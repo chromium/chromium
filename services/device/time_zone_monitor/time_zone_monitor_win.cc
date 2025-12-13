@@ -8,15 +8,16 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
-#include "ui/gfx/win/singleton_hwnd_observer.h"
+#include "ui/gfx/win/singleton_hwnd.h"
 
 namespace device {
 
@@ -40,11 +41,7 @@ class TimeZoneMonitorWin : public TimeZoneMonitor {
  public:
   explicit TimeZoneMonitorWin(
       scoped_refptr<base::SequencedTaskRunner> file_task_runner)
-      : TimeZoneMonitor(),
-        singleton_hwnd_observer_(
-            base::BindRepeating(&TimeZoneMonitorWin::OnWndProc,
-                                base::Unretained(this))),
-        main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
+      : main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
         file_task_runner_(file_task_runner) {
     InitializeCurrentPlatformTimeZone();
   }
@@ -119,7 +116,10 @@ class TimeZoneMonitorWin : public TimeZoneMonitor {
     }
   }
 
-  gfx::SingletonHwndObserver singleton_hwnd_observer_;
+  base::CallbackListSubscription hwnd_subscription_ =
+      gfx::SingletonHwnd::GetInstance()->RegisterCallback(
+          base::BindRepeating(&TimeZoneMonitorWin::OnWndProc,
+                              base::Unretained(this)));
   bool pending_update_notification_tasks_ = false;
   std::string current_platform_timezone_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;

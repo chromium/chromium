@@ -7,19 +7,20 @@ package org.chromium.chrome.browser.ui;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
+import java.util.function.Supplier;
+
 /** A factory class to create {@link IncognitoRestoreAppLaunchDrawBlocker}. */
+@NullMarked
 public class IncognitoRestoreAppLaunchDrawBlockerFactory {
-    private final @NonNull Supplier<Bundle> mSavedInstanceStateSupplier;
-    private final @NonNull ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final @NonNull CipherFactory mCipherFactory;
+    private final Supplier<Bundle> mSavedInstanceStateSupplier;
+    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final CipherFactory mCipherFactory;
 
     /**
      * @param savedInstanceStateSupplier A {@link Supplier<Bundle>} instance to pass in the bundle
@@ -30,9 +31,9 @@ public class IncognitoRestoreAppLaunchDrawBlockerFactory {
      * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting.
      */
     public IncognitoRestoreAppLaunchDrawBlockerFactory(
-            @NonNull Supplier<Bundle> savedInstanceStateSupplier,
-            @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            @NonNull CipherFactory cipherFactory) {
+            Supplier<Bundle> savedInstanceStateSupplier,
+            ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            CipherFactory cipherFactory) {
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mCipherFactory = cipherFactory;
@@ -48,10 +49,10 @@ public class IncognitoRestoreAppLaunchDrawBlockerFactory {
      * @param unblockDrawRunnable A {@link Runnable} to unblock the draw operation.
      */
     IncognitoRestoreAppLaunchDrawBlocker create(
-            @NonNull Supplier<Intent> intentSupplier,
-            @NonNull Supplier<Boolean> shouldIgnoreIntentSupplier,
-            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            @NonNull Runnable unblockDrawRunnable) {
+            Supplier<Intent> intentSupplier,
+            Supplier<Boolean> shouldIgnoreIntentSupplier,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            Runnable unblockDrawRunnable) {
         return new IncognitoRestoreAppLaunchDrawBlocker(
                 mSavedInstanceStateSupplier,
                 mTabModelSelectorSupplier,

@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/bring_android_tabs_test_session.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/bring_android_tabs_test_utils.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/constants.h"
-#import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -63,9 +62,8 @@
   }
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(YES);
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackPrimaryButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForMainTabCount:GetTabCountOnPrompt() + /*new tab page*/ 1];
@@ -83,9 +81,8 @@
   }
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(YES);
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kConfirmationAlertTertiaryActionAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackTertiaryButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kBringAndroidTabsPromptTabListAXId)]
@@ -102,9 +99,8 @@
   }
   [ChromeEarlGreyUI openTabGrid];
   VerifyConfirmationAlertPromptVisibility(YES);
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kConfirmationAlertSecondaryActionAccessibilityIdentifier)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
       performAction:grey_tap()];
   VerifyConfirmationAlertPromptVisibility(NO);
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]

@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.media.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -19,6 +22,7 @@ import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.components.browser_ui.media.MediaNotificationManager;
 import org.chromium.components.browser_ui.media.MediaSessionHelper;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -26,6 +30,7 @@ import org.chromium.url.GURL;
  * A tab helper that wraps {@link MediaSessionHelper} and is responsible for Chrome-specific
  * behavior.
  */
+@NullMarked
 public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
     private @Nullable Tab mTab;
     @VisibleForTesting MediaSessionHelper mMediaSessionHelper;
@@ -40,7 +45,8 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
                 }
 
                 @Override
-                public void onFaviconUpdated(Tab tab, Bitmap icon, GURL iconUrl) {
+                public void onFaviconUpdated(
+                        Tab tab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
                     assert tab == mTab;
 
                     if (mMediaSessionHelper == null) return;
@@ -71,10 +77,11 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
     }
 
     private void maybeCreateOrUpdateMediaSessionHelper() {
+        WebContents webContents = assumeNonNull(assumeNonNull(mTab).getWebContents());
         if (mMediaSessionHelper != null) {
-            mMediaSessionHelper.setWebContents(mTab.getWebContents());
+            mMediaSessionHelper.setWebContents(webContents);
         } else if (mTab.getWebContents() != null) {
-            mMediaSessionHelper = new MediaSessionHelper(mTab.getWebContents(), this);
+            mMediaSessionHelper = new MediaSessionHelper(webContents, this);
         }
     }
 
@@ -89,18 +96,18 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
     @Override
     public Intent createBringTabToFrontIntent() {
         return IntentHandler.createTrustedBringTabToFrontIntent(
-                mTab.getId(), IntentHandler.BringToFrontSource.NOTIFICATION);
+                assumeNonNull(mTab).getId(), IntentHandler.BringToFrontSource.NOTIFICATION);
     }
 
     @Override
     public LargeIconBridge getLargeIconBridge() {
-        return new LargeIconBridge(mTab.getProfile());
+        return new LargeIconBridge(assumeNonNull(mTab).getProfile());
     }
 
     @Override
     public MediaNotificationInfo.Builder createMediaNotificationInfoBuilder() {
         return new MediaNotificationInfo.Builder()
-                .setInstanceId(mTab.getId())
+                .setInstanceId(assumeNonNull(mTab).getId())
                 .setId(R.id.media_playback_notification);
     }
 
@@ -111,14 +118,14 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
 
     @Override
     public void hideMediaNotification() {
-        if (mTab == null) return;
+        if (mTab == null) return; // Return early if onDestroy was already called.
 
         MediaNotificationManager.hide(mTab.getId(), R.id.media_playback_notification);
     }
 
     @Override
     public void activateAndroidMediaSession() {
-        if (mTab == null) return;
+        if (mTab == null) return; // Return early if onDestroy was already called.
 
         MediaNotificationManager.activateAndroidMediaSession(
                 mTab.getId(), R.id.media_playback_notification);

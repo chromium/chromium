@@ -4,10 +4,8 @@
 
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/tabs/public/split_tab_visual_data.h"
 #include "content/public/browser/context_menu_params.h"
@@ -19,24 +17,7 @@
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #endif
 
-class ChromeWebContentsViewDelegateBrowserTest : public InProcessBrowserTest {
- public:
-  ChromeWebContentsViewDelegateBrowserTest() = default;
-  ChromeWebContentsViewDelegateBrowserTest(
-      const ChromeWebContentsViewDelegateBrowserTest&) = delete;
-  ChromeWebContentsViewDelegateBrowserTest& operator=(
-      const ChromeWebContentsViewDelegateBrowserTest&) = delete;
-  ~ChromeWebContentsViewDelegateBrowserTest() override = default;
-
-  // InProcessBrowserTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitWithFeatures({features::kSideBySide}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+class ChromeWebContentsViewDelegateBrowserTest : public InProcessBrowserTest {};
 
 #if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(ChromeWebContentsViewDelegateBrowserTest,

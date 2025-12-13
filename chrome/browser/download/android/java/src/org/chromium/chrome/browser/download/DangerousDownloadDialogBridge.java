@@ -57,7 +57,7 @@ public class DangerousDownloadDialogBridge {
             String downloadDomain,
             int iconId) {
         Activity activity = windowAndroid.getActivity().get();
-        if (activity == null) {
+        if (!(activity instanceof ModalDialogManagerHolder)) {
             onCancel(guid, windowAndroid);
             return;
         }

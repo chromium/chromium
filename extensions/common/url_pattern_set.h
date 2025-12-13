@@ -27,6 +27,9 @@ class URLPatternSet {
   using const_iterator = std::set<URLPattern>::const_iterator;
   using iterator = std::set<URLPattern>::iterator;
 
+  // Returns the empty URL patterns.
+  static const URLPatternSet& Empty();
+
   // Returns |set1| - |set2|.
   static URLPatternSet CreateDifference(const URLPatternSet& set1,
                                         const URLPatternSet& set2);

@@ -84,7 +84,7 @@ class IOSChromeSavePasswordInfoBarDelegateTest : public PlatformTest {
     delegate_ = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
         kAccountToStorePassword, password_update, kSignedInAccountStoreUser,
         std::move(form_manager),
-        /*dispatcher=*/nullptr);
+        /*dispatcher=*/nullptr, ukm_source_id_);
     const int different_nav_entry_id = kNavEntryId - 1;
     delegate_->set_nav_entry_id(different_nav_entry_id);
   }
@@ -112,7 +112,8 @@ class IOSChromeSavePasswordInfoBarDelegateTest : public PlatformTest {
   // Infobar delegate to test.
   std::unique_ptr<IOSChromeSavePasswordInfoBarDelegate> delegate_;
   // Pointer to the infobar's form manager.
-  raw_ptr<password_manager::MockPasswordFormManagerForUI> form_manager_ptr_;
+  raw_ptr<password_manager::MockPasswordFormManagerForUI, DanglingUntriaged>
+      form_manager_ptr_;
 };
 
 TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, GetUserNameText) {
@@ -264,7 +265,7 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, Accept_WhenSave) {
   // Verify that the password manager handles the Accept action.
   EXPECT_CALL(*form_manager_ptr_, Save).Times(1);
 
-  // Emulate starting presenting the info banner so actions can be taken hence
+  // Emulate starting presenting the info banner so actions can be taken and
   // metrics recorded.
   delegate_->InfobarPresenting(/*automatic=*/true);
 
@@ -303,7 +304,7 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, Accept_WhenUpdate) {
   // Verify that the password manager handles the Accept action.
   EXPECT_CALL(*form_manager_ptr_, Save).Times(1);
 
-  // Emulate starting presenting the info banner so actions can be taken hence
+  // Emulate starting presenting the info banner so actions can be taken and
   // metrics recorded.
   delegate_->InfobarPresenting(/*automatic=*/true);
 
@@ -340,7 +341,7 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, Cancel_WhenSave) {
   // Verify that the password manager handles the Cancel action.
   EXPECT_CALL(*form_manager_ptr_, Blocklist).Times(1);
 
-  // Emulate starting presenting the info banner so actions can be taken hence
+  // Emulate starting presenting the info banner so actions can be taken and
   // metrics recorded.
   delegate_->InfobarPresenting(/*automatic=*/true);
 
@@ -374,7 +375,7 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, Cancel_WhenSave) {
 }
 
 TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, Dismiss_WhenSave) {
-  // Emulate starting presenting the info banner so actions can be taken hence
+  // Emulate starting presenting the info banner so actions can be taken and
   // metrics recorded.
   delegate_->InfobarPresenting(/*automatic=*/true);
 
@@ -410,7 +411,7 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, Dismiss_WhenSave) {
 TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, Dismiss_WhenUpdate) {
   InitializeDelegate(/*password_update=*/true);
 
-  // Emulate starting presenting the info banner so actions can be taken hence
+  // Emulate starting presenting the info banner so actions can be taken and
   // metrics recorded.
   delegate_->InfobarPresenting(/*automatic=*/true);
 
@@ -444,7 +445,7 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, NoAction_WhenSave) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
-  // Emulate starting presenting the info banner so actions can be taken hence
+  // Emulate starting presenting the info banner so actions can be taken and
   // metrics recorded.
   delegate_->InfobarPresenting(/*automatic=*/true);
 
@@ -471,7 +472,7 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, NoAction_WhenSave) {
 TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, NoAction_WhenUpdate) {
   InitializeDelegate(/*password_update=*/true);
 
-  // Emulate starting presenting the info banner so actions can be taken hence
+  // Emulate starting presenting the info banner so actions can be taken and
   // metrics recorded.
   delegate_->InfobarPresenting(/*automatic=*/true);
 
@@ -637,7 +638,7 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
   const base::TimeDelta duration = base::Seconds(1);
 
   // Emulate starting presenting the info banner so actions can be taken and
-  // hence metrics recorded.
+  // metrics recorded.
   delegate_->InfobarPresenting(/*automatic=*/true);
 
   task_environment_.AdvanceClock(duration);
@@ -658,7 +659,7 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
   const base::TimeDelta duration = base::Seconds(1);
 
   // Emulate starting presenting the info banner so actions can be taken and
-  // hence metrics recorded.
+  // metrics recorded.
   delegate_->InfobarPresenting(/*automatic=*/true);
 
   task_environment_.AdvanceClock(duration);
@@ -681,7 +682,7 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
   const base::TimeDelta duration = base::Seconds(1);
 
   // Emulate starting presenting the info banner so actions can be taken and
-  // hence metrics recorded.
+  // metrics recorded.
   delegate_->InfobarPresenting(/*automatic=*/true);
 
   task_environment_.AdvanceClock(duration);
@@ -704,7 +705,7 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
   const base::TimeDelta duration = base::Seconds(1);
 
   // Emulate starting presenting the info banner so actions can be taken and
-  // hence metrics recorded.
+  // metrics recorded.
   delegate_->InfobarPresenting(/*automatic=*/true);
 
   task_environment_.AdvanceClock(duration);
@@ -725,7 +726,7 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
   const base::TimeDelta duration = base::Seconds(1);
 
   // Emulate starting presenting the info banner so actions can be taken and
-  // hence metrics recorded.
+  // metrics recorded.
   delegate_->InfobarPresenting(/*automatic=*/true);
 
   task_environment_.AdvanceClock(duration);
@@ -783,7 +784,7 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, IsPasswordUpdate_WhenSave) {
 
 TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
        IsCurrentPasswordSaved_WhenSave) {
-  // Emulate starting presenting the info banner so actions can be taken hence
+  // Emulate starting presenting the info banner so actions can be taken and
   // metrics recorded.
   delegate_->InfobarPresenting(/*automatic=*/true);
 
@@ -794,9 +795,87 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
 
 TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
        IsCurrentPasswordSaved_NoAction) {
-  // Emulate starting presenting the info banner so actions can be taken hence
+  // Emulate starting presenting the info banner so actions can be taken and
   // metrics recorded.
   delegate_->InfobarPresenting(/*automatic=*/true);
 
   EXPECT_FALSE(delegate_->IsCurrentPasswordSaved());
 }
+
+// Test fixture for the password recovery flow during a password update.
+class IOSChromeSavePasswordInfoBarDelegateRecoveryFlowTest
+    : public IOSChromeSavePasswordInfoBarDelegateTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  // Indicates whether the primary password is updated with its backup or with a
+  // different password.
+  bool IsPasswordUpdatedWithBackup() const { return GetParam(); }
+};
+
+// Tests that the backup password note is removed from the password form when
+// being updated, and that the metrics are being recorded when the new password
+// is the backup one.
+TEST_P(IOSChromeSavePasswordInfoBarDelegateRecoveryFlowTest,
+       Accept_WhenUpdate_ForPasswordRecovery) {
+  using UkmEntry = ukm::builders::PasswordManager_ChangeRecovery;
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+  InitializeDelegate(/*password_update=*/true);
+
+  password_manager::PasswordForm primary_form = form_;
+  primary_form.SetPasswordBackupNote(u"backup password");
+  primary_form.type = password_manager::PasswordForm::Type::kChangeSubmission;
+
+  password_manager::PasswordForm updated_form = form_;
+  updated_form.password_value = IsPasswordUpdatedWithBackup()
+                                    ? u"backup password"
+                                    : u"not backup password";
+
+  std::vector<password_manager::PasswordForm> forms = {primary_form};
+
+  ON_CALL(*form_manager_ptr_, GetBestMatches)
+      .WillByDefault(testing::Return(
+          base::span<const password_manager::PasswordForm>(forms)));
+  ON_CALL(testing::Const(*form_manager_ptr_), GetPendingCredentials)
+      .WillByDefault(testing::ReturnRef(updated_form));
+
+  // Set the expectations.
+  EXPECT_CALL(*form_manager_ptr_, Save).Times(1);
+
+  // Emulate starting presenting the info banner so actions can be taken and
+  // metrics recorded.
+  delegate_->InfobarPresenting(/*automatic=*/true);
+
+  // Tap on "Accept".
+  delegate_->Accept();
+
+  // Verify that the metrics are only recorded when needed.
+  auto ukm_entries = test_ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
+  if (IsPasswordUpdatedWithBackup()) {
+    histogram_tester.ExpectUniqueSample(
+        "PasswordManager.PasswordChangeRecoveryFlow",
+        password_manager::metrics_util::PasswordChangeRecoveryFlowState::
+            kPrimaryPasswordUpdated,
+        1);
+    EXPECT_EQ(1u, ukm_entries.size());
+    ukm::TestUkmRecorder::ExpectEntryMetric(
+        ukm_entries[0], UkmEntry::kPasswordChangeRecoveryFlowName,
+        static_cast<int>(
+            password_manager::metrics_util::PasswordChangeRecoveryFlowState::
+                kPrimaryPasswordUpdated));
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "PasswordManager.PasswordChangeRecoveryFlow", 0);
+    EXPECT_TRUE(ukm_entries.empty());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         IOSChromeSavePasswordInfoBarDelegateRecoveryFlowTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param
+                                      ? "WithMatchingBackup"
+                                      : "WithDifferentPasswordThanBackup";
+                         });

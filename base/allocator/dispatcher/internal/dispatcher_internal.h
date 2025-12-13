@@ -153,6 +153,18 @@ struct DispatcherImpl {
     return address;
   }
 
+  static void* AllocZeroInitializedUncheckedFn(size_t n,
+                                               size_t size,
+                                               void* context) {
+    void* const address =
+        allocator_dispatch_.next->alloc_zero_initialized_unchecked_function(
+            n, size, context);
+
+    DoNotifyAllocationForShim(address, n * size);
+
+    return address;
+  }
+
   static void* AllocAlignedFn(size_t alignment, size_t size, void* context) {
     void* const address = allocator_dispatch_.next->alloc_aligned_function(
         alignment, size, context);
@@ -227,7 +239,7 @@ struct DispatcherImpl {
         allocator_dispatch_.next->batch_malloc_function(size, results,
                                                         num_requested, context);
     for (unsigned i = 0; i < num_allocated; ++i) {
-      DoNotifyAllocationForShim(results[i], size);
+      DoNotifyAllocationForShim(UNSAFE_TODO(results[i]), size);
     }
     return num_allocated;
   }
@@ -236,7 +248,7 @@ struct DispatcherImpl {
                           unsigned num_to_be_freed,
                           void* context) {
     for (unsigned i = 0; i < num_to_be_freed; ++i) {
-      DoNotifyFreeForShim(to_be_freed[i]);
+      DoNotifyFreeForShim(UNSAFE_TODO(to_be_freed[i]));
     }
 
     MUSTTAIL return allocator_dispatch_.next->batch_free_function(
@@ -342,28 +354,30 @@ std::tuple<ObserverTypes*...> DispatcherImpl<ObserverTypes...>::s_observers;
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 template <typename... ObserverTypes>
 AllocatorDispatch DispatcherImpl<ObserverTypes...>::allocator_dispatch_ = {
-    AllocFn,                     // alloc_function
-    AllocUncheckedFn,            // alloc_unchecked_function
-    AllocZeroInitializedFn,      // alloc_zero_initialized_function
-    AllocAlignedFn,              // alloc_aligned_function
-    ReallocFn,                   // realloc_function
-    ReallocUncheckedFn,          // realloc_unchecked_function
-    FreeFn,                      // free_function
-    FreeWithSizeFn,              // free_with_size_function
-    FreeWithAlignmentFn,         // free_with_alignment_function
-    FreeWithSizeAndAlignmentFn,  // free_with_size_and_alignment_function
-    nullptr,                     // get_size_estimate_function
-    nullptr,                     // good_size_function
-    nullptr,                     // claimed_address_function
-    BatchMallocFn,               // batch_malloc_function
-    BatchFreeFn,                 // batch_free_function
-    TryFreeDefaultFn,            // try_free_default_function
-    AlignedMallocFn,             // aligned_malloc_function
-    AlignedMallocUncheckedFn,    // aligned_malloc_unchecked_function
-    AlignedReallocFn,            // aligned_realloc_function
-    AlignedReallocUncheckedFn,   // aligned_realloc_unchecked_function
-    AlignedFreeFn,               // aligned_free_function
-    nullptr                      // next
+    .alloc_function = AllocFn,
+    .alloc_unchecked_function = AllocUncheckedFn,
+    .alloc_zero_initialized_function = AllocZeroInitializedFn,
+    .alloc_zero_initialized_unchecked_function =
+        AllocZeroInitializedUncheckedFn,
+    .alloc_aligned_function = AllocAlignedFn,
+    .realloc_function = ReallocFn,
+    .realloc_unchecked_function = ReallocUncheckedFn,
+    .free_function = FreeFn,
+    .free_with_size_function = FreeWithSizeFn,
+    .free_with_alignment_function = FreeWithAlignmentFn,
+    .free_with_size_and_alignment_function = FreeWithSizeAndAlignmentFn,
+    .get_size_estimate_function = nullptr,
+    .good_size_function = nullptr,
+    .claimed_address_function = nullptr,
+    .batch_malloc_function = BatchMallocFn,
+    .batch_free_function = BatchFreeFn,
+    .try_free_default_function = TryFreeDefaultFn,
+    .aligned_malloc_function = AlignedMallocFn,
+    .aligned_malloc_unchecked_function = AlignedMallocUncheckedFn,
+    .aligned_realloc_function = AlignedReallocFn,
+    .aligned_realloc_unchecked_function = AlignedReallocUncheckedFn,
+    .aligned_free_function = AlignedFreeFn,
+    .next = nullptr,
 };
 #endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 

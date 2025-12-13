@@ -839,7 +839,7 @@ pub enum ClassAsciiKind {
     Lower,
     /// `[ -~]`
     Print,
-    /// `[!-/:-@\[-`{-~]`
+    /// ``[!-/:-@\[-`{-~]``
     Punct,
     /// `[\t\n\v\f\r ]`
     Space,
@@ -1801,9 +1801,7 @@ mod tests {
         let size = core::mem::size_of::<Ast>();
         assert!(
             size <= max,
-            "Ast size of {} bytes is bigger than suggested max {}",
-            size,
-            max
+            "Ast size of {size} bytes is bigger than suggested max {max}",
         );
     }
 }

@@ -5,22 +5,11 @@
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_H_
 
-#include <set>
-
-#include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_definitions.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
-#include "components/privacy_sandbox/privacy_sandbox_settings.h"
-#include "components/profile_metrics/browser_profile_type.h"
-#include "components/user_education/common/product_messaging_controller.h"
-#include "content/public/browser/interest_group_manager.h"
 #include "net/base/schemeful_site.h"
 
 class BrowserWindowInterface;

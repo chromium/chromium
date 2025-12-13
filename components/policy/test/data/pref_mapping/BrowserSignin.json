@@ -22,7 +22,8 @@
     "os": [
       "win",
       "mac",
-      "fuchsia"
+      "fuchsia",
+      "linux"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -37,27 +38,6 @@
           "profile.force_browser_signin": {
             "location": "local_state",
             "value": true
-          },
-          "signin.allowed_on_next_startup": {
-            "value": true
-          }
-        }
-      }
-    ]
-  },
-  {
-    "os": [
-      "linux"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "BrowserSignin": 2
-        },
-        "prefs": {
-          "profile.force_browser_signin": {
-            "default_value": false,
-            "location": "local_state"
           },
           "signin.allowed_on_next_startup": {
             "value": true

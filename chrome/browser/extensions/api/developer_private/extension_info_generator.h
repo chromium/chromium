@@ -19,9 +19,12 @@
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;

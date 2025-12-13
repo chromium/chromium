@@ -9,7 +9,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/permissions/permission_request_enums.h"
-#include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/permissions/request_type.h"
 
 namespace content {
@@ -19,6 +18,7 @@ class WebContents;
 namespace permissions {
 
 class PermissionRequest;
+enum PermissionPrediction_Likelihood_DiscretizedLikelihood : int;
 
 // The interface for implementations that decide if the quiet prompt UI should
 // be used to display a permission |request|, whether a warning should be
@@ -47,23 +47,32 @@ class PermissionUiSelector {
     kDisruptiveBehavior,
   };
 
+  enum class GeolocationAccuracy {
+    kUnspecified,
+    kPrecise,
+    kApproximate,
+  };
+
   struct Decision {
-    Decision(std::optional<QuietUiReason> quiet_ui_reason,
-             std::optional<WarningReason> warning_reason);
     ~Decision();
 
     Decision(const Decision&);
     Decision& operator=(const Decision&);
 
-    static constexpr std::optional<QuietUiReason> UseNormalUi() {
-      return std::nullopt;
-    }
+    bool operator==(const Decision&) const;
 
     static constexpr std::optional<WarningReason> ShowNoWarning() {
       return std::nullopt;
     }
 
     static Decision UseNormalUiAndShowNoWarning();
+
+    static Decision UseNormalUi(std::optional<WarningReason> warning_reason,
+                                GeolocationAccuracy geolocation_accuracy =
+                                    GeolocationAccuracy::kUnspecified);
+
+    static Decision UseQuietUi(QuietUiReason quiet_ui_reason,
+                               std::optional<WarningReason> warning_reason);
 
     // The reason for showing the quiet UI, or `std::nullopt` if the normal UI
     // should be used.
@@ -72,6 +81,14 @@ class PermissionUiSelector {
     // The reason for printing a warning to the console, or `std::nullopt` if
     // no warning should be printed.
     std::optional<WarningReason> warning_reason;
+
+    // The preselected geolocation accuracy (for geolocation prompts).
+    GeolocationAccuracy geolocation_accuracy;
+
+   private:
+    Decision(std::optional<QuietUiReason> quiet_ui_reason,
+             std::optional<WarningReason> warning_reason,
+             GeolocationAccuracy geolocation_acuracy);
   };
 
   using DecisionMadeCallback = base::OnceCallback<void(const Decision&)>;
@@ -109,6 +126,12 @@ class PermissionUiSelector {
   // that uses Gemini Nano on-device model to make decisions.
   virtual std::optional<PermissionRequestRelevance>
   PermissionRequestRelevanceForUKM();
+
+  // Will return the selector's AI model version, if any is applicable to be
+  // recorded in UKMs. This is specific only to a selector that uses an
+  // on-device AI model to predict permission relevance score.
+  virtual std::optional<permissions::PermissionAiRelevanceModel>
+  PermissionAiRelevanceModelForUKM();
 
   // Will return if the selector's decision was heldback. Currently only the
   // Web Prediction Service selector supports holdbacks.

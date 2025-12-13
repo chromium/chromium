@@ -9,13 +9,17 @@
 
 #include "base/memory/weak_ptr.h"
 #include "content/browser/webtransport/web_transport_throttle_context.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_anonymization_key.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 #include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom.h"
 #include "url/origin.h"
+
+namespace network::mojom {
+class URLLoaderNetworkServiceObserver;
+}  // namespace network::mojom
 
 namespace content {
 
@@ -24,20 +28,22 @@ class RenderFrameHostImpl;
 class WebTransportConnectorImpl final
     : public blink::mojom::WebTransportConnector {
  public:
-  // |frame| is needed for devtools and the throttle context. Sometimes (e.g.,
-  // the connector is for shared or service workers) there is no appropriate
-  // frame to associate, and in that case nullptr should be passed.
+  // |frame| is needed for devtools and the throttle context. For shared or
+  // service workers, there is no appropriate frame to associate, and in that
+  // case nullptr should be passed.
   WebTransportConnectorImpl(
       int process_id,
       base::WeakPtr<RenderFrameHostImpl> frame,
       const url::Origin& origin,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      network::mojom::ClientSecurityStatePtr client_security_state);
   ~WebTransportConnectorImpl() override;
 
   void Connect(
       const GURL& url,
       std::vector<network::mojom::WebTransportCertificateFingerprintPtr>
           fingerprints,
+      const std::vector<std::string>& application_protocols,
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client) override;
 
@@ -46,6 +52,7 @@ class WebTransportConnectorImpl final
       const GURL& url,
       std::vector<network::mojom::WebTransportCertificateFingerprintPtr>
           fingerprints,
+      const std::vector<std::string>& application_protocols,
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client,
       std::unique_ptr<WebTransportThrottleContext::Tracker> tracker);
@@ -54,6 +61,10 @@ class WebTransportConnectorImpl final
       const GURL& url,
       std::vector<network::mojom::WebTransportCertificateFingerprintPtr>
           fingerprints,
+      const std::vector<std::string>& application_protocols,
+      mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+          url_loader_network_observer,
+      network::mojom::ClientSecurityStatePtr client_security_state,
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client,
       std::optional<network::mojom::WebTransportErrorPtr> error);
@@ -62,6 +73,7 @@ class WebTransportConnectorImpl final
   const base::WeakPtr<RenderFrameHostImpl> frame_;
   const url::Origin origin_;
   const net::NetworkAnonymizationKey network_anonymization_key_;
+  const network::mojom::ClientSecurityStatePtr client_security_state_;
   const base::WeakPtr<WebTransportThrottleContext> throttle_context_;
 
   base::WeakPtrFactory<WebTransportConnectorImpl> weak_factory_{this};

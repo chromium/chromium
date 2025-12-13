@@ -61,12 +61,14 @@ PointerEvent::PointerEvent(const AtomicString& type,
   if (initializer->hasIsPrimary())
     is_primary_ = initializer->isPrimary();
   if (initializer->hasCoalescedEvents()) {
-    for (auto coalesced_event : initializer->coalescedEvents())
+    for (const auto& coalesced_event : initializer->coalescedEvents()) {
       coalesced_events_.push_back(coalesced_event);
+    }
   }
   if (initializer->hasPredictedEvents()) {
-    for (auto predicted_event : initializer->predictedEvents())
+    for (const auto& predicted_event : initializer->predictedEvents()) {
       predicted_events_.push_back(predicted_event);
+    }
   }
   if (initializer->hasAzimuthAngle())
     azimuth_angle_ = initializer->azimuthAngle();
@@ -151,14 +153,6 @@ Node* PointerEvent::fromElement() const {
 }
 
 HeapVector<Member<PointerEvent>> PointerEvent::getCoalescedEvents() {
-  if (auto* local_dom_window = DynamicTo<LocalDOMWindow>(view())) {
-    auto* document = local_dom_window->document();
-    if (document && !local_dom_window->IsSecureContext()) {
-      UseCounter::Count(document,
-                        WebFeature::kGetCoalescedEventsInInsecureContext);
-    }
-  }
-
   return coalesced_events_;
 }
 
@@ -185,10 +179,10 @@ DispatchEventResult PointerEvent::DispatchEvent(EventDispatcher& dispatcher) {
     return DispatchEventResult::kNotCanceled;  // Shouldn't happen.
 
   if (isTrusted()) {
-    for (auto coalesced_event : coalesced_events_) {
+    for (const auto& coalesced_event : coalesced_events_) {
       coalesced_event->SetTarget(&dispatcher.GetNode());
     }
-    for (auto predicted_event : predicted_events_) {
+    for (const auto& predicted_event : predicted_events_) {
       predicted_event->SetTarget(&dispatcher.GetNode());
     }
   }
@@ -197,7 +191,7 @@ DispatchEventResult PointerEvent::DispatchEvent(EventDispatcher& dispatcher) {
     return MouseEvent::DispatchEvent(dispatcher);
   }
 
-  DCHECK(!target() || target() != relatedTarget());
+  DCHECK(!RawTarget() || RawTarget() != relatedTarget());
 
   GetEventPath().AdjustForRelatedTarget(dispatcher.GetNode(), relatedTarget());
 

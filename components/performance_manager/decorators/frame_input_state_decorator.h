@@ -77,7 +77,7 @@ class FrameInputStateDecorator
   base::ObserverList<FrameInputStateObserver> observers_;
 
  public:
-  class Data : public ExternalNodeAttachedDataImpl<Data> {
+  class Data : public NodeAttachedDataImpl<Data> {
    public:
     explicit Data(const FrameNode* frame_node);
     ~Data() override;

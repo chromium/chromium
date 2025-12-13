@@ -2,14 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/credential_provider_extension/passkey_util.h"
-
-#import <AuthenticationServices/AuthenticationServices.h>
 
 #import "base/apple/foundation_util.h"
 #import "base/containers/span.h"
@@ -17,7 +10,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#import "components/webauthn/core/browser/gpm_user_verification_policy.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
+#import "device/fido/fido_user_verification_requirement.h"
+#import "device/fido/public/fido_types.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/ASPasskeyCredentialIdentity+credential.h"
 #import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
@@ -57,38 +53,38 @@ NSMutableArray<NSData*>* PRFOutputsFromExtensionOutputData(
         extension_output_data) {
   static constexpr size_t kPRFOutputSize = 32u;
 
-  size_t result_size = extension_output_data.prf_result.size();
-  bool hasOneOutput = result_size == kPRFOutputSize;
-  bool hasTwoOutputs = result_size == 2u * kPRFOutputSize;
+  auto span = base::span(extension_output_data.prf_result);
 
   // The PRF result can be empty, have exactly 1 output or exactly 2 outputs.
-  CHECK(result_size == 0u || hasOneOutput || hasTwoOutputs)
-      << "Invalid PRF result size: " << result_size;
+  CHECK_EQ(span.size() % kPRFOutputSize, 0u)
+      << "Invalid PRF result size: " << span.size();
+  CHECK_LE(span.size() / kPRFOutputSize, 2u)
+      << "Invalid PRF result size: " << span.size();
 
-  if (hasOneOutput || hasTwoOutputs) {
-    NSMutableArray<NSData*>* prf_outputs = [NSMutableArray array];
-    [prf_outputs
-        addObject:[[NSData alloc]
-                      initWithBytes:extension_output_data.prf_result.data()
-                             length:kPRFOutputSize]];
-    if (hasTwoOutputs) {
-      [prf_outputs
-          addObject:[[NSData alloc]
-                        initWithBytes:extension_output_data.prf_result.data() +
-                                      kPRFOutputSize
-                               length:kPRFOutputSize]];
-    }
-    return prf_outputs;
+  if (span.empty()) {
+    return nil;
   }
-  return nil;
+
+  NSMutableArray<NSData*>* result = [NSMutableArray array];
+  while (span.size() >= kPRFOutputSize) {
+    auto [head, rest] = span.split_at<kPRFOutputSize>();
+
+    [result addObject:[[NSData alloc] initWithBytes:head.data()
+                                             length:head.size()]];
+
+    span = rest;
+  }
+
+  return result;
 }
 
 // Wrapper around passkey_model_utils's MakeAuthenticatorDataForAssertion
 // function.
-NSData* MakeAuthenticatorDataForAssertion(NSString* rp_id) {
+NSData* MakeAuthenticatorDataForAssertion(NSString* rp_id,
+                                          bool did_complete_uv) {
   std::vector<uint8_t> authenticator_data =
       webauthn::passkey_model_utils::MakeAuthenticatorDataForAssertion(
-          SysNSStringToUTF8(rp_id));
+          SysNSStringToUTF8(rp_id), did_complete_uv);
   return [NSData dataWithBytes:authenticator_data.data()
                         length:authenticator_data.size()];
 }
@@ -115,84 +111,33 @@ NSData* GenerateSignature(NSData* authenticator_data,
   return [NSData dataWithBytes:signature->data() length:signature->size()];
 }
 
-void SaveToIdentityStore(id<Credential> credential, ProceduralBlock completion)
-    API_AVAILABLE(ios(17.0)) {
+void SaveToIdentityStore(id<Credential> credential,
+                         ProceduralBlock completion) {
   auto stateCompletion = ^(ASCredentialIdentityStoreState* state) {
-    if (state.enabled) {
-      // Update ASCredentialIdentityStore to make the passkey immediately
-      // available locally.
-      NSMutableArray<id<ASCredentialIdentity>>* storeIdentities =
-          [NSMutableArray arrayWithCapacity:1];
-      [storeIdentities addObject:[[ASPasskeyCredentialIdentity alloc]
-                                     cr_initWithCredential:credential]];
-      [ASCredentialIdentityStore.sharedStore
-          replaceCredentialIdentityEntries:storeIdentities
-                                completion:^(BOOL success, NSError* error) {
-                                  completion();
-                                }];
-    } else {
+    if (!state.enabled) {
       completion();
+      return;
+    }
+
+    NSArray<id<ASCredentialIdentity>>* storeIdentities =
+        @[ [[ASPasskeyCredentialIdentity alloc]
+            cr_initWithCredential:credential] ];
+    void (^storeCompletion)(BOOL, NSError*) = ^(BOOL success, NSError* error) {
+      completion();
+    };
+
+    if (credential.hidden) {
+      [ASCredentialIdentityStore.sharedStore
+          removeCredentialIdentityEntries:storeIdentities
+                               completion:storeCompletion];
+    } else {
+      [ASCredentialIdentityStore.sharedStore
+          saveCredentialIdentityEntries:storeIdentities
+                             completion:storeCompletion];
     }
   };
   [ASCredentialIdentityStore.sharedStore
       getCredentialIdentityStoreStateWithCompletion:stateCompletion];
-}
-
-// Saves a newly created passkey to the user defaults credential store. This
-// credential store will be read by Chrome if it is currently running, or the
-// next time it runs, to sync the newly created passkeys in the user's account.
-void SaveCredential(id<Credential> credential) {
-  NSString* key = AppGroupUserDefaultsCredentialProviderNewCredentials();
-  UserDefaultsCredentialStore* store = [[UserDefaultsCredentialStore alloc]
-      initWithUserDefaults:app_group::GetGroupUserDefaults()
-                       key:key];
-
-  if ([store credentialWithRecordIdentifier:credential.recordIdentifier]) {
-    [store updateCredential:credential];
-  } else {
-    [store addCredential:credential];
-  }
-
-  [store saveDataWithCompletion:^(NSError* error) {
-    if (error != nil) {
-      return;
-    }
-
-    if (@available(iOS 17.0, *)) {
-      SaveToIdentityStore(credential, ^{
-        // Notify Chrome that a new passkey was created
-        [CredentialProviderCreationNotifier notifyCredentialCreated];
-      });
-    }
-  }];
-}
-
-// Returns the UserVerificationPreference based on the provided
-// `user_verification_preference_string`. The passed string is expected to match
-// one of the user verification preference options made available by the
-// WebAuthn API.
-UserVerificationPreference UserVerificationPreferenceFromString(
-    ASAuthorizationPublicKeyCredentialUserVerificationPreference
-        user_verification_preference_string) {
-  if ([user_verification_preference_string
-          isEqualToString:
-              ASAuthorizationPublicKeyCredentialUserVerificationPreferenceRequired]) {
-    return UserVerificationPreference::kRequired;
-  } else if (
-      [user_verification_preference_string
-          isEqualToString:
-              ASAuthorizationPublicKeyCredentialUserVerificationPreferencePreferred]) {
-    return UserVerificationPreference::kPreferred;
-  } else if (
-      [user_verification_preference_string
-          isEqualToString:
-              ASAuthorizationPublicKeyCredentialUserVerificationPreferenceDiscouraged]) {
-    return UserVerificationPreference::kDiscouraged;
-  } else {
-    // Either indicates that the WebAuthn API changed, or that the website
-    // provided an unexpected/empty string.
-    return UserVerificationPreference::kOther;
-  }
 }
 
 }  // namespace
@@ -237,7 +182,8 @@ PasskeyCreationOutput PerformPasskeyCreation(
     NSData* user_handle,
     NSString* gaia,
     NSArray<NSData*>* security_domain_secrets,
-    NSArray<NSData*>* prf_inputs) API_AVAILABLE(ios(17.0)) {
+    NSArray<NSData*>* prf_inputs,
+    bool did_complete_uv) {
   if ([security_domain_secrets count] == 0) {
     return {};
   }
@@ -256,32 +202,30 @@ PasskeyCreationOutput PerformPasskeyCreation(
   webauthn::passkey_model_utils::ExtensionOutputData extension_output_data;
 
   // Generate a key pair containing the webauthn specifics and the public key.
-  std::pair<sync_pb::WebauthnCredentialSpecifics, std::vector<uint8_t>>
-      generated_passkey =
-          webauthn::passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
-              rp_id_str,
-              webauthn::PasskeyModel::UserEntity(user_id, user_name_str,
-                                                 user_name_str),
-              trusted_vault_key, /*trusted_vault_key_version=*/0,
-              extension_input_data, &extension_output_data);
-  sync_pb::WebauthnCredentialSpecifics passkey = generated_passkey.first;
-  std::vector<uint8_t> public_key_spki_der = generated_passkey.second;
+  auto [passkey, public_key_spki_der] =
+      webauthn::passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
+          rp_id_str,
+          webauthn::PasskeyModel::UserEntity(user_id, user_name_str,
+                                             user_name_str),
+          trusted_vault_key, /*trusted_vault_key_version=*/0,
+          extension_input_data, &extension_output_data);
 
   base::span<const uint8_t> cred_id =
       base::as_byte_span(passkey.credential_id());
+  webauthn::passkey_model_utils::SerializedAttestationObject
+      serialized_attestation_object =
+          webauthn::passkey_model_utils::MakeAttestationObjectForCreation(
+              rp_id_str, did_complete_uv, cred_id, public_key_spki_der);
+
+  SavePasskeyCredential([[ArchivableCredential alloc] initWithFavicon:nil
+                                                                 gaia:gaia
+                                                              passkey:passkey]);
+
   NSData* credential_id = [NSData dataWithBytes:cred_id.data()
                                          length:cred_id.size()];
-  std::vector<uint8_t> attestation_object_for_creation =
-      webauthn::passkey_model_utils::MakeAttestationObjectForCreation(
-          rp_id_str, cred_id, public_key_spki_der);
-  NSData* attestation_object =
-      [NSData dataWithBytes:attestation_object_for_creation.data()
-                     length:attestation_object_for_creation.size()];
-
-  SaveCredential([[ArchivableCredential alloc] initWithFavicon:nil
-                                                          gaia:gaia
-                                                       passkey:passkey]);
-
+  NSData* attestation_object = [NSData
+      dataWithBytes:serialized_attestation_object.attestation_object.data()
+             length:serialized_attestation_object.attestation_object.size()];
   return {[ASPasskeyRegistrationCredential
               credentialWithRelyingParty:rp_id
                           clientDataHash:client_data_hash
@@ -295,7 +239,8 @@ PasskeyAssertionOutput PerformPasskeyAssertion(
     NSData* client_data_hash,
     NSArray<NSData*>* allowed_credentials,
     NSArray<NSData*>* security_domain_secrets,
-    NSArray<NSData*>* prf_inputs) API_AVAILABLE(ios(17.0)) {
+    NSArray<NSData*>* prf_inputs,
+    bool did_complete_uv) {
   if ([security_domain_secrets count] == 0) {
     return {};
   }
@@ -317,7 +262,7 @@ PasskeyAssertionOutput PerformPasskeyAssertion(
   webauthn::passkey_model_utils::ExtensionInputData extension_input_data =
       ExtensionInputDataFromPRFInputs(prf_inputs);
   NSData* authenticatorData =
-      MakeAuthenticatorDataForAssertion(credential.rpId);
+      MakeAuthenticatorDataForAssertion(credential.rpId, did_complete_uv);
   NSData* signature = GenerateSignature(authenticatorData, client_data_hash,
                                         credential_secrets->private_key());
 
@@ -328,7 +273,7 @@ PasskeyAssertionOutput PerformPasskeyAssertion(
   // Update the credential's last used time.
   credential.lastUsedTime =
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
-  SaveCredential(credential);
+  SavePasskeyCredential(credential);
 
   return {[ASPasskeyAssertionCredential
               credentialWithUserHandle:credential.userId
@@ -344,19 +289,43 @@ PasskeyAssertionOutput PerformPasskeyAssertion(
 BOOL ShouldPerformUserVerificationForPreference(
     ASAuthorizationPublicKeyCredentialUserVerificationPreference
         user_verification_preference_string,
-    BOOL is_biometric_authentication_enabled) {
-  UserVerificationPreference user_verification_preference =
-      UserVerificationPreferenceFromString(user_verification_preference_string);
-
-  switch (user_verification_preference) {
-    case UserVerificationPreference::kRequired:
-      return YES;
-    case UserVerificationPreference::kPreferred:
-    case UserVerificationPreference::kOther:  // Fall back to the default
-                                              // preference as per the WebAuthn
-                                              // spec.
-      return is_biometric_authentication_enabled;
-    case UserVerificationPreference::kDiscouraged:
-      return NO;
+    BOOL is_biometric_authentication_enabled,
+    BOOL is_conditional_create) {
+  if (is_conditional_create) {
+    return NO;
   }
+
+  // Fall back to the `kPreferred` UV requirement as per the WebAuthn spec.
+  std::string user_verification_requirement_string =
+      SysNSStringToUTF8(user_verification_preference_string);
+  return webauthn::GpmWillDoUserVerification(
+      device::ConvertToUserVerificationRequirement(
+          user_verification_requirement_string)
+          .value_or(device::UserVerificationRequirement::kPreferred),
+      is_biometric_authentication_enabled);
+}
+
+void SavePasskeyCredential(id<Credential> credential) {
+  NSString* key = AppGroupUserDefaultsCredentialProviderNewCredentials();
+  UserDefaultsCredentialStore* store = [[UserDefaultsCredentialStore alloc]
+      initWithUserDefaults:app_group::GetGroupUserDefaults()
+                       key:key];
+
+  if ([store credentialWithRecordIdentifier:credential.recordIdentifier]) {
+    [store updateCredential:credential];
+  } else {
+    [store addCredential:credential];
+  }
+
+  [store saveDataWithCompletion:^(NSError* error) {
+    if (error != nil) {
+      return;
+    }
+
+    SaveToIdentityStore(credential, ^{
+      // TODO(crbug.com/432260316): Consider renaming this class as its purpose
+      // is to trigger migration, but not necessarily for creations only.
+      [CredentialProviderCreationNotifier notifyCredentialCreated];
+    });
+  }];
 }

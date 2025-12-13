@@ -15,9 +15,6 @@
 // Sends `item` to the model to handle logic and navigation.
 - (void)didSelectItem:(TableViewItem*)item;
 
-// Sends switch toggle response to the model so that it can be updated.
-- (void)didToggleSwitchItem:(TableViewSwitchItem*)item withValue:(BOOL)value;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_NOTIFICATIONS_NOTIFICATIONS_VIEW_CONTROLLER_DELEGATE_H_

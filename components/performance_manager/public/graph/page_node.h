@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/byte_count.h"
 #include "base/containers/flat_set.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -197,7 +198,7 @@ class PageNode : public TypedNode<PageNode> {
   // Returns the private memory footprint size of the main frame and its
   // children. This differs from EstimatePrivateFootprintSize which includes
   // all the frames under the page node.
-  virtual uint64_t EstimateMainFramePrivateFootprintSize() const = 0;
+  virtual base::ByteCount EstimateMainFramePrivateFootprintSize() const = 0;
 
   // Indicates if at least one of the frames in the page has received some form
   // interactions.
@@ -213,9 +214,9 @@ class PageNode : public TypedNode<PageNode> {
   // dereferenced on the UI thread.
   virtual base::WeakPtr<content::WebContents> GetWebContents() const = 0;
 
-  virtual uint64_t EstimateResidentSetSize() const = 0;
+  virtual base::ByteCount EstimateResidentSetSize() const = 0;
 
-  virtual uint64_t EstimatePrivateFootprintSize() const = 0;
+  virtual base::ByteCount EstimatePrivateFootprintSize() const = 0;
 
   // Returns a weak pointer to this page node.
   virtual base::WeakPtr<PageNode> GetWeakPtr() = 0;

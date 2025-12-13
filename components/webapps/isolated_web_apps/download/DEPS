@@ -1,0 +1,6 @@
+specific_include_rules = {
+    "bundle_downloader_unittest.cc": [
+        "+services/network/test/test_url_loader_factory.h",
+        "+services/network/test/test_utils.h",
+    ],
+}

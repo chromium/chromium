@@ -28,12 +28,10 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
@@ -52,7 +50,6 @@ import java.lang.ref.WeakReference;
 public class PdfPageIphControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private View mToolbarMenuButton;
     @Mock private AppMenuHandler mAppMenuHandler;
     @Mock private UserEducationHelper mUserEducationHelper;
@@ -64,6 +61,7 @@ public class PdfPageIphControllerUnitTest {
 
     @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private PdfPageIphController mController;
 
     @Before
@@ -156,17 +154,6 @@ public class PdfPageIphControllerUnitTest {
         // The download button in CCT appears in the icon row regardless of whether it is on a phone
         // or tablet.
         verifyIphCommand(true);
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.HIDE_TABLET_TOOLBAR_DOWNLOAD_BUTTON)
-    @Config(qualifiers = "sw600dp")
-    public void testDownloadIph_Tablet_DownloadButtonInToolbar() {
-        initializeController(true);
-        ActivityTabTabObserver activityTabTabObserver =
-                mController.getActiveTabObserverForTesting();
-        activityTabTabObserver.onPageLoadFinished(mTab, JUnitTestGURLs.EXAMPLE_URL);
-        verify(mUserEducationHelper, never()).requestShowIph(mIphCommandCaptor.capture());
     }
 
     @Test

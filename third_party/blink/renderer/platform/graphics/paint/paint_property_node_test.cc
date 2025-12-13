@@ -360,7 +360,7 @@ TEST_F(PaintPropertyNodeTest, EffectWillChangeOpacityChangesToAndFromOne) {
     EffectPaintPropertyNode::State state{transform.ancestor, clip.ancestor};
     state.opacity = 0.5f;  // Same as the initial opacity of |effect.ancestor|.
     state.direct_compositing_reasons = CompositingReason::kWillChangeOpacity;
-    EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyNonRerasterValues,
+    EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues,
               effect.ancestor->Update(*effect.root, std::move(state)));
   }
   {
@@ -390,7 +390,7 @@ TEST_F(PaintPropertyNodeTest, EffectAnimatingOpacityChangesToAndFromOne) {
     state.opacity = 0.5f;  // Same as the initial opacity of |effect.ancestor|.
     state.direct_compositing_reasons |=
         CompositingReason::kActiveOpacityAnimation;
-    EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyNonRerasterValues,
+    EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues,
               effect.ancestor->Update(*effect.root, std::move(state)));
   }
   {
@@ -430,7 +430,7 @@ TEST_F(PaintPropertyNodeTest, ChangeDirectCompositingReason) {
     state.direct_compositing_reasons =
         CompositingReason::kWillChangeTransform |
         CompositingReason::kBackfaceVisibilityHidden;
-    EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyNonRerasterValues,
+    EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues,
               transform.child1->Update(*transform.ancestor, std::move(state)));
     // The previous change is more significant.
     EXPECT_CHANGE_EQ(PaintPropertyChangeType::kChangedOnlyValues,
@@ -454,8 +454,6 @@ TEST_F(PaintPropertyNodeTest, ChangeTransformDuringCompositedAnimation) {
 
   EXPECT_FALSE(transform.child1->Changed(
       PaintPropertyChangeType::kChangedOnlyValues, *transform.root));
-  EXPECT_FALSE(transform.child1->Changed(
-      PaintPropertyChangeType::kChangedOnlyNonRerasterValues, *transform.root));
   EXPECT_TRUE(transform.child1->Changed(
       PaintPropertyChangeType::kChangedOnlyCompositedValues, *transform.root));
 

@@ -1618,58 +1618,6 @@ impl Default for RawValues<'_> {
 // license: MIT - Copyright (c) 2015 The Rust Project Developers
 
 #[derive(Clone, Debug)]
-#[deprecated(since = "4.1.0", note = "Use Occurrences instead")]
-pub(crate) struct GroupedValues<'a> {
-    #[allow(clippy::type_complexity)]
-    iter: Map<Iter<'a, Vec<AnyValue>>, fn(&Vec<AnyValue>) -> Vec<&str>>,
-    len: usize,
-}
-
-#[allow(deprecated)]
-impl<'a> Iterator for GroupedValues<'a> {
-    type Item = Vec<&'a str>;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if let Some(next) = self.iter.next() {
-            self.len -= 1;
-            Some(next)
-        } else {
-            None
-        }
-    }
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        (self.len, Some(self.len))
-    }
-}
-
-#[allow(deprecated)]
-impl DoubleEndedIterator for GroupedValues<'_> {
-    fn next_back(&mut self) -> Option<Self::Item> {
-        if let Some(next) = self.iter.next_back() {
-            self.len -= 1;
-            Some(next)
-        } else {
-            None
-        }
-    }
-}
-
-#[allow(deprecated)]
-impl ExactSizeIterator for GroupedValues<'_> {}
-
-/// Creates an empty iterator. Used for `unwrap_or_default()`.
-#[allow(deprecated)]
-impl Default for GroupedValues<'_> {
-    fn default() -> Self {
-        static EMPTY: [Vec<AnyValue>; 0] = [];
-        GroupedValues {
-            iter: EMPTY[..].iter().map(|_| unreachable!()),
-            len: 0,
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
 pub struct Occurrences<T> {
     #[allow(clippy::type_complexity)]
     iter: Map<std::vec::IntoIter<Vec<AnyValue>>, fn(Vec<AnyValue>) -> OccurrenceValues<T>>,

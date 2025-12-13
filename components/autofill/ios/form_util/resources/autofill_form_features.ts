@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+
 
 /**
  * @fileoverview Contains feature flag state for behavior relating to Autofill
@@ -24,6 +25,14 @@ let autofillAcrossIframes: boolean = true;
 let autofillAcrossIframesThrottling: boolean = true;
 // LINT.ThenChange(//components/autofill/core/common/autofill_features.cc:autofill_across_iframes_ios)
 
+// LINT.IfChange(autofill_disallow_more_hyphen_like_labels)
+/**
+ * When true, labels that only contain em dashes, minuses, fullwidth hyphens
+ * and other special characters are disallowed.
+ */
+let autofillDisallowMoreHyphenLikeLabels: boolean = false;
+// LINT.ThenChange(//components/autofill/core/common/autofill_features.cc:autofill_disallow_more_hyphen_like_labels)
+
 // LINT.IfChange(autofill_ignore_checkable_elements)
 /**
  * If true, checkboxes and radio buttons aren't extracted anymore.
@@ -36,7 +45,7 @@ let autofillIgnoreCheckableElements: boolean = false;
  Enables the logic necessary for Autofill to work from an isolated content world
  without breaking the features that need to be in the page content world.
  */
-let autofillIsolatedContentWorld: boolean = false;
+let autofillIsolatedContentWorld: boolean = true;
 // LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_isolated_content_world)
 
 // LINT.IfChange(autofill_correct_user_edited_bit_in_parsed_field)
@@ -52,14 +61,14 @@ let autofillCorrectUserEditedBitInParsedField: boolean = false;
 Allows detecting form submissions that are `defaultPrevented` by the page
 content.
 */
-let autofillAllowDefaultPreventedSubmission: boolean = false;
+let autofillAllowDefaultPreventedSubmission: boolean = true;
 // LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_allow_default_prevented_submission)
 
 // LINT.IfChange(autofill_dedupe_form_submission)
 /**
 Dedupes form submission by only allowing one submission per form.
 */
-let autofillDedupeFormSubmission: boolean = false;
+let autofillDedupeFormSubmission: boolean = true;
 // LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_dedupe_form_submission)
 
 // LINT.IfChange(autofill_report_form_submission_errors)
@@ -103,6 +112,20 @@ function setAutofillAcrossIframesThrottling(enabled: boolean): void {
  */
 function isAutofillAcrossIframesThrottlingEnabled(): boolean {
   return autofillAcrossIframesThrottling;
+}
+
+/**
+ * @see autofillDisallowMoreHyphenLikeLabels
+ */
+function setAutofillDisallowMoreHyphenLikeLabels(enabled: boolean) {
+  autofillDisallowMoreHyphenLikeLabels = enabled;
+}
+
+/**
+ * @see setAutofillDisallowMoreHyphenLikeLabel
+ */
+function isAutofillDisallowMoreHyphenLikeLabelsEnabled(): boolean {
+  return autofillDisallowMoreHyphenLikeLabels;
 }
 
 /**
@@ -207,23 +230,61 @@ function isAutofillCountFormSubmissionInRendererEnabled(): boolean {
 
 // Expose globally via `gCrWeb` instead of `export` to ensure state (feature
 // on/off) is maintained across imports.
-gCrWebLegacy.autofill_form_features = {
-  setAutofillAcrossIframes,
-  isAutofillAcrossIframesEnabled,
-  setAutofillAcrossIframesThrottling,
-  isAutofillAcrossIframesThrottlingEnabled,
-  setAutofillIgnoreCheckableElements,
-  isAutofillIgnoreCheckableElementsEnabled,
-  setAutofillIsolatedContentWorld,
-  isAutofillIsolatedContentWorldEnabled,
-  setAutofillCorrectUserEditedBitInParsedField,
-  isAutofillCorrectUserEditedBitInParsedField,
-  setAutofillAllowDefaultPreventedSubmission,
-  isAutofillAllowDefaultPreventedSubmission,
-  setAutofillDedupeFormSubmission,
-  isAutofillDedupeFormSubmissionEnabled,
-  setAutofillReportFormSubmissionErrors,
-  isAutofillReportFormSubmissionErrorsEnabled,
-  setAutofillCountFormSubmissionInRenderer,
-  isAutofillCountFormSubmissionInRendererEnabled,
-};
+const autofillFormFeatures = new CrWebApi();
+
+autofillFormFeatures.addFunction(
+    'setAutofillAcrossIframes', setAutofillAcrossIframes);
+autofillFormFeatures.addFunction(
+    'isAutofillAcrossIframesEnabled', isAutofillAcrossIframesEnabled);
+autofillFormFeatures.addFunction(
+    'setAutofillAcrossIframesThrottling', setAutofillAcrossIframesThrottling);
+autofillFormFeatures.addFunction(
+    'isAutofillAcrossIframesThrottlingEnabled',
+    isAutofillAcrossIframesThrottlingEnabled);
+autofillFormFeatures.addFunction(
+    'setAutofillDisallowMoreHyphenLikeLabels',
+    setAutofillDisallowMoreHyphenLikeLabels);
+autofillFormFeatures.addFunction(
+    'isAutofillDisallowMoreHyphenLikeLabelsEnabled',
+    isAutofillDisallowMoreHyphenLikeLabelsEnabled);
+autofillFormFeatures.addFunction(
+    'setAutofillIgnoreCheckableElements', setAutofillIgnoreCheckableElements);
+autofillFormFeatures.addFunction(
+    'isAutofillIgnoreCheckableElementsEnabled',
+    isAutofillIgnoreCheckableElementsEnabled);
+autofillFormFeatures.addFunction(
+    'setAutofillIsolatedContentWorld', setAutofillIsolatedContentWorld);
+autofillFormFeatures.addFunction(
+    'isAutofillIsolatedContentWorldEnabled',
+    isAutofillIsolatedContentWorldEnabled);
+autofillFormFeatures.addFunction(
+    'setAutofillCorrectUserEditedBitInParsedField',
+    setAutofillCorrectUserEditedBitInParsedField);
+autofillFormFeatures.addFunction(
+    'isAutofillCorrectUserEditedBitInParsedField',
+    isAutofillCorrectUserEditedBitInParsedField);
+autofillFormFeatures.addFunction(
+    'setAutofillAllowDefaultPreventedSubmission',
+    setAutofillAllowDefaultPreventedSubmission);
+autofillFormFeatures.addFunction(
+    'isAutofillAllowDefaultPreventedSubmission',
+    isAutofillAllowDefaultPreventedSubmission);
+autofillFormFeatures.addFunction(
+    'setAutofillDedupeFormSubmission', setAutofillDedupeFormSubmission);
+autofillFormFeatures.addFunction(
+    'isAutofillDedupeFormSubmissionEnabled',
+    isAutofillDedupeFormSubmissionEnabled);
+autofillFormFeatures.addFunction(
+    'setAutofillReportFormSubmissionErrors',
+    setAutofillReportFormSubmissionErrors);
+autofillFormFeatures.addFunction(
+    'isAutofillReportFormSubmissionErrorsEnabled',
+    isAutofillReportFormSubmissionErrorsEnabled);
+autofillFormFeatures.addFunction(
+    'setAutofillCountFormSubmissionInRenderer',
+    setAutofillCountFormSubmissionInRenderer);
+autofillFormFeatures.addFunction(
+    'isAutofillCountFormSubmissionInRendererEnabled',
+    isAutofillCountFormSubmissionInRendererEnabled);
+
+gCrWeb.registerApi('autofill_form_features', autofillFormFeatures);

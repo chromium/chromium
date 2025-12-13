@@ -12,9 +12,11 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/sync_status.h"
@@ -31,10 +33,10 @@ namespace syncer::sync_ui_util {
 
 namespace {
 
-const char kUninitialized[] = "Uninitialized";
+constexpr char kUninitialized[] = "Uninitialized";
 
-const char kUninitializedCSSClass[] = "uninitialized";
-const char kBadStateCSSClass[] = "in_bad_state";
+constexpr char kUninitializedCSSClass[] = "uninitialized";
+constexpr char kBadStateCSSClass[] = "in_bad_state";
 
 std::string SeverityToString(TypeStatusForDebugging::Severity severity) {
   switch (severity) {
@@ -201,6 +203,20 @@ std::string GetUserActionableErrorString(
     case SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
       return "Trusted vault recoverability degraded for everything";
+#if !BUILDFLAG(IS_IOS)
+    case SyncService::UserActionableError::kNeedsSettingsConfirmation:
+      return "Needs settings confirmation";
+    case SyncService::UserActionableError::kUnrecoverableError:
+      return "Unrecoverable error";
+#endif  // !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID)
+    case SyncService::UserActionableError::kNeedsUPMBackendUpgrade:
+      return "Needs UPM backend upgrade";
+#endif  // BUILDFLAG(IS_ANDROID)
+    case SyncService::UserActionableError::kNeedsClientUpgrade:
+      return "Client version is too old and needs upgrade";
+    case SyncService::UserActionableError::kBookmarksLimitExceeded:
+      return "Bookmarks limit exceeded";
   }
 
   NOTREACHED();
@@ -395,6 +411,10 @@ base::Value::Dict ConstructAboutInformation(
       section_local->AddBoolStat("Local Sync Backend Enabled");
   Stat<std::string>* local_backend_path =
       section_local->AddStringStat("Local Backend Path");
+  // TODO(crbug.com/454302754) Remove this once the experiment for determining a
+  // new permanent bookmark limit has finished.
+  Stat<std::string>* bookmarks_limit =
+      section_local->AddStringStat("Bookmarks Limit");
 
   Section* section_network =
       section_list.AddSection("Network", /*is_sensitive=*/false);
@@ -554,6 +574,7 @@ base::Value::Dict ConstructAboutInformation(
   if (is_local_sync_enabled_state && is_status_valid) {
     local_backend_path->Set(full_status.local_sync_folder);
   }
+  bookmarks_limit->Set(base::NumberToString(kSyncBookmarksLimitValue.Get()));
 
   // Network.
   if (snapshot.is_initialized()) {

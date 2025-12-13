@@ -6,10 +6,10 @@
 
 #include "base/notreached.h"
 #include "remoting/base/directory_service_client.h"
+#include "remoting/base/environment_details.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter_impl.h"
 #include "remoting/base/protobuf_http_client.h"
-#include "remoting/host/host_details.h"
 #include "remoting/proto/remoting/v1/directory_messages.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -33,12 +33,9 @@ void Me2MeHeartbeatServiceClient::SendFullHeartbeat(
     HeartbeatResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::string os_name = GetHostOperatingSystemName();
-  std::string os_version = GetHostOperatingSystemVersion();
-
   client_.LegacyHeartbeat(
       directory_id_, signaling_id, offline_reason, is_initial_heartbeat,
-      set_fqdn_, os_name, os_version,
+      set_fqdn_, GetOperatingSystemName(), GetOperatingSystemVersion(),
       base::BindOnce(&Me2MeHeartbeatServiceClient::OnLegacyHeartbeatResponse,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

@@ -8,15 +8,21 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/extensions/load_error_reporter.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/load_error_reporter.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
 ZipFileInstaller::DoneCallback MakeRegisterInExtensionServiceCallback(
     content::BrowserContext* context) {
+  // TODO(crbug.com/41317803): Continue removing std::string error and
+  // replacing with std::u16string.
   return base::BindOnce(
       [](base::WeakPtr<content::BrowserContext> context_weak,
          const base::FilePath& zip_file, const base::FilePath& unzip_dir,
@@ -32,7 +38,7 @@ ZipFileInstaller::DoneCallback MakeRegisterInExtensionServiceCallback(
         }
         DCHECK(!error.empty());
         LoadErrorReporter::GetInstance()->ReportLoadError(
-            zip_file, error, context_weak.get(),
+            zip_file, base::UTF8ToUTF16(error), context_weak.get(),
             /*noisy_on_failure=*/true);
       },
       context->GetWeakPtr());

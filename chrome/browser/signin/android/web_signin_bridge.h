@@ -15,7 +15,7 @@ class WebSigninBridge {
   explicit WebSigninBridge(
       signin::IdentityManager* identity_manager,
       AccountReconcilor* account_reconcilor,
-      CoreAccountId signin_account,
+      std::variant<CoreAccountId, std::string> signin_account,
       base::OnceCallback<void(signin::WebSigninTracker::Result)>
           on_signin_completed);
 

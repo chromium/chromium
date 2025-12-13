@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!--
+        The max amount of characters for the justification text input in the
+        extension install dialog.
+    -->
+    <integer name="extension_install_dialog_justification_max_input">280</integer>
+</resources>

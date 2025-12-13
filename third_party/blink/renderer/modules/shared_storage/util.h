@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SHARED_STORAGE_UTIL_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "services/network/public/mojom/shared_storage.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -42,10 +41,8 @@ enum class SharedStorageDataOrigin {
   kInvalid = 3,
 };
 
-// Helper method to convert v8 string to WTF::String.
-bool StringFromV8(v8::Isolate* isolate,
-                  v8::Local<v8::Value> val,
-                  WTF::String* out);
+// Helper method to convert v8 string to blink::String.
+bool StringFromV8(v8::Isolate* isolate, v8::Local<v8::Value> val, String* out);
 
 // Whether `lock_name` is a reserved lock resource name.
 // See https://w3c.github.io/web-locks/#resource-name

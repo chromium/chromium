@@ -79,6 +79,7 @@ interface Internals {
     // Animation testing.
     [RaisesException] void pauseAnimations(double pauseTime);
     boolean isCompositedAnimation(Animation animation);
+    boolean isMainThreadAnimation(Animation animation);
     void disableCompositedAnimation(Animation animation);
 
     // Advances an animated image. For BitmapImage (e.g., animated gifs) this

@@ -34,13 +34,15 @@
 #include <iosfwd>
 #include <iterator>
 #include <limits>
+#include <memory>
 #include <string>
+#include <type_traits>
 
 #include "absl/base/attributes.h"
-#include "absl/base/nullability.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/throw_delegate.h"
 #include "absl/base/macros.h"
+#include "absl/base/nullability.h"
 #include "absl/base/optimization.h"
 #include "absl/base/port.h"
 
@@ -56,6 +58,15 @@ ABSL_NAMESPACE_END
 
 #else  // ABSL_USES_STD_STRING_VIEW
 
+#if ABSL_HAVE_ATTRIBUTE(diagnose_if)
+#define ABSL_INTERNAL_DIAGNOSE_IF_NULLPTR(x) \
+  __attribute__((diagnose_if(                \
+      x == nullptr,                          \
+      "null passed to a callee that requires a non-null argument", "error")))
+#else
+#define ABSL_INTERNAL_DIAGNOSE_IF_NULLPTR(x)
+#endif
+
 #if ABSL_HAVE_BUILTIN(__builtin_memcmp) ||        \
     (defined(__GNUC__) && !defined(__clang__)) || \
     (defined(_MSC_VER) && _MSC_VER >= 1928)
@@ -63,6 +74,32 @@ ABSL_NAMESPACE_END
 #else  // ABSL_HAVE_BUILTIN(__builtin_memcmp)
 #define ABSL_INTERNAL_STRING_VIEW_MEMCMP memcmp
 #endif  // ABSL_HAVE_BUILTIN(__builtin_memcmp)
+
+// If `std::ranges` is available, mark `string_view` as satisfying the
+// `view` and `borrowed_range` concepts, just like `std::string_view`.
+#ifdef __has_include
+#if __has_include(<version>)
+#include <version>
+#endif
+#endif
+
+#if defined(__cpp_lib_ranges) && __cpp_lib_ranges >= 201911L
+#include <ranges>  // NOLINT(build/c++20)
+
+namespace absl {
+ABSL_NAMESPACE_BEGIN
+class string_view;
+ABSL_NAMESPACE_END
+}  // namespace absl
+
+template <>
+// NOLINTNEXTLINE(build/c++20)
+inline constexpr bool std::ranges::enable_view<absl::string_view> = true;
+template <>
+// NOLINTNEXTLINE(build/c++20)
+inline constexpr bool std::ranges::enable_borrowed_range<absl::string_view> =
+    true;
+#endif
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -197,9 +234,9 @@ class ABSL_ATTRIBUTE_VIEW string_view {
   // instead (see below).
   // The length check is skipped since it is unnecessary and causes code bloat.
   constexpr string_view(  // NOLINT(runtime/explicit)
-      const char* absl_nonnull str)
+      const char* absl_nonnull str) ABSL_INTERNAL_DIAGNOSE_IF_NULLPTR(str)
       : ptr_(str), length_(str ? StrlenInternal(str) : 0) {
-    assert(str != nullptr);
+    ABSL_HARDENING_ASSERT(str != nullptr);
   }
 
   // Constructor of a `string_view` from a `const char*` and length.
@@ -207,6 +244,19 @@ class ABSL_ATTRIBUTE_VIEW string_view {
       : ptr_(data), length_(CheckLengthInternal(len)) {
     ABSL_ASSERT(data != nullptr || len == 0);
   }
+
+#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
+  template <std::contiguous_iterator It, std::sized_sentinel_for<It> End>
+    requires(std::is_same_v<std::iter_value_t<It>, value_type> &&
+             !std::is_convertible_v<End, size_type>)
+  constexpr string_view(It begin, End end)
+      : ptr_(std::to_address(begin)), length_(end - begin) {
+    ABSL_HARDENING_ASSERT(end >= begin);
+  }
+#endif  // ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
+
+  // Deleted constructor from std::nullptr_t from C++23.
+  string_view(std::nullptr_t) = delete;
 
   constexpr string_view(const string_view&) noexcept = default;
   string_view& operator=(const string_view&) noexcept = default;
@@ -738,6 +788,7 @@ std::ostream& operator<<(std::ostream& o, string_view piece);
 ABSL_NAMESPACE_END
 }  // namespace absl
 
+#undef ABSL_INTERNAL_DIAGNOSE_IF_NULLPTR
 #undef ABSL_INTERNAL_STRING_VIEW_MEMCMP
 
 #endif  // ABSL_USES_STD_STRING_VIEW
@@ -749,8 +800,8 @@ ABSL_NAMESPACE_BEGIN
 //
 // Like `s.substr(pos, n)`, but clips `pos` to an upper bound of `s.size()`.
 // Provided because std::string_view::substr throws if `pos > size()`
-inline string_view ClippedSubstr(string_view s, size_t pos,
-                                 size_t n = string_view::npos) {
+inline string_view ClippedSubstr(string_view s ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                                 size_t pos, size_t n = string_view::npos) {
   pos = (std::min)(pos, static_cast<size_t>(s.size()));
   return s.substr(pos, n);
 }

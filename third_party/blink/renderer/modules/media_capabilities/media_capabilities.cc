@@ -21,9 +21,6 @@
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 #include "media/filters/stream_parser_factory.h"
-#include "media/learning/common/media_learning_tasks.h"
-#include "media/learning/common/target_histogram.h"
-#include "media/learning/mojo/public/mojom/learning_task_controller.mojom-blink.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom-blink.h"
 #include "media/mojo/mojom/media_types.mojom-blink.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -57,8 +54,6 @@
 #include "third_party/blink/renderer/modules/encryptedmedia/encrypted_media_utils.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/media_key_system_access.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/media_key_system_access_initializer_base.h"
-#include "third_party/blink/renderer/modules/media_capabilities/media_capabilities_identifiability_metrics.h"
-#include "third_party/blink/renderer/modules/media_capabilities_names.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -77,6 +72,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/audio_codecs/audio_format.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
@@ -87,8 +83,6 @@ namespace blink {
 
 namespace {
 
-const double kLearningBadWindowThresholdDefault = 2;
-const double kLearningNnrThresholdDefault = 3;
 const bool kWebrtcDecodeSmoothIfPowerEfficientDefault = true;
 const bool kWebrtcEncodeSmoothIfPowerEfficientDefault = true;
 
@@ -96,35 +90,6 @@ constexpr const char* kApplicationMimeTypePrefix = "application/";
 constexpr const char* kAudioMimeTypePrefix = "audio/";
 constexpr const char* kVideoMimeTypePrefix = "video/";
 constexpr const char* kCodecsMimeTypeParam = "codecs";
-constexpr const char* kSmpteSt2086HdrMetadataType = "smpteSt2086";
-constexpr const char* kSmpteSt209410HdrMetadataType = "smpteSt2094-10";
-constexpr const char* kSmpteSt209440HdrMetadataType = "smpteSt2094-40";
-constexpr const char* kSrgbColorGamut = "srgb";
-constexpr const char* kP3ColorGamut = "p3";
-constexpr const char* kRec2020ColorGamut = "rec2020";
-constexpr const char* kSrgbTransferFunction = "srgb";
-constexpr const char* kPqTransferFunction = "pq";
-constexpr const char* kHlgTransferFunction = "hlg";
-
-// Gets parameters for kMediaLearningSmoothnessExperiment field trial. Will
-// provide sane defaults when field trial not enabled. Values of -1 indicate
-// predictions from a given task should be ignored.
-
-// static
-double GetLearningBadWindowThreshold() {
-  return base::GetFieldTrialParamByFeatureAsDouble(
-      media::kMediaLearningSmoothnessExperiment,
-      MediaCapabilities::kLearningBadWindowThresholdParamName,
-      kLearningBadWindowThresholdDefault);
-}
-
-// static
-double GetLearningNnrThreshold() {
-  return base::GetFieldTrialParamByFeatureAsDouble(
-      media::kMediaLearningSmoothnessExperiment,
-      MediaCapabilities::kLearningNnrThresholdParamName,
-      kLearningNnrThresholdDefault);
-}
 
 // static
 bool WebrtcDecodeForceSmoothIfPowerEfficient() {
@@ -186,8 +151,6 @@ CreateResolvedPromiseToDecodingInfoWith(
     ScriptState* script_state,
     const MediaDecodingConfiguration* config) {
   MediaCapabilitiesDecodingInfo* info = CreateDecodingInfoWith(value);
-  media_capabilities_identifiability_metrics::ReportDecodingInfoResult(
-      ExecutionContext::From(script_state), config, info);
   return ToResolvedPromise<MediaCapabilitiesDecodingInfo>(script_state, info);
 }
 
@@ -423,8 +386,8 @@ WebAudioConfiguration ToWebAudioConfiguration(
   DCHECK(!parsed_content_type.GetParameters().HasDuplicatedNames());
 
   web_configuration.mime_type = parsed_content_type.MimeType().LowerASCII();
-  web_configuration.codec = parsed_content_type.ParameterValueForName(
-      media_capabilities_names::kCodecs);
+  web_configuration.codec =
+      parsed_content_type.ParameterValueForName(kCodecsMimeTypeParam);
 
   // |channels| is optional and will be set to a null WebString if not present.
   web_configuration.channels = configuration->hasChannels()
@@ -450,8 +413,8 @@ WebVideoConfiguration ToWebVideoConfiguration(
   DCHECK(parsed_content_type.IsValid());
   DCHECK(!parsed_content_type.GetParameters().HasDuplicatedNames());
   web_configuration.mime_type = parsed_content_type.MimeType().LowerASCII();
-  web_configuration.codec = parsed_content_type.ParameterValueForName(
-      media_capabilities_names::kCodecs);
+  web_configuration.codec =
+      parsed_content_type.ParameterValueForName(kCodecsMimeTypeParam);
 
   DCHECK(configuration->hasWidth());
   web_configuration.width = configuration->width();
@@ -474,12 +437,12 @@ WebMediaConfiguration ToWebMediaConfiguration(
 
   // |type| is required.
   DCHECK(configuration->hasType());
-  if (configuration->type() == "record") {
-    web_configuration.type = MediaConfigurationType::kRecord;
-  } else if (configuration->type() == "transmission") {
-    web_configuration.type = MediaConfigurationType::kTransmission;
-  } else {
-    NOTREACHED();
+  switch (configuration->type().AsEnum()) {
+    case V8MediaEncodingType::Enum::kRecord:
+      web_configuration.type = MediaConfigurationType::kRecord;
+      break;
+    case V8MediaEncodingType::Enum::kWebrtc:
+      NOTREACHED();
   }
 
   if (configuration->hasAudio()) {
@@ -563,46 +526,48 @@ void ParseDynamicRangeConfigurations(
   // give precedence to the latter.
 
   if (video_config->hasHdrMetadataType()) {
-    const auto& hdr_metadata_type = video_config->hdrMetadataType();
-    // TODO(crbug.com/1092328): Switch by V8HdrMetadataType::Enum.
-    if (hdr_metadata_type == kSmpteSt2086HdrMetadataType) {
-      *hdr_metadata = gfx::HdrMetadataType::kSmpteSt2086;
-    } else if (hdr_metadata_type == kSmpteSt209410HdrMetadataType) {
-      *hdr_metadata = gfx::HdrMetadataType::kSmpteSt2094_10;
-    } else if (hdr_metadata_type == kSmpteSt209440HdrMetadataType) {
-      *hdr_metadata = gfx::HdrMetadataType::kSmpteSt2094_40;
-    } else {
-      NOTREACHED();
+    switch (video_config->hdrMetadataType().AsEnum()) {
+      case V8HdrMetadataType::Enum::kSmpteSt2086:
+        *hdr_metadata = gfx::HdrMetadataType::kSmpteSt2086;
+        break;
+      case V8HdrMetadataType::Enum::kSmpteSt209410:
+        *hdr_metadata = gfx::HdrMetadataType::kSmpteSt2094_10;
+        break;
+      case V8HdrMetadataType::Enum::kSmpteSt209440:
+        *hdr_metadata = gfx::HdrMetadataType::kSmpteSt2094_40;
+        break;
     }
   } else {
     *hdr_metadata = gfx::HdrMetadataType::kNone;
   }
 
   if (video_config->hasColorGamut()) {
-    const auto& color_gamut = video_config->colorGamut();
-    // TODO(crbug.com/1092328): Switch by V8ColorGamut::Enum.
-    if (color_gamut == kSrgbColorGamut) {
-      color_space->primaries = media::VideoColorSpace::PrimaryID::BT709;
-    } else if (color_gamut == kP3ColorGamut) {
-      color_space->primaries = media::VideoColorSpace::PrimaryID::SMPTEST431_2;
-    } else if (color_gamut == kRec2020ColorGamut) {
-      color_space->primaries = media::VideoColorSpace::PrimaryID::BT2020;
-    } else {
-      NOTREACHED();
+    switch (video_config->colorGamut().AsEnum()) {
+      case V8ColorGamut::Enum::kSRGB:
+        color_space->primaries = media::VideoColorSpace::PrimaryID::BT709;
+        break;
+      case V8ColorGamut::Enum::kP3:
+        color_space->primaries =
+            media::VideoColorSpace::PrimaryID::SMPTEST431_2;
+        break;
+      case V8ColorGamut::Enum::kRec2020:
+        color_space->primaries = media::VideoColorSpace::PrimaryID::BT2020;
+        break;
     }
   }
 
   if (video_config->hasTransferFunction()) {
-    const auto& transfer_function = video_config->transferFunction();
-    // TODO(crbug.com/1092328): Switch by V8TransferFunction::Enum.
-    if (transfer_function == kSrgbTransferFunction) {
-      color_space->transfer = media::VideoColorSpace::TransferID::BT709;
-    } else if (transfer_function == kPqTransferFunction) {
-      color_space->transfer = media::VideoColorSpace::TransferID::SMPTEST2084;
-    } else if (transfer_function == kHlgTransferFunction) {
-      color_space->transfer = media::VideoColorSpace::TransferID::ARIB_STD_B67;
-    } else {
-      NOTREACHED();
+    switch (video_config->transferFunction().AsEnum()) {
+      case V8TransferFunction::Enum::kSRGB:
+        color_space->transfer = media::VideoColorSpace::TransferID::BT709;
+        break;
+      case V8TransferFunction::Enum::kPq:
+        color_space->transfer = media::VideoColorSpace::TransferID::SMPTEST2084;
+        break;
+      case V8TransferFunction::Enum::kHlg:
+        color_space->transfer =
+            media::VideoColorSpace::TransferID::ARIB_STD_B67;
+        break;
     }
   }
 }
@@ -614,26 +579,24 @@ void ParseDynamicRangeConfigurations(
 bool IsAudioCodecValid(const String& mime_type,
                        const String& codec,
                        String* console_warning) {
-  media::AudioCodec audio_codec = media::AudioCodec::kUnknown;
-  bool is_audio_codec_ambiguous = true;
+  std::optional<media::AudioType> result =
+      media::ParseAudioCodecString(mime_type.Ascii(), codec.Ascii(),
+                                   /*allow_ambiguous_matches=*/false);
+  if (result) {
+    return true;
+  }
 
-  if (!media::ParseAudioCodecString(mime_type.Ascii(), codec.Ascii(),
-                                    &is_audio_codec_ambiguous, &audio_codec)) {
-    *console_warning = StringView("Failed to parse audio contentType: ") +
-                       String{mime_type} + StringView("; codecs=") +
-                       String{codec};
-
+  if (media::ParseAudioCodecString(mime_type.Ascii(), codec.Ascii(),
+                                   /*allow_ambiguous_matches=*/true)) {
+    *console_warning =
+        StrCat({"Invalid (ambiguous) audio codec string: ", mime_type,
+                "; codecs=", codec});
     return false;
   }
 
-  if (is_audio_codec_ambiguous) {
-    *console_warning = StringView("Invalid (ambiguous) audio codec string: ") +
-                       String{mime_type} + StringView("; codecs=") +
-                       String{codec};
-    return false;
-  }
-
-  return true;
+  *console_warning = StrCat(
+      {"Failed to parse audio contentType: ", mime_type, "; codecs=", codec});
+  return false;
 }
 
 // Returns whether the video codec associated with the video configuration is
@@ -647,8 +610,9 @@ bool IsVideoCodecValid(const String& mime_type,
                        media::VideoCodec* out_video_codec,
                        media::VideoCodecProfile* out_video_profile,
                        String* console_warning) {
-  auto result = media::ParseVideoCodecString(mime_type.Ascii(), codec.Ascii(),
-                                             /*allow_ambiguous_matches=*/false);
+  std::optional<media::VideoType> result =
+      media::ParseVideoCodecString(mime_type.Ascii(), codec.Ascii(),
+                                   /*allow_ambiguous_matches=*/false);
   if (result) {
     *out_video_codec = result->codec;
     *out_video_profile = result->profile;
@@ -657,15 +621,14 @@ bool IsVideoCodecValid(const String& mime_type,
 
   if (media::ParseVideoCodecString(mime_type.Ascii(), codec.Ascii(),
                                    /*allow_ambiguous_matches=*/true)) {
-    *console_warning = StringView("Invalid (ambiguous) video codec string: ") +
-                       String{mime_type} + StringView("; codecs=") +
-                       String{codec};
+    *console_warning =
+        StrCat({"Invalid (ambiguous) video codec string: ", mime_type,
+                "; codecs=", codec});
     return false;
   }
 
-  *console_warning = StringView("Failed to parse video contentType: ") +
-                     String{mime_type} + StringView("; codecs=") +
-                     String{codec};
+  *console_warning = StrCat(
+      {"Failed to parse video contentType: ", mime_type, "; codecs=", codec});
   return false;
 }
 
@@ -675,22 +638,16 @@ bool IsAudioConfigurationSupported(
     const blink::AudioConfiguration* audio_config,
     const String& mime_type,
     const String& codec) {
-  media::AudioCodec audio_codec = media::AudioCodec::kUnknown;
-  media::AudioCodecProfile audio_profile = media::AudioCodecProfile::kUnknown;
-  bool is_audio_codec_ambiguous = true;
-  bool is_spatial_rendering = false;
-
   // Must succeed as IsAudioCodecValid() should have been called before.
-  bool parsed =
+  std::optional<media::AudioType> audio_type =
       media::ParseAudioCodecString(mime_type.Ascii(), codec.Ascii(),
-                                   &is_audio_codec_ambiguous, &audio_codec);
-  DCHECK(parsed && !is_audio_codec_ambiguous);
+                                   /*allow_ambiguous_matches=*/false);
+  DCHECK(audio_type);
 
   if (audio_config->hasSpatialRendering())
-    is_spatial_rendering = audio_config->spatialRendering();
+    audio_type->spatial_rendering = audio_config->spatialRendering();
 
-  return media::IsDecoderSupportedAudioType(
-      {audio_codec, audio_profile, is_spatial_rendering});
+  return media::IsDecoderSupportedAudioType(*audio_type);
 }
 
 // Returns whether the VideoConfiguration is supported.
@@ -700,8 +657,9 @@ bool IsVideoConfigurationSupported(const String& mime_type,
                                    media::VideoColorSpace video_color_space,
                                    gfx::HdrMetadataType hdr_metadata_type) {
   // Must succeed as IsVideoCodecValid() should have been called before.
-  auto result = media::ParseVideoCodecString(mime_type.Ascii(), codec.Ascii(),
-                                             /*allow_ambiguous_matches=*/false);
+  std::optional<media::VideoType> result =
+      media::ParseVideoCodecString(mime_type.Ascii(), codec.Ascii(),
+                                   /*allow_ambiguous_matches=*/false);
   DCHECK(result);
 
   // ParseVideoCodecString will fill in a default of REC709 for every codec, but
@@ -742,7 +700,7 @@ void OnMediaCapabilitiesEncodingInfo(
     return;
   }
 
-  Persistent<MediaCapabilitiesInfo> info(MediaCapabilitiesInfo::Create());
+  auto* info = MediaCapabilitiesInfo::Create();
   info->setSupported(result->supported);
   info->setSmooth(result->smooth);
   info->setPowerEfficient(result->power_efficient);
@@ -763,8 +721,7 @@ bool ParseContentType(const String& content_type,
   }
 
   *mime_type = parsed_content_type.MimeType().LowerASCII();
-  *codec = parsed_content_type.ParameterValueForName(
-      media_capabilities_names::kCodecs);
+  *codec = parsed_content_type.ParameterValueForName(kCodecsMimeTypeParam);
   return true;
 }
 
@@ -776,12 +733,6 @@ bool IsDolbyVisionVideoCodec(const String& video_codec_str) {
 #endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
 
 }  // anonymous namespace
-
-const char MediaCapabilities::kLearningBadWindowThresholdParamName[] =
-    "bad_window_threshold";
-
-const char MediaCapabilities::kLearningNnrThresholdParamName[] =
-    "nnr_threshold";
 
 const char MediaCapabilities::kWebrtcDecodeSmoothIfPowerEfficientParamName[] =
     "webrtc_decode_smooth_if_power_efficient";
@@ -806,14 +757,10 @@ MediaCapabilities* MediaCapabilities::mediaCapabilities(
 MediaCapabilities::MediaCapabilities(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator),
       decode_history_service_(navigator.GetExecutionContext()),
-      bad_window_predictor_(navigator.GetExecutionContext()),
-      nnr_predictor_(navigator.GetExecutionContext()),
       webrtc_history_service_(navigator.GetExecutionContext()) {}
 
 void MediaCapabilities::Trace(blink::Visitor* visitor) const {
   visitor->Trace(decode_history_service_);
-  visitor->Trace(bad_window_predictor_);
-  visitor->Trace(nnr_predictor_);
   visitor->Trace(webrtc_history_service_);
   visitor->Trace(pending_cb_map_);
   ScriptWrappable::Trace(visitor);
@@ -823,12 +770,10 @@ void MediaCapabilities::Trace(blink::Visitor* visitor) const {
 MediaCapabilities::PendingCallbackState::PendingCallbackState(
     ScriptPromiseResolverBase* resolver,
     MediaKeySystemAccess* access,
-    const base::TimeTicks& request_time,
-    std::optional<IdentifiableToken> input_token)
+    const base::TimeTicks& request_time)
     : resolver(resolver),
       key_system_access(access),
-      request_time(request_time),
-      input_token(input_token) {}
+      request_time(request_time) {}
 
 void MediaCapabilities::PendingCallbackState::Trace(
     blink::Visitor* visitor) const {
@@ -848,7 +793,7 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::decodingInfo(
         WebFeature::kMediaCapabilitiesDecodingInfoWithKeySystemConfig);
   }
 
-  const bool is_webrtc = config->type() == "webrtc";
+  const bool is_webrtc = config->type() == V8MediaDecodingType::Enum::kWebrtc;
   String message;
   if (!IsValidMediaDecodingConfiguration(config, is_webrtc, &message)) {
     exception_state.ThrowTypeError(message);
@@ -877,7 +822,7 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::decodingInfo(
       pending_cb_map_.insert(
           callback_id,
           MakeGarbageCollected<MediaCapabilities::PendingCallbackState>(
-              resolver, nullptr, request_time, std::nullopt));
+              resolver, nullptr, request_time));
 
       std::optional<webrtc::SdpAudioFormat> sdp_audio_format =
           config->hasAudio()
@@ -910,9 +855,9 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::decodingInfo(
 
       handler->DecodingInfo(
           sdp_audio_format, sdp_video_format, spatial_scalability,
-          WTF::BindOnce(&MediaCapabilities::OnWebrtcSupportInfo,
-                        WrapPersistent(this), callback_id, std::move(features),
-                        frames_per_second, OperationType::kDecoding));
+          BindOnce(&MediaCapabilities::OnWebrtcSupportInfo,
+                   WrapPersistent(this), callback_id, std::move(features),
+                   frames_per_second, OperationType::kDecoding));
 
       return promise;
     }
@@ -947,7 +892,7 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::decodingInfo(
   // MSE support is cheap to check (regex matching). Do it first. Also, note
   // that MSE support is not implied by EME support, so do it irrespective of
   // whether we have a KeySystem configuration.
-  if (config->type() == "media-source") {
+  if (config->type() == V8MediaDecodingType::Enum::kMediaSource) {
     if ((config->hasAudio() &&
          !CheckMseSupport(audio_mime_str, audio_codec_str)) ||
         (config->hasVideo() &&
@@ -956,8 +901,6 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::decodingInfo(
       // MediaKeySystemAccess.
       MediaCapabilitiesDecodingInfo* info =
           CreateEncryptedDecodingInfoWith(false, nullptr);
-      media_capabilities_identifiability_metrics::ReportDecodingInfoResult(
-          ExecutionContext::From(script_state), config, info);
       return ToResolvedPromise<MediaCapabilitiesDecodingInfo>(script_state,
                                                               info);
     }
@@ -1070,18 +1013,17 @@ ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
     ScriptState* script_state,
     const MediaEncodingConfiguration* config,
     ExceptionState& exception_state) {
-  if (config->type() == "record" &&
+  if (config->type() == V8MediaEncodingType::Enum::kRecord &&
       !RuntimeEnabledFeatures::MediaCapabilitiesEncodingInfoEnabled()) {
     exception_state.ThrowTypeError(
         "The provided value 'record' is not a valid enum value of type "
         "MediaEncodingType.");
     return EmptyPromise();
-    ;
   }
 
   const base::TimeTicks request_time = base::TimeTicks::Now();
 
-  const bool is_webrtc = config->type() == "webrtc";
+  const bool is_webrtc = config->type() == V8MediaEncodingType::Enum::kWebrtc;
   String message;
   if (!IsValidMediaEncodingConfiguration(config, is_webrtc, &message)) {
     exception_state.ThrowTypeError(message);
@@ -1110,7 +1052,7 @@ ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
       pending_cb_map_.insert(
           callback_id,
           MakeGarbageCollected<MediaCapabilities::PendingCallbackState>(
-              resolver, nullptr, request_time, std::nullopt));
+              resolver, nullptr, request_time));
 
       std::optional<webrtc::SdpAudioFormat> sdp_audio_format =
           config->hasAudio()
@@ -1143,9 +1085,9 @@ ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
 
       handler->EncodingInfo(
           sdp_audio_format, sdp_video_format, scalability_mode,
-          WTF::BindOnce(&MediaCapabilities::OnWebrtcSupportInfo,
-                        WrapPersistent(this), callback_id, std::move(features),
-                        frames_per_second, OperationType::kEncoding));
+          BindOnce(&MediaCapabilities::OnWebrtcSupportInfo,
+                   WrapPersistent(this), callback_id, std::move(features),
+                   frames_per_second, OperationType::kEncoding));
 
       return promise;
     }
@@ -1159,7 +1101,7 @@ ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
     return promise;
   }
 
-  DCHECK_EQ(config->type(), "record");
+  DCHECK_EQ(config->type(), V8MediaEncodingType::Enum::kRecord);
   DCHECK(RuntimeEnabledFeatures::MediaCapabilitiesEncodingInfoEnabled());
 
   auto task_runner = resolver->GetExecutionContext()->GetTaskRunner(
@@ -1167,11 +1109,11 @@ ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
   if (auto* handler = MakeGarbageCollected<MediaRecorderHandler>(
           task_runner, KeyFrameRequestProcessor::Configuration())) {
     task_runner->PostTask(
-        FROM_HERE,
-        WTF::BindOnce(&MediaRecorderHandler::EncodingInfo, WrapPersistent(handler),
-                      ToWebMediaConfiguration(config),
-                      WTF::BindOnce(&OnMediaCapabilitiesEncodingInfo,
-                                    WrapPersistent(resolver))));
+        FROM_HERE, blink::BindOnce(&MediaRecorderHandler::EncodingInfo,
+                                   WrapPersistent(handler),
+                                   ToWebMediaConfiguration(config),
+                                   BindOnce(&OnMediaCapabilitiesEncodingInfo,
+                                            WrapPersistent(resolver))));
 
     return promise;
   }
@@ -1180,47 +1122,6 @@ ScriptPromise<MediaCapabilitiesInfo> MediaCapabilities::encodingInfo(
   MediaCapabilitiesInfo* info = CreateEncodingInfoWith(false);
   resolver->Resolve(info);
   return promise;
-}
-
-bool MediaCapabilities::EnsureLearningPredictors(
-    ExecutionContext* execution_context) {
-  DCHECK(execution_context && !execution_context->IsContextDestroyed());
-
-  // One or both of these will have been bound in an earlier pass.
-  if (bad_window_predictor_.is_bound() || nnr_predictor_.is_bound())
-    return true;
-
-  // MediaMetricsProvider currently only exposed via render frame.
-  // TODO(chcunningham): Expose in worker contexts pending outcome of
-  // media-learning experiments.
-  if (execution_context->IsWorkerGlobalScope())
-    return false;
-
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      execution_context->GetTaskRunner(TaskType::kMediaElementEvent);
-
-  mojo::Remote<media::mojom::blink::MediaMetricsProvider> metrics_provider;
-  execution_context->GetBrowserInterfaceBroker().GetInterface(
-      metrics_provider.BindNewPipeAndPassReceiver(task_runner));
-
-  if (!metrics_provider)
-    return false;
-
-  if (GetLearningBadWindowThreshold() != -1.0) {
-    DCHECK_GE(GetLearningBadWindowThreshold(), 0);
-    metrics_provider->AcquireLearningTaskController(
-        media::learning::tasknames::kConsecutiveBadWindows,
-        bad_window_predictor_.BindNewPipeAndPassReceiver(task_runner));
-  }
-
-  if (GetLearningNnrThreshold() != -1.0) {
-    DCHECK_GE(GetLearningNnrThreshold(), 0);
-    metrics_provider->AcquireLearningTaskController(
-        media::learning::tasknames::kConsecutiveNNRs,
-        nnr_predictor_.BindNewPipeAndPassReceiver(task_runner));
-  }
-
-  return bad_window_predictor_.is_bound() || nnr_predictor_.is_bound();
 }
 
 bool MediaCapabilities::EnsurePerfHistoryService(
@@ -1386,9 +1287,9 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::GetEmeSupport(
       MakeGarbageCollected<MediaCapabilitiesKeySystemAccessInitializer>(
           execution_context, resolver, key_system_config->keySystem(),
           config_vector,
-          WTF::BindOnce(&MediaCapabilities::GetPerfInfo, WrapPersistent(this),
-                        video_codec, video_profile, video_color_space,
-                        WrapPersistent(configuration), request_time));
+          blink::BindOnce(&MediaCapabilities::GetPerfInfo, WrapPersistent(this),
+                          video_codec, video_profile, video_color_space,
+                          WrapPersistent(configuration), request_time));
 
   // IMPORTANT: Acquire the promise before potentially synchronously resolving
   // it in the code that follows. Otherwise the promise returned to JS will be
@@ -1418,8 +1319,6 @@ void MediaCapabilities::GetPerfInfo(
     // Audio-only is always smooth and power efficient.
     MediaCapabilitiesDecodingInfo* info = CreateDecodingInfoWith(true);
     info->setKeySystemAccess(access);
-    media_capabilities_identifiability_metrics::ReportDecodingInfoResult(
-        execution_context, decoding_config, info);
     resolver->Resolve(info);
     return;
   }
@@ -1429,14 +1328,15 @@ void MediaCapabilities::GetPerfInfo(
   bool use_hw_secure_codecs = false;
 
   if (access) {
-    key_system = access->keySystem();
+    // Use the internal/base key system to keep the perf database simple, e.g.
+    // different key system names may share the same internal/base key system
+    // and the same CDM implementation, and hence the same performance.
+    key_system = access->GetInternalKeySystem();
     use_hw_secure_codecs = access->UseHardwareSecureCodecs();
   }
 
   if (!EnsurePerfHistoryService(execution_context)) {
     MediaCapabilitiesDecodingInfo* info = CreateDecodingInfoWith(true);
-    media_capabilities_identifiability_metrics::ReportDecodingInfoResult(
-        execution_context, decoding_config, info);
     resolver->Resolve(WrapPersistent(info));
     return;
   }
@@ -1445,14 +1345,7 @@ void MediaCapabilities::GetPerfInfo(
   pending_cb_map_.insert(
       callback_id,
       MakeGarbageCollected<MediaCapabilities::PendingCallbackState>(
-          resolver, access, request_time,
-          media_capabilities_identifiability_metrics::
-              ComputeDecodingInfoInputToken(decoding_config)));
-
-  if (base::FeatureList::IsEnabled(media::kMediaLearningSmoothnessExperiment)) {
-    GetPerfInfo_ML(execution_context, callback_id, video_codec, video_profile,
-                   video_config->width(), video_config->framerate());
-  }
+          resolver, access, request_time));
 
   media::mojom::blink::PredictionFeaturesPtr features =
       media::mojom::blink::PredictionFeatures::New(
@@ -1461,47 +1354,12 @@ void MediaCapabilities::GetPerfInfo(
           video_config->framerate(), key_system, use_hw_secure_codecs);
 
   decode_history_service_->GetPerfInfo(
-      std::move(features), WTF::BindOnce(&MediaCapabilities::OnPerfHistoryInfo,
-                                         WrapPersistent(this), callback_id));
+      std::move(features), BindOnce(&MediaCapabilities::OnPerfHistoryInfo,
+                                    WrapPersistent(this), callback_id));
 
   if (UseGpuFactoriesForPowerEfficient(execution_context, access)) {
     GetGpuFactoriesSupport(callback_id, video_codec, video_profile,
                            video_color_space, decoding_config);
-  }
-}
-
-void MediaCapabilities::GetPerfInfo_ML(ExecutionContext* execution_context,
-                                       int callback_id,
-                                       media::VideoCodec video_codec,
-                                       media::VideoCodecProfile video_profile,
-                                       int width,
-                                       double framerate) {
-  DCHECK(execution_context && !execution_context->IsContextDestroyed());
-  DCHECK(pending_cb_map_.Contains(callback_id));
-
-  if (!EnsureLearningPredictors(execution_context)) {
-    return;
-  }
-
-  // FRAGILE: Order here MUST match order in
-  // WebMediaPlayerImpl::UpdateSmoothnessHelper().
-  // TODO(chcunningham): refactor into something more robust.
-  Vector<media::learning::FeatureValue> ml_features(
-      {media::learning::FeatureValue(static_cast<int>(video_codec)),
-       media::learning::FeatureValue(video_profile),
-       media::learning::FeatureValue(width),
-       media::learning::FeatureValue(framerate)});
-
-  if (bad_window_predictor_.is_bound()) {
-    bad_window_predictor_->PredictDistribution(
-        ml_features, WTF::BindOnce(&MediaCapabilities::OnBadWindowPrediction,
-                                   WrapPersistent(this), callback_id));
-  }
-
-  if (nnr_predictor_.is_bound()) {
-    nnr_predictor_->PredictDistribution(
-        ml_features, WTF::BindOnce(&MediaCapabilities::OnNnrPrediction,
-                                   WrapPersistent(this), callback_id));
   }
 }
 
@@ -1542,10 +1400,10 @@ void MediaCapabilities::GetGpuFactoriesSupport(
   }
 
   if (!gpu_factories->IsDecoderSupportKnown()) {
-    gpu_factories->NotifyDecoderSupportKnown(WTF::BindOnce(
-        &MediaCapabilities::GetGpuFactoriesSupport, WrapPersistent(this),
-        callback_id, video_codec, video_profile, video_color_space,
-        WrapPersistent(decoding_config)));
+    gpu_factories->NotifyDecoderSupportKnown(
+        BindOnce(&MediaCapabilities::GetGpuFactoriesSupport,
+                 WrapPersistent(this), callback_id, video_codec, video_profile,
+                 video_color_space, WrapPersistent(decoding_config)));
     return;
   }
 
@@ -1588,14 +1446,6 @@ void MediaCapabilities::ResolveCallbackIfReady(int callback_id) {
   // Both db_* fields should be set simultaneously by the DB callback.
   DCHECK(pending_cb->db_is_smooth.has_value());
 
-  if (nnr_predictor_.is_bound() &&
-      !pending_cb->is_nnr_prediction_smooth.has_value())
-    return;
-
-  if (bad_window_predictor_.is_bound() &&
-      !pending_cb->is_bad_window_prediction_smooth.has_value())
-    return;
-
   if (UseGpuFactoriesForPowerEfficient(execution_context,
                                        pending_cb->key_system_access) &&
       !pending_cb->is_gpu_factories_supported.has_value()) {
@@ -1610,8 +1460,7 @@ void MediaCapabilities::ResolveCallbackIfReady(int callback_id) {
     return;
   }
 
-  Persistent<MediaCapabilitiesDecodingInfo> info(
-      MediaCapabilitiesDecodingInfo::Create());
+  auto* info = MediaCapabilitiesDecodingInfo::Create();
   info->setSupported(true);
   info->setKeySystemAccess(pending_cb->key_system_access);
 
@@ -1630,16 +1479,7 @@ void MediaCapabilities::ResolveCallbackIfReady(int callback_id) {
     info->setPowerEfficient(*pending_cb->db_is_power_efficient);
   }
 
-  // If ML experiment is running: AND available ML signals.
-  if (pending_cb->is_bad_window_prediction_smooth.has_value() ||
-      pending_cb->is_nnr_prediction_smooth.has_value()) {
-    info->setSmooth(
-        pending_cb->is_bad_window_prediction_smooth.value_or(true) &&
-        pending_cb->is_nnr_prediction_smooth.value_or(true));
-  } else {
-    // Use DB when ML experiment not running.
-    info->setSmooth(*pending_cb->db_is_smooth);
-  }
+  info->setSmooth(*pending_cb->db_is_smooth);
 
   const base::TimeDelta process_time =
       base::TimeTicks::Now() - pending_cb->request_time;
@@ -1656,59 +1496,9 @@ void MediaCapabilities::ResolveCallbackIfReady(int callback_id) {
                         process_time);
   }
 
-  media_capabilities_identifiability_metrics::ReportDecodingInfoResult(
-      execution_context, pending_cb->input_token, info);
   pending_cb->resolver->DowncastTo<MediaCapabilitiesDecodingInfo>()->Resolve(
       std::move(info));
   pending_cb_map_.erase(callback_id);
-}
-
-void MediaCapabilities::OnBadWindowPrediction(
-    int callback_id,
-    const std::optional<::media::learning::TargetHistogram>& histogram) {
-  DCHECK(pending_cb_map_.Contains(callback_id));
-  PendingCallbackState* pending_cb = pending_cb_map_.at(callback_id);
-
-  std::stringstream histogram_log;
-  if (!histogram) {
-    // No data, so optimistically assume zero bad windows.
-    pending_cb->is_bad_window_prediction_smooth = true;
-    histogram_log << "none";
-  } else {
-    double histogram_average = histogram->Average();
-    pending_cb->is_bad_window_prediction_smooth =
-        histogram_average < GetLearningBadWindowThreshold();
-    histogram_log << histogram_average;
-  }
-
-  DVLOG(2) << __func__ << " bad_win_avg:" << histogram_log.str()
-           << " smooth_threshold (<):" << GetLearningBadWindowThreshold();
-
-  ResolveCallbackIfReady(callback_id);
-}
-
-void MediaCapabilities::OnNnrPrediction(
-    int callback_id,
-    const std::optional<::media::learning::TargetHistogram>& histogram) {
-  DCHECK(pending_cb_map_.Contains(callback_id));
-  PendingCallbackState* pending_cb = pending_cb_map_.at(callback_id);
-
-  std::stringstream histogram_log;
-  if (!histogram) {
-    // No data, so optimistically assume zero NNRs
-    pending_cb->is_nnr_prediction_smooth = true;
-    histogram_log << "none";
-  } else {
-    double histogram_average = histogram->Average();
-    pending_cb->is_nnr_prediction_smooth =
-        histogram_average < GetLearningNnrThreshold();
-    histogram_log << histogram_average;
-  }
-
-  DVLOG(2) << __func__ << " nnr_avg:" << histogram_log.str()
-           << " smooth_threshold (<):" << GetLearningNnrThreshold();
-
-  ResolveCallbackIfReady(callback_id);
 }
 
 void MediaCapabilities::OnPerfHistoryInfo(int callback_id,
@@ -1782,8 +1572,8 @@ void MediaCapabilities::OnWebrtcSupportInfo(
 
   webrtc_history_service_->GetPerfInfo(
       std::move(features), frames_per_second,
-      WTF::BindOnce(&MediaCapabilities::OnWebrtcPerfHistoryInfo,
-                    WrapPersistent(this), callback_id, type));
+      BindOnce(&MediaCapabilities::OnWebrtcPerfHistoryInfo,
+               WrapPersistent(this), callback_id, type));
 }
 
 void MediaCapabilities::OnWebrtcPerfHistoryInfo(int callback_id,
@@ -1825,7 +1615,7 @@ void MediaCapabilities::OnWebrtcPerfHistoryInfo(int callback_id,
 
 int MediaCapabilities::CreateCallbackId() {
   // Search for the next available callback ID. 0 and -1 are reserved by
-  // wtf::HashMap (meaning "empty" and "deleted").
+  // HashMap (meaning "empty" and "deleted").
   do {
     ++last_callback_id_;
   } while (last_callback_id_ == 0 || last_callback_id_ == -1 ||

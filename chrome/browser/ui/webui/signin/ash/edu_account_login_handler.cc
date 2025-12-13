@@ -28,6 +28,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
 namespace ash {
@@ -221,11 +222,9 @@ void EduAccountLoginHandler::FetchAccessToken(const GaiaId& obfuscated_gaia_id,
   Profile* profile = Profile::FromWebUI(web_ui());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  OAuth2AccessTokenManager::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kAccountsReauthOAuth2Scope);
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          "EduAccountLoginHandler", identity_manager, scopes,
+          signin::OAuthConsumerId::kEduAccountLoginHandler, identity_manager,
           base::BindOnce(
               &EduAccountLoginHandler::CreateReAuthProofTokenForParent,
               base::Unretained(this), std::move(obfuscated_gaia_id),

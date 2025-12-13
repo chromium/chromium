@@ -55,7 +55,7 @@ void TooltipManagerAura::UpdateTooltipManagerForCapture(
     return;
   }
   screen_position_client->ConvertPointToScreen(root_window, &screen_loc);
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   aura::Window* target = screen->GetWindowAtScreenPoint(screen_loc);
   if (!target) {
     return;

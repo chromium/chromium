@@ -415,7 +415,7 @@ class WPTManifest:
 
         # TODO(crbug.com/853815): perhaps also cache the manifest for wpt_internal.
         #
-        # `url_base` should match those of `external/wpt/.config.json` (or
+        # `url_base` should match those of `external/wpt/config.tmpl.json` (or
         # the implicit root `/` URL base).
         if path.startswith('external'):
             base_manifest_path = fs.join(port.web_tests_dir(), 'external',

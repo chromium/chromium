@@ -4,7 +4,7 @@
 
 import './private_aggregation_internals_table.js';
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 
 import type {AggregatableReportRequestID, ObserverInterface, WebUIAggregatableReport} from './private_aggregation_internals.mojom-webui.js';
 import {Factory as PrivateAggregationInternalsFactory, HandlerRemote as PrivateAggregationInternalsHandlerRemote, ObserverReceiver, ReportStatus} from './private_aggregation_internals.mojom-webui.js';
@@ -170,7 +170,7 @@ class SelectionColumn<T extends Selectable> implements Column<T> {
   }
 }
 
-function reportStatusToText(status: ReportStatus) {
+function reportStatusToText(status: ReportStatus): string {
   switch (status) {
     case ReportStatus.kPending:
       return 'Pending';
@@ -180,6 +180,8 @@ function reportStatusToText(status: ReportStatus) {
       return 'Failed to assemble';
     case ReportStatus.kFailedToSend:
       return 'Failed to send';
+    default:
+      assertNotReachedCase(status);
   }
 }
 

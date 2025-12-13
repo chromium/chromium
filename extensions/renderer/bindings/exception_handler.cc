@@ -117,8 +117,8 @@ void ExceptionHandler::HandleException(v8::Local<v8::Context> context,
 void ExceptionHandler::SetHandlerForContext(v8::Local<v8::Context> context,
                                             v8::Local<v8::Function> handler) {
   ExceptionHandlerPerContextData* data =
-      GetPerContextData<ExceptionHandlerPerContextData>(context,
-                                                        kCreateIfMissing);
+      GetPerContextData<ExceptionHandlerPerContextData>(
+          context, CreatePerContextData::kCreateIfMissing);
   DCHECK(data);
   data->custom_handler.Reset(v8::Isolate::GetCurrent(), handler);
 }
@@ -148,8 +148,8 @@ void ExceptionHandler::RunExtensionCallback(
 v8::Local<v8::Function> ExceptionHandler::GetCustomHandler(
     v8::Local<v8::Context> context) {
   ExceptionHandlerPerContextData* data =
-      GetPerContextData<ExceptionHandlerPerContextData>(context,
-                                                        kDontCreateIfMissing);
+      GetPerContextData<ExceptionHandlerPerContextData>(
+          context, CreatePerContextData::kDontCreateIfMissing);
   return data ? data->custom_handler.Get(v8::Isolate::GetCurrent())
               : v8::Local<v8::Function>();
 }

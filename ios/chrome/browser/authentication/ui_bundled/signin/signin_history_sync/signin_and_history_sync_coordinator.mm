@@ -7,13 +7,13 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/sync/service/sync_service.h"
+#import "ios/chrome/browser/authentication/add_account_signin/coordinator/add_account_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/consistency_promo_signin/coordinator/consistency_promo_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/history_sync/coordinator/history_sync_popup_coordinator.h"
+#import "ios/chrome/browser/authentication/history_sync/model/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator/fullscreen_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator/fullscreen_signin_coordinator_delegate.h"
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_popup_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/instant_signin/instant_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
@@ -143,6 +143,14 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
   [super stopAnimated:animated];
 }
 
+#pragma mark - BuggyAuthenticationViewOwner
+
+- (BOOL)viewWillPersist {
+  // As the current coordinator has no view, its view can has disappeared only
+  // if its signin coordinator view may have disappeared.
+  return !_signinCoordinator || _signinCoordinator.viewWillPersist;
+}
+
 #pragma mark - HistorySyncPopupCoordinatorDelegate
 
 - (void)historySyncPopupCoordinator:(HistorySyncPopupCoordinator*)coordinator
@@ -223,6 +231,9 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
 
 // Creates the current step coordinator according to `_currentStep`.
 - (void)createAndPresentStepChildCoordinator {
+  CHECK(!_fullscreenSigninCoordinator, base::NotFatalUntil::M148);
+  CHECK(!_signinCoordinator, base::NotFatalUntil::M148);
+  CHECK(!_historySyncPopupCoordinator, base::NotFatalUntil::M148);
   switch (_currentStep) {
     case SignInHistorySyncStep::kFullscreenSignin: {
       _fullscreenSigninCoordinator = [[FullscreenSigninCoordinator alloc]
@@ -246,8 +257,10 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
                 continuationProvider:_continuationProvider];
       __weak __typeof(self) weakSelf = self;
       _signinCoordinator.signinCompletion =
-          ^(SigninCoordinatorResult result, id<SystemIdentity>) {
-            [weakSelf currentSigninStepDidFinishWithResult:result];
+          ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+            id<SystemIdentity>) {
+            [weakSelf currentSigninStepDidFinishWithCoordinator:coordinator
+                                                         result:result];
           };
       [_signinCoordinator start];
       return;
@@ -263,8 +276,10 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
                 continuationProvider:_continuationProvider];
       __weak __typeof(self) weakSelf = self;
       _signinCoordinator.signinCompletion =
-          ^(SigninCoordinatorResult result, id<SystemIdentity>) {
-            [weakSelf currentSigninStepDidFinishWithResult:result];
+          ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+            id<SystemIdentity>) {
+            [weakSelf currentSigninStepDidFinishWithCoordinator:coordinator
+                                                         result:result];
           };
       [_signinCoordinator start];
       return;
@@ -298,9 +313,11 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
 }
 
 // Stops the child coordinator and prepares the next step to present.
-- (void)currentSigninStepDidFinishWithResult:(SigninCoordinatorResult)result {
+- (void)
+    currentSigninStepDidFinishWithCoordinator:(SigninCoordinator*)coordinator
+                                       result:(SigninCoordinatorResult)result {
   // TODO(crbug.com/40929259): Turn into CHECK.
-  DUMP_WILL_BE_CHECK(_signinCoordinator)
+  DUMP_WILL_BE_CHECK_EQ(_signinCoordinator, coordinator)
       << base::SysNSStringToUTF8([self description]);
   DUMP_WILL_BE_CHECK(!_historySyncPopupCoordinator)
       << base::SysNSStringToUTF8([self description]);

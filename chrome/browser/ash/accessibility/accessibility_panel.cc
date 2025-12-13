@@ -78,7 +78,7 @@ AccessibilityPanel::AccessibilityPanel(content::BrowserContext* browser_context,
   // The AccessibilityPanel is only shown in the primary root window.
   ash_util::SetupWidgetInitParamsForContainerInPrimary(
       &params, ShellWindowId::kShellWindowId_AccessibilityPanelContainer);
-  params.bounds = display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+  params.bounds = display::Screen::Get()->GetPrimaryDisplay().bounds();
   params.delegate = this;
   params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.name = widget_name;

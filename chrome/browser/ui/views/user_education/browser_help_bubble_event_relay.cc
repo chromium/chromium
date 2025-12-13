@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/user_education/browser_help_bubble_event_relay.h"
 
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if USE_AURA
 #include "ui/aura/window.h"

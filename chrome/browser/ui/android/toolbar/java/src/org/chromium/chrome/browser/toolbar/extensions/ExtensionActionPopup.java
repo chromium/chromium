@@ -157,5 +157,10 @@ class ExtensionActionPopup implements Destroyable {
         public void onLoaded() {
             mPopupWindow.show();
         }
+
+        @Override
+        public void onClose() {
+            mPopupWindow.dismiss();
+        }
     }
 }

@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_export.h"
@@ -24,6 +24,7 @@
 namespace cc {
 
 class Animation;
+class AnimationTrigger;
 class AnimationTimeline;
 class ElementAnimations;
 class LayerTreeHost;
@@ -50,6 +51,8 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
                          scoped_refptr<ElementAnimations>,
                          ElementIdHash>;
   using AnimationsList = std::vector<scoped_refptr<Animation>>;
+  using IdToTriggerMap =
+      std::unordered_map<int, scoped_refptr<AnimationTrigger>>;
 
   static std::unique_ptr<AnimationHost> CreateMainInstance();
   static std::unique_ptr<AnimationHost> CreateForTesting(
@@ -67,13 +70,24 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   }
 
   void AddAnimationTimeline(scoped_refptr<AnimationTimeline> timeline);
+  // Adds an entry to |id_to_trigger_map_|.
+  void AddTrigger(scoped_refptr<AnimationTrigger> trigger);
   void RemoveAnimationTimeline(scoped_refptr<AnimationTimeline> timeline);
+  // Removes an entry from |id_to_trigger_map_|. This should only be called when
+  // we are not in a protected sequence.
+  void RemoveTrigger(scoped_refptr<AnimationTrigger> trigger);
 
   // Lazy removal of an unused timeline.
   void DetachAnimationTimeline(scoped_refptr<AnimationTimeline> timeline);
+  // Removes an entry from |id_to_trigger_map_|. Defers removal if we are in a
+  // protected sequence.
+  void DetachTrigger(scoped_refptr<AnimationTrigger> trigger);
 
   const AnimationTimeline* GetTimelineById(int timeline_id) const;
   AnimationTimeline* GetTimelineById(int timeline_id);
+
+  scoped_refptr<AnimationTimeline> GetScopedRefTimelineById(int timeline_id);
+  const AnimationTrigger* GetTriggerById(int id) const;
 
   void RegisterAnimationForElement(ElementId element_id, Animation* animation);
   void UnregisterAnimationForElement(ElementId element_id,
@@ -123,6 +137,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
                         const PropertyTrees& property_trees) override;
 
   void RemoveStaleTimelines() override;
+  void RemoveStaleTriggers() override;
 
   void SetScrollAnimationDurationForTesting(base::TimeDelta duration) override;
   bool NeedsTickAnimations() const override;
@@ -243,6 +258,10 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   void SetCurrentFrameHadRaf(bool current_frame_had_raf);
   void SetNextFrameHasPendingRaf(bool next_frame_has_pending_raf);
 
+  const IdToTriggerMap& GetTriggersForTesting() const {
+    return id_to_trigger_map_.Read(*this);
+  }
+
  private:
   explicit AnimationHost(ThreadInstance thread_instance);
 
@@ -252,7 +271,11 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
       ElementId element_id);
 
   void PushTimelinesToImplThread(AnimationHost* host_impl) const;
+  void PushTriggersToImplThread(AnimationHost* host_impl) const;
+
   void RemoveTimelinesFromImplThread(AnimationHost* host_impl) const;
+  void RemoveTriggersFromImplThread(AnimationHost* host_impl) const;
+
   void PushPropertiesToImplThread(AnimationHost* host_impl);
 
   void EraseTimeline(scoped_refptr<AnimationTimeline> timeline);
@@ -278,10 +301,17 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   // A list of all timelines which this host owns.
   ProtectedSequenceReadable<IdToTimelineMap> id_to_timeline_map_;
 
+  // A list of animation triggers which this host owns.
+  ProtectedSequenceReadable<IdToTriggerMap> id_to_trigger_map_;
+
   // A list of IDs for detached timelines. A timeline may be detached on the
   // owner thread even during a protected sequence. These timelines are no
   // longer used and should be cleaned up at the next opportune moment.
   ProtectedSequenceForbidden<IdToTimelineMap> detached_timeline_map_;
+
+  // Similar to |detached_timeline_map_|, if detached during a protected
+  // sequence, defer the deletion of a trigger to the next opportunity.
+  ProtectedSequenceForbidden<IdToTriggerMap> detached_trigger_map_;
 
   // AnimationHosts's ProtectedSequenceSynchronizer implementation is
   // implemented using this member. As such the various helpers can not be used

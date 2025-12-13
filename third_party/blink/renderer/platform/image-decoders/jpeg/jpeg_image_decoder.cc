@@ -35,16 +35,12 @@
  * version of this file under any of the LGPL, the MPL or the GPL.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
 
 #include <limits>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
@@ -97,10 +93,10 @@ const unsigned g_scale_denominator = 8;
 // to have gone through a jpeg_read_header() call.
 cc::YUVSubsampling YuvSubsampling(const jpeg_decompress_struct& info) {
   if (info.jpeg_color_space == JCS_YCbCr && info.num_components == 3 &&
-      info.comp_info && info.comp_info[1].h_samp_factor == 1 &&
-      info.comp_info[1].v_samp_factor == 1 &&
-      info.comp_info[2].h_samp_factor == 1 &&
-      info.comp_info[2].v_samp_factor == 1) {
+      info.comp_info && UNSAFE_TODO(info.comp_info[1]).h_samp_factor == 1 &&
+      UNSAFE_TODO(info.comp_info[1]).v_samp_factor == 1 &&
+      UNSAFE_TODO(info.comp_info[2]).h_samp_factor == 1 &&
+      UNSAFE_TODO(info.comp_info[2]).v_samp_factor == 1) {
     const int h = info.comp_info[0].h_samp_factor;
     const int v = info.comp_info[0].v_samp_factor;
     if (v == 1) {
@@ -186,13 +182,13 @@ void emit_message(j_common_ptr cinfo, int msg_level);
 
 static gfx::Size ComputeYUVSize(const jpeg_decompress_struct* info,
                                 int component) {
-  return gfx::Size(info->comp_info[component].downsampled_width,
-                   info->comp_info[component].downsampled_height);
+  return gfx::Size(UNSAFE_TODO(info->comp_info[component]).downsampled_width,
+                   UNSAFE_TODO(info->comp_info[component]).downsampled_height);
 }
 
 static wtf_size_t ComputeYUVWidthBytes(const jpeg_decompress_struct* info,
                                        int component) {
-  return info->comp_info[component].width_in_blocks * DCTSIZE;
+  return UNSAFE_TODO(info->comp_info[component]).width_in_blocks * DCTSIZE;
 }
 
 static void ProgressMonitor(j_common_ptr info) {
@@ -218,7 +214,6 @@ class JPEGImageReader final {
         last_set_byte_(nullptr),
         state_(kJpegHeader),
         samples_(nullptr) {
-    memset(&info_, 0, sizeof(jpeg_decompress_struct));
 
     // Set up the normal JPEG error routines, then override error_exit.
     info_.err = jpeg_std_error(&err_.pub);
@@ -228,7 +223,6 @@ class JPEGImageReader final {
     jpeg_create_decompress(&info_);
 
     // Initialize source manager.
-    memset(&src_, 0, sizeof(decoder_source_mgr));
     info_.src = reinterpret_cast_ptr<jpeg_source_mgr*>(&src_);
 
     // Set up callback functions.
@@ -273,7 +267,7 @@ class JPEGImageReader final {
     if (bytes_to_skip < info_.src->bytes_in_buffer) {
       // The next byte needed is in the buffer. Move to it.
       info_.src->bytes_in_buffer -= bytes_to_skip;
-      info_.src->next_input_byte += bytes_to_skip;
+      UNSAFE_TODO(info_.src->next_input_byte += bytes_to_skip);
     } else {
       // Move beyond the buffer and empty it.
       next_read_position_ = static_cast<wtf_size_t>(
@@ -366,13 +360,15 @@ class JPEGImageReader final {
     *max_h = 0;
     *max_v = 0;
     for (int i = 0; i < info_.num_components; ++i) {
-      if (comp_info[i].h_samp_factor < 1 || comp_info[i].h_samp_factor > 4 ||
-          comp_info[i].v_samp_factor < 1 || comp_info[i].v_samp_factor > 4) {
+      if (UNSAFE_TODO(comp_info[i]).h_samp_factor < 1 ||
+          UNSAFE_TODO(comp_info[i]).h_samp_factor > 4 ||
+          UNSAFE_TODO(comp_info[i]).v_samp_factor < 1 ||
+          UNSAFE_TODO(comp_info[i]).v_samp_factor > 4) {
         return false;
       }
 
-      *max_h = std::max(*max_h, comp_info[i].h_samp_factor);
-      *max_v = std::max(*max_v, comp_info[i].v_samp_factor);
+      *max_h = std::max(*max_h, UNSAFE_TODO(comp_info[i]).h_samp_factor);
+      *max_v = std::max(*max_v, UNSAFE_TODO(comp_info[i]).v_samp_factor);
     }
     return true;
   }
@@ -479,7 +475,7 @@ class JPEGImageReader final {
         if (!decoder_->IgnoresColorSpace()) {
           // Extract the ICC profile data without copying it (the function
           // ColorProfile::Create will make its own copy).
-          sk_sp<SkData> profile_data =
+          auto profile_data =
               metadata_decoder_->getICCProfileData(/*copyData=*/false);
           if (profile_data) {
             std::unique_ptr<ColorProfile> profile =
@@ -597,7 +593,7 @@ class JPEGImageReader final {
           auto all_components_seen = [](const jpeg_decompress_struct& info) {
             if (info.coef_bits) {
               for (int c = 0; c < info.num_components; ++c) {
-                if (info.coef_bits[c][0] == -1) {
+                if (UNSAFE_TODO(info.coef_bits[c])[0] == -1) {
                   // Haven't seen this component yet.
                   return false;
                 }
@@ -766,9 +762,9 @@ class JPEGImageReader final {
   // value, we know we've reached the next restart position.
   raw_ptr<const JOCTET> last_set_byte_;
 
-  jpeg_decompress_struct info_;
+  jpeg_decompress_struct info_ = {};
   decoder_error_mgr err_;
-  decoder_source_mgr src_;
+  decoder_source_mgr src_ = {};
   jpeg_progress_mgr progress_mgr_;
   jstate state_;
 
@@ -799,9 +795,9 @@ void emit_message(j_common_ptr cinfo, int msg_level) {
   const char* warning = nullptr;
   int code = err->pub.msg_code;
   if (code > 0 && code <= err->pub.last_jpeg_message) {
-    warning = err->pub.jpeg_message_table[code];
+    warning = UNSAFE_TODO(err->pub.jpeg_message_table[code]);
   }
-  if (warning && !strncmp("Corrupt JPEG", warning, 12)) {
+  if (warning && !UNSAFE_TODO(strncmp("Corrupt JPEG", warning, 12))) {
     err->num_corrupt_warnings++;
   }
 }
@@ -868,18 +864,18 @@ void JPEGImageDecoder::OnSetData(scoped_refptr<SegmentReader> data) {
   // multi-picture format, also known as CIPA DC-007). This is in contrast with
   // other decoders (e.g AVIF), which are aware of gainmap metadata.
   if (data && aux_image_ == cc::AuxImage::kGainmap) {
-    sk_sp<SkData> base_image_data = data->GetAsSkData();
+    auto base_image_data = data->GetAsSkData();
     DCHECK(base_image_data);
-    SkGainmapInfo gainmap_info;
-    sk_sp<SkData> gainmap_image_data;
     auto base_metadata_decoder = SkJpegMetadataDecoder::Make(base_image_data);
-    if (!base_metadata_decoder->findGainmapImage(
-            base_image_data, gainmap_image_data, gainmap_info)) {
+    if (auto [gainmap_image_data, _] =
+            base_metadata_decoder->findGainmapImage(base_image_data);
+        gainmap_image_data) {
+      data = SegmentReader::CreateFromSkData(std::move(gainmap_image_data));
+      data_ = data;
+    } else {
       SetFailed();
       return;
     }
-    data = SegmentReader::CreateFromSkData(std::move(gainmap_image_data));
-    data_ = data;
   }
 
   if (reader_) {
@@ -1011,17 +1007,16 @@ bool JPEGImageDecoder::GetGainmapInfoAndData(
   // TODO(crbug.com/356827770): This function will be removed once all decoders
   // rely on ImageDecoder::aux_image_ to decode the gainmap, instead of
   // extracting gainmap data.
-  sk_sp<SkData> base_image_data = data_->GetAsSkData();
+  auto base_image_data = data_->GetAsSkData();
   DCHECK(base_image_data);
-  sk_sp<SkData> gainmap_image_data;
-  SkGainmapInfo gainmap_info;
-  if (!metadata_decoder->findGainmapImage(base_image_data, gainmap_image_data,
-                                          gainmap_info)) {
-    return false;
+  if (auto [ok, gainmap_info] =
+          metadata_decoder->findGainmapImage(base_image_data);
+      ok) {
+    out_gainmap_info = gainmap_info;
+    out_gainmap_data = data_;
+    return true;
   }
-  out_gainmap_info = gainmap_info;
-  out_gainmap_data = data_;
-  return true;
+  return false;
 }
 
 bool JPEGImageDecoder::HasC2PAManifest() const {
@@ -1031,8 +1026,7 @@ bool JPEGImageDecoder::HasC2PAManifest() const {
   }
 
   // C2PA manifests are contained in APP11 blocks in JUMBF format
-  sk_sp<SkData> jumbf_data =
-      metadata_decoder->getJUMBFMetadata(/*copyData=*/false);
+  auto jumbf_data = metadata_decoder->getJUMBFMetadata(/*copyData=*/false);
   if (!jumbf_data) {
     return false;
   }
@@ -1060,9 +1054,12 @@ bool JPEGImageDecoder::HasC2PAManifest() const {
     return false;
   }
   const uint8_t* jumbf_bytes = jumbf_data->bytes();
-  if (memcmp(jumbf_bytes + kSBOffset, kSBSig, sizeof(kSBSig)) != 0 ||
-      memcmp(jumbf_bytes + kDBOffset, kDBSig, sizeof(kDBSig)) != 0 ||
-      memcmp(jumbf_bytes + kC2PAOffset, kC2PASig, sizeof(kC2PASig)) != 0) {
+  if (UNSAFE_TODO(memcmp(jumbf_bytes + kSBOffset, kSBSig, sizeof(kSBSig))) !=
+          0 ||
+      UNSAFE_TODO(memcmp(jumbf_bytes + kDBOffset, kDBSig, sizeof(kDBSig))) !=
+          0 ||
+      UNSAFE_TODO(
+          memcmp(jumbf_bytes + kC2PAOffset, kC2PASig, sizeof(kC2PASig))) != 0) {
     return false;
   }
 
@@ -1117,15 +1114,16 @@ template <>
 void SetPixel<JCS_RGB>(ImageFrame::PixelData* pixel,
                        JSAMPARRAY samples,
                        int column) {
-  JSAMPLE* jsample = *samples + column * 3;
-  ImageFrame::SetRGBARaw(pixel, jsample[0], jsample[1], jsample[2], 255);
+  JSAMPLE* jsample = UNSAFE_TODO(*samples + column * 3);
+  ImageFrame::SetRGBARaw(pixel, jsample[0], UNSAFE_TODO(jsample[1]),
+                         UNSAFE_TODO(jsample[2]), 255);
 }
 
 template <>
 void SetPixel<JCS_CMYK>(ImageFrame::PixelData* pixel,
                         JSAMPARRAY samples,
                         int column) {
-  JSAMPLE* jsample = *samples + column * 4;
+  JSAMPLE* jsample = UNSAFE_TODO(*samples + column * 4);
 
   // Source is 'Inverted CMYK', output is RGB.
   // See: http://www.easyrgb.com/math.php?MATH=M12#text12
@@ -1136,9 +1134,10 @@ void SetPixel<JCS_CMYK>(ImageFrame::PixelData* pixel,
   // X = (1-iX) * (1 - (1-iK)) + (1-iK) => 1 - iX*iK
   // From CMY (0..1) to RGB (0..1):
   // R = 1 - C => 1 - (1 - iC*iK) => iC*iK  [G and B similar]
-  unsigned k = jsample[3];
-  ImageFrame::SetRGBARaw(pixel, jsample[0] * k / 255, jsample[1] * k / 255,
-                         jsample[2] * k / 255, 255);
+  unsigned k = UNSAFE_TODO(jsample[3]);
+  ImageFrame::SetRGBARaw(pixel, jsample[0] * k / 255,
+                         UNSAFE_TODO(jsample[1]) * k / 255,
+                         UNSAFE_TODO(jsample[2]) * k / 255, 255);
 }
 
 // Used only for JCS_CMYK and JCS_RGB output.  Note that JCS_RGB is used only
@@ -1159,7 +1158,7 @@ bool OutputRows(JPEGImageReader* reader, ImageFrame& buffer) {
     }
 
     ImageFrame::PixelData* pixel = buffer.GetAddr(0, y);
-    for (int x = 0; x < width; ++pixel, ++x) {
+    for (int x = 0; x < width; UNSAFE_TODO(++pixel), ++x) {
       SetPixel<colorSpace>(pixel, samples, x);
     }
 
@@ -1211,9 +1210,10 @@ static bool OutputRawData(JPEGImageReader* reader, ImagePlanes* image_planes) {
     for (int i = 0; i < y_scanlines_to_read; ++i) {
       int scanline = info->output_scanline + i;
       if (scanline < y_height) {
-        bufferraw2[i] = &output_y[scanline * row_bytes_y];
+        UNSAFE_TODO(bufferraw2[i]) =
+            &UNSAFE_TODO(output_y[scanline * row_bytes_y]);
       } else {
-        bufferraw2[i] = dummy_row;
+        UNSAFE_TODO(bufferraw2[i]) = dummy_row;
       }
     }
 
@@ -1222,11 +1222,13 @@ static bool OutputRawData(JPEGImageReader* reader, ImagePlanes* image_planes) {
     for (int i = 0; i < 8; ++i) {
       int scanline = scaled_scanline + i;
       if (scanline < uv_height) {
-        bufferraw2[16 + i] = &output_u[scanline * row_bytes_u];
-        bufferraw2[24 + i] = &output_v[scanline * row_bytes_v];
+        UNSAFE_TODO(bufferraw2[16 + i]) =
+            &UNSAFE_TODO(output_u[scanline * row_bytes_u]);
+        UNSAFE_TODO(bufferraw2[24 + i]) =
+            &UNSAFE_TODO(output_v[scanline * row_bytes_v]);
       } else {
-        bufferraw2[16 + i] = dummy_row;
-        bufferraw2[24 + i] = dummy_row;
+        UNSAFE_TODO(bufferraw2[16 + i]) = dummy_row;
+        UNSAFE_TODO(bufferraw2[24 + i]) = dummy_row;
       }
     }
 

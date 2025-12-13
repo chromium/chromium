@@ -48,9 +48,7 @@ source_set("toolbar") {
       "bookmark_sub_menu_model.h",
       "reading_list_sub_menu_model.h",
       "toolbar_action_hover_card_types.h",
-      "toolbar_action_view_controller.h",
-      "toolbar_action_view_delegate.h",
-      "toolbar_actions_bar_bubble_delegate.h",
+      "toolbar_action_view_model.h",
       "toolbar_pref_names.cc",
       "toolbar_pref_names.h",
     ]
@@ -61,6 +59,7 @@ source_set("toolbar") {
       "//chrome/browser/ui/global_error",
       "//chrome/browser/ui/safety_hub",
       "//chrome/browser/upgrade_detector",
+      "//components/contextual_tasks/public:feature_list",
       "//components/favicon/core",
       "//components/prefs",
       "//components/tabs:public",
@@ -68,14 +67,15 @@ source_set("toolbar") {
       "//content/public/browser",
       "//extensions/browser",
       "//extensions/common",
-      "//ui/base",
       "//ui/base:types",
+      "//ui/base/interaction",
       "//ui/base/mojom:ui_base_types",
       "//ui/menus",
     ]
     deps += [
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/actions:actions_headers",
+      "//components/user_education/common",
     ]
   }
 
@@ -118,6 +118,7 @@ source_set("impl") {
       "//chrome/app/theme:theme_resources",
       "//chrome/app/vector_icons",
       "//chrome/browser:browser_process",
+      "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/favicon",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/prefs",
@@ -133,6 +134,7 @@ source_set("impl") {
       "//chrome/browser/themes",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui:browser_navigator_params_headers",
+      "//chrome/browser/ui:layout_constants",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/browser_window",
@@ -144,8 +146,10 @@ source_set("impl") {
       "//chrome/browser/ui/safety_hub",
       "//chrome/browser/ui/tabs:tab_model",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs/organization",
       "//chrome/browser/ui/toolbar/chrome_labs",
       "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/web_applications:launch_utils",
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/upgrade_detector",
       "//chrome/browser/web_applications",
@@ -159,6 +163,7 @@ source_set("impl") {
       "//components/bookmarks/common",
       "//components/commerce/core:feature_list",
       "//components/commerce/core:feature_utils",
+      "//components/contextual_tasks/public:feature_list",
       "//components/dom_distiller/content/browser",
       "//components/dom_distiller/core",
       "//components/favicon_base",
@@ -202,6 +207,11 @@ source_set("impl") {
     ]
     if (is_chromeos) {
       deps += [ "//chrome/browser/policy:system_features_disable_list" ]
+    } else {
+      deps += [
+        "//chrome/browser/ui/webui/signin:signin_ui_error",
+        "//chrome/browser/ui/webui/signin:signin_utils",
+      ]
     }
     if (enable_glic) {
       deps += [
@@ -224,6 +234,10 @@ source_set("impl") {
     ]
   }
 
+  if (is_win || is_mac || is_linux) {
+    deps += [ "//chrome/browser/ui/startup/default_browser_prompt" ]
+  }
+
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
@@ -233,10 +247,8 @@ source_set("test_support") {
 
   if (enable_extensions) {
     sources += [
-      "test_toolbar_action_view_controller.cc",
-      "test_toolbar_action_view_controller.h",
-      "test_toolbar_actions_bar_bubble_delegate.cc",
-      "test_toolbar_actions_bar_bubble_delegate.h",
+      "test_toolbar_action_view_model.cc",
+      "test_toolbar_action_view_model.h",
     ]
     deps += [
       ":toolbar",
@@ -269,6 +281,7 @@ if (!is_android) {
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/extensions/api/extension_action",
       "//chrome/browser/favicon",
+      "//chrome/browser/history",
       "//chrome/browser/prefs",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",
@@ -281,11 +294,11 @@ if (!is_android) {
       "//chrome/browser/ui/safety_hub:test_support",
       "//chrome/browser/ui/tabs:tab_model",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs/organization",
       "//chrome/browser/upgrade_detector",
       "//chrome/common",
       "//chrome/common:chrome_features",
       "//chrome/common:constants",
-      "//chrome/test:test_support",
       "//chrome/test:test_support",
       "//components/crx_file",
       "//components/history/core/browser",
@@ -324,6 +337,10 @@ if (!is_android) {
         "//chrome/install_static:install_static_util",
         "//chrome/install_static/test:test_support",
       ]
+    }
+
+    if (is_win || is_mac || is_linux) {
+      deps += [ "//chrome/browser/ui/startup/default_browser_prompt" ]
     }
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

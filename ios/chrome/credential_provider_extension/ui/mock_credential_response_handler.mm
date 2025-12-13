@@ -9,7 +9,7 @@
 
 namespace {
 
-NSArray<NSData*>* SecurityDomainSecrets() {
+NSArray<NSData*>* TrustedVaultKeys() {
   std::vector<uint8_t> sds;
   base::HexStringToBytes(
       "1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF", &sds);
@@ -29,8 +29,7 @@ NSArray<NSData*>* SecurityDomainSecrets() {
   }
 }
 
-- (void)userSelectedPasskey:(ASPasskeyAssertionCredential*)credential
-    API_AVAILABLE(ios(17.0)) {
+- (void)userSelectedPasskey:(ASPasskeyAssertionCredential*)credential {
   self.passkeyCredential = credential;
   if (self.receivedPasskeyBlock) {
     self.receivedPasskeyBlock();
@@ -39,12 +38,10 @@ NSArray<NSData*>* SecurityDomainSecrets() {
 
 - (void)userSelectedPasskey:(id<Credential>)passkey
       passkeyRequestDetails:(PasskeyRequestDetails*)passkeyRequestDetails {
-  if (@available(iOS 17.0, *)) {
-    [self userSelectedPasskey:
-              [passkeyRequestDetails
-                  assertPasskeyCredential:passkey
-                    securityDomainSecrets:SecurityDomainSecrets()]];
-  }
+  [self userSelectedPasskey:[passkeyRequestDetails
+                                    assertPasskeyCredential:passkey
+                                           trustedVaultKeys:TrustedVaultKeys()
+                                didCompleteUserVerification:NO]];
 }
 
 - (void)userCancelledRequestWithErrorCode:(ASExtensionErrorCode)errorCode {

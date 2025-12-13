@@ -10,8 +10,8 @@
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -20,8 +20,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/data_sharing/collaboration_controller_delegate_desktop.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "components/collaboration/public/collaboration_flow_entry_point.h"
 #include "components/collaboration/public/collaboration_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -29,31 +27,10 @@
 #include "components/tabs/public/tab_group.h"
 
 using collaboration::messaging::MessagingBackendServiceFactory;
+using collaboration::messaging::PersistentNotificationType;
 
 namespace tab_groups {
 namespace {
-
-// Get the TabStrip that contains this group ID.
-TabStrip* GetTabStripWithGroup(LocalTabGroupID local_tab_group_id) {
-  const Browser* const browser_with_local_group_id =
-      SavedTabGroupUtils::GetBrowserWithTabGroupId(local_tab_group_id);
-  if (!browser_with_local_group_id) {
-    return nullptr;
-  }
-
-  auto* browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser_with_local_group_id);
-  if (!browser_view) {
-    return nullptr;
-  }
-
-  auto* tab_strip = browser_view->tabstrip();
-  if (!tab_strip) {
-    return nullptr;
-  }
-
-  return tab_strip;
-}
 
 // Returns the local tab group ID from the PersistentMessage.
 std::optional<LocalTabGroupID> UnwrapTabGroupID(PersistentMessage message) {
@@ -144,8 +121,9 @@ void CollaborationMessagingObserver::HandleDirtyTabGroup(
     return;
   }
 
-  if (TabStrip* tabstrip = GetTabStripWithGroup(local_tab_group_id.value())) {
-    tabstrip->SetTabGroupNeedsAttention(
+  if (Browser* browser = SavedTabGroupUtils::GetBrowserWithTabGroupId(
+          local_tab_group_id.value())) {
+    browser->tab_strip_model()->SetTabGroupNeedsAttention(
         local_tab_group_id.value(), display == MessageDisplayStatus::kDisplay);
   }
 }
@@ -159,9 +137,10 @@ void CollaborationMessagingObserver::HandleDirtyTab(
     return;
   }
 
-  if (TabStrip* tabstrip = GetTabStripWithGroup(tab_info->local_tab_group_id)) {
-    tabstrip->SetTabNeedsAttention(tab_info->tabstrip_index,
-                                   display == MessageDisplayStatus::kDisplay);
+  if (Browser* browser = SavedTabGroupUtils::GetBrowserWithTabGroupId(
+          tab_info->local_tab_group_id)) {
+    browser->tab_strip_model()->SetTabNeedsAttentionAt(
+        tab_info->tabstrip_index, display == MessageDisplayStatus::kDisplay);
   }
 }
 
@@ -175,10 +154,9 @@ void CollaborationMessagingObserver::HandleChip(PersistentMessage message,
   if (tabs::TabInterface* tab = SavedTabGroupUtils::GetGroupedTab(
           tab_info->local_tab_group_id, tab_info->local_tab_id)) {
     if (display == MessageDisplayStatus::kDisplay) {
-      tab->GetTabFeatures()->collaboration_messaging_tab_data()->SetMessage(
-          message);
+      tab_groups::CollaborationMessagingTabData::From(tab)->SetMessage(message);
     } else {
-      tab->GetTabFeatures()->collaboration_messaging_tab_data()->ClearMessage(
+      tab_groups::CollaborationMessagingTabData::From(tab)->ClearMessage(
           message);
     }
   }
@@ -229,7 +207,7 @@ CollaborationMessagingObserver::~CollaborationMessagingObserver() {
 
 void CollaborationMessagingObserver::OnMessagingBackendServiceInitialized() {
   CHECK(service_);
-  auto messages = service_->GetMessages(std::nullopt);
+  auto messages = service_->GetMessages(PersistentNotificationType::UNDEFINED);
   for (const auto& message : messages) {
     DispatchMessage(message, MessageDisplayStatus::kDisplay);
   }

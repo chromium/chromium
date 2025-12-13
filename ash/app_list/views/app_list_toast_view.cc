@@ -20,6 +20,7 @@
 #include "ash/style/typography.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -70,9 +71,8 @@ class IconImageWithBackground : public views::ImageView {
     flags.setColor(
         GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBase));
     canvas->DrawRoundRect(GetContentsBounds(), kIconCornerRadius, flags);
-    SkPath mask;
-    mask.addRoundRect(gfx::RectToSkRect(GetContentsBounds()), kIconCornerRadius,
-                      kIconCornerRadius);
+    const SkPath mask = SkPath::RRect(gfx::RectToSkRect(GetContentsBounds()),
+                                      kIconCornerRadius, kIconCornerRadius);
     canvas->ClipPath(mask, true);
     views::ImageView::OnPaint(canvas);
   }
@@ -226,8 +226,7 @@ AppListToastView::AppListToastView(const std::u16string& title,
         chromeos::features::IsSystemBlurEnabled()
             ? cros_tokens::kCrosSysSystemBaseElevated
             : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-    SetBackground(
-        views::CreateRoundedRectBackground(background_color_id, kCornerRadius));
+    SetBackground(views::CreateSolidBackground(background_color_id));
     SetBorder(std::make_unique<views::HighlightBorder>(
         kCornerRadius, views::HighlightBorder::Type::kHighlightBorderNoShadow));
   } else {

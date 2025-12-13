@@ -13,7 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public interface AddToHomescreenViewDelegate {
     /** Called when the user accepts adding the item to home screen with the provided title. */
-    void onAddToHomescreen(String title, @AppType int selectedType);
+    void onAddToHomescreen(String title);
 
     /**
      * Called when the user requests app details.

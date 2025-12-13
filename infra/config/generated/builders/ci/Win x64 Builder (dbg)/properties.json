@@ -13,7 +13,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-win-archive",
               "builder_group": "chromium.win",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -37,7 +36,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-win-archive",
               "builder_group": "chromium.win",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
@@ -82,7 +80,8 @@
         }
       ],
       "retry_failed_shards": true,
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/Win x64 Builder (dbg)/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/Win x64 Builder (dbg)/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

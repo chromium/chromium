@@ -32,6 +32,10 @@ class StubPasswordManagerDriver : public PasswordManagerDriver {
   void GeneratedPasswordAccepted(const std::u16string& password) override;
   void GeneratedPasswordRejected() override;
   void FocusNextFieldAfterPasswords() override;
+  void FillField(autofill::FieldRendererId triggering_field_id,
+                 const std::u16string& value,
+                 autofill::FieldPropertiesFlags field_properties,
+                 base::OnceCallback<void(bool)> success_callback) override;
   void FillSuggestion(const std::u16string& username,
                       const std::u16string& password,
                       base::OnceCallback<void(bool)> success_callback) override;
@@ -58,15 +62,23 @@ class StubPasswordManagerDriver : public PasswordManagerDriver {
   PasswordGenerationFrameHelper* GetPasswordGenerationHelper() override;
   PasswordManagerInterface* GetPasswordManager() override;
   PasswordAutofillManager* GetPasswordAutofillManager() override;
+  bool IsDirectChildOfPrimaryMainFrame() const override;
   bool IsInPrimaryMainFrame() const override;
+  bool IsNestedWithinFencedFrame() const override;
   bool CanShowAutofillUi() const override;
   int GetFrameId() const override;
   const GURL& GetLastCommittedURL() const override;
+  const url::Origin& GetLastCommittedOrigin() const override;
+
   gfx::RectF TransformToRootCoordinates(
       const gfx::RectF& bounds_in_frame_coordinates) override;
+  void CheckViewAreaVisible(autofill::FieldRendererId field_id,
+                            base::OnceCallback<void(bool)>) override;
+  autofill::AutofillDriver* GetAutofillDriver() const override;
   base::WeakPtr<password_manager::PasswordManagerDriver> AsWeakPtr() override;
 
  private:
+  url::Origin opaque_origin_;
   base::WeakPtrFactory<StubPasswordManagerDriver> weak_ptr_factory_{this};
 };
 

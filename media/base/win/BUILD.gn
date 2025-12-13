@@ -28,6 +28,7 @@ source_set("media_foundation_util") {
     "//base",
     "//gpu/ipc/common",
     "//media/base",
+    "//media/formats",
     "//media/gpu:command_buffer_helper",
     "//third_party/libyuv",
   ]
@@ -72,10 +73,7 @@ source_set("mf_cdm_proxy") {
 
 source_set("dcomp_texture_wrapper") {
   sources = [ "dcomp_texture_wrapper.h" ]
-  deps = [
-    "//base",
-    "//ui/gfx:memory_buffer",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("overlay_state_observer_subscription") {

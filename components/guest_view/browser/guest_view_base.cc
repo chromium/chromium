@@ -86,6 +86,15 @@ class GuestViewBase::OwnerContentsObserver : public WebContentsObserver {
     DestroyGuestIfUnattached(&*guest_);
   }
 
+  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                              content::RenderFrameHost* new_host) override {
+    if (old_host && guest_->owner_rfh_id_ == old_host->GetGlobalId() &&
+        new_host && guest_->element_instance_id_ == kInstanceIDNone) {
+      // TODO(crbug.com/40202416): Do something similar for MPArch.
+      guest_->owner_rfh_id_ = new_host->GetGlobalId();
+    }
+  }
+
   void DidToggleFullscreenModeForTab(bool entered_fullscreen,
                                      bool will_cause_resize) override {
     if (!IsGuestInitialized()) {
@@ -296,8 +305,9 @@ zoom::ZoomController* GuestViewBase::GetZoomController() const {
 
 void GuestViewBase::DispatchOnResizeEvent(const gfx::Size& old_size,
                                           const gfx::Size& new_size) {
-  if (new_size == old_size)
+  if (new_size == old_size) {
     return;
+  }
 
   // Dispatch the onResize event.
   base::Value::Dict args;
@@ -310,8 +320,9 @@ void GuestViewBase::DispatchOnResizeEvent(const gfx::Size& old_size,
 }
 
 gfx::Size GuestViewBase::GetDefaultSize() const {
-  if (!is_full_page_plugin())
+  if (!is_full_page_plugin()) {
     return gfx::Size(kDefaultWidth, kDefaultHeight);
+  }
 
   // Full page plugins default to the size of the owner's viewport.
   return owner_rfh()->GetView()->GetVisibleViewportSize();
@@ -322,8 +333,9 @@ void GuestViewBase::SetSize(const SetSizeParams& params) {
   gfx::Size min_size = params.min_size.value_or(min_auto_size_);
   gfx::Size max_size = params.max_size.value_or(max_auto_size_);
 
-  if (params.normal_size)
+  if (params.normal_size) {
     normal_size_ = *params.normal_size;
+  }
 
   min_auto_size_ = min_size;
   min_auto_size_.SetToMin(max_size);
@@ -336,16 +348,19 @@ void GuestViewBase::SetSize(const SetSizeParams& params) {
   content::RenderWidgetHostView* rwhv = GetGuestMainFrame()->GetView();
   if (enable_auto_size) {
     // Autosize is being enabled.
-    if (rwhv)
+    if (rwhv) {
       rwhv->EnableAutoResize(min_auto_size_, max_auto_size_);
+    }
     normal_size_.SetSize(0, 0);
   } else {
     // Autosize is being disabled.
     // Use default width/height if missing from partially defined normal size.
-    if (normal_size_.width() && !normal_size_.height())
+    if (normal_size_.width() && !normal_size_.height()) {
       normal_size_.set_height(GetDefaultSize().height());
-    if (!normal_size_.width() && normal_size_.height())
+    }
+    if (!normal_size_.width() && normal_size_.height()) {
       normal_size_.set_width(GetDefaultSize().width());
+    }
 
     gfx::Size new_size;
     if (!normal_size_.IsEmpty()) {
@@ -359,8 +374,9 @@ void GuestViewBase::SetSize(const SetSizeParams& params) {
     bool changed_due_to_auto_resize = false;
     if (auto_size_enabled_) {
       // Autosize was previously enabled.
-      if (rwhv)
+      if (rwhv) {
         rwhv->DisableAutoResize(new_size);
+      }
       changed_due_to_auto_resize = true;
     } else {
       // Autosize was already disabled. The RenderWidgetHostView is responsible
@@ -457,8 +473,9 @@ GuestViewBase* GuestViewBase::FromInstanceID(
 GuestViewBase* GuestViewBase::FromInstanceID(int owner_process_id,
                                              int guest_instance_id) {
   auto* host = content::RenderProcessHost::FromID(owner_process_id);
-  if (!host)
+  if (!host) {
     return nullptr;
+  }
 
   return GuestViewManager::FromBrowserContext(host->GetBrowserContext())
       ->GetGuestByInstanceIDSafely(guest_instance_id, owner_process_id);
@@ -667,8 +684,9 @@ void GuestViewBase::AttachToOuterWebContentsFrame(
   // |outer_contents_frame| gets swapped before the AttachToEmbedderFrame
   // callback is run. We also need to send the ACK before queued events are sent
   // in DidAttach.
-  if (attachment_callback)
+  if (attachment_callback) {
     std::move(attachment_callback).Run();
+  }
 
   // Completing attachment will resume suspended resource loads and then send
   // queued events.
@@ -1061,8 +1079,9 @@ void GuestViewBase::DispatchEventToView(std::unique_ptr<GuestViewEvent> event) {
 }
 
 void GuestViewBase::SendQueuedEvents() {
-  if (!attached())
+  if (!attached()) {
     return;
+  }
   while (!pending_events_.empty()) {
     std::unique_ptr<GuestViewEvent> event_ptr =
         std::move(pending_events_.front());
@@ -1176,8 +1195,9 @@ void GuestViewBase::UpdateWebContentsForNewOwner(
 }
 
 double GuestViewBase::GetEmbedderZoomFactor() const {
-  if (!embedder_web_contents())
+  if (!embedder_web_contents()) {
     return 1.0;
+  }
 
   return blink::ZoomLevelToZoomFactor(
       zoom::ZoomController::GetZoomLevelForWebContents(
@@ -1237,15 +1257,17 @@ void GuestViewBase::SetGuestZoomLevelToMatchEmbedder() {
       zoom::ZoomController::FromWebContentsAndRenderFrameHost(
           owner_web_contents(),
           owner_rfh()->GetOutermostMainFrame()->GetGlobalId());
-  if (!embedder_zoom_controller)
+  if (!embedder_zoom_controller) {
     return;
+  }
 
   GetZoomController()->SetZoomLevel(embedder_zoom_controller->GetZoomLevel());
 }
 
 void GuestViewBase::StartTrackingEmbedderZoomLevel() {
-  if (!ZoomPropagatesFromEmbedderToGuest())
+  if (!ZoomPropagatesFromEmbedderToGuest()) {
     return;
+  }
 
   auto* embedder_zoom_controller =
       zoom::ZoomController::FromWebContentsAndRenderFrameHost(
@@ -1253,8 +1275,9 @@ void GuestViewBase::StartTrackingEmbedderZoomLevel() {
           owner_rfh()->GetOutermostMainFrame()->GetGlobalId());
 
   // Chrome Apps do not have a ZoomController.
-  if (!embedder_zoom_controller)
+  if (!embedder_zoom_controller) {
     return;
+  }
   // Listen to the embedder's zoom changes.
   zoom_controller_observations_.AddObservation(embedder_zoom_controller);
 
@@ -1266,15 +1289,17 @@ void GuestViewBase::StopTrackingEmbedderZoomLevel() {
   // TODO(wjmaclean): Remove the observer any time the GuestWebView transitions
   // from propagating to not-propagating the zoom from the embedder.
 
-  if (!owner_web_contents())
+  if (!owner_web_contents()) {
     return;
+  }
   auto* embedder_zoom_controller =
       zoom::ZoomController::FromWebContentsAndRenderFrameHost(
           owner_web_contents(),
           owner_rfh()->GetOutermostMainFrame()->GetGlobalId());
   // Chrome Apps do not have a ZoomController.
-  if (!embedder_zoom_controller)
+  if (!embedder_zoom_controller) {
     return;
+  }
 
   if (zoom_controller_observations_.IsObservingSource(
           embedder_zoom_controller)) {
@@ -1284,8 +1309,9 @@ void GuestViewBase::StopTrackingEmbedderZoomLevel() {
 
 void GuestViewBase::UpdateGuestSize(const gfx::Size& new_size,
                                     bool due_to_auto_resize) {
-  if (due_to_auto_resize)
+  if (due_to_auto_resize) {
     GuestSizeChangedDueToAutoSize(guest_size_, new_size);
+  }
   DispatchOnResizeEvent(guest_size_, new_size);
   guest_size_ = new_size;
 }
@@ -1304,7 +1330,7 @@ bool GuestViewBase::IsOwnedByControlledFrameEmbedder() const {
 
 void GuestViewBase::SetOwnerHost() {
   if (IsOwnedByExtension()) {
-    owner_host_ = GetOwnerLastCommittedURL().host();
+    owner_host_ = GetOwnerLastCommittedURL().GetHost();
   } else if (IsOwnedByWebUI()) {
     owner_host_ = std::string();
   } else if (IsOwnedByControlledFrameEmbedder()) {

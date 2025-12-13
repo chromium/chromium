@@ -74,6 +74,15 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Dynamic Chrome Color (GM3)"/>
 </enum>
 
+<enum name="DWriteFontProxyIPC">
+  <int value="0" label="FindFamily"/>
+  <int value="1" label="GetFamilyCount"/>
+  <int value="2" label="GetFamilyNames"/>
+  <int value="3" label="GetFontFileHandles"/>
+  <int value="4" label="MatchUniqueFont"/>
+  <int value="5" label="MapCharacters"/>
+</enum>
+
 <enum name="DynamicChromeColorsInfo">
   <int value="0" label="Other"/>
   <int value="1" label="Grayscale"/>
@@ -95,6 +104,22 @@ chromium-metrics-reviews@google.com.
 <enum name="ExtensionPointEnableState">
   <int value="0" label="EXTENSIONPOINT_DISABLED_IME"/>
   <int value="1" label="EXTENSIONPOINT_ENABLED"/>
+</enum>
+
+<enum name="FontDataServiceCreateResult">
+  <int value="0" label="NoTypeface"/>
+  <int value="1" label="SuccessExistingSharedMemory"/>
+  <int value="2" label="FailureExistingSharedMemory"/>
+  <int value="3" label="SuccessSharingFileHandle"/>
+  <int value="4" label="SuccessSharingNewMemoryRegion"/>
+  <int value="5" label="FailureSharingNewMemoryRegion"/>
+</enum>
+
+<enum name="FontDataServiceIPC">
+  <int value="0" label="MatchFamilyName"/>
+  <int value="1" label="MatchFamilyNameCharacter"/>
+  <int value="2" label="GetAllFamilyNames"/>
+  <int value="3" label="LegacyMakeTypeface"/>
 </enum>
 
 <enum name="HeadlessChromeAction">

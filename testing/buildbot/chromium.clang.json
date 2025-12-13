@@ -10,6 +10,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//base:base_unittests",
+        "module_scheme": "gtest",
         "name": "base_unittests",
         "swarming": {
           "dimensions": {
@@ -25,6 +27,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//third_party/highway:highway_tests",
+        "module_scheme": "gtest",
         "name": "highway_tests",
         "swarming": {
           "dimensions": {
@@ -45,6 +49,8 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:chrome_sizes",
+        "module_scheme": "single",
         "name": "chrome_sizes",
         "resultdb": {
           "enable": true,
@@ -71,6 +77,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//base:base_unittests",
+        "module_scheme": "gtest",
         "name": "base_unittests",
         "swarming": {
           "dimensions": {
@@ -87,6 +95,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//third_party/highway:highway_tests",
+        "module_scheme": "gtest",
         "name": "highway_tests",
         "swarming": {
           "dimensions": {
@@ -108,6 +118,8 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:chrome_sizes",
+        "module_scheme": "single",
         "name": "chrome_sizes",
         "resultdb": {
           "enable": true,
@@ -135,6 +147,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//base:base_unittests",
+        "module_scheme": "gtest",
         "name": "base_unittests",
         "swarming": {
           "dimensions": {
@@ -150,6 +164,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//third_party/highway:highway_tests",
+        "module_scheme": "gtest",
         "name": "highway_tests",
         "swarming": {
           "dimensions": {
@@ -170,6 +186,8 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:chrome_sizes",
+        "module_scheme": "single",
         "name": "chrome_sizes",
         "resultdb": {
           "enable": true,
@@ -189,6 +207,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test/mini_installer:mini_installer_tests",
+        "module_scheme": "flat",
         "name": "mini_installer_tests",
         "swarming": {
           "dimensions": {
@@ -206,6 +226,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//tools/polymer:polymer_tools_python_unittests",
+        "module_scheme": "pyunit",
         "name": "polymer_tools_python_unittests",
         "swarming": {
           "dimensions": {
@@ -228,6 +250,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//base:base_unittests",
+        "module_scheme": "gtest",
         "name": "base_unittests",
         "swarming": {
           "dimensions": {
@@ -243,6 +267,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//third_party/highway:highway_tests",
+        "module_scheme": "gtest",
         "name": "highway_tests",
         "swarming": {
           "dimensions": {
@@ -263,6 +289,8 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:chrome_sizes",
+        "module_scheme": "single",
         "name": "chrome_sizes",
         "resultdb": {
           "enable": true,
@@ -282,6 +310,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test/mini_installer:mini_installer_tests",
+        "module_scheme": "flat",
         "name": "mini_installer_tests",
         "swarming": {
           "dimensions": {
@@ -299,6 +329,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//tools/polymer:polymer_tools_python_unittests",
+        "module_scheme": "pyunit",
         "name": "polymer_tools_python_unittests",
         "swarming": {
           "dimensions": {

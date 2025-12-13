@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/icu_util.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
@@ -32,7 +33,7 @@
 
 using url::Origin;
 
-const char* kCmdline[] = {"code_cache_host_mojolpm_fuzzer", nullptr};
+constexpr const char* kCmdline[] = {"code_cache_host_mojolpm_fuzzer", nullptr};
 
 content::mojolpm::FuzzerEnvironment& GetEnvironment() {
   static base::NoDestructor<
@@ -251,7 +252,7 @@ void CodeCacheHostTestcase::AddCodeCacheHostImpl(
     const net::NetworkIsolationKey& nik,
     const blink::StorageKey& storage_key,
     mojo::PendingReceiver<::blink::mojom::CodeCacheHost>&& receiver) {
-  auto code_cache_host = std::make_unique<content::CodeCacheHostImpl>(
+  auto code_cache_host = content::CodeCacheHostImpl::Create(
       renderer_id, generated_code_cache_context_, nik, storage_key);
   code_cache_host->SetCacheStorageControlForTesting(
       cache_storage_control_wrapper_.get());

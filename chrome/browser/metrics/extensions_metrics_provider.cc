@@ -20,7 +20,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/install_verifier.h"
+#include "chrome/browser/extensions/install_verifier_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/metrics/metrics_log.h"
@@ -32,6 +32,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/install_prefs_helper.h"
+#include "extensions/browser/install_verifier.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
@@ -478,7 +479,7 @@ void ExtensionsMetricsProvider::ProvideOffStoreMetric(
       continue;
 
     extensions::InstallVerifier* verifier =
-        extensions::InstallVerifier::Get(profiles[i]);
+        extensions::InstallVerifierFactory::GetForBrowserContext(profiles[i]);
     DCHECK(verifier);
 
     // Combine the state from each profile, always favoring the higher state as

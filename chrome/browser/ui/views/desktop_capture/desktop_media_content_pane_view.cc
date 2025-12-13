@@ -38,6 +38,15 @@ DesktopMediaContentPaneView::DesktopMediaContentPaneView(
   separator_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets::VH(0, 16)));
   separator_container->AddChildView(std::make_unique<views::Separator>());
+
+#if BUILDFLAG(IS_MAC)
+  audio_warning_view_ =
+      AddChildView(std::make_unique<AudioPermissionWarningView>(
+          base::BindRepeating(&DesktopMediaContentPaneView::CancelAudioSharing,
+                              base::Unretained(this))));
+  audio_warning_view_->SetVisible(false);
+#endif  // BUILDFLAG(IS_MAC)
+
   share_audio_view_ = AddChildView(std::move(share_audio_view));
 }
 
@@ -56,10 +65,40 @@ void DesktopMediaContentPaneView::SetAudioSharingApprovedByUser(bool is_on) {
   share_audio_view_->SetAudioSharingApprovedByUser(is_on);
 }
 
+bool DesktopMediaContentPaneView::IsAudioSharingControlEnabled() const {
+  CHECK(share_audio_view_);
+  return share_audio_view_->GetEnabled();
+}
+
+void DesktopMediaContentPaneView::SetAudioSharingControlEnabled(bool enabled) {
+  CHECK(share_audio_view_);
+  share_audio_view_->SetEnabled(enabled);
+}
+
 std::u16string_view DesktopMediaContentPaneView::GetAudioLabelText() const {
   return share_audio_view_ ? share_audio_view_->GetAudioLabelText()
                            : std::u16string_view();
 }
+
+#if BUILDFLAG(IS_MAC)
+void DesktopMediaContentPaneView::SetAudioWarningVisible(bool visible) {
+  if (audio_warning_view_) {
+    audio_warning_view_->SetWarningVisible(visible);
+    if (!visible) {
+      share_audio_view_->RequestFocus();
+    }
+  }
+}
+
+bool DesktopMediaContentPaneView::IsAudioWarningVisible() const {
+  return audio_warning_view_ && audio_warning_view_->GetVisible();
+}
+
+void DesktopMediaContentPaneView::CancelAudioSharing() {
+  SetAudioSharingApprovedByUser(false);
+  SetAudioWarningVisible(false);
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 BEGIN_METADATA(DesktopMediaContentPaneView)
 END_METADATA

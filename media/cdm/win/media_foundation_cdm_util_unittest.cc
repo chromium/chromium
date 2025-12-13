@@ -57,11 +57,11 @@ TEST_F(IsMediaFoundationContentTypeSupportedTest, Probably) {
   COM_EXPECT_CALL(mf_type_support_, IsTypeSupportedEx(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(MF_MEDIA_ENGINE_CANPLAY_PROBABLY),
                       Return(S_OK)));
-
-  bool result = IsMediaFoundationContentTypeSupported(
+  auto result = IsMediaFoundationContentTypeSupported(
       mf_type_support_, kTestKeySystem, kTestContentType);
 
-  EXPECT_TRUE(result);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_TRUE(result.value());
 }
 
 TEST_F(IsMediaFoundationContentTypeSupportedTest, NotSupported) {
@@ -69,10 +69,11 @@ TEST_F(IsMediaFoundationContentTypeSupportedTest, NotSupported) {
       .WillOnce(DoAll(SetArgPointee<2>(MF_MEDIA_ENGINE_CANPLAY_NOT_SUPPORTED),
                       Return(S_OK)));
 
-  bool result = IsMediaFoundationContentTypeSupported(
+  auto result = IsMediaFoundationContentTypeSupported(
       mf_type_support_, kTestKeySystem, kTestContentType);
 
-  EXPECT_FALSE(result);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_FALSE(result.value());
 }
 
 TEST_F(IsMediaFoundationContentTypeSupportedTest, Maybe) {
@@ -84,11 +85,12 @@ TEST_F(IsMediaFoundationContentTypeSupportedTest, Maybe) {
           DoAll(SetArgPointee<2>(MF_MEDIA_ENGINE_CANPLAY_MAYBE), Return(S_OK)));
 
   // The method should retry the maximum number of times and then return false
-  bool result = IsMediaFoundationContentTypeSupported(
+  auto result = IsMediaFoundationContentTypeSupported(
       mf_type_support_, kTestKeySystem, kTestContentType);
 
   // After only receiving MAYBE responses, the method should return false
-  EXPECT_FALSE(result);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_FALSE(result.value());
 }
 
 TEST_F(IsMediaFoundationContentTypeSupportedTest, MaybeAndThenProbably) {
@@ -106,20 +108,22 @@ TEST_F(IsMediaFoundationContentTypeSupportedTest, MaybeAndThenProbably) {
                         Return(S_OK)));
   }
 
-  bool result = IsMediaFoundationContentTypeSupported(
+  auto result = IsMediaFoundationContentTypeSupported(
       mf_type_support_, kTestKeySystem, kTestContentType);
 
-  EXPECT_TRUE(result);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_TRUE(result.value());
 }
 
 TEST_F(IsMediaFoundationContentTypeSupportedTest, Failure) {
   COM_EXPECT_CALL(mf_type_support_, IsTypeSupportedEx(_, _, _))
       .WillOnce(Return(E_FAIL));
 
-  bool result = IsMediaFoundationContentTypeSupported(
+  auto result = IsMediaFoundationContentTypeSupported(
       mf_type_support_, kTestKeySystem, kTestContentType);
 
-  EXPECT_FALSE(result);
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(E_FAIL, result.error());
 }
 
 class CreateMediaFoundationCdmTest : public testing::Test {

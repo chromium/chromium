@@ -9,13 +9,11 @@
 #import <algorithm>
 #import <memory>
 
-#import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/containers/contains.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/functional/callback.h"
 #import "base/metrics/histogram_functions.h"
-#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/sessions/core/session_id.h"
 #import "components/sessions/core/session_id_generator.h"
@@ -23,11 +21,7 @@
 #import "ios/chrome/browser/sessions/model/features.h"
 #import "ios/chrome/browser/sessions/model/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/model/proto/tab_group.pb.h"
-#import "ios/chrome/browser/sessions/model/session_constants.h"
-#import "ios/chrome/browser/sessions/model/session_tab_group.h"
-#import "ios/chrome/browser/sessions/model/session_window_ios.h"
 #import "ios/chrome/browser/sessions/model/tab_group_util.h"
-#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source_from_web_state_list.h"
@@ -37,9 +31,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/session/crw_session_storage.h"
-#import "ios/web/public/session/crw_session_user_data.h"
-#import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/web_state.h"
 
 using tab_group_util::DeserializedGroup;
@@ -216,102 +207,6 @@ class Deserializer {
   // Returns the deserisalized tab group at `index`.
   virtual DeserializedGroup GetDeserializedGroupAt(int index) const = 0;
 };
-
-// An implementation of Deserializer used to restore from legacy storage.
-class DeserializeFromSessionWindow : public Deserializer {
- public:
-  DeserializeFromSessionWindow(SessionWindowIOS* session_window,
-                               const WebStateFactory& factory);
-
-  // Deserializer implementation.
-  int GetActiveIndex() const override;
-  int GetRestoredTabsCount() const override;
-  int GetRestoredPinnedTabsCount() const override;
-  OpenerReference GetOpenerForTabAt(int index) const override;
-  std::unique_ptr<web::WebState> RestoreTabAt(int index) const override;
-  int GetTabGroupsCount() const override;
-  DeserializedGroup GetDeserializedGroupAt(int index) const override;
-
- private:
-  SessionWindowIOS* const session_window_;
-  WebStateFactory const factory_;
-};
-
-DeserializeFromSessionWindow::DeserializeFromSessionWindow(
-    SessionWindowIOS* session_window,
-    const WebStateFactory& factory)
-    : session_window_(session_window), factory_(factory) {
-  DCHECK(factory_);
-}
-
-int DeserializeFromSessionWindow::GetActiveIndex() const {
-  if (!session_window_ || session_window_.selectedIndex == NSNotFound) {
-    return -1;
-  }
-  return static_cast<int>(session_window_.selectedIndex);
-}
-
-int DeserializeFromSessionWindow::GetRestoredTabsCount() const {
-  return session_window_.sessions.count;
-}
-
-int DeserializeFromSessionWindow::GetRestoredPinnedTabsCount() const {
-  int pinned_tabs_count = 0;
-  for (CRWSessionStorage* session in session_window_.sessions) {
-    CRWSessionUserData* user_data = session.userData;
-    NSNumber* pinned_state = base::apple::ObjCCast<NSNumber>(
-        [user_data objectForKey:kLegacyWebStateListPinnedStateKey]);
-    if (!pinned_state || ![pinned_state boolValue]) {
-      // The pinned tabs are always at the beginning of the list,
-      // so stop iterating as soon as a non-pinned tab is found.
-      break;
-    }
-
-    ++pinned_tabs_count;
-  }
-  return pinned_tabs_count;
-}
-
-OpenerReference DeserializeFromSessionWindow::GetOpenerForTabAt(
-    int index) const {
-  DCHECK_GE(index, 0);
-  DCHECK_LT(index, static_cast<int>(session_window_.sessions.count));
-  CRWSessionStorage* session = session_window_.sessions[index];
-  CRWSessionUserData* user_data = session.userData;
-
-  NSNumber* opener_index = base::apple::ObjCCast<NSNumber>(
-      [user_data objectForKey:kLegacyWebStateListOpenerIndexKey]);
-
-  NSNumber* opener_navigation_index = base::apple::ObjCCast<NSNumber>(
-      [user_data objectForKey:kLegacyWebStateListOpenerNavigationIndexKey]);
-
-  if (!opener_index || !opener_navigation_index) {
-    return OpenerReference::Invalid();
-  }
-
-  return OpenerReference{
-      .index = [opener_index intValue],
-      .navigation_index = [opener_navigation_index intValue],
-  };
-}
-
-std::unique_ptr<web::WebState> DeserializeFromSessionWindow::RestoreTabAt(
-    int index) const {
-  DCHECK_GE(index, 0);
-  DCHECK_LT(index, static_cast<int>(session_window_.sessions.count));
-  return factory_.Run(session_window_.sessions[index]);
-}
-
-int DeserializeFromSessionWindow::GetTabGroupsCount() const {
-  return session_window_.tabGroups.count;
-}
-
-DeserializedGroup DeserializeFromSessionWindow::GetDeserializedGroupAt(
-    int index) const {
-  DCHECK_GE(index, 0);
-  DCHECK_LT(index, static_cast<int>(session_window_.tabGroups.count));
-  return tab_group_util::FromSerializedValue(session_window_.tabGroups[index]);
-}
 
 // An implementation of Deserializer used to restore from optimized storage.
 class DeserializeFromProto : public Deserializer {
@@ -507,92 +402,6 @@ std::vector<web::WebState*> DeserializeWebStateListInternal(
 
 }  // namespace
 
-SessionWindowIOS* SerializeWebStateList(const WebStateList* web_state_list) {
-  const RemovingIndexes removing_indexes =
-      GetIndexOfWebStatesToDrop(*web_state_list);
-
-  std::map<const web::WebState*, int> index_mapping;
-  for (int index = 0; index < web_state_list->count(); ++index) {
-    const web::WebState* web_state = web_state_list->GetWebStateAt(index);
-    index_mapping.insert(std::make_pair(web_state, index));
-  }
-
-  NSMutableArray<CRWSessionStorage*>* serialized_session =
-      [[NSMutableArray alloc] init];
-
-  for (int index = 0; index < web_state_list->count(); ++index) {
-    if (removing_indexes.Contains(index)) {
-      continue;
-    }
-
-    const web::WebState* web_state = web_state_list->GetWebStateAt(index);
-    CRWSessionStorage* session_storage = web_state->BuildSessionStorage();
-    [serialized_session addObject:session_storage];
-
-    CRWSessionUserData* user_data = session_storage.userData;
-    if (!user_data) {
-      user_data = [[CRWSessionUserData alloc] init];
-      session_storage.userData = user_data;
-    }
-
-    [user_data removeObjectForKey:kLegacyWebStateListPinnedStateKey];
-    [user_data removeObjectForKey:kLegacyWebStateListOpenerIndexKey];
-    [user_data removeObjectForKey:kLegacyWebStateListOpenerNavigationIndexKey];
-
-    const bool is_pinned = web_state_list->IsWebStatePinnedAt(index);
-    if (is_pinned) {
-      [user_data setObject:@YES forKey:kLegacyWebStateListPinnedStateKey];
-    }
-
-    WebStateOpener opener = web_state_list->GetOpenerOfWebStateAt(index);
-    if (opener.opener) {
-      DCHECK(base::Contains(index_mapping, opener.opener));
-      const int opener_index =
-          removing_indexes.IndexAfterRemoval(index_mapping[opener.opener]);
-      if (opener_index != WebStateList::kInvalidIndex) {
-        [user_data setObject:@(opener_index)
-                      forKey:kLegacyWebStateListOpenerIndexKey];
-        [user_data setObject:@(opener.navigation_index)
-                      forKey:kLegacyWebStateListOpenerNavigationIndexKey];
-      }
-    }
-  }
-
-  OrderControllerSourceFromWebStateList source(*web_state_list);
-  OrderController order_controller(source);
-  const int active_index = removing_indexes.IndexAfterRemoval(
-      order_controller.DetermineNewActiveIndex(web_state_list->active_index(),
-                                               removing_indexes));
-
-  NSUInteger selectedIndex = active_index != WebStateList::kInvalidIndex
-                                 ? static_cast<NSUInteger>(active_index)
-                                 : static_cast<NSUInteger>(NSNotFound);
-
-  NSMutableArray<SessionTabGroup*>* serialized_groups =
-      [[NSMutableArray alloc] init];
-  for (const TabGroup* group : web_state_list->GetGroups()) {
-    const TabGroupRange initial_range = group->range();
-    const TabGroupRange final_range =
-        removing_indexes.RangeAfterRemoval(initial_range);
-    if (final_range.valid()) {
-      SessionTabGroup* serialized_group = [[SessionTabGroup alloc]
-          initWithRangeStart:final_range.range_begin()
-                  rangeCount:final_range.count()
-                       title:base::SysUTF16ToNSString(
-                                 group->visual_data().title())
-                     colorId:static_cast<NSInteger>(
-                                 group->visual_data().color())
-              collapsedState:group->visual_data().is_collapsed()
-                  tabGroupId:group->tab_group_id()];
-      [serialized_groups addObject:serialized_group];
-    }
-  }
-
-  return [[SessionWindowIOS alloc] initWithSessions:[serialized_session copy]
-                                          tabGroups:[serialized_groups copy]
-                                      selectedIndex:selectedIndex];
-}
-
 void SerializeWebStateList(const WebStateList& web_state_list,
                            const WebStateMetadataMap& metadata_map,
                            ios::proto::WebStateListStorage& storage) {
@@ -672,16 +481,6 @@ void SerializeWebStateList(const WebStateList& web_state_list,
                                                removing_indexes));
   DCHECK_LT(active_index, web_state_list.count());
   storage.set_active_index(active_index);
-}
-
-std::vector<web::WebState*> DeserializeWebStateList(
-    WebStateList* web_state_list,
-    SessionWindowIOS* session_window,
-    bool enable_pinned_web_states,
-    const WebStateFactory& factory) {
-  return DeserializeWebStateListInternal(
-      web_state_list, enable_pinned_web_states,
-      DeserializeFromSessionWindow(session_window, factory));
 }
 
 std::vector<web::WebState*> DeserializeWebStateList(

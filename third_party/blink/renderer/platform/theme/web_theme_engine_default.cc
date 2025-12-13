@@ -13,15 +13,14 @@
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_conversions.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/overlay_scrollbar_constants_aura.h"
+#include "ui/native_theme/overlay_scrollbar_constants.h"
 
 namespace blink {
-
-using mojom::ColorScheme;
 
 namespace {
 
@@ -240,16 +239,17 @@ void WebThemeEngineDefault::Paint(
     WebThemeEngine::State state,
     const gfx::Rect& rect,
     const WebThemeEngine::ExtraParams* extra_params,
-    mojom::ColorScheme color_scheme,
-    bool in_forced_colors,
+    bool forced_colors,
+    mojom::blink::ColorScheme color_scheme,
+    mojom::blink::PreferredContrast contrast,
     const ui::ColorProvider* color_provider,
     const std::optional<SkColor>& accent_color) {
   ui::NativeTheme::ExtraParams native_theme_extra_params =
       GetNativeThemeExtraParams(part, state, extra_params);
   ui::NativeTheme::GetInstanceForWeb()->Paint(
       canvas, color_provider, NativeThemePart(part), NativeThemeState(state),
-      rect, native_theme_extra_params, NativeColorScheme(color_scheme),
-      in_forced_colors, accent_color);
+      rect, native_theme_extra_params, forced_colors,
+      NativeColorScheme(color_scheme), NativeContrast(contrast), accent_color);
 }
 
 gfx::Insets WebThemeEngineDefault::GetScrollbarSolidColorThumbInsets(
@@ -271,20 +271,18 @@ SkColor4f WebThemeEngineDefault::GetScrollbarThumbColor(
               /*part=*/WebThemeEngine::kPartScrollbarVerticalThumb, state,
               extra_params));
 
-  return ui::NativeTheme::GetInstanceForWeb()->GetScrollbarThumbColor(
-      *color_provider, NativeThemeState(state), native_theme_extra_params);
+  return SkColor4f::FromColor(
+      ui::NativeTheme::GetInstanceForWeb()->GetScrollbarThumbColor(
+          color_provider, NativeThemeState(state), native_theme_extra_params));
 }
 
 void WebThemeEngineDefault::GetOverlayScrollbarStyle(ScrollbarStyle* style) {
   if (!base::FeatureList::IsEnabled(features::kScrollbarAnimations)) {
     style->fade_out_delay = base::TimeDelta::Max();
     style->fade_out_duration = base::TimeDelta();
-  } else if (IsFluentOverlayScrollbarEnabled()) {
-    style->fade_out_delay = ui::kFluentOverlayScrollbarFadeDelay;
-    style->fade_out_duration = ui::kFluentOverlayScrollbarFadeDuration;
   } else {
-    style->fade_out_delay = ui::kOverlayScrollbarFadeDelay;
-    style->fade_out_duration = ui::kOverlayScrollbarFadeDuration;
+    style->fade_out_delay = ui::GetOverlayScrollbarFadeDelay();
+    style->fade_out_duration = ui::GetOverlayScrollbarFadeDuration();
   }
   style->idle_thickness_scale = ui::kOverlayScrollbarIdleThicknessScale;
   // The other fields in this struct are used only on Android to draw solid
@@ -307,20 +305,17 @@ gfx::Rect WebThemeEngineDefault::NinePatchAperture(Part part) const {
       NativeThemePart(part));
 }
 
-bool WebThemeEngineDefault::IsFluentScrollbarEnabled() const {
-  return ui::IsFluentScrollbarEnabled();
-}
-
-bool WebThemeEngineDefault::IsFluentOverlayScrollbarEnabled() const {
-  return ui::IsFluentOverlayScrollbarEnabled();
-}
-
 int WebThemeEngineDefault::GetPaintedScrollbarTrackInset() const {
   return ui::NativeTheme::GetInstanceForWeb()->GetPaintedScrollbarTrackInset();
 }
 
 std::optional<SkColor> WebThemeEngineDefault::GetAccentColor() const {
+  // LINT.IfChange(UserColor)
+  // TODO(pkasting): This is not the right way of accessing this; it should come
+  // from the preferences/settings like preferred contrast, preferred color
+  // scheme, forced colors, etc.
   return ui::NativeTheme::GetInstanceForWeb()->user_color();
+  // LINT.ThenChange(//content/renderer/render_thread_impl.cc:UserColor)
 }
 
 #if BUILDFLAG(IS_WIN)

@@ -6,8 +6,8 @@
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/url_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/socket_permission_request.h"
@@ -97,7 +97,7 @@ bool ChromeDirectSocketsDelegate::ValidateRequest(
     return false;
   }
 
-  if (url.SchemeIs(chrome::kIsolatedAppScheme)) {
+  if (url.SchemeIs(webapps::kIsolatedAppScheme)) {
     return ValidateAddressAndPortForIwa(request);
   }
 

@@ -12,6 +12,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -48,8 +49,8 @@
 // See url::mojom::kMaxURLChars for more details.
 class COMPONENT_EXPORT(URL) GURL {
  public:
-  using Replacements = url::StringViewReplacements<char>;
-  using ReplacementsW = url::StringViewReplacements<char16_t>;
+  using Replacements = url::Replacements<char>;
+  using ReplacementsW = url::Replacements<char16_t>;
 
   // Creates an empty, invalid URL.
   GURL();
@@ -295,7 +296,7 @@ class COMPONENT_EXPORT(URL) GURL {
   // URLs have different outcomes to comply with standards. Please see
   // GURLTest::ContentForNonStandardURLs for more information.
   std::string GetContent() const;
-  std::string_view GetContentPiece() const;
+  std::string_view GetContentPiece() const LIFETIME_BOUND;
 
   // Returns true if the hostname is an IP address. Note: this function isn't
   // as cheap as a simple getter because it re-parses the hostname to verify.
@@ -303,26 +304,20 @@ class COMPONENT_EXPORT(URL) GURL {
 
   // Not including the colon. If you are comparing schemes, prefer SchemeIs.
   bool has_scheme() const { return parsed_.scheme.is_valid(); }
-  std::string scheme() const {
-    return ComponentString(parsed_.scheme);
-  }
-  std::string_view scheme_piece() const {
+  std::string GetScheme() const { return ComponentString(parsed_.scheme); }
+  std::string_view scheme() const LIFETIME_BOUND {
     return ComponentStringPiece(parsed_.scheme);
   }
 
   bool has_username() const { return parsed_.username.is_valid(); }
-  std::string username() const {
-    return ComponentString(parsed_.username);
-  }
-  std::string_view username_piece() const {
+  std::string GetUsername() const { return ComponentString(parsed_.username); }
+  std::string_view username() const LIFETIME_BOUND {
     return ComponentStringPiece(parsed_.username);
   }
 
   bool has_password() const { return parsed_.password.is_valid(); }
-  std::string password() const {
-    return ComponentString(parsed_.password);
-  }
-  std::string_view password_piece() const {
+  std::string GetPassword() const { return ComponentString(parsed_.password); }
+  std::string_view password() const LIFETIME_BOUND {
     return ComponentStringPiece(parsed_.password);
   }
 
@@ -333,10 +328,8 @@ class COMPONENT_EXPORT(URL) GURL {
     // Note that hosts are special, absence of host means length 0.
     return parsed_.host.is_nonempty();
   }
-  std::string host() const {
-    return ComponentString(parsed_.host);
-  }
-  std::string_view host_piece() const {
+  std::string GetHost() const { return ComponentString(parsed_.host); }
+  std::string_view host() const LIFETIME_BOUND {
     return ComponentStringPiece(parsed_.host);
   }
 
@@ -344,39 +337,31 @@ class COMPONENT_EXPORT(URL) GURL {
   // or EffectiveIntPort() instead of these. The getters will not include the
   // ':'.
   bool has_port() const { return parsed_.port.is_valid(); }
-  std::string port() const {
-    return ComponentString(parsed_.port);
-  }
-  std::string_view port_piece() const {
+  std::string GetPort() const { return ComponentString(parsed_.port); }
+  std::string_view port() const LIFETIME_BOUND {
     return ComponentStringPiece(parsed_.port);
   }
 
   // Including first slash following host, up to the query. The URL
   // "http://www.google.com/" has a path of "/".
   bool has_path() const { return parsed_.path.is_valid(); }
-  std::string path() const {
-    return ComponentString(parsed_.path);
-  }
-  std::string_view path_piece() const {
+  std::string GetPath() const { return ComponentString(parsed_.path); }
+  std::string_view path() const LIFETIME_BOUND {
     return ComponentStringPiece(parsed_.path);
   }
 
   // Stuff following '?' up to the ref. The getters will not include the '?'.
   bool has_query() const { return parsed_.query.is_valid(); }
-  std::string query() const {
-    return ComponentString(parsed_.query);
-  }
-  std::string_view query_piece() const {
+  std::string GetQuery() const { return ComponentString(parsed_.query); }
+  std::string_view query() const LIFETIME_BOUND {
     return ComponentStringPiece(parsed_.query);
   }
 
   // Stuff following '#' to the end of the string. This will be %-escaped UTF-8.
   // The getters will not include the '#'.
   bool has_ref() const { return parsed_.ref.is_valid(); }
-  std::string ref() const {
-    return ComponentString(parsed_.ref);
-  }
-  std::string_view ref_piece() const {
+  std::string GetRef() const { return ComponentString(parsed_.ref); }
+  std::string_view ref() const LIFETIME_BOUND {
     return ComponentStringPiece(parsed_.ref);
   }
 
@@ -398,14 +383,14 @@ class COMPONENT_EXPORT(URL) GURL {
   std::string PathForRequest() const;
 
   // Returns the same characters as PathForRequest(), avoiding a copy.
-  std::string_view PathForRequestPiece() const;
+  std::string_view PathForRequestPiece() const LIFETIME_BOUND;
 
   // Returns the host, excluding the square brackets surrounding IPv6 address
   // literals. This can be useful for passing to getaddrinfo().
   std::string HostNoBrackets() const;
 
   // Returns the same characters as HostNoBrackets(), avoiding a copy.
-  std::string_view HostNoBracketsPiece() const;
+  std::string_view HostNoBracketsPiece() const LIFETIME_BOUND;
 
   // Returns true if this URL's host matches or is in the same domain as
   // the given input string. For example, if the hostname of the URL is
@@ -448,11 +433,17 @@ class COMPONENT_EXPORT(URL) GURL {
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
 
-  // Helper used by GURL::IsAboutUrl and KURL::IsAboutURL.
+  // Helper used by GURL::IsAboutUrl and KURL::IsAboutURL. Returns true if
+  // actual_path == allowed_path or actual_path == allowed_path + '/'.
   static bool IsAboutPath(std::string_view actual_path,
                           std::string_view allowed_path);
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
+
+  template <typename H>
+  friend H AbslHashValue(H h, const GURL& c) {
+    return H::combine(std::move(h), c.spec_);
+  }
 
  private:
   // Variant of the string parsing constructor that allows the caller to elect
@@ -475,7 +466,7 @@ class COMPONENT_EXPORT(URL) GURL {
   std::string ComponentString(const url::Component& comp) const {
     return std::string(ComponentStringPiece(comp));
   }
-  std::string_view ComponentStringPiece(const url::Component& comp) const {
+  std::string_view ComponentStringPiece(const url::Component& comp) const LIFETIME_BOUND {
     if (comp.is_empty())
       return std::string_view();
     return std::string_view(spec_).substr(static_cast<size_t>(comp.begin),

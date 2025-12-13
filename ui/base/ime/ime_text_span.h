@@ -55,7 +55,8 @@ struct COMPONENT_EXPORT(UI_BASE_IME_TYPES) ImeTextSpan {
       SkColor background_color = SK_ColorTRANSPARENT,
       SkColor suggestion_highlight_color = SK_ColorTRANSPARENT,
       const std::vector<std::string>& suggestions = std::vector<std::string>(),
-      SkColor text_color = SK_ColorTRANSPARENT);
+      SkColor text_color = SK_ColorTRANSPARENT,
+      bool should_hide_suggestion_menu = false);
 
   ImeTextSpan(const ImeTextSpan& rhs);
 
@@ -75,6 +76,7 @@ struct COMPONENT_EXPORT(UI_BASE_IME_TYPES) ImeTextSpan {
   bool remove_on_finish_composing = false;
   bool interim_char_selection = false;
   std::vector<std::string> suggestions;
+  bool should_hide_suggestion_menu = false;
 };
 
 using ImeTextSpans = std::vector<ImeTextSpan>;

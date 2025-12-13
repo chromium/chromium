@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -26,8 +27,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -102,7 +105,6 @@ using testing::Eq;
 using testing::Field;
 using testing::Gt;
 using testing::InSequence;
-using testing::Invoke;
 using testing::IsEmpty;
 using testing::MockFunction;
 using testing::NotNull;
@@ -512,8 +514,8 @@ void RangeTransactionServer::RangeHandler(const HttpRequestInfo* request,
   }
 
   std::vector<HttpByteRange> ranges;
-  std::optional<std::string> range_header =
-      request->extra_headers.GetHeader(HttpRequestHeaders::kRange);
+  std::optional<std::string_view> range_header =
+      request->extra_headers.GetHeaderView(HttpRequestHeaders::kRange);
   if (!range_header || !HttpUtil::ParseRangeHeader(*range_header, &ranges) ||
       bad_200_ || ranges.size() != 1 ||
       (modified_ && request->extra_headers.HasHeader("If-Range"))) {
@@ -618,10 +620,10 @@ void Verify206Response(const std::string& response, int start, int end) {
   int64_t range_start, range_end, object_size;
   ASSERT_TRUE(
       headers->GetContentRangeFor206(&range_start, &range_end, &object_size));
-  int64_t content_length = headers->GetContentLength();
+  std::optional<base::ByteCount> content_length = headers->GetContentLength();
 
   int length = end - start + 1;
-  ASSERT_EQ(length, content_length);
+  ASSERT_EQ(length, content_length->InBytes());
   ASSERT_EQ(start, range_start);
   ASSERT_EQ(end, range_end);
 }
@@ -800,7 +802,10 @@ void ContinueAfterConnect(
 
 }  // namespace
 
-using HttpCacheTest = TestWithTaskEnvironment;
+class HttpCacheTest : public TestWithTaskEnvironment {
+ public:
+  void CacheControlNoCacheNormalLoad(bool skip_feature_enabled);
+};
 
 class HttpCacheIOCallbackTest : public HttpCacheTest {
  public:
@@ -1101,7 +1106,7 @@ TEST_F(HttpCacheSimpleGetTest,
 
 // This test verifies that when the callback passed to SetConnectedCallback()
 // returns
-// `ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY`, the
+// `ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY`, the
 // cache entry is invalidated, and we'll retry the connection from the network.
 TEST_F(HttpCacheSimpleGetTest,
        ConnectedCallbackOnCacheHitReturnPrivateNetworkAccessBlockedError) {
@@ -1120,7 +1125,7 @@ TEST_F(HttpCacheSimpleGetTest,
     // connected callback error.
     ConnectedHandler connected_handler;
     connected_handler.set_result(
-        ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY);
+        ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY);
 
     auto transaction = cache.CreateTransaction();
     ASSERT_TRUE(transaction);
@@ -1134,7 +1139,7 @@ TEST_F(HttpCacheSimpleGetTest,
     EXPECT_THAT(
         callback.WaitForResult(),
         IsError(
-            ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY));
+            ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY));
 
     // Used the cache entry only.
     EXPECT_THAT(connected_handler.transports(),
@@ -1234,30 +1239,16 @@ TEST_F(HttpCacheSimpleGetTest, DelayedCacheLock) {
 enum class SplitCacheTestCase {
   kDisabled,
   kEnabledTripleKeyed,
-  kEnabledTriplePlusCrossSiteMainFrameNavBool,
 };
 
-const struct {
-  const SplitCacheTestCase test_case;
-  base::test::FeatureRef feature;
-} kTestCaseToFeatureMapping[] = {
-    {SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-     net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean}};
 
 class HttpCacheTestSplitCacheFeature
     : public HttpCacheTest,
       public ::testing::WithParamInterface<SplitCacheTestCase> {
  public:
-  HttpCacheTestSplitCacheFeature()
-      : split_cache_experiment_feature_list_(GetParam(),
-                                             kTestCaseToFeatureMapping) {
-    if (IsSplitCacheEnabled()) {
-      split_cache_enabled_feature_list_.InitAndEnableFeature(
-          net::features::kSplitCacheByNetworkIsolationKey);
-    } else {
-      split_cache_enabled_feature_list_.InitAndDisableFeature(
-          net::features::kSplitCacheByNetworkIsolationKey);
-    }
+  HttpCacheTestSplitCacheFeature() {
+    split_cache_feature_list_.InitWithFeatureState(
+        features::kSplitCacheByNetworkIsolationKey, IsSplitCacheEnabled());
   }
 
   bool IsSplitCacheEnabled() const {
@@ -1265,9 +1256,7 @@ class HttpCacheTestSplitCacheFeature
   }
 
  private:
-  net::test::ScopedMutuallyExclusiveFeatureList
-      split_cache_experiment_feature_list_;
-  base::test::ScopedFeatureList split_cache_enabled_feature_list_;
+  base::test::ScopedFeatureList split_cache_feature_list_;
 };
 
 TEST_P(HttpCacheTestSplitCacheFeature, SimpleGetVerifyGoogleFontMetrics) {
@@ -1294,29 +1283,26 @@ TEST_P(HttpCacheTestSplitCacheFeature, SimpleGetVerifyGoogleFontMetrics) {
 INSTANTIATE_TEST_SUITE_P(
     All,
     HttpCacheTestSplitCacheFeature,
-    testing::ValuesIn(
-        {SplitCacheTestCase::kDisabled, SplitCacheTestCase::kEnabledTripleKeyed,
-         SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool}),
+    testing::ValuesIn({SplitCacheTestCase::kDisabled,
+                       SplitCacheTestCase::kEnabledTripleKeyed}),
     [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
       switch (info.param) {
         case SplitCacheTestCase::kDisabled:
           return "SplitCacheDisabled";
         case SplitCacheTestCase::kEnabledTripleKeyed:
           return "SplitCacheNikFrameSiteEnabled";
-        case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
-          return "SplitCacheEnabledTriplePlusCrossSiteMainFrameNavigationBool";
       }
     });
 
 class HttpCacheTestSplitCacheFeatureEnabled : public HttpCacheTest {
  public:
   HttpCacheTestSplitCacheFeatureEnabled() {
-    split_cache_always_enabled_feature_list_.InitAndEnableFeature(
+    split_cache_enabled_feature_list_.InitAndEnableFeature(
         features::kSplitCacheByNetworkIsolationKey);
   }
 
  private:
-  base::test::ScopedFeatureList split_cache_always_enabled_feature_list_;
+  base::test::ScopedFeatureList split_cache_enabled_feature_list_;
 };
 
 TEST_F(HttpCacheSimpleGetTest, NoDiskCache) {
@@ -2194,8 +2180,10 @@ TEST_F(HttpCacheTest, StaleWhileRevalidateTruncated) {
           if (first) {
             // We should first try sending an If-Range to verify this thing is
             // valid.
-            EXPECT_EQ(request->extra_headers.GetHeader("Range"), "bytes=10-10");
-            EXPECT_EQ(request->extra_headers.GetHeader("If-Range"), "foopy");
+            EXPECT_EQ(request->extra_headers.GetHeaderView("Range"),
+                      "bytes=10-10");
+            EXPECT_EQ(request->extra_headers.GetHeaderView("If-Range"),
+                      "foopy");
             response_status->assign("HTTP/1.1 206 Partial Content");
             response_headers->assign(
                 "Content-Range: bytes 10-10/20\n"
@@ -2204,7 +2192,8 @@ TEST_F(HttpCacheTest, StaleWhileRevalidateTruncated) {
             first = false;
           } else {
             // Now a range request to the second part.
-            EXPECT_EQ(request->extra_headers.GetHeader("Range"), "bytes=10-19");
+            EXPECT_EQ(request->extra_headers.GetHeaderView("Range"),
+                      "bytes=10-19");
             response_status->assign("HTTP/1.1 206 Partial Content");
             response_headers->assign(
                 "Content-Range: bytes 10-19/20\n"
@@ -4058,7 +4047,7 @@ TEST_F(HttpCacheRangeGetTest, Enormous) {
   auto backend_factory = std::make_unique<HttpCache::DefaultBackend>(
       DISK_CACHE, CACHE_BACKEND_BLOCKFILE,
       /*file_operations_factory=*/nullptr, temp_dir.GetPath(), 1024 * 1024,
-      false);
+      false, nullptr);
   MockHttpCache cache(std::move(backend_factory));
 
   RangeTransactionServer handler;
@@ -11048,7 +11037,14 @@ TEST_F(HttpCacheTest, CachedRedirect) {
 
 // Verify that no-cache resources are stored in cache, but are not fetched from
 // cache during normal loads.
-TEST_F(HttpCacheTest, CacheControlNoCacheNormalLoad) {
+void HttpCacheTest::CacheControlNoCacheNormalLoad(bool skip_feature_enabled) {
+  base::test::ScopedFeatureList feature_list;
+  if (skip_feature_enabled) {
+    feature_list.InitAndEnableFeature(features::kHttpCacheSkipUnusableEntry);
+  } else {
+    feature_list.InitAndDisableFeature(features::kHttpCacheSkipUnusableEntry);
+  }
+
   for (bool use_memory_entry_data : {false, true}) {
     MockHttpCache cache;
     cache.disk_cache()->set_support_in_memory_entry_data(use_memory_entry_data);
@@ -11067,7 +11063,7 @@ TEST_F(HttpCacheTest, CacheControlNoCacheNormalLoad) {
     RunTransactionTest(cache.http_cache(), transaction);
 
     EXPECT_EQ(2, cache.network_layer()->transaction_count());
-    if (use_memory_entry_data) {
+    if (skip_feature_enabled && use_memory_entry_data) {
       EXPECT_EQ(0, cache.disk_cache()->open_count());
       EXPECT_EQ(2, cache.disk_cache()->create_count());
     } else {
@@ -11080,6 +11076,60 @@ TEST_F(HttpCacheTest, CacheControlNoCacheNormalLoad) {
     EXPECT_TRUE(cache.OpenBackendEntry(request.CacheKey(), &entry));
     entry->Close();
   }
+}
+
+TEST_F(HttpCacheTest, CacheControlNoCacheNormalLoadSkipUnusable) {
+  CacheControlNoCacheNormalLoad(true);
+}
+
+TEST_F(HttpCacheTest, CacheControlNoCacheNormalLoadDontSkipUnusable) {
+  CacheControlNoCacheNormalLoad(false);
+}
+
+TEST_F(HttpCacheTest, ConcurrentUnusable) {
+  MockHttpCache cache;
+  cache.disk_cache()->set_support_in_memory_entry_data(true);
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  transaction.response_headers = "cache-control: no-cache\n";
+
+  // Initial load.
+  RunTransactionTest(cache.http_cache(), transaction);
+
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+  EXPECT_EQ(0, cache.disk_cache()->open_count());
+  EXPECT_EQ(1, cache.disk_cache()->create_count());
+
+  // Two concurrent requests, one read-only.
+  MockHttpRequest request1(transaction);
+  request1.load_flags = LOAD_SKIP_CACHE_VALIDATION | LOAD_ONLY_FROM_CACHE;
+  TestCompletionCallback callback1;
+
+  MockHttpRequest request2(transaction);
+  TestCompletionCallback callback2;
+
+  auto transact1 = cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+  ASSERT_TRUE(transact1);
+  int rv1 =
+      transact1->Start(&request1, callback1.callback(), NetLogWithSource());
+  ASSERT_EQ(rv1, ERR_IO_PENDING);
+
+  auto transact2 = cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+  ASSERT_TRUE(transact2);
+  int rv2 =
+      transact2->Start(&request2, callback2.callback(), NetLogWithSource());
+  ASSERT_EQ(rv2, ERR_IO_PENDING);
+
+  EXPECT_EQ(OK, callback1.WaitForResult());
+  EXPECT_EQ(OK, callback2.WaitForResult());
+
+  ReadAndVerifyTransaction(transact1.get(), transaction);
+  ReadAndVerifyTransaction(transact2.get(), transaction);
+
+  // `transact1` reused, `transact2` didn't.
+  EXPECT_EQ(2, cache.network_layer()->transaction_count());
+  EXPECT_EQ(1, cache.disk_cache()->open_count());
+  EXPECT_EQ(2, cache.disk_cache()->create_count());
 }
 
 // Verify that no-cache resources are stored in cache and fetched from cache
@@ -11138,7 +11188,7 @@ TEST_F(HttpCacheTest, CacheControlNoStore) {
 
 TEST_F(HttpCacheTest, CacheControlNoStore2) {
   // this test is similar to the above test, except that the initial response
-  // is cachable, but when it is validated, no-store is received causing the
+  // is cacheable, but when it is validated, no-store is received causing the
   // cached document to be deleted.
   MockHttpCache cache;
 
@@ -11587,7 +11637,6 @@ TEST_P(HttpCacheTestSplitCacheFeature, SplitCache) {
     case SplitCacheTestCase::kDisabled:
       NOTREACHED();
     case SplitCacheTestCase::kEnabledTripleKeyed:
-    case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
       // The `is_subframe_document_resource` being true is enough to cause a
       // different cache partition to be used.
       break;
@@ -11686,7 +11735,6 @@ TEST_P(HttpCacheTestSplitCacheFeature, GenerateCacheKeyForRequestFailures) {
       is_request_cacheable = true;
       break;
     case SplitCacheTestCase::kEnabledTripleKeyed:
-    case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
       is_request_cacheable = false;
       break;
   }
@@ -11920,55 +11968,6 @@ TEST_F(HttpCacheTest, NonSplitCache) {
   EXPECT_TRUE(response.was_cached);
 }
 
-TEST_F(HttpCacheTest, SkipVaryCheck) {
-  MockHttpCache cache;
-
-  // Write a simple vary transaction to the cache.
-  HttpResponseInfo response;
-  ScopedMockTransaction transaction(kSimpleGET_Transaction);
-  transaction.request_headers = "accept-encoding: gzip\r\n";
-  transaction.response_headers =
-      "Vary: accept-encoding\n"
-      "Cache-Control: max-age=10000\n";
-  RunTransactionTest(cache.http_cache(), transaction);
-
-  // Change the request headers so that the request doesn't match due to vary.
-  // The request should fail.
-  transaction.load_flags = LOAD_ONLY_FROM_CACHE;
-  transaction.request_headers = "accept-encoding: foo\r\n";
-  transaction.start_return_code = ERR_CACHE_MISS;
-  RunTransactionTest(cache.http_cache(), transaction);
-
-  // Change the load flags to ignore vary checks, the request should now hit.
-  transaction.load_flags = LOAD_ONLY_FROM_CACHE | LOAD_SKIP_VARY_CHECK;
-  transaction.start_return_code = OK;
-  RunTransactionTest(cache.http_cache(), transaction);
-}
-
-TEST_F(HttpCacheTest, SkipVaryCheckStar) {
-  MockHttpCache cache;
-
-  // Write a simple vary:* transaction to the cache.
-  HttpResponseInfo response;
-  ScopedMockTransaction transaction(kSimpleGET_Transaction);
-  transaction.request_headers = "accept-encoding: gzip\r\n";
-  transaction.response_headers =
-      "Vary: *\n"
-      "Cache-Control: max-age=10000\n";
-  RunTransactionTest(cache.http_cache(), transaction);
-
-  // The request shouldn't match even with the same request headers due to the
-  // Vary: *. The request should fail.
-  transaction.load_flags = LOAD_ONLY_FROM_CACHE;
-  transaction.start_return_code = ERR_CACHE_MISS;
-  RunTransactionTest(cache.http_cache(), transaction);
-
-  // Change the load flags to ignore vary checks, the request should now hit.
-  transaction.load_flags = LOAD_ONLY_FROM_CACHE | LOAD_SKIP_VARY_CHECK;
-  transaction.start_return_code = OK;
-  RunTransactionTest(cache.http_cache(), transaction);
-}
-
 // Tests that we only return valid entries with LOAD_ONLY_FROM_CACHE
 // transactions unless LOAD_SKIP_CACHE_VALIDATION is set.
 TEST_F(HttpCacheTest, ValidLoadOnlyFromCache) {
@@ -11989,7 +11988,7 @@ TEST_F(HttpCacheTest, ValidLoadOnlyFromCache) {
   transaction.load_flags = LOAD_ONLY_FROM_CACHE | LOAD_SKIP_CACHE_VALIDATION;
   RunTransactionTest(cache.http_cache(), transaction);
 
-  // If the cache entry is checked for validitiy, it should fail.
+  // If the cache entry is checked for validity, it should fail.
   transaction.load_flags = LOAD_ONLY_FROM_CACHE;
   transaction.start_return_code = ERR_CACHE_MISS;
   RunTransactionTest(cache.http_cache(), transaction);
@@ -12221,7 +12220,7 @@ TEST_F(HttpCacheTest, StopCachingSavesEntry) {
   cache.disk_cache()->IsDiskEntryDoomed(request.CacheKey());
 }
 
-// Tests that we handle truncated enries when StopCaching is called.
+// Tests that we handle truncated entries when StopCaching is called.
 TEST_F(HttpCacheTest, StopCachingTruncatedEntry) {
   MockHttpCache cache;
   TestCompletionCallback callback;
@@ -12289,7 +12288,7 @@ class HttpCacheHugeResourceTest
   // depending on the test run configuration.
 
   // Initializes a cache containing a truncated entry containing the first 20
-  // bytes of the reponse body.
+  // bytes of the response body.
   static void SetupTruncatedCacheEntry(MockHttpCache* cache);
 
   // Initializes a cache containing a sparse entry. The first 10 bytes are
@@ -12322,8 +12321,8 @@ void HttpCacheHugeResourceTest::LargeResourceTransactionHandler(
     std::string* response_status,
     std::string* response_headers,
     std::string* response_data) {
-  std::optional<std::string> if_range =
-      request->extra_headers.GetHeader(HttpRequestHeaders::kIfRange);
+  std::optional<std::string_view> if_range =
+      request->extra_headers.GetHeaderView(HttpRequestHeaders::kIfRange);
   if (!if_range) {
     // If there were no range headers in the request, we are going to just
     // return the entire response body.
@@ -12339,8 +12338,8 @@ void HttpCacheHugeResourceTest::LargeResourceTransactionHandler(
   // From this point on, we should be processing a valid byte-range request.
   EXPECT_EQ("\"foo\"", *if_range);
 
-  std::string range_header =
-      request->extra_headers.GetHeader(HttpRequestHeaders::kRange).value();
+  std::string_view range_header =
+      request->extra_headers.GetHeaderView(HttpRequestHeaders::kRange).value();
   std::vector<HttpByteRange> ranges;
 
   EXPECT_TRUE(HttpUtil::ParseRangeHeader(range_header, &ranges));
@@ -12497,8 +12496,9 @@ TEST_P(HttpCacheHugeResourceTest,
 
   int64_t total_bytes_received = 0;
 
-  EXPECT_EQ(kTotalSize,
-            http_transaction->GetResponseInfo()->headers->GetContentLength());
+  EXPECT_EQ(kTotalSize, http_transaction->GetResponseInfo()
+                            ->headers->GetContentLength()
+                            ->InBytes());
   do {
     // This test simulates reading gigabytes of data. Buffer size is set to 10MB
     // to reduce the number of reads and speed up the test.
@@ -14160,6 +14160,189 @@ TEST_F(HttpCacheTest, PrioritizeCachingFlagSetForMainFrameNavigationRequest) {
             HINT_HIGH_PRIORITY);
 }
 
+enum class SplitCacheByCredentials { kDisabled, kEnabled };
+enum class SplitCacheByNIK { kDisabled, kEnabled };
+enum class IsSubframeDocumentResource { kNo, kYes };  // Corresponds to bool.
+enum class IsMainFrameNavigation { kNo, kYes };       // Corresponds to bool.
+enum class IsSharedResource { kNo, kYes };            // Corresponds to bool.
+
+struct GenerateCacheKeyTestParams {
+  // Test case name.
+  std::string_view name;
+
+  // Inputs to GenerateCacheKeyForRequest.
+  std::string_view url;
+  int load_flags = LOAD_NORMAL;
+  IsSubframeDocumentResource is_subframe_document_resource =
+      IsSubframeDocumentResource::kNo;
+  IsMainFrameNavigation is_main_frame_navigation = IsMainFrameNavigation::kNo;
+  std::optional<url::Origin> initiator;
+  IsSharedResource is_shared_resource = IsSharedResource::kNo;
+  std::optional<NetworkIsolationKey> network_isolation_key;
+  int64_t upload_data_identifier = 0;
+
+  // Feature flags.
+  SplitCacheByCredentials split_cache_by_credentials =
+      SplitCacheByCredentials::kDisabled;
+  SplitCacheByNIK split_cache_by_nik = SplitCacheByNIK::kDisabled;
+
+  // Expected cache key.
+  std::optional<std::string> expected_key;
+
+  // Expected cache partition key.
+  std::optional<std::string> expected_partition_key;
+};
+
+class HttpCacheGenerateCacheKeyTest
+    : public ::testing::TestWithParam<GenerateCacheKeyTestParams> {
+ public:
+  HttpCacheGenerateCacheKeyTest() {
+    const GenerateCacheKeyTestParams& param = GetParam();
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    auto enable_or_disable_feature = [&](const base::Feature& feature,
+                                         bool enable) {
+      auto& features = enable ? enabled_features : disabled_features;
+      features.push_back(feature);
+    };
+
+    enable_or_disable_feature(
+        features::kSplitCacheByIncludeCredentials,
+        param.split_cache_by_credentials == SplitCacheByCredentials::kEnabled);
+    enable_or_disable_feature(
+        features::kSplitCacheByNetworkIsolationKey,
+        param.split_cache_by_nik == SplitCacheByNIK::kEnabled);
+
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  static std::pair<std::unique_ptr<UploadDataStream>, HttpRequestInfo>
+  GenerateRequestFromTestParams(const GenerateCacheKeyTestParams& params) {
+    // `upload_data_stream` needs to outlive `request` when used.
+    std::unique_ptr<UploadDataStream> upload_data_stream;
+    HttpRequestInfo request;
+    request.url = GURL(params.url);
+    request.method = "GET";
+    request.load_flags = params.load_flags;
+    if (params.network_isolation_key) {
+      request.network_isolation_key = *params.network_isolation_key;
+      request.network_anonymization_key =
+          NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+              *params.network_isolation_key);
+    }
+    request.is_subframe_document_resource =
+        params.is_subframe_document_resource ==
+        IsSubframeDocumentResource::kYes;
+    request.is_main_frame_navigation =
+        params.is_main_frame_navigation == IsMainFrameNavigation::kYes;
+    request.initiator = params.initiator;
+    request.is_shared_resource =
+        params.is_shared_resource == IsSharedResource::kYes;
+
+    if (params.upload_data_identifier != 0) {
+      upload_data_stream = std::make_unique<ElementsUploadDataStream>(
+          std::vector<std::unique_ptr<UploadElementReader>>(),
+          params.upload_data_identifier);
+      request.upload_data_stream = upload_data_stream.get();
+    }
+    return std::pair(std::move(upload_data_stream), std::move(request));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(HttpCacheGenerateCacheKeyTest, GenerateCacheKeyForRequest) {
+  const GenerateCacheKeyTestParams& params = GetParam();
+  const auto& [upload_data_stream, request] =
+      GenerateRequestFromTestParams(params);
+
+  EXPECT_EQ(params.expected_key,
+            HttpCache::GenerateCacheKeyForRequest(&request));
+}
+
+TEST_P(HttpCacheGenerateCacheKeyTest, GenerateCachePartitionKeyForRequest) {
+  const GenerateCacheKeyTestParams& params = GetParam();
+  const auto& [upload_data_stream, request] =
+      GenerateRequestFromTestParams(params);
+
+  EXPECT_EQ(params.expected_partition_key,
+            HttpCache::GenerateCachePartitionKeyForRequest(request));
+}
+
+const GenerateCacheKeyTestParams kGenerateCacheKeyTestParams[] = {
+    {"NoSplitting", "http://a.com/", LOAD_NORMAL,
+     IsSubframeDocumentResource::kNo, IsMainFrameNavigation::kNo, std::nullopt,
+     IsSharedResource::kNo, std::nullopt, 0, SplitCacheByCredentials::kDisabled,
+     SplitCacheByNIK::kDisabled, "1/0/http://a.com/", "1/0/"},
+    {"NoSplittingWithUploadData", "http://a.com/", LOAD_NORMAL,
+     IsSubframeDocumentResource::kNo, IsMainFrameNavigation::kNo, std::nullopt,
+     IsSharedResource::kNo, std::nullopt, 123,
+     SplitCacheByCredentials::kDisabled, SplitCacheByNIK::kDisabled,
+     "1/123/http://a.com/", "1/123/"},
+    {"SplitByCredentials_NoCookies", "http://a.com/", LOAD_DO_NOT_SAVE_COOKIES,
+     IsSubframeDocumentResource::kNo, IsMainFrameNavigation::kNo, std::nullopt,
+     IsSharedResource::kNo, std::nullopt, 0, SplitCacheByCredentials::kEnabled,
+     SplitCacheByNIK::kDisabled, "0/0/http://a.com/", "0/0/"},
+    {"SplitByCredentials_WithCookies", "http://a.com/", LOAD_NORMAL,
+     IsSubframeDocumentResource::kNo, IsMainFrameNavigation::kNo, std::nullopt,
+     IsSharedResource::kNo, std::nullopt, 0, SplitCacheByCredentials::kEnabled,
+     SplitCacheByNIK::kDisabled, "1/0/http://a.com/", "1/0/"},
+    {"SplitByNIK_Basic", "http://a.com/", LOAD_NORMAL,
+     IsSubframeDocumentResource::kNo, IsMainFrameNavigation::kNo, std::nullopt,
+     IsSharedResource::kNo,
+     NetworkIsolationKey(SchemefulSite(GURL("http://b.com")),
+                         SchemefulSite(GURL("http://c.com"))),
+     0, SplitCacheByCredentials::kDisabled, SplitCacheByNIK::kEnabled,
+     "1/0/_dk_http://b.com http://c.com http://a.com/",
+     "1/0/_dk_http://b.com http://c.com"},
+    {"SplitByNIK_SharedResource", "http://a.com/", LOAD_NORMAL,
+     IsSubframeDocumentResource::kNo, IsMainFrameNavigation::kNo, std::nullopt,
+     IsSharedResource::kYes,
+     NetworkIsolationKey(SchemefulSite(GURL("http://b.com")),
+                         SchemefulSite(GURL("http://c.com"))),
+     0, SplitCacheByCredentials::kDisabled, SplitCacheByNIK::kEnabled,
+     "1/0/http://a.com/", "1/0/"},
+    {"SplitByNIK_TransientNIK", "http://a.com/", LOAD_NORMAL,
+     IsSubframeDocumentResource::kNo, IsMainFrameNavigation::kNo, std::nullopt,
+     IsSharedResource::kNo, NetworkIsolationKey::CreateTransientForTesting(), 0,
+     SplitCacheByCredentials::kDisabled, SplitCacheByNIK::kEnabled,
+     std::nullopt, std::nullopt},
+    {"SplitByNIK_SubframeDocument", "http://a.com/", LOAD_NORMAL,
+     IsSubframeDocumentResource::kYes, IsMainFrameNavigation::kNo, std::nullopt,
+     IsSharedResource::kNo,
+     NetworkIsolationKey(SchemefulSite(GURL("http://b.com")),
+                         SchemefulSite(GURL("http://c.com"))),
+     0, SplitCacheByCredentials::kDisabled, SplitCacheByNIK::kEnabled,
+     "1/0/_dk_s_http://b.com http://c.com http://a.com/",
+     "1/0/_dk_s_http://b.com http://c.com"},
+    {"SplitByCrossSiteNav_SameSite", "http://a.com/", LOAD_NORMAL,
+     IsSubframeDocumentResource::kNo, IsMainFrameNavigation::kYes,
+     url::Origin::Create(GURL("http://b.a.com")), IsSharedResource::kNo,
+     NetworkIsolationKey(SchemefulSite(GURL("http://c.com")),
+                         SchemefulSite(GURL("http://d.com"))),
+     0, SplitCacheByCredentials::kDisabled, SplitCacheByNIK::kEnabled,
+     "1/0/_dk_http://c.com http://d.com http://a.com/",
+     "1/0/_dk_http://c.com http://d.com"},
+    {"SplitByCrossSiteNav_CrossSite", "http://a.com/", LOAD_NORMAL,
+     IsSubframeDocumentResource::kNo, IsMainFrameNavigation::kYes,
+     url::Origin::Create(GURL("http://b.com")), IsSharedResource::kNo,
+     NetworkIsolationKey(SchemefulSite(GURL("http://c.com")),
+                         SchemefulSite(GURL("http://d.com"))),
+     0, SplitCacheByCredentials::kDisabled, SplitCacheByNIK::kEnabled,
+     "1/0/_dk_cn_http://c.com http://d.com http://a.com/",
+     "1/0/_dk_cn_http://c.com http://d.com"},
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HttpCacheGenerateCacheKeyTest,
+    testing::ValuesIn(kGenerateCacheKeyTestParams),
+    [](const testing::TestParamInfo<GenerateCacheKeyTestParams>& info) {
+      return std::string(info.param.name);
+    });
+
 class HttpCacheNoVarySearchTestBase
     : public HttpCacheTest,
       public ::testing::WithParamInterface<bool> {
@@ -14191,6 +14374,11 @@ class HttpCacheNoVarySearchTestBase
     RunUntilIdle();
   }
 
+  enum ETagUsage {
+    kNoEtagHeader,
+    kIncludeETagHeader,
+  };
+
   void SetUp() override { ConstructCache(http_cache_); }
 
   // This can be overloaded by subclasses to construct the cache with different
@@ -14204,10 +14392,12 @@ class HttpCacheNoVarySearchTestBase
   MockDiskCache* mock_disk_cache() { return http_cache_->disk_cache(); }
 
   // Callers can safely modify the return value, except for the `url` field.
-  MockTransaction& CreateMockTransaction(std::string_view query,
-                                         std::string_view no_vary_search,
-                                         int max_age = kMaxAgeOneDay) {
-    auto iterator = CreateData(query, no_vary_search, max_age);
+  MockTransaction& CreateMockTransaction(
+      std::string_view query,
+      std::string_view no_vary_search,
+      int max_age = kMaxAgeOneDay,
+      ETagUsage use_etag = kIncludeETagHeader) {
+    auto iterator = CreateData(query, no_vary_search, max_age, use_etag);
     MockTransaction transaction = kTypicalGET_Transaction;
     transaction.url = iterator->first.possibly_invalid_spec().c_str();
     transaction.response_headers = iterator->second.c_str();
@@ -14217,9 +14407,10 @@ class HttpCacheNoVarySearchTestBase
 
   void FetchIntoCache(std::string_view query,
                       std::string_view no_vary_search,
-                      int max_age = kMaxAgeOneDay) {
+                      int max_age = kMaxAgeOneDay,
+                      ETagUsage use_etag = kIncludeETagHeader) {
     MockTransaction& transaction =
-        CreateMockTransaction(query, no_vary_search, max_age);
+        CreateMockTransaction(query, no_vary_search, max_age, use_etag);
     MockHttpRequest network_request(transaction);
 
     HttpResponseInfo info;
@@ -14236,14 +14427,16 @@ class HttpCacheNoVarySearchTestBase
   std::map<GURL, std::string>::iterator CreateData(
       std::string_view query,
       std::string_view no_vary_search,
-      int max_age) {
+      int max_age,
+      ETagUsage use_etag) {
     GURL url(base::StrCat({kBaseURL, query}));
     std::string no_vary_search_string(no_vary_search);
     std::string response_headers = base::StringPrintf(
-        "ETag: \"foo\"\n"
+        "%s"
         "Cache-Control: max-age=%d\n"
         "No-Vary-Search: %s\n",
-        max_age, no_vary_search_string.c_str());
+        use_etag == kIncludeETagHeader ? "ETag: \"foo\"\n" : "", max_age,
+        no_vary_search_string.c_str());
     auto [data_iterator, data_inserted] =
         mock_transaction_data_.emplace(url, response_headers);
     CHECK(data_inserted)
@@ -14268,6 +14461,15 @@ class HttpCacheNoVarySearchTestBase
 };
 
 using HttpCacheNoVarySearchTest = HttpCacheNoVarySearchTestBase;
+
+constexpr auto split_cache_parameter_name = [](const auto& info) {
+  return info.param ? "NotSplitCache" : "SplitCache";
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HttpCacheNoVarySearchTest,
+                         ::testing::Bool(),
+                         split_cache_parameter_name);
 
 TEST_P(HttpCacheNoVarySearchTest, SimpleSuccess) {
   FetchIntoCache("q=fred&a=1", "params=(\"a\")");
@@ -14411,12 +14613,117 @@ TEST_P(HttpCacheNoVarySearchTest, ModeIsReadButRequiresValidation) {
   expect_fresh_response(*transaction2);
 }
 
+TEST_P(HttpCacheNoVarySearchTest, ExternalHit) {
+  static constexpr std::string_view kNvsQuery = "q=john&a=10";
+
+  FetchIntoCache(kNvsQuery, "params=(\"a\")");
+
+  MockTransaction& transaction =
+      CreateMockTransaction("q=john", "params=(\"a\")");
+
+  MockHttpRequest request(transaction);
+
+  cache()->OnExternalCacheHit(request.url, request.method,
+                              request.network_isolation_key,
+                              (request.load_flags & LOAD_DO_NOT_SAVE_COOKIES));
+
+  ASSERT_OK_AND_ASSIGN(const std::string new_url_cache_key,
+                       HttpCache::GenerateCacheKeyForRequest(&request));
+
+  GURL::Replacements replacements;
+  replacements.SetQueryStr(kNvsQuery);
+  request.url = request.url.ReplaceComponents(replacements);
+  ASSERT_OK_AND_ASSIGN(const std::string nvs_url_cache_key,
+                       HttpCache::GenerateCacheKeyForRequest(&request));
+
+  EXPECT_THAT(mock_disk_cache()->GetExternalCacheHits(),
+              ElementsAre(new_url_cache_key, nvs_url_cache_key));
+}
+
+class HttpCacheNoVarySearchKeepNotSuitableTest
+    : public HttpCacheNoVarySearchTestBase {
+ public:
+  static constexpr int kMaxAgeZero = 0;
+
+  void SetKeepNotSuitable(bool keep) {
+    keep_not_suitable_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kHttpCacheNoVarySearch,
+        {{features::kHttpCacheNoVarySearchKeepNotSuitable.name,
+          base::ToString(keep)}});
+  }
+
+  void InsertStaleNonRevalidatableEntry(std::string_view params) {
+    // Insert a No-Vary-Search entry that will match and is not capable of being
+    // revalidated.
+    FetchIntoCache(params, "params=(\"a\")", kMaxAgeZero, kNoEtagHeader);
+  }
+
+  HttpResponseInfo RunTransactionTestWithMaxAgeZeroNoEtag(
+      std::string_view params,
+      int load_flags) {
+    MockTransaction& transaction =
+        CreateMockTransaction(params, "", kMaxAgeZero, kNoEtagHeader);
+    transaction.load_flags = load_flags;
+    HttpResponseInfo info;
+    RunTransactionTestWithResponseInfo(cache(), transaction, &info);
+    return info;
+  }
+
+ private:
+  base::test::ScopedFeatureList keep_not_suitable_feature_list_;
+};
+
 INSTANTIATE_TEST_SUITE_P(All,
-                         HttpCacheNoVarySearchTest,
+                         HttpCacheNoVarySearchKeepNotSuitableTest,
                          ::testing::Bool(),
-                         [](const auto& info) {
-                           return info.param ? "NotSplitCache" : "SplitCache";
-                         });
+                         split_cache_parameter_name);
+
+// With the default behavior, an in-memory hint that the response is stale and
+// not validatable triggers erasing the entry from the NoVarySearchCache.
+TEST_P(HttpCacheNoVarySearchKeepNotSuitableTest, InMemoryHintTriggersErase) {
+  SetKeepNotSuitable(false);
+
+  InsertStaleNonRevalidatableEntry("q=fred&a=1");
+
+  // The first transaction doesn't permit a stale response. The response has an
+  // empty No-Vary-Search header so it will not result in an entry in the
+  // NoVarySearchCache.
+  const HttpResponseInfo info1 =
+      RunTransactionTestWithMaxAgeZeroNoEtag("q=fred", LOAD_NORMAL);
+  EXPECT_FALSE(info1.was_cached);
+  EXPECT_TRUE(info1.network_accessed);
+
+  // The second transaction permits a stale response, but doesn't get one
+  // because it has already been deleted.
+  HttpResponseInfo info2 = RunTransactionTestWithMaxAgeZeroNoEtag(
+      "q=fred&a=77", LOAD_SKIP_CACHE_VALIDATION);
+  EXPECT_FALSE(info2.was_cached);
+  EXPECT_TRUE(info2.network_accessed);
+}
+
+// This test is almost identical to the previous one, except that the feature
+// parameter is set which changes the behavior to not delete the
+// NoVarySearchCache entry.
+TEST_P(HttpCacheNoVarySearchKeepNotSuitableTest,
+       InMemoryHintDoesNotTriggerErase) {
+  SetKeepNotSuitable(true);
+
+  InsertStaleNonRevalidatableEntry("q=fred&a=1");
+
+  // The first transaction doesn't permit a stale response. The response has an
+  // empty No-Vary-Search header so it will not result in an entry in the
+  // NoVarySearchCache.
+  const HttpResponseInfo info1 =
+      RunTransactionTestWithMaxAgeZeroNoEtag("q=fred", LOAD_NORMAL);
+  EXPECT_FALSE(info1.was_cached);
+  EXPECT_TRUE(info1.network_accessed);
+
+  // The second transaction permits a stale response, and receives one.
+  HttpResponseInfo info2 = RunTransactionTestWithMaxAgeZeroNoEtag(
+      "q=fred&a=77", LOAD_SKIP_CACHE_VALIDATION);
+  EXPECT_TRUE(info2.was_cached);
+  EXPECT_FALSE(info2.network_accessed);
+}
 
 // A GoogleMock action to quit a base::RunLoop. This is not defined using the
 // ACTION_P macro because to be thread-safe QuitClosure() needs to be called
@@ -14456,7 +14763,7 @@ class HttpCacheNoVarySearchMockFileOperationsTest
       load_expectations_ +=
           EXPECT_CALL(*file_operations, Load)
               .WillOnce(DoAll(
-                  Invoke(maybe_block),
+                  maybe_block,
                   Return(base::unexpected(base::File::FILE_ERROR_NOT_FOUND))));
       load_expectations_ += EXPECT_CALL(*file_operations, AtomicSave)
                                 .WillOnce(Return(base::ok()));
@@ -14540,9 +14847,7 @@ class HttpCacheNoVarySearchMockFileOperationsTest
 INSTANTIATE_TEST_SUITE_P(All,
                          HttpCacheNoVarySearchMockFileOperationsTest,
                          ::testing::Bool(),
-                         [](const auto& info) {
-                           return info.param ? "NotSplitCache" : "SplitCache";
-                         });
+                         split_cache_parameter_name);
 
 TEST_P(HttpCacheNoVarySearchMockFileOperationsTest, CacheStorageIsCreated) {
   InitializeBackend();
@@ -14687,6 +14992,148 @@ TEST_P(HttpCacheNoVarySearchMockFileOperationsTest,
   EXPECT_FALSE(info.network_accessed);
   EXPECT_EQ(info.cache_entry_status, HttpResponseInfo::ENTRY_USED);
   EXPECT_EQ(info.headers->response_code(), 200);
+}
+
+// A mock CacheEncryptionDelegate that allows controlling the init result.
+class MockCacheEncryptionDelegate : public net::CacheEncryptionDelegate {
+ public:
+  MockCacheEncryptionDelegate() = default;
+  ~MockCacheEncryptionDelegate() override = default;
+
+  // CacheEncryptionDelegate implementation:
+  void Init(base::OnceCallback<void(net::Error)> callback) override {
+    init_called_ = true;
+    if (init_result_ == net::ERR_IO_PENDING) {
+      pending_callback_ = std::move(callback);
+      return;
+    }
+    std::move(callback).Run(init_result_);
+  }
+
+  bool EncryptData(base::span<const uint8_t> plaintext,
+                   std::vector<uint8_t>* ciphertext) override {
+    return false;
+  }
+  bool DecryptData(base::span<const uint8_t> ciphertext,
+                   std::vector<uint8_t>* plaintext) override {
+    return false;
+  }
+
+  void SetInitResult(net::Error result) { init_result_ = result; }
+
+  void CompleteInit() {
+    CHECK(pending_callback_);
+    std::move(pending_callback_).Run(init_result_);
+  }
+
+  bool init_called() const { return init_called_; }
+
+ private:
+  bool init_called_ = false;
+  net::Error init_result_ = net::OK;
+  base::OnceCallback<void(net::Error)> pending_callback_;
+};
+
+// A backend factory that creates a disk cache and injects a mock
+// CacheEncryptionDelegate.
+class TestCacheBackendFactoryWithEncryption
+    : public net::HttpCache::BackendFactory {
+ public:
+  TestCacheBackendFactoryWithEncryption(CacheEncryptionDelegate* delegate,
+                                        const base::FilePath& path)
+      : delegate_(delegate), path_(path) {}
+
+  ~TestCacheBackendFactoryWithEncryption() override = default;
+
+  disk_cache::BackendResult CreateBackend(
+      NetLog* net_log,
+      base::OnceCallback<void(disk_cache::BackendResult)> callback) override {
+    return disk_cache::CreateCacheBackend(
+        DISK_CACHE, CACHE_BACKEND_DEFAULT,
+        /*file_operations=*/nullptr, path_, 1024 * 1024,
+        disk_cache::ResetHandling::kNeverReset, net_log, delegate_,
+        std::move(callback));
+  }
+
+ private:
+  raw_ptr<CacheEncryptionDelegate> delegate_;
+  const base::FilePath path_;
+};
+
+TEST_F(HttpCacheTest, EncryptionDelegateInitSuccess) {
+  MockCacheEncryptionDelegate mock_delegate;
+  mock_delegate.SetInitResult(net::OK);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  MockHttpCache cache(
+      std::make_unique<TestCacheBackendFactoryWithEncryption>(
+          &mock_delegate, temp_dir.GetPath()));
+
+  // Create a transaction to trigger cache creation.
+  MockHttpRequest request(kSimpleGET_Transaction);
+  TestCompletionCallback callback;
+  std::unique_ptr<HttpTransaction> transaction =
+      cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+  ASSERT_TRUE(transaction);
+
+  int rv =
+      transaction->Start(&request, callback.callback(), NetLogWithSource());
+  // The transaction start should be pending because backend creation is async.
+  EXPECT_THAT(rv, IsError(net::ERR_IO_PENDING));
+
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+
+  // The delegate's Init should have been called.
+  EXPECT_TRUE(mock_delegate.init_called());
+
+  // The transaction should now continue, resulting in a cache miss.
+  const HttpResponseInfo* response_info = transaction->GetResponseInfo();
+  ASSERT_TRUE(response_info);
+  EXPECT_FALSE(response_info->was_cached);
+
+  ReadAndVerifyTransaction(transaction.get(), kSimpleGET_Transaction);
+  transaction.reset();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(HttpCacheTest, EncryptionDelegateInitFailure) {
+  MockCacheEncryptionDelegate mock_delegate;
+  mock_delegate.SetInitResult(net::ERR_IO_PENDING);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  MockHttpCache cache(std::make_unique<TestCacheBackendFactoryWithEncryption>(
+      &mock_delegate, temp_dir.GetPath()));
+
+  // Create a transaction to trigger cache creation. The transaction should fail
+  // because the backend creation fails.
+  MockHttpRequest request(kSimpleGET_Transaction);
+  TestCompletionCallback callback;
+  std::unique_ptr<HttpTransaction> transaction =
+      cache.http_cache()->CreateTransaction(DEFAULT_PRIORITY);
+  ASSERT_TRUE(transaction);
+
+  int rv =
+      transaction->Start(&request, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(rv, IsError(net::ERR_IO_PENDING));
+
+  // Now complete the backend creation with failure.
+  mock_delegate.SetInitResult(net::ERR_FAILED);
+  mock_delegate.CompleteInit();
+
+  // The backend creation will fail, so the transaction will be served from the
+  // network.
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  EXPECT_TRUE(mock_delegate.init_called());
+
+  const HttpResponseInfo* response_info = transaction->GetResponseInfo();
+  ASSERT_TRUE(response_info);
+  EXPECT_FALSE(response_info->was_cached);
+
+  ReadAndVerifyTransaction(transaction.get(), kSimpleGET_Transaction);
+  transaction.reset();
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace net

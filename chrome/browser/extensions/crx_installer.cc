@@ -23,18 +23,13 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/blocklist.h"
-#include "chrome/browser/extensions/blocklist_check.h"
+#include "chrome/browser/extensions/blocklist_factory.h"
 #include "chrome/browser/extensions/convert_user_script.h"
 #include "chrome/browser/extensions/extension_assets_manager.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
-#include "chrome/browser/extensions/install_approval.h"
-#include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
-#include "chrome/browser/extensions/load_error_reporter.h"
-#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -48,6 +43,8 @@
 #include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/blocklist.h"
+#include "extensions/browser/blocklist_check.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
@@ -56,11 +53,16 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/install/crx_install_error.h"
+#include "extensions/browser/install_approval.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/install_stage.h"
+#include "extensions/browser/install_tracker.h"
+#include "extensions/browser/load_error_reporter.h"
+#include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/policy_check.h"
 #include "extensions/browser/preload_check_group.h"
 #include "extensions/browser/requirements_checker.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
@@ -82,6 +84,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "components/user_manager/user_manager.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::BrowserThread;
 
@@ -168,8 +172,6 @@ CrxInstaller::CrxInstaller(content::BrowserContext* context,
 
   if (approval->bypassed_safebrowsing_friction)
     install_flags_ = kInstallFlagBypassedSafeBrowsingFriction;
-
-  show_dialog_callback_ = approval->show_dialog_callback;
 }
 
 CrxInstaller::~CrxInstaller() {
@@ -192,10 +194,9 @@ void CrxInstaller::InstallCrx(const base::FilePath& source_file) {
 }
 
 void CrxInstaller::InstallCrxFile(const CRXFileInfo& source_file) {
-  if (!profile_ || browser_terminating_) {
+  if (!AcquireKeepAlive()) {
     return;
   }
-
   NotifyCrxInstallBegin();
 
   source_file_ = source_file.path;
@@ -214,10 +215,9 @@ void CrxInstaller::InstallCrxFile(const CRXFileInfo& source_file) {
 void CrxInstaller::InstallUnpackedCrx(const ExtensionId& extension_id,
                                       const std::string& public_key,
                                       const base::FilePath& unpacked_dir) {
-  if (!profile_ || browser_terminating_) {
+  if (!AcquireKeepAlive()) {
     return;
   }
-
   NotifyCrxInstallBegin();
 
   source_file_ = unpacked_dir;
@@ -238,6 +238,9 @@ void CrxInstaller::InstallUserScript(const base::FilePath& source_file,
                                      const GURL& download_url) {
   DCHECK(!download_url.is_empty());
 
+  if (!AcquireKeepAlive()) {
+    return;
+  }
   NotifyCrxInstallBegin();
 
   source_file_ = source_file;
@@ -363,7 +366,7 @@ std::optional<CrxInstallError> CrxInstaller::AllowInstall(
       valid = *expected_manifest_ == *original_manifest_;
       if (!valid &&
           expected_manifest_check_level_ == ManifestCheckLevel::kLoose) {
-        std::string error;
+        std::u16string error;
         scoped_refptr<Extension> dummy_extension = Extension::Create(
             base::FilePath(), install_source_, *expected_manifest_,
             creation_flags_, extension->id(), &error);
@@ -446,7 +449,7 @@ std::optional<CrxInstallError> CrxInstaller::AllowInstall(
       // host (or a subdomain of the host) the download happened from.  There's
       // no way for us to verify that the app controls any other hosts.
       URLPattern pattern(UserScript::ValidUserScriptSchemes());
-      pattern.SetHost(download_url_.host());
+      pattern.SetHost(download_url_.GetHost());
       pattern.SetMatchSubdomains(true);
 
       const URLPatternSet& patterns = extension_->web_extent();
@@ -673,8 +676,8 @@ void CrxInstaller::CheckInstall() {
 
   policy_check_ = std::make_unique<PolicyCheck>(profile_, extension());
   requirements_check_ = std::make_unique<RequirementsChecker>(extension());
-  blocklist_check_ =
-      std::make_unique<BlocklistCheck>(Blocklist::Get(profile_), extension_);
+  blocklist_check_ = std::make_unique<BlocklistCheck>(
+      BlocklistFactory::GetForBrowserContext(profile_), extension_);
 
   check_group_->AddCheck(policy_check_.get());
   check_group_->AddCheck(requirements_check_.get());
@@ -802,7 +805,7 @@ void CrxInstaller::ConfirmInstall() {
     AddRef();  // Balanced in OnInstallPromptDone().
     client_->ShowDialog(
         base::BindOnce(&CrxInstaller::OnInstallPromptDone, this), extension(),
-        nullptr, show_dialog_callback_);
+        nullptr, ExtensionInstallPrompt::GetDefaultShowDialogCallback());
   } else {
     UpdateCreationFlagsAndCompleteInstall(kDontWithholdPermissions);
   }
@@ -946,10 +949,8 @@ void CrxInstaller::ReloadExtensionAfterInstall(
   // just moved the extension.
   // TODO(aa): All paths to resources inside extensions should be created
   // lazily and based on the Extension's root path at that moment.
-  // TODO(rdevlin.cronin): Continue removing std::string errors and replacing
-  // with std::u16string
   ExtensionId extension_id = extension()->id();
-  std::string error;
+  std::u16string error;
   extension_ = file_util::LoadExtension(
       version_dir, install_source_,
       // Note: modified by UpdateCreationFlagsAndCompleteInstall.
@@ -959,9 +960,9 @@ void CrxInstaller::ReloadExtensionAfterInstall(
     ReportSuccessFromSharedFileThread();
   } else {
     LOG(ERROR) << error << " " << extension_id << " " << download_url_;
-    ReportFailureFromSharedFileThread(CrxInstallError(
-        CrxInstallErrorType::OTHER, CrxInstallErrorDetail::CANT_LOAD_EXTENSION,
-        base::UTF8ToUTF16(error)));
+    ReportFailureFromSharedFileThread(
+        CrxInstallError(CrxInstallErrorType::OTHER,
+                        CrxInstallErrorDetail::CANT_LOAD_EXTENSION, error));
   }
 }
 
@@ -1080,10 +1081,25 @@ void CrxInstaller::ReportInstallationStage(InstallationStage stage) {
   install_stage_tracker->ReportCRXInstallationStage(expected_id_, stage);
 }
 
-void CrxInstaller::NotifyCrxInstallBegin() {
-  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+bool CrxInstaller::AcquireKeepAlive() {
+  if (!profile_ || browser_terminating_) {
+    return false;
+  }
+
+  profile_keep_alive_ = ScopedProfileKeepAlive::TryAcquire(
       profile_, ProfileKeepAliveOrigin::kCrxInstaller);
 
+  if (!profile_keep_alive_) {
+    RunInstallerCallbacks(
+        CrxInstallError(CrxInstallErrorType::OTHER,
+                        CrxInstallErrorDetail::PROFILE_SHUTTING_DOWN,
+                        u"Profile is shutting down."));
+    return false;
+  }
+  return true;
+}
+
+void CrxInstaller::NotifyCrxInstallBegin() {
   InstallTrackerFactory::GetForBrowserContext(profile())->OnBeginCrxInstall(
       expected_id_);
 }

@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UI_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UI_H_
 
+#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace content {
 class WebContents;
@@ -19,47 +21,78 @@ class SidePanelUI {
  public:
   // Open side panel with entry_id.
   virtual void Show(SidePanelEntryId entry_id,
-                    std::optional<SidePanelOpenTrigger> open_trigger) = 0;
-  void Show(SidePanelEntryId entry_id) { Show(entry_id, std::nullopt); }
+                    std::optional<SidePanelOpenTrigger> open_trigger,
+                    bool suppress_animations) = 0;
+  void Show(SidePanelEntryId entry_id,
+            std::optional<SidePanelOpenTrigger> open_trigger) {
+    Show(entry_id, open_trigger, /*suppress_animations=*/false);
+  }
+  void Show(SidePanelEntryId entry_id) {
+    Show(entry_id, std::nullopt, /*suppress_animations=*/false);
+  }
 
   // Open side panel with entry key.
   virtual void Show(SidePanelEntryKey entry_key,
-                    std::optional<SidePanelOpenTrigger> open_trigger) = 0;
-  void Show(SidePanelEntryKey entry_key) { Show(entry_key, std::nullopt); }
+                    std::optional<SidePanelOpenTrigger> open_trigger,
+                    bool suppress_animations) = 0;
+  void Show(SidePanelEntryKey entry_key,
+            std::optional<SidePanelOpenTrigger> open_trigger) {
+    Show(entry_key, open_trigger, /*suppress_animations=*/false);
+  }
+  void Show(SidePanelEntryKey entry_key) {
+    Show(entry_key, std::nullopt, /*suppress_animations=*/false);
+  }
+
+  // Open side panel with entry key, animating from
+  // starting_bounds_in_browser_coordinates to its final open position.
+  virtual void ShowFrom(SidePanelEntryKey entry_key,
+                        gfx::Rect starting_bounds_in_browser_coordinates) = 0;
 
   // Close the side panel.
-  virtual void Close() = 0;
+  virtual void Close(SidePanelEntry::PanelType panel_type,
+                     SidePanelEntryHideReason hide_reason,
+                     bool suppress_animations) = 0;
+  void Close(SidePanelEntry::PanelType panel_type) {
+    Close(panel_type, SidePanelEntryHideReason::kSidePanelClosed, false);
+  }
 
   // Open the side panel for a key. If side panel for the key is already opened
   // then close the side panel.
   virtual void Toggle(SidePanelEntryKey key,
                       SidePanelOpenTrigger open_trigger) = 0;
 
-  // Opens the current side panel contents in a new tab. This is called by the
-  // header button, when it's visible.
-  virtual void OpenInNewTab() = 0;
-
-  // Toggle the pin state. This is called by the header button, when it's
-  // visible.
-  virtual void UpdatePinState() = 0;
-
   // Get the current entry id if the side panel is open.
-  virtual std::optional<SidePanelEntryId> GetCurrentEntryId() const = 0;
+  virtual std::optional<SidePanelEntryId> GetCurrentEntryId(
+      SidePanelEntry::PanelType panel_type) const = 0;
 
   // Returns the current entries default width. Returns nullopt if this value is
   // not set or if the side panel is closed.
-  virtual int GetCurrentEntryDefaultContentWidth() const = 0;
+  virtual int GetCurrentEntryDefaultContentWidth(
+      SidePanelEntry::PanelType type) const = 0;
 
   // Return whether any entry is being shown in the side panel.
   // Note: this returns false if `entry` is current loading but not actually
   // shown.
-  virtual bool IsSidePanelShowing() const = 0;
+  virtual bool IsSidePanelShowing(SidePanelEntry::PanelType type) const = 0;
 
   // Returns whether `entry_key` is currently being shown in the side panel.
   // Note: this returns false if `entry` is current loading but not actually
   // shown.
   virtual bool IsSidePanelEntryShowing(
       const SidePanelEntryKey& entry_key) const = 0;
+
+  // Similar to IsSidePanelEntryShowing, but restricts to either the tab-scoped
+  // or window-scoped registry.
+  virtual bool IsSidePanelEntryShowing(const SidePanelEntry::Key& entry_key,
+                                       bool for_tab) const = 0;
+
+  // Register for this callback to detect when the side panel opens or changes.
+  // If the open is animated, this will be called at the beginning of the
+  // animation.
+  using ShownCallback = base::RepeatingCallback<void()>;
+  virtual base::CallbackListSubscription RegisterSidePanelShown(
+      SidePanelEntry::PanelType type,
+      ShownCallback callback) = 0;
 
   // Returns the content view for the given entry. Returns nullptr if the entry
   // does not exist.

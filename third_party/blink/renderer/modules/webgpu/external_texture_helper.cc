@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/modules/webgpu/external_texture_helper.h"
 
+#include "base/debug/crash_logging.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_transformation.h"
+#include "media/base/video_util.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
@@ -18,13 +20,44 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
-#include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/skia/include/effects/SkColorMatrix.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 
 namespace blink {
 namespace {
+
+bool DrawVideoFrameIntoResourceProvider(
+    scoped_refptr<media::VideoFrame> frame,
+    CanvasResourceProviderSharedImage* resource_provider,
+    viz::RasterContextProvider* raster_context_provider,
+    media::PaintCanvasVideoRenderer* video_renderer) {
+  DCHECK(frame);
+  DCHECK(resource_provider);
+
+  if (frame->HasSharedImage()) {
+    if (!raster_context_provider) {
+      DLOG(ERROR) << "Unable to process a texture backed VideoFrame w/o a "
+                     "RasterContextProvider.";
+      return false;  // Unable to get/create a shared main thread context.
+    }
+  }
+
+  cc::PaintFlags media_flags;
+  media_flags.setAlphaf(1.0f);
+  media_flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
+  media_flags.setBlendMode(SkBlendMode::kSrc);
+
+  media::PaintCanvasVideoRenderer::PaintParams params;
+  params.dest_rect = gfx::RectF(resource_provider->Size());
+  resource_provider->ExternalCanvasDrawHelper(
+      [&](MemoryManagedPaintCanvas& canvas) {
+        video_renderer->Paint(frame.get(), &canvas, media_flags, params,
+                              raster_context_provider);
+      });
+  return true;
+}
+
 wgpu::ExternalTextureRotation FromVideoRotation(media::VideoRotation rotation) {
   switch (rotation) {
     case media::VIDEO_ROTATION_0:
@@ -303,11 +336,24 @@ ExternalTexture CreateExternalTexture(
     external_texture_desc.plane0 = plane0;
     external_texture_desc.plane1 = plane1;
 
-    // Set color space transformation metas for ExternalTexture
-    std::array<float, 12> yuvToRgbMatrix =
-        GetYUVToRGBMatrix(src_color_space, media_video_frame->BitDepth());
-    external_texture_desc.yuvToRgbConversionMatrix = yuvToRgbMatrix.data();
-
+    std::array<float, 12> yuvToRgbMatrix;
+    auto set_matrix = [&]() {
+      yuvToRgbMatrix =
+          GetYUVToRGBMatrix(src_color_space, media_video_frame->BitDepth());
+      external_texture_desc.yuvToRgbConversionMatrix = yuvToRgbMatrix.data();
+    };
+    // `GetYUVToRGBMatrix` eventually calls into `ToSkYUVColorSpace` which
+    // generates DumpWithoutCrashing for RGB matrix.
+    if (src_color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::RGB) {
+      // Log debug label for a shared image created with YUV color space with an
+      // RGB matrix.
+      SCOPED_CRASH_KEY_STRING32(
+          "ExternalTextureHelper", "SIDebugLabel",
+          media_video_frame->shared_image()->debug_label());
+      set_matrix();
+    } else {
+      set_matrix();
+    }
     // Decide whether color space conversion could be skipped.
     external_texture_desc.doYuvToRgbConversionOnly =
         IsSameGamutAndGamma(src_color_space, dst_color_space);
@@ -380,16 +426,22 @@ ExternalTexture CreateExternalTexture(
     resource_color_space = media_video_frame->CompatRGBColorSpace();
   }
 
+  // High bit depth formats should also use F16, but do not yet.
+  auto sk_color_type = kN32_SkColorType;
+  if (media_video_frame->format() == media::PIXEL_FORMAT_RGBAF16) {
+    sk_color_type = kRGBA_F16_SkColorType;
+  }
+
   std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource =
       device->GetDawnControlClient()->GetOrCreateCanvasResource(
-          SkImageInfo::MakeN32Premul(natural_size.width(),
-                                     natural_size.height(),
-                                     resource_color_space.ToSkColorSpace()));
+          SkImageInfo::Make(natural_size.width(), natural_size.height(),
+                            sk_color_type, kPremul_SkAlphaType,
+                            resource_color_space.ToSkColorSpace()));
   if (!recyclable_canvas_resource) {
     return external_texture;
   }
 
-  CanvasResourceProvider* resource_provider =
+  CanvasResourceProviderSharedImage* resource_provider =
       recyclable_canvas_resource->resource_provider();
   DCHECK(resource_provider);
 
@@ -400,7 +452,7 @@ ExternalTexture CreateExternalTexture(
     gpu::SyncToken sync_token;
     auto client_si =
         resource_provider->GetBackingClientSharedImageForExternalWrite(
-            &sync_token, gpu::SharedImageUsageSet());
+            gpu::SharedImageUsageSet(), sync_token);
 
     // The returned sync token is from the SharedGpuContext.
     sync_token = video_renderer->CopyVideoFrameToSharedImage(
@@ -408,12 +460,10 @@ ExternalTexture CreateExternalTexture(
         sync_token, /*use_visible_rect=*/true);
     resource_provider->EndExternalWrite(sync_token);
   } else {
-    const gfx::Rect dest_rect = gfx::Rect(media_video_frame->natural_size());
     // Delegate video transformation to Dawn.
     if (!DrawVideoFrameIntoResourceProvider(
             std::move(media_video_frame), resource_provider,
-            raster_context_provider, dest_rect, video_renderer,
-            /* ignore_video_transformation */ true)) {
+            raster_context_provider, video_renderer)) {
       return {};
     }
   }

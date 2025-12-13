@@ -79,19 +79,19 @@ class CORE_EXPORT URLPattern : public ScriptWrappable {
              const Options& options,
              base::PassKey<URLPattern> key);
 
-  bool test(ScriptState* script_state,
+  bool test(v8::Isolate*,
             const V8URLPatternInput* input,
             const String& base_url,
             ExceptionState& exception_state) const;
-  bool test(ScriptState* script_state,
+  bool test(v8::Isolate*,
             const V8URLPatternInput* input,
             ExceptionState& exception_state) const;
 
-  URLPatternResult* exec(ScriptState* script_state,
+  URLPatternResult* exec(v8::Isolate*,
                          const V8URLPatternInput* input,
                          const String& base_url,
                          ExceptionState& exception_state) const;
-  URLPatternResult* exec(ScriptState* script_state,
+  URLPatternResult* exec(v8::Isolate*,
                          const V8URLPatternInput* input,
                          ExceptionState& exception_state) const;
 
@@ -128,7 +128,7 @@ class CORE_EXPORT URLPattern : public ScriptWrappable {
   // A utility function to determine if a given `input` matches the pattern or
   // not.  Returns `true` if there is a match and `false` otherwise.  If
   // `result` is not nullptr then the URLPatternResult contents will be filled.
-  bool Match(ScriptState* script_state,
+  bool Match(v8::Isolate*,
              const V8URLPatternInput* input,
              const String& base_url,
              URLPatternResult* result,

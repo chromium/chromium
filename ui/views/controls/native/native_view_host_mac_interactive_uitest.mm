@@ -12,7 +12,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/events/test/cocoa_test_event_utils.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/native/native_view_host_mac.h"
 #include "ui/views/controls/native/native_view_host_test_base.h"

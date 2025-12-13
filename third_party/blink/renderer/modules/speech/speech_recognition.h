@@ -111,7 +111,7 @@ class MODULES_EXPORT SpeechRecognition final
 
   // media::mojom::blink::SpeechRecognitionSessionClient
   void ResultRetrieved(
-      WTF::Vector<media::mojom::blink::WebSpeechRecognitionResultPtr> results)
+      Vector<media::mojom::blink::WebSpeechRecognitionResultPtr> results)
       override;
   void ErrorOccurred(
       media::mojom::blink::SpeechRecognitionErrorPtr error) override;

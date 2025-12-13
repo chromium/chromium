@@ -17,7 +17,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/test/embedded_test_server/aw_net_jni_headers/AwEmbeddedTestServerImpl_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using net::test_server::BasicHttpResponse;
@@ -325,7 +324,7 @@ std::unique_ptr<HttpResponse> HandleCriticalClientHintsHeaderResponse(
 }  // namespace
 
 // static
-ScopedJavaLocalRef<jlongArray> JNI_AwEmbeddedTestServerImpl_GetHandlers(
+static ScopedJavaLocalRef<jlongArray> JNI_AwEmbeddedTestServerImpl_GetHandlers(
     JNIEnv* env) {
   std::vector<int64_t> handlers = {
       reinterpret_cast<int64_t>(&HandleClickRedirect),
@@ -340,3 +339,5 @@ ScopedJavaLocalRef<jlongArray> JNI_AwEmbeddedTestServerImpl_GetHandlers(
 
 }  // namespace test
 }  // namespace android_webview
+
+DEFINE_JNI(AwEmbeddedTestServerImpl)

@@ -12,12 +12,11 @@ reverse lookup against the FFmpeg source tree to find the corresponding C or
 assembly file.
 
 Running build_ffmpeg.py on each supported platform for all architectures is
-required prior to running this script.  See build_ffmpeg.py for details as well
-as the documentation at:
+required prior to running this script.
 
-https://docs.google.com/document/d/14bqZ9NISsyEO3948wehhJ7wc9deTIz-yHUhF1MQp7Po/edit
 
-Once you've built all platforms and architectures you may run this script.
+This script is usually executed indirectly by the Robosushi tool (see related
+documentation at ./robosushi.md).
 """
 
 __author__ = 'scherkus@chromium.org (Andrew Scherkus)'
@@ -38,8 +37,7 @@ import subprocess
 import sys
 from robo_lib import config
 
-
-COPYRIGHT = """# Copyright %d The Chromium Authors. All rights reserved.
+COPYRIGHT = """# Copyright %d The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -54,6 +52,10 @@ import("ffmpeg_options.gni")
 ffmpeg_c_sources = []
 ffmpeg_gas_sources = []
 ffmpeg_asm_sources = []
+ffmpeg_asm_include_dirs = []
+ffmpeg_nasm_include_dirs = []
+ffmpeg_c_deps = []
+ffmpeg_asm_deps = []
 
 use_linux_config = is_linux || is_chromeos || is_fuchsia
 
@@ -78,7 +80,8 @@ GN_SOURCE_END = """]
 _Attrs = ('ARCHITECTURE', 'TARGET', 'PLATFORM')
 Attr = collections.namedtuple('Attr', _Attrs)(*_Attrs)
 SUPPORT_MATRIX = {
-    Attr.ARCHITECTURE: set(['ia32', 'x64', 'arm', 'arm64', 'arm-neon', 'riscv64']),
+    Attr.ARCHITECTURE:
+    set(['ia32', 'x64', 'arm', 'arm64', 'arm-neon', 'riscv64']),
     Attr.TARGET: set(['Chromium', 'Chrome']),
     Attr.PLATFORM: set(['android', 'linux', 'win', 'mac'])
 }
@@ -254,9 +257,9 @@ SourceListCondition = collections.namedtuple(
 
 
 class SourceSet(object):
-    """A SourceSet represents a set of source files that are built on each of the
-  given set of SourceListConditions.
-  """
+    """A SourceSet represents a set of source files that are built on each of
+    the given set of SourceListConditions.
+    """
 
     def __init__(self, sources, conditions):
         """Creates a SourceSet.
@@ -280,8 +283,8 @@ class SourceSet(object):
         return hash((frozenset(self.sources), frozenset(self.conditions)))
 
     def Intersect(self, other):
-        """Return a new SourceSet containing the set of source files common to both
-    this and the other SourceSet.
+        """Return a new SourceSet containing the set of source files common to
+        both this and the other SourceSet.
 
     The resulting SourceSet represents the union of the architectures and
     targets of this and the other SourceSet.
@@ -290,8 +293,8 @@ class SourceSet(object):
                          self.conditions | other.conditions)
 
     def Difference(self, other):
-        """Return a new SourceSet containing the set of source files not present in
-    the other SourceSet.
+        """Return a new SourceSet containing the set of source files not present
+        in the other SourceSet.
 
     The resulting SourceSet represents the intersection of the
     SourceListConditions from this and the other SourceSet.
@@ -301,13 +304,13 @@ class SourceSet(object):
 
     def IsEmpty(self):
         """An empty SourceSet is defined as containing no source files or no
-    conditions (i.e., a set of files that aren't built on anywhere).
-    """
+        conditions (i.e., a set of files that aren't built on anywhere).
+        """
         return (len(self.sources) == 0 or len(self.conditions) == 0)
 
     def GenerateGnStanza(self):
         """Generates a gn conditional stanza representing this source set.
-    """
+        """
 
         conjunctions = []
         for condition in self.conditions:
@@ -318,7 +321,8 @@ class SourceSet(object):
             elif condition.ARCHITECTURE == 'ia32':
                 arch_condition = 'current_cpu == "x86"'
             elif condition.ARCHITECTURE == 'arm64':
-                arch_condition = '(current_cpu == "arm64" || current_cpu == "arm64e")'
+                arch_condition = (
+                    '(current_cpu == "arm64" || current_cpu == "arm64e")')
             else:
                 arch_condition = 'current_cpu == "%s"' % condition.ARCHITECTURE
 
@@ -330,8 +334,8 @@ class SourceSet(object):
                 target_condition = 'ffmpeg_branding == "%s"' % condition.TARGET
 
             # Platform conditions look like: is_mac .
-            # Linux configuration is also used on Fuchsia, for linux config we use
-            # |use_linux_config| flag.
+            # Linux configuration is also used on Fuchsia, for linux config we
+            # use |use_linux_config| flag.
             if condition.PLATFORM == '*':
                 platform_condition = None
             elif condition.PLATFORM == 'linux':
@@ -430,8 +434,8 @@ def CreatePairwiseDisjointSets(sets):
 
             # Calculate the resulting differences for this pair of sets.
             #
-            # If the differences are an empty set, remove them from the list of sets,
-            # otherwise update the set itself.
+            # If the differences are an empty set, remove them from the list of
+            # sets, otherwise update the set itself.
             for p in pair:
                 i = disjoint_sets.index(p)
                 difference = p.Difference(intersection)
@@ -440,7 +444,8 @@ def CreatePairwiseDisjointSets(sets):
                 else:
                     disjoint_sets[i] = difference
 
-            # Restart the calculation since the list of disjoint sets has changed.
+            # Restart the calculation since the list of disjoint sets has
+            # changed.
             break
 
     return disjoint_sets
@@ -488,8 +493,8 @@ def GetAttributeValuesRange(attribute, condition):
         values = set([getattr(condition, attribute)])
 
     # Filter out impossible values given condition platform. This is admittedly
-    # fragile to changes in our supported platforms. Fortunately, these platforms
-    # don't change often. Refactor if we run into trouble.
+    # fragile to changes in our supported platforms. Fortunately, these
+    # platforms don't change often. Refactor if we run into trouble.
     platform = condition.PLATFORM
     if attribute == Attr.ARCHITECTURE and platform == 'win':
         values.intersection_update(['ia32', 'x64', 'arm64'])
@@ -546,9 +551,9 @@ def ReduceConditionalLogic(source_set):
                 # This wildcard won't work, restore the original value.
                 condition_dict[attribute] = original_attribute_value
 
-    # Finally, find the most efficient reductions. Do a pairwise comparison of all
-    # reductions to de-dup and remove those that are covered by more inclusive
-    # conditions.
+    # Finally, find the most efficient reductions. Do a pairwise comparison of
+    # all reductions to de-dup and remove those that are covered by more
+    # inclusive conditions.
     did_work = True
     while did_work:
         did_work = False
@@ -580,7 +585,8 @@ def ParseOptions():
     # The test wrapper doesn't appreciate the status messages.
     ffmpeg_home = ffmpeg_src = ''
     try:
-        # This may fail on CQ bots, but we don't care since its just for defaults.
+        # This may fail on CQ bots, but we don't care since its just for
+        # defaults.
         ROBO_CONFIGURATION = config.RoboConfiguration(quiet=True)
         ffmpeg_src = ROBO_CONFIGURATION.ffmpeg_src()
         ffmpeg_home = ROBO_CONFIGURATION.ffmpeg_home()
@@ -640,9 +646,30 @@ def SourceSetCompare(x, y):
             int(hashlib.md5(str(y).encode('utf-8')).hexdigest(), 16))
 
 
-def WriteGn(fd, disjoint_sets):
+def WriteGn(fd, disjoint_sets, asm_dirs, replaced_sources):
     fd.write(COPYRIGHT)
     fd.write(GN_HEADER)
+
+    fd.write("ffmpeg_asm_deps += [\n")
+    for dep in replaced_sources:
+        if IsNasmFile(dep):
+            fd.write(f'  "{dep}",\n')
+    fd.write("]\n")
+
+    fd.write("ffmpeg_c_deps += [\n")
+    for dep in replaced_sources:
+        if not IsNasmFile(dep):
+            fd.write(f'  "{dep}",\n')
+    fd.write("]\n\n")
+
+    # Add all directories containing .asm files to the include search path.
+    # This allows nasm to find includes that are in the same directory as the
+    # source file, even when the source file is an autorename file in a
+    # different location (or just to make includes work in general).
+    fd.write("ffmpeg_asm_include_dirs += [\n")
+    for directory in asm_dirs:
+        fd.write(f'  "//third_party/ffmpeg/{directory}",\n')
+    fd.write("]\n\n")
 
     # Generate conditional stanza for each disjoint source set.
     for s in reversed(disjoint_sets):
@@ -654,6 +681,7 @@ IGNORED_INCLUDE_FILES = [
     # Chromium generated files
     'config.h',
     'config_components.h',
+    'config_components.asm',
     os.path.join('libavcodec', 'bsf_list.c'),
     os.path.join('libavcodec', 'codec_list.c'),
     os.path.join('libavcodec', 'parser_list.c'),
@@ -714,11 +742,11 @@ LICENSE_EXCEPTIONS = [
 
 # Regex to find lines matching #include "some_dir\some_file.h".
 # Also works for assembly files that use %include.
-INCLUDE_REGEX = re.compile('^\s*[#%]\s*include\s+"([^"]+)"')
+INCLUDE_REGEX = re.compile(r'^\s*[#%]\s*include\s+"([^"]+)"')
 
 # Regex to find whacky includes that we might be overlooking (e.g. using macros
 # or defines).
-EXOTIC_INCLUDE_REGEX = re.compile('^\s*[#%]\s*include\s+[^"<\s].+')
+EXOTIC_INCLUDE_REGEX = re.compile(r'^\s*[#%]\s*include\s+[^"<\s].+')
 
 # Prefix added to renamed files as part of
 RENAME_PREFIX = 'autorename'
@@ -802,16 +830,17 @@ def GetIncludedSources(file_path, source_dir, include_set, scan_only=False):
             exit('Failed to find file ' + include_file_path + " in " +
                  file_path)
 
-        # At this point we've found the file. Check if its in our ignore list which
-        # means that the list should be updated to no longer mention this file.
+        # At this point we've found the file. Check if its in our ignore list
+        # which means that the list should be updated to no longer mention this
+        # file.
         ignored = False
         if include_file_path in IGNORED_INCLUDE_FILES:
             ignored = True
             print(f'Found {include_file_path} in IGNORED_INCLUDE_FILES. '
                   'Consider updating the list to remove this file.')
 
-        # Also make sure that it's not in our MUST_BE_MISSING list, since it's not
-        # missing anymore.
+        # Also make sure that it's not in our MUST_BE_MISSING list, since it's
+        # not missing anymore.
         if include_file_path in MUST_BE_MISSING_INCLUDE_FILES:
             exit('Found file ' + include_file_path +
                  ' that should be missing!')
@@ -896,17 +925,20 @@ def FixObjectBasenameCollisions(disjoint_sets,
     all_renames = set()
 
     # Set of files that have renames, but no longer collide.
-    old_renames_to_delete = set()
+    to_delete = set()
+    replaced_sources = set()
 
     for source_set in disjoint_sets:
-        # Track needed adjustments to change when we're done with each SourceSet.
+        # Track needed adjustments to change when we're done with each
+        # SourceSet.
         renames = set()
 
         for source_path in sorted(source_set.sources):
             folder, filename = os.path.split(source_path)
             basename, _ = os.path.splitext(filename)
 
-            # Sanity check: source set should not have any renames prior to this step.
+            # Sanity check: source set should not have any renames prior to this
+            # step.
             if RENAME_PREFIX in basename:
                 exit('Found unexpected renamed file in SourceSet: %s' %
                      source_path)
@@ -926,7 +958,7 @@ def FixObjectBasenameCollisions(disjoint_sets,
         for rename in renames:
             if log_renames:
                 print(
-                    f'Fixing basename collision: {rename.old_path} -> {rename.new_path}'
+                    f'Fixing collision: {rename.old_path} -> {rename.new_path}'
                 )
             _, old_filename = os.path.split(rename.old_path)
             _, file_extension = os.path.splitext(old_filename)
@@ -935,22 +967,26 @@ def FixObjectBasenameCollisions(disjoint_sets,
 
             do_rename_cb(
                 rename.old_path, rename.new_path,
-                RENAME_CONTENT.format(comment_prefix, include_prefix,
-                                      old_filename))
+                RENAME_CONTENT.format(
+                    comment_prefix, include_prefix,
+                    os.path.join("..", "..", "third_party", "ffmpeg",
+                                 rename.old_path)))
+            #os.path.basename(rename.old_path)))
 
             source_set.sources.remove(rename.old_path)
             source_set.sources.add(rename.new_path)
             all_renames.add(rename.new_path)
+            replaced_sources.add(rename.old_path)
 
     # Now, with all collisions handled, walk the set of known sources and warn
     # about any renames that were not replaced. This should indicate that an old
     # collision is now resolved by some external/upstream change.
     for source_path in all_sources:
         if RENAME_PREFIX in source_path and source_path not in all_renames:
-            old_renames_to_delete.add(source_path)
+            to_delete.add(source_path)
             print(f'WARNING: {source_path} no longer collides. DELETE ME!')
 
-    return all_renames, old_renames_to_delete
+    return all_renames, to_delete, replaced_sources
 
 
 def UpdateCredits(sources_to_check, source_dir):
@@ -962,7 +998,7 @@ def UpdateCredits(sources_to_check, source_dir):
     updater.WriteCredits()
 
 
-def WriteGitCommands(filename, all_renames, old_renames_to_delete):
+def WriteGitCommands(filename, all_renames, to_delete):
     """Write a shell script that will add renames and delete old ones."""
     with open(filename, 'w') as git_file:
         git_file.write("#!/bin/sh\n")
@@ -972,7 +1008,7 @@ def WriteGitCommands(filename, all_renames, old_renames_to_delete):
             "# This file is automatically generated by generate_gn.py\n")
         for renamed_file in all_renames:
             git_file.write("git add %s || exit 1\n" % renamed_file)
-        for unrenamed_file in old_renames_to_delete:
+        for unrenamed_file in to_delete:
             git_file.write("git rm %s -f || exit 1\n" % unrenamed_file)
         git_file.write("exit 0\n")
 
@@ -990,7 +1026,8 @@ def main():
     for arch in SUPPORT_MATRIX[Attr.ARCHITECTURE]:
         for target in SUPPORT_MATRIX[Attr.TARGET]:
             for platform in SUPPORT_MATRIX[Attr.PLATFORM]:
-                # Assume build directory is of the form build.$arch.$platform/$target.
+                # Assume build directory is of the form
+                # build.$arch.$platform/$target.
                 name = '.'.join(['build', arch, platform])
                 build_dir = os.path.join(options.build_dir, name, target)
                 if not os.path.exists(build_dir):
@@ -1019,21 +1056,25 @@ def main():
              'Are build_dir (%s) and/or source_dir (%s) options correct?' %
              (options.build_dir, options.source_dir))
 
-    # Sort sets prior to further processing (e.g. FixObjectBasenameCollisions) and
-    # printing to make order deterministic between runs.
+    # Sort sets prior to further processing (e.g. FixObjectBasenameCollisions)
+    # and printing to make order deterministic between runs.
     sets = sorted(sets, key=functools.cmp_to_key(SourceSetCompare))
 
-    all_renames, old_renames_to_delete = FixObjectBasenameCollisions(
+    all_renames, to_delete, replaced_sources = FixObjectBasenameCollisions(
         sets, source_files, FixBasenameCollision)
     if options.output_git_commands:
         WriteGitCommands(options.output_git_commands, all_renames,
-                         old_renames_to_delete)
+                         to_delete)
 
     # Build up set of all sources and includes.
     sources_to_check = set()
+    asm_dirs = set()
     for source_set in sets:
         for source in source_set.sources:
             GetIncludedSources(source, source_dir, sources_to_check)
+            if IsNasmFile(source):
+                # source is relative to source_dir (ffmpeg root).
+                asm_dirs.add(os.path.dirname(source))
 
     # Remove autorename_ files now that we've grabbed their underlying includes.
     # We generated autorename_ files above and should not consider them for
@@ -1050,7 +1091,8 @@ def main():
     gn_file_name = os.path.join(options.source_dir, 'ffmpeg_generated.gni')
     print(f'Writing: {gn_file_name}')
     with open(gn_file_name, 'w') as fd:
-        WriteGn(fd, sets)
+        WriteGn(fd, sets, sorted(list(asm_dirs)),
+                sorted(list(replaced_sources)))
 
     subprocess.run(['gn', 'format', gn_file_name])
 

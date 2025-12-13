@@ -37,7 +37,8 @@ v8::Local<v8::Value> SendMessageTester::TestSendMessage(
 
   v8::Local<v8::Value> output;
   TestSendMessageOrRequest(args, expected_message, expected_target,
-                           expected_port_status, SEND_MESSAGE, output);
+                           expected_port_status,
+                           SendMessageTester::Method::kSendMessage, output);
   return output;
 }
 
@@ -50,7 +51,8 @@ v8::Local<v8::Value> SendMessageTester::TestSendRequest(
 
   v8::Local<v8::Value> output;
   TestSendMessageOrRequest(args, expected_message, expected_target,
-                           expected_port_status, SEND_REQUEST, output);
+                           expected_port_status,
+                           SendMessageTester::Method::kSendRequest, output);
   return output;
 }
 
@@ -68,8 +70,9 @@ v8::Local<v8::Value> SendMessageTester::TestSendNativeMessage(
       MessageTarget::ForNativeApp(expected_application_name));
 
   v8::Local<v8::Value> output;
-  TestSendMessageOrRequest(args, expected_message, expected_target,
-                           expected_port_status, SEND_NATIVE_MESSAGE, output);
+  TestSendMessageOrRequest(
+      args, expected_message, expected_target, expected_port_status,
+      SendMessageTester::Method::kSendNativeMessage, output);
   return output;
 }
 
@@ -123,17 +126,17 @@ void SendMessageTester::TestSendMessageOrRequest(
   mojom::ChannelType channel_type = mojom::ChannelType::kSendMessage;
   const char* method_name = nullptr;
   switch (method) {
-    case SEND_MESSAGE:
+    case SendMessageTester::Method::kSendMessage:
       method_name = "sendMessage";
       expected_channel = messaging_util::kSendMessageChannel;
       channel_type = mojom::ChannelType::kSendMessage;
       break;
-    case SEND_REQUEST:
+    case SendMessageTester::Method::kSendRequest:
       method_name = "sendRequest";
       expected_channel = messaging_util::kSendRequestChannel;
       channel_type = mojom::ChannelType::kSendRequest;
       break;
-    case SEND_NATIVE_MESSAGE:
+    case SendMessageTester::Method::kSendNativeMessage:
       method_name = "sendNativeMessage";
       channel_type = mojom::ChannelType::kNative;
       // sendNativeMessage doesn't have name channels so we don't need to change

@@ -14,9 +14,9 @@
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
+#include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
+#include "components/on_device_translation/public/mojom/translator.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
-#include "components/services/on_device_translation/public/mojom/translator.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-forward.h"
@@ -130,8 +130,6 @@ class OnDeviceTranslationServiceController
   // The idle timeout for the translation service. When the service is idle for
   // this amount of time, the service will be terminated.
   base::TimeDelta service_idle_timeout_;
-  // TODO(crbug.com/335374928): implement the error handling for the translation
-  // service crash.
   mojo::Remote<mojom::OnDeviceTranslationService> service_remote_;
   // Used to listen for changes on the pref values of TranslateKit component and
   // language pack components.

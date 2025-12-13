@@ -64,15 +64,15 @@ const std::set<redaction::PIIType> kExpectedPIITypesInPolicyStatus = {
 
 // The set of pairs with policy status keys which are considered as PII. These
 // are the common keys between user and device policy status.
-const char* kPolicyStatusFieldsWithPII[] = {policy::kClientIdKey,
-                                            policy::kEnterpriseDomainManagerKey,
-                                            policy::kUsernameKey};
+constexpr const char* kPolicyStatusFieldsWithPII[] = {
+    policy::kClientIdKey, policy::kEnterpriseDomainManagerKey,
+    policy::kUsernameKey};
 
 // The set of pairs with policy status keys which don't contain PII. These are
 // the common keys between user and device policy status.
-const char* kPolicyStatusFields[] = {policy::kPolicyDescriptionKey, "error",
-                                     "policiesPushAvailable", "status",
-                                     "timeSinceLastRefresh"};
+constexpr const char* kPolicyStatusFields[] = {
+    policy::kPolicyDescriptionKey, "error", "policiesPushAvailable", "status",
+    "timeSinceLastRefresh"};
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -86,7 +86,8 @@ void ReadExportedPolicyFile(base::Value::Dict* policies,
   // "policies.json" under `output_path`.
   std::string file_contents;
   ASSERT_TRUE(base::ReadFileToString(file_path, &file_contents));
-  std::optional<base::Value> dict_value = base::JSONReader::Read(file_contents);
+  std::optional<base::Value> dict_value = base::JSONReader::Read(
+      file_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict_value);
   *policies = std::move(dict_value->GetDict());
 }

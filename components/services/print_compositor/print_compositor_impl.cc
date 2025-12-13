@@ -43,7 +43,6 @@
 #endif
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
-#include "components/enterprise/watermarking/features.h"  // nogncheck
 #include "components/enterprise/watermarking/mojom/watermark.mojom.h"  // nogncheck
 #include "components/enterprise/watermarking/watermark.h"  // nogncheck
 #endif
@@ -74,9 +73,11 @@ sk_sp<SkDocument> MakeDocument(
       generate_document_outline, &stream);
 }
 
+}  // namespace
+
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
 
-void DrawWatermarkBlock(
+void DrawEnterpriseWatermark(
     SkCanvas* canvas,
     SkSize size,
     const watermark::mojom::WatermarkBlockPtr& watermark_block) {
@@ -97,30 +98,6 @@ void DrawWatermarkBlock(
   enterprise_watermark::DrawWatermark(canvas, picture.get(),
                                       watermark_block->width,
                                       watermark_block->height, size);
-}
-
-#endif
-
-}  // namespace
-
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
-
-void DrawEnterpriseWatermark(
-    SkCanvas* canvas,
-    SkSize size,
-    const watermark::mojom::WatermarkBlockPtr& watermark_block) {
-  if (!base::FeatureList::IsEnabled(
-          enterprise_watermark::features::kEnablePrintWatermark)) {
-    return;
-  }
-  DrawWatermarkBlock(canvas, size, watermark_block);
-}
-
-void DrawWatermarkBlockForTesting(
-    SkCanvas* canvas,
-    SkSize size,
-    const watermark::mojom::WatermarkBlockPtr& watermark_block) {
-  DrawWatermarkBlock(canvas, size, watermark_block);
 }
 
 #endif

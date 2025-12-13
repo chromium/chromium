@@ -13,6 +13,8 @@
 #include "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #include "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #include "ios/chrome/browser/history/model/top_sites_factory.h"
+#include "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#include "ios/chrome/browser/ntp_tiles/model/ios_custom_links_manager_factory.h"
 #include "ios/chrome/browser/ntp_tiles/model/ios_popular_sites_factory.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -27,7 +29,10 @@ IOSMostVisitedSitesFactory::NewForBrowserState(ProfileIOS* profile) {
       SupervisedUserServiceFactory::GetForProfile(profile),
       ios::TopSitesFactory::GetForProfile(profile),
       IOSPopularSitesFactory::NewForBrowserState(profile),
-      /*custom_links=*/nullptr,
+      IsContentSuggestionsCustomizable()
+          ? IOSCustomLinksManagerFactory::NewForProfile(profile)
+          : nullptr,
+      /*enterprise_shortcuts=*/nullptr,
       std::make_unique<ntp_tiles::IconCacherImpl>(
           ios::FaviconServiceFactory::GetForProfile(
               profile, ServiceAccessType::IMPLICIT_ACCESS),
@@ -36,6 +41,5 @@ IOSMostVisitedSitesFactory::NewForBrowserState(ProfileIOS* profile) {
               image_fetcher::CreateIOSImageDecoder(),
               profile->GetSharedURLLoaderFactory()),
           /*data_decoder=*/nullptr),
-      /*is_default_chrome_app_migrated=*/false,
-      /*is_custom_links_mixable=*/false);
+      /*is_default_chrome_app_migrated=*/false);
 }

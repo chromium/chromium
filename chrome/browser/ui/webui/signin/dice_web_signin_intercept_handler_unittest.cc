@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -69,14 +68,15 @@ AccountInfo CreateAccount(GaiaId gaia_id,
                           std::string full_name,
                           std::string email,
                           std::string hosted_domain = kNoHostedDomainFound) {
-  AccountInfo account_info;
-  account_info.account_id = CoreAccountId::FromGaiaId(gaia_id);
-  account_info.given_name = given_name;
-  account_info.full_name = full_name;
-  account_info.email = email;
-  account_info.hosted_domain = hosted_domain;
+  AccountInfo account_info =
+      AccountInfo::Builder(gaia_id, email)
+          .SetAccountId(CoreAccountId::FromGaiaId(gaia_id))
+          .SetGivenName(given_name)
+          .SetFullName(full_name)
+          .SetHostedDomain(hosted_domain)
+          .Build();
   AccountCapabilitiesTestMutator(&account_info.capabilities)
-      .set_is_subject_to_enterprise_policies(hosted_domain !=
+      .set_is_subject_to_enterprise_features(hosted_domain !=
                                              kNoHostedDomainFound);
   return account_info;
 }

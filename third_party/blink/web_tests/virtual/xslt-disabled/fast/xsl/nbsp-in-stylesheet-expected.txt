@@ -1,0 +1,4 @@
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been removed in this browser. See https://chromestatus.com/feature/4709671889534976.
+Test for bug 19215: XSLT transformToDocument fails when stylesheet contains &#160;
+
+Exception: NotSupportedError: Failed to construct 'XSLTProcessor': XSLT is disabled

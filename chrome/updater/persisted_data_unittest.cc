@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/updater/activity.h"
@@ -29,7 +30,12 @@
 
 namespace updater {
 
-TEST(PersistedDataTest, Simple) {
+class PersistedDataTest : public testing::Test {
+ protected:
+  base::test::TaskEnvironment environment_;
+};
+
+TEST_F(PersistedDataTest, Simple) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());
@@ -65,7 +71,7 @@ TEST(PersistedDataTest, Simple) {
   EXPECT_EQ(metadata->GetLastStarted(), time2);
 }
 
-TEST(PersistedDataTest, MixedCase) {
+TEST_F(PersistedDataTest, MixedCase) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());
@@ -80,9 +86,10 @@ TEST(PersistedDataTest, MixedCase) {
   EXPECT_EQ("2.0", metadata->GetProductVersion("someappid2").GetString());
 }
 
-TEST(PersistedDataTest, SharedPref) {
+TEST_F(PersistedDataTest, SharedPref) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
+  RegisterPersistedDataPrefs(pref->registry());
   auto metadata = base::MakeRefCounted<PersistedData>(
       GetUpdaterScopeForTesting(), pref.get(), nullptr);
 
@@ -96,9 +103,10 @@ TEST(PersistedDataTest, SharedPref) {
   EXPECT_EQ("1.0", metadata->GetProductVersion("someappid").GetString());
 }
 
-TEST(PersistedDataTest, RemoveAppId) {
+TEST_F(PersistedDataTest, RemoveAppId) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
+  RegisterPersistedDataPrefs(pref->registry());
   auto metadata = base::MakeRefCounted<PersistedData>(
       GetUpdaterScopeForTesting(), pref.get(), nullptr);
 
@@ -107,33 +115,39 @@ TEST(PersistedDataTest, RemoveAppId) {
   data.lang = "somelang";
   data.brand_code = "somebrand";
   data.ap = "arandom-ap=likethis";
-  data.version = base::Version("1.0");
+  data.version = "1.0";
   data.existence_checker_path =
       base::FilePath(FILE_PATH_LITERAL("some/file/path"));
 
+  ASSERT_FALSE(metadata->HasApp("someappid"));
   metadata->RegisterApp(data);
 
   data.app_id = "someappid2";
   data.lang = "somelang";
   data.brand_code = "somebrand";
   data.ap = "arandom-ap=likethis";
-  data.version = base::Version("2.0");
+  data.version = "2.0";
   data.existence_checker_path =
       base::FilePath(FILE_PATH_LITERAL("some/file/path"));
 
   metadata->RegisterApp(data);
   EXPECT_EQ(size_t{2}, metadata->GetAppIds().size());
 
+  ASSERT_TRUE(metadata->HasApp("someAPPID"));
   metadata->RemoveApp("someAPPID");
+  ASSERT_FALSE(metadata->HasApp("someAPPID"));
   EXPECT_EQ(size_t{1}, metadata->GetAppIds().size());
 
+  ASSERT_TRUE(metadata->HasApp("someappid2"));
   metadata->RemoveApp("someappid2");
+  ASSERT_FALSE(metadata->HasApp("someappid2"));
   EXPECT_TRUE(metadata->GetAppIds().empty());
 }
 
-TEST(PersistedDataTest, RegisterApp_SetFirstActive) {
+TEST_F(PersistedDataTest, RegisterApp_SetFirstActive) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
+  RegisterPersistedDataPrefs(pref->registry());
   auto metadata = base::MakeRefCounted<PersistedData>(
       GetUpdaterScopeForTesting(), pref.get(), nullptr);
 
@@ -142,21 +156,21 @@ TEST(PersistedDataTest, RegisterApp_SetFirstActive) {
   data.lang = "somelang";
   data.brand_code = "somebrand";
   data.ap = "arandom-ap=likethis";
-  data.version = base::Version("1.0");
+  data.version = "1.0";
   data.existence_checker_path =
       base::FilePath(FILE_PATH_LITERAL("some/file/path"));
   metadata->RegisterApp(data);
   EXPECT_EQ(metadata->GetDateLastActive("someappid"), -1);
   EXPECT_EQ(metadata->GetDateLastRollCall("someappid"), -1);
 
-  data.version = base::Version("2.0");
+  data.version = "2.0";
   data.dla = 1221;
   data.dlrc = 1221;
   metadata->RegisterApp(data);
   EXPECT_EQ(metadata->GetDateLastActive("someappid"), 1221);
   EXPECT_EQ(metadata->GetDateLastRollCall("someappid"), 1221);
 
-  data.version = base::Version("3.0");
+  data.version = "3.0";
   data.dla = std::nullopt;
   data.dlrc = std::nullopt;
   metadata->RegisterApp(data);
@@ -165,7 +179,7 @@ TEST(PersistedDataTest, RegisterApp_SetFirstActive) {
 }
 
 #if BUILDFLAG(IS_WIN)
-TEST(PersistedDataTest, LastOSVersion) {
+TEST_F(PersistedDataTest, LastOSVersion) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());
@@ -201,7 +215,7 @@ TEST(PersistedDataTest, LastOSVersion) {
   EXPECT_EQ(metadata_os.wProductType, os.wProductType);
 }
 
-TEST(PersistedDataTest, SetEulaRequired) {
+TEST_F(PersistedDataTest, SetEulaRequired) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
   RegisterPersistedDataPrefs(pref->registry());
@@ -230,7 +244,7 @@ TEST(PersistedDataTest, SetEulaRequired) {
 }
 #endif
 
-class PersistedDataRegistrationRequestTest : public ::testing::Test {
+class PersistedDataRegistrationRequestTest : public PersistedDataTest {
 #if BUILDFLAG(IS_WIN)
  protected:
   void SetUp() override { DeleteValuesInRegistry(); }
@@ -251,6 +265,7 @@ class PersistedDataRegistrationRequestTest : public ::testing::Test {
 TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequest) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
+  RegisterPersistedDataPrefs(pref->registry());
   auto metadata = base::MakeRefCounted<PersistedData>(
       GetUpdaterScopeForTesting(), pref.get(), nullptr);
 
@@ -259,7 +274,7 @@ TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequest) {
   data.lang = "somelang";
   data.brand_code = "somebrand";
   data.ap = "arandom-ap=likethis";
-  data.version = base::Version("1.0");
+  data.version = "1.0";
   data.existence_checker_path =
       base::FilePath(FILE_PATH_LITERAL("some/file/path"));
   data.cohort = "testcohort";
@@ -303,6 +318,7 @@ TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequest) {
 TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequestPartial) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
+  RegisterPersistedDataPrefs(pref->registry());
   auto metadata = base::MakeRefCounted<PersistedData>(
       GetUpdaterScopeForTesting(), pref.get(), nullptr);
 
@@ -311,7 +327,7 @@ TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequestPartial) {
   data.lang = "somelang";
   data.brand_code = "somebrand";
   data.ap = "arandom-ap=likethis";
-  data.version = base::Version("1.0");
+  data.version = "1.0";
   data.existence_checker_path =
       base::FilePath(FILE_PATH_LITERAL("some/file/path"));
   metadata->RegisterApp(data);
@@ -337,7 +353,7 @@ TEST_F(PersistedDataRegistrationRequestTest, RegistrationRequestPartial) {
   RegistrationRequest data3;
   data3.app_id = "someappid3";
   data3.brand_code = "somebrand";
-  data3.version = base::Version("1.0");
+  data3.version = "1.0";
   metadata->RegisterApp(data3);
   EXPECT_TRUE(metadata->GetProductVersion("someappid3").IsValid());
   EXPECT_EQ("1.0", metadata->GetProductVersion("someappid3").GetString());

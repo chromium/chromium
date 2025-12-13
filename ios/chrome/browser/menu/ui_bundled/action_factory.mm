@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/menu/ui_bundled/menu_action_type.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/saved_tab_groups/ui/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -18,10 +19,22 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
+
+namespace {
+
+// The emoji that is drawn into a UIImage for the Gemini entry point action.
+constexpr NSString* kGeminiActionImageEmoji = @"🍌";
+
+// The ratio of canvas to font point size to allow for the canvas to have some
+// padding around the emoji, which fixes clipping.
+constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
+
+}  // namespace
 
 @interface ActionFactory ()
 
@@ -57,15 +70,19 @@
 }
 
 - (UIAction*)actionToCopyURL:(CrURL*)URL {
+  return [self actionToCopyURLWithBlock:^{
+    StoreURLInPasteboard(URL.gurl);
+  }];
+}
+
+- (UIAction*)actionToCopyURLWithBlock:(ProceduralBlock)block {
   UIImage* image =
       DefaultSymbolWithPointSize(kLinkActionSymbol, kSymbolActionPointSize);
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_COPY_LINK_ACTION_TITLE)
                 image:image
                  type:MenuActionType::CopyURL
-                block:^{
-                  StoreURLInPasteboard(URL.gurl);
-                }];
+                block:block];
 }
 
 - (UIAction*)actionToShowFullURL:(NSString*)URLString
@@ -148,11 +165,14 @@
 - (UIAction*)actionToRemoveWithBlock:(ProceduralBlock)block {
   UIImage* image =
       DefaultSymbolWithPointSize(kHideActionSymbol, kSymbolActionPointSize);
-  UIAction* action =
-      [self actionWithTitle:l10n_util::GetNSString(IDS_IOS_REMOVE_ACTION_TITLE)
-                      image:image
-                       type:MenuActionType::Remove
-                      block:block];
+  UIAction* action = [self
+      actionWithTitle:l10n_util::GetNSString(
+                          IsContentSuggestionsCustomizable()
+                              ? IDS_IOS_CONTENT_SUGGESTIONS_NEVER_SHOW_SITE
+                              : IDS_IOS_REMOVE_ACTION_TITLE)
+                image:image
+                 type:MenuActionType::Remove
+                block:block];
   action.attributes = UIMenuElementAttributesDestructive;
   return action;
 }
@@ -278,6 +298,19 @@
   return action;
 }
 
+- (UIAction*)actionToDeleteBrowsingDataWithBlock:(ProceduralBlock)block {
+  UIImage* image =
+      DefaultSymbolWithPointSize(kDeleteActionSymbol, kSymbolActionPointSize);
+  UIAction* action =
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA)
+                      image:image
+                       type:MenuActionType::DeleteBrowsingData
+                      block:block];
+  action.attributes = UIMenuElementAttributesDestructive;
+  return action;
+}
+
 - (UIAction*)actionSaveImageWithBlock:(ProceduralBlock)block {
   UIImage* image = DefaultSymbolWithPointSize(kSaveImageActionSymbol,
                                               kSymbolActionPointSize);
@@ -314,9 +347,12 @@
 - (UIAction*)actionToCloseAllTabsWithBlock:(ProceduralBlock)block {
   UIImage* image =
       DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
-  int titleID = IsTabGroupSyncEnabled()
-                    ? IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABSANDGROUPS
-                    : IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS;
+  int titleID;
+  if (base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu)) {
+    titleID = IDS_IOS_INACTIVE_TABS_CLOSE_ALL_CONFIRMATION_OPTION;
+  } else {
+    titleID = IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABSANDGROUPS;
+  }
   UIAction* action = [self actionWithTitle:l10n_util::GetNSString(titleID)
                                      image:image
                                       type:MenuActionType::CloseAllTabs
@@ -356,6 +392,18 @@
       block();
     }
   };
+}
+
+- (UIAction*)actionToCreateEmptyTabGroupWithBlock:(ProceduralBlock)block {
+  UIImage* image = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
+                                              kSymbolActionPointSize);
+  UIAction* action = [self
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP_SUBMENU)
+                image:image
+                 type:MenuActionType::CreateEmptyTabGroup
+                block:block];
+  return action;
 }
 
 - (UIAction*)actionToAddTabsToNewGroupWithTabsNumber:(int)tabsNumber
@@ -560,8 +608,6 @@
 }
 
 - (UIAction*)actionToCloseTabGroupWithBlock:(ProceduralBlock)block {
-  CHECK(IsTabGroupSyncEnabled());
-
   UIImage* image =
       DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
   UIAction* action = [self
@@ -574,8 +620,6 @@
 }
 
 - (UIAction*)actionToLeaveSharedTabGroupWithBlock:(ProceduralBlock)block {
-  CHECK(IsTabGroupSyncEnabled());
-
   UIImage* image =
       DefaultSymbolWithPointSize(kMinusInCircleSymbol, kSymbolActionPointSize);
   UIAction* action =
@@ -589,8 +633,6 @@
 }
 
 - (UIAction*)actionToDeleteSharedTabGroupWithBlock:(ProceduralBlock)block {
-  CHECK(IsTabGroupSyncEnabled());
-
   UIImage* image =
       DefaultSymbolWithPointSize(kDeleteActionSymbol, kSymbolActionPointSize);
   UIAction* action =
@@ -604,8 +646,6 @@
 }
 
 - (UIAction*)actionToShareTabGroupWithBlock:(ProceduralBlock)block {
-  CHECK(IsTabGroupSyncEnabled());
-
   UIImage* image =
       DefaultSymbolWithPointSize(kPersonPlusSymbol, kSymbolActionPointSize);
   UIAction* action =
@@ -618,8 +658,6 @@
 }
 
 - (UIAction*)actionToManageTabGroupWithBlock:(ProceduralBlock)block {
-  CHECK(IsTabGroupSyncEnabled());
-
   UIImage* image =
       DefaultSymbolWithPointSize(kPersonPlusSymbol, kSymbolActionPointSize);
   UIAction* action =
@@ -791,6 +829,75 @@
                                    IDS_IOS_CONTENT_CONTEXT_RECENTACTIVITY)
                          image:image
                           type:MenuActionType::RecentActivityInSharedTabGroup
+                         block:block];
+}
+
+- (UIAction*)actionToOpenImageInGeminiWithBlock:(ProceduralBlock)block {
+  // Create the canvas slightly bigger than the emoji's text point size, to
+  // allow for the parts that overflow.
+  CGSize imageSize =
+      CGSizeMake(kSymbolActionPointSize * kEmojiCanvasPaddingRatio,
+                 kSymbolActionPointSize * kEmojiCanvasPaddingRatio);
+
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:imageSize];
+
+  // Create a UIImage from an emoji.
+  UIImage* emojiImage =
+      [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+        NSDictionary* attrs = @{
+          NSFontAttributeName : [UIFont systemFontOfSize:kSymbolActionPointSize]
+        };
+
+        // Center the draw point of the emoji in the canvas.
+        CGSize textSize = [kGeminiActionImageEmoji sizeWithAttributes:attrs];
+        CGPoint drawPoint =
+            CGPointMake((imageSize.width - textSize.width) / 2.0,
+                        (imageSize.height - textSize.height) / 2.0);
+
+        [kGeminiActionImageEmoji drawAtPoint:drawPoint withAttributes:attrs];
+      }];
+
+  return
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_GEMINI_IMAGE_CONTEXT_MENU_ENTRY_POINT)
+                      image:emojiImage
+                       type:MenuActionType::GeminiWithImageAttachment
+                      block:block];
+}
+
+- (UIAction*)actionToPinSiteToMostVisitedTileWithBlock:(ProceduralBlock)block {
+  UIImage* image =
+      DefaultSymbolWithPointSize(kPinSymbol, kSymbolActionPointSize);
+  return [self actionWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE)
+                         image:image
+                          type:MenuActionType::PinSite
+                         block:block];
+}
+
+- (UIAction*)actionToUnpinSiteFromMostVisitedTileWithBlock:
+    (ProceduralBlock)block {
+  UIImage* image =
+      DefaultSymbolWithPointSize(kPinSlashSymbol, kSymbolActionPointSize);
+  UIAction* action =
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_CONTENT_SUGGESTIONS_UNPIN_SITE)
+                      image:image
+                       type:MenuActionType::UnpinSite
+                      block:block];
+  action.attributes = UIMenuElementAttributesDestructive;
+  return action;
+}
+
+- (UIAction*)actionToEditPinnedSiteOnMostVisitedTileWithBlock:
+    (ProceduralBlock)block {
+  UIImage* image =
+      DefaultSymbolWithPointSize(kEditActionSymbol, kSymbolActionPointSize);
+  return [self actionWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_CONTENT_SUGGESTIONS_EDIT_PINNED_SITE)
+                         image:image
+                          type:MenuActionType::EditPinnedSite
                          block:block];
 }
 

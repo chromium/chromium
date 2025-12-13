@@ -20,10 +20,6 @@ ExtensionRegistry* ExtensionRegistry::Get(content::BrowserContext* context) {
   return ExtensionRegistryFactory::GetForBrowserContext(context);
 }
 
-base::WeakPtr<ExtensionRegistry> ExtensionRegistry::GetWeakPtr() {
-  return weak_factory_.GetWeakPtr();
-}
-
 ExtensionSet ExtensionRegistry::GenerateInstalledExtensionsSet() const {
   return GenerateInstalledExtensionsSet(EVERYTHING);
 }

@@ -9,14 +9,18 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.profiles.ProfileKeyUtil;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Utilities for working with incognito tabs spread across multiple activities. */
 @NullMarked
@@ -51,7 +55,7 @@ public class IncognitoUtils {
      * @param otrProfileId The {@link OtrProfileId} of the profile. Null for regular profile.
      * @return The {@link ProfileKey} of the key.
      */
-    public static ProfileKey getProfileKeyFromOtrProfileId(OtrProfileId otrProfileId) {
+    public static ProfileKey getProfileKeyFromOtrProfileId(@Nullable OtrProfileId otrProfileId) {
         // If off-the-record is not requested, the request might be before native initialization.
         if (otrProfileId == null) return ProfileKeyUtil.getLastUsedRegularProfileKey();
 
@@ -65,6 +69,25 @@ public class IncognitoUtils {
     public static void setEnabledForTesting(Boolean enabled) {
         sIsEnabledForTesting = enabled;
         ResettersForTesting.register(() -> sIsEnabledForTesting = null);
+    }
+
+    /**
+     * @return Whether incognito tabs should open in a separate window.
+     */
+    public static boolean shouldOpenIncognitoAsWindow() {
+        // TODO(crbug.com/467768341): Clean up the desktop form factor check once the bug is fixed.
+        return ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()
+                && ((DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                                        ContextUtils.getApplicationContext())
+                                && !DeviceInfo.isAutomotive())
+                        || DeviceInfo.isDesktop());
+    }
+
+    /**
+     * @return Whether incognito theme overlay is enabled for testing on current window.
+     */
+    public static boolean isIncognitoThemeOverlayEnabledForTesting() {
+        return ChromeFeatureList.sIncognitoThemeOverlayTesting.isEnabled();
     }
 
     @NativeMethods

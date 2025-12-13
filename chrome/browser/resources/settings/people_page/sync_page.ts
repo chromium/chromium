@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
 import '//resources/js/util.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
@@ -19,6 +20,7 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 import './sync_encryption_options.js';
 import '../privacy_page/personalization_options.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 // <if expr="not is_chromeos">
@@ -34,7 +36,7 @@ import {assert, assertNotReached} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SyncBrowserProxy, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {PageStatus, SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {ChromeSigninAccessPoint, PageStatus, SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 
@@ -46,11 +48,15 @@ import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import type {SettingsPersonalizationOptionsElement} from '../privacy_page/personalization_options.js';
 // </if>
 
+import type {Route} from '../router.js';
+import {routes} from '../route.js';
 import {RouteObserverMixin, Router} from '../router.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 // <if expr="is_chromeos">
 import type {SettingsSyncEncryptionOptionsElement} from './sync_encryption_options.js';
 // </if>
+// clang-format on
 
 import {getTemplate} from './sync_page.html.js';
 
@@ -65,8 +71,8 @@ export interface SettingsSyncPageElement {
  * 'settings-sync-page' is the settings page containing sync settings.
  */
 
-const SettingsSyncPageElementBase =
-    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
+const SettingsSyncPageElementBase = SettingsViewMixin(
+    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
 export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   static get is() {
@@ -113,7 +119,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
        */
       syncPrefs: Object,
 
-      syncStatus: Object,
+      syncStatus_: Object,
 
       dataEncrypted_: {
         type: Boolean,
@@ -146,27 +152,27 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
         type: Boolean,
         value: false,
         computed: 'computeShowExistingPassphraseBelowAccount_(' +
-            'syncStatus.signedInState, syncPrefs.passphraseRequired)',
+            'syncStatus_.signedInState, syncPrefs.passphraseRequired)',
       },
 
       signedIn_: {
         type: Boolean,
         value: true,
-        computed: 'computeSignedIn_(syncStatus.signedInState)',
+        computed: 'computeSignedIn_(syncStatus_.signedInState)',
       },
 
       syncDisabledByAdmin_: {
         type: Boolean,
         value: false,
-        computed: 'computeSyncDisabledByAdmin_(syncStatus.managed)',
+        computed: 'computeSyncDisabledByAdmin_(syncStatus_.managed)',
       },
 
       syncSectionDisabled_: {
         type: Boolean,
         value: false,
         computed: 'computeSyncSectionDisabled_(' +
-            'syncStatus.signedInState, syncStatus.disabled, ' +
-            'syncStatus.hasError, syncStatus.statusAction, ' +
+            'syncStatus_.signedInState, syncStatus_.disabled, ' +
+            'syncStatus_.hasError, syncStatus_.statusAction, ' +
             'syncPrefs.trustedVaultKeysRequired)',
       },
 
@@ -189,14 +195,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
             'syncPrefs.explicitPassphraseTime)',
       },
 
-      // TODO(crbug.com/324091979): Remove once crbug.com/324091979 launched.
-      enableLinkedServicesSetting_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableLinkedServicesSetting');
-        },
-      },
-
       isEeaChoiceCountry_: {
         type: Boolean,
         value() {
@@ -207,6 +205,12 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
       personalizationCollapseExpanded_: {
         type: Boolean,
         value: false,
+      },
+
+      // Exposes ChromeSigninAccessPoint enum to HTML bindings.
+      accessPointEnum_: {
+        type: Object,
+        value: ChromeSigninAccessPoint,
       },
     };
   }
@@ -221,7 +225,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   declare focusConfig: FocusConfig;
   declare private pageStatus_: PageStatus;
   declare syncPrefs?: SyncPrefs;
-  declare syncStatus: SyncStatus;
+  declare private syncStatus_: SyncStatus;
   declare private dataEncrypted_: boolean;
   declare private encryptionExpanded_: boolean;
   declare forceEncryptionExpanded: boolean;
@@ -230,7 +234,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   declare private signedIn_: boolean;
   declare private syncDisabledByAdmin_: boolean;
   declare private syncSectionDisabled_: boolean;
-  declare private enableLinkedServicesSetting_: boolean;
   declare private isEeaChoiceCountry_: boolean;
   declare private personalizationCollapseExpanded_: boolean;
 
@@ -298,10 +301,10 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     this.addWebUiListener(
         'sync-prefs-changed', this.handleSyncPrefsChanged_.bind(this));
 
-    const router = Router.getInstance();
-    if (router.getCurrentRoute() === router.getRoutes().SYNC) {
-      this.onNavigateToPage_();
-    }
+    this.syncBrowserProxy_.getSyncStatus().then(
+        this.onSyncStatusChanged_.bind(this));
+    this.addWebUiListener(
+        'sync-status-changed', this.onSyncStatusChanged_.bind(this));
   }
 
   override disconnectedCallback() {
@@ -322,6 +325,18 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     }
   }
 
+  private onSyncStatusChanged_(syncStatus: SyncStatus) {
+    this.syncStatus_ = syncStatus;
+
+    // <if expr="not is_chromeos">
+    if (Router.getInstance().getCurrentRoute() === routes.SYNC &&
+        !this.shouldShowSyncPage_()) {
+      this.onNavigateAwayFromPage_();
+      Router.getInstance().navigateTo(routes.PEOPLE);
+    }
+    // </if>
+  }
+
   // <if expr="is_chromeos">
   getEncryptionOptions(): SettingsSyncEncryptionOptionsElement|null {
     return this.shadowRoot!.querySelector('settings-sync-encryption-options');
@@ -333,21 +348,23 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   // </if>
 
   private computeSignedIn_(): boolean {
-    return this.syncStatus.signedInState === SignedInState.SYNCING;
+    return this.syncStatus_.signedInState === SignedInState.SYNCING;
   }
 
   private computeSyncSectionDisabled_(): boolean {
-    return this.syncStatus !== undefined &&
-        (this.syncStatus.signedInState !== SignedInState.SYNCING ||
-         !!this.syncStatus.disabled ||
-         (!!this.syncStatus.hasError &&
-          this.syncStatus.statusAction !== StatusAction.ENTER_PASSPHRASE &&
-          this.syncStatus.statusAction !==
-              StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS));
+    return this.syncStatus_ !== undefined &&
+        (this.syncStatus_.signedInState !== SignedInState.SYNCING ||
+         !!this.syncStatus_.disabled ||
+         (!!this.syncStatus_.hasError &&
+          this.syncStatus_.statusAction !== StatusAction.ENTER_PASSPHRASE &&
+          this.syncStatus_.statusAction !==
+              StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS &&
+          this.syncStatus_.statusAction !==
+              StatusAction.CONFIRM_SYNC_SETTINGS));
   }
 
   private computeSyncDisabledByAdmin_(): boolean {
-    return this.syncStatus !== undefined && !!this.syncStatus.managed;
+    return this.syncStatus_ !== undefined && !!this.syncStatus_.managed;
   }
 
   private onFocusConfigChange_() {
@@ -381,11 +398,27 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   private onSetupCancelDialogClose_() {
     this.showSetupCancelDialog_ = false;
   }
+
+  private shouldShowSyncPage_(): boolean {
+    return !loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos') ||
+        !this.syncStatus_ ||
+        this.syncStatus_.signedInState === SignedInState.SYNCING;
+  }
   // </if>
 
-  override currentRouteChanged() {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     const router = Router.getInstance();
     if (router.getCurrentRoute() === router.getRoutes().SYNC) {
+      // <if expr="not is_chromeos">
+      if (!this.shouldShowSyncPage_()) {
+        this.onNavigateAwayFromPage_();
+        Router.getInstance().navigateTo(routes.PEOPLE);
+        return;
+      }
+      // </if>
+
       this.onNavigateToPage_();
       return;
     }
@@ -404,8 +437,8 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     }
 
     // <if expr="not is_chromeos">
-    const userActionCancelsSetup = this.syncStatus &&
-        this.syncStatus.firstSetupInProgress && this.didAbort_;
+    const userActionCancelsSetup = this.syncStatus_ &&
+        this.syncStatus_.firstSetupInProgress && this.didAbort_;
     if (userActionCancelsSetup && !this.setupCancelConfirmed_) {
       chrome.metricsPrivate.recordUserAction(
           'Signin_Signin_BackOnAdvancedSyncSettings');
@@ -450,7 +483,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     this.beforeunloadCallback_ = event => {
       // When the user tries to leave the sync setup, show the 'Leave site'
       // dialog.
-      if (this.syncStatus && this.syncStatus.firstSetupInProgress) {
+      if (this.syncStatus_ && this.syncStatus_.firstSetupInProgress) {
         event.preventDefault();
 
         chrome.metricsPrivate.recordUserAction(
@@ -596,7 +629,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
     // Stay on the setup page if the user hasn't approved sync settings yet.
     // Otherwise, close sync setup.
-    return this.syncStatus && this.syncStatus.firstSetupInProgress ?
+    return this.syncStatus_ && this.syncStatus_.firstSetupInProgress ?
         PageStatus.CONFIGURE :
         PageStatus.DONE;
   }
@@ -641,15 +674,15 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
   // <if expr="not is_chromeos">
   private shouldShowSyncAccountControl_(): boolean {
-    return this.syncStatus !== undefined &&
-        !!this.syncStatus.syncSystemEnabled &&
+    return this.syncStatus_ !== undefined &&
+        !!this.syncStatus_.syncSystemEnabled &&
         loadTimeData.getBoolean('signinAllowed');
   }
   // </if>
 
   private computeShowExistingPassphraseBelowAccount_(): boolean {
-    return this.syncStatus !== undefined &&
-        this.syncStatus.signedInState === SignedInState.SYNCING &&
+    return this.syncStatus_ !== undefined &&
+        this.syncStatus_.signedInState === SignedInState.SYNCING &&
         this.syncPrefs !== undefined && !!this.syncPrefs.passphraseRequired;
   }
 
@@ -687,6 +720,11 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
         router.getCurrentRoute() === router.getRoutes().SYNC) {
       passphraseInput.focus();
     }
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

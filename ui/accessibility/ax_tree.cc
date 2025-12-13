@@ -1244,8 +1244,10 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
         << unserialize_count_ << " with update:\n"
         << update.ToString(true).substr(0, 1000);
 #else
-    NOTREACHED() << "Tree must have already a valid root or update must have a "
-                    "valid root.";
+    RecordError(update_state, "Tree or update must have a valid root.",
+                /* is_fatal = */ false);
+    DUMP_WILL_BE_NOTREACHED();
+    return false;
 #endif
   }
   // Accumulates the work that will be required to update the AXTree.
@@ -2325,17 +2327,8 @@ void AXTree::NotifyNodeAttributesHaveBeenChanged(
                       new_bool);
   };
 
-  // Intentionally break the abstraction here to use a performance-optimized
-  // diffing algorithm.
-  if (old_data.bool_attributes->IsBitset()) {
-    CallIfAttributeValuesChanged(old_data.bool_attributes->GetBitsetStore(),
-                                 new_data.bool_attributes->GetBitsetStore(),
-                                 false, bool_callback);
-  } else {
-    CallIfAttributeValuesChanged(old_data.bool_attributes->GetVectorStore(),
-                                 new_data.bool_attributes->GetVectorStore(),
-                                 false, bool_callback);
-  }
+  CallIfAttributeValuesChanged(old_data.bool_attributes,
+                               new_data.bool_attributes, false, bool_callback);
 
   auto float_callback = [this, node](ax::mojom::FloatAttribute attr,
                                      const float& old_float,

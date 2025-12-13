@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_imagedata_offscreencanvas_videoframe.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
@@ -41,6 +42,7 @@
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 namespace blink {
 
@@ -51,16 +53,20 @@ bool IsValidExternalImageDestinationFormat(
   switch (dawn_texture_format) {
     case wgpu::TextureFormat::R8Unorm:
     case wgpu::TextureFormat::R16Float:
+    case wgpu::TextureFormat::R16Unorm:
     case wgpu::TextureFormat::R32Float:
     case wgpu::TextureFormat::RG8Unorm:
     case wgpu::TextureFormat::RG16Float:
+    case wgpu::TextureFormat::RG16Unorm:
     case wgpu::TextureFormat::RG32Float:
     case wgpu::TextureFormat::RGBA8Unorm:
     case wgpu::TextureFormat::RGBA8UnormSrgb:
     case wgpu::TextureFormat::BGRA8Unorm:
     case wgpu::TextureFormat::BGRA8UnormSrgb:
     case wgpu::TextureFormat::RGB10A2Unorm:
+    case wgpu::TextureFormat::RG11B10Ufloat:
     case wgpu::TextureFormat::RGBA16Float:
+    case wgpu::TextureFormat::RGBA16Unorm:
     case wgpu::TextureFormat::RGBA32Float:
       return true;
     default:
@@ -74,8 +80,11 @@ wgpu::TextureFormat SkColorTypeToDawnColorFormat(SkColorType sk_color_type) {
       return wgpu::TextureFormat::RGBA8Unorm;
     case SkColorType::kBGRA_8888_SkColorType:
       return wgpu::TextureFormat::BGRA8Unorm;
-    default:
+    case SkColorType::kRGBA_F16_SkColorType:
+      return wgpu::TextureFormat::RGBA16Float;
+    default: {
       NOTREACHED();
+    }
   }
 }
 
@@ -263,7 +272,7 @@ ExternalSource GetExternalSourceFromExternalImage(
   // on GPU if possible.
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
   auto image_for_canvas = canvas_image_source->GetSourceImageForCanvas(
-      FlushReason::kWebGPUExternalImage, &source_image_status, image_size);
+      &source_image_status, image_size);
   if (source_image_status != kNormalSourceImageStatus) {
     // Canvas back resource is broken, zero size, incomplete or invalid.
     // but developer can do nothing. Return nullptr and issue an noop.
@@ -477,7 +486,7 @@ ScriptPromise<IDLUndefined> GPUQueue::onSubmittedWorkDone(
   auto promise = resolver->Promise();
 
   auto* callback = MakeWGPUOnceCallback(
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(&OnWorkDoneCallback)));
+      resolver->WrapCallbackInScriptScope(BindOnce(&OnWorkDoneCallback)));
 
   GetHandle().OnSubmittedWorkDone(wgpu::CallbackMode::AllowSpontaneous,
                                   callback->UnboundCallback(),
@@ -681,13 +690,17 @@ void GPUQueue::copyExternalImageToTexture(
     return;
   }
 
+  wgpu::TexelCopyTextureInfo dawn_destination;
+  if (!IsValidDestinationTexture(destination, dawn_destination,
+                                 exception_state)) {
+    return;
+  }
+
   wgpu::Extent3D dawn_copy_size;
   wgpu::Origin2D origin_in_external_image;
-  wgpu::TexelCopyTextureInfo dawn_destination;
   if (!ConvertToDawn(copy_size, &dawn_copy_size, device_, exception_state) ||
       !ConvertToDawn(copyImage->origin(), &origin_in_external_image,
-                     exception_state) ||
-      !ConvertToDawn(destination, &dawn_destination, exception_state)) {
+                     exception_state)) {
     return;
   }
 
@@ -712,32 +725,6 @@ void GPUQueue::copyExternalImageToTexture(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kOperationError,
         "Copy depth is out of bounds of external image.");
-    return;
-  }
-
-  if (!IsValidExternalImageDestinationFormat(
-          destination->texture()->Format())) {
-    device_->GetHandle().InjectError(wgpu::ErrorType::Validation,
-                                     "Invalid destination gpu texture format.");
-    return;
-  }
-
-  if (destination->texture()->Dimension() != wgpu::TextureDimension::e2D) {
-    device_->GetHandle().InjectError(wgpu::ErrorType::Validation,
-                                     "Dst gpu texture must be 2d.");
-    return;
-  }
-
-  wgpu::TextureUsage dst_texture_usage = destination->texture()->Usage();
-
-  if ((dst_texture_usage & wgpu::TextureUsage::RenderAttachment) !=
-          wgpu::TextureUsage::RenderAttachment ||
-      (dst_texture_usage & wgpu::TextureUsage::CopyDst) !=
-          wgpu::TextureUsage::CopyDst) {
-    device_->GetHandle().InjectError(
-        wgpu::ErrorType::Validation,
-        "Destination texture needs to have CopyDst and RenderAttachment "
-        "usage.");
     return;
   }
 
@@ -766,6 +753,103 @@ void GPUQueue::copyExternalImageToTexture(
                                  copyImage->flipY())) {
     exception_state.ThrowTypeError(
         "Failed to copy content from external image.");
+    return;
+  }
+}
+
+bool GPUQueue::IsValidDestinationTexture(
+    GPUImageCopyTextureTagged* destination,
+    wgpu::TexelCopyTextureInfo& dawn_destination,
+    ExceptionState& exception_state) {
+  if (!ConvertToDawn(destination, &dawn_destination, exception_state)) {
+    device_->GetHandle().InjectError(wgpu::ErrorType::Validation,
+                                     "Invalid destination.");
+    return false;
+  }
+  if (!IsValidExternalImageDestinationFormat(
+          destination->texture()->Format())) {
+    device_->GetHandle().InjectError(wgpu::ErrorType::Validation,
+                                     "Invalid destination gpu texture format.");
+    return false;
+  }
+  if (destination->texture()->Dimension() != wgpu::TextureDimension::e2D) {
+    device_->GetHandle().InjectError(wgpu::ErrorType::Validation,
+                                     "Dst gpu texture must be 2d.");
+    return false;
+  }
+
+  wgpu::TextureUsage dst_texture_usage = destination->texture()->Usage();
+  if ((dst_texture_usage & wgpu::TextureUsage::RenderAttachment) !=
+          wgpu::TextureUsage::RenderAttachment ||
+      (dst_texture_usage & wgpu::TextureUsage::CopyDst) !=
+          wgpu::TextureUsage::CopyDst) {
+    device_->GetHandle().InjectError(
+        wgpu::ErrorType::Validation,
+        "Destination texture needs to have CopyDst and RenderAttachment "
+        "usage.");
+    return false;
+  }
+  return true;
+}
+
+void GPUQueue::copyElementImageToTexture(Element* element,
+                                         GPUImageCopyTextureTagged* destination,
+                                         ExceptionState& exception_state) {
+  CopyElementImageToTextureInternal(element, std::nullopt, std::nullopt,
+                                    destination, exception_state);
+}
+
+void GPUQueue::copyElementImageToTexture(Element* element,
+                                         uint32_t width,
+                                         uint32_t height,
+                                         GPUImageCopyTextureTagged* destination,
+                                         ExceptionState& exception_state) {
+  CopyElementImageToTextureInternal(element, width, height, destination,
+                                    exception_state);
+}
+
+void GPUQueue::CopyElementImageToTextureInternal(
+    Element* element,
+    std::optional<uint32_t> width,
+    std::optional<uint32_t> height,
+    GPUImageCopyTextureTagged* destination,
+    ExceptionState& exception_state) {
+  CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
+
+  CanvasRenderingContext* context =
+      CanvasRenderingContext::GetEnclosingContextForDrawElement(
+          element, "copyElementImageToTexture()", exception_state);
+  if (!context) {
+    return;
+  }
+
+  PredefinedColorSpace color_space;
+  if (!ValidateAndConvertColorSpace(destination->colorSpace(), color_space,
+                                    exception_state)) {
+    return;
+  }
+
+  wgpu::TexelCopyTextureInfo dawn_destination;
+  if (!IsValidDestinationTexture(destination, dawn_destination,
+                                 exception_state)) {
+    return;
+  }
+
+  scoped_refptr<StaticBitmapImage> image = context->GetElementImage(
+      element, width, height, "copyElementImageToTexture()", exception_state);
+  if (!image) {
+    return;
+  }
+
+  wgpu::Extent3D dawn_copy_size;
+  dawn_copy_size.width = image->Size().width();
+  dawn_copy_size.height = image->Size().height();
+  if (!CopyFromCanvasSourceImage(image.get(), wgpu::Origin2D(), dawn_copy_size,
+                                 dawn_destination,
+                                 destination->premultipliedAlpha(), color_space,
+                                 /*flipY*/ false)) {
+    exception_state.ThrowTypeError(
+        "Failed to copy content from element image.");
     return;
   }
 }

@@ -11,9 +11,14 @@
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_consumer.h"
+#include "base/memory_coordinator/memory_consumer_registry_destruction_observer.h"
+#include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/types/pass_key.h"
 
 namespace base {
+
+class MemoryConsumerRegistration;
 
 // Provides an interface to safely notify MemoryConsumers of their memory limit.
 class BASE_EXPORT RegisteredMemoryConsumer {
@@ -24,6 +29,8 @@ class BASE_EXPORT RegisteredMemoryConsumer {
   friend bool operator==(const RegisteredMemoryConsumer& lhs,
                          const RegisteredMemoryConsumer& rhs) = default;
 
+  int memory_limit() const { return memory_consumer_->memory_limit(); }
+
  private:
   friend class MemoryConsumerRegistry;
 
@@ -32,16 +39,17 @@ class BASE_EXPORT RegisteredMemoryConsumer {
   raw_ptr<MemoryConsumer> memory_consumer_;
 };
 
-// A minimal interface for registering a MemoryConsumer with the
-// global registry for the current process.
+// A base class for registering a MemoryConsumer with the global registry for
+// the current process.
 class BASE_EXPORT MemoryConsumerRegistry {
  public:
+  static bool Exists();
   static MemoryConsumerRegistry& Get();
+  static MemoryConsumerRegistry* MaybeGet();
   static void Set(MemoryConsumerRegistry* instance);
 
-  // Returns true if the global instance is registered.
-  // TODO(406578344):  Remove this when the registry is always registered.
-  static bool IsAvailable();
+  MemoryConsumerRegistry();
+  virtual ~MemoryConsumerRegistry();
 
   // Adds/Removes an instance of MemoryConsumer with a specific
   // `consumer_id` and `traits`.
@@ -51,13 +59,22 @@ class BASE_EXPORT MemoryConsumerRegistry {
   void RemoveMemoryConsumer(std::string_view consumer_id,
                             MemoryConsumer* consumer);
 
- protected:
-  virtual ~MemoryConsumerRegistry() = default;
+  void AddDestructionObserver(
+      PassKey<MemoryConsumerRegistration>,
+      MemoryConsumerRegistryDestructionObserver* observer);
+  void RemoveDestructionObserver(
+      PassKey<MemoryConsumerRegistration>,
+      MemoryConsumerRegistryDestructionObserver* observer);
 
+ protected:
   RegisteredMemoryConsumer CreateRegisteredMemoryConsumer(
       MemoryConsumer* memory_consumer) {
     return RegisteredMemoryConsumer(memory_consumer);
   }
+
+  // Implementations must call this at the beginning of their destructors.
+  // Notifies all registered MemoryConsumerRegistryDestructionObservers.
+  void NotifyDestruction();
 
  private:
   virtual void OnMemoryConsumerAdded(std::string_view consumer_id,
@@ -67,6 +84,10 @@ class BASE_EXPORT MemoryConsumerRegistry {
                                        RegisteredMemoryConsumer consumer) = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  ObserverList<MemoryConsumerRegistryDestructionObserver>
+      destruction_observers_;
+  bool destruction_observers_notified_ = false;
 };
 
 // Helper class for creating and registering a singleton registry. This is

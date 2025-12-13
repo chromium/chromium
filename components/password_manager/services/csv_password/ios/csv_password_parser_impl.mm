@@ -10,33 +10,25 @@
 #include <vector>
 
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "components/password_manager/services/csv_password/ios/csv_passwords_parser_swift.h"
 
-namespace password_manager {
+namespace {
 
-CSVPasswordParserImpl::CSVPasswordParserImpl(
-    mojo::PendingReceiver<mojom::CSVPasswordParser> receiver)
-    : receiver_(this, std::move(receiver)) {}
-
-CSVPasswordParserImpl::~CSVPasswordParserImpl() = default;
-
-void CSVPasswordParserImpl::ParseCSV(const std::string& raw_csv,
-                                     ParseCSVCallback callback) {
-  mojom::CSVPasswordSequencePtr result = nullptr;
-
+password_manager::mojom::CSVPasswordSequencePtr DoParseCSV(
+    const std::string& raw_csv) {
   if (raw_csv.empty()) {
-    std::move(callback).Run(std::move(result));
-    return;
+    return nullptr;
   }
 
   CSVPasswordsParser* parser =
       [CSVPasswordsParser fromCSVInput:base::SysUTF8ToNSString(raw_csv)];
   if (!parser.passwords) {
-    std::move(callback).Run(std::move(result));
-    return;
+    return nullptr;
   }
 
-  result = mojom::CSVPasswordSequence::New();
+  password_manager::mojom::CSVPasswordSequencePtr result =
+      password_manager::mojom::CSVPasswordSequence::New();
   size_t count = [parser.passwords count];
   result->csv_passwords.reserve(count);
   for (PasswordData* parsed_password in parser.passwords) {
@@ -58,7 +50,25 @@ void CSVPasswordParserImpl::ParseCSV(const std::string& raw_csv,
     }
   }
 
-  std::move(callback).Run(std::move(result));
+  return result;
+}
+
+}  // namespace
+
+namespace password_manager {
+
+CSVPasswordParserImpl::CSVPasswordParserImpl(
+    mojo::PendingReceiver<mojom::CSVPasswordParser> receiver)
+    : receiver_(this, std::move(receiver)) {}
+
+CSVPasswordParserImpl::~CSVPasswordParserImpl() = default;
+
+void CSVPasswordParserImpl::ParseCSV(const std::string& raw_csv,
+                                     ParseCSVCallback callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&DoParseCSV, base::OwnedRef(raw_csv)),
+      std::move(callback));
 }
 
 }  // namespace password_manager

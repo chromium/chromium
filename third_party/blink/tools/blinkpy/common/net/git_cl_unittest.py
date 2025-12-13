@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import unittest
+from unittest import mock
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.net.results_fetcher import Build
@@ -12,6 +13,7 @@ from blinkpy.common.net.git_cl import CLStatus, CLSummary
 from blinkpy.common.net.git_cl import GitCL
 from blinkpy.common.net.git_cl import BuildStatus
 from blinkpy.common.net.web_mock import MockWeb
+from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.executive_mock import MockExecutive
 
 
@@ -120,19 +122,27 @@ class GitCLTest(unittest.TestCase):
         host.executive = MockExecutive(
             output='Foo\nIssue number: 12345 (http://crrev.com/12345)')
         git_cl = GitCL(host)
-        self.assertEqual(git_cl.get_issue_number(), '12345')
+        self.assertEqual(git_cl.get_issue_number(), 12345)
 
     def test_get_issue_number_none(self):
         host = MockHost()
         host.executive = MockExecutive(output='Issue number: None (None)')
         git_cl = GitCL(host)
-        self.assertEqual(git_cl.get_issue_number(), 'None')
+        self.assertIsNone(git_cl.get_issue_number())
+
+    def test_get_issue_number_error(self):
+        host = MockHost()
+        git_cl = GitCL(host)
+        with mock.patch.object(host.executive,
+                               'run_command',
+                               side_effect=ScriptError):
+            self.assertIsNone(git_cl.get_issue_number())
 
     def test_get_issue_number_nothing_in_output(self):
         host = MockHost()
         host.executive = MockExecutive(output='Bogus output')
         git_cl = GitCL(host)
-        self.assertEqual(git_cl.get_issue_number(), 'None')
+        self.assertIsNone(git_cl.get_issue_number())
 
     def test_wait_for_try_jobs_timeout(self):
         response = {

@@ -12,7 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/functional/callback.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
@@ -20,6 +20,8 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
+#include "chrome/browser/media/webrtc/capture_policy_utils.h"
+#include "chrome/browser/media/webrtc/same_origin_observer.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/tab_contents/tab_util.h"
@@ -72,6 +74,33 @@ const extensions::Extension* GetExtension(WebContents* web_contents) {
 }
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+std::unique_ptr<SameOriginObserver> MaybeCreateSameOriginObserverForTabCapture(
+    content::WebContents* capturer_web_contents,
+    const std::optional<content::DesktopMediaID>& media_id,
+    base::RepeatingCallback<void(content::WebContents*)> stop_callback) {
+  if (!media_id ||
+      media_id->type != content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
+    return nullptr;
+  }
+
+  if (!capture_policy::CapturerRestrictedToSameOrigin(capturer_web_contents)) {
+    return nullptr;
+  }
+
+  auto* captured_contents = content::WebContents::FromRenderFrameHost(
+      content::RenderFrameHost::FromID(
+          media_id->web_contents_id.render_process_id,
+          media_id->web_contents_id.main_render_frame_id));
+  if (!captured_contents) {
+    return nullptr;
+  }
+
+  const url::Origin capturer_origin =
+      capturer_web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  return std::make_unique<SameOriginObserver>(
+      captured_contents, capturer_origin, std::move(stop_callback));
+}
 
 std::u16string GetTitle(WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -179,7 +208,8 @@ class MediaStreamCaptureIndicator::WebContentsDeviceUsage
   std::unique_ptr<content::MediaStreamUI> RegisterMediaStream(
       const blink::mojom::StreamDevices& devices,
       std::unique_ptr<MediaStreamUI> ui,
-      const std::u16string application_title);
+      const std::u16string application_title,
+      const std::optional<content::DesktopMediaID>& media_id);
 
   // Increment ref-counts up based on the type of each device provided.
   void AddDevices(const blink::mojom::StreamDevices& devices,
@@ -230,7 +260,8 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
              base::WeakPtr<WebContentsDeviceUsage> device_usage,
              const blink::mojom::StreamDevices& devices,
              std::unique_ptr<::MediaStreamUI> ui,
-             const std::u16string application_title)
+             const std::u16string application_title,
+             std::optional<content::DesktopMediaID> media_id)
       : device_usage_(device_usage),
         devices_(devices),
         ui_(std::move(ui)),
@@ -242,6 +273,13 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     DCHECK(devices_.audio_device.has_value() ||
            devices_.video_device.has_value());
+
+    // base::Unretained is safe here because `same_origin_observer_` is owned by
+    // `this`, so the callback will not be invoked after `this` is destroyed.
+    same_origin_observer_ = MaybeCreateSameOriginObserverForTabCapture(
+        web_contents, media_id,
+        base::BindRepeating(&UIDelegate::StopCaptureDueToPolicy,
+                            base::Unretained(this)));
   }
 
   UIDelegate(const UIDelegate&) = delete;
@@ -323,6 +361,14 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
   }
 #endif
 
+  void StopCaptureDueToPolicy(content::WebContents* contents) {
+    if (device_usage_) {
+      device_usage_->StopMediaCapturing(MediaType::kUserMedia |
+                                        MediaType::kDisplayMedia);
+    }
+    capture_policy::ShowCaptureTerminatedDialog(contents);
+  }
+
   base::WeakPtr<WebContentsDeviceUsage> device_usage_;
   const blink::mojom::StreamDevices devices_;
   const std::unique_ptr<::MediaStreamUI> ui_;
@@ -332,18 +378,20 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
   const std::u16string application_title_;
   bool started_ = false;
   const int stop_callback_id_;
+  std::unique_ptr<SameOriginObserver> same_origin_observer_;
 };
 
 std::unique_ptr<content::MediaStreamUI>
 MediaStreamCaptureIndicator::WebContentsDeviceUsage::RegisterMediaStream(
     const blink::mojom::StreamDevices& devices,
     std::unique_ptr<MediaStreamUI> ui,
-    const std::u16string application_title) {
+    const std::u16string application_title,
+    const std::optional<content::DesktopMediaID>& media_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   return std::make_unique<UIDelegate>(
       web_contents(), weak_factory_.GetWeakPtr(), devices, std::move(ui),
-      std::move(application_title));
+      std::move(application_title), media_id);
 }
 
 void MediaStreamCaptureIndicator::WebContentsDeviceUsage::AddDevices(
@@ -545,7 +593,8 @@ MediaStreamCaptureIndicator::RegisterMediaStream(
     content::WebContents* web_contents,
     const blink::mojom::StreamDevices& devices,
     std::unique_ptr<MediaStreamUI> ui,
-    const std::u16string application_title) {
+    const std::u16string application_title,
+    std::optional<content::DesktopMediaID> media_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(web_contents);
 
@@ -554,7 +603,7 @@ MediaStreamCaptureIndicator::RegisterMediaStream(
     usage = std::make_unique<WebContentsDeviceUsage>(this, web_contents);
 
   return usage->RegisterMediaStream(devices, std::move(ui),
-                                    std::move(application_title));
+                                    std::move(application_title), media_id);
 }
 
 void MediaStreamCaptureIndicator::ExecuteCommand(int command_id,
@@ -566,8 +615,9 @@ void MediaStreamCaptureIndicator::ExecuteCommand(int command_id,
   DCHECK_LE(0, index);
   DCHECK_GT(static_cast<int>(command_targets_.size()), index);
   WebContents* web_contents = command_targets_[index];
-  if (base::Contains(usage_map_, web_contents))
+  if (base::Contains(usage_map_, web_contents)) {
     web_contents->GetDelegate()->ActivateContents(web_contents);
+  }
 }
 
 bool MediaStreamCaptureIndicator::CheckUsage(

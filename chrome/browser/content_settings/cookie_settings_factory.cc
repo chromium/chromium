@@ -5,7 +5,6 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 
 #include "base/check_op.h"
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"

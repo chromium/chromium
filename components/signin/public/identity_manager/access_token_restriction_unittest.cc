@@ -4,8 +4,13 @@
 
 #include "components/signin/public/identity_manager/access_token_restriction.h"
 
+#include "build/build_config.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if !BUILDFLAG(IS_FUCHSIA)
+#include "pdf/buildflags.h"  // nogncheck
+#endif                       // !BUILDFLAG(IS_FUCHSIA)
 
 namespace {
 struct AccessTokenRestrictionTestParam {
@@ -22,7 +27,6 @@ using signin::OAuth2ScopeRestriction;
 const AccessTokenRestrictionTestParam kTestParams[] = {
  {GaiaConstants::kGoogleUserInfoEmail, OAuth2ScopeRestriction::kNoRestriction},
  {GaiaConstants::kGoogleUserInfoProfile, OAuth2ScopeRestriction::kNoRestriction},
- {GaiaConstants::kDeviceManagementServiceOAuth, OAuth2ScopeRestriction::kNoRestriction},
  {GaiaConstants::kSecureConnectOAuth2Scope, OAuth2ScopeRestriction::kNoRestriction},
  {GaiaConstants::kFCMOAuthScope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kPaymentsOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
@@ -47,6 +51,13 @@ const AccessTokenRestrictionTestParam kTestParams[] = {
  {GaiaConstants::kOAuth1LoginScope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kCalendarReadOnlyOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kDriveReadOnlyOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
+ {GaiaConstants::kDeviceManagementServiceOAuth,
+#if BUILDFLAG(IS_ANDROID)
+  OAuth2ScopeRestriction::kNoRestriction
+#else
+  OAuth2ScopeRestriction::kSignedIn
+#endif
+ },
 #if BUILDFLAG(IS_CHROMEOS)
  {GaiaConstants::kAssistantOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kAuditRecordingOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
@@ -63,6 +74,11 @@ const AccessTokenRestrictionTestParam kTestParams[] = {
  {GaiaConstants::kPhotosOAuth2Scope, OAuth2ScopeRestriction::kSignedIn},
  {GaiaConstants::kTachyonOAuthScope, OAuth2ScopeRestriction::kSignedIn},
  #endif  // BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+ {GaiaConstants::kDriveOAuth2Scope, OAuth2ScopeRestriction::kNoRestriction},
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
  {GaiaConstants::kAnyApiOAuth2Scope, OAuth2ScopeRestriction::kPrivilegedOAuth2Consumer},
  {GaiaConstants::kChromeSyncSupervisedOAuth2Scope, OAuth2ScopeRestriction::kExplicitConsent},
  {GaiaConstants::kKidManagementPrivilegedOAuth2Scope, OAuth2ScopeRestriction::kExplicitConsent},

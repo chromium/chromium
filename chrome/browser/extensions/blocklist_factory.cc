@@ -3,10 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/blocklist_factory.h"
-#include "chrome/browser/extensions/blocklist.h"
+
+#include "extensions/browser/blocklist.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::BrowserContext;
 
@@ -45,7 +49,7 @@ BlocklistFactory::~BlocklistFactory() = default;
 std::unique_ptr<KeyedService>
 BlocklistFactory::BuildServiceInstanceForBrowserContext(
     BrowserContext* context) const {
-  return std::make_unique<Blocklist>();
+  return std::make_unique<Blocklist>(context);
 }
 
 }  // namespace extensions

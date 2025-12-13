@@ -20,7 +20,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabstripBrowserTest,
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
 
   // Set locked fullscreen state.
-  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
   AddTabAt(browser(), GURL("https://google.com"),
            /*index=*/0,
            /*foreground=*/true);

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/cma/backend/mixer/audio_output_redirector.h"
 
 #include <algorithm>
 #include <limits>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -251,7 +247,7 @@ void AudioOutputRedirector::InputImpl::Redirect(::media::AudioBus* const buffer,
 
   float* channels[kMaxChannels];
   for (int c = 0; c < num_output_channels_; ++c) {
-    channels[c] = temp_buffer_->channel(c);
+    UNSAFE_TODO(channels[c]) = temp_buffer_->channel(c).data();
   }
   if (previous_ended_in_silence_) {
     if (!redirected) {
@@ -415,8 +411,8 @@ void AudioOutputRedirector::PrepareNextBuffer(int num_frames) {
   }
 
   current_mix_buffer_ = buffer_pool_->GetBuffer();
-  current_mix_data_ = reinterpret_cast<float*>(current_mix_buffer_->data() +
-                                               kAudioMessageHeaderSize);
+  current_mix_data_ = reinterpret_cast<float*>(
+      UNSAFE_TODO(current_mix_buffer_->data() + kAudioMessageHeaderSize));
   std::fill_n(current_mix_data_, num_frames * config_.num_output_channels,
               0.0f);
   next_output_timestamp_ = INT64_MIN;
@@ -448,14 +444,14 @@ void AudioOutputRedirector::MixInput(MixerInput* mixer_input,
 
   ++input_count_;
   for (int c = 0; c < config_.num_output_channels; ++c) {
-    float* dest_channel = current_mix_data_ + c * next_num_frames_;
+    float* dest_channel = UNSAFE_TODO(current_mix_data_ + c * next_num_frames_);
     if (config_.apply_volume) {
-      mixer_input->VolumeScaleAccumulate(data->channel(c), num_frames,
+      mixer_input->VolumeScaleAccumulate(data->channel(c).data(), num_frames,
                                          dest_channel, c);
     } else {
-      const float* temp_channel = data->channel(c);
+      auto temp_channel = data->channel(c);
       for (int i = 0; i < num_frames; ++i) {
-        dest_channel[i] += temp_channel[i];
+        UNSAFE_TODO(dest_channel[i] += temp_channel[i]);
       }
     }
   }
@@ -472,7 +468,7 @@ void AudioOutputRedirector::FinishBuffer() {
           .Cast<size_t>()
           .ValueOrDie();
 
-  auto data_to_clamp = base::span(current_mix_data_, total_frames);
+  auto data_to_clamp = UNSAFE_TODO(base::span(current_mix_data_, total_frames));
   ::media::vector_math::FCLAMP(data_to_clamp, data_to_clamp);
 
   io_task_runner_->PostTask(

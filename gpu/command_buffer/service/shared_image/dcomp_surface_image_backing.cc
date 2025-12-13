@@ -20,7 +20,6 @@
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLTypes.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gl/debug_utils.h"
 #include "ui/gl/direct_composition_support.h"
@@ -222,17 +221,16 @@ DCompSurfaceImageBacking::DCompSurfaceImageBacking(
     gpu::SharedImageUsageSet usage,
     std::string debug_label,
     Microsoft::WRL::ComPtr<IDCompositionSurface> dcomp_surface)
-    : ClearTrackingSharedImageBacking(
-          mailbox,
-          format,
-          size,
-          color_space,
-          surface_origin,
-          alpha_type,
-          usage,
-          std::move(debug_label),
-          gfx::BufferSizeForBufferFormat(size, ToBufferFormat(format)),
-          /*is_thread_safe=*/false),
+    : ClearTrackingSharedImageBacking(mailbox,
+                                      format,
+                                      size,
+                                      color_space,
+                                      surface_origin,
+                                      alpha_type,
+                                      usage,
+                                      std::move(debug_label),
+                                      format.EstimatedSizeInBytes(size),
+                                      /*is_thread_safe=*/false),
       gl_surface_(scoped_refptr(
           new D3DTextureGLSurfaceEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(),
                                      size))),

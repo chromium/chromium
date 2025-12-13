@@ -17,6 +17,10 @@ class AutofillManagerTestApi {
   explicit AutofillManagerTestApi(AutofillManager* manager)
       : manager_(*manager) {}
 
+  FormStructure* FindCachedFormById(const FormGlobalId& form_id) {
+    return manager_->FindCachedFormById(form_id, /*pass_key=*/{});
+  }
+
   const base::ObserverList<AutofillManager::Observer>& observers() {
     return manager_->observers_;
   }
@@ -39,10 +43,14 @@ class AutofillManagerTestApi {
     manager_->OnFormsParsed(forms);
   }
 
-  std::map<FormGlobalId, std::unique_ptr<FormStructure>>*
-  mutable_form_structures() {
-    return manager_->mutable_form_structures();
+  FormStructure* AddSeenFormStructure(
+      std::unique_ptr<FormStructure> form_structure) {
+    const FormGlobalId id = form_structure->global_id();
+    manager_->form_structures_[id] = std::move(form_structure);
+    return manager_->form_structures_[id].get();
   }
+
+  void ClearFormStructures() { manager_->form_structures_.clear(); }
 
  private:
   raw_ref<AutofillManager> manager_;

@@ -125,7 +125,6 @@ class RenderWidgetHostViewChildFrameTest
         base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
             browser_context(), process_host_.get()));
     int32_t routing_id = process_host_->GetNextRoutingID();
-    sink_ = &process_host_->sink();
 
     // Create a RenderWidgetHostImpl which will be associated with an
     // RenderWidgetHostViewChildFrame, to simulate what would be done for an
@@ -165,7 +164,6 @@ class RenderWidgetHostViewChildFrameTest
   }
 
   void TearDown() override {
-    sink_ = nullptr;
     if (view_) {
       RenderWidgetHostViewChildFrame* local_view = view_;
       view_ = nullptr;
@@ -196,7 +194,6 @@ class RenderWidgetHostViewChildFrameTest
  protected:
   std::unique_ptr<MockRenderProcessHost> process_host_;
   scoped_refptr<SiteInstanceGroup> site_instance_group_;
-  raw_ptr<IPC::TestSink> sink_ = nullptr;
   MockRenderWidgetHostDelegate delegate_;
   MockWidget widget_;
 

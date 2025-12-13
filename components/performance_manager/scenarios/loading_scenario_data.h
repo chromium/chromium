@@ -18,13 +18,13 @@ class ProcessNode;
 // inline in ProcessNode; global counts are stored in LoadingScenarioObserver.
 class LoadingScenarioCounts : public NodeInlineData<LoadingScenarioCounts> {
  public:
-  LoadingScenarioCounts() = default;
+  LoadingScenarioCounts();
   ~LoadingScenarioCounts() = default;
 
   // Move-only.
   LoadingScenarioCounts(const LoadingScenarioCounts&) = delete;
   LoadingScenarioCounts& operator=(const LoadingScenarioCounts&) = delete;
-  LoadingScenarioCounts(LoadingScenarioCounts&&) = default;
+  LoadingScenarioCounts(LoadingScenarioCounts&&);
   LoadingScenarioCounts& operator=(LoadingScenarioCounts&&) = default;
 
   // Focused pages that are loading.

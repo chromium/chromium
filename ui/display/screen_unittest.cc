@@ -8,7 +8,6 @@
 #include "ui/display/display.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/display/test/test_screen.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace display {
 
@@ -64,26 +63,26 @@ class ZeroDisplayScreenTest : public testing::Test {
 };
 
 TEST_F(ScreenTest, GetPrimaryDisplaySize) {
-  const gfx::Size size = Screen::GetScreen()->GetPrimaryDisplay().size();
+  const gfx::Size size = Screen::Get()->GetPrimaryDisplay().size();
   EXPECT_EQ(DEFAULT_DISPLAY_WIDTH, size.width());
   EXPECT_EQ(DEFAULT_DISPLAY_HEIGHT, size.height());
 }
 
 TEST_F(ScreenTest, GetNumDisplays) {
-  EXPECT_EQ(Screen::GetScreen()->GetNumDisplays(), 2);
+  EXPECT_EQ(Screen::Get()->GetNumDisplays(), 2);
 }
 
 TEST_F(ScreenTest, GetDisplayWithDisplayId) {
   Display display;
-  EXPECT_TRUE(Screen::GetScreen()->GetDisplayWithDisplayId(DEFAULT_DISPLAY_ID,
-                                                           &display));
+  EXPECT_TRUE(
+      Screen::Get()->GetDisplayWithDisplayId(DEFAULT_DISPLAY_ID, &display));
   EXPECT_EQ(DEFAULT_DISPLAY_ID, display.id());
   EXPECT_EQ(DEFAULT_DISPLAY_WIDTH, display.size().width());
   EXPECT_EQ(DEFAULT_DISPLAY_HEIGHT, display.size().height());
 }
 
 TEST_F(ScreenTest, GetDisplayForNewWindows) {
-  Screen* screen = Screen::GetScreen();
+  Screen* screen = Screen::Get();
 
   // Display for new windows defaults to the primary display.
   EXPECT_EQ(screen->GetPrimaryDisplay().id(),
@@ -91,7 +90,7 @@ TEST_F(ScreenTest, GetDisplayForNewWindows) {
 }
 
 TEST_F(ScreenTest, ScopedDisplayForNewWindows) {
-  Screen* screen = Screen::GetScreen();
+  Screen* screen = Screen::Get();
 
   // Set primary as default;
   screen->SetDisplayForNewWindows(DEFAULT_DISPLAY_ID);
@@ -107,7 +106,7 @@ TEST_F(ScreenTest, ScopedDisplayForNewWindows) {
 }
 
 TEST_F(ScreenTest, GetScreenInfosNearestDisplay) {
-  Screen* screen = Screen::GetScreen();
+  Screen* screen = Screen::Get();
 
   // Nearest default
   {
@@ -140,7 +139,7 @@ TEST_F(ScreenTest, GetScreenInfosNearestDisplay) {
 // which have no displays (and don't need displays) but also need to have
 // this function return non-empty ScreenInfos.
 TEST_F(ZeroDisplayScreenTest, GetScreenInfosZeroDisplays) {
-  Screen* screen = Screen::GetScreen();
+  Screen* screen = Screen::Get();
   ScreenInfos screen_infos =
       screen->GetScreenInfosNearestDisplay(kInvalidDisplayId);
 

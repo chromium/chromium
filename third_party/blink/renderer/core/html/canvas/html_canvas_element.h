@@ -32,8 +32,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "cc/layers/texture_layer_client.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob_callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -44,8 +42,6 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
-#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types_3d.h"
 #include "third_party/blink/renderer/platform/graphics/offscreen_canvas_placeholder.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -64,12 +60,11 @@ class TextureLayer;
 
 namespace blink {
 
-class CanvasHibernationHandler;
 class CanvasContextCreationAttributesCore;
 class CanvasDrawListener;
 class CanvasHighDynamicRangeOptions;
 class CanvasRenderingContextFactory;
-class CanvasResourceProvider;
+class DOMMatrix;
 class Element;
 class GraphicsContext;
 class HTMLCanvasElement;
@@ -94,14 +89,11 @@ class CORE_EXPORT HTMLCanvasElement final
       public CanvasRenderingContextHost,
       public cc::TextureLayerClient,
       public WebSurfaceLayerBridgeObserver,
-      public OffscreenCanvasPlaceholder,
-      public CanvasHibernationHandler::Delegate {
+      public OffscreenCanvasPlaceholder {
   DEFINE_WRAPPERTYPEINFO();
   USING_PRE_FINALIZER(HTMLCanvasElement, Dispose);
 
  public:
-  using ElementHitTestRegion = CanvasRenderingContext::ElementHitTestRegion;
-
   using Node::GetExecutionContext;
 
   explicit HTMLCanvasElement(Document&);
@@ -122,10 +114,11 @@ class CORE_EXPORT HTMLCanvasElement final
   void setLayoutSubtree(bool);
   bool layoutSubtree() const;
 
-  void SetSize(gfx::Size new_size) final;
+  void SetSize(gfx::Size new_size);
 
   // Called by Document::getCSSCanvasContext as well as above getContext().
   CanvasRenderingContext* GetCanvasRenderingContext(
+      ExecutionContext*,
       const String&,
       const CanvasContextCreationAttributesCore&);
 
@@ -155,8 +148,6 @@ class CORE_EXPORT HTMLCanvasElement final
       const AtomicString&,
       HeapVector<CSSPropertyValue, 8>&) final;
 
-  bool IsCompositedForCanvas2D() const;
-
   // Used for canvas capture.
   void AddListener(CanvasDrawListener*);
   void RemoveListener(CanvasDrawListener*);
@@ -177,11 +168,6 @@ class CORE_EXPORT HTMLCanvasElement final
 
   bool OriginClean() const override;
   void SetOriginTainted() override { origin_clean_ = false; }
-
-  CanvasHibernationHandler* GetHibernationHandler() const;
-  void RecreateHibernationHandler() {
-    hibernation_handler_ = std::make_unique<CanvasHibernationHandler>(*this);
-  }
 
   unsigned IncrementFramesSinceLastCommit() {
     return ++frames_since_last_commit_;
@@ -232,8 +218,7 @@ class CORE_EXPORT HTMLCanvasElement final
   void PageVisibilityChanged() override;
 
   // CanvasImageSource implementation
-  scoped_refptr<Image> GetSourceImageForCanvas(FlushReason,
-                                               SourceImageStatus*,
+  scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
                                                const gfx::SizeF&) override;
   bool WouldTaintOrigin() const override;
   gfx::SizeF ElementSize(const gfx::SizeF&,
@@ -246,17 +231,7 @@ class CORE_EXPORT HTMLCanvasElement final
   void RegisterContentsLayer(cc::Layer*) override;
   void UnregisterContentsLayer(cc::Layer*) override;
 
-  // CanvasHibernationHandler::Delegate implementation
-  bool IsContextLost() const override;
   bool IsPageVisible() const override;
-  CanvasResourceProvider* GetResourceProviderForCanvas2D() const override {
-    CHECK(IsRenderingContext2D());
-    return resource_provider_for_canvas2d_.get();
-  }
-  void ResetResourceProviderForCanvas2D() override {
-    ReplaceResourceProviderForCanvas2D(nullptr);
-  }
-  void SetNeedsCompositingUpdate() override;
 
   // CanvasResourceProvider::Delegate implementation
   void NotifyGpuContextLost() override;
@@ -264,31 +239,11 @@ class CORE_EXPORT HTMLCanvasElement final
   bool TransferToGPUTextureWasInvoked() override;
 
   // CanvasRenderingContextHost implementation
-  void UpdateMemoryUsage() override;
-  size_t GetMemoryUsage() const override;
   bool ShouldAccelerate2dContext() const override;
   bool LowLatencyEnabled() const override;
-  bool IsHibernating() const override;
   void SetTransferToGPUTextureWasInvoked() override;
   UkmParameters GetUkmParameters() override;
-
-  std::unique_ptr<CanvasResourceProvider> ReplaceResourceProviderForCanvas2D(
-      std::unique_ptr<CanvasResourceProvider>);
-
-  // This method attempts to ensure that the canvas' resource exists on the GPU.
-  // A HTMLCanvasElement can downgrade itself from GPU to CPU when readback
-  // occurs too frequently, so a canvas may exist on the CPU even if the browser
-  // is normally GPU-capable. If the canvas needed to be migrated off of the
-  // CPU, the canvas resource provider and canvas 2D layer bridge will be
-  // destroyed and recreated; when this occurs, any existing pointers to these
-  // objects will be invalidated. If the canvas resource provider did not exist
-  // at all, it may be created.  NOTE: This method might fail to enable
-  // acceleration. Clients needing to know whether it succeeded should check
-  // whether the Canvas2D resource provider is accelerated after calling this
-  // method.
-  void EnableAccelerationForCanvas2D();
-
-  void DisableAccelerationForCanvas2D();
+  void SetNeedsCompositingUpdate() override;
 
   // ImageBitmapSource implementation
   ScriptPromise<ImageBitmap> CreateImageBitmap(
@@ -322,9 +277,6 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void DetachContext() override { context_ = nullptr; }
 
-  void WillDrawImageInCanvas2D(CanvasImageSource*,
-                               bool image_is_texture_backed);
-
   ExecutionContext* GetTopExecutionContext() const override {
     return GetDocument().GetExecutionContext();
   }
@@ -354,8 +306,7 @@ class CORE_EXPORT HTMLCanvasElement final
     needs_unbuffered_input_ = value;
   }
 
-  scoped_refptr<StaticBitmapImage> Snapshot(FlushReason,
-                                            SourceDrawingBuffer) const;
+  scoped_refptr<StaticBitmapImage> Snapshot(SourceDrawingBuffer) const;
 
   // Returns the cc layer containing the contents. It's the cc layer of
   // SurfaceLayerBridge() or RenderingContext(), or nullptr if the canvas is not
@@ -374,27 +325,22 @@ class CORE_EXPORT HTMLCanvasElement final
   bool CanStartSelection() const override;
 
   bool ShouldDisableAccelerationBecauseOfReadback() const;
-
-  void SetHitTestRegions(VectorOf<ElementHitTestRegion> hit_test_regions);
-  const VectorOf<ElementHitTestRegion>& GetHitTestRegions() const;
-
-  // `resource_provider_` must be null.
-  void SetResourceProviderForCanvas2D(
-      std::unique_ptr<CanvasResourceProvider> resource_provider) {
-    CHECK(IsRenderingContext2D());
-    CHECK(!resource_provider_for_canvas2d_);
-    resource_provider_for_canvas2d_ = std::move(resource_provider);
-    UpdateMemoryUsage();
-  }
+  void OnAccelerationDisabled();
 
   // Updates the preferred 2D raster mode based on the state of the context and
   // GPU acceleration.
   void UpdatePreferred2DRasterMode();
 
-  // Recreates the resource provider.
-  CanvasResourceProvider* RecreateCanvasResourceProviderForCanvas2D();
-
   void ResetLayer();
+
+  gfx::Vector2dF PhysicalPixelToCanvasGridScaleFactor();
+
+  // If `element` is drawn into the canvas's coordinate system with
+  // `draw_transform`, this returns the transform that can be applied to
+  // `element` to make its CSS position match the drawn position.
+  DOMMatrix* getElementTransform(Element* element,
+                                 DOMMatrix* draw_transform,
+                                 ExceptionState&);
 
  protected:
   void DidMoveToNewDocument(Document& old_document) override;
@@ -402,26 +348,9 @@ class CORE_EXPORT HTMLCanvasElement final
   void RemovedFrom(ContainerNode& insertion_point) override;
 
  private:
-  enum class ReadbackType {
-    kWebExposed,
-    kNotWebExposed,
-  };
-
   void Dispose();
 
-  void CreateCanvasResourceProviderForCanvas2D();
-
   void ColorSchemeMayHaveChanged();
-
-  void RecordIdentifiabilityMetric(IdentifiableSurface surface,
-                                   IdentifiableToken value) const;
-
-  // If the user is enrolled in the identifiability study, report the canvas
-  // type, and if applicable, canvas digest, taint bits, and
-  // |canvas_contents_token|, which represents the current bitmap displayed by
-  // this canvas.
-  void IdentifiabilityReportWithDigest(
-      IdentifiableToken canvas_contents_token) const;
 
   void PaintInternal(GraphicsContext&, const PhysicalRect&);
 
@@ -434,43 +363,34 @@ class CORE_EXPORT HTMLCanvasElement final
   void ParseAttribute(const AttributeModificationParams&) override;
   void AttributeChanged(const AttributeModificationParams&) override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
-  bool AreAuthorShadowsAllowed() const override { return false; }
 
-  void Reset();
-
-  void SetSurfaceSize(gfx::Size);
+  void OnWidthOrHeightAssigned();
 
   bool SizeChangesAreAllowed(ExceptionState& exception_state);
 
   bool PaintsIntoCanvasBuffer() const;
 
-  String ToDataURLInternal(
-      const String& mime_type,
-      const double& quality,
-      SourceDrawingBuffer,
-      ReadbackType readback_type = ReadbackType::kWebExposed) const;
+  String ToDataURLInternal(const String& mime_type,
+                           const double& quality,
+                           SourceDrawingBuffer) const;
 
   // Returns the transparent image resource for this canvas.
   scoped_refptr<StaticBitmapImage> GetTransparentImage();
 
   CanvasRenderingContext* GetCanvasRenderingContextInternal(
+      ExecutionContext*,
       const String&,
       const CanvasContextCreationAttributesCore&);
 
   scoped_refptr<StaticBitmapImage> GetSourceImageForCanvasInternal(
-      FlushReason,
       SourceImageStatus*);
 
   static std::pair<blink::Image*, float> BrokenCanvas(
       float device_scale_factor);
 
-  bool RecreateCanvasInGPURasterModeForCanvas2D();
-
   void ChildrenChanged(const ChildrenChange&) override;
 
   FRIEND_TEST_ALL_PREFIXES(HTMLCanvasElementTest, BrokenCanvasHighRes);
-
-  std::unique_ptr<CanvasResourceProvider> resource_provider_for_canvas2d_;
 
   HeapHashSet<WeakMember<CanvasDrawListener>> listeners_;
 
@@ -481,7 +401,7 @@ class CORE_EXPORT HTMLCanvasElement final
   bool disposing_ = false;
   bool canvas_is_clear_ = true;
 
-  bool ignore_reset_ = false;
+  bool within_set_size_ = false;
   gfx::Rect dirty_rect_;
 
   scoped_refptr<cc::TextureLayer> cc_layer_;
@@ -495,9 +415,6 @@ class CORE_EXPORT HTMLCanvasElement final
   bool needs_unbuffered_input_ = false;
   bool style_is_visible_ = false;
 
-  // CanvasHibernationHandler is used when canvas has 2d rendering context
-  std::unique_ptr<CanvasHibernationHandler> hibernation_handler_;
-
   // Used for OffscreenCanvas that controls this HTML canvas element
   // and for low latency mode.
   std::unique_ptr<::blink::SurfaceLayerBridge> surface_layer_bridge_;
@@ -510,9 +427,6 @@ class CORE_EXPORT HTMLCanvasElement final
 
   bool did_notify_listeners_for_current_frame_ = false;
 
-  // GPU Memory Management
-  mutable intptr_t externally_allocated_memory_;
-
   scoped_refptr<StaticBitmapImage> transparent_image_;
 
   // Paint flags set based on CSS properties, which must be propagated to the
@@ -520,10 +434,6 @@ class CORE_EXPORT HTMLCanvasElement final
   cc::PaintFlags::FilterQuality filter_quality_ =
       cc::PaintFlags::FilterQuality::kLow;
   cc::PaintFlags::DynamicRangeLimitMixture dynamic_range_limit_;
-
-  VectorOf<ElementHitTestRegion> hit_test_regions_;
-
-  NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
 };
 
 }  // namespace blink

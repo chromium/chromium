@@ -1,1 +1,2 @@
 per-file *tab_strip*=file://chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/OWNERS
+per-file *bookmark*=file://chrome/browser/bookmarks/android/OWNERS

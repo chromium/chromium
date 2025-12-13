@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
@@ -53,6 +54,13 @@ void ArcActivationNecessityChecker::Check(CheckCallback callback) {
 
   // Activate ARC if Always ON VPN is enabled.
   if (!profile_->GetPrefs()->GetString(prefs::kAlwaysOnVpnPackage).empty()) {
+    OnChecked(std::move(callback), true);
+    return;
+  }
+
+  // Activate ARC if Coral feature is enabled, since it depends on the on-device
+  // safety service which is powered inside arc.
+  if (ash::features::IsCoralFeatureEnabled()) {
     OnChecked(std::move(callback), true);
     return;
   }

@@ -8,8 +8,8 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <body>
-  <iframe id="same-origin"></iframe>
   <iframe id="cross-origin" allow="digital-credentials-get"></iframe>
+  <iframe id="same-origin"></iframe>
 </body>
 <script type="module">
   import { makeGetOptions, sendMessage, loadIframe } from "./support/helper.js";
@@ -31,16 +31,8 @@
   promise_test(async (t) => {
     const invalidData = [null, undefined, "", 123, true, false];
     for (const data of invalidData) {
-      const options = {
-        digital: {
-          requests: [
-            {
-              data,
-              protocol: "openid4vp",
-            },
-          ],
-        },
-      };
+      const options = makeGetOptions({ data });
+      await test_driver.bless("user activation");
       await promise_rejects_js(
         t,
         TypeError,
@@ -107,8 +99,12 @@
   }, "Calling navigator.credentials.get() without a digital member same origin.");
 
   promise_test(async (t) => {
-    for (const request of [undefined, []]) {
-      const options = makeGetOptions(request);
+    for (const r of [undefined, []]) {
+      const options = {
+        digital: {
+          requests: r
+        },
+      };
       await test_driver.bless("user activation");
       await promise_rejects_js(
         t,
@@ -121,8 +117,12 @@
   promise_test(async (t) => {
     iframeSameOrigin.focus();
     const { contentWindow: iframeWindow } = iframeSameOrigin;
-    for (const request of [undefined, []]) {
-      const options = makeGetOptions(request);
+    for (const r of [undefined, []]) {
+      const options = {
+        digital: {
+          requests: r
+        },
+      };
       await test_driver.bless("user activation");
       await promise_rejects_js(
         t,
@@ -134,8 +134,12 @@
 
   promise_test(async (t) => {
     iframeCrossOrigin.focus();
-    for (const request of [undefined, []]) {
-      const options = makeGetOptions(request);
+    for (const r of [undefined, []]) {
+      const options = {
+        digital: {
+          requests: r
+        },
+      };
       const result = await sendMessage(iframeCrossOrigin, {
         action: "get",
         options,
@@ -148,7 +152,7 @@
     const abortController = new AbortController();
     const { signal } = abortController;
     abortController.abort();
-    for (const options of [{ signal }, { signal, ...makeGetOptions([]) }]) {
+    for (const options of [{ signal }, makeGetOptions({protocol: [], signal})]) {
       await promise_rejects_dom(
         t,
         "AbortError",
@@ -163,7 +167,7 @@
     const abortController = new iframeWindow.AbortController();
     const { signal } = abortController;
     abortController.abort();
-    for (const options of [{ signal }, { signal, ...makeGetOptions([]) }]) {
+    for (const options of [{ signal }, makeGetOptions({protocol: [], signal})]) {
       await test_driver.bless("user activation");
       await promise_rejects_dom(
         t,
@@ -180,7 +184,7 @@
 
   promise_test(async (t) => {
     iframeCrossOrigin.focus();
-    for (const options of [undefined, {}, makeGetOptions([])]) {
+    for (const options of [undefined, {}, makeGetOptions({protocol: []})]) {
       const result = await sendMessage(iframeCrossOrigin, {
         abort: "before",
         action: "get",
@@ -194,8 +198,7 @@
   promise_test(async (t) => {
     const abortController = new AbortController();
     const { signal } = abortController;
-    const options = makeGetOptions("openid4vp");
-    options.signal = signal;
+    const options = makeGetOptions({signal});
     await test_driver.bless("user activation");
     const promise = promise_rejects_dom(
       t,
@@ -213,24 +216,25 @@
       abort: "after",
       action: "get",
       needsActivation: true,
-      options: makeGetOptions("openid4vp"),
+      options: makeGetOptions(),
     });
     assert_equals(result.constructor, "DOMException");
     assert_equals(result.name, "AbortError");
   }, "navigator.credentials.get() promise is rejected if abort controller is aborted after call to get() in cross-origin iframe.");
 
   promise_test(async (t) => {
-    /** @type sequence<CredentialMediationRequirement> */
-    const disallowedMediations = ["conditional", "optional", "silent"];
-    for (const mediation of disallowedMediations) {
-      const options = makeGetOptions("default", mediation);
-      await promise_rejects_js(
-        t,
-        TypeError,
-        navigator.credentials.get(options)
-      );
+    for (const mediation of ["silent", "optional", "conditional", "required"]) {
+      const abortController = new AbortController();
+      const { signal } = abortController;
+      await test_driver.bless("user activation");
+      const requestPromise = navigator.credentials.get(makeGetOptions({
+        mediation,
+        signal,
+      }));
+      abortController.abort(new Error(`Aborted for testing mediation "${mediation}"`));
+      await promise_rejects_js(t, Error, requestPromise);
     }
-  }, "Mediation is required to get a DigitalCredential.");
+  }, "Mediation is implicitly required and hence ignored. Request is aborted regardless.");
 
 promise_test(async t => {
   const throwingValues = [
@@ -240,8 +244,7 @@ promise_test(async t => {
   ];
 
   for (const badValue of throwingValues) {
-    const options = makeGetOptions("openid4vp");
-    options.digital.requests[0].data = badValue;
+    const options = makeGetOptions({ data: badValue });
 
     await promise_rejects_js(
       t,
@@ -251,4 +254,11 @@ promise_test(async t => {
     );
   }
 }, "Throws TypeError when request data is not JSON stringifiable.");
+
+promise_test(async (t) => {
+    await promise_rejects_js(
+      t,
+      TypeError,
+      navigator.credentials.get({digital: {}}));
+  }, "`requests` field is required in the options object.");
 </script>

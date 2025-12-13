@@ -1,6 +1,6 @@
 Name: Benchmark - Macrobenchmark
 Short Name: benchmark-macro
-URL: https://developer.android.com/jetpack/androidx/releases/benchmark#1.5.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/14586925/artifacts/repository/androidx/benchmark/benchmark-macro/1.5.0-SNAPSHOT/benchmark-macro-1.5.0-20251213.041943-1.aar
 Version: 1.5.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 Android Benchmark - Macrobenchmark
+
+See also: https://developer.android.com/jetpack/androidx/releases/benchmark#1.5.0-SNAPSHOT
+
 
 Local Modifications:
 No modifications.

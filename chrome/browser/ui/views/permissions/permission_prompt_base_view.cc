@@ -22,6 +22,7 @@
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -132,17 +133,22 @@ void PermissionPromptBaseView::AnchorToPageInfoOrChip() {
   bubble_anchor_util::AnchorConfiguration configuration =
       bubble_anchor_util::GetPermissionPromptBubbleAnchorConfiguration(
           browser_);
-  SetAnchorView(configuration.anchor_view);
-  // In fullscreen, `anchor_view` may be nullptr because the toolbar is hidden,
+  SetAnchor(configuration.anchor);
+  // In fullscreen, `anchor` may be nullptr because the toolbar is hidden,
   // therefore anchor to the browser window instead.
-  if (configuration.anchor_view) {
-    set_parent_window(configuration.anchor_view->GetWidget()->GetNativeView());
+  if (std::holds_alternative<View*>(configuration.anchor)) {
+    set_parent_window(
+        std::get<View*>(configuration.anchor)->GetWidget()->GetNativeView());
+  } else if (std::holds_alternative<ui::TrackedElement*>(
+                 configuration.anchor)) {
+    set_parent_window(
+        std::get<ui::TrackedElement*>(configuration.anchor)->GetNativeView());
   } else {
     set_parent_window(
         platform_util::GetViewForWindow(browser_->window()->GetNativeWindow()));
   }
   SetHighlightedButton(configuration.highlighted_button);
-  if (!configuration.anchor_view) {
+  if (std::holds_alternative<std::nullptr_t>(configuration.anchor)) {
     SetAnchorRect(bubble_anchor_util::GetPageInfoAnchorRect(browser_));
   }
   SetArrow(configuration.bubble_arrow);

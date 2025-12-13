@@ -8,8 +8,17 @@
 #import "base/memory/weak_ptr.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/web/public/web_state.h"
+
+namespace {
+
+// Size of the NTP symbol in points.
+const CGFloat kSymbolSize = 14.0;
+
+}  // namespace
 
 @implementation WebStateTabSwitcherItem {
   // The web state represented by this item.
@@ -47,7 +56,9 @@
   if (!_webState) {
     return NO;
   }
-  return IsUrlNtp(_webState->GetVisibleURL());
+  return IsTabGridEmptyThumbnailUIEnabled()
+             ? NO
+             : IsUrlNtp(_webState->GetVisibleURL());
 }
 
 - (BOOL)showsActivity {
@@ -60,7 +71,9 @@
 #pragma mark - Favicons
 
 - (UIImage*)NTPFavicon {
-  return [[UIImage alloc] init];
+  return IsTabGridEmptyThumbnailUIEnabled()
+             ? CustomSymbolWithPointSize(kChromeProductSymbol, kSymbolSize)
+             : [[UIImage alloc] init];
 }
 
 #pragma mark - NSObject

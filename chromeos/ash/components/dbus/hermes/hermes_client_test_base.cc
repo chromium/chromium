@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/dbus/hermes/hermes_client_test_base.h"
+
+#include <utility>
+
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
@@ -26,13 +29,13 @@ HermesClientTestBase::~HermesClientTestBase() = default;
 void HermesClientTestBase::OnMethodCalled(
     dbus::MethodCall* method_call,
     int timeout_ms,
-    dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
+    dbus::ObjectProxy::ResponseOrErrorCallback callback) {
   ASSERT_FALSE(pending_method_call_results_.empty());
   MethodCallResult result = std::move(pending_method_call_results_.front());
   pending_method_call_results_.pop_front();
   task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&RunResponseOrErrorCallback, std::move(*callback),
+      base::BindOnce(&RunResponseOrErrorCallback, std::move(callback),
                      std::move(result.first), std::move(result.second)));
 }
 
@@ -50,7 +53,7 @@ dbus::MockBus* HermesClientTestBase::GetMockBus() {
 void HermesClientTestBase::InitMockBus() {
   dbus::Bus::Options options;
   options.bus_type = dbus::Bus::SYSTEM;
-  bus_ = new dbus::MockBus(options);
+  bus_ = new dbus::MockBus(std::move(options));
 }
 
 }  // namespace ash

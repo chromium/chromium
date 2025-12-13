@@ -125,6 +125,7 @@ Study CreateTwoArmStudy(Study_Consistency consistency) {
   Study study;
   study.set_name("TestStudy");
   study.set_consistency(consistency);
+  study.set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
   AddExperiment("Group1", 50, &study);
   AddExperiment("Group2", 50, &study);
@@ -307,7 +308,7 @@ TEST_F(VariationsLayersTest, InvalidLayer_LimitedLayerDropped) {
   // in the enabled group of the limited entropy synthetic trial.
   const EntropyProviders entropy_providers(
       kTestClientID, {kTestLowEntropySource, 8000},
-      /*limited_entropy_randomization_source=*/std::string_view());
+      /*limited_entropy_source=*/std::string_view());
 
   VariationsLayers layers(CreateSeedWithLimitedLayer(), entropy_providers);
 
@@ -331,6 +332,17 @@ TEST_F(VariationsLayersTest, ValidSlotBounds) {
                    .layer_members = {
                        {.id = 1u, .start = 0u, .end = representable_max - 1}}});
   EXPECT_TRUE(VariationsLayers::AreSlotBoundsValid(layer));
+}
+
+TEST_F(VariationsLayersTest, ValidSlotBounds_OverlapppingLayerMembers) {
+  auto layer = CreateLayer({.id = 1u,
+                            .num_slots = 100u,
+                            .entropy_mode = Layer::DEFAULT,
+                            .layer_members = {
+                                {.id = 1u, .start = 0u, .end = 49u},
+                                {.id = 2u, .start = 40u, .end = 99u},
+                            }});
+  EXPECT_FALSE(VariationsLayers::AreSlotBoundsValid(layer));
 }
 
 TEST_F(VariationsLayersTest, InvalidSlotBounds_ReferringToOutOfBoundsSlot) {

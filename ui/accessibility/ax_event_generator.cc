@@ -388,8 +388,17 @@ void AXEventGenerator::OnIgnoredChanged(AXTree* tree,
   AddEvent(unignored_parent, Event::CHILDREN_CHANGED);
 
   AddEvent(node, Event::IGNORED_CHANGED);
-  if (!is_ignored_new_value)
+  if (!is_ignored_new_value) {
     AddEvent(node, Event::SUBTREE_CREATED);
+    // Fire alert events when a node with alert role becomes unignored.
+    // This handles cases where role and ignored state change simultaneously
+    // (e.g. visibility:hidden->visible + role="alert" on the same element),
+    // which don't trigger OnRoleChanged due to early returns in
+    // NotifyNodeAttributesHaveBeenChanged for ignored state transitions.
+    if (IsAlert(node->GetRole())) {
+      AddEvent(node, Event::ALERT);
+    }
+  }
   if (node->GetRole() == ax::mojom::Role::kMenu) {
     if (is_ignored_new_value) {
       AddEvent(node, Event::MENU_POPUP_END);
@@ -665,6 +674,9 @@ void AXEventGenerator::OnIntAttributeChanged(AXTree* tree,
         AddEvent(node, Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED);
         AddEvent(node, Event::OBJECT_ATTRIBUTE_CHANGED);
       }
+      break;
+    case ax::mojom::IntAttribute::kDefaultActionVerb:
+      AddEvent(node, Event::DEFAULT_ACTION_VERB_CHANGED);
       break;
     default:
       break;
@@ -1325,6 +1337,8 @@ const char* ToString(AXEventGenerator::Event event) {
       return "collapsed";
     case AXEventGenerator::Event::CONTROLS_CHANGED:
       return "controlsChanged";
+    case AXEventGenerator::Event::DEFAULT_ACTION_VERB_CHANGED:
+      return "defaultActionVerbChanged";
     case AXEventGenerator::Event::DETAILS_CHANGED:
       return "detailsChanged";
     case AXEventGenerator::Event::DESCRIBED_BY_CHANGED:

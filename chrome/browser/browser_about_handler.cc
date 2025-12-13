@@ -13,12 +13,13 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
-#include "components/policy/content/policy_blocklist_service.h"
-#include "components/policy/core/browser/url_blocklist_manager.h"
+#include "components/policy/core/browser/url_list/policy_blocklist_service.h"
+#include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -50,16 +51,17 @@ bool HandleChromeAboutAndChromeSyncRewrite(
          !url->SchemeIs(url::kAboutScheme));
 
   // Only handle chrome: URLs.
-  if (!url->SchemeIs(content::kChromeUIScheme))
+  if (!url->SchemeIs(content::kChromeUIScheme)) {
     return false;
+  }
 
-  std::string host(url->host());
+  std::string host(url->GetHost());
   if (host == chrome::kChromeUIAboutHost) {
     // Replace chrome://about with chrome://chrome-urls.
     host = chrome::kChromeUIChromeURLsHost;
   }
 
-  if (host != url->host()) {
+  if (host != url->GetHost()) {
     GURL::Replacements replacements;
     replacements.SetHostStr(host);
     *url = url->ReplaceComponents(replacements);
@@ -78,7 +80,8 @@ bool HandleNonNavigationAboutURL(const GURL& url,
   // TODO(crbug.com/418187845): Remove this check once Android is supported.
   if (context) {
     PolicyBlocklistService* service =
-        PolicyBlocklistFactory::GetForBrowserContext(context);
+        ChromePolicyBlocklistServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(context));
     using URLBlocklistState = policy::URLBlocklist::URLBlocklistState;
     if (service->GetURLBlocklistState(url) ==
         URLBlocklistState::URL_IN_BLOCKLIST) {

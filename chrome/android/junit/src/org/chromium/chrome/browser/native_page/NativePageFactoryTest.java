@@ -23,6 +23,8 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.pdf.PdfPage;
@@ -31,6 +33,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage.NativePageType;
 import org.chromium.chrome.browser.ui.native_page.NativePageTest.UrlCombo;
+import org.chromium.chrome.browser.url_constants.ExtensionsUrlOverrideRegistry;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** Tests public methods in NativePageFactory. */
@@ -111,7 +114,7 @@ public class NativePageFactoryTest {
         private MockNativePageBuilder() {
             super(
                     null, null, null, null, null, null, null, null, null, null, null, null, null,
-                    null, null, null, null, null);
+                    null, null, null, null, null, null, null, null);
         }
 
         @Override
@@ -141,7 +144,7 @@ public class NativePageFactoryTest {
         mNativePageFactory =
                 new NativePageFactory(
                         null, null, null, null, null, null, null, null, null, null, null, null,
-                        null, null, null, null, null);
+                        null, null, null, null, null, null, null, null);
         mNativePageFactory.setNativePageBuilderForTesting(new MockNativePageBuilder());
         NativePageFactory.setPdfPageForTesting(mPdfPage);
         mPdfInfo = new PdfInfo();
@@ -260,5 +263,77 @@ public class NativePageFactoryTest {
                         mTabModelSelector,
                         mActivity);
         Assert.assertEquals("A new pdf page should be created.", mPdfPage, page);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING)
+    public void testExtensionUrlOverrides() {
+        // Test NTP override
+        String ntpUrl = "chrome://newtab";
+        Assert.assertNotNull(
+                "NTP should be a native page by default.",
+                mNativePageFactory.createNativePageForURL(ntpUrl, null, mTab, false, null));
+        ExtensionsUrlOverrideRegistry.setNtpOverrideEnabled(true);
+        Assert.assertNull(
+                "NTP should not be a native page when overridden.",
+                mNativePageFactory.createNativePageForURL(ntpUrl, null, mTab, false, null));
+        Assert.assertNotNull(
+                "Incognito NTP should still be a native page when NTP is overridden.",
+                mNativePageFactory.createNativePageForURL(ntpUrl, null, mTab, true, null));
+        ExtensionsUrlOverrideRegistry.setNtpOverrideEnabled(false);
+
+        // Test incognito NTP override
+        Assert.assertNotNull(
+                "Incognito NTP should be a native page by default.",
+                mNativePageFactory.createNativePageForURL(ntpUrl, null, mTab, true, null));
+        ExtensionsUrlOverrideRegistry.setIncognitoNtpOverrideEnabled(true);
+        Assert.assertNotNull(
+                "NTP should still be a native page when incognito NTP is overridden.",
+                mNativePageFactory.createNativePageForURL(ntpUrl, null, mTab, false, null));
+        Assert.assertNull(
+                "Incognito NTP should not be a native page when overridden.",
+                mNativePageFactory.createNativePageForURL(ntpUrl, null, mTab, true, null));
+        ExtensionsUrlOverrideRegistry.setIncognitoNtpOverrideEnabled(false);
+
+        // Test Bookmarks override
+        String bookmarksUrl = "chrome://bookmarks";
+        Assert.assertNotNull(
+                "Bookmarks should be a native page by default.",
+                mNativePageFactory.createNativePageForURL(bookmarksUrl, null, mTab, false, null));
+        ExtensionsUrlOverrideRegistry.setBookmarksPageOverrideEnabled(true);
+        Assert.assertNull(
+                "Bookmarks should not be a native page when overridden.",
+                mNativePageFactory.createNativePageForURL(bookmarksUrl, null, mTab, false, null));
+        Assert.assertNotNull(
+                "Incognito Bookmarks should still be a native page when Bookmarks is overridden.",
+                mNativePageFactory.createNativePageForURL(bookmarksUrl, null, mTab, true, null));
+        ExtensionsUrlOverrideRegistry.setBookmarksPageOverrideEnabled(false);
+
+        // Test incognito Bookmarks override
+        Assert.assertNotNull(
+                "Incognito Bookmarks should be a native page by default.",
+                mNativePageFactory.createNativePageForURL(bookmarksUrl, null, mTab, true, null));
+        ExtensionsUrlOverrideRegistry.setIncognitoBookmarksPageOverrideEnabled(true);
+        Assert.assertNotNull(
+                "Bookmarks should still be a native page when incognito Bookmarks is overridden.",
+                mNativePageFactory.createNativePageForURL(bookmarksUrl, null, mTab, false, null));
+        Assert.assertNull(
+                "Incognito Bookmarks should not be a native page when overridden.",
+                mNativePageFactory.createNativePageForURL(bookmarksUrl, null, mTab, true, null));
+        ExtensionsUrlOverrideRegistry.setIncognitoBookmarksPageOverrideEnabled(false);
+
+        // Test History override
+        String historyUrl = "chrome://history";
+        Assert.assertNotNull(
+                "History should be a native page by default.",
+                mNativePageFactory.createNativePageForURL(historyUrl, null, mTab, false, null));
+        ExtensionsUrlOverrideRegistry.setHistoryPageOverrideEnabled(true);
+        Assert.assertNull(
+                "History should not be a native page when overridden.",
+                mNativePageFactory.createNativePageForURL(historyUrl, null, mTab, false, null));
+        Assert.assertNotNull(
+                "Incognito history should always be a native page.",
+                mNativePageFactory.createNativePageForURL(historyUrl, null, mTab, true, null));
+        ExtensionsUrlOverrideRegistry.setHistoryPageOverrideEnabled(false);
     }
 }

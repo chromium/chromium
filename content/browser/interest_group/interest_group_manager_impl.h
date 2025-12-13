@@ -20,7 +20,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
-#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"

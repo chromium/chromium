@@ -49,6 +49,10 @@
 //    ARCH_CPU_31_BITS / ARCH_CPU_32_BITS / ARCH_CPU_64_BITS
 //    ARCH_CPU_BIG_ENDIAN / ARCH_CPU_LITTLE_ENDIAN
 
+// Mapping to some Rust conditionals:
+//
+// * `#[cfg(unix)]` ~= `BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)`
+
 #ifndef BUILD_BUILD_CONFIG_H_
 #define BUILD_BUILD_CONFIG_H_
 
@@ -89,8 +93,8 @@
 // The OS_CHROMEOS macro is defined in GN.
 #define OS_LINUX 1
 #endif  // !defined(OS_CHROMEOS)
-// Include a system header to pull in features.h for glibc/uclibc macros.
-#include <assert.h>
+// Include features.h for glibc/uclibc macros.
+#include <features.h>
 #if defined(__GLIBC__) && !defined(__UCLIBC__)
 // We really are using glibc, not uClibc pretending to be glibc.
 #define LIBC_GLIBC 1

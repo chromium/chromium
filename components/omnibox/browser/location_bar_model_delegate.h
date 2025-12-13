@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/security_state/core/security_state.h"
 
 class AutocompleteClassifier;

@@ -8,7 +8,6 @@
 
 #include "apps/ui/views/app_window_frame_view.h"
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration_win.h"
@@ -79,7 +78,7 @@ void ChromeNativeAppWindowViewsWin::InitializeDefaultWindow(
   }
 }
 
-std::unique_ptr<views::NonClientFrameView>
+std::unique_ptr<views::FrameView>
 ChromeNativeAppWindowViewsWin::CreateStandardDesktopAppFrame() {
   auto frame_view = std::make_unique<AppWindowFrameViewWin>(widget());
   frame_view_ = frame_view.get();

@@ -16,6 +16,7 @@
 
 namespace views {
 class CompositorAnimationRunner;
+class Widget;
 
 // Provides default implementation to adapt CompositorAnimationRunner for
 // Animation. Falls back to the default animation runner when |view| is nullptr.
@@ -25,6 +26,8 @@ class VIEWS_EXPORT AnimationDelegateViews
       public gfx::AnimationContainerObserver {
  public:
   explicit AnimationDelegateViews(View* view,
+                                  const base::Location& location = FROM_HERE);
+  explicit AnimationDelegateViews(Widget* widget,
                                   const base::Location& location = FROM_HERE);
   ~AnimationDelegateViews() override;
 

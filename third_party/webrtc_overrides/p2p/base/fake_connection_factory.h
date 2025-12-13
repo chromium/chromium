@@ -17,12 +17,11 @@
 #include "third_party/webrtc/p2p/base/port_allocator.h"
 #include "third_party/webrtc/p2p/base/port_interface.h"
 #include "third_party/webrtc/rtc_base/socket_factory.h"
-#include "third_party/webrtc/rtc_base/third_party/sigslot/sigslot.h"
 
 namespace blink {
 
 // Generates simulated connection objects for use in tests.
-class FakeConnectionFactory : public sigslot::has_slots<> {
+class FakeConnectionFactory {
  public:
   // The factory must be initialized by calling Prepare(). readyEvent will be
   // signaled when the factory is ready to start creating connections.

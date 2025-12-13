@@ -20,17 +20,17 @@ namespace ui {
 namespace {
 
 const size_t kSampleCandidateSize = 3;
-auto kSampleCandidate = std::to_array<const char*>({
+constexpr auto kSampleCandidate = std::to_array<const char*>({
     "Sample Candidate 1",
     "Sample Candidate 2",
     "Sample Candidate 3",
 });
-auto kSampleDescriptionTitle = std::to_array<const char*>({
+constexpr auto kSampleDescriptionTitle = std::to_array<const char*>({
     "Sample Description Title 1",
     "Sample Description Title 2",
     "Sample Description Title 3",
 });
-auto kSampleDescriptionBody = std::to_array<const char*>({
+constexpr auto kSampleDescriptionBody = std::to_array<const char*>({
     "Sample Description Body 1",
     "Sample Description Body 2",
     "Sample Description Body 3",

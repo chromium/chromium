@@ -5,21 +5,33 @@
 #include "components/permissions/android/android_permission_util.h"
 
 #include "base/android/jni_array.h"
+#include "base/auto_reset.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/location/android/location_settings_impl.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "components/permissions/android/core_jni/PermissionUtil_jni.h"
 #include "components/permissions/android/jni_headers/AndroidPermissionRequester_jni.h"
+#include "components/permissions/android/jni_headers/PermissionUtil_jni.h"
 
 namespace permissions {
 
 namespace {
 
+bool g_is_system_location_setting_enabled_for_test = false;
+
 // Returns whether the Android location setting is enabled/disabled.
 bool IsSystemLocationSettingEnabled() {
+  if (g_is_system_location_setting_enabled_for_test) {
+    return true;
+  }
   LocationSettingsImpl location_settings;
   return location_settings.IsSystemLocationSettingEnabled();
 }
@@ -60,12 +72,14 @@ bool HasRequiredAndroidPermissionsForContentSetting(
 PermissionRepromptState ShouldRepromptUserForPermissions(
     content::WebContents* web_contents,
     const std::vector<ContentSettingsType>& content_settings_types) {
-  if (!web_contents)
+  if (!web_contents) {
     return PermissionRepromptState::kCannotShow;
+  }
 
   auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
-  if (!window_android)
+  if (!window_android) {
     return PermissionRepromptState::kCannotShow;
+  }
 
   for (ContentSettingsType content_settings_type : content_settings_types) {
     if (!HasRequiredAndroidPermissionsForContentSetting(
@@ -153,7 +167,7 @@ bool HasSystemPermission(ContentSettingsType type,
   if (!web_contents || !web_contents->GetNativeView()) {
     return false;
   }
-  if (type == ContentSettingsType::GEOLOCATION &&
+  if ((type == permissions::PermissionUtil::GetGeolocationType()) &&
       !IsSystemLocationSettingEnabled()) {
     return false;
   }
@@ -168,7 +182,7 @@ bool CanRequestSystemPermission(ContentSettingsType type,
   if (!web_contents || !web_contents->GetNativeView()) {
     return false;
   }
-  if (type == ContentSettingsType::GEOLOCATION &&
+  if ((type == permissions::PermissionUtil::GetGeolocationType()) &&
       !IsSystemLocationSettingEnabled()) {
     return false;
   }
@@ -196,4 +210,56 @@ void RequestLocationServices(content::WebContents* web_contents) {
       env, window_android->GetJavaObject());
 }
 
+base::AutoReset<bool> EnableSystemLocationSettingForTesting() {
+  return base::AutoReset<bool>(&g_is_system_location_setting_enabled_for_test,
+                               true);
+}
+
 }  // namespace permissions
+
+static void JNI_PermissionUtil_ResolvePermissionRequest(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& jweb_contents,
+    jint content_settings_type,
+    jint content_setting) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(jweb_contents);
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  ContentSetting setting = static_cast<ContentSetting>(content_setting);
+
+  if (!permission_request_manager) {
+    return;
+  }
+  if (permission_request_manager->IsRequestInProgress() &&
+      permission_request_manager->Requests().size() > 0 &&
+      permission_request_manager->Requests()[0]->GetContentSettingsType() ==
+          static_cast<ContentSettingsType>(content_settings_type)) {
+    if (setting == CONTENT_SETTING_ALLOW) {
+      base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Subscribed",
+                                true);
+      permission_request_manager->Accept();
+    } else if (setting == CONTENT_SETTING_BLOCK) {
+      // There are multiple ways to deny the permission request. This histogram
+      // will track the number of times the user denied the permission request
+      // by closing the PageInfo.
+      base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Closed",
+                                true);
+      permission_request_manager->Deny();
+    } else if (setting == CONTENT_SETTING_DEFAULT) {
+      base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Reset", true);
+      // After the user interacts with the reset permission button in PageInfo,
+      // all previously decided permissions are reset by setting them to
+      // DEFAULT. There is no a default action or a state for permission
+      // requests, so we need to explicitly dismiss the request.
+      permission_request_manager->Dismiss();
+    } else {
+      // Currently, only ALLOW and BLOCK are supported. In case other actions
+      // are added in the future, this should be updated.
+      NOTREACHED();
+    }
+  }
+}
+
+DEFINE_JNI(PermissionUtil)
+DEFINE_JNI(AndroidPermissionRequester)

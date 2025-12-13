@@ -198,16 +198,20 @@ avoid validation errors.
 * Chrome Cleanup: `<ph name="CHROME_CLEANUP_NAME">Chrome Cleanup</ph>`
 * Chrome Remote Desktop: `<ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME">Chrome Remote Desktop</ph>`
 * Chrome Sync: `<ph name="CHROME_SYNC_NAME">Chrome Sync</ph>`
+* Chrome DevTools: `<ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph>`
 
 #### Google Product
 
 * Google Admin console: `<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>`
+* Google AI Mode: `<ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph>`
 * Google Calendar: `<ph name="GOOGLE_CALENDAR_NAME">Google Calendar</ph>`
 * Google Cast: `<ph name="PRODUCT_NAME">Google Cast</ph>`
 * Google Classroom: `<ph name="GOOGLE_CLASSROOM_NAME">Google Classroom</ph>`
 * Google Cloud Print: `<ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>`
 * Google Drive: `<ph name="GOOGLE_DRIVE_NAME">Google Drive</ph>`
+* Google Gemini: `<ph name="GOOGLE_GEMINI_PRODUCT_NAME">Google Gemini</ph>`
 * Google Photos: `<ph name="GOOGLE_PHOTOS_PRODUCT_NAME">Google Photos</ph>`
+* Google Search: `<ph name="GOOGLE_SEARCH_PRODUCT_NAME">Google Search</ph>`
 * Google Tasks: `<ph name="GOOGLE_TASKS_NAME">Google Tasks</ph>`
 * Google Update: `<ph name="GOOGLE_UPDATE_NAME">Google Update</ph>`
 * Google Workspace: `<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google Workspace</ph>`

@@ -10,6 +10,7 @@ source_set("model") {
 
   deps = [
     "//base",
+    "//components/application_locale_storage",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/signin/public/identity_manager",
@@ -19,6 +20,7 @@ source_set("model") {
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/optimization_guide/mojom",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/web/public",

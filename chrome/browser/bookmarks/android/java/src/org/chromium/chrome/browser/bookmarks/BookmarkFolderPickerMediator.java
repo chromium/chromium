@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 
-import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
@@ -32,12 +33,11 @@ class BookmarkFolderPickerMediator {
     private final BookmarkModelObserver mBookmarkModelObserver =
             new BookmarkModelObserver() {
                 @Override
-                @SuppressWarnings("NullAway")
                 public void bookmarkModelChanged() {
                     if (mBookmarkModel.doAllBookmarksExist(mBookmarkIds)) {
                         populateFoldersForParentId(
                                 mCurrentParentItem == null
-                                        ? mOriginalParentId
+                                        ? assertNonNull(mOriginalParentId)
                                         : mCurrentParentItem.getId());
                     } else {
                         mFinishRunnable.run();
@@ -50,6 +50,7 @@ class BookmarkFolderPickerMediator {
                 @Override
                 public void onBookmarkRowDisplayPrefChanged(
                         @BookmarkRowDisplayPref int displayPref) {
+                    assumeNonNull(mCurrentParentItem);
                     populateFoldersForParentId(mCurrentParentItem.getId());
                 }
             };
@@ -74,7 +75,7 @@ class BookmarkFolderPickerMediator {
     private boolean mMovingAtLeastOneFolder;
     private boolean mMovingAtLeastOneBookmark;
     private boolean mCanMoveAllToReadingList;
-    private BookmarkItem mCurrentParentItem;
+    private @Nullable BookmarkItem mCurrentParentItem;
 
     BookmarkFolderPickerMediator(
             Context context,
@@ -143,7 +144,7 @@ class BookmarkFolderPickerMediator {
         mModel.set(BookmarkFolderPickerProperties.CANCEL_CLICK_LISTENER, mFinishRunnable);
         mModel.set(BookmarkFolderPickerProperties.MOVE_CLICK_LISTENER, this::onMoveClicked);
 
-        // TODO(crbug.com/324303006): Assert that the bookmark model is loaded instead.
+        // crbug.com/439882814 shows bookmark model is not always loaded by this time.
         mBookmarkModel.finishLoadingBookmarkModel(
                 () -> {
                     mCanMoveAllToReadingList = allItemsSupportReadingList(bookmarkItems);
@@ -165,15 +166,14 @@ class BookmarkFolderPickerMediator {
         mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
     }
 
-    @Initializer
     void populateFoldersForParentId(BookmarkId parentId) {
-        BookmarkItem parentItem = assumeNonNull(mBookmarkModel.getBookmarkById(parentId));
+        BookmarkItem parentItem = mBookmarkModel.getBookmarkById(parentId);
+        assert parentItem != null;
         mCurrentParentItem = parentItem;
         updateToolbarTitleForCurrentParent();
         updateButtonsForCurrentParent();
 
-        List<BookmarkListEntry> children =
-                mQueryHandler.buildBookmarkListForFolderSelect(parentItem.getId());
+        List<BookmarkListEntry> children = mQueryHandler.buildBookmarkListForFolderSelect(parentId);
 
         mModelList.clear();
         for (BookmarkListEntry child : children) {
@@ -219,7 +219,8 @@ class BookmarkFolderPickerMediator {
         return new ListItem(entry.getViewType(), propertyModel);
     }
 
-    void updateToolbarTitleForCurrentParent() {
+    @RequiresNonNull("mCurrentParentItem")
+    private void updateToolbarTitleForCurrentParent() {
         String title;
         if (mCurrentParentItem.getId().equals(mBookmarkModel.getRootFolderId())) {
             title = mContext.getString(R.string.folder_picker_root);
@@ -229,7 +230,8 @@ class BookmarkFolderPickerMediator {
         mModel.set(BookmarkFolderPickerProperties.TOOLBAR_TITLE, title);
     }
 
-    void updateButtonsForCurrentParent() {
+    @RequiresNonNull("mCurrentParentItem")
+    private void updateButtonsForCurrentParent() {
         BookmarkId currentParentId = mCurrentParentItem.getId();
         // Folders are removed from the list in {@link #populateFoldersForParentId}, but it's still
         // possible to get to invalid folders through hierarchy navigation (e.g. the root folder
@@ -249,6 +251,9 @@ class BookmarkFolderPickerMediator {
     }
 
     void updateToolbarButtons() {
+        if (mCurrentParentItem == null) {
+            return;
+        }
         mModel.set(
                 BookmarkFolderPickerProperties.ADD_NEW_FOLDER_BUTTON_ENABLED,
                 BookmarkUtils.canAddFolderToParent(mBookmarkModel, mCurrentParentItem.getId()));
@@ -258,6 +263,7 @@ class BookmarkFolderPickerMediator {
 
     boolean optionsItemSelected(int menuItemId) {
         if (menuItemId == R.id.create_new_folder_menu_id) {
+            assumeNonNull(mCurrentParentItem);
             mAddNewFolderCoordinator.show(mCurrentParentItem.getId());
             return true;
         } else if (menuItemId == android.R.id.home) {
@@ -268,7 +274,8 @@ class BookmarkFolderPickerMediator {
     }
 
     boolean onBackPressed() {
-        if (mCurrentParentItem.getId().equals(mBookmarkModel.getRootFolderId())) {
+        if (mCurrentParentItem == null
+                || mCurrentParentItem.getId().equals(mBookmarkModel.getRootFolderId())) {
             mFinishRunnable.run();
         } else {
             populateFoldersForParentId(mCurrentParentItem.getParentId());
@@ -280,6 +287,7 @@ class BookmarkFolderPickerMediator {
     // Private methods.
 
     private void onMoveClicked() {
+        assumeNonNull(mCurrentParentItem);
         mBookmarkModel.moveBookmarks(mBookmarkIds, mCurrentParentItem.getId());
         BookmarkUtils.setLastUsedParent(mCurrentParentItem.getId());
         mFinishRunnable.run();

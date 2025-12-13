@@ -21,7 +21,11 @@ bool Traits::Read(viz::mojom::FrameTimingDetailsDataView data,
          data.ReadDrawStartTimestamp(&out->draw_start_timestamp) &&
          data.ReadSwapTimings(&out->swap_timings) &&
          data.ReadPresentationFeedback(&out->presentation_feedback) &&
-         data.ReadFrameId(&out->frame_id);
+         data.ReadFrameId(&out->frame_id) &&
+         data.ReadStartUpdateDisplayTree(&out->start_update_display_tree) &&
+         data.ReadStartPrepareToDraw(&out->start_prepare_to_draw) &&
+         data.ReadStartDrawLayers(&out->start_draw_layers) &&
+         data.ReadSubmitCompositorFrame(&out->submit_compositor_frame);
 }
 
 }  // namespace mojo

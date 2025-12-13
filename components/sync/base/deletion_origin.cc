@@ -17,6 +17,7 @@
 namespace syncer {
 namespace {
 
+constexpr std::string_view kEllipsis = "...";
 constexpr size_t kMaxFileNameBeforeTruncation = 30;
 
 // Truncates the filename to a maximum size by stripping, if needed, the
@@ -29,9 +30,7 @@ std::string MaybeTruncateFileName(std::string_view file_name) {
 
   std::string result(
       file_name.substr(file_name.size() - kMaxFileNameBeforeTruncation));
-  for (int i = 0; i < 3; i++) {
-    result[i] = '.';
-  }
+  result.replace(0, kEllipsis.size(), kEllipsis);
   return result;
 }
 

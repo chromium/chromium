@@ -11,9 +11,9 @@ source_set("utils") {
     "//base",
     "//printing:printing_base",
     "//skia",
-    "//ui/events/devices:devices",
+    "//ui/events/devices",
     "//ui/gfx",
-    "//ui/ozone:ozone",
+    "//ui/ozone",
   ]
 
   sources = [

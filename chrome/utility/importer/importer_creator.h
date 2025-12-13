@@ -5,7 +5,7 @@
 #ifndef CHROME_UTILITY_IMPORTER_IMPORTER_CREATOR_H_
 #define CHROME_UTILITY_IMPORTER_IMPORTER_CREATOR_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/user_data_importer/common/importer_type.h"
 
 class Importer;

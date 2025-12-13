@@ -70,9 +70,7 @@ std::optional<base::Value::Dict> HostConfigFromJson(const std::string& json) {
 }
 
 std::string HostConfigToJson(const base::Value::Dict& host_config) {
-  std::string data;
-  base::JSONWriter::Write(host_config, &data);
-  return data;
+  return base::WriteJson(host_config).value_or("");
 }
 
 std::optional<base::Value::Dict> HostConfigFromJsonFile(

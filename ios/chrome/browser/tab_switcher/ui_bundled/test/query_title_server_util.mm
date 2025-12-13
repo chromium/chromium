@@ -19,9 +19,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
       new net::test_server::BasicHttpResponse);
   http_response->set_content_type("text/html");
-  http_response->set_content("<html><head><title>" + request.GetURL().query() +
-                             "</title></head><body>" +
-                             request.GetURL().query() + "</body></html>");
+  http_response->set_content(
+      "<html><head><title>" + request.GetURL().GetQuery() +
+      "</title></head><body>" + request.GetURL().GetQuery() + "</body></html>");
   return std::move(http_response);
 }
 

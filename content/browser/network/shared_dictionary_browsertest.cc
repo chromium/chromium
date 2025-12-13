@@ -21,6 +21,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/clear_site_data_utils.h"
@@ -690,13 +691,13 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_OK);
 
-    if (request.GetURL().query() == "html") {
+    if (request.GetURL().GetQuery() == "html") {
       response->set_content_type("text/html");
     } else {
       response->set_content_type("application/javascript");
     }
 
-    if (request.GetURL().query() != "no_acao" &&
+    if (request.GetURL().GetQuery() != "no_acao" &&
         request.headers.find("origin") != request.headers.end()) {
       response->AddCustomHeader("Access-Control-Allow-Credentials", "true");
       response->AddCustomHeader("Access-Control-Allow-Origin",
@@ -731,13 +732,7 @@ class SharedDictionaryBrowserTest
     : public SharedDictionaryBrowserTestBase,
       public ::testing::WithParamInterface<BrowserType> {
  public:
-  SharedDictionaryBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {network::features::kCompressionDictionaryTransportBackend,
-         network::features::kCompressionDictionaryTransport},
-        /*disabled_features=*/{});
-  }
+  SharedDictionaryBrowserTest() {}
   SharedDictionaryBrowserTest(const SharedDictionaryBrowserTest&) = delete;
   SharedDictionaryBrowserTest& operator=(const SharedDictionaryBrowserTest&) =
       delete;
@@ -862,7 +857,7 @@ class SharedDictionaryBrowserTest
     RunWriteDictionaryTestImpl(
         GetTargetShell(), fetch_type, page_url, dictionary_url,
         GetBrowserType() == BrowserType::kNormal
-            ? "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB"
+            ? "Net.SharedDictionaryManagerOnDisk.DictionarySize"
             : "Net.SharedDictionaryWriterInMemory.DictionarySize",
         expect_success);
   }
@@ -878,21 +873,15 @@ class SharedDictionaryBrowserTest
   }
 
   bool HasPreloadedSharedDictionaryInfo() {
-    bool result = false;
-    base::RunLoop run_loop;
+    base::test::TestFuture<bool> future;
     GetTargetNetworkContext()->HasPreloadedSharedDictionaryInfoForTesting(
-        base::BindLambdaForTesting([&](bool value) {
-          result = value;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return result;
+        future.GetCallback());
+    return future.Get();
   }
 
   void SendMemoryPressureToNetworkService() {
     content::GetNetworkService()->OnMemoryPressure(
-        base::MemoryPressureListener::MemoryPressureLevel::
-            MEMORY_PRESSURE_LEVEL_CRITICAL);
+        base::MEMORY_PRESSURE_LEVEL_CRITICAL);
     // To make sure that OnMemoryPressure has been received by the network
     // service, send a GetNetworkList IPC and wait for the result.
     base::RunLoop run_loop;
@@ -917,7 +906,7 @@ class SharedDictionaryBrowserTest
     }
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_MOVED_PERMANENTLY);
-    const std::string location = request.GetURL().query();
+    const std::string location = request.GetURL().GetQuery();
     response->AddCustomHeader("Location", location);
     if (request.headers.find("origin") != request.headers.end()) {
       response->AddCustomHeader("Access-Control-Allow-Credentials", "true");
@@ -948,11 +937,11 @@ class SharedDictionaryBrowserTest
                                 request.headers.at("origin"));
     }
 
-    if (request.GetURL().query() == "cache") {
+    if (request.GetURL().GetQuery() == "cache") {
       response->AddCustomHeader("Clear-Site-Data", "\"cache\"");
-    } else if (request.GetURL().query() == "cookies") {
+    } else if (request.GetURL().GetQuery() == "cookies") {
       response->AddCustomHeader("Clear-Site-Data", "\"cookies\"");
-    } else if (request.GetURL().query() == "storage") {
+    } else if (request.GetURL().GetQuery() == "storage") {
       response->AddCustomHeader("Clear-Site-Data", "\"storage\"");
     }
     response->set_content("");
@@ -997,8 +986,31 @@ class SharedDictionaryBrowserTest
 
   raw_ptr<Shell> off_the_record_shell_ = nullptr;
   std::unique_ptr<net::EmbeddedTestServer> cross_origin_server_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+bool WaitUntilHasPreloadSharedDictionaryInfo(
+    network::mojom::NetworkContext* context,
+    bool expected_value) {
+  static constexpr auto kMaximumWaitTime = base::Seconds(3);
+  static constexpr auto kPollInterval = base::Milliseconds(10);
+  base::ElapsedTimer elapsed_timer;
+
+  while (true) {
+    base::test::TestFuture<bool> result_future;
+    context->HasPreloadedSharedDictionaryInfoForTesting(
+        result_future.GetCallback());
+    if (result_future.Get() == expected_value) {
+      return true;
+    }
+    if (elapsed_timer.Elapsed() > kMaximumWaitTime) {
+      return false;
+    }
+    base::OneShotTimer one_shot_timer;
+    base::test::TestFuture<void> timer_future;
+    one_shot_timer.Start(FROM_HERE, kPollInterval, timer_future.GetCallback());
+    timer_future.Get();
+  }
+}
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SharedDictionaryBrowserTest,
@@ -1517,7 +1529,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, MatchDestEmptyString) {
   // Wait for the dictionary to be registered.
   EXPECT_TRUE(WaitForHistogram(
       GetBrowserType() == BrowserType::kNormal
-          ? "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB"
+          ? "Net.SharedDictionaryManagerOnDisk.DictionarySize"
           : "Net.SharedDictionaryWriterInMemory.DictionarySize"));
 
   // Check that Chrome uses the dictionary while fetching the resource using
@@ -1546,7 +1558,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, MatchDestScript) {
   // Wait for the dictionary to be registered.
   EXPECT_TRUE(WaitForHistogram(
       GetBrowserType() == BrowserType::kNormal
-          ? "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB"
+          ? "Net.SharedDictionaryManagerOnDisk.DictionarySize"
           : "Net.SharedDictionaryWriterInMemory.DictionarySize"));
 
   // Check that Chrome uses the dictionary while fetching a script.
@@ -1927,6 +1939,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
   GetTargetNetworkContext()->PreloadSharedDictionaryInfoForDocument(
       {GetURL("/")},
       preloaded_shared_dictionaries_handle.InitWithNewPipeAndPassReceiver());
+  FlushNetworkServiceInstanceForTesting();
   EXPECT_FALSE(HasPreloadedSharedDictionaryInfo());
 }
 
@@ -1939,7 +1952,9 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
       preloaded_shared_dictionaries_handle.InitWithNewPipeAndPassReceiver());
   EXPECT_TRUE(HasPreloadedSharedDictionaryInfo());
   SendMemoryPressureToNetworkService();
-  EXPECT_FALSE(HasPreloadedSharedDictionaryInfo());
+  FlushNetworkServiceInstanceForTesting();
+  EXPECT_TRUE(WaitUntilHasPreloadSharedDictionaryInfo(GetTargetNetworkContext(),
+                                                      false));
 }
 
 }  // namespace

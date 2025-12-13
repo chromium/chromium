@@ -40,19 +40,29 @@ class AutocompleteChange {
 using AutocompleteChangeList = std::vector<AutocompleteChange>;
 
 // Change notification details for Autofill related changes.
-// TODO(crbug.com/40928146): Update the name for `AutofillDataModelChange` as it
-// now captures non data model changes.
 template <typename DataType, typename KeyType>
   requires std::same_as<DataType, AutofillProfile> ||
-           std::same_as<DataType, std::optional<EntityInstance>> ||
+           std::same_as<DataType, EntityInstance> ||
+           std::same_as<DataType, EntityInstance::EntityMetadata> ||
            std::same_as<DataType, CreditCard> || std::same_as<DataType, Iban> ||
            std::same_as<DataType, ServerCvc>
 class AutofillDataModelChange {
  public:
-  // The difference between `REMOVE` and `HIDE_IN_AUTOFILL` is that the latter
-  // does not actually remove the profile from the server, but instead marks
-  // it as uninteresting to Chrome. This profile may become visible again if
-  // it is updated in a different product.
+  // The difference between `REMOVE` and `HIDE_IN_AUTOFILL` is that the
+  // `HIDE_IN_AUTOFILL`:
+  // - For kAccount, kAccountHome and kAccountWork profiles, does not
+  // actually remove the profile from the server, but instead marks it as
+  // uninteresting to Chrome. This profile may become visible again if it is
+  // updated in a different product.
+  //
+  // - For kAccountNameEmail profile, removes the profile for the duration of
+  // the sign out or autofill sync toggle being off, but the profile may
+  // reappear once the user is signed in and autofill sync toggle is enabled
+  // again. See `AccountNameEmailStore` for the detailed description of this
+  // behaviour.
+  //
+  // - For kLocalOrSyncable profile, there is no difference.
+  // TODO(crbug.com/40100455): Consider renaming `HIDE_IN_AUTOFILL`.
   enum Type { ADD, UPDATE, REMOVE, HIDE_IN_AUTOFILL };
 
   // The `type` input specifies the change type.  The `key` input is the key
@@ -83,6 +93,9 @@ class AutofillDataModelChange {
     } else if constexpr (std::same_as<DataType,
                                       std::optional<EntityInstance>>) {
       CHECK(data_model_ && data_model_->guid() == key_);
+    } else if constexpr (std::same_as<DataType,
+                                      EntityInstance::EntityMetadata>) {
+      CHECK(data_model_.guid == key_);
     } else {
       CHECK(data_model_.guid() == key_);
     }
@@ -110,10 +123,14 @@ class AutofillDataModelChange {
 using AutofillProfileChange =
     AutofillDataModelChange<AutofillProfile, std::string>;
 
-// Identified by `EntityInstance::guid()`. The EntityInstance is present for
-// `ADD` and `UPDATE` operations but absent for `REMOVE` operations.
+// Identified by `EntityInstance::guid()`.
 using EntityInstanceChange =
-    AutofillDataModelChange<std::optional<EntityInstance>, base::Uuid>;
+    AutofillDataModelChange<EntityInstance, EntityInstance::EntityId>;
+
+// Identified by `EntityInstance::guid()`.
+using EntityInstanceMetadataChange =
+    AutofillDataModelChange<EntityInstance::EntityMetadata,
+                            EntityInstance::EntityId>;
 
 // Identified by `CreditCard::guid()` for local cards and
 // `CreditCard::server_id()` for server cards.

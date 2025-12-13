@@ -14,6 +14,7 @@
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkMallocPixelRef.h"

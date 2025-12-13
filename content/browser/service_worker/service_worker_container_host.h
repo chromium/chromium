@@ -11,8 +11,9 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/common/content_export.h"

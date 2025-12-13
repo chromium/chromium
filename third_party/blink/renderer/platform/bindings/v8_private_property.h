@@ -126,7 +126,7 @@ class PLATFORM_EXPORT V8PrivateProperty {
   // requirement.
   ScopedPersistent<v8::Private> symbol_window_document_cached_accessor_;
 
-  WTF::HashMap<const void*, v8::Eternal<v8::Private>> symbol_map_;
+  HashMap<const void*, v8::Eternal<v8::Private>> symbol_map_;
 };
 
 }  // namespace blink

@@ -14,8 +14,6 @@
 
 #include <stddef.h>
 
-#include "net/base/net_export.h"
-
 // This file plases constants inside the ::net::websockets namespace to avoid
 // risk of collisions with other symbols in libnet.
 namespace net::websockets {
@@ -23,41 +21,41 @@ namespace net::websockets {
 // "HTTP/1.1"
 // RFC6455 only requires HTTP/1.1 "or better" but in practice an HTTP version
 // other than 1.1 should not occur in a WebSocket handshake.
-extern const char kHttpProtocolVersion[];
+inline constexpr char kHttpProtocolVersion[] = "HTTP/1.1";
 
 // The Sec-WebSockey-Key challenge is 16 random bytes, base64 encoded.
 inline constexpr size_t kRawChallengeLength = 16;
 
 // "Sec-WebSocket-Protocol"
-extern const char kSecWebSocketProtocol[];
+inline constexpr char kSecWebSocketProtocol[] = "Sec-WebSocket-Protocol";
 
 // "Sec-WebSocket-Extensions"
-extern const char kSecWebSocketExtensions[];
+inline constexpr char kSecWebSocketExtensions[] = "Sec-WebSocket-Extensions";
 
 // "Sec-WebSocket-Key"
-extern const char kSecWebSocketKey[];
+inline constexpr char kSecWebSocketKey[] = "Sec-WebSocket-Key";
 
 // "Sec-WebSocket-Accept"
-extern const char kSecWebSocketAccept[];
+inline constexpr char kSecWebSocketAccept[] = "Sec-WebSocket-Accept";
 
 // "Sec-WebSocket-Version"
-extern const char kSecWebSocketVersion[];
+inline constexpr char kSecWebSocketVersion[] = "Sec-WebSocket-Version";
 
 // This implementation only supports one version of the WebSocket protocol,
 // "13", as specified in RFC6455. If support for multiple versions is added in
 // future, it will probably no longer be worth having a constant for this.
-extern const char kSupportedVersion[];
+inline constexpr char kSupportedVersion[] = "13";
 
 // "Upgrade"
-extern const char kUpgrade[];
+inline constexpr char kUpgrade[] = "Upgrade";
 
 // "258EAFA5-E914-47DA-95CA-C5AB0DC85B11" as defined in section 4.1 of
 // RFC6455.
-extern const char NET_EXPORT kWebSocketGuid[];
+inline constexpr char kWebSocketGuid[] = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
 // "websocket", as used in the "Upgrade:" header. This is always lowercase
 // (except in obsolete versions of the protocol).
-extern const char kWebSocketLowercase[];
+inline constexpr char kWebSocketLowercase[] = "websocket";
 
 }  // namespace net::websockets
 

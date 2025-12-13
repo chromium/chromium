@@ -128,9 +128,9 @@ base::FilePath GenerateFilename(const std::u16string& title,
           std::string());
 
       // If host is used as file name, try to decode punycode.
-      if (name_with_proper_ext.AsUTF8Unsafe() == url.host()) {
+      if (name_with_proper_ext.AsUTF8Unsafe() == url.GetHost()) {
         name_with_proper_ext = base::FilePath::FromUTF16Unsafe(
-            url_formatter::IDNToUnicode(url.host()));
+            url_formatter::IDNToUnicode(url.GetHost()));
       }
     } else {
       name_with_proper_ext = base::FilePath::FromUTF8Unsafe("dataurl");

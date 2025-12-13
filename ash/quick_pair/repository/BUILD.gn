@@ -42,14 +42,14 @@ source_set("repository") {
   ]
 
   deps = [
-    "//ash/constants:constants",
+    "//ash/constants",
     "//ash/quick_pair/common",
     "//ash/quick_pair/proto:fastpair_proto",
     "//base",
     "//chromeos/ash/components/network",
     "//chromeos/ash/services/bluetooth_config/public/cpp",
     "//chromeos/ash/services/quick_pair/public/cpp",
-    "//components/cross_device/logging:logging",
+    "//components/cross_device/logging",
     "//components/image_fetcher/core",
     "//components/prefs",
     "//components/signin/public/identity_manager",

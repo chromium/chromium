@@ -200,6 +200,33 @@ LocationBarModelImpl::GetPageClassification(bool is_prefetch) const {
                      : OmniboxEventProto::OTHER;
 }
 
+metrics::OmniboxEventProto::PageClassification
+LocationBarModelImpl::GetOmniboxComposeboxPageClassification() const {
+  GURL gurl;
+  if (!delegate_->GetURL(&gurl)) {
+    return metrics::OmniboxEventProto::OTHER_OMNIBOX_COMPOSEBOX;
+  }
+  if (delegate_->IsNewTabPage()) {
+    return metrics::OmniboxEventProto::NTP_OMNIBOX_COMPOSEBOX;
+  }
+  if (!gurl.is_valid() || (gurl.spec() == url::kAboutBlankURL) ||
+      delegate_->IsHomePage(gurl)) {
+    return metrics::OmniboxEventProto::OTHER_OMNIBOX_COMPOSEBOX;
+  }
+  if (delegate_->IsNewTabPageURL(gurl)) {
+    return metrics::OmniboxEventProto::NTP_OMNIBOX_COMPOSEBOX;
+  }
+
+  TemplateURLService* template_url_service = delegate_->GetTemplateURLService();
+  if (template_url_service &&
+      template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
+          gurl)) {
+    return metrics::OmniboxEventProto::SRP_OMNIBOX_COMPOSEBOX;
+  }
+
+  return metrics::OmniboxEventProto::OTHER_OMNIBOX_COMPOSEBOX;
+}
+
 const gfx::VectorIcon& LocationBarModelImpl::GetVectorIcon() const {
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
   auto* const icon_override = delegate_->GetVectorIconOverride();
@@ -211,8 +238,7 @@ const gfx::VectorIcon& LocationBarModelImpl::GetVectorIcon() const {
 #endif
 
   return location_bar_model::GetSecurityVectorIcon(
-      GetSecurityLevel(),
-      delegate_->GetVisibleSecurityState()->malicious_content_status);
+      GetSecurityLevel(), delegate_->GetVisibleSecurityState().get());
 }
 
 std::u16string LocationBarModelImpl::GetSecureDisplayText() const {

@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 
 import androidx.collection.ArraySet;
 
+import org.chromium.base.ChildBindingState;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.process_launcher.ChildProcessConnection;
@@ -184,37 +185,17 @@ class BindingManager implements ComponentCallbacks2 {
     int getExclusiveBindingCount() {
         int exclusiveBindingCount = 0;
         for (ChildProcessConnection connection : mConnections) {
-            if (ChildProcessConnection.supportNotPerceptibleBinding()
-                    ? isExclusiveNotPerceptibleBinding(connection)
-                    : isExclusiveVisibleBinding(connection)) {
+            if (isExclusiveNotPerceptibleBinding(connection)) {
                 exclusiveBindingCount++;
             }
         }
         return exclusiveBindingCount;
     }
 
-    /**
-     * @param connection The connection to check if BindingManager has a binding for.
-     * @return whether this BindingManager has an exclusive moderate connection.
-     */
-    boolean hasExclusiveVisibleBinding(ChildProcessConnection connection) {
-        return !ChildProcessConnection.supportNotPerceptibleBinding()
-                && mConnections.contains(connection)
-                && isExclusiveVisibleBinding(connection);
-    }
-
     private boolean isExclusiveNotPerceptibleBinding(ChildProcessConnection connection) {
         return connection != mWaivedConnection
-                && !connection.isStrongBindingBound()
-                && !connection.isVisibleBindingBound()
+                && connection.bindingStateCurrent() < ChildBindingState.VISIBLE
                 && connection.getNotPerceptibleBindingCount() == 1;
-    }
-
-    private boolean isExclusiveVisibleBinding(ChildProcessConnection connection) {
-        return connection != mWaivedConnection
-                && !connection.isStrongBindingBound()
-                && !connection.isNotPerceptibleBindingBound()
-                && connection.getVisibleBindingCount() == 1;
     }
 
     /**
@@ -292,18 +273,10 @@ class BindingManager implements ComponentCallbacks2 {
     }
 
     private void addBinding(ChildProcessConnection connection) {
-        if (ChildProcessConnection.supportNotPerceptibleBinding()) {
-            connection.addNotPerceptibleBinding();
-            return;
-        }
-        connection.addVisibleBinding();
+        connection.addNotPerceptibleBinding();
     }
 
     private void removeBinding(ChildProcessConnection connection) {
-        if (ChildProcessConnection.supportNotPerceptibleBinding()) {
-            connection.removeNotPerceptibleBinding();
-            return;
-        }
-        connection.removeVisibleBinding();
+        connection.removeNotPerceptibleBinding();
     }
 }

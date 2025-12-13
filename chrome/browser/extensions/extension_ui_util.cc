@@ -15,10 +15,13 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/ui_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/image_util.h"
 #include "extensions/common/manifest_handlers/app_display_info.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -62,7 +65,7 @@ std::u16string GetEnabledExtensionNameForUrl(const GURL& url,
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(context);
   const extensions::Extension* extension =
-      extension_registry->enabled_extensions().GetByID(url.host());
+      extension_registry->enabled_extensions().GetByID(url.GetHost());
   return extension ? base::CollapseWhitespace(
                          base::UTF8ToUTF16(extension->name()), false)
                    : std::u16string();

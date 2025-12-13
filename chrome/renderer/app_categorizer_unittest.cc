@@ -9,29 +9,27 @@
 
 namespace {
 
-const char* kChatAppURLs[] = {
-  "https://hangouts.google.com/hangouts/foo",
-  "https://hAnGoUtS.gOoGlE.com/HaNgOuTs/foo",
-  "https://meet.google.com/hangouts/foo",
-  "https://talkgadget.google.com/hangouts/foo",
-  "https://staging.talkgadget.google.com/hangouts/foo",
-  "https://plus.google.com/hangouts/foo",
-  "https://plus.sandbox.google.com/hangouts/foo"
-};
+constexpr const char* kChatAppURLs[] = {
+    "https://hangouts.google.com/hangouts/foo",
+    "https://hAnGoUtS.gOoGlE.com/HaNgOuTs/foo",
+    "https://meet.google.com/hangouts/foo",
+    "https://talkgadget.google.com/hangouts/foo",
+    "https://staging.talkgadget.google.com/hangouts/foo",
+    "https://plus.google.com/hangouts/foo",
+    "https://plus.sandbox.google.com/hangouts/foo"};
 
-const char* kChatManifestFSs[] = {
-  "filesystem:https://hangouts.google.com/foo",
-  "filesystem:https://hAnGoUtS.gOoGlE.com/foo",
-  "filesystem:https://meet.google.com/foo",
-  "filesystem:https://talkgadget.google.com/foo",
-  "filesystem:https://staging.talkgadget.google.com/foo",
-  "filesystem:https://plus.google.com/foo",
-  "filesystem:https://plus.sandbox.google.com/foo"
-};
+constexpr const char* kChatManifestFSs[] = {
+    "filesystem:https://hangouts.google.com/foo",
+    "filesystem:https://hAnGoUtS.gOoGlE.com/foo",
+    "filesystem:https://meet.google.com/foo",
+    "filesystem:https://talkgadget.google.com/foo",
+    "filesystem:https://staging.talkgadget.google.com/foo",
+    "filesystem:https://plus.google.com/foo",
+    "filesystem:https://plus.sandbox.google.com/foo"};
 
-const char* kBadChatAppURLs[] = {
-  "http://talkgadget.google.com/hangouts/foo",  // not https
-  "https://talkgadget.evil.com/hangouts/foo"    // domain not whitelisted
+constexpr const char* kBadChatAppURLs[] = {
+    "http://talkgadget.google.com/hangouts/foo",  // not https
+    "https://talkgadget.evil.com/hangouts/foo"    // domain not whitelisted
 };
 
 }  // namespace

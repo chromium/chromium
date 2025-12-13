@@ -44,8 +44,8 @@ struct RWBuffer::BufferBlock {
   static RWBuffer::BufferBlock* Alloc(size_t length) {
     size_t capacity = LengthToCapacity(length);
     void* buffer =
-        WTF::Partitions::BufferMalloc(sizeof(RWBuffer::BufferBlock) + capacity,
-                                      "blink::RWBuffer::BufferBlock");
+        Partitions::BufferMalloc(sizeof(RWBuffer::BufferBlock) + capacity,
+                                 "blink::RWBuffer::BufferBlock");
     return new (buffer) RWBuffer::BufferBlock(capacity);
   }
 
@@ -92,7 +92,7 @@ struct RWBuffer::BufferHead {
     size_t capacity = LengthToCapacity(length);
     size_t size = sizeof(RWBuffer::BufferHead) + capacity;
     void* buffer =
-        WTF::Partitions::BufferMalloc(size, "blink::RWBuffer::BufferHead");
+        Partitions::BufferMalloc(size, "blink::RWBuffer::BufferHead");
     return new (buffer) RWBuffer::BufferHead(capacity);
   }
 
@@ -111,11 +111,11 @@ struct RWBuffer::BufferHead {
       // `buffer_` has a `raw_ptr` that needs to be destroyed to
       // properly lower the refcount.
       block_.~BufferBlock();
-      WTF::Partitions::BufferFree(const_cast<RWBuffer::BufferHead*>(this));
+      Partitions::BufferFree(const_cast<RWBuffer::BufferHead*>(this));
       while (block) {
         RWBuffer::BufferBlock* next = block->next_;
         block->~BufferBlock();
-        WTF::Partitions::BufferFree(block);
+        Partitions::BufferFree(block);
         block = next;
       }
     }

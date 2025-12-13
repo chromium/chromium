@@ -40,6 +40,7 @@
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace web_app {
 
@@ -489,10 +490,10 @@ void ExternallyManagedAppManager::MaybeEnqueueServiceWorkerRegistration(
   if (url.is_empty()) {
     return;
   }
-  if (url.scheme() == content::kChromeUIScheme) {
+  if (url.GetScheme() == content::kChromeUIScheme) {
     return;
   }
-  if (url.scheme() == content::kChromeUIUntrustedScheme) {
+  if (url.GetScheme() == content::kChromeUIUntrustedScheme) {
     return;
   }
 
@@ -547,41 +548,95 @@ void ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
     base::Value::Dict& debug_info) {
   CHECK(callback);
   debug_info.Set("install_source", base::ToString(install_source));
-  base::Value::List* desired_installs =
-      debug_info.EnsureList("desired_apps_install_options");
-  for (const ExternalInstallOptions& option : desired_apps_install_options) {
-    desired_installs->Append(option.install_url.spec());
-  }
-  std::vector<GURL> installed_urls;
-  for (const auto& [app_id, install_urls] :
-       lock.registrar().GetExternallyInstalledApps(install_source)) {
-    for (const GURL& url : install_urls) {
-      installed_urls.push_back(url);
+
+  auto is_app_installed_by_other_sources_or_display_modes =
+      [&](const webapps::AppId& app_id,
+          std::optional<mojom::UserDisplayMode> desired_display_mode) {
+        if (!lock.registrar().IsInstallState(
+                app_id,
+                {web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                 web_app::proto::InstallState::
+                     INSTALLED_WITH_OS_INTEGRATION})) {
+          return /*keep_old_app=*/false;
+        }
+        const WebApp* app = lock.registrar().GetAppById(app_id);
+        CHECK(app);
+        if (!app->HasOnlySource(
+                ConvertExternalInstallSourceToSource(install_source))) {
+          return /*keep_old_app=*/true;
+        }
+        if (desired_display_mode == mojom::UserDisplayMode::kBrowser &&
+            app->user_display_mode() != desired_display_mode) {
+          return /*keep_old_app=*/true;
+        }
+        return /*keep_old_app=*/false;
+      };
+  auto get_install_urls_for_source = [&](const webapps::AppId& app_id) {
+    const WebApp* app = lock.registrar().GetAppById(app_id);
+    CHECK(app);
+
+    absl::flat_hash_set<GURL> install_urls;
+    const WebApp::ExternalConfigMap& config_map =
+        app->management_to_external_config_map();
+    auto it =
+        config_map.find(ConvertExternalInstallSourceToSource(install_source));
+    if (it != config_map.end() && !it->second.install_urls.empty()) {
+      install_urls = absl::flat_hash_set<GURL>(it->second.install_urls.begin(),
+                                               it->second.install_urls.end());
+    }
+    return install_urls;
+  };
+
+  absl::flat_hash_set<GURL> desired_urls;
+  absl::flat_hash_set<GURL> backup_installed_urls;
+  std::vector<ExternalInstallOptions> desired_installs;
+  for (auto& info : desired_apps_install_options) {
+    std::optional<webapps::AppId> app_to_maybe_replace =
+        info.only_uninstall_and_replace_when_compatible();
+    if (app_to_maybe_replace.has_value() &&
+        is_app_installed_by_other_sources_or_display_modes(
+            *app_to_maybe_replace, info.user_display_mode)) {
+      base::ListValue backup_urls_debug;
+      // Add install URLs from the app being replaced to backup_installed_urls
+      // to make sure we don't uninstall/remove our source from the already
+      // installed app.
+      for (const GURL& url :
+           get_install_urls_for_source(*app_to_maybe_replace)) {
+        backup_installed_urls.insert(url);
+        backup_urls_debug.Append(url.spec());
+      }
+      debug_info.EnsureList("backup_apps_found")
+          ->Append(base::DictValue()
+                       .Set("using", *app_to_maybe_replace)
+                       .Set("for", info.install_url.spec())
+                       .Set("backup_urls", std::move(backup_urls_debug)));
+    } else {
+      desired_urls.insert(info.install_url);
+      debug_info.EnsureList("desired_install_urls")
+          ->Append(info.install_url.spec());
+      desired_installs.push_back(std::move(info));
     }
   }
 
-  std::sort(installed_urls.begin(), installed_urls.end());
-
-  base::Value::List* desired_urls_debug = debug_info.EnsureList("desired_urls");
-  std::vector<GURL> desired_urls;
-  desired_urls.reserve(desired_apps_install_options.size());
-  for (const auto& info : desired_apps_install_options) {
-    desired_urls.push_back(info.install_url);
-    desired_urls_debug->Append(info.install_url.spec());
+  absl::flat_hash_set<GURL> installed_urls;
+  for (const auto& [app_id, install_urls] :
+       lock.registrar().GetExternallyInstalledApps(install_source)) {
+    for (const GURL& url : install_urls) {
+      installed_urls.insert(url);
+    }
   }
 
-  std::sort(desired_urls.begin(), desired_urls.end());
-
-  std::vector<GURL> urls_to_remove =
-      base::STLSetDifference<std::vector<GURL>>(installed_urls, desired_urls);
-  base::Value::List* urls_to_remove_debug =
-      debug_info.EnsureList("urls_to_remove");
-  for (const GURL& url_to_remove : urls_to_remove) {
-    urls_to_remove_debug->Append(url_to_remove.spec());
+  std::vector<GURL> urls_to_remove;
+  for (const GURL& installed_url : installed_urls) {
+    if (!desired_urls.contains(installed_url) &&
+        !backup_installed_urls.contains(installed_url)) {
+      debug_info.EnsureList("urls_to_remove")->Append(installed_url.spec());
+      urls_to_remove.push_back(installed_url);
+    }
   }
 
   // Run callback immediately if there's no work to be done.
-  if (urls_to_remove.empty() && desired_apps_install_options.empty()) {
+  if (urls_to_remove.empty() && desired_installs.empty()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), std::map<GURL, InstallResult>(),
@@ -592,8 +647,7 @@ void ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
   // Add the callback to a map and call once all installs/uninstalls finish.
   synchronize_requests_.insert_or_assign(
       install_source,
-      SynchronizeRequest(std::move(callback),
-                         std::move(desired_apps_install_options),
+      SynchronizeRequest(std::move(callback), std::move(desired_installs),
                          urls_to_remove.size()));
 
   if (urls_to_remove.empty()) {

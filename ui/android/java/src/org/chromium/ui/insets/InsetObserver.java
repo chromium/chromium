@@ -20,11 +20,13 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 
@@ -42,7 +44,8 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     private int mKeyboardInset;
     private final Rect mSystemGestureInsets;
     protected final ObserverList<WindowInsetObserver> mObservers;
-    private final KeyboardInsetObservableSupplier mKeyboardInsetSupplier;
+    private final SettableNonNullObservableSupplier<Integer> mKeyboardInsetSupplier =
+            ObservableSuppliers.createNonNull(0);
     private final WindowInsetsAnimationCompat.Callback mWindowInsetsAnimationProxyCallback;
     private final ObserverList<WindowInsetsAnimationListener> mWindowInsetsAnimationListeners =
             new ObserverList<>();
@@ -120,6 +123,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
             InsetConsumerSource.TEST_SOURCE,
             InsetConsumerSource.DEFERRED_IME_WINDOW_INSET_APPLICATION_CALLBACK,
             InsetConsumerSource.APP_HEADER_COORDINATOR_CAPTION,
+            InsetConsumerSource.TOP_INSET_COORDINATOR,
             InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_CREATOR,
             InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_IMPL,
             InsetConsumerSource.EDGE_TO_EDGE_LAYOUT_COORDINATOR,
@@ -137,17 +141,22 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
             // critical to drawing the tab strip in the caption bar area in a desktop window
             // correctly.
             int APP_HEADER_COORDINATOR_CAPTION = 2;
+
+            // The TopInsetCoordinator should be placed before EDGE_TO_EDGE_LAYOUT_COORDINATOR since
+            // it consumes the top padding (Status bar).
+            int TOP_INSET_COORDINATOR = 3;
+
             // The EdgeToEdgeControllerCreator exists only to create the EdgeToEdgeControllerImpl
             // if the current configuration (including window insets) indicate that the current
             // devices supports the bottom chin feature. This creator will remove itself as an
             // inset consumer if it creates the EdgeToEdgeControllerImpl.
-            int EDGE_TO_EDGE_CONTROLLER_CREATOR = 3;
-            int EDGE_TO_EDGE_CONTROLLER_IMPL = 4;
-            int EDGE_TO_EDGE_LAYOUT_COORDINATOR = 5;
-            int APP_HEADER_COORDINATOR_BOTTOM = 6;
+            int EDGE_TO_EDGE_CONTROLLER_CREATOR = 4;
+            int EDGE_TO_EDGE_CONTROLLER_IMPL = 5;
+            int EDGE_TO_EDGE_LAYOUT_COORDINATOR = 6;
+            int APP_HEADER_COORDINATOR_BOTTOM = 7;
 
             // Update this whenever a consumer source is added or removed.
-            int COUNT = 7;
+            int COUNT = 8;
         }
     }
 
@@ -203,14 +212,6 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         void onEnd(WindowInsetsAnimationCompat animation);
     }
 
-    private static class KeyboardInsetObservableSupplier extends ObservableSupplierImpl<Integer>
-            implements WindowInsetObserver {
-        @Override
-        public void onKeyboardInsetChanged(int inset) {
-            this.set(inset);
-        }
-    }
-
     /**
      * Creates an instance of {@link InsetObserver}.
      *
@@ -228,8 +229,6 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         mKeyboardInset = 0;
         mSystemGestureInsets = new Rect();
         mObservers = new ObserverList<>();
-        mKeyboardInsetSupplier = new KeyboardInsetObservableSupplier();
-        addObserver(mKeyboardInsetSupplier);
         mWindowInsetsAnimationProxyCallback =
                 new WindowInsetsAnimationCompat.Callback(
                         WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP) {
@@ -291,7 +290,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
      * Returns a supplier that observes this {@link InsetObserver} and provides changes to the
      * keyboard inset using the {@link ObservableSupplier} interface.
      */
-    public ObservableSupplier<Integer> getSupplierForKeyboardInset() {
+    public NonNullObservableSupplier<Integer> getSupplierForKeyboardInset() {
         return mKeyboardInsetSupplier;
     }
 
@@ -565,9 +564,9 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         }
 
         mKeyboardInset = keyboardInset;
-
+        mKeyboardInsetSupplier.set(keyboardInset);
         for (WindowInsetObserver mObserver : mObservers) {
-            mObserver.onKeyboardInsetChanged(mKeyboardInset);
+            mObserver.onKeyboardInsetChanged(keyboardInset);
         }
     }
 

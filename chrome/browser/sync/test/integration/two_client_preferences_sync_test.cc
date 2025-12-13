@@ -32,18 +32,37 @@ using testing::Eq;
 
 namespace {
 
-class TwoClientPreferencesSyncTest : public SyncTest {
+class TwoClientPreferencesSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  TwoClientPreferencesSyncTest() : SyncTest(TWO_CLIENT) {}
+  TwoClientPreferencesSyncTest() : SyncTest(TWO_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
 
   TwoClientPreferencesSyncTest(const TwoClientPreferencesSyncTest&) = delete;
   TwoClientPreferencesSyncTest& operator=(const TwoClientPreferencesSyncTest&) =
       delete;
 
   ~TwoClientPreferencesSyncTest() override = default;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(Sanity)) {
+INSTANTIATE_TEST_SUITE_P(,
+                         TwoClientPreferencesSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(TwoClientPreferencesSyncTest, E2E_ENABLED(Sanity)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(StringPrefMatchChecker(prefs::kHomePage).Wait());
@@ -78,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(Sanity)) {
               .size());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(BooleanPref)) {
+IN_PROC_BROWSER_TEST_P(TwoClientPreferencesSyncTest, E2E_ENABLED(BooleanPref)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(BooleanPrefMatchChecker(prefs::kHomePageIsNewTabPage).Wait());
@@ -87,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(BooleanPref)) {
   ASSERT_TRUE(BooleanPrefMatchChecker(prefs::kHomePageIsNewTabPage).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientPreferencesSyncTest,
                        E2E_ENABLED(Bidirectional)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
@@ -105,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest,
             GetPrefs(0)->GetString(prefs::kHomePage));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientPreferencesSyncTest,
                        E2E_ENABLED(UnsyncableBooleanPref)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
@@ -124,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest,
   ASSERT_FALSE(BooleanPrefMatches(prefs::kDisableScreenshots));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(StringPref)) {
+IN_PROC_BROWSER_TEST_P(TwoClientPreferencesSyncTest, E2E_ENABLED(StringPref)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(StringPrefMatchChecker(prefs::kHomePage).Wait());
@@ -133,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(StringPref)) {
   ASSERT_TRUE(StringPrefMatchChecker(prefs::kHomePage).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(ClearPref)) {
+IN_PROC_BROWSER_TEST_P(TwoClientPreferencesSyncTest, E2E_ENABLED(ClearPref)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
   ChangeStringPref(0, prefs::kHomePage, "http://news.google.com");
@@ -144,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest, E2E_ENABLED(ClearPref)) {
   ASSERT_TRUE(ClearedPrefMatchChecker(prefs::kHomePage).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientPreferencesSyncTest,
                        E2E_ENABLED(ComplexPrefs)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupSync());
@@ -163,15 +182,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTest,
   ASSERT_TRUE(ListPrefMatchChecker(prefs::kURLsToRestoreOnStartup).Wait());
 }
 
-// The following tests use lower-level mechanisms to wait for sync cycle
-// completions. Those only work reliably with self notifications turned on.
-class TwoClientPreferencesSyncTestWithSelfNotifications : public SyncTest {
- public:
-  TwoClientPreferencesSyncTestWithSelfNotifications() : SyncTest(TWO_CLIENT) {}
-  ~TwoClientPreferencesSyncTestWithSelfNotifications() override = default;
-};
-
-IN_PROC_BROWSER_TEST_F(TwoClientPreferencesSyncTestWithSelfNotifications,
+IN_PROC_BROWSER_TEST_P(TwoClientPreferencesSyncTest,
                        E2E_ENABLED(ShouldKeepLocalDataOnTypeMismatch)) {
   ASSERT_TRUE(ResetSyncForPrimaryAccount());
   ASSERT_TRUE(SetupClients());

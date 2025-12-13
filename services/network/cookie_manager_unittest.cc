@@ -2154,7 +2154,7 @@ TEST_F(CookieManagerTest, AddCookieChangeListener) {
   const std::string listener_url_host("www.testing.com");
   const std::string listener_url_domain("testing.com");
   const std::string listener_cookie_name("Cookie_Name");
-  ASSERT_EQ(listener_url.host(), listener_url_host);
+  ASSERT_EQ(listener_url.GetHost(), listener_url_host);
 
   mojo::PendingRemote<mojom::CookieChangeListener> listener_remote;
   CookieChangeListener listener(
@@ -2315,7 +2315,7 @@ TEST_F(CookieManagerTest, ListenerDestroyed) {
   // Create two identical listeners.
   const GURL listener_url("http://www.testing.com/pathele");
   const std::string listener_url_host("www.testing.com");
-  ASSERT_EQ(listener_url.host(), listener_url_host);
+  ASSERT_EQ(listener_url.GetHost(), listener_url_host);
   const std::string listener_cookie_name("Cookie_Name");
 
   mojo::PendingRemote<mojom::CookieChangeListener> listener1_remote;

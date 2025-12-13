@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"

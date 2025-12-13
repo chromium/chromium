@@ -19,12 +19,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
-#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/test/base/testing_profile.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension.h"
@@ -61,11 +61,11 @@ class BackgroundApplicationListModelTest
   // extensions::ExtensionServiceTestBase:
   void SetUp() override {
     InitializeEmptyExtensionService();
-    model_ = std::make_unique<BackgroundApplicationListModel>(profile_.get());
+    model_ = std::make_unique<BackgroundApplicationListModel>(profile());
   }
 
   bool IsBackgroundApp(const Extension& app) {
-    return BackgroundApplicationListModel::IsBackgroundApp(app, profile_.get());
+    return BackgroundApplicationListModel::IsBackgroundApp(app, profile());
   }
 
   BackgroundApplicationListModel* model() const { return model_.get(); }
@@ -95,7 +95,7 @@ static scoped_refptr<Extension> CreateExtension(const std::string& name,
   }
   manifest.Set(extensions::manifest_keys::kPermissions, std::move(permissions));
 
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension = Extension::Create(
       bogus_file_pathname(name), extensions::mojom::ManifestLocation::kInternal,
       manifest, Extension::NO_FLAGS, &error);

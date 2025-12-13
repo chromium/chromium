@@ -26,6 +26,7 @@
 #include "media/base/pipeline_status.h"
 #include "media/base/renderer_client.h"
 #include "media/base/video_frame.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -40,10 +41,6 @@ namespace {
 // Today, |min_buffered_frames_| can go down (as low as 1) and up in response to
 // SetLatencyHint(), so we needed to peg this with a constant.
 constexpr int kAbsoluteMaxFrames = 24;
-
-BASE_FEATURE(kReportUnderflowForBackgroundRendering,
-             "ReportUnderflowForBackgroundRendering",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -165,8 +162,8 @@ void VideoRendererImpl::Initialize(
     const TimeSource::WallClockTimeCB& wall_clock_time_cb,
     PipelineStatusCallback init_cb) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "VideoRendererImpl::Initialize",
-                                    TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("media", "VideoRendererImpl::Initialize",
+                    perfetto::Track::FromPointer(this));
 
   base::AutoLock auto_lock(lock_);
   DCHECK(stream);
@@ -239,15 +236,9 @@ scoped_refptr<VideoFrame> VideoRendererImpl::Render(
   // frames have been decoded since the last Render() call.
   // HaveEnoughData_Locked() will abort the transition if any frames come in
   // after this current render.
-  bool skip_have_nothing_for_background_rendering = false;
-  if (base::FeatureList::IsEnabled(kReportUnderflowForBackgroundRendering)) {
-    skip_have_nothing_for_background_rendering =
-        background_rendering || (was_background_rendering_ &&
-                                 last_frame_ready_time_ >= last_render_time_);
-  } else {
-    skip_have_nothing_for_background_rendering =
-        background_rendering || was_background_rendering_;
-  }
+  const bool skip_have_nothing_for_background_rendering =
+      background_rendering || (was_background_rendering_ &&
+                               last_frame_ready_time_ >= last_render_time_);
 
   last_render_time_ = tick_clock_->NowTicks();
 
@@ -333,16 +324,15 @@ void VideoRendererImpl::OnVideoDecoderStreamInitialized(bool success) {
 
 void VideoRendererImpl::FinishInitialization(PipelineStatus status) {
   DCHECK(init_cb_);
-  TRACE_EVENT_NESTABLE_ASYNC_END1("media", "VideoRendererImpl::Initialize",
-                                  TRACE_ID_LOCAL(this), "status",
-                                  PipelineStatusToString(status));
+  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this), "status",
+                  PipelineStatusToString(status));
   std::move(init_cb_).Run(status);
 }
 
 void VideoRendererImpl::FinishFlush() {
   DCHECK(flush_cb_);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("media", "VideoRendererImpl::Flush",
-                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END("media", /*"VideoRendererImpl::Flush"*/
+                  perfetto::Track::FromPointer(this));
   std::move(flush_cb_).Run();
 }
 

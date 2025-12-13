@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -204,12 +205,6 @@ std::string FetchUrlWithNoCorsModeScript(const GURL& url) {
 class ChromeSharedDictionaryBrowserTest : public InProcessBrowserTest {
  public:
   ChromeSharedDictionaryBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {network::features::kCompressionDictionaryTransportBackend,
-         network::features::kCompressionDictionaryTransport},
-        /*disabled_features=*/{});
-
     embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&ChromeSharedDictionaryBrowserTest::RequestHandler,
                             base::Unretained(this)));
@@ -397,7 +392,6 @@ class ChromeSharedDictionaryBrowserTest : public InProcessBrowserTest {
     return nullptr;
   }
   std::unique_ptr<net::EmbeddedTestServer> cross_origin_server_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, BlockWriting) {
@@ -759,31 +753,18 @@ class SharedDictionaryDevToolsBrowserTest
     : public InProcessBrowserTest,
       public content::TestDevToolsProtocolClient {
  public:
-  explicit SharedDictionaryDevToolsBrowserTest(
-      bool enable_feature = true,
-      bool enable_navigation_feature = true) {
+  explicit SharedDictionaryDevToolsBrowserTest(bool enable_feature = true) {
     if (enable_feature) {
-      if (enable_navigation_feature) {
-        scoped_feature_list_.InitWithFeatures(
-            /*enabled_features=*/
-            {network::features::kCompressionDictionaryTransportBackend,
-             network::features::kCompressionDictionaryTransport,
-             network::features::kSharedDictionaryRegisterNavigationRequests},
-            /*disabled_features=*/
-            {});
-      } else {
-        scoped_feature_list_.InitWithFeatures(
-            /*enabled_features=*/
-            {network::features::kCompressionDictionaryTransportBackend,
-             network::features::kCompressionDictionaryTransport},
-            /*disabled_features=*/
-            {network::features::kSharedDictionaryRegisterNavigationRequests});
-      }
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {network::features::kCompressionDictionaryTransport,
+           network::features::kCompressionDictionaryTTL},
+          /*disabled_features=*/
+          {});
     } else {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
-          {network::features::kCompressionDictionaryTransportBackend,
-           network::features::kSharedDictionaryRegisterNavigationRequests},
+          {},
           /*disabled_features=*/
           {network::features::kCompressionDictionaryTransport});
     }
@@ -895,17 +876,6 @@ class DevToolsSharedDictionaryFeatureDisabledBrowserTest
   DevToolsSharedDictionaryFeatureDisabledBrowserTest()
       : SharedDictionaryDevToolsBrowserTest(/*enable_feature=*/false) {}
   ~DevToolsSharedDictionaryFeatureDisabledBrowserTest() override = default;
-};
-
-class SharedDictionaryNavigationFeatureDisabledDevToolsBrowserTest
-    : public SharedDictionaryDevToolsBrowserTest {
- public:
-  SharedDictionaryNavigationFeatureDisabledDevToolsBrowserTest()
-      : SharedDictionaryDevToolsBrowserTest(
-            /*enable_feature=*/true,
-            /*enable_navigation_feature=*/false) {}
-  ~SharedDictionaryNavigationFeatureDisabledDevToolsBrowserTest() override =
-      default;
 };
 
 IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
@@ -1076,18 +1046,6 @@ IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
   RunCustomHeaderTest("WriteErrorInvalidStructuredHeader", "match=\"");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SharedDictionaryNavigationFeatureDisabledDevToolsBrowserTest,
-    WriteErrorNavigationRequest) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  NavigateAndEnableAudits(
-      embedded_test_server()->GetURL("/shared_dictionary/blank.html"));
-  EXPECT_TRUE(NavigateToURL(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      embedded_test_server()->GetURL("/shared_dictionary/test_dict.html")));
-  WaitForSharedDictionaryIssueAdded("WriteErrorNavigationRequest");
-}
-
 IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
                        WriteErrorNoMatchField) {
   RunCustomHeaderTest("WriteErrorNoMatchField", "id=\"dict_id\"");
@@ -1132,6 +1090,17 @@ IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
                        WriteErrorNonTokenTypeField) {
   RunCustomHeaderTest("WriteErrorNonTokenTypeField",
                       "match=\"/test/*\", type=\"raw\"");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorNonIntegerTTLField) {
+  RunCustomHeaderTest("WriteErrorNonIntegerTTLField",
+                      "match=\"/test/*\", ttl=token");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorInvalidTTLField) {
+  RunCustomHeaderTest("WriteErrorInvalidTTLField", "match=\"/test/*\", ttl=0");
 }
 
 IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,

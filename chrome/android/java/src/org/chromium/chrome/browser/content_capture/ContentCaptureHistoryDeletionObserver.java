@@ -5,11 +5,12 @@
 package org.chromium.chrome.browser.content_capture;
 
 import org.chromium.base.Log;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.history.HistoryDeletionBridge;
 import org.chromium.chrome.browser.history.HistoryDeletionInfo;
 import org.chromium.components.content_capture.PlatformContentCaptureController;
+
+import java.util.function.Supplier;
 
 /** History deletion observer that calls ContentCapture methods. */
 @NullMarked

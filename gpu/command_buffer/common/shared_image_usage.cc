@@ -36,7 +36,6 @@ std::string CreateLabelForSharedImageUsage(SharedImageUsageSet usage) {
       {SHARED_IMAGE_USAGE_DISPLAY_READ, "DisplayRead"},
       {SHARED_IMAGE_USAGE_DISPLAY_WRITE, "DisplayWrite"},
       {SHARED_IMAGE_USAGE_SCANOUT, "Scanout"},
-      {SHARED_IMAGE_USAGE_OOP_RASTERIZATION, "OopRasterization"},
       {SHARED_IMAGE_USAGE_WEBGPU_READ, "WebgpuRead"},
       {SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE, "ConcurrentReadWrite"},
       {SHARED_IMAGE_USAGE_VIDEO_DECODE, "VideoDecode"},
@@ -53,14 +52,14 @@ std::string CreateLabelForSharedImageUsage(SharedImageUsageSet usage) {
       {SHARED_IMAGE_USAGE_GLES2_WRITE, "Gles2Write"},
       {SHARED_IMAGE_USAGE_RASTER_WRITE, "RasterWrite"},
       {SHARED_IMAGE_USAGE_WEBGPU_WRITE, "WebgpuWrite"},
-      {SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY, "GLES2ForRasterOnly"},
-      {SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY, "RasterOverGLES2Only"},
       {SHARED_IMAGE_USAGE_PROTECTED_VIDEO, "ProtectedVideo"},
       {SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER, "WebgpuSharedBuffer"},
       {SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR, "WebnnSharedTensor"},
       {SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE, "CpuOnlyReadWrite"},
       {SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE, "RasterCopySource"},
       {SHARED_IMAGE_USAGE_CPU_READ, "CpuRead"},
+      {SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_READ, "WebnnSharedTensorRead"},
+      {SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_WRITE, "WebnnSharedTensorWrite"},
   };
 
   std::string label;

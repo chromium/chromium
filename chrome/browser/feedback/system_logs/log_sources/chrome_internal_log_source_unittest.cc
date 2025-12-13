@@ -7,10 +7,12 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/browser/gpu_data_manager.h"
@@ -24,8 +26,8 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
-#include "chrome/browser/updater/browser_updater_client.h"
 #include "chrome/browser/updater/browser_updater_client_testutils.h"
+#include "chrome/browser/updater/updater.h"
 #include "chrome/updater/constants.h"       // nogncheck
 #include "chrome/updater/update_service.h"  // nogncheck
 #include "chrome/updater/updater_scope.h"   // nogncheck
@@ -66,10 +68,17 @@ class ChromeInternalLogSourceTest : public BrowserWithTestWindowTest {
   ~ChromeInternalLogSourceTest() override = default;
 
   void SetUp() override {
+    BrowserWithTestWindowTest::SetUp();
 #if BUILDFLAG(IS_CHROMEOS)
     auth_events_recorder_ = ash::AuthEventsRecorder::CreateForTesting();
 #endif
-    BrowserWithTestWindowTest::SetUp();
+  }
+
+  void TearDown() override {
+#if BUILDFLAG(IS_CHROMEOS)
+    auth_events_recorder_.reset();
+#endif
+    BrowserWithTestWindowTest::TearDown();
   }
 
  protected:
@@ -203,23 +212,21 @@ TEST_F(ChromeInternalLogSourceTest, RecordedAuthEventsPresent) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
 TEST_F(ChromeInternalLogSourceTest, UpdaterDataPresent) {
+  base::ScopedClosureRunner service_override =
+      updater::OverrideService(updater::UpdateService::Result::kSuccess, {});
   base::RunLoop loop;
-  BrowserUpdaterClient::Create(
-      updater::MakeFakeService(updater::UpdateService::Result::kSuccess, {}),
-      updater::UpdaterScope::kUser)
-      ->CheckForUpdate(base::BindLambdaForTesting(
-          [&](const updater::UpdateService::UpdateState& status) {
-            loop.QuitWhenIdle();
-          }));
+  updater::CheckForUpdate(
+      base::BindRepeating([](const updater::UpdateService::UpdateState&) {
+      }).Then(loop.QuitWhenIdleClosure()));
   loop.Run();
 
   std::unique_ptr<SystemLogsResponse> response = GetChromeInternalLogs();
   EXPECT_EQ(response->at("update_error_code"), "0/0");
   EXPECT_EQ(response->at("update_hresult"), "0");
 }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
 
 }  // namespace
 }  // namespace system_logs

@@ -29,20 +29,17 @@ base::android::FeatureMap* GetFeatureMap() {
 }  // namespace
 
 BASE_FEATURE(kMessagesForAndroidFullyVisibleCallback,
-             "MessagesForAndroidFullyVisibleCallback",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature that enables extra histogram recordings.
-BASE_FEATURE(kMessagesAndroidExtraHistograms,
-             "MessagesAndroidExtraHistograms",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMessagesAndroidExtraHistograms, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMessagesCloseButton,
-             "MessagesCloseButton",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMessagesCloseButton, base::FEATURE_ENABLED_BY_DEFAULT);
 
 static jlong JNI_MessageFeatureMap_GetNativeMap(JNIEnv* env) {
   return reinterpret_cast<jlong>(GetFeatureMap());
 }
 
 }  // namespace messages
+
+DEFINE_JNI(MessageFeatureMap)

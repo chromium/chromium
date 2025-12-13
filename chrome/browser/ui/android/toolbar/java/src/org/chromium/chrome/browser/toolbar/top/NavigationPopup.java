@@ -28,7 +28,6 @@ import androidx.core.widget.ImageViewCompat;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -37,7 +36,8 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
-import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
@@ -49,6 +49,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** A popup that handles displaying the navigation history for a given tab. */
 @NullMarked
@@ -129,10 +130,12 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
                 mNavigationController.getDirectedNavigationHistory(
                         isForward, MAXIMUM_HISTORY_ITEMS);
         if (!shouldUseIncognitoResources()) {
+            UrlConstantResolver urlConstantResolver =
+                    UrlConstantResolverFactory.getForProfile(profile);
             mHistory.addEntry(
                     new NavigationEntry(
                             FULL_HISTORY_ENTRY_INDEX,
-                            new GURL(UrlConstants.HISTORY_URL),
+                            new GURL(urlConstantResolver.getHistoryPageUrl()),
                             GURL.emptyGURL(),
                             GURL.emptyGURL(),
                             resources.getString(R.string.show_full_history),
@@ -289,7 +292,12 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
     private void onFaviconAvailable(GURL pageUrl, Bitmap favicon) {
         if (favicon == null) {
             if (mDefaultFaviconHelper == null) mDefaultFaviconHelper = new DefaultFaviconHelper();
-            favicon = mDefaultFaviconHelper.getDefaultFaviconBitmap(mContext, pageUrl, true);
+            favicon =
+                    mDefaultFaviconHelper.getDefaultFaviconBitmap(
+                            mContext,
+                            pageUrl,
+                            /* useDarkIcon= */ true,
+                            /* useIncognitoNtpIcon= */ false);
         }
         if (UrlUtilities.isNtpUrl(pageUrl) && shouldUseIncognitoResources()) {
             favicon =

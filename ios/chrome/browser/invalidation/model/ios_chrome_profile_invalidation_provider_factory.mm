@@ -13,12 +13,10 @@
 #import "components/gcm_driver/gcm_profile_service.h"
 #import "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #import "components/invalidation/profile_invalidation_provider.h"
-#import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_registry.h"
 #import "ios/chrome/browser/gcm/model/instance_id/ios_chrome_instance_id_profile_service_factory.h"
 #import "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 using invalidation::ProfileInvalidationProvider;
 
@@ -51,11 +49,6 @@ IOSChromeProfileInvalidationProviderFactory::
 
 std::unique_ptr<KeyedService>
 IOSChromeProfileInvalidationProviderFactory::BuildServiceInstanceFor(
-    web::BrowserState* /*context*/) const {
+    ProfileIOS* profile) const {
   return std::make_unique<ProfileInvalidationProvider>();
-}
-
-void IOSChromeProfileInvalidationProviderFactory::RegisterBrowserStatePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  ProfileInvalidationProvider::RegisterProfilePrefs(registry);
 }

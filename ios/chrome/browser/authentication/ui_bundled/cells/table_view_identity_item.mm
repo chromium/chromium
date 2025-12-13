@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_item.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_cell.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -32,6 +33,20 @@
 - (void)configureCell:(TableViewIdentityCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
+  [self configureCell:cell completion:nil];
+}
+
+- (void)configureCell:(TableViewIdentityCell*)cell
+           withStyler:(ChromeTableViewStyler*)styler
+           completion:(ProceduralBlock)completion {
+  [super configureCell:cell withStyler:styler];
+  [self configureCell:cell completion:completion];
+}
+
+#pragma mark - Private
+
+- (void)configureCell:(TableViewIdentityCell*)cell
+           completion:(ProceduralBlock)completion {
   NSString* title = self.name;
   NSString* subtitle = self.email;
   if (!title.length) {
@@ -60,7 +75,8 @@
                        checked:self.selected
                        managed:self.managed
              identityViewStyle:self.identityViewStyle
-                    titleColor:[UIColor colorNamed:kTextPrimaryColor]];
+                    titleColor:[UIColor colorNamed:kTextPrimaryColor]
+                    completion:completion];
 }
 
 @end

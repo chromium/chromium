@@ -43,7 +43,6 @@ class ClipboardHistoryControllerDelegate;
 class ClipboardHistoryItem;
 class ClipboardHistoryMenuModelAdapter;
 class ClipboardHistoryResourceManager;
-class ClipboardImageModelFactory;
 class ClipboardNudgeController;
 class ScopedClipboardHistoryPause;
 enum class LoginStatus;
@@ -266,10 +265,6 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // Either the browser-implemented or test-implemented delegate depending on
   // whether we are running in an Ash-only test context.
   const std::unique_ptr<ClipboardHistoryControllerDelegate> delegate_;
-
-  // The browser-implemented image model factory that renders html. This will be
-  // `nullptr` if and only if we are running in an Ash-only test context.
-  const std::unique_ptr<ClipboardImageModelFactory> image_model_factory_;
 
   // Observers notified when clipboard history is shown, used, or updated.
   base::ObserverList<ClipboardHistoryController::Observer> observers_;

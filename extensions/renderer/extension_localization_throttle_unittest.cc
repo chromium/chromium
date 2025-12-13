@@ -6,8 +6,14 @@
 
 #include <string_view>
 
+#include "base/json/json_reader.h"
 #include "base/test/task_environment.h"
+#include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/mock_render_thread.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/renderer/renderer_extension_registry.h"
 #include "extensions/renderer/shared_l10n_map.h"
+#include "extensions/renderer/test_extensions_renderer_client.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
@@ -175,10 +181,13 @@ class ExtensionLocalizationThrottleTest : public testing::Test {
     messages.insert(std::make_pair("hello", "hola"));
     messages.insert(std::make_pair("world", "mundo"));
     extensions::SharedL10nMap::GetInstance().SetMessagesForTesting(
-        "some_id", std::move(messages));
+        "aabbccddeeffgghhiijjkkllmmnnoopp", std::move(messages));
   }
   // Be the first member so it is destroyed last.
   base::test::TaskEnvironment task_environment_;
+
+  // A gurl with a valid extension id.
+  GURL test_gurl_ = GURL("chrome-extension://aabbccddeeffgghhiijjkkllmmnnoopp");
 };
 
 TEST_F(ExtensionLocalizationThrottleTest, DoNotCreate) {
@@ -189,7 +198,7 @@ TEST_F(ExtensionLocalizationThrottleTest, DoNotCreate) {
 }
 
 TEST_F(ExtensionLocalizationThrottleTest, DoNotIntercept) {
-  const GURL url("chrome-extension://some_id/test.txt");
+  const GURL url = test_gurl_.Resolve("test.txt");
   auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
       std::nullopt, blink::WebURL(url));
   ASSERT_TRUE(throttle);
@@ -205,7 +214,7 @@ TEST_F(ExtensionLocalizationThrottleTest, DoNotIntercept) {
 }
 
 TEST_F(ExtensionLocalizationThrottleTest, OneMessage) {
-  const GURL url("chrome-extension://some_id/test.css");
+  const GURL url = test_gurl_.Resolve("test.css");
   auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
       std::nullopt, blink::WebURL(url));
   ASSERT_TRUE(throttle);
@@ -234,7 +243,7 @@ TEST_F(ExtensionLocalizationThrottleTest, OneMessage) {
 }
 
 TEST_F(ExtensionLocalizationThrottleTest, TwoMessages) {
-  const GURL url("chrome-extension://some_id/test.css");
+  const GURL url = test_gurl_.Resolve("test.css");
   auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
       std::nullopt, blink::WebURL(url));
   ASSERT_TRUE(throttle);
@@ -266,7 +275,7 @@ TEST_F(ExtensionLocalizationThrottleTest, TwoMessages) {
 }
 
 TEST_F(ExtensionLocalizationThrottleTest, EmptyData) {
-  const GURL url("chrome-extension://some_id/test.css");
+  const GURL url = test_gurl_.Resolve("test.css");
   auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
       std::nullopt, blink::WebURL(url));
   ASSERT_TRUE(throttle);
@@ -295,7 +304,7 @@ TEST_F(ExtensionLocalizationThrottleTest, EmptyData) {
 
 // Regression test for https://crbug.com/1475798
 TEST_F(ExtensionLocalizationThrottleTest, Cancel) {
-  const GURL url("chrome-extension://some_id/test.css");
+  const GURL url = test_gurl_.Resolve("test.css");
   auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
       std::nullopt, blink::WebURL(url));
   ASSERT_TRUE(throttle);
@@ -325,7 +334,7 @@ TEST_F(ExtensionLocalizationThrottleTest, Cancel) {
 }
 
 TEST_F(ExtensionLocalizationThrottleTest, SourceSideError) {
-  const GURL url("chrome-extension://some_id/test.css");
+  const GURL url = test_gurl_.Resolve("test.css");
   auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
       std::nullopt, blink::WebURL(url));
   ASSERT_TRUE(throttle);
@@ -358,7 +367,7 @@ TEST_F(ExtensionLocalizationThrottleTest, SourceSideError) {
 }
 
 TEST_F(ExtensionLocalizationThrottleTest, WriteError) {
-  const GURL url("chrome-extension://some_id/test.css");
+  const GURL url = test_gurl_.Resolve("test.css");
   auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
       std::nullopt, blink::WebURL(url));
   ASSERT_TRUE(throttle);
@@ -387,7 +396,7 @@ TEST_F(ExtensionLocalizationThrottleTest, WriteError) {
 }
 
 TEST_F(ExtensionLocalizationThrottleTest, CreateDataPipeError) {
-  const GURL url("chrome-extension://some_id/test.css");
+  const GURL url = test_gurl_.Resolve("test.css");
   auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
       std::nullopt, blink::WebURL(url));
   ASSERT_TRUE(throttle);
@@ -414,7 +423,7 @@ TEST_F(ExtensionLocalizationThrottleTest, CreateDataPipeError) {
 }
 
 TEST_F(ExtensionLocalizationThrottleTest, URLLoaderChain) {
-  const GURL url("chrome-extension://some_id/test.css");
+  const GURL url = test_gurl_.Resolve("test.css");
   auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
       std::nullopt, blink::WebURL(url));
   ASSERT_TRUE(throttle);
@@ -456,7 +465,7 @@ TEST_F(ExtensionLocalizationThrottleTest, URLLoaderChain) {
 
 TEST_F(ExtensionLocalizationThrottleTest,
        URLLoaderClientOnTransferSizeUpdated) {
-  const GURL url("chrome-extension://some_id/test.css");
+  const GURL url = test_gurl_.Resolve("test.css");
   auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
       std::nullopt, blink::WebURL(url));
   ASSERT_TRUE(throttle);
@@ -492,6 +501,76 @@ TEST_F(ExtensionLocalizationThrottleTest,
       destination_loader_client->response_body_release(), &response));
   EXPECT_EQ("hola!", response);
   EXPECT_EQ(net::OK, destination_loader_client->completion_status().error_code);
+}
+
+// A renderer thread is required to be able to use RendererExtensionRegistry.
+class ExtensionLocalizationThrottleTestWithRendererThread
+    : public ExtensionLocalizationThrottleTest {
+ public:
+  void SetUp() override {
+    render_thread_ = std::make_unique<content::MockRenderThread>();
+    renderer_client_ = std::make_unique<TestExtensionsRendererClient>();
+    ExtensionsRendererClient::Set(renderer_client_.get());
+  }
+
+ protected:
+  // Return an extension when provided with a valid json manifest.
+  scoped_refptr<const Extension> GetExtension(
+      const std::string& manifest_json) {
+    std::u16string error;
+    base::Value::Dict manifest_dict;
+    auto manifest_value =
+        base::JSONReader::ReadDict(manifest_json, base::JSON_PARSE_RFC);
+    EXPECT_TRUE(manifest_value.has_value());
+    manifest_dict = std::move(*manifest_value);
+    scoped_refptr<const Extension> extension = Extension::Create(
+        base::FilePath(), extensions::mojom::ManifestLocation::kInternal,
+        manifest_dict, Extension::NO_FLAGS, &error);
+    EXPECT_TRUE(extension) << error;
+    return extension;
+  }
+
+ private:
+  std::unique_ptr<content::MockRenderThread> render_thread_;
+  std::unique_ptr<ExtensionsRendererClient> renderer_client_;
+};
+
+// Ensure that extension ids are used instead of guids in very rare scenarios.
+TEST_F(ExtensionLocalizationThrottleTestWithRendererThread,
+       ExtensionIdInsteadOfGuid) {
+  std::string manifest_json = R"({
+    "name": "Test",
+    "version": "1.0",
+    "manifest_version": 3,
+    "resources": [{
+      "resources": ["styles.css"],
+      "matches": ["https://allowed.example/*"],
+      "use_dynamic_url": true
+    }]
+  })";
+
+  auto extension = GetExtension(manifest_json);
+  ASSERT_TRUE(extension);
+
+  RendererExtensionRegistry::Get()->Insert(extension);
+
+  auto process_response = [](const GURL& gurl) {
+    auto throttle = ExtensionLocalizationThrottle::MaybeCreate(
+        std::nullopt, blink::WebURL(gurl));
+    ASSERT_TRUE(throttle);
+    auto delegate = std::make_unique<FakeDelegate>();
+    throttle->set_delegate(delegate.get());
+
+    auto response_head = network::mojom::URLResponseHead::New();
+    response_head->mime_type = "text/css";
+    bool defer = false;
+    throttle->WillProcessResponse(gurl, response_head.get(), &defer);
+    EXPECT_FALSE(defer);
+    EXPECT_TRUE(delegate->is_intercepted());
+  };
+
+  process_response(extension->GetResourceURL("styles.css"));
+  process_response(extension->dynamic_url().Resolve("styles.css"));
 }
 
 }  // namespace

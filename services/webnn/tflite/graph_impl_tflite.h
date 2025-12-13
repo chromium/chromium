@@ -33,7 +33,7 @@ class ContextImplTflite;
 // and executing the graph.
 class GraphImplTflite final : public WebNNGraphImpl {
  public:
-  static base::expected<std::unique_ptr<GraphImplTflite>, mojom::ErrorPtr>
+  static base::expected<scoped_refptr<GraphImplTflite>, mojom::ErrorPtr>
   CreateAndBuild(
       mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
@@ -43,29 +43,28 @@ class GraphImplTflite final : public WebNNGraphImpl {
       base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
       ContextImplTflite* context);
 
-  GraphImplTflite(const GraphImplTflite&) = delete;
-  GraphImplTflite& operator=(const GraphImplTflite&) = delete;
-  ~GraphImplTflite() override;
-
- private:
   class ComputeResources;
-
-  using NamedBuffers = base::flat_map<std::string, mojo_base::BigBuffer>;
-
   GraphImplTflite(mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
                   ComputeResourceInfo compute_resource_info,
                   base::flat_map<std::string, int> input_name_to_index,
                   base::flat_map<std::string, int> output_name_to_index,
                   scoped_refptr<QueueableResourceState<ComputeResources>>
                       compute_resources_state,
-                  ContextImplTflite* context,
+                  base::WeakPtr<WebNNContextImpl> context,
                   std::vector<mojom::Device> devices);
+
+  GraphImplTflite(const GraphImplTflite&) = delete;
+  GraphImplTflite& operator=(const GraphImplTflite&) = delete;
+
+ private:
+  ~GraphImplTflite() override;
 
   // Execute the compiled platform graph asynchronously. The inputs were
   // validated in base class so we can use them to compute directly.
   void DispatchImpl(
-      base::flat_map<std::string, WebNNTensorImpl*> named_inputs,
-      base::flat_map<std::string, WebNNTensorImpl*> named_outputs) override;
+      base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_inputs,
+      base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_outputs)
+      override;
 
   scoped_refptr<QueueableResourceState<ComputeResources>>
       compute_resources_state_;

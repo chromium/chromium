@@ -41,8 +41,7 @@ class ChromeNativeAppWindowViewsWin : public ChromeNativeAppWindowViewsAura {
       views::Widget* widget) override;
   void InitializeDefaultWindow(
       const extensions::AppWindow::CreateParams& create_params) override;
-  std::unique_ptr<views::NonClientFrameView> CreateStandardDesktopAppFrame()
-      override;
+  std::unique_ptr<views::FrameView> CreateStandardDesktopAppFrame() override;
 
   // Overridden from views::WidgetDelegate:
   bool CanMinimize() const override;

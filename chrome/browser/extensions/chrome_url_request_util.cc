@@ -18,13 +18,15 @@
 #include "base/strings/string_view_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/extensions/chrome_manifest_url_handlers.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/browser/component_extension_resource_manager.h"
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/url_request_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/file_util.h"
+#include "extensions/common/manifest_handlers/devtools_page_handler.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -40,6 +42,8 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::ExtensionsBrowserClient;
 
@@ -157,7 +161,7 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
                        base::Unretained(read_mime_type)),
         base::BindOnce(&ResourceBundleFileLoader::OnMimeTypeRead,
                        weak_factory_.GetWeakPtr(), resource_id,
-                       request.url.host(), base::Owned(read_mime_type)));
+                       request.url.GetHost(), base::Owned(read_mime_type)));
   }
 
   void OnMimeTypeRead(int resource_id,
@@ -266,13 +270,16 @@ bool AllowCrossRendererResourceLoad(
     return true;
   }
 
-  // If there aren't any explicitly marked web accessible resources, the
-  // load should be allowed only if it is by DevTools. A close approximation is
-  // checking if the extension contains a DevTools page.
   if (extension &&
       !chrome_manifest_urls::GetDevToolsPage(extension).is_empty()) {
-    *allowed = true;
-    return true;
+    // Allow the load if the initiator is either a devtools origin, or if
+    // there is no initiator (in which case it was likely a browser-initiated
+    // request).
+    if (!request.request_initiator ||
+        request.request_initiator->scheme() == content::kChromeDevToolsScheme) {
+      *allowed = true;
+      return true;
+    }
   }
 
   // Couldn't determine if the resource is allowed or not.

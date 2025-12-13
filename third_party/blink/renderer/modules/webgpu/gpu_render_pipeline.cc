@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_pipeline.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_blend_component.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_blend_state.h"
@@ -221,7 +222,8 @@ void AsDawnVertexBufferLayouts(GPUDevice* device,
     if (const auto* buffer = descriptor->buffers()[i].Get()) {
       UNSAFE_TODO(dawn_desc_info->attributes.get()[i]) =
           AsDawnType(buffer->attributes());
-      wgpu::VertexBufferLayout* dawn_buffer = &dawn_desc_info->buffers[i];
+      wgpu::VertexBufferLayout* dawn_buffer =
+          UNSAFE_TODO(&dawn_desc_info->buffers[i]);
       dawn_buffer->attributes =
           UNSAFE_TODO(dawn_desc_info->attributes.get()[i].get());
     }
@@ -318,7 +320,8 @@ void GPUFragmentStateAsWGPUFragmentState(GPUDevice* device,
       }
 
       dawn_fragment->blend_states[i] = AsDawnType(blend_state);
-      dawn_fragment->targets[i].blend = &dawn_fragment->blend_states[i];
+      UNSAFE_TODO(dawn_fragment->targets[i].blend) =
+          &dawn_fragment->blend_states[i];
     }
   }
 }

@@ -101,12 +101,12 @@ void MouseKeysBubbleController::Update(
   // Update the bounds to fit entirely within the screen.
   gfx::Rect new_bounds = widget_->GetWindowBoundsInScreen();
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetDisplayMatching(new_bounds).bounds();
+      display::Screen::Get()->GetDisplayMatching(new_bounds).bounds();
   new_bounds.AdjustToFit(display_bounds);
 
   // Update the preferred bounds based on other system windows.
   gfx::Rect resting_bounds = CollisionDetectionUtils::AvoidObstacles(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           widget_->GetNativeWindow()),
       new_bounds, CollisionDetectionUtils::RelativePriority::kMouseKeysBubble);
   widget_->SetBounds(resting_bounds);

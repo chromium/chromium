@@ -313,41 +313,40 @@ ValueState PrefHashStoreImpl::PrefHashStoreTransactionImpl::CheckValueInternal(
     const base::Value* value,
     const std::optional<std::string>& stored_encrypted_hash,
     const std::optional<std::string>& stored_mac) const {
-    if (encryptor_) {
-      // Priority 1: Check encrypted hash.
-      if (stored_encrypted_hash.has_value()) {
-        ValidationResult result =
-            outer_->pref_hash_calculator_.ValidateEncrypted(
-                path, value, *stored_encrypted_hash, encryptor_);
-        if (result == ValidationResult::VALID_ENCRYPTED) {
-          return ValueState::UNCHANGED_ENCRYPTED;
-        }
-        return value ? ValueState::CHANGED_ENCRYPTED
-                     : ValueState::CLEARED_ENCRYPTED;
+  if (encryptor_) {
+    // Priority 1: Check encrypted hash.
+    if (stored_encrypted_hash.has_value()) {
+      ValidationResult result = outer_->pref_hash_calculator_.ValidateEncrypted(
+          path, value, *stored_encrypted_hash, encryptor_);
+      if (result == ValidationResult::VALID_ENCRYPTED) {
+        return ValueState::UNCHANGED_ENCRYPTED;
       }
-      // Priority 2: Fallback to legacy MAC for healing.
-      if (stored_mac.has_value()) {
-        ValidationResult result =
-            outer_->pref_hash_calculator_.Validate(path, value, *stored_mac);
-        if (result == ValidationResult::VALID) {
-          return ValueState::UNCHANGED_VIA_HMAC_FALLBACK;
-        }
-        return value ? ValueState::CHANGED_VIA_HMAC_FALLBACK
-                     : ValueState::CLEARED_VIA_HMAC_FALLBACK;
-      }
-    } else {
-      // ---- Encryptor is NOT available: Legacy path ----
-      if (stored_mac.has_value()) {
-        ValidationResult mac_validation_result =
-            outer_->pref_hash_calculator_.Validate(path, value, *stored_mac);
-        if (mac_validation_result == ValidationResult::VALID) {
-          // If we fell through from encrypted (which was unusable), a valid MAC
-          // still means the value is UNCHANGED.
-          return ValueState::UNCHANGED;
-        }
-        return value ? ValueState::CHANGED : ValueState::CLEARED;
-      }
+      return value ? ValueState::CHANGED_ENCRYPTED
+                   : ValueState::CLEARED_ENCRYPTED;
     }
+    // Priority 2: Fallback to legacy MAC for healing.
+    if (stored_mac.has_value()) {
+      ValidationResult result =
+          outer_->pref_hash_calculator_.Validate(path, value, *stored_mac);
+      if (result == ValidationResult::VALID) {
+        return ValueState::UNCHANGED_VIA_HMAC_FALLBACK;
+      }
+      return value ? ValueState::CHANGED_VIA_HMAC_FALLBACK
+                   : ValueState::CLEARED_VIA_HMAC_FALLBACK;
+    }
+  } else {
+    // ---- Encryptor is NOT available: Legacy path ----
+    if (stored_mac.has_value()) {
+      ValidationResult mac_validation_result =
+          outer_->pref_hash_calculator_.Validate(path, value, *stored_mac);
+      if (mac_validation_result == ValidationResult::VALID) {
+        // If we fell through from encrypted (which was unusable), a valid MAC
+        // still means the value is UNCHANGED.
+        return ValueState::UNCHANGED;
+      }
+      return value ? ValueState::CHANGED : ValueState::CLEARED;
+    }
+  }
 
   // --- No Usable Hashes Found ---
   // Arrive here if:

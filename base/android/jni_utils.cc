@@ -19,7 +19,8 @@ namespace android {
 namespace {
 struct LockAndMap {
   base::Lock lock;
-  base::flat_map<const char*, ScopedJavaGlobalRef<jobject>> map;
+  base::flat_map<const char*, ScopedJavaGlobalRef<jobject>> map
+      GUARDED_BY(lock);
 };
 LockAndMap* GetLockAndMap() {
   static base::NoDestructor<LockAndMap> lock_and_map;
@@ -45,4 +46,4 @@ jobject GetSplitClassLoader(JNIEnv* env, const char* split_name) {
 }  // namespace android
 }  // namespace base
 
-DEFINE_JNI_FOR_JNIUtils()
+DEFINE_JNI(JNIUtils)

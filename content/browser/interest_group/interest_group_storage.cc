@@ -237,7 +237,8 @@ std::optional<base::Value> DeserializeValue(std::string_view serialized_value) {
   if (serialized_value.empty()) {
     return {};
   }
-  std::optional<base::Value> result = base::JSONReader::Read(serialized_value);
+  std::optional<base::Value> result = base::JSONReader::Read(
+      serialized_value, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (result) {
     base::UmaHistogramEnumeration(
         "Storage.InterestGroup.JSONDeserializationResult",
@@ -388,9 +389,10 @@ AdProtos GetAdProtosFromAds(const std::vector<blink::InterestGroup::Ad>& ads) {
           *ad.buyer_and_seller_reporting_id);
     }
     if (ad.selectable_buyer_and_seller_reporting_ids.has_value()) {
-      for (const auto& id : *ad.selectable_buyer_and_seller_reporting_ids) {
-        ad_proto->add_selectable_buyer_and_seller_reporting_ids(id);
-      }
+      ad_proto->mutable_selectable_buyer_and_seller_reporting_ids()->Add(
+        ad.selectable_buyer_and_seller_reporting_ids->begin(),
+        ad.selectable_buyer_and_seller_reporting_ids->end()
+      );
     }
     if (ad.ad_render_id.has_value()) {
       ad_proto->set_ad_render_id(*ad.ad_render_id);
@@ -6433,6 +6435,7 @@ bool CompactClickiness(sql::Database& db, base::Time now) {
         raw_views->compacted_events.empty() &&
         raw_clicks->uncompacted_events.empty() &&
         raw_clicks->compacted_events.empty()) {
+      delete_row.Reset(/*clear_bound_vars=*/true);
       delete_row.BindString(0, provider_origin);
       delete_row.BindString(1, eligible_origin);
       if (!delete_row.Run()) {

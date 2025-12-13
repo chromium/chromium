@@ -27,8 +27,8 @@
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/search_test_utils.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/actions/tab_switch_action.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_result.h"
@@ -51,6 +51,8 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/ax_update_observer.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -197,10 +199,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegration) {
   UseDefaultTheme();
   SetUseDeviceTheme(false);
 
-  SetUseDarkColor(true);
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   const SkColor selection_color_dark = GetSelectedColor(browser());
 
-  SetUseDarkColor(false);
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
   const SkColor selection_color_light = GetSelectedColor(browser());
 
   // Unthemed, non-incognito always has a white background. Exceptions: Inverted
@@ -217,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegration) {
   extensions::ChromeTestExtensionLoader loader(browser()->profile());
   {
     ThemeChangeWaiter wait(theme_service);
-    base::FilePath path = ui_test_utils::GetTestFilePath(
+    base::FilePath path = chrome_test_utils::GetTestFilePath(
         base::FilePath().AppendASCII("extensions"),
         base::FilePath().AppendASCII("theme"));
     loader.LoadExtension(path);
@@ -246,19 +250,21 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegrationInIncognito) {
   UseDefaultTheme();
   SetUseDeviceTheme(false);
 
-  SetUseDarkColor(true);
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   SetIsGrayscale(true);
 
   const SkColor selection_color_dark = GetSelectedColor(browser());
 
-  SetUseDarkColor(false);
+  os_settings_provider().SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
   SetIsGrayscale(false);
 
   // Install a theme (in both browsers, since it's the same profile).
   extensions::ChromeTestExtensionLoader loader(browser()->profile());
   {
     ThemeChangeWaiter wait(theme_service);
-    base::FilePath path = ui_test_utils::GetTestFilePath(
+    base::FilePath path = chrome_test_utils::GetTestFilePath(
         base::FilePath().AppendASCII("extensions"),
         base::FilePath().AppendASCII("theme"));
     loader.LoadExtension(path);
@@ -618,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   results.SortAndCull(input, /*template_url_service=*/nullptr,
                       triggered_feature_service(), /*is_lens_active=*/false,
                       /*can_show_contextual_suggestions=*/false,
-                      /*mia_enabled*/ false);
+                      /*mia_enabled=*/false, /*is_incognito=*/false);
   controller()->autocomplete_controller()->NotifyChanged();
 
   // Check that arrowing up and down emits the event.
@@ -692,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   // Check accessibility of list box while it's closed.
   widget->Close();
   waiter.Wait();
-  EXPECT_FALSE(popup_view()->IsOpen());
+  EXPECT_FALSE(controller()->IsPopupOpen());
   popup_node_data = ui::AXNodeData();
   popup_view()->GetViewAccessibility().GetAccessibleNodeData(&popup_node_data);
   EXPECT_FALSE(popup_node_data.HasState(ax::mojom::State::kExpanded));
@@ -773,7 +779,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   input.set_omit_asynchronous_matches(true);
   controller()->autocomplete_controller()->Start(input);
-  ASSERT_TRUE(popup_view()->IsOpen());
+  ASSERT_TRUE(controller()->IsPopupOpen());
 
   // Select deletable match at index 1 (input is index 0).
   edit_model()->SetPopupSelection(OmniboxPopupSelection(1));
@@ -823,9 +829,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
                        MAYBE_SpaceEntersKeywordMode) {
   CreatePopupForTestQuery();
-  EXPECT_TRUE(popup_view()->IsOpen());
+  EXPECT_TRUE(controller()->IsPopupOpen());
 
-  omnibox_view()->controller()->client()->GetPrefs()->SetBoolean(
+  location_bar()->GetOmniboxController()->client()->GetPrefs()->SetBoolean(
       omnibox::kKeywordSpaceTriggeringEnabled, true);
   omnibox_view()->SetUserText(u"@bookmarks");
   edit_model()->StartAutocomplete(false, false);
@@ -860,7 +866,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   ui::AXNodeData ax_node_data_omnibox;
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data_omnibox);
-  EXPECT_FALSE(popup_view()->IsOpen());
+  EXPECT_FALSE(controller()->IsPopupOpen());
   EXPECT_FALSE(ax_node_data_omnibox.HasIntAttribute(
       ax::mojom::IntAttribute::kActivedescendantId));
 
@@ -888,7 +894,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   edit_model()->StartAutocomplete(false, false);
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data_omnibox);
-  EXPECT_TRUE(popup_view()->IsOpen());
+  EXPECT_TRUE(controller()->IsPopupOpen());
   EXPECT_TRUE(ax_node_data_omnibox.HasIntAttribute(
       ax::mojom::IntAttribute::kActivedescendantId));
   // First result is selected by default.
@@ -910,7 +916,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
       AutocompleteStopReason::kClobbered);
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data_omnibox);
-  EXPECT_FALSE(popup_view()->IsOpen());
+  EXPECT_FALSE(controller()->IsPopupOpen());
   EXPECT_FALSE(ax_node_data_omnibox.HasIntAttribute(
       ax::mojom::IntAttribute::kActivedescendantId));
 }
@@ -919,7 +925,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, AccessibleControlIds) {
   ui::AXNodeData ax_node_data_omnibox, data;
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data_omnibox);
-  EXPECT_FALSE(popup_view()->IsOpen());
+  EXPECT_FALSE(controller()->IsPopupOpen());
   EXPECT_FALSE(ax_node_data_omnibox.HasIntListAttribute(
       ax::mojom::IntListAttribute::kControlsIds));
 
@@ -930,7 +936,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, AccessibleControlIds) {
   edit_model()->StartAutocomplete(false, false);
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data_omnibox);
-  EXPECT_TRUE(popup_view()->IsOpen());
+  EXPECT_TRUE(controller()->IsPopupOpen());
   EXPECT_TRUE(ax_node_data_omnibox.HasIntListAttribute(
       ax::mojom::IntListAttribute::kControlsIds));
   EXPECT_THAT(ax_node_data_omnibox.GetIntListAttribute(
@@ -943,7 +949,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, AccessibleControlIds) {
       AutocompleteStopReason::kClobbered);
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data_omnibox);
-  EXPECT_FALSE(popup_view()->IsOpen());
+  EXPECT_FALSE(controller()->IsPopupOpen());
   EXPECT_FALSE(ax_node_data_omnibox.HasIntListAttribute(
       ax::mojom::IntListAttribute::kControlsIds));
 }
@@ -1016,7 +1022,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupSuggestionGroupHeadersTest,
         ChromeAutocompleteSchemeClassifier(browser()->profile()));
     input.set_omit_asynchronous_matches(true);
     controller()->autocomplete_controller()->Start(input);
-    ASSERT_TRUE(popup_view()->IsOpen());
+    ASSERT_TRUE(controller()->IsPopupOpen());
 
     // Skip over implicit SEARCH_WHAT_YOU_TYPED suggestion at index 0.
 
@@ -1049,7 +1055,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupSuggestionGroupHeadersTest,
         ChromeAutocompleteSchemeClassifier(browser()->profile()));
     input.set_omit_asynchronous_matches(true);
     controller()->autocomplete_controller()->Start(input);
-    ASSERT_TRUE(popup_view()->IsOpen());
+    ASSERT_TRUE(controller()->IsPopupOpen());
 
     // Skip over implicit SEARCH_WHAT_YOU_TYPED suggestion at index 0.
 
@@ -1077,7 +1083,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupSuggestionGroupHeadersTest,
         ChromeAutocompleteSchemeClassifier(browser()->profile()));
     input.set_omit_asynchronous_matches(true);
     controller()->autocomplete_controller()->Start(input);
-    ASSERT_TRUE(popup_view()->IsOpen());
+    ASSERT_TRUE(controller()->IsPopupOpen());
 
     // Skip over implicit SEARCH_WHAT_YOU_TYPED suggestion at index 0.
 

@@ -27,10 +27,10 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSource
   // RTCEncodedUnderlyingSourceWrapper.
   explicit RTCEncodedAudioUnderlyingSource(
       ScriptState*,
-      WTF::CrossThreadOnceClosure disconnect_callback);
+      CrossThreadOnceClosure disconnect_callback);
   explicit RTCEncodedAudioUnderlyingSource(
       ScriptState*,
-      WTF::CrossThreadOnceClosure disconnect_callback,
+      CrossThreadOnceClosure disconnect_callback,
       bool enable_frame_restrictions,
       base::UnguessableToken owner_id,
       ReadableStreamDefaultControllerWithScriptScope* controller_override =
@@ -66,7 +66,7 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSource
   static const int kMinQueueDesiredSize;
 
   const Member<ScriptState> script_state_;
-  WTF::CrossThreadOnceClosure disconnect_callback_;
+  CrossThreadOnceClosure disconnect_callback_;
   Member<ReadableStreamDefaultControllerWithScriptScope> override_controller_;
   // Count of frames dropped due to the queue being full, for logging.
   int dropped_frames_ = 0;

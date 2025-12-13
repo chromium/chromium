@@ -7,9 +7,7 @@
 div {
     font-size: 40px;
     font-family: monospace;
-    caret-color: orange;
-    caret-shape: block;
-    caret-animation: manual;
+    width: 5ch;
     outline: none;
     white-space: pre;
 }
@@ -17,10 +15,4 @@ div {
 
 <p>Test passes if you see a orange text insertion caret at the end of the line below.
 
-<div id=test contenteditable spellcheck="false">abcde</div>
-
-<script>
-const t = document.querySelector("#test");
-window.getSelection().selectAllChildren(t);
-window.getSelection().collapseToEnd();
-</script>
+<div id=test>abcde</div>

@@ -83,7 +83,6 @@ TEST_F(UnifiedVolumeViewTest, SliderButtonComponents) {
   EXPECT_EQ(unified_volume_view()->children()[0]->GetClassName(),
             "QuickSettingsSlider");
 
-  // TODO(b/257151067): Updates the a11y name id and tooltip text.
   auto* live_caption_button =
       static_cast<IconButton*>(unified_volume_view()->children()[1]);
   EXPECT_EQ(live_caption_button->GetClassName(), "IconButton");

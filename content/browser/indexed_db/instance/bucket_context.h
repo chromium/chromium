@@ -7,19 +7,19 @@
 
 #include <stdint.h>
 
-#include <list>
 #include <memory>
+#include <optional>
 #include <queue>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -42,25 +42,15 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
-namespace base {
-class UpdateableSequencedTaskRunner;
-}
-
 namespace storage {
 class QuotaManagerProxy;
 }
 
 namespace content::indexed_db {
 
-namespace level_db {
-class BackingStore;
-class BackingStoreTest;
-}  // namespace level_db
-
 class BackingStore;
 class BucketContextHandle;
 class Database;
-struct PendingConnection;
 
 // BucketContext manages the per-bucket IndexedDB state, and other important
 // context like the backing store and lock manager.
@@ -74,7 +64,7 @@ struct PendingConnection;
 // `ResetBackingStore()`, which returns `this` to an uninitialized state.
 //
 // Each instance of this class is created and run on a unique thread pool
-// SequencedTaskRunner, i.e. the "bucket thread".
+// SequencedTaskRunner, i.e. the "bucket sequence".
 class CONTENT_EXPORT BucketContext
     : public blink::mojom::IDBFactory,
       public base::trace_event::MemoryDumpProvider {
@@ -100,8 +90,8 @@ class CONTENT_EXPORT BucketContext
 
   // This structure defines the interface between `BucketContext` and the
   // broader context that exists per Storage Partition (i.e. BrowserContext).
-  // TODO(crbug.com/40279485): for now these callbacks execute on the current
-  // sequence, but in the future they should be bound to the main IDB sequence.
+  // The callbacks are invoked on the bucket sequence, but almost all are bound
+  // to run on the main IDB sequence (see IndexedDBContextImpl).
   struct CONTENT_EXPORT Delegate {
     Delegate();
     Delegate(Delegate&&);
@@ -109,6 +99,8 @@ class CONTENT_EXPORT BucketContext
 
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
+
+    base::OnceClosure on_destroyed;
 
     // Called when the bucket context is ready to be destroyed. After this is
     // called, the bucket context will no longer accept new IDBFactory
@@ -139,29 +131,40 @@ class CONTENT_EXPORT BucketContext
     base::RepeatingCallback<void(bool /*did_sync*/)> on_files_written;
   };
 
-  BucketContext(
-      storage::BucketInfo bucket_info,
-      const base::FilePath& data_path,
-      Delegate&& delegate,
-      scoped_refptr<base::UpdateableSequencedTaskRunner> updateable_task_runner,
-      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-      mojo::PendingRemote<storage::mojom::BlobStorageContext>
-          blob_storage_context,
-      mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
-          file_system_access_context);
+  BucketContext(storage::BucketInfo bucket_info,
+                const base::FilePath& data_path,
+                Delegate&& delegate,
+                scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
+                mojo::PendingRemote<storage::mojom::BlobStorageContext>
+                    blob_storage_context,
+                mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
+                    file_system_access_context);
 
   BucketContext(const BucketContext&) = delete;
   BucketContext& operator=(const BucketContext&) = delete;
 
   ~BucketContext() override;
 
-  // True if the backing store is SQLite, or would be SQLite if it existed.
-  bool ShouldUseSqlite() const;
+  // All `BucketContext` instances created during the lifetime of the returned
+  // object will use SQLite iff `use_sqlite` is true.
+  static base::AutoReset<std::optional<bool>> OverrideShouldUseSqliteForTesting(
+      bool use_sqlite);
+
+  // Inserts an extra step during BackingStore teardown; used for testing
+  // crbug.com/340398745.
+  static void InsertTeardownStepForTesting(base::OnceClosure on_teardown);
+
+  bool ShouldUseSqlite() const { return should_use_sqlite_; }
 
   void QueueRunTasks();
 
-  // Normally, in-memory bucket contexts never self-close. If this is called
-  // with `doom` set to true, they will self-close.
+  // Returns true if a RunTask invocation is queued. To be used by metrics.
+  bool task_run_queued() const { return task_run_queued_; }
+
+  // Closes the bucket context, i.e. closes the backing store and closes Mojo
+  // connections to renderers. When `doom` is true, the directories containing
+  // data will also be deleted. Normally, in-memory bucket contexts never close.
+  // If this is called with `doom` set to true, they will close.
   void ForceClose(bool doom, const std::string& message);
 
   // Starts capturing state data for indexeddb-internals. The data will be
@@ -172,24 +175,14 @@ class CONTENT_EXPORT BucketContext
   int64_t GetInMemorySize();
 
   bool IsClosing() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return closing_stage_ != ClosingState::kNotClosing;
   }
 
   ClosingState closing_stage() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return closing_stage_;
   }
 
   void ReportOutstandingBlobs(bool blobs_outstanding);
-
-  // Called whenever some active or new connection's scheduling priority has
-  // changed.
-  void OnConnectionPriorityUpdated();
-
-  // Determines the scheduling priority for this bucket (which is the highest of
-  // all active connections). Public for testing.
-  std::optional<int> CalculateSchedulingPriority();
 
   // Called when `space_requested` bytes are about to be used by committing a
   // transaction. Will invoke `disk_space_check_callback` if this usage is
@@ -213,26 +206,21 @@ class CONTENT_EXPORT BucketContext
     return bucket_info_.ToBucketLocator();
   }
   BackingStore* backing_store() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return backing_store_.get();
   }
   const DBMap& GetDatabasesForTesting() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return databases_;
   }
   PartitionedLockManager& lock_manager() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return *lock_manager_;
   }
   const PartitionedLockManager& lock_manager() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return *lock_manager_;
   }
 
   Delegate& delegate() { return delegate_; }
 
   base::OneShotTimer* close_timer() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return &close_timer_;
   }
 
@@ -309,15 +297,14 @@ class CONTENT_EXPORT BucketContext
 
  private:
   friend BucketContextHandle;
-  friend class level_db::BackingStoreTest;
+  friend class BackingStoreTestBase;
   friend class DatabaseTest;
   friend class IndexedDBTest;
-  friend class TransactionTest;
+  friend class TransactionTestBase;
 
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionKillSwitchWorks);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TooLongOrigin);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, BasicFactoryCreationAndTearDown);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TaskRunnerPriority);
   FRIEND_TEST_ALL_PREFIXES(BucketContextTest, BucketSpaceDecay);
   FRIEND_TEST_ALL_PREFIXES(BucketContextTest, MetadataRecordingStateHistory);
 
@@ -371,8 +358,8 @@ class CONTENT_EXPORT BucketContext
   // Removes all readers for this file path.
   void RemoveBoundReaders(const base::FilePath& path);
 
-  std::tuple<Status, DatabaseError, IndexedDBDataLossInfo>
-  InitBackingStoreIfNeeded(bool create_if_missing);
+  std::tuple<Status, DatabaseError, IndexedDBDataLossInfo> InitBackingStore(
+      bool create_if_missing);
 
   // Destroys `backing_store_` and all associated state. If there are no
   // receivers remaining, it will also destroy `this`.
@@ -388,16 +375,13 @@ class CONTENT_EXPORT BucketContext
 
   std::string SanitizeErrorMessage(const std::string& message);
 
-  SEQUENCE_CHECKER(sequence_checker_);
-
   const storage::BucketInfo bucket_info_;
-
-  // The task runner `this` runs on, if `this` runs on a task runner that can be
-  // updated with different task traits (priority).
-  scoped_refptr<base::UpdateableSequencedTaskRunner> updateable_task_runner_;
 
   // Base directory for blobs and backing store files.
   const base::FilePath data_path_;
+
+  // True if the backing store is SQLite, or would be SQLite if it existed.
+  bool should_use_sqlite_ = false;
 
   // True if there are blobs referencing this backing store that are still
   // alive. This is used as closing criteria for this object, see CanClose.
@@ -421,9 +405,6 @@ class CONTENT_EXPORT BucketContext
   // this bucket context using OpenReference. This is used as closing criteria
   // for this object, see CanClose.
   int64_t open_handles_ = 0;
-
-  // Pending connections are also inputs to the calculated scheduling priority.
-  std::list<base::WeakPtr<PendingConnection>> pending_connections_;
 
   // A queue of callbacks representing `CheckCanUseDiskSpace()` requests.
   std::queue<std::tuple<int64_t /*space_requested*/,

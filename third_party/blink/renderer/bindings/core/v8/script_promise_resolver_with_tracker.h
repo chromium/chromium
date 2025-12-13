@@ -7,9 +7,11 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -26,9 +28,10 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
       public ExecutionContextLifecycleObserver {
  public:
   // For a given metric |metric_name_prefix|, this class will record
-  // "|metric_name_prefix|.Result" and "|metric_name_prefix|.Latency",
-  // or "|metric_name_prefix|.|result_suffix_|" if a custom result-suffix
-  // is specified.
+  // "|metric_name_prefix|.Result" and "|metric_name_prefix|.Latency".
+  // It will use "|metric_name_prefix|.|result_suffix_|" if a custom
+  // result-suffix is specified and "|metric_name_prefix|.|latency_suffix_|" if
+  // a custom latency-suffix is specified.
   //
   // For example, if the targeted histograms are
   // "WebRTC.EnumerateDevices.Result" and "WebRTC.EnumerateDevices.Latency",
@@ -42,7 +45,7 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
   // max_latency_bucket).
   ScriptPromiseResolverWithTracker(
       ScriptState* script_state,
-      std::string metric_name_prefix,
+      String metric_name_prefix,
       base::TimeDelta timeout_interval,
       base::TimeDelta min_latency_bucket = base::Milliseconds(1),
       base::TimeDelta max_latency_bucket = base::Seconds(10),
@@ -65,8 +68,8 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
       execution_context->GetTaskRunner(TaskType::kInternalDefault)
           ->PostDelayedTask(
               FROM_HERE,
-              WTF::BindOnce(&ScriptPromiseResolverWithTracker::RecordResult,
-                            WrapPersistent(this), ResultEnumType::kTimedOut),
+              BindOnce(&ScriptPromiseResolverWithTracker::RecordResult,
+                       WrapPersistent(this), ResultEnumType::kTimedOut),
               timeout_interval);
     }
   }
@@ -89,9 +92,14 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
     resolver_->template Reject<IDLRejectType>(value);
   }
 
-  void SetResultSuffix(std::string result_suffix) {
+  void SetResultSuffix(String result_suffix) {
     CHECK(!result_suffix.empty());
     result_suffix_ = std::move(result_suffix);
+  }
+
+  void SetLatencySuffix(String latency_suffix) {
+    CHECK(!latency_suffix.empty());
+    latency_suffix_ = std::move(latency_suffix);
   }
 
   void RecordAndThrowDOMException(ExceptionState& exception_state,
@@ -129,7 +137,7 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
 
     is_result_recorded_ = true;
     base::UmaHistogramEnumeration(
-        base::StrCat({metric_name_prefix_, ".", result_suffix_}), result);
+        StrCat({metric_name_prefix_, ".", result_suffix_}).Utf8(), result);
   }
 
   void RecordLatency() {
@@ -138,9 +146,9 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
 
     is_latency_recorded_ = true;
     const base::TimeDelta elapsed = base::TimeTicks::Now() - start_time_;
-    base::UmaHistogramCustomTimes(metric_name_prefix_ + ".Latency", elapsed,
-                                  min_latency_bucket_, max_latency_bucket_,
-                                  n_buckets_);
+    base::UmaHistogramCustomTimes(
+        StrCat({metric_name_prefix_, ".", latency_suffix_}).Utf8(), elapsed,
+        min_latency_bucket_, max_latency_bucket_, n_buckets_);
   }
 
   ScriptState* GetScriptState() const { return resolver_->GetScriptState(); }
@@ -156,12 +164,13 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
   void ContextDestroyed() override { resolver_->Detach(); }
 
   Member<ScriptPromiseResolver<IDLResolvedType>> resolver_;
-  const std::string metric_name_prefix_;
+  const String metric_name_prefix_;
   const base::TimeTicks start_time_;
   const base::TimeDelta min_latency_bucket_;
   const base::TimeDelta max_latency_bucket_;
   const size_t n_buckets_;
-  std::string result_suffix_ = "Result";  // Mutable through SetResultSuffix().
+  String result_suffix_ = "Result";    // Mutable through SetResultSuffix().
+  String latency_suffix_ = "Latency";  // Mutable through SetLatencySuffix().
   bool is_latency_recorded_ = false;
   bool is_result_recorded_ = false;
 };

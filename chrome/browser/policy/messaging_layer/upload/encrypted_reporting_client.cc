@@ -25,6 +25,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/token.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -44,6 +45,7 @@
 #include "components/reporting/util/statusor.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/backoff_entry.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -449,8 +451,7 @@ class PayloadSizeComputationRateLimiterForUma {
 
 // Gets the size of payload as a JSON string.
 static int GetPayloadSize(const base::Value::Dict& payload) {
-  std::string payload_json;
-  base::JSONWriter::Write(payload, &payload_json);
+  std::string payload_json = base::WriteJson(payload).value_or("");
   return static_cast<int>(payload_json.size());
 }
 }  // namespace

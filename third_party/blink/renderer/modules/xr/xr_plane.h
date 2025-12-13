@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "device/vr/public/mojom/plane_id.h"
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -29,12 +30,12 @@ class XRPlane : public ScriptWrappable {
  public:
   enum class Orientation { kHorizontal, kVertical };
 
-  XRPlane(uint64_t id,
+  XRPlane(device::PlaneId id,
           XRSession* session,
           const device::mojom::blink::XRPlaneData& plane_data,
           double timestamp);
 
-  uint64_t id() const;
+  device::PlaneId id() const;
 
   XRSpace* planeSpace() const;
 
@@ -44,6 +45,7 @@ class XRPlane : public ScriptWrappable {
 
   std::optional<V8XRPlaneOrientation> orientation() const;
   const FrozenArray<DOMPointReadOnly>& polygon() const;
+  String semanticLabel() const;
   double lastChangedTime() const;
 
   // Updates plane data from passed in |plane_data|. The resulting instance
@@ -62,20 +64,23 @@ class XRPlane : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
  private:
-  XRPlane(uint64_t id,
+  XRPlane(device::PlaneId id,
           XRSession* session,
           const std::optional<Orientation>& orientation,
           HeapVector<Member<DOMPointReadOnly>> polygon,
           const std::optional<device::Pose>& mojo_from_plane,
+          const String& semantic_label,
           double timestamp);
 
-  const uint64_t id_;
+  const device::PlaneId id_;
   Member<FrozenArray<DOMPointReadOnly>> polygon_;
   std::optional<Orientation> orientation_;
 
   // Plane center's pose in device (mojo) space.  Nullptr if the pose of the
   // anchor is unknown in the current frame.
   std::optional<device::Pose> mojo_from_plane_;
+
+  String semantic_label_;
 
   Member<XRSession> session_;
 

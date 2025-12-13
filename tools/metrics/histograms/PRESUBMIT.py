@@ -8,9 +8,9 @@ for more details on the presubmit API built into depot_tools.
 
 PRESUBMIT_VERSION = '2.0.0'
 
-from enum import Enum
+import enum
 import os
-from pathlib import Path
+import pathlib
 import sys
 import tempfile
 from typing import Any, Callable, List, Type
@@ -18,7 +18,7 @@ from typing import Any, Callable, List, Type
 
 # Cannot be called CheckType because by convention PRESUBMIT will try to call
 # anything with a Check prefix as a function.
-class HistogramsPresubmitCheckType(Enum):
+class HistogramsPresubmitCheckType(enum.Enum):
   """Unique identifiers for the checks in this files.
 
   As this file contains multiple checks, we need to have unique identifiers for
@@ -78,24 +78,27 @@ def GetPrettyPrintErrors(input_api, output_api, cwd, rel_path, results):
   exit_code = input_api.subprocess.call(args, cwd=cwd)
 
   if exit_code != 0:
-    error_msg = ('%s is not formatted correctly; run `git cl format` to fix.' %
-                 rel_path)
+    xml_path = os.path.join(cwd, rel_path)
+    error_msg = (f'{xml_path} is not formatted correctly; '
+                 f'run `git cl format` to fix.')
     results.append(output_api.PresubmitError(error_msg))
 
 
 def GetTokenErrors(input_api, output_api, cwd, rel_path, results):
   """Validates histogram tokens in specified file."""
-  exit_code = input_api.subprocess.call([
+  args = [
       input_api.python3_executable,
       os.path.join(input_api.PresubmitLocalPath(), 'validate_token.py'),
       rel_path
-  ],
-                                        cwd=cwd)
+  ]
+  exit_code = input_api.subprocess.call(args, cwd=cwd)
 
   if exit_code != 0:
+    validate_token_py_path = os.path.join(cwd, 'validate_token.py')
+    xml_path = os.path.join(cwd, rel_path)
     error_msg = (
-        '%s contains histogram(s) using <variants> not defined in the file, '
-        'please run validate_token.py %s to fix.' % (rel_path, rel_path))
+        f'{xml_path} contains histogram(s) using <variants> not defined in the '
+        f'file, please run {validate_token_py_path} {xml_path} to fix.')
     results.append(output_api.PresubmitError(error_msg))
 
 
@@ -128,9 +131,9 @@ def GetValidateHistogramsError(input_api: Type, output_api: Type, cwd: str,
 
   exit_code = input_api.subprocess.call(validate_format_argv, cwd=cwd)
   if exit_code != 0:
-    error_msg = (
-        'Histograms are not well-formatted; please run %s/validate_format.py '
-        'and fix the reported errors.' % cwd)
+    validate_format_py_path = os.path.join(cwd, 'validate_format.py')
+    error_msg = ('Histograms are not well-formatted; please run '
+                 f'{validate_format_py_path} and fix the reported errors.')
     results.append(output_api.PresubmitError(error_msg))
 
 
@@ -145,16 +148,17 @@ def _GetValidateHistogramsIndexError(input_api: Type, output_api: Type,
     cwd: Work directory to run the python process in.
     results: The list of output_api objects to append the check warnings to.
   """
-  exit_code = input_api.subprocess.call([
+  args = [
       input_api.python3_executable,
       os.path.join(input_api.PresubmitLocalPath(),
-                   'validate_histograms_index.py')
-  ],
-                                        cwd=cwd)
+                   'validate_histograms_index.py'),
+  ]
+  exit_code = input_api.subprocess.call(args, cwd=cwd)
 
   if exit_code != 0:
+    histogram_paths_py_path = os.path.join(cwd, 'histogram_paths.py')
     error_msg = ('Histograms index file is not up-to-date. Please run '
-                 '%s/histogram_paths.py to update it' % cwd)
+                 f'{histogram_paths_py_path} to update it.')
     results.append(output_api.PresubmitError(error_msg))
 
 
@@ -280,7 +284,7 @@ def ExecuteCheckWebViewHistogramsAllowlistOnUpload(input_api, output_api,
                                                    allowlist_path_override,
                                                    xml_paths_override):
   """Checks that HistogramsAllowlist.java contains valid histograms."""
-  xml_filter = lambda f: Path(f.LocalPath()).suffix == '.xml'
+  xml_filter = lambda f: pathlib.Path(f.LocalPath()).suffix == '.xml'
   xml_files = input_api.AffectedFiles(include_deletes=False,
                                       file_filter=xml_filter)
   if not xml_files:
@@ -349,3 +353,77 @@ def ExecuteCheckBooleansAreEnums(input_api, output_api):
   if results:
     return [output_api.PresubmitPromptOrNotify(units_warning, results)]
   return results
+
+
+def CheckRemovedSegmentationHistograms(input_api, output_api):
+  """Checks if any histogram used by segmentation platform is removed."""
+  affected_xml_files = [
+      f for f in input_api.AffectedFiles(include_deletes=True)
+      if 'histograms.xml' in f.LocalPath()
+  ]
+  if not affected_xml_files:
+    return []
+
+  import print_histogram_names
+  removed_histograms = set()
+  for f in affected_xml_files:
+    old_histograms = set()
+    if f.Action() != 'A':
+      old_histograms = print_histogram_names.get_names_from_contents(
+          f.OldContents())
+
+    new_histograms = set()
+    if f.Action() != 'D':
+      new_histograms = print_histogram_names.get_names_from_contents(
+          f.NewContents())
+
+    removed_histograms.update(old_histograms - new_histograms)
+
+  if not removed_histograms:
+    return []
+
+  # It's important to add the directory of generate_histogram_list.py to
+  # sys.path. PRESUBMIT.py is in src/tools/metrics/histograms.
+  # generate_histogram_list.py is in
+  # src/components/segmentation_platform/tools.
+  tools_dir = input_api.os_path.join(input_api.PresubmitLocalPath(), '..', '..',
+                                     '..', 'components',
+                                     'segmentation_platform', 'tools')
+  sys_path_modified = False
+  if tools_dir not in sys.path:
+    sys.path.append(tools_dir)
+    sys_path_modified = True
+
+  try:
+    import generate_histogram_list
+  except ImportError:
+    return [
+        output_api.PresubmitError(
+            'Could not import generate_histogram_list.py. Make sure the path '
+            'is correct.')
+    ]
+  finally:
+    if sys_path_modified:
+      # Avoid polluting sys.path.
+      sys.path.remove(tools_dir)
+
+  # Load the list of all histograms required by segmentation models.
+  segmentation_histograms = generate_histogram_list.GetActualHistogramNames()
+
+  if not segmentation_histograms:
+    # If the file is empty or doesn't exist, there's nothing to check.
+    return []
+
+  removed_segmentation_histograms = removed_histograms.intersection(
+      segmentation_histograms)
+
+  if removed_segmentation_histograms:
+    return [
+        output_api.PresubmitError(
+            'The following histograms are used by segmentation platform and '
+            'should not be removed without a migration plan. Please reach out '
+            'to chrome-segmentation-platform@google.com for questions.',
+            items=sorted(list(removed_segmentation_histograms)))
+    ]
+
+  return []

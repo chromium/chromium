@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/svg/svg_foreign_object_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -59,7 +58,7 @@ gfx::RectF LayoutSVGForeignObject::DecoratedBoundingBox() const {
 gfx::RectF LayoutSVGForeignObject::VisualRectInLocalSVGCoordinates() const {
   NOT_DESTROYED();
   PhysicalOffset offset = PhysicalLocation();
-  PhysicalSize size = Size();
+  PhysicalSize size = StitchedSize();
   return gfx::RectF(offset.left, offset.top, size.width, size.height);
 }
 
@@ -74,18 +73,9 @@ AffineTransform LayoutSVGForeignObject::LocalToSVGParentTransform() const {
   return transform;
 }
 
-PhysicalOffset LayoutSVGForeignObject::PhysicalLocation(
-    const LayoutBox*) const {
+PhysicalOffset LayoutSVGForeignObject::PhysicalLocation() const {
   NOT_DESTROYED();
   return overridden_location_;
-}
-
-DeprecatedLayoutPoint LayoutSVGForeignObject::DeprecatedLocationInternal()
-    const {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-  return DeprecatedLayoutPoint(overridden_location_.left,
-                               overridden_location_.top);
 }
 
 PaintLayerType LayoutSVGForeignObject::LayerTypeRequired() const {
@@ -114,7 +104,7 @@ SVGLayoutResult LayoutSVGForeignObject::UpdateSVGLayout(
   // will not care about (reach) this value.
   UpdateTransformBeforeLayout();
 
-  const PhysicalRect old_frame_rect(PhysicalLocation(), Size());
+  const PhysicalRect old_frame_rect(PhysicalLocation(), StitchedSize());
 
   // Resolve the viewport in the local coordinate space - this does not include
   // zoom.
@@ -168,16 +158,17 @@ SVGLayoutResult LayoutSVGForeignObject::UpdateSVGLayout(
 
   DCHECK(!NeedsLayout() || ChildLayoutBlockedByDisplayLock());
 
-  const PhysicalRect frame_rect(PhysicalLocation(), Size());
+  const PhysicalRect frame_rect(PhysicalLocation(), StitchedSize());
   bool bounds_changed = old_frame_rect != frame_rect;
   if (UpdateAfterSVGLayout(layout_info, bounds_changed)) {
     bounds_changed = true;
   }
 
   const bool has_viewport_dependence =
-      To<SVGForeignObjectElement>(GetElement())->SelfHasRelativeLengths() ||
       (transform_uses_reference_box_ &&
-       StyleRef().TransformBox() == ETransformBox::kViewBox);
+       style.TransformBox() == ETransformBox::kViewBox) ||
+      style.Width().HasPercent() || style.Height().HasPercent() ||
+      style.X().HasPercent() || style.Y().HasPercent();
 
   DCHECK(!needs_transform_update_);
   return SVGLayoutResult(bounds_changed, has_viewport_dependence);
@@ -193,10 +184,12 @@ bool LayoutSVGForeignObject::UpdateAfterSVGLayout(
   return UpdateTransformAfterLayout(layout_info, bounds_changed);
 }
 
-void LayoutSVGForeignObject::StyleDidChange(StyleDifference diff,
-                                            const ComputedStyle* old_style) {
+void LayoutSVGForeignObject::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutSVGBlock::StyleDidChange(diff, old_style);
+  LayoutSVGBlock::StyleDidChange(diff, old_style, style_change_context);
 
   float old_zoom = old_style ? old_style->EffectiveZoom()
                              : ComputedStyleInitialValues::InitialZoom();

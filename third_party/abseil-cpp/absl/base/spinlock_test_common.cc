@@ -18,6 +18,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <mutex>  // NOLINT(build/c++11)
 #include <random>
 #include <thread>  // NOLINT(build/c++11)
 #include <type_traits>
@@ -100,7 +101,7 @@ static uint32_t Hash32(uint32_t a, uint32_t c) {
 
 static void TestFunction(uint32_t thread_salt, SpinLock* spinlock) {
   for (int i = 0; i < kIters; i++) {
-    SpinLockHolder h(spinlock);
+    SpinLockHolder h(*spinlock);
     for (size_t j = 0; j < kArrayLength; j++) {
       const size_t index = (j + thread_salt) % kArrayLength;
       values[index] = Hash32(values[index], thread_salt);
@@ -119,7 +120,7 @@ static void ThreadedTest(SpinLock* spinlock) {
     thread.join();
   }
 
-  SpinLockHolder h(spinlock);
+  SpinLockHolder h(*spinlock);
   for (size_t i = 1; i < kArrayLength; i++) {
     EXPECT_EQ(values[0], values[i]);
   }
@@ -131,15 +132,13 @@ static_assert(std::is_trivially_destructible<SpinLock>(), "");
 
 TEST(SpinLock, StackNonCooperativeDisablesScheduling) {
   SpinLock spinlock(base_internal::SCHEDULE_KERNEL_ONLY);
-  spinlock.Lock();
+  SpinLockHolder l(spinlock);
   EXPECT_FALSE(base_internal::SchedulingGuard::ReschedulingIsAllowed());
-  spinlock.Unlock();
 }
 
 TEST(SpinLock, StaticNonCooperativeDisablesScheduling) {
-  static_noncooperative_spinlock.Lock();
+  SpinLockHolder l(static_noncooperative_spinlock);
   EXPECT_FALSE(base_internal::SchedulingGuard::ReschedulingIsAllowed());
-  static_noncooperative_spinlock.Unlock();
 }
 
 TEST(SpinLock, WaitCyclesEncoding) {
@@ -244,12 +243,12 @@ TEST(SpinLockWithThreads, DoesNotDeadlock) {
                                BlockingCounter* b) {
       locked->WaitForNotification();  // Wait for LockThenWait() to hold "s".
       b->DecrementCount();
-      SpinLockHolder l(spinlock);
+      SpinLockHolder l(*spinlock);
     }
 
     static void LockThenWait(Notification* locked, SpinLock* spinlock,
                              BlockingCounter* b) {
-      SpinLockHolder l(spinlock);
+      SpinLockHolder l(*spinlock);
       locked->Notify();
       b->Wait();
     }
@@ -272,16 +271,13 @@ TEST(SpinLockWithThreads, DoesNotDeadlock) {
     }
   };
 
+  int num_threads = base_internal::NumCPUs() * 2;
   SpinLock stack_cooperative_spinlock;
   SpinLock stack_noncooperative_spinlock(base_internal::SCHEDULE_KERNEL_ONLY);
-  Helper::DeadlockTest(&stack_cooperative_spinlock,
-                       base_internal::NumCPUs() * 2);
-  Helper::DeadlockTest(&stack_noncooperative_spinlock,
-                       base_internal::NumCPUs() * 2);
-  Helper::DeadlockTest(&static_cooperative_spinlock,
-                       base_internal::NumCPUs() * 2);
-  Helper::DeadlockTest(&static_noncooperative_spinlock,
-                       base_internal::NumCPUs() * 2);
+  Helper::DeadlockTest(&stack_cooperative_spinlock, num_threads);
+  Helper::DeadlockTest(&stack_noncooperative_spinlock, num_threads);
+  Helper::DeadlockTest(&static_cooperative_spinlock, num_threads);
+  Helper::DeadlockTest(&static_noncooperative_spinlock, num_threads);
 }
 
 TEST(SpinLockTest, IsCooperative) {
@@ -293,6 +289,11 @@ TEST(SpinLockTest, IsCooperative) {
 
   SpinLock kernel_only(base_internal::SCHEDULE_KERNEL_ONLY);
   EXPECT_FALSE(SpinLockTest::IsCooperative(kernel_only));
+}
+
+TEST(SpinLockTest, ScopedLock) {
+  SpinLock s;
+  std::scoped_lock l(s);
 }
 
 }  // namespace

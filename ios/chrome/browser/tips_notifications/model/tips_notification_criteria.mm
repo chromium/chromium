@@ -6,18 +6,18 @@
 
 #import "base/time/time.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/search/search.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/utils.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/public/set_up_list_utils.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
-#import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -118,7 +118,21 @@ bool TipsNotificationCriteria::CanSignIn(ProfileIOS* profile) {
 }
 
 bool TipsNotificationCriteria::ShouldSendDefaultBrowser() {
-  return !IsChromeLikelyDefaultBrowser() && !DefaultBrowserPromoCanceled();
+  if (IsChromeLikelyDefaultBrowser()) {
+    return false;
+  }
+  if (base::FeatureList::IsEnabled(kIOSOneTimeDefaultBrowserNotification)) {
+    // For kIOSOneTimeDefaultBrowserNotification, the logic simply checks if
+    // the user has not seen the promo in the last 14 days.
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForProfile(profile_);
+    bool would_trigger = tracker->WouldTriggerHelpUI(
+        feature_engagement::kIPHiOSOneTimeDefaultBrowserNotificationFeature);
+    if (would_trigger) {
+      return true;
+    }
+  }
+  return !DefaultBrowserPromoCanceled();
 }
 
 bool TipsNotificationCriteria::ShouldSendWhatsNew() {
@@ -138,7 +152,7 @@ bool TipsNotificationCriteria::ShouldSendSetUpListContinuation() {
   // Up List minus the trigger interval after FirstRun.
   TimeDelta trigger_delta = TipsNotificationTriggerDelta(
       reactivation_, GetTipsNotificationUserType(local_state_));
-  if (!IsFirstRunRecent(set_up_list::SetUpListDurationPastFirstRun() -
+  if (!IsFirstRunRecent(set_up_list_utils::SetUpListDurationPastFirstRun() -
                         trigger_delta)) {
     return false;
   }
@@ -156,7 +170,7 @@ bool TipsNotificationCriteria::ShouldSendOmniboxPosition() {
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
     return false;
   }
-  return !local_state_->GetUserPrefValue(prefs::kBottomOmnibox);
+  return !local_state_->GetUserPrefValue(omnibox::kIsOmniboxInBottomPosition);
 }
 
 bool TipsNotificationCriteria::ShouldSendLens() {

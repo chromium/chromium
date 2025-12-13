@@ -11,7 +11,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
-#include "components/webapps/services/web_app_origin_association/public/mojom/web_app_origin_association_parser.mojom.h"
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_fetcher.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -47,8 +46,6 @@ class WebAppOriginAssociationManager {
  private:
   FRIEND_TEST_ALL_PREFIXES(WebAppOriginAssociationManagerTest, RunTasks);
 
-  const mojo::Remote<webapps::mojom::WebAppOriginAssociationParser>&
-  GetParser();
   webapps::WebAppOriginAssociationFetcher& GetFetcher();
   void MaybeStartNextTask();
   void OnTaskCompleted();
@@ -56,7 +53,6 @@ class WebAppOriginAssociationManager {
   std::deque<std::unique_ptr<Task>> pending_tasks_;
   bool task_in_progress_ = false;
 
-  mojo::Remote<webapps::mojom::WebAppOriginAssociationParser> parser_;
   std::unique_ptr<webapps::WebAppOriginAssociationFetcher> fetcher_;
   base::WeakPtrFactory<WebAppOriginAssociationManager> weak_ptr_factory_{this};
 };

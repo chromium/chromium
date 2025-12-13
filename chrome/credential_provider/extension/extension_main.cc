@@ -6,6 +6,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/process/memory.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/win/process_startup_helper.h"

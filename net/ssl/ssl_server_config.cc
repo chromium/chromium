@@ -10,6 +10,12 @@
 
 namespace net {
 
+SSLServerCredential::SSLServerCredential() = default;
+SSLServerCredential::SSLServerCredential(SSLServerCredential&& other) = default;
+SSLServerCredential& SSLServerCredential::operator=(
+    SSLServerCredential&& other) = default;
+SSLServerCredential::~SSLServerCredential() = default;
+
 SSLServerConfig::SSLServerConfig() = default;
 
 SSLServerConfig::SSLServerConfig(const SSLServerConfig& other) = default;

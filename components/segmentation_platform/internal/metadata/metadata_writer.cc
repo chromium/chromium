@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 
 #include <cstddef>
@@ -14,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/strcat.h"
 #include "components/segmentation_platform/public/constants.h"
@@ -23,20 +19,40 @@ namespace segmentation_platform {
 
 namespace {
 
+void FillDefaultValues(const features::DefaultValue& default_value,
+                       google::protobuf::RepeatedField<float>* proto_values) {
+  using DefaultValue = features::DefaultValue;
+  switch (default_value.type) {
+    case DefaultValue::Type::kSingle:
+      proto_values->Add(default_value.value.single_value);
+      break;
+    case DefaultValue::Type::kSpan:
+      for (float v : default_value.value.span_value) {
+        proto_values->Add(v);
+      }
+      break;
+    case DefaultValue::Type::kArray:
+      for (size_t i = 0; i < default_value.value.array_value.size; ++i) {
+        proto_values->Add(UNSAFE_TODO(default_value.value.array_value.ptr[i]));
+      }
+      break;
+    case DefaultValue::Type::kNotSet:
+      break;
+  }
+}
+
 void FillCustomInput(const MetadataWriter::CustomInput feature,
                      proto::CustomInput& input) {
   input.set_tensor_length(feature.tensor_length);
   input.set_fill_policy(feature.fill_policy);
-  for (size_t i = 0; i < feature.default_values_size; ++i) {
-    input.add_default_value(feature.default_values[i]);
-  }
+  FillDefaultValues(feature.default_value, input.mutable_default_value());
   if (feature.name) {
     input.set_name(feature.name);
   }
 
   for (size_t i = 0; i < feature.arg_size; ++i) {
-    (*input.mutable_additional_args())[feature.arg[i].first] =
-        std::string(feature.arg[i].second);
+    (*input.mutable_additional_args())[UNSAFE_TODO(feature.arg[i]).first] =
+        std::string(UNSAFE_TODO(feature.arg[i]).second);
   }
 }
 
@@ -62,7 +78,7 @@ void MetadataWriter::AddUmaFeatures(const UMAFeature features[],
                                     size_t features_size,
                                     bool is_output) {
   for (size_t i = 0; i < features_size; i++) {
-    const auto& feature = features[i];
+    const auto& feature = UNSAFE_TODO(features[i]);
     proto::UMAFeature* uma_feature;
     if (is_output) {
       auto* training_output =
@@ -81,11 +97,22 @@ void MetadataWriter::AddUmaFeatures(const UMAFeature features[],
     uma_feature->set_aggregation(feature.aggregation);
 
     for (size_t j = 0; j < feature.enum_ids_size; j++) {
-      uma_feature->add_enum_ids(feature.accepted_enum_ids[j]);
+      uma_feature->add_enum_ids(UNSAFE_TODO(feature.accepted_enum_ids[j]));
     }
 
-    for (size_t j = 0; j < feature.default_values_size; j++) {
-      uma_feature->add_default_values(feature.default_values[j]);
+    FillDefaultValues(feature.default_value,
+                      uma_feature->mutable_default_values());
+  }
+}
+
+void MetadataWriter::AddFeatures(const base::span<const Feature> features) {
+  for (const auto& feature : features) {
+    if (feature.uma_feature) {
+      AddUmaFeatures(&feature.uma_feature.value(), 1);
+    } else if (feature.sql_feature) {
+      AddSqlFeature(feature.sql_feature.value());
+    } else if (feature.custom_input) {
+      AddCustomInput(feature.custom_input.value());
     }
   }
 }
@@ -95,12 +122,12 @@ proto::SqlFeature* MetadataWriter::AddSqlFeature(const SqlFeature& feature) {
       metadata_->add_input_features()->mutable_sql_feature();
   proto->set_sql(feature.sql);
   for (size_t ev = 0; ev < feature.events_size; ++ev) {
-    const auto& event = feature.events[ev];
+    const auto& event = UNSAFE_TODO(feature.events[ev]);
     auto* ukm_event = proto->mutable_signal_filter()->add_ukm_events();
     ukm_event->set_event_hash(event.event_hash.GetUnsafeValue());
     for (size_t m = 0; m < event.metrics_size; ++m) {
       ukm_event->mutable_metric_hash_filter()->Add(
-          event.metrics[m].GetUnsafeValue());
+          UNSAFE_TODO(event.metrics[m]).GetUnsafeValue());
     }
   }
   return proto;
@@ -138,8 +165,8 @@ void MetadataWriter::AddDiscreteMappingEntries(
   auto* discrete_mappings = metadata_->mutable_discrete_mappings();
   for (size_t i = 0; i < mappings_size; i++) {
     auto* discrete_mapping_entry = (*discrete_mappings)[key].add_entries();
-    discrete_mapping_entry->set_min_result(mappings[i].first);
-    discrete_mapping_entry->set_rank(mappings[i].second);
+    discrete_mapping_entry->set_min_result(UNSAFE_TODO(mappings[i]).first);
+    discrete_mapping_entry->set_rank(UNSAFE_TODO(mappings[i]).second);
   }
 }
 

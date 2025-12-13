@@ -762,6 +762,28 @@ fn first() {
 }
 
 #[test]
+fn sort_by_key() {
+    let mut index_set: IndexSet<i32> = IndexSet::new();
+    index_set.insert(3);
+    index_set.insert(1);
+    index_set.insert(2);
+    index_set.insert(0);
+    index_set.sort_by_key(|&x| -x);
+    assert_eq!(index_set.as_slice(), &[3, 2, 1, 0]);
+}
+
+#[test]
+fn sort_unstable_by_key() {
+    let mut index_set: IndexSet<i32> = IndexSet::new();
+    index_set.insert(3);
+    index_set.insert(1);
+    index_set.insert(2);
+    index_set.insert(0);
+    index_set.sort_unstable_by_key(|&x| -x);
+    assert_eq!(index_set.as_slice(), &[3, 2, 1, 0]);
+}
+
+#[test]
 fn sort_by_cached_key() {
     let mut index_set: IndexSet<i32> = IndexSet::new();
     index_set.insert(3);
@@ -996,4 +1018,43 @@ fn test_partition_point() {
     assert_eq!(b.partition_point(|&x| x < 6), 2);
     assert_eq!(b.partition_point(|&x| x < 7), 2);
     assert_eq!(b.partition_point(|&x| x < 8), 3);
+}
+
+#[test]
+fn is_sorted() {
+    fn expect(set: &IndexSet<i32>, e: [bool; 4]) {
+        assert_eq!(e[0], set.is_sorted());
+        assert_eq!(e[1], set.is_sorted_by(|v1, v2| v1 < v2));
+        assert_eq!(e[2], set.is_sorted_by(|v1, v2| v1 > v2));
+        assert_eq!(e[3], set.is_sorted_by_key(|v| v));
+    }
+
+    let mut set = IndexSet::<i32>::from_iter(0..10);
+    expect(&set, [true, true, false, true]);
+
+    set.replace_index(5, -1).unwrap();
+    expect(&set, [false, false, false, false]);
+}
+
+#[test]
+fn is_sorted_trivial() {
+    fn expect(set: &IndexSet<i32>, e: [bool; 5]) {
+        assert_eq!(e[0], set.is_sorted());
+        assert_eq!(e[1], set.is_sorted_by(|_, _| true));
+        assert_eq!(e[2], set.is_sorted_by(|_, _| false));
+        assert_eq!(e[3], set.is_sorted_by_key(|_| 0f64));
+        assert_eq!(e[4], set.is_sorted_by_key(|_| f64::NAN));
+    }
+
+    let mut set = IndexSet::<i32>::default();
+    expect(&set, [true, true, true, true, true]);
+
+    set.insert(0);
+    expect(&set, [true, true, true, true, true]);
+
+    set.insert(1);
+    expect(&set, [true, true, false, true, false]);
+
+    set.reverse();
+    expect(&set, [false, true, false, true, false]);
 }

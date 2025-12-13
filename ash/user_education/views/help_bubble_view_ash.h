@@ -80,7 +80,7 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
 
  protected:
   // views::BubbleDialogDelegateView:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
   void OnAnchorBoundsChanged() override;
   std::u16string GetAccessibleWindowTitle() const override;

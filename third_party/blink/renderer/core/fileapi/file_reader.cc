@@ -30,6 +30,8 @@
 
 #include "third_party/blink/renderer/core/fileapi/file_reader.h"
 
+#include <utility>
+
 #include "base/auto_reset.h"
 #include "base/timer/elapsed_timer.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -42,6 +44,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -221,6 +224,7 @@ void FileReader::ContextDestroyed() {
         destroyed_context, this,
         ThrottlingController::RemoveReader(destroyed_context, this));
   }
+  task_state_ = nullptr;
   Terminate();
 }
 
@@ -307,6 +311,7 @@ void FileReader::ReadInternal(Blob* blob,
   read_type_ = type;
   state_ = kLoading;
   loading_state_ = kLoadingStatePending;
+  task_state_ = CaptureCurrentTaskState(context);
   error_ = nullptr;
   result_ = nullptr;
   DCHECK(ThrottlingController::From(context));
@@ -347,10 +352,12 @@ void FileReader::abort() {
   ThrottlingController::FinishReaderType final_step =
       ThrottlingController::RemoveReader(GetExecutionContext(), this);
 
-  FireEvent(event_type_names::kAbort);
+  scheduler::TaskAttributionInfo* task_state =
+      std::exchange(task_state_, nullptr);
+  FireEvent(event_type_names::kAbort, task_state);
   // TODO(https://crbug.com/1204139): Only fire loadend event if no new load was
   // started from the abort event handler.
-  FireEvent(event_type_names::kLoadend);
+  FireEvent(event_type_names::kLoadend, task_state);
 
   // All possible events have fired and we're done, no more pending activity.
   ThrottlingController::FinishReader(GetExecutionContext(), this, final_step);
@@ -382,7 +389,7 @@ void FileReader::Terminate() {
 
 FileErrorCode FileReader::DidStartLoading() {
   base::AutoReset<bool> firing_events(&still_firing_events_, true);
-  FireEvent(event_type_names::kLoadstart);
+  FireEvent(event_type_names::kLoadstart, task_state_);
   return FileErrorCode::kOK;
 }
 
@@ -393,7 +400,7 @@ FileErrorCode FileReader::DidReceiveData() {
   } else if (last_progress_notification_time_->Elapsed() >
              kProgressNotificationInterval) {
     base::AutoReset<bool> firing_events(&still_firing_events_, true);
-    FireEvent(event_type_names::kProgress);
+    FireEvent(event_type_names::kProgress, task_state_);
     last_progress_notification_time_ = base::ElapsedTimer();
   }
   return FileErrorCode::kOK;
@@ -423,7 +430,9 @@ void FileReader::DidFinishLoading(FileReaderData contents) {
   // if we're still loading (therefore we need abort process) or not.
   loading_state_ = kLoadingStateNone;
 
-  FireEvent(event_type_names::kProgress);
+  if (loader_->BytesLoaded() > 0) {
+    FireEvent(event_type_names::kProgress, task_state_);
+  }
 
   DCHECK_NE(kDone, state_);
   state_ = kDone;
@@ -432,10 +441,12 @@ void FileReader::DidFinishLoading(FileReaderData contents) {
   ThrottlingController::FinishReaderType final_step =
       ThrottlingController::RemoveReader(GetExecutionContext(), this);
 
-  FireEvent(event_type_names::kLoad);
+  scheduler::TaskAttributionInfo* task_state =
+      std::exchange(task_state_, nullptr);
+  FireEvent(event_type_names::kLoad, task_state);
   // TODO(https://crbug.com/1204139): Only fire loadend event if no new load was
   // started from the abort event handler.
-  FireEvent(event_type_names::kLoadend);
+  FireEvent(event_type_names::kLoadend, task_state);
 
   // All possible events have fired and we're done, no more pending activity.
   ThrottlingController::FinishReader(GetExecutionContext(), this, final_step);
@@ -460,16 +471,22 @@ void FileReader::DidFail(FileErrorCode error_code) {
   ThrottlingController::FinishReaderType final_step =
       ThrottlingController::RemoveReader(GetExecutionContext(), this);
 
-  FireEvent(event_type_names::kError);
-  FireEvent(event_type_names::kLoadend);
+  scheduler::TaskAttributionInfo* task_state =
+      std::exchange(task_state_, nullptr);
+  FireEvent(event_type_names::kError, task_state);
+  FireEvent(event_type_names::kLoadend, task_state);
 
   // All possible events have fired and we're done, no more pending activity.
   ThrottlingController::FinishReader(GetExecutionContext(), this, final_step);
 }
 
-void FileReader::FireEvent(const AtomicString& type) {
+void FileReader::FireEvent(const AtomicString& type,
+                           scheduler::TaskAttributionInfo* task_state) {
   probe::AsyncTask async_task(GetExecutionContext(), async_task_context(),
                               "event");
+  std::optional<scheduler::TaskAttributionTracker::TaskScope> task_scope(
+      SetCurrentTaskStateIfTopLevel(task_state, GetExecutionContext(),
+                                    TaskScopeType::kMiscEvent));
   if (!loader_) {
     DispatchEvent(*ProgressEvent::Create(type, false, 0, 0));
     return;
@@ -488,6 +505,7 @@ void FileReader::Trace(Visitor* visitor) const {
   visitor->Trace(error_);
   visitor->Trace(loader_);
   visitor->Trace(result_);
+  visitor->Trace(task_state_);
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   FileReaderAccumulator::Trace(visitor);

@@ -120,7 +120,7 @@ public class ReadLaterContextMenuTest {
         mActivityTestRule.loadUrlInNewTab(mTestServer.getURL(CONTEXT_MENU_TEST_URL));
 
         ChromeActivity activity = mActivityTestRule.getActivity();
-        Tab tab = activity.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         ContextMenuUtils.selectContextMenuItem(
                 InstrumentationRegistry.getInstrumentation(),
                 activity,
@@ -139,7 +139,7 @@ public class ReadLaterContextMenuTest {
         String url = mTestServer.getURL(CONTEXT_MENU_TEST_URL);
         mActivityTestRule.loadUrlInNewTab(url);
         ChromeActivity activity = mActivityTestRule.getActivity();
-        Tab tab = activity.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         ContextMenuUtils.selectContextMenuItem(
                 InstrumentationRegistry.getInstrumentation(),
                 activity,

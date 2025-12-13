@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/views/view.h"
 
 namespace global_media_controls {
 class MediaItemManager;
@@ -23,10 +24,6 @@ namespace media_message_center {
 class MediaNotificationItem;
 struct NotificationTheme;
 }  // namespace media_message_center
-
-namespace views {
-class View;
-}  // namespace views
 
 namespace ash {
 

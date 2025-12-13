@@ -8,22 +8,20 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 /**
- * Interface used by ChromeActivity to communicate with AR and VR code that is
- * only available if |enable_arcore| or |enable_cardboard| are set to true at
- * build time.
+ * Interface used by ChromeActivity to communicate with AR and VR code that is only available if
+ * |enable_arcore| or |enable_cardboard| are set to true at build time.
  */
 @NullMarked
 public interface XrDelegate extends BackPressHandler {
     /**
-     * Used to request the XrDelegate handle a BackPress event; note that this
-     * is the old way of handling a BackPress, but it is still in use in
-     * @{link ChromeActivity}
+     * Used to request the XrDelegate handle a BackPress event; note that this is the old way of
+     * handling a BackPress, but it is still in use in @{link ChromeActivity}
      */
-    public boolean onBackPressed();
+    boolean onBackPressed();
 
     /**
-     * Returns whether or not there is an active, ongoing AR session (as opposed
-     * to either no session or a VR Session).
+     * Returns whether or not there is an active, ongoing AR session (as opposed to either no
+     * session or a VR Session).
      */
-    public boolean hasActiveArSession();
+    boolean hasActiveArSession();
 }

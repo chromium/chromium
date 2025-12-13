@@ -80,9 +80,6 @@ class CORE_EXPORT DocumentMarker : public GarbageCollected<DocumentMarker> {
     bool operator==(const MarkerTypesIterator& other) const {
       return remaining_types_ == other.remaining_types_;
     }
-    bool operator!=(const MarkerTypesIterator& other) const {
-      return !operator==(other);
-    }
 
     MarkerTypesIterator& operator++() {
       DCHECK(remaining_types_);

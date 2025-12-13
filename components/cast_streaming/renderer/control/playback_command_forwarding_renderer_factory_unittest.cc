@@ -32,7 +32,7 @@ namespace {
 
 class MockOverlayInfoCbHandler {
  public:
-  MOCK_METHOD2(Call, void(bool, media::ProvideOverlayInfoCB));
+  MOCK_METHOD(void, Call, (media::ProvideOverlayInfoCB));
 };
 
 }  // namespace

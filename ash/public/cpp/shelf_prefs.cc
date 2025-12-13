@@ -179,7 +179,7 @@ ShelfAutoHideBehavior GetShelfAutoHideBehaviorPref(PrefService* prefs,
                           prefs::kShelfAutoHideBehavior));
   }
 
-  const bool is_in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
+  const bool is_in_tablet_mode = display::Screen::Get()->InTabletMode();
   // See comment in |kShelfAlignment| as to why we consider two prefs.
   return AutoHideBehaviorFromPref(GetPerDisplayPref(
       prefs, display_id,
@@ -201,7 +201,7 @@ void SetShelfAutoHideBehaviorPref(PrefService* prefs,
   if (!base::FeatureList::IsEnabled(features::kShelfAutoHideSeparation)) {
     SetPerDisplayShelfPref(prefs, display_id, prefs::kShelfAutoHideBehavior,
                            value);
-    if (display_id == display::Screen::GetScreen()->GetPrimaryDisplay().id()) {
+    if (display_id == display::Screen::Get()->GetPrimaryDisplay().id()) {
       // See comment in |kShelfAlignment| about why we have two prefs here.
       prefs->SetString(prefs::kShelfAutoHideBehaviorLocal, value);
       prefs->SetString(prefs::kShelfAutoHideBehavior, value);
@@ -209,13 +209,13 @@ void SetShelfAutoHideBehaviorPref(PrefService* prefs,
     return;
   }
 
-  const bool is_in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
+  const bool is_in_tablet_mode = display::Screen::Get()->InTabletMode();
   SetPerDisplayShelfPref(prefs, display_id,
                          is_in_tablet_mode
                              ? prefs::kShelfAutoHideTabletModeBehavior
                              : prefs::kShelfAutoHideBehavior,
                          value);
-  if (display_id == display::Screen::GetScreen()->GetPrimaryDisplay().id()) {
+  if (display_id == display::Screen::Get()->GetPrimaryDisplay().id()) {
     // See comment in |kShelfAlignment| about why we have two prefs here.
     prefs->SetString(is_in_tablet_mode
                          ? prefs::kShelfAutoHideTabletModeBehaviorLocal
@@ -245,7 +245,7 @@ void SetShelfAlignmentPref(PrefService* prefs,
     return;
 
   SetPerDisplayShelfPref(prefs, display_id, prefs::kShelfAlignment, value);
-  if (display_id == display::Screen::GetScreen()->GetPrimaryDisplay().id()) {
+  if (display_id == display::Screen::Get()->GetPrimaryDisplay().id()) {
     // See comment in |kShelfAlignment| as to why we consider two prefs.
     prefs->SetString(prefs::kShelfAlignmentLocal, value);
     prefs->SetString(prefs::kShelfAlignment, value);

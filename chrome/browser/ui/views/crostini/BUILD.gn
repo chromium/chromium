@@ -6,8 +6,6 @@ assert(is_chromeos)
 
 static_library("crostini") {
   sources = [
-    "crostini_ansible_software_config_view.cc",
-    "crostini_ansible_software_config_view.h",
     "crostini_app_restart_dialog.cc",
     "crostini_app_restart_dialog.h",
     "crostini_expired_container_warning_view.cc",
@@ -27,7 +25,6 @@ static_library("crostini") {
   deps = [
     "//chrome/app:generated_resources",
     "//chrome/browser/ash/crostini",
-    "//chrome/browser/ash/crostini/ansible",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ui/webui/ash/crostini_upgrader",
@@ -36,10 +33,7 @@ static_library("crostini") {
     "//ui/views",
   ]
 
-  allow_circular_includes_from = [
-    "//chrome/browser/ash/crostini",
-    "//chrome/browser/ash/crostini/ansible",
-  ]
+  allow_circular_includes_from = [ "//chrome/browser/ash/crostini" ]
 }
 
 static_library("browser_test_support") {
@@ -90,7 +84,6 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
-    "crostini_ansible_software_config_view_browsertest.cc",
     "crostini_force_close_view_browsertest.cc",
     "crostini_package_install_failure_view_browsertest.cc",
     "crostini_recovery_view_browsertest.cc",
@@ -107,8 +100,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/crostini:test_support",
-    "//chrome/browser/ash/crostini/ansible",
-    "//chrome/browser/ash/crostini/ansible:test_support",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/test:test_support_ui",

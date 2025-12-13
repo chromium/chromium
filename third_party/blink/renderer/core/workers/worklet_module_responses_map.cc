@@ -48,7 +48,7 @@ void WorkletModuleResponsesMap::Entry::SetParams(
       PostCrossThreadTask(
           *it.value, FROM_HERE,
           CrossThreadBindOnce(&ModuleScriptFetcher::Client::OnFetched, it.key,
-                              *params));
+                              params->IsolatedCopy()));
     }
   } else {
     state_ = State::kFailed;
@@ -79,8 +79,8 @@ bool WorkletModuleResponsesMap::GetEntry(
   DCHECK_NE(module_type, ModuleType::kInvalid);
   if (!is_available_ || !IsValidURL(url)) {
     client_task_runner->PostTask(
-        FROM_HERE, WTF::BindOnce(&ModuleScriptFetcher::Client::OnFailed,
-                                 WrapPersistent(client)));
+        FROM_HERE, BindOnce(&ModuleScriptFetcher::Client::OnFailed,
+                            WrapPersistent(client)));
     return true;
   }
 
@@ -99,15 +99,14 @@ bool WorkletModuleResponsesMap::GetEntry(
         // complete this algorithm with that entry's value, and abort these
         // steps."
         client_task_runner->PostTask(
-            FROM_HERE,
-            WTF::BindOnce(&ModuleScriptFetcher::Client::OnFetched,
-                          WrapPersistent(client), entry->GetParams()));
+            FROM_HERE, BindOnce(&ModuleScriptFetcher::Client::OnFetched,
+                                WrapPersistent(client), entry->GetParams()));
         return true;
       case Entry::State::kFailed:
         // Module fetching failed before. Abort following steps.
         client_task_runner->PostTask(
-            FROM_HERE, WTF::BindOnce(&ModuleScriptFetcher::Client::OnFailed,
-                                     WrapPersistent(client)));
+            FROM_HERE, BindOnce(&ModuleScriptFetcher::Client::OnFailed,
+                                WrapPersistent(client)));
         return true;
     }
     NOTREACHED();

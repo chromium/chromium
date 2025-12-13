@@ -146,7 +146,7 @@ bool StyleHighlightData::DependsOnSizeContainerQueries() const {
                           grammar_error_->HasContainerRelativeValue()))) {
     return true;
   }
-  for (auto style : custom_highlights_) {
+  for (const auto& style : custom_highlights_) {
     if (style.value->DependsOnSizeContainerQueries() ||
         style.value->HasContainerRelativeValue()) {
       return true;

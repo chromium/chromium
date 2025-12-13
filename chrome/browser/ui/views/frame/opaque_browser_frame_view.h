@@ -10,14 +10,15 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/view_ids.h"
-#include "chrome/browser/ui/views/frame/browser_frame.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout_delegate.h"
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/window/caption_button_types.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
 class BrowserView;
 class CaptionButtonPlaceholderContainer;
@@ -38,14 +39,14 @@ class FrameBackground;
 class Label;
 }  // namespace views
 
-class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
+class OpaqueBrowserFrameView : public BrowserFrameView,
                                public TabIconViewModel,
                                public OpaqueBrowserFrameViewLayoutDelegate {
-  METADATA_HEADER(OpaqueBrowserFrameView, BrowserNonClientFrameView)
+  METADATA_HEADER(OpaqueBrowserFrameView, BrowserFrameView)
 
  public:
-  // Constructs a non-client view for an BrowserFrame.
-  OpaqueBrowserFrameView(BrowserFrame* frame,
+  // Constructs a non-client view for an BrowserWidget.
+  OpaqueBrowserFrameView(BrowserWidget* widget,
                          BrowserView* browser_view,
                          OpaqueBrowserFrameViewLayout* layout);
   OpaqueBrowserFrameView(const OpaqueBrowserFrameView&) = delete;
@@ -57,7 +58,8 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   // constructor because it relies on virtual method calls.
   void InitViews();
 
-  // BrowserNonClientFrameView:
+  // BrowserFrameView:
+  BrowserLayoutParams GetBrowserLayoutParams() const override;
   gfx::Rect GetBoundsForTabStripRegion(
       const gfx::Size& tabstrip_minimum_size) const override;
   gfx::Rect GetBoundsForWebAppFrameToolbar(
@@ -69,7 +71,7 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   void PaintAsActiveChanged() override;
   void OnThemeChanged() override;
 
-  // views::NonClientFrameView:
+  // views::FrameView:
   gfx::Rect GetBoundsForClientView() const override;
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override;
@@ -104,7 +106,6 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   int GetTopAreaHeight() const override;
   bool UseCustomFrame() const override;
   bool IsFrameCondensed() const override;
-  bool EverHasVisibleBackgroundTabShapes() const override;
   FrameButtonStyle GetFrameButtonStyle() const override;
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override;
   bool ShouldDrawRestoredFrameShadow() const override;
@@ -128,12 +129,18 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
 
+  // BrowserFrameView:
+  BoundsAndMargins GetCaptionButtonBounds() const override;
+
   // Paint various sub-components of this view.  The *FrameBorder() functions
   // also paint the background of the titlebar area, since the top frame border
   // and titlebar background are a contiguous component.
   virtual void PaintRestoredFrameBorder(gfx::Canvas* canvas) const;
   void PaintMaximizedFrameBorder(gfx::Canvas* canvas) const;
   void PaintClientEdge(gfx::Canvas* canvas) const;
+
+  // Adds the app icon bounds to `params` if the icon is present.
+  void MaybeAddAppIconToLayoutParams(BrowserLayoutParams& params) const;
 
  private:
   friend class WebAppOpaqueBrowserFrameViewTest;

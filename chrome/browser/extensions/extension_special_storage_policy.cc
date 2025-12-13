@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/check.h"
@@ -34,6 +35,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
@@ -45,6 +47,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/common/webui_url_constants.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::BrowserThread;
 using extensions::APIPermission;
@@ -133,7 +137,7 @@ bool ExtensionSpecialStoragePolicy::IsStorageUnlimited(const GURL& origin) {
   }
 
   if (origin.SchemeIs(content::kChromeDevToolsScheme) &&
-      origin.host_piece() == chrome::kChromeUIDevToolsHost) {
+      origin.host() == chrome::kChromeUIDevToolsHost) {
     return true;
   }
 

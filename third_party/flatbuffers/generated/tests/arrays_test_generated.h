@@ -7,9 +7,9 @@
 
 // Ensure the included flatbuffers.h is the same version as when this file was
 // generated, otherwise it may not be compatible.
-static_assert(FLATBUFFERS_VERSION_MAJOR == 24 &&
-                  FLATBUFFERS_VERSION_MINOR == 3 &&
-                  FLATBUFFERS_VERSION_REVISION == 25,
+static_assert(FLATBUFFERS_VERSION_MAJOR == 25 &&
+                  FLATBUFFERS_VERSION_MINOR == 9 &&
+                  FLATBUFFERS_VERSION_REVISION == 23,
               "Non-compatible flatbuffers version included");
 
 namespace MyGame {
@@ -66,7 +66,6 @@ FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(8) NestedStruct FLATBUFFERS_FINAL_CLASS {
   int64_t d_[2];
 
  public:
-  struct Traits;
   static const ::flatbuffers::TypeTable* MiniReflectTypeTable() {
     return NestedStructTypeTable();
   }
@@ -135,10 +134,6 @@ inline bool operator!=(const NestedStruct& lhs, const NestedStruct& rhs) {
   return !(lhs == rhs);
 }
 
-struct NestedStruct::Traits {
-  using type = NestedStruct;
-};
-
 FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(8) ArrayStruct FLATBUFFERS_FINAL_CLASS {
  private:
   float a_;
@@ -153,7 +148,6 @@ FLATBUFFERS_MANUALLY_ALIGNED_STRUCT(8) ArrayStruct FLATBUFFERS_FINAL_CLASS {
   int64_t f_[2];
 
  public:
-  struct Traits;
   static const ::flatbuffers::TypeTable* MiniReflectTypeTable() {
     return ArrayStructTypeTable();
   }
@@ -256,10 +250,6 @@ inline bool operator!=(const ArrayStruct& lhs, const ArrayStruct& rhs) {
   return !(lhs == rhs);
 }
 
-struct ArrayStruct::Traits {
-  using type = ArrayStruct;
-};
-
 struct ArrayTableT : public ::flatbuffers::NativeTable {
   typedef ArrayTable TableType;
   std::unique_ptr<MyGame::Example::ArrayStruct> a{};
@@ -272,7 +262,6 @@ struct ArrayTableT : public ::flatbuffers::NativeTable {
 struct ArrayTable FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef ArrayTableT NativeTableType;
   typedef ArrayTableBuilder Builder;
-  struct Traits;
   static const ::flatbuffers::TypeTable* MiniReflectTypeTable() {
     return ArrayTableTypeTable();
   }
@@ -325,11 +314,6 @@ inline ::flatbuffers::Offset<ArrayTable> CreateArrayTable(
   return builder_.Finish();
 }
 
-struct ArrayTable::Traits {
-  using type = ArrayTable;
-  static auto constexpr Create = CreateArrayTable;
-};
-
 ::flatbuffers::Offset<ArrayTable> CreateArrayTable(
     ::flatbuffers::FlatBufferBuilder& _fbb,
     const ArrayTableT* _o,
@@ -353,7 +337,7 @@ inline ArrayTableT& ArrayTableT::operator=(ArrayTableT o) FLATBUFFERS_NOEXCEPT {
 
 inline ArrayTableT* ArrayTable::UnPack(
     const ::flatbuffers::resolver_function_t* _resolver) const {
-  auto _o = std::make_unique<ArrayTableT>();
+  auto _o = std::unique_ptr<ArrayTableT>(new ArrayTableT());
   UnPackTo(_o.get(), _resolver);
   return _o.release();
 }

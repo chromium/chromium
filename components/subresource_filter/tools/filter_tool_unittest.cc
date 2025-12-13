@@ -25,11 +25,13 @@ namespace {
 
 std::string CreateJsonLine(const std::string& origin,
                            const std::string& request_url,
-                           const std::string& request_type) {
+                           const std::string& request_type,
+                           const std::string& site_rank) {
   base::Value::Dict dictionary;
   dictionary.Set("origin", origin);
   dictionary.Set("request_url", request_url);
   dictionary.Set("request_type", request_type);
+  dictionary.Set("site_rank", site_rank);
 
   std::string output;
   EXPECT_TRUE(base::JSONWriter::Write(dictionary, &output));
@@ -106,12 +108,15 @@ TEST_F(FilterToolTest, NoMatch) {
 TEST_F(FilterToolTest, MatchBatch) {
   std::stringstream batch_queries;
   batch_queries << CreateJsonLine("http://example.com",
-                                  "http://example.com/disallowed1.png", "image")
+                                  "http://example.com/disallowed1.png", "image",
+                                  "1000")
                 << CreateJsonLine("http://example.com",
-                                  "http://example.com/disallowed2.png", "image")
+                                  "http://example.com/disallowed2.png", "image",
+                                  "100000")
                 << CreateJsonLine(
                        "http://example.com",
-                       "http://example.com/allowlist/disallowed2.png", "image");
+                       "http://example.com/allowlist/disallowed2.png", "image",
+                       "1000000");
 
   filter_tool_->MatchBatch(&batch_queries);
 
@@ -128,56 +133,30 @@ TEST_F(FilterToolTest, MatchBatch) {
 
 TEST_F(FilterToolTest, MatchRules) {
   std::stringstream batch_queries;
-  batch_queries << CreateJsonLine("http://example.com",
-                                  "http://example.com/disallowed1.png", "image")
-                << CreateJsonLine("http://example.com",
-                                  "http://example.com/disallowed1.png", "image")
-                << CreateJsonLine("http://example.com",
-                                  "http://example.com/disallowed2.png", "image")
-                << CreateJsonLine(
-                       "http://example.com",
-                       "http://example.com/allowlist/disallowed2.png", "image")
-                << CreateJsonLine("http://example.com",
-                                  "http://example.com/disallowed1.png", "image")
-                << CreateJsonLine(
-                       "http://example.com",
-                       "http://example.com/allowlist/disallowed2.png", "image");
+  batch_queries
+      << CreateJsonLine("http://example.com",
+                        "http://example.com/disallowed1.png", "image", "10")
+      << CreateJsonLine("http://example.com",
+                        "http://example.com/disallowed1.png", "image", "10")
+      << CreateJsonLine("http://example.com",
+                        "http://example.com/disallowed2.png", "image", "10")
+      << CreateJsonLine("http://example.com",
+                        "http://example.com/allowlist/disallowed2.png", "image",
+                        "1000")
+      << CreateJsonLine("http://example.com",
+                        "http://example.com/disallowed1.png", "image", "1000")
+      << CreateJsonLine("http://example.com",
+                        "http://example.com/allowlist/disallowed2.png", "image",
+                        "1000");
 
-  filter_tool_->MatchRules(&batch_queries, 1);
+  filter_tool_->MatchRules(&batch_queries);
 
   std::string result = out_stream_.str();
 
   std::string expected =
-      "3 disallowed1.png|\n"
-      "2 @@allowlist/disallowed2.png|\n"
-      "1 disallowed2.png|\n";
-
-  EXPECT_EQ(expected, out_stream_.str());
-}
-
-TEST_F(FilterToolTest, MatchRulesMinCount) {
-  std::stringstream batch_queries;
-  batch_queries << CreateJsonLine("http://example.com",
-                                  "http://example.com/disallowed1.png", "image")
-                << CreateJsonLine("http://example.com",
-                                  "http://example.com/disallowed1.png", "image")
-                << CreateJsonLine("http://example.com",
-                                  "http://example.com/disallowed2.png", "image")
-                << CreateJsonLine(
-                       "http://example.com",
-                       "http://example.com/allowlist/disallowed2.png", "image")
-                << CreateJsonLine(
-                       "http://example.com",
-                       "http://example.com/allowlist/disallowed2.png", "image")
-                << CreateJsonLine(
-                       "http://example.com",
-                       "http://example.com/allowlist/disallowed2.png", "image");
-
-  filter_tool_->MatchRules(&batch_queries, 2);
-
-  std::string expected =
-      "3 @@allowlist/disallowed2.png|\n"
-      "2 disallowed1.png|\n";
+      "0.206924 disallowed1.png|\n"
+      "0.103384 disallowed2.png|\n"
+      "0.000312955 @@allowlist/disallowed2.png|\n";
 
   EXPECT_EQ(expected, out_stream_.str());
 }

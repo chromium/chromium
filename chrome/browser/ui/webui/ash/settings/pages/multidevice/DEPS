@@ -10,7 +10,6 @@ include_rules = [
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/eche_app",
   "+chrome/browser/ash/login/quick_unlock",
   "+chrome/browser/ash/login/users",
@@ -23,7 +22,6 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/settings/search",
   "+chrome/browser/ui/webui/nearby_share",
   "+chrome/browser/ui/webui/settings",
-  "+chrome/browser/ui/webui/webui_util.h",
   "+chrome/common",
   "+chrome/grit",
   "+chrome/test",

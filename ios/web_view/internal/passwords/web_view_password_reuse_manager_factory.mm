@@ -50,7 +50,8 @@ WebViewPasswordReuseManagerFactory::BuildServiceInstanceFor(
   WebViewBrowserState* browser_state =
       WebViewBrowserState::FromBrowserState(context);
   std::unique_ptr<password_manager::PasswordReuseManager> reuse_manager =
-      std::make_unique<password_manager::PasswordReuseManagerImpl>();
+      std::make_unique<password_manager::PasswordReuseManagerImpl>(
+          ApplicationContext::GetInstance()->GetOSCryptAsync());
 
   reuse_manager->Init(
       browser_state->GetPrefs(),

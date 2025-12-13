@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/desktop_capture/share_this_tab_source_view.h"
 
+#include "base/compiler_specific.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -56,14 +53,15 @@ void HandleCapturedBitmap(
         reply,
     std::optional<uint32_t> last_hash,
     gfx::Size thumbnail_size,
-    const SkBitmap& bitmap) {
+    const viz::CopyOutputBitmapWithMetadata& result) {
   CHECK(!thumbnail_size.IsEmpty());
 
+  const SkBitmap& bitmap = result.bitmap;
   std::optional<gfx::ImageSkia> image;
 
   // Only scale and update if the frame appears to be new.
-  const uint32_t hash = base::FastHash(base::span(
-      static_cast<uint8_t*>(bitmap.getPixels()), bitmap.computeByteSize()));
+  const uint32_t hash = base::FastHash(UNSAFE_TODO(base::span(
+      static_cast<uint8_t*>(bitmap.getPixels()), bitmap.computeByteSize())));
   if (!last_hash.has_value() || hash != last_hash.value()) {
     image = ScaleBitmap(bitmap, thumbnail_size);
   }
@@ -155,6 +153,10 @@ void ShareThisTabSourceView::Refresh() {
 
   if (!refreshing_) {
     return;  // No further refreshes scheduled.
+  }
+
+  if (!web_contents_) {
+    return;
   }
 
   content::RenderFrameHost* const host = web_contents_->GetPrimaryMainFrame();

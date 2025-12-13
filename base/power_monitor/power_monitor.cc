@@ -14,10 +14,31 @@
 #include "power_observer.h"
 
 namespace base {
+namespace {
 
-void PowerMonitor::Initialize(std::unique_ptr<PowerMonitorSource> source) {
+perfetto::StaticString BatteryStatusToString(
+    PowerStateObserver::BatteryPowerStatus status) {
+  switch (status) {
+    case PowerStateObserver::BatteryPowerStatus::kBatteryPower:
+      return "BatteryPower";
+    case PowerStateObserver::BatteryPowerStatus::kExternalPower:
+      return "ExternalPower";
+    case PowerStateObserver::BatteryPowerStatus::kUnknown:
+      return "Unknown";
+  }
+  NOTREACHED();
+}
+
+}  // namespace
+
+void PowerMonitor::Initialize(std::unique_ptr<PowerMonitorSource> source,
+                              bool emit_global_event) {
   DCHECK(!IsInitialized());
   source_ = std::move(source);
+  emit_global_event_ = emit_global_event;
+  if (emit_global_event_) {
+    TrackEvent::AddSessionObserver(this);
+  }
 
   // When a power source is associated with the power monitor, ensure the
   // initial state is propagated to observers, if needed.
@@ -156,13 +177,12 @@ void PowerMonitor::NotifyPowerStateChange(
                      ? "On"
                      : "Off")
              << " battery";
-    TRACE_EVENT_INSTANT(
-        "power",
-        battery_power_status ==
-                PowerStateObserver::BatteryPowerStatus::kBatteryPower
-            ? perfetto::StaticString("PowerMonitor::BatteryPower")
-            : perfetto::StaticString("PowerMonitor::ExternalPower"),
-        process_track_);
+    if (emit_global_event_) {
+      TRACE_EVENT_END("base.power", battery_power_track_);
+      TRACE_EVENT_BEGIN("base.power",
+                        BatteryStatusToString(battery_power_status),
+                        battery_power_track_);
+    }
   }
 
   AutoLock auto_lock(battery_power_status_lock_);
@@ -176,11 +196,18 @@ void PowerMonitor::NotifyPowerStateChange(
 
 void PowerMonitor::NotifySuspend() {
   DCHECK(IsInitialized());
-  TRACE_EVENT_INSTANT("power", "PowerMonitor::NotifySuspend", process_track_);
   DVLOG(1) << "Power Suspending";
+  if (emit_global_event_) {
+    TRACE_EVENT_INSTANT("base.power", "PowerMonitor::NotifySuspend",
+                        suspend_track_);
+  }
 
   AutoLock auto_lock(is_system_suspended_lock_);
   if (!is_system_suspended_) {
+    if (emit_global_event_) {
+      TRACE_EVENT_BEGIN("base.power", "PowerMonitor::Suspended",
+                        suspend_track_);
+    }
     is_system_suspended_ = true;
     last_system_resume_time_ = TimeTicks::Max();
     power_suspend_observers_->Notify(FROM_HERE,
@@ -190,13 +217,19 @@ void PowerMonitor::NotifySuspend() {
 
 void PowerMonitor::NotifyResume() {
   DCHECK(IsInitialized());
-  TRACE_EVENT_INSTANT("power", "PowerMonitor::NotifyResume", process_track_);
   DVLOG(1) << "Power Resuming";
+  if (emit_global_event_) {
+    TRACE_EVENT_INSTANT("base.power", "PowerMonitor::NotifyResume",
+                        suspend_track_);
+  }
 
   TimeTicks resume_time = TimeTicks::Now();
 
   AutoLock auto_lock(is_system_suspended_lock_);
   if (is_system_suspended_) {
+    if (emit_global_event_) {
+      TRACE_EVENT_END("base.power", suspend_track_);
+    }
     is_system_suspended_ = false;
     last_system_resume_time_ = resume_time;
     power_suspend_observers_->Notify(FROM_HERE,
@@ -236,7 +269,8 @@ PowerMonitor* PowerMonitor::GetInstance() {
 }
 
 PowerMonitor::PowerMonitor()
-    : process_track_("PowerMonitor"),
+    : suspend_track_("SuspendStatus", 0, perfetto::Track()),
+      battery_power_track_("BatteryPowerStatus", 0, perfetto::Track()),
       power_state_observers_(
           base::MakeRefCounted<ObserverListThreadSafe<PowerStateObserver>>()),
       power_suspend_observers_(
@@ -246,5 +280,26 @@ PowerMonitor::PowerMonitor()
               ObserverListThreadSafe<PowerThermalObserver>>()) {}
 
 PowerMonitor::~PowerMonitor() = default;
+
+void PowerMonitor::OnStart(const perfetto::DataSourceBase::StartArgs&) {
+  if (!emit_global_event_) {
+    return;
+  }
+  {
+    AutoLock auto_lock(is_system_suspended_lock_);
+    if (is_system_suspended_) {
+      TRACE_EVENT_END("base.power", suspend_track_);
+      TRACE_EVENT_BEGIN("base.power", "PowerMonitor::Suspended",
+                        suspend_track_);
+    }
+  }
+  {
+    AutoLock auto_lock(battery_power_status_lock_);
+    TRACE_EVENT_END("base.power", battery_power_track_);
+    TRACE_EVENT_BEGIN("base.power",
+                      BatteryStatusToString(battery_power_status_),
+                      battery_power_track_);
+  }
+}
 
 }  // namespace base

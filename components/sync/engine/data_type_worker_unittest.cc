@@ -1500,8 +1500,6 @@ TEST_F(DataTypeWorkerTest, DecryptUpdateIfPossibleDespiteEncryptionDisabled) {
 }
 
 TEST_F(DataTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
-  base::HistogramTester histogram_tester;
-
   NormalInitialize();
 
   // Send an update encrypted with a key that shall remain unknown.
@@ -1526,21 +1524,10 @@ TEST_F(DataTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
   // longer blocked.
   EXPECT_FALSE(worker()->BlockForEncryption());
 
-  // Should have recorded that 1 entity was dropped.
-  histogram_tester.ExpectUniqueSample(
-      "Sync.DataTypeUndecryptablePendingUpdatesDropped", 1, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Sync.DataTypeUndecryptablePendingUpdatesDropped.PREFERENCE", 1, 1);
-
   // From now on, incoming updates encrypted with the missing key don't block
   // the worker.
   TriggerUpdateFromServer(10, kTag2, kValue2);
   EXPECT_FALSE(worker()->BlockForEncryption());
-
-  // Should have recorded that 1 incoming update was ignored.
-  histogram_tester.ExpectUniqueSample(
-      "Sync.DataTypeUpdateDrop.DecryptionPendingForTooLong",
-      DataTypeForHistograms::kPreferences, 1);
 }
 
 // Test that processor has been disconnected from Sync when worker got
@@ -1902,6 +1889,30 @@ TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
 
   // The client tag hash gets filled in by the worker.
   EXPECT_FALSE(response_data.entity.client_tag_hash.value().empty());
+}
+
+TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
+     WalletDataIncludingClientTagHash) {
+  const ClientTagHash kTestClientTagHash =
+      ClientTagHash::FromUnhashed(AUTOFILL_WALLET_DATA, "12345");
+
+  UpdateResponseData response_data;
+
+  // Set up the entity with an arbitrary value for an arbitrary field in the
+  // specifics (so that it _has_ autofill wallet specifics).
+  sync_pb::SyncEntity entity;
+  entity.set_client_tag_hash(kTestClientTagHash.value());
+  entity.mutable_specifics()->mutable_autofill_wallet()->set_type(
+      sync_pb::AutofillWalletSpecifics::POSTAL_ADDRESS);
+
+  ASSERT_EQ(
+      DataTypeWorker::SUCCESS,
+      DataTypeWorker::PopulateUpdateResponseData(
+          FakeCryptographer(), AUTOFILL_WALLET_DATA, entity, &response_data));
+
+  // The client tag hash makes it through.
+  EXPECT_EQ(response_data.entity.client_tag_hash.value(),
+            kTestClientTagHash.value());
 }
 
 TEST(DataTypeWorkerPopulateUpdateResponseDataTest,

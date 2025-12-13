@@ -28,6 +28,7 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -134,16 +135,23 @@ void GAIAInfoUpdateService::UpdatePrimaryAccount(const AccountInfo& info) {
   gaia_id_of_profile_attribute_entry_ = info.gaia;
   entry->SetGAIAGivenName(base::UTF8ToUTF16(info.given_name));
   entry->SetGAIAName(base::UTF8ToUTF16(info.full_name));
-  entry->SetHostedDomain(info.hosted_domain);
+  std::string hosted_domain_to_set;
+  if (std::optional<std::string_view> hosted_domain = info.GetHostedDomain()) {
+    hosted_domain_to_set = hosted_domain->empty()
+                               ? signin::constants::kNoHostedDomainFound
+                               : std::string(*hosted_domain);
+  }
+  entry->SetHostedDomain(hosted_domain_to_set);
   entry->SetIsManaged(info.IsManaged());
 
-  if (info.picture_url == kNoPictureURLFound) {
+  if (info.GetAvatarUrl().has_value() && info.GetAvatarUrl()->empty()) {
     entry->SetGAIAPicture(std::string(), gfx::Image());
-  } else if (!info.account_image.IsEmpty()) {
+  } else if (info.GetAvatarImage().has_value()) {
     // Only set the image if it is not empty, to avoid clearing the image if we
     // fail to download it on one of the 24 hours interval to refresh the data.
-    entry->SetGAIAPicture(info.last_downloaded_image_url_with_size,
-                          info.account_image);
+    entry->SetGAIAPicture(
+        std::string(info.GetLastDownloadedAvatarUrlWithSize().value_or("")),
+        *info.GetAvatarImage());
   }
 }
 

@@ -83,7 +83,7 @@ class TextFragmentHandlerTest : public SimTest {
           callback_called = true;
         };
     auto callback =
-        WTF::BindOnce(lambda, std::ref(callback_called), std::ref(selector));
+        BindOnce(lambda, std::ref(callback_called), std::ref(selector));
     GetTextFragmentHandler().RequestSelector(std::move(callback));
     base::RunLoop().RunUntilIdle();
 
@@ -99,8 +99,8 @@ class TextFragmentHandlerTest : public SimTest {
       target_texts = fetched_target_texts;
       callback_called = true;
     };
-    auto callback = WTF::BindOnce(lambda, std::ref(callback_called),
-                                  std::ref(target_texts));
+    auto callback =
+        BindOnce(lambda, std::ref(callback_called), std::ref(target_texts));
 
     GetTextFragmentHandler().ExtractTextFragmentsMatches(std::move(callback));
 
@@ -116,8 +116,8 @@ class TextFragmentHandlerTest : public SimTest {
       text_fragment_rect = fetched_text_fragment_rect;
       callback_called = true;
     };
-    auto callback = WTF::BindOnce(lambda, std::ref(callback_called),
-                                  std::ref(text_fragment_rect));
+    auto callback = BindOnce(lambda, std::ref(callback_called),
+                             std::ref(text_fragment_rect));
 
     GetTextFragmentHandler().ExtractFirstFragmentRect(std::move(callback));
 
@@ -662,8 +662,8 @@ TEST_F(TextFragmentHandlerTest, SecondGenerationCrash) {
   SetSelection(start, end);
 
   auto callback =
-      WTF::BindOnce([](const TextFragmentSelector& selector,
-                       shared_highlighting::LinkGenerationError error) {});
+      BindOnce([](const TextFragmentSelector& selector,
+                  shared_highlighting::LinkGenerationError error) {});
   MakeGarbageCollected<TextFragmentSelectorGenerator>(GetDocument().GetFrame())
       ->SetCallbackForTesting(std::move(callback));
 
@@ -911,7 +911,7 @@ TEST_F(TextFragmentHandlerTest,
         callback_called = true;
       };
   auto callback =
-      WTF::BindOnce(lambda, std::ref(callback_called), std::ref(selector));
+      BindOnce(lambda, std::ref(callback_called), std::ref(selector));
   remote->RequestSelector(std::move(callback));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(callback_called);
@@ -1050,6 +1050,25 @@ TEST_F(TextFragmentHandlerTest, NotGenerated) {
   ASSERT_EQ(" ", PlainText(EphemeralRange(selected_start, selected_end)));
 
   SetSelection(selected_start, selected_end);
+  EXPECT_EQ(RequestSelector(), "");
+
+  shared_highlighting::LinkGenerationError expected_error =
+      shared_highlighting::LinkGenerationError::kNotGenerated;
+  EXPECT_EQ(expected_error, GetTextFragmentHandler().error_);
+}
+
+// https://crbug.com/447973114
+TEST_F(TextFragmentHandlerTest, NotGeneratedWithFileInput) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <input type="file">
+  )HTML");
+  GetDocument().GetFrame()->Selection().SelectAll();
+  // This shouldn't crash.
+  TextFragmentHandler::OpenedContextMenuOverSelection(GetDocument().GetFrame());
+
   EXPECT_EQ(RequestSelector(), "");
 
   shared_highlighting::LinkGenerationError expected_error =

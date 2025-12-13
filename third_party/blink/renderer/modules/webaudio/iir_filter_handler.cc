@@ -44,25 +44,24 @@ IIRFilterHandler::~IIRFilterHandler() {
 
 // Get the magnitude and phase response of the filter at the given set of
 // frequencies (in Hz). The phase response is in radians.
-void IIRFilterHandler::GetFrequencyResponse(int n_frequencies,
-                                            const float* frequency_hz,
-                                            float* mag_response,
-                                            float* phase_response) const {
-  DCHECK_GE(n_frequencies, 0);
-  DCHECK(frequency_hz);
-  DCHECK(mag_response);
-  DCHECK(phase_response);
+void IIRFilterHandler::GetFrequencyResponse(
+    base::span<const float> frequency_hz,
+    base::span<float> mag_response,
+    base::span<float> phase_response) const {
+  DCHECK(!frequency_hz.empty());
+  DCHECK(!mag_response.empty());
+  DCHECK(!phase_response.empty());
 
-  Vector<float> frequency(n_frequencies);
+  Vector<float> frequency(frequency_hz.size());
 
   // Convert from frequency in Hz to normalized frequency (0 -> 1),
   // with 1 equal to the Nyquist frequency.
-  for (int k = 0; k < n_frequencies; ++k) {
+  for (size_t k = 0; k < frequency_hz.size(); ++k) {
     UNSAFE_TODO(frequency[k] = frequency_hz[k] / nyquist_frequency_);
   }
 
-  response_kernel_->GetFrequencyResponse(n_frequencies, frequency.data(),
-                                         mag_response, phase_response);
+  response_kernel_->GetFrequencyResponse(frequency, mag_response,
+                                         phase_response);
 }
 
 IIRFilterHandler::IIRFilterHandler(AudioNode& node,
@@ -120,9 +119,8 @@ IIRFilterHandler::IIRFilterHandler(AudioNode& node,
   }
 
   response_kernel_ = std::make_unique<IIRFilter>(&feedforward_, &feedback_);
-  tail_time_ = response_kernel_->TailTime(
-      sample_rate, is_filter_stable,
-      node.context()->GetDeferredTaskHandler().RenderQuantumFrames());
+  tail_time_ = response_kernel_->TailTime(sample_rate, is_filter_stable,
+                                          node.context()->renderQuantumSize());
 }
 
 void IIRFilterHandler::Process(uint32_t frames_to_process) {

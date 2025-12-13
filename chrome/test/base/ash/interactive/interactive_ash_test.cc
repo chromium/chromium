@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/test/base/ash/interactive/settings/interactive_uitest_elements.h"
 #include "chrome/test/base/chromeos/crosier/aura_window_title_observer.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -37,7 +38,7 @@
 namespace {
 
 using InteractiveMixinBasedBrowserTest =
-    InteractiveBrowserTestT<MixinBasedInProcessBrowserTest>;
+    InteractiveBrowserTestMixin<MixinBasedInProcessBrowserTest>;
 
 // This JavaScript is used to select an option from a dropdown menu. This
 // JavaScript can be formatted with a single string to identify the desired
@@ -175,7 +176,8 @@ InteractiveAshTest::InteractiveAshTest() {
   // the home button, shelf, etc. appear once per display.
   views::ElementTrackerViews::SetContextOverrideCallback(
       base::BindRepeating([](views::Widget* widget) {
-        return ui::ElementContext(ash::Shell::GetPrimaryRootWindow());
+        return ui::ElementContext::CreateFakeContextForTesting(
+            ash::Shell::GetPrimaryRootWindow());
       }));
 }
 
@@ -214,7 +216,7 @@ ui::ElementContext InteractiveAshTest::FindSystemWebApp(
   CHECK(profile);
   Browser* browser = FindSystemWebAppBrowser(profile, type);
   CHECK(browser);
-  return browser->window()->GetElementContext();
+  return BrowserElements::From(browser)->GetContext();
 }
 
 void InteractiveAshTest::CloseSystemWebApp(ash::SystemWebAppType type) {
@@ -515,7 +517,7 @@ InteractiveAshTest::CreateBrowserWindow(const GURL& url) {
   CHECK(profile);
   NavigateParams params(profile, url, ui::PAGE_TRANSITION_TYPED);
   params.disposition = WindowOpenDisposition::NEW_WINDOW;
-  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.window_action = NavigateParams::WindowAction::kShowWindow;
   return Navigate(&params);
 }
 
@@ -527,7 +529,7 @@ void InteractiveAshTest::TearDownOnMainThread() {
     base::RunLoop loop;
     loop.Run();
   }
-  InteractiveBrowserTestT<
+  InteractiveBrowserTestMixin<
       MixinBasedInProcessBrowserTest>::TearDownOnMainThread();
 }
 

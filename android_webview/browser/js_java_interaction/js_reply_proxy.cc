@@ -34,12 +34,13 @@ base::android::ScopedJavaLocalRef<jobject> JsReplyProxy::GetJavaPeer() {
   return base::android::ScopedJavaLocalRef<jobject>(java_ref_);
 }
 
-void JsReplyProxy::PostMessage(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& payload) {
+void JsReplyProxy::PostMessage(JNIEnv* env,
+                               const base::android::JavaRef<jobject>& payload) {
   reply_proxy_->PostWebMessage(
       content::android::ConvertToWebMessagePayloadFromJava(
           base::android::ScopedJavaLocalRef<jobject>(payload)));
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(JsReplyProxy)

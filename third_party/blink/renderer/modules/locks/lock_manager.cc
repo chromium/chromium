@@ -296,10 +296,6 @@ ScriptPromise<IDLAny> LockManager::request(ScriptState* script_state,
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context->IsContextThread());
 
-  context->GetScheduler()->RegisterStickyFeature(
-      blink::SchedulingPolicy::Feature::kWebLocks,
-      {blink::SchedulingPolicy::DisableBackForwardCache()});
-
   // 5. If origin is an opaque origin, then reject promise with a
   // "SecurityError" DOMException.
   //
@@ -376,7 +372,7 @@ ScriptPromise<IDLAny> LockManager::request(ScriptState* script_state,
 
   CheckStorageAccessAllowed(
       context, resolver,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(BindOnce(
           &LockManager::RequestImpl, WrapWeakPersistent(this),
           WrapPersistent(options), name, WrapPersistent(callback), mode)));
 
@@ -436,8 +432,8 @@ void LockManager::RequestImpl(const LockOptions* options,
     // In "Request a lock": If signal is present, then add the algorithm signal
     // to abort the request request with signal to signal.
     AbortSignal::AlgorithmHandle* handle = options->signal()->AddAlgorithm(
-        WTF::BindOnce(&LockRequestImpl::Abort, WrapWeakPersistent(request),
-                      WrapPersistent(options->signal())));
+        BindOnce(&LockRequestImpl::Abort, WrapWeakPersistent(request),
+                 WrapPersistent(options->signal())));
     request->InitializeAbortAlgorithm(*handle);
   }
   service_->RequestLock(name, mode, wait, std::move(request_remote));
@@ -472,7 +468,7 @@ ScriptPromise<LockManagerSnapshot> LockManager::query(
   CheckStorageAccessAllowed(
       context, resolver,
       resolver->WrapCallbackInScriptScope(
-          WTF::BindOnce(&LockManager::QueryImpl, WrapWeakPersistent(this))));
+          BindOnce(&LockManager::QueryImpl, WrapWeakPersistent(this))));
   return promise;
 }
 
@@ -489,7 +485,7 @@ void LockManager::QueryImpl(
     }
   }
 
-  service_->QueryState(WTF::BindOnce(
+  service_->QueryState(BindOnce(
       [](ScriptPromiseResolver<LockManagerSnapshot>* resolver,
          Vector<mojom::blink::LockInfoPtr> pending,
          Vector<mojom::blink::LockInfoPtr> held) {
@@ -543,7 +539,7 @@ void LockManager::CheckStorageAccessAllowed(
   DCHECK(context->IsWindow() || context->IsWorkerGlobalScope() ||
          context->IsSharedStorageWorkletGlobalScope());
 
-  auto wrapped_callback = WTF::BindOnce(
+  auto wrapped_callback = blink::BindOnce(
       &LockManager::DidCheckStorageAccessAllowed, WrapWeakPersistent(this),
       WrapPersistent(resolver), std::move(callback));
 

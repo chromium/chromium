@@ -140,7 +140,8 @@ bool MatchRequestsTask::ShouldMatchRequest(
   // Ignore the request if the queries don't match.
   if ((!match_params_->cache_query_options() ||
        !match_params_->cache_query_options()->ignore_search) &&
-      request->url.query() != match_params_->request_to_match()->url.query()) {
+      request->url.GetQuery() !=
+          match_params_->request_to_match()->url.GetQuery()) {
     return false;
   }
 

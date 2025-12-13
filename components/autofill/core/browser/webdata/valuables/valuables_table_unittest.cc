@@ -124,6 +124,30 @@ TEST_F(ValuablesTableTest, RemoveLoyaltyCard) {
   EXPECT_TRUE(valuables_table().RemoveLoyaltyCard(card1.id()));
 }
 
+TEST_F(ValuablesTableTest, AddOrUpdateLoyaltyCard_AddNew) {
+  const LoyaltyCard card = test::CreateLoyaltyCard();
+  EXPECT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card));
+  EXPECT_THAT(valuables_table().GetLoyaltyCards(), UnorderedElementsAre(card));
+}
+
+TEST_F(ValuablesTableTest, AddOrUpdateLoyaltyCard_Update) {
+  LoyaltyCard card = test::CreateLoyaltyCard();
+  valuables_table().AddOrUpdateLoyaltyCard(card);
+  EXPECT_THAT(valuables_table().GetLoyaltyCards(), UnorderedElementsAre(card));
+
+  card.set_program_name("new program name");
+  card.set_merchant_domains({GURL("https://new.merchant.com")});
+  EXPECT_TRUE(valuables_table().AddOrUpdateLoyaltyCard(card));
+  EXPECT_THAT(valuables_table().GetLoyaltyCards(), UnorderedElementsAre(card));
+}
+
+TEST_F(ValuablesTableTest, AddOrUpdateLoyaltyCard_Invalid) {
+  LoyaltyCard card = test::CreateLoyaltyCard();
+  card.set_merchant_name("");
+  EXPECT_FALSE(valuables_table().AddOrUpdateLoyaltyCard(card));
+  EXPECT_THAT(valuables_table().GetLoyaltyCards(), IsEmpty());
+}
+
 }  // namespace
 
 }  // namespace autofill

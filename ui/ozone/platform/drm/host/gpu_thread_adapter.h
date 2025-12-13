@@ -11,7 +11,7 @@
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
 #include "ui/display/types/native_display_delegate.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/platform/drm/common/display_types.h"
 
 namespace base {

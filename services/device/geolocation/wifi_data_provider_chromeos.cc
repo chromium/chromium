@@ -14,7 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromeos/ash/components/network/geolocation_handler.h"
+#include "chromeos/ash/components/network/geolocation_handler_impl.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "services/device/geolocation/wifi_data_provider_handle.h"
 #include "services/device/public/mojom/geolocation_internals.mojom.h"

@@ -16,6 +16,7 @@
 
 #include <stdlib.h>
 
+#include <array>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
@@ -33,6 +34,16 @@
 #include "gtest/gtest.h"
 #include "absl/base/config.h"
 #include "absl/meta/type_traits.h"
+
+#ifdef __has_include
+#if __has_include(<version>)
+#include <version>  // NOLINT(misc-include-cleaner)
+#endif
+#endif
+
+#if defined(__cpp_lib_ranges) && __cpp_lib_ranges >= 201911L
+#include <ranges>  // NOLINT(build/c++20)
+#endif
 
 #if defined(ABSL_USES_STD_STRING_VIEW) || defined(__ANDROID__)
 // We don't control the death messaging when using std::string_view.
@@ -54,6 +65,15 @@ static_assert(!absl::type_traits_internal::IsOwner<absl::string_view>::value &&
 static_assert(absl::type_traits_internal::IsLifetimeBoundAssignment<
                   absl::string_view, std::string>::value,
               "lifetimebound assignment not detected");
+
+#if defined(__cpp_lib_ranges) && __cpp_lib_ranges >= 201911L
+// NOLINTNEXTLINE(build/c++20)
+static_assert(std::ranges::enable_view<absl::string_view>,
+              "std::ranges::view not enabled");
+// NOLINTNEXTLINE(build/c++20)
+static_assert(std::ranges::enable_borrowed_range<absl::string_view>,
+              "std::ranges::borrowed_range not enabled");
+#endif
 
 // A minimal allocator that uses malloc().
 template <typename T>
@@ -130,6 +150,23 @@ TEST(StringViewTest, Ctor) {
     EXPECT_TRUE(s31.data() == hola.data());
     EXPECT_EQ(8u, s31.length());
   }
+
+#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
+  {
+    // Iterator constructor
+    std::string str = "hello";
+    absl::string_view s1(str.begin(), str.end());
+    EXPECT_EQ(s1, "hello");
+
+    std::array<char, 3> arr = { '1', '2', '3' };
+    absl::string_view s2(arr.begin(), arr.end());
+    EXPECT_EQ(s2, "123");
+
+    const char carr[] = "carr";
+    absl::string_view s3(carr, carr + strlen(carr));
+    EXPECT_EQ(s3, "carr");
+  }
+#endif  // ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
 
   {
     using mstring =
@@ -1154,6 +1191,18 @@ TEST(StringViewTest, ConstexprCompiles) {
 
   constexpr size_t sp_npos = sp.npos;
   EXPECT_EQ(sp_npos, static_cast<size_t>(-1));
+
+#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
+  {
+    static constexpr std::array<char, 3> arr = { '1', '2', '3' };
+    constexpr absl::string_view s2(arr.begin(), arr.end());
+    EXPECT_EQ(s2, "123");
+
+    static constexpr char carr[] = "carr";
+    constexpr absl::string_view s3(carr, carr + 4);
+    EXPECT_EQ(s3, "carr");
+  }
+#endif  // ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
 }
 
 constexpr char ConstexprMethodsHelper() {

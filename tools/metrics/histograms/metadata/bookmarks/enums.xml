@@ -26,6 +26,20 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(BookmarkBarClickType)-->
+
+<enum name="BookmarkBarClickType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="URL in Bookmark Bar"/>
+  <int value="2" label="Folder in Bookmark Bar"/>
+  <int value="3" label="Overflow Menu"/>
+  <int value="4" label="All Bookmarks"/>
+  <int value="5" label="URL in Pop-up"/>
+  <int value="6" label="Folder in Pop-up"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtils.java:BookmarkBarClickType) -->
+
 <enum name="BookmarkBarDragDropType">
   <int value="0" label="Drop single URL onto bar"/>
   <int value="1" label="Drop single URL into folder"/>
@@ -54,6 +68,22 @@ chromium-metrics-reviews@google.com.
       label="Bookmarks bar pref is set to shown and user is not opening the
              reading list from the NTP"/>
 </enum>
+
+<!-- LINT.IfChange(BookmarkBarShownReason)-->
+
+<enum name="BookmarkBarShownReason">
+  <int value="0" label="Unknown reason"/>
+  <int value="1" label="Disabled by user pref"/>
+  <int value="2" label="Enabled by user pref"/>
+  <int value="3" label="Disabled by device pref (e.g. tablet)"/>
+  <int value="4" label="Enabled by device pref (e.g. tablet)"/>
+  <int value="5"
+      label="Disabled by feature param (show_bookmark_bar on tablets)"/>
+  <int value="6"
+      label="Enabled by feature param (show_bookmark_bar on tablets)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtils.java:BookmarkBarShownReason) -->
 
 <enum name="BookmarkEditSource">
   <int value="0" label="Edited by a user"/>

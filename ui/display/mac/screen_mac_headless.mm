@@ -22,9 +22,6 @@ namespace display {
 
 namespace {
 
-// Headless display ids are synthesized sequential numbers.
-constexpr int64_t kHeadlessDisplayIdBase = 1;
-
 std::vector<headless::HeadlessScreenInfo> GetHeadlessScreenInfos() {
   std::vector<headless::HeadlessScreenInfo> screen_infos;
 
@@ -50,9 +47,13 @@ std::vector<headless::HeadlessScreenInfo> GetHeadlessScreenInfos() {
 
 ScreenMacHeadless::ScreenMacHeadless() {
   CreateDisplayList();
+
+  display::HeadlessScreenManager::Get()->SetDelegate(this);
 }
 
-ScreenMacHeadless::~ScreenMacHeadless() = default;
+ScreenMacHeadless::~ScreenMacHeadless() {
+  display::HeadlessScreenManager::Get()->SetDelegate(nullptr);
+}
 
 void ScreenMacHeadless::CreateDisplayList() {
   std::vector<headless::HeadlessScreenInfo> screen_infos =
@@ -62,15 +63,12 @@ void ScreenMacHeadless::CreateDisplayList() {
   bool is_primary = true;
   base::flat_set<int64_t> internal_display_ids;
   for (const headless::HeadlessScreenInfo& it : screen_infos) {
-    static int64_t synthesized_display_id = kHeadlessDisplayIdBase;
-    Display display(synthesized_display_id++);
+    Display display(HeadlessScreenManager::GetNewDisplayId());
     display.set_label(it.label);
     display.set_color_depth(it.color_depth);
-    display.SetScaleAndBounds(it.device_pixel_ratio, it.bounds);
 
-    if (!it.work_area_insets.IsEmpty()) {
-      display.UpdateWorkAreaFromInsets(it.work_area_insets);
-    }
+    display::HeadlessScreenManager::SetDisplayGeometry(
+        display, it.bounds, it.work_area_insets, it.device_pixel_ratio);
 
     if (it.rotation) {
       CHECK(Display::IsValidRotation(it.rotation));
@@ -120,6 +118,22 @@ Display ScreenMacHeadless::GetDisplayNearestWindow(
 
 bool ScreenMacHeadless::IsHeadless() const {
   return true;
+}
+
+int64_t ScreenMacHeadless::AddDisplay(const Display& display) {
+  Display new_display(display);
+  new_display.set_id(HeadlessScreenManager::GetNewDisplayId());
+
+  bool is_primary = display_list().displays().empty();
+  display_list().AddDisplay(new_display, is_primary
+                                             ? DisplayList::Type::PRIMARY
+                                             : DisplayList::Type::NOT_PRIMARY);
+  return new_display.id();
+}
+
+void ScreenMacHeadless::RemoveDisplay(int64_t display_id) {
+  display_list().RemoveDisplay(display_id);
+  display::RemoveInternalDisplayId(display_id);
 }
 
 }  // namespace display

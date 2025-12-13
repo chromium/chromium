@@ -75,9 +75,13 @@ void FacilitatedPaymentsBottomSheetBridge::RequestShowContentForPaymentLink(
             env, ewallet));
   }
 
-  base::android::ScopedJavaLocalRef<jobjectArray> j_app_array =
-      static_cast<FacilitatedPaymentsAppInfoListAndroid*>(app_suggestions.get())
-          ->GetJavaArray();
+  base::android::ScopedJavaLocalRef<jobjectArray> j_app_array;
+
+  if (app_suggestions) {
+    j_app_array = static_cast<FacilitatedPaymentsAppInfoListAndroid*>(
+                      app_suggestions.get())
+                      ->GetJavaArray();
+  }
 
   Java_FacilitatedPaymentsPaymentMethodsViewBridge_requestShowContentForPaymentLink(
       env, GetJavaBridge(), std::move(ewallet_vector), j_app_array);
@@ -158,3 +162,5 @@ void FacilitatedPaymentsBottomSheetBridge::OnDismissed() {
 }
 
 }  // namespace payments::facilitated
+
+DEFINE_JNI(FacilitatedPaymentsPaymentMethodsViewBridge)

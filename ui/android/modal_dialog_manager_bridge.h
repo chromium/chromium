@@ -24,8 +24,7 @@ class UI_ANDROID_EXPORT ModalDialogManagerBridge {
     kApp,
   };
 
-  explicit ModalDialogManagerBridge(
-      const jni_zero::JavaParamRef<jobject>& manager);
+  explicit ModalDialogManagerBridge(const jni_zero::JavaRef<jobject>& manager);
   ~ModalDialogManagerBridge();
 
   // Suspend / resume all dialogs of `dialog_type`, for the current Window.

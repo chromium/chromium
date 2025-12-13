@@ -28,13 +28,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -469,7 +465,7 @@ class ThreadMarker {
   ThreadMarker() : creating_thread_(reinterpret_cast<ThreadState*>(0)) {}
   explicit ThreadMarker(unsigned i)
       : creating_thread_(ThreadState::Current()), num_(i) {}
-  explicit ThreadMarker(WTF::HashTableDeletedValueType deleted)
+  explicit ThreadMarker(HashTableDeletedValueType deleted)
       : creating_thread_(reinterpret_cast<ThreadState*>(-1)) {}
   ~ThreadMarker() {
     EXPECT_TRUE((creating_thread_ == ThreadState::Current()) ||
@@ -2177,8 +2173,8 @@ TEST_F(HeapTest, CollectionNesting) {
   Persistent<GCedHeapHashMap<void*, Member<IntDeque>>> keep_alive2(map2);
 
   for (int i = 0; i < 100; i++) {
-    map->insert(key + 1 + i, MakeGarbageCollected<IntVector>());
-    map2->insert(key + 1 + i, MakeGarbageCollected<IntDeque>());
+    map->insert(UNSAFE_TODO(key + 1 + i), MakeGarbageCollected<IntVector>());
+    map2->insert(UNSAFE_TODO(key + 1 + i), MakeGarbageCollected<IntDeque>());
   }
 
   PreciselyCollectGarbage();
@@ -2625,11 +2621,11 @@ int OffHeapInt::destructor_calls_ = 0;
 
 TEST_F(HeapTest, Bind) {
   base::OnceClosure closure =
-      WTF::BindOnce(static_cast<void (Bar::*)(Visitor*) const>(&Bar::Trace),
-                    WrapPersistent(MakeGarbageCollected<Bar>()), nullptr);
+      BindOnce(static_cast<void (Bar::*)(Visitor*) const>(&Bar::Trace),
+               WrapPersistent(MakeGarbageCollected<Bar>()), nullptr);
   // OffHeapInt* should not make Persistent.
   base::OnceClosure closure2 =
-      WTF::BindOnce(&OffHeapInt::VoidFunction, OffHeapInt::Create(1));
+      blink::BindOnce(&OffHeapInt::VoidFunction, OffHeapInt::Create(1));
   PreciselyCollectGarbage();
   // The closure should have a persistent handle to the Bar.
   EXPECT_EQ(1u, Bar::live_);
@@ -2637,8 +2633,8 @@ TEST_F(HeapTest, Bind) {
   UseMixin::trace_count_ = 0;
   auto* mixin = MakeGarbageCollected<UseMixin>();
   base::OnceClosure mixin_closure =
-      WTF::BindOnce(static_cast<void (Mixin::*)(Visitor*) const>(&Mixin::Trace),
-                    WrapPersistent(mixin), nullptr);
+      BindOnce(static_cast<void (Mixin::*)(Visitor*) const>(&Mixin::Trace),
+               WrapPersistent(mixin), nullptr);
   PreciselyCollectGarbage();
   // The closure should have a persistent handle to the mixin.
   EXPECT_LE(1, UseMixin::trace_count_);
@@ -3128,7 +3124,7 @@ class KeyWithCopyingMoveConstructor final {
   unsigned GetHash() const { return hash_; }
 
   KeyWithCopyingMoveConstructor() = default;
-  explicit KeyWithCopyingMoveConstructor(WTF::HashTableDeletedValueType)
+  explicit KeyWithCopyingMoveConstructor(HashTableDeletedValueType)
       : hash_(-1) {}
   ~KeyWithCopyingMoveConstructor() = default;
   KeyWithCopyingMoveConstructor(unsigned hash, const String& string)

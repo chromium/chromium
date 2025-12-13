@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 source_set("sharing") {
@@ -39,7 +38,6 @@ source_set("sharing") {
     "//components/password_manager/core/common",
     "//components/prefs",
     "//components/signin/public/identity_manager",
-    "//components/sync/base",
     "//components/sync/base",
     "//components/sync/model",
     "//components/sync/service",

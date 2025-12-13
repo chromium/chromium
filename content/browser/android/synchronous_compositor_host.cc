@@ -68,6 +68,18 @@ void EstablishGpuChannelToEstablishVizConnection() {
 
 }  // namespace
 
+struct SynchronousCompositorHost::SharedMemoryWithSize {
+  base::WritableSharedMemoryMapping shared_memory;
+  const size_t stride;
+  const size_t buffer_size;
+
+  SharedMemoryWithSize(size_t stride, size_t buffer_size)
+      : stride(stride), buffer_size(buffer_size) {}
+
+  SharedMemoryWithSize(const SharedMemoryWithSize&) = delete;
+  SharedMemoryWithSize& operator=(const SharedMemoryWithSize&) = delete;
+};
+
 // This class runs on the IO thread and is destroyed when the renderer
 // side closes the mojo channel.
 class SynchronousCompositorControlHost
@@ -165,6 +177,8 @@ SynchronousCompositorHost::SynchronousCompositorHost(
       host_frame_sink_manager_(host_frame_sink_manager),
       use_in_process_zero_copy_software_draw_(use_in_proc_software_draw),
       bytes_limit_(0u),
+      allow_async_draw_(
+          base::FeatureList::IsEnabled(features::kWebViewAsyncDrawOnly)),
       renderer_param_version_(0u),
       need_invalidate_count_(0u),
       invalidate_needs_draw_(false),
@@ -236,14 +250,13 @@ SynchronousCompositorHost::DemandDrawHwAsync(
           transform_for_tile_priority,
           /*need_new_local_surface_id=*/was_evicted_);
 
-  was_evicted_ = false;
-
   blink::mojom::SynchronousCompositor* compositor = GetSynchronousCompositor();
   if (!bridge_->SetFrameFutureOnUIThread(frame_future)) {
     frame_future->SetFrame(nullptr);
   } else {
     DCHECK(compositor);
     compositor->DemandDrawHwAsync(std::move(params));
+    was_evicted_ = false;
   }
   return frame_future;
 }
@@ -371,18 +384,6 @@ class SynchronousCompositorHost::ScopedSendZeroMemory {
 
  private:
   const raw_ptr<SynchronousCompositorHost> host_;
-};
-
-struct SynchronousCompositorHost::SharedMemoryWithSize {
-  base::WritableSharedMemoryMapping shared_memory;
-  const size_t stride;
-  const size_t buffer_size;
-
-  SharedMemoryWithSize(size_t stride, size_t buffer_size)
-      : stride(stride), buffer_size(buffer_size) {}
-
-  SharedMemoryWithSize(const SharedMemoryWithSize&) = delete;
-  SharedMemoryWithSize& operator=(const SharedMemoryWithSize&) = delete;
 };
 
 bool SynchronousCompositorHost::DemandDrawSw(SkCanvas* canvas,

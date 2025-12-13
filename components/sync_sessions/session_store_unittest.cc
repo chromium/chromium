@@ -15,7 +15,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/sync/base/hash_util.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
@@ -164,8 +163,6 @@ class SessionStoreOpenTest : public ::testing::Test {
 };
 
 TEST_F(SessionStoreOpenTest, ShouldCreateStore) {
-  ASSERT_THAT(session_sync_prefs_.GetLegacySyncSessionsGUID(), IsEmpty());
-
   MockOpenCallback completion;
   EXPECT_CALL(completion, Run(NoModelError(), /*store=*/NotNull(),
                               MetadataBatchContains(_, IsEmpty())));
@@ -177,23 +174,6 @@ TEST_F(SessionStoreOpenTest, ShouldCreateStore) {
               Eq(syncer::GetPersonalizableDeviceNameBlocking()));
   EXPECT_THAT(completion.GetResult()->local_session_info().session_tag,
               Eq(kLocalCacheGuid));
-  EXPECT_THAT(session_sync_prefs_.GetLegacySyncSessionsGUID(), IsEmpty());
-}
-
-TEST_F(SessionStoreOpenTest, ShouldReadLegacySessionsGuidFromPrefs) {
-  const std::string kLegacySyncSessionsGUID = "sessiontag1";
-  session_sync_prefs_.SetLegacySyncSessionsGUIDForTesting(
-      kLegacySyncSessionsGUID);
-
-  NiceMock<MockOpenCallback> completion;
-  SessionStore::Open(kLocalCacheGuid, mock_sync_sessions_client_.get(),
-                     completion.Get());
-  completion.Wait();
-  ASSERT_THAT(completion.GetResult(), NotNull());
-  EXPECT_THAT(completion.GetResult()->local_session_info().session_tag,
-              Eq(kLegacySyncSessionsGUID));
-  EXPECT_THAT(session_sync_prefs_.GetLegacySyncSessionsGUID(),
-              Eq(kLegacySyncSessionsGUID));
 }
 
 TEST_F(SessionStoreOpenTest, ShouldNotUseClientIfCancelled) {
@@ -256,16 +236,6 @@ class SessionStoreTest : public SessionStoreOpenTest {
  private:
   std::unique_ptr<SessionStore> session_store_;
 };
-
-TEST_F(SessionStoreTest, ShouldClearLegacySessionsGuidFromPrefs) {
-  const std::string kLegacySyncSessionsGUID = "sessiontag1";
-  session_sync_prefs_.SetLegacySyncSessionsGUIDForTesting(
-      kLegacySyncSessionsGUID);
-  ASSERT_THAT(session_sync_prefs_.GetLegacySyncSessionsGUID(),
-              Eq(kLegacySyncSessionsGUID));
-  SessionStore::DeleteAllDataAndMetadata(TakeSessionStore());
-  EXPECT_THAT(session_sync_prefs_.GetLegacySyncSessionsGUID(), IsEmpty());
-}
 
 TEST_F(SessionStoreTest, ShouldRecreateEmptyStore) {
   const SessionStore::SessionInfo original_local_session_info =

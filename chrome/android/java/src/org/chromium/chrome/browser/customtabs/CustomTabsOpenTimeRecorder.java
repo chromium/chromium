@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JniType;
@@ -17,6 +18,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
@@ -41,6 +44,7 @@ import java.util.function.BooleanSupplier;
  * <p>The above signals help eliminate some cases that look like autoclosing but are actually
  * user-intervened ones.
  */
+@NullMarked
 class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
     @VisibleForTesting static final String PACKAGE_NAME_EMPTY_1P = "1p";
     private final CustomTabActivityNavigationController mNavigationController;
@@ -48,7 +52,7 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
     private final BrowserServicesIntentDataProvider mIntent;
 
     // Getting the package name from the Intent only works when the client is still connected.
-    @Nullable private final String mCachedPackageName;
+    private final @Nullable String mCachedPackageName;
 
     private long mOnStartTimestampMs;
 
@@ -128,7 +132,7 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
         mOnStartTimestampMs = 0;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     String getPackageName(boolean isPartial) {
         boolean isEmpty = TextUtils.isEmpty(mCachedPackageName);
         if (isPartial && isEmpty) {
@@ -138,7 +142,7 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
             }
             if (mIntent.isTrustedIntent()) return PACKAGE_NAME_EMPTY_1P;
         }
-        return isEmpty ? "" : mCachedPackageName;
+        return isEmpty ? "" : assertNonNull(mCachedPackageName);
     }
 
     void updateCloseCause() {
@@ -159,7 +163,7 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
     interface Natives {
         void recordCustomTabSession(
                 long time,
-                @JniType("std::string") String packageName,
+                @JniType("std::string") @Nullable String packageName,
                 long sessionDuration,
                 boolean wasUserClosed,
                 boolean isPartialCct);

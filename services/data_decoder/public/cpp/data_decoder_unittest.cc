@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/facilitated_payments/core/mojom/pix_code_validator.mojom.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/data_decoder/public/mojom/cbor_parser.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,81 +67,30 @@ TEST_F(DataDecoderTest, IsolationCbor) {
   EXPECT_EQ(2u, service().receivers().size());
 }
 
-TEST_F(DataDecoderTest, ParseCborToInteger) {
-  base::RunLoop run_loop;
-  DataDecoder decoder;
-  DataDecoder::ValueOrError result;
-  // 100
-  std::vector<uint8_t> input = {0x18, 0x64};
 
-  decoder.ParseCborIsolated(
-      input,
-      base::BindLambdaForTesting(
-          [&run_loop, &result](DataDecoder::ValueOrError value_or_error) {
-            result = std::move(value_or_error);
-            run_loop.Quit();
-          }));
-  run_loop.Run();
 
-  ASSERT_TRUE(result.has_value());
-  ASSERT_TRUE(result->is_int());
-  ASSERT_EQ(result->GetInt(), 100);
-}
 
-TEST_F(DataDecoderTest, ParseCborAndFailed) {
-  base::RunLoop run_loop;
-  DataDecoder decoder;
-  DataDecoder::ValueOrError result;
-  // Null
-  std::vector<uint8_t> input = {0xF6};
-
-  decoder.ParseCborIsolated(
-      input,
-      base::BindLambdaForTesting(
-          [&run_loop, &result](DataDecoder::ValueOrError value_or_error) {
-            result = std::move(value_or_error);
-            run_loop.Quit();
-          }));
-  run_loop.Run();
-
-  ASSERT_FALSE(result.has_value());
-  ASSERT_EQ(result.error(), "Error unexpected CBOR value.");
-}
-
-TEST_F(DataDecoderTest, ValidateAnInvalidPixCode) {
-  base::RunLoop run_loop;
-  DataDecoder decoder;
-  base::expected<bool, std::string> validation_result;
-
-  decoder.ValidatePixCode(
-      std::string(),
-      base::BindLambdaForTesting([&run_loop, &validation_result](
-                                     base::expected<bool, std::string> result) {
-        validation_result = std::move(result);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-
-  ASSERT_TRUE(validation_result.has_value());
-  EXPECT_FALSE(validation_result.value());
-}
 
 TEST_F(DataDecoderTest, ValidateAValidPixCode) {
   base::RunLoop run_loop;
   DataDecoder decoder;
-  base::expected<bool, std::string> validation_result;
+  base::expected<payments::facilitated::mojom::PixQrCodeType, std::string>
+      validation_result;
 
   decoder.ValidatePixCode(
       "00020126370014br.gov.bcb.pix2515www.example.com6304EA3F",
-      base::BindLambdaForTesting([&run_loop, &validation_result](
-                                     base::expected<bool, std::string> result) {
-        validation_result = std::move(result);
-        run_loop.Quit();
-      }));
+      base::BindLambdaForTesting(
+          [&run_loop, &validation_result](
+              base::expected<payments::facilitated::mojom::PixQrCodeType,
+                             std::string> result) {
+            validation_result = std::move(result);
+            run_loop.Quit();
+          }));
   run_loop.Run();
 
   ASSERT_TRUE(validation_result.has_value());
-  EXPECT_TRUE(validation_result.value());
+  EXPECT_EQ(validation_result.value(),
+            payments::facilitated::mojom::PixQrCodeType::kDynamic);
 }
 
 // PIX codes are payment related and should be private, so they should not be

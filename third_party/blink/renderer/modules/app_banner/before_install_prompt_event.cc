@@ -105,8 +105,8 @@ const AtomicString& BeforeInstallPromptEvent::InterfaceName() const {
 
 void BeforeInstallPromptEvent::preventDefault() {
   Event::preventDefault();
-  if (target()) {
-    UseCounter::Count(target()->GetExecutionContext(),
+  if (RawTarget()) {
+    UseCounter::Count(RawTarget()->GetExecutionContext(),
                       WebFeature::kBeforeInstallPromptEventPreventDefault);
   }
 }
@@ -119,14 +119,14 @@ bool BeforeInstallPromptEvent::HasPendingActivity() const {
 void BeforeInstallPromptEvent::BannerAccepted(const String& platform) {
   AppBannerPromptResult* result = AppBannerPromptResult::Create();
   result->setPlatform(platform);
-  result->setOutcome("accepted");
+  result->setOutcome(V8AppBannerPromptOutcome::Enum::kAccepted);
   user_choice_->Resolve(result);
 }
 
 void BeforeInstallPromptEvent::BannerDismissed() {
   AppBannerPromptResult* result = AppBannerPromptResult::Create();
   result->setPlatform(g_empty_atom);
-  result->setOutcome("dismissed");
+  result->setOutcome(V8AppBannerPromptOutcome::Enum::kDismissed);
   user_choice_->Resolve(result);
 }
 

@@ -9,7 +9,7 @@
 #include "base/logging.h"
 
 #if BUILDFLAG(USE_SECCOMP_BPF)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
 #endif
 
@@ -28,7 +28,8 @@ SeccompStarterAndroid::GetDefaultBaselineOptions() const {
   // patches to userfaultfd that enforce usermode pages only (i.e.
   // UFFD_USER_MODE_ONLY). Userfaultfd is used for a new ART garbage collector.
   // See https://crbug.com/1300653 for details.
-  options.allow_userfaultfd_ioctls = sdk_int_ >= base::android::SDK_VERSION_S;
+  options.allow_userfaultfd_ioctls =
+      sdk_int_ >= base::android::android_info::SDK_VERSION_S;
   return options;
 }
 #endif
@@ -47,7 +48,8 @@ bool SeccompStarterAndroid::StartSandbox() {
   }
 
   sig_t old_handler = signal(SIGSYS, SIG_DFL);
-  if (old_handler != SIG_DFL && sdk_int_ < base::android::SDK_VERSION_OREO) {
+  if (old_handler != SIG_DFL &&
+      sdk_int_ < base::android::android_info::SDK_VERSION_OREO) {
     // On Android O and later, the zygote applies a seccomp filter to all
     // apps. It has its own SIGSYS handler that must be un-hooked so that
     // the Chromium one can be used instead. If pre-O devices have a SIGSYS

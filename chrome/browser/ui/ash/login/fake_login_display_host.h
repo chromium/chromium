@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "components/user_manager/user_type.h"
 
+class PrefService;
+
 namespace session_manager {
 class SessionManager;
 }
@@ -20,7 +22,7 @@ namespace ash {
 
 class FakeLoginDisplayHost : public LoginDisplayHost {
  public:
-  FakeLoginDisplayHost();
+  explicit FakeLoginDisplayHost(PrefService* local_state = nullptr);
 
   FakeLoginDisplayHost(const FakeLoginDisplayHost&) = delete;
   FakeLoginDisplayHost& operator=(const FakeLoginDisplayHost&) = delete;

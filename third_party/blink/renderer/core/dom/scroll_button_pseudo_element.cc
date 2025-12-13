@@ -59,7 +59,7 @@ ScrollButtonPseudoElement::ScrollButtonPseudoElement(
     Element* originating_element,
     PseudoId pseudo_id)
     : PseudoElement(originating_element, pseudo_id),
-      ScrollSnapshotClient(originating_element->GetDocument().GetFrame()) {
+      PostLayoutSnapshotClient(originating_element->GetDocument().GetFrame()) {
   SetTabIndexExplicitly();
   UseCounter::Count(GetDocument(), WebFeature::kScrollButtonPseudoElement);
 }
@@ -97,20 +97,7 @@ void ScrollButtonPseudoElement::HandleButtonActivation() {
     direction = ScrollDirectionPhysical::kScrollRight;
   }
   if (direction) {
-    gfx::Vector2dF displacement = ToScrollDelta(*direction, 1);
-    displacement.Scale(
-        scrollable_area->ScrollStep(ui::ScrollGranularity::kScrollByPage,
-                                    kHorizontalScrollbar),
-        scrollable_area->ScrollStep(ui::ScrollGranularity::kScrollByPage,
-                                    kVerticalScrollbar));
-    gfx::PointF current_position = scrollable_area->ScrollPosition();
-    std::unique_ptr<cc::SnapSelectionStrategy> strategy =
-        scrollable_area->PageScrollSnapStrategy(*direction);
-    gfx::PointF new_position =
-        scrollable_area->GetSnapPositionAndSetTarget(*strategy).value_or(
-            current_position + displacement);
-    scrollable_area->ScrollToAbsolutePosition(
-        new_position, mojom::blink::ScrollBehavior::kAuto);
+    scrollable_area->ScrollByPageWithSnap(*direction);
   }
   GetDocument().SetFocusedElement(this,
                                   FocusParams(SelectionBehaviorOnFocus::kNone,
@@ -127,7 +114,7 @@ void ScrollButtonPseudoElement::DefaultEventHandler(Event& event) {
       is_key_down && (To<KeyboardEvent>(event).keyCode() == VKEY_RETURN ||
                       To<KeyboardEvent>(event).keyCode() == VKEY_SPACE);
   bool should_intercept =
-      event.target() == this && (is_click || is_enter_or_space);
+      event.RawTarget() == this && (is_click || is_enter_or_space);
   if (should_intercept) {
     HandleButtonActivation();
     event.SetDefaultHandled();
@@ -143,11 +130,11 @@ FocusableState ScrollButtonPseudoElement::SupportsFocus(
   return PseudoElement::SupportsFocus(update_behavior);
 }
 
-bool ScrollButtonPseudoElement::UpdateSnapshotInternal() {
+bool ScrollButtonPseudoElement::UpdateSnapshot() {
   // Note: we can hit it here, since we don't unsubscribe from
   // scroll snapshot client (maybe we should).
   if (!isConnected()) {
-    return true;
+    return false;
   }
   LayoutBox* scroller =
       DynamicTo<LayoutBox>(UltimateOriginatingElement().GetLayoutObject());
@@ -160,9 +147,9 @@ bool ScrollButtonPseudoElement::UpdateSnapshotInternal() {
       SetNeedsStyleRecalc(
           StyleChangeType::kLocalStyleChange,
           StyleChangeReasonForTracing::Create(style_change_reason::kControl));
-      return false;
+      return true;
     }
-    return true;
+    return false;
   }
   ScrollableArea* scrollable_area =
       scroller->IsDocumentElement() ? scroller->GetFrameView()->LayoutViewport()
@@ -206,17 +193,9 @@ bool ScrollButtonPseudoElement::UpdateSnapshotInternal() {
     SetNeedsStyleRecalc(
         StyleChangeType::kLocalStyleChange,
         StyleChangeReasonForTracing::Create(style_change_reason::kControl));
-    return false;
+    return true;
   }
-  return true;
-}
-
-void ScrollButtonPseudoElement::UpdateSnapshot() {
-  UpdateSnapshotInternal();
-}
-
-bool ScrollButtonPseudoElement::ValidateSnapshot() {
-  return UpdateSnapshotInternal();
+  return false;
 }
 
 bool ScrollButtonPseudoElement::ShouldScheduleNextService() {

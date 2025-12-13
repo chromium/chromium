@@ -273,15 +273,13 @@ TEST(MixedContentCheckerTest, DetectUpgradeableMixedContent) {
       ResourceRequest::RedirectStatus::kNoRedirect, http_ip_address_audio_url,
       String(), ReportingDisposition::kSuppressReporting, *notifier_remote);
 
-#if (BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)) && \
-    BUILDFLAG(ENABLE_CAST_RECEIVER)
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
   // Mixed Content from an insecure IP address is not blocked for Fuchsia Cast
   // Receivers.
   EXPECT_FALSE(blocked);
 #else
   EXPECT_TRUE(blocked);
-#endif  // (BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)) &&
-        // BUILDFLAG(ENABLE_CAST_RECEIVER)
+#endif  // BUILDFLAG(ENABLE_CAST_RECEIVER)
 }
 
 TEST(MixedContentCheckerTest, LNABypassTest) {

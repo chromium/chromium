@@ -145,6 +145,14 @@ class ProtocolHandlerRegistryTest : public testing::Test {
     return ProtocolHandler::CreateWebAppProtocolHandler(protocol, url, app_id);
   }
 
+  ProtocolHandler CreateExtensionProtocolHandler(
+      const std::string& protocol,
+      const GURL& url,
+      const std::string& extension_id) {
+    return ProtocolHandler::CreateExtensionProtocolHandler(protocol, url,
+                                                           extension_id);
+  }
+
   bool ProtocolHandlerCanRegisterProtocol(
       const std::string& protocol,
       const GURL& handler_url,
@@ -296,7 +304,8 @@ TEST_F(ProtocolHandlerRegistryTest, SaveAndLoad) {
 
 TEST_F(ProtocolHandlerRegistryTest, Encode) {
   base::Time now = base::Time::Now();
-  ProtocolHandler handler("news", GURL("https://example.com"), "app_id", now,
+  ProtocolHandler handler("news", GURL("https://example.com"), "app_id",
+                          std::nullopt, now,
                           blink::ProtocolHandlerSecurityLevel::kStrict);
   auto value = handler.Encode();
   ProtocolHandler recreated = ProtocolHandler::CreateProtocolHandler(value);
@@ -378,6 +387,34 @@ TEST_F(ProtocolHandlerRegistryTest, ClearHandlersBetween) {
   EXPECT_FALSE(registry()->IsIgnored(ignored1));
   EXPECT_FALSE(registry()->IsIgnored(ignored2));
   EXPECT_FALSE(registry()->IsIgnored(ignored3));
+}
+
+TEST_F(ProtocolHandlerRegistryTest, TestExtensionProtocolHandlers) {
+  const std::string kIdFoo("fooabbbbccccddddeeeeffffgggghhhh");
+  ProtocolHandler ph1 =
+      CreateExtensionProtocolHandler("news", GURL("https://test/%s"), kIdFoo);
+  registry()->OnAcceptRegisterProtocolHandler(ph1);
+  ASSERT_TRUE(registry()->IsHandledProtocol("news"));
+  ASSERT_TRUE(registry()->IsDefault(ph1));
+
+  const std::string kIdBar("barabbbbccccddddeeeeffffgggghhhh");
+  ProtocolHandler ph2 =
+      CreateExtensionProtocolHandler("mailto", GURL("https://test/%s"), kIdBar);
+  registry()->OnAcceptRegisterProtocolHandler(ph2);
+  ASSERT_TRUE(registry()->IsHandledProtocol("mailto"));
+  ASSERT_TRUE(registry()->IsDefault(ph2));
+
+  {
+    ProtocolHandlerRegistry::ProtocolHandlerList handlers =
+        registry()->GetExtensionProtocolHandlers();
+    ASSERT_EQ(static_cast<size_t>(2), handlers.size());
+  }
+
+  {
+    ProtocolHandlerRegistry::ProtocolHandlerList handlers =
+        registry()->GetExtensionProtocolHandlers(kIdBar);
+    ASSERT_EQ(static_cast<size_t>(1), handlers.size());
+  }
 }
 
 TEST_F(ProtocolHandlerRegistryTest, TestEnabledDisabled) {
@@ -1172,10 +1209,8 @@ TEST_F(ProtocolHandlerRegistryTest, ProtocolHandlerSecurityLevels) {
 namespace {
 
 enum class ProtocolTestMode {
-  kFtpOffPaytoOn,
-  kFtpOnPaytoOff,
-  kFtpOnPaytoOn,
-  kFtpOffPaytoOff,
+  kPaytoOff,
+  kPaytoOn,
 };
 
 }  // namespace
@@ -1190,27 +1225,14 @@ class ProtocolHandlerRegistrySchemeTest
   void SetUp() override {
     ProtocolHandlerRegistryTest::SetUp();
     switch (GetParam()) {
-    case ProtocolTestMode::kFtpOffPaytoOn:
-      scoped_feature_list_.InitWithFeatures(
-          {blink::features::kSafelistPaytoToRegisterProtocolHandler},
-          {blink::features::kSafelistFTPToRegisterProtocolHandler});
-      break;
-    case ProtocolTestMode::kFtpOnPaytoOff:
-      scoped_feature_list_.InitWithFeatures(
-          {blink::features::kSafelistFTPToRegisterProtocolHandler},
-          {blink::features::kSafelistPaytoToRegisterProtocolHandler});
-      break;
-    case ProtocolTestMode::kFtpOnPaytoOn:
-      scoped_feature_list_.InitWithFeatures(
-          {blink::features::kSafelistFTPToRegisterProtocolHandler,
-          blink::features::kSafelistPaytoToRegisterProtocolHandler}, {});
-      break;
-    case ProtocolTestMode::kFtpOffPaytoOff:
-    default:
-      scoped_feature_list_.InitWithFeatures({},
-          {blink::features::kSafelistFTPToRegisterProtocolHandler,
-          blink::features::kSafelistPaytoToRegisterProtocolHandler});
-      break;
+      case ProtocolTestMode::kPaytoOff:
+        scoped_feature_list_.InitWithFeatures(
+            {}, {blink::features::kSafelistPaytoToRegisterProtocolHandler});
+        break;
+      case ProtocolTestMode::kPaytoOn:
+        scoped_feature_list_.InitWithFeatures(
+            {blink::features::kSafelistPaytoToRegisterProtocolHandler}, {});
+        break;
     }
   }
 
@@ -1218,10 +1240,8 @@ class ProtocolHandlerRegistrySchemeTest
 };
 INSTANTIATE_TEST_SUITE_P(All,
                          ProtocolHandlerRegistrySchemeTest,
-                         testing::Values(ProtocolTestMode::kFtpOffPaytoOn,
-                                         ProtocolTestMode::kFtpOnPaytoOff,
-                                         ProtocolTestMode::kFtpOnPaytoOn,
-                                         ProtocolTestMode::kFtpOffPaytoOff));
+                         testing::Values(ProtocolTestMode::kPaytoOff,
+                                         ProtocolTestMode::kPaytoOn));
 // See
 // https://html.spec.whatwg.org/multipage/system-state.html#safelisted-scheme
 TEST_P(ProtocolHandlerRegistrySchemeTest, SafelistedSchemes) {
@@ -1241,20 +1261,14 @@ TEST_P(ProtocolHandlerRegistrySchemeTest, SafelistedSchemes) {
   for (auto& scheme : kFtpSchemes) {
     registry()->OnAcceptRegisterProtocolHandler(
         CreateProtocolHandler(scheme, GURL("https://example.com/url=%s")));
-    if (GetParam() == ProtocolTestMode::kFtpOnPaytoOff ||
-        GetParam() == ProtocolTestMode::kFtpOnPaytoOn) {
-      ASSERT_TRUE(registry()->IsHandledProtocol(scheme));
-    } else {
-      ASSERT_FALSE(registry()->IsHandledProtocol(scheme));
-    }
+    ASSERT_TRUE(registry()->IsHandledProtocol(scheme));
   }
   registry()->OnAcceptRegisterProtocolHandler(
     CreateProtocolHandler(kPaytoScheme, GURL("https://example.com/url=%s")));
-  if (GetParam() == ProtocolTestMode::kFtpOffPaytoOn ||
-      GetParam() == ProtocolTestMode::kFtpOnPaytoOn) {
-     ASSERT_TRUE(registry()->IsHandledProtocol(kPaytoScheme));
+  if (GetParam() == ProtocolTestMode::kPaytoOn) {
+    ASSERT_TRUE(registry()->IsHandledProtocol(kPaytoScheme));
   } else {
-     ASSERT_FALSE(registry()->IsHandledProtocol(kPaytoScheme));
+    ASSERT_FALSE(registry()->IsHandledProtocol(kPaytoScheme));
   }
 }
 

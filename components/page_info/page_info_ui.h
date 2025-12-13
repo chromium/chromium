@@ -219,18 +219,6 @@ class PageInfoUI {
   static base::span<const PermissionUIInfo>
   GetContentSettingsUIInfoForTesting();
 
-  // Returns the UI string describing the action taken for a permission,
-  // including why that action was taken. E.g. "Allowed by you",
-  // "Blocked by default". If |setting| is default, specify the actual default
-  // setting using |default_setting|.
-  static std::u16string PermissionActionToUIString(
-      PageInfoUiDelegate* delegate,
-      ContentSettingsType type,
-      ContentSetting setting,
-      ContentSetting default_setting,
-      content_settings::SettingSource source,
-      bool is_one_time);
-
   static std::u16string PermissionStateToUIString(
       PageInfoUiDelegate* delegate,
       const PageInfo::PermissionInfo& permission);

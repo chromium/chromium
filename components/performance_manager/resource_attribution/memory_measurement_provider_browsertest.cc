@@ -9,10 +9,12 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/resource_attribution/memory_measurement_delegate.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
@@ -45,6 +47,48 @@ using ::testing::IsSupersetOf;
 using ::testing::Lt;
 using ::testing::Pair;
 
+// `private_swap` is only supported on Linux, ChromeOS and Android, and is
+// always 0 on other platforms. Even on those platforms it's often measured as
+// 0. This wraps a real MemoryMeasurementDelegate but always reports a positive
+// swap value, to make sure it's attributed correctly.
+class MemoryMeasurementDelegateWithSwap final
+    : public MemoryMeasurementDelegate {
+ public:
+  class Factory final : public MemoryMeasurementDelegate::Factory {
+   public:
+    std::unique_ptr<MemoryMeasurementDelegate> CreateDelegate(
+        Graph* graph) final {
+      return std::make_unique<MemoryMeasurementDelegateWithSwap>(
+          MemoryMeasurementDelegate::GetDefaultFactory()->CreateDelegate(
+              graph));
+    }
+  };
+
+  explicit MemoryMeasurementDelegateWithSwap(
+      std::unique_ptr<MemoryMeasurementDelegate> wrapped_delegate)
+      : wrapped_delegate_(std::move(wrapped_delegate)) {}
+
+  void RequestMemorySummary(
+      base::OnceCallback<void(MemorySummaryMap)> callback) final {
+    wrapped_delegate_->RequestMemorySummary(
+        base::BindOnce(&ModifyMemorySummary).Then(std::move(callback)));
+  }
+
+ private:
+  static MemorySummaryMap ModifyMemorySummary(MemorySummaryMap summary) {
+    base::ByteCount fake_swap = base::KiB(1);
+    for (auto& [context, measurement] : summary) {
+      if (measurement.private_swap.is_zero()) {
+        measurement.private_swap = fake_swap;
+        fake_swap += base::KiB(1);
+      }
+    }
+    return summary;
+  }
+
+  std::unique_ptr<MemoryMeasurementDelegate> wrapped_delegate_;
+};
+
 class ResourceAttrMemoryMeasurementProviderBrowserTest
     : public performance_manager::PerformanceManagerBrowserTestHarness {
  protected:
@@ -52,6 +96,7 @@ class ResourceAttrMemoryMeasurementProviderBrowserTest
 
   void OnGraphCreated(Graph* graph) override {
     memory_provider_ = std::make_unique<MemoryMeasurementProvider>(graph);
+    memory_provider_->SetDelegateFactoryForTesting(&delegate_factory_);
     Super::OnGraphCreated(graph);
   }
 
@@ -73,6 +118,7 @@ class ResourceAttrMemoryMeasurementProviderBrowserTest
   }
 
  private:
+  MemoryMeasurementDelegateWithSwap::Factory delegate_factory_;
   std::unique_ptr<MemoryMeasurementProvider> memory_provider_;
 };
 
@@ -87,14 +133,16 @@ auto MemorySummaryResultIsPositive(MeasurementAlgorithm expected_algorithm) {
 #if BUILDFLAG(IS_IOS)
       // TODO(crbug.com/40947218): iOS doesn't support private_memory_footprint,
       // so it's always 0.
-      Field("private_footprint_kb", &MemorySummaryResult::private_footprint_kb,
-            Eq(0u)),
+      Field("private_footprint", &MemorySummaryResult::private_footprint,
+            Eq(base::ByteCount(0))),
 #else
-      Field("private_footprint_kb", &MemorySummaryResult::private_footprint_kb,
-            Gt(0u)),
+      Field("private_footprint", &MemorySummaryResult::private_footprint,
+            Gt(base::ByteCount(0))),
 #endif
-      Field("resident_set_size_kb", &MemorySummaryResult::resident_set_size_kb,
-            Gt(0u)),
+      Field("resident_set_size", &MemorySummaryResult::resident_set_size,
+            Gt(base::ByteCount(0))),
+      Field("private_swap", &MemorySummaryResult::private_swap,
+            Gt(base::ByteCount(0))),
       ResultMetadataMatches<MemorySummaryResult>(
           expected_measurement_time_matcher, expected_algorithm)));
 }
@@ -147,24 +195,28 @@ IN_PROC_BROWSER_TEST_F(ResourceAttrMemoryMeasurementProviderBrowserTest,
       results.at(child_frame_context).memory_summary_result.value();
   const auto process_result =
       results.at(process_context).memory_summary_result.value();
-  EXPECT_LE(main_frame_result.resident_set_size_kb,
-            process_result.resident_set_size_kb);
-  EXPECT_LE(main_frame_result.private_footprint_kb,
-            process_result.private_footprint_kb);
-  EXPECT_LE(child_frame_result.resident_set_size_kb,
-            process_result.resident_set_size_kb);
-  EXPECT_LE(child_frame_result.private_footprint_kb,
-            process_result.private_footprint_kb);
+  EXPECT_LE(main_frame_result.resident_set_size,
+            process_result.resident_set_size);
+  EXPECT_LE(main_frame_result.private_footprint,
+            process_result.private_footprint);
+  EXPECT_LE(main_frame_result.private_swap, process_result.private_swap);
+  EXPECT_LE(child_frame_result.resident_set_size,
+            process_result.resident_set_size);
+  EXPECT_LE(child_frame_result.private_footprint,
+            process_result.private_footprint);
+  EXPECT_LE(child_frame_result.private_swap, process_result.private_swap);
 
   // The page memory should be the sum of all its frames, from any process.
   const auto page_result =
       results.at(page_context).memory_summary_result.value();
-  EXPECT_EQ(page_result.resident_set_size_kb,
-            main_frame_result.resident_set_size_kb +
-                child_frame_result.resident_set_size_kb);
-  EXPECT_EQ(page_result.private_footprint_kb,
-            main_frame_result.private_footprint_kb +
-                child_frame_result.private_footprint_kb);
+  EXPECT_EQ(page_result.resident_set_size,
+            main_frame_result.resident_set_size +
+                child_frame_result.resident_set_size);
+  EXPECT_EQ(page_result.private_footprint,
+            main_frame_result.private_footprint +
+                child_frame_result.private_footprint);
+  EXPECT_EQ(page_result.private_swap,
+            main_frame_result.private_swap + child_frame_result.private_swap);
 }
 
 IN_PROC_BROWSER_TEST_F(ResourceAttrMemoryMeasurementProviderBrowserTest,
@@ -225,24 +277,28 @@ IN_PROC_BROWSER_TEST_F(ResourceAttrMemoryMeasurementProviderBrowserTest,
       results.at(process_a_context).memory_summary_result.value();
   const auto process_b_result =
       results.at(process_b_context).memory_summary_result.value();
-  EXPECT_EQ(main_frame_result.resident_set_size_kb,
-            process_a_result.resident_set_size_kb);
-  EXPECT_EQ(main_frame_result.private_footprint_kb,
-            process_a_result.private_footprint_kb);
-  EXPECT_EQ(child_frame_result.resident_set_size_kb,
-            process_b_result.resident_set_size_kb);
-  EXPECT_EQ(child_frame_result.private_footprint_kb,
-            process_b_result.private_footprint_kb);
+  EXPECT_EQ(main_frame_result.resident_set_size,
+            process_a_result.resident_set_size);
+  EXPECT_EQ(main_frame_result.private_footprint,
+            process_a_result.private_footprint);
+  EXPECT_EQ(main_frame_result.private_swap, process_a_result.private_swap);
+  EXPECT_EQ(child_frame_result.resident_set_size,
+            process_b_result.resident_set_size);
+  EXPECT_EQ(child_frame_result.private_footprint,
+            process_b_result.private_footprint);
+  EXPECT_EQ(child_frame_result.private_swap, process_b_result.private_swap);
 
   // The page memory should be the sum of all its frames, from any process.
   const auto page_result =
       results.at(page_context).memory_summary_result.value();
-  EXPECT_EQ(page_result.resident_set_size_kb,
-            main_frame_result.resident_set_size_kb +
-                child_frame_result.resident_set_size_kb);
-  EXPECT_EQ(page_result.private_footprint_kb,
-            main_frame_result.private_footprint_kb +
-                child_frame_result.private_footprint_kb);
+  EXPECT_EQ(page_result.resident_set_size,
+            main_frame_result.resident_set_size +
+                child_frame_result.resident_set_size);
+  EXPECT_EQ(page_result.private_footprint,
+            main_frame_result.private_footprint +
+                child_frame_result.private_footprint);
+  EXPECT_EQ(page_result.private_swap,
+            main_frame_result.private_swap + child_frame_result.private_swap);
 }
 
 }  // namespace

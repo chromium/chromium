@@ -2,11 +2,13 @@ include_rules = [
   "+chromeos",
   "+components/back_forward_cache",
   "+components/crash/core",
+  "+components/custom_handlers",
   "+components/guest_view",
   "+components/input",
   "+components/javascript_dialogs",
   "+components/keyed_service",
   "+components/pref_registry",
+  "+components/safe_browsing",
   "+components/services/unzip/content",
   "+components/services/unzip/public",
   "+components/sessions",
@@ -88,5 +90,9 @@ specific_include_rules = {
   "extension_prefs.cc": [
     # For CONTENT_SETTING_ALLOW / BLOCK.
     "+components/content_settings/core/common",
+  ],
+  "install_signer.cc": [
+    "+rlz/buildflags/buildflags.h",
+    "+rlz/lib/machine_id.h",
   ],
 }

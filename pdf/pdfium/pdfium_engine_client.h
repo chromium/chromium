@@ -52,14 +52,19 @@ class PDFiumEngineClient {
   // Informs the client that the given rect needs to be repainted.
   virtual void Invalidate(const gfx::Rect& rect) {}
 
+  // Returns true if the renderer is skia and premultiplied alpha should be used
+  virtual bool UseSkiaPremultipliedAlpha() = 0;
+
   // Informs the client to scroll the plugin area by the given offset.
   virtual void DidScroll(const gfx::Vector2d& offset) {}
 
   // Scroll the horizontal/vertical scrollbars to a given position.
   // Values are in screen coordinates, where 0 is the top/left of the document
   // and a positive value is the distance in pixels from that line.
-  virtual void ScrollToX(int x_screen_coords) {}
-  virtual void ScrollToY(int y_screen_coords) {}
+  // `force_smooth_scroll` forces smooth scrolling regardless of the current
+  // animation settings.
+  virtual void ScrollToX(int x_screen_coords, bool force_smooth_scroll) {}
+  virtual void ScrollToY(int y_screen_coords, bool force_smooth_scroll) {}
 
   // Scroll by a given delta relative to the current position.
   virtual void ScrollBy(const gfx::Vector2d& delta) {}

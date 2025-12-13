@@ -38,8 +38,9 @@ std::set<std::string> RemoveNonexistentContactsFromAllowlist(
     const std::vector<nearby::sharing::proto::ContactRecord>& contacts) {
   std::set<std::string> new_allowed_contact_ids;
   for (const nearby::sharing::proto::ContactRecord& contact : contacts) {
-    if (base::Contains(allowed_contact_ids, contact.id()))
+    if (base::Contains(allowed_contact_ids, contact.id())) {
       new_allowed_contact_ids.insert(contact.id());
+    }
   }
   return new_allowed_contact_ids;
 }

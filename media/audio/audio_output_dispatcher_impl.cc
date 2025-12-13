@@ -64,8 +64,9 @@ bool AudioOutputDispatcherImpl::OpenStream() {
   DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
 
   // Ensure that there is at least one open stream.
-  if (idle_streams_.empty() && !CreateAndOpenStream())
+  if (idle_streams_.empty() && !CreateAndOpenStream()) {
     return false;
+  }
 
   ++idle_proxies_;
   close_timer_.Reset();
@@ -78,8 +79,9 @@ bool AudioOutputDispatcherImpl::StartStream(
   DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
   DCHECK(!proxy_to_physical_map_.contains(stream_proxy));
 
-  if (idle_streams_.empty() && !CreateAndOpenStream())
+  if (idle_streams_.empty() && !CreateAndOpenStream()) {
     return false;
+  }
 
   AudioOutputStream* physical_stream = idle_streams_.back();
   idle_streams_.pop_back();
@@ -162,8 +164,9 @@ bool AudioOutputDispatcherImpl::CreateAndOpenStream() {
       params_, device_id_,
       base::BindRepeating(&AudioLog::OnLogMessage,
                           base::Unretained(audio_log.get())));
-  if (!stream)
+  if (!stream) {
     return false;
+  }
 
   if (!stream->Open()) {
     stream->Close();
@@ -184,8 +187,9 @@ void AudioOutputDispatcherImpl::CloseAllIdleStreams() {
 
 void AudioOutputDispatcherImpl::CloseIdleStreams(size_t keep_alive) {
   DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
-  if (idle_streams_.size() <= keep_alive)
+  if (idle_streams_.size() <= keep_alive) {
     return;
+  }
   for (size_t i = keep_alive; i < idle_streams_.size(); ++i) {
     AudioOutputStream* stream = idle_streams_[i];
     stream->Close();

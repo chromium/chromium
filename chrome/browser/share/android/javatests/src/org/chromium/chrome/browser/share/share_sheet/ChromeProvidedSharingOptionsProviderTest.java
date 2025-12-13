@@ -24,7 +24,6 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import org.chromium.base.DeviceInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,8 +33,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
@@ -100,7 +101,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
     private TestActivity mActivity;
     private ChromeProvidedSharingOptionsProvider mChromeProvidedSharingOptionsProvider;
     private UserActionTester mActionTester;
-    private final ObservableSupplierImpl<Tab> mTabProvider = new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<Tab> mTabProvider =
+            ObservableSuppliers.createNullable();
 
     @Before
     public void setUp() {

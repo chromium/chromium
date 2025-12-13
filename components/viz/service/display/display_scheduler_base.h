@@ -49,7 +49,8 @@ class VIZ_SERVICE_EXPORT DisplaySchedulerBase
   virtual void SetDamageTracker(DisplayDamageTracker* damage_tracker);
   virtual void SetVisible(bool visible) = 0;
   virtual void ForceImmediateSwapIfPossible() = 0;
-  virtual void SetNeedsOneBeginFrame(bool needs_draw) = 0;
+  virtual void SetNeedsOneBeginFrame(const BeginFrameArgs& args,
+                                     bool needs_draw) = 0;
   virtual void DidSwapBuffers() = 0;
   virtual void DidReceiveSwapBuffersAck() = 0;
   virtual void OutputSurfaceLost() = 0;

@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 struct BoundSessionDebugInfo;
+struct BoundSessionKey;
 
 // BoundSessionCookieRefreshService is responsible for maintaining cookies
 // associated with bound sessions. This class does the following:
@@ -56,6 +57,8 @@ class BoundSessionCookieRefreshService
 
   // Registers a new bound session and starts tracking it immediately. The
   // session persists across browser startups.
+  //
+  // This method is a no-op if the new session registration is not enabled.
   virtual void RegisterNewBoundSession(
       const bound_session_credentials::BoundSessionParams& params) = 0;
 
@@ -73,6 +76,19 @@ class BoundSessionCookieRefreshService
   virtual void CreateRegistrationRequest(
       BoundSessionRegistrationFetcherParam registration_params) = 0;
 
+  // Stops the cookie rotation for the given session. This is a no-op if the
+  // given session does not exist.
+  //
+  // Once the cookie rotation is stopped, all throttled requests will remain
+  // throttled until the session is terminated.
+  // This is used by OAML to ensure all requests are throttled until the
+  // returned cookies are set.
+  //
+  // The session will be terminated after a timeout if it has not been
+  // terminated explicitly. This is a safety net to ensure the session is
+  // eventually terminated even if OAML fails to terminate the session.
+  virtual void StopCookieRotation(const BoundSessionKey& key) = 0;
+
   virtual base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() = 0;
 
   virtual void AddObserver(Observer* observer) = 0;
@@ -84,6 +100,7 @@ class BoundSessionCookieRefreshService
  private:
   friend class RendererUpdater;
   friend class BoundSessionCookieRefreshServiceImplBrowserTest;
+  friend class BoundSessionOAuthMultiloginTest;
 
   // `RendererUpdater` class that is responsible for pushing updates to all
   // renderers calls this setter to subscribe for bound session throttler params

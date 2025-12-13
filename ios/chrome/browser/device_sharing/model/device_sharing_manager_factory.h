@@ -27,9 +27,9 @@ class DeviceSharingManagerFactory : public ProfileKeyedServiceFactoryIOS {
 
   DeviceSharingManagerFactory();
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_DEVICE_SHARING_MODEL_DEVICE_SHARING_MANAGER_FACTORY_H_

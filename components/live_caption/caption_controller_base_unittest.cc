@@ -270,5 +270,58 @@ TEST_F(CaptionControllerBaseTest, ListenersReceiveAudioEnd) {
   controller_under_test->DispatchTranscription(rfh, &context, result);
 }
 
+class CaptionControllerBaseListenerTest : public CaptionControllerBaseTest {
+ public:
+  class TestCaptionController : public CaptionControllerBase {
+   public:
+    TestCaptionController(PrefService* profile_prefs,
+                          const std::string& application_locale)
+        : CaptionControllerBase(profile_prefs, application_locale, nullptr) {}
+    ~TestCaptionController() override = default;
+
+    MOCK_METHOD(void, OnFirstListenerAdded, (), (override));
+    MOCK_METHOD(void, OnLastListenerRemoved, (), (override));
+    MOCK_METHOD(CaptionBubbleSettings*,
+                caption_bubble_settings,
+                (),
+                (override));
+  };
+};
+
+TEST_F(CaptionControllerBaseListenerTest, OnFirstListenerAddedCalled) {
+  auto controller = std::make_unique<TestCaptionController>(
+      &testing_pref_service_, speech::kUsEnglishLocale);
+  EXPECT_CALL(*controller, OnFirstListenerAdded).Times(1);
+  EXPECT_CALL(*controller, OnLastListenerRemoved).Times(0);
+
+  auto listener1 = std::make_unique<MockListener>();
+  controller->AddListener(std::move(listener1));
+
+  // Adding a second listener should not trigger the callback.
+  auto listener2 = std::make_unique<MockListener>();
+  controller->AddListener(std::move(listener2));
+}
+
+TEST_F(CaptionControllerBaseListenerTest, OnLastListenerRemovedCalled) {
+  auto controller = std::make_unique<TestCaptionController>(
+      &testing_pref_service_, speech::kUsEnglishLocale);
+  EXPECT_CALL(*controller, OnFirstListenerAdded).Times(1);
+  EXPECT_CALL(*controller, OnLastListenerRemoved).Times(1);
+
+  auto listener1 = std::make_unique<MockListener>();
+  auto* listener1_ptr = listener1.get();
+  controller->AddListener(std::move(listener1));
+
+  auto listener2 = std::make_unique<MockListener>();
+  auto* listener2_ptr = listener2.get();
+  controller->AddListener(std::move(listener2));
+
+  // Removing the first listener should not trigger the callback.
+  controller->remove_listener_for_testing(listener1_ptr);
+
+  // Removing the last listener should trigger the callback.
+  controller->remove_listener_for_testing(listener2_ptr);
+}
+
 }  // namespace
 }  // namespace captions

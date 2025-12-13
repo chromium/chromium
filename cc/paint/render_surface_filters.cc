@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "cc/paint/render_surface_filters.h"
 
 #include <stddef.h>
+
 #include <algorithm>
 #include <utility>
 
-#include "cc/paint/render_surface_filters.h"
-
+#include "base/compiler_specific.h"
 #include "base/numerics/angle_conversions.h"
 #include "cc/paint/filter_operation.h"
 #include "cc/paint/filter_operations.h"
@@ -30,118 +27,131 @@ void GetBrightnessMatrix(float amount, float matrix[20]) {
   // Spec implementation
   // (http://dvcs.w3.org/hg/FXTF/raw-file/tip/filters/index.html#brightnessEquivalent)
   // <feFunc[R|G|B] type="linear" slope="[amount]">
-  memset(matrix, 0, 20 * sizeof(float));
-  matrix[0] = matrix[6] = matrix[12] = amount;
-  matrix[18] = 1.f;
+  UNSAFE_TODO(memset(matrix, 0, 20 * sizeof(float)));
+  matrix[0] = UNSAFE_TODO(matrix[6]) = UNSAFE_TODO(matrix[12]) = amount;
+  UNSAFE_TODO(matrix[18]) = 1.f;
 }
 
 void GetSaturatingBrightnessMatrix(float amount, float matrix[20]) {
   // Legacy implementation used by internal clients.
   // <feFunc[R|G|B] type="linear" intercept="[amount]"/>
-  memset(matrix, 0, 20 * sizeof(float));
-  matrix[0] = matrix[6] = matrix[12] = matrix[18] = 1.f;
-  matrix[4] = matrix[9] = matrix[14] = amount;
+  UNSAFE_TODO(memset(matrix, 0, 20 * sizeof(float)));
+  matrix[0] = UNSAFE_TODO(matrix[6]) = UNSAFE_TODO(matrix[12]) =
+      UNSAFE_TODO(matrix[18]) = 1.f;
+  UNSAFE_TODO(matrix[4]) = UNSAFE_TODO(matrix[9]) = UNSAFE_TODO(matrix[14]) =
+      amount;
 }
 
 void GetContrastMatrix(float amount, float matrix[20]) {
-  memset(matrix, 0, 20 * sizeof(float));
-  matrix[0] = matrix[6] = matrix[12] = amount;
-  matrix[4] = matrix[9] = matrix[14] = (-0.5f * amount + 0.5f);
-  matrix[18] = 1.f;
+  UNSAFE_TODO(memset(matrix, 0, 20 * sizeof(float)));
+  matrix[0] = UNSAFE_TODO(matrix[6]) = UNSAFE_TODO(matrix[12]) = amount;
+  UNSAFE_TODO(matrix[4]) = UNSAFE_TODO(matrix[9]) = UNSAFE_TODO(matrix[14]) =
+      (-0.5f * amount + 0.5f);
+  UNSAFE_TODO(matrix[18]) = 1.f;
 }
 
 void GetSaturateMatrix(float amount, float matrix[20]) {
   // Note, these values are computed to ensure MatrixNeedsClamping is false
   // for amount in [0..1]
   matrix[0] = 0.213f + 0.787f * amount;
-  matrix[1] = 0.715f - 0.715f * amount;
-  matrix[2] = 1.f - (matrix[0] + matrix[1]);
-  matrix[3] = matrix[4] = 0.f;
-  matrix[5] = 0.213f - 0.213f * amount;
-  matrix[6] = 0.715f + 0.285f * amount;
-  matrix[7] = 1.f - (matrix[5] + matrix[6]);
-  matrix[8] = matrix[9] = 0.f;
-  matrix[10] = 0.213f - 0.213f * amount;
-  matrix[11] = 0.715f - 0.715f * amount;
-  matrix[12] = 1.f - (matrix[10] + matrix[11]);
-  matrix[13] = matrix[14] = 0.f;
-  matrix[15] = matrix[16] = matrix[17] = matrix[19] = 0.f;
-  matrix[18] = 1.f;
+  UNSAFE_TODO(matrix[1]) = 0.715f - 0.715f * amount;
+  UNSAFE_TODO(matrix[2]) = 1.f - (matrix[0] + UNSAFE_TODO(matrix[1]));
+  UNSAFE_TODO(matrix[3]) = UNSAFE_TODO(matrix[4]) = 0.f;
+  UNSAFE_TODO(matrix[5]) = 0.213f - 0.213f * amount;
+  UNSAFE_TODO(matrix[6]) = 0.715f + 0.285f * amount;
+  UNSAFE_TODO(matrix[7]) =
+      1.f - (UNSAFE_TODO(matrix[5]) + UNSAFE_TODO(matrix[6]));
+  UNSAFE_TODO(matrix[8]) = UNSAFE_TODO(matrix[9]) = 0.f;
+  UNSAFE_TODO(matrix[10]) = 0.213f - 0.213f * amount;
+  UNSAFE_TODO(matrix[11]) = 0.715f - 0.715f * amount;
+  UNSAFE_TODO(matrix[12]) =
+      1.f - (UNSAFE_TODO(matrix[10]) + UNSAFE_TODO(matrix[11]));
+  UNSAFE_TODO(matrix[13]) = UNSAFE_TODO(matrix[14]) = 0.f;
+  UNSAFE_TODO(matrix[15]) = UNSAFE_TODO(matrix[16]) = UNSAFE_TODO(matrix[17]) =
+      UNSAFE_TODO(matrix[19]) = 0.f;
+  UNSAFE_TODO(matrix[18]) = 1.f;
 }
 
 void GetHueRotateMatrix(float hue, float matrix[20]) {
   float cos_hue = cosf(base::DegToRad(hue));
   float sin_hue = sinf(base::DegToRad(hue));
   matrix[0] = 0.213f + cos_hue * 0.787f - sin_hue * 0.213f;
-  matrix[1] = 0.715f - cos_hue * 0.715f - sin_hue * 0.715f;
-  matrix[2] = 0.072f - cos_hue * 0.072f + sin_hue * 0.928f;
-  matrix[3] = matrix[4] = 0.f;
-  matrix[5] = 0.213f - cos_hue * 0.213f + sin_hue * 0.143f;
-  matrix[6] = 0.715f + cos_hue * 0.285f + sin_hue * 0.140f;
-  matrix[7] = 0.072f - cos_hue * 0.072f - sin_hue * 0.283f;
-  matrix[8] = matrix[9] = 0.f;
-  matrix[10] = 0.213f - cos_hue * 0.213f - sin_hue * 0.787f;
-  matrix[11] = 0.715f - cos_hue * 0.715f + sin_hue * 0.715f;
-  matrix[12] = 0.072f + cos_hue * 0.928f + sin_hue * 0.072f;
-  matrix[13] = matrix[14] = 0.f;
-  matrix[15] = matrix[16] = matrix[17] = 0.f;
-  matrix[18] = 1.f;
-  matrix[19] = 0.f;
+  UNSAFE_TODO(matrix[1]) = 0.715f - cos_hue * 0.715f - sin_hue * 0.715f;
+  UNSAFE_TODO(matrix[2]) = 0.072f - cos_hue * 0.072f + sin_hue * 0.928f;
+  UNSAFE_TODO(matrix[3]) = UNSAFE_TODO(matrix[4]) = 0.f;
+  UNSAFE_TODO(matrix[5]) = 0.213f - cos_hue * 0.213f + sin_hue * 0.143f;
+  UNSAFE_TODO(matrix[6]) = 0.715f + cos_hue * 0.285f + sin_hue * 0.140f;
+  UNSAFE_TODO(matrix[7]) = 0.072f - cos_hue * 0.072f - sin_hue * 0.283f;
+  UNSAFE_TODO(matrix[8]) = UNSAFE_TODO(matrix[9]) = 0.f;
+  UNSAFE_TODO(matrix[10]) = 0.213f - cos_hue * 0.213f - sin_hue * 0.787f;
+  UNSAFE_TODO(matrix[11]) = 0.715f - cos_hue * 0.715f + sin_hue * 0.715f;
+  UNSAFE_TODO(matrix[12]) = 0.072f + cos_hue * 0.928f + sin_hue * 0.072f;
+  UNSAFE_TODO(matrix[13]) = UNSAFE_TODO(matrix[14]) = 0.f;
+  UNSAFE_TODO(matrix[15]) = UNSAFE_TODO(matrix[16]) = UNSAFE_TODO(matrix[17]) =
+      0.f;
+  UNSAFE_TODO(matrix[18]) = 1.f;
+  UNSAFE_TODO(matrix[19]) = 0.f;
 }
 
 void GetInvertMatrix(float amount, float matrix[20]) {
-  memset(matrix, 0, 20 * sizeof(float));
-  matrix[0] = matrix[6] = matrix[12] = 1.f - 2.f * amount;
-  matrix[4] = matrix[9] = matrix[14] = amount;
-  matrix[18] = 1.f;
+  UNSAFE_TODO(memset(matrix, 0, 20 * sizeof(float)));
+  matrix[0] = UNSAFE_TODO(matrix[6]) = UNSAFE_TODO(matrix[12]) =
+      1.f - 2.f * amount;
+  UNSAFE_TODO(matrix[4]) = UNSAFE_TODO(matrix[9]) = UNSAFE_TODO(matrix[14]) =
+      amount;
+  UNSAFE_TODO(matrix[18]) = 1.f;
 }
 
 void GetOpacityMatrix(float amount, float matrix[20]) {
-  memset(matrix, 0, 20 * sizeof(float));
-  matrix[0] = matrix[6] = matrix[12] = 1.f;
-  matrix[18] = amount;
+  UNSAFE_TODO(memset(matrix, 0, 20 * sizeof(float)));
+  matrix[0] = UNSAFE_TODO(matrix[6]) = UNSAFE_TODO(matrix[12]) = 1.f;
+  UNSAFE_TODO(matrix[18]) = amount;
 }
 
 void GetGrayscaleMatrix(float amount, float matrix[20]) {
   // Note, these values are computed to ensure MatrixNeedsClamping is false
   // for amount in [0..1]
   matrix[0] = 0.2126f + 0.7874f * amount;
-  matrix[1] = 0.7152f - 0.7152f * amount;
-  matrix[2] = 1.f - (matrix[0] + matrix[1]);
-  matrix[3] = matrix[4] = 0.f;
+  UNSAFE_TODO(matrix[1]) = 0.7152f - 0.7152f * amount;
+  UNSAFE_TODO(matrix[2]) = 1.f - (matrix[0] + UNSAFE_TODO(matrix[1]));
+  UNSAFE_TODO(matrix[3]) = UNSAFE_TODO(matrix[4]) = 0.f;
 
-  matrix[5] = 0.2126f - 0.2126f * amount;
-  matrix[6] = 0.7152f + 0.2848f * amount;
-  matrix[7] = 1.f - (matrix[5] + matrix[6]);
-  matrix[8] = matrix[9] = 0.f;
+  UNSAFE_TODO(matrix[5]) = 0.2126f - 0.2126f * amount;
+  UNSAFE_TODO(matrix[6]) = 0.7152f + 0.2848f * amount;
+  UNSAFE_TODO(matrix[7]) =
+      1.f - (UNSAFE_TODO(matrix[5]) + UNSAFE_TODO(matrix[6]));
+  UNSAFE_TODO(matrix[8]) = UNSAFE_TODO(matrix[9]) = 0.f;
 
-  matrix[10] = 0.2126f - 0.2126f * amount;
-  matrix[11] = 0.7152f - 0.7152f * amount;
-  matrix[12] = 1.f - (matrix[10] + matrix[11]);
-  matrix[13] = matrix[14] = 0.f;
+  UNSAFE_TODO(matrix[10]) = 0.2126f - 0.2126f * amount;
+  UNSAFE_TODO(matrix[11]) = 0.7152f - 0.7152f * amount;
+  UNSAFE_TODO(matrix[12]) =
+      1.f - (UNSAFE_TODO(matrix[10]) + UNSAFE_TODO(matrix[11]));
+  UNSAFE_TODO(matrix[13]) = UNSAFE_TODO(matrix[14]) = 0.f;
 
-  matrix[15] = matrix[16] = matrix[17] = matrix[19] = 0.f;
-  matrix[18] = 1.f;
+  UNSAFE_TODO(matrix[15]) = UNSAFE_TODO(matrix[16]) = UNSAFE_TODO(matrix[17]) =
+      UNSAFE_TODO(matrix[19]) = 0.f;
+  UNSAFE_TODO(matrix[18]) = 1.f;
 }
 
 void GetSepiaMatrix(float amount, float matrix[20]) {
   matrix[0] = 0.393f + 0.607f * amount;
-  matrix[1] = 0.769f - 0.769f * amount;
-  matrix[2] = 0.189f - 0.189f * amount;
-  matrix[3] = matrix[4] = 0.f;
+  UNSAFE_TODO(matrix[1]) = 0.769f - 0.769f * amount;
+  UNSAFE_TODO(matrix[2]) = 0.189f - 0.189f * amount;
+  UNSAFE_TODO(matrix[3]) = UNSAFE_TODO(matrix[4]) = 0.f;
 
-  matrix[5] = 0.349f - 0.349f * amount;
-  matrix[6] = 0.686f + 0.314f * amount;
-  matrix[7] = 0.168f - 0.168f * amount;
-  matrix[8] = matrix[9] = 0.f;
+  UNSAFE_TODO(matrix[5]) = 0.349f - 0.349f * amount;
+  UNSAFE_TODO(matrix[6]) = 0.686f + 0.314f * amount;
+  UNSAFE_TODO(matrix[7]) = 0.168f - 0.168f * amount;
+  UNSAFE_TODO(matrix[8]) = UNSAFE_TODO(matrix[9]) = 0.f;
 
-  matrix[10] = 0.272f - 0.272f * amount;
-  matrix[11] = 0.534f - 0.534f * amount;
-  matrix[12] = 0.131f + 0.869f * amount;
-  matrix[13] = matrix[14] = 0.f;
+  UNSAFE_TODO(matrix[10]) = 0.272f - 0.272f * amount;
+  UNSAFE_TODO(matrix[11]) = 0.534f - 0.534f * amount;
+  UNSAFE_TODO(matrix[12]) = 0.131f + 0.869f * amount;
+  UNSAFE_TODO(matrix[13]) = UNSAFE_TODO(matrix[14]) = 0.f;
 
-  matrix[15] = matrix[16] = matrix[17] = matrix[19] = 0.f;
-  matrix[18] = 1.f;
+  UNSAFE_TODO(matrix[15]) = UNSAFE_TODO(matrix[16]) = UNSAFE_TODO(matrix[17]) =
+      UNSAFE_TODO(matrix[19]) = 0.f;
+  UNSAFE_TODO(matrix[18]) = 1.f;
 }
 
 sk_sp<PaintFilter> CreateMatrixImageFilter(const float matrix[20],

@@ -10,7 +10,8 @@
 #include <vector>
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -46,7 +47,7 @@ class TabStripController {
   virtual ~TabStripController() = default;
 
   // Returns the selection model of the tabstrip.
-  virtual const ui::ListSelectionModel& GetSelectionModel() const = 0;
+  virtual ui::ListSelectionModel GetSelectionModel() const = 0;
 
   // Returns the number of tabs in the model.
   virtual int GetCount() const = 0;
@@ -73,6 +74,9 @@ class TabStripController {
 
   // Returns true if the selected index is pinned.
   virtual bool IsTabPinned(int index) const = 0;
+
+  // Returns true if all tabs are currently being closed.
+  virtual bool IsBrowserClosing() const = 0;
 
   // Select the tab at the specified index in the model.
   // `event` is the input event that triggers the tab selection.
@@ -151,12 +155,7 @@ class TabStripController {
                                  bool drop_before) = 0;
 
   // Creates the new tab.
-  virtual void CreateNewTab() = 0;
-
-  // Creates a new tab, and loads `location` in the tab. If `location` is a
-  // valid URL, then simply loads the URL, otherwise this can open a
-  // search-result page for `location`.
-  virtual void CreateNewTabWithLocation(const std::u16string& location) = 0;
+  virtual void CreateNewTab(NewTabTypes context) = 0;
 
   // Notifies controller that the user started dragging this tabstrip's tabs.
   // `dragging_window` indicates if the whole window is moving, or if tabs are
@@ -189,6 +188,13 @@ class TabStripController {
   // Returns the `group` collapsed state. Returns false if the group does not
   // exist or is not collapsed.
   virtual bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const = 0;
+
+  // Returns the ID of the group that is focused. If no group is focused,
+  // returns nullopt.
+  virtual std::optional<tab_groups::TabGroupId> GetFocusedGroup() const = 0;
+
+  // Sets the group to be focused.
+  virtual void SetFocusedGroup(std::optional<tab_groups::TabGroupId> group) = 0;
 
   // Sets the title and color ID of the given `group`.
   virtual void SetVisualDataForGroup(
@@ -225,8 +231,6 @@ class TabStripController {
   // Returns whether tab strokes can ever be drawn. If true, strokes will only
   // be drawn if necessary.
   virtual bool CanDrawStrokes() const = 0;
-
-  virtual bool IsFrameButtonsRightAligned() const = 0;
 
   // Returns the color of the browser frame for the given window activation
   // state.

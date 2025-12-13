@@ -8,9 +8,11 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/pref_names.h"
@@ -18,9 +20,8 @@
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/endpoint_fetcher/mock_endpoint_fetcher.h"
 #include "components/prefs/testing_pref_service.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -149,70 +150,49 @@ class ProductSpecificationsServerProxyTest : public testing::Test {
   std::unique_ptr<MockProductSpecificationsServerProxy> server_proxy_;
 
   base::test::TaskEnvironment task_environment_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
  protected:
   base::test::ScopedFeatureList test_features_;
 };
 
 TEST_F(ProductSpecificationsServerProxyTest, JsonToProductSpecifications) {
-  base::RunLoop run_loop;
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      kSimpleResponse,
-      base::BindOnce(
-          [](base::RunLoop* looper,
-             data_decoder::DataDecoder::ValueOrError result) {
-            ASSERT_TRUE(result.has_value());
+  base::Value::Dict result =
+      *base::JSONReader::ReadDict(kSimpleResponse, base::JSON_PARSE_RFC);
 
-            std::optional<ProductSpecifications> spec =
-                ProductSpecificationsServerProxy::
-                    ProductSpecificationsFromJsonResponse(result.value());
+  std::optional<ProductSpecifications> spec =
+      ProductSpecificationsServerProxy::ProductSpecificationsFromJsonResponse(
+          result);
 
-            ASSERT_TRUE(spec.has_value());
+  ASSERT_TRUE(spec.has_value());
 
-            ASSERT_EQ(1u, spec->product_dimension_map.size());
-            ASSERT_EQ("Color", spec->product_dimension_map[100000]);
+  ASSERT_EQ(1u, spec->product_dimension_map.size());
+  ASSERT_EQ("Color", spec->product_dimension_map[100000]);
 
-            ASSERT_EQ(1u, spec->products.size());
-            ASSERT_EQ(12345u, spec->products[0].product_cluster_id);
-            ASSERT_EQ("/g/abcd", spec->products[0].mid);
-            ASSERT_EQ("Circle", spec->products[0].title);
-            ASSERT_EQ("http://example.com/image.png",
-                      spec->products[0].image_url.spec());
-            ASSERT_EQ("http://example.com/jackpot",
-                      spec->products[0].buying_options_url.spec());
-            ASSERT_EQ("Circle is round", spec->products[0].summary[0].text);
-            ASSERT_EQ("http://example.com/circle/",
-                      spec->products[0].summary[0].urls[0].url.spec());
-            ASSERT_EQ("http://example.com/favicon.png", spec->products[0]
-                                                            .summary[0]
-                                                            .urls[0]
-                                                            .favicon_url.value()
-                                                            .spec());
-            ASSERT_EQ("http://example.com/thumbnail.png",
-                      spec->products[0]
-                          .summary[0]
-                          .urls[0]
-                          .thumbnail_url.value()
-                          .spec());
-            ASSERT_EQ("Summary of page content",
-                      spec->products[0].summary[0].urls[0].previewText.value());
-            ASSERT_EQ(u"Circles", spec->products[0].summary[0].urls[0].title);
+  ASSERT_EQ(1u, spec->products.size());
+  ASSERT_EQ(12345u, spec->products[0].product_cluster_id);
+  ASSERT_EQ("/g/abcd", spec->products[0].mid);
+  ASSERT_EQ("Circle", spec->products[0].title);
+  ASSERT_EQ("http://example.com/image.png", spec->products[0].image_url.spec());
+  ASSERT_EQ("http://example.com/jackpot",
+            spec->products[0].buying_options_url.spec());
+  ASSERT_EQ("Circle is round", spec->products[0].summary[0].text);
+  ASSERT_EQ("http://example.com/circle/",
+            spec->products[0].summary[0].urls[0].url.spec());
+  ASSERT_EQ("http://example.com/favicon.png",
+            spec->products[0].summary[0].urls[0].favicon_url.value().spec());
+  ASSERT_EQ("http://example.com/thumbnail.png",
+            spec->products[0].summary[0].urls[0].thumbnail_url.value().spec());
+  ASSERT_EQ("Summary of page content",
+            spec->products[0].summary[0].urls[0].previewText.value());
+  ASSERT_EQ(u"Circles", spec->products[0].summary[0].urls[0].title);
 
-            const ProductSpecifications::Description& color_desc =
-                spec->products[0]
-                    .product_dimension_values[100000]
-                    .descriptions[0];
-            ASSERT_EQ("Color", color_desc.label);
-            ASSERT_EQ("The circle color", color_desc.alt_text);
-            ASSERT_EQ("Red", color_desc.options[0].descriptions[0].text);
-            ASSERT_EQ("http://example.com/red/",
-                      color_desc.options[0].descriptions[0].urls[0].url.spec());
-
-            looper->Quit();
-          },
-          &run_loop));
-  run_loop.Run();
+  const ProductSpecifications::Description& color_desc =
+      spec->products[0].product_dimension_values[100000].descriptions[0];
+  ASSERT_EQ("Color", color_desc.label);
+  ASSERT_EQ("The circle color", color_desc.alt_text);
+  ASSERT_EQ("Red", color_desc.options[0].descriptions[0].text);
+  ASSERT_EQ("http://example.com/red/",
+            color_desc.options[0].descriptions[0].urls[0].url.spec());
 }
 
 TEST_F(ProductSpecificationsServerProxyTest,

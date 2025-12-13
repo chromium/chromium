@@ -24,7 +24,6 @@
 #include "extensions/common/api/socket.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/api_permission.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -203,11 +202,11 @@ class SocketExtensionWithDnsLookupFunction
 
  private:
   // network::mojom::ResolveHostClient implementation:
-  void OnComplete(int result,
-                  const net::ResolveErrorInfo& resolve_error_info,
-                  const std::optional<net::AddressList>& resolved_addresses,
-                  const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override;
+  void OnComplete(
+      int result,
+      const net::ResolveErrorInfo& resolve_error_info,
+      const net::AddressList& resolved_addresses,
+      const net::HostResolverEndpointResults& alternative_endpoints) override;
 
   mojo::PendingRemote<network::mojom::HostResolver> pending_host_resolver_;
   mojo::Remote<network::mojom::HostResolver> host_resolver_;

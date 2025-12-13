@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/devices/x11/device_data_manager_x11.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -36,90 +32,6 @@
 #include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/future.h"
 
-// XIScrollClass was introduced in XI 2.1 so we need to define it here
-// for backward-compatibility with older versions of XInput.
-#if !defined(XIScrollClass)
-#define XIScrollClass 3
-#endif
-
-// Copied from xserver-properties.h
-#define AXIS_LABEL_PROP_REL_HWHEEL "Rel Horiz Wheel"
-#define AXIS_LABEL_PROP_REL_WHEEL "Rel Vert Wheel"
-
-// CMT specific timings
-#define AXIS_LABEL_PROP_ABS_DBL_START_TIME "Abs Dbl Start Timestamp"
-#define AXIS_LABEL_PROP_ABS_DBL_END_TIME "Abs Dbl End Timestamp"
-
-// Ordinal values
-#define AXIS_LABEL_PROP_ABS_DBL_ORDINAL_X "Abs Dbl Ordinal X"
-#define AXIS_LABEL_PROP_ABS_DBL_ORDINAL_Y "Abs Dbl Ordinal Y"
-
-// Fling properties
-#define AXIS_LABEL_PROP_ABS_DBL_FLING_VX "Abs Dbl Fling X Velocity"
-#define AXIS_LABEL_PROP_ABS_DBL_FLING_VY "Abs Dbl Fling Y Velocity"
-#define AXIS_LABEL_PROP_ABS_FLING_STATE "Abs Fling State"
-
-#define AXIS_LABEL_PROP_ABS_FINGER_COUNT "Abs Finger Count"
-
-// Cros metrics gesture from touchpad
-#define AXIS_LABEL_PROP_ABS_METRICS_TYPE "Abs Metrics Type"
-#define AXIS_LABEL_PROP_ABS_DBL_METRICS_DATA1 "Abs Dbl Metrics Data 1"
-#define AXIS_LABEL_PROP_ABS_DBL_METRICS_DATA2 "Abs Dbl Metrics Data 2"
-
-// Touchscreen multi-touch
-#define AXIS_LABEL_ABS_MT_TOUCH_MAJOR "Abs MT Touch Major"
-#define AXIS_LABEL_ABS_MT_TOUCH_MINOR "Abs MT Touch Minor"
-#define AXIS_LABEL_ABS_MT_ORIENTATION "Abs MT Orientation"
-#define AXIS_LABEL_ABS_MT_PRESSURE "Abs MT Pressure"
-#define AXIS_LABEL_ABS_MT_POSITION_X "Abs MT Position X"
-#define AXIS_LABEL_ABS_MT_POSITION_Y "Abs MT Position Y"
-#define AXIS_LABEL_ABS_MT_TRACKING_ID "Abs MT Tracking ID"
-#define AXIS_LABEL_TOUCH_TIMESTAMP "Touch Timestamp"
-
-// Stylus with absolute x y pressure and tilt info
-#define AXIS_LABEL_PROP_ABS_X "Abs X"
-#define AXIS_LABEL_PROP_ABS_Y "Abs Y"
-#define AXIS_LABEL_PROP_ABS_PRESSURE "Abs Pressure"
-#define AXIS_LABEL_PROP_ABS_TILT_X "Abs Tilt X"
-#define AXIS_LABEL_PROP_ABS_TILT_Y "Abs Tilt Y"
-
-// When you add new data types, please make sure the order here is aligned
-// with the order in the DataType enum in the header file because we assume
-// they are in sync when updating the device list (see UpdateDeviceList).
-constexpr auto kCachedAtoms = std::to_array<const char*>({
-    AXIS_LABEL_PROP_REL_HWHEEL,
-    AXIS_LABEL_PROP_REL_WHEEL,
-    AXIS_LABEL_PROP_ABS_DBL_ORDINAL_X,
-    AXIS_LABEL_PROP_ABS_DBL_ORDINAL_Y,
-    AXIS_LABEL_PROP_ABS_DBL_START_TIME,
-    AXIS_LABEL_PROP_ABS_DBL_END_TIME,
-    AXIS_LABEL_PROP_ABS_DBL_FLING_VX,
-    AXIS_LABEL_PROP_ABS_DBL_FLING_VY,
-    AXIS_LABEL_PROP_ABS_FLING_STATE,
-    AXIS_LABEL_PROP_ABS_METRICS_TYPE,
-    AXIS_LABEL_PROP_ABS_DBL_METRICS_DATA1,
-    AXIS_LABEL_PROP_ABS_DBL_METRICS_DATA2,
-    AXIS_LABEL_PROP_ABS_FINGER_COUNT,
-    AXIS_LABEL_ABS_MT_TOUCH_MAJOR,
-    AXIS_LABEL_ABS_MT_TOUCH_MINOR,
-    AXIS_LABEL_ABS_MT_ORIENTATION,
-    AXIS_LABEL_ABS_MT_PRESSURE,
-    AXIS_LABEL_ABS_MT_POSITION_X,
-    AXIS_LABEL_ABS_MT_POSITION_Y,
-    AXIS_LABEL_ABS_MT_TRACKING_ID,
-    AXIS_LABEL_TOUCH_TIMESTAMP,
-    AXIS_LABEL_PROP_ABS_X,
-    AXIS_LABEL_PROP_ABS_Y,
-    AXIS_LABEL_PROP_ABS_PRESSURE,
-    AXIS_LABEL_PROP_ABS_TILT_X,
-    AXIS_LABEL_PROP_ABS_TILT_Y,
-});
-
-// Make sure the sizes of enum and |kCachedAtoms| are aligned.
-static_assert(std::size(kCachedAtoms) ==
-                  ui::DeviceDataManagerX11::DT_LAST_ENTRY,
-              "kCachedAtoms count / enum mismatch");
-
 // Constants for checking if a data type lies in the range of CMT/Touch data
 // types.
 const int kCMTDataTypeStart = ui::DeviceDataManagerX11::DT_CMT_SCROLL_X;
@@ -132,6 +44,38 @@ const int kStylusDataTypeEnd = ui::DeviceDataManagerX11::DT_STYLUS_TILT_Y;
 namespace ui {
 
 namespace {
+
+const struct {
+  const char* name;
+  DeviceDataManagerX11::DataType type;
+} static constexpr kAtomNameToDataType[] = {
+    {"Rel Horiz Wheel", DeviceDataManagerX11::DT_CMT_SCROLL_X},
+    {"Rel Vert Wheel", DeviceDataManagerX11::DT_CMT_SCROLL_Y},
+    {"Abs Dbl Ordinal X", DeviceDataManagerX11::DT_CMT_ORDINAL_X},
+    {"Abs Dbl Ordinal Y", DeviceDataManagerX11::DT_CMT_ORDINAL_Y},
+    {"Abs Dbl Start Timestamp", DeviceDataManagerX11::DT_CMT_START_TIME},
+    {"Abs Dbl End Timestamp", DeviceDataManagerX11::DT_CMT_END_TIME},
+    {"Abs Dbl Fling X Velocity", DeviceDataManagerX11::DT_CMT_FLING_X},
+    {"Abs Dbl Fling Y Velocity", DeviceDataManagerX11::DT_CMT_FLING_Y},
+    {"Abs Fling State", DeviceDataManagerX11::DT_CMT_FLING_STATE},
+    {"Abs Metrics Type", DeviceDataManagerX11::DT_CMT_METRICS_TYPE},
+    {"Abs Dbl Metrics Data 1", DeviceDataManagerX11::DT_CMT_METRICS_DATA1},
+    {"Abs Dbl Metrics Data 2", DeviceDataManagerX11::DT_CMT_METRICS_DATA2},
+    {"Abs Finger Count", DeviceDataManagerX11::DT_CMT_FINGER_COUNT},
+    {"Abs MT Touch Major", DeviceDataManagerX11::DT_TOUCH_MAJOR},
+    {"Abs MT Touch Minor", DeviceDataManagerX11::DT_TOUCH_MINOR},
+    {"Abs MT Orientation", DeviceDataManagerX11::DT_TOUCH_ORIENTATION},
+    {"Abs MT Pressure", DeviceDataManagerX11::DT_TOUCH_PRESSURE},
+    {"Abs MT Position X", DeviceDataManagerX11::DT_TOUCH_POSITION_X},
+    {"Abs MT Position Y", DeviceDataManagerX11::DT_TOUCH_POSITION_Y},
+    {"Abs MT Tracking ID", DeviceDataManagerX11::DT_TOUCH_TRACKING_ID},
+    {"Touch Timestamp", DeviceDataManagerX11::DT_TOUCH_RAW_TIMESTAMP},
+    {"Abs X", DeviceDataManagerX11::DT_STYLUS_POSITION_X},
+    {"Abs Y", DeviceDataManagerX11::DT_STYLUS_POSITION_Y},
+    {"Abs Pressure", DeviceDataManagerX11::DT_STYLUS_PRESSURE},
+    {"Abs Tilt X", DeviceDataManagerX11::DT_STYLUS_TILT_X},
+    {"Abs Tilt Y", DeviceDataManagerX11::DT_STYLUS_TILT_Y},
+};
 
 template <typename Iterator>
 Iterator FindDeviceWithId(Iterator begin,
@@ -184,10 +128,7 @@ bool GetSourceId(const x11::Event& x11_event, uint16_t* sourceid) {
     source = crossing->sourceid;
   else
     return false;
-  uint16_t source16 = static_cast<uint16_t>(source);
-  if (source16 >= DeviceDataManagerX11::kMaxDeviceNum)
-    return false;
-  *sourceid = source16;
+  *sourceid = static_cast<uint16_t>(source);
   return true;
 }
 
@@ -243,21 +184,15 @@ bool DeviceDataManagerX11::IsXInput2Available() const {
 }
 
 void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {
-  cmt_devices_.reset();
-  touchpads_.reset();
-  stylus_.reset();
+  cmt_devices_.clear();
+  touchpads_.clear();
+  stylus_.clear();
   master_pointers_.clear();
-  for (int i = 0; i < kMaxDeviceNum; ++i) {
-    valuator_count_[i] = 0;
-    valuator_lookup_[i].clear();
-    data_type_lookup_[i].clear();
-    scroll_data_[i].horizontal.number = -1;
-    scroll_data_[i].horizontal.seen = false;
-    scroll_data_[i].vertical.number = -1;
-    scroll_data_[i].vertical.seen = false;
-    for (int j = 0; j < kMaxSlotNum; j++)
-      last_seen_valuator_[i][j].clear();
-  }
+  valuator_count_.clear();
+  valuator_lookup_.clear();
+  data_type_lookup_.clear();
+  scroll_data_.clear();
+  last_seen_valuator_.clear();
 
   // Find all the touchpad devices.
   const XDeviceList& dev_list =
@@ -265,7 +200,7 @@ void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {
   x11::Atom xi_touchpad = x11::GetAtom("TOUCHPAD");
   for (const auto& device : dev_list) {
     if (device.device_type == xi_touchpad)
-      touchpads_[device.device_id] = true;
+      touchpads_.insert(static_cast<x11::Input::DeviceId>(device.device_id));
   }
 
   if (!IsXInput2Available())
@@ -274,9 +209,10 @@ void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {
   // Update the structs with new valuator information
   const XIDeviceList& info_list =
       ui::DeviceListCacheX11::GetInstance()->GetXI2DeviceList(connection);
-  x11::Atom atoms[DT_LAST_ENTRY];
-  for (int data_type = 0; data_type < DT_LAST_ENTRY; ++data_type)
-    atoms[data_type] = x11::GetAtom(kCachedAtoms[data_type]);
+  base::flat_map<x11::Atom, DataType> atom_to_data_type;
+  for (const auto& map_entry : kAtomNameToDataType) {
+    atom_to_data_type[x11::GetAtom(map_entry.name)] = map_entry.type;
+  }
 
   for (const auto& info : info_list) {
     if (info.type == x11::Input::DeviceType::MasterPointer)
@@ -291,7 +227,7 @@ void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {
     bool possible_stylus = false;
     bool possible_cmt = false;
     bool not_cmt = false;
-    const auto deviceid = static_cast<uint16_t>(info.deviceid);
+    const auto deviceid = info.deviceid;
 
     for (const auto& device_class : info.classes) {
       if (device_class.valuator.has_value())
@@ -301,18 +237,17 @@ void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {
     }
 
     // Skip devices that don't use any valuator
-    if (!valuator_count_[deviceid])
+    if (!valuator_count_.contains(deviceid)) {
       continue;
+    }
 
     valuator_lookup_[deviceid].resize(DT_LAST_ENTRY);
     data_type_lookup_[deviceid].resize(valuator_count_[deviceid],
                                        DT_LAST_ENTRY);
-    for (int j = 0; j < kMaxSlotNum; j++)
-      last_seen_valuator_[deviceid][j].resize(DT_LAST_ENTRY, 0);
     for (const auto& device_class : info.classes) {
       if (device_class.valuator.has_value()) {
-        auto dt =
-            UpdateValuatorClassDevice(*device_class.valuator, atoms, deviceid);
+        auto dt = UpdateValuatorClassDevice(*device_class.valuator,
+                                            atom_to_data_type, deviceid);
         if (IsStylusDataType(dt))
           possible_stylus = true;
         if (IsCMTDataType(dt))
@@ -323,10 +258,10 @@ void DeviceDataManagerX11::UpdateDeviceList(x11::Connection* connection) {
     }
 
     if (possible_stylus)
-      stylus_[deviceid] = true;
+      stylus_.insert(deviceid);
 
     if (possible_cmt && !not_cmt)
-      cmt_devices_[deviceid] = true;
+      cmt_devices_.insert(deviceid);
   }
 }
 
@@ -346,25 +281,30 @@ void DeviceDataManagerX11::GetEventRawData(const x11::Event& x11_event,
   if (!xiev)
     return;
 
-  auto sourceid = static_cast<uint16_t>(xiev->sourceid);
-  auto deviceid = static_cast<uint16_t>(xiev->deviceid);
-  if (sourceid >= kMaxDeviceNum || deviceid >= kMaxDeviceNum)
+  auto sourceid = xiev->sourceid;
+  if (!valuator_count_.contains(sourceid)) {
     return;
+  }
   data->clear();
-  const x11::Input::Fp3232* valuators = xiev->axisvalues.data();
+  auto valuators_iter = xiev->axisvalues.begin();
   for (int i = 0; i <= valuator_count_[sourceid]; ++i) {
     if (IsXinputMaskSet(xiev->valuator_mask.data(), i)) {
       int type = data_type_lookup_[sourceid][i];
       if (type != DT_LAST_ENTRY) {
-        double valuator = Fp3232ToDouble(*valuators);
+        double valuator = Fp3232ToDouble(*valuators_iter);
         (*data)[type] = valuator;
         if (IsTouchDataType(type)) {
           int slot = -1;
-          if (GetSlotNumber(*xiev, &slot) && slot >= 0 && slot < kMaxSlotNum)
-            last_seen_valuator_[sourceid][slot][type] = valuator;
+          if (GetSlotNumber(*xiev, &slot) && slot >= 0) {
+            auto& slot_valuators = last_seen_valuator_[sourceid][slot];
+            if (slot_valuators.empty()) {
+              slot_valuators.resize(DT_LAST_ENTRY, 0);
+            }
+            slot_valuators[type] = valuator;
+          }
         }
       }
-      valuators++;
+      ++valuators_iter;
     }
   }
 }
@@ -376,12 +316,10 @@ bool DeviceDataManagerX11::GetEventData(const x11::Event& x11_event,
   if (!xiev)
     return false;
 
-  auto sourceid = static_cast<uint16_t>(xiev->sourceid);
-  auto deviceid = static_cast<uint16_t>(xiev->deviceid);
-  if (sourceid >= kMaxDeviceNum || deviceid >= kMaxDeviceNum)
+  auto sourceid = xiev->sourceid;
+  if (!valuator_lookup_.contains(sourceid)) {
     return false;
-  if (valuator_lookup_[sourceid].empty())
-    return false;
+  }
 
   if (type == DT_TOUCH_TRACKING_ID) {
     // With XInput2 MT, Tracking ID is provided in the detail field for touch
@@ -400,20 +338,29 @@ bool DeviceDataManagerX11::GetEventData(const x11::Event& x11_event,
   int slot = 0;
   if (val_index >= 0) {
     if (IsXinputMaskSet(xiev->valuator_mask.data(), val_index)) {
-      const x11::Input::Fp3232* valuators = xiev->axisvalues.data();
+      auto valuators_iter = xiev->axisvalues.begin();
       while (val_index--) {
         if (IsXinputMaskSet(xiev->valuator_mask.data(), val_index))
-          ++valuators;
+          ++valuators_iter;
       }
-      *value = Fp3232ToDouble(*valuators);
+      *value = Fp3232ToDouble(*valuators_iter);
       if (IsTouchDataType(type)) {
-        if (GetSlotNumber(*xiev, &slot) && slot >= 0 && slot < kMaxSlotNum)
-          last_seen_valuator_[sourceid][slot][type] = *value;
+        if (GetSlotNumber(*xiev, &slot) && slot >= 0) {
+          auto& slot_valuators = last_seen_valuator_[sourceid][slot];
+          if (slot_valuators.empty()) {
+            slot_valuators.resize(DT_LAST_ENTRY, 0);
+          }
+          slot_valuators[type] = *value;
+        }
       }
       return true;
     } else if (IsTouchDataType(type)) {
-      if (GetSlotNumber(*xiev, &slot) && slot >= 0 && slot < kMaxSlotNum)
-        *value = last_seen_valuator_[sourceid][slot][type];
+      if (GetSlotNumber(*xiev, &slot) && slot >= 0) {
+        if (last_seen_valuator_.contains(sourceid) &&
+            last_seen_valuator_.at(sourceid).contains(slot)) {
+          *value = last_seen_valuator_.at(sourceid).at(slot)[type];
+        }
+      }
     }
   }
 
@@ -426,25 +373,28 @@ bool DeviceDataManagerX11::IsXIDeviceEvent(const x11::Event& x11_event) const {
 
 bool DeviceDataManagerX11::IsStylusXInputEvent(
     const x11::Event& x11_event) const {
-  uint16_t source;
-  if (!GetSourceId(x11_event, &source))
+  uint16_t source_id;
+  if (!GetSourceId(x11_event, &source_id)) {
     return false;
-  return stylus_[source];
+  }
+  return stylus_.contains(static_cast<x11::Input::DeviceId>(source_id));
 }
 
 bool DeviceDataManagerX11::IsTouchpadXInputEvent(
     const x11::Event& x11_event) const {
-  uint16_t source;
-  if (!GetSourceId(x11_event, &source))
+  uint16_t source_id;
+  if (!GetSourceId(x11_event, &source_id)) {
     return false;
-  return touchpads_[source];
+  }
+  return touchpads_.contains(static_cast<x11::Input::DeviceId>(source_id));
 }
 
 bool DeviceDataManagerX11::IsCMTDeviceEvent(const x11::Event& x11_event) const {
-  uint16_t source;
-  if (!GetSourceId(x11_event, &source))
+  uint16_t source_id;
+  if (!GetSourceId(x11_event, &source_id)) {
     return false;
-  return cmt_devices_[source];
+  }
+  return cmt_devices_.contains(static_cast<x11::Input::DeviceId>(source_id));
 }
 
 int DeviceDataManagerX11::GetScrollClassEventDetail(
@@ -452,11 +402,12 @@ int DeviceDataManagerX11::GetScrollClassEventDetail(
   auto* xievent = x11_event.As<x11::Input::DeviceEvent>();
   if (!xievent)
     return SCROLL_TYPE_NO_SCROLL;
-  auto sourceid = static_cast<uint16_t>(xievent->sourceid);
-  if (sourceid >= kMaxDeviceNum)
+  auto sourceid = xievent->sourceid;
+  if (!scroll_data_.contains(sourceid)) {
     return SCROLL_TYPE_NO_SCROLL;
-  int horizontal_id = scroll_data_[sourceid].horizontal.number;
-  int vertical_id = scroll_data_[sourceid].vertical.number;
+  }
+  int horizontal_id = scroll_data_.at(sourceid).horizontal.number;
+  int vertical_id = scroll_data_.at(sourceid).vertical.number;
   return (horizontal_id != -1 &&
                   IsXinputMaskSet(xievent->valuator_mask.data(), horizontal_id)
               ? SCROLL_TYPE_HORIZONTAL
@@ -473,11 +424,11 @@ int DeviceDataManagerX11::GetScrollClassDeviceDetail(
   if (!xiev)
     return SCROLL_TYPE_NO_SCROLL;
 
-  auto sourceid = static_cast<uint16_t>(xiev->sourceid);
-  auto deviceid = static_cast<uint16_t>(xiev->deviceid);
-  if (sourceid >= kMaxDeviceNum || deviceid >= kMaxDeviceNum)
+  auto sourceid = xiev->sourceid;
+  if (!scroll_data_.contains(sourceid)) {
     return SCROLL_TYPE_NO_SCROLL;
-  const ScrollInfo& device_data = scroll_data_[sourceid];
+  }
+  const ScrollInfo& device_data = scroll_data_.at(sourceid);
   return (device_data.vertical.number >= 0 ? SCROLL_TYPE_VERTICAL : 0) |
          (device_data.horizontal.number >= 0 ? SCROLL_TYPE_HORIZONTAL : 0);
 }
@@ -491,12 +442,14 @@ bool DeviceDataManagerX11::HasEventData(const x11::Event& xev,
   auto* xiev = xev.As<x11::Input::DeviceEvent>();
   if (!xiev)
     return false;
-  auto sourceid = static_cast<uint16_t>(xiev->sourceid);
-  if (sourceid >= kMaxDeviceNum)
+  auto sourceid = xiev->sourceid;
+  if (!valuator_lookup_.contains(sourceid)) {
     return false;
-  if (type >= valuator_lookup_[sourceid].size())
+  }
+  if (type >= valuator_lookup_.at(sourceid).size()) {
     return false;
-  const int idx = valuator_lookup_[sourceid][type].number;
+  }
+  const int idx = valuator_lookup_.at(sourceid)[type].number;
   return (idx >= 0) && IsXinputMaskSet(xiev->valuator_mask.data(), idx);
 }
 
@@ -574,11 +527,11 @@ void DeviceDataManagerX11::GetScrollClassOffsets(const x11::Event& x11_event,
   if (!xiev)
     return;
 
-  auto sourceid = static_cast<uint16_t>(xiev->sourceid);
-  auto deviceid = static_cast<uint16_t>(xiev->deviceid);
-  if (sourceid >= kMaxDeviceNum || deviceid >= kMaxDeviceNum)
+  auto sourceid = xiev->sourceid;
+  if (!scroll_data_.contains(sourceid)) {
     return;
-  const x11::Input::Fp3232* valuators = xiev->axisvalues.data();
+  }
+  auto valuators_iter = xiev->axisvalues.begin();
 
   ScrollInfo* info = &scroll_data_[sourceid];
 
@@ -588,12 +541,12 @@ void DeviceDataManagerX11::GetScrollClassOffsets(const x11::Event& x11_event,
   for (int i = 0; i <= valuator_count_[sourceid]; ++i) {
     if (!IsXinputMaskSet(xiev->valuator_mask.data(), i))
       continue;
-    auto valuator = Fp3232ToDouble(*valuators);
+    auto valuator = Fp3232ToDouble(*valuators_iter);
     if (i == horizontal_number)
       *x_offset = ExtractAndUpdateScrollOffset(&info->horizontal, valuator);
     else if (i == vertical_number)
       *y_offset = ExtractAndUpdateScrollOffset(&info->vertical, valuator);
-    valuators++;
+    ++valuators_iter;
   }
 }
 
@@ -601,14 +554,14 @@ void DeviceDataManagerX11::InvalidateScrollClasses(
     x11::Input::DeviceId device_id) {
   if (device_id == kAllDevices) {
     for (auto& i : scroll_data_) {
-      i.horizontal.seen = false;
-      i.vertical.seen = false;
+      i.second.horizontal.seen = false;
+      i.second.vertical.seen = false;
     }
   } else {
-    auto device16 = static_cast<uint16_t>(device_id);
-    CHECK_LT(device16, kMaxDeviceNum);
-    scroll_data_[device16].horizontal.seen = false;
-    scroll_data_[device16].vertical.seen = false;
+    if (scroll_data_.contains(device_id)) {
+      scroll_data_[device_id].horizontal.seen = false;
+      scroll_data_[device_id].vertical.seen = false;
+    }
   }
 }
 
@@ -706,14 +659,12 @@ bool DeviceDataManagerX11::GetDataRange(x11::Input::DeviceId deviceid,
                                         const DataType type,
                                         double* min,
                                         double* max) {
-  auto device16 = static_cast<uint16_t>(deviceid);
-  if (device16 >= kMaxDeviceNum)
+  if (!valuator_lookup_.contains(deviceid)) {
     return false;
-  if (valuator_lookup_[device16].empty())
-    return false;
-  if (valuator_lookup_[device16][type].number >= 0) {
-    *min = valuator_lookup_[device16][type].min;
-    *max = valuator_lookup_[device16][type].max;
+  }
+  if (valuator_lookup_[deviceid][type].number >= 0) {
+    *min = valuator_lookup_[deviceid][type].min;
+    *max = valuator_lookup_[deviceid][type].max;
     return true;
   }
   return false;
@@ -723,30 +674,27 @@ void DeviceDataManagerX11::SetDeviceListForTest(
     const std::vector<int>& touchscreen,
     const std::vector<int>& cmt_devices,
     const std::vector<int>& other_devices) {
-  for (int i = 0; i < kMaxDeviceNum; ++i) {
-    valuator_count_[i] = 0;
-    valuator_lookup_[i].clear();
-    data_type_lookup_[i].clear();
-    for (int j = 0; j < kMaxSlotNum; j++)
-      last_seen_valuator_[i][j].clear();
-  }
+  valuator_count_.clear();
+  valuator_lookup_.clear();
+  data_type_lookup_.clear();
+  last_seen_valuator_.clear();
 
   for (auto deviceid : touchscreen) {
-    InitializeValuatorsForTest(deviceid, kTouchDataTypeStart, kTouchDataTypeEnd,
-                               0, 1000);
+    InitializeValuatorsForTest(static_cast<x11::Input::DeviceId>(deviceid),
+                               kTouchDataTypeStart, kTouchDataTypeEnd, 0, 1000);
   }
 
-  cmt_devices_.reset();
+  cmt_devices_.clear();
   for (auto deviceid : cmt_devices) {
-    cmt_devices_[deviceid] = true;
-    touchpads_[deviceid] = true;
-    InitializeValuatorsForTest(deviceid, kCMTDataTypeStart, kCMTDataTypeEnd,
-                               -1000, 1000);
+    cmt_devices_.insert(static_cast<x11::Input::DeviceId>(deviceid));
+    touchpads_.insert(static_cast<x11::Input::DeviceId>(deviceid));
+    InitializeValuatorsForTest(static_cast<x11::Input::DeviceId>(deviceid),
+                               kCMTDataTypeStart, kCMTDataTypeEnd, -1000, 1000);
   }
 
   for (auto deviceid : other_devices) {
-    InitializeValuatorsForTest(deviceid, kCMTDataTypeStart, kCMTDataTypeEnd,
-                               -1000, 1000);
+    InitializeValuatorsForTest(static_cast<x11::Input::DeviceId>(deviceid),
+                               kCMTDataTypeStart, kCMTDataTypeEnd, -1000, 1000);
   }
 }
 
@@ -754,7 +702,7 @@ void DeviceDataManagerX11::SetValuatorDataForTest(
     x11::Input::DeviceEvent* devev,
     DataType type,
     double value) {
-  uint16_t device = static_cast<uint16_t>(devev->deviceid);
+  auto device = devev->deviceid;
   int index = valuator_lookup_[device][type].number;
   CHECK(!IsXinputMaskSet(devev->valuator_mask.data(), index));
   CHECK(index >= 0 && index < valuator_count_[device]);
@@ -763,7 +711,7 @@ void DeviceDataManagerX11::SetValuatorDataForTest(
   x11::Input::Fp3232* valuators = devev->axisvalues.data();
   for (int i = 0; i < index; ++i) {
     if (IsXinputMaskSet(devev->valuator_mask.data(), i))
-      valuators++;
+      UNSAFE_TODO(valuators++);
   }
   for (int i = DT_LAST_ENTRY - 1; i > valuators - devev->axisvalues.data();
        --i) {
@@ -773,15 +721,15 @@ void DeviceDataManagerX11::SetValuatorDataForTest(
   *valuators = DoubleToFp3232(value);
 }
 
-void DeviceDataManagerX11::InitializeValuatorsForTest(int deviceid,
-                                                      int start_valuator,
-                                                      int end_valuator,
-                                                      double min_value,
-                                                      double max_value) {
+void DeviceDataManagerX11::InitializeValuatorsForTest(
+    x11::Input::DeviceId deviceid,
+    int start_valuator,
+    int end_valuator,
+    double min_value,
+    double max_value) {
   valuator_lookup_[deviceid].resize(DT_LAST_ENTRY);
   data_type_lookup_[deviceid].resize(DT_LAST_ENTRY, DT_LAST_ENTRY);
-  for (int j = 0; j < kMaxSlotNum; j++)
-    last_seen_valuator_[deviceid][j].resize(DT_LAST_ENTRY, 0);
+  last_seen_valuator_[deviceid].clear();
   for (int j = start_valuator; j <= end_valuator; ++j) {
     auto& valuator_info = valuator_lookup_[deviceid][j];
     valuator_info.number = valuator_count_[deviceid];
@@ -794,16 +742,13 @@ void DeviceDataManagerX11::InitializeValuatorsForTest(int deviceid,
 
 DeviceDataManagerX11::DataType DeviceDataManagerX11::UpdateValuatorClassDevice(
     const x11::Input::DeviceClass::Valuator& valuator_class_info,
-    x11::Atom* atoms,
-    uint16_t deviceid) {
-  DCHECK_LT(deviceid, kMaxDeviceNum);
-  x11::Atom* label =
-      std::find(atoms, atoms + DT_LAST_ENTRY, valuator_class_info.label);
-  if (label == atoms + DT_LAST_ENTRY)
+    const base::flat_map<x11::Atom, DataType>& atom_to_data_type,
+    x11::Input::DeviceId deviceid) {
+  auto it = atom_to_data_type.find(valuator_class_info.label);
+  if (it == atom_to_data_type.end()) {
     return DT_LAST_ENTRY;
-  int data_type = label - atoms;
-  DCHECK_GE(data_type, 0);
-  DCHECK_LT(data_type, DT_LAST_ENTRY);
+  }
+  int data_type = it->second;
 
   auto& valuator_info = valuator_lookup_[deviceid][data_type];
   valuator_info.number = valuator_class_info.number;
@@ -815,11 +760,10 @@ DeviceDataManagerX11::DataType DeviceDataManagerX11::UpdateValuatorClassDevice(
 
 void DeviceDataManagerX11::UpdateScrollClassDevice(
     const x11::Input::DeviceClass::Scroll& scroll_class_info,
-    uint16_t deviceid) {
+    x11::Input::DeviceId deviceid) {
   if (high_precision_scrolling_disabled_)
     return;
 
-  DCHECK(deviceid >= 0 && deviceid < kMaxDeviceNum);
   ScrollInfo& info = scroll_data_[deviceid];
   switch (scroll_class_info.scroll_type) {
     case x11::Input::ScrollType::Vertical:
@@ -855,7 +799,7 @@ void DeviceDataManagerX11::SetDisabledKeyboardAllowedKeys(
 }
 
 void DeviceDataManagerX11::DisableDevice(x11::Input::DeviceId deviceid) {
-  blocked_devices_.set(static_cast<uint32_t>(deviceid), true);
+  blocked_devices_.insert(deviceid);
   // TODO(rsadam@): Support blocking touchscreen devices.
   std::vector<KeyboardDevice> keyboards = GetKeyboardDevices();
   auto it = FindDeviceWithId(keyboards.begin(), keyboards.end(), deviceid);
@@ -867,7 +811,7 @@ void DeviceDataManagerX11::DisableDevice(x11::Input::DeviceId deviceid) {
 }
 
 void DeviceDataManagerX11::EnableDevice(x11::Input::DeviceId deviceid) {
-  blocked_devices_.set(static_cast<uint32_t>(deviceid), false);
+  blocked_devices_.erase(deviceid);
   auto it = blocked_keyboard_devices_.find(deviceid);
   if (it != blocked_keyboard_devices_.end()) {
     std::vector<KeyboardDevice> devices = GetKeyboardDevices();
@@ -876,11 +820,6 @@ void DeviceDataManagerX11::EnableDevice(x11::Input::DeviceId deviceid) {
     blocked_keyboard_devices_.erase(it);
     DeviceDataManager::OnKeyboardDevicesUpdated(devices);
   }
-}
-
-bool DeviceDataManagerX11::IsDeviceEnabled(
-    x11::Input::DeviceId device_id) const {
-  return blocked_devices_.test(static_cast<uint32_t>(device_id));
 }
 
 bool DeviceDataManagerX11::IsEventBlocked(const x11::Event& x11_event) {
@@ -896,7 +835,7 @@ bool DeviceDataManagerX11::IsEventBlocked(const x11::Event& x11_event) {
     return false;
   }
 
-  return blocked_devices_.test(static_cast<uint16_t>(xievent->sourceid));
+  return blocked_devices_.contains(xievent->sourceid);
 }
 
 void DeviceDataManagerX11::OnKeyboardDevicesUpdated(
@@ -910,7 +849,7 @@ void DeviceDataManagerX11::OnKeyboardDevicesUpdated(
     // If the device no longer exists, unblock it, else filter it out from our
     // active list.
     if (it == keyboards.end()) {
-      blocked_devices_.set(static_cast<uint32_t>((*blocked_iter).first), false);
+      blocked_devices_.erase((*blocked_iter).first);
       blocked_keyboard_devices_.erase(blocked_iter++);
     } else {
       keyboards.erase(it);

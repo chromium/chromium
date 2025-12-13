@@ -73,7 +73,7 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
   cc::PaintFlags paint;
   paint.setBlendMode(SkBlendMode::kSrc);
   provider->Canvas().drawImage(paint_image, 0, 0, SkSamplingOptions(), &paint);
-  return provider->Snapshot(FlushReason::kNon2DCanvas);
+  return provider->Snapshot();
 }
 
 }  // namespace
@@ -113,14 +113,6 @@ void ImageLayerBridge::SetImage(scoped_refptr<StaticBitmapImage> image) {
     } else {
       layer_->SetContentsOpaque(image_is_opaque);
       layer_->SetBlendBackgroundColor(!image_is_opaque);
-    }
-    if (!has_presented_since_last_set_image_ && image_->IsTextureBacked()) {
-      // If the layer bridge is not presenting, the GrContext may not be getting
-      // flushed regularly.  The flush is normally triggered inside the
-      // m_image->EnsureMailbox() call of
-      // ImageLayerBridge::PrepareTransferableResource. To prevent a potential
-      // memory leak we must flush the GrContext here.
-      image_->PaintImageForCurrentFrame().FlushPendingSkiaOps();
     }
   }
   has_presented_since_last_set_image_ = false;
@@ -185,9 +177,9 @@ bool ImageLayerBridge::PrepareTransferableResource(
         viz::TransferableResource::ResourceSource::kImageLayerBridge,
         image_for_compositor->GetSyncToken(), overrides);
 
-    auto func = WTF::BindOnce(&ImageLayerBridge::ResourceReleasedGpu,
-                              WrapWeakPersistent(this),
-                              std::move(image_for_compositor));
+    auto func = blink::BindOnce(&ImageLayerBridge::ResourceReleasedGpu,
+                                WrapWeakPersistent(this),
+                                std::move(image_for_compositor));
     *out_release_callback = std::move(func);
   } else {
     image_ = image_->MakeUnaccelerated();
@@ -225,8 +217,8 @@ bool ImageLayerBridge::PrepareTransferableResource(
         resource.shared_image,
         viz::TransferableResource::ResourceSource::kImageLayerBridge,
         resource.sync_token);
-    auto func = WTF::BindOnce(&ImageLayerBridge::ResourceReleasedSoftware,
-                              WrapWeakPersistent(this), std::move(resource));
+    auto func = BindOnce(&ImageLayerBridge::ResourceReleasedSoftware,
+                         WrapWeakPersistent(this), std::move(resource));
     *out_release_callback = std::move(func);
   }
 

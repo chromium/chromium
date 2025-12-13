@@ -13,17 +13,6 @@
 // MLOperand matmul(MLOperand a, MLOperand b);
 
 
-const getMatmulPrecisionTolerance = (graphResources) => {
-  const args = graphResources.operators[0].arguments;
-  const shapeA =
-      graphResources.inputs[args[0][Object.keys(args[0])[0]]].descriptor.shape;
-  const tolerance = shapeA[shapeA.length - 1] * 2;
-  const toleranceValueDict = {float32: tolerance, float16: tolerance};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const matmulTests = [
   {
     'name': 'matmul float32 2D and 2D tensors',
@@ -1095,11 +1084,5 @@ const matmulTests = [
   }
 ];
 
-if (navigator.ml) {
-  matmulTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getMatmulPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    matmulTests, buildAndExecuteGraph, getPrecisionTolerance);

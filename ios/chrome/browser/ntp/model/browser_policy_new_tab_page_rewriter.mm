@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/components/webui/web_ui_url_constants.h"
-#import "ios/web/public/browser_state.h"
 
 bool WillHandleWebBrowserNewTabPageURLForPolicy(
     GURL* url,

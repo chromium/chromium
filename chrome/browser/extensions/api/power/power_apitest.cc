@@ -6,6 +6,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/power/power_api.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace {

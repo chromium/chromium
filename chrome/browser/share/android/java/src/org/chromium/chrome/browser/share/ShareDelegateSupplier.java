@@ -5,23 +5,20 @@
 package org.chromium.chrome.browser.share;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * A {@link UnownedUserDataSupplier} which manages the supplier and UnownedUserData for a {@link
- * ShareDelegate}.
- */
+/** A class which manages the supplier and UnownedUserData for a {@link ShareDelegate}. */
 @NullMarked
-public class ShareDelegateSupplier extends UnownedUserDataSupplier<ShareDelegate> {
-    private static final UnownedUserDataKey<ShareDelegateSupplier> KEY =
-            new UnownedUserDataKey<>(ShareDelegateSupplier.class);
+public class ShareDelegateSupplier {
+    private static final UnownedUserDataKey<ObservableSupplier<ShareDelegate>> KEY =
+            new UnownedUserDataKey<>();
 
-    private static @Nullable ShareDelegateSupplier sInstanceForTesting;
+    private static @Nullable ObservableSupplier<ShareDelegate> sInstanceForTesting;
 
     /** Return {@link ShareDelegate} supplier associated with the given {@link WindowAndroid}. */
     public static @Nullable ObservableSupplier<ShareDelegate> from(WindowAndroid windowAndroid) {
@@ -29,13 +26,24 @@ public class ShareDelegateSupplier extends UnownedUserDataSupplier<ShareDelegate
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }
 
-    /** Constructs a ShareDelegateSupplier and attaches it to the {@link WindowAndroid} */
-    public ShareDelegateSupplier() {
-        super(KEY);
+    /**
+     * Attach to the specified host.
+     *
+     * @param host The host to attach the supplier to.
+     */
+    public static void attach(
+            UnownedUserDataHost host, ObservableSupplier<ShareDelegate> supplier) {
+        KEY.attachToHost(host, supplier);
     }
 
-    public static void setInstanceForTesting(ShareDelegateSupplier instanceForTesting) {
+    public static void destroy(ObservableSupplier<ShareDelegate> supplier) {
+        KEY.detachFromAllHosts(supplier);
+    }
+
+    public static void setInstanceForTesting(ObservableSupplier<ShareDelegate> instanceForTesting) {
         sInstanceForTesting = instanceForTesting;
         ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
+
+    private ShareDelegateSupplier() {}
 }

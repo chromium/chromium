@@ -25,7 +25,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_ui_util.h"
+#import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_ui_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_search_engine_item.h"
@@ -90,13 +90,13 @@ const char kUmaSelectDefaultSearchEngine[] =
   // Note that `TemplateURL` pointers should not be freed. They either come from
   // `TemplateURLService::GetTemplateURLs()`, or they are owned by
   // `_choiceScreenTemplateUrls`.
-  std::vector<raw_ptr<TemplateURL>> _firstList;
+  std::vector<raw_ptr<TemplateURL, DanglingUntriaged>> _firstList;
   // The second list in the page which contains all remaining custom search
   // engines.
   // Note that `TemplateURL` pointers should not be freed. They either come from
   // `TemplateURLService::GetTemplateURLs()`, or they are owned by
   // `_choiceScreenTemplateUrls`.
-  std::vector<raw_ptr<TemplateURL>> _secondList;
+  std::vector<raw_ptr<TemplateURL, DanglingUntriaged>> _secondList;
   // FaviconLoader is a keyed service that uses LargeIconService to retrieve
   // favicon images.
   raw_ptr<FaviconLoader> _faviconLoader;
@@ -462,10 +462,6 @@ const char kUmaSelectDefaultSearchEngine[] =
     return;
   }
 
-  // TODO(b/280753739) Update this method to return the correct list of search
-  // engines directly (for both choice-screen-eligible users and
-  // non-choice-screen-eligible users). This way we don't have to worry about
-  // calling two different methods anymore.
   std::vector<raw_ptr<TemplateURL, VectorExperimental>> urls =
       _templateURLService->GetTemplateURLs();
   _firstList.clear();
@@ -474,6 +470,11 @@ const char kUmaSelectDefaultSearchEngine[] =
   _secondList.reserve(urls.size());
   // Classify TemplateURLs.
   for (TemplateURL* url : urls) {
+    // Starter pack is not supported on iOS.
+    if (url->starter_pack_id() != 0) {
+      continue;
+    }
+
     if ([self isPrepopulatedOrDefaultSearchEngine:url]) {
       _firstList.push_back(url);
     } else {
@@ -525,7 +526,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   __weak __typeof(self) weakSelf = self;
   GetSearchEngineFavicon(
       *templateURL, *_regionalCapabilitiesService, _templateURLService,
-      _faviconLoader, ^(FaviconAttributes* attributes) {
+      _faviconLoader, ^(FaviconAttributes* attributes, bool cached) {
         [weakSelf faviconReceivedFor:item faviconAttributes:attributes];
       });
   return item;

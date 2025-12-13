@@ -9,6 +9,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -42,15 +43,19 @@ enum ButtonType {
 class OngoingProcessViewPixelTest
     : public AshTestBase,
       public testing::WithParamInterface<
-          std::tuple<const char16_t*, const char16_t*, ButtonType, bool>> {
+          std::
+              tuple<const char16_t*, const char16_t*, ButtonType, bool, bool>> {
  public:
-  const std::u16string GetTitle() { return std::get<0>(GetParam()); }
-  const std::u16string GetMessage() { return std::get<1>(GetParam()); }
-  ButtonType GetButtonType() { return std::get<2>(GetParam()); }
-  bool IsNotificationWidthIncreaseEnabled() { return std::get<3>(GetParam()); }
+  const std::u16string GetTitle() const { return std::get<0>(GetParam()); }
+  const std::u16string GetMessage() const { return std::get<1>(GetParam()); }
+  ButtonType GetButtonType() const { return std::get<2>(GetParam()); }
+  bool IsNotificationWidthIncreaseEnabled() const {
+    return std::get<3>(GetParam());
+  }
+  bool IsSystemBlurEnabled() const { return std::get<4>(GetParam()); }
 
-  std::string GenerateTestName() {
-    std::string test_name = "OngoingProcessView_";
+  std::string GenerateScreenshotName(const std::string& title) override {
+    std::string test_name = title;
 
     test_name +=
         (GetTitle() == kShortTitleString) ? "ShortTitle_" : "LongTitle_";
@@ -59,18 +64,18 @@ class OngoingProcessViewPixelTest
 
     switch (GetButtonType()) {
       case ButtonType::kNone:
-        test_name += "NoButton_";
+        test_name += "_NoButton";
         break;
       case ButtonType::kIconButton:
-        test_name += "IconButton_";
+        test_name += "_IconButton";
         break;
       case ButtonType::kPillButton:
-        test_name += "PillButton_";
+        test_name += "_PillButton";
         break;
     }
 
-    test_name +=
-        IsNotificationWidthIncreaseEnabled() ? "WidthIncreased" : "NormalWidth";
+    test_name += IsNotificationWidthIncreaseEnabled() ? "_WidthIncreased"
+                                                      : "_NormalWidth";
 
     return test_name;
   }
@@ -81,7 +86,9 @@ class OngoingProcessViewPixelTest
   // AshPixelTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams();
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = IsSystemBlurEnabled();
+    return init_params;
   }
 
   void SetUp() override {
@@ -117,7 +124,8 @@ INSTANTIATE_TEST_SUITE_P(
         /*GetButtonType()=*/
         testing::ValuesIn({ButtonType::kNone, ButtonType::kIconButton,
                            ButtonType::kPillButton}),
-        /*IsNotificationWidthIncreaseEnabled()=*/testing::Bool()));
+        /*IsNotificationWidthIncreaseEnabled()=*/testing::Bool(),
+        /*IsSystemBlurEnabled()=*/testing::Bool()));
 
 TEST_P(OngoingProcessViewPixelTest, MultilineLabels) {
   message_center::RichNotificationData optional_fields;
@@ -142,7 +150,8 @@ TEST_P(OngoingProcessViewPixelTest, MultilineLabels) {
   test_api()->ToggleBubble();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateTestName(), /*revision_number=*/4,
+      GenerateScreenshotName("OngoingProcessView"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 4 : 0,
       test_api()->GetNotificationCenterView()));
 }
 

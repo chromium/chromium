@@ -8,7 +8,9 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DESTROYABLE;
 import static org.chromium.ui.modelutil.ModelListCleaner.destroyAndClearAllRows;
 
+import android.content.ComponentCallbacks;
 import android.content.Context;
+import android.content.res.Configuration;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.task.TaskTraits;
@@ -16,7 +18,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.PendingRunnable;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.HubUtils;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
@@ -30,6 +32,7 @@ import org.chromium.components.collaboration.messaging.MessagingBackendService.P
 import org.chromium.components.collaboration.messaging.PersistentMessage;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupData;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -47,6 +50,16 @@ import java.util.List;
 /** Populates a {@link ModelList} with an item for each tab group. */
 @NullMarked
 public class TabGroupListMediator {
+    private final ComponentCallbacks mComponentsCallbacks =
+            new ComponentCallbacks() {
+                @Override
+                public void onConfigurationChanged(Configuration configuration) {
+                    setIsTabletOrLandscape();
+                }
+
+                @Override
+                public void onLowMemory() {}
+            };
     private final Context mContext;
     private final ModelList mModelList;
     private final PropertyModel mPropertyModel;
@@ -238,6 +251,7 @@ public class TabGroupListMediator {
         mDataSharingService.addObserver(mDataSharingObserver);
         mSyncService.addSyncStateChangedListener(mSyncStateChangeListener);
         mMessagingBackendService.addPersistentMessageObserver(mPersistentMessageObserver);
+        mContext.registerComponentCallbacks(mComponentsCallbacks);
 
         repopulateModelList();
         mSyncStateChangeListener.syncStateChanged();
@@ -254,6 +268,7 @@ public class TabGroupListMediator {
         mSyncService.removeSyncStateChangedListener(mSyncStateChangeListener);
         mCallbackController.destroy();
         mMessagingBackendService.removePersistentMessageObserver(mPersistentMessageObserver);
+        mContext.unregisterComponentCallbacks(mComponentsCallbacks);
     }
 
     private void repopulateModelList() {
@@ -268,14 +283,9 @@ public class TabGroupListMediator {
                 sortUtil.getSortedGroupList(
                         this::shouldShowGroupByState,
                         (a, b) -> {
-                            if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups
-                                    .isEnabled()) {
-                                return Long.compare(
-                                        TabUiUtils.getGroupLastUpdatedTimestamp(b),
-                                        TabUiUtils.getGroupLastUpdatedTimestamp(a));
-                            } else {
-                                return Long.compare(b.creationTimeMs, a.creationTimeMs);
-                            }
+                            return Long.compare(
+                                    TabUiUtils.getGroupLastUpdatedTimestamp(b),
+                                    TabUiUtils.getGroupLastUpdatedTimestamp(a));
                         });
         for (SavedTabGroup savedTabGroup : sortedTabGroups) {
             TabGroupRowMediator rowMediator =
@@ -298,6 +308,20 @@ public class TabGroupListMediator {
         }
         boolean empty = mModelList.isEmpty();
         mPropertyModel.set(TabGroupListProperties.EMPTY_STATE_VISIBLE, empty);
+
+        setIsTabletOrLandscape();
+    }
+
+    private void setIsTabletOrLandscape() {
+        if (OmniboxFeatures.sAndroidHubSearchTabGroups.isEnabled()
+                && OmniboxFeatures.sAndroidHubSearchEnableOnTabGroupsPane.getValue()) {
+            Configuration config = mContext.getResources().getConfiguration();
+            boolean isTabletOrLandscape = HubUtils.isScreenWidthTablet(config.screenWidthDp);
+            mPropertyModel.set(TabGroupListProperties.IS_TABLET_OR_LANDSCAPE, isTabletOrLandscape);
+        } else {
+            // No search box to make space for.
+            mPropertyModel.set(TabGroupListProperties.IS_TABLET_OR_LANDSCAPE, true);
+        }
     }
 
     private boolean shouldShowGroupByState(@GroupWindowState int groupWindowState) {

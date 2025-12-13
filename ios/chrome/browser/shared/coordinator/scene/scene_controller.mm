@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"
@@ -32,6 +30,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/supervised_user/core/browser/kids_management_api_fetcher.h"
 #import "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
@@ -40,13 +39,13 @@
 #import "components/url_formatter/url_formatter.h"
 #import "components/version_info/version_info.h"
 #import "components/web_resource/web_resource_pref_names.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/url_opener.h"
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
 #import "ios/chrome/app/application_mode.h"
 #import "ios/chrome/app/change_profile_commands.h"
-#import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/deferred_initialization_task_names.h"
 #import "ios/chrome/app/profile/profile_state.h"
@@ -56,14 +55,15 @@
 #import "ios/chrome/browser/app_store_rating/ui_bundled/app_store_rating_scene_agent.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/appearance/ui_bundled/appearance_customization.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_coordinator_delegate.h"
+#import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator.h"
+#import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h"
+#import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_authentication_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_load_url.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_signout_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/features.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/promo/signin_fullscreen_promo_scene_agent.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/promo/fullscreen_signin_promo_scene_agent.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
@@ -74,7 +74,6 @@
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_browser_agent.h"
-#import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
 #import "ios/chrome/browser/crash_report/model/crash_loop_detection_util.h"
 #import "ios/chrome/browser/crash_report/model/crash_report_helper.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_scene_agent.h"
@@ -109,7 +108,6 @@
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
@@ -119,7 +117,6 @@
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_policy_scene_agent.h"
 #import "ios/chrome/browser/policy/ui_bundled/signin_policy_scene_agent.h"
-#import "ios/chrome/browser/policy/ui_bundled/user_policy_scene_agent.h"
 #import "ios/chrome/browser/policy/ui_bundled/user_policy_util.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
@@ -127,21 +124,25 @@
 #import "ios/chrome/browser/promos_manager/ui_bundled/utils.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_main_coordinator.h"
+#import "ios/chrome/browser/safari_data_import/model/features.h"
+#import "ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h"
+#import "ios/chrome/browser/scene/coordinator/scene_coordinator.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/screenshot/model/screenshot_delegate.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_saving_scene_agent.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_utils.h"
+#import "ios/chrome/browser/share_extension/model/share_extension_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_controller+OTRProfileDeletion.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
-#import "ios/chrome/browser/shared/coordinator/scene/widget_context.h"
+#import "ios/chrome/browser/shared/coordinator/scene/url_context.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -151,6 +152,7 @@
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
@@ -174,11 +176,15 @@
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
+#import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
+#import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_window.h"
 #import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/constants.h"
@@ -191,14 +197,13 @@
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
+#import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator/tab_grid_scene_agent.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/chrome/browser/url_loading/model/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
-#import "ios/chrome/browser/web/model/page_placeholder_browser_agent.h"
-#import "ios/chrome/browser/web_state_list/model/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/whats_new/coordinator/promo/whats_new_scene_agent.h"
 #import "ios/chrome/browser/widget_kit/model/features.h"
@@ -217,8 +222,6 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/navigation_util.h"
 #import "ios/web/public/session/proto/storage.pb.h"
-#import "ios/web/public/thread/web_task_traits.h"
-#import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
@@ -231,21 +234,10 @@
 
 namespace {
 
-// TODO(crbug.com/429351158): Remove
-// kMakeKeyAndVisibleBeforeMainCoordinatorStart feature. Killswitch, can be
-// removed around February 2024. If enabled, createInitialUI will call
-// makeKeyAndVisible before mainCoordinator start. When disabled, this fix
-// resolves a flicker when starting the app in light mode
-BASE_FEATURE(kMakeKeyAndVisibleBeforeMainCoordinatorStart,
-             "MakeKeyAndVisibleBeforeMainCoordinatorStart",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Feature to control whether Search Intents (Widgets, Application
 // Shortcuts menu) forcibly open a new tab, rather than reusing an
 // existing NTP. See http://crbug.com/1363375 for details.
-BASE_FEATURE(kForceNewTabForIntentSearch,
-             "ForceNewTabForIntentSearch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kForceNewTabForIntentSearch, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // A rough estimate of the expected duration of a view controller transition
 // animation. It's used to temporarily disable mutally exclusive chrome
@@ -269,9 +261,6 @@ const char kContextsToOpen[] = "IOS.NumberOfContextsToOpen";
 
 // The App Store page for Google Chrome.
 NSString* const kChromeAppStoreURL = @"https://apps.apple.com/app/id535886823";
-
-// String passed in the URL context to request to open it in a sign-out state.
-NSString* const kNoAccountId = @"No account";
 
 // Enum for IOS.NumberOfContextsToOpen histogram.
 // Keep in sync with "ContextsToOpen" in tools/metrics/histograms/enums.xml.
@@ -395,12 +384,24 @@ void OnListFamilyMembersResponse(
   }
 }
 
+// Records a SigninFullscreenPromoEvents UMA histogram.
+void RecordIfNeededSigninFullscreenPromoEvent(
+    SigninFullscreenPromoEvents event,
+    signin_metrics::AccessPoint accessPoint) {
+  if (accessPoint != signin_metrics::AccessPoint::kFullscreenSigninPromo) {
+    return;
+  }
+  base::UmaHistogramEnumeration("IOS.SignInpromo.Fullscreen.PromoEvents",
+                                event);
+}
+
 }  // namespace
 
 // TODO(crbug.com/429355979): Order and group methods by interface.
 // TODO(crbug.com/429354805): Add method comments(!)
 
 @interface SceneController () <AccountMenuCoordinatorDelegate,
+                               AuthenticationServiceObserving,
                                HistoryCoordinatorDelegate,
                                IncognitoInterstitialCoordinatorDelegate,
                                PasswordCheckupCoordinatorDelegate,
@@ -449,6 +450,10 @@ void OnListFamilyMembersResponse(
   // This is used to ensure that the image search is only triggered when the BVC
   // is active.
   NSData* _imageSearchData;
+  // Observer for auth service status changes.
+  std::unique_ptr<AuthenticationServiceObserverBridge>
+      _authServiceObserverBridge;
+  BOOL _handleExternalIntentsInProgress;
 }
 
 // Navigation View controller for the settings.
@@ -493,7 +498,7 @@ void OnListFamilyMembersResponse(
 
 // The main coordinator to manage the main view controller. This property should
 // not be accessed before the browser has started up to the FOREGROUND stage.
-@property(nonatomic, strong) TabGridCoordinator* mainCoordinator;
+@property(nonatomic, strong) SceneCoordinator* mainCoordinator;
 
 // YES while activating a new browser (often leading to dismissing the tab
 // switcher.
@@ -532,6 +537,9 @@ void OnListFamilyMembersResponse(
 @property(nonatomic, strong)
     YoutubeIncognitoCoordinator* youtubeIncognitoCoordinator;
 
+// The profile of the current scene.
+@property(nonatomic, readonly) ProfileIOS* profile;
+
 @end
 
 @implementation SceneController
@@ -558,6 +566,10 @@ void OnListFamilyMembersResponse(
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!_authServiceObserverBridge, base::NotFatalUntil::M145);
+}
+
 - (void)setProfileState:(ProfileState*)profileState {
   DCHECK(!_sceneState.profileState);
 
@@ -567,16 +579,7 @@ void OnListFamilyMembersResponse(
 
   // Add agents. They may depend on the ProfileState, so they need to be
   // created after it has been connected to the SceneState.
-  [_sceneState addAgent:[[UIBlockerSceneAgent alloc] init]];
-  [_sceneState addAgent:[[IncognitoBlockerSceneAgent alloc] init]];
-  [_sceneState
-      addAgent:[[IncognitoReauthSceneAgent alloc]
-                         initWithReauthModule:[[ReauthenticationModule alloc]
-                                                  init]
-                   applicationCommandsHandler:self]];
-  [_sceneState addAgent:[[StartSurfaceSceneAgent alloc] init]];
-  [_sceneState addAgent:[[SessionSavingSceneAgent alloc] init]];
-  [_sceneState addAgent:[[LayoutGuideSceneAgent alloc] init]];
+  [self addProfileStateDependentAgents];
 
   // Start observing the ProfileState. This needs to happen after the agents
   // as this may result in creation of the UI which can access to the agents.
@@ -588,6 +591,10 @@ void OnListFamilyMembersResponse(
 // TODO(crbug.com/429347474): Get rid of BrowserProviderInterface
 - (WrangledBrowser*)mainInterface {
   return self.browserViewWrangler.mainInterface;
+}
+
+- (ProfileIOS*)profile {
+  return self.sceneState.profileState.profile;
 }
 
 - (WrangledBrowser*)currentInterface {
@@ -619,6 +626,11 @@ void OnListFamilyMembersResponse(
 
   ProfileIOS* profile = mainBrowser->GetProfile();
   if (!profile) {
+    return;
+  }
+
+  if (parameters.openedViaShareExtensionScheme) {
+    [self handleExternalIntents];
     return;
   }
 
@@ -659,22 +671,56 @@ void OnListFamilyMembersResponse(
   }
 }
 
-- (void)handleExternalIntents {
+- (BOOL)handleExternalIntents {
+  // TODO(crbug.com/462018636): Remove once the startup refactore is done.
+  // Early return when a recursive call is done, while the fuction is still
+  // being executed.
+  if (_handleExternalIntentsInProgress) {
+    return NO;
+  }
+  base::AutoReset<BOOL> autoResetHandleExternalIntents(
+      &_handleExternalIntentsInProgress, YES);
   if (![self canHandleIntents]) {
-    return;
+    return NO;
   }
   UserActivityBrowserAgent* userActivityBrowserAgent =
       UserActivityBrowserAgent::FromBrowser(self.currentInterface.browser);
+
+  NSMutableSet<UIOpenURLContext*>* contexts =
+      [NSMutableSet setWithSet:self.sceneState.connectionOptions.URLContexts];
+  [contexts unionSet:self.sceneState.URLContextsToOpen];
+  self.sceneState.URLContextsToOpen = nil;
+
+  if ([self multipleAccountSwitchesRequired:contexts]) {
+    // If more than one context require a potental account change only open the
+    // first context and discard the others to avoid looping between acocunt
+    // changes.
+    NSEnumerator<UIOpenURLContext*>* enumerator = [contexts objectEnumerator];
+    contexts = [NSMutableSet setWithObject:[enumerator nextObject]];
+    base::UmaHistogramEnumeration(
+        kContextsToOpen, ContextsToOpen::kMoreThanOneContextWithAccountChange);
+  }
+
+  // Find the first context that requires an account change.
+  URLContext* firstContextForAccountChange =
+      [self findContextRequiringAccountChange:contexts];
+  // Perform profile switching if needed.
+  if ([self changeProfileForContext:firstContextForAccountChange
+                           contexts:contexts
+                            openURL:NO]) {
+    return YES;
+  }
+
   // Handle URL opening from
   // `UIWindowSceneDelegate scene:willConnectToSession:options:`.
-  for (UIOpenURLContext* context in self.sceneState.connectionOptions
-           .URLContexts) {
+  for (UIOpenURLContext* context in contexts) {
     URLOpenerParams* params =
         [[URLOpenerParams alloc] initWithUIOpenURLContext:context];
     [self openTabFromLaunchWithParams:params
                    startupInformation:self.sceneState.profileState.appState
                                           .startupInformation];
   }
+
   if (self.sceneState.connectionOptions.shortcutItem) {
     userActivityBrowserAgent->Handle3DTouchApplicationShortcuts(
         self.sceneState.connectionOptions.shortcutItem);
@@ -740,6 +786,7 @@ void OnListFamilyMembersResponse(
       [self showToastWhenOpenExternalIntentInUnexpectedMode];
     }
   }
+  return NO;
 }
 
 // Handles a tab move activity as part of an intent when launching a
@@ -782,7 +829,10 @@ void OnListFamilyMembersResponse(
 
 - (void)sceneState:(SceneState*)sceneState
     hasPendingURLs:(NSSet<UIOpenURLContext*>*)URLContexts {
-  [self handleURLContextsToOpen];
+  // Only process the event if the profile is ready.
+  if (sceneState.profileState.initStage >= ProfileInitStage::kFinal) {
+    [self handleURLContextsToOpen];
+  }
 }
 
 - (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
@@ -869,6 +919,47 @@ void OnListFamilyMembersResponse(
 
 #pragma mark - private
 
+- (void)webSigninCompletion:(SigninCoordinator*)coordinator
+                     result:(SigninCoordinatorResult)result
+         completionIdentity:(id<SystemIdentity>)completionIdentity
+                        URL:(const GURL&)URL {
+  CHECK_EQ(coordinator, self.signinCoordinator);
+  // If the sign-in is not successful do not load the continuation URL.
+  BOOL success = result == SigninCoordinatorResultSuccess;
+  if (!success) {
+    return;
+  }
+  UrlLoadingBrowserAgent::FromBrowser(self.mainInterface.browser)
+      ->Load(UrlLoadParams::InCurrentTab(URL));
+}
+
+// If sign-in is disabled, switch to the personal profile and sign-out.
+- (void)signoutIfNeeded {
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(
+          self.sceneState.profileState.profile);
+  if (authenticationService->SigninEnabled()) {
+    return;
+  }
+  // If sign-in is disabled, switch to personal profile and sign-out.
+  if (!IsPersonalProfile(self.profile)) {
+    auto signoutSource = signin_metrics::ProfileSignout::kPrefChanged;
+    ChangeProfileContinuation continuation =
+        CreateChangeProfileSignoutContinuation(
+            signoutSource, /*force_snackbar_over_toolbar=*/false,
+            /*should_record_metrics=*/false, /*snackbar_message =*/nil,
+            base::DoNothing());
+    signin::SwitchToPersonalProfile(self.sceneState,
+                                    ChangeProfileReason::kManagedAccountSignOut,
+                                    std::move(continuation));
+    return;
+  }
+  if (![self isSignedIn]) {
+    authenticationService->SignOut(signin_metrics::ProfileSignout::kPrefChanged,
+                                   nil);
+  }
+}
+
 - (void)stopAccountMenu {
   [_accountMenuCoordinator stop];
   _accountMenuCoordinator.delegate = nil;
@@ -897,44 +988,70 @@ void OnListFamilyMembersResponse(
   }
   self.sceneState.URLContextsToOpen = nil;
 
-  BOOL widgetsForMIMEnabled = BUILDFLAG(ENABLE_WIDGETS_FOR_MIM);
-
-  if (widgetsForMIMEnabled || IsShareExtensionForMultiprofileEnabled()) {
-    // Find the first context that requires an account change.
-    WidgetContext* context = [self findContextRequiringAccountChange:contexts];
-    if (context) {
-      // Perform profile switching if needed.
-      id<ChangeProfileCommands> changeProfileHandler = HandlerForProtocol(
-          self.sceneState.profileState.appState.appCommandDispatcher,
-          ChangeProfileCommands);
-
-      std::optional<std::string> profileName;
-
-      if ([context.gaiaID isEqualToString:kNoAccountId]) {
-        // Use the personal profile name if there is no GaiaID (this happens in
-        // the sign-out scenario).
-        profileName = GetApplicationContext()
-                          ->GetProfileManager()
-                          ->GetProfileAttributesStorage()
-                          ->GetPersonalProfileName();
-      } else {
-        profileName = GetApplicationContext()
-                          ->GetAccountProfileMapper()
-                          ->FindProfileNameForGaiaID(GaiaId(context.gaiaID));
-      }
-      if (profileName.has_value()) {
-        [changeProfileHandler
-            changeProfile:*profileName
-                 forScene:self.sceneState
-                   reason:ChangeProfileReason::kSwitchAccountsFromWidget
-             continuation:CreateChangeProfileAuthenticationContinuation(
-                              context, contexts)];
-        return;
-      }
-    }
+  // Find the first context that requires an account change.
+  URLContext* context = [self findContextRequiringAccountChange:contexts];
+  // Perform profile switching if needed.
+  if ([self changeProfileForContext:context contexts:contexts openURL:YES]) {
+    // Don't open the URLs if the profile was changed.
+    return;
   }
 
   [self openURLContexts:contexts];
+}
+
+// Returns YES if a profile change was triggered.
+- (BOOL)changeProfileForContext:(URLContext*)context
+                       contexts:(NSSet<UIOpenURLContext*>*)contexts
+                        openURL:(BOOL)openURL {
+  if (!context) {
+    return NO;
+  }
+
+  // Perform profile switching if needed.
+  id<ChangeProfileCommands> changeProfileHandler = HandlerForProtocol(
+      self.sceneState.profileState.appState.appCommandDispatcher,
+      ChangeProfileCommands);
+
+  std::optional<std::string> profileName;
+
+  if ([context.gaiaID.ToNSString() isEqualToString:app_group::kNoAccount]) {
+    // Use the personal profile name if there is no GaiaID (this happens in
+    // the sign-out scenario).
+    profileName = GetApplicationContext()
+                      ->GetProfileManager()
+                      ->GetProfileAttributesStorage()
+                      ->GetPersonalProfileName();
+  } else {
+    profileName = GetApplicationContext()
+                      ->GetAccountProfileMapper()
+                      ->FindProfileNameForGaiaID(context.gaiaID);
+  }
+
+  if (!profileName.has_value()) {
+    return NO;
+  }
+
+  const std::string& oldProfileName =
+      self.sceneState.profileState.profile->GetProfileName();
+  if (oldProfileName == profileName) {
+    // In this case there will be no profile change, just an account change,
+    // always open the URL in the continuation in this scenario.
+    openURL = YES;
+  }
+  ChangeProfileReason reason;
+  if ([self shareExtensionURLEligibleForAccountChange:context.context.URL]) {
+    reason = ChangeProfileReason::kSwitchAccountsFromShareExtension;
+  } else {
+    reason = ChangeProfileReason::kSwitchAccountsFromWidget;
+  }
+
+  [changeProfileHandler
+      changeProfile:*profileName
+           forScene:self.sceneState
+             reason:reason
+       continuation:CreateChangeProfileAuthenticationContinuation(
+                        context, contexts, openURL)];
+  return YES;
 }
 
 - (BOOL)multipleAccountSwitchesRequired:(NSSet<UIOpenURLContext*>*)URLContexts {
@@ -963,18 +1080,19 @@ void OnListFamilyMembersResponse(
 }
 
 - (BOOL)shareExtensionURLEligibleForAccountChange:(NSURL*)URL {
-  return IsShareExtensionForMultiprofileEnabled() &&
-         [URL.path
-             isEqualToString:
-                 [NSString
-                     stringWithFormat:
-                         @"/%s", app_group::kChromeAppGroupXCallbackCommand]];
+  return [URL.path
+      isEqualToString:
+          [NSString
+              stringWithFormat:@"/%s",
+                               app_group::kChromeAppGroupXCallbackCommand]];
 }
 
-- (WidgetContext*)findContextRequiringAccountChange:
+- (URLContext*)findContextRequiringAccountChange:
     (NSSet<UIOpenURLContext*>*)URLContexts {
-  NSString* gaiaInApp = nil;
-
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(self.profile->GetOriginalProfile());
+  CoreAccountInfo primaryAccount =
+      identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   for (UIOpenURLContext* context : URLContexts) {
     // Check that this URL is coming from a widget.
     if (!([self widgetURLEligibleForAccountChange:context.URL] ||
@@ -988,32 +1106,25 @@ void OnListFamilyMembersResponse(
                                     &newGaia)) {
       continue;
     }
-    NSString* newGaiaID = base::SysUTF8ToNSString(newGaia);
-
-    AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForProfile(
-            self.sceneState.profileState.profile);
-    id<SystemIdentity> identityOnDevice =
-        authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-    gaiaInApp = identityOnDevice.gaiaID;
+    GaiaId newGaiaID(newGaia);
 
     // Only switch account if the gaia in the widget is different from the gaia
     // in the app.
-    if ([gaiaInApp isEqualToString:newGaiaID]) {
+    if (primaryAccount.gaia == newGaiaID) {
       continue;
     }
 
-    if ([newGaiaID isEqualToString:kNoAccountId] && gaiaInApp) {
-      return
-          [[WidgetContext alloc] initWithContext:context
+    if ([newGaiaID.ToNSString() isEqualToString:app_group::kNoAccount] &&
+        !primaryAccount.gaia.empty()) {
+      return [[URLContext alloc] initWithContext:context
                                           gaiaID:newGaiaID
                                             type:AccountSwitchType::kSignOut];
     }
-    if (![newGaiaID isEqualToString:gaiaInApp] &&
-        ![newGaiaID isEqualToString:kNoAccountId]) {
-      return [[WidgetContext alloc] initWithContext:context
-                                             gaiaID:newGaiaID
-                                               type:AccountSwitchType::kSignIn];
+    if (newGaiaID != primaryAccount.gaia &&
+        ![newGaiaID.ToNSString() isEqualToString:app_group::kNoAccount]) {
+      return [[URLContext alloc] initWithContext:context
+                                          gaiaID:newGaiaID
+                                            type:AccountSwitchType::kSignIn];
     }
   }
   return nil;
@@ -1154,9 +1265,14 @@ void OnListFamilyMembersResponse(
   if (level == SceneActivationLevelForegroundActive &&
       profileInitStage == ProfileInitStage::kFinal) {
     if (!IsFullscreenSigninPromoManagerMigrationEnabled()) {
-      [self tryPresentSigninUpgradePromo];
+      [self tryPresentFullscreenSigninPromo];
     }
-    [self handleExternalIntents];
+
+    if ([self handleExternalIntents]) {
+      // handleExternalIntents may change profile, don't execute code below if
+      // profile was changed.
+      return;
+    }
 
     if (!initializingUIInColdStart &&
         transitionedToForegroundActiveFromBackground &&
@@ -1174,6 +1290,16 @@ void OnListFamilyMembersResponse(
       [applicationHandler openURLInNewTab:command];
       [self finishActivatingBrowserDismissingTabSwitcher];
     }
+
+    AuthenticationService* authenticationService =
+        AuthenticationServiceFactory::GetForProfile(
+            self.sceneState.profileState.profile);
+    _authServiceObserverBridge =
+        std::make_unique<AuthenticationServiceObserverBridge>(
+            authenticationService, self);
+    // The user may be signed-in while sign-in is disabled. In which case,
+    // we must sign the user out, potentially switching profile.
+    [self signoutIfNeeded];
   }
   if (level == SceneActivationLevelBackground) {
     [self recordWindowCreationForSceneState:self.sceneState];
@@ -1185,7 +1311,9 @@ void OnListFamilyMembersResponse(
     return;
   }
 
-  [self startUpChromeUI];
+  if (!tests_hook::LoadMinimalAppUI()) {
+    [self startUpChromeUI];
+  }
   self.sceneState.UIEnabled = YES;
 }
 
@@ -1193,10 +1321,10 @@ void OnListFamilyMembersResponse(
 - (void)startUpChromeUI {
   DCHECK(!self.browserViewWrangler);
   DCHECK(_sceneURLLoadingService.get());
-  DCHECK(self.sceneState.profileState.profile);
+  DCHECK(self.profile);
 
   SceneState* sceneState = self.sceneState;
-  ProfileIOS* profile = sceneState.profileState.profile;
+  ProfileIOS* profile = self.profile;
 
   self.browserViewWrangler =
       [[BrowserViewWrangler alloc] initWithProfile:profile
@@ -1206,75 +1334,8 @@ void OnListFamilyMembersResponse(
 
   // Create and start the BVC.
   [self.browserViewWrangler createMainCoordinatorAndInterface];
-  Browser* mainBrowser = self.browserViewWrangler.mainInterface.browser;
 
-  PromosManager* promosManager = PromosManagerFactory::GetForProfile(profile);
-
-  DefaultBrowserPromoSceneAgent* defaultBrowserAgent =
-      [[DefaultBrowserPromoSceneAgent alloc] init];
-  defaultBrowserAgent.promosManager = promosManager;
-  [sceneState addAgent:defaultBrowserAgent];
-  [sceneState
-      addAgent:[[NonModalDefaultBrowserPromoSchedulerSceneAgent alloc] init]];
-
-  // Add scene agents that require CommandDispatcher.
-  CommandDispatcher* mainCommandDispatcher =
-      mainBrowser->GetCommandDispatcher();
-  id<ApplicationCommands> applicationCommandsHandler =
-      HandlerForProtocol(mainCommandDispatcher, ApplicationCommands);
-  id<PolicyChangeCommands> policyChangeCommandsHandler =
-      HandlerForProtocol(mainCommandDispatcher, PolicyChangeCommands);
-
-  [sceneState
-      addAgent:[[SigninPolicySceneAgent alloc]
-                       initWithSceneUIProvider:self
-                    applicationCommandsHandler:applicationCommandsHandler
-                   policyChangeCommandsHandler:policyChangeCommandsHandler]];
-
-  PrefService* prefService = profile->GetPrefs();
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(profile);
-
-  policy::UserCloudPolicyManager* userPolicyManager =
-      profile->GetUserCloudPolicyManager();
-  if (IsUserPolicyNotificationNeeded(authService, prefService,
-                                     userPolicyManager)) {
-    policy::UserPolicySigninService* userPolicyService =
-        policy::UserPolicySigninServiceFactory::GetForProfile(profile);
-    [sceneState
-        addAgent:[[UserPolicySceneAgent alloc]
-                        initWithSceneUIProvider:self
-                                    authService:authService
-                     applicationCommandsHandler:applicationCommandsHandler
-                                    prefService:prefService
-                                    mainBrowser:mainBrowser
-                                  policyService:userPolicyService
-                              userPolicyManager:userPolicyManager]];
-  }
-
-  enterprise_idle::IdleService* idleService =
-      enterprise_idle::IdleServiceFactory::GetForProfile(profile);
-  id<SnackbarCommands> snackbarCommandsHandler =
-      static_cast<id<SnackbarCommands>>(mainCommandDispatcher);
-
-  [sceneState addAgent:[[IdleTimeoutPolicySceneAgent alloc]
-                              initWithSceneUIProvider:self
-                           applicationCommandsHandler:applicationCommandsHandler
-                              snackbarCommandsHandler:snackbarCommandsHandler
-                                          idleService:idleService
-                                          mainBrowser:mainBrowser]];
-
-  // Now that the main browser's command dispatcher is created and the newly
-  // started UI coordinators have registered with it, inject it into the
-  // PolicyWatcherBrowserAgent so it can start monitoring UI-impacting policy
-  // changes.
-  PolicyWatcherBrowserAgent* policyWatcherAgent =
-      PolicyWatcherBrowserAgent::FromBrowser(self.mainInterface.browser);
-  _policyWatcherObserver = std::make_unique<base::ScopedObservation<
-      PolicyWatcherBrowserAgent, PolicyWatcherBrowserAgentObserverBridge>>(
-      _policyWatcherObserverBridge.get());
-  _policyWatcherObserver->Observe(policyWatcherAgent);
-  policyWatcherAgent->Initialize(policyChangeCommandsHandler);
+  [self addAgents];
 
   self.screenshotDelegate = [[ScreenshotDelegate alloc]
       initWithBrowserProviderInterface:self.browserViewWrangler];
@@ -1286,41 +1347,6 @@ void OnListFamilyMembersResponse(
 
   // Make sure the GeolocationManager is created to observe permission events.
   [GeolocationManager sharedInstance];
-
-  if (ShouldPromoManagerDisplayPromos()) {
-    [sceneState addAgent:[[PromosManagerSceneAgent alloc]
-                             initWithCommandDispatcher:mainCommandDispatcher]];
-  }
-
-  if (IsAppStoreRatingEnabled()) {
-    [sceneState addAgent:[[AppStoreRatingSceneAgent alloc]
-                             initWithPromosManager:promosManager]];
-  }
-
-  [sceneState addAgent:[[WhatsNewSceneAgent alloc]
-                           initWithPromosManager:promosManager]];
-
-  // Do not gate by feature flag so it can run for enabled -> disabled
-  // scenarios.
-  [sceneState addAgent:[[CredentialProviderPromoSceneAgent alloc]
-                           initWithPromosManager:promosManager]];
-
-  if (IsFullscreenSigninPromoManagerMigrationEnabled()) {
-    [sceneState
-        addAgent:
-            [[SigninFullscreenPromoSceneAgent alloc]
-                initWithPromosManager:promosManager
-                          authService:authService
-                      identityManager:IdentityManagerFactory::GetForProfile(
-                                          profile)
-                          syncService:SyncServiceFactory::GetForProfile(profile)
-                          prefService:prefService]];
-  }
-
-  if (IsPageActionMenuEnabled()) {
-    [sceneState addAgent:[[BWGPromoSceneAgent alloc]
-                             initWithPromosManager:promosManager]];
-  }
 }
 
 // Determines the mode (normal or incognito) the initial UI should be in.
@@ -1383,12 +1409,7 @@ void OnListFamilyMembersResponse(
       _webStateListForwardingObserver.get());
   _mainWebStateObserver->Observe(self.mainInterface.browser->GetWebStateList());
 
-  if (base::FeatureList::IsEnabled(
-          kMakeKeyAndVisibleBeforeMainCoordinatorStart)) {
-    [self.sceneState.window makeKeyAndVisible];
-  }
-
-  _mainCoordinator = [[TabGridCoordinator alloc]
+  _mainCoordinator = [[SceneCoordinator alloc]
       initWithApplicationCommandEndpoint:self
                           regularBrowser:self.mainInterface.browser
                          inactiveBrowser:self.mainInterface.inactiveBrowser
@@ -1397,14 +1418,11 @@ void OnListFamilyMembersResponse(
 
   [_mainCoordinator start];
 
-  if (!base::FeatureList::IsEnabled(
-          kMakeKeyAndVisibleBeforeMainCoordinatorStart)) {
-    // Enables UI initializations to query the keyWindow's size. Do this after
-    // `mainCoordinator start` as it sets self.window.rootViewController to work
-    // around crbug.com/850387, causing a flicker if -makeKeyAndVisible has been
-    // called.
-    [self.sceneState.window makeKeyAndVisible];
-  }
+  // Enables UI initializations to query the keyWindow's size. Do this after
+  // `mainCoordinator start` as it sets self.window.rootViewController to work
+  // around crbug.com/850387, causing a flicker if -makeKeyAndVisible has been
+  // called.
+  [self.sceneState.window makeKeyAndVisible];
 
   if (!self.sceneState.profileState.startupInformation.isFirstRun) {
     [self reconcileEulaAsAccepted];
@@ -1489,6 +1507,7 @@ void OnListFamilyMembersResponse(
 
   _incognitoWebStateObserver.reset();
   _mainWebStateObserver.reset();
+  _authServiceObserverBridge.reset();
   _policyWatcherObserver.reset();
 
   // TODO(crbug.com/40778288): Consider moving this at the beginning of
@@ -1497,8 +1516,6 @@ void OnListFamilyMembersResponse(
   // agent).
   self.sceneState.UIEnabled = NO;
 
-  [[SessionSavingSceneAgent agentFromScene:self.sceneState]
-      saveSessionsIfNeeded];
   [self.browserViewWrangler shutdown];
   self.browserViewWrangler = nil;
 
@@ -1515,7 +1532,7 @@ void OnListFamilyMembersResponse(
   Browser* browser = self.currentInterface.browser;
   DCHECK(browser);
 
-  if (browser->GetProfile()->IsOffTheRecord()) {
+  if (self.profile->IsOffTheRecord()) {
     return nil;
   }
   web::WebState* webState = browser->GetWebStateList()->GetActiveWebState();
@@ -1561,10 +1578,10 @@ void OnListFamilyMembersResponse(
                                           completion:nil];
   };
 
-  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
   action.handler = moreAction;
   action.title = l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_MORE_BUTTON);
-  action.accessibilityIdentifier =
+  action.accessibilityHint =
       l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_MORE_BUTTON);
 
   NSString* text =
@@ -1572,7 +1589,7 @@ void OnListFamilyMembersResponse(
           ? l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_FORCED)
           : l10n_util::GetNSString(IDS_IOS_SNACKBAR_MESSAGE_INCOGNITO_DISABLED);
 
-  MDCSnackbarMessage* message = CreateSnackbarMessage(text);
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:text];
   message.action = action;
 
   [handler showSnackbarMessage:message
@@ -1625,15 +1642,13 @@ void OnListFamilyMembersResponse(
   });
 }
 
-// Returns YES if the sign-in upgrade promo should be presented.
-- (BOOL)shouldPresentSigninUpgradePromo {
+// Returns YES if the fullscreen sign-in promo should be presented.
+- (BOOL)shouldPresentFullscreenSigninPromo {
   if (![self isTabAvailableToPresentViewController]) {
     return NO;
   }
-  if (!signin::ShouldPresentUserSigninUpgrade(
-          self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-              ->GetProfile(),
-          version_info::GetVersion())) {
+  if (!signin::ShouldPresentUserSigninUpgrade(self.profile,
+                                              version_info::GetVersion())) {
     return NO;
   }
   // Don't show the promo in Incognito mode.
@@ -1649,22 +1664,24 @@ void OnListFamilyMembersResponse(
     return NO;
   }
   // Don't show the promo if already presented.
-  if (self.sceneState.profileState.appState.signinUpgradePromoPresentedOnce) {
+  if (self.sceneState.profileState.appState
+          .fullscreenSigninPromoPresentedOnce) {
     return NO;
   }
   return YES;
 }
 
-// Presents the sign-in upgrade promo.
-- (void)tryPresentSigninUpgradePromo {
+// Presents the fullscreen sign-in  promo.
+- (void)tryPresentFullscreenSigninPromo {
   // It is possible during a slow asynchronous call that the user changes their
   // state so as to no longer be eligible for sign-in promos. Return early in
   // this case.
-  if (![self shouldPresentSigninUpgradePromo]) {
+  if (![self shouldPresentFullscreenSigninPromo]) {
     return;
   }
-  self.sceneState.profileState.appState.signinUpgradePromoPresentedOnce = YES;
-  [self showSigninUpgradePromoWithCompletion:nil];
+  self.sceneState.profileState.appState.fullscreenSigninPromoPresentedOnce =
+      YES;
+  [self showFullscreenSigninPromoWithCompletion:nil];
 }
 
 - (BOOL)canHandleIntents {
@@ -1695,19 +1712,19 @@ void OnListFamilyMembersResponse(
     }
   }
 
+  if (tests_hook::LoadMinimalAppUI()) {
+    return NO;
+  }
+
   return YES;
 }
 
 - (BOOL)isSignedIn {
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(
-          self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-              ->GetProfile());
-  DCHECK(authenticationService);
-  DCHECK(authenticationService->initialized());
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(self.profile);
+  CHECK(identityManager);
 
-  return authenticationService->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin);
+  return identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
 - (void)showYoutubeIncognitoWithUrlLoadParams:
@@ -1775,9 +1792,122 @@ void OnListFamilyMembersResponse(
   }];
 }
 
+// Add scene agents that are not dependent on profileState.
+- (void)addAgents {
+  SceneState* sceneState = self.sceneState;
+  ProfileIOS* profile = self.profile;
+  Browser* mainBrowser = self.browserViewWrangler.mainInterface.browser;
+
+  PromosManager* promosManager = PromosManagerFactory::GetForProfile(profile);
+
+  DefaultBrowserPromoSceneAgent* defaultBrowserAgent =
+      [[DefaultBrowserPromoSceneAgent alloc] init];
+  defaultBrowserAgent.promosManager = promosManager;
+  [sceneState addAgent:defaultBrowserAgent];
+  [sceneState
+      addAgent:[[NonModalDefaultBrowserPromoSchedulerSceneAgent alloc] init]];
+
+  // Add scene agents that require CommandDispatcher.
+  CommandDispatcher* mainCommandDispatcher =
+      mainBrowser->GetCommandDispatcher();
+  id<ApplicationCommands> applicationCommandsHandler =
+      HandlerForProtocol(mainCommandDispatcher, ApplicationCommands);
+  id<PolicyChangeCommands> policyChangeCommandsHandler =
+      HandlerForProtocol(mainCommandDispatcher, PolicyChangeCommands);
+
+  [sceneState
+      addAgent:[[SigninPolicySceneAgent alloc]
+                       initWithSceneUIProvider:self
+                    applicationCommandsHandler:applicationCommandsHandler
+                   policyChangeCommandsHandler:policyChangeCommandsHandler]];
+
+  enterprise_idle::IdleService* idleService =
+      enterprise_idle::IdleServiceFactory::GetForProfile(profile);
+  id<SnackbarCommands> snackbarCommandsHandler =
+      static_cast<id<SnackbarCommands>>(mainCommandDispatcher);
+
+  [sceneState addAgent:[[IdleTimeoutPolicySceneAgent alloc]
+                              initWithSceneUIProvider:self
+                           applicationCommandsHandler:applicationCommandsHandler
+                              snackbarCommandsHandler:snackbarCommandsHandler
+                                          idleService:idleService
+                                          mainBrowser:mainBrowser]];
+
+  // Now that the main browser's command dispatcher is created and the newly
+  // started UI coordinators have registered with it, inject it into the
+  // PolicyWatcherBrowserAgent so it can start monitoring UI-impacting policy
+  // changes.
+  PolicyWatcherBrowserAgent* policyWatcherAgent =
+      PolicyWatcherBrowserAgent::FromBrowser(self.mainInterface.browser);
+  _policyWatcherObserver = std::make_unique<base::ScopedObservation<
+      PolicyWatcherBrowserAgent, PolicyWatcherBrowserAgentObserverBridge>>(
+      _policyWatcherObserverBridge.get());
+  _policyWatcherObserver->Observe(policyWatcherAgent);
+  policyWatcherAgent->Initialize(policyChangeCommandsHandler);
+
+  if (ShouldPromoManagerDisplayPromos()) {
+    [sceneState addAgent:[[PromosManagerSceneAgent alloc]
+                             initWithCommandDispatcher:mainCommandDispatcher]];
+  }
+
+  if (IsAppStoreRatingEnabled()) {
+    [sceneState addAgent:[[AppStoreRatingSceneAgent alloc]
+                             initWithPromosManager:promosManager]];
+  }
+
+  [sceneState addAgent:[[WhatsNewSceneAgent alloc]
+                           initWithPromosManager:promosManager]];
+
+  // Do not gate by feature flag so it can run for enabled -> disabled
+  // scenarios.
+  [sceneState addAgent:[[CredentialProviderPromoSceneAgent alloc]
+                           initWithPromosManager:promosManager]];
+
+  if (IsFullscreenSigninPromoManagerMigrationEnabled()) {
+    AuthenticationService* authService =
+        AuthenticationServiceFactory::GetForProfile(profile);
+    PrefService* prefService = profile->GetPrefs();
+    [sceneState
+        addAgent:
+            [[FullscreenSigninPromoSceneAgent alloc]
+                initWithPromosManager:promosManager
+                          authService:authService
+                      identityManager:IdentityManagerFactory::GetForProfile(
+                                          profile)
+                          syncService:SyncServiceFactory::GetForProfile(profile)
+                          prefService:prefService]];
+  }
+
+  if (IsPageActionMenuEnabled()) {
+    [sceneState addAgent:[[BWGPromoSceneAgent alloc]
+                             initWithPromosManager:promosManager]];
+  }
+}
+
+// Adds agents that may depend on profileState. Called after a profileState has
+// been connected to the sceneState.
+- (void)addProfileStateDependentAgents {
+  if (tests_hook::LoadMinimalAppUI()) {
+    return;
+  }
+
+  [_sceneState addAgent:[[UIBlockerSceneAgent alloc] init]];
+  [_sceneState addAgent:[[IncognitoBlockerSceneAgent alloc] init]];
+  [_sceneState
+      addAgent:[[IncognitoReauthSceneAgent alloc]
+                         initWithReauthModule:[[ReauthenticationModule alloc]
+                                                  init]
+                   applicationCommandsHandler:self]];
+  [_sceneState addAgent:[[StartSurfaceSceneAgent alloc] init]];
+  [_sceneState addAgent:[[SessionSavingSceneAgent alloc] init]];
+  [_sceneState addAgent:[[LayoutGuideSceneAgent alloc] init]];
+  [_sceneState addAgent:[[TabGridSceneAgent alloc] init]];
+  [_sceneState addAgent:[[ShareExtensionSceneAgent alloc] init]];
+}
+
 #pragma mark - ApplicationCommands
 
-- (void)showSigninUpgradePromoWithCompletion:
+- (void)showFullscreenSigninPromoWithCompletion:
     (SigninCoordinatorCompletionCallback)dismissalCompletion {
   DCHECK(!self.signinCoordinator)
       << "self.signinCoordinator: "
@@ -1785,13 +1915,13 @@ void OnListFamilyMembersResponse(
   Browser* browser = self.mainInterface.browser;
   [self stopSigninCoordinatorWithCompletionAnimated:NO];
   self.signinCoordinator = [SigninCoordinator
-      upgradeSigninPromoCoordinatorWithBaseViewController:self.mainInterface
-                                                              .viewController
-                                                  browser:browser
-                                             contextStyle:SigninContextStyle::
-                                                              kDefault
-                        changeProfileContinuationProvider:
-                            DoNothingContinuationProvider()];
+      fullscreenSigninPromoCoordinatorWithBaseViewController:self.mainInterface
+                                                                 .viewController
+                                                     browser:browser
+                                                contextStyle:
+                                                    SigninContextStyle::kDefault
+                           changeProfileContinuationProvider:
+                               DoNothingContinuationProvider()];
   [self startSigninCoordinatorWithCompletion:dismissalCompletion];
 }
 
@@ -2065,6 +2195,26 @@ using UserFeedbackDataCallback =
     }
   }
 
+  if (IsDiamondPrototypeEnabled()) {
+    if (!command.URL.is_valid() || IsUrlNtp(command.URL)) {
+      if (command.inIncognito !=
+          (self.currentInterface == self.incognitoInterface)) {
+        [self setCurrentInterfaceForMode:command.inIncognito
+                                             ? ApplicationMode::INCOGNITO
+                                             : ApplicationMode::NORMAL];
+      }
+      dispatch_after(
+          dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)),
+          dispatch_get_main_queue(), ^{
+            DiamondPrototypeStartNewTab(
+                self.mainCoordinator.isTabGridActive, command.inIncognito,
+                self.mainInterface.browser, self.incognitoInterface.browser,
+                self.mainCoordinator.activeViewController);
+          });
+      return;
+    }
+  }
+
   UrlLoadParams params =
       UrlLoadParams::InNewTab(command.URL, command.virtualURL);
   params.SetInBackground(command.inBackground);
@@ -2138,14 +2288,16 @@ using UserFeedbackDataCallback =
   [self startSigninCoordinatorWithCompletion:command.completion];
 }
 
-- (void)showAccountMenuFromAccessPoint:(AccountMenuAccessPoint)accessPoint
-                                   URL:(const GURL&)url {
+- (void)showAccountMenuFromWebWithURL:(const GURL&)url {
   if (![self isTabAvailableToPresentViewController]) {
     return;
   }
-  DCHECK(!self.signinCoordinator)
-      << "self.signinCoordinator: "
-      << base::SysNSStringToUTF8([self.signinCoordinator description]);
+  if (_accountMenuCoordinator) {
+    // In case the account is already opened, no need to open a second one.
+    // It is not clear how it could occur, but it does according to
+    // crbug.com/443698000.
+    return;
+  }
   Browser* browser = self.mainInterface.browser;
   UIViewController* baseViewController = self.mainInterface.viewController;
   _accountMenuCoordinator = [[AccountMenuCoordinator alloc]
@@ -2200,16 +2352,12 @@ using UserFeedbackDataCallback =
   // Copy the URL so it can be safely captured in the block.
   GURL copiedURL = url;
   [self startSigninCoordinatorWithCompletion:^(
-            SigninCoordinatorResult result,
+            SigninCoordinator* coordinator, SigninCoordinatorResult result,
             id<SystemIdentity> completionIdentity) {
-    // If the sign-in is not successful or the scene controller is shut down do
-    // not load the continuation URL.
-    BOOL success = result == SigninCoordinatorResultSuccess;
-    if (!success || !weakSelf) {
-      return;
-    }
-    UrlLoadingBrowserAgent::FromBrowser(weakSelf.mainInterface.browser)
-        ->Load(UrlLoadParams::InCurrentTab(copiedURL));
+    [weakSelf webSigninCompletion:coordinator
+                           result:result
+               completionIdentity:completionIdentity
+                              URL:copiedURL];
   }];
 }
 
@@ -2226,8 +2374,7 @@ using UserFeedbackDataCallback =
   id<SettingsCommands> settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
   SigninNotificationInfoBarDelegate::Create(
-      infoBarManager, self.mainInterface.browser->GetProfile(), settingsHandler,
-      baseViewController);
+      infoBarManager, self.profile, settingsHandler, baseViewController);
 }
 
 - (void)setIncognitoContentVisible:(BOOL)incognitoContentVisible {
@@ -2261,8 +2408,7 @@ using UserFeedbackDataCallback =
   Browser* browser = self.mainInterface.browser;
   if (browser) {
     feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForProfile(
-            browser->GetProfile());
+        feature_engagement::TrackerFactory::GetForProfile(self.profile);
     if (tracker) {
       hasDefaultBrowserBlueDot =
           ShouldTriggerDefaultBrowserHighlightFeature(tracker);
@@ -2335,11 +2481,16 @@ using UserFeedbackDataCallback =
     return;  // silent no-op.
   }
 
-  UISceneActivationRequestOptions* options =
-      [[UISceneActivationRequestOptions alloc] init];
+  UIWindowSceneActivationRequestOptions* options =
+      [[UIWindowSceneActivationRequestOptions alloc] init];
   options.requestingScene = self.sceneState.scene;
+  if (@available(iOS 19.0, *)) {
+    // For iOS26 windowing, ensure the new window doesn't fully overlap the
+    // prior window.
+    options.placement = [UIWindowSceneProminentPlacement prominentPlacement];
+  }
 
-  ProfileIOS* profile = self.sceneState.profileState.profile;
+  ProfileIOS* profile = self.profile;
   if (profile) {
     AttachProfileNameToActivity(userActivity, profile->GetProfileName());
   }
@@ -2411,23 +2562,36 @@ using UserFeedbackDataCallback =
   [self.AIPrototypingCoordinator start];
 }
 
-- (void)displaySafariDataImportEntryPointWithUIHandler:
-    (id<SafariDataImportUIHandler>)UIHandler {
+- (void)displaySafariDataImportFromEntryPoint:
+            (SafariDataImportEntryPoint)entryPoint
+                                withUIHandler:
+                                    (id<SafariDataImportUIHandler>)UIHandler {
   if (_safariImportCoordinator) {
     // Currently displaying.
     return;
   }
-  CHECK(base::FeatureList::IsEnabled(kImportPasswordsFromSafari));
+  CHECK(ShouldShowSafariDataImportEntryPoint(
+      self.currentInterface.browser->GetProfile()->GetPrefs()));
+  BOOL presentOverSettings = self.settingsNavigationController &&
+                             entryPoint == SafariDataImportEntryPoint::kSetting;
+  UIViewController* baseViewController = presentOverSettings
+                                             ? self.settingsNavigationController
+                                             : self.activeViewController;
   SafariDataImportMainCoordinator* safariDataImportCoordinator =
       [[SafariDataImportMainCoordinator alloc]
-          initWithBaseViewController:self.activeViewController
-                             browser:self.currentInterface.browser];
+              initFromEntryPoint:entryPoint
+          withBaseViewController:baseViewController
+                         browser:self.currentInterface.browser];
   safariDataImportCoordinator.delegate = self;
   safariDataImportCoordinator.UIHandler = UIHandler;
-  [self closePresentedViews:YES
-                 completion:^{
-                   [safariDataImportCoordinator start];
-                 }];
+  if (presentOverSettings) {
+    [safariDataImportCoordinator start];
+  } else {
+    [self closePresentedViews:YES
+                   completion:^{
+                     [safariDataImportCoordinator start];
+                   }];
+  }
   _safariImportCoordinator = safariDataImportCoordinator;
 }
 
@@ -2564,6 +2728,24 @@ using UserFeedbackDataCallback =
     [weakSelf showSavedPasswordsSettingsAfterModalDismissFromViewController:
                   baseViewController];
   }];
+}
+
+- (void)showPasswordManagerForCredentialImport:(NSUUID*)UUID {
+  if (!self.settingsNavigationController) {
+    self.settingsNavigationController = [SettingsNavigationController
+        credentialImportControllerForBrowser:self.mainInterface.browser
+                                    delegate:self
+                                        UUID:UUID];
+    [self.currentInterface.viewController
+        presentViewController:self.settingsNavigationController
+                     animated:YES
+                   completion:nil];
+    return;
+  }
+
+  CHECK(self.settingsNavigationController);
+  [self.settingsNavigationController
+      showPasswordManagerForCredentialImport:UUID];
 }
 
 - (void)dismissModalsAndShowPasswordCheckupPageForReferrer:
@@ -2721,24 +2903,6 @@ using UserFeedbackDataCallback =
                                  completion:nil];
 }
 
-- (void)showClearBrowsingDataSettings {
-  CHECK(!IsIosQuickDeleteEnabled());
-
-  UIViewController* baseViewController = self.currentInterface.viewController;
-  if (self.settingsNavigationController) {
-    [self.settingsNavigationController showClearBrowsingDataSettings];
-    return;
-  }
-  Browser* browser = self.mainInterface.browser;
-
-  self.settingsNavigationController = [SettingsNavigationController
-      clearBrowsingDataControllerForBrowser:browser
-                                   delegate:self];
-  [baseViewController presentViewController:self.settingsNavigationController
-                                   animated:YES
-                                 completion:nil];
-}
-
 // Displays the Safety Check (via Settings) for `referrer`.
 - (void)showAndStartSafetyCheckForReferrer:
     (password_manager::PasswordCheckReferrer)referrer {
@@ -2856,10 +3020,13 @@ using UserFeedbackDataCallback =
       BWGControllerForBrowser:self.mainInterface.browser
                      delegate:self];
 
-  UIViewController* baseViewController = self.currentInterface.viewController;
-  [baseViewController presentViewController:self.settingsNavigationController
-                                   animated:YES
-                                 completion:nil];
+  UIViewController* presenter = self.currentInterface.viewController;
+  while (presenter.presentedViewController) {
+    presenter = presenter.presentedViewController;
+  }
+  [presenter presentViewController:self.settingsNavigationController
+                          animated:YES
+                        completion:nil];
 }
 
 #pragma mark - SettingsNavigationControllerDelegate
@@ -3062,6 +3229,10 @@ using UserFeedbackDataCallback =
       return ^{
         [weakSelf searchShareExtensionImageWithLens];
       };
+    case CREDENTIAL_EXCHANGE_IMPORT:
+      return ^{
+        [weakSelf importCredentials];
+      };
     default:
       return nil;
   }
@@ -3166,7 +3337,7 @@ using UserFeedbackDataCallback =
     return;
   }
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(browser->GetProfile());
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
   if (tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kPasswordManagerWidgetPromoUsed);
@@ -3225,15 +3396,9 @@ using UserFeedbackDataCallback =
   __weak CommandDispatcher* weakDispatcher =
       self.mainInterface.browser->GetCommandDispatcher();
   ProceduralBlock openQuickDeleteBlock = ^{
-    if (IsIosQuickDeleteEnabled()) {
-      id<QuickDeleteCommands> quickDeleteHandler =
-          HandlerForProtocol(weakDispatcher, QuickDeleteCommands);
-      [quickDeleteHandler showQuickDeleteAndCanPerformTabsClosureAnimation:YES];
-    } else {
-      id<SettingsCommands> settingsHandler =
-          HandlerForProtocol(weakDispatcher, SettingsCommands);
-      [settingsHandler showClearBrowsingDataSettings];
-    }
+    id<QuickDeleteCommands> quickDeleteHandler =
+        HandlerForProtocol(weakDispatcher, QuickDeleteCommands);
+    [quickDeleteHandler showQuickDeleteAndCanPerformRadialWipeAnimation:YES];
   };
 
   if (self.currentInterface.incognito) {
@@ -3275,6 +3440,14 @@ using UserFeedbackDataCallback =
       ReadingListBrowserAgent::FromBrowser(self.currentInterface.browser);
 
   readingListBrowserAgent->BulkAddURLsToReadingListWithViewSnackbar(URLs);
+}
+
+- (void)importCredentials {
+  id<SettingsCommands> settingsHandler = HandlerForProtocol(
+      self.currentInterface.browser->GetCommandDispatcher(), SettingsCommands);
+  [settingsHandler
+      showPasswordManagerForCredentialImport:self.startupParameters
+                                                 .credentialExchangeImportUUID];
 }
 
 #pragma mark - TabOpening implementation.
@@ -3364,6 +3537,10 @@ using UserFeedbackDataCallback =
 }
 
 - (BOOL)shouldOpenNTPTabOnActivationOfBrowser:(Browser*)browser {
+  if (IsDiamondPrototypeEnabled()) {
+    return NO;
+  }
+
   // Check if there are pending actions that would result in opening a new tab.
   // In that case, it is not useful to open another tab.
   for (NSUserActivity* activity in self.sceneState.connectionOptions
@@ -3679,26 +3856,11 @@ using UserFeedbackDataCallback =
       }
     }
   } else {
-    if (!self.currentInterface.viewController.presentedViewController) {
-      PagePlaceholderBrowserAgent* pagePlaceholderBrowserAgent =
-          PagePlaceholderBrowserAgent::FromBrowser(targetInterface.browser);
-      pagePlaceholderBrowserAgent->ExpectNewForegroundTab();
-    }
     [self setCurrentInterfaceForMode:targetMode];
     [self openOrReuseTabInMode:targetMode
              withUrlLoadParams:urlLoadParams
            tabOpenedCompletion:tabOpenedCompletion];
   }
-}
-
-- (void)expectNewForegroundTabForMode:(ApplicationMode)targetMode {
-  WrangledBrowser* interface = targetMode == ApplicationMode::INCOGNITO
-                                   ? self.incognitoInterface
-                                   : self.mainInterface;
-  DCHECK(interface);
-  PagePlaceholderBrowserAgent* pagePlaceholderBrowserAgent =
-      PagePlaceholderBrowserAgent::FromBrowser(interface.browser);
-  pagePlaceholderBrowserAgent->ExpectNewForegroundTab();
 }
 
 - (void)openNewTabFromOriginPoint:(CGPoint)originPoint
@@ -3925,17 +4087,23 @@ using UserFeedbackDataCallback =
 // with or without animation. Executes its signinCompletion. It’s expected to be
 // not already executed.
 - (void)stopSigninCoordinatorWithCompletionAnimated:(BOOL)animated {
-  if (!self.signinCoordinator) {
+  // We retain the coordinator until the end of the completion, while ensuring
+  // that when the completion requests `self` to stop the signin coordinator,
+  // `stop` is not called a second time.
+  SigninCoordinator* signinCoordinator = self.signinCoordinator;
+  if (!signinCoordinator) {
     return;
   }
-
-  [self.signinCoordinator stopAnimated:animated];
-  SigninCoordinatorCompletionCallback signinCompletion =
-      self.signinCoordinator.signinCompletion;
-  self.signinCoordinator.signinCompletion = nil;
-  CHECK(signinCompletion, base::NotFatalUntil::M142);
-  signinCompletion(SigninCoordinatorResultInterrupted, nil);
   self.signinCoordinator = nil;
+
+  [signinCoordinator stopAnimated:animated];
+  SigninCoordinatorCompletionCallback signinCompletion =
+      signinCoordinator.signinCompletion;
+  signinCoordinator.signinCompletion = nil;
+  CHECK(signinCompletion, base::NotFatalUntil::M142);
+  // The `signinCoordinator` must be nil here, because `self.signinCoordinator`
+  // was set to `nil` above.
+  signinCompletion(nil, SigninCoordinatorResultInterrupted, nil);
 }
 
 // Starts the sign-in coordinator with a default cleanup completion.
@@ -3944,21 +4112,27 @@ using UserFeedbackDataCallback =
     (SigninCoordinatorCompletionCallback)completion {
   DCHECK(self.signinCoordinator);
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(
-          self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-              ->GetProfile());
+      AuthenticationServiceFactory::GetForProfile(self.profile);
   AuthenticationService::ServiceStatus statusService =
       authenticationService->GetServiceStatus();
   switch (statusService) {
     case AuthenticationService::ServiceStatus::SigninDisabledByPolicy: {
       if (completion) {
-        completion(SigninCoordinatorResultDisabled, nil);
+        // The coordinator argument is `nil` because this completion has never
+        // been assigned to a signinCoordinator’s `signinCompletion`. It works
+        // because the part that check the coordinator value is in the
+        // `signinCompletedWithCoordinator:...` below, and so not integrated in
+        // the completion function yet.
+        completion(nil, SigninCoordinatorResultDisabled, nil);
       }
       [self stopSigninCoordinatorAnimated:NO];
       id<PolicyChangeCommands> handler = HandlerForProtocol(
           self.signinCoordinator.browser->GetCommandDispatcher(),
           PolicyChangeCommands);
       [handler showForceSignedOutPrompt];
+      RecordIfNeededSigninFullscreenPromoEvent(
+          SigninFullscreenPromoEvents::kPromoCanceledByPolicy,
+          self.signinCoordinator.accessPoint);
       return;
     }
     case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
@@ -3979,33 +4153,50 @@ using UserFeedbackDataCallback =
     // This could occur due to race condition with multiple windows and
     // simultaneous taps. See crbug.com/368310663.
     if (completion) {
-      completion(SigninCoordinatorResultInterrupted, nil);
+      // The coordinator argument is `nil` because this completion has never
+      // been assigned to a signinCoordinator’s `signinCompletion`. It works
+      // because the part that check the coordinator value is in the
+      // `signinCompletedWithCoordinator:...` below, and so not integrated in
+      // the completion function yet.
+      completion(nil, SigninCoordinatorResultInterrupted, nil);
     }
     self.signinCoordinator = nil;
+    RecordIfNeededSigninFullscreenPromoEvent(
+        SigninFullscreenPromoEvents::kPromoCanceledByUIBlocked,
+        self.signinCoordinator.accessPoint);
     return;
   }
 
   __weak __typeof(self) weakSelf = self;
   self.signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
-        [weakSelf signinCompletedWithResult:result
-                                   identity:identity
-                                 completion:completion];
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> identity) {
+        [weakSelf signinCompletedWithCoordinator:coordinator
+                                          result:result
+                                        identity:identity
+                                      completion:completion];
       };
+
+  // Log that the fullscreen sign-in promo UI has started.
+  RecordIfNeededSigninFullscreenPromoEvent(
+      SigninFullscreenPromoEvents::kPromoUIStarted,
+      self.signinCoordinator.accessPoint);
 
   [self.signinCoordinator start];
 }
 
 // Completion block for Signin coordinators.
-- (void)signinCompletedWithResult:(SigninCoordinatorResult)result
-                         identity:(id<SystemIdentity>)identity
-                       completion:
-                           (SigninCoordinatorCompletionCallback)completion {
-  [self stopSigninCoordinatorAnimated:YES];
+- (void)signinCompletedWithCoordinator:(SigninCoordinator*)coordinator
+                                result:(SigninCoordinatorResult)result
+                              identity:(id<SystemIdentity>)identity
+                            completion:(SigninCoordinatorCompletionCallback)
+                                           completion {
+  CHECK_EQ(coordinator, self.signinCoordinator, base::NotFatalUntil::M151);
 
   if (completion) {
-    completion(result, identity);
+    completion(coordinator, result, identity);
   }
+  [self stopSigninCoordinatorAnimated:YES];
 }
 
 #pragma mark - WebStateListObserving
@@ -4197,27 +4388,6 @@ using UserFeedbackDataCallback =
 
 // Called when the last incognito tab was closed.
 - (void)lastIncognitoTabClosed {
-  // If no other window has incognito tab, then destroy and rebuild the
-  // Profile. Otherwise, just do the state transition animation.
-  if ([self shouldDestroyAndRebuildIncognitoProfile]) {
-    // Incognito profile cannot be deleted before all the requests are
-    // deleted. Queue empty task on IO thread and destroy the Profile
-    // when the task has executed, again verifying that no incognito tabs are
-    // present. When an incognito tab is moved between browsers, there is
-    // a point where the tab isn't attached to any web state list. However, when
-    // this queued cleanup step executes, the moved tab will be attached, so
-    // the cleanup shouldn't proceed.
-
-    auto cleanup = ^{
-      if ([self shouldDestroyAndRebuildIncognitoProfile]) {
-        [self destroyAndRebuildIncognitoProfile];
-      }
-    };
-
-    web::GetIOThreadTaskRunner({})->PostTaskAndReply(
-        FROM_HERE, base::DoNothing(), base::BindRepeating(cleanup));
-  }
-
   // a) The first condition can happen when the last incognito tab is closed
   // from the tab switcher.
   // b) The second condition can happen if some other code (like JS) triggers
@@ -4245,27 +4415,6 @@ using UserFeedbackDataCallback =
   }
 
   [self showTabSwitcher];
-}
-
-// Clears incognito data that is specific to iOS and won't be cleared by
-// deleting the profile.
-- (void)clearIOSSpecificIncognitoData {
-  DCHECK(self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-             ->GetProfile()
-             ->HasOffTheRecordProfile());
-  ProfileIOS* otrProfile =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-          ->GetProfile()
-          ->GetOffTheRecordProfile();
-
-  __weak SceneController* weakSelf = self;
-  BrowsingDataRemover* browsingDataRemover =
-      BrowsingDataRemoverFactory::GetForProfile(otrProfile);
-  browsingDataRemover->Remove(browsing_data::TimePeriod::ALL_TIME,
-                              BrowsingDataRemoveMask::REMOVE_ALL,
-                              base::BindOnce(^{
-                                [weakSelf activateBVCAndMakeCurrentBVCPrimary];
-                              }));
 }
 
 - (void)activateBVCAndMakeCurrentBVCPrimary {
@@ -4359,81 +4508,6 @@ using UserFeedbackDataCallback =
 
 #pragma mark - Handling of destroying the incognito profile
 
-// The incognito Profile should be closed when the last incognito tab is
-// closed (i.e. if there are other incognito tabs open in another Scene, the
-// Profile must not be destroyed).
-- (BOOL)shouldDestroyAndRebuildIncognitoProfile {
-  ProfileIOS* profile = self.sceneState.browserProviderInterface
-                            .mainBrowserProvider.browser->GetProfile();
-  if (!profile->HasOffTheRecordProfile()) {
-    return NO;
-  }
-
-  ProfileIOS* otrProfile = profile->GetOffTheRecordProfile();
-  DCHECK(otrProfile);
-
-  BrowserList* browserList = BrowserListFactory::GetForProfile(otrProfile);
-  for (Browser* browser :
-       browserList->BrowsersOfType(BrowserList::BrowserType::kIncognito)) {
-    WebStateList* webStateList = browser->GetWebStateList();
-    if (!webStateList->empty()) {
-      return NO;
-    }
-  }
-
-  return YES;
-}
-
-// Destroys and rebuilds the incognito Profile. This will inform all the
-// other SceneController to destroy state tied to the Profile and to
-// recreate it.
-- (void)destroyAndRebuildIncognitoProfile {
-  // This seems the best place to mark the start of destroying the incognito
-  // profile.
-  crash_keys::SetDestroyingAndRebuildingIncognitoBrowserState(
-      /*in_progress=*/true);
-
-  [self clearIOSSpecificIncognitoData];
-
-  ProfileIOS* profile = self.sceneState.browserProviderInterface
-                            .mainBrowserProvider.browser->GetProfile();
-  DCHECK(profile->HasOffTheRecordProfile());
-  ProfileIOS* otrProfile = profile->GetOffTheRecordProfile();
-
-  NSMutableArray<SceneController*>* sceneControllers =
-      [[NSMutableArray alloc] init];
-  for (SceneState* sceneState in self.sceneState.profileState.connectedScenes) {
-    SceneController* sceneController = sceneState.controller;
-    // In some circumstances, the scene state may still exist while the
-    // corresponding scene controller has been deallocated.
-    // (see crbug.com/1142782).
-    if (sceneController) {
-      [sceneControllers addObject:sceneController];
-    }
-  }
-
-  for (SceneController* sceneController in sceneControllers) {
-    [sceneController willDestroyIncognitoProfile];
-  }
-
-  // Record off-the-record metrics before detroying the Profile.
-  SessionMetrics::FromProfile(otrProfile)
-      ->RecordAndClearSessionMetrics(MetricsToRecordFlags::kNoMetrics);
-
-  // Destroy and recreate the off-the-record Profile.
-  profile->DestroyOffTheRecordProfile();
-  profile->GetOffTheRecordProfile();
-
-  for (SceneController* sceneController in sceneControllers) {
-    [sceneController incognitoProfileCreated];
-  }
-
-  // This seems the best place to deem the destroying and rebuilding the
-  // incognito profile to be completed.
-  crash_keys::SetDestroyingAndRebuildingIncognitoBrowserState(
-      /*in_progress=*/false);
-}
-
 - (void)willDestroyIncognitoProfile {
   // Clear the Incognito Browser and notify the TabGrid that its otrBrowser
   // will be destroyed.
@@ -4522,6 +4596,12 @@ using UserFeedbackDataCallback =
   CHECK_EQ(coordinator, _safariImportCoordinator);
   [_safariImportCoordinator stop];
   _safariImportCoordinator = nil;
+}
+
+#pragma mark - AuthenticationServiceObserving
+
+- (void)onServiceStatusChanged {
+  [self signoutIfNeeded];
 }
 
 @end

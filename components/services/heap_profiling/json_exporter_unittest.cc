@@ -149,7 +149,8 @@ TEST(ProfilingJsonExporterTest, Simple) {
   std::string json = ExportMemoryMapsAndV2StackTraceToJSON(&params);
 
   // JSON should parse.
-  std::optional<base::Value> root = base::JSONReader::Read(json);
+  std::optional<base::Value> root =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root);
 
   const base::Value::Dict* dict = root->GetIfDict();
@@ -299,7 +300,8 @@ TEST(ProfilingJsonExporterTest, MAYBE_MemoryMaps) {
   std::string json = ExportMemoryMapsAndV2StackTraceToJSON(&params);
 
   // JSON should parse.
-  std::optional<base::Value> root = base::JSONReader::Read(json);
+  std::optional<base::Value> root =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root);
 
   const base::Value::Dict* dict = root->GetIfDict();
@@ -348,7 +350,8 @@ TEST(ProfilingJsonExporterTest, Context) {
   std::string json = ExportMemoryMapsAndV2StackTraceToJSON(&params);
 
   // JSON should parse.
-  std::optional<base::Value> root = base::JSONReader::Read(json);
+  std::optional<base::Value> root =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root);
 
   // Retrieve the allocations.
@@ -430,7 +433,8 @@ TEST(ProfilingJsonExporterTest, LargeAllocation) {
 
   // JSON should parse.
   ASSERT_OK_AND_ASSIGN(auto parsed_json,
-                       base::JSONReader::ReadAndReturnValueWithError(json));
+                       base::JSONReader::ReadAndReturnValueWithError(
+                           json, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   // Validate the allocators summary.
   const base::Value::Dict* malloc_summary =

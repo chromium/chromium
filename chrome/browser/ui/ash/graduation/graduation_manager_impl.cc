@@ -112,6 +112,7 @@ void GraduationManagerImpl::ResumeTimerForTesting() {
 void GraduationManagerImpl::OnUserSessionStarted(bool is_primary) {
   profile_ = ProfileManager::GetActiveUserProfile();
   CHECK(profile_);
+  pref_change_registrar_.Reset();
   if (!profile_->GetProfilePolicyConnector()->IsManaged()) {
     return;
   }

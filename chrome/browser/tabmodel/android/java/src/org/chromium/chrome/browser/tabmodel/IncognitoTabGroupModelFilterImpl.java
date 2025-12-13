@@ -23,14 +23,8 @@ import java.util.Set;
  * last incognito tab is closed we fully tear down the associated profile and related {@link
  * TabCollectionTabModelImpl}. However, this class is long lasting and abstracts away this lifecycle
  * complexity to the outside world by always existing regardless of the existence of an OTR profile.
- *
- * <p>This class only exists if {@link TabCollectionTabModelImpl} is in use as the prior
- * implementation of {@link TabGroupModelFilterImpl} already fulfilled this role by wrapping the
- * {@link IncognitoTabModelImpl}.
- *
- * <p>Post {@link TabCollectionTabModelImpl} launching we could merge this class with {@link
- * IncognitoTabModelImpl}.
  */
+// TODO(crbug.com/463685717): Consider merging with IncognitoTabModelImpl.
 @NullMarked
 public class IncognitoTabGroupModelFilterImpl implements TabGroupModelFilterInternal {
     private final Callback<TabModelInternal> mDelegateModelObserver = this::setDelegateModel;
@@ -97,17 +91,6 @@ public class IncognitoTabGroupModelFilterImpl implements TabGroupModelFilterInte
     public void moveTabOutOfGroupInDirection(int sourceTabId, boolean trailing) {
         if (mCurrentFilter == null) return;
         mCurrentFilter.moveTabOutOfGroupInDirection(sourceTabId, trailing);
-    }
-
-    @Override
-    public void destroy() {
-        // Intentional no-op. Destruction of the mCurrentFilter is not managed by this class.
-    }
-
-    @Override
-    public boolean closeTabs(TabClosureParams params) {
-        if (mCurrentFilter == null) return false;
-        return mCurrentFilter.closeTabs(params);
     }
 
     @Override
@@ -270,9 +253,13 @@ public class IncognitoTabGroupModelFilterImpl implements TabGroupModelFilterInte
     }
 
     @Override
-    public void mergeListOfTabsToGroup(List<Tab> tabs, Tab destinationTab, boolean notify) {
+    public void mergeListOfTabsToGroup(
+            List<Tab> tabs,
+            Tab destinationTab,
+            @Nullable Integer indexInGroup,
+            @MergeNotificationType int notify) {
         if (mCurrentFilter == null) return;
-        mCurrentFilter.mergeListOfTabsToGroup(tabs, destinationTab, notify);
+        mCurrentFilter.mergeListOfTabsToGroup(tabs, destinationTab, indexInGroup, notify);
     }
 
     @Override
@@ -281,13 +268,15 @@ public class IncognitoTabGroupModelFilterImpl implements TabGroupModelFilterInte
     }
 
     @Override
-    public void undoGroupedTab(
-            Tab tab,
-            int originalIndex,
-            @TabId int originalRootId,
-            @Nullable Token originalTabGroupId) {
+    public void performUndoGroupOperation(UndoGroupMetadata undoGroupMetadata) {
         if (mCurrentFilter == null) return;
-        mCurrentFilter.undoGroupedTab(tab, originalIndex, originalRootId, originalTabGroupId);
+        mCurrentFilter.performUndoGroupOperation(undoGroupMetadata);
+    }
+
+    @Override
+    public void undoGroupOperationExpired(UndoGroupMetadata undoGroupMetadata) {
+        if (mCurrentFilter == null) return;
+        mCurrentFilter.undoGroupOperationExpired(undoGroupMetadata);
     }
 
     @Override
@@ -334,21 +323,9 @@ public class IncognitoTabGroupModelFilterImpl implements TabGroupModelFilterInte
     }
 
     @Override
-    public @Nullable String getTabGroupTitle(@TabId int rootId) {
-        if (mCurrentFilter == null) return null;
-        return mCurrentFilter.getTabGroupTitle(rootId);
-    }
-
-    @Override
     public void setTabGroupTitle(Token tabGroupId, @Nullable String title) {
         if (mCurrentFilter == null) return;
         mCurrentFilter.setTabGroupTitle(tabGroupId, title);
-    }
-
-    @Override
-    public void setTabGroupTitle(@TabId int rootId, @Nullable String title) {
-        if (mCurrentFilter == null) return;
-        mCurrentFilter.setTabGroupTitle(rootId, title);
     }
 
     @Override
@@ -358,21 +335,9 @@ public class IncognitoTabGroupModelFilterImpl implements TabGroupModelFilterInte
     }
 
     @Override
-    public void deleteTabGroupTitle(@TabId int rootId) {
-        if (mCurrentFilter == null) return;
-        mCurrentFilter.deleteTabGroupTitle(rootId);
-    }
-
-    @Override
     public int getTabGroupColor(Token tabGroupId) {
         if (mCurrentFilter == null) return TabGroupColorUtils.INVALID_COLOR_ID;
         return mCurrentFilter.getTabGroupColor(tabGroupId);
-    }
-
-    @Override
-    public int getTabGroupColor(@TabId int rootId) {
-        if (mCurrentFilter == null) return TabGroupColorUtils.INVALID_COLOR_ID;
-        return mCurrentFilter.getTabGroupColor(rootId);
     }
 
     @Override
@@ -388,21 +353,9 @@ public class IncognitoTabGroupModelFilterImpl implements TabGroupModelFilterInte
     }
 
     @Override
-    public @TabGroupColorId int getTabGroupColorWithFallback(@TabId int rootId) {
-        if (mCurrentFilter == null) return TabGroupColorId.GREY;
-        return mCurrentFilter.getTabGroupColorWithFallback(rootId);
-    }
-
-    @Override
     public void setTabGroupColor(Token tabGroupId, @TabGroupColorId int color) {
         if (mCurrentFilter == null) return;
         mCurrentFilter.setTabGroupColor(tabGroupId, color);
-    }
-
-    @Override
-    public void setTabGroupColor(@TabId int rootId, @TabGroupColorId int color) {
-        if (mCurrentFilter == null) return;
-        mCurrentFilter.setTabGroupColor(rootId, color);
     }
 
     @Override
@@ -412,21 +365,9 @@ public class IncognitoTabGroupModelFilterImpl implements TabGroupModelFilterInte
     }
 
     @Override
-    public void deleteTabGroupColor(@TabId int rootId) {
-        if (mCurrentFilter == null) return;
-        mCurrentFilter.deleteTabGroupColor(rootId);
-    }
-
-    @Override
     public boolean getTabGroupCollapsed(Token tabGroupId) {
         if (mCurrentFilter == null) return false;
         return mCurrentFilter.getTabGroupCollapsed(tabGroupId);
-    }
-
-    @Override
-    public boolean getTabGroupCollapsed(@TabId int rootId) {
-        if (mCurrentFilter == null) return false;
-        return mCurrentFilter.getTabGroupCollapsed(rootId);
     }
 
     @Override
@@ -436,32 +377,8 @@ public class IncognitoTabGroupModelFilterImpl implements TabGroupModelFilterInte
     }
 
     @Override
-    public void setTabGroupCollapsed(@TabId int rootId, boolean isCollapsed, boolean animate) {
-        if (mCurrentFilter == null) return;
-        mCurrentFilter.setTabGroupCollapsed(rootId, isCollapsed, animate);
-    }
-
-    @Override
     public void deleteTabGroupCollapsed(Token tabGroupId) {
         if (mCurrentFilter == null) return;
         mCurrentFilter.deleteTabGroupCollapsed(tabGroupId);
-    }
-
-    @Override
-    public void deleteTabGroupCollapsed(@TabId int rootId) {
-        if (mCurrentFilter == null) return;
-        mCurrentFilter.deleteTabGroupCollapsed(rootId);
-    }
-
-    @Override
-    public void deleteTabGroupVisualData(Token tabGroupId) {
-        if (mCurrentFilter == null) return;
-        mCurrentFilter.deleteTabGroupVisualData(tabGroupId);
-    }
-
-    @Override
-    public void deleteTabGroupVisualData(@TabId int rootId) {
-        if (mCurrentFilter == null) return;
-        mCurrentFilter.deleteTabGroupVisualData(rootId);
     }
 }

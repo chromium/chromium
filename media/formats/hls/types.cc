@@ -33,6 +33,18 @@ ParseStatus::Or<base::TimeDelta> TimeDelta::Parse(ResolvedSourceString str) {
       });
 }
 
+ByteRangeExpression::ByteRangeExpression(
+    types::DecimalInteger length,
+    std::optional<types::DecimalInteger> offset)
+    : length(std::move(length)), offset(std::move(offset)) {}
+ByteRangeExpression::ByteRangeExpression(const ByteRangeExpression& other) =
+    default;
+ByteRangeExpression::ByteRangeExpression(ByteRangeExpression&& other) = default;
+ByteRangeExpression& ByteRangeExpression::operator=(
+    const ByteRangeExpression& other) = default;
+ByteRangeExpression& ByteRangeExpression::operator=(
+    ByteRangeExpression&& other) = default;
+
 // static
 ParseStatus::Or<ByteRangeExpression> ByteRangeExpression::Parse(
     ResolvedSourceString source_str) {
@@ -59,8 +71,7 @@ ParseStatus::Or<ByteRangeExpression> ByteRangeExpression::Parse(
     offset = std::move(offset_result).value();
   }
 
-  return ByteRangeExpression{.length = std::move(length).value(),
-                             .offset = offset};
+  return ByteRangeExpression(std::move(length).value(), offset);
 }
 
 // static
@@ -69,7 +80,7 @@ ParseStatus::Or<base::Time> ISO8601Date::Parse(ResolvedSourceString str) {
   if (base::Time::FromString(str.Str().data(), &time)) {
     return time;
   }
-  return ParseStatusCode::kMalformedTag;
+  return ParseStatusCode::kMalformedDate;
 }
 
 // static

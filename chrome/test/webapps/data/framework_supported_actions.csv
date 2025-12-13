@@ -97,7 +97,6 @@ open_app_settings_from_app_menu,                       🌕, 🌕,  🌕,   🌑
 open_app_settings_from_command,                        🌕, 🌕,  🌕,   🌑,
 check_browser_navigation,                              🌕, 🌕,  🌕,   🌕,
 check_browser_navigation_is_app_settings,              🌕, 🌕,  🌕,   🌑,
-await_manifest_update,                                 🌕, 🌕,  🌕,   🌕,
 enable_file_handling,                                  🌕, 🌕,  🌕,   🌕,
 disable_file_handling,                                 🌕, 🌕,  🌕,   🌕,
 install_sub_app,                                       🌑, 🌑,  🌑,   🌕,
@@ -109,3 +108,5 @@ new_app_tab,                                           🌕, 🌕,  🌕,   🌕
 check_app_tab_is_site,                                 🌕, 🌕,  🌕,   🌕,
 check_app_tab_created,                                 🌕, 🌕,  🌕,   🌕,
 check_site_loaded_in_tab,                              🌕, 🌕,  🌕,   🌕,
+check_menu_button_pending_update,                      🌕, 🌕,  🌕,   🌕,
+trigger_update_dialog_and_handle_response,             🌕, 🌕,  🌕,   🌕,

@@ -16,6 +16,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
+        "module_scheme": "flat",
         "name": "noop_sleep_tests",
         "swarming": {
           "containment_type": "AUTO",

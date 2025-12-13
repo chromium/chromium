@@ -4,6 +4,7 @@
 
 #include "ui/android/handle_view_resources.h"
 
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -69,3 +70,5 @@ float HandleViewResources::GetDrawableHorizontalPaddingRatio() const {
 }
 
 }  // namespace ui
+
+DEFINE_JNI(HandleViewResources)

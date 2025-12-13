@@ -196,8 +196,9 @@ bool UserUninstalledPreinstalledWebAppPrefs::AppIdContainsAllUrls(
       continue;
 
     for (const GURL& url_to_insert : it.second.install_urls) {
-      if (!base::Contains(existing_urls, url_to_insert.spec()))
+      if (!base::Contains(existing_urls, url_to_insert.spec())) {
         return false;
+      }
     }
   }
   return true;

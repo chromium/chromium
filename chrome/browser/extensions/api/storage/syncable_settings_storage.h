@@ -17,7 +17,10 @@
 #include "components/sync/model/syncable_service.h"
 #include "components/value_store/value_store.h"
 #include "extensions/browser/api/storage/settings_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace syncer {
 class ModelError;

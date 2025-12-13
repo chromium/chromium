@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/cma/backend/alsa/scoped_alsa_mixer.h"
 
 #include "base/containers/span.h"
@@ -366,23 +361,22 @@ TEST_F(ScopedAlsaMixerEventTest, RealCallback) {
 
   EXPECT_CALL(alsa_, MixerPollDescriptorsCount(mixer_)).WillOnce(Return(1));
   EXPECT_CALL(alsa_, MixerPollDescriptors(mixer_, _, 1))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [this](snd_mixer_t* mixer_, struct pollfd* pfds, unsigned int space) {
             for (unsigned int i = 0; i < space; ++i) {
-              pfds[i].fd = pipe_fds_[0];
+              UNSAFE_TODO(pfds[i]).fd = pipe_fds_[0];
             }
             return space;
-          }));
+          });
 
   EXPECT_EQ(alsa_mixer_->element, element_);
   alsa_mixer_->WatchForEvents(&MixerEventCallback, cb_private_data_);
 
-  EXPECT_CALL(alsa_, MixerHandleEvents(mixer_))
-      .WillOnce(testing::Invoke([this, &run_loop]() {
-        ReadByte();
-        run_loop.Quit();
-        return 0;
-      }));
+  EXPECT_CALL(alsa_, MixerHandleEvents(mixer_)).WillOnce([this, &run_loop]() {
+    ReadByte();
+    run_loop.Quit();
+    return 0;
+  });
   WriteByte();
 
   run_loop.Run();

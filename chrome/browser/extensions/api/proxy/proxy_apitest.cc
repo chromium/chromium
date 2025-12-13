@@ -48,8 +48,6 @@ class ProxySettingsApiTest : public ExtensionApiTest {
     ASSERT_TRUE(pref != nullptr);
     EXPECT_TRUE(pref->IsExtensionControlled());
 
-    // TODO(https://crbug.com/1348219) This should call
-    // `PrefService::GetDict`.
     ProxyConfigDictionary dict(
         pref_service->GetDict(proxy_config::prefs::kProxy).Clone());
 
@@ -144,10 +142,8 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, SettingsChangeOnDisableEnable) {
                    pref_service);
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that proxy settings corresponding to an extension are removed when
 // the extension is uninstalled.
-// TODO(crbug.com/431085489): enable proxy api tests on desktop Android.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, SettingsRemovedOnUninstall) {
   ASSERT_TRUE(
       RunExtensionTest("proxy/direct", {}, {.allow_in_incognito = true}))
@@ -162,7 +158,6 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, SettingsRemovedOnUninstall) {
   UninstallExtension(extension->id());
   ExpectNoSettings(pref_service);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that proxy settings corresponding to an extension are removed when
 // the extension is blocklisted by management policy. Regression test for
@@ -200,16 +195,13 @@ IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest,
   ExpectNoSettings(pref_service);
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that proxy settings corresponding to an extension take effect again
 // on browser restart, when the extension is removed from the policy blocklist.
-// TODO(crbug.com/431085489): enable proxy api tests on desktop Android.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, SettingsRemovedOnPolicyBlocklist) {
   PrefService* pref_service = profile()->GetPrefs();
   ValidateSettings(ProxyPrefs::MODE_DIRECT, kNoServer, kNoBypass, kNoPac,
                    pref_service);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests auto-detect settings.
 IN_PROC_BROWSER_TEST_F(ProxySettingsApiTest, ProxyAutoSettings) {

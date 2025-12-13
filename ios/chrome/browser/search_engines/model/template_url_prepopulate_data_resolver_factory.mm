@@ -10,7 +10,6 @@
 #import "components/search_engines/template_url_prepopulate_data_resolver.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/web/public/browser_state.h"
 
 namespace ios {
 
@@ -45,9 +44,7 @@ TemplateURLPrepopulateDataResolverFactory::GetForProfile(ProfileIOS* profile) {
 
 std::unique_ptr<KeyedService>
 TemplateURLPrepopulateDataResolverFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   return std::make_unique<TemplateURLPrepopulateData::Resolver>(
       CHECK_DEREF(profile->GetPrefs()),
       CHECK_DEREF(

@@ -188,6 +188,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() const final;
   FrameOrWorkerScheduler* GetScheduler() final;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) final;
+  // TODO(crbug.com/451479061): Consider moving the following function
+  // under trustedTypes/
   TrustedTypePolicyFactory* GetTrustedTypes() const final {
     return GetTrustedTypesForWorld(*GetCurrentWorld());
   }
@@ -243,6 +245,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // Checks if navigation to Javascript URL is allowed. This check should run
   // before any action is taken (e.g. creating new window) for all
   // same-origin navigations.
+  bool AllowInlineJavascriptUrl(const DOMWrapperWorld* world,
+                                const KURL& url,
+                                Element* element);
   String CheckAndGetJavascriptUrl(
       const DOMWrapperWorld* world,
       const KURL& url,
@@ -450,7 +455,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   Event* CurrentEvent() const;
   void SetCurrentEvent(Event*);
 
-  TrustedTypePolicyFactory* trustedTypes(ScriptState*) const;
   TrustedTypePolicyFactory* GetTrustedTypesForWorld(
       const DOMWrapperWorld&) const;
 
@@ -557,6 +561,8 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   SoftNavigationHeuristics* GetSoftNavigationHeuristics() {
     return soft_navigation_heuristics_.Get();
   }
+
+  void requestResize(ExceptionState&);
 
  protected:
   // EventTarget overrides.

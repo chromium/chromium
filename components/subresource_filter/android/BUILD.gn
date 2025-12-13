@@ -61,7 +61,7 @@ source_set("android") {
     "//base",
     "//components/subresource_filter/core/browser",
     "//content/public/browser",
-    "//ui/android:android",
+    "//ui/android",
   ]
 }
 

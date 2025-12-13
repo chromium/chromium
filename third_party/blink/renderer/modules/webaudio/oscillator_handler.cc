@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webaudio/oscillator_handler.h"
 
 #include <algorithm>
 #include <array>
 #include <limits>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/synchronization/lock.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
@@ -43,14 +40,13 @@ float DetuneToFrequencyMultiplier(float detune_value) {
 
 // Clamp the frequency value to lie with Nyquist frequency. For NaN, arbitrarily
 // clamp to +Nyquist.
-void ClampFrequency(float* frequency, int frames_to_process, float nyquist) {
-  for (int k = 0; k < frames_to_process; ++k) {
-    float f = frequency[k];
-
+void ClampFrequency(base::span<float> frequency,
+                    float nyquist) {
+  for (float& f : frequency) {
     if (std::isnan(f)) {
-      frequency[k] = nyquist;
+      f = nyquist;
     } else {
-      frequency[k] = ClampTo(f, -nyquist, nyquist);
+      f = ClampTo(f, -nyquist, nyquist);
     }
   }
 }
@@ -91,10 +87,10 @@ float DoInterpolation(double virtual_read_index,
     read_index_0 = read_index_0 & read_index_mask;
     read_index2 = read_index2 & read_index_mask;
 
-    float sample1_lower = lower_wave_data[read_index_0];
-    float sample2_lower = lower_wave_data[read_index2];
-    float sample1_higher = higher_wave_data[read_index_0];
-    float sample2_higher = higher_wave_data[read_index2];
+    float sample1_lower = UNSAFE_TODO(lower_wave_data[read_index_0]);
+    float sample2_lower = UNSAFE_TODO(lower_wave_data[read_index2]);
+    float sample1_higher = UNSAFE_TODO(higher_wave_data[read_index_0]);
+    float sample2_higher = UNSAFE_TODO(higher_wave_data[read_index2]);
 
     // Linearly interpolate within each table (lower and higher).
     double interpolation_factor =
@@ -124,8 +120,8 @@ float DoInterpolation(double virtual_read_index,
     a[2] = 0.5 * t * (t + 1);
 
     for (int k = 0; k < 3; ++k) {
-      sample_lower += a[k] * lower_wave_data[read_index[k]];
-      sample_higher += a[k] * higher_wave_data[read_index[k]];
+      sample_lower += a[k] * UNSAFE_TODO(lower_wave_data[read_index[k])];
+      sample_higher += a[k] * UNSAFE_TODO(higher_wave_data[read_index[k])];
     }
   } else {
     // For everything else (more than 6 points per entry), we'll do a
@@ -149,8 +145,8 @@ float DoInterpolation(double virtual_read_index,
     a[4] = t * (t2 - 1) * (t + 2) / 24;
 
     for (int k = 0; k < 5; ++k) {
-      sample_lower += a[k] * lower_wave_data[read_index[k]];
-      sample_higher += a[k] * higher_wave_data[read_index[k]];
+      sample_lower += a[k] * UNSAFE_TODO(lower_wave_data[read_index[k])];
+      sample_higher += a[k] * UNSAFE_TODO(higher_wave_data[read_index[k])];
     }
   }
 
@@ -344,8 +340,7 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
   }
 
   if (has_sample_accurate_values) {
-    ClampFrequency(phase_increments.data(), frames_to_process,
-                   Context()->sampleRate() / 2);
+    ClampFrequency(phase_increments, Context()->sampleRate() / 2);
     // Convert from frequency to wavetable increment.
     vector_math::Vsmul(phase_increments.data(), 1, &final_scale,
                        phase_increments.data(), 1, frames_to_process);
@@ -454,10 +449,10 @@ double OscillatorHandler::ProcessKRateScalar(int start,
         static_cast<unsigned>(virtual_read_index) & read_index_mask;
     const unsigned read_index_1 = (read_index_0 + 1) & read_index_mask;
 
-    const float sample1_lower = lower_wave_data[read_index_0];
-    const float sample2_lower = lower_wave_data[read_index_1];
-    const float sample1_higher = higher_wave_data[read_index_0];
-    const float sample2_higher = higher_wave_data[read_index_1];
+    const float sample1_lower = UNSAFE_TODO(lower_wave_data[read_index_0]);
+    const float sample2_lower = UNSAFE_TODO(lower_wave_data[read_index_1]);
+    const float sample1_higher = UNSAFE_TODO(higher_wave_data[read_index_0]);
+    const float sample2_higher = UNSAFE_TODO(higher_wave_data[read_index_1]);
 
     // Linearly interpolate within each table (lower and higher).
     const float interpolation_factor =
@@ -472,7 +467,7 @@ double OscillatorHandler::ProcessKRateScalar(int start,
     const float sample = sample_higher + table_interpolation_factor *
                                              (sample_lower - sample_higher);
 
-    dest_p[k] = sample;
+    UNSAFE_TODO(dest_p[k]) = sample;
 
     // Increment virtual read index and wrap virtualReadIndex into the range
     // 0 -> periodicWaveSize.
@@ -498,7 +493,7 @@ double OscillatorHandler::ProcessKRate(int n,
   float frequency = frequency_->FinalValue();
   const float detune_scale = DetuneToFrequencyMultiplier(detune_->FinalValue());
   frequency *= detune_scale;
-  ClampFrequency(&frequency, 1, Context()->sampleRate() / 2);
+  ClampFrequency(base::span_from_ref(frequency), Context()->sampleRate() / 2);
   periodic_wave_->WaveDataForFundamentalFrequency(
       frequency, lower_wave_data, higher_wave_data, table_interpolation_factor);
 
@@ -530,7 +525,7 @@ double OscillatorHandler::ProcessKRate(int n,
           virtual_read_index, fabs(incr), read_index_mask,
           table_interpolation_factor, lower_wave_data, higher_wave_data);
 
-      *dest_p++ = sample;
+      *UNSAFE_TODO(dest_p++) = sample;
 
       // Increment virtual read index and wrap virtualReadIndex into the range
       // 0 -> periodicWaveSize.
@@ -566,7 +561,7 @@ std::tuple<int, double> OscillatorHandler::ProcessARateVector(
     std::array<float, 4> frequency;
 
     for (int m = 0; m < 4; ++m) {
-      float phase_incr = phase_increments[k + m];
+      float phase_incr = UNSAFE_TODO(phase_increments[k + m]);
       is_big_increment =
           is_big_increment && (fabs(phase_incr) >= kInterpolate2Point);
       frequency[m] = inv_rate_scale * phase_incr;
@@ -581,21 +576,22 @@ std::tuple<int, double> OscillatorHandler::ProcessARateVector(
     // to call DoInterpolation to handle it correctly.
     if (is_big_increment) {
       virtual_read_index = ProcessARateVectorKernel(
-          destination + k, virtual_read_index, phase_increments + k,
-          periodic_wave_size, lower_wave_data.data(), higher_wave_data.data(),
+          UNSAFE_TODO(destination + k), virtual_read_index,
+          UNSAFE_TODO(phase_increments + k), periodic_wave_size,
+          lower_wave_data.data(), higher_wave_data.data(),
           table_interpolation_factor.data());
     } else {
       for (int m = 0; m < 4; ++m) {
-        float sample =
-            DoInterpolation(virtual_read_index, fabs(phase_increments[k + m]),
-                            read_index_mask, table_interpolation_factor[m],
-                            lower_wave_data[m], higher_wave_data[m]);
+        float sample = DoInterpolation(
+            virtual_read_index, fabs(UNSAFE_TODO(phase_increments[k + m])),
+            read_index_mask, table_interpolation_factor[m], lower_wave_data[m],
+            higher_wave_data[m]);
 
-        destination[k + m] = sample;
+        UNSAFE_TODO(destination[k + m]) = sample;
 
         // Increment virtual read index and wrap virtualReadIndex into the range
         // 0 -> periodicWaveSize.
-        virtual_read_index += phase_increments[k + m];
+        virtual_read_index += UNSAFE_TODO(phase_increments[k + m]);
         virtual_read_index -=
             floor(virtual_read_index * inv_periodic_wave_size) *
             periodic_wave_size;
@@ -623,7 +619,7 @@ double OscillatorHandler::ProcessARateScalar(
   float table_interpolation_factor = 0;
 
   for (int m = k; m < n; ++m) {
-    float incr = phase_increments[m];
+    float incr = UNSAFE_TODO(phase_increments[m]);
 
     float frequency = inv_rate_scale * incr;
     periodic_wave_->WaveDataForFundamentalFrequency(frequency, lower_wave_data,
@@ -634,7 +630,7 @@ double OscillatorHandler::ProcessARateScalar(
                                    read_index_mask, table_interpolation_factor,
                                    lower_wave_data, higher_wave_data);
 
-    destination[m] = sample;
+    UNSAFE_TODO(destination[m]) = sample;
 
     // Increment virtual read index and wrap virtualReadIndex into the range
     // 0 -> periodicWaveSize.
@@ -726,7 +722,7 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
     float detune = detune_->FinalValue();
     float detune_scale = DetuneToFrequencyMultiplier(detune);
     frequency *= detune_scale;
-    ClampFrequency(&frequency, 1, Context()->sampleRate() / 2);
+    ClampFrequency(base::span_from_ref(frequency), Context()->sampleRate() / 2);
     periodic_wave_->WaveDataForFundamentalFrequency(frequency, lower_wave_data,
                                                     higher_wave_data,
                                                     table_interpolation_factor);
@@ -735,7 +731,7 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
   float* phase_increments = phase_increments_.Data();
 
   // Start rendering at the correct offset.
-  dest_p += quantum_frame_offset;
+  UNSAFE_TODO(dest_p += quantum_frame_offset);
   int n = non_silent_frames_to_process;
 
   // If startFrameOffset is not 0, that means the oscillator doesn't actually
@@ -743,7 +739,7 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
   // to reflect that, and adjust virtualReadIndex to start the value at
   // startFrameOffset.
   if (start_frame_offset > 0) {
-    ++dest_p;
+    UNSAFE_TODO(++dest_p);
     --n;
     virtual_read_index += (1 - start_frame_offset) * frequency * rate_scale;
     DCHECK(virtual_read_index < periodic_wave_size);

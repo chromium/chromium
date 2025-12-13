@@ -41,7 +41,9 @@ class CC_EXPORT UkmManager {
       const CompositorFrameReporter::ProcessedBlinkBreakdown&
           processed_blink_breakdown,
       const CompositorFrameReporter::ProcessedVizBreakdown&
-          processed_viz_breakdown) const;
+          processed_viz_breakdown,
+      const CompositorFrameReporter::ProcessedTreesInVizBreakdown&
+          processed_trees_in_viz_breakdown) const;
 
   void RecordEventLatencyUKM(
       const EventMetrics::List& events_metrics,

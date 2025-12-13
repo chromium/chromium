@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/client/gl_helper.h"
 
 #include <stddef.h>
@@ -19,12 +14,14 @@
 #include "base/atomicops.h"
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
@@ -158,7 +155,7 @@ class GLHelper::CopyTextureToImpl final {
                             GLenum texture_target,
                             const gfx::Point& src_starting_point,
                             const gfx::Size& dst_size,
-                            unsigned char* out,
+                            base::span<uint8_t> out,
                             size_t row_stride_bytes,
                             bool flip_y,
                             GLenum format,
@@ -170,7 +167,7 @@ class GLHelper::CopyTextureToImpl final {
                      const gfx::Size& dst_size,
                      size_t bytes_per_row,     // generally dst_size.width() * 4
                      size_t row_stride_bytes,  // generally dst_size.width() * 4
-                     unsigned char* out,
+                     base::span<uint8_t> out,
                      GLenum format,
                      GLenum type,
                      size_t bytes_per_pixel,
@@ -179,7 +176,7 @@ class GLHelper::CopyTextureToImpl final {
 
   void ReadbackPlane(const gfx::Size& texture_size,
                      int row_stride_bytes,
-                     unsigned char* data,
+                     base::span<uint8_t> data,
                      int size_shift,
                      const gfx::Rect& paste_rect,
                      ReadbackSwizzle swizzle,
@@ -202,7 +199,7 @@ class GLHelper::CopyTextureToImpl final {
             size_t bytes_per_pixel_,
             size_t bytes_per_row_,
             size_t row_stride_bytes_,
-            unsigned char* pixels_,
+            base::span<uint8_t> pixels_,
             bool flip_y_,
             base::OnceCallback<void(bool)> callback_)
         : size(size_),
@@ -221,7 +218,7 @@ class GLHelper::CopyTextureToImpl final {
     size_t row_stride_bytes;
     bool flip_y;
     base::OnceCallback<void(bool)> callback;
-    raw_ptr<unsigned char> pixels;
+    base::raw_span<uint8_t> pixels;
     GLuint buffer = 0;
     GLuint query = 0;
   };
@@ -278,11 +275,11 @@ class GLHelper::CopyTextureToImpl final {
                      const gfx::Size& src_texture_size,
                      const gfx::Rect& output_rect,
                      int y_plane_row_stride_bytes,
-                     unsigned char* y_plane_data,
+                     base::span<uint8_t> y_plane_data,
                      int u_plane_row_stride_bytes,
-                     unsigned char* u_plane_data,
+                     base::span<uint8_t> u_plane_data,
                      int v_plane_row_stride_bytes,
-                     unsigned char* v_plane_data,
+                     base::span<uint8_t> v_plane_data,
                      const gfx::Point& paste_location,
                      base::OnceCallback<void(bool)> callback) override;
 
@@ -360,7 +357,7 @@ void GLHelper::CopyTextureToImpl::ReadbackAsync(
     const gfx::Size& dst_size,
     size_t bytes_per_row,
     size_t row_stride_bytes,
-    unsigned char* out,
+    base::span<uint8_t> out,
     GLenum format,
     GLenum type,
     size_t bytes_per_pixel,
@@ -396,7 +393,7 @@ void GLHelper::CopyTextureToImpl::ReadbackTextureAsync(
     GLenum texture_target,
     const gfx::Point& src_starting_point,
     const gfx::Size& dst_size,
-    unsigned char* out,
+    base::span<uint8_t> out,
     size_t row_stride_bytes,
     bool flip_y,
     GLenum format,
@@ -444,27 +441,34 @@ void GLHelper::CopyTextureToImpl::ReadbackDone(Request* finished_request) {
     bool result = false;
     if (request->buffer != 0) {
       gl_->BindBuffer(GL_PIXEL_PACK_TRANSFER_BUFFER_CHROMIUM, request->buffer);
-      unsigned char* src = static_cast<unsigned char*>(gl_->MapBufferCHROMIUM(
-          GL_PIXEL_PACK_TRANSFER_BUFFER_CHROMIUM, GL_READ_ONLY));
-      if (src) {
+      void* mapped_ptr = gl_->MapBufferCHROMIUM(
+          GL_PIXEL_PACK_TRANSFER_BUFFER_CHROMIUM, GL_READ_ONLY);
+      if (mapped_ptr) {
         result = true;
         int dst_stride = base::saturated_cast<int>(request->row_stride_bytes);
-        int src_stride = base::saturated_cast<int>(request->bytes_per_pixel *
-                                                   request->size.width());
+        const size_t src_stride =
+            request->bytes_per_pixel * request->size.width();
+        const size_t src_buffer_size = src_stride * request->size.height();
+        base::span<const uint8_t> UNSAFE_TODO(
+            src_span(static_cast<const uint8_t*>(mapped_ptr), src_buffer_size));
+        base::span<uint8_t> dst_span = request->pixels;
+
+        size_t src_offset = 0;
+        size_t dst_offset = 0;
         size_t bytes_to_copy =
             std::min(request->row_stride_bytes, request->bytes_per_row);
-        unsigned char* dst = request->pixels;
         if (request->flip_y && request->size.height() > 1) {
-          dst += dst_stride * (request->size.height() - 1);
+          dst_offset = dst_stride * (request->size.height() - 1);
           dst_stride = -dst_stride;
         }
         // We need to use `RelaxedAtomicWriteMemcpy` because we might be writing
         // into memory observed by JS at the same time.
-        for (int y = 0; y < request->size.height(); y++) {
-          base::subtle::RelaxedAtomicWriteMemcpy(
-              base::span(dst, bytes_to_copy), base::span(src, bytes_to_copy));
-          dst += dst_stride;
-          src += src_stride;
+        for (int y = 0; y < request->size.height(); ++y) {
+          auto src_row = src_span.subspan(src_offset, bytes_to_copy);
+          auto dst_row = dst_span.subspan(dst_offset, bytes_to_copy);
+          base::subtle::RelaxedAtomicWriteMemcpy(dst_row, src_row);
+          src_offset += src_stride;
+          dst_offset += dst_stride;
         }
         gl_->UnmapBufferCHROMIUM(GL_PIXEL_PACK_TRANSFER_BUFFER_CHROMIUM);
       }
@@ -526,7 +530,7 @@ void GLHelper::ReadbackTextureAsync(GLuint texture,
                                     GLenum texture_target,
                                     const gfx::Point& src_starting_point,
                                     const gfx::Size& dst_size,
-                                    unsigned char* out,
+                                    base::span<uint8_t> out,
                                     size_t row_stride_bytes,
                                     bool flip_y,
                                     GLenum format,
@@ -570,7 +574,7 @@ GLint GLHelper::MaxDrawBuffers() {
 void GLHelper::CopyTextureToImpl::ReadbackPlane(
     const gfx::Size& texture_size,
     int row_stride_bytes,
-    unsigned char* data,
+    base::span<uint8_t> data,
     int size_shift,
     const gfx::Rect& paste_rect,
     ReadbackSwizzle swizzle,
@@ -583,7 +587,7 @@ void GLHelper::CopyTextureToImpl::ReadbackPlane(
   const bool kFlipY = false;
   size_t bytes_per_row = paste_rect.width() >> size_shift;
   ReadbackAsync(gfx::Point(), texture_size, bytes_per_row, row_stride_bytes,
-                data + offset,
+                data.subspan(offset),
                 (swizzle == kSwizzleBGRA) ? GL_BGRA_EXT : GL_RGBA,
                 GL_UNSIGNED_BYTE, 4, kFlipY, std::move(callback));
 }
@@ -773,11 +777,11 @@ void GLHelper::CopyTextureToImpl::ReadbackYUVImpl::ReadbackYUV(
     const gfx::Size& src_texture_size,
     const gfx::Rect& output_rect,
     int y_plane_row_stride_bytes,
-    unsigned char* y_plane_data,
+    base::span<uint8_t> y_plane_data,
     int u_plane_row_stride_bytes,
-    unsigned char* u_plane_data,
+    base::span<uint8_t> u_plane_data,
     int v_plane_row_stride_bytes,
-    unsigned char* v_plane_data,
+    base::span<uint8_t> v_plane_data,
     const gfx::Point& paste_location,
     base::OnceCallback<void(bool)> callback) {
   DCHECK(!(paste_location.x() & 1));

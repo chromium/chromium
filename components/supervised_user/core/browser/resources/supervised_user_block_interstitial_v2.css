@@ -25,7 +25,12 @@ button {
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
-  height: 32px;
+  /*
+   * Google accessibility compliance requires a minimum touch target size of 48
+   * dp for all controls on all Android surfaces, including desktops. This
+   * setting is applied to all platforms though for simplicity.
+   */
+  height: 48px;
   line-height: normal;
   margin: 0;
   padding: 6px 16px;
@@ -285,7 +290,6 @@ iframes. */
 
   button,
   [dir='rtl'] button {
-    height: 40px;
     width: 100%;
     padding: 10px;
   }

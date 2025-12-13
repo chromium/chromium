@@ -83,12 +83,13 @@ public interface IntentRequestTracker {
 
     /**
      * Responds to the intent result.
+     *
      * @param requestCode Request code of the requested intent.
      * @param resultCode Result code of the requested intent.
      * @param data The data returned by the intent.
      * @return Boolean value of whether the intent.
      */
-    boolean onActivityResult(int requestCode, int resultCode, Intent data);
+    boolean onActivityResult(int requestCode, int resultCode, @Nullable Intent data);
 
     WeakReference<Activity> getActivity();
 
@@ -105,7 +106,7 @@ public interface IntentRequestTracker {
      *
      * @param bundle The bundle to restore the information from onResume
      */
-    void restoreInstanceState(Bundle bundle);
+    void restoreInstanceState(@Nullable Bundle bundle);
 
     /**
      * Show a cancelable intent.

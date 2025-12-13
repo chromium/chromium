@@ -41,10 +41,16 @@
 #include "ui/events/event_targeter.h"
 #include "ui/events/gestures/gesture_types.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_APPLE)
 #error "This file must not be included on macOS; Chromium Mac doesn't use Aura."
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/376575664): Remove this include directive when the
+// ADVANCED_MEMORY_SAFETY_CHECKS macro is removed.
+#include "base/memory/advanced_memory_safety_checks.h"
 #endif
 
 namespace cc {
@@ -110,6 +116,11 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
                            public ui::PropertyHandler,
                            public ui::metadata::MetaDataProvider,
                            public viz::HostFrameSinkClient {
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/376575664): Remove this macro once the bug gets fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+#endif
+
  public:
   METADATA_HEADER_BASE(Window);
 

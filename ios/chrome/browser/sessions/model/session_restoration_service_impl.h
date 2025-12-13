@@ -44,7 +44,6 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
   void AddObserver(SessionRestorationObserver* observer) final;
   void RemoveObserver(SessionRestorationObserver* observer) final;
   void SaveSessions() final;
-  void ScheduleSaveSessions() final;
   void SetSessionID(Browser* browser, const std::string& identifier) final;
   void LoadSession(Browser* browser) final;
   void LoadWebStateStorage(Browser* browser,

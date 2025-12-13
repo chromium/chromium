@@ -65,7 +65,7 @@
 
 namespace policy {
 
-// Collects logs to be displayed in chrome://policy-logs.
+// Collects logs to be displayed in chrome://policy/logs.
 class POLICY_EXPORT PolicyLogger {
  public:
   class POLICY_EXPORT Log {

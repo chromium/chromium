@@ -23,11 +23,14 @@ import android.view.inputmethod.ExtractedText;
 import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.HandwritingGesture;
 import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.InputContentInfo;
 import android.view.inputmethod.SurroundingText;
+import android.view.inputmethod.TextAttribute;
 
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
@@ -35,7 +38,9 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.StylusWritingGestureData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.net.MimeTypeFilter;
 
+import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -129,7 +134,7 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
 
     @Override
     public void updateStateOnUiThread(
-            String text,
+            CharSequence text,
             final int selectionStart,
             final int selectionEnd,
             final int compositionStart,
@@ -386,6 +391,36 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
     private void commitTextOnUiThread(final CharSequence text, final int newCursorPosition) {
         cancelCombiningAccentOnUiThread();
         mImeAdapter.sendCompositionToNative(text, newCursorPosition, true, 0);
+    }
+
+    /**
+     * @see InputConnection#replaceText(int, int, java.lang.CharSequence, int,
+     *     android.view.inputmethod.TextAttribute)
+     */
+    @Override
+    public boolean replaceText(
+            final int start,
+            final int end,
+            final CharSequence text,
+            final int newCursorPosition,
+            @Nullable final TextAttribute attribute) {
+        if (DEBUG_LOGS) {
+            Log.i(
+                    TAG,
+                    "replaceText [%d] [%d] [%s] [%d] [%s]",
+                    start,
+                    end,
+                    text,
+                    newCursorPosition,
+                    attribute);
+        }
+
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mImeAdapter.replaceText(start, end, text, newCursorPosition);
+                });
+        return true;
     }
 
     /**
@@ -817,6 +852,60 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
                             new OngoingGesture(gestureData, executor, consumer);
                     mImeAdapter.handleGesture(ongoingGesture);
                 });
+    }
+
+    /**
+     * @see InputConnection#commitContent(InputContentInfo, int, Bundle)
+     */
+    @Override
+    public boolean commitContent(final InputContentInfo inputContentInfo, int flags, Bundle data) {
+        if (DEBUG_LOGS) Log.i(TAG, "commitContent [%s] [%d]", inputContentInfo, flags);
+        final String mimeType = inputContentInfo.getDescription().getMimeType(0);
+
+        if (!new MimeTypeFilter(
+                        Arrays.asList(mImeAdapter.getSupportedMimeTypes()),
+                        /* acceptDirectory= */ false)
+                .accept(null, mimeType)) {
+            return false;
+        }
+
+        PostTask.postTask(
+                TaskTraits.USER_BLOCKING_MAY_BLOCK,
+                () -> {
+                    inputContentInfo.requestPermission();
+                    try {
+                        String dataUrl =
+                                ImeUtils.getDataUrlFromContentUri(
+                                        ContextUtils.getApplicationContext()
+                                                .getContentResolver()
+                                                .openInputStream(inputContentInfo.getContentUri()),
+                                        mimeType);
+
+                        PostTask.postTask(
+                                TaskTraits.UI_DEFAULT,
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mImeAdapter.commitContent(dataUrl);
+                                    }
+                                });
+                    } catch (Exception e) {
+                        Log.e(TAG, "Failed to commit rich content.", e);
+                        return;
+                    }
+                });
+        return true;
+    }
+
+    /**
+     * @see InputConnection#performSpellCheck()
+     */
+    @Override
+    public boolean performSpellCheck() {
+        if (DEBUG_LOGS) Log.i(TAG, "performSpellCheck");
+
+        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> mImeAdapter.performSpellCheck());
+        return true;
     }
 
     /**

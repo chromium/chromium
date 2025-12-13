@@ -27,6 +27,7 @@ class AccountPickerBottomSheetProperties {
      * account picker bottom sheet configuration.
      */
     @IntDef({
+        ViewState.NONE,
         ViewState.NO_ACCOUNTS,
         ViewState.COLLAPSED_ACCOUNT_LIST,
         ViewState.EXPANDED_ACCOUNT_LIST,
@@ -37,6 +38,15 @@ class AccountPickerBottomSheetProperties {
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface ViewState {
+        /**
+         * Sentinel value for ViewState, indicating no specific active view state. It's used as the
+         * initial value for seamless sign-in flow's previous view state or to signal that the
+         * bottom sheet should be dismissed when the back button is pressed.
+         *
+         * <p>TODO(crbug.com/462087276): Decouple seamless sign-in ViewState from the account picker
+         */
+        int NONE = -1;
+
         /**
          * When there is no account on device, the user sees only one blue button
          * |Add account to device|.
@@ -116,9 +126,13 @@ class AccountPickerBottomSheetProperties {
     static final ReadableObjectPropertyKey<OnClickListener> ON_CONTINUE_AS_CLICKED =
             new ReadableObjectPropertyKey<>("on_continue_as_clicked");
 
-    // PropertyKey for the button to dismiss the bottom sheet
-    static final ReadableObjectPropertyKey<OnClickListener> ON_DISMISS_CLICKED =
-            new ReadableObjectPropertyKey<>("on_dismiss_clicked");
+    // PropertyKey for the button to dismiss the account picker bottom sheet.
+    static final ReadableObjectPropertyKey<OnClickListener> ON_ACCOUNT_PICKER_DISMISS_CLICKED =
+            new ReadableObjectPropertyKey<>("on_account_picker_dismiss_clicked");
+
+    // PropertyKey for the cancel button on the confirm management screen.
+    static final ReadableObjectPropertyKey<OnClickListener> ON_CONFIRM_MANAGEMENT_CANCEL_CLICKED =
+            new ReadableObjectPropertyKey<>("on_confirm_management_cancel_clicked");
 
     // PropertyKey indicates the view state of the account picker bottom sheet
     static final WritableIntPropertyKey VIEW_STATE = new WritableIntPropertyKey("view_state");
@@ -133,7 +147,8 @@ class AccountPickerBottomSheetProperties {
                 SELECTED_ACCOUNT_DATA,
                 SELECTED_ACCOUNT_DOMAIN,
                 ON_CONTINUE_AS_CLICKED,
-                ON_DISMISS_CLICKED,
+                ON_ACCOUNT_PICKER_DISMISS_CLICKED,
+                ON_CONFIRM_MANAGEMENT_CANCEL_CLICKED,
                 VIEW_STATE,
                 BOTTOM_SHEET_STRINGS,
             };
@@ -147,15 +162,44 @@ class AccountPickerBottomSheetProperties {
     static PropertyModel createModel(
             Runnable onSelectedAccountClicked,
             Runnable onContinueAsClicked,
-            OnClickListener onDismissClicked,
+            Runnable onAccountPickerDismissClicked,
+            Runnable onConfirmManagementCancelClicked,
             AccountPickerBottomSheetStrings accountPickerBottomSheetStrings) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(ON_SELECTED_ACCOUNT_CLICKED, v -> onSelectedAccountClicked.run())
                 .with(SELECTED_ACCOUNT_DATA, null)
                 .with(ON_CONTINUE_AS_CLICKED, v -> onContinueAsClicked.run())
-                .with(ON_DISMISS_CLICKED, onDismissClicked)
+                .with(ON_ACCOUNT_PICKER_DISMISS_CLICKED, v -> onAccountPickerDismissClicked.run())
+                .with(
+                        ON_CONFIRM_MANAGEMENT_CANCEL_CLICKED,
+                        v -> onConfirmManagementCancelClicked.run())
                 .with(VIEW_STATE, ViewState.NO_ACCOUNTS)
                 .with(BOTTOM_SHEET_STRINGS, accountPickerBottomSheetStrings)
+                .build();
+    }
+
+    /**
+     * Creates a default model for the seamless sign-in bottom sheet. This defines the state and
+     * actions for the bottom sheet that is only shown on error or for management notice
+     * confirmation (along with subsequent loading state after user accepts management notice).
+     *
+     * <p>In most cases, the bottom sheet remains hidden.
+     *
+     * <p>TODO(crbug.com/462087276): Decouple seamless sign-in from the account picker properties.
+     * The seamless sign-in flow currently reuses the account picker's PropertyModel, which can lead
+     * to invalid view states. A dedicated set of ViewStates should be created for seamless sign-in.
+     */
+    public static PropertyModel createModelForSeamlessSignin(
+            Runnable onContinueAsClicked,
+            Runnable onConfirmManagementCancelClicked,
+            AccountPickerBottomSheetStrings strings) {
+        return new PropertyModel.Builder(ALL_KEYS)
+                .with(ON_CONTINUE_AS_CLICKED, v -> onContinueAsClicked.run())
+                .with(
+                        ON_CONFIRM_MANAGEMENT_CANCEL_CLICKED,
+                        v -> onConfirmManagementCancelClicked.run())
+                .with(BOTTOM_SHEET_STRINGS, strings)
+                .with(VIEW_STATE, ViewState.NONE)
                 .build();
     }
 

@@ -11,7 +11,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -36,12 +35,6 @@ namespace {
 
 // This is used for tagging system event logs.
 const char kApplicationName[] = "chromoting";
-
-std::ostream& operator<<(std::ostream& os, const ScreenResolution& resolution) {
-  return os << resolution.dimensions().width() << "x"
-            << resolution.dimensions().height() << " at "
-            << resolution.dpi().x() << "x" << resolution.dpi().y() << " DPI";
-}
 
 }  // namespace
 

@@ -1,0 +1,49 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("utils") {
+  sources = [
+    "utils.cc",
+    "utils.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/commerce/core:pref_names",
+    "//components/ntp_tiles:pref_names",
+    "//components/omnibox/browser:pref_names",
+    "//components/safety_check:pref_names",
+    "//components/sync_preferences/cross_device_pref_tracker/prefs",
+  ]
+  deps = [
+    "//components/prefs",
+    "//components/sync_device_info",
+    "//components/sync_preferences/cross_device_pref_tracker",
+    "//components/sync_preferences/cross_device_pref_tracker:timestamped_pref_value",
+  ]
+  if (is_android) {
+    deps += [ "android:jni_headers" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "utils_unittest.cc" ]
+  deps = [
+    ":utils",
+    "//base",
+    "//base/test:test_support",
+    "//components/sync/protocol",
+    "//components/sync_device_info",
+    "//components/sync_device_info:test_support",
+    "//components/sync_preferences/cross_device_pref_tracker",
+    "//components/sync_preferences/cross_device_pref_tracker:timestamped_pref_value",
+    "//testing/gtest",
+  ]
+  if (is_android) {
+    deps += [
+      "android",
+      "android:java",
+    ]
+  }
+}

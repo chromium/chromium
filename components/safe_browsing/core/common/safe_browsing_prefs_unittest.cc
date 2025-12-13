@@ -39,6 +39,8 @@ class SafeBrowsingPrefsTest : public ::testing::Test {
     prefs_.registry()->RegisterListPref(prefs::kSafeBrowsingAllowlistDomains);
     prefs_.registry()->RegisterBooleanPref(
         prefs::kHashPrefixRealTimeChecksAllowedByPolicy, true);
+    prefs_.registry()->RegisterBooleanPref(
+        prefs::kEnhancedProtectionEnabledViaTailoredSecurity, false);
   }
 
   void ResetPrefs(bool scout_reporting) {
@@ -102,6 +104,9 @@ TEST_F(SafeBrowsingPrefsTest,
 }
 
 TEST_F(SafeBrowsingPrefsTest, GetSafeBrowsingExtendedReportingLevel) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      safe_browsing::kExtendedReportingRemovePrefDependency);
   // By Default, extended reporting is off.
   EXPECT_EQ(SBER_LEVEL_OFF, GetExtendedReportingLevel(prefs_));
 
@@ -204,16 +209,10 @@ TEST_F(SafeBrowsingPrefsTest,
 }
 
 TEST_F(SafeBrowsingPrefsTest, IsExtendedReportingPolicyManaged) {
-  // This test checks that manipulating SBEROptInAllowed and the management
-  // state of SBER behaves as expected. Below, we describe what should happen
-  // to the results of IsExtendedReportingPolicyManaged and
-  // IsExtendedReportingOptInAllowed.
-
-  // Confirm default state, SBER should be disabled, SBER with deprecation flag
-  // bypassed should be disabled, OptInAllowed should be enabled, and SBER is
-  // not managed.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kExtendedReportingRemovePrefDependency);
   EXPECT_FALSE(IsExtendedReportingEnabled(prefs_));
-  EXPECT_FALSE(IsExtendedReportingEnabledBypassDeprecationFlag(prefs_));
   EXPECT_TRUE(IsExtendedReportingOptInAllowed(prefs_));
   EXPECT_FALSE(IsExtendedReportingPolicyManaged(prefs_));
 
@@ -236,10 +235,25 @@ TEST_F(SafeBrowsingPrefsTest, IsExtendedReportingPolicyManaged) {
       prefs_.IsManagedPreference(prefs::kSafeBrowsingScoutReportingEnabled));
   // The value of the pref comes from the policy.
   EXPECT_TRUE(IsExtendedReportingEnabled(prefs_));
-  // The value of the pref comes from the policy and should be enabled.
-  EXPECT_TRUE(IsExtendedReportingEnabledBypassDeprecationFlag(prefs_));
   // SBER being managed doesn't change the SBEROptInAllowed pref.
   EXPECT_TRUE(IsExtendedReportingOptInAllowed(prefs_));
+}
+
+TEST_F(SafeBrowsingPrefsTest, IsSafeBrowsingPolicyManaged_ForESB) {
+  // This test checks that manipulating ESB and the management state of ESB
+  // behaves as expected.
+  EXPECT_FALSE(IsSafeBrowsingPolicyManaged(prefs_));
+
+  // Make the ESB pref managed and ensure that the pref gets the
+  // expected value.
+  prefs_.SetManagedPref(prefs::kSafeBrowsingEnhanced,
+                        std::make_unique<base::Value>(true));
+  EXPECT_TRUE(prefs_.IsManagedPreference(prefs::kSafeBrowsingEnhanced));
+  EXPECT_TRUE(IsSafeBrowsingPolicyManaged(prefs_));
+
+  // Remove the managed pref.
+  prefs_.RemoveManagedPref(prefs::kSafeBrowsingEnhanced);
+  EXPECT_FALSE(IsSafeBrowsingPolicyManaged(prefs_));
 }
 
 TEST_F(SafeBrowsingPrefsTest, VerifyIsURLAllowlistedByPolicy) {
@@ -263,4 +277,84 @@ TEST_F(SafeBrowsingPrefsTest, VerifyHashPrefixRealTimeChecksAllowedByPolicy) {
   prefs_.SetBoolean(prefs::kHashPrefixRealTimeChecksAllowedByPolicy, false);
   EXPECT_FALSE(AreHashPrefixRealTimeLookupsAllowedByPolicy(prefs_));
 }
+
+TEST_F(SafeBrowsingPrefsTest, InitializesExtensionTelemetryLastUploadTime) {
+  TestingPrefServiceSimple prefs;
+  safe_browsing::RegisterProfilePrefs(prefs.registry());
+  EXPECT_EQ(prefs.GetTime(prefs::kExtensionTelemetryLastUploadTime),
+            base::Time());
+}
+
+struct SetSafeBrowsingStateTestParams {
+  bool initial_tailored_security_enabled;
+  bool initial_enhanced_protection_enabled;
+  bool initial_standard_protection_enabled;
+  SafeBrowsingState state_to_set;
+  bool is_esb_enabled_by_account_integration;
+  bool expected_tailored_security_enabled;
+  bool expected_enhanced_protection_enabled;
+  bool expected_standard_protection_enabled;
+};
+
+class SetSafeBrowsingStateTest
+    : public SafeBrowsingPrefsTest,
+      public ::testing::WithParamInterface<SetSafeBrowsingStateTestParams> {};
+
+TEST_P(SetSafeBrowsingStateTest, SetSafeBrowsingState) {
+  const auto& params = GetParam();
+  prefs_.SetBoolean(prefs::kEnhancedProtectionEnabledViaTailoredSecurity,
+                    params.initial_tailored_security_enabled);
+  prefs_.SetBoolean(prefs::kSafeBrowsingEnhanced,
+                    params.initial_enhanced_protection_enabled);
+  prefs_.SetBoolean(prefs::kSafeBrowsingEnabled,
+                    params.initial_standard_protection_enabled);
+
+  SetSafeBrowsingState(&prefs_, params.state_to_set,
+                       params.is_esb_enabled_by_account_integration);
+
+  EXPECT_EQ(
+      prefs_.GetBoolean(prefs::kEnhancedProtectionEnabledViaTailoredSecurity),
+      params.expected_tailored_security_enabled);
+  EXPECT_EQ(prefs_.GetBoolean(prefs::kSafeBrowsingEnhanced),
+            params.expected_enhanced_protection_enabled);
+  EXPECT_EQ(prefs_.GetBoolean(prefs::kSafeBrowsingEnabled),
+            params.expected_standard_protection_enabled);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SetSafeBrowsingStateTest,
+    ::testing::Values(
+        // Enabling ESB with account integration.
+        SetSafeBrowsingStateTestParams{
+            .initial_tailored_security_enabled = false,
+            .initial_enhanced_protection_enabled = false,
+            .initial_standard_protection_enabled = false,
+            .state_to_set = SafeBrowsingState::ENHANCED_PROTECTION,
+            .is_esb_enabled_by_account_integration = true,
+            .expected_tailored_security_enabled = true,
+            .expected_enhanced_protection_enabled = true,
+            .expected_standard_protection_enabled = true},
+        // Enabling ESB without account integration.
+        SetSafeBrowsingStateTestParams{
+            .initial_tailored_security_enabled = true,
+            .initial_enhanced_protection_enabled = false,
+            .initial_standard_protection_enabled = false,
+            .state_to_set = SafeBrowsingState::ENHANCED_PROTECTION,
+            .is_esb_enabled_by_account_integration = false,
+            .expected_tailored_security_enabled = false,
+            .expected_enhanced_protection_enabled = true,
+            .expected_standard_protection_enabled = true},
+        // This test case simulates a scenario where a user has ESB enabled, and
+        // then disables Safe Browsing entirely.
+        SetSafeBrowsingStateTestParams{
+            .initial_tailored_security_enabled = true,
+            .initial_enhanced_protection_enabled = true,
+            .initial_standard_protection_enabled = true,
+            .state_to_set = SafeBrowsingState::NO_SAFE_BROWSING,
+            .is_esb_enabled_by_account_integration = true,
+            .expected_tailored_security_enabled = false,
+            .expected_enhanced_protection_enabled = false,
+            .expected_standard_protection_enabled = false}));
+
 }  // namespace safe_browsing

@@ -25,6 +25,9 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
 
+# common gn args for spanify project scripts.
+from gnconfigs import GnConfigs, GenerateGnTarget
+
 
 # To install the required dependencies to interact with the Google Sheets API:
 # ```
@@ -164,19 +167,6 @@ def uploadScratch(creds, file_name, scratch_dir):
         print(f"Failed to upload scratch: {e}", file=sys.stderr)
 
 
-def writeCommonArgs(f):
-    f.write("target_os = \"linux\"\n")
-    f.write("clang_use_chrome_plugins = false\n")
-    f.write("dcheck_always_on = true\n")
-    f.write("is_chrome_branded = true\n")
-    f.write("is_debug = false\n")
-    # linux-rel would have this be true, but to save on compile time we disable
-    # it.
-    f.write("is_official_build = false\n")
-    f.write("chrome_pgo_phase = 0\n")
-    f.write("force_enable_raw_ptr_exclusion = true\n")
-
-
 def ReportCaseResult(scratch_dir, result, spreadsheet, today, index, patches,
                      user, error_msg, diff, final_file):
     with open(scratch_dir + "/evaluation.csv", "a") as f:
@@ -219,6 +209,7 @@ scratch_dir = os.path.expanduser("~/scratch")
 creds = getGoogleCreds()
 spreadsheet = getSpreadsheet(creds)
 user = getpass.getuser()
+platform = "linux"
 
 # Curry ReportCaseResult to use the variables above to simplify the code below.
 # Preventing code duplication and mistakes.
@@ -240,26 +231,29 @@ run("git reset --hard origin/main")
 # patches to avoid recompiling the entire project for each patch.
 run("gclient sync -fD", exit_on_error=False)
 
+if len(sys.argv) > 2:
+    # If you pass both a patch limit override and a second argument, use the
+    # second argument as the platform to rewrite-multiple-platforms. This
+    # allows doing something like:
+    # "evaluate_patches.py 3000 android"
+    # To override the default Linux platform and do android instead.
+    platform = sys.argv[2]
+
 try:
     run("gcertstatus --check_remaining=3h --nocheck_ssh")
     print("Remote exec available. Enabling.")
-    with open("out/linux/args.gn", "w") as f:
-        writeCommonArgs(f)
-        f.write("use_remoteexec = true\n")
-        f.write("use_siso = true\n")
+    GenerateGnTarget(platform, GnConfigs(True).min_all_platforms[platform])
 except:
     print("Remote exec not available. Disabling.")
-    with open("out/linux/args.gn", "w") as f:
-        writeCommonArgs(f)
-        f.write("use_remoteexec = false\n")
-        f.write("use_reclient = false\n")
-        f.write("use_siso = true\n")
+    GenerateGnTarget(platform, GnConfigs(False).min_all_platforms[platform])
 
 # We've updated the args and need to generate new build files.
-run("gn gen out/linux", "Failed to generate out/linux.")
+run(f"gn gen out/{platform}", f"Failed to generate out/{platform}.")
 
 # Produce a full rewrite, and store individual patches below ~/scratch/patch_*
-run("./tools/clang/spanify/rewrite-multiple-platforms.sh")
+rewrite_script = "./tools/clang/spanify/rewrite-multiple-platforms.sh"
+print(f"{rewrite_script} --platform={platform}")
+run(f"{rewrite_script} --platform={platform}")
 
 run("git reset --hard origin/main")  # Restore source code.
 run("gclient sync -fD", exit_on_error=False)  # Restore compiler.
@@ -288,7 +282,7 @@ with open(scratch_dir + "/evaluation.csv", "w+") as f:
     f.write("patch, status, error_msg\n")
 
 # Perform a clean build to ensure a valid state for the incremental builds.
-run("autoninja -C out/linux", "Failed to build the project.")
+run(f"autoninja -C out/{platform}", "Failed to build the project.")
 
 # Create and evaluate patches
 try:
@@ -314,7 +308,7 @@ try:
         try:
             result = subprocess.run(f"cat ~/scratch/{patch} " +
                                     " | tools/clang/scripts/apply_edits.py" +
-                                    " -p ./out/linux/",
+                                    f" -p ./out/{platform}/",
                                     shell=True,
                                     check=True,
                                     capture_output=True,
@@ -358,7 +352,7 @@ try:
         print(f"Evaluating patch {index}/{len(patches)}")
         print("Building...")
 
-        result = subprocess.run("time autoninja -C out/linux",
+        result = subprocess.run(f"time autoninja -C out/{platform}",
                                 shell=True,
                                 capture_output=True,
                                 text=True)
@@ -382,7 +376,7 @@ try:
                     break
 
             report_failure(error_msg, diff, final_file)
-        elif not run('gn check out/linux', exit_on_error=False):
+        elif not run(f'gn check out/{platform}', exit_on_error=False):
             error_msg = "failed gn check"
             report_failure(error_msg, diff, final_file)
             continue

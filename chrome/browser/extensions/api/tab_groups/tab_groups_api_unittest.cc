@@ -117,7 +117,7 @@ class TabGroupsApiUnitTest : public ExtensionServiceTestBase {
   void WaitForTabGroupSyncServiceInitialized() {
     auto observer =
         std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
-            tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile()));
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
     observer->Wait();
   }
 
@@ -127,7 +127,7 @@ class TabGroupsApiUnitTest : public ExtensionServiceTestBase {
 
  private:
   // The browser (and accompanying window).
-  std::unique_ptr<TestBrowserWindow> browser_window_;
+  raw_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
 
   // The original web contentses in order.
@@ -140,10 +140,11 @@ void TabGroupsApiUnitTest::SetUp() {
   InitializeEmptyExtensionService();
 
   // Create a browser window.
-  browser_window_ = std::make_unique<TestBrowserWindow>();
+  auto browser_window = std::make_unique<TestBrowserWindow>();
+  browser_window_ = browser_window.get();
   Browser::CreateParams params(profile(), /* user_gesture */ true);
   params.type = Browser::TYPE_NORMAL;
-  params.window = browser_window_.get();
+  params.window = browser_window.release();
   browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
   BrowserList::SetLastActive(browser_.get());
 
@@ -174,9 +175,9 @@ void TabGroupsApiUnitTest::SetUp() {
 }
 
 void TabGroupsApiUnitTest::TearDown() {
+  browser_window_ = nullptr;
   browser_->tab_strip_model()->CloseAllTabs();
   browser_.reset();
-  browser_window_.reset();
   ExtensionServiceTestBase::TearDown();
 }
 
@@ -185,14 +186,11 @@ TEST_F(TabGroupsApiUnitTest, TabStripModelWithNoTabGroupFails) {
   // Create a new window that doesnt support groups and add a few tabs.
   auto window2 = std::make_unique<TestBrowserWindow>();
 
-  Browser::CreateParams params(profile(), /* user_gesture */ true);
-  params.type = Browser::TYPE_NORMAL;
-  params.window = window2.get();
-  params.are_tab_groups_enabled = false;
-
-  // TestBrowserWindowOwner handles its own lifetime, and also cleans up
-  // |window2|.
-  new TestBrowserWindowOwner(std::move(window2));
+  // App windows don't allow tab groups.
+  Browser::CreateParams params = Browser::CreateParams::CreateForApp(
+      "some app", /*trusted_source=*/false, gfx::Rect(), profile(),
+      /*user_gesture=*/true);
+  params.window = window2.release();
 
   auto browser2 = Browser::DeprecatedCreateOwnedForTesting(params);
   BrowserList::SetLastActive(browser2.get());
@@ -296,7 +294,6 @@ class SharedTabGroupExtensionsTabUtilTest : public TabGroupsApiUnitTest {
   SharedTabGroupExtensionsTabUtilTest() {
     feature_list_.InitWithFeatures(
         {
-            tab_groups::kTabGroupSyncServiceDesktopMigration,
             data_sharing::features::kDataSharingFeature,
         },
         {});
@@ -311,8 +308,7 @@ class SharedTabGroupExtensionsTabUtilTest : public TabGroupsApiUnitTest {
     TabGroupsApiUnitTest ::SetUp();
     tab_groups::TabGroupSyncService* service =
         static_cast<tab_groups::TabGroupSyncService*>(
-            tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-                browser()->profile()));
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
     service->SetIsInitializedForTesting(true);
   }
 
@@ -320,8 +316,7 @@ class SharedTabGroupExtensionsTabUtilTest : public TabGroupsApiUnitTest {
                      const syncer::CollaborationId& collaboration_id) {
     tab_groups::TabGroupSyncService* service =
         static_cast<tab_groups::TabGroupSyncService*>(
-            tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-                browser()->profile()));
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
     service->MakeTabGroupSharedForTesting(group_id, collaboration_id);
   }
 
@@ -346,8 +341,8 @@ TEST_F(SharedTabGroupExtensionsTabUtilTest, TabGroupsQueryShared) {
   {  // Query unshared groups.
     scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
 
-    base::Value::List groups_list = RunTabGroupsQueryFunction(
-        browser()->profile(), extension.get(), not_shared_query);
+    base::Value::List groups_list =
+        RunTabGroupsQueryFunction(profile(), extension.get(), not_shared_query);
     ASSERT_EQ(1u, groups_list.size());
 
     const base::Value& group_info = groups_list[0];
@@ -483,8 +478,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsUpdateSavedTab) {
   tab_strip_model->ChangeTabGroupVisuals(group, visual_data);
 
   tab_groups::TabGroupSyncService* saved_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
-          browser()->profile());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile());
   ASSERT_TRUE(saved_service);
   saved_service->SetIsInitializedForTesting(true);
   saved_service->AddGroup(
@@ -664,11 +658,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsMoveAcrossWindows) {
   auto window2 = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), /* user_gesture */ true);
   params.type = Browser::TYPE_NORMAL;
-  params.window = window2.get();
-
-  // TestBrowserWindowOwner handles its own lifetime, and also cleans up
-  // |window2|.
-  new TestBrowserWindowOwner(std::move(window2));
+  params.window = window2.release();
 
   auto browser2 = Browser::DeprecatedCreateOwnedForTesting(params);
   BrowserList::SetLastActive(browser2.get());

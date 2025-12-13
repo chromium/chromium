@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/omnibox/debugger/omnibox_debugger_mediator.h"
 
+#import <optional>
+#import <string>
+
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/remote_suggestions_service.h"
 #import "components/variations/variations_ids_provider.h"
@@ -111,7 +114,7 @@
 
 - (void)onRequestCompleted:(const network::SimpleURLLoader*)source
               responseCode:(int)responseCode
-              responseBody:(std::unique_ptr<std::string>)responseBody
+              responseBody:(std::optional<std::string>)responseBody
                 completion:
                     (RemoteSuggestionsService::CompletionCallback)completion {
   if (responseCode == 200 && !_hardcodedSuggestResponse.empty()) {
@@ -124,7 +127,7 @@
 - (void)onIndexedRequestCompleted:(int)requestIndex
                         urlLoader:(const network::SimpleURLLoader*)source
                      responseCode:(int)responseCode
-                     responseBody:(std::unique_ptr<std::string>)responseBody
+                     responseBody:(std::optional<std::string>)responseBody
                        completion:
                            (RemoteSuggestionsService::IndexedCompletionCallback)
                                completion {

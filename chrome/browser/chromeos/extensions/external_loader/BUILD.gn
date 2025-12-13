@@ -17,10 +17,7 @@ static_library("external_loader") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/extensions:external_loader",
     "//extensions/buildflags",
   ]
-
-  # TODO(crbug.com/413050705): Fix longstanding circular dependency between this
-  # target and //chrome/browser/extensions. For now, continue to omit deps on
-  # //chrome/browser/extensions.
 }

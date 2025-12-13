@@ -5,6 +5,7 @@
 #ifndef CC_MOJOM_HIT_TEST_OPAQUENESS_MOJOM_TRAITS_H_
 #define CC_MOJOM_HIT_TEST_OPAQUENESS_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "cc/input/hit_test_opaqueness.h"
 #include "cc/mojom/hit_test_opaqueness.mojom-shared.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"

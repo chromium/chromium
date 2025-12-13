@@ -13,6 +13,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/new_tab_page_instant_resources.h"
 #include "components/search/ntp_features.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -41,7 +42,7 @@ void MostVisitedIframeSource::StartDataRequest(
     content::URLDataSource::GotDataCallback callback) {
   // TODO(crbug.com/40050262): Simplify usages of |path| since |url| is
   // available.
-  const std::string path(url.path());
+  const std::string path(url.GetPath());
 
   if (path == kTitleHTMLPath) {
     SendResource(IDR_NEW_TAB_PAGE_INSTANT_MOST_VISITED_TITLE_HTML,
@@ -58,7 +59,7 @@ void MostVisitedIframeSource::StartDataRequest(
 }
 
 std::string MostVisitedIframeSource::GetMimeType(const GURL& url) {
-  std::string_view path = url.path_piece();
+  std::string_view path = url.path();
   if (base::EndsWith(path, ".js", base::CompareCase::INSENSITIVE_ASCII))
     return "application/javascript";
   if (base::EndsWith(path, ".css", base::CompareCase::INSENSITIVE_ASCII))
@@ -83,7 +84,7 @@ bool MostVisitedIframeSource::ShouldServiceRequest(
   return InstantService::ShouldServiceRequest(url, browser_context,
                                               render_process_id) &&
          url.SchemeIs(chrome::kChromeSearchScheme) &&
-         url.host_piece() == GetSource() && ServesPath(url.path());
+         url.host() == GetSource() && ServesPath(url.GetPath());
 }
 
 bool MostVisitedIframeSource::ShouldDenyXFrameOptions() {

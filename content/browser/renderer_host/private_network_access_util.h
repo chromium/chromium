@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_PRIVATE_NETWORK_ACCESS_UTIL_H_
 
 #include "content/common/content_export.h"
+#include "content/public/browser/content_browser_client.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -19,7 +20,9 @@ struct PolicyContainerPolicies;
 enum class PrivateNetworkRequestContext {
   kSubresource,  // Subresource fetches initiated by documents.
   kWorker,  // Worker script fetches/updates or fetches within worker scripts.
-  kNavigation,  // Navigation fetches
+  kMainFrameNavigation,    // Main frame navigation fetches.
+  kSubframeNavigation,     // Subframe navigation fetches (e.g., iframe).
+  kFencedFrameNavigation,  // Navigation of a fenced frame.
 };
 
 // Returns the policy to use for private network requests fetched by a client
@@ -28,13 +31,19 @@ enum class PrivateNetworkRequestContext {
 // `ip_address_space` identifies the IP address space of the request client.
 // `is_web_secure_context` specifies whether the request client is a secure
 // context or not.
-// `private_network_request_context` specifies what this request is about. For
-// example, requests made from workers can have different policies from normal
-// subresource requests.
+// `allow_on_non_secure_context` specifies whether we allow local network
+// requests on non-secure contexts. Note: this only applies to local network
+// access requests, not private network access requests, and having this be true
+// means that while we still allow the requests, they still need to pass
+// permissions checks.
+// `private_network_request_context` specifies what this
+// request is about. For example, requests made from workers can have different
+// policies from normal subresource requests.
 network::mojom::PrivateNetworkRequestPolicy CONTENT_EXPORT
 DerivePrivateNetworkRequestPolicy(
     network::mojom::IPAddressSpace ip_address_space,
     bool is_web_secure_context,
+    bool allow_on_non_secure_context,
     PrivateNetworkRequestContext private_network_request_context);
 
 // Convenience overload to directly compute this from the client's `policies`.
@@ -63,8 +72,19 @@ network::mojom::IPAddressSpace CalculateIPAddressSpace(
     network::mojom::URLResponseHead* response_head,
     ContentBrowserClient* client);
 
-network::mojom::PrivateNetworkRequestPolicy OverrideBlockWithWarn(
+network::mojom::PrivateNetworkRequestPolicy OverrideToBlockInsteadOfWarn(
     network::mojom::PrivateNetworkRequestPolicy);
+
+network::mojom::PrivateNetworkRequestPolicy OverrideToWarnInsteadOfBlock(
+    network::mojom::PrivateNetworkRequestPolicy);
+
+// TODO(crbug.com/452389539): make this logic part of
+// DeriveClientSecurityState/DerivePrivateNetworkRequestPolicy to reduce errors
+// where the policy is computed but ContentBrowserClient overrides are not taken
+// into account.
+network::mojom::PrivateNetworkRequestPolicy OverrideLocalNetworkAccessPolicy(
+    network::mojom::PrivateNetworkRequestPolicy policy,
+    ContentBrowserClient::PrivateNetworkRequestPolicyOverride policy_override);
 
 }  // namespace content
 

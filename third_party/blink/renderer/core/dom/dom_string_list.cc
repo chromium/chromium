@@ -47,7 +47,7 @@ bool DOMStringList::contains(const String& string) const {
 }
 
 void DOMStringList::Sort() {
-  std::sort(strings_.begin(), strings_.end(), WTF::CodeUnitCompareLessThan);
+  std::sort(strings_.begin(), strings_.end(), CodeUnitCompareLessThan);
 }
 
 }  // namespace blink

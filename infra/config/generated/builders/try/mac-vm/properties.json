@@ -19,8 +19,9 @@
                 "apply_configs": [
                   "mb"
                 ],
-                "build_config": "Debug",
+                "build_config": "Release",
                 "config": "chromium",
+                "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "mac"
               },
@@ -38,7 +39,8 @@
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/try/mac-vm/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/mac-vm/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

@@ -11,7 +11,9 @@
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/grit/browser_resources.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
@@ -50,17 +52,16 @@ void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::Hide() {
 void SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews::
     AddedToWidget() {
   if (ui_params_.is_success) {
-    auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
-        ui::ImageModel::FromVectorIcon(kSaveCardAndVcnSuccessConfirmationIcon),
-        ui::ImageModel::FromVectorIcon(
-            kSaveCardAndVcnSuccessConfirmationDarkIcon),
-        base::BindRepeating(&views::BubbleDialogDelegate::background_color,
-                            base::Unretained(this)));
-    image_view->SetBorder(
+    ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+    auto image =
+        std::make_unique<views::ImageView>(bundle.GetThemedLottieImageNamed(
+            IDR_AUTOFILL_VIRTUAL_CARD_ENROLL_SUCCESS_LOTTIE));
+    image->GetViewAccessibility().SetIsInvisible(true);
+    image->SetBorder(
         views::CreateEmptyBorder(ChromeLayoutProvider::Get()
                                      ->GetInsetsMetric(views::INSETS_DIALOG)
                                      .set_bottom(0)));
-    GetBubbleFrameView()->SetHeaderView(std::move(image_view));
+    GetBubbleFrameView()->SetHeaderView(std::move(image));
   }
   GetBubbleFrameView()->SetTitleView(
       std::make_unique<TitleWithIconAfterLabelView>(

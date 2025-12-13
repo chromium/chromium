@@ -55,7 +55,6 @@ source_set("manage_accounts") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/reauthentication",
-    "//ios/third_party/material_components_ios",
   ]
 }
 
@@ -63,8 +62,6 @@ source_set("manage_accounts_ui") {
   sources = [
     "identity_view_item.h",
     "identity_view_item.mm",
-    "legacy_accounts_table_view_controller.h",
-    "legacy_accounts_table_view_controller.mm",
     "manage_accounts_consumer.h",
     "manage_accounts_model_identity_data_source.h",
     "manage_accounts_mutator.h",
@@ -93,7 +90,6 @@ source_set("manage_accounts_ui") {
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
-    "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/cells",
     "//ios/chrome/browser/settings/ui_bundled/sync",
     "//ios/chrome/browser/shared/coordinator/alert",
@@ -106,7 +102,6 @@ source_set("manage_accounts_ui") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/symbols:icons",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
@@ -138,18 +133,15 @@ source_set("constants") {
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [
-    "legacy_accounts_table_egtest.mm",
-    "manage_accounts_table_egtest.mm",
-  ]
+  sources = [ "manage_accounts_table_egtest.mm" ]
   deps = [
     "//base/test:test_support",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/authentication/ui_bundled/views:views_constants",
     "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
-    "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/bookmarks/test:eg_test_support+eg2",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/policy/model:constants",
@@ -170,10 +162,7 @@ source_set("eg2_tests") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "legacy_accounts_table_view_controller_unittest.mm",
-    "manage_accounts_table_view_controller_unittest.mm",
-  ]
+  sources = [ "manage_accounts_table_view_controller_unittest.mm" ]
   deps = [
     ":manage_accounts_ui",
     "//base/test:test_support",

@@ -6,6 +6,7 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("gamepad") {
   sources = [
+    "dom_window_gamepad.h",
     "gamepad.cc",
     "gamepad.h",
     "gamepad_button.cc",
@@ -19,6 +20,8 @@ blink_modules_sources("gamepad") {
     "gamepad_haptic_actuator.cc",
     "gamepad_haptic_actuator.h",
     "gamepad_listener.h",
+    "gamepad_raw_input_change_event.cc",
+    "gamepad_raw_input_change_event.h",
     "gamepad_shared_memory_reader.cc",
     "gamepad_shared_memory_reader.h",
     "gamepad_touch.cc",

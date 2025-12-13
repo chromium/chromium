@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MAIN_BOTTOM_SHEET_MVT_SECTION_SUBTITLE;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MAIN_BOTTOM_SHEET_NTP_CARDS_SECTION_SUBTITLE_RES_ID;
 
 import android.content.Context;
 
@@ -82,6 +83,16 @@ public class BottomSheetListContainerViewBinderUnitTest {
         mPropertyModel.set(MAIN_BOTTOM_SHEET_MVT_SECTION_SUBTITLE, R.string.text_on);
         verify(mMainBottomSheetListItem).setSubtitle(eq("On"));
         mPropertyModel.set(MAIN_BOTTOM_SHEET_MVT_SECTION_SUBTITLE, R.string.text_off);
+        verify(mMainBottomSheetListItem).setSubtitle(eq("Off"));
+
+        // Verifies the ntp cards section subtitle of the main bottom sheet will get updated.
+        clearInvocations(mMainBottomSheetListItem);
+        when(mMainBottomSheetListContainerView.findViewById(R.id.ntp_cards))
+                .thenReturn(mMainBottomSheetListItem);
+
+        mPropertyModel.set(MAIN_BOTTOM_SHEET_NTP_CARDS_SECTION_SUBTITLE_RES_ID, R.string.text_on);
+        verify(mMainBottomSheetListItem).setSubtitle(eq("On"));
+        mPropertyModel.set(MAIN_BOTTOM_SHEET_NTP_CARDS_SECTION_SUBTITLE_RES_ID, R.string.text_off);
         verify(mMainBottomSheetListItem).setSubtitle(eq("Off"));
     }
 }

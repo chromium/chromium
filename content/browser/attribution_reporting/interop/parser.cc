@@ -174,9 +174,6 @@ class AttributionInteropParser {
     interop_config.needs_cross_app_web =
         ParseBool(dict, "needs_cross_app_web").value_or(false);
 
-    interop_config.needs_retry_after_new_navigation =
-        ParseNavigationRetryAttempt(dict);
-
     AttributionConfig& config = interop_config.attribution_config;
 
     ParseInt(dict, "max_sources_per_origin", config.max_sources_per_origin,
@@ -387,11 +384,6 @@ class AttributionInteropParser {
       bool connected = *dict.FindBool("connection");
       events.emplace_back(time,
                           AttributionSimulationEvent::Connection(connected));
-      return;
-    }
-
-    if (dict.FindBool("navigation").value_or(false)) {
-      events.emplace_back(time, AttributionSimulationEvent::Navigation());
       return;
     }
 
@@ -715,18 +707,6 @@ class AttributionInteropParser {
     return null_aggregatable_reports_days;
   }
 
-  std::optional<std::string> ParseNavigationRetryAttempt(
-      const base::Value::Dict& dict) {
-    if (const std::string* retry_config =
-            dict.FindString("retry_after_new_navigation")) {
-      if (*retry_config == "first_retry" || *retry_config == "second_retry" ||
-          *retry_config == "third_retry") {
-        return *retry_config;
-      }
-    }
-    return std::nullopt;
-  }
-
   bool ParseDict(base::Value::Dict& value,
                  std::string_view key,
                  base::FunctionRef<void(base::Value::Dict)> parse_dict) {
@@ -813,7 +793,7 @@ class AttributionInteropParser {
     // uint32 and [0, INT64_MAX] encompasses the same values.
     if (ParseInteger(dict, key, result_64, &base::StringToInt64, required,
                      allow_zero)) {
-      if (base::internal::IsValueInRangeForNumericType<uint32_t>(result_64)) {
+      if (base::IsValueInRangeForNumericType<uint32_t>(result_64)) {
         result = static_cast<uint32_t>(result_64);
         return true;
       } else {

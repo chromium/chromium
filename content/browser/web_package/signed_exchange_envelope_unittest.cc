@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/web_package/signed_exchange_envelope.h"
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -54,7 +51,7 @@ std::optional<SignedExchangeEnvelope> GenerateHeaderAndParse(
       cbor::Writer::Write(cbor::Value(std::move(response_cbor_map)));
   return SignedExchangeEnvelope::Parse(
       version, signed_exchange_utils::URLWithRawString(fallback_url), signature,
-      base::span(serialized->data(), serialized->size()),
+      UNSAFE_TODO(base::span(serialized->data(), serialized->size())),
       nullptr /* devtools_proxy */);
 }
 
@@ -71,37 +68,41 @@ TEST_P(SignedExchangeEnvelopeTest, ParseGoldenFile) {
 
   std::string contents;
   ASSERT_TRUE(base::ReadFileToString(test_sxg_path, &contents));
-  auto* contents_bytes = reinterpret_cast<const uint8_t*>(contents.data());
+  base::span<const uint8_t> contents_bytes = base::as_byte_span(contents);
 
   ASSERT_GT(contents.size(),
             signed_exchange_prologue::BeforeFallbackUrl::kEncodedSizeInBytes);
   signed_exchange_prologue::BeforeFallbackUrl prologue_a =
       signed_exchange_prologue::BeforeFallbackUrl::Parse(
-          base::span(
-              contents_bytes,
-              signed_exchange_prologue::BeforeFallbackUrl::kEncodedSizeInBytes),
+          UNSAFE_TODO(base::span(contents_bytes.data(),
+                                 signed_exchange_prologue::BeforeFallbackUrl::
+                                     kEncodedSizeInBytes)),
           nullptr /* devtools_proxy */);
   ASSERT_GT(contents.size(),
             signed_exchange_prologue::BeforeFallbackUrl::kEncodedSizeInBytes +
                 prologue_a.ComputeFallbackUrlAndAfterLength());
   signed_exchange_prologue::FallbackUrlAndAfter prologue_b =
       signed_exchange_prologue::FallbackUrlAndAfter::Parse(
-          base::span(contents_bytes +
-                         signed_exchange_prologue::BeforeFallbackUrl::
-                             kEncodedSizeInBytes,
-                     prologue_a.ComputeFallbackUrlAndAfterLength()),
+          UNSAFE_TODO(base::span(
+              contents_bytes
+                  .subspan(signed_exchange_prologue::BeforeFallbackUrl::
+                               kEncodedSizeInBytes)
+                  .data(),
+              prologue_a.ComputeFallbackUrlAndAfterLength())),
           prologue_a, nullptr /* devtools_proxy */);
 
   size_t signature_header_field_offset =
       signed_exchange_prologue::BeforeFallbackUrl::kEncodedSizeInBytes +
       prologue_a.ComputeFallbackUrlAndAfterLength();
   std::string_view signature_header_field(
-      contents.data() + signature_header_field_offset,
+      UNSAFE_TODO(contents.data() + signature_header_field_offset),
       prologue_b.signature_header_field_length());
-  const auto cbor_bytes =
-      base::span(contents_bytes + signature_header_field_offset +
-                     prologue_b.signature_header_field_length(),
-                 prologue_b.cbor_header_length());
+  const auto cbor_bytes = UNSAFE_TODO(
+      base::span(contents_bytes
+                     .subspan(signature_header_field_offset +
+                              prologue_b.signature_header_field_length())
+                     .data(),
+                 prologue_b.cbor_header_length()));
   const std::optional<SignedExchangeEnvelope> envelope =
       SignedExchangeEnvelope::Parse(
           SignedExchangeVersion::kB3, prologue_b.fallback_url(),

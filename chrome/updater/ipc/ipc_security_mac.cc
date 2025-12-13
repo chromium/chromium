@@ -9,12 +9,20 @@
 #include <unistd.h>
 
 #include "components/named_mojo_ipc_server/connection_info.h"
+#include "components/named_mojo_ipc_server/endpoint_options.h"
+#include "mojo/public/cpp/platform/named_platform_channel.h"
 
 namespace updater {
 
 bool IsConnectionTrusted(
     const named_mojo_ipc_server::ConnectionInfo& connector) {
   return audit_token_to_euid(connector.audit_token) == geteuid();
+}
+
+named_mojo_ipc_server::EndpointOptions CreateServerEndpointOptions(
+    const mojo::NamedPlatformChannel::ServerName& server_name) {
+  return {server_name,
+          named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection};
 }
 
 }  // namespace updater

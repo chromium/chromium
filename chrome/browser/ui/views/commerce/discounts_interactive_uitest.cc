@@ -4,6 +4,7 @@
 
 #include <optional>
 
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/time/default_clock.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/views/commerce/discounts_coupon_code_label_view.h"
 #include "chrome/browser/ui/views/commerce/discounts_icon_view.h"
 #include "chrome/browser/ui/views/controls/subpage_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -180,7 +182,7 @@ INSTANTIATE_TEST_SUITE_P(
     DiscountsIconViewInteractiveTest,
     testing::Values(
         TestData{
-            .name = "OfferLevelDiscountsWithPageActionMigrationDisabled",
+            .name = "OfferLevelDiscountsWithPageActionsMigrationDisabled",
             .type = commerce::DiscountClusterType::kOfferLevel,
             .enabled_feature =
                 std::make_optional<base::test::FeatureRefAndParams>(
@@ -188,7 +190,7 @@ INSTANTIATE_TEST_SUITE_P(
             .page_action_migration_enabled = false,
         },
         TestData{
-            .name = "OfferLevelDiscountsWithPageActionMigrationEnabled",
+            .name = "OfferLevelDiscountsWithPageActionsMigrationEnabled",
             .type = commerce::DiscountClusterType::kOfferLevel,
             .enabled_feature =
                 std::make_optional<base::test::FeatureRefAndParams>(
@@ -196,7 +198,7 @@ INSTANTIATE_TEST_SUITE_P(
             .page_action_migration_enabled = true,
         },
         TestData{
-            .name = "PageLevelDiscountsWithPageActionMigrationDisabled",
+            .name = "PageLevelDiscountsWithPageActionsMigrationDisabled",
             .type = commerce::DiscountClusterType::kPageLevel,
             .enabled_feature =
                 std::make_optional<base::test::FeatureRefAndParams>(
@@ -205,7 +207,7 @@ INSTANTIATE_TEST_SUITE_P(
             .page_action_migration_enabled = false,
         },
         TestData{
-            .name = "PageLevelDiscountsWithPageActionMigrationEnabled",
+            .name = "PageLevelDiscountsWithPageActionsMigrationEnabled",
             .type = commerce::DiscountClusterType::kPageLevel,
             .enabled_feature =
                 std::make_optional<base::test::FeatureRefAndParams>(
@@ -323,10 +325,8 @@ class DiscountsBubbleDialogInteractiveTest : public DiscountsInteractiveTest {
             }
           }));
       auto* widget =
-          static_cast<DiscountsBubbleDialogView*>(
-              views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-                  kDiscountsBubbleDialogId,
-                  browser()->window()->GetElementContext()))
+          BrowserElementsViews::From(browser())
+              ->GetViewAs<DiscountsBubbleDialogView>(kDiscountsBubbleDialogId)
               ->GetWidget();
       widget->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
       run_loop.Run();
@@ -339,7 +339,7 @@ INSTANTIATE_TEST_SUITE_P(
     DiscountsBubbleDialogInteractiveTest,
     testing::Values(
         TestData{
-            .name = "OfferLevelDiscountsWithPageActionMigrationDisabled",
+            .name = "OfferLevelDiscountsWithPageActionsMigrationDisabled",
             .type = commerce::DiscountClusterType::kOfferLevel,
             .enabled_feature =
                 std::make_optional<base::test::FeatureRefAndParams>(
@@ -347,7 +347,7 @@ INSTANTIATE_TEST_SUITE_P(
             .page_action_migration_enabled = false,
         },
         TestData{
-            .name = "OfferLevelDiscountsWithPageActionMigrationEnabled",
+            .name = "OfferLevelDiscountsWithPageActionsMigrationEnabled",
             .type = commerce::DiscountClusterType::kOfferLevel,
             .enabled_feature =
                 std::make_optional<base::test::FeatureRefAndParams>(
@@ -355,7 +355,7 @@ INSTANTIATE_TEST_SUITE_P(
             .page_action_migration_enabled = true,
         },
         TestData{
-            .name = "PageLevelDiscountsWithPageActionMigrationDisabled",
+            .name = "PageLevelDiscountsWithPageActionsMigrationDisabled",
             .type = commerce::DiscountClusterType::kPageLevel,
             .enabled_feature =
                 std::make_optional<base::test::FeatureRefAndParams>(
@@ -364,7 +364,7 @@ INSTANTIATE_TEST_SUITE_P(
             .page_action_migration_enabled = false,
         },
         TestData{
-            .name = "PageLevelDiscountsWithPageActionMigrationEnabled",
+            .name = "PageLevelDiscountsWithPageActionsMigrationEnabled",
             .type = commerce::DiscountClusterType::kPageLevel,
             .enabled_feature =
                 std::make_optional<base::test::FeatureRefAndParams>(
@@ -601,17 +601,17 @@ INSTANTIATE_TEST_SUITE_P(
     DiscountDialogAutoPopupCounterfactual,
     testing::Values(
         TestData{
-            .name = "CounterfactualDisabledWithPageActionMigrationDisabled",
+            .name = "CounterfactualDisabledWithPageActionsMigrationDisabled",
             .type = commerce::DiscountClusterType::kOfferLevel,
             .page_action_migration_enabled = false,
         },
         TestData{
-            .name = "CounterfactualDisabledWithPageActionMigrationEnabled",
+            .name = "CounterfactualDisabledWithPageActionsMigrationEnabled",
             .type = commerce::DiscountClusterType::kOfferLevel,
             .page_action_migration_enabled = true,
         },
         TestData{
-            .name = "CounterfactualEnabledWithPageActionMigrationDisabled",
+            .name = "CounterfactualEnabledWithPageActionsMigrationDisabled",
             .type = commerce::DiscountClusterType::kOfferLevel,
             .enabled_feature =
                 std::make_optional<base::test::FeatureRefAndParams>(
@@ -619,7 +619,7 @@ INSTANTIATE_TEST_SUITE_P(
             .page_action_migration_enabled = false,
         },
         TestData{
-            .name = "CounterfactualEnabledWithPageActionMigrationEnabled",
+            .name = "CounterfactualEnabledWithPageActionsMigrationEnabled",
             .type = commerce::DiscountClusterType::kOfferLevel,
             .enabled_feature =
                 std::make_optional<base::test::FeatureRefAndParams>(
@@ -639,7 +639,7 @@ IN_PROC_BROWSER_TEST_P(DiscountDialogAutoPopupCounterfactual,
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
-      WaitForPageActionButtonVisible(),
+      WaitForPageActionChipVisible(kActionCommerceDiscounts),
       If([&]() { return IsPageActionMigrated(PageActionIconType::kDiscounts); },
          Then(WaitForViewProperty(kDiscountsChipElementId, views::LabelButton,
                                   Visible, true)),

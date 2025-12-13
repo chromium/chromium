@@ -114,6 +114,11 @@
       depends_on: ["AttributionReporting"],
     },
     {
+      name: "Autofill",
+      permissions_policy_name: "autofill",
+      depends_on: ["Autofill"],
+    },
+    {
       name: "Autoplay",
       permissions_policy_name: "autoplay",
     },
@@ -291,6 +296,11 @@
       depends_on: ["DeviceAttributes"],
     },
     {
+      name: "DigitalCredentialsCreate",
+      permissions_policy_name: "digital-credentials-create",
+      depends_on: ["WebIdentityDigitalCredentialsCreation"],
+    },
+    {
       name: "DigitalCredentialsGet",
       permissions_policy_name: "digital-credentials-get",
       depends_on: ["WebIdentityDigitalCredentials"],
@@ -414,6 +424,11 @@
       permissions_policy_name: "magnetometer",
     },
     {
+      name: "ManualText",
+      permissions_policy_name: "manual-text",
+      depends_on: ["ManualText"],
+    },
+    {
       name: "MediaPlaybackWhileNotVisible",
       permissions_policy_name: "media-playback-while-not-visible",
       feature_default: "EnableForAll",
@@ -429,6 +444,12 @@
       permissions_policy_name: "midi",
     },
     {
+      name: "MulticastInDirectSockets",
+      permissions_policy_name: "direct-sockets-multicast",
+      depends_on: ["MulticastInDirectSockets"],
+      visibility: "IsolatedContext",
+    },
+    {
       name: "OnDeviceSpeechRecognition",
       permissions_policy_name: "on-device-speech-recognition",
       depends_on: ["OnDeviceWebSpeechAvailable"],
@@ -439,15 +460,8 @@
       depends_on: ["WebOTPAssertionFeaturePolicy"],
     },
     {
-      name: "PartitionedPopins",
-      permissions_policy_name: "popins",
-      feature_default: "EnableForSelf",
-      depends_on: ["PartitionedPopins"],
-    },
-    {
       name: "Payment",
       permissions_policy_name: "payment",
-      depends_on: ["PaymentRequest"],
     },
     {
       name: "PictureInPicture",
@@ -504,11 +518,6 @@
       permissions_policy_name: "serial",
       depends_on: ["Serial"],
       privacy_sensitive: true,
-    },
-    {
-      name: "SharedAutofill",
-      permissions_policy_name: "shared-autofill",
-      depends_on: ["SharedAutofill"],
     },
     {
       name: "SharedStorage",
@@ -621,5 +630,5 @@
       depends_on: ["AIWriterAPI"],
     },
   ],
-  // LINT.ThenChange(//third_party/blink/public/devtools_protocol/browser_protocol.pdl:PermissionsPolicyFeature)
+  // LINT.ThenChange(//third_party/blink/public/devtools_protocol/domains/Page.pdl:PermissionsPolicyFeature)
 }

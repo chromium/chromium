@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/if_condition.h"
 #include "third_party/blink/renderer/core/css/parser/css_if_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
+#include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -338,6 +339,7 @@ static bool IsCustomFunction(const CSSParserToken& token) {
          css_parsing_utils::IsDashedFunctionName(token);
 }
 
+// Keep in sync with ConsumeMixinArguments() below.
 static bool ConsumeCustomFunction(CSSParserTokenStream& stream,
                                   bool& has_references,
                                   bool& has_font_units,
@@ -402,6 +404,80 @@ static bool ConsumeCustomFunction(CSSParserTokenStream& stream,
     return false;
   }
   return true;
+}
+
+// Keep in sync with ConsumeCustomFunction() above. The only real difference
+// between the two is that this one calls ConsumeUnparsedDeclaration() instead
+// of ConsumeUnparsedValue(), and stores the result.
+bool CSSVariableParser::ConsumeMixinArguments(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    HeapVector<Member<CSSVariableData>>& result) {
+  bool important_ignored;
+
+  CSSParserTokenStream::BlockGuard guard(stream);
+  stream.ConsumeWhitespace();
+
+  // Consume the arguments.
+  while (!stream.AtEnd()) {
+    // Commas and "{}" blocks are normally not allowed in argument values
+    // (at the top level), unless the whole value is wrapped in a "{}" block.
+    //
+    // https://drafts.csswg.org/css-values-5/#component-function-commas
+    if (stream.Peek().GetType() == kLeftBraceToken) {
+      CSSParserTokenStream::BlockGuard brace_guard(stream);
+      stream.ConsumeWhitespace();
+      if (stream.AtEnd()) {
+        // Empty values are not allowed. (The "{}" wrapper is not part
+        // of the value.)
+        return false;
+      }
+      CSSVariableData* variable_data = ConsumeUnparsedDeclaration(
+          stream, /*allow_important_annotation=*/false,
+          /*is_animation_tainted=*/false,
+          /*must_contain_variable_reference=*/false,
+          /*restricted_value=*/false,
+          /*comma_ends_declaration=*/false, important_ignored, context);
+      if (!variable_data) {
+        return false;
+      }
+      result.push_back(variable_data);
+    } else {
+      // Arguments that look like custom property declarations are reserved
+      // for named arguments.
+      //
+      // https://github.com/w3c/csswg-drafts/issues/11749
+      if (CSSVariableParser::StartsCustomPropertyDeclaration(stream)) {
+        return false;
+      }
+      // Passing restricted_value=true effectively disallows "{}".
+      CSSVariableData* variable_data = ConsumeUnparsedDeclaration(
+          stream, /*allow_important_annotation=*/false,
+          /*is_animation_tainted=*/false,
+          /*must_contain_variable_reference=*/false,
+          /*restricted_value=*/true,
+          /*comma_ends_declaration=*/true, important_ignored, context);
+      if (!variable_data) {
+        return false;
+      }
+      result.push_back(variable_data);
+    }
+    if (stream.Peek().GetType() == kCommaToken) {
+      stream.ConsumeIncludingWhitespace();  // kCommaToken
+      if (stream.AtEnd() || stream.Peek().GetType() == kCommaToken) {
+        // Empty values are not allowed. (ConsumeUnparsedValue returns true
+        // in that case.)
+        return false;
+      }
+      continue;
+    } else if (stream.AtEnd()) {
+      // No further arguments.
+      break;
+    }
+    // Unexpected token, e.g. '!'.
+    return false;
+  }
+  return stream.AtEnd();
 }
 
 // Utility function for ConsumeUnparsedDeclaration().
@@ -488,6 +564,11 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
           }
           has_references = true;
           continue;
+        case CSSValueID::kInherit:
+          if (!RuntimeEnabledFeatures::CSSInheritFunctionEnabled()) {
+            return false;
+          }
+          [[fallthrough]];
         case CSSValueID::kVar:
           if (!ConsumeVariableReference(
                   stream, has_references, has_font_units, has_root_font_units,
@@ -505,9 +586,6 @@ static bool ConsumeUnparsedValue(CSSParserTokenStream& stream,
           has_references = true;
           continue;
         case CSSValueID::kAttr:
-          if (!RuntimeEnabledFeatures::CSSAdvancedAttrFunctionEnabled()) {
-            break;
-          }
           if (!ConsumeAttributeReference(
                   stream, has_references, has_font_units, has_root_font_units,
                   has_line_height_units, has_dashed_functions, context)) {
@@ -802,6 +880,49 @@ void CSSVariableParser::CollectDashedFunctions(CSSParserTokenStream& stream,
         return;
     }
   }
+}
+
+template <CSSParserTokenType... Types>
+StringView ConsumeUntilPeekedTypeIs(CSSParserTokenStream& stream) {
+  wtf_size_t value_start_offset = stream.LookAheadOffset();
+  stream.SkipUntilPeekedTypeIs<Types...>();
+  wtf_size_t value_end_offset = stream.LookAheadOffset();
+  return stream.StringRangeAt(value_start_offset,
+                              value_end_offset - value_start_offset);
+}
+
+HeapVector<String> CSSVariableParser::ConsumeFunctionArguments(
+    CSSParserTokenStream& stream,
+    unsigned max_arguments) {
+  HeapVector<String> arguments;
+
+  while (arguments.size() < max_arguments) {
+    stream.ConsumeWhitespace();
+
+    if (!stream.AtEnd() &&
+        (arguments.empty() || stream.Peek().GetType() == kCommaToken)) {
+      if (stream.Peek().GetType() == kCommaToken) {
+        stream.ConsumeIncludingWhitespace();
+      }
+      StringView argument_string;
+      // Handle {}-wrapper.
+      // https://drafts.csswg.org/css-values-5/#component-function-commas
+      if (stream.Peek().GetType() == kLeftBraceToken) {
+        CSSParserTokenStream::BlockGuard guard(stream);
+        stream.ConsumeWhitespace();
+        DCHECK(!stream.AtEnd());
+        argument_string = ConsumeUntilPeekedTypeIs<>(stream);
+      } else {
+        argument_string = ConsumeUntilPeekedTypeIs<kCommaToken>(stream);
+      }
+      DCHECK(!argument_string.empty());  // Handled parse-time.
+      arguments.push_back(argument_string.ToString());
+    } else {
+      break;
+    }
+  }
+
+  return arguments;
 }
 
 }  // namespace blink

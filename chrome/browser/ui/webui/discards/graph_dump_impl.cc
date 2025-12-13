@@ -533,7 +533,7 @@ void DiscardsGraphDumpImpl::SendProcessNotification(
 
   process_info->id = GetNodeId(process);
   process_info->pid = process->GetProcessId();
-  process_info->private_footprint_kb = process->GetPrivateFootprintKb();
+  process_info->private_footprint_kb = process->GetPrivateFootprint().InKiB();
 
   process_info->description_json =
       ToJSON(GetOwningGraph()->GetNodeDataDescriberRegistry()->DescribeNodeData(

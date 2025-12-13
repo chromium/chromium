@@ -13,8 +13,8 @@ import org.chromium.base.SysUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 import java.util.function.Function;
 
@@ -63,14 +63,23 @@ public class DownloadManagerUiConfig {
      */
     public final boolean showDangerousItems;
 
-    /** Whether need to focus on search box at first. */
-    public final boolean autoFocusSearchBox;
+    /**
+     * Whether or not items with blocked sentive content verdict from Safe Browsing should be shown
+     * with warning text/icon in the list.
+     */
+    public final boolean showBlockedSensitiveItems;
 
     /**
      * A generator for the {@link EdgeToEdgePadAdjuster} to be used to adjust the padding for the
      * download manager.
      */
     public final @Nullable Function<View, EdgeToEdgePadAdjuster> edgeToEdgePadAdjusterGenerator;
+
+    /** Whether to show the search bar inline with the content. */
+    public final boolean inlineSearchBar;
+
+    /** Whether to auto-focus the search box. */
+    public final boolean autoFocusSearchBox;
 
     /** Constructor. */
     private DownloadManagerUiConfig(Builder builder) {
@@ -84,8 +93,10 @@ public class DownloadManagerUiConfig {
         showPaginationHeaders = builder.mShowPaginationHeaders;
         startWithPrefetchedContent = builder.mStartWithPrefetchedContent;
         showDangerousItems = builder.mShowDangerousItems;
+        inlineSearchBar = builder.mInlineSearchBar;
         autoFocusSearchBox = builder.mAutoFocusSearchBox;
         edgeToEdgePadAdjusterGenerator = builder.mEdgeToEdgePadAdjusterGenerator;
+        showBlockedSensitiveItems = builder.mShowBlockedSensitiveItems;
     }
 
     /** Helper class for building a {@link DownloadManagerUiConfig}. */
@@ -104,8 +115,10 @@ public class DownloadManagerUiConfig {
         private boolean mShowPaginationHeaders;
         private boolean mStartWithPrefetchedContent;
         private boolean mShowDangerousItems;
-        private boolean mAutoFocusSearchBox;
+        private boolean mShowBlockedSensitiveItems;
         private @Nullable Function<View, EdgeToEdgePadAdjuster> mEdgeToEdgePadAdjusterGenerator;
+        private boolean mInlineSearchBar;
+        private boolean mAutoFocusSearchBox;
 
         public Builder() {
             mSupportFullWidthImages =
@@ -114,7 +127,7 @@ public class DownloadManagerUiConfig {
             mUseGenericViewTypes = SysUtils.isLowEndDevice();
         }
 
-        public Builder setOtrProfileId(OtrProfileId otrProfileId) {
+        public Builder setOtrProfileId(@Nullable OtrProfileId otrProfileId) {
             mOtrProfileId = otrProfileId;
             return this;
         }
@@ -164,14 +177,24 @@ public class DownloadManagerUiConfig {
             return this;
         }
 
-        public Builder setAutoFocusSearchBox(boolean autoFocusSearchBox) {
-            mAutoFocusSearchBox = autoFocusSearchBox;
+        public Builder setShowBlockedSensitiveItems(boolean showBlockedSensitiveItems) {
+            mShowBlockedSensitiveItems = showBlockedSensitiveItems;
             return this;
         }
 
         public Builder setEdgeToEdgePadAdjusterGenerator(
                 Function<View, EdgeToEdgePadAdjuster> edgeToEdgePadAdjusterGenerator) {
             mEdgeToEdgePadAdjusterGenerator = edgeToEdgePadAdjusterGenerator;
+            return this;
+        }
+
+        public Builder setInlineSearchBar(boolean inlineSearchBar) {
+            mInlineSearchBar = inlineSearchBar;
+            return this;
+        }
+
+        public Builder setAutoFocusSearchBox(boolean autoFocusSearchBox) {
+            mAutoFocusSearchBox = autoFocusSearchBox;
             return this;
         }
 

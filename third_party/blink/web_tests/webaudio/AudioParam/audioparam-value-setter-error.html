@@ -1,89 +1,72 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>
-      AudioParam Value Setter Error Tests 
-    </title>
+    <title>AudioParam Value Setter Error Tests</title>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
     <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
     <script src="../resources/audioparam-testing.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
-      let sampleRate = 16384;
+    <script>
+      const sampleRate = 16384;
+
       // Number of frames in a rendering quantum.
       // Test doesn't need to run for very long.
-      let renderDuration = 0.2;
-      let renderFrames = renderDuration * sampleRate;
-      let automationEndTime = 0.1;
+      const renderDuration = 0.2;
+      const renderFrames = Math.ceil(renderDuration * sampleRate);
 
-      let audit = Audit.createTaskRunner();
+      promise_test(async () => {
+        const context = new OfflineAudioContext({
+          length: renderFrames,
+          sampleRate: sampleRate,
+        });
 
-      audit.define(
-          'Test value setter with setValueCurveAtTime', (task, should) => {
-            let context = new OfflineAudioContext(
-                {length: renderFrames, sampleRate: sampleRate});
+        const src = new ConstantSourceNode(context);
+        const gain = new GainNode(context);
 
-            let src = new ConstantSourceNode(context);
-            let gain = new GainNode(context);
+        src.connect(gain).connect(context.destination);
 
-            src.connect(gain).connect(context.destination);
+        const renderQuantumDuration =
+            RENDER_QUANTUM_FRAMES / context.sampleRate;
 
-            let render_quantum_duration =
-                RENDER_QUANTUM_FRAMES / context.sampleRate;
+        // Start and duration of the curve automation.  These are fairly
+        // arbitrary, but the start should be at least 2 render quanta from
+        // the beginning to allow time for testing the value setter before
+        // the curve starts.  The duration should be at least 2 render
+        // quanta to allow us to apply the value setter in the middle
+        // (somewhere) of the curve.
+        const curveStartTime = 3 * renderQuantumDuration;
+        const curveDuration = 4 * renderQuantumDuration;
 
-            // Start and duration of the curve automation.  These are fairly
-            // arbitrary, but the start should be at least 2 render quanta from
-            // the beginning to allow time for testing the value setter before
-            // the curve starts.  The duration should be at least 2 render
-            // quanta to allow us to apply the value setter in the middle
-            // (somewhere) of the curve.
-            let curveStartTime = 3 * render_quantum_duration;
-            let curveDuration = 4 * render_quantum_duration;
+        // Schedule the value curve. This should not throw.
+        gain.gain.setValueCurveAtTime(
+            new Float32Array([-2, 1]),
+            curveStartTime,
+            curveDuration);
 
-            should(
-                () => {
-                  gain.gain.setValueCurveAtTime(
-                      [-2, 1], curveStartTime, curveDuration);
-                },
-                `setValueCurveAtTime([...], ${curveStartTime}, ${
-                                                                 curveDuration
-                                                               })`)
-                .notThrow();
+        // Applying the value setter outside the curve automation should not
+        // throw.  The gain value is arbitrary.
+        context.suspend(curveStartTime - renderQuantumDuration).then(() => {
+          gain.gain.value = Math.PI;
+          context.resume();
+        });
 
-            // Applying the value setter outside the curve automation should not
-            // throw.  The gain value is arbitrary.
-            context.suspend(curveStartTime - render_quantum_duration)
-                .then(() => {
-                  should(
-                      () => gain.gain.value = Math.PI,
-                      'Using value setter at time ' + context.currentTime +
-                          ' before curve starts')
-                      .notThrow();
-                })
-                .then(() => context.resume());
+        // Applying the value setter inside the curve automation should not
+        // throw.  The gain value is arbitrary.
+        context.suspend(curveStartTime + curveDuration / 2).then(() => {
+          assert_throws_dom(
+              'NotSupportedError',
+              () => gain.gain.value = 0,
+              `Using value setter at time ${context.currentTime} ` +
+                  `in the middle of the curve`);
+          context.resume();
+        });
 
-            // Applying the value setter inside the curve automation should not
-            // throw.  The gain value is arbitrary.
-            context.suspend(curveStartTime + curveDuration / 2)
-                .then(() => {
-                  should(
-                      () => gain.gain.value = 0,
-                      'Using value setter at time ' + context.currentTime +
-                          ' in the middle of the curve')
-                      .throw(DOMException, 'NotSupportedError');
-                })
-                .then(() => context.resume());
+        src.start();
 
-            src.start();
-
-            // Don't care about the actual output.
-            context.startRendering().then(() => task.done());
-          });
-
-      audit.run();
+        await context.startRendering();
+      }, 'Value setter behavior with setValueCurveAtTime automation');
     </script>
   </body>
 </html>

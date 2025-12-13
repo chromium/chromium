@@ -8,10 +8,14 @@
 
 #include <algorithm>
 #include <cmath>
+#include <ranges>
 
+#include "base/containers/contains.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_render_state_init.h"
+#include "third_party/blink/renderer/modules/xr/xr_composition_layer.h"
+#include "third_party/blink/renderer/modules/xr/xr_frame_provider.h"
+#include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
-
 namespace blink {
 
 namespace {
@@ -36,14 +40,22 @@ void XRRenderState::Update(const XRRenderStateInit* init) {
     depth_far_ = std::max(0.0, init->depthFar());
   }
   if (init->hasBaseLayer()) {
+    needs_layers_update_ |= base_layer_ != init->baseLayer();
     base_layer_ = init->baseLayer();
-    layers_ = MakeGarbageCollected<FrozenArray<XRLayer>>();
+    UpdateLayersState(MakeGarbageCollected<FrozenArray<XRLayer>>());
   }
   if (init->hasLayers()) {
+    if (!init->layers() || init->layers()->size() != layers_->size() ||
+        !std::equal(init->layers()->begin(), init->layers()->end(),
+                    layers_->begin())) {
+      needs_layers_update_ = true;
+    }
+
     base_layer_ = nullptr;
-    layers_ = init->layers() ? MakeGarbageCollected<FrozenArray<XRLayer>>(
-                                   HeapVector<Member<XRLayer>>(*init->layers()))
-                             : MakeGarbageCollected<FrozenArray<XRLayer>>();
+    UpdateLayersState(init->layers()
+                          ? MakeGarbageCollected<FrozenArray<XRLayer>>(
+                                HeapVector<Member<XRLayer>>(*init->layers()))
+                          : MakeGarbageCollected<FrozenArray<XRLayer>>());
   }
   if (init->hasInlineVerticalFieldOfView()) {
     double fov = init->inlineVerticalFieldOfView();
@@ -55,11 +67,30 @@ void XRRenderState::Update(const XRRenderStateInit* init) {
   }
 }
 
+void XRRenderState::UpdateLayersState(FrozenArray<XRLayer>* layers) {
+  auto update_layers_redraw_state = [](FrozenArray<XRLayer>& source_layers,
+                                       const FrozenArray<XRLayer>& other_layers,
+                                       bool needs_redraw) {
+    std::ranges::for_each(source_layers, [&](auto& source_layer) {
+      if (!base::Contains(other_layers, source_layer)) {
+        source_layer->SetNeedsRedraw(needs_redraw);
+      }
+    });
+  };
+
+  // Disable needs redraw state for removed layers.
+  update_layers_redraw_state(*layers_, *layers, /*needs_redraw=*/false);
+  // Enable needs redraw state for newly added layers.
+  update_layers_redraw_state(*layers, *layers_, /*needs_redraw=*/true);
+
+  layers_ = layers;
+}
+
 XRLayer* XRRenderState::GetFirstLayer() const {
   if (base_layer_) {
     return base_layer_.Get();
   }
-  if (layers_->size()) {
+  if (!layers_->empty()) {
     return layers_->at(0);
   }
   return nullptr;
@@ -76,6 +107,94 @@ std::optional<double> XRRenderState::inlineVerticalFieldOfView() const {
   if (immersive_)
     return std::nullopt;
   return inline_vertical_fov_;
+}
+
+bool XRRenderState::HasActiveLayer() const {
+  return base_layer_ || (layers_ && !layers_->empty());
+}
+
+void XRRenderState::OnFrameStart() {
+  if (base_layer_) {
+    base_layer_->OnFrameStart();
+  }
+
+  if (layers_) {
+    for (XRLayer* layer : *layers_) {
+      layer->OnFrameStart();
+    }
+  }
+}
+
+void XRRenderState::OnFrameEnd() {
+  if (base_layer_) {
+    base_layer_->OnFrameEnd();
+  }
+
+  if (layers_) {
+    for (XRLayer* layer : *layers_) {
+      layer->OnFrameEnd();
+    }
+  }
+}
+
+void XRRenderState::OnResize() {
+  if (base_layer_) {
+    base_layer_->OnResize();
+  }
+
+  if (layers_) {
+    for (XRLayer* layer : *layers_) {
+      layer->OnResize();
+    }
+  }
+}
+
+XRFrameTransportDelegate* XRRenderState::GetTransportDelegate() {
+  if (XRLayer* first_layer = GetFirstLayer(); first_layer) {
+    return first_layer->LayerClient()->GetTransportDelegate();
+  }
+  return nullptr;
+}
+
+bool XRRenderState::NeedLayersUpdate() {
+  return needs_layers_update_;
+}
+
+void XRRenderState::OnLayersUpdated() {
+  needs_layers_update_ = false;
+}
+
+void XRRenderState::UpdateLayersBackend(
+    device::mojom::blink::XRLayerManager* layer_manager) {
+  if (!needs_layers_update_) {
+    return;
+  }
+
+  needs_layers_update_ = false;
+  if (!layer_manager) {
+    return;
+  }
+
+  blink::Vector<device::LayerId> ids;
+  if (base_layer_) {
+    ids.push_back(base_layer_->layer_id());
+  }
+
+  if (layers_) {
+    ids.reserve(layers_->size());
+    for (XRLayer* layer : *layers_) {
+      ids.push_back(layer->layer_id());
+    }
+  }
+  layer_manager->SetEnabledCompositionLayers(std::move(ids));
+}
+
+void XRRenderState::MaybeDispatchRedrawEvents() {
+  if (layers_) {
+    for (XRLayer* layer : *layers_) {
+      layer->MaybeDispatchRedrawEvent();
+    }
+  }
 }
 
 void XRRenderState::Trace(Visitor* visitor) const {

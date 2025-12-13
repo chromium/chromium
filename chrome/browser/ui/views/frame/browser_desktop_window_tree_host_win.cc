@@ -24,8 +24,9 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_frame.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/browser_window_property_manager_win.h"
 #include "chrome/browser/ui/views/frame/system_menu_insertion_delegate_win.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -34,14 +35,15 @@
 #include "chrome/browser/win/titlebar_config.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/win/hwnd_metrics.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/icon_util.h"
 #include "ui/gfx/image/image_family.h"
+#include "ui/gfx/win/icon_util.h"
 #include "ui/views/controls/menu/native_menu_win.h"
 
 class VirtualDesktopHelper
@@ -219,11 +221,11 @@ BrowserDesktopWindowTreeHostWin::BrowserDesktopWindowTreeHostWin(
     views::internal::NativeWidgetDelegate* native_widget_delegate,
     views::DesktopNativeWidgetAura* desktop_native_widget_aura,
     BrowserView* browser_view,
-    BrowserFrame* browser_frame)
+    BrowserWidget* browser_widget)
     : DesktopWindowTreeHostWin(native_widget_delegate,
                                desktop_native_widget_aura),
       browser_view_(browser_view),
-      browser_frame_(browser_frame),
+      browser_widget_(browser_widget),
       virtual_desktop_helper_(nullptr) {
   profile_observation_.Observe(
       &g_browser_process->profile_manager()->GetProfileAttributesStorage());
@@ -240,10 +242,10 @@ BrowserDesktopWindowTreeHostWin::~BrowserDesktopWindowTreeHostWin() = default;
 
 views::NativeMenuWin* BrowserDesktopWindowTreeHostWin::GetSystemMenu() {
   if (!system_menu_.get()) {
-    CHECK(browser_frame_);
+    CHECK(browser_widget_);
     SystemMenuInsertionDelegateWin insertion_delegate;
     system_menu_ = std::make_unique<views::NativeMenuWin>(
-        browser_frame_->GetSystemMenuModel(), GetHWND());
+        browser_widget_->GetSystemMenuModel(), GetHWND());
     system_menu_->Rebuild(&insertion_delegate);
   }
   return system_menu_.get();
@@ -255,10 +257,6 @@ views::NativeMenuWin* BrowserDesktopWindowTreeHostWin::GetSystemMenu() {
 views::DesktopWindowTreeHost*
 BrowserDesktopWindowTreeHostWin::AsDesktopWindowTreeHost() {
   return this;
-}
-
-int BrowserDesktopWindowTreeHostWin::GetMinimizeButtonOffset() const {
-  return minimize_button_metrics_.GetMinimizeButtonOffsetX();
 }
 
 bool BrowserDesktopWindowTreeHostWin::UsesNativeSystemMenu() const {
@@ -365,7 +363,7 @@ bool BrowserDesktopWindowTreeHostWin::GetDwmFrameInsetsInPixels(
   // an opaque frame, leading to graphical glitches behind the opaque frame.
   // Instead, we use that function below to tell us whether the frame is
   // currently native or opaque.
-  if (!browser_view_ || !browser_frame_ || !GetWidget()->client_view() ||
+  if (!browser_view_ || !browser_widget_ || !GetWidget()->client_view() ||
       !browser_view_->GetIsNormalType() ||
       !DesktopWindowTreeHostWin::ShouldUseNativeFrame()) {
     return false;
@@ -377,8 +375,9 @@ bool BrowserDesktopWindowTreeHostWin::GetDwmFrameInsetsInPixels(
     *insets = gfx::Insets();
   } else {
     // The glass should extend to the bottom of the tabstrip.
-    gfx::Rect tabstrip_region_bounds(browser_frame_->GetBoundsForTabStripRegion(
-        browser_view_->tab_strip_region_view()->GetMinimumSize()));
+    gfx::Rect tabstrip_region_bounds(
+        browser_widget_->GetFrameView()->GetBoundsForTabStripRegion(
+            browser_view_->tab_strip_view()->GetMinimumSize()));
     tabstrip_region_bounds = display::win::GetScreenWin()->DIPToClientRect(
         GetHWND(), tabstrip_region_bounds);
 
@@ -412,22 +411,11 @@ void BrowserDesktopWindowTreeHostWin::HandleDestroying() {
   DesktopWindowTreeHostWin::HandleDestroying();
 }
 
-void BrowserDesktopWindowTreeHostWin::HandleWindowScaleFactorChanged(
-    float window_scale_factor) {
-  DesktopWindowTreeHostWin::HandleWindowScaleFactorChanged(window_scale_factor);
-  minimize_button_metrics_.OnDpiChanged();
-}
-
 bool BrowserDesktopWindowTreeHostWin::PreHandleMSG(UINT message,
                                                    WPARAM w_param,
                                                    LPARAM l_param,
                                                    LRESULT* result) {
   switch (message) {
-    case WM_ACTIVATE:
-      if (LOWORD(w_param) != WA_INACTIVE) {
-        minimize_button_metrics_.OnHWNDActivated();
-      }
-      return false;
     case WM_ENDSESSION:
       chrome::SessionEnding();
       return true;
@@ -451,9 +439,6 @@ void BrowserDesktopWindowTreeHostWin::PostHandleMSG(UINT message,
       UpdateWorkspace();
       break;
     }
-    case WM_CREATE:
-      minimize_button_metrics_.Init(GetHWND());
-      break;
     case WM_WINDOWPOSCHANGED: {
       // Windows lies to us about the position of the minimize button before a
       // window is visible. We use this position to place the incognito avatar
@@ -544,7 +529,7 @@ void BrowserDesktopWindowTreeHostWin::ClientDestroyedWidget() {
   profile_observation_.Reset();
   system_menu_.reset();
   browser_window_property_manager_.reset();
-  browser_frame_ = nullptr;
+  browser_widget_ = nullptr;
   browser_view_ = nullptr;
   DesktopWindowTreeHostWin::ClientDestroyedWidget();
 }
@@ -652,8 +637,8 @@ BrowserDesktopWindowTreeHost::CreateBrowserDesktopWindowTreeHost(
     views::internal::NativeWidgetDelegate* native_widget_delegate,
     views::DesktopNativeWidgetAura* desktop_native_widget_aura,
     BrowserView* browser_view,
-    BrowserFrame* browser_frame) {
+    BrowserWidget* browser_widget) {
   return new BrowserDesktopWindowTreeHostWin(native_widget_delegate,
                                              desktop_native_widget_aura,
-                                             browser_view, browser_frame);
+                                             browser_view, browser_widget);
 }

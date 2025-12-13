@@ -46,13 +46,9 @@ ActionResult InteractionTestUtilSimulatorMac::SelectMenuItem(
 
   for (size_t i = 0; i < model->GetItemCount(); ++i) {
     if (model->GetElementIdentifierAt(i) == element->identifier()) {
-      NSMenuItem* item = [menu itemWithTag:i];
-      if (item) {
-        DCHECK([item action]);
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-        [controller performSelector:[item action] withObject:item];
-#pragma clang diagnostic pop
+      NSInteger item_index = [menu indexOfItemWithTag:i];
+      if (item_index != -1) {
+        [menu performActionForItemAtIndex:item_index];
         [controller cancel];
         return ActionResult::kSucceeded;
       }

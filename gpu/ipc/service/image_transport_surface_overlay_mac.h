@@ -62,12 +62,9 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
                PresentationCallback presentation_callback,
                gfx::FrameData data) override;
 
-  bool ScheduleOverlayPlane(
-      gl::OverlayImage image,
-      std::unique_ptr<gfx::GpuFence> gpu_fence,
-      const gfx::OverlayPlaneData& overlay_plane_data) override;
-
-  bool ScheduleCALayer(const ui::CARendererLayerParams& params) override;
+  bool ScheduleCALayer(
+      const ui::CARendererLayerParams& params,
+      std::vector<gfx::MTLSharedEventFence> backpressure_fences) override;
 
   void SetMaxPendingSwaps(int max_pending_swaps) override;
 

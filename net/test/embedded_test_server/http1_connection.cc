@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/completion_once_callback.h"
@@ -99,12 +98,12 @@ void Http1Connection::AddResponse(std::unique_ptr<HttpResponse> response) {
 }
 
 void Http1Connection::SendResponseHeaders(HttpStatusCode status,
-                                          const std::string& status_reason,
+                                          std::string_view status_reason,
                                           const base::StringPairs& headers) {
   std::string response_builder;
 
   base::StringAppendF(&response_builder, "HTTP/1.1 %d %s\r\n", status,
-                      status_reason.c_str());
+                      status_reason);
   for (const auto& header_pair : headers) {
     const std::string& header_name = header_pair.first;
     const std::string& header_value = header_pair.second;
@@ -116,11 +115,11 @@ void Http1Connection::SendResponseHeaders(HttpStatusCode status,
   SendRawResponseHeaders(response_builder);
 }
 
-void Http1Connection::SendRawResponseHeaders(const std::string& headers) {
+void Http1Connection::SendRawResponseHeaders(std::string_view headers) {
   SendContents(headers, base::DoNothing());
 }
 
-void Http1Connection::SendContents(const std::string& contents,
+void Http1Connection::SendContents(std::string_view contents,
                                    base::OnceClosure callback) {
   if (contents.empty()) {
     std::move(callback).Run();
@@ -129,7 +128,8 @@ void Http1Connection::SendContents(const std::string& contents,
 
   scoped_refptr<DrainableIOBuffer> buf =
       base::MakeRefCounted<DrainableIOBuffer>(
-          base::MakeRefCounted<StringIOBuffer>(contents), contents.length());
+          base::MakeRefCounted<StringIOBuffer>(std::string(contents)),
+          contents.length());
 
   SendInternal(std::move(callback), buf);
 }
@@ -138,16 +138,16 @@ void Http1Connection::FinishResponse() {
   server_delegate_->RemoveConnection(this, connection_listener_);
 }
 
-void Http1Connection::SendContentsAndFinish(const std::string& contents) {
+void Http1Connection::SendContentsAndFinish(std::string_view contents) {
   SendContents(contents, base::BindOnce(&HttpResponseDelegate::FinishResponse,
                                         weak_factory_.GetWeakPtr()));
 }
 
 void Http1Connection::SendHeadersContentAndFinish(
     HttpStatusCode status,
-    const std::string& status_reason,
+    std::string_view status_reason,
     const base::StringPairs& headers,
-    const std::string& contents) {
+    std::string_view contents) {
   SendResponseHeaders(status, status_reason, headers);
   SendContentsAndFinish(contents);
 }

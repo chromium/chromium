@@ -30,7 +30,6 @@ namespace headless {
 
 namespace switches {
 static const char kResetResults[] = "reset-results";
-static const char kDumpConsoleMessages[] = "dump-console-messages";
 static const char kDumpDevToolsProtocol[] = "dump-devtools-protocol";
 }  // namespace switches
 
@@ -121,24 +120,19 @@ void HeadlessModeProtocolBrowserTest::RunDevTooledTest() {
                           base::Unretained(this)));
   devtools_client_.SendCommand("Page.enable");
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDumpConsoleMessages)) {
-    // Set up Runtime domain to intercept console messages.
-    devtools_client_.AddEventHandler(
-        "Runtime.consoleAPICalled",
-        base::BindRepeating(
-            &HeadlessModeProtocolBrowserTest::OnConsoleAPICalled,
-            base::Unretained(this)));
-    devtools_client_.SendCommand("Runtime.enable");
-  }
-
   // Expose DevTools protocol to the target.
-  browser_devtools_client_.SendCommand("Target.exposeDevToolsProtocol",
-                                       Param("targetId", agent_host->GetId()));
+  browser_devtools_client_.SendCommand(
+      "Target.exposeDevToolsProtocol", Param("targetId", agent_host->GetId()),
+      base::BindOnce(
+          &HeadlessModeProtocolBrowserTest::OnDevToolsProtocolExposed,
+          base::Unretained(this)));
+}
 
+void HeadlessModeProtocolBrowserTest::OnDevToolsProtocolExposed(
+    base::Value::Dict params) {
   // Navigate to test harness page
   GURL page_url = embedded_test_server()->GetURL(
-      "harness.test", "/protocol/inspector-protocol-test.html");
+      "harness.test", "/resources/inspector-protocol-test-subtarget.html");
   devtools_client_.SendCommand("Page.navigate", Param("url", page_url.spec()));
 }
 
@@ -159,8 +153,7 @@ void HeadlessModeProtocolBrowserTest::OnLoadEventFired(
   }
   test_params.Merge(GetPageUrlExtraParams());
 
-  std::string json_test_params;
-  base::JSONWriter::Write(test_params, &json_test_params);
+  std::string json_test_params = base::WriteJson(test_params).value_or("");
   std::string evaluate_script = "runTest(" + json_test_params + ")";
 
   base::Value::Dict evaluate_params;
@@ -205,28 +198,6 @@ void HeadlessModeProtocolBrowserTest::ProcessTestResult(
   }
 
   EXPECT_EQ(expectation, test_result);
-}
-
-void HeadlessModeProtocolBrowserTest::OnConsoleAPICalled(
-    const base::Value::Dict& params) {
-  const base::Value::List* args = params.FindListByDottedPath("params.args");
-  if (!args || args->empty()) {
-    return;
-  }
-
-  const base::Value* value = args->front().GetDict().Find("value");
-  switch (value->type()) {
-    case base::Value::Type::NONE:
-    case base::Value::Type::BOOLEAN:
-    case base::Value::Type::INTEGER:
-    case base::Value::Type::DOUBLE:
-    case base::Value::Type::STRING:
-      LOG(INFO) << value->DebugString();
-      return;
-    default:
-      LOG(INFO) << "Unhandled value type: " << value->type();
-      return;
-  }
 }
 
 HEADLESS_MODE_PROTOCOL_TEST(DomFocus, "input/dom-focus.js")
@@ -276,14 +247,9 @@ class HeadlessModeInputSelectFileDialogTest
   bool select_file_dialog_has_run_ = false;
 };
 
-// TODO(crbug.com/40919351): flaky on Mac and Linux builders.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_InputSelectFileDialog DISABLED_InputSelectFileDialog
-#else
-#define MAYBE_InputSelectFileDialog InputSelectFileDialog
-#endif
+// TODO(crbug.com/40919351, crbug.com/443993825): flaky on Mac/Linux/Win.
 HEADLESS_MODE_PROTOCOL_TEST_F(HeadlessModeInputSelectFileDialogTest,
-                              MAYBE_InputSelectFileDialog,
+                              DISABLED_InputSelectFileDialog,
                               "input/input-select-file-dialog.js")
 
 class HeadlessModeScreencastTest : public HeadlessModeProtocolBrowserTest {
@@ -308,6 +274,9 @@ HEADLESS_MODE_PROTOCOL_TEST_F(HeadlessModeScreencastTest,
                               ScreencastViewport,
                               "shared/screencast-viewport.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(WindowWithNewContext,
+                            "shared/window-with-new-context.js")
+
 HEADLESS_MODE_PROTOCOL_TEST(HiddenTargetCreate,
                             "shared/hidden-target-create.js")
 HEADLESS_MODE_PROTOCOL_TEST(HiddenTargetClose, "shared/hidden-target-close.js")
@@ -320,9 +289,14 @@ HEADLESS_MODE_PROTOCOL_TEST(ChangeWindowSize, "shared/change-window-size.js")
 HEADLESS_MODE_PROTOCOL_TEST(ChangeWindowState, "shared/change-window-state.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(WindowOuterSize, "shared/window-outer-size.js")
+
 HEADLESS_MODE_PROTOCOL_TEST(WindowInnerSize, "shared/window-inner-size.js")
+
 HEADLESS_MODE_PROTOCOL_TEST(WindowInnerSizeScaled,
                             "shared/window-inner-size-scaled.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(WindowInnerSizeLargerThanScreen,
+                            "shared/window-inner-size-larger-than-screen.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(LargeBrowserWindowSize,
                             "shared/large-browser-window-size.js")
@@ -343,10 +317,12 @@ HEADLESS_MODE_PROTOCOL_TEST(MaximizedWindowSize,
                             "shared/maximized-window-size.js")
 #endif  // !BUILDFLAG(IS_MAC)
 
-// This currently fails on Mac, see https://crbug.com/1500046
+// These currently fail on Mac, see https://crbug.com/1500046
 #if !BUILDFLAG(IS_MAC)
 HEADLESS_MODE_PROTOCOL_TEST(FullscreenWindowSize,
                             "shared/fullscreen-window-size.js")
+HEADLESS_MODE_PROTOCOL_TEST(FullscreenWindowSizeScaled,
+                            "shared/fullscreen-window-size-scaled.js")
 #endif  // !BUILDFLAG(IS_MAC)
 
 HEADLESS_MODE_PROTOCOL_TEST(PrintToPdfTinyPage,
@@ -354,6 +330,9 @@ HEADLESS_MODE_PROTOCOL_TEST(PrintToPdfTinyPage,
 
 HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsMultipleScreens,
                             "shared/screen-details-multiple-screens.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsMultipleScreensScaled,
+                            "shared/screen-details-multiple-screens-scaled.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsRotationAngle,
                             "shared/screen-details-rotation-angle.js")
@@ -367,10 +346,20 @@ HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsColorDepth,
 HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsWorkArea,
                             "shared/screen-details-work-area.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsWorkAreaScaled,
+                            "shared/screen-details-work-area-scaled.js")
+
 HEADLESS_MODE_PROTOCOL_TEST(RequestFullscreen, "shared/request-fullscreen.js")
 
-// Fails on all platforms, see https://crbug.com/429035133
-HEADLESS_MODE_PROTOCOL_TEST(DISABLED_RequestFullscreenOnSecondaryScreen,
+// TODO(crbug.com/429035133): Times out on macOS. Fix and re-enable.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RequestFullscreenOnSecondaryScreen \
+  DISABLED_RequestFullscreenOnSecondaryScreen
+#else
+#define MAYBE_RequestFullscreenOnSecondaryScreen \
+  RequestFullscreenOnSecondaryScreen
+#endif  // BUILDFLAG(IS_MAC)
+HEADLESS_MODE_PROTOCOL_TEST(MAYBE_RequestFullscreenOnSecondaryScreen,
                             "shared/request-fullscreen-on-secondary-screen.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(CreateTargetPosition,
@@ -381,6 +370,9 @@ HEADLESS_MODE_PROTOCOL_TEST(CreateTargetWindowState,
 
 HEADLESS_MODE_PROTOCOL_TEST(DocumentVisibilityState,
                             "shared/document-visibility-state.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(DocumentVisibilityStatePopup,
+                            "shared/document-visibility-state-popup.js")
 
 // Headless Mode uses Ozone only when running on Linux.
 #if BUILDFLAG(IS_LINUX)
@@ -435,8 +427,8 @@ HEADLESS_MODE_PROTOCOL_TEST(WindowScreenAvail, "shared/window-screen-avail.js")
 HEADLESS_MODE_PROTOCOL_TEST(MAYBE_StartFullscreenSwitch,
                             "sanity/start-fullscreen-switch.js")
 
-// TODO(crbug.com/423951863): Fails on Linux and Mac.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/423951863): Fails on Mac 13.
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_StartFullscreenSwitchScaled DISABLED_StartFullscreenSwitchScaled
 #else
 #define MAYBE_StartFullscreenSwitchScaled StartFullscreenSwitchScaled
@@ -445,7 +437,7 @@ HEADLESS_MODE_PROTOCOL_TEST(MAYBE_StartFullscreenSwitch,
 HEADLESS_MODE_PROTOCOL_TEST(MAYBE_StartFullscreenSwitchScaled,
                             "sanity/start-fullscreen-switch-scaled.js")
 
-// TODO(crbug.com/430156442): These fail on Mac 13.
+// TODO(crbug.com/430156442): These fail on Mac 13
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_WindowStateTransitions DISABLED_WindowStateTransitions
 #define MAYBE_WindowZoomOnSecondaryScreen DISABLED_WindowZoomOnSecondaryScreen
@@ -472,4 +464,44 @@ HEADLESS_MODE_PROTOCOL_TEST(WindowScreenScaleFactor,
 HEADLESS_MODE_PROTOCOL_TEST(WindowScreenSizeOrientation,
                             "shared/window-screen-size-orientation.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(AutofillTriggerCreditCard,
+                            "autofill/autofill-trigger-credit-card.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(DispatchMouseEventScreenCoordinates,
+                            "shared/dispatch-mouse-event-screen-coordinates.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(DispatchTouchEventScreenCoordinates,
+                            "shared/dispatch-touch-event-screen-coordinates.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(
+    EmulateTouchFromMouseEventScreenCoordinates,
+    "shared/emulate-touch-from-mouse-event-screen-coordinates.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(GetScreenInfos, "shared/get-screen-infos.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(AddScreen, "shared/add-screen.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(AddScreenScaleFactor,
+                            "shared/add-screen-scale-factor.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(AddScreenWorkArea, "shared/add-screen-work-area.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(AddScreenGetScreenDetails,
+                            "shared/add-screen-get-screen-details.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(RemoveScreen, "shared/remove-screen.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(RemoveScreenGetScreenDetails,
+                            "shared/remove-screen-get-screen-details.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(AddRemoveScreen, "shared/add-remove-screen.js")
+
+// TODO(crbug.com/423951863): Fails on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SetZoomedWindowBounds DISABLED_SetZoomedWindowBounds
+#else
+#define MAYBE_SetZoomedWindowBounds SetZoomedWindowBounds
+#endif
+HEADLESS_MODE_PROTOCOL_TEST(MAYBE_SetZoomedWindowBounds,
+                            "shared/set-zoomed-window-bounds.js")
 }  // namespace headless

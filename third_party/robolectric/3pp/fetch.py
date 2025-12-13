@@ -9,11 +9,16 @@ import json
 import pathlib
 
 # All instrumented jars + latest non-instrumented one.
+# We should keep .jars only for supported API levels.
+# See what's available here:
+# https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/
 _ROBO_URL_FILES = {
-    'android-all-15-robolectric-12650502.jar':
-        'https://repo1.maven.org/maven2/org/robolectric/android-all/15-robolectric-12650502/android-all-15-robolectric-12650502.jar',
-    'android-all-instrumented-15-robolectric-12650502-i7.jar':
-        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/15-robolectric-12650502-i7/android-all-instrumented-15-robolectric-12650502-i7.jar',
+    'android-all-16-robolectric-13921718.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all/16-robolectric-13921718/android-all-16-robolectric-13921718.jar',
+    'android-all-instrumented-16-robolectric-13921718-i7.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/16-robolectric-13921718-i7/android-all-instrumented-16-robolectric-13921718-i7.jar',
+    'android-all-instrumented-15-robolectric-13954326-i7.jar':
+        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/15-robolectric-13954326-i7/android-all-instrumented-15-robolectric-13954326-i7.jar',
     'android-all-instrumented-14-robolectric-10818077-i7.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/14-robolectric-10818077-i7/android-all-instrumented-14-robolectric-10818077-i7.jar',
     'android-all-instrumented-13-robolectric-9030017-i7.jar':
@@ -36,10 +41,6 @@ _ROBO_URL_FILES = {
         'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/7.1.0_r7-robolectric-r1-i7/android-all-instrumented-7.1.0_r7-robolectric-r1-i7.jar',
     'android-all-instrumented-7.0.0_r1-robolectric-r1-i7.jar':
         'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/7.0.0_r1-robolectric-r1-i7/android-all-instrumented-7.0.0_r1-robolectric-r1-i7.jar',
-    'android-all-instrumented-6.0.1_r3-robolectric-r1-i7.jar':
-        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/6.0.1_r3-robolectric-r1-i7/android-all-instrumented-6.0.1_r3-robolectric-r1-i7.jar',
-    'android-all-instrumented-5.0.2_r3-robolectric-r0-i7.jar':
-        'https://repo1.maven.org/maven2/org/robolectric/android-all-instrumented/5.0.2_r3-robolectric-r0-i7/android-all-instrumented-5.0.2_r3-robolectric-r0-i7.jar',
 }
 
 

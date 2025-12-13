@@ -126,14 +126,15 @@ class MenuScrollButton : public View {
       std::swap(y, y_bottom);
     }
 
-    SkPath path;
-    path.setFillType(SkPathFillType::kWinding);
-    path.moveTo(SkIntToScalar(x), SkIntToScalar(y));
-    path.lineTo(SkIntToScalar(x - config.scroll_arrow_height),
-                SkIntToScalar(y_bottom));
-    path.lineTo(SkIntToScalar(x + config.scroll_arrow_height),
-                SkIntToScalar(y_bottom));
-    path.lineTo(SkIntToScalar(x), SkIntToScalar(y));
+    const SkPath path = SkPath::Polygon(
+        {
+            SkPoint(x, y),
+            SkPoint(x - config.scroll_arrow_height, y_bottom),
+            SkPoint(x + config.scroll_arrow_height, y_bottom),
+            SkPoint(x, y),
+        },
+        /*isClosed=*/false);
+
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setAntiAlias(true);

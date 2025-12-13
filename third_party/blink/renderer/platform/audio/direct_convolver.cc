@@ -26,15 +26,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/audio/direct_convolver.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 
@@ -60,8 +56,9 @@ DirectConvolver::DirectConvolver(
       buffer_(input_block_size * 2),
       convolution_kernel_(std::move(convolution_kernel)) {
   size_t kernel_size = ConvolutionKernelSize();
-  PrepareFilterForConv(convolution_kernel_->Data() + kernel_size - 1, -1,
-                       kernel_size, &prepared_convolution_kernel_);
+  PrepareFilterForConv(
+      UNSAFE_TODO(convolution_kernel_->Data() + kernel_size - 1), -1,
+      kernel_size, &prepared_convolution_kernel_);
 }
 
 void DirectConvolver::Process(const float* source_p,
@@ -79,16 +76,18 @@ void DirectConvolver::Process(const float* source_p,
   DCHECK(dest_p);
   DCHECK(buffer_.Data());
 
-  float* input_p = buffer_.Data() + input_block_size_;
+  float* input_p = UNSAFE_TODO(buffer_.Data() + input_block_size_);
 
   // Copy samples to 2nd half of input buffer.
-  memcpy(input_p, source_p, sizeof(float) * frames_to_process);
+  UNSAFE_TODO(memcpy(input_p, source_p, sizeof(float) * frames_to_process));
 
-  Conv(input_p - kernel_size + 1, 1, kernel_p + kernel_size - 1, -1, dest_p, 1,
+  Conv(UNSAFE_TODO(input_p - kernel_size + 1), 1,
+       UNSAFE_TODO(kernel_p + kernel_size - 1), -1, dest_p, 1,
        frames_to_process, kernel_size, &prepared_convolution_kernel_);
 
   // Copy 2nd half of input buffer to 1st half.
-  memcpy(buffer_.Data(), input_p, sizeof(float) * frames_to_process);
+  UNSAFE_TODO(
+      memcpy(buffer_.Data(), input_p, sizeof(float) * frames_to_process));
 }
 
 void DirectConvolver::Reset() {

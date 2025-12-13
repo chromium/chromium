@@ -5,25 +5,60 @@
 #ifndef IOS_WEB_PUBLIC_FIND_IN_PAGE_FIND_IN_PAGE_MANAGER_H_
 #define IOS_WEB_PUBLIC_FIND_IN_PAGE_FIND_IN_PAGE_MANAGER_H_
 
-#import "ios/web/public/find_in_page/abstract_find_in_page_manager.h"
+#import "ios/web/public/find_in_page/find_in_page_manager_delegate.h"
 #import "ios/web/public/web_state_user_data.h"
 
 namespace web {
 
-// Manager for searching text on a page. As opposed to the
-// JavaScriptFindInPageManager, this manager does not rely on JavaScript but on
-// the Find interaction API available on iOS 16 or later.
-class FindInPageManager : public AbstractFindInPageManager,
-                          public WebStateUserData<FindInPageManager> {
- protected:
-  friend class WebStateUserData<FindInPageManager>;
+// Indicates what action the FindinPageManager should take.
+enum class FindInPageOptions {
+  // Searches for a string. Highlights all matches. Selects and scrolls to the
+  // first result if string is found. Selecting refers to highlighting in a
+  // unique manner different from the other matches.
+  FindInPageSearch = 1,
+  // Selects and scrolls to the next result if there is one. Otherwise, nothing
+  // will change. Loop back to the first result if currently on last result. If
+  // passed before a Find() with FindInPageSearch call, nothing will change.
+  FindInPageNext,
+  // Selects and scrolls to the previous result if there is one. Otherwise,
+  // nothing will change. Loop to last result if currently on first result. If
+  // passed before a Find() with FindInPageSearch call, nothing will change.
+  FindInPagePrevious,
+};
 
-  // Overload WebStateUserData<FindInPageManager>::Create() since
-  // FindInPageManager is an abstract class and the factory needs
-  // to create an instance of a sub-class.
+// Manager for searching text on a page. This manager relies on the Find
+// interaction API available on iOS 16 or later.
+class FindInPageManager : public WebStateUserData<FindInPageManager> {
+ public:
   static std::unique_ptr<FindInPageManager> Create(WebState* web_state);
   static std::unique_ptr<FindInPageManager> Create(WebState* web_state,
                                                    base::TimeDelta delay);
+
+  // Searches for string `query`. Executes new search or traverses results based
+  // on `options`. `query` must not be null if `options` is `FindInPageSearch`.
+  // `query` is ignored if `options` is not `FindInPageSearch`. If new search is
+  // started before previous search finishes, old request will be discarded.
+  // Check CanSearchContent() before calling Find().
+  //
+  // FindInPageManagerDelegate::DidHighlightMatches() will be called to return
+  // the total matches found if FindInPageSearch is passed, assuming it hasn't
+  // been discarded. FindInPageManagerDelegate::DidSelectMatch() will also be
+  // called if matches were found to inform client of the new match that was
+  // highlighted for all FindInPageOptions.
+  virtual void Find(NSString* query, FindInPageOptions options) = 0;
+
+  // Removes any highlighting. Does nothing if Find() with
+  // FindInPageOptions::FindInPageSearch is never called.
+  virtual void StopFinding() = 0;
+
+  // Returns false if page content can not be searched.
+  virtual bool CanSearchContent() = 0;
+
+  virtual FindInPageManagerDelegate* GetDelegate() = 0;
+  virtual void SetDelegate(FindInPageManagerDelegate* delegate) = 0;
+
+ protected:
+  friend class WebStateUserData<FindInPageManager>;
 };
 
 }  // namespace web

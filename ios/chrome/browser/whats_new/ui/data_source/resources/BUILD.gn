@@ -68,6 +68,8 @@ screenshots_lists = [
   "m139/ChooseFromDrive_darkmode.json",
   "m139/SaveToDrive.json",
   "m139/SaveToDrive_darkmode.json",
+  "m143/BlingEnterpriseProfiles.json",
+  "m143/BlingEnterpriseProfiles_darkmode.json",
 ]
 
 bundle_data("screenshots_files") {

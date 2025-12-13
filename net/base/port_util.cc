@@ -10,7 +10,6 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -116,8 +115,10 @@ const int kRestrictedPorts[] = {
     10080,  // Amanda
 };
 
-base::LazyInstance<std::multiset<int>>::Leaky g_explicitly_allowed_ports =
-    LAZY_INSTANCE_INITIALIZER;
+std::multiset<int>& GetExplicitlyAllowedPorts() {
+  static base::NoDestructor<std::multiset<int>> explicitly_allowed_ports;
+  return *explicitly_allowed_ports;
+}
 
 // List of ports which are permitted to be reenabled despite being in
 // kRestrictedList. When adding an port to this list you should also update the
@@ -169,8 +170,9 @@ bool IsPortAllowedForScheme(int port, std::string_view url_scheme) {
     return false;
 
   // Allow explicitly allowed ports for any scheme.
-  if (g_explicitly_allowed_ports.Get().count(port) > 0)
+  if (GetExplicitlyAllowedPorts().count(port) > 0) {
     return true;
+  }
 
   // Finally check against the generic list of restricted ports for all
   // schemes.
@@ -211,7 +213,7 @@ bool IsPortAllowedForIpEndpoint(const IPEndPoint& endpoint) {
   int port = endpoint.port();
 
   // Allow explicitly allowed ports.
-  if (g_explicitly_allowed_ports.Get().count(port) > 0) {
+  if (GetExplicitlyAllowedPorts().count(port) > 0) {
     return true;
   }
 
@@ -234,24 +236,24 @@ bool IsPortAllowedForIpEndpoint(const IPEndPoint& endpoint) {
 }
 
 size_t GetCountOfExplicitlyAllowedPorts() {
-  return g_explicitly_allowed_ports.Get().size();
+  return GetExplicitlyAllowedPorts().size();
 }
 
 // Specifies a comma separated list of port numbers that should be accepted
 // despite bans. If the string is invalid no allowed ports are stored.
 void SetExplicitlyAllowedPorts(base::span<const uint16_t> allowed_ports) {
   std::multiset<int> ports(allowed_ports.begin(), allowed_ports.end());
-  g_explicitly_allowed_ports.Get() = std::move(ports);
+  GetExplicitlyAllowedPorts() = std::move(ports);
 }
 
 ScopedPortException::ScopedPortException(int port) : port_(port) {
-  g_explicitly_allowed_ports.Get().insert(port);
+  GetExplicitlyAllowedPorts().insert(port);
 }
 
 ScopedPortException::~ScopedPortException() {
-  auto it = g_explicitly_allowed_ports.Get().find(port_);
-  if (it != g_explicitly_allowed_ports.Get().end()) {
-    g_explicitly_allowed_ports.Get().erase(it);
+  auto it = GetExplicitlyAllowedPorts().find(port_);
+  if (it != GetExplicitlyAllowedPorts().end()) {
+    GetExplicitlyAllowedPorts().erase(it);
   } else {
     NOTREACHED();
   }

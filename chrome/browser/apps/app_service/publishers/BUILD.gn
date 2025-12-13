@@ -1,0 +1,193 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(!is_android)
+
+# Concrete implementation of Publisher interface.
+# Importantly this must not be depended on by app_service.
+# The the dependency must be injected at earlier stage on runtime.
+source_set("publishers") {
+  sources = [
+    "app_publisher.cc",
+    "app_publisher.h",
+    "extension_apps.cc",
+    "extension_apps.h",
+    "extension_apps_base.cc",
+    "extension_apps_base.h",
+    "extension_apps_enable_flow.cc",
+    "extension_apps_enable_flow.h",
+    "extension_apps_util.cc",
+    "extension_apps_util.h",
+    "publisher_host_factory_impl.cc",
+    "publisher_host_factory_impl.h",
+    "publisher_host_impl.cc",
+    "publisher_host_impl.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service/app_icon",
+    "//chrome/browser/extensions",
+    "//chrome/browser/prefs",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/extensions:extension_enable_flow_delegate",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications/app_service",
+  ]
+
+  # TODO(crbug.com/441649482): circular dependency to support concrete
+  # publisher implementation. Resolve the dependency.
+  allow_circular_includes_from = [
+    # app_publisher is referred as a skeleton implementation.
+    "//chrome/browser/web_applications/app_service",
+  ]
+
+  if (is_chromeos) {
+    sources += [
+      "arc_apps.cc",
+      "arc_apps.h",
+      "arc_apps_factory.cc",
+      "arc_apps_factory.h",
+      "borealis_apps.cc",
+      "borealis_apps.h",
+      "bruschetta_apps.cc",
+      "bruschetta_apps.h",
+      "crostini_apps.cc",
+      "crostini_apps.h",
+      "extension_apps_chromeos.cc",
+      "extension_apps_chromeos.h",
+      "guest_os_apps.cc",
+      "guest_os_apps.h",
+      "plugin_vm_apps.cc",
+      "plugin_vm_apps.h",
+      "remote_apps.cc",
+      "remote_apps.h",
+    ]
+
+    deps += [
+      "//chrome/app/theme:chrome_unscaled_resources_grit",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/apps/app_service/app_icon:util",
+      "//chrome/browser/ash/app_list",
+      "//chrome/browser/ash/app_list/arc",
+      "//chrome/browser/ash/apps",
+      "//chrome/browser/ash/arc:arc_util",
+      "//chrome/browser/ash/arc/app_shortcuts",
+      "//chrome/browser/ash/arc/privacy_items",
+      "//chrome/browser/ash/arc/session",
+      "//chrome/browser/ash/arc/session:service_launcher",
+      "//chrome/browser/ash/borealis",
+      "//chrome/browser/ash/bruschetta",
+      "//chrome/browser/ash/child_accounts",
+      "//chrome/browser/ash/child_accounts/time_limits",
+      "//chrome/browser/ash/crostini",
+      "//chrome/browser/ash/extensions",
+      "//chrome/browser/ash/file_manager",
+      "//chrome/browser/ash/guest_os",
+      "//chrome/browser/ash/guest_os/public",
+      "//chrome/browser/ash/plugin_vm",
+      "//chrome/browser/ash/remote_apps",
+      "//chrome/browser/chromeos/arc",
+      "//chrome/browser/policy:system_features_disable_list",
+      "//chrome/browser/resources:component_extension_resources_grit",
+      "//chrome/browser/ui/ash/multi_user",
+      "//chrome/browser/ui/ash/session",
+      "//chrome/browser/ui/ash/shelf",
+      "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/ash/components/policy/system_features_disable_list",
+      "//chromeos/ash/experiences/arc",
+      "//chromeos/ash/experiences/arc:arc_app_constants",
+      "//chromeos/ash/experiences/arc:arc_metrics_constants",
+      "//chromeos/ash/experiences/arc/intent_helper:arc_intent_helper_constants",
+      "//chromeos/ash/experiences/arc/session",
+      "//components/app_constants",
+    ]
+
+    # Caused by KeyedService dependency. We should revisit to resolve this.
+    # E.g. crbug.com/442761233.
+    allow_circular_includes_from += [
+      "//chrome/browser/ash/arc/session:service_launcher",
+      "//chrome/browser/ash/remote_apps",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "app_publisher_unittest.cc",
+    "publisher_unittest.cc",
+  ]
+
+  deps = [
+    ":publishers",
+    "//base",
+    "//chrome/app:branded_strings",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//components/account_id",
+    "//components/app_constants",
+    "//components/services/app_service",
+    "//components/services/app_service/public/cpp:app_types",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//url",
+  ]
+
+  if (is_chromeos) {
+    sources += [
+      "arc_apps_unittest.cc",
+      "bruschetta_apps_unittest.cc",
+      "crostini_apps_unittest.cc",
+      "guest_os_apps_unittest.cc",
+      "plugin_vm_apps_unittest.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/ash/app_list/arc",
+      "//chrome/browser/ash/app_list/arc:test_support",
+      "//chrome/browser/ash/apps",
+      "//chrome/browser/ash/arc/fileapi",
+      "//chrome/browser/ash/arc/privacy_items",
+      "//chrome/browser/ash/borealis",
+      "//chrome/browser/ash/bruschetta",
+      "//chrome/browser/ash/bruschetta:test_support",
+      "//chrome/browser/ash/crostini:test_support",
+      "//chrome/browser/ash/guest_os",
+      "//chrome/browser/ash/guest_os:test_support",
+      "//chrome/browser/ash/guest_os/public",
+      "//chrome/browser/ash/plugin_vm",
+      "//chrome/browser/ash/plugin_vm:test_support",
+      "//chrome/browser/policy:system_features_disable_list",
+      "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/ash/components/dbus/chunneld",
+      "//chromeos/ash/components/dbus/seneschal",
+      "//chromeos/ash/experiences/arc:arc_app_constants",
+      "//chromeos/ash/experiences/arc:arc_test_support",
+      "//chromeos/ash/experiences/arc:notification_test_support",
+    ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  }
+}

@@ -65,3 +65,5 @@ ScopedJavaLocalRef<jobject> ToJniType(
       request.header_values);
 }
 }  // namespace jni_zero
+
+DEFINE_JNI(AwWebResourceRequest)

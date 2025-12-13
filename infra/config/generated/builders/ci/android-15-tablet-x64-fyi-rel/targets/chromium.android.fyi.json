@@ -18,6 +18,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/test:android_browsertests",
+        "module_scheme": "gtest",
         "name": "android_browsertests",
         "resultdb": {
           "enable": true,

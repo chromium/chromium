@@ -102,7 +102,7 @@ class VideoRendererImplTest : public testing::Test {
         null_video_sink_.get(),
         base::BindRepeating(&VideoRendererImplTest::CreateVideoDecodersForTest,
                             base::Unretained(this)),
-        true, &media_log_, nullptr, 0);
+        true, &media_log_, nullptr, MediaPlayerLoggingID(0));
     renderer_->SetTickClockForTesting(&tick_clock_);
     null_video_sink_->set_tick_clock_for_testing(&tick_clock_);
 
@@ -277,9 +277,9 @@ class VideoRendererImplTest : public testing::Test {
     WaitableMessageLoopEvent event;
     PipelineStatusCallback error_cb = event.GetPipelineStatusCB();
     EXPECT_CALL(mock_cb_, OnError(_))
-        .WillOnce(Invoke([cb = &error_cb](PipelineStatus status) {
+        .WillOnce([cb = &error_cb](PipelineStatus status) {
           std::move(*cb).Run(status);
-        }));
+        });
     event.RunAndWaitForStatus(expected);
   }
 
@@ -1379,7 +1379,7 @@ class VideoRendererImplAsyncAddFrameReadyTest : public VideoRendererImplTest {
                             base::Unretained(this)),
         true, &media_log_,
         std::make_unique<MockGpuMemoryBufferVideoFramePool>(&frame_ready_cbs_),
-        0);
+        MediaPlayerLoggingID(0));
     VideoRendererImplTest::Initialize();
   }
 

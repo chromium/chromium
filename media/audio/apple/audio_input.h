@@ -9,9 +9,9 @@
 #include <AudioToolbox/AudioQueue.h>
 #include <stdint.h>
 
+#include <atomic>
 #include <memory>
 
-#include "base/atomicops.h"
 #include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
@@ -108,7 +108,7 @@ class PCMQueueInAudioInputStream : public AudioInputStream {
 
   // Is set to true on the internal AUHAL IO thread in the first input callback
   // after Start() has bee called.
-  base::subtle::Atomic32 input_callback_is_active_;
+  std::atomic<bool> input_callback_is_active_;
 
   // Timer which triggers CheckInputStartupSuccess() to verify that input
   // callbacks have started as intended after a successful call to Start().

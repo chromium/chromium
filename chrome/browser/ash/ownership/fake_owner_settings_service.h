@@ -7,7 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 
 class Profile;

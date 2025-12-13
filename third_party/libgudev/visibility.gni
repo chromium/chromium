@@ -1,0 +1,8 @@
+# libgudev should only be used in testing code. This visibility list helps
+# enforce that.
+visibility = [
+  "//third_party/libgudev/*",
+
+  # mutter is also test-only
+  "//third_party/mutter/*",
+]

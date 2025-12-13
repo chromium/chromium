@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
@@ -15,17 +16,20 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "chromeos/ash/experiences/arc/session/adb_sideloading_availability_delegate.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
@@ -34,6 +38,7 @@
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -76,21 +81,27 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
   ~ArcActivationNecessityCheckerTest() override = default;
 
   void SetUp() override {
+    ASSERT_TRUE(testing_profile_manager_.SetUp());
+
     SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ash::switches::kEnableArcVm);
 
     ash::ConciergeClient::InitializeFake();
+    ash::DlcserviceClient::InitializeFake();
 
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
-    arc_session_manager_ =
-        CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
-            base::BindRepeating(FakeArcSession::Create)));
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
+    arc_session_manager_ = CreateTestArcSessionManager(
+        std::make_unique<ArcSessionRunner>(
+            base::BindRepeating(FakeArcSession::Create)),
+        arc_dlc_installer_.get());
 
     user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
         std::make_unique<user_manager::FakeUserManagerDelegate>(),
-        testing_local_state_.Get(), ash::CrosSettings::Get()));
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        ash::CrosSettings::Get()));
 
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId("1234567890"));
@@ -99,8 +110,10 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
     user_manager_->UserLoggedIn(
         account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
 
-    profile_ = std::make_unique<TestingProfile>();
-    ash::AnnotatedAccountId::Set(profile_.get(), account_id);
+    ash::ScopedAccountIdAnnotator annotator(
+        testing_profile_manager_.profile_manager(), account_id);
+    profile_ = testing_profile_manager_.CreateTestingProfile(
+        TestingProfile::kDefaultProfileUserName);
 
     profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
     profile_->GetPrefs()->SetBoolean(prefs::kArcEnabled, true);
@@ -127,24 +140,29 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
     checker_.reset();
     app_instance_.reset();
     arc_session_manager_.reset();
+    arc_dlc_installer_.reset();
     arc_service_manager_.reset();
-    profile_.reset();
+    profile_ = nullptr;
+    testing_profile_manager_.DeleteAllTestingProfiles();
+    ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
   }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
-  ScopedTestingLocalState testing_local_state_{
+  TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
   ash::ScopedStubInstallAttributes install_attributes_;
   ash::ScopedTestingCrosSettings testing_cros_settings_;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
+  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   user_manager::ScopedUserManager user_manager_;
 
-  std::unique_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
   FakeAdbSideloadingAvailabilityDelegate adb_sideloading_availability_delegate_;
   std::unique_ptr<ArcActivationNecessityChecker> checker_;
@@ -379,6 +397,18 @@ TEST_F(ArcActivationNecessityCheckerTest, ManagementTransition) {
 
 TEST_F(ArcActivationNecessityCheckerTest, AlwaysOnVpn) {
   profile_->GetPrefs()->SetString(prefs::kAlwaysOnVpnPackage, "vpn.app.fake");
+  base::test::TestFuture<bool> future;
+  checker_->Check(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(ArcActivationNecessityCheckerTest, CoralFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  // Coral feature is enabled when both flags below are enabled.
+  feature_list.InitWithFeatures(
+      /* enabled_features */ {ash::features::kCoralFeature,
+                              ash::features::kCoralFeatureAllowed},
+      /* disabled_features */ {});
   base::test::TestFuture<bool> future;
   checker_->Check(future.GetCallback());
   EXPECT_TRUE(future.Get());

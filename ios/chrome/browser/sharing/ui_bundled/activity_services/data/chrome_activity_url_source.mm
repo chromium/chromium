@@ -15,7 +15,6 @@ namespace {
 // Feature flag to restore sharing just the data instead of an Extension Item.
 // To be used as a kill switch.
 BASE_FEATURE(kShareNSExtensionItemKillSwitch,
-             "ShareNSExtensionItemKillSwitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 
@@ -93,7 +92,9 @@ BASE_FEATURE(kShareNSExtensionItemKillSwitch,
   };
   NSExtensionItem* item = [[NSExtensionItem alloc] init];
   item.attachments = @[ provider ];
-  item.attributedTitle = [[NSAttributedString alloc] initWithString:_subject];
+  if (_subject) {
+    item.attributedTitle = [[NSAttributedString alloc] initWithString:_subject];
+  }
   return item;
 }
 

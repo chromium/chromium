@@ -9,12 +9,14 @@
 #include "components/saved_tab_groups/public/utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "extensions/common/constants.h"
 #include "net/http/http_request_headers.h"
 
 namespace tab_groups {
 
 // static
 bool TabGroupSyncUtils::IsSaveableNavigation(
+    bool is_extension_navigation_allowed,
     content::NavigationHandle* navigation_handle) {
   ui::PageTransition page_transition = navigation_handle->GetPageTransition();
 
@@ -61,6 +63,19 @@ bool TabGroupSyncUtils::IsSaveableNavigation(
   // auto triggered on restoration. So there is no need to save them.
   if (navigation_handle->IsRendererInitiated() &&
       !navigation_handle->HasUserGesture()) {
+    if (!is_extension_navigation_allowed || navigation_handle->IsHistory()) {
+      return false;
+    }
+
+    // Navigation triggered by Extension's chrome.tab.update will have extension
+    // URL as the initiator origin.
+    if (navigation_handle->GetInitiatorOrigin().has_value()) {
+      GURL origin_url = navigation_handle->GetInitiatorOrigin()->GetURL();
+      if (origin_url.SchemeIs(extensions::kExtensionScheme)) {
+        return true;
+      }
+    }
+
     return false;
   }
 

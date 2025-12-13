@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/omnibox/ui/omnibox_container_view.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_keyboard_delegate.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_mutator.h"
-#import "ios/chrome/browser/omnibox/ui/omnibox_text_field_delegate.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_text_input_delegate.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
@@ -31,7 +31,7 @@
 
 using base::UserMetricsAction;
 
-@interface OmniboxViewController () <OmniboxTextFieldDelegate,
+@interface OmniboxViewController () <OmniboxTextInputDelegate,
                                      OmniboxKeyboardDelegate,
                                      UIScribbleInteractionDelegate>
 
@@ -84,16 +84,22 @@ using base::UserMetricsAction;
   /// Clear button owned by `view` (OmniboxContainerView).
   __weak UIButton* _clearButton;
 
-  /// Whether the view is presented in the lens overlay.
-  BOOL _isLensOverlay;
+  /// The context in which the omnibox is presented.
+  OmniboxPresentationContext _presentationContext;
+
+  /// Leading icon from autocomplete.
+  UIImage* _autocompleteLeadingIcon;
+  /// Accessibility identifier for the `_autocompleteLeadingIcon`.
+  NSString* _autocompleteLeadingIconAccessibilityIdentifier;
 }
 
 @dynamic view;
 
-- (instancetype)initWithIsLensOverlay:(BOOL)isLensOverlay {
+- (instancetype)initWithPresentationContext:
+    (OmniboxPresentationContext)presentationContext {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
-    _isLensOverlay = isLensOverlay;
+    _presentationContext = presentationContext;
   }
   return self;
 }
@@ -102,44 +108,39 @@ using base::UserMetricsAction;
 
 - (void)loadView {
   UIColor* textColor = [UIColor colorNamed:kTextPrimaryColor];
-  UIColor* textFieldTintColor = [UIColor colorNamed:kBlueColor];
+  UIColor* textInputTintColor = [UIColor colorNamed:kBlueColor];
   UIColor* iconTintColor;
   iconTintColor = [UIColor colorNamed:kToolbarButtonColor];
 
   self.view = [[OmniboxContainerView alloc] initWithFrame:CGRectZero
                                                 textColor:textColor
-                                            textFieldTint:textFieldTintColor
+                                            textInputTint:textInputTintColor
                                                  iconTint:iconTintColor
-                                            isLensOverlay:_isLensOverlay];
+                                      presentationContext:_presentationContext];
   self.view.layoutGuideCenter = self.layoutGuideCenter;
+  self.view.metricsRecorder = self.metricsRecorder;
   _clearButton = self.view.clearButton;
 
   self.view.shouldGroupAccessibilityChildren = YES;
 
-  self.textField.delegate = self;
-  self.textField.omniboxKeyboardDelegate = self;
+  self.textInput.omniboxTextInputDelegate = self;
+  self.textInput.omniboxKeyboardDelegate = self;
 
-  SetA11yLabelAndUiAutomationName(self.textField, IDS_ACCNAME_LOCATION,
+  SetA11yLabelAndUiAutomationName(self.textInput.view, IDS_ACCNAME_LOCATION,
                                   @"Address");
 
-  [self.textField
+  [self.textInput.view
       addInteraction:[[UIScribbleInteraction alloc] initWithDelegate:self]];
 }
 
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.textField.placeholder = [self currentPlaceholderText];
+  [self.textInput setDefaultPlaceholderText:[self currentPlaceholderText]];
 
   [_clearButton addTarget:self
                    action:@selector(clearButtonPressed)
          forControlEvents:UIControlEventTouchUpInside];
-
-  // Observe text changes to show the clear button when there is text and hide
-  // it when the textfield is empty.
-  [self.textField addTarget:self
-                     action:@selector(textFieldDidChange:)
-           forControlEvents:UIControlEventEditingChanged];
 
   if (base::FeatureList::IsEnabled(kEnableLensOverlay)) {
     [self.view.thumbnailButton addTarget:self
@@ -155,8 +156,8 @@ using base::UserMetricsAction;
 
   // Reset the text after initial layout has been forced, see comment in
   // `OmniboxTextFieldIOS`.
-  if ([self.textField.text isEqualToString:@" "]) {
-    self.textField.text = @"";
+  if ([self.textInput.text isEqualToString:@" "]) {
+    self.textInput.text = @"";
   }
   [self updateClearButtonVisibility];
   [self updateLeadingImage];
@@ -183,18 +184,25 @@ using base::UserMetricsAction;
 
 - (void)viewIsAppearing:(BOOL)animated {
   [super viewIsAppearing:animated];
-  if (_isLensOverlay) {
+  if (_presentationContext == OmniboxPresentationContext::kLensOverlay) {
     self.semanticContentAttribute =
-        [self.textField bestSemanticContentAttribute];
-    [self.textField updateTextDirection];
+        [self.textInput bestSemanticContentAttribute];
+    [self.textInput updateTextDirection];
+  }
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  if (_presentationContext == OmniboxPresentationContext::kComposebox) {
+    [self.view updateTextViewHeight];
   }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
-  self.textField.selectedTextRange =
-      [self.textField textRangeFromPosition:self.textField.beginningOfDocument
-                                 toPosition:self.textField.beginningOfDocument];
+  self.textInput.selectedTextRange =
+      [self.textInput textRangeFromPosition:self.textInput.beginningOfDocument
+                                 toPosition:self.textInput.beginningOfDocument];
 
   [NSNotificationCenter.defaultCenter
       removeObserver:self
@@ -216,29 +224,32 @@ using base::UserMetricsAction;
   return self.view;
 }
 
+- (void)setMetricsRecorder:(OmniboxMetricsRecorder*)metricsRecorder {
+  _metricsRecorder = metricsRecorder;
+  self.view.metricsRecorder = metricsRecorder;
+}
+
 #pragma mark - public methods
 
-- (OmniboxTextFieldIOS*)textField {
-  return self.view.textField;
+- (id<OmniboxTextInput>)textInput {
+  return self.view.textInput;
 }
 
 - (void)prepareOmniboxForScribble {
   [self.mutator prepareForScribble];
-  self.textField.placeholder = nil;
+  [self.textInput setDefaultPlaceholderText:nil];
 }
 
 - (void)cleanupOmniboxAfterScribble {
   [self.mutator cleanupAfterScribble];
-  self.textField.placeholder = [self currentPlaceholderText];
+  [self.textInput setDefaultPlaceholderText:[self currentPlaceholderText]];
 }
 
-#pragma mark - OmniboxTextFieldDelegate
+#pragma mark - OmniboxTextInputDelegate
 
-#pragma mark UITextFieldDelegate
-
-- (BOOL)textField:(UITextField*)textField
-    shouldChangeCharactersInRange:(NSRange)range
-                replacementString:(NSString*)newText {
+- (BOOL)textInput:(id<OmniboxTextInput>)textInput
+    shouldChangeTextInRange:(NSRange)range
+          replacementString:(NSString*)newText {
   // Any change in the content of the omnibox should deselect thumbnail button.
   self.view.thumbnailButton.selected = NO;
   self.processingUserEvent =
@@ -247,10 +258,10 @@ using base::UserMetricsAction;
   return self.processingUserEvent;
 }
 
-- (void)textFieldDidChange:(id)sender {
+- (void)textInputDidChange:(id<OmniboxTextInput>)textInput {
   [self updateLeadingImage];
   [self updateClearButtonVisibility];
-  self.semanticContentAttribute = [self.textField bestSemanticContentAttribute];
+  self.semanticContentAttribute = [self.textInput bestSemanticContentAttribute];
 
   if (self.forwardingOnDidChange) {
     return;
@@ -266,7 +277,12 @@ using base::UserMetricsAction;
   self.forwardingOnDidChange = NO;
 }
 
-- (BOOL)textFieldShouldReturn:(UITextField*)textField {
+- (void)textInputDidUpdateUIForText:(id<OmniboxTextInput>)textInput {
+  [self updateLeadingImage];
+  [self updateClearButtonVisibility];
+}
+
+- (BOOL)textInputShouldReturn:(id<OmniboxTextInput>)textInput {
   // Forward kReturnKey action to the keyboard handler.
   if ([self canPerformKeyboardAction:OmniboxKeyboardAction::kReturnKey]) {
     [self performKeyboardAction:OmniboxKeyboardAction::kReturnKey];
@@ -279,7 +295,7 @@ using base::UserMetricsAction;
 // for this method to be called when we are already editing (popup focus
 // change).  In this case, OnDidBeginEditing will be called multiple times.
 // If that becomes an issue a boolean should be added to track editing state.
-- (void)textFieldDidBeginEditing:(UITextField*)textField {
+- (void)textInputDidBeginEditing:(id<OmniboxTextInput>)textInput {
   [self updateCachedClipboardState];
 
   // Update the clear button state.
@@ -290,15 +306,14 @@ using base::UserMetricsAction;
     self.view.thumbnailButton.selected = NO;
   }
 
-  self.semanticContentAttribute = [self.textField bestSemanticContentAttribute];
+  self.semanticContentAttribute = [self.textInput bestSemanticContentAttribute];
 
   self.omniboxInteractedWhileFocused = NO;
   [self.mutator onDidBeginEditing];
 }
 
 // Records the metrics as needed.
-- (void)textFieldDidEndEditing:(UITextField*)textField
-                        reason:(UITextFieldDidEndEditingReason)reason {
+- (void)textInputDidEndEditing:(id<OmniboxTextInput>)textInput {
   if (base::FeatureList::IsEnabled(kEnableLensOverlay)) {
     self.view.thumbnailButton.selected = NO;
   }
@@ -309,7 +324,7 @@ using base::UserMetricsAction;
   }
 }
 
-- (UIMenu*)textField:(UITextField*)textField
+- (UIMenu*)textInput:(id<OmniboxTextInput>)textInput
     editMenuForCharactersInRange:(NSRange)range
                 suggestedActions:(NSArray<UIMenuElement*>*)suggestedActions {
   NSMutableArray* actions = [suggestedActions mutableCopy];
@@ -361,39 +376,37 @@ using base::UserMetricsAction;
   return [UIMenu menuWithChildren:actions];
 }
 
-#pragma mark OmniboxTextFieldDelegate
-
-- (void)onCopy {
+- (void)textInputDidCopy:(id<OmniboxTextInput>)textInput {
   self.omniboxInteractedWhileFocused = YES;
   [self.mutator onCopy];
 }
 
-- (void)willPaste {
+- (void)textInputWillPaste:(id<OmniboxTextInput>)textInput {
   [self.mutator willPaste];
 }
 
-- (void)onDeleteBackward {
+- (void)textInputDidDeleteBackward:(id<OmniboxTextInput>)textInput {
   // If not in pre-edit, deleting when cursor is at the beginning interacts with
   // the thumbnail.
-  if (OmniboxTextFieldIOS* textField = self.textField;
-      !textField.isPreEditing && textField.selectedTextRange.empty &&
-      [textField offsetFromPosition:textField.beginningOfDocument
-                         toPosition:textField.selectedTextRange.start] == 0) {
+  if (!textInput.isPreEditing && textInput.selectedTextRange.empty &&
+      [textInput offsetFromPosition:textInput.beginningOfDocument
+                         toPosition:textInput.selectedTextRange.start] == 0) {
     [self didTapThumbnailButton];
   }
   [self.mutator onDeleteBackward];
 }
 
-- (void)textFieldDidAcceptAutocomplete:(OmniboxTextFieldIOS*)textField {
+- (void)textInputDidAcceptAutocomplete:(id<OmniboxTextInput>)textInput {
   [self.mutator onAcceptAutocomplete];
 }
 
-- (void)textFieldDidRemoveAdditionalText:(OmniboxTextFieldIOS*)textField {
+- (void)textInputDidRemoveAdditionalText:(id<OmniboxTextInput>)textInput {
   base::RecordAction(UserMetricsAction("MobileOmniboxRichInlineRemoved"));
   [self.mutator removeAdditionalText];
 }
 
-- (BOOL)canPasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders {
+- (BOOL)textInput:(id<OmniboxTextInput>)textInput
+    canPasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders {
   for (NSItemProvider* itemProvider in itemProviders) {
     if (((self.searchByImageEnabled || self.shouldUseLensInMenu) &&
          [itemProvider canLoadObjectOfClass:[UIImage class]]) ||
@@ -405,14 +418,15 @@ using base::UserMetricsAction;
   return NO;
 }
 
-- (void)pasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders {
+- (void)textInput:(id<OmniboxTextInput>)textInput
+    pasteItemProviders:(NSArray<NSItemProvider*>*)itemProviders {
   // Interacted while focused.
   self.omniboxInteractedWhileFocused = YES;
 
   [self.mutator pasteToSearch:itemProviders];
 }
 
-- (void)textFieldDidAcceptInput:(OmniboxTextFieldIOS*)textField {
+- (void)textInputDidAcceptInput:(id<OmniboxTextInput>)textInput {
   [self.mutator acceptInput];
 }
 
@@ -420,14 +434,14 @@ using base::UserMetricsAction;
 
 - (BOOL)canPerformKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
   return [self.popupKeyboardDelegate canPerformKeyboardAction:keyboardAction] ||
-         [self.textField canPerformKeyboardAction:keyboardAction];
+         [self.textInput canPerformKeyboardAction:keyboardAction];
 }
 
 - (void)performKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
   if ([self.popupKeyboardDelegate canPerformKeyboardAction:keyboardAction]) {
     [self.popupKeyboardDelegate performKeyboardAction:keyboardAction];
-  } else if ([self.textField canPerformKeyboardAction:keyboardAction]) {
-    [self.textField performKeyboardAction:keyboardAction];
+  } else if ([self.textInput canPerformKeyboardAction:keyboardAction]) {
+    [self.textInput performKeyboardAction:keyboardAction];
   } else {
     NOTREACHED() << "Check canPerformKeyboardAction before!";
   }
@@ -437,8 +451,9 @@ using base::UserMetricsAction;
 
 - (void)updateAutocompleteIcon:(UIImage*)icon
     withAccessibilityIdentifier:(NSString*)accessibilityIdentifier {
-  [self.view setLeadingImage:icon
-      withAccessibilityIdentifier:accessibilityIdentifier];
+  _autocompleteLeadingIcon = icon;
+  _autocompleteLeadingIconAccessibilityIdentifier = accessibilityIdentifier;
+  [self updateLeadingImage];
 }
 - (void)updateSearchByImageSupported:(BOOL)searchByImageSupported {
   self.searchByImageEnabled = searchByImageSupported;
@@ -452,12 +467,12 @@ using base::UserMetricsAction;
   [self.view setThumbnailImage:image];
   // Cancel any pending image removal if a new selection is made.
   self.view.thumbnailButton.selected = NO;
-  self.textField.placeholder = [self currentPlaceholderText];
+  [self.textInput setDefaultPlaceholderText:[self currentPlaceholderText]];
   [self updateReturnKeyAvailability];
 }
 
 - (void)updateReturnKeyAvailability {
-  self.textField.allowsReturnKeyWithEmptyText =
+  self.textInput.allowsReturnKeyWithEmptyText =
       !!self.view.thumbnailImage ||
       [self.popupKeyboardDelegate
           canPerformKeyboardAction:OmniboxKeyboardAction::kReturnKey];
@@ -469,7 +484,7 @@ using base::UserMetricsAction;
   }
   _searchOrTypeURLPlaceholderText = [placeholderText copy];
 
-  self.textField.placeholder = [self currentPlaceholderText];
+  [self.textInput setDefaultPlaceholderText:[self currentPlaceholderText]];
 }
 
 - (void)setSearchOnlyPlaceholderText:(NSString*)placeholderText {
@@ -477,7 +492,7 @@ using base::UserMetricsAction;
     return;
   }
   _searchOnlyPlaceholderText = [placeholderText copy];
-  self.textField.placeholder = [self currentPlaceholderText];
+  [self.textInput setDefaultPlaceholderText:[self currentPlaceholderText]];
 }
 
 #pragma mark - EditViewAnimatee
@@ -493,20 +508,33 @@ using base::UserMetricsAction;
 #pragma mark - LocationBarOffsetProvider
 
 - (CGFloat)xOffsetForString:(NSString*)string {
-  return [self.textField offsetForString:string];
+  return [self.textInput offsetForString:string];
 }
 
 #pragma mark - private
 
 - (void)updateLeadingImage {
-  UIImage* image = self.textField.text.length ? self.defaultLeadingImage
+  // If autocomplete provides an icon, use this one.
+  if (_autocompleteLeadingIcon) {
+    [self.view setLeadingImage:_autocompleteLeadingIcon
+        withAccessibilityIdentifier:
+            _autocompleteLeadingIconAccessibilityIdentifier];
+    return;
+  }
+
+  UIImage* image = self.textInput.text.length ? self.defaultLeadingImage
                                               : self.emptyTextLeadingImage;
   NSString* accessibilityID =
-      self.textField.text.length
+      self.textInput.text.length
           ? kOmniboxLeadingImageDefaultAccessibilityIdentifier
           : kOmniboxLeadingImageEmptyTextAccessibilityIdentifier;
 
   [self.view setLeadingImage:image withAccessibilityIdentifier:accessibilityID];
+}
+
+- (void)clearAutocompleteIcon {
+  _autocompleteLeadingIcon = nil;
+  _autocompleteLeadingIconAccessibilityIdentifier = nil;
 }
 
 - (BOOL)shouldUseLensInMenu {
@@ -531,15 +559,15 @@ using base::UserMetricsAction;
 
 #pragma mark notification callbacks
 
-// Called on UITextInputCurrentInputModeDidChangeNotification for self.textField
+// Called on UITextInputCurrentInputModeDidChangeNotification for self.textInput
 - (void)textInputModeDidChange {
   // Only respond to language changes when the omnibox is first responder.
-  if (![self.textField isFirstResponder]) {
+  if (![self.textInput.view isFirstResponder]) {
     return;
   }
 
-  [self.textField updateTextDirection];
-  self.semanticContentAttribute = [self.textField bestSemanticContentAttribute];
+  [self.textInput updateTextDirection];
+  self.semanticContentAttribute = [self.textInput bestSemanticContentAttribute];
 
   [self.mutator onTextInputModeChange];
 }
@@ -581,12 +609,13 @@ using base::UserMetricsAction;
 - (void)clearButtonPressed {
   [self.mutator clearText];
   [self updateClearButtonVisibility];
+  [self clearAutocompleteIcon];
   [self updateLeadingImage];
 }
 
 // Hides the clear button if the textfield is empty; shows it otherwise.
 - (void)updateClearButtonVisibility {
-  BOOL hasText = self.textField.text.length > 0;
+  BOOL hasText = self.textInput.text.length > 0;
   [self.view setClearButtonHidden:!hasText];
 }
 
@@ -597,7 +626,7 @@ using base::UserMetricsAction;
   _semanticContentAttribute = semanticContentAttribute;
 
   self.view.semanticContentAttribute = self.semanticContentAttribute;
-  self.textField.semanticContentAttribute = self.semanticContentAttribute;
+  self.textInput.view.semanticContentAttribute = self.semanticContentAttribute;
 }
 
 #pragma mark - UIMenuItem

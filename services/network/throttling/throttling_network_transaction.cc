@@ -27,26 +27,26 @@ ThrottlingNetworkTransaction::ThrottlingNetworkTransaction(
       network_transaction_(std::move(network_transaction)) {}
 
 ThrottlingNetworkTransaction::~ThrottlingNetworkTransaction() {
-  if (interceptor_ && !throttle_callback_.is_null())
+  if (interceptor_ && !throttle_callback_.is_null()) {
     interceptor_->StopThrottle(throttle_callback_);
+  }
 }
 
-void ThrottlingNetworkTransaction::IOCallback(
-    bool start,
-    int result) {
+void ThrottlingNetworkTransaction::IOCallback(bool start, int result) {
   DCHECK(callback_);
   result = Throttle(start, result);
-  if (result != net::ERR_IO_PENDING)
+  if (result != net::ERR_IO_PENDING) {
     std::move(callback_).Run(result);
+  }
 }
 
-int ThrottlingNetworkTransaction::Throttle(
-    bool start,
-    int result) {
-  if (failed_)
+int ThrottlingNetworkTransaction::Throttle(bool start, int result) {
+  if (failed_) {
     return net::ERR_INTERNET_DISCONNECTED;
-  if (!interceptor_ || result < 0)
+  }
+  if (!interceptor_ || result < 0) {
     return result;
+  }
 
   base::TimeTicks send_end;
   if (start) {
@@ -112,7 +112,7 @@ int ThrottlingNetworkTransaction::Start(const net::HttpRequestInfo* request,
   started_ = true;
 
   ThrottlingNetworkInterceptor* interceptor =
-      ThrottlingController::GetInterceptor(net_log.source().id);
+      ThrottlingController::GetInterceptor(net_log.source().id, request->url);
 
   if (interceptor) {
     custom_request_ = std::make_unique<net::HttpRequestInfo>(*request);

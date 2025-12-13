@@ -105,6 +105,7 @@ class BookmarkEditorView : public BookmarkEditor,
                        const std::u16string& new_contents) override;
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
+  bool OnBeforePaste(views::Textfield* sender, std::u16string* text) override;
 
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;

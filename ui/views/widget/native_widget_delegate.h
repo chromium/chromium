@@ -7,7 +7,7 @@
 
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/events/event_constants.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/views_export.h"
 
 class SkPath;

@@ -21,6 +21,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/audio_parameters.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace content {
@@ -86,7 +87,7 @@ void ForwardingAudioStreamFactory::Core::CreateInputStream(
   // |this| owns |inputs_|, so Unretained is safe.
   inputs_
       .insert(broker_factory_->CreateAudioInputStreamBroker(
-          render_process_id, render_frame_id, device_id, params,
+          render_process_id, render_frame_id, device_id, params, group_id_,
           shared_memory_count, enable_agc, std::move(processing_config),
           base::BindOnce(&ForwardingAudioStreamFactory::Core::RemoveInput,
                          base::Unretained(this)),

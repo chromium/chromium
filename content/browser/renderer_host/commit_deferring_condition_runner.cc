@@ -15,6 +15,7 @@
 #include "content/browser/renderer_host/concurrent_navigations_commit_deferring_condition.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
+#include "content/browser/renderer_host/network_restrictions_commit_deferring_condition.h"
 #include "content/browser/renderer_host/view_transition_commit_deferring_condition.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
@@ -41,6 +42,8 @@ CommitDeferringConditionRunner::Create(
     NavigationRequest& navigation_request,
     CommitDeferringCondition::NavigationType navigation_type,
     std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id) {
+  // Initial WebUI navigations shouldn't run CommitDeferringConditions.
+  CHECK(!navigation_request.IsInitialWebUISyncNavigation());
   auto runner = base::WrapUnique(new CommitDeferringConditionRunner(
       navigation_request, navigation_type,
       candidate_prerender_frame_tree_node_id));
@@ -58,11 +61,10 @@ CommitDeferringConditionRunner::CommitDeferringConditionRunner(
 
 CommitDeferringConditionRunner::~CommitDeferringConditionRunner() {
   if (is_deferred_) {
-    // Pass a nullptr and it will close the opening slice.
-    TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", nullptr,
-                                    TRACE_ID_LOCAL(this));
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "navigation", "CommitDeferringConditionRunning", TRACE_ID_LOCAL(this));
+    // End `condition->TraceEventName()` trace event.
+    TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
+    // End "CommitDeferringConditionRunning" trace event.
+    TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
   }
 }
 
@@ -88,10 +90,10 @@ CommitDeferringConditionRunner::GetDeferringConditionForTesting() const {
 void CommitDeferringConditionRunner::ResumeProcessing() {
   DCHECK(is_deferred_);
   is_deferred_ = false;
-  // Pass a nullptr and it will close the opening slice.
-  TRACE_EVENT_NESTABLE_ASYNC_END0("navigation", nullptr, TRACE_ID_LOCAL(this));
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "navigation", "CommitDeferringConditionRunning", TRACE_ID_LOCAL(this));
+  // End `condition->TraceEventName()` trace event.
+  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
+  // End "CommitDeferringConditionRunning" trace event.
+  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
   // This is resuming from a check that resolved asynchronously. The current
   // check is always at the front of the vector so pop it and then proceed with
   // the next one.
@@ -102,6 +104,10 @@ void CommitDeferringConditionRunner::ResumeProcessing() {
 
 void CommitDeferringConditionRunner::RegisterDeferringConditions(
     NavigationRequest& navigation_request) {
+  // Initial WebUI navigations shouldn't run CommitDeferringConditions.
+  CHECK(!navigation_request.IsInitialWebUINavigation() ||
+        !base::FeatureList::IsEnabled(
+            features::kInitialWebUISyncNavStartToCommit));
   switch (navigation_type_) {
     case CommitDeferringCondition::NavigationType::kPrerenderedPageActivation:
       // For prerendered page activation, conditions should run before start
@@ -110,9 +116,13 @@ void CommitDeferringConditionRunner::RegisterDeferringConditions(
                 NavigationRequest::WILL_START_NAVIGATION);
       break;
     case CommitDeferringCondition::NavigationType::kOther:
-      // For other navigations, conditions should run before navigation commit.
-      DCHECK_EQ(navigation_request.state(),
-                NavigationRequest::WILL_PROCESS_RESPONSE);
+      // For other navigations, conditions should run before navigation commit,
+      // which can be either a normal commit or an error page commit.
+      DCHECK(navigation_request.state() ==
+                 NavigationRequest::WILL_PROCESS_RESPONSE ||
+             navigation_request.state() ==
+                 NavigationRequest::WILL_FAIL_REQUEST ||
+             navigation_request.state() == NavigationRequest::CANCELING);
       break;
   }
 
@@ -154,6 +164,9 @@ void CommitDeferringConditionRunner::RegisterDeferringConditions(
     AddCondition(ConcurrentNavigationsCommitDeferringCondition::MaybeCreate(
         navigation_request, navigation_type_));
   }
+
+  AddCondition(NetworkRestrictionsCommitDeferringCondition::MaybeCreate(
+      navigation_request));
 
   // The BFCache deferring condition should run after all other conditions
   // since it'll disable eviction on a cached renderer.
@@ -198,11 +211,11 @@ void CommitDeferringConditionRunner::ProcessConditions() {
     switch (condition->WillCommitNavigation(std::move(resume_closure))) {
       case CommitDeferringCondition::Result::kDefer:
         is_deferred_ = true;
-        TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("navigation",
-                                          "CommitDeferringConditionRunning",
-                                          TRACE_ID_LOCAL(this));
-        TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-            "navigation", condition->TraceEventName(), TRACE_ID_LOCAL(this));
+        TRACE_EVENT_BEGIN("navigation", "CommitDeferringConditionRunning",
+                          perfetto::Track::FromPointer(this));
+        TRACE_EVENT_BEGIN("navigation",
+                          perfetto::DynamicString(condition->TraceEventName()),
+                          perfetto::Track::FromPointer(this));
         return;
       // TODO(crbug.com/40270812): Also add instant tracing for the condition
       // that is being resolved synchronously.

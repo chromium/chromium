@@ -53,6 +53,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/scope_set.h"
@@ -196,7 +197,7 @@ class UserCloudPolicyManagerAshTest : public testing::Test {
     policy_proto.mutable_homepagelocation()->set_value("http://chromium.org");
     ASSERT_TRUE(
         policy_proto.SerializeToString(policy_data_.mutable_policy_value()));
-    policy_data_.set_policy_type(dm_protocol::kChromeUserPolicyType);
+    policy_data_.set_policy_type(dm_protocol::GetChromeUserPolicyType());
     policy_data_.set_device_id(kDeviceId);
     policy_data_.set_request_token(kDMToken);
     policy_data_.set_device_id("id987");
@@ -394,6 +395,7 @@ class UserCloudPolicyManagerAshTest : public testing::Test {
     manager_ = std::make_unique<UserCloudPolicyManagerAsh>(
         ash::ProfileHelper::Get()->GetProfileByUser(active_user),
         std::move(store),
+        /*extension_install_store=*/nullptr,
         base::WrapUnique<MockCloudExternalDataManager>(
             external_data_manager_.get()),
         base::FilePath(), enforcement_type, &prefs_, fetch_timeout,
@@ -892,7 +894,9 @@ TEST_F(UserCloudPolicyManagerAshTest, TestReportSchedulerDelayedCreation) {
 
   // After UserCloudPolicyManagerAsh is initialized, report scheduler is
   // still not created because the profile of primary user hasn't been created.
-  session_manager::SessionManager session_manager;
+  session_manager::SessionManager session_manager{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
+
   InitAndConnectManager();
   EXPECT_FALSE(manager_->GetReportSchedulerForTesting());
 

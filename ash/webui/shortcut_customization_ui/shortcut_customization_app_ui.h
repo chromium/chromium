@@ -16,15 +16,10 @@
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 namespace content {
 class WebUI;
 }  // namespace content
-
-namespace ui {
-class ColorChangeHandler;
-}  // namespace ui
 
 namespace ash {
 
@@ -63,14 +58,7 @@ class ShortcutCustomizationAppUI : public ui::MojoWebUIController,
       mojo::PendingReceiver<shortcut_customization::mojom::SearchHandler>
           receiver);
 
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          receiver);
-
  private:
-  // The color change handler notifies the WebUI when the color provider
-  // changes.
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

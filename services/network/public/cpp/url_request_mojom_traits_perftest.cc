@@ -98,7 +98,6 @@ network::ResourceRequest CreateResourceRequest() {
   request.devtools_accepted_stream_types = std::vector<net::SourceStreamType>(
       {net::SourceStreamType::kBrotli, net::SourceStreamType::kGzip,
        net::SourceStreamType::kDeflate});
-  request.target_ip_address_space = mojom::IPAddressSpace::kLocal;
   request.storage_access_api_status =
       net::StorageAccessApiStatus::kAccessViaAPI;
 

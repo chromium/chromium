@@ -218,7 +218,7 @@ TEST_F(BrokeredUdpClientSocketTest, Connect) {
 #if BUILDFLAG(IS_WIN)
   // Pretending we don't need to broker a localhost address to be able to
   // reliably test connecting synchronously.
-  socket_->SetBrokerHelperDelegateForTesting(
+  client_socket_factory_.SetBrokerHelperDelegateForTesting(
       std::make_unique<TestBrokerHelperDelegate>(false));
   rv = socket_->Connect(server_address);
   ASSERT_EQ(rv, net::OK);
@@ -229,8 +229,6 @@ TEST_F(BrokeredUdpClientSocketTest, Connect) {
   auto socket2 = client_socket_factory_.CreateBrokeredUdpClientSocket(
       net::DatagramSocket::DEFAULT_BIND, net::NetLog::Get(),
       net::NetLogSource());
-  socket2->SetBrokerHelperDelegateForTesting(
-      std::make_unique<TestBrokerHelperDelegate>(false));
   rv = socket2->ConnectUsingNetwork(net::handles::kInvalidNetworkHandle,
                                     server_address);
   ASSERT_EQ(rv, net::ERR_NOT_IMPLEMENTED);
@@ -239,11 +237,12 @@ TEST_F(BrokeredUdpClientSocketTest, Connect) {
   auto socket3 = client_socket_factory_.CreateBrokeredUdpClientSocket(
       net::DatagramSocket::DEFAULT_BIND, net::NetLog::Get(),
       net::NetLogSource());
-  socket3->SetBrokerHelperDelegateForTesting(
-      std::make_unique<TestBrokerHelperDelegate>(false));
   rv = socket3->ConnectUsingDefaultNetwork(server_address);
   ASSERT_EQ(rv, net::ERR_NOT_IMPLEMENTED);
   EXPECT_EQ(net::handles::kInvalidNetworkHandle, socket3->GetBoundNetwork());
+
+  // Clean up the broker helper for remaining tests.
+  client_socket_factory_.SetBrokerHelperDelegateForTesting(nullptr);
 #else
   rv = socket_->Connect(server_address);
   ASSERT_EQ(rv, net::ERR_NOT_IMPLEMENTED);

@@ -12,11 +12,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
-#include "gpu/command_buffer/service/gles2_cmd_decoder.h"
-#include "gpu/command_buffer/service/texture_manager.h"
-#include "gpu/config/gpu_finch_features.h"
-#include "ui/gl/gl_context.h"
-#include "ui/gl/scoped_make_current.h"
 
 namespace media {
 
@@ -95,17 +90,8 @@ void CodecImage::ReleaseResources() {
   ReleaseCodecBuffer();
 }
 
-void CodecImage::UpdateAndBindTexImage() {
-  AssertAcquiredDrDcLock();
-  RenderToTextureOwnerFrontBuffer();
-}
-
 bool CodecImage::HasTextureOwner() const {
   return !!texture_owner();
-}
-
-gpu::TextureBase* CodecImage::GetTextureBase() const {
-  return texture_owner()->GetTextureBase();
 }
 
 bool CodecImage::RenderToFrontBuffer() {
@@ -137,15 +123,6 @@ bool CodecImage::RenderToOverlay() {
   if (!output_buffer_renderer_)
     return false;
   return output_buffer_renderer_->RenderToOverlay();
-}
-
-bool CodecImage::TextureOwnerBindsTextureOnUpdate() {
-  return const_cast<const CodecImage*>(this)->TextureOwnerBindsOnUpdate();
-}
-
-bool CodecImage::TextureOwnerBindsOnUpdate() const {
-  AssertAcquiredDrDcLock();
-  return texture_owner() ? texture_owner()->binds_texture_on_update() : false;
 }
 
 void CodecImage::ReleaseCodecBuffer() {

@@ -59,4 +59,10 @@ bool AutofillAiModelCacheFactory::ServiceIsCreatedWithBrowserContext() const {
   return base::FeatureList::IsEnabled(features::kAutofillAiServerModel);
 }
 
+bool AutofillAiModelCacheFactory::ServiceIsNULLWhileTesting() const {
+  // This is to work around some obscure test failures.
+  // TODO(crbug.com/439803741): Remove once the tests are fixed.
+  return true;
+}
+
 }  // namespace autofill

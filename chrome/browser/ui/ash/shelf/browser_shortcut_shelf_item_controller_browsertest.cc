@@ -10,7 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -37,8 +37,7 @@ IN_PROC_BROWSER_TEST_F(BrowserShortcutShelfItemControllerTest, AppMenu) {
   ASSERT_TRUE(controller);
 
   // InProcessBrowserTest's default browser window is shown with a blank tab.
-  BrowserList* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(1U, browser_list->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
   auto items = GetAppMenuItems(controller, ui::EF_NONE);
   ASSERT_EQ(1U, items.size());
   EXPECT_EQ(u"about:blank", items[0].title);
@@ -47,14 +46,14 @@ IN_PROC_BROWSER_TEST_F(BrowserShortcutShelfItemControllerTest, AppMenu) {
   Browser* browser1 =
       Browser::Create(Browser::CreateParams(browser()->profile(), true));
   EXPECT_FALSE(browser1->window()->IsVisible());
-  EXPECT_EQ(2U, browser_list->size());
+  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
   EXPECT_EQ(1U, GetAppMenuItems(controller, ui::EF_NONE).size());
 
   // Browsers shown with no active tab appear as "New Tab" without crashing.
   browser1->window()->Show();
   EXPECT_TRUE(browser1->window()->IsVisible());
   EXPECT_FALSE(browser1->tab_strip_model()->GetActiveWebContents());
-  EXPECT_EQ(2U, browser_list->size());
+  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
   items = GetAppMenuItems(controller, ui::EF_NONE);
   ASSERT_EQ(2U, items.size());
   EXPECT_EQ(u"about:blank", items[0].title);
@@ -99,21 +98,19 @@ IN_PROC_BROWSER_TEST_F(BrowserShortcutShelfItemControllerTest, AppMenu) {
 
   // Close the window and wait for all asynchronous window teardown.
   CloseBrowserSynchronously(browser1);
-  EXPECT_EQ(1U, browser_list->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
   // Selecting an app menu item for the closed browser window should not crash.
   controller->ExecuteCommand(/*from_context_menu=*/false, /*command_id=*/1,
                              ui::EF_NONE, display::kInvalidDisplayId);
 
   // Create and close a window, but don't allow asynchronous teardown to occur.
   browser1 = CreateBrowser(browser()->profile());
-  EXPECT_EQ(2U, browser_list->size());
+  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
+  ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer(browser1);
   CloseBrowserAsynchronously(browser1);
-  EXPECT_EQ(2U, browser_list->size());
   // The app menu should not list the browser window while it is closing.
   items = GetAppMenuItems(controller, ui::EF_NONE);
   EXPECT_EQ(1U, items.size());
-  // Now, allow the asynchronous teardown to occur.
-  EXPECT_EQ(2U, browser_list->size());
-  ui_test_utils::WaitForBrowserToClose(browser1);
-  EXPECT_EQ(1U, browser_list->size());
+  browser_destroyed_observer.Wait();
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 }

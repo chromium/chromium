@@ -237,7 +237,7 @@ ClipboardWin::ClipboardWin() {
   if (base::CurrentUIThread::IsSet())
     clipboard_owner_ = std::make_unique<base::win::MessageWindow>();
 
-  if (base::FeatureList::IsEnabled(features::kClipboardChangeEvent)) {
+  if (base::FeatureList::IsEnabled(features::kPlatformClipboardMonitor)) {
     ui::ClipboardMonitor::GetInstance()->SetNotifier(this);
   }
 }
@@ -920,7 +920,12 @@ SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer) const {
   // We use a DIB rather than a DDB here since ::GetObject() with the
   // HBITMAP returned from ::GetClipboardData(CF_BITMAP) always reports a color
   // depth of 32bpp.
-  BITMAPINFO* bitmap = static_cast<BITMAPINFO*>(::GetClipboardData(CF_DIB));
+  HANDLE hdata = ::GetClipboardData(CF_DIB);
+  if (!hdata) {
+    return SkBitmap();
+  }
+  base::win::ScopedHGlobal<BITMAPINFO*> locked(hdata);
+  BITMAPINFO* bitmap = locked.data();
   if (!bitmap)
     return SkBitmap();
   int color_table_length = 0;
@@ -968,7 +973,8 @@ SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer) const {
     case 24:
       break;
     default:
-      NOTREACHED();
+      // Return an empty image for unsupported bit depths.
+      return SkBitmap();
   }
   const void* bitmap_bits = reinterpret_cast<const char*>(bitmap) +
                             bitmap->bmiHeader.biSize +

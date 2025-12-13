@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -95,7 +96,7 @@ MATCHER_P5(MatchQuery, source, text, title, shared, offline, "") {
   if (arg->query_source != source) {
     return false;
   }
-  if (text != nullptr) {
+  if constexpr (!std::is_null_pointer_v<decltype(text)>) {
     if (!arg->text_content || *arg->text_content != std::string(text)) {
       return false;
     }
@@ -104,7 +105,7 @@ MATCHER_P5(MatchQuery, source, text, title, shared, offline, "") {
       return false;
     }
   }
-  if (title != nullptr) {
+  if constexpr (!std::is_null_pointer_v<decltype(title)>) {
     if (!arg->title || *arg->title != std::string(title)) {
       return false;
     }

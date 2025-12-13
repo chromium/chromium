@@ -30,18 +30,19 @@ enum class TabGridTransitionType {
 @interface TabGridTransitionHandler : NSObject
 
 // Creates the transition object based on the provided `transitionType`,
-// `direction`, `tabGridViewController`, `bvcContainerViewController`,
-// `layoutGuideCenter`, `isRegularBrowserNTP`, and `isIncognito`.
+// `direction`, `tabGridTransitionLayoutProvider`, `tabGridViewController`,
+// `bvcContainerViewController`, `layoutGuideCenter`, `isRegularBrowserNTP`,
+// and `isIncognito`.
 - (instancetype)initWithTransitionType:(TabGridTransitionType)transitionType
                              direction:(TabGridTransitionDirection)direction
-                 tabGridViewController:
-                     (UIViewController<TabGridTransitionLayoutProviding>*)
-                         tabGridViewController
+       tabGridTransitionLayoutProvider:
+           (id<TabGridTransitionLayoutProviding>)tabGridTransitionLayoutProvider
+                 tabGridViewController:(UIViewController*)tabGridViewController
             bvcContainerViewController:
                 (UIViewController*)bvcContainerViewController
                      layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
                    isRegularBrowserNTP:(BOOL)isRegularBrowserNTP
-                           isIncognito:(BOOL)isIncognito
+                             incognito:(BOOL)incognito
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

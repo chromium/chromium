@@ -7,7 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "dbus/bus.h"

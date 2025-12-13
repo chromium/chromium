@@ -44,6 +44,10 @@ declare_args() {
   # implementors must provide their own demuxers and decoders.
   media_use_ffmpeg = true
 
+  # Enable usage of Symphonia within the media library. Used experimentally
+  # for software decoding. Currently only enabled on linux builds.
+  media_use_symphonia = is_linux
+
   # Enable usage of libvpx within the media library. Used for software based
   # decoding of VP9 and VP8A type content.
   media_use_libvpx = true
@@ -62,7 +66,7 @@ declare_args() {
   # Enable usage of OpenH264 within the media library. Used for software based
   # encoding of H264 content.
   media_use_openh264 = true
-  if (is_ios || is_android || !proprietary_codecs) {
+  if (is_ios || (is_android && current_cpu == "arm") || !proprietary_codecs) {
     media_use_openh264 = false
   }
 

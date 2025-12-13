@@ -33,6 +33,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
@@ -188,8 +189,7 @@ class WTF_EXPORT String {
   // This function should be removed after enabling C++23 because
   // std::u16string_view(Span16()) will work with C++23.
   std::u16string_view View16() const LIFETIME_BOUND {
-    auto chars = Span16();
-    return std::u16string_view(chars.begin(), chars.end());
+    return base::as_string_view(Span16());
   }
 
   UChar operator[](wtf_size_t index) const {
@@ -582,8 +582,8 @@ class WTF_EXPORT String {
 #undef DISPATCH_CASE_OP
 
 inline bool operator==(const String& a, const String& b) {
-  // We don't use equalStringView here since we want the isAtomic() fast path
-  // inside WTF::equal.
+  // We don't use EqualStringView here since we want the IsAtomic() fast path
+  // inside blink::Equal.
   return Equal(a.Impl(), b.Impl());
 }
 inline bool operator==(const String& a, const char* b) {
@@ -591,16 +591,6 @@ inline bool operator==(const String& a, const char* b) {
 }
 inline bool operator==(const char* a, const String& b) {
   return b == a;
-}
-
-inline bool operator!=(const String& a, const String& b) {
-  return !(a == b);
-}
-inline bool operator!=(const String& a, const char* b) {
-  return !(a == b);
-}
-inline bool operator!=(const char* a, const String& b) {
-  return !(a == b);
 }
 
 inline bool EqualIgnoringNullity(const String& a, const String& b) {
@@ -718,20 +708,8 @@ struct HashTraits<String>;
 
 }  // namespace blink
 
-namespace WTF {
-
-// TODO(crbug.com/422768753): Remove these`using` directives.
-using blink::CodeUnitCompare;
-using blink::CodeUnitCompareIgnoringASCIICase;
-using blink::CodeUnitCompareLessThan;
-using blink::EqualIgnoringNullity;
-using blink::g_empty_string;
-using blink::g_xmlns_with_colon;
-using blink::NewlineThenWhitespaceStringsTable;
-using blink::String;
-}  // namespace WTF
-
 WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(String)
 
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_WTF_STRING_H_

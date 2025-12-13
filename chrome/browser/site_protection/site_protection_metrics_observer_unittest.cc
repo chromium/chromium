@@ -4,31 +4,43 @@
 
 #include "chrome/browser/site_protection/site_protection_metrics_observer.h"
 
+#include "base/base_switches.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/site_protection/site_familiarity_heuristic_name.h"
+#include "chrome/browser/site_protection/site_protection_metrics.h"
 #include "chrome/browser/ui/safety_hub/mock_safe_browsing_database_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/site_engagement/content/site_engagement_helper.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/process_selection_user_data.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
+#include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
+#include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/test/base/scoped_testing_local_state.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace site_protection {
 namespace {
@@ -202,15 +214,12 @@ class SiteProtectionMetricsObserverTest
               GetUkmFamiliarityHeuristicValue(ukm_recorder, metric_name));
   }
 
+  bool AreV8OptimizersEnabled(content::RenderFrameHost* rfh) {
+    return !rfh->GetProcess()->AreV8OptimizationsDisabled();
+  }
+
  protected:
   raw_ptr<TestingBrowserProcess> browser_process_;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Local state is needed to construct ProxyConfigService, which is a
-  // dependency of PingManager on ChromeOS.
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   scoped_refptr<TestSafeBrowsingDatabaseManager>
       safe_browsing_database_manager_;
@@ -570,6 +579,286 @@ TEST_F(SiteProtectionMetricsObserverTest, MatchesHeuristicCandidate) {
   NavigateAndCheckCandidate1HeuristicHistogram(
       kUrlVisitedNeverHighConfidenceAllowlist,
       /*expected_value=*/true);
+}
+
+// MockRenderProcessHost subclass with custom v8-optimizer state.
+class TestRenderProcessHost : public content::MockRenderProcessHost {
+ public:
+  explicit TestRenderProcessHost(content::BrowserContext* browser_context,
+                                 bool are_v8_optimizations_enabled)
+      : content::MockRenderProcessHost(browser_context,
+                                       /*is_for_guests_only=*/false),
+        are_v8_optimizations_enabled_(are_v8_optimizations_enabled) {}
+
+  ~TestRenderProcessHost() override = default;
+
+  bool AreV8OptimizationsDisabled() override {
+    return !are_v8_optimizations_enabled_;
+  }
+
+ private:
+  bool are_v8_optimizations_enabled_ = false;
+};
+
+// Factory for TestRenderProcessHost.
+class TestRenderProcessHostFactory
+    : public content::MockRenderProcessHostFactory {
+ public:
+  explicit TestRenderProcessHostFactory(
+      content::ContentBrowserClient* browser_client)
+      : browser_client_(browser_client) {}
+  ~TestRenderProcessHostFactory() override = default;
+
+ protected:
+  std::unique_ptr<content::MockRenderProcessHost> BuildRenderProcessHost(
+      content::BrowserContext* browser_context,
+      content::SiteInstance* site_instance) override {
+    bool should_enable_v8_optimizers =
+        browser_client_->AreV8OptimizationsEnabledForSite(browser_context,
+                                                          std::nullopt, GURL());
+    return std::make_unique<TestRenderProcessHost>(browser_context,
+                                                   should_enable_v8_optimizers);
+  }
+
+ private:
+  raw_ptr<content::ContentBrowserClient> browser_client_ = nullptr;
+};
+
+// Test ContentBrowserClient with custom v8-optimizer and origin-isolation
+// state.
+class TestContentBrowserClient : public content::ContentBrowserClient {
+ public:
+  TestContentBrowserClient() = default;
+  ~TestContentBrowserClient() override = default;
+
+  bool AreV8OptimizationsEnabledForSite(
+      content::BrowserContext* browser_context,
+      const std::optional<base::SafeRef<content::ProcessSelectionUserData>>&
+          process_selection_user_data,
+      const GURL& site_url) override {
+    return are_v8_optimizations_enabled_;
+  }
+
+  bool ShouldDisableOriginIsolation() override {
+    return !should_use_origin_isolation_;
+  }
+
+  void SetAreV8OptimizationsEnabled(bool are_v8_optimizations_enabled) {
+    are_v8_optimizations_enabled_ = are_v8_optimizations_enabled;
+  }
+
+  void SetUseOriginIsolation(bool should_use_origin_isolation) {
+    should_use_origin_isolation_ = should_use_origin_isolation;
+  }
+
+ private:
+  bool are_v8_optimizations_enabled_ = false;
+  bool should_use_origin_isolation_ = false;
+};
+
+// Test fixture for SiteProtectionMetricsObserver::LogV8OptimizerUma() tests.
+class SiteProtectionMetricsObserverV8OptTest
+    : public SiteProtectionMetricsObserverTest {
+ public:
+  SiteProtectionMetricsObserverV8OptTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kProcessSelectionDeferringConditions,
+                              content_settings::features::
+                                  kBlockV8OptimizerOnUnfamiliarSitesSetting,
+                              features::kOriginKeyedProcessesByDefault},
+        /*disabled_features=*/{});
+  }
+
+  void SetUp() override {
+    old_browser_client_ = SetBrowserClientForTesting(&browser_client_);
+    SiteProtectionMetricsObserverTest::SetUp();
+
+    profile()->GetTestingPrefService()->SetBoolean(
+        prefs::kJavascriptOptimizerBlockedForUnfamiliarSites, true);
+
+    content::SpareRenderProcessHostManager::Get().CleanupSparesForTesting();
+
+    test_render_process_host_factory_ =
+        std::make_unique<TestRenderProcessHostFactory>(&browser_client_);
+    SetRenderProcessHostFactory(test_render_process_host_factory_.get());
+
+    // Navigate to URL so that tests don't reuse the current render process.
+    NavigateAndCommit(GURL("https://baz.com"));
+  }
+
+  void TearDown() override {
+    DeleteContents();
+    SetRenderProcessHostFactory(nullptr);
+    test_render_process_host_factory_.reset();
+    SetBrowserClientForTesting(old_browser_client_);
+    SiteProtectionMetricsObserverTest::TearDown();
+  }
+
+ protected:
+  content::RenderFrameHost* CreateAndNavigateIframe(
+      content::RenderFrameHost* parent,
+      const GURL& iframe_url) {
+    content::RenderFrameHost* iframe_rfh =
+        content::RenderFrameHostTester::For(parent)->AppendChild("child");
+    return content::NavigationSimulator::NavigateAndCommitFromDocument(
+        iframe_url, iframe_rfh);
+  }
+
+  void SetV8OptimizerStateForFutureRenderProcesses(
+      bool are_v8_optimizations_enabled) {
+    browser_client_.SetAreV8OptimizationsEnabled(are_v8_optimizations_enabled);
+  }
+
+  void NavigateToPageWithIframeAndV8OptState(
+      const GURL& main_url,
+      bool topmost_are_v8_optimizations_enabled,
+      const GURL& iframe_url,
+      bool iframe_are_v8_optimizations_enabled) {
+    SetV8OptimizerStateForFutureRenderProcesses(
+        topmost_are_v8_optimizations_enabled);
+    NavigateAndCommit(main_url);
+    content::RenderFrameHost* main_rfh = web_contents()->GetPrimaryMainFrame();
+    ASSERT_EQ(topmost_are_v8_optimizations_enabled,
+              AreV8OptimizersEnabled(main_rfh));
+
+    SetV8OptimizerStateForFutureRenderProcesses(
+        iframe_are_v8_optimizations_enabled);
+    content::RenderFrameHost* iframe_rfh =
+        CreateAndNavigateIframe(main_rfh, iframe_url);
+    ASSERT_EQ(iframe_are_v8_optimizations_enabled,
+              AreV8OptimizersEnabled(iframe_rfh));
+  }
+
+  void SetUseOriginIsolation(bool should_use_origin_isolation) {
+    browser_client_.SetUseOriginIsolation(should_use_origin_isolation);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<TestRenderProcessHostFactory>
+      test_render_process_host_factory_;
+  TestContentBrowserClient browser_client_;
+  raw_ptr<content::ContentBrowserClient> old_browser_client_ = nullptr;
+};
+
+TEST_F(SiteProtectionMetricsObserverV8OptTest, NoIframe) {
+  base::HistogramTester histogram_tester;
+
+  GURL kMainUrl("https://foo.com");
+  NavigateAndCommit(kMainUrl);
+
+  EXPECT_EQ(
+      0u, histogram_tester.GetAllSamples("SafeBrowsing.V8Optimizer.IframeState")
+              .size());
+}
+
+TEST_F(SiteProtectionMetricsObserverV8OptTest,
+       Iframe_EnabledForChildAndTopmost) {
+  base::HistogramTester histogram_tester;
+  GURL kMainUrl("https://foo.com");
+  GURL kIframeUrl("https://bar.com");
+  NavigateToPageWithIframeAndV8OptState(
+      kMainUrl,
+      /*topmost_are_v8_optimizations_enabled=*/true, kIframeUrl,
+      /*iframe_are_v8_optimizations_enabled=*/true);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V8Optimizer.IframeState",
+      IframeV8OptimizerState::kEnabledForChildAndTopmost, 1);
+}
+
+TEST_F(SiteProtectionMetricsObserverV8OptTest,
+       Iframe_EnabledForChildDisabledForTopmost) {
+  base::HistogramTester histogram_tester;
+  GURL kMainUrl("https://foo.com");
+  GURL kIframeUrl("https://bar.com");
+  NavigateToPageWithIframeAndV8OptState(
+      kMainUrl,
+      /*topmost_are_v8_optimizations_enabled=*/false, kIframeUrl,
+      /*iframe_are_v8_optimizations_enabled=*/true);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V8Optimizer.IframeState",
+      IframeV8OptimizerState::kEnabledForChildDisabledForTopmost, 1);
+}
+
+TEST_F(SiteProtectionMetricsObserverV8OptTest,
+       Iframe_DisabledForChildEnabledForTopmost) {
+  base::HistogramTester histogram_tester;
+  GURL kMainUrl("https://foo.com");
+  GURL kIframeUrl("https://bar.com");
+  NavigateToPageWithIframeAndV8OptState(
+      kMainUrl,
+      /*topmost_are_v8_optimizations_enabled=*/true, kIframeUrl,
+      /*iframe_are_v8_optimizations_enabled=*/false);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V8Optimizer.IframeState",
+      IframeV8OptimizerState::kDisabledForChildEnabledForTopmost, 1);
+}
+
+TEST_F(SiteProtectionMetricsObserverV8OptTest,
+       Iframe_DisabledForChildAndTopmost) {
+  base::HistogramTester histogram_tester;
+  GURL kMainUrl("https://foo.com");
+  GURL kIframeUrl("https://bar.com");
+  NavigateToPageWithIframeAndV8OptState(
+      kMainUrl,
+      /*topmost_are_v8_optimizations_enabled=*/false, kIframeUrl,
+      /*iframe_are_v8_optimizations_enabled=*/false);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V8Optimizer.IframeState",
+      IframeV8OptimizerState::kDisabledForChildAndTopmost, 1);
+}
+
+TEST_F(SiteProtectionMetricsObserverV8OptTest,
+       Iframe_DifferentRenderProcessSameSiteMetric_SameProcess) {
+  SetUseOriginIsolation(false);
+
+  base::HistogramTester histogram_tester;
+  GURL kMainUrl("https://foo.com");
+  GURL kIframeUrl("https://sub.foo.com");
+  NavigateToPageWithIframeAndV8OptState(
+      kMainUrl,
+      /*topmost_are_v8_optimizations_enabled=*/false, kIframeUrl,
+      /*iframe_are_v8_optimizations_enabled=*/false);
+  EXPECT_EQ(0u,
+            histogram_tester
+                .GetAllSamples("SafeBrowsing.V8Optimizer."
+                               "DifferentRenderProcess.SameSite.IframeState")
+                .size());
+}
+
+TEST_F(SiteProtectionMetricsObserverV8OptTest,
+       Iframe_DifferentRenderProcessSameSiteMetric_DifferentProcess) {
+  SetUseOriginIsolation(true);
+
+  base::HistogramTester histogram_tester;
+  GURL kMainUrl("https://foo.com");
+  GURL kIframeUrl("https://sub.foo.com");
+  NavigateToPageWithIframeAndV8OptState(
+      kMainUrl,
+      /*topmost_are_v8_optimizations_enabled=*/false, kIframeUrl,
+      /*iframe_are_v8_optimizations_enabled=*/false);
+  histogram_tester.ExpectUniqueSample(
+      "SafeBrowsing.V8Optimizer.DifferentRendererProcess.SameSite.IframeState",
+      IframeV8OptimizerState::kDisabledForChildAndTopmost, 1);
+}
+
+TEST_F(SiteProtectionMetricsObserverV8OptTest,
+       Iframe_DifferentRenderProcessSameSiteMetric_DifferentSite) {
+  SetUseOriginIsolation(false);
+
+  base::HistogramTester histogram_tester;
+  GURL kMainUrl("https://foo.com");
+  GURL kIframeUrl("https://bar.com");
+  NavigateToPageWithIframeAndV8OptState(
+      kMainUrl,
+      /*topmost_are_v8_optimizations_enabled=*/false, kIframeUrl,
+      /*iframe_are_v8_optimizations_enabled=*/false);
+
+  EXPECT_EQ(0u,
+            histogram_tester
+                .GetAllSamples("SafeBrowsing.V8Optimizer."
+                               "DifferentRendererProcess.SameSite.IframeState")
+                .size());
 }
 
 }  // namespace site_protection

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -13,12 +14,10 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -30,17 +29,8 @@ namespace crostini {
 constexpr SkColor kTestContainerBadgeColor = SK_ColorBLUE;
 
 CrostiniTestHelper::CrostiniTestHelper(Profile* profile, bool enable_crostini)
-    : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
-      profile_(profile) {
+    : profile_(CHECK_DEREF(profile)) {
   scoped_feature_list_.InitAndEnableFeature(features::kCrostini);
-
-  ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
-  auto account =
-      AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("12345"));
-  fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-      account, false, user_manager::UserType::kRegular, profile);
-  fake_user_manager_->LoginUser(account);
-
   if (enable_crostini) {
     EnableCrostini(profile);
   }
@@ -48,14 +38,13 @@ CrostiniTestHelper::CrostiniTestHelper(Profile* profile, bool enable_crostini)
   current_apps_.set_vm_name(kCrostiniDefaultVmName);
   current_apps_.set_container_name(kCrostiniDefaultContainerName);
 
-  guest_os::AddContainerToPrefs(profile_, DefaultContainerId(), {});
-  SetContainerBadgeColor(profile_, DefaultContainerId(),
+  guest_os::AddContainerToPrefs(profile, DefaultContainerId(), {});
+  SetContainerBadgeColor(profile, DefaultContainerId(),
                          kTestContainerBadgeColor);
 }
 
 CrostiniTestHelper::~CrostiniTestHelper() {
-  ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(false);
-  DisableCrostini(profile_);
+  DisableCrostini(&*profile_);
 }
 
 void CrostiniTestHelper::SetupDummyApps() {
@@ -113,7 +102,7 @@ void CrostiniTestHelper::ReInitializeAppServiceIntegration() {
   //
   // We therefore manually have the App Service re-examine whether Crostini
   // is enabled for this profile.
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(&*profile_);
   proxy->ReInitializeCrostiniForTesting();
 }
 
@@ -173,7 +162,7 @@ ApplicationList CrostiniTestHelper::BasicAppList(
 }
 
 void CrostiniTestHelper::UpdateRegistry() {
-  guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_)
+  guest_os::GuestOsRegistryServiceFactory::GetForProfile(&*profile_)
       ->UpdateApplicationList(current_apps_);
 }
 

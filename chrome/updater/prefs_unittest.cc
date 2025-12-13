@@ -17,6 +17,7 @@
 #include "chrome/updater/prefs_impl.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/test/test_scope.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/update_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,6 +36,7 @@ TEST(PrefsTest, PrefsCommitPendingWrites) {
   base::test::TaskEnvironment task_environment;
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   update_client::RegisterPrefs(pref->registry());
+  RegisterPersistedDataPrefs(pref->registry());
   auto metadata = base::MakeRefCounted<PersistedData>(
       GetUpdaterScopeForTesting(), pref.get(), nullptr);
 

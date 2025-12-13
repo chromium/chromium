@@ -16,11 +16,10 @@ std::unique_ptr<Rule> ProviderInterface::GetRule(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
-    bool off_the_record,
-    const PartitionKey& partition_key) const {
+    bool off_the_record) const {
   // TODO(b/316530672): Remove default implementation when all providers are
   // implemented.
-  auto it = GetRuleIterator(content_type, off_the_record, partition_key);
+  auto it = GetRuleIterator(content_type, off_the_record);
   while (it && it->HasNext()) {
     auto rule = it->Next();
     if (rule->primary_pattern.Matches(primary_url) &&

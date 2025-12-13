@@ -9,6 +9,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
+#include <string>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -18,10 +20,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
-#include "components/omnibox/browser/actions/omnibox_answer_action.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_scoring_signals_annotator.h"
@@ -129,7 +132,7 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   // populating information from EntityInfo.
   const auto& suggest_template_info = suggestion.suggest_template_info();
   if (suggest_template_info) {
-    match.suggest_template = *suggest_template_info;
+    match.suggest_template = suggest_template_info;
     if (suggest_template_info->has_image()) {
       match.image_dominant_color =
           suggest_template_info->image().dominant_color();
@@ -143,13 +146,7 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   match.website_uri = suggestion.entity_info().website_uri();
   match.contents = suggestion.match_contents();
   match.contents_class = suggestion.match_contents_class();
-  if (OmniboxFieldTrial::kAnswerActionsShowRichCard.Get() &&
-      suggestion.answer_template() &&
-      suggestion.answer_template()->enhancements().enhancements().size() > 0) {
-    match.suggestion_group_id = omnibox::GROUP_MOBILE_RICH_ANSWER;
-  } else {
-    match.suggestion_group_id = suggestion.suggestion_group_id();
-  }
+  match.suggestion_group_id = suggestion.suggestion_group_id();
   match.answer_template = suggestion.answer_template();
   match.answer_type = suggestion.answer_type();
   match.suggest_type = suggestion.suggest_type();
@@ -236,24 +233,31 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   // Attach Actions in Suggest to the newly created match on Android if Google
   // is the default search engine.
   if ((is_android || is_ios) && is_google) {
-    // TODO(crbug.com/417745802): Use TemplateAction from SuggestTemplateInfo
-    // if available.
-    for (const omnibox::ActionInfo& action_info :
-         suggestion.entity_info().action_suggestions()) {
-      match.actions.emplace_back(CreateActionInSuggest(action_info, search_url,
-                                                       *match.search_terms_args,
-                                                       search_terms_data));
+    if (suggest_template_info &&
+        suggest_template_info->action_suggestions_size() > 0) {
+      for (const omnibox::SuggestTemplateInfo_TemplateAction& action :
+           suggest_template_info->action_suggestions()) {
+        match.actions.emplace_back(CreateActionInSuggest(
+            action, search_url, *match.search_terms_args, search_terms_data));
+      }
+    } else {
+      // TODO(crbug.com/417745802): Remove once actions are migrated from
+      // EntityInfo to SuggestTemplateInfo.
+      for (const omnibox::ActionInfo& action_info :
+           suggestion.entity_info().action_suggestions()) {
+        omnibox::SuggestTemplateInfo::TemplateAction template_action;
+        template_action.set_action_uri(action_info.action_uri());
+        template_action.set_logs_action_type(action_info.logs_action_type());
+        template_action.set_action_type(
+            static_cast<omnibox::SuggestTemplateInfo_TemplateAction_ActionType>(
+                action_info.action_type()));
+        *template_action.mutable_search_parameters() =
+            action_info.search_parameters();
+        match.actions.emplace_back(
+            CreateActionInSuggest(template_action, search_url,
+                                  *match.search_terms_args, search_terms_data));
+      }
     }
-  }
-
-  if (is_android && is_google && suggestion.answer_template()) {
-    std::ranges::transform(
-        suggestion.answer_template()->enhancements().enhancements(),
-        std::back_inserter(match.actions),
-        [&](const omnibox::SuggestionEnhancement& enhancement) {
-          return CreateAnswerAction(enhancement, *match.search_terms_args,
-                                    suggestion.answer_type());
-        });
   }
 
   match.navigational_intent = suggestion.navigational_intent();
@@ -262,7 +266,7 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
 }
 
 scoped_refptr<OmniboxAction> BaseSearchProvider::CreateActionInSuggest(
-    omnibox::ActionInfo action_info,
+    omnibox::SuggestTemplateInfo::TemplateAction template_action,
     const TemplateURLRef& search_url,
     const TemplateURLRef::SearchTermsArgs& original_search_terms_args,
     const SearchTermsData& search_terms_data) {
@@ -270,29 +274,15 @@ scoped_refptr<OmniboxAction> BaseSearchProvider::CreateActionInSuggest(
   // If the Action's URL is empty, but the Action supplies additional search
   // parameters, compute new URL based on the base URL (that is specific to
   // the entire suggestion).
-  if (action_info.action_uri().empty() &&
-      !action_info.search_parameters().empty()) {
+  if (template_action.action_uri().empty() &&
+      !template_action.search_parameters().empty()) {
     action_search_terms_args = original_search_terms_args;
     action_search_terms_args->additional_query_params =
-        CreateQueryParamStringFromMap(action_info.search_parameters());
+        CreateQueryParamStringFromMap(template_action.search_parameters());
   }
 
   return base::MakeRefCounted<OmniboxActionInSuggest>(
-      std::move(action_info), std::move(action_search_terms_args));
-}
-
-// static
-scoped_refptr<OmniboxAction> BaseSearchProvider::CreateAnswerAction(
-    omnibox::SuggestionEnhancement enhancement,
-    TemplateURLRef::SearchTermsArgs search_terms_args,
-    omnibox::AnswerType answer_type) {
-  // Define actions destination URL.
-  search_terms_args.additional_query_params =
-      CreateQueryParamStringFromMap(enhancement.query_cgi_params());
-  search_terms_args.search_terms = base::UTF8ToUTF16(enhancement.query());
-
-  return base::MakeRefCounted<OmniboxAnswerAction>(
-      std::move(enhancement), search_terms_args, answer_type);
+      std::move(template_action), std::move(action_search_terms_args));
 }
 
 // static
@@ -502,7 +492,7 @@ void BaseSearchProvider::DeleteMatch(const AutocompleteMatch& match) {
   }
 
   const TemplateURL* template_url =
-      match.GetTemplateURL(client_->GetTemplateURLService(), false);
+      match.GetTemplateURL(client_->GetTemplateURLService());
   // This may be nullptr if the template corresponding to the keyword has been
   // deleted or there is no keyword set.
   if (template_url != nullptr) {
@@ -581,6 +571,11 @@ void BaseSearchProvider::AddMatchToMap(
       accepted_suggestion, ShouldAppendExtraParams(result));
   if (!match.destination_url.is_valid())
     return;
+  if (match.IsSearchAimSuggestion() &&
+      (!omnibox_feature_configs::AiMode::Get().allow_ai_mode_matches ||
+       !client_->GetAimEligibilityService()->IsAimLocallyEligible())) {
+    return;
+  }
   match.RecordAdditionalInfo(kRelevanceFromServerKey,
                              result.relevance_from_server() ? kTrue : kFalse);
   match.RecordAdditionalInfo(kShouldPrefetchKey,
@@ -698,10 +693,6 @@ void BaseSearchProvider::AddMatchToMap(
       existing_match.answer_template =
           less_relevant_duplicate_match.answer_template;
       existing_match.answer_type = less_relevant_duplicate_match.answer_type;
-      if (OmniboxFieldTrial::kAnswerActionsShowRichCard.Get()) {
-        existing_match.suggestion_group_id =
-            less_relevant_duplicate_match.suggestion_group_id;
-      }
     }
     // This is to avoid having shopping categorical queries lose their images to
     // higher-relevance local history and verbatim matches. This works for the
@@ -717,11 +708,9 @@ void BaseSearchProvider::AddMatchToMap(
     // entirety so it can be carried over when deduplicating the matches here or
     // later in the Autocomplete process.
     // TODO(crbug.com/40276602): rework how `entity_info` is used in the match.
-    if (base::FeatureList::IsEnabled(omnibox::kCategoricalSuggestions)) {
-      if (!less_relevant_duplicate_match.image_url.is_empty() &&
-          existing_match.image_url.is_empty()) {
-        existing_match.image_url = less_relevant_duplicate_match.image_url;
-      }
+    if (!less_relevant_duplicate_match.image_url.is_empty() &&
+        existing_match.image_url.is_empty()) {
+      existing_match.image_url = less_relevant_duplicate_match.image_url;
     }
     // This is to avoid having shopping categorical queries lose their subtypes
     // to higher-relevance local history and verbatim matches. The subtypes are
@@ -730,11 +719,9 @@ void BaseSearchProvider::AddMatchToMap(
     // identify what the user selected so they can be suggested the next time,
     // i.e., if the user selects a decorated suggestion - which is accompanied
     // by specific subtypes - we want to show a decorated suggestion next time.
-    if (base::FeatureList::IsEnabled(omnibox::kCategoricalSuggestions)) {
-      existing_match.subtypes.insert(
-          less_relevant_duplicate_match.subtypes.begin(),
-          less_relevant_duplicate_match.subtypes.end());
-    }
+    existing_match.subtypes.insert(
+        less_relevant_duplicate_match.subtypes.begin(),
+        less_relevant_duplicate_match.subtypes.end());
     // This is to avoid having `stripped_destination_url` being later set by
     // `AutocompleteResult::ComputeStrippedDestinationURL()` which strips away
     // the additional query params from `destination_url` leaving only the
@@ -780,7 +767,7 @@ void BaseSearchProvider::DeleteMatchFromMatches(
 void BaseSearchProvider::OnDeletionComplete(
     const network::SimpleURLLoader* source,
     const int response_code,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   RecordDeletionResult(response_code == 200);
   std::erase_if(
       deletion_loaders_,

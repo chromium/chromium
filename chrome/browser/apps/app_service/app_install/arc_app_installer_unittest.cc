@@ -17,28 +17,34 @@ namespace apps {
 class ArcAppInstallerTest : public testing::Test {
  protected:
   void SetUp() override {
-    testing::Test::SetUp();
-    arc_test_.SetUp(&profile_);
+    arc_app_test_.PreProfileSetUp();
+    profile_ = std::make_unique<TestingProfile>();
+    arc_app_test_.PostProfileSetUp(profile_.get());
   }
 
-  void TearDown() override { arc_test_.TearDown(); }
+  void TearDown() override {
+    arc_app_test_.PreProfileTearDown();
+    profile_.reset();
+    arc_app_test_.PostProfileTearDown();
+  }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
-  ArcAppTest arc_test_;
+  std::unique_ptr<TestingProfile> profile_;
+  ArcAppTest arc_app_test_;
 };
 
 TEST_F(ArcAppInstallerTest, Install) {
   base::HistogramTester histograms;
-  ArcAppInstaller installer(&profile_);
+  ArcAppInstaller installer(profile_.get());
   AppInstallData data(PackageId::FromString("android:com.example.app").value());
   data.app_type_data.emplace<AndroidAppInstallData>();
   base::test::TestFuture<bool> result;
   installer.InstallApp(AppInstallSurface::kAppPreloadServiceOem,
                        std::move(data), result.GetCallback());
-  EXPECT_EQ(1,
-            arc_test_.app_instance()->start_fast_app_reinstall_request_count());
+  EXPECT_EQ(
+      1,
+      arc_app_test_.app_instance()->start_fast_app_reinstall_request_count());
   EXPECT_TRUE(result.Get());
   histograms.ExpectBucketCount(
       "Apps.AppInstallService.ArcAppInstaller.InstallResult",

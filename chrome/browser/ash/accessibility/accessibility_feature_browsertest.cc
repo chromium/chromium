@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/test/base/ui_test_utils.h"
 
 namespace ash {
@@ -15,8 +15,8 @@ AccessibilityFeatureBrowserTest::AccessibilityFeatureBrowserTest() = default;
 AccessibilityFeatureBrowserTest::~AccessibilityFeatureBrowserTest() = default;
 
 void AccessibilityFeatureBrowserTest::NavigateToUrl(const GURL& url) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        BrowserList::GetInstance()->GetLastActive(), url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile(), url));
 }
 
 Profile* AccessibilityFeatureBrowserTest::GetProfile() const {

@@ -311,7 +311,7 @@ HRESULT GwpAsanCommand::SymbolizeStackTrace(
   }
 
   std::optional<base::Value> symbolized_json =
-      base::JSONReader::Read(json_string);
+      base::JSONReader::Read(json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!symbolized_json.has_value() && !symbolized_json->is_list()) {
     return E_FAIL;
   }

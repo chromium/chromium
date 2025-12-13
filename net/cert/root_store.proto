@@ -89,6 +89,25 @@ message TrustAnchor {
   optional bytes trust_anchor_id = 11;
 }
 
+message MtcAnchor {
+  // The log id is a trust anchor id in binary representation.
+  optional bytes log_id = 1;
+
+  // If not empty, the anchor is only trusted if at least one of the
+  // ConstraintSets is satisfied.
+  repeated ConstraintSet constraints = 2;
+
+  // If true, indicates that this MTC is a trust anchor for TLS connections.
+  optional bool tls_trust_anchor = 3;
+
+  // TODO(crbug.com/452983502): Add co-signer configuration.
+  //
+  // In the current implementation, MTC anchors can only be used through the
+  // signatureless path, and the trusted subtrees are configured separately in
+  // MtcAnchorData. This MtcAnchor will be ignored unless a MtcAnchorData with
+  // matching log_id is also present.
+}
+
 // Message storing a complete Chrome Root Store.
 message RootStore {
   // Certificates in this list are expected to have |tls_trust_anchor| unset,
@@ -105,4 +124,71 @@ message RootStore {
   // Additional certificates that are shipped as part of the Chrome Root Store
   // but convey different trust information than those in trust_anchors.
   repeated TrustAnchor additional_certs = 3;
+
+  // Merkle Tree Certificate anchors. Like `additional_certs`, entries are not
+  // trusted for any purpose unless explicitly specified in the MtcAnchor (for
+  // example by setting `tls_trust_anchor=true`).
+  repeated MtcAnchor mtc_anchors = 4;
+}
+
+message TrustAnchorIdRange {
+  // The base_id is a relative OID in DER representation which, when a
+  // landmark number is appended, specifies a Trust Anchor ID for this
+  // signatureless MTC.
+  optional bytes base_id = 1;
+
+  // The minimum supported landmark number.
+  optional uint64 min_active_landmark_inclusive = 2;
+
+  // The maximum supported landmark number, inclusive.
+  optional uint64 last_landmark_inclusive = 3;
+}
+
+message MtcSubTree {
+  // The start index of the range covered by this subtree.
+  optional uint64 start_inclusive = 1;
+
+  // The end index, exclusive, of the range covered by this subtree.
+  optional uint64 end_exclusive = 2;
+
+  // The merkle tree hash for this subtree.
+  optional bytes hash = 3;
+}
+
+message MtcIndexRange {
+  // The start index of the range.
+  optional uint64 start_inclusive = 1;
+
+  // The end index, exclusive, of the range.
+  optional uint64 end_exclusive = 2;
+}
+
+message MtcAnchorData {
+  // The log id is a trust anchor id in binary representation. This must match
+  // the `log_id` for an MtcAnchor in the root store, or this MtcAnchorData
+  // will be ignored. (It is not an error for this to occur in practice, since
+  // the MtcMetadata and ChromeRootStoreData are updated separately.)
+  optional bytes log_id = 1;
+
+  // The range of landmark numbers corresponding to `trusted_subtrees`, along
+  // with the base_id, sufficient for constructing the Trust Anchor ID(s) for
+  // negotiating the use of signatureless certificates.
+  optional TrustAnchorIdRange trusted_landmark_ids_range = 2;
+
+  // Trusted subtrees that can be used for signatureless Merkle Tree
+  // certificate verification. Presence in this list implies that relevant root
+  // store policies have been already been checked offline for all certificates
+  // covered by each subtree.
+  repeated MtcSubTree trusted_subtrees = 3;
+
+  // Ranges of Merkle Tree Certificate indices which are revoked.
+  repeated MtcIndexRange revoked_indices = 4;
+}
+
+message MtcMetadata {
+  // The time this data was generated, in seconds since the unix epoch.
+  optional int64 update_time_seconds = 1;
+
+  // Metadata for each of the supported MTC anchors.
+  repeated MtcAnchorData mtc_anchor_data = 2;
 }

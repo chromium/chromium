@@ -15,7 +15,7 @@
 #include "components/policy/android/jni_headers/CombinedPolicyProvider_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace {
 
@@ -29,10 +29,8 @@ namespace android {
 AndroidCombinedPolicyProvider::AndroidCombinedPolicyProvider(
     SchemaRegistry* registry)
     : initialized_(!g_wait_for_policies) {
-  PolicyNamespace ns(POLICY_DOMAIN_CHROME, std::string());
-  const Schema* schema = registry->schema_map()->GetSchema(ns);
   policy_converter_ =
-      std::make_unique<policy::android::PolicyConverter>(schema);
+      std::make_unique<policy::android::PolicyConverter>(registry);
   java_combined_policy_provider_.Reset(Java_CombinedPolicyProvider_linkNative(
       AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
       policy_converter_->GetJavaObject()));
@@ -74,3 +72,5 @@ bool AndroidCombinedPolicyProvider::IsFirstPolicyLoadComplete(
 
 }  // namespace android
 }  // namespace policy
+
+DEFINE_JNI(CombinedPolicyProvider)

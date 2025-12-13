@@ -26,12 +26,15 @@ EmptyNetworkManager::EmptyNetworkManager(
   DCHECK(network_manager);
   DETACH_FROM_THREAD(thread_checker_);
   set_enumeration_permission(ENUMERATION_BLOCKED);
-  network_manager->SignalNetworksChanged.connect(
-      this, &EmptyNetworkManager::OnNetworksChanged);
+  network_manager->SubscribeNetworksChanged(this,
+                                            [this]() { OnNetworksChanged(); });
 }
 
 EmptyNetworkManager::~EmptyNetworkManager() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (network_manager_for_signaling_thread_) {
+    network_manager_for_signaling_thread_->UnsubscribeNetworksChanged(this);
+  }
 }
 
 void EmptyNetworkManager::StartUpdating() {
@@ -71,7 +74,7 @@ void EmptyNetworkManager::OnNetworksChanged() {
   if (!start_count_)
     return;
 
-  SignalNetworksChanged();
+  NotifyNetworksChanged();
 }
 
 }  // namespace blink

@@ -79,7 +79,8 @@ class IOSSecurityInterstitialPage {
 
   // Used to interact with the embedder. Unowned pointer; must outlive `this`
   // instance.
-  const raw_ptr<IOSBlockingPageControllerClient> client_ = nullptr;
+  const raw_ptr<IOSBlockingPageControllerClient, DanglingUntriaged> client_ =
+      nullptr;
 };
 
 }  // namespace security_interstitials

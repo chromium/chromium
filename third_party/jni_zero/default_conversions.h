@@ -63,9 +63,9 @@ inline ContainerType FromJniArray(JNIEnv* env,
     // Do not call FromJni for jobject->jobject.
     if constexpr (std::is_base_of_v<JavaRef<jobject>, ElementType>) {
       if constexpr (has_push_back) {
-        ret.emplace_back(env, j_element);
+        ret.push_back(ElementType::Adopt(env, j_element));
       } else if constexpr (has_insert) {
-        ret.emplace(env, j_element);
+        ret.insert(ElementType::Adopt(env, j_element));
       }
     } else {
       auto element = ScopedJavaLocalRef<jobject>::Adopt(env, j_element);
@@ -100,7 +100,7 @@ ToJniArray(JNIEnv* env, const ContainerType& collection, jclass clazz) {
     }
     ++i;
   }
-  return ScopedJavaLocalRef<jobjectArray>(env, j_array);
+  return ScopedJavaLocalRef<jobjectArray>::Adopt(env, j_array);
 }
 
 #define DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(T)                                 \

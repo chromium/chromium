@@ -61,11 +61,17 @@ namespace pdf {
 namespace {
 
 const chrome_pdf::AccessibilityTextRunInfo kFirstTextRun = {
-    15, "P", gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    /*start_index=*/0,
+    /*len=*/15,
+    "P",
+    gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
     chrome_pdf::AccessibilityTextDirection::kNone,
     chrome_pdf::AccessibilityTextStyleInfo()};
 const chrome_pdf::AccessibilityTextRunInfo kSecondTextRun = {
-    15, "P", gfx::RectF(28.0f, 117.0f, 152.0f, 19.0f),
+    /*start_index=*/15,
+    /*len=*/15,
+    "P",
+    gfx::RectF(28.0f, 117.0f, 152.0f, 19.0f),
     chrome_pdf::AccessibilityTextDirection::kNone,
     chrome_pdf::AccessibilityTextStyleInfo()};
 const chrome_pdf::AccessibilityCharInfo kDummyCharsData[] = {
@@ -76,19 +82,31 @@ const chrome_pdf::AccessibilityCharInfo kDummyCharsData[] = {
     {'w', 16}, {'o', 12}, {'r', 8},  {'l', 4},  {'d', 12}, {'!', 2},
 };
 const chrome_pdf::AccessibilityTextRunInfo kFirstRunMultiLine = {
-    7, "P", gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    /*start_index=*/0,
+    /*len=*/7,
+    "P",
+    gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
     chrome_pdf::AccessibilityTextDirection::kNone,
     chrome_pdf::AccessibilityTextStyleInfo()};
 const chrome_pdf::AccessibilityTextRunInfo kSecondRunMultiLine = {
-    8, "P", gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    /*start_index=*/7,
+    /*len=*/8,
+    "P",
+    gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
     chrome_pdf::AccessibilityTextDirection::kNone,
     chrome_pdf::AccessibilityTextStyleInfo()};
 const chrome_pdf::AccessibilityTextRunInfo kThirdRunMultiLine = {
-    9, "P", gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    /*start_index=*/15,
+    /*len=*/9,
+    "P",
+    gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
     chrome_pdf::AccessibilityTextDirection::kNone,
     chrome_pdf::AccessibilityTextStyleInfo()};
 const chrome_pdf::AccessibilityTextRunInfo kFourthRunMultiLine = {
-    6, "P", gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    /*start_index=*/24,
+    /*len=*/6,
+    "P",
+    gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
     chrome_pdf::AccessibilityTextDirection::kNone,
     chrome_pdf::AccessibilityTextStyleInfo()};
 
@@ -599,6 +617,168 @@ TEST_F(PdfAccessibilityTreeTest, HeadingsDetectedFromTags) {
   EXPECT_EQ(ax::mojom::Role::kHeading, heading2->GetRole());
   EXPECT_EQ(2, heading2->GetIntAttribute(
                    ax::mojom::IntAttribute::kHierarchicalLevel));
+}
+
+TEST_F(PdfAccessibilityTreeTest, StructureTree) {
+  base::test::ScopedFeatureList pdf_tags;
+  pdf_tags.InitAndEnableFeature(chrome_pdf::features::kPdfTags);
+  CreatePdfAccessibilityTree();
+
+  auto doc_structure_root =
+      std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  doc_structure_root->type = chrome_pdf::PdfTagType::kDocument;
+
+  auto page_structure =
+      std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  page_structure->type = chrome_pdf::PdfTagType::kPart;
+
+  text_runs_ = {kFirstRunMultiLine, kSecondRunMultiLine, kThirdRunMultiLine,
+                kFourthRunMultiLine};
+  chars_.insert(chars_.end(), std::begin(kDummyCharsData),
+                std::end(kDummyCharsData));
+
+  auto para = std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  para->type = chrome_pdf::PdfTagType::kP;
+  para->associated_text_runs_if_available.push_back(&text_runs_[0]);
+
+  // Add image to paragraph to test elements with both text and image.
+  auto para_image = std::make_unique<chrome_pdf::AccessibilityImageInfo>();
+  para_image->bounds = gfx::RectF(100.0f, 100.0f, 50.0f, 50.0f);
+  para_image->alt_text = "Inline image";
+  para_image->page_object_index = 0;
+  para->associated_image_if_available = std::move(para_image);
+
+  auto article = std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  article->type = chrome_pdf::PdfTagType::kArt;
+  article->associated_text_runs_if_available.push_back(&text_runs_[1]);
+
+  auto blockquote =
+      std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  blockquote->type = chrome_pdf::PdfTagType::kBlockQuote;
+  blockquote->associated_text_runs_if_available.push_back(&text_runs_[2]);
+
+  auto heading = std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  heading->type = chrome_pdf::PdfTagType::kH1;
+  heading->associated_text_runs_if_available.push_back(&text_runs_[3]);
+
+  auto figure = std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  figure->type = chrome_pdf::PdfTagType::kFigure;
+  figure->alt_text = "Test Figure";
+
+  auto image = std::make_unique<chrome_pdf::AccessibilityImageInfo>();
+  image->bounds = gfx::RectF(10.0f, 10.0f, 50.0f, 50.0f);
+  image->page_object_index = 0;
+  figure->associated_image_if_available = std::move(image);
+
+  // Test empty semantic container with nested child.
+  auto section = std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  section->type = chrome_pdf::PdfTagType::kSect;
+
+  auto nested_heading =
+      std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  nested_heading->type = chrome_pdf::PdfTagType::kH2;
+  nested_heading->associated_text_runs_if_available.push_back(&text_runs_[3]);
+
+  section->children.push_back(std::move(nested_heading));
+
+  // Test non-Figure image (e.g., clickable image in Link element).
+  auto link = std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  link->type = chrome_pdf::PdfTagType::kLink;
+
+  auto link_image = std::make_unique<chrome_pdf::AccessibilityImageInfo>();
+  link_image->bounds = gfx::RectF(200.0f, 200.0f, 30.0f, 30.0f);
+  link_image->page_object_index = 0;
+  link->associated_image_if_available = std::move(link_image);
+
+  page_structure->children.push_back(std::move(para));
+  page_structure->children.push_back(std::move(article));
+  page_structure->children.push_back(std::move(blockquote));
+  page_structure->children.push_back(std::move(heading));
+  page_structure->children.push_back(std::move(figure));
+  page_structure->children.push_back(std::move(section));
+  page_structure->children.push_back(std::move(link));
+  doc_structure_root->children.push_back(std::move(page_structure));
+
+  page_info_.text_run_count = text_runs_.size();
+  page_info_.char_count = chars_.size();
+
+  std::unique_ptr<chrome_pdf::AccessibilityDocInfo> doc_info =
+      CreateAccessibilityDocInfo();
+  doc_info->is_tagged = true;
+  doc_info->structure_tree_root = std::move(doc_structure_root);
+
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(std::move(doc_info));
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+
+  WaitForThreadTasks();
+  // Wait for `PdfAccessibilityTree::UnserializeNodes()`, a delayed task.
+  WaitForThreadDelayedTasks();
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  CheckRootAndStatusNodes(pdf_root, page_count_,
+                          /*is_pdf_ocr_test=*/false, /*is_ocr_completed=*/false,
+                          /*create_empty_ocr_results=*/false);
+
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(7u, page->GetChildCount());
+
+  const ui::AXNode* para_node = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, para_node);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, para_node->GetRole());
+
+  // Verify paragraph has both text and image children.
+  ASSERT_GE(para_node->GetChildCount(), 2u)
+      << "Paragraph should have at least 2 children (text and image)";
+  bool found_text = false;
+  bool found_image = false;
+  for (size_t i = 0; i < para_node->GetChildCount(); ++i) {
+    const ui::AXNode* child = para_node->GetChildAtIndex(i);
+    ASSERT_NE(nullptr, child);
+    if (child->GetRole() == ax::mojom::Role::kStaticText) {
+      found_text = true;
+    } else if (child->GetRole() == ax::mojom::Role::kImage) {
+      found_image = true;
+      EXPECT_EQ("Inline image",
+                child->GetStringAttribute(ax::mojom::StringAttribute::kName));
+    }
+  }
+  EXPECT_TRUE(found_text) << "Text node should be present in paragraph";
+  EXPECT_TRUE(found_image) << "Image node should be present in paragraph";
+
+  const ui::AXNode* article_node = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, article_node);
+  EXPECT_EQ(ax::mojom::Role::kArticle, article_node->GetRole());
+
+  const ui::AXNode* blockquote_node = page->GetChildAtIndex(2u);
+  ASSERT_NE(nullptr, blockquote_node);
+  EXPECT_EQ(ax::mojom::Role::kBlockquote, blockquote_node->GetRole());
+
+  const ui::AXNode* heading_node = page->GetChildAtIndex(3u);
+  ASSERT_NE(nullptr, heading_node);
+  EXPECT_EQ(ax::mojom::Role::kHeading, heading_node->GetRole());
+
+  const ui::AXNode* figure_node = page->GetChildAtIndex(4u);
+  ASSERT_NE(nullptr, figure_node);
+  EXPECT_EQ(ax::mojom::Role::kFigure, figure_node->GetRole());
+  EXPECT_EQ("Test Figure",
+            figure_node->GetStringAttribute(ax::mojom::StringAttribute::kName));
+
+  const ui::AXNode* section_node = page->GetChildAtIndex(5u);
+  ASSERT_NE(nullptr, section_node);
+  EXPECT_EQ(ax::mojom::Role::kSection, section_node->GetRole());
+  ASSERT_EQ(1u, section_node->GetChildCount());
+
+  const ui::AXNode* nested_heading_node = section_node->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, nested_heading_node);
+  EXPECT_EQ(ax::mojom::Role::kHeading, nested_heading_node->GetRole());
+
+  const ui::AXNode* link_node = page->GetChildAtIndex(6u);
+  ASSERT_NE(nullptr, link_node);
+  EXPECT_EQ(ax::mojom::Role::kImage, link_node->GetRole());
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestOverlappingAnnots) {

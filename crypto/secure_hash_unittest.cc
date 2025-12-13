@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "crypto/secure_hash.h"
 
 #include <stddef.h>
@@ -16,6 +11,8 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span_writer.h"
 #include "base/types/fixed_array.h"
 #include "crypto/sha2.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,13 +31,14 @@ class SecureHashTest : public testing::Test,
 };
 
 TEST_P(SecureHashTest, TestUpdateSHA256) {
-  std::string input3;
+  std::vector<uint8_t> input3;
   std::vector<uint8_t> expected_hash_of_input_3;
 
   switch (algorithm_) {
     case crypto::SecureHash::SHA256:
       // Example B.3 from FIPS 180-2: long message.
-      input3 = std::string(500000, 'a');  // 'a' repeated half a million times
+      input3 = std::vector<uint8_t>(500000,
+                                    'a');  // 'a' repeated half a million times
       expected_hash_of_input_3 = {
           0xcd, 0xc7, 0x6e, 0x5c, 0x99, 0x14, 0xfb, 0x92, 0x81, 0xa1, 0xc7,
           0xe2, 0x84, 0xd7, 0x3e, 0x67, 0xf1, 0x80, 0x9a, 0x48, 0xa4, 0x97,
@@ -48,7 +46,8 @@ TEST_P(SecureHashTest, TestUpdateSHA256) {
       break;
     case crypto::SecureHash::SHA512:
       // Example C.3 from FIPS 180-2: long message.
-      input3 = std::string(500000, 'a');  // 'a' repeated half a million times
+      input3 = std::vector<uint8_t>(500000,
+                                    'a');  // 'a' repeated half a million times
       expected_hash_of_input_3 = {
           0xe7, 0x18, 0x48, 0x3d, 0x0c, 0xe7, 0x69, 0x64, 0x4e, 0x2e, 0x42,
           0xc7, 0xbc, 0x15, 0xb4, 0x63, 0x8e, 0x1f, 0x98, 0xb1, 0x3b, 0x20,
@@ -63,17 +62,17 @@ TEST_P(SecureHashTest, TestUpdateSHA256) {
 
   std::unique_ptr<crypto::SecureHash> ctx(
       crypto::SecureHash::Create(algorithm_));
-  ctx->Update(input3.data(), input3.size());
-  ctx->Update(input3.data(), input3.size());
+  ctx->Update(input3);
+  ctx->Update(input3);
 
-  ctx->Finish(output3.data(), output3.size());
+  ctx->Finish(output3);
   for (size_t i = 0; i < hash_length_; i++)
     EXPECT_EQ(expected_hash_of_input_3[i], static_cast<int>(output3[i]));
 }
 
 TEST_P(SecureHashTest, TestClone) {
-  std::string input1(10001, 'a');  // 'a' repeated 10001 times
-  std::string input2(10001, 'd');  // 'd' repeated 10001 times
+  std::vector<uint8_t> input1(10001, 'a');  // 'a' repeated 10001 times
+  std::vector<uint8_t> input2(10001, 'd');  // 'd' repeated 10001 times
 
   std::vector<uint8_t> expected_hash_of_input_1;
   std::vector<uint8_t> expected_hash_of_input_1_and_2;
@@ -113,7 +112,7 @@ TEST_P(SecureHashTest, TestClone) {
 
   std::unique_ptr<crypto::SecureHash> ctx1(
       crypto::SecureHash::Create(algorithm_));
-  ctx1->Update(input1.data(), input1.size());
+  ctx1->Update(input1);
 
   std::unique_ptr<crypto::SecureHash> ctx2(ctx1->Clone());
   std::unique_ptr<crypto::SecureHash> ctx3(ctx2->Clone());
@@ -121,20 +120,23 @@ TEST_P(SecureHashTest, TestClone) {
   // state after hashing input1.
 
   // Updating ctx1 and ctx2 with input2 should produce equivalent results.
-  ctx1->Update(input2.data(), input2.size());
-  ctx1->Finish(output1.data(), output1.size());
+  ctx1->Update(input2);
+  ctx1->Finish(output1);
 
-  ctx2->Update(input2.data(), input2.size());
-  ctx2->Finish(output2.data(), output2.size());
+  ctx2->Update(input2);
+  ctx2->Finish(output2);
 
-  EXPECT_EQ(0, memcmp(output1.data(), output2.data(), hash_length_));
-  EXPECT_EQ(0, memcmp(output1.data(), expected_hash_of_input_1_and_2.data(),
-                      hash_length_));
+  UNSAFE_TODO(
+      EXPECT_EQ(0, memcmp(output1.data(), output2.data(), hash_length_)));
+  UNSAFE_TODO(
+      EXPECT_EQ(0, memcmp(output1.data(), expected_hash_of_input_1_and_2.data(),
+                          hash_length_)));
 
   // Finish() ctx3, which should produce the hash of input1.
-  ctx3->Finish(output3.data(), output3.size());
-  EXPECT_EQ(
-      0, memcmp(output3.data(), expected_hash_of_input_1.data(), hash_length_));
+  ctx3->Finish(output3);
+  UNSAFE_TODO(EXPECT_EQ(
+      0,
+      memcmp(output3.data(), expected_hash_of_input_1.data(), hash_length_)));
 }
 
 TEST_P(SecureHashTest, TestLength) {
@@ -144,8 +146,8 @@ TEST_P(SecureHashTest, TestLength) {
 }
 
 TEST_P(SecureHashTest, Equality) {
-  std::string input1(10001, 'a');  // 'a' repeated 10001 times
-  std::string input2(10001, 'd');  // 'd' repeated 10001 times
+  std::vector<uint8_t> input1(10001, 'a');  // 'a' repeated 10001 times
+  std::vector<uint8_t> input2(10001, 'd');  // 'd' repeated 10001 times
 
   base::FixedArray<uint8_t> output1(hash_length_);
   base::FixedArray<uint8_t> output2(hash_length_);
@@ -153,19 +155,23 @@ TEST_P(SecureHashTest, Equality) {
   // Call Update() twice on input1 and input2.
   std::unique_ptr<crypto::SecureHash> ctx1(
       crypto::SecureHash::Create(algorithm_));
-  ctx1->Update(input1.data(), input1.size());
-  ctx1->Update(input2.data(), input2.size());
-  ctx1->Finish(output1.data(), output1.size());
+  ctx1->Update(input1);
+  ctx1->Update(input2);
+  ctx1->Finish(output1);
 
   // Call Update() once one input1 + input2 (concatenation).
   std::unique_ptr<crypto::SecureHash> ctx2(
       crypto::SecureHash::Create(algorithm_));
-  std::string input3 = input1 + input2;
-  ctx2->Update(input3.data(), input3.size());
-  ctx2->Finish(output2.data(), output2.size());
+  std::vector<uint8_t> input3(input1.size() + input2.size());
+  base::SpanWriter<uint8_t> writer(input3);
+  writer.Write(input1);
+  writer.Write(input2);
+  ctx2->Update(input3);
+  ctx2->Finish(output2);
 
   // The hash should be the same.
-  EXPECT_EQ(0, memcmp(output1.data(), output2.data(), hash_length_));
+  UNSAFE_TODO(
+      EXPECT_EQ(0, memcmp(output1.data(), output2.data(), hash_length_)));
 }
 
 INSTANTIATE_TEST_SUITE_P(

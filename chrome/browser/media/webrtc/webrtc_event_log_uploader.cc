@@ -4,6 +4,9 @@
 
 #include "chrome/browser/media/webrtc/webrtc_event_log_uploader.h"
 
+#include <optional>
+#include <string>
+
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -102,10 +105,11 @@ void BindURLLoaderFactoryReceiver(
 }
 
 void OnURLLoadUploadProgress(uint64_t current, uint64_t total) {
-  ui::DataUnits unit = ui::GetByteDisplayUnits(total);
+  ui::DataUnits unit = ui::GetByteDisplayUnits(base::ByteCount(total));
   VLOG(1) << "WebRTC event log upload progress: "
-          << FormatBytesWithUnits(current, unit, false) << " / "
-          << FormatBytesWithUnits(total, unit, true) << ".";
+          << FormatBytesWithUnits(base::ByteCount(current), unit, false)
+          << " / " << FormatBytesWithUnits(base::ByteCount(total), unit, true)
+          << ".";
 }
 }  // namespace
 
@@ -292,17 +296,16 @@ void WebRtcEventLogUploaderImpl::StartUpload(const std::string& upload_data) {
 }
 
 void WebRtcEventLogUploaderImpl::OnURLLoadComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(url_loader_);
 
-  if (response_body.get() != nullptr && response_body->empty()) {
+  if (response_body && response_body->empty()) {
     LOG(WARNING) << "SimpleURLLoader reported upload successful, "
                  << "but report ID unknown.";
   }
 
-  const bool upload_successful =
-      (response_body.get() != nullptr && !response_body->empty());
+  const bool upload_successful = (response_body && !response_body->empty());
 
   // NetError() is 0 when no error occurred.
   UmaRecordWebRtcEventLoggingNetErrorType(url_loader_->NetError());

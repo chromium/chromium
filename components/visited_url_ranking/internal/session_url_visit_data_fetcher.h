@@ -6,7 +6,6 @@
 #define COMPONENTS_VISITED_URL_RANKING_INTERNAL_SESSION_URL_VISIT_DATA_FETCHER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
 #include "components/visited_url_ranking/public/fetcher_config.h"

@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_BITMAP_FETCHER_BITMAP_FETCHER_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -71,7 +73,7 @@ class BitmapFetcher : public ImageDecoder::ImageRequest {
   void OnDecodeImageFailed() override;
 
  private:
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
   // Alerts the delegate that a failure occurred.
   void ReportFailure();

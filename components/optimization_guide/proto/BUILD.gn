@@ -18,9 +18,12 @@ proto_library("optimization_guide_proto") {
     "contextual_cueing_metadata.proto",
     "descriptors.proto",
     "features/actions_data.proto",
+    "features/actor_login.proto",
+    "features/amount_extraction.proto",
     "features/bling_prototyping.proto",
     "features/common_quality_data.proto",
     "features/compose.proto",
+    "features/contextual_tasks_context.proto",
     "features/default.proto",
     "features/enhanced_calendar.proto",
     "features/example_for_testing.proto",
@@ -29,11 +32,11 @@ proto_library("optimization_guide_proto") {
     "features/history_query.proto",
     "features/history_query_intent.proto",
     "features/history_search_strings.proto",
+    "features/ios_smart_tab_grouping.proto",
     "features/media.proto",
     "features/model_prototyping.proto",
     "features/notification_content_detection.proto",
     "features/password_change_submission.proto",
-    "features/permissions_ai.proto",
     "features/product_specifications.proto",
     "features/prompt_api.proto",
     "features/proofreader_api.proto",
@@ -41,6 +44,7 @@ proto_library("optimization_guide_proto") {
     "features/summarize.proto",
     "features/tab_organization.proto",
     "features/text_safety.proto",
+    "features/walletable_pass_extraction.proto",
     "features/wallpaper_search.proto",
     "features/writing_assistance_api.proto",
     "features/zero_state_suggestions.proto",
@@ -82,7 +86,7 @@ proto_library("optimization_guide_proto") {
 
   # These are required to import system_profile.proto in
   # model_quality_metadata.proto.
-  deps = [ "//third_party/metrics_proto:metrics_proto" ]
+  deps = [ "//third_party/metrics_proto" ]
   import_dirs = [ "//third_party/metrics_proto/" ]
 }
 
@@ -91,8 +95,10 @@ if (is_android) {
     proto_path = "//"
     sources = [
       "common_types.proto",
+      "features/common_quality_data.proto",
       "hints.proto",
       "loading_predictor_metadata.proto",
+      "model_execution.proto",
       "models.proto",
       "push_notification.proto",
     ]
@@ -105,7 +111,7 @@ proto_library("optimization_guide_proto_descriptors") {
   sources = [ "features/feature_proto_registry.proto" ]
   deps = [
     ":optimization_guide_proto",
-    "//third_party/metrics_proto:metrics_proto",
+    "//third_party/metrics_proto",
   ]
   generate_cc = false
   generate_python = false

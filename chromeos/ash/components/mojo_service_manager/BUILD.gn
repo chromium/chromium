@@ -34,10 +34,7 @@ component("mojo_service_manager_impl") {
 }
 
 static_library("fake_mojo_service_manager") {
-  visibility = [
-    ":*",
-    "//chromeos/ash/experiences/arc:unit_tests",
-  ]
+  visibility = [ ":*" ]
   sources = [
     "fake_mojo_service_manager.cc",
     "fake_mojo_service_manager.h",

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2extchromium.h>
@@ -14,6 +9,7 @@
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,10 +82,10 @@ GLuint LoadTextureDXT1(bool alpha) {
   for (unsigned i = 0; i < kPaletteSize; ++i) {
     // Each iteration defines a 4x4 block of texture.
     unsigned j = kStride * i;
-    data[j++] = kPalette[i];  // color_0.
-    data[j++] = kPalette[i];  // color_1.
-    data[j++] = kColor0;  // color index.
-    data[j++] = kColor1;  // color index.
+    UNSAFE_TODO(data[j++]) = kPalette[i];  // color_0.
+    UNSAFE_TODO(data[j++]) = kPalette[i];  // color_1.
+    UNSAFE_TODO(data[j++]) = kColor0;      // color index.
+    UNSAFE_TODO(data[j++]) = kColor1;      // color index.
   }
   GLenum format = alpha ?
       GL_COMPRESSED_RGBA_S3TC_DXT1_EXT : GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
@@ -104,14 +100,14 @@ GLuint LoadTextureDXT3() {
   for (unsigned i = 0; i < kPaletteSize; ++i) {
     // Each iteration defines a 4x4 block of texture.
     unsigned j = kStride * i;
-    data[j++] = kOpaque;  // alpha row 0.
-    data[j++] = kOpaque;  // alpha row 1.
-    data[j++] = kOpaque;  // alpha row 2.
-    data[j++] = kOpaque;  // alpha row 3.
-    data[j++] = kPalette[i];  // color_0.
-    data[j++] = kPalette[i];  // color_1.
-    data[j++] = kColor0;  // color index.
-    data[j++] = kColor1;  // color index.
+    UNSAFE_TODO(data[j++]) = kOpaque;      // alpha row 0.
+    UNSAFE_TODO(data[j++]) = kOpaque;      // alpha row 1.
+    UNSAFE_TODO(data[j++]) = kOpaque;      // alpha row 2.
+    UNSAFE_TODO(data[j++]) = kOpaque;      // alpha row 3.
+    UNSAFE_TODO(data[j++]) = kPalette[i];  // color_0.
+    UNSAFE_TODO(data[j++]) = kPalette[i];  // color_1.
+    UNSAFE_TODO(data[j++]) = kColor0;      // color index.
+    UNSAFE_TODO(data[j++]) = kColor1;      // color index.
   }
   return LoadCompressedTexture(data,
                                sizeof(data),
@@ -128,14 +124,14 @@ GLuint LoadTextureDXT5() {
   for (unsigned i = 0; i < kPaletteSize; ++i) {
     // Each iteration defines a 4x4 block of texture.
     unsigned j = kStride * i;
-    data[j++] = kClear;  // alpha_0 | alpha_1.
-    data[j++] = kAlpha7;  // alpha index.
-    data[j++] = kAlpha7;  // alpha index.
-    data[j++] = kAlpha7;  // alpha index.
-    data[j++] = kPalette[i];  // color_0.
-    data[j++] = kPalette[i];  // color_1.
-    data[j++] = kColor0;  // color index.
-    data[j++] = kColor1;  // color index.
+    UNSAFE_TODO(data[j++]) = kClear;       // alpha_0 | alpha_1.
+    UNSAFE_TODO(data[j++]) = kAlpha7;      // alpha index.
+    UNSAFE_TODO(data[j++]) = kAlpha7;      // alpha index.
+    UNSAFE_TODO(data[j++]) = kAlpha7;      // alpha index.
+    UNSAFE_TODO(data[j++]) = kPalette[i];  // color_0.
+    UNSAFE_TODO(data[j++]) = kPalette[i];  // color_1.
+    UNSAFE_TODO(data[j++]) = kColor0;      // color index.
+    UNSAFE_TODO(data[j++]) = kColor1;      // color index.
   }
   return LoadCompressedTexture(data,
                                sizeof(data),
@@ -150,8 +146,8 @@ static void ToRGB888(uint16_t rgb565, uint8_t rgb888[]) {
   uint8_t b5 = (rgb565 & kBlueMask);
   // Replicate upper bits to lower empty bits.
   rgb888[0] = (r5 << 3) | (r5 >> 2);
-  rgb888[1] = (g6 << 2) | (g6 >> 4);
-  rgb888[2] = (b5 << 3) | (b5 >> 2);
+  UNSAFE_TODO(rgb888[1]) = (g6 << 2) | (g6 >> 4);
+  UNSAFE_TODO(rgb888[2]) = (b5 << 3) | (b5 >> 2);
 }
 
 class CompressedTextureTest : public ::testing::TestWithParam<GLenum> {

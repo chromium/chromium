@@ -27,6 +27,7 @@
 #include "net/base/parse_number.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
+#include "url/gurl.h"
 
 namespace net {
 
@@ -155,15 +156,15 @@ void HttpUtil::ParseContentType(std::string_view content_type_str,
 }
 
 // static
-bool HttpUtil::ParseRangeHeader(const std::string& ranges_specifier,
+bool HttpUtil::ParseRangeHeader(std::string_view ranges_specifier,
                                 std::vector<HttpByteRange>* ranges) {
   size_t equal_char_offset = ranges_specifier.find('=');
-  if (equal_char_offset == std::string::npos)
+  if (equal_char_offset == std::string::npos) {
     return false;
+  }
 
   // Try to extract bytes-unit part.
-  std::string_view bytes_unit =
-      std::string_view(ranges_specifier).substr(0, equal_char_offset);
+  std::string_view bytes_unit = ranges_specifier.substr(0, equal_char_offset);
 
   // "bytes" unit identifier is not found.
   bytes_unit = TrimLWS(bytes_unit);
@@ -171,19 +172,16 @@ bool HttpUtil::ParseRangeHeader(const std::string& ranges_specifier,
     return false;
   }
 
-  std::string::const_iterator byte_range_set_begin =
-      ranges_specifier.begin() + equal_char_offset + 1;
-  std::string::const_iterator byte_range_set_end = ranges_specifier.end();
-
   ValuesIterator byte_range_set_iterator(
-      std::string_view(byte_range_set_begin, byte_range_set_end),
+      ranges_specifier.substr(equal_char_offset + 1),
       /*delimiter=*/',');
   while (byte_range_set_iterator.GetNext()) {
     std::string_view value = byte_range_set_iterator.value();
     size_t minus_char_offset = value.find('-');
     // If '-' character is not found, reports failure.
-    if (minus_char_offset == std::string::npos)
+    if (minus_char_offset == std::string::npos) {
       return false;
+    }
 
     std::string_view first_byte_pos = value.substr(0, minus_char_offset);
     first_byte_pos = TrimLWS(first_byte_pos);
@@ -192,8 +190,9 @@ bool HttpUtil::ParseRangeHeader(const std::string& ranges_specifier,
     // Try to obtain first-byte-pos.
     if (!first_byte_pos.empty()) {
       int64_t first_byte_position = -1;
-      if (!base::StringToInt64(first_byte_pos, &first_byte_position))
+      if (!base::StringToInt64(first_byte_pos, &first_byte_position)) {
         return false;
+      }
       range.set_first_byte_position(first_byte_position);
     }
 
@@ -203,19 +202,22 @@ bool HttpUtil::ParseRangeHeader(const std::string& ranges_specifier,
     // We have last-byte-pos or suffix-byte-range-spec in this case.
     if (!last_byte_pos.empty()) {
       int64_t last_byte_position;
-      if (!base::StringToInt64(last_byte_pos, &last_byte_position))
+      if (!base::StringToInt64(last_byte_pos, &last_byte_position)) {
         return false;
-      if (range.HasFirstBytePosition())
+      }
+      if (range.HasFirstBytePosition()) {
         range.set_last_byte_position(last_byte_position);
-      else
+      } else {
         range.set_suffix_length(last_byte_position);
+      }
     } else if (!range.HasFirstBytePosition()) {
       return false;
     }
 
     // Do a final check on the HttpByteRange object.
-    if (!range.IsValid())
+    if (!range.IsValid()) {
       return false;
+    }
     ranges->push_back(range);
   }
   return !ranges->empty();

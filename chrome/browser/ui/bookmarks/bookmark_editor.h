@@ -12,9 +12,10 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class GURL;
 class Profile;
@@ -84,6 +85,11 @@ class BookmarkEditor {
     static EditDetails AddFolder(const bookmarks::BookmarkNode* parent_node,
                                  size_t index);
 
+    static EditDetails TabGroupToFolder(
+        const bookmarks::BookmarkNode* parent_node,
+        size_t index,
+        const std::u16string& title);
+
     enum Type {
       // The user is editing an existing node in the model. The node the user
       // is editing is set in |existing_node|.
@@ -100,7 +106,12 @@ class BookmarkEditor {
 
       // The user is moving one or multiple existing nodes in the model. The
       // nodes the user is moving are set in `existing_nodes_to_move`.
-      MOVE
+      MOVE,
+
+      // Convert a tab group to a bookmark folder. Similar to `NEW_FOLDER`
+      // except different localization strings and has a default title of tab
+      // group name.
+      CONVERT_TAB_GROUP_TO_FOLDER,
     };
 
     EditDetails(const EditDetails& other);

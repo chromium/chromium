@@ -11,7 +11,6 @@
 #include "ash/shell.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -49,6 +48,48 @@ class ArcVmmManagerFactory
 };
 
 }  // namespace
+
+// ArcVmmManager::AcceleratorTarget --------------------------------------------
+
+class ArcVmmManager::AcceleratorTarget : public ui::AcceleratorTarget {
+ public:
+  explicit AcceleratorTarget(ArcVmmManager* manager)
+      : manager_(manager),
+        vmm_swap_enabled_(ui::VKEY_O, ash::kDebugModifier),
+        vmm_swap_disabled_(ui::VKEY_P, ash::kDebugModifier) {
+    ash::Shell::Get()->accelerator_controller()->Register(
+        {vmm_swap_enabled_, vmm_swap_disabled_}, this);
+  }
+  AcceleratorTarget(const AcceleratorTarget&) = delete;
+  AcceleratorTarget& operator=(const AcceleratorTarget&) = delete;
+  ~AcceleratorTarget() override = default;
+
+ private:
+  // ui::AcceleratorTarget:
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override {
+    if (accelerator == vmm_swap_enabled_) {
+      DVLOG(1) << "Set force enable vmm swap state by keyboard shortcut.";
+      manager_->SetSwapState(SwapState::FORCE_ENABLE);
+    } else if (accelerator == vmm_swap_disabled_) {
+      DVLOG(1) << "Set diable vmm swap state by keyboard shortcut.";
+      manager_->SetSwapState(SwapState::DISABLE);
+    } else {
+      NOTREACHED();
+    }
+    return true;
+  }
+
+  bool CanHandleAccelerators() const override { return true; }
+
+  // The manager responsible for executing vmm commands.
+  const raw_ptr<ArcVmmManager> manager_;
+
+  // The accelerator to enable vmm swap for ARCVM.
+  const ui::Accelerator vmm_swap_enabled_;
+
+  // The accelerator to disable vmm swap for ARCVM.
+  const ui::Accelerator vmm_swap_disabled_;
+};
 
 // static
 ArcVmmManager* ArcVmmManager::GetForBrowserContext(
@@ -367,47 +408,5 @@ void ArcVmmManager::ShrinkArcVmMemoryAndEnableSwap(
 void ArcVmmManager::SetShrinkResult(bool success) {
   last_shrink_result_ = success;
 }
-
-// ArcVmmManager::AcceleratorTarget --------------------------------------------
-
-class ArcVmmManager::AcceleratorTarget : public ui::AcceleratorTarget {
- public:
-  explicit AcceleratorTarget(ArcVmmManager* manager)
-      : manager_(manager),
-        vmm_swap_enabled_(ui::VKEY_O, ash::kDebugModifier),
-        vmm_swap_disabled_(ui::VKEY_P, ash::kDebugModifier) {
-    ash::Shell::Get()->accelerator_controller()->Register(
-        {vmm_swap_enabled_, vmm_swap_disabled_}, this);
-  }
-  AcceleratorTarget(const AcceleratorTarget&) = delete;
-  AcceleratorTarget& operator=(const AcceleratorTarget&) = delete;
-  ~AcceleratorTarget() override = default;
-
- private:
-  // ui::AcceleratorTarget:
-  bool AcceleratorPressed(const ui::Accelerator& accelerator) override {
-    if (accelerator == vmm_swap_enabled_) {
-      DVLOG(1) << "Set force enable vmm swap state by keyboard shortcut.";
-      manager_->SetSwapState(SwapState::FORCE_ENABLE);
-    } else if (accelerator == vmm_swap_disabled_) {
-      DVLOG(1) << "Set diable vmm swap state by keyboard shortcut.";
-      manager_->SetSwapState(SwapState::DISABLE);
-    } else {
-      NOTREACHED();
-    }
-    return true;
-  }
-
-  bool CanHandleAccelerators() const override { return true; }
-
-  // The manager responsible for executing vmm commands.
-  const raw_ptr<ArcVmmManager> manager_;
-
-  // The accelerator to enable vmm swap for ARCVM.
-  const ui::Accelerator vmm_swap_enabled_;
-
-  // The accelerator to disable vmm swap for ARCVM.
-  const ui::Accelerator vmm_swap_disabled_;
-};
 
 }  // namespace arc

@@ -33,6 +33,7 @@
 #include <memory>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -648,13 +649,12 @@ base::OnceClosure Frame::ScheduleFormSubmission(
   form_submission->NotifyInspector();
   form_submit_navigation_task_ = PostCancellableTask(
       *scheduler->GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
-      WTF::BindOnce(&FormSubmission::Navigate,
-                    WrapPersistent(form_submission)));
+      BindOnce(&FormSubmission::Navigate, WrapPersistent(form_submission)));
   form_submit_navigation_task_version_++;
 
-  return WTF::BindOnce(&Frame::CancelFormSubmissionWithVersion,
-                       WrapWeakPersistent(this),
-                       form_submit_navigation_task_version_);
+  return BindOnce(&Frame::CancelFormSubmissionWithVersion,
+                  WrapWeakPersistent(this),
+                  form_submit_navigation_task_version_);
 }
 
 void Frame::CancelFormSubmission() {
@@ -671,11 +671,15 @@ bool Frame::IsFormSubmissionPending() {
 }
 
 void Frame::FocusPage(LocalFrame* originating_frame) {
-  // We only allow focus to move to the |frame|'s page when the request comes
-  // from a user gesture. (See https://bugs.webkit.org/show_bug.cgi?id=33389.)
+  // To prevent unexpected focus stealing, only allow the focus to move to the
+  // |originating_frame|'s page if the request is initiated by a user
+  // gesture (has transient user activation) or if the |originating_frame|
+  // is specially permitted to change focus without user interaction.
   if (originating_frame &&
-      LocalFrame::HasTransientUserActivation(originating_frame)) {
-    // Ask the broswer process to focus the page.
+      (LocalFrame::HasTransientUserActivation(originating_frame) ||
+       originating_frame->GetSettings()
+           ->GetAllowWindowFocusWithoutUserGesture())) {
+    // Ask the browser process to focus the page.
     GetPage()->GetChromeClient().FocusPage();
 
     // Tattle on the frame that called |window.focus()|.
@@ -1021,29 +1025,6 @@ void Frame::DetachFromParent() {
     }
   }
   Parent()->RemoveChild(this);
-}
-
-HeapVector<Member<Resource>> Frame::AllResourcesUnderFrame() {
-  DCHECK(base::FeatureList::IsEnabled(features::kMemoryCacheStrongReference));
-
-  HeapVector<Member<Resource>> resources;
-  if (IsLocalFrame()) {
-    if (auto* this_local_frame = DynamicTo<LocalFrame>(this)) {
-      HeapHashSet<Member<Resource>> local_frame_resources =
-          this_local_frame->GetDocument()
-              ->Fetcher()
-              ->MoveResourceStrongReferences();
-      for (Resource* resource : local_frame_resources) {
-        resources.push_back(resource);
-      }
-    }
-  }
-
-  for (Frame* child = Tree().FirstChild(); child;
-       child = child->Tree().NextSibling()) {
-    resources.AppendVector(child->AllResourcesUnderFrame());
-  }
-  return resources;
 }
 
 void Frame::AdjustOffsetByAncestorFrames(gfx::Point* origin_point) {

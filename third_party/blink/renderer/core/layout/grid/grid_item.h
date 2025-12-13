@@ -43,6 +43,15 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
   void SetAlignmentFallback(GridTrackSizingDirection track_direction,
                             bool has_synthesized_baseline);
 
+  // This method updates the current item's span to be the given `span` in the
+  // given `track_direction`, translates the item as needed by the
+  // `start_offset`, and recalculates the item's set indices based on its new
+  // span location.
+  void UpdateSpan(const GridSpan& span,
+                  GridTrackSizingDirection track_direction,
+                  wtf_size_t start_offset,
+                  const GridLayoutTrackCollection& track_collection);
+
   AxisEdge Alignment(GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns)
                ? column_fallback_alignment.value_or(column_alignment)
@@ -223,18 +232,50 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
 
   void EncompassContributionSize(MinMaxSizes sizes) {
     if (contribution_sizes) {
-      contribution_sizes->Encompass(sizes);
+      contribution_sizes->min_max_contribution.Encompass(sizes);
     } else {
-      contribution_sizes = sizes;
+      contribution_sizes = VirtualItemContributions();
+      contribution_sizes->min_max_contribution = sizes;
     }
   }
 
-  void EncompassContributionSize(LayoutUnit block_size) {
-    if (contribution_sizes) {
-      contribution_sizes->Encompass(block_size);
-    } else {
-      contribution_sizes = block_size;
+  void EncompassIntrinsicMinIgnoringTrackPlacement(LayoutUnit size) {
+    if (!contribution_sizes) {
+      contribution_sizes = VirtualItemContributions();
     }
+    contribution_sizes->intrinsic_min_ignoring_track_placement = std::max(
+        contribution_sizes->intrinsic_min_ignoring_track_placement, size);
+  }
+
+  void EncompassIntrinsicMinIgnoringTrackPlacementUnclamped(LayoutUnit size) {
+    if (!contribution_sizes) {
+      contribution_sizes = VirtualItemContributions();
+    }
+    contribution_sizes
+        ->intrinsic_min_ignoring_track_placement_unclamped = std::max(
+        contribution_sizes->intrinsic_min_ignoring_track_placement_unclamped,
+        size);
+  }
+
+  void EncompassIntrinsicMinAssumingTrackPlacement(LayoutUnit size) {
+    if (!contribution_sizes) {
+      contribution_sizes = VirtualItemContributions();
+    }
+    contribution_sizes->intrinsic_min_assuming_track_placement = std::max(
+        contribution_sizes->intrinsic_min_assuming_track_placement, size);
+  }
+
+  // The min clamp size is the margin, border, padding, and baseline shim
+  // for an item that may be clamped. We take the largest of these to ensure
+  // we don't clamp past the largest such value for these items. This may not
+  // be 100% equivalent to what we would get with the grid implementation, but
+  // should be as close as we can get without leading to overflow.
+  void EncompassMinClampSize(LayoutUnit min_clamp_size) {
+    if (!contribution_sizes) {
+      contribution_sizes = VirtualItemContributions();
+    }
+    contribution_sizes->min_clamp_size =
+        std::max(contribution_sizes->min_clamp_size, min_clamp_size);
   }
 
   void Trace(Visitor* visitor) const { visitor->Trace(node); }
@@ -244,6 +285,7 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
 
   bool has_subgridded_columns : 1 {false};
   bool has_subgridded_rows : 1 {false};
+  bool is_auto_placed : 1 {false};
   bool is_considered_for_column_sizing : 1 {true};
   bool is_considered_for_row_sizing : 1 {true};
   bool is_opposite_direction_in_root_grid_columns : 1 {false};
@@ -292,7 +334,55 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
   // intrinsic contribution among the items that make up its respective group,
   // which may be the min/max sizes if parallel to the grid-axis, and the block
   // contribution size if perpendicular.
-  std::optional<MinMaxSizes> contribution_sizes;
+  struct VirtualItemContributions {
+    MinMaxSizes min_max_contribution;
+
+    // Intrinsic minimums have special contribution size logic as outlined in
+    // [1]. Virtual masonry items don't have a node, so we cache this value for
+    // later. Note that some of the logic depends on the tracks spanned, which
+    // we don't know when creating the virtual item. Some of the logic also
+    // requires clamping based on the total track size an item spans. Store:
+    //
+    // - `intrinsic_min_assuming_track_placement` - The max intrinsic min
+    // contribution assuming the tracks it spans will lead us to use the
+    // automatic min size. This value will never need to be clamped, so no need
+    // to store a clamped/unclamped version.
+    //
+    // - `intrinsic_min_ignoring_track_placement` - The max intrinsic min
+    // contribution assuming that we *don't* span tracks that will lead us to
+    // use the automatic min size. Under this condition, some items may be
+    // forced to the automatic min size, and some will use the min content
+    // contribution (which may need to be clamped). This var holds the the max
+    // contribution for items that use the min content contribution that may
+    // need to be clamped later to get the actual contribution size once we know
+    // the tracks the item spans.
+    //
+    // - `intrinsic_min_ignoring_track_placement_unclamped` - The max intrinsic
+    // min contribution assuming that we *don't* span tracks that will lead us
+    // to use the automatic min size. Under this condition, some items may be
+    // forced to the automatic min size, and some will use the min content
+    // contribution (which may need to be clamped). This var holds the the max
+    // contribution for items that use the automatic min size, which will *not*
+    // need to be clamped later.
+    //
+    // - `min_clamp_size` - When we clamp
+    // `intrinsic_min_ignoring_track_placement` by the total track span later on
+    // in the track sizing algo, we should not clamp past the sum of
+    // margin/border/padding/baseline shim. This value holds the largest such
+    // sum for items that contribute to
+    // `intrinsic_min_ignoring_track_placement`.
+    //
+    // We store all of these values to choose which ends up leading to the
+    // largest contribution size when we know the final virtual item
+    // position(s).
+    //
+    // [1] https://drafts.csswg.org/css-grid/#min-size-auto
+    LayoutUnit intrinsic_min_assuming_track_placement;
+    LayoutUnit intrinsic_min_ignoring_track_placement;
+    LayoutUnit intrinsic_min_ignoring_track_placement_unclamped;
+    LayoutUnit min_clamp_size;
+  };
+  std::optional<VirtualItemContributions> contribution_sizes;
 };
 
 class CORE_EXPORT GridItems {

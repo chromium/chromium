@@ -5,9 +5,9 @@
 #include <string>
 #include <string_view>
 
-#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -36,8 +36,7 @@ class IncognitoModeInSupervisedContextUiTest
  protected:
   auto CheckCountOfIncognitoBrowsers(size_t expected_count) {
     return Check(base::BindLambdaForTesting([expected_count]() {
-                   return BrowserList::GetIncognitoBrowserCount() ==
-                          expected_count;
+                   return chrome::GetIncognitoBrowserCount() == expected_count;
                  }),
                  "Verify count of incognito browsers");
   }
@@ -54,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoModeInSupervisedContextUiTest,
       IncognitoModePrefs::IsIncognitoAllowed(child().browser().profile()));
 
   RunTestSequenceInContext(
-      child().browser().window()->GetElementContext(),
+      BrowserElements::From(&child().browser())->GetContext(),
       InstrumentTab(kWebContentsElementId),
       CheckCountOfIncognitoBrowsers(/*expected_count=*/0),
       PressButton(kToolbarAppMenuButtonElementId),
@@ -72,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoModeInSupervisedContextUiTest,
       head_of_household().browser().profile()));
 
   RunTestSequenceInContext(
-      head_of_household().browser().window()->GetElementContext(),
+      BrowserElements::From(&head_of_household().browser())->GetContext(),
       CheckCountOfIncognitoBrowsers(/*expected_count=*/0),
       PressButton(kToolbarAppMenuButtonElementId),
       CheckViewProperty(AppMenuModel::kIncognitoMenuItem,

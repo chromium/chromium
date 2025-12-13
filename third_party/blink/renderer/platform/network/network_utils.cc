@@ -17,7 +17,6 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
-#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -90,16 +89,16 @@ std::tuple<int, ResourceResponse, scoped_refptr<SharedBuffer>> ParseDataURL(
   response.SetHttpStatusCode(200);
   response.SetHttpStatusText(AtomicString("OK"));
   response.SetCurrentRequestUrl(url);
-  response.SetMimeType(WebString::FromUTF8(utf8_mime_type));
+  response.SetMimeType(AtomicString(String::FromUTF8(utf8_mime_type)));
   response.SetExpectedContentLength(buffer->size());
-  response.SetTextEncodingName(WebString::FromUTF8(utf8_charset));
+  response.SetTextEncodingName(AtomicString(String::FromUTF8(utf8_charset)));
 
   size_t iter = 0;
   std::string name;
   std::string value;
   while (headers->EnumerateHeaderLines(&iter, &name, &value)) {
-    response.AddHttpHeaderField(WebString::FromLatin1(name),
-                                WebString::FromLatin1(value));
+    response.AddHttpHeaderField(AtomicString(base::as_byte_span(name)),
+                                AtomicString(base::as_byte_span(value)));
   }
 
   base::TimeDelta elapsed = timer.Elapsed();
@@ -169,12 +168,12 @@ bool IsCertificateTransparencyRequiredError(int error_code) {
 }
 
 String GenerateAcceptLanguageHeader(const String& lang) {
-  return WebString::FromUTF8(
+  return String::FromUTF8(
       net::HttpUtil::GenerateAcceptLanguageHeader(lang.Utf8()));
 }
 
 String ExpandLanguageList(const String& lang) {
-  return WebString::FromUTF8(net::HttpUtil::ExpandLanguageList(lang.Utf8()));
+  return String::FromUTF8(net::HttpUtil::ExpandLanguageList(lang.Utf8()));
 }
 
 Vector<char> ParseMultipartBoundary(const AtomicString& content_type_header) {

@@ -11,4 +11,5 @@ include_rules = [
   "+components/signin/public/identity_manager",
   "+components/variations",
   "+components/visitedlink/core",
+  "+crypto",
 ]

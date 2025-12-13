@@ -4,10 +4,11 @@
 
 package org.chromium.components.variations.firstrun;
 
-import static org.hamcrest.CoreMatchers.equalTo;
+import static com.google.common.truth.Truth.assertThat;
+
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -104,12 +105,10 @@ public class VariationsSeedFetcherTest {
 
         mFetcher.fetchSeed(sRestrict, sMilestone, sChannel);
 
-        assertThat(
-                mPrefs.getString(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_SIGNATURE, ""),
-                equalTo("signature"));
-        assertThat(
-                mPrefs.getString(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_COUNTRY, ""),
-                equalTo("Nowhere Land"));
+        assertThat(mPrefs.getString(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_SIGNATURE, ""))
+                .isEqualTo("signature");
+        assertThat(mPrefs.getString(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_COUNTRY, ""))
+                .isEqualTo("Nowhere Land");
         assertEquals(
                 "Seed date should be set to the value from the header",
                 12345L,
@@ -117,11 +116,10 @@ public class VariationsSeedFetcherTest {
         assertTrue(
                 mPrefs.getBoolean(
                         VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_IS_GZIP_COMPRESSED, false));
-        assertThat(
-                mPrefs.getString(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_BASE64, ""),
-                equalTo(
+        assertThat(mPrefs.getString(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_BASE64, ""))
+                .isEqualTo(
                         Base64.encodeToString(
-                                ApiCompatibilityUtils.getBytesUtf8("1234"), Base64.NO_WRAP)));
+                                ApiCompatibilityUtils.getBytesUtf8("1234"), Base64.NO_WRAP));
         assertEquals(
                 "Should be logged as HTTP code",
                 1,
@@ -335,7 +333,7 @@ public class VariationsSeedFetcherTest {
         assertEquals(curSeedInfo.country, updatedSeedInfo.country);
         assertEquals(curSeedInfo.isGzipCompressed, updatedSeedInfo.isGzipCompressed);
         assertEquals(34567L, updatedSeedInfo.date);
-        Arrays.equals(curSeedInfo.seedData, updatedSeedInfo.seedData);
+        assertArrayEquals(curSeedInfo.seedData, updatedSeedInfo.seedData);
 
         assertEquals("savedSerialNumber", curSeedInfo.getParsedVariationsSeed().getSerialNumber());
     }

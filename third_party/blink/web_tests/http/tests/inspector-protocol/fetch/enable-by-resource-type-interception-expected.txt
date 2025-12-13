@@ -1,0 +1,38 @@
+Test Fetch.enable successfully intercepts various resource types.
+
+--- Running test: [Document] with resourceType: [Document] ---
+SUCCESS: Intercepted request with correct resource type: Document
+
+--- Running test: [Stylesheet] with resourceType: [Stylesheet] ---
+SUCCESS: Intercepted request with correct resource type: Stylesheet
+
+--- Running test: [Image] with resourceType: [Image] ---
+SUCCESS: Intercepted request with correct resource type: Image
+
+--- Running test: [Media] with resourceType: [Media] ---
+SUCCESS: Intercepted request with correct resource type: Media
+
+--- Running test: [Font] with resourceType: [Font] ---
+SUCCESS: Intercepted request with correct resource type: Font
+
+--- Running test: [Script] with resourceType: [Script] ---
+SUCCESS: Intercepted request with correct resource type: Script
+
+--- Running test: [XHR] with resourceType: [XHR] ---
+SUCCESS: Intercepted request with correct resource type: XHR
+
+--- Running test: [Fetch] with resourceType: [Fetch] ---
+SUCCESS: Intercepted request with correct resource type: XHR
+
+--- Running test: [EventSource] with resourceType: [EventSource] ---
+SUCCESS: Intercepted request with correct resource type: XHR
+
+--- Running test: [Ping] with resourceType: [Ping] ---
+SUCCESS: Intercepted request with correct resource type: Ping
+
+--- Running test: [Other (Worker)] with resourceType: [Other] ---
+SUCCESS: Intercepted request with correct resource type: Other
+
+--- Running test: [Other (SharedWorker)] with resourceType: [Other] ---
+SUCCESS: Intercepted request with correct resource type: Other
+

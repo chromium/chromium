@@ -18,19 +18,6 @@ namespace blink {
 
 struct MatchedProperties;
 
-inline uint32_t EncodeMatchResultPosition(uint16_t block,
-                                          uint16_t declaration) {
-  return (static_cast<uint32_t>(block) << 16) | declaration;
-}
-
-inline wtf_size_t DecodeMatchedPropertiesIndex(uint32_t position) {
-  return (position >> 16) & 0xFFFF;
-}
-
-inline wtf_size_t DecodeDeclarationIndex(uint32_t position) {
-  return position & 0xFFFF;
-}
-
 // Used by the -inl.h file.
 CORE_EXPORT CascadeFilter
 CreateExpansionFilter(const MatchedProperties& matched_properties);

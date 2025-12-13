@@ -6,7 +6,7 @@
 #define SERVICES_TRACING_PUBLIC_CPP_PERFETTO_CUSTOM_EVENT_RECORDER_H_
 
 #include "base/component_export.h"
-#include "base/metrics/histogram_samples.h"
+#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/typed_macros.h"
@@ -34,9 +34,7 @@ class COMPONENT_EXPORT(TRACING_CPP) CustomEventRecorder
   CustomEventRecorder& operator=(const CustomEventRecorder&) = delete;
 
   // perfetto::TrackEventSessionObserver implementation
-  void OnSetup(const perfetto::DataSourceBase::SetupArgs&) override;
   void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
-  void OnStop(const perfetto::DataSourceBase::StopArgs&) override;
   void WillClearIncrementalState(
       const perfetto::DataSourceBase::ClearIncrementalStateArgs&) override;
 
@@ -55,20 +53,7 @@ class COMPONENT_EXPORT(TRACING_CPP) CustomEventRecorder
   ~CustomEventRecorder() override;
 
   SEQUENCE_CHECKER(perfetto_sequence_checker_);
-  // Extracts UMA histogram names that should be logged in traces and logs their
-  // starting values.
-  void ResetHistograms(const std::unordered_set<std::string>& histogram_names);
-  // Logs selected UMA histogram.
-  void LogHistograms();
-  // Logs a given histogram in traces.
-  void LogHistogram(base::HistogramBase* histogram);
 
-  // For each of the Histogram that we are tracking, cache the snapshot of their
-  // HistogramSamples from before tracing began. So that we can calculate the
-  // delta when we go to LogHistograms.
-  std::map<std::string, std::unique_ptr<base::HistogramSamples>, std::less<>>
-      startup_histogram_samples_;
-  std::vector<std::string> histograms_;
   ActiveProcessesCallback active_processes_callback_;
 };
 

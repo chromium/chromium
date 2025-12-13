@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
+import("//build/config/chrome_build.gni")
 import("//build/config/ui.gni")
 import("//chrome/version.gni")
 import("//remoting/remoting_enable.gni")
@@ -28,16 +28,9 @@ declare_args() {
   # internal sources and implementations in a developer build. Setting this
   # variable explicitly to true will cause your build to fail if the
   # //remoting/internal directory is not present in your checkout.
-  remoting_internal = false
-
-  if (is_chrome_branded) {
-    remoting_internal = true
-  }
+  remoting_internal = enable_src_internal
 
   # Set to true to enable using Crashpad instead of Breakpad.
   # Currently, this is only implemented for linux.
-  enable_chromoting_crashpad = false
-  if (is_linux) {
-    enable_chromoting_crashpad = true
-  }
+  enable_chromoting_crashpad = is_linux
 }

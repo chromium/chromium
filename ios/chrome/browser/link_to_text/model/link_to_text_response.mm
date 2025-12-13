@@ -59,7 +59,6 @@ using shared_highlighting::TextFragment;
                        sourceID:(ukm::SourceId)sourceID
                         latency:(base::TimeDelta)latency {
   DCHECK(payload);
-  DCHECK(sourceID != ukm::kInvalidSourceId);
   if ((self = [self initWithSourceID:sourceID latency:latency])) {
     _payload = payload;
   }

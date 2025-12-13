@@ -195,8 +195,6 @@ class ExternalAppResolutionCommand
   std::optional<InstallFromInfoJob> install_from_info_job_;
   std::optional<RemoveInstallSourceJob> remove_placeholder_job_;
 
-  InstallErrorLogEntry install_error_log_entry_;
-
   base::OnceClosure on_lock_upgraded_callback_for_testing_;
 
   base::WeakPtrFactory<ExternalAppResolutionCommand> weak_ptr_factory_{this};

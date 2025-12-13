@@ -242,18 +242,9 @@
   <message name="IDS_SETTINGS_ENABLE_LOGGING_PREF" desc="The label of the checkbox to enable/disable crash and user metrics logging. This string does not need a Chromium counter-part because it will only be visible if Google-branded.">
     Help improve Chrome's features and performance
   </message>
-  <if expr="is_fuchsia">
-    <then>
-      <message name="IDS_SETTINGS_ENABLE_LOGGING_PREF_DESC" desc="The description of the checkbox to enable/disable crash and user metrics logging">
-        Automatically sends usage statistics to Google. You can turn crash reports on or off in your device's settings.
-      </message>
-    </then>
-    <else>
-      <message name="IDS_SETTINGS_ENABLE_LOGGING_PREF_DESC" desc="The description of the checkbox to enable/disable crash and user metrics logging">
-        Automatically sends usage statistics and crash reports to Google
-      </message>
-    </else>
-  </if>
+  <message name="IDS_SETTINGS_ENABLE_LOGGING_PREF_DESC" desc="The description of the checkbox to enable/disable crash and user metrics logging">
+    Automatically sends usage statistics and crash reports to Google
+  </message>
   <message name="IDS_SETTINGS_SUGGEST_PREF" desc="The label of the checkbox to enable/disable sending omnibox input to the user's default search engine to get additional suggestions.">
     Improve search suggestions
   </message>
@@ -295,19 +286,22 @@
     Turn on Sync
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_AWARE_SIGNIN_BUTTON_LABEL" desc="Label of the button shown in the settings page to sign in when users are signed in the web only ">
-     Continue as <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
+    Continue as <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
   </message>
   <message name="IDS_SETTINGS_ERROR_PASSWORDS_USER_ERROR_DESCRIPTION" desc="Error description of the sync/signin error header the settings page.">
-  To use and save passwords in your Google Account, verify it's you
+    To use and save passwords in your Google Account, verify it's you
   </message>
   <message name="IDS_SETTINGS_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_ERROR_DESCRIPTION" desc="Error description of a sync error header of desktop settings page that prompts the user to add recovery options.">
-  To make sure you can always use the passwords in your Google Account, verify it's you
+    To make sure you can always use the passwords in your Google Account, verify it's you
   </message>
-   <message name="IDS_SETTINGS_PEOPLE_ACCOUNT_AWARE_SIGNIN_ACCOUNT_ROW_SUBTITLE_WITH_EMAIL" desc="The subtitle of the avatar row shown to users who are signed in only to the web">
-      To get your passwords and more on all your devices, sign in as <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
+  <message name="IDS_SETTINGS_PEOPLE_ACCOUNT_AWARE_SIGNIN_ACCOUNT_ROW_SUBTITLE_WITH_EMAIL" desc="The subtitle of the avatar row shown to users who are signed in only to the web">
+    To get your passwords and more on all your devices, sign in as <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
   </message>
-   <message name="IDS_SETTINGS_PEOPLE_ACCOUNT_AWARE_SIGNIN_ACCOUNT_ROW_SUBTITLE_WITH_EMAIL_WITH_BOOKMARKS" desc="The subtitle of the avatar row shown to users who are signed in only to the web">
-      To get your passwords, bookmarks, and more on all your devices, sign in as <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
+  <message name="IDS_SETTINGS_PEOPLE_ACCOUNT_AWARE_SIGNIN_ACCOUNT_ROW_SUBTITLE_WITH_EMAIL_WITH_BOOKMARKS" desc="The subtitle of the avatar row shown to users who are signed in only to the web">
+    To get your passwords, bookmarks, and more on all your devices, sign in as <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_ACCOUNT_AWARE_SIGNIN_ACCOUNT_ROW_SUBTITLE_WITH_EMAIL_SIMPLE" desc="The subtitle of the avatar row shown to users who are signed in only to the web">
+    Sign in as <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
   </message>
   <message name="IDS_SETTINGS_CHANGE_ACCOUNT" desc="The alt-text that corresponds to the down arrow button on the settings page. On clicking the user will a list of accounts they can use to signin with. This button is shown when the user is signed in the content area but not into Chrome.">
       Choose another account
@@ -361,7 +355,7 @@
     Sync data
   </message>
 
-  <!-- Sync page (strings used by the <settings-sync-page> element) -->
+  <!-- Sync page (strings used by the <settings-sync-page> element) / Account Settings Page -->
   <message name="IDS_SETTINGS_PASSWORDS_AND_PASSKEYS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing passwords and passkey metadata (i.e. their username and sites) between multiple browser instances. See the glossary for a definition of 'passkey', do not translate 'passkey' as 'password'.">
     Passwords and passkeys
   </message>
@@ -376,6 +370,9 @@
   </message>
   <message name="IDS_SETTINGS_ENCRYPT_WITH_GOOGLE_CREDENTIALS_LABEL" desc="Label for the radio button which, when selected, causes synced settings to be encrypted with the Google login for the current browser profile.">
     Encrypt synced passwords with your Google Account
+  </message>
+  <message name="IDS_SETTINGS_ENCRYPT_ACCOUNT_DATA_WITH_GOOGLE_CREDENTIALS_LABEL" desc="Label for the radio button which, when selected, causes synced settings to be encrypted with the Google login for the current browser profile.">
+    Use Google’s default encryption for the passwords in your Google Account
   </message>
   <message name="IDS_SETTINGS_BOOKMARKS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing bookmarks between multiple browser instances.">
     Bookmarks
@@ -452,7 +449,7 @@
     </message>
   </if>
   <message name="IDS_SETTINGS_THEME_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing themes between multiple browser instances.">
-    Theme
+    Themes
   </message>
 
   <!-- Password Prompt Dialog -->

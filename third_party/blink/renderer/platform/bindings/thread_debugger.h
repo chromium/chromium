@@ -42,7 +42,7 @@ class PLATFORM_EXPORT ThreadDebugger : public v8_inspector::V8InspectorClient {
   virtual void AsyncTaskStarted(void* task) = 0;
   virtual void AsyncTaskFinished(void* task) = 0;
   virtual unsigned PromiseRejected(v8::Local<v8::Context>,
-                                   const WTF::String& error_message,
+                                   const String& error_message,
                                    v8::Local<v8::Value> exception,
                                    SourceLocation*) = 0;
   virtual void PromiseRejectionRevoked(v8::Local<v8::Context>,

@@ -27,12 +27,12 @@ import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
 import org.chromium.components.browser_ui.widget.R;
@@ -43,6 +43,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplaySt
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
 import org.chromium.ui.display.DisplayUtil;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.widget.LoadingView;
 
 import java.util.HashSet;
@@ -86,8 +87,9 @@ public class SelectableListLayout<E> extends FrameLayout
 
     private @Nullable UiConfig mUiConfig;
 
-    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
+            ObservableSuppliers.createNonNull(false);
+
     private final Set<Integer> mIgnoredTypesForEmptyState = new HashSet<>();
 
     private final AdapterDataObserver mAdapterObserver =
@@ -122,6 +124,16 @@ public class SelectableListLayout<E> extends FrameLayout
     public SelectableListLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         onBackPressStateChanged(); // Initialize back press state.
+    }
+
+    @Override
+    protected void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
+        if (visibility == VISIBLE
+                && mToolbar != null
+                && (mToolbar.isSearching() || mToolbar.isLargeScreenWithKeyboard())) {
+            mToolbar.requestSearchFocus(/* showKeyboard= */ true);
+        }
     }
 
     @Override
@@ -319,6 +331,7 @@ public class SelectableListLayout<E> extends FrameLayout
         mToolbarShadow.init(
                 getContext().getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_TOP);
 
+        mToolbar.hasSearchTextSupplier().addObserver((hasText) -> onBackPressStateChanged());
         delegate.addObserver(this);
         setToolbarShadowVisibility();
 
@@ -411,6 +424,11 @@ public class SelectableListLayout<E> extends FrameLayout
      */
     public void ignoreItemTypeForEmptyState(int type) {
         mIgnoredTypesForEmptyState.add(type);
+    }
+
+    /** Hides the loading UI. */
+    public void hideLoadingUi() {
+        mLoadingView.hideLoadingUi();
     }
 
     /** Called when the view that owns the SelectableListLayout is destroyed. */
@@ -557,8 +575,9 @@ public class SelectableListLayout<E> extends FrameLayout
 
     /**
      * Called when the user presses the back key. Note that this method is not called automatically.
-     * The embedding UI must call this method
-     * when a backpress is detected for the event to be handled.
+     * The embedding UI must call this method when a backpress is detected for the event to be
+     * handled.
+     *
      * @return Whether this event is handled.
      */
     public boolean onBackPressed() {
@@ -568,9 +587,16 @@ public class SelectableListLayout<E> extends FrameLayout
             return true;
         }
 
-        if (mToolbar.isSearching()) {
-            mToolbar.hideSearchView();
-            return true;
+        if (mToolbar.isLargeScreenWithKeyboard()) {
+            if (mToolbar.hasSearchText()) {
+                mToolbar.clearSearch();
+                return true;
+            }
+        } else {
+            if (mToolbar.isSearching()) {
+                mToolbar.hideSearchView();
+                return true;
+            }
         }
 
         return false;
@@ -584,7 +610,7 @@ public class SelectableListLayout<E> extends FrameLayout
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mBackPressStateSupplier;
     }
 
@@ -593,7 +619,18 @@ public class SelectableListLayout<E> extends FrameLayout
             mBackPressStateSupplier.set(false);
             return;
         }
+
+        boolean canHandleSearch = false;
+        if (mToolbar.isLargeScreenWithKeyboard()) {
+            canHandleSearch = mToolbar.hasSearchText();
+        } else if (mToolbar.isSearching()) {
+            canHandleSearch = true;
+        }
         mBackPressStateSupplier.set(
-                mToolbar.getSelectionDelegate().isSelectionEnabled() || mToolbar.isSearching());
+                mToolbar.getSelectionDelegate().isSelectionEnabled() || canHandleSearch);
+    }
+
+    public RecyclerView getRecyclerViewForTesting() {
+        return mRecyclerView;
     }
 }

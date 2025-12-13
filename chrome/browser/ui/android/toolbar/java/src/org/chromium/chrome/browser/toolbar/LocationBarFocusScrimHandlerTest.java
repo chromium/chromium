@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -30,7 +31,10 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -41,6 +45,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class LocationBarFocusScrimHandlerTest {
+    private static final int BOTTOM_CHIN_HEIGHT = 37;
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private View mScrimTarget;
     @Mock private Runnable mClickDelegate;
@@ -51,11 +56,17 @@ public class LocationBarFocusScrimHandlerTest {
     @Mock private ScrimManager mScrimManager;
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
     @Mock private ObservableSupplier<Integer> mTabStripHeightSupplier;
+    @Mock private BottomControlsStacker mBottomControlsStacker;
 
     LocationBarFocusScrimHandler mScrimHandler;
 
     @Before
     public void setUp() {
+        lenient()
+                .doReturn(BOTTOM_CHIN_HEIGHT)
+                .when(mBottomControlsStacker)
+                .getHeightFromLayerToBottom(LayerType.BOTTOM_CHIN);
+
         doReturn(mResources).when(mContext).getResources();
         doReturn(mConfiguration).when(mResources).getConfiguration();
         mScrimHandler =
@@ -66,7 +77,8 @@ public class LocationBarFocusScrimHandlerTest {
                         mLocationBarDataProvider,
                         mClickDelegate,
                         mScrimTarget,
-                        mTabStripHeightSupplier);
+                        mTabStripHeightSupplier,
+                        mBottomControlsStacker);
     }
 
     @Test
@@ -74,6 +86,9 @@ public class LocationBarFocusScrimHandlerTest {
         doReturn(mNewTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
         doReturn(false).when(mNewTabPageDelegate).isLocationBarShown();
         mScrimHandler.onUrlFocusChange(true);
+        assertEquals(
+                BOTTOM_CHIN_HEIGHT,
+                mScrimHandler.getScrimModelForTesting().get(ScrimProperties.BOTTOM_MARGIN));
 
         verify(mScrimManager).showScrim(any());
 
@@ -98,14 +113,23 @@ public class LocationBarFocusScrimHandlerTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
+    public void testScrimNotShown_omniboxAutofocusOnIncognitoNtp() {
+        doReturn(mNewTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
+        doReturn(true).when(mNewTabPageDelegate).isIncognitoNewTabPageCurrentlyVisible();
+        mScrimHandler.onUrlFocusChange(true);
+        verify(mScrimManager, never()).showScrim(any());
+    }
+
+    @Test
     public void testTabStripHeightChangeCallback() {
         ArgumentCaptor<Callback<Integer>> captor = ArgumentCaptor.forClass(Callback.class);
         verify(mTabStripHeightSupplier).addObserver(captor.capture());
         Callback<Integer> tabStripHeightChangeCallback = captor.getValue();
-        int newTabStripHeight =
-                mContext.getResources()
-                        .getDimensionPixelSize(org.chromium.chrome.R.dimen.tab_strip_height);
+        int newTabStripHeight = 10;
+        doReturn(newTabStripHeight)
+                .when(mResources)
+                .getDimensionPixelSize(R.dimen.tab_strip_height);
         tabStripHeightChangeCallback.onResult(newTabStripHeight);
         assertEquals(
                 "Scrim top margin should be updated when tab strip height changes.",

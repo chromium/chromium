@@ -8,11 +8,13 @@
 #include "content/browser/preloading/preloading_decider.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-data-view.h"
 
 namespace content {
 
@@ -144,29 +146,58 @@ void AnchorElementInteractionHostImpl::OnPointerDown(const GURL& url) {
   MaybeWarmUpServiceWorkerOnPointerDown(url, render_frame_host());
 }
 
-void AnchorElementInteractionHostImpl::OnPointerHover(
+void AnchorElementInteractionHostImpl::OnPointerHoverEager(
     const GURL& url,
     blink::mojom::AnchorElementPointerDataPtr mouse_data) {
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
-  preloading_decider->OnPointerHover(url, std::move(mouse_data));
+  preloading_decider->OnPointerHover(
+      url, std::move(mouse_data), blink::mojom::SpeculationEagerness::kEager);
+}
+
+void AnchorElementInteractionHostImpl::OnPointerHoverModerate(
+    const GURL& url,
+    blink::mojom::AnchorElementPointerDataPtr mouse_data) {
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
+  preloading_decider->OnPointerHover(
+      url, std::move(mouse_data),
+      blink::mojom::SpeculationEagerness::kModerate);
   MaybePrewarmHttpDiskCache(url, render_frame_host());
   MaybeWarmUpServiceWorkerOnPointerHover(url, render_frame_host());
 }
 
-void AnchorElementInteractionHostImpl::OnViewportHeuristicTriggered(
+void AnchorElementInteractionHostImpl::OnModerateViewportHeuristicTriggered(
     const GURL& url) {
   if (!base::FeatureList::IsEnabled(
-          blink::features::kPreloadingViewportHeuristics)) {
+          blink::features::kPreloadingModerateViewportHeuristics)) {
     ReportBadMessageAndDeleteThis(
-        "OnViewportHeuristic should not be called by the renderer without "
-        "blink::features::kPreloadingViewportHeuristics being enabled");
+        "OnModerateViewportHeuristic should not be called by the renderer "
+        "without blink::features::kPreloadingModerateViewportHeuristics being "
+        "enabled");
     return;
   }
 
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
-  preloading_decider->OnViewportHeuristicTriggered(url);
+  preloading_decider->OnModerateViewportHeuristicTriggered(url);
+}
+
+void AnchorElementInteractionHostImpl::OnEagerViewportHeuristicTriggered(
+    const std::vector<GURL>& target_urls) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPreloadingEagerViewportHeuristics)) {
+    ReportBadMessageAndDeleteThis(
+        "OnEagerViewportHeuristic should not be called by the renderer without "
+        "blink::features::kPreloadingEagerViewportHeuristics being enabled");
+    return;
+  }
+
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
+  for (const GURL& url : target_urls) {
+    preloading_decider->OnEagerViewportHeuristicTriggered(url);
+  }
 }
 
 }  // namespace content

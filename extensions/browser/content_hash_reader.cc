@@ -4,13 +4,12 @@
 
 #include "extensions/browser/content_hash_reader.h"
 
-#include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "extensions/browser/computed_hashes.h"
 #include "extensions/browser/content_hash_tree.h"
 #include "extensions/browser/content_verifier/content_hash.h"
@@ -45,9 +44,9 @@ std::unique_ptr<const ContentHashReader> ContentHashReader::Create(
   std::vector<std::string> block_hashes;
 
   if (computed_hashes.GetHashes(relative_path, &block_size, &block_hashes) &&
-      block_size % crypto::kSHA256Length == 0) {
-    root =
-        ComputeTreeHashRoot(block_hashes, block_size / crypto::kSHA256Length);
+      block_size % crypto::hash::kSha256Size == 0) {
+    root = ComputeTreeHashRoot(block_hashes,
+                               block_size / crypto::hash::kSha256Size);
   }
 
   ContentHash::TreeHashVerificationResult verification =

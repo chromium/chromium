@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">سنترے</translation>
 <translation id="1275718070701477396">منتخب</translation>
 <translation id="1290331692326790741">کمزور سگنل</translation>
+<translation id="1292474106138697109">کلاس ٹولز ڈسپلے</translation>
 <translation id="1300115153046603471">‏APN کی قسم ڈیفالٹ اور <ph name="ATTACH" /> ہے۔</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">تبدیل کریں</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> تصاویر</translation>
 <translation id="4300272766492248925">ایپ کھولیں</translation>
 <translation id="430786093962686457">شفان</translation>
+<translation id="4309762678330556039">خودکار طور پر ٹرانسکرپشنز جنریٹ کریں اور آڈیو تلاش کریں۔ آپ انٹرنیٹ سے منسلک نہ ہونے کے باوجود ریکارڈنگز تخلیق کر سکتے ہیں۔</translation>
 <translation id="4310735698903592804">‏Google AI سے تقویت یافتہ حالیہ وال پیپرز</translation>
 <translation id="4320904097188876154">نیون گلابی</translation>
 <translation id="432961742358282111">تعریفیں، ترجمے یا یونٹ کی تبدیلیاں حاصل کرنے کیلئے، دایاں کلک کریں یا چھوئیں اور دبائے رکھیں۔ اس خصوصیت کا نظم کرنے کیلئے، بائیں یا دائیں تیر کے نشان کی کلیدیں استعمال کریں۔</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">مزید اختیارات</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> کلید ٹیسٹ کی گئی</translation>
 <translation id="5606865426897221650">ٹیب</translation>
+<translation id="5612205513582918357">کلاس ٹولز آپ کی اسکرین کا اشتراک <ph name="RECEIVER_NAME" /> کے ساتھ کر رہا ہے</translation>
 <translation id="5613201299517339763">آپ سائن آؤٹ ہو گئے ہیں</translation>
 <translation id="5620281292257375798">صرف داخلی</translation>
 <translation id="5628106863521633649">دستیاب زبانیں</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">کلاؤڈ فلو</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">کوئی بھی اسکینر دستیاب نہیں ہے</translation>
-<translation id="6231648282154119906">‏مشتبہ فائلز کو آپ کے منتخب کردہ بہتر تحفظ کے حصے کے طور پر Google محفوظ براؤزنگ کے ذریعہ خودکار طور پر اسکین کیا جائے گا</translation>
 <translation id="6232017090690406397">بیٹری</translation>
 <translation id="6234024205316847054">آؤٹ لائنز دکھائیں</translation>
 <translation id="6243280677745499710">فی الحال سیٹ ہے</translation>

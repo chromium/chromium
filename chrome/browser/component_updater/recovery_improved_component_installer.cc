@@ -22,17 +22,20 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/sequence_checker.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/component_updater/component_updater_utils.h"
+#include "components/component_updater/component_updater_paths.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/update_client/patcher.h"
 #include "components/update_client/unpacker.h"
@@ -87,8 +90,8 @@ void RecoveryComponentActionHandler::Unpack() {
                       base::BindRepeating(&unzip::LaunchUnzipper))
                       ->Create();
   update_client::Unpacker::Unpack(
-      kRecoveryImprovedComponentId, key_hash_, crx_path_, std::move(unzipper),
-      verifier_format_,
+      kRecoveryImprovedComponentId, "RecoveryComponentActionHandler", key_hash_,
+      crx_path_, std::move(unzipper), verifier_format_,
       base::BindOnce(&RecoveryComponentActionHandler::UnpackComplete, this));
 }
 
@@ -216,6 +219,14 @@ void RegisterRecoveryImprovedComponent(ComponentUpdateService* cus,
       std::make_unique<RecoveryImprovedInstallerPolicy>(prefs),
       RecoveryComponentActionHandler::MakeActionHandler());
   installer->Register(cus, base::OnceClosure());
+
+  // Post a task to clean up the legacy recovery component. This can be removed
+  // in M155+.
+  if (base::FilePath path; base::PathService::Get(DIR_RECOVERY_BASE, &path)) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(base::IgnoreResult(&base::DeletePathRecursively), path));
+  }
 #endif
 }
 

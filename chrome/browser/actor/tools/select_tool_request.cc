@@ -22,11 +22,12 @@ void SelectToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
 }
 
-std::string SelectToolRequest::JournalEvent() const {
-  return "Select";
+std::string_view SelectToolRequest::Name() const {
+  return kName;
 }
 
-mojom::ToolActionPtr SelectToolRequest::ToMojoToolAction() const {
+mojom::ToolActionPtr SelectToolRequest::ToMojoToolAction(
+    content::RenderFrameHost& frame) const {
   auto select = mojom::SelectAction::New();
 
   select->value = value_;

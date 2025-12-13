@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/prefetch_cache.h"
 #include "services/network/prefetch_matches.h"
 #include "services/network/public/cpp/resource_request.h"

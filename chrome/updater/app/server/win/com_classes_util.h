@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/win/windows_types.h"
+#include "chrome/updater/registration_data.h"
 
 namespace base {
 
@@ -18,8 +19,6 @@ class Version;
 }  // namespace base
 
 namespace updater {
-
-struct RegistrationRequest;
 
 // Returns S_OK if user install, or if the COM caller is admin. Error otherwise.
 HRESULT IsCOMCallerAllowed();

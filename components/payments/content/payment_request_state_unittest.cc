@@ -477,7 +477,7 @@ TEST_F(PaymentRequestStateTest, JaLatnShippingAddress) {
 
   // Select an address, nothing should happen until the normalization is
   // completed and the merchant has validated the address.
-  autofill::AutofillProfile profile(AddressCountryCode("JP"));
+  autofill::AutofillProfile profile(autofill::AddressCountryCode("JP"));
   autofill::test::SetProfileInfo(&profile, "Jon", "V.", "Doe",
                                  "jon.doe@exampl.com", "Example Inc",
                                  "Roppongi", "6 Chrome-10-1", "Tokyo", "",

@@ -24,7 +24,8 @@ import type {Constructor} from '../common/types.js';
 import type {DevicePageBrowserProxy} from './device_page_browser_proxy.js';
 import {DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
 import {getTemplate} from './display_layout.html.js';
-import type {LayoutMixinInterface, Position} from './layout_mixin.js';
+import type {Position} from './drag_mixin.js';
+import type {LayoutMixinInterface} from './layout_mixin.js';
 import {LayoutMixin} from './layout_mixin.js';
 
 import Bounds = chrome.system.display.Bounds;

@@ -7,6 +7,7 @@ import {PageCallbackRouter, PageHandler} from 'chrome://resources/cr_components/
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 import type {ForeignSession} from './externs.js';
+import type {HistoryIdentityState} from './externs.js';
 
 export type RemoveVisitsRequest = Array<{
   url: string,
@@ -26,11 +27,14 @@ export interface BrowserService {
   openForeignSessionTab(sessionTag: string, tabId: number, e: MouseEvent): void;
   deleteForeignSession(sessionTag: string): void;
   recordHistogram(histogram: string, value: number, max: number): void;
+  recordBooleanHistogram(histogram: string, value: boolean): void;
   recordAction(action: string): void;
   recordTime(histogram: string, time: number): void;
   recordLongTime(histogram: string, time: number): void;
+  recordSigninPendingOffered(): void;
   navigateToUrl(url: string, target: string, e: MouseEvent): void;
   otherDevicesInitialized(): void;
+  getInitialIdentityState(): Promise<HistoryIdentityState>;
   startTurnOnSyncFlow(): void;
 }
 
@@ -86,6 +90,10 @@ export class BrowserServiceImpl implements BrowserService {
     chrome.send('metricsHandler:recordInHistogram', [histogram, value, max]);
   }
 
+  recordBooleanHistogram(histogram: string, value: boolean): void {
+    chrome.metricsPrivate.recordBoolean(histogram, value);
+  }
+
   /**
    * Record an action in UMA.
    * @param action The name of the action to be logged.
@@ -108,6 +116,10 @@ export class BrowserServiceImpl implements BrowserService {
     chrome.metricsPrivate.recordLongTime(histogram, time);
   }
 
+  recordSigninPendingOffered() {
+    chrome.send('recordSigninPendingOffered');
+  }
+
   navigateToUrl(url: string, target: string, e: MouseEvent) {
     chrome.send(
         'navigateToUrl',
@@ -116,6 +128,10 @@ export class BrowserServiceImpl implements BrowserService {
 
   otherDevicesInitialized() {
     chrome.send('otherDevicesInitialized');
+  }
+
+  getInitialIdentityState(): Promise<HistoryIdentityState> {
+    return sendWithPromise('getInitialIdentityState');
   }
 
   startTurnOnSyncFlow() {

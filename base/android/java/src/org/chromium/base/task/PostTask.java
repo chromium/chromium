@@ -50,6 +50,8 @@ public class PostTask {
     private static ChromeThreadPoolExecutor sPrenativeThreadPoolExecutor =
             new ChromeThreadPoolExecutor();
     private static volatile @Nullable Executor sPrenativeThreadPoolExecutorForTesting;
+    private static volatile @Nullable DelayedExecutorForTesting
+            sPrenativeThreadPoolDelayedExecutorForTesting;
     private static final @Nullable ThreadLocal<TaskOriginException> sTaskOrigin =
             ENABLE_TASK_ORIGINS ? new ThreadLocal<>() : null;
     private static final TaskRunner[] sTraitsToRunnerMap =
@@ -85,6 +87,11 @@ public class PostTask {
         }
     }
 
+    /** Schedules delayed tasks to run on an Executor after a delay. */
+    public interface DelayedExecutorForTesting {
+        void scheduleDelayedTask(Runnable task, long delay);
+    }
+
     private static boolean isUiTaskTraits(@TaskTraits int taskTraits) {
         return taskTraits >= TaskTraits.UI_TRAITS_START;
     }
@@ -112,12 +119,34 @@ public class PostTask {
     }
 
     /**
+     * Do not call this method directly unless forwarding a location object. Use {@link
+     * #postTask(int, Runnable)} instead.
+     *
+     * <p>Overload of {@link #postTask(int, Runnable)} for the Java location rewriter.
+     */
+    public static void postTask(
+            @TaskTraits int taskTraits, Runnable task, @Nullable Location location) {
+        postDelayedTask(taskTraits, task, 0, location);
+    }
+
+    /**
      * @param taskTraits The TaskTraits that describe the desired TaskRunner.
      * @param task The task to be run with the specified traits.
      * @param delay The delay in milliseconds before the task can be run.
      */
     public static void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
-        sTraitsToRunnerMap[taskTraits].postDelayedTask(task, delay);
+        postDelayedTask(taskTraits, task, delay, null);
+    }
+
+    /**
+     * Do not call this method directly unless forwarding a location object. Use {@link
+     * #postDelayedTask(int, Runnable, long)} instead.
+     *
+     * <p>Overload of {@link #postDelayedTask(int, Runnable, long)} for the Java location rewriter.
+     */
+    public static void postDelayedTask(
+            @TaskTraits int taskTraits, Runnable task, long delay, @Nullable Location location) {
+        sTraitsToRunnerMap[taskTraits].postDelayedTask(task, delay, location);
     }
 
     /**
@@ -130,10 +159,21 @@ public class PostTask {
      * @param task The task to be run with the specified traits.
      */
     public static void runOrPostTask(@TaskTraits int taskTraits, Runnable task) {
+        runOrPostTask(taskTraits, task, null);
+    }
+
+    /**
+     * Do not call this method directly unless forwarding a location object. Use {@link
+     * #runOrPostTask(int, Runnable)} instead.
+     *
+     * <p>Overload of {@link #runOrPostTask(int, Runnable)} for the Java location rewriter.
+     */
+    public static void runOrPostTask(
+            @TaskTraits int taskTraits, Runnable task, @Nullable Location location) {
         if (canRunTaskImmediately(taskTraits)) {
             task.run();
         } else {
-            postTask(taskTraits, task);
+            postTask(taskTraits, task, location);
         }
     }
 
@@ -160,7 +200,18 @@ public class PostTask {
      */
     public static <T extends @Nullable Object> T runSynchronously(
             @TaskTraits int taskTraits, Callable<T> c) {
-        return runSynchronouslyInternal(taskTraits, new FutureTask<T>(c));
+        return runSynchronously(taskTraits, c, null);
+    }
+
+    /**
+     * Do not call this method directly unless forwarding a location object. Use {@link
+     * #runSynchronously(int, Callable)} instead.
+     *
+     * <p>Overload of {@link #runSynchronously(int, Callable)} for the Java location rewriter.
+     */
+    public static <T extends @Nullable Object> T runSynchronously(
+            @TaskTraits int taskTraits, Callable<T> c, @Nullable Location location) {
+        return runSynchronouslyInternal(taskTraits, new FutureTask<T>(c), location);
     }
 
     /**
@@ -174,16 +225,27 @@ public class PostTask {
      * @param r The task to be run with the specified traits.
      */
     public static void runSynchronously(@TaskTraits int taskTraits, Runnable r) {
-        runSynchronouslyInternal(taskTraits, new FutureTask<@Nullable Void>(r, null));
+        runSynchronously(taskTraits, r, null);
+    }
+
+    /**
+     * Do not call this method directly unless forwarding a location object. Use {@link
+     * #runSynchronously(int, Runnable)} instead.
+     *
+     * <p>Overload of {@link #runSynchronously(int, Runnable)} for the Java location rewriter.
+     */
+    public static void runSynchronously(
+            @TaskTraits int taskTraits, Runnable r, @Nullable Location location) {
+        runSynchronouslyInternal(taskTraits, new FutureTask<@Nullable Void>(r, null), location);
     }
 
     @NullUnmarked // https://github.com/uber/NullAway/issues/1075
     private static <T extends @Nullable Object> T runSynchronouslyInternal(
-            @TaskTraits int taskTraits, FutureTask<T> task) {
+            @TaskTraits int taskTraits, FutureTask<T> task, @Nullable Location location) {
         // Ensure no task origin "caused by" is added, since we are wrapping in a RuntimeException
         // anyways.
         Runnable r = ENABLE_TASK_ORIGINS ? populateTaskOrigin(null, task) : task;
-        runOrPostTask(taskTraits, r);
+        runOrPostTask(taskTraits, r, location);
         try {
             return task.get();
         } catch (Exception e) {
@@ -212,6 +274,30 @@ public class PostTask {
             return sPrenativeThreadPoolExecutorForTesting;
         }
         return sPrenativeThreadPoolExecutor;
+    }
+
+    /**
+     * Lets a test override _delayed_ task execution with a thread pool executor.
+     *
+     * <p>Outside of tests, non-UI delayed tasks always wait for native Post Task to execute them.
+     *
+     * @param executor The DelayedExecutorForTesting to post pre-native delayed thread pool tasks.
+     */
+    public static void setPrenativeThreadPoolDelayedExecutorForTesting(
+            DelayedExecutorForTesting executor) {
+        sPrenativeThreadPoolDelayedExecutorForTesting = executor;
+        ResettersForTesting.register(() -> sPrenativeThreadPoolDelayedExecutorForTesting = null);
+    }
+
+    /**
+     * @return The DelayedExecutorForTesting that PrenativeThreadPool delayed tasks should run on.
+     *     Returns null in production, as delayed tasks are only run on native PostTask.
+     */
+    static @Nullable DelayedExecutorForTesting getPrenativeThreadPoolDelayedExecutor() {
+        if (sPrenativeThreadPoolDelayedExecutorForTesting != null) {
+            return sPrenativeThreadPoolDelayedExecutorForTesting;
+        }
+        return null;
     }
 
     public static @Nullable Exception getTaskOrigin() {
@@ -314,6 +400,7 @@ public class PostTask {
             sTestIterationForTesting++;
         }
         sPrenativeThreadPoolExecutorForTesting = null;
+        sPrenativeThreadPoolDelayedExecutorForTesting = null;
         if (taskCount > 0) {
             Log.w(TAG, "%d background task(s) existed after test finished.", taskCount);
         }

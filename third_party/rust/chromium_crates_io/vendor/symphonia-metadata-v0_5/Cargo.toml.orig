@@ -1,6 +1,6 @@
 [package]
 name = "symphonia-metadata"
-version = "0.5.4"
+version = "0.5.5"
 description = "Project Symphonia multimedia tag and metadata readers."
 homepage = "https://github.com/pdeljanov/Symphonia"
 repository = "https://github.com/pdeljanov/Symphonia"
@@ -16,4 +16,4 @@ rust-version = "1.53"
 encoding_rs = "0.8.17"
 lazy_static = "1.4.0"
 log = "0.4"
-symphonia-core = { version = "0.5.4", path = "../symphonia-core" }
+symphonia-core = { version = "0.5.5", path = "../symphonia-core" }

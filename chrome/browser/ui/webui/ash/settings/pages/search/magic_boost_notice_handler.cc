@@ -20,10 +20,10 @@ MagicBoostNoticeHandler::MagicBoostNoticeHandler(
 MagicBoostNoticeHandler::~MagicBoostNoticeHandler() = default;
 
 void MagicBoostNoticeHandler::ShowNotice() {
-  if (chromeos::MagicBoostState::Get()->IsMagicBoostAvailable() &&
+  if (chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures() &&
       ash::MagicBoostControllerAsh::Get()) {
     ash::MagicBoostControllerAsh::Get()->ShowDisclaimerUi(
-        /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+        /*display_id=*/display::Screen::Get()->GetPrimaryDisplay().id(),
         /*action=*/
         crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing,
         /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);

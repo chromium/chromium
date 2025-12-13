@@ -77,7 +77,6 @@ class GaiaRemoteConsentFlow : public WebAuthFlow::Delegate {
  private:
   void OnResolutionDataCookiesSet(
       const std::vector<net::CookieAccessResult>& cookie_set_result);
-  void GaiaRemoteConsentFlowFailed(Failure failure);
 
   void DetachWebAuthFlow();
 

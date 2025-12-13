@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/instruction_view/instruction_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -30,13 +31,31 @@ NSString* const kDefaultBrowserAnimationDarkmode =
     @"default_browser_animation_darkmode";
 NSString* const kDefaultBrowserAnimationRtlDarkmode =
     @"default_browser_animation_rtl_darkmode";
+// TODO(crbug.com/458333601): Update the animations to use the dynamically
+// colored Default Browser Lottie.
+NSString* const kDefaultBrowserDefaultAppsAnimation =
+    @"default_browser_default_apps_animation";
+NSString* const kDefaultBrowserDefaultAppsAnimationRtl =
+    @"default_browser_default_apps_animation_rtl";
+NSString* const kDefaultBrowserDefaultAppsAnimationDarkmode =
+    @"default_browser_default_apps_animation_darkmode";
+NSString* const kDefaultBrowserDefaultAppsAnimationRtlDarkmode =
+    @"default_browser_default_apps_animation_rtl_darkmode";
+
 // Accessibility IDs.
 NSString* const kDefaultBrowserInstructionsViewAnimationViewId =
     @"DefaultBrowserInstructionsViewAnimationViewId";
 NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
     @"DefaultBrowserInstructionsViewDarkAnimationViewId";
+
+// Keys in the lottie assets.
+NSString* const kBrowserAppKeypath = @"IDS_BROWSER_APP";
+NSString* const kDefaultBrowserAppKeypath = @"IDS_DEFAULT_BROWSER_APP";
+NSString* const kChromeKeypath = @"IDS_CHROME";
+
 // Spacing for the content stack view.
 const CGFloat kStackViewSpacing = 10;
+
 // Spacing above the title.
 const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
 }  // namespace
@@ -58,20 +77,17 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
       first_run::kFirstRunAnimatedDefaultBrowserScreenAccessibilityIdentifier;
   self.subtitleBottomMargin = 0;
   self.titleTopMarginWhenNoHeaderImage = kTitleTopMarginWhenNoHeaderImage;
-  self.preferToCompressContent = YES;
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(selectAnimationForCurrentStyle)];
-  }
+  NSArray<UITrait>* traits =
+      TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(selectAnimationForCurrentStyle)];
 
   if (![self.titleText length] || ![self.subtitleText length]) {
     // Sets default promo text if title and subtitle text are not explicitly
     // set.
-    CHECK(![self.titleText length], base::NotFatalUntil::M138);
-    CHECK(![self.subtitleText length], base::NotFatalUntil::M138);
+    CHECK(![self.titleText length]);
+    CHECK(![self.subtitleText length]);
     BOOL usesTabletStrings =
         ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
     [self setPromoTitle:
@@ -85,35 +101,36 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
                       ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE_IPAD
                       : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE)];
   }
-  self.primaryActionString = l10n_util::GetNSString(
+  self.configuration.primaryActionString = l10n_util::GetNSString(
       IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_PRIMARY_ACTION);
-  self.secondaryActionString = l10n_util::GetNSString(
+  self.configuration.secondaryActionString = l10n_util::GetNSString(
       IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECONDARY_ACTION);
 
   if (first_run::AnimatedDefaultBrowserPromoInFREExperimentTypeEnabled() ==
       first_run::AnimatedDefaultBrowserPromoInFREExperimentType::
           kAnimationWithShowMeHow) {
-    self.tertiaryActionString =
+    self.configuration.tertiaryActionString =
         l10n_util::GetNSString(IDS_IOS_SHOW_ME_HOW_FIRST_RUN_TITLE);
   }
 
-  UIStackView* contentStack = [self contentStack];
+  BOOL useDefaultAppsDestination =
+      IsDefaultAppsDestinationAvailable() &&
+      IsUseDefaultAppsDestinationForPromosEnabled();
+  UIStackView* contentStack = [self contentStack:useDefaultAppsDestination];
   [self.specificContentView addSubview:contentStack];
-  AddSameConstraints(contentStack, self.specificContentView);
+  [NSLayoutConstraint activateConstraints:@[
+    [contentStack.leadingAnchor
+        constraintEqualToAnchor:self.specificContentView.leadingAnchor],
+    [contentStack.trailingAnchor
+        constraintEqualToAnchor:self.specificContentView.trailingAnchor],
+    [contentStack.bottomAnchor
+        constraintEqualToAnchor:self.specificContentView.bottomAnchor],
+    [contentStack.topAnchor
+        constraintEqualToAnchor:self.specificContentView.topAnchor]
+  ]];
 
   [super viewDidLoad];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self selectAnimationForCurrentStyle];
-}
-#endif
 
 #pragma mark - DefaultBrowserScreenConsumer
 
@@ -128,15 +145,22 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
 #pragma mark - Private
 
 // Returns a content stack that includes the animation and instructions views.
-- (UIStackView*)contentStack {
-  [self createAnimationViews];
+- (UIStackView*)contentStack:(BOOL)useDefaultAppsDestination {
+  [self createAnimationViews:useDefaultAppsDestination];
   UIStackView* stack = [[UIStackView alloc] initWithArrangedSubviews:@[
     _animationViewWrapper.animationView,
     _animationViewWrapperDarkMode.animationView
   ]];
+  [NSLayoutConstraint activateConstraints:@[
+    [_animationViewWrapper.animationView.widthAnchor
+        constraintEqualToAnchor:stack.widthAnchor],
+    [_animationViewWrapperDarkMode.animationView.widthAnchor
+        constraintEqualToAnchor:stack.widthAnchor],
+  ]];
 
   if ([self shouldShowInstructions]) {
-    UIView* instructionsView = [self instructionsView];
+    UIView* instructionsView =
+        [self instructionsView:useDefaultAppsDestination];
     [stack addArrangedSubview:instructionsView];
     [NSLayoutConstraint activateConstraints:@[
       [instructionsView.widthAnchor constraintEqualToAnchor:stack.widthAnchor],
@@ -154,18 +178,27 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
 
 // Creates the animation views. Sets `_animationViewWrapper` and
 // `_animationViewWrapperDarkMode`.
-- (void)createAnimationViews {
+- (void)createAnimationViews:(BOOL)useDefaultAppsDestination {
   NSString* animationAssetName = nil;
   NSString* animationAssetNameDarkMode = nil;
 
-  // TODO(crbug.com/40948842): Handle the case when the promo is displayed and
-  // the user switches between LTR and RLT.
-  if (base::i18n::IsRTL()) {
-    animationAssetName = kDefaultBrowserAnimationRtl;
-    animationAssetNameDarkMode = kDefaultBrowserAnimationRtlDarkmode;
+  if (useDefaultAppsDestination) {
+    if (base::i18n::IsRTL()) {
+      animationAssetName = kDefaultBrowserDefaultAppsAnimationRtl;
+      animationAssetNameDarkMode =
+          kDefaultBrowserDefaultAppsAnimationRtlDarkmode;
+    } else {
+      animationAssetName = kDefaultBrowserDefaultAppsAnimation;
+      animationAssetNameDarkMode = kDefaultBrowserDefaultAppsAnimationDarkmode;
+    }
   } else {
-    animationAssetName = kDefaultBrowserAnimation;
-    animationAssetNameDarkMode = kDefaultBrowserAnimationDarkmode;
+    if (base::i18n::IsRTL()) {
+      animationAssetName = kDefaultBrowserAnimationRtl;
+      animationAssetNameDarkMode = kDefaultBrowserAnimationRtlDarkmode;
+    } else {
+      animationAssetName = kDefaultBrowserAnimation;
+      animationAssetNameDarkMode = kDefaultBrowserAnimationDarkmode;
+    }
   }
 
   _animationViewWrapper = [self createAnimation:animationAssetName];
@@ -178,9 +211,11 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
 
   // Set the text localization.
   NSDictionary* textProvider = @{
-    @"IDS_IOS_DEFAULT_BROWSER_APP" : l10n_util::GetNSString(
+    kBrowserAppKeypath :
+        l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_BROWSER_APP),
+    kDefaultBrowserAppKeypath : l10n_util::GetNSString(
         IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_DEFAULT_BROWSER_APP),
-    @"IDS_CHROME" : l10n_util::GetNSString(IDS_IOS_SHORT_PRODUCT_NAME)
+    kChromeKeypath : l10n_util::GetNSString(IDS_IOS_SHORT_PRODUCT_NAME)
   };
   [_animationViewWrapper setDictionaryTextProvider:textProvider];
   [_animationViewWrapperDarkMode setDictionaryTextProvider:textProvider];
@@ -190,34 +225,41 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
   _animationViewWrapperDarkMode.animationView
       .translatesAutoresizingMaskIntoConstraints = NO;
 
-  // Set low compression resistance priority for the animation views to make
-  // their height dynamic. We need to index the subviews here because Lottie
-  // animation wrapper doesn't expose the view we need access to for this.
-  // TODO(crbug.com/404301564): Expose the subview we need from Lottie.
-  NSArray<UIView*>* animationSubviews =
-      _animationViewWrapper.animationView.subviews;
-  NSArray<UIView*>* animationDarkmodeSubviews =
-      _animationViewWrapper.animationView.subviews;
-  CHECK([animationSubviews count] == 1, base::NotFatalUntil::M138);
-  CHECK([animationDarkmodeSubviews count] == 1, base::NotFatalUntil::M138);
-  [animationSubviews[0]
-      setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
-                                      forAxis:UILayoutConstraintAxisVertical];
-  [animationDarkmodeSubviews[0]
-      setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
-                                      forAxis:UILayoutConstraintAxisVertical];
+  // Set the content hugging priority for the animation views to make their
+  // height dynamic.
+  [_animationViewWrapper.animationView
+      setContentHuggingPriority:UILayoutPriorityDefaultLow - 1
+                        forAxis:UILayoutConstraintAxisVertical];
+  [_animationViewWrapperDarkMode.animationView
+      setContentHuggingPriority:UILayoutPriorityDefaultLow - 1
+                        forAxis:UILayoutConstraintAxisVertical];
 
   [self selectAnimationForCurrentStyle];
 }
 
 // Returns an InstructionView configured with steps to set default browser.
-- (UIView*)instructionsView {
-  NSArray* defaultBrowserSteps = @[
-    l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP),
-    l10n_util::GetNSString(
-        IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP),
-    l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP)
-  ];
+- (UIView*)instructionsView:(BOOL)useDefaultAppsDestination {
+  NSMutableArray* defaultBrowserSteps = [[NSMutableArray alloc] init];
+  if (useDefaultAppsDestination) {
+    [defaultBrowserSteps
+        addObject:
+            l10n_util::GetNSString(
+                IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_DEFAULT_APPS_FIRST_STEP)];
+    [defaultBrowserSteps
+        addObject:
+            l10n_util::GetNSString(
+                IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_DEFAULT_APPS_SECOND_STEP)];
+  } else {
+    [defaultBrowserSteps
+        addObject:l10n_util::GetNSString(
+                      IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP)];
+    [defaultBrowserSteps
+        addObject:l10n_util::GetNSString(
+                      IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP)];
+  }
+  [defaultBrowserSteps
+      addObject:l10n_util::GetNSString(
+                    IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP)];
 
   UIView* instructionView =
       [[InstructionView alloc] initWithList:defaultBrowserSteps];
@@ -230,7 +272,7 @@ const CGFloat kTitleTopMarginWhenNoHeaderImage = 30;
   LottieAnimationConfiguration* config =
       [[LottieAnimationConfiguration alloc] init];
   config.animationName = animationAssetName;
-  config.loopAnimationCount = -1;  // Always loop.
+  config.shouldLoop = YES;
   return ios::provider::GenerateLottieAnimation(config);
 }
 

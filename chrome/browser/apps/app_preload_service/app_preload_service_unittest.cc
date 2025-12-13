@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -20,9 +19,9 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/prefs/pref_service.h"
@@ -57,13 +56,12 @@ class AppPreloadServiceTest : public testing::Test {
   AppPreloadServiceTest()
       : startup_check_resetter_(
             AppPreloadService::DisablePreloadsOnStartupForTesting()) {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kAppPreloadService, kAppPreloadServiceEnableShelfPin}, {});
-    AppPreloadServiceFactory::SkipApiKeyCheckForTesting(true);
+    scoped_feature_list_.InitWithFeatures({kAppPreloadServiceEnableShelfPin},
+                                          {});
   }
 
   void SetUp() override {
-    testing::Test::SetUp();
+    AppPreloadServiceFactory::SkipApiKeyCheckForTesting(true);
 
     user_manager::UserManager::Get()->SetIsCurrentUserNew(true);
 
@@ -87,13 +85,12 @@ class AppPreloadServiceTest : public testing::Test {
   // BrowserTaskEnvironment has to be the first member or test will break.
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  ScopedTestingLocalState testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
+  ash::ScopedStubInstallAttributes installed_attributes_;
   ash::ScopedTestingCrosSettings testing_cros_settings_;
   user_manager::ScopedUserManager scoped_user_manager_{
       std::make_unique<user_manager::UserManagerImpl>(
           std::make_unique<user_manager::FakeUserManagerDelegate>(),
-          testing_local_state_.Get(),
+          TestingBrowserProcess::GetGlobal()->local_state(),
           ash::CrosSettings::Get())};
   std::unique_ptr<TestingProfile> profile_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;

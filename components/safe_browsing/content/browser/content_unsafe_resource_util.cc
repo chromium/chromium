@@ -5,6 +5,7 @@
 #include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"

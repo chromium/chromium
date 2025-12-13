@@ -10,7 +10,7 @@
 <translation id="1591562245178063882">ఈ నెల</translation>
 <translation id="1637811476055996098">ఫైళ్లను ఎంచుకోండి</translation>
 <translation id="1729654308190250600">దయచేసి ఖాళీ-కాని ఈమెయిల్‌ అడ్రస్‌ను నమోదు చేయండి.</translation>
-<translation id="1758486001363313524">ఇతర...</translation>
+<translation id="1758486001363313524">ఇతరం...</translation>
 <translation id="1921819250265091946">dd</translation>
 <translation id="1938124657309484470">విలువ తప్పనిసరిగా <ph name="MAXIMUM_DATE_OR_TIME" /> లేదా అంతకంటే మునుపటిది అయి ఉండాలి.</translation>
 <translation id="1993104285338243655">మిర్రరింగ్‌కు మార్చబడింది</translation>
@@ -20,6 +20,7 @@
 <translation id="2226276347425096477">దయచేసి ఈ వచనాన్ని <ph name="MAX_CHARACTERS" /> అక్షరాలకు లేదా అంతకంటే తక్కువకు తగ్గించండి (మీరు ప్రస్తుతం <ph name="CURRENT_LENGTH" /> అక్షరాలను ఉపయోగిస్తున్నారు).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />వ వారం, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ట్రాక్ <ph name="NUMBER" /></translation>
+<translation id="2500270406326775625">డేటా URL</translation>
 <translation id="2507943997699731163">దయచేసి ఈ ఫీల్డ్‌ను పూర్తి చేయండి.</translation>
 <translation id="2613802280814924224">దయచేసి చెల్లుబాటు అయ్యే విలువను నమోదు చేయండి. <ph name="VALID_VALUE" /> అనేది సమీప చెల్లుబాటు విలువ.</translation>
 <translation id="2653659639078652383">సమర్పించు</translation>
@@ -69,7 +70,7 @@
 <translation id="6550675742724504774">ఎంపికలు</translation>
 <translation id="6643016212128521049">క్లియర్ చేయండి</translation>
 <translation id="6661136971638885481">ట్రాక్ #<ph name="TRACK_NUMBER" /></translation>
-<translation id="668171684555832681">ఇతర...</translation>
+<translation id="668171684555832681">ఇతరం...</translation>
 <translation id="6709093583001123835">విలువ ఖచ్చితంగా <ph name="VALUE" /> అయ్యి ఉండాలి.</translation>
 <translation id="6709570249143506788">ప్లేబ్యాక్ క్వాలిటీ బాగాలేదు</translation>
 <translation id="6790428901817661496">ప్లే చేయి</translation>
@@ -79,7 +80,7 @@
 <translation id="709897737746224366">దయచేసి రిక్వెస్ట్ చేసిన ఫార్మాటింగ్‌ను సరిపోల్చండి.</translation>
 <translation id="7263440858009898357">దయచేసి లిస్ట్‌లోని ఒక అంశాన్ని ఎంచుకోండి.</translation>
 <translation id="7364796246159120393">ఫైల్‌ను ఎంచుకోండి</translation>
-<translation id="739024184232394898">ఇతర...</translation>
+<translation id="739024184232394898">ఇతరం...</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7514365320538308">డౌన్‌లోడ్ చేయండి</translation>
 <translation id="7750228210027921155">చిత్రంలో చిత్రం</translation>
@@ -100,6 +101,6 @@
 <translation id="8845239796550121995">ఇప్పుడు మీ టీవీలో ప్రసారం చేస్తోంది</translation>
 <translation id="8875657656876809964">వీడియో ప్లేబ్యాక్ ఎర్రర్</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
-<translation id="9132465097189459683">ఇతర...</translation>
+<translation id="9132465097189459683">ఇతరం...</translation>
 <translation id="916607977885256133">చిత్రంలో చిత్రం</translation>
 </translationbundle>

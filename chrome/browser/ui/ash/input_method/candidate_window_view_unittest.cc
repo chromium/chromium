@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/ash/input_method/candidate_window_view.h"
 
 #include <stddef.h>
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -224,10 +220,10 @@ TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
     candidate_window.set_orientation(ui::CandidateWindow::VERTICAL);
     for (size_t i = 0; i < kPageSize; ++i) {
       ui::CandidateWindow::Entry entry;
-      entry.value = kSampleCandidate[i];
-      entry.annotation = kSampleAnnotation[i];
-      entry.description_title = kSampleDescriptionTitle[i];
-      entry.description_body = kSampleDescriptionBody[i];
+      entry.value = UNSAFE_TODO(kSampleCandidate[i]);
+      entry.annotation = UNSAFE_TODO(kSampleAnnotation[i]);
+      entry.description_title = UNSAFE_TODO(kSampleDescriptionTitle[i]);
+      entry.description_body = UNSAFE_TODO(kSampleDescriptionBody[i]);
       entry.label = kEmptyLabel;
       candidate_window.mutable_candidates()->push_back(entry);
     }
@@ -236,8 +232,8 @@ TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
 
     ASSERT_EQ(kPageSize, GetCandidatesSize());
     for (size_t i = 0; i < kPageSize; ++i) {
-      ExpectLabels(kEmptyLabel, kSampleCandidate[i], kSampleAnnotation[i],
-                   GetCandidateAt(i));
+      ExpectLabels(kEmptyLabel, UNSAFE_TODO(kSampleCandidate[i]),
+                   UNSAFE_TODO(kSampleAnnotation[i]), GetCandidateAt(i));
     }
   }
   {
@@ -250,10 +246,10 @@ TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
     candidate_window.set_orientation(ui::CandidateWindow::HORIZONTAL);
     for (size_t i = 0; i < kPageSize; ++i) {
       ui::CandidateWindow::Entry entry;
-      entry.value = kSampleCandidate[i];
-      entry.annotation = kSampleAnnotation[i];
-      entry.description_title = kSampleDescriptionTitle[i];
-      entry.description_body = kSampleDescriptionBody[i];
+      entry.value = UNSAFE_TODO(kSampleCandidate[i]);
+      entry.annotation = UNSAFE_TODO(kSampleAnnotation[i]);
+      entry.description_title = UNSAFE_TODO(kSampleDescriptionTitle[i]);
+      entry.description_body = UNSAFE_TODO(kSampleDescriptionBody[i]);
       entry.label = kEmptyLabel;
       candidate_window.mutable_candidates()->push_back(entry);
     }
@@ -263,8 +259,8 @@ TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
     ASSERT_EQ(kPageSize, GetCandidatesSize());
     // Confirm actual labels not containing ".".
     for (size_t i = 0; i < kPageSize; ++i) {
-      ExpectLabels(kEmptyLabel, kSampleCandidate[i], kSampleAnnotation[i],
-                   GetCandidateAt(i));
+      ExpectLabels(kEmptyLabel, UNSAFE_TODO(kSampleCandidate[i]),
+                   UNSAFE_TODO(kSampleAnnotation[i]), GetCandidateAt(i));
     }
   }
   {
@@ -276,11 +272,11 @@ TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
     candidate_window.set_orientation(ui::CandidateWindow::VERTICAL);
     for (size_t i = 0; i < kPageSize; ++i) {
       ui::CandidateWindow::Entry entry;
-      entry.value = kSampleCandidate[i];
-      entry.annotation = kSampleAnnotation[i];
-      entry.description_title = kSampleDescriptionTitle[i];
-      entry.description_body = kSampleDescriptionBody[i];
-      entry.label = kCustomizedLabel[i];
+      entry.value = UNSAFE_TODO(kSampleCandidate[i]);
+      entry.annotation = UNSAFE_TODO(kSampleAnnotation[i]);
+      entry.description_title = UNSAFE_TODO(kSampleDescriptionTitle[i]);
+      entry.description_body = UNSAFE_TODO(kSampleDescriptionBody[i]);
+      entry.label = UNSAFE_TODO(kCustomizedLabel[i]);
       candidate_window.mutable_candidates()->push_back(entry);
     }
 
@@ -289,8 +285,9 @@ TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
     ASSERT_EQ(kPageSize, GetCandidatesSize());
     // Confirm actual labels not containing ".".
     for (size_t i = 0; i < kPageSize; ++i) {
-      ExpectLabels(kCustomizedLabel[i], kSampleCandidate[i],
-                   kSampleAnnotation[i], GetCandidateAt(i));
+      ExpectLabels(UNSAFE_TODO(kCustomizedLabel[i]),
+                   UNSAFE_TODO(kSampleCandidate[i]),
+                   UNSAFE_TODO(kSampleAnnotation[i]), GetCandidateAt(i));
     }
   }
   {
@@ -302,11 +299,11 @@ TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
     candidate_window.set_orientation(ui::CandidateWindow::HORIZONTAL);
     for (size_t i = 0; i < kPageSize; ++i) {
       ui::CandidateWindow::Entry entry;
-      entry.value = kSampleCandidate[i];
-      entry.annotation = kSampleAnnotation[i];
-      entry.description_title = kSampleDescriptionTitle[i];
-      entry.description_body = kSampleDescriptionBody[i];
-      entry.label = kCustomizedLabel[i];
+      entry.value = UNSAFE_TODO(kSampleCandidate[i]);
+      entry.annotation = UNSAFE_TODO(kSampleAnnotation[i]);
+      entry.description_title = UNSAFE_TODO(kSampleDescriptionTitle[i]);
+      entry.description_body = UNSAFE_TODO(kSampleDescriptionBody[i]);
+      entry.label = UNSAFE_TODO(kCustomizedLabel[i]);
       candidate_window.mutable_candidates()->push_back(entry);
     }
 
@@ -315,8 +312,9 @@ TEST_F(CandidateWindowViewTest, ShortcutSettingTest) {
     ASSERT_EQ(kPageSize, GetCandidatesSize());
     // Confirm actual labels not containing ".".
     for (size_t i = 0; i < kPageSize; ++i) {
-      ExpectLabels(kExpectedHorizontalCustomizedLabel[i], kSampleCandidate[i],
-                   kSampleAnnotation[i], GetCandidateAt(i));
+      ExpectLabels(UNSAFE_TODO(kExpectedHorizontalCustomizedLabel[i]),
+                   UNSAFE_TODO(kSampleCandidate[i]),
+                   UNSAFE_TODO(kSampleAnnotation[i]), GetCandidateAt(i));
     }
   }
 }

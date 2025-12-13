@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_for_testing.h"
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/use_death_tests.h"
@@ -29,22 +30,26 @@ TEST_F(SlotStartTest, SlotStartDoesntCrash) {
   void* buffer = allocator_.root()->Alloc(16, "");
 
   // `buffer` _is_ a slot start, so this must not crash.
-  SlotStart::FromObject</*enforce=*/true>(buffer);
+  SlotStart::Checked(buffer, allocator_.root());
 
+#if !PA_BUILDFLAG(DCHECKS_ARE_ON)
   // This is _not_ a slot start, but with enforcement off, this also
   // must not crash.
-  SlotStart::FromObject</*enforce=*/false>(static_cast<char*>(buffer) + 1);
+  SlotStart::Checked(PA_UNSAFE_TODO(static_cast<char*>(buffer) + 1),
+                     allocator_.root());
+#endif
 
   allocator_.root()->Free(buffer);
 }
 
-#if PA_USE_DEATH_TESTS()
+#if PA_USE_DEATH_TESTS() && PA_BUILDFLAG(DCHECKS_ARE_ON)
 TEST_F(SlotStartTest, SlotStartCrashes) {
   void* buffer = allocator_.root()->Alloc(16, "");
 
   // `buffer + 1` is not a slot start, so this must crash.
   EXPECT_DEATH_IF_SUPPORTED(
-      SlotStart::FromObject</*enforce=*/true>(static_cast<char*>(buffer) + 1),
+      SlotStart::Checked(PA_UNSAFE_TODO(static_cast<char*>(buffer) + 1),
+                         allocator_.root()),
       "");
 
   allocator_.root()->Free(buffer);
@@ -64,10 +69,10 @@ TEST_F(SlotStartTest, SlotStartCrashesOnFreedDirectMap) {
 
   // `buffer` was decommitted by the `Free()` above. We expect this
   // to crash.
-  EXPECT_DEATH_IF_SUPPORTED(SlotStart::FromObject</*enforce=*/true>(buffer),
-                            "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      SlotStart::Checked(buffer, allocator_.root()).Untag(), "");
 }
-#endif  // PA_USE_DEATH_TESTS()
+#endif  // PA_USE_DEATH_TESTS() && PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 }  // namespace
 }  // namespace partition_alloc::internal

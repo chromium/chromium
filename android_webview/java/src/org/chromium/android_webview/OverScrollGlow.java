@@ -21,6 +21,9 @@ class OverScrollGlow {
     private final EdgeEffect mEdgeGlowLeft;
     private final EdgeEffect mEdgeGlowRight;
 
+    // These track how far the overscroll glow is being pulled. These will be negative if the
+    // overscroll is being pulled off of the top of the View or the left side of the View. These are
+    // zero when there is no overscroll.
     private int mOverScrollDeltaX;
     private int mOverScrollDeltaY;
 
@@ -111,6 +114,7 @@ class OverScrollGlow {
             return;
         }
         if (rangeY > 0 || mHostView.getOverScrollMode() == View.OVER_SCROLL_ALWAYS) {
+            mOverScrollDeltaY = 0;
             if (y < 0 && oldY >= 0) {
                 mEdgeGlowTop.onAbsorb((int) currentFlingVelocity);
                 if (!mEdgeGlowBottom.isFinished()) {
@@ -125,6 +129,7 @@ class OverScrollGlow {
         }
 
         if (rangeX > 0) {
+            mOverScrollDeltaX = 0;
             if (x < 0 && oldX >= 0) {
                 mEdgeGlowLeft.onAbsorb((int) currentFlingVelocity);
                 if (!mEdgeGlowRight.isFinished()) {

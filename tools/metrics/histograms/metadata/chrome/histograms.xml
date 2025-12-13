@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Chrome.AppMenu.MenuHostInitToNextFramePresented" units="ms"
-    expires_after="2025-11-23">
+    expires_after="2026-05-03">
   <owner>temao@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
@@ -42,20 +42,157 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Chrome.DWriteFontProxy.GetFontFailedHResult" enum="Hresult"
+    expires_after="2026-08-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>drott@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    The HResult of failed GetFont calls in
+    DWriteFontProxyImpl::GetFontFileHandles.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.DWriteFontProxy.GetFontFamilyFailedHResult"
+    enum="Hresult" expires_after="2026-08-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>drott@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    The HResult of failed GetFontFamily calls in
+    DWriteFontProxyImpl::GetFontFileHandles.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.DWriteFontProxy.InvokedIPC" enum="DWriteFontProxyIPC"
+    expires_after="2026-08-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>drott@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Records when an IPC is made to DwriteFontProxy. The bucket recorded is the
+    IPC invoked.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.DWriteFontProxy.WinLastError" enum="WinGetLastError"
+    expires_after="2026-08-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>drott@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    The Windows last error obtained from a call to GetLastError after a failed
+    attempt to obtain the file handle for a font.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.FontDataManager.NumMappedFiles" units="files"
+    expires_after="2026-08-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>drott@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Records the amount of currently mapped font files in a renderer's Font Data
+    Manager. This is recorded whenever a new mapped file is added to the cache.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.FontDataService.CreateResult"
+    enum="FontDataServiceCreateResult" expires_after="2026-08-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>drott@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Records the result of creating the typeface result object in the browser
+    process following a request for matching font name from a renderer process.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.FontDataService.EmptyPathOnGetFileHandle"
+    enum="Boolean" expires_after="2026-08-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>drott@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Records whether the font path is empty when attempting to obtain the file
+    handle for a font.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.FontDataService.FileHandlePathReferencesParent"
+    enum="Boolean" expires_after="2026-08-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>drott@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Records whether the font path references a parent (contains &quot;..&quot;)
+    when trying to get a file handle to a font in FontDataService. This would
+    prevent the creation of the base::File from succeeding.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.FontDataService.InvokedIPC" enum="FontDataServiceIPC"
+    expires_after="2026-08-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>drott@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Records when an IPC is made to FontDataService. The bucket recorded is the
+    IPC invoked.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.FontDataService.MemoryMapCacheSize" units="count"
+    expires_after="2026-08-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Records the size of the assets cache used when using a shared memory region.
+    If the cache is over the size limit, a dump without crashing is triggered.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.FontDataService.WinLastError" enum="WinGetLastError"
+    expires_after="2026-08-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>drott@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    The Windows last error obtained from a call to GetLastError after a failed
+    attempt to obtain the file handle for a font.
+  </summary>
+</histogram>
+
 <histogram name="Chrome.Headless.Action" enum="HeadlessChromeAction"
-    expires_after="2023-12-31">
+    expires_after="M150">
   <owner>kvitekp@google.com</owner>
   <owner>headless-owners@chromium.org</owner>
+  <component>1456776</component>
   <summary>
     Records headless chrome action, e.g. remote debugging, screenshot, print to
     PDF, DOM dump. Reported once when the browser process is launched in
     headless mode. If more than one action is requested only one will be
     reported.
+
+    This histogram expired in December 2023 and was revived in M142.
   </summary>
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.JoinSet.Action"
-    enum="KAnonymityServiceJoinSetAction" expires_after="2025-11-16">
+    enum="KAnonymityServiceJoinSetAction" expires_after="2026-05-24">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -79,7 +216,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.QuerySet.Action"
-    enum="KAnonymityServiceQuerySetAction" expires_after="2025-11-16">
+    enum="KAnonymityServiceQuerySetAction" expires_after="2026-05-24">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -91,7 +228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.QuerySet.Latency" units="ms"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -104,7 +241,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.QuerySet.Size" units="count"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -113,7 +250,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.KAnonymityService.TrustTokenGetter.Action"
-    enum="KAnonymityTrustTokenGetterAction" expires_after="2025-12-28">
+    enum="KAnonymityTrustTokenGetterAction" expires_after="2026-05-03">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -138,7 +275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.NotifyResult" enum="NotifyResult"
-    expires_after="2025-12-28">
+    expires_after="2026-05-03">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -184,7 +321,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TerminateProcessTime" units="ms"
-    expires_after="2025-12-14">
+    expires_after="2026-04-26">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -236,7 +373,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Chrome.SystemNetworkContextManager.NetworkSandboxEarlyLaunchCrashed"
-    enum="Boolean" expires_after="2025-12-31">
+    enum="Boolean" expires_after="2026-05-03">
   <owner>wfh@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
   <summary>
@@ -247,7 +384,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Chrome.SystemNetworkContextManager.NetworkSandboxLaunchFailed.ErrorCode"
-    enum="LaunchErrorCodes" expires_after="2025-12-31">
+    enum="LaunchErrorCodes" expires_after="2026-05-03">
   <owner>wfh@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
   <summary>
@@ -272,7 +409,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.SystemNetworkContextManager.NetworkSandboxState"
-    enum="NetworkSandboxState" expires_after="2025-12-31">
+    enum="NetworkSandboxState" expires_after="2026-05-03">
   <owner>wfh@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
   <summary>
@@ -344,7 +481,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeColors.ColorOnLoad" enum="ChromeColorsInfo"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -358,7 +495,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeColors.ColorType" enum="ChromeColorType"
-    expires_after="2025-12-21">
+    expires_after="2026-04-26">
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -373,7 +510,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromeColors.DynamicColorOnLoad"
-    enum="DynamicChromeColorsInfo" expires_after="2025-12-14">
+    enum="DynamicChromeColorsInfo" expires_after="2026-04-19">
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>

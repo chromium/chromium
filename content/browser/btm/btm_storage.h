@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_BTM_BTM_STORAGE_H_
 
 #include <cstddef>
-#include <map>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -18,13 +17,16 @@
 #include "content/browser/btm/btm_state.h"
 #include "content/browser/btm/btm_utils.h"
 #include "content/common/content_export.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/clear_data_filter.mojom-forward.h"
 
 class GURL;
 
 namespace content {
 
-// Manages the storage of BtmState values.
+// Manages the storage of `BtmState` values in the BTM database.
+//
+// This class is not thread-safe and should only be used on the sequence it was
+// created on.
 class CONTENT_EXPORT BtmStorage {
  public:
   explicit BtmStorage(const std::optional<base::FilePath>& path);
@@ -58,14 +60,11 @@ class CONTENT_EXPORT BtmStorage {
 
   // DIPS Helper Method Impls --------------------------------------------------
 
-  // Record that `url` wrote to storage.
-  void RecordStorage(const GURL& url, base::Time time);
   // Record that there was a user activation on `url`.
   void RecordUserActivation(const GURL& url, base::Time time);
   void RecordWebAuthnAssertion(const GURL& url, base::Time time);
-  // Record that |url| redirected the user and whether it was |stateful|,
-  // meaning that |url| wrote to storage while redirecting.
-  void RecordBounce(const GURL& url, base::Time time, bool stateful);
+  // Record that |url| redirected the user.
+  void RecordBounce(const GURL& url, base::Time time);
 
   // Storage querying Methods --------------------------------------------------
 
@@ -87,7 +86,7 @@ class CONTENT_EXPORT BtmStorage {
   std::vector<std::string> GetSitesThatBounced(
       base::TimeDelta grace_period) const;
 
-  // Returns the list of sites that should have their state cleared by DIPS. How
+  // Returns the list of sites that should have their state cleared by BTM. How
   // these sites are determined is controlled by the value of
   // `features::kBtmTriggeringAction`. Passing a non-NULL `grace_period`
   // parameter overrides the use of `features::kBtmGracePeriod` when

@@ -190,7 +190,7 @@ gfx::Rect SplitViewDivider::GetDividerBoundsInScreen(
 }
 
 aura::Window* SplitViewDivider::GetDividerWindow() {
-  return divider_widget_ ? divider_widget_->GetNativeWindow() : nullptr;
+  return divider_window_observation_.GetSource();
 }
 
 bool SplitViewDivider::HasDividerWidget() const {
@@ -215,8 +215,7 @@ void SplitViewDivider::SetDividerPosition(int divider_position) {
   divider_position_ = divider_position;
   // Only clamp within `observed_windows_` if it is not empty; otherwise it
   // will return an invalid range.
-  if (!observed_windows_.empty() &&
-      !display::Screen::GetScreen()->InTabletMode()) {
+  if (!observed_windows_.empty() && !display::Screen::Get()->InTabletMode()) {
     const gfx::Range divider_allowed_range =
         GetDividerPositionAllowedRange(observed_windows_);
     if (!divider_allowed_range.is_reversed()) {
@@ -234,7 +233,7 @@ void SplitViewDivider::UpdateDividerPosition(
     const gfx::Point& location_in_screen) {
   aura::Window* root = GetRootWindow();
   const bool horizontal = IsLayoutHorizontal(root);
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     // In clamshell mode, we try to keep the center point of the divider as in
     // sync with the mouse event location as possible. `SetDividerPosition()`
     // will clamp the position between the windows' minimum sizes.
@@ -354,7 +353,7 @@ void SplitViewDivider::EndResizeWithDivider(
   // `EndResizeWithDivider()`.
   UpdateDividerPosition(modified_location_in_screen);
   const gfx::Point cursor_point =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
+      display::Screen::Get()->GetCursorScreenPoint();
   EnlargeOrShrinkDivider(
       GetDividerBoundsInScreen(/*is_dragging=*/true).Contains(cursor_point));
 
@@ -498,15 +497,33 @@ void SplitViewDivider::SwapWindows() {
 }
 
 void SplitViewDivider::OnWindowDestroying(aura::Window* window) {
+  if (divider_window_observation_.IsObservingSource(window)) {
+    DCHECK_EQ(window, GetDividerWindow());
+    // This can happen as a result of closing the divider window's transient
+    // parent. Destroy the widget now so that other code won't have to deal with
+    // a zombie widget.
+    divider_window_observation_.Reset();
+    divider_view_ = nullptr;
+    divider_widget_.reset();
+    return;
+  }
   MaybeRemoveObservedWindow(window);
 }
 
 void SplitViewDivider::OnWindowStackingChanged(aura::Window* window) {
+  if (divider_window_observation_.IsObservingSource(window)) {
+    DCHECK_EQ(window, GetDividerWindow());
+    return;
+  }
   RefreshStackingOrder();
 }
 
 void SplitViewDivider::OnWindowVisibilityChanged(aura::Window* window,
                                                  bool visible) {
+  if (divider_window_observation_.IsObservingSource(window)) {
+    DCHECK_EQ(window, GetDividerWindow());
+    return;
+  }
   if (transient_windows_observations_.IsObservingSource(window) && visible &&
       is_resizing_with_divider_) {
     window->layer()->SetOpacity(kOpacityForTransientDuringResize);
@@ -558,7 +575,7 @@ void SplitViewDivider::RefreshDividerState(bool observed_windows_changed) {
   // Stacking order is refreshed only if the widget has just been created or the
   // observed windows have changed.
   bool refresh_stacking_order = observed_windows_changed;
-  if (!divider_widget_) {
+  if (!divider_widget_ && target_visibility_) {
     CreateDividerWidget(divider_position_);
     refresh_stacking_order = true;
   }
@@ -578,6 +595,8 @@ void SplitViewDivider::RefreshDividerState(bool observed_windows_changed) {
       refresh_stacking_order = true;
     }
   } else if (update_visibility) {
+    // At this point divider_widget_ is guaranteed to exist, see
+    // GetActualTargetVisibility().
     divider_widget_->Hide();
     // Else no need to refresh the stacking order if the divider is hidden.
     refresh_stacking_order = false;
@@ -616,6 +635,7 @@ void SplitViewDivider::CreateDividerWidget(int divider_position) {
       std::make_unique<SplitViewDividerView>(this));
   auto* divider_widget_native_window = divider_widget_->GetNativeWindow();
   divider_widget_native_window->SetProperty(kLockedToRootKey, true);
+  divider_window_observation_.Observe(divider_widget_native_window);
 
   // Use a window targeter and enlarge the hit region to allow located events
   // that are slightly outside the divider widget bounds be consumed by
@@ -644,9 +664,16 @@ void SplitViewDivider::CloseDividerWidget() {
   dragged_window_ = nullptr;
 
   if (divider_widget_) {
-    auto* divider_window = divider_widget_->GetNativeWindow();
-    if (auto* transient_parent = wm::GetTransientParent(divider_window)) {
-      wm::RemoveTransientChild(transient_parent, divider_window);
+    // Widget::GetNativeWindow() may be null if the NativeWidget is closed
+    // independently of the Widget, which may occur during Widget teardown when
+    // using the CLIENT_OWNS_WIDGET ownership scheme.
+    auto* const divider_window = divider_widget_->GetNativeWindow();
+    if (divider_window) {
+      divider_window_observation_.Reset();
+      if (auto* const transient_parent =
+              wm::GetTransientParent(divider_window)) {
+        wm::RemoveTransientChild(transient_parent, divider_window);
+      }
     }
 
     // During the asynchronous window closing, there may be a duration when the
@@ -657,7 +684,10 @@ void SplitViewDivider::CloseDividerWidget() {
     // Disable any event handling on the divider while we are closing the
     // widget.
     divider_view_->SetCanProcessEventsWithinSubtree(false);
-    divider_window->SetEventTargetingPolicy(aura::EventTargetingPolicy::kNone);
+    if (divider_window) {
+      divider_window->SetEventTargetingPolicy(
+          aura::EventTargetingPolicy::kNone);
+    }
     divider_view_ = nullptr;
     divider_widget_.reset();
     widget_delegate_.reset();
@@ -665,7 +695,7 @@ void SplitViewDivider::CloseDividerWidget() {
 }
 
 bool SplitViewDivider::GetActualTargetVisibility() const {
-  return divider_widget_ &&
+  return divider_widget_ && divider_widget_->GetNativeWindow() &&
          divider_widget_->GetNativeWindow()->TargetVisibility();
 }
 

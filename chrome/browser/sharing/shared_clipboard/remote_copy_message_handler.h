@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SHARING_SHARED_CLIPBOARD_REMOTE_COPY_MESSAGE_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -48,7 +49,7 @@ class RemoteCopyMessageHandler : public SharingMessageHandler,
 
   void HandleText(const std::string& text);
   void HandleImage(const std::string& image_url);
-  void OnURLLoadComplete(std::unique_ptr<std::string> content);
+  void OnURLLoadComplete(std::optional<std::string> content);
   void WriteImageAndShowNotification(const SkBitmap& image);
   void ShowNotification(const std::u16string& title, const SkBitmap& image);
   void DetectWrite(const ui::ClipboardSequenceNumberToken& old_sequence_number,

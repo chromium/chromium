@@ -5,18 +5,17 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_WEBRTC_AUDIO_PRIVATE_WEBRTC_AUDIO_PRIVATE_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_WEBRTC_AUDIO_PRIVATE_WEBRTC_AUDIO_PRIVATE_API_H_
 
-#include <stddef.h>
-
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/system/system_monitor.h"
 #include "chrome/common/extensions/api/webrtc_audio_private.h"
-#include "content/public/browser/render_process_host.h"
-#include "content/public/browser/resource_context.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/buildflags/buildflags.h"
 #include "media/audio/audio_device_description.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace media {
 class AudioSystem;

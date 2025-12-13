@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_item.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_snapshot_and_favicon.h"
@@ -29,8 +30,7 @@
 namespace {
 
 // Builds a `TestFaviconLoader`.
-std::unique_ptr<KeyedService> BuildTestFaviconLoader(
-    web::BrowserState* context) {
+std::unique_ptr<KeyedService> BuildTestFaviconLoader(ProfileIOS* profile) {
   return std::make_unique<TestFaviconLoader>();
 }
 
@@ -84,6 +84,7 @@ class TabSnapshotAndFaviconConfiguratorTest : public PlatformTest {
     auto fake_web_state = std::make_unique<web::FakeWebState>();
     web::FakeWebState* inserted_web_state = fake_web_state.get();
     SnapshotTabHelper::CreateForWebState(inserted_web_state);
+    SnapshotSourceTabHelper::CreateForWebState(inserted_web_state);
     web_state_list_->InsertWebState(
         std::move(fake_web_state),
         WebStateList::InsertionParams::Automatic().Activate());

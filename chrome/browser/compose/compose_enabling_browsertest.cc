@@ -13,6 +13,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/compose/chrome_compose_client.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -34,6 +36,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)

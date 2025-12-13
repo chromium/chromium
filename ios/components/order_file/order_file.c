@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include <stdlib.h>
 
-#import "ios/components/order_file/order_file_common.h"
-
-#import <stdlib.h>
+#include "base/compiler_specific.h"
+#include "ios/components/order_file/order_file_common.h"
 
 // Queue containing the ordered procedure calls.
 OSQueueHead gCRWSanitizerQueue = OS_ATOMIC_QUEUE_INIT;
@@ -34,7 +30,10 @@ void __sanitizer_cov_trace_pc_guard_init(uint32_t* start_guard,
   if (start_guard == stop_guard || *start_guard) {
     return;
   }
-  for (uint32_t* guard = start_guard; guard < stop_guard; guard++) {
+  // SAFETY: clang will ensure this function is called with a valid range
+  // `start_guard` <= `stop_guard` and `guard` will stay in range.
+  for (uint32_t* guard = start_guard; guard < stop_guard;
+       UNSAFE_BUFFERS(guard++)) {
     // Per https://clang.llvm.org/docs/SanitizerCoverage.html, *guard is
     // initialized to 1 and set to 0 below.
     *guard = 1;

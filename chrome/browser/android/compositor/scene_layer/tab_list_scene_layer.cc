@@ -16,7 +16,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/TabListSceneLayer_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace android {
@@ -170,8 +169,8 @@ void TabListSceneLayer::PutBackgroundLayer(
 
 void TabListSceneLayer::SetDependencies(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jtab_content_manager,
-    const base::android::JavaParamRef<jobject>& jresource_manager) {
+    const base::android::JavaRef<jobject>& jtab_content_manager,
+    const base::android::JavaRef<jobject>& jresource_manager) {
   if (!tab_content_manager_) {
     tab_content_manager_ =
         TabContentManager::FromJavaObject(jtab_content_manager);
@@ -199,10 +198,12 @@ SkColor TabListSceneLayer::GetBackgroundColor() {
 }
 
 static jlong JNI_TabListSceneLayer_Init(JNIEnv* env,
-                                        const JavaParamRef<jobject>& jobj) {
+                                        const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
   TabListSceneLayer* scene_layer = new TabListSceneLayer(env, jobj);
   return reinterpret_cast<intptr_t>(scene_layer);
 }
 
 }  // namespace android
+
+DEFINE_JNI(TabListSceneLayer)

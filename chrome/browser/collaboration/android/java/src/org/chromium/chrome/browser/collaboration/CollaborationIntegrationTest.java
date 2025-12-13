@@ -431,6 +431,11 @@ public class CollaborationIntegrationTest {
         mCollaborationTestUtils.prepareToShareGroup(
                 mCollaborationTestUtils.getLocalTabGroupId(cta), TEST_COLLABORATION_ID);
 
+        // Assert that sdk delegate has been initialized.
+        assertTrue(
+                "DataSharingSDKDelegateBridge should be initialized for shared tab group.",
+                DataSharingSDKDelegateBridge.isInitializedForTesting());
+
         // Check share button changes to manage.
         onViewWaiting(withContentDescription(R.string.manage_sharing_content_description))
                 .check(matches(isDisplayed()));
@@ -459,6 +464,7 @@ public class CollaborationIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky test, see crbug.com/441333492")
     public void testDataSharingDeleteGroup() {
         mCollaborationTestUtils.setUpSyncAndSignIn();
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -507,6 +513,7 @@ public class CollaborationIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky, see crbug.com/440302092")
     public void testDataSharingLeaveGroup() {
         mCollaborationTestUtils.setUpSyncAndSignIn();
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();

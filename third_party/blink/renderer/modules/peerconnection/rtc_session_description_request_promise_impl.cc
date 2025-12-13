@@ -38,7 +38,8 @@ void RTCSessionDescriptionRequestPromiseImpl::RequestSucceeded(
     RTCSessionDescriptionPlatform* platform_session_description) {
   if (requester_ && requester_->ShouldFireDefaultCallbacks()) {
     auto* description = RTCSessionDescriptionInit::Create();
-    description->setType(platform_session_description->GetType());
+    description->setType(
+        V8RTCSdpType::Create(platform_session_description->GetType()).value());
     description->setSdp(platform_session_description->Sdp());
     requester_->NoteSdpCreated(*description);
     resolver_->Resolve(description);

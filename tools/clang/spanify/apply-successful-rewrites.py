@@ -190,7 +190,7 @@ def CreateNewBranch(branch_name: str) -> ():
     print(f'switching to {branch_name}')
     run(f'git branch -D {branch_name} 1>/dev/null 2>/dev/null',
         exit_on_error=False)
-    run(f'git new-branch --upstream BRANCHES[0] {branch_name} 2>&1')
+    run(f'git new-branch --upstream {BRANCHES[-1]} {branch_name} 2>&1')
     BRANCHES.append(branch_name)
 
 
@@ -324,12 +324,13 @@ def CompileCurrentBranch(out_dir):
 # the result is already know.
 def CheckPatchesForTarget(target, args, patches, scratch_dir, label) -> bool:
     global CACHE
+    working = lambda x: x == CacheResult.COMPILED
     # If we've already compiled this set of patches for this target we can skip
     # we know the result.
     result = CACHE.Result(target, patches)
     if result != CacheResult.NOT_CACHED:
         print('returning cached result: ' + str(result))
-        return result
+        return working(result)
     CreateNewBranch(f'spanification_apply_patches_{label}')
     applied = ApplyEdits(patches, scratch_dir, label)
     compiled = False
@@ -337,8 +338,8 @@ def CheckPatchesForTarget(target, args, patches, scratch_dir, label) -> bool:
         compiled = CompileCurrentBranch(f'out/{target}')
     PopBranch()
     # Cache the result.
-    WriteResultToCache(target, patches, applied, compiled)
-    return CACHE.Result(target, patches)
+    CACHE.WriteResultToCache(target, patches, applied, compiled)
+    return working(CACHE.Result(target, patches))
 
 
 def HandleLen2BaseCase(target, args, base, to_try, scratch_dir,
@@ -346,7 +347,7 @@ def HandleLen2BaseCase(target, args, base, to_try, scratch_dir,
     assert len(to_try) == 2, "Invalid length passed"
     err_msg = "base has to be a tuple of all ints."
     assert isinstance(base, tuple), err_msg
-    assert all(ininstance(b, int) for b in base), err_msg
+    assert all(isinstance(b, int) for b in base), err_msg
 
     left_patch = to_try[0]
     left_patches = base + (left_patch, )
@@ -468,8 +469,6 @@ def main():
     # whatever the current state is, all future branches will be based on it.
     assert len(BRANCHES) == 0
     BRANCHES.append("spanification-base-for-rewrite")
-    run(f'git branch -D {BRANCHES[0]} 1>/dev/null 2>/dev/null',
-        exit_on_error=False)
     run(f'git checkout {BRANCHES[0]} 1>/dev/null 2>/dev/null')
 
     CreateNewBranch(f'spanification_apply_patches_base')

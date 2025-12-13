@@ -10,6 +10,8 @@ static_library("enterprise") {
     "browser/reporting/browser_report_generator.h",
     "browser/reporting/chrome_profile_request_generator.cc",
     "browser/reporting/chrome_profile_request_generator.h",
+    "browser/reporting/cloud_profile_reporting_policy_handler.cc",
+    "browser/reporting/cloud_profile_reporting_policy_handler.h",
     "browser/reporting/cloud_reporting_frequency_policy_handler.cc",
     "browser/reporting/cloud_reporting_frequency_policy_handler.h",
     "browser/reporting/cloud_reporting_policy_handler.cc",
@@ -61,13 +63,6 @@ static_library("enterprise") {
     ]
   }
 
-  if (!is_ios) {
-    sources += [
-      "browser/reporting/cloud_profile_reporting_policy_handler.cc",
-      "browser/reporting/cloud_profile_reporting_policy_handler.h",
-    ]
-  }
-
   if (!is_ios && !is_android) {
     sources += [
       "browser/promotion/promotion_eligibility_checker.cc",
@@ -82,8 +77,11 @@ static_library("enterprise") {
 
   deps = [
     "//base",
-    "//components/device_signals/core/browser:browser",
+    "//components/device_signals/core/browser",
     "//components/device_signals/core/common:features",
+    "//components/enterprise/connectors/core:constants",
+    "//components/enterprise/device_attestation",
+    "//components/enterprise/device_attestation:common",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/policy/proto",
@@ -92,6 +90,7 @@ static_library("enterprise") {
     "//components/strings",
     "//components/version_info",
     "//crypto",
+    "//google_apis",
     "//net",
     "//services/network/public/cpp",
   ]
@@ -114,11 +113,18 @@ static_library("enterprise") {
   }
 
   if (enterprise_client_certificates) {
-    deps += [ "//components/enterprise/client_certificates/core" ]
+    public_deps += [ "//components/enterprise/client_certificates/core" ]
   }
 
   if (!is_ios && !is_android) {
-    deps += [ "//components/signin/public/identity_manager:identity_manager" ]
+    deps += [ "//components/signin/public/identity_manager" ]
+  }
+
+  if (is_android) {
+    deps += [
+      "//components/enterprise/device_attestation/android",
+      "//components/enterprise/device_attestation/android:jni_headers",
+    ]
   }
 }
 
@@ -178,7 +184,8 @@ source_set("unit_tests") {
     "//components/device_signals/core/common:features",
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/browser/identifiers:test_support",
-    "//components/enterprise/signin:unit_tests",
+    "//components/enterprise/connectors/core:constants",
+    "//components/enterprise/device_attestation:test_support",
     "//components/policy/core/common:test_support",
     "//components/prefs:test_support",
     "//components/version_info",
@@ -208,7 +215,7 @@ source_set("unit_tests") {
       "//components/enterprise/common/proto:extensions_workflow_events_proto",
       "//components/reporting/client:mock_report_queue_provider",
       "//components/reporting/client:test_support",
-      "//components/signin/public/identity_manager:identity_manager",
+      "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
     ]
   }

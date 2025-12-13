@@ -3,9 +3,9 @@ use std::fmt::{self, Display};
 #[derive(Copy, Clone)]
 pub(crate) struct Error {
     pub msg: &'static str,
-    #[allow(dead_code)] // only used by cxx-build, not cxxbridge-macro
+    #[cfg_attr(proc_macro, expect(dead_code))]
     pub label: Option<&'static str>,
-    #[allow(dead_code)] // only used by cxx-build, not cxxbridge-macro
+    #[cfg_attr(proc_macro, expect(dead_code))]
     pub note: Option<&'static str>,
 }
 

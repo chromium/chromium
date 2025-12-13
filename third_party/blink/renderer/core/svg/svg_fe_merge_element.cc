@@ -20,12 +20,16 @@
 
 #include "third_party/blink/renderer/core/svg/svg_fe_merge_element.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_string.h"
 #include "third_party/blink/renderer/core/svg/svg_fe_merge_node_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_merge.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -34,6 +38,7 @@ SVGFEMergeElement::SVGFEMergeElement(Document& document)
 
 FilterEffect* SVGFEMergeElement::Build(SVGFilterBuilder* filter_builder,
                                        Filter* filter) {
+  UseCounter::Count(GetDocument(), WebFeature::kSVGFEMergeElement);
   FilterEffect* effect = MakeGarbageCollected<FEMerge>(filter);
   FilterEffectVector& merge_inputs = effect->InputEffects();
   for (SVGFEMergeNodeElement& merge_node :

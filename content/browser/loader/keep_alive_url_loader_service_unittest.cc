@@ -51,6 +51,10 @@
 #include "third_party/blink/public/mojom/loader/fetch_later.mojom.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace content {
 namespace {
 
@@ -463,9 +467,7 @@ class KeepAliveURLLoaderServiceTest : public KeepAliveURLLoaderServiceTestBase {
  protected:
   void SetUp() override {
     feature_list().InitWithFeatures(
-        {blink::features::kKeepAliveInBrowserMigration,
-         blink::features::kAttributionReportingInBrowserMigration},
-        {});
+        {blink::features::kKeepAliveInBrowserMigration}, {});
     KeepAliveURLLoaderServiceTestBase::SetUp();
   }
 };
@@ -1330,7 +1332,6 @@ class FetchLaterKeepAliveURLLoaderServiceTest
   void SetUp() override {
     feature_list().InitWithFeaturesAndParameters(
         {{blink::features::kFetchLaterAPI, {}},
-         {blink::features::kAttributionReportingInBrowserMigration, {}},
          {blink::features::kKeepAliveInBrowserMigration,
           {{"disconnected_loader_timeout_seconds",
             base::NumberToString(
@@ -1576,7 +1577,6 @@ class KeepAliveURLLoaderServiceRetryTest
   void SetUp() override {
     feature_list().InitWithFeaturesAndParameters(
         {{blink::features::kKeepAliveInBrowserMigration, {}},
-         {blink::features::kAttributionReportingInBrowserMigration, {}},
          {blink::features::kFetchRetry,
           {
               {"max_retry_count",
@@ -1898,6 +1898,14 @@ TEST_F(KeepAliveURLLoaderServiceRetryTest, NoRetryOptionsWillNotBeRetried) {
 
 // Test that failing a request to non-HTTPs will not be retried.
 TEST_F(KeepAliveURLLoaderServiceRetryTest, NonHTTPSWillNotBeRetried) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
+
   FakeRemoteURLLoaderFactory renderer_loader_factory;
   MockReceiverURLLoaderClient renderer_loader_client;
   BindKeepAliveURLLoaderFactory(renderer_loader_factory);
@@ -1934,6 +1942,14 @@ TEST_F(KeepAliveURLLoaderServiceRetryTest, NonHTTPSWillNotBeRetried) {
 // retry options doesn't specify it wants to retry non-idempotent failures.
 TEST_F(KeepAliveURLLoaderServiceRetryTest,
        POSTWillNotBeRetriedUnlessRequested) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
+
   FakeRemoteURLLoaderFactory renderer_loader_factory;
   MockReceiverURLLoaderClient renderer_loader_client;
   BindKeepAliveURLLoaderFactory(renderer_loader_factory);
@@ -1967,9 +1983,16 @@ TEST_F(KeepAliveURLLoaderServiceRetryTest,
   EXPECT_FALSE(loader.get());
 }
 
-// Test that failing all the attmpte
+// Test that fail all attempts will forward the last error.
 TEST_F(KeepAliveURLLoaderServiceRetryTest,
        FailedMaxAttemptWillForwardLastError) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   FakeRemoteURLLoaderFactory renderer_loader_factory;
   MockReceiverURLLoaderClient renderer_loader_client;
   BindKeepAliveURLLoaderFactory(renderer_loader_factory);
@@ -2045,6 +2068,13 @@ TEST_F(KeepAliveURLLoaderServiceRetryTest, ReceivedResponseWillNotBeRetried) {
 // Test that hitting the redirect limit won't trigger a retry.
 TEST_F(KeepAliveURLLoaderServiceRetryTest,
        ExceededRedirectLimitWillNotBeRetried) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   FakeRemoteURLLoaderFactory renderer_loader_factory;
   MockReceiverURLLoaderClient renderer_loader_client;
   BindKeepAliveURLLoaderFactory(renderer_loader_factory);

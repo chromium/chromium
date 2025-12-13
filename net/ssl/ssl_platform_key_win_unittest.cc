@@ -2,26 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/ssl/ssl_platform_key_win.h"
 
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "crypto/evp.h"
-#include "crypto/features.h"
 #include "crypto/scoped_capi_types.h"
 #include "crypto/scoped_cng_types.h"
 #include "crypto/unexportable_key.h"
-#include "net/base/features.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/ssl/ssl_private_key_test_util.h"
@@ -133,7 +126,7 @@ bool PKCS8ToBLOBForCAPI(base::span<const uint8_t> pkcs8,
     return false;
   }
 
-  blob->assign(blob_data, blob_data + blob_len);
+  blob->assign(blob_data, UNSAFE_TODO(blob_data + blob_len));
   OPENSSL_free(blob_data);
   return true;
 }
@@ -188,7 +181,7 @@ bool PKCS8ToBLOBForCNG(base::span<const uint8_t> pkcs8,
     }
 
     *blob_type = BCRYPT_RSAFULLPRIVATE_BLOB;
-    blob->assign(blob_data, blob_data + blob_len);
+    blob->assign(blob_data, UNSAFE_TODO(blob_data + blob_len));
     OPENSSL_free(blob_data);
     return true;
   }
@@ -236,7 +229,7 @@ bool PKCS8ToBLOBForCNG(base::span<const uint8_t> pkcs8,
     }
 
     *blob_type = BCRYPT_ECCPRIVATE_BLOB;
-    blob->assign(blob_data, blob_data + blob_len);
+    blob->assign(blob_data, UNSAFE_TODO(blob_data + blob_len));
     OPENSSL_free(blob_data);
     return true;
   }
@@ -358,9 +351,6 @@ class UnexportableSSLPlatformKeyWinTest : public testing::TestWithParam<bool> {
 };
 
 TEST_P(UnexportableSSLPlatformKeyWinTest, WrapUnexportableKeySlowly) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      crypto::features::kIsHardwareBackedFixEnabled);
-
   auto provider = UseHardwareBackedKeys()
                       ? crypto::GetUnexportableKeyProvider({})
                       : crypto::GetMicrosoftSoftwareUnexportableKeyProvider();

@@ -32,7 +32,7 @@ class TabletModePageBehavior : public display::DisplayObserver,
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // BrowserTabStripTrackerDelegate:
-  bool ShouldTrackBrowser(Browser* browser) override;
+  bool ShouldTrackBrowser(BrowserWindowInterface* browser) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(

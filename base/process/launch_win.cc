@@ -54,8 +54,8 @@ bool GetAppOutputInternal(
     int* exit_code,
     TimeDelta timeout = TimeDelta::Max(),
     LaunchOptions options = {},
-    FunctionRef<void(std::string_view)> still_waiting =
-        [](std::string_view partial_output) {},
+    FunctionRef<void(const Process&, std::string_view)> still_waiting =
+        [](const Process& process, std::string_view partial_output) {},
     TerminationStatus* final_status = nullptr) {
   TRACE_EVENT0("base", "GetAppOutput");
 
@@ -91,6 +91,7 @@ bool GetAppOutputInternal(
   if (!process.IsValid()) {
     return false;
   }
+  still_waiting(process, {});
 
   // Close our writing end of pipe now. Otherwise later read would not be able
   // to detect end of child's output.
@@ -126,7 +127,7 @@ bool GetAppOutputInternal(
         }
         CHECK_LE(bytes_read, bytes_to_read);
         std::string_view buffer_view(buffer, bytes_read);
-        still_waiting(buffer_view);
+        still_waiting(process, buffer_view);
         if (output) {
           output->append(buffer_view);
         }
@@ -140,14 +141,7 @@ bool GetAppOutputInternal(
       // The process ended, so continue reading as long as there is data
       // available.
     }
-
-    if (process_exited) {
-      // Exit and return from the function.
-      break;
-    }
-
-    still_waiting({});
-  } while (timer.Elapsed() < timeout);
+  } while (!process_exited && (timer.Elapsed() < timeout));
 
   if (final_status) {
     *final_status = process_exited ? TERMINATION_STATUS_NORMAL_TERMINATION
@@ -505,7 +499,7 @@ bool GetAppOutputWithExitCodeAndTimeout(
     int* exit_code,
     TimeDelta timeout,
     const LaunchOptions& options,
-    FunctionRef<void(std::string_view)> still_waiting,
+    FunctionRef<void(const Process&, std::string_view)> still_waiting,
     TerminationStatus* final_status) {
   return GetAppOutputInternal(cl, include_stderr, output, exit_code, timeout,
                               options, still_waiting, final_status);

@@ -48,8 +48,8 @@ class MockCursorImpl : public mojom::blink::IDBCursor {
   explicit MockCursorImpl(
       mojo::PendingAssociatedReceiver<mojom::blink::IDBCursor> receiver)
       : receiver_(this, std::move(receiver)) {
-    receiver_.set_disconnect_handler(WTF::BindOnce(
-        &MockCursorImpl::CursorDestroyed, WTF::Unretained(this)));
+    receiver_.set_disconnect_handler(
+        BindOnce(&MockCursorImpl::CursorDestroyed, Unretained(this)));
   }
 
   void Prefetch(int32_t count,

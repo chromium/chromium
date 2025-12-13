@@ -1724,4 +1724,38 @@ TEST_F(LayoutTextTest, OriginalTextNullWhenTransformedTextIsNonNull) {
   EXPECT_FALSE(DynamicTo<Text>(layout_text.GetNode()));
 }
 
+TEST_F(LayoutTextTest, OriginalTextEmptyWhenTransformedTextIsNonEmpty) {
+  // Setup an unordered list element.
+  SetBodyInnerHTML(R"HTML(
+    <ul>
+      <li id="target">first</li>
+    </ul>
+  )HTML");
+
+  // Get the LayoutText from the ::marker pseudo-element
+  const Element& target = *GetElementById("target");
+  const Element& after = *target.GetPseudoElement(kPseudoIdMarker);
+  const auto& layout_text =
+      *To<LayoutText>(after.GetLayoutObject()->SlowFirstChild());
+
+  // Check that layout_text has content
+  EXPECT_FALSE(layout_text.PlainText().empty());
+
+  // Setup an ordered list element.
+  SetBodyInnerHTML(R"HTML(
+    <ol>
+      <li id="target2">one</li>
+    </ol>
+  )HTML");
+
+  // Get the LayoutText from the ::marker pseudo-element
+  const Element& target2 = *GetElementById("target2");
+  const Element& after2 = *target2.GetPseudoElement(kPseudoIdMarker);
+  const auto& layout_text2 =
+      *To<LayoutText>(after2.GetLayoutObject()->SlowFirstChild());
+
+  // Check that layout_text2 has content
+  EXPECT_FALSE(layout_text2.PlainText().empty());
+}
+
 }  // namespace blink

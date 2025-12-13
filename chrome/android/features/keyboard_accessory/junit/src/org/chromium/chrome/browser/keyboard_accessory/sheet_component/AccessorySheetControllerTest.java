@@ -22,7 +22,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.Acc
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.TOP_SHADOW_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.VISIBLE;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.view.ViewGroup;
 
@@ -36,17 +35,15 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetTrigger;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
-import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Tab;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator.SheetVisibilityDelegate;
+import org.chromium.chrome.browser.keyboard_accessory.utils.ManualFillingMetricsRecorder;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -58,19 +55,8 @@ import org.chromium.ui.test.util.modelutil.FakeViewProvider;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        shadows = {
-            CustomShadowAsyncTask.class,
-            AccessorySheetControllerTest.ShadowSemanticColorUtils.class
-        })
+        shadows = {CustomShadowAsyncTask.class})
 public class AccessorySheetControllerTest {
-    @Implements(SemanticColorUtils.class)
-    static class ShadowSemanticColorUtils {
-        @Implementation
-        public static int getDefaultBgColor(Context context) {
-            return DEFAULT_BG_COLOR;
-        }
-    }
-
     private static final int DEFAULT_BG_COLOR = Color.LTGRAY;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -96,6 +82,7 @@ public class AccessorySheetControllerTest {
 
     @Before
     public void setUp() {
+        SemanticColorUtils.setDefaultBgColorForTesting(DEFAULT_BG_COLOR);
         when(mMockView.getLayoutParams()).thenReturn(new ViewGroup.LayoutParams(0, 0));
         mCoordinator =
                 new AccessorySheetCoordinator(

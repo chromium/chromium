@@ -12,12 +12,14 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
+#include "third_party/omnibox_proto/aim_tools_and_models.pb.h"
 #include "url/gurl.h"
 
 namespace {
@@ -41,7 +43,7 @@ class MockAutocompleteController : public AutocompleteController {
   MockAutocompleteController()
       : AutocompleteController(
             std::make_unique<FakeAutocompleteProviderClient>(),
-            /*provider_types=*/0) {}
+            AutocompleteControllerConfig{}) {}
 
   // AutocompleteController:
   MOCK_METHOD(void, Start, (const AutocompleteInput&), (override));
@@ -85,7 +87,7 @@ TEST_F(AutocompleteControllerAndroidTest, OnOmniboxFocused_NTP) {
   auto j_omnibox_text = base::android::ConvertUTF16ToJavaString(env, u"");
   auto j_current_url = base::android::ConvertUTF16ToJavaString(env, url);
   auto j_current_title = base::android::ConvertUTF16ToJavaString(env, u"title");
-  jint j_page_classification = OEP::NTP;
+  auto page_classification = OEP::NTP;
 
   EXPECT_CALL(
       *mock(),
@@ -96,10 +98,8 @@ TEST_F(AutocompleteControllerAndroidTest, OnOmniboxFocused_NTP) {
                            Eq(OFT::INTERACTION_FOCUS)))));
 
   controller()->OnOmniboxFocused(
-      env, base::android::JavaParamRef<jstring>(env, j_omnibox_text.obj()),
-      base::android::JavaParamRef<jstring>(env, j_current_url.obj()),
-      j_page_classification,
-      base::android::JavaParamRef<jstring>(env, j_current_title.obj()));
+      env, j_omnibox_text, j_current_url, page_classification,
+      omnibox::TOOL_MODE_UNSPECIFIED, j_current_title);
 }
 
 TEST_F(AutocompleteControllerAndroidTest, OnOmniboxFocused_OTHER) {
@@ -112,7 +112,7 @@ TEST_F(AutocompleteControllerAndroidTest, OnOmniboxFocused_OTHER) {
   auto j_omnibox_text = base::android::ConvertUTF16ToJavaString(env, u"text");
   auto j_current_url = base::android::ConvertUTF16ToJavaString(env, url);
   auto j_current_title = base::android::ConvertUTF16ToJavaString(env, u"title");
-  jint j_page_classification = OEP::OTHER;
+  auto page_classification = OEP::OTHER;
 
   EXPECT_CALL(
       *mock(),
@@ -123,8 +123,6 @@ TEST_F(AutocompleteControllerAndroidTest, OnOmniboxFocused_OTHER) {
                            Eq(OFT::INTERACTION_FOCUS)))));
 
   controller()->OnOmniboxFocused(
-      env, base::android::JavaParamRef<jstring>(env, j_omnibox_text.obj()),
-      base::android::JavaParamRef<jstring>(env, j_current_url.obj()),
-      j_page_classification,
-      base::android::JavaParamRef<jstring>(env, j_current_title.obj()));
+      env, j_omnibox_text, j_current_url, page_classification,
+      omnibox::TOOL_MODE_UNSPECIFIED, j_current_title);
 }

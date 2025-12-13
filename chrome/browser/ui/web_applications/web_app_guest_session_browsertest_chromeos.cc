@@ -5,14 +5,13 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -46,11 +45,18 @@ IN_PROC_BROWSER_TEST_F(WebAppGuestSessionBrowserTest, LaunchOsSettings) {
       ash::kOsSettingsAppId, apps::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::NEW_FOREGROUND_TAB, apps::LaunchSource::kFromTest);
 
-  content::WebContents* contents =
-      apps::AppServiceProxyFactory::GetForProfile(profile)
-          ->BrowserAppLauncher()
-          ->LaunchAppWithParamsForTesting(std::move(params));
-  EXPECT_EQ(GURL(chrome::kChromeUIOSSettingsURL), contents->GetVisibleURL());
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
+  base::test::TestFuture<base::WeakPtr<Browser>,
+                         base::WeakPtr<content::WebContents>,
+                         apps::LaunchContainer>
+      future;
+  provider->scheduler().LaunchAppWithCustomParams(std::move(params),
+                                                  future.GetCallback());
+  auto* web_contents = future.template Get<1>().get();
+  ASSERT_TRUE(web_contents);
+  EXPECT_EQ(GURL(chrome::kChromeUIOSSettingsURL),
+            web_contents->GetVisibleURL());
 }
 
 }  // namespace web_app

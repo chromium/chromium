@@ -22,6 +22,8 @@
 
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -702,8 +704,12 @@ HistogramBase* Histogram::FactoryGetInternal(std::string_view name,
                                              int32_t flags) {
   bool valid_arguments =
       InspectConstructionArguments(name, &minimum, &maximum, &bucket_count);
-  DCHECK(valid_arguments) << name;
   if (!valid_arguments) {
+    // Produce a crash dump with the histogram name, so that we can detect cases
+    // where there is a coding error where a histogram is logged from multiple
+    // places with different params.
+    SCOPED_CRASH_KEY_STRING32("BadHistogramArgs", "name", std::string(name));
+    base::debug::DumpWithoutCrashing();
     DLOG(ERROR) << "Histogram " << name << " dropped for invalid parameters.";
     return DummyHistogram::GetInstance();
   }
@@ -808,9 +814,9 @@ class LinearHistogram::Factory : public Histogram::Factory {
     LinearHistogram* histogram = static_cast<LinearHistogram*>(base_histogram);
     // Set range descriptions.
     if (descriptions_) {
-      for (int i = 0; descriptions_[i].description; ++i) {
-        histogram->bucket_description_[descriptions_[i].sample] =
-            descriptions_[i].description;
+      for (int i = 0; UNSAFE_TODO(descriptions_[i].description); ++i) {
+        UNSAFE_TODO(histogram->bucket_description_[descriptions_[i].sample] =
+                        descriptions_[i].description);
       }
     }
   }
@@ -901,8 +907,12 @@ HistogramBase* LinearHistogram::FactoryGetWithRangeDescription(
 
   bool valid_arguments = Histogram::InspectConstructionArguments(
       name, &minimum, &maximum, &bucket_count);
-  DCHECK(valid_arguments) << name;
   if (!valid_arguments) {
+    // Produce a crash dump with the histogram name, so that we can detect cases
+    // where there is a coding error where a histogram is logged from multiple
+    // places with different params.
+    SCOPED_CRASH_KEY_STRING32("BadHistogramArgs", "name", std::string(name));
+    base::debug::DumpWithoutCrashing();
     DLOG(ERROR) << "Histogram " << name << " dropped for invalid parameters.";
     return DummyHistogram::GetInstance();
   }

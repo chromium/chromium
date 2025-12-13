@@ -10,8 +10,16 @@
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  // For large inputs, doing IDN canonicalization can be so slow it hits the
+  // timeout. Limit the input size to avoid this.
+  if (size > 128 * 1024) {
+    return 0;
+  }
+
   net::ProxyList list;
-  std::string input(data, UNSAFE_TODO(data + size));
+  // SAFETY: LibFuzzer guarantees there will be `size` bytes of data at the
+  // address `data`.
+  std::string input(data, UNSAFE_BUFFERS(data + size));
   list.SetFromPacString(input);
   return 0;
 }

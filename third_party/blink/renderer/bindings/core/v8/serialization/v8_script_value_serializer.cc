@@ -60,7 +60,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
-#include "third_party/blink/renderer/platform/wtf/date_math.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 
 namespace blink {
@@ -95,8 +95,8 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     if (transferables.message_ports.Contains(port)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
-          "Message port at index " + String::Number(object_index) +
-              " is a duplicate of an earlier port.");
+          StrCat({"Message port at index ", String::Number(object_index),
+                  " is a duplicate of an earlier port."}));
       return false;
     }
     transferables.message_ports.push_back(port);
@@ -107,8 +107,8 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     if (transferables.mojo_handles.Contains(handle)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
-          "Mojo handle at index " + String::Number(object_index) +
-              " is a duplicate of an earlier handle.");
+          StrCat({"Mojo handle at index ", String::Number(object_index),
+                  " is a duplicate of an earlier handle."}));
       return false;
     }
     transferables.mojo_handles.push_back(handle);
@@ -123,8 +123,8 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     if (transferables.array_buffers.Contains(array_buffer)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
-          "ArrayBuffer at index " + String::Number(object_index) +
-              " is a duplicate of an earlier ArrayBuffer.");
+          StrCat({"ArrayBuffer at index ", String::Number(object_index),
+                  " is a duplicate of an earlier ArrayBuffer."}));
       return false;
     }
     transferables.array_buffers.push_back(array_buffer);
@@ -139,8 +139,8 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     if (transferables.array_buffers.Contains(shared_array_buffer)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
-          "SharedArrayBuffer at index " + String::Number(object_index) +
-              " is a duplicate of an earlier SharedArrayBuffer.");
+          StrCat({"SharedArrayBuffer at index ", String::Number(object_index),
+                  " is a duplicate of an earlier SharedArrayBuffer."}));
       return false;
     }
     transferables.array_buffers.push_back(shared_array_buffer);
@@ -150,8 +150,8 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     if (transferables.image_bitmaps.Contains(image_bitmap)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
-          "ImageBitmap at index " + String::Number(object_index) +
-              " is a duplicate of an earlier ImageBitmap.");
+          StrCat({"ImageBitmap at index ", String::Number(object_index),
+                  " is a duplicate of an earlier ImageBitmap."}));
       return false;
     }
     transferables.image_bitmaps.push_back(image_bitmap);
@@ -162,8 +162,8 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     if (transferables.offscreen_canvases.Contains(offscreen_canvas)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
-          "OffscreenCanvas at index " + String::Number(object_index) +
-              " is a duplicate of an earlier OffscreenCanvas.");
+          StrCat({"OffscreenCanvas at index ", String::Number(object_index),
+                  " is a duplicate of an earlier OffscreenCanvas."}));
       return false;
     }
     transferables.offscreen_canvases.push_back(offscreen_canvas);
@@ -173,8 +173,8 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     if (transferables.readable_streams.Contains(stream)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
-          "ReadableStream at index " + String::Number(object_index) +
-              " is a duplicate of an earlier ReadableStream.");
+          StrCat({"ReadableStream at index ", String::Number(object_index),
+                  " is a duplicate of an earlier ReadableStream."}));
       return false;
     }
     transferables.readable_streams.push_back(stream);
@@ -184,8 +184,8 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     if (transferables.writable_streams.Contains(stream)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
-          "WritableStream at index " + String::Number(object_index) +
-              " is a duplicate of an earlier WritableStream.");
+          StrCat({"WritableStream at index ", String::Number(object_index),
+                  " is a duplicate of an earlier WritableStream."}));
       return false;
     }
     transferables.writable_streams.push_back(stream);
@@ -196,8 +196,8 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     if (transferables.transform_streams.Contains(stream)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
-          "TransformStream at index " + String::Number(object_index) +
-              " is a duplicate of an earlier TransformStream.");
+          StrCat({"TransformStream at index ", String::Number(object_index),
+                  " is a duplicate of an earlier TransformStream."}));
       return false;
     }
     transferables.transform_streams.push_back(stream);
@@ -214,7 +214,9 @@ V8ScriptValueSerializer::V8ScriptValueSerializer(ScriptState* script_state,
       transferables_(options.transferables),
       blob_info_array_(options.blob_info),
       wasm_policy_(options.wasm_policy),
-      for_storage_(options.for_storage == SerializedScriptValue::kForStorage) {}
+      for_storage_(options.for_storage == SerializedScriptValue::kForStorage),
+      skip_wrapped_objects_(options.script_wrappable_policy ==
+                            Options::kOmitWrappedObjects) {}
 
 scoped_refptr<SerializedScriptValue> V8ScriptValueSerializer::Serialize(
     v8::Local<v8::Value> value,
@@ -901,6 +903,10 @@ v8::Maybe<bool> V8ScriptValueSerializer::WriteHostObject(
     v8::Isolate* isolate,
     v8::Local<v8::Object> object) {
   DCHECK_EQ(isolate, script_state_->GetIsolate());
+
+  if (skip_wrapped_objects_) {
+    return v8::Just(true);
+  }
   ExceptionState exception_state(isolate);
 
   if (!V8DOMWrapper::IsWrapper(isolate, object)) {
@@ -920,7 +926,7 @@ v8::Maybe<bool> V8ScriptValueSerializer::WriteHostObject(
     StringView interface = ToWrapperTypeInfo(wrappable)->interface_name;
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataCloneError,
-        interface + " object could not be cloned.");
+        StrCat({interface, " object could not be cloned."}));
   }
   return v8::Nothing<bool>();
 }
@@ -1039,13 +1045,13 @@ v8::Maybe<uint32_t> V8ScriptValueSerializer::GetWasmModuleTransferId(
 void* V8ScriptValueSerializer::ReallocateBufferMemory(void* old_buffer,
                                                       size_t size,
                                                       size_t* actual_size) {
-  *actual_size = WTF::Partitions::BufferPotentialCapacity(size);
-  return WTF::Partitions::BufferTryRealloc(old_buffer, *actual_size,
-                                           "SerializedScriptValue buffer");
+  *actual_size = Partitions::BufferPotentialCapacity(size);
+  return Partitions::BufferTryRealloc(old_buffer, *actual_size,
+                                      "SerializedScriptValue buffer");
 }
 
 void V8ScriptValueSerializer::FreeBufferMemory(void* buffer) {
-  return WTF::Partitions::BufferFree(buffer);
+  return Partitions::BufferFree(buffer);
 }
 
 bool V8ScriptValueSerializer::AdoptSharedValueConveyor(

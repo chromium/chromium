@@ -13,19 +13,12 @@
 @protocol DriveFilePickerMediatorDelegate
 
 // Browses a given drive collection.
-- (void)
-    browseDriveCollectionWithMediator:
-        (DriveFilePickerMediator*)driveFilePickerMediator
-                                title:(NSString*)title
-                        imagesPending:(NSMutableSet<NSString*>*)imagesPending
-                           imageCache:(NSCache<NSString*, UIImage*>*)imageCache
-                       collectionType:
-                           (DriveFilePickerCollectionType)collectionType
-                     folderIdentifier:(NSString*)folderIdentifier
-                               filter:(DriveFilePickerFilter)filter
-                  ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
-                      sortingCriteria:(DriveItemsSortingType)sortingCriteria
-                     sortingDirection:(DriveItemsSortingOrder)sortingDirection;
+- (void)browseDriveCollectionWithMediator:
+            (DriveFilePickerMediator*)driveFilePickerMediator
+                               collection:
+                                   (std::unique_ptr<DriveFilePickerCollection>)
+                                       collection
+                                  options:(DriveFilePickerOptions)options;
 
 // Called when the mediator has stopped file selection in the web page.
 - (void)mediatorDidStopFileSelection:(DriveFilePickerMediator*)mediator;
@@ -36,11 +29,7 @@
 // Called when the mediator did update the filter/sorting criteria.
 - (void)browseDriveCollectionWithMediator:
             (DriveFilePickerMediator*)driveFilePickerMediator
-                          didUpdateFilter:(DriveFilePickerFilter)filter
-                          sortingCriteria:(DriveItemsSortingType)sortingCriteria
-                         sortingDirection:
-                             (DriveItemsSortingOrder)sortingDirection
-                      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes;
+                         didUpdateOptions:(DriveFilePickerOptions)options;
 
 // Called when "Add account" button is triggered.
 - (void)mediatorDidTapAddAccount:(DriveFilePickerMediator*)mediator;

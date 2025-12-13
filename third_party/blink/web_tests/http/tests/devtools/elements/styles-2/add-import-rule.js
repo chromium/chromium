@@ -28,7 +28,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
     sheetId = matchedResult.nodeStyles()[1].styleSheetId;
     TestRunner.addResult('\n== Matched rules before @import added ==\n');
     await ElementsTestRunner.dumpSelectedElementStyles(true);
-    TestRunner.CSSAgent.setStyleSheetText(sheetId, '@import \'data:text/css,span{color:green}\';').then(sheetTextSet);
+    TestRunner.CSSAgent.invoke_setStyleSheetText({styleSheetId: sheetId, text: '@import \'data:text/css,span{color:green}\';'}).then(sheetTextSet);
   }
 
   function sheetTextSet() {

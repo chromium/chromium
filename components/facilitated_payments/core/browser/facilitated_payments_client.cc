@@ -5,6 +5,7 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -12,6 +13,7 @@
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
+#include "components/facilitated_payments/core/browser/payment_link_manager.h"
 #include "components/facilitated_payments/core/browser/pix_account_linking_manager.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "url/origin.h"
@@ -23,38 +25,6 @@ FacilitatedPaymentsClient::FacilitatedPaymentsClient()
           std::make_unique<PixAccountLinkingManager>(/* client= */ this)) {}
 
 FacilitatedPaymentsClient::~FacilitatedPaymentsClient() = default;
-
-void FacilitatedPaymentsClient::ShowPixPaymentPrompt(
-    base::span<const autofill::BankAccount> bank_account_suggestions,
-    base::OnceCallback<void(int64_t)> on_payment_account_selected) {}
-
-void FacilitatedPaymentsClient::ShowPaymentLinkPrompt(
-    base::span<const autofill::Ewallet> ewallet_suggestions,
-    std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
-    base::OnceCallback<void(int64_t)> on_ewallet_account_selected) {}
-
-void FacilitatedPaymentsClient::ShowProgressScreen() {}
-
-void FacilitatedPaymentsClient::ShowErrorScreen() {}
-
-void FacilitatedPaymentsClient::DismissPrompt() {}
-
-void FacilitatedPaymentsClient::SetUiEventListener(
-    base::RepeatingCallback<void(UiEvent)> ui_event_listener) {}
-
-void FacilitatedPaymentsClient::InitPixAccountLinkingFlow(
-    const url::Origin& pix_payment_page_origin) {
-  pix_account_linking_manager_->MaybeShowPixAccountLinkingPrompt(
-      pix_payment_page_origin);
-}
-
-void FacilitatedPaymentsClient::ShowPixAccountLinkingPrompt(
-    base::OnceCallback<void()> on_accepted,
-    base::OnceCallback<void()> on_declined) {}
-
-bool FacilitatedPaymentsClient::HasScreenlockOrBiometricSetup() {
-  return false;
-}
 
 void FacilitatedPaymentsClient::SetPixAccountLinkingManagerForTesting(
     std::unique_ptr<PixAccountLinkingManager> pix_account_linking_manager) {

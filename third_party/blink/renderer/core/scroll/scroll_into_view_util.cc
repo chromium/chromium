@@ -146,13 +146,19 @@ ALWAYS_INLINE void AdjustRectAndParamsForParentFrame(
   }
 }
 
+// Internal result structure for PerformBubblingScrollIntoView
+struct BubblingScrollResult {
+  std::optional<PhysicalRect> rect;
+  bool did_scroll = false;
+};
+
 // Helper that reveals the given rect, given in absolute coordinates, by
 // scrolling the given `box` LayoutBox and then all its ancestors up to the
 // local root frame.  To continue the reveal through remote ancestors, use
 // LayoutObject::ScrollRectToVisible. If the scroll bubbled up to the local
 // root successfully, returns the updated absolute rect in the absolute
 // coordinates of the local root. Otherwise returns an empty optional.
-std::optional<PhysicalRect> PerformBubblingScrollIntoView(
+BubblingScrollResult PerformBubblingScrollIntoViewWithResult(
     const LayoutBox& box,
     const PhysicalRect& absolute_rect,
     mojom::blink::ScrollIntoViewParamsPtr& params,
@@ -164,11 +170,11 @@ std::optional<PhysicalRect> PerformBubblingScrollIntoView(
          params->type == mojom::blink::ScrollType::kUser);
 
   if (!box.GetFrameView())
-    return std::nullopt;
+    return BubblingScrollResult{};
 
   PhysicalRect absolute_rect_to_scroll = absolute_rect;
   PhysicalBoxStrut active_scroll_margin = scroll_margin;
-  bool scrolled_to_area = false;
+  bool any_actual_scroll = false;
 
   // TODO(bokan): Temporary, to track cross-origin scroll-into-view prevalence.
   // https://crbug.com/1339003.
@@ -213,7 +219,6 @@ std::optional<PhysicalRect> PerformBubblingScrollIntoView(
 
       absolute_rect_to_scroll = area_to_scroll->ScrollIntoView(
           absolute_rect_to_scroll, active_scroll_margin, params);
-      scrolled_to_area = true;
 
       // TODO(bokan): Temporary, to track cross-origin scroll-into-view
       // prevalence. https://crbug.com/1339003.
@@ -223,6 +228,9 @@ std::optional<PhysicalRect> PerformBubblingScrollIntoView(
       // check instead if an entry was added to the sequence which occurs only
       // if the scroll offset is changed as a result of ScrollIntoView.
       bool scroll_changed = area_to_scroll->GetScrollOffset() != scroll_before;
+      if (scroll_changed) {
+        any_actual_scroll = true;
+      }
       if (scroll_changed && !params->for_focused_editable &&
           params->type == mojom::blink::ScrollType::kProgrammatic) {
         const SecurityOrigin* current_frame_origin =
@@ -256,13 +264,16 @@ std::optional<PhysicalRect> PerformBubblingScrollIntoView(
       // (GetFrameView()->GetScrollableArea() above).
       if (current_box->GetFrame()->IsMainFrame() &&
           visual_viewport.IsActiveViewport()) {
+        ScrollOffset viewport_scroll_before = visual_viewport.GetScrollOffset();
         absolute_rect_to_scroll =
             current_box->GetFrame()
                 ->GetPage()
                 ->GetVisualViewport()
                 .ScrollIntoView(absolute_rect_to_scroll, active_scroll_margin,
                                 params);
-        scrolled_to_area = true;
+        if (visual_viewport.GetScrollOffset() != viewport_scroll_before) {
+          any_actual_scroll = true;
+        }
       }
 
       // TODO(bokan): To be correct we should continue to bubble the scroll
@@ -278,7 +289,7 @@ std::optional<PhysicalRect> PerformBubblingScrollIntoView(
     std::optional<LayoutBox*> next_box_opt =
         GetScrollParent(*current_box, params);
     if (!next_box_opt) {
-      return std::nullopt;
+      return BubblingScrollResult{std::nullopt, any_actual_scroll};
     }
 
     LayoutBox* next_box = *next_box_opt;
@@ -295,7 +306,7 @@ std::optional<PhysicalRect> PerformBubblingScrollIntoView(
             current_box != &box) &&
            stop_at.Contains(current_box)) ||
           (next_box && next_box->GetFrame() != current_box->GetFrame())) {
-        return std::nullopt;
+        return BubblingScrollResult{std::nullopt, any_actual_scroll};
       }
     }
 
@@ -309,14 +320,14 @@ std::optional<PhysicalRect> PerformBubblingScrollIntoView(
     // scrollers themselves? This will probably need to be spec'd as the current
     // scroll-into-view spec[1] only refers to the bounding border box.
     // [1] https://drafts.csswg.org/cssom-view-1/#scroll-a-target-into-view
-    if (scrolled_to_area) {
+    if (any_actual_scroll) {
       active_scroll_margin = PhysicalBoxStrut();
     }
 
     current_box = next_box;
   }
 
-  return absolute_rect_to_scroll;
+  return BubblingScrollResult{absolute_rect_to_scroll, any_actual_scroll};
 }
 
 }  // namespace
@@ -336,7 +347,7 @@ ScrollableArea* GetScrollableAreaForLayoutBox(
   return nullptr;
 }
 
-void ScrollRectToVisible(const LayoutObject& layout_object,
+bool ScrollRectToVisible(const LayoutObject& layout_object,
                          const PhysicalRect& absolute_rect,
                          mojom::blink::ScrollIntoViewParamsPtr params,
                          const LayoutObject* container,
@@ -344,7 +355,7 @@ void ScrollRectToVisible(const LayoutObject& layout_object,
                          bool include_self) {
   LayoutBox* enclosing_box = layout_object.EnclosingBox();
   if (!enclosing_box)
-    return;
+    return false;
   // If we've already skipped the layout object, we shouldn't skip scrolling
   // an ancestor scrolling container.
   if (layout_object != enclosing_box) {
@@ -361,38 +372,38 @@ void ScrollRectToVisible(const LayoutObject& layout_object,
                             : PhysicalBoxStrut();
   PhysicalRect absolute_rect_to_scroll = absolute_rect;
   absolute_rect_to_scroll.Expand(scroll_margin);
-  std::optional<PhysicalRect> updated_absolute_rect =
-      PerformBubblingScrollIntoView(*enclosing_box, absolute_rect_to_scroll,
-                                    params, scroll_margin, container,
-                                    from_remote_frame, include_self);
-
+  BubblingScrollResult result = PerformBubblingScrollIntoViewWithResult(
+      *enclosing_box, absolute_rect_to_scroll, params, scroll_margin, container,
+      from_remote_frame, include_self);
   // If the scroll into view stopped early (i.e. before the local root),
   // there's no need to continue bubbling or finishing a scroll focused
   // editable into view.
-  if (!updated_absolute_rect)
-    return;
+  if (!result.rect) {
+    return result.did_scroll;
+  }
 
   LocalFrame& local_root = frame->LocalFrameRoot();
   LocalFrameView* local_root_view = local_root.View();
 
   if (!local_root_view)
-    return;
+    return result.did_scroll;
 
   if (!local_root.IsOutermostMainFrame()) {
     // Continue the scroll via IPC if there's a remote ancestor.
     if (AllowedToPropagateToParent(local_root, params)) {
-      local_root_view->ScrollRectToVisibleInRemoteParent(*updated_absolute_rect,
+      local_root_view->ScrollRectToVisibleInRemoteParent(*result.rect,
                                                          std::move(params));
     }
   } else if (params->for_focused_editable) {
     // If we're scrolling a focused editable into view, once we reach the main
     // frame we need to perform an animated scroll and zoom to bring the
     // editable into a legible size.
-    gfx::RectF caret_rect_in_root_frame(*updated_absolute_rect);
+    gfx::RectF caret_rect_in_root_frame(*result.rect);
     DCHECK(!caret_rect_in_root_frame.IsEmpty());
     local_root.GetPage()->GetChromeClient().FinishScrollFocusedEditableIntoView(
         caret_rect_in_root_frame, std::move(params));
   }
+  return result.did_scroll;
 }
 
 gfx::RectF FocusedEditableBoundsFromParams(
@@ -548,12 +559,22 @@ mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
 
 mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
     const ComputedStyle& computed_style) {
+  // Per https://www.w3.org/TR/css-overflow-5/#scroll-marker-activation
+  // default to 'start' if scroll-snap-align is 'none'.
+  cc::SnapAlignment alignment_inline =
+      computed_style.GetScrollSnapAlign().alignment_inline;
+  if (alignment_inline == cc::SnapAlignment::kNone) {
+    alignment_inline = cc::SnapAlignment::kStart;
+  }
   V8ScrollLogicalPosition::Enum inline_alignment =
-      SnapAlignmentToV8ScrollLogicalPosition(
-          computed_style.GetScrollSnapAlign().alignment_inline);
+      SnapAlignmentToV8ScrollLogicalPosition(alignment_inline);
+  cc::SnapAlignment alignment_block =
+      computed_style.GetScrollSnapAlign().alignment_block;
+  if (alignment_block == cc::SnapAlignment::kNone) {
+    alignment_block = cc::SnapAlignment::kStart;
+  }
   V8ScrollLogicalPosition::Enum block_alignment =
-      SnapAlignmentToV8ScrollLogicalPosition(
-          computed_style.GetScrollSnapAlign().alignment_block);
+      SnapAlignmentToV8ScrollLogicalPosition(alignment_block);
   auto align_x = ResolveToPhysicalAlignment(inline_alignment, block_alignment,
                                             kHorizontalScroll, computed_style);
   auto align_y = ResolveToPhysicalAlignment(inline_alignment, block_alignment,

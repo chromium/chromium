@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -25,6 +26,8 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/publishers/publisher_host_factory_impl.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -51,7 +54,6 @@
 #include "chrome/browser/ui/views/test/view_event_test_base.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -318,6 +320,11 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
   ~BookmarkBarViewEventTestBase() override = default;
 
   void SetUp() override {
+    // Inject the publisher dependency to AppService.
+    publisher_host_factory_resetter_ =
+        apps::AppServiceProxyFactory::GetInstance()->SetPublisherHostFactory(
+            std::make_unique<apps::PublisherHostFactoryImpl>());
+
     InitializeActionIdStringMapping();
     content_client_ = std::make_unique<ChromeContentClient>();
     content::SetContentClient(content_client_.get());
@@ -328,8 +335,6 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
     BookmarkBarView::DisableAnimationsForTesting(true);
     SetConstrainedWindowViewsClient(CreateChromeConstrainedWindowViewsClient());
 
-    local_state_ = std::make_unique<ScopedTestingLocalState>(
-        TestingBrowserProcess::GetGlobal());
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
         BookmarkModelFactory::GetInstance(),
@@ -396,6 +401,8 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
     browser_content_client_.reset();
     content_client_.reset();
     content::SetContentClient(nullptr);
+
+    publisher_host_factory_resetter_.reset();
   }
 
  protected:
@@ -521,11 +528,12 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
     model_->AddURL(of2, 1, u"of2b", GURL(test_base + "of2b"));
   }
 
+  std::optional<base::AutoReset<std::unique_ptr<apps::PublisherHostFactory>>>
+      publisher_host_factory_resetter_;
   std::unique_ptr<ChromeContentClient> content_client_;
   std::unique_ptr<ChromeContentBrowserClient> browser_content_client_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<Browser> browser_;
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
 };
 
 class BookmarkBarViewDragTestBase : public BookmarkBarViewEventTestBase,

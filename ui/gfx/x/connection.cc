@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/threading/thread_local.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/switches.h"
@@ -410,7 +411,14 @@ bool Connection::HasNextEvent() {
     }
     events_.pop_front();
   }
+#if BUILDFLAG(IS_LINUX)
+  // Move an event from XCB's internal queue to our queue, if available.
+  return ReadResponse(/*queued=*/false);
+#else
+  // linux-chromeos-rel has a failing browser test, but should also eventually
+  // read XCB-queued events.
   return false;
+#endif
 }
 
 int Connection::GetFd() {
@@ -972,9 +980,8 @@ void Connection::OnRootPropertyChanged(Atom property,
           std::vector<Atom>{check_atom, GetAtom("_NET_WM_NAME")});
     }
   } else if (property == Atom::RESOURCE_MANAGER) {
-    auto xresources = PropertyCache::GetAsSpan<char>(value);
-    xresources_ =
-        ParseXResources(std::string_view(xresources.begin(), xresources.end()));
+    xresources_ = ParseXResources(
+        base::as_string_view(PropertyCache::GetAsSpan<char>(value)));
   }
 }
 

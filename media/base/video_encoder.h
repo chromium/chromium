@@ -36,6 +36,12 @@ MEDIA_EXPORT uint32_t GetDefaultVideoEncodeBitrate(gfx::Size frame_size,
 
 MEDIA_EXPORT int GetNumberOfThreadsForSoftwareEncoding(gfx::Size frame_size);
 
+// Converts AV1/VP9 qindex (0-255) to the quantizer parameter (0-63).
+MEDIA_EXPORT uint8_t QIndexToQuantizer(VideoCodec codec, uint8_t q_index);
+
+// Converts AV1/VP9 quantizer parameter (0-63) to qindex (0-255) range.
+MEDIA_EXPORT uint8_t QuantizerToQIndex(VideoCodec codec, uint8_t quantizer);
+
 // Encoded video frame, its data and metadata.
 struct MEDIA_EXPORT VideoEncoderOutput {
   VideoEncoderOutput();

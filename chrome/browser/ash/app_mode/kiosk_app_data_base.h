@@ -9,10 +9,13 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_icon_loader.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "ui/gfx/image/image_skia.h"
+
+class PrefService;
 
 namespace base {
 class Value;
@@ -22,7 +25,9 @@ namespace ash {
 
 class KioskAppDataBase {
  public:
-  KioskAppDataBase(const std::string& dictionary_name,
+  // `local_state` must be non-null, and must outlive `this`.
+  KioskAppDataBase(PrefService* local_state,
+                   const std::string& dictionary_name,
                    const std::string& app_id,
                    const AccountId& account_id);
   KioskAppDataBase(const KioskAppDataBase&) = delete;
@@ -61,6 +66,8 @@ class KioskAppDataBase {
 
   // Helper to cache `icon` to `cache_dir`.
   void SaveIcon(const SkBitmap& icon, const base::FilePath& cache_dir);
+
+  const raw_ref<PrefService> local_state_;
 
   // In protected section to allow derived classes to modify.
   std::string name_;

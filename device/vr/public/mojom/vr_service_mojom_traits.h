@@ -5,8 +5,13 @@
 #ifndef DEVICE_VR_PUBLIC_MOJOM_VR_SERVICE_MOJOM_TRAITS_H_
 #define DEVICE_VR_PUBLIC_MOJOM_VR_SERVICE_MOJOM_TRAITS_H_
 
+#include "device/vr/public/mojom/anchor_id.h"
+#include "device/vr/public/mojom/hit_test_subscription_id.h"
+#include "device/vr/public/mojom/layer_id.h"
+#include "device/vr/public/mojom/plane_id.h"
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/rgb_tuple_f32.h"
+#include "device/vr/public/mojom/visibility_mask_id.h"
 #include "device/vr/public/mojom/vr_service.mojom-shared.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
@@ -14,6 +19,72 @@
 #include "ui/gfx/geometry/quaternion.h"
 
 namespace mojo {
+
+template <>
+struct StructTraits<device::mojom::PlaneIdDataView, device::PlaneId> {
+  static uint64_t id_value(const device::PlaneId& plane_id) {
+    return plane_id.GetUnsafeValue();
+  }
+
+  static bool Read(device::mojom::PlaneIdDataView data, device::PlaneId* out) {
+    *out = device::PlaneId(data.id_value());
+    return true;
+  }
+};
+
+template <>
+struct StructTraits<device::mojom::AnchorIdDataView, device::AnchorId> {
+  static uint64_t id_value(const device::AnchorId& anchor_id) {
+    return anchor_id.GetUnsafeValue();
+  }
+
+  static bool Read(device::mojom::AnchorIdDataView data,
+                   device::AnchorId* out) {
+    *out = device::AnchorId(data.id_value());
+    return true;
+  }
+};
+
+template <>
+struct StructTraits<device::mojom::XrVisibilityMaskIdDataView,
+                    device::XrVisibilityMaskId> {
+  static uint64_t id_value(const device::XrVisibilityMaskId& id) {
+    return id.GetUnsafeValue();
+  }
+
+  static bool Read(device::mojom::XrVisibilityMaskIdDataView data,
+                   device::XrVisibilityMaskId* out) {
+    *out = device::XrVisibilityMaskId(data.id_value());
+    return true;
+  }
+};
+
+template <>
+struct StructTraits<device::mojom::HitTestSubscriptionIdDataView,
+                    device::HitTestSubscriptionId> {
+  static uint64_t id_value(
+      const device::HitTestSubscriptionId& hit_test_subscription_id) {
+    return hit_test_subscription_id.GetUnsafeValue();
+  }
+
+  static bool Read(device::mojom::HitTestSubscriptionIdDataView data,
+                   device::HitTestSubscriptionId* out) {
+    *out = device::HitTestSubscriptionId(data.id_value());
+    return true;
+  }
+};
+
+template <>
+struct StructTraits<device::mojom::LayerIdDataView, device::LayerId> {
+  static uint64_t id_value(const device::LayerId& layer_id) {
+    return layer_id.GetUnsafeValue();
+  }
+
+  static bool Read(device::mojom::LayerIdDataView data, device::LayerId* out) {
+    *out = device::LayerId(data.id_value());
+    return true;
+  }
+};
 
 template <>
 struct StructTraits<device::mojom::RgbTupleF32DataView, device::RgbTupleF32> {

@@ -51,7 +51,7 @@ TEST_F(AppZeroStateProviderTest, FetchRecommendations) {
   InitializeSearchProvider();
 
   extensions::ExtensionPrefs* prefs =
-      extensions::ExtensionPrefs::Get(profile_.get());
+      extensions::ExtensionPrefs::Get(profile());
 
   prefs->SetLastLaunchTime(kHostedAppId, MicrosecondsSinceEpoch(20));
   prefs->SetLastLaunchTime(kPackagedApp1Id, MicrosecondsSinceEpoch(10));
@@ -93,9 +93,11 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
 
   base::RunLoop().RunUntilIdle();
 
-  profile_->SetIsNewProfile(true);
+  testing_profile()->SetIsNewProfile(true);
   ASSERT_TRUE(profile()->IsNewProfile());
-  arc_test().SetUp(profile());
+  // TODO(crbug.com/454468678): This should be called before profile is created.
+  arc_app_test().PreProfileSetUp();
+  arc_app_test().PostProfileSetUp(profile());
 
   // There are four default web apps. We use real app IDs here, as these are
   // used internally by the ranking logic. We can use arbitrary app names.
@@ -158,13 +160,17 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
   EXPECT_EQ("Canvas," + std::string(kNormalAppName) +
                 ",OsSettings,Help,Play Store,Camera",
             RunZeroStateSearch());
+
+  arc_app_test().PreProfileTearDown();
+  // TODO(crbug.com/454468678): This should be called after profile is deleted.
+  arc_app_test().PostProfileTearDown();
 }
 
 TEST_F(AppZeroStateProviderTest, FetchUnlaunchedRecommendations) {
   InitializeSearchProvider();
 
   extensions::ExtensionPrefs* prefs =
-      extensions::ExtensionPrefs::Get(profile_.get());
+      extensions::ExtensionPrefs::Get(profile());
 
   // The order of unlaunched recommendations should be based on the install time
   // order.

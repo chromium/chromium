@@ -13,10 +13,23 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
+#include "content/common/content_export.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
 namespace content {
+
+class CONTENT_EXPORT DesktopCapturerAndroidJniInterface {
+ public:
+  virtual ~DesktopCapturerAndroidJniInterface() = default;
+  virtual base::android::ScopedJavaLocalRef<jobject> Create(
+      JNIEnv* env,
+      jlong native_ptr) = 0;
+  virtual jboolean StartCapture(JNIEnv* env,
+                                const base::android::JavaRef<jobject>& obj) = 0;
+  virtual void Destroy(JNIEnv* env,
+                       const base::android::JavaRef<jobject>& obj) = 0;
+};
 
 // `DesktopCapturer` implementation for Android. There are a few things
 // involved:
@@ -31,9 +44,14 @@ namespace content {
 //
 // On Android, the desktop capturer thread is created with an Android message
 // pump, so we can keep everything on one thread.
-class DesktopCapturerAndroid final : public webrtc::DesktopCapturer {
+class CONTENT_EXPORT DesktopCapturerAndroid final
+    : public webrtc::DesktopCapturer {
  public:
-  DesktopCapturerAndroid(const webrtc::DesktopCaptureOptions& options);
+  explicit DesktopCapturerAndroid(const webrtc::DesktopCaptureOptions& options);
+  DesktopCapturerAndroid(
+      const webrtc::DesktopCaptureOptions& options,
+      std::unique_ptr<DesktopCapturerAndroidJniInterface> jni_interface);
+
   DesktopCapturerAndroid(const DesktopCapturerAndroid&) = delete;
   DesktopCapturerAndroid& operator=(const DesktopCapturerAndroid&) = delete;
   ~DesktopCapturerAndroid() override;
@@ -57,6 +75,23 @@ class DesktopCapturerAndroid final : public webrtc::DesktopCapturer {
                             jint unchecked_crop_right,
                             jint unchecked_crop_bottom);
 
+  void OnI420FrameAvailable(JNIEnv* env,
+                            const base::android::JavaRef<jobject>& release_cb,
+                            jlong timestamp_ns,
+                            const base::android::JavaRef<jobject>& y_buf,
+                            jint y_unchecked_pixel_stride,
+                            jint y_unchecked_row_stride,
+                            const base::android::JavaRef<jobject>& u_buf,
+                            jint u_unchecked_pixel_stride,
+                            jint u_unchecked_row_stride,
+                            const base::android::JavaRef<jobject>& v_buf,
+                            jint v_unchecked_pixel_stride,
+                            jint v_unchecked_row_stride,
+                            jint unchecked_crop_left,
+                            jint unchecked_crop_top,
+                            jint unchecked_crop_right,
+                            jint unchecked_crop_bottom);
+
   void OnStop(JNIEnv* env);
 
  private:
@@ -73,8 +108,6 @@ class DesktopCapturerAndroid final : public webrtc::DesktopCapturer {
 
     // Java callback to run when this plane's buffer is no longer in use.
     base::android::ScopedJavaGlobalRef<jobject> release_cb;
-    // Timestamp of the frame in nanoseconds.
-    int64_t timestamp_ns;
     // Java ByteBuffer containing the plane data.
     base::android::ScopedJavaGlobalRef<jobject> buf;
     // The number of bytes between the start of adjacent pixels in a row.
@@ -101,6 +134,7 @@ class DesktopCapturerAndroid final : public webrtc::DesktopCapturer {
   std::unique_ptr<webrtc::DesktopFrame> next_frame_;
   int64_t last_frame_time_ns_ = 0;
   bool finishing_ = false;
+  std::unique_ptr<DesktopCapturerAndroidJniInterface> jni_interface_;
 };
 
 }  // namespace content

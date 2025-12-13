@@ -8,8 +8,10 @@
 #include <cstddef>
 
 #include "base/memory/raw_ref.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -26,11 +28,19 @@ class AutofillAiUkmLogger {
 
   void LogKeyMetrics(ukm::SourceId ukm_source_id,
                      const FormStructure& form,
+                     EntityType entity_type,
                      bool data_to_fill_available,
                      bool suggestions_shown,
                      bool suggestion_filled,
                      bool edited_autofilled_field,
                      bool opt_in_status);
+  void LogImportPromptResult(
+      const FormData& form,
+      AutofillClient::AutofillAiImportPromptType prompt_type,
+      EntityType entity_type,
+      EntityInstance::RecordType record_type,
+      AutofillClient::AutofillAiBubbleClosedReason close_reason,
+      ukm::SourceId ukm_source_id);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -47,6 +57,8 @@ class AutofillAiUkmLogger {
   void LogFieldEvent(ukm::SourceId ukm_source_id,
                      const FormStructure& form,
                      const AutofillField& field,
+                     EntityType entity_type,
+                     EntityInstance::RecordType record_type,
                      EventType event_type);
 
  private:

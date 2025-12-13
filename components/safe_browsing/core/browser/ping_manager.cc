@@ -5,6 +5,8 @@
 #include "components/safe_browsing/core/browser/ping_manager.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -26,6 +28,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/types/optional_ref.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/safe_browsing_hats_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -33,6 +36,8 @@
 #include "components/safe_browsing/core/common/utils.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -98,19 +103,20 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         sender: "Safe Browsing Extended Reporting"
         description:
           "When a user is opted in to automatically reporting 'possible "
-          "security incidents to Google,' and they reach a bad page that's "
-          "flagged by Safe Browsing, Chrome will send a report to Google "
-          "with information about the threat. This helps Safe Browsing learn "
+          "security incidents to Google,' and the security-relevant event "
+          "happens in Chrome, Chrome will send a report to Google "
+          "with information about the event. This helps Safe Browsing learn "
           "where threats originate and thus protect more users."
         trigger:
-          "When a red interstitial is shown, and the user is opted-in."
+          "The security-relevant event, and the user is opted-in."
         data:
           "The report includes the URL and referrer chain of the page. If the "
           "warning is triggered by a subresource on a partially loaded page, "
           "the report will include the URL and referrer chain of sub frames "
           "and resources loaded into the page.  It may also include a subset "
           "of headers for resources loaded, and some Google ad identifiers to "
-          "help block malicious ads."
+          "help block malicious ads. The specific data depends on the "
+          "security-relevant event."
         destination: GOOGLE_OWNED_SERVICE
       }
       policy {
@@ -127,6 +133,88 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           }
         }
       })");
+
+// LINT.IfChange(ClientSafeBrowsingReportTypeString)
+std::string GetReportTypeSuffix(
+    safe_browsing::ClientSafeBrowsingReportRequest::ReportType report_type) {
+  switch (report_type) {
+    case safe_browsing::ClientSafeBrowsingReportRequest_ReportType_UNKNOWN:
+      return "Unknown";
+    case safe_browsing::ClientSafeBrowsingReportRequest_ReportType_URL_PHISHING:
+      return "URLPhishing";
+    case safe_browsing::ClientSafeBrowsingReportRequest_ReportType_URL_MALWARE:
+      return "URLMalware";
+    case safe_browsing::ClientSafeBrowsingReportRequest_ReportType_URL_UNWANTED:
+      return "URLUnwanted";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_URL_CLIENT_SIDE_PHISHING:
+      return "URLClientSidePhishing";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_DANGEROUS_DOWNLOAD_RECOVERY:
+      return "DangerousDownloadRecovery";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_DANGEROUS_DOWNLOAD_WARNING:
+      return "DangerousDownloadWarning";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_DANGEROUS_DOWNLOAD_BY_API:
+      return "DangerousDownloadByAPI";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_URL_PASSWORD_PROTECTION_PHISHING:
+      return "URLPasswordProtectionPhishing";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_DANGEROUS_DOWNLOAD_OPENED:
+      return "DangerousDownloadOpened";
+    case safe_browsing::ClientSafeBrowsingReportRequest_ReportType_AD_SAMPLE:
+      return "AdSample";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_URL_SUSPICIOUS:
+      return "URLSuspicious";
+    case safe_browsing::ClientSafeBrowsingReportRequest_ReportType_BILLING:
+      return "URLBilling";
+    case safe_browsing::ClientSafeBrowsingReportRequest_ReportType_APK_DOWNLOAD:
+      return "APKDownload";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_BLOCKED_AD_REDIRECT:
+      return "BlockedAdRedirect";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_BLOCKED_AD_POPUP:
+      return "BlockedAdPopup";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_PHISHY_SITE_INTERACTIONS:
+      return "PhishySiteInteractions";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_WARNING_SHOWN:
+      return "WarningShown";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_NOTIFICATION_PERMISSION_ACCEPTED:
+      return "NotificationPermissionAccepted";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_DANGEROUS_DOWNLOAD_AUTO_DELETED:
+      return "DangerousDownloadAutoDeleted";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_DANGEROUS_DOWNLOAD_PROFILE_CLOSED:
+      return "DangerousDownloadProfileClosed";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_URL_REALTIME_AND_HASH_REALTIME_DISCREPANCY:
+      return "URLRealTimeAndHashRealTimeDiscrepancy";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_EXTERNAL_APP_REDIRECT:
+      return "ExternalAppRedirect";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_DANGEROUS_DOWNLOAD_WARNING_ANDROID:
+      return "DangerousDownloadWarningAndroid";
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_SERVICE_WORKER_BEHAVIOR:
+      return "ServiceWorkerBehavior";
+    // Deprecated report types.
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_URL_CLIENT_SIDE_MALWARE:
+    case safe_browsing::
+        ClientSafeBrowsingReportRequest_ReportType_HASH_PREFIX_REAL_TIME_EXPERIMENT:
+      NOTREACHED();
+  }
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/histograms.xml:ClientSafeBrowsingReportTypeString)
 
 }  // namespace
 
@@ -247,7 +335,7 @@ PingManager::~PingManager() = default;
 // All SafeBrowsing request responses are handled here.
 void PingManager::OnURLLoaderComplete(
     network::SimpleURLLoader* source,
-    std::unique_ptr<std::string> response_body) {
+    base::optional_ref<std::string> response_body) {
   auto it = safebrowsing_reports_.find(source);
   CHECK(it != safebrowsing_reports_.end());
   safebrowsing_reports_.erase(it);
@@ -258,29 +346,48 @@ void PingManager::OnURLLoaderComplete(
 
 void PingManager::OnSafeBrowsingHitURLLoaderComplete(
     network::SimpleURLLoader* source,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = source->ResponseInfo() && source->ResponseInfo()->headers
                           ? source->ResponseInfo()->headers->response_code()
                           : 0;
   RecordHttpResponseOrErrorCode("SafeBrowsing.HitReport.NetworkResult",
                                 source->NetError(), response_code);
-  OnURLLoaderComplete(source, std::move(response_body));
+  OnURLLoaderComplete(source, response_body);
 }
+
 void PingManager::OnThreatDetailsReportURLLoaderComplete(
     network::SimpleURLLoader* source,
     bool has_access_token,
-    std::unique_ptr<std::string> response_body) {
+    ClientSafeBrowsingReportRequest::ReportType report_type,
+    std::optional<std::string> response_body) {
   int response_code = source->ResponseInfo() && source->ResponseInfo()->headers
                           ? source->ResponseInfo()->headers->response_code()
                           : 0;
   std::string metric = "SafeBrowsing.ClientSafeBrowsingReport.NetworkResult";
-  std::string suffix =
+  std::string access_token_suffix =
       (has_access_token ? ".YesAccessToken" : ".NoAccessToken");
+  std::string report_type_token_suffix = "." + GetReportTypeSuffix(report_type);
   RecordHttpResponseOrErrorCode(metric.c_str(), source->NetError(),
                                 response_code);
-  RecordHttpResponseOrErrorCode((metric + suffix).c_str(), source->NetError(),
-                                response_code);
-  OnURLLoaderComplete(source, std::move(response_body));
+  RecordHttpResponseOrErrorCode((metric + access_token_suffix).c_str(),
+                                source->NetError(), response_code);
+  RecordHttpResponseOrErrorCode((metric + report_type_token_suffix).c_str(),
+                                source->NetError(), response_code);
+  if (response_code == net::HTTP_BAD_REQUEST) {
+    base::UmaHistogramExactLinear(
+        "SafeBrowsing.ClientSafeBrowsingReport.BadRequestReportType",
+        report_type, ClientSafeBrowsingReportRequest::ReportType_MAX + 1);
+  }
+  base::UmaHistogramExactLinear(
+      "SafeBrowsing.ClientSafeBrowsingReport.ResponseReceived", report_type,
+      ClientSafeBrowsingReportRequest::ReportType_MAX + 1);
+  if (source->NetError() == net::OK && response_code == net::HTTP_OK) {
+    base::UmaHistogramExactLinear(
+        "SafeBrowsing.ClientSafeBrowsingReport.ResponseSuccessful", report_type,
+        ClientSafeBrowsingReportRequest::ReportType_MAX + 1);
+  }
+
+  OnURLLoaderComplete(source, response_body);
 }
 
 // Sends a SafeBrowsing "hit" report.
@@ -325,33 +432,21 @@ void PingManager::ReportSafeBrowsingHit(
 // Sends threat details for users who opt-in.
 PingManager::ReportThreatDetailsResult PingManager::ReportThreatDetails(
     std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
-  SanitizeThreatDetailsReport(report.get());
-  if (!get_user_population_callback_.is_null()) {
-    *report->mutable_population() = get_user_population_callback_.Run();
-  }
-  if (!get_page_load_token_callback_.is_null()) {
-    ChromeUserPopulation::PageLoadToken token =
-        get_page_load_token_callback_.Run(GURL(report->page_url()));
-    report->mutable_population()->mutable_page_load_tokens()->Add()->Swap(
-        &token);
+  std::string serialized_report;
+  ReportThreatDetailsResult result =
+      FinalizeAndSerializeReport(report.get(), &serialized_report);
+  if (result != ReportThreatDetailsResult::SUCCESS) {
+    return result;
   }
 
-  std::string serialized_report;
-  if (!report->SerializeToString(&serialized_report)) {
-    DLOG(ERROR) << "Unable to serialize the threat report.";
-    return ReportThreatDetailsResult::SERIALIZATION_ERROR;
-  }
-  if (serialized_report.empty()) {
-    DLOG(ERROR) << "The threat report is empty.";
-    return ReportThreatDetailsResult::EMPTY_REPORT;
-  }
   if (get_should_fetch_access_token_.Run()) {
-    token_fetcher_->Start(
-        base::BindOnce(&PingManager::ReportThreatDetailsOnGotAccessToken,
-                       weak_factory_.GetWeakPtr(), serialized_report));
+    token_fetcher_->Start(base::BindOnce(
+        &PingManager::ReportThreatDetailsOnGotAccessToken,
+        weak_factory_.GetWeakPtr(), serialized_report, report->type()));
   } else {
     std::string empty_access_token;
-    ReportThreatDetailsOnGotAccessToken(serialized_report, empty_access_token);
+    ReportThreatDetailsOnGotAccessToken(serialized_report, report->type(),
+                                        empty_access_token);
   }
 
   base::UmaHistogramExactLinear(
@@ -426,25 +521,13 @@ void PingManager::AttachThreatDetailsAndLaunchSurvey(
            ClientSafeBrowsingReportRequest::URL_UNWANTED,
            ClientSafeBrowsingReportRequest::URL_MALWARE});
   CHECK(base::Contains(valid_report_types, report->type()));
-  SanitizeThreatDetailsReport(report.get());
-  if (!get_user_population_callback_.is_null()) {
-    *report->mutable_population() = get_user_population_callback_.Run();
-  }
-  if (!get_page_load_token_callback_.is_null()) {
-    ChromeUserPopulation::PageLoadToken token =
-        get_page_load_token_callback_.Run(GURL(report->page_url()));
-    report->mutable_population()->mutable_page_load_tokens()->Add()->Swap(
-        &token);
-  }
+
   std::string serialized_report;
-  if (!report->SerializeToString(&serialized_report)) {
-    DLOG(ERROR) << "Unable to serialize the threat report.";
+  if (FinalizeAndSerializeReport(report.get(), &serialized_report) !=
+      ReportThreatDetailsResult::SUCCESS) {
     return;
   }
-  if (serialized_report.empty()) {
-    DLOG(ERROR) << "The threat report is empty.";
-    return;
-  }
+
   std::string url_encoded_serialized_report;
   base::Base64UrlEncode(serialized_report,
                         base::Base64UrlEncodePolicy::INCLUDE_PADDING,
@@ -458,6 +541,7 @@ void PingManager::AttachThreatDetailsAndLaunchSurvey(
 
 void PingManager::ReportThreatDetailsOnGotAccessToken(
     const std::string& serialized_report,
+    ClientSafeBrowsingReportRequest::ReportType report_type,
     const std::string& access_token) {
   GURL report_url = ThreatDetailsUrl();
 
@@ -485,7 +569,7 @@ void PingManager::ReportThreatDetailsOnGotAccessToken(
       url_loader_factory_.get(),
       base::BindOnce(&PingManager::OnThreatDetailsReportURLLoaderComplete,
                      base::Unretained(this), loader.get(),
-                     !access_token.empty()));
+                     !access_token.empty(), report_type));
   safebrowsing_reports_.insert(std::move(loader));
 }
 
@@ -576,6 +660,31 @@ GURL PingManager::SafeBrowsingHitUrl(
           .c_str(),
       hit_report->is_subresource, threat_source.c_str(),
       hit_report->is_metrics_reporting_active));
+}
+
+PingManager::ReportThreatDetailsResult PingManager::FinalizeAndSerializeReport(
+    ClientSafeBrowsingReportRequest* report,
+    std::string* out_serialized_report) {
+  SanitizeThreatDetailsReport(report);
+  if (!get_user_population_callback_.is_null()) {
+    *report->mutable_population() = get_user_population_callback_.Run();
+  }
+  if (!get_page_load_token_callback_.is_null()) {
+    ChromeUserPopulation::PageLoadToken token =
+        get_page_load_token_callback_.Run(GURL(report->page_url()));
+    report->mutable_population()->mutable_page_load_tokens()->Add()->Swap(
+        &token);
+  }
+
+  if (!report->SerializeToString(out_serialized_report)) {
+    DLOG(ERROR) << "Unable to serialize the threat report.";
+    return ReportThreatDetailsResult::SERIALIZATION_ERROR;
+  }
+  if (out_serialized_report->empty()) {
+    DLOG(ERROR) << "The threat report is empty.";
+    return ReportThreatDetailsResult::EMPTY_REPORT;
+  }
+  return ReportThreatDetailsResult::SUCCESS;
 }
 
 GURL PingManager::ThreatDetailsUrl() const {

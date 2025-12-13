@@ -32,6 +32,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowRoleManager;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -39,6 +40,8 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoTriggerStateListener;
 import org.chromium.components.feature_engagement.Tracker;
@@ -53,6 +56,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.time.Duration;
+
 /** Unit test for {@link DefaultBrowserPromoUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DefaultBrowserPromoUtilsTest {
@@ -65,6 +70,7 @@ public class DefaultBrowserPromoUtilsTest {
     @Mock private InsetObserver mInsetObserver;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     private Activity mActivity;
     private WindowAndroid mWindowAndroid;
@@ -299,11 +305,27 @@ public class DefaultBrowserPromoUtilsTest {
 
     @Test
     public void testNotifyDefaultBrowserPromoVisible() {
+        ChromeSharedPreferences.getInstance()
+                .removeKey(
+                        ChromePreferenceKeys.EDUCATIONAL_TIP_LAST_DEFAULT_BROWSER_PROMO_TIMESTAMP);
+        Assert.assertFalse(
+                "Promo shouldn't have been shown recently.",
+                DefaultBrowserPromoUtils.hasPromoShownRecently());
+
         DefaultBrowserPromoTriggerStateListener listener =
                 Mockito.mock(DefaultBrowserPromoTriggerStateListener.class);
         mUtils.addListener(listener);
         mUtils.notifyDefaultBrowserPromoVisible();
         verify(listener).onDefaultBrowserPromoTriggered();
+
+        mFakeTimeTestRule.advanceMillis(Duration.ofDays(1).toMillis());
+        Assert.assertTrue(
+                "Promo should still be considered recently shown.",
+                DefaultBrowserPromoUtils.hasPromoShownRecently());
+        mFakeTimeTestRule.advanceMillis(Duration.ofDays(8).toMillis());
+        Assert.assertFalse(
+                "Promo should no longer be considered recently shown.",
+                DefaultBrowserPromoUtils.hasPromoShownRecently());
 
         mUtils.removeListener(listener);
         mUtils.notifyDefaultBrowserPromoVisible();

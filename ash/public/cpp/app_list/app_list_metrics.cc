@@ -96,7 +96,7 @@ bool IsAppListShowSourceUserTriggered(AppListShowSource show_source) {
     case AppListShowSource::kSwipeFromShelf:
       return true;
     case AppListShowSource::kTabletMode:
-    case AppListShowSource::kAssistantEntryPoint:
+    case AppListShowSource::kAssistantEntryPoint_DEPRECATED:
     case AppListShowSource::kBrowser:
     case AppListShowSource::kWelcomeTour:
       return false;

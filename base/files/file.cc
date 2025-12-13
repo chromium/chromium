@@ -114,8 +114,7 @@ std::optional<size_t> File::Read(int64_t offset, span<uint8_t> data) {
 }
 
 bool File::ReadAndCheck(int64_t offset, span<uint8_t> data) {
-  // Size checked in span form of Read() above.
-  return Read(offset, data) == static_cast<int>(data.size());
+  return Read(offset, data) == data.size();
 }
 
 std::optional<size_t> File::ReadAtCurrentPos(span<uint8_t> data) {
@@ -130,8 +129,7 @@ std::optional<size_t> File::ReadAtCurrentPos(span<uint8_t> data) {
 }
 
 bool File::ReadAtCurrentPosAndCheck(span<uint8_t> data) {
-  // Size checked in span form of ReadAtCurrentPos() above.
-  return ReadAtCurrentPos(data) == static_cast<int>(data.size());
+  return ReadAtCurrentPos(data) == data.size();
 }
 
 std::optional<size_t> File::Write(int64_t offset, span<const uint8_t> data) {
@@ -146,8 +144,7 @@ std::optional<size_t> File::Write(int64_t offset, span<const uint8_t> data) {
 }
 
 bool File::WriteAndCheck(int64_t offset, span<const uint8_t> data) {
-  // Size checked in span form of Write() above.
-  return Write(offset, data) == static_cast<int>(data.size());
+  return Write(offset, data) == data.size();
 }
 
 std::optional<size_t> File::WriteAtCurrentPos(span<const uint8_t> data) {
@@ -162,20 +159,7 @@ std::optional<size_t> File::WriteAtCurrentPos(span<const uint8_t> data) {
 }
 
 bool File::WriteAtCurrentPosAndCheck(span<const uint8_t> data) {
-  // Size checked in span form of WriteAtCurrentPos() above.
-  return WriteAtCurrentPos(data) == static_cast<int>(data.size());
-}
-
-std::optional<size_t> File::ReadNoBestEffort(int64_t offset,
-                                             base::span<uint8_t> data) {
-  span<char> chars = base::as_writable_chars(data);
-  int size = checked_cast<int>(chars.size());
-  // SAFETY: `chars.size()` describes valid portion of `chars.data()`.
-  int result = UNSAFE_BUFFERS(ReadNoBestEffort(offset, chars.data(), size));
-  if (result < 0) {
-    return std::nullopt;
-  }
-  return checked_cast<size_t>(result);
+  return WriteAtCurrentPos(data) == data.size();
 }
 
 std::optional<size_t> File::ReadAtCurrentPosNoBestEffort(
@@ -184,19 +168,6 @@ std::optional<size_t> File::ReadAtCurrentPosNoBestEffort(
   int size = checked_cast<int>(chars.size());
   // SAFETY: `chars.size()` describes valid portion of `chars.data()`.
   int result = UNSAFE_BUFFERS(ReadAtCurrentPosNoBestEffort(chars.data(), size));
-  if (result < 0) {
-    return std::nullopt;
-  }
-  return checked_cast<size_t>(result);
-}
-
-std::optional<size_t> File::WriteAtCurrentPosNoBestEffort(
-    base::span<const uint8_t> data) {
-  span<const char> chars = base::as_chars(data);
-  int size = checked_cast<int>(chars.size());
-  // SAFETY: `chars.size()` describes valid portion of `chars.data()`.
-  int result =
-      UNSAFE_BUFFERS(WriteAtCurrentPosNoBestEffort(chars.data(), size));
   if (result < 0) {
     return std::nullopt;
   }

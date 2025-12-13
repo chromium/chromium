@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/raster/raster_buffer_provider.h"
 
 #include <stddef.h>
@@ -14,7 +9,9 @@
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
@@ -35,65 +32,19 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_context_support.h"
-#include "components/viz/test/test_gles2_interface.h"
-#include "gpu/command_buffer/client/raster_implementation_gles.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
-#include "third_party/khronos/GLES2/gl2.h"
-#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 
 namespace cc {
-namespace {
-
-class PerfGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
-  // Overridden from gpu::gles2::GLES2Interface:
-  void GenBuffers(GLsizei n, GLuint* buffers) override {
-    for (GLsizei i = 0; i < n; ++i)
-      buffers[i] = 1u;
-  }
-  void GenTextures(GLsizei n, GLuint* textures) override {
-    for (GLsizei i = 0; i < n; ++i)
-      textures[i] = 1u;
-  }
-  void GetIntegerv(GLenum pname, GLint* params) override {
-    if (pname == GL_MAX_TEXTURE_SIZE)
-      *params = INT_MAX;
-  }
-  void GenQueriesEXT(GLsizei n, GLuint* queries) override {
-    for (GLsizei i = 0; i < n; ++i)
-      queries[i] = 1u;
-  }
-  void GetQueryObjectuivEXT(GLuint query,
-                            GLenum pname,
-                            GLuint* params) override {
-    if (pname == GL_QUERY_RESULT_AVAILABLE_EXT)
-      *params = 1;
-  }
-
-  // Overridden from gpu::InterfaceBase
-  void GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) override {
-    // Copy the data over after setting the data to ensure alignment.
-    gpu::SyncToken sync_token_data(gpu::CommandBufferNamespace::GPU_IO,
-                                   gpu::CommandBufferId(), 0);
-    memcpy(sync_token, &sync_token_data, sizeof(sync_token_data));
-  }
-};
-
-}  // namespace
 
 class PerfContextProvider
     : public base::RefCountedThreadSafe<PerfContextProvider>,
       public viz::RasterContextProvider {
  public:
-  PerfContextProvider()
-      : context_gl_(new PerfGLES2Interface),
-        cache_controller_(&support_, nullptr) {
+  PerfContextProvider() : cache_controller_(&support_, nullptr) {
     capabilities_.sync_query = true;
-
-    raster_context_ = std::make_unique<gpu::raster::RasterImplementationGLES>(
-        context_gl_.get(), ContextSupport(), capabilities_);
   }
 
   // viz::RasterContextProvider implementation.
@@ -114,15 +65,12 @@ class PerfContextProvider
     return gpu_feature_info_;
   }
   gpu::raster::RasterInterface* RasterInterface() override {
-    return raster_context_.get();
-  }
-  gpu::ContextSupport* ContextSupport() override { return &support_; }
-  class GrDirectContext* GrContext() override {
     if (!test_context_provider_) {
       test_context_provider_ = viz::TestContextProvider::CreateRaster();
     }
-    return test_context_provider_->GrContext();
+    return test_context_provider_->RasterInterface();
   }
+  gpu::ContextSupport* ContextSupport() override { return &support_; }
   gpu::SharedImageInterface* SharedImageInterface() override {
     if (!test_context_provider_) {
       test_context_provider_ = viz::TestContextProvider::CreateRaster();
@@ -135,19 +83,12 @@ class PerfContextProvider
   base::Lock* GetLock() override { return &context_lock_; }
   void AddObserver(viz::ContextLostObserver* obs) override {}
   void RemoveObserver(viz::ContextLostObserver* obs) override {}
-  unsigned int GetGrGLTextureFormat(
-      viz::SharedImageFormat format) const override {
-    return viz::SharedImageFormatRestrictedSinglePlaneUtils::
-        ToGLTextureStorageFormat(
-            format, ContextCapabilities().angle_rgbx_internal_format);
-  }
 
  private:
   friend class base::RefCountedThreadSafe<PerfContextProvider>;
 
   ~PerfContextProvider() override = default;
 
-  std::unique_ptr<PerfGLES2Interface> context_gl_;
   std::unique_ptr<gpu::raster::RasterInterface> raster_context_;
 
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
@@ -216,8 +157,7 @@ class PerfRasterBufferProviderHelper {
   virtual std::unique_ptr<RasterBuffer> AcquireBufferForRaster(
       const ResourcePool::InUsePoolResource& resource,
       uint64_t resource_content_id,
-      uint64_t previous_content_id,
-      bool depends_on_at_raster_decodes) = 0;
+      uint64_t previous_content_id) = 0;
 };
 
 class PerfRasterTaskImpl : public PerfTileTask {
@@ -292,8 +232,7 @@ class RasterBufferProviderPerfTestBase {
       // No tile ids are given to support partial updates.
       std::unique_ptr<RasterBuffer> raster_buffer;
       if (helper)
-        raster_buffer =
-            helper->AcquireBufferForRaster(in_use_resource, 0, 0, false);
+        raster_buffer = helper->AcquireBufferForRaster(in_use_resource, 0, 0);
       TileTask::Vector dependencies = image_decode_tasks;
       raster_tasks->push_back(new PerfRasterTaskImpl(
           resource_pool_.get(), std::move(in_use_resource),
@@ -378,8 +317,8 @@ class RasterBufferProviderPerfTest
         raster_buffer_provider_ = std::make_unique<OneCopyRasterBufferProvider>(
             worker_context_provider_->SharedImageInterface(),
             task_runner_.get(), compositor_context_provider_.get(),
-            worker_context_provider_.get(), std::numeric_limits<int>::max(),
-            false, std::numeric_limits<int>::max(),
+            worker_context_provider_.get(), false,
+            std::numeric_limits<int>::max(),
             /*is_overlay_candidate=*/false);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_GPU:
@@ -418,13 +357,9 @@ class RasterBufferProviderPerfTest
   std::unique_ptr<RasterBuffer> AcquireBufferForRaster(
       const ResourcePool::InUsePoolResource& resource,
       uint64_t resource_content_id,
-      uint64_t previous_content_id,
-      bool depends_on_at_raster_decodes) override {
+      uint64_t previous_content_id) override {
     return raster_buffer_provider_->AcquireBufferForRaster(
-        resource, resource_content_id, previous_content_id,
-        depends_on_at_raster_decodes,
-        false /* depends_on_hardware_accelerated_jpeg_candidates */,
-        false /* depends_on_hardware_accelerated_webp_candidates */);
+        resource, resource_content_id, previous_content_id);
   }
 
   void RunMessageLoopUntilAllTasksHaveCompleted() {

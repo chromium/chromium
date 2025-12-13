@@ -43,8 +43,8 @@ void MockCloudPolicyClient::SetClientId(const std::string& client_id) {
 void MockCloudPolicyClient::SetPolicy(const std::string& policy_type,
                                       const std::string& settings_entity_id,
                                       const em::PolicyFetchResponse& policy) {
-  last_policy_fetch_responses_[std::make_pair(policy_type,
-                                              settings_entity_id)] = policy;
+  last_policy_fetch_responses_[CloudPolicyClientTypeParams(
+      policy_type, settings_entity_id)] = policy;
 }
 
 void MockCloudPolicyClient::SetFetchedInvalidationVersion(

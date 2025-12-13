@@ -16,6 +16,7 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "content/browser/file_system_access/file_system_access_bucket_path_watcher.h"
 #include "content/browser/file_system_access/file_system_access_change_source.h"

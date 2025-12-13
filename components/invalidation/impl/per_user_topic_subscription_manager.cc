@@ -21,9 +21,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/invalidation/public/identity_provider.h"
-#include "components/invalidation/public/invalidation_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -251,7 +249,11 @@ void PerUserTopicSubscriptionManager::UpdateSubscribedTopics(
   ReportNewInstanceIdTokenState(new_instance_id_token);
   DropAllSavedSubscriptionsOnTokenChange(new_instance_id_token);
   StoreNewToken(new_instance_id_token);
+  UpdateSubscribedTopics(topics);
+}
 
+void PerUserTopicSubscriptionManager::UpdateSubscribedTopics(
+    const TopicMap& topics) {
   for (const auto& topic : topics) {
     auto it = pending_subscriptions_.find(topic.first);
     if (it != pending_subscriptions_.end() &&

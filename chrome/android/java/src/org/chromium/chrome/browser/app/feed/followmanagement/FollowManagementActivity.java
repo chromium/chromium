@@ -13,6 +13,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.feed.followmanagement.FollowManagementCoordinator;
@@ -23,7 +24,7 @@ public class FollowManagementActivity extends SnackbarActivity {
     private static final String TAG = "FollowMActivity";
 
     @Override
-    protected void onCreateInternal(Bundle savedInstanceState) {
+    protected void onCreateInternal(@Nullable Bundle savedInstanceState) {
         super.onCreateInternal(savedInstanceState);
         Log.d(TAG, "FollowManagementActivity.onCreate");
 

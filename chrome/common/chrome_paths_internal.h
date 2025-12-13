@@ -85,14 +85,6 @@ bool GetLocalLibraryDirectory(base::FilePath* result);
 // Get the global Application Support directory (under /Library/).
 bool GetGlobalApplicationSupportDirectory(base::FilePath* result);
 
-#if defined(__OBJC__)
-
-// Returns the NSBundle for the outer browser application, even when running
-// inside the helper. In unbundled applications, such as tests, returns nil.
-NSBundle* OuterAppBundle();
-
-#endif  // __OBJC__
-
 #endif  // BUILDFLAG(IS_MAC)
 
 // Checks if the |process_type| has the rights to access the profile.

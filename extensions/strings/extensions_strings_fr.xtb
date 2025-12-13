@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Appview : <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Cette extension comprend le fichier clé <ph name="KEY_PATH" />. Vous ne voulez probablement pas poursuivre.</translation>
 <translation id="5486326529110362464">La valeur d'entrée de la clé privée est obligatoire.</translation>
+<translation id="5707185214361380026">Échec du chargement de l'extension depuis :</translation>
 <translation id="5972529113578162692">L'administrateur de cet ordinateur exige que l'extension <ph name="EXTENSION_NAME" /> soit installée. Cette extension ne pourra pas être désinstallée.</translation>
 <translation id="6027032947578871493">Produit inconnu <ph name="PRODUCT_ID" /> fourni par <ph name="VENDOR_NAME" /> (numéro de série : <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> du fournisseur <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Erreur lors du chargement de l'extension</translation>
 <translation id="6322279351188361895">Échec de lecture de la clé privée</translation>
 <translation id="6391538222494443604">Le répertoire d'extensions est obligatoire.</translation>
 <translation id="641087317769093025">Impossible de décompresser l'extension.</translation>

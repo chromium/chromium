@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -59,10 +60,10 @@ class ReadableStream::PullAlgorithm final : public StreamAlgorithm {
   explicit PullAlgorithm(UnderlyingByteSourceBase* underlying_byte_source)
       : underlying_byte_source_(underlying_byte_source) {}
 
-  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) override {
-    DCHECK_EQ(argc, 0);
+  ScriptPromise<IDLUndefined> Run(
+      ScriptState* script_state,
+      base::span<v8::Local<v8::Value>> argv) override {
+    DCHECK_EQ(argv.size(), 0u);
     DCHECK(controller_);
     ScriptPromise<IDLUndefined> promise;
     if (script_state->ContextIsValid()) {
@@ -109,10 +110,10 @@ class ReadableStream::CancelAlgorithm final : public StreamAlgorithm {
   explicit CancelAlgorithm(UnderlyingByteSourceBase* underlying_byte_source)
       : underlying_byte_source_(underlying_byte_source) {}
 
-  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) override {
-    DCHECK_EQ(argc, 1);
+  ScriptPromise<IDLUndefined> Run(
+      ScriptState* script_state,
+      base::span<v8::Local<v8::Value>> argv) override {
+    DCHECK_EQ(argv.size(), 1u);
     ScriptPromise<IDLUndefined> promise;
     if (script_state->ContextIsValid()) {
       v8::TryCatch try_catch(script_state->GetIsolate());
@@ -531,7 +532,7 @@ V8ReadableStreamReader* ReadableStream::getReader(
     ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#rs-get-reader
   if (options->hasMode()) {
-    DCHECK_EQ(options->mode(), "byob");
+    DCHECK_EQ(options->mode(), V8ReadableStreamReaderMode::Enum::kByob);
 
     UseCounter::Count(ExecutionContext::From(script_state),
                       WebFeature::kReadableStreamBYOBReader);
@@ -559,7 +560,7 @@ ReadableStreamBYOBReader* ReadableStream::GetBYOBReaderForTesting(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   auto* options = ReadableStreamGetReaderOptions::Create();
-  options->setMode("byob");
+  options->setMode(V8ReadableStreamReaderMode::Enum::kByob);
   auto* result = getReader(script_state, options, exception_state);
   if (!result)
     return nullptr;

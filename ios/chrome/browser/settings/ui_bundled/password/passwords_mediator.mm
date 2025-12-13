@@ -101,21 +101,16 @@ struct PasswordManagerActiveWidgetPromoData
 
   // Service to know whether passwords are synced.
   raw_ptr<syncer::SyncService> _syncService;
-
-  // The user pref service.
-  raw_ptr<PrefService> _prefService;
 }
 
 - (instancetype)initWithPasswordCheckManager:
                     (scoped_refptr<IOSChromePasswordCheckManager>)
                         passwordCheckManager
                                faviconLoader:(FaviconLoader*)faviconLoader
-                                 syncService:(syncer::SyncService*)syncService
-                                 prefService:(PrefService*)prefService {
+                                 syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
     _syncService = syncService;
-    _prefService = prefService;
     _faviconLoader = faviconLoader;
 
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
@@ -164,14 +159,11 @@ struct PasswordManagerActiveWidgetPromoData
   _passwordCheckManager.reset();
   _savedPasswordsPresenter = nullptr;
   _faviconLoader = nullptr;
-  _prefService = nullptr;
   _syncService = nullptr;
 }
 
 - (void)askFETToShowPasswordManagerWidgetPromo {
-  if (password_manager::features::
-          IsPasswordManagerTrustedVaultWidgetEnabled() &&
-      [self shouldTrustedVaultPromoBeShown]) {
+  if ([self shouldTrustedVaultPromoBeShown]) {
     // We don't display the password manager widget promo because the trusted
     // vault promo should be shown.
     return;
@@ -366,7 +358,7 @@ struct PasswordManagerActiveWidgetPromoData
 // Compute whether user is capable to run password check in Google Account.
 - (BOOL)canUseAccountPasswordCheckup {
   return password_manager::features_util::IsAccountStorageEnabled(
-             _prefService, _syncService) &&
+             _syncService) &&
          !_syncService->GetUserSettings()->IsEncryptEverythingEnabled();
 }
 
@@ -432,11 +424,9 @@ struct PasswordManagerActiveWidgetPromoData
 // whether the error badge should be displayed for the GPM icon in the overflow
 // menu.
 - (void)displayOrHideTrustedVaultPasswordManagerWidgetPromo {
-  if (password_manager::features::
-          IsPasswordManagerTrustedVaultWidgetEnabled()) {
-    [self.consumer setShouldShowTrustedVaultWidgetPromo:
-                       [self shouldTrustedVaultPromoBeShown]];
-  };
+  [self.consumer
+      setShouldShowTrustedVaultWidgetPromo:[self
+                                               shouldTrustedVaultPromoBeShown]];
 }
 
 #pragma mark - SavedPasswordsPresenterObserver
@@ -458,7 +448,8 @@ struct PasswordManagerActiveWidgetPromoData
 #pragma mark - TableViewFaviconDataSource
 
 - (void)faviconForPageURL:(CrURL*)URL
-               completion:(void (^)(FaviconAttributes*))completion {
+               completion:(void (^)(FaviconAttributes* attributes,
+                                    bool cached))completion {
   BOOL fallbackToGoogleServer =
       password_manager_util::IsSavingPasswordsToAccountWithNormalEncryption(
           _syncService);

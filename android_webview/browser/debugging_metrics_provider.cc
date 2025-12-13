@@ -5,7 +5,8 @@
 #include "android_webview/browser/debugging_metrics_provider.h"
 
 #include "android_webview/browser/aw_devtools_server.h"
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
+#include "base/android/apk_info.h"
 #include "base/metrics/histogram_functions.h"
 
 namespace {
@@ -22,9 +23,8 @@ enum class DebuggingEnabled {
 };
 
 void RecordMetricsImpl() {
-  base::android::BuildInfo* build_info =
-      base::android::BuildInfo::GetInstance();
-  if (build_info->is_debug_app() || build_info->is_debug_android()) {
+  if (base::android::apk_info::is_debug_app() ||
+      base::android::android_info::is_debug_android()) {
     base::UmaHistogramEnumeration(
         kisDebuggableHistogramName,
         DebuggingEnabled::kEnabledByDebuggableAppOrOS);

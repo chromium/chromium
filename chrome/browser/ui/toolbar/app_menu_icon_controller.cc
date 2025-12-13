@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/defaults.h"
+#include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
@@ -35,9 +36,9 @@ AppMenuIconController::Severity SeverityFromUpgradeLevel(
       case UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED:
       case UpgradeDetector::UPGRADE_ANNOYANCE_GRACE:
       case UpgradeDetector::UPGRADE_ANNOYANCE_HIGH:
-        return AppMenuIconController::Severity::LOW;
+        return AppMenuIconController::Severity::kLow;
       case UpgradeDetector::UPGRADE_ANNOYANCE_CRITICAL:
-        return AppMenuIconController::Severity::HIGH;
+        return AppMenuIconController::Severity::kHigh;
     }
   } else {
     switch (level) {
@@ -45,20 +46,35 @@ AppMenuIconController::Severity SeverityFromUpgradeLevel(
         break;
       case UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW:
         // kVeryLow is meaningless for stable channels.
-        return AppMenuIconController::Severity::NONE;
+        return AppMenuIconController::Severity::kNone;
       case UpgradeDetector::UPGRADE_ANNOYANCE_LOW:
-        return AppMenuIconController::Severity::LOW;
+        return AppMenuIconController::Severity::kLow;
       case UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED:
-        return AppMenuIconController::Severity::MEDIUM;
+        return AppMenuIconController::Severity::kMedium;
       case UpgradeDetector::UPGRADE_ANNOYANCE_GRACE:
       case UpgradeDetector::UPGRADE_ANNOYANCE_HIGH:
       case UpgradeDetector::UPGRADE_ANNOYANCE_CRITICAL:
-        return AppMenuIconController::Severity::HIGH;
+        return AppMenuIconController::Severity::kHigh;
     }
   }
   DCHECK_EQ(level, UpgradeDetector::UPGRADE_ANNOYANCE_NONE);
 
-  return AppMenuIconController::Severity::NONE;
+  return AppMenuIconController::Severity::kNone;
+}
+
+// Returns the app menu icon severity for a Global Error.
+AppMenuIconController::Severity SeverityFromError(GlobalError* error) {
+  CHECK(error);
+
+  switch (error->GetSeverity()) {
+    case GlobalError::SEVERITY_LOW:
+      return AppMenuIconController::Severity::kLow;
+    case GlobalError::SEVERITY_MEDIUM:
+      return AppMenuIconController::Severity::kMedium;
+    case GlobalError::SEVERITY_HIGH:
+      return AppMenuIconController::Severity::kHigh;
+  }
+  NOTREACHED();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -114,20 +130,20 @@ AppMenuIconController::GetTypeAndSeverity() const {
     // update. This can happen for beta and stable channels once the VERY_LOW
     // annoyance level is reached.
     auto severity = SeverityFromUpgradeLevel(is_unstable_channel_, level);
-    if (severity != Severity::NONE) {
-      return {IconType::UPGRADE_NOTIFICATION, severity};
+    if (severity != Severity::kNone) {
+      return {IconType::kUpgradeNotification, severity};
     }
   }
 
-  if (GlobalErrorServiceFactory::GetForProfile(profile_)
-          ->GetHighestSeverityGlobalErrorWithAppMenuItem()) {
-    // If you change the severity here, make sure to also change the menu icon
-    // and the bubble icon.
-    return {IconType::GLOBAL_ERROR, Severity::MEDIUM};
+  // If you change the severity here, make sure to also change the menu icon
+  // and the bubble icon.
+  if (auto* error = GlobalErrorServiceFactory::GetForProfile(profile_)
+                        ->GetHighestSeverityGlobalErrorWithAppMenuItem()) {
+    return {IconType::kGlobalError, SeverityFromError(error)};
   }
 #endif
 
-  return {IconType::NONE, Severity::NONE};
+  return {IconType::kNone, Severity::kNone};
 }
 
 void AppMenuIconController::OnGlobalErrorsChanged() {

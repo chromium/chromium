@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/traced_value.h"
 #include "components/download/public/common/download_create_info.h"
@@ -76,7 +77,9 @@ namespace {
 namespace AttributionReportingIssueTypeEnum =
     protocol::Audits::AttributionReportingIssueTypeEnum;
 
-const char kPrivacySandboxExtensionsAPI[] = "PrivacySandboxExtensionsAPI";
+const char kExampleBrowserProcessDeprecation[] =
+    "ExampleBrowserProcessDeprecation";
+const char kRelatedWebsiteSets[] = "RelatedWebsiteSets";
 
 template <typename Handler, typename... MethodArgs, typename... Args>
 void DispatchToAgents(DevToolsAgentHostImpl* host,
@@ -510,8 +513,10 @@ BuildFederatedAuthUserInfoRequestIssue(
 const char* DeprecationIssueTypeToProtocol(
     blink::mojom::DeprecationIssueType error_type) {
   switch (error_type) {
-    case blink::mojom::DeprecationIssueType::kPrivacySandboxExtensionsAPI:
-      return kPrivacySandboxExtensionsAPI;
+    case blink::mojom::DeprecationIssueType::kExampleBrowserProcessDeprecation:
+      return kExampleBrowserProcessDeprecation;
+    case blink::mojom::DeprecationIssueType::kRelatedWebsiteSets:
+      return kRelatedWebsiteSets;
   }
 }
 
@@ -874,6 +879,7 @@ void DidActivatePrerender(const NavigationRequest& nav_request,
 void DidUpdatePrerenderStatus(
     FrameTreeNodeId initiator_frame_tree_node_id,
     const base::UnguessableToken& initiator_devtools_navigation_token,
+    blink::mojom::SpeculationAction action,
     const GURL& prerender_url,
     std::optional<blink::mojom::SpeculationTargetHint> target_hint,
     const base::UnguessableToken& preload_pipeline_id,
@@ -897,11 +903,11 @@ void DidUpdatePrerenderStatus(
   // We update DevToolsPreloadStorage, even if there are no active DevTools
   // sessions, to persist the latest status update.
   devtools_preload_storage->UpdatePrerenderStatus(
-      prerender_url, target_hint, preload_pipeline_id, status, prerender_status,
-      disallowed_mojo_interface, mismatched_headers);
+      action, prerender_url, target_hint, preload_pipeline_id, status,
+      prerender_status, disallowed_mojo_interface, mismatched_headers);
 
   DispatchToAgents(ftn, &protocol::PreloadHandler::DidUpdatePrerenderStatus,
-                   initiator_devtools_navigation_token, prerender_url,
+                   initiator_devtools_navigation_token, action, prerender_url,
                    target_hint, preload_pipeline_id, status, prerender_status,
                    disallowed_mojo_interface, mismatched_headers);
 }
@@ -1014,6 +1020,33 @@ void OnNavigationRequestFailed(
 
   DispatchToAgents(ftn, &protocol::NetworkHandler::LoadingComplete, id,
                    protocol::Network::ResourceTypeEnum::Document, status);
+}
+
+void OnNavigationEntryMarkedSkippable(const GURL& url,
+                                      RenderFrameHostImpl* rfh) {
+  DCHECK(rfh);
+
+  auto request =
+      protocol::Audits::AffectedRequest::Create().SetUrl(url.spec()).Build();
+
+  auto generic_details =
+      protocol::Audits::GenericIssueDetails::Create()
+          .SetErrorType(protocol::Audits::GenericIssueErrorTypeEnum::
+                            NavigationEntryMarkedSkippable)
+          .SetRequest(std::move(request))
+          .Build();
+
+  auto details = protocol::Audits::InspectorIssueDetails::Create()
+                     .SetGenericIssueDetails(std::move(generic_details))
+                     .Build();
+
+  auto issue =
+      protocol::Audits::InspectorIssue::Create()
+          .SetCode(protocol::Audits::InspectorIssueCodeEnum::GenericIssue)
+          .SetDetails(std::move(details))
+          .Build();
+
+  ReportBrowserInitiatedIssue(rfh, std::move(issue));
 }
 
 bool ShouldBypassCSP(const NavigationRequest& nav_request) {
@@ -1284,6 +1317,22 @@ bool ShouldWaitForDebuggerInWindowOpen() {
   return false;
 }
 
+DevtoolsOverriddenOutputParams ApplyEmulationOverrides(
+    DevToolsAgentHostImpl* agent_host,
+    net::HttpRequestHeaders* headers) {
+  DevtoolsOverriddenOutputParams output_params;
+  for (auto* emulation : protocol::EmulationHandler::ForAgentHost(agent_host)) {
+    bool ua_overridden = false;
+    bool accept_language_overridden = false;
+    emulation->ApplyOverrides(headers, &ua_overridden,
+                              &accept_language_overridden);
+
+    output_params.user_agent_overridden |= ua_overridden;
+    output_params.accept_language_overridden |= accept_language_overridden;
+  }
+  return output_params;
+}
+
 namespace {
 // This is a helper function used in ApplyNetworkRequestOverrides and
 // ApplyUserAgentMetadataOverrides to help correctly set network request header
@@ -1314,7 +1363,8 @@ void ApplyNetworkRequestOverrides(
     std::optional<std::vector<net::SourceStreamType>>*
         devtools_accepted_stream_types,
     bool* devtools_user_agent_overridden,
-    bool* devtools_accept_language_overridden) {
+    bool* devtools_accept_language_overridden,
+    GURL* referrer_override) {
   for (auto* network : protocol::NetworkHandler::ForAgentHost(agent_host)) {
     if (!network->enabled()) {
       continue;
@@ -1323,20 +1373,17 @@ void ApplyNetworkRequestOverrides(
       *network_instrumentation_enabled = true;
     }
     network->ApplyOverrides(headers, skip_service_worker, disable_cache,
-                            devtools_accepted_stream_types);
+                            devtools_accepted_stream_types, referrer_override);
   }
 
-  for (auto* emulation : protocol::EmulationHandler::ForAgentHost(agent_host)) {
-    bool ua_overridden = false;
-    bool accept_language_overridden = false;
-    emulation->ApplyOverrides(headers, &ua_overridden,
-                              &accept_language_overridden);
-    if (devtools_user_agent_overridden) {
-      *devtools_user_agent_overridden |= ua_overridden;
-    }
-    if (devtools_accept_language_overridden) {
-      *devtools_accept_language_overridden |= accept_language_overridden;
-    }
+  DevtoolsOverriddenOutputParams output_params =
+      ApplyEmulationOverrides(agent_host, headers);
+  if (devtools_user_agent_overridden) {
+    *devtools_user_agent_overridden = output_params.user_agent_overridden;
+  }
+  if (devtools_accept_language_overridden) {
+    *devtools_accept_language_overridden =
+        output_params.accept_language_overridden;
   }
 }
 
@@ -1355,7 +1402,7 @@ void ApplyAuctionNetworkRequestOverrides(
   ApplyNetworkRequestOverrides(
       agent_host, &request->headers, &disable_cache,
       network_instrumentation_enabled, &request->skip_service_worker,
-      &request->devtools_accepted_stream_types, nullptr, nullptr);
+      &request->devtools_accepted_stream_types, nullptr, nullptr, nullptr);
   if (disable_cache) {
     request->load_flags = net::LOAD_BYPASS_CACHE;
   }
@@ -1368,7 +1415,8 @@ void ApplyNetworkRequestOverrides(
     std::optional<std::vector<net::SourceStreamType>>*
         devtools_accepted_stream_types,
     bool* devtools_user_agent_overridden,
-    bool* devtools_accept_language_overridden) {
+    bool* devtools_accept_language_overridden,
+    GURL* referrer_override) {
   *devtools_user_agent_overridden = false;
   *devtools_accept_language_overridden = false;
   bool disable_cache = false;
@@ -1382,7 +1430,8 @@ void ApplyNetworkRequestOverrides(
   ApplyNetworkRequestOverrides(
       agent_host, &headers, &disable_cache, report_raw_headers,
       &begin_params->skip_service_worker, devtools_accepted_stream_types,
-      devtools_user_agent_overridden, devtools_accept_language_overridden);
+      devtools_user_agent_overridden, devtools_accept_language_overridden,
+      referrer_override);
   if (disable_cache) {
     begin_params->load_flags &=
         ~(net::LOAD_VALIDATE_CACHE | net::LOAD_SKIP_CACHE_VALIDATION |
@@ -1446,7 +1495,9 @@ bool MaybeCreateProxyForInterception(
     const base::UnguessableToken& frame_token,
     bool is_navigation,
     bool is_download,
-    network::mojom::URLLoaderFactoryOverride* agent_override) {
+    network::mojom::URLLoaderFactoryOverride* agent_override,
+    mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
+        header_client) {
   if (!agent_host) {
     return false;
   }
@@ -1455,7 +1506,7 @@ bool MaybeCreateProxyForInterception(
   for (const auto& handler : base::Reversed(handlers)) {
     had_interceptors |= handler->MaybeCreateProxyForInterception(
         process_id, storage_partition, frame_token, is_navigation, is_download,
-        agent_override);
+        agent_override, header_client);
   }
   return had_interceptors;
 }
@@ -1466,7 +1517,9 @@ bool WillCreateURLLoaderFactoryParams::Run(
     bool is_navigation,
     bool is_download,
     network::URLLoaderFactoryBuilder& factory_builder,
-    network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
+    network::mojom::URLLoaderFactoryOverridePtr* factory_override,
+    mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
+        header_client) {
   CHECK(!is_download || is_navigation);
 
   network::mojom::URLLoaderFactoryOverride devtools_override;
@@ -1484,17 +1537,17 @@ bool WillCreateURLLoaderFactoryParams::Run(
   bool had_interceptors =
       MaybeCreateProxyForInterception<protocol::NetworkHandler>(
           agent_host_, process_id_, storage_partition_, devtools_token_,
-          is_navigation, is_download, handler_override);
+          is_navigation, is_download, handler_override, header_client);
 
   had_interceptors |= MaybeCreateProxyForInterception<protocol::FetchHandler>(
       agent_host_, process_id_, storage_partition_, devtools_token_,
-      is_navigation, is_download, handler_override);
+      is_navigation, is_download, handler_override, header_client);
 
   // TODO(caseq): assure deterministic order of browser agents (or sessions).
   for (auto* browser_agent_host : BrowserDevToolsAgentHost::Instances()) {
     had_interceptors |= MaybeCreateProxyForInterception<protocol::FetchHandler>(
         browser_agent_host, process_id_, storage_partition_, devtools_token_,
-        is_navigation, is_download, handler_override);
+        is_navigation, is_download, handler_override, header_client);
   }
   if (!had_interceptors) {
     return false;
@@ -2133,6 +2186,14 @@ BuildUserReidentificationIssue(
                               : protocol::Audits::AffectedRequest::Create()
                                     .SetUrl(issue_details->request->url)
                                     .Build();
+  auto source_code_location =
+      issue_details->sourceCodeLocation.is_null()
+          ? nullptr
+          : protocol::Audits::SourceCodeLocation::Create()
+                .SetUrl(issue_details->sourceCodeLocation->url.value())
+                .SetLineNumber(issue_details->sourceCodeLocation->line)
+                .SetColumnNumber(issue_details->sourceCodeLocation->column)
+                .Build();
   std::string issue_type;
   switch (issue_details->type) {
     case blink::mojom::UserReidentificationIssueType::kBlockedFrameNavigation:
@@ -2142,6 +2203,10 @@ BuildUserReidentificationIssue(
     case blink::mojom::UserReidentificationIssueType::kBlockedSubresource:
       issue_type = protocol::Audits::UserReidentificationIssueTypeEnum::
           BlockedSubresource;
+      break;
+    case blink::mojom::UserReidentificationIssueType::kNoisedCanvasReadback:
+      issue_type = protocol::Audits::UserReidentificationIssueTypeEnum::
+          NoisedCanvasReadback;
       break;
     default:
       NOTREACHED();
@@ -2434,7 +2499,7 @@ void OnWorkerMainScriptRequestWillBeSent(
   ApplyNetworkRequestOverrides(owner_host, &request.headers, &disable_cache,
                                nullptr, &request.skip_service_worker,
                                &request.devtools_accepted_stream_types, nullptr,
-                               nullptr);
+                               nullptr, nullptr);
   if (disable_cache) {
     request.load_flags &=
         ~(net::LOAD_VALIDATE_CACHE | net::LOAD_SKIP_CACHE_VALIDATION |
@@ -2525,17 +2590,17 @@ protocol::Audits::GenericIssueErrorType GenericIssueErrorTypeToProtocol(
       return protocol::Audits::GenericIssueErrorTypeEnum::
           FormEmptyIdAndNameAttributesForInputError;
     case blink::mojom::GenericIssueErrorType::
-        kFormAriaLabelledByToNonExistingId:
+        kFormAriaLabelledByToNonExistingIdError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormAriaLabelledByToNonExistingId;
+          FormAriaLabelledByToNonExistingIdError;
     case blink::mojom::GenericIssueErrorType::
         kFormInputAssignedAutocompleteValueToIdOrNameAttributeError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           FormInputAssignedAutocompleteValueToIdOrNameAttributeError;
     case blink::mojom::GenericIssueErrorType::
-        kFormLabelHasNeitherForNorNestedInput:
+        kFormLabelHasNeitherForNorNestedInputError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormLabelHasNeitherForNorNestedInput;
+          FormLabelHasNeitherForNorNestedInputError;
     case blink::mojom::GenericIssueErrorType::
         kFormLabelForMatchesNonExistingIdError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
@@ -2547,6 +2612,21 @@ protocol::Audits::GenericIssueErrorType GenericIssueErrorTypeToProtocol(
     case blink::mojom::GenericIssueErrorType::kResponseWasBlockedByORB:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           ResponseWasBlockedByORB;
+    case blink::mojom::GenericIssueErrorType::kNavigationEntryMarkedSkippable:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          NavigationEntryMarkedSkippable;
+    case blink::mojom::GenericIssueErrorType::
+        kAutofillAndManualTextPolicyControlledFeaturesInfo:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          AutofillAndManualTextPolicyControlledFeaturesInfo;
+    case blink::mojom::GenericIssueErrorType::
+        kAutofillPolicyControlledFeatureInfo:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          AutofillPolicyControlledFeatureInfo;
+    case blink::mojom::GenericIssueErrorType::
+        kManualTextPolicyControlledFeatureInfo:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          ManualTextPolicyControlledFeatureInfo;
   }
 }
 
@@ -2607,8 +2687,10 @@ void DidCloseFedCmDialog(RenderFrameHost& render_frame_host) {
   DispatchToAgents(ftn, &protocol::FedCmHandler::DidCloseDialog);
 }
 
-void WillSendFedCmNetworkRequest(FrameTreeNodeId frame_tree_node_id,
-                                 const network::ResourceRequest& request) {
+void WillSendFedCmNetworkRequest(
+    FrameTreeNodeId frame_tree_node_id,
+    const network::ResourceRequest& request,
+    const std::optional<std::string>& request_body) {
   FrameTreeNode* ftn = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
   if (!ftn) {
     return;
@@ -2630,15 +2712,11 @@ void WillSendFedCmNetworkRequest(FrameTreeNodeId frame_tree_node_id,
     initiator_url = request.request_initiator->GetURL();
   }
 
-  network::mojom::URLRequestDevToolsInfoPtr request_info =
-      network::ExtractDevToolsInfo(request);
-
-  DispatchToAgents(frame_tree_node_id, &protocol::NetworkHandler::RequestSent,
+  DispatchToAgents(frame_tree_node_id,
+                   &protocol::NetworkHandler::FedCmRequestWillBeSent,
                    request.devtools_request_id.value(),
-                   loader_id.value().ToString(), request.headers, *request_info,
-                   protocol::Network::ResourceTypeEnum::FedCM, initiator_url,
-                   /*initiator_devtools_request_id=*/"", frame_token,
-                   base::TimeTicks::Now());
+                   loader_id.value().ToString(), request, request_body,
+                   initiator_url, frame_token, base::TimeTicks::Now());
 }
 
 void DidReceiveFedCmNetworkResponse(

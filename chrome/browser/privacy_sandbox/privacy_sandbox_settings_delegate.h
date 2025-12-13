@@ -44,7 +44,6 @@ class PrivacySandboxSettingsDelegate
   bool IsCookieDeprecationExperimentEligible() const override;
   privacy_sandbox::TpcdExperimentEligibility
   GetCookieDeprecationExperimentCurrentEligibility() const override;
-  bool IsCookieDeprecationLabelAllowed() const override;
   bool AreThirdPartyCookiesBlockedByCookieDeprecationExperiment()
       const override;
 
@@ -55,7 +54,7 @@ class PrivacySandboxSettingsDelegate
 
  private:
   bool PrivacySandboxRestrictedNoticeRequired() const;
-  bool IsSubjectToEnterprisePolicies() const;
+  bool IsSubjectToEnterpriseFeatures() const;
   raw_ptr<Profile> profile_;
   // TODO(linnan): Remove this field when
   // `IsCookieDeprecationExperimentEligible()` consults `ExperimentManager`.

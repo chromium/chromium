@@ -10,6 +10,10 @@
 #include "third_party/ink/src/ink/strokes/input/stroke_input.h"
 #include "third_party/skia/include/core/SkColor.h"
 
+namespace blink {
+class WebPointerProperties;
+}
+
 namespace gfx {
 class PointF;
 }
@@ -20,11 +24,23 @@ class Brush;
 
 namespace chrome_pdf {
 
+// Shorthand for `CreateInkStrokeInputWithProperties()` with `properties` set to
+// nullptr. This is easier to use when the input is known to not have additional
+// properties.
 ink::StrokeInput CreateInkStrokeInput(ink::StrokeInput::ToolType tool_type,
                                       const gfx::PointF& position,
                                       base::TimeDelta elapsed_time);
 
+// `properties` can be nullptr.
+ink::StrokeInput CreateInkStrokeInputWithProperties(
+    ink::StrokeInput::ToolType tool_type,
+    const gfx::PointF& position,
+    base::TimeDelta elapsed_time,
+    const blink::WebPointerProperties* properties);
+
 SkColor GetSkColorFromInkBrush(const ink::Brush& brush);
+
+float GetOpacityMultiplierFromBrush(const ink::Brush& brush);
 
 ink::Point InkPointFromGfxPoint(const gfx::PointF& point);
 

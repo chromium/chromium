@@ -4,18 +4,33 @@
 
 package org.chromium.chrome.browser.battery;
 
+import android.content.Context;
+import android.os.PowerManager;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.night_mode.PowerSavingModeMonitor;
+import org.chromium.build.annotations.Nullable;
 
 /** Wrapper for exposing OS level battery saver mode status. */
 @JNINamespace("battery::android")
 @NullMarked
 public class BatterySaverOSSetting {
+    private static boolean sInitialized;
+    private static @Nullable PowerManager sPowerManager;
+
     @CalledByNative
     public static boolean isBatterySaverEnabled() {
-        return PowerSavingModeMonitor.getInstance().powerSavingIsOn();
+        // We don't need to worry about threading since all we do is get a system service.
+        if (!sInitialized) {
+            sPowerManager =
+                    (PowerManager)
+                            ContextUtils.getApplicationContext()
+                                    .getSystemService(Context.POWER_SERVICE);
+            sInitialized = true;
+        }
+        return sPowerManager != null && sPowerManager.isPowerSaveMode();
     }
 }

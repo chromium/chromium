@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILLERS_AUTOCOMPLETE_MOCK_AUTOCOMPLETE_HISTORY_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILLERS_AUTOCOMPLETE_MOCK_AUTOCOMPLETE_HISTORY_MANAGER_H_
 
-#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -18,7 +17,10 @@ class MockAutocompleteHistoryManager : public AutocompleteHistoryManager {
 
   MOCK_METHOD(void,
               OnGetSingleFieldSuggestions,
-              (const FormFieldData& field,
+              (const FormData& form,
+               const FormStructure* form_structure,
+               const FormFieldData& field,
+               const AutofillField* autofill_field,
                const AutofillClient& client,
                SingleFieldFillRouter::OnSuggestionsReturnedCallback callback),
               (override));

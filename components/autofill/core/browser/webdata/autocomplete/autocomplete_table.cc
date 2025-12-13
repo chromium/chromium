@@ -448,22 +448,4 @@ bool AutocompleteTable::InitMainTable() {
   return true;
 }
 
-AutocompleteTable::Dropper::Dropper() = default;
-AutocompleteTable::Dropper::~Dropper() = default;
-
-WebDatabaseTable::TypeKey AutocompleteTable::Dropper::GetTypeKey() const {
-  static int table_key = 0;
-  return reinterpret_cast<void*>(&table_key);
-}
-
-bool AutocompleteTable::Dropper::CreateTablesIfNecessary() {
-  return true;
-}
-
-bool AutocompleteTable::Dropper::MigrateToVersion(
-    int version,
-    bool* update_compatible_version) {
-  return DropTableIfExists(db(), kAutocompleteTable);
-}
-
 }  // namespace autofill

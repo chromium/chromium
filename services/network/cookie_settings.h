@@ -169,8 +169,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const GURL& secondary_url,
       ContentSettingsType content_type,
       content_settings::SettingInfo* info) const override;
-  bool IsThirdPartyCookiesAllowedScheme(
-      const std::string& scheme) const override;
+  bool IsThirdPartyCookiesAllowedScheme(std::string_view scheme) const override;
   bool ShouldBlockThirdPartyCookies(
       base::optional_ref<const url::Origin> top_frame_origin,
       net::CookieSettingOverrides overrides) const override;
@@ -235,9 +234,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   bool mitigations_enabled_for_3pcd_ = false;
   // This bool makes sure the correct cookie exclusion reasons are used.
   bool tracking_protection_enabled_for_3pcd_ = false;
-  std::set<std::string> secure_origin_cookies_allowed_schemes_;
-  std::set<std::string> matching_scheme_cookies_allowed_schemes_;
-  std::set<std::string> third_party_cookies_allowed_schemes_;
+  std::set<std::string, std::less<>> secure_origin_cookies_allowed_schemes_;
+  std::set<std::string, std::less<>> matching_scheme_cookies_allowed_schemes_;
+  std::set<std::string, std::less<>> third_party_cookies_allowed_schemes_;
 
   typedef base::flat_map<ContentSettingsType, ContentSettingsForOneType>
       EntryMap;

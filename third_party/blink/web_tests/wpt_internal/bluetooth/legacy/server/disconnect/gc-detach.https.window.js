@@ -3,6 +3,7 @@
 // META: script=/common/gc.js
 // META: script=/bluetooth/resources/bluetooth-test.js
 // META: script=/bluetooth/resources/bluetooth-fake-devices.js
+// META: timeout=long
 'use strict';
 const test_desc = 'Garbage collect then detach frame. We shouldn\'t crash.';
 let iframe = document.createElement('iframe');

@@ -5,6 +5,7 @@
 #ifndef SERVICES_METRICS_PUBLIC_CPP_UKM_ENTRY_BUILDER_BASE_H_
 #define SERVICES_METRICS_PUBLIC_CPP_UKM_ENTRY_BUILDER_BASE_H_
 
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "services/metrics/public/cpp/metrics_export.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -15,6 +16,9 @@ namespace ukm::internal {
 // A base class for generated UkmEntry builder objects.
 // This class should not be used directly.
 class METRICS_EXPORT UkmEntryBuilderBase {
+  // TODO(crbug.com/433395880): Remove this macro once it gets fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   UkmEntryBuilderBase(const UkmEntryBuilderBase&) = delete;
   UkmEntryBuilderBase(UkmEntryBuilderBase&&);

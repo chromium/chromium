@@ -28,6 +28,9 @@ import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.webkit.JavascriptInterface;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
@@ -47,11 +50,11 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.AwViewAndroidDelegate;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
-import org.chromium.base.BaseFeatures;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.Log;
@@ -63,7 +66,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.util.RenderProcessHostUtils;
@@ -1829,31 +1831,6 @@ public class AwContentsTest extends AwParameterizedTest {
                 });
     }
 
-    // Disables hardware acceleration and ensures that there is no crash in the code that adds and
-    // removes frame metrics listener. This code should do nothing when hardware acceleration is
-    // disabled.
-    @Test
-    @DisableHardwareAcceleration
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({BaseFeatures.COLLECT_ANDROID_FRAME_TIMELINE_METRICS})
-    public void testNoCrashWithoutHardwareAcceleration() throws Throwable {
-        mActivityTestRule.startBrowserProcess();
-        AwContents.resetRecordMemoryForTesting();
-
-        AwTestContainerView testView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        final AwContents awContents = testView.getAwContents();
-
-        // Frame metrics listener is detached when AwContents becomes invisible.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    awContents.getViewMethods().onWindowVisibilityChanged(View.INVISIBLE);
-                });
-
-        Assert.assertFalse(testView.isBackedByHardwareView());
-    }
-
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
@@ -1920,5 +1897,51 @@ public class AwContentsTest extends AwParameterizedTest {
         CriteriaHelper.pollUiThread(
                 () -> awContents.getViewAndroidDelegateForTesting().getViewportInsetBottom() > 0,
                 "Viewport bottom inset was not updated after the soft keyboard was displayed.");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
+    public void testInsetsAreUpdatedInScrollView() {
+        mActivityTestRule.startBrowserProcess();
+        AwTestContainerView containerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        AwViewAndroidDelegate viewAndroidDelegate =
+                containerView.getAwContents().getViewAndroidDelegateForTesting();
+        AtomicInteger oldInset = new AtomicInteger();
+        int scrollAmount = 2000;
+        ScrollView scrollView = new ScrollView(mActivityTestRule.getActivity());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.getActivity().removeAllViews();
+                    int width = mActivityTestRule.getActivity().getRootLayoutWidth();
+
+                    // Create a ScrollView containing both a FrameLayout and an AwTestContainerView
+                    // inside a LinearLayout. The FrameLayout acts as a spacer pushing the WebView
+                    // off-screen then we scroll the ScrollView by 2000dp to bring the WebView into
+                    // view. We expect to see the bottom inset reduce by 2000dp.
+                    FrameLayout spacer = new FrameLayout(mActivityTestRule.getActivity());
+                    LinearLayout container = new LinearLayout(mActivityTestRule.getActivity());
+                    container.setOrientation(LinearLayout.VERTICAL);
+                    container.addView(spacer, new LinearLayout.LayoutParams(width, 2000, 1));
+                    container.addView(containerView, new LinearLayout.LayoutParams(width, 4000, 1));
+                    scrollView.addView(container, new FrameLayout.LayoutParams(width, 6000));
+                    mActivityTestRule.getActivity().addView(scrollView);
+                });
+
+        // This sets up the base inset for when the view is added to the activity's hierarchy.
+        containerView.getAwContents().getDisplayCutoutController().recalculateBottomImeInset();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    oldInset.set(viewAndroidDelegate.getViewportInsetBottom());
+                    return oldInset.get() != 0;
+                });
+
+        // Scroll by scroll amount and wait for the update to take effect.
+        scrollView.scrollBy(0, scrollAmount);
+        CriteriaHelper.pollUiThread(
+                () -> viewAndroidDelegate.getViewportInsetBottom() == oldInset.get() - scrollAmount,
+                "Insets never updated after scroll");
     }
 }

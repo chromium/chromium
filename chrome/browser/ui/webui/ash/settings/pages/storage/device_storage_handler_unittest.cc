@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "base/byte_count.h"
 #include "base/containers/adapters.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -36,11 +37,13 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/account_id/account_id.h"
@@ -103,6 +106,7 @@ class StorageHandlerTest : public testing::Test {
   void SetUp() override {
     // Initialize fake DBus clients.
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::DlcserviceClient::InitializeFake();
     SpacedClient::InitializeFake();
     UserDataAuthClient::OverrideGlobalInstanceForTesting(&userdataauth_);
 
@@ -111,9 +115,11 @@ class StorageHandlerTest : public testing::Test {
     disks::DiskMountManager::InitializeForTesting(
         new disks::FakeDiskMountManager);
     arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
+    arc_dlc_installer_ = std::make_unique<arc::ArcDlcInstaller>();
     arc_session_manager_ = arc::CreateTestArcSessionManager(
         std::make_unique<arc::ArcSessionRunner>(
-            base::BindRepeating(arc::FakeArcSession::Create)));
+            base::BindRepeating(arc::FakeArcSession::Create)),
+        arc_dlc_installer_.get());
 
     // Initialize profile.
     profile_manager_ = std::make_unique<TestingProfileManager>(
@@ -172,10 +178,12 @@ class StorageHandlerTest : public testing::Test {
     crostini_size_test_api_.reset();
     other_users_size_test_api_.reset();
     arc_session_manager_.reset();
+    arc_dlc_installer_.reset();
     arc_service_manager_.reset();
     disks::DiskMountManager::Shutdown();
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
     SpacedClient::Shutdown();
+    ash::DlcserviceClient::Shutdown();
     ConciergeClient::Shutdown();
   }
 
@@ -295,6 +303,7 @@ class StorageHandlerTest : public testing::Test {
 
  private:
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
+  std::unique_ptr<arc::ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   MockNewWindowDelegate new_window_delegate_;
 };
@@ -324,7 +333,8 @@ TEST_F(StorageHandlerTest, RoundByteSize) {
 
   for (auto& c : cases) {
     int64_t rounded_bytes = RoundByteSize(c.bytes);
-    EXPECT_EQ(base::ASCIIToUTF16(c.expected), ui::FormatBytes(rounded_bytes));
+    EXPECT_EQ(base::ASCIIToUTF16(c.expected),
+              ui::FormatBytes(base::ByteCount(rounded_bytes)));
   }
 }
 
@@ -332,8 +342,10 @@ TEST_F(StorageHandlerTest, GlobalSizeStat) {
   // Get local filesystem storage statistics.
   const base::FilePath mount_path =
       file_manager::util::GetMyFilesFolderForProfile(profile_);
-  int64_t total_size = base::SysInfo::AmountOfTotalDiskSpace(mount_path);
-  int64_t available_size = base::SysInfo::AmountOfFreeDiskSpace(mount_path);
+  int64_t total_size =
+      base::SysInfo::AmountOfTotalDiskSpace(mount_path).value_or(-1);
+  int64_t available_size =
+      base::SysInfo::AmountOfFreeDiskSpace(mount_path).value_or(-1);
 
   // Round the total size.
   int64_t rounded_total_size = RoundByteSize(total_size);
@@ -356,9 +368,9 @@ TEST_F(StorageHandlerTest, GlobalSizeStat) {
       *dictionary.FindString("usedSize");
   double storage_handler_used_ratio = *dictionary.FindDouble("usedRatio");
 
-  EXPECT_EQ(ui::FormatBytes(available_size),
+  EXPECT_EQ(ui::FormatBytes(base::ByteCount(available_size)),
             base::ASCIIToUTF16(storage_handler_available_size));
-  EXPECT_EQ(ui::FormatBytes(used_size),
+  EXPECT_EQ(ui::FormatBytes(base::ByteCount(used_size)),
             base::ASCIIToUTF16(storage_handler_used_size));
   double diff = used_ratio > storage_handler_used_ratio
                     ? used_ratio - storage_handler_used_ratio

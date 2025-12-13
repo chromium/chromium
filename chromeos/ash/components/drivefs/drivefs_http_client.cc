@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"

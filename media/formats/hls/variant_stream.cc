@@ -10,11 +10,57 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "media/formats/hls/rendition.h"
 #include "media/formats/hls/types.h"
 #include "url/gurl.h"
 
 namespace media::hls {
+
+namespace {
+
+// Converts a number representing "bytes per second" into a more human readable
+// form for presentation, ie "27 Kbps" or "3.1 Mbps".
+//
+// When the value would otherwise be a single digit value (such as "2 Kbps"),
+// it instead gets formatted to use a few decimal places as well.  The `digits`
+// parameter is used to control the number of digits that can appear after the
+// decimal place. It should be set to 10^(max decimals).
+//
+// The string representation is never rounded, only truncated.
+std::string FormatBandwidth(types::DecimalInteger bandwidth, int digits) {
+  types::DecimalInteger basis = 1;
+  if (bandwidth > 1000000) {
+    basis = 1000000;
+  } else if (bandwidth > 1000) {
+    basis = 1000;
+  }
+  const types::DecimalInteger decimal_basis = basis / digits;
+  const types::DecimalInteger left_digits = bandwidth / basis;
+
+  std::stringstream bandwidth_text;
+  bandwidth_text << left_digits;
+  if (left_digits < 10 && decimal_basis > 1) {
+    bandwidth_text << "." << ((bandwidth / decimal_basis) % digits);
+  }
+  switch (basis) {
+    case 1:
+      bandwidth_text << " bps";
+      break;
+    case 1000:
+      bandwidth_text << " Kbps";
+      break;
+    case 1000000:
+      bandwidth_text << " Mbps";
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  return bandwidth_text.str();
+}
+
+}  // namespace
 
 VariantStream::VariantStream(
     GURL primary_rendition_uri,
@@ -24,9 +70,8 @@ VariantStream::VariantStream(
     std::optional<std::vector<std::string>> codecs,
     std::optional<types::DecimalResolution> resolution,
     std::optional<types::DecimalFloatingPoint> frame_rate,
-    scoped_refptr<RenditionGroup> audio_rendition_group,
-    scoped_refptr<RenditionGroup> video_rendition_group,
-    RenditionGroup::RenditionTrack implicit_rendition)
+    std::unique_ptr<RenditionGroup::View> audio_renditions,
+    std::unique_ptr<RenditionGroup::View> video_renditions)
     : primary_rendition_uri_(std::move(primary_rendition_uri)),
       bandwidth_(bandwidth),
       average_bandwidth_(average_bandwidth),
@@ -34,9 +79,8 @@ VariantStream::VariantStream(
       codecs_(std::move(codecs)),
       resolution_(resolution),
       frame_rate_(frame_rate),
-      audio_rendition_group_(std::move(audio_rendition_group)),
-      video_rendition_group_(std::move(video_rendition_group)),
-      implicit_rendition_(std::move(implicit_rendition)) {}
+      audio_renditions_(std::move(audio_renditions)),
+      video_renditions_(std::move(video_renditions)) {}
 
 VariantStream::VariantStream(VariantStream&&) = default;
 
@@ -85,11 +129,7 @@ const std::string VariantStream::Format(
         break;
       }
       case FormatComponent::kBandwidth: {
-        if (bandwidth_ > 1000000) {
-          format << bandwidth_ / 1000000 << " Mbps";
-        } else {
-          format << bandwidth_ / 1000 << " Kbps";
-        }
+        format << FormatBandwidth(bandwidth_, 10);
         break;
       }
       case FormatComponent::kUri: {
@@ -106,16 +146,7 @@ const std::string VariantStream::Format(
 }
 
 void VariantStream::UpdateImplicitRenditionMediaTrackName(std::string name) {
-  auto old_track = std::get<0>(implicit_rendition_);
-  auto new_track = MediaTrack::CreateVideoTrack(
-      /*id = */ name,
-      /*kind =*/MediaTrack::VideoKind::kMain,
-      /*label = */ name,
-      /*language = */ "",
-      /*enabled = */ old_track.enabled(),
-      /*stream_id =*/old_track.stream_id());
-  implicit_rendition_ =
-      std::make_tuple(new_track, std::get<1>(implicit_rendition_));
+  video_renditions_->UpdateImplicitRenditionMediaTrackName(name);
 }
 
 // static
@@ -136,7 +167,7 @@ VariantStream::OptimalFormatForCollection(
   // there is more than one total size available.
   base::flat_set<types::DecimalInteger> resolutions;
   base::flat_set<types::DecimalInteger> rates;
-  base::flat_set<types::DecimalInteger> bandwidths;
+  base::flat_set<std::string> formatted_bandwidths;
 
   bool missing_resolution = false;
   bool missing_frame_rate = false;
@@ -174,8 +205,7 @@ VariantStream::OptimalFormatForCollection(
     } else {
       missing_frame_rate = true;
     }
-
-    bandwidths.insert(bandwidth);
+    formatted_bandwidths.insert(FormatBandwidth(bandwidth, 10));
   }
 
   if (resolutions.size() == streams.size()) {
@@ -194,7 +224,7 @@ VariantStream::OptimalFormatForCollection(
             VariantStream::FormatComponent::kFrameRate};
   }
 
-  if (bandwidths.size() == streams.size()) {
+  if (formatted_bandwidths.size() == streams.size()) {
     if (missing_resolution || resolutions.size() == 1) {
       // Don't include resolution. Maybe frame rate?
       if (missing_frame_rate || rates.size() == 1) {

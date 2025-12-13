@@ -52,6 +52,20 @@ public class ListMenuItemViewBinder {
             if (title != null) {
                 textView.setText(title);
             }
+        } else if (propertyKey == ListMenuItemProperties.SUBTITLE) {
+            TextView subtitleView = view.findViewById(R.id.menu_item_subtitle);
+            CharSequence subtitleText = model.get(ListMenuItemProperties.SUBTITLE);
+            subtitleView.setText(subtitleText != null ? subtitleText : "");
+            subtitleView.setVisibility(TextUtils.isEmpty(subtitleText) ? View.GONE : View.VISIBLE);
+        } else if (propertyKey == ListMenuItemProperties.IS_SUBTITLE_ELLIPSIZED_AT_END) {
+            TextView subtitleView = view.findViewById(R.id.menu_item_subtitle);
+            if (model.get(ListMenuItemProperties.IS_SUBTITLE_ELLIPSIZED_AT_END)) {
+                subtitleView.setMaxLines(1);
+                subtitleView.setEllipsize(TextUtils.TruncateAt.END);
+            } else {
+                subtitleView.setEllipsize(null);
+                subtitleView.setMaxLines(Integer.MAX_VALUE);
+            }
         } else if (propertyKey == ListMenuItemProperties.CONTENT_DESCRIPTION) {
             textView.setContentDescription(model.get(ListMenuItemProperties.CONTENT_DESCRIPTION));
         } else if (propertyKey == ListMenuItemProperties.START_ICON_ID
@@ -85,6 +99,10 @@ public class ListMenuItemViewBinder {
             // Not tracked intentionally because it's mainly for setting a custom click listener
             // for an item. The click listener will be expected to be retrieved and used
             // by the component using this binder and not the binder itself.
+        } else if (propertyKey == ListMenuItemProperties.HOVER_LISTENER) {
+            view.setOnHoverListener(model.get(ListMenuItemProperties.HOVER_LISTENER));
+        } else if (propertyKey == ListMenuItemProperties.IS_HIGHLIGHTED) {
+            view.setHovered(model.get(ListMenuItemProperties.IS_HIGHLIGHTED));
         } else if (propertyKey == ListMenuItemProperties.INTENT) {
             // Not tracked intentionally because it's mainly for setting a custom intent
             // for an item. The intent will be expected to be retrieved and used
@@ -131,6 +149,13 @@ public class ListMenuItemViewBinder {
             } else {
                 textView.setEllipsize(null);
             }
+        } else if (propertyKey == ListMenuItemProperties.KEY_LISTENER) {
+            view.setOnKeyListener(model.get(ListMenuItemProperties.KEY_LISTENER));
+        } else if (propertyKey == ListMenuItemProperties.TOUCH_LISTENER) {
+            view.setOnTouchListener(model.get(ListMenuItemProperties.TOUCH_LISTENER));
+        } else if (propertyKey == ListMenuItemProperties.ORDER) {
+            // Not tracked intentionally because it's used by clients to keep track of items. The
+            // order field is used to recreate a SelectionMenuItem when an item is clicked.
         } else {
             assert false : "Supplied propertyKey not implemented in ListMenuItemProperties.";
         }

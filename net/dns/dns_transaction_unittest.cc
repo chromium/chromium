@@ -452,39 +452,42 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
         response_modifier_(response_modifier),
         on_start_(on_start) {
     data_provider_->Initialize(this);
-    MatchQueryData(request, data_provider);
   }
 
   // Compare the query contained in either the POST body or the body
   // parameter of the GET query to the write data of the SocketDataProvider.
-  static void MatchQueryData(URLRequest* request,
-                             SocketDataProvider* data_provider) {
+  static void MatchQueryData(const URLRequest& request,
+                             SocketDataProvider& data_provider,
+                             UploadDataStream* upload_data_stream) {
     std::string decoded_query;
-    if (request->method() == "GET") {
+    if (request.method() == "GET") {
       std::string encoded_query;
-      EXPECT_TRUE(GetValueForKeyInQuery(request->url(), "dns", &encoded_query));
+      EXPECT_TRUE(GetValueForKeyInQuery(request.url(), "dns", &encoded_query));
       EXPECT_GT(encoded_query.size(), 0ul);
 
       EXPECT_TRUE(base::Base64UrlDecode(
           encoded_query, base::Base64UrlDecodePolicy::IGNORE_PADDING,
           &decoded_query));
-    } else if (request->method() == "POST") {
-      EXPECT_EQ(IDEMPOTENT, request->GetIdempotency());
-      const UploadDataStream* stream = request->get_upload_for_testing();
-      auto* readers = stream->GetElementReaders();
-      EXPECT_TRUE(readers);
-      EXPECT_FALSE(readers->empty());
-      for (auto& reader : *readers) {
-        const UploadBytesElementReader* byte_reader = reader->AsBytesReader();
-        decoded_query +=
-            std::string(base::as_string_view(byte_reader->bytes()));
-      }
+    } else if (request.method() == "POST") {
+      EXPECT_EQ(IDEMPOTENT, request.GetIdempotency());
+      // Upload data stream should be in memory, so all operations will complete
+      // synchronously.
+      ASSERT_THAT(upload_data_stream->Init(CompletionOnceCallback(),
+                                           NetLogWithSource()),
+                  IsOk());
+      ASSERT_TRUE(upload_data_stream->IsInMemory());
+      scoped_refptr<IOBuffer> io_buffer =
+          base::MakeRefCounted<IOBufferWithSize>(upload_data_stream->size());
+      ASSERT_EQ(upload_data_stream->Read(io_buffer.get(), io_buffer->size(),
+                                         CompletionOnceCallback()),
+                static_cast<int>(upload_data_stream->size()));
+      decoded_query = base::as_string_view(io_buffer->span());
     }
 
     std::string query(decoded_query);
     MockWriteResult result(SYNCHRONOUS, 1);
     while (result.result > 0 && query.length() > 0) {
-      result = data_provider->OnWrite(query);
+      result = data_provider.OnWrite(query);
       if (result.result > 0)
         query = query.substr(result.result);
     }
@@ -500,6 +503,7 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
 
   // URLRequestJob implementation:
   void Start() override {
+    MatchQueryData(*request(), *data_provider_, upload_data_stream_.get());
     if (on_start_)
       on_start_.Run();
     // Start reading asynchronously so that all error reporting and data
@@ -507,6 +511,10 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&URLRequestMockDohJob::StartAsync,
                                   weak_factory_.GetWeakPtr()));
+  }
+
+  void SetUpload(UploadDataStream* upload) override {
+    upload_data_stream_ = upload;
   }
 
   URLRequestMockDohJob(const URLRequestMockDohJob&) = delete;
@@ -598,8 +606,40 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
   const UrlRequestStartedCallback on_start_;
   raw_ptr<IOBuffer> pending_buf_;
   int pending_buf_size_;
+  raw_ptr<UploadDataStream> upload_data_stream_;
 
   base::WeakPtrFactory<URLRequestMockDohJob> weak_factory_{this};
+};
+
+// Subclass of URLRequestFailedJob which takes a SocketDataProvider with data
+// representing both a DNS over HTTPS query and response, and simulates writing
+// the request body to it before failing the request.
+class URLRequestMockDohFailedJob : public URLRequestFailedJob {
+ public:
+  URLRequestMockDohFailedJob(URLRequest* request,
+                             FailurePhase phase,
+                             int net_error,
+                             SocketDataProvider* data_provider)
+      : URLRequestFailedJob(request, phase, net_error),
+        data_provider_(data_provider) {}
+
+  ~URLRequestMockDohFailedJob() override = default;
+
+ private:
+  // URLRequestJob implementation:
+  void Start() override {
+    URLRequestMockDohJob::MatchQueryData(*request(), *data_provider_,
+                                         upload_data_stream_.get());
+    data_provider_ = nullptr;
+    URLRequestFailedJob::Start();
+  }
+
+  void SetUpload(UploadDataStream* upload) override {
+    upload_data_stream_ = upload;
+  }
+
+  raw_ptr<SocketDataProvider> data_provider_;
+  raw_ptr<UploadDataStream> upload_data_stream_;
 };
 
 class DnsTransactionTestBase : public testing::Test {
@@ -631,7 +671,7 @@ class DnsTransactionTestBase : public testing::Test {
                            bool make_available = true) {
     GURL url(URLRequestMockDohJob::GetMockHttpsUrl("doh_test"));
     URLRequestFilter* filter = URLRequestFilter::GetInstance();
-    filter->AddHostnameInterceptor(url.scheme(), url.host(),
+    filter->AddHostnameInterceptor(url.GetScheme(), url.GetHost(),
                                    std::make_unique<DohJobInterceptor>(this));
     CHECK_LE(num_doh_servers, 255u);
     std::vector<string> templates;
@@ -816,7 +856,7 @@ class DnsTransactionTestBase : public testing::Test {
     // If the path indicates a redirect, skip checking the list of
     // configured servers, because it won't be there and we still want
     // to handle it.
-    bool server_found = request->url().path() == "/redirect-destination";
+    bool server_found = request->url().GetPath() == "/redirect-destination";
     for (auto server : config_.doh_config.servers()) {
       if (server_found)
         break;
@@ -1233,17 +1273,38 @@ TEST_F(DnsTransactionTest, ZeroSizeResponseAsync) {
   helper0.RunUntilComplete();
 }
 
-TEST_F(DnsTransactionTest, ServerFail) {
-  AddAsyncQueryAndRcode(kT0HostName, kT0Qtype, dns_protocol::kRcodeSERVFAIL);
+struct RcodeError {
+  int rcode;
+  int net_error;
+};
 
-  TransactionHelper helper0(ERR_DNS_SERVER_FAILED);
+class DnsTransactionRcodeTest
+    : public DnsTransactionTest,
+      public ::testing::WithParamInterface<RcodeError> {};
+
+TEST_P(DnsTransactionRcodeTest, RcodeToError) {
+  const RcodeError& param = GetParam();
+  AddAsyncQueryAndRcode(kT0HostName, kT0Qtype, param.rcode);
+
+  TransactionHelper helper0(param.net_error);
   helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
-                           false /* secure */, resolve_context_.get());
+                           /*secure=*/false, resolve_context_.get());
   helper0.RunUntilComplete();
 
   ASSERT_NE(helper0.response(), nullptr);
-  EXPECT_EQ(helper0.response()->rcode(), dns_protocol::kRcodeSERVFAIL);
+  EXPECT_EQ(helper0.response()->rcode(), param.rcode);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DnsTransactionRcodeTest,
+    ::testing::Values(
+        RcodeError{dns_protocol::kRcodeFORMERR, ERR_DNS_FORMAT_ERROR},
+        RcodeError{dns_protocol::kRcodeSERVFAIL, ERR_DNS_SERVER_FAILURE},
+        RcodeError{dns_protocol::kRcodeNOTIMP, ERR_DNS_NOT_IMPLEMENTED},
+        RcodeError{dns_protocol::kRcodeREFUSED, ERR_DNS_REFUSED},
+        // A random unassigned rcode.
+        RcodeError{15, ERR_DNS_OTHER_FAILURE}));
 
 TEST_F(DnsTransactionTest, NoDomain) {
   AddAsyncQueryAndRcode(kT0HostName, kT0Qtype, dns_protocol::kRcodeNXDOMAIN);
@@ -1620,19 +1681,20 @@ TEST_F(DnsTransactionTest, HttpsGetLookup) {
   helper0.RunUntilComplete();
 }
 
-TEST_F(DnsTransactionTest, HttpsGetFailure) {
-  ConfigureDohServers(false /* use_post */);
-  AddQueryAndRcode(kT0HostName, kT0Qtype, dns_protocol::kRcodeSERVFAIL,
-                   SYNCHRONOUS, Transport::HTTPS,
-                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
-                   false /* enqueue_transaction_id */);
+TEST_P(DnsTransactionRcodeTest, HttpsGetFailure) {
+  const RcodeError& param = GetParam();
+  ConfigureDohServers(/*use_post=*/false);
+  AddQueryAndRcode(kT0HostName, kT0Qtype, param.rcode, SYNCHRONOUS,
+                   Transport::HTTPS,
+                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128,
+                   /*id=*/0, /*enqueue_transaction_id=*/false);
 
-  TransactionHelper helper0(ERR_DNS_SERVER_FAILED);
+  TransactionHelper helper0(param.net_error);
   helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
-                           true /* secure */, resolve_context_.get());
+                           /*secure=*/true, resolve_context_.get());
   helper0.RunUntilComplete();
   ASSERT_NE(helper0.response(), nullptr);
-  EXPECT_EQ(helper0.response()->rcode(), dns_protocol::kRcodeSERVFAIL);
+  EXPECT_EQ(helper0.response()->rcode(), param.rcode);
 }
 
 TEST_F(DnsTransactionTest, HttpsGetMalformed) {
@@ -1660,19 +1722,20 @@ TEST_F(DnsTransactionTest, HttpsPostLookup) {
   helper0.RunUntilComplete();
 }
 
-TEST_F(DnsTransactionTest, HttpsPostFailure) {
-  ConfigureDohServers(true /* use_post */);
-  AddQueryAndRcode(kT0HostName, kT0Qtype, dns_protocol::kRcodeSERVFAIL,
-                   SYNCHRONOUS, Transport::HTTPS,
-                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
-                   false /* enqueue_transaction_id */);
+TEST_P(DnsTransactionRcodeTest, HttpsPostFailure) {
+  const RcodeError& param = GetParam();
+  ConfigureDohServers(/*use_post=*/true);
+  AddQueryAndRcode(kT0HostName, kT0Qtype, param.rcode, SYNCHRONOUS,
+                   Transport::HTTPS,
+                   DnsQuery::PaddingStrategy::BLOCK_LENGTH_128,
+                   /*id=*/0, /*enqueue_transaction_id=*/false);
 
-  TransactionHelper helper0(ERR_DNS_SERVER_FAILED);
+  TransactionHelper helper0(param.net_error);
   helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
-                           true /* secure */, resolve_context_.get());
+                           /*secure=*/true, resolve_context_.get());
   helper0.RunUntilComplete();
   ASSERT_NE(helper0.response(), nullptr);
-  EXPECT_EQ(helper0.response()->rcode(), dns_protocol::kRcodeSERVFAIL);
+  EXPECT_EQ(helper0.response()->rcode(), param.rcode);
 }
 
 TEST_F(DnsTransactionTest, HttpsPostMalformed) {
@@ -1704,9 +1767,8 @@ TEST_F(DnsTransactionTest, HttpsPostLookupAsync) {
 std::unique_ptr<URLRequestJob> DohJobMakerCallbackFailLookup(
     URLRequest* request,
     SocketDataProvider* data) {
-  URLRequestMockDohJob::MatchQueryData(request, data);
-  return std::make_unique<URLRequestFailedJob>(
-      request, URLRequestFailedJob::START, ERR_NAME_NOT_RESOLVED);
+  return std::make_unique<URLRequestMockDohFailedJob>(
+      request, URLRequestFailedJob::START, ERR_NAME_NOT_RESOLVED, data);
 }
 
 TEST_F(DnsTransactionTest, HttpsPostLookupFailDohServerLookup) {
@@ -1725,9 +1787,8 @@ TEST_F(DnsTransactionTest, HttpsPostLookupFailDohServerLookup) {
 std::unique_ptr<URLRequestJob> DohJobMakerCallbackFailStart(
     URLRequest* request,
     SocketDataProvider* data) {
-  URLRequestMockDohJob::MatchQueryData(request, data);
-  return std::make_unique<URLRequestFailedJob>(
-      request, URLRequestFailedJob::START, ERR_FAILED);
+  return std::make_unique<URLRequestMockDohFailedJob>(
+      request, URLRequestFailedJob::START, ERR_FAILED, data);
 }
 
 TEST_F(DnsTransactionTest, HttpsPostLookupFailStart) {
@@ -1746,9 +1807,8 @@ TEST_F(DnsTransactionTest, HttpsPostLookupFailStart) {
 std::unique_ptr<URLRequestJob> DohJobMakerCallbackFailSync(
     URLRequest* request,
     SocketDataProvider* data) {
-  URLRequestMockDohJob::MatchQueryData(request, data);
-  return std::make_unique<URLRequestFailedJob>(
-      request, URLRequestFailedJob::READ_SYNC, ERR_FAILED);
+  return std::make_unique<URLRequestMockDohFailedJob>(
+      request, URLRequestFailedJob::READ_SYNC, ERR_FAILED, data);
 }
 
 TEST_F(DnsTransactionTest, HttpsPostLookupFailSync) {
@@ -1768,9 +1828,8 @@ TEST_F(DnsTransactionTest, HttpsPostLookupFailSync) {
 std::unique_ptr<URLRequestJob> DohJobMakerCallbackFailAsync(
     URLRequest* request,
     SocketDataProvider* data) {
-  URLRequestMockDohJob::MatchQueryData(request, data);
-  return std::make_unique<URLRequestFailedJob>(
-      request, URLRequestFailedJob::READ_ASYNC, ERR_FAILED);
+  return std::make_unique<URLRequestMockDohFailedJob>(
+      request, URLRequestFailedJob::READ_ASYNC, ERR_FAILED, data);
 }
 
 TEST_F(DnsTransactionTest, HttpsPostLookupFailAsync) {
@@ -2513,8 +2572,8 @@ TEST_F(DnsTransactionTest, HttpsPostWithWrongType) {
 void MakeResponseRedirect(URLRequest* request, HttpResponseInfo* info) {
   if (request->url_chain().size() < 2) {
     info->headers->ReplaceStatusLine("HTTP/1.1 302 Found");
-    info->headers->AddHeader("Location",
-                             "/redirect-destination?" + request->url().query());
+    info->headers->AddHeader(
+        "Location", "/redirect-destination?" + request->url().GetQuery());
   }
 }
 
@@ -2539,7 +2598,7 @@ void MakeResponseInsecureRedirect(URLRequest* request, HttpResponseInfo* info) {
   if (request->url_chain().size() < 2) {
     info->headers->ReplaceStatusLine("HTTP/1.1 302 Found");
     const std::string location = URLRequestMockDohJob::GetMockHttpUrl(
-        "/redirect-destination?" + request->url().query());
+        "/redirect-destination?" + request->url().GetQuery());
     info->headers->AddHeader("Location", location);
   }
 }
@@ -2988,7 +3047,7 @@ TEST_F(DnsTransactionTestWithMockTime, LastHttpsAttemptFails_FastTimeout) {
                    DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
                    false /* enqueue_transaction_id */);
 
-  TransactionHelper helper(ERR_DNS_SERVER_FAILED);
+  TransactionHelper helper(ERR_DNS_SERVER_FAILURE);
   std::unique_ptr<DnsTransaction> transaction =
       transaction_factory_->CreateTransaction(
           kT0HostName, kT0Qtype, NetLogWithSource(), true /* secure */,
@@ -3027,7 +3086,7 @@ TEST_F(DnsTransactionTestWithMockTime, LastHttpsAttemptFailsFirst) {
                    DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
                    false /* enqueue_transaction_id */);
 
-  TransactionHelper helper(ERR_DNS_SERVER_FAILED);
+  TransactionHelper helper(ERR_DNS_SERVER_FAILURE);
   std::unique_ptr<DnsTransaction> transaction =
       transaction_factory_->CreateTransaction(
           kT0HostName, kT0Qtype, NetLogWithSource(), true /* secure */,
@@ -3060,7 +3119,7 @@ TEST_F(DnsTransactionTestWithMockTime, LastHttpsAttemptFailsLast) {
                    DnsQuery::PaddingStrategy::BLOCK_LENGTH_128, 0 /* id */,
                    false /* enqueue_transaction_id */);
 
-  TransactionHelper helper(ERR_DNS_SERVER_FAILED);
+  TransactionHelper helper(ERR_DNS_SERVER_FAILURE);
   std::unique_ptr<DnsTransaction> transaction =
       transaction_factory_->CreateTransaction(
           kT0HostName, kT0Qtype, NetLogWithSource(), true /* secure */,
@@ -3135,7 +3194,7 @@ TEST_F(DnsTransactionTest, TCPFailure) {
   AddQueryAndRcode(kT0HostName, kT0Qtype, dns_protocol::kRcodeSERVFAIL, ASYNC,
                    Transport::TCP);
 
-  TransactionHelper helper0(ERR_DNS_SERVER_FAILED);
+  TransactionHelper helper0(ERR_DNS_SERVER_FAILURE);
   helper0.StartTransaction(transaction_factory_.get(), kT0HostName, kT0Qtype,
                            false /* secure */, resolve_context_.get());
   helper0.RunUntilComplete();
@@ -3543,7 +3602,7 @@ TEST_F(DnsTransactionTestWithMockTime, ProbeAttemptServFailAffectsHistograms) {
       DohServerAutoupgradeStatus::kFailureWithNoPriorSuccesses, 1);
   histogram_tester.ExpectUniqueSample(
       "Net.DNS.DnsTransaction.SecureNotValidated.Other.FailureError",
-      std::abs(Error::ERR_DNS_SERVER_FAILED), 1);
+      std::abs(Error::ERR_DNS_SERVER_FAILURE), 1);
 }
 
 TEST_F(DnsTransactionTestWithMockTime,

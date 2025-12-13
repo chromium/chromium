@@ -40,6 +40,7 @@ GeneratedSecuritySettingsBundlePref::SetPref(const base::Value* value) {
       selection != static_cast<int>(SecuritySettingsBundleSetting::ENHANCED)) {
     return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
   }
+
   // Update Security Settings Bundle preference to match selection.
   profile_->GetPrefs()->SetInteger(prefs::kSecuritySettingsBundle, selection);
 
@@ -48,22 +49,13 @@ GeneratedSecuritySettingsBundlePref::SetPref(const base::Value* value) {
 
 extensions::api::settings_private::PrefObject
 GeneratedSecuritySettingsBundlePref::GetPrefObject() const {
+  SecuritySettingsBundleSetting bundle_setting =
+      GetSecurityBundleSetting(*profile_->GetPrefs());
+
   extensions::api::settings_private::PrefObject pref_object;
   pref_object.key = kGeneratedSecuritySettingsBundlePref;
   pref_object.type = extensions::api::settings_private::PrefType::kNumber;
-
-  auto security_settings_bundle_enabled =
-      profile_->GetPrefs()->GetInteger(prefs::kSecuritySettingsBundle);
-
-  if (security_settings_bundle_enabled ==
-      static_cast<int>(SecuritySettingsBundleSetting::ENHANCED)) {
-    pref_object.value =
-        base::Value(static_cast<int>(SecuritySettingsBundleSetting::ENHANCED));
-  } else {
-    pref_object.value =
-        base::Value(static_cast<int>(SecuritySettingsBundleSetting::STANDARD));
-  }
-
+  pref_object.value = base::Value(static_cast<int>(bundle_setting));
   return pref_object;
 }
 

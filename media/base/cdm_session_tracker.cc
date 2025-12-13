@@ -29,7 +29,7 @@ void CdmSessionTracker::RemoveSession(const std::string& session_id) {
 void CdmSessionTracker::CloseRemainingSessions(
     const SessionClosedCB& session_closed_cb,
     CdmSessionClosedReason reason) {
-  std::unordered_set<std::string> session_ids;
+  absl::flat_hash_set<std::string> session_ids;
   session_ids.swap(session_ids_);
 
   for (const auto& session_id : session_ids)

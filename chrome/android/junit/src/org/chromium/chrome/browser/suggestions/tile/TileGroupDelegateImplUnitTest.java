@@ -20,10 +20,12 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -40,6 +42,7 @@ import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -151,6 +154,34 @@ public class TileGroupDelegateImplUnitTest {
         verify(mNavigationDelegate).maybeSelectTabWithUrl(eq(url));
         verify(mNavigationDelegate, never())
                 .navigateToSuggestionUrl(anyInt(), anyString(), anyBoolean());
+    }
+
+    @Test
+    @SmallTest
+    public void testRemoveMostVisitedItem_ShowsSnackbar() {
+        mTileGroupDelegateImpl.removeMostVisitedItem(makeTile("Foo", NON_SEARCH_URL, 0));
+
+        verify(mMostVisitedSites).addBlocklistedUrl(NON_SEARCH_URL);
+        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
+        verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
+        Assert.assertEquals(
+                mContext.getString(R.string.most_visited_item_removed),
+                snackbarCaptor.getValue().getTextForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testShowTileUnpinSnackbar() {
+        // Unlike `removeMostVisitedItem()`, `deleteCustomLink()` relies on the caller to show a
+        // snackbar. This test is therefore limited to verifying the snackbar logic via
+        // `showTileUnpinSnackbar()`, rather than the full unpin flow.
+        mTileGroupDelegateImpl.showTileUnpinSnackbar(() -> {});
+
+        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
+        verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
+        Assert.assertEquals(
+                mContext.getString(R.string.custom_tile_unpinned),
+                snackbarCaptor.getValue().getTextForTesting());
     }
 
     private Tile makeTile(String title, GURL url, int index) {

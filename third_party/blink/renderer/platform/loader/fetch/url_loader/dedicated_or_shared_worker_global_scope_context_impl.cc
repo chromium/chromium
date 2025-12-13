@@ -670,7 +670,7 @@ WebDedicatedOrSharedWorkerGlobalScopeContext::Create(
       base::checked_cast<wtf_size_t>(web_cors_exempt_header_list.size()));
   std::ranges::transform(web_cors_exempt_header_list,
                          cors_exempt_header_list.begin(),
-                         &WebString::operator WTF::String);
+                         &WebString::operator String);
 
   scoped_refptr<DedicatedOrSharedWorkerGlobalScopeContextImpl>
       worker_global_scope_context =

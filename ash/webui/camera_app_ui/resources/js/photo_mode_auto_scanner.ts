@@ -89,8 +89,6 @@ export class PhotoModeAutoScanner {
   constructor(private readonly video: HTMLVideoElement) {}
 
   start(): void {
-    // TODO(b/311592341): Show the object closer to the center of preview when
-    // both scanners detect objects at the same time.
     this.barcodeRunner = this.createBarcodeRunner(BARCODE_SCAN_INTERVAL);
     this.ocrRunner = this.createOcrRunner(OCR_SCAN_INTERVAL);
     this.slowdownTimer = new OneShotTimer(() => {

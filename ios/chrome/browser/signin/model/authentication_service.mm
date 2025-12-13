@@ -10,11 +10,13 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/location.h"
+#import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
 #import "components/browser_sync/sync_to_signin_migration.h"
+#import "components/policy/core/common/management/platform_management_service.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
@@ -71,9 +73,8 @@ enum class IOSDeviceRestoreSignedinState : int {
 CoreAccountId SystemIdentityToAccountID(
     signin::IdentityManager* identity_manager,
     id<SystemIdentity> identity) {
-  GaiaId gaia_id([identity gaiaID]);
   std::string email = base::SysNSStringToUTF8([identity userEmail]);
-  return identity_manager->PickAccountIdForAccount(gaia_id, email);
+  return identity_manager->PickAccountIdForAccount(identity.gaiaId, email);
 }
 
 }  // namespace
@@ -180,8 +181,8 @@ void AuthenticationService::Initialize(
   if (!primary_account || primary_account.length == 0) {
     id<SystemIdentity> identity =
         GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-    if (identity.gaiaID) {
-      [shared_defaults setObject:identity.gaiaID
+    if (!identity.gaiaId.empty()) {
+      [shared_defaults setObject:identity.gaiaId.ToNSString()
                           forKey:app_group::kPrimaryAccount];
     }
   }
@@ -340,7 +341,7 @@ bool AuthenticationService::ShouldClearDataForSignedInPeriodOnSignOut() const {
   // 2. The app management configuration key is present.
   // Note: data will be cleared from the time of sign-in in this case.
   return HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin) &&
-         !IsApplicationManagedByMDM();
+         !policy::PlatformManagementService::GetInstance()->IsManaged();
 }
 
 id<SystemIdentity> AuthenticationService::GetPrimaryIdentity(
@@ -369,7 +370,7 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity,
       ->ReloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountId());
 
   const CoreAccountId account_id = identity_manager_->PickAccountIdForAccount(
-      GaiaId(identity.gaiaID), base::SysNSStringToUTF8(identity.userEmail));
+      identity.gaiaId, base::SysNSStringToUTF8(identity.userEmail));
 
   // Ensure that the account the user is trying to sign into has been loaded
   // from the SSO library.
@@ -612,8 +613,19 @@ bool AuthenticationService::HandleMDMError(id<SystemIdentity> identity,
 
   SystemIdentityManager* system_identity_manager =
       GetApplicationContext()->GetSystemIdentityManager();
+  bool scope_limited_error_suppressed =
+      system_identity_manager->IsScopeLimitedError(error);
+  base::UmaHistogramBoolean("Signin.ScopeLimitedErrorSuppressed",
+                            scope_limited_error_suppressed);
+  if (scope_limited_error_suppressed) {
+    return false;
+  }
 
-  if (system_identity_manager->HandleMDMNotification(
+  // Stop displaying the MDM error dialog on the NTP when
+  // kHandleMdmErrorsForDasherAccounts is enabled.
+  if (!base::FeatureList::IsEnabled(
+          switches::kHandleMdmErrorsForDasherAccounts) &&
+      system_identity_manager->HandleMDMNotification(
           identity, ActiveIdentities(), error,
           base::BindOnce(&AuthenticationService::MDMErrorHandled,
                          weak_pointer_factory_.GetWeakPtr(), identity))) {
@@ -621,7 +633,8 @@ bool AuthenticationService::HandleMDMError(id<SystemIdentity> identity,
         SystemIdentityToAccountID(identity_manager_, identity);
     DUMP_WILL_BE_CHECK(!account_id.empty())
         << "Unexpected identity with empty account id: [gaiaID = "
-        << identity.gaiaID << "; userEmail = " << identity.userEmail << "]";
+        << identity.gaiaId.ToNSString()
+        << "; userEmail = " << identity.userEmail << "]";
     cached_mdm_errors_[account_id] = error;
     return true;
   }
@@ -646,7 +659,7 @@ void AuthenticationService::MDMErrorHandled(id<SystemIdentity> identity,
 
 void AuthenticationService::OnRefreshTokenUpdated(id<SystemIdentity> identity) {
   const CoreAccountId account_id = identity_manager_->PickAccountIdForAccount(
-      GaiaId(identity.gaiaID), base::SysNSStringToUTF8(identity.userEmail));
+      identity.gaiaId, base::SysNSStringToUTF8(identity.userEmail));
   if (!identity_manager_->HasAccountWithRefreshToken(account_id)) {
     return;
   }
@@ -741,11 +754,10 @@ void AuthenticationService::HandleForgottenIdentity(
   // Sign the user out.
   SignOut(signout_source, nil);
 
-  NSString* gaia_id = account_info.gaia.ToNSString();
   // Should prompt the user if the identity was not removed by the user.
   bool should_prompt = !GetApplicationContext()
                             ->GetSystemIdentityManager()
-                            ->IdentityRemovedByUser(gaia_id);
+                            ->IdentityRemovedByUser(account_info.gaia);
   if (should_prompt && account_filtered_out) {
     FirePrimaryAccountRestricted();
   } else if (should_prompt &&
@@ -811,7 +823,7 @@ void AuthenticationService::ClearAccountSettingsPrefsOfRemovedAccounts() {
   std::vector<GaiaId> available_gaia_ids;
   for (id<SystemIdentity> identity in account_manager_service_
            ->GetAllIdentities()) {
-    available_gaia_ids.emplace_back(identity.gaiaID);
+    available_gaia_ids.emplace_back(identity.gaiaId);
   }
   sync_service_->GetUserSettings()->KeepAccountSettingsPrefsOnlyForUsers(
       available_gaia_ids);

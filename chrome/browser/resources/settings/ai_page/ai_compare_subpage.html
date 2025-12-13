@@ -4,7 +4,8 @@
   }
 </style>
 
-<settings-subpage page-title="$i18n{aiCompareLabel}">
+<settings-subpage page-title="$i18n{aiCompareLabel}"
+    route-path$="[[routePath]]">
 <settings-ai-policy-indicator pref="[[enterprisePref_]]">
 </settings-ai-policy-indicator>
 <template is="dom-if" if="[[!isDisabled_(enterprisePref_)]]" restamp>

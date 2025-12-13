@@ -14,6 +14,7 @@
 #include <type_traits>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/types/to_address.h"
@@ -23,7 +24,7 @@
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test_internal.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/interaction/interaction_test_util_mouse.h"
 #include "ui/views/interaction/widget_focus_observer.h"
 
@@ -44,10 +45,12 @@ namespace internal {
 // Provides functionality required by InteractiveViewsTestApi but which needs to
 // be hidden from tests inheriting from the API class.
 class InteractiveViewsTestPrivate
-    : public ui::test::internal::InteractiveTestPrivate {
+    : public ui::test::internal::InteractiveTestPrivateFrameworkBase {
  public:
+  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+
   explicit InteractiveViewsTestPrivate(
-      std::unique_ptr<ui::test::InteractionTestUtil> test_util);
+      ui::test::internal::InteractiveTestPrivate& test_impl);
   ~InteractiveViewsTestPrivate() override;
 
   // base::test::internal::InteractiveTestPrivate:
@@ -92,12 +95,12 @@ class InteractiveViewsTestPrivate
 
  protected:
   // Retrieves the native window from an element. Used by GetWindowHintFor().
-  virtual gfx::NativeWindow GetNativeWindowFromElement(
-      ui::TrackedElement* el) const;
+  gfx::NativeWindow GetNativeWindowFromElement(
+      const ui::TrackedElement* el) const override;
 
   // Retrieves the native window from a context. Used by GetWindowHintFor().
-  virtual gfx::NativeWindow GetNativeWindowFromContext(
-      ui::ElementContext context) const;
+  gfx::NativeWindow GetNativeWindowFromContext(
+      ui::ElementContext context) const override;
 
   // Use this to register widget focus suppliers.
   WidgetFocusSupplierFrame::SupplierList& widget_focus_suppliers() {
@@ -105,17 +108,19 @@ class InteractiveViewsTestPrivate
   }
 
   // Gets a debug description of a widget.
-  virtual std::string DebugDumpWidget(const Widget& widget) const;
+  std::string DebugDumpWidget(const Widget& widget) const;
 
   // InteractiveTestPrivate:
-  DebugTreeNode DebugDumpElement(const ui::TrackedElement* el) const override;
-  DebugTreeNode DebugDumpContext(
-      const ui::ElementContext context) const override;
+  std::vector<DebugTreeNode> DebugDumpElements(
+      std::set<const ui::TrackedElement*>& elements) const override;
 
  private:
   friend class views::test::InteractiveViewsTestApi;
 
   class WindowHintCacheEntry;
+
+  std::optional<DebugTreeNode> DebugDumpElement(
+      const ui::TrackedElement* el) const;
 
   // Provides mouse input simulation.
   std::unique_ptr<InteractionTestUtilMouse> mouse_util_;

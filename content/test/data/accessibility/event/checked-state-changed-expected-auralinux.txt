@@ -1,2 +1,14 @@
+=== Accessibility tree before go() pass 1 ===
+[document web] focused
+++[check box] name='My Checkbox' checkable checkable:true
+++[tree item] name='Treeitem' selectable checkable checkable:true
+++++[static] name='Treeitem'
+=== End accessibility tree ===
 STATE-CHANGE:CHECKED:TRUE role=ROLE_CHECK_BOX name='My Checkbox' CHECKED,ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE,CHECKABLE
 STATE-CHANGE:CHECKED:TRUE role=ROLE_TREE_ITEM name='Treeitem' CHECKED,ENABLED,SELECTABLE,SENSITIVE,SHOWING,VISIBLE,CHECKABLE
+=== Accessibility tree after go() pass 1 ===
+[document web] focused
+++[check box] name='My Checkbox' checked checkable checkable:true <<<<<< CHANGED
+++[tree item] name='Treeitem' checked selectable checkable checkable:true <<<<<< CHANGED
+++++[static] name='Treeitem'
+=== End accessibility tree ===

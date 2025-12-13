@@ -68,7 +68,7 @@ class LayerTitleCache {
   // Called from Java, updates a native cc::slim::Layer based on the new texture
   // information.
   void UpdateGroupLayer(JNIEnv* env,
-                        const base::android::JavaParamRef<jobject>& group_token,
+                        const base::android::JavaRef<jobject>& group_token,
                         jint title_resource_id,
                         jint avatar_resource_id,
                         jint avatar_padding,

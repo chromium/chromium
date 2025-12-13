@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <array>
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
@@ -31,8 +27,6 @@
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/logger.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
-#include "gpu/command_buffer/service/passthrough_discardable_manager.h"
-#include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
@@ -162,10 +156,7 @@ class RecordReplayContext : public GpuControl {
   RecordReplayContext()
       : gpu_preferences_(GetGpuPreferences()),
         share_group_(new gl::GLShareGroup),
-        discardable_manager_(gpu::GpuPreferences()),
-        passthrough_discardable_manager_(gpu::GpuPreferences()),
         translator_cache_(gpu_preferences_) {
-    bool bind_generates_resource = false;
     if (base::CommandLine::ForCurrentProcess()->HasSwitch("use-stub")) {
       surface_ = new gl::GLSurfaceStub;
       scoped_refptr<gl::GLContextStub> context_stub =
@@ -176,7 +167,6 @@ class RecordReplayContext : public GpuControl {
     } else {
       gl::GLContextAttribs attribs;
       if (gpu_preferences_.use_passthrough_cmd_decoder) {
-        attribs.bind_generates_resource = bind_generates_resource;
         attribs.allow_client_arrays = false;
       }
       surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
@@ -187,26 +177,23 @@ class RecordReplayContext : public GpuControl {
     context_->MakeCurrent(surface_.get());
 
     scoped_refptr<gles2::FeatureInfo> feature_info = new gles2::FeatureInfo();
-    scoped_refptr<gles2::ContextGroup> context_group = new gles2::ContextGroup(
+    auto context_group = base::MakeRefCounted<gles2::ContextGroup>(
         gpu_preferences_, /*memory_tracker=*/nullptr, &translator_cache_,
-        &completeness_cache_, feature_info, bind_generates_resource,
-        /*progress_reporter=*/nullptr, GpuFeatureInfo(), &discardable_manager_,
-        &passthrough_discardable_manager_, &shared_image_manager_);
+        &completeness_cache_, feature_info,
+        /*progress_reporter=*/nullptr, GpuFeatureInfo(),
+        &shared_image_manager_);
     command_buffer_ = std::make_unique<RecordReplayCommandBuffer>();
 
-    decoder_.reset(gles2::GLES2Decoder::Create(
-        command_buffer_.get(), command_buffer_->service(), &outputter_,
-        context_group.get()));
+    decoder_ = gles2::GLES2Decoder::Create(command_buffer_.get(),
+                                           command_buffer_->service(),
+                                           &outputter_, context_group.get());
     command_buffer_->set_handler(decoder_.get());
 
     decoder_->GetLogger()->set_log_synthesized_gl_errors(false);
 
-    ContextCreationAttribs attrib_helper;
-    attrib_helper.context_type = CONTEXT_TYPE_OPENGLES3;
-
-    ContextResult result =
-        decoder_->Initialize(surface_.get(), context_.get(), true,
-                             gles2::DisallowedFeatures(), attrib_helper);
+    ContextResult result = decoder_->Initialize(
+        surface_.get(), context_.get(), /*offscreen=*/true,
+        CONTEXT_TYPE_OPENGLES3, /*lose_context_when_out_of_memory=*/false);
     DCHECK_EQ(result, ContextResult::kSuccess);
     capabilities_ = decoder_->GetCapabilities();
     gl_capabilities_ = decoder_->GetGLCapabilities();
@@ -222,11 +209,9 @@ class RecordReplayContext : public GpuControl {
 
     // Create the object exposing the OpenGL API.
     const bool lose_context_when_out_of_memory = false;
-    const bool support_client_side_arrays = false;
     gles2_implementation_ = std::make_unique<gles2::GLES2Implementation>(
         gles2_helper_.get(), nullptr, transfer_buffer_.get(),
-        bind_generates_resource, lose_context_when_out_of_memory,
-        support_client_side_arrays, this);
+        lose_context_when_out_of_memory, this);
 
     result = gles2_implementation_->Initialize(limits);
     DCHECK_EQ(result, ContextResult::kSuccess);
@@ -321,8 +306,6 @@ class RecordReplayContext : public GpuControl {
   GpuPreferences gpu_preferences_;
 
   scoped_refptr<gl::GLShareGroup> share_group_;
-  ServiceDiscardableManager discardable_manager_;
-  PassthroughDiscardableManager passthrough_discardable_manager_;
   SharedImageManager shared_image_manager_;
 
   scoped_refptr<gl::GLSurface> surface_;
@@ -606,7 +589,7 @@ TEST_F(DecoderPerfTest, TextureDraw) {
     float xpos = 2.f * x / N - 1.f;
     for (int y = 0; y < N; ++y) {
       float ypos = 2.f * y / N - 1.f;
-      gl_->BindTexture(GL_TEXTURE_2D, textures[texture]);
+      gl_->BindTexture(GL_TEXTURE_2D, UNSAFE_TODO(textures[texture]));
       gl_->Uniform2f(offset_location, xpos, ypos);
       gl_->DrawArrays(GL_TRIANGLE_STRIP, 0, 4);
       texture = (texture + 1) % kTextures;

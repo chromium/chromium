@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_COLOR_CHOOSER_UI_CONTROLLER_H_
 
 #include "build/build_config.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/forms/color_chooser.h"

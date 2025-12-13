@@ -9,7 +9,7 @@
 #include <Security/Security.h>
 
 #include "base/apple/scoped_cftyperef.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "ios/web/public/security/security_style.h"
 
 namespace net {

@@ -12,7 +12,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/cancelable_callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -66,10 +66,9 @@ class AudioSinkAndroidAudioTrackImpl : public AudioSinkAndroid {
   // byte_buffers.
   void CacheDirectBufferAddress(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& pcm_byte_buffer,
-      const base::android::JavaParamRef<jobject>& rendering_delay_byte_buffer,
-      const base::android::JavaParamRef<jobject>&
-          audio_track_timestamp_byte_buffer);
+      const base::android::JavaRef<jobject>& pcm_byte_buffer,
+      const base::android::JavaRef<jobject>& rendering_delay_byte_buffer,
+      const base::android::JavaRef<jobject>& audio_track_timestamp_byte_buffer);
 
   // AudioSinkAndroid implementation:
   void WritePcm(scoped_refptr<DecoderBufferBase> data) override;

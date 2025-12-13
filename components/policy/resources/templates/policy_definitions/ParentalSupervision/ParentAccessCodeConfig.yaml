@@ -30,7 +30,8 @@ features:
   per_profile: false
 owners:
 - file://chrome/browser/ash/child_accounts/OWNERS
-- agawronska@chromium.org
+- zhangwenyu@googe.com
+- longbowei@google.com
 schema:
   properties:
     current_config:

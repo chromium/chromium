@@ -10,8 +10,8 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="@dimen/navigation_popup_default_padding"
-    android:paddingEnd="@dimen/navigation_popup_default_padding"
+    android:paddingStart="@dimen/navigation_popup_start_padding"
+    android:paddingEnd="@dimen/navigation_popup_end_padding"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:background="?attr/selectableItemBackground">
@@ -19,13 +19,16 @@ found in the LICENSE file.
     <FrameLayout
       android:layout_width="wrap_content"
       android:layout_height="match_parent">
-        <View
+        <ImageView
           android:id="@+id/favicon_bg"
-          android:layout_width="@dimen/navigation_popup_favicon_bg_size"
-          android:layout_height="@dimen/navigation_popup_favicon_bg_size"
+          android:layout_width="?attr/minInteractTargetSize"
+          android:layout_height="?attr/minInteractTargetSize"
           android:layout_gravity="center"
-          android:background="@drawable/oval_shape"
-          android:backgroundTint="@color/context_menu_header_circle_bg_color" />
+          android:padding="@dimen/navigation_popup_favicon_padding"
+          android:src="@drawable/oval_shape"
+          android:tint="@color/context_menu_header_circle_bg_color"
+          android:scaleType="fitCenter"
+          android:importantForAccessibility="no" />
         <ImageView
           android:id="@+id/favicon_img"
           android:layout_width="@dimen/default_favicon_size"
@@ -39,8 +42,8 @@ found in the LICENSE file.
         android:gravity="center_vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/navigation_popup_default_padding"
-        android:minHeight="@dimen/navigation_popup_item_height"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:layout_marginStart="@dimen/navigation_popup_icon_text_spacing"
+        android:minHeight="?attr/listItemHeightLarge"
+        android:textAppearance="@style/TextAppearance.DensityAdaptive.TextLarge.Primary"
         android:singleLine="true"/>
 </LinearLayout>

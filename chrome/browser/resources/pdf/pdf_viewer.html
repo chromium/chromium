@@ -1,5 +1,5 @@
 <!-- #html_wrapper_imports_start
-<if expr="enable_pdf_ink2 or enable_ink">
+<if expr="enable_pdf_ink2">
 import {AnnotationMode} from './constants.js';
 </if>
 #html_wrapper_imports_end -->
@@ -9,13 +9,8 @@ import {AnnotationMode} from './constants.js';
     .embeddedViewer="${this.embedded_}" .pageNo="${this.pageNo_}"
     .loadProgress="${this.loadProgress_}" .hasEdits="${this.hasEdits_}"
     .strings="${this.strings}"
-<if expr="enable_ink or enable_pdf_ink2">
-    .annotationMode="${this.annotationMode_}"
-</if>
-<if expr="enable_ink">
-    .hasEnteredAnnotationMode="${this.hasEnteredAnnotationMode_}"
-</if>
 <if expr="enable_pdf_ink2">
+    .annotationMode="${this.annotationMode_}"
     .enableUndoRedo="${!this.isTextboxActive_()}"
     .hasInk2Edits="${this.hasInk2AnnotationEdits_()}"
 </if>
@@ -25,28 +20,25 @@ import {AnnotationMode} from './constants.js';
     .twoUpViewEnabled="${this.twoUpViewEnabled_}"
     .viewportZoom="${this.viewportZoom_}"
     .zoomBounds="${this.zoomBounds_}"
-<if expr="enable_ink or enable_pdf_ink2">
-    .annotationAvailable="${this.annotationAvailable_()}"
-</if>
 <if expr="enable_pdf_ink2">
+    .annotationAvailable="${this.annotationAvailable_()}"
     .pdfInk2Enabled="${this.pdfInk2Enabled_}"
 </if>
 <if expr="enable_pdf_save_to_drive">
     .pdfSaveToDriveEnabled="${this.pdfSaveToDriveEnabled_}"
+    .saveToDriveProgress="${this.getSaveToDriveProgress_()}"
+    .saveToDriveState="${this.saveToDriveState_}"
 </if>
     @change-page="${this.onChangePage_}"
     @display-annotations-changed="${this.onDisplayAnnotationsChanged_}"
     @fit-to-changed="${this.onFitToChanged}"
     @present-click="${this.onPresentClick_}"
     @properties-click="${this.onPropertiesClick_}"
-<if expr="enable_ink">
-    @annotation-mode-dialog-confirmed="${this.onResetView_}"
-</if>
     @sidenav-toggle-click="${this.onSidenavToggleClick_}"
     @two-up-view-changed="${this.onTwoUpViewChanged_}"
     @zoom-changed="${this.onZoomChanged}" @zoom-in="${this.onZoomIn}"
     @zoom-out="${this.onZoomOut}" @rotate-left="${this.rotateCounterclockwise}"
-<if expr="enable_ink or enable_pdf_ink2">
+<if expr="enable_pdf_ink2">
     @annotation-mode-updated="${this.onAnnotationModeUpdated_}"
 </if>
     @print="${this.onPrint_}" @save="${this.onToolbarSave_}"
@@ -135,3 +127,12 @@ ${this.showPropertiesDialog_ ? html`<viewer-properties-dialog
     .strings="${this.strings}"
     @close="${this.onPropertiesDialogClose_}">
 </viewer-properties-dialog>` : ''}
+
+<if expr="enable_pdf_save_to_drive">
+${this.pdfSaveToDriveEnabled_ ? html`<viewer-save-to-drive-bubble
+    .docTitle="${this.title_}"
+    .progress="${this.saveToDriveProgress_}"
+    .state="${this.saveToDriveState_}"
+    @save-to-drive-bubble-action="${this.onSaveToDriveBubbleAction_}">
+</viewer-save-to-drive-bubble>` : ''}
+</if>

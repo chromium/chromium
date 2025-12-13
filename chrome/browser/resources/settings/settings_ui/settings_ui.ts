@@ -145,14 +145,6 @@ export class SettingsUiElement extends SettingsUiElementBase {
       // </if>
     };
 
-    this.addEventListener('show-container', () => {
-      this.$.container.style.visibility = 'visible';
-    });
-
-    this.addEventListener('hide-container', () => {
-      this.$.container.style.visibility = 'hidden';
-    });
-
     this.addEventListener('refresh-pref', this.onRefreshPref_.bind(this));
   }
 
@@ -270,8 +262,8 @@ export class SettingsUiElement extends SettingsUiElementBase {
    */
   private onMenuClose_() {
     if (!this.$.drawer.wasCanceled()) {
-      // If a navigation happened, MainPageMixin#currentRouteChanged
-      // handles focusing the corresponding section.
+      // If a navigation happened, SettingsMain handles focusing the
+      // corresponding section.
       return;
     }
 

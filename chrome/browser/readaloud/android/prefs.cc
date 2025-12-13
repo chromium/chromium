@@ -17,16 +17,13 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/readaloud/android/jni_headers/ReadAloudPrefs_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::GetClass;
-using base::android::JavaParamRef;
-using base::android::MethodID;
-using base::android::ScopedJavaLocalRef;
+using base::android::JavaRef;
 
 namespace readaloud {
 namespace {
@@ -53,34 +50,23 @@ void RegisterLocalPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kReadAloudSyntheticTrials);
 }
 
-void JNI_ReadAloudPrefs_GetVoices(JNIEnv* env,
-                                  const JavaParamRef<jobject>& j_pref_service,
-                                  const JavaParamRef<jobject>& j_output_map) {
+static void JNI_ReadAloudPrefs_GetVoices(JNIEnv* env,
+                                         const JavaRef<jobject>& j_pref_service,
+                                         const JavaRef<jobject>& j_output_map) {
   PrefService* prefs =
       PrefServiceAndroid::FromPrefServiceAndroid(j_pref_service);
-
-  ScopedJavaLocalRef<jclass> output_map_class =
-      GetClass(env, "java/util/HashMap");
-  // jmethodID is a pointer to an internal struct. We don't own it and should
-  // not delete it.
-  jmethodID map_put_id = MethodID::Get<MethodID::Type::TYPE_INSTANCE>(
-      env, output_map_class.obj(), "put",
-      "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
 
   const base::Value::Dict& dict =
       prefs->GetDict(prefs::kReadAloudVoiceSettings);
   for (auto [language, value] : dict) {
-    env->CallObjectMethod(
-        j_output_map.obj(), map_put_id,
-        ConvertUTF8ToJavaString(env, language).obj(),
-        ConvertUTF8ToJavaString(env, value.GetString()).obj());
+    jni_zero::MapPut(env, j_output_map, language, value.GetString());
   }
 }
 
-void JNI_ReadAloudPrefs_SetVoice(JNIEnv* env,
-                                 const JavaParamRef<jobject>& j_pref_service,
-                                 const JavaParamRef<jstring>& j_language,
-                                 const JavaParamRef<jstring>& j_voice_id) {
+static void JNI_ReadAloudPrefs_SetVoice(JNIEnv* env,
+                                        const JavaRef<jobject>& j_pref_service,
+                                        const JavaRef<jstring>& j_language,
+                                        const JavaRef<jstring>& j_voice_id) {
   ScopedDictPrefUpdate(
       PrefServiceAndroid::FromPrefServiceAndroid(j_pref_service),
       prefs::kReadAloudVoiceSettings)
@@ -88,10 +74,10 @@ void JNI_ReadAloudPrefs_SetVoice(JNIEnv* env,
             ConvertJavaStringToUTF8(env, j_voice_id));
 }
 
-jlong JNI_ReadAloudPrefs_GetReliabilityLoggingId(
+static jlong JNI_ReadAloudPrefs_GetReliabilityLoggingId(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_pref_service,
-    const JavaParamRef<jstring>& j_metrics_id) {
+    const JavaRef<jobject>& j_pref_service,
+    const JavaRef<jstring>& j_metrics_id) {
   PrefService* prefs =
       PrefServiceAndroid::FromPrefServiceAndroid(j_pref_service);
   if (!prefs) {
@@ -118,3 +104,5 @@ uint64_t GetReliabilityLoggingId(PrefService& prefs,
 }
 
 }  // namespace readaloud
+
+DEFINE_JNI(ReadAloudPrefs)

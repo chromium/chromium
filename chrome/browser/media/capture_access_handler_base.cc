@@ -15,7 +15,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/extension.h"
@@ -26,8 +26,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "base/hash/sha1.h"
 #include "base/strings/string_number_conversions.h"
+#include "crypto/hash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 using content::BrowserThread;
@@ -322,26 +322,32 @@ void CaptureAccessHandlerBase::UpdateVideoScreenCaptureStatus(
   }
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 bool CaptureAccessHandlerBase::IsExtensionAllowedForScreenCapture(
     const extensions::Extension* extension) {
   if (!extension)
     return false;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  std::string hash = base::SHA1HashString(extension->id());
-  std::string hex_hash = base::HexEncode(hash);
+  std::string hex_hash = base::HexEncode(crypto::hash::Sha256(extension->id()));
 
   // crbug.com/446688
-  return hex_hash == "4F25792AF1AA7483936DE29C07806F203C7170A0" ||
-         hex_hash == "BD8781D757D830FC2E85470A1B6E8A718B7EE0D9" ||
-         hex_hash == "4AC2B6C63C6480D150DFDA13E4A5956EB1D0DDBB" ||
-         hex_hash == "81986D4F846CEDDDB962643FA501D1780DD441BB";
+  return hex_hash ==
+             "EA4DC6890B3B3EBE6248E7580099D9F44D8E5932D60F09E4335E157149EF552"
+             "1" ||
+         hex_hash ==
+             "8F1F245CCEDCD968DDC092FF36AA79E30644FCAB491A7DD4F2C6F5482344A93"
+             "F" ||
+         hex_hash ==
+             "B84DF148EE6A745982FFB1E868520F44077D9E80BAF191272CAF8F1C06D68EB"
+             "C" ||
+         hex_hash ==
+             "DC019F2EF6680AF54DDDB6B4BC6FAA735F8D21A7DEB79D77FCC8180BD76C6BA8";
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 bool CaptureAccessHandlerBase::IsBuiltInFeedbackUI(const GURL& origin) {
   return origin.spec() == chrome::kChromeUIFeedbackURL;

@@ -10,10 +10,13 @@
 #include "base/auto_reset.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/stack_util.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
+
+#if !DCHECK_IS_ON()
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#endif
 
 namespace blink {
 

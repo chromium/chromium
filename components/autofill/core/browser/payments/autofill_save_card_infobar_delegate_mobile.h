@@ -63,6 +63,7 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
   const std::u16string& expiration_date_year() const {
     return ui_info_.expiration_date_year;
   }
+  const std::u16string& card_cvc() const { return ui_info_.card_cvc; }
   const std::u16string& displayed_target_account_email() const {
     return ui_info_.displayed_target_account_email;
   }

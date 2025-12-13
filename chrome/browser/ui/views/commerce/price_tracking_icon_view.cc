@@ -51,7 +51,8 @@
 namespace {
 
 // This will add the bookmark to the shopping collection if the feature is
-// enabled, otherwise we save to "other bookmarks".
+// enabled, otherwise we create a new shopping collection in the account and
+// save it there.
 void AddIfNotBookmarkedToTheDefaultFolder(bookmarks::BookmarkModel* model,
                                           content::WebContents* web_contents) {
   GURL url;
@@ -64,6 +65,9 @@ void AddIfNotBookmarkedToTheDefaultFolder(bookmarks::BookmarkModel* model,
 
     const bookmarks::BookmarkNode* parent =
         commerce::GetShoppingCollectionBookmarkFolder(model, true);
+    // At this point, we expect that the shopping collection folder exists in
+    // the account and can be saved to.
+    CHECK(parent);
 
     model->AddNewURL(parent, parent->children().size(), title, url);
   }
@@ -248,6 +252,9 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
   bool is_new_bookmark = existing_node == nullptr;
 
   if (enable) {
+    CHECK(commerce::ShoppingServiceFactory::GetForBrowserContext(profile_)
+              ->IsShoppingListEligible());
+
     AddIfNotBookmarkedToTheDefaultFolder(model, GetWebContents());
     base::RecordAction(
         base::UserMetricsAction("Commerce.PriceTracking.OmniboxChip.Tracked"));

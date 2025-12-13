@@ -31,6 +31,16 @@ class DnsTransactionFactory;
 class NetLog;
 class ResolveContext;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DnsConfigLocalNameserverState {
+  kNoLocal = 0,
+  kOnlyLoopback = 1,
+  kOnlyNonLoopbackLocal = 2,
+  kLoopbackAndNonLoopback = 3,
+  kMaxValue = kLoopbackAndNonLoopback,
+};
+
 // Entry point for HostResolverManager to interact with the built-in async
 // resolver, as implemented by DnsTransactionFactory. Manages configuration and
 // status of the resolver.

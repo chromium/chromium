@@ -4,22 +4,23 @@
 
 package org.chromium.chrome.browser.sync.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentSender;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
-import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
+import org.chromium.components.trusted_vault.TrustedVaultUserActionTriggerForUMA;
 
 /**
  * {@link SyncTrustedVaultProxyActivity} has no own UI and just acts as a proxy to launch an
@@ -27,6 +28,7 @@ import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
  * this proxy activity is to detect when the proxied activity (key retrieval or degraded
  * recoverability fix UI) finishes and notify TrustedVaultClient about changes.
  */
+@NullMarked
 public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
     private static final String TAG = "SyncUI";
 
@@ -132,23 +134,17 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
         OneshotSupplierImpl<ProfileProvider> supplier = new OneshotSupplierImpl<>();
         ProfileProvider profileProvider =
                 new ProfileProvider() {
-                    @NonNull
+
                     @Override
                     public Profile getOriginalProfile() {
-                        throw new IllegalStateException(
-                                "Unexpected access of the original profile.");
-                    }
-
-                    @Nullable
-                    @Override
-                    public Profile getOffTheRecordProfile(boolean createIfNeeded) {
-                        throw new IllegalStateException(
-                                "Unexpected access of the incognito profile.");
+                        assert false;
+                        return assumeNonNull(null);
                     }
 
                     @Override
-                    public boolean hasOffTheRecordProfile() {
-                        return false;
+                    public @Nullable Profile getOffTheRecordProfile(boolean createIfNeeded) {
+                        assert !createIfNeeded;
+                        return null;
                     }
                 };
         supplier.set(profileProvider);
@@ -185,7 +181,8 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
     }
 
     @Override
-    public boolean onActivityResultWithNative(int requestCode, int resultCode, Intent intent) {
+    public boolean onActivityResultWithNative(
+            int requestCode, int resultCode, @Nullable Intent intent) {
         boolean result = super.onActivityResultWithNative(requestCode, resultCode, intent);
 
         switch (requestCode) {
@@ -193,7 +190,7 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
                 // Upon key retrieval completion, the keys in TrustedVaultClient could have changed.
                 // This is done even if the user cancelled the flow (i.e. resultCode != RESULT_OK)
                 // because it's harmless to issue a redundant notifyKeysChanged().
-                TrustedVaultClient.get().notifyKeysChanged();
+                TrustedVaultClient.get().notifyKeysChanged(mUserActionTrigger);
                 break;
 
             case REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED:

@@ -5,6 +5,7 @@
 #include "components/exo/display.h"
 
 #include <GLES2/gl2extchromium.h>
+
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -91,7 +92,7 @@ std::unique_ptr<SharedMemory> Display::CreateSharedMemory(
 
 std::unique_ptr<Buffer> Display::CreateLinuxDMABufBuffer(
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::NativePixmapHandle handle,
     bool y_invert) {
   TRACE_EVENT1("exo", "Display::CreateLinuxDMABufBuffer", "size",
@@ -101,9 +102,8 @@ std::unique_ptr<Buffer> Display::CreateLinuxDMABufBuffer(
 
   const gfx::BufferUsage buffer_usage = gfx::BufferUsage::GPU_READ;
 
-  // COMMANDS_COMPLETED queries are required by native pixmaps.
-  const unsigned query_type = GL_COMMANDS_COMPLETED_CHROMIUM;
-
+  // Using readlock fence instead of query for zero-copy.
+  const unsigned query_type = 0;
   // Using zero-copy for optimal performance.
   const bool use_zero_copy = true;
   const bool is_overlay_candidate = true;

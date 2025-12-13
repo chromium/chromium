@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/base_paths.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -20,6 +21,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
@@ -29,6 +32,42 @@
 #include "chrome/installer/util/work_item_list.h"
 
 namespace enterprise_companion {
+
+namespace {
+
+#if ENTERPRISE_COMPANION_USE_ICU_DATA_FILE
+
+// Blocks the calling sequence for up to 10 seconds until a file becomes
+// writable. Returns true if the file is eventually writable. This is
+// particularly useful for spinning on files which may be be open by other
+// processes.
+bool WaitForFileWritable(const base::FilePath& path) {
+  static constexpr base::TimeDelta kMaxWait = base::Seconds(10);
+  static constexpr base::TimeDelta kLoggingInterval = base::Seconds(2);
+  base::TimeTicks next_logging_time = base::TimeTicks::Now() + kLoggingInterval;
+  base::TimeTicks deadline = base::TimeTicks::Now() + kMaxWait;
+  while (base::TimeTicks::Now() < deadline) {
+    // The file is writeable if it can be opened for exclusive write access or
+    // if it does not exist.
+    if (base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_WRITE |
+                                  base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                                  base::File::FLAG_WIN_EXCLUSIVE_READ |
+                                  base::File::FLAG_WIN_SHARE_DELETE);
+        file.IsValid() ||
+        file.error_details() == base::File::FILE_ERROR_NOT_FOUND) {
+      return true;
+    }
+    if (next_logging_time < base::TimeTicks::Now()) {
+      VLOG(1) << "Still waiting for " << path << " to become writable.";
+      next_logging_time += kLoggingInterval;
+    }
+    base::PlatformThread::Sleep(base::Milliseconds(100));
+  }
+  return false;
+}
+#endif  // ENTERPRISE_COMPANION_USE_ICU_DATA_FILE
+
+}  // namespace
 
 const wchar_t kAppRegKey[] = L"Software\\" COMPANY_SHORTNAME_STRING
                              "\\Update\\Clients\\" ENTERPRISE_COMPANION_APPID;
@@ -66,10 +105,15 @@ bool Install() {
       temp_dir.GetPath(), WorkItem::ALWAYS);
 #if ENTERPRISE_COMPANION_USE_ICU_DATA_FILE
   if (base::PathExists(source_exe_path.DirName().Append(kIcuDataFileName))) {
-    install_list->AddCopyTreeWorkItem(
-        source_exe_path.DirName().Append(kIcuDataFileName),
-        install_directory->Append(kIcuDataFileName), temp_dir.GetPath(),
-        WorkItem::ALWAYS);
+    if (WaitForFileWritable(install_directory->Append(kIcuDataFileName))) {
+      install_list->AddCopyTreeWorkItem(
+          source_exe_path.DirName().Append(kIcuDataFileName),
+          install_directory->Append(kIcuDataFileName), temp_dir.GetPath(),
+          WorkItem::ALWAYS);
+    } else {
+      VLOG(1) << "ICU data file is not writable. It will be omitted from the "
+                 "installation.";
+    }
   }
 #endif
   install_list->AddCreateRegKeyWorkItem(HKEY_LOCAL_MACHINE, kAppRegKey,

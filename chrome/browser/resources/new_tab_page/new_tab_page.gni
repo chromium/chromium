@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//ui/webui/webui_features.gni")
-import("./composebox/composebox.gni")
+import("./action_chips/action_chips.gni")
 import("./modules/modules.gni")
 import("./ntp_promo/ntp_promo.gni")
 
@@ -21,7 +21,7 @@ all_ts_files = [
                  "transparency.ts",
                  "utils.ts",
                  "window_proxy.ts",
-               ] + modules_ts_files + composebox_ts_files + ntp_promo_ts_files
+               ] + modules_ts_files + ntp_promo_ts_files + action_chips_ts_files
 
 # Files holding a Polymer element definition and have an equivalent .html file.
 all_web_component_files = [
@@ -45,15 +45,15 @@ all_css_files =
       "logo.css",
       "middle_slot_promo.css",
       "voice_search_overlay.css",
-    ] + modules_css_files + composebox_css_files + ntp_promo_css_files
+    ] + modules_css_files + ntp_promo_css_files + action_chips_css_files
 
 if (optimize_webui) {
   # Transpiled Mojo JS files to be excluded from the bundle in optimized builds.
   mojo_js_files = [
+    "action_chips.mojom-webui.js",
     "calendar_data.mojom-webui.js",
-    "composebox.mojom-webui.js",
-    "composebox_query.mojom-webui.js",
     "ntp_promo.mojom-webui.js",
+    "customize_chrome.mojom-webui.js",
     "customize_buttons.mojom-webui.js",
     "drive_suggestion.mojom-webui.js",
     "file_suggestion.mojom-webui.js",
@@ -64,6 +64,9 @@ if (optimize_webui) {
     "new_tab_page.mojom-webui.js",
     "ntp_microsoft_auth_shared_ui.mojom-webui.js",
     "outlook_calendar.mojom-webui.js",
+    "tab_groups.mojom-webui.js",
+    "tab_group_types.mojom-webui.js",
+    "tile_type.mojom-webui.js",
     "url_visit_types.mojom-webui.js",
   ]
 

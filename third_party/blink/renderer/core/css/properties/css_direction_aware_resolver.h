@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_DIRECTION_AWARE_RESOLVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_DIRECTION_AWARE_RESOLVER_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -22,12 +23,12 @@ class CSSDirectionAwareResolver {
   class Group {
    public:
     explicit Group(const StylePropertyShorthand&);
-    explicit Group(const CSSProperty* (&properties)[size]);
+    explicit Group(const CSSProperty* const (&properties)[size]);
     const CSSProperty& GetProperty(size_t index) const;
     bool Contains(CSSPropertyID) const;
 
    private:
-    const CSSProperty* const* properties_;
+    base::span<const CSSProperty* const> properties_;
   };
 
  public:
@@ -68,7 +69,6 @@ class CSSDirectionAwareResolver {
   static LogicalMapping<4> LogicalPaddingMapping();
   static LogicalMapping<4> LogicalScrollMarginMapping();
   static LogicalMapping<4> LogicalScrollPaddingMapping();
-  static LogicalMapping<2> LogicalScrollStartMapping();
   static LogicalMapping<2> LogicalSizeMapping();
   static LogicalMapping<4> LogicalVisitedBorderColorMapping();
 
@@ -88,7 +88,6 @@ class CSSDirectionAwareResolver {
   static PhysicalMapping<4> PhysicalPaddingMapping();
   static PhysicalMapping<4> PhysicalScrollMarginMapping();
   static PhysicalMapping<4> PhysicalScrollPaddingMapping();
-  static PhysicalMapping<2> PhysicalScrollStartMapping();
   static PhysicalMapping<2> PhysicalSizeMapping();
   static PhysicalMapping<4> PhysicalVisitedBorderColorMapping();
 

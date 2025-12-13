@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_METRICS_CONTENT_SUBPROCESS_METRICS_PROVIDER_H_
 #define COMPONENTS_METRICS_CONTENT_SUBPROCESS_METRICS_PROVIDER_H_
 
-#include <map>
 #include <memory>
 
+#include "base/containers/variant_map.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -15,6 +16,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/task/task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "base/types/pass_key.h"
 #include "components/metrics/metrics_provider.h"
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/render_process_host.h"
@@ -39,6 +41,8 @@ class SubprocessMetricsProvider
       public content::RenderProcessHostCreationObserver,
       public content::RenderProcessHostObserver {
  public:
+  using PassKey = base::PassKey<SubprocessMetricsProvider>;
+
   SubprocessMetricsProvider(const SubprocessMetricsProvider&) = delete;
   SubprocessMetricsProvider& operator=(const SubprocessMetricsProvider&) =
       delete;
@@ -136,7 +140,8 @@ class SubprocessMetricsProvider
   // Merges all histograms of the |allocators| to the global StatisticsRecorder.
   // Does not have any form of ownership on the allocators. May be called on a
   // background thread.
-  using AllocatorByIdMap = std::map<int, scoped_refptr<RefCountedAllocator>>;
+  using AllocatorByIdMap =
+      base::VariantMap<int, scoped_refptr<RefCountedAllocator>>;
   static void MergeHistogramDeltasFromAllocators(AllocatorByIdMap* allocators);
 
   // Callback for when MergeHistogramDeltasFromAllocator() is called in a

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.app.tab_activity_glue;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -12,6 +14,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 /** Constructs delegates needed for reparenting tabs. */
+@NullMarked
 public class ReparentingDelegateFactory {
     /**
      * @return Creates an implementation of {@link ReparentingTask.Delegate} that supplies
@@ -20,7 +23,7 @@ public class ReparentingDelegateFactory {
     public static ReparentingTask.Delegate createReparentingTaskDelegate(
             final CompositorViewHolder compositorViewHolder,
             final WindowAndroid windowAndroid,
-            TabDelegateFactory tabDelegateFactory) {
+            @Nullable TabDelegateFactory tabDelegateFactory) {
         return new ReparentingTask.Delegate() {
             @Override
             public CompositorViewHolder getCompositorViewHolder() {
@@ -33,7 +36,7 @@ public class ReparentingDelegateFactory {
             }
 
             @Override
-            public TabDelegateFactory getTabDelegateFactory() {
+            public @Nullable TabDelegateFactory getTabDelegateFactory() {
                 return tabDelegateFactory;
             }
         };

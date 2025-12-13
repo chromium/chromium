@@ -39,7 +39,7 @@ if (is_android) {
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/hamcrest:hamcrest_library_java",
-      "//third_party/junit:junit",
+      "//third_party/junit",
       "//url:gurl_java",
     ]
   }
@@ -59,7 +59,6 @@ if (is_android) {
       "//chrome/browser/flags:java",
       "//chrome/browser/profiles/android:java",
       "//components/segmentation_platform/public:public_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
@@ -84,6 +83,7 @@ static_library("test_utils") {
     ":segmentation_platform",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/history",
     "//components/segmentation_platform/embedder",
     "//components/segmentation_platform/embedder/default_model:default_model_test_base",
     "//components/segmentation_platform/internal",

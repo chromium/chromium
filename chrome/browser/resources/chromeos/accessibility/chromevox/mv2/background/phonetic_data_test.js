@@ -47,8 +47,6 @@ JA_TEST_MAP = new Map([
   ['働', 'ロウドウノドウ'],
 ]);
 
-// TODO(crbug.com/40758998): Polish phonetic readings so that users can disambiguate
-// more precisely.
 AX_TEST_F('ChromeVoxMV2PhoneticDataTest', 'forCharacterJa', function() {
   assertEquals('ヒラガナ アサヒ ノ ア', PhoneticData.forCharacter('あ', 'ja'));
   assertEquals('カタカナ アサヒ ノ ア', PhoneticData.forCharacter('ア', 'ja'));

@@ -8,11 +8,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
@@ -21,7 +21,10 @@ import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 
+import java.util.function.Supplier;
+
 /** Class that holds the {@link CustomTabMinimizationManager}. */
+@NullMarked
 public class CustomTabMinimizationManagerHolder implements DestroyObserver {
     private final AppCompatActivity mActivity;
     private final Supplier<CustomTabActivityNavigationController> mNavigationController;
@@ -64,7 +67,7 @@ public class CustomTabMinimizationManagerHolder implements DestroyObserver {
                             mActivityTabProvider,
                             new UserEducationHelper(
                                     mActivity,
-                                    profileSupplier,
+                                    (Supplier<@Nullable Profile>) profileSupplier,
                                     new Handler(Looper.getMainLooper())),
                             profileSupplier);
             Runnable closeTabRunnable = mNavigationController.get()::navigateOnClose;

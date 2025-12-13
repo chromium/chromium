@@ -30,7 +30,7 @@
 #include "extensions/common/mojom/manifest.mojom-data-view.h"
 #include "extensions/components/native_app_window/native_app_window_views.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
 namespace ash {
 

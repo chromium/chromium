@@ -9,8 +9,11 @@ namespace tabs_api::testing {
 ToyTabStripBrowserAdapter::ToyTabStripBrowserAdapter(ToyTabStrip* tab_strip)
     : tab_strip_(tab_strip) {}
 
-tabs::TabHandle ToyTabStripBrowserAdapter::AddTabAt(const GURL& url,
-                                                    std::optional<int> index) {
+tabs::TabHandle ToyTabStripBrowserAdapter::AddTabAt(
+    const GURL& url,
+    std::optional<int> index,
+    std::optional<tab_groups::TabGroupId> group,
+    bool pinned) {
   return tab_strip_->AddTabAt(url, index);
 }
 

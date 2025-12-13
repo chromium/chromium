@@ -5,6 +5,7 @@
 #include "base/win/access_token.h"
 
 #include <windows.h>
+#include <winternl.h>
 
 #include <algorithm>
 #include <cstdint>
@@ -15,6 +16,7 @@
 #include "base/win/atl.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/security_util.h"
+#include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -358,6 +360,88 @@ std::vector<std::wstring> PrivilegesToNames(
   }
   return sids;
 }
+
+extern "C" NTSTATUS WINAPI
+NtQuerySecurityAttributesToken(HANDLE TokenHandle,
+                               PUNICODE_STRING Attributes,
+                               ULONG NumberOfAttributes,
+                               PVOID Buffer,
+                               ULONG Length,
+                               PULONG ReturnLength);
+
+typedef struct _TOKEN_SECURITY_ATTRIBUTE_V1 {
+  UNICODE_STRING Name;
+  USHORT ValueType;
+  USHORT Reserved;
+  ULONG Flags;
+  ULONG ValueCount;
+  PUNICODE_STRING pString;
+} TOKEN_SECURITY_ATTRIBUTE_V1, *PTOKEN_SECURITY_ATTRIBUTE_V1;
+
+typedef struct _TOKEN_SECURITY_ATTRIBUTES_INFORMATION {
+  USHORT Version;
+  USHORT Reserved;
+  ULONG AttributeCount;
+  PTOKEN_SECURITY_ATTRIBUTE_V1 pAttributeV1;
+} TOKEN_SECURITY_ATTRIBUTES_INFORMATION,
+    *PTOKEN_SECURITY_ATTRIBUTES_INFORMATION;
+
+#define TOKEN_SECURITY_ATTRIBUTE_TYPE_STRING 0x03U
+
+#define TOKEN_SECURITY_ATTRIBUTE_NON_INHERITABLE 0x0001U
+#define TOKEN_SECURITY_ATTRIBUTE_MANDATORY 0x0020U
+
+constexpr wchar_t kProcUniqueAttribute[] = L"TSA://ProcUnique";
+
+void CheckSecurityAttribute(const AccessToken& token,
+                            std::wstring_view name,
+                            DWORD flags,
+                            std::wstring_view value) {
+  UNICODE_STRING attr_name;
+  ASSERT_TRUE(ViewToUnicodeString(name, attr_name));
+  BYTE buffer[256];
+  DWORD return_length = 0;
+  NTSTATUS status = NtQuerySecurityAttributesToken(
+      token.get(), &attr_name, 1, buffer, sizeof(buffer), &return_length);
+  ASSERT_EQ(status, 0);
+  PTOKEN_SECURITY_ATTRIBUTE_V1 attr =
+      reinterpret_cast<PTOKEN_SECURITY_ATTRIBUTES_INFORMATION>(buffer)
+          ->pAttributeV1;
+  EXPECT_EQ(attr->Flags, flags);
+  ASSERT_EQ(attr->ValueCount, 1U);
+  ASSERT_EQ(attr->ValueType, TOKEN_SECURITY_ATTRIBUTE_TYPE_STRING);
+  ASSERT_EQ(value, UnicodeStringToView(*attr->pString));
+}
+
+std::optional<AccessToken> AddSecurityAttribute(const AccessToken& token,
+                                                std::wstring_view name,
+                                                bool inherit,
+                                                std::wstring_view value) {
+  std::optional<AccessToken> dup =
+      token.DuplicatePrimary(TOKEN_QUERY | TOKEN_ADJUST_DEFAULT);
+  if (!dup) {
+    return std::nullopt;
+  }
+  if (!dup->AddSecurityAttribute(name, inherit, value)) {
+    return std::nullopt;
+  }
+  return dup;
+}
+
+void TestAddSecurityAttribute(const AccessToken& token, bool inherit) {
+  constexpr wchar_t kAttributeName[] = L"TEST://CHROMEATTR";
+  constexpr wchar_t kAttributeValue[] = L"ABC";
+  std::optional<AccessToken> dup =
+      AddSecurityAttribute(token, kAttributeName, inherit, kAttributeValue);
+  ASSERT_TRUE(dup);
+  ULONG flags = TOKEN_SECURITY_ATTRIBUTE_MANDATORY;
+  if (!inherit) {
+    flags |= TOKEN_SECURITY_ATTRIBUTE_NON_INHERITABLE;
+  }
+  CheckSecurityAttribute(*dup, kAttributeName, flags, kAttributeValue);
+  EXPECT_TRUE(dup->HasSecurityAttribute(kAttributeName).value_or(false));
+}
+
 }  // namespace
 
 TEST(AccessTokenTest, FromToken) {
@@ -923,6 +1007,65 @@ TEST(AccessTokenTest, CheckRelease) {
   EXPECT_TRUE(handle.is_valid());
   EXPECT_FALSE(token->is_valid());
   EXPECT_EQ(token->get(), nullptr);
+}
+
+TEST(AccessTokenTest, AddSecurityAttribute) {
+  std::optional<AccessToken> token =
+      AccessToken::FromCurrentProcess(false, TOKEN_ALL_ACCESS);
+  ASSERT_TRUE(token);
+  if (!token->SetPrivilege(SE_TCB_NAME, true)) {
+    GTEST_SKIP() << "Skipping test, must be run with SeTcbPrivilege.";
+  }
+  TestAddSecurityAttribute(*token, /*inherit=*/false);
+  TestAddSecurityAttribute(*token, /*inherit=*/true);
+}
+
+TEST(AccessTokenTest, HasSecurityAttribute) {
+  std::optional<AccessToken> token = AccessToken::FromCurrentProcess();
+  ASSERT_TRUE(token);
+  // Empirically, this SA is present on every process token.
+  EXPECT_TRUE(
+      token->HasSecurityAttribute(kProcUniqueAttribute).value_or(false));
+  EXPECT_FALSE(token->HasSecurityAttribute(L"InvalidSA").value_or(true));
+}
+
+TEST(AccessTokenTest, GetSecurityAttributeString) {
+  std::optional<AccessToken> token =
+      AccessToken::FromCurrentProcess(false, TOKEN_ALL_ACCESS);
+  ASSERT_TRUE(token);
+  EXPECT_FALSE(token->GetSecurityAttributeString(L"InvalidSA"));
+  EXPECT_FALSE(token->GetSecurityAttributeString(kProcUniqueAttribute));
+}
+
+TEST(AccessTokenTest, GetSecurityAttributeStringTcb) {
+  std::optional<AccessToken> token =
+      AccessToken::FromCurrentProcess(false, TOKEN_ALL_ACCESS);
+  ASSERT_TRUE(token);
+  if (!token->SetPrivilege(SE_TCB_NAME, true)) {
+    GTEST_SKIP() << "Skipping test, must be run with SeTcbPrivilege.";
+  }
+  constexpr wchar_t kAttributeName[] = L"TEST://STRING";
+  constexpr wchar_t kAttributeValue[] = L"ThisIsATestString";
+  std::optional<AccessToken> dup = AddSecurityAttribute(
+      *token, kAttributeName, /*inherit=*/true, kAttributeValue);
+  ASSERT_TRUE(dup);
+  CheckSecurityAttribute(*dup, kAttributeName,
+                         /*flags=*/TOKEN_SECURITY_ATTRIBUTE_MANDATORY,
+                         kAttributeValue);
+  EXPECT_EQ(dup->GetSecurityAttributeString(kAttributeName), kAttributeValue);
+}
+
+TEST(AccessTokenTest, AnonymousTokenHasNoSecurityAttributes) {
+  ATL::CAccessToken atl_anon_token;
+  ASSERT_TRUE(::ImpersonateAnonymousToken(::GetCurrentThread()));
+  bool result = atl_anon_token.GetThreadToken(TOKEN_QUERY);
+  ASSERT_TRUE(result);
+  ::RevertToSelf();
+  std::optional<AccessToken> anon_token =
+      AccessToken::FromToken(atl_anon_token.GetHandle());
+  ASSERT_TRUE(anon_token);
+  EXPECT_FALSE(
+      anon_token->HasSecurityAttribute(L"TSA://ProcUnique").value_or(true));
 }
 
 }  // namespace base::win

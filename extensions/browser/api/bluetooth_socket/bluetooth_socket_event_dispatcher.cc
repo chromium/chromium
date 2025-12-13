@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/bluetooth_socket/bluetooth_socket_event_dispatcher.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/containers/to_vector.h"
@@ -23,7 +24,7 @@ namespace {
 namespace bluetooth_socket = extensions::api::bluetooth_socket;
 using extensions::BluetoothApiSocket;
 
-int kDefaultBufferSize = 4096;
+constexpr int kDefaultBufferSize = 4096;
 
 bluetooth_socket::ReceiveError MapReceiveErrorReason(
     BluetoothApiSocket::ErrorReason value) {
@@ -299,9 +300,9 @@ void BluetoothSocketEventDispatcher::AcceptCallback(
   accept_info.socket_id = params.socket_id;
   accept_info.client_socket_id = client_socket_id;
   auto args = bluetooth_socket::OnAccept::Create(accept_info);
-  std::unique_ptr<Event> event(new Event(events::BLUETOOTH_SOCKET_ON_ACCEPT,
-                                         bluetooth_socket::OnAccept::kEventName,
-                                         std::move(args)));
+  auto event = std::make_unique<Event>(events::BLUETOOTH_SOCKET_ON_ACCEPT,
+                                       bluetooth_socket::OnAccept::kEventName,
+                                       std::move(args));
   PostEvent(params, std::move(event));
 
   // Post a task to delay the accept until the socket is available, as

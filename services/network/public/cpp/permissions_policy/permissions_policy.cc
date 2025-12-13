@@ -277,6 +277,7 @@ bool PermissionsPolicy::IsFeatureEnabledForOrigin(
 // Version https://www.w3.org/TR/2023/WD-permissions-policy-1-20231218/
 bool PermissionsPolicy::GetFeatureValueForOrigin(
     network::mojom::PermissionsPolicyFeature feature,
+    network::PermissionsPolicyFeatureDefault default_policy,
     const url::Origin& origin) const {
   DCHECK(base::Contains(*feature_list_, feature));
 
@@ -295,8 +296,6 @@ bool PermissionsPolicy::GetFeatureValueForOrigin(
     return allowlist->second.Contains(origin);
   }
 
-  const network::PermissionsPolicyFeatureDefault default_policy =
-      feature_list_->at(feature);
   switch (default_policy) {
     case network::PermissionsPolicyFeatureDefault::EnableForAll:
     case network::PermissionsPolicyFeatureDefault::EnableForSelf:
@@ -631,14 +630,15 @@ bool PermissionsPolicy::InheritedValueForFeature(
   // 9.7 2: If the result of executing Get feature value for origin on feature,
   // container’s node document, and container’s node document’s origin is
   // "Disabled", return "Disabled".
-  if (!parent_policy->GetFeatureValueForOrigin(feature.first,
+  if (!parent_policy->GetFeatureValueForOrigin(feature.first, feature.second,
                                                parent_policy->origin_)) {
     return false;
   }
 
   // 9.7 3: If feature was inherited and (if declared) the allowlist for the
   // feature does not match origin, then return "Disabled".
-  if (!parent_policy->GetFeatureValueForOrigin(feature.first, origin)) {
+  if (!parent_policy->GetFeatureValueForOrigin(feature.first, feature.second,
+                                               origin)) {
     return false;
   }
 

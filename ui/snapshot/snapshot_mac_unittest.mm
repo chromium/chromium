@@ -17,7 +17,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/snapshot/snapshot_mac.h"
 
 namespace ui {
@@ -37,6 +37,11 @@ INSTANTIATE_TEST_SUITE_P(Snapshot,
 
 TEST_P(GrabWindowSnapshotTest, TestGrabWindowSnapshot) {
   SnapshotAPI api = GetParam();
+  // The CGWindowListCreateImage API is not supported on macOS 26. Skip the
+  // test case for the old API to prevent hangs and failures.
+  if (api == SnapshotAPI::kOldAPI && base::mac::MacOSVersion() >= 26'00'00) {
+    GTEST_SKIP() << "Old CGWindowList API is removed on macOS 26+.";
+  }
   if (api == SnapshotAPI::kNewAPI && base::mac::MacOSVersion() < 14'04'00) {
     GTEST_SKIP() << "Cannot test macOS 14.4 API on pre-14.4 macOS";
   }
@@ -87,7 +92,14 @@ TEST_P(GrabWindowSnapshotTest, TestGrabWindowSnapshot) {
   // version of blue.
   SkColor color = gfx::test::GetPlatformImageColor(ns_image, window_size / 2,
                                                    window_size / 2);
-  EXPECT_LE(SkColorGetR(color), 10u);
+
+  // The blue color is slightly different in macOS 26.
+  if (base::mac::MacOSVersion() == 26'00'00) {
+    EXPECT_LE(SkColorGetR(color), 23u);
+  } else {
+    EXPECT_LE(SkColorGetR(color), 10u);
+  }
+
   EXPECT_LE(SkColorGetG(color), 10u);
   EXPECT_GE(SkColorGetB(color), 245u);
   EXPECT_EQ(SkColorGetA(color), 255u);

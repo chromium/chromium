@@ -12,23 +12,15 @@ namespace {
 class ChromiumDiscoverFeedService final : public DiscoverFeedService {
  public:
   // DiscoverFeedService implementation:
-  void CreateFeedModels() final {}
-  void CreateFeedModel(FeedModelConfiguration* feed_model_config) final {}
-  void ClearFeedModels() final {}
-  void SetFollowingFeedSortType(FollowingFeedSortType sort_type) final {}
+  void CreateFeedModel() final {}
+  void SetIsShownOnStartSurface(bool shown_on_start_surface) final {}
   FeedMetricsRecorder* GetFeedMetricsRecorder() final { return nil; }
   UIViewController* NewDiscoverFeedViewControllerWithConfiguration(
       DiscoverFeedViewControllerConfiguration* configuration) final {
     return nil;
   }
-  UIViewController* NewFollowingFeedViewControllerWithConfiguration(
-      DiscoverFeedViewControllerConfiguration* configuration) final {
-    return nil;
-  }
   void RemoveFeedViewController(UIViewController* feed_view_controller) final {}
   void UpdateTheme() final {}
-  BOOL GetFollowingFeedHasUnseenContent() final { return NO; }
-  void SetFollowingFeedContentSeen() final {}
   void UpdateFeedViewVisibilityState(
       UICollectionView* collection_view,
       BrowserViewVisibilityState current_state,

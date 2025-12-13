@@ -5,22 +5,26 @@
 module network.mojom;
 
 import "components/content_settings/core/common/content_settings.mojom";
-import "components/ip_protection/mojom/core.mojom";
+import "components/unexportable_keys/mojom/unexportable_key_service.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "services/network/public/mojom/address_list.mojom";
+import "services/network/public/mojom/cache_encryption_provider.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
 import "services/network/public/mojom/clear_data_filter.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
+import "services/network/public/mojom/connection_change_observer_client.mojom";
 import "services/network/public/mojom/cookie_access_observer.mojom";
 import "services/network/public/mojom/cookie_encryption_provider.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/cookie_setting_overrides.mojom";
 import "services/network/public/mojom/cors_origin_pattern.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
+import "services/network/public/mojom/ct_policy.mojom";
 import "services/network/public/mojom/default_credentials.mojom";
 import "services/network/public/mojom/device_bound_sessions.mojom";
 import "services/network/public/mojom/devtools_observer.mojom";
@@ -48,7 +52,6 @@ import "services/network/public/mojom/proxy_config.mojom";
 import "services/network/public/mojom/proxy_config_with_annotation.mojom";
 import "services/network/public/mojom/proxy_lookup_client.mojom";
 import "services/network/public/mojom/proxy_resolving_socket.mojom";
-import "services/network/public/mojom/connection_change_observer_client.mojom";
 import "services/network/public/mojom/reporting_service.mojom";
 import "services/network/public/mojom/restricted_cookie_manager.mojom";
 import "services/network/public/mojom/restricted_udp_socket.mojom";
@@ -73,6 +76,7 @@ import "services/network/public/mojom/web_transport.mojom";
 import "services/network/public/mojom/websocket.mojom";
 import "services/proxy_resolver/public/mojom/proxy_resolver.mojom";
 import "url/mojom/origin.mojom";
+import "url/mojom/scheme_host_port.mojom";
 import "url/mojom/url.mojom";
 
 [EnableIf=is_chromeos]
@@ -83,9 +87,6 @@ import "services/network/public/mojom/p2p.mojom";
 
 [EnableIf=is_p2p_enabled]
 import "services/network/public/mojom/p2p_trusted.mojom";
-
-[EnableIf=is_win]
-import "services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom";
 
 const uint32 kWebSocketOptionNone = 0;
 
@@ -169,7 +170,7 @@ interface TrustedHeaderClient {
   // used. If |preserve_fragment_on_redirect_url| is populated, and the
   // request is redirected to exactly that URL, then the fragment of the
   // original URL will not be copied to the redirect target URL.
-  OnHeadersReceived(string headers, IPEndPoint remote_endpoint)
+  OnHeadersReceived(string headers, IPEndPoint remote_endpoint, SSLInfo? ssl_info)
       => (int32 result,
           string? headers,
           url.mojom.Url? preserve_fragment_on_redirect_url);
@@ -198,12 +199,6 @@ struct HttpAuthStaticNetworkContextParams {
       DefaultCredentials.ALLOW_DEFAULT_CREDENTIALS;
 };
 
-[EnableIf=is_ct_supported]
-struct CTPolicy {
-  array<string> excluded_hosts;
-  array<string> excluded_spkis;
-};
-
 struct NetworkContextFilePaths {
   // Points to the shared dictionary directory containing the sqlite database
   // file named "db" for metadata and the disk cache directory named "cache".
@@ -215,6 +210,12 @@ struct NetworkContextFilePaths {
   // Points to the HTTP cache directory. Ignored if the cache is disabled.
   // If null and the cache is enabled, an in-memory database is used.
   TransferableDirectory? http_cache_directory;
+
+  // Points to the directory used for persisting the No-Vary-Search cache for
+  // the HTTP cache. Ignored if the cache is disabled or `http_cache_directory`
+  // is null. If left null, will be set to a subdirectory of
+  // `http_cache_directory` automatically by the network service.
+  TransferableDirectory? no_vary_search_directory;
 
   // Points to a path that contains all the network service files and databases
   // as listed below. If this network context is running inside a sandboxed
@@ -342,8 +343,8 @@ struct NetworkContextParams {
   // the operating system. Otherwise, or if this is not populated, proxy
   // resolution is handled by Chrome as normal.
   [EnableIf=is_win]
-  pending_remote<proxy_resolver_win.mojom.WindowsSystemProxyResolver>?
-      windows_system_proxy_resolver;
+  pending_remote<proxy_resolver.mojom.SystemProxyResolver>?
+      system_proxy_resolver;
 
   // Retrieves the PAC script URL set via DHCP from the browser process. Only
   // used if |proxy_resolver_factory| is set. Note: optional because some tests
@@ -372,6 +373,10 @@ struct NetworkContextParams {
   // platforms (depending on the sandboxing mechanism the platform provides).
   pending_remote<HttpCacheBackendFileOperationsFactory>?
       http_cache_file_operations_factory;
+
+  // An optional provider for encrypting/decrypting cache data. If this is
+  // provided, the disk cache will use it to get an encryptor instance.
+  pending_remote<CacheEncryptionProvider>? encryption_provider;
 
   // Enabled protocols. Note that these apply to all fetches, including those
   // used to fetch PAC scripts. Note that currently data URLs are always enabled
@@ -433,32 +438,6 @@ struct NetworkContextParams {
   // the browser. Set when the sandbox is enabled on Windows.
   [EnableIf=is_win]
   SocketBrokerRemotes? socket_brokers;
-
-  // A service to fetch blind-signed auth tokens and proxy configuration info
-  // for IP protection. If this is not set, then either this NetworkContext
-  // doesn't have its traffic proxied by IP Protection or the feature has been
-  // disabled (and can't be re-enabled until the browser is restarted).
-  pending_remote<ip_protection.mojom.CoreHost>? ip_protection_core_host;
-
-  // A receiver for sending notifications from the browser process to the IP
-  // Protection business logic in the network service. This is set in the same
-  // cases as `ip_protection_core_host`.
-  pending_receiver<ip_protection.mojom.CoreControl>? ip_protection_control;
-
-  // Whether the IP Protection feature is enabled at the time the NetworkContext
-  // is created. This setting can change via the
-  // `SetIpProtectionEnabled` method of the `IpProtectionControl` interface.
-  bool enable_ip_protection = false;
-
-  // Signals to IP Protection if this is an incognito network context.
-  bool ip_protection_incognito = false;
-
-  // Points to the user-data directory of the active profile, where
-  // Probabilistic Reveal Tokens will be stored if the
-  // `StoreProbabilisticRevealTokens` switch is enabled. This path will be
-  // populated when the IP Protection feature and the PRT storage switch are
-  // enabled, even for incognito contexts when `file_paths` is empty.
-  mojo_base.mojom.FilePath? ip_protection_data_directory;
 
   // When PAC quick checking is enabled, DNS lookups for PAC script's host are
   // timed out aggressively. This prevents hanging all network request on DNS
@@ -527,11 +506,6 @@ struct NetworkContextParams {
   // network::url_request.cors_exempt_headers.
   array<string> cors_exempt_header_list;
 
-  // If true, no checking of cors exempt headers (from the browser) are done.
-  // If false, cors_exempt_headers are checked against
-  // |cors_exempt_header_list|.
-  bool allow_any_cors_exempt_header_for_browser = false;
-
   // List of single-label hostnames that are exempted from the HSTS upgrade
   // policy.
   array<string> hsts_policy_bypass_list;
@@ -590,25 +564,10 @@ struct NetworkContextParams {
   // removed (always enabled) in the future.
   bool acam_preflight_spec_conformant = true;
 
-  // To support 3PCD experimentation, a per-partition `cookie_deprecation_label`
-  // will be sent to developers who opt-in to receiving it. This enables server
-  // side opt-in to testing without cookies. See:
-  // https://developer.chrome.com/en/docs/privacy-sandbox/chrome-testing/#mode-a
-  // A non defined value indicates that the 3PCD experimentation feature is
-  // disabled for this client or that the profile is guest or incognito.
-  // A defined and non-empty value indicates that the 3PCD experiment feature is
-  // enabled, the client is eligible to it and the profile is not guest or
-  // incognito.
-  // A defined but empty value indicates that the 3PCD experimentation feature
-  // is enabled for the client but the client is not eligible for it or the
-  // label value defined by the experiment is empty.
-  string? cookie_deprecation_label;
-
   // Sets the cookie encryption provider to be used by this network context if
-  // `enable_encrypted_cookies` is also enabled.
-  // If both are set then the `GetEncryptor` method on the supplied
-  // `cookie_encryption_provider` is called to obtain a valid set of keys for
-  // cookie encryption.
+  // `enable_encrypted_cookies` is enabled.
+  // The `GetEncryptor` method on the supplied `cookie_encryption_provider` is
+  // called to obtain a valid set of keys for cookie encryption.
   pending_remote<CookieEncryptionProvider>? cookie_encryption_provider;
 
   // Enables Device Bound Session Credential for this network context.
@@ -636,6 +595,17 @@ struct NetworkContextParams {
   // Modifies the default value of the QUIC connection timeout, this value
   // gets applied while constructing NetworkContext by updating the quic_params.
   int64? quic_idle_connection_timeout_seconds;
+
+  // If true, the HTTP cache will be encrypted on disk. For now, this only
+  // switches the backend on Windows.
+  bool enable_encrypted_http_cache = false;
+
+  // If set, the network process will use the remote to reach the unexportable
+  // key service in the browser process, and delegate all unexportable keys
+  // operations to it. This remote should only be used for Device Bound
+  // Sessions and nothing else.
+  pending_remote<unexportable_keys.mojom.UnexportableKeyService>?
+      bound_sessions_unexportable_key_service;
 };
 
 struct NetworkConditions {
@@ -664,6 +634,16 @@ struct NetworkConditions {
 
   // Allow packet reordering for WebRTC connections.
   bool packet_reordering;
+
+  // Used to tag requests that were affected by these conditions.
+  mojo_base.mojom.UnguessableToken? rule_id;
+};
+
+struct MatchedNetworkConditions {
+  // A URLPattern matching the conditions. An empty pattern matches all
+  // requests.
+  string pattern;
+  NetworkConditions conditions;
 };
 
 // Represents a shared dictionary.
@@ -934,6 +914,26 @@ struct URLLoaderFactoryParams {
   // If this is true, this URLLoaderFactory should not be reset when
   // calling `ResetURLLoaderFactories()`.
   bool ignore_factory_reset = false;
+
+  // If this is true, the request's main frame origin is recently accessed.
+  bool is_main_frame_origin_recently_accessed = false;
+
+  // An unguessable token used to apply network restrictions to outgoing
+  // requests using this factory. The token is matched against the tokens in
+  // `NetworkContext::network_revocation_nonces_`.
+  // If no value is present, network restrictions will not be checked.
+  mojo_base.mojom.UnguessableToken? network_restrictions_id;
+};
+
+// If allowlisted_patterns is empty then it falls back to the earlier use case
+// of all network revoked (only applicable to fenced frames).
+struct NonceAndAllowlistedPatterns {
+  mojo_base.mojom.UnguessableToken nonce;
+  // TODO(crbug.com/447954811): It would be ideal for us to have a URLPattern
+  // representation in mojo rather than using a string here. Moving
+  // `blink::SafeUrlPattern` somewhere usable by both the network service
+  // and Blink might be a reasonable approach in the future.
+  array<string> allowlisted_patterns;
 };
 
 // Represents a distinct context for making network requests, with its own
@@ -1051,11 +1051,6 @@ interface NetworkContext {
   // Set Trust Token blocking to |block|.
   SetBlockTrustTokens(bool block);
 
-  // Sets the list of TRACKING_PROTECTION content setting exceptions in
-  // IpProtectionCore.
-  SetTrackingProtectionContentSetting(
-      array<content_settings.mojom.ContentSettingPatternSource> settings);
-
   // Clears network objects with implicit URL history information. Data related
   // to events that happened prior to |start_time| and after |end_time| may be
   // retained. Only applies to network objects without more specific methods
@@ -1089,6 +1084,11 @@ interface NetworkContext {
   ComputeHttpCacheSize(
       mojo_base.mojom.Time start_time, mojo_base.mojom.Time end_time)
       => (bool is_upper_bound, int64 size_or_error);
+
+  // Notifies the network context that the browser is idle. This can be used
+  // by underlying services to perform deferred tasks, such as checkpointing
+  // the disk cache's database.
+  NotifyBrowserIdle();
 
   // Notifies the HttpCache of a renderer-level cache hit with `url`
   // and `http_method`, with the network isolation key `key` and
@@ -1264,9 +1264,8 @@ interface NetworkContext {
   // Configures network conditions for the specified throttling profile.
   // The throttling will be applied only to requests that have matching
   // throttling_profile_id.
-  // Passing null NetworkConditions disables the throttling.
   SetNetworkConditions(mojo_base.mojom.UnguessableToken throttling_profile_id,
-                       NetworkConditions? conditions);
+                       array<MatchedNetworkConditions> conditions);
 
   // Updates the Accept-Language header to be used for requests.
   SetAcceptLanguage(string new_accept_language);
@@ -1292,6 +1291,9 @@ interface NetworkContext {
   // Creates a Restricted UDP socket that wraps an internal UDP Socket connected
   // or bound to |addr| with |params| depending on the provided |mode|.
   //
+  // if |allow_multicast| is false, then using joinGroup or leaveGroup
+  // on RestrictedUDPSocket will report mojo bad message.
+  //
   // The socket created can only be used for the purpose specified in
   // |traffic_annotation|, and cannot be re-used for other purposes.
   //
@@ -1310,8 +1312,8 @@ interface NetworkContext {
       MutableNetworkTrafficAnnotationTag traffic_annotation,
       RestrictedUDPSocketParams? params,
       pending_receiver<RestrictedUDPSocket> receiver,
-      pending_remote<UDPSocketListener>? listener)
-      => (int32 result, IPEndPoint? local_addr_out);
+      pending_remote<UDPSocketListener>? listener,
+      bool allow_multicast) => (int32 result, IPEndPoint? local_addr_out);
 
   // Creates a TCP server socket that listens on |local_addr|. The socket
   // created can only be used for the purpose specified in |traffic_annotation|,
@@ -1444,6 +1446,7 @@ interface NetworkContext {
       array<HttpHeader> additional_headers,
       int32 process_id,
       url.mojom.Origin origin,
+      ClientSecurityState client_security_state,
       uint32 options,
       MutableNetworkTrafficAnnotationTag traffic_annotation,
       pending_remote<WebSocketHandshakeClient> handshake_client,
@@ -1465,7 +1468,11 @@ interface NetworkContext {
       url.mojom.Origin origin,
       NetworkAnonymizationKey network_anonymization_key,
       array<WebTransportCertificateFingerprint> fingerprints,
-      pending_remote<WebTransportHandshakeClient> handshake_client);
+      array<string> application_protocols,
+      pending_remote<WebTransportHandshakeClient> handshake_client,
+      pending_remote<URLLoaderNetworkServiceObserver>?
+          url_loader_network_observer,
+      ClientSecurityState client_security_state);
 
   // Create a NetLogExporter, which helps export NetLog to an existing file.
   // Note that the log is generally global, including all NetworkContexts
@@ -1565,9 +1572,8 @@ interface NetworkContext {
   // Performs 2-QWAC verification. Returns the verified 2-QWAC certificate
   // chain if `binding` is a valid 2-QWAC binding for `hostname` which binds
   // `tls_certificate`.
-  Verify2QwacCertBinding(string binding,
-                         string hostname,
-                         X509Certificate tls_certificate)
+  Verify2QwacCertBinding(
+      string binding, string hostname, X509Certificate tls_certificate)
       => (X509Certificate verified_cert);
 
   // Adds explicitly-specified data as if it was processed from an
@@ -1643,14 +1649,6 @@ interface NetworkContext {
   // supported in this network context.
   SetCorsNonWildcardRequestHeadersSupport(bool value);
 
-  // Looks up credentials in the HttpAuthCache using the origin and path from
-  // |url|. Only supports basic auth scheme. Only looks up server (not proxy)
-  // auth credentials, and only those that are usable in the scope of
-  // |network_anonymization_key|.
-  LookupServerBasicAuthCredentials(
-      url.mojom.Url url, NetworkAnonymizationKey network_anonymization_key)
-      => (AuthCredentials? credentials);
-
   // Looks up the proxy authentication credentials associated with
   // |proxy_server|, |auth_scheme| and |realm| in the HttpAuthCache.
   // |auth_scheme| is the authentication scheme of the challenge and it's
@@ -1662,7 +1660,6 @@ interface NetworkContext {
       => (AuthCredentials? credentials);
 
   // Enables the checking of static PKP records.
-  [Sync]
   EnableStaticKeyPinningForTesting() => ();
 
   // Verifies the given certificate using the context's CertVerifier.
@@ -1671,17 +1668,14 @@ interface NetworkContext {
                               string ocsp_response,
                               string sct_list) => (int32 error_code);
 
-  [Sync]
   GetTrustAnchorIDsForTesting() => (array<array<uint8>> trust_anchor_ids);
 
   // Adds a Domain Reliability Context.
-  [Sync]
   AddDomainReliabilityContextForTesting(
       url.mojom.Origin origin, url.mojom.Url upload_url) => ();
 
   // Forces all pending Domain Reliability uploads to run now, even if their
   // minimum delay has not yet passed.
-  [Sync]
   ForceDomainReliabilityUploadsForTesting() => ();
 
   // Set the SCT auditing mode for this NetworkContext.
@@ -1718,11 +1712,6 @@ interface NetworkContext {
   // Check if there is a preloaded shared dictionary info.
   HasPreloadedSharedDictionaryInfoForTesting() => (bool value);
 
-  // Called when visibility of ResourceSchedulerClient has changed.
-  // `client_token` identifies which client has changed its visibility.
-  ResourceSchedulerClientVisibilityChanged(
-      mojo_base.mojom.UnguessableToken client_token, bool visible);
-
   // Will flush cached client certificate for `host` if `certificate`
   // doesn't match the corresponding cached certificate.
   FlushCachedClientCertIfNeeded(
@@ -1732,23 +1721,36 @@ interface NetworkContext {
   // the cached certificate.
   FlushMatchingCachedClientCert(X509Certificate certificate);
 
-  // Sets cookie deprecation label.
-  SetCookieDeprecationLabel(string? label);
+  // Flushes all cached client certificate decisions. Used when client cert
+  // selection policy changes (e.g., AutoSelectCertificateForUrls).
+  FlushClientCertCache();
 
   // Clients should revoke network access for nonces using
   // `StoragePartitionImpl::RevokeNetworkForNoncesInNetworkContext` instead of
   // this function. This is because `RevokeNetworkForNoncesInNetworkContext`
   // replicates the nonces so that they can be restored in case of a
   // `NetworkService` crash.
-  // Register that all network requests with nonces in `nonces` as their
-  // partition nonce should be blocked. Used for fenced frames network
+  // TODO(crbug.com/447954811): Rename this function when connection-allowlist
+  // feature is beyond the prototype phase. Initially this name made sense
+  // since it was intended to revoke network access for fenced frames. But with
+  // the connection-allowlist feature it is extended to also add allowlisted
+  // URLs for iframes and top-level frames. Also rename the corresponding
+  // NetworkContext::network_revocation_nonces_ to network_restriction_nonces_.
+  // Used for the following scenarios:
+  // 1. Used for fenced frames network
   // revocation:
   // https://github.com/WICG/fenced-frame/blob/master/explainer/fenced_frames_with_local_unpartitioned_data_access.md#revoking-network-access
   // Each fenced frame tree primarily uses one "fenced frame nonce" for
   // requests that originate from it, but requests from credentialless iframes
   // within the fenced frame tree use a different "credentialless iframes
   // nonce". Currently these are the two nonces passed in `nonces`.
-  RevokeNetworkForNonces(array<mojo_base.mojom.UnguessableToken> nonces) => ();
+  //
+  // 2. Used for connection-allowlist (see
+  // https://github.com/WICG/connection-allowlists). Network from the
+  // URLLoaderfactory whose `network_restriction_id` matches `nonces` will only
+  // be allowed to `allowlisted_patterns` and blocked otherwise.
+  RevokeNetworkForNonces(
+      array<NonceAndAllowlistedPatterns> nonces_to_patterns) => ();
 
   // Clients should clear nonces tagged for network revocation using
   // `StoragePartitionImpl::ClearNoncesInNetworkContextAfterDelay` instead of
@@ -1791,4 +1793,9 @@ interface NetworkContext {
   [AllowedContext=sandbox.mojom.Context.kBrowser]
   GetDeviceBoundSessionManager(
       pending_receiver<DeviceBoundSessionManager> device_bound_session_manager);
+
+  // Request that the network service prioritizes QUIC connections to the given
+  // origins.
+  AddQuicHints(array<url.mojom.SchemeHostPort> origins,
+               NetworkAnonymizationKey network_anonymization_key);
 };

@@ -7,6 +7,7 @@
 
 #include <array>
 #include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/types/expected.h"

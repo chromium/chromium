@@ -46,8 +46,7 @@ IOSProfileSessionDurationsServiceFactory::
 
 std::unique_ptr<KeyedService>
 IOSProfileSessionDurationsServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
   signin::IdentityManager* identity_manager =

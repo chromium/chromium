@@ -6,6 +6,9 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 ExtensionWebRequestTimeTracker::RequestTimeLog::RequestTimeLog() = default;
 ExtensionWebRequestTimeTracker::RequestTimeLog::~RequestTimeLog() = default;

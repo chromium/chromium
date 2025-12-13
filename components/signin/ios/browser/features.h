@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SIGNIN_IOS_BROWSER_FEATURES_H_
 #define COMPONENTS_SIGNIN_IOS_BROWSER_FEATURES_H_
 
-#include "base/feature_list.h"
-
 namespace signin {
 
 // Returns true if the startup sign-in promo should be displayed at boot.

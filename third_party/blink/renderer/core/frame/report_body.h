@@ -18,6 +18,7 @@ class CORE_EXPORT ReportBody : public ScriptWrappable {
   ~ReportBody() override = default;
 
   ScriptObject toJSON(ScriptState* script_state) const;
+  ScriptObject toJSON(ScriptState* script_state, const String& key) const;
 
   // This function is public for use in Report::toJSON
   virtual void BuildJSONValue(V8ObjectBuilder& builder) const = 0;

@@ -6,7 +6,7 @@
 #define UI_BASE_X_X11_MOVE_LOOP_H_
 
 #include "base/functional/callback_forward.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 

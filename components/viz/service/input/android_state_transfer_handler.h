@@ -14,6 +14,7 @@
 #include "components/input/render_input_router.mojom.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/service/input/render_input_router_support_android.h"
+#include "components/viz/service/input/viz_touch_state_handler.h"
 #include "components/viz/service/viz_service_export.h"
 
 namespace viz {
@@ -31,9 +32,9 @@ class AndroidStateTransferHandlerClient {
 class VIZ_SERVICE_EXPORT AndroidStateTransferHandler
     : public input::AndroidInputCallbackClient {
  public:
-  explicit AndroidStateTransferHandler(
-      AndroidStateTransferHandlerClient& client);
-  ~AndroidStateTransferHandler();
+  AndroidStateTransferHandler(AndroidStateTransferHandlerClient& client,
+                              VizTouchStateHandler* viz_touch_state_handler);
+  virtual ~AndroidStateTransferHandler();
 
   // `root_frame_sink_id` could be invalid. In cases when root frame sink is
   // destroyed and there was an ongoing touch sequence, OS may send a few events
@@ -72,7 +73,7 @@ class VIZ_SERVICE_EXPORT AndroidStateTransferHandler
   void MaybeDropEventsFromEarlierSequences(
       const input::mojom::TouchTransferStatePtr& state);
   void EmitPendingTransfersHistogram();
-  void ValidateRootFrameSinkId(const FrameSinkId& root_frame_sink_id);
+  void HandleFirstDownEvent();
 
   bool ignore_remaining_touch_sequence_ = false;
 
@@ -100,6 +101,7 @@ class VIZ_SERVICE_EXPORT AndroidStateTransferHandler
   base::queue<base::android::ScopedInputEvent> events_buffer_;
 
   const raw_ref<AndroidStateTransferHandlerClient> client_;
+  raw_ptr<VizTouchStateHandler> viz_touch_state_handler_;
 };
 
 }  // namespace viz

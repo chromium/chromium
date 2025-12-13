@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.user_education;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -11,7 +12,6 @@ import android.os.Handler;
 import android.view.View;
 
 import org.chromium.base.TraceEvent;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -30,6 +30,7 @@ import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Class that manages requests to trigger IPH's. Customizes the IPH with text bubbles, view
@@ -75,14 +76,12 @@ public class UserEducationHelper {
      * a reference to the {@link Profile#getOriginalProfile()}.
      */
     public UserEducationHelper(
-            Activity activity, Supplier<Profile> profileSupplier, Handler handler) {
-        assert activity != null : "Trying to show an IPH for a null activity.";
-        assert profileSupplier != null : "Trying to show an IPH with a null profile supplier";
-
+            Activity activity, Supplier<@Nullable Profile> profileSupplier, Handler handler) {
         mActivity = activity;
         mHandler = handler;
 
-        SupplierUtils.waitForAll(() -> setProfile(profileSupplier.get()), profileSupplier);
+        SupplierUtils.waitForAll(
+                () -> setProfile(assertNonNull(profileSupplier.get())), profileSupplier);
     }
 
     @Initializer

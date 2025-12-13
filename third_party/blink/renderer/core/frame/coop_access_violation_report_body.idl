@@ -15,5 +15,5 @@
   readonly attribute DOMString? openeeURL;
   readonly attribute DOMString? openerURL;
   readonly attribute DOMString? otherDocumentURL;
-  [CallWith=ScriptState] object toJSON();
+  [CallWith=ScriptState] object toJSON(optional DOMString key);
 };

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/ipcz_driver/shared_buffer.h"
 
 #include <array>
 #include <cstdint>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -162,7 +158,7 @@ scoped_refptr<SharedBuffer> SharedBuffer::CreateForMojoWrapper(
   }
 
   auto handle = CreateRegionHandleFromPlatformHandles(
-      {&handles[0], mojo_platform_handles.size()}, mode);
+      UNSAFE_TODO({&handles[0], mojo_platform_handles.size()}), mode);
   auto region = base::subtle::PlatformSharedMemoryRegion::Take(
       std::move(handle), mode, size, guid.value());
   if (!region.IsValid()) {

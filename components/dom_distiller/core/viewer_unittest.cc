@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/distiller_ui_handle.h"
+#include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
 #include "components/dom_distiller/core/task_tracker.h"
 #include "components/dom_distiller/core/url_constants.h"
@@ -156,9 +158,10 @@ TEST_F(DomDistillerViewerTest, TestGetDistilledPageFontFamilyJsOutput) {
 }
 
 TEST_F(DomDistillerViewerTest, TestGetDistilledPageFontScalingJsOutput) {
-  std::string kJsFontScaling = "useFontScaling(5);";
-  EXPECT_EQ(kJsFontScaling.compare(viewer::GetDistilledPageFontScalingJs(5)),
-            0);
+  std::string kJsFontScaling = "useFontScaling(5, false);";
+  EXPECT_EQ(
+      kJsFontScaling.compare(viewer::GetDistilledPageFontScalingJs(5, false)),
+      0);
 }
 
 TEST_F(DomDistillerViewerTest, TestGetAddToPageJsEmptyDisplaysDefault) {
@@ -173,6 +176,45 @@ TEST_F(DomDistillerViewerTest, TestGetAddToPageJsEmptyDisplaysDefault) {
 TEST_F(DomDistillerViewerTest, TestGetAddToPageJsDisplaysContent) {
   std::string output = viewer::GetAddToPageJs("content");
   EXPECT_EQ(output, "addToPage(\"content\");");
+}
+
+TEST_F(DomDistillerViewerTest, TestGetJavaScriptPinchMinZoom_Default) {
+  base::test::ScopedFeatureList scoped_feature_list;
+#if BUILDFLAG(IS_ANDROID)
+  scoped_feature_list.InitAndDisableFeature(kReaderModeDistillInApp);
+#endif
+  std::string output = viewer::GetJavaScript();
+  EXPECT_THAT(output, testing::ContainsRegex(
+                          "this\\.clampedScale\\s*=\\s*Math\\.max\\(0\\.5,"));
+}
+
+TEST_F(DomDistillerViewerTest, TestGetJavaScriptPinchMinMaxZoom_DistillInApp) {
+#if BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kReaderModeDistillInApp);
+  std::string output = viewer::GetJavaScript();
+  EXPECT_THAT(
+      output,
+      testing::ContainsRegex(
+          "this\\.clampedScale\\s*=\\s*Math\\.max\\(1, Math\\.min\\(2.5"));
+#else
+  SUCCEED();
+#endif
+}
+
+TEST_F(DomDistillerViewerTest,
+       TestGetJavaScriptPinchMinMaxZoom_DistillInCustomTab) {
+#if BUILDFLAG(IS_ANDROID)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kReaderModeDistillInApp);
+  std::string output = viewer::GetJavaScript();
+  EXPECT_THAT(
+      output,
+      testing::ContainsRegex(
+          "this\\.clampedScale\\s*=\\s*Math\\.max\\(0.5, Math\\.min\\(2"));
+#else
+  SUCCEED();
+#endif
 }
 
 }  // namespace dom_distiller

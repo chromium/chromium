@@ -50,25 +50,26 @@ gfx::SizeF ResizeObserverUtilities::ComputeZoomAdjustedBox(
     case ResizeObserverBoxOptions::kDevicePixelContentBox: {
       LogicalSize box_size = {layout_box.ContentLogicalWidth(),
                               layout_box.ContentLogicalHeight()};
-      return ComputeSnappedDevicePixelContentBox(box_size, layout_box, style);
+      return gfx::SizeF(
+          ComputeSnappedDevicePixelContentBox(box_size, layout_box, style));
     }
     default:
       NOTREACHED();
   }
 }
 
-gfx::SizeF ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
+gfx::Size ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
     LogicalSize box_size,
     const LayoutObject& layout_object,
     const ComputedStyle& style) {
   LogicalOffset paint_offset = ComputePaintOffset(layout_object, style);
-  return gfx::SizeF(
+  return gfx::Size(
       SnapSizeToPixel(box_size.inline_size, paint_offset.inline_offset),
       SnapSizeToPixel(box_size.block_size, paint_offset.block_offset));
 }
 
 // static
-gfx::SizeF ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
+gfx::Size ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
     const gfx::SizeF& box_size,
     const LayoutObject& layout_object,
     const ComputedStyle& style) {

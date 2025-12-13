@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -93,9 +94,9 @@ TranslationDispatcher::TranslationDispatcher(
 
 TranslationDispatcher::~TranslationDispatcher() = default;
 
-void TranslationDispatcher::GetTranslation(const std::string& result,
-                                           std::string source_language,
-                                           std::string target_language,
+void TranslationDispatcher::GetTranslation(absl::string_view result,
+                                           absl::string_view source_language,
+                                           absl::string_view target_language,
                                            TranslateEventCallback callback) {
   if (!url_loader_factory_.is_bound() || !url_loader_factory_.is_connected()) {
     ResetURLLoaderFactory();
@@ -148,8 +149,8 @@ void TranslationDispatcher::GetTranslation(const std::string& result,
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
   url_loader_->AttachStringForUpload(
-      base::StringPrintf(kTranslateBodyRequestTemplate, result.c_str(),
-                         source_language.c_str(), target_language.c_str()),
+      base::StringPrintf(kTranslateBodyRequestTemplate, result.data(),
+                         source_language.data(), target_language.data()),
       kUploadContentType);
 
   // Unretained is safe because |this| owns |url_loader_|.

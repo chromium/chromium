@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef GIN_ARRAY_BUFFER_H_
 #define GIN_ARRAY_BUFFER_H_
 
@@ -84,7 +79,7 @@ class GIN_EXPORT ArrayBufferView {
   ArrayBufferView& operator=(const ArrayBufferView& other);
 
   void* bytes() const {
-    return static_cast<uint8_t*>(array_buffer_.bytes()) + offset_;
+    return UNSAFE_TODO(static_cast<uint8_t*>(array_buffer_.bytes()) + offset_);
   }
   size_t num_bytes() const { return num_bytes_; }
 

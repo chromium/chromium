@@ -9,6 +9,8 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
@@ -17,9 +19,11 @@
 #include "media/base/media_switches.h"
 #include "services/audio/input_stream.h"
 #include "services/audio/local_muter.h"
+#include "services/audio/loopback_mixin.h"
 #include "services/audio/loopback_stream.h"
 #include "services/audio/output_stream.h"
 #include "services/audio/reference_signal_provider.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 #include "services/audio/loopback_reference_manager.h"
@@ -60,9 +64,11 @@ constexpr base::TimeDelta kReatimeThreadPeriod = base::Milliseconds(10);
 
 StreamFactory::StreamFactory(
     media::AudioManager* audio_manager,
-    media::AecdumpRecordingManager* aecdump_recording_manager)
+    media::AecdumpRecordingManager* aecdump_recording_manager,
+    raw_ptr<MlModelManager> ml_model_manager)
     : audio_manager_(audio_manager),
       aecdump_recording_manager_(aecdump_recording_manager),
+      ml_model_manager_(ml_model_manager),
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
       output_device_mixer_manager_(
           MaybeCreateOutputDeviceMixerManager(audio_manager)),
@@ -89,14 +95,15 @@ void StreamFactory::CreateInputStream(
     mojo::PendingRemote<media::mojom::AudioLog> pending_log,
     const std::string& device_id,
     const media::AudioParameters& params,
+    const base::UnguessableToken& group_id,
     uint32_t shared_memory_count,
     bool enable_agc,
     media::mojom::AudioProcessingConfigPtr processing_config,
     CreateInputStreamCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT2("audio", "CreateInputStream", this,
-                                      "device id", device_id, "params",
-                                      params.AsHumanReadableString());
+  TRACE_EVENT_INSTANT("audio", "CreateInputStream",
+                      perfetto::Track::FromPointer(this), "device id",
+                      device_id, "params", params.AsHumanReadableString());
 
   // Unretained is safe since |this| indirectly owns the InputStream.
   auto deleter_callback = base::BindOnce(&StreamFactory::DestroyInputStream,
@@ -127,11 +134,14 @@ void StreamFactory::CreateInputStream(
       std::move(created_callback), std::move(deleter_callback),
       std::move(stream_receiver), std::move(client), std::move(observer),
       std::move(shared_log), audio_manager_, aecdump_recording_manager_,
+      ml_model_manager_,
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
       std::move(reference_provider), std::move(processing_config),
 #else
       nullptr, nullptr,
 #endif
+      base::BindOnce(&LoopbackMixin::MaybeCreateRestrictOwnAudioLoopbackMixin,
+                     &coordinator_, group_id),
       device_id, params, shared_memory_count, enable_agc));
 }
 
@@ -157,9 +167,9 @@ void StreamFactory::CreateOutputStream(
     const base::UnguessableToken& group_id,
     CreateOutputStreamCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT2("audio", "CreateOutputStream", this,
-                                      "device id", output_device_id, "params",
-                                      params.AsHumanReadableString());
+  TRACE_EVENT_INSTANT(
+      "audio", "CreateOutputStream", perfetto::Track::FromPointer(this),
+      "device id", output_device_id, "params", params.AsHumanReadableString());
 
   CreateOutputStreamInternal(std::move(stream_receiver), mojo::NullReceiver(),
                              std::move(observer), std::move(log),
@@ -179,9 +189,10 @@ void StreamFactory::CreateSwitchableOutputStream(
     const base::UnguessableToken& group_id,
     CreateOutputStreamCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT2("audio", "CreateSwitchableOutputStream",
-                                      this, "device id", output_device_id,
-                                      "params", params.AsHumanReadableString());
+  TRACE_EVENT_INSTANT("audio", "CreateSwitchableOutputStream",
+                      perfetto::Track::FromPointer(this), "device id",
+                      output_device_id, "params",
+                      params.AsHumanReadableString());
   DCHECK(device_switch_receiver.is_valid());
 
   CreateOutputStreamInternal(
@@ -194,8 +205,8 @@ void StreamFactory::BindMuter(
     mojo::PendingAssociatedReceiver<media::mojom::LocalMuter> receiver,
     const base::UnguessableToken& group_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT1("audio", "BindMuter", this, "group id",
-                                      group_id);
+  TRACE_EVENT_INSTANT("audio", "BindMuter", perfetto::Track::FromPointer(this),
+                      "group id", group_id);
 
   // Find the existing LocalMuter for this group, or create one on-demand.
   auto it = std::ranges::find(muters_, group_id, &LocalMuter::group_id);
@@ -224,9 +235,9 @@ void StreamFactory::CreateLoopbackStream(
     const base::UnguessableToken& group_id,
     CreateLoopbackStreamCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT2("audio", "CreateLoopbackStream", this,
-                                      "group id", group_id, "params",
-                                      params.AsHumanReadableString());
+  TRACE_EVENT_INSTANT("audio", "CreateLoopbackStream",
+                      perfetto::Track::FromPointer(this), "group id", group_id,
+                      "params", params.AsHumanReadableString());
 
   // All LoopbackStreams share a single realtime worker thread. This is because
   // the execution timing of scheduled tasks must be precise, and top priority
@@ -334,9 +345,9 @@ void StreamFactory::CreateOutputStreamInternal(
     const base::UnguessableToken& group_id,
     CreateOutputStreamCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT2("audio", "CreateOutputStream", this,
-                                      "device id", output_device_id, "params",
-                                      params.AsHumanReadableString());
+  TRACE_EVENT_INSTANT(
+      "audio", "CreateOutputStream", perfetto::Track::FromPointer(this),
+      "device id", output_device_id, "params", params.AsHumanReadableString());
 
   // Unretained is safe since |this| indirectly owns the OutputStream.
   auto deleter_callback = base::BindOnce(&StreamFactory::DestroyOutputStream,

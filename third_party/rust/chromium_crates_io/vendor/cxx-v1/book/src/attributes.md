@@ -73,3 +73,30 @@ Either of the two attributes may be used on extern "Rust" as well as extern
 
 The same attribute works for renaming functions, opaque types, shared
 structs and enums, and enum variants.
+
+## Self
+
+Indicates the name of the type in which to place a [Rust associated function] or
+[C++ static member function].
+
+[Rust associated function]: extern-rust.md#associated-functions
+[C++ static member function]: extern-c++.md#functions-and-member-functions
+
+```rust,noplayground
+#[cxx::bridge]
+mod ffi {
+    extern "Rust" {
+        type RustType;
+
+        #[Self = "RustType"]
+        fn member();  // callable from C++ as `RustType::member()`
+    }
+
+    unsafe extern "C++" {
+        type CppType;
+
+        #[Self = "CppType"]
+        fn member();  // callable from Rust as `CppType::member()`
+    }
+}
+```

@@ -73,7 +73,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   void OnConnectStreamAborted();
   void OnConnectStreamDeleted();
   void OnCloseTimeout();
-  void OnDatagramProcessed(std::optional<quic::MessageStatus> status);
+  void OnDatagramProcessed(std::optional<quic::DatagramStatus> status);
 
   // QuicTransportClientSession::ClientVisitor methods.
   void OnSessionReady() override;
@@ -111,6 +111,8 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
     CONNECT_STATE_CHECK_PROXY_COMPLETE,
     CONNECT_STATE_RESOLVE_HOST,
     CONNECT_STATE_RESOLVE_HOST_COMPLETE,
+    CONNECT_STATE_CHECK_LOCAL_NETWORK_ACCESS,
+    CONNECT_STATE_CHECK_LOCAL_NETWORK_ACCESS_COMPLETE,
     CONNECT_STATE_CONNECT,
     CONNECT_STATE_CONNECT_CONFIGURE,
     CONNECT_STATE_CONNECT_COMPLETE,
@@ -130,6 +132,9 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   // Resolves the hostname in the URL.
   int DoResolveHost();
   int DoResolveHostComplete(int rv);
+  // Run Local Network Access checks before initiating connection.
+  int DoLocalNetworkAccessCheck();
+  int DoLocalNetworkAccessCheckComplete(int rv);
   // Establishes the QUIC connection.
   int DoConnect();
   int DoConnectConfigure(int rv);

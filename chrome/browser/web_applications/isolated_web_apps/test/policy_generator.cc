@@ -5,7 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
 
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 
 namespace web_app {
 
@@ -16,7 +16,7 @@ void PolicyGenerator::AddForceInstalledIwa(
     const web_package::SignedWebBundleId& web_bundle_id,
     const GURL& update_manifest_url,
     const std::optional<UpdateChannel>& channel,
-    const std::optional<base::Version>& pinned_version,
+    const std::optional<IwaVersion>& pinned_version,
     bool allow_downgrades) {
   app_policies_.Append(test::CreateForceInstallIwaPolicyEntry(
       web_bundle_id, update_manifest_url,

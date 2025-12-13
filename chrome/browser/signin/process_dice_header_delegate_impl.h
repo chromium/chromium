@@ -36,8 +36,11 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
   // Callback starting History syncing.
   // This is similar to `DiceTabHelper::EnableHistorySyncOptinCallback` but is a
   // once callback (vs repeating).
-  using EnableHistorySyncOptinCallback = base::OnceCallback<
-      void(Profile*, content::WebContents*, const CoreAccountInfo&)>;
+  using EnableHistorySyncOptinCallback =
+      base::OnceCallback<void(Profile*,
+                              content::WebContents*,
+                              const CoreAccountInfo&,
+                              signin_metrics::AccessPoint)>;
 
   // Callback showing a signin error UI.
   // This is similar to `DiceTabHelper::ShowSigninErrorCallback` but is a once
@@ -87,6 +90,9 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
   // Returns true if sync should be enabled after the user signs in.
   bool ShouldEnableSync();
   bool ShouldEnableHistorySync();
+  void AttemptChromeSignin(CoreAccountId account_id);
+  bool AttemptSettingPrimaryAccount(const CoreAccountInfo& account_info,
+                                    bool show_signin_error = true);
 
   // Navigates to `redirect_url_`. Does nothing if the url is empty.
   void Redirect();
@@ -94,7 +100,7 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
   const base::WeakPtr<content::WebContents> web_contents_;
   const raw_ref<Profile> profile_;
   const bool is_sync_signin_tab_;
-  const signin_metrics::AccessPoint access_point_;
+  signin_metrics::AccessPoint access_point_;
   const signin_metrics::PromoAction promo_action_;
   const GURL redirect_url_;
   EnableSyncCallback enable_sync_callback_;

@@ -261,6 +261,8 @@ class SQLitePersistentSharedDictionaryStore::Backend
   DEFINE_CROSS_SEQUENCE_CALL_METHOD(GetAllDiskCacheKeyTokens)
   DEFINE_CROSS_SEQUENCE_CALL_METHOD(DeleteDictionariesByDiskCacheKeyTokens)
   DEFINE_CROSS_SEQUENCE_CALL_METHOD(UpdateDictionaryLastFetchTime)
+  DEFINE_CROSS_SEQUENCE_CALL_METHOD(
+      UpdateDictionaryResponseTimeAndLastFetchTime)
 #undef DEFINE_CROSS_SEQUENCE_CALL_METHOD
 
   void UpdateDictionaryLastUsedTime(int64_t primary_key_in_database,
@@ -300,6 +302,9 @@ class SQLitePersistentSharedDictionaryStore::Backend
       const std::set<base::UnguessableToken>& disk_cache_key_tokens);
   Error UpdateDictionaryLastFetchTimeImpl(const int64_t primary_key_in_database,
                                           const base::Time last_fetch_time);
+  Error UpdateDictionaryResponseTimeAndLastFetchTimeImpl(
+      const int64_t primary_key_in_database,
+      const base::Time new_time);
 
   // If a matching dictionary exists, populates 'size_out' and
   // 'disk_cache_key_out' with the dictionary's respective values and returns
@@ -1526,6 +1531,31 @@ SQLitePersistentSharedDictionaryStore::Backend::
   return Error::kOk;
 }
 
+SQLitePersistentSharedDictionaryStore::Error
+SQLitePersistentSharedDictionaryStore::Backend::
+    UpdateDictionaryResponseTimeAndLastFetchTimeImpl(
+        int64_t primary_key_in_database,
+        base::Time new_time) {
+  if (!InitializeDatabase()) {
+    return Error::kFailedToInitializeDatabase;
+  }
+  static constexpr char kQuery[] =
+      "UPDATE dictionaries SET res_time=?, last_fetch_time=? WHERE "
+      "primary_key=?";
+
+  if (!db()->IsSQLValid(kQuery)) {
+    return Error::kInvalidSql;
+  }
+  sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
+  statement.BindTime(0, new_time);
+  statement.BindTime(1, new_time);
+  statement.BindInt64(2, primary_key_in_database);
+  if (!statement.Run()) {
+    return Error::kFailedToExecuteSql;
+  }
+  return Error::kOk;
+}
+
 base::expected<uint64_t, SQLitePersistentSharedDictionaryStore::Error>
 SQLitePersistentSharedDictionaryStore::Backend::
     DeleteDictionaryByDiskCacheToken(
@@ -1855,6 +1885,17 @@ void SQLitePersistentSharedDictionaryStore::UpdateDictionaryLastUsedTime(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   backend_->UpdateDictionaryLastUsedTime(primary_key_in_database,
                                          last_used_time);
+}
+
+void SQLitePersistentSharedDictionaryStore::
+    UpdateDictionaryResponseTimeAndLastFetchTime(
+        const int64_t primary_key_in_database,
+        const base::Time new_time,
+        base::OnceCallback<void(Error)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  backend_->UpdateDictionaryResponseTimeAndLastFetchTime(
+      WrapCallbackWithWeakPtrCheck(GetWeakPtr(), std::move(callback)),
+      primary_key_in_database, new_time);
 }
 
 base::WeakPtr<SQLitePersistentSharedDictionaryStore>

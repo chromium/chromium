@@ -117,4 +117,4 @@ static jboolean JNI_FieldTrialList_CreateFieldTrial(JNIEnv* env,
          nullptr;
 }
 
-DEFINE_JNI_FOR_FieldTrialList()
+DEFINE_JNI(FieldTrialList)

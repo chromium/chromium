@@ -28,8 +28,8 @@ class FullscreenWindowFinderTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    gfx::Rect bounds(100, 100, 200, 200);
-    test_window_.reset(CreateTestWindowInShellWithBounds(bounds));
+    test_window_.reset(
+        CreateTestWindowInShell({.bounds = {100, 100, 200, 200}}));
   }
 
   void TearDown() override {

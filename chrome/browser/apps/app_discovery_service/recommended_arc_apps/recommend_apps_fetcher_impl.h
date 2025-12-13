@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_DISCOVERY_SERVICE_RECOMMENDED_ARC_APPS_RECOMMEND_APPS_FETCHER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -122,7 +123,7 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
   void OnDownloadTimeout();
 
   // Callback function called when SimpleURLLoader completes.
-  void OnDownloaded(std::unique_ptr<std::string> response_body);
+  void OnDownloaded(std::optional<std::string> response_body);
 
   void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
 

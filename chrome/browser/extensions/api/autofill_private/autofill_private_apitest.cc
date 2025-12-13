@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/test/browser_test.h"
@@ -40,7 +41,14 @@ namespace {
 
 class AutofillPrivateApiTest : public ExtensionApiTest {
  public:
-  AutofillPrivateApiTest() = default;
+  AutofillPrivateApiTest() {
+#if BUILDFLAG(IS_CHROMEOS)
+    // Enable the feature flag for this test.
+    scoped_feature_list_.InitAndEnableFeature(
+        autofill::features::kAutofillEnablePaymentsMandatoryReauthChromeOs);
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
   AutofillPrivateApiTest(const AutofillPrivateApiTest&) = delete;
   AutofillPrivateApiTest& operator=(const AutofillPrivateApiTest&) = delete;
   ~AutofillPrivateApiTest() override = default;
@@ -54,8 +62,6 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
     AutofillPrivateEventRouterFactory::GetForProfile(browser_context())
         ->RebindPersonalDataManagerForTesting(
             &autofill_client()->GetPersonalDataManager());
-    autofill_client()->GetPersonalDataManager().SetPrefService(
-        autofill_client()->GetPrefs());
   }
 
   void TearDownOnMainThread() override {
@@ -77,17 +83,16 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
   }
 
   autofill::TestContentAutofillClient* autofill_client() {
-    return test_autofill_client_injector_
-        [browser()->tab_strip_model()->GetActiveWebContents()];
+    return test_autofill_client_injector_[GetActiveWebContents()];
   }
 
  private:
   content::BrowserContext* browser_context() {
-    return browser()
-        ->tab_strip_model()
-        ->GetActiveWebContents()
-        ->GetBrowserContext();
+    return GetActiveWebContents()->GetBrowserContext();
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
       test_autofill_client_injector_;
@@ -333,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, logServerIbanLinkClicked) {
   histogram_tester.ExpectTotalCount("Autofill.ServerIbanLinkClicked", 1u);
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest,
                        authenticateUserAndFlipMandatoryAuthToggle) {
   base::UserActionTester user_action_tester;
@@ -428,10 +433,11 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddVirtualCard) {
       autofill_client()->GetPersonalDataManager();
   autofill_client()
       ->GetPaymentsAutofillClient()
-      ->set_payments_network_interface(
-          std::make_unique<autofill::payments::TestPaymentsNetworkInterface>(
+      ->set_multiple_request_payments_network_interface(
+          std::make_unique<
+              autofill::payments::MockMultipleRequestPaymentsNetworkInterface>(
               autofill_client()->GetURLLoaderFactory(),
-              autofill_client()->GetIdentityManager(), &personal_data_manager));
+              *autofill_client()->GetIdentityManager()));
   // Required for adding the server card.
   personal_data_manager.payments_data_manager().SetSyncingForTest(
       /*is_syncing_for_test=*/true);

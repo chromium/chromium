@@ -62,10 +62,10 @@ public interface WebContents extends Parcelable {
     }
 
     /**
-     * @return a default implementation of {@link InternalsHolder} that holds a reference to
-     * {@link WebContentsInternals} object owned by {@link WebContents} instance.
+     * @return a default implementation of {@link InternalsHolder} that holds a reference to {@link
+     *     WebContentsInternals} object owned by {@link WebContents} instance.
      */
-    public static InternalsHolder createDefaultInternalsHolder() {
+    static InternalsHolder createDefaultInternalsHolder() {
         return new InternalsHolder() {
             private @Nullable WebContentsInternals mInternals;
 
@@ -218,6 +218,15 @@ public interface WebContents extends Parcelable {
     String getEncoding();
 
     /**
+     * Discards the RenderFrameHost associated with this WebContents.
+     *
+     * @param onDiscarded a callback to be called when the RenderFrameHost is discarded. May never
+     *     be called if the operation fails.
+     *     <p>TODO(crbug.com/441841249): Change the runnable to a callback.
+     */
+    void discard(Runnable onDiscarded);
+
+    /**
      * @return Whether this WebContents is loading a resource.
      */
     boolean isLoading();
@@ -246,12 +255,17 @@ public interface WebContents extends Parcelable {
 
     /**
      * ChildProcessImportance on Android allows controls of the renderer process bindings
-     * independent of visibility. Note this does not affect importance of subframe processes or main
-     * frames processeses for non-primary pages.
+     * independent of visibility. Note this does not affect importance of processes for non-primary
+     * pages.
      *
-     * @param importance importance of the primary page's main frame process.
+     * <p>The subframeImportance must be less than or equal to the mainFrameImportance.
+     *
+     * @param mainFrameImportance importance of the primary page's main frame process.
+     * @param subframeImportance importance of the primary page's subframes process.
      */
-    void setPrimaryMainFrameImportance(@ChildProcessImportance int importance);
+    void setPrimaryPageImportance(
+            @ChildProcessImportance int mainFrameImportance,
+            @ChildProcessImportance int subframeImportance);
 
     /**
      * Suspends all media players for this WebContents. Note: There may still be activities
@@ -556,14 +570,6 @@ public interface WebContents extends Parcelable {
     void setDisplayCutoutSafeArea(Rect insets);
 
     /**
-     * Sets the context menu "safe area" of the WebContents. These are insets from each edge in
-     * physical pixels.
-     *
-     * @param insets The insets stored in a Rect.
-     */
-    void setContextMenuInsets(Rect insets);
-
-    /**
      * Instructs the web contents to "show interest" in the Element corresponding to the provided
      * nodeID.
      *
@@ -620,6 +626,15 @@ public interface WebContents extends Parcelable {
     void setLongPressLinkSelectText(boolean enabled);
 
     /**
+     * Allow drag-drop of files such as an image to load and replace contents.
+     *
+     * @param enabled whether the behavior should be enabled.
+     */
+    void setCanAcceptLoadDrops(boolean enabled);
+
+    boolean getCanAcceptLoadDropsForTesting();
+
+    /**
      * Update the OffsetTagDefinitions. This could be because the controls' visibility constraints
      * have changed, which requires adding/removing the OffsetTags, or because the
      * OffsetTagConstraints have changed due to a change in the controls' scrollable height.
@@ -637,6 +652,12 @@ public interface WebContents extends Parcelable {
     boolean hasOpener();
 
     /**
+     * @return The opener WebContents if this WebContents is in Document Picture-in-Picture mode, or
+     *     {@code null} otherwise.
+     */
+    @Nullable WebContents getDocumentPictureInPictureOpener();
+
+    /**
      * Returns the window open disposition that was originally requested when this WebContents was
      * created or navigated to. This method provides the disposition specified by the opener of this
      * WebContents, indicating how the content was initially intended to be displayed (e.g., as a
@@ -648,6 +669,16 @@ public interface WebContents extends Parcelable {
      * @return an integer constant representing the original window open disposition.
      */
     int getOriginalWindowOpenDisposition();
+
+    /**
+     * Updates the Window Controls Overlay rect for a PWA.
+     *
+     * @param rect The rect of the overlay.
+     */
+    void updateWindowControlsOverlay(Rect rect);
+
+    /** Enables draggable region calculation in this WebContents' primary main frame. */
+    void setSupportsDraggableRegions(boolean supportsDraggableRegions);
 
     /**
      * Factory interface passed to {@link #getOrSetUserData()} for instantiation of class as user
@@ -669,7 +700,7 @@ public interface WebContents extends Parcelable {
      *
      * @param <T> Class to instantiate.
      */
-    public interface UserDataFactory<T> {
+    interface UserDataFactory<T> {
         T create(WebContents webContents);
     }
 
@@ -683,7 +714,7 @@ public interface WebContents extends Parcelable {
      *     yet, or {@code userDataFactory} is null, or the internal data storage is already
      *     garbage-collected.
      */
-    public <T extends UserData> @Nullable T getOrSetUserData(
+    <T extends UserData> @Nullable T getOrSetUserData(
             Class<T> key, @Nullable UserDataFactory<T> userDataFactory);
 
     /**
@@ -693,5 +724,5 @@ public interface WebContents extends Parcelable {
      * @param key The class object representing the type of user data to remove. If no user data
      *     object of this type exists, this method has no effect.
      */
-    public <T extends UserData> void removeUserData(Class<T> key);
+    <T extends UserData> void removeUserData(Class<T> key);
 }

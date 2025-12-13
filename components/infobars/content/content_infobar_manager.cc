@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "components/infobars/core/infobar.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -54,9 +55,7 @@ ContentInfoBarManager::ContentInfoBarManager(content::WebContents* web_contents)
   }
 }
 
-ContentInfoBarManager::~ContentInfoBarManager() {
-  ShutDown();
-}
+ContentInfoBarManager::~ContentInfoBarManager() = default;
 
 int ContentInfoBarManager::GetActiveEntryID() {
   content::NavigationEntry* active_entry =

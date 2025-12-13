@@ -969,11 +969,10 @@ TEST_F(LayoutResultCachingTest, ChangeTableCellBlockSizeConstrainedness) {
   result = TestCachedLayoutResult(test3, src3, &cache_status);
   // The third child has overflow:auto and a percentage height, and its
   // intrinsic height is 0 (no children), so it matters whether the cell has a
-  // height or not. We're only going to need simplified layout, though, since no
-  // children will be affected by its height change.
-  EXPECT_EQ(cache_status, RuntimeEnabledFeatures::LayoutStretchCacheFixEnabled()
-                              ? LayoutCacheStatus::kNeedsLayout
-                              : LayoutCacheStatus::kNeedsSimplifiedLayout);
+  // height or not. We used to return simplified layout for this case because no
+  // children will be affected by the height change, but that cache logic was
+  // too fragile. See https://crrev.com/c/6629745 for details.
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
 }
 
 TEST_F(LayoutResultCachingTest, OptimisticFloatPlacementNoRelayout) {
@@ -1485,7 +1484,7 @@ TEST_F(LayoutResultCachingTest, HitRowFlexBoxMeasureAndLayout) {
   EXPECT_NE(result, nullptr);
 }
 
-TEST_F(LayoutResultCachingTest, HitFlexLegacyImg) {
+TEST_F(LayoutResultCachingTest, MissFlexReplaced) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .bfc { display: flex; flex-direction: column; width: 300px; }
@@ -1493,12 +1492,12 @@ TEST_F(LayoutResultCachingTest, HitFlexLegacyImg) {
     </style>
     <div class="bfc">
       <div id="test">
-        <img />
+        <canvas width=200 height=200></canvas>
       </div>
     </div>
     <div class="bfc" style="height: 200px;">
       <div id="src">
-        <img />
+        <canvas width=200 height=200></canvas>
       </div>
     </div>
   )HTML");
@@ -1509,45 +1508,17 @@ TEST_F(LayoutResultCachingTest, HitFlexLegacyImg) {
   LayoutCacheStatus cache_status;
   const LayoutResult* result = TestCachedLayoutResult(test, src, &cache_status);
 
-  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
-  EXPECT_NE(result, nullptr);
-}
-
-TEST_F(LayoutResultCachingTest, HitFlexLegacyGrid) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      .bfc { display: flex; flex-direction: column; width: 300px; }
-      .bfc > * { display: flex; }
-      .grid { display: grid; }
-    </style>
-    <div class="bfc">
-      <div id="test">
-        <div class="grid"></div>
-      </div>
-    </div>
-    <div class="bfc" style="height: 200px;">
-      <div id="src">
-        <div class="grid"></div>
-      </div>
-    </div>
-  )HTML");
-
-  auto* test = To<LayoutBlock>(GetLayoutObjectByElementId("test"));
-  auto* src = To<LayoutBlock>(GetLayoutObjectByElementId("src"));
-
-  LayoutCacheStatus cache_status;
-  const LayoutResult* result = TestCachedLayoutResult(test, src, &cache_status);
-
-  EXPECT_EQ(cache_status, LayoutCacheStatus::kHit);
-  EXPECT_NE(result, nullptr);
+  EXPECT_EQ(cache_status, LayoutCacheStatus::kNeedsLayout);
+  EXPECT_EQ(result, nullptr);
 }
 
 TEST_F(LayoutResultCachingTest, HitFlexDefiniteChange) {
   SetBodyInnerHTML(R"HTML(
-    <div style="display: flex; flex-direction: column;">
+    <div style="display: flex; flex-direction: column; height: 200px;">
       <div style="height: 200px;" id=target1>
         <div style="height: 100px"></div>
       </div>
+      <div></div>
     </div>
   )HTML");
 

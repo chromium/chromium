@@ -132,7 +132,7 @@ bool D3D12CopyCommandQueueWrapper::ExecuteAndWait() {
 
   ID3D12CommandList* command_lists[] = {command_list_.Get()};
   command_queue_->ExecuteCommandLists(1, command_lists);
-  D3D11Status status = fence_->SignalAndWait(*command_queue_.Get());
+  D3D11Status status = fence_->SignalAndWaitCPU(*command_queue_.Get());
   if (!status.is_ok()) {
     LOG(ERROR) << "Failed to SignalAndWait: " << status.message();
     return false;

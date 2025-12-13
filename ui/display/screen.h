@@ -18,7 +18,7 @@
 #include "ui/display/display_export.h"
 #include "ui/display/screen_infos.h"
 #include "ui/gfx/gpu_extra_info.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace base {
 class TimeDelta;
@@ -54,8 +54,7 @@ class DISPLAY_EXPORT Screen {
   // Retrieves the single Screen object; this may be null if it's not already
   // created, except for IOS where it creates a native screen instance
   // automatically. On ChromeOS ash the return value is only null on startup.
-
-  static Screen* GetScreen();
+  static Screen* Get();
 
   // Returns whether a Screen singleton exists or not.
   static bool HasScreen();

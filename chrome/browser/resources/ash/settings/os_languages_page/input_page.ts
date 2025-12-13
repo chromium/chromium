@@ -100,13 +100,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
         value: false,
       },
 
-      languageSettingsJapaneseEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('systemJapanesePhysicalTyping');
-        },
-      },
-
       /**
        * Whether the shortcut reminder for the last used IME is currently
        * showing.
@@ -146,10 +139,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
       languagePacksInSettingsEnabled_: Boolean,
 
-      allowEmojiSuggestion_: Boolean,
-
-      allowSuggestionSection_: Boolean,
-
       acceleratorFetcher: Object,
 
       isShortcutCustomizationEnabled_: Boolean,
@@ -176,7 +165,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
   // From DeepLinkingMixin.
   override supportedSettingIds = new Set([
     Setting.kAddInputMethod,
-    Setting.kShowEmojiSuggestions,
     Setting.kShowInputOptionsInShelf,
     Setting.kSpellCheckOnOff,
   ]);
@@ -200,13 +188,8 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
   // loadTimeData flags.
   private onDeviceGrammarCheckEnabled_: boolean;
-  private languageSettingsJapaneseEnabled_: boolean;
   private languagePacksInSettingsEnabled_ =
       loadTimeData.getBoolean('languagePacksInSettingsEnabled');
-  private readonly allowEmojiSuggestion_: boolean =
-      loadTimeData.getBoolean('allowEmojiSuggestion');
-  private readonly allowSuggestionSection_: boolean =
-      this.allowEmojiSuggestion_;
 
   // Computed properties.
   private spellCheckLanguages_: SpellCheckLanguageState[]|undefined;
@@ -384,8 +367,6 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
           loadTimeData.getBoolean('isPhysicalKeyboardAutocorrectAllowed'),
       isPhysicalKeyboardPredictiveWritingAllowed:
           loadTimeData.getBoolean('isPhysicalKeyboardPredictiveWritingAllowed'),
-      isJapaneseSettingsAllowed:
-          loadTimeData.getBoolean('systemJapanesePhysicalTyping'),
       isVietnameseFirstPartyInputSettingsAllowed:
           loadTimeData.getBoolean('allowFirstPartyVietnameseInput'),
     });

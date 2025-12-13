@@ -94,7 +94,6 @@ chrome.runtime.PlatformOs = {
   CROS: 'cros',
   LINUX: 'linux',
   OPENBSD: 'openbsd',
-  FUCHSIA: 'fuchsia',
 };
 
 /**

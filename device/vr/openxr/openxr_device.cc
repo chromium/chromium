@@ -31,6 +31,7 @@ const std::vector<mojom::XRSessionFeature>& GetSupportedFeatures() {
                           mojom::XRSessionFeature::REF_SPACE_BOUNDED_FLOOR,
                           mojom::XRSessionFeature::REF_SPACE_UNBOUNDED,
                           mojom::XRSessionFeature::ANCHORS,
+                          mojom::XRSessionFeature::HAND_INPUT,
                           mojom::XRSessionFeature::SECONDARY_VIEWS}};
 
   return *kSupportedFeatures;
@@ -53,8 +54,13 @@ bool AreAllRequiredFeaturesSupported(
         // features and things that could theoretically be supported depending
         // on enabled extensions (which we're now checking if they're actually
         // supported,since we need to create an instance to confirm that).
-        return IsFeatureSupportedForMode(feature, mode) &&
-               extension_helper.IsFeatureSupported(feature);
+        const bool supported = IsFeatureSupportedForMode(feature, mode) &&
+                               extension_helper.IsFeatureSupported(feature);
+        if (!supported) {
+          DVLOG(1) << __func__ << " " << feature << " not supported";
+        }
+
+        return supported;
       });
 }
 }  // namespace
@@ -73,19 +79,14 @@ OpenXrDevice::OpenXrDevice(
 
   device_data.supported_features = GetSupportedFeatures();
 
-  // Only support hand input if the feature flag is enabled.
-  if (base::FeatureList::IsEnabled(features::kWebXrHandInput))
-    device_data.supported_features.emplace_back(
-        mojom::XRSessionFeature::HAND_INPUT);
-
   // Only support layers if the feature flag is enabled.
-  if (base::FeatureList::IsEnabled(features::kWebXrLayers)) {
+  if (base::FeatureList::IsEnabled(features::kWebXRLayers)) {
     device_data.supported_features.emplace_back(
         mojom::XRSessionFeature::LAYERS);
   }
 
   // Only support WebGPU sessions if feature flag is enabled.
-  if (base::FeatureList::IsEnabled(features::kWebXrWebGpuBinding)) {
+  if (base::FeatureList::IsEnabled(features::kWebXRWebGPUBinding)) {
     device_data.supported_features.emplace_back(
         mojom::XRSessionFeature::WEBGPU);
   }
@@ -97,6 +98,8 @@ OpenXrDevice::OpenXrDevice(
     device_data.supported_features.emplace_back(
         mojom::XRSessionFeature::LIGHT_ESTIMATION);
     device_data.supported_features.emplace_back(mojom::XRSessionFeature::DEPTH);
+    device_data.supported_features.emplace_back(
+        mojom::XRSessionFeature::PLANE_DETECTION);
   }
 
   SetDeviceData(std::move(device_data));

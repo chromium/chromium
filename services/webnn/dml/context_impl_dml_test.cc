@@ -8,12 +8,10 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/dml/adapter.h"
-#include "services/webnn/dml/test_base.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
 #include "services/webnn/public/mojom/webnn_context.mojom.h"
@@ -25,6 +23,7 @@
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_tensor_impl.h"
+#include "services/webnn/webnn_test_environment.h"
 #include "services/webnn/webnn_test_utils.h"
 
 namespace webnn::dml {
@@ -42,23 +41,23 @@ class FakeWebNNGraphImpl final : public WebNNGraphImpl {
  public:
   FakeWebNNGraphImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
-      ContextImplDml* context,
+      base::WeakPtr<WebNNContextImpl> context,
       ComputeResourceInfo compute_resource_info)
       : WebNNGraphImpl(std::move(receiver),
-                       context,
+                       std::move(context),
                        std::move(compute_resource_info),
-                       /*devices=*/{}),
-        context_(context) {}
-  ~FakeWebNNGraphImpl() override = default;
+                       /*devices=*/{}) {}
 
  private:
-  void DispatchImpl(
-      base::flat_map<std::string, WebNNTensorImpl*> named_inputs,
-      base::flat_map<std::string, WebNNTensorImpl*> named_outputs) override {
-    RemoveDeviceToDestroyAllContexts(context_);
-  }
+  ~FakeWebNNGraphImpl() override = default;
 
-  raw_ptr<ContextImplDml> context_;
+  void DispatchImpl(
+      base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_inputs,
+      base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_outputs)
+      override {
+    RemoveDeviceToDestroyAllContexts(
+        static_cast<ContextImplDml*>(context_.get()));
+  }
 };
 
 // A fake WebNNTensor Mojo interface implementation that binds a pipe for
@@ -90,6 +89,11 @@ class FakeWebNNTensorImpl final : public WebNNTensorImpl {
     RemoveDeviceToDestroyAllContexts(
         static_cast<ContextImplDml*>(context_impl));
   }
+
+  // Interop is not required by tests.
+  bool ImportTensorImpl(ScopedAccessPtr access) override { return false; }
+  void ExportTensorImpl(ScopedAccessPtr access,
+                        ExportTensorCallback callback) override {}
 };
 
 // Helper class to create the FakeWebNNGraphImpl that is intended to test
@@ -100,17 +104,17 @@ class FakeWebNNBackend final : public ContextImplDml::BackendForTesting {
       ContextImplDml* context,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
       WebNNContextImpl::CreateGraphImplCallback callback) override {
-    std::move(callback).Run(std::make_unique<FakeWebNNGraphImpl>(
-        std::move(receiver), context, std::move(compute_resource_info)));
+    std::move(callback).Run(base::MakeRefCounted<FakeWebNNGraphImpl>(
+        std::move(receiver), context->AsWeakPtr(),
+        std::move(compute_resource_info)));
   }
 
-  void CreateTensorImpl(
-      base::WeakPtr<WebNNContextImpl> context,
-      mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-      mojom::TensorInfoPtr tensor_info,
-      WebNNContextImpl::CreateTensorImplCallback callback) override {
-    std::move(callback).Run(base::MakeRefCounted<FakeWebNNTensorImpl>(
-        std::move(receiver), std::move(context), std::move(tensor_info)));
+  base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+  CreateTensorImpl(ContextImplDml* context,
+                   mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+                   mojom::TensorInfoPtr tensor_info) override {
+    return base::MakeRefCounted<FakeWebNNTensorImpl>(
+        std::move(receiver), context->AsWeakPtr(), std::move(tensor_info));
   }
 };
 
@@ -142,14 +146,29 @@ CreateTensorSuccess CreateWebNNTensor(
 
 }  // namespace
 
-class WebNNContextDMLImplTest : public TestBase {
+class WebNNContextDMLImplTest : public testing::Test {
  public:
   void SetUp() override;
 
+  test::WebNNTestEnvironment& test_environment() {
+    return webnn_test_environment_;
+  }
+
+  bool AllContextsLost() const { return all_contexts_lost_; }
+
  protected:
   WebNNContextDMLImplTest()
-      : scoped_feature_list_(
-            webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
+      : webnn_test_environment_(
+            WebNNContextProviderImpl::WebNNStatus::kWebNNEnabled,
+            base::BindOnce(
+                [](bool* all_contexts_lost) { *all_contexts_lost = true; },
+                base::Unretained(&all_contexts_lost_))) {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{webnn::mojom::features::
+                                  kWebMachineLearningNeuralNetwork,
+                              webnn::mojom::features::kWebNNDirectML},
+        /*disabled_features=*/{webnn::mojom::features::kWebNNOnnxRuntime});
+  }
   ~WebNNContextDMLImplTest() override = default;
 
   bool CreateWebNNContext() {
@@ -178,6 +197,8 @@ class WebNNContextDMLImplTest : public TestBase {
   mojo::Remote<mojom::WebNNContext> webnn_context_remote_;
 
  private:
+  bool all_contexts_lost_ = false;
+  test::WebNNTestEnvironment webnn_test_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -218,7 +239,7 @@ void WebNNFakeContextDMLImplTest::TearDown() {
 }
 
 TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
-  WebNNContextProviderImpl::CreateForTesting(
+  test_environment().BindWebNNContextProvider(
       webnn_provider_remote_.BindNewPipeAndPassReceiver());
   SKIP_TEST_IF(!CreateWebNNContext());
 
@@ -250,7 +271,7 @@ TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
     create_graph_result.value()->graph_remote.reset();
   }
 
-  // Ensure `WebNNContextImpl::OnConnectionError()` is called and
+  // Ensure `WebNNContextImpl::RemoveWebNNContextImpl()` is called and
   // `WebNNContextImpl` is released.
   webnn_context_remote_.reset();
   webnn_provider_remote_.reset();
@@ -259,12 +280,8 @@ TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
 }
 
 TEST_F(WebNNFakeContextDMLImplTest, DeviceRemovalFromDispatch) {
-  bool all_contexts_lost = false;
-  WebNNContextProviderImpl::CreateForTesting(
-      webnn_provider_remote_.BindNewPipeAndPassReceiver(),
-      WebNNContextProviderImpl::WebNNStatus::kWebNNEnabled,
-      base::BindOnce([](bool* all_contexts_lost) { *all_contexts_lost = true; },
-                     base::Unretained(&all_contexts_lost)));
+  test_environment().BindWebNNContextProvider(
+      webnn_provider_remote_.BindNewPipeAndPassReceiver());
   SKIP_TEST_IF(!CreateWebNNContext());
 
   ASSERT_TRUE(webnn_context_remote_.is_bound());
@@ -308,16 +325,12 @@ TEST_F(WebNNFakeContextDMLImplTest, DeviceRemovalFromDispatch) {
   webnn_context_remote_.reset();
   // Ensure the WebNN context remains valid so scheduled callbacks can run
   // before we check for context loss.
-  EXPECT_TRUE(base::test::RunUntil([&]() { return all_contexts_lost; }));
+  EXPECT_TRUE(base::test::RunUntil([&]() { return AllContextsLost(); }));
 }
 
 TEST_F(WebNNFakeContextDMLImplTest, DeviceRemovalFromWritingTensor) {
-  bool all_contexts_lost = false;
-  WebNNContextProviderImpl::CreateForTesting(
-      webnn_provider_remote_.BindNewPipeAndPassReceiver(),
-      WebNNContextProviderImpl::WebNNStatus::kWebNNEnabled,
-      base::BindOnce([](bool* all_contexts_lost) { *all_contexts_lost = true; },
-                     base::Unretained(&all_contexts_lost)));
+  test_environment().BindWebNNContextProvider(
+      webnn_provider_remote_.BindNewPipeAndPassReceiver());
   SKIP_TEST_IF(!CreateWebNNContext());
 
   ASSERT_TRUE(webnn_context_remote_.is_bound());
@@ -330,16 +343,12 @@ TEST_F(WebNNFakeContextDMLImplTest, DeviceRemovalFromWritingTensor) {
 
   tensor.webnn_tensor_remote.reset();
   webnn_context_remote_.reset();
-  EXPECT_TRUE(base::test::RunUntil([&]() { return all_contexts_lost; }));
+  EXPECT_TRUE(base::test::RunUntil([&]() { return AllContextsLost(); }));
 }
 
 TEST_F(WebNNFakeContextDMLImplTest, DeviceRemovalFromReadingTensor) {
-  bool all_contexts_lost = false;
-  WebNNContextProviderImpl::CreateForTesting(
-      webnn_provider_remote_.BindNewPipeAndPassReceiver(),
-      WebNNContextProviderImpl::WebNNStatus::kWebNNEnabled,
-      base::BindOnce([](bool* all_contexts_lost) { *all_contexts_lost = true; },
-                     base::Unretained(&all_contexts_lost)));
+  test_environment().BindWebNNContextProvider(
+      webnn_provider_remote_.BindNewPipeAndPassReceiver());
   SKIP_TEST_IF(!CreateWebNNContext());
 
   ASSERT_TRUE(webnn_context_remote_.is_bound());
@@ -353,7 +362,7 @@ TEST_F(WebNNFakeContextDMLImplTest, DeviceRemovalFromReadingTensor) {
 
   tensor.webnn_tensor_remote.reset();
   webnn_context_remote_.reset();
-  EXPECT_TRUE(base::test::RunUntil([&]() { return all_contexts_lost; }));
+  EXPECT_TRUE(base::test::RunUntil([&]() { return AllContextsLost(); }));
 }
 
 }  // namespace webnn::dml

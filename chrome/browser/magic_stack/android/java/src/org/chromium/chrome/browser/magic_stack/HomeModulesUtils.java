@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_GROUP_SYNC_PROMO;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TIPS_NOTIFICATIONS_PROMO;
 
 import android.content.Context;
 import android.os.SystemClock;
@@ -27,8 +28,10 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.ProcessedValue;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -57,7 +60,8 @@ public class HomeModulesUtils {
                             TAB_GROUP_PROMO,
                             TAB_GROUP_SYNC_PROMO,
                             QUICK_DELETE_PROMO,
-                            HISTORY_SYNC_PROMO));
+                            HISTORY_SYNC_PROMO,
+                            TIPS_NOTIFICATIONS_PROMO));
 
     static boolean belongsToEducationalTipModule(@ModuleType int moduleType) {
         return sEducationalTipCardList.contains(moduleType);
@@ -106,6 +110,7 @@ public class HomeModulesUtils {
             case TAB_GROUP_SYNC_PROMO:
             case QUICK_DELETE_PROMO:
             case HISTORY_SYNC_PROMO:
+            case TIPS_NOTIFICATIONS_PROMO:
                 // All tips use the same name.
                 return context.getString(R.string.educational_tip_module_name);
             case AUXILIARY_SEARCH:
@@ -275,5 +280,36 @@ public class HomeModulesUtils {
         SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
         String freshnessScoreKey = getFreshnessTimeStampPreferenceKey(moduleType);
         sharedPreferencesManager.removeKey(freshnessScoreKey);
+    }
+
+    /** Returns the preference key of the module type. */
+    public static String getSettingsPreferenceKey(@ModuleType int moduleType) {
+        assert 0 <= moduleType && moduleType < ModuleType.NUM_ENTRIES;
+
+        // All the educational tip modules are controlled by the same preference key.
+        if (HomeModulesUtils.belongsToEducationalTipModule(moduleType)) {
+            return ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(
+                    String.valueOf(DEFAULT_BROWSER_PROMO));
+        }
+
+        return ChromePreferenceKeys.HOME_MODULES_MODULE_TYPE.createKey(String.valueOf(moduleType));
+    }
+
+    /**
+     * Updates the C++ boolean user pref for profile {@param profile} with key {@param cKey}, to
+     * have the same value as the Java SharedPreference with key {@param javaKey}.
+     *
+     * @param javaKey The key of the Java preference.
+     * @param cKey The key of the C++ preference.
+     * @param profile The profile that the preference is associated with.
+     */
+    public static void updateBooleanUserPrefs(String javaKey, String cKey, Profile profile) {
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        if (sharedPreferencesManager.contains(javaKey)) {
+            // Default value should not be read since we already checked that the key was set.
+            boolean value =
+                    sharedPreferencesManager.readBoolean(javaKey, /* defaultValue= */ false);
+            UserPrefs.get(profile).setBoolean(cKey, value);
+        }
     }
 }

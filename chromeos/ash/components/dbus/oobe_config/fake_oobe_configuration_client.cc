@@ -73,8 +73,8 @@ void FakeOobeConfigurationClient::DeleteFlexOobeConfig() {
   if (!configuration_.has_value()) {
     return;
   }
-  std::optional<base::Value::Dict> dict =
-      base::JSONReader::ReadDict(*configuration_);
+  std::optional<base::Value::Dict> dict = base::JSONReader::ReadDict(
+      *configuration_, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dict.has_value()) {
     return;
   }

@@ -25,8 +25,6 @@ if (is_android) {
       "android_cdm_factory.h",
       "android_overlay.cc",
       "android_overlay.h",
-      "android_util.cc",
-      "android_util.h",
       "jni_hdr_metadata.cc",
       "jni_hdr_metadata.h",
       "media_codec_bridge.h",
@@ -175,9 +173,9 @@ if (is_android) {
     ]
     resources_package = "org.chromium.media"
     sources = [
+      "java/src/org/chromium/media/AudioDeviceListener.java",
       "java/src/org/chromium/media/AudioManagerAndroid.java",
       "java/src/org/chromium/media/AudioTrackOutputStream.java",
-      "java/src/org/chromium/media/BitrateAdjuster.java",
       "java/src/org/chromium/media/CodecProfileLevelList.java",
       "java/src/org/chromium/media/CommunicationDeviceListener.java",
       "java/src/org/chromium/media/CommunicationDeviceSelector.java",
@@ -187,13 +185,13 @@ if (is_android) {
       "java/src/org/chromium/media/MaxAnticipatedResolutionEstimator.java",
       "java/src/org/chromium/media/MediaCodecBridge.java",
       "java/src/org/chromium/media/MediaCodecBridgeBuilder.java",
-      "java/src/org/chromium/media/MediaCodecEncoder.java",
       "java/src/org/chromium/media/MediaCodecUtil.java",
       "java/src/org/chromium/media/MediaDrmBridge.java",
       "java/src/org/chromium/media/MediaDrmSessionManager.java",
       "java/src/org/chromium/media/MediaDrmStorageBridge.java",
       "java/src/org/chromium/media/MediaFormatBuilder.java",
       "java/src/org/chromium/media/MediaServerCrashListener.java",
+      "java/src/org/chromium/media/ScoStateListener.java",
       "java/src/org/chromium/media/ScreenResolutionUtil.java",
       "java/src/org/chromium/media/VideoAcceleratorUtil.java",
     ]
@@ -209,7 +207,6 @@ if (is_android) {
   robolectric_binary("media_base_junit_tests") {
     sources = [
       "java/src/test/org/chromium/media/AudioTrackOutputStreamTest.java",
-      "java/src/test/org/chromium/media/BitrateAdjusterTest.java",
       "java/src/test/org/chromium/media/CommunicationDeviceListenerTest.java",
       "java/src/test/org/chromium/media/MediaFormatBuilderTest.java",
     ]
@@ -219,6 +216,7 @@ if (is_android) {
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
       "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/google-truth:google_truth_java",
       "//third_party/junit",
     ]
   }

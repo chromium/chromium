@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='utf-8'?>
 <grit base_dir="." latest_public_release="0" current_release="1" source_lang_id="en" enc_check="möl">
   <!--
   This file contains definition of resources that will be translated for each
@@ -185,6 +185,9 @@
       <message name="IDS_IOS_ACCESSIBILITY_LABEL_SHARE_EXTENSION" desc="The accessible name for the Chrome logo that appears visually at the top of the Share Chrome extension will be, `Share Chrome, Heading`">
         Share
     </message>
+    <message name="IDS_IOS_ACCOUNTS_TITLE_SHARE_EXTENSION" desc="The title of the accounts table.">
+        Accounts
+    </message>
     <message name="IDS_IOS_ADDED_ITEM_SHARE_EXTENSION" desc="Label of the button 'add to' after it has been pressed confirming the action to the user.">
         Added
       </message>
@@ -209,20 +212,17 @@
     <message name="IDS_IOS_OPEN_IN_BUTTON_SHARE_EXTENSION" desc="Label for the open in button in the share extension.">
         Open in
     </message>
-      <message name="IDS_IOS_OPEN_IN_CHROME_SHARE_EXTENSION" desc="Share extension button to open link in Chrome [Length: 30em]" meaning="Button title [Length: 30em]">
-        Open in Chrome
-      </message>
     <message name="IDS_IOS_OPEN_IN_INCOGNITO_BUTTON_SHARE_EXTENSION" desc="Label for the open in incognito button in the share extension.">
       Open in Incognito
-    </message>
-    <message name="IDS_IOS_SEARCH_IN_BUTTON_SHARE_EXTENSION" desc="Label for the search in button in the share extension.">
-        Search in
     </message>
     <message name="IDS_IOS_SEARCH_IN_INCOGNITO_BUTTON_SHARE_EXTENSION" desc="Label for the search in incognito button in the share extension.">
         Search in Incognito
     </message>
     <message name="IDS_IOS_SEARCH_MAX_LIMIT" desc="String to add to the end of the search text to inform the user that the character limit of a search has been reached.">
         (Max limit)
+    </message>
+    <message name="IDS_IOS_SIGNED_OUT_USER_TITLE_SHARE_EXTENSION" desc="The title of the item representing a signed out user.">
+        Signed out
     </message>
     </messages>
   </release>

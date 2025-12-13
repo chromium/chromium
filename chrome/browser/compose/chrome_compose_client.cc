@@ -24,7 +24,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -44,12 +43,15 @@
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/config.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/strings/grit/components_strings.h"
@@ -104,14 +106,16 @@ ChromeComposeClient::FieldChangeObserver::FieldChangeObserver(
     content::WebContents* web_contents)
     : web_contents_(web_contents) {
   autofill_managers_observation_.Observe(
-      web_contents, autofill::ScopedAutofillManagersObservation::
-                        InitializationPolicy::kObservePreexistingManagers);
+      autofill::ContentAutofillClient::FromWebContents(web_contents),
+      autofill::ScopedAutofillManagersObservation::InitializationPolicy::
+          kObservePreexistingManagers);
 }
 
 ChromeComposeClient::FieldChangeObserver::~FieldChangeObserver() = default;
 
 void ChromeComposeClient::FieldChangeObserver::OnSuggestionsShown(
-    autofill::AutofillManager& manager) {
+    autofill::AutofillManager& manager,
+    base::span<const autofill::Suggestion> suggestions) {
   text_field_value_change_event_count_ = 0;
 }
 
@@ -181,8 +185,9 @@ ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
   }
 
   autofill_managers_observation_.Observe(
-      web_contents, autofill::ScopedAutofillManagersObservation::
-                        InitializationPolicy::kObservePreexistingManagers);
+      autofill::ContentAutofillDriverFactory::FromWebContents(web_contents),
+      autofill::ScopedAutofillManagersObservation::InitializationPolicy::
+          kObservePreexistingManagers);
   nudge_tracker_.StartObserving(web_contents);
 }
 
@@ -246,8 +251,6 @@ void ChromeComposeClient::BindComposeDialog(
 void ChromeComposeClient::ShowComposeDialog(
     EntryPoint ui_entry_point,
     const autofill::FormFieldData& trigger_field,
-    std::optional<autofill::AutofillClient::PopupScreenLocation>
-        popup_screen_location,
     ComposeCallback callback) {
   active_compose_ids_ = std::make_optional<FieldIdentifier>(
       trigger_field.global_id(), trigger_field.renderer_form_id());
@@ -858,7 +861,7 @@ void ChromeComposeClient::OnAfterFocusOnFormField(
   active_compose_ids_.reset();
 }
 
-optimization_guide::OptimizationGuideModelExecutor*
+optimization_guide::RemoteModelExecutor*
 ChromeComposeClient::GetModelExecutor() {
   return model_executor_for_test_.value_or(
       OptimizationGuideKeyedServiceFactory::GetForProfile(
@@ -887,7 +890,7 @@ InnerTextProvider* ChromeComposeClient::GetInnerTextProvider() {
 }
 
 void ChromeComposeClient::SetModelExecutorForTest(
-    optimization_guide::OptimizationGuideModelExecutor* model_executor) {
+    optimization_guide::RemoteModelExecutor* model_executor) {
   model_executor_for_test_ = model_executor;
 }
 
@@ -956,8 +959,7 @@ void ChromeComposeClient::OnWebContentsFocused(
       if (auto* driver = autofill::ContentAutofillDriver::GetForRenderFrameHost(
               top_level_frame)) {
         GetManager().OpenCompose(
-            *driver, active_compose_ids_.value().second,
-            active_compose_ids_.value().first,
+            *driver, active_compose_ids_.value().first,
             compose::ComposeManagerImpl::UiEntryPoint::kContextMenu);
       }
     }
@@ -973,7 +975,7 @@ void ChromeComposeClient::DidGetUserInteraction(
   }
 }
 void ChromeComposeClient::OnFocusChangedInPage(
-    content::FocusedNodeDetails* details) {
+    const content::FocusedNodeDetails& details) {
   // TODO(crbug/337690061): Use Autofill events to track focus change.
   return nudge_tracker_.FocusChangedInPage();
 }

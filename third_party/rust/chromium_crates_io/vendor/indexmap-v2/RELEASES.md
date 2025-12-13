@@ -1,5 +1,47 @@
 # Releases
 
+## 2.12.1 (2025-11-20)
+
+- Simplified a lot of internals using `hashbrown`'s new bucket API.
+
+## 2.12.0 (2025-10-17)
+
+- **MSRV**: Rust 1.82.0 or later is now required.
+- Updated the `hashbrown` dependency to 0.16 alone.
+- Error types now implement `core::error::Error`.
+- Added `pop_if` methods to `IndexMap` and `IndexSet`, similar to the
+  method for `Vec` added in Rust 1.86.
+
+## 2.11.4 (2025-09-18)
+
+- Updated the `hashbrown` dependency to a range allowing 0.15 or 0.16.
+
+## 2.11.3 (2025-09-15)
+
+- Make the minimum `serde` version only apply when "serde" is enabled.
+
+## 2.11.2 (2025-09-15)
+
+- Switched the "serde" feature to depend on `serde_core`, improving build
+  parallelism in cases where other dependents have enabled "serde/derive".
+
+## 2.11.1 (2025-09-08)
+
+- Added a `get_key_value_mut` method to `IndexMap`.
+- Removed the unnecessary `Ord` bound on `insert_sorted_by` methods.
+
+## 2.11.0 (2025-08-22)
+
+- Added `insert_sorted_by` and `insert_sorted_by_key` methods to `IndexMap`,
+  `IndexSet`, and `VacantEntry`, like customizable versions of `insert_sorted`.
+- Added `is_sorted`, `is_sorted_by`, and `is_sorted_by_key` methods to
+  `IndexMap` and `IndexSet`, as well as their `Slice` counterparts.
+- Added `sort_by_key` and `sort_unstable_by_key` methods to `IndexMap` and
+  `IndexSet`, as well as parallel counterparts.
+- Added `replace_index` methods to `IndexMap`, `IndexSet`, and `VacantEntry`
+  to replace the key (or set value) at a given index.
+- Added optional `sval` serialization support.
+
 ## 2.10.0 (2025-06-26)
 
 - Added `extract_if` methods to `IndexMap` and `IndexSet`, similar to the

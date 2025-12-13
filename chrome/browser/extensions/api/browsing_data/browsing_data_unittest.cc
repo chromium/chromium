@@ -60,8 +60,11 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
  protected:
   void SetUp() override {
 #if !BUILDFLAG(IS_ANDROID)
-    scoped_feature_list_.InitAndEnableFeature(
-        browsing_data::features::kDbdRevampDesktop);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{browsing_data::features::kDbdRevampDesktop,
+                              browsing_data::features::
+                                  kPasswordRemovalExtensionErrorKillSwitch},
+        /*disabled_features=*/{});
 #endif  // !BUILDFLAG(IS_ANDROID)
 
     ExtensionServiceTestBase::SetUp();
@@ -259,8 +262,8 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
                   content::BrowsingDataRemover::DATA_TYPE_LOCAL_STORAGE) |
         // PluginData is not supported anymore.
         GetAsMask(data_to_remove, "pluginData", 0) |
-        GetAsMask(data_to_remove, "passwords",
-                  chrome_browsing_data_remover::DATA_TYPE_PASSWORDS) |
+        // Passwords are not supported anymore.
+        GetAsMask(data_to_remove, "passwords", 0) |
         GetAsMask(data_to_remove, "serviceWorkers",
                   content::BrowsingDataRemover::DATA_TYPE_SERVICE_WORKERS);
 
@@ -332,7 +335,6 @@ TEST_F(BrowsingDataApiTest, RemovalProhibited) {
   CheckRemovalPermitted("{\"indexedDB\": true}", true);
   CheckRemovalPermitted("{\"localStorage\": true}", true);
   CheckRemovalPermitted("{\"serverBoundCertificates\": true}", true);
-  CheckRemovalPermitted("{\"passwords\": true}", true);
   CheckRemovalPermitted("{\"serviceWorkers\": true}", true);
 
   // The entire removal is prohibited if any part is.
@@ -366,8 +368,7 @@ TEST_F(BrowsingDataApiTest, RemoveBrowsingDataAll) {
           content::BrowsingDataRemover::DATA_TYPE_CACHE |
           content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS |
           chrome_browsing_data_remover::DATA_TYPE_FORM_DATA |
-          chrome_browsing_data_remover::DATA_TYPE_HISTORY |
-          chrome_browsing_data_remover::DATA_TYPE_PASSWORDS,
+          chrome_browsing_data_remover::DATA_TYPE_HISTORY,
       GetRemovalMask());
 }
 
@@ -416,8 +417,6 @@ TEST_F(BrowsingDataApiTest, BrowsingDataRemovalMask) {
       "indexedDB", content::BrowsingDataRemover::DATA_TYPE_INDEXED_DB);
   RunBrowsingDataRemoveWithKeyAndCompareRemovalMask(
       "localStorage", content::BrowsingDataRemover::DATA_TYPE_LOCAL_STORAGE);
-  RunBrowsingDataRemoveWithKeyAndCompareRemovalMask(
-      "passwords", chrome_browsing_data_remover::DATA_TYPE_PASSWORDS);
   RunBrowsingDataRemoveWithKeyAndCompareRemovalMask(
       "serviceWorkers",
       content::BrowsingDataRemover::DATA_TYPE_SERVICE_WORKERS);
@@ -494,8 +493,6 @@ TEST_F(BrowsingDataApiTest, ShortcutFunctionRemovalMask) {
       content::BrowsingDataRemover::DATA_TYPE_INDEXED_DB);
   RunAndCompareRemovalMask<BrowsingDataRemoveLocalStorageFunction>(
       content::BrowsingDataRemover::DATA_TYPE_LOCAL_STORAGE);
-  RunAndCompareRemovalMask<BrowsingDataRemovePasswordsFunction>(
-      chrome_browsing_data_remover::DATA_TYPE_PASSWORDS);
   RunAndCompareRemovalMask<BrowsingDataRemoveServiceWorkersFunction>(
       content::BrowsingDataRemover::DATA_TYPE_SERVICE_WORKERS);
 }
@@ -658,7 +655,7 @@ TEST_F(BrowsingDataApiTest, RemoveCookiesAndStorageWithFilter) {
 
 TEST_F(BrowsingDataApiTest, RemoveWithFilterAndInvalidParameters) {
   CheckInvalidRemovalArgs(
-      R"([{"origins": ["http://example.com"]}, {"passwords": true}])",
+      R"([{"origins": ["http://example.com"]}, {"formData": true}])",
       extension_browsing_data_api_constants::kNonFilterableError);
 
   CheckInvalidRemovalArgs(
@@ -677,4 +674,13 @@ TEST_F(BrowsingDataApiTest, RemoveWithFilterAndInvalidParameters) {
       base::StringPrintf(
           extension_browsing_data_api_constants::kInvalidOriginError, "foo"));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(BrowsingDataApiTest, RemoveDeprecatedPasswordsError) {
+  auto function = base::MakeRefCounted<BrowsingDataRemovePasswordsFunction>();
+  EXPECT_EQ(RunFunctionAndReturnError(
+                function.get(), std::string("[{\"since\": 1}]"), profile()),
+            extension_browsing_data_api_constants::kDeprecatedDataTypeError);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace extensions

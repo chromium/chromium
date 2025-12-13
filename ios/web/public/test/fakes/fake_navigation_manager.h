@@ -7,7 +7,6 @@
 
 #import <optional>
 
-#include "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -97,10 +96,10 @@ class FakeNavigationManager : public NavigationManager {
   std::vector<std::unique_ptr<NavigationItem>> items_;
   int items_index_ = -1;
   // Individual backing instance variables for Set* test set up methods.
-  raw_ptr<NavigationItem> pending_item_ = nullptr;
+  raw_ptr<NavigationItem, DanglingUntriaged> pending_item_ = nullptr;
   int pending_item_index_ = -1;
-  raw_ptr<NavigationItem> last_committed_item_ = nullptr;
-  raw_ptr<NavigationItem> visible_item_ = nullptr;
+  raw_ptr<NavigationItem, DanglingUntriaged> last_committed_item_ = nullptr;
+  raw_ptr<NavigationItem, DanglingUntriaged> visible_item_ = nullptr;
   raw_ptr<web::BrowserState> browser_state_ = nullptr;
   bool load_url_with_params_was_called_ = false;
   // Copy of the last WebLoadParams passed to LoadURLWithParams.

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "base/message_loop/message_pump_glib.h"
 
 #include <glib.h>
 #include <math.h>
 
 #include <algorithm>
+#include <memory>
 #include <string_view>
 #include <vector>
 
@@ -30,6 +30,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/trace_event_analyzer.h"
+#include "base/test/trace_test_utils.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -572,6 +573,8 @@ class NestedEventAnalyzer {
                                     trace_analyzer::Query::String("Nested"),
                                 &events);
   }
+
+  base::test::TracingEnvironment tracing_environment_;
 };
 
 }  // namespace
@@ -793,7 +796,7 @@ TEST_F(MessagePumpGLibFdWatchTest, DeleteWatcher) {
 // called for a READ_WRITE event, when the watcher calls
 // StopWatchingFileDescriptor in OnFileCanWriteWithoutBlocking callback.
 TEST_F(MessagePumpGLibFdWatchTest, StopWatcher) {
-  std::unique_ptr<MessagePumpGlib> pump(new MessagePumpGlib);
+  auto pump = std::make_unique<MessagePumpGlib>();
   MessagePumpGlib::FdWatchController controller(FROM_HERE);
   StopWatcher watcher(&controller);
   pump->WatchFileDescriptor(pipefds_[1], false,
@@ -807,7 +810,7 @@ TEST_F(MessagePumpGLibFdWatchTest, StopWatcher) {
 TEST_F(MessagePumpGLibFdWatchTest, NestedPumpWatcher) {
   test::SingleThreadTaskEnvironment task_environment(
       test::SingleThreadTaskEnvironment::MainThreadType::UI);
-  std::unique_ptr<MessagePumpGlib> pump(new MessagePumpGlib);
+  auto pump = std::make_unique<MessagePumpGlib>();
   NestedPumpWatcher watcher;
   MessagePumpGlib::FdWatchController controller(FROM_HERE);
   pump->WatchFileDescriptor(pipefds_[1], false, MessagePumpGlib::WATCH_READ,

@@ -9,7 +9,7 @@
 
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace gfx {
 class Size;

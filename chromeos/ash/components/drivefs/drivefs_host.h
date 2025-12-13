@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

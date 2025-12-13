@@ -14,6 +14,7 @@
 #include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service_factory.h"

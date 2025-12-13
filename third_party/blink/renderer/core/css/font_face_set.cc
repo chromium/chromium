@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/font_face_set.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_font_face_set_load_status.h"
 #include "third_party/blink/renderer/core/css/font_face_cache.h"
@@ -29,8 +30,8 @@ void FontFaceSet::HandlePendingEventsAndPromisesSoon() {
       pending_task_queued_ = true;
       context->GetTaskRunner(TaskType::kFontLoading)
           ->PostTask(FROM_HERE,
-                     WTF::BindOnce(&FontFaceSet::HandlePendingEventsAndPromises,
-                                   WrapPersistent(this)));
+                     BindOnce(&FontFaceSet::HandlePendingEventsAndPromises,
+                              WrapPersistent(this)));
     }
   }
 }
@@ -323,8 +324,7 @@ void FontFaceSet::LoadFontPromiseResolver::Trace(Visitor* visitor) const {
 }
 
 bool FontFaceSet::IterationSource::FetchNextItem(ScriptState*,
-                                                 FontFace*& value,
-                                                 ExceptionState&) {
+                                                 FontFace*& value) {
   if (font_faces_.size() <= index_) {
     return false;
   }
@@ -333,8 +333,7 @@ bool FontFaceSet::IterationSource::FetchNextItem(ScriptState*,
 }
 
 FontFaceSetIterable::IterationSource* FontFaceSet::CreateIterationSource(
-    ScriptState*,
-    ExceptionState&) {
+    ScriptState*) {
   // Setlike should iterate each item in insertion order, and items should
   // be keep on up to date. But since blink does not have a way to hook up CSS
   // modification, take a snapshot here, and make it ordered as follows.

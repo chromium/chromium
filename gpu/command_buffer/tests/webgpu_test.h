@@ -5,8 +5,8 @@
 #ifndef GPU_COMMAND_BUFFER_TESTS_WEBGPU_TEST_H_
 #define GPU_COMMAND_BUFFER_TESTS_WEBGPU_TEST_H_
 
-#include <dawn/webgpu_cpp.h>
-#include <dawn/webgpu_cpp_print.h>
+#include <dawn/wire/client/webgpu_cpp.h>
+#include <dawn/wire/client/webgpu_cpp_print.h>
 
 #include <memory>
 
@@ -14,10 +14,6 @@
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/common/webgpu_cmd_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "gpu/ipc/service/gpu_memory_buffer_factory_io_surface.h"
-#endif
 
 namespace viz {
 class TestGpuServiceHolder;
@@ -42,9 +38,6 @@ class WebGPUTest : public testing::Test {
   struct Options {
     Options();
 
-    // Shared memory limits
-    SharedMemoryLimits shared_memory_limits =
-        SharedMemoryLimits::ForWebGPUContext();
     bool force_fallback_adapter = false;
     wgpu::FeatureLevel feature_level = wgpu::FeatureLevel::Core;
     bool enable_unsafe_webgpu = false;

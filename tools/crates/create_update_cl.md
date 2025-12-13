@@ -54,7 +54,9 @@ happens.
 
 Before the auto-generated CLs can be landed, you will need to get an LGTM from
 `//third_party/rust/OWNERS`.  A review checklist can be found at
-`//third_party/rust/OWNERS-review-checklist.md`.
+`//third_party/rust/OWNERS-review-checklist.md`. If you add
+chrome-third-party-rust-reviews@google.com to the "Reviewers" line, an
+OWNER will be automatically assigned.
 
 ## New transitive dependencies
 
@@ -108,22 +110,59 @@ updates (e.g.  123.1 => 123.2, or 0.123.1 => 0.123.2).  Major version changes
 (e.g. 1.0 => 2.0, which may include breaking API changes and other breaking
 changes) need to be handled separately - this section describes what to do.
 
-### Detecting available major version updates
+### Detecting available major version updates (and doing the updates)
 
-As part of the rotation, one should attempt to check for new major versions of
-_direct_ Chromium dependencies (i.e. dependencies directly listed in
-`third_party/rust/chromium_crates_io/Cargo.toml`).  To discover direct _and_
-transitive dependencies with a new major version, you can use the command below
-(running it in the final update CL branch - after all the minor version
-updates):
+As part of the rotation, please do the following:
 
-```sh
-$ tools/crates/run_gnrt.py update -- --verbose --dry-run
-...
-   Unchanged serde_json_lenient v0.1.8 (latest: v0.2.0)
-   Unchanged syn v1.0.109 (latest: v2.0.53)
-...
-```
+1. Check for new major versions of
+   _direct_ Chromium dependencies (i.e. dependencies directly listed in
+  `third_party/rust/chromium_crates_io/Cargo.toml`).  To discover direct _and_
+  transitive dependencies with a new major version, you can use the command below
+  (running it in the final update CL branch - after all the minor version
+  updates):
+
+    ```sh
+    $ tools/crates/run_gnrt.py update -- --verbose --dry-run
+    ...
+       Unchanged serde_json_lenient v0.1.8 (latest: v0.2.0)
+       Unchanged syn v1.0.109 (latest: v2.0.53)
+    ...
+    ```
+
+2. For each detected available major version update, use the script to
+   put together a CL that updates the crate (see the "Major version update:
+   Workflow A: Single update CL" section below) and then kick of CQ dry run.
+   Example invocation:
+
+    ```
+    $ tools/crates/create_update_cl.py auto -- font-types read-fonts skrifa --breaking
+    Checking out the `origin/main` branch...
+    ...
+    Creating a major version update CL...
+      Running `gnrt update -- font-types read-fonts skrifa --breaking` ...
+      ...
+      Issue number: 6990318 (https://chromium-review.googlesource.com/6990318)
+    ```
+
+3. Depending on whether the CQ dry run succeeds
+   (or it's relatively easy to fix errors and make it succeed):
+
+    * If CQ succeeds then get a review from the crate owner (look
+      for `//third_party/rust/some_crate_name/OWNERS`) and land the CL.
+      Getting a review from the crate owner is important, because sometimes a
+      major version bump indicates a breaking behavior change (and CQ may pass
+      if there are no breaking API changes and Chromium test coverage doesn't
+      exercise the breaking behavior change).
+    * Otherwise, if fixing CQ dry run is not straightforward, then please
+      open a bug and assign it to the crate owner (asking them to drive the
+      update).  For searchability use a bug title like:
+      "Rust crate major version update: `some_crate_name`: 123.x => 124.x"
+
+Other notes to help with this part of the rotation:
+
+* Major version updates of sets of interdependent crates may need to be
+  atomically (i.e. in a single CL).  For example the 3 Fontations crates
+  (`font-types`, `read-fonts`, `skrifa`) need to be updated together.
 
 ### Major version update: Workflow A: Single update CL
 
@@ -252,8 +291,12 @@ Examples of a few specific situations that may lead to script failure:
       (this CL can't be landed on its own - it needs to be combined
       with the actual update CL):
         ```sh
-        $ # Fix the patches
+        $ # Get the updated crate code
+        $ ./tools/crates/run_gnrt.py update foo
+        $ ./tools/crates/run_gnrt.py vendor --no-patches foo
         $ git commit -a -m ...
+        $ # Manually apply patches, creating separate commits for patch file updates
+        $ git rebase -i # drop everything but the patch file commits
         $ git cl upload
         ```
     - Restart the script (the CL created by the script can't be landed

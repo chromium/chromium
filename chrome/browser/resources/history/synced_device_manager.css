@@ -5,8 +5,8 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
- * #import=./shared_style_lit.css.js
- * #include=shared-style-lit
+ * #import=./shared_style.css.js
+ * #include=shared-style
  * #css_wrapper_metadata_end */
 
 :host {
@@ -14,7 +14,7 @@
   overflow: auto;
 }
 
-#illustration {
+#sync-promo-illustration {
   background: url(images/sign_in_promo.svg) no-repeat center center;
   background-size: contain;
   height: 222px;
@@ -22,9 +22,28 @@
   width: 594.5px;
 }
 
+.sync-history-illustration {
+  content: url(images/sync_history_promo.svg);
+  width: 100%;
+}
+
+.sync-history-promo-avatar-illustration {
+  content: url(./images/avatar_surrounding_illustration_light.svg);
+  height: 132px;
+  width: 100%;
+}
+
 @media (prefers-color-scheme: dark) {
-  #illustration {
+  #sync-promo-illustration {
     background-image: url(images/sign_in_promo_dark.svg);
+  }
+
+  .sync-history-illustration  {
+    content: url(images/sync_history_promo_dark.svg);
+  }
+
+  .sync-history-promo-avatar-illustration  {
+    content: url(images/avatar_surrounding_illustration_dark.svg);
   }
 }
 
@@ -63,3 +82,84 @@
 history-synced-device-card {
   margin-block-end: var(--card-padding-between);
 }
+
+<if expr="not is_chromeos">
+.history-sync-optin {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.sync-history-promo {
+  margin-top: 12px;
+  margin-bottom: 0;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.sync-history-promo-desc {
+  margin-top: 8px;
+  max-width: 684px;
+  color: var(--cr-secondary-text-color);
+  text-align: center;
+  font-size: 16px;
+}
+
+.avatar {
+  /** The user avatar may be transparent, add a background */
+  background-color: var(--md-background-color);
+  border: solid var(--md-background-color);
+  border-radius: 50%;
+  height: 64px;
+  /* To place the avatar at the center of the background image,
+     place it at top left point of its parent,
+     then shift it back by half its width and height. */
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+}
+
+.image-container {
+  align-items: center;
+  display: flex;
+  /* The height must be set so that the height of this relatively positioned
+  container is taken into account in the height calculator of the entire screen. */
+  height: 162px;
+  /* Establishes a positioning context for absolute children. */
+  position: relative;
+  margin-top: 36px;
+}
+
+.profile-row {
+  text-align: left;
+  align-items: center;
+  display: flex;
+  margin-top: 16px;
+}
+
+.account-info-container {
+  padding-inline-start: 16px;
+}
+
+.profile-icon {
+  border-radius: 20px;
+  height: 40px;
+  width: 40px;
+}
+
+.account-name {
+  font-size: 13px;
+}
+
+.account-email {
+  color: var(--cr-primary-text-color);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.action-button {
+  margin: 16px 0;
+}
+</if>

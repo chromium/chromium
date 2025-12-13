@@ -507,7 +507,7 @@ TEST_F(BoxReaderTest, AVCDecoderConfigurationRecordTakenFromMp4) {
   };
 
   AVCDecoderConfigurationRecord record;
-  EXPECT_TRUE(record.Parse(test_data.data(), test_data.size()));
+  EXPECT_TRUE(record.Parse(test_data));
 
   EXPECT_EQ(record.version, 1);
   EXPECT_EQ(record.profile_indication, 0x64);
@@ -554,7 +554,7 @@ TEST_F(BoxReaderTest, AVCDecoderConfigurationRecordInvalidREXT) {
   };
 
   AVCDecoderConfigurationRecord record;
-  EXPECT_TRUE(record.Parse(test_data.data(), test_data.size()));
+  EXPECT_TRUE(record.Parse(test_data));
 
   // Default values should be used.
   EXPECT_EQ(record.chroma_format, 0);
@@ -572,10 +572,31 @@ TEST_F(BoxReaderTest, AVCDecoderConfigurationRecordTakenFromStream) {
       0x00, 0x02, 0x49, 0xF3, 0xF8, 0xC7, 0x0E, 0xD0, 0xB1, 0x68, 0x90,
       0x01, 0x00, 0x04, 0x68, 0xEB, 0x73, 0x52};
   AVCDecoderConfigurationRecord record;
-  EXPECT_TRUE(record.Parse(test_data.data(), test_data.size()));
+  EXPECT_TRUE(record.Parse(test_data));
   std::vector<uint8_t> output;
   EXPECT_TRUE(record.Serialize(output));
   ASSERT_THAT(output, testing::ElementsAreArray(test_data));
+}
+
+TEST_F(BoxReaderTest, MovieFragmentWithZeroTracks) {
+  static const uint8_t kData[] = {
+      0x00, 0x00, 0x00, 0x18, 'm', 'o', 'o', 'f',  // moof box
+      0x00, 0x00, 0x00, 0x10, 'm', 'f', 'h', 'd',  // mfhd box
+      0x00, 0x00, 0x00, 0x00,                      // version = 0, flags = 0
+      0x00, 0x00, 0x00, 0x01                       // sequence_number = 1
+  };
+
+  std::unique_ptr<BoxReader> reader;
+  ParseResult result = BoxReader::ReadTopLevelBox(kData, &media_log_, &reader);
+
+  EXPECT_EQ(result, ParseResult::kOk);
+  EXPECT_TRUE(reader);
+  EXPECT_EQ(FOURCC_MOOF, reader->type());
+
+  MovieFragment moof;
+  EXPECT_TRUE(moof.Parse(reader.get()));
+  EXPECT_EQ(moof.header.sequence_number, 1u);
+  EXPECT_TRUE(moof.tracks.empty());
 }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 

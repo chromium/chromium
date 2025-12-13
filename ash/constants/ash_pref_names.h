@@ -1002,12 +1002,6 @@ inline constexpr char kDesksNamesList[] = "ash.desks.desks_names_list";
 // for the primary user on first sign-in. The guids are stored as lowercase
 // strings.
 inline constexpr char kDesksGuidsList[] = "ash.desks.desks_guids_list";
-// A list containing the lacros profile ID associations for desks in the same
-// order of the desks in the overview desks bar. This is used so that desk <->
-// profile associations can be restored. The profile IDs are logically unsigned
-// integers, but stored as strings since they can (and will) be 64-bits large.
-inline constexpr char kDesksLacrosProfileIdList[] =
-    "ash.desks.desks_lacros_profile_id_list";
 // This list stores the metrics of virtual desks. Like |kDesksNamesList|, this
 // list stores entries in the same order of the desks in the overview desks bar.
 // Values are stored as dictionaries.
@@ -1581,6 +1575,10 @@ inline constexpr char kWallpaperTimeOfDayStatus[] =
 inline constexpr char kWallpaperTimeOfDayScheduleType[] =
     "ash.wallpaper_time_of_day.schedule_type";
 
+// A string pref storing the path of device wallpaper image file.
+inline constexpr char kDeviceWallpaperImageFilePath[] =
+    "policy.device_wallpaper_image_file_path";
+
 // Boolean pref indicating whether a user has enabled the bluetooth adapter.
 inline constexpr char kUserBluetoothAdapterEnabled[] =
     "ash.user.bluetooth.adapter_enabled";
@@ -1730,6 +1728,20 @@ inline constexpr char kQuickUnlockPinFailedAttempts[] =
 // 2 - two days. Users will have to enter their password every two days.
 // 3 - week. Users will have to enter their password every week.
 inline constexpr char kQuickUnlockTimeout[] = "quick_unlock_timeout";
+
+// Enum that specifies the minimum complexity requirements for local
+// authentication factors (PINs and local passwords) set by users. The values
+// are:
+// 1 - None: No complexity requirements apart from the PIN/Password being set.
+// 2 - Low: Basic complexity requirements.
+// 3 - Medium: Stricter length and character-type requirements.
+// 4 - High: Strongest complexity requirements, multiple character types.
+inline constexpr char kLocalAuthFactorsComplexity[] =
+    "ash.local_auth_factors.complexity";
+
+// A list of allowed local auth factors.
+inline constexpr char kLocalAuthFactors[] =
+    "ash.local_auth_factors.enabled_factors";
 
 // Dictionary prefs in local state that keeps information about detachable
 // bases - for example the last used base per user.
@@ -1999,10 +2011,6 @@ inline constexpr char kFilesAppTrashEnabled[] = "ash.filesapp.trash_enabled";
 inline constexpr char kLoginScreenWebUILazyLoading[] =
     "ash.login.LoginScreenWebUILazyLoading";
 
-// Boolean value for the FloatingWorkspaceV2Enabled policy
-inline constexpr char kFloatingWorkspaceV2Enabled[] =
-    "ash.floating_workspace_v2_enabled";
-
 // Boolean value indicating that post reboot notification should be shown to the
 // user.
 inline constexpr char kShowPostRebootNotification[] =
@@ -2060,6 +2068,10 @@ inline constexpr char kAutozoomNudges[] = "ash.camera.autozoom_nudges";
 // by default.
 inline constexpr char kCameraAppDevToolsOpen[] =
     "ash.camera.cca_dev_tools_open";
+
+// A string pref that is set by enterprise policy when admin forces a custom
+// path to save camera photos.
+inline constexpr char kCameraSaveLocation[] = "ash.camera.save_location";
 
 // A boolean pref that specifies the recovery service activation for user.
 // When the pref is set to `true`, the user data recovery is activated. When the
@@ -2660,6 +2672,10 @@ inline constexpr char kClassManagementToolsViewScreenEligibilitySetting[] =
 // tools OOBE page.
 inline constexpr char kClassManagementToolsOOBEAccessCountSetting[] =
     "ash.class_management_tools.oobe_access_count_setting";
+
+// A list pref containing Class Tools kiosk receiver codes.
+inline constexpr char kClassManagementToolsKioskReceiverCodes[] =
+    "ash.class_management_tools.kiosk_receiver_codes";
 
 // A boolean pref indicating whether age requirement met for GenAI access for
 // Coral.

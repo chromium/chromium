@@ -36,12 +36,14 @@
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
 #include "chrome/browser/ui/startup/google_api_keys_infobar_delegate.h"
 #include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
+#include "chrome/browser/ui/tab_sharing/mock_tab_sharing_ui.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_infobar.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/crx_verifier.h"
@@ -58,7 +60,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-#include "chrome/browser/plugins/plugin_observer.h"
 #include "chrome/browser/plugins/reload_plugin_infobar_delegate.h"
 #endif
 
@@ -81,7 +82,7 @@ class InfoBarsTest : public InProcessBrowserTest {
   InfoBarsTest() = default;
 
   void InstallExtension(const char* filename) {
-    base::FilePath path = ui_test_utils::GetTestFilePath(
+    base::FilePath path = chrome_test_utils::GetTestFilePath(
         base::FilePath().AppendASCII("extensions"),
         base::FilePath().AppendASCII(filename));
     extensions::TestExtensionRegistryObserver observer(
@@ -164,6 +165,8 @@ class InfoBarUiTest : public TestInfoBar {
 
  private:
   using IBD = infobars::InfoBarDelegate;
+
+  MockTabSharingUI mock_tab_sharing_ui_views_;
 };
 
 void InfoBarUiTest::ShowUi(const std::string& name) {
@@ -197,7 +200,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
 
 #if BUILDFLAG(ENABLE_PLUGINS)
           {"reload_plugin", IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE},
-          {"plugin_observer", IBD::PLUGIN_OBSERVER_INFOBAR_DELEGATE},
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
       });
   const auto id_entry = kIdentifiers.find(name);
@@ -245,11 +247,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           GetInfoBarManager(), nullptr,
           l10n_util::GetStringFUTF16(IDS_PLUGIN_CRASHED_PROMPT,
                                      u"Test Plugin"));
-      break;
-
-    case IBD::PLUGIN_OBSERVER_INFOBAR_DELEGATE:
-      PluginObserver::CreatePluginObserverInfoBar(GetInfoBarManager(),
-                                                  u"Test Plugin");
       break;
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
@@ -343,7 +340,8 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           TabSharingInfoBarDelegate::ButtonState::ENABLED,
           /*focus_target=*/content::GlobalRenderFrameHostId(),
           /*captured_surface_control_active=*/false,
-          /*ui=*/nullptr, TabSharingInfoBarDelegate::TabShareType::CAPTURE);
+          /*ui=*/&mock_tab_sharing_ui_views_,
+          TabSharingInfoBarDelegate::TabShareType::CAPTURE);
       break;
 
     default:
@@ -387,10 +385,6 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_theme_installed) {
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_reload_plugin) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_plugin_observer) {
   ShowAndVerifyUi();
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
@@ -462,6 +456,12 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, MAYBE_InvokeUi_tab_sharing) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_multiple_infobars) {
+// Consistently failing on Windows https://crbug.com/1462107.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_multiple_infobars DISABLED_InvokeUi_multiple_infobars
+#else
+#define MAYBE_InvokeUi_multiple_infobars InvokeUi_multiple_infobars
+#endif
+IN_PROC_BROWSER_TEST_F(InfoBarUiTest, MAYBE_InvokeUi_multiple_infobars) {
   ShowAndVerifyUi();
 }

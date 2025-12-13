@@ -14,7 +14,7 @@ specific_include_rules = {
     "+third_party/boringssl/src/include",
   ],
   "credential_manager_type_converters_unittest.cc": [
-    "+device/fido/fido_constants.h",
+    "+device/fido/public",
   ],
   ".*test\.cc": [
     "+components/ukm/test_ukm_recorder.h",

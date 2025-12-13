@@ -37,6 +37,8 @@ import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButton;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -63,6 +65,8 @@ public class HomeButtonTest {
     @Rule public HomepageTestRule mHomepageTestRule = new HomepageTestRule();
 
     @Mock private SettingsNavigation mSettingsNavigation;
+    @Mock private ThemeColorProvider mThemeColorProvider;
+    @Mock private IncognitoStateProvider mIncognitoStateProvider;
 
     private HomeButtonCoordinator mHomeButtonCoordinator;
     private int mIdHomeButton;
@@ -100,7 +104,9 @@ public class HomeButtonTest {
                                     homeButton,
                                     (view) -> {},
                                     HomepageManager.getInstance()::onMenuClick,
-                                    () -> false);
+                                    () -> false,
+                                    mThemeColorProvider,
+                                    mIncognitoStateProvider);
                     SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
 
                     content.addView(homeButton);

@@ -140,16 +140,16 @@ GURL DocsURLStripHandler::StripExtraParams(GURL url) {
   // The below logic handles google.com redirects; e.g., google.com/url/q=<url>
   std::string url_str;
   std::string url_str_host;
-  if (url.host() == "www.google.com" && url.path() == "/url") {
+  if (url.GetHost() == "www.google.com" && url.GetPath() == "/url") {
     if ((!net::GetValueForKeyInQuery(url, "q", &url_str) || url_str.empty()) &&
         (!net::GetValueForKeyInQuery(url, "url", &url_str) ||
          url_str.empty())) {
       return GURL();
     }
-    url_str_host = GURL(url_str).host();
+    url_str_host = GURL(url_str).GetHost();
   } else {
     url_str = url.spec();
-    url_str_host = url.host();
+    url_str_host = url.GetHost();
   }
 
   // Recheck the domain, since a google URL could redirect to a non-google URL

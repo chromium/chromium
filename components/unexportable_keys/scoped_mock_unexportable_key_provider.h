@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_UNEXPORTABLE_KEYS_SCOPED_MOCK_UNEXPORTABLE_KEY_PROVIDER_H_
 #define COMPONENTS_UNEXPORTABLE_KEYS_SCOPED_MOCK_UNEXPORTABLE_KEY_PROVIDER_H_
 
+#include <memory>
+
 #include "base/containers/queue.h"
+#include "components/unexportable_keys/mock_unexportable_key_provider.h"
 #include "crypto/unexportable_key.h"
 
 namespace unexportable_keys {
@@ -23,11 +26,12 @@ class ScopedMockUnexportableKeyProvider {
       const ScopedMockUnexportableKeyProvider&) = delete;
   ~ScopedMockUnexportableKeyProvider();
 
+  MockUnexportableKeyProvider& mock() { return mock_provider_; }
+
   void AddNextGeneratedKey(std::unique_ptr<crypto::UnexportableSigningKey> key);
 
-  std::unique_ptr<crypto::UnexportableSigningKey> GetNextGeneratedKey();
-
  private:
+  MockUnexportableKeyProvider mock_provider_;
   base::queue<std::unique_ptr<crypto::UnexportableSigningKey>>
       next_generated_keys_;
 };

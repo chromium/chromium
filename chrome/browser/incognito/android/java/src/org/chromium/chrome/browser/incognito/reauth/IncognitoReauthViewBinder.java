@@ -31,9 +31,10 @@ class IncognitoReauthViewBinder {
             incognitoReauthView
                     .findViewById(R.id.incognito_reauth_see_other_tabs_label)
                     .setOnClickListener(view -> seeOtherTabs.run());
-        } else if (IncognitoReauthProperties.IS_FULL_SCREEN == propertyKey) {
-            boolean isFullScreen = model.get(IncognitoReauthProperties.IS_FULL_SCREEN);
-            updateViewVisibility(incognitoReauthView, isFullScreen);
+        } else if (IncognitoReauthProperties.IS_SEE_OTHER_TABS_VISIBLE == propertyKey) {
+            boolean isSeeOtherTabsVisible =
+                    model.get(IncognitoReauthProperties.IS_SEE_OTHER_TABS_VISIBLE);
+            updateViewVisibility(incognitoReauthView, isSeeOtherTabsVisible);
         } else if (IncognitoReauthProperties.MENU_BUTTON_DELEGATE == propertyKey) {
             updateMenuButton(
                     incognitoReauthView, model.get(IncognitoReauthProperties.MENU_BUTTON_DELEGATE));
@@ -42,10 +43,11 @@ class IncognitoReauthViewBinder {
         }
     }
 
-    private static void updateViewVisibility(View incognitoReauthView, boolean isFullscreen) {
+    private static void updateViewVisibility(
+            View incognitoReauthView, boolean isSeeOtherTabsVisible) {
         incognitoReauthView
                 .findViewById(R.id.incognito_reauth_see_other_tabs_label)
-                .setVisibility(isFullscreen ? View.VISIBLE : View.GONE);
+                .setVisibility(isSeeOtherTabsVisible ? View.VISIBLE : View.GONE);
         // For non-full screen we have a slight modification on top of the default
         // to remove the incognito icon only for small screen size.
         // TODO(crbug.com/40056462): Add logic to remove Incognito icon for

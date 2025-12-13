@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_consumer.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_service_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_view_controller_model_delegate.h"
 
@@ -24,8 +23,7 @@ class IdentityManager;
 
 // Mediator for the Google services settings.
 @interface GoogleServicesSettingsMediator
-    : NSObject <GoogleServicesSettingsServiceDelegate,
-                GoogleServicesSettingsViewControllerModelDelegate>
+    : NSObject <GoogleServicesSettingsViewControllerModelDelegate>
 
 // View controller.
 @property(nonatomic, weak) id<GoogleServicesSettingsConsumer> consumer;

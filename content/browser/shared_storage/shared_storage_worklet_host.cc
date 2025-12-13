@@ -12,7 +12,9 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,6 +32,7 @@
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/shared_storage/shared_storage_code_cache_host_proxy.h"
@@ -43,7 +46,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -51,6 +53,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/shared_storage.mojom.h"
 #include "storage/browser/blob/blob_url_loader_factory.h"
+#include "storage/browser/blob/blob_url_registry.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
@@ -1699,17 +1702,22 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
     RenderFrameHostImpl& rfh = static_cast<RenderFrameHostImpl&>(
         document_service_->render_frame_host());
 
-    mojo::PendingRemote<blink::mojom::CodeCacheHost> actual_code_cache_host;
-    code_cache_host_receivers_->Add(
-        rfh.GetProcess()->GetDeprecatedID(), rfh.GetNetworkIsolationKey(),
-        rfh.GetStorageKey(),
-        actual_code_cache_host.InitWithNewPipeAndPassReceiver());
-
+    // Only supply a CodeCacheHost when PersistentCache is not enabled, as
+    // Shared Storage is deprecated and its removal is planned.
     mojo::PendingRemote<blink::mojom::CodeCacheHost> proxied_code_cache_host;
-    code_cache_host_proxy_ = std::make_unique<SharedStorageCodeCacheHostProxy>(
-        std::move(actual_code_cache_host),
-        proxied_code_cache_host.InitWithNewPipeAndPassReceiver(),
-        script_source_url_);
+    if (!blink::features::IsPersistentCacheForCodeCacheEnabled()) {
+      mojo::PendingRemote<blink::mojom::CodeCacheHost> actual_code_cache_host;
+      code_cache_host_receivers_->Add(
+          rfh.GetProcess()->GetDeprecatedID(), rfh.GetNetworkIsolationKey(),
+          rfh.GetStorageKey(),
+          actual_code_cache_host.InitWithNewPipeAndPassReceiver());
+
+      code_cache_host_proxy_ =
+          std::make_unique<SharedStorageCodeCacheHostProxy>(
+              std::move(actual_code_cache_host),
+              proxied_code_cache_host.InitWithNewPipeAndPassReceiver(),
+              script_source_url_);
+    }
 
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker;
@@ -1741,7 +1749,9 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
 
     shared_storage_worklet_service_->Initialize(
         shared_storage_worklet_service_client_.BindNewEndpointAndPassRemote(),
-        std::move(permissions_policy_state), embedder_context);
+        std::move(permissions_policy_state), embedder_context,
+        base::BindOnce(&SharedStorageWorkletHost::OnWorkletInitialized,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   return shared_storage_worklet_service_.get();
@@ -1820,7 +1830,7 @@ bool SharedStorageWorkletHost::IsSharedStorageSelectURLAllowed(
 }
 
 void SharedStorageWorkletHost::OnOptInRequestComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   const auto* response_info = data_origin_opt_in_url_loader_->ResponseInfo();
   if (!response_body || !response_info ||
       !blink::IsJSONMimeType(response_info->mime_type)) {
@@ -1837,15 +1847,15 @@ void SharedStorageWorkletHost::OnOptInRequestComplete(
   // `data_origin_opt_in_url_loader_` is no longer needed after this point.
   data_origin_opt_in_url_loader_.reset();
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *response_body, base::BindOnce(&SharedStorageWorkletHost::OnJsonParsed,
-                                     weak_ptr_factory_.GetWeakPtr()));
+  std::optional<base::Value::List> parsed =
+      base::JSONReader::ReadList(*response_body, base::JSON_PARSE_RFC);
+  OnJsonParsed(std::move(parsed));
 }
 
 void SharedStorageWorkletHost::OnJsonParsed(
-    data_decoder::DataDecoder::ValueOrError result) {
+    std::optional<base::Value::List> result) {
   std::string shared_storage_origin_str = shared_storage_origin_.Serialize();
-  if (!result.has_value() || !result->is_list()) {
+  if (!result.has_value()) {
     SetDataOriginOptInResultAndMaybeFinish(
         /*opted_in=*/false, /*data_origin_opt_in_error_message=*/base::StrCat(
             {"Unable to parse the /.well-known/shared-storage/trusted-origins "
@@ -1856,7 +1866,7 @@ void SharedStorageWorkletHost::OnJsonParsed(
     return;
   }
 
-  if (result->GetList().empty()) {
+  if (result->empty()) {
     SetDataOriginOptInResultAndMaybeFinish(
         /*opted_in=*/false, /*data_origin_opt_in_error_message=*/base::StrCat(
             {"The /.well-known/shared-storage/trusted-origins file for ",
@@ -1867,7 +1877,7 @@ void SharedStorageWorkletHost::OnJsonParsed(
   bool script_origin_match = false;
   bool context_origin_match = false;
   url::Origin worklet_script_origin = url::Origin::Create(script_source_url_);
-  for (const base::Value& item_value : result->GetList()) {
+  for (const base::Value& item_value : result.value()) {
     if (!item_value.is_dict()) {
       SetDataOriginOptInResultAndMaybeFinish(
           /*opted_in=*/false, /*data_origin_opt_in_error_message=*/base::StrCat(
@@ -1983,6 +1993,27 @@ void SharedStorageWorkletHost::OnCreateWorkletScriptLoadingFinished(
 
   script_loading_state_ = std::make_pair(success, error_message);
   MaybeFinishCreateWorklet();
+}
+
+const base::UnguessableToken& SharedStorageWorkletHost::GetWorkletToken()
+    const {
+  return worklet_token_;
+}
+
+const net::NetworkIsolationKey&
+SharedStorageWorkletHost::MaybeGetNetworkIsolationKey() const {
+  if (document_service_) {
+    return static_cast<RenderFrameHostImpl&>(
+               document_service_->render_frame_host())
+        .GetNetworkIsolationKey();
+  }
+  static const base::NoDestructor<net::NetworkIsolationKey> kEmptyNIK;
+  return *kEmptyNIK;
+}
+
+void SharedStorageWorkletHost::OnWorkletInitialized(
+    const blink::SharedStorageWorkletToken& token) {
+  worklet_token_ = static_cast<const base::UnguessableToken&>(token);
 }
 
 void SharedStorageWorkletHost::SetDataOriginOptInResultAndMaybeFinish(

@@ -101,4 +101,5 @@ struct ImeTextSpan {
   bool remove_on_finish_composing;
   bool interim_char_selection;
   array<string> suggestions;
+  bool should_hide_suggestion_menu;
 };

@@ -27,26 +27,27 @@
 
 using ::testing::_;
 using ::testing::ElementsAre;
-using ::testing::Invoke;
 
 using PeerConnectionInfoPtr = ::blink::mojom::blink::PeerConnectionInfoPtr;
 
 namespace blink {
 
 const char* kDefaultTransceiverString =
-    "getTransceivers()[0]:{\n"
-    "  mid:null,\n"
-    "  kind:'audio',\n"
-    "  sender:{\n"
-    "    track:'senderTrackId',\n"
-    "    streams:['senderStreamId'],\n"
-    "  },\n"
-    "  receiver:{\n"
-    "    track:'receiverTrackId',\n"
-    "    streams:['receiverStreamId'],\n"
-    "  },\n"
-    "  direction:'sendonly',\n"
-    "  currentDirection:null,\n"
+    "{\"mid\":null,"
+    "\"kind\":\"audio\","
+    "\"sender\":{"
+    "\"track\":\"senderTrackId\","
+    "\"streams\":[\"senderStreamId\"],"
+    "\"encodings\":[]"
+    "},"
+    "\"receiver\":{"
+    "\"track\":\"receiverTrackId\","
+    "\"streams\":[\"receiverStreamId\"]"
+    "},"
+    "\"direction\":\"sendonly\","
+    "\"currentDirection\":null,"
+    "\"reason\":\"setLocalDescription\","
+    "\"transceiverIndex\":0"
     "}";
 
 class MockPeerConnectionTrackerHost
@@ -158,10 +159,10 @@ class PeerConnectionTrackerTest : public ::testing::Test {
     PeerConnectionInfoPtr res;
     base::RunLoop run_loop;
     EXPECT_CALL(*mock_host_, AddPeerConnection)
-        .WillOnce(Invoke([&res, &run_loop](PeerConnectionInfoPtr info) {
+        .WillOnce([&res, &run_loop](PeerConnectionInfoPtr info) {
           res = std::move(info);
           run_loop.Quit();
-        }));
+        });
     tracker_->RegisterPeerConnection(mock_handler_.get(), DefaultConfig(),
                                      nullptr);
     run_loop.Run();
@@ -181,13 +182,13 @@ TEST_F(PeerConnectionTrackerTest, TrackCreateOffer) {
   // Note: blink::RTCOfferOptionsPlatform is not mockable. So we can't write
   // tests for anything but a null options parameter.
   RTCOfferOptionsPlatform* options =
-      MakeGarbageCollected<RTCOfferOptionsPlatform>(0, 0, false, false);
+      MakeGarbageCollected<RTCOfferOptionsPlatform>(1, 1, true, true);
   EXPECT_CALL(
       *mock_host_,
       UpdatePeerConnection(
           _, String("createOffer"),
-          String("options: {offerToReceiveVideo: 0, offerToReceiveAudio: 0, "
-                 "voiceActivityDetection: false, iceRestart: false}")));
+          String("{\"offerToReceiveAudio\":true,\"offerToReceiveVideo\":true,"
+                 "\"voiceActivityDetection\":true,\"iceRestart\":true}")));
   tracker_->TrackCreateOffer(mock_handler_.get(), options);
   base::RunLoop().RunUntilIdle();
 }
@@ -390,21 +391,21 @@ TEST_F(PeerConnectionTrackerTest, AddTransceiverWithOptionalValuesPresent) {
       0u);
   base::RunLoop().RunUntilIdle();
   String expected_value(
-      "Caused by: addTrack\n"
-      "\n"
-      "getTransceivers()[0]:{\n"
-      "  mid:'midValue',\n"
-      "  kind:'audio',\n"
-      "  sender:{\n"
-      "    track:'senderTrackId',\n"
-      "    streams:['streamIdA','streamIdB'],\n"
-      "  },\n"
-      "  receiver:{\n"
-      "    track:'receiverTrackId',\n"
-      "    streams:['streamIdC'],\n"
-      "  },\n"
-      "  direction:'sendrecv',\n"
-      "  currentDirection:'inactive',\n"
+      "{\"mid\":\"midValue\","
+      "\"kind\":\"audio\","
+      "\"sender\":{"
+      "\"track\":\"senderTrackId\","
+      "\"streams\":[\"streamIdA\",\"streamIdB\"],"
+      "\"encodings\":[]"
+      "},"
+      "\"receiver\":{"
+      "\"track\":\"receiverTrackId\","
+      "\"streams\":[\"streamIdC\"]"
+      "},"
+      "\"direction\":\"sendrecv\","
+      "\"currentDirection\":\"inactive\","
+      "\"reason\":\"addTrack\","
+      "\"transceiverIndex\":0"
       "}");
   EXPECT_EQ(expected_value, update_value);
 }
@@ -432,21 +433,21 @@ TEST_F(PeerConnectionTrackerTest, AddTransceiverWithOptionalValuesNull) {
       transceiver, 1u);
   base::RunLoop().RunUntilIdle();
   String expected_value(
-      "Caused by: addTransceiver\n"
-      "\n"
-      "getTransceivers()[1]:{\n"
-      "  mid:null,\n"
-      "  kind:'audio',\n"
-      "  sender:{\n"
-      "    track:null,\n"
-      "    streams:[],\n"
-      "  },\n"
-      "  receiver:{\n"
-      "    track:'receiverTrackId',\n"
-      "    streams:[],\n"
-      "  },\n"
-      "  direction:'inactive',\n"
-      "  currentDirection:null,\n"
+      "{\"mid\":null,"
+      "\"kind\":\"audio\","
+      "\"sender\":{"
+      "\"track\":null,"
+      "\"streams\":[],"
+      "\"encodings\":[]"
+      "},"
+      "\"receiver\":{"
+      "\"track\":\"receiverTrackId\","
+      "\"streams\":[]"
+      "},"
+      "\"direction\":\"inactive\","
+      "\"currentDirection\":null,"
+      "\"reason\":\"addTransceiver\","
+      "\"transceiverIndex\":1"
       "}");
   EXPECT_EQ(expected_value, update_value);
 }
@@ -464,29 +465,94 @@ TEST_F(PeerConnectionTrackerTest, ModifyTransceiver) {
       PeerConnectionTracker::TransceiverUpdatedReason::kSetLocalDescription,
       *transceiver, 0u);
   base::RunLoop().RunUntilIdle();
-  String expected_value("Caused by: setLocalDescription\n\n" +
-                        String(kDefaultTransceiverString));
+  String expected_value(kDefaultTransceiverString);
   EXPECT_EQ(expected_value, update_value);
 }
 
-TEST_F(PeerConnectionTrackerTest, IceCandidateError) {
+TEST_F(PeerConnectionTrackerTest, OnSignalingStateChange) {
   CreateTrackerWithMocks();
   CreateAndRegisterPeerConnectionHandler();
   auto transceiver = CreateDefaultTransceiver();
   String update_value;
   EXPECT_CALL(*mock_host_,
-              UpdatePeerConnection(_, String("icecandidateerror"), _))
+              UpdatePeerConnection(_, String("onsignalingstatechange"), _))
+      .WillOnce(testing::SaveArg<2>(&update_value));
+  tracker_->TrackSignalingStateChange(
+      mock_handler_.get(),
+      webrtc::PeerConnectionInterface::SignalingState::kStable);
+  base::RunLoop().RunUntilIdle();
+  String expected_value("\"stable\"");
+  EXPECT_EQ(expected_value, update_value);
+}
+
+TEST_F(PeerConnectionTrackerTest, OnIceGatheringStateChange) {
+  CreateTrackerWithMocks();
+  CreateAndRegisterPeerConnectionHandler();
+  auto transceiver = CreateDefaultTransceiver();
+  String update_value;
+  EXPECT_CALL(*mock_host_,
+              UpdatePeerConnection(_, String("onicegatheringstatechange"), _))
+      .WillOnce(testing::SaveArg<2>(&update_value));
+  tracker_->TrackIceGatheringStateChange(
+      mock_handler_.get(), webrtc::PeerConnectionInterface::IceGatheringState::
+                               kIceGatheringComplete);
+  base::RunLoop().RunUntilIdle();
+  String expected_value("\"complete\"");
+  EXPECT_EQ(expected_value, update_value);
+}
+
+TEST_F(PeerConnectionTrackerTest, OnIceConnectionStateChange) {
+  CreateTrackerWithMocks();
+  CreateAndRegisterPeerConnectionHandler();
+  auto transceiver = CreateDefaultTransceiver();
+  String update_value;
+  EXPECT_CALL(*mock_host_,
+              UpdatePeerConnection(_, String("oniceconnectionstatechange"), _))
+      .WillOnce(testing::SaveArg<2>(&update_value));
+  tracker_->TrackIceConnectionStateChange(
+      mock_handler_.get(), webrtc::PeerConnectionInterface::IceConnectionState::
+                               kIceConnectionDisconnected);
+  base::RunLoop().RunUntilIdle();
+  String expected_value("\"disconnected\"");
+  EXPECT_EQ(expected_value, update_value);
+}
+
+TEST_F(PeerConnectionTrackerTest, OnConnectionStateChange) {
+  CreateTrackerWithMocks();
+  CreateAndRegisterPeerConnectionHandler();
+  auto transceiver = CreateDefaultTransceiver();
+  String update_value;
+  EXPECT_CALL(*mock_host_,
+              UpdatePeerConnection(_, String("onconnectionstatechange"), _))
+      .WillOnce(testing::SaveArg<2>(&update_value));
+  tracker_->TrackConnectionStateChange(
+      mock_handler_.get(),
+      webrtc::PeerConnectionInterface::PeerConnectionState::kDisconnected);
+  base::RunLoop().RunUntilIdle();
+  String expected_value("\"disconnected\"");
+  EXPECT_EQ(expected_value, update_value);
+}
+
+TEST_F(PeerConnectionTrackerTest, OnIceCandidateError) {
+  CreateTrackerWithMocks();
+  CreateAndRegisterPeerConnectionHandler();
+  auto transceiver = CreateDefaultTransceiver();
+  String update_value;
+  EXPECT_CALL(*mock_host_,
+              UpdatePeerConnection(_, String("onicecandidateerror"), _))
       .WillOnce(testing::SaveArg<2>(&update_value));
   tracker_->TrackIceCandidateError(mock_handler_.get(), "1.1.1.1", 15, "[::1]",
                                    "test url", 404, "test error");
   base::RunLoop().RunUntilIdle();
   String expected_value(
-      "url: test url\n"
-      "address: 1.1.1.1\n"
-      "port: 15\n"
-      "host_candidate: [::1]\n"
-      "error_text: test error\n"
-      "error_code: 404");
+      "{"
+      "\"url\":\"test url\","
+      "\"address\":\"1.1.1.1\","
+      "\"port\":15,"
+      "\"host_candidate\":\"[::1]\","
+      "\"error_text\":\"test error\","
+      "\"error_code\":404"
+      "}");
   EXPECT_EQ(expected_value, update_value);
 }
 

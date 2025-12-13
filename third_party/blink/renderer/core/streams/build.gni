@@ -72,4 +72,5 @@ blink_core_tests_streams = [
   "transferable_streams_test.cc",
   "transform_stream_test.cc",
   "writable_stream_test.cc",
+  "streams_exception_handling_test.cc",
 ]

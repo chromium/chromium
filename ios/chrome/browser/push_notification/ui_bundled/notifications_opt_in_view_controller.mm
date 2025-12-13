@@ -4,12 +4,15 @@
 
 #import "ios/chrome/browser/push_notification/ui_bundled/notifications_opt_in_view_controller.h"
 
+#import "ios/chrome/browser/push_notification/ui_bundled/push_notifications_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/shared/ui/image/image_names.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/switch_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -23,15 +26,13 @@ enum SectionIdentifier {
 struct CellConfig {
   int title_id;
   int subtitle_id;
+  NSString* accessibility_id;
   BOOL on;
-  BOOL show_separator;
 };
 // Radius size of the table view.
 CGFloat const kTableViewCornerRadius = 10;
 // Table view separator inset.
 CGFloat const kTableViewSeparatorInset = 16.0;
-// Table view separator inset to use to hide the separator.
-CGFloat const kTableViewSeparatorInsetHide = 10000;
 // Space above the title.
 CGFloat const kSpaceAboveTitle = 20.0;
 // Accessibility identifier.
@@ -43,7 +44,7 @@ CGFloat const kTitleHorizontalMargin = 25.0;
 
 // Returns the name of the banner image above the title.
 NSString* BannerImageName(bool landscape) {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   return landscape ? kChromeNotificationsOptInBannerLandscapeImage
                    : kChromeNotificationsOptInBannerImage;
 #else
@@ -69,10 +70,6 @@ bool TooNarrowForBanner(UIView* view) {
   UITableView* _tableView;
   NSLayoutConstraint* _tableViewHeightConstraint;
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
-  UISwitch* _contentToggle;
-  UISwitch* _tipsToggle;
-  UISwitch* _priceTrackingToggle;
-  UISwitch* _safetyCheckToggle;
   BOOL _contentNotificationsEnabled;
   BOOL _tipsNotificationsEnabled;
   BOOL _priceTrackingNotificationsEnabled;
@@ -84,9 +81,9 @@ bool TooNarrowForBanner(UIView* view) {
   self.subtitleText =
       l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_OPT_IN_SUBTITLE);
   self.titleHorizontalMargin = kTitleHorizontalMargin;
-  self.primaryActionString =
+  self.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_OPT_IN_ENABLE_BUTTON);
-  self.secondaryActionString =
+  self.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_ALERT_CANCEL);
   self.titleTopMarginWhenNoHeaderImage = kSpaceAboveTitle;
   [self configureBanner];
@@ -106,7 +103,6 @@ bool TooNarrowForBanner(UIView* view) {
                                               .bottomAnchor],
   ]];
   [self loadModel];
-  [self setPrimaryButtonConfiguration];
   [self updatePrimaryButtonState];
   [super viewDidLoad];
 
@@ -161,7 +157,7 @@ bool TooNarrowForBanner(UIView* view) {
                                       itemIdentifier.integerValue)];
            }];
 
-  RegisterTableViewCell<TableViewSwitchCell>(_tableView);
+  [TableViewCellContentConfiguration registerCellForTableView:_tableView];
 
   NSDiffableDataSourceSnapshot* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
@@ -197,41 +193,40 @@ bool TooNarrowForBanner(UIView* view) {
 
 - (void)setOptInItem:(NotificationsOptInItemIdentifier)identifier
              enabled:(BOOL)enabled {
+  [self updateStatusForItem:identifier enabled:enabled];
+  NSDiffableDataSourceSnapshot* snapshot = [_dataSource snapshot];
+  [snapshot reconfigureItemsWithIdentifiers:@[ @(identifier) ]];
+  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+#pragma mark - Private
+
+// Updates the enabled status for an item.
+- (void)updateStatusForItem:(NotificationsOptInItemIdentifier)identifier
+                    enabled:(BOOL)enabled {
   switch (identifier) {
     case kContent:
-      if (_contentToggle) {
-        _contentToggle.on = enabled;
-      }
       _contentNotificationsEnabled = enabled;
       break;
     case kTips:
-      if (_tipsToggle) {
-        _tipsToggle.on = enabled;
-      }
       _tipsNotificationsEnabled = enabled;
       break;
     case kPriceTracking:
-      if (_priceTrackingToggle) {
-        _priceTrackingToggle.on = enabled;
-      }
       _priceTrackingNotificationsEnabled = enabled;
       break;
     case kSafetyCheck:
-      if (_safetyCheckToggle) {
-        _safetyCheckToggle.on = enabled;
-      }
       _safetyCheckNotificationsEnabled = enabled;
       break;
   }
 }
-
-#pragma mark - Private
 
 // Creates the table view.
 - (UITableView*)createTableView {
   UITableView* tableView =
       [[UITableView alloc] initWithFrame:CGRectZero
                                    style:UITableViewStylePlain];
+  tableView.tableFooterView =
+      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
   tableView.layer.cornerRadius = kTableViewCornerRadius;
   tableView.estimatedRowHeight = UITableViewAutomaticDimension;
   tableView.scrollEnabled = NO;
@@ -239,7 +234,8 @@ bool TooNarrowForBanner(UIView* view) {
   tableView.delegate = self;
   tableView.userInteractionEnabled = YES;
   tableView.translatesAutoresizingMaskIntoConstraints = NO;
-  tableView.separatorInset = UIEdgeInsetsZero;
+  tableView.separatorInset =
+      UIEdgeInsetsMake(0, kTableViewSeparatorInset, 0, 0);
   _tableViewHeightConstraint =
       [tableView.heightAnchor constraintEqualToConstant:0];
   _tableViewHeightConstraint.active = YES;
@@ -254,19 +250,23 @@ bool TooNarrowForBanner(UIView* view) {
     case kContent:
       return {IDS_IOS_CONTENT_NOTIFICATIONS_CONTENT_SETTINGS_TOGGLE_TITLE,
               IDS_IOS_CONTENT_NOTIFICATIONS_CONTENT_SETTINGS_FOOTER_TEXT,
-              _contentNotificationsEnabled, YES};
+              kNotificationsOptInContentAccessibilityID,
+              _contentNotificationsEnabled};
     case kTips:
-      return {IDS_IOS_SET_UP_LIST_TIPS_TITLE,
+      return {IDS_IOS_MAGIC_STACK_TIP_TITLE,
               IDS_IOS_NOTIFICATIONS_OPT_IN_TIPS_SETTINGS_TOGGLE_MESSSAGE,
-              _tipsNotificationsEnabled, YES};
+              kNotificationsOptInTipsAccessibilityID,
+              _tipsNotificationsEnabled};
     case kPriceTracking:
       return {IDS_IOS_NOTIFICATIONS_OPT_IN_PRICE_TRACKING_TOGGLE_TITLE,
               IDS_IOS_NOTIFICATIONS_OPT_IN_PRICE_TRACKING_TOGGLE_MESSAGE,
-              _priceTrackingNotificationsEnabled, YES};
+              kNotificationsOptInPriceTrackingAccessibilityID,
+              _priceTrackingNotificationsEnabled};
     case kSafetyCheck:
       return {IDS_IOS_SAFETY_CHECK_TITLE,
               IDS_IOS_SAFETY_CHECK_DESCRIPTION_DEFAULT,
-              _safetyCheckNotificationsEnabled, YES};
+              kNotificationsOptInSafetyCheckAccessibilityID,
+              _safetyCheckNotificationsEnabled};
   }
 }
 
@@ -275,42 +275,28 @@ bool TooNarrowForBanner(UIView* view) {
                            indexPath:(NSIndexPath*)indexPath
                       itemIdentifier:
                           (NotificationsOptInItemIdentifier)itemIdentifier {
-  TableViewSwitchCell* cell =
-      DequeueTableViewCell<TableViewSwitchCell>(tableView);
-
   CellConfig config = [self configForItemIdentifier:itemIdentifier];
-  [cell configureCellWithTitle:l10n_util::GetNSString(config.title_id)
-                      subtitle:l10n_util::GetNSString(config.subtitle_id)
-                 switchEnabled:YES
-                            on:config.on];
 
-  switch (itemIdentifier) {
-    case kContent:
-      _contentToggle = cell.switchView;
-      break;
-    case kTips:
-      _tipsToggle = cell.switchView;
-      break;
-    case kPriceTracking:
-      _priceTrackingToggle = cell.switchView;
-      break;
-    case kSafetyCheck:
-      _safetyCheckToggle = cell.switchView;
-      break;
-  }
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title = l10n_util::GetNSString(config.title_id);
+  configuration.subtitle = l10n_util::GetNSString(config.subtitle_id);
 
-  cell.switchView.tag = itemIdentifier;
+  SwitchContentConfiguration* switchConfiguration =
+      [[SwitchContentConfiguration alloc] init];
+  switchConfiguration.target = self;
+  switchConfiguration.selector = @selector(switchToggled:);
+  switchConfiguration.on = config.on;
+  switchConfiguration.tag = itemIdentifier;
 
-  // Make the separator invisible on the last row.
-  BOOL lastRow =
-      indexPath.row == [tableView numberOfRowsInSection:indexPath.section] - 1;
-  CGFloat separatorInset =
-      lastRow ? kTableViewSeparatorInsetHide : kTableViewSeparatorInset;
-  cell.separatorInset = UIEdgeInsetsMake(0.f, separatorInset, 0.f, 0.f);
+  configuration.trailingConfiguration = switchConfiguration;
 
-  [cell.switchView addTarget:self
-                      action:@selector(switchToggled:)
-            forControlEvents:UIControlEventValueChanged];
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
+  cell.contentConfiguration = configuration;
+  cell.accessibilityIdentifier = config.accessibility_id;
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
 
@@ -319,10 +305,11 @@ bool TooNarrowForBanner(UIView* view) {
 
 // Invoked when a notification opt-in switch is toggled.
 - (void)switchToggled:(UISwitch*)sender {
-  [self.notificationsDelegate
-      selectionChangedForItemType:static_cast<NotificationsOptInItemIdentifier>(
-                                      sender.tag)
-                         selected:sender.on];
+  NotificationsOptInItemIdentifier identifier =
+      static_cast<NotificationsOptInItemIdentifier>(sender.tag);
+  [self.notificationsDelegate selectionChangedForItemType:identifier
+                                                 selected:sender.on];
+  [self updateStatusForItem:identifier enabled:sender.on];
   [self updatePrimaryButtonState];
 }
 
@@ -332,40 +319,13 @@ bool TooNarrowForBanner(UIView* view) {
   _tableViewHeightConstraint.constant = _tableView.contentSize.height;
 }
 
-// Sets the configurationUpdateHandler for the primaryActionButton to handle the
-// button's state changes. The button is blue when enabled, and grayed out when
-// disabled.
-- (void)setPrimaryButtonConfiguration {
-  self.updateHandler = ^(UIButton* incomingButton) {
-    UIButtonConfiguration* updatedConfig = incomingButton.configuration;
-    switch (incomingButton.state) {
-      case UIControlStateDisabled: {
-        updatedConfig.background.backgroundColor =
-            [UIColor colorNamed:kUpdatedTertiaryBackgroundColor];
-        updatedConfig.baseForegroundColor =
-            [UIColor colorNamed:kTextTertiaryColor];
-        break;
-      }
-      case UIControlStateNormal: {
-        updatedConfig.background.backgroundColor =
-            [UIColor colorNamed:kBlueColor];
-        updatedConfig.baseForegroundColor =
-            [UIColor colorNamed:kBackgroundColor];
-        break;
-      }
-      default:
-        break;
-    }
-    incomingButton.configuration = updatedConfig;
-  };
-}
-
 // Enables the primary action button if any one of the toggles are on. Disables
 // otherwise.
 - (void)updatePrimaryButtonState {
-  self.primaryButtonEnabled = _contentToggle.isOn || _tipsToggle.isOn ||
-                              _priceTrackingToggle.isOn ||
-                              _safetyCheckToggle.isOn;
+  self.configuration.primaryActionEnabled =
+      _contentNotificationsEnabled || _tipsNotificationsEnabled ||
+      _priceTrackingNotificationsEnabled || _safetyCheckNotificationsEnabled;
+  [self reloadConfiguration];
 }
 
 // Configures the banner based on the view's size.

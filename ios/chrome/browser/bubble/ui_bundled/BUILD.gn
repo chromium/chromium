@@ -37,6 +37,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/ntp/shared/metrics",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
@@ -89,7 +90,6 @@ source_set("bubble_view") {
     "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
-    "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -132,7 +132,9 @@ source_set("eg2_tests") {
     ":constants",
     "//base",
     "//components/feature_engagement/public",
+    "//components/omnibox/browser:pref_names",
     "//ios/chrome/browser/bubble/ui_bundled/gesture_iph:test_utils",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test:eg_test_support+eg2",

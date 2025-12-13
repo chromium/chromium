@@ -8,7 +8,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -77,7 +77,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       mojom::URLLoaderFactory* network_loader_factory,
       URLLoaderFactory* sync_network_loader_factory,
       const OriginAccessList* origin_access_list,
-      bool allow_any_cors_exempt_header,
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
       const mojom::ClientSecurityState* factory_client_security_state,
@@ -204,32 +203,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // Returns a clone of the value returned by `GetClientSecurityState()`.
   mojom::ClientSecurityStatePtr CloneClientSecurityState() const;
 
-  // Returns whether preflight errors due exclusively to Private Network Access
-  // checks should be ignored.
-  //
-  // This is used to soft-launch Private Network Access preflights: we send
-  // preflights but do not require them to succeed.
-  //
-  // TODO(crbug.com/40204695): Remove this once preflight enforcement
-  // is enabled.
-  bool ShouldIgnorePrivateNetworkAccessErrors(
-      mojom::IPAddressSpace target_address_space) const;
-
-  // Returns the PNA-specific behavior to apply to the next preflight request.
-  //
-  // This is used to soft-launch Private Network Access preflights: we send
-  // preflights but do not require them to succeed.
-  //
-  // TODO(crbug.com/40204695): Remove this once preflight enforcement
-  // is enabled.
-  PrivateNetworkAccessPreflightBehavior
-  GetPrivateNetworkAccessPreflightBehavior(
-      mojom::IPAddressSpace target_address_space) const;
-
-  // Returns `pna_preflight_result_`'s value, then resets it.
-  mojom::PrivateNetworkAccessPreflightResult
-  TakePrivateNetworkAccessPreflightResult();
-
   static std::optional<std::string> GetHeaderString(
       const mojom::URLResponseHead& response,
       const std::string& header_name);
@@ -327,8 +300,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // Flag to specify if the CORS-enabled scheme check should be applied.
   const bool skip_cors_enabled_scheme_check_;
 
-  const bool allow_any_cors_exempt_header_;
-
   net::IsolationInfo isolation_info_;
 
   // The client security state set on the factory that created this loader.
@@ -351,33 +322,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   const CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
 
   bool has_authorization_covered_by_wildcard_ = false;
-
-  PreflightController::PreflightMode preflight_mode_;
-
-  // Whether the current preflight request is 1) solely sent for PNA, not for
-  // CORS and PNA at the same time, and 2) in warning mode.
-  //
-  // If set to true, then any and all errors raised by subsequent preflight
-  // requests are ignored.
-  //
-  // This is used to soft-launch Private Network Access preflights. In some
-  // cases, the only reason we send a preflight is because of Private Network
-  // Access. Errors that arise then would never have been noticed if we had not
-  // sent the preflight, so we ignore them all.
-  //
-  // INVARIANT: if this is true, then
-  // `ShouldIgnorePrivateNetworkAccessErrors()` is also true.
-  //
-  // TODO(crbug.com/40204695): Remove this along with
-  // `ShouldIgnorePrivateNetworkAccessErrors()`.
-  bool sending_pna_only_warning_preflight_ = false;
-
-  // The result of sending a PNA preflight, if any.
-  // Set when a PNA preflight completes. Reset and passed to
-  // `forwarding_client_` via `URLResponseHead` in `OnReceiveRedirect()` and
-  // `OnReceiveResponse()`.
-  mojom::PrivateNetworkAccessPreflightResult pna_preflight_result_ =
-      mojom::PrivateNetworkAccessPreflightResult::kNone;
 
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
   base::WeakPtrFactory<mojo::Remote<mojom::DevToolsObserver>>

@@ -13,6 +13,8 @@ import org.jni_zero.JniType;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.autofill.AutofillSuggestion.Payload;
 
+import java.util.Objects;
+
 @JNINamespace("autofill")
 @NullMarked
 public final class AutofillProfilePayload implements Payload {
@@ -26,5 +28,21 @@ public final class AutofillProfilePayload implements Payload {
 
     public String getGuid() {
         return mGuid;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof AutofillProfilePayload other)) {
+            return false;
+        }
+        return this.mGuid.equals(other.mGuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mGuid);
     }
 }

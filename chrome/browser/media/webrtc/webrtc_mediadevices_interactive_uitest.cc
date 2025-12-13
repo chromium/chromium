@@ -28,7 +28,6 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/common/content_features.h"
@@ -324,8 +323,6 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   CookieSettingsFactory::GetForProfile(browser()->profile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled,
-                                               true);
   content::WebContents* tab1 =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -355,8 +352,6 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   CookieSettingsFactory::GetForProfile(browser()->profile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled,
-                                               true);
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -381,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       [](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
-        if (request.GetURL().path() == kClearCookiesPage) {
+        if (request.GetURL().GetPath() == kClearCookiesPage) {
           auto response =
               std::make_unique<net::test_server::BasicHttpResponse>();
           response->AddCustomHeader("Clear-Site-Data", "\"cookies\"");
@@ -452,8 +447,6 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   CookieSettingsFactory::GetForProfile(browser()->profile())
       ->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled,
-                                               true);
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   std::vector<MediaDeviceInfo> devices;

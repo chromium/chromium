@@ -58,7 +58,7 @@ class PushProvider final : public GarbageCollected<PushProvider>,
   void DidUnsubscribe(ScriptPromiseResolver<IDLBoolean>* resolver,
                       mojom::blink::PushErrorType error_type,
                       bool did_unsubscribe,
-                      const WTF::String& error_message);
+                      const String& error_message);
 
   void DidGetSubscription(
       ScriptPromiseResolver<IDLNullable<PushSubscription>>* resolver,

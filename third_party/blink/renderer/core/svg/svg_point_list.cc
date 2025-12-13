@@ -20,11 +20,11 @@
 
 #include "third_party/blink/renderer/core/svg/svg_point_list.h"
 
-#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -35,27 +35,28 @@ SVGPointList::SVGPointList() = default;
 SVGPointList::~SVGPointList() = default;
 
 template <typename CharType>
-SVGParsingError SVGPointList::Parse(const CharType* ptr, const CharType* end) {
-  if (!SkipOptionalSVGSpaces(ptr, end))
+SVGParsingError SVGPointList::Parse(base::span<const CharType> span) {
+  const size_t list_start_size = span.size();
+  if (!SkipOptionalSVGSpaces(span)) {
     return SVGParseStatus::kNoError;
+  }
 
-  const CharType* list_start = ptr;
   for (;;) {
     float x = 0;
     float y = 0;
-    if (!ParseNumber(ptr, end, x) ||
-        !ParseNumber(ptr, end, y, kDisallowWhitespace))
-      return SVGParsingError(SVGParseStatus::kExpectedNumber, ptr - list_start);
+    if (!ParseNumber(span, x) || !ParseNumber(span, y, kDisallowWhitespace)) {
+      return SVGParsingError(SVGParseStatus::kExpectedNumber,
+                             list_start_size - span.size());
+    }
 
     Append(MakeGarbageCollected<SVGPoint>(gfx::PointF(x, y)));
 
-    if (!SkipOptionalSVGSpaces(ptr, end))
+    if (!SkipOptionalSVGSpaces(span)) {
       break;
+    }
 
-    if (*ptr == ',') {
-      UNSAFE_TODO(++ptr);
-      SkipOptionalSVGSpaces(ptr, end);
-
+    if (SkipExactly<CharType>(span, ',')) {
+      SkipOptionalSVGSpaces(span);
       // ',' requires the list to be continued
       continue;
     }
@@ -69,9 +70,7 @@ SVGParsingError SVGPointList::SetValueAsString(const String& value) {
   if (value.empty())
     return SVGParseStatus::kNoError;
 
-  return VisitCharacters(value, [&](auto chars) {
-    return Parse(chars.data(), chars.data() + chars.size());
-  });
+  return VisitCharacters(value, [&](auto chars) { return Parse(chars); });
 }
 
 void SVGPointList::Add(const SVGPropertyBase* other,

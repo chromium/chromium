@@ -32,6 +32,7 @@ class EnterpriseCompanionService {
 
 std::unique_ptr<EnterpriseCompanionService> CreateEnterpriseCompanionService(
     std::unique_ptr<DMClient> dm_client,
+    base::RepeatingClosure before_each_request,
     scoped_refptr<EnterpriseCompanionEventLogger> logger,
     base::OnceClosure shutdown_callback);
 

@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
@@ -26,6 +27,7 @@ class CrxDownloaderFactory
   CrxDownloaderFactory& operator=(const CrxDownloaderFactory&) = delete;
 
   virtual scoped_refptr<CrxDownloader> MakeCrxDownloader(
+      const std::string& prod_id,
       bool background_download_enabled) const = 0;
 
  protected:

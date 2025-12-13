@@ -9,10 +9,11 @@
 #include <variant>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
@@ -24,6 +25,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
+namespace autofill {
+struct AutofillServerPrediction;
+}
+
 namespace password_manager {
 
 // This template allows creating methods with signature conforming to
@@ -33,7 +38,7 @@ namespace password_manager {
 template <class Context, class Store>
 scoped_refptr<RefcountedKeyedService> BuildPasswordStore(Context* context) {
   scoped_refptr<password_manager::PasswordStore> store(new Store);
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
   return store;
 }
 
@@ -54,7 +59,7 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStoreWithArgs(
     Context* context) {
   scoped_refptr<password_manager::PasswordStore> store(
       new Store(std::forward<Args>(args)...));
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->Init(/*affiliated_match_helper=*/nullptr);
   return store;
 }
 
@@ -121,6 +126,15 @@ bool ContainsEqualPasswordFormsUnordered(
     const std::vector<std::unique_ptr<PasswordForm>>& expectations,
     const std::vector<std::unique_ptr<PasswordForm>>& actual_values,
     std::ostream* mismatch_output);
+
+// Creates a set map of `ServerPrediction`s for `form` according to the
+// specified `types`. `types` is a map of the fields index in `form.fields()` to
+// the `FieldType`.
+base::flat_map<autofill::FieldGlobalId, autofill::AutofillServerPrediction>
+CreateServerPredictions(
+    const autofill::FormData& form,
+    const base::flat_map<size_t, autofill::FieldType>& types,
+    bool is_override = false);
 
 MATCHER_P(UnorderedPasswordFormElementsAre, expectations, "") {
   return ContainsEqualPasswordFormsUnordered(*expectations, arg,

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/gpu/h264_builder.h"
 
 #include "base/logging.h"
 #include "media/filters/h26x_annex_b_bitstream_builder.h"
 #include "media/parsers/h264_parser.h"
+#include "media/parsers/temporal_scalability_id_extractor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -53,6 +49,23 @@ class H264BuilderTest : public ::testing::Test {
     pps.second_chroma_qp_index_offset = -2;
     return pps;
   }
+
+  static void TestPrefixNALU(int num_temporal_layers,
+                             size_t nal_ref_idc,
+                             H264NALU::Type associated_nalu_type,
+                             uint8_t temporal_id) {
+    const std::vector<uint8_t> prefix_nalu =
+        BuildPrefixNALU(nal_ref_idc, associated_nalu_type, temporal_id);
+    ASSERT_FALSE(prefix_nalu.empty());
+
+    TemporalScalabilityIdExtractor temporal_id_scalability_id_extractor(
+        VideoCodec::kH264, num_temporal_layers);
+    TemporalScalabilityIdExtractor::BitstreamMetadata metadata;
+    EXPECT_TRUE(temporal_id_scalability_id_extractor.ParseChunk(prefix_nalu,
+                                                                /*frame_id=*/0,
+                                                                metadata));
+    EXPECT_EQ(metadata.temporal_id, static_cast<int>(temporal_id));
+  }
 };
 
 TEST_F(H264BuilderTest, H264BuildParseIdentity) {
@@ -65,8 +78,7 @@ TEST_F(H264BuilderTest, H264BuildParseIdentity) {
   BuildPackedH264PPS(bitstream_builder, sps, pps);
 
   H264Parser parser;
-  parser.SetStream(bitstream_builder.data().data(),
-                   bitstream_builder.BytesInBuffer());
+  parser.SetStream(bitstream_builder.data());
   H264NALU nalu;
   EXPECT_EQ(parser.AdvanceToNextNALU(&nalu), H264Parser::Result::kOk);
   EXPECT_EQ(nalu.nal_unit_type, H264NALU::kSPS);
@@ -81,4 +93,53 @@ TEST_F(H264BuilderTest, H264BuildParseIdentity) {
   EXPECT_EQ(*parser.GetPPS(pps_id), pps);
 }
 
+TEST_F(H264BuilderTest, H264BuildPrefixNALU) {
+  struct PrefixNALUParams {
+    int nal_ref_idc;
+    H264NALU::Type associated_nalu_type;
+    uint8_t temporal_id;
+  };
+
+  auto generateParams = [](uint8_t num_temporal_layers) {
+    std::vector<PrefixNALUParams> params;
+    constexpr bool kIsRef[] = {false, true};
+    constexpr bool kIsIdr[] = {false, true};
+    for (bool is_ref : kIsRef) {
+      for (bool is_idr : kIsIdr) {
+        for (uint8_t tid = 0; tid < num_temporal_layers; tid++) {
+          // Filter invalid patterns.
+          if (is_idr && tid != 0) {
+            // If the frame is IDR, then it must be the bottom temporal layer.
+            continue;
+          }
+          if (is_ref == (tid == num_temporal_layers - 1)) {
+            // The highest temporal layer must not be reference frame.
+            // The other temporal layer must be reference frame.
+            continue;
+          }
+
+          params.push_back(PrefixNALUParams{
+              .nal_ref_idc = is_idr ? 3 : is_ref,
+              .associated_nalu_type = is_idr ? H264NALU::Type::kIDRSlice
+                                             : H264NALU::Type::kNonIDRSlice,
+              .temporal_id = tid,
+          });
+        }
+      }
+    }
+    return params;
+  };
+
+  auto l1t2_params = generateParams(2);
+  for (const auto& param : l1t2_params) {
+    TestPrefixNALU(2, param.nal_ref_idc, param.associated_nalu_type,
+                   param.temporal_id);
+  }
+
+  auto l1t3_params = generateParams(3);
+  for (const auto& param : l1t3_params) {
+    TestPrefixNALU(3, param.nal_ref_idc, param.associated_nalu_type,
+                   param.temporal_id);
+  }
+}
 }  // namespace media

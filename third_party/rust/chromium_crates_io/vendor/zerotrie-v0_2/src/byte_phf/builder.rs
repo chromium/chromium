@@ -17,6 +17,7 @@ const MAX_L2_SEARCH_MISSES: usize = 24;
 ///
 /// Returns `(p, [q_0, q_1, ..., q_(N-1)])`, or an error if the PHF could not be computed.
 #[allow(unused_labels)] // for readability
+#[allow(clippy::indexing_slicing)] // carefully reviewed to not panic
 pub fn find(bytes: &[u8]) -> Result<(u8, Vec<u8>), ZeroTrieBuildError> {
     let n_usize = bytes.len();
 
@@ -37,6 +38,7 @@ pub fn find(bytes: &[u8]) -> Result<(u8, Vec<u8>), ZeroTrieBuildError> {
     };
 
     'p_loop: loop {
+        // Vec of tuples: (index, bucket count)
         let mut buckets: Vec<(usize, Vec<u8>)> = (0..n_usize).map(|i| (i, vec![])).collect();
         for byte in bytes {
             let l1 = f1(*byte, p, N) as usize;
@@ -49,8 +51,11 @@ pub fn find(bytes: &[u8]) -> Result<(u8, Vec<u8>), ZeroTrieBuildError> {
         bqs.fill(0);
         seen.fill(false);
         'q_loop: loop {
+            // Loop condition: exit when i is beyond the buckets length
             if i == buckets.len() {
                 for (local_j, real_j) in buckets.iter().map(|(j, _)| *j).enumerate() {
+                    debug_assert!(local_j < n_usize); // comes from .enumerate()
+                    debug_assert!(real_j < n_usize); // first item of bucket tuple is an index
                     qq[real_j] = bqs[local_j];
                 }
                 // println!("Success: p={p:?}, num_max_q={num_max_q:?}, bqs={bqs:?}, qq={qq:?}");
@@ -117,6 +122,7 @@ impl PerfectByteHashMap<Vec<u8>> {
     /// Computes a new [`PerfectByteHashMap`].
     ///
     /// (this is a doc-hidden API)
+    #[allow(clippy::indexing_slicing)] // carefully reviewed to not panic
     pub fn try_new(keys: &[u8]) -> Result<Self, ZeroTrieBuildError> {
         let n_usize = keys.len();
         let n = n_usize as u8;

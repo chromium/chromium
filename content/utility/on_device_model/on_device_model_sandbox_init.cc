@@ -10,6 +10,7 @@
 #include "base/native_library.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 
 #if defined(ENABLE_ML_INTERNAL)
 #include "services/on_device_model/ml/chrome_ml.h"      // nogncheck
@@ -24,7 +25,8 @@
 #include "sandbox/policy/linux/sandbox_linux.h"
 #endif
 
-#if !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA) && \
+    !(BUILDFLAG(IS_LINUX) && BUILDFLAG(ENABLE_CAST_RECEIVER))
 #include "base/feature_list.h"
 #include "third_party/dawn/include/dawn/dawn_proc.h"          // nogncheck
 #include "third_party/dawn/include/dawn/native/DawnNative.h"  // nogncheck
@@ -63,12 +65,12 @@ void UpdateSandboxOptionsForGpu(
 }
 #endif
 
-#if !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA) && \
+    !(BUILDFLAG(IS_LINUX) && BUILDFLAG(ENABLE_CAST_RECEIVER))
 // If this feature is enabled, a WebGPU device is created for each valid
 // adapter. This makes sure any relevant drivers or other libs are loaded before
 // enabling the sandbox.
 BASE_FEATURE(kOnDeviceModelWarmDrivers,
-             "OnDeviceModelWarmDrivers",
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -76,6 +78,23 @@ BASE_FEATURE(kOnDeviceModelWarmDrivers,
 #endif
 );
 #endif
+
+bool ShouldWarmDrivers() {
+#if BUILDFLAG(IS_FUCHSIA) || \
+    (BUILDFLAG(IS_LINUX) && BUILDFLAG(ENABLE_CAST_RECEIVER))
+  return false;
+#else
+  bool is_gpu_not_blocklisted = true;
+#if defined(ENABLE_ML_INTERNAL)
+  ml::DeviceInfo device_info =
+      ml::QueryDeviceInfo(ml::ChromeML::Get()->api(), /*log_histogram=*/false);
+  is_gpu_not_blocklisted =
+      device_info.gpu_blocked_reason == ml::GpuBlockedReason::kNotBlocked;
+#endif
+  return base::FeatureList::IsEnabled(kOnDeviceModelWarmDrivers) &&
+         is_gpu_not_blocklisted;
+#endif
+}
 
 }  // namespace
 
@@ -97,15 +116,12 @@ bool PreSandboxInit() {
   }
 #endif
 
-#if !BUILDFLAG(IS_FUCHSIA)
-  if (base::FeatureList::IsEnabled(kOnDeviceModelWarmDrivers)
-#if defined(ENABLE_ML_INTERNAL)
-      && !ml::IsGpuBlocked(ml::ChromeML::Get()->api(), /*log_histogram=*/false)
-#endif
-  ) {
+  if (ShouldWarmDrivers()) {
     // Warm any relevant drivers before attempting to bring up the sandbox. For
     // good measure we initialize a device instance for any adapter with an
     // appropriate backend on top of any integrated or discrete GPU.
+#if !BUILDFLAG(IS_FUCHSIA) && \
+    !(BUILDFLAG(IS_LINUX) && BUILDFLAG(ENABLE_CAST_RECEIVER))
     dawnProcSetProcs(&dawn::native::GetProcs());
     auto instance = std::make_unique<dawn::native::Instance>();
     const wgpu::RequestAdapterOptions adapter_options{
@@ -132,8 +148,8 @@ bool PreSandboxInit() {
         }
       }
     }
-  }
 #endif
+  }
   return true;
 }
 

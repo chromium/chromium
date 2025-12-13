@@ -31,6 +31,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/view_class_properties.h"
 
@@ -39,7 +40,6 @@
 #endif
 
 namespace {
-constexpr int kIconSize = 16;
 constexpr gfx::Size kButtonSize = {28, 28};
 }  // namespace
 
@@ -50,6 +50,11 @@ TabCloseButton::TabCloseButton(PressedCallback pressed_callback,
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   GetViewAccessibility().SetName(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+
+  // Some sites cannot be closed immediately and instead show a confirmation
+  // dialog when the close button is clicked, so this is needed to reset the
+  // inkdrop state.
+  SetHasInkDropActionOnClick(true);
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   views::InkDrop::Get(this)->SetHighlightOpacity(0.16f);
@@ -105,7 +110,7 @@ void TabCloseButton::SetColors(TabStyle::TabColors colors) {
 
   UpdateIcon();
 
-  OnPropertyChanged(&colors_, views::kPropertyEffectsPaint);
+  OnPropertyChanged(&colors_, views::PropertyEffects::kPaint);
 }
 
 views::View* TabCloseButton::GetTooltipHandlerForPoint(
@@ -195,21 +200,24 @@ views::View* TabCloseButton::TargetForRect(views::View* root,
 
 bool TabCloseButton::GetHitTestMask(SkPath* mask) const {
   // We need to define this so hit-testing won't include the border region.
-  mask->addRect(gfx::RectToSkRect(GetMirroredRect(GetContentsBounds())));
+  *mask = SkPath::Rect(gfx::RectToSkRect(GetMirroredRect(GetContentsBounds())));
   return true;
 }
 void TabCloseButton::UpdateIcon() {
   const auto& icon = kCloseTabChromeRefreshIcon;
 
-  SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(icon, colors_.foreground_color,
-                                               kIconSize));
-  SetImageModel(views::Button::STATE_HOVERED,
-                ui::ImageModel::FromVectorIcon(icon, colors_.foreground_color,
-                                               kIconSize));
-  SetImageModel(views::Button::STATE_PRESSED,
-                ui::ImageModel::FromVectorIcon(icon, colors_.foreground_color,
-                                               kIconSize));
+  SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(icon, colors_.foreground_color,
+                                     GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE)));
+  SetImageModel(
+      views::Button::STATE_HOVERED,
+      ui::ImageModel::FromVectorIcon(icon, colors_.foreground_color,
+                                     GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE)));
+  SetImageModel(
+      views::Button::STATE_PRESSED,
+      ui::ImageModel::FromVectorIcon(icon, colors_.foreground_color,
+                                     GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE)));
 }
 
 BEGIN_METADATA(TabCloseButton)

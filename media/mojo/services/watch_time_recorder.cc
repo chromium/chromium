@@ -68,7 +68,7 @@ WatchTimeRecorder::WatchTimeRecorder(
     mojom::PlaybackPropertiesPtr properties,
     ukm::SourceId source_id,
     bool is_top_frame,
-    uint64_t player_id)
+    MediaPlayerUkmId player_id)
     : auto_pip_reason_cb_(std::move(auto_pip_reason_cb)),
       properties_(std::move(properties)),
       source_id_(source_id),
@@ -81,6 +81,8 @@ WatchTimeRecorder::WatchTimeRecorder(
             kRebuffersCountAudioMse, kDiscardedWatchTimeAudioMse},
            {WatchTimeKey::kAudioEme, kMeanTimeBetweenRebuffersAudioEme,
             kRebuffersCountAudioEme, kDiscardedWatchTimeAudioEme},
+           {WatchTimeKey::kAudioHls, kMeanTimeBetweenRebuffersAudioHls,
+            kRebuffersCountAudioHls, kDiscardedWatchTimeAudioHls},
            {WatchTimeKey::kAudioVideoSrc,
             kMeanTimeBetweenRebuffersAudioVideoSrc,
             kRebuffersCountAudioVideoSrc, kDiscardedWatchTimeAudioVideoSrc},
@@ -89,7 +91,10 @@ WatchTimeRecorder::WatchTimeRecorder(
             kRebuffersCountAudioVideoMse, kDiscardedWatchTimeAudioVideoMse},
            {WatchTimeKey::kAudioVideoEme,
             kMeanTimeBetweenRebuffersAudioVideoEme,
-            kRebuffersCountAudioVideoEme, kDiscardedWatchTimeAudioVideoEme}}) {}
+            kRebuffersCountAudioVideoEme, kDiscardedWatchTimeAudioVideoEme},
+           {WatchTimeKey::kAudioVideoHls,
+            kMeanTimeBetweenRebuffersAudioVideoHls,
+            kRebuffersCountAudioVideoHls, kDiscardedWatchTimeAudioVideoHls}}) {}
 
 WatchTimeRecorder::~WatchTimeRecorder() {
   FinalizeWatchTime({});
@@ -117,8 +122,8 @@ void WatchTimeRecorder::FinalizeWatchTime(
     }
 
     // Report only certain keys to UMA and only if they have at met the minimum
-    // watch time requirement. Otherwise, for SRC/MSE/EME keys, log them to the
-    // discard metric.
+    // watch time requirement. Otherwise, for SRC/MSE/EME/HLS keys, log them to
+    // the discard metric.
     std::string_view key_str = ConvertWatchTimeKeyToStringForUma(kv.first);
     if (ShouldRecordUma() && !key_str.empty()) {
       if (kv.second >= kMinimumElapsedWatchTime) {
@@ -342,7 +347,8 @@ void WatchTimeRecorder::RecordUkmPlaybackData() {
     builder.SetIsTopFrame(is_top_frame_);
     builder.SetIsBackground(properties_->is_background);
     builder.SetIsMuted(properties_->is_muted);
-    builder.SetPlayerID(player_id_);
+    builder.SetPlayerID(player_id_.value());
+    builder.SetRendererType(static_cast<int64_t>(properties_->renderer_type));
     if (clamped_duration_ms.has_value())
       builder.SetDuration(*clamped_duration_ms);
 
@@ -436,7 +442,7 @@ void WatchTimeRecorder::RecordUkmPlaybackData() {
     builder.SetVideoEncryptionScheme(static_cast<int64_t>(
         ukm_record.secondary_properties->video_encryption_scheme));
     builder.SetIsEME(properties_->is_eme);
-    builder.SetIsMSE(properties_->is_mse);
+    builder.SetIsMSE(properties_->demuxer_type == DemuxerType::kChunkDemuxer);
     builder.SetMediaStreamType(
         static_cast<int64_t>(properties_->media_stream_type));
     builder.SetLastPipelineStatus(pipeline_status_);
@@ -485,8 +491,10 @@ void WatchTimeRecorder::MaybeRecordWatchTimeForAutoPipReason(
     current_auto_pip_reason_ = auto_pip_reason_cb_.Run();
   }
 
-  if (current_auto_pip_reason_ !=
-      PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback) {
+  if ((current_auto_pip_reason_ !=
+       PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback) &&
+      (current_auto_pip_reason_ !=
+       PictureInPictureEventsInfo::AutoPipReason::kBrowserInitiated)) {
     return;
   }
 

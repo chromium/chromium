@@ -87,7 +87,6 @@ std::unique_ptr<WebMediaPlayer> WebMediaPlayerBuilder::Build(
     WebContentDecryptionModule* initial_cdm,
     media::RequestRoutingTokenCallback request_routing_token_cb,
     base::WeakPtr<media::MediaObserver> media_observer,
-    bool enable_instant_source_buffer_gc,
     bool embedded_media_experience_enabled,
     CrossVariantMojoRemote<media::mojom::MediaMetricsProviderInterfaceBase>
         metrics_provider,
@@ -112,10 +111,10 @@ std::unique_ptr<WebMediaPlayer> WebMediaPlayerBuilder::Build(
       std::move(compositor_task_runner),
       std::move(video_frame_compositor_task_runner), initial_cdm,
       std::move(request_routing_token_cb), std::move(media_observer),
-      enable_instant_source_buffer_gc, embedded_media_experience_enabled,
-      std::move(metrics_provider), std::move(create_bridge_callback),
-      std::move(raster_context_provider), use_surface_layer,
-      is_background_suspend_enabled, is_background_video_playback_enabled,
+      embedded_media_experience_enabled, std::move(metrics_provider),
+      std::move(create_bridge_callback), std::move(raster_context_provider),
+      use_surface_layer, is_background_suspend_enabled,
+      is_background_video_playback_enabled,
       is_background_video_track_optimization_supported,
       std::move(demuxer_override), std::move(remote_interfaces));
 }

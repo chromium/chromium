@@ -28,7 +28,7 @@ template <typename MojomType,
           typename InputUserType,
           typename... Args>
 void Serialize(InputUserType&& input, Args&&... args) {
-  if constexpr (IsAbslOptional<InputUserType>::value) {
+  if constexpr (IsStdOptional<InputUserType>::value) {
     if (!input) {
       return;
     }

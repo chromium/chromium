@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/bwg//ui/bwg_settings_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_settings_view_controller.h"
 
 #import "base/apple/foundation_util.h"
-#import "base/metrics/user_metrics.h"
-#import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/ui_bundled/bwg/coordinator/bwg_settings_mutator.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_metadata.h"
+#import "ios/chrome/browser/settings/ui_bundled/bwg/ui/bwg_location_view_controller.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -30,12 +31,14 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierLocation = kSectionIdentifierEnumZero,
   SectionIdentifierPageContent,
   SectionIdentifierActivity,
+  SectionIdentifierExtensions,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeLocation = kItemTypeEnumZero,
   ItemTypePageContentSharing,
   ItemTypeAppActivity,
+  ItemTypeExtensions,
   ItemTypeLocationFooter,
   ItemTypePageContentSharingFooter,
   ItemTypeAppActivityFooter,
@@ -53,6 +56,10 @@ NSString* const kPageContentSharingCellId = @"PageContentSharingCellId";
 NSString* const kLocationLinkAction = @"LocationLinkAction";
 NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 
+// The amount by which to offset the integer value of a dynamic setting to
+// create its corresponding section/row identifier.
+NSInteger const kDynamicSettingsIdOffset = 10000;
+
 }  // namespace
 
 @interface BWGSettingsViewController () <TableViewLinkHeaderFooterItemDelegate>
@@ -63,12 +70,14 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   TableViewMultiDetailTextItem* _preciseLocationItem;
   // Switch item for toggling page content sharing.
   TableViewSwitchItem* _pageContentSharingItem;
-  // BWG Apps activity item. Uses `accessoryView` to create a tappable icon.
-  TableViewDetailTextItem* _BWGAppsActivityItem;
+  // Location view controller shown when precise location row is tapped.
+  BWGLocationViewController* _locationViewController;
   // Precise location preference value.
   BOOL _preciseLocationEnabled;
   // Page content sharing preference value.
   BOOL _pageContentSharingEnabled;
+  // Metadata for dynamic settings.
+  NSArray<GeminiSettingsMetadata*>* _dynamicSettings;
 }
 
 #pragma mark - UIViewController
@@ -77,18 +86,15 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   [super viewDidLoad];
   self.tableView.accessibilityIdentifier = kBWGSettingsViewTableIdentifier;
   self.title = l10n_util::GetNSString(IDS_IOS_BWG_SETTINGS_TITLE);
+  RecordGeminiSettingsOpened();
   [self loadModel];
+  [self.mutator loadDynamicSettings];
 }
 
 #pragma mark - CollectionViewController
 
 - (void)loadModel {
   [super loadModel];
-  TableViewModel* model = self.tableViewModel;
-  [model addSectionWithIdentifier:SectionIdentifierLocation];
-  [model addSectionWithIdentifier:SectionIdentifierPageContent];
-  [model addSectionWithIdentifier:SectionIdentifierActivity];
-
   _preciseLocationItem =
       [self detailItemWithType:ItemTypeLocation
                              text:l10n_util::GetNSString(
@@ -102,6 +108,8 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
                                  IDS_IOS_BWG_SETTINGS_PAGE_CONTENT_SHARING_TITLE)
                   switchValue:_pageContentSharingEnabled
       accessibilityIdentifier:kPageContentSharingCellId];
+  _pageContentSharingItem.target = self;
+  _pageContentSharingItem.selector = @selector(pageContentSharingSwitchTapped:);
 
   TableViewLinkHeaderFooterItem* locationFooterItem = [self
       headerFooterItemWithType:ItemTypeLocationFooter
@@ -121,30 +129,42 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
                                   IDS_IOS_BWG_SETTINGS_APP_ACTIVITY_FOOTER_TEXT)
                        linkURL:GURL()];
 
-  [model addItem:_preciseLocationItem
-      toSectionWithIdentifier:SectionIdentifierLocation];
-  [model setFooter:locationFooterItem
-      forSectionWithIdentifier:SectionIdentifierLocation];
+  TableViewModel* model = self.tableViewModel;
+  if (IsBWGPreciseLocationEnabled()) {
+    [model addSectionWithIdentifier:SectionIdentifierLocation];
+    [model addItem:_preciseLocationItem
+        toSectionWithIdentifier:SectionIdentifierLocation];
+    [model setFooter:locationFooterItem
+        forSectionWithIdentifier:SectionIdentifierLocation];
+  }
 
+  [model addSectionWithIdentifier:SectionIdentifierPageContent];
   [model addItem:_pageContentSharingItem
       toSectionWithIdentifier:SectionIdentifierPageContent];
   [model setFooter:pageContentSharingFooterItem
       forSectionWithIdentifier:SectionIdentifierPageContent];
 
-  [model addItem:[self BWGAppActivityItem]
-      toSectionWithIdentifier:SectionIdentifierActivity];
-  [model setFooter:BWGAppActivityFooterItem
-      forSectionWithIdentifier:SectionIdentifierActivity];
+  if (!IsGeminiPersonalizationEnabled()) {
+    [model addSectionWithIdentifier:SectionIdentifierActivity];
+    [model addItem:[self BWGAppActivityItem]
+        toSectionWithIdentifier:SectionIdentifierActivity];
+    [model setFooter:BWGAppActivityFooterItem
+        forSectionWithIdentifier:SectionIdentifierActivity];
+
+    [model addSectionWithIdentifier:SectionIdentifierExtensions];
+    [model addItem:[self BWGExtensionsItem]
+        toSectionWithIdentifier:SectionIdentifierExtensions];
+  }
 }
 
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
-  base::RecordAction(base::UserMetricsAction("MobileBWGSettingsClose"));
+  RecordGeminiSettingsClose();
 }
 
 - (void)reportBackUserAction {
-  base::RecordAction(base::UserMetricsAction("MobileBWGSettingsBack"));
+  RecordGeminiSettingsBack();
 }
 
 #pragma mark - Private
@@ -203,7 +223,20 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
       l10n_util::GetNSString(IDS_IOS_BWG_SETTINGS_APP_ACTIVITY_TITLE);
   BWGAppActivityItem.accessorySymbol =
       TableViewDetailTextCellAccessorySymbolExternalLink;
+  BWGAppActivityItem.accessibilityTraits = UIAccessibilityTraitLink;
   return BWGAppActivityItem;
+}
+
+// Creates the BWG extensions item.
+- (TableViewDetailTextItem*)BWGExtensionsItem {
+  TableViewDetailTextItem* BWGExtensionsItem =
+      [[TableViewDetailTextItem alloc] initWithType:ItemTypeExtensions];
+  BWGExtensionsItem.text =
+      l10n_util::GetNSString(IDS_IOS_BWG_SETTINGS_EXTENSIONS_TITLE);
+  BWGExtensionsItem.accessorySymbol =
+      TableViewDetailTextCellAccessorySymbolExternalLink;
+  BWGExtensionsItem.accessibilityTraits = UIAccessibilityTraitLink;
+  return BWGExtensionsItem;
 }
 
 // Called from the PageContentSharing setting's UIControlEventTouchUpInside.
@@ -227,11 +260,48 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 - (void)tableView:(UITableView*)tableView
     performPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
   if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
+      ItemTypeLocation) {
+    _locationViewController = [[BWGLocationViewController alloc]
+        initWithStyle:ChromeTableViewStyle()];
+    _locationViewController.navigationItem.backButtonTitle =
+        l10n_util::GetNSString(IDS_IOS_BWG_LOCATION_BACK_BUTTON_TITLE);
+    _locationViewController.preciseLocationEnabled = _preciseLocationEnabled;
+    _locationViewController.mutator = self.mutator;
+    [self.navigationController pushViewController:_locationViewController
+                                         animated:YES];
+  }
+
+  if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
       ItemTypeAppActivity) {
-    base::RecordAction(
-        base::UserMetricsAction("Settings.BWGSettings.BWGAppActivity"));
+    RecordGeminiSettingsAppActivity();
     [self.mutator openNewTabWithURL:GURL(kBWGAppActivityURL)];
   }
+
+  if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
+      ItemTypeExtensions) {
+    RecordGeminiSettingsExtensions();
+    [self.mutator openNewTabWithURL:GURL(kBWGExtensionsURL)];
+  }
+
+  NSInteger sectionIdentifier =
+      [self.tableViewModel sectionIdentifierForSectionIndex:indexPath.section];
+
+  if (sectionIdentifier >= kDynamicSettingsIdOffset) {
+    NSInteger potentialDynamicSettingsId =
+        sectionIdentifier - kDynamicSettingsIdOffset;
+    switch (potentialDynamicSettingsId) {
+      case GeminiSettingsContextGeminiAppsActivity:
+      case GeminiSettingsContextPersonalization:
+      case GeminiSettingsContextExtensions:
+        // TODO(crbug.com/462382850): Present a view controller instead.
+        NSLog(@"Tapped dynamic setting %ld.", potentialDynamicSettingsId);
+        break;
+      default:
+        NSLog(@"Tapped row in unknown section %ld.",
+              potentialDynamicSettingsId);
+    }
+  }
+
   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
@@ -245,26 +315,6 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   return footerView;
 }
 
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-
-  ItemType itemType = static_cast<ItemType>(
-      [self.tableViewModel itemTypeForIndexPath:indexPath]);
-
-  if (itemType == ItemTypePageContentSharing) {
-    TableViewSwitchCell* switchCell =
-        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-    [switchCell.switchView addTarget:self
-                              action:@selector(pageContentSharingSwitchTapped:)
-                    forControlEvents:UIControlEventTouchUpInside];
-  }
-  return cell;
-}
-
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
@@ -275,6 +325,12 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
 
 - (void)setPreciseLocationEnabled:(BOOL)enabled {
   _preciseLocationEnabled = enabled;
+
+  // Propagate precise location pref changes to other views that may be opened
+  // such as an alternate multi-window screen.
+  if (_locationViewController) {
+    _locationViewController.preciseLocationEnabled = enabled;
+  }
 
   if ([self isViewLoaded]) {
     _preciseLocationItem.trailingDetailText =
@@ -290,6 +346,40 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
     _pageContentSharingItem.on = _pageContentSharingEnabled;
     [self reconfigureCellsForItems:@[ _pageContentSharingItem ]];
   }
+}
+
+- (void)updateDynamicSettingsRows:
+    (NSArray<GeminiSettingsMetadata*>*)newSettings {
+  // Remove previous dynamic settings sections.
+  for (GeminiSettingsMetadata* oldSetting in _dynamicSettings) {
+    NSInteger settingIdentifier = oldSetting.context + kDynamicSettingsIdOffset;
+    [self.tableViewModel removeSectionWithIdentifier:settingIdentifier];
+  }
+
+  _dynamicSettings = newSettings;
+
+  // Add a new section, item and optional footer for each dynamic setting.
+  for (GeminiSettingsMetadata* newSetting in newSettings) {
+    NSInteger settingIdentifier = newSetting.context + kDynamicSettingsIdOffset;
+
+    [self.tableViewModel addSectionWithIdentifier:settingIdentifier];
+
+    TableViewDetailTextItem* settingItem =
+        [[TableViewDetailTextItem alloc] initWithType:settingIdentifier];
+    settingItem.text = newSetting.title;
+    [self.tableViewModel addItem:settingItem
+         toSectionWithIdentifier:settingIdentifier];
+
+    if (newSetting.subtitle) {
+      TableViewLinkHeaderFooterItem* settingFooterItem =
+          [self headerFooterItemWithType:ItemTypeAppActivityFooter
+                                    text:newSetting.subtitle
+                                 linkURL:GURL()];
+      [self.tableViewModel setFooter:settingFooterItem
+            forSectionWithIdentifier:settingIdentifier];
+    }
+  }
+  [self.tableView reloadData];
 }
 
 @end

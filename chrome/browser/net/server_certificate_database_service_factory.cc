@@ -4,9 +4,8 @@
 
 #include "chrome/browser/net/server_certificate_database_service_factory.h"
 
-#include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "components/server_certificate_database/server_certificate_database_service.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -65,23 +64,19 @@ ServerCertificateDatabaseServiceFactory::
     ServerCertificateDatabaseServiceFactory()
     : ProfileKeyedServiceFactory(
           "ServerCertificateDatabaseService",
-          base::FeatureList::IsEnabled(
-              ::features::kEnableCertManagementUIV2Write)
-              ?
-              // Use the same service for incognito profiles.
-              ProfileSelections::Builder()
-                  .WithRegular(ProfileSelection::kRedirectedToOriginal)
-                  // For Guest the need for these these are based off of what
-                  // ProfileNetworkContextService does.
-                  .WithGuest(ProfileSelection::kRedirectedToOriginal)
-                  // Not needed for Ash internals as it's not a real user
-                  // profile and so there isn't a user to use the database.
-                  // This also matches the practical behavior of
-                  // NssServiceFactory which will end up crashing the browser
-                  // if attempted to use on an AshInternals profile.
-                  .WithAshInternals(ProfileSelection::kNone)
-                  .Build()
-              : ProfileSelections::BuildNoProfilesSelected()
+          // Use the same service for incognito profiles.
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              // For Guest the need for these these are based off of what
+              // ProfileNetworkContextService does.
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              // Not needed for Ash internals as it's not a real user
+              // profile and so there isn't a user to use the database.
+              // This also matches the practical behavior of
+              // NssServiceFactory which will end up crashing the browser
+              // if attempted to use on an AshInternals profile.
+              .WithAshInternals(ProfileSelection::kNone)
+              .Build()
 
       ) {
 #if BUILDFLAG(IS_CHROMEOS)

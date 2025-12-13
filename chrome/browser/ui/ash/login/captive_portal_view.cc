@@ -25,7 +25,7 @@ GURL CaptivePortalStartURL() {
   const NetworkState* default_network =
       NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
   if (!default_network || default_network->probe_url().is_empty()) {
-    return GURL(captive_portal::CaptivePortalDetector::kDefaultURL);
+    return GURL(captive_portal::CaptivePortalDetector::GetDefaultUrl());
   }
   return default_network->probe_url();
 }

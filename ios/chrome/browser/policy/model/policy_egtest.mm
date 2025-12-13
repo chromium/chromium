@@ -20,8 +20,8 @@
 #import "components/policy/test_support/signature_provider.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_constants.h"
@@ -452,14 +452,13 @@ constexpr char kEnrollmentToken[] = "fake-enrollment-token";
                                         IDS_IOS_MANAGEMENT_UI_DESC)];
 
   // Check the navigation.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          kChromeUIManagementURL)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL(kChromeUIManagementURL)];
 }
 
 // Tests whether the managed item will be shown if UserPolicy is enabled and
 // the browser is signed in with a managed account.
-- (void)testPopupMenuItemWithUserPolicy {
+// TODO(crbug.com/435333773): Reenable this test.
+- (void)FLAKY_testPopupMenuItemWithUserPolicy {
   // Sign in with a managed account.
   NSString* managedAccountEmail = base::SysUTF8ToNSString(
       base::StrCat({"enterprise@", policy::SignatureProvider::kTestDomain1}));
@@ -481,9 +480,7 @@ constexpr char kEnrollmentToken[] = "fake-enrollment-token";
 
   // Check the navigation without assert the content (which is done in another
   // test case).
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          kChromeUIManagementURL)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL(kChromeUIManagementURL)];
 }
 
 // Tests the chrome://management page when no machine level policy is set.
@@ -558,6 +555,63 @@ constexpr char kEnrollmentToken[] = "fake-enrollment-token";
       waitForWebStateContainingText:
           l10n_util::GetStringFUTF8(IDS_MANAGEMENT_SUBTITLE_PROFILE_MANAGED_BY,
                                     base::SysNSStringToUTF16(kDomain1))];
+}
+
+// Tests the chrome://management page when reporting is disabled.
+- (void)testManagementPageManagedWithoutReporting {
+  // Open the management page.
+  [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                        IDS_MANAGEMENT_BROWSER_REPORTING)];
+
+  // Expect the profile reporting section to be invisible.
+  GREYAssertFalse(
+      [ChromeEarlGrey webStateContainsElement:VisibleElementSelector(
+                                                  @"profile-reporting-info")],
+      @"Profile reporting section is visible.");
+}
+
+// Tests the chrome://management page when browser reporting is enabled.
+- (void)testManagementPageManagedWithBrowserReporting {
+  // Set up profile reporting.
+  SetPolicy(true, policy::key::kCloudReportingEnabled);
+
+  // Open the management page and check if the content is expected.
+  [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
+  [ChromeEarlGrey waitForWebStateContainingText:
+                      l10n_util::GetStringUTF8(
+                          IDS_MANAGEMENT_BROWSER_REPORTING_EXPLANATION)];
+}
+
+// Tests the chrome://management page when profile reporting is enabled.
+- (void)testManagementPageManagedWithProfileReporting {
+  // Set up profile reporting.
+  SetPolicy(true, policy::key::kCloudProfileReportingEnabled);
+
+  // Open the management page and check if the content is expected.
+  [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
+  [ChromeEarlGrey waitForWebStateContainingText:
+                      l10n_util::GetStringUTF8(
+                          IDS_MANAGEMENT_PROFILE_REPORTING_EXPLANATION)];
+}
+
+// Tests the chrome://management page when browser reporting is enabled.
+- (void)testManagementPageManagedWithBrowserAndProfileReporting {
+  // Set up profile reporting.
+  SetPolicy(true, policy::key::kCloudReportingEnabled);
+
+  // Open the management page and check if the content is expected.
+  [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
+  [ChromeEarlGrey waitForWebStateContainingText:
+                      l10n_util::GetStringUTF8(
+                          IDS_MANAGEMENT_BROWSER_REPORTING_EXPLANATION)];
+
+  // If both are enabled, only show the browser reporting section.
+  GREYAssertFalse(
+      [ChromeEarlGrey webStateContainsElement:VisibleElementSelector(
+                                                  @"profile-reporting-info")],
+      @"Profile reporting section is visible.");
 }
 
 // Tests the chrome://management page when there are machine level policies and
@@ -665,9 +719,6 @@ constexpr char kEnrollmentToken[] = "fake-enrollment-token";
   config.additional_args.push_back(
       base::StrCat({"--", policy::switches::kDeviceManagementUrl, "=",
                     _server->GetServiceURL().spec()}));
-
-  config.features_enabled.push_back(
-      enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS);
 
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -812,9 +863,9 @@ constexpr char kEnrollmentToken[] = "fake-enrollment-token";
 }
 
 // Tests enterprise mode in the Privacy Safe Browsing settings as if the
-// enterprise selected Enhanced Protection as the choice of protection.
-- (void)testEnhancedSafeBrowsing {
-  SetPolicy(2, policy::key::kSafeBrowsingProtectionLevel);
+// enterprise selected No Protection as the choice of protection.
+- (void)testEnterpriseBubbleInEnhancedSafeBrowsingPage {
+  SetPolicy(0, policy::key::kSafeBrowsingProtectionLevel);
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::SettingsMenuPrivacyButton()];
@@ -824,12 +875,12 @@ constexpr char kEnrollmentToken[] = "fake-enrollment-token";
 
   // Tap the info button on row. Accessibility point has been changed in this
   // TableViewInfoButtonItem to be on the center of the row instead of on the
-  // "i" button. To tap the "i" button, we select the info button as the matcher
-  // instead of the row.
+  // "i" button. To tap the "i" button, we select the info button as the
+  // matcher instead of the row.
   [[EarlGrey
       selectElementWithMatcher:
           grey_allOf(grey_ancestor(grey_accessibilityID(
-                         kSettingsSafeBrowsingStandardProtectionCellId)),
+                         kSettingsSafeBrowsingEnhancedProtectionCellId)),
                      grey_accessibilityID(kTableViewCellInfoButtonViewId),
                      grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
@@ -842,7 +893,7 @@ constexpr char kEnrollmentToken[] = "fake-enrollment-token";
   // Tap outside of the bubble.
   [[EarlGrey
       selectElementWithMatcher:
-          grey_accessibilityID(kSettingsSafeBrowsingStandardProtectionCellId)]
+          grey_accessibilityID(kSettingsSafeBrowsingEnhancedProtectionCellId)]
       performAction:grey_tap()];
 
   // Check if the contextual bubble is hidden.

@@ -24,9 +24,13 @@ class TickClock;
 
 namespace remoting {
 
-class DesktopDisplayInfo;
 class DesktopDisplayInfoMonitor;
 class DesktopResizer;
+
+struct RateLimitState {
+  base::TimeTicks previous_time;
+  base::OneShotTimer timer;
+};
 
 // TODO(alexeypa): Rename this class to reflect that it is not
 // HostStatusObserver any more.
@@ -51,9 +55,6 @@ class ResizingHostObserver : public ScreenControls {
                            std::optional<webrtc::ScreenId> screen_id) override;
   void SetVideoLayout(const protocol::VideoLayout& video_layout) override;
 
-  // Allows tests to provide display-info updates.
-  void SetDisplayInfoForTesting(const DesktopDisplayInfo& display_info);
-
   // Provide a replacement for base::TimeTicks::Now so that this class can be
   // unit-tested in a timely manner. This function will be called exactly
   // once for each call to SetScreenResolution.
@@ -73,9 +74,13 @@ class ResizingHostObserver : public ScreenControls {
   void RecordOriginalResolution(ScreenResolution resolution,
                                 webrtc::ScreenId screen_id);
 
-  void OnDisplayInfoChanged(const DesktopDisplayInfo& display_info);
+  void OnDisplayInfoChanged();
 
   std::unique_ptr<DesktopResizer> desktop_resizer_;
+
+  // It is only safe to access this from displays-changed callbacks, otherwise
+  // it could have been destroyed.
+  raw_ptr<DesktopDisplayInfoMonitor> display_info_monitor_;
 
   // List of per-monitor original resolutions to be restored.
   std::map<webrtc::ScreenId, ScreenResolution> original_resolutions_;
@@ -97,8 +102,7 @@ class ResizingHostObserver : public ScreenControls {
   ScreenResolution pending_resolution_request_;
 
   // State to manage rate-limiting of desktop resizes.
-  base::OneShotTimer deferred_resize_timer_;
-  base::TimeTicks previous_resize_time_;
+  std::map<webrtc::ScreenId, RateLimitState> rate_limiters_;
   raw_ptr<const base::TickClock> clock_;
 
   base::WeakPtrFactory<ResizingHostObserver> weak_factory_{this};

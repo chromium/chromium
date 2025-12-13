@@ -7,20 +7,53 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "cc/base/features.h"
+#include "cc/scheduler/commit_earlyout_reason.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
 
 namespace cc {
 
 namespace {
 // Surfaces and CompositorTimingHistory don't support more than 1 pending swap.
 const int kMaxPendingSubmitFrames = 1;
+
+bool IsEligibleToThrottleMainFrameRate() {
+#if BUILDFLAG(IS_ANDROID)
+  // Still requires balancing tradeoffs for desktop Android, not enabled yet.
+  return !base::android::device_info::is_desktop();
+#else
+  return true;
+#endif
+}
+
+bool ShouldThrottleMainFrameRate(const SchedulerSettings& settings) {
+  if (!features::IsEligibleForThrottleMainFrameTo60Hz()) {
+    return false;
+  }
+#if BUILDFLAG(IS_ANDROID)
+  bool is_webview = settings.using_synchronous_renderer_compositor;
+  return is_webview
+             ? base::FeatureList::IsEnabled(
+                   features::kThrottleMainFrameTo60HzWebView)
+             : base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz);
+#else
+  return base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz);
+#endif  // BUILDFLAG(IS_ANDROID)
+}
 
 }  // namespace
 
@@ -282,7 +315,7 @@ void SchedulerStateMachine::AsProtozeroInto(
       processing_animation_worklets_for_pending_tree_);
   minor_state->set_processing_paint_worklets_for_pending_tree(
       processing_paint_worklets_for_pending_tree_);
-  minor_state->set_processing_paint_worklets_for_pending_tree(should_warm_up_);
+  minor_state->set_should_warm_up(should_warm_up_);
 }
 
 bool SchedulerStateMachine::PendingDrawsShouldBeAborted() const {
@@ -664,6 +697,7 @@ bool SchedulerStateMachine::ShouldSendBeginMainFrame() const {
 bool SchedulerStateMachine::ShouldThrottleSendBeginMainFrame() const {
   bool result = false;
   auto throttled_interval = MainFrameThrottledInterval();
+
   if (throttled_interval.is_positive() &&
       last_begin_impl_frame_time_ - last_sent_begin_main_frame_time_ <
           throttled_interval) {
@@ -675,6 +709,15 @@ bool SchedulerStateMachine::ShouldThrottleSendBeginMainFrame() const {
   // throttle. This is more expensive, but is required to reach perceptual
   // visual parity between throttled and non-throttled scrolling.
   if (is_current_scroll_main_painted_) {
+    result = false;
+  }
+
+  // Only evaluate the condition if we would be throttling, this is important
+  // for experiment targeting (not querying the feature).
+  if (result &&
+      base::FeatureList::IsEnabled(
+          features::kBoostFrameRateForUrgentMainFrame) &&
+      (Now() - last_urgent_main_frame_request_) < kUrgentBoostDuration) {
     result = false;
   }
 
@@ -1538,11 +1581,10 @@ void SchedulerStateMachine::FrameIntervalUpdated(
   constexpr float kSlackFactor = .9;
   bool fast_vsync_interval =
       frame_interval < base::Hertz(120) * (1 / kSlackFactor);
-  if (fast_vsync_interval) {
+  if (fast_vsync_interval && IsEligibleToThrottleMainFrameRate()) {
     features::SetIsEligibleForThrottleMainFrameTo60Hz(true);
   }
-  if (fast_vsync_interval &&
-      base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz)) {
+  if (fast_vsync_interval && ShouldThrottleMainFrameRate(settings_)) {
     // Here as well, use a slack factor, to make sure that small timing
     // variations don't result in uneven pacing.
     //
@@ -1558,6 +1600,9 @@ void SchedulerStateMachine::FrameIntervalUpdated(
 }
 
 bool SchedulerStateMachine::IsDrawThrottled() const {
+  if (base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
+    return false;
+  }
   return pending_submit_frames_ >= kMaxPendingSubmitFrames &&
          !settings_.disable_frame_rate_limit;
 }
@@ -1612,25 +1657,27 @@ void SchedulerStateMachine::SetNeedsPrepareTiles() {
   }
 }
 void SchedulerStateMachine::DidSubmitCompositorFrame() {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("cc", "Scheduler:pending_submit_frames",
-                                    TRACE_ID_LOCAL(this), "pending_frames",
-                                    pending_submit_frames_);
+  if (!base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
+    TRACE_EVENT_BEGIN("cc", "Scheduler:pending_submit_frames",
+                      perfetto::Track::FromPointer(this), "pending_frames",
+                      pending_submit_frames_);
 
-  // If we are running with no frame rate limits, the GPU process can submit
-  // a new BeginFrame request if the deadline for the pending BeginFrame
-  // request expires. It will basically cause this DCHECK to fire as we may
-  // not have received acks for previously submitted requests.
-  // Please see SchedulerStateMachine::IsDrawThrottled() where throttling
-  // is disabled when the disable_frame_rate_limit setting is enabled.
-  // TODO(ananta/jonross/sunnyps)
-  // http://crbug.com/346931323
-  // We should remove or change this once VRR support is implemented for
-  // Windows and other platforms potentially.
-  if (!settings_.disable_frame_rate_limit) {
-    DCHECK_LT(pending_submit_frames_, kMaxPendingSubmitFrames);
+    // If we are running with no frame rate limits, the GPU process can submit
+    // a new BeginFrame request if the deadline for the pending BeginFrame
+    // request expires. It will basically cause this DCHECK to fire as we may
+    // not have received acks for previously submitted requests.
+    // Please see SchedulerStateMachine::IsDrawThrottled() where throttling
+    // is disabled when the disable_frame_rate_limit setting is enabled.
+    // TODO(ananta/jonross/sunnyps)
+    // http://crbug.com/346931323
+    // We should remove or change this once VRR support is implemented for
+    // Windows and other platforms potentially.
+    if (!settings_.disable_frame_rate_limit) {
+      DCHECK_LT(pending_submit_frames_, kMaxPendingSubmitFrames);
+    }
+
+    pending_submit_frames_++;
   }
-
-  pending_submit_frames_++;
   submit_frames_with_current_layer_tree_frame_sink_++;
 
   did_submit_in_last_frame_ = true;
@@ -1638,10 +1685,14 @@ void SchedulerStateMachine::DidSubmitCompositorFrame() {
 }
 
 void SchedulerStateMachine::DidReceiveCompositorFrameAck() {
-  TRACE_EVENT_NESTABLE_ASYNC_END1("cc", "Scheduler:pending_submit_frames",
-                                  TRACE_ID_LOCAL(this), "pending_frames",
-                                  pending_submit_frames_);
-  pending_submit_frames_--;
+  if (base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
+    NOTREACHED();
+  } else {
+    TRACE_EVENT_END("cc", /*"Scheduler:pending_submit_frames"*/
+                    perfetto::Track::FromPointer(this), "pending_frames",
+                    pending_submit_frames_);
+    pending_submit_frames_--;
+  }
 }
 
 void SchedulerStateMachine::SetTreePrioritiesAndScrollState(
@@ -1679,6 +1730,7 @@ void SchedulerStateMachine::SetNeedsBeginMainFrame(bool now) {
 
   if (now) {
     last_sent_begin_main_frame_time_ = base::TimeTicks();
+    last_urgent_main_frame_request_ = Now();
   }
 }
 
@@ -1718,6 +1770,9 @@ void SchedulerStateMachine::BeginMainFrameAborted(CommitEarlyOutReason reason) {
       case CommitEarlyOutReason::kFinishedNoUpdates:
         WillCommit(/*commit_had_no_updates=*/true);
         break;
+      case CommitEarlyOutReason::kNoEarlyOut:
+        // Not a real case, only used for metrics.
+        NOTREACHED();
     }
   } else {
     DCHECK(settings_.main_frame_before_commit_enabled);
@@ -1733,6 +1788,9 @@ void SchedulerStateMachine::BeginMainFrameAborted(CommitEarlyOutReason reason) {
       case CommitEarlyOutReason::kFinishedNoUpdates:
         commit_count_++;
         break;
+      case CommitEarlyOutReason::kNoEarlyOut:
+        // Not a real case, only used for metrics.
+        NOTREACHED();
     }
   }
 }
@@ -1838,6 +1896,10 @@ void SchedulerStateMachine::SetShouldThrottleFrameRate(bool flag) {
   if (base::FeatureList::IsEnabled(features::kRenderThrottleFrameRate)) {
     throttle_frame_rate_ = flag;
   }
+}
+
+base::TimeTicks SchedulerStateMachine::Now() const {
+  return base::TimeTicks::Now();
 }
 
 base::TimeDelta SchedulerStateMachine::MainFrameThrottledInterval() const {

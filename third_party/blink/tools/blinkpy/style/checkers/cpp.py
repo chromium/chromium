@@ -39,14 +39,12 @@ import math  # for log
 import os
 import os.path
 import re
-import six
 import sre_compile
 import unicodedata
 
 from blinkpy.common.system.filesystem import FileSystem
 
 from functools import total_ordering
-
 
 # Headers that we consider STL headers.
 _STL_HEADERS = frozenset([
@@ -619,8 +617,8 @@ def is_cpp_string(line):
     """
 
     line = line.replace(r'\\', 'XX')  # after this, \\" does not match to \"
-    return (
-        (line.count('"') - line.count(r'\"') - line.count("'\"'")) & 1) == 1
+    return ((line.count('"') - line.count(r'\"') - line.count("'\"'"))
+            & 1) == 1
 
 
 def cleanse_raw_strings(raw_lines):
@@ -1080,6 +1078,7 @@ class _ClassState(object):
 
 
 class _FileState(object):
+
     def __init__(self, clean_lines, file_extension):
         self._clean_lines = clean_lines
         if file_extension in ['m', 'mm']:
@@ -1544,7 +1543,7 @@ def get_line_width(line):
       The width of the line in column positions, accounting for Unicode
       combining characters and wide characters.
     """
-    if isinstance(line, six.text_type):
+    if isinstance(line, str):
         width = 0
         for c in unicodedata.normalize('NFC', line):
             if unicodedata.east_asian_width(c) in ('W', 'F'):
@@ -1911,9 +1910,10 @@ def check_language(filename, clean_lines, line_number, file_extension,
                 'Using deprecated casting style.  '
                 'Use static_cast<%s>(...) instead' % matched.group(1))
 
-    check_c_style_cast(
-        line_number, line, clean_lines.raw_lines[line_number], 'static_cast',
-        r'\((int|float|double|bool|char|u?int(16|32|64))\)', error)
+    check_c_style_cast(line_number, line, clean_lines.raw_lines[line_number],
+                       'static_cast',
+                       r'\((int|float|double|bool|char|u?int(16|32|64))\)',
+                       error)
     # This doesn't catch all cases.  Consider (const char * const)"hello".
     check_c_style_cast(line_number, line, clean_lines.raw_lines[line_number],
                        'reinterpret_cast', r'\((\w+\s?\*+\s?)\)', error)
@@ -1961,8 +1961,8 @@ def check_language(filename, clean_lines, line_number, file_extension,
     if matched and not match(r"^''|-?[0-9]+|0x[0-9A-Fa-f]$", matched.group(2)):
         error(
             line_number, 'runtime/memset', 4,
-            'Did you mean "memset(%s, 0, %s)"?' % (matched.group(1),
-                                                   matched.group(2)))
+            'Did you mean "memset(%s, 0, %s)"?' %
+            (matched.group(1), matched.group(2)))
 
     # Detect variable-length arrays.
     matched = match(r'\s*(.+::)?(\w+) [a-z]\w*\[(.+)];', line)
@@ -2331,8 +2331,8 @@ def check_c_style_cast(line_number, line, raw_line, cast_type, pattern, error):
     # At this point, all that should be left is actual casts.
     error(
         line_number, 'readability/casting', 4,
-        'Using C-style cast.  Use %s<%s>(...) instead' % (cast_type,
-                                                          matched.group(1)))
+        'Using C-style cast.  Use %s<%s>(...) instead' %
+        (cast_type, matched.group(1)))
 
 
 _HEADERS_CONTAINING_TEMPLATES = (
@@ -2584,8 +2584,8 @@ def check_for_include_what_you_use(filename, clean_lines, include_state,
     # include_state is modified during iteration, so we iterate over a copy of
     # the keys.
     for header in list(include_state):  # NOLINT
-        (same_module, common_path) = files_belong_to_same_module(
-            abs_filename, header)
+        (same_module,
+         common_path) = files_belong_to_same_module(abs_filename, header)
         fullpath = common_path + header
         if same_module and update_include_state(fullpath, include_state):
             header_found = True
@@ -2662,8 +2662,8 @@ def _process_lines(filename, file_extension, lines, error, min_confidence):
              last element being empty if the file is terminated with a newline.
       error: A callable to which errors are reported, which takes 4 arguments:
     """
-    lines = (['// marker so line numbers and indices both start at 1'] + lines
-             + ['// marker so line numbers end in a known way'])
+    lines = (['// marker so line numbers and indices both start at 1'] +
+             lines + ['// marker so line numbers end in a known way'])
 
     include_state = _IncludeState()
     function_state = _FunctionState(min_confidence)

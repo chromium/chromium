@@ -43,7 +43,7 @@ source_set("test_support") {
     "//components/prefs",
     "//testing/gmock",
     "//testing/gtest",
-    "//url:url",
+    "//url",
   ]
 }
 
@@ -55,6 +55,6 @@ source_set("unit_tests") {
     ":in_memory",
     "//base/test:test_support",
     "//testing/gtest",
-    "//url:url",
+    "//url",
   ]
 }

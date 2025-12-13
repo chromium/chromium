@@ -5,7 +5,7 @@
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 
 #include "components/input/native_web_keyboard_event.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
 namespace views {

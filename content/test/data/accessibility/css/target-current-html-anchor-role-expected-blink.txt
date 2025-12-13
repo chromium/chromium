@@ -1,0 +1,27 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++link name='One' ariaCurrentState=true
+++++++++++staticText name='One'
+++++++++++++inlineTextBox name='One'
+++++++++staticText name=' '
+++++++++++inlineTextBox name=' '
+++++++++link name='Two'
+++++++++++staticText name='Two'
+++++++++++++inlineTextBox name='Two'
+++++++++staticText name=' '
+++++++++++inlineTextBox name=' '
+++++++++link name='Three'
+++++++++++staticText name='Three'
+++++++++++++inlineTextBox name='Three'
+++++++genericContainer
+++++++++genericContainer
+++++++++++staticText name='One'
+++++++++++++inlineTextBox name='One'
+++++++++genericContainer
+++++++++++staticText name='Two'
+++++++++++++inlineTextBox name='Two'
+++++++++genericContainer
+++++++++++staticText name='Three'
+++++++++++++inlineTextBox name='Three'

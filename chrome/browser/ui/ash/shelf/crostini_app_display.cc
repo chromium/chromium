@@ -30,7 +30,7 @@ void CrostiniAppDisplay::Register(const std::string& app_id,
 int64_t CrostiniAppDisplay::GetDisplayIdForAppId(const std::string& app_id) {
   auto it = app_id_to_display_id_.find(app_id);
   if (it == app_id_to_display_id_.end()) {
-    return display::Screen::GetScreen()->GetDisplayForNewWindows().id();
+    return display::Screen::Get()->GetDisplayForNewWindows().id();
   }
   return it->second;
 }

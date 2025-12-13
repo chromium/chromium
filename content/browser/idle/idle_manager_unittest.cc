@@ -18,6 +18,7 @@
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/test_browser_context.h"
@@ -35,7 +36,6 @@
 using blink::mojom::IdleManagerError;
 using blink::mojom::IdleStatePtr;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -118,11 +118,11 @@ class IdleManagerTest : public RenderViewHostTestHarness {
 
   void SetPermissionStatus(blink::mojom::PermissionStatus permission_status) {
     ON_CALL(*permission_manager_,
-            GetPermissionStatusForCurrentDocument(
+            GetPermissionResultForCurrentDocument(
                 PermissionTypeMatcher(blink::PermissionType::IDLE_DETECTION),
                 main_rfh(),
                 /*should_include_device_status*/ false))
-        .WillByDefault(Return(permission_status));
+        .WillByDefault(Return(PermissionResult(permission_status)));
   }
 
   std::tuple<UserIdleState, ScreenIdleState> AddMonitorRequest() {
@@ -143,11 +143,11 @@ class IdleManagerTest : public RenderViewHostTestHarness {
     IdleStatePtr result;
 
     EXPECT_CALL(idle_monitor_, Update(_, expect_override))
-        .WillOnce(Invoke([&loop, &result](IdleStatePtr state,
-                                          bool is_overridden_by_devtools) {
+        .WillOnce([&loop, &result](IdleStatePtr state,
+                                   bool is_overridden_by_devtools) {
           result = std::move(state);
           loop.Quit();
-        }));
+        });
 
     if (!expect_override) {
       // If we aren't expecting an override then we need to fast forward in

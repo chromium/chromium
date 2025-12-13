@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<span id="a" tabindex="-1">hello</span>
+<span id="b" tabindex="-1">world</span>
+<script>
+  const spanB = document.getElementById('b');
+  const rect = spanB.getBoundingClientRect();
+
+  // Get coordinates for the first character
+  let xLeft = rect.left + 1;
+  let y = rect.top + rect.height / 2;
+  let xRight = rect.left + 10;
+  if (spanB.firstChild && spanB.firstChild.length > 0) {
+    const range = document.createRange();
+    range.setStart(spanB.firstChild, 0);
+    range.setEnd(spanB.firstChild, 1);
+    const rects = range.getClientRects();
+    if (rects.length > 0) {
+      xRight = rects[0].right;
+    }
+  }
+
+  promise_test(() => {
+    return new Promise((resolve, reject) => {
+      assert_own_property(window, 'chrome');
+      assert_own_property(window.chrome, 'gpuBenchmarking');
+      chrome.gpuBenchmarking.pointerActionSequence([{
+        source: 'mouse',
+        actions: [
+          { name: 'pointerDown', x: xLeft, y: y },
+          { name: 'pointerMove', x: xRight, y: y },
+          { name: 'pointerUp' }
+        ]
+      }], resolve);
+    }).then(() => {
+      const sel = window.getSelection();
+      assert_equals(sel.toString(), "w", "Selected text should be 'w'");
+      assert_equals(sel.anchorNode, spanB.firstChild, "Selection anchor should be in spanB");
+      assert_equals(sel.anchorOffset, 0, "Selection anchor offset should be 0 in spanB");
+      assert_equals(sel.focusNode, spanB.firstChild, "Selection focus should be in spanB");
+      assert_equals(sel.focusOffset, 1, "Selection focus offset should be 1 in spanB");
+      assert_false(sel.isCollapsed, "Selection should not be collapsed");
+    });
+
+  }, "Mouse selection of first letter in non-editable span with tabindex");
+</script>

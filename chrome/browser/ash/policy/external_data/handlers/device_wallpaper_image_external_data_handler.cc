@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "chrome/common/pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -26,23 +26,17 @@ DeviceWallpaperImageExternalDataHandler::
 DeviceWallpaperImageExternalDataHandler::
     ~DeviceWallpaperImageExternalDataHandler() = default;
 
-// static
-void DeviceWallpaperImageExternalDataHandler::RegisterPrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(prefs::kDeviceWallpaperImageFilePath,
-                               std::string());
-}
-
 void DeviceWallpaperImageExternalDataHandler::OnDeviceExternalDataCleared(
     const std::string& policy) {
-  local_state_->SetString(prefs::kDeviceWallpaperImageFilePath, std::string());
+  local_state_->SetString(ash::prefs::kDeviceWallpaperImageFilePath,
+                          std::string());
 }
 
 void DeviceWallpaperImageExternalDataHandler::OnDeviceExternalDataFetched(
     const std::string& policy,
     std::unique_ptr<std::string> data,
     const base::FilePath& file_path) {
-  local_state_->SetString(prefs::kDeviceWallpaperImageFilePath,
+  local_state_->SetString(ash::prefs::kDeviceWallpaperImageFilePath,
                           file_path.value());
 }
 

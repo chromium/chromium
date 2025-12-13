@@ -6,9 +6,11 @@
 #define JNI_ZERO_COMMON_APIS_H_
 
 #include <jni.h>
+#include <stdint.h>
 
 #include "third_party/jni_zero/java_refs.h"
 #include "third_party/jni_zero/jni_export.h"
+#include "third_party/jni_zero/type_conversions.h"
 
 namespace jni_zero {
 // Wraps Collection.toArray().
@@ -26,6 +28,10 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> ArrayToMap(
     JNIEnv* env,
     const JavaRef<jobjectArray>& array);
 
+//
+// java.util.List
+//
+
 JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject>
 ListGet(JNIEnv* env, const JavaRef<jobject>& list, jint idx);
 
@@ -34,25 +40,86 @@ JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> ListSet(
     const JavaRef<jobject>& list,
     jint idx,
     const JavaRef<jobject>& value);
+// Use ToJniType on the value.
+template <typename V>
+  requires(!internal::IsJavaRef<V>)
+inline ScopedJavaLocalRef<jobject> ListSet(JNIEnv* env,
+                                           const JavaRef<jobject>& list,
+                                           jint idx,
+                                           const V& value) {
+  return ListSet(env, list, idx, ToJniType(env, value));
+}
 
-JNI_ZERO_COMPONENT_BUILD_EXPORT void ListAdd(JNIEnv* env,
-                                             const JavaRef<jobject>& list,
-                                             const JavaRef<jobject>& value);
-
-JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject>
-MapGet(JNIEnv* env, const JavaRef<jobject>& map, const JavaRef<jobject>& key);
-
-JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> SetMapAt(
+//
+// java.util.Collection
+//
+JNI_ZERO_COMPONENT_BUILD_EXPORT bool CollectionAdd(
     JNIEnv* env,
-    const JavaRef<jobject>& map,
-    const JavaRef<jobject>& key,
+    const JavaRef<jobject>& collection,
+    const JavaRef<jobject>& value);
+// Use ToJniType on the value.
+template <typename V>
+  requires(!internal::IsJavaRef<V>)
+inline ScopedJavaLocalRef<jobject>
+CollectionAdd(JNIEnv* env, const JavaRef<jobject>& collection, const V& value) {
+  return CollectionAdd(env, collection, ToJniType(env, value));
+}
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT bool CollectionRemove(
+    JNIEnv* env,
+    const JavaRef<jobject>& collection,
+    const JavaRef<jobject>& value);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT void CollectionClear(
+    JNIEnv* env,
+    const JavaRef<jobject>& collection);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT bool CollectionContains(
+    JNIEnv* env,
+    const JavaRef<jobject>& collection,
     const JavaRef<jobject>& value);
 
 JNI_ZERO_COMPONENT_BUILD_EXPORT jint
 CollectionSize(JNIEnv* env, const JavaRef<jobject>& collection);
 
+//
+// java.util.Map
+//
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject>
+MapGet(JNIEnv* env, const JavaRef<jobject>& map, const JavaRef<jobject>& key);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> MapPut(
+    JNIEnv* env,
+    const JavaRef<jobject>& map,
+    const JavaRef<jobject>& key,
+    const JavaRef<jobject>& value);
+
+// Use ToJniType on the key/value.
+template <typename K, typename V>
+  requires(!internal::IsJavaRef<K> && !internal::IsJavaRef<V>)
+inline ScopedJavaLocalRef<jobject> MapPut(JNIEnv* env,
+                                          const JavaRef<jobject>& map,
+                                          const K& key,
+                                          const V& value) {
+  return MapPut(env, map, ToJniType(env, key), ToJniType(env, value));
+}
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT bool MapContainsKey(
+    JNIEnv* env,
+    const JavaRef<jobject>& map,
+    const JavaRef<jobject>& key);
+
+JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> MapRemove(
+    JNIEnv* env,
+    const JavaRef<jobject>& map,
+    const JavaRef<jobject>& key);
+
 JNI_ZERO_COMPONENT_BUILD_EXPORT jint MapSize(JNIEnv* env,
                                              const JavaRef<jobject>& map);
+//
+// Boxed types
+//
 JNI_ZERO_COMPONENT_BUILD_EXPORT bool FromJavaBoolean(
     JNIEnv* env,
     const JavaRef<jobject>& j_bool);

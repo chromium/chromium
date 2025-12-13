@@ -84,6 +84,7 @@ const net::BackoffEntry::Policy kDefaultBackoffPolicy = {
 ChromotingHost::ChromotingHost(
     DesktopEnvironmentFactory* desktop_environment_factory,
     std::unique_ptr<protocol::SessionManager> session_manager,
+    std::unique_ptr<protocol::SessionManager> secondary_session_manager,
     scoped_refptr<protocol::TransportContext> transport_context,
     scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner,
@@ -92,6 +93,7 @@ ChromotingHost::ChromotingHost(
     const LocalSessionPoliciesProvider* local_session_policies_provider)
     : desktop_environment_factory_(desktop_environment_factory),
       session_manager_(std::move(session_manager)),
+      secondary_session_manager_(std::move(secondary_session_manager)),
       transport_context_(transport_context),
       audio_task_runner_(audio_task_runner),
       video_encode_task_runner_(video_encode_task_runner),
@@ -112,9 +114,9 @@ ChromotingHost::~ChromotingHost() {
                                         FROM_HERE);
   }
 
-  // Destroy the session manager to make sure that |signal_strategy_| does not
-  // have any listeners registered.
+  // Destroy the session manager(s) to unregister their SignalStrategy listeners
   session_manager_.reset();
+  secondary_session_manager_.reset();
 
   // Notify observers.
   if (started_) {
@@ -136,6 +138,10 @@ void ChromotingHost::Start(const std::string& host_owner_email) {
 
   session_manager_->AcceptIncoming(base::BindRepeating(
       &ChromotingHost::OnIncomingSession, base::Unretained(this)));
+  if (secondary_session_manager_) {
+    secondary_session_manager_->AcceptIncoming(base::BindRepeating(
+        &ChromotingHost::OnIncomingSession, base::Unretained(this)));
+  }
 }
 
 #if BUILDFLAG(IS_LINUX)
@@ -164,6 +170,10 @@ void ChromotingHost::AddExtension(std::unique_ptr<HostExtension> extension) {
 void ChromotingHost::SetAuthenticatorFactory(
     std::unique_ptr<protocol::AuthenticatorFactory> authenticator_factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (secondary_session_manager_) {
+    secondary_session_manager_->set_authenticator_factory(
+        authenticator_factory->Clone());
+  }
   session_manager_->set_authenticator_factory(std::move(authenticator_factory));
 }
 

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/signin_promo_view_wrapper"
+    style="@style/MaterialCardStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/signin_promo_two_buttons_container_horizontal_padding"
+        android:layout_marginVertical="@dimen/signin_promo_two_buttons_container_vertical_padding">
+        <TextView
+            android:id="@+id/signin_promo_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:lineHeight="20sp"
+            android:includeFontPadding="false"
+            android:paddingEnd="@dimen/signin_promo_two_buttons_title_horizontal_padding"
+            android:paddingStart="@dimen/signin_promo_two_buttons_title_horizontal_padding"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="@string/signin_promo_title" />
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/signin_promo_dismiss_button"
+            android:layout_width="@dimen/signin_promo_two_buttons_dismiss_button_size"
+            android:layout_height="@dimen/signin_promo_two_buttons_dismiss_button_size"
+            android:background="?attr/selectableItemBackground"
+            android:src="@drawable/btn_close"
+            android:scaleType="center"
+            android:contentDescription="@string/close"
+            android:accessibilityTraversalBefore="@id/signin_promo_image"
+            app:layout_constraintTop_toTopOf="@id/signin_promo_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/signin_promo_title"
+            app:tint="@macro/default_icon_color" />
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/signin_promo_title_description_barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="signin_promo_title,signin_promo_dismiss_button" />
+        <ImageView
+            android:id="@+id/signin_promo_image"
+            android:layout_width="@dimen/signin_promo_cold_state_image_size"
+            android:layout_height="@dimen/signin_promo_cold_state_image_size"
+            android:layout_marginTop="@dimen/signin_promo_two_buttons_space_between_title_and_description"
+            android:scaleType="fitCenter"
+            android:importantForAccessibility="no"
+            app:layout_constraintTop_toBottomOf="@id/signin_promo_title_description_barrier"
+            app:layout_constraintEnd_toStartOf="@id/signin_promo_description"
+            app:layout_constraintBottom_toTopOf="@id/signin_promo_description_buttons_barrier"
+            app:layout_constraintStart_toStartOf="parent" />
+        <TextView
+            android:id="@+id/signin_promo_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="@dimen/signin_promo_two_buttons_space_between_title_and_description"
+            android:lineHeight="16sp"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+            android:gravity="center_vertical"
+            android:includeFontPadding="false"
+            app:layout_constraintTop_toBottomOf="@id/signin_promo_title_description_barrier"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/signin_promo_description_buttons_barrier"
+            app:layout_constraintStart_toEndOf="@id/signin_promo_image"
+            tools:text="@string/signin_promo_description_recent_tabs" />
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/signin_promo_description_buttons_barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="signin_promo_image,signin_promo_description" />
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/signin_promo_primary_button"
+            style="@style/FilledButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/signin_promo_two_buttons_space_between_buttons_and_description"
+            android:text="@string/sync_promo_continue_as"
+            android:singleLine="true"
+            android:ellipsize="end"
+            app:layout_constraintTop_toBottomOf="@id/signin_promo_description_buttons_barrier"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/signin_promo_secondary_button"
+            style="@style/SigninButtonBorderlessRegular"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/signin_promo_choose_account"
+            android:singleLine="true"
+            android:ellipsize="end"
+            app:layout_constraintTop_toBottomOf="@id/signin_promo_primary_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>

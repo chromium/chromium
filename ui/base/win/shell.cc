@@ -110,25 +110,23 @@ void SetAppDetailsForWindow(const std::wstring& app_id,
     return;
 
   if (!app_id.empty())
-    base::win::SetAppIdForPropertyStore(pps.Get(), app_id.c_str());
+    base::win::SetAppIdForPropertyStore(pps.Get(), app_id);
   if (!app_icon_path.empty()) {
     // Always add the icon index explicitly to prevent bad interaction with the
     // index notation when file path has commas.
     base::win::SetStringValueForPropertyStore(
         pps.Get(), PKEY_AppUserModel_RelaunchIconResource,
         base::StrCat({app_icon_path.value(), L",",
-                      base::NumberToWString(app_icon_index)})
-            .c_str());
+                      base::NumberToWString(app_icon_index)}));
   }
   if (!relaunch_command.empty()) {
     base::win::SetStringValueForPropertyStore(
-        pps.Get(), PKEY_AppUserModel_RelaunchCommand,
-        relaunch_command.c_str());
+        pps.Get(), PKEY_AppUserModel_RelaunchCommand, relaunch_command);
   }
   if (!relaunch_display_name.empty()) {
     base::win::SetStringValueForPropertyStore(
         pps.Get(), PKEY_AppUserModel_RelaunchDisplayNameResource,
-        relaunch_display_name.c_str());
+        relaunch_display_name);
   }
 }
 

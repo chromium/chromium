@@ -8,43 +8,49 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderUtils.java",
+    "java/src/org/chromium/chrome/browser/ui/desktop_windowing/BasicAppHeaderStateProvider.java",
   ]
   deps = [
     "//base:base_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//components/browser_ui/desktop_windowing/android:java",
-    "//components/browser_ui/edge_to_edge/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_java",
+    "//ui/edge_to_edge:java",
   ]
 }
 
 robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderCoordinatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderTestUtils.java",
     "java/src/org/chromium/chrome/browser/ui/desktop_windowing/AppHeaderUtilsUnitTest.java",
+    "java/src/org/chromium/chrome/browser/ui/desktop_windowing/BasicAppHeaderStateProviderTest.java",
   ]
 
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:base_java_test_support_uncommon",
     "//base:base_junit_test_support",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//components/browser_ui/desktop_windowing/android:java",
-    "//components/browser_ui/edge_to_edge/android:java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
+    "//ui/edge_to_edge:java",
   ]
 }

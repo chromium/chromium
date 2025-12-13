@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/synchronization/waitable_event.h"
 
 #include <windows.h>
@@ -131,21 +126,21 @@ bool WaitableEvent::TimedWaitImpl(TimeDelta wait_delta) {
 }
 
 // static
-size_t WaitableEvent::WaitManyImpl(WaitableEvent** events, size_t count) {
+size_t WaitableEvent::WaitManyImpl(base::span<WaitableEvent*> events) {
   HANDLE handles[MAXIMUM_WAIT_OBJECTS];
-  CHECK_LE(count, static_cast<size_t>(MAXIMUM_WAIT_OBJECTS))
+  CHECK_LE(events.size(), static_cast<size_t>(MAXIMUM_WAIT_OBJECTS))
       << "Can only wait on " << MAXIMUM_WAIT_OBJECTS << " with WaitMany";
 
-  for (size_t i = 0; i < count; ++i) {
-    handles[i] = events[i]->handle();
+  for (size_t i = 0; i < events.size(); ++i) {
+    UNSAFE_TODO(handles[i]) = events[i]->handle();
   }
 
   // The cast is safe because count is small - see the CHECK above.
   DWORD result =
-      WaitForMultipleObjects(static_cast<DWORD>(count), handles,
+      WaitForMultipleObjects(static_cast<DWORD>(events.size()), handles,
                              FALSE,      // don't wait for all the objects
                              INFINITE);  // no timeout
-  if (result >= WAIT_OBJECT_0 + count) {
+  if (result >= WAIT_OBJECT_0 + events.size()) {
     DPLOG(FATAL) << "WaitForMultipleObjects failed";
     return 0;
   }

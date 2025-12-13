@@ -5,17 +5,14 @@
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
     <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
     <script src="../resources/biquad-filters.js"></script>
     <script src="test-tail-time.js"></script>
   </head>
 
   <body>
     <script>
-      let audit = Audit.createTaskRunner();
-
-      let sampleRate = 16384;
-      let renderSeconds = 1;
+      const sampleRate = 16384;
+      const renderSeconds = 1;
 
       // For a lowpass filter:
       //   b0 = (1-cos(w0))/2
@@ -38,7 +35,7 @@
 
       // Array of tests to run.  |descripton| is the task description for
       // audit.define.  |parameters| is option for |testTailTime|.
-      let tests = [
+      const tests = [
         {
           descripton:
               {label: 'lpf-complex-roots', description: 'complex roots'},
@@ -149,20 +146,22 @@
           // Node computed tail frame is 90000 which matches the real tail, so
           // tail output should be exactly 0.
           threshold: 0,
-        }
-      ]
+        },
+      ];
 
-      // Define an appropriate task for each test.
-      tests.forEach(entry => {
-        audit.define(entry.descripton, (task, should) => {
-          let context = new OfflineAudioContext(
-              1, entry.renderDuration * entry.sampleRate, entry.sampleRate);
-          testTailTime(should, context, entry.parameters)
-              .then(() => task.done());
-        });
-      });
+      for (const entry of tests) {
+        const testName = typeof entry.descripton === 'string'
+            ? entry.descripton
+            : `${entry.descripton.label}: ${entry.descripton.description}`;
 
-      audit.run();
+        promise_test(async () => {
+          const frames = Math.floor(entry.renderDuration * entry.sampleRate);
+          const context = new OfflineAudioContext(1, frames, entry.sampleRate);
+
+          await testTailTime_W3CTH(
+              context, {...entry.parameters, threshold: entry.threshold});
+        }, testName);
+      }
     </script>
   </body>
 </html>

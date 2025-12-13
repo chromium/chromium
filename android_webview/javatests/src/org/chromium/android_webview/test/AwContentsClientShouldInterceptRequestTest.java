@@ -8,7 +8,6 @@ import static org.chromium.android_webview.test.AwActivityTestRule.SCALED_WAIT_T
 
 import android.util.Pair;
 import android.webkit.JavascriptInterface;
-import android.webkit.WebViewClient;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -33,13 +32,13 @@ import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.CookieUtils;
 import org.chromium.android_webview.test.util.JSUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.TestFileUtil;
-import org.chromium.base.ThreadUtils;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.util.TestWebServer;
@@ -1806,10 +1805,10 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
                         "/worker.js",
                         String.format(
                                 """
-                                    self.onmessage = () => {
-                                      importScripts('%s');
-                                    }
-                        """,
+                                            self.onmessage = () => {
+                                              importScripts('%s');
+                                            }
+                                """,
                                 importScriptJs));
         final String mainPageUrl =
                 addPageToTestServer(
@@ -1819,11 +1818,11 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
                                 "",
                                 String.format(
                                         """
-                                            <script>
-                                              const w = new Worker('%s');
-                                              w.postMessage('msg');
-                                            </script>
-                                """,
+                                                    <script>
+                                                      const w = new Worker('%s');
+                                                      w.postMessage('msg');
+                                                    </script>
+                                        """,
                                         workerJs)));
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
@@ -1835,34 +1834,6 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
         Assert.assertEquals(
                 Arrays.asList(mainPageUrl, workerJs, importScriptJs),
                 mShouldInterceptRequestHelper.getUrls());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=WebViewShortCircuitShouldInterceptRequest"})
-    public void testShortCircuitShouldInterceptRequest() throws Throwable {
-        final String aboutPageUrl = addAboutPageToTestServer(mWebServer);
-
-        // This test currently relies on the fact that the WebViewClient handed to
-        // AwContents#onWebViewClientUpdated can be different from the one that's actually
-        // used (even though it shouldn't be in practice). All onWebViewClientUpdated does it checks
-        // whether the we can short circuit.
-
-        // Doing this more "properly" would be a pain because we need to overload
-        // WebViewClient#shouldInterceptRequest in the test to make sure that it isn't actually
-        // called, so we'd need to add some other back door to get things working.
-
-        // This seems good enough for a test.
-        mAwContents.onWebViewClientUpdated(new WebViewClient());
-
-        int onPageFinishedCallCount = mContentsClient.getOnPageFinishedHelper().getCallCount();
-        int shouldInterceptRequestCallCount = mShouldInterceptRequestHelper.getCallCount();
-        mActivityTestRule.loadUrlAsync(mAwContents, aboutPageUrl);
-        mContentsClient.getOnPageFinishedHelper().waitForCallback(onPageFinishedCallCount);
-
-        Assert.assertEquals(
-                shouldInterceptRequestCallCount, mShouldInterceptRequestHelper.getCallCount());
     }
 
     @Test
@@ -1935,48 +1906,5 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
                 "We should have seen at least all the requests for html pages.",
                 mShouldInterceptRequestHelper.getUrls().size() >= 1 + parallelRequestCount);
         mContentsClient.getOnPageFinishedHelper().waitForCallback(onPageFinishedCallCount);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    public void testTimingHistogramEmitted() throws Throwable {
-        String syncGetUrl = mWebServer.getResponseUrl("/intercept_me");
-        String aboutPageUrl = addAboutPageToTestServer(mWebServer);
-        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
-        HistogramWatcher.Builder builder =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecord(
-                                "Android.WebView.IoThreadClientOnUrlLoaderTime.RequestSetup")
-                        .expectAnyRecord(
-                                "Android.WebView.IoThreadClientOnUrlLoaderTime.RequestDone")
-                        .allowExtraRecordsForHistogramsAbove();
-
-        // No intercept
-        try (HistogramWatcher histogramExpectation = builder.build()) {
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), aboutPageUrl);
-        }
-
-        // Intercept
-        mShouldInterceptRequestHelper.enqueueHtmlResponseForUrl(syncGetUrl, "hello, world", null);
-        try (HistogramWatcher histogramExpectation = builder.build()) {
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), syncGetUrl);
-        }
-
-        // Bad input stream
-        mShouldInterceptRequestHelper.enqueueResponseForUrlWithStream(
-                syncGetUrl, "text/html", "UTF-8", ThrowingInputStream::new);
-        try (HistogramWatcher histogramExpectation = builder.build()) {
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), aboutPageUrl);
-        }
-
-        String redirectUrl = mWebServer.setRedirect("/redirect", aboutPageUrl);
-        try (HistogramWatcher histogramExpectation = builder.build()) {
-            mActivityTestRule.loadUrlSync(
-                    mAwContents, mContentsClient.getOnPageFinishedHelper(), redirectUrl);
-        }
     }
 }

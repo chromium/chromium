@@ -88,7 +88,7 @@ void ManifestIconDownloader::OnIconFetched(
   if (bitmaps.empty()) {
     if (web_contents && !suppress_warnings) {
       web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kError,
+          blink::mojom::ConsoleMessageLevel::kWarning,
           "Error while trying to use the following icon from the Manifest: " +
               url.spec() + " (Download error or resource isn't a valid image)");
     }
@@ -104,7 +104,7 @@ void ManifestIconDownloader::OnIconFetched(
   if (closest_index == -1) {
     if (web_contents && !suppress_warnings) {
       web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kError,
+          blink::mojom::ConsoleMessageLevel::kWarning,
           "Error while trying to use the following icon from the Manifest: " +
               url.spec() +
               " (Resource size is not correct - typo in the Manifest?)");

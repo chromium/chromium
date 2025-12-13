@@ -23,18 +23,17 @@
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/app_list_toast_view.h"
-#include "ash/app_list/views/assistant/app_list_bubble_assistant_page.h"
 #include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/continue_task_view.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
-#include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/notification_center/notification_center_tray.h"
@@ -46,18 +45,17 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -176,6 +174,27 @@ class AppListBubbleViewTest : public AshTestBase {
     auto* view = GetFocusedView();
     return view ? view->GetClassName() : "none";
   }
+
+  void SimulateGeminiAppInstalled() {
+    auto kTestAccountId =
+        Shell::Get()->session_controller()->GetActiveAccountId();
+
+    apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(kTestAccountId,
+                                                             &cache);
+
+    std::unique_ptr<apps::App> app =
+        std::make_unique<apps::App>(apps::AppType::kChromeApp, kGeminiAppId);
+    app->name = "Gemini App";
+
+    std::vector<apps::AppPtr> apps;
+    apps.push_back(std::move(app));
+
+    cache.OnAppsForTesting(std::move(apps), apps::AppType::kChromeApp,
+                           /*should_notify_initialized=*/false);
+  }
+
+ private:
+  apps::AppRegistryCache cache;
 };
 
 TEST_F(AppListBubbleViewTest, LayerConfiguration) {
@@ -239,8 +258,8 @@ TEST_F(AppListBubbleViewTest,
 
 TEST_F(AppListBubbleViewTest, OpeningBubbleTriggersAnimations) {
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Enable app list nudge to test the animation.
   GetAppListTestHelper()->DisableAppListNudge(false);
@@ -286,8 +305,8 @@ TEST_F(AppListBubbleViewTest, OpeningBubbleTriggersAnimations) {
 
 TEST_F(AppListBubbleViewTest, OpeningBubbleWithSideShelfTriggersAnimations) {
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Enable app list nudge to test the animation.
   GetAppListTestHelper()->DisableAppListNudge(false);
@@ -336,8 +355,8 @@ TEST_F(AppListBubbleViewTest, OpeningBubbleWithSideShelfTriggersAnimations) {
 
 TEST_F(AppListBubbleViewTest, ShowAnimationCreatesAndDestroysLayers) {
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Enable app list nudge to test the animation.
   GetAppListTestHelper()->DisableAppListNudge(false);
@@ -376,8 +395,8 @@ TEST_F(AppListBubbleViewTest, ShowAnimationCreatesAndDestroysLayers) {
 
 TEST_F(AppListBubbleViewTest, ShowAnimationDestroysAndRestoresShadow) {
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   AddAppItems(20);
   ShowAppList();
@@ -399,8 +418,8 @@ TEST_F(AppListBubbleViewTest, ShowAnimationRecordsSmoothnessHistogram) {
   base::HistogramTester histograms;
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Show an app list with just the apps grid.
   AddAppItems(5);
@@ -430,8 +449,8 @@ TEST_F(AppListBubbleViewTest, HideAnimationsRecordsSmoothnessHistogram) {
   ShowAppList();
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   AppListBubbleView* view = GetBubblePresenter()->bubble_view_for_test();
   ui::Layer* layer = view->layer();
@@ -454,8 +473,8 @@ TEST_F(AppListBubbleViewTest, ShutdownDuringHideAnimationDoesNotCrash) {
   base::HistogramTester histograms;
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Show the app list and wait for the show animation to finish.
   AddAppItems(5);
@@ -557,10 +576,8 @@ TEST_F(AppListBubbleViewTest, SearchBoxTextUsesPrimaryTextColor) {
 
   views::Textfield* search_box = GetSearchBoxView()->search_box();
   EXPECT_EQ(search_box->GetTextColor(),
-            AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kTextColorPrimary));
+            AshColorProvider::Get()->GetColor(cros_tokens::kTextColorPrimary));
 }
-
 
 TEST_F(AppListBubbleViewTest, SearchBoxCloseButton) {
   ShowAppList();
@@ -790,6 +807,110 @@ class AppListBubbleViewSunfishEnabledTest : public AppListBubbleViewTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+// Exercises ButtonFocusSkipper with the Gemini button.
+TEST_F(AppListBubbleViewSunfishDisabledTest, DownAndUpArrowSkipsGeminiButton) {
+  SimulateGeminiAppInstalled();
+
+  // Add an app, but no "Continue" suggestions.
+  AddAppItems(1);
+  ShowAppList();
+
+  auto* apps_grid_view = GetAppsGridView();
+  AppListItemView* app_item = apps_grid_view->GetItemViewAt(0);
+  SearchBoxView* search_box_view = GetSearchBoxView();
+
+  // Enable animations.
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Wait for the animation to finish.
+  ui::Layer* layer = GetAppsGridView()->layer();
+  ui::LayerAnimationStoppedWaiter().Wait(layer);
+
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  ASSERT_TRUE(search_box_view->gemini_button());
+  ASSERT_TRUE(search_box_view->gemini_button()->GetVisible());
+
+  // Pressing down arrow moves focus into apps.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_FALSE(search_box_view->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view->gemini_button()->HasFocus());
+  EXPECT_TRUE(app_item->HasFocus());
+
+  // Pressing up arrow moves focus back to search box.
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view->gemini_button()->HasFocus());
+  EXPECT_FALSE(app_item->HasFocus());
+
+  // Tab key moves focus to Gemini button.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_FALSE(search_box_view->search_box()->HasFocus());
+  EXPECT_TRUE(search_box_view->gemini_button()->HasFocus());
+
+  // Shift-tab moves focus back to search box.
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view->gemini_button()->HasFocus());
+}
+
+// Exercises ButtonFocusSkipper with both Sunfish and Gemini buttons.
+TEST_F(AppListBubbleViewSunfishEnabledTest,
+       DownAndUpArrowSkipsSunfishAndGeminiButton) {
+  SimulateGeminiAppInstalled();
+
+  // Add an app, but no "Continue" suggestions.
+  AddAppItems(1);
+  ShowAppList();
+
+  auto* apps_grid_view = GetAppListTestHelper()->GetScrollableAppsGridView();
+  AppListItemView* app_item = apps_grid_view->GetItemViewAt(0);
+  SearchBoxView* search_box_view = GetSearchBoxView();
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  ASSERT_TRUE(search_box_view->sunfish_button());
+  ASSERT_TRUE(search_box_view->sunfish_button()->GetVisible());
+  ASSERT_TRUE(search_box_view->gemini_button());
+  ASSERT_TRUE(search_box_view->gemini_button()->GetVisible());
+
+  // Pressing down arrow moves focus into apps.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_FALSE(search_box_view->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view->sunfish_button()->HasFocus());
+  EXPECT_FALSE(search_box_view->gemini_button()->HasFocus());
+  EXPECT_TRUE(app_item->HasFocus());
+
+  // Pressing up arrow moves focus back to search box.
+  PressAndReleaseKey(ui::VKEY_UP);
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view->sunfish_button()->HasFocus());
+  EXPECT_FALSE(search_box_view->gemini_button()->HasFocus());
+  EXPECT_FALSE(app_item->HasFocus());
+
+  // Tab key moves focus to Sunfish button.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_FALSE(search_box_view->search_box()->HasFocus());
+  EXPECT_TRUE(search_box_view->sunfish_button()->HasFocus());
+  EXPECT_FALSE(search_box_view->gemini_button()->HasFocus());
+
+  // Tab key moves focus to Gemini button.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  EXPECT_FALSE(search_box_view->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view->sunfish_button()->HasFocus());
+  EXPECT_TRUE(search_box_view->gemini_button()->HasFocus());
+
+  // Shift-tab moves focus back to Sunfish button.
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_FALSE(search_box_view->search_box()->HasFocus());
+  EXPECT_TRUE(search_box_view->sunfish_button()->HasFocus());
+  EXPECT_FALSE(search_box_view->gemini_button()->HasFocus());
+
+  // Shift-tab moves focus back to search box.
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  EXPECT_FALSE(search_box_view->sunfish_button()->HasFocus());
+  EXPECT_FALSE(search_box_view->gemini_button()->HasFocus());
+}
 
 // Exercises ButtonFocusSkipper with only the Sunfish button.
 TEST_F(AppListBubbleViewSunfishEnabledTest, DownAndUpArrowSkipsSunfishButton) {
@@ -1554,8 +1675,8 @@ TEST_F(AppListBubbleViewTest, CanOpenMessageCenterWithKeyboardShortcut) {
   ASSERT_TRUE(search_box_input->HasFocus());
 
   // Enable animations.
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Move focus to the message center notification area with Alt-Shift-N. The
   // message center will open and the app list will dismiss.

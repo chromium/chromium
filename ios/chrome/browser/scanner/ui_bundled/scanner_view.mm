@@ -11,7 +11,7 @@
 #import "base/numerics/math_constants.h"
 #import "ios/chrome/browser/scanner/ui_bundled/preview_overlay_view.h"
 #import "ios/chrome/browser/scanner/ui_bundled/video_preview_view.h"
-#import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -67,12 +67,9 @@ const CGFloat kFlashDuration = 0.5;
   }
   DCHECK(delegate);
   _delegate = delegate;
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(maybeHideCaptions)];
-  }
+  NSArray<UITrait>* traits =
+      TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
+  [self registerForTraitChanges:traits withAction:@selector(maybeHideCaptions)];
 
   return self;
 }
@@ -189,17 +186,6 @@ const CGFloat kFlashDuration = 0.5;
   return @"";
 }
 
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self maybeHideCaptions];
-}
-#endif
-
 #pragma mark - private methods
 
 // Creates an image with template rendering mode for use in icons.
@@ -224,12 +210,14 @@ const CGFloat kFlashDuration = 0.5;
 
 // Adds the subviews.
 - (void)addSubviews {
+  UIImage* closeIcon =
+      DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
   UIBarButtonItem* close =
-      [[UIBarButtonItem alloc] initWithImage:[ChromeIcon closeIcon]
+      [[UIBarButtonItem alloc] initWithImage:closeIcon
                                        style:UIBarButtonItemStylePlain
                                       target:_delegate
                                       action:@selector(dismissScannerView:)];
-  close.accessibilityLabel = [[ChromeIcon closeIcon] accessibilityLabel];
+  close.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ICON_CLOSE);
   UIBarButtonItem* spacer = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                            target:nil

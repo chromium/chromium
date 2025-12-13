@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
+#include "net/base/proxy_delegate.h"
 #include "net/base/proxy_server.h"
 
 namespace net {
@@ -16,14 +17,22 @@ namespace net {
 NET_EXPORT bool CanFalloverToNextProxy(const ProxyChain& proxy_chain,
                                        int error,
                                        int* final_error,
-                                       bool is_for_ip_protection) {
-  if (is_for_ip_protection) {
+                                       ProxyDelegate* proxy_delegate) {
+  if (proxy_delegate) {
+    std::optional<bool> can_fallover =
+        proxy_delegate->CanFalloverToNextProxyOverride(proxy_chain, error);
+    if (can_fallover.has_value()) {
+      return *can_fallover;
+    }
+  }
+
+  if (proxy_chain.is_for_ip_protection()) {
     // Log the error.
     // Useful to know if errors not handled below are passed to this function.
     if (const int chain_id = proxy_chain.ip_protection_chain_id();
         chain_id != ProxyChain::kNotIpProtectionChainId) {
       base::UmaHistogramSparse(
-          base::StrCat({"Net.IpProtection.CanFalloverToNextProxy.Error.Chain",
+          base::StrCat({"Net.IpProtection.CanFalloverToNextProxy2.Error.Chain",
                         base::NumberToString(chain_id)}),
           error);
     }
@@ -75,7 +84,30 @@ NET_EXPORT bool CanFalloverToNextProxy(const ProxyChain& proxy_chain,
     // ERR_SSL_PROTOCOL_ERROR can happen when trying to talk SSL to a non-SSL
     // server (like a captive portal).
     case ERR_SSL_PROTOCOL_ERROR:
+    // ERR_PROXY_DELEGATE_CANCELED_CONNECT_{REQUEST, RESPONSE} are used by
+    // ProxyDelegates that rely on a separate entity to decide whether to cancel
+    // tunnels being established. In these scenarios the expectation is to
+    // always fall onto the next ProxyChain in the list.
+    case ERR_PROXY_DELEGATE_CANCELED_CONNECT_REQUEST:
+    case ERR_PROXY_DELEGATE_CANCELED_CONNECT_RESPONSE:
       return true;
+    // A failure while establishing a tunnel through the proxy can fail for
+    // reasons related to the request itself (for instance, failing to resolve
+    // the hostname of the request) or because of issues with the proxy itself.
+    // A ProxyDelegate differentiates the two based on response codes and/or
+    // response headers. The delegate signals a destination-related error by
+    // returning ERR_PROXY_UNABLE_TO_CONNECT_TO_DESTINATION, which prevents
+    // fallback.
+    case ERR_PROXY_UNABLE_TO_CONNECT_TO_DESTINATION:
+      return false;
+    case ERR_TUNNEL_CONNECTION_FAILED:
+      // Tunnel connection failures not indicated by
+      // ERR_PROXY_UNABLE_TO_CONNECT_TO_DESTINATION are only considered grounds
+      // for fallback when connecting to an IP Protection proxy. Other browsers
+      // similarly don't fallback, and some client's PAC configurations rely on
+      // this for some degree of content blocking. See https://crbug.com/680837
+      // for details.
+      return proxy_chain.is_for_ip_protection();
 
     case ERR_SOCKS_CONNECTION_HOST_UNREACHABLE:
       // Remap the SOCKS-specific "host unreachable" error to a more
@@ -88,14 +120,6 @@ NET_EXPORT bool CanFalloverToNextProxy(const ProxyChain& proxy_chain,
       // ERR_ADDRESS_UNREACHABLE.
       *final_error = ERR_ADDRESS_UNREACHABLE;
       return false;
-
-    case ERR_TUNNEL_CONNECTION_FAILED:
-      // A failure while establishing a tunnel to the proxy is only considered
-      // grounds for fallback when connecting to an IP Protection proxy. Other
-      // browsers similarly don't fallback, and some client's PAC configurations
-      // rely on this for some degree of content blocking. See
-      // https://crbug.com/680837 for details.
-      return is_for_ip_protection;
   }
   return false;
 }

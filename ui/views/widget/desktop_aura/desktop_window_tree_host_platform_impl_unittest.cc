@@ -14,7 +14,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/display/display_switches.h"
 #include "ui/platform_window/platform_window.h"
-#include "ui/views/test/configurable_test_non_client_frame_view.h"
+#include "ui/views/test/configurable_test_custom_frame_view.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
@@ -63,24 +63,25 @@ class ShapedWidgetDelegate : public WidgetDelegateView {
   ~ShapedWidgetDelegate() override = default;
 
   // WidgetDelegateView:
-  std::unique_ptr<NonClientFrameView> CreateNonClientFrameView(
-      Widget* widget) override {
-    // Create a NonClientFrameView with a window mask with the bottom right
+  std::unique_ptr<FrameView> CreateFrameView(Widget* widget) override {
+    // Create a FrameView with a window mask with the bottom right
     // corner cut out.
-    auto frame_view =
-        std::make_unique<test::ConfigurableTestNonClientFrameView>();
+    auto frame_view = std::make_unique<test::ConfigurableTestCustomFrameView>();
     frame_view->SetWindowMaskCallback(
         base::BindRepeating([](const gfx::Size& size, SkPath* window_mask) {
           int right = size.width();
           int bottom = size.height();
 
-          window_mask->moveTo(0, 0);
-          window_mask->lineTo(0, bottom);
-          window_mask->lineTo(right, bottom);
-          window_mask->lineTo(right, 10);
-          window_mask->lineTo(right - 10, 10);
-          window_mask->lineTo(right - 10, 0);
-          window_mask->close();
+          *window_mask = SkPath::Polygon(
+              {
+                  SkPoint(0, 0),
+                  SkPoint(0, bottom),
+                  SkPoint(right, bottom),
+                  SkPoint(right, 10),
+                  SkPoint(right - 10, 10),
+                  SkPoint(right - 10, 0),
+              },
+              /*isClosed=*/true);
         }));
 
     frame_view->SetHitTestCallback(
@@ -143,7 +144,7 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest,
   // Sanity check that the two widgets each have their own XID.
   ASSERT_NE(parent_widget.GetNativeWindow()->GetHost()->GetAcceleratedWidget(),
             child_widget.GetNativeWindow()->GetHost()->GetAcceleratedWidget());
-  Widget::CloseAllSecondaryWidgets();
+  Widget::CloseAllWidgets();
   EXPECT_TRUE(DesktopWindowTreeHostPlatform::GetAllOpenWindows().empty());
 }
 

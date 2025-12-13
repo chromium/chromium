@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
+#include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
 #include "components/performance_manager/graph/graph_impl.h"
@@ -72,7 +73,7 @@ class LenientMockPageDiscarder
   MOCK_METHOD1(DiscardPageNodeImpl, bool(const PageNode* page_node));
 
  private:
-  std::optional<uint64_t> DiscardPageNode(
+  std::optional<base::ByteCount> DiscardPageNode(
       const PageNode* page_node,
       ::mojom::LifecycleUnitDiscardReason discard_reason) override;
 };
@@ -122,6 +123,38 @@ class ScopedSetAllPagesDiscardableForTesting {
 };
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+// Checks DiscardEligibilityPolicy::CanDiscard() returns kEligible for each
+// discard reason in |discard_reasons|.
+void ExpectCanDiscardEligible(
+    const PageNode* page_node,
+    std::vector<policies::DiscardEligibilityPolicy::DiscardReason>
+        discard_reasons,
+    base::TimeDelta minimum_time_in_background =
+        policies::kNonVisiblePagesUrgentProtectionTime);
+
+// Checks DiscardEligibilityPolicy::CanDiscard() returns kEligible for all
+// discard reasons.
+void ExpectCanDiscardEligibleAllReasons(
+    const PageNode* page_node,
+    base::TimeDelta minimum_time_in_background =
+        policies::kNonVisiblePagesUrgentProtectionTime);
+
+// Checks DiscardEligibilityPolicy::CanDiscard() returns kProtected for each
+// discard reason in |discard_reasons|. Checks the returned
+// CannotDiscardReason vector contains |protected_reason|.
+void ExpectCanDiscardProtected(
+    const PageNode* page_node,
+    std::vector<policies::DiscardEligibilityPolicy::DiscardReason>
+        discard_reasons,
+    policies::CannotDiscardReason protected_reason);
+
+// Checks DiscardEligibilityPolicy::CanDiscard() returns kProtected for all
+// discard reasons. Checks the returned CannotDiscardReason vector contains
+// |disallowed_reason|.
+void ExpectCanDiscardDisallowedAllReasons(
+    const PageNode* page_node,
+    policies::CannotDiscardReason disallowed_reason);
 
 }  // namespace testing
 }  // namespace performance_manager

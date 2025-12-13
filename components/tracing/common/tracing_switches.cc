@@ -20,14 +20,14 @@ const char kEnableBackgroundTracing[] = "enable-background-tracing";
 
 // Enables startup tracing by passing a file path containing the chrome Json
 // tracing config as an argument. This flag will be ignored if --trace-startup
-// or --trace-shutdown is provided.
+// is provided.
 const char kTraceConfigFile[]               = "trace-config-file";
 
 // Enables startup tracing by passing a file path containing the perfetto config
 // as an argument. The config is a serialized or base64 encoded proto
 // `perfetto.protos.TraceConfig` defined in
 // third_party/perfetto/protos/perfetto/config/trace_config.proto. This flag
-// will be ignored if --trace-startup or --trace-shutdown is provided.
+// will be ignored if --trace-startup is provided.
 const char kTracePerfettoConfigFile[] = "trace-perfetto-config-file";
 
 // Causes TRACE_EVENT flags to be recorded from startup. Optionally, can
@@ -51,13 +51,17 @@ const char kEnableTracing[] = "enable-tracing";
 
 // Causes TRACE_EVENT flags to be recorded from startup, passing a SMB
 // handle containing the serialized perfetto config. This flag will be
-// ignored if --trace-startup or --trace-shutdown is provided.
+// ignored if --trace-startup is provided.
 const char kTraceConfigHandle[] = "trace-config-handle";
 
 // Handle to the shared memory segment a child process should use to transmit
 // tracing data back to the tracing service. This flag allows tracing to be
 // recorded before sandbox setup.
 const char kTraceBufferHandle[] = "trace-buffer-handle";
+
+// Child process track uuid used by perfetto; this is chosen by the browser
+// process and sent to child processes to get predictable track uuid.
+const char kTraceProcessTrackUuid[] = "trace-process-track-uuid";
 
 // Sets the time in seconds until startup tracing ends. If omitted:
 // - if --trace-startup is specified, a default of 5 seconds is used.
@@ -115,9 +119,6 @@ const char kTraceStartupOwner[] = "trace-startup-owner";
 
 // Repeat internable data for each TraceEvent in the perfetto proto format.
 const char kPerfettoDisableInterning[] = "perfetto-disable-interning";
-
-// Sends a pretty-printed version of tracing info to the console.
-const char kTraceToConsole[] = "trace-to-console";
 
 // Sets a local folder destination for tracing data. This is only used if
 // kEnableBackgroundTracing is also specified.

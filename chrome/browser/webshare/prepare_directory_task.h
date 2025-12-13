@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_WEBSHARE_PREPARE_DIRECTORY_TASK_H_
 #define CHROME_BROWSER_WEBSHARE_PREPARE_DIRECTORY_TASK_H_
 
+#include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"

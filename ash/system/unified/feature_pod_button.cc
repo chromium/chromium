@@ -8,12 +8,12 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -27,10 +27,6 @@
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
-
-using ContentLayerType = AshColorProvider::ContentLayerType;
-using ControlsLayerType = AshColorProvider::ControlsLayerType;
-
 namespace {
 
 void ConfigureFeaturePodLabel(views::Label* label,
@@ -161,11 +157,6 @@ gfx::Size FeaturePodLabelButton::CalculatePreferredSize(
   return gfx::Size(width, height);
 }
 
-void FeaturePodLabelButton::OnThemeChanged() {
-  views::Button::OnThemeChanged();
-  OnEnabledChanged();
-}
-
 void FeaturePodLabelButton::SetLabel(std::u16string_view label) {
   label_->SetText(label);
   InvalidateLayout();
@@ -193,23 +184,19 @@ void FeaturePodLabelButton::ShowDetailedViewArrow() {
 
 void FeaturePodLabelButton::OnEnabledChanged() {
   views::Button::OnEnabledChanged();
-  const AshColorProvider* color_provider = AshColorProvider::Get();
-  const SkColor primary_text_color =
-      color_provider->GetContentLayerColor(ContentLayerType::kTextColorPrimary);
-  const SkColor secondary_text_color = color_provider->GetContentLayerColor(
-      ContentLayerType::kTextColorSecondary);
-  label_->SetEnabledColor(
-      GetEnabled() ? primary_text_color
-                   : ColorUtil::GetDisabledColor(primary_text_color));
+  label_->SetEnabledColor(GetEnabled() ? cros_tokens::kTextColorPrimary
+                                       : ColorUtil::GetDisabledColor(
+                                             cros_tokens::kTextColorPrimary));
   sub_label_->SetEnabledColor(
-      GetEnabled() ? secondary_text_color
-                   : ColorUtil::GetDisabledColor(secondary_text_color));
+      GetEnabled()
+          ? cros_tokens::kTextColorSecondary
+          : ColorUtil::GetDisabledColor(cros_tokens::kTextColorSecondary));
 
-  const SkColor icon_color =
-      color_provider->GetContentLayerColor(ContentLayerType::kIconColorPrimary);
   detailed_view_arrow_->SetImage(ui::ImageModel::FromVectorIcon(
       kUnifiedMenuMoreIcon,
-      GetEnabled() ? icon_color : ColorUtil::GetDisabledColor(icon_color)));
+      GetEnabled()
+          ? cros_tokens::kIconColorPrimary
+          : ColorUtil::GetDisabledColor(cros_tokens::kIconColorPrimary)));
 }
 
 void FeaturePodLabelButton::LayoutInCenter(views::View* child, int y) {

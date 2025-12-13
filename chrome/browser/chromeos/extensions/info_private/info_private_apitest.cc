@@ -200,8 +200,6 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, StylusSupported) {
       << message_;
 }
 
-// TODO(crbug.com/40564126): Excluded from Mash because pointer events
-// aren't seen.
 IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, StylusSeen) {
   ui::DeviceDataManagerTestApi test_api;
   ui::TouchscreenDevice touchscreen(1,

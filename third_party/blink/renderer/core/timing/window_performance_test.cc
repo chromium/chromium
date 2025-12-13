@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/trace_event_analyzer.h"
+#include "base/test/trace_test_utils.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_timing_details.h"
@@ -141,6 +142,9 @@ class WindowPerformanceTest : public testing::Test,
     init->setKeyCode(key_code);
     KeyboardEvent* keyboard_event =
         MakeGarbageCollected<KeyboardEvent>(type, init, start_time);
+    // use start_time to simulate enqueue time.
+    performance_->GetResponsivenessMetrics()
+          .SetCurrentInteractionEventQueuedTimestamp(start_time);
     performance_->EventTimingProcessingStart(*keyboard_event, processing_start,
                                              target);
     keyboard_event->SetTarget(target);
@@ -157,6 +161,9 @@ class WindowPerformanceTest : public testing::Test,
     PointerEventInit* init = PointerEventInit::Create();
     init->setPointerId(pointer_id);
     PointerEvent* pointer_event = PointerEvent::Create(type, init, start_time);
+    // use start_time to simulate enqueue time.
+    performance_->GetResponsivenessMetrics()
+          .SetCurrentInteractionEventQueuedTimestamp(start_time);
     performance_->EventTimingProcessingStart(*pointer_event, processing_start,
                                              target);
     pointer_event->SetTarget(target);
@@ -234,6 +241,7 @@ class WindowPerformanceTest : public testing::Test,
   }
 
   test::TaskEnvironment task_environment_;
+  base::test::TracingEnvironment tracing_environment_;
   Persistent<WindowPerformance> performance_;
   std::unique_ptr<DummyPageHolder> page_holder_;
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
@@ -1421,6 +1429,7 @@ TEST_P(WindowPerformanceTest, ElementTimingTraceEvent) {
   std::string* url = arg_dict.FindString("url");
   ASSERT_TRUE(url);
   EXPECT_EQ(*url, "url");
+  ASSERT_TRUE(arg_dict.FindInt("nodeId").has_value());
 }
 
 TEST_P(WindowPerformanceTest, EventTimingTraceEvents) {
@@ -1723,7 +1732,7 @@ TEST_P(WindowPerformanceTest, ContainerTimingTraceEvent) {
   trace_analyzer::Start("*");
   performance_->AddContainerTiming(
       DOMPaintTimingInfo{.paint_time = 2000, .presentation_time = 2000},
-      gfx::Rect(10, 20, 30, 40), 1200, AtomicString("identifier"),
+      gfx::Rect(10, 20, 30, 40), 1200, nullptr, AtomicString("identifier"),
       /*element*/ nullptr,
       DOMPaintTimingInfo{.paint_time = 1000, .presentation_time = 1000});
   auto analyzer = trace_analyzer::Stop();

@@ -19,7 +19,6 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -70,7 +69,6 @@ using base::ASCIIToUTF16;
 using base::Time;
 using testing::_;
 using testing::ElementsAre;
-using testing::Invoke;
 using testing::IsEmpty;
 using testing::WithArg;
 using testing::WithArgs;

@@ -21,8 +21,7 @@ class CSSIfParserTest : public PageTestBase {
     const auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
     CSSIfParser parser(*context);
     CSSParserTokenStream stream(string);
-    const IfCondition* if_test = parser.ConsumeIfCondition(stream);
-    return if_test;
+    return !!parser.ConsumeIfCondition(stream);
   }
 };
 

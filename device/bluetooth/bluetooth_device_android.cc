@@ -18,7 +18,6 @@
 #include "base/notimplemented.h"
 #include "base/stl_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "device/base/features.h"
 #include "device/bluetooth/android/outcome.h"
 #include "device/bluetooth/bluetooth_adapter_android.h"
 #include "device/bluetooth/bluetooth_common.h"
@@ -29,7 +28,6 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace device {
@@ -171,10 +169,6 @@ bool BluetoothDeviceAndroid::IsConnecting() const {
 }
 
 BluetoothDevice::UUIDSet BluetoothDeviceAndroid::GetUUIDs() const {
-  if (!base::FeatureList::IsEnabled(features::kBluetoothRfcommAndroid)) {
-    return BluetoothDevice::GetUUIDs();
-  }
-
   BluetoothTransport device_type = GetType();
   if (device_type == BLUETOOTH_TRANSPORT_LE ||
       device_type == BLUETOOTH_TRANSPORT_INVALID) {
@@ -330,8 +324,8 @@ void BluetoothDeviceAndroid::OnGattServicesDiscovered(JNIEnv* env) {
 
 void BluetoothDeviceAndroid::CreateGattRemoteService(
     JNIEnv* env,
-    const JavaParamRef<jstring>& instance_id,
-    const JavaParamRef<jobject>&
+    const JavaRef<jstring>& instance_id,
+    const JavaRef<jobject>&
         bluetooth_gatt_service_wrapper) {  // BluetoothGattServiceWrapper
   std::string instance_id_string = ConvertJavaStringToUTF8(env, instance_id);
 
@@ -376,3 +370,5 @@ void BluetoothDeviceAndroid::UpdateAclConnectState(uint8_t transport,
 }
 
 }  // namespace device
+
+DEFINE_JNI(ChromeBluetoothDevice)

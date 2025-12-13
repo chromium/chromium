@@ -105,16 +105,12 @@ bool ResourcePool::Backing::CreateSharedImage(
 void ResourcePool::InUsePoolResource::InstallGpuBacking(
     gpu::SharedImageInterface* sii,
     bool is_overlay_candidate,
-    bool use_gpu_rasterization,
     std::string_view debug_label) const {
   auto backing =
       std::make_unique<ResourcePool::Backing>(size(), format(), color_space());
 
   gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                    gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
-  if (use_gpu_rasterization) {
-    flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-  }
   if (is_overlay_candidate) {
     flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
@@ -186,9 +182,9 @@ ResourcePool::ResourcePool(
       clock_(base::DefaultTickClock::GetInstance()) {
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "cc::ResourcePool", task_runner_.get());
-  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE, base::BindRepeating(&ResourcePool::OnMemoryPressure,
-                                     weak_ptr_factory_.GetWeakPtr()));
+  memory_pressure_listener_registration_ =
+      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
+          FROM_HERE, base::MemoryPressureListenerTag::kResourcePool, this);
 }
 
 ResourcePool::~ResourcePool() {
@@ -685,13 +681,12 @@ bool ResourcePool::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
   return true;
 }
 
-void ResourcePool::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
+void ResourcePool::OnMemoryPressure(base::MemoryPressureLevel level) {
   switch (level) {
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+    case base::MEMORY_PRESSURE_LEVEL_NONE:
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
       break;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
       EvictResourcesNotUsedSince(base::TimeTicks() + base::TimeDelta::Max());
       FlushEvictedResources();
       break;

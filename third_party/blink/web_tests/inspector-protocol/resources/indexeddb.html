@@ -4,6 +4,12 @@
     <script>
 window.dbPromise = new Promise(resolve => {
     var dbRequest = indexedDB.open('testDatabase1', 2147483649);
+    dbRequest.onupgradeneeded = () => {
+      const store = dbRequest.transaction.db.createObjectStore('testStore1', { keyPath: 'x' });
+      store.add({ x: 1, y: 3 });
+      store.add({ x: 4, y: 2 });
+      store.createIndex('', 'y');
+    };
     dbRequest.onsuccess = () => resolve(dbRequest.result);
 });
     </script>

@@ -190,6 +190,8 @@ $ echo "ryu1kn.annotator wmaurer.change-case" \
     This is very useful for editing `*.star` starlark files. If you want "Go to
     definition" to work in our `infra/config` directory, see the
     [//tools/vscode/bazel_lsp/README.md][lsp_patches_readme]
+*   [**Gerrit**](https://marketplace.visualstudio.com/items?itemName=SanderRonde.vscode--gerrit) -
+    Interact with [Chromium's Gerrit instance](https://chromium-review.googlesource.com/) for code review. Note: Chromium's Gerrit cannot provide the Stream Events permission.
 
 [lsp_patches_readme]: ../tools/vscode/bazel_lsp/README.md
 

@@ -35,8 +35,6 @@ std::unique_ptr<GpuBlocklist> GpuBlocklist::Create(
                             GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION);
   list->AddSupportedFeature("accelerated_webgl2",
                             GPU_FEATURE_TYPE_ACCELERATED_WEBGL2);
-  list->AddSupportedFeature("android_surface_control",
-                            GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL);
   list->AddSupportedFeature("accelerated_gl", GPU_FEATURE_TYPE_ACCELERATED_GL);
   list->AddSupportedFeature("vulkan", GPU_FEATURE_TYPE_VULKAN);
   list->AddSupportedFeature("accelerated_webgpu",
@@ -46,6 +44,8 @@ std::unique_ptr<GpuBlocklist> GpuBlocklist::Create(
   list->AddSupportedFeature(
       "direct_rendering_display_compositor",
       GPU_FEATURE_TYPE_DIRECT_RENDERING_DISPLAY_COMPOSITOR);
+  list->AddSupportedFeature("webgpu_on_vk_via_gl_interop",
+                            GPU_FEATURE_TYPE_WEBGPU_ON_VK_VIA_GL_INTEROP);
   return list;
 }
 

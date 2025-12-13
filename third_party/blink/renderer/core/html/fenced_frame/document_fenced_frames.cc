@@ -49,7 +49,7 @@ void DocumentFencedFrames::RegisterFencedFrame(
 void DocumentFencedFrames::DeregisterFencedFrame(
     HTMLFencedFrameElement* fenced_frame) {
   wtf_size_t index = fenced_frames_.Find(fenced_frame);
-  if (index != WTF::kNotFound) {
+  if (index != kNotFound) {
     fenced_frames_.EraseAt(index);
   }
 

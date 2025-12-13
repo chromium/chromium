@@ -16,12 +16,11 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/HistoryDeletionBridge_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 
 static jlong JNI_HistoryDeletionBridge_Init(JNIEnv* env,
-                                            const JavaParamRef<jobject>& jobj,
+                                            const JavaRef<jobject>& jobj,
                                             Profile* profile) {
   return reinterpret_cast<intptr_t>(new HistoryDeletionBridge(jobj, profile));
 }
@@ -70,3 +69,5 @@ void HistoryDeletionBridge::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
   scoped_history_service_observer_.Reset();
 }
+
+DEFINE_JNI(HistoryDeletionBridge)

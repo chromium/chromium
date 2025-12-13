@@ -20,7 +20,7 @@ class ChromePdfStreamDelegate : public pdf::PdfStreamDelegate {
       content::NavigationHandle& navigation_handle) override;
   std::optional<StreamInfo> GetStreamInfo(
       content::RenderFrameHost* embedder_frame) override;
-  void OnPdfEmbedderSandboxed(
+  bool MaybeDeleteSandboxedStream(
       content::FrameTreeNodeId frame_tree_node_id) override;
   bool ShouldAllowPdfFrameNavigation(
       content::NavigationHandle* navigation_handle) override;

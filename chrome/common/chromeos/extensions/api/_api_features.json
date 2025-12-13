@@ -14,8 +14,7 @@
     "contexts": [
       "privileged_extension"
     ],
-    "platforms": ["chromeos"],
-    "channel": "stable"
+    "platforms": ["chromeos"]
   },
   "os.events": {
     "dependencies": [
@@ -24,8 +23,7 @@
     "contexts": [
       "privileged_extension"
     ],
-    "platforms": ["chromeos"],
-    "channel": "stable"
+    "platforms": ["chromeos"]
   },
   "os.management": {
     // Right now Management API is limited to audio control.
@@ -35,8 +33,7 @@
     "contexts": [
       "privileged_extension"
     ],
-    "platforms": ["chromeos"],
-    "channel": "stable"
+    "platforms": ["chromeos"]
   },
   "os.management.setAudioGain": {
     "dependencies": [
@@ -55,7 +52,6 @@
     "contexts": [
       "privileged_extension"
     ],
-    "platforms": ["chromeos"],
-    "channel": "stable"
+    "platforms": ["chromeos"]
   }
 }

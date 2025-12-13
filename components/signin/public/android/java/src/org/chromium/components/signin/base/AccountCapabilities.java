@@ -65,7 +65,14 @@ public class AccountCapabilities {
         return new AccountCapabilities(capabilities);
     }
 
-    /** Please keep the list of capability getters alphabetically sorted. */
+    /** keep-sorted start block=yes sticky_prefixes=/**,* newline_separated=yes */
+    /**
+     * @return canFetchFamilyMemberInfo capability value.
+     */
+    public @Tribool int canFetchFamilyMemberInfo() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.CAN_FETCH_FAMILY_MEMBER_INFO_CAPABILITY_NAME);
+    }
 
     /**
      * @return canHaveEmailAddressDisplayed capability value.
@@ -73,15 +80,6 @@ public class AccountCapabilities {
     public @Tribool int canHaveEmailAddressDisplayed() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME);
-    }
-
-    /**
-     * @return canShowHistorySyncOptInsWithoutMinorModeRestrictions capability value.
-     */
-    public @Tribool int canShowHistorySyncOptInsWithoutMinorModeRestrictions() {
-        return getCapabilityByName(
-                AccountCapabilitiesConstants
-                        .CAN_SHOW_HISTORY_SYNC_OPT_INS_WITHOUT_MINOR_MODE_RESTRICTIONS_CAPABILITY_NAME);
     }
 
     /**
@@ -93,19 +91,12 @@ public class AccountCapabilities {
     }
 
     /**
-     * @return isOptedInToParentalSupervision capability value.
+     * @return canShowHistorySyncOptInsWithoutMinorModeRestrictions capability value.
      */
-    public @Tribool int isOptedInToParentalSupervision() {
+    public @Tribool int canShowHistorySyncOptInsWithoutMinorModeRestrictions() {
         return getCapabilityByName(
-                AccountCapabilitiesConstants.IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME);
-    }
-
-    /**
-     * @return canFetchFamilyMemberInfo capability value.
-     */
-    public @Tribool int canFetchFamilyMemberInfo() {
-        return getCapabilityByName(
-                AccountCapabilitiesConstants.CAN_FETCH_FAMILY_MEMBER_INFO_CAPABILITY_NAME);
+                AccountCapabilitiesConstants
+                        .CAN_SHOW_HISTORY_SYNC_OPT_INS_WITHOUT_MINOR_MODE_RESTRICTIONS_CAPABILITY_NAME);
     }
 
     /**
@@ -120,6 +111,13 @@ public class AccountCapabilities {
      */
     public @Tribool int canUseChromeIpProtection() {
         return getCapabilityByName(AccountCapabilitiesConstants.CAN_USE_CHROME_IP_PROTECTION_NAME);
+    }
+
+    /**
+     * @return canUseChromeOSGenerativeAi capability value.
+     */
+    public @Tribool int canUseChromeOSGenerativeAi() {
+        return getCapabilityByName(AccountCapabilitiesConstants.CAN_USE_CHROMEOS_GENERATIVE_AI);
     }
 
     /**
@@ -147,62 +145,6 @@ public class AccountCapabilities {
     }
 
     /**
-     * @return canUseMantaService capability value.
-     */
-    public @Tribool int canUseMantaService() {
-        return getCapabilityByName(AccountCapabilitiesConstants.CAN_USE_MANTA_SERVICE_NAME);
-    }
-
-    /**
-     * @return canUseModelExecutionFeatures capability value.
-     */
-    public @Tribool int canUseModelExecutionFeatures() {
-        return getCapabilityByName(
-                AccountCapabilitiesConstants.CAN_USE_MODEL_EXECUTION_FEATURES_NAME);
-    }
-
-    /**
-     * @return isAllowedForMachineLearning capability value.
-     */
-    public @Tribool int isAllowedForMachineLearning() {
-        return getCapabilityByName(
-                AccountCapabilitiesConstants.IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME);
-    }
-
-    /**
-     * @return isSubjectToChromePrivacySandboxRestrictedMeasurementNotice capability value.
-     */
-    public @Tribool int isSubjectToChromePrivacySandboxRestrictedMeasurementNotice() {
-        return getCapabilityByName(
-                AccountCapabilitiesConstants
-                        .IS_SUBJECT_TO_CHROME_PRIVACY_SANDBOX_RESTRICTED_MEASUREMENT_NOTICE);
-    }
-
-    /**
-     * @return isSubjectToEnterprisePolicies capability value.
-     */
-    public @Tribool int isSubjectToEnterprisePolicies() {
-        return getCapabilityByName(
-                AccountCapabilitiesConstants.IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME);
-    }
-
-    /**
-     * @return isSubjectToParentalControls capability value.
-     */
-    public @Tribool int isSubjectToParentalControls() {
-        return getCapabilityByName(
-                AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME);
-    }
-
-    /**
-     * @return canUseSpeakerLabelInRecorderApp capability value.
-     */
-    public @Tribool int canUseSpeakerLabelInRecorderApp() {
-        return getCapabilityByName(
-                AccountCapabilitiesConstants.CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP);
-    }
-
-    /**
      * @return canUseGenerativeAiInRecorderApp capability value.
      */
     public @Tribool int canUseGenerativeAiInRecorderApp() {
@@ -219,11 +161,70 @@ public class AccountCapabilities {
     }
 
     /**
-     * @return canUseChromeOSGenerativeAi capability value.
+     * @return canUseMantaService capability value.
      */
-    public @Tribool int canUseChromeOSGenerativeAi() {
-        return getCapabilityByName(AccountCapabilitiesConstants.CAN_USE_CHROMEOS_GENERATIVE_AI);
+    public @Tribool int canUseMantaService() {
+        return getCapabilityByName(AccountCapabilitiesConstants.CAN_USE_MANTA_SERVICE_NAME);
     }
+
+    /**
+     * @return canUseModelExecutionFeatures capability value.
+     */
+    public @Tribool int canUseModelExecutionFeatures() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.CAN_USE_MODEL_EXECUTION_FEATURES_NAME);
+    }
+
+    /**
+     * @return canUseSpeakerLabelInRecorderApp capability value.
+     */
+    public @Tribool int canUseSpeakerLabelInRecorderApp() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP);
+    }
+
+    /**
+     * @return isAllowedForMachineLearning capability value.
+     */
+    public @Tribool int isAllowedForMachineLearning() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME);
+    }
+
+    /**
+     * @return isOptedInToParentalSupervision capability value.
+     */
+    public @Tribool int isOptedInToParentalSupervision() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.IS_OPTED_IN_TO_PARENTAL_SUPERVISION_CAPABILITY_NAME);
+    }
+
+    /**
+     * @return isSubjectToChromePrivacySandboxRestrictedMeasurementNotice capability value.
+     */
+    public @Tribool int isSubjectToChromePrivacySandboxRestrictedMeasurementNotice() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants
+                        .IS_SUBJECT_TO_CHROME_PRIVACY_SANDBOX_RESTRICTED_MEASUREMENT_NOTICE);
+    }
+
+    /**
+     * @return isSubjectToEnterpriseFeatures capability value.
+     */
+    public @Tribool int isSubjectToEnterpriseFeatures() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME);
+    }
+
+    /**
+     * @return isSubjectToParentalControls capability value.
+     */
+    public @Tribool int isSubjectToParentalControls() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME);
+    }
+
+    /** keep-sorted end */
 
     /**
      * Merges capabilities from another {@link AccountCapabilities} object into this one.
@@ -255,7 +256,7 @@ public class AccountCapabilities {
      * @return the capability value associated to the name.
      */
     @CalledByNative
-    private @Tribool int getCapabilityByName(String capabilityName) {
+    public @Tribool int getCapabilityByName(String capabilityName) {
         if (!mAccountCapabilities.containsKey(capabilityName)) {
             return Tribool.UNKNOWN;
         }

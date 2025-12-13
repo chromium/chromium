@@ -5,18 +5,18 @@
 #include "chrome/common/conflicts/module_watcher_win.h"
 
 #include <windows.h>
+#include <winternl.h>  // For UNICODE_STRING.
 
 #include <tlhelp32.h>
-#include <winternl.h>  // For UNICODE_STRING.
 
 #include <string>
 #include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -99,10 +99,12 @@ namespace {
 //          cause a deadlock. A noteworthy example in this file are the
 //          LdrRegisterDllNotification and LdrUnregisterDllNotification
 //          functions.
-base::LazyInstance<base::Lock>::Leaky g_module_watcher_lock =
-    LAZY_INSTANCE_INITIALIZER;
+base::Lock& GetModuleWatcherLock() {
+  static base::NoDestructor<base::Lock> module_watcher_lock;
+  return *module_watcher_lock;
+}
 // Global pointer to the singleton ModuleWatcher, if one exists. Under
-// |module_watcher_lock|.
+// |GetModuleWatcherLock()|.
 ModuleWatcher* g_module_watcher_instance = nullptr;
 
 // Names of the DLL notification registration functions. These are exported by
@@ -133,25 +135,25 @@ void OnModuleEvent(ModuleWatcher::ModuleEventType event_type,
 std::unique_ptr<ModuleWatcher> ModuleWatcher::Create(
     OnModuleEventCallback callback) {
   {
-    base::AutoLock lock(g_module_watcher_lock.Get());
+    base::AutoLock lock(GetModuleWatcherLock());
     // If a ModuleWatcher already exists then bail out.
     if (g_module_watcher_instance)
       return nullptr;
     g_module_watcher_instance = new ModuleWatcher();
   }
 
-  // Initialization mustn't occur while holding |g_module_watcher_lock|.
+  // Initialization mustn't occur while holding |GetModuleWatcherLock()|.
   g_module_watcher_instance->Initialize(std::move(callback));
   return base::WrapUnique(g_module_watcher_instance);
 }
 
 ModuleWatcher::~ModuleWatcher() {
-  // Done before acquiring |g_module_watcher_lock|.
+  // Done before acquiring |GetModuleWatcherLock()|.
   UnregisterDllNotificationCallback();
 
   // As soon as |g_module_watcher_instance| is null any dispatched callbacks
   // will be silently absorbed by LoaderNotificationCallback.
-  base::AutoLock lock(g_module_watcher_lock.Get());
+  base::AutoLock lock(GetModuleWatcherLock());
   DCHECK_EQ(g_module_watcher_instance, this);
   g_module_watcher_instance = nullptr;
 }
@@ -208,13 +210,15 @@ void ModuleWatcher::EnumerateAlreadyLoadedModules(
   for (int i = 0; i < 5; ++i) {
     snap.Set(::CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32,
                                         process_id));
-    if (snap.IsValid())
+    if (snap.is_valid()) {
       break;
+    }
     if (::GetLastError() != ERROR_BAD_LENGTH)
       return;
   }
-  if (!snap.IsValid())
+  if (!snap.is_valid()) {
     return;
+  }
 
   // Walk the module list.
   MODULEENTRY32 module = {sizeof(module)};
@@ -230,7 +234,7 @@ void ModuleWatcher::EnumerateAlreadyLoadedModules(
 // static
 ModuleWatcher::OnModuleEventCallback ModuleWatcher::GetCallbackForContext(
     void* context) {
-  base::AutoLock lock(g_module_watcher_lock.Get());
+  base::AutoLock lock(GetModuleWatcherLock());
   if (context != g_module_watcher_instance)
     return OnModuleEventCallback();
   return g_module_watcher_instance->callback_;

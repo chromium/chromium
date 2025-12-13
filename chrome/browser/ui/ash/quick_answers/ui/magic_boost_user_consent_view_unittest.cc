@@ -154,8 +154,6 @@ TEST_F(MagicBoostUserConsentViewTest, ConvertButtonTextLabel) {
 
 TEST_F(MagicBoostUserConsentViewTest, OpenSettings) {
   MockSettingsWindowManager mock_settings_window_manager;
-  chrome::SettingsWindowManager::SetInstanceForTesting(
-      &mock_settings_window_manager);
 
   CreateUserConsentView();
 

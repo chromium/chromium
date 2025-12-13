@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -45,6 +47,7 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
@@ -67,16 +70,23 @@
 #if DCHECK_IS_ON()
 
 #include <set>
+
 #include "base/check_op.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 
 namespace {
 
-base::LazyInstance<base::Lock>::Leaky g_profile_instances_lock =
-    LAZY_INSTANCE_INITIALIZER;
-base::LazyInstance<std::set<content::BrowserContext*>>::Leaky
-    g_profile_instances = LAZY_INSTANCE_INITIALIZER;
+base::Lock& GetProfileInstancesLock() {
+  static base::NoDestructor<base::Lock> profile_instances_lock;
+  return *profile_instances_lock;
+}
+
+std::set<content::BrowserContext*>& GetProfileInstances() {
+  static base::NoDestructor<std::set<content::BrowserContext*>>
+      profile_instances;
+  return *profile_instances;
+}
 
 }  // namespace
 
@@ -192,17 +202,17 @@ Profile::OTRProfileID Profile::OTRProfileID::ConvertFromJavaOTRProfileID(
 }
 
 // static
-base::android::ScopedJavaLocalRef<jobject>
+static base::android::ScopedJavaLocalRef<jobject>
 JNI_OtrProfileId_CreateUniqueOtrProfileId(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& j_profile_id_prefix) {
+    const base::android::JavaRef<jstring>& j_profile_id_prefix) {
   Profile::OTRProfileID profile_id = Profile::OTRProfileID::CreateUnique(
       base::android::ConvertJavaStringToUTF8(env, j_profile_id_prefix));
   return profile_id.ConvertToJavaOTRProfileID(env);
 }
 
 // static
-base::android::ScopedJavaLocalRef<jobject> JNI_OtrProfileId_GetPrimaryId(
+static base::android::ScopedJavaLocalRef<jobject> JNI_OtrProfileId_GetPrimaryId(
     JNIEnv* env) {
   return Profile::OTRProfileID::PrimaryID().ConvertToJavaOTRProfileID(env);
 }
@@ -234,8 +244,8 @@ Profile::Profile(const OTRProfileID* otr_profile_id)
 #endif
 
 #if DCHECK_IS_ON()
-  base::AutoLock lock(g_profile_instances_lock.Get());
-  g_profile_instances.Get().insert(this);
+  base::AutoLock lock(GetProfileInstancesLock());
+  GetProfileInstances().insert(this);
 #endif  // DCHECK_IS_ON()
 
   BrowserContextDependencyManager::GetInstance()->MarkBrowserContextLive(this);
@@ -251,8 +261,8 @@ Profile::~Profile() {
 #endif
 
 #if DCHECK_IS_ON()
-  base::AutoLock lock(g_profile_instances_lock.Get());
-  g_profile_instances.Get().erase(this);
+  base::AutoLock lock(GetProfileInstancesLock());
+  GetProfileInstances().erase(this);
 #endif  // DCHECK_IS_ON()
 }
 
@@ -266,8 +276,8 @@ Profile* Profile::FromBrowserContext(content::BrowserContext* browser_context) {
   // testing, however, there are several BrowserContext subclasses that are not
   // Profile subclasses, and we can catch them. http://crbug.com/725276
 #if DCHECK_IS_ON()
-  base::AutoLock lock(g_profile_instances_lock.Get());
-  if (!g_profile_instances.Get().count(browser_context)) {
+  base::AutoLock lock(GetProfileInstancesLock());
+  if (!GetProfileInstances().count(browser_context)) {
     DCHECK(false)
         << "Non-Profile BrowserContext passed to Profile::FromBrowserContext! "
            "If you have a test linked in chrome/ you need a chrome/ based test "
@@ -340,19 +350,29 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   base::PathService::Get(base::DIR_HOME, &home);
   registry->RegisterStringPref(prefs::kSelectFileLastDirectory,
                                home.MaybeAsASCII());
+#if BUILDFLAG(IS_CHROMEOS)
+  const uint32_t caption_registration_flags =
+      base::FeatureList::IsEnabled(
+          ash::features::kOsSyncAccessibilitySettingsBatch2)
+          ? user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF
+          : 0;
+#else
+  constexpr uint32_t caption_registration_flags = 0;
+#endif
   registry->RegisterStringPref(prefs::kAccessibilityCaptionsTextSize,
-                               std::string());
+                               std::string(), caption_registration_flags);
   registry->RegisterStringPref(prefs::kAccessibilityCaptionsTextFont,
-                               std::string());
+                               std::string(), caption_registration_flags);
   registry->RegisterStringPref(prefs::kAccessibilityCaptionsTextColor,
-                               std::string());
-  registry->RegisterIntegerPref(prefs::kAccessibilityCaptionsTextOpacity, 100);
+                               std::string(), caption_registration_flags);
+  registry->RegisterIntegerPref(prefs::kAccessibilityCaptionsTextOpacity, 100,
+                                caption_registration_flags);
   registry->RegisterIntegerPref(prefs::kAccessibilityCaptionsBackgroundOpacity,
-                                100);
+                                100, caption_registration_flags);
   registry->RegisterStringPref(prefs::kAccessibilityCaptionsBackgroundColor,
-                               std::string());
+                               std::string(), caption_registration_flags);
   registry->RegisterStringPref(prefs::kAccessibilityCaptionsTextShadow,
-                               std::string());
+                               std::string(), caption_registration_flags);
   registry->RegisterDictionaryPref(prefs::kPartitionDefaultZoomLevel);
   registry->RegisterDictionaryPref(prefs::kPartitionPerHostZoomLevels);
   registry->RegisterStringPref(prefs::kPreinstalledApps, "install");
@@ -532,6 +552,31 @@ bool Profile::HasPrimaryOTRProfile() {
   return HasOffTheRecordProfile(OTRProfileID::PrimaryID());
 }
 
+bool Profile::AllowsBrowserWindows() const {
+  if (allows_browser_windows_for_testing_.has_value()) {
+    CHECK_IS_TEST();
+    return allows_browser_windows_for_testing_.value();
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Do not allow Browsers on signin-derived profiles.
+  if (ash::IsSigninBrowserContext(GetOriginalProfile())) {
+    return false;
+  }
+#endif
+  // Only OTR Browsers may be opened in guest mode.
+  if (IsGuestSession() && !IsOffTheRecord()) {
+    return false;
+  }
+
+  // Some OTR profiles are not allowed to open Browsers.
+  if (otr_profile_id_.has_value() && !otr_profile_id_->AllowsBrowserWindows()) {
+    return false;
+  }
+
+  return !IsSystemProfile();
+}
+
 class Profile::ChromeVariationsClient : public variations::VariationsClient {
  public:
   explicit ChromeVariationsClient(Profile* profile) : profile_(profile) {}
@@ -558,10 +603,6 @@ variations::VariationsClient* Profile::GetVariationsClient() {
   if (!chrome_variations_client_)
     chrome_variations_client_ = std::make_unique<ChromeVariationsClient>(this);
   return chrome_variations_client_.get();
-}
-
-base::WeakPtr<const Profile> Profile::GetWeakPtr() const {
-  return weak_factory_.GetWeakPtr();
 }
 
 base::WeakPtr<Profile> Profile::GetWeakPtr() {
@@ -591,3 +632,7 @@ std::string Profile::ToDebugString() {
 
   return out.str();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(OtrProfileId)
+#endif

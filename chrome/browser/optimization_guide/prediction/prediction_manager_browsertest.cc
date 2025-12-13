@@ -12,6 +12,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
@@ -144,7 +145,7 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
         net::EmbeddedTestServer::TYPE_HTTPS);
     net::EmbeddedTestServer::ServerCertificateConfig models_server_cert_config;
     models_server_cert_config.dns_names = {
-        GURL(kOptimizationGuideServiceGetModelsDefaultURL).host()};
+        GURL(kOptimizationGuideServiceGetModelsDefaultURL).GetHost()};
     models_server_cert_config.ip_addresses = {net::IPAddress::IPv4Localhost()};
     models_server_->SetSSLConfig(models_server_cert_config);
     models_server_->ServeFilesFromSourceDirectory(
@@ -186,8 +187,9 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
     cmd->AppendSwitchASCII(
         switches::kOptimizationGuideServiceGetModelsURL,
         models_server_
-            ->GetURL(GURL(kOptimizationGuideServiceGetModelsDefaultURL).host(),
-                     "/")
+            ->GetURL(
+                GURL(kOptimizationGuideServiceGetModelsDefaultURL).GetHost(),
+                "/")
             .spec());
     cmd->AppendSwitchASCII("force-variation-ids", "4");
   }
@@ -201,7 +203,10 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
     OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
         ->AddObserverForOptimizationTargetModel(
             optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            std::nullopt, model_file_observer);
+            std::nullopt,
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+            model_file_observer);
   }
 
   PredictionManager* GetPredictionManager() {
@@ -228,6 +233,7 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
     if (request.GetURL() == model_file_with_good_additional_file_url_) {
       return nullptr;
     }
+
     if (request.GetURL() == model_file_with_nonexistent_additional_file_url_) {
       return nullptr;
     }
@@ -427,7 +433,10 @@ class PredictionManagerModelDownloadingBrowserTest
         profile ? profile : browser()->profile())
         ->AddObserverForOptimizationTargetModel(
             proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            /*model_metadata=*/std::nullopt, model_file_observer_.get());
+            /*model_metadata=*/std::nullopt,
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+            model_file_observer_.get());
   }
 
  private:
@@ -492,37 +501,6 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
     otr_histogram_tester.ExpectTotalCount(
         "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
   }
-}
-
-// TODO(crbug.com/336399137): Flaky on Linux Chromium OS ASan LSan Tests.
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
-#define MAYBE_TestIncognitoDoesntFetchModels \
-  DISABLED_TestIncognitoDoesntFetchModels
-#else
-#define MAYBE_TestIncognitoDoesntFetchModels TestIncognitoDoesntFetchModels
-#endif
-IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
-                       MAYBE_TestIncognitoDoesntFetchModels) {
-  base::HistogramTester histogram_tester;
-
-  SetResponseType(PredictionModelsFetcherRemoteResponseType::
-                      kSuccessfulWithInvalidModelFile);
-
-  Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
-
-  // Registering should not initiate the fetch and the model updated callback
-  // should not be triggered too.
-  RegisterModelFileObserverWithKeyedService(otr_browser->profile());
-
-  SetUpNoModelInfoReceival(model_file_observer());
-  RetryForHistogramUntilCountReached(
-      &histogram_tester, "OptimizationGuide.PredictionManager.StoreInitialized",
-      1);
-
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 0);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
@@ -880,57 +858,6 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
   CreateBrowser(&profile);
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-// CreateGuestBrowser() is not supported for Android or ChromeOS out of the box.
-IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
-                       GuestProfileReceivesModel) {
-  SetResponseType(
-      PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile);
-
-  {
-    base::HistogramTester histogram_tester;
-    // Register in the primary profile and ensure the model returns.
-    RegisterModelFileObserverWithKeyedService(browser()->profile());
-
-    std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-    SetUpValidModelInfoReceival(model_file_observer(), run_loop.get());
-    run_loop->Run();
-    histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
-        PredictionModelDownloadStatus::kSuccess, 1);
-  }
-
-  {
-    base::HistogramTester histogram_tester;
-    // Now hook everything up in the guest profile and we should still get the
-    // model back but no additional fetches should be made.
-    Browser* guest_browser = CreateGuestBrowser();
-
-    // To prevent any race, ensure the store has be initialized.
-    RetryForHistogramUntilCountReached(
-        &histogram_tester,
-        "OptimizationGuide.PredictionManager.StoreInitialized", 1);
-    std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
-    ModelFileObserver model_file_observer;
-    SetUpValidModelInfoReceival(&model_file_observer, run_loop.get());
-    OptimizationGuideKeyedServiceFactory::GetForProfile(
-        guest_browser->profile())
-        ->AddObserverForOptimizationTargetModel(
-            proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            /*model_metadata=*/std::nullopt, &model_file_observer);
-    // Wait until the opt guide is up and the model is loaded as its shared
-    // between profiles.
-    RetryForHistogramUntilCountReached(
-        &histogram_tester,
-        "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 1);
-
-    run_loop->Run();
-    histogram_tester.ExpectTotalCount(
-        "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 0);
-  }
-}
-#endif
-
 class PredictionManagerModelPackageOverrideTest : public InProcessBrowserTest {
  public:
   PredictionManagerModelPackageOverrideTest() = default;
@@ -963,7 +890,10 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelPackageOverrideTest, TestE2E) {
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
       ->AddObserverForOptimizationTargetModel(
           proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-          /*model_metadata=*/std::nullopt, &model_file_observer);
+          /*model_metadata=*/std::nullopt,
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+          &model_file_observer);
 
   run_loop.Run();
 }

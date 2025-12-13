@@ -2,16 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include "gpu/command_buffer/service/gles2_cmd_decoder.h"
-
 #include <stdint.h>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
@@ -19,8 +13,8 @@
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/gl_surface_mock.h"
+#include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
-
 #include "gpu/command_buffer/service/mocks.h"
 #include "gpu/command_buffer/service/program_manager.h"
 #include "gpu/command_buffer/service/test_helper.h"
@@ -163,9 +157,9 @@ TEST_P(GLES2DecoderRGBBackbufferTest, RGBBackbufferColorMask) {
       result->GetNumResults());
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   EXPECT_EQ(1, result->GetData()[0]);
-  EXPECT_EQ(1, result->GetData()[1]);
-  EXPECT_EQ(1, result->GetData()[2]);
-  EXPECT_EQ(1, result->GetData()[3]);
+  UNSAFE_TODO(EXPECT_EQ(1, result->GetData()[1]));
+  UNSAFE_TODO(EXPECT_EQ(1, result->GetData()[2]));
+  UNSAFE_TODO(EXPECT_EQ(1, result->GetData()[3]));
 }
 
 // Test that with no depth if we set DepthMask true that it's set to false at
@@ -1809,7 +1803,7 @@ TEST_P(GLES2DecoderManualInitTest, DrawArraysClearsAfterTexImage2DNULLCubemap) {
   DoBindTexture(GL_TEXTURE_CUBE_MAP, client_texture_id_, kServiceTextureId);
   // Fill out all the faces for 2 levels, leave 2 uncleared.
   for (int ii = 0; ii < 6; ++ii) {
-    GLenum face = faces[ii];
+    GLenum face = UNSAFE_TODO(faces[ii]);
     int32_t shm_id =
         (face == GL_TEXTURE_CUBE_MAP_NEGATIVE_Y) ? 0 : shared_memory_id_;
     uint32_t shm_offset =

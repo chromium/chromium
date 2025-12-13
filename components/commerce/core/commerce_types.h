@@ -12,9 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/time/time.h"
 #include "base/tuple.h"
-#include "components/commerce/core/proto/parcel.pb.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
 #include "components/commerce/core/proto/product_category.pb.h"
 #include "url/gurl.h"
@@ -287,6 +285,7 @@ using ProductSpecificationsCallback =
                             std::optional<ProductSpecifications>)>;
 using IsShoppingPageCallback =
     base::OnceCallback<void(const GURL&, std::optional<bool>)>;
+
 }  // namespace commerce
 
 #endif  // COMPONENTS_COMMERCE_CORE_COMMERCE_TYPES_H_

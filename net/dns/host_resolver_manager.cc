@@ -134,7 +134,6 @@
 #include <net/if.h>
 #include "net/base/sys_addrinfo.h"
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
 #else  // !BUILDFLAG(IS_ANDROID)
 #include <ifaddrs.h>
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -232,7 +231,7 @@ PrioritizedDispatcher::Limits GetDispatcherLimits(
   parsed.pop_back();
 
   const size_t total_reserved_slots =
-      std::accumulate(parsed.begin(), parsed.end(), 0u);
+      std::accumulate(parsed.begin(), parsed.end(), size_t{0});
 
   // There must be some unreserved slots available for the all priorities.
   if (total_reserved_slots > total_jobs ||
@@ -795,12 +794,9 @@ void HostResolverManager::InitializeJobKeyAndIPAddress(
     effective_types.Remove(DnsQueryType::AAAA);
   }
 
-  // Optimistically enable feature-controlled queries. These queries may be
-  // skipped at a later point.
-
-  // `https_svcb_options_.enable` has precedence, so if enabled, ignore any
-  // other related features.
-  if (https_svcb_options_.enable && out_job_key.host.HasScheme()) {
+  // Optimistically enable HTTPS record. It may be skipped at a later point.
+  if (base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcb) &&
+      out_job_key.host.HasScheme()) {
     static constexpr std::string_view kSchemesForHttpsQuery[] = {
         url::kHttpScheme, url::kHttpsScheme, url::kWsScheme, url::kWssScheme};
     if (base::Contains(kSchemesForHttpsQuery, out_job_key.host.GetScheme())) {
@@ -1473,7 +1469,7 @@ bool RequestWillUseWiFi(handles::NetworkHandle network) {
 void HostResolverManager::FinishIPv6ReachabilityCheck(
     CompletionOnceCallback callback,
     int rv) {
-  SetLastIPv6ProbeResult((rv == OK) ? true : false);
+  SetLastIPv6ProbeResult(rv == OK);
   std::move(callback).Run(OK);
   if (!ipv6_request_callbacks_.empty()) {
     std::vector<CompletionOnceCallback> tmp_request_callbacks;
@@ -1514,7 +1510,7 @@ int HostResolverManager::StartIPv6ReachabilityCheck(
         base::BindOnce(&HostResolverManager::FinishIPv6ReachabilityCheck,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     if (rv != ERR_IO_PENDING) {
-      SetLastIPv6ProbeResult((rv == OK) ? true : false);
+      SetLastIPv6ProbeResult(rv == OK);
       rv = OK;
     }
     cached = false;
@@ -1683,7 +1679,8 @@ void HostResolverManager::TryServingAllJobsFromHosts() {
   }
 }
 
-void HostResolverManager::OnIPAddressChanged() {
+void HostResolverManager::OnIPAddressChanged(
+    NetworkChangeNotifier::IPAddressChangeType change_type) {
   DCHECK(!IsBoundToNetwork());
   last_ipv6_probe_time_ = base::TimeTicks();
   // Abandon all ProbeJobs.

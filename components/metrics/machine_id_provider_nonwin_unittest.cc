@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
+namespace {
 
 TEST(MachineIdProviderNonWinTest, GetId) {
   const bool has_machine_name = !base::SysInfo::HardwareModelName().empty();
@@ -30,4 +31,5 @@ TEST(MachineIdProviderNonWinTest, GetId) {
   }
 }
 
+}  // namespace
 }  // namespace metrics

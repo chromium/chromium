@@ -16,6 +16,7 @@
 #import "components/collaboration/public/messaging/message.h"
 #import "components/collaboration/public/messaging/messaging_backend_service.h"
 #import "components/data_sharing/public/data_sharing_service.h"
+#import "components/data_sharing/public/features.h"
 #import "components/data_sharing/public/group_data.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
@@ -35,7 +36,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/activity_label_data.h"
@@ -163,8 +163,15 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
           _messagingBackendServiceBridge.get());
       [self fetchMessages];
     }
-
-    BOOL shareAvailable = _shareKitService && _shareKitService->IsSupported();
+    // Share not available if:
+    // ShareKitService is not supported or available
+    // version is out of date and no UI should be shown
+    BOOL shareAvailable =
+        _shareKitService && _shareKitService->IsSupported() &&
+        (!base::FeatureList::IsEnabled(
+             data_sharing::features::kSharedDataTypesKillSwitch) ||
+         base::FeatureList::IsEnabled(
+             data_sharing::features::kDataSharingEnableUpdateChromeUI));
     [_groupConsumer setShareAvailable:shareAvailable];
     [self updateFacePileUI];
     [self updateTabGroupSharingState];
@@ -198,16 +205,11 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
 - (void)closeGroup {
   [self.tabGridIdleStatusHandler
       tabGridDidPerformAction:TabGridActionType::kInPageAction];
-  if (IsTabGroupSyncEnabled()) {
-    tab_groups::TabGroupSyncService* syncService =
-        tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-            self.browser->GetProfile());
-    tab_groups::utils::CloseTabGroupLocally(_tabGroup.get(), self.webStateList,
-                                            syncService);
-  } else {
-    CloseAllWebStatesInGroup(*self.webStateList, _tabGroup.get(),
-                             WebStateList::ClosingReason::kUserAction);
-  }
+  tab_groups::TabGroupSyncService* syncService =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          self.browser->GetProfile());
+  tab_groups::utils::CloseTabGroupLocally(_tabGroup.get(), self.webStateList,
+                                          syncService);
   _tabGroup.reset();
 }
 
@@ -687,7 +689,7 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
     return;
   }
 
-  tab_groups::CollaborationId savedCollabID =
+  syncer::CollaborationId savedCollabID =
       tab_groups::utils::GetTabGroupCollabID(_tabGroup.get(),
                                              _tabGroupSyncService);
   BOOL isShared = !savedCollabID.value().empty();
@@ -857,7 +859,7 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
 
   // Group Ids doesn't match.
   if (savedGroup->collaboration_id().value() !=
-      tab_groups::CollaborationId(groupId.value())) {
+      syncer::CollaborationId(groupId.value())) {
     return;
   }
 

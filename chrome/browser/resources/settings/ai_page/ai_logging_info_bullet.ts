@@ -9,6 +9,8 @@
  * an AI feature. |pref| must be set to the preference that is bound to the
  * enterprise policy of this AI feature.
  */
+import '/shared/settings/controls/cr_policy_pref_indicator.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../settings_shared.css.js';
 

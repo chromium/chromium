@@ -109,8 +109,4 @@ std::optional<base::FilePath> GetProcessExePath(base::ProcessId pid) {
   return file_path;
 }
 
-std::optional<CrowdStrikeSignals> GetCrowdStrikeSignals() {
-  return std::nullopt;
-}
-
 }  // namespace device_signals

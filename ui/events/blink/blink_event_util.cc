@@ -836,7 +836,18 @@ std::unique_ptr<WebGestureEvent> CreateWebGestureEventFromGestureEventAndroid(
   // event's fields better when extended to handle more cases.
   web_event->SetPositionInWidget(event.location());
   web_event->SetPositionInScreen(event.screen_location());
-  web_event->SetSourceDevice(WebGestureDevice::kTouchscreen);
+  WebGestureDevice device_type = WebGestureDevice::kUninitialized;
+  switch (event.source()) {
+    case ui::GestureDeviceType::DEVICE_TOUCHPAD:
+      device_type = WebGestureDevice::kTouchpad;
+      break;
+    case ui::GestureDeviceType::DEVICE_TOUCHSCREEN:
+      device_type = WebGestureDevice::kTouchscreen;
+      break;
+    default:
+      NOTREACHED() << "Unexpected gesture device type";
+  }
+  web_event->SetSourceDevice(device_type);
   if (event.synthetic_scroll())
     web_event->SetSourceDevice(WebGestureDevice::kSyntheticAutoscroll);
   if (event_type == WebInputEvent::Type::kGesturePinchUpdate) {

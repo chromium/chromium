@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -278,8 +279,8 @@ void MojoURLLoaderClient::Freeze(LoaderFreezeMode mode) {
   }
   if (mode == LoaderFreezeMode::kNone) {
     task_runner_->PostTask(
-        FROM_HERE, WTF::BindOnce(&MojoURLLoaderClient::FlushDeferredMessages,
-                                 weak_factory_.GetWeakPtr()));
+        FROM_HERE, blink::BindOnce(&MojoURLLoaderClient::FlushDeferredMessages,
+                                   weak_factory_.GetWeakPtr()));
   } else if (mode == LoaderFreezeMode::kBufferIncoming &&
              !has_received_complete_ &&
              !back_forward_cache_eviction_timer_.IsRunning()) {
@@ -288,7 +289,7 @@ void MojoURLLoaderClient::Freeze(LoaderFreezeMode mode) {
     back_forward_cache_eviction_timer_.SetTaskRunner(task_runner_);
     back_forward_cache_eviction_timer_.Start(
         FROM_HERE, back_forward_cache_timeout_,
-        WTF::BindOnce(
+        blink::BindOnce(
             &MojoURLLoaderClient::EvictFromBackForwardCacheDueToTimeout,
             weak_factory_.GetWeakPtr()));
   }
@@ -303,6 +304,10 @@ void MojoURLLoaderClient::OnReceiveResponse(
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   TRACE_EVENT1("loading", "MojoURLLoaderClient::OnReceiveResponse", "url",
                last_loaded_url_.GetString().Utf8());
+
+  // OnReceiveResponse() can be called at most once. This check is added to
+  // debug crbug.com/463388771.
+  CHECK(!has_received_response_head_);
 
   has_received_response_head_ = true;
   has_received_response_body_ = !!body;

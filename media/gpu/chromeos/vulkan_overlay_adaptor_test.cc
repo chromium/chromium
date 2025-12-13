@@ -15,13 +15,11 @@
 
 #include <cstdint>
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 #include "base/bits.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -46,6 +44,7 @@
 #include "media/gpu/test/image_quality_metrics.h"
 #include "media/gpu/test/video_test_environment.h"
 #include "media/gpu/video_frame_mapper_factory.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gl/gl_bindings.h"
@@ -122,6 +121,17 @@ const base::FilePath::CharType* kMT2TImage =
     FILE_PATH_LITERAL("crowd_run_1080x512.mt2t");
 
 constexpr int kLibYUVSuccess = 0;
+
+base::span<const uint32_t> ConvertBytesSpanToUint32Span(
+    base::span<const uint8_t> bytes) {
+  CHECK_EQ(bytes.size() % sizeof(uint32_t), 0u);
+  // SAFETY: The above CHECK_EQ() ensures that the size of `bytes` is divisible
+  // by sizeof(uint32_t), and thus the range bytes.data() + size is valid for
+  // uint32_t once you divide by sizeof(uint32_t).
+  return UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<const uint32_t*>(bytes.data()),
+                 bytes.size() / sizeof(uint32_t)));
+}
 
 scoped_refptr<VideoFrame> ConvMM21ToI420(const VideoFrame& in_frame) {
   CHECK_EQ(in_frame.format(), VideoPixelFormat::PIXEL_FORMAT_NV12);
@@ -473,7 +483,7 @@ scoped_refptr<VideoFrame> ProcessFrameLibyuv(scoped_refptr<VideoFrame> in_frame,
   // steps for a given frame. Some of these conversions are not completely
   // lossless, so we want to minimize distortion.
   std::vector<FrameState> frame_states = {FrameState(in_fourcc, false)};
-  std::unordered_set<FrameState> seen_states;
+  absl::flat_hash_set<FrameState> seen_states;
   std::vector<std::vector<
       base::RepeatingCallback<scoped_refptr<VideoFrame>(const VideoFrame&)>>>
       paths = {{}};
@@ -713,7 +723,7 @@ scoped_refptr<VideoFrame> VulkanOverlayAdaptorTest::CreateVideoFrame(
   std::unique_ptr<VideoFrameMapper> frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
           VideoPixelFormat::PIXEL_FORMAT_NV12,
-          VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+          VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
           /*force_linear_buffer_mapper=*/true);
   scoped_refptr<VideoFrame> mapped_frame =
       frame_mapper->Map(frame, PROT_READ | PROT_WRITE);
@@ -767,7 +777,7 @@ scoped_refptr<VideoFrame> VulkanOverlayAdaptorTest::CreateFramebuffer(
       VideoFrameMapperFactory::CreateMapper(
           is_10bit ? VideoPixelFormat::PIXEL_FORMAT_XR30
                    : VideoPixelFormat::PIXEL_FORMAT_ARGB,
-          VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+          VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
           /*force_linear_buffer_mapper=*/true);
   scoped_refptr<VideoFrame> mapped_frame =
       frame_mapper->Map(frame, PROT_READ | PROT_WRITE);
@@ -846,11 +856,11 @@ TEST_P(VulkanOverlayAdaptorTest, Correctness) {
                          output_size, transform);
   if (is_10bit) {
     psnr = test::ComputeAR30PSNR(
-        reinterpret_cast<const uint32_t*>(
-            out_frame->visible_data(VideoFrame::Plane::kARGB)),
+        ConvertBytesSpanToUint32Span(
+            out_frame->GetVisiblePlaneData(VideoFrame::Plane::kARGB)),
         out_frame->stride(VideoFrame::Plane::kARGB) / 4,
-        reinterpret_cast<const uint32_t*>(
-            libyuv_out_frame->visible_data(VideoFrame::Plane::kARGB)),
+        ConvertBytesSpanToUint32Span(
+            libyuv_out_frame->GetVisiblePlaneData(VideoFrame::Plane::kARGB)),
         libyuv_out_frame->stride(VideoFrame::Plane::kARGB) / 4,
         output_size.width(), output_size.height());
   } else {

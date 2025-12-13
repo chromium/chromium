@@ -18,6 +18,10 @@
 
 class GURL;
 
+namespace autofill {
+struct AutofillServerPrediction;
+}
+
 namespace password_manager {
 
 class PasswordManagerClient;
@@ -52,8 +56,7 @@ class PasswordGenerationFrameHelper {
   void ProcessPasswordRequirements(
       const autofill::FormData& form,
       const base::flat_map<autofill::FieldGlobalId,
-                           autofill::AutofillType::ServerPrediction>&
-          predictions);
+                           autofill::AutofillServerPrediction>& predictions);
 
   // Determines current state of password generation
   // `log_debug_data` determines whether log entries are sent to the
@@ -99,11 +102,11 @@ class PasswordGenerationFrameHelper {
 
   // The PasswordManagerClient instance associated with this instance. Must
   // outlive this instance.
-  const raw_ptr<PasswordManagerClient> client_;
+  const raw_ptr<PasswordManagerClient, DanglingUntriaged> client_;
 
   // The PasswordManagerDriver instance associated with this instance. Must
   // outlive this instance.
-  const raw_ptr<PasswordManagerDriver> driver_;
+  const raw_ptr<PasswordManagerDriver, DanglingUntriaged> driver_;
 
   // The fields that have manual generation enabled. This includes fields that
   // have type="text".

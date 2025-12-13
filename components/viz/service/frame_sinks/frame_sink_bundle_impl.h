@@ -6,7 +6,6 @@
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_FRAME_SINK_BUNDLE_IMPL_H_
 
 #include <cstdint>
-#include <map>
 #include <memory>
 #include <set>
 #include <vector>

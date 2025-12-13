@@ -136,10 +136,6 @@ class DownloadUIModel {
     FRIEND_TEST_ALL_PREFIXES(DownloadItemModelTest,
                              GetBubbleStatusMessageWithBytes);
 
-    static std::u16string GetBubbleStatusMessageWithBytes(
-        const std::u16string& bytes_substring,
-        const std::u16string& detail_message,
-        bool is_active);
     std::u16string GetBubbleWarningStatusText() const;
   };
 

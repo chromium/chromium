@@ -36,13 +36,6 @@
 
 namespace blink {
 
-using StatePtr = mojo::StructPtr<mojom::blink::DevToolsSessionState>;
-template <>
-struct CrossThreadCopier<StatePtr>
-    : public CrossThreadCopierByValuePassThrough<StatePtr> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 namespace {
 
 DevToolsAgent* DevToolsAgentFromContext(ExecutionContext* execution_context) {
@@ -114,10 +107,10 @@ class DevToolsAgent::IOAgent : public mojom::blink::DevToolsAgent {
           main_session,
       mojo::PendingReceiver<mojom::blink::DevToolsSession> io_session,
       mojom::blink::DevToolsSessionStatePtr reattach_session_state,
-      const WTF::String& script_to_evaluate_on_load,
+      const String& script_to_evaluate_on_load,
       bool client_expects_binary_responses,
       bool client_is_trusted,
-      const WTF::String& session_id,
+      const String& session_id,
       bool session_waits_for_debugger) override {
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
     DCHECK(receiver_.is_bound());
@@ -210,8 +203,8 @@ void DevToolsAgent::BindReceiverForWorker(
   DCHECK(!associated_receiver_.is_bound());
 
   host_remote_.Bind(std::move(host_remote), std::move(task_runner));
-  host_remote_.set_disconnect_handler(WTF::BindOnce(
-      &DevToolsAgent::CleanupConnection, WrapWeakPersistent(this)));
+  host_remote_.set_disconnect_handler(
+      BindOnce(&DevToolsAgent::CleanupConnection, WrapWeakPersistent(this)));
 
   io_agent_ = new IOAgent(io_task_runner_, inspector_task_runner_,
                           MakeCrossThreadWeakHandle(this), std::move(receiver));
@@ -224,8 +217,8 @@ void DevToolsAgent::BindReceiver(
   DCHECK(!associated_receiver_.is_bound());
   associated_receiver_.Bind(std::move(receiver), task_runner);
   associated_host_remote_.Bind(std::move(host_remote), task_runner);
-  associated_host_remote_.set_disconnect_handler(WTF::BindOnce(
-      &DevToolsAgent::CleanupConnection, WrapWeakPersistent(this)));
+  associated_host_remote_.set_disconnect_handler(
+      BindOnce(&DevToolsAgent::CleanupConnection, WrapWeakPersistent(this)));
 }
 
 namespace {
@@ -255,10 +248,10 @@ void DevToolsAgent::AttachDevToolsSessionImpl(
         session_receiver,
     mojo::PendingReceiver<mojom::blink::DevToolsSession> io_session_receiver,
     mojom::blink::DevToolsSessionStatePtr reattach_session_state,
-    const WTF::String& script_to_evaluate_on_load,
+    const String& script_to_evaluate_on_load,
     bool client_expects_binary_responses,
     bool client_is_trusted,
-    const WTF::String& session_id,
+    const String& session_id,
     bool session_waits_for_debugger) {
   TRACE_EVENT0("devtools", "Agent::AttachDevToolsSessionImpl");
   client_->DebuggerTaskStarted();
@@ -292,10 +285,10 @@ void DevToolsAgent::AttachDevToolsSession(
         session_receiver,
     mojo::PendingReceiver<mojom::blink::DevToolsSession> io_session_receiver,
     mojom::blink::DevToolsSessionStatePtr reattach_session_state,
-    const WTF::String& script_to_evaluate_on_load,
+    const String& script_to_evaluate_on_load,
     bool client_expects_binary_responses,
     bool client_is_trusted,
-    const WTF::String& session_id,
+    const String& session_id,
     bool session_waits_for_debugger) {
   TRACE_EVENT0("devtools", "Agent::AttachDevToolsSession");
   if (associated_receiver_.is_bound()) {

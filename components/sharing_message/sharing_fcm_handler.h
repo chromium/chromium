@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SHARING_MESSAGE_SHARING_FCM_HANDLER_H_
 #define COMPONENTS_SHARING_MESSAGE_SHARING_FCM_HANDLER_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>

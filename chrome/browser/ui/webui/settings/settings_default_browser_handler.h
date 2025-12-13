@@ -43,18 +43,34 @@ class DefaultBrowserHandler : public SettingsPageUIHandler {
   // Called from WebUI to request the current state.
   void RequestDefaultBrowserState(const base::Value::List& args);
 
-  // Makes this the default browser. Called from WebUI.
+  // Called from WebUI to request the state of kUserValueDefaultBrowserStrings.
+  void HandleRequestUserValueStringsFeatureState(const base::Value::List& args);
+
+  // Makes this the default browser. Called from WebUI. If `args` is not empty,
+  // and the first value is true, this method will attempt to pin Chrome to the
+  // taskbar (currently Windows-only).
   void SetAsDefaultBrowser(const base::Value::List& args);
 
   // Called when there is a change to the default browser setting pref.
   void OnDefaultBrowserSettingChange();
 
+  // Called when the check if Chrome can be pinned to the taskbar has finished.
+  void OnCanPinToTaskbarResult(const std::optional<std::string>& js_callback_id,
+                               shell_integration::DefaultWebClientState state,
+                               bool can_pin);
+
   // Called with the default browser state when the DefaultBrowserWorker is
   // done.
-  // |js_callback_id| is specified when the state was requested from WebUI.
+  // `js_callback_id` is specified when the state was requested from WebUI.
   void OnDefaultBrowserWorkerFinished(
       const std::optional<std::string>& js_callback_id,
       shell_integration::DefaultWebClientState state);
+
+  // Called when finished determining if Chrome is the default browser, and
+  // if not, whether it can be pinned to the taskbar (Windows-only).
+  void OnDefaultCheckFinished(const std::optional<std::string>& js_callback_id,
+                              bool can_pin,
+                              shell_integration::DefaultWebClientState state);
 
   // Reference to a background worker that handles default browser settings.
   scoped_refptr<shell_integration::DefaultBrowserWorker>

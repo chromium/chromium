@@ -29,7 +29,7 @@ android_library("javatests") {
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
   ]
 }
 
@@ -45,9 +45,15 @@ android_library("test_support_java") {
   deps = [
     "//base:base_java",
     "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/profiles/android:java",
+    "//components/browser_ui/site_settings/android:java",
+    "//components/content_settings/android:content_settings_enums_java",
+    "//components/content_settings/core/common:content_settings_types_java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/jni_zero:jni_zero_java",
+    "//url:url_java",
   ]
 
   srcjar_deps = [ ":jni_headers" ]
@@ -71,7 +77,7 @@ static_library("test_support") {
   deps = [
     ":jni_headers",
     "//base",
-    "//chrome/browser/picture_in_picture:picture_in_picture",
+    "//chrome/browser/picture_in_picture",
     "//content/public/browser",
   ]
 }

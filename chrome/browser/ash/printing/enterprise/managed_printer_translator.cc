@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/printing/enterprise/managed_printer_translator.h"
 
 #include <cstdint>
+#include <limits>
 #include <optional>
 #include <string>
 
@@ -23,6 +24,7 @@ const char kGuid[] = "guid";
 const char kDisplayName[] = "display_name";
 const char kDescription[] = "description";
 const char kUri[] = "uri";
+const char kUsbDeviceId[] = "usb_device_id";
 const char kPpdResource[] = "ppd_resource";
 const char kPrintJobOptions[] = "print_job_options";
 
@@ -30,6 +32,11 @@ const char kPrintJobOptions[] = "print_job_options";
 const char kUserSuppliedPpdUri[] = "user_supplied_ppd_uri";
 const char kEffectiveModel[] = "effective_model";
 const char kAutoconf[] = "autoconf";
+
+// UsbDeviceId field names.
+const char kVendorId[] = "vendor_id";
+const char kProductId[] = "product_id";
+const char kUsbProtocol[] = "usb_protocol";
 
 std::optional<ManagedPrinterConfiguration::PpdResource> PpdResourceFromDict(
     const base::Value::Dict& ppd_resource) {
@@ -105,6 +112,66 @@ std::optional<Printer::PpdReference> ManagedPpdResourceToPpdReference(
   return ppd_reference;
 }
 
+std::optional<Printer::UsbDeviceId> UsbDeviceIdFromInts(int vendor_id,
+                                                        int product_id) {
+  // Verify values are in the uint16 range.
+  if (vendor_id < std::numeric_limits<uint16_t>::min() ||
+      vendor_id > std::numeric_limits<uint16_t>::max() ||
+      product_id < std::numeric_limits<uint16_t>::min() ||
+      product_id > std::numeric_limits<uint16_t>::max()) {
+    LOG(WARNING) << "vendor_id or product_id out of range: " << vendor_id
+                 << ", " << product_id;
+    return std::nullopt;
+  }
+
+  return Printer::UsbDeviceId(static_cast<uint16_t>(vendor_id),
+                              static_cast<uint16_t>(product_id));
+}
+
+std::optional<ManagedPrinterConfiguration::UsbDeviceId>
+UsbDeviceIdProtoFromDict(const base::Value::Dict& dict) {
+  std::optional<int> vendor_id = dict.FindInt(kVendorId);
+  std::optional<int> product_id = dict.FindInt(kProductId);
+  std::optional<int> usb_protocol = dict.FindInt(kUsbProtocol);
+
+  // Verify values exist and are integers.
+  if (!vendor_id.has_value() || !product_id.has_value()) {
+    LOG(WARNING) << "vendor_id or product_id missing or not an int: "
+                 << dict.DebugString();
+    return std::nullopt;
+  }
+
+  // Verify usb_protocol exists and is an integer.
+  if (!usb_protocol.has_value()) {
+    LOG(WARNING) << "usb_protocol missing or not an int: "
+                 << dict.DebugString();
+    return std::nullopt;
+  }
+
+  auto usb_device_id =
+      UsbDeviceIdFromInts(vendor_id.value(), product_id.value());
+  if (!usb_device_id.has_value()) {
+    return std::nullopt;
+  }
+
+  if (!ManagedPrinterConfiguration_UsbProtocol_IsValid(usb_protocol.value()) ||
+      usb_protocol.value() ==
+          ManagedPrinterConfiguration_UsbProtocol::
+              ManagedPrinterConfiguration_UsbProtocol_USB_PROTOCOL_UNSPECIFIED) {
+    LOG(WARNING) << "UsbProtocol value invalid: " << usb_protocol.value();
+    return std::nullopt;
+  }
+
+  auto usb_device_id_proto = ManagedPrinterConfiguration::UsbDeviceId();
+  usb_device_id_proto.set_vendor_id(usb_device_id.value().vendor_id);
+  usb_device_id_proto.set_product_id(usb_device_id.value().product_id);
+  usb_device_id_proto.set_usb_protocol(
+      static_cast<ManagedPrinterConfiguration_UsbProtocol>(
+          usb_protocol.value()));
+
+  return usb_device_id_proto;
+}
+
 }  // namespace
 
 std::optional<ManagedPrinterConfiguration> ManagedPrinterConfigFromDict(
@@ -113,6 +180,7 @@ std::optional<ManagedPrinterConfiguration> ManagedPrinterConfigFromDict(
   const std::string* display_name = config.FindString(kDisplayName);
   const std::string* description = config.FindString(kDescription);
   const std::string* uri = config.FindString(kUri);
+  const base::Value::Dict* usb_device_id_dict = config.FindDict(kUsbDeviceId);
   const base::Value::Dict* ppd_resource = config.FindDict(kPpdResource);
   const base::Value::Dict* print_job_options =
       config.FindDict(kPrintJobOptions);
@@ -125,7 +193,25 @@ std::optional<ManagedPrinterConfiguration> ManagedPrinterConfigFromDict(
     result.set_display_name(*display_name);
   }
   if (uri) {
+    if (usb_device_id_dict) {
+      LOG(WARNING) << base::StringPrintf(
+          "Could not convert a dictionary to ManagedPrinterConfiguration: "
+          "multiple values set for the 'connection_type' oneof field: %s",
+          config.DebugString().c_str());
+      return std::nullopt;
+    }
     result.set_uri(*uri);
+  }
+  if (usb_device_id_dict) {
+    auto usb_device_id = UsbDeviceIdProtoFromDict(*usb_device_id_dict);
+    if (!usb_device_id.has_value()) {
+      LOG(WARNING) << base::StringPrintf(
+          "Could not convert a dictionary to UsbDeviceId: "
+          "invalid 'usb_device_id' field: %s",
+          usb_device_id_dict->DebugString().c_str());
+      return std::nullopt;
+    }
+    *result.mutable_usb_device_id() = usb_device_id.value();
   }
   if (description) {
     result.set_description(*description);
@@ -162,10 +248,6 @@ std::optional<Printer> PrinterFromManagedPrinterConfig(
     LogRequiredFieldMissing(kDisplayName);
     return std::nullopt;
   }
-  if (!managed_printer.has_uri()) {
-    LogRequiredFieldMissing(kUri);
-    return std::nullopt;
-  }
   if (!managed_printer.has_ppd_resource()) {
     LogRequiredFieldMissing(kPpdResource);
     return std::nullopt;
@@ -174,12 +256,55 @@ std::optional<Printer> PrinterFromManagedPrinterConfig(
   Printer printer(managed_printer.guid());
   printer.set_source(Printer::SRC_POLICY);
   printer.set_display_name(managed_printer.display_name());
-  std::string set_uri_error_message;
-  if (!printer.SetUri(managed_printer.uri(), &set_uri_error_message)) {
-    LOG(WARNING) << base::StringPrintf(
-        "Managed printer '%s' has invalid %s value: %s, error: %s",
-        managed_printer.display_name().c_str(), kUri,
-        managed_printer.uri().c_str(), set_uri_error_message.c_str());
+
+  if (managed_printer.has_uri()) {
+    std::string set_uri_error_message;
+    if (!printer.SetUri(managed_printer.uri(), &set_uri_error_message)) {
+      LOG(WARNING) << base::StringPrintf(
+          "Managed printer '%s' has invalid %s value: %s, error: %s",
+          managed_printer.display_name().c_str(), kUri,
+          managed_printer.uri().c_str(), set_uri_error_message.c_str());
+      return std::nullopt;
+    }
+  } else if (managed_printer.has_usb_device_id()) {
+    std::optional<Printer::UsbDeviceId> usb_device_id =
+        UsbDeviceIdFromInts(managed_printer.usb_device_id().vendor_id(),
+                            managed_printer.usb_device_id().product_id());
+    if (!usb_device_id.has_value()) {
+      LOG(WARNING) << base::StringPrintf(
+          "Managed printer '%s' has invalid %s value: %d, %d",
+          managed_printer.display_name().c_str(), kUsbDeviceId,
+          managed_printer.usb_device_id().vendor_id(),
+          managed_printer.usb_device_id().product_id());
+      return std::nullopt;
+    }
+    ManagedPrinterConfiguration_UsbProtocol usb_protocol =
+        managed_printer.usb_device_id().usb_protocol();
+    if (!ManagedPrinterConfiguration_UsbProtocol_IsValid(usb_protocol) ||
+        usb_protocol ==
+            ManagedPrinterConfiguration_UsbProtocol::
+                ManagedPrinterConfiguration_UsbProtocol_USB_PROTOCOL_UNSPECIFIED) {
+      LOG(WARNING) << base::StringPrintf(
+          "Managed printer '%s' has invalid %s value: %d",
+          managed_printer.display_name().c_str(), kUsbProtocol, usb_protocol);
+      return std::nullopt;
+    }
+    printer.set_usb_device_id(usb_device_id.value());
+    // Also set the URI since it's needed by CUPS and displayed in the UI.
+    if (usb_protocol ==
+        ManagedPrinterConfiguration_UsbProtocol::
+            ManagedPrinterConfiguration_UsbProtocol_USB_PROTOCOL_LEGACY_USB) {
+      printer.SetUri(base::StringPrintf("usb://%04x/%04x?serial",
+                                        usb_device_id.value().vendor_id,
+                                        usb_device_id.value().product_id));
+    } else {
+      printer.SetUri(base::StringPrintf("ippusb://%04x_%04x/ipp/print",
+                                        usb_device_id.value().vendor_id,
+                                        usb_device_id.value().product_id));
+    }
+  } else {
+    LOG(WARNING) << "Managed printer is missing oneof field: " << kUri << " or "
+                 << kUsbDeviceId;
     return std::nullopt;
   }
 

@@ -81,3 +81,5 @@ void AdsBlockedDialog::OnDismissed(JNIEnv* env) {
   java_ads_blocked_dialog_.Reset();
   std::move(dialog_dismissed_callback_).Run();
 }
+
+DEFINE_JNI(AdsBlockedDialog)

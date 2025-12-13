@@ -31,6 +31,6 @@ JavaScriptConsoleFeatureFactory::~JavaScriptConsoleFeatureFactory() = default;
 
 std::unique_ptr<KeyedService>
 JavaScriptConsoleFeatureFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   return std::make_unique<JavaScriptConsoleFeature>();
 }

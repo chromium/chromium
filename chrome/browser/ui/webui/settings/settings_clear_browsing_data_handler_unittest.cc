@@ -108,7 +108,6 @@ class ClearBrowsingDataHandlerUnitTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment browser_task_environment_;
-  std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager;
   std::unique_ptr<TestingProfile> profile_;
@@ -139,10 +138,10 @@ void ClearBrowsingDataHandlerUnitTest::SetUp() {
   profile_->GetTestingPrefService()->registry()->RegisterBooleanPref(
       kTestingDatatypePref, true);
 
-  browser_window_ = std::make_unique<TestBrowserWindow>();
+  auto browser_window = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile_.get(), /*user_gesture*/ true);
   params.type = Browser::TYPE_NORMAL;
-  params.window = browser_window_.get();
+  params.window = browser_window.release();
   browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
 
   std::unique_ptr<tabs::TabModel> tab_model = std::make_unique<tabs::TabModel>(
@@ -174,7 +173,6 @@ void ClearBrowsingDataHandlerUnitTest::TearDown() {
   dse_factory_util_.reset();
   browser_->tab_strip_model()->CloseAllTabs();
   browser_ = nullptr;
-  browser_window_ = nullptr;
 }
 
 void ClearBrowsingDataHandlerUnitTest::VerifySearchHistoryWebUIUpdate(

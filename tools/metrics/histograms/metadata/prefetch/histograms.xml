@@ -35,26 +35,34 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(TriggerTypeAndEagerness) -->
 
 <variants name="TriggerTypeAndEagerness">
+  <variant name="Embedder_BookmarkBar" summary="Embedder trigger, BookmarkBar"/>
   <variant name="Embedder_ChromeCustomTabs"
       summary="Embedder trigger, ChromeCustomTabs"/>
   <variant name="Embedder_DefaultSearchEngine"
       summary="Embedder trigger, DefaultSearchEngine"/>
+  <variant name="Embedder_NewTabPage" summary="Embedder trigger, NewTabPage"/>
   <variant name="Embedder_WebView" summary="Embedder trigger, WebView"/>
   <variant name="SpeculationRule_Conservative"
       summary="SpeculationRules trigger, Conservative"/>
-  <variant name="SpeculationRule_Immediate"
+  <variant name="SpeculationRule_Eager2"
+      summary="SpeculationRules trigger, Eager"/>
+  <variant name="SpeculationRule_Immediate2"
       summary="SpeculationRules trigger, Immediate"/>
   <variant name="SpeculationRule_Moderate"
       summary="SpeculationRules trigger, Moderate"/>
   <variant name="SpeculationRuleFromAutoSpeculationRules_Conservative"
       summary="SpeculationRulesFromAutoSpeculationRules trigger, Conservative"/>
-  <variant name="SpeculationRuleFromAutoSpeculationRules_Immediate"
+  <variant name="SpeculationRuleFromAutoSpeculationRules_Eager2"
+      summary="SpeculationRulesFromAutoSpeculationRules trigger, Eager"/>
+  <variant name="SpeculationRuleFromAutoSpeculationRules_Immediate2"
       summary="SpeculationRulesFromAutoSpeculationRules trigger, Immediate"/>
   <variant name="SpeculationRuleFromAutoSpeculationRules_Moderate"
       summary="SpeculationRulesFromAutoSpeculationRules trigger, Moderate"/>
   <variant name="SpeculationRuleFromIsolatedWorld_Conservative"
       summary="SpeculationRulesFromIsolatedWorld trigger, Conservative"/>
-  <variant name="SpeculationRuleFromIsolatedWorld_Immediate"
+  <variant name="SpeculationRuleFromIsolatedWorld_Eager2"
+      summary="SpeculationRulesFromIsolatedWorld trigger, Eager"/>
+  <variant name="SpeculationRuleFromIsolatedWorld_Immediate2"
       summary="SpeculationRulesFromIsolatedWorld trigger, Immediate"/>
   <variant name="SpeculationRuleFromIsolatedWorld_Moderate"
       summary="SpeculationRulesFromIsolatedWorld trigger, Moderate"/>
@@ -69,7 +77,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.{PrerenderOrNonPrerender}.{WasServed}.{TriggerTypeAndEagerness}"
-    units="ms" expires_after="2025-12-21">
+    units="ms" expires_after="2026-04-26">
   <owner>kenoss@chromium.org</owner>
   <owner>taiyo@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -98,7 +106,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.{WasServed}.{TriggerTypeAndEagerness}"
-    units="ms" expires_after="2025-12-21">
+    units="ms" expires_after="2026-04-26">
   <owner>kenoss@chromium.org</owner>
   <owner>taiyo@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -126,8 +134,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Prefetch.PrefetchContainer.AddedToDomainLookupStarted.{TriggerTypeAndEagerness}"
+    units="ms" expires_after="2026-11-12">
+  <owner>yoichio@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the duration from when `PrefetchContainer` is added to
+    `PrefetchService` to when the domain lookup for the corresponding URL
+    request is started.
+
+    This metric is recorded when `PrefetchContainer::dtor()` is called if it
+    received a non-redirect header.
+
+    This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
     name="Prefetch.PrefetchContainer.AddedToHeaderDeterminedSuccessfully.{TriggerTypeAndEagerness}"
-    units="ms" expires_after="2025-11-30">
+    units="ms" expires_after="2026-06-07">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -144,7 +171,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.PrefetchContainer.AddedToInitialEligibility.{TriggerTypeAndEagerness}"
-    units="ms" expires_after="2025-11-30">
+    units="ms" expires_after="2026-06-07">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -161,7 +188,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.PrefetchContainer.AddedToPrefetchCompletedSuccessfully.{TriggerTypeAndEagerness}"
-    units="ms" expires_after="2025-11-30">
+    units="ms" expires_after="2026-06-07">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -178,7 +205,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.PrefetchContainer.AddedToPrefetchStarted.{TriggerTypeAndEagerness}"
-    units="ms" expires_after="2025-11-30">
+    units="ms" expires_after="2026-06-07">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -196,7 +223,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.PrefetchContainer.AddedToURLRequestStarted.{TriggerTypeAndEagerness}"
-    units="ms" expires_after="2025-12-01">
+    units="ms" expires_after="2026-06-07">
   <owner>taiyo@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -214,8 +241,42 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Prefetch.PrefetchContainer.ConnectedCallbackDelay.{TriggerTypeAndEagerness}"
+    units="ms" expires_after="2026-11-12">
+  <owner>hayato@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the time taken to call http network transaction connected callback.
+
+    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    started the load.
+
+    This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
+    name="Prefetch.PrefetchContainer.CreateStreamDelay.{TriggerTypeAndEagerness}"
+    units="ms" expires_after="2026-11-12">
+  <owner>hayato@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the time taken for HTTP stream creation to finish.
+
+    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    started the load.
+
+    This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
     name="Prefetch.PrefetchContainer.InitialEligibilityToPrefetchStarted.{TriggerTypeAndEagerness}"
-    units="ms" expires_after="2026-01-11">
+    units="ms" expires_after="2026-05-17">
   <owner>taiyo@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -234,8 +295,74 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Prefetch.PrefetchContainer.InitializeStreamDelay.{TriggerTypeAndEagerness}"
+    units="ms" expires_after="2026-11-12">
+  <owner>hayato@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the time taken for HTTP stream initialization to finish if the
+    initialization was blocked, otherwise zero.
+
+    This metrics is recorded when `PrefetchContainer::dtor()` is called if it
+    started the load.
+
+    This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
+    name="Prefetch.PrefetchContainer.PrefetchMatchMissedToPrefetchStarted.{TriggerTypeAndEagerness}"
+    units="ms" expires_after="2025-12-21">
+  <owner>wbjacksonjr@chromium.org</owner>
+  <owner>taiyo@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    Records the time delta between a missed prefetch matching and a subsequent
+    prefetch for the same resource. This is logged when a prefetch request is
+    sent to the network for a URL that was recently navigated to by the user and
+    that could have been served by the prefetch if it had been available. A
+    smaller time delta indicates a potential race condition between the
+    navigation and the prefetch. This metric is logged in milliseconds and is
+    only recorded against the latest navigation that could've matched with the
+    prefetch.
+
+    Note that this is calculated from non-SW-controlled `PrefetchMatchResolver`
+    i.e. it is calculated for each redirect, and it ignores SW-controlled
+    `PrefetchMatchResolver` case. Also, this information of being unmatched is
+    stored in an LRU with a limited size, so older mismatches might not be taken
+    into account. Please see
+    `PrefetchService::recent_unmatched_navigated_keys_for_metrics_` for more
+    details.
+
+    This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
+    name="Prefetch.PrefetchContainer.PrefetchStartedToDomainLookupStarted.{TriggerTypeAndEagerness}"
+    units="ms" expires_after="2026-11-12">
+  <owner>yoichio@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the duration from when `PrefetchService` starts its loading process
+    (i.e., `PrefetchService::StartSinglePrefetch` is called) to when the domain
+    lookup for the corresponding URL request is started.
+
+    This metric is recorded when `PrefetchContainer::dtor()` is called if it
+    received a non-redirect header.
+
+    This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
     name="Prefetch.PrefetchContainer.PrefetchStartedToHeaderDeterminedSuccessfully.{TriggerTypeAndEagerness}"
-    units="ms" expires_after="2026-01-11">
+    units="ms" expires_after="2026-05-17">
   <owner>taiyo@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -254,7 +381,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.PrefetchContainer.PrefetchStartedToPrefetchCompletedSuccessfully.{TriggerTypeAndEagerness}"
-    units="ms" expires_after="2026-01-11">
+    units="ms" expires_after="2026-05-17">
   <owner>taiyo@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -273,7 +400,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.PrefetchContainer.PrefetchStartedToURLRequestStarted.{TriggerTypeAndEagerness}"
-    units="ms" expires_after="2026-01-11">
+    units="ms" expires_after="2026-05-17">
   <owner>taiyo@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -292,8 +419,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Prefetch.PrefetchContainer.ServedCount.{TriggerTypeAndEagerness}"
+    units="count" expires_after="2026-05-17">
+  <owner>taiyo@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    This histogram records how many times the `PrefetchContainer` has been
+    served to the navigation.
+
+    The count is incremented when `PrefetchContainer` receives the
+    `PrefetchMatchResolver`'s notification that the container is serevd (i.e.
+    `PrefetchMatchResolver::UnregisterCandidate`), and its value is recorded on
+    `PrefetchContainer::dtor()`.
+
+    This histogram is recorded with its TriggerType and Eagerness as
+    {TriggerTypeAndEagerness}.
+  </summary>
+</histogram>
+
+<histogram
     name="Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.{PrerenderOrNonPrerender}.{TriggerTypeAndEagerness}"
-    enum="Boolean" expires_after="2025-12-14">
+    enum="Boolean" expires_after="2026-04-26">
   <owner>kouhei@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>taiyo@chromium.org</owner>
@@ -320,7 +466,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.{TriggerTypeAndEagerness}"
-    enum="Boolean" expires_after="2025-12-14">
+    enum="Boolean" expires_after="2026-04-26">
   <owner>kouhei@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>taiyo@chromium.org</owner>
@@ -342,6 +488,57 @@ chromium-metrics-reviews@google.com.
 
     Before 2025-04-25, this histogram was recorded as
     `PrefetchProxy.AfterClick.PrefetchMatchingBlockedNavigationWithPrefetch.*`
+  </summary>
+  <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
+</histogram>
+
+<histogram
+    name="Prefetch.PrefetchMatchResolver.OnDeterminedHeadWithUnmatch.PotentialCandidateServingResultAndServableStateAndMatcherAction"
+    units="code" expires_after="2026-05-06">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    The combination of `PrefetchPotentialCandidateServingResult`,
+    `PrefetchServableState`, and `PrefetchMatchResolverAction`. See
+    `GetCodeOfPotentialCandidateServingResultAndServableStateAndMatcherAction()`
+    for the details of the value.
+
+    How to decode: prompt: &quot; Generate a python program that decodes
+    `GetCodeOfPotentialCandidateServingResultAndServableStateAndMatcherAction()`.
+
+    Example:
+
+    ``` $ decode.py 124181
+    ('PrefetchPotentialCandidateServingResult::kNotServedLoadFailed',
+    'PrefetchServableState::kNotServable',
+    'PrefetchMatchResolverAction::ActionKind::kDrop',
+    'PrefetchContainer::LoadState::kFailedDeterminedHead', None) ``` &quot;
+
+    Recorded when prefetch matching received unmatch in
+    `PrefetchMatchResolver::OnDeterminedHead()`.
+  </summary>
+</histogram>
+
+<histogram
+    name="Prefetch.PrefetchPotentialCandidateServingResult.PerMatchingCandidate.{TriggerTypeAndEagerness}"
+    enum="PrefetchPotentialCandidateServingResult" expires_after="2026-05-17">
+  <owner>taiyo@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    When a navigation started, `PrefetchMatchResolver` collects potentially
+    matching prefetches for it. Judging a prefetch actually matches or not needs
+    non-redirect header. If a prefetch has non-redirect header and actually
+    matched, then this judging ends synchronously. If not, it being the
+    `PrefetchMatchResolver` waits for non-redirect headers until it finds a
+    matched and servable one or there is no more candidates.
+
+    This histogram records the result of the serving judgement per those
+    potentially matching candidates. Recorded when that serving judgement is
+    settled and the candidate is unregistered from the resolver (i.e.
+    `PrefetchMatchResolver::UnregisterCandidate`).
+
+    This histogram is recorded per potentially matching candidate, with its
+    TriggerType and Eagerness as {TriggerTypeAndEagerness}.
   </summary>
   <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
 </histogram>
@@ -437,7 +634,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.AfterClick.RedirectChainSize" units="count"
-    expires_after="2026-01-11">
+    expires_after="2026-05-17">
   <owner>kouhei@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -451,7 +648,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.AfterClick.WasFullRedirectChainServed"
-    enum="Boolean" expires_after="2025-11-16">
+    enum="Boolean" expires_after="2026-05-24">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -476,7 +673,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.CacheLookupResult.{PrefetchProxyCanaryCheckerClient}"
-    enum="CanaryCheckLookupResult" expires_after="2026-01-11">
+    enum="CanaryCheckLookupResult" expires_after="2026-03-15">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -494,7 +691,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.FinalState.{PrefetchProxyCanaryCheckerClient}"
-    enum="BooleanSuccess" expires_after="2026-01-11">
+    enum="BooleanSuccess" expires_after="2026-03-15">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -511,7 +708,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.NetError.{PrefetchProxyCanaryCheckerClient}"
-    enum="NetErrorCodes" expires_after="2026-01-11">
+    enum="NetErrorCodes" expires_after="2026-03-15">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -548,7 +745,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.TimeUntilFailure.{PrefetchProxyCanaryCheckerClient}"
-    units="ms" expires_after="2026-01-11">
+    units="ms" expires_after="2026-03-15">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -564,7 +761,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.TimeUntilSuccess.{PrefetchProxyCanaryCheckerClient}"
-    units="ms" expires_after="2026-01-11">
+    units="ms" expires_after="2026-03-15">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -578,19 +775,8 @@ chromium-metrics-reviews@google.com.
       variants="PrefetchProxyCanaryCheckerClient"/>
 </histogram>
 
-<histogram name="PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL"
-    enum="Boolean" expires_after="2024-01-14">
-  <owner>kouhei@chromium.org</owner>
-  <owner>chrome-loading@chromium.org</owner>
-  <summary>
-    Records whether or not there was an existing prefetch with a matching URL
-    from a different referring document when a new prefetch is requested. This
-    is recorded everytime a prefetch is requested.
-  </summary>
-</histogram>
-
 <histogram name="PrefetchProxy.Prefetch.Mainframe.BodyLength" units="bytes"
-    expires_after="2026-01-11">
+    expires_after="2026-05-17">
   <owner>kouhei@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
@@ -605,7 +791,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.ConnectTime" units="ms"
-    expires_after="2026-01-11">
+    expires_after="2026-05-17">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -628,7 +814,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.NetError"
-    enum="NetErrorCodes" expires_after="2026-01-11">
+    enum="NetErrorCodes" expires_after="2026-05-17">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -641,7 +827,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.RespCode"
-    enum="HttpResponseCode" expires_after="2025-12-14">
+    enum="HttpResponseCode" expires_after="2026-04-19">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -662,7 +848,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.TotalTime" units="ms"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -671,74 +857,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="PrefetchProxy.Prefetch.NumExistingEligiblePrefetchWithMatchingURL"
-    units="count" expires_after="2024-02-04">
-  <owner>kouhei@chromium.org</owner>
-  <owner>chrome-loading@chromium.org</owner>
-  <summary>
-    Records the number of existing eligible prefetches with a matching URL from
-    a different referring document when a new prefetch is requested. This is
-    only recorded for prefetches where there is at least one existing prefetch
-    with a matching URL.
-  </summary>
-</histogram>
-
-<histogram name="PrefetchProxy.Prefetch.NumExistingPrefetchWithMatchingURL"
-    units="count" expires_after="2024-01-14">
-  <owner>kouhei@chromium.org</owner>
-  <owner>chrome-loading@chromium.org</owner>
-  <summary>
-    Records the number of existing prefetches with a matching URL from a
-    different referring document when a new prefetch is requested. This is
-    recorded everytime a prefetch is requested.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrefetchProxy.Prefetch.NumExistingPrefetchWithMatchingURLAndReferrer"
-    units="count" expires_after="2024-02-04">
-  <owner>kouhei@chromium.org</owner>
-  <owner>chrome-loading@chromium.org</owner>
-  <summary>
-    Records the number of existing prefetches with a matching referring URL and
-    matching prefetch URL from a different referring document when a new
-    prefetch is requested. This is only recorded for prefetches where there is
-    at least one existing prefetch with a matching URL.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrefetchProxy.Prefetch.NumExistingPrefetchWithMatchingURLAndRenderFrameHost"
-    units="count" expires_after="2024-02-04">
-  <owner>kouhei@chromium.org</owner>
-  <owner>chrome-loading@chromium.org</owner>
-  <summary>
-    Records the number of existing prefetches with a matching referring render
-    frame host and matching prefetch URL from a different referring document
-    when a new prefetch is requested. This case can occur if and only if there
-    was a same origin navigation that re-used the same render frame host and
-    both pages requested to prefetch the same URL. This is only recorded for
-    prefetches where there is at least one existing prefetch with a matching
-    URL.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrefetchProxy.Prefetch.NumExistingServablePrefetchWithMatchingURL"
-    units="count" expires_after="2024-02-04">
-  <owner>kouhei@chromium.org</owner>
-  <owner>chrome-loading@chromium.org</owner>
-  <summary>
-    Records the number of existing prefetches with a successfully completed
-    prefetched responses and matching URL from a different referring document
-    when a new prefetch is requested. This is only recorded for prefetches where
-    there is at least one existing prefetch with a matching URL.
-  </summary>
-</histogram>
-
 <histogram name="PrefetchProxy.Prefetch.RedirectChainSize" units="count"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -748,7 +868,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus"
-    enum="PrefetchStreamingURLLoaderStatus" expires_after="2025-11-16">
+    enum="PrefetchStreamingURLLoaderStatus" expires_after="2026-05-24">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -776,7 +896,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Proxy.RespCode" enum="HttpResponseCode"
-    expires_after="2026-01-04">
+    expires_after="2026-05-10">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
@@ -802,7 +922,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Redirect.Result" enum="PrefetchRedirectResult"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>kouhei@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>

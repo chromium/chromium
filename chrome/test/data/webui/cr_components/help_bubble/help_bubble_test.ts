@@ -181,7 +181,7 @@ suite('CrComponentsHelpBubbleTest', () => {
         'help bubble should have correct anchor element');
     assertBodyInTop();
     assertEquals(
-        HELP_BUBBLE_BODY, helpBubble.$.topBody.textContent!.trim(),
+        HELP_BUBBLE_BODY, helpBubble.$.topBody.textContent.trim(),
         'body content show match');
     assertTrue(isVisible(helpBubble), 'help bubble should be visible');
   });
@@ -199,7 +199,7 @@ suite('CrComponentsHelpBubbleTest', () => {
     assertTrue(!!titleElement, 'title element should exist');
     assertFalse(titleElement.hidden, 'title element should not be hidden');
     assertEquals(
-        HELP_BUBBLE_TITLE, titleElement.textContent!.trim(),
+        HELP_BUBBLE_TITLE, titleElement.textContent.trim(),
         'title content should match');
     assertTrue(isVisible(titleElement), 'title element should be visible');
   });
@@ -288,7 +288,7 @@ suite('CrComponentsHelpBubbleTest', () => {
         'title element should be anchor element');
     assertBodyInTop();
     assertEquals(
-        HELP_BUBBLE_BODY, helpBubble.$.topBody.textContent!.trim(),
+        HELP_BUBBLE_BODY, helpBubble.$.topBody.textContent.trim(),
         'body content should match');
     assertTrue(isVisible(helpBubble), 'help bubble should be visible');
   });
@@ -700,7 +700,7 @@ suite('CrComponentsHelpBubbleTest', () => {
         'help bubble should have correct anchor element');
     assertBodyInTop();
     assertEquals(
-        HELP_BUBBLE_BODY, helpBubble.$.topBody.textContent!.trim(),
+        HELP_BUBBLE_BODY, helpBubble.$.topBody.textContent.trim(),
         'body content show match');
     assertTrue(isVisible(helpBubble), 'help bubble should be visible');
 
@@ -729,7 +729,7 @@ suite('CrComponentsHelpBubbleTest', () => {
         'help bubble should have correct anchor element');
     assertBodyInTop();
     assertEquals(
-        HELP_BUBBLE_BODY, helpBubble.$.topBody.textContent!.trim(),
+        HELP_BUBBLE_BODY, helpBubble.$.topBody.textContent.trim(),
         'body content show match');
     assertTrue(isVisible(helpBubble), 'help bubble should be visible');
 
@@ -757,7 +757,7 @@ suite('CrComponentsHelpBubbleTest', () => {
         'help bubble should have correct anchor element');
     assertBodyInTop();
     assertEquals(
-        HELP_BUBBLE_BODY, helpBubble.$.topBody.textContent!.trim(),
+        HELP_BUBBLE_BODY, helpBubble.$.topBody.textContent.trim(),
         'body content show match');
     assertTrue(isVisible(helpBubble), 'help bubble should be visible');
 
@@ -786,7 +786,7 @@ suite('CrComponentsHelpBubbleTest', () => {
         'help bubble should have correct anchor element');
     assertBodyInTop();
     assertEquals(
-        HELP_BUBBLE_BODY, helpBubble.$.topBody.textContent!.trim(),
+        HELP_BUBBLE_BODY, helpBubble.$.topBody.textContent.trim(),
         'body content show match');
     assertTrue(isVisible(helpBubble), 'help bubble should be visible');
 

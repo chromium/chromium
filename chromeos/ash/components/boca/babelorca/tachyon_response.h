@@ -25,7 +25,7 @@ class TachyonResponse {
   explicit TachyonResponse(int rpc_code, const std::string& error_message = "");
   TachyonResponse(int net_error,
                   std::optional<int> http_status_code,
-                  std::unique_ptr<std::string> response_body);
+                  std::optional<std::string> response_body);
 
   TachyonResponse(TachyonResponse&& other) = default;
   TachyonResponse& operator=(TachyonResponse&& other) = default;

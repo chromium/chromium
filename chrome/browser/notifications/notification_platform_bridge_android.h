@@ -53,7 +53,7 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
                              jboolean incognito,
                              std::string& webapk_package,
                              jint action_index,
-                             const jni_zero::JavaParamRef<jstring>& java_reply);
+                             const jni_zero::JavaRef<jstring>& java_reply);
 
   // Called by the Java implementation when the query of WebAPK's package name
   // is done.
@@ -73,13 +73,13 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
 
   // Called by the Java implementation when the user commits to unsubscribing
   // from notification from this origin.
-  void OnNotificationDisablePermission(
-      JNIEnv* env,
-      std::string& otification_id,
-      jint java_notification_type,
-      std::string& origin,
-      std::string& profile_id,
-      jboolean incognito);
+  void OnNotificationDisablePermission(JNIEnv* env,
+                                       std::string& otification_id,
+                                       jint java_notification_type,
+                                       std::string& origin,
+                                       std::string& profile_id,
+                                       jboolean incognito,
+                                       jboolean is_suspicious);
 
   // Called by Java tests for testing both suspicious and non-suspicious
   // notification behaviour when showing warnings for suspicious notifications
@@ -117,7 +117,7 @@ class NotificationPlatformBridgeAndroid : public NotificationPlatformBridge {
 
   void OnNotificationShowOriginalNotification(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& java_object,
+      const base::android::JavaRef<jobject>& java_object,
       std::string& origin,
       std::string& profile_id,
       jboolean incognito);

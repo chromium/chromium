@@ -30,6 +30,21 @@ base::Value TestUtils::GetContentSettingValue(const ProviderInterface* provider,
 }
 
 // static
+std::optional<PermissionSetting> TestUtils::GetPermissionSetting(
+    const ProviderInterface* provider,
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    bool include_incognito,
+    RuleMetaData* metadata) {
+  auto* info = PermissionSettingsRegistry::GetInstance()->Get(content_type);
+  CHECK(info);
+  return info->delegate().FromValue(
+      GetContentSettingValue(provider, primary_url, secondary_url, content_type,
+                             include_incognito, metadata));
+}
+
+// static
 ContentSetting TestUtils::GetContentSetting(const ProviderInterface* provider,
                                             const GURL& primary_url,
                                             const GURL& secondary_url,

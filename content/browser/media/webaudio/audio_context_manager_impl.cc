@@ -66,7 +66,12 @@ AudioContextManagerImpl::~AudioContextManagerImpl() {
 
 void AudioContextManagerImpl::AudioContextAudiblePlaybackStarted(
     uint32_t audio_context_id) {
-  DCHECK(pending_audible_durations_[audio_context_id].is_null());
+  if (!pending_audible_durations_[audio_context_id].is_null()) {
+    mojo::ReportBadMessage(
+        "AudioContextAudiblePlaybackStarted() called more than once with the "
+        "same audio_context_id");
+    return;
+  }
 
   // Keeps track of the start audible time for this context.
   pending_audible_durations_[audio_context_id] = clock_->NowTicks();

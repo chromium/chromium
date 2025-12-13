@@ -140,7 +140,7 @@ ScriptPromise<SelectorDirective> FragmentDirective::createSelectorDirective(
   auto* generator = MakeGarbageCollected<TextFragmentSelectorGenerator>(frame);
   generator->Generate(
       *range_in_flat_tree,
-      WTF::BindOnce(
+      BindOnce(
           [](ScriptPromiseResolver<SelectorDirective>* resolver,
              TextFragmentSelectorGenerator* generator,
              const RangeInFlatTree* range, const TextFragmentSelector& selector,
@@ -172,14 +172,20 @@ void FragmentDirective::ParseDirectives(const String& fragment_directive) {
                            directive_strings);
 
   HeapVector<Member<Directive>> new_directives;
+  HashSet<String> text_directives;
   for (String& directive_string : directive_strings) {
     if (directive_string.StartsWith("text=")) {
       String value = directive_string.Right(directive_string.length() - 5);
-      if (value.empty())
+      if (value.empty() ||
+          (RuntimeEnabledFeatures::
+               ScrollToTextFragmentUniqueFragmentsEnabled() &&
+           !text_directives.insert(value.LowerASCII()).is_new_entry)) {
         continue;
+      }
 
-      if (TextDirective* text_directive = TextDirective::Create(value))
+      if (TextDirective* text_directive = TextDirective::Create(value)) {
         new_directives.push_back(text_directive);
+      }
     } else if (auto* selector_directive =
                    CssSelectorDirective::TryParse(directive_string)) {
       new_directives.push_back(selector_directive);

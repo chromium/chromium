@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<script>
+if (window.opener) {
+  window.opener.postMessage("Hello!", "*");
+}
+window.top.postMessage("Hello!", "*");
+</script>

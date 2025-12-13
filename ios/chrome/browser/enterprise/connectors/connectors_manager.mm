@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/enterprise/connectors/connectors_manager.h"
 
+#import "components/enterprise/connectors/core/common.h"
+
 namespace enterprise_connectors {
 
 ConnectorsManager::ConnectorsManager(PrefService* pref_service,
@@ -11,5 +13,14 @@ ConnectorsManager::ConnectorsManager(PrefService* pref_service,
     : ConnectorsManagerBase(pref_service, config, /*observe_prefs=*/true) {}
 
 ConnectorsManager::~ConnectorsManager() = default;
+
+void ConnectorsManager::CacheAnalysisConnectorPolicy(
+    AnalysisConnector connector) const {
+  // do nothing
+}
+
+DataRegion ConnectorsManager::GetDataRegion(AnalysisConnector connector) const {
+  return DataRegion::NO_PREFERENCE;
+}
 
 }  // namespace enterprise_connectors

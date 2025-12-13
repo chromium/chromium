@@ -8,10 +8,9 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/platform_experience/features.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,15 +22,11 @@ class PlatformExperiencePrefsTest : public testing::Test {
   PlatformExperiencePrefsTest() = default;
   ~PlatformExperiencePrefsTest() override = default;
 
-  void SetUp() override {
-    local_state_ = std::make_unique<ScopedTestingLocalState>(
-        TestingBrowserProcess::GetGlobal());
+  PrefService& local_state() {
+    return *TestingBrowserProcess::GetGlobal()->local_state();
   }
 
-  PrefService& local_state() { return *local_state_->Get(); }
-
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
 };
 
 // Test to ensure that the preference is registered correctly with its default

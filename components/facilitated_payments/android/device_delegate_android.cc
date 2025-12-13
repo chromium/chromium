@@ -5,13 +5,17 @@
 #include "components/facilitated_payments/android/device_delegate_android.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/android/application_status_listener.h"
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "components/facilitated_payments/android/facilitated_payments_app_info_list_android.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
+#include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
+#include "components/facilitated_payments/core/validation/payment_link_validator.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 #include "url/android/gurl_android.h"
@@ -27,12 +31,19 @@ DeviceDelegateAndroid::DeviceDelegateAndroid(content::WebContents* web_contents)
 
 DeviceDelegateAndroid::~DeviceDelegateAndroid() = default;
 
-bool DeviceDelegateAndroid::IsPixAccountLinkingSupported() const {
+WalletEligibilityForPixAccountLinking
+DeviceDelegateAndroid::IsPixAccountLinkingSupported() const {
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_DeviceDelegate_isWalletEligibleForPixAccountLinking(env);
+  jint eligibility =
+      Java_DeviceDelegate_getWalletEligibilityForPixAccountLinking(env);
+  CHECK(eligibility >= static_cast<jint>(
+                           WalletEligibilityForPixAccountLinking::kEligible) &&
+        eligibility <= static_cast<jint>(WalletEligibilityForPixAccountLinking::
+                                             kWalletVersionNotSupported));
+  return static_cast<WalletEligibilityForPixAccountLinking>(eligibility);
 }
 
-void DeviceDelegateAndroid::LaunchPixAccountLinkingPage() {
+void DeviceDelegateAndroid::LaunchPixAccountLinkingPage(std::string email) {
   if (!web_contents_ || !web_contents_->GetNativeView() ||
       !web_contents_->GetNativeView()->GetWindowAndroid()) {
     // TODO(crbug.com/419108993): Log metrics.
@@ -40,7 +51,8 @@ void DeviceDelegateAndroid::LaunchPixAccountLinkingPage() {
   }
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_DeviceDelegate_openPixAccountLinkingPageInWallet(
-      env, web_contents_->GetTopLevelNativeWindow()->GetJavaObject());
+      env, web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
+      base::android::ConvertUTF8ToJavaString(env, email));
 }
 
 void DeviceDelegateAndroid::SetOnReturnToChromeCallbackAndObserveAppState(
@@ -95,4 +107,30 @@ DeviceDelegateAndroid::GetSupportedPaymentApps(const GURL& payment_link_url) {
       std::move(raw_array));
 }
 
+bool DeviceDelegateAndroid::InvokePaymentApp(std::string_view package_name,
+                                             std::string_view activity_name,
+                                             const GURL& payment_link_url) {
+  PaymentLinkValidator validator;
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_DeviceDelegate_invokePaymentApp(
+      env, base::android::ConvertUTF8ToJavaString(env, package_name),
+      base::android::ConvertUTF8ToJavaString(env, activity_name),
+      base::android::ConvertUTF8ToJavaString(
+          env, SchemeToString(validator.GetScheme(payment_link_url))),
+      url::GURLAndroid::FromNativeGURL(env, payment_link_url),
+      web_contents_->GetTopLevelNativeWindow()->GetJavaObject());
+}
+
+bool DeviceDelegateAndroid::IsPixSupportAvailableViaGboard() const {
+  if (!web_contents_ || !web_contents_->GetNativeView() ||
+      !web_contents_->GetNativeView()->GetWindowAndroid()) {
+    return false;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_DeviceDelegate_isPixSupportAvailableViaGboard(
+      env, web_contents_->GetTopLevelNativeWindow()->GetJavaObject());
+}
+
 }  // namespace payments::facilitated
+
+DEFINE_JNI(DeviceDelegate)

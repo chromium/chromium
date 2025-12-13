@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -45,7 +44,6 @@ class UninstallationViaOsSettingsSubManagerTest : public WebAppTest {
 
   void SetUp() override {
     WebAppTest::SetUp();
-    provider_ = FakeWebAppProvider::Get(profile());
 
     auto file_handler_manager =
         std::make_unique<WebAppFileHandlerManager>(profile());
@@ -55,7 +53,7 @@ class UninstallationViaOsSettingsSubManagerTest : public WebAppTest {
         profile(), std::move(file_handler_manager),
         std::move(protocol_handler_manager));
 
-    provider_->SetOsIntegrationManager(std::move(os_integration_manager));
+    fake_provider().SetOsIntegrationManager(std::move(os_integration_manager));
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
@@ -74,7 +72,7 @@ class UninstallationViaOsSettingsSubManagerTest : public WebAppTest {
         result;
     // InstallFromInfoWithParams is used instead of InstallFromInfo, because
     // InstallFromInfo doesn't register OS integration.
-    provider().scheduler().InstallFromInfoWithParams(
+    fake_provider().scheduler().InstallFromInfoWithParams(
         std::move(info), /*overwrite_existing_manifest_fields=*/true, source,
         result.GetCallback(), WebAppInstallParams());
     bool success = result.Wait();
@@ -86,12 +84,6 @@ class UninstallationViaOsSettingsSubManagerTest : public WebAppTest {
               webapps::InstallResultCode::kSuccessNewInstall);
     return result.Get<webapps::AppId>();
   }
-
- protected:
-  WebAppProvider& provider() { return *provider_; }
-
- private:
-  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_ = nullptr;
 };
 
 bool IsOsUninstallationSupported() {
@@ -116,7 +108,8 @@ TEST_F(UninstallationViaOsSettingsSubManagerTest, TestUserUninstallable) {
 #endif  // BUILDFLAG(IS_WIN)
 
   auto state =
-      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+      fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          app_id);
   ASSERT_TRUE(state.has_value());
   const proto::os_state::WebAppOsIntegration& os_integration_state =
       state.value();
@@ -137,7 +130,8 @@ TEST_F(UninstallationViaOsSettingsSubManagerTest, TestNotUserUninstallable) {
       InstallWebApp(webapps::WebappInstallSource::EXTERNAL_POLICY);
 
   auto state =
-      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+      fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          app_id);
   ASSERT_TRUE(state.has_value());
   const proto::os_state::WebAppOsIntegration& os_integration_state =
       state.value();
@@ -164,7 +158,8 @@ TEST_F(UninstallationViaOsSettingsSubManagerTest, UninstallApp) {
   base::HistogramTester histogram_tester;
   test::UninstallAllWebApps(profile());
   auto state =
-      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+      fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          app_id);
   ASSERT_FALSE(state.has_value());
   base::expected<bool, std::string> install_result =
       fake_os_integration().IsUninstallRegisteredWithOs(app_id, "Test App",
@@ -197,7 +192,8 @@ TEST_F(UninstallationViaOsSettingsSubManagerTest,
 #endif  // BUILDFLAG(IS_WIN)
 
   auto state =
-      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+      fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
+          app_id);
   ASSERT_TRUE(state.has_value());
   const proto::os_state::WebAppOsIntegration& os_integration_state =
       state.value();

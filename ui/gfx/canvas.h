@@ -7,12 +7,14 @@
 
 #include <stdint.h>
 
+#include <compare>
 #include <memory>
 #include <optional>
 #include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
@@ -20,8 +22,8 @@
 #include "cc/paint/skottie_color_map.h"
 #include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_text_property_value.h"
-#include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
+#include "ui/gfx/platform_font.h"
 #include "ui/gfx/text_constants.h"
 
 namespace cc {
@@ -33,6 +35,8 @@ namespace gfx {
 class Rect;
 class RectF;
 class FontList;
+class ImageSkia;
+class ImageSkiaRep;
 class Point;
 class PointF;
 class Size;
@@ -155,6 +159,29 @@ class COMPONENT_EXPORT(GFX) Canvas {
   // This function returns either Canvas::TEXT_ALIGN_LEFT or
   // Canvas::TEXT_ALIGN_RIGHT.
   static int DefaultCanvasTextAlignment();
+
+  // Key for the string width cache.
+  using StringWidthCacheKey =
+      std::pair<std::u16string, scoped_refptr<const gfx::PlatformFont>>;
+
+  struct StringWidthCacheKeyCompare {
+    bool operator()(const StringWidthCacheKey& lhs,
+                    const StringWidthCacheKey& rhs) const {
+      if (lhs.first != rhs.first) {
+        return lhs.first < rhs.first;
+      }
+      if (!lhs.second || !rhs.second) {
+        return lhs.second < rhs.second;
+      }
+      return *lhs.second < *rhs.second;
+    }
+  };
+
+  // Cache for string widths.
+  using StringWidthCache =
+      base::LRUCache<StringWidthCacheKey, float, StringWidthCacheKeyCompare>;
+
+  static StringWidthCache& GetStringWidthCacheForTesting();
 
   // Unscales by the image scale factor (aka device scale factor), and returns
   // that factor.  This is useful when callers want to draw directly in the

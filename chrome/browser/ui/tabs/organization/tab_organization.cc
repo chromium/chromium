@@ -205,13 +205,13 @@ void TabOrganization::Accept() {
     // grouped tab. If this group is already in the leftmost position then leave
     // it there. Else move the group at the index of that tab.
     int move_index = tab_strip_model->IndexOfFirstNonPinnedTab();
-    while (move_index < tab_strip_model->GetTabCount() &&
+    while (move_index < tab_strip_model->count() &&
            (tab_strip_model->GetTabGroupForTab(move_index).has_value() &&
             tab_strip_model->GetTabGroupForTab(move_index).value() !=
                 group_id_.value())) {
       move_index++;
     }
-    CHECK(move_index < tab_strip_model->GetTabCount());
+    CHECK(move_index < tab_strip_model->count());
 
     if (tab_strip_model->GetTabGroupForTab(move_index) != group_id_.value()) {
       tab_strip_model->MoveGroupTo(group_id_.value(), move_index);

@@ -13,8 +13,95 @@ from parameterized import parameterized  # pylint: disable=import-error
 
 # pylint: disable=too-many-lines
 
+# Mocked constants to avoid dependency on the actual json_constants file.
+MOCK_JSON_CONSTANTS = {
+    'AVERAGE': 'average',
+    'BENCHMARK': 'benchmark',
+    'BENCHMARKS': 'benchmarks',
+    'BOT': 'bot',
+    'BOT_ID': 'botId',
+    'BOT_IDS': 'Bot Id',
+    'BUILD_PAGE': 'Build Page',
+    'CHROMIUM_COMMIT_POSITION': 'Chromium Commit Position',
+    'COUNT': 'count',
+    'DIAGNOSTICS': 'diagnostics',
+    'EXPERIMENT_GCS_BUCKET': 'chrome-perf-experiment-non-public',
+    'ERROR': 'error',
+    'GENERIC_SET': 'GenericSet',
+    'GIT_HASH': 'git_hash',
+    'GUID': 'guid',
+    'IMPROVEMENT_DIRECTION': 'improvement_direction',
+    'KEY': 'key',
+    'LINKS': 'links',
+    'MASTER': 'master',
+    'MAX': 'max',
+    'MEASUREMENTS': 'measurements',
+    'MEASUREMENT': 'measurement',
+    'MIN': 'min',
+    'NAME': 'name',
+    'OS_DETAILED_VERSIONS': 'osDetailedVersions',
+    'OS_VERSION': 'OS Version',
+    'RESULTS': 'results',
+    'SAMPLE_VALUES': 'sampleValues',
+    'STD_DEV': 'error',
+    'STAT': 'stat',
+    'STORIES': 'stories',
+    'STORY_TAGS': 'storyTags',
+    'SUBTEST_1': 'subtest_1',
+    'SUBTEST_2': 'subtest_2',
+    'SUM': 'sum',
+    'SUMMARY_OPTIONS': 'summaryOptions',
+    'TEST': 'test',
+    'TRACE_URLS': 'traceUrls',
+    'TRACING_URI': 'Tracing uri',
+    'TYPE': 'type',
+    'UNIT': 'unit',
+    'V8_GIT_HASH': 'V8',
+    'VALUE': 'value',
+    'VALUES': 'values',
+    'VERSION': 'version',
+    'WEBRTC_GIT_HASH': 'WebRTC',
+    'STATS_BLOCKLIST': {'std', 'count', 'max', 'min', 'sum'},
+}
+
+
+def mock_json_constants(mock_obj):
+  for key, value in MOCK_JSON_CONSTANTS.items():
+    setattr(mock_obj, key, value)
+
 
 class JsonUtilTest(unittest.TestCase):
+
+  def _create_generic_set(self, guid, values):
+    """Helper to create a GenericSet entry for test data."""
+    return {'type': 'GenericSet', 'guid': guid, 'values': values}
+
+  def _create_sample_result(self, name, values, stories_guid, tags_guid):
+    """Helper to create a non-summary result item with sampleValues."""
+    return {
+        'name': name,
+        'unit': 'ms_smallerIsBetter',
+        'diagnostics': {
+            'stories': stories_guid,
+            'storyTags': tags_guid,
+        },
+        'sampleValues': values,
+    }
+
+  def _create_summary_result(self, name):
+    """Helper to create a summary result item with summaryOptions."""
+    return {
+        'name': name,
+        'unit': 'ms_smallerIsBetter',
+        'diagnostics': {
+            # Diagnostics can exist on summaries but are not used for subtests.
+            'stories': 'summary-story-guid',
+            'storyTags': 'summary-tag-guid',
+        },
+        'summaryOptions': {
+            'count': 'true'
+        },
+    }
 
   @parameterized.expand([
       (
@@ -27,7 +114,7 @@ class JsonUtilTest(unittest.TestCase):
           'just_stories',
           ['load:news:reddit:2018'],
           [],
-          ['load:news:reddit:2018', ''],
+          ['load_news_reddit_2018', ''],
       ),
       (
           'just_tags',
@@ -39,7 +126,7 @@ class JsonUtilTest(unittest.TestCase):
           'just_tags_2',
           ['no_colon_stories'],
           ['2018', 'case:load', 'group:games'],
-          ['load_games', ''],
+          ['load_games', 'no_colon_stories'],
       ),
       (
           'valid_stories_and_tags',
@@ -79,6 +166,30 @@ class JsonUtilTest(unittest.TestCase):
           ],
           ['speedometer3', ''],
       ),
+      (
+          'story_with_colon_and_slash',
+          ['browse:news/story'],
+          [],
+          ['browse_news_story', ''],
+      ),
+      (
+          'tag_with_equals_and_hash',
+          [],
+          ['case:run=fast', 'group:test#1'],
+          ['run_fast_test_1', ''],
+      ),
+      (
+          'story_and_tag_with_multiple_special_chars',
+          ['page|load,story#1'],
+          ['ver:1,2&3'],
+          ['1_2_3', 'page_load_story_1'],
+      ),
+      (
+          'no_colon_in_story',
+          ['speedometer3'],
+          ['case:run', 'group:all'],
+          ['run_all', 'speedometer3'],
+      ),
   ])
   def test_extract_subtest_from_stories_tags(self, _, stories, tags, expected):
     got_1, got_2 = json_util.extract_subtest_from_stories_tags(stories, tags)
@@ -114,7 +225,14 @@ class JsonUtilTest(unittest.TestCase):
         (0.0, 0.0, 0, 0, 0, 0),
       )
 
-  def test_process(self):
+  @mock.patch('json_util.histogram_helpers')
+  @mock.patch('json_util.json_constants')
+  def test_process(self, mock_constants, mock_hist_helpers):
+    mock_json_constants(mock_constants)
+    setattr(mock_hist_helpers, '_STATS_BLACKLIST',
+            MOCK_JSON_CONSTANTS['STATS_BLOCKLIST'])
+    mock_hist_helpers.ShouldGenerateStatistics.return_value = True
+
     result2_json = [
         {
             'type': 'GenericSet',
@@ -216,6 +334,16 @@ class JsonUtilTest(unittest.TestCase):
             'min': 1736637289209.919,
         },
         {
+            'type':
+            'GenericSet',
+            'guid':
+            '8563ece0-740a-44c0-ae72-418721ee56d8',
+            'values': [('https://storage.cloud.google.com/'
+                        'chrome-telemetry-output/20251112T181417_63858/'
+                        'rendering.desktop/balls_css_transition_all_properties/'
+                        'retry_0/trace.pb')]
+        },
+        {
             'name':
             'Editor-TipTap',
             'unit':
@@ -237,6 +365,7 @@ class JsonUtilTest(unittest.TestCase):
                 'storysetRepeats': 'a7f54f55-870b-4b76-bb87-d64df4bf3e7b',
                 'storyTags': 'f0bb92d7-5ab2-42ed-ad7f-d79018aa3b60',
                 'traceStart': 'cf09d1a1-8b3b-4d3c-bee6-b8d341d5e31e',
+                'traceUrls': '8563ece0-740a-44c0-ae72-418721ee56d8',
             },
             'sampleValues': [
                 172.90000000130385,
@@ -316,6 +445,10 @@ class JsonUtilTest(unittest.TestCase):
                '60e67b93909a1c858305b27111d9988f94fff0f8'),
         'WebRTC': ('https://webrtc.googlesource.com/src/+/'
                    '1e19045eaa63d00a3b4017fd43c5b502c6ed73a2'),
+        'Tracing uri': ('https://storage.cloud.google.com/'
+                        'chrome-telemetry-output/20251112T181417_63858/'
+                        'rendering.desktop/balls_css_transition_all_properties/'
+                        'retry_0/trace.pb'),
     }
     expected = {
         'version': 1,
@@ -345,6 +478,7 @@ class JsonUtilTest(unittest.TestCase):
       agent = json_util.JsonUtil(generate_synthetic_measurements=False)
       agent.add(result2_json)
       got = agent.process(details)
+      self.assertEqual(len(got['results']), 1)
       self.assertDictEqual(got, expected)
 
     with self.subTest(name='no_synthetic_measurements_with_benchmark_name'):
@@ -355,14 +489,29 @@ class JsonUtilTest(unittest.TestCase):
       got = agent.process(details, benchmark_name='speedometer3_modified')
       self.assertDictEqual(got, expected2)
 
+    with self.subTest(name='non_guid_diagnostics'):
+      input_json = [copy.deepcopy(result2_json[-1])]
+      input_json[0]['diagnostics'] = {
+          'stories': {
+              'type': 'GenericSet',
+              'values': ['stories_value'],
+          }
+      }
+      agent = json_util.JsonUtil(generate_synthetic_measurements=False)
+      agent.add(input_json)
+      got = agent.process(details)
+      self.assertEqual(len(got['results']), 1)
+      self.assertEqual(got['results'][0]['key']['subtest_1'], 'stories_value')
+
     with self.subTest(name='generate_synthetic_measurements'):
+      mock_hist_helpers.ShouldGenerateStatistics.return_value = True
       agent = json_util.JsonUtil(generate_synthetic_measurements=True)
       agent.add(result2_json)
       synthetic_measurements_1 = {
           'measurements': {
               'stat': [
                   {
-                      'value': 'average',
+                      'value': 'value',
                       'measurement': 140.6900000002235
                   },
               ]
@@ -378,7 +527,7 @@ class JsonUtilTest(unittest.TestCase):
           'measurements': {
               'stat': [
                   {
-                      'value': 'min',
+                      'value': 'value',
                       'measurement': 130.90000000037253
                   },
               ]
@@ -394,7 +543,7 @@ class JsonUtilTest(unittest.TestCase):
           'measurements': {
               'stat': [
                   {
-                      'value': 'max',
+                      'value': 'value',
                       'measurement': 172.90000000130385
                   },
               ]
@@ -410,7 +559,7 @@ class JsonUtilTest(unittest.TestCase):
           'measurements': {
               'stat': [
                   {
-                      'value': 'sum',
+                      'value': 'value',
                       'measurement': 1406.9000000022352
                   },
               ]
@@ -426,7 +575,7 @@ class JsonUtilTest(unittest.TestCase):
           'measurements': {
               'stat': [
                   {
-                      'value': 'count',
+                      'value': 'value',
                       'measurement': 10.0
                   },
               ]
@@ -442,7 +591,7 @@ class JsonUtilTest(unittest.TestCase):
           'measurements': {
               'stat': [
                   {
-                      'value': 'error',
+                      'value': 'value',
                       'measurement': 13.676537086499565
                   },
               ]
@@ -463,6 +612,7 @@ class JsonUtilTest(unittest.TestCase):
           synthetic_measurements_6])
       got = agent.process(details)
       self.assertDictEqual(got, expected)
+
     with self.subTest(name='generate_synthetic_measurements_with_subtest'):
       agent = json_util.JsonUtil(generate_synthetic_measurements=True)
       # modifies result2_json_copy to support subtest_1 and subtest_2
@@ -512,13 +662,17 @@ class JsonUtilTest(unittest.TestCase):
   @parameterized.expand([
       (
           'empty_data',
-          False,
+          False,  # synthetic_measurements enabled in JsonUtil
+          True,  # should_generate_stats (Mock return value)
+          'some_benchmark',
           None,
           [],
       ),
       (
           'without_subtest',
           False,
+          True,
+          'some_benchmark',
           {
               ('abc', 'ms_smallerIsBetter', 'down'): [1, 2, 3],
           },
@@ -561,6 +715,8 @@ class JsonUtilTest(unittest.TestCase):
       (
           'with_subtest',
           False,
+          True,
+          'some_benchmark',
           {
               ('abc', 'ms_smallerIsBetter', 'down', 'subtest', 'subtest2'): [
                   1,
@@ -609,6 +765,8 @@ class JsonUtilTest(unittest.TestCase):
       (
           'without_subtest_with_synthetic_measurements',
           True,
+          True,
+          'some_benchmark',
           {
               ('abc', 'ms_smallerIsBetter', 'down'): [1, 2, 3],
           },
@@ -652,7 +810,7 @@ class JsonUtilTest(unittest.TestCase):
                   'measurements': {
                       'stat': [
                           {
-                              'value': 'average',
+                              'value': 'value',
                               'measurement': 2.0
                           },
                       ],
@@ -667,7 +825,7 @@ class JsonUtilTest(unittest.TestCase):
                   'measurements': {
                       'stat': [
                           {
-                              'value': 'min',
+                              'value': 'value',
                               'measurement': 1.0
                           },
                       ],
@@ -682,7 +840,7 @@ class JsonUtilTest(unittest.TestCase):
                   'measurements': {
                       'stat': [
                           {
-                              'value': 'max',
+                              'value': 'value',
                               'measurement': 3.0
                           },
                       ],
@@ -697,7 +855,7 @@ class JsonUtilTest(unittest.TestCase):
                   'measurements': {
                       'stat': [
                           {
-                              'value': 'sum',
+                              'value': 'value',
                               'measurement': 6.0
                           },
                       ],
@@ -712,7 +870,7 @@ class JsonUtilTest(unittest.TestCase):
                   'measurements': {
                       'stat': [
                           {
-                              'value': 'count',
+                              'value': 'value',
                               'measurement': 3.0
                           },
                       ],
@@ -727,7 +885,7 @@ class JsonUtilTest(unittest.TestCase):
                   'measurements': {
                       'stat': [
                           {
-                              'value': 'error',
+                              'value': 'value',
                               'measurement': 1.0
                           },
                       ],
@@ -743,6 +901,8 @@ class JsonUtilTest(unittest.TestCase):
       (
           'with_subtest_with_synthetic_measurements',
           True,
+          True,
+          'some_benchmark',
           {
               ('abc', 'ms_smallerIsBetter', 'down', 'subtest', 'subtest2'): [
                   1,
@@ -792,7 +952,7 @@ class JsonUtilTest(unittest.TestCase):
                   'measurements': {
                       'stat': [
                           {
-                              'value': 'average',
+                              'value': 'value',
                               'measurement': 2.0
                           },
                       ],
@@ -809,7 +969,7 @@ class JsonUtilTest(unittest.TestCase):
                   'measurements': {
                       'stat': [
                           {
-                              'value': 'min',
+                              'value': 'value',
                               'measurement': 1.0
                           },
                       ],
@@ -826,7 +986,7 @@ class JsonUtilTest(unittest.TestCase):
                   'measurements': {
                       'stat': [
                           {
-                              'value': 'max',
+                              'value': 'value',
                               'measurement': 3.0
                           },
                       ],
@@ -843,7 +1003,7 @@ class JsonUtilTest(unittest.TestCase):
                   'measurements': {
                       'stat': [
                           {
-                              'value': 'sum',
+                              'value': 'value',
                               'measurement': 6.0
                           },
                       ],
@@ -860,7 +1020,7 @@ class JsonUtilTest(unittest.TestCase):
                   'measurements': {
                       'stat': [
                           {
-                              'value': 'count',
+                              'value': 'value',
                               'measurement': 3.0
                           },
                       ],
@@ -877,7 +1037,7 @@ class JsonUtilTest(unittest.TestCase):
                   'measurements': {
                       'stat': [
                           {
-                              'value': 'error',
+                              'value': 'value',
                               'measurement': 1.0
                           },
                       ],
@@ -892,11 +1052,65 @@ class JsonUtilTest(unittest.TestCase):
               },
           ],
       ),
+      (
+          'synthetics_enabled_but_blocked_by_helper',
+          True,  # generate_synthetic_measurements=True
+          False,  # should_generate_stats=False (Mock override)
+          'any_benchmark_name',
+          {
+              ('abc', 'ms_smallerIsBetter', 'down'): [1, 2, 3],
+          },
+          [{
+              'measurements': {
+                  'stat': [
+                      {
+                          'value': 'value',
+                          'measurement': 2.0
+                      },
+                      {
+                          'value': 'error',
+                          'measurement': 1.0
+                      },
+                      {
+                          'value': 'count',
+                          'measurement': 3.0
+                      },
+                      {
+                          'value': 'max',
+                          'measurement': 3.0
+                      },
+                      {
+                          'value': 'min',
+                          'measurement': 1.0
+                      },
+                      {
+                          'value': 'sum',
+                          'measurement': 6.0
+                      },
+                  ],
+              },
+              'key': {
+                  'improvement_direction': 'down',
+                  'unit': 'ms_smallerIsBetter',
+                  'test': 'abc',
+              },
+          }],
+      ),
   ])
-  def test_measurement(self, _, synthetic_measurements, data, expected):
+  @mock.patch('json_util.histogram_helpers')
+  @mock.patch('json_util.json_constants')
+  def test_measurement(self, _, synthetic_measurements, should_generate_stats,
+                       benchmark_name, data, expected, mock_constants,
+                       mock_hist_helpers):
+    mock_json_constants(mock_constants)
+    setattr(mock_hist_helpers, '_STATS_BLACKLIST',
+            MOCK_JSON_CONSTANTS['STATS_BLOCKLIST'])
+    mock_hist_helpers.ShouldGenerateStatistics.return_value = should_generate_stats
+
     instance = json_util.JsonUtil(
         generate_synthetic_measurements=synthetic_measurements)
-    got = instance.measurements_from_results(data=data)
+    got = instance.measurements_from_results(data=data,
+                                             benchmark_name=benchmark_name)
     self.assertEqual(expected, got)
 
   def test_key_from_builder_details(self):
@@ -940,7 +1154,7 @@ class JsonUtilTest(unittest.TestCase):
         builder_details=builder_details,
         bot_ids={'win-222-e504', 'win-223-e504', 'win-224-e504'},
         os_versions={'10.0.19045'},
-    )
+        trace_urls=[])
     expected = {
         'Build Page':
         ('https://ci.chromium.org/ui/p/chrome/builders/ci/win-10-perf/39376'),
@@ -1119,9 +1333,18 @@ class JsonUtilTest(unittest.TestCase):
           ['chrome-perf-experiment-non-public'],
       ),
   ])
-  def test_gcs_buckets_from_builder_name(
-      self, _, builder_name, master_name, experiment_only,
-      copy_to_experiment, expected):
+  @mock.patch('json_util.json_constants')
+  def test_gcs_buckets_from_builder_name(self, _, builder_name, master_name,
+                                         experiment_only, copy_to_experiment,
+                                         expected, mock_constants):
+    mock_constants.REPOSITORY_PROPERTY_MAP = {
+        'chromium': {
+            'masters': ['ChromiumPerf'],
+            'public_bucket_name': 'chrome-perf-public',
+            'internal_bucket_name': 'chrome-perf-non-public',
+        },
+    }
+    mock_constants.EXPERIMENT_GCS_BUCKET = 'chrome-perf-experiment-non-public'
     with mock.patch('builtins.open', new_callable=mock.mock_open) as mock_open:
       mock_open.return_value.__enter__.return_value.read.return_value = (
           '{"public_perf_builders": ["win-10-perf"]}')
@@ -1272,6 +1495,49 @@ class JsonUtilTest(unittest.TestCase):
   def test_is_empty(self, _, data, expected):
     self.assertEqual(json_util.is_empty(data), expected)
 
+  @mock.patch('json_util.extract_subtest_from_stories_tags')
+  @mock.patch('json_util.histogram_helpers')
+  @mock.patch('json_util.json_constants')
+  def test_process_applies_logic_conditionally(self, mock_constants,
+                                               mock_hist_helpers,
+                                               mock_extractor):
+    """
+    CRITICAL: Verifies that story/tag processing is ONLY applied to
+    non-summary results, matching the legacy pipeline's conditional logic.
+    """
+    mock_json_constants(mock_constants)
+    setattr(mock_hist_helpers, '_STATS_BLACKLIST',
+            MOCK_JSON_CONSTANTS['STATS_BLOCKLIST'])
+
+    mock_hist_helpers.ShouldGenerateStatistics.return_value = True
+    mock_extractor.return_value = ('sub1', 'sub2')
+
+    agent = json_util.JsonUtil()
+    # Create one non-summary item and one summary item.
+    result2_json = [
+        self._create_generic_set('s1', ['story1']),
+        self._create_generic_set('t1', ['tag1']),
+        self._create_sample_result('NonSummaryTest', [10], 's1', 't1'),
+        self._create_summary_result('SummaryTest'),
+    ]
+    agent.add(result2_json)
+    details = json_util.PerfBuilderDetails(bot='test-bot',
+                                           master='TestMaster',
+                                           git_hash='test-hash',
+                                           builder_page='',
+                                           chromium_commit_position='',
+                                           v8_git_hash='',
+                                           webrtc_git_hash='')
+
+    result = agent.process(details)
+
+    # Assert that the extraction logic was called only ONCE,
+    # for the non-summary item.
+    mock_extractor.assert_called_once()
+
+    # Assert the final output contains ONLY the processed non-summary result.
+    self.assertEqual(len(result['results']), 1)
+    self.assertEqual(result['results'][0]['key']['test'], 'NonSummaryTest')
 
 if __name__ == '__main__':
   unittest.main()

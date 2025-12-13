@@ -41,6 +41,7 @@ use prost::Message;
 map_keys! {
     CLAIMED_PIN, CLAIMED_PIN_KEY = "claimed_pin",
     CLIENT_DATA_JSON, CLIENT_DATA_JSON_KEY = "client_data_json",
+    CLIENT_DATA_JSON_HASH, CLIENT_DATA_JSON_HASH_KEY = "client_data_json_hash",
     COSE_ALGORITHM, COSE_ALGORITHM_KEY = "alg",
     ENCRYPTED, ENCRYPTED_KEY = "encrypted",
     EVAL, EVAL_KEY = "eval",
@@ -95,6 +96,13 @@ fn key(k: &str) -> MapKey {
     MapKey::String(String::from(k))
 }
 
+/// Returns a passkey assertion.
+/// This function can take either a `client_data_json` or a
+/// `client_data_json_hash`. If both are passed, `client_data_json_hash` is
+/// ignored. Callers should prefer passing `client_data_json_hash`.
+///
+/// If a client passes `client_data_json`, the enclave will return it as part of
+/// the assertion response. Otherwise, clients are expected to fill it in.
 pub(crate) fn do_assert(
     metrics: &mut MetricsUpdate,
     auth: &Authentication,
@@ -107,10 +115,24 @@ pub(crate) fn do_assert(
     let Some(Value::Bytestring(proto_bytes)) = request.get(PROTOBUF_KEY) else {
         return debug("protobuf required");
     };
-    let Some(Value::String(client_data_json)) = request.get(CLIENT_DATA_JSON_KEY) else {
-        return debug("clientDataJSON required");
+    let client_data_json = match request.get(CLIENT_DATA_JSON_KEY) {
+        Some(Value::String(client_data_json)) => Some(client_data_json),
+        Some(_) => return debug("clientDataJson is not a string"),
+        None => None,
     };
-    let client_data_json_hash = crypto::sha256(client_data_json.as_bytes());
+    let client_data_json_hash = if let Some(client_data_json) = client_data_json {
+        crypto::sha256(client_data_json.as_bytes())
+    } else {
+        match request.get(CLIENT_DATA_JSON_HASH_KEY) {
+            Some(Value::Bytestring(client_data_json_hash)) => {
+                client_data_json_hash.to_vec().try_into().map_err(|_| {
+                    RequestError::Debug("clientDataJsonHash does not match expected length")
+                })?
+            }
+            Some(_) => return debug("clientDataJsonHash is not a bytestring"),
+            None => return debug("either clientDataJson or clientDataJsonHash are required"),
+        }
+    };
     let Some(Value::Map(webauthn_request)) = request.get(WEBAUTHN_REQUEST_KEY) else {
         return debug("WebAuthn request required");
     };
@@ -159,15 +181,17 @@ pub(crate) fn do_assert(
         .map_err(|_| RequestError::Debug("signing failed"))?;
 
     // https://w3c.github.io/webauthn/#dictdef-authenticatorassertionresponsejson
-    let assertion_response_json = BTreeMap::<MapKey, Value>::from([
-        (
-            key("clientDataJSON"),
-            Value::String(client_data_json.clone()),
-        ),
+    let mut assertion_response_json = BTreeMap::<MapKey, Value>::from([
         (key("authenticatorData"), Value::from(authenticator_data)),
         (key("signature"), Value::from(signature.as_ref())),
         (key("userHandle"), Value::from(user_id.to_vec())),
     ]);
+    if let Some(client_data_json) = client_data_json {
+        assertion_response_json.insert(
+            key("clientDataJSON"),
+            Value::String(client_data_json.clone()),
+        );
+    }
     let mut response = BTreeMap::from([(key("response"), Value::Map(assertion_response_json))]);
 
     if let Some(prf_result) = handle_prf(
@@ -482,6 +506,8 @@ fn validate_pin(
     Ok(())
 }
 
+/// This is intended to be removed in favour of recovery_key_store.rs'
+/// do_wrap_pin_and_secret.
 pub(crate) fn do_wrap_pin(
     metrics: &mut MetricsUpdate,
     auth: &Authentication,
@@ -783,8 +809,6 @@ fn handle_write_large_blob(
         return Err(RequestError::Debug("large blob write > 8KiB"));
     }
 
-    let enc = entity_secrets.encrypted.as_mut().unwrap();
-
     // The caller must tell what the uncompressed length of its data is.
     let Some(Value::Int(uncompressed_len)) = large_blob_req.get(LARGE_BLOB_SIZE_KEY) else {
         return debug("largeBlobSize required");
@@ -793,6 +817,14 @@ fn handle_write_large_blob(
         return debug("largeBlobSize must be non-negative");
     }
 
+    let Some(enc) = entity_secrets.encrypted.as_mut() else {
+        // Old style passkeys without an `encrypted` field do not support large
+        // blobs.
+        return Ok(Some(Value::Map(BTreeMap::from([(
+            key(LARGE_BLOB_WRITTEN),
+            Value::Boolean(false),
+        )]))));
+    };
     enc.large_blob = Some(new_blob.to_vec());
     enc.large_blob_uncompressed_size = Some(*uncompressed_len as u64);
 
@@ -1235,6 +1267,74 @@ pub mod tests {
             ),
             Err(RequestError::Debug(m)) if m.contains("invalid base64 in largeBlob.write")
         ));
+    }
+
+    // Test attempting to write a large blob on an old style `private_key` proto
+    // field.
+    // Regression test for https://crbug.com/441240975.
+    #[test]
+    fn test_write_large_blob_on_old_credential_type() {
+        let new_blob_content = b"new blob data".to_vec();
+        let b64_blob = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(&new_blob_content);
+        let uncompressed_size = new_blob_content.len() + 10;
+        let webauthn_req_write = make_req(cbor!({
+           "write": (b64_blob.as_str()),
+           "largeBlobSize": (uncompressed_size as i64),
+        }));
+
+        let mut secrets_for_write = entity_secrets_from_proto(
+            &SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(),
+            &PROTOBUF,
+        )
+        .unwrap();
+        assert!(secrets_for_write.encrypted.is_none());
+
+        let result = handle_large_blob(
+            &webauthn_req_write,
+            &mut secrets_for_write,
+            &SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(),
+        )
+        .unwrap();
+        let response_val = result.expect("expected a response");
+        let Value::Map(response_map) = response_val else {
+            panic!("expected a map response");
+        };
+        assert_eq!(
+            response_map.get(LARGE_BLOB_WRITTEN_KEY),
+            Some(&Value::Boolean(false))
+        );
+    }
+
+    // Test attempting to read a large blob on an old style `private_key` proto
+    // field.
+    // Regression test for https://crbug.com/441240975.
+    #[test]
+    fn test_read_large_blob_on_old_credential_type() {
+        let webauthn_req_read = make_req(cbor!({
+           "read": true
+        }));
+        let mut secrets_for_read = entity_secrets_from_proto(
+            &SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(),
+            &PROTOBUF,
+        )
+        .unwrap();
+        assert!(secrets_for_read.encrypted.is_none());
+
+        let result = handle_large_blob(
+            &webauthn_req_read,
+            &mut secrets_for_read,
+            &SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(),
+        )
+        .unwrap();
+
+        let response_val = result.expect("expected a response");
+        assert_eq!(
+            response_val,
+            cbor!({
+                "largeBlobData": (&[] as &[u8]),
+                "largeBlobSize": 0,
+            })
+        );
     }
 
     // Integration tests of this code are done in Chromium, which builds this

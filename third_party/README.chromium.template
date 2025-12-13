@@ -1,3 +1,6 @@
+# For more information on these fields, see:
+# https://chromium.googlesource.com/chromium/src/+/HEAD/docs/adding_to_third_party.md#readme_chromium
+
 Name: Descriptive name of the package.
 Short Name (OPTIONAL): Name the package is distributed under (ex. libxml, openssl, etc).
 URL: The URL where the package lives i.e. A clonable url for git repositories, a package manager url for packages from package managers, etc. If there is no upstream, use 'This is the canonical public repository'. For packages coming from google internal repositories, use 'Google Internal'.
@@ -8,7 +11,7 @@ Update Mechanism: (REQUIRED, one of ('Autoroll', 'Manual', 'Static', or 'Static.
 License: The license/s under which the package is distributed. See ALLOWED_SPDX_LICENSES in depot_tools for the full list of allowed licenses https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:metadata/fields/custom/license_allowlist.py. If your dependency has multiple licenses, see https://chromium.googlesource.com/chromium/src/+/main/docs/adding_to_third_party.md#add-a-license-file-and-run-related-checks for guidance on how supply multiple entries or choose the best fit.
 License File: A file path from //third_party or a relative path from the README.chromium to a child directory, whichever makes more sense for your dependency. The file should contain a copy of the package's license and correspond to the License provided above. All packages should contain a valid license, regardless of whether it is shipped or not.
 Shipped: Either yes or no depending on whether this package should be included in about:credits. Anything shipped as part of a release or by component-updater should be credited.
-Security Critical: Either yes or no. Information on what classifies a package as security critical can be found at https://chromium.googlesource.com/chromium/src/+/HEAD/docs/adding_to_third_party.md#add-a-readme_chromium
+Security Critical: Either yes or no. Information on what classifies a package as security critical can be found at https://chromium.googlesource.com/chromium/src/+/HEAD/docs/adding_to_third_party.md#security-critical
 License Android Compatible: (OPTIONAL if the package is not shipped or uses a standard form license) Either yes or no depending on whether the package uses a license compatible with Android.
 CPEPrefix: (OPTIONAL) A 'common platform enumeration' version 2.3 (preferred) or 2.2, as per https://nvd.nist.gov/products/cpe/search, which represents the upstream package. This will be used to report known vulnerabilities in the upstream software package, such that we can be sure to merge fixes for those vulnerabilities. Please ensure you're using the closest applicable upstream version, according to the standard format for the CPE for that package. For example, cpe:/a:xmlsoft:libxslt:1.0.10. If no CPE is available for the package, please specify "unknown". If you're using a patched or modified version which is halfway between two public versions, please "round downwards" to the lower of the public versions (it's better for us to be notified of false-positive vulnerabilities than false-negatives).
 

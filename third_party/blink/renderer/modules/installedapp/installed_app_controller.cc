@@ -32,8 +32,8 @@ void InstalledAppController::GetInstalledRelatedApps(
   // Upon returning, filter the result list to those apps that are installed.
   ManifestManager::From(*GetSupplementable())
       ->RequestManifest(
-          WTF::BindOnce(&InstalledAppController::OnGetManifestForRelatedApps,
-                        WrapPersistent(this), WrapPersistent(resolver)));
+          BindOnce(&InstalledAppController::OnGetManifestForRelatedApps,
+                   WrapPersistent(this), WrapPersistent(resolver)));
 }
 
 InstalledAppController* InstalledAppController::From(LocalDOMWindow& window) {
@@ -88,8 +88,8 @@ void InstalledAppController::OnGetManifestForRelatedApps(
 
   provider_->FilterInstalledApps(
       std::move(mojo_related_apps), url, add_saved_related_applications,
-      WTF::BindOnce(&InstalledAppController::OnFilterInstalledApps,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+      BindOnce(&InstalledAppController::OnFilterInstalledApps,
+               WrapPersistent(this), WrapPersistent(resolver)));
 }
 
 void InstalledAppController::OnFilterInstalledApps(

@@ -22,7 +22,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "mojo/public/cpp/bindings/features.h"
 #include "mojo/public/cpp/bindings/lib/default_construct_tag_internal.h"
 #include "mojo/public/cpp/bindings/lib/generated_code_util.h"
 #include "mojo/public/cpp/bindings/lib/message_internal.h"
@@ -87,10 +86,10 @@ const char* IFace::MessageToMethodName_(mojo::Message& message) {
 
 #if !BUILDFLAG(IS_FUCHSIA)
 uint32_t IFace::Method_Sym::IPCStableHash() {
-  // This method's address is used for identifiying the mojo method name after
+  // This method's address is used for identifying the mojo method name after
   // symbolization. So each IPCStableHash should have a unique address.
   // We cannot use NO_CODE_FOLDING() here - it relies on the uniqueness of
-  // __LINE__ value, which is not unique accross different mojo modules.
+  // __LINE__ value, which is not unique across different mojo modules.
   // The code below is very similar to NO_CODE_FOLDING, but it uses a unique
   // hash instead of __LINE__.
   static constexpr uint32_t kHash = 0x8f16d37f;  // IPCStableHash for golden::IFace::Method

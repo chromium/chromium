@@ -9,7 +9,13 @@
 
 namespace content_capture::features {
 
+// Enables sending content capture metadata (e.g. sensitivity score, language
+// string, language confidence) to the data share service.
+BASE_DECLARE_FEATURE(kContentCaptureSendMetadataForDataShare);
+
 bool IsContentCaptureEnabled();
+
+bool ShouldSendMetadataForDataShare();
 
 int TaskInitialDelayInMilliseconds();
 

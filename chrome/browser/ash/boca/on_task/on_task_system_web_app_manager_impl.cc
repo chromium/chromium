@@ -14,13 +14,13 @@
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -46,14 +46,17 @@ Browser* GetBrowserWindowWithID(SessionID window_id) {
   if (!window_id.is_valid()) {
     return nullptr;
   }
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->session_id() == window_id) {
-      return browser;
-    }
-  }
-
-  // No window found with specified ID.
-  return nullptr;
+  Browser* result = nullptr;
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& browser) {
+        if (browser.GetSessionID() == window_id) {
+          result = &browser.GetBrowser();
+          return ash::BrowserController::kBreakIteration;
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
+  return result;
 }
 
 void MakeWindowResizable(const BrowserWindow* window) {
@@ -116,8 +119,6 @@ void OnTaskSystemWebAppManagerImpl::CloseSystemWebAppWindow(
 SessionID OnTaskSystemWebAppManagerImpl::GetActiveSystemWebAppWindowID() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // TODO (b/354007279): Filter out SWA window instances that are not managed by
-  // OnTask (for instance, those manually spawned by consumers).
   BrowserDelegate* const browser = FindSystemWebAppBrowser(
       profile_, SystemWebAppType::BOCA, BrowserType::kApp);
   // Verify that there is no browser instance and that there is no scheduled
@@ -296,7 +297,8 @@ void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForSystemWebAppWindow(
   if (!window_tracker) {
     return;
   }
-  window_tracker->InitializeBrowserInfoForTracking(browser);
+  window_tracker->InitializeBrowserInfoForTracking(
+      BrowserController::GetInstance()->GetDelegate(browser));
   for (auto* observer : observers) {
     window_tracker->AddObserver(observer);
   }
@@ -325,6 +327,34 @@ SessionID OnTaskSystemWebAppManagerImpl::CreateBackgroundTabWithUrl(
       tab, url, restriction_level);
   window_tracker->set_can_start_navigation_throttle(true);
   return sessions::SessionTabHelper::IdForTab(tab);
+}
+
+void OnTaskSystemWebAppManagerImpl::SetParentTabsRestriction(
+    SessionID window_id,
+    ::boca::LockedNavigationOptions::NavigationType restriction_level) {
+  Browser* const browser = GetBrowserWindowWithID(window_id);
+  if (!browser) {
+    return;
+  }
+  LockedSessionWindowTracker* const window_tracker = GetWindowTracker();
+  if (!window_tracker) {
+    return;
+  }
+  window_tracker->set_can_start_navigation_throttle(false);
+  for (int idx = browser->tab_strip_model()->count() - 1; idx >= 0; --idx) {
+    content::WebContents* const tab =
+        browser->tab_strip_model()->GetWebContentsAt(idx);
+
+    // Use the visible URL if the navigation has not been committed. It is
+    // safe to do so because this is normally triggered when the app has been
+    // launched.
+    const GURL tab_url = tab->GetLastCommittedURL().is_empty()
+                             ? tab->GetVisibleURL()
+                             : tab->GetLastCommittedURL();
+    window_tracker->on_task_blocklist()->SetParentURLRestrictionLevel(
+        tab, tab_url, restriction_level);
+  }
+  window_tracker->set_can_start_navigation_throttle(true);
 }
 
 void OnTaskSystemWebAppManagerImpl::RemoveTabsWithTabIds(
@@ -416,23 +446,34 @@ void OnTaskSystemWebAppManagerImpl::SwitchToTab(SessionID tab_id) {
 }
 
 void OnTaskSystemWebAppManagerImpl::SetAllChromeTabsMuted(bool muted) {
-  Browser* const boca_browser =
-      GetBrowserWindowWithID(GetActiveSystemWebAppWindowID());
+  BrowserDelegate* const boca_browser =
+      ash::BrowserController::GetInstance()->GetDelegate(
+          GetBrowserWindowWithID(GetActiveSystemWebAppWindowID()));
   if (!boca_browser) {
     return;
   }
-  for (Browser* const browser : *BrowserList::GetInstance()) {
-    if (!browser || browser == boca_browser) {
-      continue;
-    }
-    for (int idx = 0; idx < browser->tab_strip_model()->count(); ++idx) {
-      content::WebContents* const tab =
-          browser->tab_strip_model()->GetWebContentsAt(idx);
-      if (tab) {
-        tab->SetAudioMuted(muted);
-      }
-    }
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& browser) {
+        if (&browser == boca_browser) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        for (size_t idx = 0; idx < browser.GetWebContentsCount(); ++idx) {
+          content::WebContents* const tab = browser.GetWebContentsAt(idx);
+          if (tab) {
+            tab->SetAudioMuted(muted);
+          }
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
+}
+
+bool OnTaskSystemWebAppManagerImpl::IsWindowPinned(SessionID window_id) {
+  Browser* const browser = GetBrowserWindowWithID(window_id);
+  if (!browser) {
+    return false;
   }
+  return platform_util::IsBrowserLockedFullscreen(browser);
 }
 
 void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForTesting(

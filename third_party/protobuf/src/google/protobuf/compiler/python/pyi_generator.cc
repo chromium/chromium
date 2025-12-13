@@ -73,6 +73,7 @@ struct ImportModules {
   bool has_union = false;       // typing.Union
   bool has_callable = false;    // typing.Callable
   bool has_well_known_type = false;
+  bool has_datetime = false;
 };
 
 // Checks whether a descriptor name matches a well-known type.
@@ -112,8 +113,15 @@ void CheckImportModules(const Descriptor* descriptor,
     if (field->is_map()) {
       import_modules->has_mapping = true;
       const FieldDescriptor* value_des = field->message_type()->field(1);
-      if (value_des->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE ||
-          value_des->cpp_type() == FieldDescriptor::CPPTYPE_ENUM) {
+      if (value_des->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE) {
+        import_modules->has_union = true;
+        const absl::string_view name = value_des->message_type()->full_name();
+        if (name == "google.protobuf.Duration" ||
+            name == "google.protobuf.Timestamp") {
+          import_modules->has_datetime = true;
+        }
+      }
+      if (value_des->cpp_type() == FieldDescriptor::CPPTYPE_ENUM) {
         import_modules->has_union = true;
       }
     } else {
@@ -123,6 +131,11 @@ void CheckImportModules(const Descriptor* descriptor,
       if (field->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE) {
         import_modules->has_union = true;
         import_modules->has_mapping = true;
+        const absl::string_view name = field->message_type()->full_name();
+        if (name == "google.protobuf.Duration" ||
+            name == "google.protobuf.Timestamp") {
+          import_modules->has_datetime = true;
+        }
       }
       if (field->cpp_type() == FieldDescriptor::CPPTYPE_ENUM) {
         import_modules->has_union = true;
@@ -170,21 +183,6 @@ void PyiGenerator::PrintImportForDescriptor(
 }
 
 void PyiGenerator::PrintImports() const {
-  // Prints imported dependent _pb2 files.
-  absl::flat_hash_set<std::string> seen_aliases;
-  bool has_importlib = false;
-  for (int i = 0; i < file_->dependency_count(); ++i) {
-    const FileDescriptor* dep = file_->dependency(i);
-    if (strip_nonfunctional_codegen_ && IsKnownFeatureProto(dep->name())) {
-      continue;
-    }
-    PrintImportForDescriptor(*dep, &seen_aliases, &has_importlib);
-    for (int j = 0; j < dep->public_dependency_count(); ++j) {
-      PrintImportForDescriptor(*dep->public_dependency(j), &seen_aliases,
-                               &has_importlib);
-    }
-  }
-
   // Checks what modules should be imported.
   ImportModules import_modules;
   if (file_->message_type_count() > 0) {
@@ -200,6 +198,24 @@ void PyiGenerator::PrintImports() const {
   }
   for (int i = 0; i < file_->message_type_count(); i++) {
     CheckImportModules(file_->message_type(i), &import_modules);
+  }
+  if (import_modules.has_datetime) {
+    printer_->Print("import datetime\n\n");
+  }
+
+  // Prints imported dependent _pb2 files.
+  absl::flat_hash_set<std::string> seen_aliases;
+  bool has_importlib = false;
+  for (int i = 0; i < file_->dependency_count(); ++i) {
+    const FileDescriptor* dep = file_->dependency(i);
+    if (strip_nonfunctional_codegen_ && IsKnownFeatureProto(dep->name())) {
+      continue;
+    }
+    PrintImportForDescriptor(*dep, &seen_aliases, &has_importlib);
+    for (int j = 0; j < dep->public_dependency_count(); ++j) {
+      PrintImportForDescriptor(*dep->public_dependency(j), &seen_aliases,
+                               &has_importlib);
+    }
   }
 
   // Prints modules (e.g. _containers, _messages, typing) that are
@@ -240,6 +256,8 @@ void PyiGenerator::PrintImports() const {
   } else {
     if (file_->service_count() > 0) {
       printer_->Print(
+          "from google3.net.rpc.python import legacy_stream_token as "
+          "_legacy_stream_token\n"
           "from google3.net.rpc.python import proto_python_api_2_stub as "
           "_proto_python_api_2_stub\n"
           "from google3.net.rpc.python import pywraprpc as _pywraprpc\n"
@@ -426,21 +444,7 @@ void PyiGenerator::PrintMessage(const Descriptor& message_descriptor,
   Annotate("class_name", &message_descriptor);
   printer_->Indent();
 
-  // Prints slots
-  printer_->Print("__slots__ = (");
-  int items_printed = 0;
-  for (int i = 0; i < message_descriptor.field_count(); ++i) {
-    const FieldDescriptor* field_des = message_descriptor.field(i);
-    if (IsPythonKeyword(field_des->name())) {
-      continue;
-    }
-    if (items_printed > 0) {
-      printer_->Print(", ");
-    }
-    ++items_printed;
-    printer_->Print("\"$field_name$\"", "field_name", field_des->name());
-  }
-  printer_->Print(items_printed == 1 ? ",)\n" : ")\n");
+  printer_->Print("__slots__ = ()\n");
 
   // Prints Extensions for extendable messages
   if (message_descriptor.extension_range_count() > 0) {
@@ -522,10 +526,7 @@ void PyiGenerator::PrintMessage(const Descriptor& message_descriptor,
     std::string field_name = std::string(field_des->name());
     printer_->Print(", $field_name$: ", "field_name", field_name);
     Annotate("field_name", field_des);
-    if (field_des->is_repeated() ||
-        field_des->cpp_type() != FieldDescriptor::CPPTYPE_BOOL) {
-      printer_->Print("_Optional[");
-    }
+    printer_->Print("_Optional[");
     if (field_des->is_map()) {
       const Descriptor* map_entry = field_des->message_type();
       printer_->Print(
@@ -557,11 +558,7 @@ void PyiGenerator::PrintMessage(const Descriptor& message_descriptor,
         printer_->Print("]");
       }
     }
-    if (field_des->is_repeated() ||
-        field_des->cpp_type() != FieldDescriptor::CPPTYPE_BOOL) {
-      printer_->Print("]");
-    }
-    printer_->Print(" = ...");
+    printer_->Print("] = ...");
   }
   if (has_python_keywords) {
     printer_->Print(", **kwargs");

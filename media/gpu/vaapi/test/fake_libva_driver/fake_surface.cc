@@ -13,13 +13,12 @@
 #include <drm_fourcc.h>
 #include <va/va_drmcommon.h>
 
-#include <unordered_set>
-
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace media::internal {
 
@@ -56,7 +55,7 @@ std::unique_ptr<FakeSurface> FakeSurface::Create(
   }
 
   // Verify attributes and extract surface descriptor.
-  std::unordered_set<VASurfaceAttribType> attribs;
+  absl::flat_hash_set<VASurfaceAttribType> attribs;
   VADRMPRIMESurfaceDescriptor* surf_desc = nullptr;
   for (auto attrib : attrib_list) {
     // Some libva clients are quirky about their surface attributes, so

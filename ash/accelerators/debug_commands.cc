@@ -218,7 +218,7 @@ void HandleToggleTouchscreen() {
 
 void HandleToggleTabletMode() {
   Shell::Get()->tablet_mode_controller()->SetEnabledForDev(
-      !display::Screen::GetScreen()->InTabletMode());
+      !display::Screen::Get()->InTabletMode());
 }
 
 void HandleToggleVideoConferenceCameraTrayIcon() {

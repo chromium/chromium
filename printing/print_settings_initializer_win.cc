@@ -29,11 +29,10 @@ bool IsTechnology(HDC hdc, const char* technology) {
   if (!HasEscapeSupport(hdc, GETTECHNOLOGY))
     return false;
 
-  char buf[256];
-  UNSAFE_TODO(memset(buf, 0, sizeof(buf)));
+  char buf[256] = {};
   if (ExtEscape(hdc, GETTECHNOLOGY, 0, nullptr, sizeof(buf) - 1, buf) <= 0)
     return false;
-  return UNSAFE_TODO(strcmp(buf, technology)) == 0;
+  return std::string_view(buf) == technology;
 }
 
 void SetPrinterToGdiMode(HDC hdc) {

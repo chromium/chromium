@@ -6,6 +6,8 @@
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 
 namespace media {
@@ -187,6 +189,10 @@ void SilentSinkSuspender::TransitionSinks(bool use_fake_sink) {
       is_transition_pending_ = false;
       is_using_fake_sink_ = true;
     }
+
+    TRACE_EVENT_INSTANT0(
+        "audio", "SilentSinkSuspender::TransitionSinks - fake_sink_.Start()",
+        TRACE_EVENT_SCOPE_THREAD);
     fake_sink_.Start(base::BindRepeating(
         [](SilentSinkSuspender* suspender, base::TimeDelta frozen_delay,
            base::TimeTicks frozen_delay_timestamp, base::TimeTicks ideal_time,
@@ -199,6 +205,9 @@ void SilentSinkSuspender::TransitionSinks(bool use_fake_sink) {
         },
         this, latest_output_delay_, latest_output_delay_timestamp_));
   } else {
+    TRACE_EVENT_INSTANT0(
+        "audio", "SilentSinkSuspender::TransitionSinks - fake_sink_.Stop()",
+        TRACE_EVENT_SCOPE_THREAD);
     fake_sink_.Stop();
 
     // Despite the fake sink having a synchronous Stop(), if this transition

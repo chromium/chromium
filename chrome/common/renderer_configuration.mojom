@@ -32,6 +32,13 @@ struct DynamicParams {
   string allowed_domains_for_apps;
 };
 
+// The renderer configuration parameters are set during the process lock update
+// and remain unchanged afterward.
+[EnableIfNot=is_android]
+struct StaticParams {
+    bool is_instant_process = false;
+};
+
 // Event triggering release of blocked requests.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -91,4 +98,9 @@ interface RendererConfiguration {
 
   // Update renderer configuration with settings that can change.
   SetConfiguration(DynamicParams params);
+
+  // Update the renderer configuration with settings that won't
+  // change after being set.
+  [EnableIfNot=is_android]
+  SetConfigurationOnProcessLockUpdate(StaticParams params);
 };

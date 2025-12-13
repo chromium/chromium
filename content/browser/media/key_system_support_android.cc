@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/android/build_info.h"
 #include "base/feature_list.h"
 #include "base/types/expected.h"
 #include "content/public/browser/android/android_overlay_provider.h"

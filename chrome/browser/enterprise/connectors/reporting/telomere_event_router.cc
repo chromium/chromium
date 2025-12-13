@@ -12,9 +12,7 @@
 
 namespace enterprise_connectors {
 
-BASE_FEATURE(kTelomereReporting,
-             "TelomereReporting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTelomereReporting, base::FEATURE_DISABLED_BY_DEFAULT);
 
 TelomereEventRouter::TelomereEventRouter(content::BrowserContext* context) {
   TelomereReportingContext* telomere_reporting_context =

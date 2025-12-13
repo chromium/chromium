@@ -106,8 +106,10 @@ public class HomeModulesContextMenuManagerUnitTest {
     @SmallTest
     public void testGetListMenuContent() {
         // Obtains the first and second list views created by mManager.getListMenu().
-        View listItemView1 = mMenu.getAdapterForTesting().getView(0, null, mMenu.getListView());
-        View listItemView2 = mMenu.getAdapterForTesting().getView(1, null, mMenu.getListView());
+        View listItemView1 =
+                mMenu.getContentAdapter().getView(0, null, mMenu.getListView());
+        View listItemView2 =
+                mMenu.getContentAdapter().getView(1, null, mMenu.getListView());
         String listItemText1 =
                 ((TextView) listItemView1.findViewById(R.id.menu_item_text)).getText().toString();
         String listItemText2 =
@@ -130,7 +132,7 @@ public class HomeModulesContextMenuManagerUnitTest {
                                 MODULE_TYPE)
                         .build();
 
-        mMenu.onItemClick(null, null, 0, 0);
+        mMenu.clickItemForTesting(0);
 
         histogramWatcher.assertExpected();
         verify(mModuleDelegate).removeModuleAndDisable(eq(MODULE_TYPE));
@@ -146,7 +148,7 @@ public class HomeModulesContextMenuManagerUnitTest {
                                 MODULE_TYPE)
                         .build();
 
-        mMenu.onItemClick(null, null, 1, 0);
+        mMenu.clickItemForTesting(1);
 
         histogramWatcher.assertExpected();
         verify(mModuleDelegate).customizeSettings();

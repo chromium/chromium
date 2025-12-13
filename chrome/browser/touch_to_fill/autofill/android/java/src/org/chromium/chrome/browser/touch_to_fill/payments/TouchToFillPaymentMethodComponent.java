@@ -6,12 +6,16 @@ package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import android.content.Context;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.LoyaltyCard;
+import org.chromium.components.autofill.payments.BnplIssuerContext;
+import org.chromium.components.autofill.payments.BnplIssuerTosDetail;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 import java.util.List;
@@ -25,7 +29,7 @@ interface TouchToFillPaymentMethodComponent {
     /** This delegate is called when the TouchToFillPaymentMethod component is interacted with. */
     interface Delegate {
         /** Called whenever the sheet is dismissed (by user or native). */
-        void onDismissed(boolean dismissedByUser);
+        void onDismissed(boolean dismissedByUser, boolean shouldReshow);
 
         /** Called when user requests to scan a new credit card. */
         void scanCreditCard();
@@ -48,16 +52,26 @@ interface TouchToFillPaymentMethodComponent {
         void creditCardSuggestionSelected(String uniqueId, boolean isVirtual);
 
         /**
+         * Called when the user selects the BNPL suggestion. If the extractedAmount is available, we
+         * show the issuer selection screen. Otherwise, the progress screen is displayed until
+         * amount extraction is complete.
+         *
+         * @param extractedAmount The amount associated with the BNPL suggestion, extracted from the
+         *     page.
+         */
+        void bnplSuggestionSelected(@Nullable Long extractedAmount);
+
+        /**
          * Called when the user selects a local IBAN.
          *
-         * @param GUID of the selected local IBAN.
+         * @param guid The selected local IBAN.
          */
         void localIbanSuggestionSelected(String guid);
 
         /**
          * Called when the user selects a server IBAN.
          *
-         * @param InstrumentId of the selected server IBAN.
+         * @param instrumentId The selected server IBAN.
          */
         void serverIbanSuggestionSelected(long instrumentId);
 
@@ -70,6 +84,16 @@ interface TouchToFillPaymentMethodComponent {
 
         /** Called when the user clicks the "Manage loyalty cards" button. */
         void openPassesManagementUi();
+
+        /**
+         * Called when the user selects a BNPL issuer.
+         *
+         * @param issuerId The selected BNPL issuer Id.
+         */
+        void onBnplIssuerSuggestionSelected(String issuerId);
+
+        /** Called when the user clicks the "Continue" button on the BNPL ToS screen. */
+        void onBnplTosAccepted();
     }
 
     /**
@@ -90,7 +114,7 @@ interface TouchToFillPaymentMethodComponent {
             BottomSheetFocusHelper bottomSheetFocusHelper);
 
     /**
-     * Displays a new credit card bottom sheet.
+     * Displays a new payment methods bottom sheet.
      *
      * @param suggestions A list of {@link AutofillSuggestion}, each generated from a corresponding
      *     credit card. It includes a boolean that denotes if the card is acceptable for the given
@@ -98,7 +122,7 @@ interface TouchToFillPaymentMethodComponent {
      * @param shouldShowScanCreditCard A boolean that conveys whether 'ScanCreditCard' should be
      *     shown.
      */
-    void showCreditCards(List<AutofillSuggestion> suggestions, boolean shouldShowScanCreditCard);
+    void showPaymentMethods(List<AutofillSuggestion> suggestions, boolean shouldShowScanCreditCard);
 
     /** Displays a new IBAN bottom sheet. */
     void showIbans(List<PersonalDataManager.Iban> ibans);
@@ -118,6 +142,56 @@ interface TouchToFillPaymentMethodComponent {
             List<LoyaltyCard> allLoyaltyCards,
             boolean firstTimeUsage);
 
+    /**
+     * Updates BNPL suggestions or BNPL screen on the bottom sheet based on the results of amount
+     * extraction.
+     *
+     * @param bnplIssuerContexts A list of {@link BnplIssuerContext} objects, each representing a
+     *     BNPL issuer context, to be displayed on the bottom sheet for the user to select from.
+     * @param extractedAmount The amount extracted from the checkout page, or {@code null} if
+     *     extraction failed or timed out.
+     * @param isAmountSupportedByAnyIssuer Whether the {@code extractedAmount} is supported by at
+     *     least one BNPL issuer. This is only relevant if {@code extractedAmount} is not {@code
+     *     null}.
+     */
+    void onPurchaseAmountExtracted(
+            List<BnplIssuerContext> bnplIssuerContexts,
+            @Nullable Long extractedAmount,
+            boolean isAmountSupportedByAnyIssuer);
+
+    /** Displays a progress screen bottom sheet. */
+    void showProgressScreen();
+
+    /**
+     * Displays a new BNPL issuers bottom sheet.
+     *
+     * @param bnplIssuerContexts A list of {@link BnplIssuerContext} objects, each representing a
+     *     BNPL issuer context, to be displayed on the bottom sheet for the user to select from.
+     */
+    void showBnplIssuers(List<BnplIssuerContext> bnplIssuerContexts);
+
+    /**
+     * Displays an error screen bottom sheet.
+     *
+     * @param title The title to be displayed on the error screen.
+     * @param description The description to be displayed on the error screen.
+     */
+    void showErrorScreen(String title, String description);
+
+    /**
+     * Displays a new BNPL issuer ToS bottom sheet.
+     *
+     * @param bnplIssuerTosDetail The struct that holds info for showing the ToS screen.
+     */
+    void showBnplIssuerTos(BnplIssuerTosDetail bnplIssuerTosDetail);
+
     /** Hides the bottom sheet if shown. */
     void hideSheet();
+
+    /**
+     * Sets the bottom sheet visibility.
+     *
+     * @param visible The value to set the bottom sheet visibility to.
+     */
+    void setVisible(boolean visible);
 }

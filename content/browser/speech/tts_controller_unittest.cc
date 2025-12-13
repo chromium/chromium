@@ -451,7 +451,7 @@ TEST_F(TtsControllerTest, TestGetMatchingVoice) {
     std::unique_ptr<TtsUtterance> utterance(TtsUtterance::Create());
     EXPECT_EQ(0, controller()->GetMatchingVoice(utterance.get(), voices));
 
-    std::set<TtsEventType> types;
+    base::flat_set<TtsEventType> types;
     types.insert(TTS_EVENT_WORD);
     utterance->SetRequiredEventTypes(types);
     EXPECT_EQ(1, controller()->GetMatchingVoice(utterance.get(), voices));

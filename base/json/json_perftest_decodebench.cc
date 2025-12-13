@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 // This program measures the time taken to decode the given JSON files (the
 // command line arguments). It is for manual benchmarking.
 //
@@ -70,7 +65,8 @@ int main(int argc, char* argv[]) {
     std::string error_message;
     for (int i = 0; i < iterations; ++i) {
       auto start = base::ThreadTicks::Now();
-      auto v = base::JSONReader::ReadAndReturnValueWithError(src);
+      auto v = base::JSONReader::ReadAndReturnValueWithError(
+          src, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       auto end = base::ThreadTicks::Now();
       int64_t iteration_time = (end - start).InMicroseconds();
       total_time += iteration_time;

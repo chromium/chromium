@@ -10,11 +10,12 @@ import "mojo/public/mojom/base/string16.mojom";
 // There is one instance of this interface per render frame in the render
 // process. All methods are called by browser on renderer.
 interface AutofillAgent {
-  // Triggers form re-extraction the new forms. This is done when a form is seen
-  // in a subframe and it is not known which form is its parent.
+  // Triggers extraction of new or updated forms. This is called when a form is
+  // seen in a subframe and it is not known yet which form in the parent frame
+  // contains the form in the subframe.
   TriggerFormExtraction();
 
-  // Triggers form re-extraction the new forms and notifies the caller when
+  // Triggers extraction of new or updated forms and notifies the caller when
   // it's done.
   // If `success == false`, TriggerFormExtractionWithResponse() was triggered
   // while another TriggerFormExtractionWithResponse() was ongoing.
@@ -23,9 +24,20 @@ interface AutofillAgent {
   // Fills or previews the form identified by `form` with the data of its
   // fields. `action_type` denotes if the action is a Fill or Undo.
   // `action_persistence` denotes if the operation is a Fill or Preview.
+  //
+  // `fill_id` uniquely identifies the fill operation. It does *not* uniquely
+  // identify this ApplyFormAction() call. See `FillId` for details.
+  //
+  // Only if `supports_refill` is true, the renderer may request a refill via
+  // a subsequent AutofillDriver::RequestRefill() call. It is still at the
+  // discretion of the browser process whether to honor the request. For
+  // example, the browser process ignores refill requests after a certain
+  // timeout.
   ApplyFieldsAction(FormActionType action_type,
                     ActionPersistence action_persistence,
-                    array<FormFieldData_FillData> fields);
+                    array<FormFieldData_FillData> fields,
+                    FillId fill_id,
+                    bool supports_refill);
 
   // Fills or previews the field identified by `field` with `value`.
   // `action_persistence` denotes if the operation is a Fill or Preview.
@@ -40,9 +52,9 @@ interface AutofillAgent {
                    FieldRendererId field,
                    mojo_base.mojom.String16 value);
 
-  // Extracts the given form and responds with the FormData if that form can
-  // be found and extracted.
-  ExtractForm(FormRendererId form) => (FormData? form);
+  // Extracts the form that contains the given field and responds with the
+  // FormData, if that form can be found and extracted.
+  ExtractFormWithField(FieldRendererId field_id) => (FormData? form);
 
   // Tries to extract the node value from the DOM and returns the extracted
   // value back to the browser process. The response string contains the
@@ -58,8 +70,8 @@ interface AutofillAgent {
   FieldTypePredictionsAvailable(array<FormDataPredictions> forms);
 
   // For all elements the DOM Node ID will be exposed on the DOM
-  // as attribute "dom-node-id".This is done for data collection purposes.
-  ExposeDomNodeIDs();
+  // as attribute "dom-node-id". This is done for data collection purposes.
+  ExposeDomNodeIds();
 
   // Tells the renderer that the Autofill previewed form should be cleared.
   ClearPreviewedForm();
@@ -103,6 +115,11 @@ interface AutofillAgent {
   // merchant website.
   GetPotentialLastFourCombinationsForStandaloneCvc()
       => (array<string> potential_matches);
+
+  // Asks the renderer to dispatch a custom DOM event on a specific field.
+  // The event will be of type VerifiedEvent.
+  DispatchEmailVerifiedEvent(
+      FieldRendererId field_id, string presentation_token);
 };
 
 // There is one instance of this interface per render frame in the render
@@ -151,11 +168,11 @@ interface PasswordAutofillAgent {
   PreviewField(FieldRendererId field_id, mojo_base.mojom.String16 value);
 
   // Fills the given `value` into the field identified by `field_id`.
-  // `suggestion_source` specified how the user has interacted with
-  // PWM suggestions, such as manual fallback. Used to update the
-  // `FieldPropertiesMask` of the filled fields.
+  // `field_properties` will be used to update the field data map with
+  // metadata about filling. See `FieldPropertiesFlags` for potential
+  // values.
   FillField(FieldRendererId field_id, mojo_base.mojom.String16 value,
-    AutofillSuggestionTriggerSource suggestion_source);
+    uint32 field_properties) => (bool success);
 
   // Fills a given change password form, specifically `password_element_id` with
   // `old_password` and `new_password_element_id`, `confirm_password_element_id`
@@ -168,11 +185,6 @@ interface PasswordAutofillAgent {
                          mojo_base.mojom.String16 new_password)
       => (FormData? form_data);
 
-  // Submits a form based on field id if all conditions for submission with
-  // Enter are satisfied, i.e. the form exists, there is a submit element
-  // inside a form, the submit element is not disabled.
-  SubmitFormWithEnter(FieldRendererId field_id) => (bool success);
-
   // Notification to start (`active` == true) or stop (`active` == false)
   // logging the decisions made about saving the password.
   SetLoggingState(bool active);
@@ -184,6 +196,10 @@ interface PasswordAutofillAgent {
   // Annotate password related (username, password) DOM input elements with
   // corresponding HTML attributes. It is used only for debugging.
   AnnotateFieldsWithParsingResult(ParsingResult parsing_result);
+
+  // Scrolls to the element if needed and checks if the view area of the field
+  // is visible.
+  CheckViewAreaVisible(FieldRendererId field_id) => (bool is_visible);
 };
 
 // There is one instance of this interface per render frame in the render

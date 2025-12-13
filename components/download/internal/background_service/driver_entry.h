@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"

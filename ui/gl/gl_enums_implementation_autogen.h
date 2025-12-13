@@ -545,15 +545,15 @@ static constexpr EnumToString kEnumToStringTable[] = {
     },
     {
         0x0D02,
-        "GL_PACK_ROW_LENGTH",
+        "GL_PACK_ROW_LENGTH_NV",
     },
     {
         0x0D03,
-        "GL_PACK_SKIP_ROWS",
+        "GL_PACK_SKIP_ROWS_NV",
     },
     {
         0x0D04,
-        "GL_PACK_SKIP_PIXELS",
+        "GL_PACK_SKIP_PIXELS_NV",
     },
     {
         0x0D05,
@@ -976,10 +976,6 @@ static constexpr EnumToString kEnumToStringTable[] = {
         "GL_COMMANDS_ISSUED_CHROMIUM",
     },
     {
-        0x6005,
-        "GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM",
-    },
-    {
         0x6006,
         "GL_ASYNC_PIXEL_PACK_COMPLETED_CHROMIUM",
     },
@@ -1218,6 +1214,10 @@ static constexpr EnumToString kEnumToStringTable[] = {
     {
         0x80CB,
         "GL_BLEND_SRC_ALPHA",
+    },
+    {
+        0x80E0,
+        "GL_BGR_EXT",
     },
     {
         0x80E1,
@@ -2896,6 +2896,10 @@ static constexpr EnumToString kEnumToStringTable[] = {
         "GL_FRAMEBUFFER_SWAP_XY_MESA",
     },
     {
+        0x8BBE,
+        "GL_CONST_BW_TILING_MESA",
+    },
+    {
         0x8BC0,
         "GL_COUNTER_TYPE_AMD",
     },
@@ -3222,6 +3226,10 @@ static constexpr EnumToString kEnumToStringTable[] = {
     {
         0x8C93,
         "GL_ATC_RGBA_EXPLICIT_ALPHA_AMD",
+    },
+    {
+        0x8C96,
+        "GL_TEXTURE_LOD_BIAS_QCOM",
     },
     {
         0x8CA1,
@@ -4238,6 +4246,10 @@ static constexpr EnumToString kEnumToStringTable[] = {
     {
         0x8F6E,
         "GL_NUM_SURFACE_COMPRESSION_FIXED_RATES_EXT",
+    },
+    {
+        0x8F6F,
+        "GL_FRAGMENT_SHADING_RATE_NON_TRIVIAL_COMBINERS_SUPPORTED_EXT",
     },
     {
         0x8F94,
@@ -6786,27 +6798,39 @@ static constexpr EnumToString kEnumToStringTable[] = {
     },
     {
         0x96A6,
-        "GL_SHADING_RATE_1X1_PIXELS_QCOM",
+        "GL_SHADING_RATE_1X1_PIXELS_EXT",
     },
     {
         0x96A7,
-        "GL_SHADING_RATE_1X2_PIXELS_QCOM",
+        "GL_SHADING_RATE_1X2_PIXELS_EXT",
     },
     {
         0x96A8,
-        "GL_SHADING_RATE_2X1_PIXELS_QCOM",
+        "GL_SHADING_RATE_2X1_PIXELS_EXT",
     },
     {
         0x96A9,
-        "GL_SHADING_RATE_2X2_PIXELS_QCOM",
+        "GL_SHADING_RATE_2X2_PIXELS_EXT",
+    },
+    {
+        0x96AA,
+        "GL_SHADING_RATE_1X4_PIXELS_EXT",
+    },
+    {
+        0x96AB,
+        "GL_SHADING_RATE_4X1_PIXELS_EXT",
     },
     {
         0x96AC,
-        "GL_SHADING_RATE_4X2_PIXELS_QCOM",
+        "GL_SHADING_RATE_4X2_PIXELS_EXT",
+    },
+    {
+        0x96AD,
+        "GL_SHADING_RATE_2X4_PIXELS_EXT",
     },
     {
         0x96AE,
-        "GL_SHADING_RATE_4X4_PIXELS_QCOM",
+        "GL_SHADING_RATE_4X4_PIXELS_EXT",
     },
     {
         0x96BA,
@@ -6873,6 +6897,72 @@ static constexpr EnumToString kEnumToStringTable[] = {
         "GL_SURFACE_COMPRESSION_FIXED_RATE_12BPC_EXT",
     },
     {
+        0x96D0,
+        "GL_SHADING_RATE_EXT",
+    },
+    {
+        0x96D1,
+        "GL_SHADING_RATE_ATTACHMENT_EXT",
+    },
+    {
+        0x96D2,
+        "GL_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_EXT",
+    },
+    {
+        0x96D3,
+        "GL_FRAGMENT_SHADING_RATE_COMBINER_OP_REPLACE_EXT",
+    },
+    {
+        0x96D4,
+        "GL_FRAGMENT_SHADING_RATE_COMBINER_OP_MIN_EXT",
+    },
+    {
+        0x96D5,
+        "GL_FRAGMENT_SHADING_RATE_COMBINER_OP_MAX_EXT",
+    },
+    {
+        0x96D6,
+        "GL_FRAGMENT_SHADING_RATE_COMBINER_OP_MUL_EXT",
+    },
+    {
+        0x96D7,
+        "GL_MIN_FRAGMENT_SHADING_RATE_ATTACHMENT_TEXEL_WIDTH_EXT",
+    },
+    {
+        0x96D8,
+        "GL_MAX_FRAGMENT_SHADING_RATE_ATTACHMENT_TEXEL_WIDTH_EXT",
+    },
+    {
+        0x96D9,
+        "GL_MIN_FRAGMENT_SHADING_RATE_ATTACHMENT_TEXEL_HEIGHT_EXT",
+    },
+    {
+        0x96DA,
+        "GL_MAX_FRAGMENT_SHADING_RATE_ATTACHMENT_TEXEL_HEIGHT_EXT",
+    },
+    {
+        0x96DB,
+        "GL_MAX_FRAGMENT_SHADING_RATE_ATTACHMENT_TEXEL_ASPECT_RATIO_EXT",
+    },
+    {
+        0x96DC,
+        "GL_MAX_FRAGMENT_SHADING_RATE_ATTACHMENT_LAYERS_EXT",
+    },
+    {
+        0x96DD,
+        "GL_FRAGMENT_SHADING_RATE_WITH_SHADER_DEPTH_STENCIL_WRITES_SUPPORTED_"
+        "EXT",
+    },
+    {
+        0x96DE,
+        "GL_FRAGMENT_SHADING_RATE_WITH_SAMPLE_MASK_SUPPORTED_EXT",
+    },
+    {
+        0x96DF,
+        "GL_FRAGMENT_SHADING_RATE_ATTACHMENT_WITH_DEFAULT_FRAMEBUFFER_"
+        "SUPPORTED_EXT",
+    },
+    {
         0x96E0,
         "GL_MAX_PIXEL_LOCAL_STORAGE_PLANES_ANGLE",
     },
@@ -6927,6 +7017,42 @@ static constexpr EnumToString kEnumToStringTable[] = {
     {
         0x96ED,
         "GL_PIXEL_LOCAL_CLEAR_VALUE_UNSIGNED_INT_ANGLE",
+    },
+    {
+        0x96F0,
+        "GL_SHADER_CORE_COUNT_ARM",
+    },
+    {
+        0x96F1,
+        "GL_SHADER_CORE_ACTIVE_COUNT_ARM",
+    },
+    {
+        0x96F2,
+        "GL_SHADER_CORE_PRESENT_MASK_ARM",
+    },
+    {
+        0x96F3,
+        "GL_SHADER_CORE_MAX_WARP_COUNT_ARM",
+    },
+    {
+        0x96F4,
+        "GL_SHADER_CORE_PIXEL_RATE_ARM",
+    },
+    {
+        0x96F5,
+        "GL_SHADER_CORE_TEXEL_RATE_ARM",
+    },
+    {
+        0x96F6,
+        "GL_SHADER_CORE_FMA_RATE_ARM",
+    },
+    {
+        0x9710,
+        "GL_TEXTURE_Y_DEGAMMA_QCOM",
+    },
+    {
+        0x9711,
+        "GL_TEXTURE_CBCR_DEGAMMA_QCOM",
     },
     {
         0xC0,

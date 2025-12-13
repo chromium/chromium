@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/base/status.h"
 
 #include <algorithm>
@@ -100,7 +95,7 @@ struct TraitsWithDataPacking {
 struct TraitsWithDefaultNamedMessage {
   enum class Codes { kFail1, kFail2, kFail3 };
   static constexpr StatusGroupType Group() { return "GroupWithDefaultNames"; }
-  static constexpr std::string ReadableCodeName(Codes code) {
+  static constexpr std::string_view ReadableCodeName(Codes code) {
     switch (code) {
       case Codes::kFail1:
         return "Failure1";
@@ -625,18 +620,6 @@ TEST_F(StatusTest, OrTypeMapping) {
 
   auto case_5 = GetStartingValue(5).MapValue(UnwrapPtr).MapValue(FindIntSqrt);
   ASSERT_TRUE(case_5 == MapValueCodeTraits::Codes::kBadStartCode);
-}
-
-TEST_F(StatusTest, TestDefaultMessageHelper) {
-  using Status = TypedStatus<TraitsWithDefaultNamedMessage>;
-  Status default_msg1 = Status::Codes::kFail1;
-  Status default_msg2 = Status::Codes::kFail2;
-  Status default_msg3 = Status::Codes::kFail3;
-  Status custom_msg = {Status::Codes::kFail1, "Custom"};
-  ASSERT_EQ(default_msg1.message(), "Failure1");
-  ASSERT_EQ(default_msg2.message(), "Failure2");
-  ASSERT_EQ(default_msg3.message(), "Failure3");
-  ASSERT_EQ(custom_msg.message(), "Custom");
 }
 
 }  // namespace media

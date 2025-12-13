@@ -134,11 +134,9 @@ def _run_generate_build_scripts(output_path: str):
 
 def _write_desc_json(gn_out_dir: str, temp_file: tempfile.NamedTemporaryFile):
   """Generate desc json files needed by gen_android_bp.py."""
-  cronet_utils.run([
-      cronet_utils.GN_PATH, 'desc', gn_out_dir, '--format=json',
-      '--all-toolchains', '//*'
-  ],
-                   stdout=temp_file)
+  cronet_utils.run(
+      [cronet_utils.GN_PATH, 'desc', gn_out_dir, '--format=json', '//*'],
+      stdout=temp_file)
 
 
 def _gen_extras_bp(import_channel: str):
@@ -155,6 +153,17 @@ def _gen_extras_bp(import_channel: str):
       string.Template(extras_androidbp_template_contents).substitute(
           GN2BP_MODULE_PREFIX=f'{import_channel}_cronet_'))
 
+
+def _gen_androidtest_xml():
+  """Generate AndroidTest.xml, required to run test in Android."""
+  androidtest_xml_template_path = os.path.join(REPOSITORY_ROOT, 'components',
+                                               'cronet', 'gn2bp', 'templates',
+                                               'AndroidTest.xml.template')
+  androidtest_xml_template_contents = cronet_utils.read_file(
+      androidtest_xml_template_path)
+  androidtest_xml_path = os.path.join(REPOSITORY_ROOT, 'AndroidTest.xml')
+  cronet_utils.write_file(androidtest_xml_path,
+                          androidtest_xml_template_contents)
 
 def _gen_boringssl(import_channel: str):
   """Generate boringssl Android build files."""
@@ -387,7 +396,8 @@ def main():
   args = parser.parse_args()
   delete_temporary_files = not args.keep_temporary_files
 
-  if os.listdir(os.path.join(REPOSITORY_ROOT, 'clank')):
+  if not args.skip_copybara and os.listdir(
+      os.path.join(REPOSITORY_ROOT, 'clank')):
     raise RuntimeError(
         'gn2bp should not be run with an internal code checkout, as copybara'
         ' may end up leaking internal code to the destination')
@@ -419,6 +429,7 @@ def main():
                channel=args.channel)
     _gen_boringssl(args.channel)
     _gen_extras_bp(args.channel)
+    _gen_androidtest_xml()
 
     if not args.skip_copybara:
       _run_copybara_to_aosp(

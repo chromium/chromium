@@ -138,37 +138,13 @@ std::string FilteringReasonToString(
   NOTREACHED();
 }
 
-bool IsSubjectToFamilyLinkParentalControls(
-    const signin::IdentityManager* identity_manager) {
-  if (!identity_manager) {
-    return false;
+std::string GetHostedDomainString(
+    std::optional<std::string_view> hosted_domain) {
+  if (!hosted_domain.has_value()) {
+    return "UNKNOWN";
   }
-  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  return account_info.capabilities.is_subject_to_parental_controls() ==
-         signin::Tribool::kTrue;
-}
-
-std::string WebContentFiltersToToggle(
-    FamilyLinkUserInternalsMessageHandler::WebContentFilters value) {
-  switch (value) {
-    case FamilyLinkUserInternalsMessageHandler::WebContentFilters::kDisabled:
-      return "off";
-    case FamilyLinkUserInternalsMessageHandler::WebContentFilters::kEnabled:
-      return "on";
-    default:
-      NOTREACHED();
-  }
-}
-FamilyLinkUserInternalsMessageHandler::WebContentFilters
-ToggleToWebContentFilters(std::string value) {
-  if (value == "on") {
-    return FamilyLinkUserInternalsMessageHandler::WebContentFilters::kEnabled;
-  }
-  if (value == "off") {
-    return FamilyLinkUserInternalsMessageHandler::WebContentFilters::kDisabled;
-  }
-  NOTREACHED();
+  return hosted_domain->empty() ? "NO_HOSTED_DOMAIN"
+                                : std::string(*hosted_domain);
 }
 
 }  // namespace
@@ -197,16 +173,6 @@ void FamilyLinkUserInternalsMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "tryURL",
       base::BindRepeating(&FamilyLinkUserInternalsMessageHandler::HandleTryURL,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "changeSearchContentFilters",
-      base::BindRepeating(&FamilyLinkUserInternalsMessageHandler::
-                              HandleChangeSearchContentFilters,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "changeBrowserContentFilters",
-      base::BindRepeating(&FamilyLinkUserInternalsMessageHandler::
-                              HandleChangeBrowserContentFilters,
                           base::Unretained(this)));
 }
 
@@ -246,10 +212,6 @@ void FamilyLinkUserInternalsMessageHandler::OnAccountsInCookieUpdated(
 }
 
 void FamilyLinkUserInternalsMessageHandler::OnAccountChanged() {
-  // There's no need to change the search_content_filtering_status_ setting even
-  // if the account changes to family link supervised - Chrome will use
-  // feature's default.
-  SendWebContentFiltersInfo();
   SendBasicInfo();
 }
 
@@ -274,7 +236,6 @@ void FamilyLinkUserInternalsMessageHandler::HandleRegisterForEvents(
       IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager_observation_.IsObserving() && identity_manager) {
     identity_manager_observation_.Observe(identity_manager);
-    SendWebContentFiltersInfo();
   }
 }
 
@@ -313,67 +274,6 @@ void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
       base::BindOnce(&FamilyLinkUserInternalsMessageHandler::OnTryURLResult,
                      weak_factory_.GetWeakPtr(), callback_id),
       skip_manual_parent_filter);
-}
-
-void FamilyLinkUserInternalsMessageHandler::ConfigureSearchContentFilters() {
-  Profile* profile = Profile::FromWebUI(web_ui());
-  switch (search_content_filtering_status_) {
-    case WebContentFilters::kDisabled:
-      supervised_user::DisableSearchContentFilters(*profile->GetPrefs());
-      break;
-    case WebContentFilters::kEnabled:
-      supervised_user::EnableSearchContentFilters(*profile->GetPrefs());
-      break;
-    default:
-      NOTREACHED();
-  }
-}
-void FamilyLinkUserInternalsMessageHandler::ConfigureBrowserContentFilters() {
-  Profile* profile = Profile::FromWebUI(web_ui());
-  switch (browser_content_filtering_status_) {
-    case WebContentFilters::kDisabled:
-      supervised_user::DisableBrowserContentFilters(*profile->GetPrefs());
-      break;
-    case WebContentFilters::kEnabled:
-      supervised_user::EnableBrowserContentFilters(*profile->GetPrefs());
-      break;
-    default:
-      NOTREACHED();
-  }
-}
-
-void FamilyLinkUserInternalsMessageHandler::HandleChangeSearchContentFilters(
-    const base::Value::List& args) {
-  CHECK(args.size() == 1u && args[0].is_string())
-      << "Expected call is (toggle_status: string)";
-
-  Profile* profile = Profile::FromWebUI(web_ui());
-  if (IsSubjectToFamilyLinkParentalControls(
-          IdentityManagerFactory::GetForProfile(profile))) {
-    // Feature not available for the Family Link supervised users.
-    return;
-  }
-
-  const std::string& toggle_status = args[0].GetString();
-  search_content_filtering_status_ = ToggleToWebContentFilters(toggle_status);
-  ConfigureSearchContentFilters();
-}
-
-void FamilyLinkUserInternalsMessageHandler::HandleChangeBrowserContentFilters(
-    const base::Value::List& args) {
-  CHECK(args.size() == 1u && args[0].is_string())
-      << "Expected call is (toggle_status: string)";
-
-  Profile* profile = Profile::FromWebUI(web_ui());
-  if (IsSubjectToFamilyLinkParentalControls(
-          IdentityManagerFactory::GetForProfile(profile))) {
-    // Feature not available for the Family Link supervised users.
-    return;
-  }
-
-  const std::string& toggle_status = args[0].GetString();
-  browser_content_filtering_status_ = ToggleToWebContentFilters(toggle_status);
-  ConfigureBrowserContentFilters();
 }
 
 void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
@@ -417,7 +317,8 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
       AddSectionEntry(section_user, "Gaia", account.gaia.ToString());
       AddSectionEntry(section_user, "Email", account.email);
       AddSectionEntry(section_user, "Given name", account.given_name);
-      AddSectionEntry(section_user, "Hosted domain", account.hosted_domain);
+      AddSectionEntry(section_user, "Hosted domain",
+                      GetHostedDomainString(account.GetHostedDomain()));
       AddSectionEntry(section_user, "Locale", account.locale);
       AddSectionEntry(
           section_user, "Is subject to parental controls",
@@ -447,20 +348,6 @@ void FamilyLinkUserInternalsMessageHandler::SendBasicInfo() {
 void FamilyLinkUserInternalsMessageHandler::SendFamilyLinkUserSettings(
     const base::Value::Dict& settings) {
   FireWebUIListener("user-settings-received", settings);
-}
-
-void FamilyLinkUserInternalsMessageHandler::SendWebContentFiltersInfo() {
-  Profile* profile = Profile::FromWebUI(web_ui());
-
-  AllowJavascript();
-  base::Value::Dict info;
-  info.Set("enabled", !IsSubjectToFamilyLinkParentalControls(
-                          IdentityManagerFactory::GetForProfile(profile)));
-  info.Set("search_content_filtering",
-           WebContentFiltersToToggle(search_content_filtering_status_));
-  info.Set("browser_content_filtering",
-           WebContentFiltersToToggle(browser_content_filtering_status_));
-  FireWebUIListener("web-content-filters-info-received", info);
 }
 
 void FamilyLinkUserInternalsMessageHandler::OnTryURLResult(

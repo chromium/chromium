@@ -21,8 +21,6 @@
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/model/table_view_url_drag_drop_handler.h"
 #import "ios/chrome/browser/history/ui_bundled/base_history_view_controller+subclassing.h"
-#import "ios/chrome/browser/history/ui_bundled/history_entries_status_item.h"
-#import "ios/chrome/browser/history/ui_bundled/history_entries_status_item_delegate.h"
 #import "ios/chrome/browser/history/ui_bundled/history_entry_inserter.h"
 #import "ios/chrome/browser/history/ui_bundled/history_entry_item.h"
 #import "ios/chrome/browser/history/ui_bundled/history_menu_provider.h"
@@ -34,7 +32,6 @@
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -258,6 +255,12 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 - (UIContextMenuConfiguration*)tableView:(UITableView*)tableView
     contextMenuConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath
                                         point:(CGPoint)point {
+  // TODO(crbug.com/428177163): Remove this workaround when the underlying iOS
+  // issue handling context menu presentation during an active drag/drop session
+  // is resolved.
+  if (tableView.hasActiveDrag || tableView.hasActiveDrop) {
+    return nil;
+  }
   if (self.isEditing) {
     // Don't show the context menu when currently in editing mode.
     return nil;
@@ -535,20 +538,14 @@ const CGFloat kButtonHorizontalPadding = 30.0;
       browsing_data::DeleteBrowsingDataDialogAction::
           kHistoryEntryPointSelected);
 
-  if (IsIosQuickDeleteEnabled()) {
-    if (!self.browser) {
-      return;
-    }
-    id<QuickDeleteCommands> quickDeleteHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), QuickDeleteCommands);
-    [quickDeleteHandler
-        showQuickDeleteAndCanPerformTabsClosureAnimation:
-            ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
-            self.canPerformTabsClosureAnimation];
+  if (!self.browser) {
     return;
   }
-
-  [self.delegate displayClearHistoryData];
+  id<QuickDeleteCommands> quickDeleteHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), QuickDeleteCommands);
+  [quickDeleteHandler
+      showQuickDeleteAndCanPerformRadialWipeAnimation:
+          ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET];
 }
 
 #pragma mark - Setter & Getters

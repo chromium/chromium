@@ -52,10 +52,14 @@ class FeaturePromoController25 : public FeaturePromoControllerCommon {
 
   // FeaturePromoControllerCommon:
   FeaturePromoResult CanShowPromo(
-      const FeaturePromoParams& params) const override;
-  void MaybeShowStartupPromo(FeaturePromoParams params) override;
-  void MaybeShowPromo(FeaturePromoParams params) override;
-  void MaybeShowPromoForDemoPage(FeaturePromoParams params) override;
+      const FeaturePromoParams& params,
+      const UserEducationContextPtr& context) const override;
+  void MaybeShowStartupPromo(FeaturePromoParams params,
+                             UserEducationContextPtr context) override;
+  void MaybeShowPromo(FeaturePromoParams params,
+                      UserEducationContextPtr context) override;
+  void MaybeShowPromoForDemoPage(FeaturePromoParams params,
+                                 UserEducationContextPtr context) override;
   bool IsPromoQueued(const base::Feature& iph_feature) const override;
 
  protected:

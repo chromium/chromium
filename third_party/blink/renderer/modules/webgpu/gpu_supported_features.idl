@@ -24,12 +24,13 @@ enum GPUFeatureName {
     "dual-source-blending",
     "subgroups",
     "texture-component-swizzle",
+    "texture-formats-tier1",
+    "texture-formats-tier2",
+    "primitive-index",
 
     // Non-standard (not currently in the spec).
     "chromium-experimental-timestamp-query-inside-passes",
     "chromium-experimental-multi-draw-indirect",
-    "chromium-experimental-unorm16-texture-formats",
-    "chromium-experimental-snorm16-texture-formats",
     "chromium-experimental-subgroup-matrix",
 };
 

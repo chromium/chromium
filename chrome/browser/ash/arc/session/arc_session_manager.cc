@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -55,14 +54,17 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
 #include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
@@ -106,6 +108,9 @@ constexpr const char kArcPrepareHostGeneratedDirJobName[] =
 // timeout expires, keep ARC running in case the user wants to file feedback,
 // but present the UI to try again.
 constexpr base::TimeDelta kArcSignInTimeout = base::Minutes(5);
+// Given that Reven boards need to download the ARC image from a DLC server
+// over the internet, we increase the timeout limit.
+constexpr base::TimeDelta kRevenArcSignInTimeout = base::Minutes(15);
 
 // Updates UMA with user cancel only if error is not currently shown.
 void MaybeUpdateOptInCancelUMA(const ArcSupportHost* support_host) {
@@ -511,12 +516,14 @@ class ArcSessionManager::ScopedOptInFlowTracker {
 ArcSessionManager::ArcSessionManager(
     std::unique_ptr<ArcSessionRunner> arc_session_runner,
     std::unique_ptr<AdbSideloadingAvailabilityDelegateImpl>
-        adb_sideloading_availability_delegate)
+        adb_sideloading_availability_delegate,
+    ArcDlcInstaller* arc_dlc_installer)
     : arc_session_runner_(std::move(arc_session_runner)),
       adb_sideloading_availability_delegate_(
           std::move(adb_sideloading_availability_delegate)),
       android_management_checker_factory_(
           ArcRequirementChecker::GetDefaultAndroidManagementCheckerFactory()),
+      arc_dlc_installer_(arc_dlc_installer),
       attempt_user_exit_callback_(base::BindRepeating(chrome::AttemptUserExit)),
       attempt_restart_callback_(base::BindRepeating(chrome::AttemptRestart)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -885,6 +892,8 @@ void ArcSessionManager::Initialize() {
     LOG(WARNING) << "Skipping auto-resume of ARCVM /data migration, because it "
                     "has reached the maximum number of retries";
   }
+
+  observer_list_.Notify(&ArcSessionManagerObserver::OnInitialized);
 
   // Chrome may be shut down before completing ARC data removal.
   // For such a case, start removing the data now, if necessary.
@@ -1838,13 +1847,61 @@ void ArcSessionManager::MaybeStartTimer() {
     return;
   }
 
-  VLOG(1) << "Setup provisioning timer";
+  if (!arc::IsArcVmDlcRequired()) {
+    VLOG(1) << "Setup provisioning timer (DLC gating disabled)";
+    StartProvisioningTimerWithTimeout(kArcSignInTimeout);
+    return;
+  }
+
+  VLOG(1) << "Checking ARCVM DLC state to determine provisioning timeout.";
+  arc_dlc_installer_->CheckInstallationState(
+      base::BindOnce(&ArcSessionManager::OnDlcCheckDoneForTimer,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcSessionManager::OnDlcCheckDoneForTimer(
+    ArcDlcInstaller::DlcState state) {
+  base::TimeDelta timeout;
+  switch (state) {
+    case ArcDlcInstaller::DlcState::kNotInstalled:
+      VLOG(1) << "android-vm-dlc not installed yet; using extended timeout.";
+      timeout = kRevenArcSignInTimeout;
+      break;
+    case ArcDlcInstaller::DlcState::kInstalled:
+      VLOG(1) << "android-vm-dlc installed; using normal timeout.";
+      timeout = kArcSignInTimeout;
+      break;
+    case ArcDlcInstaller::DlcState::kNotRequired:
+      VLOG(1) << "android-vm-dlc not required; using normal timeout.";
+      timeout = kArcSignInTimeout;
+      break;
+    case ArcDlcInstaller::DlcState::kError:
+      // If getting the DLC state fails, fall back to the default timeout
+      // instead of aborting, as the provisioning should continue without
+      // consideration of ArcDLC.
+      // TODO(b:450965036): Implement a dedicated error handling mechanism for
+      // ArcDlc error.
+      LOG(WARNING)
+          << "Failed to get DLC state; falling back to default timeout.";
+      timeout = kArcSignInTimeout;
+      break;
+  }
+  StartProvisioningTimerWithTimeout(timeout);
+}
+
+void ArcSessionManager::StartProvisioningTimerWithTimeout(
+    base::TimeDelta timeout) {
+  VLOG(1) << "Setup provisioning timer, timeout=" << timeout.InSeconds() << "s";
   sign_in_start_time_ = base::TimeTicks::Now();
   ReportProvisioningStartTime(sign_in_start_time_, profile_);
   arc_sign_in_timer_.Start(
-      FROM_HERE, kArcSignInTimeout,
+      FROM_HERE, timeout,
       base::BindOnce(&ArcSessionManager::OnArcSignInTimeout,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  if (provisioning_timer_started_callback_for_testing_) {
+    std::move(provisioning_timer_started_callback_for_testing_).Run();
+  }
 }
 
 void ArcSessionManager::StartMiniArc() {

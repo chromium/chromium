@@ -75,17 +75,11 @@ base::Value::List IPEndpointsToBaseList(
                            &net::IPEndPoint::ToStringWithoutPort);
 }
 
-// This function converts std::optional<net::HostResolverEndpointResults> to
-// base::Value::List.
+// This function converts net::HostResolverEndpointResults to base::Value::List.
 base::Value::List HostResolverEndpointResultsToBaseList(
-    const std::optional<net::HostResolverEndpointResults>& endpoint_results) {
+    const net::HostResolverEndpointResults& endpoint_results) {
   base::Value::List endpoint_results_list;
-
-  if (!endpoint_results) {
-    return endpoint_results_list;
-  }
-
-  for (const auto& endpoint : *endpoint_results) {
+  for (const auto& endpoint : endpoint_results) {
     base::Value::Dict dict;
     dict.Set("ip_endpoints", IPEndpointsToBaseList(endpoint.ip_endpoints));
 
@@ -119,11 +113,11 @@ base::Value::List GetMatchDestList(
 // This class implements network::mojom::ResolveHostClient.
 class NetInternalsResolveHostClient : public network::mojom::ResolveHostClient {
  public:
-  using Callback = base::OnceCallback<void(
-      const net::ResolveErrorInfo&,
-      const std::optional<net::AddressList>&,
-      const std::optional<net::HostResolverEndpointResults>&,
-      NetInternalsResolveHostClient*)>;
+  using Callback =
+      base::OnceCallback<void(const net::ResolveErrorInfo&,
+                              const net::AddressList&,
+                              const net::HostResolverEndpointResults&,
+                              NetInternalsResolveHostClient*)>;
 
   NetInternalsResolveHostClient(
       mojo::PendingReceiver<network::mojom::ResolveHostClient> receiver,
@@ -132,8 +126,7 @@ class NetInternalsResolveHostClient : public network::mojom::ResolveHostClient {
     receiver_.set_disconnect_handler(base::BindOnce(
         &NetInternalsResolveHostClient::OnComplete, base::Unretained(this),
         net::ERR_FAILED, net::ResolveErrorInfo(net::ERR_FAILED),
-        /*resolved_addresses=*/std::nullopt,
-        /*endpoint_results_with_metadata=*/std::nullopt));
+        net::AddressList(), net::HostResolverEndpointResults()));
   }
   ~NetInternalsResolveHostClient() override = default;
 
@@ -143,13 +136,13 @@ class NetInternalsResolveHostClient : public network::mojom::ResolveHostClient {
 
  private:
   // network::mojom::ResolveHostClient:
-  void OnComplete(int32_t error,
-                  const net::ResolveErrorInfo& resolve_error_info,
-                  const std::optional<net::AddressList>& resolved_addresses,
-                  const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override {
+  void OnComplete(
+      int32_t error,
+      const net::ResolveErrorInfo& resolve_error_info,
+      const net::AddressList& resolved_addresses,
+      const net::HostResolverEndpointResults& alternative_endpoints) override {
     std::move(callback_).Run(resolve_error_info, resolved_addresses,
-                             endpoint_results_with_metadata, this);
+                             alternative_endpoints, this);
   }
   void OnTextResults(const std::vector<std::string>& text_results) override {
     NOTREACHED();
@@ -204,8 +197,8 @@ class NetInternalsMessageHandler : public content::WebUIMessageHandler {
   void OnFlushSocketPools(const base::Value::List& list);
   void OnResolveHostDone(const std::string& callback_id,
                          const net::ResolveErrorInfo&,
-                         const std::optional<net::AddressList>&,
-                         const std::optional<net::HostResolverEndpointResults>&,
+                         const net::AddressList&,
+                         const net::HostResolverEndpointResults&,
                          NetInternalsResolveHostClient* dns_lookup_client);
   void OnClearSharedDictionary(const base::Value::List& list);
   void OnClearSharedDictionaryCacheForIsolationKey(
@@ -455,15 +448,14 @@ void NetInternalsMessageHandler::OnCloseIdleSockets(
 void NetInternalsMessageHandler::OnResolveHostDone(
     const std::string& callback_id,
     const net::ResolveErrorInfo& resolve_error_info,
-    const std::optional<net::AddressList>& resolved_addresses,
-    const std::optional<net::HostResolverEndpointResults>&
-        endpoint_results_with_metadata,
+    const net::AddressList& resolved_addresses,
+    const net::HostResolverEndpointResults& alternative_endpoints,
     NetInternalsResolveHostClient* dns_lookup_client) {
   DCHECK_EQ(dns_lookup_clients_.count(dns_lookup_client), 1u);
   auto it = dns_lookup_clients_.find(dns_lookup_client);
   dns_lookup_clients_.erase(it);
 
-  if (!resolved_addresses) {
+  if (resolved_addresses.empty()) {
     RejectJavascriptCallback(
         base::Value(callback_id),
         base::Value(net::ErrorToString(resolve_error_info.error)));
@@ -473,14 +465,11 @@ void NetInternalsMessageHandler::OnResolveHostDone(
   base::Value::Dict result;
 
   base::Value::List resolved_addresses_list =
-      IPEndpointsToBaseList(resolved_addresses->endpoints());
+      IPEndpointsToBaseList(resolved_addresses.endpoints());
   result.Set("resolved_addresses", std::move(resolved_addresses_list));
 
-  // TODO(crbug.com/40256843): Rename `endpoint_results_with_metadata` in the
-  // Mojo API to `alternative_endpoints`, to match the terminology used in the
-  // specification.
   base::Value::List alternative_endpoints_list =
-      HostResolverEndpointResultsToBaseList(endpoint_results_with_metadata);
+      HostResolverEndpointResultsToBaseList(alternative_endpoints);
   result.Set("alternative_endpoints", std::move(alternative_endpoints_list));
 
   ResolveJavascriptCallback(base::Value(callback_id), std::move(result));
@@ -518,7 +507,7 @@ void NetInternalsMessageHandler::OnGetSharedDictionaryInfoDone(
     dict.Set("expiration", base::NumberToString(item->expiration.InSeconds()));
     dict.Set("last_used_time", base::TimeFormatHTTP(item->last_used_time));
     dict.Set("size", base::NumberToString(item->size));
-    dict.Set("hash", base::ToLowerASCII(base::HexEncode(item->hash)));
+    dict.Set("hash", base::HexEncodeLower(item->hash));
     dict_list.Append(std::move(dict));
   }
   AllowJavascript();

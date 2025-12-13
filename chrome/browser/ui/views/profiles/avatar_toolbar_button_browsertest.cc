@@ -24,6 +24,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_service_test_helper.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,8 +32,10 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_delegate.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -42,20 +45,26 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
+#include "chrome/browser/ui/signin/dice_migration_service.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/webauthn/passkey_unlock_manager.h"
+#include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_destruction_waiter.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
+#include "chrome/test/user_education/interactive_feature_promo_test_common.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
@@ -64,20 +73,26 @@
 #include "components/policy/policy_constants.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/user_education/common/user_education_features.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
+#include "device/fido/public/features.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -95,8 +110,6 @@
 #include "components/user_manager/user_names.h"
 #endif
 
-using signin::constants::kNoHostedDomainFound;
-
 namespace {
 using ::testing::StrictMock;
 using ::testing::ValuesIn;
@@ -110,9 +123,20 @@ const char kSignedInImageUrl[] = "SIGNED_IN_IMAGE_URL";
 
 constexpr std::string_view kTestPassphrase = "testpassphrase";
 
-#if !BUILDFLAG(IS_CHROMEOS)
-constexpr std::u16string_view kGivenName = u"TestName";
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+constexpr std::u16string_view kTestEmail = u"test@gmail.com";
+std::u16string test_email() {
+  return std::u16string(kTestEmail);
+}
+constexpr std::u16string_view kTestGivenName = u"TestName";
+std::u16string test_given_name() {
+  return std::u16string(kTestGivenName);
+}
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+constexpr std::u16string_view kWorkBadge(u"Custom Label");
+std::u16string work_badge() {
+  return std::u16string(kWorkBadge);
+}
+#endif
 
 enum class ColorThemeType { kAutogeneratedTheme, kUserColor };
 
@@ -174,6 +198,9 @@ class MockSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
                signin_metrics::AccessPoint,
                signin_metrics::PromoAction),
               (override));
+  MOCK_METHOD(void,
+              ShowHistorySyncOptinUI,
+              (Profile*, const CoreAccountId&, signin_metrics::AccessPoint));
 };
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -291,11 +318,16 @@ class AvatarToolbarButtonBaseBrowserTest {
         GetIdentityManager(), base::UTF16ToUTF8(email), consent_level);
     EXPECT_FALSE(account_info.IsEmpty());
 
-    account_info.given_name = base::UTF16ToUTF8(name);
-    account_info.full_name = base::UTF16ToUTF8(name);
-    account_info.picture_url = "SOME_FAKE_URL";
-    account_info.hosted_domain = kNoHostedDomainFound;
-    account_info.locale = "en";
+    account_info = AccountInfo::Builder(account_info)
+                       .SetGivenName(base::UTF16ToUTF8(name))
+                       .SetFullName(base::UTF16ToUTF8(name))
+                       .SetAvatarUrl("SOME_FAKE_URL")
+                       .SetHostedDomain(std::string())
+                       .SetLocale("en")
+                       .Build();
+
+    AccountCapabilitiesTestMutator(&account_info.capabilities)
+        .set_is_subject_to_account_level_enterprise_policies(false);
 
     // Make sure account is valid so that all changes are persisted properly.
     CHECK(account_info.IsValid());
@@ -310,8 +342,21 @@ class AvatarToolbarButtonBaseBrowserTest {
 
   // Signs in to Chrome with `email` and set the `name` to the account name.
   AccountInfo Signin(const std::u16string& email, const std::u16string& name) {
-    return MakePrimaryAccountAvailableWithName(signin::ConsentLevel::kSignin,
-                                               email, name);
+    AccountInfo account_info = MakePrimaryAccountAvailableWithName(
+        signin::ConsentLevel::kSignin, email, name);
+
+    // This simplifies the setup for tests that expect to show the SyncPromo.
+    if (switches::IsAvatarSyncPromoFeatureEnabled()) {
+      // Simulate setting enough time passing for the cookie change.
+      GetBrowser()->GetProfile()->GetPrefs()->SetDouble(
+          prefs::kGaiaCookieChangedTime,
+          (base::Time::Now() -
+           (switches::GetAvatarSyncPromoFeatureMinimumCookeAgeParam() +
+            base::Minutes(1)))
+              .InSecondsFSinceUnixEpoch());
+    }
+
+    return account_info;
   }
 
   // Make sure `image_url` is different for each new image in order for the
@@ -358,25 +403,25 @@ class AvatarToolbarButtonBaseBrowserTest {
       const std::u16string& email,
       const std::u16string& name = u"account_name") {
     AccountInfo account_info = SigninWithImage(email, name);
+    CHECK(!avatar->GetText().empty());
     avatar->ClearActiveStateForTesting();
     // Make sure the cross window animation replay is not triggered. This is
     // needed to clear the animation in all windows.
     delay_resets_.push_back(
         signin_ui_util::
             CreateZeroOverrideDelayForCrossWindowAnimationReplayForTesting());
-    ClearHistorySyncOptinPromoIfEnabled(avatar);
-    return account_info;
-  }
 
-  // Clears the history sync optin promo if it is enabled. This is a no-op if
-  // the promo is disabled.
-  void ClearHistorySyncOptinPromoIfEnabled(AvatarToolbarButton* avatar) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    if (base::FeatureList::IsEnabled(
-            switches::kEnableHistorySyncOptinExpansionPill)) {
+    // Clears the sync optin promo if it is enabled. This is a no-op if the
+    // promo is disabled. When `syncer::kReplaceSyncPromosWithSignInPromos` is
+    // enabled, there is no promo after signing in.
+    if (switches::IsAvatarSyncPromoFeatureEnabled() &&
+        !base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos)) {
+      CHECK(!avatar->GetText().empty());
       avatar->ClearActiveStateForTesting();
     }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+    return account_info;
   }
 
   void SetHistoryAndTabsSyncingPreference(bool enable_sync) {
@@ -402,7 +447,7 @@ class AvatarToolbarButtonBaseBrowserTest {
   }
 #endif
 
-  void SimulateSigninError(bool web_sign_out) {
+  void SimulateSigninPending(bool web_sign_out) {
     ASSERT_TRUE(
         GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
@@ -413,13 +458,21 @@ class AvatarToolbarButtonBaseBrowserTest {
 
     signin::SetInvalidRefreshTokenForPrimaryAccount(GetIdentityManager(),
                                                     token_operation_source);
+    ASSERT_TRUE(
+        GetIdentityManager()->HasAccountWithRefreshTokenInPersistentErrorState(
+            GetIdentityManager()->GetPrimaryAccountId(
+                signin::ConsentLevel::kSignin)));
   }
 
-  void ClearSigninError() {
+  void ClearSigninPending() {
     ASSERT_TRUE(
         GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
     signin::SetRefreshTokenForPrimaryAccount(GetIdentityManager());
+    ASSERT_FALSE(
+        GetIdentityManager()->HasAccountWithRefreshTokenInPersistentErrorState(
+            GetIdentityManager()->GetPrimaryAccountId(
+                signin::ConsentLevel::kSignin)));
   }
 
   // Enables sync for account with `email` and set the `name` to the account
@@ -461,6 +514,13 @@ class AvatarToolbarButtonBaseBrowserTest {
     // Simulates Sync Paused.
     GetTestSyncService()->SetPersistentAuthError();
     GetTestSyncService()->FireStateChanged();
+    signin::SetInvalidRefreshTokenForPrimaryAccount(
+        GetIdentityManager(), signin_metrics::SourceForRefreshTokenOperation::
+                                  kDiceResponseHandler_Signout);
+    ASSERT_TRUE(
+        GetIdentityManager()->HasAccountWithRefreshTokenInPersistentErrorState(
+            GetIdentityManager()->GetPrimaryAccountId(
+                signin::ConsentLevel::kSignin)));
   }
 
   void ClearSyncPaused() {
@@ -470,6 +530,11 @@ class AvatarToolbarButtonBaseBrowserTest {
     // Clear Sync Paused introduced in `SimulateSyncPaused()`.
     GetTestSyncService()->ClearAuthError();
     GetTestSyncService()->FireStateChanged();
+    signin::SetRefreshTokenForPrimaryAccount(GetIdentityManager());
+    ASSERT_FALSE(
+        GetIdentityManager()->HasAccountWithRefreshTokenInPersistentErrorState(
+            GetIdentityManager()->GetPrimaryAccountId(
+                signin::ConsentLevel::kSignin)));
   }
 
   void ExpectSyncPaused(AvatarToolbarButton* avatar_button) {
@@ -483,18 +548,12 @@ class AvatarToolbarButtonBaseBrowserTest {
   }
 
   void SimulateSyncError() {
-    ASSERT_TRUE(
-        GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-
     // Triggers Sync Error.
     GetTestSyncService()->SetTrustedVaultKeyRequired(true);
     GetTestSyncService()->FireStateChanged();
   }
 
   void ClearSyncError() {
-    ASSERT_TRUE(
-        GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-
     // Clear Sync Error introduces in `SimulateSyncError()`.
     GetTestSyncService()->SetTrustedVaultKeyRequired(false);
     GetTestSyncService()->FireStateChanged();
@@ -544,20 +603,39 @@ class AvatarToolbarButtonBaseBrowserTest {
     sync_status.sync_protocol_error.action = syncer::UPGRADE_CLIENT;
     GetTestSyncService()->SetDetailedSyncStatus(true, sync_status);
     GetTestSyncService()->FireStateChanged();
-    ASSERT_TRUE(GetTestSyncService()->RequiresClientUpgrade());
+    ASSERT_EQ(GetTestSyncService()->GetUserActionableError(),
+              syncer::SyncService::UserActionableError::kNeedsClientUpgrade);
   }
 
   void ClearUpgradeClientError() {
     syncer::SyncStatus sync_status;
     GetTestSyncService()->SetDetailedSyncStatus(true, sync_status);
     GetTestSyncService()->FireStateChanged();
-    ASSERT_FALSE(GetTestSyncService()->RequiresClientUpgrade());
+    ASSERT_NE(GetTestSyncService()->GetUserActionableError(),
+              syncer::SyncService::UserActionableError::kNeedsClientUpgrade);
   }
+
+  void SetSyncServiceTransportState(
+      syncer::SyncService::TransportState transport_state) {
+    GetTestSyncService()->SetMaxTransportState(transport_state);
+    GetTestSyncService()->FireStateChanged();
+  }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  BatchUploadServiceTestHelper& batch_upload_test_helper() {
+    return batch_upload_test_helper_;
+  }
+#endif
 
  private:
   void SetTestingFactories(content::BrowserContext* context) {
     SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         context, base::BindRepeating(&TestingSyncFactoryFunction));
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    batch_upload_test_helper_.SetupBatchUploadTestingFactoryInProfile(
+        Profile::FromBrowserContext(context));
+#endif
   }
 
   syncer::TestSyncService* GetTestSyncService() {
@@ -567,6 +645,10 @@ class AvatarToolbarButtonBaseBrowserTest {
 
   base::CallbackListSubscription dependency_manager_subscription_;
   std::vector<base::AutoReset<std::optional<base::TimeDelta>>> delay_resets_;
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  BatchUploadServiceTestHelper batch_upload_test_helper_;
+#endif
 };
 
 class AvatarToolbarButtonBrowserTest
@@ -704,38 +786,95 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SigninBrowser) {
 }
 #endif
 
+// Test suite to mark test with Sync enabled (simulating Sync granted already -
+// Enabling sync and only after clearing states performing checks) that have a
+// Signin equivalent test. This test suite can be directly removed when removing
+// `signin::ConsentLevel::kSync`.
+using AvatarToolbarButtonWithSyncBrowserTest = AvatarToolbarButtonBrowserTest;
+
+// TODO(crbug.com/438165525): During cleanup of
+// `syncer::kReplaceSyncPromosWithSignInPromos`, remove all tests from this test
+// suite.
+class AvatarToolbarButtonReplaceSyncPromosWithSignInPromosOffBrowserTest
+    : public AvatarToolbarButtonBrowserTest {
+ public:
+  AvatarToolbarButtonReplaceSyncPromosWithSignInPromosOffBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// TODO(crbug.com/438165525): During cleanup of
+// `syncer::kReplaceSyncPromosWithSignInPromos`, move all tests to
+// `AvatarToolbarButtonBrowserTest`.
+class AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest
+    : public AvatarToolbarButtonBrowserTest {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      syncer::kReplaceSyncPromosWithSignInPromos};
+};
+
+// Macro that simplifies starting a test when already signed in.
+// Internally signs the testing profile in the `PRE_` part of the test.
+// The regular test is to be defined as a regular test, the only advantage is
+// that the profile will already be signed in.
+// This allows some specific scenarios to be easily tested; e.g. showing the
+// greeting.
+// Note: this does not scale accordingly with `MAYBE_*` tests; a simple (not
+// ideal) solution is to just not compile the test at all for the expected
+// DISABLED platform/buildflag. Also does not scale well with tests that expect
+// `PRE_` in their main test definition.
+#define TEST_WITH_SIGNED_IN_FROM_PRE(test_type, test_suite, test_name)       \
+  test_type(test_suite, PRE_##test_name) {                                   \
+    AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());         \
+    ASSERT_TRUE(avatar->GetText().empty());                                  \
+                                                                             \
+    SigninWithImage(test_email(), test_given_name());                        \
+    if (base::FeatureList::IsEnabled(                                        \
+            syncer::kReplaceSyncPromosWithSignInPromos)) {                   \
+      ASSERT_EQ(                                                             \
+          avatar->GetText(),                                                 \
+          l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS)); \
+      avatar->ClearActiveStateForTesting();                                  \
+      EXPECT_TRUE(avatar->GetText().empty());                                \
+    } else {                                                                 \
+      ASSERT_EQ(avatar->GetText(),                                           \
+                l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,       \
+                                           test_given_name()));              \
+      /* Explicitly do not clear the state not to activate any promo to   */ \
+      /* avoid affecting the rate limiting mechanism that some tests rely */ \
+      /* on.                                                              */ \
+    }                                                                        \
+  }                                                                          \
+                                                                             \
+  test_type(test_suite, test_name)  // Actual test implementation starts here.
+
 // TODO(b/331746545): Check flaky test issue on windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ShowNameOnSigninThenSync DISABLED_ShowNameOnSigninThenSync
-#else
-#define MAYBE_ShowNameOnSigninThenSync ShowNameOnSigninThenSync
-#endif
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
-                       MAYBE_ShowNameOnSigninThenSync) {
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)
+TEST_WITH_SIGNED_IN_FROM_PRE(
+    IN_PROC_BROWSER_TEST_F,
+    AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
+    ShowNameOnSignin) {
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
+
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-
-  std::u16string email(u"test@gmail.com");
-  std::u16string name(u"TestName");
-  AccountInfo account_info = Signin(email, name);
-  // The button is in a waiting for image state, the name is not yet displayed.
-  EXPECT_EQ(avatar->GetText(), std::u16string());
-
-  // The greeting will only show when the image is loaded.
-  AddSignedInImage(account_info.account_id);
-  EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
-
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
   avatar->ClearActiveStateForTesting();
-  ClearHistorySyncOptinPromoIfEnabled(avatar);
-  // Once the name is not shown anymore, we expect no text.
-  EXPECT_EQ(avatar->GetText(), std::u16string());
 
-  // Enabling Sync after already being signed in does not show the name again.
-  EnableSync(email, name);
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_HISTORY));
+  avatar->ClearActiveStateForTesting();
+
+  // Once the greeting and promo are not shown anymore, we expect no text.
   EXPECT_EQ(avatar->GetText(), std::u16string());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)
 
 // TODO(b/331746545): Check flaky test issue on windows.
 #if BUILDFLAG(IS_WIN)
@@ -743,7 +882,9 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
 #else
 #define MAYBE_ShowNameOnSync ShowNameOnSync
 #endif
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, MAYBE_ShowNameOnSync) {
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonReplaceSyncPromosWithSignInPromosOffBrowserTest,
+    MAYBE_ShowNameOnSync) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar->GetText().empty());
@@ -767,22 +908,17 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, MAYBE_ShowNameOnSync) {
 // Check www.crbug.com/331499330: This test makes sure that no states attempt to
 // request an update during their construction. But rather do so after all the
 // states are created and the view is added to the Widget.
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
-                       OpenNewBrowserWhileNameIsShown) {
+TEST_WITH_SIGNED_IN_FROM_PRE(
+    IN_PROC_BROWSER_TEST_F,
+    AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
+    OpenNewBrowserWhileNameIsShown) {
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-
-  std::u16string name(u"TestName");
-  AccountInfo account_info = Signin(u"test@gmail.com", name);
-
-  // The button is in a waiting for image state, the name is not yet displayed.
-  EXPECT_EQ(avatar->GetText(), std::u16string());
-
-  // The greeting will only show when the image is loaded.
-  AddSignedInImage(account_info.account_id);
   EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
 
   // Creating a new browser while the refresh tokens are already loaded and the
   // name showing should not break/crash.
@@ -790,12 +926,14 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   AvatarToolbarButton* new_avatar_button = GetAvatarToolbarButton(new_browser);
   // Name is expected to be shown while it is still shown on the first browser.
   ASSERT_EQ(avatar->GetText(),
-            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
   EXPECT_EQ(new_avatar_button->GetText(),
-            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
 }
 
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SyncPaused) {
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithSyncBrowserTest, SyncPaused) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar_button->GetText().empty());
@@ -811,7 +949,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SyncPaused) {
 
 // Checks that "Sync paused" has higher priority than passphrase errors.
 // Regression test for https://crbug.com/368997513
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithSyncBrowserTest,
                        SyncPausedWithPassphraseError) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   ASSERT_TRUE(avatar_button->GetText().empty());
@@ -823,7 +961,24 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   ExpectSyncPaused(avatar_button);
 }
 
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SyncError) {
+#if !BUILDFLAG(IS_CHROMEOS)
+// Checks that "Signin pending" has higher priority than passphrase errors.
+// Adapted regression test for https://crbug.com/368997513
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       SigninPendingWithPassphraseError) {
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  ASSERT_TRUE(avatar_button->GetText().empty());
+
+  AccountInfo account_info = SigninWithImageAndClearGreetingAndSyncPromo(
+      avatar_button, u"test@gmail.com");
+  SimulatePassphraseError();
+  SimulateSigninPending(/*web_sign_out=*/false);
+  EXPECT_EQ(avatar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithSyncBrowserTest, SyncError) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar_button->GetText().empty());
@@ -837,7 +992,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SyncError) {
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
 }
 
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithSyncBrowserTest,
                        SyncPausedThenExplicitText) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   // Normal state.
@@ -860,8 +1015,8 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
 }
 
 // Explicit text over sync paused/error.
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
-                       ExplicitTextThenSyncPause) {
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithSyncBrowserTest,
+                       ExplicitTextThenSyncPaused) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar_button->GetText().empty());
@@ -1038,6 +1193,126 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
 
 #endif
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SigninWithSyncError) {
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar_button->GetText().empty());
+
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar_button, u"test@gmail.com");
+  SimulateSyncError();
+  EXPECT_EQ(avatar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+
+  ClearSyncError();
+  EXPECT_EQ(avatar_button->GetText(), std::u16string());
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       SigninPendingThenExplicitText) {
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar_button->GetText().empty());
+
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar_button, u"test@gmail.com");
+  SimulateSigninPending(/*web_sign_out=*/false);
+  ASSERT_EQ(avatar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+
+  const std::u16string profile_switch_text(u"Profile Switch?");
+  base::ScopedClosureRunner hide_callback =
+      avatar_button->SetExplicitButtonState(
+          profile_switch_text, /*accessibility_label=*/std::nullopt,
+          /*explicit_action=*/std::nullopt);
+  ASSERT_EQ(avatar_button->GetText(), profile_switch_text);
+
+  // Clearing explicit text should go back to Signin Pending.
+  hide_callback.RunAndReset();
+  EXPECT_EQ(avatar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+}
+
+// Explicit text over signin pending.
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       ExplicitTextThenSigninPending) {
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar_button->GetText().empty());
+
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar_button, u"test@gmail.com");
+  const std::u16string profile_switch_text(u"Profile Switch?");
+  base::ScopedClosureRunner hide_callback =
+      avatar_button->SetExplicitButtonState(
+          profile_switch_text, /*accessibility_label=*/std::nullopt,
+          /*explicit_action=*/std::nullopt);
+  ASSERT_EQ(avatar_button->GetText(), profile_switch_text);
+
+  SimulateSigninPending(/*web_sign_out=*/false);
+  // Explicit text should still be shown even if Signin Pending.
+  ASSERT_EQ(avatar_button->GetText(), profile_switch_text);
+
+  // Clearing explicit text should go back to Signin Pending.
+  hide_callback.RunAndReset();
+  EXPECT_EQ(avatar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       PRE_SigninPendingFromWebSignoutThenRestartChrome) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar, test_email(),
+                                              test_given_name());
+
+  SimulateSigninPending(/*web_sign_out=*/true);
+  ASSERT_EQ(avatar->GetText(), std::u16string());
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       SigninPendingFromWebSignoutThenRestartChrome) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  // The greetings are shown after the restart.
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
+
+  avatar->ClearActiveStateForTesting();
+  // The error text is expected to be shown even if the error delay has not
+  // reached yet.
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+}
+
+// Regression test for https://crbug.com/348587566
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       SigninPendingDelayEndedNoBrowser) {
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com",
+                                              u"TestName");
+  SimulateSigninPending(/*web_sign_out=*/true);
+  ASSERT_TRUE(avatar->GetText().empty());
+  Profile* profile = browser()->profile();
+
+  // Close the browser before the delay ends, but keep the profile and Chrome
+  // alive by opening an incognito browser.
+  CreateIncognitoBrowser(profile);
+  CloseBrowserSynchronously(browser());
+
+  // This simulates the delay expiry for the next browser. Instead of advancing
+  // time, we set the expected delay to 0, making the elapsed time greater than
+  // the delay for sure - simulating the delay expiry.
+  SetZeroAvatarDelayForSigninPendingText();
+
+  // Open a new browser, this should not crash.
+  Browser* new_browser = CreateBrowser(profile);
+  EXPECT_EQ(GetAvatarToolbarButton(new_browser)->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+}
+
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 class AvatarToolbarButtonWithInteractiveFeaturePromoBrowserTest
     : public InteractiveFeaturePromoTest,
       public AvatarToolbarButtonBaseBrowserTest {
@@ -1059,108 +1334,187 @@ class AvatarToolbarButtonWithInteractiveFeaturePromoBrowserTest
 };
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-class AvatarToolbarButtonHistorySyncOptinBrowserTest
+// TODO(crbug.com/465718425): Support more promos; replace with
+// `signin::ProfileMenuAvatarButtonPromoInfo::Type` values directly.
+enum FeaturePromoType {
+  // Enables `syncer::kReplaceSyncPromosWithSignInPromos` feature.
+  kHistorySyncPromo,
+  // Enables `switches::kAvatarButtonSyncPromoForTesting` feature, which is
+  // checked through `switches::IsAvatarSyncPromoFeatureEnabled()`.
+  kSyncPromo,
+};
+
+signin::ProfileMenuAvatarButtonPromoInfo::Type GetAvatarPromoType(
+    FeaturePromoType param_promo_type) {
+  switch (param_promo_type) {
+    case FeaturePromoType::kHistorySyncPromo:
+      return signin::ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo;
+    case FeaturePromoType::kSyncPromo:
+      return signin::ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo;
+  }
+}
+
+// The tests relying on this base class can test both the History Sync Promo and
+// the Sync Promo. It is important to ensure that one of the feature flags is
+// enabled at the same time, since the features are not compatible (SyncPromo
+// have a higher priority than HistorySync in `HistorySyncOptinStateProvider`).
+class AvatarToolbarButtonSyncPromoBaseBrowserTest
     : public AvatarToolbarButtonWithInteractiveFeaturePromoBrowserTest {
  protected:
-  explicit AvatarToolbarButtonHistorySyncOptinBrowserTest(
-      base::FieldTrialParams feature_parameters = {}) {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        switches::kEnableHistorySyncOptinExpansionPill, feature_parameters);
+  explicit AvatarToolbarButtonSyncPromoBaseBrowserTest(
+      FeaturePromoType promo_type) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    switch (promo_type) {
+      case FeaturePromoType::kHistorySyncPromo:
+        enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+        disabled_features.push_back(switches::kAvatarButtonSyncPromoForTesting);
+        break;
+      case FeaturePromoType::kSyncPromo:
+        enabled_features.push_back(switches::kAvatarButtonSyncPromoForTesting);
+        // `enable_replace_sync_with_signin` is ignored.
+        disabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+        break;
+    }
+
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  void SetUpOnMainThread() override {
+    AvatarToolbarButtonWithInteractiveFeaturePromoBrowserTest::
+        SetUpOnMainThread();
+    // Disable the preferences related to History sync to allow History sync
+    // promos. Those are enabled by default in the `syncer::TestSyncService`.
+    SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonHistorySyncOptinBrowserTest,
-                       HistorySyncOptinNotShownIfGreetingNotShown) {
+// TODO(crbug.com/331746545): Check the flaky test suite issue on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AvatarToolbarButtonSyncPromoBrowserTest \
+  DISABLED_AvatarToolbarButtonSyncPromoBrowserTest
+#else
+#define MAYBE_AvatarToolbarButtonSyncPromoBrowserTest \
+  AvatarToolbarButtonSyncPromoBrowserTest
+#endif
+class MAYBE_AvatarToolbarButtonSyncPromoBrowserTest
+    : public AvatarToolbarButtonSyncPromoBaseBrowserTest,
+      public testing::WithParamInterface<FeaturePromoType> {
+ protected:
+  MAYBE_AvatarToolbarButtonSyncPromoBrowserTest()
+      : AvatarToolbarButtonSyncPromoBaseBrowserTest(GetParam()) {}
+
+  std::u16string GetExpectedPromoText() {
+    if (switches::IsAvatarSyncPromoFeatureEnabled()) {
+      return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PROMO);
+    }
+    return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_HISTORY);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
+                       PRE_HistorySyncOptinNotShownIfGreetingNotShown) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-  Signin(/*email=*/u"test@gmail.com", /*name=*/u"TestName");
+  // Explicitly sign in without an image.
+  Signin(test_email(), test_given_name());
+  switch (GetParam()) {
+    case FeaturePromoType::kHistorySyncPromo:
+      EXPECT_EQ(avatar->GetText(), l10n_util ::GetStringUTF16(
+                                       IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+      break;
+    case FeaturePromoType::kSyncPromo:
+      EXPECT_EQ(avatar->GetText(), std::u16string());
+      break;
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
+                       HistorySyncOptinNotShownIfGreetingNotShown) {
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // The button is in a waiting for image state, the greeting is not yet
   // displayed, hence the history sync opt-in should not be shown.
   EXPECT_EQ(avatar->GetText(), std::u16string());
+
+  // Only after adding the image that the greeting is shown.
+  AddSignedInImage(
+      GetIdentityManager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
+  avatar->ClearActiveStateForTesting();
+
+  // Then the promo.
+  ASSERT_EQ(avatar->GetText(), GetExpectedPromoText());
+  avatar->ClearActiveStateForTesting();
+
+  // Then normal state.
+  EXPECT_EQ(avatar->GetText(), std::u16string());
 }
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_HistorySyncOptinNotShownWhenSyncEnabled \
-  DISABLED_HistorySyncOptinNotShownWhenSyncEnabled
-#else
-#define MAYBE_HistorySyncOptinNotShownWhenSyncEnabled \
-  HistorySyncOptinNotShownWhenSyncEnabled
-#endif
 // TODO(crbug.com/407964657): Merge this test with
 // AvatarToolbarButtonBrowserTest.SyncError once the feature is enabled by
 // default.
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonHistorySyncOptinBrowserTest,
-                       MAYBE_HistorySyncOptinNotShownWhenSyncEnabled) {
+TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
+                             MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
+                             HistorySyncOptinNotShownWhenSyncEnabled) {
+  SetHistoryAndTabsSyncingPreference(/*enable_sync=*/true);
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-  const AccountInfo account = EnableSyncWithImage(/*email=*/u"test@gmail.com");
   ASSERT_EQ(avatar->GetText(),
             l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
-                                       base::UTF8ToUTF16(account.given_name)));
+                                       test_given_name()));
   avatar->ClearActiveStateForTesting();
-  // The greeting should NOT be followed by the history sync opt-in entry point
-  // if sync is already enabled.
-  EXPECT_TRUE(avatar->GetText().empty());
+  switch (GetParam()) {
+    case FeaturePromoType::kHistorySyncPromo:
+      // The greeting should NOT be followed by the history sync opt-in entry
+      // point if sync is already enabled.
+      EXPECT_TRUE(avatar->GetText().empty());
+      break;
+    case FeaturePromoType::kSyncPromo:
+      EXPECT_EQ(avatar->GetText(), GetExpectedPromoText());
+      break;
+  }
   SimulateSyncError();
   // The sync error should be shown.
   EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_ERROR));
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
   ClearSyncError();
   // After clearing the sync error, the history sync opt-in entry point should
   // NOT be shown.
   EXPECT_TRUE(avatar->GetText().empty());
 }
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-// TODO(crbug.com/331746545): Re-enable this test
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_HistorySyncOptinNotShownWhenPromotionsDisabled \
-  DISABLED_HistorySyncOptinNotShownWhenPromotionsDisabled
-#else
-#define MAYBE_HistorySyncOptinNotShownWhenPromotionsDisabled \
-  HistorySyncOptinNotShownWhenPromotionsDisabled
-#endif
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonHistorySyncOptinBrowserTest,
-                       MAYBE_HistorySyncOptinNotShownWhenPromotionsDisabled) {
+#if !BUILDFLAG(IS_LINUX)
+TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
+                             MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
+                             HistorySyncOptinNotShownWhenPromotionsDisabled) {
   TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
       prefs::kPromotionsEnabled, false);
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-  const AccountInfo account = SigninWithImage(/*email=*/u"test@gmail.com");
   ASSERT_EQ(avatar->GetText(),
             l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
-                                       base::UTF8ToUTF16(account.given_name)));
+                                       test_given_name()));
   avatar->ClearActiveStateForTesting();
   // The greeting should NOT be followed by the history sync opt-in entry point
   // if promotions are disabled.
   EXPECT_TRUE(avatar->GetText().empty());
 }
-
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_HistorySyncOptinNotShownWhenSyncNotAllowed \
-  DISABLED_HistorySyncOptinNotShownWhenSyncNotAllowed
-#else
-#define MAYBE_HistorySyncOptinNotShownWhenSyncNotAllowed \
-  HistorySyncOptinNotShownWhenSyncNotAllowed
 #endif
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonHistorySyncOptinBrowserTest,
-                       MAYBE_HistorySyncOptinNotShownWhenSyncNotAllowed) {
+
+TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
+                             MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
+                             HistorySyncOptinNotShownWhenSyncNotAllowed) {
   SimulateDisableSyncByPolicyWithError();
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-  const std::u16string account_name(u"Account name");
-  SigninWithImage(/*email=*/u"test@gmail.com", account_name);
-  ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
-                                   IDS_AVATAR_BUTTON_GREETING, account_name));
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
   avatar->ClearActiveStateForTesting();
   // The greeting should NOT be followed by the history sync opt-in entry point
   // if sync is not allowed.
@@ -1177,42 +1531,15 @@ struct HistorySyncOptinSyncManagedTypeTestCase {
   syncer::UserSelectableType managed_type;
 };
 
-class AvatarToolbarButtonHistorySyncOptinManagedTypeTest
-    : public AvatarToolbarButtonHistorySyncOptinBrowserTest,
-      public WithParamInterface<HistorySyncOptinSyncManagedTypeTestCase> {};
-
 // TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_HistorySyncOptinNotShownWhenSyncManaged \
-  DISABLED_HistorySyncOptinNotShownWhenSyncManaged
-#else
-#define MAYBE_HistorySyncOptinNotShownWhenSyncManaged \
-  HistorySyncOptinNotShownWhenSyncManaged
-#endif
-IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinManagedTypeTest,
-                       MAYBE_HistorySyncOptinNotShownWhenSyncManaged) {
-  switch (GetParam().managed_by) {
-    case ManagedBy::kPolicy:
-      SimulateTypeManagedByPolicy(GetParam().managed_type);
-      break;
-    case ManagedBy::kCustodian:
-      SimulateTypeManagedByCustodian(GetParam().managed_type);
-      break;
-    default:
-      NOTREACHED();
-  }
-  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-  const std::u16string account_name(u"Account name");
-  SigninWithImage(/*email=*/u"test@gmail.com", account_name);
-  ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
-                                   IDS_AVATAR_BUTTON_GREETING, account_name));
-  avatar->ClearActiveStateForTesting();
-  // The greeting should NOT be followed by the history sync opt-in entry point
-  // if sync is not allowed.
-  EXPECT_TRUE(avatar->GetText().empty());
-}
+#if !BUILDFLAG(IS_WIN)
+class AvatarToolbarButtonHistorySyncOptinManagedTypeTest
+    : public AvatarToolbarButtonWithInteractiveFeaturePromoBrowserTest,
+      public WithParamInterface<HistorySyncOptinSyncManagedTypeTestCase> {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      syncer::kReplaceSyncPromosWithSignInPromos};
+};
 
 const HistorySyncOptinSyncManagedTypeTestCase
     kHistorySyncOptinSyncManagedTypeTestCases[] = {
@@ -1234,126 +1561,108 @@ const HistorySyncOptinSyncManagedTypeTestCase
         },
 };
 
+TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
+                             AvatarToolbarButtonHistorySyncOptinManagedTypeTest,
+                             HistorySyncOptinNotShownWhenSyncManaged) {
+  switch (GetParam().managed_by) {
+    case ManagedBy::kPolicy:
+      SimulateTypeManagedByPolicy(GetParam().managed_type);
+      break;
+    case ManagedBy::kCustodian:
+      SimulateTypeManagedByCustodian(GetParam().managed_type);
+      break;
+    default:
+      NOTREACHED();
+  }
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
+  avatar->ClearActiveStateForTesting();
+  // The greeting should NOT be followed by the history sync opt-in entry point
+  // if sync is not allowed.
+  EXPECT_TRUE(avatar->GetText().empty());
+}
+
 INSTANTIATE_TEST_SUITE_P(HistorySyncOptinManagedType,
                          AvatarToolbarButtonHistorySyncOptinManagedTypeTest,
                          ValuesIn(kHistorySyncOptinSyncManagedTypeTestCases));
-
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_HistorySyncOptinThenPassphraseError \
-  DISABLED_HistorySyncOptinThenPassphraseError
-#else
-#define MAYBE_HistorySyncOptinThenPassphraseError \
-  HistorySyncOptinThenPassphraseError
 #endif
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonHistorySyncOptinBrowserTest,
-                       MAYBE_HistorySyncOptinThenPassphraseError) {
+
+TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
+                             MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
+                             HistorySyncOptinThenPassphraseError) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-  const std::u16string account_name(u"Account name");
-  SigninWithImage(/*email=*/u"test@gmail.com", account_name);
-  ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
-                                   IDS_AVATAR_BUTTON_GREETING, account_name));
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
   avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
-  EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES));
+  EXPECT_EQ(avatar->GetText(), GetExpectedPromoText());
   SimulatePassphraseError();
   // The history sync opt-in entry point should be replaced by the passphrase
   // error message.
-  EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
-                                   IDS_SYNC_ERROR_USER_MENU_PASSPHRASE_BUTTON));
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON_MAYBE_TITLE_CASE));
   ClearPassphraseError();
   // After clearing the passphrase error, the history sync opt-in entry point
   // should NOT be shown.
   EXPECT_TRUE(avatar->GetText().empty());
 }
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_HistorySyncOptinThenClientUpgradeError \
-  DISABLED_HistorySyncOptinThenClientUpgradeError
-#else
-#define MAYBE_HistorySyncOptinThenClientUpgradeError \
-  HistorySyncOptinThenClientUpgradeError
-#endif
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonHistorySyncOptinBrowserTest,
-                       MAYBE_HistorySyncOptinThenClientUpgradeError) {
+TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
+                             MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
+                             HistorySyncOptinThenClientUpgradeError) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-  const std::u16string account_name(u"Account name");
-  SigninWithImage(/*email=*/u"test@gmail.com", account_name);
-  ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
-                                   IDS_AVATAR_BUTTON_GREETING, account_name));
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
   avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
-  EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES));
+  EXPECT_EQ(avatar->GetText(), GetExpectedPromoText());
   SimulateUpgradeClientError();
   // The history sync opt-in entry point should be replaced by the passphrase
   // error message.
   EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_UPGRADE_BUTTON));
+            l10n_util::GetStringUTF16(IDS_SYNC_UPGRADE_CLIENT_BUTTON));
   ClearUpgradeClientError();
   // After clearing the passphrase error, the history sync opt-in entry point
   // should NOT be shown.
   EXPECT_TRUE(avatar->GetText().empty());
 }
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_HistorySyncOptinThenSigninPending \
-  DISABLED_HistorySyncOptinThenSigninPending
-#else
-#define MAYBE_HistorySyncOptinThenSigninPending \
-  HistorySyncOptinThenSigninPending
-#endif
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonHistorySyncOptinBrowserTest,
-                       MAYBE_HistorySyncOptinThenSigninPending) {
+TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
+                             MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
+                             HistorySyncOptinThenSigninPending) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-  const std::u16string account_name(u"Account name");
-  SigninWithImage(/*email=*/u"test@gmail.com", account_name);
-  ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
-                                   IDS_AVATAR_BUTTON_GREETING, account_name));
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
   avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
-  EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES));
-  SimulateSigninError(/*web_sign_out=*/false);
+  EXPECT_EQ(avatar->GetText(), GetExpectedPromoText());
+  SimulateSigninPending(/*web_sign_out=*/false);
   // The history sync opt-in entry point should be replaced by the signin
   // pending message.
   EXPECT_EQ(avatar->GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
-  ClearSigninError();
+  ClearSigninPending();
   // After clearing the sign in error, the history sync opt-in entry point
   // should NOT be shown.
   EXPECT_TRUE(avatar->GetText().empty());
 }
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_HistorySyncOptinThenExplicitText \
-  DISABLED_HistorySyncOptinThenExplicitText
-#else
-#define MAYBE_HistorySyncOptinThenExplicitText HistorySyncOptinThenExplicitText
-#endif
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonHistorySyncOptinBrowserTest,
-                       MAYBE_HistorySyncOptinThenExplicitText) {
+TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
+                             MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
+                             HistorySyncOptinThenExplicitText) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-  const std::u16string account_name(u"Account name");
-  SigninWithImage(/*email=*/u"test@gmail.com", account_name);
-  ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
-                                   IDS_AVATAR_BUTTON_GREETING, account_name));
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
   avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
-  EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES));
+  EXPECT_EQ(avatar->GetText(), GetExpectedPromoText());
   const std::u16string explicit_text(u"Explicit Text");
   base::ScopedClosureRunner hide_callback = avatar->SetExplicitButtonState(
       explicit_text, /*accessibility_label=*/std::nullopt,
@@ -1367,141 +1676,95 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonHistorySyncOptinBrowserTest,
   EXPECT_TRUE(avatar->GetText().empty());
 }
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_HistorySyncOptinNotShownIfErrorBeforeGreetingTimesOut \
-  DISABLED_HistorySyncOptinNotShownIfErrorBeforeGreetingTimesOut
-#else
-#define MAYBE_HistorySyncOptinNotShownIfErrorBeforeGreetingTimesOut \
-  HistorySyncOptinNotShownIfErrorBeforeGreetingTimesOut
-#endif
-IN_PROC_BROWSER_TEST_F(
-    AvatarToolbarButtonHistorySyncOptinBrowserTest,
-    MAYBE_HistorySyncOptinNotShownIfErrorBeforeGreetingTimesOut) {
+TEST_WITH_SIGNED_IN_FROM_PRE(
+    IN_PROC_BROWSER_TEST_P,
+    MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
+    HistorySyncOptinNotShownIfErrorBeforeGreetingTimesOut) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-  const std::u16string account_name(u"Account name");
-  SigninWithImage(/*email=*/u"test@gmail.com", account_name);
-  ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
-                                   IDS_AVATAR_BUTTON_GREETING, account_name));
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
   SimulatePassphraseError();
   avatar->ClearActiveStateForTesting();
   // No history sync opt-in entry point should be shown if the error is shown
   // before the greeting times out.
-  EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
-                                   IDS_SYNC_ERROR_USER_MENU_PASSPHRASE_BUTTON));
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON_MAYBE_TITLE_CASE));
   ClearPassphraseError();
   // After clearing the passphrase error, the history sync opt-in entry point
   // should NOT be shown.
   EXPECT_TRUE(avatar->GetText().empty());
 }
 
-struct HistorySyncOptinExpansionPillOptionTestCase {
-  std::string feature_param;
-  int expected_history_sync_message_id;
-};
-
-class AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest
-    : public AvatarToolbarButtonHistorySyncOptinBrowserTest,
-      public WithParamInterface<HistorySyncOptinExpansionPillOptionTestCase> {
- public:
-  AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest()
-      : AvatarToolbarButtonHistorySyncOptinBrowserTest(/*feature_parameters=*/
-                                                       {{"history-sync-optin-"
-                                                         "expansion-pill-"
-                                                         "option",
-                                                         GetParam()
-                                                             .feature_param}}) {
-  }
-};
-
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_CollapsesOnSyncTurnedOn DISABLED_CollapsesOnSyncTurnedOn
-#else
-#define MAYBE_CollapsesOnSyncTurnedOn CollapsesOnSyncTurnedOn
-#endif
-IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
-                       MAYBE_CollapsesOnSyncTurnedOn) {
+TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
+                             MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
+                             CollapsesOnSyncTurnedOn) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-  const std::u16string email(u"test@gmail.com");
-  const std::u16string account_name(u"Account name");
-  const AccountInfo account_info = SigninWithImage(email, account_name);
-  EXPECT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
-                                   IDS_AVATAR_BUTTON_GREETING, account_name));
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
   avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
-  EXPECT_EQ(
-      avatar->GetText(),
-      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
-  EnableSync(email, account_name);
+  EXPECT_EQ(avatar->GetText(), GetExpectedPromoText());
+  // TODO(crbug.com/465718425): Change to enabling history sync instead of sync.
+  EnableSync(test_email(), test_given_name());
   // Once sync is turned on, the button should return to the normal state.
   EXPECT_TRUE(avatar->GetText().empty());
 }
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_CollapsesOnSignOut DISABLED_CollapsesOnSignOut
-#else
-#define MAYBE_CollapsesOnSignOut CollapsesOnSignOut
-#endif
-IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
-                       MAYBE_CollapsesOnSignOut) {
+TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
+                             MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
+                             CollapsesOnSignOut) {
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-  const std::u16string email(u"test@gmail.com");
-  const std::u16string account_name(u"Account name");
-  const AccountInfo account_info = SigninWithImage(email, account_name);
-  EXPECT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
-                                   IDS_AVATAR_BUTTON_GREETING, account_name));
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
   avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
-  EXPECT_EQ(
-      avatar->GetText(),
-      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
+  EXPECT_EQ(avatar->GetText(), GetExpectedPromoText());
   Signout();
   // Once the user signs out, the button should return to the normal state.
   EXPECT_TRUE(avatar->GetText().empty());
 }
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_PRE_ShowsOnBrowserRestart DISABLED_PRE_ShowsOnBrowserRestart
-#define MAYBE_ShowsOnBrowserRestart DISABLED_ShowsOnBrowserRestart
-#else
-#define MAYBE_PRE_ShowsOnBrowserRestart PRE_ShowsOnBrowserRestart
-#define MAYBE_ShowsOnBrowserRestart ShowsOnBrowserRestart
-#endif
-IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
-                       MAYBE_PRE_ShowsOnBrowserRestart) {
+IN_PROC_BROWSER_TEST_P(MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
+                       PRE_ShowsOnBrowserRestart) {
+  // Disable the preferences about syncing the tabs and history to make the
+  // avatar promo eligible.
+  SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
+
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar->GetText().empty());
   const std::u16string email(u"test@gmail.com");
   const std::u16string account_name(u"Account name");
   const AccountInfo account_info = SigninWithImage(email, account_name);
-  EXPECT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
-                                   IDS_AVATAR_BUTTON_GREETING, account_name));
-  avatar->ClearActiveStateForTesting();
-  // The greeting should be followed by the history sync opt-in entry point.
-  EXPECT_EQ(
-      avatar->GetText(),
-      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
-  avatar->ClearActiveStateForTesting();
+  switch (GetParam()) {
+    case FeaturePromoType::kHistorySyncPromo:
+      ASSERT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
+                                       IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+      avatar->ClearActiveStateForTesting();
+      break;
+    case FeaturePromoType::kSyncPromo:
+      ASSERT_EQ(
+          avatar->GetText(),
+          l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, account_name));
+      avatar->ClearActiveStateForTesting();
+      // The greeting should be followed by the sync opt-in entry point.
+      ASSERT_EQ(avatar->GetText(), GetExpectedPromoText());
+      avatar->ClearActiveStateForTesting();
+      break;
+  }
   // The button should return to the normal state.
   EXPECT_TRUE(avatar->GetText().empty());
 }
 
-IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
-                       MAYBE_ShowsOnBrowserRestart) {
-  // Disable the preferences about syncing the tabs and history to make the
-  // avatar promo eligible.
-  SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
-
+IN_PROC_BROWSER_TEST_P(MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
+                       ShowsOnBrowserRestart) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // The greeting is shown after the restart.
   ASSERT_EQ(
@@ -1509,160 +1772,57 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
       l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, u"Account name"));
   avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
-  EXPECT_EQ(
-      avatar->GetText(),
-      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
+  ASSERT_EQ(avatar->GetText(), GetExpectedPromoText());
   avatar->ClearActiveStateForTesting();
   // The button should return to the normal state.
   EXPECT_TRUE(avatar->GetText().empty());
 }
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_HistorySyncOptinShowsAfterGreetingAndOnInactivity \
-  DISABLED_HistorySyncOptinShowsAfterGreetingAndOnInactivity
-#else
-#define MAYBE_HistorySyncOptinShowsAfterGreetingAndOnInactivity \
-  HistorySyncOptinShowsAfterGreetingAndOnInactivity
-#endif
-IN_PROC_BROWSER_TEST_P(
-    AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
-    MAYBE_HistorySyncOptinShowsAfterGreetingAndOnInactivity) {
-  base::TimeDelta last_active_time;
-  RunTestSequence(SetLastActive(last_active_time));
+TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
+                             MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
+                             HistorySyncOptinNotShownIfMaxShownCountReached) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-  const std::u16string account_name(u"Account name");
-  const AccountInfo account_info =
-      Signin(/*email=*/u"test@gmail.com", account_name);
-  // Simulate inactivity for enough time to trigger the new session.
-  last_active_time += user_education::features::GetIdleTimeBetweenSessions();
-  RunTestSequence(SetLastActive(last_active_time));
-  // The history sync opt-in entry point should NOT be shown after the
-  // inactivity period if the greeting has not been shown yet.
-  EXPECT_TRUE(avatar->GetText().empty());
-  AddSignedInImage(account_info.account_id);
-  EXPECT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
-                                   IDS_AVATAR_BUTTON_GREETING, account_name));
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
   avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
-  EXPECT_EQ(
-      avatar->GetText(),
-      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
-  avatar->ClearActiveStateForTesting();
-  // Once the history sync opt-in entry point collapses, the button should
-  // return to the normal state.
-  EXPECT_TRUE(avatar->GetText().empty());
-  // Simulate inactivity for enough time to trigger the new session.
-  last_active_time += user_education::features::GetIdleTimeBetweenSessions();
-  RunTestSequence(SetLastActive(last_active_time));
-  // The history sync opt-in entry point should be shown again after the
-  // inactivity period.
-  EXPECT_EQ(
-      avatar->GetText(),
-      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
-  avatar->ClearActiveStateForTesting();
-  // Once the history sync opt-in entry point collapses, the button should
-  // return to the normal state.
-  EXPECT_TRUE(avatar->GetText().empty());
-  // Simulate inactivity for short time to not trigger the new session.
-  const base::TimeDelta short_inactivity = base::Minutes(30);
-  ASSERT_GT(user_education::features::GetIdleTimeBetweenSessions(),
-            short_inactivity);
-  last_active_time += short_inactivity;
-  RunTestSequence(SetLastActive(last_active_time));
-  // The history sync opt-in entry point should NOT be shown after the short
-  // inactivity period.
-  EXPECT_TRUE(avatar->GetText().empty());
-}
-
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_HistorySyncOptinNotShownIfMaxShownCountReached \
-  DISABLED_HistorySyncOptinNotShownIfMaxShownCountReached
-#else
-#define MAYBE_HistorySyncOptinNotShownIfMaxShownCountReached \
-  HistorySyncOptinNotShownIfMaxShownCountReached
-#endif
-IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
-                       MAYBE_HistorySyncOptinNotShownIfMaxShownCountReached) {
-  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-  const std::u16string account_name_1(u"Account name");
-  SigninWithImage(/*email=*/u"test@gmail.com", account_name_1);
-  ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
-                                   IDS_AVATAR_BUTTON_GREETING, account_name_1));
-  avatar->ClearActiveStateForTesting();
-  // The greeting should be followed by the history sync opt-in entry point.
-  EXPECT_EQ(
-      avatar->GetText(),
-      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
+  EXPECT_EQ(avatar->GetText(), GetExpectedPromoText());
   int shown_count = 1;
   avatar->ClearActiveStateForTesting();
   // The button comes back to the normal state.
   EXPECT_TRUE(avatar->GetText().empty());
   for (; shown_count < user_education::features::GetNewBadgeShowCount();
        ++shown_count) {
-    // Simulate inactivity for enough time to trigger the new session.
-    RunTestSequence(SetLastActive(
-        shown_count * user_education::features::GetIdleTimeBetweenSessions()));
-    EXPECT_EQ(
-        avatar->GetText(),
-        l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
+    avatar->ForceShowingPromoForTesting();
+    EXPECT_EQ(avatar->GetText(), GetExpectedPromoText());
     avatar->ClearActiveStateForTesting();
     // The button comes back to the normal state.
     EXPECT_TRUE(avatar->GetText().empty());
   }
-  RunTestSequence(SetLastActive(
-      shown_count * user_education::features::GetIdleTimeBetweenSessions()));
-  // The history sync opt-in entry point should NOT be shown after the
-  // inactivity period if the max shown count has been reached.
+  avatar->ForceShowingPromoForTesting();
+  // The history sync opt-in entry point should NOT be shown even after forcing
+  // it to show if the max shown count has been reached.
   EXPECT_TRUE(avatar->GetText().empty());
-
-  Signout();
-  const std::u16string account_name_2(u"Account name 2");
-  SigninWithImage(/*email=*/u"test2@gmail.com", account_name_2);
-  ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
-                                   IDS_AVATAR_BUTTON_GREETING, account_name_2));
-  avatar->ClearActiveStateForTesting();
-  // The greeting should be followed by the history sync opt-in entry point
-  // (rate limiting is per account).
-  EXPECT_EQ(
-      avatar->GetText(),
-      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
 }
 
-const HistorySyncOptinExpansionPillOptionTestCase kHistorySyncOptinTestCases[] =
-    {
-        {
-            "browse-across-devices",
-            IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES,
-        },
-        {
-            "sync-history",
-            IDS_AVATAR_BUTTON_SYNC_HISTORY,
-        },
-        {
-            "see-tabs-from-other-devices",
-            IDS_AVATAR_BUTTON_SEE_TABS_FROM_OTHER_DEVICES,
-        },
-        {
-            "browse-across-devices-new-profile-menu-promo-variant",
-            IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES,
-        },
-};
+INSTANTIATE_TEST_SUITE_P(,
+                         MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
+                         ValuesIn({FeaturePromoType::kHistorySyncPromo,
+                                   FeaturePromoType::kSyncPromo}));
 
-INSTANTIATE_TEST_SUITE_P(
-    HistorySyncOptinExpansionPillOptions,
-    AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest,
-    ValuesIn(kHistorySyncOptinTestCases));
-
-class AvatarToolbarButtonHistorySyncOptinClickBrowserTest
-    : public AvatarToolbarButtonHistorySyncOptinWithParamBrowserTest {
+// TODO(crbug.com/331746545): Check the flaky test suite issue on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AvatarToolbarButtonPromoClickBrowserTest \
+  DISABLED_AvatarToolbarButtonPromoClickBrowserTest
+#else
+#define MAYBE_AvatarToolbarButtonPromoClickBrowserTest \
+  AvatarToolbarButtonPromoClickBrowserTest
+#endif
+class MAYBE_AvatarToolbarButtonPromoClickBrowserTest
+    : public MAYBE_AvatarToolbarButtonSyncPromoBrowserTest {
  protected:
-  AvatarToolbarButtonHistorySyncOptinClickBrowserTest()
+  MAYBE_AvatarToolbarButtonPromoClickBrowserTest()
       : delegate_auto_reset_(signin_ui_util::SetSigninUiDelegateForTesting(
             &mock_signin_ui_delegate_)) {}
 
@@ -1681,47 +1841,30 @@ class AvatarToolbarButtonHistorySyncOptinClickBrowserTest
   base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_auto_reset_;
 };
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_CollapsesOnClickAndTriggersProfileMenuStartup \
-  DISABLED_CollapsesOnClickAndTriggersProfileMenuStartup
-#else
-#define MAYBE_CollapsesOnClickAndTriggersProfileMenuStartup \
-  CollapsesOnClickAndTriggersProfileMenuStartup
-#endif
-IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
-                       MAYBE_CollapsesOnClickAndTriggersProfileMenuStartup) {
+TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
+                             MAYBE_AvatarToolbarButtonPromoClickBrowserTest,
+                             CollapsesOnClickAndTriggersProfileMenuStartup) {
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
   base::HistogramTester histogram_tester;
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-  const std::u16string account_name(u"Account name");
-  const AccountInfo account_info =
-      SigninWithImage(/*email=*/u"test@gmail.com", account_name);
-  ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
-                                   IDS_AVATAR_BUTTON_GREETING, account_name));
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
   avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
-  EXPECT_EQ(
-      avatar->GetText(),
-      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
-  // `Signin.SyncOptIn.IdentityPill.Shown` should be recorded with the correct
-  // access point.
-  histogram_tester.ExpectBucketCount(
-      "Signin.SyncOptIn.IdentityPill.Shown",
-      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Signin.SyncOptIn.IdentityPill.Shown",
-      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnInactivity,
-      /*expected_count=*/0);
+  EXPECT_EQ(avatar->GetText(), GetExpectedPromoText());
+  histogram_tester.ExpectBucketCount("Signin.AvatarPillPromo.Shown",
+                                     GetAvatarPromoType(GetParam()),
+                                     /*expected_count=*/1);
   // The button action should be overridden.
   histogram_tester.ExpectTotalCount(
-      "Signin.SyncOptIn.IdentityPill.DurationBeforeClick",
+      "Signin.AvatarPillPromo.DurationBeforeClick",
       /*expected_count=*/0);
   Click(avatar);
   histogram_tester.ExpectTotalCount(
-      "Signin.SyncOptIn.IdentityPill.DurationBeforeClick",
+      "Signin.AvatarPillPromo.DurationBeforeClick",
       /*expected_count=*/1);
   auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
   ASSERT_NE(coordinator, nullptr);
@@ -1729,131 +1872,49 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
   EXPECT_TRUE(avatar->GetText().empty());
   // Once the history sync opt-in entry point collapses, the button action
   // should be reset to the default behavior.
-  // Clicking the sync button in the profile menu should trigger the sync
-  // dialog with the correct access point
-  // (`kHistorySyncOptinExpansionPillOnStartup`).
-  EXPECT_CALL(
-      mock_signin_ui_delegate_,
-      ShowTurnSyncOnUI(
-          browser()->profile(),
-          signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup,
-          signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-          account_info.account_id,
-          TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-          /*is_sync_promo=*/false,
-          /*user_already_signed_in=*/true));
+  CoreAccountId primary_account_id =
+      GetIdentityManager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  switch (GetParam()) {
+    case FeaturePromoType::kHistorySyncPromo:
+      // Clicking the history sync button in the profile menu should trigger the
+      // history sync dialog with the correct access point
+      // (`kHistorySyncOptinExpansionPillOnStartup`).
+      EXPECT_CALL(
+          mock_signin_ui_delegate_,
+          ShowHistorySyncOptinUI(browser()->profile(), primary_account_id,
+                                 signin_metrics::AccessPoint::
+                                     kHistorySyncOptinExpansionPillOnStartup));
+      break;
+    case FeaturePromoType::kSyncPromo:
+      // Clicking the sync button in the profile menu should trigger the sync
+      // dialog with the correct access point
+      // (`kHistorySyncOptinExpansionPillOnStartup`).
+      EXPECT_CALL(mock_signin_ui_delegate_,
+                  ShowTurnSyncOnUI(
+                      browser()->profile(),
+                      signin_metrics::AccessPoint::
+                          kHistorySyncOptinExpansionPillOnStartup,
+                      signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
+                      primary_account_id,
+                      TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+                      /*is_sync_promo=*/false,
+                      /*user_already_signed_in=*/true));
+      break;
+  }
   ASSERT_NO_FATAL_FAILURE(
       ClickSyncButton(coordinator->GetProfileMenuViewBaseForTesting()));
 }
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_CollapsesOnClickAndTriggersProfileMenuInactivity \
-  DISABLED_CollapsesOnClickAndTriggersProfileMenuInactivity
-#else
-#define MAYBE_CollapsesOnClickAndTriggersProfileMenuInactivity \
-  CollapsesOnClickAndTriggersProfileMenuInactivity
-#endif
-IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
-                       MAYBE_CollapsesOnClickAndTriggersProfileMenuInactivity) {
-  base::HistogramTester histogram_tester;
+TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
+                             MAYBE_AvatarToolbarButtonPromoClickBrowserTest,
+                             HistorySyncOptinNotShownIfUsedLimitReached) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-  const std::u16string account_name(u"Account name");
-  const AccountInfo account_info =
-      SigninWithImage(/*email=*/u"test@gmail.com", account_name);
-  ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
-                                   IDS_AVATAR_BUTTON_GREETING, account_name));
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
   avatar->ClearActiveStateForTesting();
   // The greeting should be followed by the history sync opt-in entry point.
-  EXPECT_EQ(
-      avatar->GetText(),
-      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
-  // `Signin.SyncOptIn.IdentityPill.Shown` should be recorded with the correct
-  // access point.
-  histogram_tester.ExpectBucketCount(
-      "Signin.SyncOptIn.IdentityPill.Shown",
-      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Signin.SyncOptIn.IdentityPill.Shown",
-      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnInactivity,
-      /*expected_count=*/0);
-  avatar->ClearActiveStateForTesting();
-  // The button comes back to the normal state.
-  EXPECT_TRUE(avatar->GetText().empty());
-  // Simulate inactivity for enough time to trigger the new session.
-  RunTestSequence(
-      SetLastActive(user_education::features::GetIdleTimeBetweenSessions()));
-  // The history sync opt-in entry point should be shown again after the
-  // inactivity period.
-  EXPECT_EQ(
-      avatar->GetText(),
-      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
-  // `Signin.SyncOptIn.IdentityPill.Shown` should be recorded with the correct
-  // access point.
-  histogram_tester.ExpectBucketCount(
-      "Signin.SyncOptIn.IdentityPill.Shown",
-      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Signin.SyncOptIn.IdentityPill.Shown",
-      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnInactivity,
-      /*expected_count=*/1);
-  // The button action should be overridden.
-  histogram_tester.ExpectTotalCount(
-      "Signin.SyncOptIn.IdentityPill.DurationBeforeClick",
-      /*expected_count=*/0);
-  Click(avatar);
-  histogram_tester.ExpectTotalCount(
-      "Signin.SyncOptIn.IdentityPill.DurationBeforeClick",
-      /*expected_count=*/1);
-  auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
-  ASSERT_NE(coordinator, nullptr);
-  EXPECT_TRUE(coordinator->IsShowing());
-  // The button comes back to the normal state.
-  EXPECT_TRUE(avatar->GetText().empty());
-  EXPECT_TRUE(coordinator->IsShowing());
-  // Clicking the sync button in the profile menu should trigger the sync
-  // dialog with the correct access point
-  // (`kHistorySyncOptinExpansionPillOnInactivity`).
-  EXPECT_CALL(
-      mock_signin_ui_delegate_,
-      ShowTurnSyncOnUI(browser()->profile(),
-                       signin_metrics::AccessPoint::
-                           kHistorySyncOptinExpansionPillOnInactivity,
-                       signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-                       account_info.account_id,
-                       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-                       /*is_sync_promo=*/false,
-                       /*user_already_signed_in=*/true));
-  ASSERT_NO_FATAL_FAILURE(
-      ClickSyncButton(coordinator->GetProfileMenuViewBaseForTesting()));
-}
-
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_HistorySyncOptinNotShownIfUsedLimitReached \
-  DISABLED_HistorySyncOptinNotShownIfUsedLimitReached
-#else
-#define MAYBE_HistorySyncOptinNotShownIfUsedLimitReached \
-  HistorySyncOptinNotShownIfUsedLimitReached
-#endif
-IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
-                       MAYBE_HistorySyncOptinNotShownIfUsedLimitReached) {
-  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-  const std::u16string account_name_1(u"Account name");
-  SigninWithImage(/*email=*/u"test@gmail.com", account_name_1);
-  ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
-                                   IDS_AVATAR_BUTTON_GREETING, account_name_1));
-  avatar->ClearActiveStateForTesting();
-  // The greeting should be followed by the history sync opt-in entry point.
-  EXPECT_EQ(
-      avatar->GetText(),
-      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
+  EXPECT_EQ(avatar->GetText(), GetExpectedPromoText());
   // The button action should be overridden.
   Click(avatar);
   // The button comes back to the normal state.
@@ -1861,46 +1922,43 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
   int used_count = 1;
   for (; used_count < user_education::features::GetNewBadgeFeatureUsedCount();
        ++used_count) {
-    // Simulate inactivity for enough time to trigger the new session.
-    RunTestSequence(SetLastActive(
-        used_count * user_education::features::GetIdleTimeBetweenSessions()));
-    EXPECT_EQ(
-        avatar->GetText(),
-        l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
+    avatar->ForceShowingPromoForTesting();
+    EXPECT_EQ(avatar->GetText(), GetExpectedPromoText());
     Click(avatar);
     // The button comes back to the normal state.
     EXPECT_TRUE(avatar->GetText().empty());
   }
-  RunTestSequence(SetLastActive(
-      used_count * user_education::features::GetIdleTimeBetweenSessions()));
-  // The history sync opt-in entry point should NOT be shown after the
-  // inactivity period if the max used count has been reached.
+  avatar->ForceShowingPromoForTesting();
+  // The history sync opt-in entry point should NOT be shown even after forcing
+  // it to show if the max used count has been reached.
   EXPECT_TRUE(avatar->GetText().empty());
 
   Signout();
   const std::u16string account_name_2(u"Account name 2");
   SigninWithImage(/*email=*/u"test2@gmail.com", account_name_2);
-  ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
-                                   IDS_AVATAR_BUTTON_GREETING, account_name_2));
-  avatar->ClearActiveStateForTesting();
-  // The greeting should be followed by the history sync opt-in entry point
-  // (rate limiting is per account).
-  EXPECT_EQ(
-      avatar->GetText(),
-      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
+  switch (GetParam()) {
+    case FeaturePromoType::kHistorySyncPromo:
+      ASSERT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
+                                       IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+      avatar->ClearActiveStateForTesting();
+      avatar->ForceShowingPromoForTesting();
+      break;
+    case FeaturePromoType::kSyncPromo:
+      ASSERT_EQ(avatar->GetText(),
+                l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                           account_name_2));
+      avatar->ClearActiveStateForTesting();
+      break;
+  }
+  // The promo should be shown for the new account (rate limiting is per
+  // account).
+  EXPECT_EQ(avatar->GetText(), GetExpectedPromoText());
 }
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_TriggersAndCollapsesConsistentlyAcrossMultipleBrowsers \
-  DISABLED_TriggersAndCollapsesConsistentlyAcrossMultipleBrowsers
-#else
-#define MAYBE_TriggersAndCollapsesConsistentlyAcrossMultipleBrowsers \
-  TriggersAndCollapsesConsistentlyAcrossMultipleBrowsers
-#endif
-IN_PROC_BROWSER_TEST_P(
-    AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
-    MAYBE_TriggersAndCollapsesConsistentlyAcrossMultipleBrowsers) {
+TEST_WITH_SIGNED_IN_FROM_PRE(
+    IN_PROC_BROWSER_TEST_P,
+    MAYBE_AvatarToolbarButtonPromoClickBrowserTest,
+    TriggersAndCollapsesConsistentlyAcrossMultipleBrowsers) {
   // Make the delay for cross window animation replay zero to avoid flakiness.
   base::AutoReset<std::optional<base::TimeDelta>> delay_override_reset =
       signin_ui_util::
@@ -1909,85 +1967,34 @@ IN_PROC_BROWSER_TEST_P(
   Profile* profile = browser()->profile();
   Browser* browser_1 = browser();
   AvatarToolbarButton* avatar_1 = GetAvatarToolbarButton(browser_1);
-  // Normal state.
-  ASSERT_TRUE(avatar_1->GetText().empty());
-  const std::u16string account_name(u"Account name");
-  const AccountInfo account_info =
-      SigninWithImage(/*email=*/u"test@gmail.com", account_name);
-  ASSERT_EQ(avatar_1->GetText(), l10n_util::GetStringFUTF16(
-                                     IDS_AVATAR_BUTTON_GREETING, account_name));
+  ASSERT_EQ(avatar_1->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
   avatar_1->ClearActiveStateForTesting();
 
   // The greeting should be followed by the history sync opt-in.
-  EXPECT_EQ(
-      avatar_1->GetText(),
-      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
+  EXPECT_EQ(avatar_1->GetText(), GetExpectedPromoText());
   // Open the second browser before the history sync opt-in collapses.
   Browser* browser_2 = CreateBrowser(profile);
   AvatarToolbarButton* avatar_2 = GetAvatarToolbarButton(browser_2);
   // The history sync opt-in should be shown in the second browser as well.
-  EXPECT_EQ(
-      avatar_2->GetText(),
-      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
-  // `Signin.SyncOptIn.IdentityPill.Shown` histogram should be recorded only
+  EXPECT_EQ(avatar_2->GetText(), GetExpectedPromoText());
+  // `Signin.AvatarPillPromo.Shown` histogram should be recorded only
   // once.
-  histogram_tester.ExpectBucketCount(
-      "Signin.SyncOptIn.IdentityPill.Shown",
-      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Signin.SyncOptIn.IdentityPill.Shown",
-      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnInactivity,
-      /*expected_count=*/0);
+  histogram_tester.ExpectBucketCount("Signin.AvatarPillPromo.Shown",
+                                     GetAvatarPromoType(GetParam()),
+                                     /*expected_count=*/1);
   avatar_1->ClearActiveStateForTesting();
   // The button in both browsers comes back to the normal state.
   EXPECT_TRUE(avatar_1->GetText().empty());
   EXPECT_TRUE(avatar_2->GetText().empty());
-
-  // Simulate inactivity for enough time to trigger the new session.
-  RunTestSequence(
-      SetLastActive(user_education::features::GetIdleTimeBetweenSessions()));
-  // The history sync opt-in entry point should be shown again after the
-  // inactivity period (in both browsers).
-  EXPECT_EQ(
-      avatar_1->GetText(),
-      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
-  EXPECT_EQ(
-      avatar_2->GetText(),
-      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
-  // Open the third browser before the history sync opt-in collapses.
-  Browser* browser_3 = CreateBrowser(profile);
-  AvatarToolbarButton* avatar_3 = GetAvatarToolbarButton(browser_3);
-  // The history sync opt-in should be shown in the third browser as well.
-  EXPECT_EQ(
-      avatar_3->GetText(),
-      l10n_util::GetStringUTF16(GetParam().expected_history_sync_message_id));
-  // `Signin.SyncOptIn.IdentityPill.Shown` histogram should be recorded only
-  // once.
-  histogram_tester.ExpectBucketCount(
-      "Signin.SyncOptIn.IdentityPill.Shown",
-      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup,
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Signin.SyncOptIn.IdentityPill.Shown",
-      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnInactivity,
-      /*expected_count=*/1);
-  // Clicking the button on any browser should collapse the history sync opt-in
-  // in all browsers.
-  Click(avatar_2);
-  // `Signin.SyncOptIn.IdentityPill.DurationBeforeClick` histogram should be
-  // recorded only once.
-  histogram_tester.ExpectTotalCount(
-      "Signin.SyncOptIn.IdentityPill.DurationBeforeClick",
-      /*expected_count=*/1);
-  EXPECT_TRUE(avatar_1->GetText().empty());
-  EXPECT_TRUE(avatar_2->GetText().empty());
-  EXPECT_TRUE(avatar_3->GetText().empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(HistorySyncOptinExpansionPillOptions,
-                         AvatarToolbarButtonHistorySyncOptinClickBrowserTest,
-                         ValuesIn(kHistorySyncOptinTestCases));
+                         MAYBE_AvatarToolbarButtonPromoClickBrowserTest,
+                         ValuesIn({FeaturePromoType::kHistorySyncPromo,
+                                   FeaturePromoType::kSyncPromo}));
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Test suite for testing `AvatarToolbarButton`'s responsibility of updating
@@ -2155,10 +2162,8 @@ INSTANTIATE_TEST_SUITE_P(,
 class AvatarToolbarButtonEnterpriseBadgingBrowserTest
     : public AvatarToolbarButtonWithInteractiveFeaturePromoBrowserTest {
  public:
-  AvatarToolbarButtonEnterpriseBadgingBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kEnterpriseProfileBadgingForAvatar}, {});
-  }
+  AvatarToolbarButtonEnterpriseBadgingBrowserTest() = default;
+
   void SetUpInProcessBrowserTestFixture() override {
     provider_.SetDefaultReturns(
         true /* is_initialization_complete_return */,
@@ -2182,7 +2187,9 @@ class AvatarToolbarButtonEnterpriseBadgingBrowserTest
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
       scoped_browser_management_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+
+  base::test::ScopedFeatureList scoped_feature_list_{
+      syncer::kReplaceSyncPromosWithSignInPromos};
 };
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
@@ -2358,6 +2365,12 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   EXPECT_EQ(avatar_button->GetText(), work_label);
 
   EnableSyncWithImage(u"work@managed.com");
+  ASSERT_EQ(avatar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+  avatar_button->ClearActiveStateForTesting();
+
+  ASSERT_EQ(avatar_button->GetText(), work_label);
+
   SimulateSyncPaused();
   // Sync Paused has priority over the Work badge.
   ExpectSyncPaused(avatar_button);
@@ -2384,206 +2397,114 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       GreetingNotShownWhenManagementAccepted) {
+                       PRE_ManagedAccountFlowWithDefaultWorkBadge) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar->GetText().empty());
 
-  AccountInfo account_info = Signin(u"work@managed.com", u"TestName");
+  SigninWithImage(u"work@managed.com", test_given_name());
   enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
-
-  // The greeting would only show when the image is loaded. Set the image to
-  // make sure we do not have a false positive later.
-  AddSignedInImage(account_info.account_id);
-
-  // We do not expect a greeting to be shown if user accepted management.
-  EXPECT_EQ(avatar->GetText(), u"Work");
-}
-
-class AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest
-    : public base::test::WithFeatureOverride,
-      public AvatarToolbarButtonEnterpriseBadgingBrowserTest {
- protected:
-  AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest()
-      : WithFeatureOverride(switches::kEnableHistorySyncOptinExpansionPill) {}
-};
-
-// TODO(crbug.com/331746545): Check flaky test issue on windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_GreetingShownWhenManagementNotAccepted \
-  DISABLED_GreetingShownWhenManagementNotAccepted
-#else
-#define MAYBE_GreetingShownWhenManagementNotAccepted \
-  GreetingShownWhenManagementNotAccepted
-#endif
-// test makes sure the greeting is not shown when the management badge is shown
-// in the profile avatar pill.
-IN_PROC_BROWSER_TEST_P(
-    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest,
-    MAYBE_GreetingShownWhenManagementNotAccepted) {
-  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-
-  std::u16string name(u"TestName");
-  AccountInfo account_info = Signin(u"work@managed.com", name);
-  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(),
-                                                    false);
-
-  // The button is in a waiting for image state, the name is not yet displayed.
-  // At this point the user has not accepted management yet.
-  EXPECT_EQ(avatar->GetText(), std::u16string());
-
-  // The greeting will only show when the image is loaded.
-  AddSignedInImage(account_info.account_id);
-
-  // Since the user has not accepted management, the greeting will still be
-  // shown.
   EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
-  avatar->ClearActiveStateForTesting();
-  if (IsParamFeatureEnabled()) {
-    // The greeting is followed by the history sync opt-in.
-    EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
-                                     IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES));
-    avatar->ClearActiveStateForTesting();
-  }
-  // Once the name (or sync promo) is not shown anymore, we expect no text.
-  EXPECT_EQ(avatar->GetText(), std::u16string());
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
 }
 
-// TODO(crbug.com/331746545): Check flaky test issue on windows.
-// TODO(crbug.com/331746545): Check flaky test issue on windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_PRE_SignedInWithNewSessionKeepWorkBadge \
-  DISABLED_PRE_SignedInWithNewSessionKeepWorkBadge
-#define MAYBE_SignedInWithNewSessionKeepWorkBadge \
-  DISABLED_SignedInWithNewSessionKeepWorkBadge
-#else
-#define MAYBE_PRE_SignedInWithNewSessionKeepWorkBadge \
-  PRE_SignedInWithNewSessionKeepWorkBadge
-#define MAYBE_SignedInWithNewSessionKeepWorkBadge \
-  SignedInWithNewSessionKeepWorkBadge
-#endif
-// Tests the flow for a managed sign-in.
-IN_PROC_BROWSER_TEST_P(
-    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest,
-    MAYBE_PRE_SignedInWithNewSessionKeepWorkBadge) {
-  // Sign in.
-  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  std::u16string name(u"TestName");
-  AccountInfo account_info = SigninWithImage(u"work@managed.com", name);
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       ManagedAccountFlowWithDefaultWorkBadge) {
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
-  // Since the user has not accepted management yet, the greeting will be
-  // shown.
-  EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
-  avatar->ClearActiveStateForTesting();
-  if (IsParamFeatureEnabled()) {
-    // The greeting is followed by the history sync opt-in.
-    EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
-                                     IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES));
-    avatar->ClearActiveStateForTesting();
-  }
-
-  // Once the name (or sync promo) is not shown anymore, we expect no text since
-  // management is not accepted.
-  EXPECT_EQ(avatar->GetText(), std::u16string());
-
-  // Management is usually accepted by the time the greeting is finished. The
-  // work badgge should be shown once this happens.
-  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
-  browser()->profile()->GetPrefs()->SetString(
-      prefs::kEnterpriseCustomLabelForProfile, "Custom Label");
-
-  EXPECT_EQ(avatar->GetText(), u"Custom Label");
-}
-
-// Test that the work badge remains upon restart for a user that is managed.
-// Note that we need to unset and reset UserAcceptedAccountManagement due to the
-// management service override.
-IN_PROC_BROWSER_TEST_P(
-    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest,
-    MAYBE_SignedInWithNewSessionKeepWorkBadge) {
   // Disable the preferences about syncing the tabs and history to make the
   // avatar promo eligible.
   SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
 
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // The greetings are shown due to the management service override (unaware of
-  // the management acceptance after restart).
-  EXPECT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
-                                   IDS_AVATAR_BUTTON_GREETING, u"TestName"));
+  // Greeting shown even for Managed users.
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
   avatar->ClearActiveStateForTesting();
-  if (IsParamFeatureEnabled()) {
-    // The greeting is followed by the history sync opt-in.
-    EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
-                                     IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES));
-    avatar->ClearActiveStateForTesting();
-  }
+  // The greeting is followed by the history sync opt-in.
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_HISTORY));
+  avatar->ClearActiveStateForTesting();
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_WORK));
+}
 
-  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(),
-                                                    false);
+// TODO(crbug.com/331746545): Check flaky test issue on windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PRE_SignedInWithNewSessionKeepCustomWorkBadge \
+  DISABLED_PRE_SignedInWithNewSessionKeepCustomWorkBadge
+#define MAYBE_SignedInWithNewSessionKeepCustomWorkBadge \
+  DISABLED_SignedInWithNewSessionKeepCustomWorkBadge
+#else
+#define MAYBE_PRE_SignedInWithNewSessionKeepCustomWorkBadge \
+  PRE_SignedInWithNewSessionKeepCustomWorkBadge
+#define MAYBE_SignedInWithNewSessionKeepCustomWorkBadge \
+  SignedInWithNewSessionKeepCustomWorkBadge
+#endif
+// Tests the flow for a managed sign-in.
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       MAYBE_PRE_SignedInWithNewSessionKeepCustomWorkBadge) {
+  // Sign in.
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  AccountInfo account_info =
+      SigninWithImage(u"work@managed.com", test_given_name());
+
+  // Accept management and prepare work badge.
   enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kEnterpriseCustomLabelForProfile, base::UTF16ToUTF8(work_badge()));
 
-  EXPECT_EQ(avatar->GetText(), u"Custom Label");
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+}
+
+// Test that the work badge remains upon restart for a user that is managed.
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       MAYBE_SignedInWithNewSessionKeepCustomWorkBadge) {
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(
+      enterprise_util::UserAcceptedAccountManagement(browser()->profile()));
+
+  // Disable the preferences about syncing the tabs and history to make the
+  // avatar promo eligible.
+  SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
+
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
+  avatar->ClearActiveStateForTesting();
+  // The greeting is followed by the history sync opt-in.
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_HISTORY));
+  avatar->ClearActiveStateForTesting();
+
+  // Once the promo is not shown anymore, we expect the work badge to be shown.
+  EXPECT_EQ(avatar->GetText(), work_badge());
   EXPECT_EQ(GetProfileAttributesEntry(browser()->profile())
                 ->GetEnterpriseProfileLabel(),
-            u"Custom Label");
+            work_badge());
   EXPECT_EQ(
       GetProfileAttributesEntry(browser()->profile())->GetLocalProfileName(),
-      u"Custom Label");
+      work_badge());
+
   // Previously added image on signin should still be shown in the new session.
   EXPECT_TRUE(IsSignedInImageUsed());
 }
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_SyncPromoShownOnInactivityWhenManagementAccepted \
-  DISABLED_SyncPromoShownOnInactivityWhenManagementAccepted
-#else
-#define MAYBE_SyncPromoShownOnInactivityWhenManagementAccepted \
-  SyncPromoShownOnInactivityWhenManagementAccepted
-#endif
-IN_PROC_BROWSER_TEST_P(
-    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest,
-    MAYBE_SyncPromoShownOnInactivityWhenManagementAccepted) {
-  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-
-  AccountInfo account_info = Signin(u"work@managed.com", u"TestName");
-  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
-
-  // The greeting would only show when the image is loaded. Set the image to
-  // make sure we do not have a false positive later.
-  AddSignedInImage(account_info.account_id);
-  // We do not expect a greeting to be shown if user accepted management.
-  EXPECT_EQ(avatar->GetText(), u"Work");
-  // Simulate long enough inactivity to trigger the sync promo.
-  RunTestSequence(
-      SetLastActive(user_education::features::GetIdleTimeBetweenSessions()));
-  if (IsParamFeatureEnabled()) {
-    EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
-                                     IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES));
-    avatar->ClearActiveStateForTesting();
-  }
-  EXPECT_EQ(avatar->GetText(), u"Work");
-}
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest);
-
 // TODO(b/331746545): Check flaky test issue on windows.
 #if BUILDFLAG(IS_WIN)
-#define MAYBE_SigninPausedFromExternalErrorThenReauth \
-  DISABLED_SigninPausedFromExternalErrorThenReauth
+#define MAYBE_SigninPendingFromExternalErrorThenReauth \
+  DISABLED_SigninPendingFromExternalErrorThenReauth
 #else
-#define MAYBE_SigninPausedFromExternalErrorThenReauth \
-  SigninPausedFromExternalErrorThenReauth
+#define MAYBE_SigninPendingFromExternalErrorThenReauth \
+  SigninPendingFromExternalErrorThenReauth
 #endif
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
-                       MAYBE_SigninPausedFromExternalErrorThenReauth) {
+                       MAYBE_SigninPendingFromExternalErrorThenReauth) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com");
   ASSERT_EQ(avatar->GetText(), std::u16string());
@@ -2594,7 +2515,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
       GetAvatarToolbarButton(opened_browser);
   ASSERT_EQ(opened_browser_avatar_button->GetText(), std::u16string());
 
-  SimulateSigninError(/*web_sign_out=*/false);
+  SimulateSigninPending(/*web_sign_out=*/false);
   EXPECT_EQ(avatar->GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
   EXPECT_EQ(opened_browser_avatar_button->GetText(),
@@ -2607,7 +2528,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   EXPECT_EQ(new_browser_avatar_button->GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
 
-  ClearSigninError();
+  ClearSigninPending();
   EXPECT_EQ(avatar->GetText(), std::u16string());
   EXPECT_EQ(opened_browser_avatar_button->GetText(), std::u16string());
   EXPECT_EQ(new_browser_avatar_button->GetText(), std::u16string());
@@ -2615,12 +2536,12 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
 
 // TODO(b/331746545): Check flaky test issue on windows.
 #if BUILDFLAG(IS_WIN)
-#define MAYBE_SigninPausedFromWebSignout DISABLED_SigninPausedFromWebSignout
+#define MAYBE_SigninPendingFromWebSignout DISABLED_SigninPendingFromWebSignout
 #else
-#define MAYBE_SigninPausedFromWebSignout SigninPausedFromWebSignout
+#define MAYBE_SigninPendingFromWebSignout SigninPendingFromWebSignout
 #endif
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
-                       MAYBE_SigninPausedFromWebSignout) {
+                       MAYBE_SigninPendingFromWebSignout) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
 
   SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com");
@@ -2632,7 +2553,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
       GetAvatarToolbarButton(opened_browser);
   ASSERT_EQ(opened_browser_avatar_button->GetText(), std::u16string());
 
-  SimulateSigninError(/*web_sign_out=*/true);
+  SimulateSigninPending(/*web_sign_out=*/true);
   // Text does not appear directly after a web sign out, a timer is started.
   EXPECT_EQ(avatar->GetText(), std::u16string());
   EXPECT_EQ(opened_browser_avatar_button->GetText(), std::u16string());
@@ -2656,78 +2577,25 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   EXPECT_EQ(new_browser_avatar_button->GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
 
-  ClearSigninError();
+  ClearSigninPending();
   EXPECT_EQ(avatar->GetText(), std::u16string());
   EXPECT_EQ(opened_browser_avatar_button->GetText(), std::u16string());
   EXPECT_EQ(new_browser_avatar_button->GetText(), std::u16string());
 }
 
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
-                       PRE_SigninPausedFromWebSignoutThenRestartChrome) {
-  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com",
-                                              std::u16string(kGivenName));
-
-  SimulateSigninError(/*web_sign_out=*/true);
-  ASSERT_EQ(avatar->GetText(), std::u16string());
-}
-
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
-                       SigninPausedFromWebSignoutThenRestartChrome) {
-  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // The greetings are shown after the restart.
-  EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
-                                       std::u16string(kGivenName)));
-
-  avatar->ClearActiveStateForTesting();
-  // The error text is expected to be shown even if the error delay has not
-  // reached yet.
-  EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
-}
-
-// Regression test for https://crbug.com/348587566
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
-                       SigninPausedDelayEndedNoBrowser) {
-  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
-  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-
-  SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com",
-                                              u"TestName");
-  SimulateSigninError(/*web_sign_out=*/true);
-  ASSERT_TRUE(avatar->GetText().empty());
-  Profile* profile = browser()->profile();
-
-  // Close the browser before the delay ends, but keep the profile and Chrome
-  // alive by opening an incognito browser.
-  CreateIncognitoBrowser(profile);
-  CloseBrowserSynchronously(browser());
-
-  // This simulates the delay expiry for the next browser. Instead of advancing
-  // time, we set the expected delay to 0, making the elapsed time greater than
-  // the delay for sure - simulating the delay expiry.
-  SetZeroAvatarDelayForSigninPendingText();
-
-  // Open a new browser, this should not crash.
-  Browser* new_browser = CreateBrowser(profile);
-  EXPECT_EQ(GetAvatarToolbarButton(new_browser)->GetText(),
-            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
-}
-
 // TODO(b/331746545): Check flaky test issue on windows.
 #if BUILDFLAG(IS_WIN)
-#define MAYBE_SigninPausedThenSignout DISABLED_SigninPausedThenSignout
+#define MAYBE_SigninPendingThenSignout DISABLED_SigninPendingThenSignout
 #else
-#define MAYBE_SigninPausedThenSignout SigninPausedThenSignout
+#define MAYBE_SigninPendingThenSignout SigninPendingThenSignout
 #endif
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
-                       MAYBE_SigninPausedThenSignout) {
+                       MAYBE_SigninPendingThenSignout) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com");
   ASSERT_EQ(avatar->GetText(), std::u16string());
 
-  SimulateSigninError(/*web_sign_out=*/false);
+  SimulateSigninPending(/*web_sign_out=*/false);
 
   EXPECT_EQ(avatar->GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
@@ -2790,7 +2658,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, AccessibilityLabels) {
 
   // This will trigger the immediate button content text change. Accessibility
   // text should adapt as well.
-  SimulateSigninError(/*web_sign_out=*/false);
+  SimulateSigninPending(/*web_sign_out=*/false);
 
   EXPECT_EQ(accessibility.GetCachedName(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
@@ -2798,14 +2666,14 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, AccessibilityLabels) {
             l10n_util::GetStringUTF16(
                 IDS_AVATAR_BUTTON_SIGNIN_PENDING_ACCESSIBILITY_LABEL));
 
-  ClearSigninError();
+  ClearSigninPending();
 
   EXPECT_EQ(accessibility.GetCachedName(), expected_profile_name_with_account);
   EXPECT_EQ(accessibility.GetCachedDescription(), std::u16string());
 
   // This will not trigger the immediate button content text change.
   // Accessibility text should adapt as well.
-  SimulateSigninError(/*web_sign_out=*/true);
+  SimulateSigninPending(/*web_sign_out=*/true);
 
   EXPECT_EQ(accessibility.GetCachedName(),
             l10n_util::GetStringUTF16(
@@ -2813,7 +2681,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, AccessibilityLabels) {
   EXPECT_EQ(accessibility.GetCachedDescription(),
             expected_profile_name_with_account);
 
-  ClearSigninError();
+  ClearSigninPending();
 
   EXPECT_EQ(accessibility.GetCachedName(), expected_profile_name_with_account);
   EXPECT_EQ(accessibility.GetCachedDescription(), std::u16string());
@@ -2836,8 +2704,9 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com");
   ASSERT_EQ(avatar->GetText(), std::u16string());
   SimulatePassphraseError();
-  EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
-                                   IDS_SYNC_ERROR_USER_MENU_PASSPHRASE_BUTTON));
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON_MAYBE_TITLE_CASE));
 }
 
 // TODO(crbug.com/359995696): Flaky on Windows.
@@ -2852,8 +2721,9 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   EnableSyncWithImageAndClearGreeting(avatar, u"test@gmail.com");
   ASSERT_EQ(avatar->GetText(), std::u16string());
   SimulatePassphraseError();
-  EXPECT_EQ(avatar->GetText(), l10n_util::GetStringUTF16(
-                                   IDS_SYNC_ERROR_USER_MENU_PASSPHRASE_BUTTON));
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON_MAYBE_TITLE_CASE));
 }
 
 // TODO(crbug.com/359995696): Flaky on Windows.
@@ -2869,22 +2739,10 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   ASSERT_EQ(avatar->GetText(), std::u16string());
   SimulateUpgradeClientError();
   EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_UPGRADE_BUTTON));
+            l10n_util::GetStringUTF16(IDS_SYNC_UPGRADE_CLIENT_BUTTON));
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-class AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest
-    : public AvatarToolbarButtonBrowserTest {
- public:
-  AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
 
 // TODO(crbug.com/331746545): Check the flaky test issue on Windows.
 #if BUILDFLAG(IS_WIN)
@@ -2901,12 +2759,110 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NE(avatar_toolbar_button, nullptr);
   // Normal state.
   ASSERT_TRUE(avatar_toolbar_button->GetText().empty());
-  Signin(/*email=*/u"test@gmail.com", /*name=*/u"Account");
+  SigninWithImage(/*email=*/u"test@gmail.com", /*name=*/u"Account");
   EXPECT_EQ(avatar_toolbar_button->GetText(),
             l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
   avatar_toolbar_button->ClearActiveStateForTesting();
   EXPECT_TRUE(avatar_toolbar_button->GetText().empty());
+
+  // A new browser within the same session should not show any text as well.
+  // Specifically not showing the greeting.
+  Browser* second_browser = CreateBrowser(browser()->profile());
+  EXPECT_TRUE(GetAvatarToolbarButton(second_browser)->GetText().empty());
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ClearMakingChromeYoursOnSignout \
+  DISABLED_ClearMakingChromeYoursOnSignout
+#else
+#define MAYBE_ClearMakingChromeYoursOnSignout ClearMakingChromeYoursOnSignout
+#endif
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
+    MAYBE_ClearMakingChromeYoursOnSignout) {
+  AvatarToolbarButton* avatar_toolbar_button =
+      GetAvatarToolbarButton(browser());
+  ASSERT_NE(avatar_toolbar_button, nullptr);
+  // Normal state.
+  ASSERT_TRUE(avatar_toolbar_button->GetText().empty());
+  SigninWithImage(/*email=*/u"test@gmail.com", /*name=*/u"Account");
+  EXPECT_EQ(avatar_toolbar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+
+  Signout();
+  EXPECT_TRUE(avatar_toolbar_button->GetText().empty());
+}
+
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ShowMakingChromeYoursOnSigninThenClick \
+  DISABLED_ShowMakingChromeYoursOnSigninThenClick
+#else
+#define MAYBE_ShowMakingChromeYoursOnSigninThenClick \
+  ShowMakingChromeYoursOnSigninThenClick
+#endif
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
+    MAYBE_ShowMakingChromeYoursOnSigninThenClick) {
+  AvatarToolbarButton* avatar_toolbar_button =
+      GetAvatarToolbarButton(browser());
+  ASSERT_NE(avatar_toolbar_button, nullptr);
+  // Normal state.
+  ASSERT_TRUE(avatar_toolbar_button->GetText().empty());
+  SigninWithImage(/*email=*/u"test@gmail.com", /*name=*/u"Account");
+  EXPECT_EQ(avatar_toolbar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+
+  // A new browser should also show the message.
+  Browser* second_browser = CreateBrowser(browser()->profile());
+  AvatarToolbarButton* second_avatar_toolbar_button =
+      GetAvatarToolbarButton(second_browser);
+  EXPECT_EQ(second_avatar_toolbar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+
+  // Clicking on either avatar buttons should clear both messages.
+  Click(avatar_toolbar_button);
+  EXPECT_TRUE(avatar_toolbar_button->GetText().empty());
+  EXPECT_TRUE(second_avatar_toolbar_button->GetText().empty());
+}
+
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ShowMakingChromeYoursOnSigninBeforeBrowserWindow \
+  DISABLED_ShowMakingChromeYoursOnSigninBeforeBrowserWindow
+#else
+#define MAYBE_ShowMakingChromeYoursOnSigninBeforeBrowserWindow \
+  ShowMakingChromeYoursOnSigninBeforeBrowserWindow
+#endif
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
+    MAYBE_ShowMakingChromeYoursOnSigninBeforeBrowserWindow) {
+  // Create a new profile and sign in.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ASSERT_NE(profile_manager, nullptr);
+  Profile& profile = profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(&profile), "test@gmail.com",
+      signin::ConsentLevel::kSignin);
+
+  // Create a new browser window for the new profile.
+  Browser* browser = CreateBrowser(&profile);
+  AvatarToolbarButton* avatar_toolbar_button = GetAvatarToolbarButton(browser);
+  ASSERT_NE(avatar_toolbar_button, nullptr);
+
+  // The on sign-in state should be shown after the the browser window is
+  // created if the sign-in event happened before the browser window was
+  // created.
+  EXPECT_EQ(avatar_toolbar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+  avatar_toolbar_button->ClearActiveStateForTesting();
+  // The button should return to the normal state.
+  EXPECT_TRUE(avatar_toolbar_button->GetText().empty());
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // TODO(crbug.com/331746545): Check the flaky test issue on Windows.
 #if BUILDFLAG(IS_WIN)
@@ -3028,3 +2984,349 @@ IN_PROC_BROWSER_TEST_F(
   // The button should return to the normal state.
   EXPECT_TRUE(avatar_toolbar_button->GetText().empty());
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// TODO(crbug.com/331746545): Check flaky test issue on windows.
+#if !BUILDFLAG(IS_WIN)
+TEST_WITH_SIGNED_IN_FROM_PRE(
+    IN_PROC_BROWSER_TEST_F,
+    AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
+    ShowBatchUploadBookmarksPromo) {
+  const GaiaId primary_account_gaia_id =
+      GetIdentityManager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
+  ASSERT_FALSE(primary_account_gaia_id.empty());
+  SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kGoogleServicesLastSyncingGaiaId,
+      primary_account_gaia_id.ToString());
+  batch_upload_test_helper().SetReturnDescriptions(syncer::BOOKMARKS,
+                                                   /*item_count=*/5);
+
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
+  avatar->ClearActiveStateForTesting();
+
+  ASSERT_EQ(
+      avatar->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_AVATAR_BUTTON_BATCH_UPLOAD_PROMO_WITH_BOOKMARK_CLEANUP_PROMO));
+  avatar->ClearActiveStateForTesting();
+
+  // Once the greeting and promo are not shown anymore, we expect no text.
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+}
+#endif  // !BUILDFLAG(IS_WIN)
+
+// TODO(crbug.com/331746545): Check flaky test issue on windows.
+#if !BUILDFLAG(IS_WIN)
+TEST_WITH_SIGNED_IN_FROM_PRE(
+    IN_PROC_BROWSER_TEST_F,
+    AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
+    ShowBatchUploadPromo) {
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  SetHistoryAndTabsSyncingPreference(/*enable_sync=*/true);
+  batch_upload_test_helper().SetReturnDescriptions(syncer::PASSWORDS,
+                                                   /*item_count=*/5);
+
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
+  avatar->ClearActiveStateForTesting();
+
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_BATCH_UPLOAD_PROMO));
+  avatar->ClearActiveStateForTesting();
+
+  // Once the greeting and promo are not shown anymore, we expect no text.
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+}
+#endif  // !BUILDFLAG(IS_WIN)
+
+class AvatarToolbarButtonWithWindows10DepreciationBrowserTest
+    : public AvatarToolbarButtonBrowserTest {
+ public:
+  AvatarToolbarButtonWithWindows10DepreciationBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
+                              switches::
+                                  kSigninWindows10DepreciationStateForTesting},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// TODO(crbug.com/331746545): Check flaky test issue on windows.
+#if !BUILDFLAG(IS_WIN)
+TEST_WITH_SIGNED_IN_FROM_PRE(
+    IN_PROC_BROWSER_TEST_F,
+    AvatarToolbarButtonWithWindows10DepreciationBrowserTest,
+    ShowBatchUploadWindowsDepreciationPromo) {
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
+  batch_upload_test_helper().SetReturnDescriptions(syncer::PASSWORDS,
+                                                   /*item_count=*/5);
+
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
+  avatar->ClearActiveStateForTesting();
+
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PROMO));
+  avatar->ClearActiveStateForTesting();
+
+  // Once the greeting and promo are not shown anymore, we expect no text.
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+}
+#endif  // !BUILDFLAG(IS_WIN)
+
+// TODO(crbug.com/331746545): Check flaky test issue on windows.
+#if !BUILDFLAG(IS_WIN)
+TEST_WITH_SIGNED_IN_FROM_PRE(
+    IN_PROC_BROWSER_TEST_F,
+    AvatarToolbarButtonReplaceSyncPromosWithSignInPromosBrowserTest,
+    NoPromoShownUntilSyncServiceIsInitialized) {
+  const GaiaId primary_account_gaia_id =
+      GetIdentityManager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
+  ASSERT_FALSE(primary_account_gaia_id.empty());
+  SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
+  browser()->profile()->GetPrefs()->SetString(
+      ::prefs::kGoogleServicesLastSyncingGaiaId,
+      primary_account_gaia_id.ToString());
+  batch_upload_test_helper().SetReturnDescriptions(syncer::BOOKMARKS,
+                                                   /*item_count=*/5);
+  SetSyncServiceTransportState(
+      syncer::SyncService::TransportState::INITIALIZING);
+
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
+  avatar->ClearActiveStateForTesting();
+  // No Promo shown as long as the sync service is not active.
+  ASSERT_EQ(avatar->GetText(), std::u16string());
+
+  // Check crbug.com/454927990.
+  SetSyncServiceTransportState(
+      syncer::SyncService::TransportState::CONFIGURING);
+  // No Promo shown as long as the sync service is not active.
+  ASSERT_EQ(avatar->GetText(), std::u16string());
+
+  SetSyncServiceTransportState(syncer::SyncService::TransportState::ACTIVE);
+  ASSERT_EQ(
+      avatar->GetText(),
+      l10n_util::GetStringUTF16(
+          IDS_AVATAR_BUTTON_BATCH_UPLOAD_PROMO_WITH_BOOKMARK_CLEANUP_PROMO));
+  avatar->ClearActiveStateForTesting();
+
+  // Once the greeting and promo are not shown anymore, we expect no text.
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+}
+#endif  // !BUILDFLAG(IS_WIN)
+
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+class AvatarToolbarButtonSignInBenefitsIphBrowserTest
+    : public InteractiveFeaturePromoTestMixin<AvatarToolbarButtonBrowserTest> {
+ public:
+  AvatarToolbarButtonSignInBenefitsIphBrowserTest()
+      : InteractiveFeaturePromoTestMixin(UseDefaultTrackerAllowingPromos(
+            {feature_engagement::kIPHSignInBenefitsFeature})) {
+    // Disable the migration feature flag for PRE tests. This allows simulating
+    // users signing in before the sync-to-signin migration.
+    if (content::IsPreTest()) {
+      feature_list_.InitAndDisableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    } else {
+      feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
+
+  bool WillShowPromo() {
+    auto* const user_education = BrowserUserEducationInterface::From(browser());
+    return user_education->IsFeaturePromoActive(
+               feature_engagement::kIPHSignInBenefitsFeature) ||
+           user_education->IsFeaturePromoQueued(
+               feature_engagement::kIPHSignInBenefitsFeature);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsIphBrowserTest,
+                       PRE_ShownForUsersSignedInBeforeMigration) {
+  // Sign in a user before the sync-to-signin migration.
+  Signin(/*email=*/u"test@gmail.com", /*name=*/u"Account");
+
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  ASSERT_FALSE(
+      prefs->GetBoolean(prefs::kPrimaryAccountSetAfterSigninMigration));
+}
+
+// Tests that the IPH bubble for signin benefits is shown for users who have
+// signed in before the sync-to-signin migration.
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsIphBrowserTest,
+                       ShownForUsersSignedInBeforeMigration) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabContents);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
+
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      WaitForPromo(feature_engagement::kIPHSignInBenefitsFeature),
+      PressNonDefaultPromoButton(), InstrumentTab(kSecondTabContents, 1),
+      WaitForWebContentsReady(kSecondTabContents,
+                              GURL(chrome::kChromeUIAccountSettingsURL)),
+      CheckPromoActive(feature_engagement::kIPHSignInBenefitsFeature, false));
+}
+
+// Tests that the IPH bubble for signin benefits is not shown for users who have
+// signed in after the sync-to-signin migration.
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsIphBrowserTest,
+                       NotShownForUsersSignedInAfterMigration) {
+  // Sign in a user after the sync-to-signin migration.
+  Signin(/*email=*/u"test@gmail.com", /*name=*/u"Account");
+
+  AvatarToolbarButton* avatar_toolbar_button =
+      GetAvatarToolbarButton(browser());
+  ASSERT_NE(avatar_toolbar_button, nullptr);
+
+  // Attempt to show the IPH.
+  avatar_toolbar_button->MaybeShowSignInBenefitsIPH();
+  EXPECT_FALSE(WillShowPromo());
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsIphBrowserTest,
+                       PRE_NotShownForUsersMigratedFromDice) {
+  // Sign in a user before the sync-to-signin migration.
+  Signin(/*email=*/u"test@gmail.com", /*name=*/u"Account");
+
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  ASSERT_FALSE(
+      prefs->GetBoolean(prefs::kPrimaryAccountSetAfterSigninMigration));
+
+  // Simulate user having migrated from DICe.
+  prefs->SetBoolean(kDiceMigrationMigrated, true);
+}
+
+// Tests that the IPH bubble for signin benefits is not shown for users who have
+// migrated from DICe.
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsIphBrowserTest,
+                       NotShownForUsersMigratedFromDice) {
+  AvatarToolbarButton* avatar_toolbar_button =
+      GetAvatarToolbarButton(browser());
+  ASSERT_NE(avatar_toolbar_button, nullptr);
+
+  // Attempt to show the IPH.
+  avatar_toolbar_button->MaybeShowSignInBenefitsIPH();
+  EXPECT_FALSE(WillShowPromo());
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+#if !BUILDFLAG(IS_CHROMEOS)
+class MockPasskeyUnlockManager : public webauthn::PasskeyUnlockManager {
+ public:
+  MOCK_METHOD(bool, ShouldDisplayErrorUi, (), (const, override));
+};
+
+class AvatarToolbarButtonPasskeyUnlockErrorBrowserTest
+    : public AvatarToolbarButtonBrowserTest {
+ public:
+  AvatarToolbarButtonPasskeyUnlockErrorBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{device::kPasskeyUnlockErrorUi,
+                              device::kPasskeyUnlockManager,
+                              device::kWebAuthnOpportunisticRetrieval},
+        /*disabled_features=*/{});
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    AvatarToolbarButtonBrowserTest::SetUpBrowserContextKeyedServices(context);
+    webauthn::PasskeyUnlockManagerFactory::GetInstance()
+        ->SetTestingFactoryAndUse(
+            context, base::BindRepeating(
+                         &AvatarToolbarButtonPasskeyUnlockErrorBrowserTest::
+                             CreateMockPasskeyUnlockManager,
+                         base::Unretained(this)));
+  }
+
+  void TearDownOnMainThread() override {
+    mock_passkey_unlock_manager_ = nullptr;
+    AvatarToolbarButtonBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  MockPasskeyUnlockManager* passkey_unlock_manager() {
+    return mock_passkey_unlock_manager_;
+  }
+
+  static constexpr const char kPasskeyUnlockErrorUiEventHistogram[] =
+      "WebAuthentication.PasskeyUnlock.ErrorUi.Event";
+
+ private:
+  std::unique_ptr<KeyedService> CreateMockPasskeyUnlockManager(
+      content::BrowserContext* context) {
+    auto passkey_unlock_manager =
+        std::make_unique<testing::NiceMock<MockPasskeyUnlockManager>>();
+    mock_passkey_unlock_manager_ = passkey_unlock_manager.get();
+    ON_CALL(*passkey_unlock_manager, ShouldDisplayErrorUi())
+        .WillByDefault(testing::Return(false));
+    return passkey_unlock_manager;
+  }
+
+  raw_ptr<MockPasskeyUnlockManager> mock_passkey_unlock_manager_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonPasskeyUnlockErrorBrowserTest,
+                       PasskeyUnlockError) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com");
+
+  base::HistogramTester histogram_tester;
+  // Simulate the error appearing.
+  ON_CALL(*passkey_unlock_manager(), ShouldDisplayErrorUi())
+      .WillByDefault(testing::Return(true));
+  passkey_unlock_manager()->NotifyObserversForTesting();
+
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_PASSKEYS_ERROR_VERIFY));
+  histogram_tester.ExpectBucketCount(
+      kPasskeyUnlockErrorUiEventHistogram,
+      webauthn::PasskeyUnlockManager::ErrorUIEventType::kAvatarUIDisplayed, 1);
+
+  // Click the avatar button.
+  Click(avatar);
+  histogram_tester.ExpectBucketCount(
+      kPasskeyUnlockErrorUiEventHistogram,
+      webauthn::PasskeyUnlockManager::ErrorUIEventType::kAvatarButtonPressed,
+      1);
+
+  // Simulate the error disappearing.
+  ON_CALL(*passkey_unlock_manager(), ShouldDisplayErrorUi())
+      .WillByDefault(testing::Return(false));
+  EXPECT_CALL(*passkey_unlock_manager(), ShouldDisplayErrorUi())
+      .Times(testing::AtLeast(1));
+  passkey_unlock_manager()->NotifyObserversForTesting();
+
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+  histogram_tester.ExpectBucketCount(
+      kPasskeyUnlockErrorUiEventHistogram,
+      webauthn::PasskeyUnlockManager::ErrorUIEventType::kAvatarUIHidden, 1);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)

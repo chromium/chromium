@@ -16,7 +16,6 @@
 #include "components/webid/federated_identity_data_model.h"
 #include "content/public/browser/webid/federated_identity_permission_context_delegate.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 
 namespace content {
 class BrowserContext;

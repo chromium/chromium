@@ -62,16 +62,13 @@ class PushPullFIFO;
 class WebAudioLatencyHint;
 class WebAudioSinkDescriptor;
 
-// The AudioDestination class is an audio sink interface between the media
-// renderer and the Blink's WebAudio module. It has a FIFO to adapt the
-// different processing block sizes of WebAudio renderer and actual hardware
-// audio callback.
+// `AudioDestination` is an audio sink that bridges the WebAudio module with the
+// underlying media renderer. It uses a FIFO to adapt the different processing
+// block sizes between the WebAudio renderer and the actual hardware audio
+// callback.
 //
-// Currently AudioDestination supports two types of threading models:
-//  - Single-thread (default): process the entire WebAudio render call chain by
-//    AudioDeviceThread.
-//  - Dual-thread (experimental): Use WebThread for the WebAudio rendering with
-//    AudioWorkletThread.
+// For a detailed architectural overview of this class, see the documentation at
+// `docs/audio_destination_lifetime_threading.md`.
 class PLATFORM_EXPORT AudioDestination final
     : public ThreadSafeRefCounted<AudioDestination>,
       public media::AudioRendererSink::RenderCallback {
@@ -122,7 +119,7 @@ class PLATFORM_EXPORT AudioDestination final
   void StartWithWorkletTaskRunner(
       scoped_refptr<base::SingleThreadTaskRunner> worklet_task_runner);
 
-  bool IsPlaying();
+  bool IsPlaying() const;
 
   // This is the context sample rate, not the device one.
   double SampleRate() const;
@@ -147,6 +144,17 @@ class PLATFORM_EXPORT AudioDestination final
   // RealtimeAudioDestinationHandler::SetSinkDescriptor, which can be invoked
   // from the constructor of AudioContext and AudioContext.setSinkId() method.
   media::OutputDeviceStatus MaybeCreateSinkAndGetStatus();
+
+  // Returns the elapsed frames of the destination. This only gets called when
+  // switching sink devices. (i.e. stopped destinations)
+  size_t FramesElapsed() const;
+
+  // Transfer the elapsed frame from the previous platform destination to
+  // the new one. This ensures the timestamp, which is based on the frame
+  // count, does not go backward. This only gets called when switching sink
+  // devices.
+  void TransferElapsedFramesFrom(
+      const scoped_refptr<AudioDestination> previous_platform_destination);
 
   const PushPullFIFOStateForTest GetPushPullFIFOStateForTest() {
     return fifo_->GetStateForTest();

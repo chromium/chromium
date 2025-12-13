@@ -26,7 +26,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/os_crypt/sync/os_crypt.h"
+#include "base/test/test_future.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -49,15 +50,26 @@ class LoginDatabaseIOSTest : public PlatformTest {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    test_oscrypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
+        /*is_sync_for_unittests=*/true);
     base::FilePath login_db_path =
         temp_dir_.GetPath().AppendASCII("temp_login.db");
     login_db_.reset(new password_manager::LoginDatabase(
         login_db_path, password_manager::IsAccountStore(false)));
     login_db_->Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
-                    /*encryptor=*/nullptr);
+                    /*encryptor=*/CreateEncryptor());
+  }
+
+  os_crypt_async::Encryptor CreateEncryptor() {
+    base::test::TestFuture<os_crypt_async::Encryptor> future;
+
+    test_oscrypt_async_->GetInstance(future.GetCallback(),
+                                     os_crypt_async::Encryptor::Option::kNone);
+    return future.Take();
   }
 
  protected:
+  std::unique_ptr<os_crypt_async::OSCryptAsync> test_oscrypt_async_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<LoginDatabase> login_db_;
   base::test::TaskEnvironment task_environment_;
@@ -301,6 +313,8 @@ class LoginDatabaseMigrationToOSCryptTest : public LoginDatabaseIOSTest {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    test_oscrypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
+        /*is_sync_for_unittests=*/true);
     database_path_ = temp_dir_.GetPath().AppendASCII("test.db");
   }
 
@@ -343,9 +357,7 @@ class LoginDatabaseMigrationToOSCryptTest : public LoginDatabaseIOSTest {
 
     std::vector<std::string> results;
     while (s.Step()) {
-      std::string encrypted_password;
-      s.ColumnBlobAsString(0, &encrypted_password);
-      results.push_back(std::move(encrypted_password));
+      results.push_back(s.ColumnBlobAsString(0));
     }
 
     return results;
@@ -361,9 +373,7 @@ class LoginDatabaseMigrationToOSCryptTest : public LoginDatabaseIOSTest {
 
     std::vector<std::string> results;
     while (s.Step()) {
-      std::string encrypted_note;
-      s.ColumnBlobAsString(0, &encrypted_note);
-      results.push_back(std::move(encrypted_note));
+      results.push_back(s.ColumnBlobAsString(0));
     }
 
     return results;
@@ -416,7 +426,7 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
     LoginDatabase db(get_database_path(), IsAccountStore(false));
     ASSERT_TRUE(
         db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
-                /*encryptor=*/nullptr));
+                /*encryptor=*/CreateEncryptor()));
 
     // Delete password from the keychain to check that GetAllLogins no longer
     // needs to access it.
@@ -437,8 +447,8 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
     std::vector<std::string> password_values(GetEncryptedPasswordValues());
     ASSERT_EQ(password_values.size(), 1u);
     std::string decrypted_password;
-    ASSERT_TRUE(
-        OSCrypt::DecryptString(password_values[0], &decrypted_password));
+    ASSERT_TRUE(CreateEncryptor().DecryptString(password_values[0],
+                                                &decrypted_password));
     EXPECT_EQ(decrypted_password, "test1");
   }
 
@@ -481,7 +491,7 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
   LoginDatabase login_db(get_database_path(), IsAccountStore(true));
   ASSERT_TRUE(
       login_db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
-                    /*encryptor=*/nullptr));
+                    /*encryptor=*/CreateEncryptor()));
 
   // Delete password from the keychain to check that GetAllLogins no longer
   // needs to access it.
@@ -508,7 +518,7 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
   LoginDatabase login_db(get_database_path(), IsAccountStore(false));
   ASSERT_TRUE(
       login_db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
-                    /*encryptor=*/nullptr));
+                    /*encryptor=*/CreateEncryptor()));
 
   std::vector<PasswordForm> forms;
   EXPECT_EQ(login_db.GetAllLogins(&forms), FormRetrievalResult::kSuccess);
@@ -536,7 +546,7 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
     LoginDatabase login_db(get_database_path(), IsAccountStore(false));
     ASSERT_TRUE(login_db.Init(
         /*on_undecryptable_passwords_removed=*/base::NullCallback(),
-        /*encryptor=*/nullptr));
+        /*encryptor=*/CreateEncryptor()));
 
     // Delete note from the keychain to check that GetAllLogins no longer needs
     // to access it;
@@ -554,7 +564,8 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
     std::vector<std::string> note_values(GetEncryptedPasswordNoteValues());
     ASSERT_EQ(note_values.size(), 1u);
     std::u16string decrypted_note;
-    ASSERT_TRUE(OSCrypt::DecryptString16(note_values[0], &decrypted_note));
+    ASSERT_TRUE(
+        CreateEncryptor().DecryptString16(note_values[0], &decrypted_note));
     EXPECT_EQ(decrypted_note, u"password note");
   }
 }
@@ -579,7 +590,7 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
     LoginDatabase login_db(get_database_path(), IsAccountStore(true));
     ASSERT_TRUE(login_db.Init(
         /*on_undecryptable_passwords_removed=*/base::NullCallback(),
-        /*encryptor=*/nullptr));
+        /*encryptor=*/CreateEncryptor()));
 
     // Delete note from the keychain to check that GetAllLogins no longer needs
     // to access it;
@@ -597,7 +608,8 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
     std::vector<std::string> note_values(GetEncryptedPasswordNoteValues());
     ASSERT_EQ(note_values.size(), 1u);
     std::u16string decrypted_note;
-    ASSERT_TRUE(OSCrypt::DecryptString16(note_values[0], &decrypted_note));
+    ASSERT_TRUE(
+        CreateEncryptor().DecryptString16(note_values[0], &decrypted_note));
     EXPECT_EQ(decrypted_note, u"test_note");
   }
 }
@@ -616,7 +628,7 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest,
   LoginDatabase login_db(get_database_path(), IsAccountStore(false));
   ASSERT_TRUE(
       login_db.Init(/*on_undecryptable_passwords_removed=*/base::NullCallback(),
-                    /*encryptor=*/nullptr));
+                    /*encryptor=*/CreateEncryptor()));
 
   // Check that the first note is still readable and the second one was deleted
   // during migration.

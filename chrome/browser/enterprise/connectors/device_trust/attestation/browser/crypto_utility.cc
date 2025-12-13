@@ -2,25 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/crypto_utility.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
-#include "crypto/random.h"
-#include "crypto/signature_verifier.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
-#include "third_party/boringssl/src/include/openssl/hmac.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
-#include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace enterprise_connectors {
 
@@ -55,46 +47,6 @@ bssl::UniquePtr<RSA> GetRSA(const std::string& public_key_modulus_hex) {
     return nullptr;
   }
   return rsa;
-}
-
-bool CreatePubKeyFromHex(const std::string& public_key_modulus_hex,
-                         std::vector<uint8_t>& public_key_info) {
-  bssl::UniquePtr<RSA> rsa = GetRSA(public_key_modulus_hex);
-
-  bssl::UniquePtr<EVP_PKEY> public_key(EVP_PKEY_new());
-  EVP_PKEY_assign_RSA(public_key.get(), rsa.release());
-
-  uint8_t* der;
-  size_t der_len;
-  bssl::ScopedCBB cbb;
-  if (!CBB_init(cbb.get(), 0) ||
-      !EVP_marshal_public_key(cbb.get(), public_key.get()) ||
-      !CBB_finish(cbb.get(), &der, &der_len)) {
-    return false;
-  }
-  public_key_info.assign(der, der + der_len);
-  OPENSSL_free(der);
-
-  return true;
-}
-
-bool VerifySignatureUsingHexKey(const std::string& public_key_modulus_hex,
-                                const std::string& data,
-                                const std::string& signature) {
-  std::vector<uint8_t> public_key_info;
-  if (!CreatePubKeyFromHex(public_key_modulus_hex, public_key_info)) {
-    return false;
-  }
-
-  crypto::SignatureVerifier verifier;
-  if (!verifier.VerifyInit(crypto::SignatureVerifier::RSA_PKCS1_SHA256,
-                           base::as_byte_span(signature),
-                           base::as_byte_span(public_key_info))) {
-    return false;
-  }
-
-  verifier.VerifyUpdate(base::as_byte_span(data));
-  return verifier.VerifyFinal();
 }
 
 bool WrapKeyOAEP(base::span<const uint8_t> key,

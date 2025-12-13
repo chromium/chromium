@@ -37,7 +37,6 @@ class WaitableEvent;
 
 namespace content {
 class BrowserContext;
-class StoragePartition;
 }
 
 namespace webrtc_event_logging {
@@ -67,9 +66,6 @@ class ChromeBrowsingDataRemoverDelegate
   content::BrowsingDataRemoverDelegate::EmbedderOriginTypeMatcher
   GetOriginTypeMatcher() override;
   bool MayRemoveDownloadHistory() override;
-  std::vector<std::string> GetDomainsForDeferredCookieDeletion(
-      content::StoragePartition* storage_partition,
-      uint64_t remove_mask) override;
   void RemoveEmbedderData(
       const base::Time& delete_begin,
       const base::Time& delete_end,
@@ -243,13 +239,6 @@ class ChromeBrowsingDataRemoverDelegate
   std::unique_ptr<WebappRegistry> webapp_registry_;
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-  // On desktop, some per-account sync settings must be cleared when cookies are
-  // deleted. This flag is used to defer the process until after sync uploads
-  // deletions of any other data.
-  bool should_clear_sync_account_settings_ = false;
-#endif
-
   // PasswordStore::DisableAutoSignInForOrigins() is required when wiping
   // DATA_TYPE_COOKIES, but that must be deferred until any password deletions
   // have completed, to avoid resurrecting passwords (c.f. crbug.com/325323180).
@@ -257,8 +246,7 @@ class ChromeBrowsingDataRemoverDelegate
   // other tasks are done. Executing it adds to `pending_sub_tasks_` again.
   // OnBrowsingDataRemoverDone() is only called after the (async) auto-signin
   // disabling has completed.
-  // This field is similar to `should_clear_sync_account_settings_` above,
-  // except that clearing settings is synchronous, disabling auto sign-in isn't.
+  // Note disabling auto sign-in is asynchronous.
   base::OnceClosure deferred_disable_passwords_auto_signin_cb_;
 
   std::unique_ptr<device::fido::PlatformCredentialStore> credential_store_;

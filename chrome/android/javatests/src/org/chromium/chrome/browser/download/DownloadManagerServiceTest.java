@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.download;
 import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.util.Log;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
@@ -19,6 +18,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;

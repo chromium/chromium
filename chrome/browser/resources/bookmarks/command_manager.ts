@@ -18,7 +18,7 @@ import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {KeyboardShortcutList} from 'chrome://resources/js/keyboard_shortcut_list.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -268,8 +268,21 @@ export class BookmarksCommandManagerElement extends
       case Command.IMPORT:
       case Command.HELP_CENTER:
         return true;
+      case Command.COPY:
+      case Command.CUT:
+      case Command.DESELECT_ALL:
+      case Command.OPEN:
+      case Command.OPEN_BOOKMARK:
+      case Command.OPEN_FOLDER:
+      case Command.PASTE:
+      case Command.REDO:
+      case Command.SELECT_ALL:
+      case Command.UNDO:
+      case Command.MAX_VALUE:
+        return false;
+      default:
+        assertNotReachedCase(command);
     }
-    assertNotReached();
   }
 
   protected isCommandEnabled_(command: Command, itemIds: Set<string>): boolean {
@@ -462,8 +475,12 @@ export class BookmarksCommandManagerElement extends
       case Command.HELP_CENTER:
         window.open('https://support.google.com/chrome/?p=bookmarks');
         break;
+      case Command.OPEN_BOOKMARK:
+      case Command.OPEN_FOLDER:
+      case Command.MAX_VALUE:
+        break;
       default:
-        assertNotReached();
+        assertNotReachedCase(command);
     }
     this.recordCommandHistogram_(
         itemIds, 'BookmarkManager.CommandExecuted', command);
@@ -674,6 +691,8 @@ export class BookmarksCommandManagerElement extends
       case Command.OPEN_SPLIT_VIEW:
         label = 'menuOpenSplitView';
         break;
+      default:
+        break;
     }
     if (label !== null) {
       return loadTimeData.getString(label);
@@ -697,6 +716,8 @@ export class BookmarksCommandManagerElement extends
         return this.getPluralizedOpenAllString_(
             'menuOpenAllNewTabGroup', 'menuOpenNewTabGroup',
             'menuOpenAllNewTabGroupWithCount');
+      default:
+        break;
     }
 
     assertNotReached();
@@ -736,10 +757,8 @@ export class BookmarksCommandManagerElement extends
           Command.OPEN_NEW_GROUP,
           Command.OPEN_NEW_TAB,
           Command.OPEN_NEW_WINDOW,
+          Command.OPEN_SPLIT_VIEW,
         ];
-        if (loadTimeData.getBoolean('splitViewEnabled')) {
-          commands.push(Command.OPEN_SPLIT_VIEW);
-        }
         return commands;
       case MenuSource.TOOLBAR:
         return [
@@ -758,10 +777,12 @@ export class BookmarksCommandManagerElement extends
           Command.ADD_BOOKMARK,
           Command.ADD_FOLDER,
         ];
+      case MenuSource.NUM_VALUES:
       case MenuSource.NONE:
         return [];
+      default:
+        assertNotReachedCase(this.menuSource_);
     }
-    assertNotReached();
   }
 
   protected showDividerAfter_(command: Command): boolean {
@@ -774,8 +795,9 @@ export class BookmarksCommandManagerElement extends
         return this.globalCanEdit_;
       case Command.PASTE:
         return this.globalCanEdit_ || this.isSingleBookmark_(this.menuIds_);
+      default:
+        return false;
     }
-    return false;
   }
 
   private recordCommandHistogram_(

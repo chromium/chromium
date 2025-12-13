@@ -29,7 +29,7 @@ DeviceAuthenticatorProxyFactory::~DeviceAuthenticatorProxyFactory() = default;
 
 std::unique_ptr<KeyedService>
 DeviceAuthenticatorProxyFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   return std::make_unique<DeviceAuthenticatorProxy>();
 }
 

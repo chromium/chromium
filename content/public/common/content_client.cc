@@ -6,14 +6,18 @@
 
 #include <string_view>
 
+#include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/origin_util.h"
 #include "ui/gfx/image/image.h"
 
@@ -158,6 +162,40 @@ void ContentClient::ExposeInterfacesToBrowser(
 
 bool ContentClient::ShouldAllowDefaultSiteInstanceGroup() {
   return true;
+}
+
+bool ContentClient::ShouldIgnoreDuplicateNavs(
+    const GURL& url,
+    bool is_renderer_initiated) const {
+  if (!base::FeatureList::IsEnabled(features::kIgnoreDuplicateNavs)) {
+    return false;
+  }
+  if (is_renderer_initiated &&
+      features::kSkipIgnoreRendererInitiatedNavs.Get()) {
+    return false;
+  }
+  const std::string& origins_list_str =
+      features::kIgnoreDuplicateNavsOrigins.Get();
+  // Ignore browser-initiated navigations, or if the origin list parameter is
+  // empty, which means the feature should apply to all origins.
+  if (!is_renderer_initiated || origins_list_str.empty()) {
+    return true;
+  }
+  static const base::NoDestructor<std::vector<url::Origin>>
+      target_origin_ignorelist([&origins_list_str] {
+        std::vector<url::Origin> origins;
+        const auto& origin_strings =
+            base::SplitString(origins_list_str, ",", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY);
+        origins.reserve(origin_strings.size());
+        for (const auto& origin_str : origin_strings) {
+          origins.push_back(url::Origin::Create(GURL(origin_str)));
+        }
+        return origins;
+      }());
+
+  const url::Origin navigation_origin = url::Origin::Create(url);
+  return base::Contains(*target_origin_ignorelist, navigation_origin);
 }
 
 bool ContentClient::IsFilePickerAllowedForCrossOriginSubframe(

@@ -34,7 +34,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -51,6 +51,9 @@ namespace views {
 class View;
 class ViewTracker;
 }  // namespace views
+namespace viz {
+struct CopyOutputBitmapWithMetadata;
+}  // namespace viz
 namespace tabs {
 class TabModel;
 }
@@ -65,6 +68,7 @@ class TabStripScrollSession;
 class WindowFinder;
 class TabStripScrollSession;
 struct DetachedTabCollection;
+struct DetachedTab;
 
 // `TabDragDelegate` is an interface that may be implemented to facilitate
 // custom behavior beyond the tabstrip.
@@ -171,17 +175,16 @@ class TabDragController : public views::WidgetObserver,
   // TODO(crbug.com/41482188): Return this from *all* methods which may end the
   // drag (but maybe skip the public notification methods, e.g. TabWasAdded).
   enum class Liveness {
-    ALIVE,
-    DELETED,
+    kAlive,
+    kDeleted,
   };
 
   // Initializes TabDragController to drag the views in `dragging_views`
   // originating from `source_context`. `source_view` is the view that
   // initiated the drag and is either a Tab or a TabGroupHeader contained in
-  // `dragging_views`. `mouse_offset` is the distance of the mouse pointer from
-  // the origin of the first view in `dragging_views` and `source_view_offset`
-  // the offset from `source_view`. `source_view_offset` is the horizontal
-  // offset of `mouse_offset` relative to `source_view`.
+  // `dragging_views`. `offset_from_first_dragged_view` is the distance of the
+  // mouse pointer from the origin of the first view in `dragging_views` and
+  // `offset_from_source_view` the offset from `source_view`.
   // `initial_selection_model` is the selection model before the drag started
   // and is only non-empty if the original selection isn't the same as the
   // dragging set. Returns Liveness::DELETED if `this` was deleted during this
@@ -189,8 +192,8 @@ class TabDragController : public views::WidgetObserver,
   [[nodiscard]] Liveness Init(TabDragContext* source_context,
                               TabSlotView* source_view,
                               const std::vector<TabSlotView*>& dragging_views,
-                              const gfx::Point& mouse_offset,
-                              int source_view_offset,
+                              const gfx::Point& offset_from_first_dragged_view,
+                              const gfx::Point& offset_from_source_view,
                               ui::ListSelectionModel initial_selection_model,
                               ui::mojom::DragEventSource event_source);
 
@@ -207,7 +210,8 @@ class TabDragController : public views::WidgetObserver,
   // instead of a move loop.
   static bool IsSystemDnDSessionRunning();
 
-  // Called by TabStrip / TabStripRegionView to inform TabDragController.
+  // Called by TabStrip / HorizontalTabStripRegionView to inform
+  // TabDragController.
   static void OnSystemDnDUpdated(const ui::DropTargetEvent& event);
   static void OnSystemDnDExited();
   static void OnSystemDnDEnded();
@@ -309,26 +313,26 @@ class TabDragController : public views::WidgetObserver,
   };
 
   // Enumeration of the ways a drag session can end.
-  enum EndDragType {
+  enum class EndDragType {
     // Drag session exited normally: the user released the mouse.
-    NORMAL,
+    kNormal,
 
     // The drag session was canceled (alt-tab during drag, escape ...)
-    CANCELED,
+    kCanceled,
 
     // The tab (NavigationController) was destroyed during the drag.
-    TAB_DESTROYED
+    kTabDestroyed
   };
 
   // Whether Detach() should release capture or not.
-  enum ReleaseCapture {
-    RELEASE_CAPTURE,
-    DONT_RELEASE_CAPTURE,
+  enum class ReleaseCapture {
+    kReleaseCapture,
+    kDontReleaseCapture,
   };
 
   // Specifies what should happen when a drag motion exits the tab strip region
   // in an attempt to detach a tab.
-  enum DetachBehavior { DETACHABLE, NOT_DETACHABLE };
+  enum class DetachBehavior { kDetachable, kNotDetachable };
 
   // Overridden from views::WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,
@@ -388,7 +392,8 @@ class TabDragController : public views::WidgetObserver,
   //
   // `window_scale` is the scale of the window that `thumbnail` was captured
   // from.
-  void OnTabThumbnailAvailable(float window_scale, const SkBitmap& thumbnail);
+  void OnTabThumbnailAvailable(float window_scale,
+                               const viz::CopyOutputBitmapWithMetadata& result);
 
   // Starts a regular drag and drop session as a fallback if RunMoveLoop() is
   // not supported and no drag session is currently running. `context` is used
@@ -423,7 +428,7 @@ class TabDragController : public views::WidgetObserver,
   void AttachToNewContext(
       TabDragContext* attached_context,
       std::unique_ptr<TabDragController> controller,
-      std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
+      std::vector<std::variant<std::unique_ptr<DetachedTab>,
                                std::unique_ptr<DetachedTabCollection>>>
           owned_tabs_and_collections);
 
@@ -436,7 +441,7 @@ class TabDragController : public views::WidgetObserver,
   // `attached_context_` currently owns a controller. Otherwise returns
   // nullptr.
   std::tuple<std::unique_ptr<TabDragController>,
-             std::vector<std::variant<std::unique_ptr<tabs::TabModel>,
+             std::vector<std::variant<std::unique_ptr<DetachedTab>,
                                       std::unique_ptr<DetachedTabCollection>>>>
   Detach(ReleaseCapture release_capture);
 

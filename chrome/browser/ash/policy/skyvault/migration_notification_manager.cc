@@ -76,7 +76,7 @@ void HandleCompletedNotificationClick(Profile* profile,
                                       std::optional<int> button) {
   if (button.has_value() && button == 0) {
     file_manager::util::ShowItemInFolder(profile, path, base::DoNothing());
-    ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+    ash::NewWindowDelegate::GetInstance()->OpenUrl(
         net::FilePathToFileURL(path),
         ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
         ash::NewWindowDelegate::Disposition::kNewForegroundTab);
@@ -90,7 +90,7 @@ void HandleErrorNotificationClick(Profile* profile,
                                   const base::FilePath& path,
                                   std::optional<int> button) {
   if (button.has_value() && button == 0) {
-    ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+    ash::NewWindowDelegate::GetInstance()->OpenUrl(
         net::FilePathToFileURL(path),
         ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
         ash::NewWindowDelegate::Disposition::kNewForegroundTab);

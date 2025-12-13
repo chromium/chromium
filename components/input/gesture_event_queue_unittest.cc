@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -107,7 +108,7 @@ class GestureEventQueueTest : public testing::Test,
       base::WeakPtr<FlingController> fling_controller) override {}
   void DidStopFlingingOnBrowser(
       base::WeakPtr<FlingController> fling_controller) override {}
-  bool NeedsBeginFrameForFlingProgress() override { return false; }
+  bool ProgressFlingOnFlingStart() override { return true; }
   bool ShouldUseMobileFlingCurve() override {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     return true;
@@ -375,6 +376,45 @@ TEST_F(GestureEventQueueTest,
     WebGestureEvent merged_event = GestureEventQueueEventAt(i);
     EXPECT_EQ(expected[i], merged_event.GetType());
   }
+}
+
+TEST_F(GestureEventQueueTest, DebounceThenFling) {
+  SetUpForDebounce(3);
+  blink::WebGestureDevice source = blink::WebGestureDevice::kTouchpad;
+
+  // Start a scroll.
+  SimulateGestureEvent(WebInputEvent::Type::kGestureScrollBegin, source);
+  SimulateGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, source);
+
+  // Debounce one GSE+GSB pair.
+  SimulateGestureEvent(WebInputEvent::Type::kGestureScrollEnd, source);
+  SimulateGestureEvent(WebInputEvent::Type::kGestureScrollBegin, source);
+  EXPECT_EQ(2U, GestureEventDebouncingQueueSize());
+  EXPECT_TRUE(ScrollingInProgress());
+
+  // Every GSU clears the debouncing queue.
+  SimulateGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, source);
+  EXPECT_EQ(0U, GestureEventDebouncingQueueSize());
+
+  // Start a fling.
+  SimulateGestureFlingStartEvent(0, -10, blink::WebGestureDevice::kTouchscreen);
+  SimulateGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, source);
+  EXPECT_TRUE(FlingInProgress());
+
+  // Stop the fling. Simulate GSE first. (With a real RenderWidgetHostImpl, the
+  // GSE would be sent during StopFling(), but before resetting fling_curve_.)
+  SimulateGestureEvent(WebInputEvent::Type::kGestureScrollEnd, source);
+  queue()->StopFling();
+  EXPECT_FALSE(FlingInProgress());
+  EXPECT_EQ(0U, GestureEventDebouncingQueueSize());
+
+  // Let the debounce timer fire. We're all done with this scroll.
+  FastForwardBy(base::Milliseconds(5));
+  EXPECT_FALSE(ScrollingInProgress());
+
+  // Start a brand new scroll. This GSB should NOT be filtered.
+  SimulateGestureEvent(WebInputEvent::Type::kGestureScrollBegin, source);
+  EXPECT_EQ(0U, GestureEventDebouncingQueueSize());
 }
 
 TEST_F(GestureEventQueueTest, DebounceDefersGSBIfPreviousGSEDeferred) {

@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TAB_GRID_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TAB_GRID_COORDINATOR_H_
 
-#import <Foundation/Foundation.h>
-
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/coordinator/root_coordinator/root_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"

@@ -8,6 +8,7 @@
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/snapshots/model/features.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_generator.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_manager.h"
@@ -61,6 +62,7 @@ void SnapshotTabHelper::RetrieveColorSnapshot(SnapshotRetrievedBlock callback) {
 
 void SnapshotTabHelper::RetrieveGreySnapshot(SnapshotRetrievedBlock callback) {
   CHECK(snapshot_manager_);
+  CHECK(!base::FeatureList::IsEnabled(kRemoveGreySnapshot));
   [snapshot_manager_
       retrieveSnaphotWithKind:SnapshotKindGreyscale
                    completion:BlockRecordingElapsedTime(
@@ -135,7 +137,12 @@ void SnapshotTabHelper::PageLoaded(
       break;
 
     case web::PageLoadCompletionStatus::SUCCESS:
-      if (ignore_next_load_) {
+      // Do not take a snapshot after loading chrome://newtab since there are no
+      // page contents, just UIView. This prevents taking a snapshot while the
+      // user is in the tabswitcher and thus the NTP is not in the view
+      // hierarchy. In this case, the safe area insets are not available, so the
+      // snapshot will cut off view contents.
+      if (ignore_next_load_ || IsVisibleURLNewTabPage(web_state)) {
         break;
       }
 

@@ -162,6 +162,8 @@ class TriggerManagerTest : public ::testing::Test {
     return trigger_manager_.data_collectors_map_;
   }
 
+  TestingPrefServiceSimple* pref_service() { return &pref_service_; }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -176,6 +178,7 @@ class TriggerManagerTest : public ::testing::Test {
 };
 
 TEST_F(TriggerManagerTest, StartAndFinishCollectingThreatDetails) {
+  SetSafeBrowsingState(pref_service(), SafeBrowsingState::ENHANCED_PROTECTION);
   // Basic workflow is to start and finish data collection with a single
   // WebContents.
   content::WebContents* web_contents1 = CreateWebContents();
@@ -290,7 +293,11 @@ TEST_F(TriggerManagerTest, NoDataCollection_Incognito) {
   EXPECT_TRUE(data_collectors_map().empty());
 }
 
-TEST_F(TriggerManagerTest, NoDataCollection_SBEROptInDisallowed) {
+TEST_F(TriggerManagerTest,
+       NoDataCollection_SBEROptInDisallowed_WithoutSBERDeprecation_SBER) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      safe_browsing::kExtendedReportingRemovePrefDependency);
   // Data collection will not begin and no reports will be sent when the user is
   // not allowed to opt-in to SBER.
   SetPref(prefs::kSafeBrowsingExtendedReportingOptInAllowed, false);
@@ -303,7 +310,30 @@ TEST_F(TriggerManagerTest, NoDataCollection_SBEROptInDisallowed) {
   EXPECT_TRUE(data_collectors_map().empty());
 }
 
+TEST_F(TriggerManagerTest,
+       NoDataCollection_SBEROptInDisallowed_WithoutSBERDeprecation_ESB) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      safe_browsing::kExtendedReportingRemovePrefDependency);
+  // Data collection will not begin and no reports will be sent when the user is
+  // not allowed to opt-in to SBER, even if they have ESB enabled.
+  SetPref(prefs::kSafeBrowsingExtendedReportingOptInAllowed, false);
+  SetSafeBrowsingState(pref_service(), SafeBrowsingState::ENHANCED_PROTECTION);
+  content::WebContents* web_contents = CreateWebContents();
+  EXPECT_FALSE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                            web_contents));
+  EXPECT_TRUE(data_collectors_map().empty());
+  EXPECT_FALSE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                             web_contents, false));
+  EXPECT_TRUE(data_collectors_map().empty());
+}
+
+// TODO(crbug.com/448895753): This test should be removed when
+// kExtendedReportingRemovePrefDependency is deleted.
 TEST_F(TriggerManagerTest, NoDataCollection_IncognitoAndSBEROptInDisallowed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      safe_browsing::kExtendedReportingRemovePrefDependency);
   // Data collection will not begin and no reports will be sent when the user is
   // not allowed to opt-in to SBER and is also incognito.
   SetPref(prefs::kSafeBrowsingExtendedReportingOptInAllowed, false);
@@ -316,7 +346,33 @@ TEST_F(TriggerManagerTest, NoDataCollection_IncognitoAndSBEROptInDisallowed) {
   EXPECT_TRUE(data_collectors_map().empty());
 }
 
-TEST_F(TriggerManagerTest, UserOptedOutOfSBER_DataCollected_NoReportSent) {
+// TODO(crbug.com/448895753): This test should be removed when
+// kExtendedReportingRemovePrefDependency is deleted.
+TEST_F(TriggerManagerTest,
+       UserOptedOutOfSBER_DataCollected_ReportSent_WithSBERDeprecation) {
+  scoped_feature_list_.InitAndEnableFeature(
+      kExtendedReportingRemovePrefDependency);
+  SetSafeBrowsingState(pref_service(), SafeBrowsingState::ENHANCED_PROTECTION);
+  // When the user is opted-out of SBER then data collection will begin and a
+  // report will be sent, because the SBER pref is ignored.
+  SetPref(prefs::kSafeBrowsingScoutReportingEnabled, false);
+  content::WebContents* web_contents = CreateWebContents();
+  WebContentsKey web_contents_key = GetWebContentsKey(web_contents);
+  EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                           web_contents));
+  EXPECT_THAT(data_collectors_map(),
+              UnorderedElementsAre(Key(web_contents_key)));
+  EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                            web_contents, true));
+  EXPECT_NE(data_collectors_map().find(web_contents_key),
+            data_collectors_map().end());
+  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents_key).threat_details);
+}
+TEST_F(TriggerManagerTest,
+       UserOptedOutOfSBER_DataCollected_NoReportSent_WithoutSBERDeprecation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      safe_browsing::kExtendedReportingRemovePrefDependency);
   // When the user is opted-out of SBER then data collection will begin but no
   // report will be sent when data collection ends.
   SetPref(prefs::kSafeBrowsingScoutReportingEnabled, false);
@@ -333,7 +389,35 @@ TEST_F(TriggerManagerTest, UserOptedOutOfSBER_DataCollected_NoReportSent) {
   EXPECT_EQ(nullptr, data_collectors_map().at(web_contents_key).threat_details);
 }
 
-TEST_F(TriggerManagerTest, UserOptsOutOfSBER_DataCollected_NoReportSent) {
+// TODO(crbug.com/448895753): This test should be removed when
+// kExtendedReportingRemovePrefDependency is deleted.
+TEST_F(TriggerManagerTest,
+       UserOptsOutOfSBER_DataCollected_ReportSent_WithSBERDeprecation) {
+  scoped_feature_list_.InitAndEnableFeature(
+      kExtendedReportingRemovePrefDependency);
+  SetSafeBrowsingState(pref_service(), SafeBrowsingState::ENHANCED_PROTECTION);
+  // If the user opts-out of Extended Reporting while data is being collected
+  // then a report is still sent, because the SBER pref is ignored.
+  content::WebContents* web_contents = CreateWebContents();
+  WebContentsKey web_contents_key = GetWebContentsKey(web_contents);
+  EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                           web_contents));
+  EXPECT_THAT(data_collectors_map(),
+              UnorderedElementsAre(Key(web_contents_key)));
+
+  SetPref(prefs::kSafeBrowsingScoutReportingEnabled, false);
+
+  EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                            web_contents, true));
+  EXPECT_NE(data_collectors_map().find(web_contents_key),
+            data_collectors_map().end());
+  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents_key).threat_details);
+}
+TEST_F(TriggerManagerTest,
+       UserOptsOutOfSBER_DataCollected_NoReportSent_WithoutSBERDeprecation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      safe_browsing::kExtendedReportingRemovePrefDependency);
   // If the user opts-out of Extended Reporting while data is being collected
   // then no report is sent. Note that the test fixture opts the user into
   // Extended Reporting by default.
@@ -353,7 +437,11 @@ TEST_F(TriggerManagerTest, UserOptsOutOfSBER_DataCollected_NoReportSent) {
   EXPECT_EQ(nullptr, data_collectors_map().at(web_contents_key).threat_details);
 }
 
-TEST_F(TriggerManagerTest, UserOptsInToSBER_DataCollected_ReportSent) {
+TEST_F(TriggerManagerTest,
+       UserOptsInToSBER_DataCollected_ReportSent_WithoutSBERDeprecation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      safe_browsing::kExtendedReportingRemovePrefDependency);
   // When the user is opted-out of SBER then data collection will begin. If they
   // opt-in to SBER while data collection is in progress then the report will
   // also be sent.
@@ -374,8 +462,12 @@ TEST_F(TriggerManagerTest, UserOptsInToSBER_DataCollected_ReportSent) {
   EXPECT_EQ(nullptr, data_collectors_map().at(web_contents_key).threat_details);
 }
 
-TEST_F(TriggerManagerTest,
-       SBEROptInBecomesDisallowed_DataCollected_NoReportSent) {
+TEST_F(
+    TriggerManagerTest,
+    SBEROptInBecomesDisallowed_DataCollected_NoReportSent_WithoutSBERDeprecation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      safe_browsing::kExtendedReportingRemovePrefDependency);
   // If the user loses the ability to opt-in to SBER in the middle of data
   // collection then the report will not be sent.
   content::WebContents* web_contents = CreateWebContents();
@@ -396,6 +488,7 @@ TEST_F(TriggerManagerTest,
 }
 
 TEST_F(TriggerManagerTest, NoCollectionWhenOutOfQuota) {
+  SetSafeBrowsingState(pref_service(), SafeBrowsingState::ENHANCED_PROTECTION);
   // Triggers are not allowed to collect data when they're out of quota, even if
   // all other conditions are as expected.
   content::WebContents* web_contents = CreateWebContents();
@@ -424,7 +517,29 @@ TEST_F(TriggerManagerTest, NoCollectionWhenOutOfQuota) {
   EXPECT_EQ(nullptr, data_collectors_map().at(web_contents_key).threat_details);
 }
 
-TEST_F(TriggerManagerTest, NoCollectionWhenSBERDisabledByPolicy) {
+// TODO(crbug.com/448895753): This test should be removed when
+// kExtendedReportingRemovePrefDependency is deleted.
+TEST_F(TriggerManagerTest,
+       CollectionWhenSBERDisabledByPolicy_WithSBERDeprecation) {
+  scoped_feature_list_.InitAndEnableFeature(
+      kExtendedReportingRemovePrefDependency);
+  // SBER is disabled by policy, but this should not affect data collection for
+  // ESB users when the deprecation feature is on.
+  content::WebContents* web_contents = CreateWebContents();
+
+  SetManagedPref(prefs::kSafeBrowsingScoutReportingEnabled, false);
+  SetSafeBrowsingState(pref_service(), SafeBrowsingState::ENHANCED_PROTECTION);
+  EXPECT_TRUE(
+      StartCollectingThreatDetails(TriggerType::AD_SAMPLE, web_contents));
+  EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::AD_SAMPLE,
+                                            web_contents, true));
+}
+
+TEST_F(TriggerManagerTest,
+       NoCollectionWhenSBERDisabledByPolicy_WithoutSBERDeprecation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      safe_browsing::kExtendedReportingRemovePrefDependency);
   // Confirm that disabling SBER through an enterprise policy does disable
   // triggers.
   content::WebContents* web_contents = CreateWebContents();
@@ -439,6 +554,69 @@ TEST_F(TriggerManagerTest, NoCollectionWhenSBERDisabledByPolicy) {
 }
 
 TEST_F(TriggerManagerTest, AdSamplerTrigger) {
+  scoped_feature_list_.InitAndEnableFeature(
+      kExtendedReportingRemovePrefDependency);
+  SetSafeBrowsingState(pref_service(), SafeBrowsingState::ENHANCED_PROTECTION);
+  // Check the conditions required for the Ad Sampler trigger to fire. When the
+  // SBER deprecation feature is on, it only needs Safe Browsing to be enabled
+  // and for the trigger to have quota.
+  content::WebContents* web_contents = CreateWebContents();
+  WebContentsKey web_contents_key = GetWebContentsKey(web_contents);
+
+  // The default setup in this test makes the trigger fire.
+  EXPECT_TRUE(
+      StartCollectingThreatDetails(TriggerType::AD_SAMPLE, web_contents));
+  EXPECT_THAT(data_collectors_map(),
+              UnorderedElementsAre(Key(web_contents_key)));
+  EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::AD_SAMPLE,
+                                            web_contents, true));
+  EXPECT_NE(data_collectors_map().find(web_contents_key),
+            data_collectors_map().end());
+  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents_key).threat_details);
+
+  // Disabling SBEROptInAllowed no longer disables this trigger.
+  SetPref(prefs::kSafeBrowsingExtendedReportingOptInAllowed, false);
+  EXPECT_TRUE(
+      StartCollectingThreatDetails(TriggerType::AD_SAMPLE, web_contents));
+  EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::AD_SAMPLE,
+                                            web_contents, true));
+  SetPref(prefs::kSafeBrowsingExtendedReportingOptInAllowed, true);
+
+  // Disabling Scout no longer disables this trigger.
+  SetPref(prefs::kSafeBrowsingScoutReportingEnabled, false);
+  EXPECT_TRUE(
+      StartCollectingThreatDetails(TriggerType::AD_SAMPLE, web_contents));
+  EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::AD_SAMPLE,
+                                            web_contents, true));
+  SetPref(prefs::kSafeBrowsingScoutReportingEnabled, true);
+
+  // Finally, make sure the trigger can't fire if it has no quota.
+  SetTriggerHasQuota(TriggerType::AD_SAMPLE, false);
+  EXPECT_FALSE(
+      StartCollectingThreatDetails(TriggerType::AD_SAMPLE, web_contents));
+
+  // Confirm it can fire again when quota is available.
+  SetTriggerHasQuota(TriggerType::AD_SAMPLE, true);
+  EXPECT_TRUE(
+      StartCollectingThreatDetails(TriggerType::AD_SAMPLE, web_contents));
+  EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::AD_SAMPLE,
+                                            web_contents, true));
+}
+
+TEST_F(TriggerManagerTest, AdSamplerTrigger_Incognito) {
+  scoped_feature_list_.InitAndEnableFeature(
+      kExtendedReportingRemovePrefDependency);
+  // Ad sampler trigger should not fire in incognito, regardless of feature
+  // flag state.
+  content::WebContents* web_contents = CreateIncognitoWebContents();
+  EXPECT_FALSE(
+      StartCollectingThreatDetails(TriggerType::AD_SAMPLE, web_contents));
+}
+
+TEST_F(TriggerManagerTest, AdSamplerTrigger_WithoutSBERDeprecation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      safe_browsing::kExtendedReportingRemovePrefDependency);
   // Check the conditions required for the Ad Sampler trigger to fire. It needs
   // opt-in to start collecting data, scout opt-in, and quota.
   content::WebContents* web_contents = CreateWebContents();
@@ -493,7 +671,10 @@ TEST_F(TriggerManagerTest, AdSamplerTrigger) {
                                             web_contents, true));
 }
 
-TEST_F(TriggerManagerTest, AdSamplerTrigger_Incognito) {
+TEST_F(TriggerManagerTest, AdSamplerTrigger_Incognito_WithoutSBERDeprecation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      safe_browsing::kExtendedReportingRemovePrefDependency);
   // Check the conditions required for the Ad Sampler trigger to fire. It needs
   // opt-in to start collecting data, scout opt-in, and quota, and it can't fire
   // in inconito (except when forced on by finch feature).
@@ -505,11 +686,10 @@ TEST_F(TriggerManagerTest, AdSamplerTrigger_Incognito) {
       StartCollectingThreatDetails(TriggerType::AD_SAMPLE, web_contents));
 }
 
-TEST_F(TriggerManagerTest,
-       CollectionWhenExtendedReportingDeprecationEnabledAllowOptinEnabled) {
-  SetPref(prefs::kSafeBrowsingExtendedReportingOptInAllowed, true);
+TEST_F(TriggerManagerTest, ReportSentWhenEsbIsEnabled) {
   scoped_feature_list_.InitAndEnableFeature(
       kExtendedReportingRemovePrefDependency);
+  SetPref(prefs::kSafeBrowsingEnhanced, true);
 
   content::WebContents* web_contents = CreateWebContents();
   EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
@@ -518,17 +698,16 @@ TEST_F(TriggerManagerTest,
                                             web_contents, true));
 }
 
-TEST_F(TriggerManagerTest,
-       CollectionWhenExtendedReportingDeprecationEnabledAllowOptinDisabled) {
-  SetPref(prefs::kSafeBrowsingExtendedReportingOptInAllowed, false);
+TEST_F(TriggerManagerTest, ReportNotSentWhenEsbIsDisabled) {
   scoped_feature_list_.InitAndEnableFeature(
       kExtendedReportingRemovePrefDependency);
+  SetPref(prefs::kSafeBrowsingEnhanced, false);
 
   content::WebContents* web_contents = CreateWebContents();
   EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                            web_contents));
-  EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
-                                            web_contents, true));
+  EXPECT_FALSE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                             web_contents, false));
 }
 
 TEST_F(TriggerManagerTest,
@@ -555,5 +734,73 @@ TEST_F(TriggerManagerTest,
                                             web_contents));
   EXPECT_FALSE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
                                              web_contents, false));
+}
+
+// TODO(crbug.com/448895753): This test should be removed when
+// kExtendedReportingRemovePrefDependency is deleted.
+TEST_F(TriggerManagerTest,
+       DataCollection_SBEROptInDisallowed_WithSBERDeprecation_ESB) {
+  scoped_feature_list_.InitAndEnableFeature(
+      kExtendedReportingRemovePrefDependency);
+  SetSafeBrowsingState(pref_service(), SafeBrowsingState::ENHANCED_PROTECTION);
+  // SBER opt-in is disallowed, but this should not affect data collection for
+  // ESB users when the deprecation feature is on.
+  SetPref(prefs::kSafeBrowsingExtendedReportingOptInAllowed, false);
+
+  content::WebContents* web_contents = CreateWebContents();
+  WebContentsKey web_contents_key = GetWebContentsKey(web_contents);
+  EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                           web_contents));
+  EXPECT_THAT(data_collectors_map(),
+              UnorderedElementsAre(Key(web_contents_key)));
+  EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                            web_contents, true));
+  EXPECT_NE(data_collectors_map().find(web_contents_key),
+            data_collectors_map().end());
+  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents_key).threat_details);
+}
+
+TEST_F(TriggerManagerTest, UserOptsOutOfESB_DataCollected_NoReportSent) {
+  scoped_feature_list_.InitAndEnableFeature(
+      kExtendedReportingRemovePrefDependency);
+  // If the user opts-out of Enhanced Protection while data is being collected
+  // then no report is sent.
+  SetSafeBrowsingState(pref_service(), SafeBrowsingState::ENHANCED_PROTECTION);
+  content::WebContents* web_contents = CreateWebContents();
+  WebContentsKey web_contents_key = GetWebContentsKey(web_contents);
+  EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                           web_contents));
+  EXPECT_THAT(data_collectors_map(),
+              UnorderedElementsAre(Key(web_contents_key)));
+
+  SetSafeBrowsingState(pref_service(), SafeBrowsingState::STANDARD_PROTECTION);
+
+  EXPECT_FALSE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                             web_contents, false));
+  EXPECT_NE(data_collectors_map().find(web_contents_key),
+            data_collectors_map().end());
+  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents_key).threat_details);
+}
+
+TEST_F(TriggerManagerTest, UserOptsInToESB_DataCollected_ReportSent) {
+  scoped_feature_list_.InitAndEnableFeature(
+      kExtendedReportingRemovePrefDependency);
+  // If the user opts-in to Enhanced Protection while data is being collected
+  // then a report is sent.
+  SetSafeBrowsingState(pref_service(), SafeBrowsingState::STANDARD_PROTECTION);
+  content::WebContents* web_contents = CreateWebContents();
+  WebContentsKey web_contents_key = GetWebContentsKey(web_contents);
+  EXPECT_TRUE(StartCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                           web_contents));
+  EXPECT_THAT(data_collectors_map(),
+              UnorderedElementsAre(Key(web_contents_key)));
+
+  SetSafeBrowsingState(pref_service(), SafeBrowsingState::ENHANCED_PROTECTION);
+
+  EXPECT_TRUE(FinishCollectingThreatDetails(TriggerType::SECURITY_INTERSTITIAL,
+                                            web_contents, true));
+  EXPECT_NE(data_collectors_map().find(web_contents_key),
+            data_collectors_map().end());
+  EXPECT_EQ(nullptr, data_collectors_map().at(web_contents_key).threat_details);
 }
 }  // namespace safe_browsing

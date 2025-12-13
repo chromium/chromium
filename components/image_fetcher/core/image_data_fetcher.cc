@@ -4,6 +4,8 @@
 
 #include "components/image_fetcher/core/image_data_fetcher.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -162,7 +164,7 @@ void ImageDataFetcher::FetchImageData(const GURL& image_url,
 void ImageDataFetcher::OnURLLoaderComplete(
     const network::SimpleURLLoader* source,
     ImageFetcherParams params,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pending_requests_.find(source) != pending_requests_.end());
   bool success = source->NetError() == net::OK;
@@ -183,7 +185,7 @@ void ImageDataFetcher::OnURLLoaderComplete(
 
   std::string image_data;
   if (success && response_body) {
-    image_data = std::move(*response_body);
+    image_data = std::move(response_body).value();
   }
   FinishRequest(source, metadata, image_data);
 

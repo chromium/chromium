@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/url_formatter/url_fixer.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/char_iterator.h"
@@ -370,7 +366,7 @@ bool HasPort(const std::string& original_text,
                                      url::ParserMode::kSpecialURL)) {
     ++port_end;
   }
-  std::string_view port_piece(original_text.data() + port_start,
+  std::string_view port_piece(UNSAFE_TODO(original_text.data() + port_start),
                               port_end - port_start);
   if (port_piece.empty()) {
     return false;
@@ -414,7 +410,7 @@ bool GetValidScheme(const std::string& text,
   // brackets are not in the whitelist.
   url::StdStringCanonOutput canon_scheme_output(canon_scheme);
   url::Component canon_scheme_component;
-  if (!url::CanonicalizeScheme(scheme_component->as_string_view_on(text.data()),
+  if (!url::CanonicalizeScheme(scheme_component->AsViewOn(text),
                                &canon_scheme_output, &canon_scheme_component)) {
     return false;
   }
@@ -502,19 +498,19 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
   }
 
   if (scheme == url::kFileScheme) {
-    *parts = url::ParseFileURL(*text);
+    *parts = url::ParseFileUrl(*text);
     return scheme;
   }
 
   if (scheme == url::kFileSystemScheme) {
     // Have the GURL parser do the heavy lifting for us.
-    *parts = url::ParseFileSystemURL(*text);
+    *parts = url::ParseFileSystemUrl(*text);
     return scheme;
   }
 
   if (parts->scheme.is_valid()) {
     // Have the GURL parser do the heavy lifting for us.
-    *parts = url::ParseStandardURL(*text);
+    *parts = url::ParseStandardUrl(*text);
     return scheme;
   }
 
@@ -540,7 +536,7 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
   text_to_parse.append(first_nonwhite, text->end());
 
   // Have the GURL parser do the heavy lifting for us.
-  *parts = url::ParseStandardURL(text_to_parse);
+  *parts = url::ParseStandardUrl(text_to_parse);
 
   // Offset the results of the parse to match the original text.
   const int offset = -static_cast<int>(inserted_text.length());

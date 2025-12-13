@@ -15,10 +15,13 @@ class GURL;
 @protocol InfobarSaveCardModalDelegate <InfobarModalDelegate>
 
 // Saves the current card with using `cardholderName` as cardholder name,
-// `month` as expiration month and `year` as expiration year.
+// `month` as expiration month, `year` as expiration year, `cardCvc` as security
+// code. The `cardCvc` is optional and should be an empty string if not provided
+// by the user.
 - (void)saveCardWithCardholderName:(NSString*)cardholderName
                    expirationMonth:(NSString*)month
-                    expirationYear:(NSString*)year;
+                    expirationYear:(NSString*)year
+                           cardCvc:(NSString*)cardCvc;
 
 // Opens `linkURL` in a new tab and dismisses the Modal.
 - (void)dismissModalAndOpenURL:(const GURL&)linkURL;

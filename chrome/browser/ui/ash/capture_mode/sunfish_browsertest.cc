@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/lens/lens_overlay_permission_utils.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"

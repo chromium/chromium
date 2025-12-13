@@ -1,5 +1,4 @@
-#![allow(unknown_lints)]
-#![allow(unexpected_cfgs)]
+#![expect(unexpected_cfgs)]
 
 use std::env;
 use std::path::{Path, PathBuf};
@@ -26,34 +25,30 @@ fn main() {
         println!("cargo:HEADER={}", cxx_h.to_string_lossy());
     }
 
-    if let Some(rustc) = rustc_version() {
-        if rustc.minor >= 80 {
-            println!("cargo:rustc-check-cfg=cfg(built_with_cargo)");
-            println!("cargo:rustc-check-cfg=cfg(compile_error_if_alloc)");
-            println!("cargo:rustc-check-cfg=cfg(compile_error_if_std)");
-            println!("cargo:rustc-check-cfg=cfg(cxx_experimental_no_alloc)");
-            println!("cargo:rustc-check-cfg=cfg(error_in_core)");
-            println!("cargo:rustc-check-cfg=cfg(seek_relative)");
-            println!("cargo:rustc-check-cfg=cfg(skip_ui_tests)");
-        }
+    println!("cargo:rustc-check-cfg=cfg(built_with_cargo)");
+    println!("cargo:rustc-check-cfg=cfg(compile_error_if_alloc)");
+    println!("cargo:rustc-check-cfg=cfg(compile_error_if_std)");
+    println!("cargo:rustc-check-cfg=cfg(cxx_experimental_no_alloc)");
+    println!("cargo:rustc-check-cfg=cfg(skip_ui_tests)");
 
-        if rustc.minor < 73 {
-            println!("cargo:warning=The cxx crate requires a rustc version 1.73.0 or newer.");
+    if let Some(rustc) = rustc_version() {
+        if rustc.minor < 82 {
+            println!("cargo:warning=The cxx crate requires a rustc version 1.82.0 or newer.");
             println!(
                 "cargo:warning=You appear to be building with: {}",
                 rustc.version,
             );
         }
+    }
 
-        if rustc.minor >= 80 {
-            // std::io::Seek::seek_relative
-            println!("cargo:rustc-cfg=seek_relative");
-        }
-
-        if rustc.minor >= 81 {
-            // core::error::Error
-            println!("cargo:rustc-cfg=error_in_core");
-        }
+    if let (Some(manifest_links), Some(pkg_version_major)) = (
+        env::var_os("CARGO_MANIFEST_LINKS"),
+        env::var_os("CARGO_PKG_VERSION_MAJOR"),
+    ) {
+        assert_eq!(
+            manifest_links,
+            *format!("cxxbridge{}", pkg_version_major.to_str().unwrap()),
+        );
     }
 }
 

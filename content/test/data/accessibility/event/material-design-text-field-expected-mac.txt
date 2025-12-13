@@ -1,0 +1,104 @@
+=== Accessibility tree before go() pass 1 ===
+AXWebArea AXTitle='Material Web Text Field Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXGroup
+++++++++AXGroup
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+++++++++++++++AXGroup
+++++++++++++++++AXStaticText AXValue='Test Text Field'
+++++++++++++AXTextField AXDescription='Test Text Field'
+++++++++++AXGroup
+=== End accessibility tree ===
+AXValueChanged on AXTextField AXDescription='Test Text Field' AXValue='Hello'
+AXValueChanged on AXWebArea AXTitle='Material Web Text Field Events'
+=== Accessibility tree after go() pass 1 ===
+AXWebArea AXTitle='Material Web Text Field Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXGroup
+++++++++AXGroup
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+++++++++++++++AXGroup
+++++++++++++++++AXStaticText AXValue='Test Text Field'
+++++++++++++AXTextField AXDescription='Test Text Field' AXValue='Hello' <<<<<< CHANGED
+++++++++++AXGroup
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+AXWebArea AXTitle='Material Web Text Field Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXGroup
+++++++++AXGroup
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+++++++++++++++AXGroup
+++++++++++++++++AXStaticText AXValue='Test Text Field'
+++++++++++++AXTextField AXDescription='Test Text Field' AXValue='Hello'
+++++++++++AXGroup
+=== End accessibility tree ===
+AXValueChanged on AXTextField AXDescription='Test Text Field' AXValue='Hello World'
+AXValueChanged on AXWebArea AXTitle='Material Web Text Field Events'
+=== Accessibility tree after go() pass 2 ===
+AXWebArea AXTitle='Material Web Text Field Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXGroup
+++++++++AXGroup
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+++++++++++++++AXGroup
+++++++++++++++++AXStaticText AXValue='Test Text Field'
+++++++++++++AXTextField AXDescription='Test Text Field' AXValue='Hello World' <<<<<< CHANGED
+++++++++++AXGroup
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+AXWebArea AXTitle='Material Web Text Field Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXGroup
+++++++++AXGroup
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+++++++++++++++AXGroup
+++++++++++++++++AXStaticText AXValue='Test Text Field'
+++++++++++++AXTextField AXDescription='Test Text Field' AXValue='Hello World'
+++++++++++AXGroup
+=== End accessibility tree ===
+AXValueChanged on AXTextField AXDescription='Test Text Field'
+AXValueChanged on AXWebArea AXTitle='Material Web Text Field Events'
+=== Accessibility tree after go() pass 3 ===
+AXWebArea AXTitle='Material Web Text Field Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXGroup
+++++++++AXGroup
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+++++++++++++++AXGroup
+++++++++++++++++AXStaticText AXValue='Test Text Field'
+++++++++++++AXTextField AXDescription='Test Text Field' <<<<<< CHANGED
+++++++++++AXGroup
+=== End accessibility tree ===

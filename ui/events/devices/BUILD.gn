@@ -65,6 +65,7 @@ component("devices") {
       "input_device_observer_ios.h",
       "input_device_observer_ios.mm",
     ]
+    frameworks = [ "GameController.framework" ]
   }
 
   defines = [ "EVENTS_DEVICES_IMPLEMENTATION" ]

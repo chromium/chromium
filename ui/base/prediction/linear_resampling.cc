@@ -22,11 +22,6 @@ constexpr auto kResampleMinDelta = base::Milliseconds(2);
 // far into the future. This time is further bounded by 50% of the last time
 // delta.
 constexpr auto kResampleMaxPrediction = base::Milliseconds(8);
-// Align events to a few milliseconds before frame_time. This is to make the
-// resampling either doing interpolation or extrapolating a closer future time
-// so that resampled result is more accurate and has less noise. This adds some
-// latency during resampling but a few ms should be fine.
-constexpr auto kResampleLatency = base::Milliseconds(-5);
 
 // Get position at |sample_time| by linear interpolate/extrapolate a and b.
 inline gfx::PointF lerp(const InputPredictor::InputData& a,
@@ -35,6 +30,32 @@ inline gfx::PointF lerp(const InputPredictor::InputData& a,
   const float alpha =
       (sample_time - a.time_stamp) / (a.time_stamp - b.time_stamp);
   return a.pos + gfx::ScaleVector2d(a.pos - b.pos, alpha);
+}
+
+// This value is related to kResamplingScrollEventsExperimentalPrediction and
+// may be adjusted based on experimentation results. Currently, CalculateLatency
+// relies on reading values off of the field trial (which won't exist when we
+// ship). As such, we introduce the following constant which can be used for the
+// latency calculation.
+constexpr double kPredictFrameAheadBy = 0.375;
+
+// Align events to a few milliseconds before frame_time. This is to make the
+// resampling either doing interpolation or extrapolating a closer future time
+// so that resampled result is more accurate and has less noise. This adds some
+// latency during resampling but a few ms should be fine.
+inline constexpr auto kResampleLatency = base::Milliseconds(-5);
+
+// Returns the latency to be used for resampling. This can be controlled via the
+// kResampleScrollEventsLatency feature and its parameters.
+base::TimeDelta GetResampleScrollEventLatency(base::TimeDelta frame_interval) {
+  std::string mode = features::kResampleLatencyModeParam.Get();
+  double value = features::kResampleLatencyValueParam.Get();
+
+  if (mode == features::kResampleLatencyModeFixedMs) {
+    return base::Milliseconds(value);
+  } else {  // kFractional
+    return frame_interval * value;
+  }
 }
 
 }  // namespace
@@ -80,8 +101,7 @@ std::unique_ptr<InputPredictor::InputData> LinearResampling::GeneratePrediction(
   if (!HasPrediction())
     return nullptr;
 
-  base::TimeDelta resample_latency =
-      latency_calculator_.GetResampleLatency(frame_interval);
+  base::TimeDelta resample_latency = ResampleLatency(frame_interval);
   base::TimeTicks sample_time = frame_time + resample_latency;
 
   // Clamping shouldn't affect prediction experiment, as we're predicting
@@ -106,7 +126,12 @@ base::TimeDelta LinearResampling::TimeInterval() const {
   return kTimeInterval;
 }
 
-base::TimeDelta LinearResampling::LatencyCalculator::GetResampleLatency(
+base::TimeDelta LinearResampling::ResampleLatency(
+    base::TimeDelta frame_interval) const {
+  return latency_calculator_.GetResampleLatencyInternal(frame_interval);
+}
+
+base::TimeDelta LinearResampling::LatencyCalculator::GetResampleLatencyInternal(
     base::TimeDelta frame_interval) {
   // Cache |resample_latency_| and recalculate only when |frame_interval|
   // changes.
@@ -118,13 +143,36 @@ base::TimeDelta LinearResampling::LatencyCalculator::GetResampleLatency(
 }
 
 base::TimeDelta LinearResampling::LatencyCalculator::CalculateLatency() {
+  base::TimeDelta resample_latency;
+  // If kResampleScrollEventsLatency is enabled, it takes precedence over
+  // kResamplingScrollEventsExperimentalPrediction for latency calculation.
+  if (base::FeatureList::IsEnabled(features::kResampleScrollEventsLatency)) {
+    resample_latency = GetResampleScrollEventLatency(frame_interval_);
+    TRACE_EVENT2("ui", "LatencyCalculator::CalculateLatency", "type",
+                 "kResampleScrollEventsLatency", "resample_latency",
+                 resample_latency.InMillisecondsF());
+    return resample_latency;
+  }
+
+  // Otherwise, use kResamplingScrollEventsExperimentalPrediction settings.
   std::string prediction_type = GetFieldTrialParamValueByFeature(
       ::features::kResamplingScrollEventsExperimentalPrediction, "mode");
 
   if (prediction_type != ::features::kPredictionTypeFramesBased) {
-    TRACE_EVENT1("ui", "LatencyCalculator::CalculateLatency", "prediction_type",
-                 "default");
-    return kResampleLatency;
+    const bool feature_enabled = base::FeatureList::IsEnabled(
+        ::features::kResamplingScrollEventsExperimentalPrediction);
+    // If the feature is enabled and no field trial is active, default to using
+    // kPredictFrameAheadBy. Tests that set up field trials need not hit this
+    // path since they are testing specific latency values.
+    resample_latency =
+        kResampleLatency + (feature_enabled
+                                ? (kPredictFrameAheadBy * frame_interval_)
+                                : base::Milliseconds(0));
+    TRACE_EVENT2("ui", "LatencyCalculator::CalculateLatency", "prediction_type",
+                 (feature_enabled ? "frames" : "default"),
+                 "predicting ahead by (in ms)",
+                 resample_latency.InMillisecondsF());
+    return resample_latency;
   }
 
   double latency = 0;
@@ -135,9 +183,12 @@ base::TimeDelta LinearResampling::LatencyCalculator::CalculateLatency() {
           &latency)) {
     latency = 0.5;
   }
+
+  resample_latency = latency * frame_interval_ + kResampleLatency;
   TRACE_EVENT2("ui", "LatencyCalculator::CalculateLatency", "prediction_type",
-               prediction_type, "latency", latency);
-  return latency * frame_interval_ + kResampleLatency;
+               prediction_type, "predicting ahead by (in ms)",
+               resample_latency.InMillisecondsF());
+  return resample_latency;
 }
 
 }  // namespace ui

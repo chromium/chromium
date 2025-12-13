@@ -4,9 +4,16 @@
 
 #include "content/browser/permissions/permission_controller_impl.h"
 
+#include <optional>
 #include <string>
+#include <utility>
+#include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
+#include "base/types/optional_ref.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "content/browser/permissions/permission_service_context.h"
 #include "content/browser/permissions/permission_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -87,6 +94,8 @@ PermissionToSchedulingFeature(PermissionType permission_name) {
     case PermissionType::AUTOMATIC_FULLSCREEN:
     case PermissionType::WEB_APP_INSTALLATION:
     case PermissionType::LOCAL_NETWORK_ACCESS:
+    case PermissionType::LOCAL_NETWORK:
+    case PermissionType::LOOPBACK_NETWORK:
       return std::nullopt;
   }
 }
@@ -130,18 +139,17 @@ PermissionResult VerifyContextOfCurrentDocument(
   }
 #endif
 
-  return PermissionResult(PermissionStatus::ASK,
-                          PermissionStatusSource::UNSPECIFIED);
+  return PermissionResult(PermissionStatus::ASK);
 }
 
 bool IsRequestAllowed(
     const std::vector<blink::mojom::PermissionDescriptorPtr>& permissions,
     RenderFrameHost* render_frame_host,
-    base::OnceCallback<void(const std::vector<PermissionStatus>&)>& callback) {
+    base::OnceCallback<void(const std::vector<PermissionResult>&)>& callback) {
   if (!render_frame_host) {
     // Permission request is not allowed without a valid RenderFrameHost.
-    std::move(callback).Run(std::vector<PermissionStatus>(
-        permissions.size(), PermissionStatus::ASK));
+    std::move(callback).Run(std::vector<PermissionResult>(
+        permissions.size(), PermissionResult(PermissionStatus::ASK)));
     return false;
   }
 
@@ -149,10 +157,12 @@ bool IsRequestAllowed(
   // render_frame_host was evicted, returns false otherwise.
   if (render_frame_host->IsInactiveAndDisallowActivation(
           DisallowActivationReasonId::kRequestPermission)) {
-    std::move(callback).Run(std::vector<PermissionStatus>(
-        permissions.size(), PermissionStatus::ASK));
+    std::move(callback).Run(std::vector<PermissionResult>(
+        permissions.size(), PermissionResult(PermissionStatus::ASK)));
     return false;
   }
+
+  auto permission_results = std::vector<PermissionResult>();
 
   // Verify each permission independently to generate proper warning messages.
   bool is_permission_allowed = true;
@@ -161,6 +171,7 @@ bool IsRequestAllowed(
         blink::PermissionDescriptorToPermissionType(permission);
     PermissionResult result =
         VerifyContextOfCurrentDocument(permission_type, render_frame_host);
+    permission_results.push_back(result);
 
     if (result.status == PermissionStatus::DENIED) {
       switch (result.source) {
@@ -191,8 +202,7 @@ bool IsRequestAllowed(
   }
 
   if (!is_permission_allowed) {
-    std::move(callback).Run(std::vector<PermissionStatus>(
-        permissions.size(), PermissionStatus::DENIED));
+    std::move(callback).Run(permission_results);
     return false;
   }
 
@@ -222,10 +232,10 @@ void NotifySchedulerAboutPermissionRequest(RenderFrameHost* render_frame_host,
 // |delegated_results| contains results that did not have overrides - they
 // were delegated - their results need to be inserted in order.
 void MergeOverriddenAndDelegatedResults(
-    base::OnceCallback<void(const std::vector<PermissionStatus>&)> original_cb,
-    std::vector<std::optional<PermissionStatus>> overridden_results,
-    const std::vector<PermissionStatus>& delegated_results) {
-  std::vector<PermissionStatus> full_results;
+    base::OnceCallback<void(const std::vector<PermissionResult>&)> original_cb,
+    std::vector<std::optional<PermissionResult>> overridden_results,
+    const std::vector<PermissionResult>& delegated_results) {
+  std::vector<PermissionResult> full_results;
   full_results.reserve(overridden_results.size());
   auto delegated_it = delegated_results.begin();
   for (auto& status : overridden_results) {
@@ -241,8 +251,8 @@ void MergeOverriddenAndDelegatedResults(
 }
 
 void PermissionStatusCallbackWrapper(
-    base::OnceCallback<void(PermissionStatus)> callback,
-    const std::vector<PermissionStatus>& vector) {
+    base::OnceCallback<void(PermissionResult)> callback,
+    const std::vector<PermissionResult>& vector) {
   DCHECK_EQ(1ul, vector.size());
   std::move(callback).Run(vector.at(0));
 }
@@ -251,18 +261,19 @@ void PermissionStatusCallbackWrapper(
 // status (as per the provided overrides). Returns a result vector that contains
 // all the statuses for permissions after applying overrides, using `nullopt`
 // for those permissions that do not have an override.
-std::vector<std::optional<blink::mojom::PermissionStatus>> OverridePermissions(
+std::vector<std::optional<PermissionResult>> OverridePermissions(
     PermissionRequestDescription& description,
     RenderFrameHost* render_frame_host,
     const PermissionOverrides& permission_overrides) {
   std::vector<blink::mojom::PermissionDescriptorPtr>
       permissions_without_overrides;
-  std::vector<std::optional<blink::mojom::PermissionStatus>> results;
-  const url::Origin& origin = render_frame_host->GetLastCommittedOrigin();
+  std::vector<std::optional<PermissionResult>> results;
+
   for (const auto& permission : description.permissions) {
-    std::optional<blink::mojom::PermissionStatus> override_status =
-        permission_overrides.Get(
-            origin, blink::PermissionDescriptorToPermissionType(permission));
+    std::optional<PermissionResult> override_status = permission_overrides.Get(
+        render_frame_host->GetLastCommittedOrigin(),
+        render_frame_host->GetMainFrame()->GetLastCommittedOrigin(),
+        blink::PermissionDescriptorToPermissionType(permission));
     if (!override_status) {
       permissions_without_overrides.push_back(permission.Clone());
     }
@@ -271,6 +282,18 @@ std::vector<std::optional<blink::mojom::PermissionStatus>> OverridePermissions(
 
   description.permissions = std::move(permissions_without_overrides);
   return results;
+}
+
+ContentSettingsType ConvertPermissionTypeForCookieManager(
+    PermissionType permission) {
+  switch (permission) {
+    case PermissionType::STORAGE_ACCESS_GRANT:
+      return ContentSettingsType::STORAGE_ACCESS;
+    case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
+      return ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS;
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace
@@ -292,42 +315,44 @@ PermissionControllerImpl::~PermissionControllerImpl() {
   // we can't fetch our delegate.
 }
 
-PermissionStatus PermissionControllerImpl::GetSubscriptionCurrentValue(
-    const PermissionStatusSubscription& subscription) {
+PermissionResult PermissionControllerImpl::GetSubscriptionCurrentResult(
+    const PermissionResultSubscription& subscription) {
   // The RFH may be null if the request is for a worker.
   RenderFrameHost* rfh = RenderFrameHost::FromID(subscription.render_process_id,
                                                  subscription.render_frame_id);
-  // TODO(crbug.com/408965890): Add support for multi-state permissions. The
-  // following won't work for detecting changes in permission options.
-  const auto descriptor =
-      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
-          subscription.permission);
   if (rfh) {
-    return GetPermissionStatusForCurrentDocument(descriptor, rfh);
+    return GetPermissionResultForCurrentDocument(
+        subscription.permission_descriptor, rfh);
   }
 
   RenderProcessHost* rph =
       RenderProcessHost::FromID(subscription.render_process_id);
   if (rph) {
-    return GetPermissionStatusForWorker(
-        descriptor, rph, url::Origin::Create(subscription.requesting_origin));
+    return GetPermissionResultForWorker(
+        subscription.permission_descriptor, rph,
+        url::Origin::Create(subscription.requesting_origin));
   }
 
-  return GetPermissionStatusInternal(descriptor, subscription.requesting_origin,
+  return GetPermissionResultInternal(subscription.permission_descriptor,
+                                     subscription.requesting_origin,
                                      subscription.embedding_origin);
 }
 
 PermissionControllerImpl::SubscriptionsStatusMap
 PermissionControllerImpl::GetSubscriptionsStatuses(
-    const std::optional<GURL>& origin) {
+    base::optional_ref<const GURL> requesting_origin,
+    base::optional_ref<const GURL> embedding_origin) {
   SubscriptionsStatusMap statuses;
   for (SubscriptionsMap::iterator iter(&subscriptions_); !iter.IsAtEnd();
        iter.Advance()) {
-    PermissionStatusSubscription* subscription = iter.GetCurrentValue();
-    if (origin.has_value() && subscription->requesting_origin != *origin) {
+    PermissionResultSubscription* subscription = iter.GetCurrentValue();
+    if (requesting_origin.has_value() && embedding_origin.has_value() &&
+        subscription->requesting_origin != *requesting_origin &&
+        subscription->embedding_origin != *embedding_origin) {
       continue;
     }
-    statuses[iter.GetCurrentKey()] = GetSubscriptionCurrentValue(*subscription);
+    statuses[iter.GetCurrentKey()] =
+        GetSubscriptionCurrentResult(*subscription);
   }
   return statuses;
 }
@@ -337,17 +362,17 @@ void PermissionControllerImpl::NotifyChangedSubscriptions(
   std::vector<base::OnceClosure> callbacks;
   for (const auto& it : old_statuses) {
     auto key = it.first;
-    PermissionStatusSubscription* subscription = subscriptions_.Lookup(key);
+    PermissionResultSubscription* subscription = subscriptions_.Lookup(key);
     if (!subscription) {
       continue;
     }
-    PermissionStatus old_status = it.second;
-    PermissionStatus new_status = GetSubscriptionCurrentValue(*subscription);
-    if (new_status != old_status) {
+    PermissionResult old_result = it.second;
+    PermissionResult new_result = GetSubscriptionCurrentResult(*subscription);
+    if (old_result != new_result) {
       // This is a private method that is called internally if a permission
       // status was set by DevTools. Suppress permission status override
       // verification and always notify listeners.
-      callbacks.push_back(base::BindOnce(subscription->callback, new_status,
+      callbacks.push_back(base::BindOnce(subscription->callback, new_result,
                                          /*ignore_status_override=*/true));
     }
   }
@@ -356,81 +381,100 @@ void PermissionControllerImpl::NotifyChangedSubscriptions(
   }
 }
 
-PermissionControllerImpl::OverrideStatus
-PermissionControllerImpl::GrantOverridesForDevTools(
-    const std::optional<url::Origin>& origin,
-    const std::vector<PermissionType>& permissions) {
-  return GrantPermissionOverrides(origin, permissions);
-}
-
-PermissionControllerImpl::OverrideStatus
-PermissionControllerImpl::SetOverrideForDevTools(
-    const std::optional<url::Origin>& origin,
+void PermissionControllerImpl::SetPermissionOverride(
+    base::optional_ref<const url::Origin> requesting_origin,
+    base::optional_ref<const url::Origin> embedding_origin,
     PermissionType permission,
-    const PermissionStatus& status) {
-  return SetPermissionOverride(origin, permission, status);
-}
+    const PermissionStatus& status,
+    base::OnceCallback<void(OverrideStatus)> callback) {
+  CHECK_EQ(requesting_origin.has_value(), embedding_origin.has_value());
 
-void PermissionControllerImpl::ResetOverridesForDevTools() {
-  ResetPermissionOverrides();
-}
-
-PermissionControllerImpl::OverrideStatus
-PermissionControllerImpl::SetPermissionOverride(
-    const std::optional<url::Origin>& origin,
-    PermissionType permission,
-    const PermissionStatus& status) {
   PermissionControllerDelegate* delegate =
       browser_context_->GetPermissionControllerDelegate();
-  if (delegate && !delegate->IsPermissionOverridable(permission, origin)) {
-    return OverrideStatus::kOverrideNotSet;
+  if (delegate && !delegate->IsPermissionOverridable(
+                      permission, requesting_origin, embedding_origin)) {
+    std::move(callback).Run(OverrideStatus::kOverrideNotSet);
+    return;
   }
-  const auto old_statuses = GetSubscriptionsStatuses(
-      origin ? std::make_optional(origin->GetURL()) : std::nullopt);
-  permission_overrides_.Set(origin, permission, status);
-  NotifyChangedSubscriptions(old_statuses);
 
-  return OverrideStatus::kOverrideSet;
+  const std::optional<GURL> requesting_origin_url =
+      requesting_origin.has_value()
+          ? std::make_optional(requesting_origin->GetURL())
+          : std::nullopt;
+  const std::optional<GURL> embedding_origin_url =
+      embedding_origin.has_value()
+          ? std::make_optional(embedding_origin->GetURL())
+          : std::nullopt;
+  const auto old_statuses =
+      GetSubscriptionsStatuses(requesting_origin_url, embedding_origin_url);
+
+  permission_overrides_.Set(requesting_origin, embedding_origin, permission,
+                            status);
+  NotifyChangedSubscriptions(old_statuses);
+  UpdateCookieManagerContentSettings(
+      permission,
+      base::BindOnce(std::move(callback), OverrideStatus::kOverrideSet));
 }
 
-PermissionControllerImpl::OverrideStatus
-PermissionControllerImpl::GrantPermissionOverrides(
-    const std::optional<url::Origin>& origin,
-    const std::vector<PermissionType>& permissions) {
+void PermissionControllerImpl::GrantPermissionOverrides(
+    base::optional_ref<const url::Origin> requesting_origin,
+    base::optional_ref<const url::Origin> embedding_origin,
+    const std::vector<PermissionType>& permissions,
+    base::OnceCallback<void(OverrideStatus)> callback) {
+  CHECK_EQ(requesting_origin.has_value(), embedding_origin.has_value());
+
   PermissionControllerDelegate* delegate =
       browser_context_->GetPermissionControllerDelegate();
   if (delegate) {
     for (const auto permission : permissions) {
-      if (!delegate->IsPermissionOverridable(permission, origin)) {
-        return OverrideStatus::kOverrideNotSet;
+      if (!delegate->IsPermissionOverridable(permission, requesting_origin,
+                                             embedding_origin)) {
+        std::move(callback).Run(OverrideStatus::kOverrideNotSet);
+        return;
       }
     }
   }
 
-  const auto old_statuses = GetSubscriptionsStatuses(
-      origin ? std::make_optional(origin->GetURL()) : std::nullopt);
-  permission_overrides_.GrantPermissions(origin, permissions);
+  const std::optional<GURL> requesting_origin_url =
+      requesting_origin.has_value()
+          ? std::make_optional(requesting_origin->GetURL())
+          : std::nullopt;
+  const std::optional<GURL> embedding_origin_url =
+      embedding_origin.has_value()
+          ? std::make_optional(embedding_origin->GetURL())
+          : std::nullopt;
+  const auto old_statuses =
+      GetSubscriptionsStatuses(requesting_origin_url, embedding_origin_url);
+
+  permission_overrides_.GrantPermissions(requesting_origin, embedding_origin,
+                                         permissions);
   // If any statuses changed because they lose overrides or the new overrides
   // modify their previous state (overridden or not), subscribers must be
   // notified manually.
   NotifyChangedSubscriptions(old_statuses);
 
-  return OverrideStatus::kOverrideSet;
+  UpdateCookieManagerContentSettings(
+      /*permission_to_process=*/std::nullopt,
+      base::BindOnce(std::move(callback), OverrideStatus::kOverrideSet));
 }
 
-void PermissionControllerImpl::ResetPermissionOverrides() {
+void PermissionControllerImpl::ResetPermissionOverrides(
+    base::OnceClosure callback) {
   const auto old_statuses = GetSubscriptionsStatuses();
   permission_overrides_ = PermissionOverrides();
 
   // If any statuses changed because they lost their overrides, the subscribers
   // must be notified manually.
   NotifyChangedSubscriptions(old_statuses);
+
+  UpdateCookieManagerContentSettings(/*permission_to_process=*/std::nullopt,
+                                     std::move(callback));
 }
 
 void PermissionControllerImpl::RequestPermissions(
     RenderFrameHost* render_frame_host,
     PermissionRequestDescription request_description,
-    base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
+    base::OnceCallback<void(const std::vector<PermissionResult>&)> callback) {
   if (!IsRequestAllowed(request_description.permissions, render_frame_host,
                         callback)) {
     return;
@@ -443,7 +487,7 @@ void PermissionControllerImpl::RequestPermissions(
         blink::PermissionDescriptorToPermissionType(permission));
   }
 
-  std::vector<std::optional<blink::mojom::PermissionStatus>> override_results =
+  std::vector<std::optional<PermissionResult>> override_results =
       OverridePermissions(request_description, render_frame_host,
                           permission_overrides_);
 
@@ -459,8 +503,9 @@ void PermissionControllerImpl::RequestPermissions(
   PermissionControllerDelegate* delegate =
       browser_context_->GetPermissionControllerDelegate();
   if (!delegate) {
-    std::move(wrapper).Run(std::vector<PermissionStatus>(
-        request_description.permissions.size(), PermissionStatus::DENIED));
+    std::move(wrapper).Run(std::vector<PermissionResult>(
+        request_description.permissions.size(),
+        PermissionResult(PermissionStatus::DENIED)));
     return;
   }
 
@@ -471,7 +516,7 @@ void PermissionControllerImpl::RequestPermissions(
 void PermissionControllerImpl::RequestPermissionFromCurrentDocument(
     RenderFrameHost* render_frame_host,
     PermissionRequestDescription request_description,
-    base::OnceCallback<void(PermissionStatus)> callback) {
+    base::OnceCallback<void(PermissionResult)> callback) {
   RequestPermissionsFromCurrentDocument(
       render_frame_host, std::move(request_description),
       base::BindOnce(&PermissionStatusCallbackWrapper, std::move(callback)));
@@ -480,7 +525,7 @@ void PermissionControllerImpl::RequestPermissionFromCurrentDocument(
 void PermissionControllerImpl::RequestPermissionsFromCurrentDocument(
     RenderFrameHost* render_frame_host,
     PermissionRequestDescription request_description,
-    base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
+    base::OnceCallback<void(const std::vector<PermissionResult>&)> callback) {
   if (!IsRequestAllowed(request_description.permissions, render_frame_host,
                         callback)) {
     return;
@@ -494,7 +539,7 @@ void PermissionControllerImpl::RequestPermissionsFromCurrentDocument(
 
   request_description.requesting_origin =
       render_frame_host->GetLastCommittedOrigin().GetURL();
-  std::vector<std::optional<blink::mojom::PermissionStatus>> override_results =
+  std::vector<std::optional<PermissionResult>> override_results =
       OverridePermissions(request_description, render_frame_host,
                           permission_overrides_);
 
@@ -510,8 +555,9 @@ void PermissionControllerImpl::RequestPermissionsFromCurrentDocument(
   PermissionControllerDelegate* delegate =
       browser_context_->GetPermissionControllerDelegate();
   if (!delegate) {
-    std::move(wrapper).Run(std::vector<PermissionStatus>(
-        request_description.permissions.size(), PermissionStatus::DENIED));
+    std::move(wrapper).Run(std::vector<PermissionResult>(
+        request_description.permissions.size(),
+        PermissionResult(PermissionStatus::DENIED)));
     return;
   }
 
@@ -524,98 +570,83 @@ void PermissionControllerImpl::ResetPermission(blink::PermissionType permission,
   ResetPermission(permission, origin.GetURL(), origin.GetURL());
 }
 
-PermissionStatus PermissionControllerImpl::GetPermissionStatusInternal(
+void PermissionControllerImpl::UpdateCookieManagerContentSettings(
+    std::optional<PermissionType> permission_to_process,
+    base::OnceClosure callback) {
+  std::vector<PermissionType> permissions;
+  if (permission_to_process == PermissionType::STORAGE_ACCESS_GRANT ||
+      permission_to_process == PermissionType::TOP_LEVEL_STORAGE_ACCESS) {
+    permissions.push_back(permission_to_process.value());
+  } else if (!permission_to_process) {
+    // A null `permission_to_process` value indicates that a bulk operation
+    // like `ResetPermissionOverrides` or `GrantPermissionOverrides` was
+    // performed. In such cases, we must update all permissions that require
+    // it, which currently includes both Storage Access API permissions.
+    permissions = {PermissionType::STORAGE_ACCESS_GRANT,
+                   PermissionType::TOP_LEVEL_STORAGE_ACCESS};
+  }
+
+  const auto callback_after_ipc =
+      base::BarrierClosure(permissions.size(), std::move(callback));
+
+  for (auto permission : permissions) {
+    std::vector<ContentSettingPatternSource> grants =
+        permission_overrides_.CreateContentSettingsForType(permission);
+
+    // The network service does not care about non-allowed settings. So we can
+    // filter those ones out here.
+    std::erase_if(grants, [](const ContentSettingPatternSource& setting) {
+      return setting.GetContentSetting() != CONTENT_SETTING_ALLOW;
+    });
+
+    browser_context_->GetDefaultStoragePartition()
+        ->GetCookieManagerForBrowserProcess()
+        ->SetContentSettings(ConvertPermissionTypeForCookieManager(permission),
+                             grants, callback_after_ipc);
+  }
+}
+
+PermissionResult PermissionControllerImpl::GetPermissionResultInternal(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
-  std::optional<PermissionStatus> status = permission_overrides_.Get(
+  std::optional<PermissionResult> permission_result = permission_overrides_.Get(
       url::Origin::Create(requesting_origin),
+      url::Origin::Create(embedding_origin),
       blink::PermissionDescriptorToPermissionType(permission_descriptor));
-  if (status) {
-    return *status;
+  if (permission_result) {
+    return permission_result.value();
   }
 
   PermissionControllerDelegate* delegate =
       browser_context_->GetPermissionControllerDelegate();
   if (!delegate) {
-    return PermissionStatus::DENIED;
+    return PermissionResult(PermissionStatus::DENIED);
   }
-  return delegate->GetPermissionStatus(permission_descriptor, requesting_origin,
-                                       embedding_origin);
+  return delegate->GetPermissionResultForOriginWithoutContext(
+      permission_descriptor, url::Origin::Create(requesting_origin),
+      url::Origin::Create(embedding_origin));
 }
 
-PermissionStatus
-PermissionControllerImpl::GetPermissionStatusForCurrentDocumentInternal(
+PermissionResult
+PermissionControllerImpl::GetPermissionResultForCurrentDocumentInternal(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     RenderFrameHost* render_frame_host,
     bool should_include_device_status) {
   auto permission_type =
       blink::PermissionDescriptorToPermissionType(permission_descriptor);
-  std::optional<PermissionStatus> status = permission_overrides_.Get(
-      render_frame_host->GetLastCommittedOrigin(), permission_type);
-  if (status) {
-    return *status;
-  }
-  PermissionControllerDelegate* delegate =
-      browser_context_->GetPermissionControllerDelegate();
-  if (!delegate) {
-    return PermissionStatus::DENIED;
-  }
-  if (VerifyContextOfCurrentDocument(permission_type, render_frame_host)
-          .status == PermissionStatus::DENIED) {
-    return PermissionStatus::DENIED;
-  }
-  return delegate->GetPermissionStatusForCurrentDocument(
-      permission_descriptor, render_frame_host, should_include_device_status);
-}
-
-PermissionStatus PermissionControllerImpl::GetPermissionStatusForWorker(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-    RenderProcessHost* render_process_host,
-    const url::Origin& worker_origin) {
-  auto permission_type =
-      blink::PermissionDescriptorToPermissionType(permission_descriptor);
-  std::optional<PermissionStatus> status =
-      permission_overrides_.Get(worker_origin, permission_type);
-  if (status.has_value()) {
-    return *status;
+  std::optional<PermissionResult> permission_result = permission_overrides_.Get(
+      render_frame_host->GetLastCommittedOrigin(),
+      render_frame_host->GetMainFrame()->GetLastCommittedOrigin(),
+      permission_type);
+  if (permission_result) {
+    return permission_result.value();
   }
 
   PermissionControllerDelegate* delegate =
       browser_context_->GetPermissionControllerDelegate();
   if (!delegate) {
-    return PermissionStatus::DENIED;
-  }
-
-  return delegate->GetPermissionStatusForWorker(
-      permission_descriptor, render_process_host, worker_origin.GetURL());
-}
-
-PermissionStatus
-PermissionControllerImpl::GetPermissionStatusForCurrentDocument(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-    RenderFrameHost* render_frame_host) {
-  return GetPermissionStatusForCurrentDocumentInternal(permission_descriptor,
-                                                       render_frame_host);
-}
-
-PermissionResult
-PermissionControllerImpl::GetPermissionResultForCurrentDocument(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-    RenderFrameHost* render_frame_host) {
-  auto permission_type =
-      blink::PermissionDescriptorToPermissionType(permission_descriptor);
-  std::optional<PermissionStatus> status = permission_overrides_.Get(
-      render_frame_host->GetLastCommittedOrigin(), permission_type);
-  if (status) {
-    return PermissionResult(*status, PermissionStatusSource::UNSPECIFIED);
-  }
-
-  PermissionControllerDelegate* delegate =
-      browser_context_->GetPermissionControllerDelegate();
-  if (!delegate) {
-    return PermissionResult(PermissionStatus::DENIED,
-                            PermissionStatusSource::UNSPECIFIED);
+    return PermissionResult(PermissionStatus::DENIED);
   }
 
   PermissionResult result =
@@ -625,6 +656,58 @@ PermissionControllerImpl::GetPermissionResultForCurrentDocument(
   }
 
   return delegate->GetPermissionResultForCurrentDocument(
+      permission_descriptor, render_frame_host, should_include_device_status);
+}
+
+PermissionStatus PermissionControllerImpl::GetPermissionStatusForWorker(
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+    RenderProcessHost* render_process_host,
+    const url::Origin& worker_origin) {
+  return GetPermissionResultForWorker(permission_descriptor,
+                                      render_process_host, worker_origin)
+      .status;
+}
+
+PermissionResult PermissionControllerImpl::GetPermissionResultForWorker(
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+    RenderProcessHost* render_process_host,
+    const url::Origin& worker_origin) {
+  auto permission_type =
+      blink::PermissionDescriptorToPermissionType(permission_descriptor);
+
+  // TODO(crbug.com/428178708): This is likely incorrect for partitioned
+  // contexts and requires impact evaluation before updating to use embedding
+  // and requesting origins.
+  std::optional<PermissionResult> permission_result =
+      permission_overrides_.Get(worker_origin, worker_origin, permission_type);
+  if (permission_result) {
+    return permission_result.value();
+  }
+
+  PermissionControllerDelegate* delegate =
+      browser_context_->GetPermissionControllerDelegate();
+  if (!delegate) {
+    return PermissionResult(PermissionStatus::DENIED);
+  }
+
+  return delegate->GetPermissionResultForWorker(
+      permission_descriptor, render_process_host, worker_origin.GetURL());
+}
+
+PermissionStatus
+PermissionControllerImpl::GetPermissionStatusForCurrentDocument(
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+    RenderFrameHost* render_frame_host) {
+  return GetPermissionResultForCurrentDocument(permission_descriptor,
+                                               render_frame_host)
+      .status;
+}
+
+PermissionResult
+PermissionControllerImpl::GetPermissionResultForCurrentDocument(
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+    RenderFrameHost* render_frame_host) {
+  return GetPermissionResultForCurrentDocumentInternal(
       permission_descriptor, render_frame_host,
       /*should_include_device_status=*/false);
 }
@@ -644,25 +727,24 @@ PermissionControllerImpl::GetPermissionResultForOriginWithoutContext(
     const url::Origin& embedding_origin) {
   auto permission_type =
       blink::PermissionDescriptorToPermissionType(permission_descriptor);
-  std::optional<PermissionStatus> status =
-      permission_overrides_.Get(requesting_origin, permission_type);
-  if (status) {
-    return PermissionResult(*status, PermissionStatusSource::UNSPECIFIED);
+  std::optional<PermissionResult> permission_result = permission_overrides_.Get(
+      requesting_origin, embedding_origin, permission_type);
+  if (permission_result) {
+    return permission_result.value();
   }
 
   PermissionControllerDelegate* delegate =
       browser_context_->GetPermissionControllerDelegate();
   if (!delegate) {
-    return PermissionResult(PermissionStatus::DENIED,
-                            PermissionStatusSource::UNSPECIFIED);
+    return PermissionResult(PermissionStatus::DENIED);
   }
 
   return delegate->GetPermissionResultForOriginWithoutContext(
       permission_descriptor, requesting_origin, embedding_origin);
 }
 
-PermissionStatus
-PermissionControllerImpl::GetPermissionStatusForEmbeddedRequester(
+PermissionResult
+PermissionControllerImpl::GetPermissionResultForEmbeddedRequester(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     RenderFrameHost* render_frame_host,
     const url::Origin& requesting_origin) {
@@ -674,36 +756,40 @@ PermissionControllerImpl::GetPermissionStatusForEmbeddedRequester(
   DCHECK(permission_type == blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS);
 
   if (permission_type != blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS) {
-    return PermissionStatus::DENIED;
+    return PermissionResult(PermissionStatus::DENIED);
   }
 
-  std::optional<PermissionStatus> status =
-      permission_overrides_.Get(requesting_origin, permission_type);
-  if (status) {
-    return *status;
+  std::optional<PermissionResult> permission_result = permission_overrides_.Get(
+      requesting_origin,
+      render_frame_host->GetMainFrame()->GetLastCommittedOrigin(),
+      permission_type);
+  if (permission_result) {
+    return permission_result.value();
   }
 
   PermissionControllerDelegate* delegate =
       browser_context_->GetPermissionControllerDelegate();
   if (!delegate) {
-    return PermissionStatus::DENIED;
+    return PermissionResult(PermissionStatus::DENIED);
   }
 
   if (VerifyContextOfCurrentDocument(permission_type, render_frame_host)
           .status == PermissionStatus::DENIED) {
-    return PermissionStatus::DENIED;
+    return PermissionResult(PermissionStatus::DENIED);
   }
 
-  return delegate->GetPermissionStatusForEmbeddedRequester(
+  return delegate->GetPermissionResultForEmbeddedRequester(
       permission_descriptor, render_frame_host, requesting_origin);
 }
 
 PermissionStatus PermissionControllerImpl::GetCombinedPermissionAndDeviceStatus(
     const blink::mojom::PermissionDescriptorPtr& permission,
     RenderFrameHost* render_frame_host) {
-  CHECK(PermissionUtil::IsDevicePermission(permission));
-  return GetPermissionStatusForCurrentDocumentInternal(
-      permission, render_frame_host, /*should_include_device_status=*/true);
+  CHECK(PermissionUtil::IsDevicePermission(permission)) << permission->name;
+  return GetPermissionResultForCurrentDocumentInternal(
+             permission, render_frame_host,
+             /*should_include_device_status=*/true)
+      .status;
 }
 
 void PermissionControllerImpl::ResetPermission(PermissionType permission,
@@ -717,19 +803,19 @@ void PermissionControllerImpl::ResetPermission(PermissionType permission,
   delegate->ResetPermission(permission, requesting_origin, embedding_origin);
 }
 
-void PermissionControllerImpl::PermissionStatusChange(
-    const base::RepeatingCallback<void(PermissionStatus)>& callback,
+void PermissionControllerImpl::PermissionResultChange(
+    const base::RepeatingCallback<void(PermissionResult)>& callback,
     SubscriptionId subscription_id,
-    PermissionStatus status,
+    PermissionResult result,
     bool ignore_status_override) {
   // Check if the permission status override should be ignored. The verification
   // is suppressed if a permission status change was initiated by DevTools. In
   // all other cases permission status override is always checked.
   if (ignore_status_override) {
-    callback.Run(status);
+    callback.Run(result);
     return;
   }
-  PermissionStatusSubscription* subscription =
+  PermissionResultSubscription* subscription =
       subscriptions_.Lookup(subscription_id);
   DCHECK(subscription);
   // TODO(crbug.com/40056329) Adding this block to prevent crashes while we
@@ -738,29 +824,31 @@ void PermissionControllerImpl::PermissionStatusChange(
   if (!subscription) {
     return;
   }
-  std::optional<PermissionStatus> status_override = permission_overrides_.Get(
+  std::optional<PermissionResult> permission_result = permission_overrides_.Get(
       url::Origin::Create(subscription->requesting_origin),
-      subscription->permission);
-  if (!status_override.has_value()) {
-    callback.Run(status);
+      url::Origin::Create(subscription->embedding_origin),
+      blink::PermissionDescriptorToPermissionType(
+          subscription->permission_descriptor));
+  if (!permission_result.has_value()) {
+    callback.Run(result);
   }
 }
 
 PermissionController::SubscriptionId
-PermissionControllerImpl::SubscribeToPermissionStatusChange(
-    PermissionType permission,
+PermissionControllerImpl::SubscribeToPermissionResultChange(
+    blink::mojom::PermissionDescriptorPtr permission_descriptor,
     RenderProcessHost* render_process_host,
     RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     bool should_include_device_status,
-    const base::RepeatingCallback<void(PermissionStatus)>& callback) {
+    const base::RepeatingCallback<void(PermissionResult)>& callback) {
   DCHECK(!render_process_host || !render_frame_host);
 
   auto id = subscription_id_generator_.GenerateNextId();
-  auto subscription = std::make_unique<PermissionStatusSubscription>();
-  subscription->permission = permission;
+  auto subscription = std::make_unique<PermissionResultSubscription>(
+      std::move(permission_descriptor));
   subscription->callback =
-      base::BindRepeating(&PermissionControllerImpl::PermissionStatusChange,
+      base::BindRepeating(&PermissionControllerImpl::PermissionResultChange,
                           base::Unretained(this), callback, id);
   subscription->requesting_origin = requesting_origin;
   subscription->should_include_device_status = should_include_device_status;
@@ -790,9 +878,9 @@ PermissionControllerImpl::SubscribeToPermissionStatusChange(
   return id;
 }
 
-void PermissionControllerImpl::UnsubscribeFromPermissionStatusChange(
+void PermissionControllerImpl::UnsubscribeFromPermissionResultChange(
     SubscriptionId subscription_id) {
-  PermissionStatusSubscription* subscription =
+  PermissionResultSubscription* subscription =
       subscriptions_.Lookup(subscription_id);
   if (!subscription) {
     return;
@@ -800,7 +888,7 @@ void PermissionControllerImpl::UnsubscribeFromPermissionStatusChange(
   PermissionControllerDelegate* delegate =
       browser_context_->GetPermissionControllerDelegate();
   if (delegate) {
-    delegate->UnsubscribeFromPermissionStatusChange(subscription_id);
+    delegate->UnsubscribeFromPermissionResultChange(subscription_id);
   }
   subscriptions_.Remove(subscription_id);
 }

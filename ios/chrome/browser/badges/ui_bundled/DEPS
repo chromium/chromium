@@ -3,5 +3,7 @@ include_rules = [
   "+ios/chrome/browser/overlays/model/public",
   "+ios/chrome/browser/popup_menu/ui_bundled/public",
   "+ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h",
+  "+ios/chrome/browser/location_bar/badge/model",
   "+ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h",
+  "+ios/chrome/browser/intelligence/features",
 ]

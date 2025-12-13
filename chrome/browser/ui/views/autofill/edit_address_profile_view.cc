@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
@@ -29,6 +30,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -47,6 +49,7 @@ class AutofillBubbleUI : public AutofillBubbleBase {
  private:
   // Overrides from AutofillBubbleBase:
   void Hide() override;
+  bool IsMouseHovered() const override;
 
   void CloseWidget(views::Widget::ClosedReason closed_reason);
 
@@ -65,6 +68,11 @@ AutofillBubbleUI::~AutofillBubbleUI() = default;
 
 void AutofillBubbleUI::Hide() {
   dialog_->Close();
+}
+
+bool AutofillBubbleUI::IsMouseHovered() const {
+  // The edit view is not part of the bubbles managed by `BubbleManager`.
+  NOTREACHED();
 }
 
 void AutofillBubbleUI::CloseWidget(views::Widget::ClosedReason closed_reason) {

@@ -20,7 +20,6 @@ namespace {
 
 constexpr char kBody[] = "body";
 constexpr char kTestUrl[] = "http://www.test.com/";
-constexpr char kTestScope[] = "http://www.test.com/scope";
 const net::PartialNetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefinePartialNetworkTrafficAnnotation("test_request",
                                                "oauth2_api_call_flow",
@@ -53,8 +52,8 @@ class OAuthHttpFetcherTest : public testing::Test {
   }
 
   void SetUp() override {
-    http_fetcher_ =
-        std::make_unique<OAuthHttpFetcher>(kTrafficAnnotation, kTestScope);
+    http_fetcher_ = std::make_unique<OAuthHttpFetcher>(
+        kTrafficAnnotation, signin::OAuthConsumerId::kFastPair);
     browser_delegate_ = std::make_unique<MockQuickPairBrowserDelegate>();
     ON_CALL(*browser_delegate_, GetURLLoaderFactory())
         .WillByDefault(

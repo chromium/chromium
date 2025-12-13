@@ -118,6 +118,10 @@ component("shared_typemap_traits") {
   sources = [
     "big_buffer_mojom_traits.cc",
     "big_buffer_mojom_traits.h",
+    "byte_count_mojom_traits.cc",
+    "byte_count_mojom_traits.h",
+    "byte_size_mojom_traits.cc",
+    "byte_size_mojom_traits.h",
     "byte_string_mojom_traits.cc",
     "byte_string_mojom_traits.h",
     "file_info_mojom_traits.cc",
@@ -201,6 +205,7 @@ source_set("tests") {
   sources = [
     "big_buffer_unittest.cc",
     "big_string_unittest.cc",
+    "byte_size_unittest.cc",
     "byte_string_unittest.cc",
     "file_path_unittest.cc",
     "file_unittest.cc",
@@ -222,6 +227,7 @@ source_set("tests") {
     "uuid_unittest.cc",
     "values_unittest.cc",
     "version_unittest.cc",
+    "work_in_progress_unittest.cc",
   ]
 
   public_deps = [

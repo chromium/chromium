@@ -295,9 +295,7 @@ bool AXRelationCache::IsAriaOwned(const AXObject* child, bool check) const {
           << "\n* Child: " << child << "\n* Actual parent: " << parent
           << "\n* Natural ax parent: " << object_cache_->Get(natural_parent)
           << "\n* Natural dom parent: " << natural_parent << " #"
-          << natural_parent->GetDomNodeId()
-          << "\n* parent->GetNode(): " << parent->GetNode()
-          << "\n* Owners to update:";
+          << natural_parent->GetDomNodeId() << "\n* Owners to update:";
       for (AXID id : owner_axids_to_update_) {
         msg << " " << id;
       }
@@ -476,8 +474,7 @@ AXRelationCache::GetTextRelationAttributes() {
 
 void AXRelationCache::UpdateReverseTextRelations(Element& source) {
   for (const auto& [attribute, filter] : GetTextRelationAttributes()) {
-    if (source.CouldHaveAttributeWithPrecomputedFilter(filter) ||
-        source.GetElementInternals()) {
+    if (source.CouldMatchFilter(filter) || source.GetElementInternals()) {
       UpdateReverseTextRelations(source, attribute);
     }
   }
@@ -587,8 +584,7 @@ AXRelationCache::GetOtherRelationAttributes() {
 
 void AXRelationCache::UpdateReverseOtherRelations(Element& source) {
   for (const auto& [attribute, filter] : GetOtherRelationAttributes()) {
-    if (source.CouldHaveAttributeWithPrecomputedFilter(filter) ||
-        source.GetElementInternals()) {
+    if (source.CouldMatchFilter(filter) || source.GetElementInternals()) {
       UpdateReverseRelations(source, attribute, aria_other_relations_id_map_,
                              aria_other_relations_node_map_);
     }
@@ -1366,6 +1362,7 @@ void AXRelationCache::UpdateCSSAnchorFor(Node* positioned_node) {
 
 AXObject* AXRelationCache::GetPositionedObjectForAnchor(
     const AXObject* anchor) {
+  CHECK(!RuntimeEnabledFeatures::NoAriaDetailsForAnchorPosEnabled());
   HashMap<AXID, AXID>::const_iterator iter =
       anchor_to_positioned_obj_mapping_.find(anchor->AXObjectID());
   if (iter == anchor_to_positioned_obj_mapping_.end()) {
@@ -1427,13 +1424,24 @@ void AXRelationCache::RemoveOwnedRelation(AXID obj_id) {
     // Previous owner no longer relevant to this child.
     // Also, remove |obj_id| from previous owner's owned child list:
     AXID owner_id = aria_owned_child_to_owner_mapping_.Take(obj_id);
-    const Vector<AXID>& owners_owned_children =
-        aria_owner_to_children_mapping_.at(owner_id);
-    for (wtf_size_t index = 0; index < owners_owned_children.size(); index++) {
-      if (owners_owned_children[index] == obj_id) {
-        aria_owner_to_children_mapping_.at(owner_id).EraseAt(index);
-        break;
+    if (aria_owner_to_children_mapping_.Contains(owner_id)) {
+      const Vector<AXID>& owners_owned_children =
+          aria_owner_to_children_mapping_.at(owner_id);
+      for (wtf_size_t index = 0; index < owners_owned_children.size();
+           index++) {
+        if (owners_owned_children[index] == obj_id) {
+          aria_owner_to_children_mapping_.at(owner_id).EraseAt(index);
+          break;
+        }
       }
+    } else {
+      // TODO(crbug.com/437579600) This is not a situation we expect, but it
+      // also shouldn't cause a renderer crash. Once we have fixed the
+      // underlying issue and verified that this dump does not exist in
+      // telemetry, we should upgrade this to a NOTREACHED or remove the
+      // `Contains(owner_id)` check above.
+      DUMP_WILL_BE_NOTREACHED() << "Inconsistent aria-owns mapping: owner "
+                                << owner_id << " not found";
     }
     if (AXObject* owner = ObjectFromAXID(owner_id)) {
       // The child is removed, so the owner needs to make sure its maps

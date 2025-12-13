@@ -3,7 +3,6 @@ include_rules = [
   "+cc/paint",
   "+mojo/public",
   "+third_party/skia",
-  "+components/miracle_parameter",
   "+components/viz/common/resources/shared_image_format.h",
   "+components/viz/common/resources/shared_image_format_utils.h",
   "+mojo/public/cpp/bindings/pending_remote.h",

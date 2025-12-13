@@ -1,0 +1,21 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ai.mojom;
+
+import "mojo/public/mojom/base/proto_wrapper.mojom";
+
+// Result of the Smart Tab Grouping execution.
+union SmartTabGroupingResponseResult {
+  string error;
+  mojo_base.mojom.ProtoWrapper response;
+};
+
+// Used to bridge a mojo service and execute query requests related
+// to the smart tab grouping feature.
+interface SmartTabGroupingService {
+  // Executes the Smart Tab Grouping request.
+  ExecuteSmartTabGroupingRequest() =>
+    (SmartTabGroupingResponseResult result);
+};

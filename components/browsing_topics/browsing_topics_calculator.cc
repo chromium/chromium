@@ -386,6 +386,7 @@ void BrowsingTopicsCalculator::OnGetRecentBrowsingTopicsApiUsagesCompleted(
   history::QueryOptions options;
   options.begin_time = api_usage_context_data_start_time_;
   options.end_time = calculation_time_;
+  options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
   options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
 
   progress_ = Progress::kHistoryRequested;
@@ -415,7 +416,7 @@ void BrowsingTopicsCalculator::OnGetRecentlyVisitedURLsCompleted(
       continue;
     }
 
-    std::string raw_host = url_result.url().host();
+    std::string raw_host = url_result.url().GetHost();
     raw_hosts.insert(raw_host);
 
     if (url_result.visit_time() >= history_data_start_time_) {

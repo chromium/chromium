@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">pomarańcze</translation>
 <translation id="1275718070701477396">Zaznaczony</translation>
 <translation id="1290331692326790741">słaby sygnał</translation>
+<translation id="1292474106138697109">Wyświetlanie Narzędzi lekcyjnych</translation>
 <translation id="1300115153046603471">APN jest typu domyślnego i: <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Konwertuj</translation>
@@ -754,6 +755,7 @@
 <translation id="4300073214558989">Obrazy: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4300272766492248925">Otwórz aplikację</translation>
 <translation id="430786093962686457">szyfonu</translation>
+<translation id="4309762678330556039">Automatycznie twórz transkrypcje i przeszukuj dźwięk. Możesz tworzyć nagrania nawet wtedy, gdy nie masz połączenia z internetem.</translation>
 <translation id="4310735698903592804">Najnowsze tapety utworzone z wykorzystaniem AI od Google</translation>
 <translation id="4320904097188876154">neonowy róż</translation>
 <translation id="432961742358282111">Kliknij prawym przyciskiem lub naciśnij i przytrzymaj, aby zobaczyć definicje, tłumaczenia lub konwersje jednostek. Aby zarządzać tą funkcją, naciskaj klawisze strzałek w lewo lub w prawo.</translation>
@@ -1043,6 +1045,7 @@
 <translation id="5596627076506792578">Więcej opcji</translation>
 <translation id="5600027863942488546">Przetestowano klawisz <ph name="KEY_NAME" /></translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">Narzędzia lekcyjne udostępniają Twój ekran aplikacji <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Wylogowaliśmy Cię</translation>
 <translation id="5620281292257375798">Na użytek wewnętrzny</translation>
 <translation id="5628106863521633649">Dostępne języki</translation>
@@ -1176,7 +1179,6 @@
 <translation id="6205145102504628069">Chmury</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Brak dostępnych skanerów</translation>
-<translation id="6231648282154119906">W ramach wybranej przez Ciebie silniejszej ochrony Bezpieczne przeglądanie Google będzie automatycznie skanować podejrzane pliki</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6234024205316847054">Pokaż kontury</translation>
 <translation id="6243280677745499710">Obecnie ustawiona</translation>

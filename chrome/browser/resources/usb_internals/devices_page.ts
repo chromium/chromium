@@ -12,13 +12,20 @@ import 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
 
 import type {CrTreeElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 import type {CrTreeItemElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
-import {assert} from 'chrome://resources/js/assert.js';
-import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 
 import {DescriptorPanel, renderClassCodeWithDescription} from './descriptor_panel.js';
 import type {UsbAlternateInterfaceInfo, UsbConfigurationInfo, UsbDeviceInfo, UsbEndpointInfo, UsbInterfaceInfo} from './usb_device.mojom-webui.js';
 import {UsbDeviceRemote, UsbTransferDirection, UsbTransferType} from './usb_device.mojom-webui.js';
 import type {UsbDeviceManagerRemote} from './usb_manager.mojom-webui.js';
+
+enum InspectorPanelType {
+  BOS_DESCRIPTOR = 'bos-descriptor',
+  CONFIGURATION_DESCRIPTOR = 'configuration-descriptor',
+  DEVICE_DESCRIPTOR = 'device-descriptor',
+  STRING_DESCRIPTOR = 'string-descriptor',
+  TESTING_TOOL = 'testing-tool',
+}
 
 /**
  * Page that contains a tab header and a tab panel displaying devices table.
@@ -60,13 +67,13 @@ export class DevicesPage {
       td[2]!.textContent = toHex(device.vendorId);
       td[3]!.textContent = toHex(device.productId);
       if (device.manufacturerName) {
-        td[4]!.textContent = decodeString16(device.manufacturerName);
+        td[4]!.textContent = device.manufacturerName;
       }
       if (device.productName) {
-        td[5]!.textContent = decodeString16(device.productName);
+        td[5]!.textContent = device.productName;
       }
       if (device.serialNumber) {
-        td[6]!.textContent = decodeString16(device.serialNumber);
+        td[6]!.textContent = device.serialNumber;
       }
 
       const inspectButton = clone.querySelector('button');
@@ -130,8 +137,8 @@ class DevicePage {
 
     const tab = tabClone.querySelector<HTMLElement>('div[slot=\'tab\']');
     assert(tab);
-    if (device.productName && device.productName.data.length > 0) {
-      tab.textContent = decodeString16(device.productName);
+    if (device.productName && device.productName.length > 0) {
+      tab.textContent = device.productName;
     } else {
       const vendorId = toHex(device.vendorId).slice(2);
       const productId = toHex(device.productId).slice(2);
@@ -177,21 +184,23 @@ class DevicePage {
         guid, /*blocked_interface_classes=*/[],
         usbDevice.$.bindNewPipeAndPassReceiver(), /*device_client=*/ null);
 
-    const deviceDescriptorPanel =
-        initialInspectorPanel(tabPanel, 'device-descriptor', usbDevice, guid);
+    const deviceDescriptorPanel = initialInspectorPanel(
+        tabPanel, InspectorPanelType.DEVICE_DESCRIPTOR, usbDevice, guid);
 
     const configurationDescriptorPanel = initialInspectorPanel(
-        tabPanel, 'configuration-descriptor', usbDevice, guid);
+        tabPanel, InspectorPanelType.CONFIGURATION_DESCRIPTOR, usbDevice, guid);
 
-    const stringDescriptorPanel =
-        initialInspectorPanel(tabPanel, 'string-descriptor', usbDevice, guid);
+    const stringDescriptorPanel = initialInspectorPanel(
+        tabPanel, InspectorPanelType.STRING_DESCRIPTOR, usbDevice, guid);
     deviceDescriptorPanel.setStringDescriptorPanel(stringDescriptorPanel);
     configurationDescriptorPanel.setStringDescriptorPanel(
         stringDescriptorPanel);
 
-    initialInspectorPanel(tabPanel, 'bos-descriptor', usbDevice, guid);
+    initialInspectorPanel(
+        tabPanel, InspectorPanelType.BOS_DESCRIPTOR, usbDevice, guid);
 
-    initialInspectorPanel(tabPanel, 'testing-tool', usbDevice, guid);
+    initialInspectorPanel(
+        tabPanel, InspectorPanelType.TESTING_TOOL, usbDevice, guid);
 
     document.body.dispatchEvent(new CustomEvent(
         'device-tab-initialized-for-test', {bubbles: true, composed: true}));
@@ -222,18 +231,15 @@ function renderDeviceTree(device: UsbDeviceInfo, root: CrTreeElement) {
       device.deviceVersionMinor}.${device.deviceVersionSubminor}`));
 
   if (device.manufacturerName) {
-    root.add(customTreeItem(
-        `Manufacturer Name: ${decodeString16(device.manufacturerName)}`));
+    root.add(customTreeItem(`Manufacturer Name: ${device.manufacturerName}`));
   }
 
   if (device.productName) {
-    root.add(
-        customTreeItem(`Product Name: ${decodeString16(device.productName)}`));
+    root.add(customTreeItem(`Product Name: ${device.productName}`));
   }
 
   if (device.serialNumber) {
-    root.add(customTreeItem(
-        `Serial Number: ${decodeString16(device.serialNumber)}`));
+    root.add(customTreeItem(`Serial Number: ${device.serialNumber}`));
   }
 
   if (device.webusbLandingPage) {
@@ -262,8 +268,8 @@ function renderConfigurationTreeItem(
         customTreeItem(`Configuration ${configuration.configurationValue}`);
 
     if (configuration.configurationName) {
-      configurationItem.add(customTreeItem(`Configuration Name: ${
-          decodeString16(configuration.configurationName)}`));
+      configurationItem.add(customTreeItem(
+          `Configuration Name: ${configuration.configurationName}`));
     }
 
     const interfacesArray = configuration.interfaces;
@@ -309,8 +315,8 @@ function renderAlternatesTreeItem(
         customTreeItem(`Protocol Code: ${alternate.protocolCode}`));
 
     if (alternate.interfaceName) {
-      alternateItem.add(customTreeItem(
-          `Interface Name: ${decodeString16(alternate.interfaceName)}`));
+      alternateItem.add(
+          customTreeItem(`Interface Name: ${alternate.interfaceName}`));
     }
 
     const endpointsArray = alternate.endpoints;
@@ -337,6 +343,8 @@ function renderEndpointsTreeItem(
       case UsbTransferDirection.OUTBOUND:
         itemLabel += ' (OUTBOUND)';
         break;
+      default:
+        assertNotReachedCase(endpoint.direction);
     }
 
     const endpointItem = customTreeItem(itemLabel);
@@ -355,6 +363,8 @@ function renderEndpointsTreeItem(
       case UsbTransferType.INTERRUPT:
         usbTransferType = 'INTERRUPT';
         break;
+      default:
+        assertNotReachedCase(endpoint.type);
     }
 
     endpointItem.add(customTreeItem(`USB Transfer Type: ${usbTransferType}`));
@@ -369,8 +379,8 @@ function renderEndpointsTreeItem(
  * Initialize a descriptor panel.
  */
 function initialInspectorPanel(
-    tabPanel: HTMLElement, panelType: string, usbDevice: UsbDeviceRemote,
-    guid: string): DescriptorPanel {
+    tabPanel: HTMLElement, panelType: InspectorPanelType,
+    usbDevice: UsbDeviceRemote, guid: string): DescriptorPanel {
   const button = tabPanel.querySelector<HTMLElement>(`.${panelType}-button`);
   assert(button);
   const displayElement =
@@ -378,11 +388,13 @@ function initialInspectorPanel(
   assert(displayElement);
   const descriptorPanel = new DescriptorPanel(usbDevice, displayElement);
   switch (panelType) {
-    case 'string-descriptor':
+    case InspectorPanelType.STRING_DESCRIPTOR:
       descriptorPanel.initialStringDescriptorPanel(guid);
       break;
-    case 'testing-tool':
+    case InspectorPanelType.TESTING_TOOL:
       descriptorPanel.initialTestingToolPanel();
+      break;
+    default:
       break;
   }
 
@@ -393,29 +405,24 @@ function initialInspectorPanel(
 
     if (!displayElement.hidden) {
       switch (panelType) {
-        case 'device-descriptor':
+        case InspectorPanelType.DEVICE_DESCRIPTOR:
           await descriptorPanel.getDeviceDescriptor();
           break;
-        case 'configuration-descriptor':
+        case InspectorPanelType.CONFIGURATION_DESCRIPTOR:
           await descriptorPanel.getConfigurationDescriptor();
           break;
-        case 'string-descriptor':
+        case InspectorPanelType.STRING_DESCRIPTOR:
           await descriptorPanel.getAllLanguageCodes();
           break;
-        case 'bos-descriptor':
+        case InspectorPanelType.BOS_DESCRIPTOR:
           await descriptorPanel.getBosDescriptor();
+          break;
+        default:
           break;
       }
     }
   });
   return descriptorPanel;
-}
-
-/**
- * Parses utf16 coded string.
- */
-function decodeString16(arr: String16): string {
-  return arr.data.map(ch => String.fromCodePoint(ch)).join('');
 }
 
 /**

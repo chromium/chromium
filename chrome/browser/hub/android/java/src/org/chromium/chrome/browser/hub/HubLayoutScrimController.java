@@ -9,14 +9,15 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.function.Supplier;
 
 /** Wrapper around {@link ScrimManager} to inject into {@link HubLayout}. */
 @NullMarked
@@ -26,7 +27,7 @@ public class HubLayoutScrimController implements ScrimController {
 
     private final ScrimManager mScrimManager;
     private final Supplier<View> mAnchorViewSupplier;
-    private final ObservableSupplier<Boolean> mIsIncognitoSupplier;
+    private final NonNullObservableSupplier<Boolean> mIsIncognitoSupplier;
     private final Callback<Boolean> mOnIncognitoChange = this::onIncognitoChange;
 
     private @Nullable PropertyModel mPropertyModel;
@@ -40,7 +41,7 @@ public class HubLayoutScrimController implements ScrimController {
     public HubLayoutScrimController(
             ScrimManager scrimManager,
             Supplier<View> anchorViewSupplier,
-            ObservableSupplier<Boolean> isIncognitoSupplier) {
+            NonNullObservableSupplier<Boolean> isIncognitoSupplier) {
         mScrimManager = scrimManager;
         mAnchorViewSupplier = anchorViewSupplier;
         mIsIncognitoSupplier = isIncognitoSupplier;
@@ -90,7 +91,7 @@ public class HubLayoutScrimController implements ScrimController {
     private @ColorInt int calculateScrimColor() {
         View anchorView = mAnchorViewSupplier.get();
         assert anchorView != null;
-        return SurfaceColorUpdateUtils.getGridTabSwitcherBackgroundColor(
+        return ChromeColors.getPrimaryBackgroundColor(
                 anchorView.getContext(), mIsIncognitoSupplier.get());
     }
 }

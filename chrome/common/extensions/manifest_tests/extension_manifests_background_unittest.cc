@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "components/version_info/version_info.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
@@ -21,6 +22,8 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -54,9 +57,8 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundScripts) {
             background_scripts[1u].relative_path().value());
 
   EXPECT_TRUE(BackgroundInfo::HasBackgroundPage(extension.get()));
-  EXPECT_EQ(
-      std::string("/") + kGeneratedBackgroundPageFilename,
-      BackgroundInfo::GetBackgroundURL(extension.get()).path());
+  EXPECT_EQ(std::string("/") + kGeneratedBackgroundPageFilename,
+            BackgroundInfo::GetBackgroundURL(extension.get()).GetPath());
 
   manifest->SetByDottedPath("background.page", "monkey.html");
   LoadAndExpectError(ManifestData(std::move(*manifest), ""),
@@ -90,7 +92,7 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundPage) {
       LoadAndExpectSuccess("background_page.json"));
   ASSERT_TRUE(extension.get());
   EXPECT_EQ("/foo.html",
-            BackgroundInfo::GetBackgroundURL(extension.get()).path());
+            BackgroundInfo::GetBackgroundURL(extension.get()).GetPath());
   EXPECT_TRUE(BackgroundInfo::AllowJSAccess(extension.get()));
 }
 

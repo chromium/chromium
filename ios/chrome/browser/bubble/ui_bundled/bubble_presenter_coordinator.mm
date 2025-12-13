@@ -6,6 +6,7 @@
 
 #import "base/notreached.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -72,7 +74,7 @@
 
   _bottomOmniboxEnabled = [[PrefBackedBoolean alloc]
       initWithPrefService:GetApplicationContext()->GetLocalState()
-                 prefName:prefs::kBottomOmnibox];
+                 prefName:omnibox::kIsOmniboxInBottomPosition];
   [_bottomOmniboxEnabled setObserver:self];
 }
 
@@ -123,14 +125,6 @@
     }
     case InProductHelpType::kHomeCustomizationMenu: {
       [_presenter presentHomeCustomizationTipBubble];
-      break;
-    }
-    case InProductHelpType::kFollowWhileBrowsing: {
-      [_presenter presentFollowWhileBrowsingTipBubbleAndLogWithRecorder:
-                      DiscoverFeedServiceFactory::GetForProfile(profile)
-                          ->GetFeedMetricsRecorder()
-                                                       popupMenuHandler:
-                                                           popupMenuHandler];
       break;
     }
     case InProductHelpType::kDefaultSiteView: {
@@ -201,6 +195,11 @@
       _presenter.pageActionMenuEntryPointHandler = HandlerForProtocol(
           commandDispatcher, PageActionMenuEntryPointCommands);
       [_presenter presentPageActionMenuBubble];
+      break;
+    }
+    case InProductHelpType::kReaderModeOptions: {
+      CHECK(IsReaderModeAvailable());
+      [_presenter presentReaderModeOptionsBubble];
       break;
     }
   }

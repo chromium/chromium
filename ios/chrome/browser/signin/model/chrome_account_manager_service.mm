@@ -17,7 +17,6 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
-#import "ios/chrome/browser/signin/model/resized_avatar_cache.h"
 #import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 
@@ -61,16 +60,16 @@ class SkipRestricted {
 // Filter class skipping identities that do not have the given Gaia ID.
 class KeepGaiaID {
  public:
-  explicit KeepGaiaID(NSString* gaia_id) : gaia_id_(gaia_id) {
-    DCHECK(gaia_id_.length);
+  explicit KeepGaiaID(const GaiaId& gaia_id) : gaia_id_(gaia_id) {
+    DCHECK(!gaia_id_.empty());
   }
 
   bool ShouldFilter(id<SystemIdentity> identity) const {
-    return ![gaia_id_ isEqualToString:identity.gaiaID];
+    return gaia_id_ != identity.gaiaId;
   }
 
  private:
-  NSString* gaia_id_ = nil;
+  GaiaId gaia_id_;
 };
 
 // Filter skipping identities if either sub-filter match.
@@ -231,7 +230,7 @@ bool ChromeAccountManagerService::HasIdentities() const {
 
 bool ChromeAccountManagerService::IsValidIdentity(
     id<SystemIdentity> identity) const {
-  return GetIdentityWithGaiaID(GaiaId(identity.gaiaID)) != nil;
+  return GetIdentityWithGaiaID(identity.gaiaId) != nil;
 }
 
 bool ChromeAccountManagerService::IsEmailRestricted(
@@ -248,7 +247,7 @@ id<SystemIdentity> ChromeAccountManagerService::GetIdentityWithGaiaID(
 
   return IterateOverIdentities(
       FindFirstIdentity{},
-      CombineOr{SkipRestricted{restriction_}, KeepGaiaID{gaia_id.ToNSString()}},
+      CombineOr{SkipRestricted{restriction_}, KeepGaiaID{gaia_id}},
       profile_name_);
 }
 
@@ -261,15 +260,6 @@ NSArray<id<SystemIdentity>>* ChromeAccountManagerService::GetAllIdentities()
 id<SystemIdentity> ChromeAccountManagerService::GetDefaultIdentity() const {
   return IterateOverIdentities(FindFirstIdentity{},
                                SkipRestricted{restriction_}, profile_name_);
-}
-
-UIImage* ChromeAccountManagerService::GetIdentityAvatarWithIdentity(
-    id<SystemIdentity> identity,
-    IdentityAvatarSize avatar_size) {
-  ResizedAvatarCache* avatar_cache =
-      GetAvatarCacheForIdentityAvatarSize(avatar_size);
-  DCHECK(avatar_cache);
-  return [avatar_cache resizedAvatarForIdentity:identity];
 }
 
 bool ChromeAccountManagerService::IsServiceSupported() const {
@@ -298,14 +288,9 @@ void ChromeAccountManagerService::RemoveObserver(Observer* observer) {
 
 id<SystemIdentity> ChromeAccountManagerService::GetIdentityOnDeviceWithGaiaID(
     const GaiaId& gaia_id) const {
-  return GetIdentityOnDeviceWithGaiaID(gaia_id.ToNSString());
-}
-
-id<SystemIdentity> ChromeAccountManagerService::GetIdentityOnDeviceWithGaiaID(
-    NSString* gaia_id) const {
   // Do not iterate if the gaia ID is invalid (since `KeepGaiaId` requires a
   // non-empty ID).
-  if (!gaia_id.length) {
+  if (gaia_id.empty()) {
     return nil;
   }
   return IterateOverAllIdentitiesOnDevice(
@@ -318,7 +303,7 @@ ChromeAccountManagerService::GetIdentitiesOnDeviceWithGaiaIDs(
     const std::vector<AccountInfo>& account_infos) const {
   NSMutableArray<id<SystemIdentity>>* identities = [NSMutableArray array];
   for (const AccountInfo& account_info : account_infos) {
-    NSString* gaia_id = account_info.gaia.ToNSString();
+    GaiaId gaia_id = account_info.gaia;
     id<SystemIdentity> identity = GetIdentityOnDeviceWithGaiaID(gaia_id);
     if (identity) {
       [identities addObject:identity];
@@ -393,30 +378,4 @@ ChromeAccountManagerService::GetWeakPtr() {
 void ChromeAccountManagerService::UpdateRestriction() {
   restriction_ = PatternAccountRestrictionFromPreference(local_state_);
   OnIdentitiesInProfileChanged();
-}
-
-ResizedAvatarCache*
-ChromeAccountManagerService::GetAvatarCacheForIdentityAvatarSize(
-    IdentityAvatarSize avatar_size) {
-  ResizedAvatarCache* __strong* avatar_cache = nil;
-  switch (avatar_size) {
-    case IdentityAvatarSize::TableViewIcon:
-      avatar_cache = &default_table_view_avatar_cache_;
-      break;
-    case IdentityAvatarSize::SmallSize:
-      avatar_cache = &small_size_avatar_cache_;
-      break;
-    case IdentityAvatarSize::Regular:
-      avatar_cache = &regular_avatar_cache_;
-      break;
-    case IdentityAvatarSize::Large:
-      avatar_cache = &large_avatar_cache_;
-      break;
-  }
-  DCHECK(avatar_cache);
-  if (!*avatar_cache) {
-    *avatar_cache =
-        [[ResizedAvatarCache alloc] initWithIdentityAvatarSize:avatar_size];
-  }
-  return *avatar_cache;
 }

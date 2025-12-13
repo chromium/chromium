@@ -10,7 +10,6 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/process/internal_linux.h"
 #include "base/process/process_iterator.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
@@ -163,10 +162,10 @@ void MemoryStatus::UpdatePerProcessStat() {
 }
 
 void MemoryStatus::UpdateMeminfo() {
-  base::SystemMemoryInfoKB meminfo;
+  base::SystemMemoryInfo meminfo;
   base::GetSystemMemoryInfo(&meminfo);
-  total_ram_size_ = meminfo.total * 1024LL;
-  total_free_ = meminfo.free * 1024LL;
+  total_ram_size_ = meminfo.total.InBytes();
+  total_free_ = meminfo.free.InBytes();
 
   base::GraphicsMemoryInfoKB gpu_meminfo;
   if (base::GetGraphicsMemoryInfo(&gpu_meminfo))

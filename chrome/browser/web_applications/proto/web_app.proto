@@ -12,6 +12,7 @@ import "chrome/browser/web_applications/proto/web_app_isolation_data.proto";
 import "chrome/browser/web_applications/proto/web_app_related_applications.proto";
 import "chrome/browser/web_applications/proto/web_app_share_target.proto";
 import "chrome/browser/web_applications/proto/web_app_tab_strip.proto";
+import "chrome/browser/web_applications/proto/web_app_url_pattern.proto";
 import "chromeos/ash/experiences/system_web_apps/types/proto/system_web_app_data.proto";
 
 option optimize_for = LITE_RUNTIME;
@@ -181,14 +182,38 @@ message GeneratedIconFix {
   optional uint32 attempt_count = 4;  // Required.
 }
 
+// Stores the mapping of an icon purpose to icon sizes for downloaded icons.
+// This is saved in PendingUpdateInfo if there are pending icons to be updated
+// from the ManifestSilentUpdateCommand. It is written to the web app in the
+// ApplyManifestPendingUpdateCommand if the user confirms the updates.
+message DownloadedIconSizeInfo {
+  optional sync_pb.WebAppIconInfo.Purpose purpose = 1;
+  repeated int32 icon_sizes = 2;
+}
+
 // Stores the pending updates for security sensitive members. Saved when an
 // update is registered in the ManifestSilentUpdateCommand, and used to show
 // update UX. At least one field should be populated. If the icon is populated,
-// the url, size, and purpose must all be populated.
+// the url, size, and purpose must all be populated. The downloaded manifest
+// and downloaded trusted icons map the stored manifest and trusted icon
+// purposes with all their downloaded sizes. If manifest icons and trusted
+// icons exist, the downloaded manifest and downloaded trusted icons must also
+// exist.
 message PendingUpdateInfo {
   optional string name = 1;
-  optional string short_name = 2;
+  reserved 2;
   repeated sync_pb.WebAppIconInfo manifest_icons = 3;
+  repeated sync_pb.WebAppIconInfo trusted_icons = 4;
+  repeated DownloadedIconSizeInfo downloaded_manifest_icons = 5;
+  repeated DownloadedIconSizeInfo downloaded_trusted_icons = 6;
+  optional bool was_ignored = 7;
+}
+
+// This stores the time and requesting page URL of an attempted install of the
+// app via the Web Install API.
+message InstalledBy {
+  optional int64 install_api_call_time = 1;  // Required.
+  optional string requesting_url = 2;        // Required.
 }
 
 // Full WebApp object data. See detailed comments in
@@ -476,4 +501,22 @@ message WebApp {
   // Contains the metadata for the trusted icons to be shown on security
   // sensitive surfaces by the web app.
   repeated sync_pb.WebAppIconInfo trusted_icons = 74;
+
+  // A list of icon sizes for trusted icons stored on disk that are suitable for
+  // any purpose (ie. IconPurpose::ANY). See also:
+  // |stored_trusted_icon_sizes_maskable|.
+  repeated int32 stored_trusted_icon_sizes_any = 75;
+
+  // A list of icon sizes for trusted icons stored on disk that are designed for
+  // masking (ie. IconPurpose::MASKABLE). See also:
+  // |stored_trusted_icon_sizes_any|.
+  repeated int32 stored_trusted_icon_sizes_maskable = 76;
+
+  // A list of URL patterns in which the app window should be borderless.
+  repeated UrlPattern borderless_url_patterns = 77;
+
+  // A list of up to ten unique URLs of the most recent pages that attempt to
+  // install the app via the Web Install API. The order is that the front is
+  // the oldest entry and the back is the newest.
+  repeated InstalledBy installed_by = 78;
 }

@@ -308,6 +308,19 @@ std::string PlatformFontSkia::GetActualFontName() const {
   return family_name.c_str();
 }
 
+std::vector<std::string> PlatformFontSkia::GetActualFontNames() const {
+  std::vector<std::string> names;
+  names.push_back(GetActualFontName());
+
+  sk_sp<SkTypeface::LocalizedStrings> family_names(
+      typeface_->createFamilyNameIterator());
+  SkTypeface::LocalizedString family_name;
+  while (family_names->next(&family_name)) {
+    names.push_back(family_name.fString.c_str());
+  }
+  return names;
+}
+
 int PlatformFontSkia::GetFontSize() const {
   return font_size_pixels_;
 }
@@ -443,8 +456,7 @@ void PlatformFontSkia::ComputeMetricsIfNecessary() {
       // the letter 'x' when available, otherwise use the max character width.
       SkGlyphID glyph = typeface_->unicharToGlyph('x');
       if (glyph != kUnsupportedGlyph) {
-        SkScalar sk_width;
-        font.getWidths(&glyph, 1, &sk_width);
+        SkScalar sk_width = font.getWidth(glyph);
         average_width_pixels_ = SkScalarToDouble(sk_width);
       }
       if (!average_width_pixels_) {

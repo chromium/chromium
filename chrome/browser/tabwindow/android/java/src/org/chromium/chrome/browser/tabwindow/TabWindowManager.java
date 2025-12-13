@@ -62,7 +62,10 @@ public interface TabWindowManager {
 
     interface Observer {
         /** Called when a tab model selector is added for an activity opening. */
-        void onTabModelSelectorAdded(TabModelSelector selector);
+        default void onTabModelSelectorAdded(TabModelSelector selector) {}
+
+        /** Called when tab state is initialized. */
+        default void onTabStateInitialized() {}
     }
 
     /** Add an observer. */
@@ -81,6 +84,7 @@ public interface TabWindowManager {
      * @param profileProviderSupplier The provider of the Profiles used in the selector.
      * @param tabCreatorManager An instance of {@link TabCreatorManager}.
      * @param nextTabPolicySupplier An instance of {@link NextTabPolicySupplier}.
+     * @param multiInstanceManager An instance of {@link MultiInstanceManager}.
      * @param mismatchedIndicesHandler An instance of {@link MismatchedIndicesHandler}.
      * @param windowId The suggested id of the window that the selector should correspond to. Not
      *     guaranteed to be the index of the {@link TabModelSelector} returned.
@@ -93,6 +97,7 @@ public interface TabWindowManager {
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier,
+            MultiInstanceManager multiInstanceManager,
             MismatchedIndicesHandler mismatchedIndicesHandler,
             @WindowId int windowId);
 
@@ -155,6 +160,15 @@ public interface TabWindowManager {
     @Nullable Tab getTabById(@TabId int tabId, @WindowId int windowId);
 
     /**
+     * Similar to {@link #getTabById(int)} but returns a {@link TabWindowInfo}. Does not check the
+     * non-window sources for the tab.
+     *
+     * @param tabId The id of the tab to look for.
+     * @return The tab and related parents, null if it cannot be found.
+     */
+    @Nullable TabWindowInfo getTabWindowInfoById(@TabId int tabId);
+
+    /**
      * @param windowId The ID of the window that holds the tab group.
      * @param tabGroupId The tab group ID of the tab group.
      * @param isIncognito Whether the grouped tabs are incognito tabs.
@@ -170,6 +184,15 @@ public interface TabWindowManager {
      * @return Specified {@link TabModelSelector} or {@code null} if not found.
      */
     @Nullable TabModelSelector getTabModelSelectorById(@WindowId int windowId);
+
+    /**
+     * Finds the Window ID associated with a {@link TabModelSelector}. If it is not associated with
+     * a window, then {@link #INVALID_WINDOW_ID} is returned.
+     *
+     * @param selector The {@link TabModelSelector} to check.
+     */
+    @WindowId
+    int getWindowIdForSelector(TabModelSelector selector);
 
     /** Gets a Collection of all TabModelSelectors. */
     Collection<TabModelSelector> getAllTabModelSelectors();

@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,7 +30,8 @@ class DiagnosticsDialogTest : public testing::Test {
   raw_ptr<DiagnosticsDialog> diagnostics_dialog;
 
  private:
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
 };
 
 // Test that the Diagnostics dialog can be found once initialized.

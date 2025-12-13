@@ -526,8 +526,8 @@
                      * event will be subscribed to globally. If omitted, the
                      * event will be subscribed to on the current browsing
                      * context.
-                     * @returns {Promise<void>} Resolves when the subscription
-                     * is successfully done.
+                     * @returns {Promise<(function(): Promise<void>)>} Callback
+                     * for unsubscribing from the created subscription.
                      */
                     subscribe: async function(params = {}) {
                         assertBidiIsEnabled();
@@ -593,8 +593,8 @@
                      * event will be subscribed to globally. If omitted, the
                      * event will be subscribed to on the current browsing
                      * context.
-                     * @returns {Promise<void>} Resolves when the subscription
-                     * is successfully done.
+                     * @returns {Promise<(function(): Promise<void>)>} Callback
+                     * for unsubscribing from the created subscription.
                      */
                     subscribe: async function(params = {}) {
                         assertBidiIsEnabled();
@@ -660,8 +660,8 @@
                      * event will be subscribed to globally. If omitted, the
                      * event will be subscribed to on the current browsing
                      * context.
-                     * @returns {Promise<void>} Resolves when the subscription
-                     * is successfully done.
+                     * @returns {Promise<(function(): Promise<void>)>} Callback
+                     * for unsubscribing from the created subscription.
                      */
                     subscribe: async function(params = {}) {
                         assertBidiIsEnabled();
@@ -727,8 +727,8 @@
                      * event will be subscribed to globally. If omitted, the
                      * event will be subscribed to on the current browsing
                      * context.
-                     * @returns {Promise<void>} Resolves when the subscription
-                     * is successfully done.
+                     * @returns {Promise<(function(): Promise<void>)>} Callback
+                     * for unsubscribing from the created subscription.
                      */
                     subscribe: async function(params = {}) {
                         assertBidiIsEnabled();
@@ -819,6 +819,69 @@
                     return window.test_driver_internal.bidi.emulation.set_geolocation_override(
                         params);
                 },
+                /**
+                 * Overrides the locale for the specified browsing contexts.
+                 * Matches the `emulation.setLocaleOverride
+                 * <https://www.w3.org/TR/webdriver-bidi/#commands-emulationsetlocaleoverride>`_
+                 * WebDriver BiDi command.
+                 *
+                 * @example
+                 * await test_driver.bidi.emulation.set_locale_override({
+                 *     locale: 'de-DE'
+                 * });
+                 *
+                 * @param {object} params - Parameters for the command.
+                 * @param {null|string} params.locale - The optional
+                 * locale to set.
+                 * @param {null|Array.<(Context)>} [params.contexts] The
+                 * optional contexts parameter specifies which browsing contexts
+                 * to set the locale override on. It should be either an array
+                 * of Context objects (window or browsing context id), or null.
+                 * If null or omitted, the override will be set on the current
+                 * browsing context.
+                 * @returns {Promise<void>} Resolves when the locale override
+                 * is successfully set.
+                 */
+                set_locale_override: function (params) {
+                    assertBidiIsEnabled();
+                    return window.test_driver_internal.bidi.emulation.set_locale_override(
+                        params);
+                },
+                /**
+                 * Overrides the screen orientation for the specified browsing
+                 * contexts.
+                 * Matches the `emulation.setScreenOrientationOverride
+                 * <https://www.w3.org/TR/webdriver-bidi/#commands-emulationsetscreenorientationoverride>`_
+                 * WebDriver BiDi command.
+                 *
+                 * @example
+                 * await test_driver.bidi.emulation.set_screen_orientation_override({
+                 *     screenOrientation: {
+                 *         natural: 'portrait',
+                 *         type: 'landscape-secondary'
+                 *     }
+                 * });
+                 *
+                 * @param {object} params - Parameters for the command.
+                 * @param {null|object} params.screenOrientation - The optional
+                 * screen orientation. Matches the
+                 * `emulation.ScreenOrientation <https://www.w3.org/TR/webdriver-bidi/#cddl-type-emulationscreenorientation>`_
+                 * type. If null or omitted, the override will be removed.
+                 * @param {null|Array.<(Context)>} [params.contexts] The
+                 * optional contexts parameter specifies which browsing contexts
+                 * to set the screen orientation override on. It should be
+                 * either an array of Context objects (window or browsing
+                 * context id), or null. If null or omitted, the override will
+                 * be set on the current browsing context.
+                 * @returns {Promise<void>} Resolves when the screen orientation
+                 * override is successfully set.
+                 */
+                set_screen_orientation_override: function (params) {
+                    // Ensure the bidi feature is enabled before calling the internal method
+                    assertBidiIsEnabled();
+                    return window.test_driver_internal.bidi.emulation.set_screen_orientation_override(
+                        params);
+                },
             },
             /**
              * `log <https://www.w3.org/TR/webdriver-bidi/#module-log>`_ module.
@@ -844,8 +907,8 @@
                      * event will be subscribed to globally. If omitted, the
                      * event will be subscribed to on the current browsing
                      * context.
-                     * @returns {Promise<void>} Resolves when the subscription
-                     * is successfully done.
+                     * @returns {Promise<(function(): Promise<void>)>} Callback
+                     * for unsubscribing from the created subscription.
                      */
                     subscribe: async function (params = {}) {
                         assertBidiIsEnabled();
@@ -910,9 +973,12 @@
                  * @param {PermissionState} params.state - a `PermissionState
                  *                          <https://w3c.github.io/permissions/#dom-permissionstate>`_
                  *                          value.
-                 * @param {string} [params.origin] - an optional `origin` string to set the
+                 * @param {string} [params.origin] - an optional top-level `origin` string to set the
                  *                 permission for. If omitted, the permission is set for the
                  *                 current window's origin.
+                 * @param {string} [params.embeddedOrigin] - an optional embedded `origin` string to set the
+                 *                 permission for. If omitted, the top-level `origin` is used as the
+                 *                 embedded origin.
                  * @returns {Promise} fulfilled after the permission is set, or rejected if setting
                  *                    the permission fails.
                  */
@@ -2106,6 +2172,69 @@
          */
         clear_display_features: function(context=null) {
             return window.test_driver_internal.clear_display_features(context);
+        },
+
+        /**
+         * Gets the current globally-applied privacy control status
+         *
+         * @returns {Promise} Fulfils with an object with boolean property `gpc`
+         *                    that encodes the current "do not sell or share"
+         *                    signal the browser is configured to convey.
+         */
+        get_global_privacy_control: function() {
+            return window.test_driver_internal.get_global_privacy_control();
+        },
+
+        /**
+         * Gets the current globally-applied privacy control status
+         *
+         * @param {bool} newValue - The a boolean that is true if the browers
+         *                          should convey a "do not sell or share" signal
+         *                          and false otherwise
+         *
+         * @returns {Promise} Fulfils with an object with boolean property `gpc`
+         *                    that encodes the new "do not sell or share"
+         *                    after applying the new value.
+         */
+        set_global_privacy_control: function(newValue) {
+            return window.test_driver_internal.set_global_privacy_control(newValue);
+        },
+
+        /**
+         * Installs a WebExtension.
+         *
+         * Matches the `Install WebExtension
+         * <https://github.com/w3c/webextensions/blob/main/specification/webdriver-classic.bs>`_
+         * WebDriver command.
+         *
+         * @param {Object} params - Parameters for loading the extension.
+         * @param {String} params.type - A type such as "path", "archivePath", or "base64".
+         *
+         * @param {String} params.path - The path to the extension's resources if type "path" or "archivePath" is specified.
+         *
+         * @param {String} params.value - The base64 encoded value of the extension's resources if type "base64" is specified.
+         *
+         * @returns {Promise} Returns the extension identifier as defined in the spec.
+         *                    Rejected if the extension fails to load.
+         */
+        install_web_extension: function(params) {
+            return window.test_driver_internal.install_web_extension(params);
+        },
+
+        /**
+         * Uninstalls a WebExtension.
+         *
+         * Matches the `Uninstall WebExtension
+         * <https://github.com/w3c/webextensions/blob/main/specification/webdriver-classic.bs>`_
+         * WebDriver command.
+         *
+         * @param {String} extension_id - The extension identifier.
+         *
+         * @returns {Promise} Fulfilled after the extension has been removed.
+         *                    Rejected in case the WebDriver command errors out.
+         */
+        uninstall_web_extension: function(extension_id) {
+            return window.test_driver_internal.uninstall_web_extension(extension_id);
         }
     };
 
@@ -2181,6 +2310,14 @@
                 set_geolocation_override: function (params) {
                     throw new Error(
                         "bidi.emulation.set_geolocation_override is not implemented by testdriver-vendor.js");
+                },
+                set_locale_override: function (params) {
+                    throw new Error(
+                        "bidi.emulation.set_locale_override is not implemented by testdriver-vendor.js");
+                },
+                set_screen_orientation_override: function (params) {
+                    throw new Error(
+                        "bidi.emulation.set_screen_orientation_override is not implemented by testdriver-vendor.js");
                 }
             },
             log: {
@@ -2415,6 +2552,14 @@
 
         async clear_display_features(context=null) {
             throw new Error("clear_display_features() is not implemented by testdriver-vendor.js");
+        },
+
+        async set_global_privacy_control(newValue) {
+            throw new Error("set_global_privacy_control() is not implemented by testdriver-vendor.js");
+        },
+
+        async get_global_privacy_control() {
+            throw new Error("get_global_privacy_control() is not implemented by testdriver-vendor.js");
         }
     };
 })();

@@ -56,7 +56,6 @@ class NullImageResourceInfo final
       DoesCurrentFrameHaveSingleSecurityOrigin) const override {
     return true;
   }
-  bool HasCacheControlNoStoreHeader() const override { return false; }
   std::optional<ResourceError> GetResourceError() const override {
     return std::nullopt;
   }
@@ -100,6 +99,16 @@ ImageResourceContent* ImageResourceContent::CreateLoaded(
       MakeGarbageCollected<ImageResourceContent>(std::move(image));
   content->content_status_ = ResourceStatus::kCached;
   content->size_available_ = Image::kSizeAvailable;
+  return content;
+}
+
+ImageResourceContent* ImageResourceContent::CreatePendingForTest(
+    scoped_refptr<blink::Image> image) {
+  DCHECK(image);
+  ImageResourceContent* content =
+      MakeGarbageCollected<ImageResourceContent>(std::move(image));
+  content->content_status_ = ResourceStatus::kPending;
+  content->size_available_ = Image::kSizeUnavailable;
   return content;
 }
 
@@ -150,10 +159,12 @@ void ImageResourceContent::AddObserver(ImageResourceObserver* observer) {
     ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(
         this);
     observers_.insert(observer);
-    ApplyPriorityAndSpeculativeDecodeParams(
-        observer->CachedResourcePriority(),
-        observer->CachedSpeculativeDecodeSize(),
-        observer->CachedSpeculativeDecodeQuality());
+    if (observer->CachedResourcePriority().has_value()) {
+      ApplyPriorityAndSpeculativeDecodeParams(
+          observer->CachedResourcePriority().value(),
+          observer->CachedSpeculativeDecodeSize(),
+          observer->CachedSpeculativeDecodeQuality());
+    }
   }
 
   if (info_->IsCacheValidator())
@@ -194,8 +205,8 @@ void ImageResourceContent::DidRemoveObserver() {
 void ImageResourceContent::UpdateResourceInfoFromObservers() {
   ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(this);
 
-  cached_info_.priority_ = ResourcePriority();
-  cached_info_.priority_excluding_image_loader_ = ResourcePriority();
+  cached_info_.priority_.emplace();
+  cached_info_.priority_excluding_image_loader_.emplace();
   cached_info_.max_size_ = gfx::Size();
   cached_info_.max_interpolation_quality_ = kInterpolationNone;
 
@@ -218,24 +229,31 @@ void ImageResourceContent::ApplyPriorityAndSpeculativeDecodeParams(
     const ResourcePriority& new_priority,
     const gfx::Size& new_size,
     InterpolationQuality new_quality) {
+  if (!cached_info_.priority_.has_value()) {
+    cached_info_.priority_.emplace();
+  }
+  if (!cached_info_.priority_excluding_image_loader_.has_value()) {
+    cached_info_.priority_excluding_image_loader_.emplace();
+  }
+
   if (new_priority.is_lcp_resource) {
     // Mark the resource as predicted LCP despite its visibility.
-    cached_info_.priority_.is_lcp_resource = true;
-    cached_info_.priority_excluding_image_loader_.is_lcp_resource = true;
+    cached_info_.priority_->is_lcp_resource = true;
+    cached_info_.priority_excluding_image_loader_->is_lcp_resource = true;
   }
 
   if (new_priority.visibility == ResourcePriority::kNotVisible) {
     return;
   }
 
-  cached_info_.priority_.visibility = ResourcePriority::kVisible;
-  cached_info_.priority_.intra_priority_value +=
+  cached_info_.priority_->visibility = ResourcePriority::kVisible;
+  cached_info_.priority_->intra_priority_value +=
       new_priority.intra_priority_value;
 
   if (new_priority.source != ResourcePriority::Source::kImageLoader) {
-    cached_info_.priority_excluding_image_loader_.visibility =
+    cached_info_.priority_excluding_image_loader_->visibility =
         ResourcePriority::kVisible;
-    cached_info_.priority_excluding_image_loader_.intra_priority_value +=
+    cached_info_.priority_excluding_image_loader_->intra_priority_value +=
         new_priority.intra_priority_value;
   }
   cached_info_.max_size_.SetToMax(new_size);
@@ -257,7 +275,7 @@ bool ImageResourceContent::CanBeSpeculativelyDecoded() const {
   return true;
 }
 
-std::pair<ResourcePriority, ResourcePriority>
+std::pair<std::optional<ResourcePriority>, std::optional<ResourcePriority>>
 ImageResourceContent::PriorityFromObservers() const {
   return std::make_pair(cached_info_.priority_,
                         cached_info_.priority_excluding_image_loader_);
@@ -670,10 +688,6 @@ bool ImageResourceContent::IsPaintedFirstFrame() const {
   return IsAnimatedImage() && image_->FirstFrameIsComplete();
 }
 
-bool ImageResourceContent::TimingAllowPassed() const {
-  return GetResponse().TimingAllowPassed();
-}
-
 // TODO(hiroshige): Consider removing the following methods, or stopping
 // redirecting to ImageResource.
 const KURL& ImageResourceContent::Url() const {
@@ -712,10 +726,6 @@ base::TimeTicks ImageResourceContent::LoadEnd() const {
 
 base::TimeTicks ImageResourceContent::LoadResponseEnd() const {
   return info_->LoadResponseEnd();
-}
-
-bool ImageResourceContent::HasCacheControlNoStoreHeader() const {
-  return info_->HasCacheControlNoStoreHeader();
 }
 
 float ImageResourceContent::DevicePixelRatioHeaderValue() const {

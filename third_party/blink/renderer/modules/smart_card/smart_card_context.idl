@@ -86,7 +86,7 @@ dictionary SmartCardConnectOptions {
       sequence<SmartCardReaderStateIn> readerStates,
       optional SmartCardGetStatusChangeOptions options = {});
 
-  [CallWith=ScriptState, RaisesException]
+  [CallWith=ScriptState, MeasureAs=SmartCardConnect, RaisesException]
   Promise<SmartCardConnectResult> connect(
       DOMString readerName,
       SmartCardAccessMode accessMode,

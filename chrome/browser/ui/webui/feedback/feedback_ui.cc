@@ -16,7 +16,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -88,14 +87,6 @@ FeedbackUI::~FeedbackUI() = default;
 
 bool FeedbackUI::IsFeedbackEnabled(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(prefs::kUserFeedbackAllowed);
-}
-
-void FeedbackUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-#if BUILDFLAG(IS_CHROMEOS)
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 FeedbackUIConfig::FeedbackUIConfig()

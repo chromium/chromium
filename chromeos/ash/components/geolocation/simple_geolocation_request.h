@@ -6,15 +6,18 @@
 #define CHROMEOS_ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_REQUEST_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
+#include "chromeos/ash/components/geolocation/location_provider.h"
 #include "chromeos/ash/components/network/network_util.h"
 #include "url/gurl.h"
 
@@ -29,7 +32,7 @@ class SimpleGeolocationRequestTestMonitor;
 
 // Sends request to a server to get local geolocation information.
 // It performs formatting of the request and interpretation of the response.
-// Request is owned and destroyed by caller (usually SimpleGeolocationProvider).
+// Request is owned and destroyed by caller (usually SystemLocationProvider).
 // - If error occurs, request is retried until timeout.
 // - On successul response, callback is called.
 // - On timeout, callback with last (failed) position is called.
@@ -42,14 +45,6 @@ class SimpleGeolocationRequestTestMonitor;
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
     SimpleGeolocationRequest {
  public:
-  // Called when a new geolocation information is available.
-  // The second argument indicates whether there was a server error or not.
-  // It is true when there was a server or network error - either no response
-  // or a 500 error code.
-  using ResponseCallback = base::OnceCallback<void(const Geoposition& position,
-                                                   bool server_error,
-                                                   base::TimeDelta elapsed)>;
-
   // |url| is the server address to which the request wil be sent.
   // |timeout| retry request on error until timeout.
   // If wifi_data is not null, it will be sent to the geolocation server.
@@ -69,7 +64,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   // Initiates request.
   // Note: if request object is destroyed before callback is called,
   // request will be silently cancelled.
-  void MakeRequest(ResponseCallback callback);
+  void MakeRequest(LocationProvider::ResponseCallback callback);
 
   void set_retry_sleep_on_server_error_for_testing(
       const base::TimeDelta value) {
@@ -88,7 +83,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   GURL GetServiceURLForTesting() const;
 
  private:
-  void OnSimpleURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleURLLoaderComplete(std::optional<std::string> response_body);
 
   // Start new request.
   void StartRequest();
@@ -110,7 +105,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   // Service URL from constructor arguments.
   const GURL service_url_;
 
-  ResponseCallback callback_;
+  LocationProvider::ResponseCallback callback_;
 
   // Actual URL with parameters.
   GURL request_url_;

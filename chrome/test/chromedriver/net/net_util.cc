@@ -5,16 +5,20 @@
 #include "chrome/test/chromedriver/net/net_util.h"
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -24,8 +28,11 @@
 
 namespace {
 
-base::LazyInstance<scoped_refptr<base::SequencedTaskRunner>>::Leaky
-    g_io_capable_task_runner_for_tests = LAZY_INSTANCE_INITIALIZER;
+scoped_refptr<base::SequencedTaskRunner>& GetIOCapableTaskRunnerForTests() {
+  static base::NoDestructor<scoped_refptr<base::SequencedTaskRunner>>
+      io_capable_task_runner_for_tests;
+  return *io_capable_task_runner_for_tests;
+}
 
 class SyncUrlFetcher {
  public:
@@ -34,8 +41,8 @@ class SyncUrlFetcher {
                  std::string* response)
       : url_(url),
         url_loader_factory_(url_loader_factory),
-        network_task_runner_(g_io_capable_task_runner_for_tests.Get()
-                                 ? g_io_capable_task_runner_for_tests.Get()
+        network_task_runner_(GetIOCapableTaskRunnerForTests()
+                                 ? GetIOCapableTaskRunnerForTests()
                                  : base::ThreadPool::CreateSequencedTaskRunner(
                                        {base::MayBlock()})),
         response_(response),
@@ -65,14 +72,14 @@ class SyncUrlFetcher {
                                             base::Unretained(this)));
   }
 
-  void OnURLLoadComplete(std::unique_ptr<std::string> response_body) {
+  void OnURLLoadComplete(std::optional<std::string> response_body) {
     int response_code = -1;
     if (loader_->ResponseInfo() && loader_->ResponseInfo()->headers)
       response_code = loader_->ResponseInfo()->headers->response_code();
 
     success_ = response_code == 200 && response_body;
     if (success_)
-      *response_ = std::move(*response_body);
+      *response_ = std::move(response_body).value();
     loader_.reset();
     event_.Signal();
   }
@@ -116,7 +123,7 @@ int NetAddress::port() const {
 
 void SetIOCapableTaskRunnerForTest(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  g_io_capable_task_runner_for_tests.Get() = task_runner;
+  GetIOCapableTaskRunnerForTests() = task_runner;
 }
 
 bool FetchUrl(const std::string& url,

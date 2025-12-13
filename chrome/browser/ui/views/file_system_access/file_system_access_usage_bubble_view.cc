@@ -523,6 +523,7 @@ void FileSystemAccessUsageBubbleView::WindowClosing() {
 void FileSystemAccessUsageBubbleView::CloseBubble() {
   // Widget's Close() is async, but we don't want to use bubble_ after
   // this. Additionally web_contents() may have been destroyed.
+  UpdateBubbleVisibilityState(/*is_bubble_visible=*/false);
   bubble_ = nullptr;
   LocationBarBubbleDelegateView::CloseBubble();
 }

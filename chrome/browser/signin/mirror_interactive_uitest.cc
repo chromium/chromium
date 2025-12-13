@@ -119,9 +119,7 @@ class MirrorResponseBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest, Incognito) {
   base::HistogramTester histogram_tester;
   size_t browser_count = chrome::GetTotalBrowserCount();
-  ui_test_utils::BrowserChangeObserver browser_change_observer(
-      /*browser=*/nullptr,
-      ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
   NavigateToURL(GetUrlWithManageAccountsHeader({{"action", "INCOGNITO"}}),
                 url::Origin::Create(GURL("https://google.com")));
@@ -129,9 +127,9 @@ IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest, Incognito) {
   // Incognito window should have been displayed, the browser count goes up.
   EXPECT_GT(chrome::GetTotalBrowserCount(), browser_count);
 
-  // No waiting happens here - BrowserChangeObserver is used to obtain a pointer
-  // to the newly added browser.
-  Browser* incognito_browser = browser_change_observer.Wait();
+  // No waiting happens here - BrowserCreatedObserver is used to obtain a
+  // pointer to the newly added browser.
+  Browser* incognito_browser = browser_created_observer.Wait();
   EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
 
   histogram_tester.ExpectUniqueSample(

@@ -244,8 +244,8 @@ TEST_F(CustomPropertyTest, ParseAnchorQueriesAsLength) {
   RegisterProperty(GetDocument(), "--x", "<length>", "0px", false);
   CustomProperty property(AtomicString("--x"), GetDocument());
 
-  // We can't parse anchor queries as a <length>, because it can't be resolved
-  // into a pixel value at style time.
+  // Anchor queries are not allowed in registered custom properties for
+  // <length>.
   EXPECT_FALSE(
       ParseValue(property, "anchor(--foo top)", CSSParserLocalContext()));
   EXPECT_FALSE(ParseValue(property, "anchor-size(--foo width)",
@@ -256,32 +256,15 @@ TEST_F(CustomPropertyTest, ParseAnchorQueriesAsLengthPercentage) {
   RegisterProperty(GetDocument(), "--x", "<length-percentage>", "0px", false);
   CustomProperty property(AtomicString("--x"), GetDocument());
 
-  {
-    const CSSValue* value =
-        ParseValue(property, "anchor(--foo top)", CSSParserLocalContext());
-    ASSERT_TRUE(value);
-    EXPECT_EQ("anchor(--foo top)", value->CssText());
-  }
-
-  {
-    const CSSValue* value = ParseValue(property, "anchor-size(--foo width)",
-                                       CSSParserLocalContext());
-    ASSERT_TRUE(value);
-    EXPECT_EQ("anchor-size(--foo width)", value->CssText());
-  }
-
-  {
-    // There are no restrictions on what anchor queries are allowed in a custom
-    // property, so mixing anchor() and anchor-size() is also allowed, although
-    // using it in any builtin property via var() makes it invalid at
-    // computed-value time.
-    const CSSValue* value = ParseValue(
-        property, "calc(anchor(--foo top) + anchor-size(--foo width))",
-        CSSParserLocalContext());
-    ASSERT_TRUE(value);
-    EXPECT_EQ("calc(anchor(--foo top) + anchor-size(--foo width))",
-              value->CssText());
-  }
+  // Anchor queries are not allowed in registered custom properties for
+  // <length-percentage>.
+  EXPECT_FALSE(
+      ParseValue(property, "anchor(--foo top)", CSSParserLocalContext()));
+  EXPECT_FALSE(ParseValue(property, "anchor-size(--foo width)",
+                          CSSParserLocalContext()));
+  EXPECT_FALSE(ParseValue(property,
+                          "calc(anchor(--foo top) + anchor-size(--foo width))",
+                          CSSParserLocalContext()));
 }
 
 TEST_F(CustomPropertyTest, ValueMode) {
@@ -298,7 +281,8 @@ TEST_F(CustomPropertyTest, ValueMode) {
   {
     StyleResolverState state(GetDocument(), *GetDocument().documentElement(),
                              /* StyleRecalcContext */ nullptr, StyleRequest());
-    state.SetStyle(*GetDocument().GetStyleResolver().InitialStyleForElement());
+    state.CreateNewClonedStyle(
+        *GetDocument().GetStyleResolver().InitialStyleForElement());
     property.ApplyValue(state, *declaration, CSSProperty::ValueMode::kNormal);
     const ComputedStyle* style = state.TakeStyle();
     ASSERT_TRUE(style->GetVariableData(AtomicString("--x")));
@@ -310,7 +294,8 @@ TEST_F(CustomPropertyTest, ValueMode) {
   {
     StyleResolverState state(GetDocument(), *GetDocument().documentElement(),
                              /* StyleRecalcContext */ nullptr, StyleRequest());
-    state.SetStyle(*GetDocument().GetStyleResolver().InitialStyleForElement());
+    state.CreateNewClonedStyle(
+        *GetDocument().GetStyleResolver().InitialStyleForElement());
     property.ApplyValue(state, *declaration, CSSProperty::ValueMode::kAnimated);
     const ComputedStyle* style = state.TakeStyle();
     ASSERT_TRUE(style->GetVariableData(AtomicString("--x")));

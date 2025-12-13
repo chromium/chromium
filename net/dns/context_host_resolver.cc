@@ -66,8 +66,8 @@ void ContextHostResolver::OnShutdown() {
 }
 
 std::unique_ptr<HostResolver::ResolveHostRequest>
-ContextHostResolver::CreateRequest(
-    url::SchemeHostPort host,
+ContextHostResolver::CreateRequestInternal(
+    HostResolver::Host host,
     NetworkAnonymizationKey network_anonymization_key,
     NetLogWithSource source_net_log,
     std::optional<ResolveHostParameters> optional_parameters) {
@@ -77,12 +77,29 @@ ContextHostResolver::CreateRequest(
     return HostResolver::CreateFailingRequest(ERR_CONTEXT_SHUT_DOWN);
   }
 
+  if (manager_->InvalidationInProgress()) {
+    return HostResolver::CreateFailingRequest(
+        ERR_DNS_CACHE_INVALIDATION_IN_PROGRESS);
+  }
+
   CHECK(resolve_context_);
 
   return manager_->CreateRequest(
-      Host(std::move(host)), std::move(network_anonymization_key),
+      std::move(host), std::move(network_anonymization_key),
       std::move(source_net_log), std::move(optional_parameters),
       resolve_context_.get());
+}
+
+std::unique_ptr<HostResolver::ResolveHostRequest>
+ContextHostResolver::CreateRequest(
+    url::SchemeHostPort host,
+    NetworkAnonymizationKey network_anonymization_key,
+    NetLogWithSource source_net_log,
+    std::optional<ResolveHostParameters> optional_parameters) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return CreateRequestInternal(
+      Host(std::move(host)), std::move(network_anonymization_key),
+      std::move(source_net_log), std::move(optional_parameters));
 }
 
 std::unique_ptr<HostResolver::ResolveHostRequest>
@@ -92,16 +109,9 @@ ContextHostResolver::CreateRequest(
     const NetLogWithSource& source_net_log,
     const std::optional<ResolveHostParameters>& optional_parameters) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (shutting_down_) {
-    return HostResolver::CreateFailingRequest(ERR_CONTEXT_SHUT_DOWN);
-  }
-
-  CHECK(resolve_context_);
-
-  return manager_->CreateRequest(host, network_anonymization_key,
-                                 source_net_log, optional_parameters,
-                                 resolve_context_.get());
+  return CreateRequestInternal(HostResolver::Host(std::move(host)),
+                               network_anonymization_key, source_net_log,
+                               optional_parameters);
 }
 
 std::unique_ptr<HostResolver::ServiceEndpointRequest>

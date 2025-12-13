@@ -65,7 +65,7 @@ void ChromeNativeAppWindowViewsAura::OnBeforeWidgetInit(
                                                  widget);
 }
 
-std::unique_ptr<views::NonClientFrameView>
+std::unique_ptr<views::FrameView>
 ChromeNativeAppWindowViewsAura::CreateNonStandardAppFrame() {
   auto frame = std::make_unique<apps::AppWindowFrameView>(
       widget(), this, HasFrameColor(), ActiveFrameColor(),

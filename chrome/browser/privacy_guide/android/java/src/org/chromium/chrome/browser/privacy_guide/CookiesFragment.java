@@ -9,11 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -25,7 +23,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 @NullMarked
 public class CookiesFragment extends PrivacyGuideBasePage
         implements RadioGroup.OnCheckedChangeListener {
-    private RadioButtonWithDescription mBlockThirdPartyIncognito;
+    private RadioButtonWithDescription mAllowThirdParty;
     private RadioButtonWithDescription mBlockThirdParty;
 
     @Override
@@ -41,23 +39,8 @@ public class CookiesFragment extends PrivacyGuideBasePage
         RadioGroup radioGroup = view.findViewById(R.id.cookies_radio_button);
         radioGroup.setOnCheckedChangeListener(this);
 
-        mBlockThirdPartyIncognito = view.findViewById(R.id.block_third_party_incognito);
+        mAllowThirdParty = view.findViewById(R.id.allow_third_party);
         mBlockThirdParty = view.findViewById(R.id.block_third_party);
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO)) {
-            TextView header = view.findViewById(R.id.cookies_step_header);
-            header.setText(getContext().getString(R.string.privacy_guide_cookies_header));
-            int allowSubheaderId =
-                    R.string.settings_privacy_guide_cookies_card_block_tpc_allow_subheader;
-            mBlockThirdPartyIncognito.setPrimaryText(getContext().getString(allowSubheaderId));
-            mBlockThirdPartyIncognito.setDescriptionText(
-                    getContext().getString(R.string.privacy_guide_cookies_allow_description));
-            int blockSubheaderId =
-                    R.string.settings_privacy_guide_cookies_card_block_tpc_block_subheader;
-            mBlockThirdParty.setPrimaryText(getContext().getString(blockSubheaderId));
-            mBlockThirdParty.setDescriptionText(
-                    getContext().getString(R.string.privacy_guide_cookies_block_description));
-        }
 
         boolean allowCookies =
                 WebsitePreferenceBridge.isCategoryEnabled(
@@ -70,10 +53,7 @@ public class CookiesFragment extends PrivacyGuideBasePage
 
     @Override
     public void onCheckedChanged(RadioGroup group, int clickedButtonId) {
-        // TODO(crbug.com/370008370): Remove following line, it's a no-op
-        WebsitePreferenceBridge.setCategoryEnabled(getProfile(), ContentSettingsType.COOKIES, true);
-
-        if (clickedButtonId == R.id.block_third_party_incognito) {
+        if (clickedButtonId == R.id.allow_third_party) {
             setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
         } else if (clickedButtonId == R.id.block_third_party) {
             setCookieControlsMode(CookieControlsMode.BLOCK_THIRD_PARTY);
@@ -87,17 +67,11 @@ public class CookiesFragment extends PrivacyGuideBasePage
         int cookieControlsMode = PrivacyGuideUtils.getCookieControlsMode(getProfile());
         switch (cookieControlsMode) {
             case CookieControlsMode.INCOGNITO_ONLY:
-                mBlockThirdPartyIncognito.setChecked(true);
+            case CookieControlsMode.OFF:
+                mAllowThirdParty.setChecked(true);
                 break;
             case CookieControlsMode.BLOCK_THIRD_PARTY:
                 mBlockThirdParty.setChecked(true);
-                break;
-            case CookieControlsMode.OFF:
-                if (ChromeFeatureList.isEnabled(ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO)) {
-                    mBlockThirdPartyIncognito.setChecked(true);
-                    break;
-                }
-                assert false : "Cookies page should not be shown when cookie control is off";
                 break;
             default:
                 assert false : "Unexpected CookieControlsMode " + cookieControlsMode;

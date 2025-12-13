@@ -18,7 +18,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 namespace ash::smb_dialog {
@@ -101,9 +100,7 @@ void SmbCredentialsDialog::GetDialogSize(gfx::Size* size) const {
 std::string SmbCredentialsDialog::GetDialogArgs() const {
   base::Value::Dict args;
   args.Set("path", share_path_);
-  std::string json;
-  base::JSONWriter::Write(args, &json);
-  return json;
+  return base::WriteJson(args).value_or("");
 }
 
 SmbCredentialsDialogUI::SmbCredentialsDialogUI(content::WebUI* web_ui)
@@ -134,12 +131,6 @@ void SmbCredentialsDialogUI::OnUpdateCredentials(const std::string& username,
   if (dialog) {
     dialog->Respond(username, password);
   }
-}
-
-void SmbCredentialsDialogUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 bool SmbCredentialsDialog::ShouldShowCloseButton() const {

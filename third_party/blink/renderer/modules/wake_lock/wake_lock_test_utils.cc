@@ -90,7 +90,7 @@ void MockWakeLock::Bind(
   DCHECK(!receiver_.is_bound());
   receiver_.Bind(std::move(receiver));
   receiver_.set_disconnect_handler(
-      WTF::BindOnce(&MockWakeLock::OnConnectionError, WTF::Unretained(this)));
+      BindOnce(&MockWakeLock::OnConnectionError, Unretained(this)));
 }
 
 void MockWakeLock::Unbind() {
@@ -173,8 +173,8 @@ void MockPermissionService::BindRequest(mojo::ScopedMessagePipeHandle handle) {
   DCHECK(!receiver_.is_bound());
   receiver_.Bind(mojo::PendingReceiver<mojom::blink::PermissionService>(
       std::move(handle)));
-  receiver_.set_disconnect_handler(WTF::BindOnce(
-      &MockPermissionService::OnConnectionError, WTF::Unretained(this)));
+  receiver_.set_disconnect_handler(
+      BindOnce(&MockPermissionService::OnConnectionError, Unretained(this)));
 }
 
 void MockPermissionService::SetPermissionResponse(
@@ -227,10 +227,12 @@ void MockPermissionService::HasPermission(PermissionDescriptorPtr permission,
 
 void MockPermissionService::RegisterPageEmbeddedPermissionControl(
     Vector<mojom::blink::PermissionDescriptorPtr> permissions,
+    mojom::blink::EmbeddedPermissionRequestDescriptorPtr descriptor,
     mojo::PendingRemote<mojom::blink::EmbeddedPermissionControlClient> client) {
 }
 
 void MockPermissionService::RequestPageEmbeddedPermission(
+    Vector<mojom::blink::PermissionDescriptorPtr> descriptors,
     mojom::blink::EmbeddedPermissionRequestDescriptorPtr permissions,
     RequestPageEmbeddedPermissionCallback) {
   NOTREACHED();
@@ -273,7 +275,7 @@ void MockPermissionService::AddPermissionObserver(
   NOTREACHED();
 }
 
-void MockPermissionService::AddCombinedPermissionObserver(
+void MockPermissionService::AddPageEmbeddedPermissionObserver(
     PermissionDescriptorPtr permission,
     mojom::blink::PermissionStatus last_known_status,
     mojo::PendingRemote<mojom::blink::PermissionObserver>) {
@@ -292,12 +294,12 @@ WakeLockTestingContext::WakeLockTestingContext(
     MockWakeLockService* mock_wake_lock_service) {
   DomWindow()->GetBrowserInterfaceBroker().SetBinderForTesting(
       mojom::blink::WakeLockService::Name_,
-      WTF::BindRepeating(&MockWakeLockService::BindRequest,
-                         WTF::Unretained(mock_wake_lock_service)));
+      BindRepeating(&MockWakeLockService::BindRequest,
+                    Unretained(mock_wake_lock_service)));
   DomWindow()->GetBrowserInterfaceBroker().SetBinderForTesting(
       mojom::blink::PermissionService::Name_,
-      WTF::BindRepeating(&MockPermissionService::BindRequest,
-                         WTF::Unretained(&permission_service_)));
+      BindRepeating(&MockPermissionService::BindRequest,
+                    Unretained(&permission_service_)));
 }
 
 WakeLockTestingContext::~WakeLockTestingContext() {

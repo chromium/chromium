@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//pdf/features.gni")
 
 assert(is_chromeos)
 
@@ -35,6 +36,8 @@ static_library("app_mode") {
     "kiosk_app_update_install_gate.h",
     "kiosk_app_update_service.cc",
     "kiosk_app_update_service.h",
+    "kiosk_app_update_service_factory.cc",
+    "kiosk_app_update_service_factory.h",
     "kiosk_chrome_app_manager.cc",
     "kiosk_chrome_app_manager.h",
     "kiosk_controller.cc",
@@ -78,7 +81,6 @@ static_library("app_mode") {
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/disks",
     "//chromeos/ash/components/install_attributes",
-    "//chromeos/ash/components/kiosk/vision",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/policy/device_local_account",
@@ -102,6 +104,7 @@ static_library("app_mode") {
     "//ash",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",
+    "//chrome/browser/app_mode",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash/app_mode/arcvm_app",
     "//chrome/browser/ash/app_mode/auto_sleep",
@@ -239,7 +242,7 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//extensions:test_support",
     "//extensions/browser/updater",
-    "//extensions/common:common",
+    "//extensions/common",
     "//google_apis",
     "//services/data_decoder/public/cpp:test_support",
     "//testing/gmock",
@@ -285,7 +288,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/system_web_apps/test_support",
     "//chrome/browser/chromeos/app_mode",
     "//chrome/browser/devtools:test_support",
-    "//chrome/browser/extensions:extensions",
+    "//chrome/browser/extensions",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/system_web_apps",
@@ -295,13 +298,14 @@ source_set("browser_tests") {
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/shill",
-    "//chromeos/ash/components/dbus/update_engine:update_engine",
+    "//chromeos/ash/components/dbus/update_engine",
     "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/policy/device_policy:test_support",
     "//components/crx_file",
     "//components/ownership",
     "//content/test:test_support",
     "//extensions/browser",
+    "//pdf:buildflags",
     "//ui/events:test_support",
     "//ui/views:view_pixel_diff_test_support",
 
@@ -310,4 +314,8 @@ source_set("browser_tests") {
     "//chrome/browser/ash/app_mode/test:browser_tests",
     "//chrome/browser/ash/app_mode/web_app:browser_tests",
   ]
+
+  if (enable_pdf) {
+    deps += [ "//pdf:features" ]
+  }
 }

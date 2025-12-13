@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <linux/elf.h>
 #include <sched.h>
+#include <sys/mman.h>
 #include <sys/prctl.h>
 #include <sys/ptrace.h>
 #include <sys/resource.h>
@@ -32,6 +33,7 @@
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
 #include "sandbox/linux/seccomp-bpf/syscall.h"
 #include "sandbox/linux/services/syscall_wrappers.h"
+#include "sandbox/linux/system_headers/linux_memfd.h"
 #include "sandbox/linux/system_headers/linux_ptrace.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/linux/system_headers/linux_time.h"
@@ -376,6 +378,75 @@ BPF_DEATH_TEST_C(
          &iov);
 }
 #endif
+
+class RestrictMemfdWithExecMappingsPolicy : public bpf_dsl::Policy {
+ public:
+  RestrictMemfdWithExecMappingsPolicy() = default;
+  ~RestrictMemfdWithExecMappingsPolicy() override = default;
+
+  ResultExpr EvaluateSyscall(int sysno) const override {
+    switch (sysno) {
+      case __NR_memfd_create:
+        return RestrictMemfdCreateWithExecMappings();
+      default:
+        return Allow();
+    }
+  }
+};
+
+BPF_TEST_C(ParameterRestrictions,
+           memfd_create_regular_flags_allowed,
+           RestrictMemfdWithExecMappingsPolicy) {
+  int fd = syscall(__NR_memfd_create, "test_shared_memory", MFD_CLOEXEC);
+#if BUILDFLAG(IS_ANDROID)
+  if (fd == -1 && errno == ENOSYS) {
+    // Older version of Android that doesn't support memfds. Skip this test.
+    return;
+  }
+#endif
+  BPF_ASSERT_NE(fd, -1);
+
+  // This combination of flags is used by PulseAudio, and should be the Chrome
+  // default as well.
+  fd = syscall(__NR_memfd_create, "test_shared_memory2",
+               MFD_ALLOW_SEALING | MFD_CLOEXEC | MFD_NOEXEC_SEAL);
+  if (fd == -1 && errno == EINVAL) {
+    // Kernel too old for MFD_NOEXEC_SEAL, skip
+    return;
+  }
+  BPF_ASSERT_NE(fd, -1);
+}
+
+BPF_TEST_C(ParameterRestrictions,
+           memfd_create_use_exec_mappings,
+           RestrictMemfdWithExecMappingsPolicy) {
+  // This flag combination is used by certain nvidia GPU drivers to create
+  // executable shared mappings.
+  int fd = syscall(__NR_memfd_create, "test_shared_memory",
+                   MFD_ALLOW_SEALING | MFD_CLOEXEC | MFD_EXEC);
+#if BUILDFLAG(IS_ANDROID)
+  if (fd == -1 && errno == ENOSYS) {
+    // Older version of Android that doesn't support memfds. Skip this test.
+    return;
+  }
+#endif
+  if (fd == -1 && errno == EINVAL) {
+    // Kernel too old for MFD_EXEC, skip
+    return;
+  }
+  BPF_ASSERT_NE(fd, -1);
+}
+
+BPF_DEATH_TEST_C(ParameterRestrictions,
+                 memfd_hugetlb_crashes,
+                 DEATH_SEGV_MESSAGE(sandbox::GetErrorMessageContentForTests()),
+                 RestrictMemfdWithExecMappingsPolicy) {
+  // This should crash--hugetlb should still be disallowed even with exec
+  // mappings allowed.
+  [[maybe_unused]] int fd =
+      syscall(__NR_memfd_create, "should_never_be_allocated",
+              MFD_CLOEXEC | MFD_HUGETLB);
+}
 
 }  // namespace
 

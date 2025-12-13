@@ -19,9 +19,9 @@
 
 @end
 
-// EnhancedSafeBrowsingInlinePromoCell implements an TableViewCell subclass that
-// contains all the inline promo's UI elements.
-@interface EnhancedSafeBrowsingInlinePromoCell : TableViewCell
+// EnhancedSafeBrowsingInlinePromoCell implements an LegacyTableViewCell
+// subclass that contains all the inline promo's UI elements.
+@interface EnhancedSafeBrowsingInlinePromoCell : LegacyTableViewCell
 
 // Delegate object used to send events from the inline promo to the Settings
 // page.

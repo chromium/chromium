@@ -11,7 +11,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/token_android.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -43,21 +42,23 @@ namespace {
 AccountInfo GetFakeAccountInfo(
     const std::string& username,
     const std::optional<std::string>& hosted_domain) {
-  AccountInfo account_info;
-  account_info.email = username;
-  account_info.gaia = signin::GetTestGaiaIdForEmail(username);
-  account_info.account_id = CoreAccountId::FromGaiaId(account_info.gaia);
-  account_info =
-      signin::WithGeneratedUserInfo(account_info, /*given_name=*/"Fake");
-  account_info.hosted_domain =
-      hosted_domain.value_or(signin::constants::kNoHostedDomainFound);
-  bool managed = false;
-  if (hosted_domain.has_value() && !hosted_domain.value().empty()) {
-    managed = hosted_domain.value() !=
-                  signin::constants::kNoHostedDomainFound;
+  AccountInfo::Builder builder(signin::GetTestGaiaIdForEmail(username),
+                               username);
+  builder.SetAccountId(
+      CoreAccountId::FromGaiaId(signin::GetTestGaiaIdForEmail(username)));
+  AccountInfo account_info =
+      signin::WithGeneratedUserInfo(builder.Build(), /*given_name=*/"Fake");
+  // `signin::WithGeneratedUserInfo()` resets hosted domain, so it needs to be
+  // set below.
+  if (hosted_domain.has_value()) {
+    account_info = AccountInfo::Builder(account_info)
+                       .SetHostedDomain(*hosted_domain)
+                       .Build();
   }
+  bool managed = hosted_domain.has_value() && !hosted_domain->empty() &&
+                 hosted_domain != signin::constants::kNoHostedDomainFound;
   AccountCapabilitiesTestMutator(&account_info.capabilities)
-      .set_is_subject_to_enterprise_policies(managed);
+      .set_is_subject_to_enterprise_features(managed);
   return account_info;
 }
 
@@ -92,7 +93,7 @@ void SignOutForTesting() {
 
 void SetUpFakeAuthForTesting() {
   Java_SyncTestSigninUtils_setUpFakeAuthForTesting(
-      base::android::AttachCurrentThread());
+      base::android::AttachCurrentThread(), /*isNativeTest=*/true);
 }
 
 void TearDownFakeAuthForTesting() {
@@ -164,11 +165,14 @@ void UpdateTabGroupVisualData(TabAndroid* tab,
                                                      j_title, j_color);
 }
 
-void JNI_SyncTestSigninUtils_OnShutdownComplete(JNIEnv* env,
-                                                jlong callbackPtr) {
+static void JNI_SyncTestSigninUtils_OnShutdownComplete(JNIEnv* env,
+                                                       jlong callbackPtr) {
   std::unique_ptr<base::OnceClosure> heap_callback(
       reinterpret_cast<base::OnceClosure*>(callbackPtr));
   std::move(*heap_callback).Run();
 }
 
 }  // namespace sync_test_utils_android
+
+DEFINE_JNI(SyncTestSigninUtils)
+DEFINE_JNI(SyncTestTabGroupHelpers)

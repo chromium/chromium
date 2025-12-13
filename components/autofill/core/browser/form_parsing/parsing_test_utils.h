@@ -12,7 +12,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/address_field_parser.h"
@@ -92,12 +91,12 @@ class FormFieldParserTestBase {
 
   // Apply the parsing with a specific parser.
   virtual std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                                 AutofillScanner* scanner) = 0;
+                                                 AutofillScanner& scanner) = 0;
 
   FieldRendererId MakeFieldRendererId();
 
   // Fields that will be parsed.
-  std::vector<std::unique_ptr<AutofillField>> fields_;
+  std::vector<FormFieldData> fields_;
   // Actual outcome of parsing.
   FieldCandidatesMap field_candidates_map_;
   // Expectations of parsing.

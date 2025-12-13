@@ -52,7 +52,9 @@
         }
       ],
       "retry_failed_shards": true,
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/ios-asan/targets"
+      "retry_invalid_shards": true,
+      "targets_spec_directory": "infra/config/generated/builders/ci/ios-asan/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {
@@ -82,5 +84,5 @@
   "sheriff_rotations": [
     "ios"
   ],
-  "xcode_build_version": "16c5032a"
+  "xcode_build_version": "17a400"
 }

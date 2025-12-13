@@ -10,10 +10,10 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/ref_counted.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -57,7 +57,8 @@ class TabLoaderTester;
 // out of the outermost function.
 class TabLoader : public base::RefCounted<TabLoader>,
                   public TabLoaderCallback,
-                  public resource_coordinator::TabLoadTracker::Observer {
+                  public resource_coordinator::TabLoadTracker::Observer,
+                  public base::MemoryPressureListener {
  public:
   // Helper class used for tracking reentrancy and performing lifetime
   // management. See implementation for full details.
@@ -68,9 +69,10 @@ class TabLoader : public base::RefCounted<TabLoader>,
   TabLoader(const TabLoader&) = delete;
   TabLoader& operator=(const TabLoader&) = delete;
 
-  // Called to start restoring tabs.
-  static void RestoreTabs(const std::vector<RestoredTab>& tabs,
-                          const base::TimeTicks& restore_started);
+  // Called to start restoring tabs. Deprecated: use
+  // performance_manager::policies::ScheduleLoadForRestoredTabs().
+  static void DeprecatedRestoreTabs(const std::vector<RestoredTab>& tabs,
+                                    const base::TimeTicks& restore_started);
 
  private:
   friend class base::RefCounted<TabLoader>;
@@ -119,7 +121,7 @@ class TabLoader : public base::RefCounted<TabLoader>,
 
   // React to memory pressure by stopping to load any more tabs.
   void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   // Determines whether or not tab loading should stop early due to external
   // factors.
@@ -233,7 +235,8 @@ class TabLoader : public base::RefCounted<TabLoader>,
 
   // Listens for system under memory pressure notifications and stops loading
   // of tabs when we start running out of memory.
-  base::MemoryPressureListener memory_pressure_listener_;
+  base::MemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 
   // Used for selecting which timeout to use, and to prevent additional
   // non-active tabs from being scheduled to load initially.

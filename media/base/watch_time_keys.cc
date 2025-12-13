@@ -6,136 +6,118 @@
 
 #include "base/notreached.h"
 
-namespace media {
+namespace {
 
-// TODO(dalecurtis): Key strings aren't really necessary anymore, so instead
-// of hard coding these, switch to generating them.
+// Note: While we could switch these keys to be dynamically constructed, testing
+// shows this doesn't save any binary size and just complicates the code.
 
 // Audio+video watch time metrics.
-static const char kWatchTimeAudioVideoAll[] = "Media.WatchTime.AudioVideo.All";
-static const char kWatchTimeAudioVideoMse[] = "Media.WatchTime.AudioVideo.MSE";
-static const char kWatchTimeAudioVideoEme[] = "Media.WatchTime.AudioVideo.EME";
-static const char kWatchTimeAudioVideoSrc[] = "Media.WatchTime.AudioVideo.SRC";
-static const char kWatchTimeAudioVideoBattery[] =
+constexpr char kWatchTimeAudioVideoAll[] = "Media.WatchTime.AudioVideo.All";
+constexpr char kWatchTimeAudioVideoMse[] = "Media.WatchTime.AudioVideo.MSE";
+constexpr char kWatchTimeAudioVideoEme[] = "Media.WatchTime.AudioVideo.EME";
+constexpr char kWatchTimeAudioVideoSrc[] = "Media.WatchTime.AudioVideo.SRC";
+constexpr char kWatchTimeAudioVideoHls[] = "Media.WatchTime.AudioVideo.HLS";
+constexpr char kWatchTimeAudioVideoBattery[] =
     "Media.WatchTime.AudioVideo.Battery";
-static const char kWatchTimeAudioVideoAc[] = "Media.WatchTime.AudioVideo.AC";
-static const char kWatchTimeAudioVideoDisplayFullscreen[] =
+constexpr char kWatchTimeAudioVideoAc[] = "Media.WatchTime.AudioVideo.AC";
+constexpr char kWatchTimeAudioVideoDisplayFullscreen[] =
     "Media.WatchTime.AudioVideo.DisplayFullscreen";
-static const char kWatchTimeAudioVideoDisplayInline[] =
+constexpr char kWatchTimeAudioVideoDisplayInline[] =
     "Media.WatchTime.AudioVideo.DisplayInline";
-static const char kWatchTimeAudioVideoDisplayPictureInPicture[] =
+constexpr char kWatchTimeAudioVideoDisplayPictureInPicture[] =
     "Media.WatchTime.AudioVideo.DisplayPictureInPicture";
-static const char kWatchTimeAudioVideoEmbeddedExperience[] =
+constexpr char kWatchTimeAudioVideoDominantVisibleContent[] =
+    "Media.WatchTime.AudioVideo.DominantVisibleContent";
+constexpr char kWatchTimeAudioVideoAuxiliaryVisibleContent[] =
+    "Media.WatchTime.AudioVideo.AuxiliaryVisibleContent";
+constexpr char kWatchTimeAudioVideoEmbeddedExperience[] =
     "Media.WatchTime.AudioVideo.EmbeddedExperience";
-static const char kWatchTimeAudioVideoNativeControlsOn[] =
+constexpr char kWatchTimeAudioVideoNativeControlsOn[] =
     "Media.WatchTime.AudioVideo.NativeControlsOn";
-static const char kWatchTimeAudioVideoNativeControlsOff[] =
+constexpr char kWatchTimeAudioVideoNativeControlsOff[] =
     "Media.WatchTime.AudioVideo.NativeControlsOff";
 
 // Audio only "watch time" metrics.
-static const char kWatchTimeAudioAll[] = "Media.WatchTime.Audio.All";
-static const char kWatchTimeAudioMse[] = "Media.WatchTime.Audio.MSE";
-static const char kWatchTimeAudioEme[] = "Media.WatchTime.Audio.EME";
-static const char kWatchTimeAudioSrc[] = "Media.WatchTime.Audio.SRC";
-static const char kWatchTimeAudioBattery[] = "Media.WatchTime.Audio.Battery";
-static const char kWatchTimeAudioAc[] = "Media.WatchTime.Audio.AC";
-static const char kWatchTimeAudioEmbeddedExperience[] =
+constexpr char kWatchTimeAudioAll[] = "Media.WatchTime.Audio.All";
+constexpr char kWatchTimeAudioMse[] = "Media.WatchTime.Audio.MSE";
+constexpr char kWatchTimeAudioEme[] = "Media.WatchTime.Audio.EME";
+constexpr char kWatchTimeAudioSrc[] = "Media.WatchTime.Audio.SRC";
+constexpr char kWatchTimeAudioHls[] = "Media.WatchTime.Audio.HLS";
+constexpr char kWatchTimeAudioBattery[] = "Media.WatchTime.Audio.Battery";
+constexpr char kWatchTimeAudioAc[] = "Media.WatchTime.Audio.AC";
+constexpr char kWatchTimeAudioEmbeddedExperience[] =
     "Media.WatchTime.Audio.EmbeddedExperience";
-static const char kWatchTimeAudioNativeControlsOn[] =
+constexpr char kWatchTimeAudioNativeControlsOn[] =
     "Media.WatchTime.Audio.NativeControlsOn";
-static const char kWatchTimeAudioNativeControlsOff[] =
+constexpr char kWatchTimeAudioNativeControlsOff[] =
     "Media.WatchTime.Audio.NativeControlsOff";
 
-static const char kWatchTimeAudioBackgroundAll[] =
+constexpr char kWatchTimeAudioBackgroundAll[] =
     "Media.WatchTime.Audio.Background.All";
-static const char kWatchTimeAudioBackgroundMse[] =
+constexpr char kWatchTimeAudioBackgroundMse[] =
     "Media.WatchTime.Audio.Background.MSE";
-static const char kWatchTimeAudioBackgroundEme[] =
+constexpr char kWatchTimeAudioBackgroundEme[] =
     "Media.WatchTime.Audio.Background.EME";
-static const char kWatchTimeAudioBackgroundSrc[] =
+constexpr char kWatchTimeAudioBackgroundSrc[] =
     "Media.WatchTime.Audio.Background.SRC";
-static const char kWatchTimeAudioBackgroundBattery[] =
+constexpr char kWatchTimeAudioBackgroundHls[] =
+    "Media.WatchTime.Audio.Background.HLS";
+constexpr char kWatchTimeAudioBackgroundBattery[] =
     "Media.WatchTime.Audio.Background.Battery";
-static const char kWatchTimeAudioBackgroundAc[] =
+constexpr char kWatchTimeAudioBackgroundAc[] =
     "Media.WatchTime.Audio.Background.AC";
-static const char kWatchTimeAudioBackgroundEmbeddedExperience[] =
+constexpr char kWatchTimeAudioBackgroundEmbeddedExperience[] =
     "Media.WatchTime.Audio.Background.EmbeddedExperience";
 
 // Audio+video background watch time metrics.
-static const char kWatchTimeAudioVideoBackgroundAll[] =
+constexpr char kWatchTimeAudioVideoBackgroundAll[] =
     "Media.WatchTime.AudioVideo.Background.All";
-static const char kWatchTimeAudioVideoBackgroundMse[] =
+constexpr char kWatchTimeAudioVideoBackgroundMse[] =
     "Media.WatchTime.AudioVideo.Background.MSE";
-static const char kWatchTimeAudioVideoBackgroundEme[] =
+constexpr char kWatchTimeAudioVideoBackgroundEme[] =
     "Media.WatchTime.AudioVideo.Background.EME";
-static const char kWatchTimeAudioVideoBackgroundSrc[] =
+constexpr char kWatchTimeAudioVideoBackgroundSrc[] =
     "Media.WatchTime.AudioVideo.Background.SRC";
-static const char kWatchTimeAudioVideoBackgroundBattery[] =
+constexpr char kWatchTimeAudioVideoBackgroundHls[] =
+    "Media.WatchTime.AudioVideo.Background.HLS";
+constexpr char kWatchTimeAudioVideoBackgroundBattery[] =
     "Media.WatchTime.AudioVideo.Background.Battery";
-static const char kWatchTimeAudioVideoBackgroundAc[] =
+constexpr char kWatchTimeAudioVideoBackgroundAc[] =
     "Media.WatchTime.AudioVideo.Background.AC";
-static const char kWatchTimeAudioVideoBackgroundEmbeddedExperience[] =
+constexpr char kWatchTimeAudioVideoBackgroundEmbeddedExperience[] =
     "Media.WatchTime.AudioVideo.Background.EmbeddedExperience";
 
 // Audio+video muted watch time metrics.
-static const char kWatchTimeAudioVideoMutedAll[] =
+constexpr char kWatchTimeAudioVideoMutedAll[] =
     "Media.WatchTime.AudioVideo.Muted.All";
-static const char kWatchTimeAudioVideoMutedMse[] =
+constexpr char kWatchTimeAudioVideoMutedMse[] =
     "Media.WatchTime.AudioVideo.Muted.MSE";
-static const char kWatchTimeAudioVideoMutedEme[] =
+constexpr char kWatchTimeAudioVideoMutedEme[] =
     "Media.WatchTime.AudioVideo.Muted.EME";
-static const char kWatchTimeAudioVideoMutedSrc[] =
+constexpr char kWatchTimeAudioVideoMutedSrc[] =
     "Media.WatchTime.AudioVideo.Muted.SRC";
+constexpr char kWatchTimeAudioVideoMutedHls[] =
+    "Media.WatchTime.AudioVideo.Muted.HLS";
+constexpr char kWatchTimeAudioVideoMutedDominantVisibleContent[] =
+    "Media.WatchTime.AudioVideo.Muted.DominantVisibleContent";
+constexpr char kWatchTimeAudioVideoMutedAuxiliaryVisibleContent[] =
+    "Media.WatchTime.AudioVideo.Muted.AuxiliaryVisibleContent";
 
 // Media Foundation AudioVideo watch time metric.
-static const char kWatchTimeAudioVideoMediaFoundationAll[] =
+constexpr char kWatchTimeAudioVideoMediaFoundationAll[] =
     "Media.WatchTime.AudioVideo.MediaFoundation.All";
-static const char kWatchTimeAudioVideoMediaFoundationEme[] =
+constexpr char kWatchTimeAudioVideoMediaFoundationEme[] =
     "Media.WatchTime.AudioVideo.MediaFoundation.Eme";
 
 // Automatic picture in picture for media playback watch time metrics.
-static const char kWatchTimeAudioVideoAutoPipMediaPlayback[] =
+constexpr char kWatchTimeAudioVideoAutoPipMediaPlayback[] =
     "Media.WatchTime.AudioVideo.AutoPipMediaPlayback";
-static const char kWatchTimeAudioAutoPipMediaPlayback[] =
+constexpr char kWatchTimeAudioAutoPipMediaPlayback[] =
     "Media.WatchTime.Audio.AutoPipMediaPlayback";
 
-const char kWatchTimeUnderflowCount[] = "UnderflowCount";
+}  // namespace
 
-const char kMeanTimeBetweenRebuffersAudioSrc[] =
-    "Media.MeanTimeBetweenRebuffers.Audio.SRC";
-const char kMeanTimeBetweenRebuffersAudioMse[] =
-    "Media.MeanTimeBetweenRebuffers.Audio.MSE";
-const char kMeanTimeBetweenRebuffersAudioEme[] =
-    "Media.MeanTimeBetweenRebuffers.Audio.EME";
-const char kMeanTimeBetweenRebuffersAudioVideoSrc[] =
-    "Media.MeanTimeBetweenRebuffers.AudioVideo.SRC";
-const char kMeanTimeBetweenRebuffersAudioVideoMse[] =
-    "Media.MeanTimeBetweenRebuffers.AudioVideo.MSE";
-const char kMeanTimeBetweenRebuffersAudioVideoEme[] =
-    "Media.MeanTimeBetweenRebuffers.AudioVideo.EME";
-
-const char kRebuffersCountAudioSrc[] = "Media.RebuffersCount.Audio.SRC";
-const char kRebuffersCountAudioMse[] = "Media.RebuffersCount.Audio.MSE";
-const char kRebuffersCountAudioEme[] = "Media.RebuffersCount.Audio.EME";
-const char kRebuffersCountAudioVideoSrc[] =
-    "Media.RebuffersCount.AudioVideo.SRC";
-const char kRebuffersCountAudioVideoMse[] =
-    "Media.RebuffersCount.AudioVideo.MSE";
-const char kRebuffersCountAudioVideoEme[] =
-    "Media.RebuffersCount.AudioVideo.EME";
-
-const char kDiscardedWatchTimeAudioSrc[] =
-    "Media.WatchTime.Audio.Discarded.SRC";
-const char kDiscardedWatchTimeAudioMse[] =
-    "Media.WatchTime.Audio.Discarded.MSE";
-const char kDiscardedWatchTimeAudioEme[] =
-    "Media.WatchTime.Audio.Discarded.EME";
-const char kDiscardedWatchTimeAudioVideoSrc[] =
-    "Media.WatchTime.AudioVideo.Discarded.SRC";
-const char kDiscardedWatchTimeAudioVideoMse[] =
-    "Media.WatchTime.AudioVideo.Discarded.MSE";
-const char kDiscardedWatchTimeAudioVideoEme[] =
-    "Media.WatchTime.AudioVideo.Discarded.EME";
+namespace media {
 
 std::string_view ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
   // WARNING: Returning a non-empty value will log the key to UMA.
@@ -150,6 +132,8 @@ std::string_view ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
       return kWatchTimeAudioEme;
     case WatchTimeKey::kAudioSrc:
       return kWatchTimeAudioSrc;
+    case WatchTimeKey::kAudioHls:
+      return kWatchTimeAudioHls;
     case WatchTimeKey::kAudioBattery:
       return kWatchTimeAudioBattery;
     case WatchTimeKey::kAudioAc:
@@ -168,6 +152,8 @@ std::string_view ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
       return kWatchTimeAudioBackgroundEme;
     case WatchTimeKey::kAudioBackgroundSrc:
       return kWatchTimeAudioBackgroundSrc;
+    case WatchTimeKey::kAudioBackgroundHls:
+      return kWatchTimeAudioBackgroundHls;
     case WatchTimeKey::kAudioBackgroundBattery:
       return kWatchTimeAudioBackgroundBattery;
     case WatchTimeKey::kAudioBackgroundAc:
@@ -184,6 +170,8 @@ std::string_view ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
       return kWatchTimeAudioVideoEme;
     case WatchTimeKey::kAudioVideoSrc:
       return kWatchTimeAudioVideoSrc;
+    case WatchTimeKey::kAudioVideoHls:
+      return kWatchTimeAudioVideoHls;
     case WatchTimeKey::kAudioVideoBattery:
       return kWatchTimeAudioVideoBattery;
     case WatchTimeKey::kAudioVideoAc:
@@ -194,6 +182,10 @@ std::string_view ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
       return kWatchTimeAudioVideoDisplayInline;
     case WatchTimeKey::kAudioVideoDisplayPictureInPicture:
       return kWatchTimeAudioVideoDisplayPictureInPicture;
+    case WatchTimeKey::kAudioVideoDominantVisibleContent:
+      return kWatchTimeAudioVideoDominantVisibleContent;
+    case WatchTimeKey::kAudioVideoAuxiliaryVisibleContent:
+      return kWatchTimeAudioVideoAuxiliaryVisibleContent;
     case WatchTimeKey::kAudioVideoEmbeddedExperience:
       return kWatchTimeAudioVideoEmbeddedExperience;
     case WatchTimeKey::kAudioVideoNativeControlsOn:
@@ -208,12 +200,18 @@ std::string_view ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
       return kWatchTimeAudioVideoBackgroundEme;
     case WatchTimeKey::kAudioVideoBackgroundSrc:
       return kWatchTimeAudioVideoBackgroundSrc;
+    case WatchTimeKey::kAudioVideoBackgroundHls:
+      return kWatchTimeAudioVideoBackgroundHls;
     case WatchTimeKey::kAudioVideoBackgroundBattery:
       return kWatchTimeAudioVideoBackgroundBattery;
     case WatchTimeKey::kAudioVideoBackgroundAc:
       return kWatchTimeAudioVideoBackgroundAc;
     case WatchTimeKey::kAudioVideoBackgroundEmbeddedExperience:
       return kWatchTimeAudioVideoBackgroundEmbeddedExperience;
+    case WatchTimeKey::kAudioVideoHdrAll:
+      return kWatchTimeAudioVideoHdrAll;
+    case WatchTimeKey::kAudioVideoHdrEme:
+      return kWatchTimeAudioVideoHdrEme;
     case WatchTimeKey::kAudioVideoMutedAll:
       return kWatchTimeAudioVideoMutedAll;
     case WatchTimeKey::kAudioVideoMutedMse:
@@ -222,8 +220,18 @@ std::string_view ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
       return kWatchTimeAudioVideoMutedEme;
     case WatchTimeKey::kAudioVideoMutedSrc:
       return kWatchTimeAudioVideoMutedSrc;
+    case WatchTimeKey::kAudioVideoMutedHls:
+      return kWatchTimeAudioVideoMutedHls;
+    case WatchTimeKey::kAudioVideoMutedDominantVisibleContent:
+      return kWatchTimeAudioVideoMutedDominantVisibleContent;
+    case WatchTimeKey::kAudioVideoMutedAuxiliaryVisibleContent:
+      return kWatchTimeAudioVideoMutedAuxiliaryVisibleContent;
     case WatchTimeKey::kAudioVideoMediaFoundationAll:
       return kWatchTimeAudioVideoMediaFoundationAll;
+    case WatchTimeKey::kAudioVideoMediaFoundationHdrAll:
+      return kWatchTimeAudioVideoMediaFoundationHdrAll;
+    case WatchTimeKey::kAudioVideoMediaFoundationHdrEme:
+      return kWatchTimeAudioVideoMediaFoundationHdrEme;
     case WatchTimeKey::kAudioVideoMediaFoundationEme:
       return kWatchTimeAudioVideoMediaFoundationEme;
     // WARNING: Returning a non-empty value will log the key to UMA.
@@ -234,6 +242,10 @@ std::string_view ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
     case WatchTimeKey::kAudioDisplayFullscreen:
     case WatchTimeKey::kAudioDisplayInline:
     case WatchTimeKey::kAudioDisplayPictureInPicture:
+    case WatchTimeKey::kAudioVideoSdrAll:
+    case WatchTimeKey::kAudioVideoSdrEme:
+    case WatchTimeKey::kAudioVideoMediaFoundationSdrAll:
+    case WatchTimeKey::kAudioVideoMediaFoundationSdrEme:
     case WatchTimeKey::kAudioVideoMutedBattery:
     case WatchTimeKey::kAudioVideoMutedAc:
     case WatchTimeKey::kAudioVideoMutedEmbeddedExperience:
@@ -246,11 +258,14 @@ std::string_view ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
     case WatchTimeKey::kVideoMse:
     case WatchTimeKey::kVideoEme:
     case WatchTimeKey::kVideoSrc:
+    case WatchTimeKey::kVideoHls:
     case WatchTimeKey::kVideoBattery:
     case WatchTimeKey::kVideoAc:
     case WatchTimeKey::kVideoDisplayFullscreen:
     case WatchTimeKey::kVideoDisplayInline:
     case WatchTimeKey::kVideoDisplayPictureInPicture:
+    case WatchTimeKey::kVideoDominantVisibleContent:
+    case WatchTimeKey::kVideoAuxiliaryVisibleContent:
     case WatchTimeKey::kVideoEmbeddedExperience:
     case WatchTimeKey::kVideoNativeControlsOn:
     case WatchTimeKey::kVideoNativeControlsOff:
@@ -258,6 +273,7 @@ std::string_view ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
     case WatchTimeKey::kVideoBackgroundMse:
     case WatchTimeKey::kVideoBackgroundEme:
     case WatchTimeKey::kVideoBackgroundSrc:
+    case WatchTimeKey::kVideoBackgroundHls:
     case WatchTimeKey::kVideoBackgroundBattery:
     case WatchTimeKey::kVideoBackgroundAc:
     case WatchTimeKey::kVideoBackgroundEmbeddedExperience:

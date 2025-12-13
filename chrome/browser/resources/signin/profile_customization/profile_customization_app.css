@@ -119,6 +119,16 @@
   text-overflow: ellipsis;
 }
 
+#inputTitle {
+  color: var(--color-sys-on-surface-subtle);
+  flex-grow: 1;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 16px;
+  margin: 0px auto 0px auto;
+  width: 148px;
+}
+
 #nameInput {
   --cr-form-field-label-font-size: 11px;
   --cr-input-placeholder-color: rgba(var(--google-grey-900-rgb), .5);
@@ -128,6 +138,10 @@
   height: 32px;
   margin: 16px auto;
   width: 148px;
+}
+
+#inputTitle:not([hidden]) + #nameInput {
+  margin-top: 0px;
 }
 
 #pickThemeContainer {
@@ -158,6 +172,10 @@ cr-button {
 .in-dialog-design #title {
   font-size: 20px;
   line-height: 24px;
+}
+
+.in-dialog-design #inputTitle {
+  width: 320px;
 }
 
 .in-dialog-design #nameInput {

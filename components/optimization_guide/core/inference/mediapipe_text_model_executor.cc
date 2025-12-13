@@ -28,11 +28,11 @@ std::optional<std::vector<Category>> MediapipeTextModelExecutor::Execute(
     *out_status = ExecutionStatus::kErrorEmptyOrInvalidInput;
     return std::nullopt;
   }
-  TRACE_EVENT2("browser", "MediapipeTextModelExecutor::Execute",
-               "optimization_target",
-               GetStringNameForOptimizationTarget(
-                   proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY),
-               "input_length", input.size());
+  TRACE_EVENT("optimization_guide", "MediapipeTextModelExecutor::Execute",
+              "target",
+              GetStringNameForOptimizationTarget(
+                  proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY),
+              "input_length", input.size());
 
   auto status_or_result = execution_task->Classify(input);
   if (absl::IsCancelled(status_or_result.status())) {
@@ -64,7 +64,7 @@ MediapipeTextModelExecutor::BuildModelExecutionTask(base::File& model_file) {
   }
 
   base::HeapArray<char> buffer = base::HeapArray<char>::Uninit(buffer_size);
-  base::span<char> buffer_span = buffer.span();
+  base::span<char> buffer_span = buffer.as_span();
 
   if (!model_file.ReadAndCheck(0, base::as_writable_bytes(buffer_span))) {
     LOG(ERROR) << "Failed to read model file";

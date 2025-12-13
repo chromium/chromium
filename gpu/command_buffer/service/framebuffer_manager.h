@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/small_map.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/context_group.h"
@@ -187,7 +188,7 @@ class GPU_GLES2_EXPORT Framebuffer : public base::RefCounted<Framebuffer> {
 
   GLenum GetDrawBuffer(GLenum draw_buffer) const;
 
-  void SetDrawBuffers(GLsizei n, const GLenum* bufs);
+  void SetDrawBuffers(base::span<const GLenum> bufs);
 
   // If a color buffer is attached to GL_COLOR_ATTACHMENTi, enable that
   // draw buffer for glClear().

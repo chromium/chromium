@@ -5,7 +5,6 @@
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
-import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import type {Time, TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 import type {PageHandlerRemote, WebUITopic} from './browsing_topics_internals.mojom-webui.js';
@@ -22,10 +21,6 @@ function setElementVisible(id: string, visible: boolean) {
 function setButtonEnabled(id: string, enabled: boolean) {
   const element = document.querySelector<HTMLButtonElement>('#' + id);
   element!.disabled = !enabled;
-}
-
-function decodeString16(arr: String16) {
-  return arr.data.map(ch => String.fromCodePoint(ch)).join('');
 }
 
 function formatTimeDuration(totalMicrosecondsBigInt: bigint) {
@@ -86,7 +81,7 @@ function createTopicRow(topic: WebUITopic) {
       HTMLElement;
   const nestedCells = row.querySelectorAll('td');
   nestedCells[0]!.textContent = String(topic.topicId);
-  nestedCells[1]!.textContent = decodeString16(topic.topicName);
+  nestedCells[1]!.textContent = topic.topicName;
   nestedCells[2]!.textContent = getRealOrRandomStatusText(topic.isRealTopic);
 
   topic.observedByDomains.forEach((domain) => {
@@ -134,7 +129,7 @@ async function asyncGetBrowsingTopicsConfiguration() {
       .forEach(id => {
         const div = document.querySelector<HTMLElement>(`#${id}`);
         assert(div);
-        div.textContent! += getEnabledStatusText(
+        div.textContent += getEnabledStatusText(
             config[fieldNameFromId(id) as keyof typeof config] as boolean);
       });
 
@@ -150,7 +145,7 @@ async function asyncGetBrowsingTopicsConfiguration() {
       .forEach(id => {
         const div = document.querySelector<HTMLElement>(`#${id}`);
         assert(div);
-        div.textContent! +=
+        div.textContent +=
             (config[fieldNameFromId(id) as keyof typeof config] as number);
       });
 
@@ -159,7 +154,7 @@ async function asyncGetBrowsingTopicsConfiguration() {
       id => {
         const div = document.querySelector<HTMLElement>(`#${id}`);
         assert(div);
-        div.textContent! += formatTimeDuration(
+        div.textContent += formatTimeDuration(
             (config[fieldNameFromId(id) as keyof typeof config] as TimeDelta)
                 .microseconds);
       });
@@ -236,8 +231,7 @@ function createClassificationResultRow(host: string, topics: WebUITopic[]) {
   nestedCells[0]!.textContent = host;
 
   topics.forEach((topic) => {
-    const topicText =
-        String(topic.topicId) + '. ' + decodeString16(topic.topicName);
+    const topicText = String(topic.topicId) + '. ' + topic.topicName;
     nestedCells[1]!.appendChild(
         createClassificationResultTopicEntry(topicText));
   });

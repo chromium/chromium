@@ -26,12 +26,9 @@ void GraphicsDelegateWin::Initialize(base::OnceClosure on_initialized) {
       content::GetGpuChannelEstablishFactory();
   gpu_channel_host_ = factory->EstablishGpuChannelSync();
 
-  gpu::ContextCreationAttribs attributes;
-  context_provider_ = base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
+  context_provider_ = viz::ContextProviderCommandBuffer::CreateForGL(
       gpu_channel_host_, content::kGpuStreamIdDefault,
       content::kGpuStreamPriorityUI, GURL(std::string("chrome://gpu/VrUiWin")),
-      false /* automatic flushes */, false /* support locking */,
-      gpu::SharedMemoryLimits::ForMailboxContext(), attributes,
       viz::command_buffer_metrics::ContextType::XR_COMPOSITING);
 
   if (context_provider_->BindToCurrentSequence() ==

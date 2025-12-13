@@ -55,7 +55,13 @@ class TranslateKitComponentInstallerPolicy : public ComponentInstallerPolicy {
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  void OnImageLoaderComponentLoaded(std::optional<base::FilePath> mount_path);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   raw_ptr<PrefService> pref_service_;
+  base::WeakPtrFactory<TranslateKitComponentInstallerPolicy> weak_factory_{
+      this};
 };
 
 // Call once during startup to make the component update service aware of

@@ -12,6 +12,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_wp_color_manager.h"
 
 namespace ui {
 
@@ -49,10 +50,11 @@ void WaylandOutputManager::AddWaylandOutput(WaylandOutput::Id output_id,
     wayland_output->InitializeXdgOutput(connection_->xdg_output_manager_v1());
   }
 
-  if (connection_->zcr_color_manager()) {
-    wayland_output->InitializeColorManagementOutput(
-        connection_->zcr_color_manager());
+  if (auto* wp_color_manager = connection_->wp_color_manager();
+      wp_color_manager && wp_color_manager->ready()) {
+    wayland_output->InitializeWpColorManagementOutput(wp_color_manager);
   }
+
   DCHECK(!wayland_output->IsReady());
 
   output_list_[output_id] = std::move(wayland_output);
@@ -84,11 +86,13 @@ void WaylandOutputManager::InitializeAllXdgOutputs() {
     output.second->InitializeXdgOutput(connection_->xdg_output_manager_v1());
 }
 
-void WaylandOutputManager::InitializeAllColorManagementOutputs() {
-  DCHECK(connection_->zcr_color_manager());
-  for (const auto& output : output_list_)
-    output.second->InitializeColorManagementOutput(
-        connection_->zcr_color_manager());
+void WaylandOutputManager::InitializeAllWpColorManagementOutputs() {
+  auto* wp_color_manager = connection_->wp_color_manager();
+  CHECK(wp_color_manager);
+  CHECK(wp_color_manager->ready());
+  for (const auto& output : output_list_) {
+    output.second->InitializeWpColorManagementOutput(wp_color_manager);
+  }
 }
 
 std::unique_ptr<WaylandScreen> WaylandOutputManager::CreateWaylandScreen() {

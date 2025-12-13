@@ -18,11 +18,11 @@ source_set("bubble") {
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/browser_window:browser_window",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui:webui_util",
     "//content/public/browser",
     "//skia",
-    "//ui/base",
+    "//ui/base/interaction",
     "//ui/views",
     "//ui/views/controls/webview",
 

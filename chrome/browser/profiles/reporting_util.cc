@@ -37,11 +37,13 @@
 
 namespace {
 
+#if BUILDFLAG(IS_CHROMEOS)
 // Returns policy for the given |profile|. If failed to get policy returns
 // nullptr.
 const enterprise_management::PolicyData* GetPolicyData(Profile* profile) {
-  if (!profile)
+  if (!profile) {
     return nullptr;
+  }
 
   auto* manager = profile->GetCloudPolicyManager();
   if (!manager) {
@@ -56,7 +58,6 @@ const enterprise_management::PolicyData* GetPolicyData(Profile* profile) {
   return store->policy();
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 // A callback which fetches device dm_token based on user affiliation.
 using DeviceDMTokenCallback = base::RepeatingCallback<std::string(
     const std::vector<std::string>& user_affiliation_ids)>;
@@ -221,23 +222,23 @@ enterprise_connectors::ClientMetadata GetContextAsClientMetadata(
 // Otherwise returns empty string. More about DMToken:
 // go/dmserver-domain-model#dmtoken.
 std::optional<std::string> GetUserDmToken(Profile* profile) {
-  if (!profile)
+  if (!profile) {
     return std::nullopt;
-
-  const enterprise_management::PolicyData* policy_data = GetPolicyData(profile);
-  if (!policy_data || !policy_data->has_request_token())
+  }
+  auto* manager = profile->GetCloudPolicyManager();
+  if (!manager) {
     return std::nullopt;
-  return policy_data->request_token();
+  }
+  std::optional<policy::DMToken> dm_token = manager->GetDMToken();
+  return dm_token ? std::make_optional(dm_token->value()) : std::nullopt;
 }
 
 std::optional<std::string> GetUserClientId(Profile* profile) {
-  if (!profile)
+  if (!profile) {
     return std::nullopt;
-
-  const enterprise_management::PolicyData* policy_data = GetPolicyData(profile);
-  if (!policy_data || !policy_data->has_device_id())
-    return std::nullopt;
-  return policy_data->device_id();
+  }
+  auto* manager = profile->GetCloudPolicyManager();
+  return manager ? manager->GetClientId() : std::nullopt;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

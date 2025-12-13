@@ -78,6 +78,10 @@ IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
                        TabContextPermissionTestDeny) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   const InteractiveBrowserTest::DeepQuery kContextToggle = {"#getpagecontext"};
   browser()->profile()->GetPrefs()->SetBoolean(
       glic::prefs::kGlicTabContextEnabled, false);
@@ -92,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
           test::kGlicContentsElementId,
           "() => document.querySelector('#getPageContextStatus').innerText",
           "Error getting page context: Error: tabContext failed: permission "
-          "denied"));
+          "denied: context permission not enabled"));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,

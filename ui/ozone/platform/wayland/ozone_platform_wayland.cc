@@ -28,9 +28,9 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
-#include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/linux/client_native_pixmap_dmabuf.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/common/base_keyboard_hook.h"
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/drm_render_node_handle.h"
@@ -290,7 +290,7 @@ class OzonePlatformWayland : public OzonePlatform,
     }
 
     buffer_manager_connector_ = std::make_unique<WaylandBufferManagerConnector>(
-        connection_->buffer_manager_host());
+        connection_.get(), connection_->buffer_manager_host());
     cursor_factory_ = std::make_unique<WaylandCursorFactory>(connection_.get());
     input_controller_ = std::make_unique<StubInputController>();
     gpu_platform_support_host_.reset(CreateStubGpuPlatformSupportHost());
@@ -364,9 +364,6 @@ class OzonePlatformWayland : public OzonePlatform,
       // support, probably backed by org.freedesktop.portal.Screenshot.PickColor
       // API is implemented.
       properties->supports_color_picker_dialog = false;
-
-      // TODO(crbug.com/425715421): Remove this once support is implemented.
-      properties->supports_split_view_drag_and_drop = false;
 
       initialised = true;
     }
@@ -488,12 +485,12 @@ class OzonePlatformWayland : public OzonePlatform,
   }
 
   void PostMainMessageLoopRun() override {
-    // TODO(b/324294360): This will cause a lot of dangling pointers, which
-    // breaks linux wayland bot. Fix them and enable on linux as well.
-#if BUILDFLAG(IS_CHROMEOS) || !PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+    linux_ui_delegate_.reset();
+    wayland_utils_.reset();
+    menu_utils_.reset();
+    buffer_manager_connector_.reset();
     cursor_factory_.reset();
     connection_.reset();
-#endif
   }
 
   std::unique_ptr<PlatformKeyboardHook> CreateKeyboardHook(

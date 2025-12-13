@@ -15,12 +15,11 @@
 #include "chrome/android/chrome_jni_headers/TabBrowserControlsConstraintsHelper_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 TabBrowserControlsConstraintsHelper::TabBrowserControlsConstraintsHelper(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj)
+    const JavaRef<jobject>& obj)
     : jobj_(env, obj) {}
 
 TabBrowserControlsConstraintsHelper::~TabBrowserControlsConstraintsHelper() =
@@ -32,11 +31,11 @@ void TabBrowserControlsConstraintsHelper::OnDestroyed(JNIEnv* env) {
 
 void TabBrowserControlsConstraintsHelper::UpdateState(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
+    const JavaRef<jobject>& jweb_contents,
     jint constraints,
     jint current,
     jboolean animate,
-    const JavaParamRef<jobject>& joffset_tag_modifications) {
+    const JavaRef<jobject>& joffset_tag_modifications) {
   cc::BrowserControlsState constraints_state =
       static_cast<cc::BrowserControlsState>(constraints);
   cc::BrowserControlsState current_state =
@@ -56,7 +55,9 @@ void TabBrowserControlsConstraintsHelper::UpdateState(
 
 static jlong JNI_TabBrowserControlsConstraintsHelper_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+    const JavaRef<jobject>& obj) {
   return reinterpret_cast<intptr_t>(
       new TabBrowserControlsConstraintsHelper(env, obj));
 }
+
+DEFINE_JNI(TabBrowserControlsConstraintsHelper)

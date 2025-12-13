@@ -27,6 +27,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/table_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 
 namespace autofill {
@@ -168,12 +169,17 @@ bool HasAddressEntry(const std::vector<ProfileValueDifference>& diff) {
 }  // namespace
 
 UpdateAddressProfileView::UpdateAddressProfileView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor_view,
     std::unique_ptr<UpdateAddressBubbleController> controller,
     content::WebContents* web_contents)
     : AddressBubbleBaseView(anchor_view, web_contents),
       controller_(std::move(controller)) {
   auto* layout_provider = views::LayoutProvider::Get();
+
+  std::vector<ProfileValueDifference> profile_diff = GetProfileDifferenceForUi(
+      controller_->GetProfileToSave(), controller_->GetOriginalProfile(),
+      g_browser_process->GetApplicationLocale());
+  has_empty_original_values_ = !HasNonEmptySecondValues(profile_diff);
 
   SetAcceptCallback(
       base::BindOnce(&UpdateAddressBubbleController::OnUserDecision,
@@ -186,13 +192,13 @@ UpdateAddressProfileView::UpdateAddressProfileView(
       AutofillClient::AddressPromptUserDecision::kDeclined, std::nullopt));
 
   SetProperty(views::kElementIdentifierKey, kTopViewId);
-  SetTitle(controller_->GetWindowTitle());
-  SetButtonLabel(ui::mojom::DialogButton::kOk,
-                 l10n_util::GetStringUTF16(
-                     IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL));
-  SetButtonLabel(ui::mojom::DialogButton::kCancel,
-                 l10n_util::GetStringUTF16(
-                     IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL));
+  SetTitle(controller_->GetWindowTitle(has_empty_original_values_));
+  SetButtonLabel(
+      ui::mojom::DialogButton::kOk,
+      controller_->GetPositiveButtonText(has_empty_original_values_));
+  SetButtonLabel(
+      ui::mojom::DialogButton::kCancel,
+      controller_->GetNegativeButtonText(has_empty_original_values_));
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
@@ -203,10 +209,6 @@ UpdateAddressProfileView::UpdateAddressProfileView(
                   gfx::Insets::VH(layout_provider->GetDistanceMetric(
                                       views::DISTANCE_CONTROL_LIST_VERTICAL),
                                   0));
-
-  std::vector<ProfileValueDifference> profile_diff = GetProfileDifferenceForUi(
-      controller_->GetProfileToSave(), controller_->GetOriginalProfile(),
-      g_browser_process->GetApplicationLocale());
 
   std::u16string subtitle = GetProfileDescription(
       controller_->GetOriginalProfile(),
@@ -222,12 +224,10 @@ UpdateAddressProfileView::UpdateAddressProfileView(
   auto* main_content_view =
       AddChildView(std::make_unique<views::TableLayoutView>());
 
-  bool has_non_empty_original_values = HasNonEmptySecondValues(profile_diff);
-
   // Build the TableLayoutView columns.
   const int column_divider = layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
-  if (has_non_empty_original_values) {
+  if (!has_empty_original_values_) {
     // Label column exists only if there is a section for original values.
     main_content_view
         ->AddColumn(
@@ -254,12 +254,12 @@ UpdateAddressProfileView::UpdateAddressProfileView(
 
   AddValuesRow(
       main_content_view, profile_diff,
-      /*show_row_label=*/has_non_empty_original_values,
+      /*show_row_label=*/!has_empty_original_values_,
       /*edit_button_callback=*/
       base::BindRepeating(&UpdateAddressBubbleController::OnEditButtonClicked,
                           base::Unretained(controller_.get())));
 
-  if (has_non_empty_original_values) {
+  if (!has_empty_original_values_) {
     main_content_view->AddPaddingRow(
         views::TableLayout::kFixedSize,
         layout_provider->GetDistanceMetric(
@@ -293,7 +293,7 @@ bool UpdateAddressProfileView::ShouldShowCloseButton() const {
 }
 
 std::u16string UpdateAddressProfileView::GetWindowTitle() const {
-  return controller_->GetWindowTitle();
+  return controller_->GetWindowTitle(has_empty_original_values_);
 }
 
 void UpdateAddressProfileView::WindowClosing() {

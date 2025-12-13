@@ -1,0 +1,185 @@
+description = "Debug a minidump from an official Chrome build"
+prompt = """
+## Tips for debugging official Chrome releases
+
+### Inspecting Minidump Annotations
+
+When debugging a minidump, begin by inspecting annotations to determine product
+and version information. To inspect annotations in a minidump file, you can use
+the `/google/bin/releases/crash/minidump_dump` tool with `grep` to filter the
+output. This is useful for quickly extracting information like the product,
+version, and channel.
+
+**Command:**
+
+```bash
+/google/bin/releases/crash/minidump_dump <minidump_file> 2>/dev/null | grep -E 'crashpad_annotations|simple_annotations' | grep -E 'prod|ver|chromeos-builder-path|channel|package'
+```
+
+**Example:**
+
+```bash
+/google/bin/releases/crash/minidump_dump upload_file_minidump-b121d488702043e3.dmp 2>/dev/null | grep -E 'crashpad_annotations|simple_annotations' | grep -E 'prod|ver|chromeos-builder-path|channel|package'
+```
+
+This command will output the values for the specified annotations, if they exist
+in the minidump file.
+
+### Downloading Chrome for Android Debug Symbols
+
+To download debug symbols for a Chrome for Android minidump, follow these steps:
+
+1.  **Extract the 'package' annotation:** Use
+    `/google/bin/releases/crash/minidump_dump` to get the package information
+    from the minidump file. /google/bin/releases/crash/minidump_dump
+    <minidump_file> 2>/dev/null | grep 'package'
+
+    1.  **Parse the package information:** The output will contain a line like
+        this: `simple_annotations["package"] = com.chrome.canary v720500033
+        (139.0.7205.0)`
+
+        From this, you can extract:
+
+        *   **Version:** `139.0.7205.0`
+        *   **Version Code:** `v720500033`
+
+    2.  **Determine the architecture:** The last digit of the version code
+        determines the architecture. Use the following mapping:
+
+    Digit | Architecture
+    :---- | :------------------
+    0     | arm
+    1     | arm_64
+    2     | arm_64
+    3     | high-arm_64
+    4     | desktop-high-arm_64
+    6     | x86
+    7     | x86_64
+    8     | x86_64
+    9     | desktop-x86_64
+
+    1.  **Determine the symbol file name:**
+
+        *   If the last digit of the version code is `1` or `7`, the file name
+            is `Monochrome_symbols-secondary.zip`.
+        *   Otherwise, the file name is `Monochrome_symbols.zip`.
+
+    2.  **Construct the download command:** Use the following `gcloud storage
+        cp` command format: gcloud storage cp
+        gs://chrome-unsigned/android-B0urB0N/{version}/{arch}/{name} ./
+
+        Replace `{version}`, `{arch}`, and `{name}` with the values you
+        determined in the previous steps.
+
+    **Example:**
+
+    Using the package information from step 2: * **Version:** `139.0.7205.0` *
+    **Version Code:** `v720500033` -> last digit is `3` * **Architecture:**
+    `high-arm_64` * **Symbol File Name:** `Monochrome_symbols.zip`
+
+    The final command is: gcloud storage cp
+    gs://chrome-unsigned/android-B0urB0N/139.0.7205.0/high-arm_64/Monochrome_symbols.zip
+    ./
+
+### ChromeOS Debug Symbol Workflow
+
+When tasked with finding the download command for ChromeOS debug symbols from a
+minidump file, follow this procedure strictly:
+
+1.  **Prioritize the `channel` annotation:** Always extract the `channel`
+    annotation from the minidump first. This is the authoritative source for the
+    release channel.
+2.  **Use the `chromeos-builder-path` for other details:** Use the
+    `chromeos-builder-path` annotation *only* to extract the board name and
+    version number.
+3.  **Construct the gsutil path:** Combine the information in the following
+    format:
+    `gs://chromeos-releases/<channel>-channel/<board>/<version>/debug-<board>.tgz`
+
+    **Example:**
+
+    If the annotations are:
+
+4.  `channel`: "dev"
+
+5.  `chromeos-builder-path`: "puff-release/R139-16328.2.0"
+
+    The correct path is
+    `gs://chromeos-releases/dev-channel/puff/16328.2.0/debug-puff.tgz`.
+
+    **Crucially, do not infer the channel from the `chromeos-builder-path`.**
+    The `-release` suffix in the path is not a channel.
+
+### Setting up LLDB with Debug Information
+
+This guide explains how to prepare debug information for loading into LLDB in
+two steps:
+
+1. Unpack the debug information into a directory using a command like:
+
+```bash
+tar -xvf debug-puff.tgz --one-top-level=debug-information
+```
+
+2. Create a directory with symlinks to the debug files needed to debug the
+minidump by executing a script:
+
+```bash
+.gemini/commands/crash/link_symbols.sh <debug_information_dir> <minidump_file>.
+```
+
+The command creates a directory `lldb-symbols`, and creates symlinks within this
+directory pointing to the corresponding debug files mentioned in the minidump
+and found in the unpacked archive.
+
+You can then point LLDB to this directory to load the symbols for your debugging
+session.
+
+### Driving LLDB
+
+# Debugging Minidumps with LLDB and Local Symbols
+
+This guide explains how to load a minidump file into LLDB and point it to a
+directory containing the corresponding debug symbols. This is useful for
+analyzing crashes when you have the symbols available locally.
+
+## Command Structure
+
+The basic command to launch LLDB with a minidump and local symbols is: lldb \
+-o "settings set target.exec-search-paths <path_to_symbols_dir>" \
+-o "target create -c <path_to_minidump>"
+
+### Breakdown of the command:
+
+*   `lldb`: Starts LLDB
+*   `-o "settings set target.exec-search-paths <path_to_symbols_dir>"`: This is
+    a crucial one-time command (`-o`) that tells LLDB where to find the debug
+    symbols for the executable and its loaded libraries. LLDB will search in
+    `<path_to_symbols_dir>` for the necessary `.debug` and `.dwp` files.
+*   `-o "target create -c <path_to_minidump>"`: Specifies the minidump file to
+    be analyzed.
+
+## Example Workflow Here is an example based on a real debugging session.
+
+1.  **Symbols Directory:** First, ensure you have a directory (e.g.,
+    `lldb-symbols`) populated with symlinks to the debug symbols (`.debug`
+    files) and the main binary (`chrome` in this case).
+
+2.  **Launch LLDB and Load Data:** Use the following command to start LLDB, load
+    the minidump, and set the symbol search path all at once. lldb \
+    -o "settings set target.exec-search-paths lldb-symbols" \
+    -o "target create -c upload_file_minidump-faf8c85c5b360699.dmp"
+
+3.  **Analyze the Crash:** Once LLDB has loaded, you can immediately use
+    commands to investigate the crash state:
+
+    *   **`bt` (backtrace):** To view the stack trace of the crashed thread.
+    *   **`disassemble -p`:** To see the assembly code around the program
+        counter where the crash occurred.
+
+    You can also combine these into a single command for quick analysis: lldb \
+    -o "settings set target.exec-search-paths lldb-symbols" \
+    -o "target create -c upload_file_minidump-faf8c85c5b360699.dmp" \
+    -o "bt" \
+    -o "disassemble -p"
+"""

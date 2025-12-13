@@ -13,7 +13,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
@@ -262,7 +261,7 @@ class SiteSettingsHandler
   // Returns a list of content settings types that are controlled via a standard
   // permissions UI and should be made visible to the user. There is a single
   // nullable string argument, which represents an associated origin. See
-  // `SiteSettingsPrefsBrowserProxy#getCategoryList`.
+  // `SiteSettingsBrowserProxy#getCategoryList`.
   void HandleGetCategoryList(const base::Value::List& args);
 
   // Returns a list of sites, grouped by their effective top level domain plus

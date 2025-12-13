@@ -29,8 +29,7 @@ const testFunction = function(session, fakeDeviceController, t) {
     }
 
     return Promise.resolve({
-      result : SubscribeToHitTestResult.SUCCESS,
-      subscriptionId : 1001
+      subscriptionId : { idValue: 1001 }
     });
   }
 

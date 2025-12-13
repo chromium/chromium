@@ -125,6 +125,16 @@ void COMPONENT_EXPORT(DEVICE_FIDO) BuildCommandRequestBody(
     base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
         complete_callback);
 
+// Returns a copy of the enclave `request` with its sensitive information (such
+// as end-to-end encryption secrets) removed.
+cbor::Value COMPONENT_EXPORT(DEVICE_FIDO)
+    RedactEnclaveRequest(const cbor::Value& request);
+
+// Returns a copy of the enclave `response` with its sensitive information (such
+// as prf outputs) removed.
+cbor::Value COMPONENT_EXPORT(DEVICE_FIDO)
+    RedactEnclaveResponse(const cbor::Value& response);
+
 }  // namespace enclave
 
 }  // namespace device

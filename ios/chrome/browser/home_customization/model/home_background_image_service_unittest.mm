@@ -20,7 +20,6 @@
 #import "url/gurl.h"
 
 using testing::_;
-using testing::DoAll;
 using testing::SaveArg;
 
 namespace {
@@ -107,8 +106,7 @@ TEST_F(HomeBackgroundImageServiceTest, SuccessFetchCollectionsImagesResponse) {
   HomeBackgroundImageService::CollectionImageMap collections_images;
   base::MockCallback<HomeBackgroundImageService::CollectionsImagesCallback>
       mock_callback;
-  EXPECT_CALL(mock_callback, Run(_))
-      .WillOnce(DoAll(SaveArg<0>(&collections_images)));
+  EXPECT_CALL(mock_callback, Run(_)).WillOnce(SaveArg<0>(&collections_images));
 
   base::RunLoop run_loop;
   model_.get()->FetchCollectionsImages(
@@ -162,8 +160,7 @@ TEST_F(HomeBackgroundImageServiceTest,
   HomeBackgroundImageService::CollectionImageMap collections_images;
   base::MockCallback<HomeBackgroundImageService::CollectionsImagesCallback>
       mock_callback;
-  EXPECT_CALL(mock_callback, Run(_))
-      .WillOnce(DoAll(SaveArg<0>(&collections_images)));
+  EXPECT_CALL(mock_callback, Run(_)).WillOnce(SaveArg<0>(&collections_images));
 
   base::RunLoop run_loop;
   model_.get()->FetchDefaultCollectionImages(
@@ -226,8 +223,7 @@ TEST_F(HomeBackgroundImageServiceTest,
   HomeBackgroundImageService::CollectionImageMap collections_images;
   base::MockCallback<HomeBackgroundImageService::CollectionsImagesCallback>
       mock_callback;
-  EXPECT_CALL(mock_callback, Run(_))
-      .WillOnce(DoAll(SaveArg<0>(&collections_images)));
+  EXPECT_CALL(mock_callback, Run(_)).WillOnce(SaveArg<0>(&collections_images));
 
   base::RunLoop run_loop;
   model_.get()->FetchCollectionsImages(
@@ -286,8 +282,7 @@ TEST_F(HomeBackgroundImageServiceTest,
   HomeBackgroundImageService::CollectionImageMap collections_images;
   base::MockCallback<HomeBackgroundImageService::CollectionsImagesCallback>
       mock_callback;
-  EXPECT_CALL(mock_callback, Run(_))
-      .WillOnce(DoAll(SaveArg<0>(&collections_images)));
+  EXPECT_CALL(mock_callback, Run(_)).WillOnce(SaveArg<0>(&collections_images));
 
   base::RunLoop run_loop;
   model_.get()->FetchDefaultCollectionImages(
@@ -318,8 +313,7 @@ TEST_F(HomeBackgroundImageServiceTest,
   SetUpResponseWithData(service_.get()->GetCollectionsLoadURLForTesting(),
                         second_response_string);
 
-  EXPECT_CALL(mock_callback, Run(_))
-      .WillOnce(DoAll(SaveArg<0>(&collections_images)));
+  EXPECT_CALL(mock_callback, Run(_)).WillOnce(SaveArg<0>(&collections_images));
 
   base::RunLoop run_loop_2;
   model_.get()->FetchCollectionsImages(
@@ -344,8 +338,7 @@ TEST_F(HomeBackgroundImageServiceTest, BadCollectionResponse) {
   HomeBackgroundImageService::CollectionImageMap collections_images;
   base::MockCallback<HomeBackgroundImageService::CollectionsImagesCallback>
       mock_callback;
-  EXPECT_CALL(mock_callback, Run(_))
-      .WillOnce(DoAll(SaveArg<0>(&collections_images)));
+  EXPECT_CALL(mock_callback, Run(_)).WillOnce(SaveArg<0>(&collections_images));
 
   base::RunLoop run_loop;
   model_.get()->FetchCollectionsImages(
@@ -373,8 +366,7 @@ TEST_F(HomeBackgroundImageServiceTest, CollectionImagesNetworkErrorResponse) {
   HomeBackgroundImageService::CollectionImageMap collections_images;
   base::MockCallback<HomeBackgroundImageService::CollectionsImagesCallback>
       mock_callback;
-  EXPECT_CALL(mock_callback, Run(_))
-      .WillOnce(DoAll(SaveArg<0>(&collections_images)));
+  EXPECT_CALL(mock_callback, Run(_)).WillOnce(SaveArg<0>(&collections_images));
 
   base::RunLoop run_loop;
   model_.get()->FetchCollectionsImages(
@@ -392,8 +384,7 @@ TEST_F(HomeBackgroundImageServiceTest, CollectionNetworkErrorResponse) {
   HomeBackgroundImageService::CollectionImageMap collections_images;
   base::MockCallback<HomeBackgroundImageService::CollectionsImagesCallback>
       mock_callback;
-  EXPECT_CALL(mock_callback, Run(_))
-      .WillOnce(DoAll(SaveArg<0>(&collections_images)));
+  EXPECT_CALL(mock_callback, Run(_)).WillOnce(SaveArg<0>(&collections_images));
 
   base::RunLoop run_loop;
   model_.get()->FetchCollectionsImages(

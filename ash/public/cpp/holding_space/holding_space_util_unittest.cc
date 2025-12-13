@@ -91,10 +91,10 @@ TEST_F(HoldingSpaceUtilAshTest, ExtractFilePaths) {
 
   // Configure the `client` to crack file system URLs.
   ON_CALL(client, CrackFileSystemUrl)
-      .WillByDefault(testing::Invoke([](const GURL& file_system_url) {
+      .WillByDefault([](const GURL& file_system_url) {
         return base::FilePath(base::StrCat(
             {"//path/to/", std::string(&file_system_url.spec().back())}));
-      }));
+      });
 
   // Case: Empty.
   data = CreateOSExchangeData(file_system_sources, filenames);

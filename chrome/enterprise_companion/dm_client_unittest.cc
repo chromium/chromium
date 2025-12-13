@@ -11,7 +11,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -28,8 +27,10 @@
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/event_logger.h"
 #include "chrome/enterprise_companion/proto/enterprise_companion_event.pb.h"
+#include "components/policy/core/common/cloud/client_data_delegate.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -299,6 +300,45 @@ TEST_F(DMClientTest, RegisterDeviceSuccess) {
               RegisterPolicyAgentWithEnrollmentToken(kFakeEnrollmentToken,
                                                      kFakeDeviceId, _))
       .WillOnce([&] {
+        mock_cloud_policy_client_->SetDMToken(kFakeDMToken);
+        mock_cloud_policy_client_->NotifyRegistrationStateChanged();
+      });
+
+  base::RunLoop run_loop;
+  dm_client_->RegisterPolicyAgent(
+      test_event_logger_,
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
+        EXPECT_TRUE(status.ok());
+        test_event_logger_->Flush(run_loop.QuitClosure());
+      }));
+  run_loop.Run();
+
+  EXPECT_EQ(test_token_service_->GetDmToken(), kFakeDMToken);
+  EXPECT_THAT(test_event_logger_->registration_events(),
+              ElementsAre(EnterpriseCompanionStatus::Success()));
+  EXPECT_TRUE(test_event_logger_->policy_fetch_events().empty());
+}
+
+TEST_F(DMClientTest, FillRegisterBrowserRequest) {
+  test_token_service_->StoreEnrollmentToken(kFakeEnrollmentToken);
+  EXPECT_CALL(*mock_cloud_policy_client_,
+              RegisterPolicyAgentWithEnrollmentToken(kFakeEnrollmentToken,
+                                                     kFakeDeviceId, _))
+      .WillOnce([&](const std::string&, const std::string&,
+                    const policy::ClientDataDelegate& client_data_delegate) {
+        enterprise_management::RegisterBrowserRequest request;
+        base::RunLoop run_loop;
+        client_data_delegate.FillRegisterBrowserRequest(&request,
+                                                        run_loop.QuitClosure());
+        run_loop.Run();
+
+        EXPECT_EQ(request.os_platform(), policy::GetOSPlatform());
+        EXPECT_EQ(request.os_version(), policy::GetOSVersion());
+        ASSERT_TRUE(request.has_browser_device_identifier());
+        EXPECT_FALSE(
+            request.browser_device_identifier().computer_name().empty());
+
+        // Complete the registration for the outer call.
         mock_cloud_policy_client_->SetDMToken(kFakeDMToken);
         mock_cloud_policy_client_->NotifyRegistrationStateChanged();
       });

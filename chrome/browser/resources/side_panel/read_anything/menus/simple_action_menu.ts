@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -11,7 +12,8 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {openMenu, ToolbarEvent} from '../common.js';
+import {ToolbarEvent} from '../content/read_anything_types.js';
+import {openMenu} from '../shared/common.js';
 
 import type {MenuStateItem} from './menu_util.js';
 import {getCss} from './simple_action_menu.css.js';

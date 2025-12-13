@@ -45,15 +45,9 @@ NSString* const kLastSignificantUserEventMadeForIOS =
 NSString* const kLastSignificantUserEventAllTabs =
     @"lastSignificantUserEventAllTabs";
 
-// Action string for "Appear" event of the promo.
-const char kAppearAction[] = "Appear";
-
 // Maximum number of past event timestamps to record.
 const size_t kMaxPastTimestampsToRecord = 10;
 
-// Maximum number of past event timestamps to record for trigger criteria
-// experiment.
-const size_t kMaxPastTimestampsToRecordForTriggerCriteriaExperiment = 50;
 
 // Time threshold before activity timestamps should be removed.
 constexpr base::TimeDelta kUserActivityTimestampExpiration = base::Days(21);
@@ -68,15 +62,8 @@ constexpr base::TimeDelta kFullscreenPromoCoolDown = base::Days(14);
 // Short cool down between promos.
 constexpr base::TimeDelta kPromosShortCoolDown = base::Days(3);
 
-// Time threshold for default browser trigger criteria experiment statistics.
-constexpr base::TimeDelta kTriggerCriteriaExperimentStatExpiration =
-    base::Days(14);
-
 // Returns maximum number of past event timestamps to record.
 size_t GetMaxPastTimestampsToRecord() {
-  if (IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
-    return kMaxPastTimestampsToRecordForTriggerCriteriaExperiment;
-  }
   return kMaxPastTimestampsToRecord;
 }
 
@@ -159,32 +146,6 @@ NSString* StorageKeyForDefaultPromoType(DefaultPromoType type) {
 }
 
 // Loads from NSUserDefaults the time of the non-expired events for the
-// given key into the given container.
-void LoadActiveDatesForKey(NSString* key,
-                           base::TimeDelta delay,
-                           std::set<base::Time>& dates_set) {
-  NSArray* dates = GetObjectFromStorageForKey<NSArray>(key);
-  if (!dates) {
-    return;
-  }
-
-  const base::Time now = base::Time::Now();
-  for (NSObject* object : dates) {
-    NSDate* date = base::apple::ObjCCast<NSDate>(object);
-    if (!date) {
-      continue;
-    }
-
-    const base::Time time = base::Time::FromNSDate(date);
-    if (now - time > delay) {
-      continue;
-    }
-
-    dates_set.insert(time.LocalMidnight());
-  }
-}
-
-// Loads from NSUserDefaults the time of the non-expired events for the
 // given key.
 std::vector<base::Time> LoadActiveTimestampsForKey(NSString* key,
                                                    base::TimeDelta delay) {
@@ -245,23 +206,6 @@ bool HasRecordedEventForKeyLessThanDelay(NSString* key, base::TimeDelta delay) {
   return base::Time::Now() - time < delay;
 }
 
-// Returns whether an event was logged for key occuring more than `delay`
-// in the past.
-bool HasRecordedEventForKeyMoreThanDelay(NSString* key, base::TimeDelta delay) {
-  NSDate* date = GetObjectFromStorageForKey<NSDate>(key);
-  if (!date) {
-    return false;
-  }
-
-  const base::Time time = base::Time::FromNSDate(date);
-  return base::Time::Now() - time > delay;
-}
-
-// Returns number of events logged for key occuring less than `delay` in the
-// past.
-int NumRecordedEventForKeyLessThanDelay(NSString* key, base::TimeDelta delay) {
-  return LoadActiveTimestampsForKey(key, delay).size();
-}
 // `YES` if user interacted with the first run default browser screen.
 BOOL HasUserInteractedWithFirstRunPromoBefore() {
   NSNumber* number =
@@ -315,28 +259,6 @@ int NumDaysSincePromoInteraction() {
   return days;
 }
 
-// Returns number of days in past `kTriggerCriteriaExperimentStatExpiration`
-// days when user opened chrome.
-int NumActiveDays() {
-  std::set<base::Time> active_dates;
-
-  LoadActiveDatesForKey(kAllTimestampsAppLaunchColdStart,
-                        kTriggerCriteriaExperimentStatExpiration, active_dates);
-  LoadActiveDatesForKey(kAllTimestampsAppLaunchWarmStart,
-                        kTriggerCriteriaExperimentStatExpiration, active_dates);
-  LoadActiveDatesForKey(kAllTimestampsAppLaunchIndirectStart,
-                        kTriggerCriteriaExperimentStatExpiration, active_dates);
-  return active_dates.size();
-}
-
-// Adds current timestamp in the array of timestamps for the given key.
-void StoreCurrentTimestampForKey(NSString* key) {
-  std::vector<base::Time> timestamps =
-      LoadActiveTimestampsForKey(key, kTriggerCriteriaExperimentStatExpiration);
-  timestamps.push_back(base::Time::Now());
-  StoreTimestampsForKey(key, timestamps);
-}
-
 }  // namespace
 
 NSString* const kLastHTTPURLOpenTime = @"lastHTTPURLOpenTime";
@@ -346,18 +268,8 @@ NSString* const kUserInteractedWithNonModalPromoCount =
     @"userInteractedWithNonModalPromoCount";
 NSString* const kLastTimeUserInteractedWithFullscreenPromo =
     @"lastTimeUserInteractedWithFullscreenPromo";
-NSString* const kAllTimestampsAppLaunchColdStart =
-    @"AllTimestampsAppLaunchColdStart";
-NSString* const kAllTimestampsAppLaunchWarmStart =
-    @"AllTimestampsAppLaunchWarmStart";
-NSString* const kAllTimestampsAppLaunchIndirectStart =
-    @"AllTimestampsAppLaunchIndirectStart";
 NSString* const kLastSignificantUserEventStaySafe =
     @"lastSignificantUserEventStaySafe";
-NSString* const kOmniboxUseCount = @"OmniboxUseCount";
-NSString* const kBookmarkUseCount = @"BookmarkUseCount";
-NSString* const kAutofillUseCount = @"AutofillUseCount";
-NSString* const kSpecialTabsUseCount = @"SpecialTabUseCount";
 
 NSString* const kUserHasInteractedWithFullscreenPromo =
     @"userHasInteractedWithFullscreenPromo";
@@ -378,8 +290,6 @@ NSString* const kPromoInterestEventMigrationDone =
     @"promo_interest_event_migration_done";
 NSString* const kPromoImpressionsMigrationDone =
     @"promo_impressions_migration_done";
-NSString* const kTimestampTriggerCriteriaExperimentStarted =
-    @"TimestampTriggerCriteriaExperimentStarted";
 NSString* const kNonModalPromoMigrationDone = @"kNonModalPromoMigrationDone";
 
 std::vector<base::Time> LoadTimestampsForPromoType(DefaultPromoType type) {
@@ -476,27 +386,6 @@ bool ShouldTriggerDefaultBrowserHighlightFeature(
   return false;
 }
 
-bool IsDefaultBrowserTriggerCriteraExperimentEnabled() {
-  return base::FeatureList::IsEnabled(
-      feature_engagement::kDefaultBrowserTriggerCriteriaExperiment);
-}
-
-void SetTriggerCriteriaExperimentStartTimestamp() {
-  SetObjectIntoStorageForKey(kTimestampTriggerCriteriaExperimentStarted,
-                             [NSDate date]);
-}
-
-bool HasTriggerCriteriaExperimentStarted() {
-  NSDate* date = GetObjectFromStorageForKey<NSDate>(
-      kTimestampTriggerCriteriaExperimentStarted);
-  return date != nil;
-}
-
-bool HasTriggerCriteriaExperimentStarted21days() {
-  return HasRecordedEventForKeyMoreThanDelay(
-      kTimestampTriggerCriteriaExperimentStarted, base::Days(21));
-}
-
 bool HasUserInteractedWithFullscreenPromoBefore() {
   if (base::FeatureList::IsEnabled(
           feature_engagement::kDefaultBrowserEligibilitySlidingWindow)) {
@@ -582,51 +471,6 @@ void LogUserInteractionWithFirstRunPromo() {
     kLastTimeUserInteractedWithFullscreenPromo : [NSDate date],
     kDisplayedFullscreenPromoCount : @(displayed_promo_count + 1),
   });
-}
-
-void CleanupStorageForTriggerExperiment() {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-  [defaults removeObjectForKey:kAllTimestampsAppLaunchColdStart];
-  [defaults removeObjectForKey:kAllTimestampsAppLaunchWarmStart];
-  [defaults removeObjectForKey:kAllTimestampsAppLaunchIndirectStart];
-  [defaults removeObjectForKey:kAutofillUseCount];
-  [defaults removeObjectForKey:kSpecialTabsUseCount];
-  [defaults removeObjectForKey:kOmniboxUseCount];
-}
-
-void LogCopyPasteInOmniboxForCriteriaExperiment() {
-  if (!IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
-    CleanupStorageForTriggerExperiment();
-    return;
-  }
-  StoreCurrentTimestampForKey(kOmniboxUseCount);
-}
-
-void LogBookmarkUseForCriteriaExperiment() {
-  if (!IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
-    CleanupStorageForTriggerExperiment();
-    return;
-  }
-
-  StoreCurrentTimestampForKey(kBookmarkUseCount);
-}
-
-void LogAutofillUseForCriteriaExperiment() {
-  if (!IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
-    CleanupStorageForTriggerExperiment();
-    return;
-  }
-  StoreCurrentTimestampForKey(kAutofillUseCount);
-}
-
-void LogRemoteTabsUseForCriteriaExperiment() {
-  if (!IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
-    CleanupStorageForTriggerExperiment();
-    return;
-  }
-
-  StoreCurrentTimestampForKey(kSpecialTabsUseCount);
 }
 
 bool IsChromeLikelyDefaultBrowserXDays(int days) {
@@ -752,11 +596,6 @@ const std::string IOSDefaultBrowserPromoActionToString(
 
 const base::Feature& GetFeatureForPromoReason(
     NonModalDefaultBrowserPromoReason promo_reason) {
-  if (!IsTailoredNonModalDBPromoEnabled()) {
-    return feature_engagement::
-        kIPHiOSPromoNonModalUrlPasteDefaultBrowserFeature;
-  }
-
   switch (promo_reason) {
     case NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste:
       return feature_engagement::
@@ -773,11 +612,6 @@ const base::Feature& GetFeatureForPromoReason(
 
 const std::string GetFeatureEventNameForPromoReason(
     NonModalDefaultBrowserPromoReason promo_reason) {
-  if (!IsTailoredNonModalDBPromoEnabled()) {
-    return feature_engagement::events::
-        kNonModalDefaultBrowserPromoUrlPasteTrigger;
-  }
-
   switch (promo_reason) {
     case NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste:
       return feature_engagement::events::
@@ -793,91 +627,6 @@ const std::string GetFeatureEventNameForPromoReason(
   }
 }
 
-void RecordPromoStatsToUMAForActionString(PromoStatistics* promo_stats,
-                                          const std::string& action_str) {
-  if (!IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
-    return;
-  }
-  std::string histogram_prefix =
-      base::StrCat({"IOS.DefaultBrowserPromo.", action_str});
-
-  base::UmaHistogramCounts100(
-      base::StrCat({histogram_prefix, ".ActiveDayCount"}),
-      promo_stats.activeDayCount);
-  base::UmaHistogramCounts100(
-      base::StrCat({histogram_prefix, ".PromoDisplayCount"}),
-      promo_stats.promoDisplayCount);
-  base::UmaHistogramCounts1000(
-      base::StrCat({histogram_prefix, ".LastPromoInteractionNumDays"}),
-      promo_stats.numDaysSinceLastPromo);
-  base::UmaHistogramCounts1000(
-      base::StrCat({histogram_prefix, ".ChromeColdStartCount"}),
-      promo_stats.chromeColdStartCount);
-  base::UmaHistogramCounts1000(
-      base::StrCat({histogram_prefix, ".ChromeWarmStartCount"}),
-      promo_stats.chromeWarmStartCount);
-  base::UmaHistogramCounts100(
-      base::StrCat({histogram_prefix, ".ChromeIndirectStartCount"}),
-      promo_stats.chromeIndirectStartCount);
-  base::UmaHistogramCounts100(
-      base::StrCat({histogram_prefix, ".PasswordManagerUseCount"}),
-      promo_stats.passwordManagerUseCount);
-  base::UmaHistogramCounts100(
-      base::StrCat({histogram_prefix, ".OmniboxClipboardUseCount"}),
-      promo_stats.omniboxClipboardUseCount);
-  base::UmaHistogramCounts100(
-      base::StrCat({histogram_prefix, ".BookmarkUseCount"}),
-      promo_stats.bookmarkUseCount);
-  base::UmaHistogramCounts100(
-      base::StrCat({histogram_prefix, ".AutofllUseCount"}),
-      promo_stats.autofillUseCount);
-  base::UmaHistogramCounts100(
-      base::StrCat({histogram_prefix, ".SpecialTabsUseCount"}),
-      promo_stats.specialTabsUseCount);
-}
-
-PromoStatistics* CalculatePromoStatistics() {
-  if (!IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
-    return nil;
-  }
-
-  PromoStatistics* promo_stats = [[PromoStatistics alloc] init];
-  promo_stats.promoDisplayCount = DisplayedFullscreenPromoCount();
-  promo_stats.numDaysSinceLastPromo = NumDaysSincePromoInteraction();
-  promo_stats.chromeColdStartCount = NumRecordedEventForKeyLessThanDelay(
-      kAllTimestampsAppLaunchColdStart,
-      kTriggerCriteriaExperimentStatExpiration);
-  promo_stats.chromeWarmStartCount = NumRecordedEventForKeyLessThanDelay(
-      kAllTimestampsAppLaunchWarmStart,
-      kTriggerCriteriaExperimentStatExpiration);
-  promo_stats.chromeIndirectStartCount = NumRecordedEventForKeyLessThanDelay(
-      kAllTimestampsAppLaunchIndirectStart,
-      kTriggerCriteriaExperimentStatExpiration);
-  promo_stats.activeDayCount = NumActiveDays();
-  promo_stats.passwordManagerUseCount = NumRecordedEventForKeyLessThanDelay(
-      kLastSignificantUserEventStaySafe,
-      kTriggerCriteriaExperimentStatExpiration);
-  promo_stats.omniboxClipboardUseCount = NumRecordedEventForKeyLessThanDelay(
-      kOmniboxUseCount, kTriggerCriteriaExperimentStatExpiration);
-  promo_stats.bookmarkUseCount = NumRecordedEventForKeyLessThanDelay(
-      kBookmarkUseCount, kTriggerCriteriaExperimentStatExpiration);
-  promo_stats.autofillUseCount = NumRecordedEventForKeyLessThanDelay(
-      kAutofillUseCount, kTriggerCriteriaExperimentStatExpiration);
-  promo_stats.specialTabsUseCount = NumRecordedEventForKeyLessThanDelay(
-      kSpecialTabsUseCount, kTriggerCriteriaExperimentStatExpiration);
-  return promo_stats;
-}
-
-void RecordPromoStatsToUMAForAction(PromoStatistics* promo_stats,
-                                    IOSDefaultBrowserPromoAction action) {
-  RecordPromoStatsToUMAForActionString(
-      promo_stats, IOSDefaultBrowserPromoActionToString(action));
-}
-
-void RecordPromoStatsToUMAForAppear(PromoStatistics* promo_stats) {
-  RecordPromoStatsToUMAForActionString(promo_stats, kAppearAction);
-}
-
 void RecordPromoDisplayStatsToUMA() {
   base::UmaHistogramCounts1000(
       "IOS.DefaultBrowserPromo.DaysSinceLastPromoInteraction",
@@ -888,26 +637,6 @@ void RecordPromoDisplayStatsToUMA() {
   base::UmaHistogramCounts100(
       "IOS.DefaultBrowserPromo.TailoredPromoDisplayCount",
       TailoredPromoInteractionCount());
-}
-
-void LogBrowserLaunched(bool is_cold_start) {
-  if (!IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
-    CleanupStorageForTriggerExperiment();
-    return;
-  }
-
-  NSString* key = is_cold_start ? kAllTimestampsAppLaunchColdStart
-                                : kAllTimestampsAppLaunchWarmStart;
-  StoreCurrentTimestampForKey(key);
-}
-
-void LogBrowserIndirectlylaunched() {
-  if (!IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
-    CleanupStorageForTriggerExperiment();
-    return;
-  }
-
-  StoreCurrentTimestampForKey(kAllTimestampsAppLaunchIndirectStart);
 }
 
 // Migration to FET
@@ -1027,4 +756,21 @@ std::optional<IOSDefaultBrowserPromoAction> DefaultBrowserPromoLastAction() {
 NSDate* LastTimeUserInteractedWithNonModalPromo() {
   return GetObjectFromStorageForKey<NSDate>(
       kLastTimeUserInteractedWithNonModalPromo);
+}
+
+void OpenIOSDefaultBrowserSettingsPage(bool force_default_apps_if_available,
+                                       UIApplication* ui_application_to_use) {
+  NSURL* url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+  if (@available(iOS 18.3, *)) {
+    if (IsDefaultAppsDestinationAvailable() &&
+        (force_default_apps_if_available ||
+         IsUseDefaultAppsDestinationForPromosEnabled())) {
+      url = [NSURL
+          URLWithString:UIApplicationOpenDefaultApplicationsSettingsURLString];
+    }
+  }
+  if (!ui_application_to_use) {
+    ui_application_to_use = [UIApplication sharedApplication];
+  }
+  [ui_application_to_use openURL:url options:{} completionHandler:nil];
 }

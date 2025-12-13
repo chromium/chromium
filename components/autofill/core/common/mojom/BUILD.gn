@@ -49,6 +49,10 @@ mojom("mojo_types") {
           copyable_pass_by_value = true
         },
         {
+          mojom = "autofill.mojom.FillId"
+          cpp = "::autofill::FillId"
+        },
+        {
           mojom = "autofill.mojom.ParsingResult"
           cpp = "::autofill::ParsingResult"
         },

@@ -15,6 +15,7 @@
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "content/public/renderer/worker_thread.h"
 
 namespace content {
@@ -90,8 +91,9 @@ WorkerThreadRegistry::WorkerThreadRegistry()
 int WorkerThreadRegistry::PostTaskToAllThreads(
     const base::RepeatingClosure& closure) {
   base::AutoLock locker(task_runner_map_lock_);
-  for (const auto& it : task_runner_map_)
+  for (const auto& it : task_runner_map_) {
     it.second->PostTask(FROM_HERE, closure);
+  }
   return static_cast<int>(task_runner_map_.size());
 }
 
@@ -114,8 +116,9 @@ void WorkerThreadRegistry::DidStartCurrentWorkerThread() {
 
 void WorkerThreadRegistry::WillStopCurrentWorkerThread() {
   DCHECK(worker_data);
-  for (auto& observer : worker_data->observers)
+  for (auto& observer : worker_data->observers) {
     observer.WillStopCurrentWorkerThread();
+  }
   {
     base::AutoLock locker(task_runner_map_lock_);
     task_runner_map_.erase(worker_data->thread_id);
@@ -136,8 +139,9 @@ bool WorkerThreadRegistry::PostTask(int id, base::OnceClosure closure) {
   DCHECK(id > 0);
   base::AutoLock locker(task_runner_map_lock_);
   auto found = task_runner_map_.find(id);
-  if (found == task_runner_map_.end())
+  if (found == task_runner_map_.end()) {
     return false;
+  }
   return found->second->PostTask(FROM_HERE, std::move(closure));
 }
 

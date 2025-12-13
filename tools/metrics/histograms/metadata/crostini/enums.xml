@@ -60,6 +60,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="DISK_STATUS_IN_PROGRESS"/>
   <int value="7" label="DISK_STATUS_RESIZED"/>
   <int value="8" label="DISK_STATUS_NOT_ENOUGH_SPACE"/>
+  <int value="9" label="DISK_STATUS_BAD_IMAGE"/>
 </enum>
 
 <enum name="CrostiniDiskImageType">

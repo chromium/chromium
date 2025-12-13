@@ -9,6 +9,8 @@
 
 #import <memory>
 
+class GaiaId;
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
@@ -47,7 +49,8 @@ class PushNotificationService {
   // Returns the representative target ID for the given Gaia ID. Returns null if
   // the user with the associated gaia_id is not registered for push
   // notifications.
-  virtual std::string GetRepresentativeTargetIdForGaiaId(NSString* gaia_id);
+  virtual std::string GetRepresentativeTargetIdForGaiaId(
+      const GaiaId& gaia_id) = 0;
 
   // Returns PushNotificationService's PushNotificationClientManager.
   PushNotificationClientManager* GetPushNotificationClientManager();
@@ -57,20 +60,20 @@ class PushNotificationService {
 
   // Enables/disables `client_id` ability to send push notifications to the
   // primary account signed into Chrome across synced iOS devices.
-  void SetPreference(NSString* account_id,
+  void SetPreference(const GaiaId& account_id,
                      PushNotificationClientId client_id,
                      bool enabled);
 
   // Registers the new account to the push notification server. In a multi
   // Profile environment, the PushNotificationService tracks the signed in
   // account across Profiles.
-  void RegisterAccount(NSString* account_id,
+  void RegisterAccount(const GaiaId& account_id,
                        CompletionHandler completion_handler);
 
   // Unregisters the account from the push notification server. In a multi
   // Profile environment, the account will not be signed out until it's
   // signed out across Profiles.
-  void UnregisterAccount(NSString* account_id,
+  void UnregisterAccount(const GaiaId& account_id,
                          CompletionHandler completion_handler);
 
   // Registers each PushNotificationClient's prefs. Each
@@ -97,7 +100,7 @@ class PushNotificationService {
 
   // Updates the current user's push notification preferences with the push
   // notification server.
-  virtual void SetPreferences(NSString* account_id,
+  virtual void SetPreferences(const GaiaId& account_id,
                               PreferenceMap preference_map,
                               CompletionHandler completion_handler) = 0;
 

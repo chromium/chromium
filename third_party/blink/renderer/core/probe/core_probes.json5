@@ -16,6 +16,7 @@
       "third_party/blink/renderer/core/loader/frame_loader_types.h",
       "third_party/blink/renderer/core/page/chrome_client.h",
       "third_party/blink/renderer/core/probe/core_probes.h",
+      "third_party/blink/renderer/core/inspector/inspector_media_context_impl.h",
       "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h",
     ],
   },
@@ -89,9 +90,10 @@
       probes: [
         "CharacterDataModified",
         "DidCommitLoad",
-        'DidRestoreFromBackForwardCache',
+        "DidRestoreFromBackForwardCache",
         "DidInsertDOMNode",
         "DidInvalidateStyleAttr",
+        "DidModifyAdoptedStyleSheets",
         "DidModifyDOMAttr",
         "DidPerformSlotDistribution",
         "DidPushShadowRoot",
@@ -101,6 +103,7 @@
         "FrameOwnerContentUpdated",
         "NodeCreated",
         "UpdateScrollableFlag",
+        "UpdateAffectedByStartingStylesFlag",
         "PseudoElementCreated",
         "TopLayerElementsChanged",
         "PseudoElementDestroyed",
@@ -178,11 +181,11 @@
     },
     InspectorMediaAgent: {
       probes: [
+        "PlayerCreated",
         "PlayerErrorsRaised",
         "PlayerEventsAdded",
         "PlayerMessagesLogged",
         "PlayerPropertiesChanged",
-        "PlayersCreated"
       ]
     },
     InspectorNetworkAgent: {
@@ -227,6 +230,8 @@
         "DirectUDPSocketClosed",
         "DirectUDPSocketChunkSent",
         "DirectUDPSocketChunkReceived",
+        "DirectUDPSocketJoinedMulticastGroup",
+        "DirectUDPSocketLeftMulticastGroup",
         "WillCreateP2PSocketUdp",
         "WillCreateWebSocket",
         "WillDispatchEventSourceEvent",

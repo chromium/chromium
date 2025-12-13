@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/protocol/channel_multiplexer.h"
 
 #include <memory>
@@ -120,8 +115,8 @@ class ChannelMultiplexerTest : public testing::Test {
   scoped_refptr<net::IOBufferWithSize> CreateTestBuffer(int size) {
     scoped_refptr<net::IOBufferWithSize> result =
         base::MakeRefCounted<net::IOBufferWithSize>(size);
-    for (int i = 0; i < size; ++i) {
-      result->data()[i] = rand() % 256;
+    for (auto& elem : result->span()) {
+      elem = rand() % 256;
     }
     return result;
   }

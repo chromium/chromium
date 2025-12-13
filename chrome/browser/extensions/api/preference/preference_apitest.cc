@@ -38,11 +38,14 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using CookieControlsMode = content_settings::CookieControlsMode;
 
@@ -57,10 +60,7 @@ class ExtensionPreferenceApiTest
       delete;
 
  protected:
-  ExtensionPreferenceApiTest() : ExtensionApiTest(GetParam()) {
-    feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kAlwaysBlock3pcsIncognito);
-  }
+  ExtensionPreferenceApiTest() : ExtensionApiTest(GetParam()) {}
   ~ExtensionPreferenceApiTest() override = default;
 
   void SetCookieControlsMode(PrefService* prefs, CookieControlsMode mode) {
@@ -666,36 +666,14 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, ThirdPartyCookiesAllowed) {
       /* expected_controlled */ false);
 }
 
-class AlwaysBlock3pcsIncognitoExtensionApiTest
-    : public extensions::ExtensionApiTest,
-      public testing::WithParamInterface<bool> {
- public:
-  AlwaysBlock3pcsIncognitoExtensionApiTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          privacy_sandbox::kAlwaysBlock3pcsIncognito);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          privacy_sandbox::kAlwaysBlock3pcsIncognito);
-    }
-  }
+using Block3pcsIncognitoExtensionApiTest = extensions::ExtensionApiTest;
 
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(AlwaysBlock3pcsIncognitoExtensionApiTest,
+IN_PROC_BROWSER_TEST_F(Block3pcsIncognitoExtensionApiTest,
                        Blocks3pcsWhenInIncognitoWithCookieControlsModeOff) {
-  bool feature_enabled = GetParam();
-  EXPECT_EQ(extensions::CookieControlsModeTransformer()
-                .BrowserToExtensionPref(
-                    base::Value(static_cast<int>(
-                        content_settings::CookieControlsMode::kOff)),
-                    /*is_incognito_profile=*/true)
-                ->GetBool(),
-            !feature_enabled);
+  EXPECT_FALSE(extensions::CookieControlsModeTransformer()
+                   .BrowserToExtensionPref(
+                       base::Value(static_cast<int>(
+                           content_settings::CookieControlsMode::kOff)),
+                       /*is_incognito_profile=*/true)
+                   ->GetBool());
 }
-
-INSTANTIATE_TEST_SUITE_P(TestAlwaysBlock3pcsIncognito,
-                         AlwaysBlock3pcsIncognitoExtensionApiTest,
-                         testing::Bool());

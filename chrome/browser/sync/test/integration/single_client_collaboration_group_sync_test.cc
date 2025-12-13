@@ -10,23 +10,29 @@
 #include "content/public/test/browser_test.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif  // BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
 
 namespace {
 
-class SingleClientCollaborationGroupSyncTest : public SyncTest {
+class SingleClientCollaborationGroupSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientCollaborationGroupSyncTest() : SyncTest(SINGLE_CLIENT) {
-    feature_list_.InitAndEnableFeature(
-        data_sharing::features::kDataSharingFeature);
+    std::vector<base::test::FeatureRef> enabled_features = {
+        data_sharing::features::kDataSharingFeature};
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+    feature_list_.InitWithFeatures(enabled_features, {});
   }
 
   ~SingleClientCollaborationGroupSyncTest() override = default;
 
   void SetUp() override {
 #if BUILDFLAG(IS_ANDROID)
-    if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    if (base::android::device_info::is_automotive()) {
       // TODO(crbug.com/399444939): Re-enable once automotive is supported.
       GTEST_SKIP() << "Test shouldn't run on automotive builders.";
     }
@@ -34,11 +40,20 @@ class SingleClientCollaborationGroupSyncTest : public SyncTest {
   SyncTest::SetUp();
   }
 
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientCollaborationGroupSyncTest, Sanity) {
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientCollaborationGroupSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientCollaborationGroupSyncTest, Sanity) {
   ASSERT_TRUE(SetupSync());
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::COLLABORATION_GROUP));

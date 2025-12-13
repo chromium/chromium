@@ -29,10 +29,11 @@ void HandleAppExitingForPlatform() {
                     object:NSApp];
 
   // Views Widgets host ui::Compositors that talk to the GPU process, whose host
-  // complains if it is destroyed while in-use. By this point, all browser
-  // windows are closed, which tear down any Widgets parented to them. This will
-  // additionally close any unparented, non-Browser Widgets.
-  views::Widget::CloseAllSecondaryWidgets();
+  // complains if it is destroyed while in-use.
+  // By this point all Browsers will have been closed, however their associated
+  // NativeWidgets may not yet have been destroyed (these are owned and managed
+  // by the platform). This will close any remaining NativeWidgets.
+  views::Widget::CloseAllWidgets();
 }
 
 }  // namespace chrome

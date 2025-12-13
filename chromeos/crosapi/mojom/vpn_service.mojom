@@ -11,25 +11,6 @@ struct VpnErrorResponse {
   string? message@1;
 };
 
-// Adapter that allows packets received by ash to be routed through
-// PepperVpnProviderResourceHostProxy running in lacros.
-// See content/public/browser/pepper_vpn_provider_resource_host_proxy.h for
-// details.
-// Next version: 1
-// Next method id: 2
-[Uuid="abf3cd5e-a471-40a1-947b-3be9f8519da4"]
-interface PepperVpnProxyObserver {
-  // Invoked when the active Vpn configuration disconnects.
-  // Corresponds to
-  //    PepperVpnProviderResourceHostProxy::SendOnUnbind().
-  OnUnbind@0();
-
-  // Invoked when the active Vpn configuration receives |data| packet.
-  // Corresponds to
-  //    PepperVpnProviderResourceHostProxy::SendOnPacketReceived(...).
-  OnPacketReceived@1(array<uint8> data);
-};
-
 // Listens to events dispatched by VpnServiceForExtension.
 // See
 //   * chrome.vpnProvider.onPlatformMessage
@@ -70,38 +51,10 @@ interface VpnServiceForExtension {
   DestroyConfiguration@1(string configuration_name)
       => (VpnErrorResponse? error);
 
-  // Set |parameters| for the active VPN configuration after verifying that it
-  // belongs to the extension.
-  // See chrome.vpnProvider.setParameters(...)
-  // We use mojo_base.mojom.DictionaryValue as the type because:
-  // * The shill counterpart is stable and expects base::Value with type=dict.
-  // * Both the supplier and consumer of this information uses a type
-  //   interchangeable with mojo_base.mojom.DictionaryValue. While we could add
-  //   a translation layer to a strongly typed mojom struct, this adds an
-  //   overhead and the potential for errors with no benefit.
-  SetParameters@2(mojo_base.mojom.DictionaryValue parameters)
-      => (VpnErrorResponse? error);
-
-  // Sends an IP packet contained in |data| to the active VPN configuration
-  // after verifying that it belongs to the extension.
-  // See chrome.vpnProvider.sendPacket(...)
-  SendPacket@3(array<uint8> data)
-      => (VpnErrorResponse? error);
-
-  // Notifies new connection state to the active VPN configuration after
-  // verifying that it belongs to the extension.
-  // See chrome.vpnProvider.notifyConnectionStateChanged(...)
-  NotifyConnectionStateChanged@4(bool connection_success)
-      => (VpnErrorResponse? error);
-
-  // Binds |pepper_vpn_proxy_observer| to the active configuration if it belongs
-  // to the extension and has name equal to
-  // |configuration_name|. On success all packets will be routed through
-  // Pepper API.
-  BindPepperVpnProxyObserver@5(string configuration_name,
-      pending_remote<PepperVpnProxyObserver> pepper_vpn_proxy_observer)
-      => (VpnErrorResponse? error);
-
+  // SetParameters@2 was removed.
+  // SendPacket@3 was removed.
+  // NotifyConnectionStateChanged@4 was removed.
+  // BindPepperVpnProxyObserver@5 was removed.
   // DispatchAddDialogEvent@6 was removed.
   // DispatchConfigureDialogEvent@7 was removed.
 };

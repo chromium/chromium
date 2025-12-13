@@ -12,8 +12,10 @@
 namespace media {
 
 // DmabufVideoFrameConverter can be used to convert a NativePixmapFrameResource
-// to a STORAGE_DMABUFS VideoFrame. It is used by the decoder utility process to
-// transport DMA buffer-backed VideoFrames to the OOPVideoDecoder.
+// to a STORAGE_DMABUFS VideoFrame.
+// TODO(https://crbug.com/403183890): This converter and the corresponding
+// dmabuf dup code in video_frame_mojom_traits.cc can be removed if we never
+// send dmabuf directly in VideoFrames via mojo.
 class MEDIA_GPU_EXPORT DmabufVideoFrameConverter
     : public FrameResourceConverter {
  public:

@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
@@ -95,4 +96,14 @@ public class ThemeSettingsFragment extends ChromeBaseSettingsFragment
     public @AnimationType int getAnimationType() {
         return AnimationType.PROPERTY;
     }
+
+    @Override
+    public @Nullable String getMainMenuKey() {
+        return "ui_theme";
+    }
+
+    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(
+                    ThemeSettingsFragment.class.getName(), R.xml.theme_preferences);
 }

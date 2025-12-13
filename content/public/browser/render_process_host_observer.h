@@ -57,6 +57,14 @@ class CONTENT_EXPORT RenderProcessHostObserver : public base::CheckedObserver {
   // delete it.
   virtual void RenderProcessHostDestroyed(RenderProcessHost* host) {}
 
+#if BUILDFLAG(IS_ANDROID)
+  // This method is invoked when the renderer priority is correctly updated in
+  // the launcher thread by calling
+  // RenderProcessHost::GraduateSpareToNormalRendererPriority.
+  virtual void SpareRendererPriorityGraduated(RenderProcessHost* host,
+                                              bool is_alive) {}
+#endif
+
  protected:
   ~RenderProcessHostObserver() override;
 };

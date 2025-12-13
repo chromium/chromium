@@ -1,11 +1,14 @@
-/*
- * Summary: SAX2 parser interface used to build the DOM tree
- * Description: those are the default SAX2 interfaces used by
+/**
+ * @file
+ * 
+ * @brief SAX2 parser interface used to build the DOM tree
+ * 
+ * those are the default SAX2 interfaces used by
  *              the library when building DOM tree.
  *
- * Copy: See Copyright for the status of this software.
+ * @copyright See Copyright for the status of this software.
  *
- * Author: Daniel Veillard
+ * @author Daniel Veillard
  */
 
 
@@ -24,7 +27,7 @@ XMLPUBFUN const xmlChar *
 		xmlSAX2GetSystemId		(void *ctx);
 XMLPUBFUN void
 		xmlSAX2SetDocumentLocator	(void *ctx,
-						 xmlSAXLocatorPtr loc);
+						 xmlSAXLocator *loc);
 
 XMLPUBFUN int
 		xmlSAX2GetLineNumber		(void *ctx);
@@ -41,20 +44,20 @@ XMLPUBFUN int
 XMLPUBFUN void
 		xmlSAX2InternalSubset		(void *ctx,
 						 const xmlChar *name,
-						 const xmlChar *ExternalID,
-						 const xmlChar *SystemID);
+						 const xmlChar *publicId,
+						 const xmlChar *systemId);
 XMLPUBFUN void
 		xmlSAX2ExternalSubset		(void *ctx,
 						 const xmlChar *name,
-						 const xmlChar *ExternalID,
-						 const xmlChar *SystemID);
-XMLPUBFUN xmlEntityPtr
+						 const xmlChar *publicId,
+						 const xmlChar *systemId);
+XMLPUBFUN xmlEntity *
 		xmlSAX2GetEntity		(void *ctx,
 						 const xmlChar *name);
-XMLPUBFUN xmlEntityPtr
+XMLPUBFUN xmlEntity *
 		xmlSAX2GetParameterEntity	(void *ctx,
 						 const xmlChar *name);
-XMLPUBFUN xmlParserInputPtr
+XMLPUBFUN xmlParserInput *
 		xmlSAX2ResolveEntity		(void *ctx,
 						 const xmlChar *publicId,
 						 const xmlChar *systemId);
@@ -73,12 +76,12 @@ XMLPUBFUN void
 						 int type,
 						 int def,
 						 const xmlChar *defaultValue,
-						 xmlEnumerationPtr tree);
+						 xmlEnumeration *tree);
 XMLPUBFUN void
 		xmlSAX2ElementDecl		(void *ctx,
 						 const xmlChar *name,
 						 int type,
-						 xmlElementContentPtr content);
+						 xmlElementContent *content);
 XMLPUBFUN void
 		xmlSAX2NotationDecl		(void *ctx,
 						 const xmlChar *name,

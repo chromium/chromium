@@ -17,7 +17,7 @@ static_library("android") {
     ":jni_headers",
     "//components/security_state/content",
     "//components/security_state/core",
-    "//content/public/browser:browser",
+    "//content/public/browser",
   ]
 }
 
@@ -32,6 +32,20 @@ android_library("java") {
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "security_state_model_android_unittest.cc" ]
+  deps = [
+    ":android",
+    ":jni_headers",
+    "//base/test:test_support",
+    "//components/security_state/core",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }
 

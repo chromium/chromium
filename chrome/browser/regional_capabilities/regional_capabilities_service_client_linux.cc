@@ -6,12 +6,10 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_client.h"
 #include "components/country_codes/country_codes.h"
-#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/variations/service/variations_service.h"
 
 using ::country_codes::CountryId;
@@ -32,13 +30,7 @@ RegionalCapabilitiesServiceClientLinux::
 
 void RegionalCapabilitiesServiceClientLinux::FetchCountryId(
     CountryIdCallback on_country_id_fetched) {
-  const CountryId fetched_country_id =
-      base::FeatureList::IsEnabled(
-          switches::kUseFinchPermanentCountryForFetchCountryId)
-          ? variations_permanent_country_id_
-          : GetVariationsLatestCountryId();
-
-  std::move(on_country_id_fetched).Run(fetched_country_id);
+  std::move(on_country_id_fetched).Run(variations_permanent_country_id_);
 }
 
 }  // namespace regional_capabilities

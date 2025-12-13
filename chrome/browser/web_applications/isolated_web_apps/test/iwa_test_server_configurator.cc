@@ -11,7 +11,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/bundle_versions_storage.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_test_utils.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 
@@ -59,11 +59,23 @@ void IwaTestServerConfigurator::SetServedUpdateManifestResponse(
                         std::move(head), json_content, status);
 }
 
+void IwaTestServerConfigurator::SetServedUpdateManifestResponse(
+    const GURL& update_manifest_url,
+    net::HttpStatusCode http_status,
+    std::string_view json_content) {
+  network::mojom::URLResponseHeadPtr head =
+      network::CreateURLResponseHead(http_status);
+  head->mime_type = "application/json";
+  network::URLLoaderCompletionStatus status;
+  factory_->AddResponse(update_manifest_url, std::move(head),
+                        std::string(json_content), status);
+}
+
 // static
 base::Value::Dict IwaTestServerConfigurator::CreateForceInstallPolicyEntry(
     const web_package::SignedWebBundleId& web_bundle_id,
     const std::optional<UpdateChannel>& update_channel,
-    const std::optional<base::Version>& pinned_version,
+    const std::optional<IwaVersion>& pinned_version,
     bool allow_downgrades) {
   return test::CreateForceInstallIwaPolicyEntry(
       web_bundle_id,

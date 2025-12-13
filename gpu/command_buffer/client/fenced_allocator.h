@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This file contains the definition of the FencedAllocator class.
 
 #ifndef GPU_COMMAND_BUFFER_CLIENT_FENCED_ALLOCATOR_H_
@@ -18,6 +13,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
@@ -232,7 +228,7 @@ class FencedAllocatorWrapper {
   void *GetPointer(FencedAllocator::Offset offset) {
     return (offset == FencedAllocator::kInvalidOffset)
                ? nullptr
-               : static_cast<char*>(base_) + offset;
+               : UNSAFE_TODO(static_cast<char*>(base_) + offset);
   }
 
   // Gets the offset to a memory block given the base memory and the address.

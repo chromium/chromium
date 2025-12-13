@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef UI_EVENTS_GESTURE_EVENT_DETAILS_H_
 #define UI_EVENTS_GESTURE_EVENT_DETAILS_H_
 
 #include <string.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_latency_metadata.h"
 #include "ui/events/events_base_export.h"
@@ -231,7 +227,7 @@ struct EVENTS_BASE_EXPORT GestureEventDetails {
   // Supports comparison over internal structures for testing.
   bool operator==(const GestureEventDetails& other) const {
     return type_ == other.type_ &&
-           !memcmp(&data_, &other.data_, sizeof(Details)) &&
+           !UNSAFE_TODO(memcmp(&data_, &other.data_, sizeof(Details))) &&
            device_type_ == other.device_type_ &&
            touch_points_ == other.touch_points_ &&
            bounding_box_ == other.bounding_box_;

@@ -73,6 +73,7 @@ class CORE_EXPORT RuleSetDiff : public GarbageCollected<RuleSetDiff> {
   // after reaction).
   void NewRuleSetCreated(RuleSet* new_ruleset) {
     DCHECK(!HasNewRuleSet());
+    DCHECK(new_ruleset);
     new_ruleset_ = new_ruleset;
   }
   void NewRuleSetCleared() { new_ruleset_ = nullptr; }
@@ -83,11 +84,7 @@ class CORE_EXPORT RuleSetDiff : public GarbageCollected<RuleSetDiff> {
     return old_ruleset == old_ruleset_ && new_ruleset == new_ruleset_;
   }
 
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(old_ruleset_);
-    visitor->Trace(new_ruleset_);
-    visitor->Trace(changed_rules_);
-  }
+  void Trace(Visitor* visitor) const;
 
   // Creates a RuleSet that contains only those rules in “old_ruleset_”
   // and “new_ruleset_” that are covered by a change given to AddDiff().
@@ -98,6 +95,8 @@ class CORE_EXPORT RuleSetDiff : public GarbageCollected<RuleSetDiff> {
   RuleSet* CreateDiffRuleset() const;
 
  private:
+  void AddRules(StyleRuleBase*);
+
   Member<RuleSet> old_ruleset_;
   Member<RuleSet> new_ruleset_;
   HeapHashSet<Member<StyleRule>> changed_rules_;

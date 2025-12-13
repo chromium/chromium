@@ -8,10 +8,9 @@ import android.os.SystemClock;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper.PasswordCheckOperation;
-
-import java.util.Optional;
 
 /**
  * Records metrics for an asynchronous job or a series of jobs. The job is expected to have started
@@ -39,21 +38,20 @@ class PasswordCheckupClientMetricsRecorder {
     }
 
     /**
-     * Records the metrics depending on {@link Exception} provided.
-     * Success metric is always reported. Latency is reported separately for
-     * successful and failed operations.
-     * Error codes are reported for failed operations only. For GMS errors, API error code is
-     * additionally reported.
+     * Records the metrics depending on {@link Exception} provided. Success metric is always
+     * reported. Latency is reported separately for successful and failed operations. Error codes
+     * are reported for failed operations only. For GMS errors, API error code is additionally
+     * reported.
      *
-     * @param exception {@link Optional<Exception>} instance corresponding to the occurred error
+     * @param exception {@link Nullable<Exception>} instance corresponding to the occurred error
      */
-    void recordMetrics(Optional<Exception> exception) {
-        RecordHistogram.recordBooleanHistogram(getHistogramName("Success"), !exception.isPresent());
+    void recordMetrics(@Nullable Exception exception) {
+        RecordHistogram.recordBooleanHistogram(getHistogramName("Success"), exception == null);
         RecordHistogram.recordTimesHistogram(
-                getHistogramName(exception.isPresent() ? "ErrorLatency" : "Latency"),
+                getHistogramName(exception != null ? "ErrorLatency" : "Latency"),
                 SystemClock.elapsedRealtime() - mStartTimeMs);
-        if (exception.isPresent()) {
-            recordErrorMetrics(exception.get());
+        if (exception != null) {
+            recordErrorMetrics(exception);
         }
     }
 

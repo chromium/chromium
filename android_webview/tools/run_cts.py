@@ -29,6 +29,7 @@ from devil.utils import cmd_helper
 from devil.utils import logging_common
 from pylib.constants import ANDROID_SDK_ROOT
 from pylib.constants import ANDROID_SDK_TOOLS
+from pylib.constants import DIR_SOURCE_ROOT
 from pylib.local.emulator import avd
 from pylib.utils import test_filter
 
@@ -60,9 +61,6 @@ _TEST_APK_AS_INSTANT_ARG = '--test-apk-as-instant'
 _USE_WEBVIEW_PROVIDER_ARG = '--use-webview-provider'
 
 SDK_PLATFORM_DICT = {
-    version_codes.OREO: 'O',
-    version_codes.OREO_MR1: 'O',
-    version_codes.PIE: 'P',
     version_codes.Q: 'Q',
     version_codes.R: 'R',
     version_codes.S: 'S',
@@ -503,7 +501,12 @@ def GetTemporaryRunTimeDepsFile(known_args):
 
 
 def main():
-  parser = argparse.ArgumentParser()
+  parser = argparse.ArgumentParser(epilog='''
+      repeat:
+        The --repeat flag can be used to run the test suite multiple times.
+        A value of 0 (the default) means the suite will be run once.
+        A value of N > 0 means the suite will be run N+1 times.
+      ''')
   parser.add_argument(
       '--arch',
       choices=list(set(_SUPPORTED_ARCH_DICT.values())),
@@ -628,6 +631,14 @@ def main():
   with GetDevice(args) as device:
     arch = args.arch or DetermineArch(device)
     cts_release = args.cts_release or DetermineCtsRelease(device)
+
+    # CTS tests depend on a java version of 1.8, 9, or 11 on PATH. So we use the
+    # checked-in jdk11 to satisfy that.
+    # TODO(crbug.com/438779947): Switch to using the current jdk instead.
+    java_path = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'jdk11', 'current',
+                             'bin')
+    if java_path not in os.environ['PATH']:
+      os.environ['PATH'] = os.pathsep.join([java_path, os.environ['PATH']])
 
     if (args.test_filter_files or args.test_filters
         or args.isolated_script_test_filters):

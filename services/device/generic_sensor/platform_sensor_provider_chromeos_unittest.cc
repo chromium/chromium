@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/generic_sensor/platform_sensor_provider_chromeos.h"
 
 #include <memory>
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -115,7 +111,7 @@ class PlatformSensorProviderChromeOSTest : public ::testing::Test {
     std::vector<chromeos::sensors::FakeSensorDevice::ChannelData> channels_data(
         kNumberOfAxes + 1);
     for (uint32_t i = 0; i < kNumberOfAxes; ++i) {
-      channels_data[i].id = channels[i];
+      channels_data[i].id = UNSAFE_TODO(channels[i]);
       channels_data[i].sample_data = kFakeSampleData;
     }
     channels_data.back().id = chromeos::sensors::mojom::kTimestampChannel;

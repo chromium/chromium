@@ -62,17 +62,14 @@ class HTMLDimension {
   bool operator==(const HTMLDimension& other) const {
     return type_ == other.type_ && value_ == other.value_;
   }
-  bool operator!=(const HTMLDimension& other) const {
-    return !(*this == other);
-  }
 
  private:
   HTMLDimensionType type_;
   double value_;
 };
 
-CORE_EXPORT Vector<HTMLDimension> ParseListOfDimensions(const WTF::String&);
-CORE_EXPORT bool ParseDimensionValue(const WTF::String&, HTMLDimension&);
+CORE_EXPORT Vector<HTMLDimension> ParseListOfDimensions(const String&);
+CORE_EXPORT bool ParseDimensionValue(const String&, HTMLDimension&);
 
 }  // namespace blink
 

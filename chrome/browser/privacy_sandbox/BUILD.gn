@@ -7,22 +7,18 @@ import("//build/config/chromeos/args.gni")
 assert(!is_ios)
 
 source_set("headers") {
-  sources = [ "privacy_sandbox_service.h" ]
+  sources = [
+    "privacy_sandbox_service.h",
+    "privacy_sandbox_service_factory.h",
+  ]
 
   public_deps = [
-    ":countries",
     "notice:notice_definitions",
     "//base",
-    "//chrome/browser/first_party_sets",
-    "//components/content_settings/core/browser",
+    "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
-    "//components/prefs",
     "//components/privacy_sandbox",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
-    "//components/privacy_sandbox:privacy_sandbox_settings_headers",
-    "//components/profile_metrics",
-    "//components/user_education/common",
-    "//content/public/browser",
     "//net",
   ]
 }
@@ -50,6 +46,10 @@ source_set("countries") {
   ]
 }
 
+source_set("roll_back_3pcd_notice_action") {
+  public = [ "roll_back_3pcd_notice_action.h" ]
+}
+
 source_set("countries_browser_test") {
   testonly = true
   sources = [ "privacy_sandbox_countries_browsertest.cc" ]
@@ -60,7 +60,7 @@ source_set("countries_browser_test") {
     "//chrome/browser:browser_process",
     "//chrome/test:test_support",
     "//components/privacy_sandbox:features",
-    "//components/variations/service:service",
+    "//components/variations/service",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -74,7 +74,6 @@ if (!is_android) {
     deps = [
       "//base/test:test_support",
       "//chrome/browser:browser_process",
-      "//chrome/test:test_support",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/component_updater:component_updater_paths",
@@ -399,9 +398,6 @@ if (!is_android && !is_chromeos_device) {
     ]
   }
 }
-
-# TODO(crbug.com/408801109) move other privacy_sandbox sources
-# from chrome/test/BUILD.gn here.
 
 source_set("test_support") {
   testonly = true

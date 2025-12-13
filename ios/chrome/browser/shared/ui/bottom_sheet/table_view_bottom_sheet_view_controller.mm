@@ -64,20 +64,16 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   [self updateHeight];
 }
 
+- (void)reconfigureCellAtIndexPath:(NSIndexPath*)indexPath {
+  [_tableView reconfigureRowsAtIndexPaths:@[ indexPath ]];
+}
+
 - (NSInteger)selectedRow {
   return _tableView.indexPathForSelectedRow.row;
 }
 
 - (CGFloat)tableViewWidth {
   return _tableView.frame.size.width;
-}
-
-- (UIEdgeInsets)separatorInsetForTableViewWidth:(CGFloat)tableViewWidth
-                                    atIndexPath:(NSIndexPath*)indexPath {
-  // Make separator invisible on last cell
-  CGFloat separatorLeftMargin =
-      [self isLastRow:indexPath] ? tableViewWidth : kTableViewHorizontalSpacing;
-  return UIEdgeInsetsMake(0.f, separatorLeftMargin, 0.f, 0.f);
 }
 
 - (UITableViewCellAccessoryType)accessoryType:(NSIndexPath*)indexPath {
@@ -111,6 +107,11 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 - (UITableView*)createTableView {
   _tableView = [[UITableView alloc] initWithFrame:CGRectZero
                                             style:UITableViewStylePlain];
+
+  _tableView.separatorInset =
+      UIEdgeInsetsMake(0, kTableViewHorizontalSpacing, 0, 0);
+  _tableView.tableFooterView =
+      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
 
   _tableView.layer.cornerRadius = kTableViewCornerRadius;
   _tableView.estimatedRowHeight = kTableViewEstimatedRowHeight;
@@ -161,13 +162,9 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
   self.imageHasFixedSize = YES;
   self.showsVerticalScrollIndicator = NO;
-  self.showDismissBarButton = NO;
   self.topAlignedLayout = YES;
-  self.customScrollViewBottomInsets = 0;
 
   [super viewDidLoad];
-
-  [self displayGradientView:NO];
 
   // Assign table view's width anchor now that it is in the same hierarchy as
   // the top view.
@@ -180,35 +177,17 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   // Set selection to the first one.
   [self selectFirstRow];
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitPreferredContentSizeCategory.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(updateHeightOnTraitChange)];
-  }
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitPreferredContentSizeCategory.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(updateHeightOnTraitChange)];
 }
 
 - (void)viewIsAppearing:(BOOL)animated {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000
   [super viewIsAppearing:animated];
-#endif
 
   [self updateHeight];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if (self.traitCollection.preferredContentSizeCategory !=
-      previousTraitCollection.preferredContentSizeCategory) {
-    [self updateHeightOnTraitChange];
-  }
-}
-#endif
 
 #pragma mark - UITableViewDelegate
 
@@ -231,29 +210,6 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
     forRowAtIndexPath:(NSIndexPath*)indexPath {
   // If only one suggestion exists, the item should not be selectable.
   cell.userInteractionEnabled = [self rowCount] > 1;
-}
-
-#pragma mark - UIScrollViewDelegate
-
-- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
-  [self displayGradientView:![self isScrolledToBottom]];
-}
-
-#pragma mark - UISheetPresentationControllerDelegate
-
-- (void)sheetPresentationControllerDidChangeSelectedDetentIdentifier:
-    (UISheetPresentationController*)sheetPresentationController
-    API_AVAILABLE(ios(16)) {
-  // Show the gradient view to let the user know that the view can be scrolled
-  // when the bottom sheet is in minimized state or if the expanded state takes
-  // more space than the screen.
-  NSString* selectedDetentIdentifier =
-      sheetPresentationController.selectedDetentIdentifier;
-  [self displayGradientView:selectedDetentIdentifier ==
-                                kCustomMinimizedDetentIdentifier ||
-                            (selectedDetentIdentifier ==
-                                 kCustomDetentIdentifier &&
-                             _expandSizeTooLarge)];
 }
 
 #pragma mark - Private
@@ -316,10 +272,6 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   // `initialNumberOfVisibleCells` rows).
   NSMutableArray* currentDetents = [[NSMutableArray alloc] init];
   if (useMinimizedState) {
-    // Show gradient view when the user is in minimized state to show that the
-    // view can be scrolled.
-    [self displayGradientView:YES];
-
     CGFloat bottomSheetHeight = [self initialHeight];
     auto detentBlock = ^CGFloat(
         id<UISheetPresentationControllerDetentResolutionContext> context) {

@@ -18,8 +18,11 @@
 #include "components/commerce/core/metrics/discounts_metric_collector.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace commerce {
+
+DEFINE_USER_DATA(DiscountsPageActionViewController);
 
 DiscountsPageActionViewController::DiscountsPageActionViewController(
     tabs::TabInterface& tab_interface,
@@ -28,13 +31,20 @@ DiscountsPageActionViewController::DiscountsPageActionViewController(
     : PageActionObserver(kActionCommerceDiscounts),
       tab_interface_(tab_interface),
       page_action_controller_(page_action_controller),
-      commerce_ui_tab_helper_(commerce_ui_tab_helper) {
+      commerce_ui_tab_helper_(commerce_ui_tab_helper),
+      scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
   CHECK(IsPageActionMigrated(PageActionIconType::kDiscounts));
   RegisterAsPageActionObserver(*page_action_controller_);
 }
 
 DiscountsPageActionViewController::~DiscountsPageActionViewController() =
     default;
+
+// static
+DiscountsPageActionViewController* DiscountsPageActionViewController::From(
+    tabs::TabInterface& tab) {
+  return Get(tab.GetUnownedUserDataHost());
+}
 
 void DiscountsPageActionViewController::UpdatePageIcon(
     bool should_show_icon,

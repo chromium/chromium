@@ -4,12 +4,19 @@
 
 #include "chrome/browser/devtools/devtools_availability_checker.h"
 
+#include "chrome/browser/policy/developer_tools_policy_checker.h"
+#include "chrome/browser/policy/developer_tools_policy_checker_factory.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/web_applications/web_app.h"
@@ -49,36 +56,81 @@ policy::DeveloperToolsPolicyHandler::Availability GetDevToolsAvailability(
 }  // namespace
 
 bool IsInspectionAllowed(Profile* profile, content::WebContents* web_contents) {
-  const extensions::Extension* extension = nullptr;
-  if (web_contents) {
-    if (auto* process_manager = extensions::ProcessManager::Get(
-            web_contents->GetBrowserContext())) {
-      extension = process_manager->GetExtensionForWebContents(web_contents);
-    }
-    if (extension) {
-      return IsInspectionAllowed(profile, extension);
-    }
-#if !BUILDFLAG(IS_ANDROID)
-    if (!web_app::AreWebAppsEnabled(profile)) {
-      return IsInspectionAllowed(profile, extension);
-    }
-    const webapps::AppId* app_id =
-        web_app::WebAppTabHelper::GetAppId(web_contents);
-    auto* web_app_provider =
-        web_app::WebAppProvider::GetForWebContents(web_contents);
-    if (app_id && web_app_provider) {
-      const web_app::WebApp* web_app =
-          web_app_provider->registrar_unsafe().GetAppById(*app_id);
-      return IsInspectionAllowed(profile, web_app);
-    }
-#endif
+  if (!web_contents) {
+    // For contexts without web_contents, we can only check the general policy.
+    return IsInspectionAllowed(
+        profile, static_cast<const extensions::Extension*>(nullptr));
   }
-  // |extension| is always nullptr here.
-  return IsInspectionAllowed(profile, extension);
+  policy::DeveloperToolsPolicyChecker* checker =
+      policy::DeveloperToolsPolicyCheckerFactory::GetForBrowserContext(profile);
+  if (checker) {
+    if (auto url_check =
+            checker->CheckDevToolsAvailabilityForUrl(web_contents->GetURL())) {
+      return *url_check;
+    }
+  }
+  // Now check the enum policy
+  using Availability = policy::DeveloperToolsPolicyHandler::Availability;
+  Availability availability = GetDevToolsAvailability(profile);
+  switch (availability) {
+    case Availability::kDisallowed:
+      return false;
+    case Availability::kAllowed:
+      return true;
+    case Availability::kDisallowedForForceInstalledExtensions: {
+// This policy only restricts extensions and web apps. Regular pages are
+// allowed.
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+      const extensions::Extension* extension = nullptr;
+      if (auto* process_manager = extensions::ProcessManager::Get(
+              web_contents->GetBrowserContext())) {
+        extension = process_manager->GetExtensionForWebContents(web_contents);
+      }
+      if (extension) {
+        if (extensions::Manifest::IsPolicyLocation(extension->location()) ||
+            (extensions::Manifest::IsComponentLocation(extension->location()) &&
+             profile->GetProfilePolicyConnector()->IsManaged())) {
+          return false;
+        }
+      }
+#endif
+#if !BUILDFLAG(IS_ANDROID)
+      if (web_app::AreWebAppsEnabled(profile)) {
+        const webapps::AppId* app_id =
+            web_app::WebAppTabHelper::GetAppId(web_contents);
+        auto* web_app_provider =
+            web_app::WebAppProvider::GetForWebContents(web_contents);
+        if (app_id && web_app_provider) {
+          const web_app::WebApp* web_app =
+              web_app_provider->registrar_unsafe().GetAppById(*app_id);
+          if (web_app && (web_app->IsKioskInstalledApp() ||
+                          web_app->IsIwaPolicyInstalledApp())) {
+            return false;
+          }
+        }
+      }
+#endif
+      // If it's not a restricted extension or web app, it's allowed.
+      return true;
+    }
+    default:
+      NOTREACHED();
+  }
 }
 
 bool IsInspectionAllowed(Profile* profile,
                          const extensions::Extension* extension) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (extension) {
+    policy::DeveloperToolsPolicyChecker* checker =
+        policy::DeveloperToolsPolicyCheckerFactory::GetForBrowserContext(
+            profile);
+    if (auto url_check =
+            checker->CheckDevToolsAvailabilityForUrl(extension->url())) {
+      return *url_check;
+    }
+  }
+#endif
   using Availability = policy::DeveloperToolsPolicyHandler::Availability;
   Availability availability;
   if (extension) {
@@ -90,10 +142,22 @@ bool IsInspectionAllowed(Profile* profile,
   }
   switch (availability) {
     case Availability::kDisallowed:
+      if (!extension) {
+        // When no specific context is given, we can't check for exceptions
+        // like the allowlist. But if the allowlist is not empty, we should
+        // allow the DevTools UI to load its resources, so it can be used for
+        // allowlisted contexts.
+        const base::Value::List& allowlist = profile->GetPrefs()->GetList(
+            prefs::kDeveloperToolsAvailabilityAllowlist);
+        if (!allowlist.empty()) {
+          return true;
+        }
+      }
       return false;
     case Availability::kAllowed:
       return true;
     case Availability::kDisallowedForForceInstalledExtensions:
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
       if (!extension) {
         return true;
       }
@@ -106,6 +170,7 @@ bool IsInspectionAllowed(Profile* profile,
           profile->GetProfilePolicyConnector()->IsManaged()) {
         return false;
       }
+#endif
       return true;
     default:
       NOTREACHED() << "Unknown developer tools policy";
@@ -114,6 +179,15 @@ bool IsInspectionAllowed(Profile* profile,
 
 #if !BUILDFLAG(IS_ANDROID)
 bool IsInspectionAllowed(Profile* profile, const web_app::WebApp* web_app) {
+  if (web_app) {
+    policy::DeveloperToolsPolicyChecker* checker =
+        policy::DeveloperToolsPolicyCheckerFactory::GetForBrowserContext(
+            profile);
+    if (auto url_check =
+            checker->CheckDevToolsAvailabilityForUrl(web_app->start_url())) {
+      return *url_check;
+    }
+  }
   using Availability = policy::DeveloperToolsPolicyHandler::Availability;
   Availability availability =
       policy::DeveloperToolsPolicyHandler::GetEffectiveAvailability(profile);

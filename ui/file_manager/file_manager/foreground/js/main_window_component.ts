@@ -319,6 +319,8 @@ export class MainWindowComponent {
           this.ui_.dialogFooter.cancelButton.click();
         }
         break;
+      default:
+        break;
     }
   }
 
@@ -398,6 +400,8 @@ export class MainWindowComponent {
         if (this.acceptSelection_()) {
           event.preventDefault();
         }
+        break;
+      default:
         break;
     }
   }

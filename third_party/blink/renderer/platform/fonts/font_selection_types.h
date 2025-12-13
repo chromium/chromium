@@ -72,7 +72,6 @@ class PLATFORM_EXPORT FontSelectionValue {
   constexpr FontSelectionValue operator/(const FontSelectionValue& other) const;
   constexpr FontSelectionValue operator-() const;
   constexpr bool operator==(const FontSelectionValue& other) const;
-  constexpr bool operator!=(const FontSelectionValue& other) const;
   constexpr bool operator<(const FontSelectionValue& other) const;
   constexpr bool operator<=(const FontSelectionValue& other) const;
   constexpr bool operator>(const FontSelectionValue& other) const;
@@ -135,11 +134,6 @@ inline constexpr FontSelectionValue FontSelectionValue::operator-() const {
 inline constexpr bool FontSelectionValue::operator==(
     const FontSelectionValue& other) const {
   return backing_ == other.backing_;
-}
-
-inline constexpr bool FontSelectionValue::operator!=(
-    const FontSelectionValue& other) const {
-  return !operator==(other);
 }
 
 inline constexpr bool FontSelectionValue::operator<(
@@ -313,10 +307,6 @@ struct PLATFORM_EXPORT FontSelectionRequest {
            slope == other.slope;
   }
 
-  bool operator!=(const FontSelectionRequest& other) const {
-    return !operator==(other);
-  }
-
   String ToString() const;
 
   FontSelectionValue weight;
@@ -332,7 +322,7 @@ struct FontSelectionRequestKey {
 
   FontSelectionRequestKey(FontSelectionRequest request) : request(request) {}
 
-  explicit FontSelectionRequestKey(WTF::HashTableDeletedValueType)
+  explicit FontSelectionRequestKey(HashTableDeletedValueType)
       : isDeletedValue(true) {}
 
   bool IsHashTableDeletedValue() const { return isDeletedValue; }
@@ -358,7 +348,7 @@ struct FontSelectionCapabilities {
                             FontSelectionRange weight)
       : width(width), slope(slope), weight(weight), is_deleted_value_(false) {}
 
-  FontSelectionCapabilities(WTF::HashTableDeletedValueType)
+  FontSelectionCapabilities(HashTableDeletedValueType)
       : is_deleted_value_(true) {}
 
   bool IsHashTableDeletedValue() const { return is_deleted_value_; }
@@ -384,10 +374,6 @@ struct FontSelectionCapabilities {
            is_deleted_value_ == other.is_deleted_value_;
   }
 
-  bool operator!=(const FontSelectionCapabilities& other) const {
-    return !(*this == other);
-  }
-
   FontSelectionRange width{kFontSelectionZeroValue, kFontSelectionZeroValue};
   FontSelectionRange slope{kFontSelectionZeroValue, kFontSelectionZeroValue};
   FontSelectionRange weight{kFontSelectionZeroValue, kFontSelectionZeroValue};
@@ -407,19 +393,17 @@ template <>
 struct HashTraits<FontSelectionCapabilities>
     : FontSelectionCapabilitiesHashTraits {};
 
-}  // namespace blink
-
 // Used for ClampTo for example in StyleBuilderConverter
 template <>
-inline blink::FontSelectionValue
-DefaultMinimumForClamp<blink::FontSelectionValue>() {
-  return blink::FontSelectionValue::MinimumValue();
+inline FontSelectionValue DefaultMinimumForClamp<FontSelectionValue>() {
+  return FontSelectionValue::MinimumValue();
 }
 
 template <>
-inline blink::FontSelectionValue
-DefaultMaximumForClamp<blink::FontSelectionValue>() {
-  return blink::FontSelectionValue::MaximumValue();
+inline FontSelectionValue DefaultMaximumForClamp<FontSelectionValue>() {
+  return FontSelectionValue::MaximumValue();
 }
+
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_SELECTION_TYPES_H_

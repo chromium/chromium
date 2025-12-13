@@ -18,6 +18,9 @@ struct PLATFORM_EXPORT HitTestData : public GarbageCollected<HitTestData> {
  public:
   Vector<TouchActionRect> touch_action_rects;
   Vector<gfx::Rect> wheel_event_rects;
+#if BUILDFLAG(IS_ANDROID)
+  Vector<CompositorElementId> xr_regions;
+#endif
 
   // If scroll_translation is nullptr, this marks a region in which composited
   // scroll is not allowed. When scroll_translation is not nullptr, this is the
@@ -32,6 +35,9 @@ struct PLATFORM_EXPORT HitTestData : public GarbageCollected<HitTestData> {
   bool operator==(const HitTestData& rhs) const {
     return touch_action_rects == rhs.touch_action_rects &&
            wheel_event_rects == rhs.wheel_event_rects &&
+#if BUILDFLAG(IS_ANDROID)
+           xr_regions == rhs.xr_regions &&
+#endif
            scroll_hit_test_rect == rhs.scroll_hit_test_rect &&
            scroll_translation == rhs.scroll_translation &&
            scrolling_contents_cull_rect == rhs.scrolling_contents_cull_rect;

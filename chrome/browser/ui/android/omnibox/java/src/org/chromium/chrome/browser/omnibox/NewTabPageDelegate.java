@@ -10,7 +10,6 @@ import android.view.MotionEvent;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 /**
  * Delegate that provides the toolbar with the info of the NTP for the current tab.
@@ -69,7 +68,7 @@ public interface NewTabPageDelegate {
      *
      * @param scrollCallback Callback to be invoked when the event occurs.
      */
-    default void setSearchBoxScrollListener(@Nullable Callback<Float> scrollCallback) {}
+    default void setSearchBoxScrollListener(Callback<Float> scrollCallback) {}
 
     /**
      * Get the bounds of the search box in relation to the top level NewTabPage view.
@@ -113,5 +112,5 @@ public interface NewTabPageDelegate {
     }
 
     /** Empty implementation of NewTabDelegate. Used for a default before initialization. */
-    public static final NewTabPageDelegate EMPTY = new NewTabPageDelegate() {};
+    NewTabPageDelegate EMPTY = new NewTabPageDelegate() {};
 }

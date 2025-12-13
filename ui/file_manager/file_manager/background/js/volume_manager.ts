@@ -77,6 +77,8 @@ export async function createVolumeInfo(
         case MediaViewRootType.AUDIO:
           localizedLabel = str('MEDIA_VIEW_AUDIO_ROOT_LABEL');
           break;
+        default:
+          break;
       }
       break;
     case VolumeType.CROSTINI:
@@ -474,6 +476,9 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
             return;
         }
       }
+
+      default:
+        break;
     }
   }
 

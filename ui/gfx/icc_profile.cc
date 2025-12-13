@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/icc_profile.h"
 
 #include <array>
@@ -14,6 +9,7 @@
 #include <set>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/lru_cache.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -153,7 +149,7 @@ std::vector<char> ICCProfile::GetData() const {
 // static
 ICCProfile ICCProfile::FromData(const void* data_as_void, size_t size) {
   const char* data_as_byte = reinterpret_cast<const char*>(data_as_void);
-  std::vector<char> data(data_as_byte, data_as_byte + size);
+  std::vector<char> data(data_as_byte, UNSAFE_TODO(data_as_byte + size));
 
   base::AutoLock lock(GetIccProfileLock());
 

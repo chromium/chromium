@@ -18,7 +18,7 @@
 #include "base/types/expected.h"
 #include "chrome/common/extensions/api/printing.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom-forward.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace content {
 class BrowserContext;

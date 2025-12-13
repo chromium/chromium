@@ -10,11 +10,13 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/pdf/browser/fake_pdf_stream_delegate.h"
 #include "components/pdf/browser/pdf_stream_delegate.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/mock_web_contents_observer.h"
@@ -165,6 +167,49 @@ TEST_F(PdfNavigationThrottleTest, WillStartRequestOtherUrl) {
       GURL("https://example.test"), CreateChildFrame());
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             navigation_throttle->WillStartRequest().action());
+}
+
+class PdfNavigationThrottleTestDelayedRfhDestruction
+    : public PdfNavigationThrottleTest {
+ public:
+  PdfNavigationThrottleTestDelayedRfhDestruction() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kDelayRfhDestructionsOnUnloadAndDetach,
+        {{"task_delay", "1h"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that the navigation throttle does not crash when the embedder frame is
+// in pending deletion state and the navigation is canceled.
+// It relies on a long delay for the frame destruction, so that flakiness is
+// prevented.
+TEST_F(PdfNavigationThrottleTestDelayedRfhDestruction,
+       WillStartRequestFramePendingDeletion) {
+  content::RenderFrameHost* child_frame = CreateChildFrame();
+  content::RenderFrameHost* grandchild_frame =
+      content::RenderFrameHostTester::For(child_frame)
+          ->AppendChild("subsubframe");
+  auto navigation_throttle =
+      CreateNavigationThrottle(stream_url(), grandchild_frame);
+  NiceMock<content::MockWebContentsObserver> web_contents_observer(
+      web_contents());
+
+  // Detach the embedder frame so that it's in pending deletion state.
+  content::RenderFrameHostTester::For(child_frame)->Detach();
+  EXPECT_EQ(child_frame->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kPendingDeletion);
+
+  EXPECT_EQ(content::NavigationThrottle::CANCEL_AND_IGNORE,
+            navigation_throttle->WillStartRequest().action());
+
+  EXPECT_CALL(web_contents_observer, DidStartLoading()).Times(0);
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 }  // namespace pdf

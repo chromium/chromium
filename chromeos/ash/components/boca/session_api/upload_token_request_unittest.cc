@@ -33,7 +33,6 @@ using ::net::test_server::HttpResponse;
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SaveArg;
 

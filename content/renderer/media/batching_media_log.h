@@ -61,6 +61,7 @@ class CONTENT_EXPORT BatchingMediaLog : public media::MediaLog {
   // Posted as a delayed task on |task_runner_| to throttle ipc message
   // frequency.
   void SendQueuedMediaEvents();
+  void SendQueuedMediaEvents_Locked();
 
   void MaybeQueueEvent_Locked(std::unique_ptr<media::MediaLogRecord> event);
 
@@ -91,7 +92,11 @@ class CONTENT_EXPORT BatchingMediaLog : public media::MediaLog {
   // Limits the number of events we send over IPC to one.
   std::optional<media::MediaLogRecord> last_duration_changed_event_
       GUARDED_BY(lock_);
-  std::optional<media::MediaLogRecord> last_buffering_state_event_
+  std::optional<media::MediaLogRecord> last_audio_buffering_state_
+      GUARDED_BY(lock_);
+  std::optional<media::MediaLogRecord> last_video_buffering_state_
+      GUARDED_BY(lock_);
+  std::optional<media::MediaLogRecord> last_pipeline_buffering_state_
       GUARDED_BY(lock_);
   std::optional<media::MediaLogRecord> last_play_event_;
   std::optional<media::MediaLogRecord> last_pause_event_;

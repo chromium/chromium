@@ -6,7 +6,7 @@
 #define UI_OZONE_DEMO_RENDERER_BASE_H_
 
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/demo/renderer.h"
 
 namespace ui {

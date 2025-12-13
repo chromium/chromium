@@ -15,7 +15,6 @@
 namespace media_router {
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::StrictMock;
 using ::testing::WithArg;
@@ -61,10 +60,10 @@ struct TestPacketWriter {
   void SetSendToCallbackError(int error_code) {
     EXPECT_CALL(*transport, SendTo(_, _, _))
         .WillOnce(WithArg<2>(
-            Invoke([error_code](base::OnceCallback<void(int32_t)> callback) {
+            [error_code](base::OnceCallback<void(int32_t)> callback) {
               std::move(callback).Run(error_code);
               return net::Error::OK;
-            })));
+            }));
   }
 
   StrictMock<MockDelegate> delegate;
@@ -235,11 +234,11 @@ TEST(NetworkServiceQuicPacketWriterTest, TooManyPacketsCausesWriteBlockage) {
   // Store the write complete callbacks for calling later.
   std::vector<base::OnceCallback<void(int32_t)>> callbacks;
   EXPECT_CALL(*test_writer.transport, SendTo(_, _, _))
-      .WillRepeatedly(WithArg<2>(
-          Invoke([&callbacks](base::OnceCallback<void(int32_t)> callback) {
+      .WillRepeatedly(
+          WithArg<2>([&callbacks](base::OnceCallback<void(int32_t)> callback) {
             callbacks.push_back(std::move(callback));
             return net::Error::OK;
-          })));
+          }));
 
   EXPECT_CALL(test_writer.delegate, OnWriteUnblocked());
 

@@ -21,10 +21,7 @@ namespace ios {
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildInMemoryURLIndex(
-    web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+std::unique_ptr<KeyedService> BuildInMemoryURLIndex(ProfileIOS* profile) {
   SchemeSet allowed_schemes;
   allowed_schemes.insert(kChromeUIScheme);
 
@@ -65,14 +62,14 @@ InMemoryURLIndexFactory::InMemoryURLIndexFactory()
 InMemoryURLIndexFactory::~InMemoryURLIndexFactory() = default;
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+InMemoryURLIndexFactory::TestingFactory
 InMemoryURLIndexFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildInMemoryURLIndex);
+  return base::BindOnce(&BuildInMemoryURLIndex);
 }
 
 std::unique_ptr<KeyedService> InMemoryURLIndexFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildInMemoryURLIndex(context);
+    ProfileIOS* profile) const {
+  return BuildInMemoryURLIndex(profile);
 }
 
 }  // namespace ios

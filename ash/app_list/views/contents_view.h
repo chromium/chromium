@@ -33,7 +33,6 @@ class AppListPage;
 class AppListView;
 class AppListMainView;
 class AppsContainerView;
-class AssistantPageView;
 class SearchBoxView;
 class SearchResultPageView;
 
@@ -97,12 +96,6 @@ class ASH_EXPORT ContentsView : public views::View,
   // ShowSearchResults(true) was invoked.
   void ShowSearchResults(bool show);
   bool IsShowingSearchResults() const;
-
-  // Shows/hides the Assistant page. Hiding the Assistant page will
-  // cause the app list to return to the page that was displayed before
-  // ShowSearchResults(true) was invoked.
-  void ShowEmbeddedAssistantUI(bool show);
-  bool IsShowingEmbeddedAssistantUI() const;
 
   // Sets the active launcher page and animates the pages into place.
   void SetActiveState(AppListState state);
@@ -190,9 +183,6 @@ class ASH_EXPORT ContentsView : public views::View,
                                 AppListState current_state,
                                 AppListState target_state);
 
-  // Updates search box visibility based on the current state.
-  void UpdateSearchBoxVisibility(AppListState current_state);
-
   // Adds |view| as a new page to the end of the list of launcher pages. The
   // view is inserted as a child of the ContentsView. The page is associated
   // with the name |state|. Returns a pointer to the instance of the new page.
@@ -217,7 +207,6 @@ class ASH_EXPORT ContentsView : public views::View,
   gfx::Rect ConvertRectToWidgetWithoutTransform(const gfx::Rect& rect);
 
   // Sub-views of the ContentsView. All owned by the views hierarchy.
-  raw_ptr<AssistantPageView> assistant_page_view_ = nullptr;
   raw_ptr<AppsContainerView> apps_container_view_ = nullptr;
   raw_ptr<SearchResultPageView> search_result_page_view_ = nullptr;
 

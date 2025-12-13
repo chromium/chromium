@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/cma/backend/mixer/mixer_input.h"
 
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <cmath>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -278,7 +274,8 @@ void MixerInput::RenderInterleaved(int num_output_frames) {
     // Keep only the samples from the selected channel.
     float* dest = interleaved_.data();
     for (int f = 0; f < num_output_frames; ++f) {
-      dest[f] = data[f * num_channels_ + playout_channel_];
+      UNSAFE_TODO(dest[f]) =
+          UNSAFE_TODO(data[f * num_channels_ + playout_channel_]);
     }
     data = dest;
   }
@@ -315,7 +312,7 @@ int MixerInput::FillAudioData(int num_frames,
   CHECK_LE(num_channels_, kMaxChannels);
   float* channels[kMaxChannels];
   for (int c = 0; c < num_channels_; ++c) {
-    channels[c] = dest->channel(c);
+    UNSAFE_TODO(channels[c]) = dest->channel(c).data();
   }
   if (first_buffer_ && redirected) {
     // If the first buffer is redirected, don't provide any data to the mixer

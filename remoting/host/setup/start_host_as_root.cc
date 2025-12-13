@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "remoting/host/setup/start_host_as_root.h"
 
 #include <errno.h>
@@ -23,6 +18,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -39,11 +35,12 @@ constexpr std::string_view kCorpUserSwitch = "corp-user";
 constexpr std::string_view kCloudUserSwitch = "cloud-user";
 
 void PrintGroupMembershipError(const char* user_name) {
-  fprintf(stderr,
-          "%s is not a member of the `%s` group.\n"
-          "  Please add them using this command:\n"
-          "  sudo usermod -G %s %s\n",
-          user_name, kChromotingGroupName, kChromotingGroupName, user_name);
+  UNSAFE_TODO(fprintf(stderr,
+                      "%s is not a member of the `%s` group.\n"
+                      "  Please add them using this command:\n"
+                      "  sudo usermod -G %s %s\n",
+                      user_name, kChromotingGroupName, kChromotingGroupName,
+                      user_name));
 }
 
 bool CheckChromotingGroupMembership(const char* user_name,
@@ -54,11 +51,12 @@ bool CheckChromotingGroupMembership(const char* user_name,
     // The installer creates this group so this condition is unexpected but we
     // check here in case the machine is in a bad state or our installer was
     // modified (broken) in some way such that the group does not exist.
-    fprintf(stderr,
-            "Failed to retrieve group info for `%s`. errno = %s(%d)\n"
-            "  Please create this group using this command:\n"
-            "  sudo addgroup --system chrome-remote-desktop\n",
-            kChromotingGroupName, strerror(errno), errno);
+    UNSAFE_TODO(
+        fprintf(stderr,
+                "Failed to retrieve group info for `%s`. errno = %s(%d)\n"
+                "  Please create this group using this command:\n"
+                "  sudo addgroup --system chrome-remote-desktop\n",
+                kChromotingGroupName, strerror(errno), errno));
     return false;
   }
 
@@ -79,8 +77,8 @@ bool CheckChromotingGroupMembership(const char* user_name,
     return false;
   }
 
-  fprintf(stdout, "Verified that %s is a member of %s\n", user_name,
-          kChromotingGroupName);
+  UNSAFE_TODO(fprintf(stdout, "Verified that %s is a member of %s\n", user_name,
+                      kChromotingGroupName));
   return true;
 }
 
@@ -165,10 +163,11 @@ int StartHostAsRoot(int argc, char** argv) {
   errno = 0;
   const passwd* user_struct = getpwnam(user_name.c_str());
   if (!user_struct) {
-    fprintf(stderr,
-            "Failed to retrieve passwd struct for %s. errno = %s(%d)\n"
-            "Does this user account exist on the machine?\n",
-            user_name.c_str(), strerror(errno), errno);
+    UNSAFE_TODO(
+        fprintf(stderr,
+                "Failed to retrieve passwd struct for %s. errno = %s(%d)\n"
+                "Does this user account exist on the machine?\n",
+                user_name.c_str(), strerror(errno), errno));
     return -1;
   }
 

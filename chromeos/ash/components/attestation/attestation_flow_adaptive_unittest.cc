@@ -128,10 +128,9 @@ TEST_F(AttestationFlowAdaptiveTest, DefaultFlowSuccess) {
       GetCertificate(kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail),
                      kFakeOrigin, true, ::attestation::KEY_TYPE_RSA,
                      kFakeKeyName, _, _))
-      .WillOnce(
-          WithArg<7>(Invoke([](AttestationFlow::CertificateCallback callback) {
-            std::move(callback).Run(ATTESTATION_SUCCESS, kFakeCert);
-          })));
+      .WillOnce(WithArg<7>([](AttestationFlow::CertificateCallback callback) {
+        std::move(callback).Run(ATTESTATION_SUCCESS, kFakeCert);
+      }));
   AttestationStatus result_status;
   std::string result_cert;
 
@@ -192,10 +191,9 @@ TEST_F(AttestationFlowAdaptiveTest,
               VariantWith<::attestation::DeviceSetupCertificateRequestMetadata>(
                   ProtoBufEq(profile_specific_data))),
           _))
-      .WillOnce(
-          WithArg<7>(Invoke([](AttestationFlow::CertificateCallback callback) {
-            std::move(callback).Run(ATTESTATION_SUCCESS, kFakeCert);
-          })));
+      .WillOnce(WithArg<7>([](AttestationFlow::CertificateCallback callback) {
+        std::move(callback).Run(ATTESTATION_SUCCESS, kFakeCert);
+      }));
   AttestationStatus result_status;
   std::string result_cert;
 
@@ -237,10 +235,9 @@ TEST_F(AttestationFlowAdaptiveTest, DefaultFlowSuccessWithECC) {
       GetCertificate(kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail),
                      kFakeOrigin, true, ::attestation::KEY_TYPE_ECC,
                      kFakeKeyName, _, _))
-      .WillOnce(
-          WithArg<7>(Invoke([](AttestationFlow::CertificateCallback callback) {
-            std::move(callback).Run(ATTESTATION_SUCCESS, kFakeCert);
-          })));
+      .WillOnce(WithArg<7>([](AttestationFlow::CertificateCallback callback) {
+        std::move(callback).Run(ATTESTATION_SUCCESS, kFakeCert);
+      }));
   AttestationStatus result_status;
   std::string result_cert;
 
@@ -286,19 +283,17 @@ TEST_F(AttestationFlowAdaptiveTest, DefaultFlowFailureAndFallback) {
       GetCertificate(kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail),
                      kFakeOrigin, true, ::attestation::KEY_TYPE_RSA,
                      kFakeKeyName, _, _))
-      .WillOnce(
-          WithArg<7>(Invoke([](AttestationFlow::CertificateCallback callback) {
-            std::move(callback).Run(ATTESTATION_UNSPECIFIED_FAILURE, "");
-          })));
+      .WillOnce(WithArg<7>([](AttestationFlow::CertificateCallback callback) {
+        std::move(callback).Run(ATTESTATION_UNSPECIFIED_FAILURE, "");
+      }));
   EXPECT_CALL(
       *(test_factory->GetFallbackMock()),
       GetCertificate(kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail),
                      kFakeOrigin, true, ::attestation::KEY_TYPE_RSA,
                      kFakeKeyName, _, _))
-      .WillOnce(
-          WithArg<7>(Invoke([](AttestationFlow::CertificateCallback callback) {
-            std::move(callback).Run(ATTESTATION_SUCCESS, kFakeCert);
-          })));
+      .WillOnce(WithArg<7>([](AttestationFlow::CertificateCallback callback) {
+        std::move(callback).Run(ATTESTATION_SUCCESS, kFakeCert);
+      }));
   AttestationStatus result_status;
   std::string result_cert;
 
@@ -345,10 +340,9 @@ TEST_F(AttestationFlowAdaptiveTest, SkipDefaultFlow) {
       GetCertificate(kFakeProfile, AccountId::FromUserEmail(kFakeUserEmail),
                      kFakeOrigin, true, ::attestation::KEY_TYPE_RSA,
                      kFakeKeyName, _, _))
-      .WillOnce(
-          WithArg<7>(Invoke([](AttestationFlow::CertificateCallback callback) {
-            std::move(callback).Run(ATTESTATION_SUCCESS, kFakeCert);
-          })));
+      .WillOnce(WithArg<7>([](AttestationFlow::CertificateCallback callback) {
+        std::move(callback).Run(ATTESTATION_SUCCESS, kFakeCert);
+      }));
   AttestationStatus result_status;
   std::string result_cert;
 
@@ -397,9 +391,9 @@ TEST_F(AttestationFlowAdaptiveTest, FallbackTwice) {
                      kFakeKeyName, _, _))
       .Times(2)
       .WillRepeatedly(
-          WithArg<7>(Invoke([](AttestationFlow::CertificateCallback callback) {
+          WithArg<7>([](AttestationFlow::CertificateCallback callback) {
             std::move(callback).Run(ATTESTATION_SUCCESS, kFakeCert);
-          })));
+          }));
   AttestationStatus result_status;
   std::string result_cert;
 

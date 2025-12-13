@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_DATA_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"

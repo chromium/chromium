@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/lobster/lobster_candidate_id_generator.h"
 #include "chrome/browser/ash/lobster/lobster_image_fetcher.h"
 #include "components/manta/proto/manta.pb.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace manta {
 

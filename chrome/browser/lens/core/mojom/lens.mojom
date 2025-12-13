@@ -94,6 +94,9 @@ interface LensPageHandler {
   // tab contents.
   AddBackgroundBlur();
 
+  // Enables/disables the live blurring of the background
+  SetLiveBlur(bool enabled);
+
   // When this method is called, the C++ coordinator will show the feedback
   // dialog.
   FeedbackRequestedByOverlay();
@@ -213,13 +216,27 @@ interface LensPageHandler {
   FetchSupportedLanguages() => (string browser_locale,
                                 array<Language> source_languages,
                                 array<Language> target_languages);
+
+  // Notifies the browser that the overlay WebUI is ready to be reshown so it
+  // can reshow the blur with the appropriate live page screenshot.
+  FinishReshowOverlay();
+
+  // Notifies the browser that the user has accepted the privacy notice in the
+  // overlay.
+  AcceptPrivacyNotice();
+
+  // Notifies the browser that the user has dismissed the privacy notice in the
+  // overlay.
+  DismissPrivacyNotice();
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)
 interface LensPage {
-  // Pass screenshot data to WebUI.
+  // Pass screenshot data to WebUI and a parameter indicating whether the
+  // side panel is already open in order to update the UI.
   ScreenshotDataReceived(
-      skia.mojom.BitmapMappedFromTrustedProcess screenshot_data);
+      skia.mojom.BitmapMappedFromTrustedProcess screenshot_data,
+      bool is_side_panel_open);
 
   // Notifies the WebUI that the handshake to the Lens backend is complete.
   NotifyHandshakeComplete();
@@ -236,6 +253,13 @@ interface LensPage {
 
   // Passes Text received from Lens to WebUI for rendering.
   TextReceived(Text text);
+
+  // Passes region text received from Lens to WebUI for rendering. Also
+  // indicates whether the text was received for an injected image. An injected
+  // image is a preselected region that was sent to the Lens overlay on open.
+  // It differs from a regular region search because the image bytes are not
+  // cropped from the page screenshot.
+  RegionTextReceived(Text text, bool is_injected_image);
 
   // Passes the dynamic theme to WebUI.
   ThemeReceived(OverlayTheme theme);
@@ -272,4 +296,7 @@ interface LensPage {
 
   // Suppress the ghost loader when tab is foregrounded.
   SuppressGhostLoader();
+
+  // Notifies the WebUI that the overlay is being reshown.
+  OnOverlayReshown(skia.mojom.BitmapMappedFromTrustedProcess screenshot_data);
 };

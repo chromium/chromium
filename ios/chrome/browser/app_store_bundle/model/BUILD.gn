@@ -1,0 +1,31 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "app_store_bundle_service.h",
+    "app_store_bundle_service.mm",
+  ]
+  public_deps = [
+    "//base",
+    "//components/keyed_service/core",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("app_store_bundle_service_factory") {
+  sources = [
+    "app_store_bundle_service_factory.h",
+    "app_store_bundle_service_factory.mm",
+  ]
+  public_deps = [
+    "//base",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+  ]
+  deps = [
+    "//components/segmentation_platform/public",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/public/provider/chrome/browser/app_store_bundle:app_store_bundle_api",
+  ]
+}

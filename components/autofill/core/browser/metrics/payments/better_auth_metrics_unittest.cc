@@ -33,7 +33,7 @@ class BetterAuthMetricsTest
 
   FormData SetUpCreditCardUnmaskingPreflightCallTest() {
     CreditCardAccessManager& access_manager =
-        autofill_manager().GetCreditCardAccessManager();
+        *autofill_manager().GetCreditCardAccessManager();
     test_api(access_manager)
         .set_unmask_details_request_in_progress(
             IsUnmaskDetailsRequestInProgress());

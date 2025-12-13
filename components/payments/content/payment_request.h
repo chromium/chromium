@@ -20,7 +20,6 @@
 #include "components/payments/core/journey_logger.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "url/gurl.h"
@@ -117,6 +116,12 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
   void OnShippingOptionIdSelected(std::string shipping_option_id) override;
   void OnShippingAddressSelected(mojom::PaymentAddressPtr address) override;
   void OnPayerInfoSelected(mojom::PayerDetailPtr payer_info) override;
+
+  // Called when the user wants to authenticate in a different way. This is
+  // different from cancel as this signals that the user still wants to continue
+  // with the payment transaction. Will destroy this object and close any
+  // related connections. Only used for SecurePaymentConfirmation currently.
+  void OnUserAuthAnotherWay();
 
   // Called when the user explicitly cancelled the flow. Will destroy this
   // object and close any related connections.

@@ -8,14 +8,20 @@
 #include <variant>
 
 #include "base/barrier_callback.h"
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/device_signals/core/browser/signals_aggregator.h"
+#include "components/device_signals/core/common/signals_features.h"
 #include "components/enterprise/browser/reporting/os_report_generator.h"
 #include "components/enterprise/browser/reporting/report_type.h"
 #include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
+#include "components/enterprise/device_attestation/device_attestation_service_factory.h"
 #include "components/policy/core/common/policy_logger.h"
 
 namespace enterprise_reporting {
@@ -23,6 +29,18 @@ namespace enterprise_reporting {
 namespace em = enterprise_management;
 
 namespace {
+
+// The size of the nonce challenge in bytes.
+const int kNonceSizeInBytes = 16;
+
+constexpr char kAttestationFlowName[] = "chrome-signals-sharing";
+
+std::string CreateNonce() {
+  std::vector<uint8_t> nonce_buffer(kNonceSizeInBytes);
+  base::RandBytes(nonce_buffer);
+
+  return base::Base64Encode(nonce_buffer);
+}
 
 em::ChromeProfileReportRequest::ReportType GetReportTypeFromSignalsMode(
     SecuritySignalsMode signals_mode) {
@@ -68,7 +86,10 @@ ChromeProfileRequestGenerator::ChromeProfileRequestGenerator(
     : profile_path_(profile_path),
       browser_report_generator_(delegate_factory),
       profile_report_generator_(delegate_factory),
-      signals_aggregator_(signals_aggregator) {
+      signals_aggregator_(signals_aggregator),
+      device_attestation_service_(
+          enterprise::DeviceAttestationServiceFactory::GetInstance()
+              ->CreateDeviceAttestationService()) {
   profile_report_generator_.set_is_machine_scope(false);
 }
 
@@ -86,8 +107,14 @@ void ChromeProfileRequestGenerator::Generate(
   auto request = std::make_unique<ReportRequest>(ReportType::kProfileReport);
   request->GetChromeProfileReportRequest().set_report_type(
       GetReportTypeFromSignalsMode(generation_config.security_signals_mode));
-  if (generation_config.security_signals_mode ==
-      SecuritySignalsMode::kSignalsOnly) {
+
+  bool is_signals_only = generation_config.security_signals_mode ==
+                         SecuritySignalsMode::kSignalsOnly;
+  bool policies_enabled =
+      enterprise_signals::features::IsPolicyDataCollectionEnabled();
+
+  // Early Exit since it's a Signals-Only report with no policies.
+  if (is_signals_only && !policies_enabled) {
     return OnBaseReportsReady(std::move(request), std::move(callback),
                               generation_config,
                               std::make_unique<em::BrowserReport>(),
@@ -103,18 +130,23 @@ void ChromeProfileRequestGenerator::Generate(
                             weak_ptr_factory_.GetWeakPtr(), std::move(request),
                             std::move(callback), generation_config)));
 
-  browser_report_generator_.Generate(
-      ReportType::kProfileReport,
-      base::BindOnce(
-          [](std::unique_ptr<em::BrowserReport> browser_report)
-              -> std::variant<std::unique_ptr<em::BrowserReport>,
-                              std::unique_ptr<em::ChromeUserProfileInfo>> {
-            return std::move(browser_report);
-          })
-          .Then(barrier_callback));
+  if (is_signals_only) {
+    barrier_callback.Run(std::make_unique<em::BrowserReport>());
+  } else {
+    browser_report_generator_.Generate(
+        ReportType::kProfileReport,
+        base::BindOnce(
+            [](std::unique_ptr<em::BrowserReport> browser_report)
+                -> std::variant<std::unique_ptr<em::BrowserReport>,
+                                std::unique_ptr<em::ChromeUserProfileInfo>> {
+              return std::move(browser_report);
+            })
+            .Then(barrier_callback));
+  }
 
   profile_report_generator_.MaybeGenerate(
       profile_path_, ReportType::kProfileReport,
+      generation_config.security_signals_mode,
       base::BindOnce(
           [](std::unique_ptr<em::ChromeUserProfileInfo> profile_report)
               -> std::variant<std::unique_ptr<em::BrowserReport>,
@@ -153,6 +185,13 @@ void ChromeProfileRequestGenerator::OnBaseReportsReady(
   signals_request.signal_names.emplace(device_signals::SignalName::kOsSignals);
   signals_request.signal_names.emplace(
       device_signals::SignalName::kBrowserContextSignals);
+
+  if (enterprise_signals::features::IsDetectedAgentSignalCollectionEnabled()) {
+    signals_request.signal_names.emplace(device_signals::SignalName::kAgent);
+    signals_request.agent_signal_parameters.emplace(
+        device_signals::AgentSignalCollectionType::kDetectedAgents);
+  }
+
 #if BUILDFLAG(IS_WIN)
   signals_request.signal_names.emplace(device_signals::SignalName::kAntiVirus);
   signals_request.signal_names.emplace(device_signals::SignalName::kHotfixes);
@@ -168,6 +207,8 @@ void ChromeProfileRequestGenerator::OnBaseReportsReady(
           std::move(profile_report)));
 }
 
+// TODO(crbug.com/448356931): Separate the following logics into a specialized
+// module.
 void ChromeProfileRequestGenerator::OnAggregatedSignalsReceived(
     std::unique_ptr<ReportRequest> request,
     ReportCallback callback,
@@ -236,6 +277,21 @@ void ChromeProfileRequestGenerator::OnAggregatedSignalsReceived(
     }
 #endif  // BUILDFLAG(IS_WIN)
 
+    if (os_signals.distribution_version) {
+      os_report->set_distribution_version(
+          os_signals.distribution_version.value());
+    }
+
+#if BUILDFLAG(IS_ANDROID)
+    os_report->set_has_potentially_harmful_apps(
+        os_signals.has_potentially_harmful_apps);
+    os_report->set_verified_apps_enabled(os_signals.verified_apps_enabled);
+
+    if (os_signals.security_patch_ms) {
+      os_report->set_security_patch_ms(os_signals.security_patch_ms.value());
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+
     browser_report->set_browser_version(os_signals.browser_version);
   }
 
@@ -284,6 +340,17 @@ void ChromeProfileRequestGenerator::OnAggregatedSignalsReceived(
     }
   }
 
+  if (response.agent_signals_response) {
+    const auto& agent_signals = response.agent_signals_response.value();
+    for (auto detected_agent : agent_signals.detected_agents) {
+      switch (detected_agent) {
+        case (device_signals::Agents::kCrowdStrikeFalcon):
+          os_report->add_detected_agents(em::Agent::CROWDSTRIKE_FALCON);
+          break;
+      }
+    }
+  }
+
 #if BUILDFLAG(IS_WIN)
   if (response.av_signal_response) {
     const auto& antivirus_signals = response.av_signal_response.value();
@@ -312,8 +379,37 @@ void ChromeProfileRequestGenerator::OnAggregatedSignalsReceived(
   request->GetChromeProfileReportRequest().set_allocated_browser_report(
       browser_report.release());
 
-  VLOG_POLICY(1, REPORTING)
-      << "Signals report request generated: "
+  VLOG_POLICY(1, REPORTING) << "Signals report request is mostly ready, "
+                               "generating attestation payload";
+  std::string report_timestamp =
+      base::NumberToString(base::Time::Now().InMillisecondsFSinceUnixEpoch());
+  std::string report_nonce = CreateNonce();
+  auto signals_string =
+      GetSecuritySignalsInReport(request->GetChromeProfileReportRequest());
+  device_attestation_service_->GetAttestationResponse(
+      kAttestationFlowName, signals_string, report_timestamp, report_nonce,
+      base::BindOnce(&ChromeProfileRequestGenerator::OnAttestationResultReady,
+                     weak_ptr_factory_.GetWeakPtr(), report_timestamp,
+                     report_nonce, std::move(callback), std::move(request)));
+}
+
+void ChromeProfileRequestGenerator::OnAttestationResultReady(
+    std::string_view timestamp,
+    std::string_view nonce,
+    ReportCallback callback,
+    std::unique_ptr<ReportRequest> request,
+    const enterprise::BlobGenerationResult& attestation_result) {
+  auto attestation_payload = std::make_unique<em::AttestationPayload>();
+  attestation_payload->set_timestamp(timestamp);
+  attestation_payload->set_nonce(nonce);
+
+  attestation_payload->set_attestation_blob(
+      attestation_result.attestation_blob);
+  attestation_payload->set_attestation_error(attestation_result.error_message);
+  request->GetChromeProfileReportRequest().set_allocated_attestation_payload(
+      attestation_payload.release());
+  VLOG_POLICY(2, REPORTING)
+      << "Signals report request generated with attestation: "
       << GetSecuritySignalsInReport(request->GetChromeProfileReportRequest());
   OnRequestReady(std::move(request), std::move(callback));
 }

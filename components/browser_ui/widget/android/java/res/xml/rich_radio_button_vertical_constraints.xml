@@ -10,14 +10,16 @@ found in the LICENSE file.
 
     <Constraint
         android:id="@+id/rich_radio_button_icon_container"
-        android:layout_width="@dimen/rich_radio_button_icon_container_size"
-        android:layout_height="@dimen/rich_radio_button_icon_container_size"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/rich_radio_button_text_container"
         app:layout_constraintVertical_chainStyle="packed"
-        android:layout_marginTop="0dp"
+        app:layout_constraintWidth_max="@dimen/rich_radio_button_vertical_icon_container_size"
+        app:layout_constraintDimensionRatio="1:1"
+        android:layout_marginTop="@dimen/rich_radio_button_vertical_icon_container_margin_top"
         android:layout_marginBottom="@dimen/rich_radio_button_vertical_margin_bottom" />
 
       <Constraint
@@ -40,6 +42,6 @@ found in the LICENSE file.
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginTop="0dp"
-        android:layout_marginBottom="0dp" />
+        android:layout_marginBottom="10dp" />
 
 </androidx.constraintlayout.widget.ConstraintSet>

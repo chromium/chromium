@@ -4,6 +4,10 @@
 
 #include "chrome/browser/extensions/permissions_url_constants.h"
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extension_permissions_constants {
 
 // The link to the help article for runtime host permissions.

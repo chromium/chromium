@@ -29,10 +29,6 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_list.h",
-  "+chrome/browser/ui/browser_list_observer.h",
-  "+chrome/browser/ui/browser_window.h",
-  "+chrome/browser/ui/tabs",
   "+chrome/browser/ui/webui/ash/cloud_upload",
   "+chrome/common/chrome_features.h",
   "+chrome/common/chrome_paths.h",
@@ -47,5 +43,7 @@ specific_include_rules = {
   ".*browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/ui/browser_commands.h",
+    "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/tabs",
   ],
 }

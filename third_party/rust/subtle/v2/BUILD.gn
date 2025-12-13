@@ -23,6 +23,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Isis Lovecruft <isis@patternsinthevoid.net>, Henry de Valence <hdevalence@hdevalence.ca>"
   cargo_pkg_name = "subtle"
   cargo_pkg_description = "Pure-Rust traits and utilities for constant-time cryptographic implementations."
+  cargo_pkg_repository = "https://github.com/dalek-cryptography/subtle"
   cargo_pkg_version = "2.6.1"
 
   allow_unsafe = false

@@ -111,7 +111,7 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
 
     this.toolbarManager_!.hideToolbarAfterTimeout();
     // Let the viewport handle directional key events.
-    if (this.viewport.handleDirectionalKeyEvent(e, false)) {
+    if (this.viewport.handleDirectionalKeyEvent(e, false, false)) {
       return;
     }
 
@@ -133,6 +133,8 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
           this.$.zoomToolbar.fitToggleFromHotKey();
         }
         return;
+      default:
+        break;
     }
 
     // Give print preview a chance to handle the key event.
@@ -276,9 +278,9 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
         position.x += positionData.x;
         this.viewport.setPosition(position);
         return true;
+      default:
+        return false;
     }
-
-    return false;
   }
 
   override setLoadState(loadState: LoadState) {
@@ -288,7 +290,7 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
     }
   }
 
-  override handlePluginMessage(e: CustomEvent) {
+  override handlePluginMessage(e: CustomEvent<MessageData>) {
     const data = e.detail;
     switch (data.type.toString()) {
       case 'documentDimensions':
@@ -323,8 +325,9 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
       case 'setIsEditing':
         // These messages are not relevant in Print Preview.
         return;
+      default:
+        assertNotReached('Unknown message type received: ' + data.type);
     }
-    assertNotReached('Unknown message type received: ' + data.type);
   }
 
   /**

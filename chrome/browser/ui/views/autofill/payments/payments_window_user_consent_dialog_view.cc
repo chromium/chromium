@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/autofill/payments/payments_window_user_consent_dialog_view.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/notreached.h"
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"

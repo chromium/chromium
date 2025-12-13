@@ -16,7 +16,7 @@ class PostSaveCompromisedBubbleView : public PasswordBubbleViewBase {
 
  public:
   explicit PostSaveCompromisedBubbleView(content::WebContents* web_contents,
-                                         views::View* anchor_view);
+                                         views::BubbleAnchor anchor_view);
   ~PostSaveCompromisedBubbleView() override;
 
  private:

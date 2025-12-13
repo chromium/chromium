@@ -31,15 +31,17 @@ class MockAutofillManager : public AutofillManager {
 
   MOCK_METHOD(bool, ShouldClearPreviewedForm, (), (override));
   MOCK_METHOD(void, OnFocusOnNonFormFieldImpl, (), (override));
+  MOCK_METHOD(void, OnDidAutofillFormImpl, (const FormData& form), (override));
   MOCK_METHOD(void,
-              OnDidFillAutofillFormDataImpl,
-              (const FormData& form, const base::TimeTicks timestamp),
+              SuppressAutomaticRefillsImpl,
+              (const FillId& fill_id),
               (override));
+  MOCK_METHOD(void, RequestRefillImpl, (const FillId& fill_id), (override));
   MOCK_METHOD(void, OnDidEndTextFieldEditingImpl, (), (override));
   MOCK_METHOD(void, OnHidePopupImpl, (), (override));
   MOCK_METHOD(void,
               OnSelectFieldOptionsDidChangeImpl,
-              (const FormData& form),
+              (const FormData& form, const FieldGlobalId& field_id),
               (override));
   MOCK_METHOD(void,
               OnJavaScriptChangedAutofilledValueImpl,
@@ -49,7 +51,7 @@ class MockAutofillManager : public AutofillManager {
               (override));
   MOCK_METHOD(void,
               OnLoadedServerPredictionsImpl,
-              ((base::span<const raw_ptr<FormStructure, VectorExperimental>>)),
+              ((base::span<const raw_ref<FormStructure>>)),
               (override));
   MOCK_METHOD(void,
               OnFormSubmittedImpl,
@@ -97,6 +99,14 @@ class MockAutofillManager : public AutofillManager {
               ReportAutofillWebOTPMetrics,
               (bool used_web_otp),
               (override));
+  MOCK_METHOD(CreditCardAccessManager*,
+              GetCreditCardAccessManager,
+              (),
+              (override));
+  MOCK_METHOD(const CreditCardAccessManager*,
+              GetCreditCardAccessManager,
+              (),
+              (const override));
 
   base::WeakPtr<AutofillManager> GetWeakPtr() override;
 

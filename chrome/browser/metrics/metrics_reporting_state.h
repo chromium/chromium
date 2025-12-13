@@ -57,7 +57,6 @@ void ChangeMetricsReportingState(
 // disabled as reported so as to not include them in the next log). If
 // |called_from| is set to anything else, then metrics will not be cleared when
 // enabling metrics reporting.
-// TODO(crbug.com/40592297): Support setting the pref on all platforms.
 void ChangeMetricsReportingStateWithReply(
     bool enabled,
     OnMetricsReportingCallbackType callback_fn,

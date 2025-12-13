@@ -74,6 +74,7 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/geolocation/geolocation_coordinates.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -81,7 +82,6 @@
 #include "third_party/blink/renderer/modules/ad_auction/join_leave_queue.h"
 #include "third_party/blink/renderer/modules/ad_auction/protected_audience.h"
 #include "third_party/blink/renderer/modules/ad_auction/validate_blink_interest_group.h"
-#include "third_party/blink/renderer/modules/geolocation/geolocation_coordinates.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -89,7 +89,6 @@
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
@@ -535,20 +534,18 @@ String ErrorInvalidInterestGroup(const AuctionAdInterestGroup& group,
 
 String ErrorInvalidInterestGroupJson(const AuctionAdInterestGroup& group,
                                      const String& field_name) {
-  return String::Format(
-      "%s for AuctionAdInterestGroup with owner '%s' and name '%s' must be a "
-      "JSON-serializable object.",
-      field_name.Utf8().c_str(), group.owner().Utf8().c_str(),
-      group.name().Utf8().c_str());
+  return StrCat({field_name, " for AuctionAdInterestGroup with owner '",
+                 group.owner(), "' and name '", group.name(),
+                 "' must be a JSON-serializable object."});
 }
 
 String ErrorInvalidAuctionConfigSeller(const String& seller_name,
                                        const String& field_name,
                                        const String& field_value,
                                        const String& error) {
-  return String::Format("%s '%s' for AuctionAdConfig with seller '%s' %s",
-                        field_name.Utf8().c_str(), field_value.Utf8().c_str(),
-                        seller_name.Utf8().c_str(), error.Utf8().c_str());
+  return StrCat({field_name, " '", field_value,
+                 "' for AuctionAdConfig with seller '", seller_name, "' ",
+                 error});
 }
 
 String ErrorInvalidAuctionConfig(const AuctionAdConfig& config,
@@ -561,43 +558,37 @@ String ErrorInvalidAuctionConfig(const AuctionAdConfig& config,
 
 String ErrorInvalidAuctionConfigSellerJson(const String& seller_name,
                                            const String& field_name) {
-  return String::Format(
-      "%s for AuctionAdConfig with seller '%s' must be a JSON-serializable "
-      "object.",
-      field_name.Utf8().c_str(), seller_name.Utf8().c_str());
+  return StrCat({field_name, " for AuctionAdConfig with seller '", seller_name,
+                 "' must be a JSON-serializable object."});
 }
 
 String ErrorInvalidAdRequestConfig(const AdRequestConfig& config,
                                    const String& field_name,
                                    const String& field_value,
                                    const String& error) {
-  return String::Format("%s '%s' for AdRequestConfig with URL '%s' %s",
-                        field_name.Utf8().c_str(), field_value.Utf8().c_str(),
-                        config.adRequestUrl().Utf8().c_str(),
-                        error.Utf8().c_str());
+  return StrCat({field_name, " '", field_value,
+                 "' for AdRequestConfig with URL '", config.adRequestUrl(),
+                 "' ", error});
 }
 
 String ErrorInvalidAuctionConfigUint(const AuctionAdConfig& config,
                                      const String& field_name,
                                      const String& error) {
-  return String::Format("%s for AuctionAdConfig with seller '%s': %s",
-                        field_name.Utf8().c_str(),
-                        config.seller().Utf8().c_str(), error.Utf8().c_str());
+  return StrCat({field_name, " for AuctionAdConfig with seller '",
+                 config.seller(), "': ", error});
 }
 
 String ErrorRenameMismatch(const String& old_field_name,
                            const String& old_field_value,
                            const String& new_field_name,
                            const String& new_field_value) {
-  return String::Format(
-      "%s doesn't have the same value as %s ('%s' vs '%s')",
-      old_field_name.Utf8().c_str(), new_field_name.Utf8().c_str(),
-      old_field_value.Utf8().c_str(), new_field_value.Utf8().c_str());
+  return StrCat({old_field_name, " doesn't have the same value as ",
+                 new_field_name, " ('", old_field_value, "' vs '",
+                 new_field_value, "')"});
 }
 
 String ErrorMissingRequired(const String& required_field_name) {
-  return String::Format("Missing required field %s",
-                        required_field_name.Utf8().c_str());
+  return StrCat({"Missing required field ", required_field_name});
 }
 
 // Console warnings.
@@ -617,10 +608,9 @@ void ConsoleWarnDeprecatedEnum(const ExecutionContext& execution_context,
                                String deprecated_value) {
   AddWarningMessageToConsole(
       execution_context,
-      String::Format("Enum %s used deprecated value %s -- \"dashed-naming\" "
-                     "should be used instead of \"camelCase\".",
-                     enum_name.Utf8().c_str(),
-                     deprecated_value.Utf8().c_str()));
+      StrCat(
+          {"Enum ", enum_name, " used deprecated value ", deprecated_value,
+           " -- \"dashed-naming\" should be used instead of \"camelCase\"."}));
 }
 
 // JSON and Origin conversion helpers.
@@ -720,10 +710,9 @@ bool CopyOwnerFromIdlToMojo(const ExecutionContext& execution_context,
                             mojom::blink::InterestGroup& output) {
   scoped_refptr<const SecurityOrigin> owner = ParseOrigin(input.owner());
   if (!owner) {
-    exception_state.ThrowTypeError(String::Format(
-        "owner '%s' for AuctionAdInterestGroup with name '%s' must be a valid "
-        "https origin.",
-        input.owner().Utf8().c_str(), input.name().Utf8().c_str()));
+    exception_state.ThrowTypeError(StrCat(
+        {"owner '", input.owner(), "' for AuctionAdInterestGroup with name '",
+         input.name(), "' must be a valid https origin."}));
     return false;
   }
 
@@ -732,11 +721,11 @@ bool CopyOwnerFromIdlToMojo(const ExecutionContext& execution_context,
 }
 
 // Converts a sparse vector used in `priority_vector` and
-// `priority_signals_overrides` to a WTF::HashMap, as is used in mojom structs.
+// `priority_signals_overrides` to a HashMap, as is used in mojom structs.
 // Has no failure cases.
-WTF::HashMap<WTF::String, double> ConvertSparseVectorIdlToMojo(
-    const Vector<std::pair<WTF::String, double>>& priority_signals_in) {
-  WTF::HashMap<WTF::String, double> priority_signals_out;
+HashMap<String, double> ConvertSparseVectorIdlToMojo(
+    const Vector<std::pair<String, double>>& priority_signals_in) {
+  HashMap<String, double> priority_signals_out;
   for (const auto& key_value_pair : priority_signals_in) {
     priority_signals_out.insert(key_value_pair.first, key_value_pair.second);
   }
@@ -805,7 +794,7 @@ bool CopySellerCapabilitiesFromIdlToMojo(
 bool CopyExecutionModeFromIdlToMojo(
     const ExecutionContext& execution_context,
     ExceptionState& exception_state,
-    const WTF::String& execution_mode,
+    const String& execution_mode,
     const bool check_deprecated_names,
     mojom::blink::InterestGroup::ExecutionMode& output) {
   if (check_deprecated_names) {
@@ -966,11 +955,10 @@ bool CopyMaxTrustedBiddingSignalsURLLengthFromIdlToMojo(
   }
 
   if (input.maxTrustedBiddingSignalsURLLength() < 0) {
-    exception_state.ThrowTypeError(
-        String::Format("maxTrustedBiddingSignalsURLLength of interest group "
-                       "'%s' is less than 0 which is '%d'.",
-                       input.name().Latin1().c_str(),
-                       input.maxTrustedBiddingSignalsURLLength()));
+    exception_state.ThrowTypeError(StrCat(
+        {"maxTrustedBiddingSignalsURLLength of interest group '", input.name(),
+         "' is less than 0 which is '",
+         String::Number(input.maxTrustedBiddingSignalsURLLength()), "'."}));
     return false;
   }
 
@@ -994,11 +982,11 @@ bool CopyTrustedBiddingSignalsCoordinatorFromIdlToMojo(
   scoped_refptr<const SecurityOrigin> trustedBiddingSignalsCoordinator =
       ParseOrigin(input.trustedBiddingSignalsCoordinator());
   if (!trustedBiddingSignalsCoordinator) {
-    exception_state.ThrowTypeError(String::Format(
-        "trustedBiddingSignalsCoordinator '%s' for AuctionAdInterestGroup with "
-        "name '%s' must be a valid https origin.",
-        input.trustedBiddingSignalsCoordinator().Utf8().c_str(),
-        input.name().Utf8().c_str()));
+    exception_state.ThrowTypeError(
+        StrCat({"trustedBiddingSignalsCoordinator '",
+                input.trustedBiddingSignalsCoordinator(),
+                "' for AuctionAdInterestGroup with name '", input.name(),
+                "' must be a valid https origin."}));
     return false;
   }
 
@@ -1019,10 +1007,10 @@ bool CopyViewAndClickCountsProvidersFromIdlToMojo(
   for (const String& provider : input.viewAndClickCountsProviders()) {
     scoped_refptr<const SecurityOrigin> parsed_provider = ParseOrigin(provider);
     if (!parsed_provider) {
-      exception_state.ThrowTypeError(String::Format(
-          "viewAndClickCountsProviders '%s' for AuctionAdInterestGroup "
-          "with name '%s' must be a valid https origin.",
-          provider.Utf8().c_str(), input.name().Utf8().c_str()));
+      exception_state.ThrowTypeError(
+          StrCat({"viewAndClickCountsProviders '", provider,
+                  "' for AuctionAdInterestGroup with name '", input.name(),
+                  "' must be a valid https origin."}));
       return false;
     }
     view_and_click_counts_providers.push_back(parsed_provider);
@@ -1224,7 +1212,7 @@ bool CopyAdditionalBidKeyFromIdlToMojo(
   if (!input.hasAdditionalBidKey()) {
     return true;
   }
-  WTF::Vector<uint8_t> decoded_key;
+  Vector<uint8_t> decoded_key;
   if (!Base64Decode(input.additionalBidKey(), decoded_key,
                     Base64DecodePolicy::kForgiving)) {
     exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
@@ -1258,18 +1246,18 @@ bool GetAggregationCoordinatorFromConfig(
   if (!aggregation_coordinator_origin) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        String::Format(
-            "aggregationCoordinatorOrigin '%s' must be a valid https origin.",
-            config.aggregationCoordinatorOrigin().Utf8().c_str()));
+        StrCat({"aggregationCoordinatorOrigin '",
+                config.aggregationCoordinatorOrigin(),
+                "' must be a valid https origin."}));
     return false;
   }
   if (!aggregation_service::IsAggregationCoordinatorOriginAllowed(
           aggregation_coordinator_origin->ToUrlOrigin())) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
-        String::Format("aggregationCoordinatorOrigin '%s' is not a recognized "
-                       "coordinator origin.",
-                       config.aggregationCoordinatorOrigin().Utf8().c_str()));
+        StrCat({"aggregationCoordinatorOrigin '",
+                config.aggregationCoordinatorOrigin(),
+                "' is not a recognized coordinator origin."}));
     return false;
   }
   aggregation_coordinator_origin_out =
@@ -1299,9 +1287,8 @@ bool CopyAdRequestUrlFromIdlToMojo(const ExecutionContext& context,
   if (!ad_request_url.IsValid() ||
       (ad_request_url.Protocol() != url::kHttpsScheme)) {
     exception_state.ThrowTypeError(
-        String::Format("adRequestUrl '%s' for AdRequestConfig must "
-                       "be a valid https origin.",
-                       input.adRequestUrl().Utf8().c_str()));
+        StrCat({"adRequestUrl '", input.adRequestUrl(),
+                "' for AdRequestConfig must be a valid https origin."}));
     return false;
   }
   output.ad_request_url = ad_request_url;
@@ -1415,19 +1402,22 @@ bool CopyAdSignalsFromIdlToMojo(const ExecutionContext& context,
   output.anonymized_proxied_signals.emplace();
 
   for (const auto& signal : input.anonymizedProxiedSignals()) {
-    if (signal == "coarse-geolocation") {
-      output.anonymized_proxied_signals->push_back(
-          blink::mojom::AdSignals::kCourseGeolocation);
-    } else if (signal == "coarse-ua") {
-      output.anonymized_proxied_signals->push_back(
-          blink::mojom::AdSignals::kCourseUserAgent);
-    } else if (signal == "targeting") {
-      output.anonymized_proxied_signals->push_back(
-          blink::mojom::AdSignals::kTargeting);
-    } else if (signal == "user-ad-interests") {
-      output.anonymized_proxied_signals->push_back(
-          blink::mojom::AdSignals::kUserAdInterests);
+    mojom::blink::AdSignals mojo_signal;
+    switch (signal.AsEnum()) {
+      case V8AdSignals::Enum::kCoarseGeolocation:
+        mojo_signal = mojom::blink::AdSignals::kCourseGeolocation;
+        break;
+      case V8AdSignals::Enum::kCoarseUa:
+        mojo_signal = mojom::blink::AdSignals::kCourseUserAgent;
+        break;
+      case V8AdSignals::Enum::kTargeting:
+        mojo_signal = mojom::blink::AdSignals::kTargeting;
+        break;
+      case V8AdSignals::Enum::kUserAdInterests:
+        mojo_signal = mojom::blink::AdSignals::kUserAdInterests;
+        break;
     }
+    output.anonymized_proxied_signals->push_back(mojo_signal);
   }
   return true;
 }
@@ -1445,9 +1435,8 @@ bool CopyFallbackSourceFromIdlToMojo(const ExecutionContext& context,
   if (!fallback_source.IsValid() ||
       (fallback_source.Protocol() != url::kHttpsScheme)) {
     exception_state.ThrowTypeError(
-        String::Format("fallbackSource '%s' for AdRequestConfig must "
-                       "be a valid https origin.",
-                       input.fallbackSource().Utf8().c_str()));
+        StrCat({"fallbackSource '", input.fallbackSource(),
+                "' for AdRequestConfig must be a valid https origin."}));
     return false;
   }
   output.fallback_source = fallback_source;
@@ -1461,9 +1450,9 @@ bool CopySellerFromIdlToMojo(ExceptionState& exception_state,
                              mojom::blink::AuctionAdConfig& output) {
   scoped_refptr<const SecurityOrigin> seller = ParseOrigin(input.seller());
   if (!seller) {
-    exception_state.ThrowTypeError(String::Format(
-        "seller '%s' for AuctionAdConfig must be a valid https origin.",
-        input.seller().Utf8().c_str()));
+    exception_state.ThrowTypeError(
+        StrCat({"seller '", input.seller(),
+                "' for AuctionAdConfig must be a valid https origin."}));
     return false;
   }
   output.seller = seller;
@@ -1898,10 +1887,10 @@ void CopyDirectFromSellerSignalsHeaderAdSlotFromIdlToMojo(
   output.expects_direct_from_seller_signals_header_ad_slot = true;
 }
 
-WTF::Vector<mojom::blink::AdKeywordReplacementPtr>
+Vector<mojom::blink::AdKeywordReplacementPtr>
 ConvertNonPromiseDeprecatedRenderURLReplacementsFromV8ToMojo(
     const std::optional<Vector<std::pair<String, String>>>& input) {
-  WTF::Vector<mojom::blink::AdKeywordReplacementPtr> output;
+  Vector<mojom::blink::AdKeywordReplacementPtr> output;
   if (!input.has_value()) {
     return output;
   }
@@ -1950,18 +1939,17 @@ bool CopyAdditionalBidsFromIdlToMojo(
 
   if (!input.hasAuctionNonce()) {
     exception_state.ThrowTypeError(
-        String::Format("additionalBids specified for AuctionAdConfig with "
-                       "seller '%s' which does not have an auctionNonce.",
-                       input.seller().Utf8().c_str()));
+        StrCat({"additionalBids specified for AuctionAdConfig with seller '",
+                input.seller(), "' which does not have an auctionNonce."}));
     return false;
   }
 
   if (!input.hasInterestGroupBuyers() || input.interestGroupBuyers().empty()) {
     exception_state.ThrowTypeError(
-        String::Format("additionalBids specified for AuctionAdConfig with "
-                       "seller '%s' which has no interestGroupBuyers. All "
-                       "additionalBid buyers must be in interestGroupBuyers.",
-                       input.seller().Utf8().c_str()));
+        StrCat({"additionalBids specified for AuctionAdConfig with seller '",
+                input.seller(),
+                "' which has no interestGroupBuyers. All additionalBid buyers "
+                "must be in interestGroupBuyers."}));
     return false;
   }
 
@@ -2359,8 +2347,8 @@ bool CopyPerBuyerGroupLimitsFromIdlToMojo(
 bool ConvertAuctionConfigPrioritySignalsFromIdlToMojo(
     ExceptionState& exception_state,
     const AuctionAdConfig& input,
-    const Vector<std::pair<WTF::String, double>>& priority_signals_in,
-    WTF::HashMap<WTF::String, double>& priority_signals_out) {
+    const Vector<std::pair<String, double>>& priority_signals_in,
+    HashMap<String, double>& priority_signals_out) {
   for (const auto& key_value_pair : priority_signals_in) {
     if (key_value_pair.first.StartsWith("browserSignals.")) {
       exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
@@ -2385,7 +2373,7 @@ bool CopyPerBuyerPrioritySignalsFromIdlToMojo(
       .emplace();
   for (const auto& per_buyer_priority_signals :
        input.perBuyerPrioritySignals()) {
-    WTF::HashMap<WTF::String, double> signals;
+    HashMap<String, double> signals;
     if (!ConvertAuctionConfigPrioritySignalsFromIdlToMojo(
             exception_state, input, per_buyer_priority_signals.second,
             signals)) {
@@ -2507,9 +2495,9 @@ bool CopyAuctionReportBuyerDebugModeConfigFromIdlToMojo(
       input.auctionReportBuyerDebugModeConfig();
   bool enabled = debug_mode_config->enabled();
   std::optional<uint64_t> debug_key;
-  if (debug_mode_config->hasDebugKeyNonNull()) {
+  if (debug_mode_config->hasDebugKey() && debug_mode_config->debugKey()) {
     ASSIGN_OR_RETURN(
-        debug_key, CopyBigIntToUint64(debug_mode_config->debugKeyNonNull()),
+        debug_key, CopyBigIntToUint64(*debug_mode_config->debugKey()),
         [&](String error) {
           exception_state.ThrowTypeError(ErrorInvalidAuctionConfigUint(
               input, "auctionReportBuyerDebugModeConfig", error));
@@ -2557,25 +2545,25 @@ mojom::blink::AdSizePtr ParseAdSize(const AuctionAdConfig& input,
       blink::ParseAdSizeString(size.height().Ascii());
   if (width_units == blink::AdSize::LengthUnit::kInvalid) {
     exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
-        input, String::Format("%s width", field_name), size.width(),
+        input, StrCat({field_name, " width"}), size.width(),
         "must use units '', 'px', 'sw', or 'sh'."));
     return mojom::blink::AdSizePtr();
   }
   if (height_units == blink::AdSize::LengthUnit::kInvalid) {
     exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
-        input, String::Format("%s height", field_name), size.height(),
+        input, StrCat({field_name, " height"}), size.height(),
         "must use units '', 'px', 'sw', or 'sh'."));
     return mojom::blink::AdSizePtr();
   }
   if (width_val <= 0 || !std::isfinite(width_val)) {
     exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
-        input, String::Format("%s width", field_name), size.width(),
+        input, StrCat({field_name, " width"}), size.width(),
         "must be finite and positive."));
     return mojom::blink::AdSizePtr();
   }
   if (height_val <= 0 || !std::isfinite(height_val)) {
     exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
-        input, String::Format("%s height", field_name), size.height(),
+        input, StrCat({field_name, " height"}), size.height(),
         "must be finite and positive."));
     return mojom::blink::AdSizePtr();
   }
@@ -2618,9 +2606,8 @@ bool CopyAllSlotsRequestedSizesFromIdlToMojo(
 
   if (input.allSlotsRequestedSizes().empty()) {
     exception_state.ThrowTypeError(
-        String::Format("allSlotsRequestedSizes for AuctionAdConfig with seller "
-                       "'%s' may not be empty.",
-                       input.seller().Utf8().c_str()));
+        StrCat({"allSlotsRequestedSizes for AuctionAdConfig with seller '",
+                input.seller(), "' may not be empty."}));
     return false;
   }
 
@@ -2637,9 +2624,8 @@ bool CopyAllSlotsRequestedSizesFromIdlToMojo(
     if (!distinct_sizes.insert(*size).second) {
       exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
           input, "allSlotsRequestedSizes",
-          String::Format(R"({"width": "%s", "height": "%s"})",
-                         unparsed_size->width().Utf8().c_str(),
-                         unparsed_size->height().Utf8().c_str()),
+          StrCat({R"({"width": ")", unparsed_size->width(), R"(", "height": ")",
+                  unparsed_size->height(), "\"}"}),
           "must be distinct from other sizes in the list."));
       return false;
     }
@@ -2653,10 +2639,11 @@ bool CopyAllSlotsRequestedSizesFromIdlToMojo(
       !base::Contains(
           distinct_sizes,
           *output.auction_ad_config_non_shared_params->requested_size)) {
-    exception_state.ThrowTypeError(String::Format(
-        "allSlotsRequestedSizes for AuctionAdConfig with seller '%s' must "
-        "contain requestedSize as an element when requestedSize is set.",
-        input.seller().Utf8().c_str()));
+    exception_state.ThrowTypeError(
+        StrCat({"allSlotsRequestedSizes for AuctionAdConfig with seller '",
+                input.seller(),
+                "' must contain requestedSize as an element when requestedSize "
+                "is set."}));
     return false;
   }
 
@@ -2701,10 +2688,10 @@ bool CopyAuctionNonceFromIdlToMojo(const ExecutionContext& execution_context,
         base::Uuid::ParseLowercase(input.auctionNonce().Ascii());
     if (!output.auction_ad_config_non_shared_params->auction_nonce
              ->is_valid()) {
-      exception_state.ThrowTypeError(String::Format(
-          "auctionNonce for AuctionAdConfig with seller '%s' must "
-          "be a valid UUIDv4, but got, '%s'.",
-          input.seller().Utf8().c_str(), input.auctionNonce().Ascii().c_str()));
+      exception_state.ThrowTypeError(
+          StrCat({"auctionNonce for AuctionAdConfig with seller '",
+                  input.seller(), "' must be a valid UUIDv4, but got, '",
+                  input.auctionNonce(), "'."}));
       return false;
     }
   }
@@ -3163,10 +3150,9 @@ std::optional<mojom::blink::AuctionDataConfigPtr> createAuctionDataConfig(
       scoped_refptr<const SecurityOrigin> buyer =
           ParseOrigin(per_buyer_config.first);
       if (!buyer) {
-        exception_state.ThrowTypeError(String::Format(
-            "buyer origin '%s' for AdAuctionDataConfig must be a valid "
-            "https origin.",
-            per_buyer_config.first.Utf8().c_str()));
+        exception_state.ThrowTypeError(StrCat(
+            {"buyer origin '", per_buyer_config.first,
+             "' for AdAuctionDataConfig must be a valid https origin."}));
         return std::nullopt;
       }
 
@@ -3208,9 +3194,9 @@ scoped_refptr<const SecurityOrigin> ParseAndValidateOrigin(
     ExceptionState& exception_state) {
   scoped_refptr<const SecurityOrigin> origin = ParseOrigin(origin_string);
   if (!origin_string) {
-    exception_state.ThrowTypeError(String::Format(
-        "%s '%s' for AdAuctionDataConfig must be a valid https origin.",
-        field_name.Utf8().c_str(), origin_string.Utf8().c_str()));
+    exception_state.ThrowTypeError(
+        StrCat({field_name, " '", origin_string,
+                "' for AdAuctionDataConfig must be a valid https origin."}));
     return nullptr;
   }
   return origin;
@@ -3369,7 +3355,7 @@ void NavigatorAuction::AuctionHandle::DeprecatedRenderURLReplacementsResolved::
   if (!script_state->ContextIsValid()) {
     return;
   }
-  WTF::Vector<mojom::blink::AdKeywordReplacementPtr>
+  Vector<mojom::blink::AdKeywordReplacementPtr>
       deprecated_render_url_replacements =
           ConvertNonPromiseDeprecatedRenderURLReplacementsFromV8ToMojo(value);
   for (const auto& replacement : deprecated_render_url_replacements) {
@@ -3580,16 +3566,14 @@ void NavigatorAuction::AuctionHandle::ResolveToConfigResolved::React(
 NavigatorAuction::NavigatorAuction(Navigator& navigator)
     : Supplement(navigator),
       queued_cross_site_joins_(kMaxActiveCrossSiteJoins,
-                               WTF::BindRepeating(&NavigatorAuction::StartJoin,
-                                                  WrapWeakPersistent(this))),
-      queued_cross_site_leaves_(
-          kMaxActiveCrossSiteLeaves,
-          WTF::BindRepeating(&NavigatorAuction::StartLeave,
-                             WrapWeakPersistent(this))),
-      queued_cross_site_clears_(
-          kMaxActiveCrossSiteClears,
-          WTF::BindRepeating(&NavigatorAuction::StartClear,
-                             WrapWeakPersistent(this))),
+                               BindRepeating(&NavigatorAuction::StartJoin,
+                                             WrapWeakPersistent(this))),
+      queued_cross_site_leaves_(kMaxActiveCrossSiteLeaves,
+                                BindRepeating(&NavigatorAuction::StartLeave,
+                                              WrapWeakPersistent(this))),
+      queued_cross_site_clears_(kMaxActiveCrossSiteClears,
+                                BindRepeating(&NavigatorAuction::StartClear,
+                                              WrapWeakPersistent(this))),
       ad_auction_service_(navigator.GetExecutionContext()),
       protected_audience_(MakeGarbageCollected<ProtectedAudience>(
           navigator.GetExecutionContext())) {
@@ -3716,8 +3700,8 @@ ScriptPromise<IDLUndefined> NavigatorAuction::joinAdInterestGroup(
   auto promise = resolver->Promise();
   mojom::blink::AdAuctionService::JoinInterestGroupCallback callback =
       resolver->WrapCallbackInScriptScope(
-          WTF::BindOnce(&NavigatorAuction::JoinComplete,
-                        WrapWeakPersistent(this), is_cross_origin));
+          BindOnce(&NavigatorAuction::JoinComplete, WrapWeakPersistent(this),
+                   is_cross_origin));
 
   PendingJoin pending_join{std::move(mojo_group), std::move(callback)};
   if (is_cross_origin) {
@@ -3757,10 +3741,10 @@ ScriptPromise<IDLUndefined> NavigatorAuction::leaveAdInterestGroup(
     ExceptionState& exception_state) {
   scoped_refptr<const SecurityOrigin> owner = ParseOrigin(group_key->owner());
   if (!owner) {
-    exception_state.ThrowTypeError("owner '" + group_key->owner() +
-                                   "' for AuctionAdInterestGroup with name '" +
-                                   group_key->name() +
-                                   "' must be a valid https origin.");
+    exception_state.ThrowTypeError(
+        StrCat({"owner '", group_key->owner(),
+                "' for AuctionAdInterestGroup with name '", group_key->name(),
+                "' must be a valid https origin."}));
     return EmptyPromise();
   }
 
@@ -3780,8 +3764,8 @@ ScriptPromise<IDLUndefined> NavigatorAuction::leaveAdInterestGroup(
   auto promise = resolver->Promise();
   mojom::blink::AdAuctionService::LeaveInterestGroupCallback callback =
       resolver->WrapCallbackInScriptScope(
-          WTF::BindOnce(&NavigatorAuction::LeaveComplete,
-                        WrapWeakPersistent(this), is_cross_origin));
+          BindOnce(&NavigatorAuction::LeaveComplete, WrapWeakPersistent(this),
+                   is_cross_origin));
 
   PendingLeave pending_leave{std::move(owner), std::move(group_key->name()),
                              std::move(callback)};
@@ -3869,8 +3853,8 @@ ScriptPromise<IDLUndefined> NavigatorAuction::clearOriginJoinedAdInterestGroups(
     ExceptionState& exception_state) {
   scoped_refptr<const SecurityOrigin> owner = ParseOrigin(owner_string);
   if (!owner) {
-    exception_state.ThrowTypeError("owner '" + owner_string +
-                                   "' must be a valid https origin.");
+    exception_state.ThrowTypeError(
+        StrCat({"owner '", owner_string, "' must be a valid https origin."}));
     return EmptyPromise();
   }
 
@@ -3890,8 +3874,8 @@ ScriptPromise<IDLUndefined> NavigatorAuction::clearOriginJoinedAdInterestGroups(
   auto promise = resolver->Promise();
   mojom::blink::AdAuctionService::LeaveInterestGroupCallback callback =
       resolver->WrapCallbackInScriptScope(
-          WTF::BindOnce(&NavigatorAuction::ClearComplete,
-                        WrapWeakPersistent(this), is_cross_origin));
+          BindOnce(&NavigatorAuction::ClearComplete, WrapWeakPersistent(this),
+                   is_cross_origin));
 
   PendingClear pending_clear{owner, std::move(interest_groups_to_keep),
                              std::move(callback)};
@@ -4090,10 +4074,10 @@ NavigatorAuction::runAdAuction(ScriptState* script_state,
   bool is_server_auction = config->hasServerResponse();
   ad_auction_service_->RunAdAuction(
       std::move(mojo_config), std::move(abort_receiver),
-      WTF::BindOnce(&NavigatorAuction::AuctionHandle::AuctionComplete,
-                    WrapPersistent(auction_handle), WrapPersistent(resolver),
-                    std::move(scoped_abort_state), std::move(start_time),
-                    std::move(is_server_auction)));
+      blink::BindOnce(&NavigatorAuction::AuctionHandle::AuctionComplete,
+                      WrapPersistent(auction_handle), WrapPersistent(resolver),
+                      std::move(scoped_abort_state), std::move(start_time),
+                      std::move(is_server_auction)));
   return promise;
 }
 
@@ -4176,7 +4160,7 @@ ScriptPromise<IDLUSVString> NavigatorAuction::deprecatedURNToURL(
   auto promise = resolver->Promise();
   ad_auction_service_->DeprecatedGetURLFromURN(
       std::move(uuid_url), send_reports,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(BindOnce(
           &NavigatorAuction::GetURLFromURNComplete, WrapPersistent(this))));
   return promise;
 }
@@ -4241,7 +4225,7 @@ ScriptPromise<IDLUndefined> NavigatorAuction::deprecatedReplaceInURN(
   auto promise = resolver->Promise();
   ad_auction_service_->DeprecatedReplaceInURN(
       std::move(uuid_url), std::move(replacements_list),
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(BindOnce(
           &NavigatorAuction::ReplaceInURNComplete, WrapPersistent(this))));
   return promise;
 }
@@ -4319,8 +4303,8 @@ ScriptPromise<Ads> NavigatorAuction::createAdRequest(
   auto promise = resolver->Promise();
   ad_auction_service_->CreateAdRequest(
       std::move(mojo_config),
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          &NavigatorAuction::AdsRequested, WrapPersistent(this))));
+      resolver->WrapCallbackInScriptScope(
+          BindOnce(&NavigatorAuction::AdsRequested, WrapPersistent(this))));
   return promise;
 }
 
@@ -4340,7 +4324,7 @@ ScriptPromise<Ads> NavigatorAuction::createAdRequest(
 }
 
 void NavigatorAuction::AdsRequested(ScriptPromiseResolver<Ads>* resolver,
-                                    const WTF::String&) {
+                                    const String&) {
   // TODO(https://crbug.com/1249186): Add full impl of methods.
   resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
       resolver->GetScriptState()->GetIsolate(),
@@ -4386,7 +4370,7 @@ ScriptPromise<IDLString> NavigatorAuction::finalizeAd(
   auto promise = resolver->Promise();
   ad_auction_service_->FinalizeAd(
       ads->GetGuid(), std::move(mojo_config),
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(BindOnce(
           &NavigatorAuction::FinalizeAdComplete, WrapPersistent(this))));
   return promise;
 }
@@ -4686,8 +4670,8 @@ ScriptPromise<AdAuctionData> NavigatorAuction::getInterestGroupAdAuctionData(
   if (!script_state->ContextIsValid()) {
     return EmptyPromise();
   }
-  WTF::HashMap<scoped_refptr<const SecurityOrigin>,
-               scoped_refptr<const SecurityOrigin>>
+  HashMap<scoped_refptr<const SecurityOrigin>,
+          scoped_refptr<const SecurityOrigin>>
       sellers;
   bool is_single_seller = false;
   // Keep the seller being required when
@@ -4729,9 +4713,9 @@ ScriptPromise<AdAuctionData> NavigatorAuction::getInterestGroupAdAuctionData(
     scoped_refptr<const SecurityOrigin> seller =
         ParseAndValidateOrigin(config->seller(), "seller", exception_state);
     if (!seller) {
-      exception_state.ThrowTypeError(String::Format(
-          "seller '%s' for AdAuctionDataConfig must be a valid https origin.",
-          config->seller().Utf8().c_str()));
+      exception_state.ThrowTypeError(
+          StrCat({"seller '", config->seller(),
+                  "' for AdAuctionDataConfig must be a valid https origin."}));
       return EmptyPromise();
     }
     scoped_refptr<const SecurityOrigin> coordinator;
@@ -4739,10 +4723,9 @@ ScriptPromise<AdAuctionData> NavigatorAuction::getInterestGroupAdAuctionData(
       coordinator = ParseAndValidateOrigin(
           config->coordinatorOrigin(), "coordinatorOrigin", exception_state);
       if (!coordinator) {
-        exception_state.ThrowTypeError(String::Format(
-            "coordinatorOrigin '%s' for AdAuctionDataConfig must be "
-            "a valid https origin.",
-            config->coordinatorOrigin().Utf8().c_str()));
+        exception_state.ThrowTypeError(StrCat(
+            {"coordinatorOrigin '", config->coordinatorOrigin(),
+             "' for AdAuctionDataConfig must be a valid https origin."}));
         return EmptyPromise();
       }
     }
@@ -4754,9 +4737,9 @@ ScriptPromise<AdAuctionData> NavigatorAuction::getInterestGroupAdAuctionData(
           seller_and_coordinator->seller(), "seller", exception_state);
       if (!seller) {
         exception_state.ThrowTypeError(
-            String::Format("seller '%s' in sellers for AdAuctionDataConfig "
-                           "must be a valid https origin.",
-                           seller_and_coordinator->seller().Utf8().c_str()));
+            StrCat({"seller '", seller_and_coordinator->seller(),
+                    "' in sellers for AdAuctionDataConfig "
+                    "must be a valid https origin."}));
         return EmptyPromise();
       }
       if (sellers.Contains(seller)) {
@@ -4770,10 +4753,11 @@ ScriptPromise<AdAuctionData> NavigatorAuction::getInterestGroupAdAuctionData(
             ParseAndValidateOrigin(seller_and_coordinator->coordinatorOrigin(),
                                    "coordinatorOrigin", exception_state);
         if (!coordinator) {
-          exception_state.ThrowTypeError(String::Format(
-              "coordinatorOrigin '%s' in sellers for AdAuctionDataConfig must "
-              "be a valid https origin.",
-              seller_and_coordinator->coordinatorOrigin().Utf8().c_str()));
+          exception_state.ThrowTypeError(
+              StrCat({"coordinatorOrigin '",
+                      seller_and_coordinator->coordinatorOrigin(),
+                      "' in sellers for AdAuctionDataConfig must be a valid "
+                      "https origin."}));
           return EmptyPromise();
         }
       }
@@ -4792,7 +4776,7 @@ ScriptPromise<AdAuctionData> NavigatorAuction::getInterestGroupAdAuctionData(
   auto promise = resolver->Promise();
   ad_auction_service_->GetInterestGroupAdAuctionData(
       std::move(sellers), std::move(*maybe_config_ptr),
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(blink::BindOnce(
           &NavigatorAuction::GetInterestGroupAdAuctionDataComplete,
           WrapPersistent(this), std::move(start_time), is_single_seller)));
   return promise;

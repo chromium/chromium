@@ -5,9 +5,11 @@
 #ifndef CHROME_UPDATER_INSTALLER_H_
 #define CHROME_UPDATER_INSTALLER_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -110,7 +112,8 @@ class Installer final : public update_client::CrxInstaller {
             bool update_disabled,
             UpdateService::PolicySameVersionUpdate policy_same_version_update,
             scoped_refptr<PersistedData> persisted_data,
-            crx_file::VerifierFormat crx_verifier_format);
+            crx_file::VerifierFormat crx_verifier_format,
+            std::optional<std::vector<uint8_t>> crx_public_key_hash);
   Installer(const Installer&) = delete;
   Installer& operator=(const Installer&) = delete;
 
@@ -131,7 +134,6 @@ class Installer final : public update_client::CrxInstaller {
   ~Installer() override;
 
   // Overrides from update_client::CrxInstaller.
-  void OnUpdateError(int error) override;
   void Install(const base::FilePath& unpack_path,
                const std::string& public_key,
                std::unique_ptr<InstallParams> install_params,
@@ -173,6 +175,7 @@ class Installer final : public update_client::CrxInstaller {
   const UpdateService::PolicySameVersionUpdate policy_same_version_update_;
   scoped_refptr<PersistedData> persisted_data_;
   const crx_file::VerifierFormat crx_verifier_format_;
+  const std::optional<std::vector<uint8_t>> crx_public_key_hash_;
 
   // AppInfo is set only after MakeCrxComponent is called, and is not updated
   // when the installer succeeds.

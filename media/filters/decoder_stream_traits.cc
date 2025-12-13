@@ -255,9 +255,10 @@ void DecoderStreamTraits<DemuxerStream::VIDEO>::OnDecode(
   }
 
   frame_metadata_[buffer.timestamp()] = {
-      buffer.discard_padding().first == kInfiniteDuration,  // should_drop
-      buffer.duration(),                                    // duration
-      base::TimeTicks::Now(),                               // decode_begin_time
+      buffer.discard_padding().has_value() &&
+          buffer.discard_padding()->first == kInfiniteDuration,  // should_drop
+      buffer.duration(),                                         // duration
+      base::TimeTicks::Now(),  // decode_begin_time
   };
 
   if (!buffer.is_key_frame())

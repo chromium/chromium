@@ -18,6 +18,7 @@
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/pulse/pulse_util.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 
 namespace media {

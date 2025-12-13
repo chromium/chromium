@@ -121,7 +121,8 @@ suite('CategoriesTest', () => {
             collections[1]!.querySelector('.label')!.textContent);
       });
 
-      test('collection image src based on error detection', async () => {
+      // TODO(crbug.com/440593576): Flaky on multiple platforms.
+      test.skip('collection image src based on error detection', async () => {
         const numCollections = 2;
         await setInitialSettings(
             {numCollections: numCollections, shouldReplaceBrokenImages: true});

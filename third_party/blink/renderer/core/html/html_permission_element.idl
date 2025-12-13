@@ -20,11 +20,6 @@ interface HTMLPermissionElement : HTMLElement {
   readonly attribute PermissionState initialPermissionStatus;
   readonly attribute PermissionState permissionStatus;
 
-  attribute EventHandler onresolve;
-  attribute EventHandler ondismiss;
-
-  // New name for the events `onresolve` and `ondismiss`. We will keep both
-  // for backward compability and will remove the old events in M138.
   attribute EventHandler onpromptaction;
   attribute EventHandler onpromptdismiss;
   attribute EventHandler onvalidationstatuschange;

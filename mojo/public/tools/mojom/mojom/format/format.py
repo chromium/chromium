@@ -37,10 +37,10 @@ def mojom_format(filename, contents=None):
     If `contents` is provided, then it is used instead of reading the file.
     """
     if contents is None:
-        with open(filename) as f:
+        with open(filename, newline='\n', encoding='utf-8') as f:
             contents = f.read()
     tree = parser.Parse(contents, filename, with_comments=True)
-    output = StringIO()
+    output = StringIO(newline='\n')
     state = FormatState(output)
     _write_mojom(tree, state)
     return output.getvalue()
@@ -351,10 +351,14 @@ def _write_method(node, state):
         _write_parameter_list(node.response_parameter_list, state, '=> (')
 
     if node.result_response:
-        result_response = node.result_response
-        expr = '=> result<'\
-               f'{result_response.success_type}, '\
-               f'{result_response.failure_type}>'
+        # This doesn't break result<T,E> if the whole expression is too long.
+        w = StringIO()
+        w.write('=> result<')
+        _write_typename(node.result_response.success_type, w)
+        w.write(', ')
+        _write_typename(node.result_response.failure_type, w)
+        w.write('>')
+        expr = w.getvalue()
         if (state.col + len(' ') + len(expr)) < LINE_LENGTH:
             state.write(' ')
             state.write(expr)

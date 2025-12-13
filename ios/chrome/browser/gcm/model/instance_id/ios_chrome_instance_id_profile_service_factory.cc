@@ -37,10 +37,9 @@ IOSChromeInstanceIDProfileServiceFactory::
 
 std::unique_ptr<KeyedService>
 IOSChromeInstanceIDProfileServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  DCHECK(!context->IsOffTheRecord());
+    ProfileIOS* profile) const {
+  DCHECK(!profile->IsOffTheRecord());
 
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<instance_id::InstanceIDProfileService>(
       IOSChromeGCMProfileServiceFactory::GetForProfile(profile)->driver(),
       profile->IsOffTheRecord());

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views_test_api.h"
 
 #include <algorithm>
@@ -157,6 +152,22 @@ void DesktopMediaPickerViewsTestApi::SetAudioSharingApprovedByUser(bool allow) {
 
 bool DesktopMediaPickerViewsTestApi::IsAudioSharingApprovedByUser() const {
   return picker_->dialog_->IsAudioSharingApprovedByUser();
+}
+
+bool DesktopMediaPickerViewsTestApi::IsAudioSharingControlEnabled() const {
+  return picker_->dialog_->IsAudioSharingControlEnabled();
+}
+
+bool DesktopMediaPickerViewsTestApi::IsScreenAudioOffered() const {
+  return picker_->dialog_->is_screen_audio_offered_;
+}
+bool DesktopMediaPickerViewsTestApi::IsWindowAudioOffered() const {
+  return picker_->dialog_->window_audio_type_offered_ !=
+         content::DesktopMediaID::AudioType::kNone;
+}
+content::DesktopMediaID::AudioType
+DesktopMediaPickerViewsTestApi::GetWindowAudioType() const {
+  return picker_->dialog_->window_audio_type_offered_;
 }
 
 views::MdTextButton* DesktopMediaPickerViewsTestApi::GetReselectButton() {

@@ -36,7 +36,7 @@ public class BadFlagsSnackbarManager {
         if (snackbarManager == null) return;
         Snackbar snackBar =
                 Snackbar.make(message, null, Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_BAD_FLAGS);
-        snackBar.setSingleLine(false);
+        snackBar.setDefaultLines(false);
         snackBar.setDuration(SnackbarManager.DEFAULT_SNACKBAR_DURATION_LONG_MS);
         snackbarManager.showSnackbar(snackBar);
     }

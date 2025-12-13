@@ -50,7 +50,7 @@ class DriveIphTabHelperNotificationDelegate
       return;
     }
 
-    ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+    ash::NewWindowDelegate::GetInstance()->OpenUrl(
         GURL(kGoogleOneOfferUrl),
         ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
         ash::NewWindowDelegate::Disposition::kNewForegroundTab);

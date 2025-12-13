@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest,
   LaunchApp(ash::SystemWebAppType::ECHE, &browser);
 
   gfx::Rect work_area =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+      display::Screen::Get()->GetDisplayForNewWindows().work_area();
   int expected_width = work_area.height() / 2;
   int expected_height = work_area.height() * aspect_ratio / 2;
   int x = (work_area.width() - expected_width) / 2;
@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest,
   LaunchApp(ash::SystemWebAppType::ECHE, &browser);
 
   gfx::Rect work_area =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+      display::Screen::Get()->GetDisplayForNewWindows().work_area();
   int expected_width = work_area.width() / 2;
   int expected_height = work_area.width() * aspect_ratio / 2;
   int x = (work_area.width() - expected_width) / 2;

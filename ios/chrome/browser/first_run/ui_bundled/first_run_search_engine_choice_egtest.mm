@@ -5,17 +5,18 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/policy_constants.h"
 #import "components/regional_capabilities/regional_capabilities_switches.h"
+#import "components/regional_capabilities/regional_capabilities_test_utils.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_matchers.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_app_interface.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_test_case_base.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_constants.h"
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/search_engine_choice/test/search_engine_choice_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -45,10 +46,21 @@
   config.additional_args.push_back(
       "--" + std::string(switches::kForceSearchEngineChoiceScreen));
   config.additional_args.push_back("true");
+  /// Disable post FRE actions so the test cases could open Settings sooner.
   config.additional_args.push_back(
       "--disable-features=UpdatedFirstRunSequence");
   config.additional_args.push_back(
       "--disable-features=AnimatedDefaultBrowserPromoInFRE");
+
+  if ([self isRunningTest:@selector
+            (testNoDefaultBrowserPromoAfterSearchEngineChoiceScreen)]) {
+    config.additional_args.push_back(
+        "--enable-features=SkipDefaultBrowserPromoInFirstRun");
+  } else {
+    config.additional_args.push_back(
+        "--disable-features=SkipDefaultBrowserPromoInFirstRun");
+  }
+
   return config;
 }
 
@@ -72,8 +84,8 @@
 // scrolls down and that it correctly sets the default search engine.
 - (void)testSearchEngineChoiceScreenSelectThenScroll {
   // Skip sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoScreenSecondaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               ButtonStackSecondaryButton()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -114,8 +126,8 @@
 // search engine and that it correctly sets the default search engine.
 - (void)testSearchEngineChoiceScreenScrollThenSelect {
   // Skip sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoScreenSecondaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               ButtonStackSecondaryButton()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -170,8 +182,8 @@
   policy_test_utils::MergePolicy(true,
                                  policy::key::kDefaultSearchProviderEnabled);
   // Skip sign-in.
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoScreenSecondaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               ButtonStackSecondaryButton()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -206,8 +218,8 @@
   // Skip sign-in.
   chrome_test_util::GREYAssertErrorNil(
       [MetricsAppInterface expectTotalCount:0 forHistogram:eventHistogram]);
-  [[self elementInteractionWithGreyMatcher:
-             chrome_test_util::PromoScreenSecondaryButtonMatcher()
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               ButtonStackSecondaryButton()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -285,7 +297,7 @@
             FRESigninIntentSigninWithPolicy];
   // Accept sign-in.
   [[self elementInteractionWithGreyMatcher:chrome_test_util::
-                                               PromoScreenPrimaryButtonMatcher()
+                                               ButtonStackPrimaryButton()
                       scrollViewIdentifier:
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
@@ -310,6 +322,34 @@
   [[[EarlGrey selectElementWithMatcher:continueButtonMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
   [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
+}
+
+// Tests that the Default Browser Promo is not shown in the EEA region if
+// `kSkipDefaultBrowserInFirstRun` is enabled.
+- (void)testNoDefaultBrowserPromoAfterSearchEngineChoiceScreen {
+  // Skip sign-in.
+  [[self elementInteractionWithGreyMatcher:chrome_test_util::
+                                               ButtonStackSecondaryButton()
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+
+  // Select a search engine.
+  NSString* searchEngineToSelect = [SearchEngineChoiceEarlGreyUI
+      searchEngineNameWithPrepopulatedEngine:TemplateURLPrepopulateData::bing];
+  [SearchEngineChoiceEarlGreyUI
+      selectSearchEngineCellWithName:searchEngineToSelect
+                     scrollDirection:kGREYDirectionDown
+                              amount:50];
+
+  // Tap on the Continue button. This scrolls the table down to the bottom.
+  id<GREYMatcher> continueButtonMatcher =
+      grey_accessibilityID(kSearchEngineContinueButtonIdentifier);
+  [[[EarlGrey selectElementWithMatcher:continueButtonMatcher]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+
+  // Verify that the Default Browser Promo doesn't appear.
+  [self verifyDefaultBrowserNotDisplayed];
 }
 
 @end

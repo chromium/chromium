@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPE_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPE_UTILS_H_
 
-#include "components/autofill/core/browser/autofill_field.h"
+#include "base/notreached.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
+
+class AutofillField;
 
 // Return true if the `field` has at least one possible field type. A possible
 // field type is every type that is neither UNKNOWN_TYPE or EMPTY_TYPE. The
@@ -21,7 +23,7 @@ bool FieldHasMeaningfulPossibleFieldTypes(const AutofillField& field);
 bool TypeOfFieldIsPossibleType(const AutofillField& field);
 
 // Returns true if `type` is address-related.
-bool IsAddressType(FieldType type);
+constexpr bool IsAddressType(FieldType type);
 
 // Returns 0-based index of an address line type, which is X-1 for
 // ADDRESS_HOME_LINEX. Expects only ADDRESS_HOME_LINE(1|2|3) types.
@@ -34,16 +36,35 @@ size_t DetermineExpirationYearLength(FieldType assumed_field_type);
 // Returns true if `type` is alternative name related.
 bool IsAlternativeNameType(FieldType type);
 
-// A tag type is a type that doesn't provide complete information about a field
-// on its own, and that instead needs a second type to complement its meaning.
-// TODO(crbug.com/422563282): Remove when cleaning up kAutofillAiNoTagTypes.
-bool IsTagType(FieldType type);
-
 // Indicates whether the FieldType's domain are dates (year, month, day).
 bool IsDateFieldType(FieldType field_type);
 
 // Returns true for FieldTypes like PASSPORT_NUMBER.
 bool IsAffixFormatStringEnabledForType(FieldType type);
+
+constexpr bool IsAddressType(FieldType type) {
+  switch (GroupTypeOfFieldType(type)) {
+    case FieldTypeGroup::kName:
+    case FieldTypeGroup::kEmail:
+    case FieldTypeGroup::kCompany:
+    case FieldTypeGroup::kAddress:
+    case FieldTypeGroup::kPhone:
+      return true;
+    case FieldTypeGroup::kNoGroup:
+    case FieldTypeGroup::kUnfillable:
+    case FieldTypeGroup::kCreditCard:
+    case FieldTypeGroup::kUsernameField:
+    case FieldTypeGroup::kPasswordField:
+    case FieldTypeGroup::kTransaction:
+    case FieldTypeGroup::kIban:
+    case FieldTypeGroup::kStandaloneCvcField:
+    case FieldTypeGroup::kAutofillAi:
+    case FieldTypeGroup::kLoyaltyCard:
+    case FieldTypeGroup::kOneTimePassword:
+      return false;
+  }
+  NOTREACHED();
+}
 
 }  // namespace autofill
 

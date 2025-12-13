@@ -6,6 +6,9 @@ found in the LICENSE file.
 -->
 <resources>
     <dimen name="hub_search_box_height">40dp</dimen>
+    <dimen name="hub_search_box_vertical_margin">8dp</dimen>
+    <!-- hub_search_box_gap = hub_search_box_height + 2*hub_search_box_vertical_margin-->
+    <dimen name="hub_search_box_gap">56dp</dimen>
     <dimen name="hub_search_box_background_radius">50dp</dimen>
     <dimen name="hub_toolbar_action_button_size">40dp</dimen>
     <dimen name="hub_toolbar_action_button_start_margin">16dp</dimen>

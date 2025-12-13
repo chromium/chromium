@@ -71,6 +71,9 @@
 - (void)configureHandlersForRootViewController:
     (id<SettingsRootViewControlling>)controller;
 
+// Creates a "Done" button with text label for edit mode.
+- (UIBarButtonItem*)createEditModeDoneButtonForToolbar:(BOOL)toolbar;
+
 @end
 
 // Subclasses of SettingsRootTableViewController should implement the

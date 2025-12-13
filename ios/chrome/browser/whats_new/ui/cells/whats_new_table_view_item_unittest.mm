@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/whats_new/ui/cells/whats_new_table_view_item.h"
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -14,6 +14,7 @@
 #import "testing/platform_test.h"
 
 namespace {
+constexpr CGFloat kTestIconPointSize = 30;
 using WhatsNewTableViewItemTest = PlatformTest;
 }  // namespace
 
@@ -26,7 +27,8 @@ TEST_F(WhatsNewTableViewItemTest, ItemProperties) {
   WhatsNewTableViewItem* item = [[WhatsNewTableViewItem alloc] initWithType:0];
   item.title = title;
   item.detailText = detail_text;
-  item.iconImage = [UIImage imageNamed:@"ic_search"];
+  item.iconImage =
+      DefaultSymbolWithPointSize(kMagnifyingglassSymbol, kTestIconPointSize);
   item.iconBackgroundColor = UIColor.blueColor;
 
   id cell = [[[item cellClass] alloc] init];
@@ -77,7 +79,7 @@ TEST_F(WhatsNewTableViewItemTest, ItemProperties) {
 
   // Check that icon view is set properly .
   UIImageView* icon_view = whats_new_cell.iconView;
-  EXPECT_NSEQ([ChromeIcon searchIcon], icon_view.image);
+  EXPECT_NSEQ(item.iconImage, icon_view.image);
 }
 
 // Tests that the icon background in hidden when iconBackgroundImageView is not
@@ -89,7 +91,8 @@ TEST_F(WhatsNewTableViewItemTest, ItemWithoutBackgroundImageView) {
   WhatsNewTableViewItem* item = [[WhatsNewTableViewItem alloc] initWithType:0];
   item.title = title;
   item.detailText = detail_text;
-  item.iconImage = [UIImage imageNamed:@"ic_search"];
+  item.iconImage =
+      DefaultSymbolWithPointSize(kMagnifyingglassSymbol, kTestIconPointSize);
 
   id cell = [[[item cellClass] alloc] init];
   ASSERT_TRUE([cell isMemberOfClass:[WhatsNewTableViewCell class]]);
@@ -137,11 +140,4 @@ TEST_F(WhatsNewTableViewItemTest, ItemWithoutBackgroundImageView) {
                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate],
               icon_background_image_view.image);
   EXPECT_EQ(YES, icon_background_image_view.hidden);
-
-  // Check that icon view is set properly .
-  UIImageView* icon_view = whats_new_cell.iconView;
-
-  CGSize expectedSize = CGSizeMake(30, 30);
-  EXPECT_EQ(expectedSize.height, [icon_view.image size].height);
-  EXPECT_EQ(expectedSize.width, [icon_view.image size].width);
 }

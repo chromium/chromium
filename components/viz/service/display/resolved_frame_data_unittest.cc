@@ -87,10 +87,8 @@ void AddRenderPassQuad(CompositorRenderPass* render_pass,
   auto* quad =
       render_pass->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
   quad->SetNew(sqs, kOutputRect, kOutputRect, render_pass_id,
-               kInvalidResourceId, gfx::RectF(), gfx::Size(),
-               gfx::Vector2dF(1.0f, 1.0f), gfx::PointF(), gfx::RectF(),
-               /*force_anti_aliasing_off=*/false,
-               /*backdrop_filter_quality=*/1.0f);
+               kInvalidResourceId, gfx::RectF(), gfx::Size(), gfx::RectF(),
+               /*force_anti_aliasing_off=*/false);
 }
 
 class ResolvedFrameDataTest : public testing::Test {

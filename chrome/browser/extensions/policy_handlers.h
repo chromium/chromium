@@ -10,6 +10,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace policy {
 class PolicyMap;
@@ -102,7 +105,6 @@ class ExtensionInstallBlockListPolicyHandler
   ExtensionListPolicyHandler list_handler_;
 };
 
-#if !BUILDFLAG(IS_ANDROID)
 // Implements additional checks for policies that are lists of extension
 // URLPatterns.
 class ExtensionURLPatternListPolicyHandler
@@ -127,7 +129,6 @@ class ExtensionURLPatternListPolicyHandler
  private:
   const char* pref_path_;
 };
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 class ExtensionSettingsPolicyHandler
     : public policy::SchemaValidatingPolicyHandler {

@@ -307,7 +307,8 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
-  void OnLoginStatusChanged(LoginStatus loing_status) override;
+  void OnAppModeSessionStarted() override;
+  void OnLoginStatusChanged(LoginStatus login_status) override;
 
   // WallpaperControllerObserver:
   void OnWallpaperBlurChanged() override;

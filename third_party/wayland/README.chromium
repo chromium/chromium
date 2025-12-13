@@ -1,6 +1,7 @@
 Name: wayland
 URL: http://wayland.freedesktop.org/
-Version: 1.23.0
+Version: 1.24.0
+Update Mechanism: Manual
 CPEPrefix: cpe:/a:wayland:wayland:1.20.91
 License: MIT
 License File: src/COPYING
@@ -13,7 +14,7 @@ library implementation of that protocol.
 
 Note: It appears that Wayland has been failing to register CPEs with
 nvd.nist.gov. Thus the last actual CPEPrefix is 1.20.91, even though the latest
-version is 1.23.0.
+version is 1.24.0.
 
 Modifications:
 - Added wayland_scanner_wrapper.py to generate protocol code automatically.

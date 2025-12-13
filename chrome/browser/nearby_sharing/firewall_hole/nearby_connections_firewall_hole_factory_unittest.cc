@@ -17,7 +17,7 @@
 
 namespace {
 
-uint16_t kPort = ash::nearby::TcpServerSocketPort::kMin + 1;
+constexpr uint16_t kPort = ash::nearby::TcpServerSocketPort::kMin + 1;
 
 void MoveFirewallHole(
     base::RunLoop* run_loop,

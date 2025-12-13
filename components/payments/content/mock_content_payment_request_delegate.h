@@ -7,9 +7,9 @@
 
 #include "base/unguessable_token.h"
 #include "components/payments/content/content_payment_request_delegate.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_ui_observer.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -36,8 +36,8 @@ class MockContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
               CreateInternalAuthenticator,
               (),
               (override, const));
-  MOCK_METHOD(scoped_refptr<PaymentManifestWebDataService>,
-              GetPaymentManifestWebDataService,
+  MOCK_METHOD(scoped_refptr<WebPaymentsWebDataService>,
+              GetWebPaymentsWebDataService,
               (),
               (override, const));
   MOCK_METHOD(PaymentRequestDisplayManager*, GetDisplayManager, (), (override));
@@ -72,6 +72,10 @@ class MockContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
               (override));
   MOCK_METHOD(std::optional<base::UnguessableToken>,
               GetChromeOSTWAInstanceId,
+              (),
+              (override, const));
+  MOCK_METHOD(std::string,
+              GetSecurePaymentConfirmationKeychainAccessGroup,
               (),
               (override, const));
 

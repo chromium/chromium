@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Called when the user clicks on the page action.
-chrome.pageAction.onClicked.addListener(function(tab) {
+chrome.action.onClicked.addListener(function(tab) {
   chrome.test.sendMessage('clicked');
 });
 

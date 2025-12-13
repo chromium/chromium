@@ -121,11 +121,24 @@ def CheckApiChangesAreBackwardsCompatibleIfModified(input_api, output_api,
     return results
 
 
+def _CommonChecks(input_api, output_api, on_upload):
+    old_path = input_api.sys.path[:]
+    try:
+        input_api.sys.path.insert(0, "../../../..")
+        from chrome.browser.resources.glic.common_checks import GlicCommonChecks
+        return sum([
+            CheckApiChangesAreBackwardsCompatibleIfModified(
+                input_api, output_api, on_upload),
+            GlicCommonChecks(input_api, output_api),
+        ], [])
+    finally:
+        # Restore the original path, or other presubmits may fail.
+        input_api.sys.path = old_path
+
+
 def CheckChangeOnUpload(input_api, output_api):
-    return CheckApiChangesAreBackwardsCompatibleIfModified(
-        input_api, output_api, True)
+    return _CommonChecks(input_api, output_api, True)
 
 
 def CheckChangeOnCommit(input_api, output_api):
-    return CheckApiChangesAreBackwardsCompatibleIfModified(
-        input_api, output_api, False)
+    return _CommonChecks(input_api, output_api, False)

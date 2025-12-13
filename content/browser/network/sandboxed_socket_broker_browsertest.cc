@@ -29,6 +29,10 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
+#endif
+
 namespace content {
 namespace {
 
@@ -42,7 +46,7 @@ class SandboxedSocketBrokerBrowserTest : public ContentBrowserTest {
     // enabled. Since it is not strictly necessary to test socket brokering core
     // functionality with the featurelist we won't enable it on Android versions
     // prior to R.
-    const int sdk_version = base::android::BuildInfo::GetInstance()->sdk_int();
+    const int sdk_version = base::android::android_info::sdk_int();
     check_sandbox_ = sdk_version >= base::android::SdkVersion::SDK_VERSION_R;
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -90,8 +94,9 @@ class SandboxedSocketBrokerBrowserTest : public ContentBrowserTest {
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
     GURL absolute_url = embedded_test_server_.GetURL(request.relative_url);
-    if (absolute_url.path() != "/test")
+    if (absolute_url.GetPath() != "/test") {
       return nullptr;
+    }
 
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();

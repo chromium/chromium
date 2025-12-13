@@ -420,18 +420,21 @@ public class TabUiTestHelper {
      * @param isIncognito   indicates the tab model that we are creating tab group in.
      */
     static void mergeAllTabsToAGroup(ChromeTabbedActivity cta, boolean isIncognito) {
-        List<Tab> tabGroup = new ArrayList<>();
-        TabModel tabModel = cta.getTabModelSelector().getModel(isIncognito);
-        for (int i = 0; i < tabModel.getCount(); i++) {
-            tabGroup.add(tabModel.getTabAt(i));
-        }
-        createTabGroup(cta, isIncognito, tabGroup);
-        TabGroupModelFilter filter =
-                cta.getTabModelSelector()
-                        .getTabGroupModelFilterProvider()
-                        .getTabGroupModelFilter(isIncognito);
-        assertEquals(1, filter.getTabGroupCount());
-        assertEquals(1, filter.getIndividualTabAndGroupCount());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<Tab> tabGroup = new ArrayList<>();
+                    TabModel tabModel = cta.getTabModelSelector().getModel(isIncognito);
+                    for (Tab tab : tabModel) {
+                        tabGroup.add(tab);
+                    }
+                    createTabGroup(cta, isIncognito, tabGroup);
+                    TabGroupModelFilter filter =
+                            cta.getTabModelSelector()
+                                    .getTabGroupModelFilterProvider()
+                                    .getTabGroupModelFilter(isIncognito);
+                    assertEquals(1, filter.getTabGroupCount());
+                    assertEquals(1, filter.getIndividualTabAndGroupCount());
+                });
     }
 
     /**
@@ -532,8 +535,8 @@ public class TabUiTestHelper {
         assertTrue(numTabs >= 1);
         assertTrue(numIncognitoTabs >= 0);
 
-        assertEquals(1, rule.getActivity().getTabModelSelector().getModel(false).getCount());
-        assertEquals(0, rule.getActivity().getTabModelSelector().getModel(true).getCount());
+        assertEquals(1, rule.tabsCount(false));
+        assertEquals(0, rule.tabsCount(true));
 
         if (url != null) rule.loadUrl(url);
         if (numTabs > 1) {
@@ -542,10 +545,8 @@ public class TabUiTestHelper {
         }
         if (numIncognitoTabs > 0) createTabsWithThumbnail(rule, numIncognitoTabs, url, true);
 
-        assertEquals(numTabs, rule.getActivity().getTabModelSelector().getModel(false).getCount());
-        assertEquals(
-                numIncognitoTabs,
-                rule.getActivity().getTabModelSelector().getModel(true).getCount());
+        assertEquals(numTabs, rule.tabsCount(false));
+        assertEquals(numIncognitoTabs, rule.tabsCount(true));
         if (url != null) {
             verifyAllTabsHaveUrl(rule.getActivity().getTabModelSelector().getModel(false), url);
             verifyAllTabsHaveUrl(rule.getActivity().getTabModelSelector().getModel(true), url);
@@ -553,9 +554,13 @@ public class TabUiTestHelper {
     }
 
     private static void verifyAllTabsHaveUrl(TabModel tabModel, String url) {
-        for (int i = 0; i < tabModel.getCount(); i++) {
-            assertEquals(url, ChromeTabUtils.getUrlStringOnUiThread(tabModel.getTabAt(i)));
-        }
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    for (Tab tab : tabModel) {
+                        String tabUrl = tab.getUrl().getSpec();
+                        assertEquals(url, tabUrl);
+                    }
+                });
     }
 
     /**
@@ -576,13 +581,15 @@ public class TabUiTestHelper {
             boolean isIncognito) {
         ChromeTabbedActivity cta = rule.getActivity();
         assertTrue(numTabs >= 1);
-        int previousTabCount =
-                rule.getActivity().getTabModelSelector().getModel(isIncognito).getCount();
+        int previousTabCount = rule.tabsCount(isIncognito);
 
         for (int i = 0; i < numTabs; i++) {
             TabModel previousTabModel = cta.getTabModelSelector().getCurrentModel();
-            int previousTabIndex = previousTabModel.index();
-            Tab previousTab = previousTabModel.getTabAt(previousTabIndex);
+            int previousTabIndex =
+                    ThreadUtils.runOnUiThreadBlocking(() -> previousTabModel.index());
+            Tab previousTab =
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () -> previousTabModel.getTabAt(previousTabIndex));
 
             boolean urlIsNull = url == null;
             if (urlIsNull) {
@@ -594,18 +601,18 @@ public class TabUiTestHelper {
             }
 
             TabModel currentTabModel = cta.getTabModelSelector().getCurrentModel();
-            int currentTabIndex = currentTabModel.index();
-            Tab currentTab = currentTabModel.getTabAt(currentTabIndex);
+            int currentTabIndex = ThreadUtils.runOnUiThreadBlocking(() -> currentTabModel.index());
+            Tab currentTab =
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () -> currentTabModel.getTabAt(currentTabIndex));
 
             waitForThumbnailsToCapture(cta, previousTab, currentTab);
         }
 
         ChromeTabUtils.waitForTabPageLoaded(
-                rule.getActivity().getActivityTab(), null, null, WAIT_TIMEOUT_SECONDS * 3);
+                rule.getActivityTab(), null, null, WAIT_TIMEOUT_SECONDS * 3);
 
-        assertEquals(
-                numTabs + previousTabCount,
-                rule.getActivity().getTabModelSelector().getModel(isIncognito).getCount());
+        assertEquals(numTabs + previousTabCount, rule.tabsCount(isIncognito));
 
         // Don't wait on the current tab to fetch. It should be fetched either when entering the
         // tab switcher or as a side-effect of unsticking the last tab.
@@ -652,8 +659,11 @@ public class TabUiTestHelper {
     }
 
     public static void verifyAllTabsHaveThumbnail(TabModel tabModel) {
-        for (int i = 0; i < tabModel.getCount(); i++) {
-            checkThumbnailsExist(tabModel.getTabAt(i));
+        int tabCount = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getCount());
+        for (int i = 0; i < tabCount; i++) {
+            int j = i;  // Effectively final for the lambda.
+            Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabAt(j));
+            checkThumbnailsExist(tab);
         }
     }
 

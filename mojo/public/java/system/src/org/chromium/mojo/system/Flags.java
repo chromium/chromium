@@ -75,8 +75,7 @@ public abstract class Flags<F extends Flags<F>> {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
+        if (!(obj instanceof Flags)) return false;
         Flags<?> other = (Flags<?>) obj;
         if (mFlags != other.mFlags) return false;
         return true;

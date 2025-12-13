@@ -25,6 +25,7 @@
 #include "base/files/platform_file.h"
 #include "base/linux_util.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/metrics/histogram_shared_memory.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -111,8 +112,7 @@ bool Zygote::ProcessRequests() {
 
   // We need to accept SIGCHLD, even though our handler is a no-op because
   // otherwise we cannot wait on children. (According to POSIX 2001.)
-  struct sigaction action;
-  UNSAFE_TODO(memset(&action, 0, sizeof(action)));
+  struct sigaction action = {};
   action.sa_handler = &SIGCHLDHandler;
   PCHECK(sigaction(SIGCHLD, &action, nullptr) == 0);
 
@@ -248,7 +248,7 @@ bool Zygote::HandleRequestFromBrowser(int fd) {
   }
 
   base::Pickle pickle = base::Pickle::WithUnownedBuffer(
-      UNSAFE_TODO(base::span(buf, base::checked_cast<size_t>(len))));
+      base::span(buf).first(base::checked_cast<size_t>(len)));
   base::PickleIterator iter(pickle);
 
   int kind;
@@ -501,7 +501,7 @@ int Zygote::ForkWithRealPid(const std::string& process_type,
       CHECK(recv_fds.empty());
 
       base::Pickle pickle = base::Pickle::WithUnownedBuffer(
-          UNSAFE_TODO(base::span(buf, base::checked_cast<size_t>(len))));
+          base::span(buf).first(base::checked_cast<size_t>(len)));
       base::PickleIterator iter(pickle);
 
       int kind;
@@ -618,6 +618,18 @@ base::ProcessId Zygote::ReadArgsAndFork(base::PickleIterator iter,
     // SetProcessTitleFromCommandLine in ChromeMain, so we can pass NULL here
     // (we don't have the original argv at this point).
     base::SetProcessTitleFromCommandLine(nullptr);
+
+    // Linux-specific hack: Avoid taking the ~10-50ms jank penalty that a
+    // multithreaded process has to take when expanding its file descriptor
+    // table:
+    //  - from 64 to 128 entries
+    //  - from 128 to 256 entries
+    //  - from 256 to 512 entries
+    // by allocating an fd table with at least 512 entries right away, while
+    // we're still single-threaded.
+    // No error checks - if this fails, it's not a problem, this is just a
+    // performance hack.
+    base::ScopedFD fdtable_alloc_fd(fcntl(0, F_DUPFD, 256));
   } else if (child_pid < 0) {
     LOG(ERROR) << "Zygote could not fork: process_type " << process_type
                << " numfds " << numfds << " child_pid " << child_pid;

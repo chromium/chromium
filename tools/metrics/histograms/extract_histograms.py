@@ -4,81 +4,40 @@
 """Extract histogram names from the description XML file.
 
 For more information on the format of the XML file, which is self-documenting,
-see histograms.xml; however, here is a simple example to get you started. The
-XML below will generate the following five histograms:
-
-    HistogramTime
-    HistogramEnum
-    HistogramEnum_Chrome
-    HistogramEnum_IE
-    HistogramEnum_Firefox
-
-<histogram-configuration>
-
-<histograms>
-
-<histogram name="HistogramTime" units="milliseconds">
-  <owner>person@chromium.org</owner>
-  <owner>some-team@chromium.org</owner>
-  <summary>A brief description.</summary>
-</histogram>
-
-<histogram name="HistogramEnum" enum="MyEnumType">
-  <owner>person@chromium.org</owner>
-  <summary>This histogram sports an enum value type.</summary>
-</histogram>
-
-</histograms>
-
-<enums>
-
-<enum name="MyEnumType">
-  <summary>This is an example enum type, where the values mean little.</summary>
-  <int value="1" label="FIRST_VALUE">This is the first value.</int>
-  <int value="2" label="SECOND_VALUE">This is the second value.</int>
-</enum>
-
-</enums>
-
-<histogram_suffixes_list>
-
-<histogram_suffixes name="BrowserType" separator="_">
-  <suffix name="Chrome"/>
-  <suffix name="IE"/>
-  <suffix name="Firefox"/>
-  <affected-histogram name="HistogramEnum"/>
-</histogram_suffixes>
-
-</histogram_suffixes_list>
-
-</histogram-configuration>
+see histograms.xml; example path:
+tools/metrics/histograms/metadata/uma/histograms.xml
 """
 
 import bisect
 import copy
 import datetime
 import itertools
-
-try:
-  import HTMLParser
-  html = HTMLParser.HTMLParser()
-except ImportError:  # For Py3 compatibility
-  import html
-
 import logging
+import os
 import re
+import sys
+from typing import TypedDict
 import xml.dom.minidom
 
-import histogram_configuration_model
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import xml_utils
 
 BASIC_EMAIL_REGEXP = r'^[\w\-\+\%\.]+\@[\w\-\+\%\.]+$'
 
 MAX_HISTOGRAM_SUFFIX_DEPENDENCY_DEPTH = 5
 
-EXPIRY_DATE_PATTERN = "%Y-%m-%d"
+EXPIRY_DATE_PATTERN = '%Y-%m-%d'
 EXPIRY_MILESTONE_RE = re.compile(r'M[0-9]{2,3}\Z')
 
+IMPROVEMENT_DIRECTION_HIGHER_IS_BETTER = 'HIGHER_IS_BETTER'
+IMPROVEMENT_DIRECTION_LOWER_IS_BETTER = 'LOWER_IS_BETTER'
+IMPROVEMENT_DIRECTION_NEITHER_IS_BETTER = 'NEITHER_IS_BETTER'
+
+IMPROVEMENT_DIRECTION_VALID_VALUES = (
+    IMPROVEMENT_DIRECTION_HIGHER_IS_BETTER,
+    IMPROVEMENT_DIRECTION_LOWER_IS_BETTER,
+    IMPROVEMENT_DIRECTION_NEITHER_IS_BETTER,
+)
 
 class Error(Exception):
   pass
@@ -93,14 +52,69 @@ class ExtractionErrors(list[str]):
     self.append(error)
 
 
-def _ExpandHistogramNameWithSuffixes(suffix_name, histogram_name,
-                                     histogram_suffixes_node):
+# Public dictionaries representing data structures derived from histogram.xml
+# files, also referenced in google3.
+
+
+class VariantDict(TypedDict, total=False):
+  """A dict representing a variant."""
+
+  name: str
+  summary: str
+  obsolete: str
+  owners: list[str]
+
+
+class TokenDict(TypedDict):
+  """A dict representing a token."""
+
+  key: str
+  variants: list[VariantDict]
+
+
+class _BucketDict(TypedDict):
+  """A dict representing a bucket in an enum."""
+
+  key: int
+  label: str
+  summary: str
+
+
+class EnumDict(TypedDict, total=False):
+  """A dict representing an enum."""
+
+  name: str
+  type: str | None
+  buckets: list[_BucketDict]
+  summary: str
+
+
+# TODO: crbug.com/443050753 - Rename CapCase names to using snake_case.
+class HistogramDict(TypedDict, total=False):
+  """A dict representing a histogram."""
+
+  histogramName: str
+  description: str
+  owners: list[str]
+  enumDetails: EnumDict
+  units: str
+  components: list[str]
+  obsoletionMessage: str
+  expires_after: str
+  improvement: str
+
+
+def ExpandHistogramNameWithSuffixes(
+    suffix_name: str,
+    histogram_name: str,
+    histogram_suffixes_node: xml.dom.minidom.Element,
+) -> tuple[str | None, ExtractionErrors]:
   """Creates a new histogram name based on a histogram suffix.
 
   Args:
     suffix_name: The suffix string to apply to the histogram name. May be empty.
-    histogram_name: The name of the histogram. May be of the form
-      Group.BaseName or BaseName.
+    histogram_name: The name of the histogram. May be of the form Group.BaseName
+      or BaseName.
     histogram_suffixes_node: The histogram_suffixes XML node.
 
   Returns:
@@ -142,7 +156,7 @@ def _ExpandHistogramNameWithSuffixes(suffix_name, histogram_name,
   if len(sections) <= placement:
     suffixes_name = histogram_suffixes_node.getAttribute('name')
     errors.AppendAndLog(
-        f'Prefix histogram_suffixes expansions require histogram names which '
+        'Prefix histogram_suffixes expansions require histogram names which '
         f'include a dot separator. Histogram name is {histogram_name}, '
         f'histogram_suffixes is {suffixes_name}, and placment is {placement}')
     return None, errors
@@ -152,7 +166,9 @@ def _ExpandHistogramNameWithSuffixes(suffix_name, histogram_name,
   return cluster + suffix_name + separator + remainder, errors
 
 
-def ExtractEnumsFromXmlTree(tree):
+def ExtractEnumsFromXmlTree(
+    tree: xml.dom.minidom.Element,
+) -> tuple[dict[str, EnumDict], ExtractionErrors]:
   """Extracts all <enum> nodes in the tree into a dictionary.
 
   Args:
@@ -187,8 +203,10 @@ def ExtractEnumsFromXmlTree(tree):
 
     enum_dict = {}
     enum_dict['name'] = name
-    enum_dict['values'] = {}
+    enum_dict['type'] = enum.getAttribute('type') or None
+    enum_dict['buckets'] = []
     labels = set()
+    processed_keys = set()
 
     nodes = list(xml_utils.IterElementsWithTag(enum, 'int'))
 
@@ -199,24 +217,39 @@ def ExtractEnumsFromXmlTree(tree):
       continue
 
     for int_tag in nodes:
-      value_dict = {}
-      int_value = int(int_tag.getAttribute('value'))
-      if int_value in enum_dict['values']:
+      try:
+        int_value = int(int_tag.getAttribute('value'))
+      except ValueError:
+        errors.AppendAndLog(
+            f'Invalid enum value "{int_tag.getAttribute("value")}" for enum'
+            f' {name}')
+        continue
+      if int_value in processed_keys:
         errors.AppendAndLog(f'Duplicate enum value {int_value} for enum {name}')
         continue
+      processed_keys.add(int_value)
+
       label = int_tag.getAttribute('label')
       if label in labels:
         errors.AppendAndLog(f'Duplicate enum label "{label}" for enum {name}')
         continue
       labels.add(label)
-      value_dict['label'] = label
-      value_dict['summary'] = xml_utils.GetTextFromChildNodes(int_tag)
-      enum_dict['values'][int_value] = value_dict
 
-    enum_int_values = sorted(enum_dict['values'].keys())
+      bucket = {
+          'key': int_value,
+          'label': label,
+          'summary': xml_utils.GetTextFromChildNodes(int_tag),
+      }
+      enum_dict['buckets'].append(bucket)
 
+    # Sort buckets by key
+    enum_dict['buckets'].sort(key=lambda b: b['key'])
+    enum_int_values = [b['key'] for b in enum_dict['buckets']]
+
+    # Check that the int values are in numerical order in the XML.
     last_int_value = None
     for int_tag in nodes:
+      # We've already validated that the value is an int.
       int_value = int(int_tag.getAttribute('value'))
       if last_int_value is not None and int_value < last_int_value:
         errors.AppendAndLog(f'Enum {name} int values {last_int_value} and '
@@ -226,9 +259,13 @@ def ExtractEnumsFromXmlTree(tree):
           logging.warning('Insert value %d at the beginning', int_value)
         else:
           left_int_value = enum_int_values[left_item_index - 1]
-          left_label = enum_dict['values'][left_int_value]['label']
-          logging.warning('Insert value %d after %d ("%s")', int_value,
-                          left_int_value, left_label)
+          left_label = enum_dict['buckets'][left_item_index - 1]['label']
+          logging.warning(
+              'Insert value %d after %d ("%s")',
+              int_value,
+              left_int_value,
+              left_label,
+          )
       else:
         last_int_value = int_value
 
@@ -241,7 +278,7 @@ def ExtractEnumsFromXmlTree(tree):
   return enums, errors
 
 
-def _ExtractOwners(node):
+def _ExtractOwners(node: xml.dom.minidom.Element) -> tuple[list[str], bool]:
   """Extracts owners information from the given node, if exists.
 
   Args:
@@ -250,16 +287,20 @@ def _ExtractOwners(node):
   Returns:
     A tuple of owner-related info, e.g. (['alice@chromium.org'], True)
 
-    The first element is a list of the owners' email addresses. The second
-    element is a boolean indicating whether the node has an owner.
+    The first element is a list of owners' email addresses.
+    The second element is a boolean indicating whether there is an owner node.
   """
   email_pattern = re.compile(BASIC_EMAIL_REGEXP)
   owners = []
   has_owner = False
 
-  for owner_node in xml_utils.IterElementsWithTag(node, 'owner', 1):
+  owner_nodes = list(xml_utils.IterElementsWithTag(node, 'owner', 1))
+  for owner_node in owner_nodes:
     child = owner_node.firstChild
-    owner_text = (child and child.nodeValue) or ''
+    if isinstance(child, xml.dom.minidom.Text):
+      owner_text = child.nodeValue
+    else:
+      owner_text = ''
     if email_pattern.match(owner_text):
       has_owner = True
       owners.append(owner_text)
@@ -267,7 +308,9 @@ def _ExtractOwners(node):
   return owners, has_owner
 
 
-def _ExtractImprovementDirection(histogram_node):
+def _ExtractImprovementDirection(
+    histogram_node: xml.dom.minidom.Element,
+) -> tuple[str | None, ExtractionErrors]:
   """Extracts improvement direction from the given histogram element, if any.
 
   Args:
@@ -289,8 +332,7 @@ def _ExtractImprovementDirection(histogram_node):
 
   improvement_node = improvement_nodes[0]
   direction = improvement_node.getAttribute('direction')
-  if (direction not in
-      histogram_configuration_model.IMPROVEMENT_DIRECTION_VALID_VALUES):
+  if direction not in IMPROVEMENT_DIRECTION_VALID_VALUES:
     histogram_name = histogram_node.getAttribute('name')
     errors.AppendAndLog(
         f'Histogram "{histogram_name}" has an invalid direction '
@@ -300,7 +342,7 @@ def _ExtractImprovementDirection(histogram_node):
   return direction, errors
 
 
-def _ExtractComponents(histogram):
+def _ExtractComponents(histogram: xml.dom.minidom.Element) -> list[str]:
   """Extracts component information from the given histogram element.
 
   Components are present when a histogram has a component tag, e.g.
@@ -324,7 +366,7 @@ def _ExtractComponents(histogram):
   ]
 
 
-def _ValidateDateString(date_str):
+def _ValidateDateString(date_str: str) -> bool:
   """Checks if |date_str| matches 'YYYY-MM-DD'.
 
   Args:
@@ -339,39 +381,16 @@ def _ValidateDateString(date_str):
     return False
   return True
 
-def _ValidateMilestoneString(milestone_str):
-  """Check if |milestone_str| matches 'M*'."""
+
+def _ValidateMilestoneString(milestone_str: str) -> bool:
+  """Checks if |milestone_str| matches 'M*'."""
   return EXPIRY_MILESTONE_RE.match(milestone_str) is not None
 
-def _ProcessBaseHistogramAttribute(node, histogram_entry):
-  if node.hasAttribute('base'):
-    is_base = node.getAttribute('base').lower() == 'true'
-    histogram_entry['base'] = is_base
 
-# The following code represents several concepts as JSON objects
-#
-# Token: an analog of <token> tag, represented as a JSON object like:
-# {
-#   'key': 'token_key',
-#   'variants': [a list of Variant objects]
-# }
-#
-# Variant: an analog of <variant> tag, represented as a JSON object like:
-# {
-#   'name': 'variant_name',
-#   'summary': 'variant_summary',
-#   'obsolete': 'Obsolete text.',
-#   'owners': ['me@chromium.org', 'you@chromium.org']
-# }
-#
-# Variants: an analog of <variants> tag, represented as a JSON object like:
-# {
-#   'name: 'variants_name',
-#   'variants': [a list of Variant objects]
-# }
-
-
-def ExtractTokens(histogram, variants_dict):
+def ExtractTokens(
+    histogram: xml.dom.minidom.Element,
+    variants_dict: dict[str, list[VariantDict]],
+) -> tuple[list[TokenDict], ExtractionErrors]:
   """Extracts tokens and variants from the given histogram element.
 
   Args:
@@ -380,7 +399,7 @@ def ExtractTokens(histogram, variants_dict):
 
   Returns:
     A tuple where the first element is a list of extracted Tokens, and the
-        second indicates if any errors were detected while extracting them.
+    second indicates if any errors were detected while extracting them.
   """
   tokens_seen = set()
   tokens = []
@@ -400,8 +419,8 @@ def ExtractTokens(histogram, variants_dict):
     if token_key_format not in histogram_name:
       errors.AppendAndLog(
           f'Histogram {histogram_name} includes a token tag but the token key '
-          f'is not present in histogram name. Please insert the token key into '
-          f'the histogram name in order for the token to be added.')
+          'is not present in histogram name. Please insert the token key into '
+          'the histogram name in order for the token to be added.')
       continue
 
     token = dict(key=token_key)
@@ -419,7 +438,7 @@ def ExtractTokens(histogram, variants_dict):
         errors.AppendAndLog(
             f'The variants attribute {variants_name} of token key {token_key} '
             f'of histogram {histogram_name} does not have a corresponding '
-            f'<variants> tag.')
+            '<variants> tag.')
         token['variants'] = []
     # Inline and out-of-line variants can be combined.
     token['variants'].extend(_ExtractVariantNodes(token_node))
@@ -449,7 +468,7 @@ def ExtractTokens(histogram, variants_dict):
   return tokens, errors
 
 
-def _ExtractVariantNodes(node):
+def _ExtractVariantNodes(node: xml.dom.minidom.Element) -> list[VariantDict]:
   """Extracts the variants of a given node into a list of variant dictionaries.
 
   Args:
@@ -461,16 +480,16 @@ def _ExtractVariantNodes(node):
   variant_list = []
   for variant_node in xml_utils.IterElementsWithTag(node, 'variant', 1):
     name = variant_node.getAttribute('name')
-    summary = variant_node.getAttribute('summary') if variant_node.hasAttribute(
-        'summary') else name
+    summary = (variant_node.getAttribute('summary')
+               if variant_node.hasAttribute('summary') else name)
     variant = dict(name=name, summary=summary)
 
     obsolete_text = _GetObsoleteReason(variant_node)
     if obsolete_text:
       variant['obsolete'] = obsolete_text
 
-    owners, variant_has_owners = _ExtractOwners(variant_node)
-    if variant_has_owners:
+    owners, has_owner = _ExtractOwners(variant_node)
+    if has_owner:
       variant['owners'] = owners
 
     variant_list.append(variant)
@@ -478,11 +497,29 @@ def _ExtractVariantNodes(node):
   return variant_list
 
 
-def _ExtractHistogramsFromXmlTree(tree, enums):
-  """Extracts all <histogram> nodes in the tree into a dictionary."""
+def ExtractHistogramsFromXmlTree(
+    tree: xml.dom.minidom.Element, enums: dict[str, EnumDict]
+) -> tuple[dict[str, HistogramDict], dict[str, list[TokenDict]],
+           ExtractionErrors]:
+  """Extracts histogram definitions from an XML tree.
 
-  # Process the histograms. The descriptions can include HTML tags.
+  Parses all <histogram> nodes in the XML `tree` to extract definitions before
+  suffix or token expansion. It also validates core requirements like owners,
+  expiry, and units/enum.
+
+  Args:
+    tree: The <histograms> XML element.
+    enums: A dict of parsed enum definitions, used to link to histograms.
+
+  Returns:
+    A tuple (histograms, tokens_dict, errors):
+      - histograms: A dict mapping histogram names to their definitions.
+      - tokens_dict: A dict mapping tokenized histogram names to their tokens
+        for later expansion.
+      - errors: A list of any validation errors.
+  """
   histograms = {}
+  tokens_dict = {}
   variants_dict, errors = ExtractVariantsFromXmlTree(tree)
 
   for histogram in xml_utils.IterElementsWithTag(tree, 'histogram'):
@@ -491,12 +528,13 @@ def _ExtractHistogramsFromXmlTree(tree, enums):
       errors.AppendAndLog(f'Duplicate histogram definition {name}')
       continue
     histograms[name] = histogram_entry = {}
+    histogram_entry['histogramName'] = name
 
     # Handle expiry attribute.
     if histogram.hasAttribute('expires_after'):
       expiry_str = histogram.getAttribute('expires_after')
-      if (expiry_str == "never" or _ValidateMilestoneString(expiry_str) or
-          _ValidateDateString(expiry_str)):
+      if (expiry_str == 'never' or _ValidateMilestoneString(expiry_str)
+          or _ValidateDateString(expiry_str)):
         histogram_entry['expires_after'] = expiry_str
       else:
         errors.AppendAndLog(
@@ -525,37 +563,37 @@ def _ExtractHistogramsFromXmlTree(tree, enums):
 
     # Find <summary> tag.
     summary_nodes = list(xml_utils.IterElementsWithTag(histogram, 'summary'))
-
     if summary_nodes:
-      histogram_entry['summary'] = xml_utils.GetTextFromChildNodes(
-          summary_nodes[0])
+      summary_text = xml_utils.GetTextFromChildNodes(summary_nodes[0])
     else:
-      histogram_entry['summary'] = 'TBD'
+      summary_text = 'TBD'
+    histogram_entry['description'] = summary_text
 
     # Find <obsolete> tag.
     obsolete_nodes = list(
         xml_utils.IterElementsWithTag(histogram, 'obsolete', 1))
     if obsolete_nodes:
       reason = xml_utils.GetTextFromChildNodes(obsolete_nodes[0])
-      histogram_entry['obsolete'] = reason
+      histogram_entry['obsoletionMessage'] = reason
 
     # Non-obsolete histograms should provide a non-empty <summary>.
-    if not obsolete_nodes and (not summary_nodes or
-                               not histogram_entry['summary']):
-      errors.AppendAndLog(f'histogram {name} should provide a <summary>')
+    has_summary = (histogram_entry.get('description')
+                   and histogram_entry.get('description') != 'TBD')
+    if not obsolete_nodes and not has_summary:
+      errors.AppendAndLog(
+          f'histogram {name} should provide a non-empty <summary>')
 
     # Non-obsolete histograms should specify <owner>s.
     if not obsolete_nodes and not has_owner:
       errors.AppendAndLog(f'histogram {name} should specify <owner>s')
 
     # Histograms should have either units or enum.
-    if (not histogram.hasAttribute('units') and
-        not histogram.hasAttribute('enum')):
+    if (not histogram.hasAttribute('units')
+        and not histogram.hasAttribute('enum')):
       errors.AppendAndLog(f'histogram {name} should have either units or enum')
 
     # Histograms should not have both units and enum.
-    if (histogram.hasAttribute('units') and
-        histogram.hasAttribute('enum')):
+    if histogram.hasAttribute('units') and histogram.hasAttribute('enum'):
       errors.AppendAndLog(
           f'histogram {name} should not have both units and enum')
 
@@ -567,22 +605,22 @@ def _ExtractHistogramsFromXmlTree(tree, enums):
     if histogram.hasAttribute('enum'):
       enum_name = histogram.getAttribute('enum')
       if enum_name not in enums:
-        errors.AppendAndLog(f'Unknown enum {enum_name} in histogram {name}')
+        errors.AppendAndLog(f'Unknown enum {enum_name} in histogram {name}.')
       else:
-        histogram_entry['enum'] = enums[enum_name]
+        histogram_entry['enumDetails'] = enums[enum_name]
 
     # Find <token> tag.
     tokens, token_errors = ExtractTokens(histogram, variants_dict)
     if tokens:
-      histogram_entry['tokens'] = tokens
+      tokens_dict[name] = tokens
     errors.extend(token_errors)
 
-    _ProcessBaseHistogramAttribute(histogram, histogram_entry)
-
-  return histograms, errors
+  return histograms, tokens_dict, errors
 
 
-def ExtractVariantsFromXmlTree(tree):
+def ExtractVariantsFromXmlTree(
+    tree: xml.dom.minidom.Element,
+) -> tuple[dict[str, list[VariantDict]], ExtractionErrors]:
   """Extracts all <variants> nodes in the tree into a dictionary.
 
   Args:
@@ -590,9 +628,8 @@ def ExtractVariantsFromXmlTree(tree):
 
   Returns:
     A tuple where the first element is a dictionary of extracted Variants, where
-        the key is the variants name and the value is a list of Variant objects.
-        The second element indicates if any errors were detected while
-        extracting them.
+    the key is the variants name and the value is a list of Variant objects. The
+    second element indicates if any errors were detected while extracting them.
   """
   variants_dict = {}
   errors = ExtractionErrors()
@@ -607,13 +644,16 @@ def ExtractVariantsFromXmlTree(tree):
   return variants_dict, errors
 
 
-def _GetObsoleteReason(node):
+def _GetObsoleteReason(node: xml.dom.minidom.Element) -> str | None:
   """If the node's histogram is obsolete, returns a string explanation.
 
   Otherwise, returns None.
 
   Args:
     node: A DOM Element associated with a histogram.
+
+  Returns:
+    A string explaining why the histogram is obsolete, or None if it is not.
   """
   for child in node.childNodes:
     if child.localName == 'obsolete':
@@ -622,7 +662,9 @@ def _GetObsoleteReason(node):
   return None
 
 
-def _UpdateHistogramsWithSuffixes(tree, histograms) -> ExtractionErrors:
+def UpdateHistogramsWithSuffixes(
+    tree: xml.dom.minidom.Element,
+    histograms: dict[str, HistogramDict]) -> ExtractionErrors:
   """Processes <histogram_suffixes> tags and combines with affected histograms.
 
   The histograms dictionary will be updated in-place by adding new histograms
@@ -657,12 +699,23 @@ def _UpdateHistogramsWithSuffixes(tree, histograms) -> ExtractionErrors:
   for reprocess_count, histogram_suffixes in GenerateHistogramSuffixes():
     # Check dependencies first.
     dependencies_valid = True
+    missing_dependency = None
     affected_histograms = list(
         xml_utils.IterElementsWithTag(histogram_suffixes, 'affected-histogram',
                                       1))
     for affected_histogram in affected_histograms:
       histogram_name = affected_histogram.getAttribute('name')
-      if histogram_name not in histograms:
+      # Check if the affected histogram name is a pattern or exists directly.
+      is_pattern = '{' in histogram_name
+      found = histogram_name in histograms
+      if not found and is_pattern:
+        # Check if any current histogram matches the pattern
+        prefix = histogram_name.split('{', 1)[0]
+        found = any(name.startswith(prefix) for name in histograms)
+        if found:
+          break
+
+      if not found:
         # Base histogram is missing.
         dependencies_valid = False
         missing_dependency = histogram_name
@@ -703,53 +756,55 @@ def _UpdateHistogramsWithSuffixes(tree, histograms) -> ExtractionErrors:
       else:
         suffixes_to_add = suffix_nodes
 
-      histogram_name = affected_histogram.getAttribute('name')
-      for suffix in suffixes_to_add:
-        suffix_name = suffix.getAttribute('name')
-        new_histogram_name, expansion_errors = _ExpandHistogramNameWithSuffixes(
-            suffix_name, histogram_name, histogram_suffixes)
-        errors.extend(expansion_errors)
-        if new_histogram_name is None:
-          continue
-        if new_histogram_name != histogram_name:
-          new_histogram = copy.deepcopy(histograms[histogram_name])
-          # Do not copy forward base histogram state to suffixed
-          # histograms. Any suffixed histograms that wish to remain base
-          # histograms must explicitly re-declare themselves as base
-          # histograms.
-          if new_histogram.get('base', False):
-            del new_histogram['base']
-          histograms[new_histogram_name] = new_histogram
+      affected_name = affected_histogram.getAttribute('name')
+      histograms_to_process = []
+      if '{' in affected_name:
+        # Pattern, find all matching expanded histograms
+        pattern_prefix = affected_name.split('{', 1)[0]
+        for name in list(histograms.keys()):
+          if name.startswith(pattern_prefix):
+            histograms_to_process.append(name)
+      elif affected_name in histograms:
+        histograms_to_process.append(affected_name)
 
-        suffix_label = suffix_labels.get(suffix_name, '')
+      for histogram_name in histograms_to_process:
+        for suffix in suffixes_to_add:
+          suffix_name = suffix.getAttribute('name')
+          new_histogram_name, expand_errors = ExpandHistogramNameWithSuffixes(
+              suffix_name, histogram_name, histogram_suffixes)
+          errors.extend(expand_errors)
+          if new_histogram_name is None:
+            continue
+          if new_histogram_name != histogram_name:
+            if histogram_name not in histograms:
+              # This can happen if a previous suffix operation renamed it.
+              continue
+            new_histogram = copy.deepcopy(histograms[histogram_name])
+            histograms[new_histogram_name] = new_histogram
 
-        histogram_entry = histograms[new_histogram_name]
+          histogram_entry = histograms[new_histogram_name]
 
-        # If no owners are added for this histogram-suffixes, it inherits the
-        # owners of its parents.
-        if owners:
-          histogram_entry['owners'] = owners
+          # If no owners are added for this histogram-suffixes, it inherits the
+          # owners of its parents.
+          if owners:
+            histogram_entry['owners'] = owners
 
-        # If a suffix has an obsolete node, it's marked as obsolete for the
-        # specified reason, overwriting its group's obsoletion reason if the
-        # group itself was obsolete as well.
-        obsolete_reason = _GetObsoleteReason(suffix)
-        if not obsolete_reason:
-          obsolete_reason = _GetObsoleteReason(affected_histogram)
-        if not obsolete_reason:
-          obsolete_reason = group_obsolete_reason
+          # If a suffix has an obsolete node, it's marked as obsolete for the
+          # specified reason, overwriting its group's obsoletion reason if the
+          # group itself was obsolete as well.
+          obsolete_reason = _GetObsoleteReason(suffix)
+          if not obsolete_reason:
+            obsolete_reason = group_obsolete_reason
 
-        # If the suffix has an obsolete tag, all histograms it generates
-        # inherit it.
-        if obsolete_reason:
-          histogram_entry['obsolete'] = obsolete_reason
-
-        _ProcessBaseHistogramAttribute(suffix, histogram_entry)
+          # If the suffix has an obsolete tag, all histograms it generates
+          # inherit it.
+          if obsolete_reason:
+            histogram_entry['obsoletionMessage'] = obsolete_reason
 
   return errors
 
 
-class TokenAssignment(object):
+class TokenAssignment:
   """Assignment of a Variant for each Token of histogram pattern.
 
   Attributes:
@@ -760,7 +815,7 @@ class TokenAssignment(object):
     self.pairings = pairings
 
 
-def _GetTokenAssignments(tokens):
+def GetTokenAssignments(tokens: list[TokenDict]) -> list[TokenAssignment]:
   """Gets all possible TokenAssignments for the listed tokens.
 
   Args:
@@ -778,26 +833,30 @@ def _GetTokenAssignments(tokens):
   ]
 
 
-def _AddHistogramOrExpandedVariants(histogram_name, histograms_dict,
-                                    new_histograms_dict) -> ExtractionErrors:
+def _AddHistogramOrExpandedVariants(
+    histogram_name: str,
+    histogram_node: HistogramDict,
+    tokens: list[TokenDict],
+    new_histograms_dict: dict[str, HistogramDict],
+) -> ExtractionErrors:
   """Adds histogram or all variant expanded histograms to |new_histograms_dict|.
 
-  If the histogram does not reference any variants, it's added directly to the
-  new histograms dict. Else, the tokens are expanded to produce all the variants
-  of that histogram and these are added to the new histogram dict.
+    If the histogram does not reference any variants, it's added directly to the
+    new histograms dict. Else, the tokens are expanded to produce all the
+    variants of that histogram and these are added to the new histogram dict.
 
   Args:
     histogram_name: The name of the histogram.
-    histograms_dict: The dictionary of all histograms extracted from the tree.
+    histogram_node: The histogram node to add.
+    tokens: The list of tokens to expand.
     new_histograms_dict: The dictionary of histograms to add to.
 
   Returns:
     List of errors, if any.
   """
   errors = ExtractionErrors()
-  histogram_node = histograms_dict[histogram_name]
 
-  if 'tokens' not in histogram_node:
+  if not tokens:
     # If the histogram references no variants, simply copy it over.
     new_histograms_dict[histogram_name] = histogram_node
     return errors
@@ -805,14 +864,16 @@ def _AddHistogramOrExpandedVariants(histogram_name, histograms_dict,
   # |token_assignments| contains all the cross-product combinations of token
   # variants, representing all the possible histogram names that could be
   # generated.
-  token_assignments = _GetTokenAssignments(histogram_node['tokens'])
-  summary_text = histogram_node['summary']
+  token_assignments = GetTokenAssignments(tokens)
+  summary_text = histogram_node['description']
 
   summary_errors = set()
 
   # Each |token_assignment| contains one of the cross-product combinations and
   # corresponds to one new generated histogram.
   for token_assignment in token_assignments:
+    new_histogram_node = copy.deepcopy(histogram_node)
+    new_obsolete_reason = ''
     new_owners = []
     # Dictionaries of pairings used for string formatting of histogram name and
     # summary.
@@ -828,47 +889,56 @@ def _AddHistogramOrExpandedVariants(histogram_name, histograms_dict,
       if 'owners' in variant:
         new_owners += variant['owners']
 
+      # If a variant has an obsolete reason, the new reason overwrites the
+      # obsolete reason of the original histogram.
+      if 'obsolete' in variant:
+        new_obsolete_reason = variant['obsolete']
+
     # Replace token in histogram name with variant name.
     new_histogram_name = histogram_name.format(**token_name_pairings)
     if new_histogram_name in new_histograms_dict:
       errors.AppendAndLog(
-          f'Duplicate histogram name {new_histogram_name} generated.'
-          f'Please remove identical variants in different tokens in '
+          f'Duplicate histogram name {new_histogram_name} generated. '
+          'Please remove identical variants in different tokens in '
           f'{histogram_name}.')
       continue
 
     # Replace token in summary with variant summary.
     try:
       new_summary_text = summary_text.format(**token_summary_pairings)
-    except:
+      new_histogram_node['description'] = new_summary_text
+    except KeyError:
       if histogram_name not in summary_errors:
         summary_errors.add(histogram_name)
         errors.AppendAndLog(
-            "Could not format summary text when expanding histogram %s. Please "
+            'Could not format summary text when expanding histogram %s. Please '
             "check that it's not using {Token} syntax for unknown tokens." %
             (histogram_name))
       continue
 
-    new_histogram_node = dict(histogram_node, summary=new_summary_text)
-    # Do not copy the <token> nodes to the generated histograms.
-    del new_histogram_node['tokens']
-
     if new_owners:
       new_histogram_node['owners'] = new_owners
+
+    if new_obsolete_reason:
+      new_histogram_node['obsoletionMessage'] = new_obsolete_reason
 
     new_histograms_dict[new_histogram_name] = new_histogram_node
 
   return errors
 
 
-def _UpdateHistogramsWithTokens(histograms_dict):
+def _UpdateHistogramsWithTokens(
+    histograms_dict: dict[str, HistogramDict],
+    tokens_dict: dict[str, list[TokenDict]],
+) -> tuple[dict[str, HistogramDict], ExtractionErrors]:
   """Processes histograms and combines with variants of tokens.
 
   Args:
     histograms_dict: A dictionary of all the histograms extracted from the tree.
+    tokens_dict: A dictionary mapping a histogram name to its tokens.
 
   Returns:
-    A tuple where the first element is the replacement histograms dictionary,
+    A tuple where the first element is the new histograms dictionary,
     containing the original histograms without tokens and histograms whose
     tokens are replaced by newly variant combinations. The second element is a
     list of errors detected while extracting them.
@@ -878,14 +948,20 @@ def _UpdateHistogramsWithTokens(histograms_dict):
   # histograms will be added when iterating through |histograms_dict|.
   new_histograms_dict = {}
   for histogram_name, histogram_node in histograms_dict.items():
-    errors.extend(
-        _AddHistogramOrExpandedVariants(histogram_name, histograms_dict,
-                                        new_histograms_dict))
+    if tokens := tokens_dict.get(histogram_name, []):
+      errors.extend(
+          _AddHistogramOrExpandedVariants(histogram_name, histogram_node,
+                                          tokens, new_histograms_dict))
+    # For histograms without tokens, copy to new histograms dict.
+    else:
+      new_histograms_dict[histogram_name] = histogram_node
 
   return new_histograms_dict, errors
 
 
-def ExtractHistogramsFromDom(tree):
+def ExtractHistogramsFromDom(
+    tree: xml.dom.minidom.Document,
+) -> tuple[dict[str, HistogramDict], ExtractionErrors]:
   """Computes the histogram names and descriptions from the XML representation.
 
   Args:
@@ -904,13 +980,14 @@ def ExtractHistogramsFromDom(tree):
                                                     'histogram_suffixes_list',
                                                     2)
   enums, enum_errors = ExtractEnumsFromXmlTree(enums_tree)
-  histograms, histogram_errors = _ExtractHistogramsFromXmlTree(
+  histograms, tokens_dict, histogram_errors = ExtractHistogramsFromXmlTree(
       histograms_tree, enums)
-  histograms, update_token_errors = _UpdateHistogramsWithTokens(histograms)
+  histograms, update_token_errors = _UpdateHistogramsWithTokens(
+      histograms, tokens_dict)
   # Only expand expand suffixes if there were no token errors.
   if not update_token_errors:
-    update_suffix_errors = _UpdateHistogramsWithSuffixes(
-        histogram_suffixes_tree, histograms)
+    update_suffix_errors = UpdateHistogramsWithSuffixes(histogram_suffixes_tree,
+                                                        histograms)
   else:
     update_suffix_errors = ExtractionErrors()
   errors = ExtractionErrors([
@@ -922,7 +999,8 @@ def ExtractHistogramsFromDom(tree):
 
   return histograms, errors
 
-def ExtractHistograms(filename):
+
+def ExtractHistograms(filename: str) -> dict[str, HistogramDict]:
   """Loads histogram definitions from a disk file.
 
   Args:
@@ -943,5 +1021,6 @@ def ExtractHistograms(filename):
     return histograms
 
 
-def ExtractNames(histograms):
+def ExtractNames(histograms: dict[str, HistogramDict]) -> list[str]:
+  """Returns all the names of extracted histograms."""
   return sorted(histograms.keys())

@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/types/expected.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/host_port_pair.h"
@@ -97,10 +98,15 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
     STATE_NONE,
     STATE_GENERATE_AUTH_TOKEN,
     STATE_GENERATE_AUTH_TOKEN_COMPLETE,
+    STATE_CALCULATE_HEADERS,
+    STATE_CALCULATE_HEADERS_COMPLETE,
     STATE_SEND_REQUEST,
     STATE_SEND_REQUEST_COMPLETE,
     STATE_READ_HEADERS,
     STATE_READ_HEADERS_COMPLETE,
+    STATE_PROCESS_RESPONSE_HEADERS,
+    STATE_PROCESS_RESPONSE_HEADERS_COMPLETE,
+    STATE_PROCESS_RESPONSE_CODE,
     STATE_DRAIN_BODY,
     STATE_DRAIN_BODY_COMPLETE,
     STATE_DONE,
@@ -117,20 +123,28 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
   void DoCallback(int result);
   void OnIOComplete(int result);
 
+  // Callback for proxy_delegate_->OnBeforeTunnelRequest().
+  void OnBeforeTunnelRequestComplete(
+      base::expected<HttpRequestHeaders, Error> result);
+
   int DoLoop(int last_io_result);
   int DoGenerateAuthToken();
   int DoGenerateAuthTokenComplete(int result);
+  int DoCalculateHeaders();
+  int DoCalculateHeadersComplete(int result);
   int DoSendRequest();
   int DoSendRequestComplete(int result);
   int DoReadHeaders();
   int DoReadHeadersComplete(int result);
+  int DoProcessResponseHeaders();
+  int DoProcessResponseHeadersComplete(int result);
+  int DoProcessResponseCode();
   int DoDrainBody();
   int DoDrainBodyComplete(int result);
 
   // Returns whether |next_state_| is STATE_DONE.
   bool CheckDone();
 
-  CompletionRepeatingCallback io_callback_;
   State next_state_ = STATE_NONE;
 
   // Stores the callback provided by the caller of async operations.
@@ -159,6 +173,9 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
   std::string request_line_;
   HttpRequestHeaders request_headers_;
 
+  HttpRequestHeaders authorization_headers_;
+  HttpRequestHeaders proxy_delegate_headers_;
+
   const ProxyChain proxy_chain_;
   const size_t proxy_chain_index_;
 
@@ -169,6 +186,8 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
   const NetworkTrafficAnnotationTag traffic_annotation_;
 
   const NetLogWithSource net_log_;
+
+  base::WeakPtrFactory<HttpProxyClientSocket> weak_factory_{this};
 };
 
 }  // namespace net

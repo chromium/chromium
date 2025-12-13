@@ -4,7 +4,6 @@
 
 #include "ui/base/ime/ash/ime_keyboard_impl.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/ozone/public/input_controller.h"

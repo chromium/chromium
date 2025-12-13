@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_IDENTITY_IDENTITY_CONSTANTS_H_
 #define CHROME_BROWSER_EXTENSIONS_API_IDENTITY_IDENTITY_CONSTANTS_H_
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 namespace identity_constants {

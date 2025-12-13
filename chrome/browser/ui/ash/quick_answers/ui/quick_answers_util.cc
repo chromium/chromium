@@ -16,6 +16,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/separator.h"
@@ -23,6 +24,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace {
 
@@ -74,10 +76,6 @@ void QuickAnswersUtteranceEventDelegate::OnTtsEvent(
       quick_answers::RecordTtsEngineEvent(
           quick_answers::TtsEngineEvent::TTS_EVENT_OTHER);
       break;
-  }
-
-  if (utterance->IsFinished()) {
-    delete this;
   }
 }
 
@@ -232,7 +230,8 @@ void GenerateTTSAudio(content::BrowserContext* browser_context,
   // TtsController will use the default TTS engine if the Google TTS engine
   // is not available.
   tts_utterance->SetEngineId(kGoogleTtsEngineId);
-  tts_utterance->SetEventDelegate(new QuickAnswersUtteranceEventDelegate());
+  tts_utterance->SetEventDelegate(
+      std::make_unique<QuickAnswersUtteranceEventDelegate>());
 
   tts_controller->SpeakOrEnqueue(std::move(tts_utterance));
 }

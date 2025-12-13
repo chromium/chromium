@@ -31,7 +31,7 @@ public interface ExtensionKeybindingRegistry extends Destroyable {
 
     /** Factory method to obtain an instance of the registry, if available. */
     @Nullable
-    public static ExtensionKeybindingRegistry maybeCreate(Profile profile) {
+    static ExtensionKeybindingRegistry maybeCreate(Profile profile) {
         ExtensionKeybindingRegistry registry =
                 ServiceLoaderUtil.maybeCreate(ExtensionKeybindingRegistry.class);
         if (registry == null) {

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "content/browser/zygote_host/zygote_host_impl_linux.h"
 
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/logging.h"
 #include "base/posix/unix_domain_socket.h"
@@ -57,7 +53,7 @@ bool ReceiveFixedMessage(int fd,
       fd, buf.data(), buf.memsize(), &fds_vec, sender_pid);
   if (static_cast<size_t>(len) != expect_len)
     return false;
-  if (memcmp(buf.data(), expect_msg, expect_len) != 0) {
+  if (UNSAFE_TODO(memcmp(buf.data(), expect_msg, expect_len)) != 0) {
     return false;
   }
   if (!fds_vec.empty())

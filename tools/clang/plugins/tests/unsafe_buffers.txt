@@ -1,27 +1,35 @@
-In file included from unsafe_buffers.cpp:16:
+In file included from unsafe_buffers.cpp:18:
 ./unsafe_buffers_clean.h:9:10: warning: unsafe buffer access [-Wunsafe-buffer-usage]
   return i[s];  // This is in a "clean" file, so it should make a warning.
          ^
 ./unsafe_buffers_clean.h:9:10: note: See //docs/unsafe_buffers.md for help.
-./unsafe_buffers_clean.h:19:3: warning: function introduces unsafe buffer manipulation [-Wunsafe-buffer-usage]
+./unsafe_buffers_clean.h:17:10: warning: direct access using operator[] on std::unique_ptr<T[]> is unsafe due to lack of bounds checking [-Wunsafe-buffer-usage-in-unique-ptr-array-access]
+  return i[s];  // This is in a "clean" file, so it should make a warning.
+         ^~~~
+./unsafe_buffers_clean.h:17:10: note: See //docs/unsafe_buffers.md for help.
+./unsafe_buffers_clean.h:27:3: warning: function introduces unsafe buffer manipulation [-Wunsafe-buffer-usage]
   unsafe_fn();  // Unannotated call causes error.
   ^~~~~~~~~~~
-./unsafe_buffers_clean.h:19:3: note: See //docs/unsafe_buffers.md for help.
-./unsafe_buffers_clean.h:20:3: warning: function introduces unsafe buffer manipulation [-Wunsafe-buffer-usage]
+./unsafe_buffers_clean.h:27:3: note: See //docs/unsafe_buffers.md for help.
+./unsafe_buffers_clean.h:28:3: warning: function introduces unsafe buffer manipulation [-Wunsafe-buffer-usage]
   unsafe_fn();  // Second one uses caching and still makes an error.
   ^~~~~~~~~~~
-./unsafe_buffers_clean.h:20:3: note: See //docs/unsafe_buffers.md for help.
-In file included from unsafe_buffers.cpp:17:
+./unsafe_buffers_clean.h:28:3: note: See //docs/unsafe_buffers.md for help.
+In file included from unsafe_buffers.cpp:19:
 ./unsafe_buffers_not_clean.h:9:10: warning: unsafe buffer access [-Wunsafe-buffer-usage]
   return i[s];  // This header is checked and makes an error.
          ^
 ./unsafe_buffers_not_clean.h:9:10: note: See //docs/unsafe_buffers.md for help.
-In file included from unsafe_buffers.cpp:18:
+./unsafe_buffers_not_clean.h:13:10: warning: direct access using operator[] on std::unique_ptr<T[]> is unsafe due to lack of bounds checking [-Wunsafe-buffer-usage-in-unique-ptr-array-access]
+  return i[s];  // This header is checked and makes an error.
+         ^~~~
+./unsafe_buffers_not_clean.h:13:10: note: See //docs/unsafe_buffers.md for help.
+In file included from unsafe_buffers.cpp:20:
 ./unsafe_buffers_not_clean_dir/clean_dir_1/not_clean_header.h:11:10: warning: unsafe buffer access [-Wunsafe-buffer-usage]
   return i[s];
          ^
 ./unsafe_buffers_not_clean_dir/clean_dir_1/not_clean_header.h:11:10: note: See //docs/unsafe_buffers.md for help.
-In file included from unsafe_buffers.cpp:20:
+In file included from unsafe_buffers.cpp:22:
 ./unsafe_buffers_not_clean_dir/clean_header.h:11:10: warning: unsafe buffer access [-Wunsafe-buffer-usage]
   return i[s];  // This is in a "clean" file, so it should make a warning.
          ^
@@ -38,31 +46,31 @@ In file included from unsafe_buffers.cpp:20:
 INSIDE_MACRO_CHECKED(FooChecked, ptr, int*);
 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ./unsafe_buffers_not_clean_dir/clean_header.h:33:12: note: expanded from macro 'INSIDE_MACRO_CHECKED'
-    return FIELD##s_ + index;                    /
+    return FIELD##s_ + index;                    \
            ^~~~~~~~~
-<scratch space>:20:1: note: expanded from here
+<scratch space>:24:1: note: expanded from here
 ptrs_
 ^~~~~
 ./unsafe_buffers_not_clean_dir/clean_header.h:42:1: note: See //docs/unsafe_buffers.md for help.
 ./unsafe_buffers_not_clean_dir/clean_header.h:33:12: note: expanded from macro 'INSIDE_MACRO_CHECKED'
-    return FIELD##s_ + index;                    /
+    return FIELD##s_ + index;                    \
            ^
-<scratch space>:20:1: note: expanded from here
+<scratch space>:24:1: note: expanded from here
 ptrs_
 ^
-In file included from unsafe_buffers.cpp:24:
+In file included from unsafe_buffers.cpp:26:
 ./unsafe_libc_calls_clean.h:11:10: warning: function 'memcpy' is unsafe [-Wunsafe-buffer-usage-in-libc-call]
   return memcpy(i, &s, sizeof(s));  // Should generate a warning.
          ^~~~~~~~~~~~~~~~~~~~~~~~
 ./unsafe_libc_calls_clean.h:11:10: note: See //docs/unsafe_buffers.md for help.
-In file included from unsafe_buffers.cpp:25:
+In file included from unsafe_buffers.cpp:27:
 ./unsafe_libc_calls_not_clean.h:11:10: warning: function 'memcpy' is unsafe [-Wunsafe-buffer-usage-in-libc-call]
   return memcpy(i, &s, sizeof(s));  // Should generate a warning.
          ^~~~~~~~~~~~~~~~~~~~~~~~
 ./unsafe_libc_calls_not_clean.h:11:10: note: See //docs/unsafe_buffers.md for help.
-In file included from unsafe_buffers.cpp:26:
+In file included from unsafe_buffers.cpp:28:
 ./unsafe_libc_calls_opt_out.h:18:10: warning: unsafe buffer access [-Wunsafe-buffer-usage]
   return i[s];  // Gives warning, allow_unafe_libc_calls does not imply allow_unsafe_buffers.
          ^
 ./unsafe_libc_calls_opt_out.h:18:10: note: See //docs/unsafe_buffers.md for help.
-12 warnings generated.
+14 warnings generated.

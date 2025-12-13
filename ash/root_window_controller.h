@@ -14,6 +14,7 @@
 #include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/wm_metrics.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"

@@ -900,7 +900,7 @@ TEST_F(TemporaryAppListSortTest, HandleMoveItemToFolder) {
   const std::string kFolderItemId = GenerateId("folder_id");
   ChromeAppListModelUpdater* model_updater = GetChromeModelUpdater();
   std::unique_ptr<ChromeAppListItem> folder_item =
-      std::make_unique<ChromeAppListItem>(profile_.get(), kFolderItemId,
+      std::make_unique<ChromeAppListItem>(profile(), kFolderItemId,
                                           model_updater);
   folder_item->SetChromeIsFolder(true);
   ChromeAppListItem::TestApi(folder_item.get())
@@ -1333,7 +1333,7 @@ TEST_F(TemporaryAppListSortTest, AlphabeticalEphemeralAppFirstSort) {
   // Add an ephemeral app and an ephemeral folder with two ephemeral apps
   // inside.
   std::unique_ptr<ChromeAppListItem> app3_item =
-      std::make_unique<ChromeAppListItem>(profile_.get(), GenerateId("app_id3"),
+      std::make_unique<ChromeAppListItem>(profile(), GenerateId("app_id3"),
                                           model_updater);
   app3_item->SetIsEphemeral(true);
   ChromeAppListItem::TestApi(app3_item.get()).SetPosition(child_position);
@@ -1343,8 +1343,7 @@ TEST_F(TemporaryAppListSortTest, AlphabeticalEphemeralAppFirstSort) {
 
   const std::string kFolderId2 = GenerateId("folder_id_2");
   std::unique_ptr<ChromeAppListItem> folder2_item =
-      std::make_unique<ChromeAppListItem>(profile_.get(), kFolderId2,
-                                          model_updater);
+      std::make_unique<ChromeAppListItem>(profile(), kFolderId2, model_updater);
   folder2_item->SetChromeIsFolder(true);
   folder2_item->SetIsEphemeral(true);
   ChromeAppListItem::TestApi(folder2_item.get()).SetPosition(child_position);
@@ -1354,7 +1353,7 @@ TEST_F(TemporaryAppListSortTest, AlphabeticalEphemeralAppFirstSort) {
 
   std::unique_ptr<ChromeAppListItem> app_folder2_item =
       std::make_unique<ChromeAppListItem>(
-          profile_.get(), GenerateId("folder_app_id_2"), model_updater);
+          profile(), GenerateId("folder_app_id_2"), model_updater);
   app_folder2_item->SetIsEphemeral(true);
   app_folder2_item->SetChromeFolderId(kFolderId2);
   ChromeAppListItem::TestApi(app_folder2_item.get())
@@ -1365,7 +1364,7 @@ TEST_F(TemporaryAppListSortTest, AlphabeticalEphemeralAppFirstSort) {
 
   std::unique_ptr<ChromeAppListItem> app_folder3_item =
       std::make_unique<ChromeAppListItem>(
-          profile_.get(), GenerateId("folder_app_id_3"), model_updater);
+          profile(), GenerateId("folder_app_id_3"), model_updater);
   app_folder3_item->SetIsEphemeral(true);
   app_folder3_item->SetChromeFolderId(kFolderId2);
   ChromeAppListItem::TestApi(app_folder3_item.get())
@@ -1405,8 +1404,7 @@ TEST_F(TemporaryAppListSortTest, AlphabeticalEphemeralAppFirstSort) {
   // Add a new ephemeral app.
   const std::string kItemId6 = GenerateId("app_id6");
   std::unique_ptr<ChromeAppListItem> kItemId6_item =
-      std::make_unique<ChromeAppListItem>(profile_.get(), kItemId6,
-                                          model_updater);
+      std::make_unique<ChromeAppListItem>(profile(), kItemId6, model_updater);
   kItemId6_item->SetIsEphemeral(true);
   ChromeAppListItem::TestApi(kItemId6_item.get()).SetName("App 4");
   app_list_syncable_service()->AddItem(std::move(kItemId6_item));

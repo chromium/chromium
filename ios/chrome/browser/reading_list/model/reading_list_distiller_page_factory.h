@@ -7,12 +7,10 @@
 
 #include <memory>
 
-#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "url/gurl.h"
 
-namespace web {
-class BrowserState;
-}
+class ProfileIOS;
 
 namespace reading_list {
 
@@ -26,7 +24,7 @@ class ReadingListDistillerPageDelegate;
 // These instances are configured to distille the articles of the Reading List.
 class ReadingListDistillerPageFactory {
  public:
-  explicit ReadingListDistillerPageFactory(web::BrowserState* browser_state);
+  explicit ReadingListDistillerPageFactory(ProfileIOS* profile);
 
   ReadingListDistillerPageFactory(const ReadingListDistillerPageFactory&) =
       delete;
@@ -45,7 +43,7 @@ class ReadingListDistillerPageFactory {
   void ReleaseAllRetainedWebState();
 
  private:
-  raw_ptr<web::BrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   std::unique_ptr<FaviconWebStateDispatcher> web_state_dispatcher_;
 };
 

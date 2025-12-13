@@ -8,8 +8,8 @@ import 'chrome://settings/lazy_load.js';
 import type {SettingsSafetyHubModuleElement} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome://settings/settings.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
@@ -80,7 +80,7 @@ suite('SafetyHubModule', function() {
     function assertTextContent(query: string, text: string) {
       const element = testElement.shadowRoot!.querySelector(query);
       assertTrue(!!element);
-      assertEquals(text, element.textContent!.trim());
+      assertEquals(text, element.textContent.trim());
     }
 
     assertTextContent('#header', headerText);
@@ -125,10 +125,10 @@ suite('SafetyHubModule', function() {
       assertEquals(
           mockData[i]!.origin,
           entries[i]!.querySelector(
-                         '.site-representation')!.textContent!.trim());
+                         '.site-representation')!.textContent.trim());
       assertEquals(
           mockData[i]!.detail,
-          entries[i]!.querySelector('.cr-secondary-text')!.textContent!.trim());
+          entries[i]!.querySelector('.cr-secondary-text')!.textContent.trim());
     }
 
     // Check a link in secondary text has an aria description.
@@ -185,6 +185,6 @@ suite('SafetyHubModule', function() {
     assertTrue(!!tooltip);
     await waitUntilVisible(tooltip);
     assertTrue(isVisible(tooltip));
-    assertEquals(text, tooltip.textContent!.trim());
+    assertEquals(text, tooltip.textContent.trim());
   });
 });

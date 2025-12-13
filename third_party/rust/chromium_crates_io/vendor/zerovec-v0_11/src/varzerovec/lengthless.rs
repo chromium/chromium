@@ -110,7 +110,7 @@ impl<T: VarULE + ?Sized, F: VarZeroVecFormat> VarZeroLengthlessSlice<T, F> {
 
         // get_indices_size() returns the start of the things slice, and get_things_range()
         // returns a range in-bounds of the things slice
-        #[allow(clippy::indexing_slicing)]
+        #[expect(clippy::indexing_slicing)]
         &mut self.entire_slice[offset..][range]
     }
 }

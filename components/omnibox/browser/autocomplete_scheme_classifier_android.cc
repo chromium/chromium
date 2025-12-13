@@ -11,10 +11,11 @@
 
 // static
 AutocompleteSchemeClassifier* AutocompleteSchemeClassifierAndroid::FromJavaObj(
-    const base::android::JavaParamRef<jobject>&
-        jautocomplete_scheme_classifier) {
+    const base::android::JavaRef<jobject>& jautocomplete_scheme_classifier) {
   return reinterpret_cast<AutocompleteSchemeClassifier*>(
       Java_AutocompleteSchemeClassifier_getNativePtr(
           base::android::AttachCurrentThread(),
           jautocomplete_scheme_classifier));
 }
+
+DEFINE_JNI(AutocompleteSchemeClassifier)

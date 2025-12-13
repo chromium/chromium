@@ -57,7 +57,8 @@ std::optional<base::Value::Dict> ReadValue(const base::win::RegKey& key,
   // Parse the value.
   std::string value_json_utf8 = base::WideToUTF8(value_json);
   base::JSONReader::Result value =
-      base::JSONReader::ReadAndReturnValueWithError(value_json_utf8);
+      base::JSONReader::ReadAndReturnValueWithError(
+          value_json_utf8, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value.has_value()) {
     LOG(ERROR) << "Failed to parse '" << value_name
                << "': " << value.error().ToString();

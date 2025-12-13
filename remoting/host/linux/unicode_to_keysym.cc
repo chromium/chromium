@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/linux/unicode_to_keysym.h"
 
 #include <algorithm>
+#include <array>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
 
 namespace remoting {
@@ -27,7 +25,8 @@ struct CodePair {
 // value (e.g. see XK_Tab and XK_KP_Tab). It excludes Latin1 characters (which
 // have 1-to-1 mapping between keysym and unicode), but includes some
 // alternative keysyms for some of them (e.g. XK_KP_0 for '0').
-const CodePair kKeySymUnicodeMap[] = {
+// clang-format off
+const auto kKeySymUnicodeMap = std::to_array<CodePair>({
   { XK_BackSpace,                   0x0008 },
   { XK_Tab,                         0x0009 },
   { XK_KP_Tab,                      0x0009 },
@@ -798,7 +797,8 @@ const CodePair kKeySymUnicodeMap[] = {
   { XK_Hangul_YeorinHieuh,          0x3186 },
   { XK_Hangul_AraeA,                0x318d },
   { XK_Hangul_AraeAE,               0x318e },
-};
+});
+// clang-format on
 
 bool CompareCodePair(const CodePair& pair, uint32_t unicode) {
   return pair.unicode < unicode;
@@ -815,12 +815,14 @@ std::vector<uint32_t> GetKeySymsForUnicode(uint32_t unicode) {
     keysyms.push_back(unicode);
   }
 
-  const CodePair* map_end = kKeySymUnicodeMap + std::size(kKeySymUnicodeMap);
-  const CodePair* pair =
-      std::lower_bound(kKeySymUnicodeMap, map_end, unicode, &CompareCodePair);
+  const CodePair* map_end = base::span<const CodePair>(kKeySymUnicodeMap)
+                                .subspan(std::size(kKeySymUnicodeMap))
+                                .data();
+  const CodePair* pair = std::lower_bound(kKeySymUnicodeMap.data(), map_end,
+                                          unicode, &CompareCodePair);
   while (pair != map_end && pair->unicode == unicode) {
     keysyms.push_back(pair->keysym);
-    ++pair;
+    UNSAFE_TODO(++pair);
   }
 
   keysyms.push_back(0x01000000 | unicode);

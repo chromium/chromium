@@ -576,7 +576,7 @@ class ChromeAppSortingPreinstalledAppsBase : public PrefsPrepopulatedTestBase {
     simple_dict.Set(keys::kName, "unused");
     simple_dict.SetByDottedPath(keys::kLaunchLocalPath, "fake.html");
 
-    std::string error;
+    std::u16string error;
     app1_scoped_ = Extension::Create(prefs_.temp_dir().AppendASCII("app1_"),
                                      ManifestLocation::kExternalPref,
                                      simple_dict, Extension::NO_FLAGS, &error);
@@ -742,7 +742,7 @@ class ChromeAppSortingDefaultOrdinalsBase : public ExtensionPrefsTest {
     simple_dict.Set(keys::kName, name);
     simple_dict.SetByDottedPath(keys::kLaunchLocalPath, "fake.html");
 
-    std::string errors;
+    std::u16string errors;
     scoped_refptr<Extension> app = Extension::Create(
         prefs_.temp_dir().AppendASCII(name), ManifestLocation::kExternalPref,
         simple_dict, Extension::NO_FLAGS, &errors);

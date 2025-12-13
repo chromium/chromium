@@ -68,19 +68,24 @@ class MediaStreamVideoTrack;
 // from media from a source.
 class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
  public:
-  // Do not change the order of codecs; add new ones right before kLast.
-  enum class CodecId {
-    kVp8,
-    kVp9,
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    kH264,
-#endif
-    kAv1,
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-    kHevc,
-#endif
-    kLast
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // (kMaxValue being the only exception, as it does not map to a logged value,
+  // and should be renumbered as new values are inserted.)
+  //
+  // LINT.IfChange(CodecHistogram)
+  enum class CodecHistogram : uint8_t {
+    kUnknown = 0,
+    kVp8 = 1,
+    kVp9 = 2,
+    kH264 = 3,
+    kAv1 = 4,
+    kHevc = 5,
+    kMaxValue = kHevc,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:MediaRecorderVideoCodec)
+
+  static CodecHistogram CodecHistogramFromCodec(media::VideoCodec);
 
   // Callback interface for VideoTrackRecorders. The methods here need to all be
   // called on the main thread.
@@ -116,28 +121,25 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
 
   // Video codec and its encoding profile/level.
   struct MODULES_EXPORT CodecProfile {
-    CodecId codec_id;
+    media::VideoCodec codec;
     std::optional<media::VideoCodecProfile> profile;
     std::optional<media::VideoCodecLevel> level;
 
-    explicit CodecProfile(CodecId codec_id);
-    CodecProfile(CodecId codec_id,
+    explicit CodecProfile(media::VideoCodec codec);
+    CodecProfile(media::VideoCodec codec,
                  std::optional<media::VideoCodecProfile> opt_profile,
                  std::optional<media::VideoCodecLevel> opt_level);
-    CodecProfile(CodecId codec_id,
+    CodecProfile(media::VideoCodec codec,
                  media::VideoCodecProfile profile,
                  media::VideoCodecLevel level);
 
     bool operator==(const CodecProfile& others) const {
-      return (codec_id == others.codec_id) && (profile == others.profile) &&
+      return (codec == others.codec) && (profile == others.profile) &&
              (level == others.level);
-    }
-    bool operator!=(const CodecProfile& others) const {
-      return !(*this == others);
     }
   };
 
-  using OnEncodedVideoCB = WTF::CrossThreadFunction<void(
+  using OnEncodedVideoCB = CrossThreadFunction<void(
       const media::Muxer::VideoParameters& params,
       scoped_refptr<media::DecoderBuffer> encoded_data,
       std::optional<media::VideoEncoder::CodecDescription> codec_description,
@@ -192,12 +194,12 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
         scoped_refptr<media::VideoFrame> video_frame,
         base::TimeTicks capture_timestamp);
 
-    using OnEncodedVideoInternalCB = WTF::CrossThreadFunction<void(
-        const media::Muxer::VideoParameters& params,
-        std::string encoded_data,
-        std::string encoded_alpha,
-        base::TimeTicks capture_timestamp,
-        bool is_key_frame)>;
+    using OnEncodedVideoInternalCB =
+        CrossThreadFunction<void(const media::Muxer::VideoParameters& params,
+                                 std::string encoded_data,
+                                 std::string encoded_alpha,
+                                 base::TimeTicks capture_timestamp,
+                                 bool is_key_frame)>;
 
     void SetPaused(bool paused);
     virtual bool CanEncodeAlphaChannel() const;
@@ -311,7 +313,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
 // Encoder with its own threading subtleties, see the implementation file.
 class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
  public:
-  static CodecId GetPreferredCodecId(MediaTrackContainerType type);
+  static media::VideoCodec GetPreferredCodec(MediaTrackContainerType type);
 
   // Returns true if the device has a hardware accelerated encoder which can
   // encode video of the given |width|x|height| and |framerate| to specific
@@ -384,7 +386,7 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
   Persistent<MediaStreamComponent> track_;
 
   // Holds inner class to encode using whichever codec is configured.
-  WTF::SequenceBound<Encoder> encoder_;
+  SequenceBound<Encoder> encoder_;
 
   const KeyFrameRequestProcessor::Configuration key_frame_config_;
   const CodecProfile codec_profile_;
@@ -392,7 +394,7 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
   const size_t frame_buffer_pool_limit_;
   bool should_pause_encoder_on_initialization_
       GUARDED_BY_CONTEXT(main_sequence_checker_) = false;
-  WTF::Vector<MediaStreamFrame> incoming_frame_queue_
+  Vector<MediaStreamFrame> incoming_frame_queue_
       GUARDED_BY_CONTEXT(main_sequence_checker_);
   bool encoder_support_known_ GUARDED_BY_CONTEXT(main_sequence_checker_) =
       false;

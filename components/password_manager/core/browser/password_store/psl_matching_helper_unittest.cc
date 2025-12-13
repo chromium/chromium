@@ -184,8 +184,8 @@ TEST(PSLMatchingUtilsTest, GetMatchResultFederated) {
     form.url = GURL(data.form_origin);
     form.federation_origin =
         url::SchemeHostPort(GURL(data.form_federation_origin));
-    form.signon_realm =
-        "federation://" + form.url.host() + "/" + form.federation_origin.host();
+    form.signon_realm = "federation://" + form.url.GetHost() + "/" +
+                        form.federation_origin.host();
 
     PasswordFormDigest digest(
         PasswordForm::Scheme::kHtml,
@@ -256,8 +256,8 @@ TEST(PSLMatchingUtilsTest, GetMatchResultFederatedPSL) {
     form.url = GURL(data.form_origin);
     form.federation_origin =
         url::SchemeHostPort(GURL(data.form_federation_origin));
-    form.signon_realm =
-        "federation://" + form.url.host() + "/" + form.federation_origin.host();
+    form.signon_realm = "federation://" + form.url.GetHost() + "/" +
+                        form.federation_origin.host();
 
     PasswordFormDigest digest(
         PasswordForm::Scheme::kHtml,

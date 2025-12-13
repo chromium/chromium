@@ -240,7 +240,7 @@ void AppViewGuest::CreateInnerPage(
       ExtensionRegistry::Get(browser_context())->enabled_extensions();
   const Extension* guest_extension = enabled_extensions.GetByID(*app_id);
   const Extension* embedder_extension =
-      enabled_extensions.GetByID(GetOwnerSiteURL().host());
+      enabled_extensions.GetByID(GetOwnerSiteURL().GetHost());
 
   if (!guest_extension || !guest_extension->is_platform_app() ||
       !embedder_extension || !embedder_extension->is_platform_app()) {

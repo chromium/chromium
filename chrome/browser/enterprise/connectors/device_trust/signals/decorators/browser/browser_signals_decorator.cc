@@ -98,6 +98,8 @@ void BrowserSignalsDecorator::Decorate(base::Value::Dict& signals,
   if (signals_aggregator_) {
     device_signals::SignalsAggregationRequest request;
     request.signal_names.emplace(device_signals::SignalName::kAgent);
+    request.agent_signal_parameters.emplace(
+        device_signals::AgentSignalCollectionType::kCrowdstrikeIdentifiers);
 
     if (IsDTCAntivirusSignalEnabled()) {
       request.signal_names.emplace(device_signals::SignalName::kAntiVirus);

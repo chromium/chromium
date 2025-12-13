@@ -42,7 +42,7 @@ class SimRequestBase {
     // The origin of the request used to load the main resource.
     WebSecurityOrigin requestor_origin;
 
-    WTF::HashMap<String, String> response_http_headers;
+    HashMap<String, String> response_http_headers;
 
     // The HTTP status code of the response. |response_http_status| is ignored
     // if |redirect_url| is non-empty, since a redirect implies a 302 status
@@ -98,7 +98,7 @@ class SimRequestBase {
   std::optional<WebURLError> error_;
   URLLoaderClient* client_ = nullptr;
   unsigned total_encoded_data_length_ = 0;
-  WTF::HashMap<String, String> response_http_headers_;
+  HashMap<String, String> response_http_headers_;
   int response_http_status_;
   StaticDataNavigationBodyLoader* navigation_body_loader_ = nullptr;
 };

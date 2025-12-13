@@ -20,12 +20,12 @@ namespace syncer {
 namespace {
 
 // Original metric, only recorded once Sync has become active.
-const char kMetricWithoutCaching[] = "Sync.PassphraseType2";
+constexpr char kMetricWithoutCaching[] = "Sync.PassphraseType2";
 // Supposed replacement metric, based on cached state in prefs, which however
 // counts signed-out users into the kImplicitPassphrase bucket.
-const char kMetricWithCaching[] = "Sync.PassphraseType4";
+constexpr char kMetricWithCaching[] = "Sync.PassphraseType4";
 // Replacement metric, based on cached state in prefs.
-const char kMetricWithCachingAndUnknown[] = "Sync.PassphraseType5";
+constexpr char kMetricWithCachingAndUnknown[] = "Sync.PassphraseType5";
 
 using testing::Return;
 

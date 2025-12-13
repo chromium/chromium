@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/observer_list.h"
 
 class PrefService;

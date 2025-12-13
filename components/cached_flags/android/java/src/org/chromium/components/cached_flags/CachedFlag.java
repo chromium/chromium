@@ -11,7 +11,6 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Flag;
 import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -19,6 +18,7 @@ import org.chromium.build.annotations.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * CachedFlags are Flags that may be used before native is loaded and the FeatureList is
@@ -37,6 +37,10 @@ import java.util.Map;
  *   <li>Call {@code FooFeatureMap.sMyFlag.isEnabled()} to query whether the cached flag is enabled.
  *       Consider this the source of truth for whether the flag is turned on in the current session.
  * </ul>
+ *
+ * <p>Caveat: The status of a CachedFlag in Java code can be different from the status of the
+ * corresponding flag in c++ code. Native code should not rely on consistency between the CachedFlag
+ * and base::Feature value, and use IsJavaDrivenFeatureEnabled.
  *
  * <p>Metrics caveat: For cached flags that are queried before native is initialized, when a new
  * experiment configuration is received the metrics reporting system will record metrics as if the

@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -20,7 +21,7 @@ WebAudioMediaStreamSource::WebAudioMediaStreamSource(
     : MediaStreamAudioSource(std::move(task_runner), false /* is_remote */),
       fifo_(ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &WebAudioMediaStreamSource::DeliverRebufferedAudio,
-          WTF::CrossThreadUnretained(this)))) {
+          CrossThreadUnretained(this)))) {
   DVLOG(1) << "WebAudioMediaStreamSource::WebAudioMediaStreamSource()";
 }
 

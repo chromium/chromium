@@ -44,6 +44,10 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsTest, AsyncMapDirective) {
   RunTest("extensions/async_map_directive_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsTest, DragAndDropHandler) {
+  RunTest("extensions/drag_and_drop_handler_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrExtensionsTest, ToggleRow) {
   RunTest("extensions/toggle_row_test.js", "mocha.run()");
 }
@@ -256,6 +260,10 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, EnableExtensionToggleTooltips) {
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, CanUploadAsAccountExtension) {
   RunTestCase("CanUploadAsAccountExtension");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, ShowErrorAsWarningsButtonLabel) {
+  RunTestCase("ShowErrorAsWarningsButtonLabel");
 }
 
 class CrExtensionsDetailViewTest : public ExtensionsBrowserTest {
@@ -559,8 +567,6 @@ class CrExtensionsManagerTestWithMultipleExtensionTypesInstalled
   }
 };
 
-// TODO(crbug.com/392777363): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(
     CrExtensionsManagerTestWithMultipleExtensionTypesInstalled,
     ItemListVisibility) {
@@ -616,7 +622,6 @@ IN_PROC_BROWSER_TEST_F(
   InstallPrerequisites();
   RunTestCase("ShowUnsupportedDeveloperExtensionDisabledToast");
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class CrExtensionsManagerTestWithIdQueryParam
     : public ExtensionSettingsTestBase {
@@ -638,14 +643,11 @@ class CrExtensionsManagerTestWithIdQueryParam
   }
 };
 
-// TODO(crbug.com/392777363): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(CrExtensionsManagerTestWithIdQueryParam,
                        UrlNavigationToDetails) {
   InstallPrerequisites();
   RunTestCase("UrlNavigationToDetails");
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Disabled as flaky. TODO(crbug.com/40719203): Enable this test.
 IN_PROC_BROWSER_TEST_F(CrExtensionsManagerTestWithIdQueryParam,
@@ -726,22 +728,15 @@ class CrExtensionsErrorConsoleTest : public ExtensionSettingsTestBase {
   }
 };
 
-// TODO(crbug.com/392777363): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-IN_PROC_BROWSER_TEST_F(CrExtensionsErrorConsoleTest, TestUpDownErrors) {
+IN_PROC_BROWSER_TEST_F(CrExtensionsErrorConsoleTest, SingleErrorLayout) {
   SetDevModeEnabled(true);
-  // TODO(crbug.com/40804030): Update the associated extensions to
-  // Manifest V3 and stop ignoring deprecated manifest version warnings.
-  SetSilenceDeprecatedManifestVersionWarnings(true);
   InstallErrorsExtension();
 
   RunTest("extensions/error_console_test.js", "mocha.run()");
 
   // Return settings to default.
   SetDevModeEnabled(false);
-  SetSilenceDeprecatedManifestVersionWarnings(false);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Keyboard Shortcuts Tests
@@ -838,6 +833,14 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsErrorPageTest, InvalidUrl) {
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsErrorPageTest, ReloadItem) {
   RunTestCase("ReloadItem");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsErrorPageTest, DevToolsButtonContentScript) {
+  RunTestCase("DevToolsButtonContentScript");
+}
+
+IN_PROC_BROWSER_TEST_F(CrExtensionsErrorPageTest, DevToolsButtonServiceWorker) {
+  RunTestCase("DevToolsButtonServiceWorker");
 }
 
 ////////////////////////////////////////////////////////////////////////////////

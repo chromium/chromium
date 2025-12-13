@@ -39,6 +39,9 @@ struct MEDIA_EXPORT DecoderBufferSideData {
   std::vector<uint32_t> spatial_layers;
   base::HeapArray<uint8_t> alpha_data;
 
+  // ITU-T35 metadata.
+  base::HeapArray<uint8_t> itu_t35_data;
+
   // Secure buffer handle corresponding to the decrypted contents of the
   // associated DecoderBuffer. A non-zero value indicates this was set.
   //

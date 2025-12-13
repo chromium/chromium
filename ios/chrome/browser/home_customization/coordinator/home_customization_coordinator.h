@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol HomeCustomizationDelegate;
+@protocol SnackbarCommands;
 
 // The coordinator for the Home surface's customization menu.
 @interface HomeCustomizationCoordinator

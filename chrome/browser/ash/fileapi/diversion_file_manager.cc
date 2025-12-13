@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/fileapi/diversion_file_manager.h"
 
 #include <fcntl.h>
@@ -17,6 +12,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -461,7 +457,7 @@ void DiversionFileManager::Worker::ReadOrWrite(
                               0);
       }
 
-      data_ptr += n;
+      UNSAFE_TODO(data_ptr += n);
       data_len -= static_cast<int>(n);
       offset = base::ClampAdd(offset, static_cast<int64_t>(n));
     }

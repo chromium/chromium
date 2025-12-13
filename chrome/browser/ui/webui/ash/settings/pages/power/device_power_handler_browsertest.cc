@@ -22,6 +22,7 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
@@ -52,6 +53,12 @@ class TestPowerHandler : public PowerHandler {
 };
 
 class PowerHandlerTest : public InProcessBrowserTest {
+ public:
+  // Records preference changes in the order they occur.
+  void OnPrefChanged(const std::string& pref_name) {
+    changed_prefs_in_order_.push_back(pref_name);
+  }
+
  protected:
   struct DevicePowerSettings {
     // Initialize with initial settings.
@@ -81,6 +88,10 @@ class PowerHandlerTest : public InProcessBrowserTest {
     bool has_lid = true;
     bool adaptive_charging = true;
     bool adaptive_charging_managed = false;
+    bool charge_limit = false;
+    PowerPolicyController::OptimizedChargingStrategy
+        optimized_charging_strategy =
+            PowerPolicyController::STRATEGY_ADAPTIVE_CHARGING;
     bool battery_saver_feature_enabled = true;
   };
 
@@ -110,12 +121,24 @@ class PowerHandlerTest : public InProcessBrowserTest {
     handler_->set_web_ui(&web_ui_);
     handler_->RegisterMessages();
     handler_->AllowJavascriptForTesting();
+
+    // Centralize setup: Initialize the registrar and add observers here.
+    pref_registrar_ = std::make_unique<PrefChangeRegistrar>();
+    pref_registrar_->Init(GetPrefs());
+    pref_registrar_->Add(ash::prefs::kPowerAdaptiveChargingEnabled,
+                         base::BindRepeating(&PowerHandlerTest::OnPrefChanged,
+                                             weak_ptr_factory_.GetWeakPtr()));
+    pref_registrar_->Add(ash::prefs::kPowerChargeLimitEnabled,
+                         base::BindRepeating(&PowerHandlerTest::OnPrefChanged,
+                                             weak_ptr_factory_.GetWeakPtr()));
+
     base::RunLoop().RunUntilIdle();
   }
 
   void TearDownOnMainThread() override {
     test_api_.reset();
     handler_.reset();
+    pref_registrar_.reset();
   }
 
   // Returns a JSON representation of the contents of the last message sent to
@@ -163,6 +186,9 @@ class PowerHandlerTest : public InProcessBrowserTest {
             .Set(PowerHandler::kAdaptiveChargingKey, settings.adaptive_charging)
             .Set(PowerHandler::kAdaptiveChargingManagedKey,
                  settings.adaptive_charging_managed)
+            .Set(PowerHandler::kChargeLimitKey, settings.charge_limit)
+            .Set(PowerHandler::kOptimizedChargingStrategyKey,
+                 settings.optimized_charging_strategy)
             .Set(PowerHandler::kBatterySaverFeatureEnabledKey,
                  settings.battery_saver_feature_enabled);
 
@@ -212,9 +238,14 @@ class PowerHandlerTest : public InProcessBrowserTest {
   std::unique_ptr<TestPowerHandler> handler_;
   std::unique_ptr<TestPowerHandler::TestAPI> test_api_;
 
+  std::vector<std::string> changed_prefs_in_order_;
+  std::unique_ptr<PrefChangeRegistrar> pref_registrar_;
+
   content::TestWebUI web_ui_;
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+
+  base::WeakPtrFactory<PowerHandlerTest> weak_ptr_factory_{this};
 };
 
 // Verifies that settings are sent to WebUI when requested.
@@ -392,6 +423,31 @@ IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SendAdaptiveCharging) {
   EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
 }
 
+// Verifies that the charge limit pref's value is sent directly to WebUI.
+IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SendChargeLimit) {
+  GetPrefs()->Set(ash::prefs::kPowerChargeLimitEnabled, base::Value(true));
+
+  // Current AC idle behavior should be DISPLAY_OFF.
+  DevicePowerSettings settings;
+  settings.charge_limit = true;
+
+  EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
+}
+
+// Verifies that the optimized charging strategy pref's value is sent directly
+// to WebUI.
+IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SendOptimizedChargingStrategy) {
+  GetPrefs()->Set(ash::prefs::kPowerOptimizedChargingStrategy,
+                  base::Value(PowerPolicyController::STRATEGY_CHARGE_LIMIT));
+
+  // Current AC idle behavior should be DISPLAY_OFF.
+  DevicePowerSettings settings;
+  settings.optimized_charging_strategy =
+      PowerPolicyController::STRATEGY_CHARGE_LIMIT;
+
+  EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
+}
+
 // Verifies that requests from WebUI to update the idle behavior update prefs
 // appropriately.
 IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SetIdleBehavior) {
@@ -464,6 +520,54 @@ IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SetAdaptiveCharging) {
   EXPECT_EQ(true, pref->GetValue()->GetBool());
   test_api_->SetAdaptiveCharging(false);
   EXPECT_EQ(false, pref->GetValue()->GetBool());
+}
+
+IN_PROC_BROWSER_TEST_F(PowerHandlerTest,
+                       SetOptimizedCharging_EnablesChargeLimitInCorrectOrder) {
+  // Set a unique initial state where both prefs must change.
+  GetPrefs()->SetBoolean(ash::prefs::kPowerAdaptiveChargingEnabled, true);
+  GetPrefs()->SetBoolean(ash::prefs::kPowerChargeLimitEnabled, false);
+  changed_prefs_in_order_.clear();  // Clear setup changes.
+
+  // Enable optimized charging with the charge limit strategy.
+  test_api_->SetOptimizedCharging(
+      PowerPolicyController::OptimizedChargingStrategy::STRATEGY_CHARGE_LIMIT,
+      true);
+
+  // Verify final state and change order.
+  EXPECT_FALSE(
+      GetPrefs()->GetBoolean(ash::prefs::kPowerAdaptiveChargingEnabled));
+  EXPECT_TRUE(GetPrefs()->GetBoolean(ash::prefs::kPowerChargeLimitEnabled));
+
+  const std::vector<std::string> expected_order = {
+      ash::prefs::kPowerAdaptiveChargingEnabled,
+      ash::prefs::kPowerChargeLimitEnabled};
+  EXPECT_EQ(expected_order, changed_prefs_in_order_);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PowerHandlerTest,
+    SetOptimizedCharging_EnablesAdaptiveChargingInCorrectOrder) {
+  // Set a unique initial state where both prefs must change.
+  GetPrefs()->SetBoolean(ash::prefs::kPowerChargeLimitEnabled, true);
+  GetPrefs()->SetBoolean(ash::prefs::kPowerAdaptiveChargingEnabled, false);
+  changed_prefs_in_order_.clear();  // Clear setup changes.
+
+  // Enable optimized charging with the adaptive charging strategy.
+  test_api_->SetOptimizedCharging(
+      PowerPolicyController::OptimizedChargingStrategy::
+          STRATEGY_ADAPTIVE_CHARGING,
+      true);
+
+  // Verify final state and change order.
+  EXPECT_TRUE(
+      GetPrefs()->GetBoolean(ash::prefs::kPowerAdaptiveChargingEnabled));
+  EXPECT_FALSE(GetPrefs()->GetBoolean(ash::prefs::kPowerChargeLimitEnabled));
+
+  const std::vector<std::string> expected_order = {
+      ash::prefs::kPowerChargeLimitEnabled,
+      ash::prefs::kPowerAdaptiveChargingEnabled};
+  EXPECT_EQ(expected_order, changed_prefs_in_order_);
 }
 
 }  // namespace ash::settings

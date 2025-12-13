@@ -68,7 +68,7 @@
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
 
 namespace {

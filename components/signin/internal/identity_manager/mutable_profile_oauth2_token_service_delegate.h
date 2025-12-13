@@ -10,9 +10,11 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/types/optional_ref.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
@@ -100,11 +102,14 @@ class MutableProfileOAuth2TokenServiceDelegate
   bool IsRefreshTokenBound(const CoreAccountId& account_id) const override;
   std::vector<uint8_t> GetWrappedBindingKey(
       const CoreAccountId& account_id) const override;
+  bool AllBoundTokensShareSameBindingKey() const override;
   void GenerateRefreshTokenBindingKeyAssertionForMultilogin(
       const CoreAccountId& account_id,
       std::string_view challenge,
       std::string_view ephemeral_public_key,
       TokenBindingHelper::GenerateAssertionCallback callback) override;
+  void AddBindingKeyToService(
+      base::span<const uint8_t> wrapped_binding_key) override;
   std::vector<CoreAccountId> GetAccounts() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       const override;
@@ -117,6 +122,11 @@ class MutableProfileOAuth2TokenServiceDelegate
 
   // Returns the account's refresh token used for testing purposes.
   std::string GetRefreshTokenForTest(const CoreAccountId& account_id) const;
+
+  // The use of the IssueToken endpoint for fetching access tokens is gated by
+  // the presence of official Google Chrome API keys.
+  // This function removes the official API keys check for testing.
+  static void SetIgnoreNonOfficialApiKeysForTesting();
 
  private:
   friend class MutableProfileOAuth2TokenServiceDelegateTest;
@@ -195,6 +205,14 @@ class MutableProfileOAuth2TokenServiceDelegate
       ClearBoundTokenOnStartup);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            KeepPrimaryAccountTokenOnStartupWithClearOnExit);
+  FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
+                           UpdateCredentialsClearsUnreadableTokens);
+  FRIEND_TEST_ALL_PREFIXES(
+      MutableProfileOAuth2TokenServiceDelegateTest,
+      UpdateCredentialsWithNoErrorDoesNotClearUnreadableTokens);
+  FRIEND_TEST_ALL_PREFIXES(
+      MutableProfileOAuth2TokenServiceDelegateTest,
+      UpdateCredentialsBeforeLoadCompletesDoesNotClearUnreadableTokens);
 
   // WebDataServiceConsumer implementation:
   void OnWebDataServiceRequestDone(
@@ -240,6 +258,10 @@ class MutableProfileOAuth2TokenServiceDelegate
                           const std::string& refresh_token,
                           const std::vector<uint8_t>& wrapped_binding_key);
 
+  // Clears credentials that have failed to load into memory but are still
+  // persisted in the DB.
+  void ClearUnreadableCredentials();
+
   // Clears credentials persisted for |account_id|. Enables overriding for
   // testing purposes, or other cases, when accessing the DB is not desired.
   void ClearPersistedCredentials(const CoreAccountId& account_id);
@@ -247,8 +269,14 @@ class MutableProfileOAuth2TokenServiceDelegate
   // Revokes the refresh token on the server.
   void RevokeCredentialsOnServer(const std::string& refresh_token);
 
-  // Cancels any outstanding fetch for tokens from the web database.
-  void CancelWebTokenFetch();
+  // Starts a fetch for wrapped keys from the web database.
+  void StartWebWrappedKeyFetch();
+
+  // Callback for the fetch for wrapped keys from the web database.
+  void OnWebWrappedKeyFetchDone(std::unique_ptr<WDTypedResult> result);
+
+  // Cancels any outstanding fetches from the web database.
+  void CancelWebFetches();
 
   std::string GetRefreshToken(const CoreAccountId& account_id) const;
 
@@ -272,6 +300,13 @@ class MutableProfileOAuth2TokenServiceDelegate
 
   // Handle to the request reading tokens from database.
   WebDataServiceBase::Handle web_data_service_request_;
+
+  // Handle to the request reading wrapped keys from database for garbage
+  // collection.
+  std::optional<WebDataServiceBase::Handle> web_data_service_request_for_gc_;
+
+  // Flag limiting `ClearUnreadableCredentials()` to take action at most once.
+  bool has_cleared_unreadable_credentials_ = false;
 
   // The primary account id of this service's profile during the loading of
   // credentials.  This member is empty otherwise.
@@ -300,6 +335,9 @@ class MutableProfileOAuth2TokenServiceDelegate
   // Callback function that attempts to correct request errors.  Best effort
   // only.  Returns true if the error was fixed and retry should be reattempted.
   FixRequestErrorCallback fix_request_error_callback_;
+
+  base::WeakPtrFactory<MutableProfileOAuth2TokenServiceDelegate>
+      weak_ptr_factory_{this};
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_MUTABLE_PROFILE_OAUTH2_TOKEN_SERVICE_DELEGATE_H_

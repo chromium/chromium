@@ -94,12 +94,6 @@ class JitPolicyContentBrowserClient
           context, url);
     }
   }
-
-  // Always enable renderer code integrity - without this, ProhibitDynamicCode
-  // never gets applied to the renderer anyway.
-#if BUILDFLAG(IS_WIN)
-  bool IsRendererCodeIntegrityEnabled() override { return true; }
-#endif  // IS_WIN
 };
 
 // This test fixture installs a test ContentBrowserClient which enables JIT for

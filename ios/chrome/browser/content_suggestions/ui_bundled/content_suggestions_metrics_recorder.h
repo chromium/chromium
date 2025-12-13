@@ -12,9 +12,9 @@ class PrefService;
 
 typedef NS_ENUM(NSInteger, NTPCollectionShortcutType);
 
-@class ContentSuggestionsMostVisitedItem;
 enum class ContentNotificationSnackbarEvent;
 enum class ContentSuggestionsModuleType;
+@class MostVisitedItem;
 enum class SetUpListItemType;
 @class ShopCardData;
 
@@ -54,11 +54,11 @@ enum class SetUpListItemType;
 - (void)recordMostVisitedTilesShown;
 
 // Logs a single most visited tile `item` being shown at `index`.
-- (void)recordMostVisitedTileShown:(ContentSuggestionsMostVisitedItem*)item
+- (void)recordMostVisitedTileShown:(MostVisitedItem*)item
                            atIndex:(NSInteger)index;
 
 // Logs a most visited tile `item` being opened at `index` in `webState`.
-- (void)recordMostVisitedTileOpened:(ContentSuggestionsMostVisitedItem*)item
+- (void)recordMostVisitedTileOpened:(MostVisitedItem*)item
                             atIndex:(NSInteger)index;
 
 // Logs a most visited tile being removed.

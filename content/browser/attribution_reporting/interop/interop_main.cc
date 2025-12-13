@@ -61,7 +61,8 @@ std::optional<base::Value::Dict> ReadDictFromFile(
     return std::nullopt;
   }
 
-  auto result = base::JSONReader::ReadAndReturnValueWithError(json);
+  auto result = base::JSONReader::ReadAndReturnValueWithError(
+      json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!result.has_value()) {
     std::cerr << "failed to parse " << flag
               << " as JSON: " << result.error().message << std::endl;

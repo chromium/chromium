@@ -6,7 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_DEVICE_CACHE_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/device_cache.h"

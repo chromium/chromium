@@ -67,7 +67,7 @@ WebFontDescription::operator FontDescription() const {
                 "kWeight900 conversion");
   desc.SetWeight(FontSelectionValue((weight + 1) * 100));
   desc.SetLetterSpacing(Length(letter_spacing, Length::kFixed));
-  desc.SetWordSpacing(word_spacing);
+  desc.SetWordSpacing(Length(word_spacing, Length::kFixed));
   return desc;
 }
 

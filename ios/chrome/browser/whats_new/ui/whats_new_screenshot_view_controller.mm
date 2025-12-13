@@ -7,6 +7,7 @@
 #import "base/values.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -21,6 +22,8 @@ namespace {
 constexpr CGFloat kSpacingBeforeImageIfNoNavigationBar = 24;
 constexpr CGFloat kLabelBottomMargin = -40;
 constexpr CGFloat kLabelFontSize = 15;
+constexpr CGFloat kScreenshotViewTopOffset = 29;
+constexpr CGFloat kScreenshotViewTopOffsetiOS26 = 45;
 NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 }  // namespace
 
@@ -75,7 +78,7 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
   [super viewDidLoad];
 
   self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
-      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+      initWithBarButtonSystemItem:UIBarButtonSystemItemClose
                            target:self
                            action:@selector(dismiss)];
 
@@ -99,34 +102,19 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
     [self configureLabelView];
   }
   [self layoutAlertScreen];
+  NSArray<UITrait>* traits =
+      TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(toggleDarkModeOnTraitChange)];
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(toggleDarkModeOnTraitChange)];
-
-    [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
-                       withAction:@selector
-                       (toggleConstraintsOnVerticalSizeClassChange)];
-  }
+  [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
+                     withAction:@selector
+                     (toggleConstraintsOnVerticalSizeClassChange)];
 }
 
 - (void)dismiss {
   [self.whatsNewHandler dismissWhatsNew];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self toggleDarkModeOnTraitChange];
-  [self toggleConstraintsOnVerticalSizeClassChange];
-}
-#endif
 
 #pragma mark - Private
 
@@ -136,15 +124,18 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
                   primaryActionString:(NSString*)primaryActionString
                 secondaryActionString:(NSString*)secondaryActionString {
   DCHECK(!self.alertScreen);
-  ConfirmationAlertViewController* alertScreen =
-      [[ConfirmationAlertViewController alloc] init];
-  alertScreen.titleString = titleString;
-  alertScreen.subtitleString = subtitleString;
+  ButtonStackConfiguration* configuration =
+      [[ButtonStackConfiguration alloc] init];
   if (!self.item.isIphoneOnly ||
       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
-    alertScreen.primaryActionString = primaryActionString;
-    alertScreen.secondaryActionString = secondaryActionString;
+    configuration.primaryActionString = primaryActionString;
+    configuration.secondaryActionString = secondaryActionString;
   }
+  ConfirmationAlertViewController* alertScreen =
+      [[ConfirmationAlertViewController alloc]
+          initWithConfiguration:configuration];
+  alertScreen.titleString = titleString;
+  alertScreen.subtitleString = subtitleString;
   alertScreen.actionHandler = self.actionHandler;
   self.alertScreen = alertScreen;
 }
@@ -154,7 +145,7 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
   LottieAnimationConfiguration* config =
       [[LottieAnimationConfiguration alloc] init];
   config.animationName = animationAssetName;
-  config.loopAnimationCount = 1000;
+  config.shouldLoop = YES;
   return ios::provider::GenerateLottieAnimation(config);
 }
 
@@ -162,9 +153,8 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 - (void)configureAlertScreen {
   DCHECK(self.alertScreen);
   self.alertScreen.imageHasFixedSize = YES;
-  self.alertScreen.showDismissBarButton = NO;
   self.alertScreen.titleTextStyle = UIFontTextStyleTitle2;
-  self.alertScreen.customSpacingBeforeImageIfNoNavigationBar =
+  self.alertScreen.customSpacingBeforeImage =
       kSpacingBeforeImageIfNoNavigationBar;
   self.alertScreen.topAlignedLayout = YES;
 
@@ -235,7 +225,7 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
         constraintEqualToAnchor:self.view.trailingAnchor],
     [self.screenshotViewWrapper.animationView.topAnchor
         constraintEqualToAnchor:self.view.topAnchor
-                       constant:29],
+                       constant:[self screenshotViewTopOffset]],
     [self.screenshotViewWrapper.animationView.bottomAnchor
         constraintEqualToAnchor:self.view.centerYAnchor],
   ]];
@@ -285,6 +275,14 @@ NSString* const kDarkModeAnimationSuffix = @"_darkmode";
   } else {
     [self toggleDarkModeOnTraitChange];
   }
+}
+
+// Returns the top offset for the screenshot view.
+- (CGFloat)screenshotViewTopOffset {
+  if (@available(iOS 26, *)) {
+    return kScreenshotViewTopOffsetiOS26;
+  }
+  return kScreenshotViewTopOffset;
 }
 
 @end

@@ -15,17 +15,19 @@ namespace blink {
 
 namespace {
 
-void HandleBoxFragment(const PhysicalBoxFragment& fragment,
-                       PhysicalOffset offset,
-                       bool is_first_for_node,
-                       PhysicalFragmentTraversalOptions options,
-                       PhysicalFragmentTraversalListener& listener) {
+PhysicalFragmentTraversalListener::NextStep HandleBoxFragment(
+    const PhysicalBoxFragment& fragment,
+    PhysicalOffset offset,
+    bool is_first_for_node,
+    PhysicalFragmentTraversalOptions options,
+    PhysicalFragmentTraversalListener& listener) {
   PhysicalFragmentTraversalListener::NextStep next_step =
       listener.HandleEntry(fragment, offset, is_first_for_node);
   if (next_step != PhysicalFragmentTraversalListener::kSkipChildren) {
     ForAllBoxFragmentDescendants(fragment, options, listener);
     listener.HandleExit(fragment, offset);
   }
+  return next_step;
 }
 
 }  // anonymous namespace
@@ -56,9 +58,24 @@ void ForAllBoxFragmentDescendants(const PhysicalBoxFragment& fragment,
     if (const PhysicalBoxFragment* child_box_fragment =
             cursor.Current().BoxFragment()) {
       const FragmentItem* item = cursor.Current().Item();
-      HandleBoxFragment(*child_box_fragment, item->OffsetInContainerFragment(),
-                        item->IsFirstForNode(), options, listener);
+      PhysicalFragmentTraversalListener::NextStep next_step = HandleBoxFragment(
+          *child_box_fragment, item->OffsetInContainerFragment(),
+          item->IsFirstForNode(), options, listener);
+
+      // Normal LayoutBox-derived fragments process the subtree on their own.
+      // This is not the case for non-atomic inlines (LayoutInline), though,
+      // whose actual descendants are to be found in the flat fragment items
+      // list that we're walking through here. If kContinue, make sure to visit
+      // its children.
+      if (next_step == PhysicalFragmentTraversalListener::kContinue &&
+          child_box_fragment->IsInlineBox()) {
+        cursor.MoveToNext();
+      } else {
+        cursor.MoveToNextSkippingChildren();
+      }
+      continue;
     }
+
     if (options & kFragmentTraversalOptionCulledInlines) {
       if (const LayoutObject* descendant = cursor.Current().GetLayoutObject()) {
         // Look for culled inline ancestors. Due to crbug.com/406288653 we

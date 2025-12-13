@@ -49,6 +49,10 @@ MatchAllOriginsRule::MatchAllOriginsRule()
 
 MatchAllOriginsRule::~MatchAllOriginsRule() = default;
 
+std::unique_ptr<OriginMatcherRule> MatchAllOriginsRule::Clone() const {
+  return std::make_unique<MatchAllOriginsRule>();
+}
+
 net::SchemeHostPortMatcherResult MatchAllOriginsRule::Evaluate(
     const GURL& url) const {
   return net::SchemeHostPortMatcherResult::kInclude;
@@ -105,6 +109,11 @@ bool SubdomainMatchingRule::IsValidSchemeAndHost(const std::string& scheme,
   return HostWildcardSanityCheck(host);
 }
 
+std::unique_ptr<OriginMatcherRule> SubdomainMatchingRule::Clone() const {
+  return std::make_unique<SubdomainMatchingRule>(scheme_, optional_host_,
+                                                 optional_port_);
+}
+
 net::SchemeHostPortMatcherResult SubdomainMatchingRule::Evaluate(
     const GURL& url) const {
   if (optional_port_ != -1 && url.EffectiveIntPort() != optional_port_) {
@@ -112,12 +121,12 @@ net::SchemeHostPortMatcherResult SubdomainMatchingRule::Evaluate(
     return net::SchemeHostPortMatcherResult::kNoMatch;
   }
 
-  if (url.scheme() != scheme_) {
+  if (url.GetScheme() != scheme_) {
     // Didn't match scheme expectation.
     return net::SchemeHostPortMatcherResult::kNoMatch;
   }
 
-  return base::MatchPattern(url.host(), optional_host_)
+  return base::MatchPattern(url.GetHost(), optional_host_)
              ? net::SchemeHostPortMatcherResult::kInclude
              : net::SchemeHostPortMatcherResult::kNoMatch;
 }

@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/speech/audio_buffer.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 
 AudioChunk::AudioChunk(int bytes_per_sample)
     : bytes_per_sample_(bytes_per_sample) {}
@@ -25,6 +21,8 @@ AudioChunk::AudioChunk(const uint8_t* data, size_t length, int bytes_per_sample)
   DCHECK_EQ(length % bytes_per_sample, 0U);
 }
 
+AudioChunk::~AudioChunk() = default;
+
 bool AudioChunk::IsEmpty() const {
   return data_string_.empty();
 }
@@ -39,11 +37,11 @@ const std::string& AudioChunk::AsString() const {
 
 int16_t AudioChunk::GetSample16(size_t index) const {
   DCHECK(index < (data_string_.size() / sizeof(int16_t)));
-  return SamplesData16()[index];
+  return UNSAFE_TODO(SamplesData16()[index]);
 }
 
 const int16_t* AudioChunk::SamplesData16() const {
-  return reinterpret_cast<const int16_t*>(data_string_.data());
+  return UNSAFE_TODO(reinterpret_cast<const int16_t*>(data_string_.data()));
 }
 
 AudioBuffer::AudioBuffer(int bytes_per_sample)
@@ -79,8 +77,9 @@ scoped_refptr<AudioChunk> AudioBuffer::DequeueAll() {
       new AudioChunk(resulting_length, bytes_per_sample_));
   uint8_t* dest = chunk->writable_data();
   for (it = chunks_.begin(); it != chunks_.end(); ++it) {
-    memcpy(dest, (*it)->AsString().data(), (*it)->AsString().length());
-    dest += (*it)->AsString().length();
+    UNSAFE_TODO(
+        memcpy(dest, (*it)->AsString().data(), (*it)->AsString().length()));
+    UNSAFE_TODO(dest += (*it)->AsString().length());
   }
   Clear();
   return chunk;

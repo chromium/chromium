@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsObserver;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.ContentSettingsTypeSet;
@@ -83,7 +83,7 @@ public class ContentSettingsObserverTest {
 
         GURL url = new GURL("https://www.chromium.org");
         WebsitePreferenceBridge.setContentSettingDefaultScope(
-                profile, ContentSettingsType.JAVASCRIPT, url, url, ContentSettingValues.BLOCK);
+                profile, ContentSettingsType.JAVASCRIPT, url, url, ContentSetting.BLOCK);
 
         mCallbackHelper.waitForOnly();
         Assert.assertNotNull("ContentSettingsTypeSet should not be null.", mLastTypeSet);
@@ -99,10 +99,10 @@ public class ContentSettingsObserverTest {
         // Destroy the observer and no updates should be posted for mCallbackHelper.
         observer.destroy();
         WebsitePreferenceBridge.setContentSettingDefaultScope(
-                profile, ContentSettingsType.JAVASCRIPT, url, url, ContentSettingValues.DEFAULT);
+                profile, ContentSettingsType.JAVASCRIPT, url, url, ContentSetting.DEFAULT);
         Assert.assertEquals(
                 "Content settings should be updated for URL.",
-                ContentSettingValues.ALLOW,
+                ContentSetting.ALLOW,
                 WebsitePreferenceBridge.getContentSetting(
                         profile, ContentSettingsType.JAVASCRIPT, url, url));
         Assert.assertEquals(

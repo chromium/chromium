@@ -35,6 +35,8 @@ class ChromeShellDelegate : public ash::ShellDelegate {
       PrefService* local_state) const override;
   std::unique_ptr<ash::ClipboardHistoryControllerDelegate>
   CreateClipboardHistoryControllerDelegate() const override;
+  std::unique_ptr<ash::ClipboardImageModelFactory>
+  CreateClipboardImageModelFactory() const override;
   std::unique_ptr<ash::CoralDelegate> CreateCoralDelegate() const override;
   std::unique_ptr<ash::GameDashboardDelegate> CreateGameDashboardDelegate()
       const override;

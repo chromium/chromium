@@ -1,9 +1,9 @@
-HTML_TYPE_GIVEN_NAME | firstName | Nombre * |  | firstName_1
-HTML_TYPE_FAMILY_NAME | lastName | Apellido * |  | firstName_1
+NAME_FIRST | firstName | Nombre * |  | firstName_1
+NAME_LAST | lastName | Apellido * |  | firstName_1
 UNKNOWN_TYPE | id_type | Tipo * | DNI | firstName_1
 UNKNOWN_TYPE | id_value | Número de documento * |  | firstName_1
 UNKNOWN_TYPE | day_select | Fecha de Nacimiento * | 0 | firstName_1
 UNKNOWN_TYPE | month_select | Fecha de Nacimiento * | 0 | firstName_1
 UNKNOWN_TYPE | year_select | Fecha de Nacimiento * | 0 | firstName_1
-HTML_TYPE_EMAIL | email | E-mail * |  | firstName_1
-HTML_TYPE_TEL | phone | Teléfono * |  | firstName_1
+EMAIL_ADDRESS | email | E-mail * |  | firstName_1
+PHONE_HOME_WHOLE_NUMBER | phone | Teléfono * |  | firstName_1

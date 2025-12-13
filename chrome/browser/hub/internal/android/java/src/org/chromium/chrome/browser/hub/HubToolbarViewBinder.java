@@ -6,6 +6,10 @@ package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubColorMixer.COLOR_MIXER;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.BACK_BUTTON_ENABLED;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.BACK_BUTTON_LISTENER;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.BACK_BUTTON_VISIBLE;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.HUB_SEARCH_ENABLED_STATE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
@@ -49,6 +53,14 @@ public class HubToolbarViewBinder {
                     model.get(APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION));
         } else if (key == HUB_SEARCH_ENABLED_STATE) {
             view.setHubSearchEnabledState(model.get(HUB_SEARCH_ENABLED_STATE));
+        } else if (key == HAIRLINE_VISIBILITY) {
+            view.setHairlineVisibility(model.get(HAIRLINE_VISIBILITY));
+        } else if (key == BACK_BUTTON_VISIBLE) {
+            view.setBackButtonVisible(model.get(BACK_BUTTON_VISIBLE));
+        } else if (key == BACK_BUTTON_ENABLED) {
+            view.setBackButtonEnabled(model.get(BACK_BUTTON_ENABLED));
+        } else if (key == BACK_BUTTON_LISTENER) {
+            view.setBackButtonListener(model.get(BACK_BUTTON_LISTENER));
         }
     }
 }

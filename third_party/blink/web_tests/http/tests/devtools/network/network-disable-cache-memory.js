@@ -13,35 +13,43 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
   await TestRunner.showPanel('network');
   await TestRunner.navigatePromise('resources/random-script-page.html');
 
-  var content1;
-  var content2;
-  var content3;
-
-  function loadScriptAndGetContent(callback) {
+  let status1;
+  let content1;
+  let status2;
+  let content2;
+  let status3;
+  let content3;
+  function loadScriptAndGetStatusAndContent(callback) {
     NetworkTestRunner.recordNetwork();
     ConsoleTestRunner.addConsoleSniffer(scriptLoaded);
     TestRunner.evaluateInPage('scheduleScriptLoad()');
 
     function scriptLoaded() {
-      var request = NetworkTestRunner.networkRequests().pop();
-      request.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent).then(callback);
+      const request = NetworkTestRunner.networkRequests().pop();
+      request.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent).then(
+        ({content, error, isEncoded}) => {
+          callback({status: request?.statusCode, content, error, isEncoded});
+        }
+      );
     }
   }
 
-  loadScriptAndGetContent(step1);
+  loadScriptAndGetStatusAndContent(step1);
 
-  function step1({ content, error, isEncoded }) {
+  function step1({ status, content, error, isEncoded }) {
     content1 = content;
+    status1 = status;
     TestRunner.reloadPage(step2);
   }
 
   function step2(msg) {
-    loadScriptAndGetContent(step3);
+    loadScriptAndGetStatusAndContent(step3);
   }
 
-  function step3({ content, error, isEncoded }) {
+  function step3({ status, content, error, isEncoded }) {
     content2 = content;
-    TestRunner.NetworkAgent.setCacheDisabled(true).then(step4);
+    status2 = status;
+    TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: true}).then(step4);
   }
 
   function step4() {
@@ -49,15 +57,18 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
   }
 
   function step5() {
-    loadScriptAndGetContent(step6);
+    loadScriptAndGetStatusAndContent(step6);
   }
 
-  function step6({ content, error, isEncoded }) {
+  function step6({ status, content, error, isEncoded }) {
     content3 = content;
+    status3 = status;
 
-    TestRunner.assertTrue(content1 === content2, 'First and second scripts should be equal.');
-    TestRunner.assertTrue(content2 !== content3, 'Second and third scripts should differ.');
-    TestRunner.NetworkAgent.setCacheDisabled(false).then(step7);
+    TestRunner.assertEquals(status1, 200, 'Second script load should be from cache');
+    TestRunner.assertEquals(status2, 304, 'Second script load should be from cache');
+    TestRunner.assertTrue(content1 !== content3, 'First and third scripts should differ.');
+    TestRunner.assertEquals(status3, 200, 'Third script load should be from network');
+    TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: false}).then(step7);
   }
 
   function step7() {

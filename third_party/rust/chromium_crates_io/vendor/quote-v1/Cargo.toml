@@ -11,11 +11,11 @@
 
 [package]
 edition = "2018"
-rust-version = "1.56"
+rust-version = "1.68"
 name = "quote"
-version = "1.0.40"
+version = "1.0.42"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
-build = false
+build = "build.rs"
 autolib = false
 autobins = false
 autoexamples = false
@@ -33,13 +33,14 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/quote"
 
 [package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
 rustdoc-args = [
     "--generate-link-to-definition",
+    "--generate-macro-expansion",
     "--extern-html-root-url=core=https://doc.rust-lang.org",
     "--extern-html-root-url=alloc=https://doc.rust-lang.org",
     "--extern-html-root-url=std=https://doc.rust-lang.org",
 ]
-targets = ["x86_64-unknown-linux-gnu"]
 
 [features]
 default = ["proc-macro"]
@@ -65,5 +66,5 @@ default-features = false
 version = "1.0"
 
 [dev-dependencies.trybuild]
-version = "1.0.66"
+version = "1.0.108"
 features = ["diff"]

@@ -21,7 +21,7 @@ using password_manager::InsecurePasswordCounts;
 
 namespace {
 
-// Returns true if a password check error occured.
+// Returns true if a password check error occurred.
 bool DidPasswordCheckupFail(PasswordCheckState currentState) {
   switch (currentState) {
     case PasswordCheckState::kRunning:

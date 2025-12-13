@@ -2,10 +2,12 @@ Name: dav1d is an AV1 decoder :)
 Short Name: dav1d
 URL: https://code.videolan.org/videolan/dav1d
 Version: master
+Update Mechanism: Manual
 License: BSD-2-Clause
 License File: LICENSE
 Security Critical: yes
 Shipped: yes
+CPEPrefix: cpe:/a:videolan:dav1d
 Source: https://code.videolan.org/videolan/dav1d
 
 --[ DESCRIPTION ] ------------------
@@ -33,5 +35,6 @@ all the updated configuration files. If not, you'll need to debug the bots :(
 -- [ OPEN ISSUES ] ------------------
 1. If Windows build fails on Linux, you may need to run:
 `build/vs_toolchain.py update` to regenerate FUSE links.
-2. If ARM build fails with an error around clock_gettime you likely need to
-install gcc-arm-linux-gnueabihf and gcc-aarch64-linux-gnu packages.
+2. If ARM/x86/riscv64 build fails with an error around clock_gettime you likely need to
+install gcc-arm-linux-gnueabihf, gcc-aarch64-linux-gnu, gcc-i686-linux-gnu and
+gcc-riscv64-linux-gnu packages.

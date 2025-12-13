@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -71,7 +72,7 @@ void DocumentPictureInPictureMixinTestBase::WaitForPageLoad(
 }
 
 GURL DocumentPictureInPictureMixinTestBase::GetPictureInPictureURL() const {
-  return ui_test_utils::GetTestUrl(
+  return chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kPictureInPictureDocumentPipPage));
 }

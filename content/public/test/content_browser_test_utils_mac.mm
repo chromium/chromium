@@ -148,7 +148,7 @@ void RenderWidgetHostViewCocoaObserver::SetUpSwizzlers() {
 }
 
 void SetWindowBounds(gfx::NativeWindow window, const gfx::Rect& bounds) {
-  NSRect new_bounds = NSRectFromCGRect(bounds.ToCGRect());
+  NSRect new_bounds = bounds.ToCGRect();
   if (NSScreen.screens.count > 0) {
     new_bounds.origin.y = NSScreen.screens.firstObject.frame.size.height -
                           new_bounds.origin.y - new_bounds.size.height;

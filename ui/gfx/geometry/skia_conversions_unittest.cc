@@ -5,7 +5,12 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkM44.h"
+#include "third_party/skia/include/core/SkMatrix.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace gfx {
@@ -63,22 +68,23 @@ TEST(SkiaConversionsTest, SkIRectToRectClamping) {
 }
 
 TEST(SkiaConversionsTest, TransformSkM44Conversions) {
-  std::vector<float> v = {1, 2,  3,  4,  5,  6,  7,  8,
-                          9, 10, 11, 12, 13, 14, 15, 16};
-  Transform t = Transform::ColMajorF(v.data());
+  auto v = std::to_array<float>(
+      {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16});
+  Transform t = Transform::ColMajorF(v);
 
   SkM44 m = TransformToSkM44(t);
-  std::vector<float> v1(16);
+  std::array<float, 16> v1;
   m.getColMajor(v1.data());
   EXPECT_EQ(v, v1);
   EXPECT_EQ(t, SkM44ToTransform(m));
 }
 
 TEST(SkiaConversionsTest, TransformSkMatrixConversions) {
-  std::vector<float> v = {1, 2, 0, 4, 5, 6, 0, 8, 0, 0, 1, 0, 13, 14, 0, 16};
-  Transform t = Transform::ColMajorF(v.data());
+  auto v =
+      std::to_array<float>({1, 2, 0, 4, 5, 6, 0, 8, 0, 0, 1, 0, 13, 14, 0, 16});
+  Transform t = Transform::ColMajorF(v);
 
-  std::vector<float> v1(16);
+  std::array<float, 16> v1;
   SkMatrix m = TransformToFlattenedSkMatrix(t);
   SkM44 m44(m);
   m44.getColMajor(v1.data());

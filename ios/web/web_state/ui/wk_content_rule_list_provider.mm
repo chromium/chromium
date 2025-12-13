@@ -6,22 +6,27 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/files/file_path.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/sequence_checker.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
 
 namespace web {
 
-WKContentRuleListProvider::WKContentRuleListProvider() = default;
-
-WKContentRuleListProvider::~WKContentRuleListProvider() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Remove all managed rule lists from the web view.
-  UninstallAllRuleLists();
+WKContentRuleListProvider::WKContentRuleListProvider(
+    const base::FilePath& state_path) {
+  rule_list_store_ = [WKContentRuleListStore
+      storeWithURL:base::apple::FilePathToNSURL(state_path)];
+  CHECK(rule_list_store_);
 }
+
+WKContentRuleListProvider::~WKContentRuleListProvider() = default;
 
 void WKContentRuleListProvider::SetUserContentController(
     WKUserContentController* user_content_controller) {
@@ -37,20 +42,19 @@ void WKContentRuleListProvider::UpdateRuleList(RuleListKey key,
                                                std::string json_rules,
                                                OperationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  IncrementPendingOperations();
 
   NSString* identifier = base::SysUTF8ToNSString(key);
   NSString* rules = base::SysUTF8ToNSString(json_rules);
 
   void (^completion_handler)(WKContentRuleList*, NSError*) =
-      base::CallbackToBlock(base::BindOnce(
-          &WKContentRuleListProvider::OnRuleListCompiled,
-          weak_ptr_factory_.GetWeakPtr(), key, std::move(callback)));
+      base::CallbackToBlock(
+          base::BindOnce(&WKContentRuleListProvider::OnRuleListCompiled,
+                         weak_ptr_factory_.GetWeakPtr(), key,
+                         std::move(callback), base::TimeTicks::Now()));
 
-  [WKContentRuleListStore.defaultStore
-      compileContentRuleListForIdentifier:identifier
-                   encodedContentRuleList:rules
-                        completionHandler:completion_handler];
+  [rule_list_store_ compileContentRuleListForIdentifier:identifier
+                                 encodedContentRuleList:rules
+                                      completionHandler:completion_handler];
 }
 
 void WKContentRuleListProvider::RemoveRuleList(RuleListKey key,
@@ -68,9 +72,8 @@ void WKContentRuleListProvider::RemoveRuleList(RuleListKey key,
   [user_content_controller_ removeContentRuleList:it->second];
 
   // Now, asynchronously remove it from the persistent WKContentRuleListStore.
-  IncrementPendingOperations();
   NSString* identifier = base::SysUTF8ToNSString(key);
-  [WKContentRuleListStore.defaultStore
+  [rule_list_store_
       removeContentRuleListForIdentifier:identifier
                        completionHandler:
                            base::CallbackToBlock(base::BindOnce(
@@ -79,26 +82,14 @@ void WKContentRuleListProvider::RemoveRuleList(RuleListKey key,
                                std::move(callback)))];
 }
 
-void WKContentRuleListProvider::SetIdleCallbackForTesting(
-    base::RepeatingClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  idle_callback_for_testing_ = std::move(callback);
-
-  // If the provider is already idle at the time the callback is set,
-  // the caller should be notified.
-  if (pending_operations_count_ == 0u && idle_callback_for_testing_) {
-    // Post as a task to the current message loop to avoid re-entrancy.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, idle_callback_for_testing_);
-  }
-}
-
 // Private methods
 
 void WKContentRuleListProvider::OnRuleListCompiled(RuleListKey key,
                                                    OperationCallback callback,
+                                                   base::TimeTicks start_time,
                                                    WKContentRuleList* rule_list,
                                                    NSError* error) {
+  const base::TimeDelta duration = base::TimeTicks::Now() - start_time;
   // This case is not expected. WebKit should return either a list or an
   // error.
   if (!rule_list && !error) {
@@ -111,7 +102,16 @@ void WKContentRuleListProvider::OnRuleListCompiled(RuleListKey key,
                }];
   }
 
-  if (!error) {
+  base::UmaHistogramBoolean(
+      "IOS.ContentRuleListProvider.Compile.Success." + key, error == nil);
+
+  if (error) {
+    base::UmaHistogramSparse("IOS.ContentRuleListProvider.Compile.Error." + key,
+                             error.code);
+  } else {
+    base::UmaHistogramTimes("IOS.ContentRuleListProvider.Compile.Time." + key,
+                            duration);
+
     // If a list for this key already exists, it's an update. Remove the
     // old one from the controller before adding the new one.
     auto it = compiled_lists_.find(key);
@@ -126,9 +126,8 @@ void WKContentRuleListProvider::OnRuleListCompiled(RuleListKey key,
     [user_content_controller_ addContentRuleList:rule_list];
   }
 
-  // Notify the original caller of the result and decrement the counter.
+  // Notify the original caller of the result.
   std::move(callback).Run(error);
-  DecrementPendingOperations();
 }
 
 void WKContentRuleListProvider::OnRuleListRemoved(RuleListKey key,
@@ -140,12 +139,15 @@ void WKContentRuleListProvider::OnRuleListRemoved(RuleListKey key,
                 error.code == WKErrorContentRuleListStoreLookUpFailed)) {
     error = nil;
   }
+
+  base::UmaHistogramBoolean("IOS.ContentRuleListProvider.Remove.Success." + key,
+                            error == nil);
+
   // Only remove from the internal map on success.
   if (!error) {
     compiled_lists_.erase(key);
   }
   std::move(callback).Run(error);
-  DecrementPendingOperations();
 }
 
 void WKContentRuleListProvider::InstallAllRuleLists() {
@@ -157,18 +159,6 @@ void WKContentRuleListProvider::InstallAllRuleLists() {
 void WKContentRuleListProvider::UninstallAllRuleLists() {
   for (const auto& [key, rule_list] : compiled_lists_) {
     [user_content_controller_ removeContentRuleList:rule_list];
-  }
-}
-
-void WKContentRuleListProvider::IncrementPendingOperations() {
-  pending_operations_count_++;
-}
-
-void WKContentRuleListProvider::DecrementPendingOperations() {
-  DCHECK_GT(pending_operations_count_, 0u);
-  pending_operations_count_--;
-  if (pending_operations_count_ == 0u && idle_callback_for_testing_) {
-    idle_callback_for_testing_.Run();
   }
 }
 

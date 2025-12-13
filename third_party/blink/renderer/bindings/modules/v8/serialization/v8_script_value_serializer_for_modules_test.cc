@@ -5,8 +5,10 @@
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_serializer_for_modules.h"
 
 #include "base/containers/to_vector.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "media/base/audio_bus.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink.h"
@@ -37,6 +39,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_data_channel_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -238,7 +241,7 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeRTCCertificate) {
 
   // This is encoded data generated from Chromium (around M55).
   ScriptState* script_state = scope.GetScriptState();
-  Vector<uint8_t> encoded_data = WTF::ToVector(kEcdsaCertificateEncoded);
+  Vector<uint8_t> encoded_data = ToVector(kEcdsaCertificateEncoded);
   scoped_refptr<SerializedScriptValue> input = SerializedValue(encoded_data);
 
   // Decode test.
@@ -354,119 +357,119 @@ WebCryptoResult ToWebCryptoResult(ScriptState* script_state,
       MakeGarbageCollected<WebCryptoResultAdapter<IDLType, T>>(
           std::move(function)),
       MakeGarbageCollected<WebCryptoResultAdapter<IDLAny, DOMException*>>(
-          WTF::BindRepeating([](DOMException* exception) {
+          BindRepeating([](DOMException* exception) {
             NOTREACHED() << "crypto operation failed";
           })));
   return result->Result();
 }
 
 template <typename T, typename IDLType, typename PMF, typename... Args>
-T SubtleCryptoSync(ScriptState* script_state, PMF func, Args&&... args) {
+T SubtleCryptoSync(V8TestingScope& scope, PMF func, Args&&... args) {
   T result;
   base::RunLoop run_loop;
   (Platform::Current()->Crypto()->*func)(
       std::forward<Args>(args)...,
       ToWebCryptoResult<IDLType>(
-          script_state,
-          WTF::BindRepeating(
+          scope.GetScriptState(),
+          blink::BindRepeating(
               [](T* out, base::OnceClosure quit_closure, T result) {
                 *out = result;
                 std::move(quit_closure).Run();
               },
-              WTF::Unretained(&result), run_loop.QuitClosure())),
+              Unretained(&result), run_loop.QuitClosure())),
       scheduler::GetSingleThreadTaskRunnerForTesting());
+  // The promise may resolve synchronously.
+  scope.PerformMicrotaskCheckpoint();
   run_loop.Run();
   return result;
 }
 
-CryptoKey* SyncGenerateKey(ScriptState* script_state,
+CryptoKey* SyncGenerateKey(V8TestingScope& scope,
                            const WebCryptoAlgorithm& algorithm,
                            bool extractable,
                            WebCryptoKeyUsageMask usages) {
-  return SubtleCryptoSync<CryptoKey*, IDLAny>(
-      script_state, &WebCrypto::GenerateKey, algorithm, extractable, usages);
+  return SubtleCryptoSync<CryptoKey*, IDLAny>(scope, &WebCrypto::GenerateKey,
+                                              algorithm, extractable, usages);
 }
 
-CryptoKeyPair SyncGenerateKeyPair(ScriptState* script_state,
+CryptoKeyPair SyncGenerateKeyPair(V8TestingScope& scope,
                                   const WebCryptoAlgorithm& algorithm,
                                   bool extractable,
                                   WebCryptoKeyUsageMask usages) {
   return SubtleCryptoSync<CryptoKeyPair, IDLAny>(
-      script_state, &WebCrypto::GenerateKey, algorithm, extractable, usages);
+      scope, &WebCrypto::GenerateKey, algorithm, extractable, usages);
 }
 
-CryptoKey* SyncImportKey(ScriptState* script_state,
+CryptoKey* SyncImportKey(V8TestingScope& scope,
                          WebCryptoKeyFormat format,
                          std::vector<unsigned char> data,
                          const WebCryptoAlgorithm& algorithm,
                          bool extractable,
                          WebCryptoKeyUsageMask usages) {
-  return SubtleCryptoSync<CryptoKey*, CryptoKey>(
-      script_state, &WebCrypto::ImportKey, format, data, algorithm, extractable,
-      usages);
+  return SubtleCryptoSync<CryptoKey*, CryptoKey>(scope, &WebCrypto::ImportKey,
+                                                 format, data, algorithm,
+                                                 extractable, usages);
 }
 
-std::vector<uint8_t> SyncExportKey(ScriptState* script_state,
+std::vector<uint8_t> SyncExportKey(V8TestingScope& scope,
                                    WebCryptoKeyFormat format,
                                    const WebCryptoKey& key) {
   return SubtleCryptoSync<std::vector<uint8_t>, IDLAny>(
-      script_state, &WebCrypto::ExportKey, format, key);
+      scope, &WebCrypto::ExportKey, format, key);
 }
 
-std::vector<uint8_t> SyncEncrypt(ScriptState* script_state,
+std::vector<uint8_t> SyncEncrypt(V8TestingScope& scope,
                                  const WebCryptoAlgorithm& algorithm,
                                  const WebCryptoKey& key,
                                  std::vector<unsigned char> data) {
   return SubtleCryptoSync<std::vector<uint8_t>, IDLAny>(
-      script_state, &WebCrypto::Encrypt, algorithm, key, data);
+      scope, &WebCrypto::Encrypt, algorithm, key, data);
 }
 
-std::vector<uint8_t> SyncDecrypt(ScriptState* script_state,
+std::vector<uint8_t> SyncDecrypt(V8TestingScope& scope,
                                  const WebCryptoAlgorithm& algorithm,
                                  const WebCryptoKey& key,
                                  std::vector<unsigned char> data) {
   return SubtleCryptoSync<std::vector<uint8_t>, IDLAny>(
-      script_state, &WebCrypto::Decrypt, algorithm, key, data);
+      scope, &WebCrypto::Decrypt, algorithm, key, data);
 }
 
-std::vector<uint8_t> SyncSign(ScriptState* script_state,
+std::vector<uint8_t> SyncSign(V8TestingScope& scope,
                               const WebCryptoAlgorithm& algorithm,
                               const WebCryptoKey& key,
                               std::vector<unsigned char> message) {
   return SubtleCryptoSync<std::vector<uint8_t>, IDLAny>(
-      script_state, &WebCrypto::Sign, algorithm, key, message);
+      scope, &WebCrypto::Sign, algorithm, key, message);
 }
 
-bool SyncVerifySignature(ScriptState* script_state,
+bool SyncVerifySignature(V8TestingScope& scope,
                          const WebCryptoAlgorithm& algorithm,
                          const WebCryptoKey& key,
                          std::vector<unsigned char> signature,
                          std::vector<unsigned char> message) {
-  return SubtleCryptoSync<bool, IDLAny>(script_state,
-                                        &WebCrypto::VerifySignature, algorithm,
-                                        key, signature, message);
+  return SubtleCryptoSync<bool, IDLAny>(scope, &WebCrypto::VerifySignature,
+                                        algorithm, key, signature, message);
 }
 
-std::vector<uint8_t> SyncDeriveBits(ScriptState* script_state,
+std::vector<uint8_t> SyncDeriveBits(V8TestingScope& scope,
                                     const WebCryptoAlgorithm& algorithm,
                                     const WebCryptoKey& key,
                                     unsigned length) {
   return SubtleCryptoSync<std::vector<uint8_t>, DOMArrayBuffer>(
-      script_state, &WebCrypto::DeriveBits, algorithm, key, length);
+      scope, &WebCrypto::DeriveBits, algorithm, key, length);
 }
 
 // AES-128-CBC uses AES key params.
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyAES) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope(KURL("https://secure.context/"));
-  ScriptState* script_state = scope.GetScriptState();
 
   // Generate a 128-bit AES key.
   std::unique_ptr<WebCryptoAlgorithmParams> params(
       new WebCryptoAesKeyGenParams(128));
   WebCryptoAlgorithm algorithm(kWebCryptoAlgorithmIdAesCbc, std::move(params));
   CryptoKey* key =
-      SyncGenerateKey(script_state, algorithm, true,
+      SyncGenerateKey(scope, algorithm, true,
                       kWebCryptoKeyUsageEncrypt | kWebCryptoKeyUsageDecrypt);
 
   // Round trip it and check the visible attributes.
@@ -482,9 +485,9 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyAES) {
 
   // Check that the keys have the same raw representation.
   std::vector<uint8_t> key_raw =
-      SyncExportKey(script_state, kWebCryptoKeyFormatRaw, key->Key());
+      SyncExportKey(scope, kWebCryptoKeyFormatRaw, key->Key());
   std::vector<uint8_t> new_key_raw =
-      SyncExportKey(script_state, kWebCryptoKeyFormatRaw, new_key->Key());
+      SyncExportKey(scope, kWebCryptoKeyFormatRaw, new_key->Key());
   EXPECT_THAT(new_key_raw, ElementsAreArray(key_raw));
 
   // Check that one can decrypt data encrypted with the other.
@@ -493,9 +496,9 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyAES) {
       kWebCryptoAlgorithmIdAesCbc, std::make_unique<WebCryptoAesCbcParams>(iv));
   std::vector<unsigned char> plaintext = {1, 2, 3};
   std::vector<uint8_t> ciphertext =
-      SyncEncrypt(script_state, encrypt_algorithm, key->Key(), plaintext);
+      SyncEncrypt(scope, encrypt_algorithm, key->Key(), plaintext);
   std::vector<uint8_t> new_plaintext =
-      SyncDecrypt(script_state, encrypt_algorithm, new_key->Key(), ciphertext);
+      SyncDecrypt(scope, encrypt_algorithm, new_key->Key(), ciphertext);
   EXPECT_THAT(new_plaintext, ElementsAre(1, 2, 3));
 }
 
@@ -525,7 +528,7 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyAES) {
   WebCryptoAlgorithm encrypt_algorithm(
       kWebCryptoAlgorithmIdAesCbc, std::make_unique<WebCryptoAesCbcParams>(iv));
   std::vector<uint8_t> plaintext =
-      SyncDecrypt(script_state, encrypt_algorithm, new_key->Key(), ciphertext);
+      SyncDecrypt(scope, encrypt_algorithm, new_key->Key(), ciphertext);
   EXPECT_THAT(plaintext, ElementsAre(1, 2, 3));
 }
 
@@ -533,7 +536,6 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyAES) {
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyHMAC) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope(KURL("https://secure.context/"));
-  ScriptState* script_state = scope.GetScriptState();
 
   // Generate an HMAC-SHA256 key.
   WebCryptoAlgorithm hash(kWebCryptoAlgorithmIdSha256, nullptr);
@@ -542,7 +544,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyHMAC) {
   WebCryptoAlgorithm generate_key_algorithm(kWebCryptoAlgorithmIdHmac,
                                             std::move(generate_key_params));
   CryptoKey* key =
-      SyncGenerateKey(script_state, generate_key_algorithm, true,
+      SyncGenerateKey(scope, generate_key_algorithm, true,
                       kWebCryptoKeyUsageSign | kWebCryptoKeyUsageVerify);
 
   // Round trip it and check the visible attributes.
@@ -558,18 +560,18 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyHMAC) {
 
   // Check that the keys have the same raw representation.
   std::vector<uint8_t> key_raw =
-      SyncExportKey(script_state, kWebCryptoKeyFormatRaw, key->Key());
+      SyncExportKey(scope, kWebCryptoKeyFormatRaw, key->Key());
   std::vector<uint8_t> new_key_raw =
-      SyncExportKey(script_state, kWebCryptoKeyFormatRaw, new_key->Key());
+      SyncExportKey(scope, kWebCryptoKeyFormatRaw, new_key->Key());
   EXPECT_THAT(new_key_raw, ElementsAreArray(key_raw));
 
   // Check that one can verify a message signed by the other.
   std::vector<uint8_t> message = {1, 2, 3};
   WebCryptoAlgorithm algorithm(kWebCryptoAlgorithmIdHmac, nullptr);
   std::vector<uint8_t> signature =
-      SyncSign(script_state, algorithm, key->Key(), message);
-  EXPECT_TRUE(SyncVerifySignature(script_state, algorithm, new_key->Key(),
-                                  signature, message));
+      SyncSign(scope, algorithm, key->Key(), message);
+  EXPECT_TRUE(SyncVerifySignature(scope, algorithm, new_key->Key(), signature,
+                                  message));
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyHMAC) {
@@ -601,15 +603,14 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyHMAC) {
       0x88, 0xd0, 0x56, 0x4d, 0xb6, 0x46, 0xc8, 0xb2, 0xa4, 0x2e, 0x1f,
       0x0d, 0xe2, 0xd6, 0x60, 0xf9, 0xee, 0xb7, 0xd4, 0x55, 0x12};
   WebCryptoAlgorithm algorithm(kWebCryptoAlgorithmIdHmac, nullptr);
-  EXPECT_TRUE(SyncVerifySignature(script_state, algorithm, new_key->Key(),
-                                  signature, message));
+  EXPECT_TRUE(SyncVerifySignature(scope, algorithm, new_key->Key(), signature,
+                                  message));
 }
 
 // RSA-PSS-SHA256 uses RSA hashed key params.
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyRSAHashed) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope(KURL("https://secure.context/"));
-  ScriptState* script_state = scope.GetScriptState();
 
   // Generate an RSA-PSS-SHA256 key pair.
   WebCryptoAlgorithm hash(kWebCryptoAlgorithmIdSha256, nullptr);
@@ -620,7 +621,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyRSAHashed) {
   CryptoKey* public_key;
   CryptoKey* private_key;
   std::tie(public_key, private_key) =
-      SyncGenerateKeyPair(script_state, generate_key_algorithm, true,
+      SyncGenerateKeyPair(scope, generate_key_algorithm, true,
                           kWebCryptoKeyUsageSign | kWebCryptoKeyUsageVerify);
 
   // Round trip the private key and check the visible attributes.
@@ -636,9 +637,9 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyRSAHashed) {
 
   // Check that the keys have the same PKCS8 representation.
   std::vector<uint8_t> key_raw =
-      SyncExportKey(script_state, kWebCryptoKeyFormatPkcs8, private_key->Key());
-  std::vector<uint8_t> new_key_raw = SyncExportKey(
-      script_state, kWebCryptoKeyFormatPkcs8, new_private_key->Key());
+      SyncExportKey(scope, kWebCryptoKeyFormatPkcs8, private_key->Key());
+  std::vector<uint8_t> new_key_raw =
+      SyncExportKey(scope, kWebCryptoKeyFormatPkcs8, new_private_key->Key());
   EXPECT_THAT(new_key_raw, ElementsAreArray(key_raw));
 
   // Check that one can verify a message signed by the other.
@@ -646,8 +647,8 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyRSAHashed) {
   WebCryptoAlgorithm algorithm(kWebCryptoAlgorithmIdRsaPss,
                                std::make_unique<WebCryptoRsaPssParams>(16));
   std::vector<uint8_t> signature =
-      SyncSign(script_state, algorithm, new_private_key->Key(), message);
-  EXPECT_TRUE(SyncVerifySignature(script_state, algorithm, public_key->Key(),
+      SyncSign(scope, algorithm, new_private_key->Key(), message);
+  EXPECT_TRUE(SyncVerifySignature(scope, algorithm, public_key->Key(),
                                   signature, message));
 }
 
@@ -698,15 +699,14 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyRSAHashed) {
       0x9e, 0xb1, 0x96, 0x8f, 0xe6, 0x5e, 0x89, 0x99};
   WebCryptoAlgorithm algorithm(kWebCryptoAlgorithmIdRsaPss,
                                std::make_unique<WebCryptoRsaPssParams>(16));
-  EXPECT_TRUE(SyncVerifySignature(script_state, algorithm,
-                                  new_public_key->Key(), signature, message));
+  EXPECT_TRUE(SyncVerifySignature(scope, algorithm, new_public_key->Key(),
+                                  signature, message));
 }
 
 // ECDSA uses EC key params.
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyEC) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope(KURL("https://secure.context/"));
-  ScriptState* script_state = scope.GetScriptState();
 
   // Generate an ECDSA key pair with the NIST P-256 curve.
   std::unique_ptr<WebCryptoAlgorithmParams> generate_key_params(
@@ -716,7 +716,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyEC) {
   CryptoKey* public_key;
   CryptoKey* private_key;
   std::tie(public_key, private_key) =
-      SyncGenerateKeyPair(script_state, generate_key_algorithm, true,
+      SyncGenerateKeyPair(scope, generate_key_algorithm, true,
                           kWebCryptoKeyUsageSign | kWebCryptoKeyUsageVerify);
 
   // Round trip the private key and check the visible attributes.
@@ -732,9 +732,9 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyEC) {
 
   // Check that the keys have the same PKCS8 representation.
   std::vector<uint8_t> key_raw =
-      SyncExportKey(script_state, kWebCryptoKeyFormatPkcs8, private_key->Key());
-  std::vector<uint8_t> new_key_raw = SyncExportKey(
-      script_state, kWebCryptoKeyFormatPkcs8, new_private_key->Key());
+      SyncExportKey(scope, kWebCryptoKeyFormatPkcs8, private_key->Key());
+  std::vector<uint8_t> new_key_raw =
+      SyncExportKey(scope, kWebCryptoKeyFormatPkcs8, new_private_key->Key());
   EXPECT_THAT(new_key_raw, ElementsAreArray(key_raw));
 
   // Check that one can verify a message signed by the other.
@@ -743,8 +743,8 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyEC) {
   WebCryptoAlgorithm algorithm(kWebCryptoAlgorithmIdEcdsa,
                                std::make_unique<WebCryptoEcdsaParams>(hash));
   std::vector<uint8_t> signature =
-      SyncSign(script_state, algorithm, new_private_key->Key(), message);
-  EXPECT_TRUE(SyncVerifySignature(script_state, algorithm, public_key->Key(),
+      SyncSign(scope, algorithm, new_private_key->Key(), message);
+  EXPECT_TRUE(SyncVerifySignature(scope, algorithm, public_key->Key(),
                                   signature, message));
 }
 
@@ -786,15 +786,14 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyEC) {
   WebCryptoAlgorithm hash(kWebCryptoAlgorithmIdSha256, nullptr);
   WebCryptoAlgorithm algorithm(kWebCryptoAlgorithmIdEcdsa,
                                std::make_unique<WebCryptoEcdsaParams>(hash));
-  EXPECT_TRUE(SyncVerifySignature(script_state, algorithm,
-                                  new_public_key->Key(), signature, message));
+  EXPECT_TRUE(SyncVerifySignature(scope, algorithm, new_public_key->Key(),
+                                  signature, message));
 }
 
 // Ed25519 uses no params.
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyEd25519) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope(KURL("https://secure.context/"));
-  ScriptState* script_state = scope.GetScriptState();
 
   // Generate an Ed25519 key pair.
   WebCryptoAlgorithm generate_key_algorithm(kWebCryptoAlgorithmIdEd25519,
@@ -802,7 +801,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyEd25519) {
   CryptoKey* public_key;
   CryptoKey* private_key;
   std::tie(public_key, private_key) =
-      SyncGenerateKeyPair(script_state, generate_key_algorithm, true,
+      SyncGenerateKeyPair(scope, generate_key_algorithm, true,
                           kWebCryptoKeyUsageSign | kWebCryptoKeyUsageVerify);
 
   // Round trip the private key and check the visible attributes.
@@ -818,18 +817,18 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyEd25519) {
 
   // Check that the keys have the same PKCS8 representation.
   std::vector<uint8_t> key_raw =
-      SyncExportKey(script_state, kWebCryptoKeyFormatPkcs8, private_key->Key());
-  std::vector<uint8_t> new_key_raw = SyncExportKey(
-      script_state, kWebCryptoKeyFormatPkcs8, new_private_key->Key());
+      SyncExportKey(scope, kWebCryptoKeyFormatPkcs8, private_key->Key());
+  std::vector<uint8_t> new_key_raw =
+      SyncExportKey(scope, kWebCryptoKeyFormatPkcs8, new_private_key->Key());
   EXPECT_THAT(new_key_raw, ElementsAreArray(key_raw));
 
   // Check that one can verify a message signed by the other.
   std::vector<uint8_t> message = {1, 2, 3};
   WebCryptoAlgorithm algorithm(kWebCryptoAlgorithmIdEd25519, nullptr);
   std::vector<uint8_t> signature =
-      SyncSign(script_state, algorithm, new_private_key->Key(), message);
+      SyncSign(scope, algorithm, new_private_key->Key(), message);
 
-  EXPECT_TRUE(SyncVerifySignature(script_state, algorithm, public_key->Key(),
+  EXPECT_TRUE(SyncVerifySignature(scope, algorithm, public_key->Key(),
                                   signature, message));
 }
 
@@ -868,20 +867,19 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyEd25519) {
       0x8d, 0xc0, 0x27, 0xbe, 0xce, 0xea, 0x1e, 0xc4, 0x0a,
   };
   WebCryptoAlgorithm algorithm(kWebCryptoAlgorithmIdEd25519, nullptr);
-  EXPECT_TRUE(SyncVerifySignature(script_state, algorithm,
-                                  new_public_key->Key(), signature, message));
+  EXPECT_TRUE(SyncVerifySignature(scope, algorithm, new_public_key->Key(),
+                                  signature, message));
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyX25519) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope(KURL("https://secure.context/"));
-  ScriptState* script_state = scope.GetScriptState();
 
   // Generate an X25519 key pair.
   WebCryptoAlgorithm generate_key_algorithm(kWebCryptoAlgorithmIdX25519,
                                             nullptr);
   auto [public_key, private_key] = SyncGenerateKeyPair(
-      script_state, generate_key_algorithm, true,
+      scope, generate_key_algorithm, true,
       kWebCryptoKeyUsageDeriveKey | kWebCryptoKeyUsageDeriveBits);
 
   // Round trip the private key and check the visible attributes.
@@ -898,9 +896,9 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyX25519) {
 
   // Check that the keys have the same PKCS8 representation.
   std::vector<uint8_t> key_raw =
-      SyncExportKey(script_state, kWebCryptoKeyFormatPkcs8, private_key->Key());
-  std::vector<uint8_t> new_key_raw = SyncExportKey(
-      script_state, kWebCryptoKeyFormatPkcs8, new_private_key->Key());
+      SyncExportKey(scope, kWebCryptoKeyFormatPkcs8, private_key->Key());
+  std::vector<uint8_t> new_key_raw =
+      SyncExportKey(scope, kWebCryptoKeyFormatPkcs8, new_private_key->Key());
   EXPECT_THAT(new_key_raw, ElementsAreArray(key_raw));
 
   // Check that the keys derive the same bits.
@@ -908,9 +906,9 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyX25519) {
       std::make_unique<WebCryptoEcdhKeyDeriveParams>(public_key->Key());
   WebCryptoAlgorithm algorithm(kWebCryptoAlgorithmIdX25519, std::move(params));
   std::vector<uint8_t> bits_raw =
-      SyncDeriveBits(script_state, algorithm, private_key->Key(), 32);
+      SyncDeriveBits(scope, algorithm, private_key->Key(), 32);
   std::vector<uint8_t> new_bits_raw =
-      SyncDeriveBits(script_state, algorithm, new_private_key->Key(), 32);
+      SyncDeriveBits(scope, algorithm, new_private_key->Key(), 32);
   EXPECT_EQ(4u, bits_raw.size());
   EXPECT_THAT(new_bits_raw, ElementsAreArray(bits_raw));
 }
@@ -959,7 +957,7 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyX25519) {
       std::make_unique<WebCryptoEcdhKeyDeriveParams>(public_key->Key());
   WebCryptoAlgorithm algorithm(kWebCryptoAlgorithmIdX25519, std::move(params));
   std::vector<uint8_t> bits_raw =
-      SyncDeriveBits(script_state, algorithm, private_key->Key(), 32);
+      SyncDeriveBits(scope, algorithm, private_key->Key(), 32);
   // Shared secret key.
   // TEST from https://www.rfc-editor.org/rfc/rfc7748#section-6.1
   auto expected_bits = ElementsAre(0x4a, 0x5d, 0x9d, 0x5b);
@@ -969,12 +967,11 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyX25519) {
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyNoParams) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope(KURL("https://secure.context/"));
-  ScriptState* script_state = scope.GetScriptState();
 
   // Import some data into a PBKDF2 state.
   WebCryptoAlgorithm import_key_algorithm(kWebCryptoAlgorithmIdPbkdf2, nullptr);
   CryptoKey* key =
-      SyncImportKey(script_state, kWebCryptoKeyFormatRaw, {1, 2, 3},
+      SyncImportKey(scope, kWebCryptoKeyFormatRaw, {1, 2, 3},
                     import_key_algorithm, false, kWebCryptoKeyUsageDeriveBits);
 
   // Round trip the key and check the visible attributes.
@@ -994,9 +991,9 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCryptoKeyNoParams) {
       new WebCryptoPbkdf2Params(hash, salt, 1));
   WebCryptoAlgorithm algorithm(kWebCryptoAlgorithmIdPbkdf2, std::move(params));
   std::vector<uint8_t> bits_raw =
-      SyncDeriveBits(script_state, algorithm, key->Key(), 16);
+      SyncDeriveBits(scope, algorithm, key->Key(), 16);
   std::vector<uint8_t> new_bits_raw =
-      SyncDeriveBits(script_state, algorithm, new_key->Key(), 16);
+      SyncDeriveBits(scope, algorithm, new_key->Key(), 16);
   EXPECT_EQ(2u, bits_raw.size());
   EXPECT_THAT(new_bits_raw, ElementsAreArray(bits_raw));
 }
@@ -1026,7 +1023,7 @@ TEST(V8ScriptValueSerializerForModulesTest, DecodeCryptoKeyNoParams) {
       new WebCryptoPbkdf2Params(hash, salt, 3));
   WebCryptoAlgorithm algorithm(kWebCryptoAlgorithmIdPbkdf2, std::move(params));
   std::vector<uint8_t> bits_raw =
-      SyncDeriveBits(script_state, algorithm, new_key->Key(), 32);
+      SyncDeriveBits(scope, algorithm, new_key->Key(), 32);
   EXPECT_THAT(bits_raw, ElementsAre(0xd8, 0x0e, 0x2f, 0x69));
 }
 
@@ -1350,7 +1347,7 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
   const unsigned kTotalSamples = (kFrames * kChannels);
   const float kSampleMultiplier = 1.0 / kTotalSamples;
   for (unsigned ch = 0; ch < kChannels; ++ch) {
-    auto data = audio_bus->channel_span(ch);
+    auto data = audio_bus->channel(ch);
     for (unsigned i = 0; i < kFrames; ++i)
       data[i] = (i + ch * kFrames) * kSampleMultiplier;
   }

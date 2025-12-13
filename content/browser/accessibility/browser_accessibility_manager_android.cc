@@ -195,7 +195,9 @@ void BrowserAccessibilityManagerAndroid::FireFocusEvent(ui::AXNode* node) {
 
   BrowserAccessibilityAndroid* android_node =
       static_cast<BrowserAccessibilityAndroid*>(GetFromAXNode(node));
-  wcax->HandleFocusChanged(android_node->GetUniqueId());
+  wcax->HandleFocusChanged(
+      android_node->GetUniqueId(),
+      android_node->manager()->GetBrowserAccessibilityRoot() == android_node);
 }
 
 void BrowserAccessibilityManagerAndroid::FireLocationChanged(
@@ -282,6 +284,9 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
             ANDROID_ACCESSIBILITY_EVENT_CONTENT_CHANGE_TYPE_STATE_DESCRIPTION);
       }
       break;
+    case ui::AXEventGenerator::Event::DEFAULT_ACTION_VERB_CHANGED:
+      wcax->HandleDefaultActionVerbChanged(android_node->GetUniqueId());
+      break;
     case ui::AXEventGenerator::Event::DESCRIPTION_CHANGED: {
       wcax->HandleWindowContentChange(
           android_node->GetUniqueId(),
@@ -298,11 +303,34 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       ui::AXNodeID focus_id =
           ax_tree()->GetUnignoredSelection().focus_object_id;
       ui::BrowserAccessibility* focus_object = GetFromID(focus_id);
-      if (focus_object) {
-        BrowserAccessibilityAndroid* android_focus_object =
-            static_cast<BrowserAccessibilityAndroid*>(focus_object);
-        wcax->HandleTextSelectionChanged(android_focus_object->GetUniqueId());
+      if (base::FeatureList::IsEnabled(
+              features::kAccessibilityExtendedSelection)) {
+        ui::AXNodeID anchor_id =
+            ax_tree()->GetUnignoredSelection().anchor_object_id;
+        // Send the event to the root of the frame if selection should be
+        // cleared, or multiple nodes are selected, or the node is not editable.
+        if (!focus_object || focus_id != anchor_id ||
+            !focus_object->IsTextField()) {
+          BrowserAccessibilityAndroid* android_root_object =
+              static_cast<BrowserAccessibilityAndroid*>(
+                  GetFromAXNode(ax_tree()->root()));
+          ClearNodeInfoCacheForGivenId(android_root_object->GetUniqueId());
+          wcax->HandleTextSelectionChanged(android_root_object->GetUniqueId());
+          break;
+        }
+      } else {
+        // If focus object does not exist and extended selection is not
+        // enabled, there is nothing more to do since previous selection node is
+        // not known here and can't be cleared.
+        if (!focus_object) {
+          break;
+        }
       }
+
+      // Send event to the focus node.
+      BrowserAccessibilityAndroid* android_focus_object =
+          static_cast<BrowserAccessibilityAndroid*>(focus_object);
+      wcax->HandleTextSelectionChanged(android_focus_object->GetUniqueId());
       break;
     }
     case ui::AXEventGenerator::Event::EXPANDED: {
@@ -329,15 +357,23 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     }
     case ui::AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED: {
       // This event is fired when an object appears in a live region.
-      // Speak its text unless the experimental deprecation of the announce
-      // approach is enabled, in which case we do nothing. The node will have a
-      // live region type set, and the window content change event will inform
-      // the framework of the node change.
-      if (!base::FeatureList::IsEnabled(
-              features::kAccessibilityDeprecateTypeAnnounce)) {
+      if (base::FeatureList::IsEnabled(
+              features::kAccessibilityImproveLiveRegionAnnounce)) {
+        // When enabled, fire a WINDOW_CONTENT_CHANGED event to inform the
+        // Android Framework of the node that changed.
+        wcax->HandleLiveRegionNodeChanged(android_node->GetUniqueId());
+      } else if (!base::FeatureList::IsEnabled(
+                     features::kAccessibilityDeprecateTypeAnnounce)) {
+        // If we don't support WINDOW_CONTENT_CHANGED events BUT have not yet
+        // deprecated TYPE_ANNOUNCEMENT, we should fire a TYPE_ANNOUNCEMENT
+        // event which contains the text of the changed node.
         std::u16string text = android_node->GetTextContentUTF16();
         wcax->AnnounceLiveRegionText(text);
       }
+      // If kAccessibilityImproveLiveRegionAnnounce is disabled and
+      // kAccessibilityDeprecateTypeAnnounce is enabled, we choose not to fire
+      // an event here. However, this should not happen in practice as we should
+      // not deprecate TYPE_ANNOUNCEMENT until we have landed its replacements.
       break;
     }
     case ui::AXEventGenerator::Event::MENU_POPUP_START: {
@@ -371,6 +407,11 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:
     case ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
       wcax->HandleScrollPositionChanged(android_node->GetUniqueId());
+      break;
+    case ui::AXEventGenerator::Event::SORT_CHANGED:
+      // TODO(crbug.com/465804174): Verify if removing aria-sort triggers this
+      // event.
+      wcax->HandleSortDirectionChanged(android_node->GetUniqueId());
       break;
     case ui::AXEventGenerator::Event::SUBTREE_CREATED: {
       // When a dialog is shown, we will send a SUBTREE_CREATED event.
@@ -450,7 +491,6 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
     case ui::AXEventGenerator::Event::SELECTED_VALUE_CHANGED:
     case ui::AXEventGenerator::Event::SET_SIZE_CHANGED:
-    case ui::AXEventGenerator::Event::SORT_CHANGED:
     case ui::AXEventGenerator::Event::STATE_CHANGED:
     case ui::AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
     case ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED:
@@ -759,7 +799,7 @@ BrowserAccessibilityManagerAndroid::GenerateAccessibilityNodeInfoString(
   return wcax->GenerateAccessibilityNodeInfoString(unique_id);
 }
 
-std::vector<std::string>
+std::optional<std::vector<std::string>>
 BrowserAccessibilityManagerAndroid::GetMetadataForTree() const {
   return GetTreeData().metadata;
 }

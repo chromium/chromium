@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -29,7 +30,7 @@ class DOMArrayBuffer;
 // copies. Its purpose is to support making RTCEncodedVideoFrames
 // serializable in the same process.
 class RTCEncodedAudioFrameDelegate
-    : public WTF::ThreadSafeRefCounted<RTCEncodedAudioFrameDelegate> {
+    : public ThreadSafeRefCounted<RTCEncodedAudioFrameDelegate> {
  public:
   explicit RTCEncodedAudioFrameDelegate(
       std::unique_ptr<webrtc::TransformableAudioFrameInterface> webrtc_frame,
@@ -58,11 +59,34 @@ class RTCEncodedAudioFrameDelegate
   std::unique_ptr<webrtc::TransformableAudioFrameInterface> CloneWebRtcFrame();
 
  private:
+  std::optional<base::TimeTicks> ComputeReceiveTime() const
+      EXCLUSIVE_LOCKS_REQUIRED(&lock_);
+  std::optional<CaptureTimeInfo> ComputeCaptureTime() const
+      EXCLUSIVE_LOCKS_REQUIRED(&lock_);
+  std::optional<base::TimeDelta> ComputeSenderCaptureTimeOffset() const
+      EXCLUSIVE_LOCKS_REQUIRED(&lock_);
+  std::optional<double> ComputeAudioLevel() const
+      EXCLUSIVE_LOCKS_REQUIRED(&lock_);
+
   mutable base::Lock lock_;
   std::unique_ptr<webrtc::TransformableAudioFrameInterface> webrtc_frame_
       GUARDED_BY(lock_);
   const Vector<uint32_t> contributing_sources_;
   const std::optional<uint16_t> sequence_number_;
+
+  struct Metadata {
+    std::optional<uint32_t> ssrc;
+    std::optional<uint8_t> payload_type;
+    std::optional<std::string> mime_type;
+    std::optional<base::TimeTicks> receive_time;
+    std::optional<CaptureTimeInfo> capture_time_info;
+    std::optional<base::TimeDelta> sender_capture_time_offset;
+    std::optional<double> audio_level;
+    uint32_t rtp_timestamp = 0;
+  };
+  // This field is set after the frame is neutered (e.g., written to a stream or
+  // transferred).
+  Metadata post_neuter_metadata_ GUARDED_BY(lock_);
 };
 
 class MODULES_EXPORT RTCEncodedAudioFramesAttachment

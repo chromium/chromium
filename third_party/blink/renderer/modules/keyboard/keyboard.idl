@@ -19,7 +19,6 @@
     // Keyboard Map specification: https://wicg.github.io/keyboard-map/
     [CallWith=ScriptState,
      RaisesException,
-     HighEntropy,
      MeasureAs=KeyboardApiGetLayoutMap
     ] Promise<KeyboardLayoutMap> getLayoutMap();
 };

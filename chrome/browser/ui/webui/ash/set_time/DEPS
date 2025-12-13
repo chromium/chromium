@@ -14,7 +14,6 @@ include_rules = [
   "+chrome/browser/ash/system",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/webui/ash/system_web_dialog",
-  "+chrome/browser/ui/webui/webui_util.h",
   "+chrome/common",
   "+chrome/grit",
 ]

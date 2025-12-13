@@ -43,6 +43,7 @@ using PaymentsRpcCardType = PaymentsAutofillClient::PaymentsRpcCardType;
 using PaymentsRpcResult = PaymentsAutofillClient::PaymentsRpcResult;
 using UnmaskCardReason = payments::PaymentsAutofillClient::UnmaskCardReason;
 
+namespace {
 // The consumer of the full card request API.
 class MockResultDelegate : public FullCardRequest::ResultDelegate {
  public:
@@ -102,6 +103,7 @@ class MockPaymentsDataManager : public TestPaymentsDataManager {
               (const CreditCard& credit_card),
               (override));
 };
+}  // namespace
 
 // TODO(crbug.com/41412501): Simplify this test setup.
 // The test fixture for full card request.
@@ -126,10 +128,10 @@ class FullCardRequestTest : public testing::Test {
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
-    autofill_client().SetPrefs(test::PrefServiceForTesting());
     personal_data().set_payments_data_manager(
         std::make_unique<MockPaymentsDataManager>());
-    personal_data().SetPrefService(autofill_client().GetPrefs());
+    personal_data().test_payments_data_manager().SetPrefService(
+        autofill_client().GetPrefs());
     personal_data().SetSyncServiceForTest(&sync_service_);
     autofill_client()
         .GetPaymentsAutofillClient()
@@ -204,7 +206,7 @@ class FullCardRequestTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   syncer::TestSyncService sync_service_;
   MockResultDelegate result_delegate_;
@@ -794,16 +796,12 @@ TEST_P(FullCardRequestCardMetadataTest, MetadataSignal) {
 // 1. Function reference to call which creates the appropriate credit card
 // benefit for the unittest.
 // 2. Whether the flag to render benefits is enabled.
-// 3. Whether the flag to sync benefits source is enabled.
-// 4. Issuer ID which is set for the credit card with benefits.
-// 5. Benefit source which is set for the credit card with benefits.
+// 3. Benefit source which is set for the credit card with benefits.
 class FullCardRequestCardBenefitsTest
     : public FullCardRequestTest,
       public ::testing::WithParamInterface<
           std::tuple<base::FunctionRef<CreditCardBenefit()>,
                      bool,
-                     bool,
-                     std::string,
                      std::string>> {
  public:
   void SetUp() override {
@@ -813,40 +811,27 @@ class FullCardRequestCardBenefitsTest
          {features::kAutofillEnableCardBenefitsForBmo,
           IsCreditCardBenefitsEnabled()},
          {features::kAutofillEnableFlatRateCardBenefitsFromCurinos,
-          IsCreditCardBenefitsEnabled()},
-         {features::kAutofillEnableCardBenefitsSourceSync,
-          IsCreditCardBenefitsSourceSyncEnabled()}});
+          IsCreditCardBenefitsEnabled()}});
     card_ = test::GetMaskedServerCard();
     autofill_client().set_last_committed_primary_main_frame_url(
         test::GetOriginsForMerchantBenefit().begin()->GetURL());
-    if (IsCreditCardBenefitsSourceSyncEnabled()) {
-      test::SetUpCreditCardAndBenefitData(
-          card_, /*issuer_id=*/"", GetBenefit(), GetBenefitSource(),
-          personal_data(), autofill_client().GetAutofillOptimizationGuide());
-    } else {
-      test::SetUpCreditCardAndBenefitData(
-          card_, GetIssuerId(), GetBenefit(), /*benefit_source=*/"",
-          personal_data(), autofill_client().GetAutofillOptimizationGuide());
-    }
+    test::SetUpCreditCardAndBenefitData(
+        card_, /*issuer_id=*/"", GetBenefit(), GetBenefitSource(),
+        personal_data(),
+        autofill_client().GetAutofillOptimizationGuideDecider());
   }
 
   CreditCardBenefit GetBenefit() const { return std::get<0>(GetParam())(); }
 
   bool IsCreditCardBenefitsEnabled() const { return std::get<1>(GetParam()); }
 
-  bool IsCreditCardBenefitsSourceSyncEnabled() const {
+  const std::string& GetBenefitSource() const {
     return std::get<2>(GetParam());
   }
 
-  const std::string& GetIssuerId() const { return std::get<3>(GetParam()); }
-
-  const std::string& GetBenefitSource() const {
-    return std::get<4>(GetParam());
-  }
-
   bool ShouldShowCardBenefits() const {
-    if (IsCreditCardBenefitsSourceSyncEnabled() &&
-        GetBenefitSource() == "curinos") {
+    // Benefits sourced from Curinos currently only supports flat rate benefits.
+    if (GetBenefitSource() == "curinos") {
       return IsCreditCardBenefitsEnabled() &&
              std::holds_alternative<CreditCardFlatRateBenefit>(GetBenefit());
     }
@@ -868,8 +853,6 @@ INSTANTIATE_TEST_SUITE_P(
                           &test::GetActiveCreditCardCategoryBenefit,
                           &test::GetActiveCreditCardMerchantBenefit),
         ::testing::Bool(),
-        ::testing::Bool(),
-        ::testing::Values("amex", "bmo"),
         ::testing::Values("amex", "bmo", "curinos")));
 
 // Checks that ClientBehaviorConstants::kShowingCardBenefits is populated as a

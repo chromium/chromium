@@ -1,0 +1,5 @@
+error: append_dummy test
+ --> tests/ui/append_dummy.rs:8:15
+  |
+8 | append_dummy!(need_default);
+  |               ^^^^^^^^^^^^

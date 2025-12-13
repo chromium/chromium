@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';

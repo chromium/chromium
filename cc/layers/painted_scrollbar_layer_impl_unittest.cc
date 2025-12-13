@@ -12,6 +12,7 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace cc {
 namespace {
@@ -51,7 +52,7 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
       scale, scaled_layer_size);
   scrollbar_layer_impl->SetDrawsContent(true);
   scrollbar_layer_impl->SetThumbThickness(layer_size.width());
-  scrollbar_layer_impl->SetThumbLength(500);
+  scrollbar_layer_impl->SetMinimumThumbLength(15);
   scrollbar_layer_impl->SetTrackRect(gfx::Rect(0, 0, 15, layer_size.height()));
   scrollbar_layer_impl->SetCurrentPos(100.f / 4);
   scrollbar_layer_impl->SetClipLayerLength(100.f);
@@ -168,7 +169,7 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion_SolidColorThumbNinePatchTrack) {
       scale, scaled_layer_size);
   scrollbar_layer_impl->SetDrawsContent(true);
   scrollbar_layer_impl->SetThumbThickness(11);
-  scrollbar_layer_impl->SetThumbLength(500);
+  scrollbar_layer_impl->SetMinimumThumbLength(11);
   scrollbar_layer_impl->SetTrackRect(gfx::Rect(0, 0, 15, layer_size.height()));
   scrollbar_layer_impl->SetCurrentPos(100.f / 4);
   scrollbar_layer_impl->SetClipLayerLength(100.f);
@@ -285,7 +286,7 @@ TEST(PaintedScrollbarLayerImplTest,
       scale, scaled_layer_size);
   scrollbar_layer_impl->SetDrawsContent(true);
   scrollbar_layer_impl->SetThumbThickness(11);
-  scrollbar_layer_impl->SetThumbLength(500);
+  scrollbar_layer_impl->SetMinimumThumbLength(11);
   scrollbar_layer_impl->SetTrackRect(gfx::Rect(0, 0, 15, layer_size.height()));
   scrollbar_layer_impl->SetCurrentPos(100.f / 4);
   scrollbar_layer_impl->SetClipLayerLength(100.f);
@@ -350,14 +351,14 @@ class PaintedScrollbarLayerImplSolidColorThumbTest : public ::testing::Test {
       bool is_left_side_vertical_scrollbar,
       const gfx::Rect& track_rect,
       int thumb_thickness,
-      int thumb_length,
+      int minimum_thumb_length,
       bool is_overlay = false) {
     PaintedScrollbarLayerImpl* scrollbar_layer_impl =
         impl_->AddLayerInActiveTree<PaintedScrollbarLayerImpl>(
             orientation, is_left_side_vertical_scrollbar, is_overlay);
     scrollbar_layer_impl->SetTrackRect(track_rect);
     scrollbar_layer_impl->SetThumbThickness(thumb_thickness);
-    scrollbar_layer_impl->SetThumbLength(thumb_length);
+    scrollbar_layer_impl->SetMinimumThumbLength(minimum_thumb_length);
     scrollbar_layer_impl->SetBounds(track_rect.size());
     scrollbar_layer_impl->SetThumbColor(SkColors::kRed);
     return scrollbar_layer_impl;
@@ -461,7 +462,7 @@ TEST_F(PaintedScrollbarLayerImplFluentOverlayTest,
   const gfx::Rect track_rect(0, 0, 14, 100);
   scrollbar_layer_impl->SetTrackRect(track_rect);
   scrollbar_layer_impl->SetThumbThickness(/*thumb_thickness=*/6);
-  scrollbar_layer_impl->SetThumbLength(/*thumb_length=*/30);
+  scrollbar_layer_impl->SetMinimumThumbLength(/*minimum_thumb_length=*/6);
   scrollbar_layer_impl->SetBounds(track_rect.size());
 
   // Ensure that no track quad will be appended by setting the thickness to

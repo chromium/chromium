@@ -16,7 +16,7 @@
 #include "content/public/test/browser_test.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 using StartupMetricsTest = PlatformBrowserTest;
@@ -66,8 +66,8 @@ IN_PROC_BROWSER_TEST_F(StartupMetricsTest, MAYBE_ReportsValues) {
 #else
   // On Android these metrics are based on Process.getStartUptimeMillis() - not
   // available before N.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_NOUGAT) {
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SDK_VERSION_NOUGAT) {
     AddProcessCreateMetrics(startup_metrics);
   }
 #endif  // BUILDFLAG(IS_ANDROID)

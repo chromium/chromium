@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mp4/avc.h"
 
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 
+#include <array>
 #include <optional>
 #include <ostream>
+#include <string_view>
 
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "media/base/decrypt_config.h"
+#include "media/base/media_switches.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/formats/mp4/bitstream_converter.h"
 #include "media/formats/mp4/box_definitions.h"
@@ -27,20 +27,19 @@
 #include "media/parsers/h264_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace media {
-namespace mp4 {
+namespace media::mp4 {
 
-static const uint8_t kNALU1[] = {0x01, 0x02, 0x03};
-static const uint8_t kNALU2[] = {0x04, 0x05, 0x06, 0x07};
-static const uint8_t kExpected[] = {0x00, 0x00, 0x00, 0x01, 0x01,
-                                    0x02, 0x03, 0x00, 0x00, 0x00,
-                                    0x01, 0x04, 0x05, 0x06, 0x07};
+static constexpr auto kNALU1 = std::to_array<uint8_t>({0x01, 0x02, 0x03});
+static constexpr auto kNALU2 = std::to_array<uint8_t>({0x04, 0x05, 0x06, 0x07});
+static constexpr auto kExpected =
+    std::to_array<uint8_t>({0x00, 0x00, 0x00, 0x01, 0x01, 0x02, 0x03, 0x00,
+                            0x00, 0x00, 0x01, 0x04, 0x05, 0x06, 0x07});
 
-static const uint8_t kExpectedParamSets[] = {
-    0x00, 0x00, 0x00, 0x01, 0x67, 0x12, 0x00, 0x00, 0x00, 0x01,
-    0x67, 0x34, 0x00, 0x00, 0x00, 0x01, 0x68, 0x56, 0x78};
+static constexpr auto kExpectedParamSets = std::to_array<uint8_t>(
+    {0x00, 0x00, 0x00, 0x01, 0x67, 0x12, 0x00, 0x00, 0x00, 0x01, 0x67, 0x34,
+     0x00, 0x00, 0x00, 0x01, 0x68, 0x56, 0x78});
 
-static std::string NALUTypeToString(int type) {
+static std::string_view NALUTypeToString(int type) {
   switch (type) {
     case H264NALU::kNonIDRSlice:
       return "P";
@@ -106,14 +105,14 @@ static std::string AnnexBToString(
   std::stringstream ss;
 
   H264Parser parser;
-  parser.SetEncryptedStream(&buffer[0], buffer.size(), subsamples);
+  parser.SetEncryptedStream(buffer, subsamples);
 
   H264NALU nalu;
   bool first = true;
   size_t current_subsample_index = 0;
   while (parser.AdvanceToNextNALU(&nalu) == H264Parser::kOk) {
-    size_t subsample_index = AVC::FindSubsampleIndex(buffer, &subsamples,
-                                                     nalu.data);
+    size_t subsample_index =
+        AVC::FindSubsampleIndex(buffer, subsamples, nalu.data.data());
     if (!first) {
       ss << (subsample_index == current_subsample_index ? "," : " ");
     } else {
@@ -142,10 +141,10 @@ class AVCConversionTest : public testing::TestWithParam<int> {
     buf->clear();
 
     WriteLength(length_size, sizeof(kNALU1), buf);
-    buf->insert(buf->end(), kNALU1, kNALU1 + sizeof(kNALU1));
+    buf->insert(buf->end(), kNALU1.begin(), kNALU1.end());
 
     WriteLength(length_size, sizeof(kNALU2), buf);
-    buf->insert(buf->end(), kNALU2, kNALU2 + sizeof(kNALU2));
+    buf->insert(buf->end(), kNALU2.begin(), kNALU2.end());
   }
 
 };
@@ -159,12 +158,10 @@ TEST_P(AVCConversionTest, ParseCorrectly) {
   BitstreamConverter::AnalysisResult expected;
   expected.is_conformant = true;
   expected.is_keyframe = false;
-  EXPECT_PRED2(AnalysesMatch,
-               AVC::AnalyzeAnnexB(buf.data(), buf.size(), subsamples),
-               expected);
+  EXPECT_PRED2(AnalysesMatch, AVC::AnalyzeAnnexB(buf, subsamples), expected);
 
   EXPECT_EQ(buf.size(), sizeof(kExpected));
-  EXPECT_EQ(0, memcmp(kExpected, &buf[0], sizeof(kExpected)));
+  EXPECT_EQ(kExpected, base::as_byte_span(buf));
   EXPECT_EQ("P,SDC", AnnexBToString(buf, subsamples));
 }
 
@@ -172,7 +169,7 @@ TEST_P(AVCConversionTest, ParseCorrectly) {
 TEST_P(AVCConversionTest, NALUSizeTooLarge) {
   std::vector<uint8_t> buf;
   WriteLength(GetParam(), 10 * sizeof(kNALU1), &buf);
-  buf.insert(buf.end(), kNALU1, kNALU1 + sizeof(kNALU1));
+  buf.insert(buf.end(), kNALU1.begin(), kNALU1.end());
   EXPECT_FALSE(AVC::ConvertFrameToAnnexB(GetParam(), &buf, nullptr));
 }
 
@@ -181,12 +178,12 @@ TEST_P(AVCConversionTest, NALUSizeIsZero) {
   WriteLength(GetParam(), 0, &buf);
 
   WriteLength(GetParam(), sizeof(kNALU1), &buf);
-  buf.insert(buf.end(), kNALU1, kNALU1 + sizeof(kNALU1));
+  buf.insert(buf.end(), kNALU1.begin(), kNALU1.end());
 
   WriteLength(GetParam(), 0, &buf);
 
   WriteLength(GetParam(), sizeof(kNALU2), &buf);
-  buf.insert(buf.end(), kNALU2, kNALU2 + sizeof(kNALU2));
+  buf.insert(buf.end(), kNALU2.begin(), kNALU2.end());
 
   EXPECT_FALSE(AVC::ConvertFrameToAnnexB(GetParam(), &buf, nullptr));
 }
@@ -198,7 +195,7 @@ TEST_P(AVCConversionTest, SubsampleSizesUpdatedAfterAnnexBConversion) {
 
   // Write the first subsample, consisting of only one NALU
   WriteLength(GetParam(), sizeof(kNALU1), &buf);
-  buf.insert(buf.end(), kNALU1, kNALU1 + sizeof(kNALU1));
+  buf.insert(buf.end(), kNALU1.begin(), kNALU1.end());
 
   subsample.clear_bytes = GetParam() + sizeof(kNALU1);
   subsample.cypher_bytes = 0;
@@ -206,9 +203,9 @@ TEST_P(AVCConversionTest, SubsampleSizesUpdatedAfterAnnexBConversion) {
 
   // Write the second subsample, containing two NALUs
   WriteLength(GetParam(), sizeof(kNALU1), &buf);
-  buf.insert(buf.end(), kNALU1, kNALU1 + sizeof(kNALU1));
+  buf.insert(buf.end(), kNALU1.begin(), kNALU1.end());
   WriteLength(GetParam(), sizeof(kNALU2), &buf);
-  buf.insert(buf.end(), kNALU2, kNALU2 + sizeof(kNALU2));
+  buf.insert(buf.end(), kNALU2.begin(), kNALU2.end());
 
   subsample.clear_bytes = 2*GetParam() + sizeof(kNALU1) + sizeof(kNALU2);
   subsample.cypher_bytes = 0;
@@ -255,6 +252,74 @@ INSTANTIATE_TEST_SUITE_P(AVCConversionTestValues,
                          AVCConversionTest,
                          ::testing::Values(1, 2, 4));
 
+TEST_F(AVCConversionTest, AnalyzeSEI) {
+  base::test::ScopedFeatureList scoped_sei_flag(
+      kTreatSEIRecoveryPointAsKeyframe);
+  constexpr auto kStream = std::to_array<const uint8_t>({
+      // First NALU Start code.
+      0x00,
+      0x00,
+      0x00,
+      0x01,
+      // NALU type = 6 (kSEIMessage).
+      0x06,
+      // SEI payload type = 6 (recovery_point).
+      0x06,
+      // SEI payload size = 1.
+      0x01,
+      // SEI payload.
+      0x84,
+      // RBSP trailing bits.
+      0x80,
+      // Second NALU Start code.
+      0x00,
+      0x00,
+      0x00,
+      0x01,
+      // NALU type = 6 (kSEIMessage).
+      0x06,
+      // SEI payload type = 1 (pic_timing).
+      0x01,
+      // SEI payload size = 1.
+      0x01,
+      // SEI payload.
+      0x04,
+      // RBSP trailing bits.
+      0x80,
+  });
+
+  auto result = AVC::AnalyzeAnnexB(kStream, {});
+  EXPECT_TRUE(result.is_conformant);
+  EXPECT_TRUE(result.is_keyframe.has_value());
+  EXPECT_TRUE(result.is_keyframe.value());
+}
+
+TEST_F(AVCConversionTest, AnalyzeSEICorruptionNonFatal) {
+  base::test::ScopedFeatureList scoped_sei_flag(
+      kTreatSEIRecoveryPointAsKeyframe);
+  constexpr auto kStream = std::to_array<const uint8_t>({
+      // First NALU Start code.
+      0x00,
+      0x00,
+      0x00,
+      0x01,
+      // NALU type = 6 (kSEIMessage).
+      0x06,
+      // SEI payload type = 6 (recovery_point).
+      0x06,
+      // SEI payload size = 255 to trigger an error.
+      0xFF,
+      // SEI payload.
+      0x84,
+      // RBSP trailing bits.
+      0x80,
+  });
+
+  auto result = AVC::AnalyzeAnnexB(kStream, {});
+  EXPECT_TRUE(result.is_conformant);
+  EXPECT_FALSE(result.is_keyframe.has_value());
+}
+
 TEST_F(AVCConversionTest, ConvertConfigToAnnexB) {
   AVCDecoderConfigurationRecord avc_config;
   avc_config.sps_list.resize(2);
@@ -270,8 +335,7 @@ TEST_F(AVCConversionTest, ConvertConfigToAnnexB) {
   std::vector<uint8_t> buf;
   std::vector<SubsampleEntry> subsamples;
   EXPECT_TRUE(AVC::ConvertConfigToAnnexB(avc_config, &buf));
-  EXPECT_EQ(0, memcmp(kExpectedParamSets, &buf[0],
-                      sizeof(kExpectedParamSets)));
+  EXPECT_EQ(kExpectedParamSets, base::as_byte_span(buf));
   EXPECT_EQ("SPS,SPS,PPS", AnnexBToString(buf, subsamples));
 }
 
@@ -286,18 +350,17 @@ TEST_F(AVCConversionTest, StringConversionFunctions) {
   BitstreamConverter::AnalysisResult expected;
   expected.is_conformant = true;
   expected.is_keyframe = true;
-  EXPECT_PRED2(AnalysesMatch,
-               AVC::AnalyzeAnnexB(buf.data(), buf.size(), subsamples),
-               expected);
+  EXPECT_PRED2(AnalysesMatch, AVC::AnalyzeAnnexB(buf, subsamples), expected);
 
   EXPECT_EQ(str, AnnexBToString(buf, subsamples));
 }
 
 TEST_F(AVCConversionTest, ValidAnnexBConstructs) {
-  struct {
+  struct TestCases {
     const char* case_string;
     const bool is_keyframe;
-  } test_cases[] = {
+  };
+  auto test_cases = std::to_array<TestCases>({
       {"I", true},
       {"I I I I", true},
       {"AUD I", true},
@@ -324,7 +387,7 @@ TEST_F(AVCConversionTest, ValidAnnexBConstructs) {
       {"SDA I", false},
       {"SDB I", false},
       {"SDC I", false},
-  };
+  });
 
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     std::vector<uint8_t> buf;
@@ -334,26 +397,25 @@ TEST_F(AVCConversionTest, ValidAnnexBConstructs) {
     BitstreamConverter::AnalysisResult expected;
     expected.is_conformant = true;
     expected.is_keyframe = test_cases[i].is_keyframe;
-    EXPECT_PRED2(AnalysesMatch,
-                 AVC::AnalyzeAnnexB(buf.data(), buf.size(), subsamples),
-                 expected)
+    EXPECT_PRED2(AnalysesMatch, AVC::AnalyzeAnnexB(buf, subsamples), expected)
         << "'" << test_cases[i].case_string << "' failed";
   }
 }
 
 TEST_F(AVCConversionTest, EmptyBuffer) {
   std::vector<SubsampleEntry> subsamples;
-  auto result = AVC::AnalyzeAnnexB(nullptr, 0, subsamples);
+  auto result = AVC::AnalyzeAnnexB(base::span<const uint8_t>(), subsamples);
   EXPECT_TRUE(result.is_conformant);
   EXPECT_TRUE(subsamples.empty());
   EXPECT_FALSE(result.is_keyframe.has_value());
 }
 
 TEST_F(AVCConversionTest, InvalidAnnexBConstructs) {
-  struct {
+  struct TestCases {
     const char* case_string;
     const std::optional<bool> is_keyframe;
-  } test_cases[] = {
+  };
+  auto test_cases = std::to_array<TestCases>({
       // For these cases, lack of conformance is determined before detecting any
       // IDR or non-IDR slices, so the non-conformant frames' keyframe analysis
       // reports std::nullopt (which means undetermined analysis result).
@@ -377,7 +439,7 @@ TEST_F(AVCConversionTest, InvalidAnnexBConstructs) {
       // failure, so the non-conformant frame is reported as a non-keyframe.
       {"P SPS P",
        false},  // SPS after first VCL would indicate a new access unit.
-  };
+  });
 
   BitstreamConverter::AnalysisResult expected;
   expected.is_conformant = false;
@@ -387,9 +449,7 @@ TEST_F(AVCConversionTest, InvalidAnnexBConstructs) {
     std::vector<SubsampleEntry> subsamples;
     AvcStringToAnnexB(test_cases[i].case_string, &buf, nullptr);
     expected.is_keyframe = test_cases[i].is_keyframe;
-    EXPECT_PRED2(AnalysesMatch,
-                 AVC::AnalyzeAnnexB(buf.data(), buf.size(), subsamples),
-                 expected)
+    EXPECT_PRED2(AnalysesMatch, AVC::AnalyzeAnnexB(buf, subsamples), expected)
         << "'" << test_cases[i].case_string << "' failed";
   }
 }
@@ -430,22 +490,19 @@ TEST_F(AVCConversionTest, InsertParamSetsAnnexB) {
   expected.is_conformant = true;
   expected.is_keyframe = true;
 
-  for (size_t i = 0; i < std::size(test_cases); ++i) {
+  for (auto test_case : test_cases) {
     std::vector<uint8_t> buf;
     std::vector<SubsampleEntry> subsamples;
 
-    AvcStringToAnnexB(test_cases[i].input, &buf, &subsamples);
+    AvcStringToAnnexB(test_case.input, &buf, &subsamples);
 
     EXPECT_TRUE(AVC::InsertParamSetsAnnexB(avc_config, &buf, &subsamples))
-        << "'" << test_cases[i].input << "' insert failed.";
-    EXPECT_PRED2(AnalysesMatch,
-                 AVC::AnalyzeAnnexB(buf.data(), buf.size(), subsamples),
-                 expected)
-        << "'" << test_cases[i].input << "' created invalid AnnexB.";
-    EXPECT_EQ(test_cases[i].expected, AnnexBToString(buf, subsamples))
-        << "'" << test_cases[i].input << "' generated unexpected output.";
+        << "'" << test_case.input << "' insert failed.";
+    EXPECT_PRED2(AnalysesMatch, AVC::AnalyzeAnnexB(buf, subsamples), expected)
+        << "'" << test_case.input << "' created invalid AnnexB.";
+    EXPECT_EQ(test_case.expected, AnnexBToString(buf, subsamples))
+        << "'" << test_case.input << "' generated unexpected output.";
   }
 }
 
-}  // namespace mp4
-}  // namespace media
+}  // namespace media::mp4

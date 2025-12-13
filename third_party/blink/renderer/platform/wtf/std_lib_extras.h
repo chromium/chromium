@@ -40,12 +40,14 @@
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #endif
 
-#define DEFINE_STATIC_LOCAL_IMPL(Type, Name, Arguments, allow_cross_thread)    \
-  static WTF::StaticSingleton<Type> s_##Name(                                  \
-      [&]() { return new WTF::StaticSingleton<Type>::WrapperType Arguments; }, \
-      [&](void* leaked_ptr) {                                                  \
-        new (leaked_ptr) WTF::StaticSingleton<Type>::WrapperType Arguments;    \
-      });                                                                      \
+#define DEFINE_STATIC_LOCAL_IMPL(Type, Name, Arguments, allow_cross_thread)   \
+  static blink::StaticSingleton<Type> s_##Name(                               \
+      [&]() {                                                                 \
+        return new blink::StaticSingleton<Type>::WrapperType Arguments;       \
+      },                                                                      \
+      [&](void* leaked_ptr) {                                                 \
+        new (leaked_ptr) blink::StaticSingleton<Type>::WrapperType Arguments; \
+      });                                                                     \
   Type& Name = s_##Name.Get(allow_cross_thread)
 
 // Use |DEFINE_STATIC_LOCAL()| to declare and define a static local variable
@@ -58,15 +60,16 @@
 #define DEFINE_STATIC_LOCAL(Type, Name, Arguments) \
   DEFINE_STATIC_LOCAL_IMPL(Type, Name, Arguments, false)
 
-// |DEFINE_THREAD_SAFE_STATIC_LOCAL()| is the cross-thread accessible variant
-// of |DEFINE_STATIC_LOCAL()|; use it if the singleton can be accessed by
+// |DEFINE_THREAD_SAFE_STATIC_LOCAL()| doesn't provide additional thread-safety,
+// but it effectively bypasses the `IsNotRacy` DCHECK present in
+// |DEFINE_STATIC_LOCAL()|; use it if the singleton can be accessed by
 // multiple threads.
 //
 // TODO: rename as DEFINE_CROSS_THREAD_STATIC_LOCAL() ?
 #define DEFINE_THREAD_SAFE_STATIC_LOCAL(Type, Name, Arguments) \
   DEFINE_STATIC_LOCAL_IMPL(Type, Name, Arguments, true)
 
-namespace WTF {
+namespace blink {
 
 template <typename Type>
 class StaticSingleton final {
@@ -85,11 +88,11 @@ class StaticSingleton final {
       : instance_(heap_new, placement_new)
 #if DCHECK_IS_ON()
         ,
-        safely_initialized_(blink::IsBeforeThreadCreated()),
-        thread_(blink::CurrentThread())
+        safely_initialized_(IsBeforeThreadCreated()),
+        thread_(CurrentThread())
 #endif
   {
-    static_assert(!blink::IsGarbageCollectedTypeV<Type>,
+    static_assert(!IsGarbageCollectedTypeV<Type>,
                   "Garbage collected objects must be wrapped in a Persistent");
     LEAK_SANITIZER_IGNORE_OBJECT(instance_.Get());
   }
@@ -114,7 +117,7 @@ class StaticSingleton final {
     // keeps being called on the same thread if cross-thread
     // use is not permitted.
     return allow_cross_thread_use || safely_initialized_ ||
-           thread_ == blink::CurrentThread();
+           thread_ == CurrentThread();
   }
 #endif
   template <typename T, bool is_small = sizeof(T) <= 32>
@@ -149,8 +152,6 @@ class StaticSingleton final {
 #endif
 };
 
-}  // namespace WTF
-
 // Use this to declare and define a static local pointer to a ref-counted object
 // so that it is leaked so that the object's destructors are not called at
 // exit.  This macro should be used with ref-counted objects rather than
@@ -175,24 +176,24 @@ class StaticSingleton final {
  */
 #if defined(ARCH_CPU_ARMEL) && defined(COMPILER_GCC)
 template <typename Type>
-bool isPointerTypeAlignmentOkay(Type* ptr) {
+bool IsPointerTypeAlignmentOkay(Type* ptr) {
   return !(reinterpret_cast<intptr_t>(ptr) % __alignof__(Type));
 }
 
 template <typename TypePtr>
 TypePtr reinterpret_cast_ptr(void* ptr) {
-  DCHECK(isPointerTypeAlignmentOkay(reinterpret_cast<TypePtr>(ptr)));
+  DCHECK(IsPointerTypeAlignmentOkay(reinterpret_cast<TypePtr>(ptr)));
   return reinterpret_cast<TypePtr>(ptr);
 }
 
 template <typename TypePtr>
 TypePtr reinterpret_cast_ptr(const void* ptr) {
-  DCHECK(isPointerTypeAlignmentOkay(reinterpret_cast<TypePtr>(ptr)));
+  DCHECK(IsPointerTypeAlignmentOkay(reinterpret_cast<TypePtr>(ptr)));
   return reinterpret_cast<TypePtr>(ptr);
 }
 #else
 template <typename Type>
-bool isPointerTypeAlignmentOkay(Type*) {
+bool IsPointerTypeAlignmentOkay(Type*) {
   return true;
 }
 #define reinterpret_cast_ptr reinterpret_cast
@@ -202,7 +203,7 @@ template <typename TypePtr>
 NO_SANITIZE_UNRELATED_CAST
 TypePtr unsafe_reinterpret_cast_ptr(void* ptr) {
 #if defined(ARCH_CPU_ARMEL) && defined(COMPILER_GCC)
-  DCHECK(isPointerTypeAlignmentOkay(reinterpret_cast<TypePtr>(ptr)));
+  DCHECK(IsPointerTypeAlignmentOkay(reinterpret_cast<TypePtr>(ptr)));
 #endif
   return reinterpret_cast<TypePtr>(ptr);
 }
@@ -211,12 +212,10 @@ template <typename TypePtr>
 NO_SANITIZE_UNRELATED_CAST
 TypePtr unsafe_reinterpret_cast_ptr(const void* ptr) {
 #if defined(ARCH_CPU_ARMEL) && defined(COMPILER_GCC)
-  DCHECK(isPointerTypeAlignmentOkay(reinterpret_cast<TypePtr>(ptr)));
+  DCHECK(IsPointerTypeAlignmentOkay(reinterpret_cast<TypePtr>(ptr)));
 #endif
   return reinterpret_cast<TypePtr>(ptr);
 }
-
-namespace WTF {
 
 // Use the following macros to prevent errors caused by accidental
 // implicit casting of function arguments.  For example, this can
@@ -255,6 +254,6 @@ namespace WTF {
                 "Unsigned to signed conversion not allowed for types with " \
                 "identical size (could overflow).");
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_STD_LIB_EXTRAS_H_

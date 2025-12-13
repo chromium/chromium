@@ -918,7 +918,8 @@ TEST_F(BlockLayoutAlgorithmTest, CollapsingMarginsEmptyBlockWithClearance) {
     LayoutBlockFlow* child;
     // #float
     child = To<LayoutBlockFlow>(GetLayoutObjectByElementId("float"));
-    EXPECT_EQ(PhysicalSize(LayoutUnit(50), LayoutUnit(50)), child->Size());
+    EXPECT_EQ(PhysicalSize(LayoutUnit(50), LayoutUnit(50)),
+              child->StitchedSize());
     EXPECT_EQ(PhysicalOffset(0, 0), child->PhysicalLocation());
 
     // We need to manually test the position of #zero, #abs, #inflow.
@@ -2387,7 +2388,6 @@ TEST_F(BlockLayoutAlgorithmTest, RootFragmentOffsetInsideLegacy) {
   UpdateAllLifecyclePhasesForTest();
   const LayoutObject* innerNGRoot = GetLayoutObjectByElementId("innerNGRoot");
 
-  ASSERT_TRUE(innerNGRoot->IsLayoutNGObject());
   const PhysicalBoxFragment* fragment =
       CurrentFragmentFor(To<LayoutBlockFlow>(innerNGRoot));
 
@@ -2422,6 +2422,51 @@ input::first-line {
   auto* input = GetElementById("i1");
   input->setAttribute(html_names::kPlaceholderAttr, AtomicString("z"));
   UpdateAllLifecyclePhasesForTest();
+}
+
+TEST_F(BlockLayoutAlgorithmTest, LineClampByLinesOverflowsUseCounter) {
+  // This use counter is triggered whenever (-webkit)-line-clamp is set with a
+  // number of lines, and there is also a height constraint where that number of
+  // lines will not fit.
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kLineClampByLinesOverflows));
+
+  SetBodyInnerHTML(R"HTML(
+<style>
+  #test {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    max-height: 1.9lh;
+  }
+</style>
+<div id="test">Line 1 <br> Line 2 <br> Line 3</div>
+)HTML");
+
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kLineClampByLinesOverflows));
+}
+
+TEST_F(BlockLayoutAlgorithmTest, LineClampByLinesOverflowsUseCounter2) {
+  // If there is a height constraint, but that is equal or higher to the height
+  // that those lines would have, then this use counter does not trigger.
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kLineClampByLinesOverflows));
+
+  SetBodyInnerHTML(R"HTML(
+<style>
+  #test {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    max-height: 2.1lh;
+  }
+</style>
+<div id="test">Line 1 <br> Line 2 <br> Line 3</div>
+)HTML");
+
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kLineClampByLinesOverflows));
 }
 
 }  // namespace

@@ -239,8 +239,9 @@ ChromeVariationsConfiguration::GetRegisteredFeatureConfigs() const {
 const std::vector<std::string>
 ChromeVariationsConfiguration::GetRegisteredFeatures() const {
   std::vector<std::string> features;
-  for (const auto& element : configs_)
+  for (const auto& element : configs_) {
     features.push_back(element.first);
+  }
   return features;
 }
 
@@ -266,8 +267,9 @@ ChromeVariationsConfiguration::GetRegisteredGroupConfigs() const {
 const std::vector<std::string>
 ChromeVariationsConfiguration::GetRegisteredGroups() const {
   std::vector<std::string> groups;
-  for (const auto& element : group_configs_)
+  for (const auto& element : group_configs_) {
     groups.push_back(element.first);
+  }
   return groups;
 }
 

@@ -149,6 +149,8 @@ message ViewScreenConfig {
     ACTIVE = 3;
 
     INACTIVE = 4;
+
+    AVAILABLE_FOR_KIOSK_RECEIVER = 5;
   }
 
   ViewScreenState view_screen_state = 1;
@@ -156,6 +158,18 @@ message ViewScreenConfig {
   ConnectionParameter connection_param = 2;
 
   ViewScreenDevice view_screen_requester = 3;
+
+  enum AudioPlayback {
+    AUDIO_PLAYBACK_UNKNOWN = 0;
+
+    LOCAL_ONLY = 1;
+
+    REMOTE_AND_LOCAL = 2;
+
+    REMOTE_ONLY = 3;
+  }
+
+  AudioPlayback audio_playback = 4;
 }
 
 message ConnectionParameter {

@@ -231,7 +231,7 @@ void VideoToolboxVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
 void VideoToolboxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                       DecodeCB decode_cb) {
-  DVLOG(3) << __func__ << " pts=" << buffer->timestamp().InMilliseconds();
+  DVLOG(3) << __func__ << " buffer=" << buffer->AsHumanReadableString();
 
   if (has_error_) {
     task_runner_->PostTask(
@@ -256,7 +256,7 @@ void VideoToolboxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   }
 
   decode_cbs_.push(std::move(decode_cb));
-  accelerator_->SetStream(-1, *buffer);
+  accelerator_->SetStream(-1, buffer);
   while (true) {
     // `active_decode_` is used in OnAcceleratorDecode() callbacks to look up
     // decode metadata.
@@ -360,7 +360,7 @@ void VideoToolboxVideoDecoder::OnAcceleratorDecode(
   }
 
   metadata->hdr_metadata = accelerator_->GetHDRMetadata();
-  if (!metadata->hdr_metadata) {
+  if (metadata->hdr_metadata.IsEmpty()) {
     // Note: The VP9 accelerator contains this same logic so that the format
     // description can include HDR metadata (there is no in-band HDR metadata
     // in VP9). The other accelerators use only in-band HDR metadata.

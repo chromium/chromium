@@ -13,6 +13,8 @@ html {
   --error-color: var(--google-red-700);
   /* Copied from 'ui/gfx/color_palette.h' kGoogleYellow700 (#f29900) */
   --warning-color: rgb(242, 153, 0);
+  /* Warning text color with sufficient contrast against white background */
+  --warning-text-color: #B16300;
   --extensions-card-height: 160px;
   --separator-gap: 9px;
   --sidebar-width: 256px;

@@ -53,8 +53,7 @@ void ScreenAIDownloaderNonChromeOS::OnEvent(
     return;
   }
 
-  if (item.state == update_client::ComponentState::kDownloading ||
-      item.state == update_client::ComponentState::kDownloadingDiff) {
+  if (item.state == update_client::ComponentState::kDownloading) {
     SetDownloadProgress(static_cast<double>(item.downloaded_bytes) /
                         item.total_bytes);
   }

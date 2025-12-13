@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/containers/contains.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/types/expected_macros.h"
@@ -19,7 +20,8 @@
 #include "components/url_formatter/url_fixer.h"
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "components/user_data_importer/common/importer_data_types.h"
-#include "components/user_data_importer/content/content_bookmark_parser.h"
+#include "components/user_data_importer/content/content_bookmark_parser_utils.h"
+#include "components/user_data_importer/utility/bookmark_parser.h"
 #include "content/public/common/url_constants.h"
 
 namespace internal {
@@ -48,7 +50,7 @@ bool CanImportURL(const GURL& url) {
   // that we support.
   if (url.SchemeIs(content::kChromeUIScheme) ||
       url.SchemeIs(url::kAboutScheme)) {
-    if (url.host_piece() == chrome::kChromeUIAboutHost) {
+    if (url.host() == chrome::kChromeUIAboutHost) {
       return true;
     }
 
@@ -92,41 +94,29 @@ void BookmarksFileImporter::StartImport(
   bridge->NotifyStarted();
   bridge->NotifyItemStarted(user_data_importer::FAVORITES);
 
-  user_data_importer::MakeBookmarkParser()->Parse(
-      source_profile.source_path,
-      base::BindOnce(&BookmarksFileImporter::OnBookmarksParsed,
-                     base::Unretained(this)));
-}
+  std::string raw_html;
 
-void BookmarksFileImporter::OnBookmarksParsed(
-    user_data_importer::BookmarkParser::BookmarkParsingResult result) {
-  if (cancelled()) {
-    bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
-    bridge_->NotifyEnded();
-    return;
-  }
+  // ReadFileToString can return false, but still populate something into
+  // `raw_html`. In that case, try to recover as much data as possible.
+  base::ReadFileToString(source_profile.source_path, &raw_html);
+  user_data_importer::BookmarkParser::ParsedBookmarks parsed_bookmarks =
+      user_data_importer::ParseBookmarksUnsafe(raw_html);
 
-  ASSIGN_OR_RETURN(user_data_importer::BookmarkParser::ParsedBookmarks value,
-                   std::move(result), [this](auto) {
-                     bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
-                     bridge_->NotifyEnded();
-                   });
-
-  if (!value.bookmarks.empty()) {
+  if (!parsed_bookmarks.bookmarks.empty()) {
     std::u16string first_folder_name =
         bridge_->GetLocalizedString(IDS_BOOKMARK_GROUP);
-    std::erase_if(value.bookmarks,
+    std::erase_if(parsed_bookmarks.bookmarks,
                   [](user_data_importer::ImportedBookmarkEntry bookmark) {
                     return !internal::CanImportURL(bookmark.url);
                   });
 
-    bridge_->AddBookmarks(value.bookmarks, first_folder_name);
+    bridge_->AddBookmarks(parsed_bookmarks.bookmarks, first_folder_name);
   }
-  if (!value.search_engines.empty()) {
-    bridge_->SetKeywords(value.search_engines, false);
+  if (!parsed_bookmarks.search_engines.empty()) {
+    bridge_->SetKeywords(parsed_bookmarks.search_engines, false);
   }
-  if (!value.favicons.empty()) {
-    bridge_->SetFavicons(value.favicons);
+  if (!parsed_bookmarks.favicons.empty()) {
+    bridge_->SetFavicons(parsed_bookmarks.favicons);
   }
 
   bridge_->NotifyItemEnded(user_data_importer::FAVORITES);

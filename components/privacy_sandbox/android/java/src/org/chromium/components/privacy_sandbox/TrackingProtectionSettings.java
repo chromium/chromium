@@ -41,7 +41,7 @@ import org.chromium.components.browser_ui.site_settings.WebsitePermissionsFetche
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -220,7 +220,7 @@ public class TrackingProtectionSettings extends PrivacySandboxBaseFragment
                 ContentSettingsType.COOKIES,
                 primaryPattern,
                 secondaryPattern,
-                ContentSettingValues.ALLOW);
+                ContentSetting.ALLOW);
 
         String hostname = primaryPattern.equals(SITE_WILDCARD) ? secondaryPattern : primaryPattern;
         Toast.makeText(

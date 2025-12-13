@@ -41,7 +41,6 @@ class LensUrlMatcher {
                                   base::MatcherStringPattern::ID* id);
   void InitializeHashedDomainBlockFilters(
       std::string hashed_domain_block_filters_list);
-  bool SubdomainsMatchHash(std::string str);
   bool SubdomainsMatchHash(std::string_view str);
   bool MatchesHash(std::string_view str);
 

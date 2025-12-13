@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.history;
 import android.app.Activity;
 import android.net.Uri;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -17,7 +19,10 @@ import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
+import java.util.function.Supplier;
+
 /** Native page for managing browsing history. */
+@NullMarked
 public class HistoryPage extends BasicNativePage {
     private HistoryManager mHistoryManager;
     private final String mTitle;
@@ -41,12 +46,13 @@ public class HistoryPage extends BasicNativePage {
             SnackbarManager snackbarManager,
             Profile profile,
             BottomSheetController bottomSheetController,
-            Supplier<Tab> tabSupplier,
-            String url) {
+            Supplier<@Nullable Tab> tabSupplier,
+            String url,
+            BackPressManager backPressManager) {
         super(host);
 
         Uri uri = Uri.parse(url);
-        assert uri.getHost().equals(UrlConstants.HISTORY_HOST);
+        assert UrlConstants.HISTORY_HOST.equals(uri.getHost());
 
         mHistoryManager =
                 new HistoryManager(
@@ -67,6 +73,8 @@ public class HistoryPage extends BasicNativePage {
         mTitle = host.getContext().getString(R.string.menu_history);
 
         initWithView(mHistoryManager.getView());
+
+        setBackPressHandler(mHistoryManager, backPressManager);
     }
 
     @Override
@@ -79,6 +87,7 @@ public class HistoryPage extends BasicNativePage {
         return UrlConstants.HISTORY_HOST;
     }
 
+    @SuppressWarnings("NullAway")
     @Override
     public void destroy() {
         mHistoryManager.onDestroyed();
@@ -86,7 +95,7 @@ public class HistoryPage extends BasicNativePage {
         super.destroy();
     }
 
-    public HistoryManager getHistoryManagerForTesting() {
+    public @Nullable HistoryManager getHistoryManagerForTesting() {
         return mHistoryManager;
     }
 }

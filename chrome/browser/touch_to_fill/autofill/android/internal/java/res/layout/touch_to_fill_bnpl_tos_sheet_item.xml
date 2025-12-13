@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/touch_to_fill_bnpl_tos_sheet_item"
+    android:descendantFocusability="blocksDescendants"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/ttf_for_sheet_item_margin_bottom"
+    android:layout_marginHorizontal="@dimen/ttf_for_sheet_item_margin_horizontal"
+    android:background="@android:color/transparent"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="@dimen/ttf_for_sheet_item_padding">
+
+  <ImageView
+      android:id="@+id/bnpl_tos_icon"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="@dimen/ttf_for_sheet_item_icon_margin_end"
+      android:importantForAccessibility="no"
+      android:layout_gravity="center"/>
+  <org.chromium.ui.widget.TextViewWithClickableSpans
+      android:id="@+id/bnpl_tos_text"
+      android:layout_width="0dp"
+      android:layout_weight="1"
+      android:gravity="top|start"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="@dimen/bnpl_tos_sheet_item_margin_end"
+      android:textAppearance="@style/TextAppearance.TextLarge.Primary"/>
+
+</LinearLayout>

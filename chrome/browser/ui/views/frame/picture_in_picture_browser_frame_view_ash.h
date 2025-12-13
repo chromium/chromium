@@ -10,15 +10,15 @@
 #include "ui/aura/window_observer.h"
 
 class BrowserView;
-class BrowserFrame;
+class BrowserWidget;
 
-// PictureInPictureBrowserFrameViewAsh provides the NonClientFrameView for pip
+// PictureInPictureBrowserFrameViewAsh provides the FrameView for pip
 // windows on ChromeOS under classic ash.
 class PictureInPictureBrowserFrameViewAsh
     : public PictureInPictureBrowserFrameView,
       public aura::WindowObserver {
  public:
-  PictureInPictureBrowserFrameViewAsh(BrowserFrame* frame,
+  PictureInPictureBrowserFrameViewAsh(BrowserWidget* browser_widget,
                                       BrowserView* browser_view);
 
   PictureInPictureBrowserFrameViewAsh(
@@ -28,7 +28,7 @@ class PictureInPictureBrowserFrameViewAsh
 
   ~PictureInPictureBrowserFrameViewAsh() override;
 
-  // BrowserNonClientFrameView:
+  // BrowserFrameView:
   void UpdateWindowRoundedCorners() override;
 
   // aura::WindowObserver:

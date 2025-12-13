@@ -32,6 +32,7 @@
 namespace blink {
 
 class WebGLShader;
+class ExecutionContext;
 
 class WebGLDebugShaders final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
@@ -40,11 +41,11 @@ class WebGLDebugShaders final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit WebGLDebugShaders(WebGLRenderingContextBase*);
+  WebGLDebugShaders(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 
-  WTF::String getTranslatedShaderSource(WebGLShader*);
+  String getTranslatedShaderSource(WebGLShader*);
 };
 
 }  // namespace blink

@@ -24,7 +24,7 @@
 #include "ui/accessibility/platform/ax_platform_text_boundary.h"
 #include "ui/base/buildflags.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(USE_ATK)
 #include <atk/atk.h>
@@ -104,6 +104,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   bool IsDestroyed() const override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
+
+  // For testing.
+  AXPlatformNodeDelegate* SetDelegateForTesting(
+      AXPlatformNodeDelegate* delegate);
 
   // Returns the top-level URL for the active document. This should generally
   // correspond to what would be shown in the Omnibox.

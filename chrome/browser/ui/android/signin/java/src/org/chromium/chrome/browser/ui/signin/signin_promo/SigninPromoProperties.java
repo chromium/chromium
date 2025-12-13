@@ -21,6 +21,9 @@ final class SigninPromoProperties {
             ON_PRIMARY_BUTTON_CLICKED =
                     new PropertyModel.WritableObjectPropertyKey<>("on_primary_button_clicked");
 
+    // TODO(crbug.com/448227402)
+    // Rename this property after the end of the seamless sign-in experiment if the chosen layout
+    // is `compact`.
     static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
             ON_SECONDARY_BUTTON_CLICKED =
                     new PropertyModel.WritableObjectPropertyKey<>("on_secondary_button_clicked");
@@ -47,6 +50,18 @@ final class SigninPromoProperties {
     static final PropertyModel.WritableBooleanPropertyKey SHOULD_HIDE_DISMISS_BUTTON =
             new PropertyModel.WritableBooleanPropertyKey("should_hide_dismiss_button");
 
+    // TODO(crbug.com/448227402)
+    // This property is used only in the seamless sign-in layout `compact`. It should be removed
+    // after the end of experiment if the chosen layout is `twoButtons`.
+    static final PropertyModel.WritableBooleanPropertyKey SHOULD_SHOW_ACCOUNT_PICKER =
+            new PropertyModel.WritableBooleanPropertyKey("should_show_account_picker");
+
+    static final PropertyModel.WritableBooleanPropertyKey SHOULD_SHOW_HEADER_WITH_AVATAR =
+            new PropertyModel.WritableBooleanPropertyKey("should_show_header_with_avatar");
+
+    static final PropertyModel.WritableBooleanPropertyKey SHOULD_SHOW_LOADING_STATE =
+            new PropertyModel.WritableBooleanPropertyKey("should_show_loading_state");
+
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 PROFILE_DATA,
@@ -58,7 +73,10 @@ final class SigninPromoProperties {
                 PRIMARY_BUTTON_TEXT,
                 SECONDARY_BUTTON_TEXT,
                 SHOULD_HIDE_SECONDARY_BUTTON,
-                SHOULD_HIDE_DISMISS_BUTTON
+                SHOULD_HIDE_DISMISS_BUTTON,
+                SHOULD_SHOW_ACCOUNT_PICKER,
+                SHOULD_SHOW_HEADER_WITH_AVATAR,
+                SHOULD_SHOW_LOADING_STATE
             };
 
     private SigninPromoProperties() {}
@@ -73,7 +91,10 @@ final class SigninPromoProperties {
             String primaryButtonString,
             String secondaryButtonString,
             boolean shouldSuppressSecondaryButton,
-            boolean shouldHideDismissButton) {
+            boolean shouldHideDismissButton,
+            boolean shouldShowAccountPicker,
+            boolean shouldShowHeaderWithAvatar,
+            boolean shouldShowLoadingState) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(PROFILE_DATA, profileData)
                 .with(ON_PRIMARY_BUTTON_CLICKED, (unusedView) -> onPrimaryButtonClicked.run())
@@ -85,6 +106,9 @@ final class SigninPromoProperties {
                 .with(SECONDARY_BUTTON_TEXT, secondaryButtonString)
                 .with(SHOULD_HIDE_SECONDARY_BUTTON, shouldSuppressSecondaryButton)
                 .with(SHOULD_HIDE_DISMISS_BUTTON, shouldHideDismissButton)
+                .with(SHOULD_SHOW_ACCOUNT_PICKER, shouldShowAccountPicker)
+                .with(SHOULD_SHOW_HEADER_WITH_AVATAR, shouldShowHeaderWithAvatar)
+                .with(SHOULD_SHOW_LOADING_STATE, shouldShowLoadingState)
                 .build();
     }
 }

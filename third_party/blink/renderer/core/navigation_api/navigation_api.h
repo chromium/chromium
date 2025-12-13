@@ -146,9 +146,9 @@ class CORE_EXPORT NavigationApi final : public EventTarget {
       const mojom::blink::NavigationApiHistoryEntryPtr&);
   void PopulateKeySet();
   void UpdateActivation(HistoryItem* previous_entry, WebFrameLoadType);
-  void AbortOngoingNavigation(ScriptState*, CancelNavigationReason);
+  void AbortOngoingNavigation(ScriptState*);
   void DidFinishOngoingNavigation();
-  void DidFailOngoingNavigation(ScriptValue);
+  void DidAbort(ScriptValue);
 
   NavigationResult* PerformNonTraverseNavigation(
       ScriptState*,

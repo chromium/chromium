@@ -14,12 +14,14 @@ QuotaManager::QuotaManager(
     const base::FilePath& profile_path,
     scoped_refptr<base::SingleThreadTaskRunner> io_thread,
     scoped_refptr<SpecialStoragePolicy> special_storage_policy,
-    const GetQuotaSettingsFunc& get_settings_function)
+    const GetQuotaSettingsFunc& get_settings_function,
+    bool report_static_storage_quota)
     : QuotaManagerImpl(is_incognito,
                        profile_path,
                        std::move(io_thread),
                        std::move(special_storage_policy),
-                       get_settings_function) {}
+                       get_settings_function,
+                       report_static_storage_quota) {}
 
 QuotaManager::~QuotaManager() = default;
 

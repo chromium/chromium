@@ -535,11 +535,13 @@ class BidirectionalStreamQuicImplTest
         base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)),
         QuicSessionAliasKey(
             url::SchemeHostPort(),
-            QuicSessionKey(kDefaultServerHostName, kDefaultServerPort,
-                           PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
-                           SessionUsage::kDestination, SocketTag(),
-                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                           /*require_dns_https_alpn=*/false)),
+            QuicSessionKey(
+                kDefaultServerHostName, kDefaultServerPort,
+                PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                SessionUsage::kDestination, SocketTag(),
+                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*require_dns_https_alpn=*/false,
+                /*disable_cert_verification_network_fetches=*/false)),
         /*require_confirmation=*/false,
         /*migrate_session_early_v2=*/false,
         /*migrate_session_on_network_change_v2=*/false,

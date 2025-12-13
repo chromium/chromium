@@ -69,8 +69,12 @@ public class ActivityFinisher {
         return snapshotActivities(null);
     }
 
-    /** Finishes all activities via AppTask.finishAndRemoveTask(). */
-    public static void finishAll() {
+    /**
+     * Finishes all activities via AppTask.finishAndRemoveTask().
+     *
+     * @return whether all activities were able to be finished.
+     */
+    public static boolean finishAll() {
         assert Looper.myLooper() != Looper.getMainLooper();
         UptimeMillisTimer timer = new UptimeMillisTimer();
 
@@ -88,7 +92,7 @@ public class ActivityFinisher {
                             "Giving up after %d attempts. These still remain: %s",
                             attempt,
                             snapshotActivities());
-                    break;
+                    return false;
                 }
                 if (!finishHelper(activityManager)) {
                     if (attempt > 0) {
@@ -98,12 +102,13 @@ public class ActivityFinisher {
                                 timer.getElapsedMillis(),
                                 attempt);
                     }
-                    break;
+                    return true;
                 }
             }
         } catch (TimeoutException e) {
             // The exception is logged in finishHelper();
         }
+        return false;
     }
 
     /** Returns whether any work was done. */

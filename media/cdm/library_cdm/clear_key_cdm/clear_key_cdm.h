@@ -55,7 +55,7 @@ class ClearKeyCdm : public cdm::ContentDecryptionModule_10,
   cdm::Status DecryptAndDecodeFrame(const cdm::InputBuffer_2& encrypted_buffer,
                                     cdm::VideoFrame_2* video_frame) override;
 
-  // Common cdm::ContentDecryptionModule_10/11 implementation.
+  // Common cdm::ContentDecryptionModule_* implementation.
   void Initialize(bool allow_distinctive_identifier,
                   bool allow_persistent_state,
                   bool use_hw_secure_codecs) override;
@@ -67,7 +67,6 @@ class ClearKeyCdm : public cdm::ContentDecryptionModule_10,
       const cdm::InputBuffer_2& encrypted_buffer,
       cdm::AudioFrames* audio_frames) override;
 
-  // Common cdm::ContentDecryptionModule_* implementation.
   void GetStatusForPolicy(uint32_t promise_id,
                           const cdm::Policy& policy) override;
   void CreateSessionAndGenerateRequest(uint32_t promise_id,

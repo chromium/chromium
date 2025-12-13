@@ -134,15 +134,9 @@ const char kAccessControlAllowCredentials[] =
 const char kAccessControlAllowHeaders[] = "Access-Control-Allow-Headers";
 const char kAccessControlAllowMethods[] = "Access-Control-Allow-Methods";
 const char kAccessControlAllowOrigin[] = "Access-Control-Allow-Origin";
-const char kAccessControlAllowPrivateNetwork[] =
-    "Access-Control-Allow-Private-Network";
 const char kAccessControlMaxAge[] = "Access-Control-Max-Age";
 const char kAccessControlRequestHeaders[] = "Access-Control-Request-Headers";
 const char kAccessControlRequestMethod[] = "Access-Control-Request-Method";
-const char kAccessControlRequestPrivateNetwork[] =
-    "Access-Control-Request-Private-Network";
-const char kPrivateNetworkDeviceId[] = "Private-Network-Access-ID";
-const char kPrivateNetworkDeviceName[] = "Private-Network-Access-Name";
 
 }  // namespace header_names
 

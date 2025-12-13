@@ -6,6 +6,7 @@
 #define COMPONENTS_COMMERCE_CORE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_CACHE_H_
 
 #include "base/containers/lru_cache.h"
+#include "base/time/time.h"
 #include "components/commerce/core/commerce_types.h"
 
 namespace commerce {
@@ -34,10 +35,12 @@ class ProductSpecificationsCache {
   friend class ProductSpecificationsCacheTest;
 
   using Key = std::string;
-  static const int kCacheSize = 10;
-  static constexpr base::TimeDelta kEntryInvalidationTime = base::Hours(6);
-  base::HashingLRUCache<Key, Entry> cache_;
   Key GetKey(std::vector<uint64_t> cluster_ids);
+
+  static constexpr int kCacheSize = 10;
+  static constexpr base::TimeDelta kEntryInvalidationTime = base::Hours(6);
+
+  base::HashingLRUCache<Key, Entry> cache_;
 };
 
 }  // namespace commerce

@@ -475,19 +475,6 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
                 'Using a fuzzy diff instead accounts for this variance. '
                 'See //tools/imagediff/image_diff.cc'))
         testing_group.add_argument(
-            '--ignore-builder-category',
-            help=(
-                'The category of builders to use with the --ignore-flaky-tests '
-                "option ('layout' or 'deps')."))
-        testing_group.add_argument(
-            '--ignore-flaky-tests',
-            help=
-            ('Control whether tests that are flaky on the bots get ignored. '
-             "'very-flaky' == Ignore any tests that flaked more than once on "
-             "the bot. 'maybe-flaky' == Ignore any tests that flaked once on "
-             "the bot. 'unexpected' == Ignore any tests that had unexpected "
-             'results on the bot.'))
-        testing_group.add_argument(
             '--max-locked-shards',
             type=int,
             default=0,
@@ -608,6 +595,15 @@ def add_testing_options_group(parser: argparse.ArgumentParser,
                                    action='store_true',
                                    default=None,
                                    help=('Do not run virtual tests.'))
+        testing_group.add_argument(
+            '--enable-per-test-tracing',
+            metavar='CATEGORIES',
+            dest='trace_categories',
+            nargs='?',
+            const='*',
+            help=('For each test, capture and write a trace file with the '
+                  'given comma-separated categories recorded. When no '
+                  'categories are given, default to recording all.'))
 
 
 # for run_wpt_tests.py only

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -13,6 +15,8 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+
+import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -32,9 +36,12 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -48,6 +55,8 @@ import java.util.concurrent.TimeoutException;
 /** Tests for IncognitoTabModel. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+// TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
+@DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
 public class IncognitoTabModelTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -92,7 +101,7 @@ public class IncognitoTabModelTest {
     }
 
     private void removeTabOnUiThread() {
-        Tab tab = mActivityTestRule.getActivity().getTabModelSelector().getCurrentTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         assertTrue(tab.isIncognito());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -112,12 +121,12 @@ public class IncognitoTabModelTest {
     @Feature({"OffTheRecord"})
     public void testCloseAllDuringAddTabDoesNotCrash() {
         createTabOnUiThread();
-        assertEquals(1, mIncognitoTabModel.getCount());
+        assertEquals(1, getTabCountOnUiThread(mIncognitoTabModel));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mIncognitoTabModel.addObserver(new CloseAllDuringAddTabTabModelObserver()));
 
         createTabOnUiThread();
-        assertEquals(1, mIncognitoTabModel.getCount());
+        assertEquals(1, getTabCountOnUiThread(mIncognitoTabModel));
     }
 
     @Test
@@ -155,8 +164,8 @@ public class IncognitoTabModelTest {
                                 @Override
                                 public void didAddTab(
                                         Tab tab,
-                                        int type,
-                                        int creationState,
+                                        @TabLaunchType int type,
+                                        @TabCreationState int creationState,
                                         boolean markedForSelection) {
                                     didAddTabCallbackHelper.notifyCalled();
                                 }
@@ -182,12 +191,15 @@ public class IncognitoTabModelTest {
     @Test
     @SmallTest
     public void testHideLastRegularTab_OnModelChange() {
+        mActivityTestRule.skipWindowAndTabStateCleanup();
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assert mRegularTabModel == mActivityTestRule.getActivity().getCurrentTabModel();
+                    assertThat(mRegularTabModel)
+                            .isSameInstanceAs(mActivityTestRule.getActivity().getCurrentTabModel());
                     // In setup we create a blank tab.
-                    assert mRegularTabModel.getCount() == 1;
-                    assert mIncognitoTabModel.getCount() == 0;
+                    assertThat(mRegularTabModel.getCount()).isEqualTo(1);
+                    assertThat(mIncognitoTabModel.getCount()).isEqualTo(0);
 
                     Tab mTab = mRegularTabModel.getTabAt(0);
                     assertFalse(mTab.isHidden());

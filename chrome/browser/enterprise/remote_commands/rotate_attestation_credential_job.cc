@@ -38,18 +38,14 @@ std::string CreatePayload(KeyRotationResult result) {
   base::Value::Dict root_dict;
   root_dict.Set(kResultFieldName, ResultToString(result));
 
-  std::string payload;
-  base::JSONWriter::Write(root_dict, &payload);
-  return payload;
+  return base::WriteJson(root_dict).value_or("");
 }
 
 std::string CreateUnsupportedPayload() {
   base::Value::Dict root_dict;
   root_dict.Set(kResultFieldName, "unsupported");
 
-  std::string payload;
-  base::JSONWriter::Write(root_dict, &payload);
-  return payload;
+  return base::WriteJson(root_dict).value_or("");
 }
 
 bool IsSuccess(KeyRotationResult result) {
@@ -75,8 +71,8 @@ RotateAttestationCredentialJob::GetType() const {
 
 bool RotateAttestationCredentialJob::ParseCommandPayload(
     const std::string& command_payload) {
-  std::optional<base::Value::Dict> root =
-      base::JSONReader::ReadDict(command_payload);
+  std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(
+      command_payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root)
     return false;
 

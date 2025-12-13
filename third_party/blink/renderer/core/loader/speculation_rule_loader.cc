@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rules_metrics.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {

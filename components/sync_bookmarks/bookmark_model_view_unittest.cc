@@ -16,6 +16,9 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "base/test/metrics/histogram_tester.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 namespace sync_bookmarks {
 
@@ -206,6 +209,17 @@ TEST_F(BookmarkModelViewTest, ShouldRemoveAllAccountNodes) {
   EXPECT_THAT(model_->account_mobile_node(), IsNull());
   EXPECT_THAT(model_->account_other_node(), IsNull());
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+TEST_F(BookmarkModelViewTest, ShouldRecordDeduplicationTimeMetric) {
+  base::HistogramTester histogram_tester;
+
+  BookmarkModelViewUsingAccountNodes view(model_.get());
+  view.MaybeRemoveUnderlyingModelDuplicatesUponInitialSync();
+
+  histogram_tester.ExpectTotalCount("Sync.BookmarksSignInDeduplicationTime", 1);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 }  // namespace
 

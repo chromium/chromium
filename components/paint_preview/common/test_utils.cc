@@ -4,17 +4,15 @@
 
 #include "components/paint_preview/common/test_utils.h"
 
-#include <string>
+#include <string_view>
 
 namespace paint_preview {
 
-std::string PersistenceParamToString(
-    const ::testing::TestParamInfo<paint_preview::RecordingPersistence>&
-        persistence) {
-  switch (persistence.param) {
-    case paint_preview::RecordingPersistence::kFileSystem:
+std::string_view PersistenceToString(RecordingPersistence persistence) {
+  switch (persistence) {
+    case RecordingPersistence::kFileSystem:
       return "FileSystem";
-    case paint_preview::RecordingPersistence::kMemoryBuffer:
+    case RecordingPersistence::kMemoryBuffer:
       return "MemoryBuffer";
   }
 }

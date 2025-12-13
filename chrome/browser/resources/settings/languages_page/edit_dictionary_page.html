@@ -19,7 +19,8 @@
   </style>
   <settings-subpage
       page-title="$i18n{editDictionaryPageTitle}"
-      no-search$="[[!prefs.browser.enable_spellchecking.value]]">
+      no-search$="[[!prefs.browser.enable_spellchecking.value]]"
+      route-path$="[[routePath]]">
     <div class="cr-row first" on-keydown="onKeysPress_">
       <cr-input id="newWord" value="{{newWordValue_}}"
           placeholder="$i18n{addDictionaryWordLabel}"

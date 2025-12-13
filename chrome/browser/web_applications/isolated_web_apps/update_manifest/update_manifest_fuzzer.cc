@@ -42,13 +42,17 @@ class Environment {
 Environment* const environment = new Environment();
 
 FUZZ_TEST(UpdateManifestFuzzTest, UpdateManifestCanSuccessfullyParseAnyString)
-    .WithSeeds({*base::JSONReader::Read("{}"), *base::JSONReader::Read(R"({
+    .WithSeeds({*base::JSONReader::Read("{}",
+                                        base::JSON_PARSE_CHROMIUM_EXTENSIONS),
+                *base::JSONReader::Read(R"({
                   "versions": []
-                })"),
+                })",
+                                        base::JSON_PARSE_CHROMIUM_EXTENSIONS),
                 *base::JSONReader::Read(R"({
                   "channels": {},
                   "versions": []
-                })"),
+                })",
+                                        base::JSON_PARSE_CHROMIUM_EXTENSIONS),
                 *base::JSONReader::Read(R"({
                   "versions": [
                     {
@@ -64,7 +68,8 @@ FUZZ_TEST(UpdateManifestFuzzTest, UpdateManifestCanSuccessfullyParseAnyString)
                       "src": "https://example.com/bundle2.swbn"
                     }
                   ]
-                })"),
+                })",
+                                        base::JSON_PARSE_CHROMIUM_EXTENSIONS),
                 *base::JSONReader::Read(R"({
                   "versions": [
                     {
@@ -73,7 +78,8 @@ FUZZ_TEST(UpdateManifestFuzzTest, UpdateManifestCanSuccessfullyParseAnyString)
                       "blah": 123
                     }
                   ]
-                })"),
+                })",
+                                        base::JSON_PARSE_CHROMIUM_EXTENSIONS),
                 *base::JSONReader::Read(R"({
                   "versions": [
                     {
@@ -82,7 +88,8 @@ FUZZ_TEST(UpdateManifestFuzzTest, UpdateManifestCanSuccessfullyParseAnyString)
                       "channels": ["test", "stable", "test"]
                     }
                   ]
-                })"),
+                })",
+                                        base::JSON_PARSE_CHROMIUM_EXTENSIONS),
                 *base::JSONReader::Read(R"({
                   "channels": {
                     "test": {
@@ -100,6 +107,7 @@ FUZZ_TEST(UpdateManifestFuzzTest, UpdateManifestCanSuccessfullyParseAnyString)
                       "channels": ["test", "stable", "test"]
                     }
                   ]
-                })")});
+                })",
+                                        base::JSON_PARSE_CHROMIUM_EXTENSIONS)});
 }  // namespace
 }  // namespace web_app

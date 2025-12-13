@@ -53,11 +53,11 @@ pub(crate) fn alternation_literals(
                         HirKind::Literal(Literal(ref bytes)) => {
                             lit.extend_from_slice(bytes);
                         }
-                        _ => unreachable!("expected literal, got {:?}", e),
+                        _ => unreachable!("expected literal, got {e:?}"),
                     }
                 }
             }
-            _ => unreachable!("expected literal or concat, got {:?}", alt),
+            _ => unreachable!("expected literal or concat, got {alt:?}"),
         }
         lits.push(lit);
     }

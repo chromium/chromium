@@ -4,15 +4,18 @@
 
 #import "ios/chrome/browser/tips_notifications/model/tips_notification_client.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "base/time/time.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
@@ -35,6 +38,9 @@ namespace {
 
 // The amount of time used to determine if the user should be classified.
 const base::TimeDelta kClassifyUserRecency = base::Hours(2);
+
+// The trigger time used for the one time default browser notification.
+const base::TimeDelta OneTimeNotificationTriggerDelta = base::Hours(24);
 
 // Returns the first notification from `requests` whose identifier matches
 // `identifier`.
@@ -159,13 +165,12 @@ void TipsNotificationClient::OptInIfAuthorized(
       AuthenticationServiceFactory::GetForProfile(profile);
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
   PushNotificationService* service =
       GetApplicationContext()->GetPushNotificationService();
   // Set `permitted_` here so that the OnPermittedPrefChanged exits early.
   permitted_ = true;
-  service->SetPreference(base::SysUTF8ToNSString(gaiaID),
-                         PushNotificationClientId::kTips, true);
+  service->SetPreference(identity.gaiaId, PushNotificationClientId::kTips,
+                         true);
 }
 
 std::optional<UIBackgroundFetchResult>
@@ -251,6 +256,15 @@ void TipsNotificationClient::GetPendingRequest(
 void TipsNotificationClient::OnPendingRequestFound(
     UNNotificationRequest* request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Check for the one-time default browser notification.
+  if (base::FeatureList::IsEnabled(kIOSOneTimeDefaultBrowserNotification)) {
+    TipsNotificationType type = TipsNotificationType::kDefaultBrowser;
+    if (IsNotificationValid(type)) {
+      one_time_type_ = type;
+    }
+  }
+
   if (!request) {
     MaybeLogTriggeredNotification();
     MaybeLogDismissedNotification();
@@ -262,10 +276,18 @@ void TipsNotificationClient::OnPendingRequestFound(
   MaybeLogDismissedNotification();
   interacted_type_ = std::nullopt;
 
+  std::optional<TipsNotificationType> type = ParseTipsNotificationType(request);
+
+  // It is possible that the scheduled notification doesn't meet the trigger
+  // criteria anymore. If so, remove it from the queue.
+  if (type.has_value() && !IsNotificationValid(type.value())) {
+    ClearAllRequestedNotifications();
+    MarkNotificationTypeNotSent(type.value());
+    MaybeRequestNotification(base::DoNothing());
+  }
+
   if (CanSendReactivation()) {
     ClearAllRequestedNotifications();
-    std::optional<TipsNotificationType> type =
-        ParseTipsNotificationType(request);
     if (type.has_value()) {
       MarkNotificationTypeNotSent(type.value());
       // Increment the Reactivation canceled count.
@@ -273,6 +295,16 @@ void TipsNotificationClient::OnPendingRequestFound(
           local_state_->GetInteger(kReactivationNotificationsCanceledCount) + 1;
       local_state_->SetInteger(kReactivationNotificationsCanceledCount,
                                canceled_count);
+    }
+    MaybeRequestNotification(base::DoNothing());
+  }
+
+  if (one_time_type_.has_value()) {
+    // If a pending request is found, clear it to prioritize the one-time
+    // notification.
+    ClearAllRequestedNotifications();
+    if (type.has_value()) {
+      MarkNotificationTypeNotSent(type.value());
     }
     MaybeRequestNotification(base::DoNothing());
   }
@@ -286,16 +318,34 @@ void TipsNotificationClient::MaybeRequestNotification(
     return;
   }
 
-  Browser* browser = GetActiveForegroundBrowser();
-  if (!browser) {
+  ProfileIOS* profile = GetActiveForegroundProfile();
+  if (!profile) {
     std::move(completion).Run();
     return;
   }
-  ProfileIOS* profile = browser->GetProfile();
 
   if (forced_type_.has_value()) {
     RequestNotification(forced_type_.value(), profile->GetProfileName(),
                         std::move(completion));
+    return;
+  }
+
+  if (one_time_type_.has_value()) {
+    if (one_time_type_ == TipsNotificationType::kDefaultBrowser) {
+      // The FET's feature should be triggered.
+      feature_engagement::Tracker* tracker =
+          feature_engagement::TrackerFactory::GetForProfile(profile);
+      if (tracker->ShouldTriggerHelpUI(
+              feature_engagement::
+                  kIPHiOSOneTimeDefaultBrowserNotificationFeature)) {
+        RequestNotification(one_time_type_.value(), profile->GetProfileName(),
+                            std::move(completion));
+        tracker->Dismissed(feature_engagement::
+                               kIPHiOSOneTimeDefaultBrowserNotificationFeature);
+        tracker->NotifyEvent("default_browser_promos_group_trigger");
+      }
+    }
+    one_time_type_ = std::nullopt;
     return;
   }
 
@@ -336,53 +386,55 @@ void TipsNotificationClient::ClearAllRequestedNotifications() {
       ]];
 }
 
-void TipsNotificationClient::RequestNotification(TipsNotificationType type,
-                                                 std::string_view profile_name,
-                                                 base::OnceClosure completion) {
+void TipsNotificationClient::RequestNotification(
+    TipsNotificationType notification_type,
+    std::string_view profile_name,
+    base::OnceClosure completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::TimeDelta trigger_delta = TipsNotificationTriggerDelta(
+      CanSendReactivation(), user_type_, notification_type);
+  if (one_time_type_.has_value()) {
+    trigger_delta = std::min(trigger_delta, OneTimeNotificationTriggerDelta);
+  }
 
   if (IsNotificationCollisionManagementEnabled()) {
     ScheduledNotificationRequest request = {
         kTipsNotificationId,
-        ContentForTipsNotificationType(type, CanSendReactivation(),
+        ContentForTipsNotificationType(notification_type, CanSendReactivation(),
                                        profile_name),
-        // TODO(crbug.com/413671723): Implement the logic that uses an almost
-        // instant trigger delta for the notification type
-        // `kTrustedVaultKeyRetrieval` (because we want to ensure that users fix
-        // this issue as soon as possible).
-        TipsNotificationTriggerDelta(CanSendReactivation(), user_type_)};
+        trigger_delta};
     CheckRateLimitBeforeSchedulingNotification(
         request,
         base::BindPostTask(
             base::SequencedTaskRunner::GetCurrentDefault(),
             base::BindOnce(&TipsNotificationClient::OnNotificationRequested,
-                           weak_ptr_factory_.GetWeakPtr(), type)
+                           weak_ptr_factory_.GetWeakPtr(), notification_type)
                 .Then(std::move(completion))));
-    MarkNotificationTypeSent(type);
+    MarkNotificationTypeSent(notification_type);
     return;
   }
 
   UNNotificationRequest* request = [UNNotificationRequest
       requestWithIdentifier:kTipsNotificationId
                     content:ContentForTipsNotificationType(
-                                type, CanSendReactivation(), profile_name)
+                                notification_type, CanSendReactivation(),
+                                profile_name)
                     trigger:[UNTimeIntervalNotificationTrigger
-                                triggerWithTimeInterval:
-                                    TipsNotificationTriggerDelta(
-                                        CanSendReactivation(), user_type_)
-                                        .InSecondsF()
+                                triggerWithTimeInterval:trigger_delta
+                                                            .InSecondsF()
                                                 repeats:NO]];
 
   auto completion_block = base::CallbackToBlock(base::BindPostTask(
       base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&TipsNotificationClient::OnNotificationRequested,
-                     weak_ptr_factory_.GetWeakPtr(), type)
+                     weak_ptr_factory_.GetWeakPtr(), notification_type)
           .Then(std::move(completion))));
 
   [UNUserNotificationCenter.currentNotificationCenter
       addNotificationRequest:request
        withCompletionHandler:completion_block];
-  MarkNotificationTypeSent(type);
+  MarkNotificationTypeSent(notification_type);
 }
 
 void TipsNotificationClient::OnNotificationRequested(TipsNotificationType type,
@@ -511,6 +563,24 @@ bool TipsNotificationClient::CanSendReactivation() const {
          forced_type_.has_value();
 }
 
+bool TipsNotificationClient::IsNotificationValid(
+    TipsNotificationType type) const {
+  if (forced_type_.has_value() && forced_type_.value() == type) {
+    return true;
+  }
+
+  ProfileIOS* profile = GetActiveForegroundProfile();
+  if (profile) {
+    std::unique_ptr<TipsNotificationCriteria> criteria =
+        std::make_unique<TipsNotificationCriteria>(profile, local_state_,
+                                                   CanSendReactivation());
+    return criteria->ShouldSendNotification(type);
+  }
+
+  // If cannot determine, consider the notification invalid.
+  return false;
+}
+
 void TipsNotificationClient::UpdateProvisionalAllowed() {
   Browser* browser = GetActiveForegroundBrowser();
   CHECK(browser);
@@ -560,4 +630,12 @@ void TipsNotificationClient::ClassifyUser() {
   }
   SetTipsNotificationUserType(local_state_, user_type_);
   base::UmaHistogramEnumeration("IOS.Notifications.Tips.UserType", user_type_);
+}
+
+ProfileIOS* TipsNotificationClient::GetActiveForegroundProfile() const {
+  Browser* browser = GetActiveForegroundBrowser();
+  if (!browser) {
+    return nullptr;
+  }
+  return browser->GetProfile();
 }

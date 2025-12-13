@@ -22,11 +22,11 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/zoom/zoom_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/native_widget_types.h"
-#include "components/zoom/zoom_observer.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace content {
 class WebContents;

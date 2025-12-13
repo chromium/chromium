@@ -12,7 +12,6 @@
 
 #include "ash/system/video_conference/video_conference_common.h"
 #include "base/functional/callback.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 
 namespace base {
 class UnguessableToken;
@@ -33,6 +32,9 @@ struct VideoConferenceMediaState;
 //    and providing this information to the UI as needed.
 class VideoConferenceManagerAsh : public VideoConferenceManagerBase {
  public:
+  // Gets the singleton instance.
+  static VideoConferenceManagerAsh* Get();
+
   VideoConferenceManagerAsh();
 
   VideoConferenceManagerAsh(const VideoConferenceManagerAsh&) = delete;
@@ -46,7 +48,7 @@ class VideoConferenceManagerAsh : public VideoConferenceManagerBase {
   void ReturnToApp(const base::UnguessableToken& id) override;
   void SetSystemMediaDeviceStatus(
       crosapi::mojom::VideoConferenceMediaDevice device,
-      bool disabled) override;
+      bool enabled) override;
   void StopAllScreenShare() override;
   void CreateBackgroundImage() override;
 
@@ -67,8 +69,7 @@ class VideoConferenceManagerAsh : public VideoConferenceManagerBase {
 
   // Removes entry corresponding to |client_id| from
   // |client_id_to_wrapper_|. Called by the destructor of
-  // cpp clients (ash browser, ARC++) and by the disconnect handler on
-  // |receiver| when the lacros mojo client disconnects.
+  // cpp clients (ash browser, ARC++).
   void UnregisterClient(const base::UnguessableToken& client_id);
 
  protected:
@@ -85,9 +86,9 @@ class VideoConferenceManagerAsh : public VideoConferenceManagerBase {
   VideoConferenceTrayController* GetTrayController();
 
  private:
+  friend class ::CaptureModeVideoConferenceBrowserTests;
   friend class VideoConferenceAshfeatureClientTest;
   friend class VideoConferenceAppServiceClientTest;
-  friend class ::CaptureModeVideoConferenceBrowserTests;
 
   // A (client_id, client_wrapper) entry is inserted into this map
   // whenever a new client is registered on the manager and deleted

@@ -8,17 +8,15 @@
 #include <memory>
 
 #include "base/task/single_thread_task_runner.h"
-#include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/service/command_buffer_task_executor.h"
 #include "gpu/ipc/gl_in_process_context_export.h"
 #include "gpu/ipc/in_process_command_buffer.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace gpu {
 class SharedImageInterface;
 class TransferBuffer;
 struct GpuFeatureInfo;
-struct SharedMemoryLimits;
 
 namespace gles2 {
 class GLES2CmdHelper;
@@ -36,17 +34,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GLInProcessContext {
 
   ~GLInProcessContext();
 
-  // Initialize the GLInProcessContext, if |is_offscreen| is true, renders to an
-  // offscreen context. |attrib_list| must be null or a NONE-terminated list
-  // of attribute/value pairs.
-  // If |surface| is not null, then it must match |is_offscreen|,
-  // |window| must be gfx::kNullAcceleratedWidget, and the command buffer
-  // service must run on the same thread as this client because GLSurface is
-  // not thread safe. If |surface| is null, then the other parameters are used
-  // to correctly create a surface.
-  ContextResult Initialize(CommandBufferTaskExecutor* task_executor,
-                           const ContextCreationAttribs& attribs,
-                           const SharedMemoryLimits& memory_limits);
+  ContextResult Initialize(CommandBufferTaskExecutor* task_executor);
 
   const Capabilities& GetCapabilities() const;
   const GpuFeatureInfo& GetGpuFeatureInfo() const;

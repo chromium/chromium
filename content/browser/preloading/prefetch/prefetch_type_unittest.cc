@@ -5,23 +5,15 @@
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
 
 namespace content {
 namespace {
 
-class PrefetchTypeTest : public ::testing::Test {
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kPrefetchBrowserInitiatedTriggers},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+class PrefetchTypeTest : public ::testing::Test {};
 
 TEST_F(PrefetchTypeTest, GetPrefetchTypeParams) {
   PrefetchType prefetch_type1(PreloadingTriggerType::kSpeculationRule,

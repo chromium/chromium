@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "components/autofill/android/payments/legal_message_line_android.h"
+#include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics_android.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #include "content/public/browser/web_contents.h"
@@ -98,6 +99,10 @@ AutofillSaveCardBottomSheetBridge::AutofillSaveCardBottomSheetBridge(
 
 void AutofillSaveCardBottomSheetBridge::OnUiShown(JNIEnv* env) {
   if (save_card_delegate_) {
+    autofill_metrics::LogSaveCreditCardPromptOfferMetricAndroid(
+        autofill_metrics::SaveCardPromptOffer::kShown,
+        save_card_delegate_->is_for_upload(),
+        save_card_delegate_->GetSaveCreditCardOptions());
     save_card_delegate_->OnUiShown();
   }
 }
@@ -124,8 +129,16 @@ void AutofillSaveCardBottomSheetBridge::OnUiIgnored(JNIEnv* env) {
   ResetSaveCardDelegate();
 }
 
+void AutofillSaveCardBottomSheetBridge::SetSaveCardDelegateForTesting(
+    std::unique_ptr<AutofillSaveCardDelegateAndroid> delegate) {
+  save_card_delegate_ = std::move(delegate);
+}
+
 void AutofillSaveCardBottomSheetBridge::ResetSaveCardDelegate() {
   save_card_delegate_.reset(nullptr);
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillSaveCardBottomSheetBridge)
+DEFINE_JNI(AutofillSaveCardUiInfo)

@@ -14,8 +14,8 @@
 #import "chrome/browser/ui/views/apps/app_window_native_widget_mac.h"
 #include "chrome/browser/ui/views/apps/native_app_window_frame_view_mac_client.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
+#include "ui/views/window/frame_view.h"
 #include "ui/views/window/native_frame_view_mac.h"
-#include "ui/views/window/non_client_view.h"
 
 // This observer is used to get NSWindow notifications. We need to monitor
 // zoom and full screen events to store the correct bounds to Restore() to.
@@ -134,12 +134,12 @@ void ChromeNativeAppWindowViewsMac::OnBeforeWidgetInit(
                                                  widget);
 }
 
-std::unique_ptr<views::NonClientFrameView>
+std::unique_ptr<views::FrameView>
 ChromeNativeAppWindowViewsMac::CreateStandardDesktopAppFrame() {
   return CreateFrameViewImpl();
 }
 
-std::unique_ptr<views::NonClientFrameView>
+std::unique_ptr<views::FrameView>
 ChromeNativeAppWindowViewsMac::CreateNonStandardAppFrame() {
   return CreateFrameViewImpl();
 }
@@ -199,7 +199,7 @@ void ChromeNativeAppWindowViewsMac::OnWidgetCreated(views::Widget* widget) {
       [[ResizeNotificationObserver alloc] initForNativeAppWindow:this];
 }
 
-std::unique_ptr<views::NonClientFrameView>
+std::unique_ptr<views::FrameView>
 ChromeNativeAppWindowViewsMac::CreateFrameViewImpl() {
   CHECK(!frame_view_client_);
   frame_view_client_ =

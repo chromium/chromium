@@ -25,9 +25,10 @@ struct UnguessableTokenHash;
 // UnguessableToken is, like Token, a randomly chosen 128-bit value. Unlike
 // Token, a new UnguessableToken is always generated at runtime from a
 // cryptographically strong random source (or copied or serialized and
-// deserialized from another such UnguessableToken). Also unlike Token, the ==
-// and != operators are constant time. It can be used as part of a larger
-// aggregate type, or as an ID in and of itself.
+// deserialized from another such UnguessableToken). Also unlike Token, the
+// amount of time `x == y` and `x != y` take is independent of the contents of
+// `x` and `y`. It can be used as part of a larger aggregate type, or as an ID
+// in and of itself.
 //
 // An UnguessableToken is a strong *bearer token*. Bearer tokens are like HTTP
 // cookies: if a caller has the token, the callee thereby considers the caller

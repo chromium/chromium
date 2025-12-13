@@ -46,6 +46,10 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) CupsJob {
   enum class JobStateReason {
     kJobCompletedWithErrors = 0,
     kCupsHeldForAuthentication,
+    kJobCanceledByUser,
+    kJobCanceledByOperator,
+    kJobCanceledAtDevice,
+    kJobCompletedSuccessfully,
   };
 
   CupsJob();

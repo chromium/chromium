@@ -6,16 +6,59 @@
 
 #include "base/lazy_instance.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "ui/base/accelerators/command.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 
+#if defined(USE_AURA) && !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/gfx/native_ui_types.h"
+#endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
+
+namespace {
+
+gfx::AcceleratedWidget GetAcceleratedWidgetForContext(
+    content::BrowserContext* context) {
+#if defined(USE_AURA) && !BUILDFLAG(IS_ANDROID)
+  auto* profile = Profile::FromBrowserContext(context);
+  if (!profile) {
+    return gfx::kNullAcceleratedWidget;
+  }
+
+  Browser* browser =
+      chrome::FindLastActiveWithProfile(Profile::FromBrowserContext(context));
+  if (!browser || !browser->window()) {
+    return gfx::kNullAcceleratedWidget;
+  }
+
+  auto* native_window = browser->window()->GetNativeWindow();
+  if (!native_window || !native_window->GetHost()) {
+    return gfx::kNullAcceleratedWidget;
+  }
+
+  return native_window->GetHost()->GetAcceleratedWidget();
+#else
+  return gfx::kNullAcceleratedWidget;
+#endif  // defined(USE_AURA) && !BUILDFLAG(IS_ANDROID)
+}
+
+}  // namespace
 
 ExtensionCommandsGlobalRegistry::ExtensionCommandsGlobalRegistry(
     content::BrowserContext* context)
@@ -94,7 +137,10 @@ bool ExtensionCommandsGlobalRegistry::PopulateCommands(
       profile_id = uuid.AsLowercaseString();
       prefs->SetString(pref_names::kGlobalShortcutsUuid, profile_id);
     }
-    instance->OnCommandsChanged(extension->id(), profile_id, *commands, this);
+
+    instance->OnCommandsChanged(
+        extension->id(), profile_id, *commands,
+        GetAcceleratedWidgetForContext(browser_context_), this);
   }
 
   // Add all the active global keybindings, if any.

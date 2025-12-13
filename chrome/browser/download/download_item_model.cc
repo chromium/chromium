@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/byte_count.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
@@ -22,7 +23,6 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -94,8 +94,6 @@ using DangerUiPattern = DownloadUIModel::DangerUiPattern;
 using download::DownloadItem;
 using InsecureDownloadStatus = download::DownloadItem::InsecureDownloadStatus;
 using safe_browsing::DownloadFileType;
-using ReportThreatDetailsResult =
-    safe_browsing::PingManager::ReportThreatDetailsResult;
 using TailoredVerdict = safe_browsing::ClientDownloadResponse::TailoredVerdict;
 using TailoredWarningType = DownloadUIModel::TailoredWarningType;
 
@@ -248,7 +246,7 @@ std::u16string DownloadItemModel::GetTabProgressStatusText() const {
   } else {
     size = download_->GetReceivedBytes();
   }
-  std::u16string received_size = ui::FormatBytes(size);
+  std::u16string received_size = ui::FormatBytes(base::ByteCount(size));
   std::u16string amount = received_size;
 
   // Adjust both strings for the locale direction since we don't yet know which
@@ -256,7 +254,7 @@ std::u16string DownloadItemModel::GetTabProgressStatusText() const {
   base::i18n::AdjustStringForLocaleDirection(&amount);
 
   if (total) {
-    std::u16string total_text = ui::FormatBytes(total);
+    std::u16string total_text = ui::FormatBytes(base::ByteCount(total));
     base::i18n::AdjustStringForLocaleDirection(&total_text);
 
     base::i18n::AdjustStringForLocaleDirection(&received_size);
@@ -266,7 +264,7 @@ std::u16string DownloadItemModel::GetTabProgressStatusText() const {
     amount.assign(received_size);
   }
   int64_t current_speed = download_->CurrentSpeed();
-  std::u16string speed_text = ui::FormatSpeed(current_speed);
+  std::u16string speed_text = ui::FormatSpeed(base::ByteCount(current_speed));
   base::i18n::AdjustStringForLocaleDirection(&speed_text);
 
   base::TimeDelta remaining;
@@ -363,6 +361,7 @@ bool DownloadItemModel::IsMalicious() const {
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
       return false;
   }
   NOTREACHED();
@@ -451,9 +450,8 @@ bool DownloadItemModel::ShouldPreferOpeningInBrowser() {
     base::FilePath path = GetTargetFilePath();
     std::string mime_type = GetMimeType();
     DetermineAndSetShouldPreferOpeningInBrowser(
-        path,
-        DownloadTargetDeterminer::DetermineIfHandledSafelyHelperSynchronous(
-            download_, path, mime_type));
+        path, DownloadTargetDeterminer::DetermineIfHandledSafelyHelper(
+                  download_, path, mime_type));
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
   return data->should_prefer_opening_in_browser_.value_or(false);
@@ -962,6 +960,7 @@ DangerUiPattern DownloadItemModel::GetDangerUiPattern() const {
     case download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
       return DangerUiPattern::kSuspicious;
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
@@ -1063,6 +1062,7 @@ bool DownloadItemModel::IsEphemeralWarning() const {
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
     case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
       return true;
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:

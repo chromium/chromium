@@ -15,12 +15,14 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/disabled_grid_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_container_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_mediator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_main_tab_grid_delegate.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -33,8 +35,7 @@ namespace {
 // Creates a nice mock of TabGroupSyncService. It's "nice" since these tests
 // don't really care what is called on the service, they just need to pass it
 // down to the coordinator's mediator.
-std::unique_ptr<KeyedService> CreateMockSyncService(
-    web::BrowserState* context) {
+std::unique_ptr<KeyedService> CreateMockSyncService(ProfileIOS* profile) {
   return std::make_unique<
       ::testing::NiceMock<tab_groups::MockTabGroupSyncService>>();
 }
@@ -104,6 +105,11 @@ class TabGroupsPanelCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:application_handler_mock_
                      forProtocol:@protocol(ApplicationCommands)];
 
+    tab_groups_handler_mock_ = OCMProtocolMock(@protocol(TabGroupsCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:tab_groups_handler_mock_
+                     forProtocol:@protocol(TabGroupsCommands)];
+
     base_view_controller_ = [[UIViewController alloc] init];
     toolbars_mutator_ = [[TestToolbarsMutator alloc] init];
     disabled_grid_view_controller_delegate_ =
@@ -117,6 +123,7 @@ class TabGroupsPanelCoordinatorTest : public PlatformTest {
 
   // Needed for test profile created by TestBrowser().
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
@@ -126,6 +133,7 @@ class TabGroupsPanelCoordinatorTest : public PlatformTest {
       disabled_grid_view_controller_delegate_;
   id tab_grid_handler_mock_;
   id application_handler_mock_;
+  id tab_groups_handler_mock_;
 };
 
 // Tests that the mediator and view controllers are nil before `start`.
@@ -136,7 +144,7 @@ TEST_F(TabGroupsPanelCoordinatorTest, NilPropertiesBeforeStart) {
   EXPECT_EQ(nil, coordinator_.gridContainerViewController);
 }
 
-// Tests that with no Incognito mode policy, the third panel is Tab Groups.
+// Tests that with no Incognito mode policy, the tab groups page is shown.
 TEST_F(TabGroupsPanelCoordinatorTest, NoIncognitoPolicy_TabGroupsShown) {
   [coordinator_ start];
 
@@ -149,8 +157,8 @@ TEST_F(TabGroupsPanelCoordinatorTest, NoIncognitoPolicy_TabGroupsShown) {
             coordinator_.gridContainerViewController.containedViewController);
 }
 
-// Tests that with Incognito mode disabled by policy, the third panel is Tab
-// Groups.
+// Tests that with Incognito mode disabled by policy, the tab groups page is
+// shown.
 TEST_F(TabGroupsPanelCoordinatorTest, IncognitoDisabled_TabGroupsShown) {
   // Disable Incognito with policy.
   profile_->GetTestingPrefService()->SetManagedPref(
@@ -169,8 +177,8 @@ TEST_F(TabGroupsPanelCoordinatorTest, IncognitoDisabled_TabGroupsShown) {
             coordinator_.gridContainerViewController.containedViewController);
 }
 
-// Tests that with Incognito mode forced by policy, the third panel is the
-// disabled Tab Groups view.
+// Tests that with Incognito mode forced by policy, the tab groups page is not
+// shown. Instead, it's the disabled tab groups view.
 TEST_F(TabGroupsPanelCoordinatorTest, IncognitoForced_TabGroupsDisabled) {
   // Force Incognito with policy.
   profile_->GetTestingPrefService()->SetManagedPref(

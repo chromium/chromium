@@ -33,6 +33,10 @@ class COMPONENT_EXPORT(OZONE_BASE) GpuPlatformSupportHost {
   GpuPlatformSupportHost();
   virtual ~GpuPlatformSupportHost();
 
+  // Called when the HDR state changes or is first received.
+  // This is called from browser UI thread.
+  virtual void OnHdrEnabledChanged(bool hdr_enabled);
+
   // Called when the GPU process is destroyed.
   // This is called from browser UI thread.
   virtual void OnChannelDestroyed(int host_id) = 0;

@@ -42,7 +42,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GCM.ClientStartDelay" units="ms" expires_after="2025-12-14">
+<histogram name="GCM.ClientStartDelay" units="ms" expires_after="2026-04-19">
   <owner>rushans@google.com</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -92,7 +92,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.DelayedTaskControlledReadyTime" units="ms"
-    expires_after="2025-11-30">
+    expires_after="2026-04-05">
   <owner>rushans@google.com</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -102,7 +102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.DeliveredToAppHandler{AppHandler}" enum="BooleanDelivered"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>peter@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
@@ -129,7 +129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.MessageValid" enum="BooleanSuccess"
-    expires_after="2026-01-04">
+    expires_after="2026-03-08">
   <owner>smaier@chromium.org</owner>
   <summary>
     Records whether or not a received GCM message is valid and will proceed to
@@ -168,7 +168,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GCM.RegistrationRequestStatus"
-    enum="GCMRegistrationRequestStatus" expires_after="2025-11-30">
+    enum="GCMRegistrationRequestStatus" expires_after="2026-06-07">
   <owner>peter@chromium.org</owner>
   <summary>
     Status code of the outcome of a GCM registration request. The Unknown error

@@ -81,6 +81,15 @@ class CORE_EXPORT ListInterpolationFunctions {
   // more clients to assert no more usage with this function.
   static bool VerifyNoNonInterpolableValues(const NonInterpolableValue* a,
                                             const NonInterpolableValue* b);
+
+  static bool InterpolableListsAreCompatible(
+      const InterpolableList& a,
+      const InterpolableList& b,
+      wtf_size_t length,
+      ListInterpolationFunctions::LengthMatchingStrategy
+          length_matching_strategy,
+      ListInterpolationFunctions::InterpolableValuesAreCompatibleCallback
+          interpolable_values_are_compatible);
 };
 
 class CORE_EXPORT NonInterpolableList final : public NonInterpolableValue {

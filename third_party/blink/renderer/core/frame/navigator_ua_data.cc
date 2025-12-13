@@ -7,65 +7,15 @@
 #include "base/compiler_specific.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_ua_data_values.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/dactyloscoper.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
-
-namespace {
-
-// Record identifiability study metrics for a single field requested by a
-// getHighEntropyValues() call if the user is in the study.
-void MaybeRecordMetric(bool record_identifiability,
-                       const String& hint,
-                       const IdentifiableToken token,
-                       ExecutionContext* execution_context) {
-  if (!record_identifiability) [[likely]] {
-    return;
-  }
-  auto identifiable_surface = IdentifiableSurface::FromTypeAndToken(
-      IdentifiableSurface::Type::kNavigatorUAData_GetHighEntropyValues,
-      IdentifiableToken(hint.Utf8()));
-  IdentifiabilityMetricBuilder(execution_context->UkmSourceID())
-      .Add(identifiable_surface, token)
-      .Record(execution_context->UkmRecorder());
-}
-
-void MaybeRecordMetric(bool record_identifiability,
-                       const String& hint,
-                       const String& value,
-                       ExecutionContext* execution_context) {
-  MaybeRecordMetric(record_identifiability, hint,
-                    IdentifiableToken(value.Utf8()), execution_context);
-}
-
-void MaybeRecordMetric(bool record_identifiability,
-                       const String& hint,
-                       const Vector<String>& strings,
-                       ExecutionContext* execution_context) {
-  if (!record_identifiability) [[likely]] {
-    return;
-  }
-  IdentifiableTokenBuilder token_builder;
-  for (const auto& s : strings) {
-    token_builder.AddAtomic(s.Utf8());
-  }
-  MaybeRecordMetric(record_identifiability, hint, token_builder.GetToken(),
-                    execution_context);
-}
-
-}  // namespace
 
 NavigatorUAData::NavigatorUAData(ExecutionContext* context)
     : ExecutionContextClient(context) {
@@ -149,29 +99,7 @@ bool NavigatorUAData::mobile() const {
 
 const HeapVector<Member<NavigatorUABrandVersion>>& NavigatorUAData::brands()
     const {
-  constexpr auto identifiable_surface = IdentifiableSurface::FromTypeAndToken(
-      IdentifiableSurface::Type::kWebFeature,
-      WebFeature::kNavigatorUAData_Brands);
-
-  ExecutionContext* context = GetExecutionContext();
-  if (context) {
-    // Record IdentifiabilityStudy metrics if the client is in the study.
-    if (IdentifiabilityStudySettings::Get()->ShouldSampleSurface(
-            identifiable_surface)) [[unlikely]] {
-      IdentifiableTokenBuilder token_builder;
-      for (const auto& brand : brand_set_) {
-        token_builder.AddValue(brand->hasBrand());
-        if (brand->hasBrand())
-          token_builder.AddAtomic(brand->brand().Utf8());
-        token_builder.AddValue(brand->hasVersion());
-        if (brand->hasVersion())
-          token_builder.AddAtomic(brand->version().Utf8());
-      }
-      IdentifiabilityMetricBuilder(context->UkmSourceID())
-          .Add(identifiable_surface, token_builder.GetToken())
-          .Record(context->UkmRecorder());
-    }
-
+  if (GetExecutionContext()) {
     return brand_set_;
   }
 
@@ -182,7 +110,7 @@ const String& NavigatorUAData::platform() const {
   if (GetExecutionContext()) {
     return platform_;
   }
-  return WTF::g_empty_string;
+  return g_empty_string;
 }
 
 bool AllowedToCollectHighEntropyValues(ExecutionContext* execution_context) {
@@ -218,9 +146,6 @@ ScriptPromise<UADataValues> NavigatorUAData::getHighEntropyValues(
       ExecutionContext::From(script_state);  // GetExecutionContext();
   DCHECK(execution_context);
 
-  bool record_identifiability =
-      IdentifiabilityStudySettings::Get()->ShouldSampleType(
-          IdentifiableSurface::Type::kNavigatorUAData_GetHighEntropyValues);
   UADataValues* values = MakeGarbageCollected<UADataValues>();
   // TODO: It'd be faster to compare hint when turning |hints| into an
   // AtomicString vector and turning the const string literals |hint| into
@@ -231,17 +156,9 @@ ScriptPromise<UADataValues> NavigatorUAData::getHighEntropyValues(
   // low-entropy brands, mobile and platform hints should always be included for
   // convenience.
 
-  // Use `brands()` and not `brand_set_` directly since the former also
-  // records IdentifiabilityStudy metrics.
-  values->setBrands(brands());
+  values->setBrands(brand_set_);
   values->setMobile(is_mobile_);
   values->setPlatform(platform_);
-  // Record IdentifiabilityStudy metrics for `mobile()` and `platform()` (the
-  // `brands()` part is already recorded inside that function).
-  Dactyloscoper::RecordDirectSurface(
-      GetExecutionContext(), WebFeature::kNavigatorUAData_Mobile, mobile());
-  Dactyloscoper::RecordDirectSurface(
-      GetExecutionContext(), WebFeature::kNavigatorUAData_Platform, platform());
 
   // If the "ch-ua-high-entropy-values" permission policy is enabled for a
   // document, add high-entropy client hints to values (if requested)
@@ -249,34 +166,20 @@ ScriptPromise<UADataValues> NavigatorUAData::getHighEntropyValues(
     for (const String& hint : hints) {
       if (hint == "platformVersion") {
         values->setPlatformVersion(platform_version_);
-        MaybeRecordMetric(record_identifiability, hint, platform_version_,
-                          execution_context);
       } else if (hint == "architecture") {
         values->setArchitecture(architecture_);
-        MaybeRecordMetric(record_identifiability, hint, architecture_,
-                          execution_context);
       } else if (hint == "model") {
         values->setModel(model_);
-        MaybeRecordMetric(record_identifiability, hint, model_,
-                          execution_context);
       } else if (hint == "uaFullVersion") {
         values->setUaFullVersion(ua_full_version_);
-        MaybeRecordMetric(record_identifiability, hint, ua_full_version_,
-                          execution_context);
       } else if (hint == "bitness") {
         values->setBitness(bitness_);
-        MaybeRecordMetric(record_identifiability, hint, bitness_,
-                          execution_context);
       } else if (hint == "fullVersionList") {
         values->setFullVersionList(full_version_list_);
       } else if (hint == "wow64") {
         values->setWow64(is_wow64_);
-        MaybeRecordMetric(record_identifiability, hint, is_wow64_ ? "?1" : "?0",
-                          execution_context);
       } else if (hint == "formFactors") {
         values->setFormFactors(form_factors_);
-        MaybeRecordMetric(record_identifiability, hint, form_factors_,
-                          execution_context);
       }
     }
   }
@@ -284,9 +187,9 @@ ScriptPromise<UADataValues> NavigatorUAData::getHighEntropyValues(
   execution_context->GetTaskRunner(TaskType::kPermission)
       ->PostTask(
           FROM_HERE,
-          WTF::BindOnce([](ScriptPromiseResolver<UADataValues>* resolver,
-                           UADataValues* values) { resolver->Resolve(values); },
-                        WrapPersistent(resolver), WrapPersistent(values)));
+          BindOnce([](ScriptPromiseResolver<UADataValues>* resolver,
+                      UADataValues* values) { resolver->Resolve(values); },
+                   WrapPersistent(resolver), WrapPersistent(values)));
 
   return promise;
 }
@@ -296,13 +199,6 @@ ScriptObject NavigatorUAData::toJSON(ScriptState* script_state) const {
   builder.AddVector<NavigatorUABrandVersion>("brands", brands());
   builder.AddBoolean("mobile", mobile());
   builder.AddString("platform", platform());
-
-  // Record IdentifiabilityStudy metrics for `mobile()` and `platform()`
-  // (the `brands()` part is already recorded inside that function).
-  Dactyloscoper::RecordDirectSurface(
-      GetExecutionContext(), WebFeature::kNavigatorUAData_Mobile, mobile());
-  Dactyloscoper::RecordDirectSurface(
-      GetExecutionContext(), WebFeature::kNavigatorUAData_Platform, platform());
 
   return builder.ToScriptObject();
 }

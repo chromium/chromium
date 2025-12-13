@@ -60,9 +60,24 @@ void ContextualSearchFulfillmentAction::RecordActionShown(size_t position,
 
 void ContextualSearchFulfillmentAction::Execute(
     ExecutionContext& context) const {
-  // Delegate fulfillment to Lens.
-  context.client_->IssueContextualSearchRequest(url_, match_type_,
-                                                is_zero_prefix_suggestion_);
+  // Delegate fulfillment to Lens. Navigate to the action's `fulfillment_url_`
+  // if valid, since this url includes the associated match's updated
+  // `search_terms_args` which are attached to the match after this action is
+  // added to it.
+  // NOTE: `url_` should only be navigated to for the pedal fulfillment since
+  // there are not any searchbox stats associated with the pedal match.
+  context.client_->IssueContextualSearchRequest(
+      fulfillment_url_.is_valid() ? fulfillment_url_ : url_, match_type_,
+      is_zero_prefix_suggestion_);
+}
+
+ContextualSearchFulfillmentAction*
+ContextualSearchFulfillmentAction::FromAction(OmniboxAction* action) {
+  if (action &&
+      action->ActionId() == OmniboxActionId::CONTEXTUAL_SEARCH_FULFILLMENT) {
+    return static_cast<ContextualSearchFulfillmentAction*>(action);
+  }
+  return nullptr;
 }
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& ContextualSearchFulfillmentAction::GetVectorIcon()
@@ -112,7 +127,10 @@ void ContextualSearchOpenLensAction::Execute(ExecutionContext& context) const {
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& ContextualSearchOpenLensAction::GetVectorIcon() const {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return vector_icons::kGoogleLensMonochromeLogoIcon;
+  return omnibox_feature_configs::ContextualSearch::Get()
+                 .open_lens_action_ui_tweaks
+             ? vector_icons::kGoogleLensLogoIcon
+             : vector_icons::kGoogleLensMonochromeLogoIcon;
 #else
   return vector_icons::kSearchChromeRefreshIcon;
 #endif

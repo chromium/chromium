@@ -8,7 +8,6 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -21,6 +20,8 @@ import org.chromium.components.page_info.PageInfoMainController;
 import org.chromium.components.page_info.PageInfoRowView;
 import org.chromium.components.page_info.PageInfoSubpageController;
 import org.chromium.content_public.browser.WebContents;
+
+import java.util.function.Supplier;
 
 /** Class for controlling the {@link ChromePageInfo} "store info" section. */
 @NullMarked
@@ -121,6 +122,11 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
     }
 
     @Override
+    public @Nullable View getCurrentSubpageView() {
+        return null;
+    }
+
+    @Override
     public void onSubpageRemoved() {}
 
     @Override
@@ -128,4 +134,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
 
     @Override
     public void updateRowIfNeeded() {}
+
+    @Override
+    public void updateSubpageIfNeeded() {}
 }

@@ -11,14 +11,45 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
 
-AITestUtils::MockModelStreamingResponder::MockModelStreamingResponder() =
-    default;
-AITestUtils::MockModelStreamingResponder::~MockModelStreamingResponder() =
-    default;
+AITestUtils::TestStreamingResponder::TestStreamingResponder() = default;
+AITestUtils::TestStreamingResponder::~TestStreamingResponder() = default;
 
 mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
-AITestUtils::MockModelStreamingResponder::BindNewPipeAndPassRemote() {
+AITestUtils::TestStreamingResponder::BindRemote() {
   return receiver_.BindNewPipeAndPassRemote();
+}
+
+bool AITestUtils::TestStreamingResponder::WaitForCompletion() {
+  run_loop_.Run();
+  return !error_status_.has_value();
+}
+
+void AITestUtils::TestStreamingResponder::WaitForQuotaOverflow() {
+  quota_overflow_run_loop_.Run();
+}
+
+void AITestUtils::TestStreamingResponder::OnError(
+    blink::mojom::ModelStreamingResponseStatus status,
+    blink::mojom::QuotaErrorInfoPtr quota_error_info) {
+  error_status_ = status;
+  quota_error_info_ = std::move(quota_error_info);
+  run_loop_.Quit();
+}
+
+void AITestUtils::TestStreamingResponder::OnStreaming(const std::string& text) {
+  responses_.push_back(text);
+}
+
+void AITestUtils::TestStreamingResponder::OnCompletion(
+    blink::mojom::ModelExecutionContextInfoPtr context_info) {
+  if (context_info) {
+    current_tokens_ = context_info->current_tokens;
+  }
+  run_loop_.Quit();
+}
+
+void AITestUtils::TestStreamingResponder::OnQuotaOverflow() {
+  quota_overflow_run_loop_.Quit();
 }
 
 AITestUtils::MockModelDownloadProgressMonitor::
@@ -131,6 +162,16 @@ AITestUtils::AITestBase::~AITestBase() = default;
 
 void AITestUtils::AITestBase::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
+
+  optimization_guide::FakeModelBroker::Options options{};
+  fake_broker_ = std::make_unique<optimization_guide::FakeModelBroker>(options);
+  optimization_guide::FakeAdaptationAsset::Content content{.config =
+                                                               CreateConfig()};
+  fake_asset_ = std::make_unique<optimization_guide::FakeAdaptationAsset>(
+      std::move(content));
+  fake_broker_->UpdateModelAdaptation(*fake_asset_);
+
+  SetupMockOptimizationGuideKeyedService();
   ai_manager_ = std::make_unique<AIManager>(
       main_rfh()->GetBrowserContext(), &component_update_service_, main_rfh());
 }
@@ -138,6 +179,8 @@ void AITestUtils::AITestBase::SetUp() {
 void AITestUtils::AITestBase::TearDown() {
   mock_optimization_guide_keyed_service_ = nullptr;
   ai_manager_.reset();
+  fake_broker_.reset();
+  fake_asset_.reset();
   ChromeRenderViewHostTestHarness::TearDown();
 }
 
@@ -158,30 +201,23 @@ void AITestUtils::AITestBase::SetupMockOptimizationGuideKeyedService() {
         std::move(callback).Run(
             optimization_guide::OnDeviceModelEligibilityReason::kSuccess);
       });
+  ON_CALL(*mock_optimization_guide_keyed_service_, CreateModelBrokerClient())
+      .WillByDefault([&]() {
+        return std::make_unique<optimization_guide::ModelBrokerClient>(
+            fake_broker_->BindAndPassRemote(), nullptr);
+      });
 }
 
 void AITestUtils::AITestBase::SetupNullOptimizationGuideKeyedService() {
+  mock_optimization_guide_keyed_service_ = nullptr;
+  ai_manager_.reset();
+
   OptimizationGuideKeyedServiceFactory::GetInstance()->SetTestingFactoryAndUse(
       profile(), base::BindRepeating(
                      [](content::BrowserContext* context)
                          -> std::unique_ptr<KeyedService> { return nullptr; }));
-}
-
-void AITestUtils::AITestBase::SetupMockSession() {
-  ON_CALL(*mock_optimization_guide_keyed_service_,
-          StartSession(testing::_, testing::_))
-      .WillByDefault([&] {
-        return std::make_unique<
-            testing::NiceMock<optimization_guide::MockSession>>(&session_);
-      });
-  ON_CALL(session_, GetExecutionInputSizeInTokens(testing::_, testing::_))
-      .WillByDefault(
-          [&](optimization_guide::MultimodalMessageReadView request_metadata,
-              optimization_guide::OptimizationGuideModelSizeInTokenCallback
-                  callback) {
-            std::move(callback).Run(
-                blink::mojom::kWritingAssistanceMaxInputTokenSize);
-          });
+  ai_manager_ = std::make_unique<AIManager>(
+      main_rfh()->GetBrowserContext(), &component_update_service_, main_rfh());
 }
 
 blink::mojom::AIManager* AITestUtils::AITestBase::GetAIManagerInterface() {
@@ -201,23 +237,6 @@ size_t AITestUtils::AITestBase::GetAIManagerDownloadProgressObserversSize() {
 
 size_t AITestUtils::AITestBase::GetAIManagerContextBoundObjectSetSize() {
   return ai_manager_->GetContextBoundObjectSetSizeForTesting();
-}
-
-// static
-const optimization_guide::TokenLimits& AITestUtils::GetFakeTokenLimits() {
-  static const optimization_guide::TokenLimits limits{
-      .max_tokens = 4096,
-      .max_context_tokens = 2048,
-      .max_execute_tokens = 1024,
-      .max_output_tokens = 1024,
-  };
-  return limits;
-}
-
-// static
-const optimization_guide::proto::Any& AITestUtils::GetFakeFeatureMetadata() {
-  static base::NoDestructor<optimization_guide::proto::Any> data;
-  return *data;
 }
 
 // static

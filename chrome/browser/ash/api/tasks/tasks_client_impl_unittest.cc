@@ -31,6 +31,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/services/app_service/public/cpp/app.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -68,7 +69,6 @@ using ::testing::ByMove;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::HasSubstr;
-using ::testing::Invoke;
 using ::testing::Not;
 using ::testing::Return;
 
@@ -193,9 +193,11 @@ class TasksClientImplIsDisabledByAdminTest : public testing::Test {
 
   TasksClientImpl CreateClientForProfile(Profile* profile) const {
     return TasksClientImpl(
-        profile,
+        profile->GetPrefs(),
+        apps::AppServiceProxyFactory::GetForProfile(profile),
+        AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
         base::BindLambdaForTesting(
-            [&](const std::vector<std::string>& scopes,
+            [&](signin::OAuthConsumerId oauth_consumer_id,
                 const net::NetworkTrafficAnnotationTag& traffic_annotation_tag)
                 -> std::unique_ptr<google_apis::RequestSender> {
               return nullptr;
@@ -284,17 +286,20 @@ class TasksClientImplTest : public testing::Test {
     ASSERT_TRUE(profile_manager_.SetUp());
 
     auto create_request_sender_callback = base::BindLambdaForTesting(
-        [&](const std::vector<std::string>& scopes,
+        [&](signin::OAuthConsumerId oauth_consumer_id,
             const net::NetworkTrafficAnnotationTag& traffic_annotation_tag) {
           return std::make_unique<google_apis::RequestSender>(
               std::make_unique<google_apis::DummyAuthService>(),
               url_loader_factory_, task_environment_.GetMainThreadTaskRunner(),
               "test-user-agent", traffic_annotation_tag);
         });
+    Profile* profile = profile_manager_.CreateTestingProfile(
+        "profile@example.com",
+        /*testing_factories=*/{}, url_loader_factory_);
     client_ = std::make_unique<TasksClientImpl>(
-        profile_manager_.CreateTestingProfile("profile@example.com",
-                                              /*testing_factories=*/{},
-                                              url_loader_factory_),
+        profile->GetPrefs(),
+        apps::AppServiceProxyFactory::GetForProfile(profile),
+        AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
         create_request_sender_callback, TRAFFIC_ANNOTATION_FOR_TESTS);
 
     test_server_.RegisterRequestHandler(
@@ -513,7 +518,7 @@ TEST_F(TasksClientImplTest,
 TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskLists) {
   base::RunLoop first_request_waiter;
   EXPECT_CALL(request_handler(), HandleRequest(_))
-      .WillOnce(Invoke([&first_request_waiter](const HttpRequest&) {
+      .WillOnce([&first_request_waiter](const HttpRequest&) {
         first_request_waiter.Quit();
 
         return TestRequestHandler::CreateSuccessfulResponse(R"(
@@ -529,7 +534,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskLists) {
               "updated": "2022-12-21T23:38:22.590Z"
             }]
           })");
-      }))
+      })
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
           {
             "kind": "tasks#taskLists",
@@ -1394,7 +1399,7 @@ TEST_F(TasksClientImplTest,
 TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTasks) {
   base::RunLoop first_request_waiter;
   EXPECT_CALL(request_handler(), HandleRequest(_))
-      .WillOnce(Invoke([&first_request_waiter](const HttpRequest&) {
+      .WillOnce([&first_request_waiter](const HttpRequest&) {
         first_request_waiter.Quit();
         return TestRequestHandler::CreateSuccessfulResponse(R"({
           "kind": "tasks#tasks",
@@ -1409,7 +1414,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTasks) {
             "status": "needsAction"
           }]
         })");
-      }))
+      })
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"({
           "kind": "tasks#tasks",
           "items": [{
@@ -1922,7 +1927,7 @@ TEST_F(TasksClientImplTest, MarkAsCompleted) {
       request_handler(),
       HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_PATCH))))
       .Times(2)
-      .WillRepeatedly(Invoke([](const HttpRequest&) {
+      .WillRepeatedly([](const HttpRequest&) {
         return TestRequestHandler::CreateSuccessfulResponse(R"(
           {
             "kind": "tasks#task",
@@ -1931,7 +1936,7 @@ TEST_F(TasksClientImplTest, MarkAsCompleted) {
             "status": "completed"
           }
         )");
-      }));
+      });
 
   TasksFuture get_tasks_future;
   client()->GetTasks("test-task-list-id", /*force_fetch=*/false,

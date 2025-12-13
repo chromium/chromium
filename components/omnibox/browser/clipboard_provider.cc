@@ -29,7 +29,6 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_text_util.h"
-#include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/verbatim_match.h"

@@ -6,16 +6,16 @@ package org.chromium.android_webview.robolectric;
 
 import androidx.test.filters.SmallTest;
 
-import com.android.webview.chromium.WebViewCachedFlags;
-
-import org.chromium.android_webview.common.AwFeatures;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.android_webview.common.AwFeatures;
+import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.InMemorySharedPreferences;
 
 import java.util.Map;
@@ -24,9 +24,11 @@ import java.util.Set;
 /** Tests for WebViewCachedFlags. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class WebViewCachedFlagsTest {
-    // Keep these in sync with the prefs names in WebViewCachedFlags.java.
+    // Keep these in sync with the prefs/histogram names in WebViewCachedFlags.java.
     private static final String CACHED_ENABLED_FLAGS_PREF = "CachedFlagsEnabled";
     private static final String CACHED_DISABLED_FLAGS_PREF = "CachedFlagsDisabled";
+    private static final String CACHED_FLAGS_EXIST_HISTOGRAM_NAME =
+            "Android.WebView.CachedFlagsExist";
 
     @Test
     @Feature({"AndroidWebView"})
@@ -124,13 +126,66 @@ public class WebViewCachedFlagsTest {
 
         // The flags should be enabled if the prefs were present.
         Assert.assertTrue(
-                cachedFlags.isCachedFeatureEnabled(AwFeatures.WEBVIEW_SEPARATE_RESOURCE_CONTEXT));
-        Assert.assertTrue(cachedFlags.isCachedFeatureEnabled(AwFeatures.WEBVIEW_DISABLE_CHIPS));
-        Assert.assertTrue(
                 cachedFlags.isCachedFeatureEnabled(AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC));
         // Check that we removed the old prefs.
         Assert.assertFalse(sharedPrefs.contains("useWebViewResourceContext"));
         Assert.assertFalse(sharedPrefs.contains("defaultWebViewPartitionedCookiesState"));
         Assert.assertFalse(sharedPrefs.contains("webViewUseStartupTasksLogic"));
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    public void logWhetherCachedFlagsExist() {
+        InMemorySharedPreferences sharedPrefs = new InMemorySharedPreferences();
+        sharedPrefs
+                .edit()
+                .putStringSet(CACHED_ENABLED_FLAGS_PREF, Set.of())
+                .putStringSet(CACHED_DISABLED_FLAGS_PREF, Set.of())
+                .apply();
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newSingleRecordWatcher(CACHED_FLAGS_EXIST_HISTOGRAM_NAME, true)) {
+            new WebViewCachedFlags(sharedPrefs, Map.of());
+        }
+
+        InMemorySharedPreferences emptySharedPrefs = new InMemorySharedPreferences();
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newSingleRecordWatcher(CACHED_FLAGS_EXIST_HISTOGRAM_NAME, false)) {
+            new WebViewCachedFlags(emptySharedPrefs, Map.of());
+        }
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @SmallTest
+    @Features.EnableFeatures({"Baz"})
+    @Features.DisableFeatures({"Foo"})
+    public void flagsAreNotSetIfNotOverridden() {
+        InMemorySharedPreferences sharedPrefs = new InMemorySharedPreferences();
+        WebViewCachedFlags cachedFlags =
+                new WebViewCachedFlags(
+                        sharedPrefs,
+                        Map.of(
+                                "Foo", WebViewCachedFlags.DefaultState.ENABLED,
+                                "Bar", WebViewCachedFlags.DefaultState.ENABLED,
+                                "Baz", WebViewCachedFlags.DefaultState.ENABLED));
+
+        cachedFlags.onStartupCompleted(sharedPrefs);
+        Assert.assertEquals(
+                Set.of("Baz"), sharedPrefs.getStringSet(CACHED_ENABLED_FLAGS_PREF, Set.of()));
+        Assert.assertEquals(
+                Set.of("Foo"), sharedPrefs.getStringSet(CACHED_DISABLED_FLAGS_PREF, Set.of()));
+
+        // Simulate another startup
+        WebViewCachedFlags newCachedFlags =
+                new WebViewCachedFlags(
+                        sharedPrefs,
+                        Map.of(
+                                "Foo", WebViewCachedFlags.DefaultState.ENABLED,
+                                "Bar", WebViewCachedFlags.DefaultState.ENABLED,
+                                "Baz", WebViewCachedFlags.DefaultState.ENABLED));
+        Assert.assertTrue(newCachedFlags.isCachedFeatureOverridden("Baz"));
+        Assert.assertTrue(newCachedFlags.isCachedFeatureOverridden("Foo"));
+        Assert.assertFalse(newCachedFlags.isCachedFeatureOverridden("Bar"));
     }
 }

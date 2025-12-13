@@ -27,6 +27,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_data/content/browsing_data_test_util.h"
 #include "content/public/browser/browser_context.h"
@@ -192,9 +193,9 @@ void BrowsingDataRemoverBrowserTestBase::DownloadAnItem() {
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), download_url,
                                      GURL("about:blank")));
 #else
-  GURL download_url =
-      ui_test_utils::GetTestUrl(base::FilePath().AppendASCII("downloads"),
-                                base::FilePath().AppendASCII("a_zip_file.zip"));
+  GURL download_url = chrome_test_utils::GetTestUrl(
+      base::FilePath().AppendASCII("downloads"),
+      base::FilePath().AppendASCII("a_zip_file.zip"));
   SetPromptForDownload(GetBrowser(), false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), download_url));
 #endif
@@ -369,7 +370,7 @@ bool BrowsingDataRemoverBrowserTestBase::SetGaiaCookieForProfile(
     Profile* profile) {
   GURL google_url = GaiaUrls::GetInstance()->secure_google_url();
   auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
-      "SAPISID", std::string(), "." + google_url.host(), "/", base::Time(),
+      "SAPISID", std::string(), "." + google_url.GetHost(), "/", base::Time(),
       base::Time(), base::Time(), base::Time(), /*secure=*/true,
       /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
       net::COOKIE_PRIORITY_DEFAULT);

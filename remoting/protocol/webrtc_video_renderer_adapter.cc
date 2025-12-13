@@ -38,6 +38,7 @@ std::unique_ptr<webrtc::DesktopFrame> ConvertYuvToRgb(
     FrameConsumer::PixelFormat pixel_format) {
   DCHECK(rgb_frame->size().equals(
       webrtc::DesktopSize(yuv_frame->width(), yuv_frame->height())));
+  CHECK_EQ(rgb_frame->pixel_format(), webrtc::FOURCC_ARGB);
   auto yuv_to_rgb_function = (pixel_format == FrameConsumer::FORMAT_BGRA)
                                  ? &libyuv::I420ToARGB
                                  : &libyuv::I420ToABGR;

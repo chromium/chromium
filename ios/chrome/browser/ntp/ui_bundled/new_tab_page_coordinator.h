@@ -42,9 +42,6 @@ class WebState;
 // Returns `YES` if the coordinator is started.
 @property(nonatomic, readonly) BOOL started;
 
-// Currently selected feed.
-@property(nonatomic, readonly) FeedType selectedFeed;
-
 // If set to NO, then the omnibox will not be automatically focused when the
 // view appears if this coordinator is started after Chrome has been fully
 // initialized (i.e. reloaded programmatically via `[NTPCoordinator start]`).
@@ -83,14 +80,9 @@ class WebState;
 // Constrains the named layout guide for the feed IPH.
 - (void)constrainNamedGuideForFeedIPH;
 
-// Updates the new tab page based on if there is unseen content in the Following
-// feed.
-- (void)updateFollowingFeedHasUnseenContent:(BOOL)hasUnseenContent;
-
-// Called when the given `feedType` has completed layout updates of type
+// Called when the feed has completed layout updates of type
 // `updateType`.
-- (void)handleFeedModelOfType:(FeedType)feedType
-                didEndUpdates:(FeedLayoutUpdateType)updateType;
+- (void)handleFeedModelDidEndUpdates:(FeedLayoutUpdateType)updateType;
 
 // Checks if there are any WebStates showing an NTP at this time. If not, then
 // stops the NTP.

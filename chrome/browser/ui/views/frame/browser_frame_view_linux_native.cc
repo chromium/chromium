@@ -40,11 +40,11 @@ bool BrowserFrameViewLinuxNative::DrawFrameButtonParams::operator==(
 }
 
 BrowserFrameViewLinuxNative::BrowserFrameViewLinuxNative(
-    BrowserFrame* frame,
+    BrowserWidget* widget,
     BrowserView* browser_view,
     BrowserFrameViewLayoutLinuxNative* layout,
     std::unique_ptr<ui::NavButtonProvider> nav_button_provider)
-    : BrowserFrameViewLinux(frame, browser_view, layout),
+    : BrowserFrameViewLinux(widget, browser_view, layout),
       nav_button_provider_(std::move(nav_button_provider)),
       layout_(layout) {}
 
@@ -56,7 +56,7 @@ void BrowserFrameViewLinuxNative::Layout(PassKey) {
   // DesktopWindowTreeHostPlatform::On{Window,Activation}StateChanged() does a
   // layout any time the maximized and activation state changes, respectively.
   MaybeUpdateCachedFrameButtonImages();
-  LayoutSuperclass<OpaqueBrowserFrameView>(this);
+  LayoutSuperclass<BrowserFrameViewLinux>(this);
 }
 
 BrowserFrameViewLinuxNative::FrameButtonStyle
@@ -68,6 +68,15 @@ int BrowserFrameViewLinuxNative::GetTranslucentTopAreaHeight() const {
   return layout_->GetFrameProvider()->IsTopFrameTranslucent()
              ? GetTopAreaHeight()
              : 0;
+}
+
+BrowserLayoutParams BrowserFrameViewLinuxNative::GetBrowserLayoutParams()
+    const {
+  // Because this can be called before the frame is laid out, we might need to
+  // preemptively cache the frame buttons.
+  const_cast<BrowserFrameViewLinuxNative*>(this)
+      ->MaybeUpdateCachedFrameButtonImages();
+  return BrowserFrameViewLinux::GetBrowserLayoutParams();
 }
 
 float BrowserFrameViewLinuxNative::GetRestoredCornerRadiusDip() const {

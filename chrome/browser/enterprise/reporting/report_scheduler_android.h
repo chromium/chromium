@@ -13,7 +13,8 @@ class Profile;
 namespace enterprise_reporting {
 
 // Android implementation of the ReportScheduler delegate.
-class ReportSchedulerAndroid : public ReportScheduler::Delegate {
+class ReportSchedulerAndroid : public ReportScheduler::Delegate,
+                               public UserSecuritySignalsService::Delegate {
  public:
   ReportSchedulerAndroid();
   explicit ReportSchedulerAndroid(Profile* profile);
@@ -24,16 +25,16 @@ class ReportSchedulerAndroid : public ReportScheduler::Delegate {
 
   // ReportScheduler::Delegate implementation.
   PrefService* GetPrefService() override;
-  void OnInitializationCompleted() override;
   void StartWatchingUpdatesIfNeeded(base::Time last_upload,
                                     base::TimeDelta upload_interval) override;
   void StopWatchingUpdates() override;
   void OnBrowserVersionUploaded() override;
-  bool AreSecurityReportsEnabled() override;
-  bool UseCookiesInUploads() override;
-  void OnSecuritySignalsUploaded() override;
   policy::DMToken GetProfileDMToken() override;
   std::string GetProfileClientId() override;
+
+  // UserSecuritySignalsService::Delegate implementation.
+  void OnReportEventTriggered(SecurityReportTrigger trigger) override;
+  network::mojom::CookieManager* GetCookieManager() override;
 
  private:
   raw_ptr<Profile> profile_;

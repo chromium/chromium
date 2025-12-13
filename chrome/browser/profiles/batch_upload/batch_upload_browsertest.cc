@@ -16,12 +16,12 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/local_data_description.h"
 #include "content/public/browser/browser_context.h"
@@ -29,8 +29,6 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-
-using signin::constants::kNoHostedDomainFound;
 
 namespace {
 
@@ -91,11 +89,13 @@ class BatchUploadBrowserTest : public InProcessBrowserTest {
         identity_manager, "test@gmail.com", consent_level);
     ASSERT_FALSE(account_info.IsEmpty());
 
-    account_info.full_name = "Joe Testing";
-    account_info.given_name = "Joe";
-    account_info.picture_url = "SOME_FAKE_URL";
-    account_info.hosted_domain = kNoHostedDomainFound;
-    account_info.locale = "en";
+    account_info = AccountInfo::Builder(account_info)
+                       .SetFullName("Joe Testing")
+                       .SetGivenName("Joe")
+                       .SetHostedDomain(std::string())
+                       .SetAvatarUrl("SOME_FAKE_URL")
+                       .SetLocale("en")
+                       .Build();
     ASSERT_TRUE(account_info.IsValid());
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   }
@@ -289,7 +289,10 @@ IN_PROC_BROWSER_TEST_F(BatchUploadWithFakeDelegateBrowserTest,
   test_helper().SetReturnDescriptions(syncer::DataType::CONTACT_INFO, 1);
 
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
-  ASSERT_EQ(avatar_button->GetText(), std::u16string());
+  const std::u16string original_avatar_button_text(avatar_button->GetText());
+  ASSERT_NE(original_avatar_button_text,
+            l10n_util::GetStringUTF16(
+                IDS_BATCH_UPLOAD_AVATAR_BUTTON_SAVING_TO_ACCOUNT));
 
   ASSERT_FALSE(batch_upload()->IsDialogOpened());
 
@@ -300,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(BatchUploadWithFakeDelegateBrowserTest,
   delegate->SimulateCancel();
 
   EXPECT_FALSE(batch_upload()->IsDialogOpened());
-  EXPECT_EQ(avatar_button->GetText(), std::u16string());
+  EXPECT_EQ(avatar_button->GetText(), original_avatar_button_text);
 }
 
 IN_PROC_BROWSER_TEST_F(BatchUploadWithFakeDelegateBrowserTest,
@@ -310,7 +313,9 @@ IN_PROC_BROWSER_TEST_F(BatchUploadWithFakeDelegateBrowserTest,
   test_helper().SetReturnDescriptions(syncer::DataType::CONTACT_INFO, 1);
 
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
-  ASSERT_EQ(avatar_button->GetText(), std::u16string());
+  ASSERT_NE(avatar_button->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_BATCH_UPLOAD_AVATAR_BUTTON_SAVING_TO_ACCOUNT));
 
   ASSERT_FALSE(batch_upload()->IsDialogOpened());
 

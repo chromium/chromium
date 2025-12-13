@@ -193,6 +193,10 @@ class MockClientStub : public ClientStub {
 
   // CursorShapeStub mock implementation.
   MOCK_METHOD1(SetCursorShape, void(const CursorShapeInfo& cursor_shape));
+  MOCK_METHOD(void,
+              SetHostCursorPosition,
+              (const HostCursorPosition& position),
+              (override));
 
   // KeyboardLayoutStub mock implementation.
   MOCK_METHOD1(SetKeyboardLayout, void(const KeyboardLayout& layout));

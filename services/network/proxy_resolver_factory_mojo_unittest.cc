@@ -289,7 +289,7 @@ void MockMojoProxyResolver::GetProxyForUrl(
       mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
           dns_client;
       std::ignore = dns_client.InitWithNewPipeAndPassReceiver();
-      client->ResolveDns(url.host(),
+      client->ResolveDns(url.GetHost(),
                          net::ProxyResolveDnsOperation::DNS_RESOLVE_EX,
                          network_anonymization_key, std::move(dns_client));
       blocked_clients_.push_back(std::move(client));
@@ -960,7 +960,7 @@ TEST_F(ProxyResolverFactoryMojoTest,
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
 
-  EXPECT_EQ(kUrl.host(), host_resolver_.last_host().host());
+  EXPECT_EQ(kUrl.GetHost(), host_resolver_.last_host().host());
   EXPECT_EQ(kNetworkAnonymizationKey,
             host_resolver_.last_network_anonymization_key());
 }

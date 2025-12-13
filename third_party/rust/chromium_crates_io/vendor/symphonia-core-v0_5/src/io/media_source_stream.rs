@@ -436,12 +436,12 @@ impl SeekBuffered for MediaSourceStream {
 
         // Forward seek.
         let delta = if pos > old_pos {
-            assert!(pos - old_pos < std::isize::MAX as u64);
+            assert!(pos - old_pos < isize::MAX as u64);
             (pos - old_pos) as isize
         }
         else if pos < old_pos {
             // Backward seek.
-            assert!(old_pos - pos < std::isize::MAX as u64);
+            assert!(old_pos - pos < isize::MAX as u64);
             -((old_pos - pos) as isize)
         }
         else {

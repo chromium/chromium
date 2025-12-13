@@ -14,8 +14,7 @@
 #include "media/parsers/h265_nalu_parser.h"
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
-namespace media {
-namespace mp4 {
+namespace media::mp4 {
 namespace {
 
 template <typename T>
@@ -148,16 +147,15 @@ void StringToAnnexB(const std::string& str,
   DCHECK_GT(subsample_specs.size(), 0u);
 
   buffer->clear();
-  for (size_t i = 0; i < subsample_specs.size(); ++i) {
+  for (const auto& subsample_spec : subsample_specs) {
     SubsampleEntry entry;
     size_t start = buffer->size();
 
-    std::vector<std::string> subsample_nalus =
-        base::SplitString(subsample_specs[i], ",", base::KEEP_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
+    std::vector<std::string> subsample_nalus = base::SplitString(
+        subsample_spec, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     DCHECK_GT(subsample_nalus.size(), 0u);
-    for (size_t j = 0; j < subsample_nalus.size(); ++j) {
-      WriteStartCodeAndNALUType<T>(buffer, subsample_nalus[j]);
+    for (auto& subsample_nalu : subsample_nalus) {
+      WriteStartCodeAndNALUType<T>(buffer, subsample_nalu);
 
       // Write junk for the payload since the current code doesn't
       // actually look at it.
@@ -203,5 +201,4 @@ bool AnalysesMatch(const BitstreamConverter::AnalysisResult& r1,
          r1.is_keyframe == r2.is_keyframe;
 }
 
-}  // namespace mp4
-}  // namespace media
+}  // namespace media::mp4

@@ -98,11 +98,9 @@ void MemoryPressureNotificationToAllIsolates(v8::MemoryPressureLevel level) {
   Thread::MainThread()
       ->Scheduler()
       ->ToMainThreadScheduler()
-      ->ForEachMainThreadIsolate(WTF::BindRepeating(
-          [](v8::MemoryPressureLevel level, v8::Isolate* isolate) {
-            isolate->MemoryPressureNotification(level);
-          },
-          level));
+      ->ForEachMainThreadIsolate([&](v8::Isolate* isolate) {
+        isolate->MemoryPressureNotification(level);
+      });
   WorkerBackingThread::MemoryPressureNotificationToWorkerThreadIsolates(level);
 }
 
@@ -110,11 +108,9 @@ void SetBatterySaverModeForAllIsolates(bool battery_saver_mode_enabled) {
   Thread::MainThread()
       ->Scheduler()
       ->ToMainThreadScheduler()
-      ->ForEachMainThreadIsolate(WTF::BindRepeating(
-          [](bool battery_saver_mode_enabled, v8::Isolate* isolate) {
-            isolate->SetBatterySaverMode(battery_saver_mode_enabled);
-          },
-          battery_saver_mode_enabled));
+      ->ForEachMainThreadIsolate([&](v8::Isolate* isolate) {
+        isolate->SetBatterySaverMode(battery_saver_mode_enabled);
+      });
   WorkerBackingThread::SetBatterySaverModeForWorkerThreadIsolates(
       battery_saver_mode_enabled);
 }

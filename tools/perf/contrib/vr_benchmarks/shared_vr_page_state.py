@@ -2,11 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
 from core import path_util
 path_util.AddAndroidPylibToPath()
-from telemetry.core import android_platform
-from telemetry.core import util
+from devil.android.sdk import keyevent  # pylint: disable=import-error
 from telemetry.page import shared_page_state
 from contrib.vr_benchmarks.desktop_runtimes import openxr_runtimes
 
@@ -31,7 +29,7 @@ class SharedVrPageStateFactory(shared_page_state.SharedPageState):
     super(SharedVrPageStateFactory, self).__init__(
         test, finder_options, story_set, possible_browser)
 
-    if isinstance(self.platform, android_platform.AndroidPlatform):
+    if self.platform.GetOSName().lower() == 'android':
       self.__class__ = AndroidSharedVrPageState
     elif self.platform.GetOSName().lower() == 'win':
       self.__class__ = WindowsSharedVrPageState
@@ -79,45 +77,31 @@ class AndroidSharedVrPageState(_SharedVrPageState):
   def __init__(self, test, finder_options, story_set, possible_browser=None):
     super(AndroidSharedVrPageState, self).__init__(
         test, finder_options, story_set, possible_browser)
-    self._InstallNfcApk()
-
-  def _InstallNfcApk(self):
-    """Installs the APK that allows VR tests to simulate a headset NFC scan."""
-    chromium_root = path_util.GetChromiumSrcDir()
-    # Find the most recently build APK
-    candidate_apks = []
-    for build_path in util.GetBuildDirectories(chromium_root):
-      apk_path = os.path.join(build_path, 'apks', 'VrNfcSimulator.apk')
-      if os.path.exists(apk_path):
-        last_changed = os.path.getmtime(apk_path)
-        candidate_apks.append((last_changed, apk_path))
-
-    if not candidate_apks:
-      raise RuntimeError(
-          'Could not find VrNfcSimulator.apk in a build output directory')
-    newest_apk_path = sorted(candidate_apks)[-1][1]
-    self.platform.InstallApplication(
-        os.path.join(chromium_root, newest_apk_path))
+    self._orig_doff_screen_timeout_ms = None
 
   def WillRunStory(self, story):
     super(AndroidSharedVrPageState, self).WillRunStory(story)
-    if not self._finder_options.disable_screen_reset:
-      self._CycleScreen()
-
-  def _CycleScreen(self):
-    """Cycles the screen off then on.
-
-    This is because VR test devices are set to have normal screen brightness and
-    automatically turn off after several minutes instead of the usual approach
-    of having the screen always on at minimum brightness. This is due to the
-    motion-to-photon latency test being sensitive to screen brightness, and min
-    brightness does not work well for it.
-
-    Simply using TurnScreenOn does not actually reset the timer for turning off
-    the screen, so instead cycle the screen to refresh it periodically.
-    """
-    self.platform.android_action_runner.TurnScreenOff()
+    if self.platform.android_action_runner.IsXrDevice():
+      # XR devices may keep screen off when not weared.
+      self._orig_doff_screen_timeout_ms = self.platform.android_action_runner.RunCommand(
+          'settings get system doff_screen_timeout_ms').strip()
+      # The value should never be empty, and we don't know how to restore the
+      # empty value.
+      assert self._orig_doff_screen_timeout_ms
+      self.platform.android_action_runner.RunCommand(
+          'settings put system doff_screen_timeout_ms 0')
+      self.platform.android_action_runner.InputKeyEvent(keyevent.KEYCODE_WAKEUP)
     self.platform.android_action_runner.TurnScreenOn()
+
+  def DidRunStory(self, results):
+    super(AndroidSharedVrPageState, self).DidRunStory(results)
+    if self.platform.android_action_runner.IsXrDevice():
+      if self._orig_doff_screen_timeout_ms == 'null':
+        # This means the setting wasn't set.
+        cmd = 'settings delete system doff_screen_timeout_ms'
+      elif self._orig_doff_screen_timeout_ms:
+        cmd = f'settings put system doff_screen_timeout_ms {self._orig_doff_screen_timeout_ms}'
+      self.platform.android_action_runner.RunCommand(cmd)
 
   def ShouldNavigateToBlankPageBeforeFinishing(self):
     # Android devices generate a lot of heat while in VR, so navigate away from

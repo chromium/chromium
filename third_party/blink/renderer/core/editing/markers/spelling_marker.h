@@ -18,7 +18,8 @@ class CORE_EXPORT SpellingMarker final : public SpellCheckMarker {
  public:
   SpellingMarker(unsigned start_offset,
                  unsigned end_offset,
-                 const String& description);
+                 const String& description,
+                 bool should_hide_suggestion_menu = false);
   SpellingMarker(const SpellingMarker&) = delete;
   SpellingMarker& operator=(const SpellingMarker&) = delete;
 

@@ -17,10 +17,7 @@
 
 namespace blink {
 
-class BaseAudioContext;
 class ExceptionState;
-class OscillatorOptions;
-class PeriodicWave;
 class PeriodicWaveImpl;
 
 class OscillatorHandler final : public AudioScheduledSourceHandler {

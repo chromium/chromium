@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
 #include <memory>
@@ -60,7 +55,6 @@
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "crypto/rsa_private_key.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -249,14 +243,11 @@ class WallpaperPolicyTest : public LoginManagerTest,
                                 &image_data)) {
       ADD_FAILURE();
     }
-    std::string policy;
-    base::JSONWriter::Write(policy::test::ConstructExternalDataReference(
-                                embedded_test_server()
-                                    ->GetURL(std::string("/") + relative_path)
-                                    .spec(),
-                                image_data),
-                            &policy);
-    return policy;
+    std::string path = std::string("/") + relative_path;
+    std::string url = embedded_test_server()->GetURL(path).spec();
+    return base::WriteJson(
+               policy::test::ConstructExternalDataReference(url, image_data))
+        .value_or("");
   }
 
   // Inject `filename` as wallpaper policy for test user `user_number`.  Set
@@ -266,7 +257,7 @@ class WallpaperPolicyTest : public LoginManagerTest,
     const AccountId& account_id =
         login_manager_.users()[user_number].account_id;
     policy::UserPolicyBuilder* builder =
-        user_policy_builders_[user_number].get();
+        UNSAFE_TODO(user_policy_builders_[user_number]).get();
     if (!filename.empty()) {
       builder->payload().mutable_wallpaperimage()->set_value(
           ConstructPolicy(filename));

@@ -28,12 +28,15 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/shortcut.h"
+#include "base/win/windows_version.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/shell_integration_win.h"
 #include "chrome/browser/shortcuts/platform_util_win.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcuts_menu_win.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/win/taskbar_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/shell_util.h"
@@ -43,9 +46,9 @@
 #include "crypto/obsolete/md5.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/win/shell.h"
-#include "ui/gfx/icon_util.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_family.h"
+#include "ui/gfx/win/icon_util.h"
 
 namespace web_app {
 namespace {
@@ -535,6 +538,10 @@ void AppendShortcutsMatchingName(
   }
 }
 
+void PinAppResult(bool pin_result) {
+  // TODO(crbug.com/343734031): Log metric for pin PWA result.
+}
+
 bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
                              const ShortcutLocations& creation_locations,
                              ShortcutCreationReason creation_reason,
@@ -573,7 +580,7 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
       GetShortcutPaths(shortcut_locations_wo_quick_launch);
 
   // Create/update the shortcut in the web app path for the "Pin To Taskbar"
-  // option in Win7 and Win10 versions that support pinning. We use the web app
+  // option in the Windows versions that support pinning. We use the web app
   // path shortcut because we will overwrite it rather than appending unique
   // numbers if the shortcut already exists. This prevents pinned apps from
   // having unique numbers in their names.
@@ -591,21 +598,52 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
     return false;
   }
 
-  if (pin_to_taskbar) {
-    base::FilePath file_name = GetSanitizedFileName(shortcut_info.title);
-    // Use the web app path shortcut for pinning to avoid having unique numbers
-    // in the application name.
-    base::FilePath shortcut_to_pin =
-        web_app_path.Append(file_name).AddExtension(installer::kLnkExt);
+  if (!pin_to_taskbar) {
+    return true;
+  }
+  base::FilePath file_name = GetSanitizedFileName(shortcut_info.title);
+  // Use the web app path shortcut for pinning to avoid having unique numbers
+  // in the application name.
+  base::FilePath shortcut_to_pin =
+      web_app_path.Append(file_name).AddExtension(installer::kLnkExt);
+
+  // Prior to WIN11_24H2, Microsoft allowed Chrome to pin PWAs using
+  // `IPinnedList3`.
+  if (base::win::GetVersion() < base::win::Version::WIN11_24H2) {
     if (!PinShortcutToTaskbar(shortcut_to_pin)) {
       return false;
     }
-
-    // This invalidates the Windows icon cache and causes the icon changes to
-    // register with the taskbar and desktop.
+    // This invalidates the Windows icon cache and causes the icon changes
+    // to register with the taskbar and desktop.
     ::SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
+    return true;
   }
 
+  if (!base::FeatureList::IsEnabled(features::kWinPinPWAShortcutWithLAF)) {
+    return false;
+  }
+  // Use the `ITaskbarManager` limited access feature to pin the PWA to the
+  // taskbar.
+  const std::wstring app_id(shell_integration::win::GetAppUserModelIdForApp(
+      base::UTF8ToWide(GenerateApplicationNameFromInfo(shortcut_info)),
+      shortcut_info.profile_path));
+
+  // Define a lambda function that captures the PWA's `app_id` so the shortcut
+  // can be pinned.
+  browser_util::PinResultCallback can_pin_result_callback(base::BindOnce(
+      [](const std::wstring& app_user_model_id, bool result) {
+        if (result) {
+          browser_util::PinAppToTaskbar(
+              app_user_model_id,
+              browser_util::PinAppToTaskbarChannel::kPinWebApp,
+              base::BindOnce(&PinAppResult));
+        }
+      },
+      app_id));
+
+  browser_util::ShouldOfferToPin(
+      app_id, browser_util::PinAppToTaskbarChannel::kPinWebApp,
+      std::move(can_pin_result_callback));
   return true;
 }
 

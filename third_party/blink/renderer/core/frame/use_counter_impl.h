@@ -28,6 +28,7 @@
 
 #include <bitset>
 
+#include "base/time/time.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature_tracker.h"
 #include "third_party/blink/renderer/core/core_export.h"

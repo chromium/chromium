@@ -344,7 +344,7 @@ crosapi::mojom::GoogleServiceAuthErrorPtr ToMojoGoogleServiceAuthError(
       crosapi::mojom::GoogleServiceAuthError::New();
   mojo_result->error_message = error.error_message();
   if (error.state() == GoogleServiceAuthError::State::CONNECTION_FAILED) {
-    mojo_result->network_error = error.network_error();
+    mojo_result->network_error = error.GetNetworkError();
   }
   if (error.state() ==
       GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS) {

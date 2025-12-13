@@ -6,6 +6,7 @@
 #define BASE_CONTAINERS_TO_VECTOR_H_
 
 #include <algorithm>
+#include <concepts>
 #include <functional>
 #include <iterator>
 #include <ranges>
@@ -35,6 +36,36 @@ auto ToVector(Range&& range, Proj proj = {}) {
   std::ranges::transform(std::forward<Range>(range),
                          std::back_inserter(container), std::move(proj));
   return container;
+}
+
+// Maps an rvalue array to a std::vector<>.
+//
+// This allows creating a std::vector<T> in a single expression, even when T is
+// not copyable. For example, this doesn't work (because std::initializer_list
+// provides only const access to the underlying array):
+//
+//     std::vector<std::unique_ptr<int>>{
+//       std::make_unique<int>(17),
+//       std::make_unique<int>(19),
+//     }
+//
+// but this does:
+//
+//     base::ToVector({
+//       std::make_unique<int>(17),
+//       std::make_unique<int>(19),
+//     })
+//
+// Similar API to C++20's std::to_array.
+//
+// Complexity: `N` move operations.
+template <typename T, size_t N>
+  requires(std::move_constructible<T>)
+std::vector<T> ToVector(T (&&array)[N]) {
+  return {
+      std::make_move_iterator(std::begin(array)),
+      std::make_move_iterator(std::end(array)),
+  };
 }
 
 }  // namespace base

@@ -7,76 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
+@class IconViewConfiguration;
+
 // A view which contains an icon for a Safety Check item.
 @interface IconView : UIView
 
-// Instantiates an `IconView` given a `defaultSymbolName`.
-//
-// `symbolColorPalette` determines the color palette of the icon itself.
-//
-// `symbolBackgroundColor` determines the background color of the icon.
-//
-// `symbolWidth` determines the width of the icon.
-//
-// `compactLayout` determines if the icon should be shown in a smaller, compact
-// size.
-//
-// `inSquare` determines if the icon should be shown with a square enclosure
-// surrounding it.
-- (instancetype)initWithDefaultSymbol:(NSString*)defaultSymbolName
-                   symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
-                symbolBackgroundColor:(UIColor*)symbolBackgroundColor
-                          symbolWidth:(CGFloat)symbolWidth
-                        compactLayout:(BOOL)compactLayout
-                             inSquare:(BOOL)inSquare;
+// Instantiates an `IconView` given a `configuration`.
+- (instancetype)initWithConfiguration:(IconViewConfiguration*)configuration;
 
-// Instantiates an `IconView` given a `defaultSymbolName`.
-//
-// `symbolWidth` determines the width of the icon.
-//
-// `compactLayout` determines if the icon should be shown in a smaller, compact
-// size.
-//
-// `inSquare` determines if the icon should be shown with a square enclosure
-// surrounding it.
-- (instancetype)initWithDefaultSymbol:(NSString*)defaultSymbolName
-                          symbolWidth:(CGFloat)symbolWidth
-                        compactLayout:(BOOL)compactLayout
-                             inSquare:(BOOL)inSquare;
-
-// Instantiates an `IconView` given a `customSymbolName`.
-//
-// `symbolColorPalette` determines the color palette of the icon itself.
-//
-// `symbolBackgroundColor` determines the background color of the icon.
-//
-// `symbolWidth` determines the width of the icon.
-//
-// `compactLayout` determines if the icon should be shown in a smaller, compact
-// size.
-//
-// `inSquare` determines if the icon should be shown with a square enclosure
-// surrounding it.
-- (instancetype)initWithCustomSymbol:(NSString*)customSymbolName
-                  symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
-               symbolBackgroundColor:(UIColor*)symbolBackgroundColor
-                         symbolWidth:(CGFloat)symbolWidth
-                       compactLayout:(BOOL)compactLayout
-                            inSquare:(BOOL)inSquare;
-
-// Instantiates an `IconView` given a `customSymbolName`.
-//
-// `symbolWidth` determines the width of the icon.
-//
-// `compactLayout` determines if the icon should be shown in a smaller, compact
-// size.
-//
-// `inSquare` determines if the icon should be shown with a square enclosure
-// surrounding it.
-- (instancetype)initWithCustomSymbol:(NSString*)customSymbolName
-                         symbolWidth:(CGFloat)symbolWidth
-                       compactLayout:(BOOL)compactLayout
-                            inSquare:(BOOL)inSquare;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
 @end
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_GLIC_HANDLER_H_
 
 #include "base/callback_list.h"
+#include "base/gtest_prod_util.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "content/public/browser/web_ui.h"
 
@@ -57,6 +58,12 @@ class GlicHandler : public SettingsPageUIHandler {
   // Notifies the client whether glic is disallowed by their administrator,
   // either on request or because it changed.
   void FireOnGlicDisallowedByAdminChanged();
+
+  // Callback for when the ActorKeyedService notifies of a capability change.
+  void OnWebActuationCapabilityChanged(bool can_act_on_web);
+
+  // Used to listen to changes in web actuation capability status.
+  base::CallbackListSubscription web_actuation_subscription_;
 
   // Used to listen to changes in glic enabling status.
   std::unique_ptr<base::CallbackListSubscription> glic_enabling_subscription_;

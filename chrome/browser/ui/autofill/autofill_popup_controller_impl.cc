@@ -23,10 +23,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "chrome/browser/ui/autofill/next_idle_barrier.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -101,6 +103,25 @@ SuggestionFiltrationResult FilterSuggestions(
   }
 
   return result;
+}
+
+void MaybeRecordAddressDeletedMetric(content::WebContents* web_contents,
+                                     const Suggestion& suggestion) {
+  if (web_contents) {
+    PersonalDataManager* pdm = PersonalDataManagerFactory::GetForBrowserContext(
+        web_contents->GetBrowserContext());
+
+    const auto* payload =
+        std::get_if<Suggestion::AutofillProfilePayload>(&suggestion.payload);
+    if (pdm && payload) {
+      const AutofillProfile* profile =
+          pdm->address_data_manager().GetProfileByGUID(payload->guid.value());
+      if (profile) {
+        AutofillMetrics::LogDeleteAddressProfileFromPopup(
+            profile->record_type());
+      }
+    }
+  }
 }
 
 }  // namespace
@@ -340,6 +361,11 @@ void AutofillPopupControllerImpl::Hide(SuggestionHidingReason reason) {
   HideViewAndDie();
 }
 
+bool AutofillPopupControllerImpl::HasCreditCardSuggestions() const {
+  return delegate_ &&
+         delegate_->GetMainFillingProduct() == FillingProduct::kCreditCard;
+}
+
 void AutofillPopupControllerImpl::ViewDestroyed() {
   // The view has already been destroyed so clear the reference to it.
   view_ = nullptr;
@@ -350,7 +376,9 @@ void AutofillPopupControllerImpl::OnSuggestionsChanged() {
   OnSuggestionsChanged(/*prefer_prev_arrow_side=*/false);
 }
 
-void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
+void AutofillPopupControllerImpl::AcceptSuggestion(
+    int index,
+    AutofillMetrics::SuggestionAcceptedMethod accept_method) {
   CHECK_LT(base::checked_cast<size_t>(index), GetSuggestions().size());
   CHECK(IsAcceptableSuggestionType(GetSuggestions()[index].type));
 
@@ -381,6 +409,8 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   AutofillMetrics::LogPopupInteraction(suggestions_filling_product_,
                                        GetPopupLevel(),
                                        PopupInteraction::kSuggestionAccepted);
+  base::UmaHistogramEnumeration("Autofill.SuggestionAccepted.Method",
+                                accept_method);
   delegate_->DidAcceptSuggestion(suggestion,
                                  AutofillSuggestionDelegate::SuggestionMetadata{
                                      .row = index,
@@ -474,11 +504,13 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
     case FillingProduct::kAddress:
       switch (removal_method) {
         case AutofillMetrics::SingleEntryRemovalMethod::
-            kKeyboardShiftDeletePressed:
-          AutofillMetrics::LogDeleteAddressProfileFromPopup();
+            kKeyboardShiftDeletePressed: {
+          MaybeRecordAddressDeletedMetric(web_contents_.get(),
+                                          GetSuggestions()[list_index]);
           break;
+        }
         case AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory:
-          AutofillMetrics::LogDeleteAddressProfileFromKeyboardAccessory();
+          NOTREACHED(base::NotFatalUntil::M144);
           break;
         case AutofillMetrics::SingleEntryRemovalMethod::kDeleteButtonClicked:
           NOTREACHED();
@@ -499,6 +531,7 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
     case FillingProduct::kMerchantPromoCode:
     case FillingProduct::kIban:
     case FillingProduct::kLoyaltyCard:
+    case FillingProduct::kPasskey:
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
@@ -536,12 +569,6 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
 
 FillingProduct AutofillPopupControllerImpl::GetMainFillingProduct() const {
   return delegate_->GetMainFillingProduct();
-}
-
-std::optional<AutofillClient::PopupScreenLocation>
-AutofillPopupControllerImpl::GetPopupScreenLocation() const {
-  return view_ ? view_->GetPopupScreenLocation()
-               : std::make_optional<AutofillClient::PopupScreenLocation>();
 }
 
 bool AutofillPopupControllerImpl::HasSuggestions() const {

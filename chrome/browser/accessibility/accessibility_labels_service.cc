@@ -293,9 +293,9 @@ bool AccessibilityLabelsService::GetAndroidEnabledStatus() {
   return enabled;
 }
 
-void JNI_ImageDescriptionsController_GetImageDescriptionsOnce(
+static void JNI_ImageDescriptionsController_GetImageDescriptionsOnce(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_web_contents) {
+    const base::android::JavaRef<jobject>& j_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
 
@@ -313,4 +313,8 @@ void JNI_ImageDescriptionsController_GetImageDescriptionsOnce(
         }
       });
 }
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(ImageDescriptionsController)
 #endif

@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/types/expected.h"

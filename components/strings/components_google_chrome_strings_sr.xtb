@@ -33,16 +33,16 @@
           и опозовите избор опције „<ph name="NO_PREFETCH_DESCRIPTION" />“.
           Ако вам то не реши проблем, препоручујемо да поново изаберете
           ову опцију ради бољих перформанси.</translation>
-<translation id="6855094794438142393">Идите у
+<translation id="6581867098636731226">Идите у
           Chrome мени &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
-          <ph name="ADVANCED_TITLE" />
+          <ph name="SYSTEM_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
           &gt;
-          LAN Settings (Подешавања локалне мреже)
-          и опозовите избор опције „Use a proxy server for your LAN“ (Користи прокси сервер за локалну мрежу).</translation>
+          Мрежа и интернет &gt; Прокси
+          и поништите избор опције Аутоматски откриј подешавања.</translation>
 <translation id="7230956101631259640">Прегледате безбедну Chrome страницу</translation>
 <translation id="8232971017369963250">Chrome омогућава <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> пројекат отвореног кода.</translation>
 <translation id="8279509328145658601">Chrome омогућава и други <ph name="BEGIN_LINK_OSS" />софтвер отвореног кода<ph name="END_LINK_OSS" />.</translation>

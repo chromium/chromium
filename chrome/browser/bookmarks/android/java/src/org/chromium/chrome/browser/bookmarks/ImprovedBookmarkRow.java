@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.graphics.Outline;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.view.ViewPropertyAnimator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -22,6 +25,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -148,6 +152,44 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
 
         mMoreButton = findViewById(R.id.more);
         mEndImageView = findViewById(R.id.end_image);
+
+        if (ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
+            // Define the shadow shape explicitly. This ensures that the shadow appears even if
+            // mDraggedBackgroundColor is transparent.
+            setOutlineProvider(
+                    new ViewOutlineProvider() {
+                        @Override
+                        public void getOutline(View view, Outline outline) {
+                            if (mContainer != null && mContainer.getWidth() > 0) {
+                                Resources res = getContext().getResources();
+
+                                int radiusRes =
+                                        mIsSelected
+                                                ? R.dimen.default_rounded_corner_radius
+                                                : R.dimen.improved_bookmark_row_outer_corner_radius;
+
+                                float radius = res.getDimension(radiusRes);
+
+                                // Calculate the bounds of the container relative to the parent
+                                // (ImprovedBookmarkRow) and draw the shadow.
+                                outline.setRoundRect(
+                                        mContainer.getLeft(),
+                                        mContainer.getTop(),
+                                        mContainer.getRight(),
+                                        mContainer.getBottom(),
+                                        radius);
+                                // Force shadow opacity even if view is transparent.
+                                outline.setAlpha(1.0f);
+                            } else {
+                                // Don't show the shadow.
+                                outline.setRect(0, 0, view.getWidth(), view.getHeight());
+                                outline.setAlpha(0.0f);
+                            }
+                        }
+                    });
+            // Allow the shadow to draw outside the view bounds if needed.
+            setClipToOutline(false);
+        }
     }
 
     void setRowEnabled(boolean enabled) {

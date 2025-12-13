@@ -69,8 +69,10 @@ class HistoryCounter : public browsing_data::BrowsingDataCounter {
   void Count() override;
 
   void OnGetLocalHistoryCount(history::HistoryCountResult result);
-  void OnGetWebHistoryCount(history::WebHistoryService::Request* request,
-                            base::optional_ref<const base::Value::Dict> result);
+  void OnGetWebHistoryCount(
+      history::WebHistoryService::Request* request,
+      base::optional_ref<const history::WebHistoryService::QueryHistoryResult>
+          result);
   void OnGetUniqueDomains(history::DomainsVisitedResult result);
   void OnWebHistoryTimeout();
   void MergeResults();

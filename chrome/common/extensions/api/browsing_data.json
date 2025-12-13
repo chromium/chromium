@@ -118,6 +118,7 @@
           "passwords": {
             "type": "boolean",
             "optional": true,
+            "deprecated": "Support for password deletion through extensions has been removed. This data type will be ignored.",
             "description": "Stored passwords."
           },
           "pluginData": {
@@ -381,6 +382,7 @@
       {
         "name": "removePasswords",
         "description": "Clears the browser's stored passwords.",
+        "deprecated": "Support for password deletion through extensions has been removed. This function has no effect.",
         "type": "function",
         "parameters": [
           {

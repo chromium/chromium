@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>DBSC session configuration resolving URLs</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="helper.js" type="module"></script>
@@ -15,7 +14,7 @@
     addCookieAndSessionCleanup(t);
 
     // Configure server to use the absolute URL for refresh instead of a relative URL.
-    configureServer({ refreshUrl });
+    await configureServer({ refreshUrl });
 
     // Configure registration to use absolute URL instead of relative.
     // Prompt starting a session, and wait until registration completes.

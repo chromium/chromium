@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view_controller.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -44,6 +45,9 @@ enum class DefaultBrowserSettingsPageUsage {
   // Whether the user visited the iOS Default Browser settings page.
   BOOL _defaultBrowserSettingsVisited;
 
+  // Whether to use the new Default Apps destination when going to iOS settings.
+  BOOL _useDefaultAppsDestination;
+
   // The view controller for default browser instructions.
   DefaultBrowserInstructionsViewController* _instructionsViewController;
 }
@@ -61,6 +65,13 @@ enum class DefaultBrowserSettingsPageUsage {
   self.title = l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_DEFAULT_BROWSER);
   self.shouldHideDoneButton = YES;
   self.tableView.accessibilityIdentifier = kDefaultBrowserSettingsTableViewId;
+
+  BOOL isFromOneTimeDefaultBrowserNotification =
+      self.source == DefaultBrowserSettingsPageSource::kTipsNotification &&
+      base::FeatureList::IsEnabled(kIOSOneTimeDefaultBrowserNotification);
+  _useDefaultAppsDestination = IsDefaultAppsDestinationAvailable() &&
+                               (isFromOneTimeDefaultBrowserNotification ||
+                                IsUseDefaultAppsDestinationForPromosEnabled());
 
   [self addDefaultBrowserVideoInstructionsView];
 
@@ -116,21 +127,19 @@ enum class DefaultBrowserSettingsPageUsage {
 
   _defaultBrowserSettingsVisited = YES;
 
-  [[UIApplication sharedApplication]
-                openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
-                options:{}
-      completionHandler:nil];
+  OpenIOSDefaultBrowserSettingsPage(_useDefaultAppsDestination);
 }
 
 // Adds default browser video instructions view as a background view.
 - (void)addDefaultBrowserVideoInstructionsView {
   _instructionsViewController =
       [[DefaultBrowserInstructionsViewController alloc]
-          initWithDismissButton:NO
-               hasRemindMeLater:NO
-                       hasSteps:YES
-                  actionHandler:self
-                      titleText:nil];
+              initWithDismissButton:NO
+                   hasRemindMeLater:NO
+          useDefaultAppsDestination:_useDefaultAppsDestination
+                           hasSteps:YES
+                      actionHandler:self
+                          titleText:nil];
   [self addChildViewController:_instructionsViewController];
 
   self.tableView.backgroundView = [[UIView alloc] init];

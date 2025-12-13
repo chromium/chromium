@@ -15,16 +15,6 @@
 
 using bookmarks::BookmarkNode;
 
-namespace {
-
-void LogDefaultBookmarkFolderOutcome(
-    DefaultBookmarkFolderOutcomeForMetrics value) {
-  base::UmaHistogramEnumeration("IOS.Bookmarks.DefaultBookmarkFolderOutcome",
-                                value);
-}
-
-}  // namespace
-
 const int64_t kLastUsedBookmarkFolderNone = -1;
 
 std::vector<const bookmarks::BookmarkNode*> PrimaryPermanentNodes(
@@ -83,30 +73,12 @@ const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
   int64_t node_id =
       prefs->GetInt64(prefs::kIosBookmarkLastUsedFolderReceivingBookmarks);
 
-  if (node_id == kLastUsedBookmarkFolderNone) {
-    LogDefaultBookmarkFolderOutcome(
-        DefaultBookmarkFolderOutcomeForMetrics::kUnset);
-  } else {
-    BookmarkStorageType type =
-        static_cast<BookmarkStorageType>(prefs->GetInteger(
-            prefs::kIosBookmarkLastUsedStorageReceivingBookmarks));
-
+  if (node_id != kLastUsedBookmarkFolderNone) {
     const BookmarkNode* result =
         bookmarks::GetBookmarkNodeByID(bookmark_model, node_id);
+    // Make sure the bookmark node is a folder. See crbug.com/1450146.
     if (result && result->is_folder()) {
-      // Make sure the bookmark node is a folder. See crbug.com/1450146.
-      LogDefaultBookmarkFolderOutcome(
-          bookmark_model->IsLocalOnlyNode(*result)
-              ? DefaultBookmarkFolderOutcomeForMetrics::kExistingLocalFolderSet
-              : DefaultBookmarkFolderOutcomeForMetrics::
-                    kExistingAccountFolderSet);
       return result;
-    } else {
-      LogDefaultBookmarkFolderOutcome(
-          (type == BookmarkStorageType::kLocalOrSyncable)
-              ? DefaultBookmarkFolderOutcomeForMetrics::kMissingLocalFolderSet
-              : DefaultBookmarkFolderOutcomeForMetrics::
-                    kMissingAccountFolderSet);
     }
   }
 

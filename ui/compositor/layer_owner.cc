@@ -13,6 +13,8 @@
 
 namespace ui {
 
+LayerOwner::LayerOwner() = default;
+
 LayerOwner::LayerOwner(std::unique_ptr<Layer> layer) {
   if (layer)
     SetLayer(std::move(layer));

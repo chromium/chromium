@@ -5,6 +5,10 @@
 #ifndef EXTENSIONS_COMMON_ICONS_EXTENSION_ICON_VARIANTS_DIAGNOSTICS_H_
 #define EXTENSIONS_COMMON_ICONS_EXTENSION_ICON_VARIANTS_DIAGNOSTICS_H_
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions::diagnostics::icon_variants {
 
 // Sorted list of internal ids. Unlike codes, these are not to be surfaced.
@@ -19,6 +23,7 @@ enum class Id {
   kIconVariantsKeyMustBeAList,
   kIconVariantsNotEnabled,
   kIconVariantsInvalidMimeType,
+  kIconVariantPathInvalid,
 };
 
 // Represents how significant something is.

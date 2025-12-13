@@ -110,7 +110,7 @@ double CSSMathFunctionValue::ComputeNumber(
   if (expression_->Category() == kCalcPercent) {
     value /= 100.0;
   }
-  return std::isnan(value) ? 0.0 : value;
+  return std::isnan(value) ? 0.0 : CSSValueClampingUtils::ClampDouble(value);
 }
 
 double CSSMathFunctionValue::ComputePercentage(
@@ -133,6 +133,14 @@ double CSSMathFunctionValue::ComputeValueInCanonicalUnit(
   DCHECK(optional_value.has_value());
   double value = ClampToPermittedRange(optional_value.value());
   return std::isnan(value) ? 0.0 : value;
+}
+
+std::optional<double> CSSMathFunctionValue::GetValueIfKnown() const {
+  std::optional<double> val = expression_->GetValueIfKnown();
+  if (val.has_value()) {
+    return ClampToPermittedRange(CSSValueClampingUtils::ClampDouble(*val));
+  }
+  return val;
 }
 
 bool CSSMathFunctionValue::AccumulateLengthArray(CSSLengthArray& length_array,

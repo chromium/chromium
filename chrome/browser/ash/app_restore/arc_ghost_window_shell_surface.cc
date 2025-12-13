@@ -18,6 +18,7 @@
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/buffer.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget.h"
@@ -36,8 +37,9 @@ ArcGhostWindowShellSurface::ArcGhostWindowShellSurface(
                                    /*supports_floated_state=*/false) {
   controller_surface_ = std::move(surface);
   buffer_ = exo::Buffer::CreateBuffer(
-      gfx::Size(1, 1), gfx::BufferFormat::RGBA_8888, gfx::BufferUsage::GPU_READ,
-      "ArcGhostWindowShellSurface", gpu::kNullSurfaceHandle,
+      gfx::Size(1, 1), viz::SinglePlaneFormat::kRGBA_8888,
+      gfx::BufferUsage::GPU_READ, "ArcGhostWindowShellSurface",
+      gpu::kNullSurfaceHandle,
       /*shutdown_event=*/nullptr);
   SetApplicationId(application_id.c_str());
   controller_surface_->Attach(buffer_.get());
@@ -74,8 +76,7 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
     DCHECK(chromeos::IsMaximizedOrFullscreenWindowStateType(window_state) ||
            chromeos::IsMinimizedWindowStateType(window_state));
     display::Display disp;
-    display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id_value,
-                                                          &disp);
+    display::Screen::Get()->GetDisplayWithDisplayId(display_id_value, &disp);
     local_bounds = disp.work_area();
   }
 

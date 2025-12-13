@@ -16,14 +16,14 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
   NetworkTestRunner.makeSimpleXHR('GET', 'resources/resource.php', true, step2);
 
   async function step2() {
-    await TestRunner.NetworkAgent.disable();
+    await TestRunner.NetworkAgent.invoke_disable();
     var request1 = NetworkTestRunner.networkRequests().pop();
     request1.requestContentData().then(TextUtils.ContentData.ContentData.asDeferredContent).then(step4);
   }
 
   function step4({ content, error, isEncoded }) {
     TestRunner.addResult('resource.content after disabling network domain: ' + content);
-    TestRunner.NetworkAgent.enable().then(step5);
+    TestRunner.NetworkAgent.invoke_enable({}).then(step5);
   }
 
   function step5() {

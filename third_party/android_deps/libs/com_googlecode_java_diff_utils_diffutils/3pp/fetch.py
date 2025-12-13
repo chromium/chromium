@@ -18,7 +18,7 @@ SPEC = fetch_common.Spec(repo_url=_REPO_URL,
                          group_name='com/googlecode/java-diff-utils',
                          module_name='diffutils',
                          file_ext='jar',
-                         patch_version='cr1',
+                         patch_version='cr2',
                          version_override=None,
                          version_filter=None)
 

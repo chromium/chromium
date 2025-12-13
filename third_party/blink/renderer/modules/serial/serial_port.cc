@@ -143,14 +143,17 @@ ScriptPromise<IDLUndefined> SerialPort::open(ScriptState* script_state,
       return EmptyPromise();
   }
 
-  if (options->parity() == "none") {
-    mojo_options->parity_bit = device::mojom::blink::SerialParityBit::NO_PARITY;
-  } else if (options->parity() == "even") {
-    mojo_options->parity_bit = device::mojom::blink::SerialParityBit::EVEN;
-  } else if (options->parity() == "odd") {
-    mojo_options->parity_bit = device::mojom::blink::SerialParityBit::ODD;
-  } else {
-    NOTREACHED();
+  switch (options->parity().AsEnum()) {
+    case V8ParityType::Enum::kNone:
+      mojo_options->parity_bit =
+          device::mojom::blink::SerialParityBit::NO_PARITY;
+      break;
+    case V8ParityType::Enum::kEven:
+      mojo_options->parity_bit = device::mojom::blink::SerialParityBit::EVEN;
+      break;
+    case V8ParityType::Enum::kOdd:
+      mojo_options->parity_bit = device::mojom::blink::SerialParityBit::ODD;
+      break;
   }
 
   switch (options->stopBits()) {
@@ -182,15 +185,16 @@ ScriptPromise<IDLUndefined> SerialPort::open(ScriptState* script_state,
   }
   buffer_size_ = options->bufferSize();
 
-  hardware_flow_control_ = options->flowControl() == "hardware";
+  hardware_flow_control_ =
+      options->flowControl() == V8FlowControlType::Enum::kHardware;
   mojo_options->has_cts_flow_control = true;
   mojo_options->cts_flow_control = hardware_flow_control_;
 
   mojo::PendingRemote<device::mojom::blink::SerialPortClient> client;
   open_resolver_ = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
-  auto callback = WTF::BindOnce(&SerialPort::OnOpen, WrapPersistent(this),
-                                client.InitWithNewPipeAndPassReceiver());
+  auto callback = BindOnce(&SerialPort::OnOpen, WrapPersistent(this),
+                           client.InitWithNewPipeAndPassReceiver());
 
   parent_->OpenPort(info_->token, std::move(mojo_options), std::move(client),
                     std::move(callback));
@@ -267,7 +271,7 @@ ScriptPromise<SerialInputSignals> SerialPort::getSignals(
           script_state, exception_state.GetContext());
   signal_resolvers_.insert(resolver);
   port_->GetControlSignals(resolver->WrapCallbackInScriptScope(
-      WTF::BindOnce(&SerialPort::OnGetSignals, WrapPersistent(this))));
+      BindOnce(&SerialPort::OnGetSignals, WrapPersistent(this))));
   return resolver->Promise();
 }
 
@@ -325,7 +329,7 @@ ScriptPromise<IDLUndefined> SerialPort::setSignals(
   port_->SetControlSignals(
       std::move(mojo_signals),
       resolver->WrapCallbackInScriptScope(
-          WTF::BindOnce(&SerialPort::OnSetSignals, WrapPersistent(this))));
+          BindOnce(&SerialPort::OnSetSignals, WrapPersistent(this))));
   return resolver->Promise();
 }
 
@@ -388,7 +392,7 @@ ScriptPromise<IDLUndefined> SerialPort::forget(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   parent_->ForgetPort(info_->token,
-                      WTF::BindOnce(
+                      BindOnce(
                           [](ScriptPromiseResolver<IDLUndefined>* resolver) {
                             resolver->Resolve();
                           },
@@ -410,7 +414,7 @@ void SerialPort::StreamsClosed() {
   DCHECK(IsClosing());
 
   port_->Close(/*flush=*/true,
-               WTF::BindOnce(&SerialPort::OnClose, WrapPersistent(this)));
+               BindOnce(&SerialPort::OnClose, WrapPersistent(this)));
 }
 
 void SerialPort::Flush(
@@ -599,7 +603,7 @@ void SerialPort::OnOpen(
   port_.Bind(std::move(port),
              execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
   port_.set_disconnect_handler(
-      WTF::BindOnce(&SerialPort::OnConnectionError, WrapWeakPersistent(this)));
+      BindOnce(&SerialPort::OnConnectionError, WrapWeakPersistent(this)));
   client_receiver_.Bind(
       std::move(client_receiver),
       execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));

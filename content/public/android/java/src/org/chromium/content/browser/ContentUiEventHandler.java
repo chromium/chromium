@@ -69,7 +69,7 @@ public class ContentUiEventHandler implements UserData {
         mEventDelegate = delegate;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     protected boolean onGenericMotionEvent(MotionEvent event) {
         if (Gamepad.from(mWebContents).onGenericMotionEvent(event)) return true;
@@ -105,11 +105,7 @@ public class ContentUiEventHandler implements UserData {
                 .sendMouseWheelEvent(
                         mNativeContentUiEventHandler,
                         event,
-                        MotionEventUtils.getEventTimeNanos(event),
-                        event.getX(),
-                        event.getY(),
-                        event.getAxisValue(MotionEvent.AXIS_HSCROLL),
-                        event.getAxisValue(MotionEvent.AXIS_VSCROLL));
+                        MotionEventUtils.getEventTimeNanos(event));
     }
 
     private boolean onMouseEvent(MotionEvent event, boolean shouldConvertToMouseEvent) {
@@ -126,15 +122,7 @@ public class ContentUiEventHandler implements UserData {
                         mNativeContentUiEventHandler,
                         event,
                         MotionEventUtils.getEventTimeNanos(event),
-                        event.getActionMasked(),
-                        event.getX(),
-                        event.getY(),
-                        event.getPointerId(0),
-                        event.getPressure(0),
-                        event.getOrientation(0),
-                        event.getAxisValue(MotionEvent.AXIS_TILT, 0),
                         EventForwarder.getMouseEventActionButton(event),
-                        event.getButtonState(),
                         shouldConvertToMouseEvent
                                 ? MotionEvent.TOOL_TYPE_MOUSE
                                 : event.getToolType(0));
@@ -229,28 +217,13 @@ public class ContentUiEventHandler implements UserData {
     interface Natives {
         long init(ContentUiEventHandler self, WebContents webContents);
 
-        void sendMouseWheelEvent(
-                long nativeContentUiEventHandler,
-                MotionEvent event,
-                long timeNs,
-                float x,
-                float y,
-                float ticksX,
-                float ticksY);
+        void sendMouseWheelEvent(long nativeContentUiEventHandler, MotionEvent event, long timeNs);
 
         void sendMouseEvent(
                 long nativeContentUiEventHandler,
                 MotionEvent event,
                 long timeNs,
-                int action,
-                float x,
-                float y,
-                int pointerId,
-                float pressure,
-                float orientation,
-                float tilt,
                 int changedButton,
-                int buttonState,
                 int toolType);
 
         void sendScrollEvent(

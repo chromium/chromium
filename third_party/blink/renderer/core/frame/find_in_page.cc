@@ -56,8 +56,8 @@ FindInPage::FindInPage(WebLocalFrameImpl& frame,
     return;
   // TODO(crbug.com/800641): Use InterfaceValidator when it works for associated
   // interfaces.
-  interface_registry->AddAssociatedInterface(WTF::BindRepeating(
-      &FindInPage::BindToReceiver, WrapWeakPersistent(this)));
+  interface_registry->AddAssociatedInterface(
+      BindRepeating(&FindInPage::BindToReceiver, WrapWeakPersistent(this)));
 }
 
 void FindInPage::Find(int request_id,

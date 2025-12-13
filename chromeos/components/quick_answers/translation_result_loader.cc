@@ -53,10 +53,7 @@ std::string BuildTranslationRequestBody(const IntentInfo& intent_info) {
   payload.Set(kSourceLanguageKey, intent_info.source_language);
   payload.Set(kTargetLanguageKey, intent_info.device_language);
 
-  std::string request_payload_str;
-  base::JSONWriter::Write(payload, &request_payload_str);
-
-  return request_payload_str;
+  return base::WriteJson(payload).value_or("");
 }
 
 }  // namespace

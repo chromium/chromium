@@ -7,8 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/memory/weak_ptr.h"
-#import "ios/chrome/browser/settings/ui_bundled/notifications/content_notifications/content_notifications_view_controller_delegate.h"
+#import <vector>
 
 class GaiaId;
 class PrefService;
@@ -19,8 +18,7 @@ class ContentNotificationService;
 @protocol ContentNotificationsConsumer;
 
 // Mediator for the Content Notification Settings.
-@interface ContentNotificationsMediator
-    : NSObject <ContentNotificationsViewControllerDelegate>
+@interface ContentNotificationsMediator : NSObject
 
 // Initializes the mediator with the user's pref service and gaia ID to
 // manipulate their push notification permissions.

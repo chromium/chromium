@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/file_manager/virtual_file_tasks.h"
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"

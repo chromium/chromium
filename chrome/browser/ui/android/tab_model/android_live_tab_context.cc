@@ -21,6 +21,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/restore_type.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
@@ -209,7 +210,7 @@ sessions::LiveTabContext* AndroidLiveTabContext::FindContextForWebContents(
   }
 
   TabModel* model =
-      TabModelList::FindTabModelWithId(tab_android->GetWindowId());
+      TabModelList::FindTabModelWithWindowSessionId(tab_android->GetWindowId());
 
   return model ? model->GetLiveTabContext() : nullptr;
 }
@@ -218,7 +219,7 @@ sessions::LiveTabContext* AndroidLiveTabContext::FindContextForWebContents(
 sessions::LiveTabContext* AndroidLiveTabContext::FindContextWithID(
     SessionID desired_id) {
   // Find the model with desired id.
-  TabModel* tab_model = TabModelList::FindTabModelWithId(desired_id);
+  TabModel* tab_model = TabModelList::FindTabModelWithWindowSessionId(desired_id);
 
   // If we can't find the correct model, fall back to first non-incognito model.
   if (!tab_model || tab_model->IsOffTheRecord()) {

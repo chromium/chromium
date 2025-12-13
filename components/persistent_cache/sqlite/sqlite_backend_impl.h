@@ -10,10 +10,13 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "base/gtest_prod_util.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "components/persistent_cache/backend.h"
-#include "components/persistent_cache/backend_params.h"
-#include "components/persistent_cache/entry.h"
+#include "components/persistent_cache/pending_backend.h"
 #include "components/persistent_cache/sqlite/vfs/sqlite_database_vfs_file_set.h"
 #include "components/persistent_cache/sqlite/vfs/sqlite_sandboxed_vfs.h"
 #include "sql/database.h"
@@ -22,9 +25,9 @@ namespace persistent_cache {
 
 class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
  public:
+  static std::unique_ptr<Backend> Bind(PendingBackend pending_backend);
+
   using Passkey = base::PassKey<SqliteBackendImpl>;
-  explicit SqliteBackendImpl(BackendParams backend_params);
-  explicit SqliteBackendImpl(SqliteVfsFileSet vfs_file_set);
   ~SqliteBackendImpl() override;
 
   SqliteBackendImpl(const SqliteBackendImpl&) = delete;
@@ -33,17 +36,52 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
   SqliteBackendImpl& operator=(SqliteBackendImpl&&) = delete;
 
   // `Backend`:
-  [[nodiscard]] bool Initialize() override;
-  [[nodiscard]] std::unique_ptr<Entry> Find(std::string_view key) override;
-  void Insert(std::string_view key,
-              base::span<const uint8_t> content,
-              EntryMetadata metadata) override;
+  [[nodiscard]] base::expected<std::optional<EntryMetadata>, TransactionError>
+  Find(std::string_view key, BufferProvider buffer_provider) override;
+  base::expected<void, TransactionError> Insert(
+      std::string_view key,
+      base::span<const uint8_t> content,
+      EntryMetadata metadata) override;
   BackendType GetType() const override;
   bool IsReadOnly() const override;
+  LockState Abandon() override;
+
+  const SqliteVfsFileSet& file_set() const { return vfs_file_set_; }
+
+  // Returns a `SqliteVfsFileSet` holding the state from a `PendingBackend`.
+  // Returns no value in case of error (e.g., the shared lock could not be
+  // mapped into the process's address space).
+  static std::optional<SqliteVfsFileSet> BindToFileSet(
+      PendingBackend pending_backend);
+
+  // Executes `statement` on the underlying database. Returns a SQLite result
+  // code in case of error.
+  base::expected<void, int> ExecuteStatementForTesting(
+      base::cstring_view statement);
 
  private:
-  static SqliteVfsFileSet GetVfsFileSetFromParams(BackendParams backend_params);
-  base::FilePath database_path_;
+  FRIEND_TEST_ALL_PREFIXES(PersistentCacheTest, RecoveryFromTransientError);
+
+  explicit SqliteBackendImpl(SqliteVfsFileSet vfs_file_set);
+  [[nodiscard]] bool Initialize();
+
+  // Returns a SQLite error code in case of failure.
+  base::expected<std::optional<EntryMetadata>, int> FindImpl(
+      std::string_view key,
+      BufferProvider buffer_provider) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Inserts `content` and `metadata` into storage under `key`. Returns a SQLite
+  // extended result code in case of error.
+  base::expected<void, int> InsertImpl(std::string_view key,
+                                       base::span<const uint8_t> content,
+                                       EntryMetadata metadata)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Returns the `TransactionError` corresponding to a SQLite extended result
+  // code.
+  static TransactionError TranslateError(int error_code);
+
+  const base::FilePath database_path_;
 
   // The set of of `SanboxedFiles` accessible by this backend. This class owns
   // the `SandboxedFiles`.
@@ -57,8 +95,9 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
 
   // Defined after `unregister_runner_` to ensure that files remain available
   // through the VFS throughout the database's lifetime.
-  sql::Database db_;
-  bool initialized_ = false;
+  std::optional<sql::Database> db_ GUARDED_BY(lock_);
+
+  base::Lock lock_;
 };
 
 }  // namespace persistent_cache

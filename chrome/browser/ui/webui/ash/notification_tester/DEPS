@@ -14,7 +14,6 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/app/vector_icons",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/webui/webui_util.h",
   "+chrome/common",
   "+chrome/grit",
 ]

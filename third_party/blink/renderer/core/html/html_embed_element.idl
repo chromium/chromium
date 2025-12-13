@@ -24,14 +24,14 @@
 [
     Exposed=Window,
     LegacyOverrideBuiltIns,
-    ActiveScriptWrappable,
-    HTMLConstructor
+    ActiveScriptWrappable
 ] interface HTMLEmbedElement : HTMLElement {
+    [HTMLConstructor] constructor();
     [CEReactions, RaisesException=Setter, URL] attribute (TrustedScriptURL or USVString) src;
     [CEReactions, Reflect] attribute DOMString type;
     [CEReactions, Reflect] attribute DOMString width;
     [CEReactions, Reflect] attribute DOMString height;
-    [CheckSecurity=ReturnValue, RaisesException] Document? getSVGDocument();
+    [CheckSecurity=ReturnValue] Document? getSVGDocument();
 
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLEmbedElement-partial

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/tab_list_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    <LinearLayout
+        android:id="@+id/supplementary_data_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <FrameLayout
+            android:id="@+id/pinned_tabs_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent" />
+        <ImageView
+            android:id="@+id/pane_hairline"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:gravity="top"
+            android:importantForAccessibility="no"
+            android:scaleType="fitXY"
+            android:src="@drawable/toolbar_hairline"
+            android:visibility="gone" />
+    </LinearLayout>
+</FrameLayout>

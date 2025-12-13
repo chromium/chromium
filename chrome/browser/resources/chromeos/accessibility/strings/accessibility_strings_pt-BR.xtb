@@ -82,7 +82,7 @@
 <translation id="1376703628032300005">ir para o próximo caractere</translation>
 <translation id="1377925789329510816">Este é o último título. Pressione a tecla de pesquisa+H para ir para o primeiro título, ou tecla de pesquisa+Shift+H para ir para o segundo título desta página.</translation>
 <translation id="138218114945450791">Azul-claro</translation>
-<translation id="1383876407941801731">Pesquisar</translation>
+<translation id="1383876407941801731">Pesquise</translation>
 <translation id="1396114365388024581">tablst</translation>
 <translation id="1405567553485452995">Verde-claro</translation>
 <translation id="1411043317877497323">Área para prática</translation>
@@ -189,7 +189,7 @@
 <translation id="2152179395627233441">Fechar área para prática</translation>
 <translation id="2163782704988363449">Errata</translation>
 <translation id="2169714232367507776">Clicar no item atual</translation>
-<translation id="2179452035581866348">O ChromeVox utiliza sons para fornecer informações adicionais e essenciais. Use esses sons para navegar mais rapidamente, aprendendo o que cada som significa. Quando se sentir mais confortável, desative as descrições detalhadas na fala e use-as para receber informações essenciais sobre a página. Veja esta lista completa de sons e o que eles significam.</translation>
+<translation id="2179452035581866348">O ChromeVox utiliza sons para fornecer informações essenciais e adicionais. Aprenda o que cada som significa e você poderá navegar com mais facilidade. Quando se sentir mais confortável, desative as descrições detalhadas na fala e use-as para receber informações essenciais sobre a página. Veja esta lista completa de sons e o que eles significam.</translation>
 <translation id="2183409941723714159">Navegação de guias</translation>
 <translation id="2197863150503783129">Marrom-tulipa</translation>
 <translation id="2199994615414171367">Expressão matemática anterior</translation>
@@ -370,7 +370,7 @@
 <translation id="3223779237381380437">Sem risco</translation>
 <translation id="3226035351387556942">chk</translation>
 <translation id="3232388865800379423">Um botão pop-up</translation>
-<translation id="3241052487511142956">Link anterior visitado</translation>
+<translation id="3241052487511142956">Link anterior acessado</translation>
 <translation id="3241638166094654466">Células em cada linha:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
 <translation id="3255999844137387283">A câmera está indisponível. Confira se você fez login e se a câmera está ligada.</translation>
@@ -383,7 +383,7 @@
 <translation id="3286390186030710347">Slide</translation>
 <translation id="3300733168898541351">desfazer</translation>
 <translation id="3307886118343381874">Ir para o fim da tabela</translation>
-<translation id="3312997241656799641">Próximo link visitado</translation>
+<translation id="3312997241656799641">Próximo link acessado</translation>
 <translation id="3313245066383501820">A tecla modificadora do ChromeVox</translation>
 <translation id="3317212938060708859">Um controle deslizante</translation>
 <translation id="3321460131042519426">Ativar quebra de palavra</translation>
@@ -529,7 +529,7 @@
 <translation id="4259220820964911921">Ativar o controle facial?</translation>
 <translation id="4271220233568730077">Próxima expressão matemática</translation>
 <translation id="4275397969489577657">Ativar registro de stream de eventos</translation>
-<translation id="4278486392851938658">Nenhum link visitado anterior</translation>
+<translation id="4278486392851938658">Nenhum link acessado anterior</translation>
 <translation id="4281245629646759298">Amarelo-claro</translation>
 <translation id="4289540628985791613">Visão geral</translation>
 <translation id="4294967782363273192">Classificação crescente</translation>
@@ -1036,7 +1036,7 @@
 <translation id="773906353055481349">Pressione Pesquisar+Ctrl+Alt com as setas para navegar por célula</translation>
 <translation id="7746976083433980639"><ph name="ACTION" /> para <ph name="LABEL" /></translation>
 <translation id="7763537600611320912">Download de <ph name="FILE_NAME" /> iniciado</translation>
-<translation id="7768784765476638775">Selecionar para ouvir</translation>
+<translation id="7768784765476638775">Selecionar para Ouvir</translation>
 <translation id="7776293189010177726">Abrir menus do ChromeVox</translation>
 <translation id="7799302833060027366">Pressione a seta para cima, para baixo, para a esquerda ou para a direita e veja o cálculo</translation>
 <translation id="7800558923657349506">Epílogo</translation>
@@ -1057,7 +1057,7 @@
 <translation id="7935627501098484003">Controle de hora</translation>
 <translation id="7939428177581522200">adicionados a seleção</translation>
 <translation id="7942349550061667556">Vermelho</translation>
-<translation id="7948364528129376623">Nenhum link visitado a seguir</translation>
+<translation id="7948364528129376623">Nenhum link acessado a seguir</translation>
 <translation id="7952460583030260752">Referências de comandos</translation>
 <translation id="7965147473449754028">menu fechado</translation>
 <translation id="7968340748835037139">Verde-escuro</translation>

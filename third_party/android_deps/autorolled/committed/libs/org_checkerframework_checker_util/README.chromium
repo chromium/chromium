@@ -1,7 +1,7 @@
 Name: Checker Util
 Short Name: checker-util
-URL: https://checkerframework.org/
-Version: 3.49.5
+URL: https://repo.maven.apache.org/maven2/org/checkerframework/checker-util/3.52.1/checker-util-3.52.1.jar
+Version: 3.52.1
 Update Mechanism: Autoroll
 License: MIT
 License File: LICENSE
@@ -11,6 +11,9 @@ Shipped: yes
 
 Description:
 checker-util contains utility classes for programmers to use at run time.
+
+See also: https://checkerframework.org/
+
 
 Local Modifications:
 No modifications.

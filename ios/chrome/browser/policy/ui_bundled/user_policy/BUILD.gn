@@ -29,6 +29,7 @@ source_set("user_policy") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ui/base",

@@ -18,7 +18,6 @@ import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dial
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -293,8 +292,7 @@ suite('FirmwareUpdateAppTest', () => {
           const fakeFirmwareUpdate = getFirmwareUpdateFromDialog()!;
           assertEquals(
               loadTimeData.getStringF(
-                  'updating',
-                  mojoString16ToString(fakeFirmwareUpdate.deviceName)),
+                  'updating', fakeFirmwareUpdate.deviceName),
               getUpdateDialogTitle().innerText.trim());
           // Allow firmware update to complete.
           return controller?.getUpdateCompletedPromiseForTesting();
@@ -306,8 +304,7 @@ suite('FirmwareUpdateAppTest', () => {
           assertTrue(getUpdateDialog().open);
           assertEquals(
               loadTimeData.getStringF(
-                  'deviceUpToDate',
-                  mojoString16ToString(fakeFirmwareUpdate.deviceName)),
+                  'deviceUpToDate', fakeFirmwareUpdate.deviceName),
               getUpdateDialogTitle().innerText.trim());
         });
   });
@@ -330,8 +327,7 @@ suite('FirmwareUpdateAppTest', () => {
           const fakeFirmwareUpdate = getFirmwareUpdateFromDialog()!;
           assertEquals(
               loadTimeData.getStringF(
-                  'updating',
-                  mojoString16ToString(fakeFirmwareUpdate.deviceName)),
+                  'updating', fakeFirmwareUpdate.deviceName),
               getUpdateDialogTitle().innerText.trim());
           // Allow firmware update to complete.
           return controller?.getUpdateCompletedPromiseForTesting();
@@ -343,8 +339,7 @@ suite('FirmwareUpdateAppTest', () => {
           assertTrue(getUpdateDialog().open);
           assertEquals(
               loadTimeData.getStringF(
-                  'deviceReadyToInstallUpdate',
-                  mojoString16ToString(fakeFirmwareUpdate.deviceName)),
+                  'deviceReadyToInstallUpdate', fakeFirmwareUpdate.deviceName),
               getUpdateDialogTitle().innerText.trim());
         });
   });
@@ -368,8 +363,7 @@ suite('FirmwareUpdateAppTest', () => {
           const fakeFirmwareUpdate = getFirmwareUpdateFromDialog()!;
           assertEquals(
               loadTimeData.getStringF(
-                  'updating',
-                  mojoString16ToString(fakeFirmwareUpdate.deviceName)),
+                  'updating', fakeFirmwareUpdate.deviceName),
               getUpdateDialogTitle().innerText.trim());
           return controller?.getUpdateCompletedPromiseForTesting();
         })
@@ -380,8 +374,7 @@ suite('FirmwareUpdateAppTest', () => {
           assertTrue(getUpdateDialog().open);
           assertEquals(
               loadTimeData.getStringF(
-                  'updateFailedTitleText',
-                  mojoString16ToString(fakeFirmwareUpdate.deviceName)),
+                  'updateFailedTitleText', fakeFirmwareUpdate.deviceName),
               getUpdateDialogTitle().innerText.trim());
         });
   });
@@ -401,8 +394,7 @@ suite('FirmwareUpdateAppTest', () => {
     assertEquals(UpdateState.kUpdating, getUpdateState());
     const fakeUpdate = getFirmwareUpdateFromDialog()!;
     assertEquals(
-        loadTimeData.getStringF(
-            'updating', mojoString16ToString(fakeUpdate.deviceName)),
+        loadTimeData.getStringF('updating', fakeUpdate.deviceName),
         getUpdateDialogTitle().innerText.trim());
     // Allow firmware update to complete.
     await controller?.getUpdateCompletedPromiseForTesting();

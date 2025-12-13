@@ -34,9 +34,9 @@ SurveyUiDelegateAndroid::~SurveyUiDelegateAndroid() = default;
 
 void SurveyUiDelegateAndroid::ShowSurveyInvitation(
     JNIEnv* env,
-    const JavaParamRef<jobject>& on_accepted_callback,
-    const JavaParamRef<jobject>& on_declined_callback,
-    const JavaParamRef<jobject>& on_presentation_failed_callback) {
+    const JavaRef<jobject>& on_accepted_callback,
+    const JavaRef<jobject>& on_declined_callback,
+    const JavaRef<jobject>& on_presentation_failed_callback) {
   LOG(WARNING) << "Unimplemented SurveyUiDelegateAndroid::ShowSurveyInvitation";
 }
 
@@ -50,3 +50,5 @@ const JavaRef<jobject>& SurveyUiDelegateAndroid::GetJavaObject(
 }
 
 }  // namespace hats
+
+DEFINE_JNI(SurveyUiDelegateBridge)

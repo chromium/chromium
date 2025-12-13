@@ -21,6 +21,7 @@ public class EducationalTipModuleUtils {
         modules.add(ModuleType.TAB_GROUP_SYNC_PROMO);
         modules.add(ModuleType.QUICK_DELETE_PROMO);
         modules.add(ModuleType.HISTORY_SYNC_PROMO);
+        modules.add(ModuleType.TIPS_NOTIFICATIONS_PROMO);
         return modules;
     }
 }

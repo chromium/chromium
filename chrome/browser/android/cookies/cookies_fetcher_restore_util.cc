@@ -74,7 +74,9 @@ void CookiesFetcherRestoreCookiesImpl(JNIEnv* env,
           static_cast<net::CookiePriority>(priority),
           serialized_cookie_partition_key.value(),
           static_cast<net::CookieSourceScheme>(source_scheme), source_port,
-          static_cast<net::CookieSourceType>(source_type));
+          static_cast<net::CookieSourceType>(source_type),
+          net::CanonicalCookieFromStorageCallSite::
+              kAndroidCookiesFetcherRestoreUtil);
   // FromStorage() uses a less strict version of IsCanonical(), we need to check
   // the stricter version as well here. This is safe because this function is
   // only used for incognito cookies which don't survive Chrome updates and

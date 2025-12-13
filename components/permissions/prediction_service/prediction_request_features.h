@@ -19,6 +19,7 @@ struct PredictionRequestFeatures {
     kCpssV3ExperimentId = 1,
     kAiV1ExperimentId = 2,
     kAiV3ExperimentId = 3,
+    kAiV4ExperimentId = 4,
   };
 
   struct ActionCounts {

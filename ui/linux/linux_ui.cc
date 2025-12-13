@@ -2,21 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/linux/linux_ui.h"
 
 #include <cstdio>
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "ui/linux/cursor_theme_manager_observer.h"
 #include "ui/linux/linux_ui_getter.h"
+#include "ui/linux/primary_paste_pref_observer.h"
 
 namespace ui {
 
@@ -74,6 +71,15 @@ void LinuxUi::RemoveCursorThemeObserver(CursorThemeManagerObserver* observer) {
   cursor_theme_observer_list_.RemoveObserver(observer);
 }
 
+void LinuxUi::AddPrimaryPastePrefObserver(PrimaryPastePrefObserver* observer) {
+  primary_paste_observer_list_.AddObserver(observer);
+}
+
+void LinuxUi::RemovePrimaryPastePrefObserver(
+    PrimaryPastePrefObserver* observer) {
+  primary_paste_observer_list_.RemoveObserver(observer);
+}
+
 LinuxUi::FontSettings LinuxUi::GetDefaultFontDescription() {
   if (!default_font_settings_.has_value()) {
     InitializeFontSettings();
@@ -95,8 +101,9 @@ LinuxUi::CmdLineArgs LinuxUi::CopyCmdLine(
   char* dst = cmd_line.args.data();
   for (const auto& arg : argv) {
     cmd_line.argv.push_back(dst);
-    snprintf(dst, &cmd_line.args.back() + 1 - dst, "%s", arg.c_str());
-    dst += arg.size() + 1;
+    UNSAFE_TODO(
+        snprintf(dst, &cmd_line.args.back() + 1 - dst, "%s", arg.c_str()));
+    UNSAFE_TODO(dst += arg.size() + 1);
   }
   cmd_line.argc = cmd_line.argv.size();
 

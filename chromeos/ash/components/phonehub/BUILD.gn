@@ -138,12 +138,12 @@ static_library("phonehub") {
 
   deps = [
     "//ash/constants",
-    "//ash/public/cpp:cpp",
+    "//ash/public/cpp",
     "//ash/resources/vector_icons",
     "//ash/webui/eche_app_ui:eche_app_ui_pref",
     "//ash/webui/eche_app_ui:eche_connection_status",
     "//ash/webui/eche_app_ui:system_info_provider",
-    "//ash/webui/eche_app_ui/mojom:mojom",
+    "//ash/webui/eche_app_ui/mojom",
     "//base",
     "//chromeos/ash/components/multidevice",
     "//chromeos/ash/components/multidevice/logging",
@@ -334,6 +334,7 @@ source_set("unit_tests") {
     "//components/metrics/structured:structured_metrics_features",
     "//components/prefs:test_support",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//device/bluetooth:mocks",
     "//skia",
     "//testing/gtest",

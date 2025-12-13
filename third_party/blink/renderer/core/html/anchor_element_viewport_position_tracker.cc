@@ -34,7 +34,13 @@ constexpr float kIntersectionRatioThreshold = 0.5f;
 
 wtf_size_t GetMaxNumberOfObservations() {
   const base::FeatureParam<int> max_number_of_observations{
-      &features::kNavigationPredictor, "max_intersection_observations", -1};
+      &features::kNavigationPredictor, "max_intersection_observations",
+#if BUILDFLAG(IS_ANDROID)
+      60
+#else
+      -1
+#endif
+  };
   int value = max_number_of_observations.Get();
   return value >= 0 ? value : std::numeric_limits<wtf_size_t>::max();
 }
@@ -42,14 +48,19 @@ wtf_size_t GetMaxNumberOfObservations() {
 base::TimeDelta GetIntersectionObserverDelay() {
   const base::FeatureParam<base::TimeDelta> param{
       &features::kNavigationPredictor, "intersection_observer_delay",
-      base::Milliseconds(100)};
+#if BUILDFLAG(IS_ANDROID)
+      base::Milliseconds(1000)
+#else
+      base::Milliseconds(100)
+#endif
+  };
   return param.Get();
 }
 
 bool ShouldOnlyObserveAfterFCP() {
   const base::FeatureParam<bool> param{
       &features::kNavigationPredictor,
-      "intersection_observation_after_fcp_only", false};
+      "intersection_observation_after_fcp_only", BUILDFLAG(IS_ANDROID)};
   return param.Get();
 }
 
@@ -436,9 +447,8 @@ void AnchorElementViewportPositionTracker::InitializeIntersectionObserver() {
   CHECK(!intersection_observer_);
   intersection_observer_ = IntersectionObserver::Create(
       *GetSupplementable(),
-      WTF::BindRepeating(
-          &AnchorElementViewportPositionTracker::UpdateVisibleAnchors,
-          WrapWeakPersistent(this)),
+      BindRepeating(&AnchorElementViewportPositionTracker::UpdateVisibleAnchors,
+                    WrapWeakPersistent(this)),
       LocalFrameUkmAggregator::kAnchorElementMetricsIntersectionObserver,
       {.thresholds = {kIntersectionRatioThreshold},
        .delay = intersection_observer_delay_});

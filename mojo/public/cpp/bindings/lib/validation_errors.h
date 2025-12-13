@@ -6,7 +6,7 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_VALIDATION_ERRORS_H_
 
 #include "base/component_export.h"
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "mojo/public/cpp/bindings/lib/send_validation_type.h"
 
@@ -92,49 +92,19 @@ void ReportValidationErrorForMessage(mojo::Message* message,
                                      unsigned int method_ordinal,
                                      bool is_response);
 
-// This class may be used by tests to suppress validation error logging. This is
-// not thread-safe and must only be instantiated on the main thread with no
-// other threads using Mojo bindings at the time of construction or destruction.
-class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-    ScopedSuppressValidationErrorLoggingForTests {
- public:
-  ScopedSuppressValidationErrorLoggingForTests();
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool GetIsValidationErrorLoggingSuppressedForTesting();
 
-  ScopedSuppressValidationErrorLoggingForTests(
-      const ScopedSuppressValidationErrorLoggingForTests&) = delete;
-  ScopedSuppressValidationErrorLoggingForTests& operator=(
-      const ScopedSuppressValidationErrorLoggingForTests&) = delete;
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+void SetIsValidationErrorLoggingSuppressedForTesting(bool suppress_logging);
 
-  ~ScopedSuppressValidationErrorLoggingForTests();
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+void SetSerializationWarningCallbackForTesting(
+    base::RepeatingCallback<void(ValidationError, SendValidation)>* callback);
 
- private:
-  const bool was_suppressed_;
-};
-
-// Only used by validation tests and when there is only one thread doing message
-// validation.
-class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-    ValidationErrorObserverForTesting {
- public:
-  explicit ValidationErrorObserverForTesting(base::RepeatingClosure callback);
-
-  ValidationErrorObserverForTesting(const ValidationErrorObserverForTesting&) =
-      delete;
-  ValidationErrorObserverForTesting& operator=(
-      const ValidationErrorObserverForTesting&) = delete;
-
-  ~ValidationErrorObserverForTesting();
-
-  ValidationError last_error() const { return last_error_; }
-  void set_last_error(ValidationError error) {
-    last_error_ = error;
-    callback_.Run();
-  }
-
- private:
-  ValidationError last_error_;
-  base::RepeatingClosure callback_;
-};
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+void SetValidationErrorCallbackForTesting(
+    base::RepeatingCallback<void(ValidationError)>* callback);
 
 // Used only by MOJO_INTERNAL_DLOG_SERIALIZATION_WARNING. Don't use it directly.
 //
@@ -143,35 +113,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 bool ReportSerializationWarning(ValidationError error,
                                 SendValidation validation_type);
-
-// Only used by serialization tests and when there is only one thread doing
-// message serialization.
-class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-    SerializationWarningObserverForTesting {
- public:
-  SerializationWarningObserverForTesting();
-
-  SerializationWarningObserverForTesting(
-      const SerializationWarningObserverForTesting&) = delete;
-  SerializationWarningObserverForTesting& operator=(
-      const SerializationWarningObserverForTesting&) = delete;
-
-  ~SerializationWarningObserverForTesting();
-
-  ValidationError last_warning() const { return last_warning_; }
-  std::optional<SendValidation> send_side_validation() const {
-    return send_validation_type_;
-  }
-  void set_last_warning(ValidationError error) { last_warning_ = error; }
-  void set_send_validation_type(SendValidation send_side_validation_type) {
-    send_validation_type_ = send_side_validation_type;
-  }
-  void clear_send_validation() { send_validation_type_ = std::nullopt; }
-
- private:
-  ValidationError last_warning_;
-  std::optional<SendValidation> send_validation_type_;
-};
 
 // Adds in the error message so there's consistent formatting between the
 // warning and the error

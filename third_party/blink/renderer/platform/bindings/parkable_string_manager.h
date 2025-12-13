@@ -8,8 +8,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -56,7 +56,9 @@ class PLATFORM_EXPORT ParkableStringManagerDumpProvider
 // possible to temporarily have an unparked `ParkableString` inaccessible
 // through `unparked_strings_`. This can cause aging of the string to be
 // delayed or a variation on the sizes recorded in 'ComputeStatistics()`.
-class PLATFORM_EXPORT ParkableStringManager : public RAILModeObserver {
+class PLATFORM_EXPORT ParkableStringManager
+    : public RAILModeObserver,
+      public base::MemoryPressureListener {
   USING_FAST_MALLOC(ParkableStringManager);
 
  public:
@@ -70,7 +72,9 @@ class PLATFORM_EXPORT ParkableStringManager : public RAILModeObserver {
   void SetRendererBackgrounded(bool backgrounded);
   void OnRAILModeChanged(RAILMode rail_mode) override;
 
-  void PurgeMemory();
+  // base::MemoryPressureListener:
+  void OnMemoryPressure(base::MemoryPressureLevel) override;
+
   // Number of parked and unparked strings. Public for testing.
   size_t Size() const;
 
@@ -112,9 +116,9 @@ class PLATFORM_EXPORT ParkableStringManager : public RAILModeObserver {
 
   // Relies on secure hash equality for deduplication. If one day SHA256 becomes
   // insecure, then this would need to be updated to a more robust hash.
-  using StringMap = WTF::HashMap<const ParkableStringImpl::SecureDigest*,
-                                 ParkableStringImpl*,
-                                 SecureDigestHashTraits>;
+  using StringMap = HashMap<const ParkableStringImpl::SecureDigest*,
+                            ParkableStringImpl*,
+                            SecureDigestHashTraits>;
 
   bool IsOnParkedMapForTesting(ParkableStringImpl* string);
   bool IsOnDiskMapForTesting(ParkableStringImpl* string);
@@ -207,7 +211,6 @@ class PLATFORM_EXPORT ParkableStringManager : public RAILModeObserver {
   RAILMode rail_mode_ = RAILMode::kDefault;
   bool has_pending_aging_task_ = false;
   bool has_posted_unparking_time_accounting_task_ = false;
-  bool did_register_memory_pressure_listener_ = false;
   base::TimeDelta total_unparking_time_;
   base::TimeDelta total_parking_thread_time_;
   base::TimeDelta total_disk_read_time_;
@@ -221,6 +224,9 @@ class PLATFORM_EXPORT ParkableStringManager : public RAILModeObserver {
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<DiskDataAllocator> allocator_for_testing_;
+
+  std::optional<base::AsyncMemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 
   friend class ParkableStringTest;
   FRIEND_TEST_ALL_PREFIXES(ParkableStringTest, SynchronousCompression);

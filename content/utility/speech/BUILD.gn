@@ -10,7 +10,7 @@ source_set("speech_recognition_sandbox_hook") {
 
   deps = [
     "//base",
-    "//components/component_updater:component_updater",
+    "//components/component_updater",
     "//components/soda:buildflags",
     "//components/soda:constants",
     "//sandbox/linux:sandbox_services",

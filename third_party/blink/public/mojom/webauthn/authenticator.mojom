@@ -388,6 +388,9 @@ struct SupplementalPubKeysRequest {
   array<string> attestation_formats;
 };
 
+// TODO(https://crbug.com/459517287): With `IMMEDIATE` reflecting `uiMode`,
+// this no longer maps to the `mediation` field of `CredentialRequestOptions`,
+// and should be renamed to avoid confusion.
 enum Mediation {
   MODAL,
   // Indicates that this request should prioritize showing a UI only if
@@ -402,12 +405,6 @@ enum Mediation {
 
 // Parameters passed into calls to GetAssertion.
 struct PublicKeyCredentialRequestOptions {
-  Mediation mediation = Mediation.MODAL;
-
-  // A flag word corresponding to the flags in credential_type_flags.mojom,
-  // representing the types of credentials that were indicated in the request.
-  int32 requested_credential_type_flags;
-
   // An indefinite-length blob passed from the relying party server,
   // to be sent to an authenticator for signing.
   // This value is exclusive with `challenge_url`.
@@ -491,6 +488,18 @@ struct AuthenticationExtensionsClientInputs {
   // Parameters defining the type of browser bound keys that the relying party
   // would accept.
   array<PublicKeyCredentialParameters>? payment_browser_bound_key_parameters;
+};
+
+struct GetCredentialOptions {
+  Mediation mediation;
+
+  // Null for password-only requests. If present, the
+  // response can be a public-key credential assertion.
+  PublicKeyCredentialRequestOptions? public_key;
+
+  // false for public-key only requests. If true, the response can be a password
+  // credential.
+  bool password = false;
 };
 
 // https://w3c.github.io/webauthn/#enum-residentKeyRequirement
@@ -719,11 +728,10 @@ interface Authenticator {
           WebAuthnDOMExceptionDetails? dom_exception_details);
 
   // Uses an existing credential to produce a response for the given
-  // `PublicKeyCredentialRequestOptions`. If the
-  // `requested_credential_type_flags` has the password bit set, the response
+  // `GetCredentialOptions`. If the `password` field is true, the response
   // can be a `CredentialInfo` or `GetAssertionResponse`. Otherwise it will be
   // always `GetAssertionResponse`.
-  GetCredential(PublicKeyCredentialRequestOptions options)
+  GetCredential(GetCredentialOptions options)
       => (GetCredentialResponse response);
 
   // Returns true if the user platform provides an authenticator. Relying

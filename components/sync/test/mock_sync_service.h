@@ -47,6 +47,7 @@ class MockSyncService : public SyncService {
               (),
               (override));
 #endif  // BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(void, AcknowledgeBookmarksLimitExceededError, (), (override));
   MOCK_METHOD(DisableReasonSet, GetDisableReasons, (), (const override));
   MOCK_METHOD(TransportState, GetTransportState, (), (const override));
   MOCK_METHOD(UserActionableError,
@@ -62,7 +63,6 @@ class MockSyncService : public SyncService {
               HasCachedPersistentAuthErrorForMetrics,
               (),
               (const override));
-  MOCK_METHOD(bool, RequiresClientUpgrade, (), (const override));
   MOCK_METHOD(std::unique_ptr<SyncSetupInProgressHandle>,
               GetSetupInProgressHandle,
               (),
@@ -79,7 +79,10 @@ class MockSyncService : public SyncService {
               (),
               (const override));
   MOCK_METHOD(void, OnDataTypeRequestsSyncStartup, (DataType type), (override));
-  MOCK_METHOD(void, TriggerRefresh, (const DataTypeSet& types), (override));
+  MOCK_METHOD(void,
+              TriggerRefresh,
+              (TriggerRefreshSource source, const DataTypeSet& types),
+              (override));
   MOCK_METHOD(void,
               DataTypePreconditionChanged,
               (syncer::DataType type),

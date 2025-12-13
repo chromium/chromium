@@ -48,7 +48,7 @@ struct ZwpPrimarySelectionDevice final : public TestSelectionDevice::Delegate {
         CreateResourceWithImpl<TestSelectionOffer>(
             wl_resource_get_client(device->resource()),
             &zwp_primary_selection_offer_v1_interface, version, &kOfferImpl, 0,
-            std::move(owned_delegate));
+            base::DoNothing(), std::move(owned_delegate));
     delegate->offer = GetUserDataAs<TestSelectionOffer>(new_offer_resource);
     zwp_primary_selection_device_v1_send_data_offer(device_resource,
                                                     new_offer_resource);
@@ -110,7 +110,8 @@ struct ZwpPrimarySelectionDeviceManager
     auto* delegate = owned_delegate.get();
     wl_resource* resource = CreateResourceWithImpl<TestSelectionDevice>(
         client, &zwp_primary_selection_device_v1_interface, version_,
-        &kTestSelectionDeviceImpl, id, std::move(owned_delegate));
+        &kTestSelectionDeviceImpl, id, base::DoNothing(),
+        std::move(owned_delegate));
     delegate->device = GetUserDataAs<TestSelectionDevice>(resource);
     return delegate->device;
   }
@@ -122,7 +123,8 @@ struct ZwpPrimarySelectionDeviceManager
     auto* delegate = owned_delegate.get();
     wl_resource* resource = CreateResourceWithImpl<TestSelectionSource>(
         client, &zwp_primary_selection_source_v1_interface, version_,
-        &kTestSelectionSourceImpl, id, std::move(owned_delegate));
+        &kTestSelectionSourceImpl, id, base::DoNothing(),
+        std::move(owned_delegate));
     delegate->source = GetUserDataAs<TestSelectionSource>(resource);
     return delegate->source;
   }

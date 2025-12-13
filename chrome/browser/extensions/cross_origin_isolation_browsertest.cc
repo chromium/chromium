@@ -16,6 +16,7 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/context_type.mojom.h"
@@ -25,11 +26,12 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace {
@@ -72,8 +74,8 @@ class CrossOriginIsolationTest : public ExtensionBrowserTest {
     CHECK(options.coop_value);
     CHECK(!options.is_platform_app || !options.use_service_worker)
         << "Platform apps cannot use 'service_worker' key.";
-#if BUILDFLAG(IS_ANDROID)
-    CHECK(!options.is_platform_app) << "Android does not support platform apps";
+#if !BUILDFLAG(ENABLE_PLATFORM_APPS)
+    CHECK(!options.is_platform_app) << "Platform apps are not supported.";
 #endif
 
     static constexpr char kManifestTemplate[] = R"(
@@ -240,9 +242,8 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
                             image_url_without_host_permissions));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
 // Tests that platform apps can opt into cross origin isolation.
-// Not run on desktop Android because Android does not support platform apps.
 IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
                        CrossOriginIsolation_PlatformApps) {
   RestrictProcessCount();
@@ -274,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
   EXPECT_NE(coi_app_background_render_frame_host->GetProcess(),
             non_coi_background_render_frame_host->GetProcess());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
 // Tests that a web accessible frame from a cross origin isolated extension is
 // not cross origin isolated.
@@ -477,7 +478,6 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ServiceWorker) {
                 coi_extension, service_worker_process->GetDeprecatedID(), url));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Tests certain extension APIs which retrieve in-process extension windows.
 // Test these for a cross origin isolated extension with non-cross origin
 // isolated contexts.
@@ -493,10 +493,9 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
   ASSERT_TRUE(coi_background_render_frame_host);
 
   GURL extension_test_url = coi_extension->GetResourceURL("test.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/iframe_blank.html")));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("/iframe_blank.html")));
   ASSERT_TRUE(
       content::NavigateIframeToURL(web_contents, "test", extension_test_url));
   content::RenderFrameHost* extension_iframe =
@@ -504,10 +503,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
   ASSERT_TRUE(extension_iframe);
 
   content::RenderFrameHost* extension_tab =
-      ui_test_utils::NavigateToURLWithDisposition(
-          browser(), extension_test_url,
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+      NavigateToURLInNewTab(extension_test_url);
   ASSERT_TRUE(extension_tab);
 
   // getBackgroundPage API.
@@ -560,8 +556,6 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
 
 // Tests extension messaging between cross origin isolated and
 // non-cross-origin-isolated frames of an extension.
-// TODO(https://crbug.com/383366125): Port to desktop Android when
-// chrome.runtime.sendMessage() works there.
 IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ExtensionMessaging_Frames) {
   RestrictProcessCount();
 
@@ -596,10 +590,9 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ExtensionMessaging_Frames) {
                                    .test_js = kTestJs});
   ASSERT_TRUE(coi_extension);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/iframe_blank.html")));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("/iframe_blank.html")));
 
   GURL extension_test_url = coi_extension->GetResourceURL("test.html");
   ASSERT_TRUE(
@@ -609,10 +602,7 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ExtensionMessaging_Frames) {
   ASSERT_TRUE(extension_iframe);
 
   content::RenderFrameHost* extension_tab =
-      ui_test_utils::NavigateToURLWithDisposition(
-          browser(), extension_test_url,
-          WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+      NavigateToURLInNewTab(extension_test_url);
   ASSERT_TRUE(extension_tab);
 
   // `extension_iframe` and `extension_tab` should not share a process as they
@@ -651,8 +641,6 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest, ExtensionMessaging_Frames) {
 // Tests extension messaging between a cross origin isolated extension frame and
 // the extension service worker which is not cross origin isolated (and hence in
 // a different process).
-// TODO(https://crbug.com/383366125): Port to desktop Android when
-// chrome.runtime.sendMessage() works there.
 IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
                        ExtensionMessaging_ServiceWorker) {
   RestrictProcessCount();
@@ -702,8 +690,9 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
 
   GURL extension_test_url = coi_extension->GetResourceURL("test.html");
-  content::RenderFrameHost* extension_tab =
-      ui_test_utils::NavigateToURL(browser(), extension_test_url);
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, extension_test_url));
+  content::RenderFrameHost* extension_tab = web_contents->GetPrimaryMainFrame();
   ASSERT_TRUE(extension_tab);
 
   {
@@ -727,7 +716,6 @@ IN_PROC_BROWSER_TEST_F(CrossOriginIsolationTest,
     EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   }
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Verify extension resource access if it's in an iframe. Regression test for
 // crbug.com/1343610.
@@ -796,8 +784,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionResourceInIframe) {
     EXPECT_TRUE(content::NavigateIframeToURL(web_contents, "test", target));
     nav_observer.Wait();
     EXPECT_FALSE(nav_observer.last_navigation_succeeded());
-#if !BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/388110291): Figure out why this doesn't work on Android.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    // TODO(crbug.com/442905487): Figure out why this doesn't work on Android.
     // The navigation is correctly blocked, but the error code is different and
     // the iframe pointer is invalidated.
     EXPECT_EQ(ERR_BLOCKED_BY_CLIENT, nav_observer.last_net_error_code());
@@ -811,16 +799,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionResourceInIframe) {
     content::TestNavigationObserver reload_observer(web_contents);
     EXPECT_TRUE(iframe->Reload());
     reload_observer.Wait();
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    // TODO(crbug.com/442905487): Figure out why this doesn't work on Android.
+    // The navigation is correctly blocked, but the error code is different.
     EXPECT_EQ(ERR_BLOCKED_BY_CLIENT, reload_observer.last_net_error_code());
 #endif
     iframe = content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
     EXPECT_FALSE(reload_observer.last_navigation_succeeded());
     EXPECT_EQ(invalid_request_url, iframe->GetLastCommittedURL());
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     // Verify iframe browser initiated navigation (to test real UI behavior).
-    // TODO(https://crbug.com/391922825): Port to desktop Android when we have a
+    // TODO(https://crbug.com/442905487): Port to desktop Android when we have a
     // cross-platform replacement for NavigateParams.
     iframe = content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
     content::TestNavigationObserver browser_initiated_observer(target);
@@ -836,7 +826,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionResourceInIframe) {
     EXPECT_FALSE(browser_initiated_observer.last_navigation_succeeded());
     iframe = content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
     EXPECT_EQ(target, iframe->GetLastCommittedURL());
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
 }
 

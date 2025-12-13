@@ -9,8 +9,8 @@
 #include "base/values.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extensions_manifest_constants.h"
-#include "chrome/common/url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
@@ -48,9 +48,9 @@ bool VerifyExternallyConnectableDefinition(extensions::Extension* extension) {
 
   std::optional<std::string> iwa_origin;
   if (extension_info.iwa_id.has_value()) {
-    iwa_origin =
-        base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
-                      extension_info.iwa_id->id(), "/*"});
+    iwa_origin = base::StrCat({webapps::kIsolatedAppScheme,
+                               url::kStandardSchemeSeparator,
+                               extension_info.iwa_id->id(), "/*"});
   }
   for (const auto& match : *matches_list) {
     const auto& match_str = match.GetString();

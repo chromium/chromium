@@ -95,6 +95,7 @@ meta_kms_device_flag_get_type (void)
         { META_KMS_DEVICE_FLAG_FORCE_LEGACY, "META_KMS_DEVICE_FLAG_FORCE_LEGACY", "force-legacy" },
         { META_KMS_DEVICE_FLAG_DISABLE_CLIENT_MODIFIERS, "META_KMS_DEVICE_FLAG_DISABLE_CLIENT_MODIFIERS", "disable-client-modifiers" },
         { META_KMS_DEVICE_FLAG_DISABLE_VRR, "META_KMS_DEVICE_FLAG_DISABLE_VRR", "disable-vrr" },
+        { META_KMS_DEVICE_FLAG_SUPPORTS_COLOR_MODES, "META_KMS_DEVICE_FLAG_SUPPORTS_COLOR_MODES", "supports-color-modes" },
         { 0, NULL, NULL }
       };
       GType id;

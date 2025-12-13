@@ -1,6 +1,6 @@
 Verifies that storing and sending Secure cookies over http sends Network.*ExtraInfo events with corresponding blocked cookies.
 
-ResponseReceivedExtraInfo blocked cookies:[
+ResponseReceivedExtraInfo blocked cookies: [
     [0] : {
         blockedReasons : [
             [0] : SecureOnly
@@ -23,7 +23,7 @@ ResponseReceivedExtraInfo blocked cookies:[
         cookieLine : name=value; Secure
     }
 ]
-RequestWillBeSentExtraInfo blocked cookies:[
+RequestWillBeSentExtraInfo blocked cookies: [
     [0] : {
         blockedReasons : [
             [0] : SecureOnly

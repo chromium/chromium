@@ -12,6 +12,7 @@
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_test.h"
+#import "ios/web/web_state/crw_web_view.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"

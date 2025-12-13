@@ -22,6 +22,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/common/allocator_state.h"
 #include "components/gwp_asan/common/crash_key_name.h"
@@ -138,7 +139,7 @@ crashpad::VMAddress CrashAnalyzer::GetStateAddress(
     const crashpad::ProcessSnapshot& process_snapshot,
     const char* annotation_name) {
   for (auto* module : process_snapshot.Modules()) {
-    for (auto annotation : module->AnnotationObjects()) {
+    for (const auto& annotation : module->AnnotationObjects()) {
       if (annotation.name != annotation_name)
         continue;
 
@@ -148,11 +149,11 @@ crashpad::VMAddress CrashAnalyzer::GetStateAddress(
         return 0;
       }
 
-      std::string annotation_str(reinterpret_cast<char*>(&annotation.value[0]),
-                                 annotation.value.size());
       uint64_t value;
-      if (!base::HexStringToUInt64(annotation_str, &value))
+      if (!base::HexStringToUInt64(base::as_string_view(annotation.value),
+                                   &value)) {
         return 0;
+      }
       return value;
     }
   }
@@ -263,12 +264,35 @@ bool CrashAnalyzer::AnalyzeLightweightDetectorCrash(
   }
 
   size_t slot_count = valid_state.num_metadata;
+#if BUILDFLAG(IS_IOS)
+  std::unique_ptr<LightweightDetectorState::SlotMetadata[]> metadata_arr;
+  for (auto memory :
+       reinterpret_cast<
+           const crashpad::internal::ProcessSnapshotIOSIntermediateDump&>(
+           process_snapshot)
+           .IntermediateDumpExtraMemory()) {
+    if (memory->Address() == valid_state.metadata_addr &&
+        memory->Size() ==
+            sizeof(LightweightDetectorState::SlotMetadata) * slot_count) {
+      metadata_arr = std::make_unique<LightweightDetectorState::SlotMetadata[]>(
+          slot_count);
+      ReadToPointer delegate(metadata_arr.get());
+      memory->Read(&delegate);
+    }
+    if (metadata_arr != nullptr) {
+      break;
+    }
+  }
+
+  if (metadata_arr == nullptr) {
+#else   // BUILDFLAG(IS_IOS)
   auto metadata_arr =
       std::make_unique<LightweightDetectorState::SlotMetadata[]>(slot_count);
   if (!process_snapshot.Memory()->Read(
           valid_state.metadata_addr,
           sizeof(LightweightDetectorState::SlotMetadata) * slot_count,
           metadata_arr.get())) {
+#endif  // BUILDFLAG(IS_IOS)
     ReportHistogram(
         Crash_Allocator_PARTITIONALLOC,
         GwpAsanCrashAnalysisResult::kErrorFailedToReadLightweightSlotMetadata);

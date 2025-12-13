@@ -770,6 +770,21 @@ std::wstring::size_type wcscasestr(const std::wstring &str, const std::wstring &
 #ifndef SFX_MODULE
 wchar* wcslower(wchar *s)
 {
+  // If string doesn't contain non-English or uppercase English characters,
+  // we can return immediately and avoid costly system calls.
+  bool AlreadyLower=true;
+  for (wchar *c=s;*c!=0;c++)
+  {
+    uint u=(uint)*c;
+    if (u>=128 || (u>='A' && u<='Z'))
+    {
+      AlreadyLower=false;
+      break;
+    }
+  }
+  if (AlreadyLower)
+    return s;
+
 #ifdef _WIN_ALL
 #if defined(CHROMIUM_UNRAR)
   // kernel32!LCMapStringEx instead of user32.dll!CharUpper due to win32k

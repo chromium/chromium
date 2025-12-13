@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,7 +32,6 @@ using ::testing::AllOf;
 using ::testing::Each;
 using ::testing::Field;
 using ::testing::FieldsAre;
-using ::testing::Invoke;
 using ::testing::Property;
 using ::testing::ResultOf;
 using ::testing::Return;
@@ -115,7 +115,8 @@ DlcState CreateTtsInstalledState(const std::string& locale) {
 class LanguagePackManagerTest : public testing::Test {
  public:
   void SetUp() override {
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
 
     ResetPackResult();
 

@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
@@ -43,6 +42,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "network_connection_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -80,8 +80,11 @@ class TestNetworkConnectionObserver : public NetworkConnectionObserver {
   ~TestNetworkConnectionObserver() override = default;
 
   // NetworkConnectionObserver
-  void ConnectToNetworkRequested(const std::string& service_path) override {
+  ConnectToNetworkRequestVerdict ConnectToNetworkRequested(
+      const std::string& service_path) override {
     requests_.insert(service_path);
+
+    return connect_to_network_verdict_;
   }
 
   void ConnectSucceeded(const std::string& service_path) override {
@@ -113,10 +116,17 @@ class TestNetworkConnectionObserver : public NetworkConnectionObserver {
     return disconnect_requests_;
   }
 
+  void SetConnectToNetworkVerdict(ConnectToNetworkRequestVerdict verdict) {
+    connect_to_network_verdict_ = verdict;
+  }
+
  private:
   std::set<std::string> disconnect_requests_;
   std::set<std::string> requests_;
   std::map<std::string, std::string> results_;
+
+  ConnectToNetworkRequestVerdict connect_to_network_verdict_ =
+      ConnectToNetworkRequestVerdict::kProceed;
 };
 
 class FakeTetherDelegate : public NetworkConnectionHandler::TetherDelegate {
@@ -694,6 +704,54 @@ TEST_F(NetworkConnectionHandlerImplTest,
   SetupDevicePolicy(kPolicyWifi0, global_config);
   Connect(wifi0_service_path);
   EXPECT_EQ(kSuccessResult, GetResultAndReset());
+}
+
+TEST_F(NetworkConnectionHandlerImplTest,
+       NetworkConnectionHandlerConnectVetoedByObserver) {
+  // Global arrange: Configure a wifi service.
+  Init();
+
+  std::string wifi0_service_path = ConfigureService(kConfigWifi0Connectable);
+  ASSERT_FALSE(wifi0_service_path.empty());
+
+  // Part 1: Connection attempt vetoed.
+  // Part 1 Arrange: Observer will veto the connection request.
+  network_connection_observer()->SetConnectToNetworkVerdict(
+      ConnectToNetworkRequestVerdict::kVetoWaitingForScan);
+
+  // Part 1 Act: Attempt to connect.
+  Connect(wifi0_service_path);
+
+  // Part 1 Assert: Connection has failed with the correct error.
+  EXPECT_EQ(NetworkConnectionHandler::kErrorWaitingForScan,
+            GetResultAndReset());
+  EXPECT_NE(
+      shill::kStateOnline,
+      GetServiceStringProperty(wifi0_service_path, shill::kStateProperty));
+  // Observer expectations
+  EXPECT_TRUE(network_connection_observer()->GetRequested(wifi0_service_path));
+  EXPECT_EQ(NetworkConnectionHandler::kErrorWaitingForScan,
+            network_connection_observer()->GetResult(wifi0_service_path));
+
+  // Part 2: Connection attempt allowed.
+  // Part 2 Arrange: Observer will allow the connection request.
+  network_connection_observer()->SetConnectToNetworkVerdict(
+      ConnectToNetworkRequestVerdict::kProceed);
+
+  // Part 2 Act: Attempt to connect.
+  Connect(wifi0_service_path);
+
+  // Part 2 Assert: Connection has succeeded.
+  EXPECT_EQ(kSuccessResult, GetResultAndReset());
+  EXPECT_EQ(
+      shill::kStateOnline,
+      GetServiceStringProperty(wifi0_service_path, shill::kStateProperty));
+  // Observer expectations
+  EXPECT_TRUE(network_connection_observer()->GetRequested(wifi0_service_path));
+  EXPECT_EQ(kSuccessResult,
+            network_connection_observer()->GetResult(wifi0_service_path));
+  EXPECT_EQ("wifi0",
+            GetServiceStringProperty(wifi0_service_path, shill::kGuidProperty));
 }
 
 TEST_F(NetworkConnectionHandlerImplTest,

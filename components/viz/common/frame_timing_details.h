@@ -12,7 +12,11 @@
 
 namespace viz {
 
-struct FrameTimingDetails {
+class VIZ_COMMON_EXPORT FrameTimingDetails {
+ public:
+  FrameTimingDetails();
+  FrameTimingDetails(const FrameTimingDetails& other);
+  ~FrameTimingDetails();
   // The time when the frame submitted by the client is received by the Viz
   // service. If this frame corresponds to a non-root Surface, it will not be
   // drawn until it is referenced by a parent Surface.
@@ -25,6 +29,14 @@ struct FrameTimingDetails {
   gfx::SwapTimings swap_timings;
   gfx::PresentationFeedback presentation_feedback;
   BeginFrameId frame_id;
+
+  // Optional TreesInViz timing details.
+  // TODO(crbug.com/430288888): Make use of these timing breakdowns in
+  // CompositorFrameReporter Viz Breakdowns.
+  base::TimeTicks start_update_display_tree;
+  base::TimeTicks start_prepare_to_draw;
+  base::TimeTicks start_draw_layers;
+  base::TimeTicks submit_compositor_frame;
 };
 
 }  // namespace viz

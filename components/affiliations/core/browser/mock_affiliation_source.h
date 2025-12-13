@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/affiliations/core/browser/affiliation_source.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"

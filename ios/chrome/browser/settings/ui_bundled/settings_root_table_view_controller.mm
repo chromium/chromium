@@ -145,6 +145,18 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   controller.snackbarHandler = self.snackbarHandler;
 }
 
+- (UIBarButtonItem*)createEditModeDoneButtonForToolbar:(BOOL)toolbar {
+  // Create a custom Done bar button item, as Material Navigation Bar does not
+  // handle a system UIBarButtonSystemItemDone item.
+  UIBarButtonItem* button = [[UIBarButtonItem alloc]
+      initWithTitle:l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_DONE_BUTTON)
+              style:(toolbar ? UIBarButtonItemStylePlain
+                             : UIBarButtonItemStyleDone)target:self
+             action:@selector(editButtonPressed)];
+  button.accessibilityIdentifier = kSettingsToolbarEditDoneButtonId;
+  return button;
+}
+
 #pragma mark - Property
 
 - (UIBarButtonItem*)deleteButton {
@@ -171,9 +183,6 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
                animated:YES];
 
   [super viewDidLoad];
-  self.styler.cellBackgroundColor =
-      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
-  self.styler.cellTitleColor = [UIColor colorNamed:kTextPrimaryColor];
   self.tableView.estimatedSectionHeaderHeight = kEstimatedHeaderFooterHeight;
   self.tableView.estimatedRowHeight = kSettingsCellDefaultHeight;
   self.tableView.estimatedSectionFooterHeight = kEstimatedHeaderFooterHeight;
@@ -312,18 +321,6 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
              action:@selector(editButtonPressed)];
   [button setEnabled:[self editButtonEnabled]];
   button.accessibilityIdentifier = kSettingsToolbarEditButtonId;
-  return button;
-}
-
-- (UIBarButtonItem*)createEditModeDoneButtonForToolbar:(BOOL)toolbar {
-  // Create a custom Done bar button item, as Material Navigation Bar does not
-  // handle a system UIBarButtonSystemItemDone item.
-  UIBarButtonItem* button = [[UIBarButtonItem alloc]
-      initWithTitle:l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_DONE_BUTTON)
-              style:(toolbar ? UIBarButtonItemStylePlain
-                             : UIBarButtonItemStyleDone)target:self
-             action:@selector(editButtonPressed)];
-  button.accessibilityIdentifier = kSettingsToolbarEditDoneButtonId;
   return button;
 }
 

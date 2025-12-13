@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/341324165): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/containers/buffer_iterator.h"
 
 #include <string.h>
@@ -15,6 +10,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,7 +34,7 @@ TEST(BufferIteratorTest, Object) {
   TestStruct expected = CreateTestStruct();
 
   char buffer[sizeof(TestStruct)];
-  memcpy(buffer, &expected, sizeof(buffer));
+  UNSAFE_TODO(memcpy(buffer, &expected, sizeof(buffer)));
 
   {
     // Read the object.
@@ -100,7 +96,7 @@ TEST(BufferIteratorTest, Span) {
     BufferIterator<char> iterator(buffer);
     span<TestStruct> span = iterator.MutableSpan<TestStruct>(3);
     for (auto& ts : span) {
-      memcpy(&ts, &expected, sizeof(expected));
+      UNSAFE_TODO(memcpy(&ts, &expected, sizeof(expected)));
     }
   }
   {
@@ -138,7 +134,7 @@ TEST(BufferIteratorTest, FixedSpan) {
     static_assert(std::same_as<std::optional<base::span<TestStruct, 3u>>,
                                decltype(span)>);
     for (auto& ts : *span) {
-      memcpy(&ts, &expected, sizeof(expected));
+      UNSAFE_TODO(memcpy(&ts, &expected, sizeof(expected)));
     }
   }
   {

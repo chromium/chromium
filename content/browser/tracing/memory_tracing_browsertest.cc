@@ -26,6 +26,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
+#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-data-view.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using base::trace_event::MemoryDumpArgs;
@@ -34,6 +35,7 @@ using base::trace_event::MemoryDumpLevelOfDetail;
 using base::trace_event::MemoryDumpManager;
 using base::trace_event::MemoryDumpType;
 using base::trace_event::ProcessMemoryDump;
+using memory_instrumentation::mojom::RequestOutcome;
 using testing::_;
 using testing::Return;
 
@@ -54,7 +56,7 @@ class MemoryTracingTest : public ContentBrowserTest {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       base::OnceClosure closure,
       uint32_t request_index,
-      bool success,
+      RequestOutcome outcome,
       uint64_t dump_guid) {
     // Make sure we run the RunLoop closure on the same thread that originated
     // the run loop (which is the IN_PROC_BROWSER_TEST_F main thread).
@@ -62,13 +64,14 @@ class MemoryTracingTest : public ContentBrowserTest {
       task_runner->PostTask(
           FROM_HERE, base::BindOnce(&MemoryTracingTest::OnGlobalMemoryDumpDone,
                                     base::Unretained(this), task_runner,
-                                    std::move(closure), request_index, success,
+                                    std::move(closure), request_index, outcome,
                                     dump_guid));
       return;
     }
-    if (success)
+    if (outcome == RequestOutcome::kSuccess) {
       EXPECT_NE(0u, dump_guid);
-    OnMemoryDumpDone(request_index, success);
+    }
+    OnMemoryDumpDone(request_index, outcome);
     if (closure)
       std::move(closure).Run();
   }
@@ -105,7 +108,7 @@ class MemoryTracingTest : public ContentBrowserTest {
 
     mock_dump_provider_ = std::make_unique<MockDumpProvider>();
     MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-        mock_dump_provider_.get(), "MockDumpProvider", nullptr);
+        mock_dump_provider_.get(), "TestDumpProvider", nullptr);
     MemoryDumpManager::GetInstance()
         ->set_dumper_registrations_ignored_for_testing(false);
     ContentBrowserTest::SetUp();
@@ -171,7 +174,8 @@ class MemoryTracingTest : public ContentBrowserTest {
     EXPECT_TRUE(NavigateToURL(shell, GetTestUrl("", "title1.html")));
   }
 
-  MOCK_METHOD2(OnMemoryDumpDone, void(uint32_t request_index, bool successful));
+  MOCK_METHOD2(OnMemoryDumpDone,
+               void(uint32_t request_index, RequestOutcome outcome));
 
   std::unique_ptr<MockDumpProvider> mock_dump_provider_;
   uint32_t next_request_index_;
@@ -205,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(SingleProcessMemoryTracingTest,
   Navigate(shell());
 
   EXPECT_CALL(*mock_dump_provider_, OnMemoryDump(_,_)).WillOnce(Return(true));
-  EXPECT_CALL(*this, OnMemoryDumpDone(_, true /* success */));
+  EXPECT_CALL(*this, OnMemoryDumpDone(_, RequestOutcome::kSuccess));
 
   EnableMemoryTracing();
   RequestGlobalDumpAndWait(false /* from_renderer_thread */,
@@ -228,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(SingleProcessMemoryTracingTest,
   Navigate(shell());
 
   EXPECT_CALL(*mock_dump_provider_, OnMemoryDump(_,_)).WillOnce(Return(true));
-  EXPECT_CALL(*this, OnMemoryDumpDone(_, true /* success */));
+  EXPECT_CALL(*this, OnMemoryDumpDone(_, RequestOutcome::kSuccess));
 
   EnableMemoryTracing();
   RequestGlobalDumpAndWait(true /* from_renderer_thread */,
@@ -250,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(SingleProcessMemoryTracingTest,
   EXPECT_CALL(*mock_dump_provider_, OnMemoryDump(_,_))
       .Times(4)
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(*this, OnMemoryDumpDone(_, true /* success */)).Times(4);
+  EXPECT_CALL(*this, OnMemoryDumpDone(_, RequestOutcome::kSuccess)).Times(4);
 
   EnableMemoryTracing();
   RequestGlobalDumpAndWait(true /* from_renderer_thread */,
@@ -294,41 +298,41 @@ IN_PROC_BROWSER_TEST_F(SingleProcessMemoryTracingTest, DISABLED_QueuedDumps) {
       .Times(5)
       .WillRepeatedly(Return(true));
 
-  EXPECT_CALL(*this, OnMemoryDumpDone(0, true /* success */));
+  EXPECT_CALL(*this, OnMemoryDumpDone(0, RequestOutcome::kSuccess));
   RequestGlobalDump(true /* from_renderer_thread */,
                     MemoryDumpType::kExplicitlyTriggered,
                     MemoryDumpLevelOfDetail::kDetailed);
 
   // This dump should fail immediately because there's already a detailed dump
   // request in the queue.
-  EXPECT_CALL(*this, OnMemoryDumpDone(1, false /* success */));
+  EXPECT_CALL(*this, OnMemoryDumpDone(1, RequestOutcome::kRedundant));
   RequestGlobalDump(true /* from_renderer_thread */,
                     MemoryDumpType::kPeriodicInterval,
                     MemoryDumpLevelOfDetail::kDetailed);
 
-  EXPECT_CALL(*this, OnMemoryDumpDone(2, true /* success */));
+  EXPECT_CALL(*this, OnMemoryDumpDone(2, RequestOutcome::kSuccess));
   RequestGlobalDump(true /* from_renderer_thread */,
                     MemoryDumpType::kPeriodicInterval,
                     MemoryDumpLevelOfDetail::kLight);
 
   // This dump should fail immediately because there's already a light dump
   // request in the queue.
-  EXPECT_CALL(*this, OnMemoryDumpDone(3, false /* success */));
+  EXPECT_CALL(*this, OnMemoryDumpDone(3, RequestOutcome::kRedundant));
   RequestGlobalDump(true /* from_renderer_thread */,
                     MemoryDumpType::kPeriodicInterval,
                     MemoryDumpLevelOfDetail::kLight);
 
-  EXPECT_CALL(*this, OnMemoryDumpDone(4, true /* success */));
+  EXPECT_CALL(*this, OnMemoryDumpDone(4, RequestOutcome::kSuccess));
   RequestGlobalDump(true /* from_renderer_thread */,
                     MemoryDumpType::kExplicitlyTriggered,
                     MemoryDumpLevelOfDetail::kLight);
 
-  EXPECT_CALL(*this, OnMemoryDumpDone(5, true /* success */));
+  EXPECT_CALL(*this, OnMemoryDumpDone(5, RequestOutcome::kSuccess));
   RequestGlobalDumpAndWait(true /* from_renderer_thread */,
                            MemoryDumpType::kExplicitlyTriggered,
                            MemoryDumpLevelOfDetail::kDetailed);
 
-  EXPECT_CALL(*this, OnMemoryDumpDone(6, true /* success */));
+  EXPECT_CALL(*this, OnMemoryDumpDone(6, RequestOutcome::kSuccess));
   RequestGlobalDumpAndWait(true /* from_renderer_thread */,
                            MemoryDumpType::kPeriodicInterval,
                            MemoryDumpLevelOfDetail::kLight);
@@ -361,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(MemoryTracingTest, MAYBE_BrowserInitiatedDump) {
   // crbug.com/709524. The test still tests if dumping does not crash.
   EXPECT_CALL(*this, OnMemoryDumpDone(_, _));
 #else
-  EXPECT_CALL(*this, OnMemoryDumpDone(_, true /* success */));
+  EXPECT_CALL(*this, OnMemoryDumpDone(_, RequestOutcome::kSuccess));
 #endif
 
   EnableMemoryTracing();

@@ -160,21 +160,36 @@ constexpr bool kUseLazyCommit = true;
 constexpr bool kUseLazyCommit = false;
 #endif
 
+// See the comment in PartitionBucket::SlotSpanCommittedSize(). This should not
+// be enabled on Windows (because it increases committed memory, which is a
+// limited system-wide resource on this platform). It has been evaluated on
+// macOS, where it yielded no beenefit (nor any real downside).
+constexpr bool kUseFewerMemoryRegions =
+#if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_ANDROID) || \
+    PA_BUILDFLAG(IS_CHROMEOS)
+    true;
+#else
+    false;
+#endif
+
 // On these platforms, lock all the partitions before fork(), and unlock after.
 // This may be required on more platforms in the future.
 #define PA_CONFIG_HAS_ATFORK_HANDLER()                 \
   (PA_BUILDFLAG(IS_APPLE) || PA_BUILDFLAG(IS_LINUX) || \
    PA_BUILDFLAG(IS_CHROMEOS))
 
-// With this flag, shadow pools will be mapped, on which writable shadow
-// metadatas are placed, and the real metadatas are set to read-only instead.
-// This feature is only enabled with 64-bit environment because pools work
-// differently with 32-bits pointers (see glossary).
-#define PA_CONFIG_ENABLE_SHADOW_METADATA() 0
+#if PA_BUILDFLAG(MOVE_METADATA_OUT_OF_GIGACAGE_FOR_64_BITS_POINTERS) && \
+    PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#define PA_CONFIG_MOVE_METADATA_OUT_OF_GIGACAGE() 1
+#else
+#define PA_CONFIG_MOVE_METADATA_OUT_OF_GIGACAGE() 0
+#endif
 
 // PartitionAlloc uses PartitionRootEnumerator to acquire all
 // PartitionRoots at BeforeFork and to release at AfterFork.
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_CONFIG(HAS_ATFORK_HANDLER)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+        PA_CONFIG(HAS_ATFORK_HANDLER) ||           \
+    PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 #define PA_CONFIG_USE_PARTITION_ROOT_ENUMERATOR() 1
 #else
 #define PA_CONFIG_USE_PARTITION_ROOT_ENUMERATOR() 0
@@ -245,14 +260,7 @@ constexpr bool kUseLazyCommit = false;
 #define PA_CONFIG_IS_NONCLANG_MSVC() 0
 #endif
 
-// Set GN build override 'assert_cpp_20' to false to disable assertion.
-#if PA_BUILDFLAG(ASSERT_CPP_20)
 static_assert(__cplusplus >= 202002L,
               "PartitionAlloc targets C++20 or higher.");
-#endif  // PA_BUILDFLAG(ASSERT_CPP_20)
-
-// Named pass-through that determines whether or not PA should generally
-// enforce that `SlotStart` instances are in fact slot starts.
-#define PA_CONFIG_ENFORCE_SLOT_STARTS() PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 #endif  // PARTITION_ALLOC_PARTITION_ALLOC_CONFIG_H_

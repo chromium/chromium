@@ -10,6 +10,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace page_actions {
@@ -103,6 +104,35 @@ TEST_F(PageActionModelTest, ShouldAnnounceChip) {
   EXPECT_EQ(model_.GetShouldAnnounceChip(), false);
 }
 
+TEST_F(PageActionModelTest, ShouldAnimateChip) {
+  model_.SetSuggestionChipConfig(PassKey(), {.should_animate = true});
+  EXPECT_EQ(model_.GetShouldAnimateChipOut(), true);
+  EXPECT_EQ(model_.GetShouldAnimateChipIn(), true);
+
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+  model_.SetSuggestionChipConfig(PassKey(), {.should_animate = false});
+  EXPECT_EQ(model_.GetShouldAnimateChipOut(), false);
+  EXPECT_EQ(model_.GetShouldAnimateChipIn(), false);
+}
+
+TEST_F(PageActionModelTest, ShouldAnimateIn) {
+  model_.SetSuggestionChipConfig(PassKey(), {.should_animate = true});
+  model_.SetShouldShowSuggestionChip(PassKey(), true);
+  EXPECT_EQ(model_.GetShouldAnimateChipIn(), true);
+
+  // Mark the chip as shown.
+  model_.SetIsChipShowing(PassKey(), true);
+  EXPECT_EQ(model_.GetShouldAnimateChipIn(), false);
+
+  // Hiding the chip should not reset the animation state.
+  model_.SetIsChipShowing(PassKey(), false);
+  EXPECT_EQ(model_.GetShouldAnimateChipIn(), false);
+
+  // Requesting to show the chip again should the animation state.
+  model_.SetShouldShowSuggestionChip(PassKey(), true);
+  EXPECT_EQ(model_.GetShouldAnimateChipIn(), true);
+}
+
 TEST_F(PageActionModelTest, OverrideText) {
   EXPECT_CALL(observer_, OnPageActionModelChanged).Times(2);
 
@@ -122,11 +152,13 @@ TEST_F(PageActionModelTest, OverrideImage) {
       ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(/*size=*/32));
 
   EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
-  model_.SetOverrideImage(PassKey(), kOverrideImage);
+  model_.SetOverrideImage(PassKey(), kOverrideImage,
+                          PageActionColorSource::kForeground);
   EXPECT_EQ(model_.GetImage(), kOverrideImage);
 
   EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
-  model_.SetOverrideImage(PassKey(), std::nullopt);
+  model_.SetOverrideImage(PassKey(), std::nullopt,
+                          PageActionColorSource::kForeground);
   EXPECT_EQ(model_.GetImage(), kTestImage);
 }
 
@@ -163,7 +195,7 @@ TEST_F(PageActionModelTest, SetActionItemProperties) {
   EXPECT_EQ(model_.GetActionItemIsShowingBubble(), true);
 }
 
-TEST_F(PageActionModelTest, ShouldHidePageAction) {
+TEST_F(PageActionModelTest, ShouldGetSuppressedByOmnibox) {
   model_.SetShowRequested(PassKey(), true);
   model_.SetActionItemProperties(
       PassKey(),
@@ -178,10 +210,27 @@ TEST_F(PageActionModelTest, ShouldHidePageAction) {
   //   2) true->false  => triggers a notify
   EXPECT_CALL(observer_, OnPageActionModelChanged).Times(2);
 
-  model_.SetShouldHidePageAction(PassKey(), true);
+  model_.SetIsSuppressedByOmnibox(PassKey(), true);
   EXPECT_FALSE(model_.GetVisible());
 
-  model_.SetShouldHidePageAction(PassKey(), false);
+  model_.SetIsSuppressedByOmnibox(PassKey(), false);
+  EXPECT_TRUE(model_.GetVisible());
+}
+
+TEST_F(PageActionModelTest, ShouldIgnoreOmniboxSuppression) {
+  model_.SetShowRequested(PassKey(), true);
+  model_.SetActionItemProperties(
+      PassKey(),
+      ActionItem::Builder().SetEnabled(true).SetVisible(true).Build().get());
+  model_.SetTabActive(PassKey(), true);
+  model_.SetExemptFromOmniboxSuppression(PassKey(), true);
+
+  // Confirm it's now visible by default.
+  EXPECT_TRUE(model_.GetVisible());
+
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+
+  model_.SetIsSuppressedByOmnibox(PassKey(), true);
   EXPECT_TRUE(model_.GetVisible());
 }
 
@@ -231,6 +280,38 @@ TEST_F(PageActionModelTest, ActionActive) {
   model_.SetActionActive(PassKey(), false);
   EXPECT_FALSE(model_.GetActionActive());
   testing::Mock::VerifyAndClearExpectations(&observer_);
+}
+
+TEST_F(PageActionModelTest, OverrideImageWithColorSource) {
+  model_.SetActionItemProperties(
+      PassKey(), ActionItem::Builder().SetImage(kTestImage).Build().get());
+  EXPECT_EQ(model_.GetImage(), kTestImage);
+  EXPECT_EQ(model_.GetColorSource(), PageActionColorSource::kForeground);
+
+  ui::ImageModel kOverrideImage =
+      ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(/*size=*/32));
+
+  // Override with a new image and color source.
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+  model_.SetOverrideImage(PassKey(), kOverrideImage,
+                          PageActionColorSource::kCascadingAccent);
+  EXPECT_EQ(model_.GetImage(), kOverrideImage);
+  EXPECT_EQ(model_.GetColorSource(), PageActionColorSource::kCascadingAccent);
+
+  // Override with the same image and color source should not notify.
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(0);
+  model_.SetOverrideImage(PassKey(), kOverrideImage,
+                          PageActionColorSource::kCascadingAccent);
+  EXPECT_EQ(model_.GetImage(), kOverrideImage);
+  EXPECT_EQ(model_.GetColorSource(), PageActionColorSource::kCascadingAccent);
+
+  // Clear override image, should revert to default image and preserve color
+  // source.
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+  model_.SetOverrideImage(PassKey(), std::nullopt,
+                          PageActionColorSource::kCascadingAccent);
+  EXPECT_EQ(model_.GetImage(), kTestImage);
+  EXPECT_EQ(model_.GetColorSource(), PageActionColorSource::kCascadingAccent);
 }
 
 }  // namespace

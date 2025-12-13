@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/test/trace_event_analyzer.h"
+#include "base/test/trace_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
@@ -42,8 +43,10 @@ static RuleSet* RuleSetFromSingleRule(Document& document, const String& text) {
   RuleSet* rule_set = MakeGarbageCollected<RuleSet>();
   MediaQueryEvaluator* medium =
       MakeGarbageCollected<MediaQueryEvaluator>(document.GetFrame());
+  RuleSet::ApplyMixinsStack apply_mixins_stack;
   rule_set->AddStyleRule(style_rule, /*parent_rule=*/nullptr, *medium,
-                         kRuleHasNoSpecialState, /*within_mixin=*/false);
+                         /*mixins=*/{}, kRuleHasNoSpecialState,
+                         apply_mixins_stack);
   rule_set->CompactRulesIfNeeded();
   return rule_set;
 }
@@ -354,12 +357,13 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
     }
     MediaQueryEvaluator* medium =
         MakeGarbageCollected<MediaQueryEvaluator>(GetDocument().GetFrame());
-    RuleSet& rules = sheet->EnsureRuleSet(*medium);
+    RuleSet& rules = sheet->EnsureRuleSet(*medium, /*mixins=*/{});
     auto* rule = To<StyleRule>(CSSParser::ParseRule(
         sheet->ParserContext(), sheet, CSSNestingType::kNone,
         /*parent_rule_for_nesting=*/nullptr, selector + " { color: green }"));
-    rules.AddStyleRule(rule, /*parent_rule=*/nullptr, *medium,
-                       kRuleHasNoSpecialState, /*within_mixin=*/false);
+    RuleSet::ApplyMixinsStack apply_mixins_stack;
+    rules.AddStyleRule(rule, /*parent_rule=*/nullptr, *medium, /*mixins=*/{},
+                       kRuleHasNoSpecialState, apply_mixins_stack);
 
     MatchResult result;
     ElementResolveContext context{element};
@@ -731,8 +735,8 @@ CORE_EXPORT const CSSStyleSheet* FindStyleSheet(
     const Document& document,
     const StyleRule* rule);
 
-TEST_F(ElementRuleCollectorTest, FindStyleSheetWithCacheEnabled) {
-  ScopedUseStyleRuleMapForSelectorStatsForTest scoped_feature_for_test(true);
+TEST_F(ElementRuleCollectorTest, FindStyleSheet) {
+  base::test::TracingEnvironment tracing_environment;
   trace_analyzer::Start(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"));
   InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
@@ -772,39 +776,6 @@ TEST_F(ElementRuleCollectorTest, FindStyleSheetWithCacheEnabled) {
   InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
       GetDocument(), GetDocument().GetStyleEngine());
   EXPECT_FALSE(InvalidationSetToSelectorMap::IsTracking());
-}
-
-TEST_F(ElementRuleCollectorTest, FindStyleSheetWithCacheDisabled) {
-  ScopedUseStyleRuleMapForSelectorStatsForTest scoped_feature_for_test(false);
-
-  SetBodyInnerHTML(R"HTML(
-    <style id=target>
-      .a .b { color: red; }
-    </style>
-  )HTML");
-
-  const CSSStyleSheet* author_sheet =
-      To<HTMLStyleElement>(GetElementById("target"))->sheet();
-  const StyleRule* author_rule =
-      To<StyleRule>(author_sheet->Contents()->ChildRules()[0].Get());
-  EXPECT_EQ(FindStyleSheet(&GetDocument(), GetDocument(), author_rule),
-            author_sheet);
-
-  StyleSheetContents* user_contents = MakeGarbageCollected<StyleSheetContents>(
-      MakeGarbageCollected<CSSParserContext>(GetDocument()));
-  user_contents->ParseString(".c .d { color: green; }");
-  StyleSheetKey user_key("user");
-  GetDocument().GetStyleEngine().InjectSheet(user_key, user_contents,
-                                             WebCssOrigin::kUser);
-  UpdateAllLifecyclePhasesForTest();
-  const StyleRule* user_rule =
-      To<StyleRule>(user_contents->ChildRules()[0].Get());
-  EXPECT_EQ(FindStyleSheet(nullptr, GetDocument(), user_rule)->Contents(),
-            user_contents);
-
-  const StyleRule* rule_not_in_sheet = To<StyleRule>(
-      css_test_helpers::ParseRule(GetDocument(), ".e .f { color: blue; }"));
-  EXPECT_EQ(FindStyleSheet(nullptr, GetDocument(), rule_not_in_sheet), nullptr);
 }
 
 // https://crbug.com/416699692

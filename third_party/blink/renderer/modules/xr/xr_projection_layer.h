@@ -17,12 +17,11 @@ class XRProjectionLayer : public XRCompositionLayer {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit XRProjectionLayer(XRGraphicsBinding* binding);
+  XRProjectionLayer(XRGraphicsBinding* binding,
+                    XRLayerDrawingContext* drawing_context);
   ~XRProjectionLayer() override = default;
 
-  virtual uint16_t textureWidth() const = 0;
-  virtual uint16_t textureHeight() const = 0;
-  virtual uint16_t textureArrayLength() const = 0;
+  XRLayerType LayerType() const override;
 
   bool ignoreDepthValues() const;
   std::optional<float> fixedFoveation() const;
@@ -31,6 +30,13 @@ class XRProjectionLayer : public XRCompositionLayer {
   void setDeltaPose(XRRigidTransform* value);
 
   void Trace(Visitor*) const override;
+
+ protected:
+  void UpdateLayerBackend() override;
+  device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin()
+      const override;
+  device::mojom::blink::XRLayerSpecificDataPtr CreateLayerSpecificData()
+      const override;
 
  private:
   bool ignore_depth_values_{true};

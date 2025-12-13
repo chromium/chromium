@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "build/android_buildflags.h"
@@ -51,7 +50,6 @@
 #include "third_party/blink/renderer/modules/content_extraction/frame_metadata_observer_registry.h"
 #include "third_party/blink/renderer/modules/content_extraction/inner_html_agent.h"
 #include "third_party/blink/renderer/modules/content_extraction/inner_text_agent.h"
-#include "third_party/blink/renderer/modules/context_menu/context_menu.h"
 #include "third_party/blink/renderer/modules/csspaint/css_paint_image_generator_impl.h"
 #include "third_party/blink/renderer/modules/csspaint/nativepaint/background_color_paint_image_generator_impl.h"
 #include "third_party/blink/renderer/modules/csspaint/nativepaint/clip_path_paint_image_generator_impl.h"
@@ -77,7 +75,6 @@
 #include "third_party/blink/renderer/modules/launch/web_launch_service_impl.h"
 #include "third_party/blink/renderer/modules/manifest/manifest_manager.h"
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_sink_cache.h"
-#include "third_party/blink/renderer/modules/media_capabilities_names.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source_registry_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_tracker.h"
@@ -122,16 +119,6 @@
 
 namespace blink {
 namespace {
-
-// Serves as a kill switch.
-BASE_FEATURE(kBlinkEnableInnerTextAgent,
-             "BlinkEnableInnerTextAgent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Serves as a kill switch.
-BASE_FEATURE(kBlinkEnableInnerHtmlAgent,
-             "BlinkEnableInnerHtmlAgent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
 
@@ -191,7 +178,6 @@ void ModulesInitializer::Initialize() {
   Document::RegisterEventFactory(EventModulesFactory::Create());
   ModuleBindingsInitializer::Init();
   indexed_db_names::Init();
-  media_capabilities_names::Init();
   AXObjectCache::Init(AXObjectCacheImpl::Create);
   DraggedIsolatedFileSystem::Init(
       DraggedIsolatedFileSystemImpl::PrepareForDataObject);
@@ -237,48 +223,44 @@ void ModulesInitializer::Initialize() {
 
 void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {
   if (frame.IsMainFrame()) {
-    frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+    frame.GetInterfaceRegistry()->AddInterface(BindRepeating(
         &DocumentMetadataServer::BindReceiver, WrapWeakPersistent(&frame)));
   }
   if (frame.IsLocalRoot()) {
-    frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+    frame.GetInterfaceRegistry()->AddInterface(BindRepeating(
         &AIPageContentAgent::BindReceiver, WrapWeakPersistent(&frame)));
   }
-  frame.GetInterfaceRegistry()->AddAssociatedInterface(WTF::BindRepeating(
+  frame.GetInterfaceRegistry()->AddAssociatedInterface(BindRepeating(
       &WebLaunchServiceImpl::BindReceiver, WrapWeakPersistent(&frame)));
 
-  frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+  frame.GetInterfaceRegistry()->AddInterface(BindRepeating(
       &InstallationServiceImpl::BindReceiver, WrapWeakPersistent(&frame)));
   // TODO(dominickn): This interface should be document-scoped rather than
   // frame-scoped, as the resulting banner event is dispatched to
   // frame()->document().
-  frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+  frame.GetInterfaceRegistry()->AddInterface(BindRepeating(
       &AppBannerController::BindReceiver, WrapWeakPersistent(&frame)));
-  frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+  frame.GetInterfaceRegistry()->AddInterface(BindRepeating(
       &TextSuggestionBackendImpl::Bind, WrapWeakPersistent(&frame)));
 #if BUILDFLAG(IS_ANDROID)
-  frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
+  frame.GetInterfaceRegistry()->AddInterface(BindRepeating(
       &RemoteObjectGatewayFactoryImpl::Bind, WrapWeakPersistent(&frame)));
 #endif  // BUILDFLAG(IS_ANDROID)
 
   frame.GetInterfaceRegistry()->AddInterface(
-      WTF::BindRepeating(&PeerConnectionTracker::BindToFrame,
-                         WrapCrossThreadWeakPersistent(&frame)));
+      BindRepeating(&PeerConnectionTracker::BindToFrame,
+                    WrapCrossThreadWeakPersistent(&frame)));
 
-  if (base::FeatureList::IsEnabled(kBlinkEnableInnerTextAgent)) {
-    frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
-        &InnerTextAgent::BindReceiver, WrapWeakPersistent(&frame)));
-  }
+  frame.GetInterfaceRegistry()->AddInterface(
+      BindRepeating(&InnerTextAgent::BindReceiver, WrapWeakPersistent(&frame)));
 
-  if (base::FeatureList::IsEnabled(kBlinkEnableInnerHtmlAgent)) {
-    frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
-        &InnerHtmlAgent::BindReceiver, WrapWeakPersistent(&frame)));
-  }
+  frame.GetInterfaceRegistry()->AddInterface(
+      BindRepeating(&InnerHtmlAgent::BindReceiver, WrapWeakPersistent(&frame)));
 
   if (base::FeatureList::IsEnabled(features::kFrameMetadataObserver)) {
     frame.GetInterfaceRegistry()->AddInterface(
-        WTF::BindRepeating(&FrameMetadataObserverRegistry::BindReceiver,
-                           WrapWeakPersistent(&frame)));
+        BindRepeating(&FrameMetadataObserverRegistry::BindReceiver,
+                      WrapWeakPersistent(&frame)));
   }
 }
 
@@ -286,8 +268,14 @@ void ModulesInitializer::InstallSupplements(LocalFrame& frame) const {
   DCHECK(WebLocalFrameImpl::FromFrame(&frame)->Client());
   InspectorAccessibilityAgent::ProvideTo(&frame);
   ImageDownloaderImpl::ProvideTo(frame);
-  ContextMenu::ProvideTo(frame);
   AudioRendererSinkCache::InstallWindowObserver(*frame.DomWindow());
+#if DCHECK_IS_ON()
+  if (frame.IsLocalRoot() &&
+      RuntimeEnabledFeatures::AIPageContentBuildOnLoadForTestingEnabled()) {
+    AIPageContentAgent::EnableAutomaticActionableExtractionOnPageLoadForTesting(
+        frame);
+  }
+#endif
 }
 
 MediaControls* ModulesInitializer::CreateMediaControls(
@@ -306,8 +294,8 @@ void ModulesInitializer::InitInspectorAgentSession(
     InspectorDOMAgent* dom_agent,
     InspectedFrames* inspected_frames,
     Page* page) const {
-  session->CreateAndAppend<InspectorIndexedDBAgent>(inspected_frames,
-                                                    session->V8Session());
+  session->CreateAndAppend<InspectorIndexedDBAgent>(
+      inspected_frames, /*worker_global_scope=*/nullptr, session->V8Session());
   session->CreateAndAppend<DeviceOrientationInspectorAgent>(inspected_frames);
   session->CreateAndAppend<InspectorDOMStorageAgent>(inspected_frames);
   session->CreateAndAppend<InspectorAccessibilityAgent>(inspected_frames,
@@ -315,6 +303,13 @@ void ModulesInitializer::InitInspectorAgentSession(
   session->CreateAndAppend<InspectorWebAudioAgent>(page);
   session->CreateAndAppend<InspectorCacheStorageAgent>(inspected_frames);
   session->CreateAndAppend<BucketFileSystemAgent>(inspected_frames);
+}
+
+void ModulesInitializer::InitWorkerInspectorAgentSession(
+    DevToolsSession* session,
+    WorkerGlobalScope* worker_global_scope) const {
+  session->CreateAndAppend<InspectorIndexedDBAgent>(
+      /*inspected_frames=*/nullptr, worker_global_scope, session->V8Session());
 }
 
 void ModulesInitializer::OnClearWindowObjectInMainWorld(

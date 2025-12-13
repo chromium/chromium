@@ -33,8 +33,10 @@ std::optional<std::string> TryGetEnrollmentDomain(
 
 bool GetSiteIsolationEnabled();
 
+#if !BUILDFLAG(IS_ANDROID)
 // Returns the hostname of the current machine.
 std::string GetHostName();
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Returns the hostname of the current machine.
@@ -56,6 +58,12 @@ std::optional<std::string> GetWindowsUserDomain();
 // Returns the machine GUID of the current Windows machine.
 std::optional<std::string> GetMachineGuid();
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_ANDROID)
+// Get the last date a security patch is applied on the device, in the format of
+// milliseconds since epoch.
+std::optional<int64_t> GetSecurityPatchLevelEpoch();
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace device_signals
 

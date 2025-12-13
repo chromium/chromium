@@ -117,10 +117,10 @@ std::u16string PasswordCrossDomainConfirmationPopupControllerImpl::GetBodyText()
   return show_warning_text_
              ? l10n_util::GetStringFUTF16(
                    IDS_PASSWORD_CROSS_DOMAIN_FILLING_WARNING_DESCRIPTION,
-                   password_hostname_, base::UTF8ToUTF16(domain_.host()))
+                   password_hostname_, base::UTF8ToUTF16(domain_.GetHost()))
              : l10n_util::GetStringFUTF16(
                    IDS_PASSWORD_CROSS_DOMAIN_FILLING_CONFIRMATION_DESCRIPTION,
-                   password_hostname_, base::UTF8ToUTF16(domain_.host()));
+                   password_hostname_, base::UTF8ToUTF16(domain_.GetHost()));
 }
 
 std::u16string

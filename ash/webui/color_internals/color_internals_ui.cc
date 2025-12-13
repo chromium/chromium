@@ -13,7 +13,6 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace ash {
 
@@ -32,12 +31,6 @@ ColorInternalsUI::ColorInternalsUI(content::WebUI* web_ui)
       "color_internals_tokens.json",
       IDR_WEBUI_UI_CHROMEOS_STYLES_COLOR_INTERNALS_TOKENS_JSON);
   data_source->AddResourcePaths(kAshColorInternalsResources);
-}
-
-void ColorInternalsUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void ColorInternalsUI::BindInterface(

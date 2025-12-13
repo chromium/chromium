@@ -24,9 +24,9 @@
   const {result: {nodeId}} =
       await dp.DOM.querySelector({nodeId: root.nodeId, selector: 'div'});
 
-  const {result: {cssFontPaletteValuesRule}} = await dp.CSS.getMatchedStylesForNode({nodeId});
+  const {result: {cssAtRules}} = await dp.CSS.getMatchedStylesForNode({nodeId});
 
-  testRunner.log(cssFontPaletteValuesRule);
+  testRunner.log(cssAtRules);
 
   testRunner.completeTest();
 });

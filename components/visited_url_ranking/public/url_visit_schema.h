@@ -6,7 +6,6 @@
 #define COMPONENTS_VISITED_URL_RANKING_PUBLIC_URL_VISIT_SCHEMA_H_
 
 #include <array>
-#include <map>
 #include <string>
 
 namespace visited_url_ranking {

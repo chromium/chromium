@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_DELIVERY_PREDICTION_MODEL_FETCHER_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -49,7 +50,7 @@ class PredictionModelFetcherImpl : public PredictionModelFetcher {
 
  private:
   // URL loader completion callback.
-  void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoadComplete(std::optional<std::string> response_body);
 
   // Handles the response from the remote Optimization Guide Service.
   // |response| is the response body, |status| is the

@@ -86,7 +86,7 @@ class WebRtcEncodedVideoFrame : public EncodedVideoFrame {
 // Internal class used for receiving frames from the webrtc track on a
 // libjingle thread and forward it to the IO-thread.
 class MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate
-    : public WTF::ThreadSafeRefCounted<RemoteVideoSourceDelegate>,
+    : public ThreadSafeRefCounted<RemoteVideoSourceDelegate>,
       public webrtc::VideoSinkInterface<webrtc::VideoFrame>,
       public webrtc::VideoSinkInterface<webrtc::RecordableEncodedFrame> {
  public:
@@ -94,11 +94,10 @@ class MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate
       scoped_refptr<base::SequencedTaskRunner> video_task_runner,
       VideoCaptureDeliverFrameCB new_frame_callback,
       EncodedVideoFrameCB encoded_frame_callback,
-      VideoCaptureSubCaptureTargetVersionCB
-          sub_capture_target_version_callback);
+      VideoCaptureVersionCB capture_version_callback);
 
  protected:
-  friend class WTF::ThreadSafeRefCounted<RemoteVideoSourceDelegate>;
+  friend class ThreadSafeRefCounted<RemoteVideoSourceDelegate>;
   ~RemoteVideoSourceDelegate() override;
 
   // Implements webrtc::VideoSinkInterface used for receiving video frames
@@ -124,8 +123,8 @@ class MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate
   // |encoded_frame_callback_| is accessed on the IO thread.
   EncodedVideoFrameCB encoded_frame_callback_;
 
-  // |sub_capture_target_version_callback| is accessed on the IO thread.
-  VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback_;
+  // |capture_version_callback| is accessed on the IO thread.
+  VideoCaptureVersionCB capture_version_callback_;
 
   // Timestamp of the first received frame.
   std::optional<base::TimeTicks> start_timestamp_;
@@ -146,13 +145,11 @@ MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::
         scoped_refptr<base::SequencedTaskRunner> video_task_runner,
         VideoCaptureDeliverFrameCB new_frame_callback,
         EncodedVideoFrameCB encoded_frame_callback,
-        VideoCaptureSubCaptureTargetVersionCB
-            sub_capture_target_version_callback)
+        VideoCaptureVersionCB capture_version_callback)
     : video_task_runner_(video_task_runner),
       frame_callback_(std::move(new_frame_callback)),
       encoded_frame_callback_(std::move(encoded_frame_callback)),
-      sub_capture_target_version_callback_(
-          std::move(sub_capture_target_version_callback)),
+      capture_version_callback_(std::move(capture_version_callback)),
       clock_(webrtc::Clock::GetRealTimeClock()),
       ntp_offset_(clock_->TimeInMilliseconds() -
                   clock_->CurrentNtpInMilliseconds()),
@@ -333,8 +330,8 @@ MediaStreamRemoteVideoSource::MediaStreamRemoteVideoSource(
       observer_(std::move(observer)) {
   // The callback will be automatically cleared when 'observer_' goes out of
   // scope and no further callbacks will occur.
-  observer_->SetCallback(WTF::BindRepeating(
-      &MediaStreamRemoteVideoSource::OnChanged, WTF::Unretained(this)));
+  observer_->SetCallback(BindRepeating(&MediaStreamRemoteVideoSource::OnChanged,
+                                       Unretained(this)));
 }
 
 MediaStreamRemoteVideoSource::~MediaStreamRemoteVideoSource() {
@@ -354,7 +351,7 @@ void MediaStreamRemoteVideoSource::StartSourceImpl(
   delegate_ = base::MakeRefCounted<RemoteVideoSourceDelegate>(
       video_task_runner(), std::move(media_stream_callbacks.deliver_frame_cb),
       std::move(media_stream_callbacks.encoded_frame_cb),
-      std::move(media_stream_callbacks.sub_capture_target_version_cb));
+      std::move(media_stream_callbacks.capture_version_cb));
   scoped_refptr<webrtc::VideoTrackInterface> video_track(
       static_cast<webrtc::VideoTrackInterface*>(observer_->track().get()));
   video_track->AddOrUpdateSink(delegate_.get(), webrtc::VideoSinkWants());

@@ -29,11 +29,11 @@ class EVENTS_EXPORT DragEventAndroid {
                    const gfx::PointF& location,
                    const gfx::PointF& screen_location,
                    const std::vector<std::u16string>& mime_types,
-                   jstring content,
-                   jobjectArray filenames,
-                   jstring text,
-                   jstring html,
-                   jstring url);
+                   const base::android::JavaRef<jstring>& content,
+                   const base::android::JavaRef<jobjectArray>& filenames,
+                   const base::android::JavaRef<jstring>& text,
+                   const base::android::JavaRef<jstring>& html,
+                   const base::android::JavaRef<jstring>& url);
 
   DragEventAndroid(const DragEventAndroid&) = delete;
   DragEventAndroid& operator=(const DragEventAndroid&) = delete;

@@ -111,7 +111,7 @@ enum class ManagePasswordsReferrer {
 
   // The warning (Android only) informs the user that they may loose access to
   // their passwords because the transition to UPM has not happened.
-  kAccessLossWarning = 27,
+  // Deprecated: kAccessLossWarning = 27,
 
   // The bubble that notifies the user that a passkey was created automatically
   // in GPM to upgrade an existing, matching password credential.

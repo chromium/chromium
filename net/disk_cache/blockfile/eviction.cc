@@ -36,6 +36,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -340,6 +341,27 @@ void Eviction::TrimCacheV2(bool empty) {
         // This entry is not being used by anybody.
         // Do NOT use node as an iterator after this point.
         rankings_->TrackRankingsBlock(node.get(), false);
+        if (!empty) {
+          // Eviction algorithm V2 is only used for the HTTP disk cache. These
+          // histograms are logged for every stored request, so they use the
+          // histogram macros.
+          // TODO(crbug.com/433551601): Remove these histograms once issue
+          // 433551601 is resolved.
+          UMA_HISTOGRAM_EXACT_LINEAR("DiskCache.0.EvictedRank", list,
+                                     kListsToSearch);
+
+          const Time used_time =
+              Time::FromInternalValue(node->Data()->last_used);
+          const base::TimeDelta age = Time::Now() - used_time;
+          // For the purposes of this investigation we don't care about old
+          // entries getting evicted, so just ignore them so that they don't
+          // mess up the averages.
+          if (age < base::Days(1)) {
+            UMA_HISTOGRAM_CUSTOM_TIMES("DiskCache.0.EvictedAge", age,
+                                       base::Milliseconds(1), base::Days(1),
+                                       50);
+          }
+        }
         if (EvictEntry(node.get(), empty, static_cast<Rankings::List>(list)))
           deleted_entries++;
 
@@ -470,13 +492,14 @@ void Eviction::TrimDeleted(bool empty) {
   if (backend_->disabled_)
     return;
 
+  static constexpr int kMaxDeletedPerCall = 20;
   TimeTicks start = TimeTicks::Now();
   Rankings::ScopedRankingsBlock node(rankings_);
   Rankings::ScopedRankingsBlock next(
     rankings_, rankings_->GetPrev(node.get(), Rankings::DELETED));
   int deleted_entries = 0;
   while (next.get() &&
-         (empty || (deleted_entries < 20 &&
+         (empty || (deleted_entries < kMaxDeletedPerCall &&
                     (TimeTicks::Now() - start).InMilliseconds() < 20))) {
     node.reset(next.release());
     next.reset(rankings_->GetPrev(node.get(), Rankings::DELETED));
@@ -484,6 +507,13 @@ void Eviction::TrimDeleted(bool empty) {
       deleted_entries++;
     if (test_mode_)
       break;
+  }
+
+  if (!empty && new_eviction_) {
+    // TODO(crbug.com/433551601): Remove this histogram once issue 433551601 is
+    // resolved.
+    base::UmaHistogramExactLinear("DiskCache.0.TrimmedDeletedRankingEntries",
+                                  deleted_entries, kMaxDeletedPerCall + 1);
   }
 
   if (deleted_entries && !empty && ShouldTrimDeleted()) {

@@ -63,19 +63,18 @@ found in the LICENSE file.
       android:layout_marginTop="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
       android:layout_marginHorizontal="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
       android:paddingHorizontal="@dimen/ntp_customization_edit_icon_margin"
-      app:layout_constraintTop_toBottomOf="@id/bottom_sheet_title"
-      app:layout_constraintStart_toStartOf="parent"
-      android:background="@drawable/ntp_customization_bottom_sheet_list_item_background_middle"
+      android:background="@drawable/ntp_customization_bottom_sheet_list_item_background_single"
       tools:baselinealigned="false"
-      android:text="@string/ntp_customization_theme_collections_daily_update" />
+      android:text="@string/ntp_customization_theme_collections_daily_update"
+      app:layout_constraintTop_toBottomOf="@id/bottom_sheet_title"
+      app:layout_constraintStart_toStartOf="parent"/>
 
   <androidx.recyclerview.widget.RecyclerView
       android:id="@+id/single_theme_collection_recycler_view"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginTop="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
+      android:layout_marginTop="@dimen/ntp_customization_single_theme_collection_recycler_view_margin_top"
       android:paddingHorizontal="@dimen/ntp_customization_theme_collections_recycle_view_padding_horizontal"
-      android:clipToPadding="false"
       app:layout_constraintTop_toBottomOf="@id/daily_update_switch_button"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintEnd_toEndOf="parent" />

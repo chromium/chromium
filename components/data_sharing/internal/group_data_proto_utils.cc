@@ -5,7 +5,7 @@
 #include "components/data_sharing/internal/group_data_proto_utils.h"
 
 #include "base/notreached.h"
-#include "components/data_sharing/internal/client_version_info.h"
+#include "components/data_sharing/public/client_version_info.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/public/protocol/group_data.pb.h"
 #include "google_apis/gaia/gaia_id.h"

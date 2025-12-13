@@ -59,10 +59,17 @@
     },
 
     // Do not hide chars typed in password fields immediately, but let the last char stay
-    // visible for N seconds, configured by the passwordEchoDurationInSeconds setting
-    // FIXME: Enable automatically if passwordEchoDurationInSeconds is set to a positive value.
+    // visible for N seconds, configured by the passwordEchoDurationInSeconds setting.
+
+    // Controls password echoing when input is received from physical devices (like a hardware keyboard).
     {
-      name: "passwordEchoEnabled",
+      name: "passwordEchoEnabledPhysical",
+      initial: false,
+    },
+
+    // Controls password echoing when input is received from touch-based sources (like an on-screen soft keyboard).
+    {
+      name: "passwordEchoEnabledTouch",
       initial: false,
     },
 
@@ -182,6 +189,10 @@
 
     {
       name: "allowScriptsToCloseWindows",
+      initial: false,
+    },
+    {
+      name: "allowWindowFocusWithoutUserGesture",
       initial: false,
     },
 
@@ -1200,6 +1211,10 @@
     {
       name: "selectionClipboardBufferAvailable",
       initial: false,
+    },
+    {
+      name: "middleClickPasteAllowed",
+      initial: true
     },
     {
       name: "accessibilityIncludeSvgGElement",

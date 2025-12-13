@@ -5,8 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_DAWN_CONTEXT_PROVIDER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_DAWN_CONTEXT_PROVIDER_H_
 
-#include <dawn/platform/DawnPlatform.h>
-
 #include <memory>
 #include <optional>
 
@@ -15,6 +13,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
+#include "gpu/command_buffer/service/gpu_persistent_cache.h"
 #include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -29,10 +28,18 @@
 #include <wrl/client.h>
 #endif
 
+namespace gl {
+class ProgressReporter;
+}  // namespace gl
+
 namespace gpu {
 
 class DawnSharedContext;
 class GpuProcessShmCount;
+
+namespace webgpu {
+class DawnPlatform;
+}
 
 class GPU_GLES2_EXPORT DawnContextProvider {
  public:
@@ -45,12 +52,14 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   static std::unique_ptr<DawnContextProvider> Create(
       const GpuPreferences& gpu_preferences,
       const GpuFeatureInfo& gpu_feature_info,
+      gl::ProgressReporter* progress_reporter = nullptr,
       ValidateAdapterFn validate_adapter_fn = DefaultValidateAdapterFn);
   static std::unique_ptr<DawnContextProvider> CreateWithBackend(
       wgpu::BackendType backend_type,
       bool force_fallback_adapter,
       const GpuPreferences& gpu_preferences,
       const GpuFeatureInfo& gpu_feature_info,
+      gl::ProgressReporter* progress_reporter = nullptr,
       ValidateAdapterFn validate_adapter_fn = DefaultValidateAdapterFn);
 
   // Creates a new context provider for use on a different thread that shares
@@ -73,11 +82,13 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   bool is_vulkan_swiftshader_adapter() const;
   wgpu::Adapter GetAdapter() const;
   wgpu::Instance GetInstance() const;
+  webgpu::DawnPlatform* GetDawnPlatform();
 
   // Sets the caching interface. This must be called before graphite context
   // is created and before device is shared with any other threads.
   void SetCachingInterface(
-      std::unique_ptr<webgpu::DawnCachingInterface> caching_interface);
+      std::unique_ptr<webgpu::DawnCachingInterface> dawn_caching_interface);
+  void SetCachingInterface(scoped_refptr<GpuPersistentCache> persistent_cache);
 
   bool use_thread_safe_shared_context() const;
 

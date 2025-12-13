@@ -8,12 +8,12 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.MainThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
@@ -31,9 +31,10 @@ import org.chromium.ui.widget.Toast;
  * SigninAndHistorySyncActivityLauncherImpl creates the proper intent and then launches the {@link
  * SigninAndHistorySyncActivity} in different scenarios.
  */
+@NullMarked
 public final class SigninAndHistorySyncActivityLauncherImpl
         implements SigninAndHistorySyncActivityLauncher {
-    private static SigninAndHistorySyncActivityLauncher sLauncher;
+    private static @Nullable SigninAndHistorySyncActivityLauncher sLauncher;
 
     /** Singleton instance getter */
     @MainThread
@@ -55,9 +56,9 @@ public final class SigninAndHistorySyncActivityLauncherImpl
 
     @Override
     public @Nullable Intent createBottomSheetSigninIntentOrShowError(
-            @NonNull Context context,
-            @NonNull Profile profile,
-            @NonNull BottomSheetSigninAndHistorySyncConfig config,
+            Context context,
+            Profile profile,
+            BottomSheetSigninAndHistorySyncConfig config,
             @AccessPoint int accessPoint) {
 
         if (canStartSigninAndHistorySyncOrShowError(

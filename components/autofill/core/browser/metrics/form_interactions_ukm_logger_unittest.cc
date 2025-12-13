@@ -14,12 +14,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
-#include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -36,6 +36,7 @@ namespace {
 using ::autofill::mojom::SubmissionSource;
 using ::autofill::test::AddFieldPredictionToForm;
 using ::autofill::test::CreateTestFormField;
+using ::testing::Each;
 using AutofillStatus = FormInteractionsUkmLogger::AutofillStatus;
 
 using UkmSuggestionsShownType = ukm::builders::Autofill_SuggestionsShown;
@@ -52,8 +53,6 @@ using UkmFormSummaryType = ukm::builders::Autofill2_FormSummary;
 using UkmFocusedComplexFormType = ukm::builders::Autofill2_FocusedComplexForm;
 using UkmSubmittedFormWithExperimentalFieldsType =
     ukm::builders::Autofill2_SubmittedFormWithExperimentalFields;
-using ExpectedUkmMetricsRecord = std::vector<ExpectedUkmMetricsPair>;
-using ExpectedUkmMetrics = std::vector<ExpectedUkmMetricsRecord>;
 
 std::string SerializeAndEncode(const AutofillQueryResponse& response) {
   std::string unencoded_response_string;
@@ -71,23 +70,23 @@ class FormInteractionsUkmLoggerTest : public AutofillMetricsBaseTest,
   void TearDown() override { TearDownHelper(); }
 };
 
-// Test that we log the skip decisions for hidden/representational fields
-// correctly.
+// Test that we log the skip decisions for hidden fields correctly.
 TEST_F(FormInteractionsUkmLoggerTest,
        LogHiddenRepresentationalFieldSkipDecision) {
   RecreateProfile();
 
+  // Metric is going to be recorded only for non-focusable select fields.
   FormData form = CreateForm({
       CreateTestFormField("Name", "name", "",
-                          FormControlType::kInputText),  // no decision
+                          FormControlType::kInputText),  // don't record
       CreateTestFormField("Street", "street", "",
-                          FormControlType::kInputText),  // skips
+                          FormControlType::kInputText),  // don't record
       CreateTestFormField("City", "city", "",
-                          FormControlType::kInputText),  // skips
+                          FormControlType::kInputText),  // don't record
       CreateTestFormField("State", "state", "",
-                          FormControlType::kSelectOne),  // doesn't skip
+                          FormControlType::kSelectOne),  // record
       CreateTestFormField("Country", "country", "",
-                          FormControlType::kSelectOne)  // doesn't skip
+                          FormControlType::kSelectOne)  // don't record
   });
 
   test_api(form).field(1).set_is_focusable(false);
@@ -114,47 +113,20 @@ TEST_F(FormInteractionsUkmLoggerTest,
     FillTestProfile(form);
   }
 
-  VerifyUkm(
-      &test_ukm_recorder(), form,
-      UkmLogHiddenRepresentationalFieldSkipDecisionType::kEntryName,
-      {{{UkmLogHiddenRepresentationalFieldSkipDecisionType::kFormSignatureName,
-         form_signature.value()},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldSignatureName,
-         field_signature[2].value()},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldTypeGroupName,
-         static_cast<int64_t>(FieldTypeGroup::kAddress)},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::
-             kFieldOverallTypeName,
-         ADDRESS_HOME_STATE},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kHeuristicTypeName,
-         ADDRESS_HOME_STATE},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kServerTypeName,
-         ADDRESS_HOME_STATE},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kHtmlFieldTypeName,
-         HtmlFieldType::kUnspecified},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kHtmlFieldModeName,
-         HtmlFieldMode::kNone},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kIsSkippedName,
-         false}},
-       {{UkmLogHiddenRepresentationalFieldSkipDecisionType::kFormSignatureName,
-         form_signature.value()},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldSignatureName,
-         field_signature[3].value()},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldTypeGroupName,
-         static_cast<int64_t>(FieldTypeGroup::kAddress)},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::
-             kFieldOverallTypeName,
-         ADDRESS_HOME_COUNTRY},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kHeuristicTypeName,
-         ADDRESS_HOME_COUNTRY},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kServerTypeName,
-         ADDRESS_HOME_COUNTRY},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kHtmlFieldTypeName,
-         HtmlFieldType::kUnspecified},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kHtmlFieldModeName,
-         HtmlFieldMode::kNone},
-        {UkmLogHiddenRepresentationalFieldSkipDecisionType::kIsSkippedName,
-         false}}});
+  using Ukm = UkmLogHiddenRepresentationalFieldSkipDecisionType;
+  EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+              Each(form.main_frame_origin().GetURL()));
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+      UkmEventsAre({{{Ukm::kFormSignatureName, form_signature.value()},
+                     {Ukm::kFieldSignatureName, field_signature[2].value()},
+                     {Ukm::kFieldTypeGroupName, FieldTypeGroup::kAddress},
+                     {Ukm::kFieldOverallTypeName, ADDRESS_HOME_STATE},
+                     {Ukm::kHeuristicTypeName, ADDRESS_HOME_STATE},
+                     {Ukm::kServerTypeName, ADDRESS_HOME_STATE},
+                     {Ukm::kHtmlFieldTypeName, HtmlFieldType::kUnspecified},
+                     {Ukm::kHtmlFieldModeName, HtmlFieldMode::kNone},
+                     {Ukm::kIsSkippedName, false}}}));
 }
 
 // Verify that when submitting an autofillable form, the proper type of
@@ -179,33 +151,35 @@ TEST_F(FormInteractionsUkmLoggerTest, TypeOfEditedAutofilledFieldsUkmLogging) {
 
   autofill_manager().AddSeenForm(form, heuristic_types, server_types);
 
-  auto entries =
-      test_ukm_recorder().GetEntriesByName(UkmFormEventType::kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  VerifyUkm(
-      &test_ukm_recorder(), form, UkmFormEventType::kEntryName,
-      {{{UkmFormEventType::kAutofillFormEventName, FORM_EVENT_DID_PARSE_FORM},
-        {UkmFormEventType::kFormTypesName,
-         AutofillMetrics::FormTypesToBitVector(
-             {FormTypeNameForLogging::kAddressForm})},
-        {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
+  EXPECT_THAT(GetEventUrls(test_ukm_recorder(), UkmFormEventType::kEntryName),
+              Each(form.main_frame_origin().GetURL()));
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(), UkmFormEventType::kEntryName),
+      UkmEventsAre(
+          {{{UkmFormEventType::kAutofillFormEventName,
+             FORM_EVENT_DID_PARSE_FORM},
+            {UkmFormEventType::kFormTypesName,
+             AutofillMetrics::FormTypesToBitVector(
+                 {FormTypeNameForLogging::kAddressForm})},
+            {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}}));
 
   base::HistogramTester histogram_tester;
   // Simulate text input in the first and second fields.
   SimulateUserChangedField(form, form.fields()[0]);
 
   SubmitForm(form);
-  ExpectedUkmMetricsRecord name_field_ukm_record{
-      {UkmEditedAutofilledFieldAtSubmission::kFieldSignatureName,
-       Collapse(CalculateFieldSignatureForField(form.fields()[0])).value()},
-      {UkmEditedAutofilledFieldAtSubmission::kFormSignatureName,
-       Collapse(CalculateFormSignature(form)).value()},
-      {UkmEditedAutofilledFieldAtSubmission::kOverallTypeName,
-       static_cast<int64_t>(NAME_FULL)}};
 
-  VerifyUkm(&test_ukm_recorder(), form,
-            UkmEditedAutofilledFieldAtSubmission::kEntryName,
-            {name_field_ukm_record});
+  using Ukm = UkmEditedAutofilledFieldAtSubmission;
+  EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+              Each(form.main_frame_origin().GetURL()));
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+              UkmEventsAre(
+                  {{{Ukm::kFieldSignatureName,
+                     Collapse(CalculateFieldSignatureForField(form.fields()[0]))
+                         .value()},
+                    {Ukm::kFormSignatureName,
+                     Collapse(CalculateFormSignature(form)).value()},
+                    {Ukm::kOverallTypeName, NAME_FULL}}}));
 }
 
 // Test the ukm recorded when Suggestion is shown.
@@ -228,17 +202,20 @@ TEST_F(FormInteractionsUkmLoggerTest, AutofillSuggestionsShownTest) {
 
   // Simulate and Autofill query on credit card name field.
   DidShowAutofillSuggestions(form);
-  VerifyUkm(
-      &test_ukm_recorder(), form, UkmSuggestionsShownType::kEntryName,
-      {{{UkmSuggestionsShownType::kMillisecondsSinceFormParsedName, 0},
-        {UkmSuggestionsShownType::kHeuristicTypeName, CREDIT_CARD_NAME_FULL},
-        {UkmSuggestionsShownType::kHtmlFieldTypeName,
-         HtmlFieldType::kUnspecified},
-        {UkmSuggestionsShownType::kServerTypeName, CREDIT_CARD_NAME_FULL},
-        {UkmSuggestionsShownType::kFieldSignatureName,
-         Collapse(CalculateFieldSignatureForField(form.fields()[0])).value()},
-        {UkmSuggestionsShownType::kFormSignatureName,
-         Collapse(CalculateFormSignature(form)).value()}}});
+  using Ukm = UkmSuggestionsShownType;
+  EXPECT_THAT(GetEventUrls(test_ukm_recorder(), Ukm::kEntryName),
+              Each(form.main_frame_origin().GetURL()));
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
+              UkmEventsAre(
+                  {{{Ukm::kMillisecondsSinceFormParsedName, 0},
+                    {Ukm::kHeuristicTypeName, CREDIT_CARD_NAME_FULL},
+                    {Ukm::kHtmlFieldTypeName, HtmlFieldType::kUnspecified},
+                    {Ukm::kServerTypeName, CREDIT_CARD_NAME_FULL},
+                    {Ukm::kFieldSignatureName,
+                     Collapse(CalculateFieldSignatureForField(form.fields()[0]))
+                         .value()},
+                    {Ukm::kFormSignatureName,
+                     Collapse(CalculateFormSignature(form)).value()}}}));
 }
 
 // Test the field log events at the form submission.
@@ -281,42 +258,29 @@ TEST_F(FieldLogUkmMetricTest, TestShowSuggestionAutofillStatus) {
     SubmitForm(form);
 
     // Record Autofill2.FieldInfo UKM event at autofill manager reset.
-    test_api(autofill_client().GetAutofillDriverFactory())
-        .Reset(autofill_driver());
+    autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
 
-    // Verify FieldInfo UKM event for every field.
-    auto field_entries =
-        test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
-    ASSERT_EQ(1u, field_entries.size());
-    for (size_t i = 0; i < field_entries.size(); ++i) {
-      SCOPED_TRACE(testing::Message() << i);
-      using UFIT = UkmFieldInfoType;
-      const auto* const entry = field_entries[i].get();
-
-      DenseSet<AutofillStatus> autofill_status_vector = {
-          AutofillStatus::kIsFocusable, AutofillStatus::kWasFocusedByTapOrClick,
-          AutofillStatus::kSuggestionWasAvailable,
-          AutofillStatus::kSuggestionWasShown, AutofillStatus::kWasFocused};
-      std::map<std::string, int64_t> expected = {
-          {UFIT::kFormSessionIdentifierName,
-           FormGlobalIdToHash64Bit(form.global_id())},
-          {UFIT::kFieldSessionIdentifierName,
-           FieldGlobalIdToHash64Bit(form.fields()[i].global_id())},
-          {UFIT::kFieldSignatureName,
-           Collapse(CalculateFieldSignatureForField(form.fields()[i])).value()},
-          {UFIT::kFormControlType2Name,
-           base::to_underlying(FormControlType::kInputText)},
-          {UFIT::kAutocompleteStateName,
-           base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
-          {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
-          {UFIT::kFieldLogEventCountName, 1},
-      };
-
-      EXPECT_EQ(expected.size(), entry->metrics.size());
-      for (const auto& [metric, value] : expected) {
-        test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
-      }
-    }
+    // Expect a FieldInfo UKM event for the first field.
+    using UFIT = UkmFieldInfoType;
+    DenseSet<AutofillStatus> autofill_status_vector = {
+        AutofillStatus::kIsFocusable, AutofillStatus::kWasFocusedByTapOrClick,
+        AutofillStatus::kSuggestionWasAvailable,
+        AutofillStatus::kSuggestionWasShown, AutofillStatus::kWasFocused};
+    std::vector<UkmMetricNameAndValue> expected = {
+        {UFIT::kFormSessionIdentifierName,
+         FormGlobalIdToHash64Bit(form.global_id())},
+        {UFIT::kFieldSessionIdentifierName,
+         FieldGlobalIdToHash64Bit(form.fields()[0].global_id())},
+        {UFIT::kFieldSignatureName,
+         Collapse(CalculateFieldSignatureForField(form.fields()[0])).value()},
+        {UFIT::kFormControlType2Name, FormControlType::kInputText},
+        {UFIT::kAutocompleteStateName,
+         AutofillMetrics::AutocompleteState::kNone},
+        {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
+        {UFIT::kFieldLogEventCountName, 1},
+    };
+    EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UFIT::kEntryName),
+                UkmEventsAre({expected}));
   }
 }
 
@@ -356,18 +320,12 @@ TEST_F(FieldLogUkmMetricTest, AddressSubmittedFormLogEvents) {
     SubmitForm(form);
 
     // Record Autofill2.FieldInfo UKM event at autofill manager reset.
-    test_api(autofill_client().GetAutofillDriverFactory())
-        .Reset(autofill_driver());
+    autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
 
     // Verify FieldInfo UKM event for every field.
-    auto field_entries =
-        test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
-    ASSERT_EQ(3u, field_entries.size());
-    for (size_t i = 0; i < field_entries.size(); ++i) {
-      SCOPED_TRACE(testing::Message() << i);
-      using UFIT = UkmFieldInfoType;
-      const auto* const entry = field_entries[i].get();
-
+    using UFIT = UkmFieldInfoType;
+    std::vector<std::vector<UkmMetricNameAndValue>> expected_events;
+    for (size_t i = 0; i < 3; ++i) {
       FieldFillingSkipReason status =
           i == 2 ? FieldFillingSkipReason::kFieldTypeUnrelated
                  : FieldFillingSkipReason::kNotSkipped;
@@ -402,7 +360,7 @@ TEST_F(FieldLogUkmMetricTest, AddressSubmittedFormLogEvents) {
             AutofillStatus::kWasAutofillTriggeredAnywhereOnForm};
         field_log_events_count = 1;
       }
-      std::map<std::string, int64_t> expected = {
+      expected_events.push_back({
           {UFIT::kFormSessionIdentifierName,
            FormGlobalIdToHash64Bit(form.global_id())},
           {UFIT::kFieldSessionIdentifierName,
@@ -411,28 +369,21 @@ TEST_F(FieldLogUkmMetricTest, AddressSubmittedFormLogEvents) {
            Collapse(CalculateFieldSignatureForField(form.fields()[i])).value()},
           {UFIT::kAutofillSkippedStatusName,
            DenseSet<FieldFillingSkipReason>{status}.data()[0]},
-          {UFIT::kFormControlType2Name,
-           base::to_underlying(FormControlType::kInputText)},
+          {UFIT::kFormControlType2Name, FormControlType::kInputText},
           {UFIT::kAutocompleteStateName,
-           base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
+           AutofillMetrics::AutocompleteState::kNone},
           {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
           {UFIT::kFieldLogEventCountName, field_log_events_count},
-      };
-      EXPECT_EQ(expected.size(), entry->metrics.size());
-      for (const auto& [metric, value] : expected) {
-        test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
-      }
+      });
     }
+    EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UFIT::kEntryName),
+                UkmEventsAre(expected_events));
 
     // Verify FieldInfoAfterSubmission UKM event for each field in the form.
-    auto submission_entries = test_ukm_recorder().GetEntriesByName(
-        UkmFieldInfoAfterSubmissionType::kEntryName);
+    using UFIAST = UkmFieldInfoAfterSubmissionType;
     // Form submission and user interaction trigger uploading votes twice.
-    ASSERT_EQ(6u, submission_entries.size());
-    for (size_t i = 0; i < submission_entries.size(); ++i) {
-      SCOPED_TRACE(testing::Message() << i);
-      using UFIAST = UkmFieldInfoAfterSubmissionType;
-      const auto* const entry = submission_entries[i].get();
+    expected_events.clear();
+    for (size_t i = 0; i < 6; ++i) {
       FieldType submitted_type1 =
           i % 3 == 0 ? ADDRESS_HOME_COUNTRY : EMPTY_TYPE;
 
@@ -444,27 +395,21 @@ TEST_F(FieldLogUkmMetricTest, AddressSubmittedFormLogEvents) {
       // submission.
       SubmissionSource submission_source =
           i < 3 ? SubmissionSource::FORM_SUBMISSION : SubmissionSource::NONE;
-      std::map<std::string, int64_t> expected = {
+      expected_events.push_back({
           {UFIAST::kFormSessionIdentifierName,
            FormGlobalIdToHash64Bit(form.global_id())},
           {UFIAST::kFieldSessionIdentifierName,
            FieldGlobalIdToHash64Bit(form.fields()[i % 3].global_id())},
           {UFIAST::kSubmittedType1Name, submitted_type1},
-          {UFIAST::kSubmissionSourceName, static_cast<int>(submission_source)},
+          {UFIAST::kSubmissionSourceName, submission_source},
           {UFIAST::kMillisecondsFromFormParsedUntilSubmissionName, 1000},
-      };
-      EXPECT_EQ(expected.size(), entry->metrics.size());
-      for (const auto& [metric, value] : expected) {
-        test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
-      }
+      });
     }
+    EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UFIAST::kEntryName),
+                UkmEventsAre(expected_events));
 
     // Verify FormSummary UKM event for the form.
-    auto form_entries =
-        test_ukm_recorder().GetEntriesByName(UkmFormSummaryType::kEntryName);
-    ASSERT_EQ(1u, form_entries.size());
     using UFST = UkmFormSummaryType;
-    const auto* const entry = form_entries[0].get();
     FormInteractionsUkmLogger::FormEventSet form_events = {
         FORM_EVENT_DID_PARSE_FORM,
         FORM_EVENT_INTERACTED_ONCE,
@@ -472,7 +417,7 @@ TEST_F(FieldLogUkmMetricTest, AddressSubmittedFormLogEvents) {
         FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE,
         FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE,
         FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE};
-    std::map<std::string, int64_t> expected = {
+    std::vector<UkmMetricNameAndValue> expected = {
         {UFST::kFormSessionIdentifierName,
          FormGlobalIdToHash64Bit(form.global_id())},
         {UFST::kFormSignatureName,
@@ -484,10 +429,8 @@ TEST_F(FieldLogUkmMetricTest, AddressSubmittedFormLogEvents) {
         {UFST::kMillisecondsFromFirstInteratctionUntilSubmissionName, 1000},
         {UFST::kMillisecondsFromFormParsedUntilSubmissionName, 1000},
     };
-    EXPECT_EQ(expected.size(), entry->metrics.size());
-    for (const auto& [metric, value] : expected) {
-      test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
-    }
+    EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UFST::kEntryName),
+                UkmEventsAre({expected}));
 
     // Verify LogEvent count UMA events of each type.
     histogram_tester.ExpectBucketCount(
@@ -539,12 +482,13 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsFieldType) {
 
   auto form_structure = std::make_unique<FormStructure>(form);
   FormStructure* form_structure_ptr = form_structure.get();
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
-  ASSERT_TRUE(
-      test_api(autofill_manager())
-          .mutable_form_structures()
-          ->emplace(form_structure_ptr->global_id(), std::move(form_structure))
-          .second);
+  const RegexPredictions regex_predictions =
+      DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
+                          form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
+  test_api(autofill_manager()).AddSeenFormStructure(std::move(form_structure));
 
   AutofillQueryResponse response;
   auto* form_suggestion = response.add_form_suggestions();
@@ -573,12 +517,8 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsFieldType) {
   base::HistogramTester histogram_tester;
   SubmitForm(form);
   // Record Autofill2.FieldInfo UKM event at autofill manager reset.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
 
-  auto entries =
-      test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
-  ASSERT_EQ(6u, entries.size());
   // The heuristic type of each field. The local heuristic prediction does not
   // predict the type for the fourth field.
   std::vector<FieldType> heuristic_types{NAME_LAST,          NAME_FIRST,
@@ -599,115 +539,92 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsFieldType) {
       AutofillMetrics::AutocompleteState::kValid,
       AutofillMetrics::AutocompleteState::kGarbage,
       AutofillMetrics::AutocompleteState::kPassword};
-  int field_log_events_count = 0;
+  using UFIT = UkmFieldInfoType;
+  std::vector<std::vector<UkmMetricNameAndValue>> expected_events;
   // Verify FieldInfo UKM event for every field.
-  for (size_t i = 0; i < entries.size(); ++i) {
-    SCOPED_TRACE(testing::Message() << i);
-    using UFIT = UkmFieldInfoType;
-    const auto* const entry = entries[i].get();
+  for (const auto [field, heuristic_type, html_field_type, server_type,
+                   overall_type, autocomplete_state] :
+       base::zip(form.fields(), heuristic_types, html_field_types, server_types,
+                 overall_types, autocomplete_states)) {
     FieldPrediction::Source prediction_source =
-        server_types[i] != NO_SERVER_DATA
-            ? FieldPrediction::SOURCE_AUTOFILL_DEFAULT
-            : FieldPrediction::SOURCE_UNSPECIFIED;
+        server_type != NO_SERVER_DATA ? FieldPrediction::SOURCE_AUTOFILL_DEFAULT
+                                      : FieldPrediction::SOURCE_UNSPECIFIED;
     DenseSet<AutofillStatus> autofill_status_vector = {
         AutofillStatus::kIsFocusable};
-    field_log_events_count = 2;
-    std::map<std::string, int64_t> expected = {
+    int field_log_events_count = 2;
+    std::vector<UkmMetricNameAndValue> expected = {
         {UFIT::kFormSessionIdentifierName,
          FormGlobalIdToHash64Bit(form.global_id())},
         {UFIT::kFieldSessionIdentifierName,
-         FieldGlobalIdToHash64Bit(form.fields()[i].global_id())},
+         FieldGlobalIdToHash64Bit(field.global_id())},
         {UFIT::kFieldSignatureName,
-         Collapse(CalculateFieldSignatureForField(form.fields()[i])).value()},
-        {UFIT::kServerType1Name, server_types[i]},
+         Collapse(CalculateFieldSignatureForField(field)).value()},
+        {UFIT::kServerType1Name, server_type},
         {UFIT::kServerPredictionSource1Name, prediction_source},
         {UFIT::kServerType2Name, /*SERVER_RESPONSE_PENDING*/ 161},
         {UFIT::kServerPredictionSource2Name,
          FieldPrediction::SOURCE_UNSPECIFIED},
         {UFIT::kServerTypeIsOverrideName, false},
-        {UFIT::kOverallTypeName, overall_types[i]},
+        {UFIT::kOverallTypeName, overall_type},
         {UFIT::kSectionIdName, 1},
         {UFIT::kTypeChangedByRationalizationName, false},
         {UFIT::kRankInFieldSignatureGroupName, 1},
-        {UFIT::kFormControlType2Name,
-         base::to_underlying(FormControlType::kInputText)},
-        {UFIT::kAutocompleteStateName,
-         base::to_underlying(autocomplete_states[i])},
+        {UFIT::kFormControlType2Name, FormControlType::kInputText},
+        {UFIT::kAutocompleteStateName, autocomplete_state},
         {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
     };
-    if (heuristic_types[i] != UNKNOWN_TYPE) {
-      expected.merge(std::map<std::string, int64_t>({
-          {UFIT::kHeuristicTypeName, heuristic_types[i]},
-      }));
+    if (heuristic_type != UNKNOWN_TYPE) {
+      expected.emplace_back(UFIT::kHeuristicTypeName, heuristic_type);
       field_log_events_count += 2;
     } else {
       ++field_log_events_count;
     }
-    if (autocomplete_states[i] != AutofillMetrics::AutocompleteState::kOff) {
-      expected.merge(std::map<std::string, int64_t>({
-          {UFIT::kHtmlFieldTypeName, base::to_underlying(html_field_types[i])},
-          {UFIT::kHtmlFieldModeName, base::to_underlying(HtmlFieldMode::kNone)},
-      }));
+    if (autocomplete_state != AutofillMetrics::AutocompleteState::kOff) {
+      expected.emplace_back(UFIT::kHtmlFieldTypeName, html_field_type);
+      expected.emplace_back(UFIT::kHtmlFieldModeName, HtmlFieldMode::kNone);
       ++field_log_events_count;
     }
-    expected.merge(std::map<std::string, int64_t>({
-        {UFIT::kFieldLogEventCountName, field_log_events_count},
-    }));
-    EXPECT_EQ(expected.size(), entry->metrics.size());
-    for (const auto& [metric, value] : expected) {
-      test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
-    }
+    expected.emplace_back(UFIT::kFieldLogEventCountName,
+                          field_log_events_count);
+    expected_events.push_back(std::move(expected));
   }
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UFIT::kEntryName),
+              UkmEventsAre(std::move(expected_events)));
 
   // Verify FieldInfoAfterSubmission UKM event for each field in the form.
-  auto submission_entries = test_ukm_recorder().GetEntriesByName(
-      UkmFieldInfoAfterSubmissionType::kEntryName);
+  using UFIAST = UkmFieldInfoAfterSubmissionType;
+  expected_events.clear();
   // Form submission triggers uploading votes once.
-  ASSERT_EQ(6u, submission_entries.size());
-  for (size_t i = 0; i < submission_entries.size(); ++i) {
-    SCOPED_TRACE(testing::Message() << i);
-    using UFIAST = UkmFieldInfoAfterSubmissionType;
-    const auto* const entry = submission_entries[i].get();
-    std::map<std::string, int64_t> expected = {
+  for (const auto& field : form.fields()) {
+    std::vector<UkmMetricNameAndValue> expected = {
         {UFIAST::kFormSessionIdentifierName,
          FormGlobalIdToHash64Bit(form.global_id())},
         {UFIAST::kFieldSessionIdentifierName,
-         FieldGlobalIdToHash64Bit(form.fields()[i].global_id())},
+         FieldGlobalIdToHash64Bit(field.global_id())},
         {UFIAST::kSubmittedType1Name, EMPTY_TYPE},
-        {UFIAST::kSubmissionSourceName,
-         static_cast<int>(SubmissionSource::FORM_SUBMISSION)},
+        {UFIAST::kSubmissionSourceName, SubmissionSource::FORM_SUBMISSION},
         {UFIAST::kMillisecondsFromFormParsedUntilSubmissionName, 35000},
     };
-    EXPECT_EQ(expected.size(), entry->metrics.size());
-    for (const auto& [metric, value] : expected) {
-      if (metric == UFIAST::kMillisecondsFromFormParsedUntilSubmissionName) {
-        test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
-      }
-    }
+    expected_events.push_back(std::move(expected));
   }
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UFIAST::kEntryName),
+              UkmEventsAre(std::move(expected_events)));
 
   // Verify FormSummary UKM event for the form.
-  auto form_entries =
-      test_ukm_recorder().GetEntriesByName(UkmFormSummaryType::kEntryName);
-  ASSERT_EQ(1u, form_entries.size());
   using UFST = UkmFormSummaryType;
-  const auto* const entry = form_entries[0].get();
-  FormInteractionsUkmLogger::FormEventSet form_events = {};
-  std::map<std::string, int64_t> expected = {
+  std::vector<UkmMetricNameAndValue> expected = {
       {UFST::kFormSessionIdentifierName,
        FormGlobalIdToHash64Bit(form.global_id())},
       {UFST::kFormSignatureName,
        Collapse(CalculateFormSignature(form)).value()},
-      {UFST::kAutofillFormEventsName, form_events.data()[0]},
-      {UFST::kAutofillFormEvents2Name, form_events.data()[1]},
+      {UFST::kAutofillFormEventsName, 0},
+      {UFST::kAutofillFormEvents2Name, 0},
       {UFST::kSampleRateName, 1},
       {UFST::kWasSubmittedName, true},
       {UFST::kMillisecondsFromFormParsedUntilSubmissionName, 35000},
   };
-  EXPECT_EQ(expected.size(), entry->metrics.size());
-  for (const auto& [metric, value] : expected) {
-    test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
-  }
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UFST::kEntryName),
+              UkmEventsAre({expected}));
 
   // Verify LogEvent count UMA events of each type.
   histogram_tester.ExpectBucketCount(
@@ -751,54 +668,41 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsEditedFieldWithoutFill) {
   SubmitForm(form);
 
   // Record Autofill2.FieldInfo UKM event at autofill manager reset.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
 
   // Verify FieldInfo UKM event for every field.
-  auto entries =
-      test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
-  ASSERT_EQ(2u, entries.size());
-  for (size_t i = 0; i < entries.size(); ++i) {
-    SCOPED_TRACE(testing::Message() << i);
+  using UFIT = UkmFieldInfoType;
+  std::vector<std::vector<UkmMetricNameAndValue>> expected_events;
+  for (size_t i = 0; i < 2; ++i) {
     DenseSet<AutofillStatus> autofill_status_vector = {
         AutofillStatus::kIsFocusable, AutofillStatus::kUserTypedIntoField,
         AutofillStatus::kHadTypedOrFilledValueAtSubmission};
-    using UFIT = UkmFieldInfoType;
-    const auto* const entry = entries[i].get();
-    std::map<std::string, int64_t> expected = {
+    expected_events.push_back({
         {UFIT::kFormSessionIdentifierName,
          FormGlobalIdToHash64Bit(form.global_id())},
         {UFIT::kFieldSessionIdentifierName,
          FieldGlobalIdToHash64Bit(form.fields()[i].global_id())},
         {UFIT::kFieldSignatureName,
          Collapse(CalculateFieldSignatureForField(form.fields()[i])).value()},
-        {UFIT::kFormControlType2Name,
-         base::to_underlying(FormControlType::kInputText)},
+        {UFIT::kFormControlType2Name, FormControlType::kInputText},
         {UFIT::kAutocompleteStateName,
-         base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
+         AutofillMetrics::AutocompleteState::kNone},
         {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
         {UFIT::kFieldLogEventCountName, 1},
-    };
-
-    EXPECT_EQ(expected.size(), entry->metrics.size());
-    for (const auto& [metric, value] : expected) {
-      test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
-    }
+    });
   }
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UFIT::kEntryName),
+              UkmEventsAre(std::move(expected_events)));
 
   // Verify FieldInfoAfterSubmission UKM event for each field in the form.
   std::vector<FieldType> submitted_types{NAME_FULL, EMAIL_ADDRESS, EMPTY_TYPE};
-  auto submission_entries = test_ukm_recorder().GetEntriesByName(
-      UkmFieldInfoAfterSubmissionType::kEntryName);
+  using UFIAST = UkmFieldInfoAfterSubmissionType;
+  expected_events.clear();
   // Form submission and user interaction trigger uploading votes twice.
-  ASSERT_EQ(6u, submission_entries.size());
-  for (size_t i = 0; i < submission_entries.size(); ++i) {
-    SCOPED_TRACE(testing::Message() << i);
-    using UFIAST = UkmFieldInfoAfterSubmissionType;
-    const auto* const entry = submission_entries[i].get();
+  for (size_t i = 0; i < 6; ++i) {
     SubmissionSource submission_source =
         i < 3 ? SubmissionSource::FORM_SUBMISSION : SubmissionSource::NONE;
-    std::map<std::string, int64_t> expected = {
+    expected_events.push_back({
         {UFIAST::kFormSessionIdentifierName,
          FormGlobalIdToHash64Bit(form.global_id())},
         {UFIAST::kFieldSessionIdentifierName,
@@ -806,24 +710,16 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsEditedFieldWithoutFill) {
         {UFIAST::kSubmittedType1Name, submitted_types[i % 3]},
         {UFIAST::kSubmissionSourceName, static_cast<int>(submission_source)},
         {UFIAST::kMillisecondsFromFormParsedUntilSubmissionName, 1000},
-    };
-    EXPECT_EQ(expected.size(), entry->metrics.size());
-    for (const auto& [metric, value] : expected) {
-      if (metric == UFIAST::kMillisecondsFromFormParsedUntilSubmissionName) {
-        test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
-      }
-    }
+    });
   }
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UFIAST::kEntryName),
+              UkmEventsAre(std::move(expected_events)));
 
   // Verify FormSummary UKM event for the form.
-  auto form_entries =
-      test_ukm_recorder().GetEntriesByName(UkmFormSummaryType::kEntryName);
-  ASSERT_EQ(1u, form_entries.size());
   using UFST = UkmFormSummaryType;
-  const auto* const entry = form_entries[0].get();
   FormInteractionsUkmLogger::FormEventSet form_events = {
       FORM_EVENT_DID_PARSE_FORM};
-  std::map<std::string, int64_t> expected = {
+  std::vector<UkmMetricNameAndValue> expected = {
       {UFST::kFormSessionIdentifierName,
        FormGlobalIdToHash64Bit(form.global_id())},
       {UFST::kFormSignatureName,
@@ -835,10 +731,8 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsEditedFieldWithoutFill) {
       {UFST::kMillisecondsFromFirstInteratctionUntilSubmissionName, 1000},
       {UFST::kMillisecondsFromFormParsedUntilSubmissionName, 1000},
   };
-  EXPECT_EQ(expected.size(), entry->metrics.size());
-  for (const auto& [metric, value] : expected) {
-    test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
-  }
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UFST::kEntryName),
+              UkmEventsAre({expected}));
 
   // Verify LogEvent count UMA events of each type.
   histogram_tester.ExpectBucketCount(
@@ -871,16 +765,13 @@ TEST_F(FieldLogUkmMetricTest,
   SeeForm(form);
   SubmitForm(form);
 
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
 
   // This form is not parsed in |AutofillManager::OnFormsSeen|.
-  auto entries =
-      test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
-  EXPECT_EQ(0u, entries.size());
-  auto form_entries =
-      test_ukm_recorder().GetEntriesByName(UkmFormSummaryType::kEntryName);
-  EXPECT_EQ(0u, form_entries.size());
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UkmFieldInfoType::kEntryName),
+              UkmEventsAre({}));
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UkmFormSummaryType::kEntryName),
+              UkmEventsAre({}));
 }
 
 // Test that we do not record FieldInfo/FormSummary UKM metrics for forms
@@ -895,16 +786,13 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsNotRecordOnSearchBox) {
   SeeForm(form);
   SubmitForm(form);
 
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
 
   // The form that only has a search box is not recorded into any UKM events.
-  auto entries =
-      test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
-  EXPECT_EQ(0u, entries.size());
-  auto form_entries =
-      test_ukm_recorder().GetEntriesByName(UkmFormSummaryType::kEntryName);
-  EXPECT_EQ(0u, form_entries.size());
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UkmFieldInfoType::kEntryName),
+              UkmEventsAre({}));
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UkmFormSummaryType::kEntryName),
+              UkmEventsAre({}));
 }
 
 // Tests that the forms with only <input type="checkbox"> fields are not
@@ -923,16 +811,13 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsNotRecordOnAllCheckBox) {
 
   SeeForm(form);
   SubmitForm(form);
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
 
   // The form with two checkboxes is not recorded into any UKM events.
-  auto entries =
-      test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
-  EXPECT_EQ(0u, entries.size());
-  auto form_entries =
-      test_ukm_recorder().GetEntriesByName(UkmFormSummaryType::kEntryName);
-  EXPECT_EQ(0u, form_entries.size());
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UkmFieldInfoType::kEntryName),
+              UkmEventsAre({}));
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UkmFormSummaryType::kEntryName),
+              UkmEventsAre({}));
 }
 
 // Tests that the forms with <input type="checkbox"> fields and a text field
@@ -960,17 +845,14 @@ TEST_F(
 
   SeeForm(form);
   SubmitForm(form);
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
 
   // This form only has one non-checkable field, so the local heuristics are
   // not executed.
-  auto entries =
-      test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
-  EXPECT_EQ(0u, entries.size());
-  auto form_entries =
-      test_ukm_recorder().GetEntriesByName(UkmFormSummaryType::kEntryName);
-  EXPECT_EQ(0u, form_entries.size());
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UkmFieldInfoType::kEntryName),
+              UkmEventsAre({}));
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UkmFormSummaryType::kEntryName),
+              UkmEventsAre({}));
 }
 
 // Tests that the forms with <input type="checkbox"> fields and two text field
@@ -999,22 +881,17 @@ TEST_F(FieldLogUkmMetricTest,
   task_environment_.FastForwardBy(base::Milliseconds(3500));
   base::HistogramTester histogram_tester;
   SubmitForm(form);
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
 
-  auto entries =
-      test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
-  ASSERT_EQ(4u, entries.size());
   std::vector<FormControlType> form_control_types = {
       FormControlType::kInputText, FormControlType::kInputText,
       FormControlType::kInputRadio, FormControlType::kInputRadio};
-  for (size_t i = 0; i < entries.size(); ++i) {
-    SCOPED_TRACE(testing::Message() << i);
+  using UFIT = UkmFieldInfoType;
+  std::vector<std::vector<UkmMetricNameAndValue>> expected_events;
+  for (size_t i = 0; i < 4; ++i) {
     DenseSet<AutofillStatus> autofill_status_vector = {
         AutofillStatus::kIsFocusable};
-    using UFIT = UkmFieldInfoType;
-    const auto* const entry = entries[i].get();
-    std::map<std::string, int64_t> expected = {
+    expected_events.push_back({
         {UFIT::kFormSessionIdentifierName,
          FormGlobalIdToHash64Bit(form.global_id())},
         {UFIT::kFieldSessionIdentifierName,
@@ -1024,29 +901,21 @@ TEST_F(FieldLogUkmMetricTest,
         {UFIT::kOverallTypeName, field_types[i]},
         {UFIT::kSectionIdName, 1},
         {UFIT::kTypeChangedByRationalizationName, false},
-        {UFIT::kFormControlType2Name,
-         base::to_underlying(form_control_types[i])},
+        {UFIT::kFormControlType2Name, form_control_types[i]},
         {UFIT::kAutocompleteStateName,
-         base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
+         AutofillMetrics::AutocompleteState::kNone},
         {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
         {UFIT::kFieldLogEventCountName, 1},
-    };
-
-    EXPECT_EQ(expected.size(), entry->metrics.size());
-    for (const auto& [metric, value] : expected) {
-      test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
-    }
+    });
   }
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UFIT::kEntryName),
+              UkmEventsAre(expected_events));
 
   // Verify FormSummary UKM event for the form.
-  auto form_entries =
-      test_ukm_recorder().GetEntriesByName(UkmFormSummaryType::kEntryName);
-  ASSERT_EQ(1u, form_entries.size());
   using UFST = UkmFormSummaryType;
-  const auto* const form_entry = form_entries[0].get();
   FormInteractionsUkmLogger::FormEventSet form_events = {
       FORM_EVENT_DID_PARSE_FORM};
-  std::map<std::string, int64_t> expected = {
+  std::vector<UkmMetricNameAndValue> expected = {
       {UFST::kFormSessionIdentifierName,
        FormGlobalIdToHash64Bit(form.global_id())},
       {UFST::kFormSignatureName,
@@ -1057,10 +926,8 @@ TEST_F(FieldLogUkmMetricTest,
       {UFST::kWasSubmittedName, true},
       {UFST::kMillisecondsFromFormParsedUntilSubmissionName, 3000},
   };
-  EXPECT_EQ(expected.size(), form_entry->metrics.size());
-  for (const auto& [metric, value] : expected) {
-    test_ukm_recorder().ExpectEntryMetric(form_entry, metric, value);
-  }
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UFST::kEntryName),
+              UkmEventsAre({expected}));
 
   // Verify LogEvent count UMA events of each type.
   histogram_tester.ExpectBucketCount(
@@ -1101,19 +968,15 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsRecordOnDifferentFrames) {
   task_environment_.FastForwardBy(base::Milliseconds(1980000));  // 33m
   base::HistogramTester histogram_tester;
   SubmitForm(form);
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
 
   // Verify FieldInfo UKM event for each field.
-  auto entries =
-      test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
-  ASSERT_EQ(3u, entries.size());
   std::vector<FormControlType> form_control_types = {
       FormControlType::kInputText, FormControlType::kInputText,
       FormControlType::kInputText};
-  for (size_t i = 0; i < entries.size(); ++i) {
-    SCOPED_TRACE(testing::Message() << i);
-
+  using UFIT = UkmFieldInfoType;
+  std::vector<std::vector<UkmMetricNameAndValue>> expected_events;
+  for (size_t i = 0; i < 3; ++i) {
     DenseSet<AutofillStatus> autofill_status_vector;
     if (i == 1) {
       autofill_status_vector = {AutofillStatus::kIsFocusable,
@@ -1121,9 +984,7 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsRecordOnDifferentFrames) {
     } else {
       autofill_status_vector = {AutofillStatus::kIsFocusable};
     }
-    using UFIT = UkmFieldInfoType;
-    const auto* const entry = entries[i].get();
-    std::map<std::string, int64_t> expected = {
+    expected_events.push_back({
         {UFIT::kFormSessionIdentifierName,
          FormGlobalIdToHash64Bit(form.global_id())},
         {UFIT::kFieldSessionIdentifierName,
@@ -1133,30 +994,23 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsRecordOnDifferentFrames) {
         {UFIT::kOverallTypeName, field_types[i]},
         {UFIT::kSectionIdName, 1},
         {UFIT::kTypeChangedByRationalizationName, false},
-        {UFIT::kFormControlType2Name,
-         base::to_underlying(form_control_types[i])},
+        {UFIT::kFormControlType2Name, form_control_types[i]},
         {UFIT::kAutocompleteStateName,
-         base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
+         AutofillMetrics::AutocompleteState::kNone},
         {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
         {UFIT::kHeuristicTypeName, field_types[i]},
         {UFIT::kRankInFieldSignatureGroupName, 1},
         {UFIT::kFieldLogEventCountName, 2},
-    };
-    EXPECT_EQ(expected.size(), entry->metrics.size());
-    for (const auto& [metric, value] : expected) {
-      test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
-    }
+    });
   }
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UFIT::kEntryName),
+              UkmEventsAre(expected_events));
 
   // Verify FormSummary UKM event for the form.
-  auto form_entries =
-      test_ukm_recorder().GetEntriesByName(UkmFormSummaryType::kEntryName);
-  ASSERT_EQ(1u, form_entries.size());
   using UFST = UkmFormSummaryType;
-  const auto* const form_entry = form_entries[0].get();
   FormInteractionsUkmLogger::FormEventSet form_events = {
       FORM_EVENT_DID_PARSE_FORM};
-  std::map<std::string, int64_t> expected = {
+  std::vector<UkmMetricNameAndValue> expected = {
       {UFST::kFormSessionIdentifierName,
        FormGlobalIdToHash64Bit(form.global_id())},
       {UFST::kFormSignatureName,
@@ -1167,10 +1021,8 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsRecordOnDifferentFrames) {
       {UFST::kWasSubmittedName, true},
       {UFST::kMillisecondsFromFormParsedUntilSubmissionName, 1800000},  // 30m
   };
-  EXPECT_EQ(expected.size(), form_entry->metrics.size());
-  for (const auto& [metric, value] : expected) {
-    test_ukm_recorder().ExpectEntryMetric(form_entry, metric, value);
-  }
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), UFST::kEntryName),
+              UkmEventsAre({expected}));
 
   // Verify LogEvent count UMA events of each type.
   histogram_tester.ExpectBucketCount(
@@ -1218,7 +1070,7 @@ struct LogFocusedComplexFormAtFormRemoveTestCase {
 
   // Key: UKM Metric Name, Value: recorded metric.
   // If this is empty, we assume that no UKM metrics are recorded.
-  std::map<std::string, int64_t> expected_metrics;
+  std::vector<UkmMetricNameAndValue> expected_metrics;
 };
 
 class LogFocusedComplexFormAtFormRemoveTest
@@ -1585,7 +1437,7 @@ INSTANTIATE_TEST_SUITE_P(
                     {UkmFocusedComplexFormType::
                          kIsInControlGroupOfConditionalAblationName,
                      0},
-                    {UkmFocusedComplexFormType::kDayInAblationWindowName, 10},
+                    {UkmFocusedComplexFormType::kDayInAblationWindowName, 2},
                     {UkmFocusedComplexFormType::
                          kIsAblationStudyInDryRunModeName,
                      0},
@@ -1642,7 +1494,7 @@ INSTANTIATE_TEST_SUITE_P(
                     {UkmFocusedComplexFormType::
                          kIsInControlGroupOfConditionalAblationName,
                      0},
-                    {UkmFocusedComplexFormType::kDayInAblationWindowName, 10},
+                    {UkmFocusedComplexFormType::kDayInAblationWindowName, 2},
                     // This is true due to dry-run mode.
                     {UkmFocusedComplexFormType::
                          kIsAblationStudyInDryRunModeName,
@@ -1670,9 +1522,8 @@ TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
     scoped_feature_list.InitAndEnableFeatureWithParameters(
         features::kAutofillEnableAblationStudy, feature_parameters);
   }
-  constexpr base::Time arbitrary_default_time =
-      base::Time::FromSecondsSinceUnixEpoch(25);
-  TestAutofillClock test_clock(arbitrary_default_time);
+
+  task_environment_.FastForwardBy(base::Seconds(25));
 
   CreateCreditCards(
       /*include_local_credit_card=*/true,
@@ -1718,8 +1569,8 @@ TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
       NOTREACHED();
     }
     // This simulates the callback from the renderer
-    // (AutofillManager::OnDidFillAutofillFormData).
-    FillAutofillFormData(form, base::TimeTicks::Now());
+    // (AutofillManager::OnDidAutofillForm).
+    AutofillForm(form);
   }
   if (GetParam().step_4_edit_after_autofill) {
     task_environment_.FastForwardBy(base::Milliseconds(1000));
@@ -1730,32 +1581,23 @@ TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
     SubmitForm(form);
   }
   // Record Autofill2.FocusedComplexForm UKM event at autofill manager / reset.
-  test_api(autofill_client().GetAutofillDriverFactory())
-      .Reset(autofill_driver());
+  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
 
   // Verify UKM event for the form.
-  auto interacted_entries = test_ukm_recorder().GetEntriesByName(
-      UkmFocusedComplexFormType::kEntryName);
-  const std::map<std::string, int64_t>& expected = GetParam().expected_metrics;
-  if (expected.empty()) {
-    EXPECT_THAT(interacted_entries, testing::IsEmpty());
-    return;
+  std::vector<std::vector<UkmMetricNameAndValue>> expected_events;
+  if (!GetParam().expected_metrics.empty()) {
+    std::vector<UkmMetricNameAndValue> expected_event = {
+        GetParam().expected_metrics};
+    expected_event.emplace_back(
+        UkmFocusedComplexFormType::kFormSessionIdentifierName,
+        FormGlobalIdToHash64Bit(form.global_id()));
+    expected_event.emplace_back(UkmFocusedComplexFormType::kFormSignatureName,
+                                Collapse(CalculateFormSignature(form)).value());
+    expected_events = {expected_event};
   }
-  ASSERT_EQ(1u, interacted_entries.size());
-  const auto* const entry = interacted_entries[0].get();
-
-  // +2 because the kFormSessionIdentifierName and kFormSignatureName are
-  // computed dynamically.
-  EXPECT_EQ(expected.size() + 2, entry->metrics.size());
-  test_ukm_recorder().ExpectEntryMetric(
-      entry, UkmFocusedComplexFormType::kFormSessionIdentifierName,
-      FormGlobalIdToHash64Bit(form.global_id()));
-  test_ukm_recorder().ExpectEntryMetric(
-      entry, UkmFocusedComplexFormType::kFormSignatureName,
-      Collapse(CalculateFormSignature(form)).value());
-  for (const auto& [metric, value] : expected) {
-    test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
-  }
+  EXPECT_THAT(
+      GetUkmEvents(test_ukm_recorder(), UkmFocusedComplexFormType::kEntryName),
+      UkmEventsAre(expected_events));
 }
 
 TEST_F(FieldLogUkmMetricTest,
@@ -1803,37 +1645,20 @@ TEST_F(FieldLogUkmMetricTest,
       TypingFieldLogEvent{.has_value_after_typing = OptionalBoolean::kTrue});
   // No typing on field 5.
 
-  FormInteractionsUkmLogger logger(autofill_client_.get());
+  FormInteractionsUkmLogger logger(&autofill_client());
   logger.LogAutofillFormWithExperimentalFieldsCountAtFormRemove(
-      autofill_driver_->GetPageUkmSourceId(), form_structure);
+      autofill_driver().GetPageUkmSourceId(), form_structure);
 
-  auto ukm_entries = test_ukm_recorder().GetEntriesByName(
-      UkmSubmittedFormWithExperimentalFieldsType::kEntryName);
-  ASSERT_EQ(1u, ukm_entries.size());
-  const auto* const entry = ukm_entries[0].get();
-  test_ukm_recorder().ExpectEntryMetric(
-      entry,
-      UkmSubmittedFormWithExperimentalFieldsType::kFormSessionIdentifierName,
-      FormGlobalIdToHash64Bit(form.global_id()));
-  test_ukm_recorder().ExpectEntryMetric(
-      entry,
-      UkmSubmittedFormWithExperimentalFieldsType::
-          kNumberOfNonEmptyExperimentalFields0Name,
-      1);
-  EXPECT_FALSE(test_ukm_recorder().EntryHasMetric(
-      entry, UkmSubmittedFormWithExperimentalFieldsType::
-                 kNumberOfNonEmptyExperimentalFields1Name));
-  EXPECT_FALSE(test_ukm_recorder().EntryHasMetric(
-      entry, UkmSubmittedFormWithExperimentalFieldsType::
-                 kNumberOfNonEmptyExperimentalFields2Name));
-  EXPECT_FALSE(test_ukm_recorder().EntryHasMetric(
-      entry, UkmSubmittedFormWithExperimentalFieldsType::
-                 kNumberOfNonEmptyExperimentalFields3Name));
-  test_ukm_recorder().ExpectEntryMetric(
-      entry,
-      UkmSubmittedFormWithExperimentalFieldsType::
-          kNumberOfNonEmptyExperimentalFields4Name,
-      2);
+  using USFWEFT = UkmSubmittedFormWithExperimentalFieldsType;
+  std::vector<UkmMetricNameAndValue> expected;
+  expected.emplace_back(USFWEFT::kFormSignatureName,
+                        Collapse(CalculateFormSignature(form)).value());
+  expected.emplace_back(USFWEFT::kFormSessionIdentifierName,
+                        FormGlobalIdToHash64Bit(form.global_id()));
+  expected.emplace_back(USFWEFT::kNumberOfNonEmptyExperimentalFields0Name, 1);
+  expected.emplace_back(USFWEFT::kNumberOfNonEmptyExperimentalFields4Name, 2);
+  EXPECT_THAT(GetUkmEvents(test_ukm_recorder(), USFWEFT::kEntryName),
+              UkmEventsAre({expected}));
 }
 
 }  // namespace

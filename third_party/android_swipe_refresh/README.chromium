@@ -2,6 +2,7 @@ Name: Android Open Source Project - App Compat Library
 URL: https://android.googlesource.com/platform/frameworks/support
 Version: N/A
 Date: 2015-05-06
+Update Mechanism: Static.HardFork (https://crbug.com/422056182)
 License: Apache-2.0
 License File: LICENSE
 Security Critical: yes

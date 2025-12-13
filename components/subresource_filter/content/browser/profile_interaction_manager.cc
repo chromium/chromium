@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -13,7 +14,7 @@
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
-#include "components/subresource_filter/content/shared/browser/utils.h"
+#include "components/subresource_filter/content/browser/utils.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
@@ -98,6 +99,8 @@ mojom::ActivationLevel ProfileInteractionManager::OnPageActivationComputed(
     content::NavigationHandle* navigation_handle,
     mojom::ActivationLevel initial_activation_level,
     ActivationDecision* decision) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
+               "ProfileInteractionManager::OnPageActivationComputed");
   CHECK(IsInSubresourceFilterRoot(navigation_handle));
 
   mojom::ActivationLevel effective_activation_level = initial_activation_level;

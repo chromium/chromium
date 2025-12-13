@@ -510,7 +510,8 @@ class PolicyTestCases {
         ADD_FAILURE() << "Error reading: " << path;
         return;
       }
-      auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(json);
+      auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+          json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (!parsed_json.has_value()) {
         ADD_FAILURE() << "Error parsing " << path << " : "
                       << parsed_json.error().message;
@@ -712,15 +713,15 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_dir,
                        : ::testing::Message()
                              << "Policy name: " << policy_name << " - " << idx);
 
-      if (!chrome_schema.GetKnownProperty(policy_name).valid() &&
-          test_case->IsSupported()) {
-        // Print warning message if a deprecated policy is still supported by
-        // the test file.
-        LOG(WARNING) << "Policy " << policy_name << " is marked as supported "
-                     << "on this OS but does not exist in the Chrome policy "
-                     << "schema.";
-        continue;
-      }
+      ASSERT_TRUE(chrome_schema.GetKnownProperty(policy_name).valid() ||
+                  !test_case->IsSupported())
+          << "Test case for " << policy_name << " is marked as supported on "
+          << "this OS, but the policy does not exist on this OS (anymore?). "
+          << "If you remove support for a policy, please also remove the "
+          << "corresponding test cases in "
+          << "components/policy/test/data/pref_mapping/" << policy_name
+          << ".json or remove the file altogether if the policy is no longer "
+          << "supported on any platform.";
 
       if (!test_case->IsSupported() ||
           test_case->has_reason_for_missing_test()) {

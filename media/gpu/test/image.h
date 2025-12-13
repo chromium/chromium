@@ -44,6 +44,9 @@ class Image {
   // Get the image data size.
   size_t DataSize() const;
 
+  // Get the image data as a span.
+  base::span<const uint8_t> DataSpan() const;
+
   // Get the image pixel format.
   VideoPixelFormat PixelFormat() const;
   // Get the image size.

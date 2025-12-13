@@ -19,7 +19,7 @@ using webrtc::DesktopVector;
 namespace remoting {
 
 TEST(VideoEncoderHelperTest, PropagatesCommonFields) {
-  BasicDesktopFrame frame(DesktopSize(32, 32));
+  BasicDesktopFrame frame(DesktopSize(32, 32), webrtc::FOURCC_ARGB);
   frame.set_dpi(DesktopVector(96, 97));
   frame.set_capture_time_ms(20);
   frame.mutable_updated_region()->SetRect(DesktopRect::MakeLTRB(0, 0, 16, 16));
@@ -38,7 +38,7 @@ TEST(VideoEncoderHelperTest, PropagatesCommonFields) {
 }
 
 TEST(VideoEncoderHelperTest, ZeroDpi) {
-  BasicDesktopFrame frame(DesktopSize(32, 32));
+  BasicDesktopFrame frame(DesktopSize(32, 32), webrtc::FOURCC_ARGB);
   // DPI is zero unless explicitly set.
 
   VideoEncoderHelper helper;
@@ -53,7 +53,7 @@ TEST(VideoEncoderHelperTest, ZeroDpi) {
 }
 
 TEST(VideoEncoderHelperTest, NoScreenSizeIfUnchanged) {
-  BasicDesktopFrame frame(DesktopSize(32, 32));
+  BasicDesktopFrame frame(DesktopSize(32, 32), webrtc::FOURCC_ARGB);
   // Set DPI so that the packet will have a format, with DPI but no size.
   frame.set_dpi(DesktopVector(96, 97));
 
@@ -73,12 +73,12 @@ TEST(VideoEncoderHelperTest, ScreenSizeWhenChanged) {
 
   // Process the same frame twice, so the helper knows the current size, and
   // to trigger suppression of the size field due to the size not changing.
-  BasicDesktopFrame frame1(DesktopSize(32, 32));
+  BasicDesktopFrame frame1(DesktopSize(32, 32), webrtc::FOURCC_ARGB);
   std::unique_ptr<VideoPacket> packet(helper.CreateVideoPacket(frame1));
   packet = helper.CreateVideoPacket(frame1);
 
   // Process a different-sized frame to trigger size to be emitted.
-  BasicDesktopFrame frame2(DesktopSize(48, 48));
+  BasicDesktopFrame frame2(DesktopSize(48, 48), webrtc::FOURCC_ARGB);
   packet = helper.CreateVideoPacket(frame2);
 
   ASSERT_TRUE(packet->has_format());

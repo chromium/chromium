@@ -5,9 +5,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -15,11 +13,14 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/management.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace {
@@ -44,7 +45,7 @@ class WebstoreDomainBrowserTest : public ExtensionApiTest,
     // Override the test server SSL config with the webstore domain under test
     // and two other non-webstore domains used in the tests.
     net::EmbeddedTestServer::ServerCertificateConfig cert_config;
-    cert_config.dns_names = {GetParam().host(), "foo.com", "bar.com"};
+    cert_config.dns_names = {GetParam().GetHost(), "foo.com", "bar.com"};
     embedded_test_server()->SetSSLConfig(cert_config);
     // Add the extensions directory to the test server as it has a /webstore/
     // directory to serve files from, which the webstore hosted app requires as
@@ -83,8 +84,7 @@ IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, ExpectedAvailability) {
   const GURL webstore_url = GetParam().Resolve("/webstore/mock_store.html");
   const GURL not_webstore_url = GURL(kNonWebstoreURL1).Resolve("/empty.html");
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
 
   auto is_api_available = [web_contents](const std::string& api_name) {
     constexpr char kScript[] = "chrome.hasOwnProperty($1);";
@@ -92,14 +92,14 @@ IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, ExpectedAvailability) {
         .ExtractBool();
   };
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), webstore_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, webstore_url));
   EXPECT_EQ(web_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
             webstore_url);
   EXPECT_TRUE(is_api_available("webstorePrivate"));
   EXPECT_TRUE(is_api_available("management"));
   EXPECT_TRUE(is_api_available("runtime"));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), not_webstore_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, not_webstore_url));
   EXPECT_EQ(web_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
             not_webstore_url);
   EXPECT_FALSE(is_api_available("management"));
@@ -115,10 +115,9 @@ IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, ExpectedAvailability) {
 IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, CanReceiveEvents) {
   const GURL webstore_url = GetParam().Resolve("/webstore/mock_store.html");
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), webstore_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, webstore_url));
   EXPECT_EQ(web_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
             webstore_url);
   constexpr char kAddListener[] = R"(
@@ -129,8 +128,7 @@ IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, CanReceiveEvents) {
   )";
   ASSERT_EQ("listener added", content::EvalJs(web_contents, kAddListener));
 
-  content::DOMMessageQueue message_queue(
-      browser()->tab_strip_model()->GetActiveWebContents());
+  content::DOMMessageQueue message_queue(web_contents);
   // Directly broadcast the management.onInstalled event from the EventRouter
   // and verify it arrived to the page without causing a crash.
   EventRouter* event_router = EventRouter::Get(profile());
@@ -152,9 +150,8 @@ IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, CanReceiveEvents) {
 IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, FrameWebstorePageBlocked) {
   GURL outer_frame_url = GURL(kNonWebstoreURL1).Resolve("/empty.html");
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), outer_frame_url));
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, outer_frame_url));
   EXPECT_EQ(outer_frame_url, web_contents->GetLastCommittedURL());
 
   constexpr char kScript[] =

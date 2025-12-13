@@ -59,10 +59,6 @@
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/views/media_preview/media_preview_feature.h"
-#endif
-
 namespace {
 
 std::u16string GetAccessibleWindowTitleInternal(
@@ -277,14 +273,6 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
     return;
   }
 
-  // Check this last, as it queries the origin trials service.
-  if (!media_preview_feature::ShouldShowMediaPreview(
-          *browser()->profile(), delegate()->GetRequestingOrigin(),
-          delegate()->GetEmbeddingOrigin(),
-          media_preview_metrics::UiLocation::kPermissionPrompt)) {
-    return;
-  }
-
   auto* cached_device_info = media_effects::MediaDeviceInfo::GetInstance();
   devices_observer_.Observe(cached_device_info);
   if (camera_permission_label_ || ptz_camera_permission_label_) {
@@ -298,7 +286,7 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
 
   media_previews_.emplace(browser(), this, index,
                           requested_audio_capture_device_ids,
-                          requested_video_capture_device_ids, delegate());
+                          requested_video_capture_device_ids);
 #endif
 }
 

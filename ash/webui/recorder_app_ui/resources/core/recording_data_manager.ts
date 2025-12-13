@@ -462,12 +462,17 @@ export class RecordingDataManager {
 
     const filenames = await dataDir.list();
     const metadataMap = Object.fromEntries(
-      await Promise.all(
+      (await Promise.all(
         filenames.filter((x) => x.endsWith('.meta.json')).map(async (x) => {
-          const meta = await getMetadataFromFilename(x);
-          return [meta.id, meta] as const;
+          try {
+            const meta = await getMetadataFromFilename(x);
+            return [meta.id, meta] as const;
+          } catch (e) {
+            console.error(`Failed to parse metadata file.`, e);
+            return null;
+          }
         }),
-      ),
+      )).filter((x): x is [string, RecordingMetadata] => x !== null),
     );
     return new RecordingDataManager(dataDir, metadataMap);
   }

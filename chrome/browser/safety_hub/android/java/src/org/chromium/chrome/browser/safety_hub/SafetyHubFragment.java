@@ -9,12 +9,10 @@ import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.getDas
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordDashboardInteractions;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordModuleState;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
@@ -22,8 +20,6 @@ import androidx.fragment.app.Fragment;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -34,9 +30,9 @@ import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardModu
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.LifecycleEvent;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOption;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
@@ -76,8 +72,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     @VisibleForTesting
     static final String HELP_CENTER_URL = "https://support.google.com/chrome?p=safety_check";
 
-    private static final int ORGANIC_HATS_SURVEY_DELAY_MS = 10000;
-
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     private SafetyHubModuleDelegate mDelegate;
@@ -87,14 +81,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
-        if (ChromeFeatureList.sSafetyHubAndroidOrganicSurvey.isEnabled()) {
-            mCallbackController = new CallbackController();
-            PostTask.postDelayedTask(
-                    TaskTraits.UI_DEFAULT,
-                    mCallbackController.makeCancelable(this::triggerOrganicHatsSurvey),
-                    ORGANIC_HATS_SURVEY_DELAY_MS);
-        }
-
         SettingsUtils.addPreferencesFromResource(this, R.xml.safety_hub_preferences);
         mPageTitle.set(getString(R.string.prefs_safety_check));
         setHasOptionsMenu(true);
@@ -106,9 +92,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         recordAllModulesState(LifecycleEvent.ON_IMPRESSION);
 
         // Notify the magic stack to dismiss the active module.
-        if (ChromeFeatureList.sSafetyHubMagicStack.isEnabled()) {
-            MagicStackBridge.getForProfile(getProfile()).dismissActiveModule();
-        }
+        MagicStackBridge.getForProfile(getProfile()).dismissActiveModule();
     }
 
     private void setUpModuleMediators() {
@@ -205,8 +189,10 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     }
 
     private void setUpSafetyTipsModule() {
-        ExpandablePreferenceGroup safetyTipsPreference = findPreference(PREF_SAFETY_TIPS);
+        SafetyHubExpandablePreferenceCategory safetyTipsPreference =
+                findPreference(PREF_SAFETY_TIPS);
         safetyTipsPreference.setExpanded(false);
+        safetyTipsPreference.setOnExpandedListener(this::notifyPreferencesUpdated);
 
         findPreference(PREF_SAFETY_TIPS_SAFETY_TOOLS)
                 .setOnPreferenceClickListener(
@@ -338,6 +324,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mBrowserStateModuleMediator.updateModule();
 
         updateAllModulesExpandState();
+        notifyPreferencesUpdated();
     }
 
     private void updateAllModulesExpandState() {
@@ -379,19 +366,18 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         recordModuleState(browserState, DashboardModuleType.BROWSER_STATE, event);
     }
 
-    private void triggerOrganicHatsSurvey() {
-        Activity activity = getActivity();
-        ViewStub hatsSurveyViewStub = activity.findViewById(R.id.hats_survey_container_stub);
-        if (hatsSurveyViewStub != null && hatsSurveyViewStub.getParent() != null) {
-            hatsSurveyViewStub.inflate();
-        }
-        SafetyHubHatsHelper safetyHubHatsHelper = SafetyHubHatsHelper.getForProfile(getProfile());
-        assert safetyHubHatsHelper != null && activity != null;
-        safetyHubHatsHelper.triggerOrganicHatsSurvey(activity);
-    }
-
     @Override
     public @AnimationType int getAnimationType() {
         return AnimationType.PROPERTY;
     }
+
+    @Override
+    public @Nullable String getMainMenuKey() {
+        return "safety_hub";
+    }
+
+    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(
+                    SafetyHubFragment.class.getName(), R.xml.safety_hub_preferences);
 }

@@ -25,8 +25,8 @@
 #include "components/invalidation/impl/profile_identity_provider.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/browser_context.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -130,13 +130,9 @@ ProfileInvalidationProviderFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
 
   return std::make_unique<ProfileInvalidationProvider>(
-      CreateIdentityProvider(profile),
+      profile->GetURLLoaderFactory(),
+      CreateIdentityProvider(profile), profile->GetPrefs(),
       base::BindRepeating(&CreateInvalidationListener, profile));
-}
-
-void ProfileInvalidationProviderFactory::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  ProfileInvalidationProvider::RegisterProfilePrefs(registry);
 }
 
 }  // namespace invalidation

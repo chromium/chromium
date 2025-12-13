@@ -18,6 +18,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "content/browser/media/capture/native_screen_capture_picker.h"
+#include "content/browser/media/capture/pip_screen_capture_coordinator_proxy.h"
 #include "content/browser/renderer_host/media/in_process_launched_video_capture_device.h"
 #include "content/browser/renderer_host/media/video_capture_controller.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -34,12 +35,7 @@
 #include "media/capture/video/video_capture_device_client.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video/video_frame_receiver_on_task_runner.h"
-#include "services/video_effects/public/cpp/buildflags.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
-#endif
 
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 #include "content/browser/media/capture/desktop_capture_device_uma_types.h"
@@ -51,8 +47,9 @@
 #include "content/browser/media/capture/desktop_capture_device.h"
 #endif  // !BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_MAC)
+#include "content/browser/media/capture/capture_util_mac.h"
 #include "content/browser/media/capture/desktop_capture_device_mac.h"
-#include "content/browser/media/capture/screen_capture_kit_device_utils_mac.h"
+#include "content/browser/media/capture/pip_screen_capture_coordinator_impl.h"
 #include "content/browser/media/capture/views_widget_video_capture_device_mac.h"
 #endif
 #endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
@@ -94,9 +91,7 @@ const int kMaxNumberOfBuffers = media::kVideoCaptureDefaultMaxBufferPoolSize;
 #if BUILDFLAG(IS_MAC)
 // If this feature is enabled, ScreenCaptureKit will be used for screen
 // capturing.
-BASE_FEATURE(kScreenCaptureKitMacScreen,
-             "ScreenCaptureKitMacScreen",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kScreenCaptureKitMacScreen, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 void IncrementDesktopCaptureCounters(const DesktopMediaID& device_id) {
@@ -129,7 +124,8 @@ enum DesktopCaptureImplementation {
   kScreenCaptureKitDeviceMac = 2,
   kDesktopCaptureDeviceMac = 3,
   kLegacyDesktopCaptureDevice = 4,
-  kImplementationCount = 5,
+  kNativeMacOSPickerCaptureDevice = 5,
+  kImplementationCount = 6,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -155,7 +151,11 @@ enum DesktopCaptureImplementationAndType {
   kLegacyDesktopCaptureDeviceTypeScreen = 17,
   kLegacyDesktopCaptureDeviceTypeWindow = 18,
   kLegacyDesktopCaptureDeviceTypeWebContents = 19,
-  kMaxValue = kLegacyDesktopCaptureDeviceTypeWebContents,
+  kNativeMacOSPickerCaptureDeviceTypeNone = 20,
+  kNativeMacOSPickerCaptureDeviceTypeScreen = 21,
+  kNativeMacOSPickerCaptureDeviceTypeWindow = 22,
+  kNativeMacOSPickerCaptureDeviceTypeWebContents = 23,
+  kMaxValue = kNativeMacOSPickerCaptureDeviceTypeWebContents,
 };
 
 void ReportDesktopCaptureImplementationAndType(
@@ -176,7 +176,10 @@ void ReportDesktopCaptureImplementationAndType(
 DesktopCaptureImplementation CreatePlatformDependentVideoCaptureDevice(
     NativeScreenCapturePicker* picker,
     const DesktopMediaID& desktop_id,
-    std::unique_ptr<media::VideoCaptureDevice>& device_out) {
+    std::unique_ptr<PipScreenCaptureCoordinatorProxy>
+        pip_screen_capture_coordinator_proxy,
+    std::unique_ptr<media::VideoCaptureDevice>& device_out,
+    media::VideoCaptureDeviceClient* device_client) {
   DCHECK_EQ(device_out.get(), nullptr);
 #if BUILDFLAG(IS_MAC)
   // Use ScreenCaptureKit with picker if specified. `desktop_id` for the picker
@@ -184,7 +187,7 @@ DesktopCaptureImplementation CreatePlatformDependentVideoCaptureDevice(
   if (picker) {
     device_out = picker->CreateDevice(desktop_id);
     if (device_out) {
-      return kScreenCaptureKitDeviceMac;
+      return kNativeMacOSPickerCaptureDevice;
     }
     return kNoImplementation;
   }
@@ -194,7 +197,8 @@ DesktopCaptureImplementation CreatePlatformDependentVideoCaptureDevice(
   if (desktop_id.type == DesktopMediaID::TYPE_WINDOW ||
       (desktop_id.type == DesktopMediaID::TYPE_SCREEN &&
        base::FeatureList::IsEnabled(kScreenCaptureKitMacScreen))) {
-    device_out = CreateScreenCaptureKitDeviceMac(desktop_id);
+    device_out = CreateScreenCaptureKitDeviceMac(
+        desktop_id, std::move(pip_screen_capture_coordinator_proxy));
     if (device_out) {
       return kScreenCaptureKitDeviceMac;
     }
@@ -202,8 +206,10 @@ DesktopCaptureImplementation CreatePlatformDependentVideoCaptureDevice(
   if ((device_out = CreateDesktopCaptureDeviceMac(desktop_id))) {
     return kDesktopCaptureDeviceMac;
   }
-#elif !BUILDFLAG(IS_IOS)
-  if ((device_out = DesktopCaptureDevice::Create(desktop_id))) {
+#endif  // BUILDFLAG(IS_MAC)
+
+#if !BUILDFLAG(IS_IOS)
+  if ((device_out = DesktopCaptureDevice::Create(desktop_id, device_client))) {
     return kLegacyDesktopCaptureDevice;
   }
 #endif  // !BUILDFLAG(IS_IOS)
@@ -231,13 +237,7 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     base::WeakPtr<media::VideoFrameReceiver> receiver_on_io_thread,
     base::OnceClosure /* connection_lost_cb */,
     Callbacks* callbacks,
-    base::OnceClosure done_cb,
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-        video_effects_processor,
-#endif
-    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-        readonly_video_effects_manager) {
+    base::OnceClosure done_cb) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(state_ == State::READY_TO_LAUNCH);
 
@@ -404,7 +404,7 @@ InProcessVideoCaptureDeviceLauncher::CreateDeviceClient(
                               receiver_on_io_thread)));
 #else
   return std::make_unique<media::VideoCaptureDeviceClient>(
-      std::move(receiver), std::move(buffer_pool), std::nullopt);
+      std::move(receiver), std::move(buffer_pool));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -502,12 +502,53 @@ void InProcessVideoCaptureDeviceLauncher::DoStartDesktopCaptureOnDeviceThread(
   DCHECK(device_task_runner_->BelongsToCurrentThread());
   DCHECK(!desktop_id.is_null());
 
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/445202459): Refactor the calling code to avoid
+  // jumping to the device-thread before jumping to the UIThread here.
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce([]() -> std::unique_ptr<PipScreenCaptureCoordinatorProxy> {
+        DCHECK_CURRENTLY_ON(BrowserThread::UI);
+        if (auto* coordinator =
+                PipScreenCaptureCoordinatorImpl::GetInstance()) {
+          return coordinator->CreateProxy();
+        }
+        return nullptr;
+      }),
+      base::BindOnce(&InProcessVideoCaptureDeviceLauncher::
+                         OnPipScreenCaptureCoordinatorProxyCreated,
+                     weak_factory_.GetWeakPtr(), desktop_id, params,
+                     std::move(device_client), std::move(result_callback)));
+#else
+  OnPipScreenCaptureCoordinatorProxyCreated(
+      desktop_id, params, std::move(device_client), std::move(result_callback),
+      nullptr);
+#endif
+}
+
+void InProcessVideoCaptureDeviceLauncher::
+    OnPipScreenCaptureCoordinatorProxyCreated(
+        const DesktopMediaID& desktop_id,
+        const media::VideoCaptureParams& params,
+        std::unique_ptr<media::VideoCaptureDeviceClient> device_client,
+        ReceiveDeviceCallback result_callback,
+        std::unique_ptr<PipScreenCaptureCoordinatorProxy>
+            pip_screen_capture_coordinator_proxy) {
+  DCHECK(device_task_runner_->BelongsToCurrentThread());
   std::unique_ptr<media::VideoCaptureDevice> video_capture_device;
   DesktopCaptureImplementation implementation =
       CreatePlatformDependentVideoCaptureDevice(
-          native_screen_capture_picker_, desktop_id, video_capture_device);
-  DVLOG(1) << __func__ << " implementation " << implementation << " type "
-           << desktop_id.type;
+          native_screen_capture_picker_, desktop_id,
+          std::move(pip_screen_capture_coordinator_proxy), video_capture_device,
+          device_client.get());
+  std::ostringstream string_stream;
+  string_stream << "InProcessVideoCaptureDeviceLauncher::"
+                   "DoStartDesktopCaptureOnDeviceThread: implementation = "
+                << implementation << ", type = " << desktop_id.type;
+  DVLOG(1) << string_stream.str();
+  if (device_client) {
+    device_client->OnLog(string_stream.str());
+  }
   ReportDesktopCaptureImplementationAndType(implementation, desktop_id.type);
   if (video_capture_device)
     video_capture_device->AllocateAndStart(params, std::move(device_client));

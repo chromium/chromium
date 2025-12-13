@@ -469,7 +469,7 @@ void DOMMatrixReadOnly::SetMatrixValueFromString(
   if (!value || value->IsCSSWideKeyword()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "Failed to parse '" + input_string + "'.");
+        StrCat({"Failed to parse '", input_string, "'."}));
     return;
   }
 

@@ -8,7 +8,6 @@
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
 #include "chromeos/services/tts/tts_player.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 namespace tts {

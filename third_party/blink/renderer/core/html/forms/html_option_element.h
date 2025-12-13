@@ -79,10 +79,9 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
 
   HTMLDataListElement* OwnerDataListElement() const;
 
-  // OwnerSelectElement gets nearest_ancestor_select_ and SetOwnerSelectElement
-  // assigns to it. See comment on nearest_ancestor_select_.
-  HTMLSelectElement* OwnerSelectElement() const;
-  void SetOwnerSelectElement(HTMLSelectElement*);
+  HTMLSelectElement* OwnerSelectElement() const {
+    return nearest_ancestor_select_;
+  }
 
   String label() const;
   void setLabel(const AtomicString&);
@@ -110,11 +109,6 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   void SetMultiSelectFocusedState(bool);
   bool IsMultiSelectFocused() const;
 
-  void SetWasOptionInsertedCalled(bool flag) {
-    was_option_inserted_called_ = flag;
-  }
-  bool WasOptionInsertedCalled() const;
-
   Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
@@ -129,10 +123,9 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   // an HTMLOptionElement.
   static bool IsLabelContainerElement(const Element& element);
 
-  bool IsKeyboardFocusableSlow(UpdateBehavior update_behavior) const override;
-
  private:
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
+  bool IsKeyboardFocusableSlow(UpdateBehavior update_behavior) const override;
   bool MatchesDefaultPseudoClass() const override;
   bool MatchesEnabledPseudoClass() const override;
   void ParseAttribute(const AttributeModificationParams&) override;
@@ -155,6 +148,8 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   // select's picker, and set default handled on the event.
   void ChooseOption(Event&);
 
+  bool IsVisibleInViewport();
+
   Member<OptionTextObserver> text_observer_;
 
   // The closest ancestor <select> in the DOM tree, without crossing any shadow
@@ -164,11 +159,15 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   // there may be times where it isn't up to date with the actual nearest
   // ancestor select in the DOM, such as in HTMLOptionElement::ChildrenChanged
   // before InsertedInto gets called.
-  // Only set when SelectParserRelaxation is enabled.
   // TODO(crbug.com/1511354): Consider using a flat tree traversal here
   // instead of a node traversal. That would probably also require changing
   // HTMLOptionsCollection to support flat tree traversals as well.
   Member<HTMLSelectElement> nearest_ancestor_select_;
+
+  // The closest ancestor <optgroup> in the DOM tree. This is created and
+  // maintained just like nearest_ancestor_select_, but doesn't account for any
+  // <optgroup> element ancestor above nearest_ancestor_select_.
+  Member<HTMLOptGroupElement> nearest_ancestor_optgroup_;
 
   // label_container_ contains the text content of DisplayLabel(). Based on UA
   // style rules, it is rendered when this option is not inside of a select
@@ -184,13 +183,6 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   // Represents the option being focused on in a multi-select non-contiguous
   // traversal via the keyboard.
   bool is_multi_select_focused_ = false;
-
-  // True while HTMLSelectElement::OptionInserted(this) and OptionRemoved(this);
-  // This flag is necessary to detect a state where DOM tree is updated and
-  // OptionInserted() is not called yet.
-  // TODO(crbug.com/41483940): Remove this flag when the SelectParserRelaxation
-  // flag is removed.
-  bool was_option_inserted_called_ = false;
 
   friend class HTMLOptionElementTest;
 };

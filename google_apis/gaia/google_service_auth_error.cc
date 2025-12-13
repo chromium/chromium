@@ -10,8 +10,10 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/net_errors.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "google_apis/gaia/android/jni_headers/GoogleServiceAuthError_jni.h"
@@ -71,34 +73,43 @@ bool IsTransientError(GoogleServiceAuthError::State state) {
 }
 }  // namespace
 
-GoogleServiceAuthError::GoogleServiceAuthError()
-    : GoogleServiceAuthError(NONE) {}
+GoogleServiceAuthError::GoogleServiceAuthError() : details_(None()) {}
 
-GoogleServiceAuthError::GoogleServiceAuthError(State s)
-    : GoogleServiceAuthError(s, std::string()) {}
-
-GoogleServiceAuthError::GoogleServiceAuthError(State state,
-                                               const std::string& error_message)
-    : GoogleServiceAuthError(state,
-                             (state == CONNECTION_FAILED) ? net::ERR_FAILED : 0,
-                             std::nullopt,
-                             error_message) {}
-
-GoogleServiceAuthError::GoogleServiceAuthError(State s, int error)
-    : GoogleServiceAuthError(s, error, std::nullopt, std::string()) {}
-
-GoogleServiceAuthError::GoogleServiceAuthError(
-    State s,
-    int error,
-    std::optional<ScopeLimitedUnrecoverableErrorReason> reason,
-    const std::string& error_message)
-    : state_(s),
-      network_error_(error),
-      error_message_(error_message),
-      scope_limited_unrecoverable_error_reason_(reason) {
-  CHECK(s != SCOPE_LIMITED_UNRECOVERABLE_ERROR ||
-        scope_limited_unrecoverable_error_reason_.has_value())
-      << "SCOPE_LIMITED_UNRECOVERABLE_ERROR type errors must provide a reason.";
+GoogleServiceAuthError::GoogleServiceAuthError(State s) {
+  switch (s) {
+    case NONE:
+      details_.emplace<None>();
+      break;
+    case INVALID_GAIA_CREDENTIALS:
+      details_.emplace<InvalidGaiaCredentials>();
+      break;
+    case USER_NOT_SIGNED_UP:
+      details_.emplace<UserNotSignedUp>();
+      break;
+    case CONNECTION_FAILED:
+      details_.emplace<ConnectionFailed>();
+      break;
+    case SERVICE_UNAVAILABLE:
+      details_.emplace<ServiceUnavailable>();
+      break;
+    case REQUEST_CANCELED:
+      details_.emplace<RequestCanceled>();
+      break;
+    case UNEXPECTED_SERVICE_RESPONSE:
+      details_.emplace<UnexpectedServiceResponse>();
+      break;
+    case SERVICE_ERROR:
+      details_.emplace<ServiceError>();
+      break;
+    case SCOPE_LIMITED_UNRECOVERABLE_ERROR:
+      details_.emplace<ScopeLimitedUnrecoverableError>();
+      break;
+    case CHALLENGE_RESPONSE_REQUIRED:
+      details_.emplace<ChallengeResponseRequired>();
+      break;
+    case NUM_STATES:
+      NOTREACHED();
+  }
 }
 
 GoogleServiceAuthError::GoogleServiceAuthError(
@@ -107,59 +118,60 @@ GoogleServiceAuthError::GoogleServiceAuthError(
 GoogleServiceAuthError& GoogleServiceAuthError::operator=(
     const GoogleServiceAuthError& other) = default;
 
+GoogleServiceAuthError::~GoogleServiceAuthError() = default;
+
 // static
-GoogleServiceAuthError
-    GoogleServiceAuthError::FromConnectionError(int error) {
-  return GoogleServiceAuthError(CONNECTION_FAILED, error);
+GoogleServiceAuthError GoogleServiceAuthError::FromConnectionError(int error) {
+  return GoogleServiceAuthError(Details(
+      ConnectionFailed{.network_error = static_cast<net::Error>(error)}));
 }
 
 // static
 GoogleServiceAuthError GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
     InvalidGaiaCredentialsReason reason) {
-  GoogleServiceAuthError error(INVALID_GAIA_CREDENTIALS);
-  error.invalid_gaia_credentials_reason_ = reason;
-  return error;
+  return GoogleServiceAuthError(
+      Details(InvalidGaiaCredentials{.reason = reason}));
 }
 
 // static
 GoogleServiceAuthError GoogleServiceAuthError::FromServiceUnavailable(
     const std::string& error_message) {
-  return GoogleServiceAuthError(SERVICE_UNAVAILABLE, error_message);
+  return GoogleServiceAuthError(
+      Details(ServiceUnavailable{.error_message = error_message}));
 }
 
 // static
 GoogleServiceAuthError
 GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
     ScopeLimitedUnrecoverableErrorReason reason) {
-  GoogleServiceAuthError error(SCOPE_LIMITED_UNRECOVERABLE_ERROR, 0, reason,
-                               std::string());
-  return error;
+  return GoogleServiceAuthError(
+      Details(ScopeLimitedUnrecoverableError{.reason = reason}));
 }
 
 // static
 GoogleServiceAuthError GoogleServiceAuthError::FromServiceError(
     const std::string& error_message) {
-  return GoogleServiceAuthError(SERVICE_ERROR, error_message);
+  return GoogleServiceAuthError(
+      Details(ServiceError{.error_message = error_message}));
 }
 
 // static
 GoogleServiceAuthError GoogleServiceAuthError::FromUnexpectedServiceResponse(
     const std::string& error_message) {
-  return GoogleServiceAuthError(UNEXPECTED_SERVICE_RESPONSE, error_message);
+  return GoogleServiceAuthError(
+      Details(UnexpectedServiceResponse{.error_message = error_message}));
 }
 
 // static
 GoogleServiceAuthError GoogleServiceAuthError::FromTokenBindingChallenge(
     const std::string& challenge) {
-  GoogleServiceAuthError error =
-      GoogleServiceAuthError(CHALLENGE_RESPONSE_REQUIRED, /*error=*/0);
-  error.token_binding_challenge_ = challenge;
-  return error;
+  return GoogleServiceAuthError(
+      Details(ChallengeResponseRequired{.token_binding_challenge = challenge}));
 }
 
 // static
 GoogleServiceAuthError GoogleServiceAuthError::AuthErrorNone() {
-  return GoogleServiceAuthError(NONE);
+  return GoogleServiceAuthError(Details(None()));
 }
 
 // static
@@ -184,82 +196,138 @@ bool GoogleServiceAuthError::IsValid(State state) {
 }
 
 GoogleServiceAuthError::State GoogleServiceAuthError::state() const {
-  return state_;
-}
-
-int GoogleServiceAuthError::network_error() const {
-  return network_error_;
+  return std::visit(
+      absl::Overload{
+          [](const None&) { return NONE; },
+          [](const InvalidGaiaCredentials&) {
+            return INVALID_GAIA_CREDENTIALS;
+          },
+          [](const UserNotSignedUp&) { return USER_NOT_SIGNED_UP; },
+          [](const ConnectionFailed&) { return CONNECTION_FAILED; },
+          [](const ServiceUnavailable&) { return SERVICE_UNAVAILABLE; },
+          [](const RequestCanceled&) { return REQUEST_CANCELED; },
+          [](const UnexpectedServiceResponse&) {
+            return UNEXPECTED_SERVICE_RESPONSE;
+          },
+          [](const ServiceError&) { return SERVICE_ERROR; },
+          [](const ScopeLimitedUnrecoverableError&) {
+            return SCOPE_LIMITED_UNRECOVERABLE_ERROR;
+          },
+          [](const ChallengeResponseRequired&) {
+            return CHALLENGE_RESPONSE_REQUIRED;
+          },
+      },
+      details_);
 }
 
 const std::string& GoogleServiceAuthError::error_message() const {
-  return error_message_;
+  return std::visit(
+      absl::Overload{[](const ServiceUnavailable& d) -> const std::string& {
+                       return d.error_message;
+                     },
+                     [](const UnexpectedServiceResponse& d)
+                         -> const std::string& { return d.error_message; },
+                     [](const ServiceError& d) -> const std::string& {
+                       return d.error_message;
+                     },
+                     [](const auto&) -> const std::string& {
+                       return base::EmptyString();
+                     }},
+      details_);
+}
+
+net::Error GoogleServiceAuthError::GetNetworkError() const {
+  const auto* connection_failed = std::get_if<ConnectionFailed>(&details_);
+  CHECK(connection_failed);
+  return connection_failed->network_error;
 }
 
 const std::string& GoogleServiceAuthError::GetTokenBindingChallenge() const {
-  CHECK_EQ(CHALLENGE_RESPONSE_REQUIRED, state());
-  return token_binding_challenge_;
+  const auto* challenge_response_required =
+      std::get_if<ChallengeResponseRequired>(&details_);
+  CHECK(challenge_response_required);
+  return challenge_response_required->token_binding_challenge;
 }
 
 GoogleServiceAuthError::InvalidGaiaCredentialsReason
 GoogleServiceAuthError::GetInvalidGaiaCredentialsReason() const {
-  CHECK_EQ(INVALID_GAIA_CREDENTIALS, state());
-  return invalid_gaia_credentials_reason_;
+  const auto* invalid_gaia_credentials =
+      std::get_if<InvalidGaiaCredentials>(&details_);
+  CHECK(invalid_gaia_credentials);
+  return invalid_gaia_credentials->reason;
 }
 
 GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason
 GoogleServiceAuthError::GetScopeLimitedUnrecoverableErrorReason() const {
-  CHECK_EQ(SCOPE_LIMITED_UNRECOVERABLE_ERROR, state());
-  CHECK(scope_limited_unrecoverable_error_reason_.has_value());
-  return scope_limited_unrecoverable_error_reason_.value();
+  const auto* scope_limited_unrecoverable_error =
+      std::get_if<ScopeLimitedUnrecoverableError>(&details_);
+  CHECK(scope_limited_unrecoverable_error);
+  return scope_limited_unrecoverable_error->reason;
 }
 
 std::string GoogleServiceAuthError::ToString() const {
-  switch (state_) {
-    case NONE:
-      return std::string();
-    case INVALID_GAIA_CREDENTIALS:
-      return base::StringPrintf(
-          "Invalid credentials (%s).",
-          InvalidCredentialsReasonToString(invalid_gaia_credentials_reason_));
-    case USER_NOT_SIGNED_UP:
-      return "Not authorized.";
-    case CONNECTION_FAILED:
-      return base::StringPrintf("Connection failed (%d).", network_error_);
-    case SERVICE_UNAVAILABLE:
-      return "Service unavailable; try again later.";
-    case REQUEST_CANCELED:
-      return "Request canceled.";
-    case UNEXPECTED_SERVICE_RESPONSE:
-      return base::StringPrintf("Unexpected service response (%s)",
-                                error_message_.c_str());
-    case SERVICE_ERROR:
-      return base::StringPrintf("Service responded with error: '%s'",
-                                error_message_.c_str());
-    case SCOPE_LIMITED_UNRECOVERABLE_ERROR:
-      CHECK(scope_limited_unrecoverable_error_reason_.has_value());
-      return base::StringPrintf(
-          "OAuth scope error (%s).",
-          ScopeLimitedUnrecoverableErrorReasonToString(
-              scope_limited_unrecoverable_error_reason_.value()));
-    case CHALLENGE_RESPONSE_REQUIRED:
-      return "Service responded with a token binding challenge.";
-    case NUM_STATES:
-      NOTREACHED();
-  }
+  return std::visit(
+      absl::Overload{
+          [](const None&) { return std::string(); },
+          [](const InvalidGaiaCredentials& invalid_gaia_credentials) {
+            return base::StringPrintf("Invalid credentials (%s).",
+                                      InvalidCredentialsReasonToString(
+                                          invalid_gaia_credentials.reason));
+          },
+          [](const UserNotSignedUp&) { return std::string("Not authorized."); },
+          [](const ConnectionFailed& connection_failed) {
+            return base::StringPrintf("Connection failed (%d).",
+                                      connection_failed.network_error);
+          },
+          [](const ServiceUnavailable& service_unavailable) {
+            return base::StringPrintf(
+                "Service unavailable; try again later (%s).",
+                service_unavailable.error_message);
+          },
+          [](const RequestCanceled&) {
+            return std::string("Request canceled.");
+          },
+          [](const UnexpectedServiceResponse& unexpected_service_response) {
+            return base::StringPrintf(
+                "Unexpected service response (%s)",
+                unexpected_service_response.error_message.c_str());
+          },
+          [](const ServiceError& service_error) {
+            return base::StringPrintf("Service responded with error: '%s'",
+                                      service_error.error_message.c_str());
+          },
+          [](const ScopeLimitedUnrecoverableError&
+                 scope_limited_unrecoverable_error) {
+            return base::StringPrintf(
+                "OAuth scope error (%s).",
+                ScopeLimitedUnrecoverableErrorReasonToString(
+                    scope_limited_unrecoverable_error.reason));
+          },
+          [](const ChallengeResponseRequired&) {
+            return std::string(
+                "Service responded with a token binding challenge.");
+          },
+      },
+      details_);
 }
 
 bool GoogleServiceAuthError::IsPersistentError() const {
-  if (state_ == GoogleServiceAuthError::NONE) return false;
+  if (state() == GoogleServiceAuthError::NONE) {
+    return false;
+  }
   return !IsTransientError();
 }
 
 bool GoogleServiceAuthError::IsScopePersistentError() const {
-  return state_ == GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR;
+  return state() == GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR;
 }
 
 bool GoogleServiceAuthError::IsTransientError() const {
-  return ::IsTransientError(state_);
+  return ::IsTransientError(state());
 }
+
+GoogleServiceAuthError::GoogleServiceAuthError(Details details)
+    : details_(std::move(details)) {}
 
 #if BUILDFLAG(IS_ANDROID)
 // static
@@ -284,10 +352,15 @@ GoogleServiceAuthError GoogleServiceAuthError::FromJavaObject(
 
 jni_zero::ScopedJavaLocalRef<jobject> GoogleServiceAuthError::ToJavaObject(
     JNIEnv* env) const {
-  return Java_GoogleServiceAuthError_Constructor(env, state_);
+  return Java_GoogleServiceAuthError_Constructor(env, state());
 }
 
-jboolean JNI_GoogleServiceAuthError_IsTransientError(JNIEnv* env, jint state) {
+static jboolean JNI_GoogleServiceAuthError_IsTransientError(JNIEnv* env,
+                                                            jint state) {
   return IsTransientError(static_cast<GoogleServiceAuthError::State>(state));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(GoogleServiceAuthError)
+#endif

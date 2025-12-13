@@ -45,9 +45,10 @@ VideoPlaybackQuality::VideoPlaybackQuality(const Document& document,
       total_video_frames_(total_video_frames),
       dropped_video_frames_(dropped_video_frames),
       corrupted_video_frames_(corrupted_video_frames) {
-  if (document.domWindow())
+  if (document.domWindow()) {
     creation_time_ =
         DOMWindowPerformance::performance(*(document.domWindow()))->now();
+  }
 }
 
 }  // namespace blink

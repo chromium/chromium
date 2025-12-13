@@ -4,18 +4,22 @@
 
 package org.chromium.chrome.browser.sync.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -26,7 +30,6 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
@@ -41,6 +44,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.ViewUtils;
 
@@ -48,6 +52,7 @@ import org.chromium.ui.base.ViewUtils;
  * A preference that displays "Sign in to Chrome" when the user is not sign in, and displays the
  * user's name, email, profile image and sync error icon if necessary when the user is signed in.
  */
+@NullMarked
 public class SignInPreference extends Preference
         implements SignInStateObserver,
                 ProfileDataCache.Observer,
@@ -62,7 +67,7 @@ public class SignInPreference extends Preference
     private PrefService mPrefService;
     private ProfileDataCache mProfileDataCache;
     private AccountManagerFacade mAccountManagerFacade;
-    private SyncService mSyncService;
+    private @Nullable SyncService mSyncService;
     private SigninManager mSigninManager;
     private IdentityManager mIdentityManager;
 
@@ -84,6 +89,7 @@ public class SignInPreference extends Preference
      * <p>Must be called before the preference is attached, which is called from the containing
      * settings screen's onViewCreated method.
      */
+    @Initializer
     public void initialize(
             Profile profile,
             ProfileDataCache profileDataCache,
@@ -93,8 +99,9 @@ public class SignInPreference extends Preference
         mAccountManagerFacade = accountManagerFacade;
         mPrefService = UserPrefs.get(mProfile);
         mSyncService = SyncServiceFactory.getForProfile(mProfile);
-        mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
-        mIdentityManager = IdentityServicesProvider.get().getIdentityManager(mProfile);
+        mSigninManager = assumeNonNull(IdentityServicesProvider.get().getSigninManager(mProfile));
+        mIdentityManager =
+                assumeNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile));
     }
 
     @Override
@@ -185,17 +192,22 @@ public class SignInPreference extends Preference
                 pref -> {
                     AccountPickerBottomSheetStrings bottomSheetStrings =
                             new AccountPickerBottomSheetStrings.Builder(
-                                            R.string.signin_account_picker_bottom_sheet_title)
+                                            getContext()
+                                                    .getString(
+                                                            R.string
+                                                                    .signin_account_picker_bottom_sheet_title))
                                     .build();
                     BottomSheetSigninAndHistorySyncConfig config =
                             new BottomSheetSigninAndHistorySyncConfig.Builder(
                                             bottomSheetStrings,
                                             NoAccountSigninMode.BOTTOM_SHEET,
                                             WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                            HistorySyncConfig.OptInMode.OPTIONAL)
+                                            HistorySyncConfig.OptInMode.OPTIONAL,
+                                            getContext().getString(R.string.history_sync_title),
+                                            getContext().getString(R.string.history_sync_subtitle))
                                     .build();
-                    @Nullable
-                    Intent intent =
+
+                    @Nullable Intent intent =
                             SigninAndHistorySyncActivityLauncherImpl.get()
                                     .createBottomSheetSigninIntentOrShowError(
                                             getContext(),
@@ -223,7 +235,7 @@ public class SignInPreference extends Preference
         setTitle(
                 SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
                         profileData, getContext(), SyncSettingsUtils.TitlePreference.FULL_NAME));
-        if (!mSyncService.hasSyncConsent()) {
+        if (!assumeNonNull(mSyncService).hasSyncConsent()) {
             setFragment(ManageSyncSettings.class.getName());
         } else {
             setFragment(AccountManagementFragment.class.getName());
@@ -232,7 +244,7 @@ public class SignInPreference extends Preference
         setViewEnabledAndShowAlertIcon(
                 /* enabled= */ true,
                 /* alertIconVisible= */ SyncSettingsUtils.getSyncError(mProfile)
-                        != SyncError.NO_ERROR);
+                        != UserActionableError.NONE);
         setOnPreferenceClickListener(null);
 
         mWasGenericSigninPromoDisplayed = false;

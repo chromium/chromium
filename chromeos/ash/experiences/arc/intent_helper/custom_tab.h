@@ -12,7 +12,7 @@
 #include "chromeos/ash/experiences/arc/arc_export.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/native/native_view_host.h"
 
 namespace arc {

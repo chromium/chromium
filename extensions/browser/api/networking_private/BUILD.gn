@@ -7,6 +7,7 @@ import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
+assert(!is_fuchsia, "Fuchsia does not support extensions.")
 
 import("//build/config/features.gni")
 
@@ -49,8 +50,11 @@ source_set("networking_private") {
                 "networking_private_linux.h",
               ]
 
-    deps += [ "//dbus" ]
-  } else if (is_win || is_mac || is_fuchsia) {
+    deps += [
+      "//components/dbus",
+      "//dbus",
+    ]
+  } else if (is_win || is_mac) {
     sources = default_sources + [
                 "networking_private_event_router_nonchromeos.cc",
                 "networking_private_service_client.cc",
@@ -66,7 +70,6 @@ source_set("networking_private") {
     deps += [
       "//chromeos/ash/components/login/login_state",
       "//chromeos/ash/components/network",
-      "//chromeos/ash/components/network/portal_detector",
       "//chromeos/components/onc",
       "//components/proxy_config",
     ]

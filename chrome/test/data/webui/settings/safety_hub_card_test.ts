@@ -37,7 +37,7 @@ suite('SafetyHubCard', function() {
     function assertTextContent(query: string, text: string) {
       const element = testElement.shadowRoot!.querySelector(query);
       assertTrue(!!element);
-      assertEquals(text, element.textContent!.trim());
+      assertEquals(text, element.textContent.trim());
     }
 
     assertTextContent('#header', mockData.header);

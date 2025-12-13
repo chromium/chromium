@@ -19,11 +19,9 @@
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/framebuffer_manager.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
-#include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 #include "gpu/command_buffer/service/program_manager.h"
 #include "gpu/command_buffer/service/renderbuffer_manager.h"
 #include "gpu/command_buffer/service/sampler_manager.h"
-#include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/shader_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -45,9 +43,8 @@ void GetIntegerv(GLenum pname, uint32_t* var) {
 
 }  // namespace anonymous
 
-DisallowedFeatures AdjustDisallowedFeatures(
-    ContextType context_type, const DisallowedFeatures& disallowed_features) {
-  DisallowedFeatures adjusted_disallowed_features = disallowed_features;
+DisallowedFeatures GetDisallowedFeatures(ContextType context_type) {
+  DisallowedFeatures adjusted_disallowed_features;
   if (context_type == CONTEXT_TYPE_WEBGL1) {
     adjusted_disallowed_features.npot_support = true;
   }
@@ -73,11 +70,8 @@ ContextGroup::ContextGroup(
     ShaderTranslatorCache* shader_translator_cache,
     FramebufferCompletenessCache* framebuffer_completeness_cache,
     const scoped_refptr<FeatureInfo>& feature_info,
-    bool bind_generates_resource,
     gl::ProgressReporter* progress_reporter,
     const GpuFeatureInfo& gpu_feature_info,
-    ServiceDiscardableManager* discardable_manager,
-    PassthroughDiscardableManager* passthrough_discardable_manager,
     SharedImageManager* shared_image_manager)
     : gpu_preferences_(gpu_preferences),
       memory_tracker_(std::move(memory_tracker)),
@@ -94,7 +88,6 @@ ContextGroup::ContextGroup(
       framebuffer_completeness_cache_(framebuffer_completeness_cache),
 #endif
       enforce_gl_minimums_(gpu_preferences_.enforce_gl_minimums),
-      bind_generates_resource_(bind_generates_resource),
       max_vertex_attribs_(0u),
       max_texture_units_(0u),
       max_texture_image_units_(0u),
@@ -116,28 +109,20 @@ ContextGroup::ContextGroup(
       feature_info_(feature_info),
       use_passthrough_cmd_decoder_(false),
       passthrough_resources_(new PassthroughResources),
-      passthrough_discardable_manager_(passthrough_discardable_manager),
       progress_reporter_(progress_reporter),
       gpu_feature_info_(gpu_feature_info),
-      discardable_manager_(discardable_manager),
       shared_image_representation_factory_(
           std::make_unique<SharedImageRepresentationFactory>(
               shared_image_manager,
               memory_tracker_)),
       shared_image_manager_(shared_image_manager) {
-  DCHECK(discardable_manager);
   DCHECK(feature_info_);
-
-  // Temporary check to ensure nothing is using bind_generates_resource.
-  CHECK(!bind_generates_resource_);
 
   use_passthrough_cmd_decoder_ = gpu_preferences_.use_passthrough_cmd_decoder;
 }
 
-gpu::ContextResult ContextGroup::Initialize(
-    DecoderContext* decoder,
-    ContextType context_type,
-    const DisallowedFeatures& disallowed_features) {
+gpu::ContextResult ContextGroup::Initialize(DecoderContext* decoder,
+                                            ContextType context_type) {
   switch (context_type) {
     case CONTEXT_TYPE_WEBGL1:
       if (kGpuFeatureStatusBlocklisted ==
@@ -169,7 +154,7 @@ gpu::ContextResult ContextGroup::Initialize(
   }
 
   DisallowedFeatures adjusted_disallowed_features =
-      AdjustDisallowedFeatures(context_type, disallowed_features);
+      GetDisallowedFeatures(context_type);
 
   feature_info_->Initialize(context_type, use_passthrough_cmd_decoder_,
                             adjusted_disallowed_features);
@@ -399,8 +384,8 @@ gpu::ContextResult ContextGroup::Initialize(
     texture_manager_ = std::make_unique<TextureManager>(
         memory_tracker_, feature_info_.get(), max_texture_size,
         max_cube_map_texture_size, max_rectangle_texture_size,
-        max_3d_texture_size, max_array_texture_layers, bind_generates_resource_,
-        progress_reporter_, discardable_manager_);
+        max_3d_texture_size, max_array_texture_layers,
+        /*use_default_textures=*/false, progress_reporter_);
   }
 
   const GLint kMinTextureImageUnits = 8;
@@ -613,10 +598,6 @@ void ContextGroup::Destroy(DecoderContext* decoder, bool have_context) {
     sampler_manager_->Destroy(have_context);
     sampler_manager_.reset();
     ReportProgress();
-  }
-
-  if (passthrough_discardable_manager_) {
-    passthrough_discardable_manager_->DeleteContextGroup(this, have_context);
   }
 
   if (passthrough_resources_) {

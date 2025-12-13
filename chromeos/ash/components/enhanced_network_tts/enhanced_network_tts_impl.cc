@@ -5,6 +5,8 @@
 #include "chromeos/ash/components/enhanced_network_tts/enhanced_network_tts_impl.h"
 
 #include <iterator>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/base64.h"
@@ -23,9 +25,7 @@
 
 namespace ash::enhanced_network_tts {
 
-BASE_FEATURE(kEnhancedNetworkTtsOverride,
-             "EnhancedNetworkTtsOverride",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnhancedNetworkTtsOverride, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<std::string> EnhancedNetworkTtsImpl::kApiKey;
 
@@ -196,10 +196,9 @@ void EnhancedNetworkTtsImpl::ProcessNextServerRequest() {
   }
 
   const ServerRequestList::iterator first_request_it = server_requests_.begin();
-  network::SimpleURLLoader::BodyAsStringCallbackDeprecated
-      body_as_string_callback =
-          base::BindOnce(&EnhancedNetworkTtsImpl::OnServerResponseReceived,
-                         weak_factory_.GetWeakPtr(), first_request_it);
+  network::SimpleURLLoader::BodyAsStringCallback body_as_string_callback =
+      base::BindOnce(&EnhancedNetworkTtsImpl::OnServerResponseReceived,
+                     weak_factory_.GetWeakPtr(), first_request_it);
   server_requests_.front().url_loader->DownloadToString(
       url_loader_factory_.get(), std::move(body_as_string_callback),
       kEnhancedNetworkTtsMaxResponseSize);
@@ -207,7 +206,7 @@ void EnhancedNetworkTtsImpl::ProcessNextServerRequest() {
 
 void EnhancedNetworkTtsImpl::OnServerResponseReceived(
     const ServerRequestList::iterator server_request_it,
-    const std::unique_ptr<std::string> json_response) {
+    std::optional<std::string> json_response) {
   // This callback will not be called when the url_loader and its request are
   // deleted. See simple_url_loader.h for more details.
   DCHECK(!server_requests_.empty());

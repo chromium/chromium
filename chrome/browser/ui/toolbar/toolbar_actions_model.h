@@ -25,13 +25,10 @@
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
 
+class BrowserWindowInterface;
+class ExtensionsContainer;
 class PrefService;
 class Profile;
-class ExtensionsContainer;
-
-#if !BUILDFLAG(IS_ANDROID)
-class Browser;
-#endif
 
 namespace extensions {
 class ExtensionActionManager;
@@ -96,10 +93,9 @@ class ToolbarActionsModel
   // Convenience function to get the ToolbarActionsModel for a Profile.
   static ToolbarActionsModel* Get(Profile* profile);
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Returns whether actions can be shown in the toolbar for `browser`.
-  static bool CanShowActionsInToolbar(const Browser& browser);
-#endif
+  // Returns whether actions can be shown in the toolbar for the browser window
+  // where the extensions UI is enabled.
+  static bool CanShowActionsInToolbar(const BrowserWindowInterface& browser);
 
   // Adds or removes an observer.
   void AddObserver(Observer* observer);
@@ -144,6 +140,9 @@ class ToolbarActionsModel
   void OnReady();
 
   // ExtensionRegistryObserver:
+  void OnExtensionInstalled(content::BrowserContext* browser_context,
+                            const extensions::Extension* extension,
+                            bool is_update) override;
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const extensions::Extension* extension) override;
   void OnExtensionUnloaded(content::BrowserContext* browser_context,

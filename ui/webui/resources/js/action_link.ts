@@ -27,7 +27,7 @@
 //
 // NOTE: <action-link> and document.createElement('action-link') don't work.
 
-class ActionLink extends HTMLAnchorElement {
+export class ActionLink extends HTMLAnchorElement {
   private boundOnKeyDown_: ((e: KeyboardEvent) => void)|null = null;
   private boundOnMouseDown_: (() => void)|null = null;
   private boundOnBlur_: (() => void)|null = null;

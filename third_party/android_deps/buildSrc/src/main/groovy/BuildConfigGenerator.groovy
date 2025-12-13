@@ -68,7 +68,7 @@ class BuildConfigGenerator extends DefaultTask {
     static final Map<String, String> EXISTING_LIBS = [
             com_ibm_icu_icu4j: '//third_party/icu4j:icu4j_java',
             com_almworks_sqlite4java_sqlite4java: '//third_party/sqlite4java:sqlite4java_java',
-            com_google_guava_listenablefuture: '//third_party/android_deps:guava_android_java',
+            com_google_guava_listenablefuture: '//third_party/android_deps:guava_java',
             com_jakewharton_android_repackaged_dalvik_dx: '//third_party/aosp_dalvik:aosp_dalvik_dx_java',
             junit_junit: '//third_party/junit:junit',
             net_bytebuddy_byte_buddy_android: '//third_party/byte_buddy:byte_buddy_android_java',
@@ -96,10 +96,8 @@ class BuildConfigGenerator extends DefaultTask {
             // Use fully-qualified labels here since androidx might refer to them.
             com_google_android_material_material: '//third_party/android_deps:material_design_java',
             com_google_android_play_feature_delivery: '//third_party/android_deps:playcore_java',
-            com_google_dagger_dagger_compiler: '//third_party/android_deps:dagger_processor',
-            com_google_dagger_dagger: '//third_party/android_deps:dagger_java',
-            com_google_guava_failureaccess: '//third_party/android_deps:guava_android_java',
-            com_google_guava_guava: '//third_party/android_deps:guava_android_java',
+            com_google_guava_failureaccess: '//third_party/android_deps:guava_java',
+            com_google_guava_guava: '//third_party/android_deps:guava_java',
             com_google_protobuf_protobuf_javalite: '//third_party/android_deps:protobuf_lite_runtime_java',
             net_bytebuddy_byte_buddy: '//third_party/byte_buddy:byte_buddy_android_java',
             // Logic for google_play_services_package added below.
@@ -109,11 +107,8 @@ class BuildConfigGenerator extends DefaultTask {
     static final Map<String, String> CONDITIONAL_LIBS = [
             com_google_android_material_material: '!defined(material_design_target)',
             com_google_android_play_feature_delivery: '!defined(playcore_target)',
-            com_google_dagger_dagger_compiler: '!defined(dagger_annotation_processor_target)',
-            com_google_dagger_dagger_producers: '!defined(dagger_annotation_processor_target)',
-            com_google_dagger_dagger_spi: '!defined(dagger_annotation_processor_target)',
-            com_google_dagger_dagger: '!defined(dagger_java_target)',
             com_google_protobuf_protobuf_javalite: '!defined(android_proto_runtime)',
+            com_google_guava_guava: '!defined(guava_android_target)',
             // Logic for google_play_services_package added below.
     ]
 
@@ -238,10 +233,12 @@ wnwen@chromium.org
         boolean securityCritical = dependency.supportsAndroid && dependency.isShipped
         String cpePrefix = dependency.cpePrefix ? dependency.cpePrefix : 'unknown'
 
+        // Useing fileUrl as URL is required for vulnerability scanning.
+        // https://crbug.com/446990546
         return """\
 Name: ${dependency.displayName}
 Short Name: ${dependency.name}
-URL: ${dependency.url}
+URL: ${dependency.fileUrl}
 Version: ${dependency.version}
 Update Mechanism: ${(dependency.isAutorolled || dependency.isAndroidx) ? 'Autoroll' : 'Manual'}
 License: ${licenseString}
@@ -291,20 +288,47 @@ No modifications.
         }
     }
 
+    void runLicenseDownloadWithRetries(ChromiumDepGraph.DependencyDescription dependency,
+                                       ChromiumDepGraph.LicenseSpec license,
+                                       File destFile) {
+        int maxAttempts = 3
+        long[] delays = [5000L, 30000L] // 5 seconds, 30 seconds
+
+        for (int attempt = 0; attempt < maxAttempts; attempt++) {
+            try {
+                downloadFile(dependency.id, license.url, destFile)
+
+                if (destFile.text.contains('<html')) {
+                    String snippet = destFile.text.length() < 100 ? destFile.text : destFile.text.substring(0, 100);
+                    throw new RuntimeException("Found HTML in LICENSE file at ${license.url}.\n"
+                            + "Please add an override to ChromiumDepGraph.groovy for ${dependency.id}.\n"
+                            + "First part was: ${snippet}")
+                }
+                return
+            } catch (Exception e) {
+                if (attempt < maxAttempts - 1) {
+                    println("ERROR: Download failed for ${license.url} on attempt ${attempt + 1}: ${e.getMessage()}. Retrying in ${delays[attempt]}ms...")
+                    Thread.sleep(delays[attempt])
+                } else {
+                    throw e;
+                }
+            }
+        }
+    }
+
     void downloadLicenses(ChromiumDepGraph.DependencyDescription dependency,
-                                 ExecutorService downloadExecutor,
-                                 List<Future> downloadTasks) {
+                          ExecutorService downloadExecutor,
+                          List<Future> downloadTasks) {
         for (int i = 0; i < dependency.licenses.size(); ++i) {
             ChromiumDepGraph.LicenseSpec license = dependency.licenses[i]
+
+            // Download only if path is missing and URL exists.
             if (!license.path?.trim() && license.url?.trim()) {
                 String destFileSuffix = (dependency.licenses.size() > 1) ? "${i + 1}.tmp" : ''
                 File destFile = project.file("${dependency.directoryPath}/LICENSE${destFileSuffix}")
+
                 downloadTasks.add(downloadExecutor.submit {
-                    downloadFile(dependency.id, license.url, destFile)
-                    if (destFile.text.contains('<html')) {
-                        throw new RuntimeException("Found HTML in LICENSE file at ${license.url}. "
-                                + "Please add an override to ChromiumDepGraph.groovy for ${dependency.id}.")
-                    }
+                    runLicenseDownloadWithRetries(dependency, license, destFile)
                 })
             }
         }
@@ -573,7 +597,7 @@ No modifications.
                 gnTarget = ":${depTargetName}"
             }
 
-            if (targetName.contains('guava') && gnTarget == '//third_party/android_deps:guava_android_java') {
+            if (targetName.contains('guava') && gnTarget == '//third_party/android_deps:guava_java') {
                 // Prevent circular dep caused by having listenablefuture aliased to guava_android.
                 return
             }
@@ -668,14 +692,11 @@ No modifications.
             if (CONDITIONAL_LIBS.containsKey(dependency.id)) {
                 sb.append('  # Target is swapped out when internal code is enabled.\n')
             }
-            // Guava is special in that it needs to be available for non-android code to depend on.
-            if (dependency.id != 'com_google_guava_guava') {
-              sb.append("  # Please depend on $aliasedLib instead.\n")
-              sb.append("  visibility = [ \"$visibilityLabel\" ]\n")
-            }
+            sb.append("  # Please depend on $aliasedLib instead.\n")
+            sb.append("  visibility = [ \"$visibilityLabel\" ]\n")
         } else if (!dependency.visible) {
             sb.append('  # To remove visibility constraint, add this dependency to\n')
-            sb.append("  # //${pathToBuildGradle}/build.gradle.\n")
+            sb.append("  # //${pathToBuildGradle}/build.gradle.template\n")
             sb.append("visibility = ${makeGnArray(internalTargetVisibility)}\n")
         }
         return sb.toString()
@@ -788,8 +809,6 @@ No modifications.
             case 'com_google_android_gms_play_services_basement':
                 sb.append('  # https://crbug.com/989505\n')
                 sb.append('  jar_excluded_patterns += ["META-INF/proguard/*"]\n')
-                // Deprecated deps jar but still needed by play services basement.
-                sb.append('  input_jars_paths=["$android_sdk/optional/org.apache.http.legacy.jar"]\n')
                 break
             case 'com_google_android_gms_play_services_maps':
                 sb.append('  # Ignore the dependency to org.apache.http.legacy. See crbug.com/1084879.\n')
@@ -819,13 +838,13 @@ No modifications.
                 // and android_aar_prebuilt template will fail if it's not set explictly.
                 sb.append('  extract_native_libraries = true\n')
                 break
-            case 'com_google_auto_service_auto_service_annotations_java':
+            case 'com_google_errorprone_error_prone_annotations':
+                sb.append('  preferred_dep = true\n')
+                break
+            case 'com_google_auto_service_auto_service_annotations':
                 sb.append('  preferred_dep = true\n')
                 break
             case 'com_google_guava_guava':
-                sb.append('\n')
-                sb.append('  # Only allow android targets to depend on this if there is no internal alias.\n')
-                sb.append('  supports_android = !defined(guava_android_java)\n')
                 sb.append('\n')
                 sb.append('  # Dep needed to fix:\n')
                 sb.append('  #   warning: unknown enum constant ReflectionSupport$Level.FULL\n')
@@ -871,7 +890,27 @@ No modifications.
                 sb.append('  bypass_platform_checks = true\n')
                 break
             case 'com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework':
-                sb.append('  proguard_configs = [ "local_modifications/accessibility_test_framework.pcfg" ]')
+                sb.append('  include_java_resources = true\n')
+                sb.append('  proguard_configs = [ "local_modifications/accessibility_test_framework.pcfg" ]\n')
+                break
+            case 'io_grpc_grpc_core':
+                // Classes are loaded both by reflection & by ServiceLoader.load(),
+                // so need to strip out the class and the configs.
+                sb.append('  # Needed only for gRPC networking (not IPC).\n')
+                sb.append('  jar_excluded_patterns = [\n')
+                sb.append('    "META-INF/services/io.grpc.NameResolverProvider",\n')
+                sb.append('    "io/grpc/internal/DnsNameResolver*",\n')
+                sb.append('  ]\n')
+                break
+            case 'io_grpc_grpc_binder':
+                // Classes are loaded both by reflection & by ServiceLoader.load(),
+                // so need to strip out the class and the configs.
+                sb.append('  # https://crbug.com/450243304.\n')
+                sb.append('  ignore_manifest = true\n')
+                sb.append('  jar_excluded_patterns = [\n')
+                sb.append('    "META-INF/services/io.grpc.NameResolverProvider",\n')
+                sb.append('    "io/grpc/binder/internal/IntentNameResolver*",\n')
+                sb.append('  ]\n')
                 break
         }
     }

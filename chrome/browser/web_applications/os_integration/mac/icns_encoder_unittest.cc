@@ -11,11 +11,10 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
-#include "base/path_service.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,32 +57,19 @@ TEST(IcnsEncoderTest, AppendRLEImageData) {
   }
 }
 
-namespace {
-
-gfx::Image LoadTestPNG(const base::FilePath::CharType* path) {
-  base::FilePath data_root;
-  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &data_root);
-  base::FilePath image_path = data_root.Append(path);
-  std::string png_data;
-  ReadFileToString(image_path, &png_data);
-  return gfx::Image::CreateFrom1xPNGBytes(base::as_byte_span(png_data));
-}
-
-}  // namespace
-
 TEST(IcnsEncoderTest, RoundTrip) {
   // Load a couple of test images.
-  gfx::Image basic_192 =
-      LoadTestPNG(FILE_PATH_LITERAL("chrome/test/data/web_apps/basic-192.png"));
+  gfx::Image basic_192 = web_app::test::LoadTestImageFromDisk(
+      base::FilePath("chrome/test/data/web_apps/basic-192.png"));
   ASSERT_TRUE(!basic_192.IsEmpty());
-  gfx::Image green_128 = LoadTestPNG(FILE_PATH_LITERAL(
-      "chrome/test/data/web_apps/standalone/128x128-green.png"));
+  gfx::Image green_128 = web_app::test::LoadTestImageFromDisk(
+      base::FilePath("chrome/test/data/web_apps/standalone/128x128-green.png"));
   ASSERT_TRUE(!green_128.IsEmpty());
-  gfx::Image basic_48 =
-      LoadTestPNG(FILE_PATH_LITERAL("chrome/test/data/web_apps/basic-48.png"));
+  gfx::Image basic_48 = web_app::test::LoadTestImageFromDisk(
+      base::FilePath("chrome/test/data/web_apps/basic-48.png"));
   ASSERT_TRUE(!basic_48.IsEmpty());
-  gfx::Image chromium_32 = LoadTestPNG(
-      FILE_PATH_LITERAL("chrome/test/data/web_apps/chromium-32.png"));
+  gfx::Image chromium_32 = web_app::test::LoadTestImageFromDisk(
+      base::FilePath("chrome/test/data/web_apps/chromium-32.png"));
   ASSERT_TRUE(!chromium_32.IsEmpty());
 
   // Add the images to a IcnsEncoder.

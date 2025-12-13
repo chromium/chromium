@@ -32,27 +32,14 @@ constexpr base::TimeDelta kHoldEscapeTime = base::Milliseconds(1500);
 // showing up.
 constexpr base::TimeDelta kShowExitBubbleTime = base::Milliseconds(500);
 
-constexpr char kHistogramFullscreenLockStateAtEntryViaApi[] =
-    "WebCore.Fullscreen.LockStateAtEntryViaApi";
-constexpr char kHistogramFullscreenLockStateAtEntryViaBrowserUi[] =
-    "WebCore.Fullscreen.LockStateAtEntryViaBrowserUi";
 constexpr char kHistogramEscKeyPressedDownWithModifier[] =
     "Browser.EscKeyPressedDownWithModifier";
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class LockState {
-  kUnlocked = 0,
-  kKeyboardLocked = 1,
-  kPointerLocked = 2,
-  kKeyboardAndPointerLocked = 3,
-  kMaxValue = kKeyboardAndPointerLocked,
-};
-
-// Check whether `event` is a kRawKeyDown type and doesn't have non-stateful
-// modifiers (i.e. shift, ctrl etc.).
+// Check whether `event` is a kKeyDown or kRawKeyDown type and doesn't have
+// non-stateful modifiers (i.e. shift, ctrl etc.).
 bool IsUnmodifiedEscKeyDownEvent(const input::NativeWebKeyboardEvent& event) {
-  if (event.GetType() != input::NativeWebKeyboardEvent::Type::kRawKeyDown) {
+  if (event.GetType() != input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
+      event.GetType() != input::NativeWebKeyboardEvent::Type::kKeyDown) {
     return false;
   }
   if (event.GetModifiers() & blink::WebInputEvent::kKeyModifiers) {
@@ -143,16 +130,7 @@ url::Origin ExclusiveAccessManager::GetExclusiveAccessBubbleOrigin() const {
   return result;
 }
 
-void ExclusiveAccessManager::RecordLockStateOnEnteringApiFullscreen() const {
-  RecordLockStateOnEnteringFullscreen(
-      kHistogramFullscreenLockStateAtEntryViaApi);
-}
 
-void ExclusiveAccessManager::RecordLockStateOnEnteringBrowserFullscreen()
-    const {
-  RecordLockStateOnEnteringFullscreen(
-      kHistogramFullscreenLockStateAtEntryViaBrowserUi);
-}
 
 void ExclusiveAccessManager::OnTabDeactivated(WebContents* web_contents) {
   for (auto controller : exclusive_access_controllers_) {
@@ -248,28 +226,5 @@ void ExclusiveAccessManager::ExitExclusiveAccess() {
 void ExclusiveAccessManager::HandleUserHeldEscape() {
   for (auto controller : exclusive_access_controllers_) {
     controller->HandleUserHeldEscape();
-  }
-}
-
-void ExclusiveAccessManager::RecordLockStateOnEnteringFullscreen(
-    const char histogram_name[]) const {
-  LockState lock_state = LockState::kUnlocked;
-  if (keyboard_lock_controller_.IsKeyboardLockActive()) {
-    if (pointer_lock_controller_.IsPointerLocked()) {
-      lock_state = LockState::kKeyboardAndPointerLocked;
-    } else {
-      lock_state = LockState::kKeyboardLocked;
-    }
-  } else if (pointer_lock_controller_.IsPointerLocked()) {
-    lock_state = LockState::kPointerLocked;
-  }
-  base::UmaHistogramEnumeration(histogram_name, lock_state);
-  if (fullscreen_controller_.exclusive_access_tab()) {
-    ukm::SourceId source_id = fullscreen_controller_.exclusive_access_tab()
-                                  ->GetPrimaryMainFrame()
-                                  ->GetPageUkmSourceId();
-    ukm::builders::Fullscreen_Enter(source_id)
-        .SetLockState(static_cast<int64_t>(lock_state))
-        .Record(ukm::UkmRecorder::Get());
   }
 }

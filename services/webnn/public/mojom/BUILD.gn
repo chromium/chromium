@@ -30,6 +30,10 @@ mojom_component("mojom") {
     "webnn_tensor.mojom",
   ]
 
+  if (is_win) {
+    sources += [ "ep_package_info.mojom" ]
+  }
+
   deps = [
     ":features",
     "//gpu/ipc/common:interfaces",
@@ -55,6 +59,11 @@ mojom_component("mojom") {
         {
           mojom = "webnn.mojom.DataTypeLimits"
           cpp = "::webnn::DataTypeLimits"
+          default_constructible = false
+        },
+        {
+          mojom = "webnn.mojom.Number"
+          cpp = "::webnn::MLNumber"
           default_constructible = false
         },
         {
@@ -91,6 +100,7 @@ mojom_component("mojom") {
       traits_headers = [
         "context_properties_mojom_traits.h",
         "data_type_limits_mojom_traits.h",
+        "number_mojom_traits.h",
         "operand_descriptor_mojom_traits.h",
         "operand_id_mojom_traits.h",
         "range_traits.h",
@@ -98,6 +108,16 @@ mojom_component("mojom") {
         "supported_tensors_mojom_traits.h",
         "tensor_usage_mojom_traits.h",
       ]
+
+      if (is_win) {
+        types += [
+          {
+            mojom = "webnn.mojom.PackageVersion"
+            cpp = "::PACKAGE_VERSION"
+          },
+        ]
+        traits_headers += [ "package_version_mojom_traits.h" ]
+      }
 
       traits_public_deps = [ ":webnn_mojom_traits" ]
     },

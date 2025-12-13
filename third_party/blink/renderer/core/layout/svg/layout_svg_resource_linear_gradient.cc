@@ -61,7 +61,8 @@ gfx::PointF LayoutSVGResourceLinearGradient::EndPoint(
                       *attributes.Y2());
 }
 
-scoped_refptr<Gradient> LayoutSVGResourceLinearGradient::BuildGradient() const {
+std::unique_ptr<Gradient> LayoutSVGResourceLinearGradient::BuildGradient()
+    const {
   NOT_DESTROYED();
   DCHECK(!should_collect_gradient_attributes_);
   return Gradient::CreateLinear(

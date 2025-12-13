@@ -1,40 +1,42 @@
-    <style include="cr-shared-style settings-shared">
-      :host {
-        display: block;
-      }
+  <style include="cr-shared-style settings-shared">
+    :host {
+      display: block;
+    }
 
-      .column-header {
-        margin-bottom: 15px;
-        margin-inline-start: 20px;
-        margin-top: 15px;
-      }
-      #radioGroup {
-        padding: 0 var(--cr-section-padding);
-      }
+    .column-header {
+      margin-bottom: 15px;
+      margin-inline-start: 20px;
+      margin-top: 15px;
+    }
+    #radioGroup {
+      padding: 0 var(--cr-section-padding);
+    }
 
-      #radioGroupSubHeading {
-        padding-bottom: 10px;
-      }
+    #radioGroupSubHeading {
+      padding-bottom: 10px;
+    }
 
-      #appHandlerSubHeading {
-        padding-bottom: 10px;
-      }
+    #appHandlerSubHeading {
+      padding-bottom: 10px;
+    }
 
-      #appIcon {
-        width: 16px;
-        height: 16px;
-        background-repeat: no-repeat;
-        background-size: contain;
-      }
+    #appIcon {
+      width: 16px;
+      height: 16px;
+      background-repeat: no-repeat;
+      background-size: contain;
+    }
 
-      settings-collapse-radio-button {
-        --settings-collapse-toggle-min-height: var(--cr-section-min-height);
-      }
+    settings-collapse-radio-button {
+      --settings-collapse-toggle-min-height: var(--cr-section-min-height);
+    }
 
-      settings-collapse-radio-button:not(:first-of-type) {
-        --settings-collapse-separator-line: var(--cr-separator-line);
-      }
-    </style>
+    settings-collapse-radio-button:not(:first-of-type) {
+      --settings-collapse-separator-line: var(--cr-separator-line);
+    }
+  </style>
+  <settings-subpage page-title="$i18n{siteSettingsCategoryHandlers}"
+      route-path$="[[routePath]]">
     <div id="radioGroup">
       <div class="secondary">
         $i18n{siteSettingsProtocolHandlersDescription}
@@ -44,10 +46,10 @@
         $i18n{siteSettingsDefaultBehaviorDescription}
       </div>
       <settings-radio-group
-        id="protcolHandlersRadio"
-        pref="[[handlersEnabledPref_]]"
-        on-change="onToggleChange_"
-        selectable-elements="settings-collapse-radio-button">
+          id="protcolHandlersRadio"
+          pref="[[handlersEnabledPref_]]"
+          on-change="onToggleChange_"
+          selectable-elements="settings-collapse-radio-button">
         <settings-collapse-radio-button no-collapse
             id="protcolHandlersRadioAllow"
             pref="[[handlersEnabledPref_]]"
@@ -186,3 +188,4 @@
         </template>
       </div>
     </template>
+  </settings-subpage>

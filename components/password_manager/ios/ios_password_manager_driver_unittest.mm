@@ -14,6 +14,7 @@
 #import "components/password_manager/core/browser/stub_password_manager_client.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/shared_password_controller.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -26,13 +27,6 @@ using autofill::AutofillJavaScriptFeature;
 using base::SysNSStringToUTF8;
 using password_manager::PasswordManager;
 using testing::Return;
-
-#define andCompareStringAtIndex(expected_string, index) \
-  andDo(^(NSInvocation * invocation) {                  \
-    const std::string* param;                           \
-    [invocation getArgument:&param atIndex:index + 2];  \
-    EXPECT_EQ(*param, expected_string);                 \
-  })
 
 // This is a workaround for returning const GURL&, for which .andReturn and
 // .andReturnValue don’t work.
@@ -94,7 +88,7 @@ class IOSPasswordManagerDriverTest : public PlatformTest {
   }
 
  protected:
-  raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
+  raw_ptr<web::FakeWebFramesManager, DanglingUntriaged> web_frames_manager_;
   web::FakeWebState web_state_;
   raw_ptr<IOSPasswordManagerDriver> driver_;
   raw_ptr<IOSPasswordManagerDriver> driver2_;
@@ -125,7 +119,7 @@ TEST_F(IOSPasswordManagerDriverTest, PropagateFillDataOnParsingCompletion) {
                                  forFrameId:""
                                 isMainFrame:driver_->IsInPrimaryMainFrame()
                           forSecurityOrigin:driver_->security_origin()])
-      .andCompareStringAtIndex(driver_->web_frame_id(), 1);
+      .andCompareObjectAtIndex(driver_->web_frame_id(), 1);
   driver_->PropagateFillDataOnParsingCompletion(form_data);
 
   EXPECT_OCMOCK_VERIFY(password_controller_);
@@ -136,7 +130,7 @@ TEST_F(IOSPasswordManagerDriverTest, InformNoSavedCredentials) {
   const std::string main_frame_id = SysNSStringToUTF8(@"main-frame");
   OCMExpect([[password_controller_ ignoringNonObjectArgs]
                 onNoSavedCredentialsWithFrameId:""])
-      .andCompareStringAtIndex(main_frame_id, 0);
+      .andCompareObjectAtIndex(main_frame_id, 0);
   driver_->InformNoSavedCredentials(
       /*should_show_popup_without_passwords=*/false);
 

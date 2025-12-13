@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_TABS_WINDOWS_EVENT_ROUTER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_TABS_WINDOWS_EVENT_ROUTER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 
@@ -15,8 +14,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/extensions/window_controller_list_observer.h"
-#include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_event_histogram_value.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "chrome/browser/extensions/api/tabs/app_window_helper.h"
+#endif
 
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
 #include "ui/views/focus/native_view_focus_manager.h"  // nogncheck
@@ -26,24 +29,23 @@
 #include "chrome/browser/mac/key_window_notifier.h"
 #endif
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 class Profile;
 
 namespace extensions {
-
-class AppWindow;
-class AppWindowController;
 
 // The WindowsEventRouter sends chrome.windows.* events to listeners
 // inside extension process renderers. The router listens to *all* events,
 // but will only route events within a profile to extension processes in the
 // same profile.
-class WindowsEventRouter : public AppWindowRegistry::Observer,
+class WindowsEventRouter :
 #if BUILDFLAG(IS_MAC)
-                           public KeyWindowNotifier::Observer,
+    public KeyWindowNotifier::Observer,
 #elif defined(TOOLKIT_VIEWS)
-                           public views::NativeViewFocusChangeListener,
+    public views::NativeViewFocusChangeListener,
 #endif
-                           public WindowControllerListObserver {
+    public WindowControllerListObserver {
  public:
   explicit WindowsEventRouter(Profile* profile);
 
@@ -56,15 +58,12 @@ class WindowsEventRouter : public AppWindowRegistry::Observer,
   void OnActiveWindowChanged(WindowController* window_controller);
 
  private:
-  // AppWindowRegistry::Observer:
-  void OnAppWindowAdded(AppWindow* app_window) override;
-  void OnAppWindowRemoved(AppWindow* app_window) override;
-  void OnAppWindowActivated(AppWindow* app_window) override;
-
   // WindowControllerListObserver methods:
   void OnWindowControllerAdded(WindowController* window_controller) override;
   void OnWindowControllerRemoved(WindowController* window) override;
   void OnWindowBoundsChanged(WindowController* window_controller) override;
+  void OnWindowFocusChanged(WindowController* window_controller,
+                            bool has_focus) override;
 
 #if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
   void OnNativeFocusChanged(gfx::NativeView focused_now) override;
@@ -80,27 +79,17 @@ class WindowsEventRouter : public AppWindowRegistry::Observer,
                      WindowController* window_controller,
                      base::Value::List args);
   bool HasEventListener(const std::string& event_name);
-  void AddAppWindow(AppWindow* app_window);
 
   // The main profile that owns this event router.
   raw_ptr<Profile, DanglingUntriaged> profile_;
 
-  // The profile the currently focused window belongs to; either the main or
-  // incognito profile or NULL (none of the above). We remember this in order
-  // to correctly handle focus changes between non-OTR and OTR windows.
-  raw_ptr<Profile, AcrossTasksDanglingUntriaged> focused_profile_;
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+  AppWindowHelper app_window_helper_;
+#endif
 
   // The currently focused window. We keep this so as to avoid sending multiple
   // windows.onFocusChanged events with the same windowId.
   int focused_window_id_;
-
-  using AppWindowMap = std::map<int, std::unique_ptr<AppWindowController>>;
-  // Map of application windows, the key to the session of the app window.
-  AppWindowMap app_windows_;
-
-  // Observed AppWindowRegistry.
-  base::ScopedObservation<AppWindowRegistry, AppWindowRegistry::Observer>
-      observed_app_registry_{this};
 
   // Observed WindowControllerList.
   base::ScopedObservation<WindowControllerList, WindowControllerListObserver>

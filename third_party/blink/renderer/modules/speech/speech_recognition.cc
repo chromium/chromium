@@ -109,8 +109,8 @@ void SpeechRecognition::start(ExceptionState& exception_state) {
   // If this is called in prerendering, it should be deferred.
   if (DomWindow() && DomWindow()->document()->IsPrerendering()) {
     DomWindow()->document()->AddPostPrerenderingActivationStep(
-        WTF::BindOnce(&SpeechRecognition::CheckAvailabilityAndStart,
-                      WrapWeakPersistent(this), /*exception_state=*/nullptr));
+        BindOnce(&SpeechRecognition::CheckAvailabilityAndStart,
+                 WrapWeakPersistent(this), /*exception_state=*/nullptr));
     return;
   }
   CheckAvailabilityAndStart(&exception_state);
@@ -140,8 +140,8 @@ void SpeechRecognition::stopFunction() {
   // https://wicg.github.io/nav-speculation/prerendering.html#web-speech-patch
   // If this is called in prerendering, it should be deferred.
   if (DomWindow() && DomWindow()->document()->IsPrerendering()) {
-    DomWindow()->document()->AddPostPrerenderingActivationStep(WTF::BindOnce(
-        &SpeechRecognition::stopFunction, WrapWeakPersistent(this)));
+    DomWindow()->document()->AddPostPrerenderingActivationStep(
+        BindOnce(&SpeechRecognition::stopFunction, WrapWeakPersistent(this)));
     return;
   }
 
@@ -159,7 +159,7 @@ void SpeechRecognition::abort() {
   // If this is called in prerendering, it should be deferred.
   if (DomWindow() && DomWindow()->document()->IsPrerendering()) {
     DomWindow()->document()->AddPostPrerenderingActivationStep(
-        WTF::BindOnce(&SpeechRecognition::abort, WrapWeakPersistent(this)));
+        BindOnce(&SpeechRecognition::abort, WrapWeakPersistent(this)));
     return;
   }
 
@@ -210,7 +210,7 @@ ScriptPromise<V8AvailabilityStatus> SpeechRecognition::available(
   if (options->processLocally()) {
     controller->AvailableOnDevice(
         options->langs(),
-        WTF::BindOnce(
+        BindOnce(
             [](ScriptPromiseResolver<V8AvailabilityStatus>* resolver,
                media::mojom::blink::AvailabilityStatus status) {
               resolver->Resolve(AvailabilityStatusToV8(status));
@@ -272,7 +272,7 @@ ScriptPromise<IDLBoolean> SpeechRecognition::install(
 
   controller->AvailableOnDevice(
       options->langs(),
-      WTF::BindOnce(
+      BindOnce(
           [](ScriptPromiseResolver<IDLBoolean>* resolver,
              ScriptState* script_state, const Vector<String>& languages,
              media::mojom::blink::AvailabilityStatus status) {
@@ -291,9 +291,9 @@ ScriptPromise<IDLBoolean> SpeechRecognition::install(
             }
             controller->Install(
                 languages,
-                WTF::BindOnce([](ScriptPromiseResolver<IDLBoolean>* resolver,
-                                 bool success) { resolver->Resolve(success); },
-                              WrapPersistent(resolver)));
+                BindOnce([](ScriptPromiseResolver<IDLBoolean>* resolver,
+                            bool success) { resolver->Resolve(success); },
+                         WrapPersistent(resolver)));
           },
           WrapPersistent(resolver), WrapPersistent(script_state),
           options->langs()));
@@ -302,7 +302,7 @@ ScriptPromise<IDLBoolean> SpeechRecognition::install(
 }
 
 void SpeechRecognition::ResultRetrieved(
-    WTF::Vector<media::mojom::blink::WebSpeechRecognitionResultPtr> results) {
+    Vector<media::mojom::blink::WebSpeechRecognitionResultPtr> results) {
   auto it = std::stable_partition(
       results.begin(), results.end(),
       [](const auto& result) { return !result->is_provisional; });
@@ -423,7 +423,7 @@ void SpeechRecognition::OnPhrasesChanged() {
   // If the speech recognition session has started, update the phrases.
   if (started_) {
     CHECK(session_);
-    WTF::Vector<media::mojom::blink::SpeechRecognitionPhrasePtr> wtf_phrases;
+    Vector<media::mojom::blink::SpeechRecognitionPhrasePtr> wtf_phrases;
     for (const auto& phrase : *phrases_) {
       wtf_phrases.emplace_back(
           media::mojom::blink::SpeechRecognitionPhrase::New(phrase->phrase(),
@@ -445,8 +445,8 @@ void SpeechRecognition::SchedulePhrasesUpdate() {
   phrases_update_scheduled_ = true;
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMiscPlatformAPI)
-      ->PostTask(FROM_HERE, WTF::BindOnce(&SpeechRecognition::OnPhrasesChanged,
-                                          WrapWeakPersistent(this)));
+      ->PostTask(FROM_HERE, BindOnce(&SpeechRecognition::OnPhrasesChanged,
+                                     WrapWeakPersistent(this)));
 }
 
 void SpeechRecognition::OnPhrasesSet(
@@ -506,7 +506,7 @@ void SpeechRecognition::CheckAvailabilityAndStart(
   if (process_locally_ && lang_) {
     controller_->AvailableOnDevice(
         Vector<String>{lang_},
-        WTF::BindOnce(
+        BindOnce(
             [](SpeechRecognition* speech_recognition,
                media::mojom::blink::AvailabilityStatus status) {
               if (!speech_recognition) {
@@ -542,9 +542,8 @@ void SpeechRecognition::StartInternal() {
     SpeechRecognitionMediaStreamAudioSink* sink =
         MakeGarbageCollected<SpeechRecognitionMediaStreamAudioSink>(
             GetExecutionContext(),
-            WTF::BindOnce(&SpeechRecognition::StartController,
-                          WrapPersistent(this),
-                          session_.BindNewPipeAndPassReceiver(task_runner)));
+            BindOnce(&SpeechRecognition::StartController, WrapPersistent(this),
+                     session_.BindNewPipeAndPassReceiver(task_runner)));
     WebMediaStreamAudioSink::AddToAudioTrack(
         sink, WebMediaStreamTrack(stream_track_->Component()));
     stream_track_->RegisterSink(sink);
@@ -567,7 +566,7 @@ void SpeechRecognition::StartController(
   receiver_.Bind(
       session_client.InitWithNewPipeAndPassReceiver(),
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
-  receiver_.set_disconnect_handler(WTF::BindOnce(
+  receiver_.set_disconnect_handler(BindOnce(
       &SpeechRecognition::OnConnectionError, WrapWeakPersistent(this)));
   auto params = controller_->BuildStartSpeechRecognitionRequestParams(
       std::move(session_receiver), std::move(session_client), *grammars_,

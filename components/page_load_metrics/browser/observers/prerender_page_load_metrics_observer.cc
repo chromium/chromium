@@ -79,10 +79,6 @@ const char
     kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDuration[] =
         "PageLoad.InteractiveTiming.UserInteractionLatency."
         "HighPercentile2.MaxEventDuration.Prerender";
-const char
-    kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDurationIncognito
-        [] = "PageLoad.InteractiveTiming.UserInteractionLatency."
-             "HighPercentile2.MaxEventDuration.Prerender.Incognito";
 const char kHistogramPrerenderWorstUserInteractionLatencyMaxEventDuration[] =
     "PageLoad.InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration."
     "Prerender";
@@ -97,11 +93,12 @@ const char kDomContentLoadedToActivation[] =
 const char kMainResourceParseStartToActivation[] =
     "PageLoad.Internal.Prerender2.MainResourceParseStartToActivation";
 
+// Prewarm prerender metrics
+const char kHistogramHostReused[] = "PageLoad.Clients.Prerender.HostReused";
+
 }  // namespace internal
 
-PrerenderPageLoadMetricsObserver::PrerenderPageLoadMetricsObserver(
-    bool is_incognito)
-    : is_incognito_(is_incognito) {}
+PrerenderPageLoadMetricsObserver::PrerenderPageLoadMetricsObserver() = default;
 PrerenderPageLoadMetricsObserver::~PrerenderPageLoadMetricsObserver() = default;
 
 enum PrerenderPageLoadMetricsObserver::PaintingTimeType : uint8_t {
@@ -186,6 +183,9 @@ void PrerenderPageLoadMetricsObserver::DidActivatePrerenderedPage(
       .SetNavigation_InitiatorLocation(
           static_cast<int>(prerender_trigger_type));
   builder.Record(ukm::UkmRecorder::Get());
+
+  base::UmaHistogramBoolean(AppendSuffix(internal::kHistogramHostReused),
+                            navigation_handle->IsPrerenderHostReused());
 }
 
 void PrerenderPageLoadMetricsObserver::OnFirstPaintInPage(
@@ -425,15 +425,6 @@ void PrerenderPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
           kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDuration,
       high_percentile2_max_event_duration, base::Milliseconds(1),
       base::Seconds(60), 50);
-
-  if (is_incognito_) {
-    UmaHistogramCustomTimes(
-        internal::
-            kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDurationIncognito,
-        high_percentile2_max_event_duration, base::Milliseconds(1),
-        base::Seconds(60), 50);
-  }
-
   base::UmaHistogramCounts1000(
       internal::kHistogramPrerenderNumInteractions,
       responsiveness_metrics_normalization.num_user_interactions());

@@ -7,10 +7,14 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 
 namespace autofill {
 
@@ -78,7 +82,6 @@ static constexpr auto kTypeNameToFieldType =
          {"CREDIT_CARD_TYPE", CREDIT_CARD_TYPE},
          {"CREDIT_CARD_VERIFICATION_CODE", CREDIT_CARD_VERIFICATION_CODE},
          {"COMPANY_NAME", COMPANY_NAME},
-         {"FIELD_WITH_DEFAULT_VALUE", FIELD_WITH_DEFAULT_VALUE},
          {"MERCHANT_EMAIL_SIGNUP", MERCHANT_EMAIL_SIGNUP},
          {"MERCHANT_PROMO_CODE", MERCHANT_PROMO_CODE},
          {"PASSWORD", PASSWORD},
@@ -148,7 +151,6 @@ static constexpr auto kTypeNameToFieldType =
           ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK},
          {"ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK",
           ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK},
-         {"PASSPORT_NAME_TAG", PASSPORT_NAME_TAG},
          {"PASSPORT_NUMBER", PASSPORT_NUMBER},
          {"PASSPORT_ISSUING_COUNTRY", PASSPORT_ISSUING_COUNTRY},
          {"PASSPORT_EXPIRATION_DATE", PASSPORT_EXPIRATION_DATE},
@@ -156,14 +158,12 @@ static constexpr auto kTypeNameToFieldType =
          {"LOYALTY_MEMBERSHIP_PROGRAM", LOYALTY_MEMBERSHIP_PROGRAM},
          {"LOYALTY_MEMBERSHIP_PROVIDER", LOYALTY_MEMBERSHIP_PROVIDER},
          {"LOYALTY_MEMBERSHIP_ID", LOYALTY_MEMBERSHIP_ID},
-         {"VEHICLE_OWNER_TAG", VEHICLE_OWNER_TAG},
          {"VEHICLE_LICENSE_PLATE", VEHICLE_LICENSE_PLATE},
          {"VEHICLE_VIN", VEHICLE_VIN},
          {"VEHICLE_MAKE", VEHICLE_MAKE},
          {"VEHICLE_MODEL", VEHICLE_MODEL},
          {"VEHICLE_YEAR", VEHICLE_YEAR},
          {"VEHICLE_PLATE_STATE", VEHICLE_PLATE_STATE},
-         {"DRIVERS_LICENSE_NAME_TAG", DRIVERS_LICENSE_NAME_TAG},
          {"DRIVERS_LICENSE_REGION", DRIVERS_LICENSE_REGION},
          {"DRIVERS_LICENSE_NUMBER", DRIVERS_LICENSE_NUMBER},
          {"DRIVERS_LICENSE_EXPIRATION_DATE", DRIVERS_LICENSE_EXPIRATION_DATE},
@@ -172,7 +172,21 @@ static constexpr auto kTypeNameToFieldType =
          {"NATIONAL_ID_CARD_EXPIRATION_DATE", NATIONAL_ID_CARD_EXPIRATION_DATE},
          {"NATIONAL_ID_CARD_ISSUE_DATE", NATIONAL_ID_CARD_ISSUE_DATE},
          {"NATIONAL_ID_CARD_ISSUING_COUNTRY", NATIONAL_ID_CARD_ISSUING_COUNTRY},
-         {"EMAIL_OR_LOYALTY_MEMBERSHIP_ID", EMAIL_OR_LOYALTY_MEMBERSHIP_ID}});
+         {"KNOWN_TRAVELER_NUMBER", KNOWN_TRAVELER_NUMBER},
+         {"KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE",
+          KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE},
+         {"REDRESS_NUMBER", REDRESS_NUMBER},
+         {"EMAIL_OR_LOYALTY_MEMBERSHIP_ID", EMAIL_OR_LOYALTY_MEMBERSHIP_ID},
+         {"FLIGHT_RESERVATION_FLIGHT_NUMBER", FLIGHT_RESERVATION_FLIGHT_NUMBER},
+         {"FLIGHT_RESERVATION_TICKET_NUMBER", FLIGHT_RESERVATION_TICKET_NUMBER},
+         {"FLIGHT_RESERVATION_CONFIRMATION_CODE",
+          FLIGHT_RESERVATION_CONFIRMATION_CODE},
+         {"FLIGHT_RESERVATION_DEPARTURE_AIRPORT",
+          FLIGHT_RESERVATION_DEPARTURE_AIRPORT},
+         {"FLIGHT_RESERVATION_ARRIVAL_AIRPORT",
+          FLIGHT_RESERVATION_ARRIVAL_AIRPORT},
+         {"FLIGHT_RESERVATION_DEPARTURE_DATE",
+          FLIGHT_RESERVATION_DEPARTURE_DATE}});
 
 bool IsFillableFieldType(FieldType field_type) {
   switch (field_type) {
@@ -278,21 +292,26 @@ bool IsFillableFieldType(FieldType field_type) {
     case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
       return true;
 
+    case ONE_TIME_CODE:
+#if BUILDFLAG(IS_ANDROID)
+      return base::FeatureList::IsEnabled(
+          password_manager::features::kAndroidSmsOtpFilling);
+#else
+      return false;  // Feature is not applicable on other platforms
+#endif
+
     // Autofill AI types.
     case DRIVERS_LICENSE_EXPIRATION_DATE:
     case DRIVERS_LICENSE_ISSUE_DATE:
-    case DRIVERS_LICENSE_NAME_TAG:
     case DRIVERS_LICENSE_NUMBER:
     case DRIVERS_LICENSE_REGION:
     case PASSPORT_EXPIRATION_DATE:
     case PASSPORT_ISSUE_DATE:
     case PASSPORT_ISSUING_COUNTRY:
-    case PASSPORT_NAME_TAG:
     case PASSPORT_NUMBER:
     case VEHICLE_LICENSE_PLATE:
     case VEHICLE_MAKE:
     case VEHICLE_MODEL:
-    case VEHICLE_OWNER_TAG:
     case VEHICLE_PLATE_STATE:
     case VEHICLE_VIN:
     case VEHICLE_YEAR:
@@ -300,7 +319,19 @@ bool IsFillableFieldType(FieldType field_type) {
     case NATIONAL_ID_CARD_EXPIRATION_DATE:
     case NATIONAL_ID_CARD_ISSUE_DATE:
     case NATIONAL_ID_CARD_ISSUING_COUNTRY:
+    case REDRESS_NUMBER:
+    case KNOWN_TRAVELER_NUMBER:
+    case KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
+    case FLIGHT_RESERVATION_FLIGHT_NUMBER:
+    case FLIGHT_RESERVATION_TICKET_NUMBER:
+    case FLIGHT_RESERVATION_CONFIRMATION_CODE:
+    case FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
+    case FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
       return true;
+
+    // Autofill AI types that are not fillable.
+    case FLIGHT_RESERVATION_DEPARTURE_DATE:
+      return false;
 
     // Not fillable credential fields.
     case NOT_PASSWORD:
@@ -313,13 +344,10 @@ bool IsFillableFieldType(FieldType field_type) {
     case NEW_PASSWORD:
     case PROBABLY_NEW_PASSWORD:
     case NOT_NEW_PASSWORD:
-    case ONE_TIME_CODE:
-      return false;
 
     case NO_SERVER_DATA:
     case EMPTY_TYPE:
     case AMBIGUOUS_TYPE:
-    case FIELD_WITH_DEFAULT_VALUE:
     case MERCHANT_EMAIL_SIGNUP:
     case PRICE:
     case NUMERIC_QUANTITY:
@@ -349,6 +377,12 @@ std::string FieldTypeToString(FieldType type) {
   return std::string(FieldTypeToStringView(type));
 }
 
+std::string FieldTypeSetToString(FieldTypeSet s) {
+  return base::JoinString(
+      base::ToVector(s, [](FieldType t) { return FieldTypeToStringView(t); }),
+      ", ");
+}
+
 FieldType TypeNameToFieldType(std::string_view type_name) {
   auto it = kTypeNameToFieldType.find(type_name);
   return it != kTypeNameToFieldType.end() ? it->second : UNKNOWN_TYPE;
@@ -358,7 +392,6 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
   switch (type) {
     case NO_SERVER_DATA:
     case UNKNOWN_TYPE:
-    case FIELD_WITH_DEFAULT_VALUE:
     case EMPTY_TYPE:
     case NOT_ACCOUNT_CREATION_PASSWORD:
     case NOT_NEW_PASSWORD:
@@ -368,7 +401,6 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
     case NAME_SUFFIX:
     case ADDRESS_HOME_ADDRESS:
     case ADDRESS_HOME_ADDRESS_WITH_NAME:
-    case PASSPORT_NAME_TAG:
     case PASSPORT_NUMBER:
     case PASSPORT_ISSUING_COUNTRY:
     case PASSPORT_EXPIRATION_DATE:
@@ -377,14 +409,12 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
     case LOYALTY_MEMBERSHIP_PROVIDER:
     case LOYALTY_MEMBERSHIP_ID:
     case EMAIL_OR_LOYALTY_MEMBERSHIP_ID:
-    case VEHICLE_OWNER_TAG:
     case VEHICLE_LICENSE_PLATE:
     case VEHICLE_VIN:
     case VEHICLE_MAKE:
     case VEHICLE_MODEL:
     case VEHICLE_YEAR:
     case VEHICLE_PLATE_STATE:
-    case DRIVERS_LICENSE_NAME_TAG:
     case DRIVERS_LICENSE_REGION:
     case DRIVERS_LICENSE_NUMBER:
     case DRIVERS_LICENSE_EXPIRATION_DATE:
@@ -393,6 +423,15 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
     case NATIONAL_ID_CARD_EXPIRATION_DATE:
     case NATIONAL_ID_CARD_ISSUE_DATE:
     case NATIONAL_ID_CARD_ISSUING_COUNTRY:
+    case REDRESS_NUMBER:
+    case KNOWN_TRAVELER_NUMBER:
+    case KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
+    case FLIGHT_RESERVATION_FLIGHT_NUMBER:
+    case FLIGHT_RESERVATION_TICKET_NUMBER:
+    case FLIGHT_RESERVATION_CONFIRMATION_CODE:
+    case FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
+    case FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
+    case FLIGHT_RESERVATION_DEPARTURE_DATE:
       return "";
     case NUMERIC_QUANTITY:
       return "Numeric quantity";

@@ -5,14 +5,15 @@
 #ifndef MEDIA_FUCHSIA_VIDEO_FUCHSIA_VIDEO_DECODER_H_
 #define MEDIA_FUCHSIA_VIDEO_FUCHSIA_VIDEO_DECODER_H_
 
+#include <fuchsia/media/cpp/fidl.h>
+#include <lib/zx/eventpair.h>
+
 #include <deque>
 #include <memory>
 #include <vector>
 
-#include <fuchsia/media/cpp/fidl.h>
-#include <lib/zx/eventpair.h>
-
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "media/base/media_export.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"

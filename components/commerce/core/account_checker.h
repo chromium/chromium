@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_COMMERCE_CORE_ACCOUNT_CHECKER_H_
 #define COMPONENTS_COMMERCE_CORE_ACCOUNT_CHECKER_H_
 
+#include <memory>
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
@@ -14,8 +15,6 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class GURL;
 class PrefService;
@@ -24,6 +23,10 @@ class PrefChangeRegistrar;
 namespace base {
 class TimeDelta;
 }  // namespace base
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace commerce {
 
@@ -78,11 +81,10 @@ class AccountChecker {
 
   // This method could be overridden in tests.
   virtual std::unique_ptr<endpoint_fetcher::EndpointFetcher>
-  CreateEndpointFetcher(const std::string& oauth_consumer_name,
+  CreateEndpointFetcher(signin::OAuthConsumerId oauth_consumer_id,
                         const GURL& url,
                         const endpoint_fetcher::HttpMethod http_method,
                         const std::string& content_type,
-                        const std::vector<std::string>& scopes,
                         const base::TimeDelta& timeout,
                         const std::string& post_data,
                         const net::NetworkTrafficAnnotationTag& annotation_tag);
@@ -101,9 +103,6 @@ class AccountChecker {
       std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher,
       std::unique_ptr<endpoint_fetcher::EndpointResponse> responses);
 
-  void OnSendPriceEmailPrefJsonParsed(
-      data_decoder::DataDecoder::ValueOrError result);
-
   void HandleFetchPriceEmailPrefResponse(
       // Passing the endpoint_fetcher ensures the endpoint_fetcher's
       // lifetime extends to the callback and is not destroyed
@@ -111,9 +110,6 @@ class AccountChecker {
       // TODO(crbug.com/40238190): Avoid passing this fetcher.
       std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher,
       std::unique_ptr<endpoint_fetcher::EndpointResponse> responses);
-
-  void OnFetchPriceEmailPrefJsonParsed(
-      data_decoder::DataDecoder::ValueOrError result);
 
   std::string country_;
 

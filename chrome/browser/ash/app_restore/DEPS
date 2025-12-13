@@ -8,7 +8,6 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/app/vector_icons",
   "+chrome/browser/app_mode",
   "+chrome/browser/apps/app_service",
   "+chrome/browser/apps/platform_apps",
@@ -20,7 +19,6 @@ include_rules = [
   "+chrome/browser/ash/policy/scheduled_task_handler",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/chromeos/full_restore",
   "+chrome/browser/first_run",
   "+chrome/browser/lifetime",
   "+chrome/browser/notifications",
@@ -30,6 +28,9 @@ include_rules = [
   "+chrome/browser/sessions",
   "+chrome/browser/signin",
   "+chrome/browser/ui/ash",
+  "+chrome/browser/ui/ash/desks",
+  "+chrome/browser/ui/ash/shelf",
+  "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/browser/ui/startup",
   "+chrome/browser/ui/webui/ash/settings",
   "+chrome/browser/web_applications/web_app_install_info.h",
@@ -66,9 +67,11 @@ specific_include_rules = {
   ".*test\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_finder.h",
     "+chrome/browser/ui/browser_list.h",
     "+chrome/browser/ui/browser_tabstrip.h",
     "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/browser_window/public",
     "+chrome/browser/ui/settings_window_manager_chromeos.h",
     "+chrome/browser/ui/web_applications/test",
     "+chrome/browser/web_applications/test",

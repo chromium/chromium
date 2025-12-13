@@ -132,7 +132,8 @@ FatalCrashEventsObserver::FatalCrashEventsObserver(
               // Called from member uploaded_crash_info_manager_ from
               // the same sequence, safe to assume this instance is still alive.
               base::Unretained(this)),
-          std::move(uploaded_crash_info_io_task_runner))} {}
+          std::move(uploaded_crash_info_io_task_runner))},
+      settings_for_test_{std::make_unique<SettingsForTest>()} {}
 
 FatalCrashEventsObserver::~FatalCrashEventsObserver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

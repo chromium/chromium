@@ -43,6 +43,7 @@ class PermissionBlockedDialogController {
   void ShowDialog(
       permissions::PermissionUiSelector::QuietUiReason quiet_ui_reason);
   void DismissDialog();
+  void ShowPageInfo();
 
   void OnPrimaryButtonClicked(JNIEnv* env);
   void OnNegativeButtonClicked(JNIEnv* env);

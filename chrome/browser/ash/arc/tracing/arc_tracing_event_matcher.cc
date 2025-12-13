@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event_matcher.h"
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/ash/arc/tracing/arc_tracing_event.h"
@@ -98,7 +94,8 @@ std::optional<int64_t> ArcTracingEventMatcher::ReadAndroidEventInt64(
   }
 
   int64_t value = 0;
-  if (!base::StringToInt64(event.GetName().data() + name_.size(), &value)) {
+  if (!base::StringToInt64(UNSAFE_TODO(event.GetName().data() + name_.size()),
+                           &value)) {
     return std::nullopt;
   }
 

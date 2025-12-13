@@ -62,7 +62,7 @@ const struct {
 
 // These are invalid inputs that can not be parsed regardless of the format
 // used (they are neither valid negative or non-negative values).
-const char* kInvalidParseTests[] = {
+constexpr const char* kInvalidParseTests[] = {
     "",       "-",      "--",    "23-",  "134-34", "- ",   "    ",  "+42",
     " 123",   "123 ",   "123\n", "0xFF", "-0xFF",  "0x11", "-0x11", "x11",
     "-x11",   "F11",    "-F11",  "AF",   "-AF",    "0AF",  "0.0",   "13.",

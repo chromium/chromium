@@ -11,7 +11,6 @@
 #include <optional>
 #include <string>
 
-#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/color_space_export.h"
@@ -314,6 +313,15 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // the caller but replacing the matrix and range with the given values.
   ColorSpace GetWithMatrixAndRange(MatrixID matrix, RangeID range) const;
 
+  // Return this color space with an HDR version of its transfer function
+  // (if possible).
+  ColorSpace GetAsHDR() const;
+
+  // Return this color space with the specified transfer function.
+  ColorSpace GetWithTransferFunction(TransferID) const;
+  ColorSpace GetWithTransferFunction(const skcms_TransferFunction&,
+                                     bool is_hdr) const;
+
   // This will return nullptr for non-RGB spaces, spaces with non-FULL
   // range, unspecified spaces, and spaces that require but are not provided
   // and SDR white level.
@@ -396,7 +404,7 @@ class COLOR_SPACE_EXPORT ColorSpace {
   static bool GetTransferFunction(TransferID, skcms_TransferFunction* fn);
   static size_t TransferParamCount(TransferID);
 
-  void SetCustomTransferFunction(const skcms_TransferFunction& fn);
+  void SetCustomTransferFunction(const skcms_TransferFunction& fn, bool is_hdr);
   void SetCustomPrimaries(const skcms_Matrix3x3& to_XYZD50);
 
   PrimaryID primaries_ = PrimaryID::INVALID;

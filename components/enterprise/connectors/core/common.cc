@@ -14,6 +14,7 @@
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "ui/gfx/range/range.h"
 
 #if BUILDFLAG(USE_BLINK)
 #include "components/download/public/common/download_item.h"  // nogncheck
@@ -86,6 +87,7 @@ ContentAnalysisAcknowledgement::FinalAction RuleActionToAckAction(
       return ContentAnalysisAcknowledgement::REPORT_ONLY;
     case TriggeredRule::WARN:
       return ContentAnalysisAcknowledgement::WARN;
+    case TriggeredRule::FORCE_SAVE_TO_CLOUD:
     case TriggeredRule::BLOCK:
       return ContentAnalysisAcknowledgement::BLOCK;
   }
@@ -172,6 +174,10 @@ TriggeredRule::Action GetHighestPrecedenceAction(
   // The current precedence is BLOCK > WARN > REPORT_ONLY > UNSPECIFIED
   if (action_1 == TriggeredRule::BLOCK || action_2 == TriggeredRule::BLOCK) {
     return TriggeredRule::BLOCK;
+  }
+  if (action_1 == TriggeredRule::FORCE_SAVE_TO_CLOUD ||
+      action_2 == TriggeredRule::FORCE_SAVE_TO_CLOUD) {
+    return TriggeredRule::FORCE_SAVE_TO_CLOUD;
   }
   if (action_1 == TriggeredRule::WARN || action_2 == TriggeredRule::WARN) {
     return TriggeredRule::WARN;
@@ -407,6 +413,8 @@ std::string EventResultToString(EventResult result) {
       return "EVENT_RESULT_BLOCKED";
     case EventResult::BYPASSED:
       return "EVENT_RESULT_BYPASSED";
+    case EventResult::FORCED_SAVE_TO_CLOUD:
+      return "EVENT_RESULT_FORCED_SAVE_TO_CLOUD";
   }
   NOTREACHED();
 }

@@ -8,7 +8,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
-#include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_test_utilities.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
@@ -96,7 +95,6 @@ class ShapingLineBreakerTest : public FontTestBase {
     return break_positions;
   }
 
-  FontCachePurgePreventer font_cache_purge_preventer;
   FontDescription font_description;
 };
 

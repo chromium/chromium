@@ -43,7 +43,7 @@ constexpr char kAssetUrlAttribute[] = "assetUrl";
 constexpr char kCheckmarkAssetUrl[] =
     "chrome://resources/ash/common/quick_unlock/fingerprint_check.json";
 
-int kMaxAllowedFingerprints = 3;
+constexpr int kMaxAllowedFingerprints = 3;
 
 PasswordSelectionScreen* GetPasswordSelectionScreen() {
   return static_cast<PasswordSelectionScreen*>(

@@ -16,6 +16,9 @@
 
 namespace media {
 
+CdmMetricsData::CdmMetricsData() = default;
+CdmMetricsData::~CdmMetricsData() = default;
+
 CdmAuxiliaryHelper::CdmAuxiliaryHelper() = default;
 CdmAuxiliaryHelper::~CdmAuxiliaryHelper() = default;
 

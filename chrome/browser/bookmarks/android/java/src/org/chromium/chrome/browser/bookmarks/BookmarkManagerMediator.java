@@ -22,8 +22,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -64,6 +64,8 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -71,12 +73,13 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Stack;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -137,7 +140,16 @@ class BookmarkManagerMediator
                     clearHighlight();
 
                     BookmarkId id = node.getId();
-                    if (getCurrentUiMode() == BookmarkUiMode.FOLDER) {
+                    boolean isTabletSearch =
+                            DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                                    && !TextUtils.isEmpty(getCurrentSearchText());
+
+                    if (getCurrentUiMode() == BookmarkUiMode.SEARCHING || isTabletSearch) {
+                        // We cannot rely on removing the specific list item that corresponds to the
+                        // removed node because the node might be a parent with children also shown
+                        // in the list.
+                        mPendingRefresh.post();
+                    } else if (getCurrentUiMode() == BookmarkUiMode.FOLDER) {
                         // If the folder is removed in folder mode, show the parent folder or falls
                         // back to all bookmarks mode.
                         if (Objects.equals(id, getCurrentFolderId())) {
@@ -172,11 +184,6 @@ class BookmarkManagerMediator
                                 }
                             }
                         }
-                    } else if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
-                        // We cannot rely on removing the specific list item that corresponds to the
-                        // removed node because the node might be a parent with children also shown
-                        // in the list.
-                        mPendingRefresh.post();
                     }
                 }
 
@@ -204,20 +211,19 @@ class BookmarkManagerMediator
                 }
             };
 
-    private final Stack<BookmarkUiState> mStateStack =
-            new Stack<>() {
+    private final Deque<BookmarkUiState> mStateStack =
+            new ArrayDeque<>() {
                 @Override
-                public BookmarkUiState push(BookmarkUiState item) {
+                public void addLast(BookmarkUiState item) {
                     // The back press state depends on the size of stack. So push/pop item first in
                     // order to keep the size update-to-date.
-                    var state = super.push(item);
+                    super.addLast(item);
                     onBackPressStateChanged();
-                    return state;
                 }
 
                 @Override
-                public synchronized BookmarkUiState pop() {
-                    var state = super.pop();
+                public synchronized BookmarkUiState removeLast() {
+                    var state = super.removeLast();
                     onBackPressStateChanged();
                     return state;
                 }
@@ -246,6 +252,9 @@ class BookmarkManagerMediator
                                     currentId, mCurrentPowerFilter));
                     setSearchTextAndUpdateButtonVisibility("");
                     clearSearchBoxFocus();
+                    if (!mIsExitingSearch) {
+                        maybeAutoFocusSearchBox();
+                    }
                 }
             };
 
@@ -296,23 +305,11 @@ class BookmarkManagerMediator
                 public void onBookmarkRowDisplayPrefChanged(
                         @BookmarkRowDisplayPref int displayPref) {
                     refresh();
-
-                    if (AccessibilityState.isTouchExplorationEnabled()) {
-                        mRecyclerView.announceForAccessibility(
-                                mBookmarkUiPrefs.getViewOptionsAccessibilityAnnouncementText(
-                                        mContext, displayPref));
-                    }
                 }
 
                 @Override
                 public void onBookmarkRowSortOrderChanged(@BookmarkRowSortOrder int sortOrder) {
                     refresh();
-
-                    if (AccessibilityState.isTouchExplorationEnabled()) {
-                        mRecyclerView.announceForAccessibility(
-                                mBookmarkUiPrefs.getSortOrderAccessibilityAnnouncementText(
-                                        mContext, sortOrder));
-                    }
                 }
             };
 
@@ -373,7 +370,7 @@ class BookmarkManagerMediator
     private final DragReorderableRecyclerViewAdapter mDragReorderableRecyclerViewAdapter;
     // Whether we're showing in a dialog UI which is only true for phones.
     private final boolean mIsDialogUi;
-    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier;
     private final Profile mProfile;
     private final @Nullable BookmarkPromoHeader mPromoHeaderManager;
     private final BookmarkUndoController mBookmarkUndoController;
@@ -397,6 +394,7 @@ class BookmarkManagerMediator
     private @Nullable BatchUploadCardCoordinator mBatchUploadCardCoordinator;
     // Whether this instance has been destroyed.
     private boolean mIsDestroyed;
+    private boolean mIsExitingSearch;
     private @Nullable String mInitialUrl;
     private boolean mFaviconsNeedRefresh;
     private @Nullable BasicNativePage mNativePage;
@@ -420,7 +418,7 @@ class BookmarkManagerMediator
             RecyclerView recyclerView,
             DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter,
             boolean isDialogUi,
-            ObservableSupplierImpl<Boolean> backPressStateSupplier,
+            SettableNonNullObservableSupplier<Boolean> backPressStateSupplier,
             Profile profile,
             BookmarkUndoController bookmarkUndoController,
             ModelList modelList,
@@ -547,6 +545,9 @@ class BookmarkManagerMediator
         mBookmarkUndoController.destroy();
         mBookmarkQueryHandler.destroy();
         mCallbackController.destroy();
+        if (mBatchUploadCardCoordinator != null) {
+            mBatchUploadCardCoordinator.destroy();
+        }
 
         mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
 
@@ -563,29 +564,77 @@ class BookmarkManagerMediator
 
     void onAttachedToWindow() {
         mBookmarkUndoController.setEnabled(true);
+        maybeAutoFocusSearchBox();
+        // Immediately re-calculate and set the back press state
+        // upon attachment to ensure the supplier is not stale.
+        onBackPressStateChanged();
     }
 
     void onDetachedFromWindow() {
         mBookmarkUndoController.setEnabled(false);
+        // Explicitly disable the back press handler when the view is detached.
+        // This tells the BackPressManager to ignore this handler even if another
+        // component triggers an observer update in the background.
+        mBackPressStateSupplier.set(false);
     }
 
     /** See BookmarkManager(Coordinator)#onBackPressed. */
     boolean onBackPressed() {
         if (mIsDestroyed) return false;
 
-        // TODO(twellington): Replicate this behavior for other list UIs during unification.
         if (mSelectableListLayout.onBackPressed()) {
             return true;
         }
 
-        if (!mStateStack.empty()) {
-            mStateStack.pop();
-            if (!mStateStack.empty()) {
-                setState(mStateStack.pop());
+        // Selectable list layout is not handling back presses for this condition
+        // !mToolbar.isLargeScreenWithKeyboard(). That causes back press events not to be consumed.
+        // TODO(crbug.com/444674420): Unify back press logic under SelectableListLayout.
+        if (ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+            String searchText = getCurrentSearchText();
+            if (!TextUtils.isEmpty(searchText)) {
+                onClearSearchTextRunnable();
+                return true;
+            }
+        }
+
+        if (!mStateStack.isEmpty()) {
+            mStateStack.removeLast();
+            if (!mStateStack.isEmpty()) {
+                setState(mStateStack.removeLast());
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Handles the "Escape" key press. - On tablets: Clears the search bar if it contains text. Does
+     * nothing otherwise. - On non-tablets: Behaves identically to a standard back press.
+     *
+     * @return True if the event was consumed, false otherwise.
+     */
+    boolean onEscapePressed() {
+        assert ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)
+                : "This path should only be reached when the feature flag is enabled.";
+
+        if (mIsDestroyed) return false;
+
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+            // Escape ONLY clears the search filter. It does not navigate back.
+            String searchText = getCurrentSearchText();
+            if (!TextUtils.isEmpty(searchText)) {
+                onClearSearchTextRunnable();
+                return true;
+            }
+            // If search is empty on a tablet, Escape does nothing.
+            return false;
+        } else {
+            // Escape behaves exactly the same as the back button.
+            return onBackPressed();
+        }
     }
 
     void onPromoVisibilityChange() {
@@ -605,7 +654,7 @@ class BookmarkManagerMediator
         if (mBookmarkModel.isBookmarkModelLoaded()) {
             BookmarkUiState searchState = null;
             if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
-                searchState = mStateStack.pop();
+                searchState = mStateStack.removeLast();
             }
 
             setState(BookmarkUiState.createStateFromUrl(url, mBookmarkModel));
@@ -792,7 +841,8 @@ class BookmarkManagerMediator
 
     @Override
     public @BookmarkUiMode int getCurrentUiMode() {
-        return mStateStack.isEmpty() ? BookmarkUiMode.LOADING : mStateStack.peek().mUiMode;
+        BookmarkUiState state = mStateStack.peekLast();
+        return state == null ? BookmarkUiMode.LOADING : state.mUiMode;
     }
 
     @Override
@@ -815,11 +865,13 @@ class BookmarkManagerMediator
 
     void onEndSearch() {
         // Pop the search state off the stack.
-        mStateStack.pop();
+        mStateStack.removeLast();
 
         // Set the state back to the folder that was previously being viewed. Listeners will be
         // notified of the change and the list of bookmarks will be updated.
-        setState(mStateStack.pop());
+        mIsExitingSearch = true;
+        setState(mStateStack.removeLast());
+        mIsExitingSearch = false;
     }
 
     // PartnerBookmarksReader.FaviconUpdateObserver implementation.
@@ -876,7 +928,7 @@ class BookmarkManagerMediator
         // The loading state is not persisted in history stack and once we have a valid state it
         // shall be removed.
         if (!mStateStack.isEmpty() && currentUiMode == BookmarkUiMode.LOADING) {
-            mStateStack.pop();
+            mStateStack.removeLast();
         }
 
         // TODO(crbug.com/40276748): Delete this empty search mechanism.
@@ -889,7 +941,7 @@ class BookmarkManagerMediator
         // one.
         if (currentUiMode == BookmarkUiMode.SEARCHING
                 && state.mUiMode == BookmarkUiMode.SEARCHING) {
-            mStateStack.pop();
+            mStateStack.removeLast();
         } else if (currentUiMode != BookmarkUiMode.SEARCHING
                 && state.mUiMode == BookmarkUiMode.SEARCHING) {
             // The initial state change to search should clear selection.
@@ -898,10 +950,10 @@ class BookmarkManagerMediator
 
         // Search states should only be the top most state. Back button should not restore them.
         if (currentUiMode == BookmarkUiMode.SEARCHING && state.mUiMode == BookmarkUiMode.FOLDER) {
-            mStateStack.pop();
+            mStateStack.removeLast();
         }
 
-        mStateStack.push(state);
+        mStateStack.addLast(state);
         notifyUi(state, preserveFolderBookmarksOnEmptySearch);
     }
 
@@ -959,9 +1011,27 @@ class BookmarkManagerMediator
             mBackPressStateSupplier.set(false);
             return;
         }
-        mBackPressStateSupplier.set(
-                Boolean.TRUE.equals(mSelectableListLayout.getHandleBackPressChangedSupplier().get())
-                        || mStateStack.size() > 1);
+
+        // Condition 1: Is selection mode active?
+        boolean selectionActive =
+                Boolean.TRUE.equals(
+                        mSelectableListLayout.getHandleBackPressChangedSupplier().get());
+
+        // Condition 2: Can we navigate back in the folder stack?
+        boolean canNavigateFolders = mStateStack.size() > 1;
+
+        // Condition 3: Are we on a tablet and actively searching?
+        // TODO(crbug.com/444674420): Unify back press logic under SelectableListLayout.
+        boolean isSearchingOnTablet = false;
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+            String searchText = getCurrentSearchText();
+            isSearchingOnTablet = !TextUtils.isEmpty(searchText);
+        }
+
+        // The handler is enabled if ANY of these conditions are true.
+        boolean isEnabled = selectionActive || canNavigateFolders || isSearchingOnTablet;
+
+        mBackPressStateSupplier.set(isEnabled);
     }
 
     /**
@@ -1102,9 +1172,20 @@ class BookmarkManagerMediator
     /** Refresh the list of bookmarks within the currently visible folder. */
     private void refresh() {
         assert !mIsDestroyed;
-        if (!mStateStack.isEmpty()) {
-            notifyUi(mStateStack.peek(), /* preserveFolderBookmarksOnEmptySearch= */ false);
+        if (mStateStack.isEmpty()) return;
+
+        // On tablets, a refresh during a search should re-run the search.
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+            String searchText = getCurrentSearchText();
+            if (!TextUtils.isEmpty(searchText)) {
+                setBookmarks(
+                        mBookmarkQueryHandler.buildBookmarkListForSearch(
+                                searchText, mCurrentPowerFilter));
+                return;
+            }
         }
+
+        notifyUi(mStateStack.peekLast(), /* preserveFolderBookmarksOnEmptySearch= */ false);
     }
 
     private @ViewType int calculatePromoHeaderType() {
@@ -1486,7 +1567,7 @@ class BookmarkManagerMediator
         ModelList listItems =
                 createListMenuModelList(entry, model.get(BookmarkManagerProperties.LOCATION));
         ListMenu.Delegate delegate =
-                item -> {
+                (item, view) -> {
                     int textId = item.get(ListMenuItemProperties.TITLE_ID);
                     if (textId == R.string.bookmark_item_select) {
                         mSelectionDelegate.toggleSelectionForItem(bookmarkId);
@@ -1636,7 +1717,10 @@ class BookmarkManagerMediator
         PropertyModel searchModel = assumeNonNull(getSearchBoxPropertyModel());
         searchModel.set(BookmarkSearchBoxRowProperties.HAS_FOCUS, hasFocus);
         if (hasFocus) {
-            if (getCurrentUiMode() == BookmarkUiMode.FOLDER) {
+            // On phones, tapping the search box switches to a dedicated search UI. On tablets, the
+            // search box is part of the folder view and doesn't switch modes.
+            if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                    && getCurrentUiMode() == BookmarkUiMode.FOLDER) {
                 setState(BookmarkUiState.createSearchState(""));
             }
         } else {
@@ -1659,19 +1743,61 @@ class BookmarkManagerMediator
 
     private void onSearchChange(@Nullable String searchText) {
         searchText = searchText == null ? "" : searchText;
-        setState(BookmarkUiState.createSearchState(searchText));
+        // On tablets, the search box is an in-place filter. When the search text is cleared,
+        // the list should revert to the current folder's contents. On phones, search is a
+        // distinct UI mode.
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+            if (TextUtils.isEmpty(searchText)) {
+                mSelectionDelegate.clearSelection();
+                refresh();
+            } else {
+                setBookmarks(
+                        mBookmarkQueryHandler.buildBookmarkListForSearch(
+                                searchText, mCurrentPowerFilter));
+            }
+            // After any search text change on a tablet, the back press state may have changed.
+            // (e.g., from not-searching to searching, or vice-versa). We must explicitly
+            // re-evaluate and notify the supplier.
+            onBackPressStateChanged();
+        } else {
+            setState(BookmarkUiState.createSearchState(searchText));
+        }
+    }
+
+    /** The search box only focused on LFF device with a hardware keyboard attached. */
+    private void maybeAutoFocusSearchBox() {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                && DeviceInput.supportsKeyboard()) {
+            mRecyclerView.post(
+                    () -> {
+                        // The search box might not be in the model list yet, so guard this call.
+                        if (getCurrentSearchBoxIndex() < 0) return;
+                        setSearchBoxFocusAndHideKeyboardIfNeeded(true);
+                    });
+        }
     }
 
     private @Nullable String getCurrentSearchText() {
-        return mStateStack.isEmpty() ? "" : mStateStack.peek().mSearchText;
+        // On tablets, the search box is an in-place filter and the search text is stored in the
+        // property model. On phones, search is a distinct UI mode and the search text is stored in
+        // the state stack.
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+            PropertyModel searchModel = getSearchBoxPropertyModel();
+            return searchModel == null
+                    ? ""
+                    : searchModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT);
+        }
+        BookmarkUiState state = mStateStack.peekLast();
+        return state == null ? "" : state.mSearchText;
     }
 
     private @Nullable BookmarkUiState getCurrentUiState() {
-        return mStateStack.isEmpty() ? null : mStateStack.peek();
+        return mStateStack.peekLast();
     }
 
     private @Nullable BookmarkId getCurrentFolderId() {
-        return mStateStack.isEmpty() ? null : mStateStack.peek().mFolder;
+        BookmarkUiState state = mStateStack.peekLast();
+        return state == null ? null : state.mFolder;
     }
 
     @VisibleForTesting
@@ -1698,8 +1824,6 @@ class BookmarkManagerMediator
 
     // The shopping filter should only be visible if the shopping feature is enabled and
     // there's at least one price-tracked bookmark available.
-    // TODO(crbug.com/40279892): Make this method private when price-tracking utils are mocked
-    // properly.
     @VisibleForTesting
     void updateShoppingFilterVisible() {
         if (!CommerceFeatureUtils.isShoppingListEligible(mShoppingService)) {
@@ -1769,5 +1893,9 @@ class BookmarkManagerMediator
 
     /* package */ void simulateSignInForTesting() {
         mBookmarkUiObserver.onFolderStateSet(getCurrentFolderId());
+    }
+
+    /* package */ Deque<BookmarkUiState> getStateStackForTesting() {
+        return mStateStack;
     }
 }

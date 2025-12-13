@@ -10,8 +10,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "third_party/blink/public/common/features.h"
@@ -21,7 +21,7 @@ ChromeUntrustedProjectorUIDelegate::ChromeUntrustedProjectorUIDelegate() =
 
 void ChromeUntrustedProjectorUIDelegate::PopulateLoadTimeData(
     content::WebUIDataSource* source) {
-  version_info::Channel channel = chrome::GetChannel();
+  version_info::Channel channel = ash::GetChannel();
   source->AddBoolean("isDevChannel", channel == version_info::Channel::DEV);
   source->AddBoolean("isDebugMode", ash::features::IsProjectorAppDebugMode());
   source->AddBoolean("isCustomThumbnailEnabled",

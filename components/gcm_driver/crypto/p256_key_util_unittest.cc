@@ -4,10 +4,6 @@
 
 #include "components/gcm_driver/crypto/p256_key_util.h"
 
-#include <stddef.h>
-
-#include <set>
-
 #include "base/base64.h"
 #include "base/strings/string_view_util.h"
 #include "crypto/keypair.h"
@@ -39,80 +35,71 @@ const char kCarolPublicKey[] =
 const char kBobCarolSharedSecret[] =
     "AUNmKkgLLVLf6j/VnA9Eg1CiPSPfQHGirQj79n4vOyw=";
 
+struct Keypair {
+  // Load a Keypair from provided base64-encoded private and public keys. The
+  // private key is in PKCS#8 PrivateKeyInfo format, and the public key is an
+  // X9.62 uncompressed point encoded as a big-endian integer.
+  Keypair(std::string_view priv_b64, std::string_view pub_b64)
+      : priv(*crypto::keypair::PrivateKey::FromPrivateKeyInfo(
+            *base::Base64Decode(priv_b64))),
+        pub(base::as_string_view(*base::Base64Decode(pub_b64))) {}
+
+  // Generate a new random keypair.
+  Keypair()
+      : priv(crypto::keypair::PrivateKey::GenerateEcP256()),
+        pub(base::as_string_view(priv.ToUncompressedX962Point())) {}
+
+  crypto::keypair::PrivateKey priv;
+  std::string pub;
+};
+
+// Given two keypairs key0 and key1, perform shared-secret computation in both
+// directions and check that the resulting secrets are nonempty and equal. If
+// |out_secret| is non-null, fills it in with the generated secret.
+void ExpectSharedSecretsAreEqual(const Keypair& key0,
+                                 const Keypair& key1,
+                                 std::string* out_secret = nullptr) {
+  std::string secret_01, secret_10;
+  ASSERT_TRUE(ComputeSharedP256Secret(key0.priv, key1.pub, &secret_01));
+  ASSERT_TRUE(ComputeSharedP256Secret(key1.priv, key0.pub, &secret_10));
+  EXPECT_GT(secret_01.size(), 0u);
+  EXPECT_EQ(secret_01, secret_10);
+
+  if (out_secret) {
+    out_secret->assign(secret_01);
+  }
+}
+
 TEST(P256KeyUtilTest, SharedSecretCalculation) {
-  auto bob_key = crypto::keypair::PrivateKey::GenerateEcP256();
-  auto alice_key = crypto::keypair::PrivateKey::GenerateEcP256();
+  Keypair bob, alice;
+  ExpectSharedSecretsAreEqual(alice, bob);
+}
 
-  std::string bob_public_key(
-      base::as_string_view(bob_key.ToUncompressedForm()));
-  std::string alice_public_key(
-      base::as_string_view(alice_key.ToUncompressedForm()));
-
-  std::string bob_shared_secret, alice_shared_secret;
-  ASSERT_TRUE(
-      ComputeSharedP256Secret(bob_key, alice_public_key, &bob_shared_secret));
-  ASSERT_TRUE(
-      ComputeSharedP256Secret(alice_key, bob_public_key, &alice_shared_secret));
-
-  EXPECT_GT(bob_shared_secret.size(), 0u);
-  EXPECT_EQ(bob_shared_secret, alice_shared_secret);
-
-  std::string unused_shared_secret;
+TEST(P256KeyUtilTest, SharedSecretWithInvalidKey) {
+  Keypair bob;
 
   // Empty and too short peer public values should be considered invalid.
-  ASSERT_FALSE(ComputeSharedP256Secret(bob_key, "", &unused_shared_secret));
-  ASSERT_FALSE(ComputeSharedP256Secret(bob_key, bob_public_key.substr(1),
+  std::string unused_shared_secret;
+  ASSERT_FALSE(ComputeSharedP256Secret(bob.priv, "", &unused_shared_secret));
+  ASSERT_FALSE(ComputeSharedP256Secret(bob.priv, bob.pub.substr(1),
                                        &unused_shared_secret));
 }
 
 TEST(P256KeyUtilTest, SharedSecretWithPreExistingKey) {
-  std::string bob_private_key, bob_public_key;
-  ASSERT_TRUE(base::Base64Decode(kBobPrivateKey, &bob_private_key));
-  ASSERT_TRUE(base::Base64Decode(kBobPublicKey, &bob_public_key));
+  Keypair bob(kBobPrivateKey, kBobPublicKey);
 
-  std::vector<uint8_t> bob_private_key_vec(
-    bob_private_key.begin(), bob_private_key.end());
-  auto bob_key =
-      *crypto::keypair::PrivateKey::FromPrivateKeyInfo(bob_private_key_vec);
   // First verify against a newly created, ephemeral key-pair.
-  auto alice_key = crypto::keypair::PrivateKey::GenerateEcP256();
-  std::string alice_public_key(
-      base::as_string_view(alice_key.ToUncompressedForm()));
-  std::string bob_shared_secret, alice_shared_secret;
-
-  ASSERT_TRUE(
-      ComputeSharedP256Secret(bob_key, alice_public_key, &bob_shared_secret));
-  ASSERT_TRUE(
-      ComputeSharedP256Secret(alice_key, bob_public_key, &alice_shared_secret));
-
-  EXPECT_GT(bob_shared_secret.size(), 0u);
-  EXPECT_EQ(bob_shared_secret, alice_shared_secret);
-
-  std::string carol_private_key, carol_public_key;
-  ASSERT_TRUE(base::Base64Decode(kCarolPrivateKey, &carol_private_key));
-  ASSERT_TRUE(base::Base64Decode(kCarolPublicKey, &carol_public_key));
-
-  std::vector<uint8_t> carol_private_key_vec(
-    carol_private_key.begin(), carol_private_key.end());
-  auto carol_key =
-      *crypto::keypair::PrivateKey::FromPrivateKeyInfo(carol_private_key_vec);
-  bob_shared_secret.clear();
-  std::string carol_shared_secret;
+  Keypair alice;
+  ExpectSharedSecretsAreEqual(bob, alice);
 
   // Then verify against another stored key-pair and shared secret.
-  ASSERT_TRUE(
-      ComputeSharedP256Secret(bob_key, carol_public_key, &bob_shared_secret));
-  ASSERT_TRUE(
-      ComputeSharedP256Secret(carol_key, bob_public_key, &carol_shared_secret));
+  Keypair carol(kCarolPrivateKey, kCarolPublicKey);
+  std::string secret;
+  ExpectSharedSecretsAreEqual(carol, bob, &secret);
 
-  EXPECT_GT(carol_shared_secret.size(), 0u);
-  EXPECT_EQ(carol_shared_secret, bob_shared_secret);
-
-  std::string bob_carol_shared_secret;
-  ASSERT_TRUE(base::Base64Decode(
-      kBobCarolSharedSecret, &bob_carol_shared_secret));
-
-  EXPECT_EQ(carol_shared_secret, bob_carol_shared_secret);
+  const std::string expected_secret(
+      base::as_string_view(*base::Base64Decode(kBobCarolSharedSecret)));
+  EXPECT_EQ(secret, expected_secret);
 }
 
 }  // namespace

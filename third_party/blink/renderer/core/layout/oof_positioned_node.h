@@ -13,8 +13,11 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
+
+class BlockBreakToken;
 
 // If an out-of-flow positioned element is inside a fragmentation context, it
 // will be laid out once it reaches the fragmentation context root rather than
@@ -45,6 +48,9 @@ class OofContainingBlock {
   OffsetType Offset() const { return offset_; }
   void IncreaseBlockOffset(LayoutUnit block_offset) {
     offset_.block_offset += block_offset;
+  }
+  void IncreaseInlineOffset(LayoutUnit inline_offset) {
+    offset_.inline_offset += inline_offset;
   }
   OffsetType RelativeOffset() const { return relative_offset_; }
   const PhysicalFragment* Fragment() const { return fragment_.Get(); }
@@ -127,7 +133,9 @@ struct MulticolWithPendingOofs
       OofInlineContainer<OffsetType> fixedpos_inline_container)
       : multicol_offset(multicol_offset),
         fixedpos_containing_block(fixedpos_containing_block),
-        fixedpos_inline_container(fixedpos_inline_container) {}
+        fixedpos_inline_container(fixedpos_inline_container) {
+    DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
+  }
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(fixedpos_containing_block);
@@ -157,6 +165,7 @@ struct CORE_EXPORT PhysicalOofPositionedNode {
 
  public:
   Member<LayoutBox> box;
+  Member<const BlockBreakToken> break_token;
   // Unpacked PhysicalStaticPosition.
   PhysicalOffset static_position;
   unsigned static_position_horizontal_edge : 2;
@@ -169,10 +178,12 @@ struct CORE_EXPORT PhysicalOofPositionedNode {
 
   PhysicalOofPositionedNode(
       BlockNode node,
+      const BlockBreakToken* break_token,
       PhysicalStaticPosition static_position,
       bool requires_content_before_breaking,
       OofInlineContainer<PhysicalOffset> inline_container = {})
       : box(node.GetLayoutBox()),
+        break_token(break_token),
         static_position(static_position.offset),
         static_position_horizontal_edge(static_position.horizontal_edge),
         static_position_vertical_edge(static_position.vertical_edge),
@@ -216,6 +227,7 @@ struct CORE_EXPORT LogicalOofPositionedNode {
 
  public:
   Member<LayoutBox> box;
+  Member<const BlockBreakToken> break_token;
   LogicalStaticPosition static_position;
   OofInlineContainer<LogicalOffset> inline_container;
   // Whether or not this is an LogicalOofNodeForFragmentation.
@@ -225,10 +237,12 @@ struct CORE_EXPORT LogicalOofPositionedNode {
 
   LogicalOofPositionedNode(
       BlockNode node,
+      const BlockBreakToken* break_token,
       LogicalStaticPosition static_position,
       bool requires_content_before_breaking,
       OofInlineContainer<LogicalOffset> inline_container = {})
       : box(node.GetLayoutBox()),
+        break_token(break_token),
         static_position(static_position),
         inline_container(inline_container),
         is_for_fragmentation(false),
@@ -277,12 +291,14 @@ struct CORE_EXPORT PhysicalOofNodeForFragmentation final
       OofContainingBlock<PhysicalOffset> fixedpos_containing_block = {},
       OofInlineContainer<PhysicalOffset> fixedpos_inline_container = {})
       : PhysicalOofPositionedNode(node,
+                                  /*break_token=*/nullptr,
                                   static_position,
                                   requires_content_before_breaking,
                                   inline_container),
         containing_block(containing_block),
         fixedpos_containing_block(fixedpos_containing_block),
         fixedpos_inline_container(fixedpos_inline_container) {
+    DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
     is_for_fragmentation = true;
   }
 
@@ -313,21 +329,25 @@ struct CORE_EXPORT LogicalOofNodeForFragmentation final
       OofContainingBlock<LogicalOffset> fixedpos_containing_block = {},
       OofInlineContainer<LogicalOffset> fixedpos_inline_container = {})
       : LogicalOofPositionedNode(node,
+                                 /*break_token=*/nullptr,
                                  static_position,
                                  requires_content_before_breaking,
                                  inline_container),
         containing_block(containing_block),
         fixedpos_containing_block(fixedpos_containing_block),
         fixedpos_inline_container(fixedpos_inline_container) {
+    DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
     is_for_fragmentation = true;
   }
 
   explicit LogicalOofNodeForFragmentation(
       const LogicalOofPositionedNode& oof_node)
       : LogicalOofPositionedNode(oof_node.Node(),
+                                 /*break_token=*/nullptr,
                                  oof_node.static_position,
                                  oof_node.requires_content_before_breaking,
                                  oof_node.inline_container) {
+    DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
     is_for_fragmentation = true;
   }
 
@@ -354,6 +374,10 @@ struct FragmentedOofData final : PhysicalFragment::OofData {
   using MulticolCollection =
       HeapHashMap<Member<LayoutBox>,
                   Member<MulticolWithPendingOofs<PhysicalOffset>>>;
+
+  FragmentedOofData() {
+    DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
+  }
 
   static bool HasOutOfFlowPositionedFragmentainerDescendants(
       const PhysicalFragment& fragment) {

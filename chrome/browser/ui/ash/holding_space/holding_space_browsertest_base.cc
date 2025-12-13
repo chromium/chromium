@@ -25,7 +25,7 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "storage/browser/file_system/external_mount_points.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 
@@ -152,8 +152,8 @@ void HoldingSpaceUiBrowserTestBase::SetUpOnMainThread() {
   HoldingSpaceBrowserTestBase::SetUpOnMainThread();
 
   {
-    ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
     // The holding space tray will not show until the user has added a file to
     // holding space. Holding space UI browser tests don't need to assert that

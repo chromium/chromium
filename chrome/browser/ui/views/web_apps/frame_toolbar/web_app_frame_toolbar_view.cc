@@ -14,13 +14,14 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_coordinator.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
+#include "chrome/browser/ui/views/toolbar/reload_button_web_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_content_settings_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_navigation_button_container.h"
@@ -31,15 +32,71 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/window/hit_test_utils.h"
+
+// A view targeter delegate for the WebAppFrameToolbarView that
+// allows mouse events to fall through to the underlying WebContents
+// in regions with no interactive UI.
+class WebAppFrameToolbarView::ViewTargeter
+    : public views::ViewTargeterDelegate {
+ public:
+  explicit ViewTargeter(WebAppFrameToolbarView* view) : view_(view) {}
+  ViewTargeter(const ViewTargeter&) = delete;
+  ViewTargeter& operator=(const ViewTargeter&) = delete;
+  ~ViewTargeter() override = default;
+
+  // views::ViewTargeterDelegate:
+  bool DoesIntersectRect(const views::View* target,
+                         const gfx::Rect& rect) const override {
+    CHECK_EQ(target, view_);
+
+    // A custom implementation is needed in one of two cases:
+    // 1. The WindowControlsOverlay is enabled. In this case the
+    // WebAppFrameToolbarView overlaps the WebContents.
+    // 2. In PWAs or ChromeOS System Apps with TabStrip the
+    // WebAppFrameToolbarView overlaps with it.
+    if (!view_->browser_view_->IsWindowControlsOverlayEnabled() &&
+        !view_->browser_view_->tab_strip_view()->GetVisible()) {
+      return views::ViewTargeterDelegate::DoesIntersectRect(view_, rect);
+    }
+
+    // Check the left container if it exists.
+    if (view_->left_container_) {
+      gfx::RectF converted_rect(rect);
+      views::View::ConvertRectToTarget(view_, view_->left_container_,
+                                       &converted_rect);
+      if (view_->left_container_->HitTestRect(
+              gfx::ToEnclosingRect(converted_rect))) {
+        return true;
+      }
+    }
+
+    // Check the right container.
+    CHECK(view_->right_container_);
+    gfx::RectF converted_rect(rect);
+    views::View::ConvertRectToTarget(view_, view_->right_container_,
+                                     &converted_rect);
+    if (view_->right_container_->HitTestRect(
+            gfx::ToEnclosingRect(converted_rect))) {
+      return true;
+    }
+
+    // The event is within the toolbar's bounds but not on any of the visible
+    // button containers, so let it pass through.
+    return false;
+  }
+
+ private:
+  const raw_ptr<WebAppFrameToolbarView> view_;
+};
 
 WebAppFrameToolbarView::WebAppFrameToolbarView(BrowserView* browser_view)
     : browser_view_(browser_view) {
   DCHECK(browser_view_);
   DCHECK(web_app::AppBrowserController::IsWebApp(browser_view_->browser()));
   SetID(VIEW_ID_WEB_APP_FRAME_TOOLBAR);
-  SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
   {
     // TODO(tluk) fix the need for both LayoutInContainer() and a layout
@@ -95,6 +152,9 @@ WebAppFrameToolbarView::WebAppFrameToolbarView(BrowserView* browser_view)
   if (browser_view_->AppUsesBorderlessMode()) {
     UpdateBorderlessModeEnabled();
   }
+
+  SetEventTargeter(std::make_unique<views::ViewTargeter>(
+      std::make_unique<ViewTargeter>(this)));
 }
 
 WebAppFrameToolbarView::~WebAppFrameToolbarView() = default;
@@ -134,7 +194,7 @@ void WebAppFrameToolbarView::SetPaintAsActive(bool active) {
   }
   paint_as_active_ = active;
   UpdateChildrenColor(/*color_changed=*/false);
-  OnPropertyChanged(&paint_as_active_, views::kPropertyEffectsNone);
+  OnPropertyChanged(&paint_as_active_, views::PropertyEffects::kNone);
 }
 
 bool WebAppFrameToolbarView::GetPaintAsActive() const {
@@ -173,6 +233,20 @@ gfx::Rect WebAppFrameToolbarView::LayoutInContainer(gfx::Rect available_space) {
   DCHECK(center_bounds.x() == 0 || left_container_);
   center_bounds.Offset(bounds().OffsetFromOrigin());
   return center_bounds;
+}
+
+gfx::Rect WebAppFrameToolbarView::GetCenterContainerForSize(
+    const gfx::Size& available_size) const {
+  // This value should be cached from/for the current size so amortizes to zero
+  // cost.
+  const auto layout = static_cast<const views::FlexLayout*>(GetLayoutManager())
+                          ->GetProposedLayout(available_size);
+  for (const auto& child : layout.child_layouts) {
+    if (child.child_view == center_container_) {
+      return child.visible ? child.bounds : gfx::Rect();
+    }
+  }
+  return gfx::Rect();
 }
 
 void WebAppFrameToolbarView::LayoutForWindowControlsOverlay(
@@ -271,6 +345,14 @@ views::View* WebAppFrameToolbarView::GetAnchorView(
   return anchor ? anchor : this;
 }
 
+views::BubbleAnchor WebAppFrameToolbarView::GetBubbleAnchor(
+    std::optional<actions::ActionId> action_id) {
+  if (views::View* view = GetAnchorView(action_id)) {
+    return view;
+  }
+  return nullptr;
+}
+
 void WebAppFrameToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
   if (IsPageActionMigrated(PageActionIconType::kZoom)) {
     auto* zoom_view_controller = browser_view_->browser()
@@ -295,7 +377,7 @@ ToolbarButton* WebAppFrameToolbarView::GetBackButton() {
   return left_container_ ? left_container_->back_button() : nullptr;
 }
 
-ReloadButton* WebAppFrameToolbarView::GetReloadButton() {
+ReloadControl* WebAppFrameToolbarView::GetReloadButton() {
   return left_container_ ? left_container_->reload_button() : nullptr;
 }
 
@@ -305,25 +387,6 @@ IntentChipButton* WebAppFrameToolbarView::GetIntentChipButton() {
 
 ToolbarButton* WebAppFrameToolbarView::GetDownloadButton() {
   return right_container_ ? right_container_->GetDownloadButton() : nullptr;
-}
-
-bool WebAppFrameToolbarView::DoesIntersectRect(const View* target,
-                                               const gfx::Rect& rect) const {
-  DCHECK_EQ(target, this);
-  if (!views::ViewTargeterDelegate::DoesIntersectRect(this, rect)) {
-    return false;
-  }
-
-  // If the rect is inside the bounds of the center_container, do not claim it.
-  // There is no actionable content in the center_container, and it overlaps
-  // tabs in tabbed PWA windows.
-  gfx::RectF rect_in_center_container_coords_f(rect);
-  View::ConvertRectToTarget(this, center_container_,
-                            &rect_in_center_container_coords_f);
-  gfx::Rect rect_in_client_view_coords =
-      gfx::ToEnclosingRect(rect_in_center_container_coords_f);
-
-  return !center_container_->HitTestRect(rect_in_client_view_coords);
 }
 
 void WebAppFrameToolbarView::OnWindowControlsOverlayEnabledChanged() {
@@ -391,8 +454,8 @@ WebAppFrameToolbarView::GetContentSettingViewsForTesting() const {
 }
 
 void WebAppFrameToolbarView::UpdateCachedColors() {
-  const BrowserNonClientFrameView* frame_view =
-      browser_view_->frame()->GetFrameView();
+  const BrowserFrameView* frame_view =
+      browser_view_->browser_widget()->GetFrameView();
   DCHECK(frame_view);
 
   active_background_color_ =

@@ -12,7 +12,6 @@
 #import "components/optimization_guide/core/optimization_guide_constants.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "ios/chrome/browser/optimization_guide/model/ios_chrome_hints_manager.h"
-#import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -24,12 +23,11 @@
 namespace {
 
 std::unique_ptr<KeyedService> BuildOptimizationGuideService(
-    web::BrowserState* context) {
+    ProfileIOS* profile) {
   if (!optimization_guide::features::IsOptimizationHintsEnabled()) {
     return nullptr;
   }
 
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   ProfileIOS* original_profile = profile->GetOriginalProfile();
 
   // Regardless of whether the profile is off the record or not, initialize the
@@ -79,8 +77,10 @@ void OptimizationGuideServiceFactory::InitializePredictionModelStore() {
   base::PathService::Get(ios::DIR_USER_DATA, &model_downloads_dir);
   model_downloads_dir = model_downloads_dir.Append(
       optimization_guide::kOptimizationGuideModelStoreDirPrefix);
-  optimization_guide::IOSChromePredictionModelStore::GetInstance()->Initialize(
-      model_downloads_dir);
+  GetApplicationContext()
+      ->GetOptimizationGuideGlobalState()
+      ->prediction_model_store()
+      .Initialize(model_downloads_dir);
 }
 
 OptimizationGuideServiceFactory::OptimizationGuideServiceFactory()
@@ -96,13 +96,13 @@ OptimizationGuideServiceFactory::OptimizationGuideServiceFactory()
 OptimizationGuideServiceFactory::~OptimizationGuideServiceFactory() = default;
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+OptimizationGuideServiceFactory::TestingFactory
 OptimizationGuideServiceFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildOptimizationGuideService);
+  return base::BindOnce(&BuildOptimizationGuideService);
 }
 
 std::unique_ptr<KeyedService>
 OptimizationGuideServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildOptimizationGuideService(context);
+    ProfileIOS* profile) const {
+  return BuildOptimizationGuideService(profile);
 }

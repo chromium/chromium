@@ -11,13 +11,16 @@ import android.view.View;
 
 import androidx.core.graphics.Insets;
 
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
+import org.chromium.chrome.browser.toolbar.top.ToolbarChildButton;
+import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.util.ClickWithMetaStateCallback;
@@ -28,10 +31,10 @@ import org.chromium.ui.widget.ChromeImageButton;
  * the button and affect its state.
  */
 @NullMarked
-public class BackButtonCoordinator {
+public class BackButtonCoordinator extends ToolbarChildButton {
     private final BackButtonMediator mMediator;
     private final NavigationPopup.HistoryDelegate mHistoryDelegate;
-    private final Supplier<@Nullable Tab> mTabSupplier;
+    private final NullableObservableSupplier<Tab> mTabSupplier;
     private final Runnable mOnNavigationPopupShown;
     private final View mView;
 
@@ -43,6 +46,7 @@ public class BackButtonCoordinator {
      *     state) that is invoked on back button click event. Allows parent components to intercept
      *     click and navigate back in the history or hide custom UI components.
      * @param themeColorProvider a provider that notifies about theme changes.
+     * @param incognitoStateProvider a provider that notifies about incognito state changes.
      * @param tabSupplier a supplier that provides current active tab.
      * @param historyDelegate a delegate that allows parent components to decide how to display
      *     browser history.
@@ -51,11 +55,13 @@ public class BackButtonCoordinator {
             ChromeImageButton view,
             ClickWithMetaStateCallback onBackPressed,
             ThemeColorProvider themeColorProvider,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            IncognitoStateProvider incognitoStateProvider,
+            NullableObservableSupplier<Tab> tabSupplier,
             ObservableSupplier<Boolean> enabledSupplier,
             Runnable onNavigationPopupShown,
             NavigationPopup.HistoryDelegate historyDelegate,
             boolean isWebApp) {
+        super(view.getContext(), themeColorProvider, incognitoStateProvider);
         mView = view;
         mTabSupplier = tabSupplier;
         mHistoryDelegate = historyDelegate;
@@ -70,6 +76,10 @@ public class BackButtonCoordinator {
                         .with(BackButtonProperties.TINT_COLOR_LIST, iconColorList)
                         .with(BackButtonProperties.IS_ENABLED, view.isEnabled())
                         .with(BackButtonProperties.IS_FOCUSABLE, view.isFocusable())
+                        .with(
+                                BackButtonProperties.IS_VISIBLE,
+                                mView.getVisibility() == View.VISIBLE)
+                        .with(BackButtonProperties.HAS_SPACE_TO_SHOW, true)
                         .build();
         mMediator =
                 new BackButtonMediator(
@@ -85,6 +95,16 @@ public class BackButtonCoordinator {
         PropertyModelChangeProcessor.create(model, view, BackButtonViewBinder::bind);
     }
 
+    @Override
+    public void onTintChanged(
+            @Nullable ColorStateList tint,
+            @Nullable ColorStateList activityFocusTint,
+            int brandedColorScheme) {
+        super.onTintChanged(tint, activityFocusTint, brandedColorScheme);
+        mMediator.onTintChanged(tint, activityFocusTint, brandedColorScheme);
+    }
+
+    @SuppressWarnings("NullAway") // Supplier<@Nullable> - https://crbug.com/455874046
     private void showNavigationPopup(Tab tab) {
         if (tab.getWebContents() == null) return;
 
@@ -107,7 +127,10 @@ public class BackButtonCoordinator {
      * @return {@link ObjectAnimator} that animates view's alpha
      */
     public ObjectAnimator getFadeAnimator(boolean shouldShow) {
-        return mMediator.getFadeAnimator(shouldShow);
+        ObjectAnimator fadeAnimator = mMediator.getFadeAnimator(shouldShow);
+        return shouldShow
+                ? ToolbarUtils.asFadeInAnimation(fadeAnimator)
+                : ToolbarUtils.asFadeOutAnimation(fadeAnimator);
     }
 
     /**
@@ -117,6 +140,11 @@ public class BackButtonCoordinator {
      */
     public void setVisibility(boolean isVisible) {
         mMediator.setVisibility(isVisible);
+    }
+
+    @Override
+    public void setHasSpaceToShow(boolean hasSpaceToShow) {
+        mMediator.setHasSpaceToShow(hasSpaceToShow);
     }
 
     /**
@@ -166,6 +194,7 @@ public class BackButtonCoordinator {
      *
      * @return a boolean indicating whether view is visible or not.
      */
+    @Override
     public boolean isVisible() {
         return mMediator.isVisible();
     }
@@ -174,7 +203,9 @@ public class BackButtonCoordinator {
      * Cleans up coordinator resources and unsubscribes from external events. An instance can't be
      * used after this method is called.
      */
+    @Override
     public void destroy() {
+        super.destroy();
         mMediator.destroy();
     }
 }

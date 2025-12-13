@@ -10,10 +10,13 @@
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -49,7 +52,7 @@ void CheckVisbility(TabStripModel* tab_strip_model, int visible_index) {
 }
 
 void CreateTestTabs(Browser* browser) {
-  GURL test_page(ui_test_utils::GetTestUrl(
+  GURL test_page(chrome_test_utils::GetTestUrl(
       base::FilePath(),
       base::FilePath(FILE_PATH_LITERAL("tab-restore-visibility.html"))));
   ui_test_utils::NavigateToURLWithDisposition(
@@ -69,25 +72,29 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, RecentTabsMenuTabDisposition) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
-  BrowserList* active_browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(2u, active_browser_list->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
   // Close the first browser.
   const int active_tab_index = browser()->tab_strip_model()->active_index();
   CloseBrowserSynchronously(browser());
-  EXPECT_EQ(1u, active_browser_list->size());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Restore tabs using the browser's recent tabs menu.
   content::DOMMessageQueue queue;
-  Browser* browser = active_browser_list->get(0);
-  RecentTabsSubMenuModel menu(nullptr, browser);
+  BrowserWindowInterface* const browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  RecentTabsSubMenuModel menu(nullptr, browser->GetBrowserForMigrationOnly());
+
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   menu.ExecuteCommand(menu.GetFirstRecentTabsCommandId(), 0);
+  BrowserWindowInterface* const restored_browser =
+      browser_created_observer.Wait();
+
   // There should be 3 restored tabs in the new browser. The active tab should
   // be loading.
-  EXPECT_EQ(2u, active_browser_list->size());
-  Browser* restored_browser = active_browser_list->get(1);
-  EXPECT_EQ(3, restored_browser->tab_strip_model()->count());
-  EXPECT_TRUE(restored_browser->tab_strip_model()
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(3, restored_browser->GetTabStripModel()->count());
+  EXPECT_TRUE(restored_browser->GetTabStripModel()
                   ->GetActiveWebContents()
                   ->GetController()
                   .GetPendingEntry());
@@ -100,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, RecentTabsMenuTabDisposition) {
   // CheckVisbility on "about:blank".
   {
     content::WebContents* about_blank_contents =
-        restored_browser->tab_strip_model()->GetWebContentsAt(0);
+        restored_browser->GetTabStripModel()->GetWebContentsAt(0);
     EXPECT_EQ("about:blank", about_blank_contents->GetURL().spec());
     if (about_blank_contents->IsLoading() ||
         about_blank_contents->GetController().NeedsReload()) {
@@ -110,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, RecentTabsMenuTabDisposition) {
   }
 
   // Previously active tab should have visible disposition.
-  CheckVisbility(restored_browser->tab_strip_model(), active_tab_index);
+  CheckVisbility(restored_browser->GetTabStripModel(), active_tab_index);
 }
 
 // Expect a selected restored tab to start loading synchronously.
@@ -173,43 +180,47 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, DelegateRestoreTabDisposition) {
   EXPECT_EQ(3, browser()->tab_strip_model()->count());
 
   // Create a new browser.
+  auto browser_created_observer =
+      std::make_optional<ui_test_utils::BrowserCreatedObserver>();
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
-  BrowserList* active_browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(2u, active_browser_list->size());
+  BrowserWindowInterface* const added_browser1 =
+      browser_created_observer->Wait();
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
   // Close the first browser.
   const int active_tab_index = browser()->tab_strip_model()->active_index();
   CloseBrowserSynchronously(browser());
-  EXPECT_EQ(1u, active_browser_list->size());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Check the browser has a delegated restore service.
-  Browser* browser = active_browser_list->get(0);
   sessions::TabRestoreService* service =
-      TabRestoreServiceFactory::GetForProfile(browser->profile());
+      TabRestoreServiceFactory::GetForProfile(added_browser1->GetProfile());
   bool has_tab_restore_service = !!service;
   ASSERT_TRUE(has_tab_restore_service);
   sessions::LiveTabContext* context =
       BrowserLiveTabContext::FindContextForWebContents(
-          browser->tab_strip_model()->GetActiveWebContents());
+          added_browser1->GetTabStripModel()->GetActiveWebContents());
   bool has_live_tab_context = !!context;
   ASSERT_TRUE(has_live_tab_context);
 
   // Restore tabs using that delegated restore service.
   content::DOMMessageQueue queue;
+  browser_created_observer.emplace();
   service->RestoreMostRecentEntry(context);
+  BrowserWindowInterface* const added_browser2 =
+      browser_created_observer->Wait();
   AwaitTabsReady(&queue, 2);
 
   // There should be 3 restored tabs in the new browser.
-  EXPECT_EQ(2u, active_browser_list->size());
-  browser = active_browser_list->get(1);
-  EXPECT_EQ(3, browser->tab_strip_model()->count());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(3, added_browser2->GetTabStripModel()->count());
   // The same as in RecentTabsMenuTabDisposition test case.
   // See there for the explanation.
   {
     content::WebContents* about_blank_contents =
-        browser->tab_strip_model()->GetWebContentsAt(0);
+        added_browser2->GetTabStripModel()->GetWebContentsAt(0);
     EXPECT_EQ("about:blank", about_blank_contents->GetURL().spec());
     if (about_blank_contents->IsLoading() ||
         about_blank_contents->GetController().NeedsReload()) {
@@ -219,5 +230,5 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, DelegateRestoreTabDisposition) {
   }
 
   // Previously active tab should have visible disposition.
-  CheckVisbility(browser->tab_strip_model(), active_tab_index);
+  CheckVisbility(added_browser2->GetTabStripModel(), active_tab_index);
 }

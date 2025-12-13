@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "storage/browser/blob/blob_storage_context.h"
 
 #include <stdint.h>
@@ -17,9 +12,9 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
@@ -796,7 +791,8 @@ TEST_F(BlobStorageContextTest, BuildBlobCombinations) {
     std::unique_ptr<BlobDataHandle> handle = context_->BuildBlob(
         std::move(builder),
         has_pending_memory
-            ? base::BindOnce(&SaveBlobStatusAndFiles, &statuses[0] + i, &files_)
+            ? base::BindOnce(&SaveBlobStatusAndFiles,
+                             UNSAFE_TODO(&statuses[0] + i), &files_)
             : BlobStorageContext::TransportAllowedCallback());
     handle->RunOnConstructionComplete(
         base::BindOnce(&IncrementNumber, &total_finished_blobs));

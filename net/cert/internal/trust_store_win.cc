@@ -2,24 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/374320451): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/cert/internal/trust_store_win.h"
 
 #include <algorithm>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
-#include "base/hash/sha1.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "crypto/obsolete/sha1.h"
 #include "net/base/features.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_win.h"
@@ -28,6 +24,11 @@
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
 
 namespace net {
+
+std::array<uint8_t, crypto::obsolete::Sha1::kSize> Sha1ForWinTrust(
+    base::span<const uint8_t> data) {
+  return crypto::obsolete::Sha1::Hash(data);
+}
 
 namespace {
 
@@ -75,7 +76,7 @@ bool IsCertTrustedForServerAuth(PCCERT_CONTEXT cert) {
 
   std::vector<BYTE> usage_bytes(usage_size);
   CERT_ENHKEY_USAGE* usage =
-      reinterpret_cast<CERT_ENHKEY_USAGE*>(usage_bytes.data());
+      UNSAFE_TODO(reinterpret_cast<CERT_ENHKEY_USAGE*>(usage_bytes.data()));
   if (!CertGetEnhancedKeyUsage(cert, 0, usage, &usage_size)) {
     return false;
   }
@@ -256,15 +257,18 @@ class TrustStoreWin::Impl {
         L"Disallowed");
 
     // Auto-sync all of the cert stores to get updates to the cert store.
-    // Auto-syncing on all_certs_store seems to work to resync the nested
-    // stores, although the docs at
-    // https://docs.microsoft.com/en-us/windows/win32/api/wincrypt/nf-wincrypt-certcontrolstore
-    // are somewhat unclear. If and when root store changes are linked to
+    // Auto-sync must be invoked on each individual store so that any future
+    // checks performed on the collection will ensure the individual stores
+    // within it are properly synchronized. However, the documentation at:
+    // https://docs.microsoft.com/en-us/windows/win32/api/wincrypt/nf-wincrypt-certcontrolstore,
+    // is somewhat unclear. If and when root store changes are linked to
     // clearing various caches, this should be replaced with
     // CERT_STORE_CTRL_NOTIFY_CHANGE and CERT_STORE_CTRL_RESYNC.
-    if (!CertControlStore(stores.all.get(), 0, CERT_STORE_CTRL_AUTO_RESYNC,
+    if (!CertControlStore(stores.roots.get(), 0, CERT_STORE_CTRL_AUTO_RESYNC,
                           0) ||
         !CertControlStore(stores.trusted_people.get(), 0,
+                          CERT_STORE_CTRL_AUTO_RESYNC, 0) ||
+        !CertControlStore(stores.intermediates.get(), 0,
                           CERT_STORE_CTRL_AUTO_RESYNC, 0) ||
         !CertControlStore(stores.disallowed.get(), 0,
                           CERT_STORE_CTRL_AUTO_RESYNC, 0)) {
@@ -323,7 +327,8 @@ class TrustStoreWin::Impl {
     }
 
     base::span<const uint8_t> cert_span = cert->der_cert();
-    base::SHA1Digest cert_hash = base::SHA1Hash(cert_span);
+    std::array<uint8_t, crypto::obsolete::Sha1::kSize> cert_hash =
+        Sha1ForWinTrust(cert_span);
     CRYPT_HASH_BLOB cert_hash_blob;
     cert_hash_blob.cbData = static_cast<DWORD>(cert_hash.size());
     cert_hash_blob.pbData = cert_hash.data();

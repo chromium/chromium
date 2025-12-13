@@ -24,17 +24,11 @@ class MockIncidentReceiver : public IncidentReceiver {
 
  protected:
   void AddIncidentForProfile(Profile* profile,
-                             std::unique_ptr<Incident> incident) override {
-    DoAddIncidentForProfile(profile, &incident);
-  }
+                             std::unique_ptr<Incident> incident) override;
 
-  void AddIncidentForProcess(std::unique_ptr<Incident> incident) override {
-    DoAddIncidentForProcess(&incident);
-  }
+  void AddIncidentForProcess(std::unique_ptr<Incident> incident) override;
 
-  void ClearIncidentForProcess(std::unique_ptr<Incident> incident) override {
-    DoClearIncidentForProcess(&incident);
-  }
+  void ClearIncidentForProcess(std::unique_ptr<Incident> incident) override;
 };
 
 // An action that passes ownership of the incident in |arg0| to |recipient|.

@@ -19,9 +19,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
@@ -29,6 +26,7 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridgeJni;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -38,7 +36,6 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
@@ -47,12 +44,12 @@ import org.chromium.components.user_prefs.UserPrefsJni;
  * compressed if @ParameterizedTest from JUnit5 can be used.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
 public class StepDisplayHandlerImplTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock private SafeBrowsingBridge.Natives mSBNativesMock;
     @Mock private SyncService mSyncService;
+    @Mock private HistorySyncHelper mHistorySyncHelper;
     @Mock private Profile mProfile;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
@@ -73,7 +70,10 @@ public class StepDisplayHandlerImplTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
 
+        // {@link PrivacyGuideUtils#canUpdateHistorySyncValue} assumes nonnull SyncService
         SyncServiceFactory.setInstanceForTesting(mSyncService);
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+
         SafeBrowsingBridgeJni.setInstanceForTesting(mSBNativesMock);
         PrivacySandboxBridgeJni.setInstanceForTesting(mPrivacySandboxBridgeJni);
 
@@ -117,66 +117,25 @@ public class StepDisplayHandlerImplTest {
     }
 
     @Test
-    public void hidesHistorySyncWhenSyncDisabledByEnterprisePolicy() {
+    public void hidesHistorySyncDisabledByPolicy() {
         when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
-        when(mSyncService.isSyncDisabledByEnterprisePolicy()).thenReturn(true);
+        when(mHistorySyncHelper.isHistorySyncDisabledByPolicy()).thenReturn(true);
         assertFalse(mStepDisplayHandler.shouldDisplayHistorySync());
     }
 
     @Test
-    public void hidesHistorySyncWhenHistoryAndTabsSyncIsManagedByPolicy() {
+    public void showsHistorySyncIsNotManagedByPolicyNorCustodian() {
         when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
-        when(mSyncService.isSyncDisabledByEnterprisePolicy()).thenReturn(false);
-        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.HISTORY)).thenReturn(true);
-        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.TABS)).thenReturn(true);
-        assertFalse(mStepDisplayHandler.shouldDisplayHistorySync());
-    }
-
-    @Test
-    public void showsHistorySyncWhenOnlyHistorySyncIsManagedByPolicy() {
-        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
-        when(mSyncService.isSyncDisabledByEnterprisePolicy()).thenReturn(false);
-        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.HISTORY)).thenReturn(true);
-        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.TABS)).thenReturn(false);
-        when(mSyncService.isTypeManagedByCustodian(UserSelectableType.HISTORY)).thenReturn(false);
-        when(mSyncService.isTypeManagedByCustodian(UserSelectableType.TABS)).thenReturn(false);
+        when(mHistorySyncHelper.isHistorySyncDisabledByPolicy()).thenReturn(false);
+        when(mHistorySyncHelper.isHistorySyncDisabledByCustodian()).thenReturn(false);
         assertTrue(mStepDisplayHandler.shouldDisplayHistorySync());
     }
 
     @Test
-    public void hidesHistorySyncWhenHistoryAndTabsSyncIsManagedByCustodian() {
+    public void hidesHistorySyncWhenIsDisabledByCustodian() {
         when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
-        when(mSyncService.isSyncDisabledByEnterprisePolicy()).thenReturn(false);
-        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.HISTORY)).thenReturn(false);
-        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.TABS)).thenReturn(false);
-        when(mSyncService.isTypeManagedByCustodian(UserSelectableType.HISTORY)).thenReturn(true);
-        when(mSyncService.isTypeManagedByCustodian(UserSelectableType.TABS)).thenReturn(true);
+        when(mHistorySyncHelper.isHistorySyncDisabledByCustodian()).thenReturn(true);
         assertFalse(mStepDisplayHandler.shouldDisplayHistorySync());
-    }
-
-    @Test
-    public void showsHistorySyncWhenOnlyHistorySyncIsManagedByCustodian() {
-        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
-        when(mSyncService.isSyncDisabledByEnterprisePolicy()).thenReturn(false);
-        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.HISTORY)).thenReturn(false);
-        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.TABS)).thenReturn(false);
-        when(mSyncService.isTypeManagedByCustodian(UserSelectableType.HISTORY)).thenReturn(true);
-        when(mSyncService.isTypeManagedByCustodian(UserSelectableType.TABS)).thenReturn(false);
-        assertTrue(mStepDisplayHandler.shouldDisplayHistorySync());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
-    public void hidesCookiesWhenTrackingProtection3pcdEnabled() {
-        setCookieState(CookieControlsMode.BLOCK_THIRD_PARTY, true);
-        assertFalse(mStepDisplayHandler.shouldDisplayCookies());
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
-    public void hidesCookiesWhenThirdPartyCookiesAllowed() {
-        setCookieState(CookieControlsMode.OFF, true);
-        assertFalse(mStepDisplayHandler.shouldDisplayCookies());
     }
 
     @Test
@@ -198,7 +157,6 @@ public class StepDisplayHandlerImplTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
     public void showsCookiesWhenThirdPartyCookiesAllowed() {
         setCookieState(CookieControlsMode.OFF, true);
         assertTrue(mStepDisplayHandler.shouldDisplayCookies());

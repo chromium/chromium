@@ -122,6 +122,7 @@ class LaunchCommand(object):
                clones,
                retries,
                readline_timeout,
+               exception_checker,
                out_dir=os.path.basename(os.getcwd()),
                use_clang_coverage=False,
                env=None,
@@ -136,6 +137,8 @@ class LaunchCommand(object):
       clones: (int) A number of simulator clones to run test cases against.
       readline_timeout: (int) Timeout to kill a test process when it doesn't
         have output (in seconds).
+      exception_checker: (ExceptionChecker) Checks logs for possible infra
+        issues and raises them as exceptions.
       retries: (int) A number of retries.
       out_dir: (str) A folder in which xcodebuild will generate test output.
         By default it is a current directory.
@@ -161,6 +164,7 @@ class LaunchCommand(object):
     self.test_plugin_service = test_plugin_service
     self.cert_path = cert_path
     self.erase_simulators = erase_simulators
+    self.exception_checker = exception_checker
 
   def launch_attempt(self, cmd):
     """Launch a process and do logging simultaneously.
@@ -177,7 +181,10 @@ class LaunchCommand(object):
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
     )
-    return test_runner.print_process_output(proc, timeout=self.readline_timeout)
+    return test_runner.print_process_output(
+        proc,
+        timeout=self.readline_timeout,
+        exception_checker=self.exception_checker)
 
   def launch(self):
     """Launches tests using xcodebuild."""
@@ -384,7 +391,10 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
           stdout=subprocess.PIPE,
           stderr=subprocess.STDOUT,
       )
-      test_runner.print_process_output(proc, timeout=self.readline_timeout)
+      test_runner.print_process_output(
+          proc,
+          timeout=self.readline_timeout,
+          exception_checker=self.exception_checker)
       end = time.perf_counter()
       elapsed = end - start
       LOGGER.info(f'xcodebuild -enumerate-tests (attempt {attempt + 1} of '
@@ -478,7 +488,8 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
         use_clang_coverage=(hasattr(self, 'use_clang_coverage') and
                             self.use_clang_coverage),
         env=self.get_launch_env(),
-        test_plugin_service=self.test_plugin_service)
+        test_plugin_service=self.test_plugin_service,
+        exception_checker=self.exception_checker)
 
     try:
       overall_result = launch_command.launch()

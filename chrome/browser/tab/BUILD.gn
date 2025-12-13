@@ -9,10 +9,15 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/tab/CollectionSaveForwarder.java",
+    "java/src/org/chromium/chrome/browser/tab/CollectionStorageObserverFactory.java",
     "java/src/org/chromium/chrome/browser/tab/CurrentTabObserver.java",
     "java/src/org/chromium/chrome/browser/tab/EmptyTabObserver.java",
     "java/src/org/chromium/chrome/browser/tab/SadTab.java",
     "java/src/org/chromium/chrome/browser/tab/SadTabView.java",
+    "java/src/org/chromium/chrome/browser/tab/StorageCollectionSynchronizer.java",
+    "java/src/org/chromium/chrome/browser/tab/StorageLoadedData.java",
+    "java/src/org/chromium/chrome/browser/tab/StorageRestoreOrchestratorFactory.java",
     "java/src/org/chromium/chrome/browser/tab/Tab.java",
     "java/src/org/chromium/chrome/browser/tab/TabAssociatedApp.java",
     "java/src/org/chromium/chrome/browser/tab/TabAttributeKeys.java",
@@ -20,6 +25,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/TabContextMenuData.java",
     "java/src/org/chromium/chrome/browser/tab/TabCreationState.java",
     "java/src/org/chromium/chrome/browser/tab/TabDelegateFactory.java",
+    "java/src/org/chromium/chrome/browser/tab/TabGroupCollectionData.java",
     "java/src/org/chromium/chrome/browser/tab/TabHidingType.java",
     "java/src/org/chromium/chrome/browser/tab/TabId.java",
     "java/src/org/chromium/chrome/browser/tab/TabIdManager.java",
@@ -31,6 +37,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/TabResolver.java",
     "java/src/org/chromium/chrome/browser/tab/TabState.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateAttributes.java",
+    "java/src/org/chromium/chrome/browser/tab/TabStateExtractor.java",
+    "java/src/org/chromium/chrome/browser/tab/TabStateStorageFlagHelper.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateStorageService.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateStorageServiceFactory.java",
     "java/src/org/chromium/chrome/browser/tab/TabSupplierObserver.java",
@@ -40,7 +48,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/TabWebContentsUserData.java",
     "java/src/org/chromium/chrome/browser/tab/TrustedCdn.java",
     "java/src/org/chromium/chrome/browser/tab/WebContentsState.java",
-    "java/src/org/chromium/chrome/browser/tab/WebContentsStateBridge.java",
     "java/src/org/chromium/chrome/browser/tab/state/ArchivePersistedTabData.java",
     "java/src/org/chromium/chrome/browser/tab/state/EmptyByteBufferPersistedTabDataStorage.java",
     "java/src/org/chromium/chrome/browser/tab/state/LevelDBPersistedDataStorage.java",
@@ -107,6 +114,8 @@ android_library("java") {
     "//components/security_state/content/android:java",
     "//components/security_state/core:security_state_enums_java",
     "//components/strings:components_strings_grd",
+    "//components/tab_groups:tab_groups_java",
+    "//components/tabs/public/android:java",
     "//content/public/android:content_java",
     "//net/android:net_java",
     "//third_party/android_deps:guava_android_java",
@@ -129,6 +138,8 @@ android_resources("java_resources") {
     "java/res/drawable-xhdpi/sad_tab.png",
     "java/res/drawable-xxhdpi/sad_tab.png",
     "java/res/drawable-xxxhdpi/sad_tab.png",
+    "java/res/drawable/link_status_bar_background.xml",
+    "java/res/layout/link_hover_status_bar.xml",
     "java/res/layout/sad_tab.xml",
   ]
   deps = [ "//ui/android:ui_java_resources" ]
@@ -136,10 +147,16 @@ android_resources("java_resources") {
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/chrome/browser/tab/CollectionSaveForwarder.java",
+    "java/src/org/chromium/chrome/browser/tab/CollectionStorageObserverFactory.java",
+    "java/src/org/chromium/chrome/browser/tab/StorageCollectionSynchronizer.java",
+    "java/src/org/chromium/chrome/browser/tab/StorageLoadedData.java",
+    "java/src/org/chromium/chrome/browser/tab/StorageRestoreOrchestratorFactory.java",
+    "java/src/org/chromium/chrome/browser/tab/TabGroupCollectionData.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateStorageService.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateStorageServiceFactory.java",
     "java/src/org/chromium/chrome/browser/tab/TrustedCdn.java",
-    "java/src/org/chromium/chrome/browser/tab/WebContentsStateBridge.java",
+    "java/src/org/chromium/chrome/browser/tab/WebContentsState.java",
     "java/src/org/chromium/chrome/browser/tab/state/LevelDBPersistedDataStorage.java",
     "java/src/org/chromium/chrome/browser/tab/state/PersistedTabData.java",
   ]
@@ -160,6 +177,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/tab/TabContextMenuDataUnitTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabIdManagerTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateAttributesTest.java",
+    "java/src/org/chromium/chrome/browser/tab/TabStateExtractorTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabSupplierObserverTest.java",
     "java/src/org/chromium/chrome/browser/tab/state/PriceDropMetricsLoggerTest.java",
   ]
@@ -176,12 +194,109 @@ robolectric_library("junit") {
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_full_java",
+    "//content/public/android:content_main_dex_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
+  ]
+}
+
+source_set("tab") {
+  sources = [
+    "android_tab_package.h",
+    "collection_save_forwarder.h",
+    "collection_storage_observer.h",
+    "collection_storage_package.h",
+    "payload.h",
+    "payload_util.h",
+    "restore_entity_tracker.h",
+    "storage_collection_synchronizer.h",
+    "storage_id.h",
+    "storage_id_mapping.h",
+    "storage_loaded_data.h",
+    "storage_package.h",
+    "storage_pending_updates.h",
+    "storage_restore_orchestrator.h",
+    "storage_update_unit.h",
+    "tab_group_collection_data.h",
+    "tab_state_storage_backend.h",
+    "tab_state_storage_database.h",
+    "tab_state_storage_service.h",
+    "tab_state_storage_updater.h",
+    "tab_state_storage_updater_builder.h",
+    "tab_storage_package.h",
+    "tab_storage_packager.h",
+    "tab_storage_type.h",
+    "tab_storage_util.h",
+    "web_contents_state.h",
+  ]
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/tab/protocol",
+    "//components/keyed_service/core",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//sql",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "android_tab_package.cc",
+    "collection_save_forwarder.cc",
+    "collection_storage_observer.cc",
+    "collection_storage_package.cc",
+    "payload_util.cc",
+    "storage_collection_synchronizer.cc",
+    "storage_id.cc",
+    "storage_loaded_data.cc",
+    "storage_pending_updates.cc",
+    "storage_restore_orchestrator.cc",
+    "tab_group_collection_data.cc",
+    "tab_state_storage_backend.cc",
+    "tab_state_storage_database.cc",
+    "tab_state_storage_service.cc",
+    "tab_state_storage_updater.cc",
+    "tab_state_storage_updater_builder.cc",
+    "tab_storage_package.cc",
+    "tab_storage_packager.cc",
+    "tab_storage_util.cc",
+    "web_contents_state.cc",
+  ]
+  deps = [
+    ":jni_headers",
+    ":tab",
+    "//chrome/browser/flags:flags_android",
+    "//chrome/browser/profiles",
+    "//chrome/browser/tab/protocol",
+    "//components/sessions",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//crypto",
+    "//sql",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "payload_util_unittest.cc",
+    "tab_storage_util_unittest.cc",
+  ]
+  deps = [
+    ":tab",
+    "//base",
+    "//chrome/browser",
+    "//components/tabs:public",
+    "//testing/gtest",
   ]
 }

@@ -16,12 +16,15 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/logging/user_signin_logger.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -67,7 +70,6 @@
                               contextStyle:contextStyle
                                accessPoint:accessPoint];
   if (self) {
-    CHECK(browser, base::NotFatalUntil::M142);
     CHECK(viewController, base::NotFatalUntil::M142);
     CHECK(continuationProvider);
     _identity = identity;
@@ -78,11 +80,10 @@
 }
 
 - (void)dealloc {
-  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!_mediator) << base::SysNSStringToUTF8([self description]);
-  DUMP_WILL_BE_CHECK(!_signinLogger)
-      << base::SysNSStringToUTF8([self description]);
+  // Not an invariant due to possible race conditions. DCHECKing for debugging
+  // purposes. See crbug.com/40067451.
+  DCHECK(!_mediator) << base::SysNSStringToUTF8([self description]);
+  DCHECK(!_signinLogger) << base::SysNSStringToUTF8([self description]);
 }
 
 #pragma mark - ChromeCoordinator
@@ -92,12 +93,17 @@
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(self.profile->GetOriginalProfile());
   CHECK(!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
-        base::NotFatalUntil::M142);
+        base::NotFatalUntil::M148);
   _signinLogger = [[UserSigninLogger alloc] initWithAccessPoint:self.accessPoint
                                                     promoAction:_promoAction];
   [_signinLogger logSigninStarted];
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(
+          self.profile->GetOriginalProfile());
   _mediator =
       [[InstantSigninMediator alloc] initWithAccessPoint:self.accessPoint
+                                   authenticationService:authenticationService
+                                         identityManager:identityManager
                                     continuationProvider:_continuationProvider];
   _mediator.delegate = self;
 
@@ -174,6 +180,16 @@
   [super stopAnimated:animated];
 }
 
+#pragma mark - BuggyAuthenticationViewOwner
+
+- (BOOL)viewWillPersist {
+  // This coordinator has no view of its own. The view may only have disappeared
+  // if it owns a started coordinator whose view silently disappeared. The only
+  // coordinator for which this is possible is the add account one.
+  return !_addAccountSigninCoordinator ||
+         _addAccountSigninCoordinator.viewWillPersist;
+}
+
 #pragma mark - IdentityChooserCoordinatorDelegate
 
 - (void)identityChooserCoordinatorDidClose:
@@ -213,24 +229,25 @@
 #pragma mark - InstantSigninMediatorDelegate
 
 - (void)instantSigninMediator:(InstantSigninMediator*)mediator
-          didSigninWithResult:(SigninCoordinatorResult)result {
+    didSigninWithCancelationResult:
+        (signin_ui::CancelationReason)cancelationResult {
   [self removeActivityOverlay];
-  switch (result) {
-    case SigninCoordinatorResultSuccess: {
+  switch (cancelationResult) {
+    case signin_ui::CancelationReason::kNotCanceled: {
       signin_metrics::RecordConsistencyPromoUserAction(_actionToRecordOnSuccess,
                                                        self.accessPoint);
       [self runCompletionWithSigninResult:SigninCoordinatorResultSuccess
                        completionIdentity:_identity];
       break;
     }
-    case SigninCoordinatorResultDisabled:
-    case SigninCoordinatorResultInterrupted:
-    case SigninCoordinatorResultCanceledByUser:
-    case SigninCoordinatorProfileSwitch:
-      [self runCompletionWithSigninResult:result completionIdentity:nil];
+    case signin_ui::CancelationReason::kUserCanceled:
+      [self runCompletionWithSigninResult:SigninCoordinatorResultCanceledByUser
+                       completionIdentity:nil];
       break;
-    case SigninCoordinatorUINotAvailable:
-      NOTREACHED();
+    case signin_ui::CancelationReason::kFailed:
+      [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
+                       completionIdentity:nil];
+      break;
   }
 }
 
@@ -243,6 +260,13 @@
   [self removeActivityOverlay];
   [self runCompletionWithSigninResult:SigninCoordinatorProfileSwitch
                    completionIdentity:_identity];
+}
+
+- (void)instantSigninMediatorSigninIsImpossible:
+    (InstantSigninMediator*)mediator {
+  CHECK_EQ(mediator, _mediator, base::NotFatalUntil::M144);
+  [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
+                   completionIdentity:nil];
 }
 
 #pragma mark - Private
@@ -278,28 +302,35 @@
 
 // Starts the add account coordinator.
 - (void)startAddAccountForSignInOnly {
-  // In case of double-tap, we must stop the first coordinator. This may occur
-  // because, up to iOS 18, the view may have disappeared without calling the
-  // signin completion. See crbug.com/395959814
+  if (_addAccountSigninCoordinator.viewWillPersist) {
+    return;
+  }
   [_addAccountSigninCoordinator stop];
   _addAccountSigninCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:self.baseViewController
                                           browser:self.browser
                                      contextStyle:self.contextStyle
                                       accessPoint:self.accessPoint
+                                   prefilledEmail:nil
                              continuationProvider:_continuationProvider];
   __weak __typeof(self) weakSelf = self;
-  _addAccountSigninCoordinator.signinCompletion = ^(
-      SigninCoordinatorResult result, id<SystemIdentity> resultIdentity) {
-    [weakSelf addAccountDoneWithResult:result resultIdentity:resultIdentity];
-  };
+  _addAccountSigninCoordinator.signinCompletion =
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> resultIdentity) {
+        [weakSelf addAccountDoneWithCoordinator:coordinator
+                                         result:result
+                                 resultIdentity:resultIdentity];
+      };
   [_addAccountSigninCoordinator start];
 }
 
 // Starts the sign-in flow if the identity has been selected, otherwise, it
 // ends this coordinator.
-- (void)addAccountDoneWithResult:(SigninCoordinatorResult)result
-                  resultIdentity:(id<SystemIdentity>)resultIdentity {
+- (void)addAccountDoneWithCoordinator:(SigninCoordinator*)coordinator
+                               result:(SigninCoordinatorResult)result
+                       resultIdentity:(id<SystemIdentity>)resultIdentity {
+  CHECK_EQ(_addAccountSigninCoordinator, coordinator,
+           base::NotFatalUntil::M151);
   CHECK(_addAccountSigninCoordinator)
       << base::SysNSStringToUTF8([self description]);
   [self stopAddAccountSigninCoordinator];
@@ -323,9 +354,9 @@
 
 // Adds an activity overlay to block the UI.
 - (void)showActivityOverlay {
-  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!_activityOverlayCoordinator);
+  // Not an invariant due to possible race conditions. DCHECKing for debugging
+  // purposes. See crbug.com/40067451.
+  DCHECK(!_activityOverlayCoordinator);
   _activityOverlayCoordinator = [[ActivityOverlayCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser];

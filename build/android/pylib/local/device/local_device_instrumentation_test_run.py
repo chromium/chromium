@@ -130,14 +130,11 @@ WPR_ARCHIVE_NAME_ANNOTATION = 'WPRArchiveDirectory$ArchiveName'
 WPR_RECORD_REPLAY_TEST_FEATURE_ANNOTATION = 'WPRRecordReplayTest'
 
 _DEVICE_GOLD_DIR = 'skia_gold'
-# A map of Android product models to SDK ints.
+# A map of Android product models to SDK ints. The keys can be found via `adb
+# shell getprop ro.product.model`.
 RENDER_TEST_MODEL_SDK_CONFIGS = {
-    # Android x86 emulator.
-    'Android SDK built for x86': [26, 29],
-    # We would like this to be supported, but it is currently too prone to
-    # introducing flakiness due to a combination of Gold and Chromium issues.
-    # See crbug.com/1233700 and skbug.com/12149 for more information.
-    # 'Pixel 2': [28],
+    # Android x64 emulator.
+    'sdk_gphone64_x86_64': [35],
 }
 
 _BATCH_SUFFIX = '_batch'
@@ -683,8 +680,8 @@ class LocalDeviceInstrumentationTestRun(
 
       install_steps += [push_test_data, create_flag_changer]
       post_install_steps += [
-          set_debug_app, approve_app_links, disable_system_modals,
-          set_vega_permissions, DismissCrashDialogs
+          self._SetDefaultBrowserApp, set_debug_app, approve_app_links,
+          disable_system_modals, set_vega_permissions, DismissCrashDialogs
       ]
 
       def bind_crash_handler(step, dev):
@@ -761,6 +758,8 @@ class LocalDeviceInstrumentationTestRun(
       if self._webview_flag_changers[str(dev)].GetCurrentFlags():
         self._webview_flag_changers[str(dev)].Restore()
 
+      self._ClearDefaultBrowserApp(dev)
+
       # Remove package-specific configuration
       dev.RunShellCommand(['am', 'clear-debug-app'], check_return=True)
 
@@ -781,6 +780,61 @@ class LocalDeviceInstrumentationTestRun(
         # pylint: enable=no-member
 
     self._env.parallel_devices.pMap(individual_device_tear_down)
+
+  def _SetDefaultBrowserApp(self, dev):
+    # Safely granting the browser role requires the
+    # "set-bypassing-role-qualification" ADB command, which was introduced in
+    # Android 13 (API 33).
+    if dev.build_version_sdk < version_codes.TIRAMISU:
+      return
+
+    browser_activity_names = self._test_instance.test_apk.GetActivityNamesWithCategory(
+        'android.intent.category.APP_BROWSER')
+    if browser_activity_names:
+      # By default, the add-role-holder command targets the system user
+      # (User 0).
+      #
+      # However, some bots (such as automotive bots) run in the Headless System
+      # User Mode, where User 0 runs in the background, while the actual
+      # "driver" user is usually User 10 (or higher).
+      #
+      # Therefore, we must specify the current user ID when running the
+      # add-role-holder command as the test APK may not be installed for
+      # User 0.
+      #
+      # Additionally, we should bypass role qualification in case the test APK
+      # doesn't meet Android requirements for the browser role (such as
+      # declaring specific Intent filters in its manifest to handle web links).
+      user_id = dev.GetCurrentUser()
+      dev.RunShellCommand(
+          ['cmd', 'role', 'set-bypassing-role-qualification', 'true'],
+          check_return=True)
+      dev.RunShellCommand([
+          'cmd', 'role', 'add-role-holder', '--user',
+          str(user_id), 'android.app.role.BROWSER',
+          self._test_instance.test_apk.GetPackageName()
+      ],
+                          check_return=True)
+
+  def _ClearDefaultBrowserApp(self, dev):
+    # We only set the test APK as the default browser app for Android 13+.
+    # See _SetDefaultBrowserApp().
+    if dev.build_version_sdk < version_codes.TIRAMISU:
+      return
+
+    browser_activity_names = self._test_instance.test_apk.GetActivityNamesWithCategory(
+        'android.intent.category.APP_BROWSER')
+    if browser_activity_names:
+      user_id = dev.GetCurrentUser()
+      dev.RunShellCommand([
+          'cmd', 'role', 'remove-role-holder', '--user',
+          str(user_id), 'android.app.role.BROWSER',
+          self._test_instance.test_apk.GetPackageName()
+      ],
+                          check_return=True)
+      dev.RunShellCommand(
+          ['cmd', 'role', 'set-bypassing-role-qualification', 'false'],
+          check_return=True)
 
   def _ToggleAppLinks(self, dev, state):
     # The set-app-links command was added in Android 12 (sdk = 31). The
@@ -812,8 +866,11 @@ class LocalDeviceInstrumentationTestRun(
         else:
           raise Exception('No PackageInfo found but'
                           '--use-apk-under-test-flags-file is specified.')
-      self._flag_changers[str(device)] = flag_changer.FlagChanger(
-          device, cmdline_file)
+      changer = flag_changer.FlagChanger(device, cmdline_file)
+      # Ensure that any existing flags are cleared so that there cannot be any
+      # conflicts with added flags.
+      changer.RemoveFlags(changer.GetCurrentFlags())
+      self._flag_changers[str(device)] = changer
 
   #override
   def _CreateShardsForDevices(self, tests):
@@ -1532,8 +1589,9 @@ class LocalDeviceInstrumentationTestRun(
     logcat_file = None
     logmon = None
     try:
-      with self._env.output_manager.ArchivedTempfile(stream_name,
-                                                     'logcat') as logcat_file:
+      with self._env.output_manager.ArchivedTempfile(
+          stream_name, 'logcat', output_manager.Datatype.TEXT,
+          _GetTargetPackageName(self._test_instance.test_apk)) as logcat_file:
         symbolizer = stack_symbolizer.PassThroughSymbolizerPool(
             device.product_cpu_abi)
         with symbolizer:
@@ -1716,9 +1774,13 @@ class LocalDeviceInstrumentationTestRun(
             should_rewrite = True
             del json_dict['full_test_name']
 
-        running_on_unsupported = (
-            device.build_version_sdk not in RENDER_TEST_MODEL_SDK_CONFIGS.get(
-                device.product_model, []) and not fail_on_unsupported)
+        supported_sdks_for_device = RENDER_TEST_MODEL_SDK_CONFIGS.get(
+            device.product_model, [])
+        is_unsupported_config = (device.build_version_sdk
+                                 not in supported_sdks_for_device
+                                 or self._env.skia_gold_consider_unsupported)
+        running_on_unsupported = (is_unsupported_config
+                                  and not fail_on_unsupported)
         should_ignore_in_gold = running_on_unsupported
         # We still want to fail the test even if we're ignoring the image in
         # Gold if we're running on a supported configuration, so
@@ -1759,20 +1821,22 @@ class LocalDeviceInstrumentationTestRun(
         # the test has explicitly opted in, as it's likely that baselines
         # aren't maintained for that configuration.
         if should_hide_failure:
-          if self._test_instance.skia_gold_properties.local_pixel_tests:
-            _AppendToLog(
-                results, full_test_name,
-                'Gold comparison for %s failed, but model %s with SDK '
-                '%d is not a supported configuration. This failure would be '
-                'ignored on the bots, but failing since tests are being run '
-                'locally.' %
-                (render_name, device.product_model, device.build_version_sdk))
+          message = 'Gold comparison for %s failed, but ' % render_name
+          if self._env.skia_gold_consider_unsupported:
+            message += 'the --skia-gold-consider-unsupported flag was passed'
           else:
-            _AppendToLog(
-                results, full_test_name,
-                'Gold comparison for %s failed, but model %s with SDK '
-                '%d is not a supported configuration, so ignoring failure.' %
-                (render_name, device.product_model, device.build_version_sdk))
+            message += (
+                'model %s with SDK %d is not a supported configuration' %
+                (device.product_model, device.build_version_sdk))
+
+          if self._test_instance.skia_gold_properties.local_pixel_tests:
+            message += (
+                '. This failure would be ignored on the bots, but failing '
+                'since tests are being run locally.')
+            _AppendToLog(results, full_test_name, message)
+          else:
+            message += ', so ignoring failure.'
+            _AppendToLog(results, full_test_name, message)
             continue
 
         _FailTestIfNecessary(results, full_test_name)

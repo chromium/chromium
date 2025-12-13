@@ -54,7 +54,7 @@ void FilesAppLauncher::LaunchInternal() {
   // Launching traditional files.app and launching SWA files.app need quite
   // different procedure.
   // Use ash::NewWindowDelegate::OpenFileManager that handles the diff nicely.
-  ash::NewWindowDelegate::GetPrimary()->OpenFileManager();
+  ash::NewWindowDelegate::GetInstance()->OpenFileManager();
 }
 
 void FilesAppLauncher::OnAppUpdate(const apps::AppUpdate& update) {

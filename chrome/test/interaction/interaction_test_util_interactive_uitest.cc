@@ -2,24 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/interaction/interaction_test_util.h"
-
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/tabs/tab.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
+#include "ui/views/view.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "ui/base/interaction/interaction_test_util_mac.h"
@@ -47,7 +46,7 @@ class InteractionTestUtilInteractiveUitest : public InProcessBrowserTest {
   }
 
   ui::ElementContext GetContext() {
-    return browser()->window()->GetElementContext();
+    return BrowserElements::From(browser())->GetContext();
   }
 
   ui::test::InteractionTestUtil test_util_;
@@ -61,7 +60,8 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilInteractiveUitest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
-  Tab* const tab = GetBrowserView()->tabstrip()->tab_at(0);
+  views::View* const tab =
+      GetBrowserView()->tab_strip_view()->GetTabAnchorViewAt(0);
 
   // Because context menus run synchronously on Mac we will use an
   // InteractionSequence in order to show the context menu, respond immediately

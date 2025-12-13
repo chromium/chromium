@@ -1,0 +1,10 @@
+{
+  "name": "Bookmarks override test for incognito split mode",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "Test chrome://bookmarks override",
+  "incognito": "split",
+  "chrome_url_overrides": {
+    "bookmarks": "bookmarks.html"
+  }
+}

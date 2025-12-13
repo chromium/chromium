@@ -40,8 +40,6 @@ bool IsPreflightError(network::mojom::CorsError error_code) {
     case network::mojom::CorsError::kPreflightInvalidAllowCredentials:
     case network::mojom::CorsError::kPreflightInvalidStatus:
     case network::mojom::CorsError::kPreflightDisallowedRedirect:
-    case network::mojom::CorsError::kPreflightMissingAllowPrivateNetwork:
-    case network::mojom::CorsError::kPreflightInvalidAllowPrivateNetwork:
       return true;
     default:
       return false;
@@ -180,22 +178,6 @@ String GetErrorStringForIssueSummary(const network::CorsErrorStatus& status,
     case CorsError::kPreflightDisallowedRedirect:
       builder.Append("Redirect is not allowed for a preflight request.");
       break;
-    case CorsError::kPreflightMissingAllowPrivateNetwork:
-      Append(builder, {"No 'Access-Control-Allow-Private-Network' header "
-                       "was present in the preflight response for this private "
-                       "network request targeting the `",
-                       ShortAddressSpace(status.target_address_space),
-                       "` address space."});
-      break;
-    case CorsError::kPreflightInvalidAllowPrivateNetwork:
-      Append(builder,
-             {"The 'Access-Control-Allow-Private-Network' header in the "
-              "preflight response for this private network request targeting "
-              "the `",
-              ShortAddressSpace(status.target_address_space),
-              "` address space had a value of '", EncodeHint(hint),
-              "',  not 'true'."});
-      break;
     case CorsError::kInvalidAllowMethodsPreflightResponse:
       builder.Append(
           "Cannot parse Access-Control-Allow-Methods response header field in "
@@ -223,40 +205,13 @@ String GetErrorStringForIssueSummary(const network::CorsErrorStatus& status,
       break;
     case CorsError::kInvalidPrivateNetworkAccess:
       Append(builder, {"Request had a target IP address space of `",
-                       ShortAddressSpace(status.target_address_space),
+                       ShortAddressSpace(status.inconsistent_address_space),
                        "` yet the resource is in address space `",
                        ShortAddressSpace(status.resource_address_space), "`."});
       break;
-    case CorsError::kUnexpectedPrivateNetworkAccess:
-      Append(builder, {"Request had no target IP address space, yet the "
-                       "resource is in address space `",
-                       ShortAddressSpace(status.resource_address_space), "`."});
-      break;
-    case CorsError::kPreflightMissingPrivateNetworkAccessId:
-      Append(
-          builder,
-          {"No 'Private-Network-Access-Id' header was present in the "
-           "preflight response for this private network request targeting "
-           "the `",
-           ShortAddressSpace(status.target_address_space), "` address space."});
-      break;
-    case CorsError::kPreflightMissingPrivateNetworkAccessName:
-      Append(
-          builder,
-          {"No 'Private-Network-Access-Name' header was present in the "
-           "preflight response for this private network request targeting "
-           "the `",
-           ShortAddressSpace(status.target_address_space), "` address space."});
-      break;
-    case CorsError::kPrivateNetworkAccessPermissionUnavailable:
-      Append(builder, {"Unable to ask for permission to access the `",
-                       ShortAddressSpace(status.target_address_space),
-                       "` IP address space."});
-      break;
-    case CorsError::kPrivateNetworkAccessPermissionDenied:
     case CorsError::kLocalNetworkAccessPermissionDenied:
       Append(builder, {"Permission was denied for this request to access the `",
-                       ShortAddressSpace(status.target_address_space),
+                       ShortAddressSpace(status.resource_address_space),
                        "` address space."});
   }
   return builder.ToString();
@@ -380,22 +335,6 @@ String GetErrorStringForConsoleMessage(const network::CorsErrorStatus& status,
     case CorsError::kPreflightDisallowedRedirect:
       builder.Append("Redirect is not allowed for a preflight request.");
       break;
-    case CorsError::kPreflightMissingAllowPrivateNetwork:
-      Append(builder, {"No 'Access-Control-Allow-Private-Network' header "
-                       "was present in the preflight response for this private "
-                       "network request targeting the `",
-                       ShortAddressSpace(status.target_address_space),
-                       "` address space."});
-      break;
-    case CorsError::kPreflightInvalidAllowPrivateNetwork:
-      Append(builder,
-             {"The 'Access-Control-Allow-Private-Network' header in the "
-              "preflight response for this private network request targeting "
-              "the `",
-              ShortAddressSpace(status.target_address_space),
-              "` address space had a value of '", EncodeHint(hint),
-              "',  not 'true'."});
-      break;
     case CorsError::kInvalidAllowMethodsPreflightResponse:
       builder.Append(
           "Cannot parse Access-Control-Allow-Methods response header field in "
@@ -423,40 +362,13 @@ String GetErrorStringForConsoleMessage(const network::CorsErrorStatus& status,
       break;
     case CorsError::kInvalidPrivateNetworkAccess:
       Append(builder, {"Request had a target IP address space of `",
-                       ShortAddressSpace(status.target_address_space),
+                       ShortAddressSpace(status.inconsistent_address_space),
                        "` yet the resource is in address space `",
                        ShortAddressSpace(status.resource_address_space), "`."});
       break;
-    case CorsError::kUnexpectedPrivateNetworkAccess:
-      Append(builder, {"Request had no target IP address space, yet the "
-                       "resource is in address space `",
-                       ShortAddressSpace(status.resource_address_space), "`."});
-      break;
-    case CorsError::kPreflightMissingPrivateNetworkAccessId:
-      Append(
-          builder,
-          {"No 'Private-Network-Access-Id' header was present in the "
-           "preflight response for this private network request targeting "
-           "the `",
-           ShortAddressSpace(status.target_address_space), "` address space."});
-      break;
-    case CorsError::kPreflightMissingPrivateNetworkAccessName:
-      Append(
-          builder,
-          {"No 'Private-Network-Access-Name' header was present in the "
-           "preflight response for this private network request targeting "
-           "the `",
-           ShortAddressSpace(status.target_address_space), "` address space."});
-      break;
-    case CorsError::kPrivateNetworkAccessPermissionUnavailable:
-      Append(builder, {"Unable to ask for permission to access the `",
-                       ShortAddressSpace(status.target_address_space),
-                       "` IP address space."});
-      break;
-    case CorsError::kPrivateNetworkAccessPermissionDenied:
     case CorsError::kLocalNetworkAccessPermissionDenied:
       Append(builder, {"Permission was denied for this request to access the `",
-                       ShortAddressSpace(status.target_address_space),
+                       ShortAddressSpace(status.resource_address_space),
                        "` address space."});
   }
   return builder.ToString();

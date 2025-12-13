@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -108,9 +109,9 @@ class IdleDelayedTaskHelper : public base::SingleThreadTaskRunner {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     ThreadScheduler::Current()->PostDelayedIdleTask(
         from_here, delay,
-        base::BindOnce([](base::OnceClosure task,
-                          base::TimeTicks deadline) { std::move(task).Run(); },
-                       std::move(task)));
+        blink::BindOnce([](base::OnceClosure task,
+                           base::TimeTicks deadline) { std::move(task).Run(); },
+                        std::move(task)));
     return true;
   }
 
@@ -137,7 +138,7 @@ WebThemeEngine* Platform::ThemeEngine() {
 
 void Platform::InitializeBlink() {
   DCHECK(!did_initialize_blink_);
-  WTF::Partitions::Initialize();
+  Partitions::Initialize();
   InitializeWtf();
   Length::Initialize();
   ProcessHeap::Init();
@@ -209,7 +210,7 @@ void Platform::InitializeMainThreadCommon(
   // This relies on being called prior to
   // PartitionAllocSupport::ReconfigureAfterTaskRunnerInit, which would start
   // memory reclaimer with a regular task runner. The first one prevails.
-  WTF::Partitions::StartMemoryReclaimer(
+  Partitions::StartMemoryReclaimer(
       base::MakeRefCounted<IdleDelayedTaskHelper>());
 }
 
@@ -271,10 +272,18 @@ Platform::CompositorThreadTaskRunner() {
 }
 
 std::unique_ptr<WebGraphicsContext3DProvider>
-Platform::CreateOffscreenGraphicsContext3DProvider(
-    const Platform::ContextAttributes&,
+Platform::CreateWebGLGraphicsContextProvider(
+    bool prefer_low_power_gpu,
+    bool fail_if_major_performance_caveat,
+    WebGLContextType context_type,
     const WebURL& document_url,
-    Platform::GraphicsInfo*) {
+    WebGLContextInfo*) {
+  return nullptr;
+}
+
+std::unique_ptr<WebGraphicsContext3DProvider>
+Platform::CreateRasterGraphicsContextProvider(const WebURL& document_url,
+                                              RasterContextType context_type) {
   return nullptr;
 }
 

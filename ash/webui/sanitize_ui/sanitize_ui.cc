@@ -25,7 +25,7 @@ namespace {
 // This function chooses which view should be shown based on the url. The done
 // page is only shown if the url query is set to "done".
 bool ShowDone(const GURL url) {
-  bool show_done = url.has_query() && url.query() == "done";
+  bool show_done = url.has_query() && url.GetQuery() == "done";
   if (show_done) {
     base::UmaHistogramEnumeration("Sanitize.SanitizeEvent",
                                   ash::SanitizeEvent::kSanitizeDoneScreen);
@@ -172,12 +172,6 @@ SanitizeDialogUI::SanitizeDialogUI(
 }
 
 SanitizeDialogUI::~SanitizeDialogUI() {}
-
-void SanitizeDialogUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
-}
 
 void SanitizeDialogUI::BindInterface(
     mojo::PendingReceiver<sanitize_ui::mojom::SettingsResetter> receiver) {

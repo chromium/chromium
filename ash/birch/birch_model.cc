@@ -22,11 +22,10 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -77,11 +76,11 @@ BirchModel::BirchModel()
     coral_provider_ = std::move(coral_provider);
   }
   Shell::Get()->session_controller()->AddObserver(this);
-  SimpleGeolocationProvider::GetInstance()->AddObserver(this);
+  SystemLocationProvider::GetInstance()->AddObserver(this);
 }
 
 BirchModel::~BirchModel() {
-  SimpleGeolocationProvider::GetInstance()->RemoveObserver(this);
+  SystemLocationProvider::GetInstance()->RemoveObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
@@ -116,7 +115,7 @@ void BirchModel::SetCalendarItems(
     // fetch request.
     return;
   }
-  SetItems(calendar_data_, calendar_items, /*record_latency=*/true);
+  SetItems(calendar_data_, calendar_items);
 }
 
 void BirchModel::SetAttachmentItems(
@@ -127,55 +126,51 @@ void BirchModel::SetAttachmentItems(
     // MaybeRespondToDataFetchRequest() for a data type that's disabled by pref.
     return;
   }
-  // There is no separate latency measurement for attachments because they come
-  // from the calendar provider.
-  SetItems(attachment_data_, attachment_items, /*record_latency=*/false);
+  SetItems(attachment_data_, attachment_items);
 }
 
 void BirchModel::SetFileSuggestItems(
     const std::vector<BirchFileItem>& file_suggest_items) {
-  SetItems(file_suggest_data_, file_suggest_items,
-           /*record_latency=*/true);
+  SetItems(file_suggest_data_, file_suggest_items);
 }
 
 void BirchModel::SetRecentTabItems(
     const std::vector<BirchTabItem>& recent_tab_items) {
-  SetItems(recent_tab_data_, recent_tab_items, /*record_latency=*/true);
+  SetItems(recent_tab_data_, recent_tab_items);
 }
 
 void BirchModel::SetLastActiveItems(
     const std::vector<BirchLastActiveItem>& items) {
-  SetItems(last_active_data_, items, /*record_latency=*/true);
+  SetItems(last_active_data_, items);
 }
 
 void BirchModel::SetMostVisitedItems(
     const std::vector<BirchMostVisitedItem>& items) {
-  SetItems(most_visited_data_, items, /*record_latency=*/true);
+  SetItems(most_visited_data_, items);
 }
 
 void BirchModel::SetSelfShareItems(
     const std::vector<BirchSelfShareItem>& self_share_items) {
-  SetItems(self_share_data_, self_share_items, /*record_latency=*/true);
+  SetItems(self_share_data_, self_share_items);
 }
 
 void BirchModel::SetLostMediaItems(
     const std::vector<BirchLostMediaItem>& lost_media_items) {
-  SetItems(lost_media_data_, lost_media_items, /*record_latency=*/true);
+  SetItems(lost_media_data_, lost_media_items);
 }
 
 void BirchModel::SetWeatherItems(
     const std::vector<BirchWeatherItem>& weather_items) {
-  SetItems(weather_data_, weather_items, /*record_latency=*/true);
+  SetItems(weather_data_, weather_items);
 }
 
 void BirchModel::SetReleaseNotesItems(
     const std::vector<BirchReleaseNotesItem>& release_notes_items) {
-  SetItems(release_notes_data_, release_notes_items,
-           /*record_latency=*/true);
+  SetItems(release_notes_data_, release_notes_items);
 }
 
 void BirchModel::SetCoralItems(const std::vector<BirchCoralItem>& coral_items) {
-  SetItems(coral_data_, coral_items, /*record_latency=*/true);
+  SetItems(coral_data_, coral_items);
 }
 
 void BirchModel::SetClientAndInit(BirchClient* client) {
@@ -272,7 +267,6 @@ void BirchModel::RequestBirchDataFetch(bool is_post_login,
   // freshness values after all calls to `StartDataFetchIfNeeded()`.
   MarkDataNotFresh();
 
-  is_post_login_fetch_ = is_post_login;
   fetch_start_time_ = GetNow();
 
   if (birch_client_) {
@@ -528,8 +522,6 @@ void BirchModel::RemoveItem(BirchItem* item) {
   if (!IsItemRemoverInitialized()) {
     return;
   }
-  // Record that the user hid a chip, with the type of the chip.
-  base::UmaHistogramEnumeration("Ash.Birch.Chip.Hidden", item->GetType());
 
   item_remover_->RemoveItem(item);
 
@@ -580,7 +572,6 @@ void BirchModel::OnActiveUserSessionChanged(const AccountId& account_id) {
     // This is the initial notification on signin.
     has_active_user_session_changed_ = true;
     InitPrefChangeRegistrars();
-    RecordProviderHiddenHistograms();
     return;
   }
 
@@ -647,15 +638,10 @@ void BirchModel::SetDataFetchCallbackForTest(base::OnceClosure callback) {
 
 template <typename T>
 void BirchModel::SetItems(DataTypeInfo<T>& data_info,
-                          const std::vector<T>& items,
-                          bool record_latency) {
+                          const std::vector<T>& items) {
   if (data_info.fetch_in_progress) {
     base::UmaHistogramCounts100(
         "Ash.Birch.ResultsReturned." + data_info.metric_suffix, items.size());
-    if (record_latency) {
-      base::UmaHistogramTimes("Ash.Birch.Latency." + data_info.metric_suffix,
-                              GetNow() - data_info.fetch_start_time);
-    }
     data_info.fetch_in_progress = false;
   }
   data_info.items = std::move(items);
@@ -690,19 +676,6 @@ void BirchModel::HandleLostMediaUpdateRequest() {
 void BirchModel::MaybeRespondToDataFetchRequest() {
   if (!IsDataFresh() || !IsItemRemoverInitialized()) {
     return;
-  }
-
-  // Was this a real fetch being completed (rather than a provider supplying
-  // data outside of a fetch)?
-  bool was_model_fetch = !pending_requests_.empty();
-  if (was_model_fetch) {
-    // All data providers have replied, so compute total latency.
-    base::TimeDelta latency = GetNow() - fetch_start_time_;
-    if (is_post_login_fetch_) {
-      base::UmaHistogramTimes("Ash.Birch.TotalLatencyPostLogin", latency);
-    } else {
-      base::UmaHistogramTimes("Ash.Birch.TotalLatency", latency);
-    }
   }
 
   std::vector<base::OnceClosure> callbacks;
@@ -848,28 +821,6 @@ void BirchModel::OnReleaseNotesPrefChanged() {
     StartDataFetchIfNeeded(release_notes_data_,
                            birch_client_->GetReleaseNotesProvider());
   }
-}
-
-void BirchModel::RecordProviderHiddenHistograms() {
-  PrefService* prefs = GetPrefService();
-  if (!prefs) {
-    return;
-  }
-
-  base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.Calendar",
-                            !prefs->GetBoolean(prefs::kBirchUseCalendar));
-  base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.FileSuggest",
-                            !prefs->GetBoolean(prefs::kBirchUseFileSuggest));
-  base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.ChromeTabs",
-                            !prefs->GetBoolean(prefs::kBirchUseChromeTabs));
-  base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.LostMedia",
-                            !prefs->GetBoolean(prefs::kBirchUseLostMedia));
-  base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.Weather",
-                            !prefs->GetBoolean(prefs::kBirchUseWeather));
-  base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.ReleaseNotes",
-                            !prefs->GetBoolean(prefs::kBirchUseReleaseNotes));
-  base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.Coral",
-                            !prefs->GetBoolean(prefs::kBirchUseCoral));
 }
 
 bool BirchModel::IsItemRemoverInitialized() {

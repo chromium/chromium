@@ -53,7 +53,7 @@ chrome.test.runTests([
   async function onMessagePromiseRejectWithNonObject() {
     await chrome.test.assertPromiseRejects(
         chrome.runtime.sendMessage(
-            'return promise reject with a non-error object'),
+          'return promise reject with a non-object'),
         'Error: A runtime.onMessage listener\'s promise rejected without an ' +
             'Error');
     chrome.test.succeed();
@@ -61,10 +61,18 @@ chrome.test.runTests([
 
   // Tests if the rejection value is not passed anything, then a generic Error
   // will be provided to the caller.
-  async function onMessagePromiseRejectWithNoRejectValuePromise() {
+  async function onMessagePromiseRejectWithNoRejectValue() {
     await chrome.test.assertPromiseRejects(
         chrome.runtime.sendMessage(
             'return promise reject with no reject value'),
+        'Error: A runtime.onMessage listener\'s promise rejected without an ' +
+            'Error');
+    chrome.test.succeed();
+  },
+
+  async function onMessagePromiseRejectWithUndefinedValue() {
+    await chrome.test.assertPromiseRejects(
+        chrome.runtime.sendMessage('return promise reject with undefined'),
         'Error: A runtime.onMessage listener\'s promise rejected without an ' +
             'Error');
     chrome.test.succeed();

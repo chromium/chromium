@@ -9,8 +9,10 @@
 #include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "cc/base/features.h"
 #include "components/shared_highlighting/core/common/fragment_directives_constants.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -52,7 +54,24 @@ class AnnotationAgentImplTest : public SimTest {
 
  protected:
   AnnotationAgentImplTest()
-      : SimTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : SimTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {
+            ::features::kProgrammaticScrollAnimationOverride,
+            {
+                {"cubic_bezier_x1", "0.4"},          //
+                {"cubic_bezier_y1", "0.0"},          //
+                {"cubic_bezier_x2", "0.0"},          //
+                {"cubic_bezier_y2", "1.0"},          //
+                {"max_animation_duration", "1.5s"},  //
+            }  //
+        }  //
+    };
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        std::move(enabled_features),
+        /*disabled_features=*/{});
+  }
 
   // Helper to create a range to some text within a single text node. Verifies
   // the Range selects the `expected` text.
@@ -244,6 +263,9 @@ class AnnotationAgentImplTest : public SimTest {
     return GetDocument().Markers().glic_animation_state_ ==
            DocumentMarkerController::GlicAnimationState::kNotStarted;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the agent type is correctly set.
@@ -606,7 +628,7 @@ TEST_F(AnnotationAgentImplTest, AttachmentReportsRectsToHost) {
     WebView().SetPageScaleFactor(2);
     GetDocument().View()->GetRootFrameViewport()->SetScrollOffset(
         ScrollOffset(123, 3000), mojom::blink::ScrollType::kProgrammatic,
-        mojom::blink::ScrollBehavior::kInstant,
+        cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant,
         ScrollableArea::ScrollCallback());
 
     // The visual viewport consumes all the horizontal scroll and 300px (its
@@ -1238,6 +1260,39 @@ TEST_F(AnnotationAgentImplTest, NodeContentsBeginsWithLineBreak) {
   EXPECT_TRUE(ExpectInViewport(*element_foo));
 }
 
+TEST_F(AnnotationAgentImplTest, NodeWithDisplayContents) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+     <style>
+      #container {
+        position: absolute;
+        width: 200px;
+        height: 20px;
+        left: 0;
+        top: 20000px;
+      }
+    </style>
+    <body>
+      <div id="container">
+        <div id="contents" style="display: contents;">Text</div>
+      </div>
+    </body>
+  )HTML");
+
+  auto* div_with_display_contents =
+      GetDocument().body()->getElementById(AtomicString("contents"));
+  ASSERT_NE(div_with_display_contents, nullptr);
+  auto* agent = CreateNodeAgent(div_with_display_contents->GetDomNodeId());
+  // Produce a compositor frame. This should process the DOM mutations and
+  // finish attaching the agent.
+  Compositor().BeginFrame();
+  EXPECT_TRUE(agent->IsAttached());
+  agent->ScrollIntoView(/*applies_focus=*/false);
+  EXPECT_TRUE(ExpectInViewport(*div_with_display_contents->firstChild()));
+}
+
 // kTextFinder type annotations must not cause side-effects. Ensure they do not
 // expand a hidden=until-found element.
 TEST_F(AnnotationAgentImplTest, TextFinderDoesntMutateDom) {
@@ -1572,6 +1627,30 @@ TEST_F(AnnotationAgentImplTest, TextFinderDoesntFindOffscreenFixed) {
   }
 }
 
+TEST_F(AnnotationAgentImplTest, TextFinderFindsAcrossDisplayContents) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <body>
+      <div id="1">
+        <div id="2" style="display: contents;">
+          <span>Hello </span>
+          <span>world!</span>
+        </div>
+      </div>
+    </body>
+  )HTML");
+  Compositor().BeginFrame();
+
+  auto* agent = CreateTextFinderAgent("Hello%20world!",
+                                      mojom::blink::AnnotationType::kTextFinder);
+  ASSERT_TRUE(agent->NeedsAttachment());
+
+  Compositor().BeginFrame();
+  EXPECT_TRUE(agent->IsAttached());
+}
+
 TEST_F(AnnotationAgentImplTest, GlicShouldAnimateScroll) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
@@ -1753,12 +1832,13 @@ TEST_F(AnnotationAgentImplTest, GlicScrollConsidersDeviceScaleFactor) {
   Compositor().BeginFrame();
   EXPECT_TRUE(ExpectNotInViewport(*element_foo));
 
-  // Start and complete the animation (which should happen within 700 ms based
-  // on kDeltaBasedMaxDuration in scroll_offset_animation_curve.cc).
+  // Start and complete the animation (which should happen within 1500 ms based
+  // on kProgrammaticScrollAnimationOverride's kMaxAnimationDuration in
+  // cc/base/features.cc).
   task_environment().FastForwardBy(base::Milliseconds(16));
   Compositor().BeginFrame();
   task_environment().FastForwardBy(base::Milliseconds(700));
-  Compositor().BeginFrame(/*time_delta_in_seconds*/ 0.7);
+  Compositor().BeginFrame(/*time_delta_in_seconds=*/1.5);
 
   // The text should now be in the viewport.
   EXPECT_TRUE(ExpectInViewport(*element_foo));
@@ -2194,8 +2274,8 @@ TEST_F(AnnotationAgentImplTest,
 
   EXPECT_TRUE(GlicAnimationNotStarted());
 
-  // Smooth scrolling is guaranteed to finish within 750ms.
-  task_environment().FastForwardBy(base::Seconds(1));
+  // Smooth scrolling is guaranteed to finish within 1500ms.
+  task_environment().FastForwardBy(base::Seconds(2));
   Compositor().BeginFrame(1.0);
   EXPECT_TRUE(ExpectInViewport(*element_foo));
   // Since the text node is in the viewport, we must have queued the first
@@ -2318,8 +2398,8 @@ TEST_F(AnnotationAgentImplTest,
   Compositor().BeginFrame();
   EXPECT_TRUE(GlicAnimationNotStarted());
 
-  // Max smooth scrolling is capped at 750ms.
-  task_environment().FastForwardBy(base::Seconds(1));
+  // Max smooth scrolling is capped at 1500ms.
+  task_environment().FastForwardBy(base::Seconds(2));
   Compositor().BeginFrame(1.0);
   EXPECT_TRUE(ExpectInViewport(*element_foo));
   // Since the text node is in the viewport, we must have queued the first
@@ -2336,8 +2416,8 @@ TEST_F(AnnotationAgentImplTest,
   Element* element_bar = GetDocument().getElementById(AtomicString("bar"));
   EXPECT_TRUE(ExpectNotInViewport(*element_bar));
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("start");
-  options->setBehavior("instant");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+  options->setBehavior(V8ScrollBehavior::Enum::kInstant);
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
   element_bar->scrollIntoViewForTesting(arg);

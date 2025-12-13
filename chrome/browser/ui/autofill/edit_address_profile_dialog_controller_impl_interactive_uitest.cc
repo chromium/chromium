@@ -24,6 +24,11 @@ class EditAddressProfileDialogControllerImplTest
     : public InteractiveBrowserTest {
  protected:
   EditAddressProfileDialogControllerImplTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {features::kAutofillSupportLastNamePrefix,
+         features::kAutofillSupportSplitZipCode},
+        /*disabled_features=*/{});
     local_profile_ = std::make_unique<AutofillProfile>(
         AutofillProfile::RecordType::kLocalOrSyncable,
         AddressCountryCode("US"));
@@ -90,8 +95,7 @@ class EditAddressProfileDialogControllerImplTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{
-    features::kAutofillSupportLastNamePrefix};
+  base::test::ScopedFeatureList feature_list_;
   // The latest user decisive interaction with the editor, e.g. Save or Cancel
   // the editor, it is set in the AddressProfileSavePromptCallback passed to the
   // prompt.

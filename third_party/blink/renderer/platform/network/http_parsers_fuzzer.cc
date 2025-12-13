@@ -28,7 +28,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   base::TimeDelta delay;
   blink::String url;
   blink::ResourceResponse response;
-  wtf_size_t end;
+  blink::wtf_size_t end;
 
   // SAFETY: libfuzzer provides a valid pointer and size pair.
   auto data_span = UNSAFE_BUFFERS(base::span(data, size));

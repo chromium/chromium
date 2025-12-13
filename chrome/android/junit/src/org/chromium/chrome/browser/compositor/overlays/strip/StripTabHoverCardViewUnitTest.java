@@ -45,8 +45,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
@@ -54,7 +52,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.overlays.strip.StripTabHoverCardViewUnitTest.ShadowSysUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
@@ -66,20 +63,8 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link StripTabHoverCardView}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        qualifiers = "sw600dp",
-        shadows = {ShadowSysUtils.class})
+@Config(manifest = Config.NONE, qualifiers = "sw600dp")
 public class StripTabHoverCardViewUnitTest {
-    @Implements(SysUtils.class)
-    static class ShadowSysUtils {
-        public static boolean sIsLowEndDevice;
-
-        @Implementation
-        public static boolean isLowEndDevice() {
-            return sIsLowEndDevice;
-        }
-    }
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -136,10 +121,11 @@ public class StripTabHoverCardViewUnitTest {
         var originalLayoutParams = new LayoutParams((int) mHoverCardWidth, 200);
         when(mTabHoverCardView.getLayoutParams()).thenReturn(originalLayoutParams);
 
-        ShadowSysUtils.sIsLowEndDevice = false;
+        SysUtils.setIsLowEndDeviceForTesting(false);
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void show() {
         var url = JUnitTestGURLs.EXAMPLE_URL;
         var title = "Tab 1";
@@ -195,6 +181,7 @@ public class StripTabHoverCardViewUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void hoveredTabUsesChromeScheme() {
         var url = JUnitTestGURLs.NTP_URL;
         var title = "Tab 1";
@@ -406,7 +393,7 @@ public class StripTabHoverCardViewUnitTest {
 
     @Test
     public void getHoverCardPosition_LowEndDevice() {
-        ShadowSysUtils.sIsLowEndDevice = true;
+        SysUtils.setIsLowEndDeviceForTesting(true);
 
         float[] position =
                 mTabHoverCardView.getHoverCardPosition(
@@ -508,7 +495,7 @@ public class StripTabHoverCardViewUnitTest {
 
     @Test
     public void maybeUpdateBackgroundOnLowEndDevice() {
-        ShadowSysUtils.sIsLowEndDevice = true;
+        SysUtils.setIsLowEndDeviceForTesting(true);
         mTabHoverCardView.maybeUpdateBackgroundOnLowEndDevice();
 
         assertEquals(

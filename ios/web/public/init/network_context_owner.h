@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/gtest_prod_util.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "net/url_request/url_request_context_getter_observer.h"

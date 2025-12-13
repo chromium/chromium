@@ -15,11 +15,12 @@ namespace base {
 // Helper function for creating a std::string_view from a string literal that
 // preserves internal NUL characters.
 template <class CharT, size_t N>
-std::basic_string_view<CharT> MakeStringViewWithNulChars(
+constexpr std::basic_string_view<CharT> MakeStringViewWithNulChars(
     const CharT (&lit LIFETIME_BOUND)[N])
     ENABLE_IF_ATTR(lit[N - 1u] == CharT{0},
                    "requires string literal as input") {
-  return std::basic_string_view<CharT>(lit, N - 1u);
+  // SAFETY: length of string literal is deduced by the compiler.
+  return UNSAFE_BUFFERS(std::basic_string_view<CharT>(lit, N - 1u));
 }
 
 // Converts a span over byte-like elements to `std::string_view`.
@@ -29,18 +30,21 @@ std::basic_string_view<CharT> MakeStringViewWithNulChars(
 // rightfully should be containers of `uint8_t`.
 //
 // TODO(C++23): Replace with direct use of the `std::string_view` range
-// constructor.
+// constructor to avoid marking UNSAFE_BUFFERS.
 constexpr auto as_string_view(span<const char> s) {
-  return std::string_view(s.begin(), s.end());
+  // SAFETY: legitimate spans are valid from `begin()` to `end()`.
+  return UNSAFE_BUFFERS(std::string_view(s.begin(), s.end()));
 }
 constexpr auto as_string_view(span<const unsigned char> s) {
   return as_string_view(as_chars(s));
 }
 constexpr auto as_string_view(span<const char16_t> s) {
-  return std::u16string_view(s.begin(), s.end());
+  // SAFETY: legitimate spans are valid from `begin()` to `end()`.
+  return UNSAFE_BUFFERS(std::u16string_view(s.begin(), s.end()));
 }
 constexpr auto as_string_view(span<const wchar_t> s) {
-  return std::wstring_view(s.begin(), s.end());
+  // SAFETY: legitimate spans are valid from `begin()` to `end()`.
+  return UNSAFE_BUFFERS(std::wstring_view(s.begin(), s.end()));
 }
 
 }  // namespace base

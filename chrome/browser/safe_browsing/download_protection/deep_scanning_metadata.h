@@ -17,6 +17,10 @@
 #include "content/public/browser/browser_context.h"
 #include "url/gurl.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace safe_browsing {
 
 // Download metadata interface with the subset of methods needed for safe
@@ -109,6 +113,11 @@ class DeepScanningMetadata {
   // containing the download link, not the URL of the file itself.
   virtual google::protobuf::RepeatedPtrField<std::string> CollectFrameUrls()
       const = 0;
+
+  // Returns the web contents the download originated from. This can return
+  // nullptr, for example in cases when the tab that opened the download was
+  // closed.
+  virtual content::WebContents* web_contents() const = 0;
 
  protected:
   // Potentially overrides the deep scan result based on verdict reason and

@@ -22,7 +22,7 @@ namespace base {
 
 std::unique_ptr<StackSampler> StackSampler::Create(
     SamplingProfilerThreadToken thread_token,
-    std::unique_ptr<StackUnwindData> stack_unwind_data,
+    scoped_refptr<StackUnwindData> stack_unwind_data,
     UnwindersFactory core_unwinders_factory,
     RepeatingClosure record_sample_callback,
     StackSamplerTestDelegate* test_delegate) {

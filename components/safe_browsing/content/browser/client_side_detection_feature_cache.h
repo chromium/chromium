@@ -10,6 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/containers/queue.h"
+#include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"

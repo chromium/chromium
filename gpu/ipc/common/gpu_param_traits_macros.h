@@ -7,7 +7,7 @@
 
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/ipc/common/gpu_ipc_common_export.h"
-#include "ipc/ipc_message_macros.h"
+#include "ipc/param_traits_macros.h"
 #include "ui/gfx/ipc/gfx_param_traits.h"
 
 #undef IPC_MESSAGE_EXPORT

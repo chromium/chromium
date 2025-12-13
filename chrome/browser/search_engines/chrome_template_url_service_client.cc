@@ -4,6 +4,9 @@
 
 #include "chrome/browser/search_engines/chrome_template_url_service_client.h"
 
+#include "base/feature_list.h"
+#include "components/history/core/browser/features.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/search_engines/template_url_service.h"
 
 ChromeTemplateURLServiceClient::ChromeTemplateURLServiceClient(
@@ -55,20 +58,38 @@ void ChromeTemplateURLServiceClient::AddKeywordGeneratedVisit(const GURL& url) {
         url, base::Time::Now(), /*context_id=*/0, /*nav_entry_id=*/0,
         /*referrer=*/GURL(), history::RedirectList(),
         ui::PAGE_TRANSITION_KEYWORD_GENERATED, history::SOURCE_BROWSED,
+        history::VisitResponseCodeCategory::kNot404,
         /*did_replace_entry=*/false);
 }
 
 void ChromeTemplateURLServiceClient::OnURLVisited(
     history::HistoryService* history_service,
-    const history::URLRow& url_row,
-    const history::VisitRow& new_visit) {
+    const history::VisitedURLInfo& visited_url_info) {
   DCHECK_EQ(history_service_, history_service);
   if (!owner_)
     return;
+  // Filter out 404 visits to prevent them from informing search
+  // recommendations and impacting user journeys.
+  if (visited_url_info.response_code_category ==
+      history::VisitResponseCodeCategory::k404) {
+    return;
+  }
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Filter out `SOURCE_ACTOR` visits to prevent them from informing search
+  // recommendations and impacting user journeys.
+  // TODO(crbug.com/464331451): Add tests to check that `SOURCE ACTOR` visits
+  // are dropped.
+  if (base::FeatureList::IsEnabled(
+          history::kBrowsingHistoryActorIntegrationM2) &&
+      visited_url_info.visit_row.source == history::SOURCE_ACTOR) {
+    return;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   TemplateURLService::URLVisitedDetails visited_details;
-  visited_details.url = url_row.url();
+  visited_details.url = visited_url_info.url_row.url();
   visited_details.is_keyword_transition = ui::PageTransitionCoreTypeIs(
-      new_visit.transition, ui::PAGE_TRANSITION_KEYWORD);
+      visited_url_info.visit_row.transition, ui::PAGE_TRANSITION_KEYWORD);
   owner_->OnHistoryURLVisited(visited_details);
 }

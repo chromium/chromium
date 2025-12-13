@@ -23,7 +23,7 @@ source_set("magic_boost") {
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/ui/ash/editor_menu:utils",
     "//chrome/browser/ui/ash/read_write_cards",
-    "//chromeos/components/magic_boost/public/cpp:cpp",
+    "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/components/mahi/public/cpp",
     "//chromeos/crosapi/mojom",
     "//chromeos/strings:strings_grit",

@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
@@ -114,9 +115,13 @@ void LoadRestoredTabIfVisible(Browser* browser,
   // A layout should already have been performed to determine the contents size.
   // The contents size should not be empty, unless the browser size and restored
   // size are also empty.
-  DCHECK(!browser->window()->GetContentsSize().IsEmpty() ||
-         (browser->window()->GetBounds().IsEmpty() &&
-          browser->window()->GetRestoredBounds().IsEmpty()));
+  // WebUI browser's content size is not available until the WebUI page is
+  // loaded.
+  if (!webui_browser::IsWebUIBrowserEnabled()) {
+    DCHECK(!browser->window()->GetContentsSize().IsEmpty() ||
+           (browser->window()->GetBounds().IsEmpty() &&
+            browser->window()->GetRestoredBounds().IsEmpty()));
+  }
   DCHECK_EQ(web_contents->GetSize(), browser->window()->GetContentsSize());
 
   web_contents->GetController().LoadIfNecessary();
@@ -185,8 +190,7 @@ WebContents* AddRestoredTabImpl(std::unique_ptr<WebContents> web_contents,
     // the throbber when a background restored tab is loading.
     tabs::TabInterface* const tab_interface =
         tabs::TabInterface::GetFromContents(raw_web_contents);
-    tabs::TabFeatures* const tab_features = tab_interface->GetTabFeatures();
-    tab_features->tab_ui_helper()->set_created_by_session_restore(true);
+    TabUIHelper::From(tab_interface)->set_created_by_session_restore(true);
   }
 
   // We set the size of the view here, before Blink does its initial layout.
@@ -311,8 +315,7 @@ WebContents* ReplaceRestoredTab(
     // the throbber when a background restored tab is loading.
     tabs::TabInterface* const tab_interface =
         tabs::TabInterface::GetFromContents(raw_web_contents);
-    tabs::TabFeatures* const tab_features = tab_interface->GetTabFeatures();
-    tab_features->tab_ui_helper()->set_created_by_session_restore(true);
+    TabUIHelper::From(tab_interface)->set_created_by_session_restore(true);
   }
 
   tab_strip->CloseWebContentsAt(insertion_index, TabCloseTypes::CLOSE_NONE);

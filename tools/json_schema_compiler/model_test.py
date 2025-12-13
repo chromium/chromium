@@ -77,19 +77,27 @@ class ModelTest(unittest.TestCase):
                      sorted(self.permissions.functions.keys()))
 
   def testHasTypes(self):
-    self.assertEqual(['Tab'], list(self.tabs.types.keys()))
+    self.assertEqual([
+        'TabStatus', 'MutedInfoReason', 'MutedInfo', 'Tab', 'ZoomSettingsMode',
+        'ZoomSettingsScope', 'ZoomSettings', 'WindowType'
+    ], list(self.tabs.types.keys()))
     self.assertEqual(['Permissions'], list(self.permissions.types.keys()))
-    self.assertEqual(['Window'], list(self.windows.types.keys()))
+    self.assertEqual(
+        ['WindowType', 'WindowState', 'Window', 'CreateType', 'QueryOptions'],
+        list(self.windows.types.keys()))
 
   def testHasProperties(self):
     self.assertEqual([
-        "active", "favIconUrl", "highlighted", "id", "incognito", "index",
-        "pinned", "selected", "status", "title", "url", "windowId"
+        "active", "audible", "autoDiscardable", "discarded", "favIconUrl",
+        "frozen", "groupId", "height", "highlighted", "id", "incognito",
+        "index", "lastAccessed", "mutedInfo", "openerTabId", "pendingUrl",
+        "pinned", "selected", "sessionId", "splitViewId", "status", "title",
+        "url", "width", "windowId"
     ], sorted(self.tabs.types['Tab'].properties.keys()))
 
   def testProperties(self):
     string_prop = self.tabs.types['Tab'].properties['status']
-    self.assertEqual(model.PropertyType.STRING, string_prop.type_.property_type)
+    self.assertEqual(model.PropertyType.REF, string_prop.type_.property_type)
     integer_prop = self.tabs.types['Tab'].properties['id']
     self.assertEqual(model.PropertyType.INTEGER,
                      integer_prop.type_.property_type)
@@ -101,7 +109,9 @@ class ModelTest(unittest.TestCase):
     object_prop = self.tabs.functions['query'].params[0]
     self.assertEqual(model.PropertyType.OBJECT, object_prop.type_.property_type)
     self.assertEqual([
-        "active", "highlighted", "pinned", "status", "title", "url", "windowId",
+        "active", "audible", "autoDiscardable", "currentWindow", "discarded",
+        "frozen", "groupId", "highlighted", "index", "lastFocusedWindow",
+        "muted", "pinned", "splitViewId", "status", "title", "url", "windowId",
         "windowType"
     ], sorted(object_prop.type_.properties.keys()))
 
@@ -134,6 +144,18 @@ class ModelTest(unittest.TestCase):
         'path/to/returns_async_missing_parameters_key.json',
         self.model.AddNamespace, test_json[0],
         'path/to/returns_async_missing_parameters_key.json')
+
+  def testNodocSpecifiedAsStringException(self):
+    # Note: there are checks for this on all the valid places nodoc can be used,
+    # but this test only verifies it for a property on a type.
+    test_json = CachedLoad('test/nodoc_specified_as_string.json')
+    self.assertRaisesRegex(
+        model.ParseException,
+        'Model parse exception at:\nnodocException\nSomeType\nNodocProperty\n'
+        '  in path/to/nodoc_specified_as_string.json\n'
+        'The attribute "nodoc" must be specified as <class \'bool\'>, but was '
+        'speficied as <class \'str\'>.', self.model.AddNamespace, test_json[0],
+        'path/to/nodoc_specified_as_string.json')
 
   def testDescription(self):
     self.assertFalse(

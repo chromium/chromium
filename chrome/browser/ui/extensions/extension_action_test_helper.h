@@ -11,7 +11,7 @@
 #include <string>
 
 #include "extensions/common/extension_id.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class Browser;
 

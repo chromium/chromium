@@ -3,20 +3,47 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['testing/common_e2e_test_base.js']);
+GEN_INCLUDE(['testing/e2e_test_base.js']);
 
-/** Test fixture for array_util.js. */
-AccessibilityExtensionRepeatedEventHandlerTest =
-    class extends CommonE2ETestBase {
+/**
+ * Test fixture for repeated_event_handler.js.
+ * Note it uses SwitchAccess extension because `repeated_event_handler.js` is
+ * only loaded there.
+ */
+AccessibilityExtensionRepeatedEventHandlerTest = class extends E2ETestBase {
+  /** @override */
+  testGenCppIncludes() {
+    super.testGenCppIncludes();
+    GEN(`
+#include "ash/accessibility/accessibility_controller.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
+    `);
+  }
+
+  /** @override */
+  testGenPreamble() {
+    super.testGenPreamble();
+    GEN(`
+    auto* controller = ash::AccessibilityController::Get();
+    controller->DisableSwitchAccessDisableConfirmationDialogTesting();
+    // Don't show the dialog saying Switch Access was enabled.
+    controller->DisableSwitchAccessEnableNotificationTesting();
+    base::OnceClosure load_cb =
+        base::BindOnce(&ash::AccessibilityManager::SetSwitchAccessEnabled,
+            base::Unretained(ash::AccessibilityManager::Get()),
+            true);
+    `);
+    super.testGenPreambleCommon('kSwitchAccessExtensionId');
+  }
+
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      importModule('EventGenerator', '/common/event_generator.js'),
-      importModule('KeyCode', '/common/key_code.js'),
-      importModule('RepeatedEventHandler', '/common/repeated_event_handler.js'),
-    ]);
+    const imports = TestImportManager.getImports();
+    globalThis.EventGenerator = imports.EventGenerator;
+    globalThis.KeyCode = imports.KeyCode;
+    globalThis.RepeatedEventHandler = imports.RepeatedEventHandler;
   }
 };
 

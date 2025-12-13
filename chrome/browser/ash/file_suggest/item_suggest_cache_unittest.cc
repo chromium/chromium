@@ -90,7 +90,8 @@ class ItemSuggestCacheTest : public testing::Test {
   ~ItemSuggestCacheTest() override = default;
 
   base::Value Parse(const std::string& json) {
-    return base::JSONReader::Read(json).value();
+    return base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+        .value();
   }
 
   void ResultMatches(const ItemSuggestCache::Result& actual,

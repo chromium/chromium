@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
@@ -36,6 +37,7 @@ namespace {
 
 using ::testing::A;
 using ::testing::Return;
+using SaveCardPromptOffer = autofill::autofill_metrics::SaveCardPromptOffer;
 using SaveCreditCardPromptResultIOS =
     autofill::autofill_metrics::SaveCreditCardPromptResultIOS;
 using SaveCreditCardOptions =
@@ -48,11 +50,15 @@ static constexpr base::TimeDelta kConfirmationStateDuration =
 
 // Details of the card to be saved.
 constexpr NSString* kCardHolderName = @"Name";
-NSString* kValidExpirationMonth =
+NSString* const kValidExpirationMonth =
     base::SysUTF8ToNSString(autofill::test::NextMonth());
-NSString* kValidExpirationYear =
+NSString* const kValidExpirationYear =
     base::SysUTF8ToNSString(autofill::test::NextYear());
 
+constexpr NSString* kCardCvc = @"123";
+
+constexpr std::string_view kSaveCreditCardPromptOfferBaseHistogram =
+    "Autofill.SaveCreditCardPromptOffer.IOS";
 constexpr char kSaveCreditCardPromptResultHistogramStringForLocalSave[] =
     "Autofill.SaveCreditCardPromptResult.IOS.Local.Modal.NumStrikes.0."
     "NoFixFlow";
@@ -119,9 +125,15 @@ constexpr char kSaveCreditCardPromptResultHistogramStringForServerSave[] =
 // Test fixture for SaveCardInfobarModalOverlayMediator.
 class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
  public:
-  SaveCardInfobarModalOverlayMediatorTest(bool for_upload = true)
+  SaveCardInfobarModalOverlayMediatorTest(
+      bool for_upload = true,
+      autofill::payments::PaymentsAutofillClient::CardSaveType card_save_type =
+          autofill::payments::PaymentsAutofillClient::CardSaveType::
+              kCardSaveOnly)
       : mediator_delegate_(
             OCMStrictProtocolMock(@protocol(OverlayRequestMediatorDelegate))) {
+    feature_list_.InitAndEnableFeature(
+        autofill::features::kAutofillEnableCvcStorageAndFilling);
     task_environment_ = std::make_unique<web::WebTaskEnvironment>(
         base::test::TaskEnvironment::TimeSource::MOCK_TIME);
     autofill::CreditCard credit_card(
@@ -131,7 +143,8 @@ class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
         MockAutofillSaveCardInfoBarDelegateMobileFactory::
             CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(
                 for_upload, credit_card,
-                SaveCreditCardOptions().with_num_strikes(0));
+                SaveCreditCardOptions().with_num_strikes(0).with_card_save_type(
+                    card_save_type));
     delegate_ = delegate.get();
     infobar_ = std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeSaveCard,
                                             std::move(delegate));
@@ -159,7 +172,8 @@ class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
   void SaveCard() {
     [mediator_ saveCardWithCardholderName:kCardHolderName
                           expirationMonth:kValidExpirationMonth
-                           expirationYear:kValidExpirationYear];
+                           expirationYear:kValidExpirationYear
+                                  cardCvc:kCardCvc];
   }
 
  protected:
@@ -169,6 +183,7 @@ class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
   raw_ptr<MockAutofillSaveCardInfoBarDelegateMobile> delegate_ = nil;
   SaveCardInfobarModalOverlayMediator* mediator_ = nil;
   id<OverlayRequestMediatorDelegate> mediator_delegate_ = nil;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that a SaveCardInfobarModalOverlayMediator correctly sets up its
@@ -233,6 +248,13 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
 
   mediator_.consumer = consumer;
   histogramTester.ExpectBucketCount(
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram, ".Server.Modal"}),
+      SaveCardPromptOffer::kShown, 1);
+  histogramTester.ExpectBucketCount(
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram,
+                    ".Server.Modal.NumStrikes.0.NoFixFlow"}),
+      SaveCardPromptOffer::kShown, 1);
+  histogramTester.ExpectBucketCount(
       kSaveCreditCardPromptResultHistogramStringForServerSave,
       SaveCreditCardPromptResultIOS::kShown, 1);
 
@@ -257,6 +279,9 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
 
   EXPECT_TRUE(consumer.inLoadingState);
   histogramTester.ExpectBucketCount(
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram, ".Server.Modal"}),
+      SaveCardPromptOffer::kShown, 0);
+  histogramTester.ExpectBucketCount(
       kSaveCreditCardPromptResultHistogramStringForServerSave,
       SaveCreditCardPromptResultIOS::kShown, 0);
 }
@@ -270,6 +295,13 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
       [[FakeSaveCardModalConsumer alloc] init];
 
   mediator_.consumer = consumer;
+  histogramTester.ExpectBucketCount(
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram, ".Server.Modal"}),
+      SaveCardPromptOffer::kShown, 1);
+  histogramTester.ExpectBucketCount(
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram,
+                    ".Server.Modal.NumStrikes.0.NoFixFlow"}),
+      SaveCardPromptOffer::kShown, 1);
   histogramTester.ExpectBucketCount(
       kSaveCreditCardPromptResultHistogramStringForServerSave,
       SaveCreditCardPromptResultIOS::kShown, 1);
@@ -331,7 +363,8 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
   ON_CALL(*delegate_,
           UpdateAndAccept(base::SysNSStringToUTF16(kCardHolderName),
                           base::SysNSStringToUTF16(kValidExpirationMonth),
-                          base::SysNSStringToUTF16(kValidExpirationYear)))
+                          base::SysNSStringToUTF16(kValidExpirationYear),
+                          base::SysNSStringToUTF16(kCardCvc)))
       .WillByDefault(Return(true));
   SaveCard();
   histogramTester.ExpectBucketCount(
@@ -364,6 +397,13 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLocalSave,
       [[FakeSaveCardModalConsumer alloc] init];
 
   mediator_.consumer = consumer;
+  histogramTester.ExpectBucketCount(
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram, ".Local.Modal"}),
+      SaveCardPromptOffer::kShown, 1);
+  histogramTester.ExpectBucketCount(
+      base::StrCat({kSaveCreditCardPromptOfferBaseHistogram,
+                    ".Local.Modal.NumStrikes.0.NoFixFlow"}),
+      SaveCardPromptOffer::kShown, 1);
   histogramTester.ExpectBucketCount(
       kSaveCreditCardPromptResultHistogramStringForLocalSave,
       SaveCreditCardPromptResultIOS::kShown, 1);
@@ -404,7 +444,8 @@ TEST_F(SaveCardInfobarModalOverlayMediatorWithLocalSave,
   EXPECT_CALL(*delegate_,
               UpdateAndAccept(base::SysNSStringToUTF16(kCardHolderName),
                               base::SysNSStringToUTF16(kValidExpirationMonth),
-                              base::SysNSStringToUTF16(kValidExpirationYear)));
+                              base::SysNSStringToUTF16(kValidExpirationYear),
+                              base::SysNSStringToUTF16(kCardCvc)));
   SaveCard();
 
   EXPECT_FALSE(consumer.inLoadingState);
@@ -424,7 +465,8 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest, OnSaveShowLoading) {
   EXPECT_CALL(*delegate_,
               UpdateAndAccept(base::SysNSStringToUTF16(kCardHolderName),
                               base::SysNSStringToUTF16(kValidExpirationMonth),
-                              base::SysNSStringToUTF16(kValidExpirationYear)));
+                              base::SysNSStringToUTF16(kValidExpirationYear),
+                              base::SysNSStringToUTF16(kCardCvc)));
   SaveCard();
 
   EXPECT_TRUE(consumer.inLoadingState);
@@ -552,7 +594,7 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
 
   histogramTester.ExpectUniqueSample(
       "Autofill.CreditCardUpload.LoadingResult",
-      autofill::autofill_metrics::SaveCardPromptResult::kClosed, 1);
+      autofill::autofill_metrics::LegacySaveCardPromptResult::kClosed, 1);
 }
 
 // Tests metrics for loading view shown and dismissed on receiving result from
@@ -574,10 +616,11 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
 
   histogramTester.ExpectUniqueSample(
       "Autofill.CreditCardUpload.LoadingResult",
-      autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted, 1);
+      autofill::autofill_metrics::LegacySaveCardPromptResult::kNotInteracted,
+      1);
   histogramTester.ExpectBucketCount(
       "Autofill.CreditCardUpload.LoadingResult",
-      autofill::autofill_metrics::SaveCardPromptResult::kClosed, 0);
+      autofill::autofill_metrics::LegacySaveCardPromptResult::kClosed, 0);
 }
 
 // Tests metrics for confirmation view shown and dismissed by user.
@@ -602,10 +645,11 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
 
   histogramTester.ExpectUniqueSample(
       "Autofill.CreditCardUpload.ConfirmationResult.CardUploaded",
-      autofill::autofill_metrics::SaveCardPromptResult::kClosed, 1);
+      autofill::autofill_metrics::LegacySaveCardPromptResult::kClosed, 1);
   histogramTester.ExpectBucketCount(
       "Autofill.CreditCardUpload.ConfirmationResult.CardUploaded",
-      autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted, 0);
+      autofill::autofill_metrics::LegacySaveCardPromptResult::kNotInteracted,
+      0);
 }
 
 // Tests metrics for confirmation view shown and auto-closed on
@@ -629,8 +673,134 @@ TEST_F(SaveCardInfobarModalOverlayMediatorTest,
 
   histogramTester.ExpectUniqueSample(
       "Autofill.CreditCardUpload.ConfirmationResult.CardUploaded",
-      autofill::autofill_metrics::SaveCardPromptResult::kNotInteracted, 1);
+      autofill::autofill_metrics::LegacySaveCardPromptResult::kNotInteracted,
+      1);
   histogramTester.ExpectBucketCount(
       "Autofill.CreditCardUpload.ConfirmationResult.CardUploaded",
-      autofill::autofill_metrics::SaveCardPromptResult::kClosed, 0);
+      autofill::autofill_metrics::LegacySaveCardPromptResult::kClosed, 0);
 }
+
+// Tests that the mediator correctly handles an empty CVC when the user saves.
+TEST_F(SaveCardInfobarModalOverlayMediatorTest, OnSaveWithEmptyCVC) {
+  // Expect that the delegate's UpdateAndAccept method is called with an empty
+  // string for the CVC.
+  EXPECT_CALL(*delegate_,
+              UpdateAndAccept(base::SysNSStringToUTF16(kCardHolderName),
+                              base::SysNSStringToUTF16(kValidExpirationMonth),
+                              base::SysNSStringToUTF16(kValidExpirationYear),
+                              testing::IsEmpty()));
+
+  // Call the mediator's save method directly, passing an empty NSString for the
+  // CVC.
+  [mediator_ saveCardWithCardholderName:kCardHolderName
+                        expirationMonth:kValidExpirationMonth
+                         expirationYear:kValidExpirationYear
+                                cardCvc:@""];
+}
+
+struct SaveCardModalMetricsTestCase {
+  const std::string name;
+  const bool is_for_upload;
+  const autofill::payments::PaymentsAutofillClient::CardSaveType card_save_type;
+};
+
+std::string TestCaseName(
+    const ::testing::TestParamInfo<SaveCardModalMetricsTestCase>& info) {
+  return info.param.name;
+}
+
+class SaveCardInfobarModalOverlayMediatorMetricsTest
+    : public SaveCardInfobarModalOverlayMediatorTest,
+      public ::testing::WithParamInterface<SaveCardModalMetricsTestCase> {
+ public:
+  SaveCardInfobarModalOverlayMediatorMetricsTest()
+      // This call now correctly matches the updated base constructor.
+      : SaveCardInfobarModalOverlayMediatorTest(GetParam().is_for_upload,
+                                                GetParam().card_save_type) {}
+
+ protected:
+  std::string GetExpectedHistogramName() {
+    const auto& test_case = GetParam();
+    std::string_view destination =
+        test_case.is_for_upload ? ".Server" : ".Local";
+    std::string_view suffix;
+    switch (test_case.card_save_type) {
+      case autofill::payments::PaymentsAutofillClient::CardSaveType::
+          kCardSaveWithCvc:
+        suffix = ".SavingWithCvc";
+        break;
+      case autofill::payments::PaymentsAutofillClient::CardSaveType::
+          kCardSaveOnly:
+        suffix = "";
+        break;
+      case autofill::payments::PaymentsAutofillClient::CardSaveType::
+          kCvcSaveOnly:
+        ADD_FAILURE() << "This test case shouldn't exist for the banner UI.";
+        break;
+    }
+    return base::StrCat({"Autofill.SaveCreditCardPromptResult.IOS", destination,
+                         ".Modal.NumStrikes.0.NoFixFlow", suffix});
+  }
+};
+
+TEST_P(SaveCardInfobarModalOverlayMediatorMetricsTest, LogsOfferModalShown) {
+  base::HistogramTester histogram_tester;
+  FakeSaveCardModalConsumer* consumer =
+      [[FakeSaveCardModalConsumer alloc] init];
+
+  mediator_.consumer = consumer;
+
+  const auto& test_case = GetParam();
+  std::string destination = test_case.is_for_upload ? ".Server" : ".Local";
+  std::string suffix;
+  switch (test_case.card_save_type) {
+    case autofill::payments::PaymentsAutofillClient::CardSaveType::
+        kCardSaveWithCvc:
+      suffix = ".SavingWithCvc";
+      break;
+    case autofill::payments::PaymentsAutofillClient::CardSaveType::
+        kCardSaveOnly:
+      suffix = "";
+      break;
+    case autofill::payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly:
+      FAIL() << "This test case shouldn't exist for the modal UI.";
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"Autofill.SaveCreditCardPromptOffer.IOS", destination,
+                    ".Modal", suffix}),
+      SaveCardPromptOffer::kShown, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"Autofill.SaveCreditCardPromptOffer.IOS", destination,
+                    ".Modal.NumStrikes.0.NoFixFlow", suffix}),
+      SaveCardPromptOffer::kShown, 1);
+}
+
+TEST_P(SaveCardInfobarModalOverlayMediatorMetricsTest, LogsModalShown) {
+  base::HistogramTester histogram_tester;
+  FakeSaveCardModalConsumer* consumer =
+      [[FakeSaveCardModalConsumer alloc] init];
+
+  mediator_.consumer = consumer;
+
+  histogram_tester.ExpectUniqueSample(GetExpectedHistogramName(),
+                                      SaveCreditCardPromptResultIOS::kShown, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SaveCardInfobarModalOverlayMediatorMetricsTest,
+                         testing::ValuesIn<SaveCardModalMetricsTestCase>({
+                             {"ServerCardSaveOnly", true,
+                              autofill::payments::PaymentsAutofillClient::
+                                  CardSaveType::kCardSaveOnly},
+                             {"ServerCardSaveWithCvc", true,
+                              autofill::payments::PaymentsAutofillClient::
+                                  CardSaveType::kCardSaveWithCvc},
+                             {"LocalCardSaveOnly", false,
+                              autofill::payments::PaymentsAutofillClient::
+                                  CardSaveType::kCardSaveOnly},
+                             {"LocalCardSaveWithCvc", false,
+                              autofill::payments::PaymentsAutofillClient::
+                                  CardSaveType::kCardSaveWithCvc},
+                         }),
+                         TestCaseName);

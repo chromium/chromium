@@ -12,9 +12,10 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -154,8 +155,11 @@ class AvatarToolbarButtonStateManager
     kSyncPaused,
     kUpgradeClientError,
     kPassphraseError,
-    // Catch-all for remaining errors in sync-the-feature or sync-the-transport.
+    kBookmarksLimitExceeded,
+    // Catch-all for remaining errors in sync-the-feature or sync-the-transport
+    // (this includes Trusted Vault locked Sync error).
     kSyncError,
+    kPasskeysLockedError,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     kHistorySyncOptin,
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -208,6 +212,10 @@ class AvatarToolbarButtonStateManager
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   [[nodiscard]] static base::AutoReset<std::optional<base::TimeDelta>>
   CreateScopedZeroDelayOverrideSigninPendingTextForTesting();
+
+  // WARNING: Check `AvatarToolbarButton::ForceShowingPromoForTesting()` before
+  // using.
+  void ForceShowingPromoForTesting();
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
  private:
@@ -271,5 +279,7 @@ class AvatarToolbarButtonStateManager
 
   std::vector<raw_ref<Observer>> state_manager_observers_;
 };
+
+void SigninDetectionServiceFactoryEnsureFactoryBuilt();
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_AVATAR_TOOLBAR_BUTTON_STATE_MANAGER_H_

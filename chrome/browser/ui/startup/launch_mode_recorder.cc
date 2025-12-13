@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
@@ -42,8 +43,16 @@ namespace {
 #if BUILDFLAG(IS_WIN)
 enum class ArgType { kFile, kProtocol, kInvalid };
 
-// Returns the dir enum defined in base/base_paths_win.h that corresponds to the
-// path of `shortcut_path` if any, nullopt if no match found.
+struct StartupInfo {
+  // If true, Chrome was launched from a shortcut, stored in `shortcut_path`.
+  // If false, Chrome was launched with an AppId (aka App User Model Id).
+  bool launched_from_shortcut() const { return shortcut_path.has_value(); }
+  // Only set if Chrome was launched from a shortcut and not an App Id.
+  std::optional<std::wstring> shortcut_path;
+};
+
+// Returns the dir enum defined in base/base_paths_win.h that corresponds to
+// `shortcut_path` if any, nullopt if no match found.
 std::optional<int> GetShortcutLocation(const std::wstring& shortcut_path) {
   // The windows quick launch path is not localized.
   const std::u16string shortcut(
@@ -88,21 +97,28 @@ ArgType GetArgType(const std::wstring& arg) {
   return url.SchemeIsFile() ? ArgType::kFile : ArgType::kProtocol;
 }
 
-// Gets the path of the shortcut that launched Chrome, either from the
-// command line switch --shortcut_path in the case of a rendezvous to an
-// existing process, or ::GetStartupInfoW.
-// Returns the empty string if Chrome wasn't launched from a shortcut.
-// This can be expensive and shouldn't be called from the UI thread.
-std::optional<std::wstring> GetShortcutPath(
+// Gets info about how Chrome was launched, either from the
+// command line switch --source-shortcut or --source-app-id in the case of a
+// rendezvous to an existing process, or from ::GetStartupInfoW. Returns nullopt
+// if Chrome wasn't launched from a shortcut or an App Id. This can be expensive
+// and shouldn't be called from the UI thread.
+std::optional<StartupInfo> GetStartupInfo(
     const base::CommandLine& command_line) {
   if (command_line.HasSwitch(switches::kSourceShortcut)) {
-    return command_line.GetSwitchValueNative(switches::kSourceShortcut);
+    return StartupInfo{.shortcut_path = command_line.GetSwitchValueNative(
+                           switches::kSourceShortcut)};
+  }
+  if (command_line.HasSwitch(switches::kSourceAppId)) {
+    return StartupInfo{};
   }
   STARTUPINFOW si = {sizeof(si)};
   GetStartupInfoW(&si);
-  return si.dwFlags & STARTF_TITLEISLINKNAME
-             ? std::optional<std::wstring>(si.lpTitle)
-             : std::nullopt;
+  if (si.dwFlags & STARTF_TITLEISLINKNAME) {
+    return StartupInfo{.shortcut_path = si.lpTitle};
+  } else if (si.dwFlags & STARTF_TITLEISAPPID) {
+    return StartupInfo{};
+  }
+  return std::nullopt;
 }
 
 #endif  // BUIDFLAG(IS_WIN)
@@ -131,21 +147,29 @@ void RecordLaunchMode(const base::CommandLine command_line,
 // used on the UI thread.
 std::optional<LaunchMode> GetLaunchModeSlow(
     const base::CommandLine command_line) {
-  std::optional<std::wstring> shortcut_path = GetShortcutPath(command_line);
+  std::optional<StartupInfo> startup_info = GetStartupInfo(command_line);
   bool is_app_launch = command_line.HasSwitch(switches::kApp) ||
                        command_line.HasSwitch(switches::kAppId);
-  if (!shortcut_path.has_value()) {
+  if (!startup_info.has_value() ||
+      !startup_info.value().launched_from_shortcut()) {
     // Not launched from a shortcut. Check if we're launched as a registered
-    // file or protocol handler.
+    // file or protocol handler, or with an AppId.
+    std::vector<base::CommandLine::StringType> args = command_line.GetArgs();
+    if (args.size() < 1) {
+      if (is_app_launch) {
+        return LaunchMode::kWebAppOther;
+      }
+      // If no command line arguments, and not launched from a shortcut,
+      // and startup_info isn't null, then must have been launched with an
+      // AppId. Otherwise, launched some other way.
+      return startup_info.has_value() ? LaunchMode::kWithAppId
+                                      : LaunchMode::kOther;
+    }
+    auto arg_type = GetArgType(args[0]);
     bool single_argument_switch = command_line.HasSingleArgumentSwitch();
     // Single argument switch means we were registered with the shell as a
     // handler for a file extension or a protocol/url. Then, determine if
     // Chrome or a web app is handling the argument.
-    std::vector<base::CommandLine::StringType> args = command_line.GetArgs();
-    if (args.size() < 1) {
-      return is_app_launch ? LaunchMode::kWebAppOther : LaunchMode::kOther;
-    }
-    auto arg_type = GetArgType(args[0]);
     if (!is_app_launch) {
       if (arg_type == ArgType::kFile) {
         return single_argument_switch ? LaunchMode::kFileTypeHandler
@@ -165,11 +189,11 @@ std::optional<LaunchMode> GetLaunchModeSlow(
       }
     }
   } else {
-    if (shortcut_path.value().empty()) {
+    if (startup_info.value().shortcut_path.value().empty()) {
       return LaunchMode::kShortcutNoName;
     }
     std::optional<int> shortcut_location =
-        GetShortcutLocation(shortcut_path.value());
+        GetShortcutLocation(startup_info.value().shortcut_path.value());
     if (!shortcut_location.has_value()) {
       return is_app_launch ? LaunchMode::kWebAppShortcutUnknown
                            : LaunchMode::kShortcutUnknown;

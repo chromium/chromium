@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_WRAPPABLE_H_
 
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"

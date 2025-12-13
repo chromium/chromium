@@ -4,7 +4,6 @@
 
 #include "components/exo/wayland/clients/client_helper.h"
 
-#include <chrome-color-management-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
 #include <input-timestamps-unstable-v1-client-protocol.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
@@ -60,13 +59,6 @@ DEFAULT_DELETER(zaura_shell, zaura_shell_destroy)
 DEFAULT_DELETER(zaura_surface, zaura_surface_destroy)
 DEFAULT_DELETER(zaura_toplevel, zaura_toplevel_destroy)
 DEFAULT_DELETER(zaura_output, zaura_output_destroy)
-DEFAULT_DELETER(zcr_color_manager_v1, zcr_color_manager_v1_destroy)
-DEFAULT_DELETER(zcr_color_management_output_v1,
-                zcr_color_management_output_v1_destroy)
-DEFAULT_DELETER(zcr_color_management_surface_v1,
-                zcr_color_management_surface_v1_destroy)
-DEFAULT_DELETER(zcr_color_space_creator_v1, zcr_color_space_creator_v1_destroy)
-DEFAULT_DELETER(zcr_color_space_v1, zcr_color_space_v1_destroy)
 DEFAULT_DELETER(zwp_fullscreen_shell_v1, zwp_fullscreen_shell_v1_destroy)
 DEFAULT_DELETER(zwp_input_timestamps_manager_v1,
                 zwp_input_timestamps_manager_v1_destroy)

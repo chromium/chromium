@@ -9,10 +9,10 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
+#include "components/url_pattern/simple_url_pattern_matcher.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/shared_dictionary/simple_url_pattern_matcher.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -34,7 +34,7 @@ class SharedResourceChecker::PatternEntry {
   ~PatternEntry() = default;
   PatternEntry(const std::string& pattern, const GURL& base_url) {
     auto pattern_create_result =
-        SimpleUrlPatternMatcher::Create(pattern, base_url);
+        url_pattern::SimpleUrlPatternMatcher::Create(pattern, &base_url);
     if (pattern_create_result.has_value()) {
       url_pattern_ = std::move(pattern_create_result.value());
     }
@@ -80,7 +80,7 @@ class SharedResourceChecker::PatternEntry {
     base::Time last_used;
   };
   std::list<UrlMatch> url_matches_;
-  std::unique_ptr<SimpleUrlPatternMatcher> url_pattern_;
+  std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> url_pattern_;
 };
 
 SharedResourceChecker::SharedResourceChecker(

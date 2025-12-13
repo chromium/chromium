@@ -25,11 +25,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.function.Supplier;
 
 /** Unit tests for {@link StatusIndicatorMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)

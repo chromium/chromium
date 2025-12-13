@@ -10,6 +10,7 @@
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
@@ -25,8 +26,7 @@ extern const char kExceptionMessageUnableToCloneSession[];
 extern const char kExceptionMessageUnableToCalculateUsage[];
 extern const char kExceptionMessageInputTooLarge[];
 extern const char kExceptionMessageRequestAborted[];
-extern const char kExceptionMessageSystemPromptIsDefinedMultipleTimes[];
-extern const char kExceptionMessageSystemPromptIsNotTheFirst[];
+extern const char kExceptionMessagePromptWithSystemRoleIsNotTheFirst[];
 extern const char kExceptionMessageUnsupportedLanguages[];
 extern const char kExceptionMessageInvalidResponseJsonSchema[];
 extern const char kExceptionMessagePermissionPolicy[];
@@ -37,7 +37,8 @@ void ThrowDocumentNotActiveException(ExceptionState& exception_state);
 void ThrowSessionDestroyedException(ExceptionState& exception_state);
 void ThrowAbortedException(ExceptionState& exception_state);
 
-void RejectPromiseWithInternalError(ScriptPromiseResolverBase* resolver);
+MODULES_EXPORT void RejectPromiseWithInternalError(
+    ScriptPromiseResolverBase* resolver);
 
 DOMException* CreateInternalErrorException();
 DOMException* CreateSessionDestroyedException();
@@ -46,7 +47,7 @@ DOMException* ConvertModelStreamingResponseErrorToDOMException(
     ModelStreamingResponseStatus error,
     mojom::blink::QuotaErrorInfoPtr quota_error_info);
 
-WTF::String ConvertModelAvailabilityCheckResultToDebugString(
+String ConvertModelAvailabilityCheckResultToDebugString(
     mojom::blink::ModelAvailabilityCheckResult result);
 
 // Throw the reason of the AbortSignal if it's aborted. If the reason is empty,

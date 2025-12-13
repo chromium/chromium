@@ -43,8 +43,7 @@ TopSitesFactory::TopSitesFactory()
 TopSitesFactory::~TopSitesFactory() = default;
 
 scoped_refptr<RefcountedKeyedService> TopSitesFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   history::HistoryService* history_service =
       ios::HistoryServiceFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS);
@@ -56,7 +55,7 @@ scoped_refptr<RefcountedKeyedService> TopSitesFactory::BuildServiceInstanceFor(
   return top_sites;
 }
 
-void TopSitesFactory::RegisterBrowserStatePrefs(
+void TopSitesFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   history::TopSitesImpl::RegisterPrefs(registry);
 }

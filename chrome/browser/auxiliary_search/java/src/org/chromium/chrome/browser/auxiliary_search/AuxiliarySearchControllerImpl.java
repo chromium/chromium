@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 
@@ -18,7 +15,6 @@ import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchMetrics.RequestStatus;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -37,6 +33,7 @@ public class AuxiliarySearchControllerImpl
                 AuxiliarySearchConfigManager.ShareTabsWithOsStateListener {
     // 3 minutes in milliseconds.
     @VisibleForTesting static final long TIME_RANGE_MS = 3 * TimeUtils.MILLISECONDS_PER_MINUTE;
+    private static final int ZERO_STATE_FAVICON_NUMBER = 5;
 
     protected final @AuxiliarySearchHostType int mHostType;
     protected final AuxiliarySearchProvider mAuxiliarySearchProvider;
@@ -45,7 +42,6 @@ public class AuxiliarySearchControllerImpl
     private final Context mContext;
     private final FaviconHelper mFaviconHelper;
     private final AuxiliarySearchDonor mDonor;
-    private final boolean mIsFaviconEnabled;
     private final int mZeroStateFaviconNumber;
     private final int mDefaultFaviconSize;
 
@@ -68,11 +64,9 @@ public class AuxiliarySearchControllerImpl
         mAuxiliarySearchProvider = auxiliarySearchProvider;
         mDonor = auxiliarySearchDonor;
         mFaviconHelper = faviconHelper;
-        mIsFaviconEnabled = ChromeFeatureList.sAndroidAppIntegrationWithFavicon.isEnabled();
         mHostType = hostType;
 
-        mZeroStateFaviconNumber =
-                sAndroidAppIntegrationWithFaviconZeroStateFaviconNumber.getValue();
+        mZeroStateFaviconNumber = ZERO_STATE_FAVICON_NUMBER;
         mDefaultFaviconSize = AuxiliarySearchUtils.getFaviconSize(mContext.getResources());
 
         AuxiliarySearchConfigManager.getInstance().addListener(this);
@@ -196,9 +190,7 @@ public class AuxiliarySearchControllerImpl
 
         if (tabs == null || tabs.isEmpty()) return;
 
-        if (mIsFaviconEnabled) {
-            tabs.sort(AuxiliarySearchProvider.sComparator);
-        }
+        tabs.sort(AuxiliarySearchProvider.sComparator);
 
         onNonSensitiveDataAvailable(tabs, startTimeMs, /* onDonationCompleteRunnable= */ null);
     }
@@ -236,10 +228,6 @@ public class AuxiliarySearchControllerImpl
 
         // Donates the list of entries without favicons.
         mDonor.donateEntries(entries, counts, onDonationCompleteCallback);
-
-        if (!mIsFaviconEnabled) {
-            return;
-        }
 
         mTaskFinishedCount = 0;
         Map<T, Bitmap> entryToFaviconMap = new HashMap<>();
@@ -297,9 +285,7 @@ public class AuxiliarySearchControllerImpl
                     remainingFaviconFetchCount);
 
             // Schedules a background task to donate favicons of the remaining entries.
-            mAuxiliarySearchProvider.scheduleBackgroundTask(
-                    sAndroidAppIntegrationWithFaviconScheduleDelayTimeMs.getValue(),
-                    TimeUtils.uptimeMillis());
+            mAuxiliarySearchProvider.scheduleBackgroundTask(TimeUtils.uptimeMillis());
         }
     }
 

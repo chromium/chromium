@@ -25,7 +25,7 @@ PASS WebKitCSSMatrix() threw exception TypeError: Failed to construct 'DOMMatrix
 PASS WebSocket() threw exception TypeError: Failed to construct 'WebSocket': Please use the 'new' operator, this DOM object constructor cannot be called as a function..
 PASS Worker() threw exception TypeError: Failed to construct 'Worker': Please use the 'new' operator, this DOM object constructor cannot be called as a function..
 PASS XMLHttpRequest() threw exception TypeError: Failed to construct 'XMLHttpRequest': Please use the 'new' operator, this DOM object constructor cannot be called as a function..
-PASS XSLTProcessor() threw exception TypeError: Failed to construct 'XSLTProcessor': Please use the 'new' operator, this DOM object constructor cannot be called as a function..
+SKIP XSLTProcessor is not implemented.
 PASS successfullyParsed is true
 
 TEST COMPLETE

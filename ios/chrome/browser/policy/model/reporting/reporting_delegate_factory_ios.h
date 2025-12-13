@@ -15,6 +15,8 @@
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 
+class ProfileIOS;
+
 namespace enterprise_reporting {
 
 // iOS implementation of the reporting delegate factory. Creates iOS-specific
@@ -38,6 +40,9 @@ class ReportingDelegateFactoryIOS : public ReportingDelegateFactory {
 
   std::unique_ptr<ReportScheduler::Delegate> GetReportSchedulerDelegate()
       const override;
+
+  std::unique_ptr<ReportScheduler::Delegate> GetReportSchedulerDelegate(
+      ProfileIOS* profile) const;
 
   std::unique_ptr<RealTimeReportGenerator::Delegate>
   GetRealTimeReportGeneratorDelegate() const override;

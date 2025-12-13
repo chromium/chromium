@@ -25,7 +25,7 @@ if (is_linux && !use_fuzzing_engine_with_lpm) {
   # dependency on the file that matches the build rule's name.
   js_binary("client_variations_uncompiled") {
     outputs = [ "$target_gen_dir/client_variations_gen.js" ]
-    deps = [ "..:proto_js" ]
+    deps = [ "..:client_variations_proto_js" ]
     closure_flags = strict_error_checking_closure_args + [
                       "compilation_level=ADVANCED_OPTIMIZATIONS",
                       "browser_featureset_year=2020",

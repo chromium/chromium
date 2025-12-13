@@ -76,18 +76,18 @@ class TestResolveHostClient : public mojom::ResolveHostClient {
 
   void CloseReceiver() { receiver_.reset(); }
 
-  void OnComplete(int error,
-                  const net::ResolveErrorInfo& resolve_error_info,
-                  const std::optional<net::AddressList>& addresses,
-                  const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override {
+  void OnComplete(
+      int error,
+      const net::ResolveErrorInfo& resolve_error_info,
+      const net::AddressList& addresses,
+      const net::HostResolverEndpointResults& alternative_endpoints) override {
     DCHECK(!complete_);
 
     complete_ = true;
     top_level_result_error_ = error;
     result_error_ = resolve_error_info.error;
     result_addresses_ = addresses;
-    endpoint_results_with_metadata_ = endpoint_results_with_metadata;
+    alternative_endpoints_ = alternative_endpoints;
     if (run_loop_)
       run_loop_->Quit();
   }
@@ -114,7 +114,7 @@ class TestResolveHostClient : public mojom::ResolveHostClient {
     return result_error_;
   }
 
-  const std::optional<net::AddressList>& result_addresses() const {
+  const net::AddressList& result_addresses() const {
     DCHECK(complete_);
     return result_addresses_;
   }
@@ -129,10 +129,9 @@ class TestResolveHostClient : public mojom::ResolveHostClient {
     return result_hosts_;
   }
 
-  const std::optional<net::HostResolverEndpointResults>&
-  endpoint_results_with_metadata() const {
+  const net::HostResolverEndpointResults& alternative_endpoints() const {
     DCHECK(complete_);
-    return endpoint_results_with_metadata_;
+    return alternative_endpoints_;
   }
 
  private:
@@ -141,11 +140,10 @@ class TestResolveHostClient : public mojom::ResolveHostClient {
   bool complete_;
   int top_level_result_error_;
   int result_error_;
-  std::optional<net::AddressList> result_addresses_;
+  net::AddressList result_addresses_;
   std::optional<std::vector<std::string>> result_text_;
   std::optional<std::vector<net::HostPortPair>> result_hosts_;
-  std::optional<net::HostResolverEndpointResults>
-      endpoint_results_with_metadata_;
+  net::HostResolverEndpointResults alternative_endpoints_;
   const raw_ptr<base::RunLoop> run_loop_;
 };
 
@@ -241,7 +239,7 @@ TEST_F(HostResolverTest, Sync) {
 
   EXPECT_EQ(net::OK, response_client.top_level_result_error());
   EXPECT_EQ(net::OK, response_client.result_error());
-  EXPECT_THAT(response_client.result_addresses().value().endpoints(),
+  EXPECT_THAT(response_client.result_addresses().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint("1.2.3.4", 160)));
   EXPECT_FALSE(response_client.result_text());
   EXPECT_FALSE(response_client.result_hosts());
@@ -278,7 +276,7 @@ TEST_F(HostResolverTest, Async) {
   run_loop.Run();
 
   EXPECT_EQ(net::OK, response_client.result_error());
-  EXPECT_THAT(response_client.result_addresses().value().endpoints(),
+  EXPECT_THAT(response_client.result_addresses().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint("1.2.3.4", 160)));
   EXPECT_FALSE(response_client.result_text());
   EXPECT_FALSE(response_client.result_hosts());
@@ -309,7 +307,7 @@ TEST_F(HostResolverTest, DnsQueryType) {
   run_loop.Run();
 
   EXPECT_EQ(net::OK, response_client.result_error());
-  EXPECT_THAT(response_client.result_addresses().value().endpoints(),
+  EXPECT_THAT(response_client.result_addresses().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint("::1", 160)));
 }
 
@@ -335,7 +333,7 @@ TEST_F(HostResolverTest, InitialPriority) {
   run_loop.Run();
 
   EXPECT_EQ(net::OK, response_client.result_error());
-  EXPECT_THAT(response_client.result_addresses().value().endpoints(),
+  EXPECT_THAT(response_client.result_addresses().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint("1.2.3.4", 80)));
   EXPECT_EQ(net::HIGHEST, inner_resolver->last_request_priority());
 }
@@ -413,13 +411,13 @@ TEST_F(HostResolverTest, Source) {
   dns_run_loop.Run();
 
   EXPECT_EQ(net::OK, any_client.result_error());
-  EXPECT_THAT(any_client.result_addresses().value().endpoints(),
+  EXPECT_THAT(any_client.result_addresses().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint(kAnyResult, 80)));
   EXPECT_EQ(net::OK, system_client.result_error());
-  EXPECT_THAT(system_client.result_addresses().value().endpoints(),
+  EXPECT_THAT(system_client.result_addresses().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint(kSystemResult, 80)));
   EXPECT_EQ(net::OK, dns_client.result_error());
-  EXPECT_THAT(dns_client.result_addresses().value().endpoints(),
+  EXPECT_THAT(dns_client.result_addresses().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint(kDnsResult, 80)));
 
 #if BUILDFLAG(ENABLE_MDNS)
@@ -438,7 +436,7 @@ TEST_F(HostResolverTest, Source) {
   mdns_run_loop.Run();
 
   EXPECT_EQ(net::OK, mdns_client.result_error());
-  EXPECT_THAT(mdns_client.result_addresses().value().endpoints(),
+  EXPECT_THAT(mdns_client.result_addresses().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint(kMdnsResult, 80)));
 #endif  // BUILDFLAG(ENABLE_MDNS)
 }
@@ -519,12 +517,10 @@ TEST_F(HostResolverTest, GetAlternativeEndpoints) {
   expected_endpoint_results[0].metadata = expected_with_https_endpoint_metadata;
 
   EXPECT_EQ(net::OK, without_https_client.result_error());
-  EXPECT_THAT(
-      without_https_client.endpoint_results_with_metadata(),
-      testing::AnyOf(std::nullopt, testing::Optional(testing::IsEmpty())));
+  EXPECT_THAT(without_https_client.alternative_endpoints(), testing::IsEmpty());
 
   EXPECT_EQ(net::OK, with_https_client.result_error());
-  EXPECT_THAT(with_https_client.endpoint_results_with_metadata(),
+  EXPECT_THAT(with_https_client.alternative_endpoints(),
               expected_endpoint_results);
 }
 
@@ -561,7 +557,7 @@ TEST_F(HostResolverTest, SeparateCacheBySource) {
   system_run_loop.Run();
   ASSERT_EQ(net::OK, system_client.result_error());
   EXPECT_THAT(
-      system_client.result_addresses().value().endpoints(),
+      system_client.result_addresses().endpoints(),
       testing::ElementsAre(CreateExpectedEndPoint(kSystemResultOriginal, 80)));
 
   // Change |inner_resolver| rules to ensure results are coming from cache or
@@ -602,11 +598,11 @@ TEST_F(HostResolverTest, SeparateCacheBySource) {
 
   EXPECT_EQ(net::OK, cached_client.result_error());
   EXPECT_THAT(
-      cached_client.result_addresses().value().endpoints(),
+      cached_client.result_addresses().endpoints(),
       testing::ElementsAre(CreateExpectedEndPoint(kSystemResultOriginal, 80)));
   EXPECT_EQ(net::OK, uncached_client.result_error());
   EXPECT_THAT(
-      uncached_client.result_addresses().value().endpoints(),
+      uncached_client.result_addresses().endpoints(),
       testing::ElementsAre(CreateExpectedEndPoint(kAnyResultFresh, 80)));
 }
 
@@ -629,7 +625,7 @@ TEST_F(HostResolverTest, CacheDisabled) {
   run_loop.Run();
   ASSERT_EQ(net::OK, client.result_error());
   EXPECT_THAT(
-      client.result_addresses().value().endpoints(),
+      client.result_addresses().endpoints(),
       testing::ElementsAre(CreateExpectedEndPoint(kResultOriginal, 80)));
 
   // Change |inner_resolver| rules to ensure results are coming from cache or
@@ -654,7 +650,7 @@ TEST_F(HostResolverTest, CacheDisabled) {
 
   EXPECT_EQ(net::OK, cached_client.result_error());
   EXPECT_THAT(
-      cached_client.result_addresses().value().endpoints(),
+      cached_client.result_addresses().endpoints(),
       testing::ElementsAre(CreateExpectedEndPoint(kResultOriginal, 80)));
 
   base::RunLoop uncached_run_loop;
@@ -673,7 +669,7 @@ TEST_F(HostResolverTest, CacheDisabled) {
   uncached_run_loop.Run();
 
   EXPECT_EQ(net::OK, uncached_client.result_error());
-  EXPECT_THAT(uncached_client.result_addresses().value().endpoints(),
+  EXPECT_THAT(uncached_client.result_addresses().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint(kResultFresh, 80)));
 }
 
@@ -696,7 +692,7 @@ TEST_F(HostResolverTest, CacheStaleAllowed) {
   run_loop.Run();
   ASSERT_EQ(net::OK, client.result_error());
   EXPECT_THAT(
-      client.result_addresses().value().endpoints(),
+      client.result_addresses().endpoints(),
       testing::ElementsAre(CreateExpectedEndPoint(kResultOriginal, 80)));
 
   // Change |inner_resolver| rules to ensure results are coming from cache or
@@ -727,7 +723,7 @@ TEST_F(HostResolverTest, CacheStaleAllowed) {
 
   EXPECT_EQ(net::OK, cached_client.result_error());
   EXPECT_THAT(
-      cached_client.result_addresses().value().endpoints(),
+      cached_client.result_addresses().endpoints(),
       testing::ElementsAre(CreateExpectedEndPoint(kResultOriginal, 80)));
 
   // Resolution where only non-stale cache usage is allowed returns the new
@@ -748,7 +744,7 @@ TEST_F(HostResolverTest, CacheStaleAllowed) {
   uncached_run_loop.Run();
 
   EXPECT_EQ(net::OK, uncached_client.result_error());
-  EXPECT_THAT(uncached_client.result_addresses().value().endpoints(),
+  EXPECT_THAT(uncached_client.result_addresses().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint(kResultFresh, 80)));
 }
 
@@ -835,9 +831,9 @@ TEST_F(HostResolverTest, IncludeCanonicalName) {
   run_loop.Run();
 
   EXPECT_EQ(net::OK, response_client.result_error());
-  EXPECT_THAT(response_client.result_addresses().value().endpoints(),
+  EXPECT_THAT(response_client.result_addresses().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint("123.0.12.24", 80)));
-  EXPECT_THAT(response_client.result_addresses().value().dns_aliases(),
+  EXPECT_THAT(response_client.result_addresses().dns_aliases(),
               testing::ElementsAre("canonicalexample.com"));
 }
 
@@ -864,7 +860,7 @@ TEST_F(HostResolverTest, LoopbackOnly) {
   run_loop.Run();
 
   EXPECT_EQ(net::OK, response_client.result_error());
-  EXPECT_THAT(response_client.result_addresses().value().endpoints(),
+  EXPECT_THAT(response_client.result_addresses().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint("127.0.12.24", 80)));
 }
 
@@ -891,7 +887,7 @@ TEST_F(HostResolverTest, HandlesSecureDnsPolicyParameter) {
   run_loop.Run();
 
   EXPECT_EQ(net::OK, response_client.result_error());
-  EXPECT_THAT(response_client.result_addresses().value().endpoints(),
+  EXPECT_THAT(response_client.result_addresses().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint("1.2.3.4", 80)));
   EXPECT_EQ(net::SecureDnsPolicy::kDisable,
             inner_resolver->last_secure_dns_policy());
@@ -923,9 +919,7 @@ TEST_F(HostResolverTest, Failure_Sync) {
   EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED,
             response_client.top_level_result_error());
   EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, response_client.result_error());
-  EXPECT_THAT(
-      response_client.result_addresses(),
-      testing::AnyOf(std::nullopt, testing::Optional(testing::IsEmpty())));
+  EXPECT_THAT(response_client.result_addresses(), testing::IsEmpty());
   EXPECT_EQ(0u, resolver.GetNumOutstandingRequestsForTesting());
 }
 
@@ -958,9 +952,7 @@ TEST_F(HostResolverTest, Failure_Async) {
   run_loop.Run();
 
   EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, response_client.result_error());
-  EXPECT_THAT(
-      response_client.result_addresses(),
-      testing::AnyOf(std::nullopt, testing::Optional(testing::IsEmpty())));
+  EXPECT_THAT(response_client.result_addresses(), testing::IsEmpty());
   EXPECT_TRUE(control_handle_closed);
   EXPECT_EQ(0u, resolver.GetNumOutstandingRequestsForTesting());
 }
@@ -992,7 +984,7 @@ TEST_F(HostResolverTest, NetworkAnonymizationKey) {
   run_loop.Run();
 
   EXPECT_EQ(net::OK, response_client.result_error());
-  EXPECT_THAT(response_client.result_addresses().value().endpoints(),
+  EXPECT_THAT(response_client.result_addresses().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint("1.2.3.4", 160)));
   EXPECT_EQ(0u, resolver.GetNumOutstandingRequestsForTesting());
   EXPECT_EQ(kNetworkAnonymizationKey,
@@ -1019,7 +1011,7 @@ TEST_F(HostResolverTest, NoOptionalParameters) {
 
   EXPECT_EQ(net::OK, response_client.result_error());
   EXPECT_THAT(
-      response_client.result_addresses().value().endpoints(),
+      response_client.result_addresses().endpoints(),
       testing::UnorderedElementsAre(CreateExpectedEndPoint("127.0.0.1", 80),
                                     CreateExpectedEndPoint("::1", 80)));
   EXPECT_EQ(0u, resolver.GetNumOutstandingRequestsForTesting());
@@ -1048,7 +1040,7 @@ TEST_F(HostResolverTest, NoControlHandle) {
 
   EXPECT_EQ(net::OK, response_client.result_error());
   EXPECT_THAT(
-      response_client.result_addresses().value().endpoints(),
+      response_client.result_addresses().endpoints(),
       testing::UnorderedElementsAre(CreateExpectedEndPoint("127.0.0.1", 80),
                                     CreateExpectedEndPoint("::1", 80)));
   EXPECT_EQ(0u, resolver.GetNumOutstandingRequestsForTesting());
@@ -1081,7 +1073,7 @@ TEST_F(HostResolverTest, CloseControlHandle) {
 
   EXPECT_EQ(net::OK, response_client.result_error());
   EXPECT_THAT(
-      response_client.result_addresses().value().endpoints(),
+      response_client.result_addresses().endpoints(),
       testing::UnorderedElementsAre(CreateExpectedEndPoint("127.0.0.1", 160),
                                     CreateExpectedEndPoint("::1", 160)));
   EXPECT_EQ(0u, resolver.GetNumOutstandingRequestsForTesting());
@@ -1121,9 +1113,7 @@ TEST_F(HostResolverTest, Cancellation) {
   // On cancellation, should receive an ERR_FAILED result, and the internal
   // resolver request should have been cancelled.
   EXPECT_EQ(net::ERR_ABORTED, response_client.result_error());
-  EXPECT_THAT(
-      response_client.result_addresses(),
-      testing::AnyOf(std::nullopt, testing::Optional(testing::IsEmpty())));
+  EXPECT_THAT(response_client.result_addresses(), testing::IsEmpty());
   EXPECT_EQ(1, inner_resolver->num_cancellations());
   EXPECT_TRUE(control_handle_closed);
   EXPECT_EQ(0u, resolver.GetNumOutstandingRequestsForTesting());
@@ -1171,7 +1161,7 @@ TEST_F(HostResolverTest, Cancellation_SubsequentRequest) {
 
   EXPECT_EQ(net::OK, response_client2.result_error());
   EXPECT_THAT(
-      response_client2.result_addresses().value().endpoints(),
+      response_client2.result_addresses().endpoints(),
       testing::UnorderedElementsAre(CreateExpectedEndPoint("127.0.0.1", 80),
                                     CreateExpectedEndPoint("::1", 80)));
   EXPECT_EQ(0u, resolver.GetNumOutstandingRequestsForTesting());
@@ -1212,9 +1202,7 @@ TEST_F(HostResolverTest, DestroyResolver) {
   // On context destruction, should receive an ERR_FAILED result, and the
   // internal resolver request should have been cancelled.
   EXPECT_EQ(net::ERR_FAILED, response_client.result_error());
-  EXPECT_THAT(
-      response_client.result_addresses(),
-      testing::AnyOf(std::nullopt, testing::Optional(testing::IsEmpty())));
+  EXPECT_THAT(response_client.result_addresses(), testing::IsEmpty());
   EXPECT_EQ(1, inner_resolver->num_cancellations());
   EXPECT_TRUE(control_handle_closed);
 }
@@ -1294,7 +1282,7 @@ TEST_F(HostResolverTest, CloseClient_SubsequentRequest) {
 
   EXPECT_EQ(net::OK, response_client2.result_error());
   EXPECT_THAT(
-      response_client2.result_addresses().value().endpoints(),
+      response_client2.result_addresses().endpoints(),
       testing::UnorderedElementsAre(CreateExpectedEndPoint("127.0.0.1", 80),
                                     CreateExpectedEndPoint("::1", 80)));
   EXPECT_EQ(0u, resolver.GetNumOutstandingRequestsForTesting());
@@ -1335,7 +1323,7 @@ TEST_F(HostResolverTest, Binding) {
 
   EXPECT_EQ(net::OK, response_client.result_error());
   EXPECT_THAT(
-      response_client.result_addresses().value().endpoints(),
+      response_client.result_addresses().endpoints(),
       testing::UnorderedElementsAre(CreateExpectedEndPoint("127.0.0.1", 160),
                                     CreateExpectedEndPoint("::1", 160)));
   EXPECT_EQ(0u, resolver.GetNumOutstandingRequestsForTesting());
@@ -1383,9 +1371,7 @@ TEST_F(HostResolverTest, CloseBinding) {
 
   // Request should be cancelled.
   EXPECT_EQ(net::ERR_FAILED, response_client.result_error());
-  EXPECT_THAT(
-      response_client.result_addresses(),
-      testing::AnyOf(std::nullopt, testing::Optional(testing::IsEmpty())));
+  EXPECT_THAT(response_client.result_addresses(), testing::IsEmpty());
   EXPECT_TRUE(control_handle_closed);
   EXPECT_EQ(1, inner_resolver->num_cancellations());
   EXPECT_EQ(0u, resolver.GetNumOutstandingRequestsForTesting());
@@ -1442,7 +1428,7 @@ TEST_F(HostResolverTest, CloseBinding_SubsequentRequest) {
 
   EXPECT_EQ(net::OK, response_client2.result_error());
   EXPECT_THAT(
-      response_client2.result_addresses().value().endpoints(),
+      response_client2.result_addresses().endpoints(),
       testing::UnorderedElementsAre(CreateExpectedEndPoint("127.0.0.1", 80),
                                     CreateExpectedEndPoint("::1", 80)));
   EXPECT_EQ(0u, resolver.GetNumOutstandingRequestsForTesting());
@@ -1470,9 +1456,7 @@ TEST_F(HostResolverTest, IsSpeculative) {
   run_loop.Run();
 
   EXPECT_EQ(net::OK, response_client.result_error());
-  EXPECT_THAT(
-      response_client.result_addresses(),
-      testing::AnyOf(std::nullopt, testing::Optional(testing::IsEmpty())));
+  EXPECT_THAT(response_client.result_addresses(), testing::IsEmpty());
   EXPECT_EQ(0u, resolver.GetNumOutstandingRequestsForTesting());
 }
 
@@ -1522,9 +1506,7 @@ TEST_F(HostResolverTest, TextResults) {
   run_loop.Run();
 
   EXPECT_EQ(net::OK, response_client.result_error());
-  EXPECT_THAT(
-      response_client.result_addresses(),
-      testing::AnyOf(std::nullopt, testing::Optional(testing::IsEmpty())));
+  EXPECT_THAT(response_client.result_addresses(), testing::IsEmpty());
   EXPECT_THAT(response_client.result_text(),
               testing::Optional(testing::ElementsAreArray(kTextRecords)));
   EXPECT_FALSE(response_client.result_hosts());
@@ -1567,9 +1549,7 @@ TEST_F(HostResolverTest, HostResults) {
   run_loop.Run();
 
   EXPECT_EQ(net::OK, response_client.result_error());
-  EXPECT_THAT(
-      response_client.result_addresses(),
-      testing::AnyOf(std::nullopt, testing::Optional(testing::IsEmpty())));
+  EXPECT_THAT(response_client.result_addresses(), testing::IsEmpty());
   EXPECT_FALSE(response_client.result_text());
   EXPECT_THAT(response_client.result_hosts(),
               testing::Optional(testing::UnorderedElementsAre(
@@ -1638,7 +1618,7 @@ TEST_F(HostResolverTest, CanonicalizesInputHost) {
   run_loop.Run();
 
   EXPECT_EQ(net::OK, response_client.top_level_result_error());
-  EXPECT_THAT(response_client.result_addresses().value().endpoints(),
+  EXPECT_THAT(response_client.result_addresses().endpoints(),
               testing::ElementsAre(CreateExpectedEndPoint("1.2.3.4", 165)));
   EXPECT_EQ(0u, resolver.GetNumOutstandingRequestsForTesting());
 }

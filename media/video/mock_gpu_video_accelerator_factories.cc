@@ -11,7 +11,6 @@
 #include "base/atomic_sequence_num.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "ui/gfx/buffer_format_util.h"
 
 namespace media {
 

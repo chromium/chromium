@@ -7,7 +7,6 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "ipc/urgent_message_observer.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"

@@ -108,7 +108,7 @@ base::Process LaunchNativeExeDirectly(const std::wstring& command,
   base::win::ScopedHandle stdout_file(
       ::CreateFileW(out_pipe_name.c_str(), FILE_WRITE_DATA | SYNCHRONIZE, 0,
                     &sa_attr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0));
-  if (!stdout_file.IsValid()) {
+  if (!stdout_file.is_valid()) {
     LOG(ERROR) << "Failed to open write handle for stdout.";
     return base::Process();
   }
@@ -116,7 +116,7 @@ base::Process LaunchNativeExeDirectly(const std::wstring& command,
   base::win::ScopedHandle stdin_file(
       ::CreateFileW(in_pipe_name.c_str(), FILE_READ_DATA | SYNCHRONIZE, 0,
                     &sa_attr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0));
-  if (!stdin_file.IsValid()) {
+  if (!stdin_file.is_valid()) {
     LOG(ERROR) << "Failed to open read handle for stdin.";
     return base::Process();
   }
@@ -223,7 +223,7 @@ std::optional<LaunchContext::ProcessState> LaunchContext::LaunchNativeProcess(
       PIPE_ACCESS_INBOUND | FILE_FLAG_OVERLAPPED |
           FILE_FLAG_FIRST_PIPE_INSTANCE,
       PIPE_TYPE_BYTE, 1, kBufferSize, kBufferSize, kTimeoutMs, NULL));
-  if (!stdout_pipe.IsValid()) {
+  if (!stdout_pipe.is_valid()) {
     LOG(ERROR) << "Failed to create pipe " << out_pipe_name;
     return std::nullopt;
   }
@@ -233,7 +233,7 @@ std::optional<LaunchContext::ProcessState> LaunchContext::LaunchNativeProcess(
       PIPE_ACCESS_OUTBOUND | FILE_FLAG_OVERLAPPED |
           FILE_FLAG_FIRST_PIPE_INSTANCE,
       PIPE_TYPE_BYTE, 1, kBufferSize, kBufferSize, kTimeoutMs, NULL));
-  if (!stdin_pipe.IsValid()) {
+  if (!stdin_pipe.is_valid()) {
     LOG(ERROR) << "Failed to create pipe " << in_pipe_name;
     return std::nullopt;
   }

@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.customtabs;
 import androidx.browser.customtabs.CustomTabsCallback;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -16,23 +18,23 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.net.NetError;
 import org.chromium.url.GURL;
 
-import java.util.Optional;
-
 /** An observer for firing navigation events on {@link CustomTabsCallback}. */
+@NullMarked
 public class CustomTabNavigationEventObserver extends EmptyTabObserver {
     // An operation was aborted (due to user action). Should match the value in net_error_list.h.
     private static final int NET_ERROR_ABORTED = -3;
 
-    private final SessionHolder<?> mSessionToken;
+    private final @Nullable SessionHolder<?> mSessionToken;
     private final CustomTabsConnection mConnection;
     private boolean mIsPrerender;
 
     // Cached values when prerendering, so that we don't send events for discarded prerenders.
     private boolean mPageLoadStarted;
     private boolean mPageLoadFinished;
-    private Integer mPageLoadFailed;
+    private @Nullable Integer mPageLoadFailed;
 
-    public CustomTabNavigationEventObserver(SessionHolder<?> session, boolean forPrerender) {
+    public CustomTabNavigationEventObserver(
+            @Nullable SessionHolder<?> session, boolean forPrerender) {
         mSessionToken = session;
         mConnection = CustomTabsConnection.getInstance();
         // Kill-switch for reporting events for prerendered navigations.
@@ -43,7 +45,7 @@ public class CustomTabNavigationEventObserver extends EmptyTabObserver {
     }
 
     @Override
-    public void onPageLoadStarted(Tab tab, GURL url) {
+    public void onPageLoadStarted(@Nullable Tab tab, @Nullable GURL url) {
         if (mIsPrerender) {
             mPageLoadStarted = true;
             return;
@@ -52,7 +54,7 @@ public class CustomTabNavigationEventObserver extends EmptyTabObserver {
     }
 
     @Override
-    public void onPageLoadFinished(Tab tab, GURL url) {
+    public void onPageLoadFinished(@Nullable Tab tab, @Nullable GURL url) {
         if (mIsPrerender) {
             mPageLoadFinished = true;
             return;
@@ -62,7 +64,7 @@ public class CustomTabNavigationEventObserver extends EmptyTabObserver {
 
     @Override
     @SuppressWarnings("TraditionalSwitchExpression")
-    public void onPageLoadFailed(Tab tab, int errorCode) {
+    public void onPageLoadFailed(@Nullable Tab tab, int errorCode) {
         if (mIsPrerender) {
             mPageLoadFailed = errorCode;
             return;
@@ -74,14 +76,14 @@ public class CustomTabNavigationEventObserver extends EmptyTabObserver {
 
         // For privacy reason, we do not pass all the error codes but choose a few safe ones.
         // See crbug/1501085 for more details.
-        Optional<Integer> code =
+        Integer code =
                 switch (errorCode) {
                     case NetError.ERR_INTERNET_DISCONNECTED:
                     case NetError.ERR_CONNECTION_TIMED_OUT:
                     case NetError.ERR_NAME_RESOLUTION_FAILED:
-                        yield Optional.of(getReportErrorCode(errorCode));
+                        yield getReportErrorCode(errorCode);
                     default:
-                        yield Optional.empty();
+                        yield null;
                 };
 
         mConnection.notifyNavigationEvent(mSessionToken, navigationEvent, code);

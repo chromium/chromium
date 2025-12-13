@@ -10,22 +10,21 @@ include_rules = [
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/ash/login/demo_mode/demo_session.h",
   "+chrome/browser/ash/login/users/fake_chrome_user_manager.h",
   "+chrome/browser/ash/magic_boost",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/feedback",
   "+chrome/browser/manta",
   "+chrome/browser/profiles",
+  "+chrome/browser/signin/identity_manager_factory.h",
   "+chrome/browser/ui/webui/ash/lobster",
   "+chrome/browser/ui/webui/ash/mako",
   "+chrome/common",
   "+chrome/grit/generated_resources.h",
-
-  "+chrome/browser/signin/identity_manager_factory.h",
   "+chrome/test/base/chrome_ash_test_base.h",
   "+chrome/test/base/testing_browser_process.h",
   "+chrome/test/base/testing_profile.h",
   "+chrome/test/base/testing_profile_manager.h",
+
   "+content/public/test/test_browser_context.h",
 ]

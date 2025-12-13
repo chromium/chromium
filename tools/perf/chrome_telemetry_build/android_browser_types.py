@@ -16,8 +16,6 @@ _CLANK_LIST_FILEPATH = os.path.join(_CLANK_DIR, 'telemetry_browser_types.py')
 
 TELEMETRY_ANDROID_BROWSER_TARGET_SUFFIXES = [
     '_android_chrome',
-    '_android_monochrome',
-    '_android_monochrome_bundle',
     '_android_webview',
     '_android_trichrome_chrome_bundle',
     '_android_trichrome_chrome_64_32_bundle',
@@ -35,9 +33,6 @@ else:
       'suffixes, which may be out of date')
   TELEMETRY_ANDROID_BROWSER_TARGET_SUFFIXES += [
       '_android_clank_chrome',
-      '_android_clank_monochrome',
-      '_android_clank_monochrome_64_32_bundle',
-      '_android_clank_monochrome_bundle',
       '_android_clank_trichrome_webview',
       '_android_clank_trichrome_webview_bundle',
       '_android_clank_webview',

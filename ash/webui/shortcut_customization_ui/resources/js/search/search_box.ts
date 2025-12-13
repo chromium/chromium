@@ -13,7 +13,6 @@ import {CrToolbarSearchFieldElement} from 'chrome://resources/ash/common/cr_elem
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import type {IronDropdownElement} from 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
@@ -396,8 +395,7 @@ export class SearchBoxElement extends SearchBoxElementBase implements
     // cap the number of search results to MAX_NUM_RESULTS.
     const maxNumberOfSearchResults = MAX_NUM_RESULTS * 3;
 
-    this.shortcutSearchHandler
-        .search(stringToMojoString16(query), maxNumberOfSearchResults)
+    this.shortcutSearchHandler.search(query, maxNumberOfSearchResults)
         .then((response) => {
           this.onSearchResultsReceived(query, response.results);
           this.dispatchEvent(new CustomEvent(

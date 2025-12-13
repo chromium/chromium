@@ -51,8 +51,10 @@ HTMLEmbedElement::HTMLEmbedElement(Document& document,
 
 const AttrNameToTrustedType& HTMLEmbedElement::GetCheckedAttributeTypes()
     const {
-  DEFINE_STATIC_LOCAL(AttrNameToTrustedType, attribute_map,
-                      ({{"src", SpecificTrustedType::kScriptURL}}));
+  DEFINE_STATIC_LOCAL(
+      AttrNameToTrustedType, attribute_map,
+      ({{"src", std::pair{SpecificTrustedType::kScriptURL,
+                          trusted_types_names::kHTMLEmbedElement}}}));
   return attribute_map;
 }
 
@@ -180,10 +182,6 @@ void HTMLEmbedElement::UpdatePluginInternal() {
 bool HTMLEmbedElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
   // In the current specification, there is no requirement for `ImageType` to
   // enforce layout.
-  if (!RuntimeEnabledFeatures::HTMLEmbedElementNotForceLayoutEnabled() &&
-      IsImageType()) {
-    return HTMLPlugInElement::LayoutObjectIsNeeded(style);
-  }
 
   // https://html.spec.whatwg.org/C/#the-embed-element
   // While any of the following conditions are occurring, any plugin
@@ -242,7 +240,8 @@ const V8UnionTrustedScriptURLOrUSVString* HTMLEmbedElement::src() {
 void HTMLEmbedElement::setSrc(const V8UnionTrustedScriptURLOrUSVString* value,
                               ExceptionState& exception_state) {
   String compliantValue = TrustedTypesCheckForScriptURL(
-      value, GetExecutionContext(), "HTMLEmbedElement", "src", exception_state);
+      value, GetExecutionContext(), trusted_types_names::kHTMLEmbedElement,
+      trusted_types_names::kSrc, exception_state);
   if (exception_state.HadException()) {
     return;
   }

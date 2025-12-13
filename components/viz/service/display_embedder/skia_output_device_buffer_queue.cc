@@ -42,7 +42,6 @@
 
 namespace {
 BASE_FEATURE(kRestartReadAccessForConcurrentReadWrite,
-             "RestartReadAccessForConcurrentReadWrite",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 base::TimeTicks g_last_reshape_failure = base::TimeTicks();
@@ -504,11 +503,6 @@ bool SkiaOutputDeviceBufferQueue::Reshape(const ReshapeParams& params) {
   image_size_ = params.GfxSize();
 
   return true;
-}
-
-void SkiaOutputDeviceBufferQueue::SetViewportSize(
-    const gfx::Size& viewport_size) {
-  viewport_size_ = viewport_size;
 }
 
 SkSurface* SkiaOutputDeviceBufferQueue::BeginPaint(

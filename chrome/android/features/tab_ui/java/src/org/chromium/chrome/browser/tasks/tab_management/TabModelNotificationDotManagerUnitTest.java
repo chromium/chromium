@@ -55,7 +55,6 @@ import org.chromium.components.collaboration.messaging.TabMessageMetadata;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /** Unit tests for {@link TabModelNotificationDotManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -63,7 +62,6 @@ public class TabModelNotificationDotManagerUnitTest {
     private static final int EXISTING_TAB_ID = 5;
     private static final int ROOT_ID = 6;
     private static final int NON_EXISTANT_TAB_ID = 7;
-    private static final int TAB_COUNT = 3;
     private static final Token TAB_GROUP_ID = new Token(378L, 4378L);
     private static final String TITLE = "Vacation";
 
@@ -105,8 +103,9 @@ public class TabModelNotificationDotManagerUnitTest {
         when(mTabGroupModelFilterProvider.getTabGroupModelFilter(false))
                 .thenReturn(mTabGroupModelFilter);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabGroupModelFilter.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(TAB_COUNT);
+        when(mTabGroupModelFilter.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab));
         when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(TITLE);
+        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mTabModel.getTabById(EXISTING_TAB_ID)).thenReturn(mTab);
         when(mTab.getRootId()).thenReturn(ROOT_ID);
@@ -229,7 +228,9 @@ public class TabModelNotificationDotManagerUnitTest {
         createDirtyTabMessageForIds(List.of(EXISTING_TAB_ID));
 
         when(mTab.getTabGroupId()).thenReturn(null);
-        mTabGroupModelFilterObserverCaptor.getValue().didMergeTabToGroup(mTab);
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didMergeTabToGroup(mTab, /* isDestinationTab= */ false);
         verifyHidden();
     }
 
@@ -289,7 +290,7 @@ public class TabModelNotificationDotManagerUnitTest {
         // Set to visible.
         mPersistentMessageObserverCaptor.getValue().displayPersistentMessage(mDirtyTabMessage);
 
-        verifyShown("3 tabs");
+        verifyShown("1 tab");
     }
 
     private void initializeBothBackends() {
@@ -315,8 +316,7 @@ public class TabModelNotificationDotManagerUnitTest {
             messages.add(message);
         }
 
-        when(mMessagingBackendService.getMessages(
-                        Optional.of(PersistentNotificationType.DIRTY_TAB)))
+        when(mMessagingBackendService.getMessages(PersistentNotificationType.DIRTY_TAB))
                 .thenReturn(messages);
     }
 

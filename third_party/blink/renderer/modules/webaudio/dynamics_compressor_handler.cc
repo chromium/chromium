@@ -37,7 +37,8 @@ DynamicsCompressorHandler::DynamicsCompressorHandler(
       ratio_(&ratio),
       reduction_(0),
       attack_(&attack),
-      release_(&release) {
+      release_(&release),
+      param_values_(GetDeferredTaskHandler().RenderQuantumFrames()) {
   AddInput();
   AddOutput(kDefaultNumberOfOutputChannels);
 
@@ -98,26 +99,18 @@ void DynamicsCompressorHandler::Process(uint32_t frames_to_process) {
 void DynamicsCompressorHandler::ProcessOnlyAudioParams(
     uint32_t frames_to_process) {
   DCHECK(Context()->IsAudioThread());
-  // TODO(crbug.com/40637820): Eventually, the render quantum size will no
-  // longer be hardcoded as 128. At that point, we'll need to switch from
-  // stack allocation to heap allocation.
-  constexpr unsigned render_quantum_frames_expected = 128;
-  CHECK_EQ(GetDeferredTaskHandler().RenderQuantumFrames(),
-           render_quantum_frames_expected);
-  DCHECK_LE(frames_to_process, render_quantum_frames_expected);
-
-  float values[render_quantum_frames_expected];
+  DCHECK_LE(frames_to_process, param_values_.size());
 
   threshold_->CalculateSampleAccurateValues(
-      base::span(values).first(frames_to_process));
+      param_values_.as_span().first(frames_to_process));
   knee_->CalculateSampleAccurateValues(
-      base::span(values).first(frames_to_process));
+      param_values_.as_span().first(frames_to_process));
   ratio_->CalculateSampleAccurateValues(
-      base::span(values).first(frames_to_process));
+      param_values_.as_span().first(frames_to_process));
   attack_->CalculateSampleAccurateValues(
-      base::span(values).first(frames_to_process));
+      param_values_.as_span().first(frames_to_process));
   release_->CalculateSampleAccurateValues(
-      base::span(values).first(frames_to_process));
+      param_values_.as_span().first(frames_to_process));
 }
 
 void DynamicsCompressorHandler::Initialize() {

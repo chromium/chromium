@@ -34,10 +34,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
@@ -106,6 +106,11 @@ class ToastManagerImplTest : public AshTestBase,
     // Start in the ACTIVE (logged-in) state.
     ChangeLockState(false);
     SetShouldLockScreenAutomatically(false);
+  }
+
+  void TearDown() override {
+    manager_ = nullptr;
+    AshTestBase::TearDown();
   }
 
  protected:
@@ -195,7 +200,7 @@ class ToastManagerImplTest : public AshTestBase,
   }
 
  private:
-  raw_ptr<ToastManagerImpl, DanglingUntriaged> manager_ = nullptr;
+  raw_ptr<ToastManagerImpl> manager_ = nullptr;
   unsigned int serial_ = 0;
 };
 
@@ -228,8 +233,8 @@ TEST_F(ToastManagerImplTest, ShowAndCloseManually) {
 }
 
 TEST_F(ToastManagerImplTest, ShowAndCloseManuallyDuringAnimation) {
-  ui::ScopedAnimationDurationScaleMode slow_animation_duration(
-      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+  gfx::ScopedAnimationDurationScaleMode slow_animation_duration(
+      gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
 
   ASSERT_TRUE(task_environment()->UsesMockTime());
 
@@ -515,7 +520,7 @@ TEST_F(ToastManagerImplTest, PositionWithHotseatExtendedOnAnotherMonitor) {
 
 TEST_F(ToastManagerImplTest, PositionWithAutoHiddenBottomShelf) {
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(gfx::Rect(1, 2, 3, 4)));
+      CreateTestWindowInShell({.bounds = {1, 2, 3, 4}, .window_id = 0}));
 
   Shelf* shelf = GetPrimaryShelf();
   EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
@@ -705,8 +710,8 @@ TEST_F(ToastManagerImplTest,
        ReplaceContentsOfCurrentToastBeforePriorReplacementFinishes) {
   // By default, the animation duration is zero in tests. Set the animation
   // duration to non-zero so that toasts don't immediately close.
-  ui::ScopedAnimationDurationScaleMode animation_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   std::string id1 = ShowToast(/*text=*/"TEXT1", ToastData::kInfiniteDuration);
   std::string id2 = ShowToast(/*text=*/"TEXT2", ToastData::kInfiniteDuration);
@@ -1184,8 +1189,7 @@ TEST_F(ToastManagerImplTest, SingleDisplayToastDestroyedOnRootWindowRemoved) {
   // Add a secondary display, and set it to be the active display so toasts are
   // added here.
   UpdateDisplay("800x700,800x700");
-  display::Screen::GetScreen()->SetDisplayForNewWindows(
-      GetSecondaryDisplay().id());
+  display::Screen::Get()->SetDisplayForNewWindows(GetSecondaryDisplay().id());
 
   auto* toast_manager = manager();
   std::string toast_id = "TOAST_ID_" + base::NumberToString(GetToastSerial());

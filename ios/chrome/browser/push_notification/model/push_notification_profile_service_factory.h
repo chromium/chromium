@@ -19,15 +19,20 @@ class PushNotificationProfileServiceFactory
   static PushNotificationProfileServiceFactory* GetInstance();
   static PushNotificationProfileService* GetForProfile(ProfileIOS* profile);
 
+  // Returns the default factory used to build PushNotificationProfileService.
+  // Can be registered with AddTestingFactory to use real instances during
+  // testing.
+  static TestingFactory GetDefaultFactory();
+
  private:
   friend class base::NoDestructor<PushNotificationProfileServiceFactory>;
 
   PushNotificationProfileServiceFactory();
   ~PushNotificationProfileServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_PROFILE_SERVICE_FACTORY_H_

@@ -8,7 +8,7 @@ source_set("test_support") {
   deps = [
     "//base",
     "//chrome/common/extensions/api",
-    "//components/bookmarks/browser:browser",
+    "//components/bookmarks/browser",
     "//testing/gmock",
   ]
 }

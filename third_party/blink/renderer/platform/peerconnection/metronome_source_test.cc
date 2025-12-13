@@ -24,7 +24,6 @@ namespace blink {
 namespace {
 
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::MockFunction;
 using ::testing::Return;
@@ -69,8 +68,8 @@ TEST_F(MetronomeSourceTest, InvokesRequestedCallbackOnTick) {
   // Provision a fake tick function.
   base::OnceClosure do_tick;
   EXPECT_CALL(*tick_provider_ptr_, RequestCallOnNextTick)
-      .WillOnce(Invoke(
-          [&](base::OnceClosure closure) { do_tick = std::move(closure); }));
+      .WillOnce(
+          [&](base::OnceClosure closure) { do_tick = std::move(closure); });
   metronome->RequestCallOnNextTick(callback.AsStdFunction());
 
   EXPECT_CALL(callback, Call);
@@ -84,8 +83,8 @@ TEST_F(MetronomeSourceTest, InvokesTwoCallbacksOnSameTick) {
   // Provision a fake tick function.
   base::OnceClosure do_tick;
   EXPECT_CALL(*tick_provider_ptr_, RequestCallOnNextTick)
-      .WillOnce(Invoke(
-          [&](base::OnceClosure closure) { do_tick = std::move(closure); }));
+      .WillOnce(
+          [&](base::OnceClosure closure) { do_tick = std::move(closure); });
   metronome->RequestCallOnNextTick(callback.AsStdFunction());
   metronome->RequestCallOnNextTick(callback.AsStdFunction());
 
@@ -102,14 +101,14 @@ TEST_F(MetronomeSourceTest,
   base::OnceClosure do_tick2;
   InSequence s;
   EXPECT_CALL(*tick_provider_ptr_, RequestCallOnNextTick)
-      .WillRepeatedly(Invoke(
-          [&](base::OnceClosure closure) { do_tick1 = std::move(closure); }));
-  EXPECT_CALL(callback1, Call).WillOnce(Invoke([&] {
+      .WillRepeatedly(
+          [&](base::OnceClosure closure) { do_tick1 = std::move(closure); });
+  EXPECT_CALL(callback1, Call).WillOnce([&] {
     metronome->RequestCallOnNextTick(callback2.AsStdFunction());
-  }));
+  });
   EXPECT_CALL(*tick_provider_ptr_, RequestCallOnNextTick)
-      .WillRepeatedly(Invoke(
-          [&](base::OnceClosure closure) { do_tick2 = std::move(closure); }));
+      .WillRepeatedly(
+          [&](base::OnceClosure closure) { do_tick2 = std::move(closure); });
   EXPECT_CALL(callback2, Call);
   metronome->RequestCallOnNextTick(callback1.AsStdFunction());
   std::move(do_tick1).Run();

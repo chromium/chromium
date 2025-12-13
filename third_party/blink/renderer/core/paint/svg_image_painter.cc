@@ -40,8 +40,15 @@ ImagePaintTimingInfo ComputeImagePaintTimingInfo(
 
 void SVGImagePainter::Paint(const PaintInfo& paint_info) {
   if (paint_info.phase != PaintPhase::kForeground ||
-      layout_svg_image_.StyleRef().Visibility() != EVisibility::kVisible ||
       !layout_svg_image_.ImageResource()->HasImage()) {
+    return;
+  }
+
+  auto paint_behavior = ScopedSVGPaintState::ComputePaintBehavior(
+      layout_svg_image_, paint_info,
+      layout_svg_image_.StyleRef().Visibility() == EVisibility::kVisible);
+
+  if (paint_behavior.empty()) {
     return;
   }
 
@@ -51,28 +58,38 @@ void SVGImagePainter::Paint(const PaintInfo& paint_info) {
   }
 
   if (SVGModelObjectPainter::CanUseCullRect(layout_svg_image_.StyleRef())) {
+    // CanUseCullRect returns false if there is a pixel moving filter, which
+    // includes reference filters. So execution should never reach here if
+    // painting only due to a reference filter.
+    CHECK(paint_behavior.Has(ScopedSVGPaintState::PaintComponent::kContent));
     if (!paint_info.GetCullRect().IntersectsTransformed(
             layout_svg_image_.LocalSVGTransform(),
-            layout_svg_image_.VisualRectInLocalSVGCoordinates()))
+            layout_svg_image_.VisualRectInLocalSVGCoordinates())) {
       return;
+    }
   }
   // Images cannot have children so do not call TransformCullRect.
 
   ScopedSVGTransformState transform_state(paint_info, layout_svg_image_);
   {
-    ScopedSVGPaintState paint_state(layout_svg_image_, paint_info);
-    SVGModelObjectPainter::RecordHitTestData(layout_svg_image_, paint_info);
-    SVGModelObjectPainter::RecordRegionCaptureData(layout_svg_image_,
-                                                   paint_info);
-    if (!DrawingRecorder::UseCachedDrawingIfPossible(
-            paint_info.context, layout_svg_image_, paint_info.phase)) {
-      SVGDrawingRecorder recorder(paint_info.context, layout_svg_image_,
-                                  paint_info.phase);
-      PaintForeground(paint_info);
+    ScopedSVGPaintState paint_state(layout_svg_image_, paint_info,
+                                    paint_behavior);
+    if (paint_behavior.Has(ScopedSVGPaintState::PaintComponent::kContent)) {
+      SVGModelObjectPainter::RecordHitTestData(layout_svg_image_, paint_info);
+      SVGModelObjectPainter::RecordRegionCaptureData(layout_svg_image_,
+                                                     paint_info);
+      if (!DrawingRecorder::UseCachedDrawingIfPossible(
+              paint_info.context, layout_svg_image_, paint_info.phase)) {
+        SVGDrawingRecorder recorder(paint_info.context, layout_svg_image_,
+                                    paint_info.phase);
+        PaintForeground(paint_info);
+      }
     }
   }
 
-  SVGModelObjectPainter(layout_svg_image_).PaintOutline(paint_info);
+  if (paint_behavior.Has(ScopedSVGPaintState::PaintComponent::kContent)) {
+    SVGModelObjectPainter(layout_svg_image_).PaintOutline(paint_info);
+  }
 }
 
 void SVGImagePainter::PaintForeground(const PaintInfo& paint_info) {

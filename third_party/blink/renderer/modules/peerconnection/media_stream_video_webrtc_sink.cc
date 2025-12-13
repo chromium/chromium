@@ -77,7 +77,7 @@ void RequestRefreshFrame(
 // on libjingle's network thread. WebRtcVideoCapturerAdapter implements a video
 // capturer for libjingle.
 class MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter
-    : public WTF::ThreadSafeRefCounted<WebRtcVideoSourceAdapter> {
+    : public ThreadSafeRefCounted<WebRtcVideoSourceAdapter> {
  public:
   WebRtcVideoSourceAdapter(
       const scoped_refptr<base::SingleThreadTaskRunner>&
@@ -100,7 +100,7 @@ class MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter
   void OnNotifyVideoFrameDroppedOnIO(media::VideoCaptureFrameDropReason);
 
  private:
-  friend class WTF::ThreadSafeRefCounted<WebRtcVideoSourceAdapter>;
+  friend class ThreadSafeRefCounted<WebRtcVideoSourceAdapter>;
 
   void OnVideoFrameOnNetworkThread(scoped_refptr<media::VideoFrame> frame);
 

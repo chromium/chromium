@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
+import("//build/config/chrome_build.gni")
 import("//tools/json_to_struct/json_to_struct.gni")
 if (is_android) {
   import("//build/config/android/config.gni")
@@ -80,7 +80,8 @@ static_library("search_engines") {
     "//components/crash/core/common:crash_key",
     "//components/database_utils",
     "//components/infobars/core",
-    "//components/lens:lens",
+    "//components/lens:features",
+    "//components/lens:mime_type",
     "//components/lens/proto/server:proto",
     "//components/metrics",
     "//components/omnibox/common",
@@ -90,6 +91,8 @@ static_library("search_engines") {
     "//components/regional_capabilities",
     "//components/regional_capabilities:country_access_reason",
     "//components/regional_capabilities:data",
+    "//components/search_engines/search_engine_choice:buildflags",
+    "//components/search_engines/search_engine_choice:switches",
     "//components/search_provider_logos:switches",
     "//components/signin/public/base",
     "//components/strings",
@@ -100,6 +103,7 @@ static_library("search_engines") {
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
+    "//services/preferences/tracked",
     "//sql",
     "//third_party/lens_server_proto:lens_overlay_proto",
     "//third_party/metrics_proto",
@@ -116,17 +120,13 @@ static_library("search_engines") {
 
   if (is_android) {
     sources += [
-      "android/search_engines_feature_map.cc",
       "android/template_url_android.cc",
       "android/template_url_android.h",
       "android/template_url_service_android.cc",
       "android/template_url_service_android.h",
     ]
 
-    deps += [
-      "//components/search_engines/android:features_jni_headers",
-      "//components/search_engines/android:jni_headers",
-    ]
+    deps += [ "//components/search_engines/android:jni_headers" ]
   }
 
   deps += [
@@ -135,9 +135,7 @@ static_library("search_engines") {
   ]
 
   if (enable_builtin_search_provider_assets) {
-    sources += [ "search_engine_choice/generated_marketing_snippets.cc" ]
-    deps +=
-        [ "//third_party/search_engines_data:search_engines_scaled_resources" ]
+    deps += [ "//third_party/search_engines_data:resources" ]
   }
 
   if (is_linux || is_win || is_mac || is_chromeos) {
@@ -195,9 +193,11 @@ static_library("test_support") {
     "//components/country_codes",
     "//components/metrics:metrics_pref_names",
     "//components/os_crypt/async/browser:test_support",
+    "//components/policy/core/common",
     "//components/prefs:test_support",
     "//components/regional_capabilities",
     "//components/regional_capabilities:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//components/sync_preferences:test_support",
     "//testing/gtest",
     "//third_party/search_engines_data:regional_settings",
@@ -235,18 +235,21 @@ source_set("unit_tests") {
     "//components/omnibox/common",
     "//components/policy/core/common",
     "//components/policy/core/common:test_support",
-    "//components/pref_registry:pref_registry",
+    "//components/pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/regional_capabilities",
     "//components/regional_capabilities:data",
+    "//components/search_engines/search_engine_choice:buildflags",
+    "//components/search_engines/search_engine_choice:switches",
     "//components/sync:test_support",
     "//components/sync_preferences:test_support",
     "//components/variations:test_support",
     "//components/webdata/common",
-    "//net:net",
+    "//net",
     "//services/network:test_support",
     "//services/network/public/cpp",
+    "//services/preferences/tracked",
     "//sql",
     "//sql:test_support",
     "//testing/gmock",
@@ -258,8 +261,6 @@ source_set("unit_tests") {
 
   if (is_linux || is_win || is_mac || is_chromeos) {
     sources += [
-      "enterprise/field_validation_test_utils.cc",
-      "enterprise/field_validation_test_utils.h",
       "enterprise/search_aggregator_policy_handler_unittest.cc",
       "enterprise/site_search_policy_handler_unittest.cc",
     ]

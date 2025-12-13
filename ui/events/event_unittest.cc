@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/event.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -916,7 +912,7 @@ class AltGraphEventTest
                                  0));
     BYTE test_keyboard_state[256] = {};
     for (const auto& key_code : test_case().modifier_key_codes)
-      test_keyboard_state[key_code] = 0x80;
+      UNSAFE_TODO(test_keyboard_state[key_code]) = 0x80;
     CHECK(SetKeyboardState(test_keyboard_state));
   }
 

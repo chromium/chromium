@@ -22,6 +22,7 @@
       "type": "image/png"
     }
   ],
+  "id": "webapps_integration/standalone/basic.html",
   "start_url": "/webapps_integration/standalone/basic.html",
   "scope": "/webapps_integration/standalone/",
   "display": "standalone"

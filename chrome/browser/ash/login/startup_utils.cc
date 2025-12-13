@@ -137,6 +137,8 @@ void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kAuthenticationFlowAutoReloadInterval,
       constants::kDefaultAuthenticationFlowAutoReloadInterval);
+
+  registry->RegisterBooleanPref(prefs::kAutoEnrollmentCheckExited, false);
 }
 
 // static
@@ -209,6 +211,11 @@ void StartupUtils::MarkOobeCompleted() {
 
   // Successful enrollment implies that recovery is not required.
   SaveBoolPreferenceForced(::prefs::kEnrollmentRecoveryRequired, false);
+
+  // If `kOobeComplete` is already true, the `kAutoEnrollmentCheckExited` pref
+  // is no longer needed as its purpose is to potentially block OOBE completion.
+  g_browser_process->local_state()->ClearPref(
+      prefs::kAutoEnrollmentCheckExited);
 }
 
 // static

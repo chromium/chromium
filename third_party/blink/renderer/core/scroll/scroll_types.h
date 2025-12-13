@@ -29,7 +29,6 @@
 #include "base/notreached.h"
 #include "third_party/blink/public/mojom/input/scroll_direction.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 

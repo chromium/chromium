@@ -4,7 +4,6 @@
 
 import("//build/config/cast.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/features.gni")
 import("//build/config/ozone.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
@@ -35,6 +34,7 @@ if (is_android) {
 } else if (is_ios) {
   import("//build/config/apple/mobile_config.gni")
   import("//build/config/apple/swift_source_set.gni")
+  import("//build/config/ios/ios_app_ipa.gni")
 
   if (target_platform == "iphoneos") {
     import("//content/shell/app/ios/extensions.gni")
@@ -102,6 +102,7 @@ static_library("content_shell_app") {
       "//content/web_test:web_test_browser",
       "//content/web_test:web_test_common",
       "//content/web_test:web_test_renderer",
+      "//ui/native_theme",
     ]
   }
   if (!is_fuchsia) {
@@ -112,8 +113,8 @@ static_library("content_shell_app") {
   }
   if (is_apple) {
     sources += [
-      "app/paths_mac.h",
-      "app/paths_mac.mm",
+      "app/paths_apple.h",
+      "app/paths_apple.mm",
     ]
   }
   if (is_mac) {
@@ -129,6 +130,12 @@ static_library("content_shell_app") {
       "app/ios/web_tests_support_ios.h",
       "app/ios/web_tests_support_ios.mm",
     ]
+
+    deps += [ "//components/crash/core/common:reporter_running_ios" ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
   defines = [
     "CONTENT_SHELL_VERSION=\"$content_shell_version\"",
@@ -314,7 +321,6 @@ static_library("content_shell_lib") {
     ":shell_controller_mojom",
     "//base",
     "//base:base_static",
-    "//cc/base",
     "//components/cdm/renderer",
     "//components/custom_handlers",
     "//components/custom_handlers:test_support",
@@ -322,10 +328,8 @@ static_library("content_shell_lib") {
     "//components/embedder_support:user_agent",
     "//components/input",
     "//components/keyed_service/content",
-    "//components/metrics",
     "//components/metrics:net",
-    "//components/metrics:test_support",
-    "//components/network_hints/browser:browser",
+    "//components/network_hints/browser",
     "//components/network_hints/renderer",
     "//components/network_session_configurator/common",
     "//components/origin_trials:browser",
@@ -335,7 +339,6 @@ static_library("content_shell_lib") {
     "//components/prefs",
     "//components/services/storage/test_api",
     "//components/url_formatter",
-    "//components/variations",
     "//components/variations/service",
     "//components/web_cache/renderer",
     "//content:content_resources",
@@ -414,7 +417,8 @@ static_library("content_shell_lib") {
       "//components/permissions",
       "//components/strings:components_strings",
       "//services/tracing/public/cpp",
-      "//services/tracing/public/mojom:mojom",
+      "//services/tracing/public/mojom",
+      "//ui/accessibility:ax_base",
       "//ui/shell_dialogs",
     ]
   }
@@ -453,7 +457,6 @@ static_library("content_shell_lib") {
       public_deps += [ "//ui/base/mojom:ui_base_types" ]
       deps += [
         "//ui/color:color_headers",
-        "//ui/native_theme",
         "//ui/resources",
         "//ui/views:test_support",
         "//ui/views/controls/webview",
@@ -474,10 +477,6 @@ static_library("content_shell_lib") {
 
   if (is_chromeos) {
     deps += [ "//chromeos/ash/components/dbus" ]
-  }
-
-  if (is_linux || is_chromeos) {
-    deps += [ "//build/config/freetype" ]
   }
 
   if (use_ozone) {
@@ -542,6 +541,7 @@ repack("pak") {
     "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
     "$root_gen_dir/third_party/blink/public/strings/permission_element_generated_strings.pak",
     "$root_gen_dir/third_party/blink/public/strings/permission_element_strings_en-US.pak",
+    "$root_gen_dir/ui/resources/ui_lottie_resources.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
     "$root_gen_dir/ui/strings/auto_image_annotation_strings_en-US.pak",
@@ -555,7 +555,7 @@ repack("pak") {
     "//base/tracing/protos:chrome_track_event_resources",
     "//components/ukm/debug:resources",
     "//content:content_resources",
-    "//content/browser/resources:resources",
+    "//content/browser/resources",
     "//content/browser/resources/media:resources",
     "//content/browser/webrtc/resources",
     "//content/test:web_ui_mojo_test_resources",
@@ -699,6 +699,11 @@ if (is_android) {
     bundle_identifier = ios_content_shell_bundle_identifier
   }
 
+  ios_app_ipa("content_shell_ipa") {
+    testonly = true
+    bundle_target = ":content_shell"
+  }
+
   ios_framework_bundle("content_shell_framework") {
     testonly = true
     transparent = true
@@ -758,7 +763,7 @@ if (is_android) {
 
     data_deps = [
       ":pak",
-      "//tools/v8_context_snapshot:v8_context_snapshot",
+      "//tools/v8_context_snapshot",
     ]
 
     if (is_win) {
@@ -790,7 +795,6 @@ if (is_android) {
     }
 
     if ((is_linux || is_chromeos) && !is_component_build) {
-      # Set rpath to find our own libfreetype even in a non-component build.
       configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
     }
   }
@@ -1064,6 +1068,7 @@ mojom("content_browsertests_mojom") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
+    "//third_party/blink/public/mojom/fingerprinting_protection",
     "//third_party/blink/public/mojom/tokens",
   ]
 }

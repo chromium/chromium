@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include "base/compiler_specific.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/run_loop.h"
 #include "content/public/test/browser_test.h"
@@ -54,7 +50,8 @@ void ValidateFavicon(const fuchsia::web::Favicon& favicon,
   size_t expected_size = expected_width * expected_height * sizeof(uint32_t);
   ASSERT_EQ(data->size(), expected_size);
   size_t offset = check_point_x + check_point_y * expected_width;
-  uint32_t color = reinterpret_cast<const uint32_t*>(data->data())[offset];
+  uint32_t color =
+      UNSAFE_TODO(reinterpret_cast<const uint32_t*>(data->data())[offset]);
   EXPECT_EQ(color, expected_color);
 }
 

@@ -1,53 +1,116 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// CAUTION: EntityTypes and AttributeTypes are encoded as C++ enums.
+// At least the numeric EntityType values are emitted in metrics.
+//
+// Please:
+// - Add new EntityTypes only at the bottom.
+// - Run `tools/metrics/histograms/update_autofill_enums.py` after adding
+//   a new EntityType.
 [
   {
     "name": "Passport",
     "attributes": [ "Name", "Country", "Number", "Issue date", "Expiration date" ],
     "obfuscated attributes": [ "Number" ],
+    "required fields": [
+      [ "Number" ],
+      [ "Issue date" ],
+      [ "Expiration date" ]
+    ],
     "import constraints": [
       [ "Number" ]
     ],
     "merge constraints": "import constraints",
-    "strike keys": [
-      [ "Number" ]
-    ],
+    "strike keys": "import constraints",
     "disambiguation order": [ "Name", "Country" ],
-    "syncable": false
+    "read only": false
   },
   {
     "name": "Driver's license",
     "attributes": [ "Name", "State", "Number", "Issue date", "Expiration date" ],
+    "obfuscated attributes": [ "Number" ],
+    "required fields": "any",
     "import constraints": [
       [ "Number" ]
     ],
     "merge constraints": "import constraints",
+    "strike keys": "import constraints",
     "disambiguation order": [ "Name", "State" ],
-    "syncable": false
+    "read only": false
   },
   {
     "name": "Vehicle",
     "attributes": [ "Make", "Model", "Year", "Owner", "Plate number", "Plate state", "VIN" ],
     "obfuscated attributes": [ "VIN" ],
+    "required fields": "any",
     "import constraints": [
       [ "Plate number" ],
       [ "VIN" ]
     ],
     "merge constraints": "import constraints",
+    "strike keys": "import constraints",
     "disambiguation order": [ "Make", "Model", "Year", "Owner" ],
-    "syncable": false
+    "read only": false
   },
   {
     "name": "National Id Card",
     "attributes": [ "Name", "Country", "Number", "Issue date", "Expiration date" ],
     "obfuscated attributes": [ "Number" ],
+    "required fields": "any",
     "import constraints": [
       [ "Number" ]
     ],
     "merge constraints": "import constraints",
+    "strike keys": "import constraints",
     "disambiguation order": [ "Name", "Country" ],
-    "strike keys": [
-      [ "Number "]
+    "experiment feature": "AutofillAiNationalIdCard",
+    "excluded geo-ips": [ "IN" ],
+    "read only": false
+  },
+  {
+    "name": "Known Traveler Number",
+    "attributes": ["Name", "Number", "Expiration date" ],
+    "obfuscated attributes": [ "Number" ],
+    "required fields": "any",
+    "import constraints": [
+      [ "Number" ]
     ],
-    "syncable": false,
-    "experiment feature": "AutofillAiNationalIdCard"
+    "merge constraints": "import constraints",
+    "strike keys": "import constraints",
+    "disambiguation order": [ "Name" ],
+    "experiment feature": "AutofillAiKnownTravelerNumber",
+    "read only": false
+  },
+  {
+    "name": "Redress Number",
+    "attributes": [ "Name", "Number" ],
+    "obfuscated attributes": [ ],
+    "required fields": "any",
+    "import constraints": [
+      [ "Number" ]
+    ],
+    "merge constraints": "import constraints",
+    "strike keys": "import constraints",
+    "disambiguation order": [ "Name" ],
+    "experiment feature": "AutofillAiRedressNumber",
+    "read only": false
+  },
+  {
+    "name": "Flight Reservation",
+    "attributes": [ "Flight number", "Ticket number", "Confirmation code", "Passenger name", "Departure airport", "Arrival airport", "Departure date"],
+    "obfuscated attributes": [],
+    "required fields": [
+      [ "Flight number" ],
+      [ "Ticket number" ],
+      [ "Confirmation code" ]
+    ],
+    "import constraints": [],
+    "merge constraints": [],
+    "strike keys": [],
+    "disambiguation order": [ "Departure airport", "Arrival airport", "Departure date", "Passenger name", "Flight number" ],
+    "experiment feature": "AutofillAiWalletFlightReservation",
+    "read only": true
   }
 ]

@@ -65,4 +65,11 @@ base::expected<void, std::string> IdentityValidator::ValidateWebBundleIdentity(
   return base::ok();
 }
 
+base::expected<void, std::string> IdentityValidator::ValidateWebBundleIdentity(
+    const SignedWebBundleIntegrityBlock& integrity_block) const {
+  return ValidateWebBundleIdentity(
+      integrity_block.web_bundle_id().id(),
+      integrity_block.signature_stack().public_keys());
+}
+
 }  // namespace web_package

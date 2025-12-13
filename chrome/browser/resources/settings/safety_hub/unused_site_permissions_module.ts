@@ -1,6 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -66,10 +67,12 @@ const SettingsSafetyHubUnusedSitePermissionsModuleElementBase =
     TooltipMixin(I18nMixin(RouteObserverMixin(
         WebUiListenerMixin(SiteSettingsMixin(PolymerElement)))));
 
+function doNothing() {}
+
 export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     SettingsSafetyHubUnusedSitePermissionsModuleElementBase {
   static get is() {
-    return 'settings-safety-hub-unused-site-permissions';
+    return 'settings-safety-hub-unused-site-permissions-module';
   }
 
   static get template() {
@@ -83,9 +86,6 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
 
       // Text below primary header label.
       subheaderString_: String,
-
-      // The icon next to primary header label.
-      headerIconString_: String,
 
       // Most recent site permissions the user has allowed again.
       lastUnusedSitePermissionsAllowedAgain_: {
@@ -134,7 +134,6 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
 
   declare private headerString_: string;
   declare private subheaderString_: string|null;
-  declare private headerIconString_: string;
   declare private toastText_: string|null;
   declare private sites_: UnusedSitePermissionsDisplay[]|null;
   declare private shouldShowCompletionInfo_: boolean;
@@ -144,6 +143,7 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
       UnusedSitePermissions[]|null;
   declare private renderedOrigins_: string[];
   declare private lastUserAction_: Action|null;
+  private pendingFocusCallback_: Function = doNothing;
   private eventTracker_: EventTracker = new EventTracker();
   private browserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();
@@ -262,9 +262,10 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     // once the single site is reviewed, the completion state with a permanent
     // Undo button in the header will be shown.
     if (this.sites_!.length > 1) {
-      this.$.undoToast.show();
+      this.$.undoToast.show().then(() => {
+        this.$.toastUndoButton.focus();
+      });
     }
-
     this.$.module.animateHide(
         item.origin,
         this.browserProxy_.allowPermissionsAgainForUnusedSite.bind(
@@ -351,7 +352,7 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     assert(this.headerString_);
     this.headerString_ = this.toastText_!;
     this.subheaderString_ = '';
-    this.headerIconString_ = 'cr:check';
+    this.$.bulkUndoButton.focus();
   }
 
   private async onSitesChanged_() {
@@ -359,11 +360,15 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
       return;
     }
 
-    // Run the show animation on all new items, i.e. those items
-    // in |this.sites_| which aren't already rendered.
+    const callback = this.pendingFocusCallback_;
+    this.pendingFocusCallback_ = doNothing;
+
     this.$.module.animateShow(
+        // Run the show animation on all new items, i.e. those items
+        // in |this.sites_| which aren't already rendered.
         this.sites_.map(site => site.origin)
-            .filter(origin => !this.renderedOrigins_.includes(origin)));
+            .filter(origin => !this.renderedOrigins_.includes(origin)),
+        callback);
     this.renderedOrigins_ = this.sites_.map(site => site.origin);
 
     if (this.shouldShowCompletionInfo_) {
@@ -377,7 +382,6 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     this.subheaderString_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
             'safetyHubRevokedPermissionsSecondaryLabel', this.sites_.length);
-    this.headerIconString_ = 'privacy:page-info';
   }
 
   private onUndoClick_(e: Event) {
@@ -405,6 +409,11 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
                   SafetyCheckUnusedSitePermissionsModuleInteractions
                       .UNDO_ALLOW_AGAIN);
         }
+        const originToFocus =
+            this.lastUnusedSitePermissionsAllowedAgain_.origin;
+        this.pendingFocusCallback_ = () => {
+          this.$.module.focusOriginMainButton(originToFocus);
+        };
         this.lastUnusedSitePermissionsAllowedAgain_ = null;
         this.metricsBrowserProxy_
             .recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram(
@@ -427,6 +436,9 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
             .recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram(
                 SafetyCheckUnusedSitePermissionsModuleInteractions
                     .UNDO_ACKNOWLEDGE_ALL);
+        this.pendingFocusCallback_ = () => {
+          this.$.gotItButton.focus();
+        };
         break;
       default:
         assertNotReached();
@@ -457,30 +469,24 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     this.showTooltipAtTarget(tooltip, e.target! as Element);
   }
 
-  private doesSiteListIncludeAbusiveNotifications(sites:
-                                                      UnusedSitePermissions[]) {
-    // Convert the permission type lists to i18n versions and check if each list
-    // includes notifications.
-    const listOfPermissionTypes = sites.map(site => site.permissions);
-    const listPermissionsIncludeNotifications = listOfPermissionTypes.map(
-        permissions =>
-            permissions
-                .map(permission => {
-                  const localizationString =
-                      getLocalizationStringForContentType(permission);
-                  return localizationString ? this.i18n(localizationString) :
-                                              '';
-                })
-                .includes('notifications'));
-
-    // Return true if any of the permission type lists includes notifications.
-    return listPermissionsIncludeNotifications.includes(true);
+  private doesSiteListIncludeAbusiveNotifications(
+      sites: UnusedSitePermissions[]) {
+    // Return true if any of the permission includes abusive type.
+    return sites.map(site => site.revocationType)
+               .filter(
+                   type => type ===
+                           PermissionsRevocationType
+                               .ABUSIVE_NOTIFICATION_PERMISSIONS ||
+                       type ===
+                           PermissionsRevocationType
+                               .UNUSED_PERMISSIONS_AND_ABUSIVE_NOTIFICATIONS)
+               .length > 0;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-safety-hub-unused-site-permissions':
+    'settings-safety-hub-unused-site-permissions-module':
         SettingsSafetyHubUnusedSitePermissionsModuleElement;
   }
 }

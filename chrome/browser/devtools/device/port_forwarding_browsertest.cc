@@ -94,14 +94,16 @@ IN_PROC_BROWSER_TEST_F(PortForwardingTest, LoadPageWithStyleAnsScript) {
   GURL original_url = embedded_test_server()->GetURL(kPortForwardingTestPage);
 
   std::string forwarding_port("8000");
-  GURL forwarding_url(original_url.scheme() + "://" +
-      original_url.host() + ":" + forwarding_port + original_url.path());
+  GURL forwarding_url(original_url.GetScheme() + "://" +
+                      original_url.GetHost() + ":" + forwarding_port +
+                      original_url.GetPath());
 
   PrefService* prefs = profile->GetPrefs();
   prefs->SetBoolean(prefs::kDevToolsPortForwardingEnabled, true);
 
   base::Value::Dict config;
-  config.Set(forwarding_port, original_url.host() + ":" + original_url.port());
+  config.Set(forwarding_port,
+             original_url.GetHost() + ":" + original_url.GetPort());
   prefs->SetDict(prefs::kDevToolsPortForwardingConfig, std::move(config));
   base::RunLoop loop1;
   Listener wait_for_port_forwarding(profile);
@@ -154,14 +156,16 @@ IN_PROC_BROWSER_TEST_F(PortForwardingDisconnectTest, DisconnectOnRelease) {
   GURL original_url = embedded_test_server()->GetURL(kPortForwardingTestPage);
 
   std::string forwarding_port("8000");
-  GURL forwarding_url(original_url.scheme() + "://" +
-      original_url.host() + ":" + forwarding_port + original_url.path());
+  GURL forwarding_url(original_url.GetScheme() + "://" +
+                      original_url.GetHost() + ":" + forwarding_port +
+                      original_url.GetPath());
 
   PrefService* prefs = profile->GetPrefs();
   prefs->SetBoolean(prefs::kDevToolsPortForwardingEnabled, true);
 
   base::Value::Dict config;
-  config.Set(forwarding_port, original_url.host() + ":" + original_url.port());
+  config.Set(forwarding_port,
+             original_url.GetHost() + ":" + original_url.GetPort());
   prefs->SetDict(prefs::kDevToolsPortForwardingConfig, std::move(config));
 
   base::RunLoop run_loop;

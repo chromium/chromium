@@ -52,25 +52,35 @@ static_library("browser") {
     "//net",
   ]
 
-  if (!is_android && !is_ios) {
+  if (!is_ios) {
     public += [ "browser_utils.h" ]
     sources += [ "browser_utils.cc" ]
 
     deps += [
-      "//components/policy/content",
+      "//components/policy/core/browser",
       "//content/public/browser",
     ]
   }
 
-  if (is_win || is_mac || is_linux) {
+  if (is_android) {
+    public += [ "android/android_os_signals_collector.h" ]
+    sources += [ "android/android_os_signals_collector.cc" ]
+    deps += [
+      "//components/safe_browsing/android:safe_browsing_api_handler",
+      "//components/safe_browsing/android:safe_browsing_api_handler_util",
+    ]
+  } else if (is_win || is_mac || is_linux) {
     public += [
-      "detected_agent_client.h",
-      "os_signals_collector.h",
+      "agent_signals_collector.h",
+      "crowdstrike_client.h",
+      "desktop/desktop_os_signals_collector.h",
     ]
     sources += [
-      "detected_agent_client.cc",
-      "os_signals_collector.cc",
+      "agent_signals_collector.cc",
+      "crowdstrike_client.cc",
+      "desktop/desktop_os_signals_collector.cc",
     ]
+    deps += [ "//services/data_decoder/public/cpp" ]
   }
 
   if (is_win) {
@@ -91,17 +101,8 @@ static_library("browser") {
     sources += [ "chromeos/browser_utils_chromeos.cc" ]
   }
 
-  if (is_win || is_mac) {
-    public += [
-      "agent_signals_collector.h",
-      "crowdstrike_client.h",
-    ]
-    sources += [
-      "agent_signals_collector.cc",
-      "crowdstrike_client.cc",
-    ]
-
-    deps += [ "//services/data_decoder/public/cpp" ]
+  if (is_android) {
+    sources += [ "android/browser_utils_android.cc" ]
   }
 }
 
@@ -127,6 +128,7 @@ static_library("test_support") {
     "//base",
     "//components/device_signals/core/common/mojom",
     "//components/signin/public/identity_manager",
+    "//services/network/public/cpp",
     "//testing/gmock",
   ]
 }
@@ -155,19 +157,25 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_win || is_mac || is_linux) {
-    sources += [
-      "detected_agent_client_unittest.cc",
-      "os_signals_collector_unittest.cc",
+  if (is_android) {
+    sources += [ "android/android_os_signals_collector_unittest.cc" ]
+    deps += [
+      "//components/safe_browsing/android:safe_browsing_api_handler",
+      "//components/safe_browsing/android:safe_browsing_api_handler_util",
+      "//content/test:test_support",
     ]
   }
 
-  if (is_win || is_mac) {
+  if (is_win || is_mac || is_linux) {
     sources += [
       "agent_signals_collector_unittest.cc",
       "crowdstrike_client_unittest.cc",
+      "desktop/desktop_os_signals_collector_unittest.cc",
     ]
-    deps += [ "//services/data_decoder/public/cpp:test_support" ]
+    deps += [
+      "//components/device_signals/core/common:test_support",
+      "//services/data_decoder/public/cpp:test_support",
+    ]
   }
 
   if (is_win) {

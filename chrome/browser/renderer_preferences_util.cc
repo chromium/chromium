@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/convert_explicitly_allowed_network_ports_pref.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
+#include "content/public/browser/reduce_accept_language_utils.h"
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #endif
@@ -25,8 +25,8 @@
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/renderer_preferences_util.h"
+#include "content/public/common/content_features.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -35,14 +35,14 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/ui_base_features.h"
-
-#if defined(TOOLKIT_VIEWS)
-#include "ui/views/controls/textfield/textfield.h"
-#endif
+#include "ui/native_theme/native_theme.h"
 
 #if defined(USE_AURA) && BUILDFLAG(IS_LINUX)
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
 #endif
 
@@ -99,7 +99,8 @@ std::string GetLanguageListForProfile(Profile* profile,
     // In incognito mode return only the first language.
     return language::GetFirstLanguage(language_list);
   }
-  return language_list;
+  return content::ReduceAcceptLanguageUtils::GetLanguagesWithMaxCount(
+      language_list);
 }
 
 }  // namespace
@@ -109,31 +110,55 @@ namespace renderer_preferences_util {
 void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
                               Profile* profile) {
   const PrefService* pref_service = profile->GetPrefs();
-  prefs->accept_languages = GetLanguageListForProfile(
-      profile, pref_service->GetString(language::prefs::kAcceptLanguages));
-  prefs->enable_referrers = pref_service->GetBoolean(prefs::kEnableReferrers);
-  prefs->enable_do_not_track =
-      TrackingProtectionSettingsFactory::GetForProfile(profile)
-          ->IsDoNotTrackEnabled();
-  prefs->enable_encrypted_media =
-      pref_service->GetBoolean(prefs::kEnableEncryptedMedia);
-
-#if BUILDFLAG(IS_ANDROID)
-  prefs->uses_platform_autofill = pref_service->GetBoolean(
-      autofill::prefs::kAutofillUsingVirtualViewStructure);
-#else  // if !BUILDFLAG(IS_ANDROID)
-  prefs->caret_browsing_enabled =
-      pref_service->GetBoolean(prefs::kCaretBrowsingEnabled);
-  ui::AXPlatform::GetInstance().SetCaretBrowsingState(
-      prefs->caret_browsing_enabled);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_WIN)
+  content::UpdateFontRendererPreferencesFromSystemSettings(prefs);
+#endif
+  prefs->focus_ring_color = BUILDFLAG(IS_MAC) ? SkColorSetRGB(0x00, 0x5F, 0xCC)
+                                              : SkColorSetRGB(0x10, 0x10, 0x10);
+#if defined(USE_AURA)
+#if BUILDFLAG(IS_CHROMEOS)
+  // This color is 0x544d90fe modulated with 0xffffff.
+  prefs->active_selection_bg_color = SkColorSetRGB(0xCB, 0xE4, 0xFA);
+  prefs->active_selection_fg_color = SK_ColorBLACK;
+  prefs->inactive_selection_bg_color = SkColorSetRGB(0xEA, 0xEA, 0xEA);
+  prefs->inactive_selection_fg_color = SK_ColorBLACK;
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+  if (auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile)) {
+    if (ThemeServiceFactory::GetForProfile(profile)->UsingSystemTheme()) {
+      linux_ui_theme->GetFocusRingColor(&prefs->focus_ring_color);
+      linux_ui_theme->GetActiveSelectionBgColor(
+          &prefs->active_selection_bg_color);
+      linux_ui_theme->GetActiveSelectionFgColor(
+          &prefs->active_selection_fg_color);
+      linux_ui_theme->GetInactiveSelectionBgColor(
+          &prefs->inactive_selection_bg_color);
+      linux_ui_theme->GetInactiveSelectionFgColor(
+          &prefs->inactive_selection_fg_color);
+    }
+  }
+#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(USE_AURA)
+
+#if BUILDFLAG(IS_LINUX)
+  if (auto* linux_ui = ui::LinuxUi::instance()) {
+    prefs->middle_click_paste_allowed = linux_ui->PrimaryPasteEnabled();
+  }
+#endif
+  prefs->caret_blink_interval =
+      ui::NativeTheme::GetInstanceForNativeUi()->caret_blink_interval();
+  prefs->enable_referrers = pref_service->GetBoolean(prefs::kEnableReferrers);
+  prefs->enable_do_not_track =
+      pref_service->GetBoolean(prefs::kEnableDoNotTrack);
+  prefs->enable_encrypted_media =
+      pref_service->GetBoolean(prefs::kEnableEncryptedMedia);
   prefs->webrtc_ip_handling_policy = blink::ToWebRTCIPHandlingPolicy(
       pref_service->GetString(prefs::kWebRTCIPHandlingPolicy));
 
-  const base::Value::List& webrtc_ip_handling_urls =
-      pref_service->GetList(prefs::kWebRTCIPHandlingUrl);
-  for (const base::Value& entry : webrtc_ip_handling_urls) {
+  for (const base::Value& entry :
+       pref_service->GetList(prefs::kWebRTCIPHandlingUrl)) {
     const base::Value::Dict& dict = entry.GetDict();
     const std::string* url = dict.FindString("url");
     if (!url) {
@@ -162,75 +187,37 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
         pref_service->GetBoolean(prefs::kWebRTCPostQuantumKeyAgreement);
   }
 
-  std::string webrtc_udp_port_range =
-      pref_service->GetString(prefs::kWebRTCUDPPortRange);
-  ParsePortRange(webrtc_udp_port_range, &prefs->webrtc_udp_min_port,
-                 &prefs->webrtc_udp_max_port);
-
-  const base::Value::List& allowed_urls =
-      pref_service->GetList(prefs::kWebRtcLocalIpsAllowedUrls);
-  prefs->webrtc_local_ips_allowed_urls = GetLocalIpsAllowedUrls(allowed_urls);
-#if defined(USE_AURA)
-  prefs->focus_ring_color = SkColorSetRGB(0x4D, 0x90, 0xFE);
-#if BUILDFLAG(IS_CHROMEOS)
-  // This color is 0x544d90fe modulated with 0xffffff.
-  prefs->active_selection_bg_color = SkColorSetRGB(0xCB, 0xE4, 0xFA);
-  prefs->active_selection_fg_color = SK_ColorBLACK;
-  prefs->inactive_selection_bg_color = SkColorSetRGB(0xEA, 0xEA, 0xEA);
-  prefs->inactive_selection_fg_color = SK_ColorBLACK;
-#endif
-#endif
-
-#if defined(TOOLKIT_VIEWS)
-  prefs->caret_blink_interval = views::Textfield::GetCaretBlinkInterval();
-#endif
-
-#if defined(USE_AURA) && BUILDFLAG(IS_LINUX)
-  auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
-  if (linux_ui_theme) {
-    if (ThemeServiceFactory::GetForProfile(profile)->UsingSystemTheme()) {
-      linux_ui_theme->GetFocusRingColor(&prefs->focus_ring_color);
-      linux_ui_theme->GetActiveSelectionBgColor(
-          &prefs->active_selection_bg_color);
-      linux_ui_theme->GetActiveSelectionFgColor(
-          &prefs->active_selection_fg_color);
-      linux_ui_theme->GetInactiveSelectionBgColor(
-          &prefs->inactive_selection_bg_color);
-      linux_ui_theme->GetInactiveSelectionFgColor(
-          &prefs->inactive_selection_fg_color);
-    }
-  }
-
-    // If we have a linux_ui object, set the caret blink interval regardless of
-    // whether we're in native theme mode.
-  if (auto* linux_ui = ui::LinuxUi::instance())
-    prefs->caret_blink_interval = linux_ui->GetCursorBlinkInterval();
-#endif
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_WIN)
-  content::UpdateFontRendererPreferencesFromSystemSettings(prefs);
-#endif
-
+  ParsePortRange(pref_service->GetString(prefs::kWebRTCUDPPortRange),
+                 &prefs->webrtc_udp_min_port, &prefs->webrtc_udp_max_port);
+  prefs->webrtc_local_ips_allowed_urls = GetLocalIpsAllowedUrls(
+      pref_service->GetList(prefs::kWebRtcLocalIpsAllowedUrls));
+  prefs->accept_languages = GetLanguageListForProfile(
+      profile, pref_service->GetString(language::prefs::kAcceptLanguages));
 #if !BUILDFLAG(IS_MAC)
   prefs->plugin_fullscreen_allowed =
       pref_service->GetBoolean(prefs::kFullscreenAllowed);
 #endif
-
-  PrefService* local_state = g_browser_process->local_state();
-  if (local_state) {
+#if BUILDFLAG(IS_ANDROID)
+  prefs->uses_platform_autofill = pref_service->GetBoolean(
+      autofill::prefs::kAutofillUsingVirtualViewStructure);
+#endif
+  prefs->caret_browsing_enabled =
+      pref_service->GetBoolean(prefs::kCaretBrowsingEnabled);
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(features::kAndroidCaretBrowsing)) {
+    // ensures caret browsing is disabled on Clank if the feature flag is off
+    prefs->caret_browsing_enabled = false;
+  }
+#endif
+  ui::AXPlatform::GetInstance().SetCaretBrowsingState(
+      prefs->caret_browsing_enabled);
+  if (PrefService* const local_state = g_browser_process->local_state()) {
     prefs->allow_cross_origin_auth_prompt =
         local_state->GetBoolean(prefs::kAllowCrossOriginAuthPrompt);
 
     prefs->explicitly_allowed_network_ports =
         ConvertExplicitlyAllowedNetworkPortsPref(local_state);
   }
-
-#if BUILDFLAG(IS_MAC)
-  prefs->focus_ring_color = SkColorSetRGB(0x00, 0x5F, 0xCC);
-#else
-  prefs->focus_ring_color = SkColorSetRGB(0x10, 0x10, 0x10);
-#endif
 
   prefs->view_source_line_wrap_enabled =
       pref_service->GetBoolean(prefs::kViewSourceLineWrappingEnabled);

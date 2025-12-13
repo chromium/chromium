@@ -9,8 +9,9 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -18,8 +19,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.components.tabs.TabStripCollection;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 /** Singleton class intended to stub out Tab model before it has been created. */
@@ -58,6 +61,9 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     public @Nullable Profile getProfile() {
         return null;
     }
+
+    @Override
+    public void associateWithBrowserWindow(long nativeAndroidBrowserWindow) {}
 
     @Override
     public boolean isIncognito() {
@@ -137,9 +143,9 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public ObservableSupplier<@Nullable Tab> getCurrentTabSupplier() {
+    public NullableObservableSupplier<Tab> getCurrentTabSupplier() {
         assert false : "This should be unreachable in production, it may be mocked for testing.";
-        return new ObservableSupplierImpl<>();
+        return ObservableSuppliers.alwaysNull();
     }
 
     @Override
@@ -154,7 +160,10 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     public void moveTab(int id, int newIndex) {}
 
     @Override
-    public void pinTab(int tabId) {}
+    public void pinTab(
+            int tabId,
+            boolean showUngroupDialog,
+            @Nullable TabModelActionListener tabModelActionListener) {}
 
     @Override
     public void unpinTab(int tabId) {}
@@ -187,9 +196,9 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public ObservableSupplier<Integer> getTabCountSupplier() {
+    public NonNullObservableSupplier<Integer> getTabCountSupplier() {
         assert false : "This should be unreachable in production, it may be mocked for testing.";
-        return new ObservableSupplierImpl<>();
+        return assumeNonNull(null);
     }
 
     @Override
@@ -245,5 +254,38 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     @Override
     public int getMultiSelectedTabsCount() {
         return 0;
+    }
+
+    @Override
+    public int findFirstNonPinnedTabIndex() {
+        return 0;
+    }
+
+    @Override
+    public int getPinnedTabsCount() {
+        return 0;
+    }
+
+    @Override
+    public @Nullable Integer getNativeSessionIdForTesting() {
+        return null;
+    }
+
+    @Override
+    public void setMuteSetting(List<Tab> tabs, boolean mute) {}
+
+    @Override
+    public boolean isMuted(Tab tab) {
+        return false;
+    }
+
+    @Override
+    public @Nullable TabStripCollection getTabStripCollection() {
+        return null;
+    }
+
+    @Override
+    public @Nullable Tab duplicateTab(Tab tab) {
+        return null;
     }
 }

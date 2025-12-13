@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/profiler/periodic_sampling_scheduler.h"
@@ -155,7 +156,7 @@ void ThreadGroupProfiler::OnWorkerThreadExiting(
   // During shutdown profiling_has_stopped may not get a chance to signal as
   // task runner is stopped, profiler_shutdown event will signal instead
   // indicating that clean up has finished and worker thread may safely exit.
-  WaitableEvent::WaitMany(event_array, std::size(event_array));
+  WaitableEvent::WaitMany(event_array);
 }
 
 // Production implementation that wraps an actual StackSamplingProfiler.

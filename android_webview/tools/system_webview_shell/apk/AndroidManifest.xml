@@ -48,6 +48,10 @@
         <intent>
             <action android:name="org.chromium.intent.action.UPDATE_PAYMENT_DETAILS"/>
         </intent>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT" />
+            <data android:mimeType="text/plain" />
+        </intent>
     </queries>
 
     <application
@@ -166,6 +170,12 @@
             android:name="org.chromium.webview_shell.WebViewAnimationTestActivity"
             android:noHistory="true"
             android:exported="true">
+        </activity>
+
+        <activity
+            android:name="org.chromium.webview_shell.FullscreenActivity"
+            android:noHistory="true"
+            android:exported="false">
         </activity>
 
         <activity

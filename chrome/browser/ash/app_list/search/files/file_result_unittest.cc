@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/app_list/search/files/file_result.h"
 
 #include <optional>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/image_util.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -167,10 +163,11 @@ TEST_F(FileResultTest, PenalizeScore) {
   int access_days_ago[] = {0, 10, 30};
 
   for (int i = 0; i < 3; ++i) {
-    base::Time last_accessed = now - base::Days(access_days_ago[i]);
+    base::Time last_accessed =
+        now - base::Days(UNSAFE_TODO(access_days_ago[i]));
     double relevance =
         FileResult::CalculateRelevance(query, path, last_accessed);
-    EXPECT_THAT(relevance, DoubleNear(expected_scores[i], 0.01));
+    UNSAFE_TODO(EXPECT_THAT(relevance, DoubleNear(expected_scores[i], 0.01)));
   }
 }
 

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] v128 global exports should cause TDZ errors
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/mutable-global-export.wasm"
+Harness: the test ran to completion.
+

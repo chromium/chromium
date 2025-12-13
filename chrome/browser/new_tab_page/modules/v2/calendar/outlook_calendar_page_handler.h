@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NEW_TAB_PAGE_MODULES_V2_CALENDAR_OUTLOOK_CALENDAR_PAGE_HANDLER_H_
 #define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_V2_CALENDAR_OUTLOOK_CALENDAR_PAGE_HANDLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -57,7 +58,7 @@ class OutlookCalendarPageHandler
  private:
   void MakeRequest(GetEventsCallback callback);
   void OnJsonReceived(GetEventsCallback callback,
-                      std::unique_ptr<std::string> response_body);
+                      std::optional<std::string> response_body);
   void OnJsonParsed(GetEventsCallback callback,
                     data_decoder::DataDecoder::ValueOrError result);
   void MakeAttachmentUrlRequest(

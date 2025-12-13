@@ -56,6 +56,8 @@ std::string ToDatabaseKey(SchedulerClientType type) {
       return "Prefetch";
     case SchedulerClientType::kReadingList:
       return "ReadingList";
+    case SchedulerClientType::kTips:
+      return "Tips";
   }
 }
 
@@ -496,7 +498,7 @@ void ImpressionHistoryTrackerImpl::SetNeedsUpdate(SchedulerClientType type,
 
 bool ImpressionHistoryTrackerImpl::NeedsUpdate(SchedulerClientType type) const {
   auto it = need_update_db_.find(type);
-  return it == need_update_db_.end() ? false : it->second;
+  return it != need_update_db_.end() && it->second;
 }
 
 Impression* ImpressionHistoryTrackerImpl::FindImpressionNeedsUpdate(

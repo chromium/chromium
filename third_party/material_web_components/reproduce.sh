@@ -4,6 +4,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+set -eu
+
 # - Downloads all dependencies listed in package.json
 # - Makes Chromium specific modifications.
 # - Places the final output in components-chromium/

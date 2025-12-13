@@ -35,8 +35,12 @@ SVGStopElement::SVGStopElement(Document& document)
           svg_names::kOffsetAttr,
           MakeGarbageCollected<SVGNumberAcceptPercentage>())) {
   // Since stop elements don't have corresponding layout objects, we rely on
-  // style recalc callbacks for invalidation.
-  DCHECK(HasCustomStyleCallbacks());
+  // DidRecalcStyle() for invalidation.
+  if (RuntimeEnabledFeatures::Svg2CascadeEnabled()) {
+    SetHasCustomStyleCallbacks();
+  } else {
+    DCHECK(HasCustomStyleCallbacks());
+  }
 }
 
 void SVGStopElement::Trace(Visitor* visitor) const {

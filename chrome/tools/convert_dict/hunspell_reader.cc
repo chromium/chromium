@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/tools/convert_dict/hunspell_reader.h"
 
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 
 namespace convert_dict {
@@ -34,7 +30,7 @@ void TrimLine(std::string* line) {
 }
 
 std::string ReadLine(FILE* file) {
-  const char* line = fgets(line_buffer, kLineBufferLen - 1, file);
+  const char* line = UNSAFE_TODO(fgets(line_buffer, kLineBufferLen - 1, file));
   if (!line)
     return std::string();
 

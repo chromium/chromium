@@ -53,10 +53,7 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
   std::unique_ptr<RasterBuffer> AcquireBufferForRaster(
       const ResourcePool::InUsePoolResource& resource,
       uint64_t resource_content_id,
-      uint64_t previous_content_id,
-      bool depends_on_at_raster_decodes,
-      bool depends_on_hardware_accelerated_jpeg_candidates,
-      bool depends_on_hardware_accelerated_webp_candidates) override;
+      uint64_t previous_content_id) override;
   bool CanPartialRasterIntoProvidedResource() const override;
   bool IsResourceReadyToDraw(
       const ResourcePool::InUsePoolResource& resource) override;
@@ -74,10 +71,7 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
    public:
     RasterBufferImpl(GpuRasterBufferProvider* client,
                      const ResourcePool::InUsePoolResource& in_use_resource,
-                     bool resource_has_previous_content,
-                     bool depends_on_at_raster_decodes,
-                     bool depends_on_hardware_accelerated_jpeg_candidates,
-                     bool depends_on_hardware_accelerated_webp_candidates);
+                     bool resource_has_previous_content);
     RasterBufferImpl(const RasterBufferImpl&) = delete;
     ~RasterBufferImpl() override;
 
@@ -126,10 +120,6 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
 
     // These fields are for use on the worker thread.
     const bool resource_has_previous_content_;
-    const bool depends_on_at_raster_decodes_;
-    const bool depends_on_hardware_accelerated_jpeg_candidates_;
-    const bool depends_on_hardware_accelerated_webp_candidates_;
-    base::TimeTicks creation_time_;
   };
 
   const scoped_refptr<gpu::SharedImageInterface> sii_;

@@ -2,7 +2,6 @@ ci/android-cronet-arm-dbg
 ci/android-cronet-arm-rel
 ci/android-cronet-arm64-dbg
 ci/android-cronet-arm64-rel
-ci/android-cronet-asan-arm-rel
 ci/android-cronet-asan-x86-rel
 ci/android-cronet-code-coverage-java
 ci/android-cronet-code-coverage-native
@@ -25,7 +24,6 @@ try/android-cronet-arm-dbg
 try/android-cronet-arm-rel
 try/android-cronet-arm64-dbg
 try/android-cronet-arm64-rel
-try/android-cronet-asan-arm-rel
 try/android-cronet-code-coverage-java
 try/android-cronet-code-coverage-native
 try/android-cronet-riscv64-dbg

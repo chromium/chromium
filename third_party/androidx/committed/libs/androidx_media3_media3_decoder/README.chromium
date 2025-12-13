@@ -1,6 +1,6 @@
 Name: Media3 decoder module
 Short Name: media3-decoder
-URL: https://developer.android.com/jetpack/androidx
+URL: https://dl.google.com/dl/android/maven2/androidx/media3/media3-decoder/1.2.0/media3-decoder-1.2.0.aar
 Version: 1.2.0
 Update Mechanism: Autoroll
 License: Apache-2.0

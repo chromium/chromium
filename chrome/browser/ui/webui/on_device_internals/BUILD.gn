@@ -19,6 +19,8 @@ mojom("mojom") {
 source_set("on_device_internals") {
   public = [ "on_device_internals_ui.h" ]
   sources = [
+    "on_device_internals_crx_component.cc",
+    "on_device_internals_crx_component.h",
     "on_device_internals_page_handler.cc",
     "on_device_internals_page_handler.h",
     "on_device_internals_ui.cc",
@@ -28,10 +30,12 @@ source_set("on_device_internals") {
     "//base",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/on_device_internals:resources",
     "//chrome/common",
+    "//components/update_client",
     "//content/public/browser",
     "//services/on_device_model/ml:ml_no_internal",
     "//services/preferences/public/cpp",

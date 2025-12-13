@@ -32,8 +32,12 @@ found in the LICENSE file.
 
     <!-- Navigation bar colors -->
     <macro name="bottom_system_nav_color" tools:ignore="UnusedResources">@macro/toolbar_background_primary</macro>
-    <macro name="bottom_system_nav_divider_color">@macro/divider_line_bg_color</macro>
-    <color name="bottom_system_nav_divider_color_light">@color/divider_line_bg_color_light</color>
+    <macro name="bottom_system_nav_divider_color">@color/divider_color</macro>
+    <color name="bottom_system_nav_divider_color_light">@color/divider_color_light</color>
+
+    <!-- Settings containment colors -->
+    <macro name="preference_category_text_color_contained">?attr/colorOnSurfaceVariant</macro>
+    <macro name="preference_category_text_color_standard">?attr/colorPrimary</macro>
 
     <!-- This is the color that will appear on the system recents UI. It is a neutral background
          color that adapts to dark/light modes but not a dynamic color. -->

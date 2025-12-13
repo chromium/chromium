@@ -4,7 +4,7 @@
 
 #include "chrome/browser/password_manager/android/account_chooser_dialog_android.h"
 
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -130,7 +130,7 @@ AccountChooserDialogAndroidTest::CreateDialogManyAccounts() {
 
 TEST_F(AccountChooserDialogAndroidTest, SendsCredentialIfAuthNotAvailable) {
   // Auth is required to fill passwords in Android automotive.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP();
   }
 

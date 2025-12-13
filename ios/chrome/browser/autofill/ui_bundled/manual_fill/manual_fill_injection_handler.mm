@@ -36,7 +36,6 @@
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -228,7 +227,7 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
     // It is really odd to not have params here as getting a suggestion for the
     // manual fallback should correlate with a form activity. Only
     // crash when stateless is enabled so we don't perturbate the current flow.
-    CHECK(_lastFocusedElementParams, base::NotFatalUntil::M137);
+    CHECK(_lastFocusedElementParams);
 
     // Do not pass the params yet as the client will wrap its own params around
     // the suggestion. This is to keep the status quo of how params are handled

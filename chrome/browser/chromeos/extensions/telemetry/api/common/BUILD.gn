@@ -46,6 +46,7 @@ source_set("util") {
     "//ash/webui/shimless_rma/backend",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common",
     "//chromeos/constants",
@@ -53,6 +54,10 @@ source_set("util") {
     "//components/security_state/core",
     "//extensions/common",
   ]
+
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+  }
 }
 
 source_set("remote_probe_strategy") {
@@ -62,7 +67,7 @@ source_set("remote_probe_strategy") {
   ]
 
   deps = [
-    "//chrome/browser/ash/crosapi:crosapi",
+    "//chrome/browser/ash/crosapi",
     "//chromeos/ash/components/telemetry_extension/telemetry",
     "//chromeos/crosapi/mojom",
     "//mojo/public/cpp/bindings",
@@ -124,6 +129,7 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/ash/test:test_support",
     "//chrome/common/chromeos/extensions",
     "//chrome/test:test_support_ui",
     "//chromeos/crosapi/cpp/telemetry:test_support",

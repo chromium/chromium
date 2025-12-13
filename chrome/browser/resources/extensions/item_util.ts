@@ -4,7 +4,7 @@
 
 import '/strings.m.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {Mv2ExperimentStage} from './mv2_deprecation_util.js';
@@ -79,7 +79,7 @@ export function isEnabled(state: chrome.developerPrivate.ExtensionState):
     case chrome.developerPrivate.ExtensionState.DISABLED:
       return false;
     default:
-      assertNotReached();
+      assertNotReachedCase(state);
   }
 }
 
@@ -140,7 +140,7 @@ export function getItemSource(item: chrome.developerPrivate.ExtensionInfo):
     case chrome.developerPrivate.Location.INSTALLED_BY_DEFAULT:
       return SourceType.INSTALLED_BY_DEFAULT;
     default:
-      assertNotReached(item.location);
+      assertNotReachedCase(item.location);
   }
 }
 
@@ -161,7 +161,7 @@ export function getItemSourceString(source: SourceType): string {
       // chrome.developerPrivate.ExtensionInfo's |locationText| instead.
       return '';
     default:
-      assertNotReached();
+      assertNotReachedCase(source);
   }
 }
 
@@ -192,7 +192,7 @@ export function convertSafetyCheckReason(
       return SafetyCheckWarningReason.NO_PRIVACY_PRACTICE;
     }
     default: {
-      assertNotReached();
+      assertNotReachedCase(reason);
     }
   }
 }
@@ -248,8 +248,12 @@ export function getEnableToggleAriaLabel(
     case ExtensionType.EXTENSION:
     case ExtensionType.SHARED_MODULE:
       return extensionEnabled;
+    case ExtensionType.THEME:
+      assertNotReached('Don\'t send themes to the chrome://extensions page');
+    default:
+      assertNotReachedCase(
+          extensionsDataType, 'Item type is not App or Extension.');
   }
-  assertNotReached('Item type is not App or Extension.');
 }
 
 /**

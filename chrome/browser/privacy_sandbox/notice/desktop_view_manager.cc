@@ -6,10 +6,8 @@
 
 #include <vector>
 
-#include "chrome/browser/privacy_sandbox/notice/desktop_entrypoint_handlers.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 
 namespace privacy_sandbox {
@@ -24,9 +22,6 @@ DesktopViewManager::DesktopViewManager(
     PrivacySandboxNoticeServiceInterface* notice_service)
     : notice_service_(notice_service) {
   CHECK(notice_service_);
-  navigation_handler_ = std::make_unique<NavigationHandler>(
-      base::BindRepeating(&DesktopViewManager::HandleChromeOwnedPageNavigation,
-                          base::Unretained(this)));
 }
 
 DesktopViewManager::~DesktopViewManager() {
@@ -108,10 +103,6 @@ void DesktopViewManager::SetPendingNoticesToShow(
   pending_notices_to_show_ = std::move(notices);
 }
 
-NavigationHandler* DesktopViewManager::GetNavigationHandler() {
-  return navigation_handler_.get();
-}
-
 bool DesktopViewManager::IsPromptShowingOnBrowser(
     BrowserWindowInterface* browser) {
   for (auto& observer : observers_) {
@@ -127,18 +118,6 @@ void DesktopViewManager::HandleChromeOwnedPageNavigation(
     BrowserWindowInterface* browser_interface) {
   // TODO(crbug.com/408016824): Move this Feature flag check to the orchestrator
   // once implemented.
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxNoticeFramework)) {
-    if (IsPromptShowingOnBrowser(browser_interface)) {
-      return;
-    }
-
-    // Create a view through the bound `Show` function.
-    MaybeCreateView(browser_interface,
-                    base::BindOnce(static_cast<void (*)(BrowserWindowInterface*,
-                                                        PrivacySandboxNotice)>(
-                        &PrivacySandboxDialog::Show)));
-  }
 }
 
 }  // namespace privacy_sandbox

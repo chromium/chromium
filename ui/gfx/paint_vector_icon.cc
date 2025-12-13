@@ -17,6 +17,8 @@
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -127,7 +129,7 @@ void PaintPath(Canvas* canvas,
                int dip_size,
                SkColor color) {
   int canvas_size = kReferenceSizeDip;
-  std::vector<SkPath> paths;
+  std::vector<SkPathBuilder> paths;
   std::vector<cc::PaintFlags> flags_array;
   SkRect clip_rect = SkRect::MakeEmpty();
   bool flips_in_rtl = false;
@@ -138,7 +140,7 @@ void PaintPath(Canvas* canvas,
     auto arg = [&parser](int i) { return parser.GetArgument(i); };
     const CommandType command_type = parser.CurrentCommand();
     auto start_new_path = [&paths]() {
-      paths.push_back(SkPath());
+      paths.emplace_back();
       paths.back().setFillType(SkPathFillType::kEvenOdd);
     };
     auto start_new_flags = [&flags_array, &color]() {
@@ -153,7 +155,7 @@ void PaintPath(Canvas* canvas,
       start_new_flags();
     }
 
-    SkPath& path = paths.back();
+    SkPathBuilder& path = paths.back();
     cc::PaintFlags& flags = flags_array.back();
     switch (command_type) {
       // Handled above.
@@ -199,7 +201,7 @@ void PaintPath(Canvas* canvas,
           path.rLineTo(0, 0);
         }
 
-        path.rMoveTo(arg(0), arg(1));
+        path.rMoveTo({arg(0), arg(1)});
         break;
 
       case ARC_TO:
@@ -211,15 +213,16 @@ void PaintPath(Canvas* canvas,
         SkScalar arc_sweep_flag = arg(4);
         SkScalar x = arg(5);
         SkScalar y = arg(6);
-        SkPath::ArcSize arc_size =
-            large_arc_flag ? SkPath::kLarge_ArcSize : SkPath::kSmall_ArcSize;
+        SkPathBuilder::ArcSize arc_size = large_arc_flag
+                                              ? SkPathBuilder::kLarge_ArcSize
+                                              : SkPathBuilder::kSmall_ArcSize;
         SkPathDirection direction =
             arc_sweep_flag ? SkPathDirection::kCW : SkPathDirection::kCCW;
 
         if (command_type == ARC_TO)
-          path.arcTo(rx, ry, angle, arc_size, direction, x, y);
+          path.arcTo({rx, ry}, angle, arc_size, direction, {x, y});
         else
-          path.rArcTo(rx, ry, angle, arc_size, direction, x, y);
+          path.rArcTo({rx, ry}, angle, arc_size, direction, {x, y});
         break;
       }
 
@@ -232,8 +235,7 @@ void PaintPath(Canvas* canvas,
         break;
 
       case H_LINE_TO: {
-        SkPoint last_point;
-        path.getLastPt(&last_point);
+        const SkPoint last_point = path.getLastPt().value_or({0, 0});
         path.lineTo(arg(0), last_point.fY);
         break;
       }
@@ -243,8 +245,7 @@ void PaintPath(Canvas* canvas,
         break;
 
       case V_LINE_TO: {
-        SkPoint last_point;
-        path.getLastPt(&last_point);
+        const SkPoint last_point = path.getLastPt().value_or({0, 0});
         path.lineTo(last_point.fX, arg(0));
         break;
       }
@@ -272,12 +273,12 @@ void PaintPath(Canvas* canvas,
         // details.
         // Note that |x1| and |y1| will correspond to the sole control point if
         // calculating a quadratic curve.
-        SkPoint last_point;
-        path.getLastPt(&last_point);
+        const SkPoint last_point = path.getLastPt().value_or({0, 0});
         SkScalar delta_x = 0;
         SkScalar delta_y = 0;
         if (IsCommandTypeCurve(previous_command_type)) {
-          SkPoint last_control_point = path.getPoint(path.countPoints() - 2);
+          SkSpan<const SkPoint> pts = path.points();
+          SkPoint last_control_point = pts[pts.size() - 2];
           // We find what the delta was between the last curve's starting point
           // and the control point. This difference is what we will reflect on
           // the current point, creating our new control point.
@@ -318,8 +319,8 @@ void PaintPath(Canvas* canvas,
         break;
 
       case ROUND_RECT:
-        path.addRoundRect(SkRect::MakeXYWH(arg(0), arg(1), arg(2), arg(3)),
-                          arg(4), arg(4));
+        path.addRRect(SkRRect::MakeRectXY(
+            SkRect::MakeXYWH(arg(0), arg(1), arg(2), arg(3)), arg(4), arg(4)));
         break;
 
       case CLOSE:
@@ -361,7 +362,7 @@ void PaintPath(Canvas* canvas,
 
   DCHECK_EQ(flags_array.size(), paths.size());
   for (size_t i = 0; i < paths.size(); ++i)
-    canvas->DrawPath(paths[i], flags_array[i]);
+    canvas->DrawPath(paths[i].detach(), flags_array[i]);
 }
 
 class VectorIconSource : public CanvasImageSource {

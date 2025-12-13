@@ -152,19 +152,23 @@ const CGFloat kLeadingPadding = 61;
 
     [_actionsStackView addArrangedSubview:actionButton];
 
-    if (action.type == omnibox::ActionInfo_ActionType_CALL) {
+    if (action.type ==
+        omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL) {
       [actionButton addTarget:self
                        action:@selector(callButtonTapped)
              forControlEvents:UIControlEventTouchUpInside];
       actionButton.accessibilityLabel = l10n_util::GetNSString(
           IDS_IOS_CALL_OMNIBOX_ACTION_ACCESSIBILITY_LABEL);
-    } else if (action.type == omnibox::ActionInfo_ActionType_DIRECTIONS) {
+    } else if (action.type ==
+               omnibox::
+                   SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS) {
       [actionButton addTarget:self
                        action:@selector(directionsButtonTapped)
              forControlEvents:UIControlEventTouchUpInside];
       actionButton.accessibilityLabel = l10n_util::GetNSString(
           IDS_IOS_DIRECTIONS_OMNIBOX_ACTION_ACCESSIBILITY_LABEL);
-    } else if (action.type == omnibox::ActionInfo_ActionType_REVIEWS) {
+    } else if (action.type ==
+               omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS) {
       [actionButton addTarget:self
                        action:@selector(reviewsButtonTapped)
              forControlEvents:UIControlEventTouchUpInside];
@@ -217,16 +221,15 @@ const CGFloat kLeadingPadding = 61;
   if (!highlighted) {
     UIBackgroundConfiguration* backgroundConfig =
         [UIBackgroundConfiguration clearConfiguration];
-    backgroundConfig.backgroundColor =
-        [UIColor colorNamed:kTertiaryBackgroundColor];
+    backgroundConfig.backgroundColor = [UIColor colorNamed:kGrey100Color];
     configuration.background = backgroundConfig;
   }
+
+  configuration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
 
   button.configuration = configuration;
 
   [button sizeToFit];
-  button.layer.cornerRadius = button.frame.size.height / 2;
-  button.layer.masksToBounds = YES;
 
   return button;
 }
@@ -234,7 +237,8 @@ const CGFloat kLeadingPadding = 61;
 /// Handles tap on call button
 - (void)callButtonTapped {
   SuggestAction* callAction =
-      [self actionWithType:omnibox::ActionInfo_ActionType_CALL];
+      [self actionWithType:
+                omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL];
   [_configuration.delegate
       omniboxPopupRowActionSelectedWithConfiguration:_configuration
                                               action:callAction];
@@ -242,8 +246,9 @@ const CGFloat kLeadingPadding = 61;
 
 /// Handles tap on directions button
 - (void)directionsButtonTapped {
-  SuggestAction* directionsAction =
-      [self actionWithType:omnibox::ActionInfo_ActionType_DIRECTIONS];
+  SuggestAction* directionsAction = [self
+      actionWithType:
+          omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS];
   [_configuration.delegate
       omniboxPopupRowActionSelectedWithConfiguration:_configuration
                                               action:directionsAction];
@@ -252,14 +257,16 @@ const CGFloat kLeadingPadding = 61;
 /// Handles tap on reviews button
 - (void)reviewsButtonTapped {
   SuggestAction* reviewsAction =
-      [self actionWithType:omnibox::ActionInfo_ActionType_REVIEWS];
+      [self actionWithType:
+                omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS];
   [_configuration.delegate
       omniboxPopupRowActionSelectedWithConfiguration:_configuration
                                               action:reviewsAction];
 }
 
 /// Returns the action that corresponds to the given type.
-- (SuggestAction*)actionWithType:(omnibox::ActionInfo::ActionType)actionType {
+- (SuggestAction*)actionWithType:
+    (omnibox::SuggestTemplateInfo::TemplateAction::ActionType)actionType {
   for (SuggestAction* action in _configuration.actions) {
     if (action.type == actionType) {
       return action;

@@ -11,9 +11,11 @@ import android.app.Instrumentation;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Process;
 import android.text.TextUtils;
 import android.util.Log;
@@ -54,6 +56,7 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
     private static final int DEFAULT_SHARD_SIZE_LIMIT = 0;
 
     private final Handler mHandler = new Handler();
+    private final Handler mStartHandler = new Handler();
     private final Bundle mLogBundle = new Bundle();
     private final SparseArray<ShardMonitor> mMonitors = new SparseArray<ShardMonitor>();
     private String mNativeTestActivity;
@@ -64,6 +67,16 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
     private File mStdoutFile;
     private Bundle mTransparentArguments;
     private boolean mKeepUserDataDir;
+    private final ServiceConnection mConnection =
+            new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder service) {}
+
+                @Override
+                public void onServiceDisconnected(ComponentName name) {
+                    getContext().unbindService(this);
+                }
+            };
 
     @Override
     public void onCreate(Bundle arguments) {
@@ -172,6 +185,7 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
                 new TestStatusReceiver.TestRunCallback() {
                     @Override
                     public void testRunStarted(int pid) {
+                        mStartHandler.removeCallbacksAndMessages(null);
                         if (pid != Process.myPid()) {
                             ShardMonitor m =
                                     new ShardMonitor(pid, System.nanoTime() + mShardNanoTimeout);
@@ -277,6 +291,10 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
         Intent i = new Intent(Intent.ACTION_MAIN);
         i.setComponent(new ComponentName(getContext().getPackageName(), mNativeTestActivity));
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        // Work around a framework issue where sometimes if we start an Activity too quickly after
+        // killing the Activity's old process the Activity launches into the old task and fails
+        // to come to the foreground.
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         i.putExtras(mTransparentArguments);
         if (mShards != null && !mShards.isEmpty()) {
             ShardMetadata shardMetadata = mShards.remove();
@@ -289,11 +307,37 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
         return i;
     }
 
+    private Intent getProcessKeepaliveServiceIntent() {
+        Intent i = new Intent();
+        i.setComponent(
+                new ComponentName(
+                        getContext().getPackageName(),
+                        "org.chromium.build.gtest_apk.ProcessKeepaliveService"));
+        return i;
+    }
+
     /** Starts the NativeTest Activity. */
     private class ShardStarter implements Runnable {
+        private static final int WAIT_FOR_ACTIVITY_MILLIS = 30000;
+
         @Override
         public void run() {
             getContext().startActivity(createShardMainIntent());
+            // Start a service to keep the test process alive after the Activity finishes. Some
+            // Android 16+ devices seem to otherwise kill the process immediately after the Activity
+            // is destroyed.
+            getContext()
+                    .bindService(
+                            getProcessKeepaliveServiceIntent(),
+                            mConnection,
+                            Context.BIND_AUTO_CREATE);
+
+            mStartHandler.postDelayed(
+                    () -> {
+                        Log.e(TAG, "Test activity failed to start.");
+                        finish(Activity.RESULT_CANCELED, new Bundle());
+                    },
+                    WAIT_FOR_ACTIVITY_MILLIS);
         }
     }
 
@@ -308,9 +352,14 @@ public class NativeTestInstrumentationTestRunner extends Instrumentation {
 
         @Override
         public void run() {
+            getContext().unbindService(mConnection);
+
             if (mPid != Process.myPid()) {
                 Process.killProcess(mPid);
                 try {
+                    // Always wait at least once to give the OS time to kill the process. Otherwise
+                    // the process occasionally fails to start correctly.
+                    Thread.sleep(WAIT_FOR_DEATH_MILLIS);
                     while (isAppProcessAlive(getContext(), mPid)) {
                         Thread.sleep(WAIT_FOR_DEATH_MILLIS);
                     }

@@ -20,12 +20,12 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.InMemorySharedPreferences;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.hats.SurveyThrottler.FilteringResult;
 
 import java.util.Calendar;
-import java.util.Optional;
 
 /** Unit tests for {@link SurveyThrottler}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -197,7 +197,7 @@ public class SurveyThrottlerUnitTest {
                         /* year= */ 2023,
                         /* month= */ 0, // Calendar.JANUARY
                         /* date= */ 5,
-                        newSurveyConfig(triggerId2, false, Optional.of(10)));
+                        newSurveyConfig(triggerId2, false, 10));
         assertTrue(
                 "User is selected for survey because the cooldown period is overridden to 10 days.",
                 throttler2.canShowSurvey());
@@ -212,7 +212,7 @@ public class SurveyThrottlerUnitTest {
                         /* year= */ 2023,
                         /* month= */ 0, // Calendar.JANUARY
                         /* date= */ 7,
-                        newSurveyConfig(triggerId3, false, Optional.of(10)));
+                        newSurveyConfig(triggerId3, false, 10));
         try (HistogramWatcher ignored =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.Survey.SurveyFilteringResults",
@@ -406,11 +406,11 @@ public class SurveyThrottlerUnitTest {
     }
 
     private static SurveyConfig newSurveyConfig(String triggerId, boolean userPrompted) {
-        return newSurveyConfig(triggerId, userPrompted, Optional.empty());
+        return newSurveyConfig(triggerId, userPrompted, null);
     }
 
     private static SurveyConfig newSurveyConfig(
-            String triggerId, boolean userPrompted, Optional<Integer> cooldownOverride) {
+            String triggerId, boolean userPrompted, @Nullable Integer cooldownOverride) {
         return new SurveyConfig(
                 "trigger",
                 triggerId,

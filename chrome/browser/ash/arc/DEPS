@@ -17,20 +17,18 @@ include_rules = [
   "+chrome/app/vector_icons",
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/app_list/arc",
+  "+chrome/browser/ash/certificate_provider",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part.h",
-  "+chrome/browser/certificate_provider",
   "+chrome/browser/chromeos/arc",
   "+chrome/browser/chromeos/platform_keys",
   "+chrome/browser/chromeos/policy/dlp",
   "+chrome/browser/consent_auditor",
   "+chrome/browser/extensions/api/settings_private",
-  "+chrome/browser/extensions/api/tabs",
-  "+chrome/browser/extensions/extension_tab_util.h",
   "+chrome/browser/lifetime",
   "+chrome/browser/media/webrtc",
   "+chrome/browser/memory",
@@ -52,7 +50,6 @@ include_rules = [
   "+chrome/browser/tab_contents",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/browser_commands.h",
-  "+chrome/browser/ui/browser_finder.h",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_list.h",
   "+chrome/browser/ui/browser_list_observer.h",
@@ -67,7 +64,6 @@ include_rules = [
   "+chrome/browser/ui/webui/signin/ash",
   "+chrome/browser/ui/zoom",
   "+chrome/browser/webshare",
-  "+chrome/common/channel_info.h",
   "+chrome/common/chrome_isolated_world_ids.h",
   "+chrome/common/chrome_paths.h",
   "+chrome/common/chrome_paths_internal.h",
@@ -92,3 +88,10 @@ include_rules = [
   # Unsafe to use from //chrome. See //chrome/browser/DEPS.
   "-components/user_prefs/test/test_browser_context_with_prefs.h",
 ]
+
+specific_include_rules = {
+  "arc_support_host\\.cc": [
+    "+chrome/browser/ui/extensions/app_launch_params.h",
+    "+chrome/browser/ui/extensions/application_launch.h",
+  ]
+}

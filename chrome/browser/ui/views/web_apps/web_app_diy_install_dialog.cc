@@ -108,7 +108,7 @@ void ShowDiyAppInstallDialog(
 
   // Fallback to using the document title if the web_app_info->title is not
   // populated, as the document title is always guaranteed to exist.
-  std::u16string app_name = web_app_info->title;
+  std::u16string app_name = web_app_info->title.value();
   if (app_name.empty()) {
     app_name = UrlIdentity::CreateFromUrl(profile, start_url,
                                           {UrlIdentity::Type::kDefault}, {})

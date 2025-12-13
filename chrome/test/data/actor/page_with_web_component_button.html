@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Button Test</title>
+<template id="rt-button-template">
+  <style>
+    button {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+  <button aria-label="clickable">
+    <slot></slot>
+  </button>
+  <span>Some other text</span>
+</template>
+<script>
+  customElements.define('rt-button', class extends HTMLElement {
+    constructor() {
+      super();
+      const template = document.getElementById('rt-button-template').content;
+      this.attachShadow({mode: 'open'}).appendChild(template.cloneNode(true));
+    }
+  });
+</script>
+</head>
+<body>
+  <rt-button onclick="document.title='Clicked'">
+    <span>Click me</span>
+  </rt-button>
+</body>
+</html>

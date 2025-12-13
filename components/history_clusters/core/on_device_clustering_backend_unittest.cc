@@ -68,7 +68,7 @@ class TestOptimizationGuideDecider
       optimization_guide::OptimizationMetadata* optimization_metadata)
       override {
     DCHECK_EQ(optimization_guide::proto::HISTORY_CLUSTERS, optimization_type);
-    return url.host() == "shouldskip.com"
+    return url.GetHost() == "shouldskip.com"
                ? optimization_guide::OptimizationGuideDecision::kFalse
                : optimization_guide::OptimizationGuideDecision::kTrue;
   }

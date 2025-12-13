@@ -10,8 +10,10 @@ import androidx.annotation.IntDef;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.input.BrowserControlsState;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /** An interface for retrieving and monitoring browser controls state. */
 @NullMarked
@@ -21,6 +23,7 @@ public interface BrowserControlsStateProvider {
      */
     @IntDef({ControlsPosition.TOP, ControlsPosition.BOTTOM, ControlsPosition.NONE})
     @Retention(RetentionPolicy.SOURCE)
+    @Target(ElementType.TYPE_USE)
     @interface ControlsPosition {
         /** Controls are top-anchored. */
         int TOP = 0;
@@ -75,10 +78,11 @@ public interface BrowserControlsStateProvider {
         default void onAndroidControlsVisibilityChanged(int visibility) {}
 
         /**
-         * Called when the visibility constraints of the controls are changed. Visibility here
-         * refers to if the browser is forcing the controls to be fully shown/hidden, which is not
-         * the same as the visibility of the controls container, which is observed by
-         * onAndroidControlsVisibilityChanged.
+         * Called when information relevant to OffsetTags change. This is usually from a change in
+         * visibility constraints of the controls, which would result in removing or creating new
+         * OffsetTags. Visibility here refers to if the browser is forcing the controls to be fully
+         * shown/hidden, which is not the same as the visibility of the controls container, which is
+         * observed by onAndroidControlsVisibilityChanged.
          *
          * @param oldOffsetTagsInfo the old OffsetTags for moving browser controls in viz.
          * @param offsetTagsInfo the new OffsetTags moving browser controls in viz. A null tag means
@@ -87,7 +91,7 @@ public interface BrowserControlsStateProvider {
          * @param constraints the visibility constraints of the browser controls.
          * @param shouldUpdateOffsets should the offset be updated with the renderer's offset.
          */
-        default void onControlsConstraintsChanged(
+        default void onOffsetTagsInfoChanged(
                 BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                 BrowserControlsOffsetTagsInfo offsetTagsInfo,
                 @BrowserControlsState int constraints,

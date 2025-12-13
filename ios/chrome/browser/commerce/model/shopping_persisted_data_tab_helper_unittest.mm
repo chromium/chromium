@@ -6,7 +6,9 @@
 
 #import "base/base64.h"
 #import "base/command_line.h"
+#import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
+#import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -14,15 +16,12 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/commerce/core/commerce_feature_list.h"
+#import "components/commerce/core/mock_shopping_service.h"
 #import "components/commerce/core/proto/price_tracking.pb.h"
-#import "components/optimization_guide/core/optimization_guide_features.h"
-#import "components/optimization_guide/core/optimization_guide_switches.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/unified_consent/pref_names.h"
 #import "components/unified_consent/unified_consent_service.h"
-#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
-#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
-#import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_utils.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -41,13 +40,10 @@
 #import "url/gurl.h"
 
 namespace {
-constexpr char kTypeURL[] =
-    "type.googleapis.com/optimization_guide.proto.PriceTrackingData";
 constexpr char kPriceDropUrl[] = "https://merchant.com/has_price_drop.html";
 constexpr char kNoPriceDropUrl[] =
     "https://merchant.com/has_no_price__drop.html";
 const char kCurrencyCodeUS[] = "USD";
-const char kCurrencyCodeCanada[] = "CAD";
 const char kDefaultLocale[] = "en";
 const char kCurrentPriceFormatted[] = "$5.00";
 const char kPreviousPriceFormatted[] = "$10";
@@ -63,35 +59,10 @@ const int64_t kFormatNoDecimalPlacesMicros = 20'000'000;
 const int64_t kFormatTwoDecimalPlacesMicros = 9'990'000;
 const int64_t kOfferId = 50;
 
-void FillPriceTrackingProto(commerce::PriceTrackingData& price_tracking_data,
-                            int64_t offer_id,
-                            int64_t old_price_micros,
-                            int64_t new_price_micros,
-                            std::string currency_code) {
-  price_tracking_data.mutable_product_update()->set_offer_id(offer_id);
-  price_tracking_data.mutable_product_update()
-      ->mutable_old_price()
-      ->set_currency_code(currency_code);
-  price_tracking_data.mutable_product_update()
-      ->mutable_new_price()
-      ->set_currency_code(currency_code);
-  price_tracking_data.mutable_product_update()
-      ->mutable_new_price()
-      ->set_amount_micros(new_price_micros);
-  price_tracking_data.mutable_product_update()
-      ->mutable_old_price()
-      ->set_amount_micros(old_price_micros);
-}
-
 }  // namespace
 
 class ShoppingPersistedDataTabHelperTest : public PlatformTest {
  public:
-  ShoppingPersistedDataTabHelperTest() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        optimization_guide::switches::kPurgeHintsStore);
-  }
-
   void SetUp() override {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
@@ -101,8 +72,12 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
-        OptimizationGuideServiceFactory::GetInstance(),
-        OptimizationGuideServiceFactory::GetDefaultFactory());
+        commerce::ShoppingServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+              return commerce::MockShoppingService::Build();
+            }));
+
     profile_ = std::move(builder).Build();
     profile_->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
@@ -114,22 +89,35 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
     auth_service_->SignIn(fake_identity_,
                           signin_metrics::AccessPoint::kUnknown);
-  }
-
-  void MockOptimizationGuideResponse(
-      const commerce::PriceTrackingData& price_tracking_data) {
-    optimization_guide::proto::Any any_metadata;
-    any_metadata.set_type_url(kTypeURL);
-    price_tracking_data.SerializeToString(any_metadata.mutable_value());
-    optimization_guide::OptimizationMetadata metadata;
-    metadata.set_any_metadata(any_metadata);
-    OptimizationGuideService* optimization_guide_service =
-        OptimizationGuideServiceFactory::GetForProfile(profile_.get());
-    optimization_guide_service->AddHintForTesting(
-        GURL(kPriceDropUrl), optimization_guide::proto::PRICE_TRACKING,
-        metadata);
+    shopping_service_ = static_cast<commerce::MockShoppingService*>(
+        commerce::ShoppingServiceFactory::GetForProfile(profile_.get()));
     web_state_.SetBrowserState(profile_.get());
     ShoppingPersistedDataTabHelper::CreateForWebState(&web_state_);
+  }
+
+  commerce::MockShoppingService* shopping_service() {
+    return shopping_service_;
+  }
+
+  void SetResponseForGetProductInfoForUrl(int64_t offer_id,
+                                          int64_t old_price_micros,
+                                          int64_t new_price_micros,
+                                          std::string currency_code) {
+    commerce::ProductInfo product_info;
+    product_info.offer_id = offer_id;
+    product_info.amount_micros = new_price_micros;
+    product_info.previous_amount_micros = old_price_micros;
+    product_info.currency_code = currency_code;
+    shopping_service()->SetResponseForGetProductInfoForUrl(product_info);
+  }
+  void SetEmptyResponseForGetProductInfoForUrl() {
+    shopping_service()->SetResponseForGetProductInfoForUrl(std::nullopt);
+  }
+
+  void SetProductDetailPageResponseForGetProductInfoForUrl(int64_t offer_id) {
+    commerce::ProductInfo product_info;
+    product_info.offer_id = offer_id;
+    shopping_service()->SetResponseForGetProductInfoForUrl(product_info);
   }
 
   void CommitToUrlAndNavigate(const GURL& url) {
@@ -140,13 +128,28 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
     web_state_.SetCurrentURL(GURL(kPriceDropUrl));
   }
 
-  const ShoppingPersistedDataTabHelper::PriceDrop* GetPriceDrop() {
-    return ShoppingPersistedDataTabHelper::FromWebState(&web_state_)
-        ->GetPriceDrop();
+  void GetPriceDrop(
+      base::OnceCallback<void(
+          std::optional<ShoppingPersistedDataTabHelper::PriceDrop>)> callback) {
+    ShoppingPersistedDataTabHelper::FromWebState(&web_state_)
+        ->GetPriceDrop(std::move(callback));
   }
 
-  BOOL IsPriceDropEmpty() {
-    return !GetPriceDrop()->current_price && !GetPriceDrop()->previous_price;
+  void CheckIsPriceDropEmpty(base::OnceClosure closure) {
+    GetPriceDrop(base::BindOnce(
+                     [](std::optional<ShoppingPersistedDataTabHelper::PriceDrop>
+                            price_drop) {
+                       EXPECT_TRUE(!price_drop.has_value() ||
+                                   (!price_drop->current_price &&
+                                    !price_drop->previous_price));
+                     })
+                     .Then(std::move(closure)));
+  }
+
+  void CheckIsPriceDropEmpty() {
+    base::RunLoop wait_for_price_drop_is_empty_result;
+    CheckIsPriceDropEmpty(wait_for_price_drop_is_empty_result.QuitClosure());
+    wait_for_price_drop_is_empty_result.Run();
   }
 
   BOOL IsQualifyingPriceDrop(int64_t current_price_micros,
@@ -179,83 +182,68 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
   web::FakeNavigationContext context_;
   id<SystemIdentity> fake_identity_ = nil;
   raw_ptr<AuthenticationService> auth_service_ = nullptr;
+  raw_ptr<commerce::MockShoppingService> shopping_service_;
 };
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestRegularPriceDrop) {
-  commerce::PriceTrackingData price_tracking_data;
-  FillPriceTrackingProto(price_tracking_data, kOfferId, kPreviousPreiceMicros,
-                         kCurrentPriceMicros, kCurrencyCodeUS);
-  MockOptimizationGuideResponse(price_tracking_data);
+  SetResponseForGetProductInfoForUrl(kOfferId, kPreviousPreiceMicros,
+                                     kCurrentPriceMicros, kCurrencyCodeUS);
+
   CommitToUrlAndNavigate(GURL(kPriceDropUrl));
   RunUntilIdle();
-  EXPECT_EQ(kCurrentPriceFormatted,
-            base::SysNSStringToUTF8(GetPriceDrop()->current_price));
-  EXPECT_EQ(kPreviousPriceFormatted,
-            base::SysNSStringToUTF8(GetPriceDrop()->previous_price));
+  base::RunLoop wait_for_price_drop_result;
+
+  GetPriceDrop(
+      base::BindOnce([](std::optional<ShoppingPersistedDataTabHelper::PriceDrop>
+                            price_drop) {
+        EXPECT_EQ(kCurrentPriceFormatted,
+                  base::SysNSStringToUTF8(price_drop->current_price));
+        EXPECT_EQ(kPreviousPriceFormatted,
+                  base::SysNSStringToUTF8(price_drop->previous_price));
+      }).Then(wait_for_price_drop_result.QuitClosure()));
+  wait_for_price_drop_result.Run();
 }
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestRegularPriceIncreaseNull) {
-  commerce::PriceTrackingData price_tracking_data;
-  FillPriceTrackingProto(price_tracking_data, kOfferId,
-                         kLowerThanCurrentPriceMicros, kCurrentPriceMicros,
-                         kCurrencyCodeUS);
-  MockOptimizationGuideResponse(price_tracking_data);
+  SetResponseForGetProductInfoForUrl(kOfferId, kLowerThanCurrentPriceMicros,
+                                     kCurrentPriceMicros, kCurrencyCodeUS);
   CommitToUrlAndNavigate(GURL(kPriceDropUrl));
   RunUntilIdle();
-  EXPECT_TRUE(IsPriceDropEmpty());
+  CheckIsPriceDropEmpty();
 }
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestEqualPriceNull) {
-  commerce::PriceTrackingData price_tracking_data;
-  FillPriceTrackingProto(price_tracking_data, kOfferId, kCurrentPriceMicros,
-                         kCurrentPriceMicros, kCurrencyCodeUS);
-  MockOptimizationGuideResponse(price_tracking_data);
+  SetResponseForGetProductInfoForUrl(kOfferId, kCurrentPriceMicros,
+                                     kCurrentPriceMicros, kCurrencyCodeUS);
   CommitToUrlAndNavigate(GURL(kPriceDropUrl));
   RunUntilIdle();
-  EXPECT_TRUE(IsPriceDropEmpty());
+  CheckIsPriceDropEmpty();
 }
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestNoPriceDropUrl) {
-  commerce::PriceTrackingData price_tracking_data;
-  FillPriceTrackingProto(price_tracking_data, kOfferId, kCurrentPriceMicros,
-                         kCurrentPriceMicros, kCurrencyCodeUS);
-  MockOptimizationGuideResponse(price_tracking_data);
+  SetResponseForGetProductInfoForUrl(kOfferId, kCurrentPriceMicros,
+                                     kCurrentPriceMicros, kCurrencyCodeUS);
   CommitToUrlAndNavigate(GURL(kNoPriceDropUrl));
   RunUntilIdle();
-  EXPECT_TRUE(IsPriceDropEmpty());
-}
-
-TEST_F(ShoppingPersistedDataTabHelperTest, TestInconsistentCurrencyCode) {
-  commerce::PriceTrackingData price_tracking_data;
-  FillPriceTrackingProto(price_tracking_data, kOfferId, kCurrentPriceMicros,
-                         kCurrentPriceMicros, kCurrencyCodeUS);
-  price_tracking_data.mutable_product_update()
-      ->mutable_new_price()
-      ->set_currency_code(kCurrencyCodeCanada);
-  MockOptimizationGuideResponse(price_tracking_data);
-  CommitToUrlAndNavigate(GURL(kPriceDropUrl));
-  RunUntilIdle();
-  EXPECT_TRUE(IsPriceDropEmpty());
+  CheckIsPriceDropEmpty();
 }
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestPriceDropLessThanTwoUnits) {
-  commerce::PriceTrackingData price_tracking_data;
-  FillPriceTrackingProto(price_tracking_data, kOfferId, kPreviousPreiceMicros,
-                         kLessthanTwoUnitsPreviousPrice, kCurrencyCodeUS);
-  MockOptimizationGuideResponse(price_tracking_data);
+  SetResponseForGetProductInfoForUrl(kOfferId, kPreviousPreiceMicros,
+                                     kLessthanTwoUnitsPreviousPrice,
+                                     kCurrencyCodeUS);
   CommitToUrlAndNavigate(GURL(kPriceDropUrl));
   RunUntilIdle();
-  EXPECT_TRUE(IsPriceDropEmpty());
+  CheckIsPriceDropEmpty();
 }
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestPriceDropLessThanTenPercent) {
-  commerce::PriceTrackingData price_tracking_data;
-  FillPriceTrackingProto(price_tracking_data, kOfferId, kPreviousPreiceMicros,
-                         kLessthanTenPercentPreviousPrice, kCurrencyCodeUS);
-  MockOptimizationGuideResponse(price_tracking_data);
+  SetResponseForGetProductInfoForUrl(kOfferId, kPreviousPreiceMicros,
+                                     kLessthanTenPercentPreviousPrice,
+                                     kCurrencyCodeUS);
   CommitToUrlAndNavigate(GURL(kPriceDropUrl));
   RunUntilIdle();
-  EXPECT_TRUE(IsPriceDropEmpty());
+  CheckIsPriceDropEmpty();
 }
 
 TEST_F(ShoppingPersistedDataTabHelperTest,
@@ -301,10 +289,8 @@ TEST_F(ShoppingPersistedDataTabHelperTest,
 }
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestPriceDropHistogram) {
-  commerce::PriceTrackingData price_tracking_data;
-  FillPriceTrackingProto(price_tracking_data, kOfferId, kPreviousPreiceMicros,
-                         kCurrentPriceMicros, kCurrencyCodeUS);
-  MockOptimizationGuideResponse(price_tracking_data);
+  SetResponseForGetProductInfoForUrl(kOfferId, kPreviousPreiceMicros,
+                                     kCurrentPriceMicros, kCurrencyCodeUS);
   CommitToUrlAndNavigate(GURL(kPriceDropUrl));
   RunUntilIdle();
   ShoppingPersistedDataTabHelper::FromWebState(&web_state_)
@@ -320,8 +306,7 @@ TEST_F(ShoppingPersistedDataTabHelperTest, TestPriceDropHistogram) {
 }
 
 TEST_F(ShoppingPersistedDataTabHelperTest, TestNoPriceDropHistogram) {
-  commerce::PriceTrackingData price_tracking_data;
-  MockOptimizationGuideResponse(price_tracking_data);
+  SetEmptyResponseForGetProductInfoForUrl();
   CommitToUrlAndNavigate(GURL(kNoPriceDropUrl));
   RunUntilIdle();
   ShoppingPersistedDataTabHelper::FromWebState(&web_state_)
@@ -338,9 +323,7 @@ TEST_F(ShoppingPersistedDataTabHelperTest, TestNoPriceDropHistogram) {
 
 TEST_F(ShoppingPersistedDataTabHelperTest,
        TestProductDetailPageNoPriceHistogram) {
-  commerce::PriceTrackingData price_tracking_data;
-  price_tracking_data.mutable_buyable_product()->set_offer_id(42);
-  MockOptimizationGuideResponse(price_tracking_data);
+  SetProductDetailPageResponseForGetProductInfoForUrl(42);
   CommitToUrlAndNavigate(GURL(kPriceDropUrl));
   RunUntilIdle();
   ShoppingPersistedDataTabHelper::FromWebState(&web_state_)

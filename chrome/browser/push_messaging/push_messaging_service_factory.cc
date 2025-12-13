@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
@@ -16,7 +17,9 @@
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 // static
 PushMessagingServiceImpl* PushMessagingServiceFactory::GetForProfile(
@@ -70,5 +73,17 @@ PushMessagingServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   CHECK(!profile->IsOffTheRecord());
-  return std::make_unique<PushMessagingServiceImpl>(profile);
+  // Reporting service worker network requests should only be done for ESB
+  // users. The check below is the first ESB check. A second ESB check is
+  // performed before anything about the service worker is sent off device to
+  // Safe Browsing. If at the time of the second check the user is found to no
+  // longer be an ESB user, no Safe Browsing report will be sent.
+  bool includeSafeBrowsingDatabase =
+      g_browser_process && g_browser_process->safe_browsing_service() &&
+      safe_browsing::IsEnhancedProtectionEnabled(*profile->GetPrefs());
+  return std::make_unique<PushMessagingServiceImpl>(
+      profile,
+      includeSafeBrowsingDatabase
+          ? g_browser_process->safe_browsing_service()->database_manager()
+          : nullptr);
 }

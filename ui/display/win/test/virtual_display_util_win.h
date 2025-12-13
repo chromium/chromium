@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/timer/timer.h"
 #include "third_party/win_virtual_display/controller/display_driver_controller.h"

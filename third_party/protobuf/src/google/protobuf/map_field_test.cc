@@ -15,7 +15,6 @@
 #include "absl/strings/str_format.h"
 #include "absl/synchronization/barrier.h"
 #include "absl/synchronization/blocking_counter.h"
-#include "absl/types/optional.h"
 #include "google/protobuf/arena.h"
 #include "google/protobuf/arena_test_util.h"
 #include "google/protobuf/map.h"
@@ -249,7 +248,7 @@ class MapFieldStateTest
     EXPECT_EQ(repeated_size,
               map_field->maybe_payload() == nullptr
                   ? 0
-                  : map_field->maybe_payload()->repeated_field.size());
+                  : map_field->maybe_payload()->repeated_field().size());
   }
 
   std::unique_ptr<Arena> arena_;

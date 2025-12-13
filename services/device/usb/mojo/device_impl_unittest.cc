@@ -2,12 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "services/device/usb/mojo/device_impl.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -20,11 +15,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -37,7 +34,6 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/device/usb/mock_usb_device.h"
 #include "services/device/usb/mock_usb_device_handle.h"
-#include "services/device/usb/mojo/device_impl.h"
 #include "services/device/usb/usb_descriptors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -375,7 +371,7 @@ class USBDeviceImplTest : public testing::Test {
     const std::vector<uint8_t>& bytes = mock_outbound_data_.front();
     ASSERT_EQ(bytes.size(), buffer->size());
     for (size_t i = 0; i < bytes.size(); ++i) {
-      EXPECT_EQ(bytes[i], buffer->front()[i])
+      UNSAFE_TODO(EXPECT_EQ(bytes[i], buffer->front()[i]))
           << "Contents differ at index: " << i;
     }
     mock_outbound_data_.pop();
@@ -445,7 +441,7 @@ class USBDeviceImplTest : public testing::Test {
     const std::vector<uint8_t>& bytes = mock_outbound_data_.front();
     ASSERT_EQ(buffer->size(), bytes.size());
     for (size_t i = 0; i < bytes.size(); ++i) {
-      EXPECT_EQ(bytes[i], buffer->front()[i])
+      UNSAFE_TODO(EXPECT_EQ(bytes[i], buffer->front()[i]))
           << "Contents differ at index: " << i;
     }
     mock_outbound_data_.pop();
@@ -585,9 +581,9 @@ TEST_F(USBDeviceImplTest, OpenDelayedFailure) {
 
   UsbDevice::OpenCallback saved_callback;
   EXPECT_CALL(mock_device(), OpenInternal(_))
-      .WillOnce(Invoke([&saved_callback](UsbDevice::OpenCallback& callback) {
+      .WillOnce([&saved_callback](UsbDevice::OpenCallback& callback) {
         saved_callback = std::move(callback);
-      }));
+      });
   EXPECT_CALL(device_client, OnDeviceOpened()).Times(0);
   EXPECT_CALL(device_client, OnDeviceClosed()).Times(0);
 
@@ -1402,7 +1398,8 @@ TEST_P(USBDeviceImplSecurityKeyTest, SecurityKeyControlTransferBlocked) {
   const char* data_str = mojom::UsbControlTransferParams::kSecurityKeyAOAModel;
   const std::vector<uint8_t> data(
       reinterpret_cast<const uint8_t*>(data_str),
-      reinterpret_cast<const uint8_t*>(data_str) + strlen(data_str));
+      UNSAFE_TODO(reinterpret_cast<const uint8_t*>(data_str) +
+                  strlen(data_str)));
 
   if (allow_security_key_requests) {
     AddMockOutboundData(data);

@@ -24,7 +24,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwDevToolsServer_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using content::DevToolsAgentHost;
 
 namespace {
@@ -32,7 +32,7 @@ namespace {
 const char kSocketNameFormat[] = "webview_devtools_remote_%d";
 const char kTetheringSocketName[] = "webview_devtools_tethering_%d_%d";
 
-const int kBackLog = 10;
+const int kBackLog = 4096;
 
 bool g_is_debugging_started_ = false;
 
@@ -161,3 +161,5 @@ static void JNI_AwDevToolsServer_SetRemoteDebuggingEnabled(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwDevToolsServer)

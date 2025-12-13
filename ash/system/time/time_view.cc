@@ -49,6 +49,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 

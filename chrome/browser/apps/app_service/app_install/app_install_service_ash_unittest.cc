@@ -33,24 +33,29 @@ namespace apps {
 class AppInstallServiceAshTest : public testing::Test {
  public:
   void SetUp() override {
-    testing::Test::SetUp();
-
     url_loader_factory_ = std::make_unique<network::TestURLLoaderFactory>();
+
+    arc_app_test_.set_initialize_real_intent_helper_bridge(true);
+    arc_app_test_.PreProfileSetUp();
+
     TestingProfile::Builder profile_builder;
     profile_builder.SetSharedURLLoaderFactory(
         url_loader_factory_->GetSafeWeakWrapper());
     profile_ = profile_builder.Build();
 
-    arc_test_.set_initialize_real_intent_helper_bridge(true);
-    arc_test_.SetUp(profile_.get());
+    arc_app_test_.PostProfileSetUp(profile_.get());
   }
 
-  void TearDown() override { arc_test_.TearDown(); }
+  void TearDown() override {
+    arc_app_test_.PreProfileTearDown();
+    profile_.reset();
+    arc_app_test_.PostProfileTearDown();
+  }
 
   Profile* profile() { return profile_.get(); }
 
   arc::FakeIntentHelperInstance* intent_helper_instance() {
-    return arc_test_.intent_helper_instance();
+    return arc_app_test_.intent_helper_instance();
   }
 
   AppServiceProxy* app_service() {
@@ -64,7 +69,7 @@ class AppInstallServiceAshTest : public testing::Test {
     std::vector<arc::mojom::AppInfoPtr> apps;
     apps.push_back(arc::mojom::AppInfo::New(
         "Play Store", arc::kPlayStorePackage, arc::kPlayStoreActivity));
-    arc_test_.app_instance()->SendRefreshAppList(apps);
+    arc_app_test_.app_instance()->SendRefreshAppList(apps);
 
     // Manually poke App Service to add the desired Intent Filters and set the
     // Supported Links setting.
@@ -97,7 +102,7 @@ class AppInstallServiceAshTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  ArcAppTest arc_test_;
+  ArcAppTest arc_app_test_;
   std::unique_ptr<network::TestURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<Profile> profile_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;

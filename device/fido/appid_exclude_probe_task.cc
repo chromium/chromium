@@ -66,7 +66,8 @@ void AppIdExcludeProbeTask::NextSilentSignOperation() {
                      weak_factory_.GetWeakPtr()),
       base::BindOnce(&ReadCTAPGetAssertionResponse,
                      device()->DeviceTransport()),
-      /*string_fixup_predicate=*/nullptr);
+      /*string_fixup_predicate=*/nullptr,
+      base::BindOnce(RedactCtapGetAssertionResponse));
   silent_sign_operation_->Start();
 }
 

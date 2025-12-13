@@ -4,6 +4,8 @@
 
 #include "services/audio/realtime_audio_thread.h"
 
+#include "base/time/time.h"
+
 namespace audio {
 RealtimeAudioThread::RealtimeAudioThread(const std::string& name,
                                          base::TimeDelta realtime_period)

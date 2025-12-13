@@ -53,12 +53,13 @@
 #include "ui/gfx/image/image_unittest_util.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/background/startup_launch_manager.h"
-#include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
 #endif
 
-using signin::constants::kNoHostedDomainFound;
+using ::signin::constants::kNoHostedDomainFound;
 using ::testing::Return;
 
 namespace {
@@ -68,18 +69,16 @@ AccountInfo GetValidAccountInfo(std::string email,
                                 std::string given_name,
                                 std::string full_name,
                                 std::string hosted_domain) {
-  AccountInfo account_info;
-  account_info.email = email;
-  account_info.gaia = gaia_id;
-  account_info.account_id = CoreAccountId::FromGaiaId(gaia_id);
-  account_info.given_name = given_name;
-  account_info.full_name = full_name;
-  account_info.hosted_domain = hosted_domain;
-  account_info.locale = email;
-  account_info.picture_url = "example.com";
+  AccountInfo account_info =
+      AccountInfo::Builder(gaia_id, email)
+          .SetAccountId(CoreAccountId::FromGaiaId(gaia_id))
+          .SetGivenName(given_name)
+          .SetFullName(full_name)
+          .SetHostedDomain(hosted_domain)
+          .SetAvatarUrl("https://example.com")
+          .Build();
   AccountCapabilitiesTestMutator(&account_info.capabilities)
-      .set_is_subject_to_enterprise_policies(hosted_domain !=
-                                             kNoHostedDomainFound);
+      .set_is_subject_to_enterprise_features(!hosted_domain.empty());
   return account_info;
 }
 
@@ -87,20 +86,11 @@ AccountInfo GetValidAccountInfo(std::string email,
 const char kChromiumOrgDomain[] = "chromium.org";
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(ENABLE_GLIC)
-class TestStartupLaunchManager : public StartupLaunchManager {
- public:
-  TestStartupLaunchManager() = default;
-  ~TestStartupLaunchManager() override = default;
-};
-#endif
-
 }  // namespace
 
 class GAIAInfoUpdateServiceTest : public testing::Test {
  protected:
-  GAIAInfoUpdateServiceTest()
-      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+  GAIAInfoUpdateServiceTest() {
     SigninPrefs::RegisterProfilePrefs(pref_service_.registry());
   }
 
@@ -112,21 +102,20 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-#if BUILDFLAG(ENABLE_GLIC)
-    StartupLaunchManager::SetInstanceForTesting(&startup_launch_manager_);
-#endif
-    ASSERT_TRUE(testing_profile_manager_.SetUp());
-    TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    testing_profile_manager_ =
+        TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
+            /*profile_manager=*/true);
     RecreateGAIAInfoUpdateService();
   }
 
   void RecreateGAIAInfoUpdateService() {
-    if (service_)
+    if (service_) {
       service_->Shutdown();
+    }
 
     service_ = std::make_unique<GAIAInfoUpdateService>(
         profile(), identity_manager(),
-        testing_profile_manager_.profile_attributes_storage(), pref_service_,
+        testing_profile_manager_->profile_attributes_storage(), pref_service_,
         profile()->GetPath());
   }
 
@@ -140,15 +129,17 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
     if (service_) {
       ClearGAIAInfoUpdateService();
     }
-    TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
-#if BUILDFLAG(ENABLE_GLIC)
-    StartupLaunchManager::SetInstanceForTesting(nullptr);
-#endif
+
+    profile_ = nullptr;
+
+    TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting(
+        std::move(testing_profile_manager_));
   }
 
   TestingProfile* profile() {
-    if (!profile_)
+    if (!profile_) {
       CreateProfile("Person 1");
+    }
     return profile_.get();
   }
 
@@ -157,7 +148,7 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
   }
 
   ProfileAttributesStorage* storage() {
-    return testing_profile_manager_.profile_attributes_storage();
+    return testing_profile_manager_->profile_attributes_storage();
   }
 
   network::TestURLLoaderFactory* test_url_loader_factory() {
@@ -167,7 +158,7 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
   GAIAInfoUpdateService* service() { return service_.get(); }
 
   void CreateProfile(const std::string& name) {
-    profile_ = testing_profile_manager_.CreateTestingProfile(
+    profile_ = testing_profile_manager_->CreateTestingProfile(
         name, std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
         base::UTF8ToUTF16(name), 0,
         IdentityTestEnvironmentProfileAdaptor::
@@ -188,16 +179,15 @@ class GAIAInfoUpdateServiceTest : public testing::Test {
         .SetChromeSigninInterceptionUserChoice(gaia_id,
                                                ChromeSigninUserChoice::kSignin);
   }
-
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicUnitTestEnvironment glic_test_env_;
+#endif
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfileManager testing_profile_manager_;
+  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<GAIAInfoUpdateService> service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-#if BUILDFLAG(ENABLE_GLIC)
-  TestStartupLaunchManager startup_launch_manager_;
-#endif
 };
 
 TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
@@ -207,7 +197,7 @@ TEST_F(GAIAInfoUpdateServiceTest, SyncOnSyncOff) {
   signin::SetPrimaryAccount(identity_manager(), info.email,
                             signin::ConsentLevel::kSync);
   info = GetValidAccountInfo(info.email, info.gaia, "Pat", "Pat Foo",
-                             kNoHostedDomainFound);
+                             std::string());
   signin::UpdateAccountInfoForAccount(identity_manager(), info);
   base::RunLoop().RunUntilIdle();
 
@@ -241,7 +231,7 @@ TEST_F(GAIAInfoUpdateServiceTest, RevokeSyncConsent) {
   signin::SetPrimaryAccount(identity_manager(), info.email,
                             signin::ConsentLevel::kSync);
   info = GetValidAccountInfo(info.email, info.gaia, "Pat", "Pat Foo",
-                             kNoHostedDomainFound);
+                             std::string());
   signin::UpdateAccountInfoForAccount(identity_manager(), info);
   base::RunLoop().RunUntilIdle();
 
@@ -272,7 +262,7 @@ TEST_F(GAIAInfoUpdateServiceTest, LogInLogOutLogIn) {
           .Build(email1));
   base::RunLoop().RunUntilIdle();
   info1 = GetValidAccountInfo(info1.email, info1.gaia, "Pat 1",
-                              "Pat Foo The First", kNoHostedDomainFound);
+                              "Pat Foo The First", std::string());
   signin::UpdateAccountInfoForAccount(identity_manager(), info1);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1u, storage()->GetNumberOfProfiles());
@@ -330,7 +320,7 @@ TEST_F(GAIAInfoUpdateServiceTest, MultiLoginAndLogOut) {
       {{info1.email, info1.gaia}, {info2.email, info2.gaia}});
   base::RunLoop().RunUntilIdle();
   info1 = GetValidAccountInfo(info1.email, info1.gaia, "Pat 1",
-                              "Pat Foo The First", kNoHostedDomainFound);
+                              "Pat Foo The First", std::string());
   // Make the second account an enterprise account by setting a hosted domain.
   info2 = GetValidAccountInfo(info2.email, info2.gaia, "Pat 2",
                               "Pat Foo The Second", kChromiumOrgDomain);
@@ -372,7 +362,7 @@ TEST_F(GAIAInfoUpdateServiceTest, ClearGaiaInfoOnStartup) {
   entry->SetGAIAGivenName(u"Pat Foo");
   gfx::Image gaia_picture = gfx::test::CreateImage(256, 256);
   entry->SetGAIAPicture("GAIA_IMAGE_URL_WITH_SIZE", gaia_picture);
-  entry->SetHostedDomain(kNoHostedDomainFound);
+  entry->SetHostedDomain(std::string());
   entry->SetIsManaged(signin::Tribool::kFalse);
 
   // Verify that creating the GAIAInfoUpdateService resets the GAIA related
@@ -545,7 +535,7 @@ class GAIAInfoUpdateServiceWithGlicEnablingTest
     CHECK(!primary_account_info.IsEmpty());
 
     AccountCapabilitiesTestMutator mutator(&primary_account_info.capabilities);
-    mutator.set_can_use_model_execution_features(true);
+    glic::SetGlicCapability(mutator, true);
 
     signin::UpdateAccountInfoForAccount(identity_manager(),
                                         primary_account_info);
@@ -571,7 +561,7 @@ TEST_F(GAIAInfoUpdateServiceWithGlicEnablingTest, LogInLogOut) {
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
   info = GetValidAccountInfo(info.email, info.gaia, "Pat", "Pat Foo",
-                             kNoHostedDomainFound);
+                             std::string());
   MakeProfileGlicEligible();
   signin::UpdateAccountInfoForAccount(identity_manager(), info);
   base::RunLoop().RunUntilIdle();

@@ -37,6 +37,7 @@ class UserEventDataTypeController : public syncer::DataTypeController,
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
  private:
   const raw_ptr<SyncService> sync_service_;

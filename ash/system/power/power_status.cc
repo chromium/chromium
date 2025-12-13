@@ -168,9 +168,19 @@ bool PowerStatus::IsBatteryPresent() const {
          power_manager::PowerSupplyProperties_BatteryState_NOT_PRESENT;
 }
 
+bool PowerStatus::IsBatteryChargeLimited() const {
+  return proto_.charge_limited();
+}
+
 bool PowerStatus::IsBatteryFull() const {
+  // In a special scenario, the battery can be reported as full when a battery
+  // charge limit is enabled, but the percentage is significantly lowered than
+  // 100% (i.e., FULL = 80%). Therefore, a battery should only be considered
+  // "full" in the UI if the battery percentage is close to total battery
+  // capacity (percent >= 99).
   return proto_.battery_state() ==
-         power_manager::PowerSupplyProperties_BatteryState_FULL;
+             power_manager::PowerSupplyProperties_BatteryState_FULL &&
+         GetRoundedBatteryPercent() >= 99;
 }
 
 bool PowerStatus::IsBatteryCharging() const {
@@ -218,7 +228,14 @@ std::optional<base::TimeDelta> PowerStatus::GetBatteryTimeToFull() const {
 
 bool PowerStatus::IsLinePowerConnected() const {
   return proto_.external_power() !=
-         power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED;
+             power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED &&
+         !IsIncompatibleChargerConnected();
+}
+
+bool PowerStatus::IsIncompatibleChargerConnected() const {
+  return proto_.external_power() ==
+         power_manager::
+             PowerSupplyProperties_ExternalPower_LOW_VOLTAGE_NO_CHARGE;
 }
 
 bool PowerStatus::IsMainsChargerConnected() const {
@@ -310,6 +327,11 @@ void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
         chromeos::features::IsBatteryBadgeIconEnabled()
             ? &kUnifiedMenuBatteryUnreliableOutlineMaskIcon
             : &kUnifiedMenuBatteryUnreliableOutlineMaskLegacyIcon;
+  } else if (IsLinePowerConnected() &&
+             features::IsBatteryChargeLimitAvailable() &&
+             IsBatteryChargeLimited()) {
+    info->icon_badge = &kChargeLimitShieldIcon;
+    info->badge_outline = &kChargeLimitShieldOutlineMaskIcon;
   } else if (IsLinePowerConnected()) {
     info->icon_badge = chromeos::features::IsBatteryBadgeIconEnabled()
                            ? &kUnifiedMenuBatteryBoltIcon
@@ -376,36 +398,42 @@ std::u16string PowerStatus::GetAccessibleNameString(
   }
 
   int percentage_accessibility_token = -1;
-  if (features::IsBatterySaverAvailable()) {
-    if (IsBatteryCharging()) {
-      percentage_accessibility_token =
-          IsBatterySaverActive()
-              ? IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_BSM_ON_ACCESSIBLE
-              : IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_ACCESSIBLE;
-    } else {
-      percentage_accessibility_token =
-          IsBatterySaverActive()
-              ? IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_BSM_ON_ACCESSIBLE
-              : IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_ACCESSIBLE;
-    }
-  } else {  // Backwards compatibility with battery saver feature flag disabled.
+  if (ash::features::IsBatteryChargeLimitAvailable() &&
+      IsBatteryChargeLimited()) {
     percentage_accessibility_token =
-        IsBatteryCharging()
-            ? IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_ACCESSIBLE
+        IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_ON_HOLD_ACCESSIBLE;
+  } else if (IsBatteryCharging()) {
+    percentage_accessibility_token =
+        IsBatterySaverActive()
+            ? IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_BSM_ON_ACCESSIBLE
+            : IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_ACCESSIBLE;
+  } else {
+    percentage_accessibility_token =
+        IsBatterySaverActive()
+            ? IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_BSM_ON_ACCESSIBLE
             : IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_ACCESSIBLE;
   }
 
   std::u16string battery_percentage_accessible = l10n_util::GetStringFUTF16(
       percentage_accessibility_token,
       base::NumberToString16(GetRoundedBatteryPercent()));
-  if (!full_description)
+  // When Charge limit is enabled, the full description is simply the battery
+  // percentage and that charging is on hold. We don't show calculating,
+  // unreliable, or time to empty/full.
+  if (!full_description || (ash::features::IsBatteryChargeLimitAvailable() &&
+                            IsBatteryChargeLimited())) {
     return battery_percentage_accessible;
+  }
 
   std::u16string battery_time_accessible = std::u16string();
   const std::optional<base::TimeDelta> time =
       IsBatteryCharging() ? GetBatteryTimeToFull() : GetBatteryTimeToEmpty();
 
-  if (IsUsbChargerConnected()) {
+  if (ash::features::IsHybridChargerNotificationsEnabled() &&
+      IsIncompatibleChargerConnected()) {
+    battery_time_accessible = l10n_util::GetStringUTF16(
+        IDS_ASH_STATUS_TRAY_BATTERY_INCOMPATIBLE_CHARGER_ACCESSIBLE);
+  } else if (IsUsbChargerConnected()) {
     battery_time_accessible = l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_UNRELIABLE_ACCESSIBLE);
   } else if (IsBatteryTimeBeingCalculated()) {
@@ -442,6 +470,10 @@ std::pair<std::u16string, std::u16string> PowerStatus::GetStatusStrings()
     if (IsUsbChargerConnected()) {
       status = l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_UNRELIABLE);
+    } else if (features::IsBatteryChargeLimitAvailable() &&
+               IsBatteryChargeLimited()) {
+      status = l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_ON_HOLD);
     } else if (IsBatteryTimeBeingCalculated()) {
       status =
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BATTERY_CALCULATING);

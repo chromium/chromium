@@ -8,7 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_ui.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 namespace ash {

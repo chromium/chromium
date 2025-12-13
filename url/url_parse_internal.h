@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef URL_URL_PARSE_INTERNAL_H_
 #define URL_URL_PARSE_INTERNAL_H_
 
@@ -38,40 +33,39 @@ inline bool ShouldTrimFromURL(char ch) {
   return ShouldTrimFromURL(static_cast<char16_t>(ch));
 }
 
-// Given an already-initialized begin index and length, this shrinks the range
-// to eliminate "should-be-trimmed" characters. Note that the length does *not*
-// indicate the length of untrimmed data from |*begin|, but rather the position
-// in the input string (so the string starts at character |*begin| in the spec,
-// and goes until |*len|).
-template<typename CHAR>
-inline void TrimURL(const CHAR* spec, int* begin, int* len,
-                    bool trim_path_end = true) {
+// This shrinks the input URL string to eliminate "should-be-trimmed"
+// characters. The returned value is a pair of the start index of the remaining
+// string and the start index of the trailing trimmed string in `spec`.
+template <typename CHAR>
+inline std::pair<size_t, size_t> TrimUrl(std::basic_string_view<CHAR> spec,
+                                         bool trim_path_end = true) {
+  size_t begin = 0;
+  size_t end = spec.length();
   // Strip leading whitespace and control characters.
-  while (*begin < *len && ShouldTrimFromURL(spec[*begin]))
-    (*begin)++;
+  while (begin < end && ShouldTrimFromURL(spec[begin])) {
+    ++begin;
+  }
 
   if (trim_path_end) {
-    // Strip trailing whitespace and control characters. We need the >i test
-    // for when the input string is all blanks; we don't want to back past the
-    // input.
-    while (*len > *begin && ShouldTrimFromURL(spec[*len - 1]))
-      (*len)--;
+    // Strip trailing whitespace and control characters. We need the `begin <
+    // end` test for when the input string is all blanks.
+    while (begin < end && ShouldTrimFromURL(spec[end - 1])) {
+      --end;
+    }
   }
+  return {begin, end};
 }
 
 // Counts the number of consecutive slashes or backslashes starting at the given
 // offset in the given string of the given length. A slash and backslash can be
 // mixed.
-//
-// TODO(crbug.com/40063064): Rename this function to
-// `CountConsecutiveSlashesOrBackslashes`.
 template <typename CHAR>
-inline int CountConsecutiveSlashes(const CHAR* str,
-                                   int begin_offset,
-                                   int str_len) {
-  int count = 0;
-  while (begin_offset + count < str_len &&
-         IsSlashOrBackslash(str[begin_offset + count])) {
+inline size_t CountConsecutiveSlashesOrBackslashes(
+    std::basic_string_view<CHAR> str,
+    size_t begin_offset) {
+  size_t count = 0;
+  while (begin_offset < str.length() &&
+         IsSlashOrBackslash(str[begin_offset++])) {
     ++count;
   }
   return count;
@@ -87,16 +81,12 @@ inline bool IsSlash(char ch) {
 
 // Counts the number of consecutive slashes starting at the given offset
 // in the given string of the given length.
-//
-// TODO(crbug.com/40063064): Rename this function to
-// `CountConsecutiveSlashes` after the current `CountConsecutiveSlashes` is
-// renamed to CountConsecutiveSlashesOrBackslashes`.
 template <typename CHAR>
-inline int CountConsecutiveSlashesButNotCountBackslashes(const CHAR* str,
-                                                         int begin_offset,
-                                                         int str_len) {
-  int count = 0;
-  while (begin_offset + count < str_len && IsSlash(str[begin_offset + count])) {
+inline size_t CountConsecutiveSlashes(std::basic_string_view<CHAR> str,
+                                      size_t begin_offset) {
+  size_t count = 0;
+  while (begin_offset + count < str.length() &&
+         IsSlash(str[begin_offset + count])) {
     ++count;
   }
   return count;
@@ -109,44 +99,40 @@ inline int CountConsecutiveSlashesButNotCountBackslashes(const CHAR* str,
 // This is designed for the file URL parser or other consumers who may do
 // special stuff at the beginning, but want regular path parsing, it just
 // maps to the internal parsing function for paths.
-void ParsePathInternal(const char* spec,
+void ParsePathInternal(std::string_view spec,
                        const Component& path,
                        Component* filepath,
                        Component* query,
                        Component* ref);
-void ParsePathInternal(const char16_t* spec,
+void ParsePathInternal(std::u16string_view spec,
                        const Component& path,
                        Component* filepath,
                        Component* query,
                        Component* ref);
 
 // Internal functions in url_parse.cc that parse non-special URLs, which are
-// similar to `ParseNonSpecialURL` functions in url_parse.h, but with
+// similar to `ParseNonSpecialUrl` functions in url_parse.h, but with
 // `trim_path_end` parameter that controls whether to trim path end or not.
-Parsed ParseNonSpecialURLInternal(std::string_view url, bool trim_path_end);
-Parsed ParseNonSpecialURLInternal(std::u16string_view url, bool trim_path_end);
+Parsed ParseNonSpecialUrlInternal(std::string_view url, bool trim_path_end);
+Parsed ParseNonSpecialUrlInternal(std::u16string_view url, bool trim_path_end);
 
 // Given a spec and a pointer to the character after the colon following the
 // special scheme, this parses it and fills in the structure, Every item in the
 // parsed structure is filled EXCEPT for the scheme, which is untouched.
-void ParseAfterSpecialScheme(const char* spec,
-                             int spec_len,
+void ParseAfterSpecialScheme(std::string_view spec,
                              int after_scheme,
                              Parsed* parsed);
-void ParseAfterSpecialScheme(const char16_t* spec,
-                             int spec_len,
+void ParseAfterSpecialScheme(std::u16string_view spec,
                              int after_scheme,
                              Parsed* parsed);
 
 // Given a spec and a pointer to the character after the colon following the
 // non-special scheme, this parses it and fills in the structure, Every item in
 // the parsed structure is filled EXCEPT for the scheme, which is untouched.
-void ParseAfterNonSpecialScheme(const char* spec,
-                                int spec_len,
+void ParseAfterNonSpecialScheme(std::string_view spec,
                                 int after_scheme,
                                 Parsed* parsed);
-void ParseAfterNonSpecialScheme(const char16_t* spec,
-                                int spec_len,
+void ParseAfterNonSpecialScheme(std::u16string_view spec,
                                 int after_scheme,
                                 Parsed* parsed);
 

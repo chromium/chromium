@@ -22,9 +22,11 @@
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 
 using content::BrowserThread;
@@ -38,10 +40,17 @@ namespace {
 
 using safe_browsing::ThreatSeverity;
 
-// Returns the URL host that should be used in a AllowlistUrlSet.
-std::string GetCanonicalizedHost(const GURL& url) {
+// Returns the key that should be used in a AllowlistUrlSet.
+std::string GetAllowlistEntryKey(const GURL& url) {
+  // The allowlist needs to store 'view-source' URLs and regular URLs separately
+  // because the rules for displaying 'view-source' might be different from
+  // regular domains. For example, an admin might want to disallow viewing the
+  // source of a site, but allow navigating to the site itself.
+  if (url.SchemeIs(content::kViewSourceScheme)) {
+    return url.spec();
+  }
   if (url.HostIsIPAddress()) {
-    return url.host();
+    return url.GetHost();
   } else {
     std::string canon_host;
     safe_browsing::V4ProtocolManagerUtil::CanonicalizeUrl(url, &canon_host,
@@ -50,24 +59,24 @@ std::string GetCanonicalizedHost(const GURL& url) {
   }
 }
 
-// A AllowlistUrlSet holds the set of URL hosts that have been allowlisted
+// A AllowlistUrlSet holds the set of URL entries that have been allowlisted
 // for a specific WebContents, along with pending entries that are still
-// undecided. Each host is associated with the first SBThreatType that was seen
-// for that host. The hosts in this set should be from the actual URL that was
-// flagged by Safe Browsing, not the final URL in the redirect chain.
+// undecided. Each entry is associated with the first SBThreatType that was seen
+// for that entry. The entries in this set should be from the actual URL that
+// was flagged by Safe Browsing, not the final URL in the redirect chain.
 class AllowlistUrlSet : public content::WebContentsUserData<AllowlistUrlSet> {
  public:
   ~AllowlistUrlSet() override = default;
   AllowlistUrlSet(const AllowlistUrlSet&) = delete;
   AllowlistUrlSet& operator=(const AllowlistUrlSet&) = delete;
 
-  bool ContainsHost(const std::string& canonicalized_host,
-                    SBThreatType* threat_type) {
-    if (canonicalized_host.empty()) {
+  bool ContainsEntry(const std::string& canonicalized_entry,
+                     SBThreatType* threat_type) {
+    if (canonicalized_entry.empty()) {
       return false;
     }
-    auto found = allowlisted_url_hosts_.find(canonicalized_host);
-    if (found == allowlisted_url_hosts_.end()) {
+    auto found = allowlisted_entries_.find(canonicalized_entry);
+    if (found == allowlisted_entries_.end()) {
       return false;
     }
     if (threat_type)
@@ -75,51 +84,51 @@ class AllowlistUrlSet : public content::WebContentsUserData<AllowlistUrlSet> {
     return true;
   }
   bool Contains(const GURL& url, SBThreatType* threat_type) {
-    std::string canonicalized_host = GetCanonicalizedHost(url);
-    return ContainsHost(canonicalized_host, threat_type);
+    std::string canonicalized_entry = GetAllowlistEntryKey(url);
+    return ContainsEntry(canonicalized_entry, threat_type);
   }
   void RemovePending(const GURL& url,
                      const std::optional<int64_t> navigation_id) {
-    std::string canonicalized_host = GetCanonicalizedHost(url);
-    if (canonicalized_host.empty()) {
+    std::string canonicalized_entry = GetAllowlistEntryKey(url);
+    if (canonicalized_entry.empty()) {
       return;
     }
     if (navigation_id.has_value()) {
       pending_navigation_ids_.erase(navigation_id.value());
     }
-    DCHECK(pending_allowlisted_url_hosts_.end() !=
-           pending_allowlisted_url_hosts_.find(canonicalized_host));
-    if (--pending_allowlisted_url_hosts_[canonicalized_host].second < 1) {
-      pending_allowlisted_url_hosts_.erase(canonicalized_host);
+    DCHECK(pending_allowlisted_entries_.end() !=
+           pending_allowlisted_entries_.find(canonicalized_entry));
+    if (--pending_allowlisted_entries_[canonicalized_entry].second < 1) {
+      pending_allowlisted_entries_.erase(canonicalized_entry);
     }
   }
   void Remove(const GURL& url) {
-    std::string canonicalized_host = GetCanonicalizedHost(url);
-    if (canonicalized_host.empty()) {
+    std::string canonicalized_entry = GetAllowlistEntryKey(url);
+    if (canonicalized_entry.empty()) {
       return;
     }
-    allowlisted_url_hosts_.erase(canonicalized_host);
+    allowlisted_entries_.erase(canonicalized_entry);
   }
   void Insert(const GURL& url,
               const std::optional<int64_t> navigation_id,
               SBThreatType threat_type) {
-    std::string canonicalized_host = GetCanonicalizedHost(url);
-    if (canonicalized_host.empty()) {
+    std::string canonicalized_entry = GetAllowlistEntryKey(url);
+    if (canonicalized_entry.empty()) {
       return;
     }
-    if (ContainsHost(canonicalized_host, nullptr)) {
+    if (ContainsEntry(canonicalized_entry, nullptr)) {
       return;
     }
-    allowlisted_url_hosts_[canonicalized_host] = threat_type;
-    RemoveAllPending(canonicalized_host, navigation_id);
+    allowlisted_entries_[canonicalized_entry] = threat_type;
+    RemoveAllPending(canonicalized_entry, navigation_id);
   }
   bool ContainsPending(const GURL& url, SBThreatType* threat_type) {
-    std::string canonicalized_host = GetCanonicalizedHost(url);
-    if (canonicalized_host.empty()) {
+    std::string canonicalized_entry = GetAllowlistEntryKey(url);
+    if (canonicalized_entry.empty()) {
       return false;
     }
-    auto found = pending_allowlisted_url_hosts_.find(canonicalized_host);
-    if (found == pending_allowlisted_url_hosts_.end()) {
+    auto found = pending_allowlisted_entries_.find(canonicalized_entry);
+    if (found == pending_allowlisted_entries_.end()) {
       return false;
     }
     if (threat_type) {
@@ -130,27 +139,27 @@ class AllowlistUrlSet : public content::WebContentsUserData<AllowlistUrlSet> {
   void InsertPending(const GURL url,
                      const std::optional<int64_t> navigation_id,
                      SBThreatType threat_type) {
-    std::string canonicalized_host = GetCanonicalizedHost(url);
-    if (canonicalized_host.empty()) {
+    std::string canonicalized_entry = GetAllowlistEntryKey(url);
+    if (canonicalized_entry.empty()) {
       return;
     }
     if (navigation_id.has_value()) {
       if (base::Contains(pending_navigation_ids_, navigation_id.value())) {
-        // Do not add URL host for the same navigation id in
-        // |pending_allowlisted_url_hosts_| more than once. Otherwise, the
+        // Do not add URL entry for the same navigation id in
+        // |pending_allowlisted_entries_| more than once. Otherwise, the
         // security indicator may not be cleared properly when navigating away.
         return;
       } else {
         pending_navigation_ids_.insert(navigation_id.value());
       }
     }
-    if (pending_allowlisted_url_hosts_.find(canonicalized_host) !=
-        pending_allowlisted_url_hosts_.end()) {
-      pending_allowlisted_url_hosts_[canonicalized_host].first = threat_type;
-      pending_allowlisted_url_hosts_[canonicalized_host].second++;
+    if (pending_allowlisted_entries_.find(canonicalized_entry) !=
+        pending_allowlisted_entries_.end()) {
+      pending_allowlisted_entries_[canonicalized_entry].first = threat_type;
+      pending_allowlisted_entries_[canonicalized_entry].second++;
       return;
     }
-    pending_allowlisted_url_hosts_[canonicalized_host] = {threat_type, 1};
+    pending_allowlisted_entries_[canonicalized_entry] = {threat_type, 1};
   }
 
  private:
@@ -161,27 +170,29 @@ class AllowlistUrlSet : public content::WebContentsUserData<AllowlistUrlSet> {
       : content::WebContentsUserData<AllowlistUrlSet>(*web_contents) {}
 
   // Method to remove all the instances of a website in
-  // `pending_allowlisted_url_hosts_` disregarding the count. Used when adding a
-  // site to `allowlisted_url_hosts_`.
-  void RemoveAllPending(const std::string& url_host,
+  // `pending_allowlisted_entries_` disregarding the count. Used when adding a
+  // site to `allowlisted_entries_`.
+  void RemoveAllPending(const std::string& canonicalized_entry,
                         const std::optional<int64_t> navigation_id) {
     if (navigation_id.has_value()) {
       pending_navigation_ids_.erase(navigation_id.value());
     }
-    pending_allowlisted_url_hosts_.erase(url_host);
+    pending_allowlisted_entries_.erase(canonicalized_entry);
   }
 
-  // Hosts of URLs that have been allowlisted (i.e. bypassed by the user).
-  std::map<std::string, SBThreatType> allowlisted_url_hosts_;
-  // Hosts of URLs that are pending to be allowlisted (i.e. actively showing
+  // Entries of URLs that have been allowlisted (i.e. bypassed by the user).
+  // The key is determined by `GetAllowlistEntryKey(const GURL& url)`.
+  std::map<std::string, SBThreatType> allowlisted_entries_;
+  // Entries of URLs that are pending to be allowlisted (i.e. actively showing
   // interstitials). Keep a count of how many times a site has been added to the
   // pending list in order to solve a problem where upon reloading an
   // interstitial, a site would be re-added to and removed from the allowlist in
   // the wrong order.
+  // The key is determined by `GetAllowlistEntryKey(const GURL& url)`.
   std::map<std::string, std::pair<SBThreatType, int>>
-      pending_allowlisted_url_hosts_;
-  // Ensure that the URL host for the same navigation id is added to
-  // |pending_allowlisted_url_hosts_| at most once.
+      pending_allowlisted_entries_;
+  // Ensure that the URL entry for the same navigation id is added to
+  // |pending_allowlisted_entries_| at most once.
   std::set<int64_t> pending_navigation_ids_;
 };
 
@@ -276,9 +287,18 @@ bool BaseUIManager::IsUrlAllowlistedOrPendingForWebContents(
   bool any_allowlisted = false;
   ThreatSeverity min_severity = std::numeric_limits<ThreatSeverity>::max();
 
-  for (const auto& redirect : entry && !entry->GetRedirectChain().empty()
-                                  ? entry->GetRedirectChain()
-                                  : std::vector<GURL>{url}) {
+  auto proposed_allowed_urls = entry && !entry->GetRedirectChain().empty()
+                                   ? entry->GetRedirectChain()
+                                   : std::vector<GURL>{url};
+  // The redirect chain from the navigation entry doesn't include the
+  // view-source: prefix, but in a case of ViewSourceNavigationThrottle the
+  // allowlist check needs to consider the full view-source:URL. Url argument
+  // comes from an UnsafeResource that contains url with view-source prefix
+  if (url.SchemeIs(content::kViewSourceScheme)) {
+    proposed_allowed_urls.push_back(url);
+  }
+
+  for (const auto& redirect : proposed_allowed_urls) {
     if (redirect.is_empty()) {
       continue;
     }

@@ -8,7 +8,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/aura_export.h"
 #include "ui/base/cursor/cursor.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace display {
 class Display;
@@ -111,6 +111,11 @@ class AURA_EXPORT CursorClient {
 
   // Returns the OS cursor size in DIP.
   virtual gfx::Size GetSystemCursorSize() const = 0;
+
+#if BUILDFLAG(IS_WIN)
+  // Updates the system cursor visibility for testing purposes.
+  virtual void UpdateSystemCursorVisibilityForTest(bool visible) {}
+#endif
 
  protected:
   virtual ~CursorClient() {}

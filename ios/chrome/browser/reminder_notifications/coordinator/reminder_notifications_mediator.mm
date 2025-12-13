@@ -18,7 +18,7 @@ const char kReminderNotificationsCreationTimeKey[] = "creation_time";
 
 @implementation ReminderNotificationsMediator {
   // The `PrefService` used to store reminder data.
-  raw_ptr<PrefService> _profilePrefs;
+  raw_ptr<PrefService, DanglingUntriaged> _profilePrefs;
 }
 
 - (instancetype)initWithProfilePrefService:(PrefService*)profilePrefs {

@@ -24,6 +24,8 @@ class XRGripSpace : public XRSpace {
 
   bool IsStationary() const override;
 
+  bool IsInputSpace() const override;
+
   std::string ToString() const override;
 
   void Trace(Visitor*) const override;

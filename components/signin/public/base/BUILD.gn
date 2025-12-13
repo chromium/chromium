@@ -41,6 +41,11 @@ static_library("base") {
     "hybrid_encryption_key.h",
     "multilogin_parameters.cc",
     "multilogin_parameters.h",
+    "oauth_consumer.cc",
+    "oauth_consumer.h",
+    "oauth_consumer_id.h",
+    "oauth_consumer_registry.cc",
+    "oauth_consumer_registry.h",
     "persistent_repeating_timer.cc",
     "persistent_repeating_timer.h",
     "session_binding_utils.cc",
@@ -56,6 +61,7 @@ static_library("base") {
   ]
   deps = [
     "//components/prefs",
+    "//crypto",
     "//third_party/boringssl",
     "//third_party/icu:icui18n",
     "//third_party/re2",
@@ -106,12 +112,13 @@ static_library("test_support") {
 
   deps = [
     "//base/test:test_support",
+    "//components/plus_addresses/core/common:features",
     "//components/prefs",
-
-    # TODO(b/309104936): Remove this unwanted dependency.
-    "//components/signin/public/identity_manager:identity_manager",
     "//crypto",
     "//google_apis:test_support",
+
+    # TODO(b/309104936): Remove this unwanted dependency.
+    "//components/signin/public/identity_manager",
   ]
 
   public_deps = [

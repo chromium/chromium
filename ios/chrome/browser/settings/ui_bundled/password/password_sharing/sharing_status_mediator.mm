@@ -10,9 +10,11 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/multi_avatar_image_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/recipient_info.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/sharing_status_consumer.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -87,11 +89,13 @@ const CGFloat kProfileImageSize = 60.0;
 #pragma mark - TableViewFaviconDataSource
 
 - (void)faviconForPageURL:(CrURL*)URL
-               completion:(void (^)(FaviconAttributes*))completion {
+               completion:(void (^)(FaviconAttributes* attributes,
+                                    bool cached))completion {
   _faviconLoader->FaviconForPageUrl(
       URL.gurl, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
-      /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
-        completion(attributes);
+      /*fallback_to_google_server=*/false,
+      ^(FaviconAttributes* attributes, bool cached) {
+        completion(attributes, cached);
       });
 }
 
@@ -103,7 +107,7 @@ const CGFloat kProfileImageSize = 60.0;
       _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (identity) {
     return CircularImageFromImage(
-        _accountManagerService->GetIdentityAvatarWithIdentity(
+        GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
             identity, IdentityAvatarSize::SmallSize),
         kProfileImageSize);
   }

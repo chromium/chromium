@@ -28,8 +28,8 @@ class FakeAffiliationService : public AffiliationService {
   void TrimUnusedCache(std::vector<FacetURI> facet_uris) override;
   void GetGroupingInfo(std::vector<FacetURI> facet_uris,
                        GroupsCallback callback) override;
-  void GetPSLExtensions(base::OnceCallback<void(std::vector<std::string>)>
-                            callback) const override;
+  void GetPSLExtensions(
+      base::OnceCallback<void(std::vector<std::string>)> callback) override;
   void UpdateAffiliationsAndBranding(const std::vector<FacetURI>& facets,
                                      base::OnceClosure callback) override;
   void RegisterSource(std::unique_ptr<AffiliationSource> source) override;

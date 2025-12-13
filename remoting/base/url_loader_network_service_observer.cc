@@ -120,14 +120,8 @@ void UrlLoaderNetworkServiceObserver::OnAuthRequired(
     mojo::PendingRemote<network::mojom::AuthChallengeResponder>
         auth_challenge_responder) {}
 
-void UrlLoaderNetworkServiceObserver::OnPrivateNetworkAccessPermissionRequired(
-    const GURL& url,
-    const net::IPAddress& ip_address,
-    const std::optional<std::string>& private_network_device_id,
-    const std::optional<std::string>& private_network_device_name,
-    OnPrivateNetworkAccessPermissionRequiredCallback callback) {}
-
 void UrlLoaderNetworkServiceObserver::OnLocalNetworkAccessPermissionRequired(
+    network::mojom::TransportType type,
     OnLocalNetworkAccessPermissionRequiredCallback callback) {}
 
 void UrlLoaderNetworkServiceObserver::OnClearSiteData(
@@ -171,6 +165,7 @@ void UrlLoaderNetworkServiceObserver::Clone(
 }
 
 void UrlLoaderNetworkServiceObserver::OnWebSocketConnectedToPrivateNetwork(
+    const GURL& request_url,
     network::mojom::IPAddressSpace ip_address_space) {}
 
 void UrlLoaderNetworkServiceObserver::OnUrlLoaderConnectedToPrivateNetwork(

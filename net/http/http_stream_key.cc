@@ -100,7 +100,7 @@ QuicSessionAliasKey HttpStreamKey::CalculateQuicSessionAliasKey(
       destination_.host(), destination_.port(), privacy_mode(),
       ProxyChain::Direct(), SessionUsage::kDestination, socket_tag(),
       network_anonymization_key(), secure_dns_policy(),
-      /*require_dns_https_alpn=*/false);
+      /*require_dns_https_alpn=*/false, disable_cert_network_fetches());
   return QuicSessionAliasKey(std::move(destination_for_name_resolution),
                              std::move(quic_session_key));
 }

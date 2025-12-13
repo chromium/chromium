@@ -28,6 +28,13 @@ message CloudPolicySubProto2 {
   optional StringPolicyProto ChunkTwoLastFieldStringPolicy = 800;
 }
 
+message CloudPolicySubProto3 {
+  optional BooleanPolicyProto SensitivePolicyForMultiplePlatforms = 3;
+  optional BooleanPolicyProto SensitivePolicyForChromeOSOnly = 4;
+  optional BooleanPolicyProto SensitivePolicyForChromeOSFuture = 6;
+  optional BooleanPolicyProto SensitivePolicyForChromeOSDeprecated = 7;
+}
+
 message CloudPolicySettings {
   optional StringPolicyProto ExampleStringPolicy = 3;
   optional BooleanPolicyProto ExampleBoolPolicy = 4;
@@ -38,6 +45,7 @@ message CloudPolicySettings {
   optional BooleanPolicyProto ChunkZeroLastFieldBooleanPolicy = 1042;
   optional CloudPolicySubProto1 subProto1 = 1043;
   optional CloudPolicySubProto2 subProto2 = 1044;
+  optional CloudPolicySubProto3 subProto3 = 1045;
 }
 '''
 
@@ -64,6 +72,10 @@ message CloudPolicySettings {
   optional BooleanPolicyProto ChunkOneLastFieldBooleanPolicy = 1842;
   optional StringPolicyProto ChunkTwoFirstFieldStringPolicy = 1843;
   optional StringPolicyProto ChunkTwoLastFieldStringPolicy = 2642;
+  optional BooleanPolicyProto SensitivePolicyForMultiplePlatforms = 2645;
+  optional BooleanPolicyProto SensitivePolicyForChromeOSOnly = 2646;
+  optional BooleanPolicyProto SensitivePolicyForChromeOSFuture = 2648;
+  optional BooleanPolicyProto SensitivePolicyForChromeOSDeprecated = 2649;
 }
 '''
 
@@ -85,7 +97,7 @@ import "policy_common_definitions.proto";
 //
 // ExampleStringPolicy desc
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ExampleStringPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional string ExampleStringPolicy = 2;
@@ -95,7 +107,7 @@ message ExampleStringPolicyProto {
 //
 // ExampleBoolPolicy desc
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ExampleBoolPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ExampleBoolPolicy = 2;
@@ -165,7 +177,7 @@ message UnsupportedPolicyProto {
 //
 // ChunkZeroLastFieldBooleanPolicy desc.
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ChunkZeroLastFieldBooleanPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ChunkZeroLastFieldBooleanPolicy = 2;
@@ -175,7 +187,7 @@ message ChunkZeroLastFieldBooleanPolicyProto {
 //
 // ChunkOneFirstFieldBooleanPolicy desc.
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ChunkOneFirstFieldBooleanPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ChunkOneFirstFieldBooleanPolicy = 2;
@@ -185,7 +197,7 @@ message ChunkOneFirstFieldBooleanPolicyProto {
 //
 // ChunkOneLastFieldBooleanPolicy desc.
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ChunkOneLastFieldBooleanPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ChunkOneLastFieldBooleanPolicy = 2;
@@ -195,7 +207,7 @@ message ChunkOneLastFieldBooleanPolicyProto {
 //
 // ChunkTwoFirstFieldStringPolicy desc
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ChunkTwoFirstFieldStringPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional string ChunkTwoFirstFieldStringPolicy = 2;
@@ -205,10 +217,60 @@ message ChunkTwoFirstFieldStringPolicyProto {
 //
 // ChunkTwoLastFieldStringPolicy desc
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ChunkTwoLastFieldStringPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional string ChunkTwoLastFieldStringPolicy = 2;
+}
+
+// SensitivePolicyForMultiplePlatforms caption
+//
+// SensitivePolicyForMultiplePlatforms desc
+//
+// Supported on: android, chrome_os, linux, mac, win
+message SensitivePolicyForMultiplePlatformsProto {
+  optional PolicyOptions policy_options = 1;
+  optional bool SensitivePolicyForMultiplePlatforms = 2;
+}
+
+// SensitivePolicyForChromeOSOnly caption
+//
+// SensitivePolicyForChromeOSOnly desc
+//
+// Supported on: chrome_os
+message SensitivePolicyForChromeOSOnlyProto {
+  optional PolicyOptions policy_options = 1;
+  optional bool SensitivePolicyForChromeOSOnly = 2;
+}
+
+// SensitivePolicyForUnsupportedPlatform caption
+//
+// It should neither be generated nor listed as sensitive.
+//
+// Supported on: win
+message SensitivePolicyForUnsupportedPlatformProto {
+  optional PolicyOptions policy_options = 1;
+  optional bool SensitivePolicyForUnsupportedPlatform = 2;
+}
+
+// SensitivePolicyForChromeOSFuture caption
+//
+// SensitivePolicyForChromeOSFuture desc
+//
+// Supported on: chrome_os
+message SensitivePolicyForChromeOSFutureProto {
+  optional PolicyOptions policy_options = 1;
+  optional bool SensitivePolicyForChromeOSFuture = 2;
+}
+
+// SensitivePolicyForChromeOSDeprecated caption
+//
+// SensitivePolicyForChromeOSDeprecated desc
+//
+// Supported on: chrome_os
+message SensitivePolicyForChromeOSDeprecatedProto {
+  optional PolicyOptions policy_options = 1;
+  optional bool SensitivePolicyForChromeOSDeprecated = 2;
 }
 
 // --------------------------------------------------
@@ -222,6 +284,14 @@ message ChromeSettingsSubProto1 {
 message ChromeSettingsSubProto2 {
   optional ChunkTwoFirstFieldStringPolicyProto ChunkTwoFirstFieldStringPolicy = 1;
   optional ChunkTwoLastFieldStringPolicyProto ChunkTwoLastFieldStringPolicy = 800;
+}
+
+message ChromeSettingsSubProto3 {
+  optional SensitivePolicyForMultiplePlatformsProto SensitivePolicyForMultiplePlatforms = 3;
+  optional SensitivePolicyForChromeOSOnlyProto SensitivePolicyForChromeOSOnly = 4;
+  optional SensitivePolicyForUnsupportedPlatformProto SensitivePolicyForUnsupportedPlatform = 5;
+  optional SensitivePolicyForChromeOSFutureProto SensitivePolicyForChromeOSFuture = 6;
+  optional SensitivePolicyForChromeOSDeprecatedProto SensitivePolicyForChromeOSDeprecated = 7;
 }
 
 // --------------------------------------------------
@@ -239,6 +309,7 @@ message ChromeSettingsProto {
   optional ChunkZeroLastFieldBooleanPolicyProto ChunkZeroLastFieldBooleanPolicy = 1042;
   optional ChromeSettingsSubProto1 subProto1 = 1043;
   optional ChromeSettingsSubProto2 subProto2 = 1044;
+  optional ChromeSettingsSubProto3 subProto3 = 1045;
 }
 """
 
@@ -260,7 +331,7 @@ import "policy_common_definitions.proto";
 //
 // ExampleStringPolicy desc
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ExampleStringPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional string ExampleStringPolicy = 2;
@@ -270,7 +341,7 @@ message ExampleStringPolicyProto {
 //
 // ExampleBoolPolicy desc
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ExampleBoolPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ExampleBoolPolicy = 2;
@@ -340,7 +411,7 @@ message UnsupportedPolicyProto {
 //
 // ChunkZeroLastFieldBooleanPolicy desc.
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ChunkZeroLastFieldBooleanPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ChunkZeroLastFieldBooleanPolicy = 2;
@@ -350,7 +421,7 @@ message ChunkZeroLastFieldBooleanPolicyProto {
 //
 // ChunkOneFirstFieldBooleanPolicy desc.
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ChunkOneFirstFieldBooleanPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ChunkOneFirstFieldBooleanPolicy = 2;
@@ -360,7 +431,7 @@ message ChunkOneFirstFieldBooleanPolicyProto {
 //
 // ChunkOneLastFieldBooleanPolicy desc.
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ChunkOneLastFieldBooleanPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ChunkOneLastFieldBooleanPolicy = 2;
@@ -370,7 +441,7 @@ message ChunkOneLastFieldBooleanPolicyProto {
 //
 // ChunkTwoFirstFieldStringPolicy desc
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ChunkTwoFirstFieldStringPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional string ChunkTwoFirstFieldStringPolicy = 2;
@@ -380,10 +451,60 @@ message ChunkTwoFirstFieldStringPolicyProto {
 //
 // ChunkTwoLastFieldStringPolicy desc
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ChunkTwoLastFieldStringPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional string ChunkTwoLastFieldStringPolicy = 2;
+}
+
+// SensitivePolicyForMultiplePlatforms caption
+//
+// SensitivePolicyForMultiplePlatforms desc
+//
+// Supported on: android, chrome_os, linux, mac, win
+message SensitivePolicyForMultiplePlatformsProto {
+  optional PolicyOptions policy_options = 1;
+  optional bool SensitivePolicyForMultiplePlatforms = 2;
+}
+
+// SensitivePolicyForChromeOSOnly caption
+//
+// SensitivePolicyForChromeOSOnly desc
+//
+// Supported on: chrome_os
+message SensitivePolicyForChromeOSOnlyProto {
+  optional PolicyOptions policy_options = 1;
+  optional bool SensitivePolicyForChromeOSOnly = 2;
+}
+
+// SensitivePolicyForUnsupportedPlatform caption
+//
+// It should neither be generated nor listed as sensitive.
+//
+// Supported on: win
+message SensitivePolicyForUnsupportedPlatformProto {
+  optional PolicyOptions policy_options = 1;
+  optional bool SensitivePolicyForUnsupportedPlatform = 2;
+}
+
+// SensitivePolicyForChromeOSFuture caption
+//
+// SensitivePolicyForChromeOSFuture desc
+//
+// Supported on: chrome_os
+message SensitivePolicyForChromeOSFutureProto {
+  optional PolicyOptions policy_options = 1;
+  optional bool SensitivePolicyForChromeOSFuture = 2;
+}
+
+// SensitivePolicyForChromeOSDeprecated caption
+//
+// SensitivePolicyForChromeOSDeprecated desc
+//
+// Supported on: chrome_os
+message SensitivePolicyForChromeOSDeprecatedProto {
+  optional PolicyOptions policy_options = 1;
+  optional bool SensitivePolicyForChromeOSDeprecated = 2;
 }
 
 // --------------------------------------------------
@@ -403,6 +524,11 @@ message ChromeSettingsProto {
   optional ChunkOneLastFieldBooleanPolicyProto ChunkOneLastFieldBooleanPolicy = 1842;
   optional ChunkTwoFirstFieldStringPolicyProto ChunkTwoFirstFieldStringPolicy = 1843;
   optional ChunkTwoLastFieldStringPolicyProto ChunkTwoLastFieldStringPolicy = 2642;
+  optional SensitivePolicyForMultiplePlatformsProto SensitivePolicyForMultiplePlatforms = 2645;
+  optional SensitivePolicyForChromeOSOnlyProto SensitivePolicyForChromeOSOnly = 2646;
+  optional SensitivePolicyForUnsupportedPlatformProto SensitivePolicyForUnsupportedPlatform = 2647;
+  optional SensitivePolicyForChromeOSFutureProto SensitivePolicyForChromeOSFuture = 2648;
+  optional SensitivePolicyForChromeOSDeprecatedProto SensitivePolicyForChromeOSDeprecated = 2649;
 }
 """
 
@@ -411,7 +537,7 @@ EXPECTED_POLICY_PROTO = '''\
 //
 // ExampleStringPolicy desc
 //
-// Supported on: chrome_os, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message ExampleStringPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional string ExampleStringPolicy = 2;
@@ -475,6 +601,10 @@ extern const char kChunkOneFirstFieldBooleanPolicy[];
 extern const char kChunkOneLastFieldBooleanPolicy[];
 extern const char kChunkTwoFirstFieldStringPolicy[];
 extern const char kChunkTwoLastFieldStringPolicy[];
+extern const char kSensitivePolicyForMultiplePlatforms[];
+extern const char kSensitivePolicyForChromeOSOnly[];
+extern const char kSensitivePolicyForChromeOSFuture[];
+extern const char kSensitivePolicyForChromeOSDeprecated[];
 
 }  // namespace key
 
@@ -502,6 +632,10 @@ extern const char* const kPrecedence[1];
 
 }  // namespace metapolicy
 
+// The policies that are considered only if the user is part of an AD
+// domain on Windows, managed on Mac, or enrolled in Chrome Enterprise Core.
+base::span<const char* const> GetSensitivePolicies();
+
 enum class StringPolicyType {
   STRING,
   JSON,
@@ -516,7 +650,7 @@ struct BooleanPolicyAccess {
   const em::BooleanPolicyProto& (*get_proto)(
       const em::CloudPolicySettings& policy);
 };
-extern const std::array<BooleanPolicyAccess, 7> kBooleanPolicyAccess;
+extern const std::array<BooleanPolicyAccess, 11> kBooleanPolicyAccess;
 
 // Read access to the protobufs of all supported integer user policies.
 struct IntegerPolicyAccess {
@@ -602,7 +736,26 @@ namespace policy {
   { false,        false,    kBrowser,        1841,                     0, {  } },
   // ChunkTwoLastFieldStringPolicy
   { false,        false,    kBrowser,        2640,                     0, {  } },
+  // SensitivePolicyForMultiplePlatforms
+  { false,        false,    kBrowser,        2643,                     0, {  } },
+  // SensitivePolicyForChromeOSOnly
+  { false,        false,    kBrowser,        2644,                     0, {  } },
+  // SensitivePolicyForChromeOSFuture
+  { false,        true,     kBrowser,        2646,                     0, {  } },
+  // SensitivePolicyForChromeOSDeprecated
+  { true,         false,    kBrowser,        2647,                     0, {  } },
 };
+
+const char* const kSensitivePolicies[] = {
+    key::kSensitivePolicyForChromeOSDeprecated,
+    key::kSensitivePolicyForChromeOSFuture,
+    key::kSensitivePolicyForChromeOSOnly,
+    key::kSensitivePolicyForMultiplePlatforms,
+};
+
+base::span<const char* const> GetSensitivePolicies() {
+  return kSensitivePolicies;
+}
 
 const internal::SchemaNode kSchemas[] = {
 //  Type                           Extra  IsSensitiveValue HasSensitiveChildren
@@ -624,11 +777,15 @@ const internal::PropertyNode kPropertyNodes[] = {
   { key::kExampleBoolPolicy,                                              1 },
   { key::kExampleBoolPrecedenceMetapolicy,                                1 },
   { key::kExampleStringPolicy,                                            2 },
+  { key::kSensitivePolicyForChromeOSDeprecated,                           1 },
+  { key::kSensitivePolicyForChromeOSFuture,                               1 },
+  { key::kSensitivePolicyForChromeOSOnly,                                 1 },
+  { key::kSensitivePolicyForMultiplePlatforms,                            1 },
 };
 
 const internal::PropertiesNode kProperties[] = {
 //  Begin    End  PatternEnd  RequiredBegin  RequiredEnd  Additional Properties
-  {     0,    11,    11,     0,          0,    -1 },  // root node
+  {     0,    15,    15,     0,          0,    -1 },  // root node
 };
 
 const internal::SchemaData* GetChromeSchemaData() {
@@ -674,7 +831,7 @@ const PolicyDetails* GetChromePolicyDetails(const std::string& policy) {
   // First index in kPropertyNodes of the Chrome policies.
   static constexpr int begin_index = 0;
   // One-past-the-end of the Chrome policies in kPropertyNodes.
-  static constexpr int end_index = 11;
+  static constexpr int end_index = 15;
   const internal::PropertyNode* begin =
      kPropertyNodes + begin_index;
   const internal::PropertyNode* end = kPropertyNodes + end_index;
@@ -710,6 +867,10 @@ const char kChunkOneFirstFieldBooleanPolicy[] = "ChunkOneFirstFieldBooleanPolicy
 const char kChunkOneLastFieldBooleanPolicy[] = "ChunkOneLastFieldBooleanPolicy";
 const char kChunkTwoFirstFieldStringPolicy[] = "ChunkTwoFirstFieldStringPolicy";
 const char kChunkTwoLastFieldStringPolicy[] = "ChunkTwoLastFieldStringPolicy";
+const char kSensitivePolicyForMultiplePlatforms[] = "SensitivePolicyForMultiplePlatforms";
+const char kSensitivePolicyForChromeOSOnly[] = "SensitivePolicyForChromeOSOnly";
+const char kSensitivePolicyForChromeOSFuture[] = "SensitivePolicyForChromeOSFuture";
+const char kSensitivePolicyForChromeOSDeprecated[] = "SensitivePolicyForChromeOSDeprecated";
 
 }  // namespace key
 
@@ -740,7 +901,7 @@ const char* const kPrecedence[1] = {
 
 }  // namespace metapolicy
 
-const std::array<BooleanPolicyAccess, 7> kBooleanPolicyAccess {{
+const std::array<BooleanPolicyAccess, 11> kBooleanPolicyAccess {{
   {key::kExampleBoolPolicy,
    false,
    [](const em::CloudPolicySettings& policy) {
@@ -811,6 +972,50 @@ const std::array<BooleanPolicyAccess, 7> kBooleanPolicyAccess {{
    [](const em::CloudPolicySettings& policy)
        -> const em::BooleanPolicyProto& {
      return policy.subproto1().chunkonelastfieldbooleanpolicy();
+   }
+  },
+  {key::kSensitivePolicyForMultiplePlatforms,
+   false,
+   [](const em::CloudPolicySettings& policy) {
+     return policy.has_subproto3() &&
+              policy.subproto3().has_sensitivepolicyformultipleplatforms();
+   },
+   [](const em::CloudPolicySettings& policy)
+       -> const em::BooleanPolicyProto& {
+     return policy.subproto3().sensitivepolicyformultipleplatforms();
+   }
+  },
+  {key::kSensitivePolicyForChromeOSOnly,
+   false,
+   [](const em::CloudPolicySettings& policy) {
+     return policy.has_subproto3() &&
+              policy.subproto3().has_sensitivepolicyforchromeosonly();
+   },
+   [](const em::CloudPolicySettings& policy)
+       -> const em::BooleanPolicyProto& {
+     return policy.subproto3().sensitivepolicyforchromeosonly();
+   }
+  },
+  {key::kSensitivePolicyForChromeOSFuture,
+   false,
+   [](const em::CloudPolicySettings& policy) {
+     return policy.has_subproto3() &&
+              policy.subproto3().has_sensitivepolicyforchromeosfuture();
+   },
+   [](const em::CloudPolicySettings& policy)
+       -> const em::BooleanPolicyProto& {
+     return policy.subproto3().sensitivepolicyforchromeosfuture();
+   }
+  },
+  {key::kSensitivePolicyForChromeOSDeprecated,
+   false,
+   [](const em::CloudPolicySettings& policy) {
+     return policy.has_subproto3() &&
+              policy.subproto3().has_sensitivepolicyforchromeosdeprecated();
+   },
+   [](const em::CloudPolicySettings& policy)
+       -> const em::BooleanPolicyProto& {
+     return policy.subproto3().sensitivepolicyforchromeosdeprecated();
    }
   },
 }};
@@ -1147,5 +1352,11 @@ EXPECTED_APP_RESTRICTIONS_XML = '''
         android:title="@string/ExampleStringPolicyTitle"
         android:description="@string/ExampleStringPolicyDesc"
         android:restrictionType="string"/>
+
+    <restriction
+        android:key="SensitivePolicyForMultiplePlatforms"
+        android:title="@string/SensitivePolicyForMultiplePlatformsTitle"
+        android:description="@string/SensitivePolicyForMultiplePlatformsDesc"
+        android:restrictionType="bool"/>
 
 </restrictions>'''

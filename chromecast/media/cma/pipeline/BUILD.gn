@@ -49,7 +49,7 @@ cast_source_set("pipeline") {
     ":cma_pipeline_buildflags",
     "//base",
     "//chromecast/base",
-    "//chromecast/base/metrics:metrics",
+    "//chromecast/base/metrics",
     "//chromecast/media/base",
     "//chromecast/media/cdm",
     "//chromecast/media/cma/backend",

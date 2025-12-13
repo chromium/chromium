@@ -12,7 +12,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
   var remoteObject = await TestRunner.evaluateInPageRemoteObject('document');
   TestRunner.addResult('didReceiveDocumentObject');
-  var nodeId = await TestRunner.DOMAgent.requestNode(remoteObject.objectId);
+  var nodeId = (await TestRunner.DOMAgent.invoke_requestNode({objectId: remoteObject.objectId})).nodeId;
   TestRunner.addResult('didRequestNode error = ' + (nodeId ? 'null' : 'error'));
   TestRunner.completeTest();
 })();

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/cma/backend/proxy/push_buffer_queue.h"
 
 #include <atomic>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "third_party/protobuf/src/google/protobuf/util/delimited_message_util.h"
@@ -21,12 +17,12 @@ namespace {
 
 // The number of consecutive failed read attempts before the buffer is
 // determined to be in an invalid state.
-int kMaximumFailedReadAttempts = 10;
+constexpr int kMaximumFailedReadAttempts = 10;
 
 // The maximum size of a read/write window used by the underlying buffer. This
 // is the maximum size of the array which will be cached for upcoming use.
 // size_t type is used here to simplify comparison logic later on.
-size_t kWindowSizeBytes = 32;
+constexpr size_t kWindowSizeBytes = 32;
 
 }  // namespace
 
@@ -191,8 +187,8 @@ int PushBufferQueue::ProducerHandler::overflow(int ch) {
 
   // Update the pointers that determine the writable area and write the given
   // value |ch| if one was given.
-  setp(&queue_->buffer_[current_write_index],
-       &queue_->buffer_[current_write_index + new_window_size]);
+  setp(&UNSAFE_TODO(queue_->buffer_[current_write_index]),
+       &UNSAFE_TODO(queue_->buffer_[current_write_index + new_window_size]));
   const bool should_write_ch = (ch != std::char_traits<char>::eof());
   if (should_write_ch) {
     sputc(static_cast<char>(ch));
@@ -247,17 +243,19 @@ int PushBufferQueue::ConsumerHandler::underflow() {
   // std::char_traits<char>::eof() is a special return code, cast to a uint to
   // avoid all negative results (EOF is guaranteed to be negative by the stl).
   DCHECK_LE(current_read_bytes + new_window_size, currently_written_bytes);
-  setg(&queue_->buffer_[begin], &queue_->buffer_[begin],
-       &queue_->buffer_[begin + new_window_size]);
-  return static_cast<uint8_t>(queue_->buffer_[begin]);
+  setg(&UNSAFE_TODO(queue_->buffer_[begin]),
+       &UNSAFE_TODO(queue_->buffer_[begin]),
+       &UNSAFE_TODO(queue_->buffer_[begin + new_window_size]));
+  return static_cast<uint8_t>(UNSAFE_TODO(queue_->buffer_[begin]));
 }
 
 void PushBufferQueue::ConsumerHandler::ResetReadPointers() {
   const size_t begin =
       queue_->bytes_read_so_far_.load(std::memory_order_relaxed) %
       kBufferSizeBytes;
-  setg(&queue_->buffer_[begin], &queue_->buffer_[begin],
-       &queue_->buffer_[begin]);
+  setg(&UNSAFE_TODO(queue_->buffer_[begin]),
+       &UNSAFE_TODO(queue_->buffer_[begin]),
+       &UNSAFE_TODO(queue_->buffer_[begin]));
 }
 
 void PushBufferQueue::ConsumerHandler::ApplyNewBytesRead() {

@@ -13,8 +13,8 @@ example_value: 3
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:143-
 items:
 - caption: Do not allow Isolated Web App origins to connect to smart card readers
   name: BlockSmartCardConnect

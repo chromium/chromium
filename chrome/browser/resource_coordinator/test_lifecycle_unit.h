@@ -8,7 +8,9 @@
 #include <string_view>
 
 #include "base/time/time.h"
+#include "chrome/browser/performance_manager/policies/cannot_discard_reason.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_base.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
 
 namespace resource_coordinator {
 
@@ -17,8 +19,7 @@ class TestLifecycleUnit : public LifecycleUnitBase {
   using LifecycleUnitBase::SetState;
 
   explicit TestLifecycleUnit(
-      base::TimeTicks last_focused_time = base::TimeTicks(),
-      bool can_discard = true);
+      base::TimeTicks last_focused_time = base::TimeTicks());
   explicit TestLifecycleUnit(LifecycleUnitSourceBase* source);
 
   TestLifecycleUnit(const TestLifecycleUnit&) = delete;
@@ -30,14 +31,6 @@ class TestLifecycleUnit : public LifecycleUnitBase {
     last_focused_time_ticks_ = last_focused_time;
   }
 
-  void SetSortKey(LifecycleUnit::SortKey sort_key) { sort_key_ = sort_key; }
-
-  void SetDiscardFailureReason(DecisionFailureReason failure_reason) {
-    failure_reason_ = failure_reason;
-  }
-
-  void SetCanDiscard(bool can_discard) { can_discard_ = can_discard; }
-
   void SetDiscardReason(LifecycleUnitDiscardReason discard_reason) {
     discard_reason_ = discard_reason;
   }
@@ -46,11 +39,8 @@ class TestLifecycleUnit : public LifecycleUnitBase {
   TabLifecycleUnitExternal* AsTabLifecycleUnitExternal() override;
   base::TimeTicks GetLastFocusedTimeTicks() const override;
   base::Time GetLastFocusedTime() const override;
-  SortKey GetSortKey() const override;
   LifecycleUnitLoadingState GetLoadingState() const override;
   bool Load() override;
-  bool CanDiscard(LifecycleUnitDiscardReason reason,
-                  DecisionDetails* decision_details) const override;
   bool Discard(LifecycleUnitDiscardReason discard_reason,
                uint64_t resident_set_size_estimate) override;
   LifecycleUnitDiscardReason GetDiscardReason() const override;
@@ -58,25 +48,32 @@ class TestLifecycleUnit : public LifecycleUnitBase {
  private:
   base::TimeTicks last_focused_time_ticks_;
   base::Time last_focused_time_;
-  LifecycleUnit::SortKey sort_key_;
-  bool can_discard_ = true;
   LifecycleUnitDiscardReason discard_reason_ =
       ::mojom::LifecycleUnitDiscardReason::EXTERNAL;
-  std::optional<DecisionFailureReason> failure_reason_;
 };
 
 // Helper funtions for testing CanDiscard policy.
-void ExpectCanDiscardTrue(const LifecycleUnit* lifecycle_unit,
-                          LifecycleUnitDiscardReason discard_reason);
-void ExpectCanDiscardTrueAllReasons(const LifecycleUnit* lifecycle_unit);
-void ExpectCanDiscardFalse(const LifecycleUnit* lifecycle_unit,
-                           DecisionFailureReason failure_reason,
-                           LifecycleUnitDiscardReason discard_reason);
-void ExpectCanDiscardFalseAllReasons(const LifecycleUnit* lifecycle_unit,
-                                     DecisionFailureReason failure_reason);
-void ExpectCanDiscardFalseTrivial(const LifecycleUnit* lifecycle_unit,
-                                  LifecycleUnitDiscardReason discard_reason);
-void ExpectCanDiscardFalseTrivialAllReasons(const LifecycleUnit* lu);
+void ExpectCanDiscardTrue(
+    const TabLifecycleUnitSource::TabLifecycleUnit* tab_lifecycle_unit,
+    LifecycleUnitDiscardReason discard_reason);
+void ExpectCanDiscardTrueAllReasons(
+    const TabLifecycleUnitSource::TabLifecycleUnit* tab_lifecycle_unit);
+
+// Checks the tab cannot be discarded and the cannot discard reason includes
+// |failure_reason|.
+void ExpectCanDiscardFalse(
+    const TabLifecycleUnitSource::TabLifecycleUnit* tab_lifecycle_unit,
+    performance_manager::policies::CannotDiscardReason failure_reason,
+    LifecycleUnitDiscardReason discard_reason);
+void ExpectCanDiscardFalseAllReasons(
+    const TabLifecycleUnitSource::TabLifecycleUnit* tab_lifecycle_unit,
+    performance_manager::policies::CannotDiscardReason failure_reason);
+
+void ExpectCanDiscardFalseTrivial(
+    const TabLifecycleUnitSource::TabLifecycleUnit* tab_lifecycle_unit,
+    LifecycleUnitDiscardReason discard_reason);
+void ExpectCanDiscardFalseTrivialAllReasons(
+    const TabLifecycleUnitSource::TabLifecycleUnit* tab_lifecycle_unit);
 
 }  // namespace resource_coordinator
 

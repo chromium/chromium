@@ -43,7 +43,6 @@ using testing::Matcher;
 using testing::Pointee;
 using testing::Pointwise;
 using testing::Property;
-using WTF::String;
 
 #define SUBTEST(F)                                          \
   {                                                         \
@@ -248,12 +247,12 @@ PublicKeyCredentialRequestOptionsJSON* MakeRequestOptionsJSON(
   return json;
 }
 
-// Matches a blink WTF::String and a std::string for byte equality.
+// Matches a blink String and a std::string for byte equality.
 MATCHER_P(StrEq, str, "") {
   return ExplainMatchResult(Eq(String(str)), arg, result_listener);
 }
 
-// Matches a pair of (WTF::String, std::string) for equality (used with
+// Matches a pair of (String, std::string) for equality (used with
 // `testing::Pointwise`).
 MATCHER(StrEq, "") {
   const String& s1 = std::get<0>(arg);
@@ -268,7 +267,7 @@ Matcher<Member<T>> MemberField(Matcher<T*> matcher) {
 }
 
 // Performs WebAuthn Base64URL encoding, which is always unpadded.
-WTF::String Base64URLEncode(DOMArrayPiece buffer) {
+String Base64URLEncode(DOMArrayPiece buffer) {
   // blink::Base64URLEncode always pads, so we strip trailing '='.
   String encoded = blink::Base64URLEncode(buffer.ByteSpan());
   unsigned padding_start = encoded.length();

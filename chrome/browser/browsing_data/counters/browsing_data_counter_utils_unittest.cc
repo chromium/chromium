@@ -14,6 +14,7 @@
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
 #include "chrome/browser/browsing_data/counters/signin_data_counter.h"
 #include "chrome/browser/browsing_data/counters/site_data_counter.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -26,6 +27,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -211,8 +213,7 @@ TEST_F(BrowsingDataCounterUtilsTest, DeletePasswordsAndSigninData) {
 
   auto password_store =
       base::MakeRefCounted<password_manager::TestPasswordStore>();
-  password_store->Init(GetProfile()->GetPrefs(),
-                       /*affiliated_match_helper=*/nullptr);
+  password_store->Init(/*affiliated_match_helper=*/nullptr);
 
   // This counter does not really count anything; we just need a reference to
   // pass to the SigninDataResult ctor.
@@ -336,6 +337,7 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
     kImplicitSignin,  // Legacy Dice automatic signin.
     kExplicitSignin,
     kSigninPending,
+    // TODO(crbug.com/417950948): Remove sync-related states.
     kSyncing,
     kSyncPaused
   };
@@ -344,6 +346,7 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
     int num_sites;
     SigninState signin_state = SigninState::kSignedOut;
     std::string expected_output;
+    bool signout_allowed = true;
   };
 
   void SetSignedOutState(syncer::TestSyncService* test_sync_service) {
@@ -405,10 +408,13 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
         GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
             GoogleServiceAuthError::InvalidGaiaCredentialsReason::
                 CREDENTIALS_REJECTED_BY_SERVER));
+    test_sync_service->SetPersistentAuthError();
     ASSERT_TRUE(
         identity_test_env->identity_manager()
             ->GetErrorStateOfRefreshTokenForAccount(account_info.account_id)
             .IsPersistentError());
+    ASSERT_EQ(syncer::SyncService::UserActionableError::kSignInNeedsUpdate,
+              test_sync_service->GetUserActionableError());
   }
 
   void VerifyTestCase(const TestCase& test_case) {
@@ -429,6 +435,13 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
             testing_profile.get(), base::BindOnce([](content::BrowserContext*) {
               return std::make_unique<syncer::TestSyncService>();
             }));
+
+    if (!test_case.signout_allowed) {
+      SigninClient* client =
+          ChromeSigninClientFactory::GetForProfile(testing_profile.get());
+      client->set_is_clear_primary_account_allowed_for_testing(
+          SigninClient::SignoutDecision::CLEAR_PRIMARY_ACCOUNT_DISALLOWED);
+    }
 
     switch (test_case.signin_state) {
       case SigninState::kSignedOut:
@@ -452,11 +465,15 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
                               testing_profile->GetPrefs());
         break;
       case SigninState::kSyncing:
+        CHECK(!base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos));
         SetSignedInState(signin::ConsentLevel::kSync, identity_test_env,
                          test_sync_service, testing_profile->GetPrefs(),
                          /*explicit_signin=*/true);
         break;
       case SigninState::kSyncPaused:
+        CHECK(!base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos));
         SetSyncPausedState(identity_test_env, test_sync_service,
                            testing_profile->GetPrefs());
         break;
@@ -477,26 +494,34 @@ class CookieBrowsingDataCounterUtilsTest : public BrowsingDataCounterUtilsTest {
 };
 
 TEST_F(CookieBrowsingDataCounterUtilsTest, CookieCounterResult) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(browsing_data::features::kDbdRevampDesktop);
   // This test assumes that the strings are served exactly as defined, i.e. that
   // the locale is set to the default "en".
   ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
 
   // Test the output for various forms of cookie results.
-  const struct TestCase kTestCases[] = {
+  std::vector<TestCase> test_cases = {
       {/*num_sites= */ 0, SigninState::kSignedOut, "None"},
       {/*num_sites= */ 1, SigninState::kSignedOut, "From 1 site"},
       {/*num_sites= */ 42, SigninState::kAccountAware, "From 42 sites"},
       {/*num_sites= */ 1, SigninState::kImplicitSignin, "From 1 site"},
       {/*num_sites= */ 5, SigninState::kSigninPending, "From 5 sites"},
-      {/*num_sites= */ 10, SigninState::kSyncPaused, "From 10 sites"},
       {/*num_sites= */ 1, SigninState::kExplicitSignin,
        "From 1 site (you'll stay signed in to your Google Account)"},
-      {/*num_sites= */ 42, SigninState::kSyncing,
-       "From 42 sites (you'll stay signed in to your Google Account)"},
-      {/*num_sites= */ 0, SigninState::kSyncing, "None"},
   };
 
-  for (const TestCase& test_case : kTestCases) {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    test_cases.push_back(
+        {/*num_sites= */ 10, SigninState::kSyncPaused, "From 10 sites"});
+    test_cases.push_back(
+        {/*num_sites= */ 42, SigninState::kSyncing,
+         "From 42 sites (you'll stay signed in to your Google Account)"});
+    test_cases.push_back({/*num_sites= */ 0, SigninState::kSyncing, "None"});
+  }
+
+  for (const TestCase& test_case : test_cases) {
     VerifyTestCase(test_case);
   }
 }
@@ -509,24 +534,33 @@ TEST_F(CookieBrowsingDataCounterUtilsTest, CookieCounterResult_RevampEnabled) {
   ASSERT_EQ("en", TestingBrowserProcess::GetGlobal()->GetApplicationLocale());
 
   // Test the output for various forms of cookie results.
-  const struct TestCase kTestCases[] = {
+  std::vector<TestCase> test_cases = {
       {/*num_sites= */ 0, SigninState::kSignedOut, "None"},
       {/*num_sites= */ 1, SigninState::kSignedOut, "From 1 site"},
       {/*num_sites= */ 42, SigninState::kAccountAware, "From 42 sites"},
       {/*num_sites= */ 1, SigninState::kImplicitSignin, "From 1 site"},
       {/*num_sites= */ 5, SigninState::kSigninPending, "From 5 sites"},
-      {/*num_sites= */ 10, SigninState::kSyncPaused, "From 10 sites"},
       {/*num_sites= */ 1, SigninState::kExplicitSignin,
        "From 1 site. To delete Google cookies from this device, <a href=\"#\" "
        "target=\"_blank\" id=\"signOutLink\">sign out of Chrome</a>."},
-      {/*num_sites= */ 42, SigninState::kSyncing,
-       "From 42 sites. To delete Google cookies from this device, <a "
-       "href=\"#\" target=\"_blank\" id=\"signOutLink\">sign out of "
-       "Chrome</a>."},
-      {/*num_sites= */ 0, SigninState::kSyncing, "None"},
   };
 
-  for (const TestCase& test_case : kTestCases) {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    test_cases.push_back(
+        {/*num_sites= */ 10, SigninState::kSyncPaused, "From 10 sites"});
+    test_cases.push_back(
+        {/*num_sites= */ 42, SigninState::kSyncing,
+         "From 42 sites. To delete Google cookies from this device, <a "
+         "href=\"#\" target=\"_blank\" id=\"signOutLink\">sign out of "
+         "Chrome</a>."});
+    test_cases.push_back({/*num_sites= */ 0, SigninState::kSyncing, "None"});
+    test_cases.push_back({/*num_sites= */ 42, SigninState::kSyncing,
+                          "From 42 sites",
+                          /*signout_allowed= */ false});
+  }
+
+  for (const TestCase& test_case : test_cases) {
     VerifyTestCase(test_case);
   }
 }

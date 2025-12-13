@@ -16,7 +16,7 @@ executable("aggregation_service_tool") {
   deps = [
     "//base",
     "//content/test:test_support",
-    "//mojo/core/embedder:embedder",
+    "//mojo/core/embedder",
     "//net",
     "//services/cert_verifier:lib",
     "//services/data_decoder/public/cpp:test_support",

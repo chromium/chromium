@@ -10,10 +10,11 @@
 
 #include "base/containers/map_util.h"
 #include "base/debug/alias.h"
-#include "base/lazy_instance.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/span_printf.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -72,8 +73,10 @@ class FeatureProviderStatic {
   std::map<std::string, std::unique_ptr<FeatureProvider>> feature_providers_;
 };
 
-base::LazyInstance<FeatureProviderStatic>::Leaky g_feature_provider_static =
-    LAZY_INSTANCE_INITIALIZER;
+const FeatureProviderStatic& GetFeatureProviderStatic() {
+  static base::NoDestructor<FeatureProviderStatic> instance;
+  return *instance;
+}
 
 const Feature* GetFeatureFromProviderByName(const std::string& provider_name,
                                             const std::string& feature_name) {
@@ -93,7 +96,7 @@ FeatureProvider::~FeatureProvider() = default;
 
 // static
 const FeatureProvider* FeatureProvider::GetByName(const std::string& name) {
-  return g_feature_provider_static.Get().GetFeatures(name);
+  return GetFeatureProviderStatic().GetFeatures(name);
 }
 
 // static

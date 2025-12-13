@@ -7,9 +7,11 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/browser/user_education/recent_session_tracker.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -20,15 +22,13 @@
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_storage_service.h"
 
-BASE_FEATURE(kAllowRecentSessionTracking,
-             "AllowRecentSessionTracking",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAllowRecentSessionTracking, base::FEATURE_ENABLED_BY_DEFAULT);
 
-UserEducationService::UserEducationService(
-    std::unique_ptr<BrowserUserEducationStorageService> storage_service,
-    bool allows_promos)
-    : tutorial_service_(&tutorial_registry_, &help_bubble_factory_registry_),
-      user_education_storage_service_(std::move(storage_service)),
+UserEducationService::UserEducationService(Profile* profile, bool allows_promos)
+    : profile_(*profile),
+      tutorial_service_(&tutorial_registry_, &help_bubble_factory_registry_),
+      user_education_storage_service_(
+          std::make_unique<BrowserUserEducationStorageService>(profile)),
       feature_promo_session_policy_(
           std::make_unique<user_education::FeaturePromoSessionPolicyV2>()) {
   feature_promo_session_policy_->Init(&user_education_session_manager_,
@@ -55,12 +55,32 @@ UserEducationService::UserEducationService(
     user_education_storage_service_->ResetRecentSessionData();
   }
 
-  if (user_education::features::NtpBrowserPromosEnabled()) {
+  if (allows_promos &&
+      user_education::features::GetNtpBrowserPromoType() !=
+          user_education::features::NtpBrowserPromoType::kNone) {
     ntp_promo_registry_ = std::make_unique<user_education::NtpPromoRegistry>();
     ntp_promo_controller_ =
         std::make_unique<user_education::NtpPromoController>(
-            *ntp_promo_registry_, *user_education_storage_service_);
+            *ntp_promo_registry_, *user_education_storage_service_,
+            user_education::GetNtpPromoControllerParams());
   }
+
+  // This MUST be last, after all other initialization, because it relies on
+  // members initialized above.
+  if (allows_promos) {
+    if (feature_promo_controller_) {
+      CHECK_IS_TEST()
+          << "The controller may only be set once in production code.";
+    } else {
+      feature_promo_controller_ = CreateUserEducationResources(*this);
+    }
+  }
+}
+
+void UserEducationService::Shutdown() {
+  // This holds some references that may be dangerous to hang onto during
+  // teardown, so free them now.
+  feature_promo_controller_.reset();
 }
 
 // static

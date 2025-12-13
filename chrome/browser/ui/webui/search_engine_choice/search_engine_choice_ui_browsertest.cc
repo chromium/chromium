@@ -6,7 +6,6 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,8 +36,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 // Tests for the chrome://search-engine-choice WebUI page.
@@ -254,17 +253,16 @@ class SearchEngineChoiceUIPixelTest
     InProcessBrowserTest::SetUpOnMainThread();
 
     if (GetParam().is_guest_session) {
-      ui_test_utils::BrowserChangeObserver browser_added_observer(
-          nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+      ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
       CreateGuestBrowser();
-      Browser* new_browser = browser_added_observer.Wait();
+      Browser* new_browser = browser_created_observer.Wait();
       ASSERT_TRUE(new_browser);
       ASSERT_NE(new_browser, browser());
       ASSERT_TRUE(new_browser->profile()->IsGuestSession());
 
       CloseBrowserSynchronously(browser());
-      SelectFirstBrowser();
+      SetBrowser(new_browser);
       ASSERT_EQ(new_browser, browser());
     }
   }
@@ -287,8 +285,8 @@ class SearchEngineChoiceUIPixelTest
 
   // TestBrowserDialog
   void ShowUi(const std::string& name) override {
-    ui::ScopedAnimationDurationScaleMode disable_animation(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode disable_animation(
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     SearchEngineChoiceDialogService::SetDialogDisabledForTests(
         /*dialog_disabled=*/false);
 

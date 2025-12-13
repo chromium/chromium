@@ -21,6 +21,20 @@ MagicBoostState* MagicBoostState::Get() {
   return g_magic_boost_state;
 }
 
+// Run precondition checks for providing Help Me Read feature. This is using
+// CHECKs internally as we can know which condition has failed from crash
+// report, i.e., instead of returning bool and to CHECK() from caller.
+// static
+void MagicBoostState::AssertPreconditionsOfHelpMeReadOrCrash() {
+  auto* magic_boost_state = Get();
+  CHECK(magic_boost_state);
+  CHECK(magic_boost_state->IsUserEligibleForGenAIFeatures());
+  CHECK(magic_boost_state->magic_boost_enabled().value());
+  CHECK(magic_boost_state->hmr_enabled().value());
+  CHECK_EQ(magic_boost_state->hmr_consent_status().value(),
+           HMRConsentStatus::kApproved);
+}
+
 MagicBoostState::MagicBoostState() {
   CHECK(!g_magic_boost_state);
   g_magic_boost_state = this;
@@ -62,8 +76,8 @@ bool MagicBoostState::ShouldShowHmrCard() {
   return true;
 }
 
-bool MagicBoostState::IsMagicBoostAvailable() {
-  if (!magic_boost_available_.has_value()) {
+bool MagicBoostState::IsUserEligibleForGenAIFeatures() {
+  if (!is_user_eligible_for_genai_features_.has_value()) {
     // If the value is not loaded yet, try loading it now as it might be
     // available now. To determine eligibility, extended account info is
     // required, which is loaded as an async operation. We read the value after
@@ -77,25 +91,28 @@ bool MagicBoostState::IsMagicBoostAvailable() {
     // method is called from a client side code.
     //
     // See crbug.com/429501088 for details.
-    magic_boost_available_ = IsMagicBoostAvailableExpected();
-    if (magic_boost_available_.has_value()) {
-      UpdateMagicBoostAvailable(magic_boost_available_.value());
+    is_user_eligible_for_genai_features_ =
+        IsUserEligibleForGenAIFeaturesExpected();
+    if (is_user_eligible_for_genai_features_.has_value()) {
+      UpdateUserEligibleForGenAIFeatures(
+          is_user_eligible_for_genai_features_.value());
     }
   }
 
   // Returns false if value is not available for fail-safe.
-  return magic_boost_available_.value_or(false);
+  return is_user_eligible_for_genai_features_.value_or(false);
 }
 
-void MagicBoostState::UpdateMagicBoostAvailable(bool available) {
-  if (magic_boost_available_ == available) {
+void MagicBoostState::UpdateUserEligibleForGenAIFeatures(bool eligible) {
+  if (is_user_eligible_for_genai_features_ == eligible) {
     return;
   }
 
-  magic_boost_available_ = available;
+  is_user_eligible_for_genai_features_ = eligible;
 
   for (auto& observer : observers_) {
-    observer.OnMagicBoostAvailableUpdated(magic_boost_available_.value());
+    observer.OnUserEligibleForGenAIFeaturesUpdated(
+        is_user_eligible_for_genai_features_.value());
   }
 }
 
@@ -132,6 +149,22 @@ void MagicBoostState::NotifyOnIsDeleting() {
   for (auto& observer : observers_) {
     observer.OnIsDeleting();
   }
+}
+
+std::ostream& operator<<(std::ostream& os, HMRConsentStatus status) {
+  switch (status) {
+    case HMRConsentStatus::kApproved:
+      return os << "kApproved";
+    case HMRConsentStatus::kDeclined:
+      return os << "kDeclined";
+    case HMRConsentStatus::kPendingDisclaimer:
+      return os << "kPendingDisclaimer";
+    case HMRConsentStatus::kUnset:
+      return os << "kUnset";
+  }
+
+  CHECK(false) << "Invalid HMRConsentStatus enum class value provided: "
+               << static_cast<int>(status);
 }
 
 }  // namespace chromeos

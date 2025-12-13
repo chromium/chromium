@@ -102,7 +102,8 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
     // https://html.spec.whatwg.org/C/#runtime-script-errors-2
     ScriptValue error_attribute = error_event->error(script_state_of_listener);
     if (error_attribute.IsEmpty() ||
-        error_event->target()->InterfaceName() == event_target_names::kWorker) {
+        error_event->RawTarget()->InterfaceName() ==
+            event_target_names::kWorker) {
       error_attribute = ScriptValue::CreateNull(isolate);
     }
     arguments = {
@@ -151,7 +152,7 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
   // necessary only for OnBeforeUnloadEventHandler.
   String result_for_beforeunload;
   if (IsOnBeforeUnloadEventHandler()) {
-    event_handler_->EvaluateAsPartOfCallback(WTF::BindOnce(
+    event_handler_->EvaluateAsPartOfCallback(BindOnce(
         [](v8::Local<v8::Value>& v8_return_value,
            String& result_for_beforeunload, ScriptState* script_state) {
           v8::Isolate* isolate = script_state->GetIsolate();

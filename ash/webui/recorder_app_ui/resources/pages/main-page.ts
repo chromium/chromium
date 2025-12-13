@@ -141,7 +141,7 @@ export class MainPage extends ReactiveLitElement {
 
     #start-record-nudge {
       flex-flow: column;
-      position: absolute;
+      position: fixed;
       position-anchor: --record-button;
       position-area: top span-all;
     }
@@ -373,10 +373,15 @@ export class MainPage extends ReactiveLitElement {
     </secondary-button>`;
   }
 
-  private onOnboardingDone() {
+  private onOnboardingDone(ev: CustomEvent<boolean>) {
     settings.mutate((s) => {
       s.onboardingDone = true;
     });
+    // The dialog is hidden. No need to focus back as the focus is already on
+    // the body.
+    if (!ev.detail) {
+      return;
+    }
     const onboardingDialog = assertExists(this.onboardingDialogRef.value);
     // Focus back to body after the dialog is closed.
     onboardingDialog.updateComplete.then(() => {
@@ -403,8 +408,8 @@ export class MainPage extends ReactiveLitElement {
 
     return html`
       <onboarding-dialog
-        ?open=${onboarding}
-        @close=${this.onOnboardingDone}
+        ?onboarding=${onboarding}
+        @onboarded=${this.onOnboardingDone}
         ${ref(this.onboardingDialogRef)}
       ></onboarding-dialog>
       <system-audio-consent-dialog

@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/authenticator_builder.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"

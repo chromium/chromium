@@ -31,6 +31,8 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -64,7 +66,7 @@ public class ReloadButtonMediatorTest {
     @Mock public Profile mProfile;
     private MockTab mTab;
     private MockTab mNtpTab;
-    private ObservableSupplierImpl<Tab> mTabSupplier;
+    private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private ObservableSupplierImpl<Boolean> mNtpLoadingSupplier;
     private ObservableSupplierImpl<Boolean> mEnabledSupplier;
     private PropertyModel mModel;
@@ -87,7 +89,7 @@ public class ReloadButtonMediatorTest {
         mNtpTab = new MockTab(NTP_ID, mProfile);
         mNtpTab.setIsNativePage(true);
 
-        mTabSupplier = new ObservableSupplierImpl<>(mTab);
+        mTabSupplier = ObservableSuppliers.createNullable(mTab);
         mNtpLoadingSupplier = new ObservableSupplierImpl<>();
         mEnabledSupplier = new ObservableSupplierImpl<>();
         mModel = new PropertyModel.Builder(ReloadButtonProperties.ALL_KEYS).build();
@@ -349,5 +351,15 @@ public class ReloadButtonMediatorTest {
         assertNull(
                 "Click listener should be set to null",
                 mModel.get(ReloadButtonProperties.CLICK_LISTENER));
+    }
+
+    @Test
+    public void testSetBackgroundInsets() {
+        final var insets = androidx.core.graphics.Insets.of(1, 2, 3, 4);
+        mMediator.setBackgroundInsets(insets);
+        assertEquals(
+                "Padding should be equal to insets.",
+                insets,
+                mModel.get(ReloadButtonProperties.PADDING));
     }
 }

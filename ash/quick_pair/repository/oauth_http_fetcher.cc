@@ -23,10 +23,9 @@ namespace quick_pair {
 
 OAuthHttpFetcher::OAuthHttpFetcher(
     const net::PartialNetworkTrafficAnnotationTag& traffic_annotation,
-    const std::string& oauth_scope)
-    : traffic_annotation_(traffic_annotation) {
-  oauth_scopes_.insert(oauth_scope);
-}
+    signin::OAuthConsumerId oauth_consumer_id)
+    : traffic_annotation_(traffic_annotation),
+      oauth_consumer_id_(oauth_consumer_id) {}
 
 OAuthHttpFetcher::~OAuthHttpFetcher() = default;
 
@@ -68,7 +67,7 @@ void OAuthHttpFetcher::StartRequest(const GURL& url,
   callback_ = std::move(callback);
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          "fastpair_client", identity_manager, oauth_scopes_,
+          oauth_consumer_id_, identity_manager,
           base::BindOnce(&OAuthHttpFetcher::OnAccessTokenFetched,
                          weak_ptr_factory_.GetWeakPtr()),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,

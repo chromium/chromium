@@ -82,7 +82,8 @@ TEST_P(PaintLayerTest, CompositedScrollingNoNeedsRepaint) {
   PaintLayer* content_layer = GetPaintLayerByElementId("content");
 
   scroll_layer->GetScrollableArea()->SetScrollOffset(
-      ScrollOffset(1000, 1000), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(1000, 1000), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_EQ(
       gfx::Vector2d(1000, 1000),
@@ -116,7 +117,8 @@ TEST_P(PaintLayerTest, NonCompositedScrollingNeedsRepaint) {
   EXPECT_EQ(gfx::Rect(0, 0, 2000, 2000), fragment.GetContentsCullRect().Rect());
 
   scroll_layer->GetScrollableArea()->SetScrollOffset(
-      ScrollOffset(1000, 1000), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(1000, 1000), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_EQ(
       gfx::Vector2d(1000, 1000),
@@ -1516,7 +1518,8 @@ TEST_P(PaintLayerTest, FloatLayerUnderInlineLayerScrolled) {
   PaintLayer* span = GetPaintLayerByElementId("span");
   PaintLayer* container = GetPaintLayerByElementId("container");
   container->GetScrollableArea()->SetScrollOffset(
-      ScrollOffset(0, 400), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 400), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
 
   EXPECT_EQ(span, floating->Parent());
   EXPECT_EQ(span, floating->ContainingLayer());
@@ -1647,7 +1650,8 @@ TEST_P(PaintLayerTest, ColumnSpanLayerUnderExtraLayerScrolled) {
   PaintLayer* extra_layer = GetPaintLayerByElementId("extraLayer");
   PaintLayer* columns = GetPaintLayerByElementId("columns");
   columns->GetScrollableArea()->SetScrollOffset(
-      ScrollOffset(200, 0), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(200, 0), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
 
   EXPECT_EQ(extra_layer, spanner->Parent());
   EXPECT_EQ(columns, spanner->ContainingLayer());

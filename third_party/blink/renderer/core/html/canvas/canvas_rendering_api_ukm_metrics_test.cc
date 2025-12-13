@@ -32,7 +32,8 @@ class CanvasRenderingAPIUkmMetricsTest : public PageTestBase {
   void CheckContext(String context_type,
                     CanvasRenderingContext::CanvasRenderingAPI expected_value) {
     CanvasContextCreationAttributesCore attributes;
-    canvas_element_->GetCanvasRenderingContext(context_type, attributes);
+    canvas_element_->GetCanvasRenderingContext(
+        GetDocument().GetExecutionContext(), context_type, attributes);
 
     auto entries = recorder_.GetEntriesByName(
         ukm::builders::ClientRenderingAPI::kEntryName);

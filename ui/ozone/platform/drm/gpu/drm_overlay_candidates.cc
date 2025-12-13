@@ -41,10 +41,10 @@ void DrmOverlayCandidates::OnSwapBuffersComplete(gfx::SwapResult swap_result) {
   overlay_manager_->OnSwapBuffersComplete(swap_result);
 }
 
-void DrmOverlayCandidates::SetSupportedBufferFormats(
-    base::flat_set<gfx::BufferFormat> supported_buffer_formats) {
-  overlay_manager_->SetSupportedBufferFormats(
-      widget_, std::move(supported_buffer_formats));
+void DrmOverlayCandidates::SetSupportedSharedImageFormats(
+    base::flat_set<viz::SharedImageFormat> supported_formats) {
+  overlay_manager_->SetSupportedSharedImageFormats(
+      widget_, std::move(supported_formats));
 }
 
 void DrmOverlayCandidates::NotifyOverlayPromotion(

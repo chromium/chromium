@@ -219,11 +219,7 @@ std::unique_ptr<Tracker> Tracker::Create(
         leveldb_proto::ProtoDbType::FEATURE_ENGAGEMENT_EVENT,
         device_event_storage_dir, background_task_runner);
 
-    // If the migration is completed, we don't need to migrate the data.
-    // TODO(crbug.com/426624087): Remove this and all the code related to it
-    // once the migration is completed.
-    event_storage_migration = std::make_unique<EventStorageMigration>(
-        profile_event_db, device_event_db.get());
+    auto* raw_device_event_db = device_event_db.get();
 
     auto device_event_store =
         std::make_unique<PersistentEventStore>(std::move(device_event_db));
@@ -236,6 +232,12 @@ std::unique_ptr<Tracker> Tracker::Create(
     auto device_raw_event_model = std::make_unique<EventModelImpl>(
         std::move(device_event_store),
         std::move(device_event_storage_validator));
+
+    // If the migration is completed, we don't need to migrate the data.
+    // TODO(crbug.com/426624087): Remove this and all the code related to it
+    // once the migration is completed.
+    event_storage_migration = std::make_unique<EventStorageMigration>(
+        profile_event_db, raw_device_event_db, device_raw_event_model.get());
 
     auto device_event_model = std::make_unique<InitAwareEventModel>(
         std::move(device_raw_event_model));
@@ -279,23 +281,6 @@ TrackerImpl::TrackerImpl(
       base::BindOnce(&TrackerImpl::OnAvailabilityModelInitializationFinished,
                      weak_ptr_factory_.GetWeakPtr()),
       time_provider_->GetCurrentDay());
-
-  // If the migration is not completed, we need to migrate the data from the
-  // profile db to the device db.
-  if (event_storage_migration_ &&
-      !pref_service_->GetBoolean(
-          kFeatureEngagementProfileToDeviceMigrationCompleted)) {
-    event_storage_migration_->Migrate(
-        base::BindOnce(&TrackerImpl::OnEventStorageMigrationFinished,
-                       weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-
-  if (IsOnDeviceStorageEnabled()) {
-    // If the migration was completed, log the status.
-    EventStorageMigration::RecordMigrationStatus(
-        EventStorageMigration::EventStorageMigrationStatus::kNotRequired);
-  }
 
   event_model_provider_->Initialize(
       base::BindOnce(&TrackerImpl::OnEventModelInitializationFinished,
@@ -605,6 +590,25 @@ void TrackerImpl::AddOnInitializedCallback(OnInitializedCallback callback) {
 
 void TrackerImpl::OnEventModelInitializationFinished(bool success) {
   DCHECK_EQ(success, event_model_provider_->IsReady());
+
+  // If the migration is not completed, we need to migrate the data from the
+  // profile db to the device db.
+  if (success && event_storage_migration_ &&
+      !pref_service_->GetBoolean(
+          kFeatureEngagementProfileToDeviceMigrationCompleted)) {
+    event_storage_migration_->Migrate(
+        base::BindOnce(&TrackerImpl::OnEventStorageMigrationFinished,
+                       weak_ptr_factory_.GetWeakPtr()),
+        time_provider_->GetCurrentDay());
+    return;
+  }
+
+  if (success && IsOnDeviceStorageEnabled()) {
+    // If the migration was completed, log the status.
+    EventStorageMigration::RecordMigrationStatus(
+        EventStorageMigration::EventStorageMigrationStatus::kNotRequired);
+  }
+
   event_model_provider_initialization_finished_ = true;
 
   DVLOG(2) << "Event model initialization result = " << success;
@@ -625,13 +629,18 @@ void TrackerImpl::OnEventStorageMigrationFinished(bool success) {
         kFeatureEngagementProfileToDeviceMigrationCompleted, true);
   }
 
-  // Initialize the event model provider.
-  event_model_provider_->Initialize(
-      base::BindOnce(&TrackerImpl::OnEventModelInitializationFinished,
-                     weak_ptr_factory_.GetWeakPtr()),
-      time_provider_->GetCurrentDay());
-
   event_storage_migration_ = nullptr;
+
+  event_model_provider_initialization_finished_ = true;
+
+  DVLOG(2) << "Event model initialization result = " << success;
+
+  if (event_exporter_) {
+    event_exporter_->ExportEvents(base::BindOnce(
+        &TrackerImpl::OnReceiveExportedEvents, weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    MaybePostInitializedCallbacks();
+  }
 }
 
 void TrackerImpl::OnAvailabilityModelInitializationFinished(bool success) {

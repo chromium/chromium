@@ -38,9 +38,7 @@ bool PaymentMethodData::FromValueDict(const base::Value::Dict& dict) {
   // version and attempt to parse supportedNetworks.
   const base::Value::Dict* data_dict = dict.FindDict(kMethodDataData);
   if (data_dict) {
-    std::string json_data;
-    base::JSONWriter::Write(*data_dict, &json_data);
-    data = json_data;
+    data = base::WriteJson(*data_dict).value_or("");
     const base::Value::List* supported_networks_list =
         data_dict->FindList(kSupportedNetworks);
     if (supported_networks_list) {

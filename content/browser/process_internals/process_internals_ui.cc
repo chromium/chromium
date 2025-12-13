@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "content/browser/process_internals/process_internals_ui.h"
 
 #include <memory>
@@ -15,6 +14,7 @@
 #include "content/grit/process_resources.h"
 #include "content/grit/process_resources_map.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"

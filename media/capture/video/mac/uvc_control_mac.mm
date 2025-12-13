@@ -26,9 +26,7 @@ namespace media {
 namespace {
 const unsigned int kRequestTimeoutInMilliseconds = 1000;
 
-BASE_FEATURE(kExposeAllUvcControls,
-             "ExposeAllUvcControls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kExposeAllUvcControls, base::FEATURE_DISABLED_BY_DEFAULT);
 
 struct PanTilt {
   int32_t pan;

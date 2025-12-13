@@ -3,27 +3,33 @@
 # found in the LICENSE file.
 """Definitions of builders in the tryserver.chromium.mac builder group."""
 
-load("//lib/branches.star", "branches")
-load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "cpu", "os", "siso")
-load("//lib/consoles.star", "consoles")
-load("//lib/gn_args.star", "gn_args")
-load("//lib/html.star", "linkify_builder")
-load("//lib/targets.star", "targets")
-load("//lib/try.star", "try_")
+load("@chromium-luci//branches.star", "branches")
+load("@chromium-luci//builder_config.star", "builder_config")
+load("@chromium-luci//builders.star", "cpu", "os")
+load("@chromium-luci//consoles.star", "consoles")
+load("@chromium-luci//gn_args.star", "gn_args")
+load("@chromium-luci//html.star", "linkify_builder")
+load("@chromium-luci//targets.star", "targets")
+load("@chromium-luci//try.star", "try_")
+load("//lib/gpu.star", "gpu")
+load("//lib/siso.star", "siso")
+load("//lib/try_constants.star", "try_constants")
 load("//lib/xcode.star", "xcode")
 
 try_.defaults.set(
-    executable = try_.DEFAULT_EXECUTABLE,
+    executable = try_constants.DEFAULT_EXECUTABLE,
     builder_group = "tryserver.chromium.mac",
-    pool = try_.DEFAULT_POOL,
+    pool = try_constants.DEFAULT_POOL,
     builderless = True,
     os = os.MAC_DEFAULT,
     ssd = True,
-    execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
+    execution_timeout = try_constants.DEFAULT_EXECUTION_TIMEOUT,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
     orchestrator_cores = 2,
     orchestrator_siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
-    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    service_account = try_constants.DEFAULT_SERVICE_ACCOUNT,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
 
@@ -212,7 +218,7 @@ try_.builder(
             "skip_generate_fuzzer_owners",
         ],
     ),
-    contact_team_email = "chrome-deet-core@google.com",
+    contact_team_email = "chrome-fuzzing-core@google.com",
 )
 
 try_.builder(
@@ -337,7 +343,7 @@ try_.orchestrator_builder(
         # TODO (crbug.com/415099984): change to 100,
         # then move out of experimental CQ after,
         # mac15-arm64-rel replaces mac14-arm64-rel on CQ.
-        experiment_percentage = 1,
+        experiment_percentage = 100,
     ),
 )
 
@@ -450,6 +456,32 @@ try_.builder(
     name = "mac_chromium_compile_dbg_ng",
     branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
+        "ci/mac-arm64-dbg",
+    ],
+    builder_config_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "ci/mac-arm64-dbg",
+        ],
+    ),
+    cores = None,
+    cpu = cpu.ARM64,
+    experiments = {
+        # crbug.com/940930
+        "chromium.enable_cleandead": 100,
+    },
+    main_list_view = "try",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+    tryjob = try_.job(),
+)
+
+try_.builder(
+    name = "mac-x64-compile-dbg",
+    branch_selector = branches.selector.MAC_BRANCHES,
+    mirrors = [
         "ci/Mac Builder (dbg)",
     ],
     builder_config_settings = builder_config.try_settings(
@@ -463,13 +495,13 @@ try_.builder(
     ),
     cores = None,
     cpu = cpu.ARM64,
+    contact_team_email = "bling-engprod@google.com",
     experiments = {
-        # crbug/940930
+        # crbug.com/940930
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-    tryjob = try_.job(),
 )
 
 try_.builder(
@@ -497,10 +529,10 @@ try_.builder(
 try_.builder(
     name = "mac_chromium_dbg_ng",
     mirrors = [
-        "ci/Mac Builder (dbg)",
+        "ci/mac-arm64-dbg",
         "ci/mac15-tests-dbg",
     ],
-    gn_args = "ci/Mac Builder (dbg)",
+    gn_args = "ci/mac-arm64-dbg",
     cpu = cpu.ARM64,
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
@@ -561,7 +593,6 @@ ios_builder(
     builderless = True,
     cpu = cpu.ARM64,
     execution_timeout = 4 * time.hour,
-    xcode = xcode.x26betabots,
 )
 
 ios_builder(
@@ -570,6 +601,8 @@ ios_builder(
         "ci/ios-catalyst",
     ],
     gn_args = "ci/ios-catalyst",
+    builderless = True,
+    cpu = cpu.ARM64,
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -725,7 +758,27 @@ ios_builder(
     builderless = True,
     cpu = cpu.ARM64,
     contact_team_email = "cobalt-appletv@google.com",
-    xcode = xcode.x16betabots,
+    xcode = xcode.xcode_default,
+)
+
+ios_builder(
+    name = "ios-structured-test-ids-simulator-fyi",
+    mirrors = [
+        "ci/ios-structured-test-ids-simulator-fyi",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/ios-structured-test-ids-simulator-fyi",
+        ],
+    ),
+    builderless = True,
+    cpu = cpu.ARM64,
+    contact_team_email = "chrome-browser-infra-team@google.com",
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
+    main_list_view = "try",
+    xcode = xcode.xcode_default,
 )
 
 ios_builder(
@@ -778,7 +831,6 @@ ios_builder(
     gn_args = gn_args.config(
         configs = [
             "ci/ios-simulator-code-coverage",
-            "ios_simulator",
         ],
     ),
     builderless = True,
@@ -786,7 +838,7 @@ ios_builder(
     execution_timeout = 20 * time.hour,
 )
 
-try_.gpu.optional_tests_builder(
+gpu.try_.optional_tests_builder(
     name = "mac_optional_gpu_tests_rel",
     branch_selector = branches.selector.IOS_BRANCHES,
     description_html = ("Runs GPU tests on Mac Minis with Intel UHD 630 GPUs and Macbook Pros with AMD GPUs. " +
@@ -805,7 +857,6 @@ try_.gpu.optional_tests_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.MAC,
         ),
-        build_gs_bucket = "chromium-gpu-fyi-archive",
     ),
     gn_args = gn_args.config(
         configs = [
@@ -830,9 +881,10 @@ try_.gpu.optional_tests_builder(
     ),
     pool = "luci.chromium.gpu.try",
     builderless = True,
-    cpu = None,
+    cpu = "arm64",
     ssd = None,
     free_space = None,
+    alerts_enabled = False,
     contact_team_email = "chrome-gpu-infra@google.com",
     main_list_view = "try",
     max_concurrent_builds = 7,

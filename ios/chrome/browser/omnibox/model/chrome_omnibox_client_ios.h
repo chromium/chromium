@@ -10,12 +10,11 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
-#import "base/scoped_multi_source_observation.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/omnibox_client.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
-#import "ios/web/public/web_state_observer.h"
 
+class Browser;
 class ProfileIOS;
 
 class WebLocationBar;
@@ -23,16 +22,10 @@ namespace feature_engagement {
 class Tracker;
 }
 
-namespace web {
-class NavigationContext;
-class WebState;
-}  // namespace web
-
-class ChromeOmniboxClientIOS final : public OmniboxClient,
-                                     public web::WebStateObserver {
+class ChromeOmniboxClientIOS final : public OmniboxClient {
  public:
   ChromeOmniboxClientIOS(WebLocationBar* location_bar,
-                         ProfileIOS* profile,
+                         Browser* browser,
                          feature_engagement::Tracker* tracker);
 
   ChromeOmniboxClientIOS(const ChromeOmniboxClientIOS&) = delete;
@@ -97,29 +90,12 @@ class ChromeOmniboxClientIOS final : public OmniboxClient,
       const AutocompleteMatch& alternative_nav_match) override;
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 
-  // web::WebStateObserver.
-  void DidFinishNavigation(web::WebState* web_state,
-                           web::NavigationContext* navigation_context) override;
-  void WebStateDestroyed(web::WebState* web_state) override;
-
  private:
-  // Object associated with a web state id in `web_state_tracker_`. If the
-  // navigation succeeds, the shortcut is stored in the ShortcutsDatabase.
-  struct ShortcutElement {
-    std::u16string text;
-    AutocompleteMatch match;
-  };
   raw_ptr<WebLocationBar> location_bar_;
+  raw_ptr<Browser> browser_;
   raw_ptr<ProfileIOS> profile_;
   AutocompleteSchemeClassifierImpl scheme_classifier_;
   raw_ptr<feature_engagement::Tracker> engagement_tracker_;
-  // Stores observed navigations from the omnibox. Items are removed once
-  // navigation finishes or when it's destroyed.
-  std::unordered_map<int32_t, ShortcutElement> web_state_tracker_;
-
-  // Automatically remove this observer from its host when destroyed.
-  base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
-      scoped_observations_{this};
 
   base::WeakPtrFactory<ChromeOmniboxClientIOS> weak_factory_{this};
 };

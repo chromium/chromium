@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/hash/hash.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
@@ -684,7 +683,7 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
                        DisallowWebPageFetchRequestToChromeUntrusted) {
   const GURL untrusted_url = GURL("chrome-untrusted://test/title1.html");
   WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
-      std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url.host()));
+      std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url.GetHost()));
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const GURL web_url = embedded_test_server()->GetURL("/title2.html");
@@ -715,7 +714,7 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
 IN_PROC_BROWSER_TEST_F(WebUISecurityTest, ChromeUntrustedFetchRequestToSelf) {
   const GURL untrusted_url = GURL("chrome-untrusted://test/title1.html");
   WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
-      std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url.host()));
+      std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url.GetHost()));
 
   EXPECT_TRUE(NavigateToURL(shell(), untrusted_url));
   EXPECT_EQ("success",
@@ -730,12 +729,12 @@ IN_PROC_BROWSER_TEST_F(
     DisallowCrossOriginFetchRequestToChromeUntrustedByDefault) {
   const GURL untrusted_url1 = GURL("chrome-untrusted://test1/title1.html");
   WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
-      std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url1.host()));
+      std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url1.GetHost()));
 
   const GURL untrusted_url2 = GURL("chrome-untrusted://test2/title2.html");
   URLDataSource::Add(
       shell()->web_contents()->GetBrowserContext(),
-      UntrustedSourceWithCorsSupport::CreateForHost(untrusted_url2.host()));
+      UntrustedSourceWithCorsSupport::CreateForHost(untrusted_url2.GetHost()));
 
   EXPECT_TRUE(NavigateToURL(shell(), untrusted_url1));
 
@@ -746,10 +745,10 @@ IN_PROC_BROWSER_TEST_F(
     ASSERT_TRUE(console_observer.Wait());
     EXPECT_EQ(console_observer.GetMessageAt(0),
               base::StringPrintf(
-                  "Refused to connect to '%s' because it violates the "
-                  "following Content Security Policy directive: \"default-src "
-                  "'self'\". Note that 'connect-src' was not explicitly set, "
-                  "so 'default-src' is used as a fallback.\n",
+                  "Connecting to '%s' violates the following Content Security "
+                  "Policy directive: \"default-src 'self'\". Note that "
+                  "'connect-src' was not explicitly set, so 'default-src' is "
+                  "used as a fallback. The action has been blocked.",
                   untrusted_url2.spec().c_str()));
   }
 
@@ -760,10 +759,10 @@ IN_PROC_BROWSER_TEST_F(
     ASSERT_TRUE(console_observer.Wait());
     EXPECT_EQ(console_observer.GetMessageAt(0),
               base::StringPrintf(
-                  "Refused to connect to '%s' because it violates the "
-                  "following Content Security Policy directive: \"default-src "
-                  "'self'\". Note that 'connect-src' was not explicitly set, "
-                  "so 'default-src' is used as a fallback.\n",
+                  "Connecting to '%s' violates the following Content Security "
+                  "Policy directive: \"default-src 'self'\". Note that "
+                  "'connect-src' was not explicitly set, so 'default-src' is "
+                  "used as a fallback. The action has been blocked.",
                   untrusted_url2.spec().c_str()));
   }
 }
@@ -776,13 +775,13 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
   headers.default_src = "default-src chrome-untrusted://test2;";
   const GURL untrusted_url1 = GURL("chrome-untrusted://test1/title1.html");
   WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
-      std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url1.host(),
+      std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url1.GetHost(),
                                                      headers));
 
   const GURL untrusted_url2 = GURL("chrome-untrusted://test2/title2.html");
   URLDataSource::Add(
       shell()->web_contents()->GetBrowserContext(),
-      UntrustedSourceWithCorsSupport::CreateForHost(untrusted_url2.host()));
+      UntrustedSourceWithCorsSupport::CreateForHost(untrusted_url2.GetHost()));
 
   EXPECT_TRUE(NavigateToURL(shell(), untrusted_url1));
   EXPECT_EQ("success", PerformFetch(shell(), untrusted_url2, FetchMode::CORS));
@@ -799,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
   headers.default_src = "default-src chrome://webui;";
   const GURL untrusted_url = GURL("chrome-untrusted://test1/title1.html");
   WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
-      std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url.host(),
+      std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url.GetHost(),
                                                      headers));
 
   const GURL chrome_url = GURL("chrome://webui/title2.html");
@@ -854,7 +853,7 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
                        DisallowWebPageXHRRequestToChromeUntrusted) {
   const GURL untrusted_url = GURL("chrome-untrusted://test/title1.html");
   WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
-      std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url.host()));
+      std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url.GetHost()));
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL web_url = embedded_test_server()->GetURL("/title2.html");
 
@@ -873,7 +872,7 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
                        AllowChromeUntrustedXHRRequestToSelf) {
   const GURL untrusted_url = GURL("chrome-untrusted://test/title1.html");
   WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
-      std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url.host()));
+      std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url.GetHost()));
 
   EXPECT_TRUE(NavigateToURL(shell(), untrusted_url));
   EXPECT_EQ("success", PerformXHRRequest(shell(), untrusted_url));
@@ -887,12 +886,12 @@ IN_PROC_BROWSER_TEST_F(
     DisallowCrossOriginXHRRequestToChromeUntrustedByDefault) {
   const GURL untrusted_url1 = GURL("chrome-untrusted://test1/title1.html");
   WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
-      std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url1.host()));
+      std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url1.GetHost()));
 
   const GURL untrusted_url2 = GURL("chrome-untrusted://test2/");
   URLDataSource::Add(
       shell()->web_contents()->GetBrowserContext(),
-      UntrustedSourceWithCorsSupport::CreateForHost(untrusted_url2.host()));
+      UntrustedSourceWithCorsSupport::CreateForHost(untrusted_url2.GetHost()));
 
   EXPECT_TRUE(NavigateToURL(shell(), untrusted_url1));
 
@@ -901,10 +900,10 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(console_observer.Wait());
   EXPECT_EQ(console_observer.GetMessageAt(0),
             base::StringPrintf(
-                "Refused to connect to '%s' because it violates the "
-                "following Content Security Policy directive: \"default-src "
-                "'self'\". Note that 'connect-src' was not explicitly set, "
-                "so 'default-src' is used as a fallback.\n",
+                "Connecting to '%s' violates the following Content Security "
+                "Policy directive: \"default-src 'self'\". Note that "
+                "'connect-src' was not explicitly set, so 'default-src' is "
+                "used as a fallback. The action has been blocked.",
                 untrusted_url2.spec().c_str()));
 }
 
@@ -918,13 +917,13 @@ IN_PROC_BROWSER_TEST_F(
   headers.default_src = "default-src chrome-untrusted://test2;";
   const GURL untrusted_url1 = GURL("chrome-untrusted://test1/title1.html");
   WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
-      std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url1.host(),
+      std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url1.GetHost(),
                                                      headers));
 
   const GURL untrusted_url2 = GURL("chrome-untrusted://test2/");
   URLDataSource::Add(
       shell()->web_contents()->GetBrowserContext(),
-      UntrustedSourceWithCorsSupport::CreateForHost(untrusted_url2.host()));
+      UntrustedSourceWithCorsSupport::CreateForHost(untrusted_url2.GetHost()));
 
   EXPECT_TRUE(NavigateToURL(shell(), untrusted_url1));
   EXPECT_EQ("success", PerformXHRRequest(shell(), untrusted_url2));
@@ -938,7 +937,7 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest,
   headers.default_src = "default-src chrome://webui;";
   const GURL untrusted_url = GURL("chrome-untrusted://test1/title1.html");
   WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
-      std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url.host(),
+      std::make_unique<ui::TestUntrustedWebUIConfig>(untrusted_url.GetHost(),
                                                      headers));
 
   const GURL chrome_url = GURL("chrome://webui/title2.html");
@@ -1080,8 +1079,9 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTestSiteIsolationDisabled,
 
   RenderProcessHost* rph =
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
-  EXPECT_TRUE(rph->GetProcessLock().is_locked_to_site());
-  EXPECT_EQ(test_url.GetWithEmptyPath(), rph->GetProcessLock().lock_url());
+  EXPECT_TRUE(rph->GetProcessLock().IsLockedToSite());
+  EXPECT_EQ(test_url.GetWithEmptyPath(),
+            rph->GetProcessLock().agent_cluster_key().GetSite());
 }
 
 }  // namespace content

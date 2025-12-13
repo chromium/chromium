@@ -26,7 +26,7 @@ class BuildResolverTest(LoggingTestCase):
         self.host.web.session = Mock()
         # A CL should only be required for try builders without explicit build
         # numbers.
-        self.git_cl = MockGitCL(self.host, issue_number='None')
+        self.git_cl = MockGitCL(self.host, issue_number=None)
         self.resolver = BuildResolver(self.host.web, self.git_cl)
 
     def test_resolve_last_failing_ci_build(self):

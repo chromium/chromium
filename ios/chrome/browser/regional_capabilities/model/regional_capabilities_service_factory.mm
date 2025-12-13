@@ -14,7 +14,6 @@
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/web/public/browser_state.h"
 
 namespace ios {
 
@@ -74,9 +73,7 @@ RegionalCapabilitiesServiceFactory::GetForProfile(ProfileIOS* profile) {
 
 std::unique_ptr<KeyedService>
 RegionalCapabilitiesServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   return std::make_unique<regional_capabilities::RegionalCapabilitiesService>(
       CHECK_DEREF(profile->GetPrefs()),
       std::make_unique<RegionalCapabilitiesServiceClient>(

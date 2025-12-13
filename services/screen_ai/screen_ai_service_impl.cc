@@ -4,8 +4,6 @@
 
 #include "services/screen_ai/screen_ai_service_impl.h"
 
-#include <algorithm>
-#include <memory>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -13,7 +11,6 @@
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/compiler_specific.h"
-#include "base/cpu.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -21,7 +18,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
 #include "base/strings/stringprintf.h"
-#include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
@@ -150,31 +146,6 @@ ui::AXNodeID ComputeMainNode(
   return main->id();
 }
 
-#if !BUILDFLAG(USE_FAKE_SCREEN_AI)
-void SetCPUInstructionSetCrashKey() {
-#if defined(ARCH_CPU_X86_FAMILY)
-  base::CPU();
-  // Report cpu micro architecture in case of crash.
-  static crash_reporter::CrashKeyString<3> cpu_info("intel_micro_architecture");
-  cpu_info.Set(
-      base::StringPrintf("%i", base::CPU().GetIntelMicroArchitecture()));
-#endif
-}
-#endif
-
-// Return a maximum 11 character string with the signature of available and
-// total memory, both in MB and capped to 99999.
-std::string GetMemoryStatusForCrashKey() {
-  int total_memory = base::SysInfo::AmountOfPhysicalMemoryMB();
-  int available_memory = static_cast<int>(
-      base::SysInfo::AmountOfAvailablePhysicalMemory() / (1024 * 1024));
-
-  // Cap the number of digits for crash report.
-  total_memory = std::min(total_memory, 99999);
-  available_memory = std::min(available_memory, 99999);
-  return base::StringPrintf("%i,%i", available_memory, total_memory);
-}
-
 class HangTimer : public base::OneShotTimer {
  public:
   explicit HangTimer(bool is_ocr) : is_ocr_(is_ocr) {}
@@ -232,6 +203,8 @@ class ModelDataHolder {
   static void CopyData(const char* relative_file_path,
                        uint32_t buffer_size,
                        char* buffer) {
+    base::span<uint8_t> buffer_span =
+        UNSAFE_TODO(base::as_writable_bytes(base::span(buffer, buffer_size)));
     CHECK(g_model_data_holder_instance);
     base::File* model_file =
         g_model_data_holder_instance->GetModelFile(relative_file_path);
@@ -239,7 +212,8 @@ class ModelDataHolder {
 
     int64_t length = model_file->GetLength();
     CHECK_GE(buffer_size, length);
-    CHECK_EQ(UNSAFE_TODO(model_file->Read(0, buffer, length)), length);
+    CHECK_EQ(model_file->Read(0, buffer_span).value_or(-1),
+             base::checked_cast<size_t>(length));
   }
 
   void AddModelFiles(base::flat_map<base::FilePath, base::File> model_files) {
@@ -298,9 +272,6 @@ void ScreenAIService::LoadLibrary(const base::FilePath& library_path) {
   library_ = std::make_unique<ScreenAILibraryWrapperFake>();
 #else
   library_ = std::make_unique<ScreenAILibraryWrapperImpl>();
-
-  // TODO(crbug.com/381256355): Remove when the library is SSE3 compatible.
-  SetCPUInstructionSetCrashKey();
 #endif
 
   bool load_sucessful = library_->Load(library_path);
@@ -372,9 +343,6 @@ void ScreenAIService::InitializeOCR(
     base::flat_map<base::FilePath, base::File> model_files,
     mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
     InitializeOCRCallback callback) {
-  static crash_reporter::CrashKeyString<12> memory_ocr_init(
-      "screen_ai_mem_ocr_init");
-  memory_ocr_init.Set(GetMemoryStatusForCrashKey());
   if (!library_) {
     LoadLibrary(library_path);
   }
@@ -429,10 +397,6 @@ void ScreenAIService::BindMainContentExtractor(
 
 std::optional<chrome_screen_ai::VisualAnnotation>
 ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
-  static crash_reporter::CrashKeyString<12> memory_perform_ocr(
-      "screen_ai_mem_ocr_perform");
-  memory_perform_ocr.Set(GetMemoryStatusForCrashKey());
-
   CHECK(base::Contains(ocr_client_types_,
                        screen_ai_annotators_.current_receiver()));
   OcrClientTypeForMetrics client_type = GetClientType(
@@ -468,19 +432,17 @@ ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
   if (image.width() > max_dimension || image.height() > max_dimension) {
     base::UmaHistogramEnumeration(
         "Accessibility.ScreenAI.OCR.Downsampled.ClientType", client_type);
+    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.Downsampled",
+                            elapsed_time);
+  } else {
+    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.NotDownsampled",
+                            elapsed_time);
   }
 
   base::UmaHistogramBoolean("Accessibility.ScreenAI.OCR.Successful",
                             result.has_value());
   base::UmaHistogramCounts100("Accessibility.ScreenAI.OCR.LinesCount",
                               lines_count);
-  if (image.width() < max_dimension && image.height() < max_dimension) {
-    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.NotDownsampled",
-                            elapsed_time);
-  } else {
-    base::UmaHistogramTimes("Accessibility.ScreenAI.OCR.Latency.Downsampled",
-                            elapsed_time);
-  }
 
   // MediaApp provides OCR for ChromeOS PDF viewer.
   if (client_type == OcrClientTypeForMetrics::kPdfViewer ||
@@ -641,9 +603,9 @@ bool ScreenAIService::ExtractMainContentInternalAndRecordMetrics(
   MainContentExtractionClientTypeForMetrics client_type = GetClientType(
       mce_client_types_[screen2x_main_content_extractors_.current_receiver()]);
 
-  static crash_reporter::CrashKeyString<2> cpu_info(
+  static crash_reporter::CrashKeyString<2> mce_client(
       "main_content_extraction_client");
-  cpu_info.Set(base::StringPrintf("%i", static_cast<int>(client_type)));
+  mce_client.Set(base::StringPrintf("%i", static_cast<int>(client_type)));
 
   // Early return if input is empty.
   if (snapshot.nodes.empty()) {

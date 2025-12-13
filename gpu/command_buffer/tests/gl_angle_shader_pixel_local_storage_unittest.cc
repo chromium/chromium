@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2extchromium.h>
 #include <GLES3/gl3.h>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
@@ -149,7 +145,7 @@ TEST_F(ANGLEShaderPixelLocalStorageTest,
 
     EXPECT_PLS_CLEAR_VALUE_FLOAT(plane, ({0, 0, 0, 0}));
     EXPECT_PLS_CLEAR_VALUE_INT(plane, ({0, 0, 0, 0}));
-    EXPECT_PLS_CLEAR_VALUE_UNSIGNED_INT(plane, ({0, 0, 0, 0}));
+    UNSAFE_TODO(EXPECT_PLS_CLEAR_VALUE_UNSIGNED_INT(plane, ({0, 0, 0, 0})));
 
     glFramebufferPixelLocalClearValuefvANGLE(
         plane, std::array{0.f, -1.f, .5f, 999.f}.data());
@@ -161,7 +157,8 @@ TEST_F(ANGLEShaderPixelLocalStorageTest,
 
     EXPECT_PLS_CLEAR_VALUE_FLOAT(plane, ({0, -1, .5f, 999}));
     EXPECT_PLS_CLEAR_VALUE_INT(plane, ({0, -100, 99999, -99999}));
-    EXPECT_PLS_CLEAR_VALUE_UNSIGNED_INT(plane, ({0, 100, 99999, 9999999}));
+    UNSAFE_TODO(
+        EXPECT_PLS_CLEAR_VALUE_UNSIGNED_INT(plane, ({0, 100, 99999, 9999999})));
   }
 
   EXPECT_GL_ERROR(GL_NO_ERROR);

@@ -27,82 +27,49 @@
         <img class="logo" alt="">
         <h1>$i18n{m1NoticeEeaTitle}</h1>
       </div>
-      <template is="dom-if" if="[[!shouldShowV2()]]">
-        <div id="noticeContent">
-          <div class="section cr-secondary-text">
-            $i18n{m1NoticeEeaDescription1}
-          </div>
-          <div class="banner">
-            <img class="fledge-banner" alt="">
-          </div>
-          <ul class="section cr-secondary-text">
-            <li>$i18n{m1NoticeEeaBullet1}</li>
-            <li>$i18n{m1NoticeEeaBullet2}</li>
-          </ul>
-          <privacy-sandbox-dialog-learn-more class="learn-more-section"
-              expanded="{{expanded_}}"
-              title="$i18n{m1NoticeEeaLearnMoreExpandLabel}">
-            <h2>$i18n{m1NoticeEeaLearnMoreHeading1}</h2>
-            <ul class="cr-secondary-text">
-              <li>$i18nRaw{m1NoticeEeaLearnMoreBullet1}</li>
-              <li>$i18nRaw{m1NoticeEeaLearnMoreBullet2}</li>
-              <li>$i18nRaw{m1NoticeEeaLearnMoreBullet3}</li>
-            </ul>
-            <h2>$i18n{m1NoticeEeaLearnMoreHeading2}</h2>
-            <div class="cr-secondary-text">
-              $i18n{m1NoticeEeaLearnMoreDescription}
+      <div id="noticeContentV2">
+        <div class="section cr-secondary-text">
+          $i18n{m1NoticeEEADescription1V2}
+        </div>
+        <div class="banner">
+          <img class="fledge-banner" alt="">
+        </div>
+        <h2 class="section learn-more-title">
+          $i18n{m1NoticeEEASiteSuggestedAdsTitle}
+        </h2>
+        <div class="section cr-secondary-text">
+          $i18n{m1NoticeEEASiteSuggestedAdsDescription}
+        </div>
+        <privacy-sandbox-dialog-learn-more class="learn-more-section"
+            id="siteSuggestedAdsLearnMore"
+            expanded="{{siteSuggestedAdsLearnMoreExpanded_}}"
+            title="$i18n{m1NoticeEEASiteSuggestedAdsLearnMoreLabel}">
+          <ul class="cr-secondary-text">
+            <li>$i18nRaw{m1NoticeEEASiteSuggestedAdsLearnMoreBullet1}</li>
+            <div class="learn-more-bullet-description">
+              $i18nRaw{m1NoticeEEASiteSuggestedAdsLearnMoreBullet1Description}
             </div>
-          </privacy-sandbox-dialog-learn-more>
-          <div class="section cr-secondary-text" id="lastTextElement">
-            $i18n{m1NoticeEeaDescription2}
-          </div>
+            <li>$i18nRaw{m1NoticeEEASiteSuggestedAdsLearnMoreBullet2}</li>
+          </ul>
+        </privacy-sandbox-dialog-learn-more>
+        <h2 class="section learn-more-title">
+          $i18n{m1NoticeEEAAdMeasurementTitle}
+        </h2>
+        <div class="section cr-secondary-text">
+          $i18n{m1NoticeEEAAdMeasurementDescription}
         </div>
-      </template>
-      <template is="dom-if" if="[[shouldShowV2()]]">
-        <div id="noticeContentV2">
-          <div class="section cr-secondary-text">
-            $i18n{m1NoticeEEADescription1V2}
-          </div>
-          <div class="banner">
-            <img class="fledge-banner" alt="">
-          </div>
-          <h2 class="section learn-more-title">
-            $i18n{m1NoticeEEASiteSuggestedAdsTitle}
-          </h2>
-          <div class="section cr-secondary-text">
-            $i18n{m1NoticeEEASiteSuggestedAdsDescription}
-          </div>
-          <privacy-sandbox-dialog-learn-more class="learn-more-section"
-              id="siteSuggestedAdsLearnMore"
-              expanded="{{siteSuggestedAdsLearnMoreExpanded_}}"
-              title="$i18n{m1NoticeEEASiteSuggestedAdsLearnMoreLabel}">
-            <ul class="cr-secondary-text">
-              <li>$i18nRaw{m1NoticeEEASiteSuggestedAdsLearnMoreBullet1}</li>
-              <div class="learn-more-bullet-description">
-                $i18nRaw{m1NoticeEEASiteSuggestedAdsLearnMoreBullet1Description}
-              </div>
-              <li>$i18nRaw{m1NoticeEEASiteSuggestedAdsLearnMoreBullet2}</li>
-            </ul>
-          </privacy-sandbox-dialog-learn-more>
-          <h2 class="section learn-more-title">
-            $i18n{m1NoticeEEAAdMeasurementTitle}
-          </h2>
-          <div class="section cr-secondary-text">
-            $i18n{m1NoticeEEAAdMeasurementDescription}
-          </div>
-          <privacy-sandbox-dialog-learn-more class="learn-more-section"
-              id="adsMeasurementLearnMore"
-              expanded="{{adMeasurementLearnMoreExpanded_}}"
-              title="$i18n{m1NoticeEEAAdMeasurementLearnMoreLabel}">
-            <ul class="cr-secondary-text">
-              <li>$i18nRaw{m1NoticeEEAAdMeasurementLearnMoreBullet1}</li>
-            </ul>
-          </privacy-sandbox-dialog-learn-more>
-          <div class="section cr-secondary-text" id="lastTextElementV2">
-            $i18n{m1NoticeEEALastText}
-          </div>
+        <privacy-sandbox-dialog-learn-more class="learn-more-section"
+            id="adsMeasurementLearnMore"
+            expanded="{{adMeasurementLearnMoreExpanded_}}"
+            title="$i18n{m1NoticeEEAAdMeasurementLearnMoreLabel}">
+          <ul class="cr-secondary-text">
+            <li>$i18nRaw{m1NoticeEEAAdMeasurementLearnMoreBullet1}</li>
+          </ul>
+        </privacy-sandbox-dialog-learn-more>
+        <div class="section cr-secondary-text" id="lastTextElementV2">
+          $i18n{m1NoticeEEALastText}
         </div>
-      </template>
+      </div>
     </div>
     <div class="buttons-container">
       <cr-button id="settingsButton" class="tonal-button"

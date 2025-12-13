@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <stddef.h>
@@ -14,6 +9,7 @@
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -205,8 +201,8 @@ TEST_F(DepthTextureTest, RenderTo) {
     for (GLint yy = 0; bad_count < 16 && yy < kResolution; ++yy) {
       for (GLint xx = 0; bad_count < 16 && xx < kResolution; ++xx) {
         const uint8_t* actual = &actual_pixels[(yy * kResolution + xx) * 4];
-        const uint8_t* left = actual - 4;
-        const uint8_t* down = actual - kResolution * 4;
+        const uint8_t* left = UNSAFE_TODO(actual - 4);
+        const uint8_t* down = UNSAFE_TODO(actual - kResolution * 4);
 
         // NOTE: Qualcomm on Nexus 4 the right most column has the same
         // values as the next to right most column. (bad interpolator?)

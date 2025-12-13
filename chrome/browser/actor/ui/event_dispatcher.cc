@@ -5,6 +5,8 @@
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 
 #include <memory>
+#include <string>
+#include <string_view>
 #include <type_traits>
 #include <variant>
 
@@ -12,18 +14,32 @@
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
+#include "chrome/browser/actor/tool_request_variant.h"
 #include "chrome/browser/actor/tools/tool_request.h"
+#include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
-#include "chrome/browser/actor/ui/tool_request_variant.h"
 #include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/browser/actor/ui/ui_event_debugstring.h"
-#include "chrome/browser/actor/variant_visitor.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace actor::ui {
+
+// Constructs a MouseMove that may have a computed_target.
+AsyncUiEvent ComputedMouseMove(tabs::TabInterface::Handle tab,
+                               const PageTarget& target);
 namespace {
+
+using ::actor::mojom::ActionResultCode;
+using ::actor::mojom::ActionResultPtr;
+
 template <typename T>
 struct is_variant_t : std::false_type {};
 
@@ -41,63 +57,83 @@ auto NoUiEvents = [](const T& tr) -> EventSequence<AsyncUiEvent> {
   return EventSequence<AsyncUiEvent>();
 };
 
-constexpr Visitor PreToolEventsFn{
+constexpr absl::Overload PreToolEventsFn{
     [](const ClickToolRequest& tr) {
       return EventSequence<AsyncUiEvent>{
-          MouseMove(tr.GetTabHandle(), tr.GetTarget()),
+          ComputedMouseMove(tr.GetTabHandle(), tr.GetTarget()),
           MouseClick(tr.GetTabHandle(), tr.GetClickType(), tr.GetClickCount())};
     },
     NoUiEvents<ActivateTabToolRequest>,
+    NoUiEvents<ActivateWindowToolRequest>,
     NoUiEvents<CloseTabToolRequest>,
+    NoUiEvents<CloseWindowToolRequest>,
     NoUiEvents<CreateTabToolRequest>,
+    NoUiEvents<CreateWindowToolRequest>,
     NoUiEvents<DragAndReleaseToolRequest>,
     NoUiEvents<HistoryToolRequest>,
+    NoUiEvents<MediaControlToolRequest>,
     [](const MoveMouseToolRequest& tr) {
       return EventSequence<AsyncUiEvent>{
-          MouseMove(tr.GetTabHandle(), tr.GetTarget())};
+          ComputedMouseMove(tr.GetTabHandle(), tr.GetTarget())};
     },
+    NoUiEvents<NavigateToolRequest>,
+    NoUiEvents<ScrollToolRequest>,
+    NoUiEvents<SelectToolRequest>,
+    [](const TypeToolRequest& tr) {
+      return EventSequence<AsyncUiEvent>{
+          ComputedMouseMove(tr.GetTabHandle(), tr.GetTarget())};
+    },
+    NoUiEvents<WaitToolRequest>,
+    NoUiEvents<AttemptLoginToolRequest>,
+    NoUiEvents<AttemptFormFillingToolRequest>,
+    NoUiEvents<ScriptToolRequest>,
+    NoUiEvents<ScrollToToolRequest>};
+
+constexpr absl::Overload PostToolEventsFn{
+    NoUiEvents<ClickToolRequest>,
+    NoUiEvents<ActivateTabToolRequest>,
+    NoUiEvents<ActivateWindowToolRequest>,
+    NoUiEvents<CloseTabToolRequest>,
+    NoUiEvents<CloseWindowToolRequest>,
+    NoUiEvents<CreateTabToolRequest>,
+    NoUiEvents<CreateWindowToolRequest>,
+    NoUiEvents<DragAndReleaseToolRequest>,
+    NoUiEvents<HistoryToolRequest>,
+    NoUiEvents<MediaControlToolRequest>,
+    NoUiEvents<MoveMouseToolRequest>,
     NoUiEvents<NavigateToolRequest>,
     NoUiEvents<ScrollToolRequest>,
     NoUiEvents<SelectToolRequest>,
     NoUiEvents<TypeToolRequest>,
     NoUiEvents<WaitToolRequest>,
-    NoUiEvents<AttemptLoginToolRequest>};
+    NoUiEvents<AttemptLoginToolRequest>,
+    NoUiEvents<AttemptFormFillingToolRequest>,
+    NoUiEvents<ScriptToolRequest>,
+    NoUiEvents<ScrollToToolRequest>};
 
-constexpr Visitor PostToolEventsFn{
-    NoUiEvents<ClickToolRequest>,          NoUiEvents<ActivateTabToolRequest>,
-    NoUiEvents<CloseTabToolRequest>,       NoUiEvents<CreateTabToolRequest>,
-    NoUiEvents<DragAndReleaseToolRequest>, NoUiEvents<HistoryToolRequest>,
-    NoUiEvents<MoveMouseToolRequest>,      NoUiEvents<NavigateToolRequest>,
-    NoUiEvents<ScrollToolRequest>,         NoUiEvents<SelectToolRequest>,
-    NoUiEvents<TypeToolRequest>,           NoUiEvents<WaitToolRequest>,
-    NoUiEvents<AttemptLoginToolRequest>};
-
-// TODO(crbug.com/425784083): Remove FirstActEventsFn once functionality moves
-// to ActorTaskChangeFn.
-constexpr Visitor FirstActEventsFn{
-    NoUiEvents<UiEventDispatcher::FirstActInfo>,
-};
-
-constexpr Visitor ActorTaskAsyncChangeFn{
+constexpr absl::Overload ActorTaskAsyncChangeFn{
     [](const UiEventDispatcher::AddTab& c) {
       return EventSequence<AsyncUiEvent>{
           StartingToActOnTab(c.handle, c.task_id)};
     },
 };
 
-constexpr Visitor ActorTaskSyncChangeFn{
+constexpr absl::Overload ActorTaskSyncChangeFn{
     [](const UiEventDispatcher::ChangeTaskState& c) {
       auto seq = EventSequence<SyncUiEvent>{};
       if (c.old_state == ActorTask::State::kCreated &&
           c.new_state == ActorTask::State::kActing) {
         seq.push_back(StartTask(c.task_id));
       }
-      seq.push_back(TaskStateChanged(c.task_id, c.new_state));
+      seq.push_back(TaskStateChanged(c.task_id, c.new_state, c.title));
       return seq;
+    },
+    [](const UiEventDispatcher::RemoveTab& c) {
+      return EventSequence<SyncUiEvent>{StoppedActingOnTab(c.handle)};
     },
 };
 
-template <Visitor V>
+template <absl::Overload V>
 struct VisitorTraits {};
 
 template <>
@@ -108,11 +144,6 @@ struct VisitorTraits<PreToolEventsFn> {
 template <>
 struct VisitorTraits<PostToolEventsFn> {
   static constexpr const char* phase_name = "PostTool";
-};
-
-template <>
-struct VisitorTraits<FirstActEventsFn> {
-  static constexpr const char* phase_name = "FirstAct";
 };
 
 template <>
@@ -143,28 +174,17 @@ struct InputTraits<ToolRequest> {
 };
 
 template <>
-struct InputTraits<UiEventDispatcher::FirstActInfo> {
-  static constexpr const char* name = "FirstActInfo";
-  static constexpr auto convert_fn = std::identity();
-  static constexpr auto debug_info =
-      [](const UiEventDispatcher::FirstActInfo& info) {
-        return absl::StrFormat("task_id=%d tab? %s",
-                               info.task_id.GetUnsafeValue(),
-                               info.tab_handle.has_value() ? "yes" : "no");
-      };
-};
-
-template <>
 struct InputTraits<UiEventDispatcher::ActorTaskAsyncChange> {
   static constexpr const char* name = "ActorTaskAsyncChange";
   static constexpr auto convert_fn = std::identity();
   static constexpr auto debug_info =
       [](const UiEventDispatcher::ActorTaskAsyncChange& change) {
-        constexpr Visitor DebugFn{[](const UiEventDispatcher::AddTab& c) {
-          return absl::StrFormat("AddTab task_id=%d tab=%d",
-                                 c.task_id.GetUnsafeValue(),
-                                 c.handle.raw_value());
-        }};
+        constexpr absl::Overload DebugFn{
+            [](const UiEventDispatcher::AddTab& c) {
+              return absl::StrFormat("AddTab task_id=%d tab=%d",
+                                     c.task_id.GetUnsafeValue(),
+                                     c.handle.raw_value());
+            }};
         return std::visit(DebugFn, change);
       };
 };
@@ -175,12 +195,17 @@ struct InputTraits<UiEventDispatcher::ActorTaskSyncChange> {
   static constexpr auto convert_fn = std::identity();
   static constexpr auto debug_info =
       [](const UiEventDispatcher::ActorTaskSyncChange& change) {
-        constexpr Visitor DebugFn{
+        constexpr absl::Overload DebugFn{
             [](const UiEventDispatcher::ChangeTaskState& c) {
               return absl::StrFormat(
                   "ChangeTaskState task_id=%d old_state=%s new_state=%s",
                   c.task_id.GetUnsafeValue(), ToString(c.old_state),
                   ToString(c.new_state));
+            },
+            [](const UiEventDispatcher::RemoveTab& c) {
+              return absl::StrFormat("RemoveTab task_id=%d tab=%d",
+                                     c.task_id.GetUnsafeValue(),
+                                     c.handle.raw_value());
             }};
         return std::visit(DebugFn, change);
       };
@@ -200,11 +225,6 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
     On<PostToolEventsFn>(tr, std::move(callback));
   }
 
-  void OnPreFirstAct(const FirstActInfo& first_act_info,
-                     UiCompleteCallback callback) override {
-    On<FirstActEventsFn>(first_act_info, std::move(callback));
-  }
-
   void OnActorTaskAsyncChange(const ActorTaskAsyncChange& change,
                               UiCompleteCallback callback) override {
     On<ActorTaskAsyncChangeFn>(change, std::move(callback));
@@ -220,21 +240,22 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
   UiCompleteCallback overall_callback_;
   base::WeakPtrFactory<UiEventDispatcherImpl> weak_ptr_factory_{this};
 
-  void ResetAndComplete(mojom::ActionResultPtr result) {
+  void ResetAndComplete(ActionResultPtr result) {
+    TRACE_EVENT_END("actor");
     weak_ptr_factory_.InvalidateWeakPtrs();
     std::visit([]<typename T>(EventSequence<T>& e) { return e.clear(); },
                events_);
     if (!overall_callback_.is_null()) {
       std::move(overall_callback_).Run(std::move(result));
     } else {
-      if (result->code != mojom::ActionResultCode::kOk) {
+      if (result->code != ActionResultCode::kOk) {
         LOG(DFATAL) << ToDebugString(*result);
       }
     }
   }
 
   // Takes async path.
-  template <Visitor V, typename InputT>
+  template <absl::Overload V, typename InputT>
   void On(const InputT& in, UiCompleteCallback callback) {
     VLOG(4) << VisitorTraits<V>::phase_name << "(" << InputTraits<InputT>::name
             << "): " << InputTraits<InputT>::debug_info(in);
@@ -243,7 +264,7 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
   }
 
   // Takes synchronous path.
-  template <Visitor V, typename InputT>
+  template <absl::Overload V, typename InputT>
   void On(const InputT& in) {
     VLOG(4) << VisitorTraits<V>::phase_name << "(" << InputTraits<InputT>::name
             << "): " << InputTraits<InputT>::debug_info(in);
@@ -251,9 +272,10 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
                                     UiCompleteCallback() /*=null*/);
   }
 
-  template <Visitor V, typename EventT, typename ConvertedInputT>
+  template <absl::Overload V, typename EventT, typename ConvertedInputT>
   void GenerateAndSend(const ConvertedInputT& converted,
                        UiCompleteCallback callback) {
+    TRACE_EVENT_BEGIN("actor", "UiEventDispatch");
     CHECK(std::visit([]<typename T>(EventSequence<T>& e) { return e.empty(); },
                      events_))
         << "Unexpected: unprocessed UiEvents remaining";
@@ -282,16 +304,19 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
 
   // Asynchronously send events.  Called back after each event is processed
   // by ActorUiStateManager.
-  template <Visitor V>
-  void MaybeSendNextEvent(mojom::ActionResultPtr result) {
-    if (result->code != mojom::ActionResultCode::kOk) {
+  template <absl::Overload V>
+  void MaybeSendNextEvent(ActionResultPtr result) {
+    TRACE_EVENT_BEGIN("actor", "MaybeSendNextEvent");
+    if (result->code != ActionResultCode::kOk) {
       VLOG(4) << VisitorTraits<V>::phase_name
               << " UI actuation failed: " << ToDebugString(*result);
+      TRACE_EVENT_END("actor");
       ResetAndComplete(std::move(result));
       return;
     }
     auto& events = std::get<EventSequence<AsyncUiEvent>>(events_);
     if (events.empty()) {
+      TRACE_EVENT_END("actor");
       ResetAndComplete(MakeOkResult());
       return;
     }
@@ -300,21 +325,44 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
     events.pop_front();
     VLOG(4) << VisitorTraits<V>::phase_name
             << "(AsyncUiEvent): " << DebugString(event);
+
+    // Create a callback that records metrics based on the result.
+    base::OnceCallback<ActionResultPtr(ActionResultPtr)> record_metrics =
+        base::BindOnce(
+            [](std::string_view event_name, base::TimeTicks start_time,
+               ActionResultPtr result) {
+              if (result->code == ActionResultCode::kOk) {
+                RecordUiEventDuration(event_name,
+                                      base::TimeTicks::Now() - start_time);
+              } else {
+                RecordUiEventFailure(event_name);
+              }
+              // Pass the result along to the next step.
+              return result;
+            },
+            GetUiEventName(event), base::TimeTicks::Now());
+
+    TRACE_EVENT_END("actor");
     ui_state_manager_->OnUiEvent(
         std::move(event),
-        base::BindOnce(&UiEventDispatcherImpl::MaybeSendNextEvent<V>,
-                       weak_ptr_factory_.GetWeakPtr()));
+        std::move(record_metrics)
+            .Then(base::BindOnce(&UiEventDispatcherImpl::MaybeSendNextEvent<V>,
+                                 weak_ptr_factory_.GetWeakPtr())));
   }
 
   // Synchronously send events.
-  template <Visitor V>
+  template <absl::Overload V>
   void SendAllEvents() {
+    TRACE_EVENT("actor", "SendAllEvents");
     auto& events = std::get<EventSequence<SyncUiEvent>>(events_);
     while (!events.empty()) {
       const SyncUiEvent event = std::move(events.front());
       events.pop_front();
       VLOG(4) << VisitorTraits<V>::phase_name
               << "(SyncUiEvent): " << DebugString(event);
+
+      base::ScopedUmaHistogramTimer timer =
+          GetUiEventDurationScopedTimer(GetUiEventName(event));
       ui_state_manager_->OnUiEvent(std::move(event));
     }
     ResetAndComplete(MakeOkResult());

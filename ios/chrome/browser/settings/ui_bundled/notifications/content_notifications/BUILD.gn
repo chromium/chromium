@@ -51,7 +51,6 @@ source_set("content_notifications_ui") {
     "content_notifications_consumer.h",
     "content_notifications_view_controller.h",
     "content_notifications_view_controller.mm",
-    "content_notifications_view_controller_delegate.h",
   ]
   deps = [
     ":constants",

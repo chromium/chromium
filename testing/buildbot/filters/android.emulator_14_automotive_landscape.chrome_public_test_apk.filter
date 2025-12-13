@@ -1,0 +1,44 @@
+# crbug.com/1515446
+-org.chromium.chrome.browser.webauth.Fido2CredentialRequestTest.*
+-org.chromium.chrome.browser.webauth.AuthenticatorImplTest.*
+
+# crbug.com/462590301
+-org.chromium.chrome.browser.app.bookmarks.*
+
+# crbug.com/462592111
+-org.chromium.chrome.browser.compositor.overlays.strip.*
+
+# crbug.com/462595998
+-org.chromium.chrome.browser.incognito.IncognitoPermissionLeakageTest.testAllowPermissionDoNotLeakBetweenRegularAndIncognito__INCOGNITO_TAB_REGULAR_TAB
+
+# crbug.com/462750864
+-org.chromium.chrome.browser.page_info.PageInfoViewTest.testShowCookies*
+-org.chromium.chrome.browser.page_info.PageInfoViewTest.a11yLiveRegionInUserBypass
+-org.chromium.chrome.browser.page_info.PageInfoViewTest.clearCookiesOnSubpageTrackingProtection
+
+# crbug.com/462752126
+-org.chromium.chrome.browser.privacy_sandbox.FledgeFragmentTest.testRenderBlockedSitesPageEmpty
+
+# crbug.com/462755671
+-org.chromium.chrome.browser.privacy_sandbox.FledgeFragmentTest.testBlockSites
+-org.chromium.chrome.browser.privacy_sandbox.FledgeFragmentTest.testFooterTopicsLink
+-org.chromium.chrome.browser.privacy_sandbox.FledgeFragmentTest.testFooterTopicsLinkAdTopicsContentParity
+-org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogTest.controllerShowsEEAConsentDropdown
+-org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogTest.controllerShowsEEANotice
+-org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogTest.eeaConsentPrivacyPolicyLink
+-org.chromium.chrome.browser.privacy_sandbox.TopicsFragmentTest.testBlockTopics
+-org.chromium.chrome.browser.privacy_sandbox.TopicsFragmentTest.testPopulateTopicsList
+-org.chromium.chrome.browser.privacy_sandbox.TopicsFragmentTest.testTurnTopicsOnWhenTopicsListPopulated
+-org.chromium.chrome.browser.privacy_sandbox.TopicsFragmentTest.testUnblockTopicsAdTopicsContentParity
+
+# crbug.com/462792872
+-org.chromium.chrome.browser.ui.android.webid.AccountSelectionButtonModeIntegrationTest.*
+
+# crbug.com/462793241
+-org.chromium.chrome.browser.site_settings.SiteSettingsTest.shouldShowWildcardsInExceptionsOnThirdPartyCookiesPage
+-org.chromium.chrome.browser.site_settings.SiteSettingsTest.testBlockExceptionGroupStorageAccess
+-org.chromium.chrome.browser.site_settings.SiteSettingsTest.testExpectedExceptionsStorageAccess
+-org.chromium.chrome.browser.site_settings.SiteSettingsTest.testOnlyExpectedExceptionsThirdPartyCookies
+-org.chromium.chrome.browser.site_settings.SiteSettingsTest.testResetExceptionGroupStorageAccess
+-org.chromium.chrome.browser.site_settings.SiteSettingsTest.testSetAllowLocationEnabled
+-org.chromium.chrome.browser.site_settings.SiteSettingsTest.testSetAllowLocationEnabledWithToggle

@@ -45,6 +45,8 @@ bool RequireNonNegative(CSSPropertyID property_id) {
 }  // namespace
 
 SVGParsingError SVGAnimatedLength::AttributeChanged(const String& value) {
+  // TODO: Use UpdateBaseValueFromAttribute() when we can set proper initial
+  // values on error (for example 'auto' for 'rx' and 'ry').
   SVGParsingError parse_status =
       SVGAnimatedProperty<SVGLength>::AttributeChanged(value);
 
@@ -73,7 +75,7 @@ const CSSValue* SVGAnimatedLength::CssValue() const {
       return nullptr;
     }
   }
-  return &CurrentValue()->AsCSSPrimitiveValue();
+  return &CurrentValue()->AsCSSValue();
 }
 
 void SVGAnimatedLength::Trace(Visitor* visitor) const {

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_UTILS_H_
 
+#include "base/check_op.h"
 #include "base/types/expected.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
@@ -20,11 +21,14 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_writer_create_options.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/modules/ai/availability.h"
+#include "third_party/blink/renderer/modules/ai/exception_helpers.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 
 class LanguageModelCreateCoreOptions;
+class LocalDOMWindow;
 
 static constexpr uint64_t kNormalizedDownloadProgressMax = 0x10000;
 
@@ -122,6 +126,9 @@ std::optional<Vector<String>> ValidateAndCanonicalizeBCP47Languages(
 // creating a client.
 bool RequiresUserActivation(Availability availability);
 
+// Validates that user activation requirements are met for creating a session.
+MODULES_EXPORT bool MeetsUserActivationRequirements(LocalDOMWindow* window);
+
 // Runs `callback` on destruction unless `Reset` is called.
 class RunOnDestruction {
  public:
@@ -145,7 +152,8 @@ class RunOnDestruction {
 template <typename T>
 base::OnceClosure RejectOnDestruction(ScriptPromiseResolver<T>* resolver,
                                       AbortSignal* signal = nullptr) {
-  RunOnDestruction run_on_destruction(WTF::BindOnce(
+  CHECK(resolver);
+  RunOnDestruction run_on_destruction(BindOnce(
       [](ScriptPromiseResolver<T>* resolver, AbortSignal* signal) {
         if (signal && signal->aborted()) {
           resolver->Reject(signal->reason(resolver->GetScriptState()));
@@ -155,7 +163,7 @@ base::OnceClosure RejectOnDestruction(ScriptPromiseResolver<T>* resolver,
       },
       WrapPersistent(resolver), WrapPersistent(signal)));
 
-  return WTF::BindOnce(
+  return BindOnce(
       [](RunOnDestruction resolver_holder) { resolver_holder.Reset(); },
       std::move(run_on_destruction));
 }

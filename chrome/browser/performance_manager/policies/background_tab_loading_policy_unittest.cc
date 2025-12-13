@@ -15,7 +15,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/performance_manager/mechanisms/page_loader.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -45,7 +44,28 @@ class LenientMockPageLoader
   LenientMockPageLoader(const LenientMockPageLoader& other) = delete;
   LenientMockPageLoader& operator=(const LenientMockPageLoader&) = delete;
 
-  MOCK_METHOD1(LoadPageNode, void(const PageNode* page_node));
+  MOCK_METHOD(void, LoadPageNode, (const PageNode* page_node));
+
+  std::vector<const PageNode*> GetPageNodesToLoad(
+      const PageNode* page_node) override {
+    std::vector<const PageNode*> to_load = split_nodes_map_[page_node];
+    if (to_load.empty()) {
+      return {page_node};
+    } else {
+      return to_load;
+    }
+  }
+
+  void AddTabSplit(std::vector<const PageNode*> split_nodes) {
+    // Tab splits are symmetrical: return all pages in `split_nodes` when
+    // looking up any of them.
+    for (const PageNode* page_node : split_nodes) {
+      split_nodes_map_[page_node] = split_nodes;
+    }
+  }
+
+ private:
+  std::map<const PageNode*, std::vector<const PageNode*>> split_nodes_map_;
 };
 using MockPageLoader = ::testing::StrictMock<LenientMockPageLoader>;
 
@@ -71,8 +91,6 @@ class MockBackgroundTabLoadingPolicy : public BackgroundTabLoadingPolicy {
   std::map<const PageNode*, raw_ptr<SiteDataReader, CtnExperimental>>
       site_data_readers_;
 };
-
-static constexpr size_t kMinSiteEngagement = 5;
 
 }  // namespace
 
@@ -126,9 +144,8 @@ class BackgroundTabLoadingPolicyTest : public GraphTestHarness {
 
   PageNodeToLoadData CreatePageNodeToLoadData(
       const PageNode* page_node,
-      bool updates_title_or_favicon_in_bg = false,
-      std::optional<size_t> site_engagement = std::nullopt) {
-    PageNodeToLoadData data(page_node, site_engagement);
+      bool updates_title_or_favicon_in_bg = false) {
+    PageNodeToLoadData data(page_node);
     data.updates_title_or_favicon_in_bg = updates_title_or_favicon_in_bg;
     return data;
   }
@@ -147,61 +164,54 @@ class BackgroundTabLoadingPolicyTest : public GraphTestHarness {
 };
 
 TEST_F(BackgroundTabLoadingPolicyTest,
-       ScheduleLoadForRestoredTabsWithoutNotificationPermission) {
-  std::vector<
-      performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>>
-      page_nodes;
-  std::vector<PageNodeData> to_load;
-
-  // Create vector of PageNode to restore.
-  for (int i = 0; i < 4; i++) {
-    page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>());
-    to_load.emplace_back(page_nodes.back().get()->GetWeakPtr());
-    EXPECT_CALL(*loader(), LoadPageNode(to_load.back().page_node.get()));
-
-    // Mark the PageNode as a tab as this is a requirement to pass it to
-    // ScheduleLoadForRestoredTabs().
-    page_nodes.back()->SetType(PageType::kTab);
-  }
-
-  EXPECT_EQ(0, num_all_tabs_loaded_calls());
-  policy()->ScheduleLoadForRestoredTabs(to_load);
-  EXPECT_EQ(0, num_all_tabs_loaded_calls());
-  for (auto& page_node : page_nodes) {
-    EXPECT_EQ(0, num_all_tabs_loaded_calls());
-    page_node->SetLoadingState(PageNode::LoadingState::kLoading);
-    page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
-  }
-  EXPECT_EQ(1, num_all_tabs_loaded_calls());
-}
-
-TEST_F(BackgroundTabLoadingPolicyTest,
        ScheduleLoadForRestoredTabsWithNotificationPermission) {
   std::vector<
       performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>>
       page_nodes;
   std::vector<PageNodeData> to_load;
 
-  // Create vector of PageNode to restore.
-  for (int i = 0; i < 4; i++) {
+  // Create vector of PageNodes to restore, each with a different notification
+  // permission
+  for (int i = 0; i < 3; i++) {
     page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>());
-    to_load.emplace_back(page_nodes.back().get()->GetWeakPtr(), GURL(),
-                         blink::mojom::PermissionStatus::GRANTED);
-    EXPECT_CALL(*loader(), LoadPageNode(to_load.back().page_node.get()));
+    to_load.emplace_back(page_nodes.back().get()->GetWeakPtr());
 
     // Mark the PageNode as a tab as this is a requirement to pass it to
     // ScheduleLoadForRestoredTabs().
     page_nodes.back()->SetType(PageType::kTab);
   }
 
+  to_load[0].notification_permission_status =
+      blink::mojom::PermissionStatus::ASK;
+  to_load[1].notification_permission_status =
+      blink::mojom::PermissionStatus::GRANTED;
+  to_load[2].notification_permission_status =
+      blink::mojom::PermissionStatus::DENIED;
+
+  // Load one page at a time. After each page starts loading, update its state
+  // so its loading slot opens up.
+  policy()->SetMaxSimultaneousLoadsForTesting(1);
+  auto update_loading_state = [](const PageNode* page_node) {
+    auto* page_node_impl = PageNodeImpl::FromNode(page_node);
+    page_node_impl->SetLoadingState(PageNode::LoadingState::kLoading);
+    page_node_impl->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  };
+
+  // The page with notification permission should be loaded first.
+  ::testing::Expectation first_load =
+      EXPECT_CALL(*loader(), LoadPageNode(to_load[1].page_node.get()))
+          .WillOnce(update_loading_state);
+
+  // The others may be loaded in any order.
+  EXPECT_CALL(*loader(), LoadPageNode(to_load[0].page_node.get()))
+      .After(first_load)
+      .WillOnce(update_loading_state);
+  EXPECT_CALL(*loader(), LoadPageNode(to_load[2].page_node.get()))
+      .After(first_load)
+      .WillOnce(update_loading_state);
+
   EXPECT_EQ(0, num_all_tabs_loaded_calls());
   policy()->ScheduleLoadForRestoredTabs(to_load);
-  EXPECT_EQ(0, num_all_tabs_loaded_calls());
-  for (auto& page_node : page_nodes) {
-    EXPECT_EQ(0, num_all_tabs_loaded_calls());
-    page_node->SetLoadingState(PageNode::LoadingState::kLoading);
-    page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
-  }
   EXPECT_EQ(1, num_all_tabs_loaded_calls());
 }
 
@@ -247,12 +257,156 @@ TEST_F(BackgroundTabLoadingPolicyTest, AllLoadingSlotsUsed) {
   ::testing::Mock::VerifyAndClear(loader());
   EXPECT_EQ(0, num_all_tabs_loaded_calls());
 
-  // The "all tabs loaded" callback should be loaded after the 3rd and 4th pages
-  // finish loading.
+  // The "all tabs loaded" callback should be invoked after the 3rd and 4th
+  // pages finish loading.
   page_nodes[2]->SetLoadingState(PageNode::LoadingState::kLoading);
   page_nodes[2]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
   page_nodes[3]->SetLoadingState(PageNode::LoadingState::kLoading);
   page_nodes[3]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  EXPECT_EQ(1, num_all_tabs_loaded_calls());
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest, SplitTabsLoadedTogether) {
+  // Create 4 PageNodes to restore.
+  std::vector<
+      performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>>
+      page_nodes;
+  std::vector<PageNodeData> to_load;
+
+  for (int i = 0; i < 4; i++) {
+    page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>());
+    to_load.emplace_back(page_nodes.back().get()->GetWeakPtr());
+
+    // Mark the PageNode as a tab as this is a requirement to pass it to
+    // ScheduleLoadForRestoredTabs().
+    page_nodes.back()->SetType(PageType::kTab);
+  }
+
+  // Mark tabs 1 and 2 as split and 2 as the having granted permission status so
+  // it loads first.
+  loader()->AddTabSplit({page_nodes[1].get(), page_nodes[2].get()});
+  to_load[2].notification_permission_status =
+      blink::mojom::PermissionStatus::GRANTED;
+
+  EXPECT_CALL(*loader(), LoadPageNode(page_nodes[1].get()));
+  EXPECT_CALL(*loader(), LoadPageNode(page_nodes[2].get()));
+
+  // Use 2 loading slots, which means only 2 of the PageNodes should immediately
+  // be scheduled to load.
+  policy()->SetMaxSimultaneousLoadsForTesting(2);
+
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  task_env().RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(loader());
+  EXPECT_EQ(0, num_all_tabs_loaded_calls());
+
+  // After the first 2 pages are loaded, the next two will be loaded.
+  EXPECT_CALL(*loader(), LoadPageNode(page_nodes[0].get()));
+  EXPECT_CALL(*loader(), LoadPageNode(page_nodes[3].get()));
+
+  page_nodes[2]->SetLoadingState(PageNode::LoadingState::kLoading);
+  page_nodes[2]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  page_nodes[1]->SetLoadingState(PageNode::LoadingState::kLoading);
+  page_nodes[1]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+
+  ::testing::Mock::VerifyAndClear(loader());
+
+  page_nodes[0]->SetLoadingState(PageNode::LoadingState::kLoading);
+  page_nodes[0]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  page_nodes[3]->SetLoadingState(PageNode::LoadingState::kLoading);
+  page_nodes[3]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+
+  EXPECT_EQ(1, num_all_tabs_loaded_calls());
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest, SplitTabsAllLoaded) {
+  // Create 3 PageNodes to restore.
+  std::vector<
+      performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>>
+      page_nodes;
+  std::vector<PageNodeData> to_load;
+
+  for (int i = 0; i < 3; i++) {
+    page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>());
+    to_load.emplace_back(page_nodes.back().get()->GetWeakPtr());
+
+    // Mark the PageNode as a tab as this is a requirement to pass it to
+    // ScheduleLoadForRestoredTabs().
+    page_nodes.back()->SetType(PageType::kTab);
+  }
+
+  // Create a 4th tab, and put it in a split with tab 1.
+  page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>());
+  page_nodes.back()->SetType(PageType::kTab);
+  loader()->AddTabSplit({page_nodes[1].get(), page_nodes.back().get()});
+
+  // All tabs should be loaded, including the 4th, even though it wasn't
+  // explicitly requested.
+  for (int i = 0; i < 4; i++) {
+    EXPECT_CALL(*loader(), LoadPageNode(page_nodes[i].get()));
+  }
+
+  policy()->SetMaxSimultaneousLoadsForTesting(4);
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  task_env().RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(loader());
+  EXPECT_EQ(0, num_all_tabs_loaded_calls());
+
+  // The "all tabs loaded" callback should be invoked after all the pages finish
+  // loading, not just the explicitly requested ones.
+  for (int i = 0; i < 3; i++) {
+    page_nodes[i]->SetLoadingState(PageNode::LoadingState::kLoading);
+    page_nodes[i]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  }
+  EXPECT_EQ(0, num_all_tabs_loaded_calls());
+  page_nodes.back()->SetLoadingState(PageNode::LoadingState::kLoading);
+  page_nodes.back()->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  EXPECT_EQ(1, num_all_tabs_loaded_calls());
+}
+
+// Regression test for https://crbug.com/444491692
+TEST_F(BackgroundTabLoadingPolicyTest, SplitTabsAlreadyLoading) {
+  // Create 3 PageNodes to restore.
+  std::vector<
+      performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>>
+      page_nodes;
+  std::vector<PageNodeData> to_load;
+
+  for (int i = 0; i < 3; i++) {
+    page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>());
+    to_load.emplace_back(page_nodes.back().get()->GetWeakPtr());
+
+    // Mark the PageNode as a tab as this is a requirement to pass it to
+    // ScheduleLoadForRestoredTabs().
+    page_nodes.back()->SetType(PageType::kTab);
+  }
+
+  // Create a 4th tab, and put it in a split with tab 1.
+  page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>());
+  page_nodes.back()->SetType(PageType::kTab);
+  loader()->AddTabSplit({page_nodes[1].get(), page_nodes.back().get()});
+
+  // Mark the split tab as already loading. It should NOT be loaded again by
+  // session restore.
+  page_nodes.back()->SetLoadingState(PageNode::LoadingState::kLoading);
+  for (int i = 0; i < 3; i++) {
+    EXPECT_CALL(*loader(), LoadPageNode(page_nodes[i].get()));
+  }
+
+  policy()->SetMaxSimultaneousLoadsForTesting(4);
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  task_env().RunUntilIdle();
+  ::testing::Mock::VerifyAndClear(loader());
+  EXPECT_EQ(0, num_all_tabs_loaded_calls());
+
+  // The "all tabs loaded" callback should be invoked after all scheduled pages
+  // finish loading. The split tab isn't counted because it was already loading.
+  for (int i = 0; i < 3; i++) {
+    page_nodes[i]->SetLoadingState(PageNode::LoadingState::kLoading);
+    page_nodes[i]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  }
+  EXPECT_EQ(1, num_all_tabs_loaded_calls());
+  page_nodes.back()->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
   EXPECT_EQ(1, num_all_tabs_loaded_calls());
 }
 
@@ -364,20 +518,6 @@ TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_OldTab) {
 
   // Test the max time since last use threshold.
   EXPECT_FALSE(policy()->ShouldLoad(page_node_data));
-}
-
-TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_SiteEngagement) {
-  for (size_t site_engagement : {0, 100}) {
-    performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
-        page_node = CreateNode<performance_manager::PageNodeImpl>();
-    PageNodeToLoadData data = CreatePageNodeToLoadData(
-        page_node.get(), /*updates_title_or_favicon_in_bg=*/false,
-        site_engagement);
-    // With the default value of kBackgroundTabLoadingMinSiteEngagement, site
-    // engagement should always be ignored.
-    EXPECT_TRUE(policy()->ShouldLoad(data))
-        << "site_engagement " << site_engagement;
-  }
 }
 
 // Regression test for https://crrev.com/c/3909768: Deleting a PageNode with the
@@ -570,8 +710,9 @@ TEST_F(BackgroundTabLoadingPolicyTest, OnMemoryPressure) {
   ::testing::Mock::VerifyAndClear(loader());
 
   // Simulate memory pressure and expect the tab loader to disable loading.
-  system_node()->OnMemoryPressureForTesting(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
+  task_env().RunUntilIdle();
 
   PageNodeImpl* page_node_impl = page_nodes[0].get();
 
@@ -583,217 +724,24 @@ TEST_F(BackgroundTabLoadingPolicyTest, OnMemoryPressure) {
   page_node_impl->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
 }
 
-// Tests that enable the kBackgroundTabLoadingMinSiteEngagement feature param.
+TEST_F(BackgroundTabLoadingPolicyTest,
+       ScheduleLoadForRestoredTabsWithLoadingStatusChanged) {
+  testing::SimpleTestSiteDataReader site_data_reader_default(
+      {.updates_favicon = false, .updates_title = false, .uses_audio = false});
 
-class BackgroundTabLoadingPolicySiteEngagementTest
-    : public BackgroundTabLoadingPolicyTest,
-      public ::testing::WithParamInterface<std::optional<size_t>> {
- public:
-  BackgroundTabLoadingPolicySiteEngagementTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kBackgroundTabLoadingFromPerformanceManager,
-        {{"min_site_engagement", base::NumberToString(kMinSiteEngagement)}});
-  }
-
- protected:
-  std::optional<size_t> site_engagement_to_test_ = GetParam();
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    BackgroundTabLoadingPolicySiteEngagementTest,
-    ::testing::Values(std::nullopt,  // Site engagement should be ignored.
-                      0ul,
-                      kMinSiteEngagement - 1,
-                      kMinSiteEngagement,
-                      kMinSiteEngagement + 1));
-
-TEST_P(BackgroundTabLoadingPolicySiteEngagementTest,
-       ShouldLoad_NoBackgroundCommunication) {
   performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
       page_node = CreateNode<performance_manager::PageNodeImpl>();
-  PageNodeToLoadData data = CreatePageNodeToLoadData(
-      page_node.get(), /*updates_title_or_favicon_in_bg=*/false,
-      site_engagement_to_test_);
+  policy()->SetSiteDataReaderForPageNode(page_node.get(),
+                                         &site_data_reader_default);
+  page_node->SetType(PageType::kTab);
+  PageNodeToLoadData page_node_data = CreatePageNodeToLoadData(page_node.get());
 
-  // kMinTabsToLoad should be respected.
-  policy()->tab_loads_started_ = BackgroundTabLoadingPolicy::kMinTabsToLoad - 1;
-  EXPECT_TRUE(policy()->ShouldLoad(data));
-
-  // Once the minimum tabs are loading, only tabs with high site engagement
-  // should load.
-  policy()->tab_loads_started_ = BackgroundTabLoadingPolicy::kMinTabsToLoad;
-  if (site_engagement_to_test_.has_value()) {
-    EXPECT_EQ(policy()->ShouldLoad(data),
-              site_engagement_to_test_.value() >= kMinSiteEngagement);
-  } else {
-    EXPECT_TRUE(policy()->ShouldLoad(data));
-  }
-}
-
-TEST_P(BackgroundTabLoadingPolicySiteEngagementTest,
-       ShouldLoad_NotificationPermission) {
-  performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
-      page_node = CreateNode<performance_manager::PageNodeImpl>();
-  page_node->OnNotificationPermissionStatusChange(
-      blink::mojom::PermissionStatus::GRANTED);
-  PageNodeToLoadData data = CreatePageNodeToLoadData(
-      page_node.get(), /*updates_title_or_favicon_in_bg=*/false,
-      site_engagement_to_test_);
-
-  // After the minimum tabs are loading, the notification permission should
-  // cause tabs with low site engagement to load.
-  policy()->tab_loads_started_ = BackgroundTabLoadingPolicy::kMinTabsToLoad;
-  EXPECT_TRUE(policy()->ShouldLoad(data));
-}
-
-TEST_P(BackgroundTabLoadingPolicySiteEngagementTest,
-       ShouldLoad_UpdatesTitleOrFaviconInBackground) {
-  performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
-      page_node = CreateNode<performance_manager::PageNodeImpl>();
-  PageNodeToLoadData data = CreatePageNodeToLoadData(
-      page_node.get(), /*updates_title_or_favicon_in_bg=*/true,
-      site_engagement_to_test_);
-
-  // After the minimum tabs are loading, the background update should cause
-  // tabs with low site engagement to load.
-  policy()->tab_loads_started_ = BackgroundTabLoadingPolicy::kMinTabsToLoad;
-  EXPECT_TRUE(policy()->ShouldLoad(data));
-}
-
-// End-to-end tests that ensure the `site_engagement` score and notification
-// permissions are piped through correctly from ScheduleLoadForRestoreTabs.
-class BackgroundTabLoadingPolicyScheduleLoadTest
-    : public BackgroundTabLoadingPolicyTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  BackgroundTabLoadingPolicyScheduleLoadTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kBackgroundTabLoadingFromPerformanceManager,
-        {
-            {"min_site_engagement", base::NumberToString(kMinSiteEngagement)},
-            {"restore_main_frame_state",
-             base::ToString(restore_main_frame_state_)},
-        });
-  }
-
-  void TearDown() override {
-    // Destroy all nodes before tearing down the graph.
-    page_nodes_.clear();
-    BackgroundTabLoadingPolicyTest::TearDown();
-  }
-
-  // Adds a PageNode to `page_nodes_` and returns a PageNodeData struct for it.
-  PageNodeData AddPageNode(
-      GURL main_frame_url = GURL(),
-      blink::mojom::PermissionStatus notification_permission_status =
-          blink::mojom::PermissionStatus::ASK) {
-    auto page_node = CreateNode<performance_manager::PageNodeImpl>();
-    // Mark the PageNode as a tab as this is a requirement to pass it to
-    // ScheduleLoadForRestoredTabs().
-    page_node->SetType(PageType::kTab);
-    PageNodeData page_node_data(page_node->GetWeakPtr(), main_frame_url,
-                                notification_permission_status);
-    page_nodes_.push_back(std::move(page_node));
-    return page_node_data;
-  }
-
- protected:
-  bool restore_main_frame_state_ = GetParam();
-
-  // PageNodes created and owned by the test.
-  std::vector<
-      performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>>
-      page_nodes_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         BackgroundTabLoadingPolicyScheduleLoadTest,
-                         ::testing::Bool());
-
-TEST_P(BackgroundTabLoadingPolicyScheduleLoadTest,
-       ScheduleLoadForRestoredTabs_WithoutNotificationPermission) {
   std::vector<PageNodeData> to_load;
-
-  // kMinTabsToLoad tabs will always be loaded, regardless of `site_engagement`.
-  for (size_t i = 0; i < BackgroundTabLoadingPolicy::kMinTabsToLoad; i++) {
-    auto page_node_data = AddPageNode();
-    EXPECT_CALL(*loader(), LoadPageNode(page_node_data.page_node.get()));
-    to_load.push_back(std::move(page_node_data));
-  }
-
-  // Tab with a low `site_engagement` score should not be loaded.
-  PageNodeData low_engagement_data = AddPageNode();
-  low_engagement_data.site_engagement = kMinSiteEngagement - 1;
-  EXPECT_CALL(*loader(), LoadPageNode(low_engagement_data.page_node.get()))
-      .Times(0);
-  to_load.push_back(std::move(low_engagement_data));
-
-  // Tab with a high `site_engagement` score should be loaded.
-  PageNodeData high_engagement_data = AddPageNode();
-  high_engagement_data.site_engagement = kMinSiteEngagement + 1;
-  EXPECT_CALL(*loader(), LoadPageNode(high_engagement_data.page_node.get()));
-  to_load.push_back(std::move(high_engagement_data));
-
-  // Tab with unknown `site_engagement` should be loaded.
-  PageNodeData no_engagement_data = AddPageNode();
-  EXPECT_FALSE(no_engagement_data.site_engagement.has_value());
-  EXPECT_CALL(*loader(), LoadPageNode(no_engagement_data.page_node.get()));
-  to_load.push_back(std::move(no_engagement_data));
-
-  policy()->SetMaxSimultaneousLoadsForTesting(to_load.size());
+  to_load.emplace_back(page_node.get()->GetWeakPtr());
   policy()->ScheduleLoadForRestoredTabs(to_load);
-}
-
-TEST_P(BackgroundTabLoadingPolicyScheduleLoadTest,
-       ScheduleLoadForRestoredTabs_WithNotificationPermission) {
-  std::vector<PageNodeData> to_load;
-
-  // kMinTabsToLoad tabs will always be loaded, regardless of `site_engagement`.
-  for (size_t i = 0; i < BackgroundTabLoadingPolicy::kMinTabsToLoad; i++) {
-    auto page_node_data = AddPageNode();
-    EXPECT_CALL(*loader(), LoadPageNode(page_node_data.page_node.get()));
-    to_load.push_back(std::move(page_node_data));
-  }
-
-  // The notification permission allows a tab with a low `site_engagement` score
-  // to be loaded. It should not be loaded if RestoreMainFrameState wasn't
-  // called, because the notification permission is lost (bug-for-bug
-  // compatibility with TabLoader).
-  PageNodeData low_engagement_data =
-      AddPageNode(GURL("http://low-engagement.example.com"),
-                  blink::mojom::PermissionStatus::GRANTED);
-  low_engagement_data.site_engagement = kMinSiteEngagement - 1;
-  EXPECT_CALL(*loader(), LoadPageNode(low_engagement_data.page_node.get()))
-      .Times(restore_main_frame_state_ ? 1 : 0);
-  to_load.push_back(std::move(low_engagement_data));
-
-  // Tab with a high `site_engagement` score should be loaded regardless of
-  // notification permission
-  PageNodeData high_engagement_data =
-      AddPageNode(GURL("http://high-engagement.example.com"),
-                  blink::mojom::PermissionStatus::GRANTED);
-  high_engagement_data.site_engagement = kMinSiteEngagement + 1;
-  EXPECT_CALL(*loader(), LoadPageNode(high_engagement_data.page_node.get()));
-  to_load.push_back(std::move(high_engagement_data));
-
-  // Tab with unknown `site_engagement` should be loaded regardless of
-  // notification permission.
-  PageNodeData no_engagement_data =
-      AddPageNode(GURL("http://no-engagement.example.com"),
-                  blink::mojom::PermissionStatus::GRANTED);
-  EXPECT_FALSE(no_engagement_data.site_engagement.has_value());
-  EXPECT_CALL(*loader(), LoadPageNode(no_engagement_data.page_node.get()));
-  to_load.push_back(std::move(no_engagement_data));
-
-  policy()->SetMaxSimultaneousLoadsForTesting(to_load.size());
-  policy()->ScheduleLoadForRestoredTabs(to_load);
+  page_node->SetLoadingState(PageNode::LoadingState::kLoading);
+  page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  EXPECT_FALSE(policy()->has_restored_tabs_to_load_);
 }
 
 }  // namespace policies

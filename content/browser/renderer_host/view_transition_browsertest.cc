@@ -8,13 +8,17 @@
 #include "cc/base/features.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
+#include "components/viz/common/features.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/view_transition_opt_in_state.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -422,10 +426,11 @@ class ViewTransitionCaptureTest
 
  protected:
   SkBitmap TakeScreenshot() {
-    base::test::TestFuture<const SkBitmap&> future_bitmap;
+    base::test::TestFuture<const viz::CopyOutputBitmapWithMetadata&>
+        future_bitmap;
     shell()->web_contents()->GetRenderWidgetHostView()->CopyFromSurface(
         gfx::Rect(), gfx::Size(), future_bitmap.GetCallback());
-    return future_bitmap.Take();
+    return future_bitmap.Take().bitmap;
   }
 
   void WaitForSurfaceAnimationManager(RenderFrameHost* render_frame_host) {
@@ -513,4 +518,53 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_pair(true,
                        "/view_transitions/parent-child-opacity-iframe.html")));
 
+class ViewTransitionProcessShutdownTest : public ViewTransitionBrowserTest {
+ public:
+  ViewTransitionProcessShutdownTest() {
+    EnablePixelOutput(1.f);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {::features::kAckCopyOutputRequestEarlyForViewTransition,
+         blink::features::kDelayLayerTreeViewDeletionOnLocalSwap,
+         ::features::kRenderDocument},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ViewTransitionProcessShutdownTest,
+                       ResourcesAvailableAfterCrossProcessNavigation) {
+  DisableBackForwardCacheForTesting(
+      shell()->web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  GURL test_url(embedded_test_server()->GetURL(
+      "a.com", "/view_transitions/basic-vt-opt-in.html"));
+  ASSERT_TRUE(NavigateToURL(shell()->web_contents(), test_url));
+  WaitForCopyableViewInWebContents(shell()->web_contents());
+
+  // Navigate to another page with an opt-in. Use a.com to ensure same-origin
+  // (triggers VT). Use COOP to force a new BrowsingInstance and process swap.
+  GURL second_url(embedded_test_server()->GetURL(
+      "a.com",
+      "/view_transitions/"
+      "basic-vt-opt-in.html?new&pipe=header(Cross-Origin-Opener-Policy,same-"
+      "origin)"));
+  TestNavigationManager navigation_manager(shell()->web_contents(), second_url);
+  ASSERT_TRUE(ExecJs(shell()->web_contents(),
+                     JsReplace("location.href = $1", second_url)));
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
+
+  WaitForCopyableViewInWebContents(shell()->web_contents());
+  auto& nav_controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  ASSERT_EQ(nav_controller.GetLastCommittedEntry()->GetURL(), second_url);
+
+  // Ensure the new renderer has the resources.
+  ASSERT_TRUE(static_cast<RenderWidgetHostViewBase*>(
+                  shell()->web_contents()->GetRenderWidgetHostView())
+                  ->HasViewTransitionResourcesForTesting());
+}
 }  // namespace content

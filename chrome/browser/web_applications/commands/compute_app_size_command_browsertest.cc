@@ -13,11 +13,14 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
@@ -57,6 +60,8 @@ bool CheckAppSizesNotNull(WebAppProvider& provider,
 }  // namespace
 
 class ComputeAppSizeCommandForWebAppBrowserTest : public WebAppBrowserTestBase {
+ private:
+  base::test::ScopedFeatureList feature_list_{features::kWebAppUsePrimaryIcon};
 };
 
 IN_PROC_BROWSER_TEST_F(ComputeAppSizeCommandForWebAppBrowserTest,
@@ -84,7 +89,7 @@ class ComputeAppSizeCommandForIsolatedWebAppBrowserTest
 
   void SetUpOnMainThread() override {
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
-    update_server_mixin_.AddBundle(
+    iwa_test_update_server_.AddBundle(
         IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
             .BuildBundle(kPublicKeyPair1));
   }
@@ -100,23 +105,31 @@ class ComputeAppSizeCommandForIsolatedWebAppBrowserTest
                                    std::move(update_manifest_entries));
   }
 
-  IsolatedWebAppUpdateServerMixin update_server_mixin_{&mixin_host_};
+  ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider() override {
+    return &data_provider_;
+  }
+
+  IsolatedWebAppTestUpdateServer iwa_test_update_server_;
+  FakeIwaRuntimeDataProvider data_provider_;
 
 #if !BUILDFLAG(IS_CHROMEOS)
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{features::kWebAppUsePrimaryIcon};
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 };
 
 IN_PROC_BROWSER_TEST_F(ComputeAppSizeCommandForIsolatedWebAppBrowserTest,
                        RetrieveWebAppSize) {
+  data_provider_.Update(
+      [&](auto& update) { update.AddToManagedAllowlist(kWebBundleId1); });
+
   const webapps::AppId app_id =
       web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(kWebBundleId1)
           .app_id();
 
   WebAppTestInstallObserver install_observer(profile());
   SetIwaForceInstallPolicy(base::Value::List().Append(
-      update_server_mixin_.CreateForceInstallPolicyEntry(kWebBundleId1)));
+      iwa_test_update_server_.CreateForceInstallPolicyEntry(kWebBundleId1)));
   ASSERT_EQ(install_observer.BeginListeningAndWait({app_id}), app_id);
 
   auto* browser = web_app::LaunchWebAppBrowserAndWait(profile(), app_id);

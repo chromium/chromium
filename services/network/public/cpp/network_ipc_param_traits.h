@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/pickle.h"
-#include "ipc/ipc_param_traits.h"
+#include "ipc/param_traits.h"
 #include "ipc/param_traits_macros.h"
 #include "net/base/auth.h"
 #include "net/base/ip_endpoint.h"

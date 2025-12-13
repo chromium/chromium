@@ -6,11 +6,10 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/theme/AdjustedTopUiThemeColorProvider.java",
     "java/src/org/chromium/chrome/browser/theme/BottomUiThemeColorProvider.java",
-    "java/src/org/chromium/chrome/browser/theme/SurfaceColorUpdateUtils.java",
     "java/src/org/chromium/chrome/browser/theme/ThemeColorProvider.java",
     "java/src/org/chromium/chrome/browser/theme/ThemeModuleUtils.java",
-    "java/src/org/chromium/chrome/browser/theme/ThemeOverlayProvider.java",
     "java/src/org/chromium/chrome/browser/theme/ThemeUtils.java",
     "java/src/org/chromium/chrome/browser/theme/TopUiThemeColorProvider.java",
     "java/src/org/chromium/chrome/browser/ui/theme/BrandedColorScheme.java",
@@ -42,10 +41,7 @@ android_library("java") {
 }
 
 android_resources("java_resources") {
-  sources = [
-    "java/res/values/colors.xml",
-    "java/res/values/values.xml",
-  ]
+  sources = [ "java/res/values/colors.xml" ]
   deps = [
     "//chrome/browser/tab_ui/android:java_resources",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
@@ -56,9 +52,8 @@ android_resources("java_resources") {
 
 robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/chrome/browser/theme/AdjustedTopUiThemeColorProviderUnitTest.java",
     "java/src/org/chromium/chrome/browser/theme/BottomUiThemeColorProviderTest.java",
-    "java/src/org/chromium/chrome/browser/theme/SurfaceColorUpdateUtilsUnitTest.java",
-    "java/src/org/chromium/chrome/browser/theme/ThemeModuleUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/theme/ThemeUtilsUnitTest.java",
   ]
   deps = [
@@ -71,7 +66,9 @@ robolectric_library("junit") {
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/native_page:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/styles/android:java",
     "//components/tab_groups:tab_groups_java",

@@ -29,6 +29,7 @@ chromium-metrics-reviews@google.com.
 <variants name="FileType">
   <variant name="DbFile" summary="database file"/>
   <variant name="JournalFile" summary="journal file"/>
+  <variant name="WalJournalFile" summary="write-ahead log file"/>
 </variants>
 
 <variants name="Mode">
@@ -96,6 +97,42 @@ chromium-metrics-reviews@google.com.
     Logged every time there is an attempt to delete a {FileType}.
   </summary>
   <token key="FileType" variants="FileType"/>
+</histogram>
+
+<histogram name="PersistentCache.SandboxedFile.LockStateOnAbandon"
+    enum="LockState" expires_after="2026-11-04">
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The state of the shared atomic lock at the moment a file is abandoned. The
+    lock being held on abandonment either causes loss of entries or copying
+    overhead. This is not expected to be a common case and this metric should be
+    monitored as such. Logged each time a file is abandoned.
+  </summary>
+</histogram>
+
+<histogram name="PersistentCache.Sqlite.LockResult" enum="PlatformFileError"
+    expires_after="2026-11-06">
+  <owner>grt@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Reports the result of locking a PersistentCache's primary database file when
+    opened for use by only a single connection.
+  </summary>
+</histogram>
+
+<histogram name="PersistentCache.Sqlite.{FileType}.{Operation}"
+    enum="PlatformFileError" expires_after="2026-11-06">
+  <owner>grt@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Reports the result of {Operation} a PersistentCache's {FileType}.
+  </summary>
+  <token key="FileType" variants="FileType"/>
+  <token key="Operation">
+    <variant name="CreateResult" summary="creating or opening"/>
+    <variant name="SetLengthResult" summary="deleting"/>
+  </token>
 </histogram>
 
 </histograms>

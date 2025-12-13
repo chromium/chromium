@@ -196,7 +196,7 @@ static_library("test_support") {
     ":encoding",
     ":sender",
     "//base/test:test_support",
-    "//components/openscreen_platform:openscreen_platform",
+    "//components/openscreen_platform",
     "//media",
     "//media:test_support",
     "//testing/gmock",

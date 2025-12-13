@@ -163,7 +163,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
       const bool is_standalone_session,
       ash::OnSearchUrlFetchedCallback search_callback,
       ash::OnTextDetectionComplete text_callback,
-      base::OnceCallback<void()> error_callback) override;
+      ash::OnLensErrorCallback error_callback) override;
   MOCK_METHOD(bool, IsNetworkConnectionOffline, (), (const, override));
   void DeleteRemoteFile(const base::FilePath& path,
                         base::OnceCallback<void(bool)> callback) override;

@@ -7,10 +7,10 @@ import 'chrome://webui-test/cr_elements/cr_policy_strings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SiteDetailsPermissionDeviceEntryElement} from 'chrome://settings/lazy_load.js';
-import {ChooserType, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ChooserType, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import {createChooserException, createSiteException} from './test_util.js';
 // clang-format on
 
@@ -24,12 +24,12 @@ suite('SiteDetailsPermissionDeviceEntry', function() {
   /**
    * The mock proxy object to use during test.
    */
-  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let browserProxy: TestSiteSettingsBrowserProxy;
 
   // Initialize a site-details-permission-device-entry before each test.
   setup(function() {
-    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
+    browserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement =
         document.createElement('site-details-permission-device-entry');
@@ -43,7 +43,7 @@ suite('SiteDetailsPermissionDeviceEntry', function() {
     const deviceDisplayName =
         testElement.shadowRoot!.querySelector('.url-directionality');
     assertTrue(!!deviceDisplayName);
-    assertEquals(deviceDisplayName.textContent!.trim(), deviceName);
+    assertEquals(deviceDisplayName.textContent.trim(), deviceName);
 
     // The reset button is not hidden.
     const resetButton = testElement.$.resetSite;
@@ -69,7 +69,7 @@ suite('SiteDetailsPermissionDeviceEntry', function() {
     const deviceDisplayName =
         testElement.shadowRoot!.querySelector('.url-directionality');
     assertTrue(!!deviceDisplayName);
-    assertEquals(deviceDisplayName.textContent!.trim(), deviceName);
+    assertEquals(deviceDisplayName.textContent.trim(), deviceName);
 
     // The reset button is hidden.
     assertTrue(testElement.$.resetSite.hidden);

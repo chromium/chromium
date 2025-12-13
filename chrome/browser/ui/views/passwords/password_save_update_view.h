@@ -32,7 +32,7 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExtraButtonElementId);
 
   PasswordSaveUpdateView(content::WebContents* web_contents,
-                         views::View* anchor_view,
+                         views::BubbleAnchor anchor_view,
                          DisplayReason reason);
 #ifdef UNIT_TEST
   views::EditableCombobox* username_dropdown_for_testing() const {
@@ -105,6 +105,8 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
 
   // Points to the "not now" button when present.
   raw_ptr<views::MdTextButton> extra_view_ = nullptr;
+
+  std::unique_ptr<CloseOnDeactivatePin> reveal_password_pin_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SAVE_UPDATE_VIEW_H_

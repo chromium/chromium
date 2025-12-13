@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Žánr</translation>
 <translation id="1254593899333212300">Přímé připojení k internetu</translation>
 <translation id="1272293450992660632">Hodnoty kódů PIN se neshodují.</translation>
+<translation id="1279040297980392566">Čeká se na dokončení vyhledávání, zkuste to znovu později</translation>
 <translation id="1280820357415527819">Vyhledávání mobilních sítí</translation>
 <translation id="1293556467332435079">Soubory</translation>
 <translation id="1297922636971898492">Disk Google aktuálně není k dispozici. Jakmile bude Disk Google opět dostupný, nahrávání se automaticky obnoví.</translation>
@@ -73,7 +74,7 @@
 <translation id="1577977504532381335">Zkontrolovat zásady administrátora</translation>
 <translation id="158849752021629804">Je potřeba domácí síť</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
-<translation id="1601786938618212857">Zip</translation>
+<translation id="1601786938618212857">Zazipovat</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">portugalština s klávesnicí USA – mezinárodní</translation>
 <translation id="1629521517399325891">Certifikát uživatele pro síťové ověření není k dispozici.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">Byl vybrán 1 soubor</translation>
 <translation id="3817579325494460411">Neposkytnuto</translation>
 <translation id="3819448694985509187">Nesprávný PIN. Zbývá vám jeden pokus.</translation>
-<translation id="3822559385185038546">Tento proxy server je vyžadován administrátorem</translation>
 <translation id="3830674330436234648">Přehrávání není k dispozici</translation>
 <translation id="383652340667548381">srbština</translation>
 <translation id="3839045880592694915">Váš operátor připojení vašeho modemu nepovoluje. Další podrobnosti vám poskytne váš operátor.</translation>
@@ -595,6 +595,7 @@
 <translation id="5596627076506792578">Další možnosti</translation>
 <translation id="5602622065581044566">bulharština s fonetickou klávesnicí</translation>
 <translation id="5605830556594064952">Americká klávesnice Dvorak</translation>
+<translation id="560739212255190568">Administrátor nastavil pravidla přepsání proxy serveru a vynucuje následující proxy server</translation>
 <translation id="5618330573454123917">Tento soubor je určen pro počítač se softwarem Macintosh. S vaším zařízením se systémem ChromeOS není kompatibilní. <ph name="BEGIN_LINK_HELP" />Další informace<ph name="END_LINK_HELP" /> o otevírání souborů v systému ChromeOS.</translation>
 <translation id="5625294776298156701">tamilština s klávesnicí Tamil99</translation>
 <translation id="5633226425545095130">Když tuto položku přesunete, budete ji sdílet s každým, kdo může zobrazit sdílenou složku <ph name="DESTINATION_NAME" />.</translation>
@@ -994,6 +995,7 @@
 <translation id="8540608333167683902">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="8545476925160229291">angličtina (USA)</translation>
 <translation id="854655314928502177">Adresa URL automatického zjišťování webového proxy serveru:</translation>
+<translation id="8547747809824590510">Administrátor nastavil pravidla přepsání proxy serveru</translation>
 <translation id="8549186985808798022">italština</translation>
 <translation id="8551494947769799688">lotyština</translation>
 <translation id="8560515948038859357">kantonština</translation>
@@ -1054,6 +1056,7 @@
 <translation id="9038620279323455325">Soubor s názvem „<ph name="FILE_NAME" />“ již existuje. Zvolte jiný název.</translation>
 <translation id="9046895021617826162">Připojení selhalo</translation>
 <translation id="9065512565307033593">Pokud se vám nepodaří provést ověření, bude vám zakázán přístup k síti.</translation>
+<translation id="9079844694307518094">Administrátor vynucuje používání následujícího proxy serveru</translation>
 <translation id="908378762078012445">ruština s fonetickou klávesnicí AATSEEL</translation>
 <translation id="9086302186042011942">Synchronizace</translation>
 <translation id="9099674669267916096">Počet stránek</translation>
@@ -1077,6 +1080,7 @@
 <translation id="9213073329713032541">Instalace byla úspěšně spuštěna.</translation>
 <translation id="9219103736887031265">Obrázky</translation>
 <translation id="9219908252191632183">Měsíční krajina</translation>
+<translation id="931652069802536959">Síť je blokována zásadami</translation>
 <translation id="938470336146445890">Nainstalujte prosím uživatelský certifikát.</translation>
 <translation id="939736085109172342">Nová složka</translation>
 <translation id="943972244133411984">Upravil(a)</translation>

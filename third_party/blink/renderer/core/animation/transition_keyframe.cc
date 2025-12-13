@@ -41,7 +41,7 @@ class PropertyIterator : public Keyframe::VirtualPropertyIterator {
 Keyframe::PropertyIteratorWrapper
 TransitionKeyframe::IterableTransitionKeyframeProperty::begin() const {
   return Keyframe::PropertyIteratorWrapper(
-      nullptr, std::make_unique<PropertyIterator>(&property_));
+      nullptr, MakeGarbageCollected<PropertyIterator>(&property_));
 }
 
 void TransitionKeyframe::SetCompositorValue(
@@ -63,7 +63,7 @@ void TransitionKeyframe::AddKeyframePropertiesToV8Object(
 
   Document& document = element->GetDocument();
   StyleResolverState state(document, *element);
-  state.SetStyle(document.GetStyleResolver().InitialStyle());
+  state.CreateNewClonedStyle(document.GetStyleResolver().InitialStyle());
   state.EnsureParentStyle();
   InterpolationTypesMap map(document.GetPropertyRegistry(), document);
   CSSInterpolationEnvironment environment(map, state);
@@ -104,7 +104,8 @@ TransitionKeyframe::CreatePropertySpecificKeyframe(
 Interpolation*
 TransitionKeyframe::PropertySpecificKeyframe::CreateInterpolation(
     const PropertyHandle& property,
-    const Keyframe::PropertySpecificKeyframe& other_super_class) const {
+    const Keyframe::PropertySpecificKeyframe& other_super_class,
+    const Keyframe::PropertySpecificKeyframe* /*final_keyframe*/) const {
   const auto& other = To<TransitionPropertySpecificKeyframe>(other_super_class);
   DCHECK(value_->GetType() == other.value_->GetType());
   return MakeGarbageCollected<TransitionInterpolation>(

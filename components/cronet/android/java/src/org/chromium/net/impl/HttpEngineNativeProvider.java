@@ -48,7 +48,8 @@ public class HttpEngineNativeProvider extends CronetProvider {
         try (var traceEvent =
                 ScopedSysTraceEvent.scoped("HttpEngineNativeProvider#createBuilder")) {
             return new ExperimentalCronetEngine.Builder(
-                    new AndroidHttpEngineBuilderWrapper(new HttpEngine.Builder(mContext)));
+                    new AndroidHttpEngineBuilderWrapper(
+                            mContext, new HttpEngine.Builder(mContext)));
         }
     }
 

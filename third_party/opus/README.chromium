@@ -7,6 +7,7 @@ License: Opus-Patent-BSD-3-Clause
 License File: src/COPYING
 Security Critical: yes
 Shipped: yes
+CPEPrefix: cpe:/a:opus-codec:opus
 
 Description:
 This directory contains a copy of Opus library

@@ -59,7 +59,7 @@ static_assert(IsMainWorldId(kMainDOMWorldId),
               "the internal blink value.");
 
 // This does not contain the main world because the WorldMap needs
-// non-default hashmap traits (WTF::IntWithZeroKeyHashTraits) to contain
+// non-default hashmap traits (blink::IntWithZeroKeyHashTraits) to contain
 // it for the main world's id (0), and it may change the performance trends.
 // (see https://crbug.com/704778#c6).
 using WorldMap = HeapHashMap<int, WeakMember<DOMWrapperWorld>>;

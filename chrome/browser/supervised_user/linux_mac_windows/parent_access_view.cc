@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
@@ -73,7 +72,7 @@ void OverrideZoomFactor(content::WebContents* web_contents,
   double zoom_factor = 1;
   content::HostZoomMap* zoom_map =
       content::HostZoomMap::GetForWebContents(web_contents);
-  zoom_map->SetZoomLevelForHost(pacp_url.host(),
+  zoom_map->SetZoomLevelForHost(pacp_url.GetHost(),
                                 blink::ZoomFactorToZoomLevel(zoom_factor));
 }
 
@@ -173,10 +172,11 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
   // to the delegate.
   auto view_weak_ptr = parent_access_view->GetWeakPtr();
   dialog_delegate->SetContentsView(std::move(parent_access_view));
-
   views::Widget* widget = constrained_window::CreateBrowserModalDialogViews(
       std::move(dialog_delegate),
       /*parent=*/web_contents->GetTopLevelNativeWindow());
+  widget->MakeCloseSynchronous(
+      base::BindOnce(&ParentAccessView::OnWidgetClose, view_weak_ptr));
   view_weak_ptr->widget_observations_.AddObservation(widget);
 
   // Border must be set only after the widget has been created.
@@ -200,11 +200,13 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
   return view_weak_ptr;
 }
 
-void ParentAccessView::OnWidgetClosing(views::Widget* widget) {
+void ParentAccessView::OnWidgetClose(
+    views::Widget::ClosedReason /*closed_reason*/) {
   if (!dialog_result_reset_callback_.is_null()) {
     std::move(dialog_result_reset_callback_).Run();
   }
   widget_observations_.RemoveAllObservations();
+  CloseView();
 }
 
 void ParentAccessView::OnWidgetThemeChanged(views::Widget*) {

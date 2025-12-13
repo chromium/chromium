@@ -8,14 +8,17 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "components/sessions/core/session_id.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class BrowserWindowInterface;
 class GURL;
+class TabListInterface;
 
 #if !BUILDFLAG(IS_ANDROID)
 class BrowserWindow;
-class TabStripModel;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace extensions {
@@ -78,8 +81,8 @@ class BrowserExtensionWindowController : public WindowController {
   // concepts.
 #if !BUILDFLAG(IS_ANDROID)
   const raw_ref<BrowserWindow> window_;
-  const raw_ref<TabStripModel> tab_strip_model_;
 #endif
+  const raw_ref<TabListInterface> tab_list_;
   const SessionID session_id_;
   const api::tabs::WindowType window_type_;
 

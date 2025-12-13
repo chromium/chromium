@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/hash/sha1.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/input_method/editor_helpers.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
@@ -133,12 +132,6 @@ void MakoUntrustedUI::BindInterface(
   input_method::EditorMediatorFactory::GetInstance()
       ->GetForProfile(Profile::FromWebUI(web_ui()))
       ->BindEditorClient(std::move(pending_receiver));
-}
-
-void MakoUntrustedUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void MakoUntrustedUI::BindInterface(

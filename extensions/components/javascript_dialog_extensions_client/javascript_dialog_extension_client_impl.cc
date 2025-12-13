@@ -11,7 +11,6 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace javascript_dialog_extensions_client {
 namespace {

@@ -145,6 +145,7 @@ source_set("unit_tests") {
       "//chrome/browser/ash/app_list/arc:test_support",
       "//chrome/browser/ash/arc",
       "//chrome/browser/ash/crostini:test_support",
+      "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/dbus/chunneld",
       "//chromeos/ash/components/dbus/seneschal",
       "//chromeos/ash/experiences/arc:arc_app_constants",
@@ -168,6 +169,7 @@ source_set("test_support") {
   deps = [
     ":app_icon",
     "//chrome/browser/apps:icon_standardizer",
+    "//chrome/browser/apps/app_service/publishers",
     "//chrome/test:test_support",
     "//components/services/app_service",
     "//skia",

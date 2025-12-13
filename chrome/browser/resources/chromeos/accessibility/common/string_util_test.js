@@ -10,7 +10,9 @@ AccessibilityExtensionStringUtilTest = class extends CommonE2ETestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await importModule('StringUtil', '/common/string_util.js');
+
+    const imports = TestImportManager.getImports();
+    globalThis.StringUtil = imports.StringUtil;
   }
 };
 

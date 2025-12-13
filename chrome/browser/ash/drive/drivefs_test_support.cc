@@ -9,9 +9,10 @@
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/hash/md5.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,6 +22,7 @@
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
+#include "crypto/obsolete/md5.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace drive {
@@ -41,8 +43,11 @@ FakeDriveFsHelper::FakeDriveFsHelper(Profile* profile,
         if (!user)
           return std::string();
 
-        return base::MD5String(FakeDriveFsHelper::kPredefinedProfileSalt +
-                               ("-" + user->GetAccountId().GetAccountIdKey()));
+        auto md5 = crypto::obsolete::Md5::MakeMd5HasherForTesting();
+        md5.Update(FakeDriveFsHelper::kPredefinedProfileSalt);
+        md5.Update("-");
+        md5.Update(user->GetAccountId().GetAccountIdKey());
+        return base::HexEncodeLower(md5.Finish());
       }));
 }
 FakeDriveFsHelper::~FakeDriveFsHelper() = default;

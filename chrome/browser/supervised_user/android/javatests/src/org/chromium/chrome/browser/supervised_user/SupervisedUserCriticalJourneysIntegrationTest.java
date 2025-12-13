@@ -30,6 +30,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SupportedProfileType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -80,9 +81,9 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
         String blockedHost = testServer.getURLWithHostName(BLOCKED_SITE_URL, "/");
         mActivityTestRule.loadUrl(blockedHost);
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         Assert.assertTrue(tab.isShowingErrorPage());
-        String title = mActivityTestRule.getActivity().getCurrentWebContents().getTitle();
+        String title = mActivityTestRule.getWebContents().getTitle();
         Assert.assertFalse(title.isEmpty());
         WebsiteParentApprovalTestUtils.checkLocalApprovalsButtonIsVisible(mWebContents);
         WebsiteParentApprovalTestUtils.checkRemoteApprovalsButtonIsVisible(mWebContents);
@@ -96,8 +97,13 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
                     AppMenuTestSupport.showAppMenu(
                             mActivityTestRule.getAppMenuCoordinator(), null, false);
                 });
-        onView(withText(R.string.menu_new_incognito_tab)).check(matches(not(isEnabled())));
-        onView(withText(R.string.menu_new_incognito_tab)).check(matches(not(isClickable())));
+        int incognitoMenuItemStringId =
+                mActivityTestRule.getActivity().getSupportedProfileType()
+                                == SupportedProfileType.REGULAR
+                        ? R.string.menu_new_incognito_window
+                        : R.string.menu_new_incognito_tab;
+        onView(withText(incognitoMenuItemStringId)).check(matches(not(isEnabled())));
+        onView(withText(incognitoMenuItemStringId)).check(matches(not(isClickable())));
     }
 
     @Test
@@ -105,8 +111,13 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41485872")
     public void incognitoModeIsUnavailableFromTabSwitcherActionMenu() {
         onView(withId(R.id.tab_switcher_button)).perform(longClick());
-        onView(withText(R.string.menu_new_incognito_tab)).check(matches(not(isEnabled())));
-        onView(withText(R.string.menu_new_incognito_tab)).check(matches(not(isClickable())));
+        int incognitoMenuItemStringId =
+                mActivityTestRule.getActivity().getSupportedProfileType()
+                                == SupportedProfileType.REGULAR
+                        ? R.string.menu_new_incognito_window
+                        : R.string.menu_new_incognito_tab;
+        onView(withText(incognitoMenuItemStringId)).check(matches(not(isEnabled())));
+        onView(withText(incognitoMenuItemStringId)).check(matches(not(isClickable())));
     }
 
     @Test
@@ -124,9 +135,9 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
         String blockedHost = testServer.getURL(TEST_PAGE);
         mActivityTestRule.loadUrl(blockedHost);
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         Assert.assertTrue(tab.isShowingErrorPage());
-        String title = mActivityTestRule.getActivity().getCurrentWebContents().getTitle();
+        String title = mActivityTestRule.getWebContents().getTitle();
         Assert.assertFalse(title.isEmpty());
         WebsiteParentApprovalTestUtils.checkLocalApprovalsButtonIsVisible(mWebContents);
         WebsiteParentApprovalTestUtils.checkRemoteApprovalsButtonIsVisible(mWebContents);
@@ -147,9 +158,9 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
         String notBlockedHost = testServer.getURL(TEST_PAGE);
         mActivityTestRule.loadUrl(notBlockedHost);
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         Assert.assertFalse(tab.isShowingErrorPage());
-        String title = mActivityTestRule.getActivity().getCurrentWebContents().getTitle();
+        String title = mActivityTestRule.getWebContents().getTitle();
         Assert.assertFalse(title.isEmpty());
     }
 }

@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/types/optional_util.h"
+#include "base/functional/callback_helpers.h"
 
 namespace network {
 
@@ -70,10 +70,9 @@ void TestNetworkContextWithHostResolver::OnResolveHostComplete(
     mojo::Remote<mojom::ResolveHostClient> response_client,
     std::unique_ptr<net::HostResolver::ResolveHostRequest> internal_request,
     int error) {
-  response_client->OnComplete(
-      error, internal_request->GetResolveErrorInfo(),
-      base::OptionalFromPtr(internal_request->GetAddressResults()),
-      /*endpoint_results_with_metadata=*/std::nullopt);
+  response_client->OnComplete(error, internal_request->GetResolveErrorInfo(),
+                              internal_request->GetAddressResults(),
+                              /*alternative_endpoints=*/{});
   response_client.reset();
 }
 

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Script Tool provideContext test</title>
+</head>
+<body>
+  <script>
+    async function echo(obj) {
+      return obj.text;
+    }
+
+    async function reverse(obj) {
+      return obj.text.split('').reverse().join('');
+    }
+
+    navigator.modelContext.provideContext({
+      tools: [
+        {
+          execute: echo,
+          name: "echo",
+          description: "Returns the input text as-is",
+          inputSchema: {
+            type: "object",
+            properties: {
+              text: { type: "string" }
+            },
+            required: ["text"]
+          }
+        },
+        {
+          execute: reverse,
+          name: "reverse",
+          description: "Returns the input text reversed",
+          inputSchema: {
+            type: "object",
+            properties: {
+              text: { type: "string" }
+            },
+            required: ["text"]
+          }
+        }
+      ]
+    });
+  </script>
+</body>
+</html>

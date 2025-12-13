@@ -35,14 +35,14 @@
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -51,11 +51,10 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/ash/components/account_manager/account_manager_facade_factory.h"
+#include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
@@ -82,6 +81,7 @@
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -108,24 +108,6 @@ std::unique_ptr<KeyedService> CreateCertificateProviderService(
 }
 
 }  // namespace
-
-class TestSettingsWindowManager : public chrome::SettingsWindowManager {
- public:
-  void ShowChromePageForProfile(Profile* profile,
-                                const GURL& gurl,
-                                int64_t display_id,
-                                apps::LaunchCallback callback) override {
-    last_url_ = gurl;
-    if (callback) {
-      std::move(callback).Run(apps::LaunchResult(apps::State::kSuccess));
-    }
-  }
-
-  const GURL& last_url() const { return last_url_; }
-
- private:
-  GURL last_url_;
-};
 
 namespace arc {
 
@@ -292,6 +274,20 @@ class AccountAppsAvailabilitySetter {
   const raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_;
 };
 
+class FakeArcAuthServiceDelegate : public ArcAuthService::Delegate {
+ public:
+  void OpenSettingsAppWithPeopleSection() override {
+    // Stub implementation. This test uses self built TestingProfile,
+    // unlike production, and so SWA does not work.
+    open_settings_called_ = true;
+  }
+
+  bool is_open_settings_called() const { return open_settings_called_; }
+
+ private:
+  bool open_settings_called_ = false;
+};
+
 class ArcAuthServiceTest : public InProcessBrowserTest {
  public:
   ArcAuthServiceTest(const ArcAuthServiceTest&) = delete;
@@ -320,10 +316,6 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
         std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)));
     ExpandPropertyFilesForTesting(ArcSessionManager::Get());
-
-    settings_window_manager_ = std::make_unique<TestSettingsWindowManager>();
-    chrome::SettingsWindowManager::SetInstanceForTesting(
-        settings_window_manager_.get());
   }
 
   void TearDownOnMainThread() override {
@@ -344,9 +336,10 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
     user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(
         CHECK_DEREF(ash::AnnotatedAccountId::Get(profile_)));
 
+    delegate_ = nullptr;
+    auth_service_ = nullptr;
+    arc_bridge_service_ = nullptr;
     profile_ = nullptr;
-    chrome::SettingsWindowManager::SetInstanceForTesting(nullptr);
-    settings_window_manager_.reset();
     ash::ProfileHelper::SetProfileToUserForTestingEnabled(false);
   }
 
@@ -432,6 +425,9 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
 
     auth_service_ = ArcAuthService::GetForBrowserContext(profile());
     DCHECK(auth_service_);
+    auto delegate = std::make_unique<FakeArcAuthServiceDelegate>();
+    delegate_ = delegate.get();
+    auth_service_->SetDelegateForTesting(std::move(delegate));
 
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -439,7 +435,8 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
     auth_service_->SetURLLoaderFactoryForTesting(test_shared_loader_factory_);
     arc_availability_setter_ = std::make_unique<AccountAppsAvailabilitySetter>(
         ash::AccountAppsAvailabilityFactory::GetForProfile(profile()),
-        ash::GetAccountManagerFacade(profile()->GetPath().value()));
+        ash::AccountManagerFactory::Get()->GetAccountManagerFacade(
+            profile()->GetPath().value()));
     arc_bridge_service_ = ArcServiceManager::Get()->arc_bridge_service();
     DCHECK(arc_bridge_service_);
     arc_bridge_service_->auth()->SetInstance(&auth_instance_);
@@ -558,6 +555,7 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
     return &test_url_loader_factory_;
   }
   ArcAuthService& auth_service() { return *auth_service_; }
+  FakeArcAuthServiceDelegate& delegate() { return *delegate_; }
   FakeAuthInstance& auth_instance() { return auth_instance_; }
   ArcBridgeService& arc_bridge_service() { return *arc_bridge_service_; }
   const std::vector<mojom::ArcAccountInfoPtr>& arc_google_accounts() const {
@@ -565,10 +563,6 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
   }
   bool arc_google_accounts_callback_called() const {
     return arc_google_accounts_callback_called_;
-  }
-
-  TestSettingsWindowManager& settings_window_manager() {
-    return *settings_window_manager_;
   }
 
  private:
@@ -583,12 +577,12 @@ class ArcAuthServiceTest : public InProcessBrowserTest {
   bool arc_google_accounts_callback_called_ = false;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<AccountAppsAvailabilitySetter> arc_availability_setter_;
-  std::unique_ptr<TestSettingsWindowManager> settings_window_manager_;
   base::test::ScopedCommandLine scoped_command_line_;
 
   // Not owned.
-  raw_ptr<ArcAuthService, DanglingUntriaged> auth_service_ = nullptr;
-  raw_ptr<ArcBridgeService, DanglingUntriaged> arc_bridge_service_ = nullptr;
+  raw_ptr<FakeArcAuthServiceDelegate> delegate_ = nullptr;
+  raw_ptr<ArcAuthService> auth_service_ = nullptr;
+  raw_ptr<ArcBridgeService> arc_bridge_service_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, GetPrimaryAccountForGaiaAccounts) {
@@ -1382,9 +1376,7 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, HandleRemoveAccountRequest) {
   SetAccountAndProfile(user_manager::UserType::kRegular);
   auth_service().HandleRemoveAccountRequest("dummyemail@google.com");
 
-  EXPECT_EQ(
-      chrome::GetOSSettingsUrl(chromeos::settings::mojom::kPeopleSectionPath),
-      settings_window_manager().last_url());
+  EXPECT_TRUE(delegate().is_open_settings_called());
 }
 
 }  // namespace arc

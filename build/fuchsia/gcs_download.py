@@ -19,4 +19,4 @@ def DownloadAndUnpackFromCloudStorage(url, output_dir):
     tmp_file_location = os.path.join(tmp_d, tmp_file)
     run_gsutil(['cp', url, tmp_file_location])
     tarfile.open(name=tmp_file_location,
-                 mode='r|gz').extractall(path=output_dir)
+                 mode='r:gz').extractall(path=output_dir)

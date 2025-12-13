@@ -25,6 +25,7 @@
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "skia/ext/legacy_display_globals.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect.h"
 

@@ -20,6 +20,7 @@
 #include "net/base/net_export.h"
 #include "net/dns/host_resolver.h"
 #include "net/log/net_log_with_source.h"
+#include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
 #include "net/proxy_resolution/proxy_resolver.h"
 #include "url/gurl.h"
@@ -194,6 +195,9 @@ class NET_EXPORT_PRIVATE PacFileDecider {
 
   // Whether we have an existing custom PAC URL.
   bool have_custom_pac_url_;
+
+  // Override rules from the original config.
+  std::vector<ProxyConfig::ProxyOverrideRule> proxy_override_rules_;
 
   PacSourceList pac_sources_;
   State next_state_ = STATE_NONE;

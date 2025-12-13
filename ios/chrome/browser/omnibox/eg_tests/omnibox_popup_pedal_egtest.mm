@@ -6,7 +6,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_app_interface.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_popup_accessibility_identifier_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
@@ -14,6 +13,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -22,8 +22,8 @@
 
 namespace {
 
-NSString* kDinoPedalString = @"chrome://dino";
-NSString* kDinoSearchString = @"dino game";
+NSString* const kDinoPedalString = @"chrome://dino";
+NSString* const kDinoSearchString = @"dino game";
 
 }  // namespace
 
@@ -34,7 +34,6 @@ NSString* kDinoSearchString = @"dino game";
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(kIOSQuickDelete);
 
   return config;
 }
@@ -141,7 +140,7 @@ NSString* kDinoSearchString = @"dino game";
 
   // Close the password manager.
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      selectElementWithMatcher:[ChromeMatchersAppInterface settingsDoneButton]]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
                       chrome_test_util::PasswordsTableViewMatcher()];

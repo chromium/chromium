@@ -38,7 +38,7 @@ namespace {
 // with "/test-user".
 // TODO(http://crbug.com/1234755): Add audit comment (or fix the issue) for all
 // paths that do not have a comment.
-const char* kAllowListPrefixesForAllPlatforms[] = {
+constexpr const char* kAllowListPrefixesForAllPlatforms[] = {
     "/Default/data_reduction_proxy_leveldb",
     "/Default/Extension State",
     "/Default/GCM Store/",
@@ -52,9 +52,10 @@ const char* kAllowListPrefixesForAllPlatforms[] = {
     "/GrShaderCache/GPUCache",
     "/Local State"};
 #if BUILDFLAG(IS_MAC)
-const char* kAllowListPrefixesForPlatform[] = {"/Default/Visited Links"};
+constexpr const char* kAllowListPrefixesForPlatform[] = {
+    "/Default/Visited Links"};
 #elif BUILDFLAG(IS_WIN)
-const char* kAllowListPrefixesForPlatform[] = {
+constexpr const char* kAllowListPrefixesForPlatform[] = {
     "/Default/databases-off-the-record",
     "/Default/heavy_ad_intervention_opt_out.db", "/Default/Top Sites",
     "/GrShaderCache/old_GPUCache",
@@ -63,21 +64,21 @@ const char* kAllowListPrefixesForPlatform[] = {
     // therefore it's safe to be written in Incognito.
     "/Last Browser"};
 #elif BUILDFLAG(IS_CHROMEOS)
-const char* kAllowListPrefixesForPlatform[] = {
+constexpr const char* kAllowListPrefixesForPlatform[] = {
     "/Default/Local Storage/leveldb/CURRENT",
     "/Default/Site Characteristics Database", "/Default/Sync Data/LevelDB",
     "/test-user/.variations-list.txt"};
 #elif BUILDFLAG(IS_LINUX)
-const char* kAllowListPrefixesForPlatform[] = {"/Default/Web Data"};
+constexpr const char* kAllowListPrefixesForPlatform[] = {"/Default/Web Data"};
 #else
-const char* kAllowListPrefixesForPlatform[] = {};
+constexpr const char* kAllowListPrefixesForPlatform[] = {};
 #endif
 
 // List of directory prefixes that are known to be added as an empty directory
 // during an Incognito session.
 // TODO(http://crbug.com/1234755): Add audit comment (or fix the issue) for all
 // paths that do not have a comment.
-const char* kAllowListEmptyDirectoryPrefixesForAllPlatforms[] = {
+constexpr const char* kAllowListEmptyDirectoryPrefixesForAllPlatforms[] = {
     "/Default/AutofillStrikeDatabase",
     "/Default/Download Service",
     "/Default/Feature Engagement Tracker",

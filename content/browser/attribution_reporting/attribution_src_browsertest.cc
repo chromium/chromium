@@ -116,8 +116,6 @@ class AttributionSrcBrowserTest : public ContentBrowserTest,
     if (enable_in_browser_migration) {
       enabled_features.emplace_back(
           blink::features::kKeepAliveInBrowserMigration);
-      enabled_features.emplace_back(
-          blink::features::kAttributionReportingInBrowserMigration);
     } else {
       disabled_features.emplace_back(
           blink::features::kKeepAliveInBrowserMigration);
@@ -135,8 +133,6 @@ class AttributionSrcBrowserTest : public ContentBrowserTest,
     auto data_host_manager =
         std::make_unique<AttributionDataHostManagerImpl>(mock_manager.get());
     mock_manager->SetDataHostManager(std::move(data_host_manager));
-    EXPECT_CALL(*mock_manager, UpdateLastNavigationTime)
-        .Times(testing::AnyNumber());
     static_cast<StoragePartitionImpl*>(
         web_contents()->GetBrowserContext()->GetDefaultStoragePartition())
         ->OverrideAttributionManagerForTesting(std::move(mock_manager));

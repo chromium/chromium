@@ -1,0 +1,11 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(crbug.com/458741717): Remove this file and use a modulemap in //base
+// instead once we're on Swift 6.3
+
+module Base {
+  header "chromium_umbrella.h"
+  export *
+}

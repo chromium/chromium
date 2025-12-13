@@ -18,6 +18,7 @@
 #import "components/sync/test/mock_sync_service.h"
 #import "components/webauthn/core/browser/passkey_sync_bridge.h"
 #import "components/webauthn/core/browser/test_passkey_model.h"
+#import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -56,10 +57,6 @@ class MockTrustedVaultClientBackend : public TrustedVaultClientBackend {
   ~MockTrustedVaultClientBackend() override = default;
 
   MOCK_METHOD(void,
-              SetDeviceRegistrationPublicKeyVerifierForUMA,
-              (VerifierCallback verifier),
-              (override));
-  MOCK_METHOD(void,
               FetchKeys,
               (id<SystemIdentity> identity,
                trusted_vault::SecurityDomainId security_domain_id,
@@ -81,6 +78,7 @@ class MockTrustedVaultClientBackend : public TrustedVaultClientBackend {
               Reauthentication,
               (id<SystemIdentity> identity,
                trusted_vault::SecurityDomainId security_domain_id,
+               trusted_vault::TrustedVaultUserActionTriggerForUMA trigger,
                UIViewController* presenting_view_controller,
                CompletionBlock completion),
               (override));
@@ -137,15 +135,14 @@ class PasswordSettingsMediatorTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
-        base::BindRepeating(
-            &password_manager::BuildPasswordStore<web::BrowserState,
+        base::BindOnce(
+            &password_manager::BuildPasswordStore<ProfileIOS,
                                                   TestPasswordStore>));
     builder.AddTestingFactory(
         IOSPasskeyModelFactory::GetInstance(),
-        base::BindRepeating(
-            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<webauthn::TestPasskeyModel>();
-            }));
+        base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
+          return std::make_unique<webauthn::TestPasskeyModel>();
+        }));
     profile_ = std::move(builder).Build();
 
     passkey_model_ = static_cast<webauthn::TestPasskeyModel*>(
@@ -172,6 +169,7 @@ class PasswordSettingsMediatorTest : public PlatformTest {
     mediator_ = [[PasswordSettingsMediator alloc]
            initWithReauthenticationModule:reauth_module_
                   savedPasswordsPresenter:presenter_.get()
+                             passkeyModel:passkey_model_
         bulkMovePasswordsToAccountHandler:
             bulk_move_passwords_to_account_handler_
                             exportHandler:export_handler_
@@ -214,10 +212,10 @@ class PasswordSettingsMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_env_;
   SyncServiceForPasswordTests sync_service_;
   affiliations::FakeAffiliationService affiliation_service_;
-  raw_ptr<webauthn::TestPasskeyModel> passkey_model_;
   scoped_refptr<TestPasswordStore> profile_store_;
   std::unique_ptr<SavedPasswordsPresenter> presenter_;
   std::unique_ptr<TestProfileIOS> profile_;
+  raw_ptr<webauthn::TestPasskeyModel> passkey_model_;
   id consumer_ = OCMProtocolMock(@protocol(PasswordSettingsConsumer));
   id export_handler_ = OCMProtocolMock(@protocol(PasswordExportHandler));
   id bulk_move_passwords_to_account_handler_ =
@@ -365,3 +363,16 @@ TEST_F(PasswordSettingsMediatorTest, CountsProfileStorePasswordsAsLocal) {
   AddPasskey();
   [[consumer_ verify] setCanBulkMove:NO localPasswordsCount:2];
 }
+
+#if BUILDFLAG(IOS_CREDENTIAL_EXCHANGE_ENABLED)
+// Tests that the export button is enabled/disabled based on passkey presence
+// when the Credential Exchange feature is enabled.
+TEST_F(PasswordSettingsMediatorTest, UpdatesExportStateWhenPasskeysChange) {
+  CreateMediator();
+
+  [[consumer_ verify] setCanExportCredentials:NO];
+
+  AddPasskey();
+  [[consumer_ verify] setCanExportCredentials:YES];
+}
+#endif

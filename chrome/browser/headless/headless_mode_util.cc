@@ -4,6 +4,9 @@
 
 #include "chrome/browser/headless/headless_mode_util.h"
 
+#include <string>
+
+#include "base/check_deref.h"
 #include "build/build_config.h"
 #include "ui/gfx/switches.h"
 
@@ -14,7 +17,10 @@
 
 #include "base/base_switches.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
+#include "chrome/browser/headless/headless_mode_platform.h"
 #include "chrome/browser/headless/headless_mode_switches.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/common/content_switches.h"
@@ -31,39 +37,29 @@
 namespace headless {
 
 namespace {
-const char kNewHeadlessModeSwitchValue[] = "new";
-const char kOldHeadlessModeSwitchValue[] = "old";
-
-enum HeadlessMode {
-  kNoHeadlessMode,
-  kOldHeadlessMode,
-  kNewHeadlessMode,
-  kDefaultHeadlessMode = kNewHeadlessMode
-};
-
-HeadlessMode GetHeadlessMode() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kHeadless))
-    return kNoHeadlessMode;
-
-  std::string switch_value =
-      command_line->GetSwitchValueASCII(switches::kHeadless);
-  if (switch_value == kOldHeadlessModeSwitchValue)
-    return kOldHeadlessMode;
-  if (switch_value == kNewHeadlessModeSwitchValue)
-    return kNewHeadlessMode;
-
-  return kDefaultHeadlessMode;
-}
 
 class HeadlessModeHandleImpl : public HeadlessModeHandle {
  public:
-  HeadlessModeHandleImpl() { SetUpCommandLine(); }
-
+  HeadlessModeHandleImpl() = default;
   ~HeadlessModeHandleImpl() override = default;
 
+  static base::expected<std::unique_ptr<HeadlessModeHandle>, std::string>
+  Initialize() {
+    auto handle = std::make_unique<HeadlessModeHandleImpl>();
+
+#if BUILDFLAG(IS_MAC)
+    InitializePlatform();
+#endif
+    if (std::string error = handle->SetUpCommandLine(); !error.empty()) {
+      return base::unexpected(std::move(error));
+    }
+
+    return base::ok(std::move(handle));
+  }
+
  private:
-  void SetUpCommandLine() {
+  // Returns error text if failed.
+  std::string SetUpCommandLine() {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
     // Default to incognito mode unless it is forced or user data directory is
@@ -88,59 +84,69 @@ class HeadlessModeHandleImpl : public HeadlessModeHandle {
     // parallel headless processes execution, see https://crbug.com/1477376.
     if (!command_line->HasSwitch(::switches::kUserDataDir) &&
         !command_line->HasSwitch(::switches::kProcessType)) {
-      const base::FilePath& user_data_dir = GetUserDataDir();
-      if (!user_data_dir.empty()) {
-        command_line->AppendSwitchPath(switches::kUserDataDir, user_data_dir);
+      if (std::string error = CreateUniqueUserDataDir(); !error.empty()) {
+        return error;
       }
+      const base::FilePath& user_data_dir = user_data_dir_.GetPath();
+      if (!base::DirectoryExists(user_data_dir)) {
+        return "Missing headless user data directory.";
+      }
+      command_line->AppendSwitchPath(switches::kUserDataDir, user_data_dir);
     }
 
 #if BUILDFLAG(IS_LINUX)
-  // Headless mode on Linux relies on ozone/headless platform.
-  command_line->AppendSwitchASCII(::switches::kOzonePlatform,
-                                  switches::kHeadless);
-  if (!command_line->HasSwitch(switches::kScreenInfo) &&
-      !command_line->HasSwitch(switches::kOzoneOverrideScreenSize)) {
-    command_line->AppendSwitchASCII(switches::kOzoneOverrideScreenSize,
-                                    "800,600");
-  }
+    // Headless mode on Linux relies on ozone/headless platform.
+    command_line->AppendSwitchASCII(::switches::kOzonePlatform,
+                                    switches::kHeadless);
+    if (!command_line->HasSwitch(switches::kScreenInfo) &&
+        !command_line->HasSwitch(switches::kOzoneOverrideScreenSize)) {
+      command_line->AppendSwitchASCII(switches::kOzoneOverrideScreenSize,
+                                      "800,600");
+    }
 
-  // If Ozone/Headless is enabled, Vulkan initialization crashes unless
-  // Angle implementation is specified explicitly.
-  if (!command_line->HasSwitch(switches::kUseGL) &&
-      !command_line->HasSwitch(switches::kUseANGLE) &&
-      !command_line->HasSwitch(switches::kEnableGPU)) {
-    command_line->AppendSwitchASCII(
-        switches::kUseANGLE, gl::kANGLEImplementationSwiftShaderForWebGLName);
-  }
+    // If Ozone/Headless is enabled, Vulkan initialization crashes unless
+    // Angle implementation is specified explicitly.
+    if (!command_line->HasSwitch(switches::kUseGL) &&
+        !command_line->HasSwitch(switches::kUseANGLE) &&
+        !command_line->HasSwitch(switches::kEnableGPU)) {
+      command_line->AppendSwitchASCII(
+          switches::kUseANGLE, gl::kANGLEImplementationSwiftShaderForWebGLName);
+    }
 #endif  // BUILDFLAG(IS_LINUX)
+
+    return "";
   }
 
-  const base::FilePath& GetUserDataDir() {
-    if (!user_data_dir_.IsValid()) {
+  // Returns error text if failed.
+  std::string CreateUniqueUserDataDir() {
+    CHECK(!user_data_dir_.IsValid());
+
 #if BUILDFLAG(IS_WIN)
-      // On Windows user data dir is handled before chrome.dll is loaded in
-      // chrome_elf, see chrome/install_static/user_data_dir.h/cc, so check to
-      // see if the temporary data dir for headless mode was created there and
-      // if so, associate it with our code for cleanup on exit.
-      if (IsTemporaryUserDataDirectoryCreatedForHeadless()) {
-        wchar_t user_data_dir_buf[MAX_PATH],
-            invalid_user_data_dir_buf[MAX_PATH];
-        if (GetUserDataDirectoryThunk(user_data_dir_buf,
-                                      std::size(user_data_dir_buf),
-                                      invalid_user_data_dir_buf,
-                                      std::size(invalid_user_data_dir_buf))) {
-          base::FilePath user_data_dir(user_data_dir_buf);
-          if (!user_data_dir.empty()) {
-            CHECK(user_data_dir_.Set(user_data_dir));
+    // On Windows user data dir is handled before chrome.dll is loaded in
+    // chrome_elf, see chrome/install_static/user_data_dir.h/cc, so check to
+    // see if the temporary data dir for headless mode was created there and
+    // if so, associate it with our code for cleanup on exit.
+    if (IsTemporaryUserDataDirectoryCreatedForHeadless()) {
+      wchar_t user_data_dir_buf[MAX_PATH], invalid_user_data_dir_buf[MAX_PATH];
+      if (GetUserDataDirectoryThunk(user_data_dir_buf,
+                                    std::size(user_data_dir_buf),
+                                    invalid_user_data_dir_buf,
+                                    std::size(invalid_user_data_dir_buf))) {
+        base::FilePath user_data_dir(user_data_dir_buf);
+        if (!user_data_dir.empty()) {
+          if (!user_data_dir_.Set(user_data_dir)) {
+            return "Invalid unique headless user data directory.";
           }
         }
       }
-#else   // BUILDFLAG(IS_WIN)
-      CHECK(user_data_dir_.CreateUniqueTempDir());
-#endif  // BUILDFLAG(IS_WIN)
     }
+#else   // BUILDFLAG(IS_WIN)
+    if (!user_data_dir_.CreateUniqueTempDir()) {
+      return "Failed to create a unique user data directory for headless.";
+    }
+#endif  // BUILDFLAG(IS_WIN)
 
-    return user_data_dir_.GetPath();
+    return "";
   }
 
   base::ScopedTempDir user_data_dir_;
@@ -149,22 +155,22 @@ class HeadlessModeHandleImpl : public HeadlessModeHandle {
 }  // namespace
 
 bool IsHeadlessMode() {
-  return GetHeadlessMode() == kNewHeadlessMode;
-}
-
-bool IsOldHeadlessMode() {
-  return GetHeadlessMode() == kOldHeadlessMode;
+  const base::CommandLine& command_line =
+      CHECK_DEREF(base::CommandLine::ForCurrentProcess());
+  return command_line.HasSwitch(switches::kHeadless);
 }
 
 bool IsChromeSchemeUrlAllowed() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return command_line->HasSwitch(switches::kAllowChromeSchemeUrl);
+  const base::CommandLine& command_line =
+      CHECK_DEREF(base::CommandLine::ForCurrentProcess());
+  return command_line.HasSwitch(switches::kAllowChromeSchemeUrl);
 }
 
-std::unique_ptr<HeadlessModeHandle> InitHeadlessMode() {
+base::expected<std::unique_ptr<HeadlessModeHandle>, std::string>
+InitHeadlessMode() {
   CHECK(IsHeadlessMode());
 
-  return std::make_unique<HeadlessModeHandleImpl>();
+  return HeadlessModeHandleImpl::Initialize();
 }
 
 }  // namespace headless
@@ -177,25 +183,15 @@ bool IsHeadlessMode() {
   return false;
 }
 
-bool IsOldHeadlessMode() {
-  // In addition to Linux, Windows and Mac (which are handled above),
-  // the old headless mode is also supported on ChromeOS, see chrome_main.cc.
-#if BUILDFLAG(IS_CHROMEOS)
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return command_line->HasSwitch(switches::kHeadless);
-#else
-  return false;
-#endif
-}
-
 bool IsChromeSchemeUrlAllowed() {
   return false;
 }
 
 void SetUpCommandLine(const base::CommandLine* command_line) {}
 
-std::unique_ptr<HeadlessModeHandle> InitHeadlessMode() {
-  return nullptr;
+base::expected<std::unique_ptr<HeadlessModeHandle>, std::string>
+InitHeadlessMode() {
+  return base::unexpected("Headless mode is not supported on this platform");
 }
 
 }  // namespace headless

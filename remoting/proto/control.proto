@@ -10,6 +10,7 @@ option optimize_for = LITE_RUNTIME;
 
 package remoting.protocol;
 
+import "coordinates.proto";
 import "layout_key_function.proto";
 
 // Set the host resolution to match the client. If screen_id is omitted, then
@@ -28,6 +29,7 @@ message ClientResolution {
 
   // Horizontal and vertical DPI of the screen. If either of these is zero or
   // unset, the corresponding DPI should be assumed to be 96 (Windows' default)
+  // TODO(yuweih): Deprecate `y_dpi` and rename `x_dpi` to just `dpi`.
   optional int32 x_dpi = 5;
   optional int32 y_dpi = 6;
 
@@ -87,6 +89,11 @@ message CursorShapeInfo {
 
   // Cursor pixmap data in 32-bit BGRA format.
   optional bytes data = 5;
+
+  // DPI of the cursor. This may be absent, which means the active display's DPI
+  // will be used. It is recommended to set this field, since the cursor shape
+  // may not come from the active display.
+  optional int32 dpi = 6;
 }
 
 message Capabilities {
@@ -119,6 +126,24 @@ message ExtensionMessage {
   optional string data = 2;
 }
 
+// This message describes the geometry and resolution of a single display.
+// For legacy video-layout messages, the geometry (x, y, width, height) is
+// specified in DIPs (device independent pixels). For extended video-layout
+// messages, the geometry is specified in "virtual screen" or "global
+// display" coordinates. See for example:
+// https://learn.microsoft.com/en-us/windows/win32/gdi/the-virtual-screen
+// https://developer.apple.com/documentation/coregraphics/1455788-cgeventgetlocation
+//
+// Each display may be mapped into this coordinate system according to its size
+// in pixels or in DIPs. If `pixel_type` is specified in the parent
+// `VideoLayout` message, then it will be used, otherwise it will be inferred
+// based on the host OS: on Windows and Linux/X11, displays are mapped in
+// pixels; on Mac and ChromeOS, displays are mapped in DIPs. All extended layout
+// messages are sent in global display coordinates.
+//
+// The same global display coordinates are used for injecting mouse events with
+// legacy (x, y) properties. But this fact is not important for newer hosts
+// which support fractional coordinates and ignore the legacy properties.
 message VideoTrackLayout {
   // Unique display identifier, from ScreenId in desktop_capture_types.h.
   // In client-to-host messages, an unset screen_id indicates that the client is
@@ -131,15 +156,17 @@ message VideoTrackLayout {
   optional string media_stream_id = 1;
 
   // Position of the top left corner of the rectangle covered by the video
-  // track in DIPs (device independent pixels).
+  // track. See earlier comments for the units of measurement.
   optional int32 position_x = 2;
   optional int32 position_y = 3;
 
-  // Size of the area covered by the video track in DIPs.
+  // Size of the area covered by the video track. See earlier comments for
+  // the units of measurement.
   optional int32 width = 4;
   optional int32 height = 5;
 
   // DPI of the screen.
+  // TODO(yuweih): Deprecate `y_dpi` and rename `x_dpi` to just `dpi`.
   optional int32 x_dpi = 6;
   optional int32 y_dpi = 7;
 
@@ -150,6 +177,17 @@ message VideoTrackLayout {
 }
 
 message VideoLayout {
+  enum PixelType {
+    UNSPECIFIED_PIXEL_TYPE = 0;
+
+    // Measurements are in physical screen pixels.
+    PHYSICAL = 1;
+
+    // Measurements are in logical pixels, aka. density-independent pixels
+    // (DIPs).
+    LOGICAL = 2;
+  }
+
   // Layout for each video track.
   repeated VideoTrackLayout video_track = 1;
 
@@ -158,11 +196,21 @@ message VideoLayout {
   optional bool supports_full_desktop_capture = 2;
 
   // Screen ID of the display to be associated with the main window on the
-  // client. Optional. If not set, the client will choose a sensible display to
-  // be associated with the main window.
+  // client. If not set, the client will choose a sensible display to be
+  // associated with the main window.
   //
   // This field is ignored in client-to-host messages.
   optional int64 primary_screen_id = 3;
+
+  // The type of pixels used for the video layout. Logical pixels are preferred
+  // because they preserve the density-independent display size on the client in
+  // show-all-displays mode, and the client does not support mixed-DPI layouts
+  // with physical pixels very well.
+  // If unspecified, physical pixels are assumed if the host is Windows or
+  // Linux, and logical pixels are assumed otherwise. The default behavior is
+  // only for compatibility with older hosts, and new hosts should always
+  // specify this field.
+  optional PixelType pixel_type = 4;
 }
 
 message SelectDesktopDisplayRequest {
@@ -226,4 +274,15 @@ message PeerConnectionParameters {
 // Next ID: 2
 message ActiveDisplay {
   optional int64 screen_id = 1;
+}
+
+// The position of the mouse cursor on the host. If the client receives a
+// HostCursorPosition with the fractional_coordinate, it should render the
+// host's cursor at the specified position. This may happen if relative mouse
+// mode is enabled, or a local mouse input is detected. If a client receives a
+// HostCursorPosition without the fractional_coordinate, it should hide the
+// host's cursor and revert to tracking the cursor position locally.
+// Next ID: 2
+message HostCursorPosition {
+  optional FractionalCoordinate fractional_coordinate = 1;
 }

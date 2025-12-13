@@ -12,7 +12,6 @@
 
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "components/invalidation/public/invalidation.h"
 
 namespace gcm {
 class GCMDriver;
@@ -24,19 +23,32 @@ class InstanceIDDriver;
 
 namespace invalidation {
 
-// For the migration from topic based (Fandango) invalidations to direct
-// message invalidations, this is a thin wrapper around the topic based
-// invalidations. The only reason for having this is to provide the `type`
-// method in the interface (as opposed to using the `topic` method).
-// TODO(b/350013667) Once we fully migrated to direct message
-// invalidations, we can delete `invalidation::Invalidation` and rename this to
-// Invalidation.
-class DirectInvalidation : public invalidation::Invalidation {
+// An invalidation message.
+// Represents a call for action with a specific `type()` and an optional `payload()`.
+class DirectInvalidation {
  public:
-  using invalidation::Invalidation::Invalidation;
+  DirectInvalidation(std::string type, int64_t version, std::string payload);
+  DirectInvalidation(const DirectInvalidation& other);
+  DirectInvalidation& operator=(const DirectInvalidation& other);
+  ~DirectInvalidation();
 
-  std::string type() const;
+  // Compares two invalidations.
+  constexpr bool operator==(const DirectInvalidation&) const = default;
+
+  const std::string& type() const { return type_; }
+  int64_t version() const { return version_; }
   base::Time issue_timestamp() const;
+  const std::string& payload() const { return payload_; }
+
+ private:
+  // The type to which this invalidation belongs.
+  std::string type_;
+
+  // The version number of this invalidation.
+  int64_t version_;
+
+  // The payload associated with this invalidation.
+  std::string payload_;
 };
 
 // Interface to handle obtained registration tokens.

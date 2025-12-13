@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(JourneyLoggerTest, NoPaymentMethodSupported) {
   // Launch the payment request without installing the payment app.
   content::EvalJsResult eval_js_result =
       content::EvalJs(GetActiveWebContents(), "launch()");
-  ASSERT_TRUE(eval_js_result.error.empty());
+  ASSERT_TRUE(eval_js_result.is_ok());
   EXPECT_THAT(eval_js_result.ExtractString(),
               testing::StartsWith("NotSupportedError"));
 
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(JourneyLoggerTest,
   // Launch the payment request without installing the payment app.
   content::EvalJsResult eval_js_result =
       content::EvalJs(GetActiveWebContents(), "noSupportedPromise()");
-  ASSERT_TRUE(eval_js_result.error.empty());
+  ASSERT_TRUE(eval_js_result.is_ok());
   EXPECT_THAT(eval_js_result.ExtractString(),
               testing::StartsWith("NotSupportedError"));
 

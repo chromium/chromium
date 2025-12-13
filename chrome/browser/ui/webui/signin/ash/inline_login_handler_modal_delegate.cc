@@ -15,7 +15,8 @@ InlineLoginHandlerModalDelegate::InlineLoginHandlerModalDelegate(
 InlineLoginHandlerModalDelegate::~InlineLoginHandlerModalDelegate() = default;
 
 web_modal::WebContentsModalDialogHost*
-InlineLoginHandlerModalDelegate::GetWebContentsModalDialogHost() {
+InlineLoginHandlerModalDelegate::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
   return host_;
 }
 

@@ -42,10 +42,7 @@ source_set("braille_display_private") {
   ]
 
   if (is_chromeos) {
-    deps += [
-      "//chrome/browser/ash/accessibility",
-      "//chrome/browser/ash/login/lock",
-    ]
+    deps += [ "//chrome/browser/ash/accessibility" ]
   }
 
   if (use_brlapi) {

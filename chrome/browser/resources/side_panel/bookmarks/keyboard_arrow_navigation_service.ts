@@ -127,25 +127,20 @@ export class KeyArrowNavigationService {
     return [...this.elements_];
   }
 
-  private handleKeyArrowEvent_(event: KeyboardEvent) {
-    const {key} = event;
-
-    if (!(key === 'ArrowUp' || key === 'ArrowDown')) {
-      return;
-    }
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (key === 'ArrowUp') {
-      this.moveFocus_(-1);
-    }
-    if (key === 'ArrowDown') {
-      this.moveFocus_(1);
-    }
+  /**
+   * Returns the amount of focusable elements in the current list.
+   *
+   * @returns Number of tree elements
+   */
+  getElementCount(): number {
+    return this.elements_.length;
   }
 
-  private moveFocus_(direction: -1|1) {
+  /**
+   * Moves the focus on the current tree to either the next or the previous
+   * element depending on the direction that is passed in.
+   */
+  moveFocus(direction: -1|1) {
     if (this.focusIndex_ + direction > this.elements_.length - 1) {
       this.focusIndex_ = 0;
       this.focusCurrentIndex_();
@@ -159,6 +154,24 @@ export class KeyArrowNavigationService {
 
     this.focusIndex_ += direction;
     this.focusCurrentIndex_();
+  }
+
+  private handleKeyArrowEvent_(event: KeyboardEvent) {
+    const {key} = event;
+
+    if (!(key === 'ArrowUp' || key === 'ArrowDown')) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (key === 'ArrowUp') {
+      this.moveFocus(-1);
+    }
+    if (key === 'ArrowDown') {
+      this.moveFocus(1);
+    }
   }
 
   private focusCurrentIndex_() {

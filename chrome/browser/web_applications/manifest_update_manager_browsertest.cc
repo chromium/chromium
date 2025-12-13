@@ -109,6 +109,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "skia/ext/image_operations.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -142,6 +143,9 @@
 namespace web_app {
 
 namespace {
+
+using ShortcutOsSizeColor =
+    std::vector<std::pair<std::pair<int, int>, SkColor>>;
 
 // Note: When adding new tests and any bitmap resources they may require, please
 // make sure the filename reflects the actual pixel size of the bitmap and that
@@ -334,7 +338,10 @@ class ManifestUpdateManagerBrowserTest : public WebAppBrowserTestBase {
  public:
   ManifestUpdateManagerBrowserTest()
       : update_dialog_scope_(SetIdentityUpdateDialogActionForTesting(
-            AppIdentityUpdate::kSkipped)) {}
+            AppIdentityUpdate::kSkipped)) {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kWebAppPredictableAppUpdating);
+  }
   ManifestUpdateManagerBrowserTest(const ManifestUpdateManagerBrowserTest&) =
       delete;
   ManifestUpdateManagerBrowserTest& operator=(
@@ -393,10 +400,8 @@ class ManifestUpdateManagerBrowserTest : public WebAppBrowserTestBase {
   // contains an icon family that matches exactly the color specified in
   // `expectations`. The latter is a vector mapping (size, os) to an SK_Color
   // value.
-  void ConfirmShortcutColors(
-      const webapps::AppId& app_id,
-      const std::vector<std::pair<std::pair<int, int>, SkColor>>&
-          expectations) {
+  void ConfirmShortcutColors(const webapps::AppId& app_id,
+                             const ShortcutOsSizeColor& expectations) {
     GetProvider().os_integration_manager().GetShortcutInfoForAppFromRegistrar(
         app_id, base::BindOnce(
                     &ManifestUpdateManagerBrowserTest::OnShortcutInfoRetrieved,
@@ -2530,7 +2535,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   const WebApp* web_app = GetProvider().registrar_unsafe().GetAppById(app_id);
   EXPECT_FALSE(web_app->file_handlers().empty());
   const auto& file_handler = web_app->file_handlers()[0];
-  EXPECT_EQ("plaintext", file_handler.action.query());
+  EXPECT_EQ("plaintext", file_handler.action.GetQuery());
   EXPECT_EQ(1u, file_handler.accept.size());
   EXPECT_EQ("text/plain", file_handler.accept[0].mime_type);
 }
@@ -3365,12 +3370,6 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   EXPECT_LT(manifest_update_time, web_app->manifest_update_time());
 }
 
-class ManifestUpdateManagerIconUpdatingBrowserTest
-    : public ManifestUpdateManagerBrowserTest {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kWebAppManifestIconUpdating};
-};
-
 IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_UpdateDialog,
                        CheckFindsIconContentChange) {
   constexpr char kManifest[] = R"(
@@ -3438,114 +3437,6 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_UpdateDialog,
 
     EXPECT_EQ(ReadAppIconPixel(app_id, /*size=*/256), SK_ColorGREEN);
   }
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
-                       CheckFindsIconUrlChange) {
-  constexpr char kManifestTemplate[] = R"(
-    {
-      "name": "Test app name",
-      "start_url": ".",
-      "scope": "/",
-      "display": "standalone",
-      "icons": $1
-    }
-  )";
-  OverrideManifest(kManifestTemplate, {kInstallableIconList});
-  webapps::AppId app_id = InstallWebApp();
-
-  OverrideManifest(kManifestTemplate, {kAnotherInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
-            ManifestUpdateResult::kAppUpdated);
-  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
-                                      ManifestUpdateResult::kAppUpdated, 1);
-
-  histogram_tester_.ExpectBucketCount("WebApp.Icon.DownloadedResultOnUpdate",
-                                      IconsDownloadedResult::kCompleted, 1);
-
-  histogram_tester_.ExpectBucketCount(
-      "WebApp.Icon.DownloadedHttpStatusCodeOnUpdate",
-      net::HttpStatusCode::HTTP_OK, 1);
-
-  // The icon should have changed.
-  ConfirmShortcutColors(
-      app_id, {{{32, kAll}, kAnotherInstallableIconTopLeftColor},
-               {{48, kAll}, kAnotherInstallableIconTopLeftColor},
-               {{64, kWin}, kAnotherInstallableIconTopLeftColor},
-               {{96, kWin}, kAnotherInstallableIconTopLeftColor},
-               {{128, kAll}, kAnotherInstallableIconTopLeftColor},
-               {{256, kAll}, kAnotherInstallableIconTopLeftColor},
-               {{512, kNotWin}, kAnotherInstallableIconTopLeftColor}});
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
-                       CheckIgnoresIconDownloadFail) {
-  constexpr char kManifest[] = R"(
-    {
-      "name": "Test app name",
-      "start_url": ".",
-      "scope": "/",
-      "display": "standalone",
-      "icons": [
-        {
-          "src": "/web_apps/basic-48.png?ignore",
-          "sizes": "48x48",
-          "type": "image/png"
-        },
-        {
-          "src": "/web_apps/basic-192.png?ignore",
-          "sizes": "192x192",
-          "type": "image/png"
-        }
-      ]
-    }
-  )";
-  OverrideManifest(kManifest, {});
-  webapps::AppId app_id = InstallWebApp();
-
-  histogram_tester_.ExpectBucketCount("WebApp.Icon.DownloadedResultOnCreate",
-                                      IconsDownloadedResult::kCompleted, 1);
-
-  histogram_tester_.ExpectBucketCount(
-      "WebApp.Icon.DownloadedHttpStatusCodeOnCreate",
-      net::HttpStatusCode::HTTP_OK, 1);
-
-  // Make basic-48.png fail to download.
-  // Replace the contents of basic-192.png with blue-192.png without changing
-  // the URL.
-  content::URLLoaderInterceptor url_interceptor(base::BindLambdaForTesting(
-      [this](content::URLLoaderInterceptor::RequestParams* params)
-          -> bool /*intercepted*/ {
-        if (params->url_request.url ==
-            http_server_.GetURL("/web_apps/basic-48.png?ignore")) {
-          content::URLLoaderInterceptor::WriteResponse("malformed response", "",
-                                                       params->client.get());
-          return true;
-        }
-        if (params->url_request.url ==
-            http_server_.GetURL("/web_apps/basic-192.png?ignore")) {
-          content::URLLoaderInterceptor::WriteResponse(
-              "chrome/test/data/web_apps/blue-192.png", params->client.get());
-          return true;
-        }
-        return false;
-      }));
-
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
-            ManifestUpdateResult::kIconDownloadFailed);
-  histogram_tester_.ExpectBucketCount(
-      kUpdateHistogramName, ManifestUpdateResult::kIconDownloadFailed, 1);
-
-  // The `url_interceptor` above can't simulate net::HttpStatusCode error
-  // properly, WebApp.Icon.DownloadedHttpStatusCodeOnUpdate left untested here.
-  histogram_tester_.ExpectBucketCount(
-      "WebApp.Icon.DownloadedResultOnUpdate",
-      IconsDownloadedResult::kAbortedDueToFailure, 1);
-
-  // Since one request failed, none of the icons should be updated. So the '192'
-  // size here is not updated to blue.
-  EXPECT_EQ(ReadAppIconPixel(app_id, /*size=*/48), SK_ColorBLACK);
-  EXPECT_EQ(ReadAppIconPixel(app_id, /*size=*/192), SK_ColorBLACK);
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
@@ -4063,13 +3954,13 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ManifestId,
   )";
   OverrideManifest(kManifestTemplate, {"/startA", kInstallableIconList});
   webapps::AppId app_id = InstallWebApp();
-  EXPECT_EQ(GetProvider().registrar_unsafe().GetAppStartUrl(app_id).path(),
+  EXPECT_EQ(GetProvider().registrar_unsafe().GetAppStartUrl(app_id).GetPath(),
             "/startA");
 
   OverrideManifest(kManifestTemplate, {"/startB", kInstallableIconList});
   EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
-  EXPECT_EQ(GetProvider().registrar_unsafe().GetAppStartUrl(app_id).path(),
+  EXPECT_EQ(GetProvider().registrar_unsafe().GetAppStartUrl(app_id).GetPath(),
             "/startB");
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -4194,10 +4085,6 @@ class ManifestUpdateManagerBrowserTest_ScopeExtensions
     OverrideManifest(kScopeExtensionsManifestTemplate,
                      {kInstallableIconList, substitution});
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kWebAppEnableScopeExtensions};
 };
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
@@ -5003,8 +4890,11 @@ enum AppIdTestParam {
   kActionRemoveUnimportantIcon = 1 << 16,
   kActionSwitchFromLauncher = 1 << 17,
   kActionSwitchToLauncher = 1 << 18,
+  kWithFlagTrustedIconsEnabled = 1 << 19,
 };
 
+// TODO(crbug.com/403253129): Deprecate this test once predictable app updating
+// is launched.
 class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
     : public ManifestUpdateManagerBrowserTest,
       public testing::WithParamInterface<
@@ -5024,6 +4914,11 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
     } else {
       disabled_features.push_back(
           features::kWebAppManifestPolicyAppIdentityUpdate);
+    }
+    if (IsTrustedIconsEnabled()) {
+      enabled_features.push_back(features::kWebAppUsePrimaryIcon);
+    } else {
+      disabled_features.push_back(features::kWebAppUsePrimaryIcon);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -5111,6 +5006,11 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
     return std::get<0>(GetParam()) & AppIdTestParam::kActionSwitchToLauncher;
   }
 
+  bool IsTrustedIconsEnabled() const {
+    return std::get<2>(GetParam()) &
+           AppIdTestParam::kWithFlagTrustedIconsEnabled;
+  }
+
   // This function describes in which scenarios the test should expect the title
   // of an app to change. It should mirror exactly the expectations we have of
   // the implementation and be simple to read for easy verification.
@@ -5195,6 +5095,9 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
       result += "PolicyCanUpdate_";
     if (flags & AppIdTestParam::kWithFlagAppIdDialogForIcon)
       result += "WithAppIdDlgForIcon_";
+    if (flags & AppIdTestParam::kWithFlagTrustedIconsEnabled) {
+      result += "WithTrustedIconsEnabled_";
+    }
 
     return result;
   }
@@ -5363,25 +5266,23 @@ IN_PROC_BROWSER_TEST_P(
   // to find auto-generated icons for size 64 and 96 only on Windows. Similarly,
   // size 512 is not part of `kDesiredIconSizesForShortcut` on Windows, and
   // that size therefore does not always feature in the shortcut expectations.
-  std::vector<std::pair<std::pair<int, int>, SkColor>>
-      expected_shortcut_colors_before = {
-          {{32, kAll}, SK_ColorYELLOW},
-          {{48, kAll}, SK_ColorYELLOW},
-          // Although sizes 64 and 96 are within the SizesToGenerate() list they
-          // are listed in `kDesiredIconSizesForShortcut` on Windows only.
-          {{64, kWin}, SK_ColorGREEN},
-          {{96, kWin}, SK_ColorGREEN},
-          {{128, kAll}, SK_ColorGREEN},
-          {{256, kMac}, SK_ColorGREEN},
-          {{256, kNotMac}, SK_ColorBLUE},
-          // The tests use size 512 as the icon size that guarantees that the
-          // installability requirements are met, but that size is not listed as
-          // a desired shortcut size on Windows.
-          {{512, kNotWin}, SK_ColorBLUE}};
+  ShortcutOsSizeColor expected_shortcut_colors_before = {
+      {{32, kAll}, SK_ColorYELLOW},
+      {{48, kAll}, SK_ColorYELLOW},
+      // Although sizes 64 and 96 are within the SizesToGenerate() list they
+      // are listed in `kDesiredIconSizesForShortcut` on Windows only.
+      {{64, kWin}, SK_ColorGREEN},
+      {{96, kWin}, SK_ColorGREEN},
+      {{128, kAll}, SK_ColorGREEN},
+      {{256, kMac}, SK_ColorGREEN},
+      {{256, kNotMac}, SK_ColorBLUE},
+      // The tests use size 512 as the icon size that guarantees that the
+      // installability requirements are met, but that size is not listed as
+      // a desired shortcut size on Windows.
+      {{512, kNotWin}, SK_ColorBLUE}};
 
   // This needs to be populated for each test below.
-  std::vector<std::pair<std::pair<int, int>, SkColor>>
-      expected_shortcut_colors_if_updated;
+  ShortcutOsSizeColor expected_shortcut_colors_if_updated;
 
   if (LauncherIconUpdate() && InstallIconUpdate()) {
     ending_stage =
@@ -5571,7 +5472,19 @@ IN_PROC_BROWSER_TEST_P(
                                         ManifestUpdateResult::kAppUpdated, 0);
   }
 
-  if (ExpectIconUpdate()) {
+  bool manifest_icons_considered_trusted =
+      IsDefaultApp() || IsPolicyApp() || IsKioskApp();
+
+  // If trusted icons are enabled, the largest icon will be chosen for all OSes,
+  // which is 512.
+  if (IsTrustedIconsEnabled() && !manifest_icons_considered_trusted) {
+    ShortcutOsSizeColor expected_colors_post_trusted_icon_launch = {
+        {{32, kAll}, SK_ColorBLUE},     {{48, kAll}, SK_ColorBLUE},
+        {{64, kWin}, SK_ColorBLUE},     {{96, kWin}, SK_ColorBLUE},
+        {{128, kAll}, SK_ColorBLUE},    {{256, kMac}, SK_ColorBLUE},
+        {{256, kNotMac}, SK_ColorBLUE}, {{512, kNotWin}, SK_ColorBLUE}};
+    ConfirmShortcutColors(app_id, expected_colors_post_trusted_icon_launch);
+  } else if (ExpectIconUpdate()) {
     ConfirmShortcutColors(app_id, expected_shortcut_colors_if_updated);
   } else {
     ConfirmShortcutColors(app_id, expected_shortcut_colors_before);
@@ -5604,7 +5517,8 @@ INSTANTIATE_TEST_SUITE_P(
                         AppIdTestParam::kWithFlagAppIdDialogForIcon,
                         AppIdTestParam::kWithFlagPolicyAppIdentity,
                         AppIdTestParam::kWithFlagPolicyAppIdentity |
-                            AppIdTestParam::kWithFlagAppIdDialogForIcon)),
+                            AppIdTestParam::kWithFlagAppIdDialogForIcon,
+                        AppIdTestParam::kWithFlagTrustedIconsEnabled)),
     ManifestUpdateManagerBrowserTest_AppIdentityParameterized::ParamToString);
 
 }  // namespace web_app

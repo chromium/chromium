@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -16,11 +17,11 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/device_reauth/device_reauth_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -52,8 +53,7 @@ class MockSystemAuthenticator : public AuthenticatorWinInterface {
 class DeviceAuthenticatorWinTest : public testing::Test {
  public:
   DeviceAuthenticatorWinTest()
-      : testing_local_state_(TestingBrowserProcess::GetGlobal()),
-        device_authenticator_params_(
+      : device_authenticator_params_(
             kAuthValidityPeriod,
             device_reauth::DeviceAuthSource::kPasswordManager,
             kHistogramName) {}
@@ -73,7 +73,9 @@ class DeviceAuthenticatorWinTest : public testing::Test {
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
-  ScopedTestingLocalState& local_state() { return testing_local_state_; }
+  PrefService* local_state() {
+    return TestingBrowserProcess::GetGlobal()->local_state();
+  }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
@@ -91,7 +93,6 @@ class DeviceAuthenticatorWinTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   DeviceAuthenticatorProxy proxy_;
   std::unique_ptr<DeviceAuthenticatorWin> authenticator_;
-  ScopedTestingLocalState testing_local_state_;
   device_reauth::DeviceAuthParams device_authenticator_params_;
   base::HistogramTester histogram_tester_;
 
@@ -163,24 +164,24 @@ TEST_F(DeviceAuthenticatorWinTest, ReauthenticationIfPreviousFailed) {
 
 // Checks if CanAuthenticateWithBiometrics returns a valid pref value.
 TEST_F(DeviceAuthenticatorWinTest, CanAuthenticateWithBiometrics) {
-  local_state().Get()->SetBoolean(
-      password_manager::prefs::kIsBiometricAvailable, true);
+  local_state()->SetBoolean(password_manager::prefs::kIsBiometricAvailable,
+                            true);
   EXPECT_TRUE(authenticator()->CanAuthenticateWithBiometrics());
 
-  local_state().Get()->SetBoolean(
-      password_manager::prefs::kIsBiometricAvailable, false);
+  local_state()->SetBoolean(password_manager::prefs::kIsBiometricAvailable,
+                            false);
   EXPECT_FALSE(authenticator()->CanAuthenticateWithBiometrics());
 }
 
 // Checks if CanAuthenticateWithBiometricOrScreenLock returns the correct
 // response based on whether biometric or screen lock is available.
 TEST_F(DeviceAuthenticatorWinTest, CanAuthenticateWithBiometricOrScreenLock) {
-  local_state().Get()->SetBoolean(
-      password_manager::prefs::kIsBiometricAvailable, true);
+  local_state()->SetBoolean(password_manager::prefs::kIsBiometricAvailable,
+                            true);
   EXPECT_TRUE(authenticator()->CanAuthenticateWithBiometricOrScreenLock());
 
-  local_state().Get()->SetBoolean(
-      password_manager::prefs::kIsBiometricAvailable, false);
+  local_state()->SetBoolean(password_manager::prefs::kIsBiometricAvailable,
+                            false);
   ON_CALL(system_authenticator(), CanAuthenticateWithScreenLock)
       .WillByDefault(testing::Return(true));
   EXPECT_TRUE(authenticator()->CanAuthenticateWithBiometricOrScreenLock());
@@ -253,7 +254,7 @@ TEST_P(DeviceAuthenticatorWinTestAvailability, AvailabilityCheck) {
   EXPECT_EQ(test_case.expected_result,
             authenticator()->CanAuthenticateWithBiometrics());
   EXPECT_EQ(test_case.expected_result,
-            local_state().Get()->GetBoolean(
+            local_state()->GetBoolean(
                 password_manager::prefs::kHadBiometricsAvailable));
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.BiometricAvailabilityWin", test_case.expected_bucket, 1);

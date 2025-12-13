@@ -22,6 +22,9 @@
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_list_item_custom_action_factory.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_list_item_factory.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_table_view_item.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -35,7 +38,6 @@ namespace reading_list {
 
 // ReadingListMediatorTest is parameterized on this enum to test both
 // FaviconAttributesProvider and FaviconLoader.
-// TODO(crbug.com/41410664): Remove as part of UIRefresh cleanup.
 enum class FaviconServiceType {
   FAVICON_LOADER,
   ATTRIBUTES_PROVIDER,
@@ -60,22 +62,27 @@ class ReadingListMediatorTest
     // The first 3 have the same update time on purpose.
     model_->AddOrReplaceEntry(GURL("http://chromium.org/unread1"), "unread1",
                               reading_list::ADDED_VIA_CURRENT_APP,
-                              /*estimated_read_time=*/base::TimeDelta());
+                              /*estimated_read_time=*/std::nullopt,
+                              /*creation_time=*/std::nullopt);
     model_->AddOrReplaceEntry(GURL("http://chromium.org/read1"), "read1",
                               reading_list::ADDED_VIA_CURRENT_APP,
-                              /*estimated_read_time=*/base::TimeDelta());
+                              /*estimated_read_time=*/std::nullopt,
+                              /*creation_time=*/std::nullopt);
     model_->SetReadStatusIfExists(GURL("http://chromium.org/read1"), true);
     model_->AddOrReplaceEntry(GURL("http://chromium.org/unread2"), "unread2",
                               reading_list::ADDED_VIA_CURRENT_APP,
-                              /*estimated_read_time=*/base::TimeDelta());
+                              /*estimated_read_time=*/std::nullopt,
+                              /*creation_time=*/std::nullopt);
     clock_.Advance(base::Milliseconds(10));
     model_->AddOrReplaceEntry(no_title_entry_url_, "",
                               reading_list::ADDED_VIA_CURRENT_APP,
-                              /*estimated_read_time=*/base::TimeDelta());
+                              /*estimated_read_time=*/std::nullopt,
+                              /*creation_time=*/std::nullopt);
     clock_.Advance(base::Milliseconds(10));
     model_->AddOrReplaceEntry(GURL("http://chromium.org/read2"), "read2",
                               reading_list::ADDED_VIA_CURRENT_APP,
-                              /*estimated_read_time=*/base::TimeDelta());
+                              /*estimated_read_time=*/std::nullopt,
+                              /*creation_time=*/std::nullopt);
     model_->SetReadStatusIfExists(GURL("http://chromium.org/read2"), true);
 
     mediator_ = [[ReadingListMediator alloc]

@@ -47,17 +47,8 @@ struct PaintPreviewCaptureParams {
   // GUID for the Paint Preview (used to associate subframes to main frame).
   mojo_base.mojom.UnguessableToken guid;
 
-  // Clip rect for the capture. An empty |clip_rect| will be treated as
-  // unclipped and will default to the frame (document) size. Values for
-  // width/height larger than the document size will be clamped to the
-  // size of the document.
-  //
-  // A value of -1 for x/y will center the x/y position of the capture
-  // about the current scroll offset if a width/height are specified.
-  gfx.mojom.Rect clip_rect;
-
-  // Set to true if the clip rect is only a hint as to size.
-  bool clip_rect_is_hint;
+  // Params that control the geometry/placement of the capture.
+  GeometryMetadataParams geometry_metadata_params;
 
   // Used to identify if the capture request is for the main frame.
   bool is_main_frame;
@@ -113,6 +104,35 @@ struct PaintPreviewCaptureResponse {
   // The size of the resulting serialized capture.
   uint64 serialized_size;
 
+  // Metadata about the geometry/placement of the capture.
+  GeometryMetadataResponse geometry_metadata;
+
+  // The serialized skia picture. See |SerializedRecording| for details on
+  // contents.
+  //
+  // null if not |RecordingPersistence::MemoryBuffer|.
+  mojo_base.mojom.BigBuffer? skp;
+};
+
+struct GeometryMetadataParams {
+  // Clip rect for the capture. An empty |clip_rect| will be treated as
+  // unclipped and will default to the frame (document) size. Values for
+  // width/height larger than the document size will be clamped to the
+  // size of the document.
+  gfx.mojom.Rect clip_rect;
+
+  // If not `kNone`, overrides `clip_rect`'s x coordinate with a
+  // renderer-computed value.
+  ClipCoordOverride clip_x_coord_override = kNone;
+  // If not `kNone`, overrides `clip_rect`'s y coordinate with a
+  // renderer-computed value.
+  ClipCoordOverride clip_y_coord_override = kNone;
+
+  // Set to true if the clip rect is only a hint as to size.
+  bool clip_rect_is_hint;
+};
+
+struct GeometryMetadataResponse {
   // Scroll offsets of the viewport relative to the captured region of the
   // frame at capture time.
   gfx.mojom.Point scroll_offsets;
@@ -120,12 +140,6 @@ struct PaintPreviewCaptureResponse {
   // Offset of the captured content relative to the top-left corner of the
   // captured frame.
   gfx.mojom.Point frame_offsets;
-
-  // The serialized skia picture. See |SerializedRecording| for details on
-  // contents.
-  //
-  // null if not |RecordingPersistence::MemoryBuffer|.
-  mojo_base.mojom.BigBuffer? skp;
 };
 
 // Service for capturing a paint preview of a RenderFrame's contents. This
@@ -139,9 +153,13 @@ interface PaintPreviewRecorder {
   // via the RenderFrameProxy. The browser handles dispatching these requests to
   // the correct RenderFrame and aggregating all the outputs.
   //
-  // Returns a status, and if |status| == kOK a valid instance of
-  // PaintPreviewCaptureResponse.
+  // Returns a valid instance of PaintPreviewCaptureResponse, or a status code
+  // on error.
   CapturePaintPreview(PaintPreviewCaptureParams params) =>
-    (PaintPreviewStatus status,
-     PaintPreviewCaptureResponse response);
+    result<PaintPreviewCaptureResponse, PaintPreviewStatus>;
+
+  // Computes the geometry that would be used for a capture with the given
+  // geometry params. Returns null if the geometry couldn't be calculated.
+  GetGeometryMetadata(GeometryMetadataParams params) =>
+    (GeometryMetadataResponse? response);
 };

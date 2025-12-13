@@ -64,7 +64,7 @@ class AwWebMessageHost : public js_injection::WebMessageHost {
 }  // namespace
 
 AwWebMessageHostFactory::AwWebMessageHostFactory(
-    const base::android::JavaParamRef<jobject>& listener)
+    const base::android::JavaRef<jobject>& listener)
     : listener_(listener) {}
 
 AwWebMessageHostFactory::~AwWebMessageHostFactory() = default;
@@ -99,3 +99,6 @@ AwWebMessageHostFactory::CreateHost(const std::string& top_level_origin_string,
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(WebMessageListenerHolder)
+DEFINE_JNI(WebMessageListenerInfo)

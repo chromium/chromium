@@ -38,10 +38,8 @@ PrintPreviewCrosDelegate::GetWebAppInfo() const {
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
 
-  // TODO(b/323585997): Localize title.
   info->title = kPrintPreviewCrosTitle;
 
-  // TODO(b/323421684): Replace with actual app icons when available.
   web_app::CreateIconInfoForSystemWebApp(
       info->start_url(),
       {{"app_icon_192.png", 192,

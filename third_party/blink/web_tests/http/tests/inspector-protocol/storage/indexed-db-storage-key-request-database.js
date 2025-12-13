@@ -5,7 +5,7 @@
       `(await navigator.storageBuckets.open('${bucketName}'))`;
     const frameId = (await dp.Page.getResourceTree()).result.frameTree.frame.id;
     const storageKey =
-      (await dp.Storage.getStorageKeyForFrame({ frameId })).result.storageKey;
+        (await dp.Storage.getStorageKey({frameId})).result.storageKey;
     const bucketPromise = (async () => {
       dp.Storage.setStorageBucketTracking({ storageKey, enable: true });
       const { params: { bucketInfo: { bucket } } } =

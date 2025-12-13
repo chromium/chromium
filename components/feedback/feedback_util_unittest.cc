@@ -136,8 +136,7 @@ TEST_F(FeedbackUtilTest, RemoveUrlsFromAutofillData) {
             "mainFrameUrl": "https://www.another-example.com"
           }
         ]})");
-  std::string autofill_data_str;
-  base::JSONWriter::Write(autofill_data, &autofill_data_str);
+  std::string autofill_data_str = base::WriteJson(autofill_data).value_or("");
 
   base::Value::List* form_structures = autofill_data.FindList("formStructures");
   ASSERT_TRUE(form_structures);
@@ -147,8 +146,8 @@ TEST_F(FeedbackUtilTest, RemoveUrlsFromAutofillData) {
     dict.Remove("mainFrameUrl");
   }
 
-  std::string expected_autofill_data_str;
-  base::JSONWriter::Write(autofill_data, &expected_autofill_data_str);
+  std::string expected_autofill_data_str =
+      base::WriteJson(autofill_data).value_or("");
 
   feedback_util::RemoveUrlsFromAutofillData(autofill_data_str);
   EXPECT_EQ(autofill_data_str, expected_autofill_data_str);

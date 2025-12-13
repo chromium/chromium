@@ -8,6 +8,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/memory_coordinator/memory_consumer.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace base {
 
@@ -16,6 +17,7 @@ TestMemoryConsumerRegistry::TestMemoryConsumerRegistry() {
 }
 
 TestMemoryConsumerRegistry::~TestMemoryConsumerRegistry() {
+  NotifyDestruction();
   MemoryConsumerRegistry::Set(nullptr);
 
   CHECK(memory_consumers_.empty());
@@ -25,7 +27,7 @@ void TestMemoryConsumerRegistry::OnMemoryConsumerAdded(
     std::string_view consumer_id,
     MemoryConsumerTraits traits,
     RegisteredMemoryConsumer consumer) {
-  CHECK(!base::Contains(memory_consumers_, consumer));
+  CHECK(!Contains(memory_consumers_, consumer));
   memory_consumers_.push_back(consumer);
 }
 
@@ -46,6 +48,25 @@ void TestMemoryConsumerRegistry::NotifyReleaseMemory() {
   for (RegisteredMemoryConsumer consumer : memory_consumers_) {
     consumer.ReleaseMemory();
   }
+}
+
+void TestMemoryConsumerRegistry::NotifyUpdateMemoryLimitAsync(
+    int percentage,
+    OnceClosure on_notification_sent_callback) {
+  SingleThreadTaskRunner::GetMainThreadDefault()->PostTaskAndReply(
+      FROM_HERE,
+      BindOnce(&TestMemoryConsumerRegistry::NotifyUpdateMemoryLimit,
+               weak_ptr_factory_.GetWeakPtr(), percentage),
+      std::move(on_notification_sent_callback));
+}
+
+void TestMemoryConsumerRegistry::NotifyReleaseMemoryAsync(
+    OnceClosure on_notification_sent_callback) {
+  SingleThreadTaskRunner::GetMainThreadDefault()->PostTaskAndReply(
+      FROM_HERE,
+      BindOnce(&TestMemoryConsumerRegistry::NotifyReleaseMemory,
+               weak_ptr_factory_.GetWeakPtr()),
+      std::move(on_notification_sent_callback));
 }
 
 }  // namespace base

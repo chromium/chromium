@@ -18,7 +18,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using sync_pb::PasswordSharingRecipientsResponse;
-using testing::Invoke;
 using testing::NotNull;
 
 namespace password_manager {

@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//chrome/services/file_util/public/features.gni")
 import("//components/safe_browsing/buildflags.gni")
@@ -22,15 +21,16 @@ source_set("file_util") {
     ":buildflags",
     "//base",
     "//build:chromeos_buildflags",
+    "//components/enterprise/obfuscation/core:enterprise_obfuscation",
     "//components/safe_browsing:buildflags",
-    "//extensions/buildflags:buildflags",
+    "//extensions/buildflags",
     "//mojo/public/cpp/bindings",
     "//third_party/zlib",
   ]
 
   public_deps = [
     "//chrome/services/file_util/public/mojom",
-    "//components/safe_browsing/core/common:common",
+    "//components/safe_browsing/core/common",
     "//mojo/public/cpp/bindings",
     "//mojo/public/mojom/base",
   ]
@@ -52,6 +52,10 @@ source_set("file_util") {
 
   if (safe_browsing_mode == 1) {
     sources += [
+      "obfuscated_archive_analysis_delegate.cc",
+      "obfuscated_archive_analysis_delegate.h",
+      "regular_archive_analysis_delegate.cc",
+      "regular_archive_analysis_delegate.h",
       "safe_archive_analyzer.cc",
       "safe_archive_analyzer.h",
     ]
@@ -60,6 +64,7 @@ source_set("file_util") {
       "//chrome/common/safe_browsing",
       "//chrome/common/safe_browsing:archive_analyzer_results",
       "//chrome/utility/safe_browsing",
+      "//components/enterprise/obfuscation/core:enterprise_obfuscation",
     ]
 
     defines += [ "USE_UNRAR=$safe_browsing_use_unrar" ]
@@ -75,7 +80,7 @@ source_set("file_util") {
       "single_file_tar_xz_file_extractor.h",
     ]
     deps += [
-      "//third_party/lzma_sdk:lzma_sdk",
+      "//third_party/lzma_sdk",
       "//third_party/lzma_sdk:lzma_sdk_xz",
     ]
   }
@@ -112,9 +117,9 @@ source_set("test_support") {
     ":buildflags",
     "//base",
     "//build:chromeos_buildflags",
-    "//chrome/services/file_util/public/mojom:mojom",
+    "//chrome/services/file_util/public/mojom",
     "//components/safe_browsing:buildflags",
-    "//extensions/buildflags:buildflags",
+    "//extensions/buildflags",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//third_party/abseil-cpp:absl",
@@ -138,7 +143,7 @@ if (enable_extractors) {
     ]
 
     if (safe_browsing_mode == 1) {
-      deps += [ "//chrome/common:common" ]
+      deps += [ "//chrome/common" ]
     }
 
     if (is_mac) {

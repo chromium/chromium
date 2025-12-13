@@ -45,9 +45,9 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   ~FileSystemAccessFileHandleImpl() override;
 
   // blink::mojom::FileSystemAccessFileHandle:
-  void GetPermissionStatus(bool writable,
+  void GetPermissionStatus(blink::mojom::FileSystemAccessPermissionMode mode,
                            GetPermissionStatusCallback callback) override;
-  void RequestPermission(bool writable,
+  void RequestPermission(blink::mojom::FileSystemAccessPermissionMode mode,
                          RequestPermissionCallback callback) override;
   void AsBlob(AsBlobCallback callback) override;
   void CreateFileWriter(

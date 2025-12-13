@@ -12,12 +12,13 @@
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_base.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/device_bound_sessions/dbsc_request.h"
+#include "net/device_bound_sessions/session_error.h"
 
 namespace net {
-class URLRequest;
 class CanonicalCookie;
 class FirstPartySetMetadata;
-}
+}  // namespace net
 
 namespace net::device_bound_sessions {
 
@@ -63,9 +64,10 @@ class NET_EXPORT CookieCraving : public CookieBase {
   // Creates a new CookieCraving in the context of `url`, given a `name` and
   // associated cookie `attributes`. (Note that CookieCravings do not have a
   // "value".) `url` must be valid. `creation_time` may not be null. May return
-  // nullopt if an attribute value is invalid. If a CookieCraving is returned,
-  // it will satisfy IsValid(). If there is leading or trailing whitespace in
-  // `name`, it will get trimmed.
+  // a SessionError if the CookieCraving is invalid, such as if an attribute
+  // value is invalid. If a CookieCraving is returned, it will satisfy
+  // IsValid(). If there is leading or trailing whitespace in `name`, it will
+  // get trimmed.
   //
   // Partitioned cookies are not supported. Attempts to create a
   // partitioned CookieCraving will fail.
@@ -92,10 +94,11 @@ class NET_EXPORT CookieCraving : public CookieBase {
   //    secure source_scheme, if that cookie was Secure, on the basis that that
   //    URL might be trustworthy when checked later. CookieCraving does not
   //    allow this.
-  static std::optional<CookieCraving> Create(const GURL& url,
-                                             const std::string& name,
-                                             const std::string& attributes,
-                                             base::Time creation_time);
+  static base::expected<CookieCraving, SessionError> Create(
+      const GURL& url,
+      const std::string& name,
+      const std::string& attributes,
+      base::Time creation_time);
 
   CookieCraving(const CookieCraving& other);
   CookieCraving(CookieCraving&& other);
@@ -120,16 +123,15 @@ class NET_EXPORT CookieCraving : public CookieBase {
   bool IsEqualForTesting(const CookieCraving& other) const;
 
   // May return an invalid instance.
-  static CookieCraving CreateUnsafeForTesting(
-      std::string name,
-      std::string domain,
-      std::string path,
-      base::Time creation,
-      bool secure,
-      bool httponly,
-      CookieSameSite same_site,
-      CookieSourceScheme source_scheme,
-      int source_port);
+  static CookieCraving CreateUnsafeForTesting(std::string name,
+                                              std::string domain,
+                                              std::string path,
+                                              base::Time creation,
+                                              bool secure,
+                                              bool httponly,
+                                              CookieSameSite same_site,
+                                              CookieSourceScheme source_scheme,
+                                              int source_port);
 
   // Returns a protobuf object. May only be called for
   // a valid CookieCraving object.
@@ -144,12 +146,25 @@ class NET_EXPORT CookieCraving : public CookieBase {
   // Whether the craving applies to the given `request`, with other
   // arguments providing context for the access.
   bool ShouldIncludeForRequest(
-      URLRequest* request,
+      DbscRequest& request,
       const FirstPartySetMetadata& first_party_set_metadata,
       const CookieOptions& options,
       const CookieAccessParams& params) const;
 
+  // Whether the craving could be modified by `request`, with other
+  // arguments providing context for the access.
+  bool CanSetBoundCookie(DbscRequest& request,
+                         const FirstPartySetMetadata& first_party_set_metadata,
+                         CookieOptions* options) const;
+
  private:
+  // Creates a CanonicalCookie for this craving in the context of a request to
+  // `url`. Fills in `status` with any exclusion reasons, which answer why this
+  // function may return null.
+  std::unique_ptr<CanonicalCookie> CreateCanonicalCookieForRequest(
+      const GURL& url,
+      CookieInclusionStatus* status) const;
+
   CookieCraving();
 
   // Prefer Create() over this constructor. This may return non-valid instances.

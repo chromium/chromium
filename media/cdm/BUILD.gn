@@ -18,7 +18,7 @@ source_set("cdm_type_conversion") {
     ]
     configs += [ "//media:subcomponent_config" ]
   } else {
-    visibility = [ "//media/cdm/library_cdm/clear_key_cdm:clear_key_cdm" ]
+    visibility = [ "//media/cdm/library_cdm/clear_key_cdm" ]
   }
 
   sources = [
@@ -148,7 +148,7 @@ source_set("cdm") {
 
     libs = [
       "mfuuid.lib",
-      "Propsys.lib",
+      "propsys.lib",
     ]
 
     deps += [

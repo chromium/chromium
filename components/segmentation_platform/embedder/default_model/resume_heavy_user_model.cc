@@ -25,15 +25,17 @@ constexpr SegmentId kSegmentId = SegmentId::RESUME_HEAVY_USER_SEGMENT;
 constexpr int64_t kModelVersion = 2;
 
 // InputFeatures.
-constexpr std::array<MetadataWriter::UMAFeature, 5> kUMAFeatures = {
-    MetadataWriter::UMAFeature::FromUserAction("MobileBookmarkManagerOpen", 7),
-    MetadataWriter::UMAFeature::FromUserAction("NewTabPage.MostVisited.Clicked",
-                                               7),
-    MetadataWriter::UMAFeature::FromUserAction("TabGroup.Created.OpenInNewTab",
-                                               7),
-    MetadataWriter::UMAFeature::FromUserAction("Android.HistoryPage.OpenItem",
-                                               7),
-    MetadataWriter::UMAFeature::FromUserAction("MobileMenuRecentTabs", 7),
+constexpr FeaturePair<ResumeHeavyUserModel::Feature> kFeatures[] = {
+    {ResumeHeavyUserModel::kFeatureMobileBookmarkManagerOpen,
+     features::UserAction("MobileBookmarkManagerOpen", 7)},
+    {ResumeHeavyUserModel::kFeatureNewTabPageMostVisitedClicked,
+     features::UserAction("NewTabPage.MostVisited.Clicked", 7)},
+    {ResumeHeavyUserModel::kFeatureTabGroupCreatedOpenInNewTab,
+     features::UserAction("TabGroup.Created.OpenInNewTab", 7)},
+    {ResumeHeavyUserModel::kFeatureAndroidHistoryPageOpenItem,
+     features::UserAction("Android.HistoryPage.OpenItem", 7)},
+    {ResumeHeavyUserModel::kFeatureMobileMenuRecentTabs,
+     features::UserAction("MobileMenuRecentTabs", 7)},
 };
 
 }  // namespace
@@ -76,7 +78,7 @@ ResumeHeavyUserModel::GetModelConfig() {
       /*time_unit=*/proto::TimeUnit::DAY);
 
   // Set features.
-  writer.AddUmaFeatures(kUMAFeatures.data(), kUMAFeatures.size());
+  writer.AddFeatures<Feature>(kFeatures);
   return std::make_unique<ModelConfig>(std::move(metadata), kModelVersion);
 }
 
@@ -84,23 +86,20 @@ void ResumeHeavyUserModel::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // Invalid inputs.
-  if (inputs.size() != kUMAFeatures.size()) {
+  if (inputs.size() != kFeatureCount) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 
-  const int bookmarks_opened = inputs[0];
-  const int mv_tiles_clicked = inputs[1];
-  const int opened_ntp_from_tab_groups = inputs[2];
-  const int opened_item_from_history = inputs[3];
-  const int opened_recent_tabs = inputs[4];
   float result = 0;
 
   // Determine if the user has used chrome features to resume workflow.
-  if (bookmarks_opened >= 2 || mv_tiles_clicked >= 2 ||
-      opened_ntp_from_tab_groups >= 2 || opened_item_from_history >= 2 ||
-      opened_recent_tabs >= 2) {
+  if (inputs[kFeatureMobileBookmarkManagerOpen] >= 2 ||
+      inputs[kFeatureNewTabPageMostVisitedClicked] >= 2 ||
+      inputs[kFeatureTabGroupCreatedOpenInNewTab] >= 2 ||
+      inputs[kFeatureAndroidHistoryPageOpenItem] >= 2 ||
+      inputs[kFeatureMobileMenuRecentTabs] >= 2) {
     result = 1;
   }
 

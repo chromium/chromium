@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/test/app/mock_reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -74,9 +74,8 @@ class PasswordDetailsCoordinatorTest : public PlatformTest {
 
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
-        base::BindRepeating(
-            &password_manager::BuildPasswordStore<
-                web::BrowserState, password_manager::TestPasswordStore>));
+        base::BindOnce(&password_manager::BuildPasswordStore<
+                       ProfileIOS, password_manager::TestPasswordStore>));
 
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));

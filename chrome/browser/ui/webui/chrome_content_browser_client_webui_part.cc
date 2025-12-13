@@ -8,6 +8,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
@@ -75,7 +76,7 @@ void ChromeContentBrowserClientWebUiPart::OverrideWebPreferences(
   // Set some non-font prefs for webui tabstrip. The tabstrip renderer is never
   // navigated to or from, so we don't need to replicate this logic in
   // OverrideWebPreferencesAfterNavigation.
-  if (url.host_piece() == chrome::kChromeUITabStripHost) {
+  if (url.host() == chrome::kChromeUITabStripHost) {
     web_prefs->touch_drag_drop_enabled = true;
     web_prefs->touch_dragend_context_menu = true;
   }

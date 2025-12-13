@@ -18,7 +18,8 @@ class CORE_EXPORT GrammarMarker final : public SpellCheckMarker {
  public:
   GrammarMarker(unsigned start_offset,
                 unsigned end_offset,
-                const String& description);
+                const String& description,
+                bool should_hide_suggestion_menu = false);
   GrammarMarker(const GrammarMarker&) = delete;
   GrammarMarker& operator=(const GrammarMarker&) = delete;
 

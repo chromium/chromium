@@ -31,13 +31,12 @@ class UserEventServiceImpl : public UserEventService {
   // UserEventService implementation.
   void RecordUserEvent(
       std::unique_ptr<sync_pb::UserEventSpecifics> specifics) override;
-  void RecordUserEvent(const sync_pb::UserEventSpecifics& specifics) override;
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 
  private:
   // Checks dynamic or event specific conditions.
-  bool ShouldRecordEvent(const sync_pb::UserEventSpecifics& specifics);
+  bool ShouldRecordEvent(const sync_pb::UserEventSpecifics& specifics) const;
 
   std::unique_ptr<UserEventSyncBridge> bridge_;
 

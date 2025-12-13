@@ -35,6 +35,10 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/location.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_ANDROID)
 class ProfileManagerAndroid;
 #endif
@@ -113,8 +117,14 @@ class ProfileManager : public Profile::Delegate {
   // E.g., if you need only PrefService of the Profile, you can take it from
   // user_manager::User::GetProfilePrefs(), e.g.:
   //   user_manager::UserManager::Get()->GetPrimaryUser()->GetProfilePrefs().
+  // For the safer migration, we record the callers of unexpected use via
+  // location. It should be always called FROM_HERE as default value.
   // TODO(crbug.com/40227502): Remove this.
-  static Profile* GetPrimaryUserProfile();
+  static Profile* GetPrimaryUserProfile(
+#if BUILDFLAG(IS_CHROMEOS)
+      const base::Location& location = FROM_HERE
+#endif
+  );
 
   // Get the profile for the currently active user.
   // Note that in case of a guest account this will return a 'suitable' profile.
@@ -127,8 +137,14 @@ class ProfileManager : public Profile::Delegate {
   // E.g., if you need only PrefService of the Profile, you can take it from
   // user_manager::User::GetProfilePrefs(), e.g.:
   //   user_manager::UserManager::Get()->GetActiveUser()->GetProfilePrefs().
+  // For the safer migration, we record the callers of unexpected use via
+  // location. It should be always called FROM_HERE as default value.
   // TODO(crbug.com/40227502): Remove this.
-  static Profile* GetActiveUserProfile();
+  static Profile* GetActiveUserProfile(
+#if BUILDFLAG(IS_CHROMEOS)
+      const base::Location& location = FROM_HERE
+#endif
+  );
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -310,8 +326,7 @@ class ProfileManager : public Profile::Delegate {
 
   // Used for testing. Returns true if |profile| has at least one ref of type
   // |origin|.
-  bool HasKeepAliveForTesting(const Profile* profile,
-                              ProfileKeepAliveOrigin origin);
+  bool HasKeepAliveForTesting(Profile* profile, ProfileKeepAliveOrigin origin);
 
   // Disables the periodic reporting of profile metrics, as this is causing
   // tests to time out.
@@ -338,7 +353,7 @@ class ProfileManager : public Profile::Delegate {
   // Removes the kWaitingForFirstBrowserWindow keepalive. This allows a
   // Profile* to be deleted from now on, even if it never had a visible
   // browser window.
-  void ClearFirstBrowserWindowKeepAlive(const Profile* profile);
+  void ClearFirstBrowserWindowKeepAlive(Profile* profile);
 
   // Returns whether |path| is allowed for profile creation.
   bool IsAllowedProfilePath(const base::FilePath& path) const;
@@ -440,10 +455,16 @@ class ProfileManager : public Profile::Delegate {
     bool created_ = false;
   };
 
-  // Increments/decrements the refcount on a |profile|. (it must not be an
-  // off-the-record profile)
-  void AddKeepAlive(const Profile* profile, ProfileKeepAliveOrigin origin);
-  void RemoveKeepAlive(const Profile* profile, ProfileKeepAliveOrigin origin);
+  // Increments/decrements the refcount on a |profile|. It must not be an
+  // off-the-record profile.
+  //
+  // AddKeepAlive() returns true if `profile` is currently owned by
+  // ProfileManager, and the keepalive was successfully added.
+  //
+  // Returns false if the keepalive can't be added, usually because `profile`
+  // is owned by ProfileDestroyer and scheduled for destruction soon.
+  bool AddKeepAlive(Profile* profile, ProfileKeepAliveOrigin origin);
+  void RemoveKeepAlive(Profile* profile, ProfileKeepAliveOrigin origin);
 
   void RecordZombieMetrics();
 

@@ -5,8 +5,7 @@
 #ifndef CHROME_RENDERER_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_REQUEST_THROTTLED_IN_RENDERER_MANAGER_H_
 #define CHROME_RENDERER_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_REQUEST_THROTTLED_IN_RENDERER_MANAGER_H_
 
-#include <memory>
-
+#include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "chrome/common/bound_session_request_throttled_handler.h"
 #include "chrome/common/renderer_configuration.mojom-forward.h"

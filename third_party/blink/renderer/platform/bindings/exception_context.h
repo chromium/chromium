@@ -65,9 +65,6 @@ class PLATFORM_EXPORT ExceptionContext final {
         class_name_(nullptr),
         property_name_(nullptr) {}
 
-  ExceptionContext(v8::ExceptionContext type, const char* class_name)
-      : ExceptionContext(type, class_name, nullptr) {}
-
   ExceptionContext(const ExceptionContext&) = default;
   ExceptionContext(ExceptionContext&&) = default;
   ExceptionContext& operator=(const ExceptionContext&) = default;

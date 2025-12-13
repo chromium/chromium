@@ -28,7 +28,6 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/proto/chrome_extension_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "crypto/rsa_private_key.h"
 #include "crypto/sha2.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -244,7 +243,7 @@ TEST_F(ComponentCloudPolicyUpdaterTest, PolicyFetchResponseBadSignature) {
 
 TEST_F(ComponentCloudPolicyUpdaterTest, PolicyFetchResponseWrongPublicKey) {
   // Submit a policy fetch response signed with a wrong signing key.
-  builder_.SetSigningKey(*PolicyBuilder::CreateTestOtherSigningKey());
+  builder_.SetSigningKey(PolicyBuilder::CreateTestOtherSigningKey());
   updater_->UpdateExternalPolicy(kTestPolicyNS, CreateResponse());
 
   task_env_.RunUntilIdle();
@@ -269,7 +268,7 @@ TEST_F(ComponentCloudPolicyUpdaterTest,
 TEST_F(ComponentCloudPolicyUpdaterTest, PolicyFetchResponseDifferentPublicKey) {
   // Submit a policy fetch response signed with a different key and containing a
   // new public key version.
-  builder_.SetSigningKey(*PolicyBuilder::CreateTestOtherSigningKey());
+  builder_.SetSigningKey(PolicyBuilder::CreateTestOtherSigningKey());
   builder_.policy_data().set_public_key_version(
       PolicyBuilder::kFakePublicKeyVersion + 1);
   updater_->UpdateExternalPolicy(kTestPolicyNS, CreateResponse());

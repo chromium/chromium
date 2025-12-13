@@ -8,9 +8,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -19,6 +18,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/base_window.h"
 #include "url/gurl.h"
 
 namespace {
@@ -102,12 +102,15 @@ class ShareToTargetBrowserTest : public WebAppBrowserTestBase,
   }
 
   static void CloseAppWindows(const webapps::AppId& app_id) {
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      const AppBrowserController* app_controller = browser->app_controller();
-      if (app_controller && app_controller->app_id() == app_id) {
-        browser->window()->Close();
-      }
-    }
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [&app_id](BrowserWindowInterface* browser) {
+          const web_app::AppBrowserController* const app_controller =
+              web_app::AppBrowserController::From(browser);
+          if (app_controller && app_controller->app_id() == app_id) {
+            browser->GetWindow()->Close();
+          }
+          return true;
+        });
   }
 
   webapps::AppId app_id_;

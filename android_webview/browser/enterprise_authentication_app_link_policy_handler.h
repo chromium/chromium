@@ -8,7 +8,7 @@
 #include "android_webview/browser/aw_browser_process.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/policy_error_map.h"
-#include "components/policy/core/browser/url_allowlist_policy_handler.h"
+#include "components/policy/core/browser/url_list/url_allowlist_policy_handler.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/url_matcher/url_util.h"

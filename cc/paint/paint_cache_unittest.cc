@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/paint_cache.h"
 
+#include "base/compiler_specific.h"
 #include "base/hash/hash.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,9 +14,7 @@ namespace {
 constexpr size_t kDefaultBudget = 1024u;
 
 SkPath CreatePath() {
-  SkPath path;
-  path.addCircle(2, 2, 5);
-  return path;
+  return SkPath::Circle(2, 2, 5);
 }
 
 sk_sp<SkRuntimeEffect> GetEffect() {
@@ -56,7 +50,7 @@ TEST_P(PaintCacheTest, ClientPurgeForBudgeting) {
   ClientPaintCache::PurgedData purged_data;
   client_cache.Purge(&purged_data);
   EXPECT_EQ(client_cache.bytes_used(), kDefaultBudget);
-  const auto& ids = purged_data[static_cast<uint32_t>(GetType())];
+  const auto& ids = UNSAFE_TODO(purged_data[static_cast<uint32_t>(GetType())]);
   ASSERT_EQ(ids.size(), 2u);
   EXPECT_EQ(ids[0], 1u);
   EXPECT_EQ(ids[1], 2u);

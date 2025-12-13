@@ -12,10 +12,11 @@
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/content_browser_client.h"
 #include "fuchsia_web/webengine/browser/content_directory_loader_factory.h"
+#include "fuchsia_web/webengine/web_engine_export.h"
 
 class WebEngineBrowserMainParts;
 
-class WebEngineContentBrowserClient final
+class WEB_ENGINE_EXPORT WebEngineContentBrowserClient final
     : public content::ContentBrowserClient {
  public:
   WebEngineContentBrowserClient();
@@ -54,6 +55,9 @@ class WebEngineContentBrowserClient final
                                       int child_process_id) override;
   std::string GetApplicationLocale() override;
   std::string GetAcceptLangs(content::BrowserContext* context) override;
+  bool MayDeleteServiceWorkerRegistration(
+      const GURL& scope,
+      content::BrowserContext* browser_context) override;
   base::OnceClosure SelectClientCertificate(
       content::BrowserContext* browser_context,
       int process_id,

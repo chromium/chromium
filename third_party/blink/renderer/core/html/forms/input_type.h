@@ -195,9 +195,7 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual void SetValueAsDouble(double,
                                 TextFieldEventBehavior,
                                 ExceptionState&) const;
-  virtual void SetValueAsDecimal(const Decimal&,
-                                 TextFieldEventBehavior,
-                                 ExceptionState&) const;
+  virtual void SetValueAsDecimal(const Decimal&, TextFieldEventBehavior) const;
 
   // Functions related to 'checked'
 
@@ -291,8 +289,7 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual bool IsEnumeratable();
   virtual bool IsCheckable();
   bool IsSteppable() const;
-  virtual HTMLFormControlElement::PopoverTriggerSupport
-  SupportsPopoverTriggering() const;
+  virtual PopoverTriggerSupport SupportsPopoverTriggering() const;
   virtual bool ShouldRespectHeightAndWidthAttributes();
   virtual int MaxLength() const;
   virtual int MinLength() const;
@@ -303,6 +300,7 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual bool HasLegalLinkAttribute(const QualifiedName&) const;
   virtual void CopyNonAttributeProperties(const HTMLInputElement&);
   virtual void OnAttachWithLayoutObject();
+  virtual bool SupportsBaseAppearance(Element::BaseAppearanceValue value) const;
 
   // Parses the specified string for the type, and return
   // the Decimal value for the parsing result if the parsing

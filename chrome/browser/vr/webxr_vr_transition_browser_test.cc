@@ -6,6 +6,7 @@
 #include "chrome/browser/vr/test/multi_class_browser_test.h"
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
 #include "device/vr/buildflags/buildflags.h"
+#include "device/vr/public/mojom/vr_service.mojom.h"
 
 // Browser test equivalent of
 // chrome/android/javatests/src/.../browser/vr/WebXrVrTransitionTest.java.
@@ -184,28 +185,66 @@ IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest,
   // EndTest();
 }
 
+IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest,
+                       TestVisibilityMaskChangeEventReceived) {
+  MockXRDeviceHookBase mock;
+  device::VisibilityMaskData visibility_mask{
+      .vertices = {0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f}, .indices = {0, 1, 2}};
+  mock.SetVisibilityMaskForTesting(0, visibility_mask);
+  mock.SetVisibilityMaskForTesting(1, visibility_mask);
+
+  LoadFileAndAwaitInitialization("test_visibility_mask_change_event");
+  EnterSessionWithUserGestureOrFail();
+  PollJavaScriptBooleanOrFail("visibilityMaskChangeEventCount > 0",
+                              kPollTimeoutMedium);
+}
+
 IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest, TestVisibilityChanged) {
   MockXRDeviceHookBase transition_mock;
-  this->LoadFileAndAwaitInitialization("webxr_test_visibility_changed");
-  this->EnterSessionWithUserGestureOrFail();
+  LoadFileAndAwaitInitialization("webxr_test_visibility_changed");
+  EnterSessionWithUserGestureOrFail();
 
   // Wait for JavaScript to submit at least one frame.
-  ASSERT_TRUE(this->PollJavaScriptBoolean("hasPresentedFrame",
-                                          this->kPollTimeoutMedium))
+  ASSERT_TRUE(PollJavaScriptBoolean("hasPresentedFrame", kPollTimeoutMedium))
       << "No frame submitted";
 
-  this->PollJavaScriptBooleanOrFail("isVisibilityEqualTo('visible')",
-                                    this->kPollTimeoutMedium);
+  PollJavaScriptBooleanOrFail("isVisibilityEqualTo('visible')",
+                              kPollTimeoutMedium);
+
+  RunJavaScriptOrFail("subscribeToVisibilityChange()");
 
   device_test::mojom::EventData event_data = {};
   event_data.type = device_test::mojom::EventType::kVisibilityVisibleBlurred;
   transition_mock.PopulateEvent(event_data);
 
-  // TODO(crbug.com/40646813): visible-blurred is forced to hidden in WebXR
-  this->PollJavaScriptBooleanOrFail("isVisibilityEqualTo('hidden')",
-                                    this->kPollTimeoutMedium);
-  this->RunJavaScriptOrFail("done()");
-  this->EndTest();
+  PollJavaScriptBooleanOrFail("visibility_change_count == 1",
+                              kPollTimeoutMedium);
+  PollJavaScriptBooleanOrFail("isVisibilityEqualTo('visible-blurred')",
+                              kPollTimeoutMedium);
+  RunJavaScriptOrFail("done()");
+  EndTest();
+}
+
+IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest, TestFramesWhenVisibleBlurred) {
+  MockXRDeviceHookBase transition_mock;
+  LoadFileAndAwaitInitialization("webxr_test_visibility_changed");
+  EnterSessionWithUserGestureOrFail();
+
+  // Wait for JavaScript to submit at least one frame.
+  ASSERT_TRUE(PollJavaScriptBoolean("hasPresentedFrame", kPollTimeoutMedium))
+      << "No frame submitted";
+
+  device_test::mojom::EventData event_data = {};
+  event_data.type = device_test::mojom::EventType::kVisibilityVisibleBlurred;
+  transition_mock.PopulateEvent(event_data);
+
+  PollJavaScriptBooleanOrFail("isVisibilityEqualTo('visible-blurred')",
+                              kPollTimeoutMedium);
+  // Ensure that we still get a couple of frames after being set to
+  // visible-blurred.
+  transition_mock.WaitNumFrames(2);
+  RunJavaScriptOrFail("done()");
+  EndTest();
 }
 #endif  // BUILDFLAG(ENABLE_OPENXR)
 

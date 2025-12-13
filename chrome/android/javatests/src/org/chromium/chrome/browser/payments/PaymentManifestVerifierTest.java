@@ -30,9 +30,9 @@ import org.chromium.components.payments.PaymentManifestDownloader;
 import org.chromium.components.payments.PaymentManifestParser;
 import org.chromium.components.payments.PaymentManifestVerifier;
 import org.chromium.components.payments.PaymentManifestVerifier.ManifestVerifyCallback;
-import org.chromium.components.payments.PaymentManifestWebDataService;
-import org.chromium.components.payments.PaymentManifestWebDataService.PaymentManifestWebDataServiceCallback;
 import org.chromium.components.payments.WebAppManifestSection;
+import org.chromium.components.payments.WebPaymentsWebDataService;
+import org.chromium.components.payments.WebPaymentsWebDataService.WebPaymentsWebDataServiceCallback;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.url.GURL;
@@ -97,7 +97,7 @@ public class PaymentManifestVerifierTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public ChromeBrowserTestRule mTestRule = new ChromeBrowserTestRule();
 
-    @Mock private PaymentManifestWebDataService mWebDataService;
+    @Mock private WebPaymentsWebDataService mWebDataService;
     @Mock private PackageManagerDelegate mPackageManagerDelegate;
     @Mock private ManifestVerifyCallback mCallback;
 
@@ -147,7 +147,7 @@ public class PaymentManifestVerifierTest {
         Mockito.when(
                         mWebDataService.getPaymentMethodManifest(
                                 Mockito.any(String.class),
-                                Mockito.any(PaymentManifestWebDataServiceCallback.class)))
+                                Mockito.any(WebPaymentsWebDataServiceCallback.class)))
                 .thenReturn(false);
 
         mParser =

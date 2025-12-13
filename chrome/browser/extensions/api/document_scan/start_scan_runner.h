@@ -14,7 +14,7 @@
 #include "base/types/expected.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
 #include "extensions/common/extension_id.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace content {
 class BrowserContext;

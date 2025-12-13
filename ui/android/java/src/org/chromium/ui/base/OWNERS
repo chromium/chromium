@@ -6,3 +6,6 @@ per-file SelectFileDialog.java=peter@chromium.org
 
 # Clipboard
 per-file Clipboard*.java=ender@chromium.org
+
+# Device form factor
+per-file DeviceFormFactor.java=skavuluru@google.com

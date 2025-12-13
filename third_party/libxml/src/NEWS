@@ -1,5 +1,170 @@
 NEWS file for libxml2
 
+v2.15.0: Sep 15 2025
+
+### Major changes
+
+The API documentation is now generated with Doxygen. Building the
+documentation requires the new --with-docs configuration option as well
+as Doxygen, xsltproc and the DocBook 4 XSLT stylesheets.
+
+The Python bindings are disabled by default now. Building the bindings
+also requires Doxygen.
+
+Support for Schematron is now disabled by default.
+
+The parser option XML_PARSE_UNZIP is now required to read compressed data.
+
+HTML serialization and handling of character encodings is more in line
+with the HTML5 spec now.
+
+More accessors for xmlParserCtxt were added.
+
+### Deprecations
+
+More internal functions and struct members were deprecated.
+
+### Removals
+
+The built-in HTTP client and support for LZMA compression were removed.
+
+The custom Windows build system in `win32` was removed in favor of CMake.
+
+### Planned removals
+
+The Python bindings and support for Schematron validation are planned to
+be removed in the 2.16 release.
+
+The following features are considered for removal:
+
+- Modules API (xmlmodule.h)
+- Support for zlib compressed file I/O
+
+RELAX NG support is still in a bad state and a long-term removal
+candidate.
+
+### Thanks
+
+Thanks to the following contributors:
+
+- Alex Richardson
+- Benjamin Gilbert
+- Caolán McNamara
+- Collin Funk
+- Dag-Erling Smørgrav
+- Dan Yeaw
+- Daniel P. Berrangé
+- Francesco Pretto
+- Lovell Fuller
+- Maks Verver
+- Markus Rickert
+- Michael Mann
+- Omar Siam
+- Pavel Kopylov
+- Peter Kokot
+- Samuel Thibault
+- ThomasK
+
+
+v2.14.6: Sep 8 2025
+
+### Regressions
+
+- valid: Don't add ids when validating entity content
+- Fix initGenericErrorDefaultFunc(NULL) (Samuel Thibault)
+- valid: Undeprecate xmlAdd*Decl
+- globals: Include HTMLparser.h, fixing Windows build
+- io: Fix reading from pipes like stdin on Windows
+
+### Security
+
+- regexp: Avoid integer overflow and OOB array access
+- tree: Guard against atype corruption
+
+### Improvements
+
+- parser: Fix xmlSaturatedAddSizeT argument type
+
+
+v2.14.5: Jul 10 2025
+
+### Regressions
+
+- html: Don't abort on encoding errors
+- parser: Fix handling of invalid char refs in recovery mode
+- xmllint: Print document even in case of XInclude errors
+- xmllint: Fix --xinclude --path
+
+### Security
+
+- schematron: Fix memory safety issues in xmlSchematronReportOutput
+- Schematron: Fix null pointer dereference leading to DoS (Michael Mann)
+- Fix potential buffer overflows of interactive shell (Michael Mann)
+
+### Improvements
+
+- parser: Fix xmlCtxtIsStopped
+
+### Build systems and portability
+
+- schemas: Fix compilation with pre-C99 MSVC
+- cmake: Add missing endif() in libxml2-config.cmake.in
+- Fix CMake iconv handling after change to private dependency (Markus Rickert)
+
+
+v2.14.4: Jun 16 2025
+
+### Regressions
+
+- parser: Fix parsing of PublicIds and VersionNums
+- parser: Fix custom SAX parsers without cdataBlock handler
+- error: Fix initGenericErrorDefaultFunc compatibility macro again
+- io: Make xmlOutputBufferCreate* not free encoder on error
+- reader: Fix null deref on malloc failure
+- Revert "meson: Install libxml2.py"
+
+### Security
+
+- tree: Fix integer overflow in xmlBuildQName
+
+### Improvements
+
+- parser: Use parser context as default in resource loader
+- parser: Only validate EnumerationTypes when requested
+- parser: Undeprecate some parser context members
+
+### Build systems
+
+- cmake: Avoid overlinking with non-CMake libxml2-config.cmake
+- cmake: Make iconv a private dependency
+
+
+v2.14.3: May 13 2025
+
+### Regressions
+
+- reader: Fix reading compressed data
+- parser: Make undeclared entities in XML content fatal
+- save: Fix XML escape table
+- save: Fix xmlSave with NULL encoding
+- Revert "valid: Remove duplicate error messages when streaming"
+
+### Bug fixes
+
+- save: Fix serialization of attribute defaults containing &lt;
+- io: Fix linkage of __xml*BufferCreateFilename functions
+
+### Build systems
+
+- cmake: Fix installation directories in libxml2-config.cmake
+- meson: Install libxml2.py
+
+### Improvements
+
+- parser: Make xmlCtxtGetValidCtxt depend on VALID_ENABLED
+- html: Avoid HTML_PARSE_HTML5 clashing with XML_PARSE_NOENT
+
+
 v2.14.2: Apr 17 2025
 
 ### Security
@@ -68,19 +233,6 @@ Overflow checks before reallocations were hardenend.
 
 Some unprefixed symbols were renamed to avoid namespace pollution.
 
-### Other potentially incompatible changes
-
-Strings passed to the "characters" callback of the HTML SAX parser
-aren't null-terminated anymore, matching the behavior of the XML
-parser. Custom SAX parsers must use the "len" argument.
-
-xmlIOParseDTD doesn't allow null bytes at the end of the input anymore.
-
-Type and layout of conversion callbacks in struct xmlCharEncodingHandler
-were changed. Applications using libxml2's encoding conversion API
-should use functions xmlCharEncInFunc and xmlCharEncOutFunc instead of
-accessing the callbacks directly.
-
 ### New features
 
 Input callbacks can now be set on a parser context and an improved API
@@ -120,9 +272,6 @@ was removed. The rest of the XPointer implementation isn't affected.
 The xpointer() scheme now behaves like the xpath1() scheme.
 
 Several legacy symbols and the functions in xmlunicode.h were removed.
-
-Some unprefixed, internal macros like ATTRIBUTE_UNUSED were removed
-from public headers.
 
 ELF version information was removed.
 

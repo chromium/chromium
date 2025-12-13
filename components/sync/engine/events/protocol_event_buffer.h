@@ -22,7 +22,7 @@ class ProtocolEvent;
 // by command-line param), then starts dropping the oldest events.
 class ProtocolEventBuffer {
  public:
-  static const size_t kDefaultBufferSize;
+  static constexpr size_t kDefaultBufferSize = 6;
 
   ProtocolEventBuffer();
 

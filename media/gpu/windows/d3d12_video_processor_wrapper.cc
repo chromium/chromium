@@ -191,7 +191,8 @@ bool D3D12VideoProcessorWrapper::ProcessFrames(
   ID3D12CommandList* command_list = command_list_.Get();
   command_queue_->ExecuteCommandLists(1, &command_list);
 
-  return fence_->SignalAndWait(*command_queue_.Get()) == D3D11StatusCode::kOk;
+  return fence_->SignalAndWaitCPU(*command_queue_.Get()) ==
+         D3D11StatusCode::kOk;
 }
 
 }  // namespace media

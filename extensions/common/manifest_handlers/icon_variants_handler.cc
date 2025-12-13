@@ -11,12 +11,15 @@
 #include "base/lazy_instance.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/icon_variants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/icons/extension_icon_variants.h"
 #include "extensions/common/manifest_constants.h"
 #include "ui/gfx/color_utils.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -65,7 +68,7 @@ ExtensionIconVariants GetIconVariants(Extension& extension) {
     return icon_variants;
   }
 
-  icon_variants.Parse(icon_variants_list);
+  icon_variants.Parse(extension, icon_variants_list);
 
   // Verify `icon_variants`, e.g. that at least one `icon_variant` is valid.
   if (icon_variants.IsEmpty()) {
@@ -94,7 +97,7 @@ const IconVariantsInfo* IconVariantsInfo::GetIconVariants(
     return nullptr;
   }
   return static_cast<IconVariantsInfo*>(
-      extension.GetManifestData(ManifestKeys::kIconVariants));
+      extension.GetManifestData(keys::kIconVariants));
 }
 
 // static
@@ -116,17 +119,17 @@ void IconVariantsInfo::InitializeIconSets() {
     for (const auto& size : sizes) {
       // Add the size path pair to both extension icon sets if unspecified.
       if (color_schemes.empty()) {
-        dark_.Add(size.first, size.second);
-        light_.Add(size.first, size.second);
+        dark_.Add(size.first, size.second.relative_path().AsUTF8Unsafe());
+        light_.Add(size.first, size.second.relative_path().AsUTF8Unsafe());
         continue;
       }
 
       if (color_schemes.contains(ExtensionIconVariant::ColorScheme::kDark)) {
-        dark_.Add(size.first, size.second);
+        dark_.Add(size.first, size.second.relative_path().AsUTF8Unsafe());
       }
 
       if (color_schemes.contains(ExtensionIconVariant::ColorScheme::kLight)) {
-        light_.Add(size.first, size.second);
+        light_.Add(size.first, size.second.relative_path().AsUTF8Unsafe());
       }
     }
   }

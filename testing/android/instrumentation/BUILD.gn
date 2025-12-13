@@ -15,7 +15,7 @@ android_library("test_runner_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
   ]
 }
 

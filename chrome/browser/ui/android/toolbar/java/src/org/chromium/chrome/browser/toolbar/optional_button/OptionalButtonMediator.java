@@ -11,6 +11,7 @@ import androidx.annotation.ColorInt;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonProperties.OnBeforeWidthTransitionCallback;
 import org.chromium.ui.modelutil.PropertyModel;
 
 @NullMarked
@@ -34,6 +35,10 @@ class OptionalButtonMediator {
 
     void setIconForegroundColor(@Nullable ColorStateList colorStateList) {
         mModel.set(OptionalButtonProperties.ICON_TINT_LIST, colorStateList);
+    }
+
+    void setOnBeforeWidthTransitionCallback(OnBeforeWidthTransitionCallback callback) {
+        mModel.set(OptionalButtonProperties.ON_BEFORE_WIDTH_TRANSITION_CALLBACK, callback);
     }
 
     void setBackgroundColorFilter(@ColorInt int backgroundColor) {

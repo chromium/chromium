@@ -196,6 +196,12 @@ void MenuRunnerImpl::RunMenuAt(
   } else if ((run_types & MenuRunner::CONTEXT_MENU) != 0) {
     menu_type = MenuController::MenuType::kContextMenu;
   }
+
+  if (source_type == ui::mojom::MenuSourceType::kNone &&
+      (run_types & MenuRunner::INVOKED_FROM_KEYBOARD)) {
+    source_type = ui::mojom::MenuSourceType::kKeyboard;
+  }
+
   controller->Run(parent, button_controller, menu_.get(), bounds, anchor,
                   source_type, menu_type,
                   (run_types & MenuRunner::NESTED_DRAG) != 0,

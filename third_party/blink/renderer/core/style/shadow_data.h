@@ -28,8 +28,9 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
+#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "ui/gfx/geometry/outsets_f.h"
-#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
@@ -56,7 +57,7 @@ class CORE_EXPORT ShadowData {
         opacity_(opacity) {}
 
   ShadowData(gfx::Vector2dF offset,
-             gfx::PointF blur,
+             gfx::SizeF blur,
              float spread,
              ShadowStyle style,
              StyleColor color,
@@ -77,11 +78,15 @@ class CORE_EXPORT ShadowData {
   float X() const { return offset_.x(); }
   float Y() const { return offset_.y(); }
   gfx::Vector2dF Offset() const { return offset_; }
-  float Blur() const { return blur_.x(); }
-  gfx::PointF BlurXY() const { return blur_; }
+  float BlurRadius() const { return BlurValue(); }
+  float BlurAsSigma() const { return BlurRadiusToStdDev(BlurValue()); }
+  // Accessors for the underlying blur value(s). Prefer the more "semantic"
+  // accessors above if possible.
+  float BlurValue() const { return blur_.width(); }
+  gfx::SizeF BlurValueXY() const { return blur_; }
   float Spread() const { return spread_; }
   ShadowStyle Style() const { return style_; }
-  StyleColor GetColor() const { return color_; }
+  const StyleColor& GetColor() const { return color_; }
   float Opacity() const { return opacity_; }
 
   // Outsets needed to adjust a source rectangle to the one cast by this
@@ -90,7 +95,7 @@ class CORE_EXPORT ShadowData {
 
  private:
   gfx::Vector2dF offset_;
-  gfx::PointF blur_;
+  gfx::SizeF blur_;
   float spread_;
   StyleColor color_;
   ShadowStyle style_;

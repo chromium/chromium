@@ -6,8 +6,11 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/switches.h"
 #include "net/dns/mock_host_resolver.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class ExtensionApiTestWithSwitch : public extensions::ExtensionApiTest {
  public:
@@ -27,9 +30,4 @@ class ExtensionApiTestWithSwitch : public extensions::ExtensionApiTest {
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithSwitch, ExtensionDebugger) {
   ASSERT_TRUE(RunExtensionTest("debugger_extension")) << message_;
-}
-
-// TODO(crbug.com/41485082) Flaky on various platforms
-IN_PROC_BROWSER_TEST_F(ExtensionApiTestWithSwitch, DISABLED_ExtensionTracing) {
-  ASSERT_TRUE(RunExtensionTest("tracing_extension")) << message_;
 }

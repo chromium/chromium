@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/ipcz_driver/driver.h"
 
 #include <cstddef>
@@ -14,6 +9,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/rand_util.h"
@@ -88,9 +84,10 @@ IpczResult IPCZ_API Deserialize(const volatile void* data,
   // `data`.
   scoped_refptr<ObjectBase> object;
   const IpczResult result = transport->DeserializeObject(
-      base::span(static_cast<const uint8_t*>(const_cast<const void*>(data)),
-                 num_bytes),
-      base::span(handles, num_handles), object);
+      UNSAFE_TODO(
+          base::span(static_cast<const uint8_t*>(const_cast<const void*>(data)),
+                     num_bytes)),
+      UNSAFE_TODO(base::span(handles, num_handles)), object);
   if (result != IPCZ_RESULT_OK) {
     return result;
   }
@@ -210,8 +207,9 @@ IpczResult IPCZ_API Transmit(IpczDriverHandle transport_handle,
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
-  transport->Transmit(base::span(static_cast<const uint8_t*>(data), num_bytes),
-                      base::span(handles, num_handles));
+  transport->Transmit(
+      UNSAFE_TODO(base::span(static_cast<const uint8_t*>(data), num_bytes)),
+      UNSAFE_TODO(base::span(handles, num_handles)));
   return IPCZ_RESULT_OK;
 }
 

@@ -5,3 +5,4 @@ per-file *.mojom=file://ipc/SECURITY_OWNERS
 
 per-file features.cc=file://components/safe_browsing/core/common/SAFE_BROWSING_FEATURE_OWNERS
 per-file features.h=file://components/safe_browsing/core/common/SAFE_BROWSING_FEATURE_OWNERS
+per-file proto/csd.proto=file://components/safe_browsing/core/common/SAFE_BROWSING_FEATURE_OWNERS

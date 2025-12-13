@@ -41,7 +41,7 @@ class WaylandWindowManagerTest : public WaylandTest {
 };
 
 TEST_P(WaylandWindowManagerTest, GetWindow) {
-  MockWaylandPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
 
   auto window1 = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
                                                kDefaultBounds, &delegate);
@@ -59,7 +59,7 @@ TEST_P(WaylandWindowManagerTest, GetWindow) {
 }
 
 TEST_P(WaylandWindowManagerTest, GetWindowWithLargestBounds) {
-  MockWaylandPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
 
   auto window1 = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
                                                kDefaultBounds, &delegate);
@@ -72,7 +72,7 @@ TEST_P(WaylandWindowManagerTest, GetWindowWithLargestBounds) {
 }
 
 TEST_P(WaylandWindowManagerTest, GetCurrentFocusedWindow) {
-  MockWaylandPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     wl_seat_send_capabilities(server->seat()->resource(),
@@ -123,7 +123,7 @@ TEST_P(WaylandWindowManagerTest, GetCurrentFocusedWindow) {
 }
 
 TEST_P(WaylandWindowManagerTest, GetCurrentKeyboardFocusedWindow) {
-  MockWaylandPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     wl_seat_send_capabilities(server->seat()->resource(),
@@ -168,7 +168,7 @@ TEST_P(WaylandWindowManagerTest, GetCurrentKeyboardFocusedWindow) {
 }
 
 TEST_P(WaylandWindowManagerTest, GetAllWindows) {
-  MockWaylandPlatformWindowDelegate delegate;
+  MockWaylandPlatformWindowDelegate delegate(connection_.get());
 
   // There is a default window created by WaylandTest.
   auto windows = manager_->GetAllWindows();

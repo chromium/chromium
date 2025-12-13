@@ -386,3 +386,5 @@ TEST_F(SmsProviderGmsVerificationTest, ExpectedFailuresShouldCancel) {
 }
 
 }  // namespace content
+
+DEFINE_JNI(SmsProviderFakes)

@@ -6,10 +6,11 @@
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
@@ -19,6 +20,7 @@
 #include "chrome/grit/search_engine_choice_resources.h"
 #include "chrome/grit/search_engine_choice_resources_map.h"
 #include "chrome/grit/signin_resources.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -46,14 +48,11 @@ std::string GetChoiceListJSON(
         "iconPath",
         base::StrCat({"chrome://theme/", choice->GetBuiltinImageResourceId()}));
     choice_value.Set("url", choice->url());
-    choice_value.Set("marketingSnippet",
-                     search_engines::GetMarketingSnippetString(choice->data()));
+    choice_value.Set("marketingSnippet", choice->GetMarketingSnippet());
     choice_value.Set("showMarketingSnippet", false);
     choice_value_list.Append(std::move(choice_value));
   }
-  std::string json_choice_list;
-  base::JSONWriter::Write(choice_value_list, &json_choice_list);
-  return json_choice_list;
+  return base::WriteJson(choice_value_list).value_or("");
 }
 }  // namespace
 
@@ -70,14 +69,24 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUISearchEngineChoiceHost);
 
-  source->AddLocalizedString("title", IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE);
+  regional_capabilities::RegionalCapabilitiesService*
+      regional_capabilities_service = regional_capabilities::
+          RegionalCapabilitiesServiceFactory::GetForProfile(&profile_.get());
+  const std::optional<
+      regional_capabilities::RegionalCapabilitiesService::ChoiceScreenDesign>
+      choice_screen_design =
+          regional_capabilities_service->GetChoiceScreenDesign();
+  CHECK(choice_screen_design.has_value());
+  source->AddLocalizedString("title", choice_screen_design->title_string_id);
   source->AddLocalizedString("subtitle",
-                             IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE);
-  source->AddLocalizedString("subtitleInfoLink",
-                             IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK);
+                             choice_screen_design->subtitle_1_string_id);
+  source->AddLocalizedString(
+      "subtitleInfoLink",
+      choice_screen_design->subtitle_1_learn_more_suffix_string_id);
   source->AddLocalizedString(
       "subtitleInfoLinkA11yLabel",
-      IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_INFO_LINK_A11Y_LABEL);
+      choice_screen_design->subtitle_1_learn_more_a11y_string_id);
+  CHECK(!choice_screen_design->subtitle_2_string_id.has_value());
   source->AddLocalizedString("submitButtonText",
                              IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE);
   source->AddLocalizedString("infoDialogTitle",

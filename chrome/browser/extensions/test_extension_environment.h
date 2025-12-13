@@ -12,11 +12,14 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/base/win/scoped_ole_initializer.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class TestingProfile;
 

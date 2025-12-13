@@ -186,7 +186,7 @@ void ShowDisplayErrorNotification(const std::u16string& message,
 
 bool IsRectContainedByAnyDisplay(const gfx::Rect& rect_in_screen) {
   const std::vector<display::Display>& displays =
-      display::Screen::GetScreen()->GetAllDisplays();
+      display::Screen::Get()->GetAllDisplays();
   for (const auto& display : displays) {
     if (display.bounds().Contains(rect_in_screen)) {
       return true;

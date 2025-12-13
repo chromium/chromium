@@ -15,7 +15,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -176,7 +176,7 @@ public class ModalDialogManager {
          *     enabled.
          */
         protected void setEdgeToEdgeStateSupplier(
-                ObservableSupplier<Boolean> edgeToEdgeStateSupplier,
+                NonNullObservableSupplier<Boolean> edgeToEdgeStateSupplier,
                 boolean isEdgeToEdgeEverywhereEnabled) {}
     }
 
@@ -286,7 +286,7 @@ public class ModalDialogManager {
     private @Nullable InsetObserver mInsetObserver;
 
     /** A supplier to determine whether edge-to-edge is active in the enclosing window. */
-    private final @Nullable ObservableSupplier<Boolean> mEdgeToEdgeStateSupplier;
+    private final @Nullable NonNullObservableSupplier<Boolean> mEdgeToEdgeStateSupplier;
 
     private final boolean mIsEdgeToEdgeEverywhereEnabled;
 
@@ -319,7 +319,7 @@ public class ModalDialogManager {
     public ModalDialogManager(
             Presenter defaultPresenter,
             @ModalDialogType int defaultType,
-            @Nullable ObservableSupplier<Boolean> edgeToEdgeStateSupplier,
+            @Nullable NonNullObservableSupplier<Boolean> edgeToEdgeStateSupplier,
             boolean isEdgeToEdgeEverywhereEnabled) {
         mDefaultPresenter = defaultPresenter;
         mEdgeToEdgeStateSupplier = edgeToEdgeStateSupplier;

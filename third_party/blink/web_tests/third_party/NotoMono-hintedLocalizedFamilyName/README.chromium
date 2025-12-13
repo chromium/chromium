@@ -2,6 +2,7 @@ Name: Noto Mono
 URL: https://www.google.com/get/noto/
 Version: N/A
 Date: 2017-10-24
+Update Mechanism: Static (https://crbug.com/422061680)
 License: OFL-1.1
 License File: LICENSE_OFL.txt
 Shipped: no

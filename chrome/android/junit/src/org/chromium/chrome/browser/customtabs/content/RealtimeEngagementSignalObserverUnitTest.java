@@ -41,7 +41,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowSystemClock;
 
-import org.chromium.base.task.test.PausedExecutorTestRule;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency;
 import org.chromium.chrome.browser.customtabs.content.RealtimeEngagementSignalObserver.ScrollState;
@@ -71,8 +71,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
             new CustomTabActivityContentTestEnvironment();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Rule public PausedExecutorTestRule mExecutorRule = new PausedExecutorTestRule();
 
     private static final int SCROLL_EXTENT = 100;
     private static final long CURRENT_TIME_MS = 9000000L;
@@ -116,17 +114,6 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
         verify(mGestureListenerManagerImpl)
                 .addListener(any(GestureStateListener.class), eq(ON_SCROLL_END));
-    }
-
-    @Test
-    public void removesGestureStateListenerWhenWebContentsWillSwap() {
-        initializeTabForTest();
-        GestureStateListener listener = captureGestureStateListener();
-        List<TabObserver> tabObservers = captureTabObservers();
-        for (TabObserver observer : tabObservers) {
-            observer.webContentsWillSwap(env.tabProvider.getTab());
-        }
-        verify(mGestureListenerManagerImpl).removeListener(listener);
     }
 
     @Test
@@ -191,11 +178,11 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
         // Start scrolling down.
         listener.onScrollStarted(0, SCROLL_EXTENT, false);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         verify(mEngagementSignalsCallback).onVerticalScrollEvent(eq(false), any(Bundle.class));
         // End scrolling at 50%.
         listener.onScrollEnded(50, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         // We shouldn't make any more calls.
         verify(mEngagementSignalsCallback, times(1))
                 .onVerticalScrollEvent(anyBoolean(), any(Bundle.class));
@@ -208,20 +195,20 @@ public class RealtimeEngagementSignalObserverUnitTest {
 
         // Start by scrolling down.
         listener.onScrollStarted(0, SCROLL_EXTENT, false);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         verify(mEngagementSignalsCallback).onVerticalScrollEvent(eq(false), any(Bundle.class));
         // Change direction to up at 10%.
         listener.onVerticalScrollDirectionChanged(true, .1f);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         verify(mEngagementSignalsCallback).onVerticalScrollEvent(eq(true), any(Bundle.class));
         // Change direction to down at 5%.
         listener.onVerticalScrollDirectionChanged(false, .05f);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         verify(mEngagementSignalsCallback, times(2))
                 .onVerticalScrollEvent(eq(false), any(Bundle.class));
         // End scrolling at 50%.
         listener.onScrollEnded(50, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         // We shouldn't make any more calls.
         verify(mEngagementSignalsCallback, times(3))
                 .onVerticalScrollEvent(anyBoolean(), any(Bundle.class));
@@ -232,7 +219,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         initializeTabForTest();
 
         // We shouldn't make any calls.
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         verify(mEngagementSignalsCallback, never())
                 .onGreatestScrollPercentageIncreased(anyInt(), any(Bundle.class));
     }
@@ -250,14 +237,14 @@ public class RealtimeEngagementSignalObserverUnitTest {
         // Scroll up to 30%.
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(30);
         listener.onScrollOffsetOrExtentChanged(30, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         // We shouldn't make any calls at this point.
         verify(mEngagementSignalsCallback, never())
                 .onGreatestScrollPercentageIncreased(anyInt(), any(Bundle.class));
 
         // End scrolling.
         listener.onScrollEnded(30, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         // Now we should make the call.
         verify(mEngagementSignalsCallback, times(1))
                 .onGreatestScrollPercentageIncreased(eq(55), any(Bundle.class));
@@ -275,7 +262,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         listener.onScrollOffsetOrExtentChanged(3, SCROLL_EXTENT);
         // End scrolling.
         listener.onScrollEnded(3, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         // We shouldn't make any calls at this point.
         verify(mEngagementSignalsCallback, never())
                 .onGreatestScrollPercentageIncreased(anyInt(), any(Bundle.class));
@@ -287,7 +274,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         listener.onScrollOffsetOrExtentChanged(8, SCROLL_EXTENT);
         // End scrolling.
         listener.onScrollEnded(8, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         // We should make a call for 5%.
         verify(mEngagementSignalsCallback, times(1))
                 .onGreatestScrollPercentageIncreased(eq(5), any(Bundle.class));
@@ -299,7 +286,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         listener.onScrollOffsetOrExtentChanged(94, SCROLL_EXTENT);
         // End scrolling.
         listener.onScrollEnded(94, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         // We should make a call for 90%.
         verify(mEngagementSignalsCallback, times(1))
                 .onGreatestScrollPercentageIncreased(eq(90), any(Bundle.class));
@@ -317,7 +304,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         listener.onScrollOffsetOrExtentChanged(63, SCROLL_EXTENT);
         // End scrolling.
         listener.onScrollEnded(63, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         // We should make a call for 60%.
         verify(mEngagementSignalsCallback, times(1))
                 .onGreatestScrollPercentageIncreased(eq(60), any(Bundle.class));
@@ -330,7 +317,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         listener.onScrollOffsetOrExtentChanged(30, SCROLL_EXTENT);
         // End scrolling.
         listener.onScrollEnded(30, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // We shouldn't make any more calls since the max didn't change.
         verify(mEngagementSignalsCallback, never())
@@ -360,7 +347,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         listener.onScrollOffsetOrExtentChanged(50, SCROLL_EXTENT);
         // End scrolling.
         listener.onScrollEnded(50, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // There should be only one call.
         verify(mEngagementSignalsCallback, times(1))
@@ -378,7 +365,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(50);
         gestureStateListener.onScrollOffsetOrExtentChanged(50, SCROLL_EXTENT);
         gestureStateListener.onScrollEnded(50, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // Verify 50% is reported.
         verify(mEngagementSignalsCallback)
@@ -400,7 +387,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(10);
         gestureStateListener.onScrollOffsetOrExtentChanged(10, SCROLL_EXTENT);
         gestureStateListener.onScrollEnded(10, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // Verify 10% is reported.
         verify(mEngagementSignalsCallback)
@@ -418,7 +405,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(30);
         gestureStateListener.onScrollOffsetOrExtentChanged(30, SCROLL_EXTENT);
         gestureStateListener.onScrollEnded(30, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // Verify 30% is reported.
         verify(mEngagementSignalsCallback)
@@ -440,7 +427,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(10);
         gestureStateListener.onScrollOffsetOrExtentChanged(10, SCROLL_EXTENT);
         gestureStateListener.onScrollEnded(10, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // Verify % isn't reported.
         verify(mEngagementSignalsCallback, never())
@@ -458,7 +445,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(90);
         gestureStateListener.onScrollOffsetOrExtentChanged(90, SCROLL_EXTENT);
         gestureStateListener.onScrollEnded(90, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // Verify 90% is reported.
         verify(mEngagementSignalsCallback)
@@ -480,7 +467,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(50);
         gestureStateListener.onScrollOffsetOrExtentChanged(50, SCROLL_EXTENT);
         gestureStateListener.onScrollEnded(50, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // Verify % isn't reported.
         verify(mEngagementSignalsCallback, never())
@@ -497,7 +484,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(50);
         gestureStateListener.onScrollOffsetOrExtentChanged(50, SCROLL_EXTENT);
         gestureStateListener.onScrollEnded(50, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // Verify 50% is reported.
         verify(mEngagementSignalsCallback)
@@ -512,7 +499,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(10);
         gestureStateListener.onScrollOffsetOrExtentChanged(10, SCROLL_EXTENT);
         gestureStateListener.onScrollEnded(10, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // Verify 10% is reported.
         verify(mEngagementSignalsCallback)
@@ -531,7 +518,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         listener.onScrollOffsetOrExtentChanged(24, SCROLL_EXTENT);
         // End scrolling.
         listener.onScrollEnded(24, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         // We should make a call with 20.
         verify(mEngagementSignalsCallback)
                 .onGreatestScrollPercentageIncreased(eq(20), any(Bundle.class));
@@ -550,14 +537,14 @@ public class RealtimeEngagementSignalObserverUnitTest {
         advanceTime(10);
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(24);
         listener.onScrollOffsetOrExtentChanged(24, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         // We should make a call with 20.
         verify(mEngagementSignalsCallback)
                 .onGreatestScrollPercentageIncreased(eq(20), any(Bundle.class));
         // Any update after this will be ignored.
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(25);
         listener.onScrollOffsetOrExtentChanged(25, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         verify(mEngagementSignalsCallback, never())
                 .onGreatestScrollPercentageIncreased(eq(25), any(Bundle.class));
     }
@@ -575,7 +562,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         advanceTime(15);
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(55);
         listener.onScrollOffsetOrExtentChanged(55, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         // We should make a call with 55.
         verify(mEngagementSignalsCallback)
                 .onGreatestScrollPercentageIncreased(eq(55), any(Bundle.class));
@@ -585,7 +572,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         listener.onScrollEnded(20, SCROLL_EXTENT);
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(20);
         listener.onScrollOffsetOrExtentChanged(20, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         // We shouldn't make any other calls (after the one from above).
         verify(mEngagementSignalsCallback, times(1))
                 .onGreatestScrollPercentageIncreased(anyInt(), any(Bundle.class));
@@ -604,7 +591,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         advanceTime(DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS + 18);
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(59);
         listener.onScrollOffsetOrExtentChanged(59, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         // We shouldn't make a call since the call was outside the threshold.
         verify(mEngagementSignalsCallback, never())
                 .onGreatestScrollPercentageIncreased(anyInt(), any(Bundle.class));
@@ -625,7 +612,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         // Send update after 5ms
         advanceTime(5);
         listener.onScrollOffsetOrExtentChanged(50, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         // We shouldn't make a call since the call came after a new scroll started.
         verify(mEngagementSignalsCallback, never())
                 .onGreatestScrollPercentageIncreased(anyInt(), any(Bundle.class));
@@ -639,14 +626,13 @@ public class RealtimeEngagementSignalObserverUnitTest {
         doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
-        mEngagementSignalObserver.webContentsWillSwap(tab);
         // Close all tabs.
         mEngagementSignalObserver.onClosingStateChanged(tab, true);
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
         mEngagementSignalObserver.onClosingStateChanged(env.tabProvider.getTab(), true);
         mEngagementSignalObserver.onAllTabsClosed();
 
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         verify(mEngagementSignalsCallback, times(1)).onSessionEnded(eq(true), any(Bundle.class));
     }
 
@@ -661,13 +647,12 @@ public class RealtimeEngagementSignalObserverUnitTest {
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         // User interacted.
         doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
-        mEngagementSignalObserver.webContentsWillSwap(tab);
         // Close all tabs.
         mEngagementSignalObserver.onClosingStateChanged(tab, true);
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
         mEngagementSignalObserver.onClosingStateChanged(env.tabProvider.getTab(), true);
         mEngagementSignalObserver.onAllTabsClosed();
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // didUserInteract is false, even though they did
         verify(mEngagementSignalsCallback, times(1)).onSessionEnded(eq(false), any(Bundle.class));
@@ -684,13 +669,12 @@ public class RealtimeEngagementSignalObserverUnitTest {
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         // User interacted.
         doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
-        mEngagementSignalObserver.webContentsWillSwap(tab);
         // Close all tabs.
         mEngagementSignalObserver.onClosingStateChanged(tab, true);
         doReturn(false).when(mTabInteractionRecorder).didGetUserInteraction();
         mEngagementSignalObserver.onClosingStateChanged(env.tabProvider.getTab(), true);
         mEngagementSignalObserver.onAllTabsClosed();
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // didUserInteract is false, even though they did
         verify(mEngagementSignalsCallback, times(1)).onSessionEnded(eq(false), any(Bundle.class));
@@ -703,12 +687,11 @@ public class RealtimeEngagementSignalObserverUnitTest {
         Tab tab = mock(Tab.class);
         doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
-        mEngagementSignalObserver.webContentsWillSwap(tab);
         // Close all tabs.
         mEngagementSignalObserver.onClosingStateChanged(tab, true);
         mEngagementSignalObserver.onClosingStateChanged(env.tabProvider.getTab(), true);
         mEngagementSignalObserver.onAllTabsClosed();
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         verify(mEngagementSignalsCallback, times(1)).onSessionEnded(eq(false), any(Bundle.class));
     }
@@ -721,13 +704,12 @@ public class RealtimeEngagementSignalObserverUnitTest {
         Tab tab = mock(Tab.class);
         doReturn(mock(MockWebContents.class)).when(tab).getWebContents();
         mEngagementSignalObserver.onObservingDifferentTab(tab);
-        mEngagementSignalObserver.webContentsWillSwap(tab);
         // Close all tabs.
         mEngagementSignalObserver.onClosingStateChanged(tab, true);
         mEngagementSignalObserver.onClosingStateChanged(env.tabProvider.getTab(), true);
         mEngagementSignalObserver.onAllTabsClosed();
 
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         verify(mEngagementSignalsCallback, never()).onSessionEnded(eq(false), any(Bundle.class));
 
         // We should only suspend for one call.
@@ -745,7 +727,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
         // Tab destroyed.
         mEngagementSignalObserver.onDestroyed(tab);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // didUserInteract is true.
         verify(mEngagementSignalsCallback, times(1)).onSessionEnded(eq(true), any(Bundle.class));
@@ -764,7 +746,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
         // Tab destroyed.
         mEngagementSignalObserver.onDestroyed(tab);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // didUserInteract is false, but they did.
         verify(mEngagementSignalsCallback, times(1)).onSessionEnded(eq(false), any(Bundle.class));
@@ -783,7 +765,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         doReturn(true).when(mTabInteractionRecorder).didGetUserInteraction();
         // Tab destroyed.
         mEngagementSignalObserver.onDestroyed(tab);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // didUserInteract is false, but they did.
         verify(mEngagementSignalsCallback, times(1)).onSessionEnded(eq(false), any(Bundle.class));
@@ -800,7 +782,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         mEngagementSignalObserver.onObservingDifferentTab(tab);
         // Tab destroyed.
         mEngagementSignalObserver.onDestroyed(tab);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // onSessionEnded not fired.
         verify(mEngagementSignalsCallback, never()).onSessionEnded(eq(false), any(Bundle.class));
@@ -826,7 +808,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(24);
         listener.onScrollOffsetOrExtentChanged(24, SCROLL_EXTENT);
         listener.onScrollEnded(24, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         // We shouldn't get scroll signals.
         verify(mEngagementSignalsCallback, never())
                 .onVerticalScrollEvent(anyBoolean(), any(Bundle.class));
@@ -843,7 +825,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(50);
         listener.onScrollOffsetOrExtentChanged(50, SCROLL_EXTENT);
         listener.onScrollEnded(50, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         // We should normally get signals.
         verify(mEngagementSignalsCallback).onVerticalScrollEvent(eq(false), any(Bundle.class));
         verify(mEngagementSignalsCallback)
@@ -860,7 +842,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(30);
         listener.onScrollOffsetOrExtentChanged(30, SCROLL_EXTENT);
         listener.onScrollEnded(30, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         // We shouldn't get any signals.
         verify(mEngagementSignalsCallback, never())
                 .onVerticalScrollEvent(anyBoolean(), any(Bundle.class));
@@ -871,7 +853,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(45);
         listener.onScrollOffsetOrExtentChanged(45, SCROLL_EXTENT);
         listener.onScrollEnded(45, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         // We should get signals as if we've only scrolled down to this %.
         verify(mEngagementSignalsCallback).onVerticalScrollEvent(eq(false), any(Bundle.class));
         verify(mEngagementSignalsCallback)
@@ -889,7 +871,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         listener.onScrollOffsetOrExtentChanged(25, SCROLL_EXTENT);
         listener.onScrollEnded(25, SCROLL_EXTENT);
         // We should get signals as usual.
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
         verify(mEngagementSignalsCallback).onVerticalScrollEvent(eq(false), any(Bundle.class));
         verify(mEngagementSignalsCallback)
                 .onGreatestScrollPercentageIncreased(eq(25), any(Bundle.class));
@@ -922,7 +904,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         // Simulate renderer sending the offset update.
         when(mRenderCoordinatesImpl.getScrollYPixInt()).thenReturn(35);
         listener.onScrollOffsetOrExtentChanged(35, SCROLL_EXTENT);
-        mExecutorRule.runAllBackgroundAndUi();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // We should get a notification since we initialized the observer class with true for
         // hadScrollDown.
@@ -960,6 +942,7 @@ public class RealtimeEngagementSignalObserverUnitTest {
         SystemClock.setCurrentTimeMillis(CURRENT_TIME_MS + millis);
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     private void initializeTabForTest(boolean hadScrollDown) {
         Tab initialTab = env.prepareTab();
         doAnswer(

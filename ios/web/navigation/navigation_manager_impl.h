@@ -212,12 +212,6 @@ class NavigationManagerImpl final : public NavigationManager {
   void UpdateCurrentItemForReplaceState(const GURL& url,
                                         NSString* state_object);
 
-  // Same as GoToIndex(int), but allows renderer-initiated navigations and
-  // specifying whether or not the navigation is caused by the user gesture.
-  void GoToIndex(int index,
-                 NavigationInitiationType initiation_type,
-                 bool has_user_gesture);
-
   // NavigationManager:
   BrowserState* GetBrowserState() const final;
   WebState* GetWebState() const final;
@@ -331,6 +325,12 @@ class NavigationManagerImpl final : public NavigationManager {
     kForwardList,
   };
 
+  // Same as GoToIndex(int), but allows renderer-initiated navigations and
+  // specifying whether or not the navigation is caused by the user gesture.
+  void GoToIndex(int index,
+                 NavigationInitiationType initiation_type,
+                 bool has_user_gesture);
+
   // Appends a new session blob fetcher with given source.
   void AppendSessionDataBlobFetcher(SessionDataBlobFetcher loader,
                                     SessionDataBlobSource source);
@@ -387,7 +387,7 @@ class NavigationManagerImpl final : public NavigationManager {
   const raw_ptr<NavigationManagerDelegate> delegate_;
 
   // The BrowserState that is associated with this instance.
-  const raw_ptr<BrowserState> browser_state_;
+  const raw_ptr<BrowserState, DanglingUntriaged> browser_state_;
 
   // List of transient url rewriters added by `AddTransientURLRewriter()`.
   std::vector<BrowserURLRewriter::URLRewriter> transient_url_rewriters_;

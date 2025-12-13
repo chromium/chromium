@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/file_data_source.h"
 
 #include <algorithm>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 
 namespace media {
@@ -38,26 +34,22 @@ void FileDataSource::Stop() {}
 void FileDataSource::Abort() {}
 
 void FileDataSource::Read(int64_t position,
-                          int size,
-                          uint8_t* data,
+                          base::span<uint8_t> data,
                           DataSource::ReadCB read_cb) {
   if (force_read_errors_ || !file_.IsValid()) {
     std::move(read_cb).Run(kReadError);
     return;
   }
-
-  int64_t file_size = file_.length();
-
-  CHECK_GE(file_size, 0);
   CHECK_GE(position, 0);
-  CHECK_GE(size, 0);
+
+  auto file_data = file_.bytes();
 
   // Cap position and size within bounds.
-  position = std::min(position, file_size);
-  int64_t clamped_size =
-      std::min(static_cast<int64_t>(size), file_size - position);
+  auto file_data_range = file_data.subspan(
+      std::min(base::saturated_cast<size_t>(position), file_data.size()));
+  const size_t clamped_size = std::min(data.size(), file_data_range.size());
 
-  memcpy(data, file_.data() + position, clamped_size);
+  data.copy_prefix_from(file_data_range.first(clamped_size));
   bytes_read_ += clamped_size;
   std::move(read_cb).Run(clamped_size);
 }

@@ -25,10 +25,10 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.firstrun.FirstRunActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -170,6 +170,9 @@ public class SearchWidgetProviderTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(
+            supported_abis_includes = "arm64-v8a",
+            message = "Flaky, https://crbug.com/431007457")
     @CommandLineFlags.Remove(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
     public void testUpdateCachedEngineNameBeforeFirstRun() throws ExecutionException {
         Assert.assertFalse(
@@ -293,36 +296,5 @@ public class SearchWidgetProviderTest {
                             intent, SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, false);
             Assert.assertTrue(fromWidget);
         }
-    }
-
-    @Test
-    @SmallTest
-    public void testCrashAbsorption() {
-        Runnable crashingRunnable =
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        throw new RuntimeException();
-                    }
-                };
-
-        SharedPreferencesManager prefs = mDelegate.getChromeSharedPreferences();
-        Assert.assertEquals(0, SearchWidgetProvider.getNumConsecutiveCrashes(prefs));
-
-        // The first few crashes should be silently absorbed.
-        SearchWidgetProvider.run(crashingRunnable);
-        Assert.assertEquals(1, SearchWidgetProvider.getNumConsecutiveCrashes(prefs));
-        SearchWidgetProvider.run(crashingRunnable);
-        Assert.assertEquals(2, SearchWidgetProvider.getNumConsecutiveCrashes(prefs));
-
-        // The crash should be thrown after hitting the crash limit, which is 3.
-        boolean exceptionWasThrown = false;
-        try {
-            SearchWidgetProvider.run(crashingRunnable);
-        } catch (Exception e) {
-            exceptionWasThrown = true;
-        }
-        Assert.assertEquals(3, SearchWidgetProvider.getNumConsecutiveCrashes(prefs));
-        Assert.assertTrue(exceptionWasThrown);
     }
 }

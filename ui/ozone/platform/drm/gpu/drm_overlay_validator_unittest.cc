@@ -15,6 +15,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -227,7 +228,7 @@ void DrmOverlayValidatorTest::SetupControllers() {
   primary_candidate.buffer_size = primary_rect_.size();
   primary_candidate.display_rect = gfx::RectF(primary_rect_);
   primary_candidate.is_opaque = true;
-  primary_candidate.format = gfx::BufferFormat::BGRX_8888;
+  primary_candidate.format = viz::SinglePlaneFormat::kBGRX_8888;
   primary_candidate.overlay_handled = true;
   overlay_params_.push_back(primary_candidate);
   AddPlane(primary_candidate);
@@ -237,7 +238,7 @@ void DrmOverlayValidatorTest::SetupControllers() {
   overlay_candidate.display_rect = gfx::RectF(overlay_rect_);
   overlay_candidate.plane_z_order = 1;
   primary_candidate.is_opaque = true;
-  overlay_candidate.format = gfx::BufferFormat::BGRX_8888;
+  overlay_candidate.format = viz::SinglePlaneFormat::kBGRX_8888;
   overlay_candidate.overlay_handled = true;
   overlay_params_.push_back(overlay_candidate);
   AddPlane(overlay_candidate);
@@ -247,7 +248,7 @@ void DrmOverlayValidatorTest::AddPlane(const OverlaySurfaceCandidate& params) {
   scoped_refptr<DrmDevice> drm = window_->GetController()->GetDrmDevice();
 
   scoped_refptr<DrmFramebuffer> drm_framebuffer = CreateOverlayBuffer(
-      GetFourCCFormatFromBufferFormat(params.format), params.buffer_size);
+      GetFourCCFormatFromSharedImageFormat(params.format), params.buffer_size);
   plane_list_.emplace_back(
       std::move(drm_framebuffer), params.color_space, params.plane_z_order,
       std::get<gfx::OverlayTransform>(params.transform), gfx::Rect(),
@@ -341,7 +342,7 @@ TEST_F(DrmOverlayValidatorTest, OverlayFormat_YUV) {
   overlay_params_.back().display_rect = gfx::RectF(overlay_rect_);
   overlay_params_.back().crop_rect = crop_rect;
   overlay_params_.back().is_opaque = false;
-  overlay_params_.back().format = gfx::BufferFormat::YUV_420_BIPLANAR;
+  overlay_params_.back().format = viz::MultiPlaneFormat::kNV12;
   plane_list_.pop_back();
   AddPlane(overlay_params_.back());
 
@@ -361,7 +362,7 @@ TEST_F(DrmOverlayValidatorTest, RejectYUVBuffersIfNotSupported) {
 
   overlay_params_.back().buffer_size = overlay_rect_.size();
   overlay_params_.back().display_rect = gfx::RectF(overlay_rect_);
-  overlay_params_.back().format = gfx::BufferFormat::YUV_420_BIPLANAR;
+  overlay_params_.back().format = viz::MultiPlaneFormat::kNV12;
   plane_list_.pop_back();
   AddPlane(overlay_params_.back());
 
@@ -394,7 +395,7 @@ TEST_F(DrmOverlayValidatorTest,
   plane_list_.back().crop_rect = crop_rect;
 
   std::vector<OverlaySurfaceCandidate> validated_params = overlay_params_;
-  validated_params.back().format = gfx::BufferFormat::YUV_420_BIPLANAR;
+  validated_params.back().format = viz::MultiPlaneFormat::kNV12;
   std::vector<OverlayStatus> returns =
       overlay_validator_->TestPageFlip(validated_params, DrmOverlayPlaneList());
   EXPECT_EQ(2u, returns.size());
@@ -427,7 +428,7 @@ TEST_F(DrmOverlayValidatorTest,
   plane_list_.back().crop_rect = crop_rect;
 
   std::vector<OverlaySurfaceCandidate> validated_params = overlay_params_;
-  validated_params.back().format = gfx::BufferFormat::YUV_420_BIPLANAR;
+  validated_params.back().format = viz::MultiPlaneFormat::kNV12;
   std::vector<OverlayStatus> returns =
       overlay_validator_->TestPageFlip(validated_params, DrmOverlayPlaneList());
   EXPECT_EQ(2u, returns.size());
@@ -456,7 +457,7 @@ TEST_F(DrmOverlayValidatorTest,
   plane_list_.back().crop_rect = crop_rect;
 
   std::vector<OverlaySurfaceCandidate> validated_params = overlay_params_;
-  validated_params.back().format = gfx::BufferFormat::YUV_420_BIPLANAR;
+  validated_params.back().format = viz::MultiPlaneFormat::kNV12;
 
   std::vector<OverlayStatus> returns =
       overlay_validator_->TestPageFlip(validated_params, DrmOverlayPlaneList());

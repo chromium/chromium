@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_delegate.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -104,7 +105,14 @@ class KioskWebAppDataTest : public InProcessBrowserTest,
  protected:
   KioskWebAppData CreateTestData(const std::string& title = std::string(),
                                  const GURL& icon_url = GURL()) {
-    return {*this, kAppId, EmptyAccountId(), GURL(kAppUrl), title, icon_url};
+    return {g_browser_process->local_state(),
+            g_browser_process->shared_url_loader_factory(),
+            *this,
+            kAppId,
+            EmptyAccountId(),
+            GURL(kAppUrl),
+            title,
+            icon_url};
   }
 
  private:

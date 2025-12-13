@@ -11,11 +11,11 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/animation/test/ink_drop_highlight_test_api.h"
 #include "ui/views/animation/test/test_ink_drop_highlight_observer.h"
 

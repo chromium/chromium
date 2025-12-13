@@ -46,7 +46,7 @@ bool IsFreeTypeSystemRasterizer() {
 
 sk_sp<SkTypeface> MakeTypefaceDefaultFontMgr(sk_sp<SkData> data) {
 #if BUILDFLAG(IS_WIN)
-  return FontCache::Get().FontManager()->makeFromData(data, 0);
+  return skia::DefaultFontMgr()->makeFromData(data, 0);
 #endif
 
 #if BUILDFLAG(IS_APPLE)

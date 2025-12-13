@@ -357,7 +357,7 @@ void PrivacyHubNotificationController::OpenSupportUrl(Sensor sensor) {
           privacy_hub_metrics::PrivacyHubLearnMoreSensor::kGeolocation);
       return;
   }
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(kLearnMoreUrl), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }

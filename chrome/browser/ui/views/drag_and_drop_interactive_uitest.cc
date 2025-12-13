@@ -29,12 +29,16 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -773,6 +777,27 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
         base::NumberToString(std::get<1>(GetParam())));
   }
 
+  void SetUp() override {
+    // TODO(crbug.com/394369035): The parameters for the width of the drop
+    // targets have not been determined yet, and may interfere with the tests
+    // below by shifting the contents around.
+    // These overrides should be removed once the parameters are finalized.
+    //
+    // Ensure PreserveDropEffect is enabled for DragAndDropBrowserTest.
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSideBySide,
+          {{features::kSideBySideDropTargetMinWidth.name, "0"},
+           {features::kSideBySideDropTargetMaxWidth.name, "0"}}},
+         {features::kSideBySideDropTargetNudge,
+          {{features::kSideBySideDropTargetNudgeMinWidth.name, "0"},
+           {features::kSideBySideDropTargetNudgeMaxWidth.name, "0"},
+           {features::kSideBySideDropTargetNudgeToFullMinWidth.name, "0"},
+           {features::kSideBySideDropTargetNudgeToFullMaxWidth.name, "0"}}},
+         {blink::features::kPreserveDropEffect, {}}},
+        {blink::features::kSupportOpeningDraggedLinksInSameTab});
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     https_test_server()->AddDefaultHandlers(GetChromeTestDataDir());
@@ -1029,6 +1054,8 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
 
   net::EmbeddedTestServer* https_test_server() { return &https_test_server_; }
 
+  DragAndDropSimulator* drag_simulator() { return drag_simulator_.get(); }
+
  private:
   // Constants with coordinates within content/test/data/drag_and_drop/page.html
   // The precise frame center is at 200,200 and 400,200 coordinates, but slight
@@ -1063,11 +1090,12 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
   }
 
   void AssertTestPageIsLoaded() {
-    ASSERT_EQ(kTestPagePath, web_contents()->GetLastCommittedURL().path());
+    ASSERT_EQ(kTestPagePath, web_contents()->GetLastCommittedURL().GetPath());
   }
 
   std::unique_ptr<DragAndDropSimulator> drag_simulator_;
   net::EmbeddedTestServer https_test_server_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Scenario: drag text from outside the browser and drop to the right frame.
@@ -1084,7 +1112,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropTextFromOutside) {
   // Setup test expectations.
   DOMDragEventVerifier expected_dom_event_data;
   expected_dom_event_data.set_expected_client_position("(155, 150)");
-  expected_dom_event_data.set_expected_drop_effect("none");
+  expected_dom_event_data.set_expected_drop_effect("copy");
   expected_dom_event_data.set_expected_effect_allowed("all");
   expected_dom_event_data.set_expected_mime_types("text/plain");
   expected_dom_event_data.set_expected_page_position("(155, 150)");
@@ -1107,12 +1135,20 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropTextFromOutside) {
 
   // Drop into the right frame.
   {
+    // Setup drop event expectations (dropEffect changes to "copy" during drop).
+    DOMDragEventVerifier expected_drop_event_data;
+    expected_drop_event_data.set_expected_client_position("(155, 150)");
+    expected_drop_event_data.set_expected_drop_effect("copy");
+    expected_drop_event_data.set_expected_effect_allowed("all");
+    expected_drop_event_data.set_expected_mime_types("text/plain");
+    expected_drop_event_data.set_expected_page_position("(155, 150)");
+
     DOMDragEventWaiter drop_waiter("drop", GetRightFrame());
     ASSERT_TRUE(SimulateDropInRightFrame());
 
     std::string drop_event;
     ASSERT_TRUE(drop_waiter.WaitForNextMatchingEvent(&drop_event));
-    EXPECT_THAT(drop_event, expected_dom_event_data.Matches());
+    EXPECT_THAT(drop_event, expected_drop_event_data.Matches());
   }
 }
 
@@ -1169,6 +1205,65 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropValidUrlFromOutside) {
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 }
 
+class DragAndDropDragLinksInSameTabBrowserTest : public DragAndDropBrowserTest {
+ public:
+  void SetUp() override {
+    // TODO(crbug.com/394369035): The parameters for the width of the drop
+    // targets have not been determined yet, and may interfere with the tests
+    // below by shifting the contents around.
+    // These overrides should be removed once the parameters are finalized.
+    //
+    // Ensure PreserveDropEffect is enabled based on the setting of parent class
+    // DragAndDropBrowserTest.
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSideBySide,
+          {{features::kSideBySideDropTargetMinWidth.name, "0"},
+           {features::kSideBySideDropTargetMaxWidth.name, "0"}}},
+         {features::kSideBySideDropTargetNudge,
+          {{features::kSideBySideDropTargetNudgeMinWidth.name, "0"},
+           {features::kSideBySideDropTargetNudgeMaxWidth.name, "0"},
+           {features::kSideBySideDropTargetNudgeToFullMinWidth.name, "0"},
+           {features::kSideBySideDropTargetNudgeToFullMaxWidth.name, "0"}}},
+         {blink::features::kPreserveDropEffect, {}},
+         {blink::features::kSupportOpeningDraggedLinksInSameTab, {}}},
+        {});
+    InProcessBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Scenario: drag URL from outside the browser and drop to half of a Split View.
+IN_PROC_BROWSER_TEST_P(DragAndDropDragLinksInSameTabBrowserTest,
+                       DropValidUrlFromOutside) {
+  std::string frame_site = use_cross_site_subframe() ? "b.test" : "a.test";
+  ASSERT_TRUE(NavigateToTestPage(frame_site));
+
+  // Create a second tab and create split view.
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {0}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  // Drag a normal URL from outside the browser into/over the left side of the
+  // Split View.
+  GURL dragged_url = https_test_server()->GetURL("d.test", "/title2.html");
+  ASSERT_TRUE(
+      drag_simulator()->SimulateDragEnter(gfx::Point(100, 100), dragged_url));
+  ASSERT_TRUE(drag_simulator()->SimulateDrop(gfx::Point(100, 100)));
+
+  // Verify that dropping |dragged_url| navigates the left tab to that URL.
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  content::WebContents* left_web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  content::TestNavigationObserver(left_web_contents, 1).Wait();
+  EXPECT_EQ(dragged_url,
+            left_web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
+}
+
 #if BUILDFLAG(IS_WIN)
 // Scenario: Drag and drop a file from outside the browser and it should have
 // associated file type, fetched from it's diplay_name. Test coverage:
@@ -1179,7 +1274,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragAndDropVirtualFiles) {
   ASSERT_TRUE(NavigateRightFrame("a.test", "drop_target.html"));
   // Prepare a test file with a known extension and temporary path.
   std::vector<std::pair<base::FilePath, std::string>> file_infos;
-  base::FilePath test_file = ui_test_utils::GetTestFilePath(
+  base::FilePath test_file = chrome_test_utils::GetTestFilePath(
       base::FilePath(), base::FilePath().AppendASCII("test_document.pdf"));
   file_infos.emplace_back(test_file, std::string("just some data"));
 
@@ -1247,8 +1342,9 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragAndDropVirtualFiles) {
 
 // Scenario: drag a URL into the Omnibox.  This is a regression test for
 // https://crbug.com/670123.
-// TODO(crbug.com/344168586): Very flaky on linux-chromeos-rel bots.
-#if BUILDFLAG(IS_CHROMEOS) && defined(NDEBUG)
+// TODO(crbug.com/344168586): Very flaky on linux-chromeos-rel bots and
+// consistently failing on linux-chromeos-dbg.
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DropUrlIntoOmnibox DISABLED_DropUrlIntoOmnibox
 #else
 #define MAYBE_DropUrlIntoOmnibox DropUrlIntoOmnibox
@@ -1332,7 +1428,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropFileFromOutside) {
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 
   // Drag a file from outside the browser into/over the right frame.
-  base::FilePath dragged_file = ui_test_utils::GetTestFilePath(
+  base::FilePath dragged_file = chrome_test_utils::GetTestFilePath(
       base::FilePath(), base::FilePath().AppendASCII("title3.html"));
   ASSERT_TRUE(SimulateDragEnterToRightFrame(dragged_file));
 
@@ -1369,9 +1465,9 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropMultipleFilesFromOutside) {
 
   // Drag files from outside the browser into/over the right frame.
   std::vector<ui::FileInfo> file_infos;
-  base::FilePath dragged_file_1 = ui_test_utils::GetTestFilePath(
+  base::FilePath dragged_file_1 = chrome_test_utils::GetTestFilePath(
       base::FilePath(), base::FilePath().AppendASCII("title1.html"));
-  base::FilePath dragged_file_2 = ui_test_utils::GetTestFilePath(
+  base::FilePath dragged_file_2 = chrome_test_utils::GetTestFilePath(
       base::FilePath(), base::FilePath().AppendASCII("title2.html"));
   file_infos.emplace_back(dragged_file_1, dragged_file_1.BaseName());
   file_infos.emplace_back(dragged_file_2, dragged_file_2.BaseName());
@@ -1509,8 +1605,9 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragStartInFrame) {
 // a drag-and-drop loop run by Windows OS.
 #define MAYBE_DragSameOriginImageBetweenFrames \
   DISABLED_DragSameOriginImageBetweenFrames
-#elif BUILDFLAG(IS_LINUX)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Failing to receive final drop event on linux crbug.com/1268407.
+// TODO(crbug.com/442927728): Fix failing test on ChromeOS
 #define MAYBE_DragSameOriginImageBetweenFrames \
   DISABLED_DragSameOriginImageBetweenFrames
 #else
@@ -1541,10 +1638,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
                                /*image_crossorigin_attr=*/false);
 }
 
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DragCorsSameOriginImageBetweenFrames \
-  DISABLED_DragCorsSameOriginImageBetweenFrames
-#elif BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DragCorsSameOriginImageBetweenFrames \
   DISABLED_DragCorsSameOriginImageBetweenFrames
 #else
@@ -1566,10 +1660,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
                                /*image_crossorigin_attr=*/true);
 }
 
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DragCrossOriginImageBetweenFrames \
-  DISABLED_DragCrossOriginImageBetweenFrames
-#elif BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DragCrossOriginImageBetweenFrames \
   DISABLED_DragCrossOriginImageBetweenFrames
 #else
@@ -1680,6 +1771,7 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step2(
       state->expected_dom_event_data.set_expected_client_position("(355, 150)");
       state->expected_dom_event_data.set_expected_page_position("(355, 150)");
       state->expected_dom_event_data.set_expected_file_names("");
+      state->expected_dom_event_data.set_expected_drop_effect("none");
       state->expected_dom_event_data.set_expected_mime_types(
           state->expect_image_accessible
               ? "Files,text/html,text/plain,text/uri-list"
@@ -1697,6 +1789,7 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step2(
       // (these coordinates are relative to the right frame).
       state->expected_dom_event_data.set_expected_client_position("(155, 150)");
       state->expected_dom_event_data.set_expected_page_position("(155, 150)");
+      state->expected_dom_event_data.set_expected_drop_effect("copy");
 
       EXPECT_TRUE(
           dragenter_event_waiter.WaitForNextMatchingEvent(&dragenter_event));
@@ -1756,10 +1849,18 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step3(
     DragAndDropBrowserTest::DragImageBetweenFrames_TestState* state) {
   // Verify drop DOM event.
   {
+    // Create separate expectations for drop event since dropEffect changes to
+    // "copy"
+    DOMDragEventVerifier expected_drop_event_data;
+    expected_drop_event_data.set_expected_client_position("(155, 150)");
+    expected_drop_event_data.set_expected_drop_effect("copy");
+    expected_drop_event_data.set_expected_effect_allowed("copy");
+    expected_drop_event_data.set_expected_page_position("(155, 150)");
+
     // File contents is sent in drop event.
-    state->expected_dom_event_data.set_expected_file_names(
+    expected_drop_event_data.set_expected_file_names(
         state->expect_image_accessible ? "cors-allowed.jpg" : "");
-    state->expected_dom_event_data.set_expected_mime_types(
+    expected_drop_event_data.set_expected_mime_types(
         state->expect_image_accessible
             ? "Files,text/html,text/plain,text/uri-list"
             : "text/html,text/plain,text/uri-list");
@@ -1768,7 +1869,7 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step3(
     EXPECT_TRUE(
         state->drop_event_waiter->WaitForNextMatchingEvent(&drop_event));
     state->drop_event_waiter.reset();
-    EXPECT_THAT(drop_event, state->expected_dom_event_data.Matches());
+    EXPECT_THAT(drop_event, expected_drop_event_data.Matches());
   }
 
   // Verify dragend DOM event.
@@ -1820,9 +1921,8 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step3(
 // There is no known way to execute test-controlled tasks during
 // a drag-and-drop loop run by Windows OS.
 // Also disable the test on Linux due to flaky: crbug.com/1164442
-// TODO(crbug.com/40876472): Enable on ChromeOS ASAN once flakiness is fixed.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
-    (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER))
+// TODO(crbug.com/40876472): Enable on ChromeOS once flakiness is fixed.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DragImageFromDisappearingFrame \
   DISABLED_DragImageFromDisappearingFrame
 #else
@@ -1855,7 +1955,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
 
   // Setup test expectations.
   DragAndDropBrowserTest::DragImageFromDisappearingFrame_TestState state;
-  state.expected_dom_event_data.set_expected_drop_effect("none");
+  state.expected_dom_event_data.set_expected_drop_effect("copy");
   // (dragstart event handler in image_source.html is asking for "copy" only).
   state.expected_dom_event_data.set_expected_effect_allowed("copy");
   state.expected_dom_event_data.set_expected_mime_types(
@@ -1933,11 +2033,21 @@ void DragAndDropBrowserTest::DragImageFromDisappearingFrame_Step3(
     DragAndDropBrowserTest::DragImageFromDisappearingFrame_TestState* state) {
   // Verify drop DOM event.
   {
+    // Create separate expectations for drop event since dropEffect changes to
+    // "copy"
+    DOMDragEventVerifier expected_drop_event_data;
+    expected_drop_event_data.set_expected_client_position("(155, 150)");
+    expected_drop_event_data.set_expected_drop_effect("copy");
+    expected_drop_event_data.set_expected_effect_allowed("copy");
+    expected_drop_event_data.set_expected_mime_types(
+        "Files,text/html,text/plain,text/uri-list");
+    expected_drop_event_data.set_expected_page_position("(155, 150)");
+
     std::string drop_event;
     EXPECT_TRUE(
         state->drop_event_waiter->WaitForNextMatchingEvent(&drop_event));
     state->drop_event_waiter.reset();
-    EXPECT_THAT(drop_event, state->expected_dom_event_data.Matches());
+    EXPECT_THAT(drop_event, expected_drop_event_data.Matches());
   }
 }
 
@@ -2164,8 +2274,8 @@ void DragAndDropBrowserTest::CrossNavCrossSiteDrag_Step3(
 
 // There is no known way to execute test-controlled tasks during
 // a drag-and-drop loop run by Windows OS.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_CHROMEOS) && \
-                          (defined(ADDRESS_SANITIZER) || !defined(NDEBUG)))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/442927728): Fix failing test on Linux and ChromeOS
 // https://crbug.com/1393605: Flaky at ChromeOS ASAN and Debug builds
 #define MAYBE_CrossTabDrag DISABLED_CrossTabDrag
 #else
@@ -2222,7 +2332,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_CrossTabDrag) {
   state.right_frame_events_counter =
       std::make_unique<DOMDragEventCounter>(GetRightFrame(second_contents));
   state.expected_dom_event_data.set_expected_client_position("(55, 50)");
-  state.expected_dom_event_data.set_expected_drop_effect("none");
+  state.expected_dom_event_data.set_expected_drop_effect("copy");
   // (dragstart event handler in image_source.html is asking for "copy" only).
   state.expected_dom_event_data.set_expected_effect_allowed("copy");
   state.expected_dom_event_data.set_expected_mime_types(
@@ -2352,11 +2462,20 @@ void DragAndDropBrowserTest::CrossTabDrag_Step3(
     DragAndDropBrowserTest::CrossTabDrag_TestState* state) {
   // Verify drop DOM event.
   {
+    // Setup drop event expectations (dropEffect changes to "copy" during drop).
+    DOMDragEventVerifier expected_drop_event_data;
+    expected_drop_event_data.set_expected_client_position("(155, 150)");
+    expected_drop_event_data.set_expected_drop_effect("copy");
+    expected_drop_event_data.set_expected_effect_allowed("copy");
+    expected_drop_event_data.set_expected_mime_types(
+        "Files,text/html,text/plain,text/uri-list");
+    expected_drop_event_data.set_expected_page_position("(155, 150)");
+
     std::string drop_event;
     EXPECT_TRUE(
         state->drop_event_waiter->WaitForNextMatchingEvent(&drop_event));
     state->drop_event_waiter.reset();
-    EXPECT_THAT(drop_event, state->expected_dom_event_data.Matches());
+    EXPECT_THAT(drop_event, expected_drop_event_data.Matches());
   }
 
   // Verify dragend DOM event.
@@ -2461,6 +2580,18 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(::testing::Values(true),
                        ::testing::ValuesIn(ui_scaling_factors)));
 
+INSTANTIATE_TEST_SUITE_P(
+    SameSiteSubframe,
+    DragAndDropDragLinksInSameTabBrowserTest,
+    ::testing::Combine(::testing::Values(false),
+                       ::testing::ValuesIn(ui_scaling_factors)));
+
+INSTANTIATE_TEST_SUITE_P(
+    CrossSiteSubframe,
+    DragAndDropDragLinksInSameTabBrowserTest,
+    ::testing::Combine(::testing::Values(true),
+                       ::testing::ValuesIn(ui_scaling_factors)));
+
 #if BUILDFLAG(IS_CHROMEOS)
 class DragAndDropBrowserTestNoParam : public InProcessBrowserTest {
  protected:
@@ -2511,7 +2642,9 @@ class DragAndDropBrowserTestNoParam : public InProcessBrowserTest {
 };
 
 // https://crbug.com/1312505
-IN_PROC_BROWSER_TEST_F(DragAndDropBrowserTestNoParam, CloseTabDuringDrag) {
+// TODO(crbug.com/441134573): Fix and reenable the test.
+IN_PROC_BROWSER_TEST_F(DragAndDropBrowserTestNoParam,
+                       DISABLED_CloseTabDuringDrag) {
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   ui_test_utils::TabAddedWaiter wait_for_new_tab(browser());
 

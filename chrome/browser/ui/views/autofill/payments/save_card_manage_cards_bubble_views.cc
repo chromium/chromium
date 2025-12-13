@@ -30,7 +30,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SaveCardManageCardsBubbleViews,
                                       kSaveCardBubbleManageCardsButtonId);
 
 SaveCardManageCardsBubbleViews::SaveCardManageCardsBubbleViews(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor_view,
     content::WebContents* web_contents,
     SaveCardBubbleController* controller)
     : SaveCardBubbleViews(anchor_view, web_contents, controller) {

@@ -19,8 +19,10 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   let scope = 'http://127.0.0.1:8000/devtools/service-workers/resources/network-fetch-worker-blocked-scope';
 
   NetworkTestRunner.recordNetwork();
-  SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockingEnabled(true);
-  SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockedPatterns([{url: 'resources/resource.php', enabled: true}]);
+  SDK.NetworkManager.MultitargetNetworkManager.instance().requestConditions.conditionsEnabled = true;
+  SDK.NetworkManager.MultitargetNetworkManager.instance().requestConditions.add(
+      SDK.NetworkManager.RequestCondition.createFromSetting(
+          {enabled: true, url: '*://*:*/*resources/resource.php'}));
 
   ApplicationTestRunner.makeFetchInServiceWorker(scope, '../../network/resources/resource.php', {}, fetchCallback);
 
@@ -32,6 +34,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       TestRunner.addResult(request.url());
       TestRunner.addResult('resource.type: ' + request.resourceType());
       TestRunner.addResult('request.failed: ' + !!request.failed);
+      TestRunner.addResult('request.blockedReason: ' + request.blockedReason());
     });
 
     TestRunner.completeTest();

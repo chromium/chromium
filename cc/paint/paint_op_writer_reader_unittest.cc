@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "cc/paint/paint_op_reader.h"
 #include "cc/paint/paint_op_writer.h"
 #include "cc/test/test_options_provider.h"
@@ -23,7 +19,7 @@ TEST(PaintOpWriterReaderTest, SizeT) {
 
   char buffer[128];
   TestOptionsProvider options_provider;
-  memset(buffer, 0xa5, std::size(buffer));
+  UNSAFE_TODO(memset(buffer, 0xa5, std::size(buffer)));
   PaintOpWriter writer(buffer, std::size(buffer),
                        options_provider.serialize_options(),
                        /*enable_security_constraints*/ true);
@@ -56,7 +52,7 @@ TEST(PaintOpWriterReaderTest, SizeT) {
 TEST(PaintOpWriterReaderTest, Vector) {
   char buffer[128];
   TestOptionsProvider options_provider;
-  memset(buffer, 0xa5, std::size(buffer));
+  UNSAFE_TODO(memset(buffer, 0xa5, std::size(buffer)));
   PaintOpWriter writer(buffer, std::size(buffer),
                        options_provider.serialize_options(),
                        /*enable_security_constraints*/ true);
@@ -85,7 +81,7 @@ TEST(PaintOpWriterReaderTest, Vector) {
 TEST(PaintOpWriterReaderTest, SkString) {
   char buffer[128];
   TestOptionsProvider options_provider;
-  memset(buffer, 0xa5, std::size(buffer));
+  UNSAFE_TODO(memset(buffer, 0xa5, std::size(buffer)));
   PaintOpWriter writer(buffer, std::size(buffer),
                        options_provider.serialize_options(),
                        /*enable_security_constraints=*/true);
@@ -107,7 +103,7 @@ TEST(PaintOpWriterReaderTest, SkString) {
 TEST(PaintOpWriterReaderTest, EmptySkString) {
   char buffer[128];
   TestOptionsProvider options_provider;
-  memset(buffer, 0xa5, std::size(buffer));
+  UNSAFE_TODO(memset(buffer, 0xa5, std::size(buffer)));
   PaintOpWriter writer(buffer, std::size(buffer),
                        options_provider.serialize_options(),
                        /*enable_security_constraints=*/true);
@@ -140,7 +136,7 @@ using PaintOpWriterReaderUniformTest = testing::TestWithParam<UniformTestCase>;
 TEST_P(PaintOpWriterReaderUniformTest, Uniforms) {
   char buffer[128];
   TestOptionsProvider options_provider;
-  memset(buffer, 0xa5, std::size(buffer));
+  UNSAFE_TODO(memset(buffer, 0xa5, std::size(buffer)));
   PaintOpWriter writer(buffer, std::size(buffer),
                        options_provider.serialize_options(),
                        /*enable_security_constraints=*/true);

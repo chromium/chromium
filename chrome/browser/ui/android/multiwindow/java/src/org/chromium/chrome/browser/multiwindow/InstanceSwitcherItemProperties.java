@@ -39,14 +39,22 @@ public class InstanceSwitcherItemProperties {
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
             CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
 
+    public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
+            CLOSE_BUTTON_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableObjectPropertyKey<String>
+            CLOSE_BUTTON_CONTENT_DESCRIPTION = new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableBooleanPropertyKey CLOSE_BUTTON_ENABLED =
+            new PropertyModel.WritableBooleanPropertyKey();
+
     public static final PropertyModel.WritableObjectPropertyKey<ListMenuDelegate> MORE_MENU =
             new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableObjectPropertyKey<String>
+            MORE_MENU_CONTENT_DESCRIPTION = new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableBooleanPropertyKey MORE_MENU_ENABLED =
+            new PropertyModel.WritableBooleanPropertyKey();
 
     public static final PropertyModel.WritableObjectPropertyKey<String> LAST_ACCESSED =
             new PropertyModel.WritableObjectPropertyKey<>();
-
-    public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
-            CLOSE_BUTTON_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final PropertyModel.WritableBooleanPropertyKey IS_SELECTED =
             new PropertyModel.WritableBooleanPropertyKey();
@@ -61,9 +69,13 @@ public class InstanceSwitcherItemProperties {
                 DESC,
                 INSTANCE_ID,
                 CLICK_LISTENER,
-                MORE_MENU,
-                LAST_ACCESSED,
                 CLOSE_BUTTON_CLICK_LISTENER,
+                CLOSE_BUTTON_CONTENT_DESCRIPTION,
+                CLOSE_BUTTON_ENABLED,
+                LAST_ACCESSED,
+                MORE_MENU,
+                MORE_MENU_CONTENT_DESCRIPTION,
+                MORE_MENU_ENABLED,
                 IS_SELECTED
             };
 }

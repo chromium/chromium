@@ -258,7 +258,7 @@ class TestKAnonymityServiceMixin : public InProcessBrowserTestMixin {
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request) {
     // Handle all of the URLs in k_anonymity_service_urls.h
     GURL absolute_url = https_server_->GetURL(request.relative_url);
-    std::string path = absolute_url.path();
+    std::string path = absolute_url.GetPath();
     if (path == "/v1/generateShortIdentifier") {
       return HandleGenerateShortIdentifierRequest(request);
     } else if (path.starts_with("/v1/1/fetchKeys")) {

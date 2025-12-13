@@ -131,6 +131,12 @@ class MenuItemBuilder {
     return *this;
   }
 
+  // Gives the item a symbol from SF Symbols on macOS 26.
+  MenuItemBuilder& sf_symbol(NSString* symbol_name) {
+    sf_symbol_name_ = symbol_name;
+    return *this;
+  }
+
   // Builds a NSMenuItem instance from the properties set on the Builder.
   NSMenuItem* Build() const;
 
@@ -142,7 +148,7 @@ class MenuItemBuilder {
 
   int tag_ = 0;
 
-  id __strong target_ = nil;
+  id __strong target_;
   SEL action_ = nil;
 
   NSString* __strong key_equivalent_ = @"";
@@ -157,6 +163,9 @@ class MenuItemBuilder {
   bool is_hidden_ = false;
 
   bool is_section_header_ = false;
+
+  // The action image to use on macOS 26+.
+  NSString* __strong sf_symbol_name_;
 };
 
 }  // namespace internal

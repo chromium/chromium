@@ -15,7 +15,7 @@ class UnknownFieldSet;
 
 namespace proto_extras {
 
-base::DictValue Serialize(
+base::DictValue ToValue(
     const google::protobuf::UnknownFieldSet& unknown_fields);
 
 bool MessageDifferencerEquals(const google::protobuf::Message& lhs,
@@ -27,7 +27,7 @@ void SerializeUnknownFields(const MessageType& message, base::DictValue& dict) {
   if (message.unknown_fields().empty()) {
     return;
   }
-  dict.Set("unknown_fields", Serialize(message.unknown_fields()));
+  dict.Set("unknown_fields", ToValue(message.unknown_fields()));
 }
 
 }  // namespace proto_extras

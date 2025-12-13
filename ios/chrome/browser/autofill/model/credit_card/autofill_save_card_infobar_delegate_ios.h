@@ -40,7 +40,8 @@ class AutofillSaveCardInfoBarDelegateIOS
   // as part of the iOS save card Infobar dialog.
   virtual bool UpdateAndAccept(std::u16string cardholder_name,
                                std::u16string expiration_date_month,
-                               std::u16string expiration_date_year);
+                               std::u16string expiration_date_year,
+                               std::u16string cvc);
 
   // Runs `credit_card_upload_completion_callback_` with `card_saved` to show
   // credit card upload server result and adds
@@ -72,6 +73,15 @@ class AutofillSaveCardInfoBarDelegateIOS
   // Logs metric for Infobar (banner/modal) shown, accepted or dismissed (how).
   void LogSaveCreditCardInfoBarResultMetric(
       autofill_metrics::SaveCreditCardPromptResultIOS metric,
+      autofill_metrics::SaveCreditCardPromptOverlayType overlay_type);
+
+  // Logs metric for CVC Infobar banner shown, accepted or dismissed (how).
+  void LogSaveCvcInfoBarResultMetric(
+      autofill_metrics::SaveCvcPromptResultIOS metric);
+
+  // Logs whether the save credit card prompt is shown or not.
+  void LogPromptOfferMetric(
+      autofill_metrics::SaveCardPromptOffer metric,
       autofill_metrics::SaveCreditCardPromptOverlayType overlay_type);
 
  private:

@@ -10,6 +10,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.url.GURL;
@@ -18,8 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** The JNI bridge for Android to fetch and manipulate browsing history. */
+@NullMarked
 public class BrowsingHistoryBridge implements HistoryProvider {
-    private BrowsingHistoryObserver mObserver;
+    private @Nullable BrowsingHistoryObserver mObserver;
     private long mNativeHistoryBridge;
     private boolean mRemovingItems;
     private boolean mHasPendingRemoveRequest;
@@ -42,7 +45,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
     }
 
     @Override
-    public void queryHistory(String query, String appId) {
+    public void queryHistory(String query, @Nullable String appId) {
         BrowsingHistoryBridgeJni.get()
                 .queryHistory(mNativeHistoryBridge, new ArrayList<>(), query, appId, false);
     }
@@ -172,7 +175,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                 long nativeBrowsingHistoryBridge,
                 List<HistoryItem> historyItems,
                 String query,
-                String appId,
+                @Nullable String appId,
                 boolean hostOnly);
 
         void queryHistoryContinuation(
@@ -182,7 +185,10 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                 long nativeBrowsingHistoryBridge, String hostName, Callback<Long> callback);
 
         void markItemForRemoval(
-                long nativeBrowsingHistoryBridge, GURL url, String appId, long[] nativeTimestamps);
+                long nativeBrowsingHistoryBridge,
+                GURL url,
+                @Nullable String appId,
+                long[] nativeTimestamps);
 
         void removeItems(long nativeBrowsingHistoryBridge);
 

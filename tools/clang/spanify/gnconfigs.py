@@ -275,7 +275,6 @@ class GnConfigsImpl:
             'is_debug=false',
             'is_official_build=true',
             'use_cfi_cast=true',
-            'enable_nacl=true',
             'enable_pseudolocales=true',
             'enable_remoting=true',
             # Encountered to many open fds without while compiling.

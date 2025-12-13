@@ -64,7 +64,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   base::span<const uint8_t> span(unaligned_data, size - unaligned_gap);
 #endif
 
-  if (!entry->Deserialize(context_provider->GrContext(),
+  if (!entry->Deserialize(/*gr_context=*/nullptr,
                           /*graphite_recorder=*/nullptr, span)) {
     return 0;
   }

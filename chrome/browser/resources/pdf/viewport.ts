@@ -8,7 +8,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {hasKeyModifiers, isRTL} from 'chrome://resources/js/util.js';
 
-import type {ExtendedKeyEvent, Point, Rect} from './constants.js';
+import type {ExtendedKeyEvent, Point, Rect, ScrollData} from './constants.js';
 import {FittingType} from './constants.js';
 import type {Gesture, PinchEventDetail} from './gesture_detector.js';
 import {GestureDetector} from './gesture_detector.js';
@@ -1462,12 +1462,11 @@ export class Viewport {
       const MIN_FRACTION_TO_STEP_WHEN_PAGING = 0.875;
       const scrollOffset = (isDown ? 1 : -1) * this.size.height *
           MIN_FRACTION_TO_STEP_WHEN_PAGING;
-      this.setPosition(
-          {
-            x: this.position.x,
-            y: this.position.y + scrollOffset,
-          },
-          this.smoothScrolling_);
+      // TODO(crbug.com/40218278): Re-enable smooth scrolling for all codepaths.
+      this.setPosition({
+        x: this.position.x,
+        y: this.position.y + scrollOffset,
+      });
     }
 
     this.window_.dispatchEvent(new CustomEvent('scroll-proceeded-for-testing'));
@@ -1517,10 +1516,13 @@ export class Viewport {
   /**
    * Handle certain directional key events.
    * @param formFieldFocused Whether a form field is currently focused.
+   * @param caretBrowsingEnabled Whether caret browsing mode is currently
+   *     enabled.
    * @return Whether the event was handled.
    */
-  handleDirectionalKeyEvent(e: KeyboardEvent, formFieldFocused: boolean):
-      boolean {
+  handleDirectionalKeyEvent(
+      e: KeyboardEvent, formFieldFocused: boolean,
+      caretBrowsingEnabled: boolean): boolean {
     switch (e.key) {
       case ' ':
         this.pageUpDownSpaceHandler_(e, formFieldFocused);
@@ -1534,11 +1536,15 @@ export class Viewport {
         return true;
       case 'ArrowLeft':
       case 'ArrowRight':
-        this.arrowLeftRightHandler_(e, formFieldFocused);
+        if (!caretBrowsingEnabled) {
+          this.arrowLeftRightHandler_(e, formFieldFocused);
+        }
         return true;
       case 'ArrowDown':
       case 'ArrowUp':
-        this.arrowUpDownHandler_(e, formFieldFocused);
+        if (!caretBrowsingEnabled) {
+          this.arrowUpDownHandler_(e, formFieldFocused);
+        }
         return true;
       default:
         return false;
@@ -1759,21 +1765,30 @@ export class Viewport {
     this.smoothScrolling_ = isSmooth;
   }
 
-  /** @param point The position to which to scroll the viewport. */
-  scrollTo(point: Partial<Point>) {
+  /**
+   * @param scrollData The position to scroll the viewport to, and the smooth
+   *     scrolling option.
+   */
+  scrollTo(scrollData: Partial<ScrollData>) {
     let changed = false;
     const newPosition = this.position;
-    if (point.x !== undefined && point.x !== newPosition.x) {
-      newPosition.x = point.x;
+    if (scrollData.x !== undefined && scrollData.x !== newPosition.x) {
+      newPosition.x = scrollData.x;
       changed = true;
     }
-    if (point.y !== undefined && point.y !== newPosition.y) {
-      newPosition.y = point.y;
+    if (scrollData.y !== undefined && scrollData.y !== newPosition.y) {
+      newPosition.y = scrollData.y;
       changed = true;
     }
 
     if (changed) {
-      this.setPosition(newPosition);
+      // TODO(crbug.com/40218278): Re-enable smooth scrolling for all codepaths.
+      //
+      // {@link smoothScrolling_} is bypassed entirely unless certain caller
+      // explicitly forces smooth scrolling
+      // (e.g., `PdfViewWebPlugin::ScrollTextFragmentIntoView()`).
+      // Also see crbug.com/40218278 and crbug.com/40218245 for more context.
+      this.setPosition(newPosition, scrollData.forceSmoothScroll ?? false);
     }
   }
 
@@ -1782,7 +1797,7 @@ export class Viewport {
     const newPosition = this.position;
     newPosition.x += delta.x;
     newPosition.y += delta.y;
-    this.scrollTo(newPosition);
+    this.scrollTo({...newPosition, forceSmoothScroll: false});
   }
 
   /** Removes all events being tracked from the tracker. */

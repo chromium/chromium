@@ -219,6 +219,8 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
         return 'occluded';
       case LifecycleUnitVisibility.VISIBLE:
         return 'visible';
+      default:
+        assertNotReached();
     }
   }
 
@@ -237,6 +239,8 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
         return 'loading';
       case LifecycleUnitLoadingState.LOADED:
         return 'loaded';
+      default:
+        assertNotReached();
     }
   }
 
@@ -257,6 +261,8 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
         return 'suggested';
       case LifecycleUnitDiscardReason.FROZEN_WITH_GROWING_MEMORY:
         return 'frozen with growing memory';
+      default:
+        assertNotReached();
     }
   }
 
@@ -284,6 +290,8 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
           return 'hidden';
         case LifecycleUnitVisibility.VISIBLE:
           return hasFocus ? 'active' : 'passive';
+        default:
+          assertNotReached();
       }
     }
 
@@ -300,6 +308,8 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
                      (new Date(Number(stateChangeTime.microseconds) / 1000)
                           .toLocaleString()) :
                                                               '');
+      default:
+        assertNotReached();
     }
   }
 
@@ -381,6 +391,8 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
         return '✘️';
       case CanFreeze.VARIES:
         return '~';
+      default:
+        assertNotReached();
     }
   }
 
@@ -408,19 +420,10 @@ export class DiscardsTabElement extends DiscardsTabElementBase {
    * @param tab The tab.
    * @return true iff the tab can be discarded.
    */
-  // <if expr="not is_android">
   protected canDiscardViaUi_(tab: TabDiscardsInfo): boolean {
     return tab.visibility !== LifecycleUnitVisibility.VISIBLE &&
         tab.state !== LifecycleUnitState.DISCARDED;
   }
-  // </if>
-  // <if expr="is_android">
-  // TODO(crbug.com/399740817): Enable discarding when PageDiscardingHelper is
-  // enabled on Android.
-  protected canDiscardViaUi_(_tab: TabDiscardsInfo): boolean {
-    return false;
-  }
-  // </if>
 
   /**
    * Tests whether a tab can be frozen via the discards UI. This is different

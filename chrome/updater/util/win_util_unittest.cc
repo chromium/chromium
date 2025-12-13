@@ -542,6 +542,13 @@ TEST(WinUtil, GetTextForSystemError) {
       L"0x80040200");
 }
 
+TEST(WinUtil, GetExplorerPid) {
+  if (!::IsUserAnAdmin() || !IsUACOn()) {
+    GTEST_SKIP();
+  }
+  ASSERT_NE(GetExplorerPid(), std::nullopt);
+}
+
 TEST(WinUtil, GetLoggedOnUserToken) {
   if (!::IsUserAnAdmin() || !IsUACOn()) {
     return;
@@ -668,6 +675,61 @@ TEST(WinUtil, IsServicePresent_IsServiceEnabled_NonAdmin) {
   EXPECT_TRUE(IsServiceEnabled(L"Schedule"));
   EXPECT_FALSE(IsServicePresent(L"ScheduleFooBar"));
   EXPECT_FALSE(IsServiceEnabled(L"ScheduleFooBar"));
+}
+
+TEST(WinUtil, GetCommandLineForPid) {
+  const HResultOr<std::wstring> cmd_line_for_pid =
+      GetCommandLineForPid(::GetCurrentProcessId());
+  ASSERT_TRUE(cmd_line_for_pid.has_value());
+  EXPECT_STREQ(cmd_line_for_pid->c_str(), ::GetCommandLine());
+}
+
+TEST(WinUtil, AddCurrentUserAllowedAce) {
+  CAccessToken token;
+  CSid sid;
+  ASSERT_TRUE(token.GetEffectiveToken(TOKEN_QUERY));
+  ASSERT_TRUE(token.GetUser(&sid));
+  const std::wstring added_ace = base::StrCat({L"(A;;GA;;;", sid.Sid(), L")"});
+
+  std::optional<std::wstring> new_sddl =
+      AddCurrentUserAllowedAce(L"", GENERIC_ALL, 0);
+  ASSERT_TRUE(new_sddl);
+  EXPECT_EQ(*new_sddl, base::StrCat({L"D:", added_ace}));
+
+  new_sddl = AddCurrentUserAllowedAce(L"D:(A;;GA;;;BA)", GENERIC_ALL, 0);
+  ASSERT_TRUE(new_sddl);
+  EXPECT_EQ(*new_sddl, base::StrCat({L"D:(A;;GA;;;BA)", added_ace}));
+
+  new_sddl =
+      AddCurrentUserAllowedAce(L"O:AOG:BAD:(A;;GA;;;S-1-0-0)", GENERIC_ALL, 0);
+  ASSERT_TRUE(new_sddl);
+  EXPECT_EQ(*new_sddl,
+            base::StrCat({L"O:AOG:BAD:(A;;GA;;;S-1-0-0)", added_ace}));
+
+  new_sddl = AddCurrentUserAllowedAce(
+      L"O:BAG:BAD:(A;;RPWPCCDCLCRCWOWDSDSW;;;SY)(A;;RPWPCCDCLCRCWOWDSDSW;;;BA)("
+      L"OA;;CCDC;aaaaaaaa-0000-1111-2222-bbbbbbbbbbbb;;AO)(OA;;CCDC;bbbbbbbb-"
+      L"1111-2222-3333-cccccccccccc;;AO)(OA;;CCDC;cccccccc-2222-3333-4444-"
+      L"dddddddddddd;;AO)(OA;;CCDC;dddddddd-3333-4444-5555-eeeeeeeeeeee;;PO)(A;"
+      L";RPLCRC;;;AU)S:(AU;SAFA;WDWOSDWPCCDCSW;;;WD)",
+      GENERIC_ALL, 0);
+  ASSERT_TRUE(new_sddl);
+
+  const std::wstring expected_sddl = base::StrCat(
+      {L"O:BAG:BAD:(A;;KA;;;SY)(A;;KA;;;BA)(A;;LCRPRC;;;AU)", added_ace,
+       L"(OA;;CCDC;cccccccc-2222-3333-4444-dddddddddddd;;AO)(OA;;CCDC;"
+       L"dddddddd-3333-4444-5555-eeeeeeeeeeee;;PO)(OA;;CCDC;aaaaaaaa-0000-"
+       L"1111-2222-bbbbbbbbbbbb;;AO)(OA;;CCDC;bbbbbbbb-1111-2222-3333-"
+       L"cccccccccccc;;AO)S:(AU;SAFA;CCDCSWWPSDWDWO;;;WD)"});
+  EXPECT_EQ(*new_sddl, expected_sddl);
+
+  // The SDDL will contain only a single instance of the new ACE, even if
+  // attempts are made to add it multiple times.
+  for (int i = 0; i < 100; ++i) {
+    new_sddl = AddCurrentUserAllowedAce(*new_sddl, GENERIC_ALL, 0);
+    ASSERT_TRUE(new_sddl);
+    EXPECT_EQ(*new_sddl, expected_sddl);
+  }
 }
 
 }  // namespace updater::test

@@ -374,12 +374,10 @@ void ViewPainter::PaintRootElementGroup(
 
   recorder.UniteVisualRect(paint_rect);
 
-  BoxPainterBase::FillLayerOcclusionOutputList reversed_paint_list;
-  bool should_draw_background_in_separate_buffer =
+  const FillLayer& background_layers = style.BackgroundLayers();
+  auto [should_draw_background_in_separate_buffer, last_background_layer] =
       BoxModelObjectPainter(layout_view)
-          .CalculateFillLayerOcclusionCulling(reversed_paint_list,
-                                              style.BackgroundLayers());
-  DCHECK(reversed_paint_list.size());
+          .AnalyzeFillLayersForPainting(background_layers);
 
   if (painted_separate_effect) {
     should_draw_background_in_separate_buffer = true;
@@ -433,11 +431,14 @@ void ViewPainter::PaintRootElementGroup(
   BoxBackgroundPaintContext bg_paint_context(layout_view, &box_fragment_,
                                              background_image_offset);
   BoxModelObjectPainter box_model_painter(layout_view);
-  for (const auto* fill_layer : base::Reversed(reversed_paint_list)) {
-    box_model_painter.PaintFillLayer(paint_info, Color(), *fill_layer,
-                                     PhysicalRect(paint_rect),
-                                     kBackgroundBleedNone, bg_paint_context);
-  }
+  FillLayer::IterateFillLayersInReverseOrder(
+      &background_layers, last_background_layer,
+      [&box_model_painter, paint_info, paint_rect,
+       bg_paint_context](const FillLayer& fill_layer) {
+        box_model_painter.PaintFillLayer(
+            paint_info, Color(), fill_layer, PhysicalRect(paint_rect),
+            kBackgroundBleedNone, bg_paint_context);
+      });
 
   if (should_draw_background_in_separate_buffer && !painted_separate_effect)
     context.EndLayer();

@@ -293,7 +293,7 @@ AppBannerManager::UrlType AppBannerManager::GetUrlType(
   // There is never a need to trigger a banner for a WebUI page, except
   // for PasswordManager WebUI.
   if (content::HasWebUIScheme(url) &&
-      (url.host() != password_manager::kChromeUIPasswordManagerHost)) {
+      (url.GetHost() != password_manager::kChromeUIPasswordManagerHost)) {
     return UrlType::kInvalidPrimaryFrameUrl;
   }
 
@@ -584,6 +584,7 @@ void AppBannerManager::SetInstallableWebAppCheckResult(
       break;
   }
 
+  InstallableWebAppStatusUpdate();
   for (Observer& observer : observer_list_) {
     observer.OnInstallableWebAppStatusUpdated(result, web_app_data_);
   }

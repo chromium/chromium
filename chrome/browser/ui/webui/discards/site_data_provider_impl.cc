@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/discards/site_data_provider_impl.h"
 
+#include "base/byte_count.h"
 #include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/persistence/site_data/site_data.pb.h"
@@ -174,12 +175,12 @@ void SiteDataProviderImpl::GetSiteDataDatabaseSize(
   auto inspector_callback = base::BindOnce(
       [](GetSiteDataDatabaseSizeCallback callback,
          std::optional<int64_t> num_rows,
-         std::optional<int64_t> on_disk_size_kb) {
+         std::optional<base::ByteCount> on_disk_size) {
         discards::mojom::SiteDataDatabaseSizePtr result =
             discards::mojom::SiteDataDatabaseSize::New();
         result->num_rows = num_rows.has_value() ? num_rows.value() : -1;
         result->on_disk_size_kb =
-            on_disk_size_kb.has_value() ? on_disk_size_kb.value() : -1;
+            on_disk_size.has_value() ? on_disk_size.value().InKiB() : -1;
 
         std::move(callback).Run(std::move(result));
       },

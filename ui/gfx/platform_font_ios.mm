@@ -120,6 +120,10 @@ std::string PlatformFontIOS::GetActualFontName() const {
   return base::SysNSStringToUTF8(font.familyName);
 }
 
+std::vector<std::string> PlatformFontIOS::GetActualFontNames() const {
+  return {GetActualFontName()};
+}
+
 int PlatformFontIOS::GetFontSize() const {
   return font_size_;
 }

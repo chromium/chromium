@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/extension_service.h"

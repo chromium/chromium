@@ -8,6 +8,7 @@
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace resource_attribution {
 
@@ -31,23 +32,28 @@ TEST_F(ResourceAttrResourceContextsTest, NodeContexts) {
   // they use different constructors.
 
   // Ensure each node gets a fresh token.
-  const std::set<FrameContext> frame_contexts{
+  // Put contexts in an absl set to make sure they can be hashed.
+  const absl::flat_hash_set<FrameContext> frame_contexts{
       mock_graph.frame->GetResourceContext(),
       mock_graph.other_frame->GetResourceContext(),
       mock_graph.child_frame->GetResourceContext(),
   };
   EXPECT_EQ(frame_contexts.size(), 3u);
-  EXPECT_NE(mock_graph.page->GetResourceContext(),
-            mock_graph.other_page->GetResourceContext());
-  const std::set<ProcessContext> process_contexts{
+  const absl::flat_hash_set<PageContext> page_contexts{
+      mock_graph.page->GetResourceContext(),
+      mock_graph.other_page->GetResourceContext()};
+  EXPECT_EQ(page_contexts.size(), 2u);
+  const absl::flat_hash_set<ProcessContext> process_contexts{
       mock_graph.browser_process->GetResourceContext(),
       mock_graph.process->GetResourceContext(),
       mock_graph.other_process->GetResourceContext(),
       mock_graph.utility_process->GetResourceContext(),
   };
   EXPECT_EQ(process_contexts.size(), 4u);
-  EXPECT_NE(mock_graph.worker->GetResourceContext(),
-            mock_graph.other_worker->GetResourceContext());
+  const absl::flat_hash_set<WorkerContext> worker_contexts{
+      mock_graph.worker->GetResourceContext(),
+      mock_graph.other_worker->GetResourceContext()};
+  EXPECT_EQ(worker_contexts.size(), 2u);
 }
 
 TEST_F(ResourceAttrResourceContextsTest, ResourceContextComparators) {
@@ -87,6 +93,12 @@ TEST_F(ResourceAttrResourceContextsTest, ResourceContextComparators) {
   EXPECT_NE(mock_graph.process->GetResourceContext(), page_context);
   // ResourceContext != ResourceContext
   EXPECT_NE(process_context, page_context);
+
+  // Put contexts in an absl set to make sure they can be hashed.
+  const absl::flat_hash_set<ResourceContext> context_set{
+      process_context, process_context_copy, other_process_context,
+      page_context};
+  EXPECT_EQ(context_set.size(), 3u);
 }
 
 TEST_F(ResourceAttrResourceContextsTest, ResourceContextConverters) {

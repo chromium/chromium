@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/wm/window_pin_util.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
@@ -18,18 +17,17 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ash/arc/test/arc_data_removed_waiter.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/test/regular_logged_in_browser_test_mixin.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -239,49 +237,13 @@ IN_PROC_BROWSER_TEST_F(ArcSessionManagerTest, ManagedAndroidAccount) {
   EXPECT_FALSE(IsArcPlayStoreEnabledForProfile(profile()));
 }
 
-class ArcSessionManagerLockedFullscreenTest : public ArcSessionManagerTest {
- protected:
-  ArcSessionManagerLockedFullscreenTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        ash::features::kBocaOnTaskMuteArcAudio);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ArcSessionManagerLockedFullscreenTest,
-                       ArcDisabledInLockedFullscreen) {
-  EnableArc();
-  ASSERT_EQ(ArcSessionManager::State::ACTIVE,
-            ArcSessionManager::Get()->state());
-
-  // ARC should be disabled in locked fullscreen.
-  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
-  ASSERT_EQ(ArcSessionManager::State::STOPPED,
-            ArcSessionManager::Get()->state());
-
-  // ARC should not remain disabled once we exit this mode.
-  UnpinWindow(browser()->window()->GetNativeWindow());
-  EXPECT_NE(ArcSessionManager::State::STOPPED,
-            ArcSessionManager::Get()->state());
-}
-
 // TODO - crbug.com/401589420: Move audio tests to the
 // //c/b/ash/arc/locked_fullscreen folder.
 class ArcSessionManagerLockedFullscreenWithMuteAudioTest
     : public ArcSessionManagerTest,
       public ::testing::WithParamInterface<bool> {
  protected:
-  ArcSessionManagerLockedFullscreenWithMuteAudioTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kBocaOnTaskMuteArcAudio);
-  }
-
   bool IsMuteArcVMAudioSuccess() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ArcSessionManagerLockedFullscreenWithMuteAudioTest,
@@ -299,7 +261,7 @@ IN_PROC_BROWSER_TEST_P(ArcSessionManagerLockedFullscreenWithMuteAudioTest,
 
   // ARC should remain enabled when entering fullscreen mode. This is because
   // we attempt to mute ARC VM audio instead.
-  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
   content::RunAllTasksUntilIdle();
   ASSERT_EQ(ArcSessionManager::State::ACTIVE,
             ArcSessionManager::Get()->state());
@@ -308,7 +270,7 @@ IN_PROC_BROWSER_TEST_P(ArcSessionManagerLockedFullscreenWithMuteAudioTest,
                                       IsMuteArcVMAudioSuccess(), 1);
 
   // ARC should remain enabled once we exit locked fullscreen mode.
-  UnpinWindow(browser()->window()->GetNativeWindow());
+  ash::UnpinWindow(browser()->window()->GetNativeWindow());
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(ArcSessionManager::State::ACTIVE,
             ArcSessionManager::Get()->state());

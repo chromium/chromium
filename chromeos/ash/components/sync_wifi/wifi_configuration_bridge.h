@@ -85,6 +85,7 @@ class WifiConfigurationBridge : public syncer::DataTypeSyncBridge,
       const syncer::EntityData& entity_data) const override;
   std::string GetStorageKey(
       const syncer::EntityData& entity_data) const override;
+  bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                    delete_metadata_change_list) override;
 
@@ -109,6 +110,8 @@ class WifiConfigurationBridge : public syncer::DataTypeSyncBridge,
 
  private:
   void Commit(std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch);
+
+  void RecordNetworkMetrics();
 
   // Callbacks for DataTypeStore.
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,

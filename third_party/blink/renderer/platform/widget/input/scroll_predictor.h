@@ -37,11 +37,13 @@ class PLATFORM_EXPORT ScrollPredictor {
 
   // Resampling GestureScrollUpdate events. Updates the prediction with events
   // in original events list, and apply the prediction to the aggregated GSU
-  // event if enable_resampling is true.
+  // event if enable_resampling is true. |next_event| is the first event after
+  // sample_time.
   std::unique_ptr<EventWithCallback> ResampleScrollEvents(
       std::unique_ptr<EventWithCallback> event_with_callback,
       base::TimeTicks frame_time,
-      base::TimeDelta frame_interval);
+      base::TimeDelta frame_interval,
+      const WebInputEvent* next_event);
 
   // Resamples the current GestureScrollUpdate events at the given `frame_time`.
   std::unique_ptr<EventWithCallback> GenerateSyntheticScrollUpdate(
@@ -50,7 +52,11 @@ class PLATFORM_EXPORT ScrollPredictor {
       mojom::blink::GestureDevice gesture_device,
       int modifiers);
 
-  bool HasPrediction() const;
+  bool HasPrediction(base::TimeTicks frame_time) const;
+
+  void UpdatePredictionForEventAfterSampleTime(const WebInputEvent& event);
+
+  base::TimeDelta ResampleLatency(base::TimeDelta frame_interval) const;
 
  private:
   friend class test::InputHandlerProxyEventQueueTest;
@@ -84,6 +90,11 @@ class PLATFORM_EXPORT ScrollPredictor {
   // Total scroll delta from original scroll update events, used for calculating
   // predictions. Reset on GestureScrollBegin.
   gfx::PointF current_event_accumulated_delta_;
+
+  // The timestamp of the last GestureScrollUpdate event that was used to update
+  // the prediction model.
+  base::TimeTicks last_prediction_update_timestamp_;
+
   // Predicted accumulated delta from last vsync, use for calculating delta_x
   // and delta_y for the resampled/predicted event.
   gfx::PointF last_predicted_accumulated_delta_;

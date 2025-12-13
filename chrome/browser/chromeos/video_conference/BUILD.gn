@@ -22,6 +22,7 @@ static_library("video_conference") {
 
   deps = [
     "//base",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/ui/web_applications",
     "//chromeos/crosapi/mojom",
@@ -56,7 +57,10 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "video_conference_media_listener_browsertest.cc" ]
+  sources = [
+    "video_conference_manager_client_browsertest.cc",
+    "video_conference_media_listener_browsertest.cc",
+  ]
 
   deps = [
     ":video_conference",
@@ -68,6 +72,8 @@ source_set("browser_tests") {
     "//chrome/browser/ash/video_conference",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/main_extra_parts",
+    "//chrome/browser/ui/tabs:test_support",
     "//chrome/test:test_support_ui",
     "//chromeos/crosapi/mojom",
     "//content/public/browser",

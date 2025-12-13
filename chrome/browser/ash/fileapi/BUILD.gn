@@ -96,7 +96,7 @@ source_set("impl") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions",
     "//chrome/browser/file_system_access",
-    "//chrome/common:common",
+    "//chrome/common",
     "//chrome/common/extensions/api",
     "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/ash/components/drivefs",

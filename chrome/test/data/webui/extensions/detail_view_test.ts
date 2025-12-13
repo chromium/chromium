@@ -88,7 +88,7 @@ suite('ExtensionDetailViewTest', function() {
     assertTrue(testIsVisible('#icon'));
     assertFalse(testIsVisible('#extensionsOptions'));
     assertTrue(
-        item.$.description.textContent!.indexOf('This is an extension') !== -1);
+        item.$.description.textContent.indexOf('This is an extension') !== -1);
     assertTrue(testIsVisible('#siteSettings'));
 
     assertTrue(isChildVisible(item, '#allow-incognito'));
@@ -282,24 +282,24 @@ suite('ExtensionDetailViewTest', function() {
   test('LayoutSource', async () => {
     await updateItemData(
         {location: chrome.developerPrivate.Location.FROM_STORE});
-    assertEquals('Chrome Web Store', item.$.source.textContent!.trim());
+    assertEquals('Chrome Web Store', item.$.source.textContent.trim());
     assertFalse(isChildVisible(item, '#load-path'));
 
     await updateItemData(
         {location: chrome.developerPrivate.Location.THIRD_PARTY});
-    assertEquals('Added by a third-party', item.$.source.textContent!.trim());
+    assertEquals('Added by a third-party', item.$.source.textContent.trim());
     assertFalse(isChildVisible(item, '#load-path'));
 
     await updateItemData(
         {location: chrome.developerPrivate.Location.INSTALLED_BY_DEFAULT});
-    assertEquals('Installed by default', item.$.source.textContent!.trim());
+    assertEquals('Installed by default', item.$.source.textContent.trim());
     assertFalse(isChildVisible(item, '#load-path'));
 
     await updateItemData({
       location: chrome.developerPrivate.Location.UNPACKED,
       prettifiedPath: 'foo/bar/baz/',
     });
-    assertEquals('Unpacked extension', item.$.source.textContent!.trim());
+    assertEquals('Unpacked extension', item.$.source.textContent.trim());
     // Test whether the load path is displayed for unpacked extensions.
     assertTrue(isChildVisible(item, '#load-path'));
 
@@ -309,7 +309,7 @@ suite('ExtensionDetailViewTest', function() {
       prettifiedPath: '',
       locationText: 'Foo',
     });
-    assertEquals('Foo', item.$.source.textContent!.trim());
+    assertEquals('Foo', item.$.source.textContent.trim());
     assertFalse(isChildVisible(item, '#load-path'));
   });
 
@@ -657,7 +657,7 @@ suite('ExtensionDetailViewTest', function() {
 
     assertTrue(testIsVisible('#no-permissions'));
     assertTrue(item.shadowRoot.querySelector<HTMLElement>('#no-permissions')!
-                   .textContent!.includes(loadTimeData.getString(
+                   .textContent.includes(loadTimeData.getString(
                        'itemPermissionsAndSiteAccessEmpty')));
     assertFalse(testIsVisible('#no-site-access'));
 
@@ -723,7 +723,7 @@ suite('ExtensionDetailViewTest', function() {
         Array
             .from(item.shadowRoot.querySelectorAll<HTMLElement>(
                 '.inspectable-view'))
-            .map(e => e.textContent!.trim());
+            .map(e => e.textContent.trim());
 
     assertDeepEquals(
         ['service worker', 'background page', 'popup.html'], orderedListItems);
@@ -780,7 +780,7 @@ suite('ExtensionDetailViewTest', function() {
         item.shadowRoot.querySelector('#safetyCheckWarningContainer');
     assertTrue(!!safetyWarningText);
     assertTrue(isVisible(safetyWarningText));
-    assertTrue(safetyWarningText.textContent!.includes('Test Message'));
+    assertTrue(safetyWarningText.textContent.includes('Test Message'));
   });
 
   test('Mv2DeprecationMessage_None', () => {

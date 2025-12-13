@@ -40,6 +40,7 @@ struct CONTENT_EXPORT SendResult {
 
     Result result;
     int status;
+
     Sent(Result result, int status) : result(result), status(status) {}
 
     friend bool operator==(const Sent&, const Sent&) = default;

@@ -187,7 +187,7 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
     // Extract the body payload.
     EvalJsResult result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                                  "document.body.textContent");
-    ASSERT_TRUE(result.error.empty());
+    ASSERT_TRUE(result.is_ok());
 
     *out_file_name = file_path.BaseName().MaybeAsASCII();
     *out_result = result.ExtractString();
@@ -281,7 +281,7 @@ class ServiceWorkerFileUploadTest : public testing::WithParamInterface<bool>,
 
     // Submit the form using XHR.
     EvalJsResult result = EvalJs(shell(), eval);
-    CHECK(result.error.empty()) << result;
+    CHECK(result.is_ok()) << result;
     return result.ExtractString();
   }
 

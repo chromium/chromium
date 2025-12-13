@@ -43,7 +43,7 @@ RemoteHostContactedSignal::~RemoteHostContactedSignal() = default;
 
 std::string RemoteHostContactedSignal::GetUniqueRemoteHostContactedId() const {
   return base::JoinString(
-      {remote_host_url_.host(), RemoteHostInfo::ProtocolType_Name(protocol_),
+      {remote_host_url_.GetHost(), RemoteHostInfo::ProtocolType_Name(protocol_),
        RemoteHostInfo::ContactInitiator_Name(contact_initiator_)},
       ",");
 }

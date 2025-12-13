@@ -22,7 +22,7 @@ source_set("browser") {
     "//content/public/browser",
     "//net",
     "//third_party/blink/public/common:headers",
-    "//url:url",
+    "//url",
   ]
 }
 
@@ -36,7 +36,7 @@ source_set("common") {
     "//base",
     "//content/public/common",
     "//third_party/blink/public/common:headers",
-    "//url:url",
+    "//url",
   ]
 }
 
@@ -55,7 +55,7 @@ source_set("proto") {
     ":common",
     ":db_trial_token",
     "//base",
-    "//url:url",
+    "//url",
   ]
 }
 
@@ -76,14 +76,14 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/leveldb_proto:test_support",
     "//components/sync_preferences:test_support",
-    "//components/user_prefs:user_prefs",
+    "//components/user_prefs",
     "//content/public/browser",
     "//content/public/common",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:test_headers",
-    "//url:url",
+    "//url",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

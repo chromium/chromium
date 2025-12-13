@@ -187,9 +187,6 @@ found in the LICENSE file.
       <message name="IDS_FAST_CHECKOUT_HOME_SHEET_ACCEPT" desc="Text for accepting autofilling the selected options on the site.">
         Autofill my info
       </message>
-      <message name="IDS_FAST_CHECKOUT_HOME_SHEET_ACCEPT_BUTTON_CLICKED_DESCRIPTION" desc="Accessibility string describing the actions to follow after the user accepts a selection.">
-        As you check out, your other info will be autofilled.
-      </message>
       <message name="IDS_FAST_CHECKOUT_HOME_SHEET_EXPAND_ICON_AUTOFILL_PROFILE_DESCRIPTION" desc="Accessibility string for the icon that allows entering the Autofill profile detail sheet.">
         Change to other shipping address under this menu item.
       </message>

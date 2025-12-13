@@ -7,13 +7,14 @@
 #include <optional>
 #include <utility>
 
+#include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
-#include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 
 namespace web_app {
 
@@ -22,7 +23,7 @@ IsolatedWebAppExternalInstallOptions::IsolatedWebAppExternalInstallOptions(
     web_package::SignedWebBundleId web_bundle_id,
     UpdateChannel update_channel,
     bool allow_downgrades,
-    std::optional<base::Version> pinned_version)
+    std::optional<IwaVersion> pinned_version)
     : update_manifest_url_(std::move(update_manifest_url)),
       web_bundle_id_(std::move(web_bundle_id)),
       update_channel_(std::move(update_channel)),
@@ -49,7 +50,7 @@ IsolatedWebAppExternalInstallOptions::Create(
     const web_package::SignedWebBundleId& web_bundle_id,
     const GURL& update_manifest_url,
     const UpdateChannel& update_channel,
-    const std::optional<base::Version>& maybe_pinned_version,
+    const std::optional<IwaVersion>& maybe_pinned_version,
     bool allow_downgrades) {
   if (web_bundle_id.is_for_proxy_mode()) {
     return base::unexpected("Bundle created for proxy mode");
@@ -113,14 +114,17 @@ IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
         "bundle cannot be installed");
   }
 
-  std::optional<base::Version> maybe_pinned_version;
+  std::optional<IwaVersion> maybe_pinned_version;
 
-  if (const auto* pinned_version_raw =
-          entry.FindString(kPolicyPinnedVersionKey)) {
-    base::Version pinned_version = base::Version(*pinned_version_raw);
-    if (!pinned_version.IsValid()) {
-      return base::unexpected("Pinned version has invalid format");
-    }
+  const auto* pinned_version_raw = entry.FindString(kPolicyPinnedVersionKey);
+  if (pinned_version_raw) {
+    ASSIGN_OR_RETURN(IwaVersion pinned_version,
+                     IwaVersion::Create(*pinned_version_raw),
+                     [&](IwaVersion::IwaVersionParseError error) {
+                       return base::StringPrintf(
+                           "Pinned version has invalid format: %s",
+                           web_app::IwaVersion::GetErrorString(error).c_str());
+                     });
     maybe_pinned_version = std::move(pinned_version);
   }
 

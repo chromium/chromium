@@ -1,8 +1,0 @@
-/target
-
-
-#vim temporary files
-*.swp
-*.swo
-/.vscode
-/benches/small.mp4

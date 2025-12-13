@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/cma/backend/android/volume_cache.h"
 
 #include <cmath>
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromecast {
@@ -43,7 +39,7 @@ class VolumeCacheTest : protected SystemVolumeTableAccessApi,
       return -1.0f;
 
     int idx_vol = static_cast<int>(std::round(volume * kMaxVolumeIndex));
-    return kTestVolumeTable[idx_vol];
+    return UNSAFE_TODO(kTestVolumeTable[idx_vol]);
   }
 
   VolumeCache volume_cache_;
@@ -52,8 +48,9 @@ class VolumeCacheTest : protected SystemVolumeTableAccessApi,
 TEST_F(VolumeCacheTest, CachedValuesMatchesOriginalTable) {
   for (int i = 0; i <= kMaxVolumeIndex; i++) {
     float v = static_cast<float>(i) / kMaxVolumeIndex;
-    EXPECT_FLOAT_EQ(kTestVolumeTable[i], volume_cache_.VolumeToDbFS(v));
-    float db = kTestVolumeTable[i];
+    UNSAFE_TODO(
+        EXPECT_FLOAT_EQ(kTestVolumeTable[i], volume_cache_.VolumeToDbFS(v)));
+    float db = UNSAFE_TODO(kTestVolumeTable[i]);
     EXPECT_FLOAT_EQ(v, volume_cache_.DbFSToVolume(db));
   }
 }
@@ -91,8 +88,8 @@ TEST_F(VolumeCacheTest, Volume2DbFSInterpolatesCorrectly) {
   for (; i_high <= kMaxVolumeIndex; ++i_high, ++i_low) {
     float v_low = static_cast<float>(i_low) / kMaxVolumeIndex;
     float v_high = static_cast<float>(i_high) / kMaxVolumeIndex;
-    float db_low = kTestVolumeTable[i_low];
-    float db_high = kTestVolumeTable[i_high];
+    float db_low = UNSAFE_TODO(kTestVolumeTable[i_low]);
+    float db_high = UNSAFE_TODO(kTestVolumeTable[i_high]);
     float m = (db_high - db_low) / (v_high - v_low);
     for (float v = v_low; v <= v_high; v += 0.1f) {
       float expected_db = db_low + m * (v - v_low);
@@ -106,8 +103,8 @@ TEST_F(VolumeCacheTest, DbFSToVolumeInterpolatesCorrectly) {
   for (; i_high <= kMaxVolumeIndex; ++i_high, ++i_low) {
     float v_low = static_cast<float>(i_low) / kMaxVolumeIndex;
     float v_high = static_cast<float>(i_high) / kMaxVolumeIndex;
-    float db_low = kTestVolumeTable[i_low];
-    float db_high = kTestVolumeTable[i_high];
+    float db_low = UNSAFE_TODO(kTestVolumeTable[i_low]);
+    float db_high = UNSAFE_TODO(kTestVolumeTable[i_high]);
     float m = (v_high - v_low) / (db_high - db_low);
     for (float db = db_low; db <= db_high; db += 0.1f) {
       float expected_v = v_low + m * (db - db_low);

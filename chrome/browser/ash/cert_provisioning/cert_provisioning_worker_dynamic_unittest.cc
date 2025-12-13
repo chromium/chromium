@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker_dynamic.h"
 
 #include <stdint.h>
@@ -16,6 +11,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/json/json_string_value_serializer.h"
@@ -167,7 +163,6 @@ constexpr char kCertProfileName[] = "Certificate Profile 1";
 constexpr char kCertProfileVersion[] = "cert_profile_version_1";
 constexpr base::TimeDelta kCertProfileRenewalPeriod = base::Seconds(0);
 // Prefix + certificate profile name.
-constexpr char kInvalidationTopic[] = "fake_invalidation_topic_1";
 constexpr char kChallenge[] = "fake_va_challenge_1";
 constexpr char kChallengeResponse[] = "fake_va_challenge_response_1";
 constexpr char kSignatureBase64[] = "AQIDBAU=";
@@ -252,8 +247,8 @@ std::string GetEccSignatureAsn1Str() {
 
 std::vector<uint8_t> GetCertProfileIdBin() {
   // -1 because of '\0'.
-  return std::vector<uint8_t>(kCertProfileId,
-                              kCertProfileId + sizeof(kCertProfileId) - 1);
+  return std::vector<uint8_t>(
+      kCertProfileId, UNSAFE_TODO(kCertProfileId + sizeof(kCertProfileId) - 1));
 }
 
 void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {
@@ -317,7 +312,6 @@ GetNextInstructionResult NextInstructionImportCertificate(
 
 StartResult StartResultOk() {
   em::CertProvStartResponse start_response;
-  start_response.set_invalidation_topic(kInvalidationTopic);
 
   return start_response;
 }
@@ -679,9 +673,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsRsaKeys) {
     EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
                  StartResultOk());
 
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .WillOnce(SaveArg<2>(&on_invalidation_event_callback));
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _))
+        .WillOnce(SaveArg<1>(&on_invalidation_event_callback));
 
     // kReadyForNextOperation
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
@@ -701,7 +694,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsRsaKeys) {
   }
   {
     // A signal that the the client has successfully subscribed to the
-    // invalidation topic should result in a retry of the waiting action with a
+    // invalidations should result in a retry of the waiting action with a
     // 30 seconds delay. In this particular scenario, the result is still
     // InstructionNotYetAvailable.
     testing::InSequence seq;
@@ -905,9 +898,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsEcKeys) {
     EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
                  StartResultOk());
 
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .WillOnce(SaveArg<2>(&on_invalidation_event_callback));
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _))
+        .WillOnce(SaveArg<1>(&on_invalidation_event_callback));
 
     // kReadyForNextOperation
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
@@ -927,7 +919,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsEcKeys) {
   }
   {
     // A signal that the the client has successfully subscribed to the
-    // invalidation topic should result in a retry of the waiting action with a
+    // invalidations should result in a retry of the waiting action with a
     // 30 seconds delay. In this particular scenario, the result is still
     // InstructionNotYetAvailable.
     testing::InSequence seq;
@@ -1130,9 +1122,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsNoWaitingRsaKeys) {
                  StartResultOk());
 
     OnInvalidationEventCallback on_invalidation_event_callback;
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .WillOnce(SaveArg<2>(&on_invalidation_event_callback));
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _))
+        .WillOnce(SaveArg<1>(&on_invalidation_event_callback));
 
     // kReadyForNextOperation
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
@@ -1300,9 +1291,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsNoWaitingEcKeys) {
                  StartResultOk());
 
     OnInvalidationEventCallback on_invalidation_event_callback;
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .WillOnce(SaveArg<2>(&on_invalidation_event_callback));
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _))
+        .WillOnce(SaveArg<1>(&on_invalidation_event_callback));
 
     // kReadyForNextOperation
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
@@ -4204,9 +4194,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, RetryUploadProofOfPossessionRsaKeys) {
     EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
                  StartResultOk());
 
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .WillOnce(SaveArg<2>(&on_invalidation_event_callback));
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _))
+        .WillOnce(SaveArg<1>(&on_invalidation_event_callback));
 
     worker.DoStep();
   }
@@ -4309,9 +4298,8 @@ TEST_F(CertProvisioningWorkerDynamicTest, RetryUploadProofOfPossessionEcKeys) {
     EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
                  StartResultOk());
 
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .WillOnce(SaveArg<2>(&on_invalidation_event_callback));
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _))
+        .WillOnce(SaveArg<1>(&on_invalidation_event_callback));
 
     worker.DoStep();
   }
@@ -4546,9 +4534,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, RemoveRegisteredKeyRsaKeys) {
     EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
                  StartResultOk());
 
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .Times(1);
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _)).Times(1);
 
     EXPECT_GET_NEXT_INSTRUCTION(
         GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
@@ -4638,9 +4624,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, RemoveRegisteredKeyEcKeys) {
     EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
                  StartResultOk());
 
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .Times(1);
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _)).Times(1);
 
     EXPECT_GET_NEXT_INSTRUCTION(
         GetNextInstruction(Eq(std::ref(provisioning_process)), /*callback=*/_),
@@ -4806,7 +4790,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessRsaKeys) {
               "key_type": 1
             },
             "cert_scope": 0,
-            "invalidation_topic": "",
             "key_location": 1,
             "process_id": "%s",
             "attempted_va_challenge": false,
@@ -4822,9 +4805,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessRsaKeys) {
     EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
                  StartResultOk());
 
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .Times(1);
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _)).Times(1);
 
     // Serialized in kReadyForNextOperation = 12 state
     pref_val = ParseJsonDict(base::StringPrintf(
@@ -4840,7 +4821,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessRsaKeys) {
               "key_type": 1
             },
             "cert_scope": 0,
-            "invalidation_topic": "fake_invalidation_topic_1",
             "key_location": 1,
             "process_id": "%s",
             "attempted_va_challenge": false,
@@ -4864,9 +4844,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessRsaKeys) {
     testing::InSequence seq;
 
     mock_invalidator_obj = MakeInvalidator(&mock_invalidator);
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .Times(1);
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _)).Times(1);
 
     mock_tpm_challenge_key = PrepareTpmChallengeKey();
 
@@ -4929,7 +4907,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessRsaKeys) {
               "key_type": 1
             },
             "cert_scope": 0,
-            "invalidation_topic": "fake_invalidation_topic_1",
             "key_location": 2,
             "process_id": "%s",
             "attempted_va_challenge": true,
@@ -4950,9 +4927,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessRsaKeys) {
     testing::InSequence seq;
 
     mock_invalidator_obj = MakeInvalidator(&mock_invalidator);
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .Times(1);
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _)).Times(1);
 
     worker = CertProvisioningWorkerFactory::Get()->Deserialize(
         kCertScope, GetProfile(), &testing_pref_service_,
@@ -4989,7 +4964,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessRsaKeys) {
               "key_type": 1
             },
             "cert_scope": 0,
-            "invalidation_topic": "fake_invalidation_topic_1",
             "key_location": 2,
             "process_id": "%s",
             "attempted_va_challenge": true,
@@ -5016,9 +4990,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessRsaKeys) {
     testing::InSequence seq;
 
     mock_invalidator_obj = MakeInvalidator(&mock_invalidator);
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .Times(1);
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _)).Times(1);
 
     worker = CertProvisioningWorkerFactory::Get()->Deserialize(
         kCertScope, GetProfile(), &testing_pref_service_,
@@ -5049,7 +5021,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessRsaKeys) {
               "key_type": 1
             },
             "cert_scope": 0,
-            "invalidation_topic": "fake_invalidation_topic_1",
             "key_location": 2,
             "process_id": "%s",
             "attempted_va_challenge": true,
@@ -5070,9 +5041,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessRsaKeys) {
     testing::InSequence seq;
 
     mock_invalidator_obj = MakeInvalidator(&mock_invalidator);
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .Times(1);
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _)).Times(1);
 
     worker = CertProvisioningWorkerFactory::Get()->Deserialize(
         kCertScope, GetProfile(), &testing_pref_service_,
@@ -5164,7 +5133,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessEcKeys) {
               "key_type": 2
             },
             "cert_scope": 0,
-            "invalidation_topic": "",
             "key_location": 1,
             "process_id": "%s",
             "attempted_va_challenge": false,
@@ -5180,9 +5148,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessEcKeys) {
     EXPECT_START(Start(Eq(std::ref(provisioning_process)), /*callback=*/_),
                  StartResultOk());
 
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .Times(1);
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _)).Times(1);
 
     // Serialized in kReadyForNextOperation = 12 state
     pref_val = ParseJsonDict(base::StringPrintf(
@@ -5198,7 +5164,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessEcKeys) {
               "key_type": 2
             },
             "cert_scope": 0,
-            "invalidation_topic": "fake_invalidation_topic_1",
             "key_location": 1,
             "process_id": "%s",
             "attempted_va_challenge": false,
@@ -5222,9 +5187,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessEcKeys) {
     testing::InSequence seq;
 
     mock_invalidator_obj = MakeInvalidator(&mock_invalidator);
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .Times(1);
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _)).Times(1);
 
     mock_tpm_challenge_key = PrepareTpmChallengeKey();
 
@@ -5287,7 +5250,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessEcKeys) {
               "key_type": 2
             },
             "cert_scope": 0,
-            "invalidation_topic": "fake_invalidation_topic_1",
             "key_location": 2,
             "process_id": "%s",
             "attempted_va_challenge": true,
@@ -5308,9 +5270,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessEcKeys) {
     testing::InSequence seq;
 
     mock_invalidator_obj = MakeInvalidator(&mock_invalidator);
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .Times(1);
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _)).Times(1);
 
     worker = CertProvisioningWorkerFactory::Get()->Deserialize(
         kCertScope, GetProfile(), &testing_pref_service_,
@@ -5348,7 +5308,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessEcKeys) {
               "key_type": 2
             },
             "cert_scope": 0,
-            "invalidation_topic": "fake_invalidation_topic_1",
             "key_location": 2,
             "process_id": "%s",
             "attempted_va_challenge": true,
@@ -5375,9 +5334,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessEcKeys) {
     testing::InSequence seq;
 
     mock_invalidator_obj = MakeInvalidator(&mock_invalidator);
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .Times(1);
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _)).Times(1);
 
     worker = CertProvisioningWorkerFactory::Get()->Deserialize(
         kCertScope, GetProfile(), &testing_pref_service_,
@@ -5408,7 +5365,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessEcKeys) {
               "key_type": 2
             },
             "cert_scope": 0,
-            "invalidation_topic": "fake_invalidation_topic_1",
             "key_location": 2,
             "process_id": "%s",
             "attempted_va_challenge": true,
@@ -5429,9 +5385,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccessEcKeys) {
     testing::InSequence seq;
 
     mock_invalidator_obj = MakeInvalidator(&mock_invalidator);
-    EXPECT_CALL(*mock_invalidator,
-                Register(kInvalidationTopic, listener_type, _))
-        .Times(1);
+    EXPECT_CALL(*mock_invalidator, Register(listener_type, _)).Times(1);
 
     worker = CertProvisioningWorkerFactory::Get()->Deserialize(
         kCertScope, GetProfile(), &testing_pref_service_,
@@ -5513,7 +5467,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationOnFailureRsaKeys) {
               "key_type": 1
             },
             "cert_scope": 0,
-            "invalidation_topic": "",
             "key_location": 1,
             "process_id": "%s",
             "attempted_va_challenge": false,
@@ -5591,7 +5544,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationOnFailureEcKeys) {
               "key_type": 2
             },
             "cert_scope": 0,
-            "invalidation_topic": "",
             "key_location": 1,
             "process_id": "%s",
             "attempted_va_challenge": false,
@@ -5802,7 +5754,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, CancelDeviceWorkerRsaKeys) {
               "key_type": 1
             },
             "cert_scope": 1,
-            "invalidation_topic": "",
             "key_location": 1,
             "process_id": "%s",
             "attempted_va_challenge": false,
@@ -5891,7 +5842,6 @@ TEST_F(CertProvisioningWorkerDynamicTest, CancelDeviceWorkerEcKeys) {
               "key_type": 2
             },
             "cert_scope": 1,
-            "invalidation_topic": "",
             "key_location": 1,
             "process_id": "%s",
             "attempted_va_challenge": false,

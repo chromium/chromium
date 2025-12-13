@@ -20,6 +20,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/background.h"
 
 namespace ash {
 
@@ -88,15 +89,14 @@ void KeyboardBacklightColorNudgeController::MaybeShowEducationNudge(
   label->SizeToFit(kEducationBubblePreferredWidth);
   education_nudge_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
 
-  ui::Layer* layer = education_nudge_->layer();
-
   // TODO(b:375253816): Figure out an opaque color id.
-  layer->SetColor(
-      ShelfConfig::Get()->GetDefaultShelfColor(education_nudge_->GetWidget()));
-  layer->SetRoundedCornerRadius(
-      gfx::RoundedCornersF{static_cast<float>(kBubbleCornerRadius)});
+  const auto background_color =
+      ShelfConfig::Get()->GetDefaultShelfColor(education_nudge_->GetWidget());
+  education_nudge_->SetBackground(views::CreateLayerBasedRoundedBackground(
+      background_color, gfx::RoundedCornersF{kBubbleCornerRadius}));
 
   if (chromeos::features::IsSystemBlurEnabled()) {
+    ui::Layer* layer = education_nudge_->layer();
     layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }

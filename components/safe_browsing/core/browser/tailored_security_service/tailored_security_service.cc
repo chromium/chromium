@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -26,6 +27,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
@@ -33,11 +35,11 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
-#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -146,8 +148,7 @@ class RequestImpl : public TailoredSecurityService::Request {
     access_token_fetcher_ =
         identity_manager_->CreateAccessTokenFetcherForAccount(
             GetAccountForRequest(identity_manager_),
-            /*oauth_consumer_name=*/"tailored_security_service",
-            {GaiaConstants::kChromeSafeBrowsingOAuth2Scope},
+            signin::OAuthConsumerId::kTailoredSecurityService,
             base::BindOnce(&RequestImpl::OnAccessTokenFetchComplete,
                            base::Unretained(this)),
             signin::AccessTokenFetcher::Mode::kImmediate);
@@ -156,35 +157,31 @@ class RequestImpl : public TailoredSecurityService::Request {
 
   void Shutdown() override {}
 
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body) {
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body) {
     response_code_ = 0;
     if (simple_url_loader_->ResponseInfo() &&
         simple_url_loader_->ResponseInfo()->headers) {
       response_code_ =
           simple_url_loader_->ResponseInfo()->headers->response_code();
     }
+    const int net_error = simple_url_loader_->NetError();
     RecordHttpResponseOrErrorCode(
         "SafeBrowsing.TailoredSecurityService.OAuthTokenNetworkResult",
-        simple_url_loader_->NetError(), response_code_);
+        net_error, response_code_);
     simple_url_loader_.reset();
 
     // If the response code indicates that the token might not be valid,
     // invalidate the token and try again.
     if (response_code_ == net::HTTP_UNAUTHORIZED && ++auth_retry_count_ <= 1) {
-      signin::ScopeSet oauth_scopes;
-      oauth_scopes.insert(GaiaConstants::kChromeSafeBrowsingOAuth2Scope);
       identity_manager_->RemoveAccessTokenFromCache(
-          GetAccountForRequest(identity_manager_), oauth_scopes, access_token_);
+          GetAccountForRequest(identity_manager_),
+          signin::OAuthConsumerId::kTailoredSecurityService, access_token_);
       access_token_.clear();
       Start();
       return;
     }
 
-    if (response_body) {
-      response_body_ = std::move(*response_body);
-    } else {
-      response_body_.clear();
-    }
+    response_body_ = std::move(response_body).value_or("");
     is_pending_ = false;
     std::move(callback_).Run(this, true);
     // It is valid for the callback to delete |this|, so do not access any
@@ -460,15 +457,20 @@ void TailoredSecurityService::
       std::move(pending_tailored_security_requests_[request]);
   pending_tailored_security_requests_.erase(request);
 
-  bool is_enabled = is_tailored_security_enabled_;
   base::Time previous_update = last_updated_;
-  if (success) {
-    base::Value::Dict response_value = ReadResponse(request);
-    is_enabled =
-        response_value.FindBool("history_recording_enabled").value_or(false);
-  }
+  base::Value::Dict response_value = ReadResponse(request);
+  std::optional<bool> history_recording_enabled =
+      response_value.FindBool("history_recording_enabled");
 
-  std::move(callback).Run(is_enabled, previous_update);
+  if (!base::FeatureList::IsEnabled(kModifiedESBFetchErrorHandling)) {
+    bool is_enabled = is_tailored_security_enabled_;
+    if (success) {
+      is_enabled = history_recording_enabled.value_or(false);
+    }
+    std::move(callback).Run(is_enabled, previous_update);
+  } else if (success && history_recording_enabled.has_value()) {
+    std::move(callback).Run(*history_recording_enabled, previous_update);
+  }
 }
 
 void TailoredSecurityService::SetTailoredSecurityBitForTesting(
@@ -487,9 +489,8 @@ void TailoredSecurityService::SetTailoredSecurityBitForTesting(
 
   auto enable_tailored_security_service =
       base::Value::Dict().Set("history_recording_enabled", is_enabled);
-  std::string post_data;
-  base::JSONWriter::Write(enable_tailored_security_service, &post_data);
-  request->SetPostData(post_data);
+  request->SetPostData(
+      base::WriteJson(enable_tailored_security_service).value_or(""));
 
   request->Start();
   Request* request_ptr = request.get();
@@ -500,8 +501,8 @@ void TailoredSecurityService::SetTailoredSecurityBitForTesting(
 base::Value::Dict TailoredSecurityService::ReadResponse(Request* request) {
   base::Value::Dict result;
   if (request->GetResponseCode() == net::HTTP_OK) {
-    std::optional<base::Value> json_value =
-        base::JSONReader::Read(request->GetResponseBody());
+    std::optional<base::Value> json_value = base::JSONReader::Read(
+        request->GetResponseBody(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (json_value && json_value.value().is_dict())
       result = std::move(json_value->GetDict());
     else

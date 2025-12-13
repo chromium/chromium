@@ -13,6 +13,7 @@ import android.graphics.Insets;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.hardware.display.DeviceProductInfo;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
@@ -28,12 +29,12 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
+import org.chromium.base.MathUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
-import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.ui.util.XrUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -62,8 +63,11 @@ import java.util.function.Consumer;
         return display.isHdr() && display.isHdrSdrRatioAvailable();
     }
 
-    @EnsuresNonNull("sForcedDIPScale")
     private static boolean hasForcedDIPScale() {
+        return getForcedDIPScale() > 0;
+    }
+
+    private static float getForcedDIPScale() {
         if (sForcedDIPScale == null) {
             float value = 0.0f;
             String forcedScaleAsString =
@@ -83,7 +87,14 @@ import java.util.function.Consumer;
             }
             sForcedDIPScale = value;
         }
-        return sForcedDIPScale.floatValue() > 0;
+        return sForcedDIPScale.floatValue();
+    }
+
+    /* package */ static boolean isForcedDIPScaleChanged() {
+        final float forcedDIPScale = getForcedDIPScale();
+        sForcedDIPScale = null;
+
+        return !MathUtils.areFloatsEqual(getForcedDIPScale(), forcedDIPScale);
     }
 
     /**
@@ -156,9 +167,13 @@ import java.util.function.Consumer;
     private final @Nullable WindowManager mWindowManager;
     private final @Nullable ComponentCallbacks mComponentCallbacks;
     private final Display mDisplay;
+    private @Nullable RectF mDisplayAbsoluteCoordinates;
     private @Nullable Consumer<Display> mHdrSdrRatioCallback;
 
-    /* package */ PhysicalDisplayAndroid(Display display, boolean disableHdrSdkRatioCallback) {
+    /* package */ PhysicalDisplayAndroid(
+            Display display,
+            @Nullable RectF displayAbsoluteCoordinates,
+            boolean disableHdrSdkRatioCallback) {
         super(display.getDisplayId());
         if (USE_CONFIGURATION) {
             Context appContext = ContextUtils.getApplicationContext();
@@ -184,12 +199,14 @@ import java.util.function.Consumer;
             mWindowContext.registerComponentCallbacks(mComponentCallbacks);
             mWindowManager = mWindowContext.getSystemService(WindowManager.class);
             mDisplay = mWindowContext.getDisplay();
+            mDisplayAbsoluteCoordinates = displayAbsoluteCoordinates;
             updateFromConfiguration();
         } else {
             mWindowContext = null;
             mWindowManager = null;
             mComponentCallbacks = null;
             mDisplay = display;
+            updateFromDisplay(display);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
@@ -212,12 +229,9 @@ import java.util.function.Consumer;
     }
 
     @RequiresApi(VERSION_CODES.R)
-    private Insets getWindowInsets() {
-        return assumeNonNull(mWindowManager)
-                .getCurrentWindowMetrics()
-                .getWindowInsets()
-                .getInsetsIgnoringVisibility(
-                        WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout());
+    /* package */ void updateBounds(RectF displayAbsoluteCoordinates) {
+        mDisplayAbsoluteCoordinates = displayAbsoluteCoordinates;
+        updateFromConfiguration();
     }
 
     @RequiresApi(VERSION_CODES.R)
@@ -225,26 +239,71 @@ import java.util.function.Consumer;
         assumeNonNull(mWindowContext);
         assumeNonNull(mWindowManager);
 
-        Rect bounds = mWindowManager.getMaximumWindowMetrics().getBounds();
-        Insets insets = getWindowInsets();
+        final DisplayMetrics displayMetrics = mWindowContext.getResources().getDisplayMetrics();
+        final float initialDensity = displayMetrics.density;
 
-        DisplayMetrics displayMetrics = mWindowContext.getResources().getDisplayMetrics();
-
-        if (DeviceInfo.isAutomotive()
+        if (hasForcedDIPScale()) {
+            DisplayUtil.forcedScaleUpDisplayMetrics(getForcedDIPScale(), displayMetrics);
+        } else if (DeviceInfo.isAutomotive()
                 && CommandLine.getInstance()
                         .hasSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED)) {
             mDisplay.getRealMetrics(displayMetrics);
             DisplayUtil.scaleUpDisplayMetricsForAutomotive(mWindowContext, displayMetrics);
-        } else if (XrUtils.isXrDevice()
+        } else if (DeviceInfo.isXr()
                 && CommandLine.getInstance()
                         .hasSwitch(DisplaySwitches.XR_WEB_UI_SCALE_UP_ENABLED)) {
             mDisplay.getRealMetrics(displayMetrics);
             DisplayUtil.scaleUpDisplayMetricsForXr(mWindowContext, displayMetrics);
         }
 
+        final Insets insets =
+                mWindowManager
+                        .getCurrentWindowMetrics()
+                        .getWindowInsets()
+                        .getInsetsIgnoringVisibility(
+                                WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout());
+
+        final Rect boundsInPixels = mWindowManager.getMaximumWindowMetrics().getBounds();
+
+        Rect bounds;
+        Rect workArea;
+        if (mDisplayAbsoluteCoordinates != null) {
+            final float scalingFactor = initialDensity / displayMetrics.density;
+            final RectF scaledAbsoluteBounds =
+                    new RectF(
+                            mDisplayAbsoluteCoordinates.left * scalingFactor,
+                            mDisplayAbsoluteCoordinates.top * scalingFactor,
+                            mDisplayAbsoluteCoordinates.right * scalingFactor,
+                            mDisplayAbsoluteCoordinates.bottom * scalingFactor);
+            bounds = new Rect();
+            scaledAbsoluteBounds.roundOut(bounds);
+
+            final RectF workAreaAbsoluteCoordinates =
+                    new RectF(
+                            scaledAbsoluteBounds.left + insets.left / displayMetrics.density,
+                            scaledAbsoluteBounds.top + insets.top / displayMetrics.density,
+                            scaledAbsoluteBounds.right - insets.right / displayMetrics.density,
+                            scaledAbsoluteBounds.bottom - insets.bottom / displayMetrics.density);
+            workArea = new Rect();
+            workAreaAbsoluteCoordinates.roundOut(workArea);
+        } else {
+            bounds =
+                    DisplayUtil.scaleToEnclosingRect(boundsInPixels, 1.0f / displayMetrics.density);
+            workArea =
+                    DisplayUtil.scaleToEnclosingRect(
+                            new Rect(
+                                    boundsInPixels.left + insets.left,
+                                    boundsInPixels.top + insets.top,
+                                    boundsInPixels.right - insets.right,
+                                    boundsInPixels.bottom - insets.bottom),
+                            1.0f / displayMetrics.density);
+        }
+
         updateCommon(
                 bounds,
-                insets,
+                workArea,
+                boundsInPixels.width(),
+                boundsInPixels.height(),
                 displayMetrics.density,
                 displayMetrics.xdpi,
                 displayMetrics.ydpi,
@@ -278,21 +337,30 @@ import java.util.function.Consumer;
         display.getRealSize(size);
         display.getRealMetrics(displayMetrics);
 
-        if (DeviceInfo.isAutomotive()
+        if (hasForcedDIPScale()) {
+            DisplayUtil.forcedScaleUpDisplayMetrics(getForcedDIPScale(), displayMetrics);
+        } else if (DeviceInfo.isAutomotive()
                 && CommandLine.getInstance()
                         .hasSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED)) {
             DisplayUtil.scaleUpDisplayMetricsForAutomotive(
                     ContextUtils.getApplicationContext(), displayMetrics);
-        } else if (XrUtils.isXrDevice()
+        } else if (DeviceInfo.isXr()
                 && CommandLine.getInstance()
                         .hasSwitch(DisplaySwitches.XR_WEB_UI_SCALE_UP_ENABLED)) {
             DisplayUtil.scaleUpDisplayMetricsForXr(
                     ContextUtils.getApplicationContext(), displayMetrics);
         }
 
+        Rect bounds =
+                DisplayUtil.scaleToEnclosingRect(
+                        new Rect(0, 0, size.x, size.y), 1.0f / displayMetrics.density);
+        Rect workArea = new Rect(bounds);
+
         updateCommon(
-                new Rect(0, 0, size.x, size.y),
-                null,
+                bounds,
+                workArea,
+                size.x,
+                size.y,
                 displayMetrics.density,
                 displayMetrics.xdpi,
                 displayMetrics.ydpi,
@@ -304,7 +372,9 @@ import java.util.function.Consumer;
         super.update(
                 /* name= */ null,
                 /* bounds= */ null,
-                /* insets= */ null,
+                /* workArea= */ null,
+                /* width= */ null,
+                /* height= */ null,
                 /* dipScale= */ null,
                 /* xdpi= */ null,
                 /* ydpi= */ null,
@@ -324,24 +394,26 @@ import java.util.function.Consumer;
 
     private void updateCommon(
             Rect bounds,
-            @Nullable Insets insets,
+            Rect workArea,
+            int width,
+            int height,
             float density,
             float xdpi,
             float ydpi,
             Display display) {
-        if (hasForcedDIPScale()) density = sForcedDIPScale.floatValue();
-        boolean isWideColorGamut = false;
-        // Although this API was added in Android O, it was buggy.
-        // Restrict to Android Q, where it was fixed.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            isWideColorGamut = display.isWideColorGamut();
-        }
+        boolean isWideColorGamut = display.isWideColorGamut();
 
         int pixelFormatId = PixelFormat.RGBA_8888;
 
         // Note: getMode() and getSupportedModes() can return null in some situations - see
         // crbug.com/1401322.
-        Display.Mode currentMode = display.getMode();
+        // Can also throw when modeId=-1 (b/441513616).
+        Display.Mode currentMode = null;
+        try {
+            currentMode = display.getMode();
+        } catch (Exception e) {
+            Log.w(TAG, "Invalid display mode", e);
+        }
         Display.Mode[] modes = display.getSupportedModes();
         List<Display.Mode> supportedModes = null;
         if (modes != null && modes.length > 0) {
@@ -372,7 +444,9 @@ import java.util.function.Consumer;
         super.update(
                 display.getName(),
                 bounds,
-                insets,
+                workArea,
+                width,
+                height,
                 density,
                 xdpi,
                 ydpi,
@@ -388,5 +462,10 @@ import java.util.function.Consumer;
                 getHdrSdrRatio(display),
                 isInternal,
                 arrInfo);
+    }
+
+    public static void setHasForcedDIPScaleForTesting(float forcedDIPScale) {
+        sForcedDIPScale = forcedDIPScale;
+        ResettersForTesting.register(() -> sForcedDIPScale = null);
     }
 }

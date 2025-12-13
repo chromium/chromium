@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
@@ -15,7 +16,6 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "ui/gfx/geometry/rect.h"
-#include "xr_webgl_drawing_buffer.h"
 
 namespace media {
 class VideoFrame;
@@ -63,9 +63,9 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
       wgpu::TextureUsage usage,
       scoped_refptr<media::VideoFrame> video_frame);
 
-  void SetNeedsPresent(bool needs_present) { needs_present_ = needs_present; }
+  void SetNeedsPresent(bool needs_present);
+
   void SetAlphaClearer(scoped_refptr<WebGPUTextureAlphaClearer> alpha_clearer);
-  void UnsetAlphaClearer();
 
   // Dissociates this mailbox texture from WebGPU, presenting the image if
   // necessary. Returns a sync token which will satisfy when the mailbox's
@@ -79,10 +79,7 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
 
   ~WebGPUMailboxTexture();
 
-  const wgpu::Texture& GetTexture() { return texture_; }
-  uint32_t GetTextureIdForTest() { return wire_texture_id_; }
-  uint32_t GetTextureGenerationForTest() { return wire_texture_generation_; }
-  const wgpu::Device& GetDeviceForTest() { return device_; }
+  const wgpu::Texture& GetTexture();
 
  private:
   WebGPUMailboxTexture(
@@ -96,18 +93,18 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
       base::OnceCallback<void(const gpu::SyncToken&)> finished_access_callback,
       std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource);
 
+  base::WeakPtr<WebGPUMailboxTexture> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   wgpu::Device device_;
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
+  std::unique_ptr<gpu::WebGPUTextureScopedAccess> scoped_access_;
   base::OnceCallback<void(const gpu::SyncToken&)> finished_access_callback_;
-  wgpu::Texture texture_;
-  uint32_t wire_device_id_ = 0;
-  uint32_t wire_device_generation_ = 0;
-  uint32_t wire_texture_id_ = 0;
-  uint32_t wire_texture_generation_ = 0;
   std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource_;
-  bool needs_present_ = false;
   scoped_refptr<WebGPUTextureAlphaClearer> alpha_clearer_;
+  base::WeakPtrFactory<WebGPUMailboxTexture> weak_ptr_factory_{this};
 };
 
 }  // namespace blink

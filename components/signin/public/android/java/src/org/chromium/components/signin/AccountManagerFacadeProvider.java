@@ -27,7 +27,7 @@ public class AccountManagerFacadeProvider {
             AccountManagerDelegate delegate =
                     ServiceLoaderUtil.maybeCreate(AccountManagerDelegate.class);
             if (delegate == null) {
-                delegate = new SystemAccountManagerDelegate();
+                delegate = new NullAccountManagerDelegate();
             }
             INSTANCE = new AccountManagerFacadeImpl(delegate);
         }

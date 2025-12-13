@@ -125,9 +125,7 @@ std::string SyncConfirmationUI::GetSyncBenefitsListJSON(
   history_and_more.Set(kSyncBenefitIconNameKey, "signin:devices");
   sync_benefits_list.Append(std::move(history_and_more));
 
-  std::string json_benefits_list;
-  base::JSONWriter::Write(sync_benefits_list, &json_benefits_list);
-  return json_benefits_list;
+  return base::WriteJson(sync_benefits_list).value_or("");
 }
 
 SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
@@ -175,7 +173,7 @@ SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
                                  &strings);
   source->AddLocalizedStrings(strings);
 
-  if (url.query().find("debug") != std::string::npos) {
+  if (url.GetQuery().find("debug") != std::string::npos) {
     // Not intended to be hooked to anything. The dialog will not initialize it
     // so we force it here.
     InitializeMessageHandlerWithBrowser(nullptr);

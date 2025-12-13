@@ -43,5 +43,6 @@ def _CommonChecks(input_api, output_api):
   results += _CheckSvgsOptimized(input_api, output_api)
   results += _CheckWebDevStyle(input_api, output_api)
   results += input_api.canned_checks.CheckPatchFormatted(input_api, output_api,
-                                                         check_js=True)
+                                                         check_js=True,
+                                                         check_python=False)
   return results

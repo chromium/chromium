@@ -14,6 +14,7 @@
 #include "base/timer/timer.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -94,7 +95,7 @@ void MicIndicator::OnPaint(gfx::Canvas* canvas) {
   flags.setStrokeWidth(kIndicatorWidth);
   flags.setColor(GetColorProvider()->GetColor(color_));
   flags.setStyle(cc::PaintFlags::kStroke_Style);
-  SkPath path;
+  SkPathBuilder path;
 
   const int view_height = GetContentsBounds().height();
   const int view_width = GetContentsBounds().width();
@@ -112,7 +113,7 @@ void MicIndicator::OnPaint(gfx::Canvas* canvas) {
     float y1 = y0 + length;
     path.moveTo(x, y0);
     path.lineTo(x, y1);
-    canvas->DrawPath(path, flags);
+    canvas->DrawPath(path.snapshot(), flags);
 
     x += kIndicatorSpace + static_cast<int>(flags.getStrokeWidth());
   }

@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/webdata/common/web_database.h"

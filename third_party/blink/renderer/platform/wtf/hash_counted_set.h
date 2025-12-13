@@ -35,7 +35,7 @@ namespace blink {
 // members and their counts, respectively.
 template <typename Value,
           typename Traits = HashTraits<Value>,
-          typename Allocator = WTF::PartitionAllocator>
+          typename Allocator = PartitionAllocator>
 class HashCountedSet {
   USE_ALLOCATOR(HashCountedSet, Allocator);
 

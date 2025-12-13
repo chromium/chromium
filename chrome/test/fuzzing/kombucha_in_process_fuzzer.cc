@@ -9,7 +9,8 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/accelerator_utils.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -55,21 +56,20 @@ ui::ElementTracker::ElementList GetTargetableEvents() {
   return elements;
 }
 
-void WaitForClosingBrowsersToClose() {
-  const BrowserList::BrowserSet& closing_browsers =
-      BrowserList::GetInstance()->currently_closing_browsers();
-  if (closing_browsers.empty()) {
-    return;
-  }
-
-  ui_test_utils::WaitForBrowserToClose(*closing_browsers.begin());
-  return WaitForClosingBrowsersToClose();
+void WaitForClosedBrowsersToBeDestroyed() {
+  // When a Browser is closed it enters a pending-delete state and a message is
+  // posted to the Browser's UI thread to destroy the Browser async. Perform a
+  // round trip to the Browser UI thread to ensure any pending-delete Browsers
+  // are destroyed.
+  base::RunLoop run_loop;
+  content::GetUIThreadTaskRunner()->PostTask(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 }  // namespace
 
 KombuchaInProcessFuzzer::KombuchaInProcessFuzzer()
-    : InteractiveBrowserTestT(InProcessFuzzerOptions{
+    : InteractiveBrowserTestMixin(InProcessFuzzerOptions{
           .run_loop_timeout_behavior = RunLoopTimeoutBehavior::kContinue,
           .run_loop_timeout = base::Seconds(10),
       }) {}
@@ -78,7 +78,7 @@ KombuchaInProcessFuzzer::~KombuchaInProcessFuzzer() = default;
 
 #if BUILDFLAG(IS_WIN)
 void KombuchaInProcessFuzzer::TearDown() {
-  InteractiveBrowserTestT::TearDown();
+  InteractiveBrowserTestMixin::TearDown();
   com_initializer_.reset();
 }
 #endif
@@ -105,11 +105,11 @@ void KombuchaInProcessFuzzer::SetUp() {
   ui_controls::EnableUIControls();
 #endif
 
-  InteractiveBrowserTestT::SetUp();
+  InteractiveBrowserTestMixin::SetUp();
 }
 
 void KombuchaInProcessFuzzer::SetUpOnMainThread() {
-  InteractiveBrowserTestT::SetUpOnMainThread();
+  InteractiveBrowserTestMixin::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
   embedded_test_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
   embedded_test_server()->RegisterRequestHandler(
@@ -156,10 +156,9 @@ KombuchaInProcessFuzzer::HandleHTTPRequest(
 // reproducers without doing it, which is why this code exists in the first
 // place.
 void KombuchaInProcessFuzzer::CleanInProcessBrowserState() {
-  WaitForClosingBrowsersToClose();
+  WaitForClosedBrowsersToBeDestroyed();
 
-  const BrowserList* const browser_list = BrowserList::GetInstance();
-  if (browser_list->empty()) {
+  if (!GetLastActiveBrowserWindowInterfaceWithAnyProfile()) {
     // The browser process is most likely shutting down now.
     // TODO(paulsemel): should we rather try relaunching the browser process
     // (does it make a difference between just terminating this instance
@@ -168,14 +167,12 @@ void KombuchaInProcessFuzzer::CleanInProcessBrowserState() {
     return;
   }
 
-  if (browser_list->size() > 1) {
-    const BrowserList& browsers = *BrowserList::GetInstance();
-    std::vector<Browser*> extra_browsers(std::next(browsers.begin()),
-                                         browsers.end());
-    for (Browser* browser : extra_browsers) {
-      CloseBrowserSynchronously(browser);
-    }
-    SelectFirstBrowser();
+  if (chrome::GetTotalBrowserCount() > 1) {
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [](BrowserWindowInterface* browser) {
+          CloseBrowserSynchronously(browser);
+        });
+    SetBrowser(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   }
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
@@ -279,8 +276,8 @@ int KombuchaInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
 
         // Set current_accelerator_ to chosen id's accelerator then add it to
         // input
-        chrome::AcceleratorProviderForBrowser(browser())
-            ->GetAcceleratorForCommandId(chosen_id, &current_accelerator_);
+        AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
+            chosen_id, &current_accelerator_);
         AddStep(input_buffer,
                 SendAccelerator(kBrowserViewElementId, current_accelerator_));
         break;

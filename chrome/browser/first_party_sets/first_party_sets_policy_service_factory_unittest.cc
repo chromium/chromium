@@ -69,6 +69,8 @@ TEST_F(FirstPartySetsPolicyServiceFactoryTest,
        OffTheRecordProfile_DistinctAndDisabled) {
   TestingProfile* profile =
       profile_manager().CreateTestingProfile("TestProfile");
+  profile->GetPrefs()->SetBoolean(
+      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
 
   FirstPartySetsPolicyService* service =
       FirstPartySetsPolicyServiceFactory::GetForBrowserContext(

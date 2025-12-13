@@ -8,8 +8,8 @@
 #include "chrome/install_static/install_details.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/icon_util.h"
 #include "ui/gfx/image/image_family.h"
+#include "ui/gfx/win/icon_util.h"
 
 namespace {
 

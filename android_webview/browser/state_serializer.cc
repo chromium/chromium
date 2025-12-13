@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/pickle.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
@@ -318,7 +319,7 @@ bool RestoreFromPickle(base::PickleIterator* iterator,
 
   // The list was stored in reverse order, so flip it back (and update selected
   // index).
-  std::reverse(entries.begin(), entries.end());
+  std::ranges::reverse(entries);
   selected_entry = entries.size() - selected_entry.value() - 1;
 
   sink.Restore(selected_entry.value(), &entries);
@@ -451,14 +452,13 @@ bool RestoreNavigationEntryFromPickle(
   }
 
   if (state_version >= internal::AW_STATE_VERSION_DATA_URL) {
-    const char* data;
-    size_t size;
-    if (!iterator->ReadData(&data, &size))
+    std::optional<base::span<const uint8_t>> data = iterator->ReadData();
+    if (!data) {
       return false;
-    if (size > 0) {
-      scoped_refptr<base::RefCountedString> ref = new base::RefCountedString();
-      ref->as_string().assign(data, size);
-      entry->SetDataURLAsString(ref);
+    }
+    if (!data->empty()) {
+      entry->SetDataURLAsString(base::MakeRefCounted<base::RefCountedString>(
+          std::string(base::as_string_view(*data))));
     }
   }
 

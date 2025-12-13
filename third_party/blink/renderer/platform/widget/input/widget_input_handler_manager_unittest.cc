@@ -105,11 +105,10 @@ void WidgetInputHandlerManagerTest::DispatchTouchEvent(
 void WidgetInputHandlerManagerTest::ExpectNotConsumedDispatchEvent() {
   DispatchTouchEvent(
       /*expected_times_called=*/0,
-      WTF::BindOnce([](mojom::blink::InputEventResultSource,
-                       const ui::LatencyInfo&,
-                       mojom::blink::InputEventResultState result_state,
-                       mojom::blink::DidOverscrollParamsPtr,
-                       mojom::blink::TouchActionOptionalPtr) {
+      BindOnce([](mojom::blink::InputEventResultSource, const ui::LatencyInfo&,
+                  mojom::blink::InputEventResultState result_state,
+                  mojom::blink::DidOverscrollParamsPtr,
+                  mojom::blink::TouchActionOptionalPtr) {
         EXPECT_EQ(result_state,
                   mojom::blink::InputEventResultState::kNotConsumed);
       }));
@@ -173,7 +172,7 @@ TEST_P(WidgetInputHandlerManagerTest, InputWhileHidden) {
       manager->suppressing_input_events_state(),
       static_cast<uint16_t>(WidgetInputHandlerManager::
                                 SuppressingInputEventsBits::kHasNotPainted));
-  manager->DidFirstVisuallyNonEmptyPaint(base::TimeTicks::Now());
+  manager->OnFirstContentfulPaint(base::TimeTicks::Now());
   EXPECT_EQ(manager->suppressing_input_events_state(), 0u);
 
   manager->SetHidden(true);
@@ -201,7 +200,7 @@ TEST_P(WidgetInputHandlerManagerTest, DevToolsSessionOverridesSuppression) {
       manager->suppressing_input_events_state(),
       static_cast<uint16_t>(WidgetInputHandlerManager::
                                 SuppressingInputEventsBits::kHasNotPainted));
-  manager->DidFirstVisuallyNonEmptyPaint(base::TimeTicks::Now());
+  manager->OnFirstContentfulPaint(base::TimeTicks::Now());
   EXPECT_EQ(manager->suppressing_input_events_state(), 0u);
 
   manager->SetHidden(true);

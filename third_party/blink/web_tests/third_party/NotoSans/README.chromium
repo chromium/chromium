@@ -2,6 +2,7 @@ Name: Noto Sans Font
 URL: https://code.google.com/p/noto/
 Version: 1.040
 Date: 2014-05-20
+Update Mechanism: Static (https://crbug.com/422373608)
 License: Apache-2.0
 License File: LICENSE.txt
 Shipped: no

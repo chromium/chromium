@@ -5,12 +5,24 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Default height of the logo in fullscreen signin -->
     <dimen name="fullscreen_signin_logo_default_height">110dp</dimen>
     <!-- Signin promo dimensions -->
     <dimen name="sync_promo_account_image_size">44dp</dimen>
+    <dimen name="seamless_signin_promo_account_image_size_compact">40dp</dimen>
     <dimen name="signin_promo_cold_state_image_size">24dp</dimen>
+    <dimen name="seamless_signin_promo_cold_state_image_size">36dp</dimen>
+    <dimen name="signin_promo_desc_margin_top_signed_in_compact">6dp</dimen>
+    <dimen name="signin_promo_button_margin_two_buttons">20dp</dimen>
+    <dimen name="signin_promo_button_margin_compact">16dp</dimen>
+
+    <dimen name="signin_promo_two_buttons_container_vertical_padding">16dp</dimen>
+    <dimen name="signin_promo_two_buttons_container_horizontal_padding">20dp</dimen>
+    <dimen name="signin_promo_two_buttons_title_horizontal_padding">32dp</dimen>
+    <dimen name="signin_promo_two_buttons_space_between_title_and_description">12dp</dimen>
+    <dimen name="signin_promo_two_buttons_space_between_buttons_and_description">12dp</dimen>
+    <dimen name="signin_promo_two_buttons_dismiss_button_size">24dp</dimen>
     <!-- Signin fre uma dialog dimensions -->
     <dimen name="signin_fre_uma_dialog_padding">24dp</dimen>
     <dimen name="signin_fre_uma_dialog_button_padding">16dp</dimen>

@@ -67,9 +67,15 @@ TEST_F(WidgetDelegateTest, ClientViewFactoryCanReplaceClientView) {
   ViewTracker tracker;
 
   auto delegate = std::make_unique<WidgetDelegate>();
-  delegate->SetClientViewFactory(
-      base::BindLambdaForTesting([&tracker](Widget* widget) {
-        auto view = std::make_unique<ClientView>(widget, nullptr);
+  delegate->SetClientViewFactory(base::BindLambdaForTesting(
+      [&tracker](Widget* widget, View* contents_view) {
+        auto view = std::make_unique<ClientView>(widget, contents_view);
+
+        // Explicitly take ownership of contents_view since standard ClientView
+        // initialization didn't happens. (there is no widget)
+        if (!contents_view->parent()) {
+          view->AddChildView(contents_view);
+        }
         tracker.SetView(view.get());
         return view;
       }));
@@ -79,19 +85,18 @@ TEST_F(WidgetDelegateTest, ClientViewFactoryCanReplaceClientView) {
   EXPECT_EQ(tracker.view(), client.get());
 }
 
-TEST_F(WidgetDelegateTest,
-       NonClientFrameViewFactoryCanReplaceNonClientFrameView) {
+TEST_F(WidgetDelegateTest, FrameViewFactoryCanReplaceFrameView) {
   ViewTracker tracker;
 
   auto delegate = std::make_unique<WidgetDelegate>();
-  delegate->SetNonClientFrameViewFactory(
+  delegate->SetFrameViewFactory(
       base::BindLambdaForTesting([&tracker](Widget* widget) {
-        auto view = std::make_unique<NonClientFrameView>();
+        auto view = std::make_unique<FrameView>();
         tracker.SetView(view.get());
         return view;
       }));
 
-  auto nonclient = delegate->CreateNonClientFrameView(nullptr);
+  auto nonclient = delegate->CreateFrameView(nullptr);
   EXPECT_EQ(tracker.view(), nonclient.get());
 }
 

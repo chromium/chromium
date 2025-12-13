@@ -82,11 +82,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceAndroid
   // |characteristics_|, DCHECKing that it has not already been created.
   void CreateGattRemoteCharacteristic(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& instance_id,
-      const base::android::JavaParamRef<
+      const base::android::JavaRef<jstring>& instance_id,
+      const base::android::JavaRef<
           jobject>& /* BluetoothGattCharacteristicWrapper */
           bluetooth_gatt_characteristic_wrapper,
-      const base::android::JavaParamRef<jobject>& /* ChromeBluetoothDevice */
+      const base::android::JavaRef<jobject>& /* ChromeBluetoothDevice */
           chrome_bluetooth_device);
 
  private:

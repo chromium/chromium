@@ -1,0 +1,11 @@
+{
+   "lang": "en",
+   "type": "Document",
+   "~children": [ {
+      "type": "NonStruct",
+      "~children": [ {
+         "alt": "Sample SVG image",
+         "type": "Figure"
+      } ]
+   } ]
+}

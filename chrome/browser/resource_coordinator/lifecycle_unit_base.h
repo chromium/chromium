@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_LIFECYCLE_UNIT_BASE_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_LIFECYCLE_UNIT_BASE_H_
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -18,7 +17,6 @@ namespace resource_coordinator {
 class LifecycleUnitSourceBase;
 
 using ::mojom::LifecycleUnitState;
-using ::mojom::LifecycleUnitStateChangeReason;
 
 // Base class for a LifecycleUnit.
 class LifecycleUnitBase : public LifecycleUnit {
@@ -46,9 +44,7 @@ class LifecycleUnitBase : public LifecycleUnit {
   // pure virtual.
 
   // Sets the state of this LifecycleUnit to |state| and notifies observers.
-  // |reason| indicates what caused the state change.
-  void SetState(LifecycleUnitState state,
-                LifecycleUnitStateChangeReason reason);
+  void SetState(LifecycleUnitState state);
 
   // Notifies observers that the LifecycleUnit is being destroyed. This is
   // invoked by derived classes rather than by the base class to avoid notifying

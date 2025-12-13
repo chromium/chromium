@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_mode_holder.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_view_controller.h"
@@ -45,19 +46,18 @@ class TabGroupCoordinatorFakeWebStateListDelegate
   // WebStateListDelegate implementation.
   void WillAddWebState(web::WebState* web_state) override {
     SnapshotTabHelper::CreateForWebState(web_state);
+    SnapshotSourceTabHelper::CreateForWebState(web_state);
   }
 };
 
 // Creates a FakeTabGroupSyncService.
 std::unique_ptr<KeyedService> CreateFakeTabGroupSyncService(
-    web::BrowserState* context) {
+    ProfileIOS* profile) {
   return std::make_unique<tab_groups::FakeTabGroupSyncService>();
 }
 
 // Creates a test ShareKitService.
-std::unique_ptr<KeyedService> BuildTestShareKitService(
-    web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+std::unique_ptr<KeyedService> BuildTestShareKitService(ProfileIOS* profile) {
   data_sharing::DataSharingService* data_sharing_service =
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
   TabGroupService* tab_group_service =
@@ -77,7 +77,7 @@ class TabGroupCoordinatorTest : public PlatformTest {
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
         base::BindRepeating(&CreateFakeTabGroupSyncService));
     builder.AddTestingFactory(ShareKitServiceFactory::GetInstance(),
-                              base::BindRepeating(&BuildTestShareKitService));
+                              base::BindOnce(&BuildTestShareKitService));
     profile_ = std::move(builder).Build();
 
     tab_group_sync_service_ = static_cast<tab_groups::FakeTabGroupSyncService*>(

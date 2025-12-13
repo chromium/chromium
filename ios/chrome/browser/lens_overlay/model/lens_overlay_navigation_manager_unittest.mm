@@ -11,6 +11,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/uuid.h"
 #import "components/lens/lens_url_utils.h"
+#import "components/test/ios/test_utils.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/fake_chrome_lens_overlay_result.h"
@@ -35,17 +36,10 @@ class LensOverlayNavigationManagerTest : public PlatformTest {
     mock_mutator_ = OCMProtocolMock(@protocol(LensOverlayNavigationMutator));
 
     // Stub calls to `loadURL:omniboxText:` and store the arguments.
-    OCMStub([[mock_mutator_ ignoringNonObjectArgs] loadURL:GURL()
-                                               omniboxText:[OCMArg any]])
-        .andDo(^(NSInvocation* invocation) {
-          GURL* url;
-          [invocation getArgument:&url atIndex:2];
-          latest_loaded_url_ = *url;
-
-          __unsafe_unretained NSString* omnibox_text;
-          [invocation getArgument:&omnibox_text atIndex:3];
-          latest_loaded_omnibox_text_ = omnibox_text;
-        });
+    OCMStub([[mock_mutator_ ignoringNonObjectArgs]
+                    loadURL:GURL()
+                omniboxText:CopyValueToVariable(latest_loaded_omnibox_text_)])
+        .andAssignStructParameterAtAddressToVariable(latest_loaded_url_, 0);
 
     manager_ = std::make_unique<LensOverlayNavigationManager>(mock_mutator_);
     manager_->SetWebState(fake_web_state_.get());
@@ -171,7 +165,7 @@ class LensOverlayNavigationManagerTest : public PlatformTest {
   GURL latest_loaded_url_;
   NSString* latest_loaded_omnibox_text_;
 
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 

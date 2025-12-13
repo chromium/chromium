@@ -16,7 +16,7 @@ REPOCONFIG="deb [arch=${ARCHITECTURE}] http://${BASEREPOCONFIG}"
 REPOCONFIGREGEX="deb (\\\\[arch=[^]]*\\\\b${ARCHITECTURE}\\\\b[^]]*\\\\]"
 REPOCONFIGREGEX+="[[:space:]]*) https?://${BASEREPOCONFIG}"
 
-source ${SCRIPTDIR}/../../../../chrome/installer/linux/common/installer.include
+source ${SCRIPTDIR}/installer.include
 
 guess_filename() {
   VERSION_FULL=$(get_version_full)
@@ -49,9 +49,10 @@ usage() {
   echo "-s     path to the top of the src tree."
   echo "-o     output directory path."
   echo "-O     option (no options currently defined)"
+  echo "-b     build timestamp (Epoch seconds)"
 }
 
-while getopts ":s:o:O:ph" OPTNAME
+while getopts ":s:o:O:phb:" OPTNAME
 do
   case $OPTNAME in
     s )
@@ -65,6 +66,9 @@ do
       ;;
     O )
       OPTION="$OPTARG"
+      ;;
+    b )
+      BUILD_TIMESTAMP="$OPTARG"
       ;;
     h )
       usage
@@ -131,12 +135,18 @@ debchange --create \
   --force-distribution \
   --distribution unstable \
   "New Debian package $revision_text"
-
+# Manually overwrite the trailer line to force the timestamp for reproducible
+# builds. Without this, debchange uses the current system time (localtime).
+# NOTE: When debchange --date is properly supported in the build environment,
+# this sed command should be removed and --date "$DATE_RFC5322" added to the
+# debchange command above.
+DATE_RFC5322="$(date --rfc-email -d "@$BUILD_TIMESTAMP")"
+sed -i "s/^ -- $DEBEMAIL .*/ -- $DEBEMAIL  $DATE_RFC5322/" debian/changelog
 
 CRON_SCRIPT_DIR="${OUTPUT_PATH}/remoting/installer/cron"
 mkdir -p ${CRON_SCRIPT_DIR}
 process_template \
-    "${SCRIPTDIR}/../../../../chrome/installer/linux/common/repo.cron" \
+    "${SCRIPTDIR}/debian/repo.cron" \
     "${CRON_SCRIPT_DIR}/chrome-remote-desktop"
 
 # TODO(mmoss): This is a workaround for a problem where dpkg-shlibdeps was
@@ -147,7 +157,8 @@ process_template \
 # but it seems that we don't currently, so this is the most expediant fix.
 SAVE_LDLP=$LD_LIBRARY_PATH
 unset LD_LIBRARY_PATH
-BUILD_DIR=$OUTPUT_PATH SRC_DIR=${SCRIPTDIR}/../../../.. \
+SOURCE_DATE_EPOCH="$BUILD_TIMESTAMP" \
+  BUILD_DIR=$OUTPUT_PATH SRC_DIR=${SCRIPTDIR}/../../../.. \
   dpkg-buildpackage -b -us -uc
 LD_LIBRARY_PATH=$SAVE_LDLP
 

@@ -7,6 +7,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_TABS_TABS_CONSTANTS_H_
 #define CHROME_BROWSER_EXTENSIONS_API_TABS_TABS_CONSTANTS_H_
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 namespace tabs_constants {
 
@@ -24,6 +28,10 @@ inline constexpr char kWindowIdKey[] = "windowId";
 // Error messages.
 inline constexpr char kCannotZoomDisabledTabError[] =
     "Cannot zoom a tab in disabled mode.";
+inline constexpr char kCannotSetZoomThisTabError[] =
+    "Cannot set zoom or zoom settings on this tab.";
+inline constexpr char kCannotGetZoomThisTabError[] =
+    "Cannot get zoom or zoom settings on this tab.";
 inline constexpr char kNoLastFocusedWindowError[] = "No last-focused window";
 inline constexpr char kNoTabInBrowserWindowError[] =
     "There is no tab in browser window.";

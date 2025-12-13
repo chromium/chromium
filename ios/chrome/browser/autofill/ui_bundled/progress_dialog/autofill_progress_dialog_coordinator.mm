@@ -8,7 +8,7 @@
 
 #import <memory>
 
-#import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
+#import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller.h"
 #import "ios/chrome/browser/alert_view/ui_bundled/alert_view_controller.h"
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
@@ -23,8 +23,7 @@
 @implementation AutofillProgressDialogCoordinator {
   // The model layer controller. This model controller provide access to model
   // data and also handles interactions.
-  std::unique_ptr<autofill::AutofillProgressDialogControllerImpl>
-      _modelController;
+  std::unique_ptr<autofill::AutofillProgressDialogController> _modelController;
 
   // The C++ mediator class that connects the model controller and the IOS view
   // implementation.
@@ -38,16 +37,12 @@
                                    browser:(Browser*)browser {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    // TODO(crbug.com/40714201): Use AutofillClientIOS::FromWebState() so that
-    // tests can easily inject their AutofillClient.
-    autofill::ChromeAutofillClientIOS* client =
-        AutofillTabHelper::FromWebState(
-            browser->GetWebStateList()->GetActiveWebState())
-            ->autofill_client();
+    auto* client = autofill::AutofillClientIOS::FromWebState(
+        browser->GetWebStateList()->GetActiveWebState());
     CHECK(client);
     auto* paymentsClient = client->GetPaymentsAutofillClient();
     CHECK(paymentsClient);
-    _modelController = paymentsClient->GetProgressDialogModel();
+    _modelController = paymentsClient->ExtractProgressDialogModel();
     _mediator = std::make_unique<AutofillProgressDialogMediator>(
         _modelController.get(), self);
   }

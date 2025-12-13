@@ -19,9 +19,7 @@
 #include "ui/ozone/platform/drm/host/drm_window_host.h"
 #include "ui/ozone/platform/drm/host/drm_window_host_manager.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/events/ozone/chromeos/cursor_controller.h"
-#endif
 
 namespace ui {
 namespace {
@@ -128,6 +126,7 @@ void DrmCursor::OnWindowRemoved(gfx::AcceleratedWidget window) {
       confined_bounds_ = dest_window->GetCursorConfinedBounds();
       SetCursorLocationLocked(gfx::PointF(confined_bounds_.CenterPoint()));
       SendCursorShowLocked();
+      dest_window->SynthesizeMouseMove(GetLocationWithoutLock());
     } else {
       window_ = gfx::kNullAcceleratedWidget;
       display_bounds_in_screen_ = gfx::Rect();
@@ -150,6 +149,8 @@ void DrmCursor::CommitBoundsChange(
     confined_bounds_ = new_confined_bounds;
     SetCursorLocationLocked(location_);
     SendCursorShowLocked();
+    DrmWindowHost* drm_window_host = window_manager_->GetWindow(window);
+    drm_window_host->SynthesizeMouseMove(GetLocationWithoutLock());
   }
 }
 
@@ -230,14 +231,10 @@ void DrmCursor::MoveCursor(const gfx::Vector2dF& delta) {
   if (window_ == gfx::kNullAcceleratedWidget)
     return;
 
-#if BUILDFLAG(IS_CHROMEOS)
   gfx::Vector2dF transformed_delta = delta;
   ui::CursorController::GetInstance()->ApplyCursorConfigForWindow(
       window_, &transformed_delta);
   SetCursorLocationLocked(location_ + transformed_delta);
-#else
-  SetCursorLocationLocked(location_ + delta);
-#endif
   SendCursorMoveLocked();
 }
 
@@ -248,7 +245,7 @@ bool DrmCursor::IsCursorVisible() {
 
 gfx::PointF DrmCursor::GetLocation() {
   base::AutoLock lock(lock_);
-  return location_ + display_bounds_in_screen_.OffsetFromOrigin();
+  return GetLocationWithoutLock();
 }
 
 gfx::Rect DrmCursor::GetCursorConfinedBounds() {
@@ -271,9 +268,6 @@ void DrmCursor::SetCursorLocationLocked(const gfx::PointF& location)
       gfx::PointF(confined_bounds_.right() - 1, confined_bounds_.bottom() - 1));
 
   location_ = clamped_location;
-#if BUILDFLAG(IS_CHROMEOS)
-  ui::CursorController::GetInstance()->SetCursorLocation(location_);
-#endif
 }
 
 void DrmCursor::SendCursorShowLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
@@ -311,6 +305,11 @@ void DrmCursor::MoveLockTested(gfx::AcceleratedWidget window,
                                const gfx::Point& point) {
   lock_.AssertAcquired();
   proxy_->Move(window, point);
+}
+
+gfx::PointF DrmCursor::GetLocationWithoutLock()
+    EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+  return location_ + display_bounds_in_screen_.OffsetFromOrigin();
 }
 
 }  // namespace ui

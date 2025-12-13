@@ -13,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
-#include "base/i18n/string_compare.h"
 #include "base/strings/string_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -28,27 +27,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/table_model_observer.h"
 
-namespace {
-
-// Allows sorting site search engines by group (either created by the
-// SiteSearchSettings policy, or not created by policy) and alphabetically
-// inside each group.
-//
-// Alphabetical comparison is case-insensitive according to the current locale.
-// In case of loading errors for ICU, fallback to regular string comparison.
-class OrderByManagedAndAlphabetically {
- public:
-  OrderByManagedAndAlphabetically();
-  OrderByManagedAndAlphabetically(const OrderByManagedAndAlphabetically& other)
-      : collator_(other.collator_->clone()) {}
-
-  bool operator()(const TemplateURL* lhs, const TemplateURL* rhs) const;
-
- private:
-  std::string GetShortNameSortKey(const std::u16string& short_name) const;
-
-  std::unique_ptr<icu::Collator> collator_;
-};
+namespace internal {
 
 OrderByManagedAndAlphabetically::OrderByManagedAndAlphabetically() {
   UErrorCode error_code = U_ZERO_ERROR;
@@ -62,6 +41,12 @@ OrderByManagedAndAlphabetically::OrderByManagedAndAlphabetically() {
     collator_->setStrength(icu::Collator::PRIMARY);
   }
 }
+
+OrderByManagedAndAlphabetically::OrderByManagedAndAlphabetically(
+    const OrderByManagedAndAlphabetically& other)
+    : collator_(other.collator_->clone()) {}
+
+OrderByManagedAndAlphabetically::~OrderByManagedAndAlphabetically() = default;
 
 bool OrderByManagedAndAlphabetically::operator()(const TemplateURL* lhs,
                                                  const TemplateURL* rhs) const {
@@ -87,18 +72,33 @@ std::string OrderByManagedAndAlphabetically::GetShortNameSortKey(
   constexpr int32_t kBufferSize = 1000;
   uint8_t buffer[kBufferSize];
   icu::UnicodeString icu_str(short_name.c_str(), short_name.length());
-  // Sort keys may be truncated for very long names, but that is expected to
-  // happen so rarely that simply ignoring those cases seems to be a
-  // reasonable compromise.
-  collator_->getSortKey(icu_str, buffer, kBufferSize);
-  return std::string(reinterpret_cast<const char*>(buffer));
+
+  int32_t sort_key_length = collator_->getSortKey(icu_str, buffer, kBufferSize);
+
+  // If the sort key is too long for our buffer, trim the original string
+  // for comparison to avoid buffer overflow.
+  if (sort_key_length >= kBufferSize) {
+    buffer[kBufferSize - 1] = 0;
+    sort_key_length = kBufferSize;
+  }
+
+  // getSortKey returns the length including null terminator, but we want
+  // to exclude it from the string to avoid issues with string comparison.
+  if (sort_key_length > 0) {
+    sort_key_length--;
+  }
+
+  return std::string(reinterpret_cast<const char*>(buffer), sort_key_length);
 }
 
-}  // namespace
+}  // namespace internal
 
 TemplateURLTableModel::TemplateURLTableModel(
-    TemplateURLService* template_url_service)
-    : observer_(nullptr), template_url_service_(template_url_service) {
+    TemplateURLService* template_url_service,
+    bool ai_mode_enabled)
+    : observer_(nullptr),
+      template_url_service_(template_url_service),
+      ai_mode_enabled_(ai_mode_enabled) {
   DCHECK(template_url_service);
   template_url_service_->AddObserver(this);
   template_url_service_->Load();
@@ -117,14 +117,22 @@ void TemplateURLTableModel::Reload() {
       extension_entries;
   // Keywords that can be made the default first.
   for (TemplateURL* template_url : urls) {
-    // Don't include the expanded set of starter pack keywords if the expansion
-    // feature flag is not enabled.
-    if ((template_url->starter_pack_id() ==
-             template_url_starter_pack_data::kGemini &&
-         !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) ||
-        (template_url->starter_pack_id() ==
-             template_url_starter_pack_data::kPage &&
-         !omnibox_feature_configs::ContextualSearch::Get().starter_pack_page)) {
+    // Skip @gemini if feature disabled.
+    if (template_url->starter_pack_id() ==
+            template_url_starter_pack_data::kGemini &&
+        !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) {
+      continue;
+    }
+    // Skip @page if feature disabled.
+    if (template_url->starter_pack_id() ==
+            template_url_starter_pack_data::kPage &&
+        !omnibox_feature_configs::ContextualSearch::Get().starter_pack_page) {
+      continue;
+    }
+    // Skip @aimode if feature disabled.
+    if (template_url->starter_pack_id() ==
+            template_url_starter_pack_data::kAiMode &&
+        !ai_mode_enabled_) {
       continue;
     }
 
@@ -141,8 +149,9 @@ void TemplateURLTableModel::Reload() {
     }
   }
 
-  std::ranges::sort(active_entries, OrderByManagedAndAlphabetically());
-  std::ranges::sort(other_entries, OrderByManagedAndAlphabetically());
+  std::ranges::sort(active_entries,
+                    internal::OrderByManagedAndAlphabetically());
+  std::ranges::sort(other_entries, internal::OrderByManagedAndAlphabetically());
 
   last_search_engine_index_ = default_entries.size();
   last_active_engine_index_ = last_search_engine_index_ + active_entries.size();

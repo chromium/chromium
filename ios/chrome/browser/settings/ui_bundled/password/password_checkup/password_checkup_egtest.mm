@@ -5,8 +5,8 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
@@ -345,9 +345,9 @@ NSString* LeakedPasswordDescription() {
   [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
 
   // Password Manager UI should be dismissed leaving the Settings UI Visible.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:ReauthenticationController()];
   [[EarlGrey selectElementWithMatcher:PasswordCheckupTableView()]
-      assertWithMatcher:grey_notVisible()];
-  [[EarlGrey selectElementWithMatcher:ReauthenticationController()]
       assertWithMatcher:grey_notVisible()];
 
   [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
@@ -501,7 +501,11 @@ NSString* LeakedPasswordDescription() {
 
 // Tests that the Password Checkup Homepage header image view is correctly
 // shown/hidden depending on the device's orientation.
+// TODO(crbug.com/435095080): Reenable this test.
 - (void)testPasswordCheckupHomepageDeviceOrientation {
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iPhone Simulator");
+  }
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Landscape orientation doesn't change the look of "
                            @"the Password Checkup Homepage.");
@@ -511,8 +515,8 @@ NSString* LeakedPasswordDescription() {
 
   // Rotate device to left landscape orientation before opening the Password
   // Checkup Homepage.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                   error:nil];
 
   OpenPasswordCheckupHomepage(/*result_state=*/PasswordCheckStateSafe,
                               /*result_password_count=*/0);
@@ -524,14 +528,15 @@ NSString* LeakedPasswordDescription() {
 
   // The header image view should be visible after being rotated to portrait
   // orientation.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                   error:nil];
   [[EarlGrey selectElementWithMatcher:PasswordCheckupHompageHeaderImageView()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // The header image view should not be visible after being rotated to right
   // landscape orientation.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeRight
+                                   error:nil];
   [[EarlGrey selectElementWithMatcher:PasswordCheckupHompageHeaderImageView()]
       assertWithMatcher:grey_notVisible()];
 }
@@ -821,7 +826,15 @@ NSString* LeakedPasswordDescription() {
 
 // Tests changing the password of a muted compromised password to a weak
 // password.
-- (void)testChangeMutedPasswordToWeakPassword {
+// TODO(crbug.com/452549992): Test is flaky on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testChangeMutedPasswordToWeakPassword \
+  FLAKY_testChangeMutedPasswordToWeakPassword
+#else
+#define MAYBE_testChangeMutedPasswordToWeakPassword \
+  testChangeMutedPasswordToWeakPassword
+#endif
+- (void)MAYBE_testChangeMutedPasswordToWeakPassword {
   SaveMutedCompromisedPasswordFormToProfileStore();
 
   OpenPasswordCheckupHomepage(
@@ -983,10 +996,10 @@ NSString* LeakedPasswordDescription() {
   [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
 
   // Password Manager UI should have been dismissed leaving Settings visible.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:ReauthenticationController()];
   [[EarlGrey
       selectElementWithMatcher:WeakPasswordIssuesPageTitle(/*issue_count=*/1)]
-      assertWithMatcher:grey_notVisible()];
-  [[EarlGrey selectElementWithMatcher:ReauthenticationController()]
       assertWithMatcher:grey_notVisible()];
 
   [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]

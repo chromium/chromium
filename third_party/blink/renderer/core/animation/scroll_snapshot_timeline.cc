@@ -16,7 +16,8 @@
 namespace blink {
 
 ScrollSnapshotTimeline::ScrollSnapshotTimeline(Document* document)
-    : AnimationTimeline(document), ScrollSnapshotClient(document->GetFrame()) {}
+    : AnimationTimeline(document),
+      PostLayoutSnapshotClient(document->GetFrame()) {}
 
 bool ScrollSnapshotTimeline::IsResolved() const {
   return ScrollContainer();
@@ -162,26 +163,6 @@ void ScrollSnapshotTimeline::ScheduleNextService() {
   NOTREACHED();
 }
 
-void ScrollSnapshotTimeline::UpdateSnapshot() {
-  auto state = ComputeTimelineState();
-  bool layout_changed = !state.HasConsistentLayout(timeline_state_snapshotted_);
-  timeline_state_snapshotted_ = state;
-
-  if (layout_changed) {
-    // Force recalculation of an auto-aligned start time, and invalidate
-    // normalized timing.
-    for (Animation* animation : GetAnimations()) {
-      // Avoid setting a deferred start time during the update snapshot phase.
-      // Instead wait for the validation phase post layout.
-      if (!animation->CurrentTimeInternal()) {
-        continue;
-      }
-      animation->OnValidateSnapshot(layout_changed);
-    }
-  }
-  ResolveTimelineOffsets();
-}
-
 LayoutBox* ScrollSnapshotTimeline::ComputeScrollContainer(
     Node* resolved_source) {
   auto* container_node = DynamicTo<ContainerNode>(resolved_source);
@@ -191,7 +172,7 @@ LayoutBox* ScrollSnapshotTimeline::ComputeScrollContainer(
 void ScrollSnapshotTimeline::Trace(Visitor* visitor) const {
   visitor->Trace(timeline_state_snapshotted_);
   AnimationTimeline::Trace(visitor);
-  ScrollSnapshotClient::Trace(visitor);
+  PostLayoutSnapshotClient::Trace(visitor);
 }
 
 void ScrollSnapshotTimeline::InvalidateEffectTargetStyle() const {
@@ -200,24 +181,37 @@ void ScrollSnapshotTimeline::InvalidateEffectTargetStyle() const {
   }
 }
 
-bool ScrollSnapshotTimeline::ValidateSnapshot() {
+bool ScrollSnapshotTimeline::UpdateSnapshot() {
+  return UpdateSnapshotInternal(/*service_animations=*/false);
+}
+
+void ScrollSnapshotTimeline::UpdateSnapshotForServiceAnimations() {
+  UpdateSnapshotInternal(/*service_animations=*/true);
+}
+
+bool ScrollSnapshotTimeline::UpdateSnapshotInternal(bool service_animations) {
   TimelineState new_state = ComputeTimelineState();
-  bool is_valid = timeline_state_snapshotted_ == new_state;
-  bool state_changed =
+  bool snapshot_changed = timeline_state_snapshotted_ != new_state;
+  bool layout_changed =
       !timeline_state_snapshotted_.HasConsistentLayout(new_state);
   // Note that `timeline_state_snapshotted_` must be updated before
   // ResolveTimelineOffsets is called.
   timeline_state_snapshotted_ = new_state;
-  if (state_changed) {
-    ResolveTimelineOffsets();
-  }
+  ResolveTimelineOffsets();
 
   for (Animation* animation : GetAnimations()) {
+    // Avoid setting a deferred start time during the update snapshot phase.
+    // Instead wait for the validation phase post layout.
+    // Skipping OnValidateSnapshot here is necessary for not firing too many
+    // animation events. See: https://crbug.com/40925697
+    if (service_animations && !animation->CurrentTimeInternal()) {
+      continue;
+    }
     // Compute deferred start times and update animation timing if required.
-    is_valid &= animation->OnValidateSnapshot(state_changed);
+    snapshot_changed |= !animation->OnValidateSnapshot(layout_changed);
   }
 
-  return is_valid;
+  return snapshot_changed;
 }
 
 cc::AnimationTimeline* ScrollSnapshotTimeline::EnsureCompositorTimeline() {

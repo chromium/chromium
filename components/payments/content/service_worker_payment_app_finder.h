@@ -35,7 +35,7 @@ namespace payments {
 
 class CSPChecker;
 class PaymentManifestDownloader;
-class PaymentManifestWebDataService;
+class WebPaymentsWebDataService;
 
 // Retrieves service worker payment apps.
 class ServiceWorkerPaymentAppFinder
@@ -73,7 +73,7 @@ class ServiceWorkerPaymentAppFinder
   // The method should be called on the UI thread.
   void GetAllPaymentApps(
       const url::Origin& merchant_origin,
-      scoped_refptr<PaymentManifestWebDataService> cache,
+      scoped_refptr<WebPaymentsWebDataService> cache,
       std::vector<mojom::PaymentMethodDataPtr> requested_method_data,
       base::WeakPtr<CSPChecker> csp_checker,
       GetAllPaymentAppsCallback callback,

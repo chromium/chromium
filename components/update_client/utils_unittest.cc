@@ -18,6 +18,7 @@
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/update_client/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -25,6 +26,10 @@
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#include "base/test/scoped_locale.h"
+#endif
 
 namespace update_client {
 
@@ -202,10 +207,10 @@ base::FilePath CopyCmdExe(const base::FilePath& under_dir) {
 #endif  // BUILDFLAG(IS_WIN)
 }  // namespace
 
-TEST(UpdateClientUtils, RetryDeletePathRecursively) {
+TEST(UpdateClientUtils, RetryFileOperation) {
   base::FilePath tempdir;
   ASSERT_TRUE(base::CreateNewTempDirectory(
-      FILE_PATH_LITERAL("Test_RetryDeletePathRecursively"), &tempdir));
+      FILE_PATH_LITERAL("Test_RetryFileOperation"), &tempdir));
 
 #if BUILDFLAG(IS_WIN)
   // Launch a process that runs for 3 seconds.
@@ -216,11 +221,49 @@ TEST(UpdateClientUtils, RetryDeletePathRecursively) {
 
   // Trying to delete once fails, because the process is running within
   // `tempdir`.
-  ASSERT_FALSE(RetryDeletePathRecursivelyCustom(tempdir, 1, base::Seconds(1)));
+  ASSERT_FALSE(RetryFileOperation(&base::DeletePathRecursively, tempdir, 1,
+                                  base::Seconds(1)));
 #endif  // BUILDFLAG(IS_WIN)
 
   // Deleting with retries works.
-  ASSERT_TRUE(RetryDeletePathRecursively(tempdir));
+  ASSERT_TRUE(RetryFileOperation(&base::DeletePathRecursively, tempdir));
+}
+
+struct UpdateClientUtilsUTF8StringTypeTestCase {
+  const base::FilePath::StringType stringtype;
+  const std::string utf8;
+};
+
+class UpdateClientUtilsUTF8StringTypeTest
+    : public ::testing::TestWithParam<UpdateClientUtilsUTF8StringTypeTestCase> {
+#if !defined(SYSTEM_NATIVE_UTF8) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+ protected:
+  base::ScopedLocale locale_{"en_US.UTF-8"};
+#endif
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    UpdateClientUtilsUTF8StringTypeTestCases,
+    UpdateClientUtilsUTF8StringTypeTest,
+    ::testing::ValuesIn(std::vector<UpdateClientUtilsUTF8StringTypeTestCase>{
+        {FILE_PATH_LITERAL("foo.txt"), "foo.txt"},
+
+        // "aeo" with accents. Use http://0xcc.net/jsescape/ to decode them.
+        {FILE_PATH_LITERAL("\u00E0\u00E8\u00F2.txt"),
+         "\xC3\xA0\xC3\xA8\xC3\xB2.txt"},
+
+        // Full-width "ABC".
+        {FILE_PATH_LITERAL("\uFF21\uFF22\uFF23.txt"),
+         "\xEF\xBC\xA1\xEF\xBC\xA2\xEF\xBC\xA3.txt"},
+    }));
+
+TEST_P(UpdateClientUtilsUTF8StringTypeTest, UTF8ToStringType) {
+  EXPECT_EQ(UTF8ToStringType(GetParam().utf8), GetParam().stringtype);
+}
+
+TEST_P(UpdateClientUtilsUTF8StringTypeTest, StringTypeToUTF8) {
+  EXPECT_EQ(StringTypeToUTF8(GetParam().stringtype), GetParam().utf8);
 }
 
 }  // namespace update_client

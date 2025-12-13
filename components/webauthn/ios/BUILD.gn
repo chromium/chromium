@@ -2,24 +2,44 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("ios") {
-  deps = [
-    ":passkey_controller_js",
-    "//base",
-    "//components/webauthn/core/browser:passkey_model",
-    "//ios/web/public",
-    "//ios/web/public/js_messaging",
-  ]
-
   sources = [
+    "ios_passkey_client.h",
+    "ios_passkey_client.mm",
+    "ios_webauthn_credentials_delegate.h",
+    "ios_webauthn_credentials_delegate.mm",
+    "ios_webauthn_credentials_delegate_factory.h",
+    "ios_webauthn_credentials_delegate_factory.mm",
     "passkey_java_script_feature.h",
     "passkey_java_script_feature.mm",
+    "passkey_request_params.h",
+    "passkey_request_params.mm",
     "passkey_tab_helper.h",
     "passkey_tab_helper.mm",
   ]
+
+  deps = [
+    ":features",
+    ":passkey_controller_js",
+    ":passkey_types",
+    "//base",
+    "//components/autofill/ios/browser",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:passkey_credential",
+    "//components/password_manager/ios",
+    "//components/webauthn/core/browser:client_data",
+    "//components/webauthn/core/browser:passkey_model",
+    "//device/fido",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+}
+
+source_set("passkey_types") {
+  sources = [ "passkey_types.h" ]
+  deps = [ "//base" ]
 }
 
 optimize_ts("passkey_controller_js") {
@@ -30,7 +50,10 @@ optimize_ts("passkey_controller_js") {
 
   sources = [ "resources/passkey_controller.ts" ]
 
-  deps = [ "//ios/web/public/js_messaging:util_scripts" ]
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }
 
 source_set("features") {
@@ -43,15 +66,22 @@ source_set("features") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "passkey_tab_helper_unittest.mm" ]
+  sources = [
+    "ios_webauthn_credentials_delegate_factory_unittest.mm",
+    "passkey_tab_helper_unittest.mm",
+  ]
   deps = [
     ":ios",
     ":js_tests",
     "//base/test:test_support",
+    "//components/autofill/ios/browser",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/ios",
     "//components/webauthn/core/browser:passkey_model",
     "//components/webauthn/core/browser:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
 
@@ -59,6 +89,8 @@ source_set("js_tests") {
   testonly = true
   sources = [ "passkey_controller_javascript_test.mm" ]
   deps = [
+    ":features",
+    ":ios",
     ":passkey_controller_js",
     "//ios/web/public/test:javascript_test",
     "//ios/web/public/test:util",

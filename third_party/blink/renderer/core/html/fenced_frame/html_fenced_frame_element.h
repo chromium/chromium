@@ -125,7 +125,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // events that were originally fired *inside* of the fenced frame content, and
   // that have been intentionally propagated outwards to `this`, the frame
   // owner, for reception by the embedder script.
-  void DispatchFencedEvent(const WTF::String& event_type);
+  void DispatchFencedEvent(const String& event_type);
 
  private:
   // This method will only navigate the underlying frame if the element

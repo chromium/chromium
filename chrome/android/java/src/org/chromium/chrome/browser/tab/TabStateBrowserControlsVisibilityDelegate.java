@@ -90,10 +90,7 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
      * @param tab The associated {@link Tab}.
      */
     public TabStateBrowserControlsVisibilityDelegate(Tab tab) {
-        super(BrowserControlsState.BOTH);
-
         mTab = (TabImpl) tab;
-
         mTab.addObserver(
                 new EmptyTabObserver() {
                     @SuppressLint("HandlerLeak")
@@ -129,16 +126,6 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
                     @Override
                     public void onContentChanged(Tab tab) {
                         onWebContentsUpdated(tab.getWebContents());
-                    }
-
-                    @Override
-                    public void onWebContentsSwapped(
-                            Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-                        if (!didStartLoad) return;
-
-                        // As we may have missed the main frame commit notification for the
-                        // swapped web contents, schedule the enabling of fullscreen now.
-                        scheduleEnableFullscreenLoadDelayIfNecessary();
                     }
 
                     @Override

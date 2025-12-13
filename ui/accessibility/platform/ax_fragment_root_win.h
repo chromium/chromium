@@ -12,6 +12,8 @@
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 
+struct IRawElementProviderSimple;
+
 namespace ui {
 
 class AXFragmentRootDelegateWin;
@@ -63,6 +65,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXFragmentRootWin
 
   bool HasEventListenerForEvent(int event_id);
   bool HasEventListenerForProperty(int property_id);
+
+  // Returns the fragment root's element provider. This provides direct access
+  // to the interface without increasing the instance's refcount. Prefer
+  // `GetNativeViewAccessible()` when returning the provider in response to a
+  // WM_GETOBJECT message, as that performs additional required bookkeeping.
+  IRawElementProviderSimple* GetProvider();
 
  private:
   // AXPlatformNodeDelegate overrides.

@@ -27,6 +27,7 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/view_factory.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -264,12 +265,12 @@ void SavedDeskRegularIconView::OnIconLoaded(const gfx::ImageSkia& icon) {
 void SavedDeskRegularIconView::LoadDefaultIcon() {
   is_showing_default_icon_ = true;
 
-  const ui::NativeTheme* native_theme =
-      ui::NativeTheme::GetInstanceForNativeUi();
   // Use a higher resolution image as it will look better after resizing.
-  const int resource_id = native_theme && native_theme->ShouldUseDarkColors()
-                              ? IDR_DEFAULT_FAVICON_DARK_64
-                              : IDR_DEFAULT_FAVICON_64;
+  const int resource_id =
+      (ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+       ui::NativeTheme::PreferredColorScheme::kDark)
+          ? IDR_DEFAULT_FAVICON_DARK_64
+          : IDR_DEFAULT_FAVICON_64;
 
   // `color_provider` only exist when view is created, otherwise it will be a
   // nullptr. This will be called on `OnThemeChanged` again to ensure `SetImage`

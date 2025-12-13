@@ -32,7 +32,7 @@ TrustedVaultClientBackendFactory::~TrustedVaultClientBackendFactory() = default;
 
 std::unique_ptr<KeyedService>
 TrustedVaultClientBackendFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   // Give the opportunity for the test hook to override the factory from
   // the provider (allowing EG tests to use a fake TrustedVaultClientBackend).
   if (auto backend = tests_hook::CreateTrustedVaultClientBackend()) {

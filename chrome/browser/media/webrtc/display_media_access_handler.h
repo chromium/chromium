@@ -25,6 +25,8 @@ namespace extensions {
 class Extension;
 }
 
+BASE_DECLARE_FEATURE(kDisplayMediaRejectLongDomains);
+
 // MediaAccessHandler for getDisplayMedia API, see
 // https://w3c.github.io/mediacapture-screen-share.
 class DisplayMediaAccessHandler : public CaptureAccessHandlerBase,

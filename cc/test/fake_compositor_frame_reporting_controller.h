@@ -8,7 +8,7 @@
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 
 namespace viz {
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }
 
 namespace cc {

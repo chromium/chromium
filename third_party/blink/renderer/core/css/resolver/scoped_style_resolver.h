@@ -31,9 +31,11 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
+#include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
+#include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_utils.h"
-#include "third_party/blink/renderer/core/css/rule_set.h"
+#include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -46,6 +48,8 @@ class PartNames;
 class CascadeLayerMap;
 class StyleSheetContents;
 class FontFeatureValuesStorage;
+class RuleSet;
+class RuleSetGroup;
 
 // ScopedStyleResolver collects the style sheets that occur within a TreeScope
 // and provides methods to collect the rules that apply to a given element,
@@ -73,6 +77,8 @@ class CORE_EXPORT ScopedStyleResolver final
 
   const FontFeatureValuesStorage* FontFeatureValuesForFamily(
       AtomicString font_family);
+  const HeapVector<Member<StyleRuleFontFeatureValues>>*
+  FontFeatureValuesRulesForFamily(AtomicString font_family);
 
   void RebuildCascadeLayerMap(const ActiveStyleSheetVector&);
   bool HasCascadeLayerMap() const { return cascade_layer_map_.Get(); }
@@ -102,7 +108,8 @@ class CORE_EXPORT ScopedStyleResolver final
   void QuietlySwapActiveStyleSheets(ActiveStyleSheetVector& other);
 
   void AppendActiveStyleSheets(unsigned index, const ActiveStyleSheetVector&);
-  void CollectMatchingElementScopeRules(ElementRuleCollector&,
+  void CollectMatchingElementScopeRules(const ContainerNode& scope_root,
+                                        ElementRuleCollector&,
                                         PartNames* part_names);
   void CollectMatchingShadowHostRules(ElementRuleCollector&);
   void CollectMatchingSlottedRules(ElementRuleCollector&);
@@ -125,16 +132,18 @@ class CORE_EXPORT ScopedStyleResolver final
 
  private:
   template <class Func>
-  void ForAllStylesheets(ElementRuleCollector&, const Func& func);
+  void ForAllStylesheets(ElementRuleCollector&,
+                         const ContainerNode& scope_root,
+                         const Func& func);
 
   void AddFontFaceRules(const RuleSet&);
   void AddCounterStyleRules(const RuleSet&);
   void AddKeyframeRules(const RuleSet&);
-  void AddKeyframeStyle(StyleRuleKeyframes*);
+  void AddKeyframeStyle(const CascadeLayered<StyleRuleKeyframes>&);
   void AddFontFeatureValuesRules(const RuleSet&);
   bool KeyframeStyleShouldOverride(
-      const StyleRuleKeyframes* new_rule,
-      const StyleRuleKeyframes* existing_rule) const;
+      const CascadeLayered<StyleRuleKeyframes>& new_rule,
+      const CascadeLayered<StyleRuleKeyframes>& existing_rule) const;
 
   CounterStyleMap& EnsureCounterStyleMap();
 
@@ -151,11 +160,11 @@ class CORE_EXPORT ScopedStyleResolver final
   HeapVector<RuleSetGroup> rule_set_groups_;
 
   using KeyframesRuleMap =
-      HeapHashMap<AtomicString, Member<StyleRuleKeyframes>>;
+      HeapHashMap<AtomicString, CascadeLayered<StyleRuleKeyframes>>;
   KeyframesRuleMap keyframes_rule_map_;
 
   using PositionTryRuleMap =
-      HeapHashMap<AtomicString, Member<StyleRulePositionTry>>;
+      HeapHashMap<AtomicString, CascadeLayered<StyleRulePositionTry>>;
   PositionTryRuleMap position_try_rule_map_;
 
   FunctionRuleMap function_rule_map_;
@@ -164,8 +173,11 @@ class CORE_EXPORT ScopedStyleResolver final
   // StyleRuleFontFeatureValues for each mentioned family name in the
   // comma-separated list of font families in the @font-feature-values at-rule
   // prelude.
-  using FontFeatureValuesRuleMap = HashMap<String, FontFeatureValuesStorage>;
-  FontFeatureValuesRuleMap font_feature_values_storage_map_;
+  using FontFeatureValuesStorageMap = HashMap<String, FontFeatureValuesStorage>;
+  FontFeatureValuesStorageMap font_feature_values_storage_map_;
+  using FontFeatureValuesRuleMap =
+      HeapHashMap<String, HeapVector<Member<StyleRuleFontFeatureValues>>>;
+  FontFeatureValuesRuleMap font_feature_values_rule_map_;
 
   Member<CounterStyleMap> counter_style_map_;
   Member<CascadeLayerMap> cascade_layer_map_;

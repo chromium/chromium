@@ -16,6 +16,7 @@ RenderProcess::RenderProcess(
     std::unique_ptr<base::ThreadPoolInstance::InitParams>
         thread_pool_init_params)
     : ChildProcess(base::ThreadType::kDisplayCritical,
-                   std::move(thread_pool_init_params)) {}
+                   std::move(thread_pool_init_params),
+                   /*is_renderer=*/true) {}
 
 }  // namespace content

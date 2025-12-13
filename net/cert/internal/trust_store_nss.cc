@@ -18,7 +18,6 @@
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
-#include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -26,6 +25,7 @@
 #include "crypto/chaps_support.h"
 #include "crypto/nss_util.h"
 #include "crypto/nss_util_internal.h"
+#include "crypto/obsolete/sha1.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/base/features.h"
 #include "net/cert/internal/platform_trust_store.h"
@@ -54,6 +54,11 @@ extern "C" CERTCertificate* CERT_FindCertByDERCertForChromium(
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_DEVICE)
 
 namespace net {
+
+std::array<uint8_t, crypto::obsolete::Sha1::kSize> Sha1ForNSSTrust(
+    base::span<const uint8_t> data) {
+  return crypto::obsolete::Sha1::Hash(data);
+}
 
 namespace {
 
@@ -220,13 +225,6 @@ void TrustStoreNSS::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
 }
 
 std::vector<TrustStoreNSS::ListCertsResult>
-TrustStoreNSS::ListCertsIgnoringNSSRoots() {
-  // In this path, the returned certs could include client certificates, so we
-  // should not skip the chaps module.
-  return ListCertsIgnoringNSSRootsImpl(/*ignore_chaps_module=*/false);
-}
-
-std::vector<TrustStoreNSS::ListCertsResult>
 TrustStoreNSS::ListCertsIgnoringNSSRootsImpl(bool ignore_chaps_module) {
   crypto::EnsureNSSInit();
   std::vector<TrustStoreNSS::ListCertsResult> results;
@@ -388,8 +386,8 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
   // clear the cache. (There are multiple approaches possible, could cache the
   // hash->trust mappings on a per-slot basis, or just cache the end result for
   // each cert, etc.)
-  base::SHA1Digest cert_sha1 =
-      base::SHA1Hash(x509_util::CERTCertificateAsSpan(nss_cert));
+  std::array<uint8_t, crypto::obsolete::Sha1::kSize> cert_sha1 =
+      Sha1ForNSSTrust(x509_util::CERTCertificateAsSpan(nss_cert));
 
   // Check the slots in trustOrder ordering. Lower trustOrder values are higher
   // priority, so we can return as soon as we find a matching trust object.

@@ -38,6 +38,6 @@ bool SupervisedUserSettingsServiceFactory::
 
 std::unique_ptr<KeyedService>
 SupervisedUserSettingsServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   return std::make_unique<supervised_user::SupervisedUserSettingsService>();
 }

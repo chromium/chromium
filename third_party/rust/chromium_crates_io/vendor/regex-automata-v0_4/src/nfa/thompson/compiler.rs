@@ -230,9 +230,9 @@ impl Config {
     /// # if cfg!(miri) { return Ok(()); } // miri takes too long
     /// use regex_automata::nfa::thompson::NFA;
     ///
-    /// // 400KB isn't enough!
+    /// // 300KB isn't enough!
     /// NFA::compiler()
-    ///     .configure(NFA::config().nfa_size_limit(Some(400_000)))
+    ///     .configure(NFA::config().nfa_size_limit(Some(300_000)))
     ///     .build(r"\w{20}")
     ///     .unwrap_err();
     ///
@@ -563,6 +563,28 @@ pub enum WhichCaptures {
     /// This is useful when capture states are either not needed (for example,
     /// if one is only trying to build a DFA) or if they aren't supported (for
     /// example, a reverse NFA).
+    ///
+    /// # Warning
+    ///
+    /// Callers must be exceedingly careful when using this
+    /// option. In particular, not all regex engines support
+    /// reporting match spans when using this option (for example,
+    /// [`PikeVM`](crate::nfa::thompson::pikevm::PikeVM) or
+    /// [`BoundedBacktracker`](crate::nfa::thompson::backtrack::BoundedBacktracker)).
+    ///
+    /// Perhaps more confusingly, using this option with such an
+    /// engine means that an `is_match` routine could report `true`
+    /// when `find` reports `None`. This is generally not something
+    /// that _should_ happen, but the low level control provided by
+    /// this crate makes it possible.
+    ///
+    /// Similarly, any regex engines (like [`meta::Regex`](crate::meta::Regex))
+    /// should always return `None` from `find` routines when this option is
+    /// used, even if _some_ of its internal engines could find the match
+    /// boundaries. This is because inputs from user data could influence
+    /// engine selection, and thus influence whether a match is found or not.
+    /// Indeed, `meta::Regex::find` will always return `None` when configured
+    /// with this option.
     None,
 }
 
@@ -1041,7 +1063,7 @@ impl Compiler {
     /// Compile an alternation of the given HIR values.
     ///
     /// This is like 'c_alt_iter', but it accepts a slice of HIR values instead
-    /// of an iterator of compiled NFA subgraphs. The point of accepting a
+    /// of an iterator of compiled NFA sub-graphs. The point of accepting a
     /// slice here is that it opens up some optimization opportunities. For
     /// example, if all of the HIR values are literals, then this routine might
     /// re-shuffle them to make NFA epsilon closures substantially faster.
@@ -1500,7 +1522,7 @@ impl Compiler {
     ///
     /// A more comprehensive compression scheme can be accomplished by using
     /// a range trie to efficiently sort a reverse sequence of UTF-8 byte
-    /// rqanges, and then use Daciuk's algorithm via `Utf8Compiler`.
+    /// ranges, and then use Daciuk's algorithm via `Utf8Compiler`.
     ///
     /// This is the technique used when "NFA shrinking" is disabled.
     ///
@@ -1665,7 +1687,7 @@ impl Compiler {
         capture_index: u32,
         name: Option<&str>,
     ) -> Result<StateID, BuildError> {
-        let name = name.map(|n| Arc::from(n));
+        let name = name.map(Arc::from);
         self.builder.borrow_mut().add_capture_start(
             StateID::ZERO,
             capture_index,
@@ -1702,7 +1724,7 @@ pub(crate) struct ThompsonRef {
     pub(crate) end: StateID,
 }
 
-/// A UTF-8 compiler based on Daciuk's algorithm for compilining minimal DFAs
+/// A UTF-8 compiler based on Daciuk's algorithm for compiling minimal DFAs
 /// from a lexicographically sorted sequence of strings in linear time.
 ///
 /// The trick here is that any Unicode codepoint range can be converted to

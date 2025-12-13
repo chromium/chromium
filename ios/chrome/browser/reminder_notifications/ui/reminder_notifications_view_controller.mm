@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/reminder_notifications/ui/reminder_notifications_date_picker_table_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -59,9 +60,9 @@ NSString* const kBellIconAccessibilityLabel =
   self.underTitleView = _tableView;
 
   // Set up action buttons.
-  self.primaryActionString = l10n_util::GetNSString(
+  self.configuration.primaryActionString = l10n_util::GetNSString(
       IDS_IOS_REMINDER_NOTIFICATIONS_SET_REMINDER_BUTTON);
-  self.secondaryActionString =
+  self.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_REMINDER_NOTIFICATIONS_CANCEL_BUTTON);
 
   // Configure title spacing.
@@ -73,7 +74,7 @@ NSString* const kBellIconAccessibilityLabel =
       @[ [UIColor whiteColor] ]);
   self.imageBackgroundColor = [UIColor colorNamed:kBlue500Color];
   self.imageViewAccessibilityLabel = kBellIconAccessibilityLabel;
-  self.customSpacingBeforeImageIfNoNavigationBar = kSpacingBeforeImage;
+  self.customSpacingBeforeImage = kSpacingBeforeImage;
   self.customSpacingAfterImage = kSpacingAfterImage;
   self.imageHasFixedSize = YES;
   self.imageEnclosedWithShadowWithoutBadge = YES;
@@ -81,7 +82,6 @@ NSString* const kBellIconAccessibilityLabel =
   self.alwaysShowImage = YES;
 
   // Configure layout preferences.
-  self.showDismissBarButton = NO;
   self.topAlignedLayout = YES;
 
   [super viewDidLoad];

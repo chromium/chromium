@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"

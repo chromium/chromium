@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
 
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
-#include "services/network/public/mojom/integrity_metadata.mojom-blink.h"
 
 namespace blink {
 
@@ -17,20 +16,14 @@ network::mojom::blink::CSPSourcePtr ConvertSource(const WebCSPSource& source) {
       source.is_host_wildcard, source.is_port_wildcard);
 }
 
-network::mojom::blink::IntegrityMetadataPtr ConvertIntegrityMetadata(
-    const WebIntegrityMetadata& integrity_metadata) {
-  return network::mojom::blink::IntegrityMetadata::New(
-      integrity_metadata.algorithm, Vector<uint8_t>(integrity_metadata.value));
-}
-
 network::mojom::blink::CSPSourceListPtr ConvertSourceList(
     const WebCSPSourceList& source_list) {
   return network::mojom::blink::CSPSourceList::New(
-      WTF::ToVector(source_list.sources, ConvertSource),
+      ToVector(source_list.sources, ConvertSource),
       Vector<String>(source_list.nonces),
-      WTF::ToVector(source_list.hashes, ConvertIntegrityMetadata),
-      WTF::ToVector(source_list.url_hashes, ConvertIntegrityMetadata),
-      WTF::ToVector(source_list.eval_hashes, ConvertIntegrityMetadata),
+      Vector<network::IntegrityMetadata>(source_list.hashes),
+      Vector<network::IntegrityMetadata>(source_list.url_hashes),
+      Vector<network::IntegrityMetadata>(source_list.eval_hashes),
       source_list.allow_self, source_list.allow_star, source_list.allow_inline,
       source_list.allow_inline_speculation_rules, source_list.allow_eval,
       source_list.allow_wasm_eval, source_list.allow_wasm_unsafe_eval,

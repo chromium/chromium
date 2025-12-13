@@ -4,11 +4,12 @@
 
 #include "ui/views/test/widget_test.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/test/native_widget_factory.h"
 #include "ui/views/widget/root_view.h"
 

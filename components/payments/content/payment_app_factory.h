@@ -44,7 +44,7 @@ enum class AppCreationFailureReason {
 
 class ContentPaymentRequestDelegate;
 class CSPChecker;
-class PaymentManifestWebDataService;
+class WebPaymentsWebDataService;
 class PaymentRequestSpec;
 
 // Base class for a factory that can create instances of payment apps.
@@ -78,9 +78,10 @@ class PaymentAppFactory {
         const = 0;
     virtual std::unique_ptr<webauthn::InternalAuthenticator>
     CreateInternalAuthenticator() const = 0;
-    virtual scoped_refptr<PaymentManifestWebDataService>
-    GetPaymentManifestWebDataService() const = 0;
+    virtual scoped_refptr<WebPaymentsWebDataService>
+    GetWebPaymentsWebDataService() const = 0;
     virtual bool IsOffTheRecord() const = 0;
+    virtual bool PrefsCanMakePayment() const = 0;
 
     // Returns the merchant provided information, or null if the payment is
     // being aborted.

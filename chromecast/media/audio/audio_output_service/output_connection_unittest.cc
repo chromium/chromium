@@ -35,7 +35,6 @@ namespace {
 using base::test::EqualsProto;
 using base::test::RunOnceCallback;
 using testing::_;
-using testing::Invoke;
 
 enum MessageTypes : int {
   kTest = 1,
@@ -129,10 +128,10 @@ TEST_F(OutputConnectionTest, ConnectSucceed) {
   // OutputSocket is usable.
   EXPECT_CALL(*output_connection_, OnConnected(_))
       .Times(1)
-      .WillOnce(Invoke([&message](std::unique_ptr<OutputSocket> socket) {
+      .WillOnce([&message](std::unique_ptr<OutputSocket> socket) {
         EXPECT_TRUE(!!socket);
         EXPECT_TRUE(socket->SendProto(kTest, message));
-      }));
+      });
 
   // Verify the delegate method can be triggered on the receiving end.
   EXPECT_CALL(*receiving_socket_delegate, HandleMetadata(EqualsProto(message)))

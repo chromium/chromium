@@ -50,6 +50,7 @@ source_set("unit_tests") {
   deps = [
     ":model",
     "//base/test:test_support",
+    "//components/captive_portal/core",
     "//components/security_interstitials/core",
     "//components/security_state/core",
     "//ios/chrome/browser/shared/model/profile/test",

@@ -16,15 +16,18 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -55,10 +58,18 @@ constexpr char kTableName[] = "autofill_ai_entities";
 constexpr char kGuid[] = "guid";
 constexpr char kEntityType[] = "entity_type";
 constexpr char kNickname[] = "nickname";
-constexpr char kDateModified[] = "date_modified";
+constexpr char kRecordType[] = "record_type";
+constexpr char kAttributesReadOnly[] = "attributes_read_only";
+constexpr char kFrecencyOverride[] = "frecency_override";
+}  // namespace entities
+
+namespace entities_metadata {
+constexpr char kTableName[] = "autofill_ai_entities_metadata";
+constexpr char kEntityGuid[] = "entity_guid";
 constexpr char kUseCount[] = "use_count";
 constexpr char kUseDate[] = "use_date";
-}  // namespace entities
+constexpr char kDateModified[] = "date_modified";
+}  // namespace entities_metadata
 
 // If "--autofill-wipe-entities" is present, drops the tables and creates
 // new ones.
@@ -83,8 +94,9 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
   has_been_called = true;
 
   if (wipe) {
-    DropTableIfExists(db, attributes::kTableName);
-    DropTableIfExists(db, entities::kTableName);
+    DropTableIfExists(db, autofill::attributes::kTableName);
+    DropTableIfExists(db, autofill::entities::kTableName);
+    DropTableIfExists(db, autofill::entities_metadata::kTableName);
     table.CreateTablesIfNecessary();
   }
 
@@ -93,10 +105,13 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
                                std::u16string value) -> AttributeInstance {
       auto type = AttributeType(type_name);
       auto instance = AttributeInstance(AttributeType(type));
-      instance.SetInfo(instance.type().field_type(), value, /*app_locale=*/"",
-                       /*format_string=*/
-                       IsDateFieldType(type.field_type()) ? u"YYYY-MM-DD" : u"",
-                       VerificationStatus::kNoStatus);
+      instance.SetInfo(
+          instance.type().field_type(), value, /*app_locale=*/"",
+          /*format_string=*/
+          IsDateFieldType(type.field_type())
+              ? AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE)
+              : base::optional_ref<const AutofillFormatString>(),
+          VerificationStatus::kNoStatus);
       return instance;
     };
 
@@ -109,9 +124,13 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
          create_attribute(kPassportCountry, u"Sweden"),
          create_attribute(kPassportExpirationDate, u"2035-03-31"),
          create_attribute(kPassportIssueDate, u"1998-10-11")},
-        base::Uuid::ParseLowercase("00000000-0000-4000-8000-123000000000"),
+        EntityInstance::EntityId(
+            base::Uuid::ParseLowercase("00000000-0000-4000-8000-123000000000")),
         "My passport", /*date_modified=*/base::Time::Now(), /*use_count=*/0,
-        /*use_date=*/base::Time::FromTimeT(0)));
+        /*use_date=*/base::Time::FromTimeT(0),
+        EntityInstance::RecordType::kLocal,
+        EntityInstance::AreAttributesReadOnly(false),
+        /*frecency_override=*/""));
 
     table.AddOrUpdateEntityInstance(EntityInstance(
         EntityType(EntityTypeName::kDriversLicense),
@@ -120,9 +139,13 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
          create_attribute(kDriversLicenseState, u"California"),
          create_attribute(kDriversLicenseExpirationDate, u"2069-12-31"),
          create_attribute(kDriversLicenseIssueDate, u"1969-12-24")},
-        base::Uuid::ParseLowercase("00000000-0000-4000-8000-456000000000"),
+        EntityInstance::EntityId(
+            base::Uuid::ParseLowercase("00000000-0000-4000-8000-456000000000")),
         "My license", /*date_modified=*/base::Time::Now(), /*use_count=*/0,
-        /*use_date=*/base::Time::FromTimeT(0)));
+        /*use_date=*/base::Time::FromTimeT(0),
+        EntityInstance::RecordType::kLocal,
+        EntityInstance::AreAttributesReadOnly(false),
+        /*frecency_override=*/""));
 
     table.AddOrUpdateEntityInstance(EntityInstance(
         EntityType(EntityTypeName::kVehicle),
@@ -133,10 +156,25 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
          create_attribute(kVehiclePlateNumber, u"SUNNY1133"),
          create_attribute(kVehiclePlateState, u"California"),
          create_attribute(kVehicleVin, u"3D73Y4CL2AG194665")},
-        base::Uuid::ParseLowercase("00000000-0000-4000-8000-789000000000"),
+        EntityInstance::EntityId(
+            base::Uuid::ParseLowercase("00000000-0000-4000-8000-789000000000")),
         "My wroom wroom car", /*date_modified=*/base::Time::Now(),
-        /*use_count=*/0, /*use_date=*/base::Time::FromTimeT(0)));
+        /*use_count=*/0, /*use_date=*/base::Time::FromTimeT(0),
+        EntityInstance::RecordType::kLocal,
+        EntityInstance::AreAttributesReadOnly(false),
+        /*frecency_override=*/""));
   }
+}
+
+std::optional<EntityInstance::RecordType> ToSafeRecordType(
+    std::underlying_type_t<EntityInstance::RecordType> underlying_record_type) {
+  switch (EntityInstance::RecordType record_type =
+              static_cast<EntityInstance::RecordType>(underlying_record_type)) {
+    case EntityInstance::RecordType::kLocal:
+    case EntityInstance::RecordType::kServerWallet:
+      return record_type;
+  }
+  return std::nullopt;
 }
 
 }  // namespace
@@ -174,11 +212,24 @@ bool EntityTable::CreateTablesIfNecessary() {
         {{entities::kGuid, "TEXT NOT NULL PRIMARY KEY"},
          {entities::kEntityType, "TEXT NOT NULL"},
          {entities::kNickname, "TEXT NOT NULL"},
-         {entities::kDateModified, "INTEGER NOT NULL"},
-         {entities::kUseCount, "INTEGER DEFAULT 0"},
-         {entities::kUseDate, "INTEGER DEFAULT 0"}});
+         // TODO(crbug.com/450685388): Make all columns not null.
+         {entities::kRecordType, "INTEGER DEFAULT 0"},
+         {entities::kAttributesReadOnly, "INTEGER DEFAULT 0"},
+         {entities::kFrecencyOverride, "TEXT NOT NULL DEFAULT ''"}});
   };
-  return create_attributes_table() && create_entities_table();
+  auto create_entities_metadata_table = [&] {
+    return CreateTableIfNotExists(
+        db(), /*table_name=*/autofill::entities_metadata::kTableName,
+        /*column_names_and_types=*/
+        {{autofill::entities_metadata::kEntityGuid,
+          "TEXT NOT NULL PRIMARY KEY"},
+         // TODO(crbug.com/450685388): Make all columns not null.
+         {autofill::entities_metadata::kUseCount, "INTEGER DEFAULT 0"},
+         {autofill::entities_metadata::kUseDate, "INTEGER DEFAULT 0"},
+         {autofill::entities_metadata::kDateModified, "INTEGER NOT NULL"}});
+  };
+  return create_attributes_table() && create_entities_table() &&
+         create_entities_metadata_table();
 }
 
 // There are two types of migration:
@@ -231,8 +282,50 @@ bool EntityTable::MigrateToVersion(int version,
       AddColumn(db(), "autofill_ai_entities", "use_date", "INTEGER DEFAULT 0");
       break;
     }
+    case 142: {
+      // In this version the record type was added.
+      return AddColumn(db(), "autofill_ai_entities", "record_type",
+                       "INTEGER DEFAULT 0");
+    }
+    case 143: {
+      // In this version `attributes_read_only` flag was added.
+      return AddColumn(db(), "autofill_ai_entities", "attributes_read_only",
+                       "INTEGER DEFAULT 0");
+    }
+    case 146: {
+      // In this version `frecency_override` was added.
+      return AddColumn(db(), "autofill_ai_entities", "frecency_override",
+                       "TEXT NOT NULL DEFAULT ''");
+    }
+    case 147: {
+      *update_compatible_version = true;
+      return MigrateToVersion147AddEntitiesMetadataTable();
+    }
   }
   return true;
+}
+
+bool EntityTable::MigrateToVersion147AddEntitiesMetadataTable() {
+  sql::Transaction transaction(db());
+  return transaction.Begin() &&
+         CreateTableIfNotExists(
+             db(), /*table_name=*/entities_metadata::kTableName,
+             /*column_names_and_types=*/
+             {{entities_metadata::kEntityGuid, "TEXT NOT NULL PRIMARY KEY"},
+              {entities_metadata::kUseCount, "INTEGER DEFAULT 0"},
+              {entities_metadata::kUseDate, "INTEGER DEFAULT 0"},
+              {entities_metadata::kDateModified, "INTEGER NOT NULL"}}) &&
+         db()->Execute(base::StrCat(
+             {"INSERT INTO ", autofill::entities_metadata::kTableName,
+              " SELECT ", autofill::entities::kGuid, ", ",
+              entities_metadata::kUseCount, ", ", entities_metadata::kUseDate,
+              ", ", entities_metadata::kDateModified, " FROM ",
+              autofill::entities::kTableName})) &&
+         DropColumn(db(), entities::kTableName, entities_metadata::kUseCount) &&
+         DropColumn(db(), entities::kTableName, entities_metadata::kUseDate) &&
+         DropColumn(db(), entities::kTableName,
+                    entities_metadata::kDateModified) &&
+         transaction.Commit();
 }
 
 bool EntityTable::AddAttribute(const EntityInstance& entity,
@@ -244,11 +337,11 @@ bool EntityTable::AddAttribute(const EntityInstance& entity,
                   {attributes::kEntityGuid, attributes::kAttributeType,
                    attributes::kFieldType, attributes::kValueEncrypted,
                    attributes::kVerificationStatus});
-    s.BindString(0, entity.guid().AsLowercaseString());
+    s.BindString(0, *entity.guid());
     s.BindString(1, attribute.type().name_as_string());
     s.BindInt(2, type);
     if (std::string encrypted_value; encryptor()->EncryptString16(
-            attribute.GetRawInfo(/*pass_key=*/{}, type), &encrypted_value)) {
+            attribute.GetRawInfo(type), &encrypted_value)) {
       base::UmaHistogramBoolean("Autofill.Ai.EntityTable.EncryptStatus", true);
       s.BindString(3, encrypted_value);
     } else {
@@ -261,6 +354,32 @@ bool EntityTable::AddAttribute(const EntityInstance& entity,
     }
   }
   return true;
+}
+
+bool EntityTable::AddEntityMetadata(
+    const EntityInstance::EntityMetadata& metadata) {
+  sql::Statement s;
+  InsertBuilder(
+      db(), s, entities_metadata::kTableName,
+      {entities_metadata::kEntityGuid, entities_metadata::kUseCount,
+       entities_metadata::kUseDate, entities_metadata::kDateModified});
+  s.BindString(0, *metadata.guid);
+  s.BindInt64(1, metadata.use_count);
+  s.BindTime(2, metadata.use_date);
+  s.BindInt64(3, metadata.date_modified.ToTimeT());
+  return s.Run();
+}
+
+bool EntityTable::RemoveEntityMetadata(const EntityInstance::EntityId& guid) {
+  return DeleteWhereColumnEq(db(), entities_metadata::kTableName,
+                             entities_metadata::kEntityGuid, *guid);
+}
+
+bool EntityTable::AddOrUpdateEntityMetadata(
+    const EntityInstance::EntityMetadata& metadata) {
+  sql::Transaction transaction(db());
+  return transaction.Begin() && RemoveEntityMetadata(metadata.guid) &&
+         AddEntityMetadata(metadata) && transaction.Commit();
 }
 
 bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
@@ -281,18 +400,22 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
 
   // Add the entity.
   sql::Statement s;
-  InsertBuilder(
-      db(), s, entities::kTableName,
-      {entities::kGuid, entities::kEntityType, entities::kNickname,
-       entities::kDateModified, entities::kUseCount, entities::kUseDate});
-  s.BindString(0, entity.guid().AsLowercaseString());
+  InsertBuilder(db(), s, entities::kTableName,
+                {entities::kGuid, entities::kEntityType, entities::kNickname,
+                 entities::kRecordType, entities::kAttributesReadOnly,
+                 entities::kFrecencyOverride});
+  s.BindString(0, *entity.guid());
   s.BindString(1, entity.type().name_as_string());
   s.BindString(2, entity.nickname());
-  s.BindInt64(3, entity.date_modified().ToTimeT());
-  s.BindInt64(4, entity.use_count());
-  s.BindTime(5, entity.use_date());
+  s.BindInt(3, base::to_underlying(entity.record_type()));
+  s.BindBool(4, entity.are_attributes_read_only().value());
+  s.BindString(5, entity.frecency_override(/*pass_key=*/{}));
 
   if (!s.Run()) {
+    return false;
+  }
+  // Add the entity's metadata.
+  if (!AddEntityMetadata(entity.metadata())) {
     return false;
   }
   return transaction.Commit();
@@ -306,16 +429,26 @@ bool EntityTable::AddOrUpdateEntityInstance(const EntityInstance& entity) {
          AddEntityInstance(entity) && transaction.Commit();
 }
 
-bool EntityTable::RemoveEntityInstance(const base::Uuid& guid) {
+bool EntityTable::DeleteEntityInstances(
+    EntityInstance::RecordType record_type) {
+  sql::Transaction transaction(db());
+  return transaction.Begin() &&
+         DeleteWhereColumnEq(db(), entities::kTableName, entities::kRecordType,
+                             static_cast<int>(record_type)) &&
+         transaction.Commit();
+}
+
+bool EntityTable::RemoveEntityInstance(const EntityInstance::EntityId& guid) {
   HandleTestSwitchesIfNeeded(db(), *this);
 
   sql::Transaction transaction(db());
   return transaction.Begin() &&
          DeleteWhereColumnEq(db(), attributes::kTableName,
-                             attributes::kEntityGuid,
-                             guid.AsLowercaseString()) &&
+                             attributes::kEntityGuid, *guid) &&
          DeleteWhereColumnEq(db(), entities::kTableName, entities::kGuid,
-                             guid.AsLowercaseString()) &&
+                             *guid) &&
+         DeleteWhereColumnEq(db(), autofill::entities_metadata::kTableName,
+                             autofill::entities_metadata::kEntityGuid, *guid) &&
          transaction.Commit();
 }
 
@@ -331,17 +464,14 @@ bool EntityTable::RemoveEntityInstancesModifiedBetween(base::Time delete_begin,
   }
 
   sql::Statement s;
-  SelectBuilder(db(), s, entities::kTableName, {entities::kGuid},
+  SelectBuilder(db(), s, entities_metadata::kTableName,
+                {entities_metadata::kEntityGuid},
                 "WHERE date_modified >= ? AND date_modified < ?");
   s.BindInt64(0, delete_begin.ToTimeT());
   s.BindInt64(1, delete_end.ToTimeT());
-  std::vector<base::Uuid> guids;
+  std::vector<EntityInstance::EntityId> guids;
   while (s.Step()) {
-    base::Uuid guid = base::Uuid::ParseLowercase(s.ColumnStringView(0));
-    if (!guid.is_valid()) {
-      continue;
-    }
-    guids.push_back(std::move(guid));
+    guids.emplace_back(s.ColumnString(0));
   }
   if (!s.Succeeded()) {
     return false;
@@ -350,32 +480,135 @@ bool EntityTable::RemoveEntityInstancesModifiedBetween(base::Time delete_begin,
   sql::Transaction transaction(db());
   return transaction.Begin() &&
          std::ranges::all_of(guids,
-                             [this](const base::Uuid& guid) {
+                             [this](const EntityInstance::EntityId& guid) {
                                return RemoveEntityInstance(guid);
                              }) &&
          transaction.Commit();
 }
 
-std::map<base::Uuid,
+bool EntityTable::EntityInstanceExists(
+    const EntityInstance::EntityId& guid) const {
+  sql::Statement s;
+  return SelectByGuid(db(), s, entities::kTableName, {entities::kGuid},
+                      *guid) &&
+         s.Succeeded();
+}
+
+std::optional<EntityInstance::EntityMetadata> EntityTable::GetEntityMetadata(
+    const EntityInstance::EntityId& guid) const {
+  sql::Statement s;
+  SelectBuilder(db(), s, entities_metadata::kTableName,
+                {entities_metadata::kEntityGuid, entities_metadata::kUseCount,
+                 entities_metadata::kUseDate, entities_metadata::kDateModified},
+                "WHERE entity_guid = ?");
+  s.BindString(0, *guid);
+
+  if (!s.Step()) {
+    return std::nullopt;
+  }
+
+  EntityInstance::EntityId entity_guid(s.ColumnString(0));
+  size_t use_count = s.ColumnInt64(1);
+  base::Time use_date = s.ColumnTime(2);
+  base::Time date_modified = base::Time::FromTimeT(s.ColumnInt64(3));
+
+  if (!s.Succeeded()) {
+    return std::nullopt;
+  }
+
+  return EntityInstance::EntityMetadata{.guid = entity_guid,
+                                        .date_modified = date_modified,
+                                        .use_count = use_count,
+                                        .use_date = use_date};
+}
+
+std::map<EntityInstance::EntityId, EntityInstance::EntityMetadata>
+EntityTable::GetSyncedMetadata() const {
+  std::map<EntityInstance::EntityId, EntityInstance::EntityMetadata>
+      all_metadata = LoadMetadata();
+  // Keeping only kWallet entities is not enough, because it does not handle
+  // orphan metadata. Hence we are removing kLocal metadata entities from the
+  // full set of metadata entries.
+  for (const EntityInstance& local_entity :
+       GetEntityInstances(EntityInstance::RecordType::kLocal)) {
+    all_metadata.erase(local_entity.guid());
+  }
+  return all_metadata;
+}
+
+std::map<EntityInstance::EntityId, EntityInstance::EntityMetadata>
+EntityTable::LoadMetadata() const {
+  std::map<EntityInstance::EntityId, EntityInstance::EntityMetadata>
+      metadata_records;
+  sql::Statement s;
+  SelectBuilder(db(), s, autofill::entities_metadata::kTableName,
+                {autofill::entities_metadata::kEntityGuid,
+                 autofill::entities_metadata::kUseCount,
+                 autofill::entities_metadata::kUseDate,
+                 autofill::entities_metadata::kDateModified});
+
+  while (s.Step()) {
+    EntityInstance::EntityId entity_guid(s.ColumnString(0));
+    size_t use_count = s.ColumnInt64(1);
+    base::Time use_date = s.ColumnTime(2);
+    base::Time date_modified = base::Time::FromTimeT(s.ColumnInt64(3));
+    metadata_records[entity_guid] =
+        EntityInstance::EntityMetadata{.guid = entity_guid,
+                                       .date_modified = date_modified,
+                                       .use_count = use_count,
+                                       .use_date = use_date};
+  }
+  if (!s.Succeeded()) {
+    return {};
+  }
+  return metadata_records;
+}
+
+std::map<EntityInstance::EntityId,
          std::map<std::string, std::vector<EntityTable::AttributeRecord>>>
 EntityTable::LoadAttributes() const {
-  std::map<base::Uuid, std::map<std::string, std::vector<AttributeRecord>>>
+  std::map<EntityInstance::EntityId,
+           std::map<std::string, std::vector<AttributeRecord>>>
       attribute_records;
   sql::Statement s;
   SelectBuilder(db(), s, attributes::kTableName,
                 {attributes::kEntityGuid, attributes::kAttributeType,
                  attributes::kFieldType, attributes::kValueEncrypted,
                  attributes::kVerificationStatus});
+
+  // LINT.IfChange(DecryptionStatus)
+  enum class DecryptionStatus {
+    // Decryption was successful.
+    kSuccess = 0,
+    // Temporary error (e.g. The decryption system was not available).
+    kTemporaryFailure = 1,
+    // The decryption key was lost or the data to be decrypted was corrupt.
+    kPermanentFailure = 2,
+    kMaxValue = kPermanentFailure,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiDecryptStatus)
+
   while (s.Step()) {
-    base::Uuid entity_guid = base::Uuid::ParseLowercase(s.ColumnStringView(0));
+    EntityInstance::EntityId entity_guid(s.ColumnString(0));
     std::string attribute_type_name = s.ColumnString(1);
     std::underlying_type_t<FieldType> underlying_field_type = s.ColumnInt(2);
     std::u16string decrypted_value;
-    if (!encryptor()->DecryptString16(s.ColumnString(3), &decrypted_value)) {
-      base::UmaHistogramBoolean("Autofill.Ai.EntityTable.DecryptStatus", false);
+    os_crypt_async::Encryptor::DecryptFlags flag;
+    bool decryption_result = encryptor()->DecryptString16(
+        s.ColumnString(3), &decrypted_value, &flag);
+    base::UmaHistogramBoolean("Autofill.Ai.EntityTable.DecryptStatus",
+                              decryption_result);
+    DecryptionStatus decryption_status = DecryptionStatus::kSuccess;
+    if (!decryption_result) {
+      decryption_status = flag.temporarily_unavailable
+                              ? DecryptionStatus::kTemporaryFailure
+                              : DecryptionStatus::kPermanentFailure;
+    }
+    base::UmaHistogramEnumeration("Autofill.Ai.EntityTable.DecryptStatus2",
+                                  decryption_status);
+    if (!decryption_result) {
       continue;
     }
-    base::UmaHistogramBoolean("Autofill.Ai.EntityTable.DecryptStatus", true);
     std::underlying_type_t<VerificationStatus> underlying_verification_status =
         s.ColumnInt(4);
     attribute_records[std::move(entity_guid)][std::move(attribute_type_name)]
@@ -389,37 +622,58 @@ EntityTable::LoadAttributes() const {
   return attribute_records;
 }
 
-std::vector<EntityInstance> EntityTable::GetEntityInstances() const {
+std::vector<EntityInstance> EntityTable::GetEntityInstances(
+    std::optional<EntityInstance::RecordType> record_type) const {
   HandleTestSwitchesIfNeeded(db(), const_cast<EntityTable&>(*this));
 
   // Collects all attributes, keyed by the owning entity's GUID and the
   // `AttributeTypeName` of the attribute.
-  std::map<base::Uuid,
+  std::map<EntityInstance::EntityId,
            std::map<std::string, std::vector<EntityTable::AttributeRecord>>>
       attribute_records = LoadAttributes();
 
+  // Collects all metadata, keyed by the owning entity's GUID.
+  std::map<EntityInstance::EntityId, EntityInstance::EntityMetadata>
+      metadata_records = LoadMetadata();
+
+  const std::string where =
+      record_type.has_value()
+          ? base::StrCat(
+                {"WHERE ", entities::kRecordType, "= ",
+                 base::NumberToString(base::to_underlying(*record_type))})
+          : "";
   // Collects all entities and populates them with the attributes from the
   // previous query.
   std::vector<EntityInstance> entities;
   sql::Statement s;
-  SelectBuilder(
-      db(), s, entities::kTableName,
-      {entities::kGuid, entities::kEntityType, entities::kNickname,
-       entities::kDateModified, entities::kUseCount, entities::kUseDate});
+  SelectBuilder(db(), s, entities::kTableName,
+                {entities::kGuid, entities::kEntityType, entities::kNickname,
+                 entities::kRecordType, entities::kAttributesReadOnly,
+                 entities::kFrecencyOverride},
+                where);
+
   while (s.Step()) {
-    base::Uuid guid = base::Uuid::ParseLowercase(s.ColumnStringView(0));
+    EntityInstance::EntityId guid(s.ColumnString(0));
     std::string type_name = s.ColumnString(1);
     std::string nickname = s.ColumnString(2);
-    base::Time date_modified = base::Time::FromTimeT(s.ColumnInt64(3));
-    size_t use_count = s.ColumnInt64(4);
-    base::Time use_date = s.ColumnTime(5);
+    std::underlying_type_t<EntityInstance::RecordType> underlying_record_type =
+        s.ColumnInt(3);
+    EntityInstance::AreAttributesReadOnly are_attributes_read_only =
+        EntityInstance::AreAttributesReadOnly(s.ColumnBool(4));
+    std::string frecency_override = s.ColumnString(5);
 
-    if (auto attributes = attribute_records.extract(guid)) {
-      if (std::optional<EntityInstance> e = ValidateInstance(
-              type_name, std::move(guid), std::move(nickname), date_modified,
-              use_count, use_date, std::move(attributes.mapped()))) {
-        entities.push_back(*std::move(e));
-      }
+    auto attributes = attribute_records.extract(guid);
+    auto metadata = metadata_records.extract(guid);
+    if (!attributes || !metadata) {
+      continue;
+    }
+    if (std::optional<EntityInstance> e = ValidateInstance(
+            type_name, std::move(guid), std::move(nickname),
+            metadata.mapped().date_modified, metadata.mapped().use_count,
+            metadata.mapped().use_date, underlying_record_type,
+            std::move(attributes.mapped()), are_attributes_read_only,
+            std::move(frecency_override))) {
+      entities.push_back(*std::move(e));
     }
   }
   if (!s.Succeeded()) {
@@ -430,30 +684,33 @@ std::vector<EntityInstance> EntityTable::GetEntityInstances() const {
 
 std::optional<EntityInstance> EntityTable::ValidateInstance(
     std::string_view type_name,
-    base::Uuid guid,
+    EntityInstance::EntityId guid,
     std::string nickname,
     base::Time date_modified,
     int use_count,
     base::Time use_date,
-    std::map<std::string, std::vector<AttributeRecord>> attribute_records)
-    const {
+    std::underlying_type_t<EntityInstance::RecordType> underlying_record_type,
+    std::map<std::string, std::vector<AttributeRecord>> attribute_records,
+    EntityInstance::AreAttributesReadOnly are_attributes_read_only,
+    std::string frecency_override) const {
   // An attribute's field type must never be UNKNOWN_TYPE - otherwise we will
   // discard its value here.
-  static_assert(!DenseSet<FieldType>(DenseSet<AttributeType>::all(),
-                                     &AttributeType::field_type_with_tag_types)
-                     .contains(UNKNOWN_TYPE));
+  static_assert(
+      !FieldTypeSet(DenseSet<AttributeType>::all(), &AttributeType::field_type)
+           .contains(UNKNOWN_TYPE));
 
-  std::optional<EntityType> entity_type =
-      StringToEntityType(/*pass_key=*/{}, type_name);
-  if (!entity_type || !guid.is_valid()) {
+  std::optional<EntityType> entity_type = StringToEntityType(type_name);
+  std::optional<EntityInstance::RecordType> record_type =
+      ToSafeRecordType(underlying_record_type);
+  if (!entity_type || guid->empty() || !record_type) {
     return std::nullopt;
   }
 
   std::vector<AttributeInstance> attributes;
 
   for (const auto& [attribute_type_name, records] : attribute_records) {
-    if (std::optional<AttributeType> attribute_type = StringToAttributeType(
-            /*pass_key=*/{}, *entity_type, attribute_type_name)) {
+    if (std::optional<AttributeType> attribute_type =
+            StringToAttributeType(*entity_type, attribute_type_name)) {
       AttributeInstance& attribute = attributes.emplace_back(*attribute_type);
       for (const auto& [underlying_field_type, value,
                         underlying_verification_status] : records) {
@@ -483,8 +740,9 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
   }
 
   return EntityInstance(*entity_type, std::move(attributes), std::move(guid),
-                        std::move(nickname), date_modified, use_count,
-                        use_date);
+                        std::move(nickname), date_modified, use_count, use_date,
+                        *record_type, are_attributes_read_only,
+                        frecency_override);
 }
 
 }  // namespace autofill

@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/screen_ai/proto/main_content_extractor_proto_convertor.h"
 
 #include <array>
 #include <string_view>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -41,17 +38,18 @@ struct NodeTemplate {
   std::array<ui::AXNodeID, kMaxChildInTemplate> child_ids;
 };
 
-ui::AXTreeUpdate CreateAXTreeUpdateFromTemplate(int root_id,
-                                                NodeTemplate* nodes_template,
-                                                int nodes_count) {
+ui::AXTreeUpdate CreateAXTreeUpdateFromTemplate(
+    int root_id,
+    base::span<const NodeTemplate> nodes_template) {
   ui::AXTreeUpdate update;
   update.root_id = root_id;
 
-  for (int i = 0; i < nodes_count; i++) {
+  for (const auto& node_template : nodes_template) {
     ui::AXNodeData node;
-    node.id = nodes_template[i].node_id;
-    for (int j = 0; j < nodes_template[i].child_count; j++)
-      node.child_ids.push_back(nodes_template[i].child_ids[j]);
+    node.id = node_template.node_id;
+    for (int j = 0; j < node_template.child_count; j++) {
+      node.child_ids.push_back(node_template.child_ids[j]);
+    }
     node.relative_bounds.bounds = gfx::RectF(0, 0, 100, 100);
     update.nodes.push_back(node);
   }
@@ -344,8 +342,7 @@ TEST_F(MainContentExtractorProtoConvertorTest, PreOrderTreeGeneration) {
   auto expected_order = std::to_array<int>({1, 2, 7, 8, 3, 4, 5, 6, 9, -20});
 
   // Create the tree, convert it, and decode from proto.
-  ui::AXTreeUpdate tree_update =
-      CreateAXTreeUpdateFromTemplate(1, input_tree, nodes_count);
+  ui::AXTreeUpdate tree_update = CreateAXTreeUpdateFromTemplate(1, input_tree);
   ui::AXTree tree(tree_update);
   std::optional<ViewHierarchyAndTreeSize> result =
       SnapshotToViewHierarchy(tree);

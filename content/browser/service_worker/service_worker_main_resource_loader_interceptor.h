@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/navigation_subresource_loader_params.h"
@@ -91,8 +90,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   friend class ServiceWorkerMainResourceLoaderInterceptorTest;
 
   ServiceWorkerMainResourceLoaderInterceptor(
-      base::WeakPtr<ServiceWorkerMainResourceHandle> handle,
-      bool skip_service_worker);
+      base::WeakPtr<ServiceWorkerMainResourceHandle> handle);
 
   // Returns true if a ServiceWorkerMainResourceLoaderInterceptor should be
   // created for a navigation to |url|.
@@ -115,9 +113,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   // WorkerScriptLoader which owns |this|.
   // TODO(falken): Arrange things so |handle_| outlives |this| for workers too.
   const base::WeakPtr<ServiceWorkerMainResourceHandle> handle_;
-
-  // For all clients:
-  const bool skip_service_worker_;
 
   // Handles a single request. Set to a new instance on redirects.
   std::unique_ptr<ServiceWorkerControlleeRequestHandler> request_handler_;

@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/stack_allocated.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 
 namespace blink {
 
@@ -16,18 +17,33 @@ class GraphicsContext;
 struct PhysicalRect;
 class Path;
 
+struct BorderShapeReferenceRects {
+  STACK_ALLOCATED();
+
+ public:
+  PhysicalRect outer;
+  PhysicalRect inner;
+};
+
 class BorderShapePainter {
   STACK_ALLOCATED();
 
  public:
   static bool Paint(GraphicsContext&,
-                    const PhysicalRect&,
-                    const ComputedStyle&);
+                    const ComputedStyle&,
+                    const PhysicalRect& outer_reference_rect,
+                    const PhysicalRect& inner_reference_rect);
 
-  static std::optional<Path> InnerPath(const PhysicalRect&,
-                                       const ComputedStyle&);
-  static std::optional<Path> OuterPath(const PhysicalRect&,
-                                       const ComputedStyle&);
+  static Path InnerPath(const ComputedStyle&,
+                        const PhysicalRect& inner_reference_rect);
+  static Path OuterPath(const ComputedStyle&,
+                        const PhysicalRect& outer_reference_rect);
+
+  static PhysicalBoxStrut VisualOutsets(
+      const ComputedStyle&,
+      const PhysicalRect& border_rect,
+      const PhysicalRect& outer_reference_rect,
+      const PhysicalRect& inner_reference_rect);
 };
 
 }  // namespace blink

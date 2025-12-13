@@ -33,8 +33,6 @@ void CreateAndAddAnnotatorHTMLSource(content::WebUI* web_ui) {
       web_ui->GetWebContents()->GetBrowserContext(),
       kChromeUIUntrustedAnnotatorUrl);
 
-  // TODO(b/216523790): Split untrusted annotator resources into a separate
-  // bundle.
   source->AddResourcePaths(kAshAnnotatorUntrustedResources);
   source->AddResourcePaths(kChromeosProjectorAppBundleResources);
   source->AddResourcePaths(kAshProjectorCommonResources);

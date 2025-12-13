@@ -27,7 +27,6 @@
 #include "media/mojo/services/mojo_cdm_service_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 
@@ -84,9 +83,7 @@ class InterfaceFactoryImpl final
       mojo::PendingRemote<mojom::MediaLog> media_log_remote,
       mojo::PendingReceiver<mojom::Renderer> receiver,
       mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
-          renderer_extension_receiver,
-      mojo::PendingRemote<media::mojom::MediaFoundationRendererClientExtension>
-          client_extension_remote) final;
+          renderer_extension_receiver) final;
 #endif  // BUILDFLAG(IS_WIN)
 
   void CreateCdm(const CdmConfig& cdm_config, CreateCdmCallback callback) final;

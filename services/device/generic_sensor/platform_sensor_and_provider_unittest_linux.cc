@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <algorithm>
 #include <memory>
 
 #include "base/barrier_closure.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -38,7 +34,6 @@
 
 using ::base::test::TestFuture;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::IsNull;
 using ::testing::NiceMock;
 using ::testing::NotNull;
@@ -121,21 +116,19 @@ class MockSensorDeviceManager : public SensorDeviceManager {
     const base::FilePath& base_path = device_manager->GetSensorsBasePath();
 
     ON_CALL(*device_manager, GetUdevDeviceGetSubsystem(IsNull()))
-        .WillByDefault(Invoke([](udev_device*) { return "iio"; }));
+        .WillByDefault([](udev_device*) { return "iio"; });
 
     ON_CALL(*device_manager, GetUdevDeviceGetSyspath(IsNull()))
-        .WillByDefault(
-            Invoke([base_path](udev_device*) { return base_path.value(); }));
+        .WillByDefault([base_path](udev_device*) { return base_path.value(); });
 
     ON_CALL(*device_manager, GetUdevDeviceGetDevnode(IsNull()))
-        .WillByDefault(Invoke([](udev_device*) { return "/dev/test"; }));
+        .WillByDefault([](udev_device*) { return "/dev/test"; });
 
     ON_CALL(*device_manager, GetUdevDeviceGetSysattrValue(IsNull(), _))
-        .WillByDefault(
-            Invoke([base_path](udev_device*, const std::string& attribute) {
-              base::ScopedAllowBlockingForTesting allow_blocking;
-              return ReadValueFromFile(base_path, attribute);
-            }));
+        .WillByDefault([base_path](udev_device*, const std::string& attribute) {
+          base::ScopedAllowBlockingForTesting allow_blocking;
+          return ReadValueFromFile(base_path, attribute);
+        });
 
     return device_manager;
   }
@@ -234,7 +227,7 @@ class PlatformSensorAndProviderLinuxTest : public ::testing::Test {
                                  double frequency,
                                  double offset,
                                  double scaling,
-                                 double values[kSensorValuesSize]) {
+                                 base::span<double, kSensorValuesSize> values) {
     SensorPathsLinux data;
     EXPECT_TRUE(InitSensorData(type, &data));
 
@@ -286,7 +279,7 @@ class PlatformSensorAndProviderLinuxTest : public ::testing::Test {
   void SetServiceStart() {
     auto* manager = mock_sensor_device_manager();
     EXPECT_CALL(*manager, MaybeStartEnumeration())
-        .WillOnce(Invoke([manager]() { manager->DeviceAdded(); }))
+        .WillOnce([manager]() { manager->DeviceAdded(); })
         .WillRepeatedly(Return());
   }
 
@@ -295,16 +288,14 @@ class PlatformSensorAndProviderLinuxTest : public ::testing::Test {
                                        mojom::SensorType type) {
     base::RunLoop run_loop;
     EXPECT_CALL(*client, OnSensorReadingChanged(type))
-        .WillOnce(Invoke([&](mojom::SensorType type) { run_loop.Quit(); }));
+        .WillOnce([&](mojom::SensorType type) { run_loop.Quit(); });
     run_loop.Run();
   }
 
   // Waits before OnSensorError is called.
   void WaitOnSensorErrorEvent(LinuxMockPlatformSensorClient* client) {
     base::RunLoop run_loop;
-    EXPECT_CALL(*client, OnSensorError()).WillOnce(Invoke([&]() {
-      run_loop.Quit();
-    }));
+    EXPECT_CALL(*client, OnSensorError()).WillOnce([&]() { run_loop.Quit(); });
     run_loop.Run();
   }
 

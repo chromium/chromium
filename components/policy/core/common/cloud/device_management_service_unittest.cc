@@ -42,7 +42,6 @@
 
 using testing::_;
 using testing::DoAll;
-using testing::Invoke;
 using testing::Mock;
 
 namespace em = enterprise_management;
@@ -107,10 +106,10 @@ class DeviceManagementServiceTestBase : public testing::Test {
   void SetUp() override {
     // Verify the metrics when job is done.
     ON_CALL(*this, OnJobDone(_, _, _, _))
-        .WillByDefault(Invoke(
+        .WillByDefault(
             [this](DeviceManagementService::Job*, DeviceManagementStatus status,
                    int net_error,
-                   const std::string&) { VerifyMetrics(status, net_error); }));
+                   const std::string&) { VerifyMetrics(status, net_error); });
   }
 
   void TearDown() override {
@@ -664,12 +663,12 @@ class DeviceManagementServiceTest : public DeviceManagementServiceTestBase {
       bool critical = false) {
     const GURL service_url(kServiceUrl);
     const auto& request_url = request->request.url;
-    EXPECT_EQ(service_url.scheme(), request_url.scheme());
-    EXPECT_EQ(service_url.host(), request_url.host());
-    EXPECT_EQ(service_url.port(), request_url.port());
-    EXPECT_EQ(service_url.path(), request_url.path());
+    EXPECT_EQ(service_url.GetScheme(), request_url.GetScheme());
+    EXPECT_EQ(service_url.GetHost(), request_url.GetHost());
+    EXPECT_EQ(service_url.GetPort(), request_url.GetPort());
+    EXPECT_EQ(service_url.GetPath(), request_url.GetPath());
 
-    QueryParams query_params(request_url.query());
+    QueryParams query_params(request_url.GetQuery());
     EXPECT_TRUE(query_params.Check(dm_protocol::kParamRequest, request_type));
     EXPECT_TRUE(query_params.Check(dm_protocol::kParamDeviceID, device_id));
     EXPECT_TRUE(query_params.Check(dm_protocol::kParamDeviceType,
@@ -867,7 +866,7 @@ TEST_F(DeviceManagementServiceTest, RequestWithProfileId) {
   auto* request = GetPendingRequest();
   ASSERT_TRUE(request);
 
-  QueryParams query_params(request->request.url.query());
+  QueryParams query_params(request->request.url.GetQuery());
   EXPECT_TRUE(query_params.Check(dm_protocol::kParamProfileID, kProfileID));
 
   // Generate the response.
@@ -1049,12 +1048,11 @@ TEST_F(DeviceManagementServiceTest, CancelDuringCallback) {
   ASSERT_TRUE(request);
 
   EXPECT_CALL(*this, OnJobDone(_, _, _, _))
-      .WillOnce(DoAll(ResetPointer(&request_job),
-                      Invoke([this](DeviceManagementService::Job*,
-                                    DeviceManagementStatus status,
-                                    int net_error, const std::string&) {
-                        VerifyMetrics(status, net_error);
-                      })));
+      .WillOnce(DoAll(
+          ResetPointer(&request_job),
+          [this](DeviceManagementService::Job*, DeviceManagementStatus status,
+                 int net_error,
+                 const std::string&) { VerifyMetrics(status, net_error); }));
   EXPECT_CALL(*this, OnJobRetry(_, _)).Times(0);
   EXPECT_CALL(*this, OnShouldJobRetry(500, std::string()));
 
@@ -1290,7 +1288,7 @@ class DeviceManagementRequestAuthTest : public DeviceManagementServiceTestBase {
   // Returns vector containing all values for the OAuth query param.
   std::vector<std::string> GetOAuthParams(
       const network::TestURLLoaderFactory::PendingRequest& request) {
-    QueryParams query_params(request.request.url.query());
+    QueryParams query_params(request.request.url.GetQuery());
     return query_params.GetParams(dm_protocol::kParamOAuthToken);
   }
 
@@ -1419,7 +1417,7 @@ TEST_F(DeviceManagementRequestAuthTest, OidcAuthAndIdToken) {
                     dm_protocol::kOidcAuthTokenHeaderPrefix, kOAuthToken, ",",
                     dm_protocol::kOidcIdTokenHeaderPrefix, kIdToken}),
       GetAuthHeader(*request));
-  QueryParams query_params(request->request.url.query());
+  QueryParams query_params(request->request.url.GetQuery());
 
   SendResponse(net::OK, 200, std::string());
 }

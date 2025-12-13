@@ -14,10 +14,13 @@ import '../about_page/about_page.js';
 import '../ai_page/ai_page_index.js';
 import '../appearance_page/appearance_page_index.js';
 import '../autofill_page/autofill_page_index.js';
-import '../basic_page/basic_page.js';
 import '../on_startup_page/on_startup_page.js';
+import '../people_page/people_page_index.js';
 import '../performance_page/performance_page_index.js';
+import '../privacy_page/privacy_page_index.js';
+import '../reset_page/reset_profile_banner.js';
 import '../search_page/search_page_index.js';
+import '../your_saved_info_page/your_saved_info_page_index.js';
 // <if expr="not is_chromeos">
 import '../default_browser_page/default_browser_page.js';
 
@@ -26,6 +29,7 @@ import '../default_browser_page/default_browser_page.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {beforeNextRender, flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
@@ -35,7 +39,7 @@ import type {LanguagesModel} from '../languages_page/languages_types.js';
 // </if>
 import {pageVisibility} from '../page_visibility.js';
 import type {PageVisibility} from '../page_visibility.js';
-import {routes} from '../route.js';
+import {getTopLevelRoute, routes} from '../route.js';
 import {RouteObserverMixin} from '../router.js';
 import type {Route, SettingsRoutes} from '../router.js';
 import {combineSearchResults} from '../search_settings.js';
@@ -43,19 +47,6 @@ import {combineSearchResults} from '../search_settings.js';
 import {getTemplate} from './settings_main.html.js';
 import type {SettingsPlugin} from './settings_plugin.js';
 
-
-function getTopLevelRoute() {
-  if (!loadTimeData.getBoolean('isGuest')) {
-    return routes.PEOPLE;
-  }
-
-  let guestTopLevelRoute = routes.SEARCH;
-  // <if expr="is_chromeos">
-  guestTopLevelRoute = routes.PRIVACY;
-  // </if>
-
-  return guestTopLevelRoute;
-}
 
 export interface SettingsMainElement {
   $: {
@@ -114,6 +105,13 @@ export class SettingsMainElement extends SettingsMainElementBase {
         value: false,
       },
 
+      showResetProfileBanner_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showResetProfileBanner');
+        },
+      },
+
       toolbarSpinnerActive: {
         type: Boolean,
         value: false,
@@ -132,16 +130,21 @@ export class SettingsMainElement extends SettingsMainElementBase {
   declare private routes_: SettingsRoutes;
   declare private inSearchMode_: boolean;
   declare private showNoResultsFound_: boolean;
+  declare private showResetProfileBanner_: boolean;
   declare toolbarSpinnerActive: boolean;
 
   // <if expr="not is_chromeos">
   declare private languages_?: LanguagesModel;
   // </if>
 
+  private pendingViewSwitching_: PromiseResolver<void> = new PromiseResolver();
   private topLevelEquivalentRoute_: Route = getTopLevelRoute();
+  private currentQuery_: string = '';
 
   override connectedCallback() {
     super.connectedCallback();
+
+    this.setAttribute('role', 'main');
 
     // Request loading of the lazy loaded module within an idle callback.
     requestIdleCallback(() => ensureLazyLoaded());
@@ -154,6 +157,8 @@ export class SettingsMainElement extends SettingsMainElementBase {
   }
 
   override async currentRouteChanged(route: Route) {
+    this.pendingViewSwitching_ = new PromiseResolver();
+
     if (routes.ADVANCED && routes.ADVANCED.contains(route)) {
       // Load the lazy module immediately, don't wait for requestIdleCallback()
       // to fire. No-op if it has already fired.
@@ -165,32 +170,38 @@ export class SettingsMainElement extends SettingsMainElementBase {
 
     if (this.lastRoute_ === effectiveRoute) {
       // Nothing to do.
+      this.pendingViewSwitching_.resolve();
       return;
     }
 
     this.lastRoute_ = effectiveRoute;
 
-    if (!effectiveRoute.hasMigratedToPlugin) {
-      // Case where the requested section still resides within the old
-      // <settings-basic-page> element. Show that element, and let it handle
-      // showing the correct content.
-      this.$.switcher.switchView('old', 'no-animation', 'no-animation');
-      return;
-    }
-
-    // Case where the requested section has migrated to the new "plugin"
-    // architecture.
     const newSection = effectiveRoute.section;
     let sectionElement = this.$.switcher.querySelector(`#${newSection}`);
     if (!sectionElement) {
       // Wait for any pageVisibility <dom-if>s to render and try again.
       await this.beforeNextRenderPromise_();
+
+      if (this.lastRoute_ !== effectiveRoute || !this.isConnected) {
+        // A newer currentRouteChanged call happened while awaiting or no longer
+        // connected (both can happen in tests). Do nothing.
+        this.pendingViewSwitching_.resolve();
+        return;
+      }
       sectionElement = this.$.switcher.querySelector(`#${newSection}`);
     }
 
     assert(sectionElement);
-    this.$.switcher.switchView(
+    await this.$.switcher.switchView(
         sectionElement.id, 'no-animation', 'no-animation');
+    this.pendingViewSwitching_.resolve();
+  }
+
+  // Exposed for tests, to allow making visibility assertions about
+  // cr-view-manager views without flaking. Should be called after
+  // currentRouteChanged is called.
+  whenViewSwitchingDone(): Promise<void> {
+    return this.pendingViewSwitching_.promise;
   }
 
   /**
@@ -199,6 +210,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
   searchContents(query: string): Promise<void> {
     this.inSearchMode_ = true;
     this.toolbarSpinnerActive = true;
+    this.currentQuery_ = query;
 
     if (query === '') {
       // Synchronously remove 'show-all' instead of waiting for later observers
@@ -213,18 +225,23 @@ export class SettingsMainElement extends SettingsMainElementBase {
     const toSearch =
         Array.from(this.$.switcher.querySelectorAll<HTMLElement&SettingsPlugin>(
             '[slot=view] > *:not(dom-if)'));
-    const promises = toSearch.map(element => {
-      return customElements.whenDefined(element.tagName.toLowerCase())
-          .then(() => {
-            return element.searchContents(query).then(result => {
-              // Reveal each plugin immediately, instead of waiting of all
-              // search results to come back.
-              element.toggleAttribute(
-                  'hidden-by-search',
-                  query === '' ? false : result.matchCount === 0);
-              return result;
-            });
-          });
+    const promises = toSearch.map(async element => {
+      await customElements.whenDefined(element.tagName.toLowerCase());
+      if (query !== this.currentQuery_) {
+        // Handle case where a newer query was issued while waiting for the
+        // whenDefined calls to resolve.
+        return {
+          canceled: true,
+          matchCount: 0,
+          wasClearSearch: false,
+        };
+      }
+      const result = await element.searchContents(query);
+      // Reveal each plugin immediately, instead of waiting of all
+      // search results to come back.
+      element.toggleAttribute(
+          'hidden-by-search', query === '' ? false : result.matchCount === 0);
+      return result;
     });
 
     return Promise.all(promises).then(results => {
@@ -249,12 +266,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
     });
   }
 
-  private renderBasicPage_(): boolean {
-    return this.lastRoute_ !== routes.ABOUT;
-  }
-
   private renderPlugin_(route: Route): boolean {
-    assert(route.hasMigratedToPlugin);
     return this.inSearchMode_ ||
         (!!this.lastRoute_ && route.contains(this.lastRoute_));
   }
@@ -267,6 +279,16 @@ export class SettingsMainElement extends SettingsMainElementBase {
     return loadTimeData.getBoolean('showAiPage') && this.showPage_(visibility);
   }
 
+  private showAutofillPage_(visibility?: boolean): boolean {
+    return !loadTimeData.getBoolean('enableYourSavedInfoSettingsPage') &&
+        this.showPage_(visibility);
+  }
+
+  private showYourSavedInfoPage_(visibility?: boolean): boolean {
+    return loadTimeData.getBoolean('enableYourSavedInfoSettingsPage') &&
+        this.showPage_(visibility);
+  }
+
   private showManagedHeader_(): boolean {
     return !this.inSearchMode_ && !!this.lastRoute_ &&
         this.lastRoute_ !== routes.ABOUT && !this.lastRoute_.isSubpage();
@@ -275,6 +297,10 @@ export class SettingsMainElement extends SettingsMainElementBase {
   private shouldShowAll_(): boolean {
     return this.inSearchMode_ && !!this.lastRoute_ &&
         !this.lastRoute_.isSubpage();
+  }
+
+  private onResetProfileBannerClose_() {
+    this.showResetProfileBanner_ = false;
   }
 }
 

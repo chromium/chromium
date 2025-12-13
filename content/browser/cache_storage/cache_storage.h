@@ -17,8 +17,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
@@ -29,7 +30,6 @@
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/browser/cache_storage/cache_storage_scheduler_types.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 

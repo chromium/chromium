@@ -10,6 +10,16 @@
 
 namespace content {
 
+namespace {
+
+base::StatisticsRecorder::Histograms GetAllHistograms() {
+  return base::StatisticsRecorder::GetHistograms(
+      /*include_persistent=*/true,
+      /*exclude_flags=*/base::HistogramBase::Flags::kNoFlags);
+}
+
+}  // namespace
+
 HistogramsMonitor::HistogramsMonitor() = default;
 
 HistogramsMonitor::~HistogramsMonitor() = default;
@@ -17,7 +27,7 @@ HistogramsMonitor::~HistogramsMonitor() = default;
 void HistogramsMonitor::StartMonitoring() {
   histograms_snapshot_.clear();
   // Save a snapshot of all current histograms that will be used as a baseline.
-  for (const auto* histogram : base::StatisticsRecorder::GetHistograms()) {
+  for (const auto* histogram : GetAllHistograms()) {
     base::InsertOrAssign(histograms_snapshot_, histogram->histogram_name(),
                          histogram->SnapshotSamples());
   }
@@ -25,9 +35,9 @@ void HistogramsMonitor::StartMonitoring() {
 
 base::Value::List HistogramsMonitor::GetDiff(const std::string& query) {
   base::StatisticsRecorder::Histograms histograms =
-      base::StatisticsRecorder::Sort(base::StatisticsRecorder::WithName(
-          base::StatisticsRecorder::GetHistograms(), query,
-          /*case_sensitive=*/false));
+      base::StatisticsRecorder::Sort(
+          base::StatisticsRecorder::WithName(GetAllHistograms(), query,
+                                             /*case_sensitive=*/false));
   return GetDiffInternal(histograms);
 }
 

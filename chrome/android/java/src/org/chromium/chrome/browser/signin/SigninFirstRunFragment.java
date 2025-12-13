@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.signin;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.accounts.Account;
@@ -24,7 +25,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
@@ -83,7 +84,12 @@ public class SigninFirstRunFragment extends Fragment
                         this,
                         PrivacyPreferencesManagerImpl.getInstance(),
                         new FullscreenSigninConfig(
-                                /* shouldDisableSignin= */ BuildInfo.getInstance().isAutomotive),
+                                /* title= */ context.getString(R.string.signin_fre_title),
+                                /* subtitle= */ context.getString(R.string.signin_fre_subtitle),
+                                /* dismissText= */ FullscreenSigninConfig
+                                        .DISMISS_TEXT_NOT_INITIALIZED,
+                                /* logoId= */ 0,
+                                /* shouldDisableSignin= */ DeviceInfo.isAutomotive()),
                         SigninAccessPoint.START_PAGE);
 
         var pageDelegate = assumeNonNull(getPageDelegate());
@@ -180,6 +186,7 @@ public class SigninFirstRunFragment extends Fragment
                 .recordFreProgressHistogram(MobileFreProgress.WELCOME_ADD_ACCOUNT);
         AccountManagerFacadeProvider.getInstance()
                 .createAddAccountIntent(
+                        null,
                         (@Nullable Intent intent) -> {
                             if (intent != null) {
                                 startActivityForResult(intent, ADD_ACCOUNT_REQUEST_CODE);
@@ -317,7 +324,9 @@ public class SigninFirstRunFragment extends Fragment
     /** Implements {@link FullscreenSigninCoordinator.Delegate}. */
     @Override
     public void displayDeviceLockPage(Account selectedAccount) {
-        Profile profile = ProfileProvider.getOrCreateProfile(getProfileSupplier().get(), false);
+        Profile profile =
+                ProfileProvider.getOrCreateProfile(
+                        assertNonNull(getProfileSupplier().get()), false);
         mDeviceLockCoordinator =
                 new DeviceLockCoordinator(
                         this,

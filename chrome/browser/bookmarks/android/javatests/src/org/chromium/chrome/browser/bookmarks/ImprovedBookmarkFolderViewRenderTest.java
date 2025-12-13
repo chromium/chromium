@@ -17,13 +17,13 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -46,7 +46,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.payments.ui.CurrencyFormatter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -78,8 +77,6 @@ public class ImprovedBookmarkFolderViewRenderTest {
                     .setRevision(3)
                     .build();
 
-    @Mock private CurrencyFormatter mFormatter;
-
     private BookmarkModel mBookmarkModel;
     private ImprovedBookmarkFolderView mView;
     private PropertyModel mModel;
@@ -99,6 +96,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
     @Before
     public void setUp() throws Exception {
         mBookmarkModel = ThreadUtils.runOnUiThreadBlocking(() -> Mockito.mock(BookmarkModel.class));
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         mActivityTestRule.launchActivity(null);
         mActivityTestRule.getActivity().setTheme(R.style.Theme_BrowserUI_DayNight);
 
@@ -137,6 +135,7 @@ public class ImprovedBookmarkFolderViewRenderTest {
                             ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT_TEXT_STYLE,
                             R.style.TextAppearance_RegularFolderChildCount);
                 });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     @Test

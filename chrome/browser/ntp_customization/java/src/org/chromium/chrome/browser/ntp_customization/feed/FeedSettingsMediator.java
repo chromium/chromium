@@ -12,7 +12,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationView
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_SWITCH_CHECKED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LEARN_MORE_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.SET_FEED_SWITCH_CONTENT_DESCRIPTION_RES_ID;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.SET_FEED_SWITCH_CONTENT_DESCRIPTION;
 import static org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator.FeedSettingsBottomSheetSection.ACTIVITY;
 import static org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator.FeedSettingsBottomSheetSection.FOLLOWING;
 import static org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator.FeedSettingsBottomSheetSection.HIDDEN;
@@ -20,9 +20,10 @@ import static org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoo
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.view.View.OnClickListener;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
@@ -71,6 +72,7 @@ public class FeedSettingsMediator {
     private List<Integer> mListItemsContent;
 
     public FeedSettingsMediator(
+            Context context,
             PropertyModel containerPropertyModel,
             PropertyModel bottomSheetPropertyModel,
             PropertyModel feedSettingsPropertyModel,
@@ -100,8 +102,7 @@ public class FeedSettingsMediator {
                 FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER,
                 (compoundButton, isChecked) -> onFeedSwitchToggled(isChecked));
         mFeedSettingsPropertyModel.set(
-                SET_FEED_SWITCH_CONTENT_DESCRIPTION_RES_ID,
-                R.string.ntp_customization_turn_on_feed_settings);
+                SET_FEED_SWITCH_CONTENT_DESCRIPTION, getFeedSwitchContentDescription(context));
         mFeedSettingsPropertyModel.set(
                 LEARN_MORE_BUTTON_CLICK_LISTENER, FeedSettingsMediator::handleLearnMoreClick);
 
@@ -299,6 +300,12 @@ public class FeedSettingsMediator {
     private PrefService getPrefService() {
         if (sPrefServiceForTest != null) return sPrefServiceForTest;
         return UserPrefs.get(mProfile);
+    }
+
+    private String getFeedSwitchContentDescription(Context context) {
+        return context.getString(R.string.ntp_customization_turn_on_feed_settings)
+                + context.getString(R.string.autofill_address_summary_separator)
+                + context.getString(R.string.ntp_customization_feed_switch_description);
     }
 
     static void setPrefForTesting(

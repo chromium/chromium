@@ -5,12 +5,13 @@
 #ifndef UI_GL_VSYNC_THREAD_WIN_DXGI_H_
 #define UI_GL_VSYNC_THREAD_WIN_DXGI_H_
 
+#include "ui/gl/vsync_provider_win.h"
 #include "ui/gl/vsync_thread_win.h"
 
 namespace gl {
 class GL_EXPORT VSyncThreadWinDXGI final : public VSyncThreadWin {
  public:
-  explicit VSyncThreadWinDXGI(Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device);
+  VSyncThreadWinDXGI();
 
   VSyncThreadWinDXGI(const VSyncThreadWinDXGI&) = delete;
   VSyncThreadWinDXGI& operator=(const VSyncThreadWinDXGI&) = delete;
@@ -29,12 +30,8 @@ class GL_EXPORT VSyncThreadWinDXGI final : public VSyncThreadWin {
   // Used on vsync thread only after initialization.
   VSyncProviderWin vsync_provider_;
 
-  // Used on vsync thread only after initialization
-  Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter_;
+  // Used on vsync thread only after initialization.
   Microsoft::WRL::ComPtr<IDXGIOutput> primary_output_;
-
-  // The LUID of the adapter of the IDXGIDevice this instance was created with.
-  const LUID original_adapter_luid_;
 };
 }  // namespace gl
 

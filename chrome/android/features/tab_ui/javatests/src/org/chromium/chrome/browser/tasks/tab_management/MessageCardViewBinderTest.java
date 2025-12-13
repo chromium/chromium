@@ -7,9 +7,13 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -30,12 +34,15 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.widget.OutlineOverlayHelper;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -63,14 +70,15 @@ public class MessageCardViewBinderTest {
     private final AtomicBoolean mMessageServiceReviewCallbackRan = new AtomicBoolean();
     private final AtomicBoolean mMessageServiceDismissCallbackRan = new AtomicBoolean();
 
-    private final MessageCardView.ReviewActionProvider mUiReviewHandler =
+    private final MessageCardView.ActionProvider mUiReviewHandler =
             () -> mReviewButtonClicked.set(true);
-    private final MessageCardView.DismissActionProvider mUiDismissHandler =
-            (int messageType) -> mDismissButtonClicked.set(true);
-    private final MessageCardView.ReviewActionProvider mMessageServiceActionHandler =
+    private final MessageCardView.ActionProvider mUiDismissHandler =
+            () -> mDismissButtonClicked.set(true);
+    private final MessageCardView.ActionProvider mMessageServiceActionHandler =
             () -> mMessageServiceReviewCallbackRan.set(true);
-    private final MessageCardView.DismissActionProvider mMessageServiceDismissHandler =
-            (int messageType) -> mMessageServiceDismissCallbackRan.set(true);
+    private final MessageCardView.ServiceDismissActionProvider<@MessageType Integer>
+            mMessageServiceDismissHandler =
+                    messageType -> mMessageServiceDismissCallbackRan.set(true);
 
     @BeforeClass
     public static void setupSuite() {
@@ -287,6 +295,45 @@ public class MessageCardViewBinderTest {
         assertEquals(oldParams.topMargin, newParams.topMargin);
         assertEquals(oldParams.rightMargin, newParams.rightMargin);
         assertEquals(MARGIN_OVERRIDE, newParams.bottomMargin);
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testFocusOutline() {
+        View messageCardView = mItemView.findViewById(R.id.tab_grid_message_item);
+
+        // Test only: make the view focusable in touch mode to mimic accessories
+        // are attached.
+        messageCardView.setFocusableInTouchMode(true);
+        messageCardView.requestFocus();
+
+        assertTrue("Focus is correctly registered.", messageCardView.isFocused());
+
+        GradientDrawable drawable =
+                (GradientDrawable)
+                        OutlineOverlayHelper.getFocusOutlineDrawableForTesting(messageCardView);
+        assertNotNull("Focus outline drawable is null.", drawable);
+
+        int outlineColor =
+                ChromeColors.getKeyboardFocusRingColor(messageCardView.getContext(), false);
+        assertEquals(
+                "Regular outline color is wrong.",
+                drawable.getColorFilter(),
+                new PorterDuffColorFilter(outlineColor, Mode.SRC_IN));
+
+        mItemViewModel.set(MessageCardViewProperties.IS_INCOGNITO, true);
+        drawable =
+                (GradientDrawable)
+                        OutlineOverlayHelper.getFocusOutlineDrawableForTesting(messageCardView);
+        assertNotNull("Focus outline drawable is null.", drawable);
+
+        int incognitoOutlineColor =
+                ChromeColors.getKeyboardFocusRingColor(messageCardView.getContext(), true);
+        assertEquals(
+                "Incognito outline color is wrong.",
+                drawable.getColorFilter(),
+                new PorterDuffColorFilter(incognitoOutlineColor, Mode.SRC_IN));
     }
 
     @After

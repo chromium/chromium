@@ -118,12 +118,6 @@ void RefreshRateController::StopObservingPowerStatusForTest() {
 }
 
 void RefreshRateController::UpdateSeamlessRefreshRates(int64_t display_id) {
-  // Don't attempt dynamic refresh rate adjustment with hardware mirroring
-  // enabled.
-  if (display::features::IsHardwareMirrorModeEnabled()) {
-    return;
-  }
-
   auto callback =
       base::BindOnce(&RefreshRateController::OnSeamlessRefreshRatesReceived,
                      weak_ptr_factory_.GetWeakPtr(), display_id);
@@ -200,12 +194,6 @@ void RefreshRateController::RefreshOverrideState() {
     return;
   }
 
-  // Don't attempt dynamic refresh rate adjustment with hardware mirroring
-  // enabled.
-  if (display::features::IsHardwareMirrorModeEnabled()) {
-    return;
-  }
-
   RefreshRateOverrideMap refresh_rate_overrides = GetThrottleOverrides();
 
   // Use preferred refresh rates instead of throttled refresh rates if present.
@@ -267,7 +255,7 @@ void RefreshRateController::RefreshVrrState() {
   if (game_window_observer_.IsObserving() &&
       current_performance_mode_ != ModeState::kPowerSaver) {
     display_configurator_->SetVrrEnabled(
-        {display::Screen::GetScreen()
+        {display::Screen::Get()
              ->GetDisplayNearestWindow(game_window_observer_.GetSource())
              .id()});
   } else {
@@ -297,7 +285,7 @@ RefreshRateController::ThrottleState
 RefreshRateController::GetDynamicThrottleState() {
   // Do not throttle when Borealis is active on the internal display.
   if (game_window_observer_.IsObserving() &&
-      display::Screen::GetScreen()
+      display::Screen::Get()
               ->GetDisplayNearestWindow(game_window_observer_.GetSource())
               .id() == display::Display::InternalDisplayId()) {
     return ThrottleState::kDisabled;
@@ -314,9 +302,8 @@ void RefreshRateController::OnSetPreferredRefreshRate(
     aura::WindowTreeHost* host,
     float preferred_refresh_rate) {
   CHECK(display::Screen::HasScreen());
-  const int64_t display_id = display::Screen::GetScreen()
-                                 ->GetDisplayNearestWindow(host->window())
-                                 .id();
+  const int64_t display_id =
+      display::Screen::Get()->GetDisplayNearestWindow(host->window()).id();
 
   // Only honor preferences for the internal display.
   if (!display::IsInternalDisplayId(display_id)) {

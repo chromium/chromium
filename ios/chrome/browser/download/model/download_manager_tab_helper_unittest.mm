@@ -6,6 +6,10 @@
 
 #import <memory>
 
+#import "base/functional/callback.h"
+#import "base/run_loop.h"
+#import "base/scoped_observation.h"
+#import "base/test/run_until.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/testing_pref_service.h"
 #import "download_manager_tab_helper.h"
@@ -23,6 +27,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/test/fakes/fake_download_manager_tab_helper_delegate.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/download/download_task_observer.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -30,6 +35,27 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+
+// Test observer class to wait for download task destruction.
+class TestDownloadTaskObserver : public web::DownloadTaskObserver {
+ public:
+  TestDownloadTaskObserver(web::DownloadTask* task, base::OnceClosure closure)
+      : closure_(std::move(closure)) {
+    task_observation_.Observe(task);
+  }
+
+  void OnDownloadDestroyed(web::DownloadTask* task) override {
+    task_observation_.Reset();
+    if (closure_) {
+      std::move(closure_).Run();
+    }
+  }
+
+ private:
+  base::ScopedObservation<web::DownloadTask, web::DownloadTaskObserver>
+      task_observation_{this};
+  base::OnceClosure closure_;
+};
 
 namespace {
 char kUrl[] = "https://test.test/";
@@ -220,7 +246,11 @@ TEST_F(DownloadManagerTabHelperTest, HasDownloadTask) {
   task_ptr->Start(base::FilePath());
   ASSERT_TRUE(tab_helper()->has_download_task());
 
+  base::RunLoop run_loop;
+  TestDownloadTaskObserver observer(task_ptr, run_loop.QuitClosure());
   task_ptr->Cancel();
+  run_loop.Run();
+
   EXPECT_FALSE(tab_helper()->has_download_task());
 }
 

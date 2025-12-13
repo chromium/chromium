@@ -9,6 +9,9 @@
 #include "base/memory/raw_ptr.h"
 #include "components/app_restore/window_info.h"
 
+class PrefRegistrySimple;
+class PrefService;
+
 namespace aura {
 class Window;
 }
@@ -33,6 +36,20 @@ enum class RestoreOption {
 };
 
 }  // namespace full_restore
+
+// Registers the restore pref.
+ASH_EXPORT void RegisterProfilePrefsFullRestore(PrefRegistrySimple* registry);
+
+// Returns true if the pref `kRestoreAppsAndPagesPrefName` exists. Otherwise,
+// returns false.
+ASH_EXPORT bool HasRestorePref(PrefService* prefs);
+
+// Returns true if the restore pref doesn't exist or the pref is 'Always' or
+// 'Ask every time'. Otherwise, returns false for 'Do not restore'.
+ASH_EXPORT bool CanPerformRestore(PrefService* prefs);
+
+// Returns true if the restore pref exists, and is set to 'Ask every time'.
+ASH_EXPORT bool IsAskEveryTime(PrefService* prefs);
 
 // Builds the WindowInfo for `window`. Optionally passes `activation_index`,
 // which is used to set `WindowInfo.activation_index` if it has value.

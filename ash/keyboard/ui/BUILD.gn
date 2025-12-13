@@ -62,7 +62,7 @@ component("ui") {
     "//ui/base",
     "//ui/base/ime",
     "//ui/compositor",
-    "//ui/display:display",
+    "//ui/display",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
     "//ui/gfx",

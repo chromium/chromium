@@ -13,7 +13,7 @@ if (use_bundled_fontconfig) {
     header = "include/fontconfig/fontconfig.h"
     bindgen_flags = [
       "merge-extern-blocks",
-      "allowlist-item=(FcCharSet.*|FC_(SLANT|WEIGHT|WIDTH)_.*|FcFontSet(Add|Create|Destroy).*|FcLangSet(Create|Destroy|Copy|Add|HasLang)|FcWeightFromOpenType.*|FC_DUAL|FC_MONO)",
+      "allowlist-item=(FcCharSet.*|FC_(SLANT|WEIGHT|WIDTH|DUAL|MONO|FAMILY|SPACING)(_.*)?|Fc(Lang|Font)Set(Add|Create|Destroy|Copy|HasLang).*|FcWeightFromOpenType.*)",
     ]
     crate_name = "fontconfig_bindings"
     configs = [
@@ -28,6 +28,8 @@ if (use_bundled_fontconfig) {
     bindgen_flags = [
       "merge-extern-blocks",
       "allowlist-item=(FcPattern.*|FcRange.*|FcCharSet.*|FcLangSetFromCharSet|FC_.*_OBJECT)",
+      "blocklist-type=(FcCharSet|FcLangSet)",
+      "raw-line=pub use fontconfig_bindings::FcCharSet; pub use fontconfig_bindings::FcLangSet;",
     ]
     crate_name = "fcint_bindings"
     deps = [ ":fontconfig_h_bindgen" ]
@@ -39,6 +41,7 @@ if (use_bundled_fontconfig) {
 
   rust_static_library("fontconfig_fontations_ffi") {
     allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
+    edition = "2021"
     crate_root = "src/fc-fontations/mod.rs"
     sources = [
       "src/fc-fontations/attributes.rs",
@@ -57,19 +60,18 @@ if (use_bundled_fontconfig) {
     deps = [
       ":fcint_h_bindgen",
       ":fontconfig_h_bindgen",
-      "//third_party/rust/font_types/v0_9:lib",
+      "//third_party/rust/font_types/v0_10:lib",
       "//third_party/rust/libc/v0_2:lib",
-      "//third_party/rust/read_fonts/v0_30:lib",
-      "//third_party/rust/skrifa/v0_32:lib",
+      "//third_party/rust/read_fonts/v0_36:lib",
+      "//third_party/rust/skrifa/v0_39:lib",
     ]
-
-    # TODO(https://crbug.com/429255379): Stop suppressing this warning.
-    rustflags = [ "-Amismatched_lifetime_syntaxes" ]
   }
 
   config("fontconfig_config") {
     include_dirs = [
       "src",
+      "include/",
+      "include/fc-const/",
       "include/fc-lang/",
     ]
   }
@@ -80,6 +82,7 @@ if (use_bundled_fontconfig) {
       "BINDGEN_IGNORE_VISIBILITY=1",
       "FC_NO_MT=1",
       "FLEXIBLE_ARRAY_MEMBER=1",
+      "HAVE_VASPRINTF=1",
     ]
   }
 
@@ -95,8 +98,8 @@ if (use_bundled_fontconfig) {
       "src/src/fcdbg.c",
       "src/src/fcdefault.c",
       "src/src/fcdir.c",
+      "src/src/fcfontations.c",
       "src/src/fcformat.c",
-      "src/src/fcfreetype.c",
       "src/src/fcfs.c",
       "src/src/fchash.c",
       "src/src/fcinit.c",
@@ -115,8 +118,6 @@ if (use_bundled_fontconfig) {
       "src/src/fcstr.c",
       "src/src/fcweight.c",
       "src/src/fcxml.c",
-      "src/src/ftglue.c",
-      "src/src/ftglue.h",
     ]
 
     include_dirs = [
@@ -124,7 +125,10 @@ if (use_bundled_fontconfig) {
       "include/src",
     ]
 
-    defines = [ "HAVE_CONFIG_H" ]
+    defines = [
+      "HAVE_CONFIG_H",
+      "ENABLE_FONTATIONS",
+    ]
 
     # Fontconfig symbols should not be exported from chrome, nacl_helper, or
     # anything else.
@@ -137,7 +141,6 @@ if (use_bundled_fontconfig) {
 
     deps = [
       ":fontconfig_fontations_ffi",
-      "//build/config/freetype",
       "//third_party/libxml",
       "//third_party/zlib",
     ]

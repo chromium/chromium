@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/rust/rust_target.gni")
+import("//build/rust/gni_impl/rust_target.gni")
 
 # Rust dylibs should not be built outside of component builds. Non-component
 # builds use build configurations that conflict with the linking of dylibs.

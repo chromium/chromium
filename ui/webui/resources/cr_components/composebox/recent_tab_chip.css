@@ -1,0 +1,44 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host .button-content {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+#recentTabButton {
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  height: 28px;
+  line-height: 18px;
+  padding: 6px 8px;
+  --cr-button-border-color:
+      var(--color-composebox-recent-tab-chip-outline);
+  --cr-button-text-color: var(--color-composebox-upload-button);
+  --cr-button-disabled-text-color:
+      var(--color-composebox-context-entrypoint-text-disabled);
+  --cr-hover-background-color:
+      var(--color-composebox-context-entrypoint-hover-background);
+}
+
+@media (forced-colors: active) {
+  #recentTabButton {
+    --cr-button-text-color: Highlight;
+  }
+}
+
+.favicon {
+  border-radius: 2px;
+  height: 16px;
+  width: 16px;
+}

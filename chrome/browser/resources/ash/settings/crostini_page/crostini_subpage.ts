@@ -66,22 +66,16 @@ export class SettingsCrostiniSubpageElement extends
         },
       },
 
-      showArcAdbSideloading_: {
-        type: Boolean,
-        computed: 'and_(isArcAdbSideloadingSupported_, isAndroidEnabled_)',
-      },
-
-      isArcAdbSideloadingSupported_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('arcAdbSideloadingSupported');
-        },
-      },
-
+      /**
+       * Whether port-forwarding UI should be displayed.
+       * Determined by policy setting and if current termina guest is of
+       * baguette type.
+       */
       showCrostiniPortForwarding_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('showCrostiniPortForwarding');
+          return loadTimeData.getBoolean('showCrostiniPortForwarding') &&
+              !loadTimeData.getBoolean('isBaguette');
         },
       },
 
@@ -90,10 +84,6 @@ export class SettingsCrostiniSubpageElement extends
         value() {
           return loadTimeData.getBoolean('showCrostiniExtraContainers');
         },
-      },
-
-      isAndroidEnabled_: {
-        type: Boolean,
       },
 
       /**
@@ -175,7 +165,6 @@ export class SettingsCrostiniSubpageElement extends
   static get observers() {
     return [
       'onCrostiniEnabledChanged_(prefs.crostini.enabled.value)',
-      'onArcEnabledChanged_(prefs.arc.enabled.value)',
     ];
   }
 
@@ -196,10 +185,7 @@ export class SettingsCrostiniSubpageElement extends
   private diskSizeLabel_: string;
   private hideCrostiniUninstall_: boolean;
   private installerShowing_: boolean;
-  private readonly isArcAdbSideloadingSupported_: boolean;
-  private isAndroidEnabled_: boolean;
   private isDiskUserChosenSize_: boolean;
-  private showArcAdbSideloading_: boolean;
   private showCrostiniContainerUpgrade_: boolean;
   private readonly showCrostiniExportImport_: boolean;
   private readonly showCrostiniExtraContainers_: boolean;
@@ -252,7 +238,6 @@ export class SettingsCrostiniSubpageElement extends
     this.addFocusConfig(
         r.CROSTINI_SHARED_USB_DEVICES, '#crostiniSharedUsbDevicesRow');
     this.addFocusConfig(r.CROSTINI_EXPORT_IMPORT, '#crostiniExportImportRow');
-    this.addFocusConfig(r.CROSTINI_ANDROID_ADB, '#crostiniEnableArcAdbRow');
     this.addFocusConfig(
         r.CROSTINI_PORT_FORWARDING, '#crostiniPortForwardingRow');
     this.addFocusConfig(
@@ -282,16 +267,8 @@ export class SettingsCrostiniSubpageElement extends
     }
   }
 
-  private onArcEnabledChanged_(enabled: boolean): void {
-    this.isAndroidEnabled_ = enabled;
-  }
-
   private onExportImportClick_(): void {
     Router.getInstance().navigateTo(routes.CROSTINI_EXPORT_IMPORT);
-  }
-
-  private onEnableArcAdbClick_(): void {
-    Router.getInstance().navigateTo(routes.CROSTINI_ANDROID_ADB);
   }
 
   private loadDiskInfo_(): void {

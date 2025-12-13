@@ -30,8 +30,6 @@ struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::ContextType,
         return gpu::mojom::ContextType::kOpenGLES3;
       case gpu::CONTEXT_TYPE_OPENGLES31_FOR_TESTING:
         return gpu::mojom::ContextType::kOpenGLES31ForTesting;
-      case gpu::CONTEXT_TYPE_WEBGPU:
-        return gpu::mojom::ContextType::kWebGPU;
       default:
         NOTREACHED();
     }
@@ -54,65 +52,10 @@ struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::ContextType,
       case gpu::mojom::ContextType::kOpenGLES31ForTesting:
         *out = gpu::CONTEXT_TYPE_OPENGLES31_FOR_TESTING;
         return true;
-      case gpu::mojom::ContextType::kWebGPU:
-        *out = gpu::CONTEXT_TYPE_WEBGPU;
-        return true;
       default:
         return false;
     }
   }
-};
-
-template <>
-struct GPU_IPC_COMMON_EXPORT StructTraits<
-    gpu::mojom::ContextCreationAttribsDataView,
-    gpu::ContextCreationAttribs> {
-  static gl::GpuPreference gpu_preference(
-      const gpu::ContextCreationAttribs& attribs) {
-    return attribs.gpu_preference;
-  }
-
-  static bool bind_generates_resource(
-      const gpu::ContextCreationAttribs& attribs) {
-    return attribs.bind_generates_resource;
-  }
-
-  static bool fail_if_major_perf_caveat(
-      const gpu::ContextCreationAttribs& attribs) {
-    return attribs.fail_if_major_perf_caveat;
-  }
-
-  static bool lose_context_when_out_of_memory(
-      const gpu::ContextCreationAttribs& attribs) {
-    return attribs.lose_context_when_out_of_memory;
-  }
-
-  static bool enable_gles2_interface(
-      const gpu::ContextCreationAttribs& attribs) {
-    return attribs.enable_gles2_interface;
-  }
-
-  static bool enable_grcontext(const gpu::ContextCreationAttribs& attribs) {
-    return attribs.enable_grcontext;
-  }
-
-  static bool enable_raster_interface(
-      const gpu::ContextCreationAttribs& attribs) {
-    return attribs.enable_raster_interface;
-  }
-
-  static bool enable_gpu_rasterization(
-      const gpu::ContextCreationAttribs& attribs) {
-    return attribs.enable_gpu_rasterization;
-  }
-
-  static gpu::ContextType context_type(
-      const gpu::ContextCreationAttribs& attribs) {
-    return attribs.context_type;
-  }
-
-  static bool Read(gpu::mojom::ContextCreationAttribsDataView data,
-                   gpu::ContextCreationAttribs* out);
 };
 
 }  // namespace mojo

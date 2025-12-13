@@ -49,12 +49,10 @@ struct NotificationChannel {
 };
 
 // This class provides notification content settings from system notification
-// channels on Android O+. This provider takes precedence over pref-provided
-// content settings, but defers to supervised user and policy settings - see
-// ordering of the ProviderType enum values in HostContentSettingsMap.
-//
-// PartitionKey is ignored by this provider because the content settings should
-// apply across partitions.
+// channels that per-origin notification permissions states are mapped to since
+// Android Oreo. This provider takes precedence over pref-provided content
+// settings, but defers to supervised user and policy settings - see ordering of
+// the ProviderType enum values in HostContentSettingsMap.
 class NotificationChannelsProviderAndroid
     : public content_settings::UserModifiableProvider {
  public:
@@ -72,9 +70,6 @@ class NotificationChannelsProviderAndroid
   };
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
-  // Whether this class listens to all notification channel changes.
-  static bool IsListeningToNotificationChannelChanges();
 
   explicit NotificationChannelsProviderAndroid(PrefService* pref_service);
   NotificationChannelsProviderAndroid(
@@ -97,41 +92,30 @@ class NotificationChannelsProviderAndroid
   // UserModifiableProvider methods.
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      bool off_the_record,
-      const content_settings::PartitionKey& partition_key) const override;
+      bool off_the_record) const override;
   bool SetWebsiteSetting(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
       base::Value&& value,
-      const content_settings::ContentSettingConstraints& constraints,
-      const content_settings::PartitionKey& partition_key) override;
-  void ClearAllContentSettingsRules(
-      ContentSettingsType content_type,
-      const content_settings::PartitionKey& partition_key) override;
+      const content_settings::ContentSettingConstraints& constraints) override;
+  void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
   void ShutdownOnUIThread() override;
-  bool UpdateLastUsedTime(
-      const GURL& primary_url,
-      const GURL& secondary_url,
-      ContentSettingsType content_type,
-      const base::Time time,
-      const content_settings::PartitionKey& partition_key) override;
-  bool ResetLastVisitTime(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsType content_type,
-      const content_settings::PartitionKey& partition_key) override;
-  bool UpdateLastVisitTime(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsType content_type,
-      const content_settings::PartitionKey& partition_key) override;
+  bool UpdateLastUsedTime(const GURL& primary_url,
+                          const GURL& secondary_url,
+                          ContentSettingsType content_type,
+                          const base::Time time) override;
+  bool ResetLastVisitTime(const ContentSettingsPattern& primary_pattern,
+                          const ContentSettingsPattern& secondary_pattern,
+                          ContentSettingsType content_type) override;
+  bool UpdateLastVisitTime(const ContentSettingsPattern& primary_pattern,
+                           const ContentSettingsPattern& secondary_pattern,
+                           ContentSettingsType content_type) override;
   std::optional<base::TimeDelta> RenewContentSetting(
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,
-      std::optional<ContentSetting> setting_to_match,
-      const content_settings::PartitionKey& partition_key) override;
+      std::optional<ContentSetting> setting_to_match) override;
   void SetClockForTesting(const base::Clock* clock) override;
 
  protected:

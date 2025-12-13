@@ -5,7 +5,7 @@
 #ifndef UI_ANDROID_MODAL_DIALOG_WRAPPER_H_
 #define UI_ANDROID_MODAL_DIALOG_WRAPPER_H_
 
-#include <memory>
+#include <vector>
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
@@ -18,6 +18,7 @@
 
 namespace ui {
 class DialogModel;
+class DialogModelMenuItem;
 class WindowAndroid;
 }  // namespace ui
 
@@ -57,11 +58,15 @@ class UI_ANDROID_EXPORT ModalDialogWrapper : public DialogModelHost,
   void PositiveButtonClicked(JNIEnv* env);
   void NegativeButtonClicked(JNIEnv* env);
   void CheckboxToggled(JNIEnv* env, jboolean is_checked);
+  void MenuItemClicked(JNIEnv* env, jint index);
+  void ParagraphLinkClicked(JNIEnv* env, jint index);
   void Dismissed(JNIEnv* env);
   void Destroy(JNIEnv* env);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ModalDialogWrapperTest, CloseDialogFromNative);
+  FRIEND_TEST_ALL_PREFIXES(ModalDialogWrapperTest,
+                           MenuItem_CallbackDismissesDialog);
 
   ModalDialogWrapper(std::unique_ptr<ui::DialogModel> dialog_model,
                      ui::WindowAndroid* window_android);
@@ -79,6 +84,7 @@ class UI_ANDROID_EXPORT ModalDialogWrapper : public DialogModelHost,
   const std::unique_ptr<ui::DialogModel> dialog_model_;
 
   ElementIdentifier checkbox_id_;
+  std::vector<DialogModelMenuItem*> menu_items_;
 
   const raw_ptr<WindowAndroid> window_android_;
 

@@ -5,7 +5,7 @@
 #ifndef NET_WEBSOCKETS_WEBSOCKET_HANDSHAKE_CHALLENGE_H_
 #define NET_WEBSOCKETS_WEBSOCKET_HANDSHAKE_CHALLENGE_H_
 
-#include <string>
+#include <string_view>
 
 #include "net/base/net_export.h"
 
@@ -13,8 +13,7 @@ namespace net {
 
 // Given a WebSocket handshake challenge, compute the value that the server
 // should return in the Sec-WebSocket-Accept header.
-NET_EXPORT_PRIVATE std::string ComputeSecWebSocketAccept(
-    const std::string& key);
+NET_EXPORT std::string ComputeSecWebSocketAccept(std::string_view key);
 
 }  // namespace net
 

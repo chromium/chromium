@@ -53,18 +53,18 @@ class LoopbackServerEntity;
 
 namespace {
 
-static const char kHistogramSuffix[] = "LoopBackServer";
+constexpr char kHistogramSuffix[] = "LoopBackServer";
 
-static const int kCurrentLoopbackServerProtoVersion = 1;
-static const int kKeystoreKeyLength = 16;
+constexpr int kCurrentLoopbackServerProtoVersion = 1;
+constexpr int kKeystoreKeyLength = 16;
 
 // Properties of the bookmark bar permanent folders.
-static const char kBookmarkBarFolderServerTag[] = "bookmark_bar";
-static const char kBookmarkBarFolderName[] = "Bookmark Bar";
-static const char kOtherBookmarksFolderServerTag[] = "other_bookmarks";
-static const char kOtherBookmarksFolderName[] = "Other Bookmarks";
-static const char kSyncedBookmarksFolderServerTag[] = "synced_bookmarks";
-static const char kSyncedBookmarksFolderName[] = "Synced Bookmarks";
+constexpr char kBookmarkBarFolderServerTag[] = "bookmark_bar";
+constexpr char kBookmarkBarFolderName[] = "Bookmark Bar";
+constexpr char kOtherBookmarksFolderServerTag[] = "other_bookmarks";
+constexpr char kOtherBookmarksFolderName[] = "Other Bookmarks";
+constexpr char kSyncedBookmarksFolderServerTag[] = "synced_bookmarks";
+constexpr char kSyncedBookmarksFolderName[] = "Synced Bookmarks";
 
 int GetServerMigrationVersion(
     const std::map<DataType, int>& server_migration_versions,
@@ -875,7 +875,7 @@ std::optional<std::string> LoopbackServer::SerializeData() {
   SerializeState(&proto);
   std::string data;
   if (!proto.SerializeToString(&data)) {
-    LOG(ERROR) << "Loopback sync proto could not be serialized";
+    DVLOG(1) << "Loopback sync proto could not be serialized";
     return std::nullopt;
   }
   UMA_HISTOGRAM_MEMORY_KB(
@@ -888,7 +888,7 @@ std::optional<std::string> LoopbackServer::SerializeData() {
 bool LoopbackServer::ScheduleSaveStateToFile() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!base::CreateDirectory(persistent_file_.DirName())) {
-    LOG(ERROR) << "Loopback sync could not create the storage directory.";
+    DVLOG(1) << "Loopback sync could not create the storage directory.";
     return false;
   }
 
@@ -909,9 +909,9 @@ bool LoopbackServer::LoadStateFromFile() {
   if (state_file_error != base::File::FILE_OK) {
     UMA_HISTOGRAM_ENUMERATION("Sync.Local.ReadPlatformFileError",
                               -state_file_error, -base::File::FILE_ERROR_MAX);
-    LOG(ERROR) << "Loopback sync cannot read the persistent state file ("
-               << persistent_file_ << ") with error "
-               << base::File::ErrorToString(state_file_error);
+    DVLOG(1) << "Loopback sync cannot read the persistent state file ("
+             << persistent_file_ << ") with error "
+             << base::File::ErrorToString(state_file_error);
     return false;
   }
 
@@ -921,12 +921,12 @@ bool LoopbackServer::LoadStateFromFile() {
     if (serialized.length() > 0 && proto.ParseFromString(serialized)) {
       return DeSerializeState(proto);
     }
-    LOG(ERROR) << "Loopback sync cannot parse the persistent state file ("
-               << persistent_file_ << ").";
+    DVLOG(1) << "Loopback sync cannot parse the persistent state file ("
+             << persistent_file_ << ").";
     return false;
   }
-  LOG(ERROR) << "Loopback sync cannot read the persistent state file ("
-             << persistent_file_ << ").";
+  DVLOG(1) << "Loopback sync cannot read the persistent state file ("
+           << persistent_file_ << ").";
   return false;
 }
 

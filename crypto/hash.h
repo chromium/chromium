@@ -13,7 +13,12 @@
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "crypto/crypto_export.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
+
+namespace base {
+class File;
+}
 
 namespace crypto::hash {
 
@@ -44,6 +49,13 @@ enum HashKind {
   kSha384,
   kSha512,
 };
+
+// Free functions to convert to/from bssl EVP_MDs. The functions to convert to
+// HashKind return optionals because HashKind can only represent a subset of the
+// algorithms BoringSSL supports - specifically the ones the //crypto OWNERS
+// recommend people use.
+CRYPTO_EXPORT const EVP_MD* EVPMDForHashKind(HashKind k);
+CRYPTO_EXPORT std::optional<HashKind> HashKindForEVPMD(const EVP_MD* evp_md);
 
 inline constexpr size_t DigestSizeForHashKind(HashKind k) {
   switch (k) {
@@ -90,6 +102,15 @@ class CRYPTO_EXPORT Hasher {
  private:
   bssl::ScopedEVP_MD_CTX ctx_;
 };
+
+// A utility function for a common use-case (hashing the entire body of a
+// base::File). The digest span must be of the correct size for the specified
+// HashKind. If file IO fails while reading the file, or the passed-in file is
+// not valid, the output span is filled with zeroes and this function returns
+// false.
+[[nodiscard]] CRYPTO_EXPORT bool HashFile(HashKind kind,
+                                          base::File* file,
+                                          base::span<uint8_t> digest);
 
 }  // namespace crypto::hash
 

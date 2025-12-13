@@ -70,10 +70,10 @@ void InvokeDownload(TaskWeakPtr weak_ptr,
 }  // namespace
 
 // static
-void JNI_NetworkFetcherTask_CallProgressCallback(JNIEnv* env,
-                                                 jlong weak_ptr,
-                                                 jlong task_runner,
-                                                 jlong current) {
+static void JNI_NetworkFetcherTask_CallProgressCallback(JNIEnv* env,
+                                                        jlong weak_ptr,
+                                                        jlong task_runner,
+                                                        jlong current) {
   auto* native_task_runner =
       reinterpret_cast<base::SequencedTaskRunner*>(task_runner);
   DCHECK(native_task_runner);
@@ -85,11 +85,12 @@ void JNI_NetworkFetcherTask_CallProgressCallback(JNIEnv* env,
 }
 
 // static
-void JNI_NetworkFetcherTask_CallResponseStartedCallback(JNIEnv* env,
-                                                        jlong weak_ptr,
-                                                        jlong task_runner,
-                                                        jint response_code,
-                                                        jlong content_length) {
+static void JNI_NetworkFetcherTask_CallResponseStartedCallback(
+    JNIEnv* env,
+    jlong weak_ptr,
+    jlong task_runner,
+    jint response_code,
+    jlong content_length) {
   auto* native_task_runner =
       reinterpret_cast<base::SequencedTaskRunner*>(task_runner);
   DCHECK(native_task_runner);
@@ -102,7 +103,7 @@ void JNI_NetworkFetcherTask_CallResponseStartedCallback(JNIEnv* env,
 }
 
 // static
-void JNI_NetworkFetcherTask_CallDownloadToFileCompleteCallback(
+static void JNI_NetworkFetcherTask_CallDownloadToFileCompleteCallback(
     JNIEnv* env,
     jlong weak_ptr,
     jlong task_runner,
@@ -120,11 +121,11 @@ void JNI_NetworkFetcherTask_CallDownloadToFileCompleteCallback(
 }
 
 // static
-void JNI_NetworkFetcherTask_CallPostRequestCompleteCallback(
+static void JNI_NetworkFetcherTask_CallPostRequestCompleteCallback(
     JNIEnv* env,
     jlong weak_ptr,
     jlong task_runner,
-    const base::android::JavaParamRef<jbyteArray>& response_body,
+    const base::android::JavaRef<jbyteArray>& response_body,
     jint network_error,
     std::string& header_e_tag,
     std::string& header_x_cup_server_proof,
@@ -250,3 +251,5 @@ void NetworkFetcherTask::InvokePostRequestCompleteCallback(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(NetworkFetcherTask)

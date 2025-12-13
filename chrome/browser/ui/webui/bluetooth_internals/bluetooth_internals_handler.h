@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"
@@ -18,6 +17,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/files/file_path.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 
 namespace ash {

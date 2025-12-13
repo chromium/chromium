@@ -17,4 +17,9 @@ struct FrameTimingDetails {
   gfx.mojom.SwapTimings swap_timings;
   gfx.mojom.PresentationFeedback presentation_feedback;
   BeginFrameId frame_id;
+
+  mojo_base.mojom.TimeTicks start_update_display_tree;
+  mojo_base.mojom.TimeTicks start_prepare_to_draw;
+  mojo_base.mojom.TimeTicks start_draw_layers;
+  mojo_base.mojom.TimeTicks submit_compositor_frame;
 };

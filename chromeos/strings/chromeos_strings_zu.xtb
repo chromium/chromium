@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">amawolintshi</translation>
 <translation id="1275718070701477396">Ikhethiwe</translation>
 <translation id="1290331692326790741">Isignali ebuthakathaka</translation>
+<translation id="1292474106138697109">Isibonisi Sezinsiza Zekilasi</translation>
 <translation id="1300115153046603471">I-APN iwuhlobo oluzenzakalelayo ne-<ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">I-GSM</translation>
 <translation id="1301340234286078471">Guqula</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989">Izithombe <ph name="IMAGE_COUNT" /></translation>
 <translation id="4300272766492248925">Vula uhlelo lokusebenza</translation>
 <translation id="430786093962686457">i-chiffon</translation>
+<translation id="4309762678330556039">Sungula ngokuzenzekela okubhaliwe bese usesha okulalelwayo. Ungasungula okurekhodiwe ngisho noma ungaxhunyiwe ku-inthanethi.</translation>
 <translation id="4310735698903592804">Izithombe zangemuva zakamuva zisekelwa yi-Google AI</translation>
 <translation id="4320904097188876154">okuphinki kwe-neon</translation>
 <translation id="432961742358282111">Chofoza ngakwesokudla noma cindezela futhi ubambe ukuze uthole izincazelo, ukuhumusha, noma ukuguqulwa kwamayunithi. Sebenzisa umcibisholo Wangokwesokunxele noma Wangokwesokudla ukulawula lesi sakhi.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Izinketho eziningi</translation>
 <translation id="5600027863942488546">Ukhiye we-<ph name="KEY_NAME" /> uhloliwe</translation>
 <translation id="5606865426897221650">Ithebhu</translation>
+<translation id="5612205513582918357">Izinsiza Zekilasi zabelana ngesikrini sakho ku-<ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Ukhishwe ngemvume</translation>
 <translation id="5620281292257375798">Kwangaphakathi kuphela</translation>
 <translation id="5628106863521633649">Izilimi ezitholakalayo</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Ukugeleza Kwe-Cloud</translation>
 <translation id="6213737986933151570">I-CDMA1XRTT</translation>
 <translation id="6223752125779001553">Awekho amaskena atholakalayo</translation>
-<translation id="6231648282154119906">Amafayela asolisayo azoskenwa ngokuzenzekela Ngokuphequlula Ngokuphephile kwe-Google njengengxenye yokuvikela okuthuthukisiwe okukhethile</translation>
 <translation id="6232017090690406397">Ibhethri</translation>
 <translation id="6234024205316847054">Bonisa izinhlaka</translation>
 <translation id="6243280677745499710">Manje isethiwe</translation>
@@ -1350,7 +1352,7 @@
 <translation id="695776212669661671">umcibisholo wangakwesokudla</translation>
 <translation id="6957792699151067488">imbali</translation>
 <translation id="6961170852793647506">Ukuze uqalise, beka idokhumenti yakho kuskena</translation>
-<translation id="6965382102122355670">OK</translation>
+<translation id="6965382102122355670">KULUNGILE</translation>
 <translation id="6965978654500191972">Idivayisi</translation>
 <translation id="6972754398087986839">Qala</translation>
 <translation id="6975620886940770104">I-<ph name="GLOWSCAPES_LANDSCAPE" /> ene-<ph name="GLOWSCAPES_FEATURE" /> ekhanyayo</translation>

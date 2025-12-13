@@ -16,6 +16,7 @@ ci/Linux UBSan Builder
 ci/Linux UBSan Tests
 ci/MSAN Release (chained origins)
 ci/MSAN Release (no origins)
+ci/Mac ARM64 ASAN Release
 ci/Mac ASAN Release
 ci/Mac ASan 64 Builder
 ci/Mac ASan 64 Tests (1)
@@ -35,3 +36,4 @@ try/linux-blink-asan-rel
 try/linux-blink-leak-rel
 try/linux-blink-msan-rel
 try/linux_chromium_ubsan_rel_ng
+try/mac-arm64-asan-rel

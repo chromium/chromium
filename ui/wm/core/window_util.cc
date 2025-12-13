@@ -110,7 +110,7 @@ void SetWindowFullscreen(aura::Window* window,
     // return the primary display by default.
     int64_t current_display_id =
         window->GetRootWindow()
-            ? display::Screen::GetScreen()->GetDisplayNearestWindow(window).id()
+            ? display::Screen::Get()->GetDisplayNearestWindow(window).id()
             : display::kInvalidDisplayId;
     if (is_fullscreen && target_display_id == current_display_id) {
       // Already fullscreened on the target display.

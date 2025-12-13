@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/widget.h"
 

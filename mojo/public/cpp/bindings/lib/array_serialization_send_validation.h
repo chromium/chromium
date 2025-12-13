@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_LIB_ARRAY_SERIALIZATION_SEND_VALIDATION_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_LIB_ARRAY_SERIALIZATION_SEND_VALIDATION_H_
 
 #include <type_traits>
 
+#include "base/types/is_instantiation.h"
 #include "mojo/public/cpp/bindings/array_data_view.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/array_serialization.h"
@@ -135,7 +131,7 @@ struct SendValidationArraySerializer<
   using Element = typename MojomType::Element;
   using Traits = ArrayTraits<UserType>;
 
-  static_assert(IsAbslOptional<typename Traits::Element>::value,
+  static_assert(IsStdOptional<typename Traits::Element>::value,
                 "Output type should be optional");
   static_assert(sizeof(Element) == sizeof(DataElement),
                 "Incorrect array serializer");
@@ -324,7 +320,7 @@ struct SendValidationArraySerializer<
     size_t size = input->GetSize();
     for (size_t i = 0; i < size; ++i) {
       MessageFragment<DataElement> inlined_union_element(fragment.message());
-      inlined_union_element.Claim(fragment->storage() + i);
+      inlined_union_element.Claim(&fragment->at(i));
       decltype(auto) next = input->GetNext();
       Serialize<Element, send_validation>(next, inlined_union_element, true);
 

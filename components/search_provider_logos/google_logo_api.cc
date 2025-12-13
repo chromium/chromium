@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/search_provider_logos/google_logo_api.h"
 
 #include <stdint.h>
@@ -52,7 +47,7 @@ GURL GetGoogleDoodleURL(const GURL& google_base_url) {
   replacements.SetPathStr("async/ddljson");
   // Make sure we use https rather than http (except for .cn).
   if (google_base_url.SchemeIs(url::kHttpScheme) &&
-      !base::EndsWith(google_base_url.host_piece(), ".cn",
+      !base::EndsWith(google_base_url.host(), ".cn",
                       base::CompareCase::INSENSITIVE_ASCII)) {
     replacements.SetSchemeStr(url::kHttpsScheme);
   }
@@ -140,7 +135,8 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(const GURL& base_url,
   // Default parsing failure to be true.
   *parsing_failed = true;
 
-  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(response_sp);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      response_sp, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json.has_value()) {
     LOG(WARNING) << parsed_json.error().message << " at "
                  << parsed_json.error().line << ":"
@@ -225,9 +221,7 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(const GURL& base_url,
     }
   }
 
-  const bool is_eligible_for_share_button =
-      (logo->metadata.type == LogoType::ANIMATED ||
-       logo->metadata.type == LogoType::SIMPLE);
+  const bool is_eligible_for_share_button = is_simple || is_animated;
 
   if (is_eligible_for_share_button) {
     const std::string* short_link_ptr = ddljson->FindString("short_link");

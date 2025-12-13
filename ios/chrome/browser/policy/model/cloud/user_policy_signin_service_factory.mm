@@ -10,6 +10,7 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -24,6 +25,7 @@ UserPolicySigninServiceFactory::UserPolicySigninServiceFactory()
                                     ServiceCreation::kCreateWithProfile,
                                     TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(enterprise::ProfileIdServiceFactoryIOS::GetInstance());
 }
 
 UserPolicySigninServiceFactory::~UserPolicySigninServiceFactory() = default;
@@ -42,7 +44,7 @@ UserPolicySigninServiceFactory* UserPolicySigninServiceFactory::GetInstance() {
 
 std::unique_ptr<KeyedService>
 UserPolicySigninServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
+    ProfileIOS* profile) const {
   BrowserPolicyConnector* connector =
       GetApplicationContext()->GetBrowserPolicyConnector();
   // Consistency check to make sure that the BrowserPolicyConnector is available
@@ -55,16 +57,15 @@ UserPolicySigninServiceFactory::BuildServiceInstanceFor(
           : connector->device_management_service();
   DCHECK(device_management_service);
 
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
-
   return std::make_unique<UserPolicySigninService>(
       profile->GetPrefs(), GetApplicationContext()->GetLocalState(),
+      enterprise::ProfileIdServiceFactoryIOS::GetForProfile(profile),
       device_management_service, profile->GetUserCloudPolicyManager(),
       IdentityManagerFactory::GetForProfile(profile),
-      browser_state->GetSharedURLLoaderFactory());
+      profile->GetSharedURLLoaderFactory());
 }
 
-void UserPolicySigninServiceFactory::RegisterBrowserStatePrefs(
+void UserPolicySigninServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* user_prefs) {
   user_prefs->RegisterInt64Pref(policy_prefs::kLastPolicyCheckTime, 0);
   user_prefs->RegisterIntegerPref(

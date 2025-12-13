@@ -14,12 +14,20 @@
           Download the "webrtc-internals dump"
         </button>
         <label>
-          <input type="checkbox" id="dump-checkbox" />
+          <input type="checkbox" id="dump-checkbox" checked/>
           Compress result
         </label>
         <p class="dumps-info">
           The "webrtc-internals" dump is a JSON file containing API calls,
-          events and getStats-like information about RTCPeerConnection objects
+          events and getStats data about RTCPeerConnection objects
+          as well as getUsermedia/getDisplayMedia API calls.
+        </p>
+        <button id="dump-click-target-rtcstats">
+          Download the "rtcstats dump"
+        </button>
+        <p class="dumps-info">
+          The "rtcstats dump" is an alternative file format containing API calls,
+          events and getStats data about RTCPeerConnection objects
           as well as getUsermedia/getDisplayMedia API calls.
         </p>
       </div>

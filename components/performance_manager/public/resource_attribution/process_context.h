@@ -8,6 +8,7 @@
 #include <compare>
 #include <optional>
 #include <string>
+#include <utility>
 #include <variant>
 
 #include "base/memory/weak_ptr.h"
@@ -120,16 +121,15 @@ class ProcessContext {
     return a.id_ == b.id_;
   }
 
+  // Add ProcessContexts to absl hashes.
+  template <typename H>
+  friend H AbslHashValue(H h, const ProcessContext& c) {
+    return H::combine(std::move(h), c.id_);
+  }
+
  private:
   // A tag for the browser process which has no id.
-  struct BrowserProcessTag {
-    friend constexpr auto operator<=>(const BrowserProcessTag&,
-                                      const BrowserProcessTag&) = default;
-    friend constexpr bool operator==(const BrowserProcessTag&,
-                                     const BrowserProcessTag&) = default;
-  };
-  static_assert(BrowserProcessTag{} == BrowserProcessTag{},
-                "empty structs should always compare equal");
+  using BrowserProcessTag = std::monostate;
 
   using AnyProcessHostId =
       std::variant<BrowserProcessTag,

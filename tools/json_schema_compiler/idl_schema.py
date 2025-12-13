@@ -358,12 +358,6 @@ class Typeref(object):
       properties['type'] = 'binary'
       # We force the APIs to specify instanceOf since ArrayBufferView isn't an
       # instantiable type, therefore we don't specify isInstanceOf here.
-    elif self.typeref == 'FileEntry':
-      properties['type'] = 'object'
-      properties['isInstanceOf'] = 'FileEntry'
-      if 'additionalProperties' not in properties:
-        properties['additionalProperties'] = OrderedDict()
-      properties['additionalProperties']['type'] = 'any'
     elif self.parent.GetPropertyLocal('Union'):
       properties['choices'] = [
           Typeref(node.GetProperty('TYPEREF'), node,
@@ -420,9 +414,8 @@ class Enum(object):
         'type': 'string',
         'enum': enum
     }
-    for property_name in ['cpp_enum_prefix_override', 'nodoc']:
-      if self.node.GetProperty(property_name):
-        result[property_name] = self.node.GetProperty(property_name)
+    if self.node.GetProperty('nodoc'):
+      result['nodoc'] = True
     if self.node.GetProperty('deprecated'):
       result['deprecated'] = self.node.GetProperty('deprecated')
     return result

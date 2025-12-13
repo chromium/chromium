@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_controller.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_transceiver.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_transport.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_session_description_enums.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtp_contributing_source_cache.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -122,16 +121,14 @@ class MODULES_EXPORT RTCPeerConnection final
   ScriptPromise<IDLUndefined> createOffer(ScriptState*,
                                           V8RTCSessionDescriptionCallback*,
                                           V8RTCPeerConnectionErrorCallback*,
-                                          const RTCOfferOptions*,
-                                          ExceptionState&);
+                                          const RTCOfferOptions*);
 
   ScriptPromise<RTCSessionDescriptionInit> createAnswer(ScriptState*,
                                                         const RTCAnswerOptions*,
                                                         ExceptionState&);
   ScriptPromise<IDLUndefined> createAnswer(ScriptState*,
                                            V8RTCSessionDescriptionCallback*,
-                                           V8RTCPeerConnectionErrorCallback*,
-                                           ExceptionState&);
+                                           V8RTCPeerConnectionErrorCallback*);
 
   ScriptPromise<IDLUndefined> setLocalDescription(ScriptState*,
                                                   ExceptionState&);
@@ -318,8 +315,6 @@ class MODULES_EXPORT RTCPeerConnection final
   // state.
   void UpdateIceConnectionState();
 
-  RTCRtpTransport* rtpTransport() { return rtp_transport_; }
-
   void Trace(Visitor*) const override;
 
   using RtcPeerConnectionHandlerFactoryCallback =
@@ -366,6 +361,8 @@ class MODULES_EXPORT RTCPeerConnection final
       const RTCRtpSenderPlatform& web_sender);
   HeapVector<Member<RTCRtpReceiver>>::iterator FindReceiver(
       const RTCRtpReceiverPlatform& platform_receiver);
+  HeapVector<Member<RTCRtpTransceiver>>::iterator FindTransceiverById(
+      uintptr_t id);
   HeapVector<Member<RTCRtpTransceiver>>::iterator FindTransceiver(
       const RTCRtpTransceiverPlatform& platform_transceiver);
 
@@ -556,8 +553,6 @@ class MODULES_EXPORT RTCPeerConnection final
 
   // Insertable streams.
   bool encoded_insertable_streams_;
-
-  Member<RTCRtpTransport> rtp_transport_;
 };
 
 }  // namespace blink

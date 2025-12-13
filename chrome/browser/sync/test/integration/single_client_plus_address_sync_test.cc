@@ -17,11 +17,11 @@
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "components/plus_addresses/features.h"
-#include "components/plus_addresses/plus_address_service.h"
-#include "components/plus_addresses/plus_address_test_utils.h"
-#include "components/plus_addresses/plus_address_types.h"
-#include "components/plus_addresses/webdata/plus_address_sync_util.h"
+#include "components/plus_addresses/core/browser/plus_address_service.h"
+#include "components/plus_addresses/core/browser/plus_address_test_utils.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
+#include "components/plus_addresses/core/browser/webdata/plus_address_sync_util.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -78,40 +78,27 @@ class PlusProfileChecker : public StatusChangeChecker,
       scoped_observation_{this};
 };
 
-// PLUS_ADDRESS is supposed to behave the same in and outside of transport mode.
-// These tests are parameterized by whether the test should run in transport
-// mode (true) or not (false).
 class SingleClientPlusAddressSyncTest
     : public SyncTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientPlusAddressSyncTest() : SyncTest(SINGLE_CLIENT) {
-    features_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{plus_addresses::features::kPlusAddressesEnabled,
-                               {{plus_addresses::features::
-                                     kEnterprisePlusAddressServerUrl.name,
-                                 "https://not-used.com"}}}},
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {plus_addresses::features::kPlusAddressesEnabled,
+         {{plus_addresses::features::kEnterprisePlusAddressServerUrl.name,
+           "https://not-used.com"}}}};
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      enabled_features.push_back(
+          {syncer::kReplaceSyncPromosWithSignInPromos, {}});
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        enabled_features,
         /*disabled_features=*/{});
   }
 
-  // Sets up the sync client in sync-the-feature or sync-the-transport mode,
-  // depending on `GetParam()`. Returns true if setup succeeded.
-  bool SetupSync(SyncTestAccount account = SyncTestAccount::kDefaultAccount) {
-    const bool should_run_in_transport_mode = GetParam();
-    if (should_run_in_transport_mode) {
-      if (!SetupClients()) {
-        return false;
-      }
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-      auto enable_disclaimer_on_primary_account_change_resetter =
-          enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
-              GetProfile(0));
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-      return GetClient(0)->SignInPrimaryAccount(account) &&
-             GetClient(0)->AwaitSyncTransportActive();
-    }
-    return SyncTest::SetupSync(account);
+  // SyncTest overrides.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
   }
 
   PlusAddressService* GetPlusAddressService() {
@@ -141,21 +128,13 @@ class SingleClientPlusAddressSyncTest
   }
 
  private:
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    SingleClientPlusAddressSyncTest,
-#if BUILDFLAG(IS_CHROMEOS)
-    // On ChromeOS, sync-the-feature gets started automatically once a primary
-    // account is signed in and transport mode is not a thing. As such, only run
-    // the tests in sync-the-feature mode.
-    testing::Values(false)
-#else
-    testing::Bool()
-#endif
-);
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientPlusAddressSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
 
 IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest, InitialSync) {
   // Start syncing with an existing `plus_profile` on the server.

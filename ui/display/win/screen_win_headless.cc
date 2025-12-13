@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -27,8 +28,9 @@ namespace display::win {
 
 namespace {
 
-// Headless display ids are synthesized sequential numbers.
-constexpr int64_t kHeadlessDisplayIdBase = 1;
+// Default values used to construct internal::DisplayInfo.
+constexpr float kSdrWhiteLevel = 200.0;
+constexpr float kDisplayFrequency = 60.0;
 
 // Headless display device names are fakes that look similar to the real display
 // device names.
@@ -55,6 +57,22 @@ gfx::Vector2dF GetDisplayPhysicalPixelsPerInch(float device_scaling_factor) {
   return gfx::Vector2dF(dpi, dpi);
 }
 
+DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY GetOutputTechnology(bool is_internal) {
+  return is_internal ? DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL
+                     : DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER;
+}
+
+void SetHeadlessDisplayDeviceName(MONITORINFOEX& monitor_info,
+                                  int64_t display_id) {
+  const std::wstring device_name =
+      GetHeadlessDisplayDeviceNameFromDisplayId(display_id);
+  CHECK_LT(device_name.length() + 1, std::size(monitor_info.szDevice));
+
+  base::span<WCHAR> device_name_buf = monitor_info.szDevice;
+  std::copy(device_name.begin(), device_name.end(), device_name_buf.begin());
+  device_name_buf[device_name.length()] = L'\0';
+}
+
 }  // namespace
 
 ScreenWinHeadless::ScreenWinHeadless(
@@ -63,9 +81,13 @@ ScreenWinHeadless::ScreenWinHeadless(
   CHECK(!screen_infos.empty());
 
   UpdateFromDisplayInfos(DisplayInfosFromScreenInfo(screen_infos));
+
+  HeadlessScreenManager::Get()->SetDelegate(this);
 }
 
-ScreenWinHeadless::~ScreenWinHeadless() = default;
+ScreenWinHeadless::~ScreenWinHeadless() {
+  HeadlessScreenManager::Get()->SetDelegate(nullptr);
+}
 
 int64_t ScreenWinHeadless::GetDisplayIdFromWindow(HWND hwnd,
                                                   DWORD default_options) {
@@ -269,6 +291,15 @@ void ScreenWinHeadless::OnColorProfilesChanged() {
   // headless mode.
 }
 
+void ScreenWinHeadless::SetRequestHDRStatusCallback(
+    RequestHDRStatusCallback request_hdr_status_callback) {
+  // Ignore all HDR Status requests in headless mode.
+}
+
+void ScreenWinHeadless::SetDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) {
+  // Ignore all DXGI info in headless mode.
+}
+
 gfx::NativeWindow ScreenWinHeadless::GetNativeWindowAtScreenPoint(
     const gfx::Point& point,
     const std::set<gfx::NativeWindow>& ignore) const {
@@ -335,6 +366,59 @@ ScreenWinDisplay ScreenWinHeadless::GetScreenWinDisplayForHMONITOR(
   NOTREACHED();
 }
 
+int64_t ScreenWinHeadless::AddDisplay(const Display& display) {
+  int64_t display_id = HeadlessScreenManager::GetNewDisplayId();
+
+  MONITORINFOEX monitor_info = {};
+  monitor_info.cbSize = sizeof(monitor_info);
+
+  // Display's bounds and work area have scale factor already applied, so we
+  // have to unscale them to get the correct monitor info geometry.
+  if (display.device_scale_factor() == 1.0f) {
+    monitor_info.rcMonitor = display.bounds().ToRECT();
+    monitor_info.rcWork = display.work_area().ToRECT();
+  } else {
+    const float scale_factor = display.device_scale_factor();
+    monitor_info.rcMonitor =
+        gfx::ScaleToEnclosingRect(display.bounds(), scale_factor).ToRECT();
+    monitor_info.rcWork =
+        gfx::ScaleToEnclosingRect(display.work_area(), scale_factor).ToRECT();
+  }
+
+  SetHeadlessDisplayDeviceName(monitor_info, display_id);
+
+  headless_monitor_info_.insert({display_id, monitor_info});
+
+  internal::DisplayInfo display_info(
+      display_id, monitor_info, display.device_scale_factor(),
+      display.color_depth(), kSdrWhiteLevel, display.rotation(),
+      kDisplayFrequency,
+      GetDisplayPhysicalPixelsPerInch(display.device_scale_factor()),
+      GetOutputTechnology(display.IsInternal()), display.label());
+
+  // Get the existing display infos and append the new one.
+  std::vector<internal::DisplayInfo> display_infos = GetExistingDisplayInfos();
+  display_infos.push_back(display_info);
+
+  UpdateFromDisplayInfos(display_infos);
+
+  return display_id;
+}
+
+void ScreenWinHeadless::RemoveDisplay(int64_t display_id) {
+  CHECK_NE(display_id, GetPrimaryDisplay().id());
+
+  if (!headless_monitor_info_.erase(display_id)) {
+    return;
+  }
+
+  // Get the existing display infos except for the one being removed.
+  std::vector<internal::DisplayInfo> display_infos =
+      GetExistingDisplayInfos(/*except_display_id=*/display_id);
+
+  UpdateFromDisplayInfos(display_infos);
+}
+
 std::vector<internal::DisplayInfo>
 ScreenWinHeadless::DisplayInfosFromScreenInfo(
     const std::vector<headless::HeadlessScreenInfo>& screen_infos) {
@@ -348,7 +432,7 @@ ScreenWinHeadless::DisplayInfosFromScreenInfo(
   bool is_primary = true;
   std::vector<internal::DisplayInfo> display_infos;
   for (const auto& screen_info : screen_infos) {
-    static int64_t synthesized_display_id = kHeadlessDisplayIdBase;
+    int64_t display_id = HeadlessScreenManager::GetNewDisplayId();
 
     MONITORINFOEX monitor_info;
     monitor_info.cbSize = sizeof(monitor_info);
@@ -364,34 +448,50 @@ ScreenWinHeadless::DisplayInfosFromScreenInfo(
 
     monitor_info.dwFlags = is_primary ? MONITORINFOF_PRIMARY : 0;
 
-    const std::wstring device_name =
-        GetHeadlessDisplayDeviceNameFromDisplayId(synthesized_display_id);
-    CHECK_LT(device_name.length() + 1, std::size(monitor_info.szDevice));
-    UNSAFE_TODO(wcscpy(monitor_info.szDevice, device_name.c_str()));
+    SetHeadlessDisplayDeviceName(monitor_info, display_id);
 
     const float device_scale_factor =
         forced_device_scale_factor.value_or(screen_info.device_pixel_ratio);
 
     // Maintain display id to monitor info association for all the
     // MonitorInfoFromScreen*() functions below.
-    headless_monitor_info_.insert({synthesized_display_id, monitor_info});
+    headless_monitor_info_.insert({display_id, monitor_info});
 
     internal::DisplayInfo display_info(
-        synthesized_display_id, monitor_info, device_scale_factor,
-        /*sdr_white_level=*/200.0,
-        /*rotation=*/Display::DegreesToRotation(screen_info.rotation),
-        /*display_frequency=*/60.0,
-        /*pixels_per_inch=*/
+        display_id, monitor_info, device_scale_factor, screen_info.color_depth,
+        kSdrWhiteLevel, Display::DegreesToRotation(screen_info.rotation),
+        kDisplayFrequency,
         GetDisplayPhysicalPixelsPerInch(screen_info.device_pixel_ratio),
-        /*output_technology=*/screen_info.is_internal
-            ? DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL
-            : DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER,
-        screen_info.label);
+        GetOutputTechnology(screen_info.is_internal), screen_info.label);
 
     display_infos.push_back(std::move(display_info));
 
-    ++synthesized_display_id;
     is_primary = false;
+  }
+
+  return display_infos;
+}
+
+std::vector<internal::DisplayInfo> ScreenWinHeadless::GetExistingDisplayInfos(
+    int64_t except_display_id) {
+  std::vector<internal::DisplayInfo> display_infos;
+
+  for (const Display& display : GetAllDisplays()) {
+    if (display.id() == except_display_id) {
+      continue;
+    }
+
+    auto monitor_info = GetMONITORINFOFromDisplayId(display.id());
+    CHECK(monitor_info);
+
+    internal::DisplayInfo display_info(
+        display.id(), *monitor_info, display.device_scale_factor(),
+        display.color_depth(), kSdrWhiteLevel, display.rotation(),
+        kDisplayFrequency,
+        GetDisplayPhysicalPixelsPerInch(display.device_scale_factor()),
+        GetOutputTechnology(display.IsInternal()), display.label());
+
+    display_infos.push_back(std::move(display_info));
   }
 
   return display_infos;

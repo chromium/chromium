@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/setup/me2me_native_messaging_host.h"
 
 #include <stddef.h>
@@ -428,21 +423,21 @@ std::optional<base::Value::Dict>
 Me2MeNativeMessagingHostTest::ReadMessageFromOutputPipe() {
   while (true) {
     uint32_t length;
-    int read_result = output_read_file_.ReadAtCurrentPos(
-        reinterpret_cast<char*>(&length), sizeof(length));
+    int read_result = UNSAFE_TODO(output_read_file_.ReadAtCurrentPos(
+        reinterpret_cast<char*>(&length), sizeof(length)));
     if (read_result != sizeof(length)) {
       return std::nullopt;
     }
 
     std::string message_json(length, '\0');
-    read_result =
-        output_read_file_.ReadAtCurrentPos(std::data(message_json), length);
+    read_result = UNSAFE_TODO(
+        output_read_file_.ReadAtCurrentPos(std::data(message_json), length));
     if (read_result != static_cast<int>(length)) {
       return std::nullopt;
     }
 
-    std::optional<base::Value::Dict> message =
-        base::JSONReader::ReadDict(message_json);
+    std::optional<base::Value::Dict> message = base::JSONReader::ReadDict(
+        message_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!message) {
       return std::nullopt;
     }
@@ -457,8 +452,7 @@ Me2MeNativeMessagingHostTest::ReadMessageFromOutputPipe() {
 
 void Me2MeNativeMessagingHostTest::WriteMessageToInputPipe(
     const base::ValueView& message) {
-  std::string message_json;
-  base::JSONWriter::Write(message, &message_json);
+  std::string message_json = base::WriteJson(message).value_or("");
 
   uint32_t length = base::checked_cast<uint32_t>(message_json.length());
   input_write_file_.WriteAtCurrentPos(base::byte_span_from_ref(length));

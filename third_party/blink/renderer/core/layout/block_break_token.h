@@ -6,19 +6,17 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BLOCK_BREAK_TOKEN_H_
 
 #include "base/dcheck_is_on.h"
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/block_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/break_token.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class BoxFragmentBuilder;
-class InlineBreakToken;
+struct BreakTokenAlgorithmData;
 
 // Represents a break token for a block node.
 class CORE_EXPORT BlockBreakToken final : public BreakToken {
@@ -31,13 +29,20 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
   static BlockBreakToken* Create(BoxFragmentBuilder*);
 
   // Creates a break token for a node that needs to produce its first fragment
-  // in the next fragmentainer. In this case we create a break token for a node
-  // that hasn't yet produced any fragments.
-  static BlockBreakToken* CreateBreakBefore(LayoutInputNode node,
-                                            bool is_forced_break) {
+  // in a subsequent fragmentainer. In this case we create a break token for a
+  // node that hasn't yet produced any fragments.
+  //
+  // An out-of-flow positioned node may need to skip multiple fragmentainers
+  // before creating a fragment, for instance due to a large block-start inset.
+  // `oof_start_offset` is used for that.
+  static BlockBreakToken* CreateBreakBefore(
+      LayoutInputNode node,
+      bool is_forced_break,
+      LogicalOffset oof_start_offset = LogicalOffset()) {
     auto* token = MakeGarbageCollected<BlockBreakToken>(PassKey(), node);
     token->is_break_before_ = true;
     token->is_forced_break_ = is_forced_break;
+    token->oof_start_offset_ = oof_start_offset;
     token->has_unpositioned_list_marker_ = node.IsListItem();
     return token;
   }
@@ -75,27 +80,7 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
   // this method would return then), there's 50px left to consume. The next
   // fragment will become 50px tall, assuming no additional fragmentation (if
   // the fragmentainer is shorter than 50px, for instance).
-  LayoutUnit ConsumedBlockSize() const {
-    DCHECK(data_);
-    return data_->consumed_block_size;
-  }
-
-  // The consumed block size when writing back to legacy layout. The only time
-  // this may be different than ConsumedBlockSize() is in the case of a
-  // fragmentainer. We clamp the fragmentainer block size from 0 to 1 for legacy
-  // write-back only in the case where there is content that overflows the
-  // zero-height fragmentainer. This can result in a different consumed block
-  // size when used for legacy. This difference is represented by
-  // |consumed_block_size_legacy_adjustment_|.
-  LayoutUnit ConsumedBlockSizeForLegacy() const {
-    DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-#if DCHECK_IS_ON()
-    DCHECK(!is_repeated_actual_break_);
-#endif
-    DCHECK(data_);
-    return data_->consumed_block_size +
-           data_->consumed_block_size_legacy_adjustment;
-  }
+  LayoutUnit ConsumedBlockSize() const { return consumed_block_size_; }
 
   // A unique identifier for a fragment that generates a break token. This is
   // unique within the generating layout input node. The break token of the
@@ -104,11 +89,8 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
   // want a fragmentainer break before laying out the node). What the sequence
   // number is for such a break token is undefined.
   unsigned SequenceNumber() const {
-#if DCHECK_IS_ON()
     DCHECK(is_repeated_actual_break_ || !IsBreakBefore());
-#endif
-    DCHECK(data_);
-    return data_->sequence_number;
+    return sequence_number_;
   }
 
   // The amount of monolithic fragmentainer overflow.
@@ -119,19 +101,39 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
   //
   // This value is only used (and set) when printing.
   LayoutUnit MonolithicOverflow() const {
-#if DCHECK_IS_ON()
     DCHECK(!is_repeated_actual_break_);
-#endif
-    DCHECK(data_);
-    return data_->monolithic_overflow;
+    return monolithic_overflow_;
   }
 
-  const BlockBreakTokenData* TokenData() const {
-#if DCHECK_IS_ON()
+  const BreakTokenAlgorithmData* TokenData() const {
     DCHECK(!is_repeated_actual_break_);
-#endif
-    DCHECK(data_);
     return data_.Get();
+  }
+
+  // Return the start block-offset for the next / first fragment to be generated
+  // for an OOF node. This is used for two purposes:
+  //
+  // 1. When there's a block-start inset too large for the node to produce a
+  // fragment in the current fragmentainer. This value will then be the
+  // remaining block-start inset to use in the next fragmentainer. This may
+  // repeat across multiple fragmentainers before all of the inset has been
+  // "eaten" and we're ready to produce a fragment.
+  //
+  // 2. Repeated fixed-positioned nodes (printing). Then the offset will be the
+  // same at every break token for the node.
+  LayoutUnit OofBlockStartOffset() const {
+    DCHECK(InputNode().IsOutOfFlowPositioned());
+    return oof_start_offset_.block_offset;
+  }
+
+  // Return the start inline-offset for the next fragment to be generated for an
+  // OOF node. When resuming layout of an OOF after a break, there's no easy way
+  // of recomputing the inline offset, since it may be based on a static
+  // position, which in turn may be based on something in the middle of a line
+  // box, for instance.
+  LayoutUnit OofInlineStartOffset() const {
+    DCHECK(InputNode().IsOutOfFlowPositioned());
+    return oof_start_offset_.inline_offset;
   }
 
   // Return true if this is a break token that was produced without any
@@ -149,9 +151,7 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
   bool IsRepeated() const { return is_repeated_; }
 
   bool IsCausedByColumnSpanner() const {
-#if DCHECK_IS_ON()
     DCHECK(!is_repeated_actual_break_);
-#endif
     return is_caused_by_column_spanner_;
   }
 
@@ -160,9 +160,7 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
   // break tokens, if any, and not attempt to start laying out nodes that don't
   // have one (since all children are either finished, or have a break token).
   bool HasSeenAllChildren() const {
-#if DCHECK_IS_ON()
     DCHECK(!is_repeated_actual_break_);
-#endif
     return has_seen_all_children_;
   }
 
@@ -192,9 +190,7 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
 
   // True if earlier fragments could not position the list marker.
   bool HasUnpositionedListMarker() const {
-#if DCHECK_IS_ON()
     DCHECK(!is_repeated_actual_break_);
-#endif
     return has_unpositioned_list_marker_;
   }
 
@@ -207,15 +203,9 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
   //
   // A child which we haven't visited yet doesn't have a break token here.
   const base::span<const Member<const BreakToken>> ChildBreakTokens() const {
-#if DCHECK_IS_ON()
     DCHECK(!is_repeated_actual_break_);
-#endif
     return ChildBreakTokensInternal();
   }
-
-  // Find the child InlineBreakToken for the specified node.
-  const InlineBreakToken* InlineBreakTokenFor(const LayoutInputNode&) const;
-  const InlineBreakToken* InlineBreakTokenFor(const LayoutBox&) const;
 
   // When merging out-of-flow children from a new placeholder fragmentainer into
   // an existing one, some new break token data may also have to be copied over.
@@ -231,17 +221,22 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
     // token into this one.
     void Merge(const BlockBreakToken&);
 
+    void SetInlineStartOffset(LayoutUnit offset) {
+      break_token_.oof_start_offset_.inline_offset = offset;
+    }
+    void SetBlockStartOffset(LayoutUnit offset) {
+      break_token_.oof_start_offset_.block_offset = offset;
+    }
+
    private:
-    const BlockBreakToken& break_token_;
+    BlockBreakToken& break_token_;
   };
   friend class MutableForOofFragmentation;
   MutableForOofFragmentation GetMutableForOofFragmentation() const {
     return MutableForOofFragmentation(*this);
   }
 
-#if DCHECK_IS_ON()
-  String ToString() const;
-#endif
+  String ToString(bool skip_node_info = false) const;
 
   using PassKey = base::PassKey<BlockBreakToken>;
 
@@ -261,7 +256,12 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
     return UNSAFE_BUFFERS(base::span(child_break_tokens_, const_num_children_));
   }
 
-  Member<BlockBreakTokenData> data_;
+  Member<BreakTokenAlgorithmData> data_;
+
+  LayoutUnit consumed_block_size_;
+  LayoutUnit monolithic_overflow_;
+  LogicalOffset oof_start_offset_;
+  unsigned sequence_number_ = 0;
 
   const wtf_size_t const_num_children_;
   // This must be the last member, because it is a flexible array.

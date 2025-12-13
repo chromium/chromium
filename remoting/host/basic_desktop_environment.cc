@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -38,10 +39,10 @@
 #include "remoting/host/webauthn/remote_webauthn_extension_notifier.h"
 #include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
 #include "remoting/protocol/desktop_capturer.h"
+#include "remoting/protocol/mouse_cursor_monitor.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "remoting/host/win/evaluate_d3d.h"
@@ -90,23 +91,26 @@ DesktopDisplayInfoMonitor* BasicDesktopEnvironment::GetDisplayInfoMonitor() {
         base::BindRepeating(&ClientSessionControl::OnDesktopDisplayChanged,
                             client_session_control_);
 
+    display_info_monitor_ = interaction_strategy_->CreateDisplayInfoMonitor();
     // |video_layout_callback| is bound to |client_session_control_| which is a
     // WeakPtr, but it accepts a VideoLayout proto as the parameter. DDIM needs
     // a callback that accepts a DesktopDisplayInfo& instead.
-    auto converting_callback =
-        base::BindRepeating([](const DesktopDisplayInfo& info) {
-          return info.GetVideoLayoutProto();
-        });
-    DesktopDisplayInfoMonitor::Callback callback =
-        std::move(converting_callback).Then(std::move(video_layout_callback));
-
-    display_info_monitor_ = interaction_strategy_->CreateDisplayInfoMonitor();
+    // Safe to bind raw pointer of `display_info_monitor_`, since the callback
+    // won't be called after `display_info_monitor_` is destroyed.
+    base::RepeatingClosure callback = base::BindRepeating(
+        [](DesktopDisplayInfoMonitor* monitor,
+           VideoLayoutCallback video_layout_callback) {
+          const auto* info = monitor->GetLatestDisplayInfo();
+          DCHECK(info);
+          video_layout_callback.Run(info->GetVideoLayoutProto());
+        },
+        display_info_monitor_.get(), std::move(video_layout_callback));
     display_info_monitor_->AddCallback(std::move(callback));
   }
   return display_info_monitor_.get();
 }
 
-std::unique_ptr<webrtc::MouseCursorMonitor>
+std::unique_ptr<protocol::MouseCursorMonitor>
 BasicDesktopEnvironment::CreateMouseCursorMonitor() {
   return interaction_strategy_->CreateMouseCursorMonitor();
 }

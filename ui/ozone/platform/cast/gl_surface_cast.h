@@ -6,7 +6,7 @@
 #define UI_OZONE_PLATFORM_CAST_GL_SURFACE_CAST_H_
 
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_surface_egl.h"

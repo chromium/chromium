@@ -20,7 +20,7 @@ import {TextExtractor} from '//ios/web/annotations/resources/text_extractor.js';
 import {TextIntersectionObserver} from '//ios/web/annotations/resources/text_intersection_observer.js';
 import {TextStyler} from '//ios/web/annotations/resources/text_styler.js';
 import {IdleTaskTracker} from '//ios/web/annotations/resources/text_tasks.js';
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // Used to trigger text extraction and decoration when system is idle.
@@ -175,11 +175,13 @@ function removeHighlight(): void {
   decorator?.removeHighlight();
 }
 
-gCrWebLegacy.annotations = {
-  start,
-  stop,
-  decorateAnnotations,
-  removeDecorations,
-  removeDecorationsWithType,
-  removeHighlight,
-};
+const annotations = new CrWebApi();
+
+annotations.addFunction('start', start);
+annotations.addFunction('stop', stop);
+annotations.addFunction('decorateAnnotations', decorateAnnotations);
+annotations.addFunction('removeDecorations', removeDecorations);
+annotations.addFunction('removeDecorationsWithType', removeDecorationsWithType);
+annotations.addFunction('removeHighlight', removeHighlight);
+
+gCrWeb.registerApi('annotations', annotations);

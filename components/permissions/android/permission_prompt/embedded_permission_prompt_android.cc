@@ -31,8 +31,13 @@ EmbeddedPermissionPromptAndroid::EmbeddedPermissionPromptAndroid(
       web_contents, delegate);
   prompt_model_->CalculateCurrentVariant();
   CreatePermissionDialogDelegate();
-
   const auto& current_prompt_variant = prompt_model_->prompt_variant();
+  // TODO(crbug.com/442793180): Plumb precise/approximate values when
+  // <geolocation> prompts support it. Hardcoding to precise now to avoid double
+  // prompting.
+  if (current_prompt_variant == Variant::kAsk) {
+    SetPromptOptions(GeolocationPromptOptions{GeolocationAccuracy::kPrecise});
+  }
   prompt_model_->RecordElementAnchoredBubbleVariantUMA(current_prompt_variant);
   if (current_prompt_variant == Variant::kOsPrompt ||
       current_prompt_variant == Variant::kOsSystemSettings) {

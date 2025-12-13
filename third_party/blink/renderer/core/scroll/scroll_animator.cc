@@ -93,6 +93,7 @@ void ScrollAnimator::ResetAnimationState() {
 ScrollResult ScrollAnimator::UserScroll(
     ui::ScrollGranularity granularity,
     const ScrollOffset& delta,
+    cc::ScrollSourceType source_type,
     ScrollableArea::ScrollCallback on_finish) {
   // We only store on_finish_ when running an animation, and it should be
   // invoked as soon as the animation is finished. If we don't animate the
@@ -113,7 +114,7 @@ ScrollResult ScrollAnimator::UserScroll(
     // Cancel scroll animation because asked to instant scroll.
     if (HasRunningAnimation())
       CancelAnimation();
-    return ScrollAnimatorBase::UserScroll(granularity, delta,
+    return ScrollAnimatorBase::UserScroll(granularity, delta, source_type,
                                           std::move(run_on_return));
   }
 
@@ -129,6 +130,7 @@ ScrollResult ScrollAnimator::UserScroll(
   target_offset += consumed_delta;
 
   if (WillAnimateToOffset(target_offset)) {
+    source_type_ = source_type;
     last_granularity_ = granularity;
     if (on_finish_) {
       std::move(on_finish_)
@@ -233,11 +235,14 @@ void ScrollAnimator::AdjustAnimation(const gfx::Vector2d& adjustment) {
 }
 
 void ScrollAnimator::ScrollToOffsetWithoutAnimation(
-    const ScrollOffset& offset) {
+    const ScrollOffset& offset,
+    cc::ScrollSourceType source_type) {
   current_offset_ = offset;
+  source_type_ = source_type;
 
   ResetAnimationState();
-  ScrollOffsetChanged(current_offset_, mojom::blink::ScrollType::kUser);
+  ScrollOffsetChanged(current_offset_, mojom::blink::ScrollType::kUser,
+                      source_type);
 }
 
 void ScrollAnimator::TickAnimation(base::TimeTicks monotonic_time) {
@@ -267,7 +272,8 @@ void ScrollAnimator::TickAnimation(base::TimeTicks monotonic_time) {
   }
 
   TRACE_EVENT0("blink", "ScrollAnimator::notifyOffsetChanged");
-  ScrollOffsetChanged(current_offset_, mojom::blink::ScrollType::kUser);
+  ScrollOffsetChanged(current_offset_, mojom::blink::ScrollType::kUser,
+                      source_type_);
 }
 
 bool ScrollAnimator::SendAnimationToCompositor() {
@@ -403,7 +409,7 @@ void ScrollAnimator::TakeOverCompositorAnimation() {
 bool ScrollAnimator::RegisterAndScheduleAnimation() {
   GetScrollableArea()->RegisterForAnimation();
   if (!scrollable_area_->ScheduleAnimation()) {
-    ScrollToOffsetWithoutAnimation(target_offset_);
+    ScrollToOffsetWithoutAnimation(target_offset_, source_type_);
     ResetAnimationState();
     return false;
   }

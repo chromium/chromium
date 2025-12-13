@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/global_routing_id.h"
@@ -76,7 +77,9 @@ bool IsCustomItemCheckedInternal(
 const size_t kMaxCustomMenuDepth = 5;
 const size_t kMaxCustomMenuTotalItems = 1000;
 
-void AddCustomItemsToMenu(
+}  // namespace
+
+void RenderViewContextMenuBase::AddCustomItemsToMenu(
     const std::vector<blink::mojom::CustomContextMenuItemPtr>& items,
     size_t depth,
     size_t* total_items,
@@ -109,6 +112,11 @@ void AddCustomItemsToMenu(
           menu_model->SetMinorIcon(
               menu_model->GetItemCount() - 1,
               ui::ImageModel::FromVectorIcon(vector_icons::kScienceIcon));
+        }
+        if (!item->feature_name.empty()) {
+          menu_model->SetIsNewFeatureAt(
+              menu_model->GetItemCount() - 1,
+              GetIsNewFeatureAtValue(base::UTF16ToUTF8(item->feature_name)));
         }
         if (item->accelerator) {
           menu_model->SetAcceleratorAt(
@@ -149,6 +157,11 @@ void AddCustomItemsToMenu(
             RenderViewContextMenuBase::ConvertToContentCustomCommandId(
                 item->action),
             item->label, submenu);
+        if (!item->feature_name.empty()) {
+          menu_model->SetIsNewFeatureAt(
+              menu_model->GetItemCount() - 1,
+              GetIsNewFeatureAtValue(base::UTF16ToUTF8(item->feature_name)));
+        }
         break;
       }
       default:
@@ -156,8 +169,6 @@ void AddCustomItemsToMenu(
     }
   }
 }
-
-}  // namespace
 
 // static
 void RenderViewContextMenuBase::SetContentCustomCommandIdRange(
@@ -262,6 +273,11 @@ void RenderViewContextMenuBase::AddSubMenuWithStringIdAndIcon(
     const ui::ImageModel& icon) {
   menu_model_.AddSubMenuWithStringIdAndIcon(command_id, message_id, model,
                                             icon);
+}
+
+ui::IsNewFeatureAtValue RenderViewContextMenuBase::GetIsNewFeatureAtValue(
+    const std::string& feature_name) const {
+  return ui::IsNewFeatureAtValue();
 }
 
 void RenderViewContextMenuBase::UpdateMenuItem(int command_id,

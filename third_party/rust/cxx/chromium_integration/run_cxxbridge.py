@@ -5,9 +5,12 @@
 # found in the LICENSE file.
 
 import argparse
+import io
 import os
+import platform
 import subprocess
 import sys
+
 
 # Set up path to load action_helpers.py which enables us to do
 # atomic output that's maximally compatible with ninja.
@@ -15,6 +18,20 @@ sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir,
                  os.pardir, os.pardir, os.pardir, 'build'))
 import action_helpers
+
+
+def get_cfg_args(rustc_print_cfg_path):
+  """ Returns `--cfg=target_arch=...` etc. based on rustc.
+
+      `rustc_print_cfg_path` should be a path to the output of
+      `//build/rust/gni_impl:rustc_print_cfg`
+  """
+  result = []
+  with open(rustc_print_cfg_path, 'r') as file:
+    for line in file:
+      line = line.strip()
+      result.append(f"--cfg={line}")
+  return result
 
 
 def run(exe, args, output, is_header):
@@ -38,11 +55,14 @@ def main():
   parser.add_argument("--exe", help="Path to cxxbridge", required=True),
   parser.add_argument("--cc", help="output cc file", required=True)
   parser.add_argument("--header", help="output h file", required=True)
+  parser.add_argument('--rustc-print-cfg-path', required=True,
+                      help='path to output from //build/rust/gni_impl:rustc_print_cfg')
   parser.add_argument('args',
                       metavar='args',
                       nargs='+',
                       help="Args to pass through")
   args = parser.parse_args()
+  args.args += get_cfg_args(args.rustc_print_cfg_path)
   v = run(args.exe, args.args, args.cc, False)
   if v != 0:
     return v

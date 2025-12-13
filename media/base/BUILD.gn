@@ -4,7 +4,6 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/arm.gni")
-import("//build/config/features.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
@@ -48,9 +47,6 @@ source_set("base") {
     "agtm.h",
     "amplitude_peak_detector.cc",
     "amplitude_peak_detector.h",
-    "android_overlay_config.cc",
-    "android_overlay_config.h",
-    "android_overlay_mojo_factory.h",
     "async_destroy_video_decoder.h",
     "async_destroy_video_encoder.h",
     "audio_block_fifo.cc",
@@ -122,6 +118,8 @@ source_set("base") {
     "callback_holder.h",
     "callback_registry.h",
     "callback_timeout_helpers.h",
+    "capture_version.cc",
+    "capture_version.h",
     "cdm_callback_promise.cc",
     "cdm_callback_promise.h",
     "cdm_capability.cc",
@@ -230,7 +228,6 @@ source_set("base") {
     "media_content_type.h",
     "media_controller.h",
     "media_export.h",
-    "media_export.h",
     "media_log.cc",
     "media_log.h",
     "media_log_events.cc",
@@ -314,6 +311,7 @@ source_set("base") {
     "scoped_async_trace.h",
     "seekable_buffer.cc",
     "seekable_buffer.h",
+    "sequence.h",
     "serial_runner.cc",
     "serial_runner.h",
     "silent_sink_suspender.cc",
@@ -403,7 +401,7 @@ source_set("base") {
   defines = []
   public_deps = [
     ":video_facing",
-    "//gpu/command_buffer/client:client",
+    "//gpu/command_buffer/client",
     "//media:media_buildflags",
     "//media/gpu:buildflags",
     "//media/mojo:buildflags",
@@ -417,17 +415,17 @@ source_set("base") {
     "//gpu/command_buffer/client:interface_base",
     "//gpu/command_buffer/client:raster_interface",
     "//gpu/command_buffer/common",
-    "//gpu/ipc/common:common",
+    "//gpu/ipc/common",
     "//media/cdm:clear_key_cdm_common",
     "//net",
     "//skia",
     "//third_party/libyuv",
     "//third_party/widevine/cdm:headers",
-    "//ui/display:display",
-    "//ui/events:events",
+    "//ui/display",
+    "//ui/events",
     "//ui/events:events_base",
     "//ui/events:keyboard_hook",
-    "//url:url",
+    "//url",
   ]
 
   libs = []
@@ -490,6 +488,14 @@ source_set("base") {
       "win/media_foundation_package_runtime_locator.h",
       "win/mf_feature_checks.cc",
       "win/mf_feature_checks.h",
+    ]
+  }
+
+  if (is_android) {
+    sources += [
+      "android_overlay_config.cc",
+      "android_overlay_config.h",
+      "android_overlay_mojo_factory.h",
     ]
   }
 
@@ -623,6 +629,7 @@ source_set("unit_tests") {
     "callback_holder_unittest.cc",
     "callback_registry_unittest.cc",
     "callback_timeout_helpers_unittest.cc",
+    "capture_version_unittest.cc",
     "channel_mixer_unittest.cc",
     "channel_mixing_matrix_unittest.cc",
     "container_names_unittest.cc",
@@ -650,6 +657,7 @@ source_set("unit_tests") {
     "reentrancy_checker_unittest.cc",
     "renderer_factory_selector_unittest.cc",
     "seekable_buffer_unittest.cc",
+    "sequence_unittest.cc",
     "serial_runner_unittest.cc",
     "silent_sink_suspender_unittest.cc",
     "sinc_resampler_unittest.cc",

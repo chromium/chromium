@@ -660,19 +660,23 @@ OpenXrDepthSensorAndroidFactory::GetRequestedExtensions() const {
 }
 
 std::set<device::mojom::XRSessionFeature>
-OpenXrDepthSensorAndroidFactory::GetSupportedFeatures(
-    const OpenXrExtensionEnumeration* extension_enum) const {
-  if (!IsEnabled(extension_enum)) {
+OpenXrDepthSensorAndroidFactory::GetSupportedFeatures() const {
+  if (!IsEnabled()) {
     return {};
   }
 
   return {device::mojom::XRSessionFeature::DEPTH};
 }
 
-void OpenXrDepthSensorAndroidFactory::ProcessSystemProperties(
+void OpenXrDepthSensorAndroidFactory::CheckAndUpdateEnabledState(
     const OpenXrExtensionEnumeration* extension_enum,
     XrInstance instance,
     XrSystemId system) {
+  if (!AreAllRequestedExtensionsSupported(extension_enum)) {
+    SetEnabled(false);
+    return;
+  }
+
   XrSystemDepthTrackingPropertiesANDROID depth_properties{
       XR_TYPE_SYSTEM_DEPTH_TRACKING_PROPERTIES_ANDROID};
 
@@ -685,7 +689,7 @@ void OpenXrDepthSensorAndroidFactory::ProcessSystemProperties(
     depth_supported = depth_properties.supportsDepthTracking;
   }
 
-  SetSystemPropertiesSupport(depth_supported);
+  SetEnabled(depth_supported);
 }
 
 std::unique_ptr<OpenXrDepthSensor>
@@ -694,7 +698,7 @@ OpenXrDepthSensorAndroidFactory::CreateDepthSensor(
     XrSession session,
     XrSpace mojo_space,
     const mojom::XRDepthOptions& depth_options) const {
-  bool is_supported = IsEnabled(extension_helper.ExtensionEnumeration());
+  bool is_supported = IsEnabled();
   DVLOG(2) << __func__ << " is_supported=" << is_supported;
   if (is_supported) {
     return std::make_unique<OpenXrDepthSensorAndroid>(

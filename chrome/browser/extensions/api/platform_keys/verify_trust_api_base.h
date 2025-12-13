@@ -7,16 +7,10 @@
 
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/common/extensions/api/platform_keys.h"
 
 namespace extensions {
-
-BASE_FEATURE(kVerifyTLSServerCertificateUseNetFetcher,
-             "VerifyTLSServerCertificateUseNetFetcher",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 class VerifyTrustApiBase {
  public:
   // Will be called with `return_value` set to the verification result (net::OK

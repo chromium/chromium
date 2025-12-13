@@ -59,7 +59,7 @@ NavigateParams NavigateAndReturnParams(const GURL& url,
   auto& profile = CurrentProfile();
   NavigateParams params(&profile, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.disposition = disposition;
-  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.window_action = NavigateParams::WindowAction::kShowWindow;
   Navigate(&params);
   return params;
 }
@@ -74,7 +74,8 @@ bool OpenPopup(const GURL& url) {
 Browser& NavigateInCurrentTab(const GURL& url) {
   auto params =
       NavigateAndReturnParams(url, WindowOpenDisposition::CURRENT_TAB);
-  return CHECK_DEREF(params.browser.get());
+  CHECK(params.browser);
+  return CHECK_DEREF(params.browser->GetBrowserForMigrationOnly());
 }
 
 GURL NavigateInBrowser(Browser& browser, const GURL& url) {

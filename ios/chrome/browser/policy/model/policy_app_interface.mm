@@ -18,7 +18,8 @@
 #import "base/threading/scoped_blocking_call.h"
 #import "base/values.h"
 #import "components/policy/core/browser/browser_policy_connector.h"
-#import "components/policy/core/browser/url_blocklist_manager.h"
+#import "components/policy/core/browser/url_list/policy_blocklist_service.h"
+#import "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #import "components/policy/core/common/cloud/cloud_policy_client.h"
 #import "components/policy/core/common/cloud/cloud_policy_core.h"
 #import "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -34,7 +35,6 @@
 #import "components/policy/policy_constants.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/test_platform_policy_provider.h"
-#import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
@@ -74,7 +74,8 @@ std::optional<base::Value> DeserializeValue(NSString* json_value) {
     return base::Value();
   }
 
-  return base::JSONReader::Read(base::SysNSStringToUTF8(json_value));
+  return base::JSONReader::Read(base::SysNSStringToUTF8(json_value),
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 }
 
 }  // namespace

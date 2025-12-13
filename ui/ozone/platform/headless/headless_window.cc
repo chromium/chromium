@@ -176,8 +176,10 @@ void HeadlessWindow::SizeConstraintsChanged() {}
 
 void HeadlessWindow::ZoomWindowBounds() {
   gfx::Rect zoomed_bounds =
-      display::Screen::GetScreen()->GetDisplayMatching(bounds_).work_area();
-  UpdateBounds(zoomed_bounds);
+      display::Screen::Get()->GetDisplayMatching(bounds_).work_area();
+  // Convert the work area bounds from DIP to device pixels before setting
+  // the platform window's geometry.
+  UpdateBounds(delegate_->ConvertRectToPixels(zoomed_bounds));
 }
 
 void HeadlessWindow::RestoreWindowBounds() {

@@ -7,6 +7,8 @@ package org.chromium.ui.listmenu;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
@@ -27,4 +29,12 @@ public interface ListMenuDelegate {
      * @return The {@link ListMenu} displayed by the list menu hosting view.
      */
     ListMenu getListMenu();
+
+    /**
+     * @param The parent {@ListItem} that contains submenu items.
+     * @return The {@link ListMenu} with the contents of the submenu.
+     */
+    default @Nullable ListMenu getListMenuFromParentListItem(ListItem item) {
+        return null;
+    }
 }

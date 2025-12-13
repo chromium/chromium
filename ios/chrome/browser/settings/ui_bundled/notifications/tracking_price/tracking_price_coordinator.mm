@@ -62,7 +62,6 @@
                   prefService:self.profile->GetPrefs()];
   self.mediator.consumer = self.viewController;
   self.mediator.presenter = self;
-  self.viewController.modelDelegate = self.mediator;
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];
 }

@@ -97,16 +97,13 @@ void DeviceCapabilities::Validator::SetPrivateValidatedValue(
   capabilities_->SetPrivateValidatedValue(path, std::move(new_value));
 }
 
-DeviceCapabilities::Data::Data() {
-  base::JSONWriter::Write(dictionary_, &json_string_);
-}
+DeviceCapabilities::Data::Data() : Data(base::Value::Dict()) {}
 
 DeviceCapabilities::Data::Data(base::Value::Dict dictionary)
-    : dictionary_(std::move(dictionary)) {
-  base::JSONWriter::Write(dictionary_, &json_string_);
-}
+    : dictionary_(std::move(dictionary)),
+      json_string_(base::WriteJson(dictionary_).value_or("")) {}
 
-DeviceCapabilitiesImpl::Data::~Data() {}
+DeviceCapabilitiesImpl::Data::~Data() = default;
 
 DeviceCapabilitiesImpl::ValidatorInfo::ValidatorInfo(Validator* validator)
     : validator_(validator),

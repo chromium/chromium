@@ -8,7 +8,6 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/web_common.h"

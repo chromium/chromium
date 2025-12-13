@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//content/public/common/zygote/features.gni")
 import("//ipc/features.gni")
@@ -22,7 +21,6 @@ buildflag_header("buildflags") {
   _mbi_mode_per_site_instance = mbi_mode == "per_site_instance"
 
   flags = [
-    "USE_EXTERNAL_POPUP_MENU=$use_external_popup_menu",
     "ALLOW_CRITICAL_MEMORY_PRESSURE_HANDLING_IN_FOREGROUND=$allow_critical_memory_pressure_handling_in_foreground",
     "MBI_MODE_PER_RENDER_PROCESS_HOST=$_mbi_mode_per_render_process_host",
     "MBI_MODE_PER_SITE_INSTANCE=$_mbi_mode_per_site_instance",
@@ -72,7 +70,6 @@ source_set("common") {
     "common_param_traits.cc",
     "common_param_traits.h",
     "common_param_traits_macros.h",
-    "content_constants_internal.cc",
     "content_constants_internal.h",
     "content_export.h",
     "content_navigation_policy.cc",
@@ -154,6 +151,8 @@ source_set("common") {
     "process_visibility_tracker.h",
     "pseudonymization_salt.cc",
     "pseudonymization_salt.h",
+    "scheduler_loop_quarantine_task_observer.cc",
+    "scheduler_loop_quarantine_task_observer.h",
     "service_worker/forwarded_race_network_request_url_loader_factory.cc",
     "service_worker/forwarded_race_network_request_url_loader_factory.h",
     "service_worker/race_network_request_read_buffer_manager.cc",
@@ -175,8 +174,6 @@ source_set("common") {
     "trace_utils.h",
     "url_schemes.cc",
     "url_schemes.h",
-    "user_level_memory_pressure_signal_features.cc",
-    "user_level_memory_pressure_signal_features.h",
     "web_package/signed_exchange_utils.cc",
     "web_package/signed_exchange_utils.h",
     "web_ui_loading_util.cc",
@@ -303,8 +300,6 @@ source_set("common") {
       "android/gin_java_bridge_errors.h",
       "android/gin_java_bridge_value.cc",
       "android/gin_java_bridge_value.h",
-      "android/hash_set.cc",
-      "android/hash_set.h",
       "android/surface_wrapper.cc",
       "android/surface_wrapper.h",
       "android/sync_compositor_statics.cc",
@@ -417,7 +412,7 @@ component("main_frame_counter") {
     "main_frame_counter.cc",
     "main_frame_counter.h",
   ]
-  deps = [ "//base:base" ]
+  deps = [ "//base" ]
 }
 
 # See comment at the top of //content/BUILD.gn for how this works.
@@ -512,10 +507,6 @@ mojom("mojo_bindings") {
         {
           mojom = "content.mojom.SyntheticTap"
           cpp = "::content::SyntheticTapGestureParams"
-        },
-        {
-          mojom = "content.mojom.SystemThemeColor"
-          cpp = "::ui::NativeTheme::SystemThemeColor"
         },
       ]
 

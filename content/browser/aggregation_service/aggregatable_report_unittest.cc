@@ -699,7 +699,7 @@ TEST_F(AggregatableReportTest, ReportingPathSet_SetInRequest) {
           reporting_path);
   ASSERT_TRUE(request.has_value());
   EXPECT_EQ(request->reporting_path(), reporting_path);
-  EXPECT_EQ(request->GetReportingUrl().path(), reporting_path);
+  EXPECT_EQ(request->GetReportingUrl().GetPath(), reporting_path);
   EXPECT_EQ(request->GetReportingUrl().GetWithEmptyPath(),
             example_request.shared_info().reporting_origin.GetURL());
 }

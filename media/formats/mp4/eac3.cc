@@ -64,22 +64,22 @@ bool EAC3::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
   // skip data_rate
   RCHECK(reader.SkipBits(13));
 
-  int num_ind_sub;
+  uint8_t num_ind_sub;
   RCHECK(reader.ReadBits(3, &num_ind_sub));
 
   ChannelLayout max_channel_layout = CHANNEL_LAYOUT_UNSUPPORTED;
   uint32_t max_channel_count = 0;
-  for (int i = 0; i < num_ind_sub + 1; i++) {
+  for (uint8_t i = 0; i < num_ind_sub + 1; i++) {
     // skip fscod, bsid, reserved, asvc, bsmod
     RCHECK(reader.SkipBits(2 + 5 + 1 + 1 + 3));
 
-    int acmod;
+    uint8_t acmod;
     RCHECK(reader.ReadBits(3, &acmod));
     if (acmod >= kAC3AudioCodingModeSize) {
       return false;
     }
 
-    int lfeon;
+    uint8_t lfeon;
     RCHECK(reader.ReadBits(1, &lfeon));
 
     ChannelLayout channel_layout = kAC3AudioCodingModeTable[lfeon][acmod];
@@ -95,7 +95,7 @@ bool EAC3::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
     // skip reserved
     RCHECK(reader.SkipBits(3));
 
-    int num_dep_sub;
+    uint8_t num_dep_sub;
     RCHECK(reader.ReadBits(4, &num_dep_sub));
     if (num_dep_sub == 0) {
       // skip reserved
@@ -103,7 +103,7 @@ bool EAC3::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
       continue;
     }
 
-    int chan_loc;
+    uint16_t chan_loc;
     RCHECK(reader.ReadBits(9, &chan_loc));
     if (chan_loc == 0) {
       // skip since no additional channel location info.

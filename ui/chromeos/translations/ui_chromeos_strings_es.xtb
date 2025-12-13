@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Género</translation>
 <translation id="1254593899333212300">Conexión directa a Internet</translation>
 <translation id="1272293450992660632">Los códigos PIN no coinciden.</translation>
+<translation id="1279040297980392566">Esperando a que termine el análisis. Vuelve a intentarlo más tarde.</translation>
 <translation id="1280820357415527819">Buscando redes móviles</translation>
 <translation id="1293556467332435079">Archivos</translation>
 <translation id="1297922636971898492">Google Drive no está disponible en estos momentos. La subida se reiniciará automáticamente cuando vuelva a estar disponible.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">1 archivo seleccionado</translation>
 <translation id="3817579325494460411">No proporcionada</translation>
 <translation id="3819448694985509187">PIN incorrecto. Te queda 1 intento.</translation>
-<translation id="3822559385185038546">Tu administrador obliga a usar este proxy</translation>
 <translation id="3830674330436234648">No se puede reproducir</translation>
 <translation id="383652340667548381">Serbio</translation>
 <translation id="3839045880592694915">Tu operador no permite que el módem se conecte. Ponte en contacto con tu operador para obtener más información.</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="5602622065581044566">Búlgaro con teclado fonético</translation>
 <translation id="5605830556594064952">Estados Unidos (Dvorak)</translation>
+<translation id="560739212255190568">Tu administrador ha definido reglas de anulación de proxy, además de implementar obligatoriamente el siguiente proxy</translation>
 <translation id="5618330573454123917">Este archivo está diseñado para un ordenador que utilice software de Macintosh. No es compatible con tu dispositivo, que utiliza Chrome OS. <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /> sobre cómo abrir archivos en ChromeOS</translation>
 <translation id="5625294776298156701">Tamil con teclado Tamil99</translation>
 <translation id="5633226425545095130">Si mueves este elemento, se compartirá con todos los usuarios que puedan ver la carpeta compartida "<ph name="DESTINATION_NAME" />".</translation>
@@ -787,7 +788,7 @@
 <translation id="7075931588889865715">Tailandés con teclado TIS 820‑2531</translation>
 <translation id="708278670402572152">Desconectar para habilitar la búsqueda</translation>
 <translation id="7086590977277044826">Tamil con teclado InScript</translation>
-<translation id="7088615885725309056">Más antiguos</translation>
+<translation id="7088615885725309056">Más antigua</translation>
 <translation id="7103992300314999525">Macedonio</translation>
 <translation id="7104338189998813914">No se ha podido acceder a tu cuenta de OneDrive</translation>
 <translation id="7106346894903675391">Comprar más almacenamiento...</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="8545476925160229291">Inglés (EE. UU.)</translation>
 <translation id="854655314928502177">URL de detección automática de proxy web:</translation>
+<translation id="8547747809824590510">Tu administrador ha definido reglas de anulación de proxy</translation>
 <translation id="8549186985808798022">Italiano</translation>
 <translation id="8551494947769799688">Letón</translation>
 <translation id="8560515948038859357">Cantonés</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Ya existe el archivo "<ph name="FILE_NAME" />". Elige otro nombre.</translation>
 <translation id="9046895021617826162">Error de conexión</translation>
 <translation id="9065512565307033593">Si no la verificas, se inhabilitará el acceso a la red.</translation>
+<translation id="9079844694307518094">Tu administrador está implementando obligatoriamente el siguiente proxy</translation>
 <translation id="908378762078012445">Ruso con teclado fonético AATSEEL</translation>
 <translation id="9086302186042011942">Sincronizando</translation>
 <translation id="9099674669267916096">Número de páginas</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">Se ha iniciado la instalación correctamente.</translation>
 <translation id="9219103736887031265">Imágenes</translation>
 <translation id="9219908252191632183">Lunar</translation>
+<translation id="931652069802536959">La red está bloqueada por una política</translation>
 <translation id="938470336146445890">Instala un certificado de usuario.</translation>
 <translation id="939736085109172342">Nueva carpeta</translation>
 <translation id="943972244133411984">Modificado por</translation>

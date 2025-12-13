@@ -18,7 +18,7 @@ constexpr char kAnnotatorMarkerColorHistogramName[] =
 // mode or not.
 std::string GetHistogramName(const std::string& prefix) {
   std::string mode =
-      Shell::Get()->IsInTabletMode() ? ".TabletMode" : ".ClamshellMode";
+      display::Screen::Get()->InTabletMode() ? ".TabletMode" : ".ClamshellMode";
   return prefix + mode;
 }
 

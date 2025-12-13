@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "content/public/browser/child_process_host.h"
+#include "content/public/browser/site_instance.h"
 
 namespace content {
 

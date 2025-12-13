@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
 #include "base/i18n/message_formatter.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -533,9 +532,9 @@ void DriveUploadHandler::OnGetDriveMetadata(
 
   // URLs for editing Office files in Web Drive all have a "docs.google.com"
   // host.
-  if (hosted_url.host() != "docs.google.com") {
+  if (hosted_url.GetHost() != "docs.google.com") {
     if (timed_out) {
-      if (hosted_url.host() == "drive.google.com" &&
+      if (hosted_url.GetHost() == "drive.google.com" &&
           !file_manager::file_tasks::IsOfficeFileMimeType(
               metadata->content_mime_type)) {
         // The drive.google.com will appear if an uploaded file has an Office
@@ -546,7 +545,7 @@ void DriveUploadHandler::OnGetDriveMetadata(
                   base::unexpected(GetNotAValidDocumentErrorMessage()));
       } else {
         LOG(ERROR) << "Unexpected alternate URL - Drive editing unavailable: "
-                   << hosted_url.host();
+                   << hosted_url.GetHost();
         OnEndCopy(OfficeFilesUploadResult::kUnexpectedAlternateUrlHost);
       }
     } else {

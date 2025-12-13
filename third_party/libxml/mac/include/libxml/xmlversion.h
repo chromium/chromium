@@ -15,21 +15,21 @@
  *
  * the version string like "1.2.3"
  */
-#define LIBXML_DOTTED_VERSION "2.14.2"
+#define LIBXML_DOTTED_VERSION "2.14.6"
 
 /**
  * LIBXML_VERSION:
  *
  * the version number: 1.2.3 value is 10203
  */
-#define LIBXML_VERSION 21402
+#define LIBXML_VERSION 21406
 
 /**
  * LIBXML_VERSION_STRING:
  *
  * the version number string, 1.2.3 value is "10203"
  */
-#define LIBXML_VERSION_STRING "21402"
+#define LIBXML_VERSION_STRING "21406"
 
 /**
  * LIBXML_VERSION_EXTRA:
@@ -44,7 +44,7 @@
  * Macro to check that the libxml version in use is compatible with
  * the version the software has been compiled against
  */
-#define LIBXML_TEST_VERSION xmlCheckVersion(21402);
+#define LIBXML_TEST_VERSION xmlCheckVersion(21406);
 
 /**
  * LIBXML_THREAD_ENABLED:

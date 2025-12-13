@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -29,7 +25,7 @@ class SpeechRecognitionTest : public extensions::PlatformAppBrowserTest {
         testing::UnitTest::GetInstance()->current_test_info();
     // For SpeechRecognitionTest.SpeechFromBackgroundPage test, we need to
     // fake the speech input to make tests run OK in bots.
-    if (!strcmp(test_info->name(), "SpeechFromBackgroundPage")) {
+    if (!UNSAFE_TODO(strcmp(test_info->name(), "SpeechFromBackgroundPage"))) {
       fake_speech_recognition_manager_ =
           std::make_unique<content::FakeSpeechRecognitionManager>();
       fake_speech_recognition_manager_->set_should_send_fake_response(true);

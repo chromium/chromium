@@ -3,8 +3,6 @@ include_rules = [
   "+components/content_settings/core/common",
   "+components/cookie_config",
   "+components/domain_reliability",
-  "+components/ip_protection",
-  "+components/miracle_parameter",
   "+components/network_session_configurator",
   "+components/os_crypt/async",
   "+components/os_crypt/sync",
@@ -13,8 +11,9 @@ include_rules = [
   # than to store user preferences.
   "+components/prefs",
   "+components/privacy_sandbox/privacy_sandbox_features.h",
-  "+components/privacy_sandbox/masked_domain_list",
+  "+components/unexportable_keys",
   "+components/url_matcher",
+  "+components/url_pattern",
   "+components/version_info",
   "+components/web_package",
   # FakeSSLClientSocket
@@ -24,7 +23,6 @@ include_rules = [
   "+net",
   "+sandbox",
   "+services/proxy_resolver/public/mojom",
-  "+services/proxy_resolver_win/public/mojom",
   "+services/service_manager/public",
   "+third_party/boringssl/src/include",
   "+third_party/boringssl/src/pki",

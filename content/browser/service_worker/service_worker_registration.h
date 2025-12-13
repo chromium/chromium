@@ -39,6 +39,22 @@ class CONTENT_EXPORT ServiceWorkerRegistration
   using StatusCallback =
       base::OnceCallback<void(blink::ServiceWorkerStatusCode status)>;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(DeleteInitiator)
+  enum class DeleteInitiator {
+    kUnregister = 0,
+    kDeleteForStorageKey = 1,
+    kForceDelete = 2,
+    kRegistrationFailure = 3,
+    kContentPublicApi = 4,
+    kWebUI = 5,
+    kTest = 6,
+    kMaxValue = kTest,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/service/enums.xml:ServiceWorkerRegistrationDeleteInitiator)
+
   class CONTENT_EXPORT Listener {
    public:
     virtual void OnVersionAttributesChanged(
@@ -179,11 +195,11 @@ class CONTENT_EXPORT ServiceWorkerRegistration
   // Deletes this registration from storage immediately. Triggers the
   // [[ClearRegistration]] algorithm when the currently active version has no
   // controllees.
-  void DeleteAndClearWhenReady();
+  void DeleteAndClearWhenReady(DeleteInitiator initiator);
 
   // Deletes this registration from storage immediately and then triggers the
   // [[ClearRegistration]] algorithm.
-  void DeleteAndClearImmediately();
+  void DeleteAndClearImmediately(DeleteInitiator initiator);
 
   // Restores this registration in storage and cancels the pending
   // [[ClearRegistration]] algorithm.
@@ -276,7 +292,8 @@ class CONTENT_EXPORT ServiceWorkerRegistration
       scoped_refptr<ServiceWorkerVersion> activating_version,
       blink::ServiceWorkerStatusCode status);
 
-  void OnDeleteFinished(blink::ServiceWorkerStatusCode status);
+  void OnDeleteFinished(DeleteInitiator initiator,
+                        blink::ServiceWorkerStatusCode status);
 
   // This method corresponds to the [[ClearRegistration]] algorithm.
   void Clear();

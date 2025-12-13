@@ -32,8 +32,8 @@ ReclaimableCodec::ReclaimableCodec(CodecType type, ExecutionContext* context)
   // Do this last, it will immediately re-enter via OnLifecycleStateChanged().
   observer_handle_ = context->GetScheduler()->AddLifecycleObserver(
       FrameOrWorkerScheduler::ObserverType::kWorkerScheduler,
-      WTF::BindRepeating(&ReclaimableCodec::OnLifecycleStateChanged,
-                         WrapWeakPersistent(this)));
+      BindRepeating(&ReclaimableCodec::OnLifecycleStateChanged,
+                    WrapWeakPersistent(this)));
 }
 
 void ReclaimableCodec::Trace(Visitor* visitor) const {

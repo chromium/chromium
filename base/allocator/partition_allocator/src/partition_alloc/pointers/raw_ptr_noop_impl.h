@@ -63,25 +63,31 @@ struct RawPtrNoOpImpl {
   }
 
   // Advance the wrapped pointer by `delta_elems`.
+  // PRECONDITIONS: `wrapped_ptr` must be at least `delta_elems` before the
+  // end of the range.
   template <
       typename T,
       typename Z,
       typename =
           std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
-  PA_ALWAYS_INLINE static constexpr T*
+  PA_UNSAFE_BUFFER_USAGE PA_ALWAYS_INLINE static constexpr T*
   Advance(T* wrapped_ptr, Z delta_elems, bool /*is_in_pointer_modification*/) {
-    return wrapped_ptr + delta_elems;
+    // SAFETY: required from caller, enforced by PA_UNSAFE_BUFFER_USAGE.
+    return PA_UNSAFE_BUFFERS(wrapped_ptr + delta_elems);
   }
 
   // Retreat the wrapped pointer by `delta_elems`.
+  // PRECONDITIONS: `wrapped_ptr` must be at least `delta_elems` after
+  // the start of the range.
   template <
       typename T,
       typename Z,
       typename =
           std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
-  PA_ALWAYS_INLINE static constexpr T*
+  PA_UNSAFE_BUFFER_USAGE PA_ALWAYS_INLINE static constexpr T*
   Retreat(T* wrapped_ptr, Z delta_elems, bool /*is_in_pointer_modification*/) {
-    return wrapped_ptr - delta_elems;
+    // SAFETY: required from caller, enforced by PA_UNSAFE_BUFFER_USAGE.
+    return PA_UNSAFE_BUFFERS(wrapped_ptr - delta_elems);
   }
 
   template <typename T>

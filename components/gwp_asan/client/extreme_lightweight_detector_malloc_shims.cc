@@ -4,6 +4,8 @@
 
 #include "components/gwp_asan/client/extreme_lightweight_detector_malloc_shims.h"
 
+#include "partition_alloc/slot_start.h"
+
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #include <atomic>
@@ -161,16 +163,16 @@ inline bool Quarantine(void* object) {
     return false;
   }
 
+  partition_alloc::internal::UntaggedSlotStart slot_start =
+      partition_alloc::internal::SlotStart::Unchecked(object).Untag();
+
   // TODO(yukishiino): It may and may not be more performative to get the root
   // via `FromAddrInFirstSuperpage(internal::ObjectPtr2Addr(object))`.
   // See also:
   // https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/src/partition_alloc/partition_root.h;l=1424-1434;drc=6b284da9be36f6edfdc0ddde4a031270c41096d8
   // Although in this case `slot_span` will be touched by `GetSlotUsableSize`.
-  partition_alloc::internal::SlotSpanMetadata<
-      partition_alloc::internal::MetadataKind::kReadOnly>* slot_span =
-      partition_alloc::internal::SlotSpanMetadata<
-          partition_alloc::internal::MetadataKind::kReadOnly>::
-          FromObject(object);
+  partition_alloc::internal::SlotSpanMetadata* slot_span =
+      partition_alloc::internal::SlotSpanMetadata::FromSlotStart(slot_start);
   partition_alloc::PartitionRoot* root =
       partition_alloc::PartitionRoot::FromSlotSpanMetadata(slot_span);
   if (root != lightweight_quarantine_partition_root) [[unlikely]] {
@@ -193,13 +195,12 @@ inline bool Quarantine(void* object) {
   size_t usable_size = root->GetSlotUsableSize(slot_span);
   ExtremeLightweightDetectorUtil::Zap(object, usable_size);
 
-  uintptr_t slot_start = root->ObjectToSlotStart(object);
   if (usable_size <= init_options.object_size_threshold_in_bytes) [[likely]] {
     lightweight_quarantine_branch_for_small_objects->Quarantine(
-        object, slot_span, slot_start, usable_size);
+        object, slot_span, slot_start.value(), usable_size);
   } else {
     lightweight_quarantine_branch_for_large_objects->Quarantine(
-        object, slot_span, slot_start, usable_size);
+        object, slot_span, slot_start.value(), usable_size);
   }
 
   return true;
@@ -252,6 +253,7 @@ AllocatorDispatch allocator_dispatch = {
     nullptr,  // alloc_function
     nullptr,  // alloc_unchecked_function
     nullptr,  // alloc_zero_initialized_function
+    nullptr,  // alloc_zero_initialized_unchecked_function
     nullptr,  // alloc_aligned_function
     // realloc doesn't always deallocate memory, so the Extreme LUD doesn't
     // support realloc.

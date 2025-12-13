@@ -13,12 +13,12 @@
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_vertical_data.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shaper.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
-#include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -50,7 +50,6 @@ class ShapeResultBloberizerTest : public FontTestBase {
     cache = MakeGarbageCollected<ShapeCache>();
   }
 
-  FontCachePurgePreventer font_cache_purge_preventer;
   FontDescription font_description;
 
   Persistent<ShapeCache> cache;
@@ -337,89 +336,44 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentLeftToRightFillGlyphBuffer) {
   // "/. ." with an accent mark over the first dot.
   const UChar kStr[] = {0x2F, 0x301, 0x2E, 0x20, 0x2E};
   TextRun text_run{base::span(kStr)};
-  TextRunPaintInfo run_info(text_run);
-  run_info.to = 3;
 
   Font* font = MakeGarbageCollected<Font>(font_description);
-  CachingWordShaper word_shaper(*font);
-  ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(text_run, &buffer);
+  PlainTextNode* node = MakeGarbageCollected<PlainTextNode>(
+      text_run, /* normalize_space */ false, *font, /* supports_bidi */ true,
+      /* cache */ nullptr);
   ShapeResultBloberizer::FillGlyphs bloberizer(
-      font->GetFontDescription(), run_info, buffer,
+      font->GetFontDescription(), *node,
       ShapeResultBloberizer::Type::kEmitText);
 
   Font* reference_font = MakeGarbageCollected<Font>(font_description);
   reference_font->SetCanShapeWordByWordForTesting(false);
 
-  CachingWordShaper reference_word_shaper(*reference_font);
-  ShapeResultBuffer reference_buffer;
-  reference_word_shaper.FillResultBuffer(text_run, &reference_buffer);
+  PlainTextNode* reference_node = MakeGarbageCollected<PlainTextNode>(
+      text_run, /* normalize_space */ false, *reference_font,
+      /* supports_bidi */ true,
+      /* cache */ nullptr);
   ShapeResultBloberizer::FillGlyphs reference_bloberizer(
-      reference_font->GetFontDescription(), run_info, reference_buffer,
+      reference_font->GetFontDescription(), *reference_node,
       ShapeResultBloberizer::Type::kEmitText);
 
   const auto& glyphs =
       ShapeResultBloberizerTestInfo::PendingRunGlyphs(bloberizer);
-  ASSERT_EQ(glyphs.size(), 3ul);
+  ASSERT_EQ(glyphs.size(), 5ul);
   const auto reference_glyphs =
       ShapeResultBloberizerTestInfo::PendingRunGlyphs(reference_bloberizer);
-  ASSERT_EQ(reference_glyphs.size(), 3ul);
-
-  EXPECT_EQ(reference_glyphs[0], glyphs[0]);
-  EXPECT_EQ(reference_glyphs[1], glyphs[1]);
-  EXPECT_EQ(reference_glyphs[2], glyphs[2]);
-
-  CheckBlobBuffer(
-      bloberizer.Blobs(),
-      {{
-          {3,
-           text_run.ToStringView()
-               .ToString()
-               .Substring(run_info.from, run_info.to - run_info.from)
-               .Utf8(),
-           ExpectedRun::ClusterDirection::kAscending},
-      }});
-}
-
-// Tests that filling a glyph buffer for a specific range returns the same
-// results when shaping word by word as when shaping the full run in one go.
-TEST_F(ShapeResultBloberizerTest, CommonAccentRightToLeftFillGlyphBuffer) {
-  // "[] []" with an accent mark over the last square bracket.
-  const UChar kStr[] = {0x5B, 0x5D, 0x20, 0x5B, 0x301, 0x5D};
-  TextRun text_run(StringView(base::span(kStr)), TextDirection::kRtl);
-  TextRunPaintInfo run_info(text_run);
-  run_info.from = 1;
-
-  Font* font = MakeGarbageCollected<Font>(font_description);
-  CachingWordShaper word_shaper(*font);
-  ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(text_run, &buffer);
-  ShapeResultBloberizer::FillGlyphs bloberizer(
-      font->GetFontDescription(), run_info, buffer,
-      ShapeResultBloberizer::Type::kEmitText);
-
-  Font* reference_font = MakeGarbageCollected<Font>(font_description);
-  reference_font->SetCanShapeWordByWordForTesting(false);
-
-  CachingWordShaper reference_word_shaper(*reference_font);
-  ShapeResultBuffer reference_buffer;
-  reference_word_shaper.FillResultBuffer(text_run, &reference_buffer);
-  ShapeResultBloberizer::FillGlyphs reference_bloberizer(
-      reference_font->GetFontDescription(), run_info, reference_buffer,
-      ShapeResultBloberizer::Type::kEmitText);
-
-  const auto& glyphs =
-      ShapeResultBloberizerTestInfo::PendingRunGlyphs(bloberizer);
-  ASSERT_EQ(5u, glyphs.size());
-  const auto reference_glyphs =
-      ShapeResultBloberizerTestInfo::PendingRunGlyphs(reference_bloberizer);
-  ASSERT_EQ(5u, reference_glyphs.size());
+  ASSERT_EQ(reference_glyphs.size(), 5ul);
 
   EXPECT_EQ(reference_glyphs[0], glyphs[0]);
   EXPECT_EQ(reference_glyphs[1], glyphs[1]);
   EXPECT_EQ(reference_glyphs[2], glyphs[2]);
   EXPECT_EQ(reference_glyphs[3], glyphs[3]);
   EXPECT_EQ(reference_glyphs[4], glyphs[4]);
+
+  CheckBlobBuffer(bloberizer.Blobs(),
+                  {{
+                      {5, text_run.ToStringView().ToString().Utf8(),
+                       ExpectedRun::ClusterDirection::kAscending},
+                  }});
 }
 
 TEST_F(ShapeResultBloberizerTest, CommonAccentRightToLeftFillGlyphBufferNG) {
@@ -628,21 +582,17 @@ TEST_F(ShapeResultBloberizerTest, SubRunWithZeroGlyphs) {
   TextRun text_run{base::span(kStr)};
 
   Font* font = MakeGarbageCollected<Font>(font_description);
-  CachingWordShaper shaper(*font);
+  PlainTextNode* node = MakeGarbageCollected<PlainTextNode>(
+      text_run, /* normalize_space */ false, *font, /* supports_bidi */ false,
+      /* cache */ nullptr);
   gfx::RectF glyph_bounds;
-  ASSERT_GT(shaper.Width(text_run, &glyph_bounds), 0);
+  ASSERT_GT(node->AccumulateInlineSize(&glyph_bounds), .0f);
 
-  TextRunPaintInfo run_info(text_run);
-  run_info.to = 8;
-
-  CachingWordShaper word_shaper(*font);
-  ShapeResultBuffer buffer;
-  word_shaper.FillResultBuffer(text_run, &buffer);
   ShapeResultBloberizer::FillGlyphs bloberizer(
-      font->GetFontDescription(), run_info, buffer,
+      font->GetFontDescription(), *node,
       ShapeResultBloberizer::Type::kEmitText);
 
-  shaper.GetCharacterRange(text_run, 0, 8);
+  node->ComputeCharacterRange(0, 8);
 }
 
 }  // namespace blink

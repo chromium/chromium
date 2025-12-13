@@ -6,6 +6,8 @@
 
 #include <memory>
 #include "third_party/blink/public/common/scheme_registry.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -35,9 +37,10 @@ DomActivityLoggersForIsolatedWorld() {
   return map;
 }
 
-void V8DOMActivityLogger::LogMethod(ScriptState* script_state,
-                                    const char* api_name,
-                                    v8::FunctionCallbackInfo<v8::Value> info) {
+void V8DOMActivityLogger::LogMethod(
+    ScriptState* script_state,
+    const char* api_name,
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::LocalVector<v8::Value> logger_args(info.GetIsolate());
   logger_args.reserve(info.Length());
   for (int i = 0; i < info.Length(); ++i) {

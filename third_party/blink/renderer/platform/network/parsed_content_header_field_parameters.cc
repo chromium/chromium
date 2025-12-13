@@ -67,7 +67,7 @@ ParsedContentHeaderFieldParameters::Parse(HeaderFieldTokenizer tokenizer,
 }
 
 String ParsedContentHeaderFieldParameters::ParameterValueForName(
-    const String& name) const {
+    StringView name) const {
   if (!name.ContainsOnlyASCIIOrEmpty())
     return String();
 

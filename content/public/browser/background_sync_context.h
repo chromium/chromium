@@ -34,7 +34,7 @@ class CONTENT_EXPORT BackgroundSyncContext {
   static void FireBackgroundSyncEventsAcrossPartitions(
       BrowserContext* browser_context,
       blink::mojom::BackgroundSyncType sync_type,
-      const base::android::JavaParamRef<jobject>& j_runnable);
+      const base::android::JavaRef<jobject>& j_runnable);
 #endif
 
   BackgroundSyncContext() = default;

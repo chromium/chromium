@@ -6,7 +6,7 @@
 #define UI_VIEWS_CONTROLS_NATIVE_NATIVE_VIEW_HOST_WRAPPER_H_
 
 #include "ui/base/cursor/cursor.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/views_export.h"
 
 namespace gfx {

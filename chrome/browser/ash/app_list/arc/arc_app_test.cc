@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -21,13 +21,19 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/arc/privacy_items/arc_privacy_items_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_play_store_enabled_preference_handler.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom-shared.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
@@ -40,7 +46,13 @@
 #include "chromeos/ash/experiences/arc/test/fake_compatibility_mode_instance.h"
 #include "chromeos/ash/experiences/arc/test/fake_intent_helper_host.h"
 #include "chromeos/ash/experiences/arc/test/fake_intent_helper_instance.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -91,80 +103,155 @@ std::vector<arc::mojom::AppInfoPtr> ArcAppTest::CloneApps(
 }
 
 ArcAppTest::ArcAppTest(UserManagerMode user_manager_mode)
-    : fake_user_manager_(user_manager_mode == UserManagerMode::kDoNothing
-                             ? nullptr
-                             : std::make_unique<ash::FakeChromeUserManager>()) {
+    : user_manager_mode_(user_manager_mode) {
   CreateFakeAppsAndPackages();
 }
 
-ArcAppTest::~ArcAppTest() = default;
+ArcAppTest::~ArcAppTest() {
+  CHECK(!need_pre_profile_teardown_);
+  CHECK(!need_post_profile_teardown_);
+}
 
-void ArcAppTest::SetUp(Profile* profile) {
+void ArcAppTest::PreProfileSetUp() {
+  CHECK(!is_pre_profile_setup_called_);
+  is_pre_profile_setup_called_ = true;
+  CHECK(!need_post_profile_teardown_);
+  need_post_profile_teardown_ = true;
+
+  arc::SetArcAvailableCommandLineForTesting(
+      base::CommandLine::ForCurrentProcess());
+
+  // TODO(crbug.com/455728516): Fix tests that create TestingProfile without
+  // ProfileManager, and use ScopedAccountIdAnnotator.
+  ash::ProfileHelper::SetProfileToUserForTestingEnabled(true);
+
+  // ChromeMainDelegate::PostEarlyInitialization:
   if (!ash::ConciergeClient::Get()) {
     concierge_client_initialized_ = true;
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
   }
-  arc::SetArcAvailableCommandLineForTesting(
-      base::CommandLine::ForCurrentProcess());
+
+  if (!ash::DlcserviceClient::Get()) {
+    dlcservice_client_initialized_ = true;
+    ash::DlcserviceClient::InitializeFake();
+  }
+
+  // ChromeBrowserMainPartsAsh::PreCreateMainMessageLoop:
+  if (user_manager_mode_ == UserManagerMode::kCreate) {
+    CHECK(!session_manager::SessionManager::Get())
+        << "Test should let ArcAppTest initializes SessionManager";
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
+  } else {
+    CHECK(session_manager::SessionManager::Get())
+        << "Test should initialize SessionManager too";
+  }
+
+  // ChromeBrowserMainPartsAsh::PreMainMessageLoopRun:
+  arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
+  // ConciergeClient must outlive ArcSessionManager.
+  CHECK(ash::ConciergeClient::Get());
+
+  arc_dlc_installer_ = std::make_unique<arc::ArcDlcInstaller>();
+  arc_session_manager_ = arc::CreateTestArcSessionManager(
+      std::make_unique<arc::ArcSessionRunner>(
+          base::BindRepeating(arc::FakeArcSession::Create)),
+      arc_dlc_installer_.get());
+  DCHECK(arc::ArcSessionManager::Get());
+  arc::ArcSessionManager::SetUiEnabledForTesting(false);
+
+  // ChromeBrowserMainPartsAsh::PreProfileInit:
+  if (user_manager_mode_ == UserManagerMode::kCreate) {
+    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<user_manager::FakeUserManagerDelegate>(),
+        TestingBrowserProcess::GetGlobal()->local_state()));
+    session_manager::SessionManager::Get()->OnUserManagerCreated(
+        user_manager_.Get());
+
+    // Set up user and then create a session.
+    CreateUserAndLogin();
+  }
+}
+
+void ArcAppTest::PostProfileSetUp(Profile* profile) {
+  CHECK(is_pre_profile_setup_called_);
+  CHECK(!need_pre_profile_teardown_);
+  need_pre_profile_teardown_ = true;
+
   DCHECK(!profile_);
   profile_ = profile;
 
-  if (!session_manager::SessionManager::Get()) {
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
+  // Set up user-profile mapping.
+  if (user_manager_mode_ == UserManagerMode::kCreate) {
+    CHECK(user_);
+    CHECK_EQ(user_->GetAccountId().GetUserEmail(),
+             profile->GetProfileUserName())
+        << "Test needs to call `SetUserEmail` before PreProfileSetUp";
+
+    // NOTE: Some tests call SetUp() again after TearDown().
+    // TODO(crbug.com/446582547): Fix those tests and remove the `Get` check.
+    if (!ash::AnnotatedAccountId::Get(profile_)) {
+      ash::AnnotatedAccountId::Set(profile_, user_->GetAccountId(),
+                                   /*for_test=*/true);
+    }
+
+    user_manager_.Get()->OnUserProfileCreated(user_->GetAccountId(),
+                                              profile->GetPrefs());
+
+    // The testing mapping is needed for `ProfileHelper::GetProfileByUser`.
+    // If the mapping is not setup, ProfileManager is required to look up the
+    // profile. However, several test fixtures create TestingProfile without
+    // ProfileManager.
+    // TODO(crbug.com/455728516): Fix those tests and remove this.
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user_,
+                                                                 profile_);
   }
 
   arc::ResetArcAllowedCheckForTesting(profile_);
 
-  if (fake_user_manager_.Get()) {
-    const user_manager::User* user = CreateUserAndLogin();
-
-    // If for any reason the garbage collector kicks in while we are waiting for
-    // an icon, have the user-to-profile mapping ready to avoid using the real
-    // profile manager (which is null).
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                 profile_);
-  }
-
-  // A valid |arc_app_list_prefs_| is needed for the ARC bridge service and the
-  // ARC auth service.
-  arc_app_list_pref_ = ArcAppListPrefs::Get(profile_);
-  if (!arc_app_list_pref_) {
-    ArcAppListPrefsFactory::GetInstance()->RecreateServiceInstanceForTesting(
-        profile_);
-  }
-  arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
-  arc_session_manager_ =
-      arc::CreateTestArcSessionManager(std::make_unique<arc::ArcSessionRunner>(
-          base::BindRepeating(arc::FakeArcSession::Create)));
-  DCHECK(arc::ArcSessionManager::Get());
-  arc::ArcSessionManager::SetUiEnabledForTesting(false);
+  // ArcServiceLauncher::MaybeSetProfile:
+  CHECK(arc_session_manager_);
   arc_session_manager_->SetProfile(profile_);
-  arc_session_manager_->Initialize();
-  arc_play_store_enabled_preference_handler_ =
-      std::make_unique<arc::ArcPlayStoreEnabledPreferenceHandler>(
-          profile_, arc_session_manager_.get());
-  arc_play_store_enabled_preference_handler_->Start();
 
-  if (initialize_real_intent_helper_bridge_) {
-    arc::ArcIntentHelperBridge::GetForBrowserContextForTesting(profile_);
-    intent_helper_instance_ = std::make_unique<arc::FakeIntentHelperInstance>();
-    arc_service_manager_->arc_bridge_service()->intent_helper()->SetInstance(
-        intent_helper_instance_.get());
-    WaitForInstanceReady(
-        arc_service_manager_->arc_bridge_service()->intent_helper());
+  // ArcServiceLauncher::OnPrimaryUserProfilePrepared:
+  {
+    // Create keyed-services.
+
+    // A valid |arc_app_list_prefs_| is needed for the ARC bridge service and
+    // the ARC auth service.
+    arc_app_list_pref_ = ArcAppListPrefs::Get(profile_);
+    CHECK(arc_app_list_pref_);
+
+    if (initialize_real_intent_helper_bridge_) {
+      arc::ArcIntentHelperBridge::GetForBrowserContextForTesting(profile_);
+      intent_helper_instance_ =
+          std::make_unique<arc::FakeIntentHelperInstance>();
+      arc_service_manager_->arc_bridge_service()->intent_helper()->SetInstance(
+          intent_helper_instance_.get());
+      WaitForInstanceReady(
+          arc_service_manager_->arc_bridge_service()->intent_helper());
+    }
+
+    arc::ArcPrivacyItemsBridge::GetForBrowserContextForTesting(profile_);
+
+    // Ensure that the singleton apps::ArcApps is constructed.
+    apps::ArcAppsFactory::GetForProfile(profile_);
+
+    arc_session_manager_->Initialize();
+
+    arc_play_store_enabled_preference_handler_ =
+        std::make_unique<arc::ArcPlayStoreEnabledPreferenceHandler>(
+            profile_, arc_session_manager_.get());
+    arc_play_store_enabled_preference_handler_->Start();
   }
 
-  arc_app_list_pref_ = ArcAppListPrefs::Get(profile_);
-  DCHECK(arc_app_list_pref_);
   if (wait_default_apps_)
     WaitForDefaultApps();
   WaitForRemoveAllApps();
 
-  if (ash::features::ArePromiseIconsEnabled()) {
-    apps::AppServiceProxyFactory::GetForProfile(profile_)
-        ->PromiseAppService()
-        ->SetSkipAlmanacForTesting(true);
-  }
+  apps::AppServiceProxyFactory::GetForProfile(profile_)
+      ->PromiseAppService()
+      ->SetSkipAlmanacForTesting(true);
 
   // Check initial conditions.
   if (activate_arc_on_start_) {
@@ -192,11 +279,6 @@ void ArcAppTest::SetUp(Profile* profile) {
       WaitForInstanceReady(
           arc_service_manager_->arc_bridge_service()->compatibility_mode());
     }
-  }
-
-  if (start_app_service_publisher_) {
-    // Ensure that the singleton apps::ArcApps is constructed.
-    apps::ArcAppsFactory::GetForProfile(profile_);
   }
 }
 
@@ -326,26 +408,71 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
   }
 }
 
-void ArcAppTest::TearDown() {
-  if (start_app_service_publisher_)
-    apps::ArcAppsFactory::GetInstance()->ShutDownForTesting(profile_);
+void ArcAppTest::PreProfileTearDown() {
+  CHECK(need_pre_profile_teardown_);
+  need_pre_profile_teardown_ = false;
+
   if (compatibility_mode_instance_) {
     compatibility_mode_instance_.reset();
   }
-  if (intent_helper_instance_) {
+  app_instance_.reset();
+  arc_play_store_enabled_preference_handler_.reset();
+
+  CHECK(arc_session_manager_);
+  arc_session_manager_->Shutdown();
+
+  apps::ArcAppsFactory::GetInstance()->ShutDownForTesting(profile_);
+
+  arc_session_manager_.reset();
+  arc_dlc_installer_.reset();
+
+  if (initialize_real_intent_helper_bridge_) {
     arc_service_manager_->arc_bridge_service()->intent_helper()->CloseInstance(
         intent_helper_instance_.get());
     intent_helper_instance_.reset();
-    intent_helper_host_.reset();
-  }
-  if (initialize_real_intent_helper_bridge_)
     arc::ArcIntentHelperBridge::ShutDownForTesting(profile_);
-  app_instance_.reset();
-  arc_play_store_enabled_preference_handler_.reset();
-  arc_session_manager_.reset();
-  if (!persist_service_manager_)
-    arc_service_manager_.reset();
+  }
+
+  arc::ArcPrivacyItemsBridge::ShutdownForTesting(profile_);
+
   arc::ResetArcAllowedCheckForTesting(profile_);
+
+  if (user_manager_mode_ == UserManagerMode::kCreate) {
+    CHECK(user_);
+    user_manager_.Get()->OnUserProfileWillBeDestroyed(user_->GetAccountId());
+  }
+
+  profile_ = nullptr;
+}
+
+void ArcAppTest::PostProfileTearDown() {
+  CHECK(!need_pre_profile_teardown_);
+  CHECK(need_post_profile_teardown_);
+  need_post_profile_teardown_ = false;
+  is_pre_profile_setup_called_ = false;
+
+  // ConciergeClient must outlive ArcSessionManager.
+  CHECK(ash::ConciergeClient::Get());
+  arc_session_manager_.reset();
+  if (!persist_service_manager_) {
+    arc_service_manager_.reset();
+  }
+
+  if (user_manager_mode_ == UserManagerMode::kCreate) {
+    user_ = nullptr;
+
+    CHECK(session_manager_);
+    session_manager_.reset();
+
+    CHECK(user_manager_.Get());
+    user_manager_.Reset();
+  }
+
+  if (dlcservice_client_initialized_) {
+    ash::DlcserviceClient::Shutdown();
+    dlcservice_client_initialized_ = false;
+  }
+
   // ConciergeClient may be initialized from other testing utility, such as
   // ash::AshTestHelper::SetUp(), so Shutdown() only when it is initialized in
   // ArcAppTest::SetUp().
@@ -353,8 +480,10 @@ void ArcAppTest::TearDown() {
     ash::ConciergeClient::Shutdown();
     concierge_client_initialized_ = false;
   }
-  profile_ = nullptr;
-  session_manager_.reset();
+
+  // TODO(crbug.com/455728516): Fix tests that create TestingProfile without
+  // ProfileManager, and use ScopedAccountIdAnnotator.
+  ash::ProfileHelper::SetProfileToUserForTestingEnabled(false);
 }
 
 void ArcAppTest::StopArcInstance() {
@@ -370,23 +499,23 @@ void ArcAppTest::RestartArcInstance() {
   WaitForInstanceReady(bridge_service->app());
 }
 
-void ArcAppTest::SetUpIntentHelper() {
-  DCHECK(profile_);
-  auto* arc_bridge_service = arc_service_manager_->arc_bridge_service();
-  intent_helper_host_ = std::make_unique<arc::FakeIntentHelperHost>(
-      arc_bridge_service->intent_helper());
-  intent_helper_instance_ = std::make_unique<arc::FakeIntentHelperInstance>();
-  arc_bridge_service->intent_helper()->SetInstance(
-      intent_helper_instance_.get());
-  WaitForInstanceReady(arc_bridge_service->intent_helper());
-}
+void ArcAppTest::CreateUserAndLogin() {
+  std::string profile_user_name = user_email_;
+  if (user_email_.empty()) {
+    profile_user_name = TestingProfile::kDefaultProfileUserName;
+  }
 
-const user_manager::User* ArcAppTest::CreateUserAndLogin() {
-  const AccountId account_id(AccountId::FromUserEmailGaiaId(
-      profile_->GetProfileUserName(), GaiaId("1234567890")));
-  const user_manager::User* user = fake_user_manager_->AddUser(account_id);
-  fake_user_manager_->LoginUser(account_id);
-  return user;
+  const AccountId account_id(
+      AccountId::FromUserEmailGaiaId(profile_user_name, GaiaId("1234567890")));
+  CHECK(user_manager::TestHelper(user_manager::UserManager::Get())
+            .AddRegularUser(account_id));
+  CHECK_DEREF(session_manager::SessionManager::Get())
+      .CreateSession(account_id,
+                     user_manager::TestHelper::GetFakeUsernameHash(account_id),
+                     /*new_user=*/false, /*has_active_session=*/false);
+
+  user_ = user_manager::UserManager::Get()->FindUser(account_id);
+  CHECK(user_);
 }
 
 void ArcAppTest::AddPackage(arc::mojom::ArcPackageInfoPtr package) {
@@ -412,4 +541,8 @@ void ArcAppTest::RemovePackage(const std::string& package_name) {
 bool ArcAppTest::FindPackage(const std::string& package_name) {
   return base::Contains(fake_packages_, package_name,
                         &arc::mojom::ArcPackageInfo::package_name);
+}
+
+void ArcAppTest::SetUserEmail(const std::string& email) {
+  user_email_ = email;
 }

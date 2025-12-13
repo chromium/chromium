@@ -45,9 +45,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleHostResolver {
   using ResolveHostCallback = base::OnceCallback<void(
       int result,
       const net::ResolveErrorInfo& resolve_error_info,
-      const std::optional<net::AddressList>& resolved_addresses,
-      const std::optional<net::HostResolverEndpointResults>&
-          endpoint_results_with_metadata)>;
+      const net::AddressList& resolved_addresses,
+      const net::HostResolverEndpointResults& alternative_endpoints)>;
 
   // Creates a SimpleHostResolver using the |network_context_factory|.
   // Use this if the associated network context might change over time (for

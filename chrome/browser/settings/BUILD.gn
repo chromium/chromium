@@ -11,6 +11,23 @@ android_library_factory("factory_java") {
   sources = [ "android/java/src/org/chromium/chrome/browser/settings/SettingsNavigationFactory.java" ]
 }
 
+android_library("search_java") {
+  sources = [
+    "search/java/src/org/chromium/chrome/browser/settings/search/ChromeBaseSearchIndexProvider.java",
+    "search/java/src/org/chromium/chrome/browser/settings/search/ChromeSearchIndexProvider.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//components/browser_ui/settings/android:java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+  ]
+}
+
 android_library("internal_java") {
   deps = [
     "//base:resetters_java",
@@ -30,17 +47,23 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/settings/FaviconLoader.java",
     "android/java/src/org/chromium/chrome/browser/settings/ProfileDependentSetting.java",
   ]
-  public_deps = [ ":factory_java" ]
+  public_deps = [
+    ":factory_java",
+    ":search_java",
+  ]
   deps = [
     "//base:base_java",
     "//chrome/browser/feedback/android:factory_java",
     "//chrome/browser/feedback/android:java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/favicon:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/settings/android:managed_prefs_java_resources",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/cached_flags:java",
     "//components/favicon/android:java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
@@ -49,6 +72,7 @@ android_library("java") {
     "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.chrome.browser.settings"

@@ -54,7 +54,8 @@ class UkmDatabaseBackend : public UkmDatabase {
   void AddUmaMetric(const std::string& profile_id,
                     const UmaMetricEntry& row) override;
   void RunReadOnlyQueries(QueryList&& queries, QueryCallback callback) override;
-  void DeleteEntriesOlderThan(base::Time time) override;
+  void CleanupOldEntries(base::Time ukm_time_limit,
+                         base::Time uma_time_limit) override;
   void CleanupItems(const std::string& profile_id,
                     std::vector<CleanupItem> cleanup_items) override;
   void CommitTransactionForTesting() override;
@@ -95,6 +96,8 @@ class UkmDatabaseBackend : public UkmDatabase {
   int change_count_ GUARDED_BY_CONTEXT(sequence_checker_){0};
   std::unique_ptr<sql::Transaction> current_transaction_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  bool inhibit_transaction_ GUARDED_BY_CONTEXT(sequence_checker_);
+
   UkmMetricsTable metrics_table_ GUARDED_BY_CONTEXT(sequence_checker_);
   UkmUrlTable url_table_ GUARDED_BY_CONTEXT(sequence_checker_);
   UmaMetricsTable uma_metrics_table_ GUARDED_BY_CONTEXT(sequence_checker_);

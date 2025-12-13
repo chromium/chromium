@@ -9,7 +9,7 @@ desc: |-
 
         URLs must have HTTPS scheme, e.g. "https://example.com".
 
-        For detailed information on valid url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+        For detailed information on valid url patterns, please see https://chromeenterprise.google/policies/url-patterns/.
 device_only: true
 example_value:
 - https://www.example.com/

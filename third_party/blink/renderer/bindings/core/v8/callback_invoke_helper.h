@@ -60,6 +60,7 @@ class CallbackInvokeHelper final {
       : callback_(callback),
         class_like_name_(class_like_name),
         property_name_(property_name),
+        task_attribution_scope_(InitializeTaskScope(callback)),
         // step: Prepare to run script with relevant settings.
         callback_relevant_context_scope_(
             callback->CallbackRelevantScriptState()),
@@ -83,8 +84,7 @@ class CallbackInvokeHelper final {
     if (try_catch.HasCaught()) [[unlikely]] {
       ApplyContextToException(
           callback_->CallbackRelevantScriptState(), try_catch.Exception(),
-          ExceptionContext(v8::ExceptionContext::kOperation, class_like_name_,
-                           property_name_));
+          v8::ExceptionContext::kOperation, class_like_name_, property_name_);
       try_catch.ReThrow();
       return v8::Nothing<ReturnType>();
     }
@@ -98,6 +98,20 @@ class CallbackInvokeHelper final {
     return false;
   }
 
+  static std::optional<scheduler::TaskAttributionTracker::TaskScope>
+  InitializeTaskScope(CallbackBase* callback) {
+    if constexpr (std::is_same<
+                      CallbackBase,
+                      CallbackFunctionWithTaskAttributionBase>::value) {
+      if (auto* tracker =
+              scheduler::TaskAttributionTracker::From(callback->GetIsolate())) {
+        return tracker->SetCurrentTaskStateIfTopLevel(callback->GetTaskState(),
+                                                      TaskScopeType::kCallback);
+      }
+    }
+    return std::nullopt;
+  }
+
   CallbackBase* callback_;
   const char* class_like_name_;
   const char* property_name_;
@@ -106,10 +120,12 @@ class CallbackInvokeHelper final {
   v8::Local<v8::Value> result_;
   bool aborted_ = false;
 
-  ScriptState::Scope callback_relevant_context_scope_;
-  v8::Context::BackupIncumbentScope backup_incumbent_scope_;
+  // `task_attribution_scope_` needs to be set before entering a v8::Context, so
+  // it needs to come before `callback_relevant_context_scope_`.
   std::optional<scheduler::TaskAttributionTracker::TaskScope>
       task_attribution_scope_;
+  ScriptState::Scope callback_relevant_context_scope_;
+  v8::Context::BackupIncumbentScope backup_incumbent_scope_;
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT

@@ -1,0 +1,94 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "composebox_animation_context.h",
+    "composebox_dismiss_animator.h",
+    "composebox_dismiss_animator.mm",
+    "composebox_input_item.h",
+    "composebox_input_item.mm",
+    "composebox_input_item_cell.h",
+    "composebox_input_item_cell.mm",
+    "composebox_input_item_collection.h",
+    "composebox_input_item_collection.mm",
+    "composebox_input_item_view.h",
+    "composebox_input_item_view.mm",
+    "composebox_input_plate_consumer.h",
+    "composebox_input_plate_mutator.h",
+    "composebox_input_plate_view_controller.h",
+    "composebox_input_plate_view_controller.mm",
+    "composebox_metrics_recorder.h",
+    "composebox_metrics_recorder.mm",
+    "composebox_navigation_consumer.h",
+    "composebox_present_animator.h",
+    "composebox_present_animator.mm",
+    "composebox_snackbar_presenter.h",
+    "composebox_snackbar_presenter.mm",
+    "composebox_tab_picker_consumer.h",
+    "composebox_tab_picker_mutator.h",
+    "composebox_tab_picker_view_controller.h",
+    "composebox_tab_picker_view_controller.mm",
+    "composebox_view_controller.h",
+    "composebox_view_controller.mm",
+  ]
+  deps = [
+    ":ui_constants",
+    "//base",
+    "//build:branding_buildflags",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/composebox/coordinator:constants",
+    "//ios/chrome/browser/composebox/public:animation",
+    "//ios/chrome/browser/composebox/public:features",
+    "//ios/chrome/browser/composebox/public:input_plate_controls",
+    "//ios/chrome/browser/composebox/public:theme",
+    "//ios/chrome/browser/omnibox/public:constants",
+    "//ios/chrome/browser/omnibox/ui:omnibox_internal",
+    "//ios/chrome/browser/omnibox/ui/popup",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/snackbar",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/glow_effect:glow_effect_api",
+    "//ui/base",
+  ]
+}
+
+source_set("ui_constants") {
+  sources = [
+    "composebox_ui_constants.h",
+    "composebox_ui_constants.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "composebox_egtest.mm" ]
+  deps = [
+    ":ui_constants",
+    "//ios/chrome/browser/omnibox/public:constants",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "composebox_metrics_recorder_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -63,19 +63,10 @@ const char kPermissionPromptSurveyPepcPromptPositionKey[] =
 const char kPermissionPromptSurveyInitialPermissionStatusKey[] =
     "InitialPermissionStatus";
 
-const char kPermissionPromptSurveyPreviewVisibleKey[] = "Preview was visible";
+const char kPermissionPromptSurveyPromptOptionsKey[] = "PromptOptions";
 
-const char kPermissionPromptSurveyPreviewDropdownInteractedKey[] =
-    "Preview dropdown was interacted";
-
-const char kPermissionPromptSurveyPreviewWasCombinedKey[] =
-    "Preview prompt was combined";
-
-const char kPermissionPromptSurveyPreviewTimeToDecisionKey[] =
-    "Preview time to decision";
-
-const char kPermissionPromptSurveyPreviewTimeToVisibleKey[] =
-    "Preview time to visible";
+const char kPermissionPromptSurveyPromptDisplayDurationKey[] =
+    "PromptDisplayDuration";
 
 // TODO(crbug.com/40254381): Remove the code related to unused site permissions
 // from Android builds.

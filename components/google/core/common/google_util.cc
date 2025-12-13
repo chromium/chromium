@@ -13,6 +13,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -99,14 +100,14 @@ bool IsValidURL(const GURL& url, PortPermission port_permission) {
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kIgnoreGooglePortNumbers);
   return url.is_valid() && url.SchemeIsHTTPOrHTTPS() &&
-         (url.port().empty() || g_ignore_port_numbers ||
+         (!url.has_port() || g_ignore_port_numbers ||
           (port_permission == ALLOW_NON_STANDARD_PORTS));
 }
 
 bool IsCanonicalHostGoogleHostname(std::string_view canonical_host,
                                    SubdomainPermission subdomain_permission) {
   const GURL& base_url(CommandLineGoogleBaseURL());
-  if (base_url.is_valid() && (canonical_host == base_url.host_piece())) {
+  if (base_url.is_valid() && (canonical_host == base_url.host())) {
     return true;
   }
 
@@ -133,7 +134,7 @@ bool IsGoogleSearchSubdomainUrl(const GURL& url) {
     return false;
   }
 
-  std::string_view host(url.host_piece());
+  std::string_view host(url.host());
   StripTrailingDot(&host);
 
   static constexpr auto google_subdomains =
@@ -144,6 +145,8 @@ bool IsGoogleSearchSubdomainUrl(const GURL& url) {
 }
 
 }  // namespace
+
+BASE_FEATURE(kIsViewerGoogleSearchUrl, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Global functions -----------------------------------------------------------
 
@@ -172,7 +175,7 @@ GURL AppendGoogleLocaleParam(const GURL& url,
 }
 
 std::string GetGoogleCountryCode(const GURL& google_homepage_url) {
-  std::string_view google_hostname = google_homepage_url.host_piece();
+  std::string_view google_hostname = google_homepage_url.host();
   // TODO(igorcov): This needs a fix for case when the host has a trailing dot,
   // like "google.com./". https://crbug.com/720295.
   const size_t last_dot = google_hostname.find_last_of('.');
@@ -236,7 +239,7 @@ bool IsGoogleDomainUrl(const GURL& url,
                        SubdomainPermission subdomain_permission,
                        PortPermission port_permission) {
   return IsValidURL(url, port_permission) &&
-         IsCanonicalHostGoogleHostname(url.host_piece(), subdomain_permission);
+         IsCanonicalHostGoogleHostname(url.host(), subdomain_permission);
 }
 
 bool IsGoogleHostname(std::string_view host,
@@ -255,7 +258,7 @@ bool IsGoogleHomePageUrl(const GURL& url) {
   }
 
   // Make sure the path is a known home page path.
-  std::string_view path(url.path_piece());
+  std::string_view path(url.path());
   return IsPathHomePageBase(path) ||
          base::StartsWith(path, "/ig", base::CompareCase::INSENSITIVE_ASCII);
 }
@@ -269,23 +272,28 @@ bool IsGoogleSearchUrl(const GURL& url) {
   }
 
   // Make sure the path is a known search path.
-  std::string_view path(url.path_piece());
+  std::string_view path(url.path());
   bool is_home_page_base = IsPathHomePageBase(path);
-  if (!is_home_page_base && path != "/search" && path != "/imgres") {
+  bool is_search_url =
+      is_home_page_base || path == "/search" || path == "/imgres";
+  if (base::FeatureList::IsEnabled(kIsViewerGoogleSearchUrl)) {
+    is_search_url |= path == "/viewer" || base::StartsWith(path, "/viewer/");
+  }
+  if (!is_search_url) {
     return false;
   }
 
   // Check for query parameter in URL parameter and hash fragment, depending on
   // the path type.
-  return HasGoogleSearchQueryParam(url.ref_piece()) ||
-         (!is_home_page_base && HasGoogleSearchQueryParam(url.query_piece()));
+  return HasGoogleSearchQueryParam(url.ref()) ||
+         (!is_home_page_base && HasGoogleSearchQueryParam(url.query()));
 }
 
 bool IsYoutubeDomainUrl(const GURL& url,
                         SubdomainPermission subdomain_permission,
                         PortPermission port_permission) {
   return IsValidURL(url, port_permission) &&
-         IsCanonicalHostYoutubeHostname(url.host_piece(), subdomain_permission);
+         IsCanonicalHostYoutubeHostname(url.host(), subdomain_permission);
 }
 
 bool IsGoogleAssociatedDomainUrl(const GURL& url) {
@@ -314,7 +322,7 @@ bool IsGoogleAssociatedDomainUrl(const GURL& url) {
       ".youtubekids.com",
       ".ytimg.com",
   });
-  const std::string host = url.host();
+  const std::string_view host(url.host());
   for (auto* i : kSuffixesToSetHeadersFor) {
     if (base::EndsWith(host, i, base::CompareCase::INSENSITIVE_ASCII)) {
       return true;
@@ -366,7 +374,7 @@ GURL AppendToAsyncQueryParam(const GURL& url,
   const std::string param_name = "async";
   const std::string key_value = key + ":" + value;
   bool replaced = false;
-  const std::string_view input = url.query_piece();
+  const std::string_view input = url.query();
   url::Component cursor(0, input.size());
   std::string output;
   url::Component key_range, value_range;
@@ -403,8 +411,8 @@ GoogleSearchMode GoogleSearchModeFromUrl(const GURL& url) {
                 "This function should be updated if new values are added to "
                 "GoogleSearchMode");
 
-  std::string_view query_str = url.query_piece();
-  url::Component query(0, static_cast<int>(url.query_piece().length()));
+  std::string_view query_str = url.query();
+  url::Component query(0, static_cast<int>(url.query().length()));
   url::Component key, value;
   GoogleSearchMode mode = GoogleSearchMode::kUnspecified;
   while (url::ExtractQueryKeyValue(query_str, &query, &key, &value)) {

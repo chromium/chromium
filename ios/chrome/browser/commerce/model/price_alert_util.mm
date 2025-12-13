@@ -8,16 +8,17 @@
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/web/public/web_state.h"
 
-bool IsPriceAlertsEligible(web::BrowserState* browser_state) {
-  if (browser_state->IsOffTheRecord()) {
+bool IsPriceAlertsEligible(ProfileIOS* profile) {
+  if (profile->IsOffTheRecord()) {
     return false;
   }
 
@@ -27,12 +28,10 @@ bool IsPriceAlertsEligible(web::BrowserState* browser_state) {
     return false;
   }
 
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
-  AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForProfile(profile);
-  DCHECK(authentication_service);
-  if (!authentication_service->HasPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  DCHECK(identity_manager);
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return false;
   }
   PrefService* pref_service = profile->GetPrefs();
@@ -43,4 +42,9 @@ bool IsPriceAlertsEligible(web::BrowserState* browser_state) {
     return false;
   }
   return true;
+}
+
+bool IsPriceAlertsEligibleForWebState(web::WebState* web_state) {
+  return IsPriceAlertsEligible(
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
 }

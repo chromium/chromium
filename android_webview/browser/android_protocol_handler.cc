@@ -5,6 +5,7 @@
 #include "android_webview/browser/android_protocol_handler.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "android_webview/common/url_constants.h"
@@ -27,7 +28,7 @@
 using base::android::AttachCurrentThread;
 using base::android::ClearException;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 using embedder_support::InputStream;
@@ -91,3 +92,5 @@ static std::string JNI_AndroidProtocolHandler_GetWellKnownMimeType(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AndroidProtocolHandler)

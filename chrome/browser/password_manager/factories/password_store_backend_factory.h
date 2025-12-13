@@ -7,10 +7,13 @@
 
 #include <memory>
 
-#include "base/files/file_path.h"
-#include "components/password_manager/core/browser/password_store/password_store.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 
 class PrefService;
+
+namespace base {
+class FilePath;
+}  // namespace base
 
 namespace password_manager {
 class PasswordStoreBackend;
@@ -18,25 +21,14 @@ class PasswordStoreBackend;
 
 namespace os_crypt_async {
 class OSCryptAsync;
-}
+}  // namespace os_crypt_async
 
-// Creates the password store backend for the profile store. Depending on
-// the platform, this can be backed by the login database, or by
+// Depending on the platform, this can be backed by the login database, or by
 // the android backend.
 std::unique_ptr<password_manager::PasswordStoreBackend>
-CreateProfilePasswordStoreBackend(const base::FilePath& login_db_directory,
-                                  PrefService* prefs,
-                                  os_crypt_async::OSCryptAsync* os_crypt_async);
-
-// Creates the password store backend for the account store. Depending on
-// the platform, this can be backed by the login database, or by
-// the android backend.
-std::unique_ptr<password_manager::PasswordStoreBackend>
-CreateAccountPasswordStoreBackend(
-    const base::FilePath& login_db_directory,
-    PrefService* prefs,
-    password_manager::UnsyncedCredentialsDeletionNotifier
-        unsynced_deletions_notifier,
-    os_crypt_async::OSCryptAsync* os_crypt_async);
+CreatePasswordStoreBackend(password_manager::IsAccountStore is_account_store,
+                           const base::FilePath& login_db_directory,
+                           PrefService* prefs,
+                           os_crypt_async::OSCryptAsync* os_crypt_async);
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_FACTORIES_PASSWORD_STORE_BACKEND_FACTORY_H_

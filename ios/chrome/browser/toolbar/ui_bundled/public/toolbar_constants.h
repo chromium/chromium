@@ -95,8 +95,6 @@ extern NSString* const kToolbarStackButtonIdentifier;
 extern NSString* const kToolbarShareButtonIdentifier;
 // Accessibility identifier of the NewTab button.
 extern NSString* const kToolbarNewTabButtonIdentifier;
-// Accessibility identifier of the cancel omnibox edit button.
-extern NSString* const kToolbarCancelOmniboxEditButtonIdentifier;
 
 // Font size for the TabGrid button containing the tab count.
 extern const NSInteger kTabGridButtonFontSize;

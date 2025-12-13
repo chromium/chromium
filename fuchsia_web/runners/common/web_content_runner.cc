@@ -8,11 +8,11 @@
 #include <lib/fidl/cpp/binding_set.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/service_directory.h>
+
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/files/file.h"
-#include "base/files/file_util.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"

@@ -4,20 +4,25 @@
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
-import {PageHandlerFactory, PageHandlerRemote, PageReceiver} from './glic.mojom-webui.js';
-import type {PageHandlerInterface, PageInterface} from './glic.mojom-webui.js';
+import {GlicPreloadHandlerFactory, GlicPreloadHandlerRemote, PageHandlerFactory, PageHandlerRemote, PageReceiver, PreloadPageReceiver} from './glic.mojom-webui.js';
+import type {GlicPreloadHandlerInterface, PageHandlerInterface, PageInterface, PreloadPageInterface} from './glic.mojom-webui.js';
 
 export interface BrowserProxy {
   handler: PageHandlerInterface;
+  preloadHandler?: GlicPreloadHandlerInterface;
 }
 
 // Whether to enable PageHandler debug logging. Can be enabled with the
 // --enable-features=GlicDebugWebview command-line flag.
 const kEnableDebug = loadTimeData.getBoolean('enableDebug');
+const kGlicWebContentsWarming =
+    loadTimeData.getBoolean('glicWebContentsWarming');
 
 export class BrowserProxyImpl implements BrowserProxy {
   handler: PageHandlerInterface;
-  constructor(pageInterface: PageInterface) {
+  preloadHandler?: GlicPreloadHandlerInterface;
+
+  constructor(pageInterface: PageInterface&PreloadPageInterface) {
     const pageReceiver = new PageReceiver(pageInterface);
     const pageHandlerRemote = new PageHandlerRemote();
     this.handler = pageHandlerRemote;
@@ -42,5 +47,14 @@ export class BrowserProxyImpl implements BrowserProxy {
     PageHandlerFactory.getRemote().createPageHandler(
         pageHandlerRemote.$.bindNewPipeAndPassReceiver(),
         pageReceiver.$.bindNewPipeAndPassRemote());
+
+    if (kGlicWebContentsWarming) {
+      const preloadPageReceiver = new PreloadPageReceiver(pageInterface);
+      const preloadHandlerRemote = new GlicPreloadHandlerRemote();
+      this.preloadHandler = preloadHandlerRemote;
+      GlicPreloadHandlerFactory.getRemote().createPreloadHandler(
+          preloadHandlerRemote.$.bindNewPipeAndPassReceiver(),
+          preloadPageReceiver.$.bindNewPipeAndPassRemote());
+    }
   }
 }

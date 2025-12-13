@@ -102,19 +102,17 @@ class VideoEncoderTest : public ::testing::TestWithParam<VideoEncoderTestParam>,
           accelerator_task_runner_);
 
       sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-      sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
       mock_gpu_factories_ =
           std::make_unique<MockGpuVideoAcceleratorFactories>(sii_.get());
       EXPECT_CALL(*mock_gpu_factories_, GetTaskRunner())
           .WillRepeatedly(testing::Return(accelerator_task_runner_));
       EXPECT_CALL(*mock_gpu_factories_, DoCreateVideoEncodeAccelerator())
-          .WillRepeatedly(testing::Invoke([&]() {
+          .WillRepeatedly([&]() {
             return vea_factory_->CreateVideoEncodeAcceleratorSync().release();
-          }));
+          });
       EXPECT_CALL(*mock_gpu_factories_,
                   GetVideoEncodeAcceleratorSupportedProfiles())
-          .WillRepeatedly(
-              testing::Invoke([&]() { return kDefaultSupportedProfiles; }));
+          .WillRepeatedly([&]() { return kDefaultSupportedProfiles; });
     }
 
     // Ensure that all of the software video encoders are enabled for testing.

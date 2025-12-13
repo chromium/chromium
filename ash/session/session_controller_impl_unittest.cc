@@ -230,6 +230,7 @@ class SessionControllerImplWithShellTest : public AshTestBase {
   }
 
   void TearDown() override {
+    window_state_ = nullptr;
     controller()->RemoveObserver(&observer_);
     window_.reset();
     AshTestBase::TearDown();
@@ -248,7 +249,7 @@ class SessionControllerImplWithShellTest : public AshTestBase {
   const TestSessionObserver* observer() const { return &observer_; }
 
  protected:
-  raw_ptr<WindowState, DanglingUntriaged> window_state_ = nullptr;
+  raw_ptr<WindowState> window_state_ = nullptr;
 
  private:
   TestSessionObserver observer_;
@@ -663,7 +664,7 @@ TEST_F(SessionControllerImplPrefsTest, SetsTimeOfLastSessionActivation) {
            SessionState::RMA}) {
     // Set session state and expect observers to be notified of the event.
     EXPECT_CALL(mock_session_observer, OnSessionStateChanged)
-        .WillOnce(testing::Invoke([&](SessionState session_state) {
+        .WillOnce([&](SessionState session_state) {
           EXPECT_EQ(session_state, expected_session_state);
 
           auto* const time_of_last_session_activation =
@@ -678,7 +679,7 @@ TEST_F(SessionControllerImplPrefsTest, SetsTimeOfLastSessionActivation) {
           EXPECT_EQ(
               *base::ValueToTime(time_of_last_session_activation->GetValue()),
               expected_time_of_last_session_activation);
-        }));
+        });
     session->SetSessionState(expected_session_state);
     testing::Mock::VerifyAndClearExpectations(&mock_session_observer);
 
@@ -726,7 +727,7 @@ TEST_F(SessionControllerImplPrefsTest, SetsTimeOfLastSessionActivation) {
 
   // Switch active user and expect observers to be notified of the event.
   EXPECT_CALL(mock_session_observer, OnActiveUserSessionChanged)
-      .WillOnce(testing::Invoke([&](const AccountId& account_id) {
+      .WillOnce([&](const AccountId& account_id) {
         EXPECT_EQ(account_id, kUser2AccountId);
 
         auto* const time_of_last_session_activation =
@@ -741,7 +742,7 @@ TEST_F(SessionControllerImplPrefsTest, SetsTimeOfLastSessionActivation) {
         EXPECT_EQ(
             *base::ValueToTime(time_of_last_session_activation->GetValue()),
             expected_time_of_last_session_activation);
-      }));
+      });
   SimulateUserLogin({kUser2Email});
   testing::Mock::VerifyAndClearExpectations(&mock_session_observer);
 

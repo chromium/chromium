@@ -477,13 +477,13 @@ mod tests {
     #[test]
     fn decode_writer_one_chunk() {
         let mut e = GzEncoder::new(Vec::new(), Compression::default());
-        e.write(STR.as_ref()).unwrap();
+        e.write_all(STR.as_ref()).unwrap();
         let bytes = e.finish().unwrap();
 
         let mut writer = Vec::new();
         let mut decoder = GzDecoder::new(writer);
         let n = decoder.write(&bytes[..]).unwrap();
-        decoder.write(&bytes[n..]).unwrap();
+        decoder.write_all(&bytes[n..]).unwrap();
         decoder.try_finish().unwrap();
         writer = decoder.finish().unwrap();
         let return_string = String::from_utf8(writer).expect("String parsing error");
@@ -493,7 +493,7 @@ mod tests {
     #[test]
     fn decode_writer_partial_header() {
         let mut e = GzEncoder::new(Vec::new(), Compression::default());
-        e.write(STR.as_ref()).unwrap();
+        e.write_all(STR.as_ref()).unwrap();
         let bytes = e.finish().unwrap();
 
         let mut writer = Vec::new();
@@ -501,7 +501,7 @@ mod tests {
         assert_eq!(decoder.write(&bytes[..5]).unwrap(), 5);
         let n = decoder.write(&bytes[5..]).unwrap();
         if n < bytes.len() - 5 {
-            decoder.write(&bytes[n + 5..]).unwrap();
+            decoder.write_all(&bytes[n + 5..]).unwrap();
         }
         writer = decoder.finish().unwrap();
         let return_string = String::from_utf8(writer).expect("String parsing error");
@@ -522,7 +522,7 @@ mod tests {
         assert_eq!(decoder.write(&bytes[..12]).unwrap(), 12);
         let n = decoder.write(&bytes[12..]).unwrap();
         if n < bytes.len() - 12 {
-            decoder.write(&bytes[n + 12..]).unwrap();
+            decoder.write_all(&bytes[n + 12..]).unwrap();
         }
         assert_eq!(
             decoder.header().unwrap().filename().unwrap(),
@@ -547,7 +547,7 @@ mod tests {
         assert_eq!(decoder.write(&bytes[..12]).unwrap(), 12);
         let n = decoder.write(&bytes[12..]).unwrap();
         if n < bytes.len() - 12 {
-            decoder.write(&bytes[n + 12..]).unwrap();
+            decoder.write_all(&bytes[n + 12..]).unwrap();
         }
         assert_eq!(
             decoder.header().unwrap().comment().unwrap(),
@@ -561,13 +561,13 @@ mod tests {
     #[test]
     fn decode_writer_exact_header() {
         let mut e = GzEncoder::new(Vec::new(), Compression::default());
-        e.write(STR.as_ref()).unwrap();
+        e.write_all(STR.as_ref()).unwrap();
         let bytes = e.finish().unwrap();
 
         let mut writer = Vec::new();
         let mut decoder = GzDecoder::new(writer);
         assert_eq!(decoder.write(&bytes[..10]).unwrap(), 10);
-        decoder.write(&bytes[10..]).unwrap();
+        decoder.write_all(&bytes[10..]).unwrap();
         writer = decoder.finish().unwrap();
         let return_string = String::from_utf8(writer).expect("String parsing error");
         assert_eq!(return_string, STR);
@@ -576,14 +576,14 @@ mod tests {
     #[test]
     fn decode_writer_partial_crc() {
         let mut e = GzEncoder::new(Vec::new(), Compression::default());
-        e.write(STR.as_ref()).unwrap();
+        e.write_all(STR.as_ref()).unwrap();
         let bytes = e.finish().unwrap();
 
         let mut writer = Vec::new();
         let mut decoder = GzDecoder::new(writer);
         let l = bytes.len() - 5;
         let n = decoder.write(&bytes[..l]).unwrap();
-        decoder.write(&bytes[n..]).unwrap();
+        decoder.write_all(&bytes[n..]).unwrap();
         writer = decoder.finish().unwrap();
         let return_string = String::from_utf8(writer).expect("String parsing error");
         assert_eq!(return_string, STR);
@@ -594,7 +594,7 @@ mod tests {
     #[test]
     fn decode_multi_writer() {
         let mut e = GzEncoder::new(Vec::new(), Compression::default());
-        e.write(STR.as_ref()).unwrap();
+        e.write_all(STR.as_ref()).unwrap();
         let bytes = e.finish().unwrap().repeat(2);
 
         let mut writer = Vec::new();
@@ -617,7 +617,7 @@ mod tests {
     fn decode_extra_data() {
         let compressed = {
             let mut e = GzEncoder::new(Vec::new(), Compression::default());
-            e.write(STR.as_ref()).unwrap();
+            e.write_all(STR.as_ref()).unwrap();
             let mut b = e.finish().unwrap();
             b.push(b'x');
             b

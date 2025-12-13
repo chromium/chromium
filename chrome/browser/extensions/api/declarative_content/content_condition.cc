@@ -10,7 +10,10 @@
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

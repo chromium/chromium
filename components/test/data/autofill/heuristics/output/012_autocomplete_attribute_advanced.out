@@ -1,6 +1,6 @@
-HTML_TYPE_NAME | 1.n |  |  | 1.n_1
-HTML_TYPE_EMAIL | 1.e |  |  | 1.n_1
-HTML_TYPE_ADDRESS_LINE1 | 1.a |  |  | one-shipping
+NAME_FULL | 1.n |  |  | 1.n_1
+EMAIL_ADDRESS | 1.e |  |  | 1.n_1
+ADDRESS_HOME_LINE1 | 1.a |  |  | one-shipping
 
 PHONE_HOME_CITY_AND_NUMBER | 4.phone |  |  | 4.phone_1
 EMAIL_ADDRESS | 4.email |  |  | 4.phone_1
@@ -11,7 +11,7 @@ ADDRESS_HOME_CITY | 4.city |  |  | 4.phone_1
 
 UNKNOWN_TYPE | 2.name |  |  | 2.name_1
 EMAIL_ADDRESS | 2.email |  |  | 2.name_1
-HTML_TYPE_TEL | 2.t |  |  | 2.name_1
+PHONE_HOME_WHOLE_NUMBER | 2.t |  |  | 2.name_1
 UNKNOWN_TYPE | 2.address |  |  | 2.name_1
 
 UNKNOWN_TYPE | 3.name |  |  | 3.name_1

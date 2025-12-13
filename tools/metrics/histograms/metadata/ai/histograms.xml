@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="AI.LanguageModel.APIUsage.Messages.Role"
-    enum="LanguageModelInputRole" expires_after="2025-10-27">
+    enum="LanguageModelInputRole" expires_after="2026-04-27">
   <owner>btriebw@chromium.org</owner>
   <owner>ayui@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -74,7 +74,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.LanguageModel.APIUsage.Messages.Text.Length"
-    units="characters" expires_after="2025-10-27">
+    units="characters" expires_after="2026-04-27">
   <owner>btriebw@chromium.org</owner>
   <owner>ayui@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -86,7 +86,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.LanguageModel.APIUsage.Messages.Type"
-    enum="LanguageModelInputType" expires_after="2025-10-27">
+    enum="LanguageModelInputType" expires_after="2026-04-27">
   <owner>btriebw@chromium.org</owner>
   <owner>ayui@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -99,7 +99,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="AI.LanguageModel.APIUsage.{LanguageModelFunctionName}.TemperatureX1000"
-    units="tempX1000" expires_after="2025-10-27">
+    units="tempX1000" expires_after="2026-04-27">
   <owner>btriebw@chromium.org</owner>
   <owner>ayui@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -114,7 +114,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.LanguageModel.APIUsage.{LanguageModelFunctionName}.TopK"
-    units="tokens" expires_after="2025-10-27">
+    units="tokens" expires_after="2026-04-27">
   <owner>btriebw@chromium.org</owner>
   <owner>ayui@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -128,7 +128,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="AI.LanguageModel.APIUsage.{LanguageModelFunctionName}.{LanguageModelExpectedInputOrOutput}.Language"
-    enum="LocaleCodeBCP47" expires_after="2025-10-27">
+    enum="LocaleCodeBCP47" expires_after="2026-04-27">
   <owner>btriebw@chromium.org</owner>
   <owner>ayui@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -145,7 +145,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="AI.LanguageModel.APIUsage.{LanguageModelFunctionName}.{LanguageModelExpectedInputOrOutput}.Type"
-    enum="LanguageModelInputType" expires_after="2025-10-27">
+    enum="LanguageModelInputType" expires_after="2026-04-27">
   <owner>btriebw@chromium.org</owner>
   <owner>ayui@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -204,7 +204,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.PromptRequestSize" units="bytes"
-    expires_after="2025-12-28">
+    expires_after="2026-05-03">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -216,7 +216,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.PromptResponseCallbackCount"
-    units="times" expires_after="2025-10-27">
+    units="times" expires_after="2026-04-27">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -228,7 +228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.PromptResponseSize" units="bytes"
-    expires_after="2025-12-28">
+    expires_after="2026-05-03">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -240,7 +240,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.PromptResponseStatus"
-    enum="AIModelStreamingResponseStatus" expires_after="2025-12-28">
+    enum="AIModelStreamingResponseStatus" expires_after="2026-05-03">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -275,7 +275,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="AI.Summarizer.APIUsage.{WritingAssistanceFunctionName}.CoreOptionType"
-    enum="WritingAssistanceMetricsOptionType" expires_after="2025-10-27">
+    enum="WritingAssistanceMetricsOptionType" expires_after="2026-04-27">
   <owner>btriebw@chromium.org</owner>
   <owner>ayui@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -288,7 +288,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Translation.LoadTranslateKitErrorCode"
-    enum="WinGetLastError" expires_after="2025-10-27">
+    enum="WinGetLastError" expires_after="2026-04-27">
   <owner>mych@google.com</owner>
   <owner>fergal@google.com</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -301,7 +301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Translation.LoadTranslateKitResult"
-    enum="LoadTranslateKitResult" expires_after="2025-12-28">
+    enum="LoadTranslateKitResult" expires_after="2026-05-03">
   <owner>mych@google.com</owner>
   <owner>fergal@google.com</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -314,7 +314,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.{SessionType}.AvailabilityV2" enum="Availability"
-    expires_after="2025-12-28">
+    expires_after="2026-05-03">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -327,7 +327,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="AI.{WritingAssistanceType}.APIUsage.{WritingAssistanceFunctionName}.CoreOptionFormat"
-    enum="WritingAssistanceMetricsOptionFormat" expires_after="2025-10-27">
+    enum="WritingAssistanceMetricsOptionFormat" expires_after="2026-04-27">
   <owner>btriebw@chromium.org</owner>
   <owner>ayui@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -342,7 +342,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="AI.{WritingAssistanceType}.APIUsage.{WritingAssistanceFunctionName}.CoreOptionLength"
-    enum="WritingAssistanceMetricsOptionLength" expires_after="2025-10-27">
+    enum="WritingAssistanceMetricsOptionLength" expires_after="2026-04-27">
   <owner>btriebw@chromium.org</owner>
   <owner>ayui@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -357,7 +357,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="AI.{WritingAssistanceType}.APIUsage.{WritingAssistanceFunctionName}.CoreOptionTone"
-    enum="WritingAssistanceMetricsOptionTone" expires_after="2025-10-27">
+    enum="WritingAssistanceMetricsOptionTone" expires_after="2026-04-27">
   <owner>btriebw@chromium.org</owner>
   <owner>ayui@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>
@@ -372,7 +372,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="AI.{WritingAssistanceType}.APIUsage.{WritingAssistanceFunctionName}.{LanguageMetric}"
-    enum="LocaleCodeBCP47" expires_after="2025-10-27">
+    enum="LocaleCodeBCP47" expires_after="2026-04-27">
   <owner>btriebw@chromium.org</owner>
   <owner>ayui@chromium.org</owner>
   <owner>src/chrome/browser/ai/OWNERS</owner>

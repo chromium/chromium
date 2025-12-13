@@ -14,8 +14,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/loader/response_head_update_params.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
@@ -29,7 +31,9 @@
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/test/fake_network_url_loader_factory.h"
@@ -1377,6 +1381,38 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, Lifetime) {
   EXPECT_FALSE(loader);
 
   // |loader_| is deleted here. LSan test will alert if it leaks.
+}
+
+TEST_F(ServiceWorkerMainResourceLoaderTest, Lifetime_RaceNetworkRequest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::
+           kServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement,
+       features::kServiceWorkerStaticRouterRaceRequestFix2},
+      {});
+
+  SetupStaticRoutingRules(
+      network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndFetchEvent);
+  service_worker_->DeferResponse();
+  SetupNetworkResponse();
+
+  StartRequest(CreateRequest());
+  base::WeakPtr<ServiceWorkerMainResourceLoader> loader = loader_->AsWeakPtr();
+  ASSERT_TRUE(loader);
+
+  // The network request wins, but the fetch event is still in flight.
+  client_.RunUntilComplete();
+  EXPECT_TRUE(loader);
+
+  // Even after calling DetachedFromRequest(), |loader_| should be alive until
+  // the fetch event completes.
+  loader_.release()->DetachedFromRequest();
+  EXPECT_TRUE(loader);
+
+  // Finish the fetch event. This should trigger the deletion of |loader_|.
+  service_worker_->FinishRespondWith();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(loader);
 }
 
 TEST_F(ServiceWorkerMainResourceLoaderTest, ConnectionErrorDuringFetchEvent) {

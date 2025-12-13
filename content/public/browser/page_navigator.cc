@@ -5,6 +5,8 @@
 #include "content/public/browser/page_navigator.h"
 
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/site_instance.h"
+#include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 

@@ -15,6 +15,7 @@ static_library("browser_delegate") {
 
   public_deps = [
     "//base",
+    "//components/account_id",
     "//components/sessions:session_id",
     "//components/webapps/common",
     "//ui/gfx/geometry",
@@ -41,13 +42,18 @@ static_library("impl") {
 
   deps = [
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/devtools",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/location_bar",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/web_applications",
+    "//chrome/browser/ui/web_applications:launch_utils",
     "//chrome/browser/web_applications",
     "//chromeos/ash/components/browser_context_helper",
     "//components/sessions:session_id",
     "//ui/aura",
+    "//ui/base",
   ]
 }

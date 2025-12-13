@@ -4,8 +4,8 @@
 
 #import <XCTest/XCTest.h>
 
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
+#import "ios/chrome/browser/bookmarks/public/bookmarks_ui_constants.h"
+#import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -93,10 +93,6 @@ using chrome_test_util::SettingsDoneButton;
 - (void)testKeyboardCommandsRegistered_MultiWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
-  }
-  if (@available(iOS 19.0, *)) {
-    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
   }
 
   [ChromeEarlGrey openNewWindow];

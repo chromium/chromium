@@ -8,51 +8,9 @@ component("file_manager") {
   output_name = "file_manager"
   defines = [ "IS_FILE_MANAGER_IMPL" ]
 
-  deps = [
-    "//ash/constants",
-    "//base",
-    "//chromeos/ash/components/browser_context_helper",
-    "//components/account_id",
-    "//components/user_manager",
-    "//sql",
-    "//url",
-  ]
+  deps = [ "//base" ]
 
   sources = [
-    "indexing/file_index.cc",
-    "indexing/file_index.h",
-    "indexing/file_index_service.cc",
-    "indexing/file_index_service.h",
-    "indexing/file_index_service_registry.cc",
-    "indexing/file_index_service_registry.h",
-    "indexing/file_info.cc",
-    "indexing/file_info.h",
-    "indexing/file_info_table.cc",
-    "indexing/file_info_table.h",
-    "indexing/index_storage.cc",
-    "indexing/index_storage.h",
-    "indexing/match.cc",
-    "indexing/match.h",
-    "indexing/posting_list_table.cc",
-    "indexing/posting_list_table.h",
-    "indexing/query.cc",
-    "indexing/query.h",
-    "indexing/ram_storage.cc",
-    "indexing/ram_storage.h",
-    "indexing/search_results.cc",
-    "indexing/search_results.h",
-    "indexing/sql_storage.cc",
-    "indexing/sql_storage.h",
-    "indexing/term.cc",
-    "indexing/term.h",
-    "indexing/term_table.cc",
-    "indexing/term_table.h",
-    "indexing/text_table.cc",
-    "indexing/text_table.h",
-    "indexing/token_table.cc",
-    "indexing/token_table.h",
-    "indexing/url_table.cc",
-    "indexing/url_table.h",
     "speedometer.cc",
     "speedometer.h",
   ]
@@ -66,27 +24,10 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":file_manager",
-    "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//chromeos/ash/components/browser_context_helper",
-    "//chromeos/ash/components/browser_context_helper:test_support",
-    "//components/account_id",
-    "//components/prefs:test_support",
-    "//components/user_manager",
-    "//components/user_manager:test_support",
-    "//sql",
-    "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//url",
   ]
-  sources = [
-    "indexing/file_index_service_registry_unittest.cc",
-    "indexing/file_index_service_unittest.cc",
-    "indexing/file_info_unittest.cc",
-    "indexing/index_storage_unittest.cc",
-    "indexing/token_table_unittest.cc",
-    "speedometer_unittest.cc",
-  ]
+  sources = [ "speedometer_unittest.cc" ]
 }

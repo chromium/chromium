@@ -9,24 +9,21 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.chromium.base.test.transit.Condition.whether;
 
-import android.util.Pair;
 import android.view.View;
 
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.SimpleConditions;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.omnibox.UrlBar;
-import org.chromium.chrome.test.transit.SoftKeyboardFacility;
-import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
-import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.NativePageCondition;
-import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** The Incognito New Tab Page screen, with text about Incognito mode. */
-public class IncognitoNewTabPageStation extends PageStation {
+public class IncognitoNewTabPageStation extends CtaPageStation {
     public ViewElement<UrlBar> urlBarElement;
     public ViewElement<View> iconElement;
     public ViewElement<View> goneIncognitoTextElement;
@@ -57,13 +54,8 @@ public class IncognitoNewTabPageStation extends PageStation {
         return menuButtonElement.clickTo().enterFacility(new IncognitoNewTabPageAppMenuFacility());
     }
 
-    /** Click the URL bar to enter the Omnibox. */
-    public Pair<OmniboxFacility, SoftKeyboardFacility> openOmnibox(
-            FakeOmniboxSuggestions fakeSuggestions) {
-        OmniboxFacility omniboxFacility =
-                new OmniboxFacility(/* incognito= */ true, fakeSuggestions);
-        SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
-        urlBarElement.clickTo().enterFacilities(omniboxFacility, softKeyboard);
-        return Pair.create(omniboxFacility, softKeyboard);
+    @Override
+    protected TripBuilder clickUrlBarOrSearchBarTo() {
+        return urlBarElement.clickTo();
     }
 }

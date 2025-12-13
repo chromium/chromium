@@ -12,25 +12,23 @@
 #import "components/infobars/core/infobar.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_switches.h"
-#import "components/sync/base/features.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/test/fake_infobar_banner_consumer.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
-#import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/settings/model/sync/utils/test/mock_sync_error_infobar_delegate.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-
-@protocol SyncPresenter;
 
 namespace {
 const std::u16string kTitleText = u"title_text";
@@ -46,7 +44,7 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
     profile_ = std::move(builder).Build();
 
     // Create an InfoBarIOS with a MockSyncErrorInfobarDelegate.
-    presenter_ = OCMStrictProtocolMock(@protocol(SyncPresenter));
+    presenter_ = OCMStrictProtocolMock(@protocol(SyncPresenterCommands));
     std::unique_ptr<MockSyncErrorInfoBarDelegate> delegate =
         std::make_unique<MockSyncErrorInfoBarDelegate>(
             profile_.get(), presenter_, kTitleText, kMessageText,
@@ -77,9 +75,10 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
-  id<SyncPresenter> presenter_;
-  raw_ptr<MockSyncErrorInfoBarDelegate> delegate_ = nil;
+  id<SyncPresenterCommands> presenter_;
+  raw_ptr<MockSyncErrorInfoBarDelegate, DanglingUntriaged> delegate_ = nil;
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<InfoBarIOS> infobar_;
   std::unique_ptr<OverlayRequest> request_;
@@ -138,9 +137,7 @@ TEST_F(SyncErrorInfobarBannerOverlayMediatorTest,
 TEST_F(SyncErrorInfobarBannerOverlayMediatorTest,
        BannerDismissAfterTimeoutSetsInfobarTimeoutPref) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({syncer::kSyncTrustedVaultInfobarImprovements,
-                                 switches::kEnableIdentityInAuthError},
-                                {});
+  feature_list.InitAndEnableFeature(switches::kEnableIdentityInAuthError);
   base::Time startTime = base::Time::Now();
 
   [mediator_ dismissInfobarBannerForUserInteraction:false];

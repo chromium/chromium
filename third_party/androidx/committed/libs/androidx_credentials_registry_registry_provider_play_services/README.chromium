@@ -1,6 +1,6 @@
 Name: androidx.credentials.registry:registry-provider-play-services
 Short Name: registry-provider-play-services
-URL: https://developer.android.com/jetpack/androidx/releases/credentials-registry#1.0.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/14586925/artifacts/repository/androidx/credentials/registry/registry-provider-play-services/1.0.0-SNAPSHOT/registry-provider-play-services-1.0.0-20251213.041943-1.aar
 Version: 1.0.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 register credentials using play-services-identity-credentials apis
+
+See also: https://developer.android.com/jetpack/androidx/releases/credentials-registry#1.0.0-SNAPSHOT
+
 
 Local Modifications:
 No modifications.

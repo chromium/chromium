@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Prikaz aplikacije: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Ovaj dodatak sadrži datoteku ključa „<ph name="KEY_PATH" />“. Verovatno to ne želite.</translation>
 <translation id="5486326529110362464">Ulazna vrednost privatnog ključa mora da postoji.</translation>
+<translation id="5707185214361380026">Nije uspelo učitavanje dodatka iz:</translation>
 <translation id="5972529113578162692">Administrator ovog računara zahteva da dodatak <ph name="EXTENSION_NAME" /> bude instaliran. Ne možete da ga deinstalirate.</translation>
 <translation id="6027032947578871493">Nepoznati proizvod <ph name="PRODUCT_ID" /> prodavca <ph name="VENDOR_NAME" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> prodavca <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Greška pri učitavanju dodatka</translation>
 <translation id="6322279351188361895">Čitanje privatnog ključa nije uspelo.</translation>
 <translation id="6391538222494443604">Ulazni katalog mora da postoji.</translation>
 <translation id="641087317769093025">Nije moguće raspakovati dodatak</translation>

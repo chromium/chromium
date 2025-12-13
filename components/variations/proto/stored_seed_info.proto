@@ -12,7 +12,10 @@ package variations;
 //
 // Next tag: 9
 message StoredSeedInfo {
-  // gzip-compressed seed data.
+  // Raw seed data.
+  // As a memory optimization, the seed data may be cleared from memory after
+  // being written to disk, unless it's empty or it's the sentinel value.
+  // Check `has_data()` to see if the seed data is present in memory.
   optional string data = 1;
 
   // Base 64 encoded signature of the seed received from the server. It's used

@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 import("//device/vr/buildflags/buildflags.gni")
 
 declare_args() {
@@ -110,6 +114,7 @@ if (enable_openxr) {
       "src/src/common/platform_utils.hpp",
       "src/src/common/xr_dependencies.h",
       "src/src/common/xr_linear.h",
+      "src/src/loader/api_layer_interface.cpp",
       "src/src/loader/api_layer_interface.hpp",
       "src/src/loader/exception_handling.hpp",
       "src/src/loader/loader_core.cpp",
@@ -122,6 +127,8 @@ if (enable_openxr) {
       "src/src/loader/loader_logger_recorders.cpp",
       "src/src/loader/loader_logger_recorders.hpp",
       "src/src/loader/loader_platform.hpp",
+      "src/src/loader/loader_properties.cpp",
+      "src/src/loader/loader_properties.hpp",
       "src/src/loader/manifest_file.hpp",
       "src/src/loader/runtime_interface.cpp",
       "src/src/loader/runtime_interface.hpp",
@@ -129,7 +136,6 @@ if (enable_openxr) {
       "src/src/loader/xr_generated_loader.hpp",
       "src/src/xr_generated_dispatch_table_core.c",
       "src/src/xr_generated_dispatch_table_core.h",
-      "src_overrides/src/loader/api_layer_interface.cpp",
       "src_overrides/src/loader/manifest_file.cpp",
     ]
 
@@ -182,6 +188,19 @@ if (enable_openxr) {
         "android",
         "log",
       ]
+    }
+
+    # Missing includes are fixed upstream
+    # TODO(crbug.com/440183782): Remove this once a release contains the fix
+    use_libcxx_modules = false
+  }
+
+  if (is_android) {
+    java_group("openxr_manifest_java") {
+      if (allow_openxr_content_providers) {
+        mergeable_android_manifests =
+            [ "src_overrides/src/loader/AndroidManifest.xml.in" ]
+      }
     }
   }
 

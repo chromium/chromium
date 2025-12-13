@@ -20,7 +20,6 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /** A central hub for accessing shopping and product information. */
 @JNINamespace("commerce")
@@ -30,22 +29,22 @@ public class ShoppingService {
     public static final class ProductInfo {
         public final String title;
         public final GURL imageUrl;
-        public final Optional<Long> productClusterId;
-        public final Optional<Long> offerId;
+        public final @Nullable Long productClusterId;
+        public final @Nullable Long offerId;
         public final String currencyCode;
         public final long amountMicros;
-        public final Optional<Long> previousAmountMicros;
+        public final @Nullable Long previousAmountMicros;
         public final String countryCode;
 
         public ProductInfo(
                 String title,
                 GURL imageUrl,
-                Optional<Long> productClusterId,
-                Optional<Long> offerId,
+                @Nullable Long productClusterId,
+                @Nullable Long offerId,
                 String currencyCode,
                 long amountMicros,
                 String countryCode,
-                Optional<Long> previousAmountMicros) {
+                @Nullable Long previousAmountMicros) {
             this.title = title;
             this.imageUrl = imageUrl;
             this.productClusterId = productClusterId;
@@ -99,24 +98,24 @@ public class ShoppingService {
 
     /** A data container for price insights info provided by the shopping service. */
     public static final class PriceInsightsInfo {
-        public final Optional<Long> productClusterId;
+        public final @Nullable Long productClusterId;
         public final String currencyCode;
-        public final Optional<Long> typicalLowPriceMicros;
-        public final Optional<Long> typicalHighPriceMicros;
-        public final Optional<String> catalogAttributes;
+        public final @Nullable Long typicalLowPriceMicros;
+        public final @Nullable Long typicalHighPriceMicros;
+        public final @Nullable String catalogAttributes;
         public final List<PricePoint> catalogHistoryPrices;
-        public final Optional<GURL> jackpotUrl;
+        public final @Nullable GURL jackpotUrl;
         public final @PriceBucket int priceBucket;
         public final boolean hasMultipleCatalogs;
 
         public PriceInsightsInfo(
-                Optional<Long> productClusterId,
+                @Nullable Long productClusterId,
                 String currencyCode,
-                Optional<Long> typicalLowPriceMicros,
-                Optional<Long> typicalHighPriceMicros,
-                Optional<String> catalogAttributes,
+                @Nullable Long typicalLowPriceMicros,
+                @Nullable Long typicalHighPriceMicros,
+                @Nullable String catalogAttributes,
                 List<PricePoint> catalogHistoryPrices,
-                Optional<GURL> jackpotUrl,
+                @Nullable GURL jackpotUrl,
                 @PriceBucket int priceBucket,
                 boolean hasMultipleCatalogs) {
             this.productClusterId = productClusterId;
@@ -259,6 +258,22 @@ public class ShoppingService {
 
         ShoppingServiceJni.get()
                 .getDiscountInfoForUrl(mNativeShoppingServiceAndroid, url, callback);
+    }
+
+    /**
+     * Fetch available discounts information for a URL.
+     *
+     * @param url The URL to fetch discounts info for.
+     * @param callback The callback that will run after the fetch is completed.
+     */
+    public void getAvailableDiscountInfoForUrl(GURL url, DiscountInfoCallback callback) {
+        if (mNativeShoppingServiceAndroid == 0) {
+            callback.onResult(url, null);
+            return;
+        }
+
+        ShoppingServiceJni.get()
+                .getAvailableDiscountInfoForUrl(mNativeShoppingServiceAndroid, url, callback);
     }
 
     /**
@@ -437,11 +452,9 @@ public class ShoppingService {
             String countryCode,
             boolean hasPreviousPrice,
             long previousAmountMicros) {
-        Optional<Long> offer = !hasOfferId ? Optional.empty() : Optional.of(offerId);
-        Optional<Long> cluster =
-                !hasProductClusterId ? Optional.empty() : Optional.of(productClusterId);
-        Optional<Long> previousPrice =
-                !hasPreviousPrice ? Optional.empty() : Optional.of(previousAmountMicros);
+        Long offer = !hasOfferId ? null : offerId;
+        Long cluster = !hasProductClusterId ? null : productClusterId;
+        Long previousPrice = !hasPreviousPrice ? null : previousAmountMicros;
         return new ProductInfo(
                 title,
                 imageUrl,
@@ -511,15 +524,11 @@ public class ShoppingService {
             GURL jackpotUrl,
             int priceBucket,
             boolean hasMultipleCatalogs) {
-        Optional<Long> clusterId =
-                hasProductClusterId ? Optional.of(productClusterId) : Optional.empty();
-        Optional<Long> lowPrice =
-                hasTypicalLowPrice ? Optional.of(typicalLowPriceMicros) : Optional.empty();
-        Optional<Long> highPrice =
-                hasTypicalHighPrice ? Optional.of(typicalHighPriceMicros) : Optional.empty();
-        Optional<String> attributes =
-                hasCatalogAttributes ? Optional.of(catalogAttributes) : Optional.empty();
-        Optional<GURL> jackpot = hasJackpotUrl ? Optional.of(jackpotUrl) : Optional.empty();
+        Long clusterId = hasProductClusterId ? productClusterId : null;
+        Long lowPrice = hasTypicalLowPrice ? typicalLowPriceMicros : null;
+        Long highPrice = hasTypicalHighPrice ? typicalHighPriceMicros : null;
+        String attributes = hasCatalogAttributes ? catalogAttributes : null;
+        GURL jackpot = hasJackpotUrl ? jackpotUrl : null;
 
         if (catalogHistoryPrices == null) {
             catalogHistoryPrices = new ArrayList<>();
@@ -636,6 +645,9 @@ public class ShoppingService {
         boolean isPriceInsightsEligible(long nativeShoppingServiceAndroid);
 
         void getDiscountInfoForUrl(
+                long nativeShoppingServiceAndroid, GURL url, DiscountInfoCallback callback);
+
+        void getAvailableDiscountInfoForUrl(
                 long nativeShoppingServiceAndroid, GURL url, DiscountInfoCallback callback);
 
         boolean isDiscountEligibleToShowOnNavigation(long nativeShoppingServiceAndroid);

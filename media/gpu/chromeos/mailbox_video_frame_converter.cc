@@ -4,14 +4,11 @@
 
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 
-#include <optional>
-
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
@@ -19,43 +16,63 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/scheduler.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_shared_image_interface.h"
 #include "media/base/format_utils.h"
-#include "media/base/media_switches.h"
 #include "media/base/video_util.h"
-#include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
-#include "ui/gfx/buffer_format_util.h"
-#include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
-#include "ui/gl/gl_bindings.h"
 
 namespace media {
-class MailboxVideoFrameConverter::ScopedSharedImage {
- public:
-  ScopedSharedImage() = default;
+namespace {
+// The SharedImage size ultimately must correspond to the size used to import
+// the decoded frame into a graphics API (e.g., the EGL image size when using
+// OpenGL). For most videos, this is simply frame->visible_rect().size().
+// However, some H.264 videos specify a visible rectangle that doesn't start
+// at (0, 0). Since clients are expected to calculate UV coordinates to handle
+// these exotic visible rectangles, we must include the area on the left and
+// on the top of the frames when computing the SharedImage size.
+inline gfx::Size to_shared_image_size(FrameResource* origin_frame,
+                                      scoped_refptr<FrameResource> frame) {
+  return origin_frame->metadata().needs_detiling
+             ? origin_frame->coded_size()
+             : GetRectSizeFromOrigin(frame->visible_rect());
+}
 
-  ScopedSharedImage(const ScopedSharedImage&) = delete;
-  ScopedSharedImage& operator=(const ScopedSharedImage&) = delete;
+// Note the use of GetRectSizeFromOrigin() as the coded size. The reason is
+// that the coded_size() of the outgoing FrameResource tells the client what
+// the "usable area" of the frame's buffer is so that it issues rendering
+// commands correctly. For most videos, this usable area is simply
+// frame->visible_rect().size(). However, some H.264 videos define a visible
+// rectangle that doesn't start at (0, 0). For these frames, the usable area
+// includes the non-visible area on the left and on top of the visible area
+// (so that the client can calculate the UV coordinates correctly). Hence the
+// use of GetRectSizeFromOrigin().
+//
+// Most video frames should use visible size instead of coded size because
+// some videos use 0s to pad the frames to coded size, which will cause
+// artifacting along the edges of the image when we scale using bilinear
+// filtering. Tiled protected content is an exception though, because we have
+// a custom Vulkan shader pipeline for scanning out these buffers that needs
+// to know the underlying coded buffer size for detiling computations.
+//
+// The metadata field |needs_detiling| technically comes from an untrusted
+// source, but we don't believe this is a security risk since the worst case
+// scenario simply involves video corruption when the Vulkan detiler
+// misinterprets the frame.
+inline gfx::Size to_coded_size(scoped_refptr<FrameResource> frame) {
+  return frame->metadata().needs_detiling
+             ? frame->coded_size()
+             : GetRectSizeFromOrigin(frame->visible_rect());
+}
+}  // namespace
 
-  ~ScopedSharedImage() = default;
-
-  void Reset(scoped_refptr<gpu::ClientSharedImage> shared_image) {
-    DCHECK(shared_image);
-    shared_image_ = std::move(shared_image);
-  }
-
-  bool HasData() const { return shared_image_ != nullptr; }
-  const scoped_refptr<gpu::ClientSharedImage>& shared_image() {
-    return shared_image_;
-  }
-
- private:
-  scoped_refptr<gpu::ClientSharedImage> shared_image_;
-};
+// static
+std::unique_ptr<FrameResourceConverter> MailboxVideoFrameConverter::Create(
+    scoped_refptr<gpu::SharedImageInterface> sii) {
+  return base::WrapUnique<FrameResourceConverter>(
+      new MailboxVideoFrameConverter(std::move(sii)));
+}
 
 // static
 std::unique_ptr<FrameResourceConverter> MailboxVideoFrameConverter::Create(
@@ -65,7 +82,6 @@ std::unique_ptr<FrameResourceConverter> MailboxVideoFrameConverter::Create(
   DCHECK(get_stub_cb);
 
   scoped_refptr<gpu::SharedImageInterface> sii;
-  gpu::Scheduler* scheduler;
 
   base::WaitableEvent wait;
   bool success = gpu_task_runner->PostTask(
@@ -73,70 +89,35 @@ std::unique_ptr<FrameResourceConverter> MailboxVideoFrameConverter::Create(
       base::BindOnce(
           [](GetCommandBufferStubCB get_stub_cb,
              scoped_refptr<gpu::SharedImageInterface>* sii,
-             gpu::Scheduler** scheduler, base::WaitableEvent* wait) {
+             base::WaitableEvent* wait) {
             auto* cb_stub = get_stub_cb.Run();
             if (cb_stub) {
               DCHECK(cb_stub->channel());
               *sii = cb_stub->channel()
                          ->shared_image_stub()
                          ->shared_image_interface();
-              *scheduler = cb_stub->channel()->scheduler();
             }
             wait->Signal();
           },
-          get_stub_cb, &sii, &scheduler, &wait));
+          get_stub_cb, &sii, &wait));
   if (success) {
-    // Sync wait for retrieval of `sii`, `scheduler`, and `sequence`.
+    // Sync wait for retrieval of `sii`.
     base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
     wait.Wait();
   }
-  return (sii && scheduler)
-             ? base::WrapUnique<FrameResourceConverter>(
-                   new MailboxVideoFrameConverter(sii, scheduler))
-             : nullptr;
+  return Create(std::move(sii));
 }
 
 MailboxVideoFrameConverter::MailboxVideoFrameConverter(
-    scoped_refptr<gpu::SharedImageInterface> sii,
-    base::RepeatingCallback<bool(scoped_refptr<FrameResource> frame,
-                                 const gpu::SyncToken& sync_token)> release_cb)
-    : shared_image_interface_(sii), release_cb_(release_cb) {
+    scoped_refptr<gpu::SharedImageInterface> sii)
+    : shared_image_interface_(std::move(sii)) {
   DVLOGF(2);
-  weak_this_ = weak_this_factory_.GetWeakPtr();
-}
-
-MailboxVideoFrameConverter::MailboxVideoFrameConverter(
-    scoped_refptr<gpu::SharedImageInterface> sii,
-    gpu::Scheduler* scheduler)
-    : shared_image_interface_(sii),
-      scheduler_(scheduler),
-      sequence_(scheduler->CreateSequence(
-          gpu::SchedulingPriority::kNormal,
-          base::SingleThreadTaskRunner::GetCurrentDefault())) {
-  DVLOGF(2);
-  release_cb_ =
-      base::BindRepeating(
-          [](gpu::Scheduler* scheduler, gpu::SequenceId sequence,
-             scoped_refptr<FrameResource> frame,
-             const gpu::SyncToken& sync_token) {
-            auto keep_video_frame_alive =
-                base::DoNothingWithBoundArgs(std::move(frame));
-            scheduler->ScheduleTask(gpu::Scheduler::Task(
-                sequence, std::move(keep_video_frame_alive),
-                std::vector<gpu::SyncToken>({sync_token})));
-            return true;
-          },
-          scheduler_, sequence_);
-  weak_this_ = weak_this_factory_.GetWeakPtr();
 }
 
 void MailboxVideoFrameConverter::Destroy() {
   DCHECK(!parent_task_runner() ||
          parent_task_runner()->RunsTasksInCurrentSequence());
   DVLOGF(2);
-  if (scheduler_) {
-    scheduler_->DestroySequence(sequence_);
-  }
 
   weak_this_factory_.InvalidateWeakPtrs();
   delete this;
@@ -150,26 +131,56 @@ void MailboxVideoFrameConverter::ConvertFrameImpl(
     scoped_refptr<FrameResource> frame) {
   DVLOGF(4);
 
+  if (!shared_image_interface_) {
+    return OnError(FROM_HERE, "Initialized without SharedImageInterface");
+  }
+
   if (!frame ||
       (frame->storage_type() != VideoFrame::STORAGE_DMABUFS &&
-       frame->storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER)) {
+       frame->storage_type() != VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE)) {
     return OnError(FROM_HERE, "Invalid frame.");
   }
 
   FrameResource* origin_frame = GetOriginalFrame(*frame);
-
-  if (!origin_frame)
+  if (!origin_frame) {
     return OnError(FROM_HERE, "Failed to get origin frame.");
+  }
 
-  ScopedSharedImage* shared_image = nullptr;
-  const UniqueID origin_frame_id = origin_frame->unique_id();
-  auto shared_image_it = shared_images_.find(origin_frame_id);
-  if (shared_image_it != shared_images_.end())
-    shared_image = shared_image_it->second;
+  TRACE_EVENT1("media,gpu", "ConvertFrameImpl", "FrameResource id",
+               origin_frame->unique_id());
 
-  input_frame_queue_.emplace(frame, origin_frame_id);
+  auto shared_image_it = shared_images_.find(origin_frame->unique_id());
+  // If there's a |stored_shared_image| associated with |origin_frame|, update
+  // it and call the continuation callback, otherwise create a SharedImage and
+  // register it.
+  if (shared_image_it != shared_images_.end()) {
+    auto stored_shared_image = shared_image_it->second;
+    // Check if the existing shared image is reusable.
+    if (stored_shared_image &&
+        stored_shared_image->size() ==
+            to_shared_image_size(origin_frame, frame) &&
+        stored_shared_image->color_space() == frame->ColorSpace()) {
+      shared_image_interface_->UpdateSharedImage(
+          gpu::SyncToken(), stored_shared_image->mailbox());
+      WrapSharedImageAndVideoFrameAndOutput(
+          origin_frame, std::move(frame), std::move(stored_shared_image),
+          shared_image_interface_->GenVerifiedSyncToken());
+      return;
+    }
+  }
 
-  ConvertFrame(origin_frame, std::move(frame), shared_image);
+  // Create a new shared_image.
+  scoped_refptr<gpu::ClientSharedImage> new_client_shared_image =
+      GenerateSharedImage(origin_frame, frame);
+  if (!new_client_shared_image) {
+    return;
+  }
+
+  auto sync_token = new_client_shared_image->creation_sync_token();
+  shared_image_interface_->VerifySyncToken(sync_token);
+  WrapSharedImageAndVideoFrameAndOutput(origin_frame, std::move(frame),
+                                        std::move(new_client_shared_image),
+                                        sync_token);
 }
 
 void MailboxVideoFrameConverter::WrapSharedImageAndVideoFrameAndOutput(
@@ -182,63 +193,15 @@ void MailboxVideoFrameConverter::WrapSharedImageAndVideoFrameAndOutput(
 
   const UniqueID origin_frame_id = origin_frame->unique_id();
   DCHECK(base::Contains(shared_images_, origin_frame_id));
-  DCHECK(!input_frame_queue_.empty() &&
-         input_frame_queue_.front().second == origin_frame_id);
-
-  input_frame_queue_.pop();
 
   // GenerateSharedImage() should have checked the |origin_frame|'s format
   // (which should be the same as the |frame|'s format).
   CHECK_EQ(frame->format(), origin_frame->format());
 
-  VideoFrame::ReleaseMailboxCB release_mailbox_cb = base::BindOnce(
-      [](scoped_refptr<base::SequencedTaskRunner> parent_task_runner,
-         base::WeakPtr<MailboxVideoFrameConverter> parent_weak_ptr,
-         scoped_refptr<FrameResource> frame, const gpu::SyncToken& sync_token) {
-        if (!sync_token.HasData()) {
-          return;
-        }
-        if (parent_task_runner->RunsTasksInCurrentSequence()) {
-          if (parent_weak_ptr) {
-            parent_weak_ptr->ReleaseFrame(std::move(frame), sync_token);
-            return;
-          }
-        }
-        parent_task_runner->PostTask(
-            FROM_HERE,
-            base::BindOnce(&MailboxVideoFrameConverter::ReleaseFrame,
-                           parent_weak_ptr, std::move(frame), sync_token));
-      },
-      parent_task_runner(), weak_this_, frame);
-
-  // Note the use of GetRectSizeFromOrigin() as the coded size. The reason is
-  // that the coded_size() of the outgoing FrameResource tells the client what
-  // the "usable area" of the frame's buffer is so that it issues rendering
-  // commands correctly. For most videos, this usable area is simply
-  // frame->visible_rect().size(). However, some H.264 videos define a visible
-  // rectangle that doesn't start at (0, 0). For these frames, the usable area
-  // includes the non-visible area on the left and on top of the visible area
-  // (so that the client can calculate the UV coordinates correctly). Hence the
-  // use of GetRectSizeFromOrigin().
-  //
-  // Most video frames should use visible size instead of coded size because
-  // some videos use 0s to pad the frames to coded size, which will cause
-  // artifacting along the edges of the image when we scale using bilinear
-  // filtering. Tiled protected content is an exception though, because we have
-  // a custom Vulkan shader pipeline for scanning out these buffers that needs
-  // to know the underlying coded buffer size for detiling computations.
-  //
-  // The metadata field |needs_detiling| technically comes from an untrusted
-  // source, but we don't believe this is a security risk since the worst case
-  // scenario simply involves video corruption when the Vulkan detiler
-  // misinterprets the frame.
-  const gfx::Size coded_size =
-      frame->metadata().needs_detiling
-          ? frame->coded_size()
-          : GetRectSizeFromOrigin(frame->visible_rect());
+  const gfx::Size coded_size = to_coded_size(frame);
   scoped_refptr<VideoFrame> mailbox_frame = VideoFrame::WrapSharedImage(
       frame->format(), shared_image, shared_image_sync_token,
-      std::move(release_mailbox_cb), coded_size, frame->visible_rect(),
+      /*mailbox_holder_release_cb=*/{}, coded_size, frame->visible_rect(),
       frame->natural_size(), frame->timestamp());
   mailbox_frame->set_color_space(shared_image->color_space());
   mailbox_frame->set_hdr_metadata(frame->hdr_metadata());
@@ -247,79 +210,21 @@ void MailboxVideoFrameConverter::WrapSharedImageAndVideoFrameAndOutput(
   mailbox_frame->metadata().is_webgpu_compatible =
       frame->metadata().is_webgpu_compatible;
 
+  mailbox_frame->AddDestructionObserver(
+      base::DoNothingWithBoundArgs(std::move(frame)));
+
   Output(std::move(mailbox_frame));
 }
 
-void MailboxVideoFrameConverter::ConvertFrame(
+scoped_refptr<gpu::ClientSharedImage>
+MailboxVideoFrameConverter::GenerateSharedImage(
     FrameResource* origin_frame,
-    scoped_refptr<FrameResource> frame,
-    ScopedSharedImage* stored_shared_image) {
-  TRACE_EVENT1("media,gpu", "ConvertFrame", "FrameResource id",
-               origin_frame->unique_id());
-  const gfx::ColorSpace src_color_space = frame->ColorSpace();
-  const gfx::Rect visible_rect = frame->visible_rect();
-
-  // If there's a |stored_shared_image| associated with |origin_frame|, update
-  // it and call the continuation callback, otherwise create a SharedImage and
-  // register it.
-  if (stored_shared_image) {
-    DCHECK(stored_shared_image->HasData());
-    bool res;
-    const auto& client_shared_image = stored_shared_image->shared_image();
-    std::optional<gpu::SyncToken> sync_token;
-    if (client_shared_image->size() == GetRectSizeFromOrigin(visible_rect) &&
-        client_shared_image->color_space() == src_color_space) {
-      sync_token = UpdateSharedImage(client_shared_image->mailbox());
-      res = sync_token.has_value();
-    } else {
-      // Either the existing shared image's size is no longer good enough or the
-      // color space has changed. Let's create a new shared image.
-      res = GenerateSharedImage(origin_frame, src_color_space, visible_rect,
-                                stored_shared_image);
-      sync_token = client_shared_image->creation_sync_token();
-    }
-    if (res) {
-      DCHECK(stored_shared_image->HasData());
-      WrapSharedImageAndVideoFrameAndOutput(origin_frame, std::move(frame),
-                                            std::move(client_shared_image),
-                                            sync_token.value());
-    }
-    return;
-  }
-
-  // There was no existing SharedImage: create a new one.
-  auto new_shared_image = std::make_unique<ScopedSharedImage>();
-  if (!GenerateSharedImage(origin_frame, src_color_space, visible_rect,
-                           new_shared_image.get())) {
-    return;
-  }
-  DCHECK(new_shared_image->HasData());
-
-  scoped_refptr<gpu::ClientSharedImage> new_client_shared_image =
-      new_shared_image->shared_image();
-  gpu::SyncToken sync_token = new_client_shared_image->creation_sync_token();
-  RegisterSharedImage(origin_frame, std::move(new_shared_image));
-  WrapSharedImageAndVideoFrameAndOutput(origin_frame, std::move(frame),
-                                        std::move(new_client_shared_image),
-                                        sync_token);
-}
-
-bool MailboxVideoFrameConverter::GenerateSharedImage(
-    FrameResource* origin_frame,
-    const gfx::ColorSpace& src_color_space,
-    const gfx::Rect& destination_visible_rect,
-    ScopedSharedImage* shared_image) {
-  DCHECK(shared_image);
-  if (!shared_image_interface_) {
-    OnError(FROM_HERE, "Initialized without SharedImageInterface");
-    return false;
-  }
-
+    scoped_refptr<FrameResource> frame) {
   auto si_format = VideoPixelFormatToSharedImageFormat(origin_frame->format());
   if (!si_format) {
     OnError(FROM_HERE, "Unsupported format: " +
                            VideoPixelFormatToString(origin_frame->format()));
-    return false;
+    return nullptr;
   }
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   // If format is true multiplanar format, we prefer external sampler on
@@ -333,25 +238,7 @@ bool MailboxVideoFrameConverter::GenerateSharedImage(
   DCHECK(!gpu_memory_buffer_handle.is_null());
   DCHECK_EQ(gpu_memory_buffer_handle.type, gfx::NATIVE_PIXMAP);
 
-  // The SharedImage size ultimately must correspond to the size used to import
-  // the decoded frame into a graphics API (e.g., the EGL image size when using
-  // OpenGL). For most videos, this is simply |destination_visible_rect|.size().
-  // However, some H.264 videos specify a visible rectangle that doesn't start
-  // at (0, 0). Since clients are expected to calculate UV coordinates to handle
-  // these exotic visible rectangles, we must include the area on the left and
-  // on the top of the frames when computing the SharedImage size.
-  const gfx::Size shared_image_size =
-      origin_frame->metadata().needs_detiling
-          ? origin_frame->coded_size()
-          : GetRectSizeFromOrigin(destination_visible_rect);
-
-  const std::optional<gpu::SharedImageCapabilities> shared_image_caps =
-      shared_image_interface_->GetCapabilities();
-
-  if (!shared_image_caps.has_value()) {
-    OnError(FROM_HERE, "Can't get the SharedImageCapabilities");
-    return false;
-  }
+  const gfx::Size shared_image_size = to_shared_image_size(origin_frame, frame);
 
   // The allocated SharedImages should be usable for the (Display) compositor
   // and, potentially, for overlays (Scanout). The shared image can be copied to
@@ -363,37 +250,39 @@ bool MailboxVideoFrameConverter::GenerateSharedImage(
   // These SharedImages might also be used for zero-copy import into WebGPU to
   // serve as the sources of WebGPU reads (e.g., for video effects processing).
   if (origin_frame->metadata().is_webgpu_compatible &&
-      !shared_image_caps->disable_webgpu_shared_images) {
+      !shared_image_interface_->GetCapabilities()
+           .disable_webgpu_shared_images) {
     shared_image_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
   }
 
   scoped_refptr<gpu::ClientSharedImage> client_shared_image =
       shared_image_interface_->CreateSharedImage(
-          {*si_format, shared_image_size, src_color_space, shared_image_usage,
-           "MailboxVideoFrameConverter"},
+          {*si_format, shared_image_size, frame->ColorSpace(),
+           shared_image_usage, "MailboxVideoFrameConverter"},
           std::move(gpu_memory_buffer_handle));
   if (!client_shared_image) {
     OnError(FROM_HERE, "Failed to create shared image.");
-    return false;
+    return nullptr;
   }
-  // There's no need to UpdateSharedImage() after CreateSharedImage().
+  RegisterSharedImage(origin_frame, client_shared_image);
 
-  shared_image->Reset(std::move(client_shared_image));
-  return true;
+  // There's no need to UpdateSharedImage() after CreateSharedImage().
+  return client_shared_image;
 }
 
 void MailboxVideoFrameConverter::RegisterSharedImage(
     FrameResource* origin_frame,
-    std::unique_ptr<ScopedSharedImage> scoped_shared_image) {
+    scoped_refptr<gpu::ClientSharedImage> client_shared_image) {
   DVLOGF(4) << "frame: " << origin_frame->unique_id();
   DCHECK(parent_task_runner()->RunsTasksInCurrentSequence());
-  DCHECK(scoped_shared_image);
-  DCHECK(scoped_shared_image->HasData());
-  DCHECK(!base::Contains(shared_images_, origin_frame->unique_id()));
+  DCHECK(client_shared_image);
+  DCHECK(!base::Contains(shared_images_, origin_frame->unique_id()) ||
+         shared_images_.find(origin_frame->unique_id())->second !=
+             client_shared_image);
 
-  shared_images_[origin_frame->unique_id()] = scoped_shared_image.get();
+  shared_images_[origin_frame->unique_id()] = client_shared_image;
   origin_frame->AddDestructionObserver(base::BindOnce(
-      [](std::unique_ptr<ScopedSharedImage> shared_image,
+      [](scoped_refptr<gpu::ClientSharedImage> shared_image,
          scoped_refptr<base::SequencedTaskRunner> parent_task_runner,
          base::WeakPtr<MailboxVideoFrameConverter> parent_weak_ptr,
          UniqueID origin_frame_id) {
@@ -409,54 +298,21 @@ void MailboxVideoFrameConverter::RegisterSharedImage(
                            parent_weak_ptr, origin_frame_id,
                            std::move(shared_image)));
       },
-      std::move(scoped_shared_image), parent_task_runner(), weak_this_,
-      origin_frame->unique_id()));
-}
-
-std::optional<gpu::SyncToken> MailboxVideoFrameConverter::UpdateSharedImage(
-    const gpu::Mailbox& mailbox) {
-  shared_image_interface_->UpdateSharedImage(gpu::SyncToken(), mailbox);
-  std::optional<gpu::SyncToken> sync_token =
-      shared_image_interface_->GenVerifiedSyncToken();
-  if (!sync_token.has_value()) {
-    OnError(FROM_HERE, "Could not update shared image");
-  }
-  return sync_token;
-}
-
-void MailboxVideoFrameConverter::ReleaseFrame(
-    scoped_refptr<FrameResource> frame,
-    const gpu::SyncToken& sync_token) {
-  if (!release_cb_) {
-    return OnError(FROM_HERE,
-                   "Could not schedule a task to wait on SyncToken!");
-  }
-
-  release_cb_.Run(std::move(frame), sync_token);
+      std::move(client_shared_image), parent_task_runner(),
+      weak_this_factory_.GetWeakPtr(), origin_frame->unique_id()));
 }
 
 void MailboxVideoFrameConverter::UnregisterSharedImage(
     UniqueID origin_frame_id,
-    std::unique_ptr<ScopedSharedImage> scoped_shared_image) {
+    scoped_refptr<gpu::ClientSharedImage> client_shared_image) {
   DCHECK(parent_task_runner()->RunsTasksInCurrentSequence());
   DVLOGF(4);
 
   auto it = shared_images_.find(origin_frame_id);
   CHECK(it != shared_images_.end());
-  DCHECK(it->second == scoped_shared_image.get());
-  shared_images_.erase(it);
-}
-
-void MailboxVideoFrameConverter::AbortPendingFramesImpl() {
-  DVLOGF(4) << "Number of pending frames: " << input_frame_queue_.size();
-
-  input_frame_queue_ = {};
-}
-
-bool MailboxVideoFrameConverter::HasPendingFramesImpl() const {
-  DVLOGF(4) << "Number of pending frames: " << input_frame_queue_.size();
-
-  return !input_frame_queue_.empty();
+  if (it->second == client_shared_image.get()) {
+    shared_images_.erase(it);
+  }
 }
 
 bool MailboxVideoFrameConverter::UsesGetOriginalFrameCBImpl() const {

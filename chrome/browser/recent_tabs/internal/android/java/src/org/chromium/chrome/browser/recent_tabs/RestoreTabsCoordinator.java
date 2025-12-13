@@ -81,7 +81,7 @@ public class RestoreTabsCoordinator {
     }
 
     // Helper function to convert the screen type to an index for CURRENT_SCREEN.
-    private static int getScreenIndexForScreenType(@ScreenType int screenType) {
+    static int getScreenIndexForScreenType(@ScreenType int screenType) {
         switch (screenType) {
             case ScreenType.HOME_SCREEN:
                 return 0;

@@ -12,7 +12,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/notimplemented.h"
 #include "base/path_service.h"
@@ -64,17 +63,22 @@ std::vector<std::string> GetAcceptLanguages() {
 std::unique_ptr<WebEngineBrowserContext>
 WebEngineBrowserContext::CreatePersistent(
     base::FilePath data_directory,
-    network::NetworkQualityTracker* network_quality_tracker) {
-  return base::WrapUnique(new WebEngineBrowserContext(std::move(data_directory),
-                                                      network_quality_tracker));
+    network::NetworkQualityTracker* network_quality_tracker,
+    os_crypt_async::OSCryptAsync* os_crypt_async,
+    network::NetworkConnectionTracker* network_connection_tracker) {
+  return base::WrapUnique(new WebEngineBrowserContext(
+      std::move(data_directory), network_quality_tracker, os_crypt_async,
+      network_connection_tracker));
 }
 
 // static
 std::unique_ptr<WebEngineBrowserContext>
 WebEngineBrowserContext::CreateIncognito(
-    network::NetworkQualityTracker* network_quality_tracker) {
-  return base::WrapUnique(
-      new WebEngineBrowserContext({}, network_quality_tracker));
+    network::NetworkQualityTracker* network_quality_tracker,
+    os_crypt_async::OSCryptAsync* os_crypt_async,
+    network::NetworkConnectionTracker* network_connection_tracker) {
+  return base::WrapUnique(new WebEngineBrowserContext(
+      {}, network_quality_tracker, os_crypt_async, network_connection_tracker));
 }
 
 WebEngineBrowserContext::~WebEngineBrowserContext() {
@@ -93,7 +97,7 @@ WebEngineBrowserContext::CreateZoomLevelDelegate(
   return nullptr;
 }
 
-base::FilePath WebEngineBrowserContext::GetPath() {
+base::FilePath WebEngineBrowserContext::GetPath() const {
   return data_dir_path_;
 }
 
@@ -118,12 +122,20 @@ WebEngineBrowserContext::GetSpecialStoragePolicy() {
 
 content::PlatformNotificationService*
 WebEngineBrowserContext::GetPlatformNotificationService() {
+#ifdef WEB_ENGINE_ENABLE_PUSH_MESSAGING_API
+  return &platform_notification_service_;
+#else
   return nullptr;
+#endif
 }
 
 content::PushMessagingService*
 WebEngineBrowserContext::GetPushMessagingService() {
+#ifdef WEB_ENGINE_ENABLE_PUSH_MESSAGING_API
+  return &push_messaging_service_;
+#else
   return nullptr;
+#endif
 }
 
 content::StorageNotificationService*
@@ -177,8 +189,7 @@ WebEngineBrowserContext::CreateVideoDecodePerfHistory() {
   // Return in-memory VideoDecodePerfHistory.
   return std::make_unique<media::VideoDecodePerfHistory>(
       std::make_unique<media::InMemoryVideoDecodeStatsDBImpl>(
-          nullptr /* seed_db_provider */),
-      media::learning::FeatureProviderFactoryCB());
+          nullptr /* seed_db_provider */));
 }
 
 base::RepeatingCallback<bool(const GURL&)> IsJavaScriptAllowedCallback() {
@@ -188,14 +199,23 @@ base::RepeatingCallback<bool(const GURL&)> IsJavaScriptAllowedCallback() {
 
 WebEngineBrowserContext::WebEngineBrowserContext(
     base::FilePath data_directory,
-    network::NetworkQualityTracker* network_quality_tracker)
+    network::NetworkQualityTracker* network_quality_tracker,
+    os_crypt_async::OSCryptAsync* os_crypt_async,
+    network::NetworkConnectionTracker* network_connection_tracker)
     : data_dir_path_(std::move(data_directory)),
       net_log_observer_(CreateNetLogObserver()),
       simple_factory_key_(GetPath(), IsOffTheRecord()),
       client_hints_delegate_(network_quality_tracker,
                              IsJavaScriptAllowedCallback(),
                              embedder_support::GetUserAgentMetadata()),
-      reduce_accept_language_delegate_(GetAcceptLanguages()) {
+      reduce_accept_language_delegate_(GetAcceptLanguages())
+#ifdef WEB_ENGINE_ENABLE_PUSH_MESSAGING_API
+      ,
+      push_messaging_service_(*this,
+                              *os_crypt_async,
+                              *network_connection_tracker)
+#endif
+{
   SimpleKeyMap::GetInstance()->Associate(this, &simple_factory_key_);
 
   profile_metrics::SetBrowserProfileType(

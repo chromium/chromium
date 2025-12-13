@@ -7,9 +7,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/policy/policy_constants.h"
 #include "components/safe_search_api/safe_search_util.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -59,8 +60,8 @@ void SafeSearchPolicyTest::CheckSafeSearch(Browser* browser,
   ui_test_utils::SendToOmniboxAndSubmit(browser, url);
   observer.Wait();
   OmniboxEditModel* model =
-      browser->window()->GetLocationBar()->GetOmniboxView()->model();
-  EXPECT_TRUE(model->CurrentMatch(nullptr).destination_url.is_valid());
+      browser->window()->GetLocationBar()->GetOmniboxController()->edit_model();
+  EXPECT_TRUE(model->CurrentMatch().destination_url.is_valid());
   EXPECT_EQ(GetExpectedSearchURL(expect_safe_search),
             web_contents->GetLastCommittedURL());
 }

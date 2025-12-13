@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/synchronization/lock.h"
+#include "media/base/audio_bus.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_element_audio_source_options.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
@@ -162,8 +163,8 @@ void MediaElementAudioSourceHandler::PrintCorsMessage(const String& message) {
   if (Context()->GetExecutionContext()) {
     Context()->GetExecutionContext()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
-            mojom::ConsoleMessageSource::kSecurity,
-            mojom::ConsoleMessageLevel::kInfo,
+            mojom::blink::ConsoleMessageSource::kSecurity,
+            mojom::blink::ConsoleMessageLevel::kInfo,
             StrCat({"MediaElementAudioSource outputs zeroes due to CORS access "
                     "restrictions for ",
                     message})));

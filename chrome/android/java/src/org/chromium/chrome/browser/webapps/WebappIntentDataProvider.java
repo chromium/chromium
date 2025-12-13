@@ -12,8 +12,6 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode.DefaultMode;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode.ImmersiveMode;
@@ -21,6 +19,8 @@ import androidx.browser.trusted.sharing.ShareData;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -34,11 +34,12 @@ import org.chromium.device.mojom.ScreenOrientationLockType;
 import org.chromium.ui.util.ColorUtils;
 
 /** Stores info about a web app. */
+@NullMarked
 public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider {
     private final Drawable mCloseButtonIcon;
     private final TrustedWebActivityDisplayMode mTwaDisplayMode;
-    private final ShareData mShareData;
-    private final @NonNull WebappExtras mWebappExtras;
+    private final @Nullable ShareData mShareData;
+    private final WebappExtras mWebappExtras;
     private final @Nullable WebApkExtras mWebApkExtras;
     private final @ActivityType int mActivityType;
     private final Intent mIntent;
@@ -57,13 +58,13 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     }
 
     WebappIntentDataProvider(
-            @NonNull Intent intent,
+            Intent intent,
             int toolbarColor,
             boolean hasCustomToolbarColor,
             int darkToolbarColor,
             boolean hasCustomDarkToolbarColor,
             @Nullable ShareData shareData,
-            @NonNull WebappExtras webappExtras,
+            WebappExtras webappExtras,
             @Nullable WebApkExtras webApkExtras) {
         mIntent = intent;
         mColorProvider = new ColorProviderImpl(toolbarColor, hasCustomToolbarColor);
@@ -102,12 +103,12 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     }
 
     @Override
-    public String getUrlToLoad() {
+    public @Nullable String getUrlToLoad() {
         return mWebappExtras.url;
     }
 
     @Override
-    public @NonNull ColorProvider getColorProvider() {
+    public ColorProvider getColorProvider() {
         boolean inDarkMode = ColorUtils.inNightMode(ContextUtils.getApplicationContext());
         boolean hasValidDarkToolbar = mDarkColorProvider.hasCustomToolbarColor();
         boolean hasValidLightToolbar = mColorProvider.hasCustomToolbarColor();
@@ -117,12 +118,12 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
     }
 
     @Override
-    public @NonNull ColorProvider getLightColorProvider() {
+    public ColorProvider getLightColorProvider() {
         return mColorProvider;
     }
 
     @Override
-    public @NonNull ColorProvider getDarkColorProvider() {
+    public ColorProvider getDarkColorProvider() {
         return mDarkColorProvider;
     }
 
@@ -198,7 +199,7 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
             // forcefully installed via app menu. In this case display mode should resolve to the
             // first supported display mode in the "fullscreen -> standalone -> minimal-ui ->
             // browser" fallback chain.
-            if (WebAppHeaderUtils.isMinimalUiFlagEnabled()) {
+            if (WebAppHeaderUtils.isMinimalUiEnabled()) {
                 return DisplayMode.MINIMAL_UI;
             } else {
                 return DisplayMode.STANDALONE;

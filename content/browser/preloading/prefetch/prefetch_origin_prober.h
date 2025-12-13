@@ -5,15 +5,17 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_ORIGIN_PROBER_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_ORIGIN_PROBER_H_
 
-#include <optional>
-
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/common/content_export.h"
-#include "net/base/address_list.h"
-#include "url/gurl.h"
+
+class GURL;
+
+namespace net {
+class AddressList;
+}  // namespace net
 
 namespace content {
 
@@ -60,7 +62,7 @@ class CONTENT_EXPORT PrefetchOriginProber {
                      OnProbeResultCallback callback,
                      bool also_do_tls_connect,
                      int net_error,
-                     const std::optional<net::AddressList>& resolved_addresses);
+                     const net::AddressList& resolved_addresses);
 
   // Both DNS and TLS probes need to resolve DNS. This starts the TLS probe with
   // the |addresses| from the DNS resolution.

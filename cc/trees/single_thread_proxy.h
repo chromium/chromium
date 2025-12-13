@@ -27,7 +27,7 @@
 
 namespace viz {
 class BeginFrameSource;
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }
 
 namespace cc {
@@ -78,7 +78,6 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void QueueImageDecode(int request_id,
                         const DrawImage& image,
                         bool speculative) override;
-  bool SpeculativeDecodeRequestInFlight() const override;
   void SetMutator(std::unique_ptr<LayerTreeMutator> mutator) override;
   void SetPaintWorkletLayerPainter(
       std::unique_ptr<PaintWorkletLayerPainter> painter) override;
@@ -138,6 +137,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void SetNeedsPrepareTilesOnImplThread() override;
   void SetNeedsCommitOnImplThread(bool urgent) override;
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override;
+  void DidChangeBeginFrameSourcePaused(bool paused) override;
   void SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) override {}
   bool IsInsideDraw() override;
   void RenewTreePriority() override;
@@ -203,7 +203,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void DoPainting();
   void DoCommit(const viz::BeginFrameArgs& commit_args);
   void DoPostCommit();
-  DrawResult DoComposite(LayerTreeHostImpl::FrameData* frame);
+  DrawResult DoComposite(FrameData* frame);
   void DoSwap();
   void DidCommitAndDrawFrame(int source_frame_number);
   void CommitComplete();
@@ -252,9 +252,6 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   // When output surface is lost, is set to true until a new output surface is
   // initialized.
   bool layer_tree_frame_sink_lost_;
-
-  // Only one speculative decode request may be in flight at a time.
-  bool speculative_decode_request_in_flight_ = false;
 
   // A number that kept incrementing in CompositeImmediately, which indicates a
   // new impl frame.

@@ -1,8 +1,8 @@
-Name: Headers for the Windows 10 WebAuthn API (webauthn.dll)
+Name: Headers for the Windows WebAuthn API (webauthn.dll)
 Short Name: Windows webauthn.h
 URL: https://github.com/Microsoft/webauthn/
 Version: 8
-Revision: 706d98d73a8c3d888e77f0d524f630d551b194c3
+Revision: c3ed95fd7603441a0253c55c14e79239cb556a9f
 Update Mechanism: Manual
 License: MIT
 License File: LICENSE
@@ -11,12 +11,6 @@ Shipped: yes
 
 Description:
 This project contains a header file (webauthn.h) for the native Windows 10 & 11
-WebAuthn API (webauthn.dll). While the API is already shipping with Windows 10
-Insider Preview builds (as of November 2018), the corresponding header file has
-not yet been released into a Windows SDK that Chromium can depend on. We
-therefore include the header via this open source repository for the time
-being.
+WebAuthn API (webauthn.dll).
 
-Local Modifications:
-- added BUILD.gn and README.chromium
-- files have been formatted by git cl format
+Local Modifications: None.

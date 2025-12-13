@@ -107,6 +107,7 @@ public class TabListEditorLayoutUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testShowAndHide_DescendantFocusability() {
         initializeLayout();
         when(mRootView.getChildCount()).thenReturn(2);

@@ -12,7 +12,9 @@
 #include "base/values.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
+#include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
+#include "components/content_settings/core/browser/permission_settings_info.h"
 #include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -95,7 +97,7 @@ void ContentSettingsRegistry::Init() {
       WebsiteSettingsInfo::REQUESTING_ORIGIN_WITH_TOP_ORIGIN_EXCEPTIONS_SCOPE,
       WebsiteSettingsRegistry::ALL_PLATFORMS,
       ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-      ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+      PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   Register(ContentSettingsType::IMAGES, "images", CONTENT_SETTING_ALLOW,
            WebsiteSettingsInfo::SYNCABLE,
@@ -107,7 +109,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   Register(ContentSettingsType::JAVASCRIPT, "javascript", CONTENT_SETTING_ALLOW,
            WebsiteSettingsInfo::SYNCABLE,
@@ -123,7 +125,7 @@ void ContentSettingsRegistry::Init() {
 #endif
            ,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   Register(ContentSettingsType::ALL_SCREEN_CAPTURE,
            "access-to-get-all-screens-media-in-session", CONTENT_SETTING_BLOCK,
@@ -132,7 +134,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::REQUESTING_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::ALL_PLATFORMS,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   Register(ContentSettingsType::POPUPS, "popups", CONTENT_SETTING_BLOCK,
            WebsiteSettingsInfo::SYNCABLE,
@@ -142,7 +144,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::ALL_PLATFORMS,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   Register(ContentSettingsType::GEOLOCATION, "geolocation", CONTENT_SETTING_ASK,
            WebsiteSettingsInfo::UNSYNCABLE, /*allowlisted_primary_schemes=*/{},
@@ -152,7 +154,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::NOTIFICATIONS, "notifications",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -165,7 +167,7 @@ void ContentSettingsRegistry::Init() {
            // See also NotificationPermissionContext::DecidePermission which
            // implements additional incognito exceptions.
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(
       ContentSettingsType::MEDIASTREAM_MIC, "media-stream-mic",
@@ -178,7 +180,7 @@ void ContentSettingsRegistry::Init() {
           WebsiteSettingsRegistry::PLATFORM_ANDROID |
           WebsiteSettingsRegistry::PLATFORM_IOS,
       ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-      ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+      PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(
       ContentSettingsType::MEDIASTREAM_CAMERA, "media-stream-camera",
@@ -191,7 +193,7 @@ void ContentSettingsRegistry::Init() {
           WebsiteSettingsRegistry::PLATFORM_ANDROID |
           WebsiteSettingsRegistry::PLATFORM_IOS,
       ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-      ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+      PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::AUTOMATIC_DOWNLOADS, "automatic-downloads",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::SYNCABLE,
@@ -203,7 +205,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::MIDI_SYSEX, "midi-sysex", CONTENT_SETTING_ASK,
            WebsiteSettingsInfo::UNSYNCABLE, /*allowlisted_primary_schemes=*/{},
@@ -213,7 +215,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
            "protected-media-identifier", CONTENT_SETTING_ALLOW,
@@ -229,7 +231,7 @@ void ContentSettingsRegistry::Init() {
                WebsiteSettingsRegistry::PLATFORM_CHROMEOS |
                WebsiteSettingsRegistry::PLATFORM_WINDOWS,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::DURABLE_STORAGE, "durable-storage",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -240,7 +242,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::BACKGROUND_SYNC, "background-sync",
            CONTENT_SETTING_ALLOW, WebsiteSettingsInfo::UNSYNCABLE,
@@ -250,7 +252,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::AUTOPLAY, "autoplay", CONTENT_SETTING_ALLOW,
            WebsiteSettingsInfo::UNSYNCABLE, /*allowlisted_primary_schemes=*/{},
@@ -259,7 +261,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   Register(ContentSettingsType::SOUND, "sound", CONTENT_SETTING_ALLOW,
            WebsiteSettingsInfo::UNSYNCABLE, /*allowlisted_primary_schemes=*/{},
@@ -268,7 +270,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   Register(ContentSettingsType::ADS, "subresource-filter",
            CONTENT_SETTING_BLOCK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -282,7 +284,7 @@ void ContentSettingsRegistry::Init() {
 #endif
            ,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   Register(ContentSettingsType::LEGACY_COOKIE_ACCESS, "legacy-cookie-access",
            CONTENT_SETTING_BLOCK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -291,7 +293,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::REQUESTING_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::ALL_PLATFORMS,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   Register(ContentSettingsType::LEGACY_COOKIE_SCOPE, "legacy-cookie-scope",
            CONTENT_SETTING_BLOCK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -300,27 +302,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::REQUESTING_SCHEMEFUL_SITE_ONLY_SCOPE,
            WebsiteSettingsRegistry::ALL_PLATFORMS,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
-
-  Register(ContentSettingsType::TPCD_TRIAL, "3pcd-support",
-           CONTENT_SETTING_BLOCK, WebsiteSettingsInfo::UNSYNCABLE,
-           /*allowlisted_primary_schemes=*/{},
-           /*valid_settings=*/{CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
-           WebsiteSettingsInfo::REQUESTING_ORIGIN_AND_TOP_SCHEMEFUL_SITE_SCOPE,
-           WebsiteSettingsRegistry::DESKTOP |
-               WebsiteSettingsRegistry::PLATFORM_ANDROID,
-           ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
-
-  Register(ContentSettingsType::TOP_LEVEL_TPCD_TRIAL, "top-level-3pcd-support",
-           CONTENT_SETTING_BLOCK, WebsiteSettingsInfo::UNSYNCABLE,
-           /*allowlisted_primary_schemes=*/{},
-           /*valid_settings=*/{CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
-           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
-           WebsiteSettingsRegistry::DESKTOP |
-               WebsiteSettingsRegistry::PLATFORM_ANDROID,
-           ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   Register(ContentSettingsType::TPCD_HEURISTICS_GRANTS,
            "3pcd-heuristics-grants", CONTENT_SETTING_BLOCK,
@@ -330,18 +312,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::REQUESTING_AND_TOP_SCHEMEFUL_SITE_SCOPE,
            WebsiteSettingsRegistry::ALL_PLATFORMS,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
-
-  Register(ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL,
-           "top-level-3pcd-origin-trial", CONTENT_SETTING_ALLOW,
-           WebsiteSettingsInfo::UNSYNCABLE,
-           /*allowlisted_primary_schemes=*/{},
-           /*valid_settings=*/{CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
-           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
-           WebsiteSettingsRegistry::DESKTOP |
-               WebsiteSettingsRegistry::PLATFORM_ANDROID,
-           ContentSettingsInfo::DONT_INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   Register(ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL,
            "storage-access-header-origin-trial", CONTENT_SETTING_BLOCK,
@@ -352,7 +323,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::DONT_INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   // Content settings that aren't used to store any data. TODO(raymes): use a
   // different mechanism rather than content settings to represent these.
@@ -364,7 +335,7 @@ void ContentSettingsRegistry::Init() {
            /*valid_settings=*/{}, WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::DESKTOP,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   Register(ContentSettingsType::MIXEDSCRIPT, "mixed-script",
            CONTENT_SETTING_BLOCK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -374,7 +345,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   Register(ContentSettingsType::BLUETOOTH_GUARD, "bluetooth-guard",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -384,7 +355,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   // TODO(crbug.com/40602007): Update this to "SECURE_ONLY" once
   // DeviceOrientationEvents and DeviceMotionEvents are only fired in secure
@@ -396,7 +367,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   Register(ContentSettingsType::CLIPBOARD_READ_WRITE, "clipboard",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -407,7 +378,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::PAYMENT_HANDLER, "payment-handler",
            CONTENT_SETTING_ALLOW, WebsiteSettingsInfo::UNSYNCABLE,
@@ -417,7 +388,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::USB_GUARD, "usb-guard", CONTENT_SETTING_ASK,
            WebsiteSettingsInfo::UNSYNCABLE, /*allowlisted_primary_schemes=*/{},
@@ -426,7 +397,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::SERIAL_GUARD, "serial-guard",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -436,7 +407,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::BLUETOOTH_SCANNING, "bluetooth-scanning",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -446,7 +417,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::HID_GUARD, "hid-guard", CONTENT_SETTING_ASK,
            WebsiteSettingsInfo::UNSYNCABLE, /*allowlisted_primary_schemes=*/{},
@@ -454,7 +425,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::DESKTOP,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION,
            "file-system-access-extended-permission", CONTENT_SETTING_ASK,
@@ -464,7 +435,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::DESKTOP,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION,
            "file-system-access-restore-permission", CONTENT_SETTING_ASK,
@@ -474,7 +445,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::DESKTOP,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
            "file-system-write-guard", CONTENT_SETTING_ASK,
@@ -486,7 +457,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::FILE_SYSTEM_READ_GUARD,
            "file-system-read-guard", CONTENT_SETTING_ASK,
@@ -497,7 +468,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   // The "nfc" name should not be used in the future to avoid name collisions.
   // See crbug.com/1275576
@@ -509,7 +480,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::VR, "vr", CONTENT_SETTING_ASK,
            WebsiteSettingsInfo::UNSYNCABLE, /*allowlisted_primary_schemes=*/{},
@@ -519,7 +490,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::AR, "ar", CONTENT_SETTING_ASK,
            WebsiteSettingsInfo::UNSYNCABLE, /*allowlisted_primary_schemes=*/{},
@@ -529,7 +500,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::HAND_TRACKING, "hand-tracking",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -540,7 +511,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::STORAGE_ACCESS, "storage-access",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -550,7 +521,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::REQUESTING_AND_TOP_SCHEMEFUL_SITE_SCOPE,
            WebsiteSettingsRegistry::ALL_PLATFORMS,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   Register(ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
            "top-level-storage-access", CONTENT_SETTING_ASK,
@@ -561,7 +532,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::REQUESTING_ORIGIN_AND_TOP_SCHEMEFUL_SITE_SCOPE,
            WebsiteSettingsRegistry::ALL_PLATFORMS,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   Register(ContentSettingsType::CAMERA_PAN_TILT_ZOOM, "camera-pan-tilt-zoom",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -572,7 +543,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   // TODO(crbug.com/40842170): Reconsider how WINDOW_MANAGEMENT is synced. For
   // now it remains on the legacy "window-placement" key (see
@@ -586,7 +557,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   Register(ContentSettingsType::LOCAL_FONTS, "local-fonts", CONTENT_SETTING_ASK,
            WebsiteSettingsInfo::SYNCABLE, /*allowlisted_primary_schemes=*/{},
@@ -595,7 +566,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::DESKTOP,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::IDLE_DETECTION, "idle-detection",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -605,7 +576,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::ALL_PLATFORMS,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::JAVASCRIPT_JIT, "javascript-jit",
            CONTENT_SETTING_ALLOW, WebsiteSettingsInfo::UNSYNCABLE,
@@ -615,7 +586,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   Register(ContentSettingsType::JAVASCRIPT_OPTIMIZER, "javascript-optimizer",
            CONTENT_SETTING_ALLOW, WebsiteSettingsInfo::UNSYNCABLE,
@@ -625,16 +596,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
-
-  Register(ContentSettingsType::PRIVATE_NETWORK_GUARD, "private-network-guard",
-           CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
-           /*allowlisted_primary_schemes=*/{},
-           /*valid_settings=*/{CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK},
-           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
-           WebsiteSettingsRegistry::DESKTOP,
-           ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   const auto auto_dark_web_content_setting =
 #if BUILDFLAG(IS_ANDROID)
@@ -656,7 +618,7 @@ void ContentSettingsRegistry::Init() {
 #endif
            ,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   Register(ContentSettingsType::REQUEST_DESKTOP_SITE, "request-desktop-site",
            CONTENT_SETTING_BLOCK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -666,7 +628,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::PLATFORM_ANDROID |
                WebsiteSettingsRegistry::PLATFORM_IOS,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   Register(ContentSettingsType::FEDERATED_IDENTITY_API, "webid-api",
            CONTENT_SETTING_ALLOW, WebsiteSettingsInfo::UNSYNCABLE,
@@ -675,7 +637,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE,
            WebsiteSettingsRegistry::ALL_PLATFORMS,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION,
            "webid-auto-reauthn", CONTENT_SETTING_ALLOW,
@@ -685,7 +647,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::REQUESTING_SCHEMEFUL_SITE_ONLY_SCOPE,
            WebsiteSettingsRegistry::ALL_PLATFORMS,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::ANTI_ABUSE, "anti-abuse", CONTENT_SETTING_ALLOW,
            WebsiteSettingsInfo::SYNCABLE,
@@ -695,7 +657,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING,
            "third-party-storage-partitioning", CONTENT_SETTING_ALLOW,
@@ -704,17 +666,24 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::ALL_PLATFORMS,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
+  // Controls automatic picture-in-picture (auto-PiP).
+  // On Desktop, this controls both video and document auto-PiP and prompts the
+  // user for permission.
+  // On Android, this is for video auto-PiP only. It defaults to ALLOW in
+  // regular profiles and BLOCK in incognito. This default is shown in the UI
+  // instead of "Ask". The setting can still be explicitly changed.
   Register(ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
            "auto-picture-in-picture", CONTENT_SETTING_ASK,
            WebsiteSettingsInfo::UNSYNCABLE, /*allowlisted_primary_schemes=*/{},
            /*valid_settings=*/
            {CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK},
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
-           WebsiteSettingsRegistry::DESKTOP,
+           WebsiteSettingsRegistry::DESKTOP |
+               WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::CAPTURED_SURFACE_CONTROL,
            "captured-surface-control", CONTENT_SETTING_ASK,
@@ -725,7 +694,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::DESKTOP,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::SMART_CARD_GUARD, "smart-card-guard",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -737,7 +706,7 @@ void ContentSettingsRegistry::Init() {
            // Target is DESKTOP.
            WebsiteSettingsRegistry::PLATFORM_CHROMEOS,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::WEB_PRINTING, "web-printing",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -748,7 +717,7 @@ void ContentSettingsRegistry::Init() {
            // TODO(b/302505962): Change this once more platforms are supported.
            WebsiteSettingsRegistry::PLATFORM_CHROMEOS,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::AUTOMATIC_FULLSCREEN, "automatic-fullscreen",
            CONTENT_SETTING_BLOCK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -757,7 +726,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::ALL_PLATFORMS,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::SPEAKER_SELECTION, "speaker-selection",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -767,7 +736,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::ALL_PLATFORMS,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::DIRECT_SOCKETS, "direct-sockets",
            CONTENT_SETTING_ALLOW, WebsiteSettingsInfo::UNSYNCABLE,
@@ -777,7 +746,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::DESKTOP,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::KEYBOARD_LOCK, "keyboard-lock",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -787,7 +756,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::DESKTOP,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::POINTER_LOCK, "pointer-lock",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -797,7 +766,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::DESKTOP,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(
       ContentSettingsType::TRACKING_PROTECTION, "tracking-protection",
@@ -807,9 +776,10 @@ void ContentSettingsRegistry::Init() {
       {CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
       WebsiteSettingsInfo::REQUESTING_ORIGIN_WITH_TOP_ORIGIN_EXCEPTIONS_SCOPE,
       WebsiteSettingsRegistry::DESKTOP |
-          WebsiteSettingsRegistry::PLATFORM_ANDROID,
+          WebsiteSettingsRegistry::PLATFORM_ANDROID |
+          WebsiteSettingsRegistry::PLATFORM_IOS,
       ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-      ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
+      PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
   // This setting is only available to WebUI pages and should be set through
   // WebUIAllowlist.
@@ -822,7 +792,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::REQUESTING_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::DESKTOP,
            ContentSettingsInfo::DONT_INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::WEB_APP_INSTALLATION, "web-app-installation",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -832,7 +802,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::DESKTOP,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   // TODO(crbug.com/368266657): Switch to CONTENT_SETTING_ASK once the prompt is
   // implemented and replace INHERIT_IN_INCOGNITO -> INTERIT_IF_LESS_PERMISSIVE.
@@ -845,7 +815,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::DESKTOP,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::CONTROLLED_FRAME, "controlled-frame",
            CONTENT_SETTING_ALLOW, WebsiteSettingsInfo::UNSYNCABLE,
@@ -856,7 +826,7 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
   Register(ContentSettingsType::LOCAL_NETWORK_ACCESS, "local-network-access",
            CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
@@ -867,7 +837,39 @@ void ContentSettingsRegistry::Init() {
            WebsiteSettingsRegistry::DESKTOP |
                WebsiteSettingsRegistry::PLATFORM_ANDROID,
            ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+
+  Register(ContentSettingsType::LOCAL_NETWORK, "local-network",
+           CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
+           /*allowlisted_primary_schemes=*/{},
+           /*valid_settings=*/
+           {CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK},
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
+           WebsiteSettingsRegistry::DESKTOP |
+               WebsiteSettingsRegistry::PLATFORM_ANDROID,
+           ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+
+  Register(ContentSettingsType::LOOPBACK_NETWORK, "loopback-network",
+           CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
+           /*allowlisted_primary_schemes=*/{},
+           /*valid_settings=*/
+           {CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK},
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
+           WebsiteSettingsRegistry::DESKTOP |
+               WebsiteSettingsRegistry::PLATFORM_ANDROID,
+           ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
+
+  Register(ContentSettingsType::DEVICE_ATTRIBUTES, "device-attributes",
+           CONTENT_SETTING_ALLOW, WebsiteSettingsInfo::UNSYNCABLE,
+           /*allowlisted_primary_schemes=*/{},
+           /*valid_settings=*/
+           {CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
+           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE,
+           WebsiteSettingsRegistry::PLATFORM_CHROMEOS,
+           ContentSettingsInfo::INHERIT_IN_INCOGNITO,
+           PermissionSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 }
 
 void ContentSettingsRegistry::Register(
@@ -878,33 +880,39 @@ void ContentSettingsRegistry::Register(
     const std::vector<std::string>& allowlisted_primary_schemes,
     const std::set<ContentSetting>& valid_settings,
     WebsiteSettingsInfo::ScopingType scoping_type,
-    Platforms platforms,
+    WebsiteSettingsRegistry::Platforms platforms,
     ContentSettingsInfo::IncognitoBehavior incognito_behavior,
-    ContentSettingsInfo::OriginRestriction origin_restriction) {
+    PermissionSettingsInfo::OriginRestriction origin_restriction) {
   // Ensure that nothing has been registered yet for the given type.
-  DCHECK(!website_settings_registry_->Get(type));
+  DCHECK(!permission_settings_registry_->Get(type)) << type;
+  DCHECK(!website_settings_registry_->Get(type)) << type;
+  DCHECK(!base::Contains(content_settings_info_, type)) << type;
 
-  base::Value default_value(static_cast<int>(initial_default_value));
-  const WebsiteSettingsInfo* website_settings_info =
-      website_settings_registry_->Register(
-          type, name, std::move(default_value), sync_status,
-          WebsiteSettingsInfo::NOT_LOSSY, scoping_type, platforms,
-          WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
+  auto delegate = std::make_unique<ContentSettingsInfo::Delegate>();
+  auto* delegate_ptr = delegate.get();
+  auto* permission_setting_info = permission_settings_registry_->Register(
+      type, name, initial_default_value, sync_status,
+      allowlisted_primary_schemes, scoping_type, platforms, origin_restriction,
+      std::move(delegate));
 
-  // WebsiteSettingsInfo::Register() will return nullptr if content setting type
-  // is not used on the current platform and doesn't need to be registered.
-  if (!website_settings_info) {
+  // PermissionSettingsRegistry::Register() will return nullptr if content
+  // setting type is not used on the current platform and doesn't need to be
+  // registered.
+  if (!permission_setting_info) {
     return;
   }
 
-  DCHECK(!base::Contains(content_settings_info_, type));
-  content_settings_info_[type] = std::make_unique<ContentSettingsInfo>(
-      website_settings_info, allowlisted_primary_schemes, valid_settings,
-      incognito_behavior, origin_restriction);
+  DCHECK(permission_settings_registry_->Get(type)) << type;
+  DCHECK(website_settings_registry_->Get(type)) << type;
+
+  auto& info = content_settings_info_[type] =
+      std::make_unique<ContentSettingsInfo>(permission_setting_info,
+                                            delegate_ptr, valid_settings,
+                                            incognito_behavior);
+
   if (type == ContentSettingsType::COOKIES) {
-    content_settings_info_[type]
-        ->set_third_party_cookie_allowed_secondary_schemes(
-            {kChromeDevToolsScheme, kExtensionScheme});
+    info->set_third_party_cookie_allowed_secondary_schemes(
+        {kChromeDevToolsScheme, kExtensionScheme});
   }
 }
 

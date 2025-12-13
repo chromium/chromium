@@ -6,11 +6,13 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 
 namespace net::extras {
 
-PreloadDecoder::BitReader::BitReader(const uint8_t* bytes, size_t num_bits)
+PreloadDecoder::BitReader::BitReader(base::span<const uint8_t> bytes,
+                                     size_t num_bits)
     : bytes_(bytes), num_bits_(num_bits), num_bytes_((num_bits + 7) / 8) {}
 
 // Next sets |*out| to the next bit from the input. It returns false if no
@@ -142,13 +144,12 @@ bool PreloadDecoder::BitReader::Seek(size_t offset) {
   return true;
 }
 
-PreloadDecoder::HuffmanDecoder::HuffmanDecoder(const uint8_t* tree,
-                                               size_t tree_bytes)
-    : tree_(tree), tree_bytes_(tree_bytes) {}
+PreloadDecoder::HuffmanDecoder::HuffmanDecoder(base::span<const uint8_t> tree)
+    : tree_(tree) {}
 
 bool PreloadDecoder::HuffmanDecoder::Decode(PreloadDecoder::BitReader* reader,
                                             char* out) const {
-  const uint8_t* current = &tree_[tree_bytes_ - 2];
+  base::span<const uint8_t> current = tree_.last<2>();
 
   for (;;) {
     bool bit;
@@ -156,30 +157,30 @@ bool PreloadDecoder::HuffmanDecoder::Decode(PreloadDecoder::BitReader* reader,
       return false;
     }
 
-    uint8_t b = UNSAFE_TODO(current[bit]);
+    uint8_t b = current[bit];
     if (b & 0x80) {
       *out = static_cast<char>(b & 0x7f);
       return true;
     }
 
     unsigned offset = static_cast<unsigned>(b) * 2;
-    DCHECK_LT(offset, tree_bytes_);
-    if (offset >= tree_bytes_) {
+    if (offset >= tree_.size()) {
       return false;
     }
 
-    current = &tree_[offset];
+    current = tree_.subspan(offset);
   }
 }
 
-PreloadDecoder::PreloadDecoder(const uint8_t* huffman_tree,
-                               size_t huffman_tree_size,
-                               const uint8_t* trie,
+PreloadDecoder::PreloadDecoder(base::span<const uint8_t> huffman_tree,
+                               base::span<const uint8_t> trie,
                                size_t trie_bits,
                                size_t trie_root_position)
-    : huffman_decoder_(huffman_tree, huffman_tree_size),
+    : huffman_decoder_(huffman_tree),
       bit_reader_(trie, trie_bits),
-      trie_root_position_(trie_root_position) {}
+      trie_root_position_(trie_root_position) {
+  CHECK_LE((trie_bits + 7) / 8, trie.size());
+}
 
 PreloadDecoder::~PreloadDecoder() = default;
 

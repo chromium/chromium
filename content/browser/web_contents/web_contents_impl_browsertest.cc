@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -24,6 +23,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,7 +38,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/url_formatter/url_formatter.h"
@@ -51,6 +50,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/web_contents/web_contents_view.h"
@@ -95,6 +95,7 @@
 #include "content/public/test/resource_load_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/text_input_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
@@ -150,10 +151,7 @@ void ResizeWebContentsView(Shell* shell,
 
 class WebContentsImplBrowserTest : public ContentBrowserTest {
  public:
-  WebContentsImplBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        fingerprinting_protection_interventions::features::kCanvasNoise);
-  }
+  WebContentsImplBrowserTest() = default;
 
   void SetUp() override {
     RenderWidgetHostImpl::DisableResizeAckCheckForTesting();
@@ -652,7 +650,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // the "navigation" triggered by history.pushState(). However, the start
   // notification for the history.pushState() navigation should set
   // should_show_loading_ui to false, as should all stop notifications.
-  EXPECT_EQ("pushState", shell()->web_contents()->GetLastCommittedURL().ref());
+  EXPECT_EQ("pushState",
+            shell()->web_contents()->GetLastCommittedURL().GetRef());
   EXPECT_EQ(4, delegate->loadingStateChangedCount());
   EXPECT_EQ(1, delegate->loadingStateShowLoadingUICount());
 }
@@ -685,8 +684,16 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, ResourceLoadComplete) {
 
 // Same as WebContentsImplBrowserTest.ResourceLoadComplete but with resources
 // retrieved from the network cache.
+// TODO(crbug.com/440535492): Flaky on Win dbg. Re-enable this test.
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
+#define MAYBE_ResourceLoadCompleteFromNetworkCache \
+  DISABLED_ResourceLoadCompleteFromNetworkCache
+#else
+#define MAYBE_ResourceLoadCompleteFromNetworkCache \
+  ResourceLoadCompleteFromNetworkCache
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
-                       ResourceLoadCompleteFromNetworkCache) {
+                       MAYBE_ResourceLoadCompleteFromNetworkCache) {
   ResourceLoadObserver observer(shell());
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL page_url(
@@ -1263,8 +1270,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, ViewSourceDirectNavigation) {
   // Displayed view-source URLs don't include the scheme of the effective URL if
   // the effective URL is HTTP. (e.g. view-source:example.com is displayed
   // instead of view-source:http://example.com).
-  EXPECT_EQ(base::ASCIIToUTF16(std::string("view-source:") + kUrl.host() + ":" +
-                               kUrl.port() + kUrl.path()),
+  EXPECT_EQ(base::ASCIIToUTF16(std::string("view-source:") + kUrl.GetHost() +
+                               ":" + kUrl.GetPort() + kUrl.GetPath()),
             shell()->web_contents()->GetTitle());
   EXPECT_TRUE(shell()
                   ->web_contents()
@@ -3150,6 +3157,37 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_EQ(shell()->run_file_chooser_count(), 0u);
 }
 
+class InactiveContentsDelegate : public WebContentsDelegate {
+ public:
+  explicit InactiveContentsDelegate(WebContents* contents) {
+    contents->SetDelegate(this);
+  }
+
+  bool IsContentsActive(content::WebContents* web_contents) override {
+    return false;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       FileChooserBlockedFromInactiveButVisibleWebContents) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  shell()->set_hold_file_chooser();
+
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  EXPECT_EQ(shell()->web_contents()->GetVisibility(), Visibility::VISIBLE);
+  InactiveContentsDelegate delegate(wc);
+
+  auto [chooser, remote] =
+      FileChooserImpl::CreateForTesting(wc->GetPrimaryMainFrame());
+  auto file_select_listener = base::MakeRefCounted<MockFileSelectListener>();
+  wc->RunFileChooser(chooser->GetWeakPtr(), wc->GetPrimaryMainFrame(),
+                     file_select_listener, blink::mojom::FileChooserParams());
+  EXPECT_TRUE(file_select_listener->cancelled());
+  EXPECT_EQ(shell()->run_file_chooser_count(), 0u);
+}
+
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        EnumerateDirectoryBlockedFromHiddenWebContents) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -3474,10 +3512,13 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, TitleUpdateOnRestore) {
 
   // Set up all the expected title change in the original WebContents.
   std::queue<std::u16string> original_expected_title_changes;
-  // The first "title change" is not an actual title change, it's triggered by a
-  // INVALIDATE_TYPE_ALL NotifyNavigationStateChanged call from
-  // NavigationControllerImpl::DiscardNonCommittedEntries().
-  original_expected_title_changes.push(u"");
+  if (!base::FeatureList::IsEnabled(
+          features::kSkipRedundantNavigationStateNotification)) {
+    // The first "title change" is not an actual title change, it's triggered by
+    // a INVALIDATE_TYPE_ALL NotifyNavigationStateChanged call from
+    // NavigationControllerImpl::DiscardNonCommittedEntries().
+    original_expected_title_changes.push(u"");
+  }
   // When the navigation to `main_url` commits, the document title is not set
   // yet, so we use the URL as the title.
   original_expected_title_changes.push(main_url_as_title);
@@ -3525,15 +3566,18 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, TitleUpdateOnRestore) {
 
   // Set up all the expected title change in the new WebContents.
   std::queue<std::u16string> new_expected_title_changes;
-  // Similar to the original WebContents' case above, the first "title change"
-  // is not an actual title change, but instead triggered by a
-  // INVALIDATE_TYPE_ALL NotifyNavigationStateChanged call from
-  // NavigationControllerImpl::DiscardNonCommittedEntries(). For the
-  // original WebContents' case we expect an empty title because there's no
-  // entries and GetNavigationEntryForTitle() returns null. However, in the new
-  // WebContents we already have the restored entry, so we will use the entry's
-  // title.
-  new_expected_title_changes.push(main_title);
+  if (!base::FeatureList::IsEnabled(
+          features::kSkipRedundantNavigationStateNotification)) {
+    // Similar to the original WebContents' case above, the first "title change"
+    // is not an actual title change, but instead triggered by a
+    // INVALIDATE_TYPE_ALL NotifyNavigationStateChanged call from
+    // NavigationControllerImpl::DiscardNonCommittedEntries(). For the original
+    // WebContents' case we expect an empty title because there's no entries and
+    // GetNavigationEntryForTitle() returns null. However, in the new
+    // WebContents we already have the restored entry, so we will use the
+    // entry's title.
+    new_expected_title_changes.push(main_title);
+  }
   // When the navigation to `main_url` commits, we also got another "update"
   // that is not really a title change, but it is triggered by a
   // INVALIDATE_TYPE_ALL NotifyNavigationStateChanged call from
@@ -4366,6 +4410,11 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Navigate the child to a page with a subframe, at which we will attach the
   // grandchild.
   ASSERT_TRUE(NavigateToURL(child_contents, url_b));
+  auto* child_contents_impl = static_cast<WebContentsImpl*>(child_contents);
+  auto* child_event_router = child_contents_impl->GetInputEventRouter();
+  ASSERT_TRUE(child_event_router);
+  auto* child_text_input_manager = child_contents_impl->GetTextInputManager();
+  ASSERT_TRUE(child_text_input_manager);
 
   // Create and attach grandchild to child.
   std::unique_ptr<WebContents> grandchild_contents_ptr =
@@ -4386,6 +4435,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
     auto* root_event_router = root_web_contents->GetInputEventRouter();
     EXPECT_EQ(1U, root_event_router->RegisteredViewCountForTesting());
     EXPECT_TRUE(root_event_router->IsViewInMap(root_view));
+    // Verify that the child has registered views of itself and the grandchild.
+    EXPECT_EQ(2U, child_event_router->RegisteredViewCountForTesting());
+    EXPECT_EQ(2U,
+              child_text_input_manager->GetRegisteredViewsCountForTesting());
   }
 
   // Attach child+grandchild subtree to root.
@@ -4418,6 +4471,13 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
     EXPECT_TRUE(text_input_manager->IsRegistered(root_view));
     EXPECT_TRUE(text_input_manager->IsRegistered(child_view));
     EXPECT_TRUE(text_input_manager->IsRegistered(grandchild_view));
+  }
+
+  // Verify that views are not registered with child WebContents.
+  {
+    EXPECT_EQ(0U, child_event_router->RegisteredViewCountForTesting());
+    EXPECT_EQ(0U,
+              child_text_input_manager->GetRegisteredViewsCountForTesting());
   }
 }
 
@@ -4556,10 +4616,61 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
   WebContentsImpl* inner_wc_impl =
       static_cast<WebContentsImpl*>(inner_wc.get());
   ASSERT_TRUE(NavigateToURL(inner_wc.get(), inner_url));
+  auto* outer_event_router = outer_wc->GetInputEventRouter();
+  ASSERT_TRUE(outer_event_router);
+  auto* outer_text_input_manager = outer_wc->GetTextInputManager();
+  ASSERT_TRUE(outer_text_input_manager);
+  auto* inner_event_router = inner_wc_impl->GetInputEventRouter();
+  ASSERT_TRUE(inner_event_router);
+  auto* inner_text_input_manager = inner_wc_impl->GetTextInputManager();
+  ASSERT_TRUE(inner_text_input_manager);
+
+  auto* outer_view = static_cast<RenderWidgetHostViewBase*>(
+      outer_wc->GetRenderWidgetHostView());
+  ASSERT_TRUE(outer_view);
+
+  // Verify that views are registered in their respective WebContents.
+  {
+    auto* inner_view = static_cast<RenderWidgetHostViewBase*>(
+        inner_wc->GetRenderWidgetHostView());
+    ASSERT_TRUE(inner_view);
+
+    EXPECT_EQ(1U, outer_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(outer_event_router->IsViewInMap(outer_view));
+    EXPECT_EQ(1U,
+              outer_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(outer_view));
+
+    EXPECT_EQ(1U, inner_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(inner_event_router->IsViewInMap(inner_view));
+    EXPECT_EQ(1U,
+              inner_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(inner_view));
+  }
+
   outer_wc->AttachUnownedInnerWebContents(
       UnownedInnerWebContentsClient::GetPassKeyForTesting(),
       inner_wc.get(), iframe_rfh);
   ASSERT_EQ(outer_wc, inner_wc->GetOuterWebContents());
+
+  // Verify that views are registered in outer WebContents.
+  {
+    auto* inner_view = static_cast<RenderWidgetHostViewBase*>(
+        inner_wc->GetRenderWidgetHostView());
+    ASSERT_TRUE(inner_view);
+
+    EXPECT_EQ(2U, outer_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(outer_event_router->IsViewInMap(outer_view));
+    EXPECT_TRUE(outer_event_router->IsViewInMap(inner_view));
+    EXPECT_EQ(2U,
+              outer_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(outer_view));
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(inner_view));
+
+    EXPECT_EQ(0U, inner_event_router->RegisteredViewCountForTesting());
+    EXPECT_EQ(0U,
+              inner_text_input_manager->GetRegisteredViewsCountForTesting());
+  }
 
   // Detach the inner WebContents
   outer_wc->DetachUnownedInnerWebContents(
@@ -4577,6 +4688,25 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
                               inner_wc->GetPrimaryMainFrame()));
   EXPECT_FALSE(iframe_rfh->frame_tree_node()->render_manager()
             ->is_attaching_inner_delegate());
+
+  // Verify that views are registered in their respective WebContents.
+  {
+    auto* inner_view = static_cast<RenderWidgetHostViewBase*>(
+        inner_wc->GetRenderWidgetHostView());
+    ASSERT_TRUE(inner_view);
+
+    EXPECT_EQ(1U, outer_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(outer_event_router->IsViewInMap(outer_view));
+    EXPECT_EQ(1U,
+              outer_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(outer_view));
+
+    EXPECT_EQ(1U, inner_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(inner_event_router->IsViewInMap(inner_view));
+    EXPECT_EQ(1U,
+              inner_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(inner_view));
+  }
 
   // Verify inner WebContents still exists and is functional (e.g. can navigate)
   EXPECT_FALSE(inner_wc->IsBeingDestroyed());
@@ -4644,20 +4774,27 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
   RenderFrameHostImpl* iframe_rfh = static_cast<RenderFrameHostImpl*>(
       ChildFrameAt(outer_wc->GetPrimaryMainFrame(), 0));
   ASSERT_TRUE(iframe_rfh);
+  auto* outer_event_router = outer_wc->GetInputEventRouter();
+  ASSERT_TRUE(outer_event_router);
+  auto* outer_text_input_manager = outer_wc->GetTextInputManager();
+  ASSERT_TRUE(outer_text_input_manager);
+  auto* outer_view = static_cast<RenderWidgetHostViewBase*>(
+      outer_wc->GetRenderWidgetHostView());
+  ASSERT_TRUE(outer_view);
 
   // Setup inner WebContents
   WebContents::CreateParams inner_params(
       shell()->web_contents()->GetBrowserContext());
   std::unique_ptr<WebContents> inner_wc = WebContents::Create(inner_params);
   ASSERT_TRUE(NavigateToURL(inner_wc.get(), inner_url));
+  WebContentsImpl* inner_wc_impl =
+      static_cast<WebContentsImpl*>(inner_wc.get());
+  auto* inner_event_router = inner_wc_impl->GetInputEventRouter();
+  ASSERT_TRUE(inner_event_router);
+  auto* inner_text_input_manager = inner_wc_impl->GetTextInputManager();
+  ASSERT_TRUE(inner_text_input_manager);
 
-  // Attach the inner WebContents
-  outer_wc->AttachUnownedInnerWebContents(
-      UnownedInnerWebContentsClient::GetPassKeyForTesting(),
-      inner_wc.get(), iframe_rfh);
-  ASSERT_EQ(outer_wc, inner_wc->GetOuterWebContents());
-
-  // Verify RenderFrameHost is created for the inner WebContents
+  // Verify RenderFrameHosts are created for the inner WebContents.
   RenderFrameHost* rfh_a = inner_wc->GetPrimaryMainFrame();
   ASSERT_TRUE(rfh_a);
   RenderFrameHost* rfh_b1 = ChildFrameAt(rfh_a, 0);
@@ -4666,6 +4803,78 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
   ASSERT_TRUE(rfh_a_nested);
   RenderFrameHost* rfh_b2 = ChildFrameAt(rfh_a, 1);
   ASSERT_TRUE(rfh_b2);
+
+  // Verify that views are registered in their respective WebContents.
+  {
+    EXPECT_EQ(1U, outer_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(outer_event_router->IsViewInMap(outer_view));
+    EXPECT_EQ(1U,
+              outer_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(outer_view));
+
+    EXPECT_EQ(4U, inner_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b1->GetView())));
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a_nested->GetView())));
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())));
+    EXPECT_EQ(4U,
+              inner_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b1->GetView())));
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a_nested->GetView())));
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())));
+  }
+
+  // Attach the inner WebContents
+  outer_wc->AttachUnownedInnerWebContents(
+      UnownedInnerWebContentsClient::GetPassKeyForTesting(), inner_wc.get(),
+      iframe_rfh);
+  ASSERT_EQ(outer_wc, inner_wc->GetOuterWebContents());
+
+  // Verify that RenderFrameHosts are not changed after attaching inner
+  // WebContents.
+  EXPECT_EQ(rfh_a, inner_wc->GetPrimaryMainFrame());
+  ASSERT_TRUE(rfh_a);
+  EXPECT_EQ(rfh_b1, ChildFrameAt(rfh_a, 0));
+  EXPECT_EQ(rfh_a_nested, ChildFrameAt(rfh_b1, 0));
+  EXPECT_EQ(rfh_b2, ChildFrameAt(rfh_a, 1));
+
+  // Verify that views are registered in outer WebContents.
+  {
+    EXPECT_EQ(5U, outer_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(outer_event_router->IsViewInMap(outer_view));
+    EXPECT_TRUE(outer_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(outer_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b1->GetView())));
+    EXPECT_TRUE(outer_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a_nested->GetView())));
+    EXPECT_TRUE(outer_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())));
+    EXPECT_EQ(5U,
+              outer_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(outer_view));
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b1->GetView())));
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a_nested->GetView())));
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())));
+
+    EXPECT_EQ(0U, inner_event_router->RegisteredViewCountForTesting());
+    EXPECT_EQ(0U,
+              inner_text_input_manager->GetRegisteredViewsCountForTesting());
+  }
 
   // Get the RenderWidgetHostView for a subframe RFH by going through the
   // RenderFrameProxyHost.
@@ -4702,6 +4911,35 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
   EXPECT_TRUE(rfh_a_nested->IsRenderFrameLive());
   EXPECT_TRUE(rfh_b2->IsRenderFrameLive());
 
+  // Verify that views are registered in their respective WebContents.
+  {
+    EXPECT_EQ(1U, outer_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(outer_event_router->IsViewInMap(outer_view));
+    EXPECT_EQ(1U,
+              outer_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(outer_view));
+
+    EXPECT_EQ(4U, inner_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b1->GetView())));
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a_nested->GetView())));
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())));
+    EXPECT_EQ(4U,
+              inner_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b1->GetView())));
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a_nested->GetView())));
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())));
+  }
+
   // Verify that only RVHs in the main frame's SiteInstance have a RWHV.
   EXPECT_TRUE(rfh_a->GetRenderViewHost()->GetWidget()->GetView());
   EXPECT_FALSE(rfh_b1->GetRenderViewHost()->GetWidget()->GetView());
@@ -4724,6 +4962,332 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
   EXPECT_TRUE(static_cast<RenderViewHostImpl*>(
       rfh_b2->GetRenderViewHost())->IsRenderViewLive());
 }
+
+IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
+                       UnownedInnerWebContentsWithNavigationPendingOOPIF) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL outer_url(
+      embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  const GURL inner_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL url_b = embedded_test_server()->GetURL(
+      "b.com", "/cross_site_iframe_factory.html?b()");
+
+  // Setup outer WebContents.
+  ASSERT_TRUE(NavigateToURL(shell(), outer_url));
+  WebContentsImpl* outer_wc =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* iframe_rfh = static_cast<RenderFrameHostImpl*>(
+      ChildFrameAt(outer_wc->GetPrimaryMainFrame(), 0));
+  ASSERT_TRUE(iframe_rfh);
+  auto* outer_event_router = outer_wc->GetInputEventRouter();
+  ASSERT_TRUE(outer_event_router);
+  auto* outer_text_input_manager = outer_wc->GetTextInputManager();
+  ASSERT_TRUE(outer_text_input_manager);
+  auto* outer_view = static_cast<RenderWidgetHostViewBase*>(
+      outer_wc->GetRenderWidgetHostView());
+  ASSERT_TRUE(outer_view);
+
+  // Setup inner WebContents with a navigation pending OOPIF.
+  WebContents::CreateParams inner_params(
+      shell()->web_contents()->GetBrowserContext());
+  std::unique_ptr<WebContents> inner_wc = WebContents::Create(inner_params);
+  WebContentsImpl* inner_wc_impl =
+      static_cast<WebContentsImpl*>(inner_wc.get());
+  auto* inner_event_router = inner_wc_impl->GetInputEventRouter();
+  ASSERT_TRUE(inner_event_router);
+  auto* inner_text_input_manager = inner_wc_impl->GetTextInputManager();
+  ASSERT_TRUE(inner_text_input_manager);
+  // Navigate inner WebContents and pause after speculative render frame host is
+  // created for the OOP iframe at which time the view for the iframe is
+  // registered with input event router.
+  TestNavigationManager nav_manager_b(inner_wc_impl, url_b);
+  inner_wc->GetController().LoadURLWithParams(
+      NavigationController::LoadURLParams(inner_url));
+  nav_manager_b.WaitForSpeculativeRenderFrameHostCreation();
+
+  // Get the RenderFrameHosts in inner WebContents.
+  RenderFrameHost* rfh_a = inner_wc->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh_a);
+  // OOPIF should be using speculative render frame host for the navigation.
+  FrameTreeNode* tree_node_b =
+      inner_wc_impl->GetPrimaryFrameTree().root()->child_at(0);
+  RenderFrameHost* rfh_b =
+      tree_node_b->render_manager()->speculative_frame_host();
+  ASSERT_TRUE(rfh_b);
+
+  // Verify that views for pending navigation are registered in their respective
+  // WebContents.
+  {
+    EXPECT_EQ(1U, outer_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(outer_event_router->IsViewInMap(outer_view));
+    EXPECT_EQ(1U,
+              outer_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(outer_view));
+
+    EXPECT_EQ(2U, inner_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView())));
+    EXPECT_EQ(2U,
+              inner_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView())));
+  }
+
+  // Attach the inner WebContents.
+  outer_wc->AttachUnownedInnerWebContents(
+      UnownedInnerWebContentsClient::GetPassKeyForTesting(), inner_wc.get(),
+      iframe_rfh);
+  ASSERT_EQ(outer_wc, inner_wc->GetOuterWebContents());
+
+  // Verify that RenderFrameHosts are not changed after attaching inner
+  // WebContents.
+  EXPECT_EQ(rfh_a, inner_wc->GetPrimaryMainFrame());
+  EXPECT_EQ(rfh_b, tree_node_b->render_manager()->speculative_frame_host());
+
+  // Verify that views are registered in outer WebContents.
+  {
+    EXPECT_EQ(3U, outer_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(outer_event_router->IsViewInMap(outer_view));
+    EXPECT_TRUE(outer_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(outer_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView())));
+    EXPECT_EQ(3U,
+              outer_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(outer_view));
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView())));
+
+    EXPECT_EQ(0U, inner_event_router->RegisteredViewCountForTesting());
+    EXPECT_EQ(0U,
+              inner_text_input_manager->GetRegisteredViewsCountForTesting());
+  }
+
+  // Detach the inner WebContents.
+  outer_wc->DetachUnownedInnerWebContents(
+      UnownedInnerWebContentsClient::GetPassKeyForTesting(), inner_wc.get());
+  ASSERT_EQ(nullptr, inner_wc->GetOuterWebContents());
+
+  // Verify that the inner WebContents's RFHs are still alive.
+  EXPECT_TRUE(rfh_a->IsRenderFrameLive());
+  EXPECT_TRUE(rfh_b->IsRenderFrameLive());
+
+  // Verify that views are registered in their respective WebContents.
+  {
+    EXPECT_EQ(1U, outer_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(outer_event_router->IsViewInMap(outer_view));
+    EXPECT_EQ(1U,
+              outer_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(outer_view));
+
+    EXPECT_EQ(2U, inner_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(inner_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView())));
+    EXPECT_EQ(2U,
+              inner_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(inner_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView())));
+  }
+
+  // Attach the inner WebContents again.
+  outer_wc->AttachUnownedInnerWebContents(
+      UnownedInnerWebContentsClient::GetPassKeyForTesting(), inner_wc.get(),
+      iframe_rfh);
+  ASSERT_EQ(outer_wc, inner_wc->GetOuterWebContents());
+
+  // Let the navigation complete.
+  ASSERT_TRUE(nav_manager_b.WaitForNavigationFinished());
+  EXPECT_TRUE(WaitForLoadStop(inner_wc_impl));
+  // Verify the speculative rfh is switched to be current rfh.
+  ASSERT_EQ(rfh_b, ChildFrameAt(rfh_a, 0));
+
+  // Verify that views are still registered in outer WebContents
+  {
+    EXPECT_EQ(3U, outer_event_router->RegisteredViewCountForTesting());
+    EXPECT_TRUE(outer_event_router->IsViewInMap(outer_view));
+    EXPECT_TRUE(outer_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(outer_event_router->IsViewInMap(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView())));
+    EXPECT_EQ(3U,
+              outer_text_input_manager->GetRegisteredViewsCountForTesting());
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(outer_view));
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())));
+    EXPECT_TRUE(outer_text_input_manager->IsRegistered(
+        static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView())));
+
+    EXPECT_EQ(0U, inner_event_router->RegisteredViewCountForTesting());
+    EXPECT_EQ(0U,
+              inner_text_input_manager->GetRegisteredViewsCountForTesting());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    UnownedInnerWebContentsBrowserTest,
+    AttachUnownedInnerWebContentsWithPendingCrossSiteNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL outer_url(
+      embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  const GURL inner_url_a(
+      embedded_test_server()->GetURL("a.com", "/title1.html"));
+  const GURL inner_url_b(
+      embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Setup outer WebContents.
+  ASSERT_TRUE(NavigateToURL(shell(), outer_url));
+  WebContentsImpl* outer_wc =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* iframe_rfh = static_cast<RenderFrameHostImpl*>(
+      ChildFrameAt(outer_wc->GetPrimaryMainFrame(), 0));
+  ASSERT_TRUE(iframe_rfh);
+
+  // Setup inner WebContents with a pending cross site navigation.
+  WebContents::CreateParams inner_params(
+      shell()->web_contents()->GetBrowserContext());
+  std::unique_ptr<WebContents> inner_wc = WebContents::Create(inner_params);
+  WebContentsImpl* inner_wc_impl =
+      static_cast<WebContentsImpl*>(inner_wc.get());
+  ASSERT_TRUE(NavigateToURL(inner_wc.get(), inner_url_a));
+  // Navigate inner WebContents and pause after speculative render frame host is
+  // is created for the cross site navigation at which time the view for it is
+  // also created.
+  TestNavigationManager nav_manager_b(inner_wc_impl, inner_url_b);
+  inner_wc->GetController().LoadURLWithParams(
+      NavigationController::LoadURLParams(inner_url_b));
+  nav_manager_b.WaitForSpeculativeRenderFrameHostCreation();
+
+  // Get the RenderFrameHosts in inner WebContents.
+  RenderFrameHost* rfh_a = inner_wc->GetPrimaryMainFrame();
+  ASSERT_TRUE(rfh_a);
+  // Cross site pending navigation should be using speculative render frame host
+  // for the navigation.
+  RenderFrameHost* rfh_b = inner_wc_impl->GetPrimaryFrameTree()
+                               .root()
+                               ->render_manager()
+                               ->speculative_frame_host();
+  ASSERT_TRUE(rfh_b);
+
+  // Verify that RenderWidgetHostViews have not changed to
+  // RenderWidgetHostViewChildFrame yet.
+  {
+    auto* rwhv_a = static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView());
+    ASSERT_TRUE(rwhv_a);
+    ASSERT_FALSE(rwhv_a->IsRenderWidgetHostViewChildFrame());
+    auto* rwhv_b = static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView());
+    ASSERT_TRUE(rwhv_b);
+    ASSERT_FALSE(rwhv_b->IsRenderWidgetHostViewChildFrame());
+  }
+
+  // Attach the inner WebContents.
+  outer_wc->AttachUnownedInnerWebContents(
+      UnownedInnerWebContentsClient::GetPassKeyForTesting(), inner_wc.get(),
+      iframe_rfh);
+  ASSERT_EQ(outer_wc, inner_wc->GetOuterWebContents());
+
+  // Verify that RenderFrameHosts are not changed after attaching inner
+  // WebContents.
+  EXPECT_EQ(rfh_a, inner_wc->GetPrimaryMainFrame());
+  EXPECT_EQ(rfh_b, inner_wc_impl->GetPrimaryFrameTree()
+                       .root()
+                       ->render_manager()
+                       ->speculative_frame_host());
+
+  // Verify that RenderWidgetHostViews have updated to be
+  // RenderWidgetHostViewChildFrame.
+  {
+    auto* rwhv_a = static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView());
+    ASSERT_TRUE(rwhv_a);
+    EXPECT_TRUE(rwhv_a->IsRenderWidgetHostViewChildFrame());
+    auto* rwhv_b = static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView());
+    ASSERT_TRUE(rwhv_b);
+    EXPECT_TRUE(rwhv_b->IsRenderWidgetHostViewChildFrame());
+  }
+
+  // Let the navigation complete.
+  ASSERT_TRUE(nav_manager_b.WaitForNavigationFinished());
+  EXPECT_TRUE(WaitForLoadStop(inner_wc_impl));
+
+  // Verify the speculative rfh is switched to be current rfh.
+  ASSERT_EQ(rfh_b, inner_wc->GetPrimaryMainFrame());
+
+  // Verify that RenderWidgetHostViews is still RenderWidgetHostViewChildFrame.
+  {
+    auto* rwhv_b = static_cast<RenderWidgetHostViewBase*>(rfh_b->GetView());
+    ASSERT_TRUE(rwhv_b);
+    ASSERT_TRUE(rwhv_b->IsRenderWidgetHostViewChildFrame());
+  }
+}
+
+// Tests destroying the outer delegate node while there is an unowned inner
+// WebContents attached. Ensures that the inner WebContents' RFH is still alive
+// and the WebContents can be re-attached to the outer WebContents.
+IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
+                       DestroyOuterDelegateNode) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL outer_url(
+      embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  const GURL inner_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
+
+  // Setup outer WebContents.
+  ASSERT_TRUE(NavigateToURL(shell(), outer_url));
+  WebContentsImpl* outer_wc =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* iframe_rfh = static_cast<RenderFrameHostImpl*>(
+      ChildFrameAt(outer_wc->GetPrimaryMainFrame(), 0));
+  ASSERT_TRUE(iframe_rfh);
+
+  // Setup inner WebContents
+  WebContents::CreateParams inner_params(
+      shell()->web_contents()->GetBrowserContext());
+  std::unique_ptr<WebContents> inner_wc = WebContents::Create(inner_params);
+  ASSERT_TRUE(NavigateToURL(inner_wc.get(), inner_url));
+
+  // Attach inner WC to outer WC's iframe.
+  outer_wc->AttachUnownedInnerWebContents(
+      UnownedInnerWebContentsClient::GetPassKeyForTesting(), inner_wc.get(),
+      iframe_rfh);
+  ASSERT_EQ(outer_wc, inner_wc->GetOuterWebContents());
+
+  // Destroy the outer delegate node (the iframe).
+  FrameDeletedObserver frame_deleted_observer(iframe_rfh);
+  EXPECT_TRUE(ExecJs(outer_wc, "document.querySelector('iframe').remove()"));
+  frame_deleted_observer.Wait();
+
+  // Verify that the inner WebContents is detached and still alive.
+  EXPECT_EQ(nullptr, inner_wc->GetOuterWebContents());
+  EXPECT_FALSE(inner_wc->IsBeingDestroyed());
+
+  // Verify inner WebContents is still functional (e.g. can navigate).
+  EXPECT_TRUE(NavigateToURL(
+      inner_wc.get(), embedded_test_server()->GetURL("a.com", "/title2.html")));
+  EXPECT_EQ(u"Title Of Awesomeness", inner_wc->GetTitle());
+
+  // Reload outer WebContents.
+  ASSERT_TRUE(NavigateToURL(shell(), outer_url));
+  outer_wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  iframe_rfh = static_cast<RenderFrameHostImpl*>(
+      ChildFrameAt(outer_wc->GetPrimaryMainFrame(), 0));
+  ASSERT_TRUE(iframe_rfh);
+
+  // Re-attach inner WC to outer WC's iframe.
+  outer_wc->AttachUnownedInnerWebContents(
+      UnownedInnerWebContentsClient::GetPassKeyForTesting(), inner_wc.get(),
+      iframe_rfh);
+  EXPECT_EQ(outer_wc, inner_wc->GetOuterWebContents());
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
@@ -5676,62 +6240,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
             web_contents_observer.last_value());
 }
 
-// Verifies assertions for SetRendererInitiatedUserAgentOverrideOption().
-IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
-                       RendererInitiatedUserAgentOverride) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  WebContents* web_contents = shell()->web_contents();
-
-  // This url triggers a renderer initiated navigation (redirect).
-  NavigationController::LoadURLParams load_params(
-      embedded_test_server()->GetURL("a.co", "/client_redirect.html"));
-  load_params.override_user_agent = NavigationController::UA_OVERRIDE_TRUE;
-
-  const GURL resulting_url =
-      embedded_test_server()->GetURL("a.co", "/title1.html");
-
-  // Assertions for the default SetRendererInitiatedUserAgentOverrideOption(),
-  // which is UA_OVERRIDE_INHERIT.
-  {
-    // The 2 is because the url redirects.
-    TestNavigationObserver observer(shell()->web_contents(), 2);
-    web_contents->GetController().LoadURLWithParams(load_params);
-    observer.Wait();
-
-    NavigationEntry* resulting_entry =
-        web_contents->GetController().GetLastCommittedEntry();
-    ASSERT_TRUE(resulting_entry);
-    EXPECT_EQ(resulting_url, resulting_entry->GetURL());
-    // The resulting entry should override the user-agent as the previous
-    // entry (as created by |load_params|) was configured to override the
-    // user-agent, and the WebContents was configured with
-    // SetRendererInitiatedUserAgentOverrideOption() of
-    // UA_OVERRIDE_INHERIT.
-    EXPECT_TRUE(resulting_entry->GetIsOverridingUserAgent());
-  }
-
-  // Repeat the above, but with UA_OVERRIDE_FALSE.
-  web_contents->SetRendererInitiatedUserAgentOverrideOption(
-      NavigationController::UA_OVERRIDE_FALSE);
-  {
-    // The 2 is because the url redirects.
-    TestNavigationObserver observer(shell()->web_contents(), 2);
-    web_contents->GetController().LoadURLWithParams(load_params);
-    observer.Wait();
-
-    EXPECT_EQ(2, web_contents->GetController().GetEntryCount());
-    NavigationEntry* resulting_entry =
-        web_contents->GetController().GetLastCommittedEntry();
-    ASSERT_TRUE(resulting_entry);
-    EXPECT_EQ(resulting_url, resulting_entry->GetURL());
-    // Even though |load_params| was configured to override the user-agent, the
-    // NavigationEntry for the redirect gets an override user-agent value of
-    // false because
-    // of SetRendererInitiatedUserAgentOverrideOption(UA_OVERRIDE_FALSE).
-    EXPECT_FALSE(resulting_entry->GetIsOverridingUserAgent());
-  }
-}
-
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        IgnoreUnresponsiveRendererDuringPaste) {
   WebContentsImpl* web_contents =
@@ -5842,7 +6350,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsDiscardBrowserTest, DiscardRetainsTitle) {
   EXPECT_CALL(observer, AboutToBeDiscarded(contents)).Times(1);
   EXPECT_CALL(observer, WasDiscarded()).Times(1);
   EXPECT_FALSE(contents->WasDiscarded());
-  contents->Discard();
+  contents->Discard(base::NullCallback());
   EXPECT_TRUE(contents->WasDiscarded());
   FrameTreeNode* root = contents->GetPrimaryFrameTree().root();
   ASSERT_TRUE(
@@ -5907,7 +6415,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsDiscardBrowserTest, DiscardRetainsFavicon) {
   EXPECT_CALL(observer, AboutToBeDiscarded(contents)).Times(1);
   EXPECT_CALL(observer, WasDiscarded()).Times(1);
   EXPECT_FALSE(contents->WasDiscarded());
-  contents->Discard();
+  contents->Discard(base::NullCallback());
   EXPECT_TRUE(contents->WasDiscarded());
   FrameTreeNode* root = contents->GetPrimaryFrameTree().root();
   ASSERT_TRUE(
@@ -6296,6 +6804,94 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 }
 
 namespace {
+void RunDeferredNavigationTest(
+    net::EmbeddedTestServer* embedded_test_server,
+    Shell* shell,
+    base::OnceCallback<std::string(const GURL&)> js_code_generator,
+    base::OnceCallback<void(Shell*, const GURL&)> opener_action) {
+  // Force WebContents in a new Shell to defer new navigations until the
+  // delegate is set.
+  shell->set_delay_popup_contents_delegate_for_testing(true);
+
+  // Load an initial page.
+  ASSERT_TRUE(embedded_test_server->Start());
+  const GURL url(embedded_test_server->GetURL("/title1.html"));
+  const GURL second_url(embedded_test_server->GetURL("/title2.html"));
+  const GURL third_url(embedded_test_server->GetURL("/title3.html"));
+  EXPECT_TRUE(NavigateToURL(shell, url));
+
+  // Open a popup to a same-site URL via window.open.
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(ExecJs(shell, std::move(js_code_generator).Run(second_url)));
+  Shell* new_shell = new_shell_observer.GetShell();
+  WebContents* new_contents = new_shell->web_contents();
+
+  // The navigation in the new popup should be deferred.
+  EXPECT_TRUE(WaitForLoadStop(new_contents));
+  EXPECT_TRUE(new_contents->GetController().IsInitialBlankNavigation());
+  EXPECT_TRUE(new_contents->GetLastCommittedURL().is_empty());
+
+  // Set the new shell's delegate now. This doesn't resume the navigation just
+  // yet.
+  EXPECT_FALSE(new_contents->GetDelegate());
+  new_contents->SetDelegate(new_shell);
+
+  // Run the action that triggers navigation/close of original shell.
+  std::move(opener_action).Run(shell, third_url);
+
+  // Ensure navigation completes and that this doesn't crash or hit DCHECK.
+  NavigationHandleObserver handle_observer(new_contents, second_url);
+  new_contents->ResumeLoadingCreatedWebContents();
+  EXPECT_TRUE(WaitForLoadStop(new_contents));
+  EXPECT_TRUE(handle_observer.has_committed());
+  EXPECT_EQ(new_contents->GetLastCommittedURL(), second_url);
+}
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       DeferredWindowNavigationIfOpenerNavigated) {
+  auto open_window = base::BindLambdaForTesting(
+      [](const GURL& url) { return JsReplace("window.open($1);", url); });
+  auto navigate_opener =
+      base::BindLambdaForTesting([](Shell* shell, const GURL& new_url) {
+        EXPECT_TRUE(NavigateToURL(shell, new_url));
+      });
+
+  RunDeferredNavigationTest(embedded_test_server(), shell(),
+                            std::move(open_window), std::move(navigate_opener));
+}
+
+// Open a window with noreferrer. This leads to that the opener is not forwarded
+// to the popup WebContents. Make sure this does not crash if we navigate the
+// parent away.
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       DeferredWindowNavigationIfOpenerNavigatedNoReferrer) {
+  auto open_window_no_referrer =
+      base::BindLambdaForTesting([](const GURL& url) {
+        return JsReplace("window.open($1, \"noreferrer\");", url);
+      });
+  auto navigate_opener =
+      base::BindLambdaForTesting([](Shell* shell, const GURL& new_url) {
+        EXPECT_TRUE(NavigateToURL(shell, new_url));
+      });
+
+  RunDeferredNavigationTest(embedded_test_server(), shell(),
+                            std::move(open_window_no_referrer),
+                            std::move(navigate_opener));
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       DeferredWindowNavigationIfOpenerDestroyed) {
+  auto open_window = base::BindLambdaForTesting(
+      [](const GURL& url) { return JsReplace("window.open($1);", url); });
+  auto close_opener = base::BindLambdaForTesting(
+      [](Shell* shell, const GURL& new_url) { shell->Close(); });
+
+  RunDeferredNavigationTest(embedded_test_server(), shell(),
+                            std::move(open_window), std::move(close_opener));
+}
+
+namespace {
 
 class MediaWaiter : public WebContentsObserver {
  public:
@@ -6341,6 +6937,60 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // This will not hang if MediaDestroyed() is dispatched as expected when a
   // frame with a media player is destroyed.
   waiter.WaitForMediaDestroyed();
+}
+
+// TODO(crbug.com/461821799): For top-level navigation, even if only ad
+// subframes remain loading, `WebContents::IsLoadingExcludingAdFramesTopLevel()`
+// still returns true. This test should be enabled after the behavior in this
+// case is changed to return false.
+IN_PROC_BROWSER_TEST_F(
+    WebContentsImplBrowserTest,
+    DISABLED_IsLoadingExcludingAdSubframesTopLevelNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/hello.html")));
+
+  GURL main_url = embedded_test_server()->GetURL("/page_with_iframe.html");
+  GURL iframe_url = embedded_test_server()->GetURL("/title1.html");
+  TestNavigationManager main_frame_manager(web_contents, main_url);
+  TestNavigationManager iframe_manager(web_contents, iframe_url);
+
+  // Navigate to a page with an iframe until Dom content loaded.
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, main_url));
+  // Wait for main frame navigation to finish.
+  ASSERT_TRUE(main_frame_manager.WaitForNavigationFinished());
+  ASSERT_TRUE(WaitForDOMContentLoaded(web_contents->GetPrimaryMainFrame()));
+  WaitForCopyableViewInWebContents(web_contents);
+
+  // Mark the iframe as an ad frame.
+  RenderFrameHost* iframe_rfh =
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_NE(iframe_rfh, nullptr);
+  iframe_rfh->UpdateIsAdFrame(/*is_ad_frame=*/true);
+  ASSERT_TRUE(iframe_rfh->IsAdFrame());
+
+  // TODO(crbug.com/461821799): If only ad subframe remains loading,
+  // `IsLoadingExcludingAdFrames()` is expected to return false. However, this
+  // is currently not the case
+  EXPECT_TRUE(web_contents->IsLoading());
+  EXPECT_FALSE(web_contents->IsLoadingExcludingAdSubframes());
+
+  ASSERT_TRUE(iframe_manager.WaitForResponse());
+
+  EXPECT_TRUE(web_contents->IsLoading());
+  EXPECT_FALSE(web_contents->IsLoadingExcludingAdSubframes());
+
+  // Wait for ad frame loading to stop.
+  ASSERT_TRUE(iframe_manager.WaitForNavigationFinished());
+  ASSERT_TRUE(WaitForLoadStop(web_contents));
+
+  // Loading stops.
+  ASSERT_EQ(iframe_rfh->GetLastCommittedURL(), iframe_url);
+  EXPECT_FALSE(web_contents->IsLoading());
+  EXPECT_FALSE(web_contents->IsLoadingExcludingAdSubframes());
 }
 
 class WebContentsImplInsecureLocalhostBrowserTest
@@ -6511,7 +7161,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsPrerenderWithDiscardBrowserTest,
   EXPECT_CALL(observer, AboutToBeDiscarded(web_contents())).Times(1);
   EXPECT_CALL(observer, WasDiscarded()).Times(1);
   EXPECT_FALSE(web_contents()->WasDiscarded());
-  web_contents()->Discard();
+  web_contents()->Discard(base::NullCallback());
   EXPECT_TRUE(web_contents()->WasDiscarded());
   EXPECT_FALSE(registry->FindNonReservedHostById(host_id));
 }
@@ -6608,76 +7258,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest, DoNotUpdateAXTree) {
   EXPECT_NE(nullptr, fenced_frame_rfh);
 }
 
-class MediaWatchTimeChangedDelegate : public WebContentsDelegate {
- public:
-  explicit MediaWatchTimeChangedDelegate(WebContents* contents)
-      : watch_time_(GURL(),
-                    GURL(),
-                    base::TimeDelta(),
-                    base::TimeDelta(),
-                    false,
-                    false) {
-    contents->SetDelegate(this);
-  }
-  ~MediaWatchTimeChangedDelegate() override = default;
-  MediaWatchTimeChangedDelegate(const MediaWatchTimeChangedDelegate&) = delete;
-  MediaWatchTimeChangedDelegate& operator=(
-      const MediaWatchTimeChangedDelegate&) = delete;
 
-  // WebContentsDelegate:
-  void MediaWatchTimeChanged(const MediaPlayerWatchTime& watch_time) override {
-    watch_time_ = watch_time;
-  }
-
-  const MediaPlayerWatchTime& watch_time() { return watch_time_; }
-
- private:
-  MediaPlayerWatchTime watch_time_;
-};
-
-// Tests that a media in a fenced frame reports the watch time with the url from
-// the top level frame.
-IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest,
-                       MediaWatchTimeCallback) {
-  using UkmEntry = ukm::builders::Media_WebMediaPlayerState;
-  ukm::TestAutoSetUkmRecorder test_recorder;
-
-  MediaWatchTimeChangedDelegate delegate(web_contents());
-  net::test_server::EmbeddedTestServerHandle test_server_handle;
-  ASSERT_TRUE(test_server_handle =
-                  embedded_test_server()->StartAndReturnHandle());
-  const GURL top_url = embedded_test_server()->GetURL("/empty.html");
-  ASSERT_TRUE(NavigateToURL(shell(), top_url));
-
-  // Create a fenced frame.
-  GURL fenced_frame_url(
-      embedded_test_server()->GetURL("/fenced_frames/title1.html"));
-  content::RenderFrameHost* fenced_frame =
-      fenced_frame_test_helper().CreateFencedFrame(
-          web_contents()->GetPrimaryMainFrame(), fenced_frame_url);
-  // Insert a video element.
-  EXPECT_TRUE(ExecJs(fenced_frame, R"(
-    var video = document.createElement('video');
-    document.body.appendChild(video);
-    video.src = '../media/bear.webm';
-    video.play();
-  )"));
-
-  base::RunLoop run_loop;
-  test_recorder.SetOnAddEntryCallback(UkmEntry::kEntryName,
-                                      run_loop.QuitClosure());
-  // Leave the current page to check the UKM records.
-  fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
-      fenced_frame,
-      embedded_test_server()->GetURL("a.com", "/fenced_frames/title1.html"));
-  ASSERT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
-  run_loop.Run();
-
-  const auto& entries = test_recorder.GetEntriesByName(UkmEntry::kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  for (const ukm::mojom::UkmEntry* entry : entries) {
-    test_recorder.ExpectEntryMetric(entry, UkmEntry::kIsTopFrameName, false);
-  }
-}
 
 }  // namespace content

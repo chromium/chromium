@@ -6,10 +6,9 @@
 #define CHROME_BROWSER_UI_WEBUI_SEARCHBOX_LENS_SEARCHBOX_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "components/omnibox/browser/omnibox.mojom.h"
 
-class MetricsReporter;
 class LensSearchboxClient;
 class Profile;
 
@@ -21,10 +20,13 @@ class LensSearchboxHandler : public SearchboxHandler {
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
       Profile* profile,
       content::WebContents* web_contents,
-      MetricsReporter* metrics_reporter,
       LensSearchboxClient* lens_searchbox_client);
 
   ~LensSearchboxHandler() override;
+
+  // SearchboxHandler:
+  std::string AutocompleteIconToResourceName(
+      const gfx::VectorIcon& icon) const override;
 
   // searchbox::mojom::PageHandler:
   void SetPage(
@@ -42,7 +44,6 @@ class LensSearchboxHandler : public SearchboxHandler {
                      bool ctrl_key,
                      bool meta_key,
                      bool shift_key) override {}
-  void PopupElementSizeChanged(const gfx::Size& size) override {}
   void OnThumbnailRemoved() override;
 
   // Invoked by LensSearchboxController.

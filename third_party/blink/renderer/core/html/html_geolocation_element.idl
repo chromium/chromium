@@ -1,0 +1,37 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(https://crbug.com/461543463): Putting this here rather than in a
+// distinct file, as it's possible that we'll rename it in the near future.
+// 
+// https://wicg.github.io/PEPC/permission-elements.html#permission-mixin
+interface mixin InPagePermissionMixin {
+  readonly attribute boolean isValid;
+  // TODO(https://crbug.com/461543463): This should be
+  // `InPagePermissionMixinBlockerReason`, but that will require changing
+  // `HTMLPermissionElement` too.
+  readonly attribute DOMString invalidReason;
+  readonly attribute PermissionState initialPermissionStatus;
+  readonly attribute PermissionState permissionStatus;
+
+  attribute EventHandler onpromptaction;
+  attribute EventHandler onpromptdismiss;
+  attribute EventHandler onvalidationstatuschange;
+};
+
+// https://wicg.github.io/PEPC/permission-elements.html#geolocation-element
+[RuntimeEnabled=GeolocationElement, Exposed=Window]
+interface HTMLGeolocationElement : HTMLElement {
+  [HTMLConstructor] constructor();
+
+  attribute EventHandler onlocation;
+
+  readonly attribute GeolocationPosition? position;
+  readonly attribute GeolocationPositionError? error;
+
+  [CEReactions, Reflect] attribute DOMString accuracymode;
+  [CEReactions, Reflect] attribute boolean autolocate;
+  [CEReactions, Reflect] attribute boolean watch;
+};
+HTMLGeolocationElement includes InPagePermissionMixin;

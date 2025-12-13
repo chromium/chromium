@@ -131,7 +131,7 @@ class IOSChromeVariationsSeedStoreTest : public PlatformTest {
  private:
   // Test set up dependencies.
   base::test::TaskEnvironment task_environment_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<base::FeatureList> original_feature_list_;
   // Variations service dependencies.

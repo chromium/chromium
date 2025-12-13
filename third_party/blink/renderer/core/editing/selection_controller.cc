@@ -516,7 +516,11 @@ bool SelectionController::HandleSingleClick(
 
   // SelectionControllerTest_SetCaretAtHitTestResultWithDisconnectedPosition
   // makes the IsValidFor() check fail.
-  if (is_editable && event.Event().FromTouch() &&
+  bool event_should_trigger_suggestion =
+      event.Event().FromTouch() ||
+      (RuntimeEnabledFeatures::LeftClickToHandleSuggestionEnabled() &&
+       event.Event().button == WebPointerProperties::Button::kLeft);
+  if (is_editable && event_should_trigger_suggestion &&
       position_to_use.IsValidFor(*frame_->GetDocument())) {
     frame_->GetTextSuggestionController().HandlePotentialSuggestionTap(
         position_to_use.GetPosition());
@@ -1259,6 +1263,13 @@ bool SelectionController::HandlePasteGlobalSelection(
 
   if (!frame_->GetPage())
     return false;
+
+  // Do not paste if the user has opted out of middle-click pasting.
+  if (auto* settings = frame_->GetSettings();
+      settings && !settings->GetMiddleClickPasteAllowed()) {
+    return false;
+  }
+
   Frame* focus_frame =
       frame_->GetPage()->GetFocusController().FocusedOrMainFrame();
   // Do not paste here if the focus was moved somewhere else.

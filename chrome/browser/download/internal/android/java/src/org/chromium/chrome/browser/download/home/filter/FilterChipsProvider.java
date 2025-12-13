@@ -66,7 +66,7 @@ public class FilterChipsProvider implements OfflineItemFilterObserver {
                         Filters.FilterType.VIDEOS,
                         context.getString(R.string.download_manager_ui_video),
                         chipSelectedCallback,
-                        R.drawable.ic_videocam_24dp);
+                        R.drawable.ic_videocam_fill_24dp);
 
         ListItem musicChip =
                 ChipsCoordinator.buildChipListItem(

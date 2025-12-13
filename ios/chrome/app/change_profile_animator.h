@@ -12,14 +12,14 @@
 #import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 
-@class MDCOverlayWindow;
+@class ChromeOverlayWindow;
 @class SceneState;
 
 // Object responsible for animating the transition between profile for a
 // given scene for MainController.
 @interface ChangeProfileAnimator : NSObject
 
-- (instancetype)initWithWindow:(MDCOverlayWindow*)window
+- (instancetype)initWithWindow:(ChromeOverlayWindow*)window
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

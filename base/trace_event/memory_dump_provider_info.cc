@@ -5,6 +5,7 @@
 #include "base/trace_event/memory_dump_provider_info.h"
 
 #include <tuple>
+#include <utility>
 
 #include "base/task/sequenced_task_runner.h"
 
@@ -12,13 +13,13 @@ namespace base::trace_event {
 
 MemoryDumpProviderInfo::MemoryDumpProviderInfo(
     MemoryDumpProvider* dump_provider,
-    const char* name,
+    MemoryDumpProvider::Name name,
     scoped_refptr<SequencedTaskRunner> task_runner,
     const MemoryDumpProvider::Options& options,
     bool allowed_in_background_mode)
     : dump_provider(dump_provider),
       options(options),
-      name(name),
+      name(std::move(name)),
       task_runner(std::move(task_runner)),
       allowed_in_background_mode(allowed_in_background_mode),
       consecutive_failures(0),

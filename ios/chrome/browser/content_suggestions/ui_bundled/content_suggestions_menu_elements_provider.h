@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CONTENT_SUGGESTIONS_MENU_ELEMENTS_PROVIDER_H_
 #define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_CONTENT_SUGGESTIONS_MENU_ELEMENTS_PROVIDER_H_
 
-@class ContentSuggestionsMostVisitedItem;
+@class MostVisitedItem;
 
 // Protocol for instances that will provide menus to ContentSuggestions
 // components.
@@ -14,7 +14,7 @@
 // Returns the default menu elements that should be shown in the context menu
 // for the given `item`, which is represented on the UI by `view`.
 - (NSArray<UIMenuElement*>*)defaultContextMenuElementsForItem:
-                                (ContentSuggestionsMostVisitedItem*)item
+                                (MostVisitedItem*)item
                                                      fromView:(UIView*)view;
 
 @end

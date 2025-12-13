@@ -828,9 +828,6 @@ virtual void BindFragDataLocationEXT(GLuint program,
                                      GLuint colorNumber,
                                      const char* name) = 0;
 virtual GLint GetFragDataIndexEXT(GLuint program, const char* name) = 0;
-virtual void InitializeDiscardableTextureCHROMIUM(GLuint texture_id) = 0;
-virtual void UnlockDiscardableTextureCHROMIUM(GLuint texture_id) = 0;
-virtual bool LockDiscardableTextureCHROMIUM(GLuint texture_id) = 0;
 virtual void WindowRectanglesEXT(GLenum mode,
                                  GLsizei count,
                                  const GLint* box) = 0;

@@ -23,6 +23,7 @@ owners:
 - zmin@chromium.org
 schema:
   type: boolean
+sensitive: true
 supported_on:
 - chrome.win:61-
 tags:

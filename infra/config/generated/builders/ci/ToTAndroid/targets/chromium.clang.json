@@ -6,7 +6,7 @@
     "gtest_tests": [
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_tot.base_unittests.filter",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.device_10.tot.base_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -19,6 +19,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//base:base_unittests",
+        "module_scheme": "gtest",
         "name": "base_unittests",
         "resultdb": {
           "enable": true,
@@ -52,6 +54,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/highway:highway_tests",
+        "module_scheme": "gtest",
         "name": "highway_tests",
         "resultdb": {
           "enable": true,

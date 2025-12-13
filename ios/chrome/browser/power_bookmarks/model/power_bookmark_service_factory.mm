@@ -37,14 +37,12 @@ PowerBookmarkServiceFactory::~PowerBookmarkServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 PowerBookmarkServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* state) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(state);
-
+    ProfileIOS* profile) const {
   bookmarks::BookmarkModel* bookmark_model =
       ios::BookmarkModelFactory::GetForProfile(profile);
 
   return std::make_unique<power_bookmarks::PowerBookmarkService>(
-      bookmark_model, state->GetStatePath().AppendASCII("power_bookmarks"),
+      bookmark_model, profile->GetStatePath().AppendASCII("power_bookmarks"),
       base::SequencedTaskRunner::GetCurrentDefault(),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,

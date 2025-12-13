@@ -10,7 +10,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "chromeos/ash/components/mantis/mojom/mantis_processor.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

@@ -802,6 +802,7 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     tags = [
         "benchmark",
+        "no_test_ios_sim_arm64",
         "no_test_ios_x86_64",
         "no_test_loonix",  # Crashing.
         "no_test_wasm",

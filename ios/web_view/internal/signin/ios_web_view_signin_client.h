@@ -8,8 +8,8 @@
 #include <memory>
 
 #import "base/memory/raw_ptr.h"
-#include "components/signin/public/base/signin_client.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#import "components/signin/public/base/signin_client.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 class WaitForNetworkCallbackHelperIOS;
 
@@ -49,8 +49,7 @@ class IOSWebViewSigninClient : public SigninClient {
       content_settings::Observer* observer) override;
   void PreSignOut(
       base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached,
-      signin_metrics::ProfileSignout signout_source_metric,
-      bool has_sync_account) override;
+      signin_metrics::ProfileSignout signout_source_metric) override;
   bool AreNetworkCallsDelayed() override;
   void DelayNetworkCall(base::OnceClosure callback) override;
   std::unique_ptr<GaiaAuthFetcher> CreateGaiaAuthFetcher(
@@ -59,6 +58,8 @@ class IOSWebViewSigninClient : public SigninClient {
   version_info::Channel GetClientChannel() override;
   void OnPrimaryAccountChanged(
       signin::PrimaryAccountChangeEvent event_details) override;
+  signin::OAuthConsumer GetOAuthConsumerFromId(
+      signin::OAuthConsumerId oauth_consumer_id) const override;
 
  private:
   // Helper to delay callbacks until connection becomes online again.
@@ -67,6 +68,8 @@ class IOSWebViewSigninClient : public SigninClient {
   raw_ptr<PrefService> pref_service_;
   // The browser_state_ associated with this service.
   ios_web_view::WebViewBrowserState* browser_state_;
+  // Used to convert OAuthConsumerIds to OAuthConsumers.
+  const std::unique_ptr<signin::OAuthConsumerRegistry> oauth_consumer_registry_;
 };
 
 #endif  // IOS_WEB_VIEW_INTERNAL_SIGNIN_IOS_WEB_VIEW_SIGNIN_CLIENT_H_

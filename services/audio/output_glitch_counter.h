@@ -5,8 +5,9 @@
 #ifndef SERVICES_AUDIO_OUTPUT_GLITCH_COUNTER_H_
 #define SERVICES_AUDIO_OUTPUT_GLITCH_COUNTER_H_
 
+#include <string>
 #include <vector>
-#include "base/functional/callback.h"
+
 #include "media/base/audio_latency.h"
 
 namespace audio {

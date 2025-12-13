@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/html/html_stream.h"
 #include "third_party/blink/renderer/core/html/html_tag_collection.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -74,6 +75,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
+#include "third_party/blink/renderer/core/patching/patch_supplement.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -183,6 +185,23 @@ void ContainerNode::ParserTakeAllChildrenFrom(ContainerNode& old_parent) {
     // infinite.
     old_parent.ParserRemoveChild(*child);
     ParserAppendChild(child);
+  }
+}
+
+void ContainerNode::ParserRemoveAllChildren() {
+  while (Node* child = firstChild()) {
+    ParserRemoveChild(*child);
+  }
+}
+
+void ContainerNode::ParserReplaceChild(Node& new_child, Node& old_child) {
+  CHECK_EQ(old_child.parentNode(), this);
+  Node* next = old_child.nextSibling();
+  ParserRemoveChild(old_child);
+  if (next) {
+    ParserInsertBefore(&new_child, *next);
+  } else {
+    ParserAppendChild(&new_child);
   }
 }
 
@@ -1453,10 +1472,11 @@ bool ContainerNode::ChildrenChangedAllChildrenRemovedNeedsList() const {
 }
 
 void ContainerNode::CloneChildNodesFrom(const ContainerNode& node,
-                                        NodeCloningData& data) {
+                                        NodeCloningData& data,
+                                        CustomElementRegistry* registry) {
   CHECK(data.Has(CloneOption::kIncludeDescendants));
   for (const Node& child : NodeTraversal::ChildrenOf(node)) {
-    child.Clone(GetDocument(), data, this);
+    child.Clone(GetDocument(), data, this, registry);
   }
 }
 
@@ -1886,6 +1906,67 @@ String ContainerNode::getHTML(const GetHTMLOptions* options,
   }
   return CreateMarkup(this, kChildrenOnly, kDoNotResolveURLs,
                       shadow_root_inclusion);
+}
+
+WritableStream* ContainerNode::patchSelf(ScriptState* script_state,
+                                         ExceptionState& exception_state) {
+  if (!IsElementNode() && !parentElement()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kHierarchyRequestError,
+        "Patching an orphan DocumentFragment is not allowed");
+    return nullptr;
+  }
+  return PatchSupplement::From(GetDocument())
+      ->CreateSinglePatchStream(script_state, *this, /*previous_child=*/nullptr,
+                                /*next_child=*/nullptr);
+}
+
+WritableStream* ContainerNode::patchAfter(ScriptState* script_state,
+                                          Node* a,
+                                          ExceptionState& exception_state) {
+  return patchBetween(script_state, a, nullptr, exception_state);
+}
+
+WritableStream* ContainerNode::streamAppendHTMLUnsafe(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  return HTMLStream::Create(script_state, this, exception_state);
+}
+
+WritableStream* ContainerNode::streamHTMLUnsafe(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  WritableStream* stream =
+      HTMLStream::Create(script_state, this, exception_state);
+  if (!exception_state.HadException()) {
+    RemoveChildren();
+  }
+  return stream;
+}
+
+WritableStream* ContainerNode::patchBefore(ScriptState* script_state,
+                                           Node* b,
+                                           ExceptionState& exception_state) {
+  return patchBetween(script_state, nullptr, b, exception_state);
+}
+WritableStream* ContainerNode::patchBetween(ScriptState* script_state,
+                                            Node* a,
+                                            Node* b,
+                                            ExceptionState& exception_state) {
+  if ((a && a->parentNode() != this) || (b && b->parentNode() != this)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kHierarchyRequestError,
+        "Reference nodes have to be children of the target node when patching");
+    return nullptr;
+  }
+
+  return PatchSupplement::From(GetDocument())
+      ->CreateSinglePatchStream(script_state, *this, a, b);
+}
+
+WritableStream* ContainerNode::patchAll(ScriptState* script_state) {
+  return PatchSupplement::From(GetDocument())
+      ->CreateSubtreePatchStream(script_state, *this);
 }
 
 }  // namespace blink

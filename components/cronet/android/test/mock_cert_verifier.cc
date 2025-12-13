@@ -26,7 +26,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/cronet/android/cronet_test_apk_jni/MockCertVerifier_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace cronet {
 
@@ -53,9 +53,9 @@ static bool CalculatePublicKeySha256(const net::X509Certificate& cert,
 
 static jlong JNI_MockCertVerifier_CreateMockCertVerifier(
     JNIEnv* env,
-    const JavaParamRef<jobjectArray>& jcerts,
+    const JavaRef<jobjectArray>& jcerts,
     const jboolean jknown_root,
-    const JavaParamRef<jstring>& jtest_data_dir) {
+    const JavaRef<jstring>& jtest_data_dir) {
   base::FilePath test_data_dir(
       base::android::ConvertJavaStringToUTF8(env, jtest_data_dir));
   base::InitAndroidTestPaths(test_data_dir);
@@ -92,3 +92,5 @@ static jlong JNI_MockCertVerifier_CreateFreeForAllMockCertVerifier(
 }
 
 }  // namespace cronet
+
+DEFINE_JNI(MockCertVerifier)

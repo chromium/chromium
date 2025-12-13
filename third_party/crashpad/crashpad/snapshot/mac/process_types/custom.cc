@@ -191,11 +191,14 @@ bool dyld_all_image_infos<Traits>::ReadInto(
 template <typename Traits>
 size_t crashreporter_annotations_t<Traits>::ExpectedSizeForVersion(
     decltype(crashreporter_annotations_t<Traits>::version) version) {
-  if (version >= 5) {
+  if (version >= 7) {
     return sizeof(crashreporter_annotations_t<Traits>);
   }
-  if (version >= 4) {
+  if (version >= 5) {
     return offsetof(crashreporter_annotations_t<Traits>, unknown_0);
+  }
+  if (version >= 4) {
+    return offsetof(crashreporter_annotations_t<Traits>, abort_cause);
   }
   return offsetof(crashreporter_annotations_t<Traits>, message);
 }

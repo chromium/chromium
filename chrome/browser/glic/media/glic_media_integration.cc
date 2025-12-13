@@ -4,22 +4,22 @@
 
 #include "chrome/browser/glic/media/glic_media_integration.h"
 
-#include "base/feature_list.h"
-#include "base/no_destructor.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/glic/media/glic_media_context.h"
 #include "chrome/browser/glic/media/glic_media_page_cache.h"
+#include "chrome/browser/glic/media/media_transcript_provider_impl.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/live_caption/caption_controller_base.h"
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/pref_names.h"
-#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/peer_connection_tracker_host_observer.h"
 #include "content/public/browser/web_contents.h"
-#include "media/base/media_switches.h"
 
 namespace {
 
@@ -46,15 +46,63 @@ class GlicMediaPeerConnectionObserver
       return;
     }
 
-    // For now, attribute everything to the primary main frame of the
-    // WebContents, even for subframes.
-    auto* context = glic::GlicMediaContext::GetOrCreateForCurrentDocument(
-        wc->GetPrimaryMainFrame());
-    if (!context) {
+    // Attribute this to all frames in the WebContents.
+    wc->ForEachRenderFrameHost([](content::RenderFrameHost* rfh) {
+      if (auto* context =
+              glic::GlicMediaContext::GetOrCreateForCurrentDocument(rfh)) {
+        context->OnPeerConnectionAdded();
+      }
+    });
+
+    // Also attribute this to its opener WebContents if this is a document PiP
+    // window.
+    if (auto* pip_window_manager =
+            PictureInPictureWindowManager::GetInstance()) {
+      auto* opener_wc = pip_window_manager->GetWebContents();
+      if (opener_wc) {
+        if (auto* context =
+                glic::GlicMediaContext::GetOrCreateForCurrentDocument(
+                    opener_wc->GetPrimaryMainFrame())) {
+          context->OnPeerConnectionAdded();
+        }
+      }
+    }
+  }
+
+  void OnPeerConnectionRemoved(
+      content::GlobalRenderFrameHostId render_frame_host_id,
+      int lid) override {
+    auto* rfh = content::RenderFrameHost::FromID(render_frame_host_id);
+    if (!rfh) {
       return;
     }
 
-    context->OnPeerConnectionAdded();
+    auto* wc = content::WebContents::FromRenderFrameHost(rfh);
+    if (!wc) {
+      return;
+    }
+
+    // Attribute this to all frames in the WebContents.
+    wc->ForEachRenderFrameHost([](content::RenderFrameHost* rfh) {
+      if (auto* context =
+              glic::GlicMediaContext::GetOrCreateForCurrentDocument(rfh)) {
+        context->OnPeerConnectionRemoved();
+      }
+    });
+
+    // Also attribute this to its opener WebContents if this is a document PiP
+    // window.
+    if (auto* pip_window_manager =
+            PictureInPictureWindowManager::GetInstance()) {
+      auto* opener_wc = pip_window_manager->GetWebContents();
+      if (opener_wc) {
+        if (auto* context =
+                glic::GlicMediaContext::GetOrCreateForCurrentDocument(
+                    opener_wc->GetPrimaryMainFrame())) {
+          context->OnPeerConnectionRemoved();
+        }
+      }
+    }
   }
 };
 
@@ -64,7 +112,7 @@ class GlicMediaIntegrationImpl : public glic::GlicMediaIntegration,
   explicit GlicMediaIntegrationImpl(Profile*);
   ~GlicMediaIntegrationImpl() override = default;
 
-  // glic::GlicMediaIntegration
+  // glic::GlicMediaIntegration:
   void AppendContext(
       content::WebContents* web_contents,
       optimization_guide::proto::ContentNode* context_root) override;
@@ -72,8 +120,16 @@ class GlicMediaIntegrationImpl : public glic::GlicMediaIntegration,
       content::RenderFrameHost* rfh,
       optimization_guide::proto::ContentNode* context_root) override;
   void OnPeerConnectionAddedForTesting(content::RenderFrameHost*) override;
+  void OnPeerConnectionRemovedForTesting(content::RenderFrameHost*) override;
+  void SetExcludedOrigins(
+      const std::vector<url::Origin>& excluded_origins) override;
 
+  // GlicMediaIntegrationImpl:
   void OnContextUpdated(glic::GlicMediaContext* context);
+
+  // Returns whether `web_contents` should be excluded by origin checks.  This
+  // includes subframes.
+  bool IsExcludedByOrigin(content::WebContents* web_contents);
 
  protected:
   raw_ptr<Profile> profile_;
@@ -82,6 +138,7 @@ class GlicMediaIntegrationImpl : public glic::GlicMediaIntegration,
   glic::GlicMediaPageCache page_cache_;
 
   std::unique_ptr<GlicMediaPeerConnectionObserver> rtc_observer_;
+  std::vector<url::Origin> excluded_origins_;
 };
 
 class CaptionListenerImpl : public captions::CaptionControllerBase::Listener {
@@ -95,14 +152,21 @@ class CaptionListenerImpl : public captions::CaptionControllerBase::Listener {
     if (!rfh) {
       return false;
     }
+
+    auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+    auto* integration = static_cast<GlicMediaIntegrationImpl*>(
+        glic::GlicMediaIntegration::GetFor(web_contents));
+    CHECK(integration);
+
+    if (integration->IsExcludedByOrigin(web_contents)) {
+      return false;
+    }
+
     bool continue_transcribing = false;
     if (auto* context =
             glic::GlicMediaContext::GetOrCreateForCurrentDocument(rfh)) {
       continue_transcribing = context->OnResult(result);
-      auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
-      static_cast<GlicMediaIntegrationImpl*>(
-          glic::GlicMediaIntegration::GetFor(web_contents))
-          ->OnContextUpdated(context);
+      integration->OnContextUpdated(context);
     }
 
     return continue_transcribing;
@@ -128,12 +192,42 @@ GlicMediaIntegrationImpl::GlicMediaIntegrationImpl(Profile* profile)
   // For now, enable the pref if we get this far.  Do this after getting the
   // Live Caption controller, since it resets the pref to false.
   profile->GetPrefs()->SetBoolean(prefs::kHeadlessCaptionEnabled, true);
+
+  // Default to turning off for YT.
+  std::vector<url::Origin> excluded_origins = {
+      url::Origin::Create(GURL("https://www.youtube.com")),
+      url::Origin::Create(GURL("http://www.youtube.com"))};
+  SetExcludedOrigins(std::move(excluded_origins));
+}
+
+bool GlicMediaIntegrationImpl::IsExcludedByOrigin(
+    content::WebContents* web_contents) {
+  content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+  // Walk the frame tree.
+  bool exclude_this = false;
+  const auto& excluded_origins = excluded_origins_;
+  rfh->ForEachRenderFrameHostWithAction(
+      [&exclude_this, &excluded_origins](content::RenderFrameHost* rfh) {
+        auto& origin = rfh->GetLastCommittedOrigin();
+        for (auto& excluded_origin : excluded_origins) {
+          exclude_this |= origin == excluded_origin;
+        }
+        return exclude_this
+                   ? content::RenderFrameHost::FrameIterationAction::kStop
+                   : content::RenderFrameHost::FrameIterationAction::kContinue;
+      });
+
+  return exclude_this;
 }
 
 void GlicMediaIntegrationImpl::AppendContext(
     content::WebContents* web_contents,
     optimization_guide::proto::ContentNode* context_root) {
   if (!web_contents) {
+    return;
+  }
+  if (base::FeatureList::IsEnabled(
+          optimization_guide::features::kAnnotatedPageContentWithMediaData)) {
     return;
   }
   // Walk the tree and find a transcript.
@@ -163,13 +257,13 @@ void GlicMediaIntegrationImpl::AppendContextForFrame(
 
   auto* context = glic::GlicMediaContext::GetForCurrentDocument(rfh);
   std::string result;
-  if (context != nullptr) {
+  if (context != nullptr &&
+      !IsExcludedByOrigin(content::WebContents::FromRenderFrameHost(rfh))) {
     result = context->GetContext();
   }
 
-  // Provide a default.
   if (result.length() == 0) {
-    result = "There is no transcript available.";
+    return;
   }
 
   // Trim to `max_size_bytes_`.  Note that we should utf8-trim.
@@ -199,20 +293,33 @@ void GlicMediaIntegrationImpl::OnPeerConnectionAddedForTesting(
                                        /*rtc_configuration=*/"");
 }
 
+void GlicMediaIntegrationImpl::OnPeerConnectionRemovedForTesting(
+    content::RenderFrameHost* rfh) {
+  auto id = rfh->GetGlobalId();
+  rtc_observer_->OnPeerConnectionRemoved(id, /*lid=*/0);
+}
+
+void GlicMediaIntegrationImpl::SetExcludedOrigins(
+    const std::vector<url::Origin>& excluded_origins) {
+  excluded_origins_ = excluded_origins;
+}
+
 }  // namespace
 
 namespace glic {
 
 // static
-GlicMediaIntegration* GlicMediaIntegration::GetFor(content::WebContents* wc) {
+GlicMediaIntegration* GlicMediaIntegration::GetFor(
+    content::WebContents* web_contents) {
   // This should also check the pref, once it's not toggled automatically.
   // We'll want to install a pref listener, and possibly clean up if the pref
   // is switched off after construction.
-  if (!wc || !captions::IsHeadlessCaptionFeatureSupported()) {
+  if (!web_contents || !captions::IsHeadlessCaptionFeatureSupported()) {
     return nullptr;
   }
 
-  Profile* profile = Profile::FromBrowserContext(wc->GetBrowserContext());
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   if (!profile) {
     return nullptr;
   }
@@ -223,6 +330,11 @@ GlicMediaIntegration* GlicMediaIntegration::GetFor(content::WebContents* wc) {
     auto new_data = std::make_unique<GlicMediaIntegrationImpl>(profile);
     data = new_data.get();
     profile->SetUserData(kGlicMediaIntegrationKey, std::move(new_data));
+  }
+
+  if (!optimization_guide::MediaTranscriptProvider::GetFor(web_contents)) {
+    optimization_guide::MediaTranscriptProvider::SetFor(
+        web_contents, std::make_unique<glic::MediaTranscriptProviderImpl>());
   }
 
   return data;

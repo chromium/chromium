@@ -7,8 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol OmniboxTextInput;
+
 // Implements UITextPasteDelegate to workaround http://crbug.com/755620.
 @interface OmniboxTextFieldPasteDelegate : NSObject
+
+/// Omnibox text input. Used to retrieve attributes applied to pasted text.
+@property(nonatomic, weak) id<OmniboxTextInput> textInput;
+
 @end
 
 @interface OmniboxTextFieldPasteDelegate (UITextPasteDelegate) <

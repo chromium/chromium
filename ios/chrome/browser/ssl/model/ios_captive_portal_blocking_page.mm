@@ -53,7 +53,7 @@ void IOSCaptivePortalBlockingPage::PopulateInterstitialStrings(
 
   std::u16string paragraph;
   if (landing_url_.spec() ==
-      captive_portal::CaptivePortalDetector::kDefaultURL) {
+      captive_portal::CaptivePortalDetector::GetDefaultUrl()) {
     // Captive portal may intercept requests without HTTP redirects, in which
     // case the login url would be the same as the captive portal detection url.
     // Don't show the login url in that case.
@@ -63,7 +63,7 @@ void IOSCaptivePortalBlockingPage::PopulateInterstitialStrings(
     // Portal redirection was done with HTTP redirects, so show the login URL.
     // If `languages` is empty, punycode in `login_host` will always be decoded.
     std::u16string login_host =
-        url_formatter::IDNToUnicode(landing_url_.host());
+        url_formatter::IDNToUnicode(landing_url_.GetHost());
     if (base::i18n::IsRTL()) {
       base::i18n::WrapStringWithLTRFormatting(&login_host);
     }

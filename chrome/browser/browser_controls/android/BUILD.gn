@@ -8,7 +8,8 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/browser_controls/BottomControlsLayer.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BottomControlsStacker.java",
-    "java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsMarginSupplier.java",
+    "java/src/org/chromium/chrome/browser/browser_controls/BottomOverscrollHandler.java",
+    "java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsMarginAdapter.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsOffsetTagsInfo.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsSizer.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsStateProvider.java",
@@ -34,7 +35,9 @@ android_library("java") {
 robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/browser_controls/BottomControlsStackerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/browser_controls/BottomOverscrollHandlerUnitTest.java",
     "java/src/org/chromium/chrome/browser/browser_controls/BrowserStateBrowserControlsVisibilityDelegateTest.java",
+    "java/src/org/chromium/chrome/browser/browser_controls/TopControlsStackerUnitTest.java",
   ]
   deps = [
     ":java",

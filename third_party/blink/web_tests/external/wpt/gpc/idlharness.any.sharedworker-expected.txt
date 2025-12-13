@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] WorkerNavigator interface: attribute globalPrivacyControl
+  assert_true: The prototype object must have a property "globalPrivacyControl" expected true got false
+[FAIL] WorkerNavigator interface: navigator must inherit property "globalPrivacyControl" with the proper type
+  assert_inherits: property "globalPrivacyControl" not found in prototype chain
+Harness: the test ran to completion.
+

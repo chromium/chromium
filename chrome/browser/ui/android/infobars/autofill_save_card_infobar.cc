@@ -107,3 +107,5 @@ AutofillSaveCardInfoBar::GetSaveCardDelegate() {
   return static_cast<autofill::AutofillSaveCardInfoBarDelegateMobile*>(
       GetDelegate());
 }
+
+DEFINE_JNI(AutofillSaveCardInfoBar)

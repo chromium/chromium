@@ -12,6 +12,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] XHTML parser should create a custom element candidate with null registry if customelementregistry is set
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
+[FAIL] XHTML parser should create a defined custom element with null registry if customelementregistry is set
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
+[FAIL] XHTML fragment parser should create a custom element candidate with null registry if customelementregistry is set
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
+[FAIL] XHTML fragment parser should create a defined custom element with null registry if customelementregistry is set
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
+Harness: the test ran to completion.
+

@@ -15,13 +15,11 @@
 #include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "components/network_session_configurator/common/network_features.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/variations/variations_associated_data.h"
 #include "net/base/features.h"
-#include "net/base/host_mapping_rules.h"
-#include "net/base/host_port_pair.h"
 #include "net/disk_cache/backend_experiment.h"
+#include "net/disk_cache/buildflags.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_factory.h"
 #include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
@@ -29,6 +27,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/scheme_host_port.h"
 
 namespace network_session_configurator {
 
@@ -36,7 +35,7 @@ class NetworkSessionConfiguratorTest : public testing::Test {
  public:
   NetworkSessionConfiguratorTest() {
     scoped_feature_list_.Init();
-    variations::testing::ClearAllVariationParams();
+    variations::test::ClearAllVariationParams();
   }
 
   void ParseCommandLineAndFieldTrials(const base::CommandLine& command_line) {
@@ -76,7 +75,8 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
   EXPECT_EQ(quic::QuicTagVector(), quic_params_.client_connection_options);
   EXPECT_FALSE(quic_params_.close_sessions_on_ip_change);
   EXPECT_FALSE(quic_params_.goaway_sessions_on_ip_change);
-  EXPECT_EQ(net::kIdleConnectionTimeout, quic_params_.idle_connection_timeout);
+  EXPECT_EQ(net::GetIdleConnectionTimeout(),
+            quic_params_.idle_connection_timeout);
   EXPECT_EQ(base::Seconds(quic::kPingTimeoutSecs),
             quic_params_.reduced_ping_timeout);
   EXPECT_EQ(base::Seconds(quic::kMaxTimeForCryptoHandshakeSecs),
@@ -99,9 +99,11 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
   EXPECT_FALSE(quic_params_.disable_tls_zero_rtt);
   EXPECT_TRUE(quic_params_.allow_port_migration);
   EXPECT_EQ(0, quic_params_.multi_port_probing_interval);
+  EXPECT_FALSE(quic_params_.enable_debugging_sni_in_transport_param);
 
   EXPECT_EQ(net::DefaultSupportedQuicVersions(),
             quic_params_.supported_versions);
+  EXPECT_FALSE(quic_params_.force_quic_everywhere);
   EXPECT_EQ(0u, quic_params_.origins_to_force_quic_on.size());
   EXPECT_FALSE(
       quic_params_.initial_delay_for_broken_alternative_service.has_value());
@@ -780,9 +782,8 @@ TEST_F(NetworkSessionConfiguratorTest, OriginToForceQuicOn) {
   command_line.AppendSwitch(switches::kEnableQuic);
   command_line.AppendSwitchASCII(switches::kOriginToForceQuicOn, "*");
   ParseCommandLineAndFieldTrials(command_line);
-  EXPECT_EQ(1u, quic_params_.origins_to_force_quic_on.size());
-  EXPECT_EQ(1u,
-            quic_params_.origins_to_force_quic_on.count(net::HostPortPair()));
+  EXPECT_TRUE(quic_params_.force_quic_everywhere);
+  EXPECT_EQ(0u, quic_params_.origins_to_force_quic_on.size());
 }
 
 TEST_F(NetworkSessionConfiguratorTest, OriginToForceQuicOn2) {
@@ -790,9 +791,10 @@ TEST_F(NetworkSessionConfiguratorTest, OriginToForceQuicOn2) {
   command_line.AppendSwitch(switches::kEnableQuic);
   command_line.AppendSwitchASCII(switches::kOriginToForceQuicOn, "foo:1234");
   ParseCommandLineAndFieldTrials(command_line);
+  EXPECT_FALSE(quic_params_.force_quic_everywhere);
   EXPECT_EQ(1u, quic_params_.origins_to_force_quic_on.size());
   EXPECT_EQ(1u, quic_params_.origins_to_force_quic_on.count(
-                    net::HostPortPair("foo", 1234)));
+                    url::SchemeHostPort("https", "foo", 1234)));
 }
 
 TEST_F(NetworkSessionConfiguratorTest, OriginToForceQuicOn3) {
@@ -800,11 +802,12 @@ TEST_F(NetworkSessionConfiguratorTest, OriginToForceQuicOn3) {
   command_line.AppendSwitch(switches::kEnableQuic);
   command_line.AppendSwitchASCII(switches::kOriginToForceQuicOn, "foo:1,bar:2");
   ParseCommandLineAndFieldTrials(command_line);
+  EXPECT_FALSE(quic_params_.force_quic_everywhere);
   EXPECT_EQ(2u, quic_params_.origins_to_force_quic_on.size());
   EXPECT_EQ(1u, quic_params_.origins_to_force_quic_on.count(
-                    net::HostPortPair("foo", 1)));
+                    url::SchemeHostPort("https", "foo", 1)));
   EXPECT_EQ(1u, quic_params_.origins_to_force_quic_on.count(
-                    net::HostPortPair("bar", 2)));
+                    url::SchemeHostPort("https", "bar", 2)));
 }
 
 TEST_F(NetworkSessionConfiguratorTest, EnableUserAlternateProtocolPorts) {
@@ -830,28 +833,12 @@ TEST_F(NetworkSessionConfiguratorTest, IgnoreCertificateErrors) {
   EXPECT_TRUE(params_.ignore_certificate_errors);
 }
 
-TEST_F(NetworkSessionConfiguratorTest, HostRules) {
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitchASCII(switches::kHostRules, "map *.com foo");
-  ParseCommandLineAndFieldTrials(command_line);
-
-  net::HostPortPair host_port_pair("spam.net", 80);
-  EXPECT_FALSE(params_.host_mapping_rules.RewriteHost(&host_port_pair));
-  EXPECT_EQ("spam.net", host_port_pair.host());
-
-  host_port_pair = net::HostPortPair("spam.com", 80);
-  EXPECT_TRUE(params_.host_mapping_rules.RewriteHost(&host_port_pair));
-  EXPECT_EQ("foo", host_port_pair.host());
-}
-
 TEST_F(NetworkSessionConfiguratorTest, DefaultCacheBackend) {
-  if constexpr (disk_cache::IsSimpleBackendEnabledByDefaultPlatform()) {
-    EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE,
-              ChooseCacheType());
-  } else {
-    EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE,
-              ChooseCacheType());
-  }
+  EXPECT_EQ(
+      disk_cache::IsSimpleBackendEnabledByDefaultPlatform()
+          ? net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE
+          : net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE,
+      ChooseCacheType());
 }
 
 TEST_F(NetworkSessionConfiguratorTest, DiskCacheExperimentSimpleBackend) {
@@ -866,13 +853,36 @@ TEST_F(NetworkSessionConfiguratorTest, DiskCacheExperimentBlockfileBackend) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
       net::features::kDiskCacheBackendExperiment, {{"backend", "blockfile"}});
-  if constexpr (disk_cache::IsSimpleBackendEnabledByDefaultPlatform()) {
-    EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE,
-              ChooseCacheType());
-  } else {
-    EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE,
-              ChooseCacheType());
-  }
+  EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE,
+            ChooseCacheType());
+}
+
+TEST_F(NetworkSessionConfiguratorTest, DiskCacheExperimentDefaultBackend) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment, {{"backend", "default"}});
+  EXPECT_EQ(
+      disk_cache::IsSimpleBackendEnabledByDefaultPlatform()
+          ? net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE
+          : net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE,
+      ChooseCacheType());
+}
+
+TEST_F(NetworkSessionConfiguratorTest, DiskCacheExperimentSqlBackend) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment, {{"backend", "sql"}});
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+  EXPECT_EQ(
+      net::URLRequestContextBuilder::HttpCacheParams::DISK_EXPERIMENTAL_SQL,
+      ChooseCacheType());
+#else   // BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+  EXPECT_EQ(
+      disk_cache::IsSimpleBackendEnabledByDefaultPlatform()
+          ? net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE
+          : net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE,
+      ChooseCacheType());
+#endif  // BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
 }
 
 TEST_F(NetworkSessionConfiguratorTest, Http2GreaseSettingsFromCommandLine) {
@@ -956,6 +966,18 @@ TEST_F(NetworkSessionConfiguratorTest,
   ParseFieldTrials();
 
   EXPECT_EQ(base::Milliseconds(500), quic_params_.initial_rtt_for_handshake);
+}
+
+TEST_F(NetworkSessionConfiguratorTest,
+       QuicEnableDebuggingSniInTransportParamFromFieldTrialParams) {
+  std::map<std::string, std::string> field_trial_params;
+  field_trial_params["enable_debugging_sni_in_transport_param"] = "true";
+  base::AssociateFieldTrialParams("QUIC", "Enabled", field_trial_params);
+  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
+
+  ParseFieldTrials();
+
+  EXPECT_TRUE(quic_params_.enable_debugging_sni_in_transport_param);
 }
 
 class NetworkSessionConfiguratorWithQuicVersionTest

@@ -31,7 +31,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//mojo/public/cpp/test_support:test_utils",
-    "//services/data_decoder/public/cpp:test_support",
     "//services/device/public/cpp:test_support",
     "//testing/gtest",
   ]

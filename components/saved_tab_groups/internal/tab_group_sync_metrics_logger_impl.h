@@ -10,7 +10,6 @@
 #include <optional>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/delayed_task_handle.h"
 #include "base/time/default_clock.h"

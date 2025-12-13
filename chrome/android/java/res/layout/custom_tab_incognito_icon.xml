@@ -16,6 +16,7 @@ found in the LICENSE file.
     android:layout_gravity="start"
     android:paddingEnd="8dp"
     android:scaleType="center"
-    app:srcCompat="@drawable/ic_incognito_cct_24dp"
+    app:srcCompat="@drawable/ic_incognito_fill_18dp"
+    app:tint="@color/default_icon_color_light"
     android:contentDescription="@string/accessibility_incognito_badge" />
 <!-- LINT.ThenChange(//chrome/android/java/res/layout/custom_tabs_toolbar.xml:IncognitoIcon) -->

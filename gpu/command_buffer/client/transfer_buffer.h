@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
@@ -46,12 +47,13 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT TransferBufferInterface {
 
   virtual bool HaveBuffer() const = 0;
 
-  // Allocates up to size bytes.
-  virtual void* AllocUpTo(unsigned int size, unsigned int* size_allocated) = 0;
+  // Allocates up to size bytes. The actual allocated size will be the span's
+  // size().
+  virtual base::span<uint8_t> AllocUpTo(unsigned int size) = 0;
 
   // Allocates size bytes.
   // Note: Alloc will fail if it can not return size bytes.
-  virtual void* Alloc(unsigned int size) = 0;
+  virtual base::span<uint8_t> Alloc(unsigned int size) = 0;
 
   virtual RingBuffer::Offset GetOffset(void* pointer) const = 0;
 
@@ -101,8 +103,8 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT TransferBuffer
   int GetResultOffset() override;
   void Free() override;
   bool HaveBuffer() const override;
-  void* AllocUpTo(unsigned int size, unsigned int* size_allocated) override;
-  void* Alloc(unsigned int size) override;
+  base::span<uint8_t> AllocUpTo(unsigned int size) override;
+  base::span<uint8_t> Alloc(unsigned int size) override;
   RingBuffer::Offset GetOffset(void* pointer) const override;
   void DiscardBlock(void* p) override;
   void FreePendingToken(void* p, unsigned int token) override;
@@ -185,20 +187,14 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ScopedTransferBufferPtr {
   ScopedTransferBufferPtr(unsigned int size,
                           CommandBufferHelper* helper,
                           TransferBufferInterface* transfer_buffer)
-      : buffer_(nullptr),
-        size_(0),
-        helper_(helper),
-        transfer_buffer_(transfer_buffer) {
+      : helper_(helper), transfer_buffer_(transfer_buffer) {
     Reset(size);
   }
 
   // Constructs an empty and invalid allocation that should be Reset() later.
   ScopedTransferBufferPtr(CommandBufferHelper* helper,
                           TransferBufferInterface* transfer_buffer)
-      : buffer_(nullptr),
-        size_(0),
-        helper_(helper),
-        transfer_buffer_(transfer_buffer) {}
+      : helper_(helper), transfer_buffer_(transfer_buffer) {}
 
   ScopedTransferBufferPtr(const ScopedTransferBufferPtr&) = delete;
   ScopedTransferBufferPtr& operator=(const ScopedTransferBufferPtr&) = delete;
@@ -209,23 +205,23 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ScopedTransferBufferPtr {
 
   ScopedTransferBufferPtr(ScopedTransferBufferPtr&& other);
 
-  bool valid() const { return buffer_ != nullptr; }
+  bool valid() const { return buffer_.data() != nullptr; }
 
-  unsigned int size() const {
-    return size_;
-  }
+  unsigned int size() const { return buffer_.size(); }
 
   int shm_id() const {
     return transfer_buffer_->GetShmId();
   }
 
   RingBuffer::Offset offset() const {
-    return transfer_buffer_->GetOffset(buffer_);
+    return transfer_buffer_->GetOffset(buffer_.data());
   }
 
-  void* address() const {
-    return buffer_;
-  }
+  void* address() const { return buffer_.data(); }
+
+  base::span<uint8_t> as_byte_span() { return buffer_; }
+
+  base::span<const uint8_t> as_byte_span() const { return buffer_; }
 
   // Returns true if |memory| lies inside this buffer.
   bool BelongsToBuffer(uint8_t* memory) const;
@@ -240,8 +236,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ScopedTransferBufferPtr {
   void Shrink(unsigned int new_size);
 
  private:
-  raw_ptr<void> buffer_;
-  unsigned int size_;
+  base::raw_span<uint8_t> buffer_;
 
   // Found dangling on `linux-rel` in
   // `gpu_tests.trace_integration_test.TraceIntegrationTest.

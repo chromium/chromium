@@ -80,7 +80,7 @@ bool AddDeviceInfo(HANDLE interface_enumerator,
       0,              // No optional flags.
       NULL));          // No template file.
 
-  if (!device_handle.IsValid()) {
+  if (!device_handle.is_valid()) {
     PLOG(ERROR) << "Opening device handle failed.";
     return false;
   }

@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/webshare/win/share_operation.h"
 
+#include <wrl/event.h>
+
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -30,8 +28,6 @@
 #include "storage/browser/blob/blob_storage_context.h"
 #include "ui/views/win/hwnd_util.h"
 #include "url/gurl.h"
-
-#include <wrl/event.h>
 
 using ABI::Windows::ApplicationModel::DataTransfer::IDataPackage;
 using ABI::Windows::ApplicationModel::DataTransfer::IDataPackagePropertySet;
@@ -136,7 +132,7 @@ class ShareOperationUnitTest : public ChromeRenderViewHostTestHarness {
 
     std::vector<unsigned char> bytes(bytes_loaded);
     for (UINT32 i = 0; i < bytes_loaded; i++) {
-      bytes[i] = raw_buffer[i];
+      bytes[i] = UNSAFE_TODO(raw_buffer[i]);
     }
     result = std::string(bytes.begin(), bytes.end());
 

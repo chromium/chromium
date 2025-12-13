@@ -86,7 +86,7 @@ void BeginFrameProvider::CreateCompositorFrameSinkIfNeeded() {
       cfs_receiver_.BindNewPipeAndPassRemote(task_runner),
       compositor_frame_sink_.BindNewPipeAndPassReceiver(task_runner));
 
-  compositor_frame_sink_.set_disconnect_with_reason_handler(WTF::BindOnce(
+  compositor_frame_sink_.set_disconnect_with_reason_handler(BindOnce(
       &BeginFrameProvider::OnMojoConnectionError, WrapWeakPersistent(this)));
 }
 
@@ -104,8 +104,8 @@ void BeginFrameProvider::RequestBeginFrame() {
 
 void BeginFrameProvider::OnBeginFrame(
     const viz::BeginFrameArgs& args,
-    const WTF::HashMap<uint32_t, viz::FrameTimingDetails>&,
-    WTF::Vector<viz::ReturnedResource> resources) {
+    const HashMap<uint32_t, viz::FrameTimingDetails>&,
+    Vector<viz::ReturnedResource> resources) {
   TRACE_EVENT_WITH_FLOW0("blink", "BeginFrameProvider::OnBeginFrame",
                          TRACE_ID_GLOBAL(args.trace_id),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);

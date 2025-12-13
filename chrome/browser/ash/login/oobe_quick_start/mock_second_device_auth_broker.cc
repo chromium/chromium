@@ -20,7 +20,6 @@ constexpr char kDeviceId[] = "fake-device-id";
 
 }  // namespace
 
-using testing::Invoke;
 using testing::WithArg;
 
 MockSecondDeviceAuthBroker::MockSecondDeviceAuthBroker(
@@ -35,26 +34,25 @@ MockSecondDeviceAuthBroker::~MockSecondDeviceAuthBroker() = default;
 void MockSecondDeviceAuthBroker::SetupChallengeBytesResponse(
     ChallengeBytesOrError challenge) {
   ON_CALL(*this, FetchChallengeBytes)
-      .WillByDefault(
-          WithArg<0>(Invoke([challenge](ChallengeBytesCallback callback) {
-            std::move(callback).Run(challenge);
-          })));
+      .WillByDefault(WithArg<0>([challenge](ChallengeBytesCallback callback) {
+        std::move(callback).Run(challenge);
+      }));
 }
 
 void MockSecondDeviceAuthBroker::SetupAttestationCertificateResponse(
     AttestationCertificateOrError cert) {
   ON_CALL(*this, FetchAttestationCertificate)
       .WillByDefault(
-          WithArg<1>(Invoke([cert](AttestationCertificateCallback callback) {
+          WithArg<1>([cert](AttestationCertificateCallback callback) {
             std::move(callback).Run(cert);
-          })));
+          }));
 }
 void MockSecondDeviceAuthBroker::SetupAuthCodeResponse(
     AuthCodeResponse response) {
   ON_CALL(*this, FetchAuthCode)
-      .WillByDefault(WithArg<2>(Invoke([response](AuthCodeCallback callback) {
+      .WillByDefault(WithArg<2>([response](AuthCodeCallback callback) {
         std::move(callback).Run(response);
-      })));
+      }));
 }
 
 }  // namespace ash::quick_start

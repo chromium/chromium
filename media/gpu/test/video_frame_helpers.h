@@ -63,7 +63,7 @@ scoped_refptr<VideoFrame> ScaleVideoFrame(const VideoFrame* src_frame,
 // VideoFrame with |dst_layout|. If |dst_storage_type| is STORAGE_OWNED_MEMORY,
 // this function creates memory-backed VideoFrame with |dst_layout|.
 // |dst_buffer_usage| must be specified if |dst_storage_type| is STORAGE_DMABUFS
-// or STORAGE_GPU_MEMORY_BUFFER.
+// or STORAGE_MAPPABLE_SHARED_IMAGE.
 // The created VideoFrame's content is the same as |src_frame|. The created
 // VideoFrame owns the buffer. Returns nullptr on failure.
 scoped_refptr<VideoFrame> CloneVideoFrame(

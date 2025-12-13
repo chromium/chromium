@@ -1,0 +1,109 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>drawElementImage does not use cross-origin png image for shape-outside</title>
+  <link rel="help" href="https://github.com/WICG/html-in-canvas">
+  <link rel="author" href="mailto:schenney@chromium.org">
+  <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
+  <script src='/resources/testharness.js'></script>
+  <script src='/resources/testharnessreport.js'></script>
+  <style>
+    #child {
+      width: 100px;
+      height: 200px;
+      background: red;
+      color: black;
+      font-family: Ahem;
+      font-size: 50px;
+      line-height: 50px;
+    }
+    #sameOrigin {
+      float: left;
+      height: 100px;
+      shape-outside: url("https://{{location[host]}}/wpt_internal/html/canvas/drawElementImage/resources/left-half-rectangle-50.png");
+      shape-image-threshold: 0.6;
+    }
+    #crossOrigin {
+      float: left;
+      height: 100px;
+      shape-outside: url("https://{{hosts[alt][www]}}:{{ports[h2][0]}}/wpt_internal/html/canvas/drawElementImage/resources/left-half-rectangle-50.png");
+      shape-image-threshold: 0.6;
+    }
+    img {
+      margin: 0px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id=canvas width="100" height="200" layoutsubtree>
+    <div id=child>
+      <div id="sameOrigin">
+        <img src="../resources/left-half-rectangle-50.png"/>
+      </div>
+      <div id="crossOrigin">
+      </div>
+      X
+      X
+      X
+      X
+    </div>
+  </canvas>
+  <script>
+    window.onload = () => {
+      test(function(t) {
+        var context = canvas.getContext("2d", { willReadFrequently: true });
+        context.drawElementImage(document.getElementById("child"), 0, 0);
+
+        // The expected result has the top left 50x100 rect green due to the
+        // img in the shape region. The top right 50x100 should be black due
+        // to the first 2 X outside the shape. The bottom left 50x100
+        // should be black due to the last 2 X not being outside the
+        // cross-origin shape which is ignored. And the bottom right 50x100
+        // should be red because nothing is drawn over the background.
+
+        pixel = context.getImageData(25, 25, 1, 1).data;
+        assert_equals(pixel[0], 0, "Same origin should draw, red channel");
+        assert_equals(pixel[1], 100, "Same origin should draw, green channel");
+        assert_equals(pixel[2], 0, "Same origin should draw, blue channel");
+
+        pixel = context.getImageData(75, 25, 1, 1).data;
+        assert_equals(pixel[0], 0, "Same origin should draw text, red channel");
+        assert_equals(pixel[1], 0, "Same origin should draw text, green channel");
+        assert_equals(pixel[2], 0, "Same origin should draw text, blue channel");
+
+        pixel = context.getImageData(25, 75, 1, 1).data;
+        assert_equals(pixel[0], 0, "Same origin should draw, red channel");
+        assert_equals(pixel[1], 100, "Same origin should draw, green channel");
+        assert_equals(pixel[2], 0, "Same origin should draw, blue channel");
+
+        pixel = context.getImageData(75, 75, 1, 1).data;
+        assert_equals(pixel[0], 0, "Same origin should draw text, red channel");
+        assert_equals(pixel[1], 0, "Same origin should draw text, green channel");
+        assert_equals(pixel[2], 0, "Same origin should draw text, blue channel");
+
+        pixel = context.getImageData(25, 125, 1, 1).data;
+        assert_equals(pixel[0], 0, "Cross origin should draw text, red channel");
+        assert_equals(pixel[1], 0, "Cross origin should draw text, green channel");
+        assert_equals(pixel[2], 0, "Cross origin should draw text, blue channel");
+
+        pixel = context.getImageData(75, 125, 1, 1).data;
+        assert_equals(pixel[0], 255, "Cross origin should draw text, red channel");
+        assert_equals(pixel[1], 0, "Cross origin should draw text, green channel");
+        assert_equals(pixel[2], 0, "Cross origin should draw text, blue channel");
+
+        pixel = context.getImageData(25, 175, 1, 1).data;
+        assert_equals(pixel[0], 0, "Cross origin should not draw, red channel");
+        assert_equals(pixel[1], 0, "Cross origin should not draw, green channel");
+        assert_equals(pixel[2], 0, "Cross origin should not draw, blue channel");
+
+        pixel = context.getImageData(75, 175, 1, 1).data;
+        assert_equals(pixel[0], 255, "Cross origin should not draw, red channel");
+        assert_equals(pixel[1], 0, "Cross origin should not draw, green channel");
+        assert_equals(pixel[2], 0, "Cross origin should not draw, blue channel");
+
+        t.done();
+      });
+    }
+  </script>
+</body>
+</html>

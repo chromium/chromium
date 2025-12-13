@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "url/gurl.h"
@@ -82,6 +83,15 @@ void PostProcessMatches(
         PasswordForm form_to_update = *match;
         form_to_update.password_value = pending.password_value;
         form_to_update.date_password_modified = base::Time::Now();
+        if (std::optional<std::u16string> backup_password =
+                pending.GetPasswordBackup()) {
+          form_to_update.SetPasswordBackupNote(backup_password.value());
+        } else {
+          // Since we've updated the old password and there is no new backup
+          // password, the backup password is now obsolete.
+          form_to_update.DeletePasswordBackupNote();
+        }
+        form_to_update.actor_login_approved |= pending.actor_login_approved;
         SanitizeFormData(&form_to_update.form_data);
         store->UpdateLogin(std::move(form_to_update));
       }
@@ -129,6 +139,11 @@ void FormSaverImpl::Update(
   store_->UpdateLogin(pending);
   // Update existing matches in the password store.
   PostProcessMatches(pending, matches, old_password, store_);
+}
+
+void FormSaverImpl::UpdateWithoutPostProcessing(PasswordForm pending) {
+  SanitizeFormData(&pending.form_data);
+  store_->UpdateLogin(pending);
 }
 
 void FormSaverImpl::UpdateReplace(

@@ -74,7 +74,6 @@ void InitializeDWriteFontProxy() {
 
   sk_sp<SkFontMgr> skia_font_manager = SkFontMgr_New_DirectWrite(
       factory.Get(), g_font_collection, g_font_fallback);
-  blink::WebFontRendering::SetSkiaFontManager(skia_font_manager);
   blink::WebFontRendering::SetFontRenderingClient(g_font_collection);
 
   skia::OverrideDefaultSkFontMgr(std::move(skia_font_manager));

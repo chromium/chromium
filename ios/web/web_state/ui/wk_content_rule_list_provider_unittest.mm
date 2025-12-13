@@ -10,9 +10,13 @@
 #import <string>
 #import <vector>
 
+#import "base/apple/foundation_util.h"
+#import "base/files/scoped_temp_dir.h"
+#import "base/functional/callback_helpers.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "ios/web/web_state/ui/wk_content_rule_list_util.h"
@@ -24,7 +28,6 @@
 using base::test::TestFuture;
 
 namespace web {
-namespace {
 
 // A valid, but minimal, content rule list for testing.
 constexpr char kValidTestRuleListJson[] = R"([
@@ -36,73 +39,67 @@ constexpr char kValidTestRuleListJson[] = R"([
 // An invalid JSON string for testing compilation failures.
 constexpr char kInvalidTestRuleListJson[] = "this is not valid json";
 
-// Helper to check for a rule list's presence in the store and wait.
-// Returns a gtest AssertionResult for use with EXPECT_TRUE.
-[[nodiscard]] testing::AssertionResult CheckStoreForRuleListSync(
-    const std::string& identifier,
-    bool expect_found = true) {
-  TestFuture<WKContentRuleList*, NSError*> future;
-  void (^completion_block)(WKContentRuleList*, NSError*) =
-      base::CallbackToBlock(future.GetCallback());
-  [WKContentRuleListStore.defaultStore
-      lookUpContentRuleListForIdentifier:base::SysUTF8ToNSString(identifier)
-                       completionHandler:completion_block];
-  auto [rule_list, error] = future.Get();
-
-  const bool was_found = (rule_list != nil);
-
-  // First, handle any unexpected WebKit errors. This is always a failure.
-  if (error && (![error.domain isEqualToString:WKErrorDomain] ||
-                error.code != WKErrorContentRuleListStoreLookUpFailed)) {
-    return testing::AssertionFailure()
-           << "Unexpected error looking up content rule list with identifier '"
-           << identifier << "': " << base::SysNSStringToUTF8(error.description);
-  }
-
-  // Now, check if the outcome matches the expectation.
-  if (was_found == expect_found) {
-    return testing::AssertionSuccess();
-  }
-
-  // The outcome did not match the expectation, return a specific failure.
-  if (expect_found) {
-    return testing::AssertionFailure()
-           << "Expected to find content rule list with identifier '"
-           << identifier << "', but it was not found.";
-  } else {
-    return testing::AssertionFailure()
-           << "Expected content rule list with identifier '" << identifier
-           << "' to be absent, but it was found.";
-  }
-}
-
 class WKContentRuleListProviderTest : public PlatformTest {
  public:
-  WKContentRuleListProviderTest()
-      : provider_(std::make_unique<WKContentRuleListProvider>()) {}
+  WKContentRuleListProviderTest() {
+    CHECK(temp_dir_.CreateUniqueTempDir());
+    provider_ =
+        std::make_unique<WKContentRuleListProvider>(temp_dir_.GetPath());
+  }
 
  protected:
-  void TearDown() override {
-    // Ensure any lists created during tests are cleaned up.
-    for (const auto& key : tracked_keys_) {
-      NSString* identifier = base::SysUTF8ToNSString(key);
-      TestFuture<NSError*> future;
-      [WKContentRuleListStore.defaultStore
-          removeContentRuleListForIdentifier:identifier
-                           completionHandler:base::CallbackToBlock(
-                                                 future.GetCallback())];
-      // Wait for cleanup but ignore potential errors (e.g., if the list
-      // was already removed by the test).
-      std::ignore = future.Wait();
+  // Helper to check for a rule list's presence in the store and wait.
+  // Returns a gtest AssertionResult for use with EXPECT_TRUE.
+  [[nodiscard]] testing::AssertionResult CheckStoreForRuleListSync(
+      const std::string& identifier,
+      bool expect_found = true) {
+    TestFuture<WKContentRuleList*, NSError*> future;
+    // Create a temporary store that points to the same path as the provider's
+    // store to independently verify the file system state.
+    WKContentRuleListStore* store = [WKContentRuleListStore
+        storeWithURL:base::apple::FilePathToNSURL(temp_dir_.GetPath())];
+    CHECK(store);
+
+    void (^completion_block)(WKContentRuleList*, NSError*) =
+        base::CallbackToBlock(future.GetCallback());
+    [store
+        lookUpContentRuleListForIdentifier:base::SysUTF8ToNSString(identifier)
+                         completionHandler:completion_block];
+    auto [rule_list, error] = future.Get();
+
+    const bool was_found = (rule_list != nil);
+
+    // First, handle any unexpected WebKit errors. This is always a failure.
+    if (error && (![error.domain isEqualToString:WKErrorDomain] ||
+                  error.code != WKErrorContentRuleListStoreLookUpFailed)) {
+      return testing::AssertionFailure()
+             << "Unexpected error looking up content rule list with identifier "
+                "'"
+             << identifier
+             << "': " << base::SysNSStringToUTF8(error.description);
     }
-    PlatformTest::TearDown();
+
+    // Now, check if the outcome matches the expectation.
+    if (was_found == expect_found) {
+      return testing::AssertionSuccess();
+    }
+
+    // The outcome did not match the expectation, return a specific failure.
+    if (expect_found) {
+      return testing::AssertionFailure()
+             << "Expected to find content rule list with identifier '"
+             << identifier << "', but it was not found.";
+    } else {
+      return testing::AssertionFailure()
+             << "Expected content rule list with identifier '" << identifier
+             << "' to be absent, but it was found.";
+    }
   }
 
   // Helper to create or update a rule list and verify the operation's success.
   [[nodiscard]] testing::AssertionResult UpdateRuleListSync(
       const WKContentRuleListProvider::RuleListKey& key,
       const std::string& rules_list) {
-    tracked_keys_.insert(key);
     TestFuture<NSError*> future;
     provider_->UpdateRuleList(key, rules_list, future.GetCallback());
     NSError* error = future.Get();
@@ -117,7 +114,6 @@ class WKContentRuleListProviderTest : public PlatformTest {
   // Helper to remove a rule list and verify the operation's success.
   [[nodiscard]] testing::AssertionResult RemoveRuleListSync(
       const WKContentRuleListProvider::RuleListKey& key) {
-    tracked_keys_.erase(key);
     TestFuture<NSError*> future;
     provider_->RemoveRuleList(key, future.GetCallback());
     NSError* error = future.Get();
@@ -131,8 +127,9 @@ class WKContentRuleListProviderTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
+  base::ScopedTempDir temp_dir_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<WKContentRuleListProvider> provider_;
-  std::set<WKContentRuleListProvider::RuleListKey> tracked_keys_;
 };
 
 // Tests that a new list can be successfully created and then removed.
@@ -145,6 +142,35 @@ TEST_F(WKContentRuleListProviderTest, CreationAndRemoval) {
   // 2. Remove the list.
   EXPECT_TRUE(RemoveRuleListSync(key));
   EXPECT_TRUE(CheckStoreForRuleListSync(key, /*expect_found=*/false));
+}
+
+// Tests UMA logging for successful creation and removal.
+TEST_F(WKContentRuleListProviderTest, UMA_CreationAndRemovalSuccess) {
+  const std::string key = "uma_test_key";
+  ASSERT_TRUE(UpdateRuleListSync(key, kValidTestRuleListJson));
+
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.ContentRuleListProvider.Compile.Success." + key, true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "IOS.ContentRuleListProvider.Compile.Time." + key, 1);
+
+  ASSERT_TRUE(RemoveRuleListSync(key));
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.ContentRuleListProvider.Remove.Success." + key, true, 1);
+}
+
+// Tests UMA logging for a failed compilation.
+TEST_F(WKContentRuleListProviderTest, UMA_CreationFailure) {
+  const std::string key = "uma_test_key";
+  TestFuture<NSError*> future;
+  provider_->UpdateRuleList(key, kInvalidTestRuleListJson,
+                            future.GetCallback());
+  ASSERT_NE(nil, future.Get());
+
+  histogram_tester_.ExpectUniqueSample(
+      "IOS.ContentRuleListProvider.Compile.Success." + key, false, 1);
+  histogram_tester_.ExpectTotalCount(
+      "IOS.ContentRuleListProvider.Compile.Time." + key, 0);
 }
 
 // Tests that an existing list can be successfully updated.
@@ -197,7 +223,7 @@ TEST_F(WKContentRuleListProviderTest, UpdateFailureDoesNotAffectExistingLists) {
 
 // Tests that the JSON from CreateLocalBlockingJsonRuleList compiles.
 TEST_F(WKContentRuleListProviderTest, StaticBlockLocalListCompiles) {
-  const std::string key = "static_block_key";
+  const std::string key = "BlockLocalResources";
   std::string rules =
       base::SysNSStringToUTF8(CreateLocalBlockingJsonRuleList());
   EXPECT_TRUE(UpdateRuleListSync(key, rules));
@@ -206,7 +232,7 @@ TEST_F(WKContentRuleListProviderTest, StaticBlockLocalListCompiles) {
 
 // Tests that the JSON from CreateMixedContentAutoUpgradeJsonRuleList compiles.
 TEST_F(WKContentRuleListProviderTest, StaticMixedContentListCompiles) {
-  const std::string key = "static_mixed_content_key";
+  const std::string key = "MixedContentUpgrade";
   std::string rules =
       base::SysNSStringToUTF8(CreateMixedContentAutoUpgradeJsonRuleList());
   EXPECT_TRUE(UpdateRuleListSync(key, rules));
@@ -223,7 +249,6 @@ TEST_F(WKContentRuleListProviderTest, MultipleConcurrentUpdatesSucceed) {
   for (int i = 0; i < kUpdateCount; ++i) {
     std::string key = "key_" + base::NumberToString(i);
     keys.push_back(key);
-    tracked_keys_.insert(key);
     provider_->UpdateRuleList(key, kValidTestRuleListJson,
                               futures[i].GetCallback());
   }
@@ -235,58 +260,4 @@ TEST_F(WKContentRuleListProviderTest, MultipleConcurrentUpdatesSucceed) {
   }
 }
 
-// Tests that the provider can be safely destroyed while operations are pending.
-// This is safe because of the weak pointer used in the completion handler.
-TEST_F(WKContentRuleListProviderTest, ProviderDestroyedWithPendingOperations) {
-  const std::string key = "pending_op_key";
-  TestFuture<NSError*> future;
-  // Start an update but don't wait for it.
-  provider_->UpdateRuleList(key, kValidTestRuleListJson, future.GetCallback());
-  // Track key for TearDown, in case the operation completes before the test
-  // finishes.
-  tracked_keys_.insert(key);
-
-  // Destroy the provider immediately.
-  provider_.reset();
-
-  // The test passes if it does not crash. We can also verify that the callback
-  // was never invoked.
-  EXPECT_FALSE(future.IsReady());
-}
-
-// Tests that the idle callback fires correctly when set while the provider
-// is already idle.
-TEST_F(WKContentRuleListProviderTest, IdleCallbackFiresWhenSetWhileIdle) {
-  TestFuture<void> idle_future;
-  provider_->SetIdleCallbackForTesting(idle_future.GetRepeatingCallback());
-
-  // The callback for an already-idle provider should fire. Wait for it.
-  EXPECT_TRUE(idle_future.Wait());
-}
-
-// Tests that the idle callback fires correctly when the provider becomes idle.
-TEST_F(WKContentRuleListProviderTest,
-       IdleCallbackFiresWhenProviderBecomesIdle) {
-  const std::string key = "idle_test_key";
-  // Start an update but do not wait for it, ensuring the provider is busy.
-  TestFuture<NSError*> update_future;
-  provider_->UpdateRuleList(key, kValidTestRuleListJson,
-                            update_future.GetCallback());
-  tracked_keys_.insert(key);
-
-  TestFuture<void> idle_future;
-  provider_->SetIdleCallbackForTesting(idle_future.GetRepeatingCallback());
-
-  // The provider is busy, so the idle callback should not have fired yet.
-  EXPECT_FALSE(idle_future.IsReady());
-
-  // Wait for the pending update to complete.
-  ASSERT_EQ(nil, update_future.Get());
-
-  // The provider should now be idle, and the callback should have been posted.
-  // Wait for it to execute.
-  EXPECT_TRUE(idle_future.Wait());
-}
-
-}  // namespace
 }  // namespace web

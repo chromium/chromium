@@ -33,7 +33,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/test_widget_builder.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
@@ -66,8 +65,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -358,7 +359,7 @@ TEST_F(QuickInsertControllerTest,
 TEST_F(QuickInsertControllerTest,
        ToggleWidgetShowsWidgetAfterCompletingFeatureTourWithoutFocus) {
   std::unique_ptr<views::Widget> test_widget =
-      TestWidgetBuilder()
+      views::test::TestWidgetBuilder()
           .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
           .SetShow(true)
           .BuildClientOwnsWidget();
@@ -405,7 +406,7 @@ TEST_F(QuickInsertControllerTest,
 TEST_F(QuickInsertControllerTest,
        ToggleWidgetShowsWidgetAfterCompletingFeatureTourWithFocus) {
   std::unique_ptr<views::Widget> textfield_widget =
-      TestWidgetBuilder()
+      views::test::TestWidgetBuilder()
           .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
           .SetShow(true)
           .BuildClientOwnsWidget();
@@ -465,12 +466,12 @@ TEST_F(QuickInsertControllerTest, ToggleWidgetOpensUrlAfterLearnMore) {
 
   EXPECT_CALL(
       mock_new_window_delegate(),
-      OpenUrl(Property("host", &GURL::host_piece, "support.google.com"), _, _))
+      OpenUrl(Property("host", &GURL::host, "support.google.com"), _, _))
       .Times(1);
 
-  const views::Button* button = feature_tour.learn_more_button_for_testing();
-  ASSERT_NE(button, nullptr);
-  LeftClickOn(button);
+  const views::Link* link = feature_tour.learn_more_link_for_testing();
+  ASSERT_NE(link, nullptr);
+  LeftClickOn(link);
   views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
 
   EXPECT_FALSE(controller().widget_for_testing());

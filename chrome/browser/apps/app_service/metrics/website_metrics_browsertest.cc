@@ -31,6 +31,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/webapps/browser/banners/installable_web_app_check_result.h"
 #include "components/webapps/browser/banners/web_app_banner_data.h"

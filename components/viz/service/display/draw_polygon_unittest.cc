@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/viz/service/display/draw_polygon.h"
+
 #include <stddef.h>
 
 #include <algorithm>
@@ -15,7 +17,6 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "components/viz/service/display/bsp_compare_result.h"
-#include "components/viz/service/display/draw_polygon.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -30,25 +31,29 @@ void DrawPolygon::RecomputeNormalForTesting() {
 static int sign(float v) {
   static const float epsilon = 0.00001f;
 
-  if (v > epsilon)
+  if (v > epsilon) {
     return 1;
-  if (v < -epsilon)
+  }
+  if (v < -epsilon) {
     return -1;
+  }
   return 0;
 }
 
 bool IsPlanarForTesting(const DrawPolygon& p) {
   static const float epsilon = 0.00001f;
   for (size_t i = 1; i < p.points_.size(); i++) {
-    if (gfx::DotProduct(p.points_[i] - p.points_[0], p.normal_) > epsilon)
+    if (gfx::DotProduct(p.points_[i] - p.points_[0], p.normal_) > epsilon) {
       return false;
+    }
   }
   return true;
 }
 
 bool IsConvexForTesting(const DrawPolygon& p) {
-  if (p.points_.size() < 3)
+  if (p.points_.size() < 3) {
     return true;
+  }
 
   gfx::Vector3dF prev =
       p.points_[p.points_.size() - 1] - p.points_[p.points_.size() - 2];
@@ -58,10 +63,12 @@ bool IsConvexForTesting(const DrawPolygon& p) {
     prev = next;
     next = p.points_[i] - p.points_[i - 1];
     int next_sign = sign(gfx::DotProduct(CrossProduct(prev, next), p.normal_));
-    if (ccw == 0)
+    if (ccw == 0) {
       ccw = next_sign;
-    if (next_sign != 0 && next_sign != ccw)
+    }
+    if (next_sign != 0 && next_sign != ccw) {
       return false;
+    }
   }
   return true;
 }

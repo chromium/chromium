@@ -32,9 +32,10 @@ TEST(ClientDataDelegateDesktopTest,
   client_data_delegate.FillRegisterBrowserRequest(&request, base::DoNothing());
   task_environment.RunUntilIdle();
 
-  EXPECT_EQ(request.machine_name(), GetMachineName());
   std::unique_ptr<enterprise_management::BrowserDeviceIdentifier>
       expected_browser_device_identifier = GetBrowserDeviceIdentifier();
+  EXPECT_EQ(request.browser_device_identifier().computer_name(),
+            GetMachineName());
   EXPECT_EQ(request.browser_device_identifier().computer_name(),
             expected_browser_device_identifier->computer_name());
   EXPECT_EQ(request.browser_device_identifier().serial_number(),

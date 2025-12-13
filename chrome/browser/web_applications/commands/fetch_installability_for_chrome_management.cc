@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/strings/to_string.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -85,8 +86,7 @@ void FetchInstallabilityForChromeManagement::OnUrlLoadedCheckInstallability(
                             std::nullopt);
     return;
   }
-  GetMutableDebugValue().Set("WebAppUrlLoader::Result",
-                             ConvertUrlLoaderResultToString(result));
+  GetMutableDebugValue().Set("WebAppUrlLoader::Result", base::ToString(result));
 
   if (result == webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded) {
     CompleteAndSelfDestruct(CommandResult::kSuccess,

@@ -53,9 +53,7 @@ std::string CreatePayload(uint64_t failed_data_types) {
 
   root.Set(kFailedTypesPath, std::move(failed_types_list));
 
-  std::string payload;
-  base::JSONWriter::Write(root, &payload);
-  return payload;
+  return base::WriteJson(root).value_or("");
 }
 
 }  // namespace
@@ -76,8 +74,8 @@ bool ClearBrowsingDataJob::ParseCommandPayload(
     const std::string& command_payload) {
   VLOG_POLICY(2, REMOTE_COMMANDS)
       << "Clear browsing data command payload: " << command_payload;
-  std::optional<base::Value::Dict> root =
-      base::JSONReader::ReadDict(command_payload);
+  std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(
+      command_payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root)
     return false;
 

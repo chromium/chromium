@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/functional/callback.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -48,6 +47,8 @@ class ChromeSecurityStateTabHelper : public SecurityStateTabHelper,
   std::unique_ptr<security_state::VisibleSecurityState>
   GetVisibleSecurityState() override;
 
+  security_state::MaliciousContentStatus GetMaliciousContentStatus() override;
+
   // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -56,7 +57,6 @@ class ChromeSecurityStateTabHelper : public SecurityStateTabHelper,
  private:
   explicit ChromeSecurityStateTabHelper(content::WebContents* web_contents);
 
-  security_state::MaliciousContentStatus GetMaliciousContentStatus() const;
 };
 
 #endif  // CHROME_BROWSER_SSL_CHROME_SECURITY_STATE_TAB_HELPER_H_

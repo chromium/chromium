@@ -9,11 +9,17 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/ref_counted.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "skia/ext/skcolorspace_primaries.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_space_export.h"
+
+namespace base::trace_event {
+class TracedValue;
+}  // namespace base::trace_event
 
 namespace mojo {
 template <class T, class U>
@@ -50,33 +56,34 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
   DisplayColorSpaces& operator=(const DisplayColorSpaces& display_color_space);
 
   // Initialize as |color_space| for all settings. If |color_space| is the
-  // default (invalid) color space, then initialize to sRGB. The BufferFormat
-  // will be set to a default value (BGRA_8888 or RGBA_8888) depending on
-  // build configuration.
+  // default (invalid) color space, then initialize to sRGB. The format will be
+  // set to a default value (BGRA_8888 or RGBA_8888) depending on build
+  // configuration.
   explicit DisplayColorSpaces(const ColorSpace& color_space);
 
-  // Initialize as |color_space| and |buffer_format| for all settings. If
-  // |color_space| is the default (invalid) color space, then initialize to
-  // sRGB.
-  DisplayColorSpaces(const ColorSpace& color_space, BufferFormat buffer_format);
+  // Initialize as |color_space| and |format| (which must be single-plane) for
+  // all settings. If |color_space| is the default (invalid) color space, then
+  // initialize to sRGB.
+  DisplayColorSpaces(const ColorSpace& color_space,
+                     viz::SharedImageFormat format);
 
-  // Set the color space and buffer format for the final output surface when the
-  // specified content is being displayed.
-  void SetOutputColorSpaceAndBufferFormat(ContentColorUsage color_usage,
-                                          bool needs_alpha,
-                                          const gfx::ColorSpace& color_space,
-                                          gfx::BufferFormat buffer_format);
+  // Set the color space and SharedImageFormat for the final output surface when
+  // the specified content is being displayed.
+  void SetOutputColorSpaceAndFormat(ContentColorUsage color_usage,
+                                    bool needs_alpha,
+                                    const gfx::ColorSpace& color_space,
+                                    viz::SharedImageFormat format);
 
-  // Set the buffer format for all color usages to |buffer_format_no_alpha| when
-  // alpha is not needed and |buffer_format_with_alpha| when alpha is needed.
-  void SetOutputBufferFormats(gfx::BufferFormat buffer_format_no_alpha,
-                              gfx::BufferFormat buffer_format_with_alpha);
+  // Set the format for all color usages to |format_no_alpha| when alpha is not
+  // needed and |format_with_alpha| when alpha is needed.
+  void SetOutputFormats(viz::SharedImageFormat format_no_alpha,
+                        viz::SharedImageFormat format_with_alpha);
 
   // Retrieve parameters for a specific usage and alpha.
   ColorSpace GetOutputColorSpace(ContentColorUsage color_usage,
                                  bool needs_alpha) const;
-  BufferFormat GetOutputBufferFormat(ContentColorUsage color_usage,
-                                     bool needs_alpha) const;
+  viz::SharedImageFormat GetOutputFormat(ContentColorUsage color_usage,
+                                         bool needs_alpha) const;
 
   // Set the maximum SDR luminance, in nits. This is a non-default value only
   // on Windows.
@@ -103,15 +110,16 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
   // calls to these functions are to be eliminated.
   ColorSpace GetScreenInfoColorSpace() const;
 
-  // Return the color space that should be used for rasterization.
-  // TODO: This will eventually need to take a ContentColorUsage.
-  gfx::ColorSpace GetRasterColorSpace() const;
-
-  // Return the color space in which compositing (and, in particular, blending,
-  // should be performed). This space may not (on Windows) be suitable for
-  // output.
-  gfx::ColorSpace GetCompositingColorSpace(bool needs_alpha,
-                                           ContentColorUsage color_usage) const;
+  // Return the color space in which blending for rasterization and compositing
+  // should be done.
+  // * If rasterization and compositing are done in different spaces, then
+  //   content will appear different between the two paths. See
+  //   https://crbug.com/40277679
+  // * On platforms that do delegated compositing (e.g, macOS), this color space
+  //   must also match the color space in which the operating system will do
+  //   blending.
+  gfx::ColorSpace GetRasterAndCompositeColorSpace(
+      ContentColorUsage color_usage) const;
 
   // Return true if the HDR color spaces are, indeed, HDR.
   bool SupportsHDR() const;
@@ -124,10 +132,12 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
 
   // Output as a vector of strings. This is a helper function for printing in
   // about:gpu. All output vectors will be the same length. Each entry will be
-  // the configuration name, its buffer format, and its color space.
+  // the configuration name, its format, and its color space.
   void ToStrings(std::vector<std::string>* out_names,
                  std::vector<gfx::ColorSpace>* out_color_spaces,
-                 std::vector<gfx::BufferFormat>* out_buffer_formats) const;
+                 std::vector<viz::SharedImageFormat>* out_formats) const;
+
+  void AsValueInto(base::trace_event::TracedValue* value) const;
 
   bool operator==(const DisplayColorSpaces& other) const;
 
@@ -143,10 +153,28 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
                                    gfx::DisplayColorSpaces>;
 
   gfx::ColorSpace color_spaces_[kConfigCount];
-  gfx::BufferFormat buffer_formats_[kConfigCount];
+  viz::SharedImageFormat formats_[kConfigCount];
   SkColorSpacePrimaries primaries_ = SkNamedPrimariesExt::kSRGB;
   float sdr_max_luminance_nits_ = ColorSpace::kDefaultSDRWhiteLevel;
   float hdr_max_luminance_relative_ = 1.f;
+};
+
+// A ref counted object to avoid copying DisplayColorSpaces.
+class COLOR_SPACE_EXPORT DisplayColorSpacesRef
+    : public base::RefCountedThreadSafe<DisplayColorSpacesRef> {
+ public:
+  DisplayColorSpacesRef();
+  explicit DisplayColorSpacesRef(const gfx::DisplayColorSpaces& color_spaces);
+  DisplayColorSpacesRef(const DisplayColorSpacesRef& color_spaces) = delete;
+  const DisplayColorSpacesRef& operator=(const DisplayColorSpacesRef) = delete;
+
+  const gfx::DisplayColorSpaces& color_spaces() const { return color_spaces_; }
+
+ private:
+  friend class base::RefCountedThreadSafe<DisplayColorSpacesRef>;
+
+  ~DisplayColorSpacesRef() = default;
+  const gfx::DisplayColorSpaces color_spaces_;
 };
 
 }  // namespace gfx

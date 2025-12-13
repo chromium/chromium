@@ -19,8 +19,17 @@ class GlobalErrorBubbleViewBase;
 class GlobalError {
  public:
   enum Severity {
+    // The error requires user action, but is low priority. Users' attention may
+    // be drawn to the error in a less alarming way than an error at a higher
+    // level.
     SEVERITY_LOW,
+
+    // The error requires prompt user action. This is a safe default for general
+    // errors.
     SEVERITY_MEDIUM,
+
+    // The error requires prompt user action and should take priority over all
+    // other errors.
     SEVERITY_HIGH,
   };
 

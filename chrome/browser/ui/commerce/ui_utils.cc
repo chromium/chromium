@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
+#include "content/public/browser/navigation_controller.h"
 
 namespace commerce {
 
@@ -34,10 +35,6 @@ void OpenProductSpecsTabForUrls(const std::vector<GURL>& urls,
 void ShowProductSpecsConfirmationToast(std::u16string set_name,
                                        ToastController* toast_controller) {
   if (!toast_controller) {
-    return;
-  }
-
-  if (!base::FeatureList::IsEnabled(commerce::kCompareConfirmationToast)) {
     return;
   }
 

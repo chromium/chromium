@@ -15,7 +15,7 @@ static base::AtomicSequenceNumber g_next_player_id;
 }  // namespace
 
 MediaPlayerLoggingID GetNextMediaPlayerLoggingID() {
-  return g_next_player_id.GetNext();
+  return MediaPlayerLoggingID(g_next_player_id.GetNext());
 }
 
 }  // namespace media

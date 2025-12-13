@@ -86,8 +86,8 @@ class PolicyStatisticsCollectorTest : public testing::Test {
     policy_details_.SetDetails(kEnrollmentTokenPolicy, &kTestPolicyDetails[3]);
     policy_details_.SetDetails(kEnrollmentOptionPolicy, &kTestPolicyDetails[4]);
 
-    prefs_.registry()->RegisterInt64Pref(
-        policy_prefs::kLastPolicyStatisticsUpdate, 0);
+    prefs_.registry()->RegisterTimePref(
+        policy_prefs::kLastPolicyStatisticsUpdate, base::Time());
 
     // Set up default function behaviour.
     EXPECT_CALL(policy_service_, GetPolicies(PolicyNamespace(

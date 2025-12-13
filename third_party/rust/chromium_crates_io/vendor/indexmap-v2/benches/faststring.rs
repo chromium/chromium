@@ -33,8 +33,10 @@ impl<'a, S> From<&'a S> for &'a OneShot<str>
 where
     S: AsRef<str>,
 {
+    #[allow(unsafe_code)]
     fn from(s: &'a S) -> Self {
         let s: &str = s.as_ref();
+        // SAFETY: OneShot is a `repr(transparent)` wrapper
         unsafe { &*(s as *const str as *const OneShot<str>) }
     }
 }

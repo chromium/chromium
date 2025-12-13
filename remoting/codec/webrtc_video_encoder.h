@@ -56,10 +56,13 @@ class WebrtcVideoEncoder {
   // The destructor is virtual so that implementations can derive from this
   // class to attach more data to the frame.
   struct FrameStats {
-    FrameStats() = default;
-    FrameStats(const FrameStats&) = default;
-    FrameStats& operator=(const FrameStats&) = default;
-    virtual ~FrameStats() = default;
+    FrameStats();
+    FrameStats(const FrameStats&);
+    FrameStats& operator=(const FrameStats&);
+    virtual ~FrameStats();
+
+    // Creates a copy of the frame stats.
+    virtual std::unique_ptr<FrameStats> Clone() const;
 
     // TODO(crbug.com/40175068): Consolidate all the per-frame statistics
     // into a single struct in remoting/protocol.

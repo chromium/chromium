@@ -9,6 +9,7 @@
 #include <string>
 #include <variant>
 
+#include "base/byte_count.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
@@ -114,7 +115,6 @@ class ProcessNodeImpl
 
   // mojom::ChildProcessCoordinationUnit implementation:
   void InitializeChildProcessCoordination(
-      uint64_t process_track_id,
       InitializeChildProcessCoordinationCallback callback) override;
 
   // Partial ProcessNode implementation:
@@ -126,9 +126,9 @@ class ProcessNodeImpl
   std::optional<int32_t> GetExitStatus() const override;
   const std::string& GetMetricsName() const override;
   bool GetMainThreadTaskLoadIsLow() const override;
-  uint64_t GetPrivateFootprintKb() const override;
-  uint64_t GetResidentSetKb() const override;
-  uint64_t GetPrivateSwapKb() const override;
+  base::ByteCount GetPrivateFootprint() const override;
+  base::ByteCount GetResidentSet() const override;
+  base::ByteCount GetPrivateSwap() const override;
   RenderProcessHostId GetRenderProcessHostId() const override;
   const RenderProcessHostProxy& GetRenderProcessHostProxy() const override;
   const BrowserChildProcessHostProxy& GetBrowserChildProcessHostProxy()
@@ -139,23 +139,23 @@ class ProcessNodeImpl
   // Private implementation properties.
   NodeSetView<FrameNodeImpl*> frame_nodes() const;
   NodeSetView<WorkerNodeImpl*> worker_nodes() const;
-  std::optional<perfetto::Track> tracing_track() const;
+  perfetto::Track tracing_track() const;
 
   void SetProcessExitStatus(int32_t exit_status);
   void SetProcessMetricsName(const std::string& metrics_name);
   void SetProcess(base::Process process, base::TimeTicks launch_time);
 
-  void set_private_footprint_kb(uint64_t private_footprint_kb) {
+  void set_private_footprint(base::ByteCount private_footprint) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    private_footprint_kb_ = private_footprint_kb;
+    private_footprint_ = private_footprint;
   }
-  void set_resident_set_kb(uint64_t resident_set_kb) {
+  void set_resident_set(base::ByteCount resident_set) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    resident_set_kb_ = resident_set_kb;
+    resident_set_ = resident_set;
   }
-  void set_private_swap_kb(uint64_t private_swap_kb) {
+  void set_private_swap(base::ByteCount private_swap) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    private_swap_kb_ = private_swap_kb;
+    private_swap_ = private_swap;
   }
 
   // Add |frame_node| to this process.
@@ -196,6 +196,9 @@ class ProcessNodeImpl
   using AnyChildProcessHostProxy =
       std::variant<RenderProcessHostProxy, BrowserChildProcessHostProxy>;
 
+  static perfetto::Track GetTracingTrack(content::ProcessType process_type,
+                                         const AnyChildProcessHostProxy& proxy);
+
   // Shared constructor for all process types.
   ProcessNodeImpl(content::ProcessType process_type,
                   AnyChildProcessHostProxy proxy,
@@ -221,9 +224,9 @@ class ProcessNodeImpl
   mojo::Receiver<mojom::ChildProcessCoordinationUnit> child_process_receiver_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 
-  uint64_t private_footprint_kb_ GUARDED_BY_CONTEXT(sequence_checker_) = 0u;
-  uint64_t resident_set_kb_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
-  uint64_t private_swap_kb_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  base::ByteCount private_footprint_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::ByteCount resident_set_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::ByteCount private_swap_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::ProcessId process_id_ GUARDED_BY_CONTEXT(sequence_checker_) =
       base::kNullProcessId;
@@ -244,6 +247,9 @@ class ProcessNodeImpl
   // process node for a child process (process_type() != PROCESS_TYPE_BROWSER).
   const AnyChildProcessHostProxy child_process_host_proxy_;
 
+  // The Perfetto ProcessTrack for this process.
+  perfetto::Track tracing_track_ GUARDED_BY_CONTEXT(sequence_checker_);
+
   ObservedProperty::NotifiesOnlyOnChanges<
       bool,
       &ProcessNodeObserver::OnMainThreadTaskLoadIsLow>
@@ -256,17 +262,13 @@ class ProcessNodeImpl
   // determine the right priority.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
       base::TaskPriority,
-      base::TaskPriority,
-      &ProcessNodeObserver::OnPriorityChanged>
+      &ProcessNodeObserver::OnPriorityChanged,
+      TracedWrapper<base::TaskPriority>>
       priority_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // A bit field that indicates which type of content this process has hosted,
   // either currently or in the past.
   ContentTypes hosted_content_types_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // The Perfetto ProcessTrack for this process.
-  std::optional<perfetto::Track> tracing_track_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   NodeSet frame_nodes_ GUARDED_BY_CONTEXT(sequence_checker_);
 

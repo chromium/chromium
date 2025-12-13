@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window_state.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_switches.h"
@@ -42,16 +44,19 @@ const int kMinVisibleWidth = 30;
 constexpr float kMinVisibleRatio = 0.3f;
 #endif
 
-BrowserWindow* FindMostRecentBrowserWindow(
-    base::FunctionRef<bool(Browser*)> matcher) {
-  for (Browser* last_active :
-       BrowserList::GetInstance()->OrderedByActivation()) {
-    if (last_active && matcher(last_active)) {
-      DCHECK(last_active->window());
-      return last_active->window();
-    }
-  }
-  return nullptr;
+ui::BaseWindow* FindMostRecentWindow(
+    base::FunctionRef<bool(BrowserWindowInterface*)> matcher) {
+  ui::BaseWindow* window = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* last_active) {
+        if (last_active && matcher(last_active)) {
+          window = last_active->GetWindow();
+          DCHECK(window);
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      });
+  return window;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -117,35 +122,38 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
     // If a reference browser is set, use its window. Otherwise find last
     // active. Depending on the type of browser being created, different logic
     // determines if a particular browser can be a reference browser.
-    BrowserWindow* window = nullptr;
+    ui::BaseWindow* window = nullptr;
     // Window may be null if browser is just starting up.
     if (browser_ && browser_->window()) {
       window = browser_->window();
     } else if (web_app::AppBrowserController::IsWebApp(browser_)) {
-      window = FindMostRecentBrowserWindow(
+      window = FindMostRecentWindow(
           [profile = browser_->profile(),
            app_id = browser_->app_controller()->app_id(),
-           display = display::Screen::GetScreen()->GetDisplayForNewWindows()](
-              Browser* browser) {
-            if (browser->profile() != profile) {
+           display = display::Screen::Get()->GetDisplayForNewWindows()](
+              BrowserWindowInterface* browser) {
+            if (browser->GetProfile() != profile) {
               return false;
             }
             if (!web_app::AppBrowserController::IsForWebApp(browser, app_id)) {
               return false;
             }
 #if BUILDFLAG(IS_CHROMEOS)
-            if (display::Screen::GetScreen()->GetDisplayNearestWindow(
-                    browser->window()->GetNativeWindow()) != display) {
+            if (display::Screen::Get()->GetDisplayNearestWindow(
+                    browser->GetWindow()->GetNativeWindow()) != display) {
               return false;
             }
 #endif
-            if (!browser->window()->IsOnCurrentWorkspace())
+            if (!browser->GetBrowserForMigrationOnly()
+                     ->window()
+                     ->IsOnCurrentWorkspace())
               return false;
             return true;
           });
     } else {
-      window = FindMostRecentBrowserWindow(
-          [](Browser* browser) { return browser->is_type_normal(); });
+      window = FindMostRecentWindow([](BrowserWindowInterface* browser) {
+        return browser->GetType() == BrowserWindowInterface::TYPE_NORMAL;
+      });
     }
 
     if (window) {
@@ -269,7 +277,7 @@ void WindowSizer::DetermineWindowBoundsAndShowState(
   // does not exactly what we want: It makes only sure that "a minimal part"
   // is visible on the screen.
   gfx::Rect work_area =
-      display::Screen::GetScreen()->GetDisplayMatching(*bounds).work_area();
+      display::Screen::Get()->GetDisplayMatching(*bounds).work_area();
 
   AdjustWorkAreaForPlatform(work_area);
 
@@ -290,8 +298,7 @@ bool WindowSizer::GetLastActiveWindowBounds(
   }
   bounds->Offset(kWindowTilePixels, kWindowTilePixels);
   AdjustBoundsToBeVisibleOnDisplay(
-      display::Screen::GetScreen()->GetDisplayMatching(*bounds), gfx::Rect(),
-      bounds);
+      display::Screen::Get()->GetDisplayMatching(*bounds), gfx::Rect(), bounds);
   return true;
 }
 
@@ -323,8 +330,7 @@ gfx::Rect WindowSizer::GetDefaultWindowBounds(
 #if !BUILDFLAG(IS_MAC)
   // For wider aspect ratio displays at higher resolutions, we might size the
   // window narrower to allow two windows to easily be placed side-by-side.
-  gfx::Rect screen_size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+  gfx::Rect screen_size = display::Screen::Get()->GetPrimaryDisplay().bounds();
   double width_to_height =
       static_cast<double>(screen_size.width()) / screen_size.height();
 
@@ -456,8 +462,8 @@ ui::mojom::WindowShowState WindowSizer::GetWindowDefaultShowState(
 display::Display WindowSizer::GetDisplayForNewWindow(const gfx::Rect& bounds) {
 #if BUILDFLAG(IS_CHROMEOS)
   // Prefer the display where the user last activated a window.
-  return display::Screen::GetScreen()->GetDisplayForNewWindows();
+  return display::Screen::Get()->GetDisplayForNewWindows();
 #else
-  return display::Screen::GetScreen()->GetDisplayMatching(bounds);
+  return display::Screen::Get()->GetDisplayMatching(bounds);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }

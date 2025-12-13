@@ -5,8 +5,9 @@
 #include "components/browsing_data/core/browsing_data_policies_utils.h"
 
 #include <algorithm>
-#include <vector>
+#include <forward_list>
 
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
@@ -126,6 +127,37 @@ std::string DisableSyncTypes(const syncer::UserSelectableTypeSet& types_set,
                               UserSelectableTypeSetToString(types_set).c_str());
   }
   return std::string();
+}
+
+base::flat_set<std::string> GetBrowsingDataLifetimePlatformUnsupportedTypes(
+    const base::Value& policy_value) {
+#if !BUILDFLAG(IS_ANDROID)
+  return base::flat_set<std::string>();
+#else
+  // The use of GetList() and GetDict() without type checking are safe because
+  // this function is only called if the policy schema is valid.
+  // On Android, hosted_app_data and download_history are not supported for the
+  // BrowsingDataLifetime policy, while the ClearBrowsingDataOnExit policy is
+  // not supported at all.
+  static constexpr std::string_view kUnsupportedTypes[] = {
+      policy_data_types::kHostedAppDataName,
+      policy_data_types::kDownloadHistoryName};
+  std::forward_list<std::string> unsupported_types;
+  const auto& items = policy_value.GetList();
+  for (const auto& item : items) {
+    const base::ListValue& data_types =
+        item.GetDict().Find("data_types")->GetList();
+    std::for_each(data_types.begin(), data_types.end(),
+                  [&unsupported_types](const base::Value& type) {
+                    const std::string& type_string = type.GetString();
+                    if (base::Contains(kUnsupportedTypes, type_string)) {
+                      unsupported_types.push_front(type_string);
+                    }
+                  });
+  }
+  return base::flat_set<std::string>(unsupported_types.begin(),
+                                     unsupported_types.end());
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 std::optional<PolicyDataType> NameToPolicyDataType(

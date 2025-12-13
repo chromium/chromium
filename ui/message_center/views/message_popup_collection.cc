@@ -15,10 +15,10 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/transform_util.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_types.h"
 #include "ui/message_center/notification_view_controller.h"
@@ -96,7 +96,7 @@ void MessagePopupCollection::Update() {
     }
     animation_->SetDuration(
         animation_duration *
-        ui::ScopedAnimationDurationScaleMode::duration_multiplier());
+        gfx::ScopedAnimationDurationScaleMode::duration_multiplier());
     animation_->Start();
     AnimationStarted();
 
@@ -132,6 +132,9 @@ void MessagePopupCollection::ResetBounds() {
     for (auto& item : popup_items_) {
       item.popup->SetPopupBounds(item.bounds);
       item.popup->SetOpacity(1.0);
+      if (CanUseTransformForBoundsAnimation()) {
+        item.popup->SetPopupTransform(gfx::Transform());
+      }
     }
   }
 

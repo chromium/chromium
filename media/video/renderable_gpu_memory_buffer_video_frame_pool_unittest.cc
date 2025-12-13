@@ -9,6 +9,7 @@
 #include "base/notimplemented.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -44,7 +45,7 @@ gfx::ColorSpace GetColorSpaceForPixelFormat(media::VideoPixelFormat format) {
 class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
  public:
   FakeContext()
-      : context_provider_(viz::TestContextProvider::Create()),
+      : context_provider_(viz::TestContextProvider::CreateGLES()),
         weak_factory_(this) {}
   ~FakeContext() override = default;
 
@@ -57,8 +58,6 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
       gpu::SyncToken& sync_token) override {
     DoCreateMappableSharedImage(size, buffer_usage, si_format, color_space,
                                 usage, sync_token);
-    context_provider_->SharedImageInterface()
-        ->UseTestGMBInSharedImageCreationWithBufferUsage();
     return context_provider_->SharedImageInterface()->CreateSharedImage(
         {si_format, size, color_space, usage,
          "RenderableGpuMemoryBufferVideoFramePoolTest"},
@@ -359,6 +358,92 @@ TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest, RespectSizeAndColorSpace) {
   pool.reset();
   task_environment.RunUntilIdle();
   EXPECT_FALSE(!!context);
+}
+
+// Verifies that the requires_cpu_access flag controls gfx::BufferUsage in
+// RenderableGpuMemoryBufferVideoFramePool allocations. On Linux,
+// setting the flag to false avoids GBM linear allocations by switching
+// from SCANOUT_CPU_READ_WRITE to SCANOUT. Ensures that the expected
+// buffer usage value propagates to the shared image creation code path.
+TEST_P(RenderableGpuMemoryBufferVideoFramePoolTest,
+       RequiresCpuAccessAffectsBufferUsage) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  const gfx::Size size(128, 256);
+  const gfx::ColorSpace color_space = GetColorSpaceForPixelFormat(format_);
+
+  base::WeakPtr<FakeContext> context;
+  std::unique_ptr<RenderableGpuMemoryBufferVideoFramePool> pool;
+
+  // Case 1: requires_cpu_access = true
+  {
+    auto context_strong = std::make_unique<FakeContext>();
+    context = context_strong->GetWeakPtr();
+    pool = RenderableGpuMemoryBufferVideoFramePool::Create(
+        std::move(context_strong), format_, /*requires_cpu_access=*/true);
+  }
+
+  ASSERT_TRUE(pool);
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+  gfx::BufferUsage expected_usage = gfx::BufferUsage::SCANOUT_VEA_CPU_READ;
+#elif BUILDFLAG(IS_LINUX)
+  gfx::BufferUsage expected_usage = gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
+#else
+  gfx::BufferUsage expected_usage = gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
+#endif
+
+  EXPECT_CALL(*context,
+              DoCreateMappableSharedImage(_, expected_usage, _, _, _, _))
+      .Times(1);
+
+  auto frame = pool->MaybeCreateVideoFrame(size, color_space);
+
+  // Expect one frame to be destroyed.
+  int destroy_count = 0;
+  EXPECT_CALL(*context, DestroySharedImage(_, _)).WillOnce([&]() {
+    ++destroy_count;
+  });
+
+  frame = nullptr;
+  pool.reset();
+
+  EXPECT_TRUE(base::test::RunUntil([&]() { return destroy_count == 1; }));
+  EXPECT_EQ(destroy_count, 1);
+
+  // Case 2: requires_cpu_access = false
+  {
+    auto context_strong = std::make_unique<FakeContext>();
+    context = context_strong->GetWeakPtr();
+    pool = RenderableGpuMemoryBufferVideoFramePool::Create(
+        std::move(context_strong), format_, /*requires_cpu_access=*/false);
+  }
+
+  ASSERT_TRUE(pool);
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+  gfx::BufferUsage expected_usage2 = gfx::BufferUsage::SCANOUT_VEA_CPU_READ;
+#elif BUILDFLAG(IS_LINUX)
+  gfx::BufferUsage expected_usage2 = gfx::BufferUsage::SCANOUT;
+#else
+  gfx::BufferUsage expected_usage2 = gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
+#endif
+
+  EXPECT_CALL(*context,
+              DoCreateMappableSharedImage(_, expected_usage2, _, _, _, _))
+      .Times(1);
+
+  frame = pool->MaybeCreateVideoFrame(size, color_space);
+
+  // Expect the frame to be destroyed.
+  destroy_count = 0;
+  EXPECT_CALL(*context, DestroySharedImage(_, _)).WillRepeatedly([&]() {
+    ++destroy_count;
+  });
+
+  frame = nullptr;
+  pool.reset();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return destroy_count == 1; }));
+  EXPECT_EQ(destroy_count, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

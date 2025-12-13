@@ -36,15 +36,9 @@ class CookieControlsBubbleViewController
                        CookieControlsEnforcement enforcement,
                        CookieBlocking3pcdStatus blocking_status,
                        base::Time expiration) override;
-  void OnFinishedPageReloadWithChangedSettings() override;
+  void OnBubbleCloseTriggered() override;
 
   void SetSubjectUrlNameForTesting(const std::u16string& name);
-
-  void SetIsReloadingState(bool is_reloading_state) {
-    is_reloading_state_ = is_reloading_state;
-  }
-
-  bool IsReloadingState() { return is_reloading_state_; }
 
  private:
   friend class CookieControlsBubbleViewBrowserTest;
@@ -53,7 +47,6 @@ class CookieControlsBubbleViewController
   void OnUserClosedContentView();
   void OnToggleButtonPressed(bool toggled_on);
   void OnFeedbackButtonPressed();
-  void OnTrackingProtectionsButtonPressed();
 
   void OnFaviconFetched(const favicon_base::FaviconImageResult& result) const;
 
@@ -63,15 +56,11 @@ class CookieControlsBubbleViewController
                                           base::Time expiration);
   void ApplyThirdPartyCookiesBlockedState();
 
-  void ApplyTrackingProtectionsActiveState();
-  void ApplyTrackingProtectionsPausedState();
-
   void FillDescriptionAndToggle(CookieControlsEnforcement enforcement,
                                 base::Time expiration);
 
   void FillViewForThirdPartyCookies(CookieControlsEnforcement enforcement,
                                     base::Time expiration);
-  void FillViewForTrackingProtections(CookieControlsEnforcement enforcement);
 
   void CloseBubble();
 
@@ -81,9 +70,6 @@ class CookieControlsBubbleViewController
   void FetchFaviconFrom(content::WebContents* web_contents);
 
   std::u16string GetSubjectUrlName(content::WebContents* web_contents) const;
-
-  // Whether the page is reloading in the background after UB is toggled.
-  bool is_reloading_state_ = false;
 
   // The most recent status provided by the CookieControlsController, used to
   // determine the user's 3PCD status.
@@ -101,7 +87,6 @@ class CookieControlsBubbleViewController
   base::CallbackListSubscription on_user_triggered_reloading_action_callback_;
   base::CallbackListSubscription toggle_button_callback_;
   base::CallbackListSubscription feedback_button_callback_;
-  base::CallbackListSubscription tracking_protections_button_callback_;
   base::WeakPtr<content_settings::CookieControlsController> controller_;
   base::WeakPtr<content::WebContents> web_contents_;
   base::ScopedObservation<content_settings::CookieControlsController,

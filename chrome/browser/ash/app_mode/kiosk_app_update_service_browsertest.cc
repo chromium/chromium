@@ -29,6 +29,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_update_service_factory.h"
 #include "chrome/browser/ash/system/automatic_reboot_manager.h"
 #include "chrome/browser/ash/system/automatic_reboot_manager_observer.h"
 #include "chrome/browser/browser_process.h"
@@ -183,10 +184,6 @@ IN_PROC_BROWSER_TEST_F(KioskAppUpdateServiceTest, AppUpdate) {
   ExtensionTestMessageListener listener("app_update");
   FireAppUpdateAvailable();
   EXPECT_TRUE(listener.WaitUntilSatisfied());
-
-  histogram.ExpectUniqueSample(kKioskPrimaryAppInSessionUpdateHistogram,
-                               /*sample=*/1,
-                               /*expected_bucket_count=*/1);
 }
 
 // Verifies that the app is notified a reboot is required when an OS update is

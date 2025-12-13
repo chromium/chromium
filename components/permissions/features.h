@@ -13,6 +13,11 @@
 namespace permissions {
 namespace features {
 
+#if BUILDFLAG(IS_ANDROID)
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+BASE_DECLARE_FEATURE(kAndroidWindowManagementWebApi);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kBackForwardCacheUnblockPermissionRequest);
 
@@ -23,19 +28,24 @@ COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kPermissionElementPromptPositioning);
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
-BASE_DECLARE_FEATURE(kPermissionOnDeviceNotificationPredictions);
+BASE_DECLARE_FEATURE(kPermissionHeuristicAutoGrant);
 
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
-BASE_DECLARE_FEATURE(kPermissionOnDeviceGeolocationPredictions);
-
+// DO NOT REMOVE THIS FLAG.
+// This feature was used to enable the V2 version of the permission predictions
+// model. It is enabled by default. This flag is kept around to be able to
+// fetch the size of the holdback group that is provided in the experiment
+// parameters.
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kPermissionPredictionsV2);
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
-BASE_DECLARE_FEATURE(kPermissionsAIv1);
+BASE_DECLARE_FEATURE(kPermissionsAIv3);
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
-BASE_DECLARE_FEATURE(kPermissionsAIv3);
+BASE_DECLARE_FEATURE(kPermissionsAIv4);
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+BASE_DECLARE_FEATURE(kPermissionsAIP92);
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kPermissionPromiseLifetimeModulation);
@@ -46,6 +56,20 @@ BASE_DECLARE_FEATURE(kPermissionsPromptSurvey);
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kAllowMultipleOriginsForWebKioskPermissions);
 
+// DO NOT REMOVE THIS FLAG.
+// The following 2 features are enabled by default, but the feature flags are
+// kept for internal testing purposes. Specifically, the model
+// modelconfig_feature_disable_test will fail without the models being guarded
+// by these flags, as the model gets fetched even when the feature is disabled
+// in the tests.
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+BASE_DECLARE_FEATURE(kPermissionOnDeviceNotificationPredictions);
+
+// DO NOT REMOVE THIS FLAG.
+// See comment above.
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+BASE_DECLARE_FEATURE(kPermissionOnDeviceGeolocationPredictions);
+
 #if BUILDFLAG(IS_ANDROID)
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
@@ -55,9 +79,6 @@ BASE_DECLARE_FEATURE(kPermissionDedicatedCpssSettingAndroid);
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kRecordChooserPermissionLastVisitedTimestamps);
-
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
-BASE_DECLARE_FEATURE(kMitigateUnpartitionedWebviewPermissions);
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -74,13 +95,21 @@ COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kCpssUseTfliteSignatureRunner);
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
-BASE_DECLARE_FEATURE(kFedCmUpdatedCooldownPeriod);
+BASE_DECLARE_FEATURE(kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+BASE_DECLARE_FEATURE(kGlicActorPermissionsAutoReject);
 
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
-BASE_DECLARE_FEATURE(kOsAdditionalSecurityPermissionKillSwitch);
+BASE_DECLARE_FEATURE(kReturnDeniedForNotificationsWhenNoAppLevelSettings);
 #endif
+
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+BASE_DECLARE_FEATURE(kPermissionPredictionsGeolocationAccuracy);
+
 }  // namespace features
+
 namespace feature_params {
 
 enum class PermissionElementPromptPosition {

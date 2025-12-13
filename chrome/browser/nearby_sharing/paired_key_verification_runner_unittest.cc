@@ -145,7 +145,7 @@ class PairedKeyVerificationRunnerTest : public testing::Test {
         ReadFrame(
             testing::Eq(sharing::mojom::V1Frame::Tag::kPairedKeyEncryption),
             testing::_, testing::Eq(kTimeout)))
-        .WillOnce(testing::WithArg<1>(testing::Invoke(
+        .WillOnce(testing::WithArg<1>(
             [frame_type](
                 base::OnceCallback<void(
                     std::optional<sharing::mojom::V1FramePtr>)> callback) {
@@ -181,7 +181,7 @@ class PairedKeyVerificationRunnerTest : public testing::Test {
               }
 
               std::move(callback).Run(std::move(mojo_v1frame));
-            })));
+            }));
   }
 
   void SetUpPairedKeyResultFrame(
@@ -192,7 +192,7 @@ class PairedKeyVerificationRunnerTest : public testing::Test {
         frames_reader_,
         ReadFrame(testing::Eq(sharing::mojom::V1Frame::Tag::kPairedKeyResult),
                   testing::_, testing::Eq(kTimeout)))
-        .WillOnce(testing::WithArg<1>(testing::Invoke(
+        .WillOnce(testing::WithArg<1>(
             [=](base::OnceCallback<void(
                     std::optional<sharing::mojom::V1FramePtr>)> callback) {
               if (frame_type == ReturnFrameType::kNull) {
@@ -205,7 +205,7 @@ class PairedKeyVerificationRunnerTest : public testing::Test {
                       sharing::mojom::PairedKeyResultFrame::New(status));
 
               std::move(callback).Run(std::move(mojo_v1frame));
-            })));
+            }));
   }
 
   sharing::nearby::Frame GetWrittenFrame() {

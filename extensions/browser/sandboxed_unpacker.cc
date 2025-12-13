@@ -502,15 +502,18 @@ void SandboxedUnpacker::ReadManifestDone(
     return;
   }
 
-  std::string error_msg;
+  // TODO(crbug.com/41317803): Continue removing std::string errors and
+  // replacing with std::u16string.
+  std::u16string utf16_error;
   scoped_refptr<Extension> extension(
       Extension::Create(extension_root_, location_, *dict, creation_flags_,
-                        extension_id_, &error_msg));
+                        extension_id_, &utf16_error));
   if (!extension) {
-    ReportUnpackExtensionFailed(error_msg);
+    ReportUnpackExtensionFailed(base::UTF16ToUTF8(utf16_error));
     return;
   }
 
+  std::string error_msg;
   std::vector<InstallWarning> warnings;
   if (!file_util::ValidateExtension(extension.get(), &error_msg, &warnings)) {
     ReportUnpackExtensionFailed(error_msg);
@@ -551,13 +554,14 @@ void SandboxedUnpacker::UnpackExtensionSucceeded(base::Value::Dict manifest) {
     return;
   }
 
+  std::u16string utf16_error;
   extension_ =
       Extension::Create(extension_root_, location_, final_manifest.value(),
-                        Extension::REQUIRE_KEY | creation_flags_, &utf8_error);
+                        Extension::REQUIRE_KEY | creation_flags_, &utf16_error);
 
   if (!extension_.get()) {
     ReportFailure(SandboxedUnpackerFailureReason::INVALID_MANIFEST,
-                  u"Manifest is invalid: " + ASCIIToUTF16(utf8_error));
+                  u"Manifest is invalid: " + utf16_error);
     return;
   }
 
@@ -1052,7 +1056,8 @@ void SandboxedUnpacker::ParseJsonFile(const base::FilePath& path) {
   }
 
   base::JSONReader::Result result =
-      base::JSONReader::ReadAndReturnValueWithError(contents);
+      base::JSONReader::ReadAndReturnValueWithError(
+          contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ReadManifestDone(std::move(result).transform_error(
       [](const base::JSONReader::Error& error) { return error.ToString(); }));
 }

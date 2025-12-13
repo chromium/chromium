@@ -14,6 +14,7 @@
 #include "ui/color/color_variant.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ui {
 class Event;

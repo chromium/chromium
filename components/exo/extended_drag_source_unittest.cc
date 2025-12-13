@@ -109,7 +109,7 @@ class ExtendedDragSourceTest : public test::ExoTestBase {
     drag_drop_controller_ = static_cast<ash::DragDropController*>(
         aura::client::GetDragDropClient(ash::Shell::GetPrimaryRootWindow()));
     ASSERT_TRUE(drag_drop_controller_);
-    drag_drop_controller_->set_should_block_during_drag_drop(false);
+    drag_drop_controller_->SetDisableNestedLoopForTesting(true);
     drag_drop_controller_->set_enabled(true);
 
     seat_ =
@@ -557,7 +557,7 @@ TEST_F(ExtendedDragSourceTest, CancelDraggingOperation) {
   generator.PressLeftButton();
 
   // Start a DragDropOperation.
-  drag_drop_controller_->set_should_block_during_drag_drop(true);
+  drag_drop_controller_->SetDisableNestedLoopForTesting(false);
   data_device_->StartDrag(data_source_.get(), surface, /*icon=*/nullptr,
                           ui::mojom::DragEventSource::kMouse);
 
@@ -630,7 +630,7 @@ TEST_F(ExtendedDragSourceTest, DragWithScreenCoordinates_Touch) {
   generator.PressTouch();
 
   // Start a DragDropOperation.
-  drag_drop_controller_->set_should_block_during_drag_drop(true);
+  drag_drop_controller_->SetDisableNestedLoopForTesting(false);
   data_device_->StartDrag(data_source_.get(), origin_surface, /*icon=*/nullptr,
                           ui::mojom::DragEventSource::kTouch);
 
@@ -711,7 +711,7 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
   generator->PressLeftButton();
 
   // Start a DragDropOperation.
-  drag_drop_controller_->set_should_block_during_drag_drop(true);
+  drag_drop_controller_->SetDisableNestedLoopForTesting(false);
 
   data_device_->StartDrag(data_source_.get(), origin_surface, /*icon=*/nullptr,
                           ui::mojom::DragEventSource::kMouse);
@@ -735,7 +735,7 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
           EXPECT_EQ(
               kOriginalWindowBounds.size(),
               shell_surface->GetWidget()->GetWindowBoundsInScreen().size());
-          auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
+          auto display = display::Screen::Get()->GetDisplayNearestWindow(
               shell_surface->GetWidget()->GetNativeWindow());
           // It should stay at the initial position when created.
           EXPECT_EQ(gfx::Rect(400, 0, 800, 600), display.bounds());
@@ -753,7 +753,7 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
   loop.Run();
   EXPECT_FALSE(toplevel_handler->is_drag_in_progress());
   EXPECT_FALSE(shell_surface->GetWidget()->IsMaximized());
-  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
+  auto display = display::Screen::Get()->GetDisplayNearestWindow(
       shell_surface->GetWidget()->GetNativeWindow());
 
   gfx::Size secondary_display_size(400, 300);
@@ -789,7 +789,7 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
 TEST_F(ExtendedDragSourceTest,
        DISABLED_HandlesMouseMoveBeforeExtendedDragStart) {
   UpdateDisplay("800x600,800x600");
-  const auto* screen = display::Screen::GetScreen();
+  const auto* screen = display::Screen::Get();
   ASSERT_EQ(2u, screen->GetAllDisplays().size());
 
   // Create and map a toplevel shell surface at position 100, 100 on the second
@@ -816,7 +816,7 @@ TEST_F(ExtendedDragSourceTest,
   generator->PressLeftButton();
 
   // Initiate the drag and drop session from Ash's drag drop controller.
-  drag_drop_controller_->set_should_block_during_drag_drop(true);
+  drag_drop_controller_->SetDisableNestedLoopForTesting(false);
   data_device_->StartDrag(data_source_.get(), surface, /*icon=*/nullptr,
                           ui::mojom::DragEventSource::kMouse);
 

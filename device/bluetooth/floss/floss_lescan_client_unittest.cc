@@ -79,7 +79,7 @@ class FlossLEScanClientTest : public testing::Test,
   void SetUp() override {
     ::dbus::Bus::Options options;
     options.bus_type = ::dbus::Bus::BusType::SYSTEM;
-    bus_ = base::MakeRefCounted<::dbus::MockBus>(options);
+    bus_ = base::MakeRefCounted<::dbus::MockBus>(std::move(options));
     client_ = FlossLEScanClient::Create();
     client_->AddObserver(this);
 
@@ -303,10 +303,10 @@ TEST_F(FlossLEScanClientTest, TestInitExportRegisterScanner) {
 
   // Expected call to RegisterScannerCallback when client is initialized
   EXPECT_CALL(*object_proxy_.get(),
-              DoCallMethodWithErrorResponse(
+              CallMethodWithErrorResponse(
                   HasMemberOf(adapter::kRegisterScannerCallback), _, _))
       .WillOnce([this](::dbus::MethodCall* method_call, int timeout_ms,
-                       ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+                       ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
         dbus::MessageReader msg(method_call);
         // D-Bus method call should have 1 parameter.
         dbus::ObjectPath param1;
@@ -317,7 +317,7 @@ TEST_F(FlossLEScanClientTest, TestInitExportRegisterScanner) {
         auto response = ::dbus::Response::CreateEmpty();
         dbus::MessageWriter writer(response.get());
         writer.AppendUint32(kTestCallbackId);
-        std::move(*cb).Run(response.get(), /*err=*/nullptr);
+        std::move(cb).Run(response.get(), /*err=*/nullptr);
       });
 
   client_->Init(bus_.get(), kAdapterInterface, adapter_index_, GetCurrVersion(),
@@ -333,11 +333,11 @@ TEST_F(FlossLEScanClientTest, TestInitExportRegisterScanner) {
   TestOnScanResult(method_handler_on_scan_result);
 
   // Test RegisterScanner
-  EXPECT_CALL(*object_proxy_.get(),
-              DoCallMethodWithErrorResponse(
-                  HasMemberOf(adapter::kRegisterScanner), _, _))
+  EXPECT_CALL(
+      *object_proxy_.get(),
+      CallMethodWithErrorResponse(HasMemberOf(adapter::kRegisterScanner), _, _))
       .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
-                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
         dbus::MessageReader msg(method_call);
         // D-Bus method call should have 1 parameter.
         uint32_t param1;
@@ -348,7 +348,7 @@ TEST_F(FlossLEScanClientTest, TestInitExportRegisterScanner) {
         auto response = ::dbus::Response::CreateEmpty();
         dbus::MessageWriter writer(response.get());
         writer.AppendArrayOfBytes(kTestUuidByteArray);
-        std::move(*cb).Run(response.get(), /*err=*/nullptr);
+        std::move(cb).Run(response.get(), /*err=*/nullptr);
       });
   client_->RegisterScanner(
       base::BindLambdaForTesting([](DBusResult<device::BluetoothUUID> ret) {
@@ -358,10 +358,10 @@ TEST_F(FlossLEScanClientTest, TestInitExportRegisterScanner) {
 
   // Test UnregisterScanner
   EXPECT_CALL(*object_proxy_.get(),
-              DoCallMethodWithErrorResponse(
+              CallMethodWithErrorResponse(
                   HasMemberOf(adapter::kUnregisterScanner), _, _))
       .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
-                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
         dbus::MessageReader msg(method_call);
         // D-Bus method call should have 1 parameter.
         uint8_t param1;
@@ -372,7 +372,7 @@ TEST_F(FlossLEScanClientTest, TestInitExportRegisterScanner) {
         auto response = ::dbus::Response::CreateEmpty();
         dbus::MessageWriter writer(response.get());
         writer.AppendBool(true);
-        std::move(*cb).Run(response.get(), /*err=*/nullptr);
+        std::move(cb).Run(response.get(), /*err=*/nullptr);
       });
   client_->UnregisterScanner(
       base::BindLambdaForTesting([](DBusResult<bool> ret) {
@@ -384,10 +384,10 @@ TEST_F(FlossLEScanClientTest, TestInitExportRegisterScanner) {
 
   // Expected UnregisterScannerCallback once client is cleaned up
   EXPECT_CALL(*object_proxy_.get(),
-              DoCallMethodWithErrorResponse(
+              CallMethodWithErrorResponse(
                   HasMemberOf(adapter::kUnregisterScannerCallback), _, _))
       .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
-                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
         dbus::MessageReader msg(method_call);
         // D-Bus method call should have 1 parameter.
         uint32_t param1;
@@ -402,10 +402,10 @@ TEST_F(FlossLEScanClientTest, TestStartStopScan) {
                 base::DoNothing());
 
   // Method of 3 parameters with no return.
-  EXPECT_CALL(*object_proxy_.get(), DoCallMethodWithErrorResponse(
+  EXPECT_CALL(*object_proxy_.get(), CallMethodWithErrorResponse(
                                         HasMemberOf(adapter::kStartScan), _, _))
       .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
-                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
         dbus::MessageReader msg(method_call);
         uint8_t param1;
         ASSERT_TRUE(FlossDBusClient::ReadDBusParam(&msg, &param1));
@@ -418,7 +418,7 @@ TEST_F(FlossLEScanClientTest, TestStartStopScan) {
         dbus::MessageWriter writer(response.get());
         writer.AppendUint32(
             static_cast<uint32_t>(FlossDBusClient::BtifStatus::kSuccess));
-        std::move(*cb).Run(response.get(), /*err=*/nullptr);
+        std::move(cb).Run(response.get(), /*err=*/nullptr);
       });
   client_->StartScan(base::BindLambdaForTesting(
                          [](DBusResult<FlossDBusClient::BtifStatus> ret) {
@@ -432,10 +432,10 @@ TEST_F(FlossLEScanClientTest, TestStartStopScan) {
                      std::nullopt /* ScanFilter*/);
 
   // Method of 1 parameter with no return.
-  EXPECT_CALL(*object_proxy_.get(), DoCallMethodWithErrorResponse(
+  EXPECT_CALL(*object_proxy_.get(), CallMethodWithErrorResponse(
                                         HasMemberOf(adapter::kStopScan), _, _))
       .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
-                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
         dbus::MessageReader msg(method_call);
         // D-Bus method call should have 1 parameter.
         uint8_t param1;
@@ -447,7 +447,7 @@ TEST_F(FlossLEScanClientTest, TestStartStopScan) {
         dbus::MessageWriter writer(response.get());
         writer.AppendUint32(
             static_cast<uint32_t>(FlossDBusClient::BtifStatus::kSuccess));
-        std::move(*cb).Run(response.get(), /*err=*/nullptr);
+        std::move(cb).Run(response.get(), /*err=*/nullptr);
       });
   client_->StopScan(base::BindLambdaForTesting(
                         [](DBusResult<FlossDBusClient::BtifStatus> ret) {

@@ -5,18 +5,10 @@
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-// <if expr="not is_chromeos">
-import './destination_dialog.js';
-// </if>
-// <if expr="is_chromeos">
+
 import './destination_dialog_cros.js';
-// </if>
-// <if expr="not is_chromeos">
-import './destination_select.js';
-// </if>
-// <if expr="is_chromeos">
+
 import './destination_select_cros.js';
-// </if>
 import './print_preview_shared.css.js';
 import './print_preview_vars.css.js';
 import './throbber.css.js';
@@ -30,30 +22,17 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// <if expr="not is_chromeos">
-import type {Destination, RecentDestination} from '../data/destination.js';
-import {createRecentDestinationKey, isPdfPrinter, makeRecentDestination, PrinterType} from '../data/destination.js';
-// </if>
-// <if expr="is_chromeos">
+
 import type {Destination, RecentDestination} from '../data/destination_cros.js';
 import {createRecentDestinationKey, isPdfPrinter, makeRecentDestination, PrinterType, SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from '../data/destination_cros.js';
-// </if>
 
 import {DestinationErrorType, DestinationStore, DestinationStoreEventType} from '../data/destination_store.js';
 import {Error, State} from '../data/state.js';
 
-// <if expr="not is_chromeos">
-import type {PrintPreviewDestinationDialogElement} from './destination_dialog.js';
-// </if>
-// <if expr="is_chromeos">
+
 import type {PrintPreviewDestinationDialogCrosElement} from './destination_dialog_cros.js';
-// </if>
-// <if expr="not is_chromeos">
-import type {PrintPreviewDestinationSelectElement} from './destination_select.js';
-// </if>
-// <if expr="is_chromeos">
+
 import type {PrintPreviewDestinationSelectCrosElement} from './destination_select_cros.js';
-// </if>
 import {getTemplate} from './destination_settings.html.js';
 import {SettingsMixin} from './settings_mixin.js';
 
@@ -65,12 +44,8 @@ export enum DestinationState {
 }
 
 /** Number of recent destinations to save. */
-// <if expr="not is_chromeos">
-export const NUM_PERSISTED_DESTINATIONS: number = 5;
-// </if>
-// <if expr="is_chromeos">
+
 export const NUM_PERSISTED_DESTINATIONS: number = 10;
-// </if>
 
 /**
  * Number of unpinned recent destinations to display.
@@ -80,16 +55,10 @@ const NUM_UNPINNED_DESTINATIONS: number = 3;
 
 export interface PrintPreviewDestinationSettingsElement {
   $: {
-    // <if expr="not is_chromeos">
-    destinationDialog:
-        CrLazyRenderElement<PrintPreviewDestinationDialogElement>,
-    destinationSelect: PrintPreviewDestinationSelectElement,
-    // </if>
-    // <if expr="is_chromeos">
+
     destinationDialog:
         CrLazyRenderElement<PrintPreviewDestinationDialogCrosElement>,
     destinationSelect: PrintPreviewDestinationSelectCrosElement,
-    // </if>
   };
 }
 
@@ -142,7 +111,6 @@ export class PrintPreviewDestinationSettingsElement extends
 
       displayedDestinations_: Array,
 
-      // <if expr="is_chromeos">
       driveDestinationKey_: {
         type: String,
         value: '',
@@ -153,7 +121,6 @@ export class PrintPreviewDestinationSettingsElement extends
         computed: 'computeHasPinSetting_(settings.pin.available)',
         reflectToAttribute: true,
       },
-      // </if>
 
       isDialogOpen_: {
         type: Boolean,
@@ -184,10 +151,8 @@ export class PrintPreviewDestinationSettingsElement extends
   private destinationStore_: DestinationStore|null;
   private displayedDestinations_: Destination[];
 
-  // <if expr="is_chromeos">
   private driveDestinationKey_: string;
   private hasPinSetting_: boolean;
-  // </if>
 
   private isDialogOpen_: boolean;
   private noDestinations_: boolean;
@@ -221,7 +186,6 @@ export class PrintPreviewDestinationSettingsElement extends
         this.destinationStore_, DestinationStoreEventType.DESTINATIONS_INSERTED,
         this.updateDropdownDestinations_.bind(this));
 
-    // <if expr="is_chromeos">
     this.tracker_.add(
         this.destinationStore_,
         DestinationStoreEventType.DESTINATION_EULA_READY,
@@ -230,7 +194,6 @@ export class PrintPreviewDestinationSettingsElement extends
         this.destinationStore_,
         DestinationStoreEventType.DESTINATION_PRINTER_STATUS_UPDATE,
         this.onPrinterStatusUpdate_.bind(this));
-    // </if>
   }
 
   override disconnectedCallback() {
@@ -255,10 +218,8 @@ export class PrintPreviewDestinationSettingsElement extends
     this.pdfPrinterDisabled_ = pdfPrinterDisabled;
     let recentDestinations =
         this.getSettingValue('recentDestinations') as RecentDestination[];
-    // <if expr="is_chromeos">
     this.driveDestinationKey_ =
         saveToDriveDisabled ? '' : SAVE_TO_DRIVE_CROS_DESTINATION_KEY;
-    // </if>
 
     recentDestinations = recentDestinations.slice(
         0, this.getRecentDestinationsDisplayCount_(recentDestinations));
@@ -445,11 +406,9 @@ export class PrintPreviewDestinationSettingsElement extends
           this.destination.type === PrinterType.PDF_PRINTER));
   }
 
-  // <if expr="is_chromeos">
   private computeHasPinSetting_(): boolean {
     return this.getSetting('pin').available;
   }
-  // </if>
 
   /**
    * @param e Event containing the key of the recent destination that was
@@ -497,7 +456,6 @@ export class PrintPreviewDestinationSettingsElement extends
     return this.destinationStore_;
   }
 
-  // <if expr="is_chromeos">
   /**
    * @param e Event containing the current destination's EULA URL.
    */
@@ -547,7 +505,6 @@ export class PrintPreviewDestinationSettingsElement extends
       this.notifyPath(`displayedDestinations_.${index}.printerStatusReason`);
     }
   }
-  // </if>
 }
 
 declare global {

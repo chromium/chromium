@@ -100,6 +100,8 @@ class AccountSelectionProperties {
                 new ReadableObjectPropertyKey<>("idp_for_display");
         static final ReadableObjectPropertyKey<String> RP_FOR_DISPLAY =
                 new ReadableObjectPropertyKey<>("rp_for_display");
+        static final ReadableObjectPropertyKey<String> IFRAME_FOR_DISPLAY =
+                new ReadableObjectPropertyKey<>("iframe_for_display");
         static final ReadableObjectPropertyKey<Bitmap> HEADER_ICON =
                 new ReadableObjectPropertyKey<>("header_icon");
         static final ReadableObjectPropertyKey<Bitmap> RP_BRAND_ICON =
@@ -120,6 +122,7 @@ class AccountSelectionProperties {
             CLOSE_ON_CLICK_LISTENER,
             IDP_FOR_DISPLAY,
             RP_FOR_DISPLAY,
+            IFRAME_FOR_DISPLAY,
             HEADER_ICON,
             RP_BRAND_ICON,
             TYPE,
@@ -148,7 +151,7 @@ class AccountSelectionProperties {
             public @IdentityRequestDialogDisclosureField int[] mDisclosureFields;
         }
 
-        static final ReadableObjectPropertyKey<Properties> PROPERTIES =
+        static final ReadableObjectPropertyKey<DataSharingConsentProperties.Properties> PROPERTIES =
                 new ReadableObjectPropertyKey<>("properties");
 
         static final PropertyKey[] ALL_KEYS = {PROPERTIES};
@@ -169,7 +172,7 @@ class AccountSelectionProperties {
             public Callback<View> mSetFocusViewCallback;
         }
 
-        static final ReadableObjectPropertyKey<Properties> PROPERTIES =
+        static final ReadableObjectPropertyKey<ContinueButtonProperties.Properties> PROPERTIES =
                 new ReadableObjectPropertyKey<>("properties");
 
         static final PropertyKey[] ALL_KEYS = {PROPERTIES};
@@ -188,7 +191,7 @@ class AccountSelectionProperties {
             public boolean mShowIdp;
         }
 
-        static final ReadableObjectPropertyKey<Properties> PROPERTIES =
+        static final ReadableObjectPropertyKey<LoginButtonProperties.Properties> PROPERTIES =
                 new ReadableObjectPropertyKey<>("properties");
 
         static final PropertyKey[] ALL_KEYS = {PROPERTIES};
@@ -235,7 +238,7 @@ class AccountSelectionProperties {
             public Runnable mMoreDetailsClickRunnable;
         }
 
-        static final ReadableObjectPropertyKey<Properties> PROPERTIES =
+        static final ReadableObjectPropertyKey<ErrorProperties.Properties> PROPERTIES =
                 new ReadableObjectPropertyKey<>("properties");
 
         static final PropertyKey[] ALL_KEYS = {PROPERTIES};

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 
 #include <optional>
@@ -17,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/check_is_test.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
@@ -261,9 +257,9 @@ void OnGetExistingDlcs(PrefService* prefs,
 
   const base::flat_set<std::string> hwr_locales =
       ConvertDlcsWithContentToHandwritingLocales(dlcs_with_content);
-  UpdateFromInputMethodPrefs({hwr_locales.begin(), hwr_locales.end()},
-                             InputMethodManager::Get()->GetInputMethodUtil(),
-                             prefs);
+  UpdateFromInputMethodPrefs(
+      UNSAFE_TODO({hwr_locales.begin(), hwr_locales.end()}),
+      InputMethodManager::Get()->GetInputMethodUtil(), prefs);
 }
 
 }  // namespace

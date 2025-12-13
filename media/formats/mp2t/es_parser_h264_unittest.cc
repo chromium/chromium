@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -77,11 +78,11 @@ void EsParserH264Test::GetAccessUnits() {
   size_t offset = 0;
   while (true) {
     // Find the next start code.
-    off_t relative_offset = 0;
-    off_t start_code_size = 0;
-    bool success = H264Parser::FindStartCode(
-        &stream_[offset], stream_.size() - offset,
-        &relative_offset, &start_code_size);
+    size_t relative_offset = 0;
+    size_t start_code_size = 0;
+    bool success =
+        H264Parser::FindStartCode(base::span(stream_).subspan(offset),
+                                  &relative_offset, &start_code_size);
     if (!success)
       break;
     offset += relative_offset;

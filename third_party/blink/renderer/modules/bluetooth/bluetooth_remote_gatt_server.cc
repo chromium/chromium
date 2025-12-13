@@ -8,6 +8,7 @@
 
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -22,6 +23,9 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+const char kConnectCancelledMessage[] =
+    "The GATT connect attempt was cancelled.";
 
 BluetoothRemoteGATTServer::BluetoothRemoteGATTServer(ExecutionContext* context,
                                                      BluetoothDevice* device)
@@ -51,11 +55,17 @@ bool BluetoothRemoteGATTServer::RemoveFromActiveAlgorithms(
 }
 
 void BluetoothRemoteGATTServer::CleanupDisconnectedDeviceAndFireEvent() {
-  DCHECK(connected_);
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kWebBluetoothCancelConnect)) {
+    DCHECK(connected_);
+  }
+  bool was_connected = connected_;
   connected_ = false;
   active_algorithms_.clear();
-  device_->ClearAttributeInstanceMapAndFireEvent();
-  feature_handle_for_scheduler_.reset();
+  if (was_connected) {
+    device_->ClearAttributeInstanceMapAndFireEvent();
+    feature_handle_for_scheduler_.reset();
+  }
 }
 
 void BluetoothRemoteGATTServer::DispatchDisconnected() {
@@ -78,6 +88,15 @@ void BluetoothRemoteGATTServer::ConnectCallback(
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())
     return;
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWebBluetoothCancelConnect)) {
+    if (!RemoveFromActiveAlgorithms(resolver)) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError, kConnectCancelledMessage));
+      return;
+    }
+  }
 
   if (result == mojom::blink::WebBluetoothResult::SUCCESS) {
     connected_ = true;
@@ -107,6 +126,10 @@ ScriptPromise<BluetoothRemoteGATTServer> BluetoothRemoteGATTServer::connect(
     return EmptyPromise();
   }
 
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWebBluetoothCancelConnect)) {
+    AddToActiveAlgorithms(resolver);
+  }
   mojom::blink::WebBluetoothService* service =
       device_->GetBluetooth()->Service();
   mojo::PendingAssociatedRemote<mojom::blink::WebBluetoothServerClient> client;
@@ -115,16 +138,19 @@ ScriptPromise<BluetoothRemoteGATTServer> BluetoothRemoteGATTServer::connect(
 
   service->RemoteServerConnect(
       device_->GetDevice()->id, std::move(client),
-      WTF::BindOnce(&BluetoothRemoteGATTServer::ConnectCallback,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+      BindOnce(&BluetoothRemoteGATTServer::ConnectCallback,
+               WrapPersistent(this), WrapPersistent(resolver)));
 
   return promise;
 }
 
 void BluetoothRemoteGATTServer::disconnect(ScriptState* script_state,
                                            ExceptionState& exception_state) {
-  if (!connected_)
+  if (!connected_ && (!base::FeatureList::IsEnabled(
+                          blink::features::kWebBluetoothCancelConnect) ||
+                      active_algorithms_.empty())) {
     return;
+  }
 
   if (!device_->GetBluetooth()->IsServiceBound()) {
     exception_state.ThrowDOMException(
@@ -185,9 +211,9 @@ void BluetoothRemoteGATTServer::GetPrimaryServicesCallback(
   } else {
     if (result == mojom::blink::WebBluetoothResult::SERVICE_NOT_FOUND) {
       resolver->Reject(BluetoothError::CreateDOMException(
-          BluetoothErrorCode::kServiceNotFound, "No Services matching UUID " +
-                                                    requested_service_uuid +
-                                                    " found in Device."));
+          BluetoothErrorCode::kServiceNotFound,
+          StrCat({"No Services matching UUID ", requested_service_uuid,
+                  " found in Device."})));
     } else {
       resolver->Reject(BluetoothError::CreateDOMException(result));
     }
@@ -276,9 +302,9 @@ void BluetoothRemoteGATTServer::GetPrimaryServicesImpl(
       device_->GetBluetooth()->Service();
   service->RemoteServerGetPrimaryServices(
       device_->GetDevice()->id, quantity, services_uuid,
-      WTF::BindOnce(&BluetoothRemoteGATTServer::GetPrimaryServicesCallback,
-                    WrapPersistent(this), services_uuid, quantity,
-                    WrapPersistent(resolver)));
+      BindOnce(&BluetoothRemoteGATTServer::GetPrimaryServicesCallback,
+               WrapPersistent(this), services_uuid, quantity,
+               WrapPersistent(resolver)));
 }
 
 }  // namespace blink

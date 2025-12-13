@@ -59,13 +59,13 @@ String GenerateMHTMLHelper(WebLocalFrameImpl* frame,
   base::RunLoop run_loop;
   WebFrameSerializer::GenerateMHTMLParts(
       boundary, frame, &mhtml_delegate,
-      WTF::BindOnce(
+      blink::BindOnce(
           [](StringBuilder* mhtml, base::OnceClosure quit,
              WebThreadSafeData data) {
             mhtml->Append(base::as_byte_span(data));
             std::move(quit).Run();
           },
-          WTF::Unretained(&mhtml), run_loop.QuitClosure()));
+          Unretained(&mhtml), run_loop.QuitClosure()));
   run_loop.Run();
 
   if (!only_body_parts) {

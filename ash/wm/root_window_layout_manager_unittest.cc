@@ -38,8 +38,14 @@ using RootWindowLayoutManagerTest = AshTestBase;
 TEST_F(RootWindowLayoutManagerTest, DeleteChildDuringResize) {
   aura::Window* parent = Shell::GetPrimaryRootWindow()->GetChildById(
       kShellWindowId_WallpaperContainer);
-  aura::Window* w1 = aura::test::CreateTestWindowWithId(1, parent);
-  aura::Window* w2 = aura::test::CreateTestWindowWithId(2, parent);
+  aura::Window* w1 =
+      aura::test::CreateTestWindow(
+          {.parent = parent, .bounds = {100, 100}, .window_id = 1})
+          .release();
+  aura::Window* w2 =
+      aura::test::CreateTestWindow(
+          {.parent = parent, .bounds = {100, 100}, .window_id = 2})
+          .release();
   WindowDeleter deleter(w1);
   w2->AddObserver(&deleter);
   UpdateDisplay("600x500");

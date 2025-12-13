@@ -13,13 +13,16 @@
 #include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/coreml/buffer_content_coreml.h"
 #include "services/webnn/coreml/context_impl_coreml.h"
 #include "services/webnn/coreml/utils_coreml.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/resource_task.h"
 
@@ -177,7 +180,78 @@ TensorImplCoreml::Create(
           std::move(buffer_content));
   return base::MakeRefCounted<TensorImplCoreml>(
       std::move(receiver), std::move(context), std::move(tensor_info),
-      std::move(buffer_state), base::PassKey<TensorImplCoreml>());
+      std::move(buffer_state),
+      /*representation=*/
+      RepresentationPtr{nullptr, OnTaskRunnerDeleter(nullptr)},
+      base::PassKey<TensorImplCoreml>());
+}
+
+// static
+base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+TensorImplCoreml::Create(
+    mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+    base::WeakPtr<WebNNContextImpl> context,
+    mojom::TensorInfoPtr tensor_info,
+    RepresentationPtr representation) {
+  if (tensor_info->descriptor.data_type() != OperandDataType::kFloat16) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Unsupported data type for WebGPU interop."));
+  }
+  IOSurfaceRef io_surface = representation->GetIOSurface();
+
+  if (IOSurfaceGetBytesPerElement(io_surface) != 2) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Invalid IOSurface: bytes per element is not 2."));
+  }
+  if (IOSurfaceGetPixelFormat(io_surface) !=
+      kCVPixelFormatType_OneComponent16Half) {
+    return base::unexpected(mojom::Error::New(
+        mojom::Error::Code::kUnknownError,
+        "Invalid IOSurface: pixel format is not OneComponent16Half."));
+  }
+  size_t width = 1ul;
+  const std::vector<uint32_t>& shape = tensor_info->descriptor.shape();
+  if (!shape.empty()) {
+    width = shape.back();
+  }
+  size_t height = tensor_info->descriptor.NumberOfElements() / width;
+  if (height != IOSurfaceGetHeight(io_surface) ||
+      width != IOSurfaceGetWidth(io_surface)) {
+    return base::unexpected(mojom::Error::New(
+        mojom::Error::Code::kUnknownError,
+        "Invalid IOSurface: width and height doesn't match with tensor."));
+  }
+
+  CVPixelBufferRef pixel_buffer = nullptr;
+  CVReturn pixel_buffer_result = CVPixelBufferCreateWithIOSurface(
+      kCFAllocatorDefault, io_surface,
+      /*pixelBufferAttributes=*/nil, &pixel_buffer);
+  if (pixel_buffer_result != kCVReturnSuccess) {
+    LOG(ERROR) << "[WebNN] Failed to create pixel buffer from IOSurface: "
+               << pixel_buffer_result;
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Failed to create pixel buffer from IOSurface."));
+  }
+
+  MLMultiArray* multi_array =
+      [[MLMultiArray alloc] initWithPixelBuffer:pixel_buffer
+                                          shape:ShapeToNSArray(shape)];
+  if (!multi_array) {
+    return base::unexpected(mojom::Error::New(mojom::Error::Code::kUnknownError,
+                                              "Failed to allocate tensor."));
+  }
+
+  auto buffer_content = std::make_unique<BufferContent>(std::move(multi_array));
+  auto buffer_state =
+      base::MakeRefCounted<QueueableResourceState<BufferContent>>(
+          std::move(buffer_content));
+  return base::MakeRefCounted<TensorImplCoreml>(
+      std::move(receiver), std::move(context), std::move(tensor_info),
+      std::move(buffer_state), std::move(representation),
+      base::PassKey<TensorImplCoreml>());
 }
 
 TensorImplCoreml::TensorImplCoreml(
@@ -185,19 +259,21 @@ TensorImplCoreml::TensorImplCoreml(
     base::WeakPtr<WebNNContextImpl> context,
     mojom::TensorInfoPtr tensor_info,
     scoped_refptr<QueueableResourceState<BufferContent>> buffer_state,
+    RepresentationPtr representation,
     base::PassKey<TensorImplCoreml> /*pass_key*/)
     : WebNNTensorImpl(std::move(receiver),
                       std::move(context),
-                      std::move(tensor_info)),
+                      std::move(tensor_info),
+                      std::move(representation)),
       buffer_state_(std::move(buffer_state)) {}
 
 TensorImplCoreml::~TensorImplCoreml() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 }
 
 void TensorImplCoreml::ReadTensorImpl(
     mojom::WebNNTensor::ReadTensorCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   ScopedTrace scoped_trace("TensorImplCoreml::ReadTensorImpl");
 
@@ -240,7 +316,7 @@ void TensorImplCoreml::ReadTensorImpl(
 }
 
 void TensorImplCoreml::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   ScopedTrace scoped_trace("TensorImplCoreml::WriteTensorImpl");
 
@@ -276,8 +352,52 @@ void TensorImplCoreml::WriteTensorImpl(mojo_base::BigBuffer src_buffer) {
 
 const scoped_refptr<QueueableResourceState<BufferContent>>&
 TensorImplCoreml::GetBufferState() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   return buffer_state_;
+}
+
+bool TensorImplCoreml::ImportTensorImpl(ScopedAccessPtr access) {
+  representation_access_ = std::move(access);
+
+  // Always true since CoreML requires no device synchronization.
+  return true;
+}
+
+void TensorImplCoreml::ExportTensorImpl(ScopedAccessPtr access,
+                                        ExportTensorCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  // Take an exclusive lock to the buffer contents to wait for all existing
+  // operations to finish.
+  std::vector<scoped_refptr<QueueableResourceStateBase>> exclusive_resources = {
+      buffer_state_};
+
+  auto task = base::MakeRefCounted<ResourceTask>(
+      /*shared_resources=*/
+      std::vector<scoped_refptr<QueueableResourceStateBase>>(),
+      std::move(exclusive_resources),
+      base::BindOnce(
+          [](base::WeakPtr<WebNNContextImpl> context,
+             ExportTensorCallback callback,
+             base::OnceClosure completion_closure) {
+            std::move(completion_closure).Run();
+            if (!context) {
+              return;
+            }
+
+            context->scheduler_task_runner()->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    [](base::WeakPtr<WebNNContextImpl> context,
+                       ExportTensorCallback callback) {
+                      if (!context) {
+                        return;
+                      }
+                      std::move(callback).Run(context->GenVerifiedSyncToken());
+                    },
+                    context, std::move(callback)));
+          },
+          context_, std::move(callback)));
+  task->Enqueue();
 }
 
 }  // namespace webnn::coreml

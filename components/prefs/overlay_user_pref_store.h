@@ -7,10 +7,9 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <string_view>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "components/prefs/persistent_pref_store.h"

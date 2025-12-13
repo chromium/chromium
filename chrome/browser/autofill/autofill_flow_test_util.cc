@@ -87,8 +87,8 @@ gfx::Point GetCenter(const ElementExpr& e,
           )",
       e->c_str(), event_name.c_str(), event_name.c_str());
   content::EvalJsResult result = content::EvalJs(execution_target, script);
-  if (!result.error.empty()) {
-    return AssertionFailure() << __func__ << "(): " << result.error;
+  if (!result.is_ok()) {
+    return AssertionFailure() << __func__ << "(): " << result;
   } else if (false == result) {
     return AssertionFailure()
            << __func__ << "(): couldn't trigger " << event_name << " on " << *e;

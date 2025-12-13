@@ -9,7 +9,3 @@ NSString* const kParentAccessViewAccessibilityIdentifier =
 
 NSString* const kParentAccessCloseButtonAccessibilityIdentifier =
     @"ParentAccessCloseButtonAccessibilityIdentifier";
-
-NSString* const kParentAccessSnackbarClose = @"ParentAccessSnackbarClose";
-
-NSString* const kParentAccessSnackbarCategory = @"ParentAccessSnackbarCategory";

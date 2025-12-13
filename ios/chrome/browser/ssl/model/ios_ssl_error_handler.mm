@@ -16,12 +16,12 @@
 #import "components/security_interstitials/core/ssl_error_options_mask.h"
 #import "components/security_interstitials/core/ssl_error_ui.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/ssl/model/captive_portal_metrics.h"
 #import "ios/chrome/browser/ssl/model/ios_captive_portal_blocking_page.h"
 #import "ios/chrome/browser/ssl/model/ios_ssl_blocking_page.h"
 #import "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
-#import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_state.h"
 #import "net/ssl/ssl_info.h"
 #import "net/traffic_annotation/network_traffic_annotation.h"
@@ -110,7 +110,7 @@ void IOSSSLErrorHandler::StartHandlingError() {
   base::WeakPtr<IOSSSLErrorHandler> weak_error_handler =
       weak_factory_.GetWeakPtr();
   captive_portal_detector_->DetectCaptivePortal(
-      GURL(CaptivePortalDetector::kDefaultURL),
+      GURL(CaptivePortalDetector::GetDefaultUrl()),
       base::BindRepeating(
           &IOSSSLErrorHandler::HandleCaptivePortalDetectionResult,
           weak_error_handler),

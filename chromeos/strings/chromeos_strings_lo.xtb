@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">ໝາກກ້ຽງ</translation>
 <translation id="1275718070701477396">​ເລືອກແລ້ວ</translation>
 <translation id="1290331692326790741">ສັນຍານອ່ອນ</translation>
+<translation id="1292474106138697109">ຈໍສະແດງຜົນເຄື່ອງມືສຳລັບຫ້ອງຮຽນ</translation>
 <translation id="1300115153046603471">APN ເປັນແບບຄ່າເລີ່ມຕົ້ນ ແລະ <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">ປ່ຽນແປງ</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ຮູບ</translation>
 <translation id="4300272766492248925">ເປີດແອັບ</translation>
 <translation id="430786093962686457">ຊີຟອງ</translation>
+<translation id="4309762678330556039">ສ້າງການຖອດຖ່າຍຂໍ້ຄວາມໂດຍອັດຕະໂນມັດ ແລະ ຊອກຫາສຽງ. ທ່ານສາມາດສ້າງການບັນທຶກໄດ້ເຖິງແມ່ນວ່າທ່ານຈະບໍ່ໄດ້ເຊື່ອມຕໍ່ອິນເຕີເນັດ.</translation>
 <translation id="4310735698903592804">ຮູບພື້ນຫຼັງຫຼ້າສຸດຂັບເຄື່ອນໂດຍ Google AI</translation>
 <translation id="4320904097188876154">ບົວນີອອນ</translation>
 <translation id="432961742358282111">ຄລິກຂວາ ຫຼື ກົດຄ້າງໄວ້ເພື່ອຮັບຄຳນິຍາມ, ຄຳແປ ຫຼື ການປ່ຽນຄ່າຫົວໜ່ວຍ. ໃຊ້ປຸ່ມລູກສອນຊ້າຍ ຫຼື ຂວາເພື່ອຈັດການຄຸນສົມບັດນີ້.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">ໂຕ​ເລືອກ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="5600027863942488546">ທົດສອບປຸ່ມ <ph name="KEY_NAME" /> ແລ້ວ</translation>
 <translation id="5606865426897221650">ແຖບ</translation>
+<translation id="5612205513582918357">ເຄື່ອງມືສຳລັບຫ້ອງຮຽນກຳລັງແບ່ງປັນໜ້າຈໍຂອງທ່ານກັບ <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">ທ່ານອອກຈາກລະບົບແລ້ວ</translation>
 <translation id="5620281292257375798">ສະ​ເພາະ​ພາຍ​ໃນ​ເທົ່າ​ນັ້ນ</translation>
 <translation id="5628106863521633649">ພາສາທີ່ສາມາດໃຊ້ໄດ້</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">ກະແສຄລາວ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">ບໍ່ມີເຄື່ອງສະແກນ</translation>
-<translation id="6231648282154119906">Google Safe Browsing ຈະສະແກນໄຟລ໌ທີ່ໜ້າສົງໄສໂດຍອັດຕະໂນມັດ ເຊິ່ງເປັນສ່ວນໜຶ່ງຂອງການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນທີ່ທ່ານເລືອກໄວ້</translation>
 <translation id="6232017090690406397">ແບັດເຕີຣີ</translation>
 <translation id="6234024205316847054">ສະແດງໂຄງຮ່າງ</translation>
 <translation id="6243280677745499710">ຕັ້ງຕອນນີ້ເລີຍ</translation>

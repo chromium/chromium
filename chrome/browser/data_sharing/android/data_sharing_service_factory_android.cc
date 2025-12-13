@@ -18,3 +18,5 @@ JNI_DataSharingServiceFactory_GetForProfile(JNIEnv* env, Profile* profile) {
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
   return data_sharing::DataSharingService::GetJavaObject(service);
 }
+
+DEFINE_JNI(DataSharingServiceFactory)

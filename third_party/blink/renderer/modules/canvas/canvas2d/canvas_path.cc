@@ -46,29 +46,34 @@
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_dompointinit_unrestricteddouble.h"
-#include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_enums.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
 #include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_high_entropy_op_type.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
+
+namespace {
+
+String StrFloatCat(StringView leading, float value, StringView trailing) {
+  return StrCat({leading, String::Number(value), trailing});
+}
+
+}  // namespace
 
 void CanvasPath::closePath() {
   if (IsEmpty()) [[unlikely]] {
@@ -88,9 +93,6 @@ void CanvasPath::closePath() {
     return;
   }
 
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kClosePath);
-  }
   if (IsArc()) {
     // Only the first close does something.
     if (!arc_builder_.IsClosed()) {
@@ -109,10 +111,6 @@ void CanvasPath::moveTo(double double_x, double double_y) {
   if (!std::isfinite(x) || !std::isfinite(y)) [[unlikely]] {
     return;
   }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kMoveTo, double_x,
-                                                double_y);
-  }
   gfx::PointF point(x, y);
   if (!IsTransformInvertible()) [[unlikely]] {
     point = GetTransform().MapPoint(point);
@@ -130,10 +128,6 @@ void CanvasPath::lineTo(double double_x, double double_y) {
   float y = base::saturated_cast<float>(double_y);
   if (!std::isfinite(x) || !std::isfinite(y)) [[unlikely]] {
     return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kLineTo, double_x,
-                                                double_y);
   }
   gfx::PointF p1(x, y);
 
@@ -171,11 +165,6 @@ void CanvasPath::quadraticCurveTo(double double_cpx,
     return;
   }
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kQuadradicCurveTo,
-                                                double_cpx, double_cpy,
-                                                double_x, double_y);
-  }
   gfx::PointF p1(x, y);
   gfx::PointF cp(cpx, cpy);
 
@@ -209,11 +198,6 @@ void CanvasPath::bezierCurveTo(double double_cp1x,
     return;
   }
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kBezierCurveTo, double_cp1x, double_cp1y, double_cp2x,
-        double_cp2y, double_x, double_y);
-  }
 
   gfx::PointF p1(x, y);
   gfx::PointF cp1(cp1x, cp1y);
@@ -250,15 +234,10 @@ void CanvasPath::arcTo(double double_x1,
   if (r < 0) [[unlikely]] {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "The radius provided (" + String::Number(r) + ") is negative.");
+        StrFloatCat("The radius provided (", r, ") is negative."));
     return;
   }
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kArcTo, double_x1,
-                                                double_y1, double_x2, double_y2,
-                                                double_r);
-  }
 
   gfx::PointF p1(x1, y1);
   gfx::PointF p2(x2, y2);
@@ -466,7 +445,7 @@ void CanvasPath::arc(double double_x,
   if (radius < 0) [[unlikely]] {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "The radius provided (" + String::Number(radius) + ") is negative.");
+        StrFloatCat("The radius provided (", radius, ") is negative."));
     return;
   }
 
@@ -475,12 +454,7 @@ void CanvasPath::arc(double double_x,
   }
 
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kArc, double_x, double_y, double_radius, double_start_angle,
-        double_end_angle, anticlockwise);
-  }
-  AddTriggersForCanvasIntervention(CanvasOperationType::kArc);
+  high_entropy_path_op_types_ |= HighEntropyCanvasOpType::kArc;
 
   if (!radius || start_angle == end_angle) [[unlikely]] {
     // The arc is empty but we still need to draw the connecting line.
@@ -528,17 +502,17 @@ void CanvasPath::ellipse(double double_x,
   }
 
   if (radius_x < 0) [[unlikely]] {
-    exception_state.ThrowDOMException(DOMExceptionCode::kIndexSizeError,
-                                      "The major-axis radius provided (" +
-                                          String::Number(radius_x) +
-                                          ") is negative.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kIndexSizeError,
+        StrFloatCat("The major-axis radius provided (", radius_x,
+                    ") is negative."));
     return;
   }
   if (radius_y < 0) [[unlikely]] {
-    exception_state.ThrowDOMException(DOMExceptionCode::kIndexSizeError,
-                                      "The minor-axis radius provided (" +
-                                          String::Number(radius_y) +
-                                          ") is negative.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kIndexSizeError,
+        StrFloatCat("The minor-axis radius provided (", radius_y,
+                    ") is negative."));
     return;
   }
 
@@ -547,12 +521,6 @@ void CanvasPath::ellipse(double double_x,
   }
 
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kEllipse, double_x, double_y, double_radius_x,
-        double_radius_y, double_rotation, double_start_angle, double_end_angle,
-        anticlockwise);
-  }
 
   CanonicalizeAngle(&start_angle, &end_angle);
   float adjusted_end_angle =
@@ -566,7 +534,7 @@ void CanvasPath::ellipse(double double_x,
     return;
   }
 
-  AddTriggersForCanvasIntervention(CanvasOperationType::kEllipse);
+  high_entropy_path_op_types_ |= HighEntropyCanvasOpType::kEllipse;
   path_builder_.AddEllipse(gfx::PointF(x, y), radius_x, radius_y, rotation,
                            start_angle, adjusted_end_angle);
 }
@@ -593,10 +561,6 @@ void CanvasPath::rect(double double_x,
     return;
   }
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kRect, double_x, double_y, double_width, double_height);
-  }
 
   path_builder_.AddRect(gfx::PointF(x, y), gfx::PointF(x + width, y + height));
 }
@@ -614,8 +578,8 @@ void CanvasPath::roundRect(
   const int num_radii = radii.size();
   if (num_radii < 1 || num_radii > kMaxRadii) [[unlikely]] {
     exception_state.ThrowRangeError(
-        String::Number(num_radii) +
-        " radii provided. Between one and four radii are necessary.");
+        StrCat({String::Number(num_radii),
+                " radii provided. Between one and four radii are necessary."}));
     return;
   }
 
@@ -632,8 +596,6 @@ void CanvasPath::roundRect(
     return;
   }
   UpdatePathFromLineOrArcIfNecessaryForMutation();
-  // TODO(crbug.com/1234113): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
 
   std::array<gfx::SizeF, kMaxRadii> r;
   for (int i = 0; i < num_radii; ++i) {
@@ -648,12 +610,12 @@ void CanvasPath::roundRect(
         }
         if (r_x < 0.0f) [[unlikely]] {
           exception_state.ThrowRangeError(
-              "X-radius value " + String::Number(r_x) + " is negative.");
+              StrFloatCat("X-radius value ", r_x, " is negative."));
           return;
         }
         if (r_y < 0.0f) [[unlikely]] {
           exception_state.ThrowRangeError(
-              "Y-radius value " + String::Number(r_y) + " is negative.");
+              StrFloatCat("Y-radius value ", r_y, " is negative."));
           return;
         }
         r[i] = gfx::SizeF(base::saturated_cast<float>(p->x()),
@@ -668,8 +630,8 @@ void CanvasPath::roundRect(
           return;
         }
         if (a < 0.0f) [[unlikely]] {
-          exception_state.ThrowRangeError("Radius value " + String::Number(a) +
-                                          " is negative.");
+          exception_state.ThrowRangeError(
+              StrFloatCat("Radius value ", a, " is negative."));
           return;
         }
         r[i] = gfx::SizeF(a, a);
@@ -759,10 +721,6 @@ gfx::RectF CanvasPath::BoundingRect() const {
     return arc_builder_.BoundingRect();
   }
   return path_builder_.BoundingRect();
-}
-
-void CanvasPath::Trace(Visitor* visitor) const {
-  visitor->Trace(identifiability_study_helper_);
 }
 
 ALWAYS_INLINE gfx::RectF CanvasPath::LineBuilder::BoundingRect() const {

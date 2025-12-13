@@ -23,7 +23,7 @@ TEST(NativeMetricsUtilTest, ConvertsTimes) {
               base::TimeTicks::UnixEpoch() + start_delta,
               base::Time::UnixEpoch() + start_delta, &converted);
   ASSERT_TRUE(converted.has_value());
-  EXPECT_EQ(converted->value, 30);
+  EXPECT_EQ(converted->value, 30000);
 }
 
 TEST(NativeMetricsUtilTest, OverwritesOldOutParam) {
@@ -37,7 +37,7 @@ TEST(NativeMetricsUtilTest, OverwritesOldOutParam) {
               base::TimeTicks::UnixEpoch() + start_delta,
               base::Time::UnixEpoch() + start_delta, &converted);
   ASSERT_TRUE(converted.has_value());
-  EXPECT_EQ(converted->value, 30);
+  EXPECT_EQ(converted->value, 30000);
 }
 
 TEST(NativeMetricsUtilTest, NullTicks) {

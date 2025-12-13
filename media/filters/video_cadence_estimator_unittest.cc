@@ -124,7 +124,7 @@ TEST(VideoCadenceEstimatorTest, CadenceCalculations) {
   estimator.set_cadence_hysteresis_threshold_for_testing(base::TimeDelta());
 
   const std::string kEmptyCadence = "[]";
-  VerifyCadenceVector(&estimator, 1, NTSC(60), "[60]");
+  VerifyCadenceVector(&estimator, 1, NTSC(60), kEmptyCadence);
 
   VerifyCadenceVector(&estimator, 24, 60, "[3:2]");
   VerifyCadenceVector(&estimator, NTSC(24), 60, "[3:2]");
@@ -177,7 +177,7 @@ TEST(VideoCadenceEstimatorTest, CadenceCalculationWithLargeDrift) {
   estimator.set_cadence_hysteresis_threshold_for_testing(base::TimeDelta());
 
   base::TimeDelta drift = base::Hours(1);
-  VerifyCadenceVectorWithCustomDrift(&estimator, 1, NTSC(60), drift, "[60]");
+  VerifyCadenceVectorWithCustomDrift(&estimator, 1, NTSC(60), drift, "[]");
 
   VerifyCadenceVectorWithCustomDrift(&estimator, 30, 60, drift, "[2]");
   VerifyCadenceVectorWithCustomDrift(&estimator, NTSC(30), 60, drift, "[2]");

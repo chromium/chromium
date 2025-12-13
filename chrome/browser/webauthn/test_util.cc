@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "test_util.h"
 
 #include <array>
@@ -14,13 +9,14 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
 #include "device/fido/enclave/types.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 #include "net/base/port_util.h"
 #include "url/gurl.h"
 
@@ -86,7 +82,7 @@ std::pair<base::Process, uint16_t> StartWebAuthnEnclave(base::FilePath cwd) {
 #endif
 
     CHECK(read_bytes > 0);
-    port_str[read_bytes - 1] = 0;
+    UNSAFE_TODO(port_str[read_bytes - 1]) = 0;
     unsigned u_port;
     CHECK(base::StringToUint(port_str, &u_port)) << port_str;
     port = base::checked_cast<uint16_t>(u_port);

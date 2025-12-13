@@ -1,12 +1,12 @@
 Tests overridden headers don't stick across redirects
-Redirected request headers:{
+Redirected request headers: {
     Accept : */*
     Accept-Language : en-us,en;q=0.9
-    Referer : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+    Referer : http://google.com/
     User-Agent : <string>
 }
 HTTP_X_DEVTOOLS_TEST: <not set>
 HTTP_COOKIE: <not set>
-HTTP_REFERER: http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+HTTP_REFERER: http://google.com/
 
 

@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 
 using SigninTest = WebUIMochaBrowserTest;
@@ -53,4 +55,20 @@ IN_PROC_BROWSER_TEST_F(SigninTest, ProfileCustomizationTest) {
 IN_PROC_BROWSER_TEST_F(SigninTest, SigninManagedUserProfileNotice) {
   set_test_loader_host(chrome::kChromeUIManagedUserProfileNoticeHost);
   RunTest("signin/managed_user_profile_notice_test.js", "mocha.run()");
+}
+
+class SigninTestWithHistorySync : public SigninTest {
+ protected:
+  SigninTestWithHistorySync() {
+    feature_list_.InitAndEnableFeature(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SigninTestWithHistorySync, HistorySyncOptIn) {
+  set_test_loader_host(chrome::kChromeUIHistorySyncOptinHost);
+  RunTest("signin/history_sync_optin_test.js", "mocha.run()");
 }

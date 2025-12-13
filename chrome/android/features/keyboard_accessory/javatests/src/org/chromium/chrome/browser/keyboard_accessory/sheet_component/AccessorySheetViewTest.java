@@ -53,7 +53,9 @@ import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.ViewProvider;
@@ -68,15 +70,17 @@ import java.util.concurrent.BlockingQueue;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccessorySheetViewTest {
+    private WebPageStation mPage;
     private PropertyModel mModel;
     private BlockingQueue<AccessorySheetView> mViewPager;
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Before
     public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AsyncViewStub viewStub =

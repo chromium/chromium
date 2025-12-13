@@ -51,7 +51,7 @@ canvasPromiseTest(async (canvas) => {
 
 }, 'Canvas can be given an invalid size while the GPU context is lost.',
    // Exclude WORKER because chrome.gpuBenchmarking isn't available on workers.
-   // Use PLACEHOLDER because OFFSCREEN uses a CanvasResourceProviderBitmap
+   // Use PLACEHOLDER because OFFSCREEN uses a Canvas2DResourceProviderBitmap
    // in CPU compositing mode, which cannot lose context.
    {testTypes: [CanvasTestType.HTML, CanvasTestType.PLACEHOLDER]});
 

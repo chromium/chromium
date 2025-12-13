@@ -330,7 +330,7 @@ static SynchEvent* EnsureSynchEvent(std::atomic<intptr_t>* addr,
                                     const char* name, intptr_t bits,
                                     intptr_t lockbit) {
   uint32_t h = reinterpret_cast<uintptr_t>(addr) % kNSynchEvent;
-  synch_event_mu.Lock();
+  synch_event_mu.lock();
   // When a Mutex/CondVar is destroyed, we don't remove the associated
   // SynchEvent to keep destructors empty in release builds for performance
   // reasons. If the current call is the first to set bits (kMuEvent/kCVEvent),
@@ -392,16 +392,16 @@ static SynchEvent* EnsureSynchEvent(std::atomic<intptr_t>* addr,
   } else {
     e->refcount++;  // for return value
   }
-  synch_event_mu.Unlock();
+  synch_event_mu.unlock();
   return e;
 }
 
 // Decrement the reference count of *e, or do nothing if e==null.
 static void UnrefSynchEvent(SynchEvent* e) {
   if (e != nullptr) {
-    synch_event_mu.Lock();
+    synch_event_mu.lock();
     bool del = (--(e->refcount) == 0);
-    synch_event_mu.Unlock();
+    synch_event_mu.unlock();
     if (del) {
       base_internal::LowLevelAlloc::Free(e);
     }
@@ -414,7 +414,7 @@ static void UnrefSynchEvent(SynchEvent* e) {
 static SynchEvent* GetSynchEvent(const void* addr) {
   uint32_t h = reinterpret_cast<uintptr_t>(addr) % kNSynchEvent;
   SynchEvent* e;
-  synch_event_mu.Lock();
+  synch_event_mu.lock();
   for (e = synch_event[h];
        e != nullptr && e->masked_addr != base_internal::HidePtr(addr);
        e = e->next) {
@@ -422,7 +422,7 @@ static SynchEvent* GetSynchEvent(const void* addr) {
   if (e != nullptr) {
     e->refcount++;
   }
-  synch_event_mu.Unlock();
+  synch_event_mu.unlock();
   return e;
 }
 
@@ -745,7 +745,8 @@ static unsigned TsanFlags(Mutex::MuHow how) {
 Mutex::~Mutex() { Dtor(); }
 #endif
 
-#if !defined(NDEBUG) || defined(ABSL_HAVE_THREAD_SANITIZER)
+#if !defined(NDEBUG) || defined(ABSL_HAVE_THREAD_SANITIZER) || \
+    defined(ABSL_BUILD_DLL)
 void Mutex::Dtor() {
   if (kDebugMode) {
     this->ForgetDeadlockInfo();
@@ -1223,9 +1224,8 @@ static GraphId GetGraphIdLocked(Mutex* mu)
 }
 
 static GraphId GetGraphId(Mutex* mu) ABSL_LOCKS_EXCLUDED(deadlock_graph_mu) {
-  deadlock_graph_mu.Lock();
+  base_internal::SpinLockHolder l(deadlock_graph_mu);
   GraphId id = GetGraphIdLocked(mu);
-  deadlock_graph_mu.Unlock();
   return id;
 }
 
@@ -1386,7 +1386,7 @@ static GraphId DeadlockCheck(Mutex* mu) {
 
   SynchLocksHeld* all_locks = Synch_GetAllLocks();
 
-  absl::base_internal::SpinLockHolder lock(&deadlock_graph_mu);
+  absl::base_internal::SpinLockHolder lock(deadlock_graph_mu);
   const GraphId mu_id = GetGraphIdLocked(mu);
 
   if (all_locks->n == 0) {
@@ -1456,7 +1456,7 @@ static GraphId DeadlockCheck(Mutex* mu) {
       }
       if (synch_deadlock_detection.load(std::memory_order_acquire) ==
           OnDeadlockCycle::kAbort) {
-        deadlock_graph_mu.Unlock();  // avoid deadlock in fatal sighandler
+        deadlock_graph_mu.unlock();  // avoid deadlock in fatal sighandler
         ABSL_RAW_LOG(FATAL, "dying due to potential deadlock");
         return mu_id;
       }
@@ -1481,11 +1481,11 @@ static inline GraphId DebugOnlyDeadlockCheck(Mutex* mu) {
 void Mutex::ForgetDeadlockInfo() {
   if (kDebugMode && synch_deadlock_detection.load(std::memory_order_acquire) !=
                         OnDeadlockCycle::kIgnore) {
-    deadlock_graph_mu.Lock();
+    deadlock_graph_mu.lock();
     if (deadlock_graph != nullptr) {
       deadlock_graph->RemoveNode(this);
     }
-    deadlock_graph_mu.Unlock();
+    deadlock_graph_mu.unlock();
   }
 }
 
@@ -1527,7 +1527,7 @@ static bool TryAcquireWithSpinning(std::atomic<intptr_t>* mu) {
   return false;
 }
 
-void Mutex::Lock() {
+void Mutex::lock() {
   ABSL_TSAN_MUTEX_PRE_LOCK(this, 0);
   GraphId id = DebugOnlyDeadlockCheck(this);
   intptr_t v = mu_.load(std::memory_order_relaxed);
@@ -1545,7 +1545,7 @@ void Mutex::Lock() {
   ABSL_TSAN_MUTEX_POST_LOCK(this, 0, 0);
 }
 
-void Mutex::ReaderLock() {
+void Mutex::lock_shared() {
   ABSL_TSAN_MUTEX_PRE_LOCK(this, __tsan_mutex_read_lock);
   GraphId id = DebugOnlyDeadlockCheck(this);
   intptr_t v = mu_.load(std::memory_order_relaxed);
@@ -1605,7 +1605,7 @@ bool Mutex::AwaitCommon(const Condition& cond, KernelTimeout t) {
   return res;
 }
 
-bool Mutex::TryLock() {
+bool Mutex::try_lock() {
   ABSL_TSAN_MUTEX_PRE_LOCK(this, __tsan_mutex_try_lock);
   intptr_t v = mu_.load(std::memory_order_relaxed);
   // Try fast acquire.
@@ -1643,7 +1643,7 @@ ABSL_ATTRIBUTE_NOINLINE bool Mutex::TryLockSlow() {
   return false;
 }
 
-bool Mutex::ReaderTryLock() {
+bool Mutex::try_lock_shared() {
   ABSL_TSAN_MUTEX_PRE_LOCK(this,
                            __tsan_mutex_read_lock | __tsan_mutex_try_lock);
   intptr_t v = mu_.load(std::memory_order_relaxed);
@@ -1705,7 +1705,7 @@ ABSL_ATTRIBUTE_NOINLINE bool Mutex::ReaderTryLockSlow() {
   return false;
 }
 
-void Mutex::Unlock() {
+void Mutex::unlock() {
   ABSL_TSAN_MUTEX_PRE_UNLOCK(this, 0);
   DebugOnlyLockLeave(this);
   intptr_t v = mu_.load(std::memory_order_relaxed);
@@ -1775,7 +1775,7 @@ static bool ExactlyOneReader(intptr_t v) {
   return (v & kMuMultipleWaitersMask) == 0;
 }
 
-void Mutex::ReaderUnlock() {
+void Mutex::unlock_shared() {
   ABSL_TSAN_MUTEX_PRE_UNLOCK(this, __tsan_mutex_read_lock);
   DebugOnlyLockLeave(this);
   intptr_t v = mu_.load(std::memory_order_relaxed);
@@ -2761,7 +2761,7 @@ void CondVar::SignalAll() {
 void ReleasableMutexLock::Release() {
   ABSL_RAW_CHECK(this->mu_ != nullptr,
                  "ReleasableMutexLock::Release may only be called once");
-  this->mu_->Unlock();
+  this->mu_->unlock();
   this->mu_ = nullptr;
 }
 

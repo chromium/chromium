@@ -18,20 +18,24 @@ import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.Holder;
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.InstantMessage;
 import org.chromium.components.collaboration.messaging.InstantNotificationLevel;
+import org.chromium.components.collaboration.messaging.MessageAttribution;
 import org.chromium.components.collaboration.messaging.MessageUtils;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.MessagingBackendService.InstantMessageDelegate;
@@ -39,7 +43,6 @@ import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig.DataSharingAvatarCallback;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -54,11 +57,13 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 /**
  * Responsible for displaying browser and OS messages for share. This is effectively a singleton,
@@ -111,6 +116,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
     private final List<AttachedWindowInfo> mAttachList = new ArrayList<>();
     private final DataSharingService mDataSharingService;
     private final TabGroupSyncService mTabGroupSyncService;
+    private final Map<String, Runnable> mAttributionIdToClearNotificationRunnable = new HashMap<>();
 
     /**
      * @param messagingBackendService Where to register ourself as the current delegate.
@@ -209,14 +215,31 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             ReuseSafeOnceRunnable onSuccess = new ReuseSafeOnceRunnable(successCallback.bind(true));
             if (collaborationEvent == CollaborationEvent.TAB_REMOVED) {
                 showTabRemoved(
-                        message, activity, messageDispatcher, tabGroupModelFilter, onSuccess);
+                        message,
+                        activity,
+                        messageDispatcher,
+                        tabGroupModelFilter,
+                        onSuccess,
+                        attachedWindowInfo);
             } else if (collaborationEvent == CollaborationEvent.TAB_UPDATED) {
-                showTabChange(message, activity, messageDispatcher, tabGroupModelFilter, onSuccess);
+                showTabChange(
+                        message,
+                        activity,
+                        messageDispatcher,
+                        tabGroupModelFilter,
+                        onSuccess,
+                        attachedWindowInfo);
             } else if (collaborationEvent == CollaborationEvent.COLLABORATION_MEMBER_ADDED) {
                 showCollaborationMemberAdded(
-                        message, activity, messageDispatcher, dataSharingTabManager, onSuccess);
+                        message,
+                        activity,
+                        messageDispatcher,
+                        dataSharingTabManager,
+                        onSuccess,
+                        attachedWindowInfo);
             } else if (collaborationEvent == CollaborationEvent.TAB_GROUP_REMOVED) {
-                showCollaborationRemoved(message, activity, messageDispatcher, onSuccess);
+                showCollaborationRemoved(
+                        message, activity, messageDispatcher, onSuccess, attachedWindowInfo);
             } else {
                 // Will never be able to handle this message.
                 onSuccess.run();
@@ -226,7 +249,10 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
 
     @Override
     public void hideInstantaneousMessage(Set<String> messageIds) {
-        // TODO(crbug.com/416264627): Implement this.
+        for (String messageId : messageIds) {
+            Runnable runnable = mAttributionIdToClearNotificationRunnable.get(messageId);
+            if (runnable != null) runnable.run();
+        }
     }
 
     private @Nullable AttachedWindowInfo getAttachedWindowInfo(
@@ -284,7 +310,8 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             Context context,
             MessageDispatcher messageDispatcher,
             TabGroupModelFilter tabGroupModelFilter,
-            Runnable onSuccess) {
+            Runnable onSuccess,
+            AttachedWindowInfo attachedWindowInfo) {
         String buttonText = context.getString(R.string.data_sharing_browser_message_reopen);
         GroupMember groupMember = MessageUtils.extractMember(message);
         Runnable openTabAction = prepareOpenTabActionForRemovedTab(message, tabGroupModelFilter);
@@ -300,7 +327,9 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                             buttonText,
                             icon,
                             openTabAction,
-                            onSuccess);
+                            onSuccess,
+                            message.attributions,
+                            attachedWindowInfo);
                 });
     }
 
@@ -326,7 +355,10 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             @Nullable Token tabGroupId,
             @Nullable String url,
             TabGroupModelFilter tabGroupModelFilter) {
-        url = TextUtils.isEmpty(url) ? UrlConstants.NTP_URL : url;
+        Profile currentProfile = tabGroupModelFilter.getTabModel().getProfile();
+        UrlConstantResolver urlConstantResolver =
+                UrlConstantResolverFactory.getForProfile(currentProfile);
+        url = TextUtils.isEmpty(url) ? urlConstantResolver.getNtpUrl() : url;
         int tabId = tabGroupModelFilter.getGroupLastShownTabId(tabGroupId);
         TabGroupUtils.openUrlInGroup(
                 tabGroupModelFilter, url, tabId, TabLaunchType.FROM_TAB_GROUP_UI);
@@ -337,7 +369,8 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             Context context,
             MessageDispatcher messageDispatcher,
             TabGroupModelFilter tabGroupModelFilter,
-            Runnable onSuccess) {
+            Runnable onSuccess,
+            AttachedWindowInfo attachedWindowInfo) {
         String buttonText = context.getString(R.string.data_sharing_browser_message_reopen);
         GroupMember groupMember = MessageUtils.extractMember(message);
         Runnable openTabAction = prepareOpenTabActionForUpdatedTab(message, tabGroupModelFilter);
@@ -353,7 +386,9 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                             buttonText,
                             icon,
                             openTabAction,
-                            onSuccess);
+                            onSuccess,
+                            message.attributions,
+                            attachedWindowInfo);
                 });
     }
 
@@ -362,7 +397,8 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             Activity activity,
             MessageDispatcher messageDispatcher,
             DataSharingTabManager dataSharingTabManager,
-            Runnable onSuccess) {
+            Runnable onSuccess,
+            AttachedWindowInfo attachedWindowInfo) {
         @Nullable String collaborationId = MessageUtils.extractCollaborationId(message);
         @Nullable String syncId = MessageUtils.extractSyncTabGroupId(message);
         String buttonText = activity.getString(R.string.data_sharing_browser_message_manage);
@@ -391,7 +427,9 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                             buttonText,
                             icon,
                             openManageSharingRunnable,
-                            onSuccess);
+                            onSuccess,
+                            message.attributions,
+                            attachedWindowInfo);
                 });
     }
 
@@ -399,7 +437,8 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             InstantMessage message,
             Context context,
             MessageDispatcher messageDispatcher,
-            Runnable onSuccess) {
+            Runnable onSuccess,
+            AttachedWindowInfo attachedWindowInfo) {
         String buttonText = context.getString(R.string.data_sharing_invitation_failure_button);
         Drawable icon = ContextCompat.getDrawable(context, R.drawable.ic_features_24dp);
         showGenericMessage(
@@ -409,7 +448,9 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 buttonText,
                 icon,
                 CallbackUtils.emptyRunnable(),
-                onSuccess);
+                onSuccess,
+                message.attributions,
+                attachedWindowInfo);
     }
 
     private void showCollaborationMemberAddedSystemNotification(
@@ -444,13 +485,15 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             String buttonText,
             Drawable icon,
             Runnable action,
-            Runnable onSuccess) {
+            Runnable onSuccess,
+            List<MessageAttribution> attributions,
+            AttachedWindowInfo attachedWindowInfo) {
         Supplier<Integer> onPrimary =
                 () -> {
                     action.run();
                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
                 };
-        AtomicReference<PropertyModel> propertyModel = new AtomicReference<>();
+        Holder<@Nullable PropertyModel> propertyModelHolder = new Holder<>(null);
         Callback<Boolean> onVisibleChange =
                 (fullyVisible) -> {
                     if (fullyVisible) {
@@ -467,12 +510,12 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                                 TaskTraits.UI_DEFAULT,
                                 () -> {
                                     messageDispatcher.dismissMessage(
-                                            assumeNonNull(propertyModel.get()),
+                                            assumeNonNull(propertyModelHolder.get()),
                                             DismissReason.DISMISSED_BY_FEATURE);
                                 });
                     }
                 };
-        propertyModel.set(
+        propertyModelHolder.onResult(
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(MessageBannerProperties.MESSAGE_IDENTIFIER, messageIdentifier)
                         .with(MessageBannerProperties.TITLE, title)
@@ -486,8 +529,45 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                                 MessageBannerProperties.TINT_NONE)
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION, onPrimary)
                         .with(MessageBannerProperties.ON_FULLY_VISIBLE, onVisibleChange)
+                        .with(
+                                MessageBannerProperties.ON_DISMISSED,
+                                dismissalReason -> clearAttributionMap(attributions))
                         .build());
-        messageDispatcher.enqueueWindowScopedMessage(
-                assumeNonNull(propertyModel.get()), /* highPriority= */ false);
+
+        PropertyModel propertyModel = assumeNonNull(propertyModelHolder.get());
+        prepareClearRunnables(attributions, propertyModel, attachedWindowInfo);
+        messageDispatcher.enqueueWindowScopedMessage(propertyModel, /* highPriority= */ false);
+    }
+
+    private void prepareClearRunnables(
+            List<MessageAttribution> attributions,
+            PropertyModel propertyModel,
+            AttachedWindowInfo attachedWindowInfo) {
+        for (MessageAttribution attribution : attributions) {
+            String attributionId = attribution.id;
+            if (attributionId == null) continue;
+
+            Runnable dismissRunnable =
+                    () -> dismissMessage(attributionId, propertyModel, attachedWindowInfo);
+            assert !mAttributionIdToClearNotificationRunnable.containsKey(attributionId);
+            mAttributionIdToClearNotificationRunnable.put(attributionId, dismissRunnable);
+        }
+    }
+
+    private void clearAttributionMap(List<MessageAttribution> attributions) {
+        for (MessageAttribution attribution : attributions) {
+            mAttributionIdToClearNotificationRunnable.remove(attribution.id);
+        }
+    }
+
+    private void dismissMessage(
+            String attributionId, PropertyModel model, AttachedWindowInfo attachedWindowInfo) {
+        mAttributionIdToClearNotificationRunnable.remove(attributionId);
+        MessageDispatcher messageDispatcher =
+                MessageDispatcherProvider.from(attachedWindowInfo.windowAndroid);
+
+        if (messageDispatcher != null) {
+            messageDispatcher.dismissMessage(model, DismissReason.DISMISSED_BY_FEATURE);
+        }
     }
 }

@@ -9,7 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
@@ -23,6 +23,7 @@
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/security_interstitials/core/safe_browsing_loud_error_ui.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 
@@ -40,9 +41,6 @@ namespace {
 // ThreatDetails::FinishCollection() by this much time (in
 // milliseconds).
 const int64_t kThreatDetailsProceedDelayMilliSeconds = 3000;
-
-base::LazyInstance<BaseBlockingPage::UnsafeResourceMap>::Leaky
-    g_unsafe_resource_map = LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 
@@ -143,7 +141,8 @@ void BaseBlockingPage::FinishThreatDetails(const base::TimeDelta& delay,
 
 // static
 BaseBlockingPage::UnsafeResourceMap* BaseBlockingPage::GetUnsafeResourcesMap() {
-  return g_unsafe_resource_map.Pointer();
+  static base::NoDestructor<UnsafeResourceMap> unsafe_resource_map;
+  return unsafe_resource_map.get();
 }
 
 // static

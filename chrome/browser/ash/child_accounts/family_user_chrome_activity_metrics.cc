@@ -92,8 +92,9 @@ void FamilyUserChromeActivityMetrics::OnAppInactive(
   // OnAppInactive might get called for the same instance multiple times. The
   // |instance| might have already been removed from
   // |active_browser_instances_|.
-  if (!base::Contains(active_browser_instances_, instance_id))
+  if (!base::Contains(active_browser_instances_, instance_id)) {
     return;
+  }
 
   active_browser_instances_.erase(instance_id);
   if (active_browser_instances_.empty())

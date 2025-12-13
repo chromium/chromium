@@ -414,6 +414,14 @@
       <message name="IDS_EXTENSION_WEBGL_NOT_SUPPORTED" desc="Error message when an extension has a requirement for WebGL that the system does not support.">
         WebGL is not supported.
       </message>
+
+      <!-- Load error related messages. Please keep alphabetized. -->
+      <message name="IDS_EXTENSIONS_LOAD_ERROR_ALERT_HEADING" desc="The title of the section that describes an extension load error.">
+        Error Loading Extension
+      </message>
+      <message name="IDS_EXTENSIONS_LOAD_ERROR_MESSAGE" desc="The message which tells the user that an extension failed to load.">
+        Failed to load extension from:
+      </message>
     </messages>
   </release>
 </grit>

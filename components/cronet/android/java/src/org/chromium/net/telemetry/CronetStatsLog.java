@@ -65,7 +65,11 @@ public final class CronetStatsLog {
      * total_user_executor_execute_latency_millis, int read_count, int on_upload_read_count, int
      * is_bidi_stream, int final_user_callback_threw, int uid, int cronet_internal_error_code, int
      * quic_detailed_error_code, int quic_connection_close_source, int failure_reason, int
-     * is_socket_reused, java.lang.String cronet_version, int source);<br>
+     * is_socket_reused, java.lang.String cronet_version, int source, long
+     * time_to_establish_dns_millis, long time_to_establish_ssl_millis, long time_to_connect_millis,
+     * long time_to_send_first_byte_millis, long time_to_establish_dns_micros, long
+     * time_to_establish_ssl_micros, long time_to_connect_micros, long
+     * time_to_send_first_byte_micros);<br>
      */
     public static final int CRONET_TRAFFIC_REPORTED = 704;
 
@@ -605,7 +609,15 @@ public final class CronetStatsLog {
             int arg25,
             int arg26,
             java.lang.String arg27,
-            int arg28) {
+            int arg28,
+            long arg29,
+            long arg30,
+            long arg31,
+            long arg32,
+            long arg33,
+            long arg34,
+            long arg35,
+            long arg36) {
         final StatsEvent.Builder builder = StatsEvent.newBuilder();
         builder.setAtomId(code);
         builder.writeLong(arg1);
@@ -639,6 +651,14 @@ public final class CronetStatsLog {
         builder.writeInt(arg26);
         builder.writeString(arg27);
         builder.writeInt(arg28);
+        builder.writeLong(arg29);
+        builder.writeLong(arg30);
+        builder.writeLong(arg31);
+        builder.writeLong(arg32);
+        builder.writeLong(arg33);
+        builder.writeLong(arg34);
+        builder.writeLong(arg35);
+        builder.writeLong(arg36);
 
         builder.usePooledBuffer();
         StatsLog.write(builder.build());

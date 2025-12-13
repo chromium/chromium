@@ -68,21 +68,6 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
     UChar32 c,
     const SimpleFontData*,
     FontFallbackPriority fallback_priority) {
-  // The m_fontManager is set only if it was provided by the embedder with
-  // WebFontRendering::setSkiaFontManager. This is used to emulate android fonts
-  // on linux so we always request the family from the font manager and if none
-  // is found, we return the LastResort fallback font and avoid using
-  // FontCache::GetFontForCharacter which would use sandbox support to query the
-  // underlying system for the font family.
-  if (font_manager_) {
-    AtomicString family_name = GetFamilyNameForCharacter(
-        font_manager_.get(), c, font_description, nullptr, fallback_priority);
-    if (family_name.empty())
-      return GetLastResortFallbackFont(font_description);
-    return FontDataFromFontPlatformData(GetFontPlatformData(
-        font_description, FontFaceCreationParams(family_name)));
-  }
-
   if (IsEmojiPresentationEmoji(fallback_priority)) {
     // FIXME crbug.com/591346: We're overriding the fallback character here
     // with the FAMILY emoji in the hope to find a suitable emoji font.

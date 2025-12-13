@@ -8,11 +8,12 @@
 #include <memory>
 #include <variant>
 
+#include "base/android/device_info.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/i18n/timezone.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,7 +25,7 @@
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/autofill/core/browser/data_model/payments/payment_instrument.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
-#include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
@@ -44,15 +45,13 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/credit_card_number_validation.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif
 
 namespace autofill {
 
@@ -241,8 +240,10 @@ PaymentsDataManager::PaymentsDataManager(
     syncer::SyncService* sync_service,
     signin::IdentityManager* identity_manager,
     GeoIpCountryCode variations_country_code,
-    std::string app_locale)
+    std::string app_locale,
+    AutofillOptimizationGuideDecider* autofill_optimization_guide_decider)
     : image_fetcher_(image_fetcher),
+      autofill_optimization_guide_decider_(autofill_optimization_guide_decider),
       shared_storage_handler_(std::move(shared_storage_handler)),
       sync_service_(sync_service),
       identity_manager_(identity_manager),
@@ -268,7 +269,7 @@ PaymentsDataManager::PaymentsDataManager(
 #if !BUILDFLAG(IS_IOS)
     // Clean up for crbug.com/411681430.
     if (!IsPaymentCvcStorageEnabled()) {
-      CleanupForCrbug411681430();
+      ClearLocalCvcsUpToMay2025();
     }
 #endif
   }
@@ -423,8 +424,12 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
         linked_bnpl_issuers_.clear();
         for (sync_pb::PaymentInstrument& payment_instrument :
              payment_instruments) {
-          CacheIfEwalletPaymentInstrument(payment_instrument);
-          CacheIfLinkedBnplPaymentInstrument(payment_instrument);
+          if (AreEwalletAccountsSupported()) {
+            CacheIfEwalletPaymentInstrument(payment_instrument);
+          }
+          if (AreBnplIssuersSupported()) {
+            CacheIfLinkedBnplPaymentInstrument(payment_instrument);
+          }
         }
         OnPaymentInstrumentsRefreshed(payment_instruments);
         break;
@@ -466,12 +471,16 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
     PaymentsDataCleaner(this).CleanupPaymentsData();
   }
 
+  if (autofill_optimization_guide_decider_) {
+    autofill_optimization_guide_decider_->OnPaymentsDataLoaded(*this);
+  }
+
   NotifyObservers();
 }
 
 bool PaymentsDataManager::ShouldShowBnplSettings() const {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // Check `kAutofillEnableBuyNowPayLater` only if the user has seen a BNPL
   // suggestion before, or there are already linked issuers present, to avoid
   // unnecessary feature flag checks. The linked issuer check is due to the fact
@@ -486,7 +495,7 @@ bool PaymentsDataManager::ShouldShowBnplSettings() const {
 #else
   return false;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 }
 
 CoreAccountInfo PaymentsDataManager::GetAccountInfoForPaymentsServer() const {
@@ -513,6 +522,12 @@ void PaymentsDataManager::OnStateChanged(syncer::SyncService* sync_service) {
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   database_helper_->SetUseAccountStorageForServerData(
       sync_service && !sync_service->IsSyncFeatureEnabled());
+}
+
+void PaymentsDataManager::OnSyncShutdown(syncer::SyncService*) {
+  // Unreachable, since the service owning this instance is Shutdown() before
+  // the SyncService.
+  NOTREACHED();
 }
 
 void PaymentsDataManager::OnAccountsCookieDeletedByUserAction() {
@@ -671,7 +686,7 @@ std::u16string
 PaymentsDataManager::GetApplicableBenefitDescriptionForCardAndOrigin(
     const CreditCard& credit_card,
     const url::Origin& origin,
-    const AutofillOptimizationGuide* optimization_guide) const {
+    const AutofillOptimizationGuideDecider* optimization_guide) const {
   // Ensures that benefit suggestions can be displayed.
   if (ShouldBlockCardBenefitSuggestionLabels()) {
     return std::u16string();
@@ -1000,13 +1015,17 @@ void PaymentsDataManager::SetPrefService(PrefService* pref_service) {
           &PaymentsDataManager::OnAutofillPaymentsCardBenefitsPrefChange,
           base::Unretained(this)));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   pref_registrar_.Add(
       prefs::kAutofillBnplEnabled,
       base::BindRepeating(&PaymentsDataManager::OnBnplEnabledPrefChange,
                           base::Unretained(this)));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+}
+
+bool PaymentsDataManager::IsAutofillBnplPrefEnabled() const {
+  return prefs::IsAutofillBnplEnabled(pref_service_);
 }
 
 void PaymentsDataManager::NotifyObservers() {
@@ -1057,10 +1076,6 @@ bool PaymentsDataManager::IsCardBenefitsSyncEnabled() const {
       features::kAutofillEnableCardBenefitsSync);
 }
 
-bool PaymentsDataManager::IsAutofillBnplPrefEnabled() const {
-  return prefs::IsAutofillBnplEnabled(pref_service_);
-}
-
 bool PaymentsDataManager::IsAutofillPaymentMethodsEnabled() const {
   return prefs::IsAutofillPaymentMethodsEnabled(pref_service_);
 }
@@ -1074,7 +1089,7 @@ void PaymentsDataManager::SetAutofillHasSeenIban() {
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 bool PaymentsDataManager::IsAutofillHasSeenBnplPrefEnabled() const {
   return prefs::HasSeenBnpl(pref_service_);
 }
@@ -1083,7 +1098,21 @@ void PaymentsDataManager::SetAutofillHasSeenBnpl() {
   prefs::SetAutofillHasSeenBnpl(pref_service_);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+
+bool PaymentsDataManager::IsAutofillAmountExtractionAiTermsSeenPrefEnabled()
+    const {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillEnableAiBasedAmountExtraction) &&
+         prefs::AmountExtractionAiTermsSeen(pref_service_);
+}
+
+void PaymentsDataManager::SetAutofillAmountExtractionAiTermsSeen() {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableAiBasedAmountExtraction)) {
+    prefs::SetAutofillAmountExtractionAiTermsSeen(pref_service_);
+  }
+}
 
 bool PaymentsDataManager::IsAutofillWalletImportEnabled() const {
   if (is_syncing_for_test_) {
@@ -1259,14 +1288,15 @@ bool PaymentsDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
 }
 
 bool PaymentsDataManager::ShouldShowPaymentMethodsMandatoryReauthPromo() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_CHROMEOS)
   // There is no need to show the promo if the feature is already enabled.
   if (prefs::IsPaymentMethodsMandatoryReauthEnabled(pref_service_)) {
 #if BUILDFLAG(IS_ANDROID)
     // The mandatory reauth feature is always enabled on automotive, there
     // is/was no opt-in. As such, there is no need to log anything here on
     // automotive.
-    if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
+    if (!base::android::device_info::is_automotive()) {
       LogMandatoryReauthOfferOptInDecision(
           MandatoryReauthOfferOptInDecision::kAlreadyOptedIn);
     }
@@ -1297,7 +1327,8 @@ bool PaymentsDataManager::ShouldShowPaymentMethodsMandatoryReauthPromo() {
   return allowed_by_strike_database;
 #else
   return false;
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_CHROMEOS)
 }
 
 void PaymentsDataManager::
@@ -1305,10 +1336,14 @@ void PaymentsDataManager::
   prefs::IncrementPaymentMethodsMandatoryReauthPromoShownCounter(pref_service_);
 }
 
-bool PaymentsDataManager::IsPaymentCvcStorageEnabled() {
+bool PaymentsDataManager::IsPaymentCvcStorageEnabled() const {
   return base::FeatureList::IsEnabled(
              features::kAutofillEnableCvcStorageAndFilling) &&
          prefs::IsPaymentCvcStorageEnabled(pref_service_);
+}
+
+void PaymentsDataManager::SetPaymentsCvcStorageEnabled(bool enabled) {
+  prefs::SetPaymentCvcStorage(pref_service_, enabled);
 }
 
 base::span<const VirtualCardUsageData>
@@ -1556,16 +1591,29 @@ void PaymentsDataManager::ClearLocalCvcs() {
   Refresh();
 }
 
-void PaymentsDataManager::CleanupForCrbug411681430() {
+void PaymentsDataManager::ClearLocalCvcsUpToMay2025() {
   if (!GetLocalDatabase()) {
     return;
   }
 
-  GetLocalDatabase()->CleanupForCrbug411681430();
+  GetLocalDatabase()->ClearLocalCvcsUpToMay2025();
 
   // Refresh our local cache and send notifications to observers.
   Refresh();
 }
+
+#if BUILDFLAG(IS_IOS)
+void PaymentsDataManager::CleanupForCrbug445879524() {
+  if (!GetLocalDatabase()) {
+    return;
+  }
+
+  GetLocalDatabase()->CleanupForCrbug445879524();
+
+  // Refresh our local cache and send notifications to observers.
+  Refresh();
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 void PaymentsDataManager::ClearAllServerDataForTesting() {
   // This could theoretically be called before we get the data back from the
@@ -1650,7 +1698,12 @@ bool PaymentsDataManager::SaveCardLocallyIfNew(
     }
     credit_cards.push_back(*card);
   }
-  credit_cards.push_back(imported_card);
+
+  auto imported_card_copy = imported_card;
+  if (!IsPaymentCvcStorageEnabled()) {
+    imported_card_copy.clear_cvc();
+  }
+  credit_cards.push_back(imported_card_copy);
 
   SetCreditCards(&credit_cards);
   return true;
@@ -1785,6 +1838,11 @@ bool PaymentsDataManager::ShouldSuggestServerPaymentMethods() const {
 
   // Server payment methods should be suggested if the sync service is active.
   return sync_service_->GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA);
+}
+
+base::WeakPtr<const PaymentsDataManager> PaymentsDataManager::GetWeakPtr()
+    const {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void PaymentsDataManager::LoadCreditCards() {
@@ -2042,6 +2100,14 @@ bool PaymentsDataManager::IsFacilitatedPaymentsEwalletUserPrefEnabled() const {
   return prefs::IsFacilitatedPaymentsEwalletEnabled(pref_service_);
 }
 
+bool PaymentsDataManager::IsFacilitatedPaymentsA2AUserPrefEnabled() const {
+  return prefs::IsFacilitatedPaymentsA2AEnabled(pref_service_);
+}
+
+void PaymentsDataManager::SetFacilitatedPaymentsA2ATriggeredOnce(bool enabled) {
+  prefs::SetFacilitatedPaymentsA2ATriggeredOnce(pref_service_, enabled);
+}
+
 bool PaymentsDataManager::HasPendingPaymentQueries() const {
   return pending_creditcards_query_ != 0 ||
          pending_server_creditcards_query_ != 0 ||
@@ -2059,8 +2125,7 @@ bool PaymentsDataManager::HasPendingPaymentQueries() const {
 
 bool PaymentsDataManager::AreBankAccountsSupported() const {
 #if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(
-      features::kAutofillEnableSyncingOfPixBankAccounts);
+  return true;
 #else
   return false;
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -2076,14 +2141,17 @@ bool PaymentsDataManager::AreEwalletAccountsSupported() const {
 
 bool PaymentsDataManager::AreBnplIssuersSupported() const {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-  return app_locale_ == "en-US" && GetCountryCodeForExperimentGroup() == "US" &&
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  return app_locale_ == "en-US" &&
+         (GetCountryCodeForExperimentGroup() == "US" ||
+          base::FeatureList::IsEnabled(
+              features::kAutofillDisableBnplCountryCheckForTesting)) &&
          base::FeatureList::IsEnabled(
              features::kAutofillEnableBuyNowPayLaterSyncing);
 #else
   return false;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 }
 
 bool PaymentsDataManager::ArePaymentInstrumentsSupported() const {
@@ -2109,7 +2177,7 @@ void PaymentsDataManager::ClearAllCreditCardBenefits() {
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 void PaymentsDataManager::OnBnplEnabledPrefChange() {
   // On pref change to `false`, clearing BNPL issuers is implicitly handled by
   // `GetBnplIssuers()`, since it returns an empty vector when
@@ -2125,7 +2193,7 @@ void PaymentsDataManager::OnBnplEnabledPrefChange() {
   LogBnplPrefToggled(IsAutofillBnplPrefEnabled());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 void PaymentsDataManager::ProcessCardArtUrlChanges() {
   if (!image_fetcher_) {
@@ -2240,6 +2308,15 @@ void PaymentsDataManager::CacheIfLinkedBnplPaymentInstrument(
     return;
   }
 
+  // Ensures the server does not return any duplicate issuers. Should never
+  // happen, but servers should never be trusted and responses must be handled
+  // gracefully.
+  if (base::Contains(linked_bnpl_issuers_,
+                     ConvertToBnplIssuerIdEnum(bnpl_issuer_details.issuer_id()),
+                     &BnplIssuer::issuer_id)) {
+    return;
+  }
+
   std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
   eligible_price_ranges.reserve(
       bnpl_issuer_details.eligible_price_range_size());
@@ -2258,6 +2335,33 @@ void PaymentsDataManager::CacheIfLinkedBnplPaymentInstrument(
     return;
   }
 
+  DenseSet<PaymentInstrument::ActionRequired> action_required =
+      DenseSet<PaymentInstrument::ActionRequired>();
+
+  // Sets values for `BnplIssuer::action_required` when the list is not empty
+  // and flag 'kAutofillEnableBuyNowPayLaterForExternallyLinked` is enabled.
+  // Note: `action_required_size()` is checked first so that the experiment
+  // groups only contain users having nonempty`action_required` info.
+  if (payment_instrument.action_required_size() > 0) {
+    // Issuers with `action_required` are not supported when flag
+    // `kAutofillEnableBuyNowPayLaterForExternallyLinked` is disabled. Skip
+    // adding the current issuer.
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillEnableBuyNowPayLaterForExternallyLinked)) {
+      return;
+    }
+    for (int action_required_sync : payment_instrument.action_required()) {
+      switch (action_required_sync) {
+        case sync_pb::PaymentInstrument_ActionRequired_ACTION_REQUIRED_UNKNOWN:
+          action_required.insert(PaymentInstrument::ActionRequired::kUnknown);
+          break;
+        case sync_pb::PaymentInstrument_ActionRequired_ACCEPT_TOS:
+          action_required.insert(PaymentInstrument::ActionRequired::kAcceptTos);
+          break;
+      }
+    }
+  }
+
   // `IsBnplIssuerSupported` is already called to filter out any unknown
   // issuer IDs that might be returned by the payment server. This ensures that
   // only issuer IDs with a corresponding BnplIssuer::IssuerId enum value are
@@ -2266,7 +2370,7 @@ void PaymentsDataManager::CacheIfLinkedBnplPaymentInstrument(
   linked_bnpl_issuers_.emplace_back(
       payment_instrument.instrument_id(),
       ConvertToBnplIssuerIdEnum(bnpl_issuer_details.issuer_id()),
-      std::move(eligible_price_ranges));
+      std::move(eligible_price_ranges), std::move(action_required));
 }
 
 void PaymentsDataManager::CacheIfEwalletPaymentInstrument(
@@ -2299,8 +2403,10 @@ void PaymentsDataManager::OnPaymentInstrumentCreationOptionsRefreshed(
   for (const sync_pb::PaymentInstrumentCreationOption&
            payment_instrument_creation_option :
        payment_instrument_creation_options) {
-    CacheIfBnplPaymentInstrumentCreationOption(
-        payment_instrument_creation_option);
+    if (AreBnplIssuersSupported()) {
+      CacheIfBnplPaymentInstrumentCreationOption(
+          payment_instrument_creation_option);
+    }
   }
 }
 
@@ -2317,6 +2423,15 @@ void PaymentsDataManager::CacheIfBnplPaymentInstrumentCreationOption(
   // If `payment_instrument_creation_option` has an unsupported issuer ID, do
   // not cache it.
   if (!payments::BnplManager::IsBnplIssuerSupported(bnpl_issuer.issuer_id())) {
+    return;
+  }
+
+  // Ensures the server does not return any duplicate issuers. Should never
+  // happen, but servers should never be trusted and responses must be handled
+  // gracefully.
+  if (base::Contains(unlinked_bnpl_issuers_,
+                     ConvertToBnplIssuerIdEnum(bnpl_issuer.issuer_id()),
+                     &BnplIssuer::issuer_id)) {
     return;
   }
 

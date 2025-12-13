@@ -6,7 +6,9 @@
 
 #include <cstddef>
 
+#include "base/containers/contains.h"
 #include "base/json/json_writer.h"
+#include "base/json/values_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/protobuf_matchers.h"
 #include "build/build_config.h"
@@ -579,47 +581,6 @@ void EventReportValidatorBase::ExpectPassowrdChangedEvent(
       });
 }
 
-void EventReportValidatorBase::ExpectSecurityInterstitialEvent(
-    const std::string& expected_url,
-    const std::string& expected_reason,
-    const std::string& expected_profile_username,
-    const std::string& expected_profile_identifier,
-    const std::string& result,
-    const bool expected_click_through,
-    int expected_net_error_code) {
-  EXPECT_CALL(*client_, UploadSecurityEventReport)
-      .WillOnce([this, expected_url, expected_reason, expected_profile_username,
-                 expected_profile_identifier, result, expected_click_through,
-                 expected_net_error_code](
-                    bool include_device_info, base::Value::Dict report,
-                    base::OnceCallback<void(policy::CloudPolicyClient::Result)>
-                        callback) {
-        // Extract the event list.
-        const base::Value::List* event_list = report.FindList(
-            policy::RealtimeReportingJobConfiguration::kEventListKey);
-        ASSERT_TRUE(event_list);
-
-        // There should only be 1 event per test.
-        ASSERT_EQ(1u, event_list->size());
-        const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
-        const base::Value::Dict* event =
-            wrapper.FindDict(enterprise_connectors::kKeyInterstitialEvent);
-        ASSERT_TRUE(event);
-
-        ValidateField(event, kKeyURL, expected_url);
-        ValidateField(event, kKeyReason, expected_reason);
-        ValidateField(event, kKeyNetErrorCode, expected_net_error_code);
-        ValidateField(event, kKeyClickedThrough, expected_click_through);
-        ValidateField(event, kKeyProfileUserName, expected_profile_username);
-        ValidateField(event, kKeyProfileIdentifier,
-                      expected_profile_identifier);
-        ValidateField(event, kKeyEventResult, result);
-        if (!done_closure_.is_null()) {
-          done_closure_.Run();
-        }
-      });
-}
-
 void EventReportValidatorBase::ExpectSecurityInterstitialEventWithReferrers(
     const std::string& expected_url,
     const std::string& expected_reason,
@@ -665,6 +626,78 @@ void EventReportValidatorBase::ExpectSecurityInterstitialEventWithReferrers(
           done_closure_.Run();
         }
       });
+}
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+void EventReportValidatorBase::ExpectDataControlsSensitiveDataEvent(
+    const std::string& expected_url,
+    const std::string& expected_tab_url,
+    const std::string& expected_source,
+    const std::string& expected_destination,
+    const std::set<std::string>* expected_mimetypes,
+    const std::string& expected_trigger,
+    const data_controls::Verdict::TriggeredRules& expected_triggered_rules,
+    const std::string& expected_result,
+    const std::string& expected_profile_username,
+    const std::string& expected_profile_identifier,
+    int64_t expected_content_size) {
+  EXPECT_CALL(*client_, UploadSecurityEventReport)
+      .WillOnce([this, expected_url, expected_tab_url, expected_source,
+                 expected_destination, expected_mimetypes, expected_trigger,
+                 expected_triggered_rules, expected_result,
+                 expected_profile_username, expected_profile_identifier,
+                 expected_content_size](
+                    bool include_device_info, base::Value::Dict report,
+                    base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                        callback) {
+        const base::Value::List* event_list = report.FindList(
+            policy::RealtimeReportingJobConfiguration::kEventListKey);
+        ASSERT_TRUE(event_list);
+        // There should only be 1 event per test.
+        ASSERT_EQ(1u, event_list->size());
+        const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
+        const base::Value::Dict* event =
+            wrapper.FindDict(enterprise_connectors::kKeySensitiveDataEvent);
+        ASSERT_TRUE(event);
+
+        ValidateField(event, kKeyURL, expected_url);
+        ValidateField(event, kKeyTabUrl, expected_tab_url);
+        ValidateField(event, kKeySource, expected_source);
+        ValidateField(event, kKeyDestination, expected_destination);
+        ValidateMimeType(event, expected_mimetypes);
+        ValidateDataControlsTriggerdRules(event, expected_triggered_rules);
+        ValidateField(event, kKeyTrigger, expected_trigger);
+        ValidateField(event, kKeyContentSize, expected_content_size);
+
+        if (!done_closure_.is_null()) {
+          done_closure_.Run();
+        }
+      });
+}
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+
+void EventReportValidatorBase::ExpectSensitiveDataEvent(
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent
+        expected_sensitive_data_event) {
+  EXPECT_CALL(*client_, UploadSecurityEvent)
+      .WillOnce(
+          [this, expected_sensitive_data_event](
+              bool include_device_info,
+              ::chrome::cros::reporting::proto::UploadEventsRequest request,
+              base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                  callback) {
+            // There should only be 1 event per test.
+            ASSERT_EQ(1, request.events_size());
+            ASSERT_TRUE(request.events().Get(0).has_sensitive_data_event());
+            auto sensitive_data_event =
+                request.events().Get(0).sensitive_data_event();
+            EXPECT_THAT(sensitive_data_event,
+                        EqualsProto(expected_sensitive_data_event));
+
+            if (!done_closure_.is_null()) {
+              done_closure_.Run();
+            }
+          });
 }
 
 void EventReportValidatorBase::ValidateField(
@@ -750,6 +783,18 @@ void EventReportValidatorBase::ValidateField(const base::Value::Dict* value,
       << "\nExpected value: " << expected_value;
 }
 
+void EventReportValidatorBase::ValidateField(const base::Value::Dict* value,
+                                             const std::string& field_key,
+                                             int64_t expected_value) {
+  ASSERT_TRUE(base::ValueToInt64(value->Find(field_key)).has_value())
+      << "Mismatch in field " << field_key << "\nNo value was set"
+      << "\nExpected value: " << expected_value;
+  ASSERT_EQ(base::ValueToInt64(value->Find(field_key)).value(), expected_value)
+      << "Mismatch in field " << field_key << "\nActual value: "
+      << base::ValueToInt64(value->Find(field_key)).value()
+      << "\nExpected value: " << expected_value;
+}
+
 void EventReportValidatorBase::ValidateThreatInfo(
     const base::Value::Dict* value,
     const chrome::cros::reporting::proto::TriggeredRuleInfo
@@ -814,5 +859,59 @@ void EventReportValidatorBase::ValidateIdentities(
     EXPECT_TRUE(matched);
   }
 }
+
+void EventReportValidatorBase::ValidateMimeType(
+    const base::Value::Dict* value,
+    const std::set<std::string>* expected_mimetypes) {
+  const std::string* type = value->FindString(kKeyContentType);
+  if (expected_mimetypes) {
+    EXPECT_TRUE(base::Contains(*expected_mimetypes, *type))
+        << *type << " is not an expected mimetype";
+  } else {
+    EXPECT_EQ(nullptr, type);
+  }
+}
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+void EventReportValidatorBase::ValidateDataControlsTriggerdRules(
+    const base::Value::Dict* value,
+    const data_controls::Verdict::TriggeredRules& expected_triggered_rules) {
+  const base::Value::List* triggered_rules =
+      value->FindList(kKeyTriggeredRuleInfo);
+  ASSERT_TRUE(triggered_rules);
+  ASSERT_EQ(expected_triggered_rules.size(), triggered_rules->size());
+  size_t i = 0;
+
+  for (const base::Value& rule : *triggered_rules) {
+    const std::string* name = rule.GetDict().FindString(kKeyTriggeredRuleName);
+    ASSERT_TRUE(name);
+
+    // There should be a rule with the same index as in `triggered_rules`, but
+    // `expected_triggered_rules` might be tracking it internally as a
+    // profile rule or machine rule so we need to check with two different
+    // keys.
+    data_controls::Verdict::TriggeredRule expected_rule;
+    if (expected_triggered_rules.count({i, true})) {
+      expected_rule = expected_triggered_rules.find({i, true})->second;
+    } else if (expected_triggered_rules.count({i, false})) {
+      expected_rule = expected_triggered_rules.find({i, false})->second;
+    } else {
+      NOTREACHED();
+    }
+
+    std::optional<int> id = rule.GetDict().FindInt(kKeyTriggeredRuleId);
+    if (id) {
+      int expected_rule_id = 0;
+      ASSERT_TRUE(base::StringToInt(expected_rule.rule_id, &expected_rule_id));
+      ASSERT_EQ(expected_rule_id, *id);
+    } else {
+      ASSERT_TRUE(expected_rule.rule_id.empty())
+          << " Got rule_id " << expected_rule.rule_id << " instead of nothing.";
+    }
+
+    ++i;
+  }
+}
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
 }  // namespace enterprise_connectors::test

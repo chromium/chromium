@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/sync_file_system/drive_backend/metadata_database.h"
 
 #include <stdint.h>
@@ -14,6 +9,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -241,13 +237,12 @@ class MetadataDatabaseTest : public testing::TestWithParam<bool> {
     base::RunLoop().RunUntilIdle();
   }
 
-  void SetUpDatabaseByTrackedFiles(const TrackedFile** tracked_files,
-                                   int size) {
+  void SetUpDatabaseByTrackedFiles(
+      base::span<const TrackedFile*> tracked_files) {
     std::unique_ptr<LevelDBWrapper> db = InitializeLevelDB();
     ASSERT_TRUE(db);
 
-    for (int i = 0; i < size; ++i) {
-      const TrackedFile* file = tracked_files[i];
+    for (const auto* file : tracked_files) {
       if (file->should_be_absent)
         continue;
       if (!file->tracker_only)
@@ -274,9 +269,10 @@ class MetadataDatabaseTest : public testing::TestWithParam<bool> {
         file.tracker.tracker_id(), nullptr));
   }
 
-  void VerifyTrackedFiles(const TrackedFile** tracked_files, int size) {
-    for (int i = 0; i < size; ++i)
-      VerifyTrackedFile(*tracked_files[i]);
+  void VerifyTrackedFiles(base::span<const TrackedFile*> tracked_files) {
+    for (const auto* file : tracked_files) {
+      VerifyTrackedFile(*file);
+    }
   }
 
   MetadataDatabase* metadata_database() { return metadata_database_.get(); }
@@ -678,11 +674,11 @@ TEST_P(MetadataDatabaseTest, InitializationTest_SimpleTree) {
     &sync_root, &app_root, &file, &folder, &file_in_folder, &orphaned_file
   };
 
-  SetUpDatabaseByTrackedFiles(tracked_files, std::size(tracked_files));
+  SetUpDatabaseByTrackedFiles(tracked_files);
   EXPECT_EQ(SYNC_STATUS_OK, InitializeMetadataDatabase());
 
   orphaned_file.should_be_absent = true;
-  VerifyTrackedFiles(tracked_files, std::size(tracked_files));
+  VerifyTrackedFiles(tracked_files);
 }
 
 TEST_P(MetadataDatabaseTest, AppManagementTest) {
@@ -698,9 +694,9 @@ TEST_P(MetadataDatabaseTest, AppManagementTest) {
   const TrackedFile* tracked_files[] = {
     &sync_root, &app_root, &file, &folder,
   };
-  SetUpDatabaseByTrackedFiles(tracked_files, std::size(tracked_files));
+  SetUpDatabaseByTrackedFiles(tracked_files);
   EXPECT_EQ(SYNC_STATUS_OK, InitializeMetadataDatabase());
-  VerifyTrackedFiles(tracked_files, std::size(tracked_files));
+  VerifyTrackedFiles(tracked_files);
 
   folder.tracker.set_app_id("foo");
   EXPECT_EQ(SYNC_STATUS_OK, RegisterApp(
@@ -915,7 +911,7 @@ TEST_P(MetadataDatabaseTest, UpdateByChangeListTest) {
     &new_file,
   };
 
-  SetUpDatabaseByTrackedFiles(tracked_files, std::size(tracked_files));
+  SetUpDatabaseByTrackedFiles(tracked_files);
   EXPECT_EQ(SYNC_STATUS_OK, InitializeMetadataDatabase());
 
   ApplyRenameChangeToMetadata("renamed", &renamed_file.metadata);
@@ -952,7 +948,7 @@ TEST_P(MetadataDatabaseTest, UpdateByChangeListTest) {
 
   new_file.should_be_absent = false;
 
-  VerifyTrackedFiles(tracked_files, std::size(tracked_files));
+  VerifyTrackedFiles(tracked_files);
   VerifyReloadConsistency();
 }
 
@@ -974,9 +970,9 @@ TEST_P(MetadataDatabaseTest, PopulateFolderTest_RegularFolder) {
     &sync_root, &app_root, &folder_to_populate, &known_file, &new_file
   };
 
-  SetUpDatabaseByTrackedFiles(tracked_files, std::size(tracked_files));
+  SetUpDatabaseByTrackedFiles(tracked_files);
   EXPECT_EQ(SYNC_STATUS_OK, InitializeMetadataDatabase());
-  VerifyTrackedFiles(tracked_files, std::size(tracked_files));
+  VerifyTrackedFiles(tracked_files);
 
   FileIDList listed_children;
   listed_children.push_back(known_file.metadata.file_id());
@@ -994,7 +990,7 @@ TEST_P(MetadataDatabaseTest, PopulateFolderTest_RegularFolder) {
   new_file.tracker.clear_synced_details();
   new_file.should_be_absent = false;
   new_file.tracker_only = true;
-  VerifyTrackedFiles(tracked_files, std::size(tracked_files));
+  VerifyTrackedFiles(tracked_files);
   VerifyReloadConsistency();
 }
 
@@ -1014,9 +1010,9 @@ TEST_P(MetadataDatabaseTest, PopulateFolderTest_InactiveFolder) {
     &sync_root, &app_root, &inactive_folder, &new_file,
   };
 
-  SetUpDatabaseByTrackedFiles(tracked_files, std::size(tracked_files));
+  SetUpDatabaseByTrackedFiles(tracked_files);
   EXPECT_EQ(SYNC_STATUS_OK, InitializeMetadataDatabase());
-  VerifyTrackedFiles(tracked_files, std::size(tracked_files));
+  VerifyTrackedFiles(tracked_files);
 
   FileIDList listed_children;
   listed_children.push_back(new_file.metadata.file_id());
@@ -1024,7 +1020,7 @@ TEST_P(MetadataDatabaseTest, PopulateFolderTest_InactiveFolder) {
   EXPECT_EQ(SYNC_STATUS_OK,
             PopulateFolder(inactive_folder.metadata.file_id(),
                            listed_children));
-  VerifyTrackedFiles(tracked_files, std::size(tracked_files));
+  VerifyTrackedFiles(tracked_files);
   VerifyReloadConsistency();
 }
 
@@ -1043,9 +1039,9 @@ TEST_P(MetadataDatabaseTest, PopulateFolderTest_DisabledAppRoot) {
     &sync_root, &disabled_app_root, &disabled_app_root, &known_file, &file,
   };
 
-  SetUpDatabaseByTrackedFiles(tracked_files, std::size(tracked_files));
+  SetUpDatabaseByTrackedFiles(tracked_files);
   EXPECT_EQ(SYNC_STATUS_OK, InitializeMetadataDatabase());
-  VerifyTrackedFiles(tracked_files, std::size(tracked_files));
+  VerifyTrackedFiles(tracked_files);
 
   FileIDList disabled_app_children;
   disabled_app_children.push_back(file.metadata.file_id());
@@ -1060,7 +1056,7 @@ TEST_P(MetadataDatabaseTest, PopulateFolderTest_DisabledAppRoot) {
 
   disabled_app_root.tracker.set_dirty(false);
   disabled_app_root.tracker.set_needs_folder_listing(false);
-  VerifyTrackedFiles(tracked_files, std::size(tracked_files));
+  VerifyTrackedFiles(tracked_files);
   VerifyReloadConsistency();
 }
 
@@ -1086,15 +1082,15 @@ TEST_P(MetadataDatabaseTest, DISABLED_UpdateTrackerTest) {
     &sync_root, &app_root, &file, &inactive_file, &new_conflict
   };
 
-  SetUpDatabaseByTrackedFiles(tracked_files, std::size(tracked_files));
+  SetUpDatabaseByTrackedFiles(tracked_files);
   EXPECT_EQ(SYNC_STATUS_OK, InitializeMetadataDatabase());
-  VerifyTrackedFiles(tracked_files, std::size(tracked_files));
+  VerifyTrackedFiles(tracked_files);
   VerifyReloadConsistency();
 
   *file.tracker.mutable_synced_details() = file.metadata.details();
   file.tracker.set_dirty(false);
   EXPECT_EQ(SYNC_STATUS_OK, UpdateTracker(file.tracker));
-  VerifyTrackedFiles(tracked_files, std::size(tracked_files));
+  VerifyTrackedFiles(tracked_files);
   VerifyReloadConsistency();
 
   *inactive_file.tracker.mutable_synced_details() =
@@ -1102,7 +1098,7 @@ TEST_P(MetadataDatabaseTest, DISABLED_UpdateTrackerTest) {
   inactive_file.tracker.set_dirty(false);
   inactive_file.tracker.set_active(true);
   EXPECT_EQ(SYNC_STATUS_OK, UpdateTracker(inactive_file.tracker));
-  VerifyTrackedFiles(tracked_files, std::size(tracked_files));
+  VerifyTrackedFiles(tracked_files);
   VerifyReloadConsistency();
 
   *new_conflict.tracker.mutable_synced_details() =
@@ -1112,7 +1108,7 @@ TEST_P(MetadataDatabaseTest, DISABLED_UpdateTrackerTest) {
   file.tracker.set_dirty(true);
   file.tracker.set_active(false);
   EXPECT_EQ(SYNC_STATUS_OK, UpdateTracker(new_conflict.tracker));
-  VerifyTrackedFiles(tracked_files, std::size(tracked_files));
+  VerifyTrackedFiles(tracked_files);
   VerifyReloadConsistency();
 }
 
@@ -1143,7 +1139,7 @@ TEST_P(MetadataDatabaseTest, PopulateInitialDataTest) {
   ResetTrackerID(&app_root.tracker);
   app_root.tracker.set_parent_tracker_id(sync_root.tracker.tracker_id());
 
-  VerifyTrackedFiles(tracked_files, std::size(tracked_files));
+  VerifyTrackedFiles(tracked_files);
   VerifyReloadConsistency();
 }
 

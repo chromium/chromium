@@ -14,11 +14,12 @@
     pendingRequests++;
   }
 
-  function printResults() {
-    var requests = Array.from(requestsMap.values());
-    requests.sort((a, b) => a.url < b.url ? 1 : -1);
+  async function printResults() {
+    const requestIds = Array.from(requestsMap.keys());
+    requestIds.sort((a, b) => requestsMap.get(a).url < requestsMap.get(b).url ? 1 : -1);
     testRunner.log('');
-    for (var request of requests) {
+    for (const requestId of requestIds) {
+      const request = requestsMap.get(requestId);
       testRunner.log('url: ' + request.url);
       testRunner.log('  isChunked: ' + request.isChunked);
       testRunner.log('  isH2: ' + request.isH2);
@@ -27,6 +28,8 @@
       testRunner.log('  receivedDataSize: ' + request.receivedDataSize);
       if (!request.redirected) // reportedTotalSize is not stable across platforms.
         testRunner.log('  reportedTotalSize: ' + request.reportedTotalSize);
+      const data = await dp.Network.getResponseBody({requestId});
+      testRunner.log('  payload: ' + JSON.stringify(data?.result));
       testRunner.log('');
     }
   }
@@ -63,13 +66,13 @@
     request.headersSize = params.response.encodedDataLength;
   });
 
-  dp.Network.onLoadingFinished(event => {
+  dp.Network.onLoadingFinished(async event => {
     var params = event.params;
     var request = requestsMap.get(params.requestId);
     request.reportedTotalSize += params.encodedDataLength;
     pendingRequests--;
     if (pendingRequests <= 0) {
-      printResults();
+      await printResults();
       testRunner.completeTest();
     }
   });

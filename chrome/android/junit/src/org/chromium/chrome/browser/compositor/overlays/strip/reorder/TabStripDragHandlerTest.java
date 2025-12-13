@@ -36,7 +36,6 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.text.format.DateUtils;
 import android.view.DragEvent;
-import android.view.View;
 import android.view.View.DragShadowBuilder;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -59,12 +58,14 @@ import org.robolectric.shadows.ShadowToast;
 import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Token;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
@@ -74,8 +75,10 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.compositor.overlays.strip.TestTabModel;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabStripDragHandler.TabDragShadowBuilder;
 import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
+import org.chromium.chrome.browser.dragdrop.ChromeMultiTabDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabGroupDropDataAndroid;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -102,12 +105,13 @@ import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropResult;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.dragdrop.DropDataAndroid;
-import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.ToastManager;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
 
 /** Tests for {@link TabStripDragHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -120,6 +124,7 @@ public class TabStripDragHandlerTest {
     private static final int TAB_ID_NOT_DRAGGED = 2;
     private static final int GROUPED_TAB_ID_1 = 3;
     private static final int GROUPED_TAB_ID_2 = 4;
+    private static final int TAB_ID_2 = 5;
     private static final float VIEW_WIDTH = 5f;
     private static final int TAB_INDEX = 2;
     private static final float POS_X = 20f;
@@ -157,9 +162,11 @@ public class TabStripDragHandlerTest {
     private Activity mActivity;
     private ViewGroup mTabsToolbarView;
     private Tab mTabBeingDragged;
+    private Tab mTabBeingDragged2;
     private Tab mGroupedTab1;
     private Tab mGroupedTab2;
     private final ArrayList<Tab> mTabGroupBeingDragged = new ArrayList();
+    private final ArrayList<Tab> mTabsBeingDragged = new ArrayList();
     private TabGroupMetadata mTabGroupMetadata;
     private static final PointF DRAG_START_POINT = new PointF(250, 0);
     private static final float TAB_POSITION_X = 200f;
@@ -171,9 +178,10 @@ public class TabStripDragHandlerTest {
 
     /** Resets the environment before each test. */
     @Before
+    @SuppressWarnings("DirectInvocationOnMock")
     public void beforeTest() {
         mActivity = Robolectric.setupActivity(Activity.class);
-        mActivity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI);
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mTabStripHeight = mActivity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
         mPosY = mTabStripHeight - 2 * DRAG_MOVE_DISTANCE;
         mTabStripVisible = true;
@@ -184,9 +192,14 @@ public class TabStripDragHandlerTest {
 
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
         mTabBeingDragged = MockTab.createAndInitialize(TAB_ID, mProfile);
+        mTabBeingDragged2 = MockTab.createAndInitialize(TAB_ID_2, mProfile);
 
         // Setup tab group being dragged.
         setupTabGroup(/* isGroupShared= */ false);
+
+        // Setup multi-tab drag.
+        mTabsBeingDragged.add(mTabBeingDragged);
+        mTabsBeingDragged.add(mTabBeingDragged2);
 
         when(mSourceMultiInstanceManager.getCurrentInstanceId()).thenReturn(CURR_INSTANCE_ID);
         when(mDestMultiInstanceManager.getCurrentInstanceId()).thenReturn(ANOTHER_INSTANCE_ID);
@@ -210,6 +223,7 @@ public class TabStripDragHandlerTest {
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperJniMock);
 
         when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getCurrentTab()).thenReturn(mTabBeingDragged);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
         when(mTabModelSelector.getTabGroupModelFilterProvider())
@@ -230,8 +244,8 @@ public class TabStripDragHandlerTest {
                         mActivity,
                         () -> mSourceStripLayoutHelper,
                         () -> mTabStripVisible,
-                        () -> mTabContentManager,
-                        () -> mLayerTitleCache,
+                        new ObservableSupplierImpl<>(mTabContentManager),
+                        new ObservableSupplierImpl<>(mLayerTitleCache),
                         mSourceMultiInstanceManager,
                         mDragDropDelegate,
                         mBrowserControlsStateProvider,
@@ -245,8 +259,8 @@ public class TabStripDragHandlerTest {
                         mActivity,
                         () -> mDestStripLayoutHelper,
                         () -> mTabStripVisible,
-                        () -> mTabContentManager,
-                        () -> mLayerTitleCache,
+                        new ObservableSupplierImpl<>(mTabContentManager),
+                        new ObservableSupplierImpl<>(mLayerTitleCache),
                         mDestMultiInstanceManager,
                         mDragDropDelegate,
                         mBrowserControlsStateProvider,
@@ -277,8 +291,28 @@ public class TabStripDragHandlerTest {
     }
 
     @Test
+    public void test_startSingleTabDragAction_withEscKeyPressCancelDrag() {
+        mSourceInstance.startTabDragAction(
+                mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X, VIEW_WIDTH);
+
+        assertTrue(
+                "Should be in the dragging process.",
+                mSourceInstance.getHandleBackPressChangedSupplier().get());
+
+        Boolean res = mSourceInstance.handleEscPress();
+        assertEquals(true, res);
+        mSourceInstance.onDrag(
+                mTabsToolbarView,
+                mockDragEvent(DragEvent.ACTION_DRAG_ENDED, POS_X, mPosY, DragType.SINGLE_TAB));
+        assertFalse("Global state should be cleared after cancel.", DragDropGlobalState.hasValue());
+        assertFalse(
+                "Should not be in the dragging process after an ESC key press.",
+                mSourceInstance.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
     public void test_startTabDragAction_withTabDragDropFF_returnsTrueForValidTab() {
-        XrUtils.setXrDeviceForTesting(true);
+        DeviceInfo.setIsXrForTesting(true);
         // Act and verify.
         boolean res =
                 mSourceInstance.startTabDragAction(
@@ -374,6 +408,20 @@ public class TabStripDragHandlerTest {
     }
 
     @Test
+    public void test_startMultiTabDragAction_withHasAllTabsSelectedWithHomepage_ReturnsFalse() {
+        when(mMultiWindowUtils.hasAllTabsSelectedWithHomepageEnabled(any())).thenReturn(true);
+        assertFalse(
+                "Should not startTabDragAction since last tab with homepage enabled.",
+                mSourceInstance.startMultiTabDragAction(
+                        mTabsToolbarView,
+                        mTabsBeingDragged,
+                        mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        VIEW_WIDTH));
+    }
+
+    @Test
     public void test_startGroupDragAction_withHasOneTabGroupWithHomepage_ReturnsFalse() {
         when(mMultiWindowUtils.hasAtMostOneTabGroupWithHomepageEnabled(any(), any()))
                 .thenReturn(true);
@@ -434,6 +482,17 @@ public class TabStripDragHandlerTest {
     }
 
     @Test
+    public void test_startMultiTabDragAction_FullScreenWithMultipleTabs() {
+        // Set params.
+        when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(3);
+        when(mTabModel.getMultiSelectedTabsCount()).thenReturn(2);
+
+        // Verify.
+        callAndVerifyAllowMultiTabDragToCreateInstance(true);
+    }
+
+    @Test
     public void test_startTabDragAction_FullScreenWithOneTab() {
         // Set params.
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
@@ -444,6 +503,25 @@ public class TabStripDragHandlerTest {
                 "Tab drag should not start.",
                 mSourceInstance.startTabDragAction(
                         mTabsToolbarView,
+                        mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        VIEW_WIDTH));
+    }
+
+    @Test
+    public void test_startMultiTabDragAction_FullScreenWithAllTabsSelected() {
+        // Set params.
+        when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
+        when(mTabModel.getMultiSelectedTabsCount()).thenReturn(2);
+
+        // Verify.
+        assertFalse(
+                "Tab drag should not start.",
+                mSourceInstance.startMultiTabDragAction(
+                        mTabsToolbarView,
+                        mTabsBeingDragged,
                         mTabBeingDragged,
                         DRAG_START_POINT,
                         TAB_POSITION_X,
@@ -463,6 +541,19 @@ public class TabStripDragHandlerTest {
     }
 
     @Test
+    public void test_startMultiTabDragAction_FullScreenWithMaxChromeInstances() {
+        // Set params.
+        when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(3);
+        when(mTabModel.getMultiSelectedTabsCount()).thenReturn(2);
+        MultiWindowUtils.setInstanceCountForTesting(5);
+        MultiWindowUtils.setMaxInstancesForTesting(5);
+
+        // Verify.
+        callAndVerifyAllowMultiTabDragToCreateInstance(false);
+    }
+
+    @Test
     public void test_startTabDragAction_FullScreenWithMaxInstanceAllowlistedOEM() {
         // Set params.
         when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
@@ -472,6 +563,19 @@ public class TabStripDragHandlerTest {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
 
         callAndVerifyAllowDragToCreateInstance(true);
+    }
+
+    @Test
+    public void test_startMultiTabDragAction_FullScreenWithMaxInstanceAllowlistedOEM() {
+        // Set params.
+        when(mMultiWindowUtils.isInMultiWindowMode(mActivity)).thenReturn(false);
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(3);
+        when(mTabModel.getMultiSelectedTabsCount()).thenReturn(2);
+        MultiWindowUtils.setInstanceCountForTesting(5);
+        MultiWindowUtils.setMaxInstancesForTesting(5);
+        ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
+
+        callAndVerifyAllowMultiTabDragToCreateInstance(true);
     }
 
     @Test
@@ -486,67 +590,74 @@ public class TabStripDragHandlerTest {
     }
 
     @Test
-    public void test_onProvideShadowMetrics_WithDesiredStartPosition_ReturnsSuccess() {
-        XrUtils.setXrDeviceForTesting(true);
-        // Prepare
-        final float dragStartXPosition = 480f;
-        final PointF dragStartPoint = new PointF(dragStartXPosition, 0f);
-        final Resources resources = ContextUtils.getApplicationContext().getResources();
-        // Call startDrag to set class variables.
-        mSourceInstance.startTabDragAction(
-                mTabsToolbarView, mTabBeingDragged, dragStartPoint, TAB_POSITION_X, VIEW_WIDTH);
+    public void test_startMultiTabDragAction_SplitScreenWithMaxChromeInstances() {
+        // Set params.
+        when(mTabModelSelector.getTotalTabCount()).thenReturn(3);
+        when(mTabModel.getMultiSelectedTabsCount()).thenReturn(2);
+        MultiWindowUtils.setInstanceCountForTesting(5);
+        MultiWindowUtils.setMaxInstancesForTesting(5);
 
-        View.DragShadowBuilder tabDragShadowBuilder =
-                mSourceInstance.createDragShadowBuilder(
-                        mTabsToolbarView, dragStartPoint, TAB_POSITION_X);
-
-        // Perform asking the TabDragShadowBuilder what is the anchor point.
-        Point dragSize = new Point(0, 0);
-        Point dragAnchor = new Point(0, 0);
-        tabDragShadowBuilder.onProvideShadowMetrics(dragSize, dragAnchor);
-
-        // Validate anchor.
-        assertEquals(
-                "Drag shadow x position is incorrect.",
-                Math.round(
-                        dragStartXPosition
-                                - TAB_POSITION_X * resources.getDisplayMetrics().density),
-                dragAnchor.x);
-        assertEquals(
-                "Drag shadow y position is incorrect.",
-                Math.round(
-                        resources.getDimension(R.dimen.tab_grid_card_header_height) / 2
-                                + resources.getDimension(R.dimen.tab_grid_card_margin)),
-                dragAnchor.y);
+        // Verify.
+        callAndVerifyAllowMultiTabDragToCreateInstance(false);
     }
 
     @Test
-    public void test_onProvideShadowMetrics_withTabLinkDragDropFF() {
+    public void testOnProvideShadowMetrics_Xr() {
+        DeviceInfo.setIsXrForTesting(true);
+        doTestOnProvideShadowMetrics();
+    }
+
+    @Test
+    public void testOnProvideShadowMetrics() {
+        doTestOnProvideShadowMetrics();
+    }
+
+    private void doTestOnProvideShadowMetrics() {
         // Call startDrag to set class variables.
         mSourceInstance.startTabDragAction(
                 mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X, VIEW_WIDTH);
         TabDragShadowBuilder tabDragShadowBuilder =
                 (TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder();
-        Resources resources = ContextUtils.getApplicationContext().getResources();
+        assert tabDragShadowBuilder != null;
 
         // Perform asking the TabDragShadowBuilder what is the anchor point.
-        Point dragSize = new Point(0, 0);
-        Point dragAnchor = new Point(0, 0);
-        tabDragShadowBuilder.onProvideShadowMetrics(dragSize, dragAnchor);
+        Point dragAnchor = new Point();
+        tabDragShadowBuilder.onProvideShadowMetrics(new Point(), dragAnchor);
 
         // Validate anchor.
-        assertEquals(
-                "Drag shadow x position is incorrect.",
-                Math.round(
-                        DRAG_START_POINT.x
-                                - TAB_POSITION_X * resources.getDisplayMetrics().density),
-                dragAnchor.x);
-        assertEquals(
-                "Drag shadow y position is incorrect.",
-                Math.round(
-                        resources.getDimension(R.dimen.tab_grid_card_header_height) / 2
-                                + resources.getDimension(R.dimen.tab_grid_card_margin)),
-                dragAnchor.y);
+        Resources resources = ContextUtils.getApplicationContext().getResources();
+        float headerHeight = resources.getDimension(R.dimen.tab_grid_card_header_height);
+        float cardMargin = resources.getDimension(R.dimen.tab_grid_card_margin);
+        float offsetX = DRAG_START_POINT.x - TAB_POSITION_X;
+        int expectedX = Math.round(offsetX * resources.getDisplayMetrics().density);
+        int expectedY = Math.round(headerHeight / 2 + cardMargin);
+        assertEquals("Drag shadow x position is incorrect.", expectedX, dragAnchor.x);
+        assertEquals("Drag shadow y position is incorrect.", expectedY, dragAnchor.y);
+    }
+
+    @Test
+    public void testOnProvideShadowMetrics_clampsNegativeOffset() {
+        // The touch point x is intentionally less than the tab position x, meaning the calculated
+        // offset should be negative. We want to verify that this gets clamped to 0.
+        float touchX = 0;
+        float tabPositionX = 200;
+        // Call startDrag to set class variables (with touchX < tabPositionX).
+        mSourceInstance.startTabDragAction(
+                mTabsToolbarView,
+                mTabBeingDragged,
+                new PointF(touchX, 0),
+                tabPositionX,
+                VIEW_WIDTH);
+        TabDragShadowBuilder tabDragShadowBuilder =
+                (TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder();
+        assert tabDragShadowBuilder != null;
+
+        // Perform asking the TabDragShadowBuilder what is the anchor point.
+        Point dragAnchor = new Point();
+        tabDragShadowBuilder.onProvideShadowMetrics(new Point(), dragAnchor);
+
+        // Verify the x-position gets clamped to 0.
+        assertEquals("Drag shadow x position should clamp to 0", 0, dragAnchor.x);
     }
 
     /**
@@ -587,6 +698,12 @@ public class TabStripDragHandlerTest {
         doTestOnDragDropInStripSource(/* isGroupDrag= */ true);
     }
 
+    /** Test for multi-tab drag {@link #ONDRAG_TEST_CASES} - Scenario A */
+    @Test
+    public void test_onDrag_dropInStrip_source_multiTab() {
+        doTestOnDragDropInStripSource_multiTab();
+    }
+
     /** Test for tab drag {@link #ONDRAG_TEST_CASES} - Scenario B */
     @Test
     public void test_onDrag_dropInToolbarContainer_source() {
@@ -597,6 +714,12 @@ public class TabStripDragHandlerTest {
     @Test
     public void test_onDrag_dropInToolbarContainer_source_tabGroup() {
         doTestOnDragDropInToolbarContainerSource(/* isGroupDrag= */ true);
+    }
+
+    /** Test for multi-tab drag {@link #ONDRAG_TEST_CASES} - Scenario B */
+    @Test
+    public void test_onDrag_dropInToolbarContainer_source_multiTab() {
+        doTestOnDragDropInToolbarContainerSource_multiTab();
     }
 
     @Test
@@ -741,16 +864,52 @@ public class TabStripDragHandlerTest {
                 /* mhtmlTabTitle= */ null);
     }
 
+    /** Test for Multi-Tab Drag {@link #ONDRAG_TEST_CASES} - Scenario D.1 */
+    @Test
+    public void test_onDrag_dropInStrip_destination_multiTab() {
+        doTestDropInStripDestinationForMultiTab();
+    }
+
     /** Test for Tab Drag {@link #ONDRAG_TEST_CASES} - Scenario D.2 */
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void test_onDrag_dropInStrip_differentModel_destination() {
         doTestDropInDestinationDifferentModel(/* isGroupDrag= */ false);
     }
 
     /** Test for Tab Group Drag {@link #ONDRAG_TEST_CASES} - Scenario D.2 */
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void test_onDrag_dropInStrip_differentModel_destination_tabGroup() {
         doTestDropInDestinationDifferentModel(/* isGroupDrag= */ true);
+    }
+
+    /** Test for Multi-Tab Drag {@link #ONDRAG_TEST_CASES} - Scenario D.2 */
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void test_onDrag_dropInStrip_differentModel_destination_multiTab() {
+        doTestDropInDestinationDifferentModel_multiTab();
+    }
+
+    /** Test for Tab Drag {@link #ONDRAG_TEST_CASES} - Scenario D.2 */
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void test_onDrag_dropInStrip_differentModel_fail_incognitoAsNewWindow() {
+        doTestDropInDestinationDifferentModel_fail(/* isGroupDrag= */ false);
+    }
+
+    /** Test for Tab Group Drag {@link #ONDRAG_TEST_CASES} - Scenario D.2 */
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void test_onDrag_dropInStrip_differentModel_fail_tabGroup_incognitoAsNewWindow() {
+        doTestDropInDestinationDifferentModel_fail(/* isGroupDrag= */ true);
+    }
+
+    /** Test for Multi-Tab Drag {@link #ONDRAG_TEST_CASES} - Scenario D.2 */
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void test_onDrag_dropInStrip_differentModel_fail_multiTab_incognitoAsNewWindow() {
+        doTestDropInDestinationDifferentModel_fail_multiTab();
     }
 
     /**
@@ -759,8 +918,8 @@ public class TabStripDragHandlerTest {
      */
     @Test
     public void test_onDrag_dropInStrip_withDragAsWindowFF_destination() {
-        XrUtils.setXrDeviceForTesting(true);
-        new DragEventInvoker(/* isGroupDrag= */ false, /* isGroupShared= */ false)
+        DeviceInfo.setIsXrForTesting(true);
+        new DragEventInvoker(DragType.SINGLE_TAB, /* isGroupShared= */ false)
                 .dragExit(mSourceInstance)
                 .verifyShadowVisibility(true)
                 .dragEnter(mDestInstance)
@@ -781,6 +940,12 @@ public class TabStripDragHandlerTest {
         doTestDropInDestinationToolbarContainer(/* isGroupDrag= */ true);
     }
 
+    /** Test for Multi-Tab Drag {@link #ONDRAG_TEST_CASES} - Scenario E */
+    @Test
+    public void test_onDrag_dropInToolbarContainer_destination_multiTab() {
+        doTestDropInDestinationToolbarContainer_multiTab();
+    }
+
     /** Test for Tab Drag {@link #ONDRAG_TEST_CASES} - Scenario F */
     @Test
     public void test_onDrag_exitIntoToolbarAndRenterStripAndDrop_source() {
@@ -791,6 +956,12 @@ public class TabStripDragHandlerTest {
     @Test
     public void test_onDrag_exitIntoToolbarAndRenterStripAndDrop_source_tabGroup() {
         doTestExitIntoSourceToolbarAndRenterStripAndDrop(/* isGroupDrag= */ true);
+    }
+
+    /** Test for Multi-Tab Drag {@link #ONDRAG_TEST_CASES} - Scenario F */
+    @Test
+    public void test_onDrag_exitIntoToolbarAndRenterStripAndDrop_source_multiTab() {
+        doTestExitIntoSourceToolbarAndRenterStripAndDrop_multiTab();
     }
 
     /** Test for Tab and Tab Group Drag{@link #ONDRAG_TEST_CASES} - Scenario G.1 */
@@ -923,7 +1094,7 @@ public class TabStripDragHandlerTest {
         when(mSourceMultiInstanceManager.closeChromeWindowIfEmpty(anyInt())).thenReturn(false);
 
         // Assume that the drag was not handled.
-        new DragEventInvoker(/* isGroupDrag= */ false, /* isGroupShared= */ false)
+        new DragEventInvoker(DragType.SINGLE_TAB, /* isGroupShared= */ false)
                 .dragExit(mSourceInstance)
                 .end(false);
 
@@ -935,8 +1106,7 @@ public class TabStripDragHandlerTest {
     public void test_onDrag_nullClipDescription() {
         // Mock drag event with null ClipDescription.
         DragEvent event =
-                mockDragEvent(
-                        DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY, /* isGroupDrag= */ false);
+                mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY, DragType.SINGLE_TAB);
         when(event.getClipDescription()).thenReturn(null);
 
         // No exception should be thrown when #onDragStart is invoked.
@@ -956,10 +1126,7 @@ public class TabStripDragHandlerTest {
                 mSourceInstance.onDrag(
                         mTabsToolbarView,
                         mockDragEvent(
-                                DragEvent.ACTION_DRAG_STARTED,
-                                POS_X,
-                                mPosY,
-                                /* isGroupDrag= */ false)));
+                                DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY, DragType.SINGLE_TAB)));
     }
 
     private void doTestOnDragDropInStripSource(boolean isGroupDrag) {
@@ -982,7 +1149,9 @@ public class TabStripDragHandlerTest {
                         .expectNoRecords("Android.DragDrop.Tab.Type.DesktopWindow")
                         .build();
 
-        new DragEventInvoker(isGroupDrag, /* isGroupShared= */ false)
+        new DragEventInvoker(
+                        isGroupDrag ? DragType.TAB_GROUP : DragType.SINGLE_TAB,
+                        /* isGroupShared= */ false)
                 .drop(mSourceInstance)
                 .end(true);
 
@@ -994,6 +1163,37 @@ public class TabStripDragHandlerTest {
         verify(mSourceStripLayoutHelper, times(2)).stopReorderMode();
         // Verify view not moved.
         verifyViewNotMovedToWindow(isGroupDrag);
+        // Verify destination strip not invoked.
+        verifyNoInteractions(mDestStripLayoutHelper);
+        // Verify histograms.
+        histogramExpectation.assertExpected();
+    }
+
+    private void doTestOnDragDropInStripSource_multiTab() {
+        String resultHistogram = "Android.DragDrop.MultiTab.FromStrip.Result";
+        String reorderHistogram = "Android.DragDrop.MultiTab.ReorderStripWithDragDrop";
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(resultHistogram, DragDropResult.SUCCESS)
+                        .expectBooleanRecord(reorderHistogram, false)
+                        .expectNoRecords("Android.DragDrop.Tab.FromStrip.Result.DesktopWindow")
+                        .expectNoRecords("Android.DragDrop.Tab.Type")
+                        .expectNoRecords("Android.DragDrop.Tab.Type.DesktopWindow")
+                        .build();
+
+        new DragEventInvoker(DragType.MULTI_TAB, /* isGroupShared= */ false)
+                .drop(mSourceInstance)
+                .end(true);
+
+        // Verify appropriate events are generated.
+        // Strip prepares for drop on drag enter.
+        verify(mSourceStripLayoutHelper, times(1))
+                .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+        // Stop reorder on drop and drag end.
+        verify(mSourceStripLayoutHelper, times(2)).stopReorderMode();
+        // Verify view not moved.
+        verify(mSourceMultiInstanceManager, times(0))
+                .moveTabsToWindow(any(Activity.class), any(), anyInt());
         // Verify destination strip not invoked.
         verifyNoInteractions(mDestStripLayoutHelper);
         // Verify histograms.
@@ -1016,7 +1216,9 @@ public class TabStripDragHandlerTest {
                         .expectNoRecords("Android.DragDrop.TabGroup.Type.DesktopWindow")
                         .expectNoRecords("Android.DragDrop.TabGroup.ReorderStripWithDragDrop")
                         .build();
-        new DragEventInvoker(isGroupDrag, /* isGroupShared= */ false)
+        new DragEventInvoker(
+                        isGroupDrag ? DragType.TAB_GROUP : DragType.SINGLE_TAB,
+                        /* isGroupShared= */ false)
                 // Drag our of strip but within toolbar container.
                 .dragLocationY(mSourceInstance, 3 * DRAG_MOVE_DISTANCE)
                 // Shadow visible when drag moves out of strip.
@@ -1032,6 +1234,45 @@ public class TabStripDragHandlerTest {
         verify(mSourceStripLayoutHelper, times(1)).handleDragExit(anyBoolean(), anyBoolean());
         // Verify view is not moved since drop is on source toolbar.
         verifyViewNotMovedToWindow(isGroupDrag);
+        // Verify tab cleared.
+        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode();
+        // Verify destination strip not invoked.
+        verifyNoInteractions(mDestStripLayoutHelper);
+        // Verify histograms.
+        histogramExpectation.assertExpected();
+    }
+
+    private void doTestOnDragDropInToolbarContainerSource_multiTab() {
+        String resultHistogram = "Android.DragDrop.MultiTab.FromStrip.Result";
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(resultHistogram, DragDropResult.IGNORED_TOOLBAR)
+                        .expectNoRecords("Android.DragDrop.Tab.FromStrip.Result.DesktopWindow")
+                        .expectNoRecords("Android.DragDrop.Tab.Type")
+                        .expectNoRecords("Android.DragDrop.Tab.Type.DesktopWindow")
+                        .expectNoRecords("Android.DragDrop.Tab.ReorderStripWithDragDrop")
+                        .expectNoRecords("Android.DragDrop.TabGroup.FromStrip.Result.DesktopWindow")
+                        .expectNoRecords("Android.DragDrop.TabGroup.Type")
+                        .expectNoRecords("Android.DragDrop.TabGroup.Type.DesktopWindow")
+                        .expectNoRecords("Android.DragDrop.TabGroup.ReorderStripWithDragDrop")
+                        .build();
+        new DragEventInvoker(DragType.MULTI_TAB, /* isGroupShared= */ false)
+                // Drag our of strip but within toolbar container.
+                .dragLocationY(mSourceInstance, 3 * DRAG_MOVE_DISTANCE)
+                // Shadow visible when drag moves out of strip.
+                .verifyShadowVisibility(true)
+                .drop(mSourceInstance)
+                .end(false);
+
+        // Verify appropriate events are generated.
+        // Strip prepares for drop on drag enter.
+        verify(mSourceStripLayoutHelper, times(1))
+                .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+        // Strip clears state for drop on drag exit.
+        verify(mSourceStripLayoutHelper, times(1)).handleDragExit(anyBoolean(), anyBoolean());
+        // Verify view is not moved since drop is on source toolbar.
+        verify(mSourceMultiInstanceManager, times(0))
+                .moveTabsToWindow(any(Activity.class), any(), anyInt());
         // Verify tab cleared.
         verify(mSourceStripLayoutHelper, times(1)).stopReorderMode();
         // Verify destination strip not invoked.
@@ -1067,12 +1308,13 @@ public class TabStripDragHandlerTest {
         MultiWindowUtils.setInstanceCountForTesting(5);
         MultiWindowUtils.setMaxInstancesForTesting(5);
 
-        new DragEventInvoker(isGroupDrag, /* isGroupShared= */ false)
+        new DragEventInvoker(
+                        isGroupDrag ? DragType.TAB_GROUP : DragType.SINGLE_TAB,
+                        /* isGroupShared= */ false)
                 .dragExit(mSourceInstance)
                 .end(false);
 
-        verifyToast(
-                ContextUtils.getApplicationContext().getString(R.string.max_number_of_windows, 5));
+        verify(mSourceMultiInstanceManager).showInstanceCreationLimitMessage(any());
         if (!isGroupDrag) {
             histogramExpectation.assertExpected();
         }
@@ -1097,7 +1339,9 @@ public class TabStripDragHandlerTest {
 
         // Simulate unhandled tab drops |failureCount| number of times.
         for (int i = 0; i < failureCount; i++) {
-            new DragEventInvoker(isGroupDrag, /* isGroupShared= */ false)
+            new DragEventInvoker(
+                            isGroupDrag ? DragType.TAB_GROUP : DragType.SINGLE_TAB,
+                            /* isGroupShared= */ false)
                     .dragExit(mSourceInstance)
                     .end(false);
         }
@@ -1138,7 +1382,8 @@ public class TabStripDragHandlerTest {
         }
         HistogramWatcher histogramExpectation = builder.build();
 
-        when(mDestStripLayoutHelper.getTabIndexForTabDrop(anyFloat())).thenReturn(TAB_INDEX);
+        when(mDestStripLayoutHelper.getTabIndexForTabDrop(anyFloat(), anyBoolean()))
+                .thenReturn(TAB_INDEX);
 
         // Invoke drop.
         invokeDropInDestinationStrip(
@@ -1165,6 +1410,39 @@ public class TabStripDragHandlerTest {
 
         assertNull(ShadowToast.getLatestToast());
         histogramExpectation.assertExpected();
+    }
+
+    private void doTestDropInStripDestinationForMultiTab() {
+        when(mDestStripLayoutHelper.getTabIndexForTabDrop(anyFloat(), anyBoolean()))
+                .thenReturn(TAB_INDEX);
+
+        // Invoke drop.
+        new DragEventInvoker(DragType.MULTI_TAB, /* isGroupShared= */ false)
+                .dragExit(mSourceInstance)
+                .verifyShadowVisibility(true)
+                .dragEnter(mDestInstance)
+                .verifyShadowVisibility(true)
+                .drop(mDestInstance)
+                .end(true);
+
+        // Verify view moved to window.
+        verify(mDestMultiInstanceManager, times(1))
+                .moveTabsToWindow(any(Activity.class), eq(mTabsBeingDragged), eq(TAB_INDEX));
+        List<Integer> tabIds = new ArrayList<>();
+        for (Tab tab : mTabsBeingDragged) {
+            tabIds.add(tab.getId());
+        }
+        verify(mDestStripLayoutHelper, times(1))
+                .maybeMergeToGroupOnDrop(eq(tabIds), eq(TAB_INDEX), eq(false));
+
+        // Verify reorder mode cleared.
+        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode();
+        // Verify destination strip calls.
+        verify(mDestStripLayoutHelper)
+                .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+        verify(mDestStripLayoutHelper).stopReorderMode();
+
+        assertNull(ShadowToast.getLatestToast());
     }
 
     private void doTestDropInDestinationDifferentModel(boolean isGroupDrag) {
@@ -1207,6 +1485,79 @@ public class TabStripDragHandlerTest {
         histogramExpectation.assertExpected();
     }
 
+    private void doTestDropInDestinationDifferentModel_multiTab() {
+        String resultHistogram = "Android.DragDrop.MultiTab.FromStrip.Result";
+        String typeHistogram = "Android.DragDrop.MultiTab.Type";
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(resultHistogram, DragDropResult.SUCCESS)
+                        .expectIntRecord(typeHistogram, DragDropType.TAB_STRIP_TO_TAB_STRIP)
+                        .expectNoRecords("Android.DragDrop.Tab.FromStrip.Result.DesktopWindow")
+                        .expectNoRecords("Android.DragDrop.Tab.Type.DesktopWindow")
+                        .expectNoRecords("Android.DragDrop.Tab.ReorderStripWithDragDrop")
+                        .build();
+
+        // Destination tab model is incognito.
+        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+        TabModel standardModelDestination = mock(TabModel.class);
+        when(standardModelDestination.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getModel(false)).thenReturn(standardModelDestination);
+        when(standardModelDestination.getCount()).thenReturn(5);
+
+        // Verify - View moved to destination window at end.
+        new DragEventInvoker(DragType.MULTI_TAB, /* isGroupShared= */ false)
+                .dragExit(mSourceInstance)
+                .verifyShadowVisibility(true)
+                .dragEnter(mDestInstance)
+                .verifyShadowVisibility(true)
+                .drop(mDestInstance)
+                .end(true);
+        verify(mDestMultiInstanceManager, times(1))
+                .moveTabsToWindow(any(Activity.class), eq(mTabsBeingDragged), eq(5));
+
+        // Verify toast.
+        verifyToast(
+                ContextUtils.getApplicationContext()
+                        .getString(R.string.tab_dropped_different_model));
+        assertNotNull(ShadowToast.getLatestToast());
+
+        // Verify histograms.
+        histogramExpectation.assertExpected();
+    }
+
+    private void doTestDropInDestinationDifferentModel_fail(boolean isGroupDrag) {
+        // Destination tab model is incognito.
+        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+        TabModel standardModelDestination = mock(TabModel.class);
+        when(standardModelDestination.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getModel(false)).thenReturn(standardModelDestination);
+        when(standardModelDestination.getCount()).thenReturn(5);
+
+        // Verify - View did not moved to destination window at end.
+        invokeDropInDestinationStrip(
+                /* dragEndRes= */ false, isGroupDrag, /* isGroupShared= */ false);
+        verifyViewNotMovedToWindow(isGroupDrag);
+    }
+
+    private void doTestDropInDestinationDifferentModel_fail_multiTab() {
+        // Destination tab model is incognito.
+        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+        TabModel standardModelDestination = mock(TabModel.class);
+        when(standardModelDestination.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.getModel(false)).thenReturn(standardModelDestination);
+        when(standardModelDestination.getCount()).thenReturn(5);
+
+        // Verify - View did not moved to destination window at end.
+        new DragEventInvoker(DragType.MULTI_TAB, /* isGroupShared= */ false)
+                .dragExit(mSourceInstance)
+                .verifyShadowVisibility(true)
+                .dragEnter(mDestInstance)
+                .verifyShadowVisibility(true)
+                .drop(mDestInstance)
+                .end(true);
+        verifyViewNotMovedToWindow(/* isGroupDrag= */ false);
+    }
+
     private void doTestDropInDestinationToolbarContainer(boolean isGroupDrag) {
         String resultHistogram =
                 String.format(
@@ -1224,7 +1575,9 @@ public class TabStripDragHandlerTest {
                         .expectNoRecords("Android.DragDrop.TabGroup.Type.DesktopWindow")
                         .expectNoRecords("Android.DragDrop.TabGroup.ReorderStripWithDragDrop")
                         .build();
-        new DragEventInvoker(isGroupDrag, /* isGroupShared= */ false)
+        new DragEventInvoker(
+                        isGroupDrag ? DragType.TAB_GROUP : DragType.SINGLE_TAB,
+                        /* isGroupShared= */ false)
                 .dragExit(mSourceInstance)
                 .verifyShadowVisibility(true)
                 .dragEnter(mDestInstance)
@@ -1256,6 +1609,54 @@ public class TabStripDragHandlerTest {
         histogramExpectation.assertExpected();
     }
 
+    private void doTestDropInDestinationToolbarContainer_multiTab() {
+        String resultHistogram = "Android.DragDrop.MultiTab.FromStrip.Result";
+
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(resultHistogram, DragDropResult.IGNORED_TOOLBAR)
+                        .expectNoRecords("Android.DragDrop.Tab.FromStrip.Result.DesktopWindow")
+                        .expectNoRecords("Android.DragDrop.Tab.Type")
+                        .expectNoRecords("Android.DragDrop.Tab.Type.DesktopWindow")
+                        .expectNoRecords("Android.DragDrop.Tab.ReorderStripWithDragDrop")
+                        .expectNoRecords("Android.DragDrop.TabGroup.FromStrip.Result.DesktopWindow")
+                        .expectNoRecords("Android.DragDrop.TabGroup.Type")
+                        .expectNoRecords("Android.DragDrop.TabGroup.Type.DesktopWindow")
+                        .expectNoRecords("Android.DragDrop.TabGroup.ReorderStripWithDragDrop")
+                        .build();
+        new DragEventInvoker(DragType.MULTI_TAB, /* isGroupShared= */ false)
+                .dragExit(mSourceInstance)
+                .verifyShadowVisibility(true)
+                .dragEnter(mDestInstance)
+                // Move to toolbar container outside of tab strip.
+                .dragLocationY(mDestInstance, 3 * DRAG_MOVE_DISTANCE)
+                .verifyShadowVisibility(true)
+                .drop(mDestInstance)
+                .end(false);
+
+        // Verify appropriate events are generated.
+        // Source strip prepares for drop on drag enter.
+        verify(mSourceStripLayoutHelper, times(1))
+                .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+        // Source strip clears state for drop on drag exit.
+        verify(mSourceStripLayoutHelper, times(1)).handleDragExit(anyBoolean(), anyBoolean());
+        // Destination strip prepares for drop on drag enter.
+        verify(mDestStripLayoutHelper, times(1))
+                .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+        // Destination strip clears state for drop on drag exit.
+        verify(mDestStripLayoutHelper, times(1)).handleDragExit(anyBoolean(), anyBoolean());
+
+        // Verify not moved.
+        verify(mSourceMultiInstanceManager, times(0))
+                .moveTabsToWindow(any(Activity.class), any(), anyInt());
+
+        // Verify tab cleared.
+        verify(mSourceStripLayoutHelper, times(1)).stopReorderMode();
+
+        // Verify histograms.
+        histogramExpectation.assertExpected();
+    }
+
     private void doTestExitIntoSourceToolbarAndRenterStripAndDrop(boolean isGroupDrag) {
         String resultHistogram =
                 String.format(
@@ -1276,7 +1677,9 @@ public class TabStripDragHandlerTest {
                         .expectNoRecords("Android.DragDrop.Tab.Type.DesktopWindow")
                         .build();
 
-        new DragEventInvoker(isGroupDrag, /* isGroupShared= */ false)
+        new DragEventInvoker(
+                        isGroupDrag ? DragType.TAB_GROUP : DragType.SINGLE_TAB,
+                        /* isGroupShared= */ false)
                 .dragLocationY(mSourceInstance, 3 * DRAG_MOVE_DISTANCE) // move to toolbar
                 .verifyShadowVisibility(true)
                 .dragLocationY(mSourceInstance, -3 * DRAG_MOVE_DISTANCE) // move back to strip
@@ -1301,6 +1704,47 @@ public class TabStripDragHandlerTest {
         histogramExpectation.assertExpected();
     }
 
+    private void doTestExitIntoSourceToolbarAndRenterStripAndDrop_multiTab() {
+        String resultHistogram = "Android.DragDrop.MultiTab.FromStrip.Result";
+        String reorderHistogram = "Android.DragDrop.MultiTab.ReorderStripWithDragDrop";
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(resultHistogram, DragDropResult.SUCCESS)
+                        .expectBooleanRecord(reorderHistogram, true)
+                        .expectNoRecords("Android.DragDrop.TabGroup.FromStrip.Result.DesktopWindow")
+                        .expectNoRecords("Android.DragDrop.TabGroup.Type")
+                        .expectNoRecords("Android.DragDrop.TabGroup.Type.DesktopWindow")
+                        .expectNoRecords("Android.DragDrop.Tab.FromStrip.Result.DesktopWindow")
+                        .expectNoRecords("Android.DragDrop.Tab.Type")
+                        .expectNoRecords("Android.DragDrop.Tab.Type.DesktopWindow")
+                        .build();
+
+        new DragEventInvoker(DragType.MULTI_TAB, /* isGroupShared= */ false)
+                .dragLocationY(mSourceInstance, 3 * DRAG_MOVE_DISTANCE) // move to toolbar
+                .verifyShadowVisibility(true)
+                .dragLocationY(mSourceInstance, -3 * DRAG_MOVE_DISTANCE) // move back to strip
+                .verifyShadowVisibility(false)
+                .drop(mSourceInstance)
+                .end(true);
+
+        // Verify appropriate events are generated.
+        // Strip prepares for drop on drag enter. Entered twice.
+        verify(mSourceStripLayoutHelper, times(2))
+                .handleDragEnter(anyFloat(), anyFloat(), anyBoolean(), anyBoolean());
+        // Stop reorder on drop and drag end.
+        verify(mSourceStripLayoutHelper, times(2)).stopReorderMode();
+
+        // Verify not moved.
+        verify(mSourceMultiInstanceManager, times(0))
+                .moveTabsToWindow(any(Activity.class), any(), anyInt());
+
+        // Verify destination strip not invoked.
+        verifyNoInteractions(mDestStripLayoutHelper);
+
+        // Verify histograms.
+        histogramExpectation.assertExpected();
+    }
+
     private void doTestOnDragInvalidClipData(boolean isGroupDrag) {
         // Set state.
         DragDropGlobalState.store(CURR_INSTANCE_ID, mock(ChromeDropDataAndroid.class), null);
@@ -1308,7 +1752,11 @@ public class TabStripDragHandlerTest {
         // Trigger drop with invalid tabId.
         mSourceInstance.onDrag(
                 mTabsToolbarView,
-                mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY, isGroupDrag));
+                mockDragEvent(
+                        DragEvent.ACTION_DRAG_STARTED,
+                        POS_X,
+                        mPosY,
+                        isGroupDrag ? DragType.TAB_GROUP : DragType.SINGLE_TAB));
         DragEvent event;
         if (isGroupDrag) {
             event =
@@ -1318,12 +1766,12 @@ public class TabStripDragHandlerTest {
                             mPosY,
                             /* tab= */ null,
                             mTabGroupMetadata,
-                            /* isGroupDrag= */ true);
+                            DragType.TAB_GROUP);
             mSourceInstance.onDrag(mTabsToolbarView, event);
 
             // Verify - Move to new window not invoked.
             verify(mDestMultiInstanceManager, times(0))
-                    .moveTabGroupToWindow(any(), any(), anyInt());
+                    .moveTabGroupToWindow(any(Activity.class), any(), anyInt());
         } else {
             event =
                     mockDragEvent(
@@ -1332,11 +1780,12 @@ public class TabStripDragHandlerTest {
                             mPosY,
                             MockTab.createAndInitialize(TAB_ID_NOT_DRAGGED, mProfile),
                             mTabGroupMetadata,
-                            /* isGroupDrag= */ false);
+                            DragType.SINGLE_TAB);
             mSourceInstance.onDrag(mTabsToolbarView, event);
 
             // Verify - Move to new window not invoked.
-            verify(mDestMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
+            verify(mDestMultiInstanceManager, times(0))
+                    .moveTabsToWindow(any(Activity.class), any(), anyInt());
         }
     }
 
@@ -1344,23 +1793,32 @@ public class TabStripDragHandlerTest {
         mTabStripVisible = false;
 
         // Start drag action.
-        startDragAction(isGroupDrag, /* isGroupShared= */ false);
+        startDragAction(isGroupDrag ? DragType.TAB_GROUP : DragType.SINGLE_TAB, false);
 
         boolean res =
                 mDestInstance.onDrag(
                         mTabsToolbarView,
-                        mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY, isGroupDrag));
+                        mockDragEvent(
+                                DragEvent.ACTION_DRAG_STARTED,
+                                POS_X,
+                                mPosY,
+                                isGroupDrag ? DragType.TAB_GROUP : DragType.SINGLE_TAB));
         assertFalse("onDrag should return false.", res);
     }
 
     private void doTestOnDragStartsOutsideSourceStripRunnableSuccess(boolean isGroupDrag) {
         // Start drag action. Forgo DragEventInvoker, since it mocks the drag enter on start.
-        startDragAction(isGroupDrag, /* isGroupShared= */ false);
+        startDragAction(
+                isGroupDrag ? DragType.TAB_GROUP : DragType.SINGLE_TAB, /* isGroupShared= */ false);
 
         // Verify the drag shadow begins invisible after ACTION_DRAG_STARTED.
         mSourceInstance.onDrag(
                 mTabsToolbarView,
-                mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY, isGroupDrag));
+                mockDragEvent(
+                        DragEvent.ACTION_DRAG_STARTED,
+                        POS_X,
+                        mPosY,
+                        isGroupDrag ? DragType.TAB_GROUP : DragType.SINGLE_TAB));
         assertFalse(
                 "Drag shadow should not yet be visible.",
                 ((TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder())
@@ -1376,12 +1834,17 @@ public class TabStripDragHandlerTest {
 
     private void doTestOnDragStartsOutsideSourceStripRunnableCancelledOnEnter(boolean isGroupDrag) {
         // Start drag action. Forgo DragEventInvoker, since it mocks the drag enter on start.
-        startDragAction(isGroupDrag, /* isGroupShared= */ false);
+        startDragAction(
+                isGroupDrag ? DragType.TAB_GROUP : DragType.SINGLE_TAB, /* isGroupShared= */ false);
 
         // Verify the drag shadow begins invisible after ACTION_DRAG_STARTED.
         mSourceInstance.onDrag(
                 mTabsToolbarView,
-                mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY, isGroupDrag));
+                mockDragEvent(
+                        DragEvent.ACTION_DRAG_STARTED,
+                        POS_X,
+                        mPosY,
+                        isGroupDrag ? DragType.TAB_GROUP : DragType.SINGLE_TAB));
         assertFalse(
                 "Drag shadow should not yet be visible.",
                 ((TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder())
@@ -1392,10 +1855,18 @@ public class TabStripDragHandlerTest {
         // needed to verify the tab strip part of the view was entered.
         mSourceInstance.onDrag(
                 mTabsToolbarView,
-                mockDragEvent(DragEvent.ACTION_DRAG_ENTERED, POS_X, mPosY, isGroupDrag));
+                mockDragEvent(
+                        DragEvent.ACTION_DRAG_ENTERED,
+                        POS_X,
+                        mPosY,
+                        isGroupDrag ? DragType.TAB_GROUP : DragType.SINGLE_TAB));
         mSourceInstance.onDrag(
                 mTabsToolbarView,
-                mockDragEvent(DragEvent.ACTION_DRAG_LOCATION, POS_X, mPosY, isGroupDrag));
+                mockDragEvent(
+                        DragEvent.ACTION_DRAG_LOCATION,
+                        POS_X,
+                        mPosY,
+                        isGroupDrag ? DragType.TAB_GROUP : DragType.SINGLE_TAB));
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertFalse(
                 "Drag shadow should still not visible.",
@@ -1405,12 +1876,17 @@ public class TabStripDragHandlerTest {
 
     private void testOnDragStartsOutsideSourceStripRunnableCancelledOnEnd(boolean isGroupDrag) {
         // Start drag action. Forgo DragEventInvoker, since it mocks the drag enter on start.
-        startDragAction(isGroupDrag, /* isGroupShared= */ false);
+        startDragAction(
+                isGroupDrag ? DragType.TAB_GROUP : DragType.SINGLE_TAB, /* isGroupShared= */ false);
 
         // Verify the drag shadow begins invisible after ACTION_DRAG_STARTED.
         mSourceInstance.onDrag(
                 mTabsToolbarView,
-                mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY, isGroupDrag));
+                mockDragEvent(
+                        DragEvent.ACTION_DRAG_STARTED,
+                        POS_X,
+                        mPosY,
+                        isGroupDrag ? DragType.TAB_GROUP : DragType.SINGLE_TAB));
         assertTrue(
                 "#onDragExit runnable should be posted.",
                 mSourceInstance
@@ -1420,7 +1896,11 @@ public class TabStripDragHandlerTest {
         // Verify the runnable has been cancelled after ACTION_DRAG_ENDED.
         mSourceInstance.onDrag(
                 mTabsToolbarView,
-                mockDragEvent(DragEvent.ACTION_DRAG_ENDED, POS_X, mPosY, isGroupDrag));
+                mockDragEvent(
+                        DragEvent.ACTION_DRAG_ENDED,
+                        POS_X,
+                        mPosY,
+                        isGroupDrag ? DragType.TAB_GROUP : DragType.SINGLE_TAB));
         assertFalse(
                 "#onDragExit runnable should be cleared.",
                 mSourceInstance
@@ -1442,7 +1922,7 @@ public class TabStripDragHandlerTest {
 
     private void invokeDropInDestinationStrip(
             boolean dragEndRes, boolean isGroupDrag, boolean isGroupShared) {
-        new DragEventInvoker(isGroupDrag, isGroupShared)
+        new DragEventInvoker(isGroupDrag ? DragType.TAB_GROUP : DragType.SINGLE_TAB, isGroupShared)
                 .dragExit(mSourceInstance)
                 .verifyShadowVisibility(true)
                 .dragEnter(mDestInstance)
@@ -1451,28 +1931,34 @@ public class TabStripDragHandlerTest {
                 .end(dragEndRes);
     }
 
+    enum DragType {
+        SINGLE_TAB,
+        MULTI_TAB,
+        TAB_GROUP
+    }
+
     class DragEventInvoker {
 
-        private final boolean mIsGroupDrag;
+        private final DragType mDragType;
 
-        DragEventInvoker(boolean isGroupDrag, boolean isGroupShared) {
-            mIsGroupDrag = isGroupDrag;
+        DragEventInvoker(DragType dragType, boolean isGroupShared) {
+            mDragType = dragType;
             // Start drag action.
-            startDragAction(isGroupDrag, isGroupShared);
+            startDragAction(mDragType, isGroupShared);
             // drag invokes DRAG_START and DRAG_ENTER on source and DRAG_START on destination.
             mSourceInstance.onDrag(
                     mTabsToolbarView,
-                    mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY, mIsGroupDrag));
+                    mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY, mDragType));
             mDestInstance.onDrag(
                     mTabsToolbarView,
-                    mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY, mIsGroupDrag));
+                    mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY, mDragType));
             mSourceInstance.onDrag(
                     mTabsToolbarView,
-                    mockDragEvent(DragEvent.ACTION_DRAG_ENTERED, POS_X, mPosY, mIsGroupDrag));
+                    mockDragEvent(DragEvent.ACTION_DRAG_ENTERED, POS_X, mPosY, mDragType));
             // Move within the tab strip area to set lastX / lastY.
             mSourceInstance.onDrag(
                     mTabsToolbarView,
-                    mockDragEvent(DragEvent.ACTION_DRAG_LOCATION, POS_X + 10, mPosY, mIsGroupDrag));
+                    mockDragEvent(DragEvent.ACTION_DRAG_LOCATION, POS_X + 10, mPosY, mDragType));
             // Verify shadow is not visible.
             verifyShadowVisibility(false);
         }
@@ -1481,15 +1967,14 @@ public class TabStripDragHandlerTest {
             mPosY += distance;
             instance.onDrag(
                     mTabsToolbarView,
-                    mockDragEvent(DragEvent.ACTION_DRAG_LOCATION, POS_X, mPosY, mIsGroupDrag));
+                    mockDragEvent(DragEvent.ACTION_DRAG_LOCATION, POS_X, mPosY, mDragType));
             return this;
         }
 
         public DragEventInvoker dragExit(TabStripDragHandler instance) {
             instance.onDrag(
                     mTabsToolbarView,
-                    mockDragEvent(
-                            DragEvent.ACTION_DRAG_EXITED, /* x= */ 0, /* y= */ 0, mIsGroupDrag));
+                    mockDragEvent(DragEvent.ACTION_DRAG_EXITED, /* x= */ 0, /* y= */ 0, mDragType));
             return this;
         }
 
@@ -1497,25 +1982,25 @@ public class TabStripDragHandlerTest {
             mPosY = mTabStripHeight - 2 * DRAG_MOVE_DISTANCE;
             instance.onDrag(
                     mTabsToolbarView,
-                    mockDragEvent(DragEvent.ACTION_DRAG_ENTERED, POS_X, mPosY, mIsGroupDrag));
+                    mockDragEvent(DragEvent.ACTION_DRAG_ENTERED, POS_X, mPosY, mDragType));
             // Also trigger DRAG_LOCATION following DRAG_ENTERED since enter is no-op in
             // implementation.
             instance.onDrag(
                     mTabsToolbarView,
-                    mockDragEvent(DragEvent.ACTION_DRAG_LOCATION, POS_X, mPosY, mIsGroupDrag));
+                    mockDragEvent(DragEvent.ACTION_DRAG_LOCATION, POS_X, mPosY, mDragType));
             return this;
         }
 
         public DragEventInvoker drop(TabStripDragHandler instance) {
             instance.onDrag(
                     mTabsToolbarView,
-                    mockDragEvent(DragEvent.ACTION_DROP, POS_X, mPosY, mIsGroupDrag));
+                    mockDragEvent(DragEvent.ACTION_DROP, POS_X, mPosY, mDragType));
             return this;
         }
 
         public DragEventInvoker end(boolean res) {
-            mDestInstance.onDrag(mTabsToolbarView, mockDragEndEvent(res, mIsGroupDrag));
-            mSourceInstance.onDrag(mTabsToolbarView, mockDragEndEvent(res, mIsGroupDrag));
+            mDestInstance.onDrag(mTabsToolbarView, mockDragEndEvent(res, mDragType));
+            mSourceInstance.onDrag(mTabsToolbarView, mockDragEndEvent(res, mDragType));
             assertFalse(
                     "Global state should be cleared on all drag end",
                     DragDropGlobalState.hasValue());
@@ -1532,7 +2017,7 @@ public class TabStripDragHandlerTest {
         }
     }
 
-    private DragEvent mockDragEndEvent(boolean res, boolean isGroupDrag) {
+    private DragEvent mockDragEndEvent(boolean res, DragType dragType) {
         DragEvent dragEvent =
                 mockDragEvent(
                         DragEvent.ACTION_DRAG_ENDED,
@@ -1540,13 +2025,13 @@ public class TabStripDragHandlerTest {
                         /* y= */ 0f,
                         mTabBeingDragged,
                         mTabGroupMetadata,
-                        isGroupDrag);
+                        dragType);
         when(dragEvent.getResult()).thenReturn(res);
         return dragEvent;
     }
 
-    private DragEvent mockDragEvent(int action, float x, float y, boolean isGroupDrag) {
-        return mockDragEvent(action, x, y, mTabBeingDragged, mTabGroupMetadata, isGroupDrag);
+    private DragEvent mockDragEvent(int action, float x, float y, DragType dragType) {
+        return mockDragEvent(action, x, y, mTabBeingDragged, mTabGroupMetadata, dragType);
     }
 
     private DragEvent mockDragEvent(
@@ -1555,33 +2040,40 @@ public class TabStripDragHandlerTest {
             float y,
             Tab tab,
             TabGroupMetadata tabGroupMetadata,
-            boolean isGroupDrag) {
+            DragType dragType) {
         DragEvent event = mock(DragEvent.class);
         ChromeDropDataAndroid dropData;
-        if (isGroupDrag) {
-            dropData =
-                    new ChromeTabGroupDropDataAndroid.Builder()
-                            .withTabGroupMetadata(tabGroupMetadata)
-                            .build();
-            when(event.getClipData())
-                    .thenReturn(
-                            new ClipData(
-                                    null,
-                                    SUPPORTED_GROUP_MIME_TYPES,
-                                    new Item(dropData.buildTabClipDataText(mContext), null)));
-            when(event.getClipDescription())
-                    .thenReturn(new ClipDescription("", SUPPORTED_GROUP_MIME_TYPES));
-        } else {
-            dropData = new ChromeTabDropDataAndroid.Builder().withTab(tab).build();
-            when(event.getClipData())
-                    .thenReturn(
-                            new ClipData(
-                                    null,
-                                    SUPPORTED_TAB_MIME_TYPES,
-                                    new Item(dropData.buildTabClipDataText(mContext), null)));
-            when(event.getClipDescription())
-                    .thenReturn(new ClipDescription("", SUPPORTED_TAB_MIME_TYPES));
+        String[] mimeTypes;
+        switch (dragType) {
+            case SINGLE_TAB:
+                dropData = new ChromeTabDropDataAndroid.Builder().withTab(tab).build();
+                mimeTypes = SUPPORTED_TAB_MIME_TYPES;
+                break;
+            case MULTI_TAB:
+                dropData =
+                        new ChromeMultiTabDropDataAndroid.Builder()
+                                .withTabs(mTabsBeingDragged)
+                                .build();
+                mimeTypes = new String[] {"chrome/multi-tab"};
+                break;
+            case TAB_GROUP:
+                dropData =
+                        new ChromeTabGroupDropDataAndroid.Builder()
+                                .withTabGroupMetadata(tabGroupMetadata)
+                                .build();
+                mimeTypes = SUPPORTED_GROUP_MIME_TYPES;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid drag type.");
         }
+
+        when(event.getClipData())
+                .thenReturn(
+                        new ClipData(
+                                null,
+                                mimeTypes,
+                                new Item(dropData.buildTabClipDataText(mContext), null)));
+        when(event.getClipDescription()).thenReturn(new ClipDescription("", mimeTypes));
         when(event.getAction()).thenReturn(action);
         when(event.getX()).thenReturn(x);
         when(event.getY()).thenReturn(y);
@@ -1594,6 +2086,30 @@ public class TabStripDragHandlerTest {
                 "Tab drag should start.",
                 mSourceInstance.startTabDragAction(
                         mTabsToolbarView,
+                        mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        VIEW_WIDTH));
+        var dropDataCaptor = ArgumentCaptor.forClass(ChromeDropDataAndroid.class);
+        verify(mDragDropDelegate)
+                .startDragAndDrop(
+                        eq(mTabsToolbarView),
+                        any(DragShadowBuilder.class),
+                        dropDataCaptor.capture());
+        assertEquals(
+                "DropData.allowDragToCreateInstance value is not as expected.",
+                expectedAllowDragToCreateInstance,
+                dropDataCaptor.getValue().allowDragToCreateInstance);
+    }
+
+    private void callAndVerifyAllowMultiTabDragToCreateInstance(
+            boolean expectedAllowDragToCreateInstance) {
+        // Verify.
+        assertTrue(
+                "Multi-Tab drag should start.",
+                mSourceInstance.startMultiTabDragAction(
+                        mTabsToolbarView,
+                        mTabsBeingDragged,
                         mTabBeingDragged,
                         DRAG_START_POINT,
                         TAB_POSITION_X,
@@ -1633,33 +2149,45 @@ public class TabStripDragHandlerTest {
         when(mTabModel.getTabById(mGroupedTab2.getId())).thenReturn(mGroupedTab2);
     }
 
-    private void startDragAction(boolean isGroupDrag, boolean isGroupShared) {
-        if (isGroupDrag) {
-            mSourceInstance.startGroupDragAction(
-                    mTabsToolbarView,
-                    TAB_GROUP_ID,
-                    isGroupShared,
-                    new PointF(POS_X, mPosY),
-                    TAB_POSITION_X,
-                    VIEW_WIDTH);
-        } else {
-            mSourceInstance.startTabDragAction(
-                    mTabsToolbarView,
-                    mTabBeingDragged,
-                    new PointF(POS_X, mPosY),
-                    TAB_POSITION_X,
-                    VIEW_WIDTH);
+    private void startDragAction(DragType dragType, boolean isGroupShared) {
+        switch (dragType) {
+            case SINGLE_TAB:
+                mSourceInstance.startTabDragAction(
+                        mTabsToolbarView,
+                        mTabBeingDragged,
+                        new PointF(POS_X, mPosY),
+                        TAB_POSITION_X,
+                        VIEW_WIDTH);
+                break;
+            case MULTI_TAB:
+                mSourceInstance.startMultiTabDragAction(
+                        mTabsToolbarView,
+                        mTabsBeingDragged,
+                        mTabsBeingDragged.get(0),
+                        new PointF(POS_X, mPosY),
+                        TAB_POSITION_X,
+                        VIEW_WIDTH);
+                break;
+            case TAB_GROUP:
+                mSourceInstance.startGroupDragAction(
+                        mTabsToolbarView,
+                        TAB_GROUP_ID,
+                        isGroupShared,
+                        new PointF(POS_X, mPosY),
+                        TAB_POSITION_X,
+                        VIEW_WIDTH);
         }
     }
 
     private void verifyViewNotMovedToWindow(boolean isGroupDrag) {
         if (isGroupDrag) {
             // Verify tab group is not moved.
-            verify(mSourceMultiInstanceManager, times(0))
-                    .moveTabGroupToWindow(any(), eq(mTabGroupMetadata), anyInt());
+            verify(mDestMultiInstanceManager, times(0))
+                    .moveTabGroupToWindow(any(Activity.class), eq(mTabGroupMetadata), anyInt());
         } else {
             // Verify tab is not moved.
-            verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
+            verify(mDestMultiInstanceManager, times(0))
+                    .moveTabsToWindow(any(Activity.class), any(), anyInt());
         }
     }
 
@@ -1667,10 +2195,11 @@ public class TabStripDragHandlerTest {
         if (isGroupDrag) {
             // Verify tab group is moved.
             verify(mDestMultiInstanceManager, times(1))
-                    .moveTabGroupToWindow(any(), eq(mTabGroupMetadata), eq(index));
+                    .moveTabGroupToWindow(any(Activity.class), eq(mTabGroupMetadata), eq(index));
         } else {
             // Verify tab is moved.
-            verify(mDestMultiInstanceManager, times(1)).moveTabToWindow(any(), any(), eq(index));
+            verify(mDestMultiInstanceManager, times(1))
+                    .moveTabsToWindow(any(Activity.class), any(), eq(index));
         }
     }
 

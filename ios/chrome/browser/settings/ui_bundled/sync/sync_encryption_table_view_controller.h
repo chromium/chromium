@@ -9,10 +9,24 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
 class Browser;
+@class SyncEncryptionTableViewController;
+
+@protocol SyncEncryptionTableViewControllerPresentationDelegate <NSObject>
+
+// Called when the SyncEncryptionTableViewController has been
+// dismissed.
+- (void)syncEncryptionTableViewControllerDidDisappear:
+    (SyncEncryptionTableViewController*)viewController;
+
+@end
 
 // Controller to allow user to specify encryption passphrase for Sync.
 @interface SyncEncryptionTableViewController
     : SettingsRootTableViewController <SettingsControllerProtocol>
+
+@property(nonatomic, weak)
+    id<SyncEncryptionTableViewControllerPresentationDelegate>
+        presentationDelegate;
 
 // Designated initializer. `profile` must not be nil.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;

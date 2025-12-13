@@ -15,10 +15,6 @@
 #include "third_party/inspector_protocol/crdtp/protocol_core.h"
 #include "third_party/inspector_protocol/crdtp/serializable.h"
 
-namespace base {
-class Value;
-}
-
 namespace crdtp {
 class Serializable;
 

@@ -20,7 +20,7 @@ class WebContents;
 }  // namespace content
 
 class Browser;
-class ExtensionsContainer;
+class ExtensionsContainerViews;
 class ExtensionsRequestAccessHoverCardCoordinator;
 
 // Button in the toolbar bar that displays the extensions that requests
@@ -32,7 +32,7 @@ class ExtensionsRequestAccessButton : public ToolbarChipButton,
  public:
   explicit ExtensionsRequestAccessButton(
       Browser* browser,
-      ExtensionsContainer* extensions_container);
+      ExtensionsContainerViews* extensions_container);
   ExtensionsRequestAccessButton(const ExtensionsRequestAccessButton&) = delete;
   const ExtensionsRequestAccessButton& operator=(
       const ExtensionsRequestAccessButton&) = delete;
@@ -90,7 +90,7 @@ class ExtensionsRequestAccessButton : public ToolbarChipButton,
   content::WebContents* GetActiveWebContents() const;
 
   raw_ptr<Browser> browser_;
-  raw_ptr<ExtensionsContainer> extensions_container_;
+  raw_ptr<ExtensionsContainerViews> extensions_container_;
 
   std::unique_ptr<ExtensionsRequestAccessHoverCardCoordinator>
       hover_card_coordinator_;

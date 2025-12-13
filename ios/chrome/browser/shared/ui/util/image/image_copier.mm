@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "image_copier.h"
+#import "ios/chrome/browser/shared/ui/util/image/image_copier.h"
 
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
@@ -10,7 +10,6 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
@@ -53,8 +52,6 @@ const int kNoActiveCopy = 0;
 @interface ImageCopier ()
 // The browser.
 @property(nonatomic, assign) Browser* browser;
-// Alert coordinator to give feedback to the user.
-@property(nonatomic, strong) AlertCoordinator* alertCoordinator;
 // A counter which generates one ID for each call on
 // CopyImageAtURL:referrer:webState.
 @property(nonatomic, assign) int idGenerator;
@@ -65,7 +62,10 @@ const int kNoActiveCopy = 0;
 
 @end
 
-@implementation ImageCopier
+@implementation ImageCopier {
+  // Alert controller to give feedback to the user.
+  UIAlertController* _alertController;
+}
 
 - (instancetype)initWithBrowser:(Browser*)browser {
   self = [super init];
@@ -79,7 +79,7 @@ const int kNoActiveCopy = 0;
 
 - (void)stop {
   self.browser = nullptr;
-  [self stopAlertCoordinator];
+  [self stopAlert];
 }
 
 - (void)copyImageAtURL:(const GURL&)url
@@ -105,7 +105,7 @@ const int kNoActiveCopy = 0;
   tabHelper->GetImageData(url, referrer, ^(NSData* data) {
     // Check that the copy has not been canceled.
     if (callbackID == weakSelf.activeID) {
-      [weakSelf stopAlertCoordinator];
+      [weakSelf stopAlert];
       weakSelf.activeID = kNoActiveCopy;
 
       ImageCopyResult result =
@@ -124,29 +124,33 @@ const int kNoActiveCopy = 0;
   });
 
   // Dismiss current alert.
-  [self stopAlertCoordinator];
-  self.alertCoordinator = [[AlertCoordinator alloc]
-      initWithBaseViewController:baseViewController
-                         browser:self.browser
-                           title:l10n_util::GetNSStringWithFixup(
-                                     IDS_IOS_CONTENT_COPYIMAGE_ALERT_COPYING)
-                         message:nil];
-  [self.alertCoordinator
-      addItemWithTitle:l10n_util::GetNSStringWithFixup(IDS_CANCEL)
-                action:^() {
-                  // Cancels current copy and closes the alert.
-                  weakSelf.activeID = kNoActiveCopy;
-                  [weakSelf stopAlertCoordinator];
-                  [weakSelf recordCopyImageUMA:ContextMenuCopyImage::kCanceled];
-                }
-                 style:UIAlertActionStyleCancel];
+  [self stopAlert];
+  _alertController = [UIAlertController
+      alertControllerWithTitle:l10n_util::GetNSStringWithFixup(
+                                   IDS_IOS_CONTENT_COPYIMAGE_ALERT_COPYING)
+                       message:nil
+                preferredStyle:UIAlertControllerStyleAlert];
+  UIAlertAction* cancelAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSStringWithFixup(IDS_CANCEL)
+                style:UIAlertActionStyleCancel
+              handler:^(UIAlertAction* action) {
+                // Cancels current copy and closes the alert.
+                weakSelf.activeID = kNoActiveCopy;
+                [weakSelf stopAlert];
+                [weakSelf recordCopyImageUMA:ContextMenuCopyImage::kCanceled];
+              }];
+  [_alertController addAction:cancelAction];
 
+  __weak UIAlertController* weakAlert = _alertController;
   // Delays launching alert by `kAlertDelayInMs`.
   web::GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE, base::BindOnce(^{
         // Checks that the copy has not finished yet.
         if (callbackID == weakSelf.activeID) {
-          [weakSelf.alertCoordinator start];
+          // `baseViewController` is captured by this block.
+          [baseViewController presentViewController:weakAlert
+                                           animated:YES
+                                         completion:nil];
           [weakSelf recordCopyImageUMA:ContextMenuCopyImage::kAlertPopUp];
         }
       }),
@@ -162,10 +166,11 @@ const int kNoActiveCopy = 0;
   UMA_HISTOGRAM_ENUMERATION("Mobile.ContextMenu.CopyImage", UMAEnum);
 }
 
-// Stops the alert coordinator.
-- (void)stopAlertCoordinator {
-  [self.alertCoordinator stop];
-  self.alertCoordinator = nil;
+// Stops the alert controller.
+- (void)stopAlert {
+  [_alertController.presentingViewController dismissViewControllerAnimated:YES
+                                                                completion:nil];
+  _alertController = nil;
 }
 
 @end

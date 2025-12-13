@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "cc/test/stub_decode_cache.h"
 #include "components/viz/test/test_context_provider.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
@@ -37,9 +38,9 @@ class WebGPURecyclableResourceCacheTest : public testing::Test {
 
 void WebGPURecyclableResourceCacheTest::SetUp() {
   Platform::SetMainThreadTaskRunnerForTesting();
-  test_context_provider_ = viz::TestContextProvider::Create();
-  InitializeSharedGpuContextGLES2(test_context_provider_.get(),
-                                  &image_decode_cache_);
+  test_context_provider_ = viz::TestContextProvider::CreateRaster();
+  InitializeSharedGpuContextRaster(test_context_provider_.get(),
+                                   &image_decode_cache_);
 
   recyclable_resource_cache_ = std::make_unique<WebGPURecyclableResourceCache>(
       SharedGpuContext::ContextProviderWrapper(),

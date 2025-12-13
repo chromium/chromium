@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
@@ -39,24 +35,24 @@ class OcclusionQueryTest : public testing::Test {
 
 static void SetMatrix(float x, float z, float scale, float* matrix) {
   matrix[0] = scale;
-  matrix[1] = 0.0f;
-  matrix[2] = 0.0f;
-  matrix[3] = 0.0f;
+  UNSAFE_TODO(matrix[1]) = 0.0f;
+  UNSAFE_TODO(matrix[2]) = 0.0f;
+  UNSAFE_TODO(matrix[3]) = 0.0f;
 
-  matrix[4] = 0.0f;
-  matrix[5] = scale;
-  matrix[6] = 0.0f;
-  matrix[7] = 0.0f;
+  UNSAFE_TODO(matrix[4]) = 0.0f;
+  UNSAFE_TODO(matrix[5]) = scale;
+  UNSAFE_TODO(matrix[6]) = 0.0f;
+  UNSAFE_TODO(matrix[7]) = 0.0f;
 
-  matrix[8] = 0.0f;
-  matrix[9] = 0.0f;
-  matrix[10] = scale;
-  matrix[11] = 0.0f;
+  UNSAFE_TODO(matrix[8]) = 0.0f;
+  UNSAFE_TODO(matrix[9]) = 0.0f;
+  UNSAFE_TODO(matrix[10]) = scale;
+  UNSAFE_TODO(matrix[11]) = 0.0f;
 
-  matrix[12] = x;
-  matrix[13] = 0.0f;
-  matrix[14] = z;
-  matrix[15] = 1.0f;
+  UNSAFE_TODO(matrix[12]) = x;
+  UNSAFE_TODO(matrix[13]) = 0.0f;
+  UNSAFE_TODO(matrix[14]) = z;
+  UNSAFE_TODO(matrix[15]) = 1.0f;
 }
 
 void OcclusionQueryTest::DrawRect(float x, float z, float scale, float* color) {

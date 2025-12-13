@@ -59,7 +59,7 @@ class MockJobInterceptor : public URLRequestInterceptor {
     // So first we convert base FilePath to a URL, then append the URL
     // path to that, and convert the final URL back to a FilePath.
     GURL file_url(FilePathToFileURL(base_path_));
-    std::string url = file_url.spec() + request->url().path();
+    std::string url = file_url.spec() + request->url().GetPath();
     base::FilePath file_path;
     FileURLToFilePath(GURL(url), &file_path);
     return file_path;

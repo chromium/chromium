@@ -53,7 +53,7 @@ public class PackageUtils {
      * @return The package's version code if found, -1 otherwise.
      */
     public static int getPackageVersion(String packageName) {
-        // TODO(agrieve): Return a long and move BuildInfo.packageVersionCode() to this class.
+        // TODO(agrieve): Return a long and move ApkInfo.getPackageVersionCode() to this class.
         PackageInfo packageInfo = getPackageInfo(packageName, 0);
         if (packageInfo != null) return packageInfo.versionCode;
         return -1;
@@ -71,15 +71,13 @@ public class PackageUtils {
 
     /** Returns the PackageInfo for the Chromium app, as retrieved by PackageManager. */
     public static PackageInfo getApplicationPackageInfo(int flags) {
-        BuildInfo bi = BuildInfo.getInstance();
-
         // In WebView the Chromium app is not the same package as the current app, and there is a
         // platform bug where this lookup can fail in rare cases; try to work around it.
-        if (!bi.packageName.equals(bi.hostPackageName)) {
+        if (!ApkInfo.getPackageName().equals(ApkInfo.getHostPackageName())) {
             maybeWorkAroundWebViewPackageVisibility();
         }
 
-        PackageInfo ret = getPackageInfo(bi.packageName, flags);
+        PackageInfo ret = getPackageInfo(ApkInfo.getPackageName(), flags);
         assert ret != null;
         return ret;
     }
@@ -156,6 +154,28 @@ public class PackageUtils {
         }
 
         return fingerprints;
+    }
+
+    public static @Nullable String computeCertSignatureSha256ForPackage(String packageName) {
+        PackageInfo pi = getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES);
+
+        if (pi == null || pi.signingInfo == null) {
+            return null;
+        }
+        Signature[] signatures = pi.signingInfo.getSigningCertificateHistory();
+        if (signatures == null || signatures.length == 0) {
+            return null;
+        }
+
+        try {
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+            // The current signing certificate is always the last one in the list.
+            byte[] digest = messageDigest.digest(signatures[signatures.length - 1].toByteArray());
+            return byteArrayToHexString(digest);
+        } catch (NoSuchAlgorithmException e) {
+            Log.w(TAG, "Unable to hash host app signature", e);
+        }
+        return null;
     }
 
     /**

@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/not_fatal_until.h"
@@ -17,7 +18,7 @@
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
-#import "components/plus_addresses/features.h"
+#import "components/plus_addresses/core/common/features.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_navigator.h"
@@ -25,7 +26,6 @@
 #import "ios/chrome/browser/autofill/model/form_suggestion_controller.mm"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/web/common/url_scheme_util.h"
@@ -99,16 +99,15 @@ UIImage* defaultIconForType(FormSuggestion* suggestion) {
     case autofill::SuggestionType::kGeneratePasswordEntry:
       return MakeSymbolMulticolor(
           CustomSymbolWithPointSize(kPasswordManagerSymbol, kSymbolPointSize));
-    case autofill::SuggestionType::kCreateNewPlusAddress:
     case autofill::SuggestionType::kFillExistingPlusAddress: {
       BOOL isPlusAddressFeaturesEnabled = base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressesEnabled);
       return isPlusAddressFeaturesEnabled
-          ? SymbolWithPalette(
-                DefaultSymbolWithPointSize(kShieldedEnvelope, kSymbolPointSize),
-                @[
-                  [UIColor colorNamed:kTextPrimaryColor],
-                ])
+                 ? SymbolWithPalette(DefaultSymbolWithPointSize(
+                                         kShieldedEnvelope, kSymbolPointSize),
+                                     @[
+                                       [UIColor colorNamed:kTextPrimaryColor],
+                                     ])
                  : nil;
     }
     case autofill::SuggestionType::kAddressEntry: {
@@ -478,29 +477,14 @@ bool IsRequestDedupingAllowed() {
 // Copies the incoming suggestions, making adjustments if necessary.
 - (NSArray<FormSuggestion*>*)copyAndAdjustSuggestions:
     (NSArray<FormSuggestion*>*)suggestions {
-  BOOL isPlusAddressFeaturesEnabled = base::FeatureList::IsEnabled(
-      plus_addresses::features::kPlusAddressesEnabled);
-
-  if (!IsKeyboardAccessoryUpgradeEnabled() && !isPlusAddressFeaturesEnabled) {
-    return [suggestions copy];
-  }
-
   NSMutableArray<FormSuggestion*>* suggestionsCopy = [NSMutableArray array];
   for (FormSuggestion* suggestion : suggestions) {
-    BOOL isPlusAddressSuggestion =
-        (suggestion.type == autofill::SuggestionType::kCreateNewPlusAddress) ||
-        (suggestion.type == autofill::SuggestionType::kFillExistingPlusAddress);
-
     UIImage* defaultIcon = defaultIconForType(suggestion);
 
     // If there are no icons, but we have a default icon for this suggestion,
-    // copy the suggestion and add the default icon. If
-    // `IsKeyboardAccessoryUpgradeEnabled()`, update the icon for this
-    // suggestion. Otherwise, only update the icons for the plus address
-    // suggestions.
-    BOOL shouldUpdateIcon =
-        (IsKeyboardAccessoryUpgradeEnabled() || isPlusAddressSuggestion) &&
-        !suggestion.icon && defaultIcon;
+    // copy the suggestion and add the default icon, otherwise, update the icon
+    // for this suggestion.
+    BOOL shouldUpdateIcon = !suggestion.icon && defaultIcon;
 
     if (shouldUpdateIcon) {
       // If we ever get suggestions with metadata here, we'll need to use a
@@ -517,7 +501,7 @@ bool IsRequestDedupingAllowed() {
           fieldByFieldFillingTypeUsed:suggestion.fieldByFieldFillingTypeUsed
                        requiresReauth:suggestion.requiresReauth
            acceptanceA11yAnnouncement:suggestion.acceptanceA11yAnnouncement];
-      // TODO(crbug.com/353663764): Include `featureForIPH` in the
+      // TODO(crbug.com/452315148): Include `featureForIPH` in the
       // `FormSuggestion` constructor.
       suggestionCopy.featureForIPH = suggestion.featureForIPH;
       [suggestionsCopy addObject:suggestionCopy];
@@ -535,10 +519,10 @@ bool IsRequestDedupingAllowed() {
                       state:(const AutofillSuggestionState&)suggestionState {
   id<FormSuggestionProvider> provider = suggestion.provider ?: _provider;
 
-  // If a password related suggestion was selected, reset the password bottom
+  // If a password related suggestion was selected, reset the credential bottom
   // sheet dismiss count to 0.
   if (provider.type == SuggestionProviderTypePassword) {
-    [self resetPasswordBottomSheetDismissCount];
+    [self resetCredentialBottomSheetDismissCount];
   }
 
   // Send the suggestion to the provider. Upon completion advance the cursor
@@ -559,8 +543,8 @@ bool IsRequestDedupingAllowed() {
         }];
 }
 
-// Resets the password bottom sheet dismiss count to 0.
-- (void)resetPasswordBottomSheetDismissCount {
+// Resets the credential bottom sheet dismiss count to 0.
+- (void)resetCredentialBottomSheetDismissCount {
   ProfileIOS* profile =
       _webState ? ProfileIOS::FromBrowserState(_webState->GetBrowserState())
                 : nullptr;

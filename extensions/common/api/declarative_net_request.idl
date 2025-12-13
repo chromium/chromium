@@ -52,8 +52,9 @@ namespace declarativeNetRequest {
 
   // This describes the possible operations for a "modifyHeaders" rule.
   enum HeaderOperation {
-    // Adds a new entry for the specified header. This operation is not
-    // supported for request headers.
+    // Adds a new entry for the specified header. When modifying the headers of
+    // a request, this operation is only supported for
+    // <a href="#header_modification">specific headers</a>.
     append,
     // Sets a new value for the specified header, removing any existing headers
     // with the same name.
@@ -89,6 +90,32 @@ namespace declarativeNetRequest {
     syntaxError,
     // The regular expression exceeds the memory limit.
     memoryLimitExceeded
+  };
+
+  // <!-- Lists the types of condition currently supported by RuleCondition, to
+  // aid feature detection. Must be kept consistent with the RuleCondition
+  // dictionary. -->
+  enum RuleConditionKeys {
+    urlFilter,
+    regexFilter,
+    isUrlFilterCaseSensitive,
+    initiatorDomains,
+    excludedInitiatorDomains,
+    requestDomains,
+    excludedRequestDomains,
+    topDomains,
+    excludedTopDomains,
+    domains,
+    excludedDomains,
+    resourceTypes,
+    excludedResourceTypes,
+    requestMethods,
+    excludedRequestMethods,
+    domainType,
+    tabIds,
+    excludedTabIds,
+    responseHeaders,
+    excludedResponseHeaders
   };
 
   // Describes a single static ruleset.
@@ -189,6 +216,8 @@ namespace declarativeNetRequest {
     DOMString[]? excludedValues;
   };
 
+  // <!-- When adding/removing keys from this dictionary, also update the
+  // RuleConditionKeys enum. -->
   dictionary RuleCondition {
 
     // The pattern which is matched against the network request url.
@@ -304,6 +333,41 @@ namespace declarativeNetRequest {
     //  <li>Sub-domains of the listed domains are also excluded.</li>
     // </ul>
     DOMString[]? excludedRequestDomains;
+
+    // The rule will only match network requests when the associated top-level
+    // frame's domain matches one from the list of <code>topDomains</code>. If
+    // the list is omitted, the rule is applied to requests associated with all
+    // top-level frame domains. An empty list is not allowed.
+    //
+    // Notes:
+    // <ul>
+    //  <li>Sub-domains like "a.example.com" are also allowed.</li>
+    //  <li>The entries must consist of only ascii characters.</li>
+    //  <li>Use punycode encoding for internationalized domains.</li>
+    //  <li>Sub-domains of the listed domains are also matched.</li>
+    //  <li>For requests with no associated top-level frame (e.g. ServiceWorker
+    //      initiated requests, the request initiator's domain is considered
+    //      instead.</li>
+    // </ul>
+    DOMString[]? topDomains;
+
+    // The rule will not match network requests when the associated top-level
+    // frame's domain matches one from the list of
+    // <code>excludedTopDomains</code>. If the list is empty or omitted, no
+    // domains are excluded. This takes precedence over
+    // <code>topDomains</code>.
+    //
+    // Notes:
+    // <ul>
+    //  <li>Sub-domains like "a.example.com" are also allowed.</li>
+    //  <li>The entries must consist of only ascii characters.</li>
+    //  <li>Use punycode encoding for internationalized domains.</li>
+    //  <li>Sub-domains of the listed domains are also excluded.</li>
+    //  <li>For requests with no associated top-level frame (e.g. ServiceWorker
+    //      initiated requests, the request initiator's domain is considered
+    //      instead.</li>
+    // </ul>
+    DOMString[]? excludedTopDomains;
 
     // The rule will only match network requests originating from the list of
     // <code>domains</code>.
@@ -549,6 +613,9 @@ namespace declarativeNetRequest {
     // not need to correspond to a real tab ID. Default is -1, meaning that
     // the request isn't related to a tab.
     long? tabId;
+
+    // The associated top-level frame URL (if any) for the request.
+    DOMString? topUrl;
 
     // The headers provided by a hypothetical response if the request does not
     // get blocked or redirected before it is sent. Represented as an object

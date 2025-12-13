@@ -12,7 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/win/windows_handle_util.h"
 #include "ipc/handle_attachment_win.h"
-#include "ipc/ipc_message.h"
+#include "ipc/ipc_message_attachment.h"
 
 namespace IPC {
 
@@ -57,11 +57,6 @@ bool ParamTraits<HandleWin>::Read(const base::Pickle* m,
   // handle value (the underlying handle may still not exist).
   r->set_handle(handle_attachment->Take());
   return true;
-}
-
-// static
-void ParamTraits<HandleWin>::Log(const param_type& p, std::string* l) {
-  l->append(base::StringPrintf("0x%p", p.get_handle()));
 }
 
 }  // namespace IPC

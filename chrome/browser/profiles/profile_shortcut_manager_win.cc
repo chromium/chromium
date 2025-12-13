@@ -19,6 +19,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
 #include "base/path_service.h"
@@ -53,9 +54,9 @@
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/icon_util.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_family.h"
+#include "ui/gfx/win/icon_util.h"
 
 using content::BrowserThread;
 

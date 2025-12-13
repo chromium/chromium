@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/usb/usb_device_handle_usbfs.h"
 
 #include <linux/usb/ch9.h>
@@ -19,6 +14,7 @@
 #include <utility>
 
 #include "base/cancelable_callback.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/functional/bind.h"
@@ -501,8 +497,9 @@ void* UsbDeviceHandleUsbfs::Transfer::operator new(
           .ValueOrDie();
   void* p = ::operator new(total_size);
   Transfer* transfer = static_cast<Transfer*>(p);
-  memset(&transfer->urb, 0,
-         sizeof(urb) + sizeof(urb.iso_frame_desc[0]) * number_of_iso_packets);
+  UNSAFE_TODO(memset(
+      &transfer->urb, 0,
+      sizeof(urb) + sizeof(urb.iso_frame_desc[0]) * number_of_iso_packets));
   transfer->urb.number_of_packets = number_of_iso_packets;
   return p;
 }
@@ -1021,7 +1018,7 @@ void UsbDeviceHandleUsbfs::IsochronousTransferInternal(
   transfer->urb.buffer_length = total_length;
 
   for (size_t i = 0; i < packet_lengths.size(); ++i) {
-    transfer->urb.iso_frame_desc[i].length = packet_lengths[i];
+    UNSAFE_TODO(transfer->urb.iso_frame_desc[i]).length = packet_lengths[i];
   }
 
   // USBDEVFS_SUBMITURB appears to be non-blocking as completion is reported
@@ -1073,12 +1070,13 @@ void UsbDeviceHandleUsbfs::TransferComplete(
         transfer->urb.number_of_packets);
     for (size_t i = 0; i < packets.size(); ++i) {
       packets[i] = mojom::UsbIsochronousPacket::New();
-      packets[i]->length = transfer->urb.iso_frame_desc[i].length;
+      packets[i]->length = UNSAFE_TODO(transfer->urb.iso_frame_desc[i]).length;
       packets[i]->transferred_length =
-          transfer->urb.iso_frame_desc[i].actual_length;
+          UNSAFE_TODO(transfer->urb.iso_frame_desc[i]).actual_length;
       packets[i]->status = ConvertTransferResult(
-          transfer->urb.status == 0 ? transfer->urb.iso_frame_desc[i].status
-                                    : transfer->urb.status);
+          transfer->urb.status == 0
+              ? UNSAFE_TODO(transfer->urb.iso_frame_desc[i]).status
+              : transfer->urb.status);
     }
 
     transfer->RunIsochronousCallback(std::move(packets));
@@ -1194,7 +1192,7 @@ void UsbDeviceHandleUsbfs::CancelTransfer(Transfer* transfer,
         transfer->urb.number_of_packets);
     for (size_t i = 0; i < packets.size(); ++i) {
       packets[i] = mojom::UsbIsochronousPacket::New();
-      packets[i]->length = transfer->urb.iso_frame_desc[i].length;
+      packets[i]->length = UNSAFE_TODO(transfer->urb.iso_frame_desc[i]).length;
       packets[i]->transferred_length = 0;
       packets[i]->status = status;
     }

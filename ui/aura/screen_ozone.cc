@@ -156,6 +156,10 @@ std::optional<float> ScreenOzone::GetPreferredScaleFactorForWindow(
              : Screen::GetPreferredScaleFactorForWindow(window);
 }
 
+bool ScreenOzone::IsHeadless() const {
+  return platform_screen_->IsHeadless();
+}
+
 gfx::NativeWindow ScreenOzone::GetNativeWindowFromAcceleratedWidget(
     gfx::AcceleratedWidget widget) const {
   return nullptr;

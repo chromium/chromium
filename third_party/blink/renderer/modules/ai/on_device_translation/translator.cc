@@ -72,9 +72,9 @@ Translator::Translator(
 
   if (create_abort_signal_) {
     CHECK(!create_abort_signal_->aborted());
-    create_abort_handle_ = create_abort_signal_->AddAlgorithm(WTF::BindOnce(
-        &Translator::OnCreateAbortSignalAborted, WrapWeakPersistent(this),
-        WrapWeakPersistent(script_state)));
+    create_abort_handle_ = create_abort_signal_->AddAlgorithm(
+        BindOnce(&Translator::OnCreateAbortSignalAborted,
+                 WrapWeakPersistent(this), WrapWeakPersistent(script_state)));
   }
 }
 
@@ -124,7 +124,7 @@ ScriptPromise<V8Availability> Translator::availability(
   AIInterfaceProxy::GetTranslationManagerRemote(context)->TranslationAvailable(
       mojom::blink::TranslatorLanguageCode::New(options->sourceLanguage()),
       mojom::blink::TranslatorLanguageCode::New(options->targetLanguage()),
-      WTF::BindOnce(
+      BindOnce(
           [](ExecutionContext* context,
              ScriptPromiseResolver<V8Availability>* resolver,
              CanCreateTranslatorResult result) {
@@ -182,7 +182,7 @@ ScriptPromise<Translator> Translator::create(ScriptState* script_state,
 
 ScriptPromise<IDLString> Translator::translate(
     ScriptState* script_state,
-    const WTF::String& input,
+    const String& input,
     TranslatorTranslateOptions* options,
     ExceptionState& exception_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -205,11 +205,14 @@ ScriptPromise<IDLString> Translator::translate(
 
   // Pass persistent refs to keep this instance alive during the response.
   auto pending_remote = CreateModelExecutionResponder(
-      script_state, composite_signal, resolver, task_runner_,
+      script_state, composite_signal, task_runner_,
       AIMetrics::AISessionType::kTranslator,
-      /*complete_callback=*/base::DoNothingWithBoundArgs(WrapPersistent(this)),
+      BindOnce(&ResolvePromiseOnCompletion<IDLString>,
+               WrapPersistent(resolver)),
       /*overflow_callback=*/base::DoNothingWithBoundArgs(WrapPersistent(this)),
-      /*resolve_override_callback=*/base::NullCallback());
+      BindOnce(&RejectPromiseOnError<IDLString>, WrapPersistent(resolver)),
+      BindOnce(&RejectPromiseOnAbort<IDLString>, WrapPersistent(resolver),
+               WrapPersistent(composite_signal), WrapPersistent(script_state)));
 
   // TODO(crbug.com/335374928): implement the error handling for the translation
   // service crash.
@@ -220,7 +223,7 @@ ScriptPromise<IDLString> Translator::translate(
 
 ReadableStream* Translator::translateStreaming(
     ScriptState* script_state,
-    const WTF::String& input,
+    const String& input,
     TranslatorTranslateOptions* options,
     ExceptionState& exception_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -249,7 +252,7 @@ ReadableStream* Translator::translateStreaming(
 
   // TODO(crbug.com/335374928): Implement the error handling for the translation
   // service crash.
-  translator_remote_->Translate(input, std::move(pending_remote));
+  translator_remote_->TranslateStreaming(input, std::move(pending_remote));
 
   return readable_stream;
 }
@@ -277,7 +280,7 @@ void Translator::OnCreateAbortSignalAborted(ScriptState* script_state) {
 
 ScriptPromise<IDLDouble> Translator::measureInputUsage(
     ScriptState* script_state,
-    const WTF::String& input,
+    const String& input,
     TranslatorTranslateOptions* options,
     ExceptionState& exception_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
@@ -299,9 +302,8 @@ ScriptPromise<IDLDouble> Translator::measureInputUsage(
           script_state, composite_signal);
 
   task_runner_->PostTask(
-      FROM_HERE,
-      WTF::BindOnce(&ResolverWithAbortSignal<IDLDouble>::Resolve<double>,
-                    WrapPersistent(resolver), 0));
+      FROM_HERE, BindOnce(&ResolverWithAbortSignal<IDLDouble>::Resolve<double>,
+                          WrapPersistent(resolver), 0));
 
   return resolver->Promise();
 }

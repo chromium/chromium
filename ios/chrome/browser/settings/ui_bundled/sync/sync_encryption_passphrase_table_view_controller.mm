@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/i18n/time_formatting.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/user_metrics.h"
@@ -16,6 +17,7 @@
 #import "components/google/core/common/google_util.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -265,12 +267,15 @@ const CGFloat kSpinnerButtonPadding = 18;
   TableViewLinkHeaderFooterItem* footerItem =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
   footerItem.text = self.footerMessage;
-  footerItem.urls =
-      @[ [[CrURL alloc] initWithGURL:google_util::AppendGoogleLocaleParam(
-                                         GURL(kSyncGoogleDashboardURL),
-                                         GetApplicationContext()
-                                             ->GetApplicationLocaleStorage()
-                                             ->Get())] ];
+  footerItem.urls = @[ [[CrURL alloc]
+      initWithGURL:google_util::AppendGoogleLocaleParam(
+                       GURL(base::FeatureList::IsEnabled(
+                                syncer::kSyncEnableNewSyncDashboardUrl)
+                                ? kNewSyncGoogleDashboardURL
+                                : kLegacySyncGoogleDashboardURL),
+                       GetApplicationContext()
+                           ->GetApplicationLocaleStorage()
+                           ->Get())] ];
   return footerItem;
 }
 
@@ -533,11 +538,6 @@ const CGFloat kSpinnerButtonPadding = 18;
     SettingsNavigationController* settingsNavigationController =
         base::apple::ObjCCast<SettingsNavigationController>(
             self.navigationController);
-    // During the sign-in flow it is possible for the Sync state to
-    // change when the user is in the Advanced Settings (e.g., if the user
-    // confirms a Sync passphrase). Because these navigation controllers are
-    // not directly related to Settings, we check the type before dismissal.
-    // TODO(crbug.com/40158230): Revisit with Advanced Sync Settings changes.
     if (settingsNavigationController) {
       [settingsNavigationController
           popViewControllerOrCloseSettingsAnimated:YES];

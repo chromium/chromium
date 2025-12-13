@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event_watcher.h"
@@ -39,6 +40,7 @@ class ColorSpace;
 }  // namespace gfx
 
 namespace gpu {
+class D3D11ImageSameAdapterCopyStrategy;
 class SharedContextState;
 struct Mailbox;
 
@@ -48,6 +50,7 @@ struct Mailbox;
 class GPU_GLES2_EXPORT D3DImageBacking final
     : public ClearTrackingSharedImageBacking {
  public:
+  friend class D3D11ImageSameAdapterCopyStrategy;
   // Create a backing wrapping given D3D11 texture, optionally with a shared
   // handle and keyed mutex state. Array slice is used to specify index in
   // texture array used by video decoder.
@@ -67,7 +70,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       size_t array_slice,
       bool use_update_subresource1 = false,
       bool want_dcomp_texture = false,
-      bool is_thread_safe = false);
+      bool is_thread_safe = false,
+      bool share_dxgi_handle_with_other_backings = true);
 
   // Creation method meant for buffer resources originating as ID3D12Resources.
   static std::unique_ptr<D3DImageBacking> CreateFromD3D12Resource(
@@ -77,7 +81,7 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       std::string debug_label,
       Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource);
 
-  static std::unique_ptr<D3DImageBacking> CreateFromSwapChainBuffer(
+  static std::unique_ptr<D3DImageBacking> CreateFromSwapChainBuffers(
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
       const gfx::Size& size,
@@ -85,10 +89,10 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       gpu::SharedImageUsageSet usage,
-      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer_texture,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> front_buffer_texture,
       Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
-      const GLFormatCaps& gl_format_caps,
-      bool is_back_buffer);
+      const GLFormatCaps& gl_format_caps);
 
   D3DImageBacking(const D3DImageBacking&) = delete;
   D3DImageBacking& operator=(const D3DImageBacking&) = delete;
@@ -102,7 +106,6 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   bool ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) override;
   void ReadbackToMemoryAsync(const std::vector<SkPixmap>& pixmaps,
                              base::OnceCallback<void(bool)> callback) override;
-  bool PresentSwapChain() override;
   std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
@@ -136,11 +139,21 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       const wgpu::Device& device,
-      wgpu::BackendType backend_type) override;
+      wgpu::BackendType backend_type,
+      scoped_refptr<SharedContextState> context_state) override;
   wgpu::Buffer BeginAccessDawnBuffer(const wgpu::Device& device,
                                      wgpu::BackendType backend_type,
                                      wgpu::BufferUsage usage);
   void EndAccessDawnBuffer(const wgpu::Device& device, wgpu::Buffer buffer);
+
+  std::unique_ptr<WebNNTensorRepresentation> ProduceWebNNTensor(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker) override;
+
+  Microsoft::WRL::ComPtr<ID3D12Resource> GetD3D12Buffer() const;
+
+  std::optional<scoped_refptr<gfx::D3DSharedFence>> BeginAccessWebNN();
+  void EndAccessWebNN(scoped_refptr<gfx::D3DSharedFence> signaled_fence);
 
   std::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage();
 
@@ -250,7 +263,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                   size_t array_slice = 0u,
                   bool use_update_subresource1 = false,
                   bool want_dcomp_texture = false,
-                  bool is_thread_safe = false);
+                  bool is_thread_safe = false,
+                  bool share_dxgi_handle_with_other_backings = true);
 
   D3DImageBacking(const Mailbox& mailbox,
                   const gfx::Size& size,
@@ -267,6 +281,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
 
   // Helper to retrieve internal EGLImage for WebGPU GLES compat backend.
   void* GetEGLImage() const;
+
+  bool PresentSwapChain();
 
   // Returns a staging texture for CPU uploads/readback, creating one if needed.
   ID3D11Texture2D* GetOrCreateStagingTexture() EXCLUSIVE_LOCKS_REQUIRED(lock_);
@@ -343,6 +359,9 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   // Texture could be nullptr if an empty backing is needed for testing.
   const Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
 
+  // Null unless created via CreateFromSwapBuffers().
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> swap_chain_front_buffer_texture_;
+
   // Set if this backing is used for a D3D12 resource, otherwise will be
   // nullptr.
   const Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource_;
@@ -381,11 +400,13 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   // Swap chain corresponding to this backing.
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain_;
 
-  // Set if this backing corresponds to the back buffer of |swap_chain_|.
-  bool is_back_buffer_ = false;
-
   // True if using UpdateSubresource1() in UploadFromMemory() is allowed.
   const bool use_update_subresource1_;
+
+  // Set in ctor to indicate whether DXGISharedHandle is shared with other
+  // backings. If this flag is false, the DXGISharedHandle will be exclusively
+  // owned by this backing, and certain optimizations could be enabled.
+  const bool share_dxgi_handle_with_other_backings_ = true;
 
   // Staging texture used for copy to/from shared memory GMB.
   Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture_ GUARDED_BY(lock_);

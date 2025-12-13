@@ -1,302 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.11.0-alpha09" type="baseline" client="" dependencies="true" name="" variant="all" version="8.11.0-alpha09">
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="        /* See {@link android.webkit.WebChromeClient}. */"
-        errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwContentsClient.java"
-            line="100"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="        /* See {@link android.webkit.GeolocationPermissions}. */"
-        errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwGeolocationPermissions.java"
-            line="30"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="    /* See {@link android.webkit.WebSettings}. */"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwSettings.java"
-            line="69"
-            column="12"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="    /* See {@link android.webkit.WebSettings}. */"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwSettings.java"
-            line="82"
-            column="12"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="    /* See {@link android.webkit.WebSettings}. */"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwSettings.java"
-            line="84"
-            column="12"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param fallbackOnBackPressed Callback executed when a handler claims to intercept back press"
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/back_press/android/java/src/org/chromium/chrome/browser/back_press/BackPressManager.java"
-            line="334"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param intent The intent that was used to bind to the service."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/process_launcher/ChildProcessService.java"
-            line="393"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param srcDir A directory containing a crashpad::CrashReportDatabase."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/minidump_uploader/android/java/src/org/chromium/components/minidump_uploader/CrashReportMimeWriter.java"
-            line="27"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param anrFiles Pairs of serialized ANR proto file names and the versions they happened on."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/minidump_uploader/android/java/src/org/chromium/components/minidump_uploader/CrashReportMimeWriter.java"
-            line="39"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param srcDir A directory containing a crashpad::CrashReportDatabase."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/minidump_uploader/android/java/src/org/chromium/components/minidump_uploader/CrashReportMimeWriter.java"
-            line="52"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param args arguments of the callback."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnection.java"
-            line="338"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @return whether the observerMap was changed as a result of the call."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/dom_distiller/core/android/java/src/org/chromium/components/dom_distiller/core/DistilledPagePrefs.java"
-            line="81"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @return whether the observer was removed as a result of the call."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/dom_distiller/core/android/java/src/org/chromium/components/dom_distiller/core/DistilledPagePrefs.java"
-            line="98"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param requestShipping Whether the merchant requested a shipping address."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/payments/content/android/java/src/org/chromium/components/payments/JourneyLogger.java"
-            line="104"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param methodTypes The list of types of the payment methods, defined in"
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/payments/content/android/java/src/org/chromium/components/payments/JourneyLogger.java"
-            line="127"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param shouldFake Whether to fake the version check."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/share/LensUtils.java"
-            line="30"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param featureName The feature that uses the UKM reporting."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/share/LensUtils.java"
-            line="114"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param success Whether provisioning has succeeded or not."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../media/base/android/java/src/org/chromium/media/MediaDrmBridge.java"
-            line="1545"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="    /* Returns the {@link WebContents} for which the message is intended to be shown. */"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/commerce/merchant_viewer/android/java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustMessageContext.java"
-            line="45"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param delegate Delegate providing the WindowAndroid and Context to display the UI."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/modules/ModuleInstallUi.java"
-            line="50"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="    /* Destroy the single tab card on the {@link NewTabPageLayout}. */"
-        errorLine2="                                          ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPage.java"
-            line="1344"
-            column="43"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="             * @param dataType  The type of the data contained in the section."
-        errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/payments/ui/PaymentRequestSection.java"
-            line="854"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="         * @param response The payment response to send to the merchant."
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/payments/content/android/java/src/org/chromium/components/payments/PaymentResponseHelperInterface.java"
-            line="33"
-            column="12"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param context The Context to create tha handler for."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/paint_preview/player/android/java/src/org/chromium/components/paintpreview/player/PlayerSwipeRefreshHandler.java"
-            line="35"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * @param activity The activity the share sheet belongs to."
-        errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetBottomSheetContent.java"
-            line="142"
-            column="8"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="    /* Destroy and clean up {@link DragStateTracker} to the content view. */"
-        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/tab/TabViewAndroidDelegate.java"
-            line="162"
-            column="29"/>
-    </issue>
-
-    <issue
-        id="WrongCommentType"
-        message="This block comment looks like it was intended to be a javadoc comment"
-        errorLine1="     * Updates the native {@link WebContents} with a new window. This moves the NativeView and"
-        errorLine2="                          ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content_public/browser/WebContents.java"
-            line="123"
-            column="27"/>
-    </issue>
+<issues format="6" by="lint 9.0.0-alpha14" type="baseline" client="" dependencies="true" name="" variant="all" version="9.0.0-alpha14">
 
     <issue
         id="ResourceType"
@@ -338,7 +41,7 @@
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/password_manager/AccountChooserDialog.java"
-            line="281"
+            line="290"
             column="17"/>
     </issue>
 
@@ -349,7 +52,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabVersionCompat.java"
-            line="261"
+            line="262"
             column="21"/>
     </issue>
 
@@ -360,288 +63,13 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java"
-            line="103"
+            line="96"
             column="27"/>
     </issue>
 
     <issue
         id="NewApi"
-        message="`&lt;org.chromium.chrome.browser.base.SplitCompatAppComponentFactory>` requires API level 28 (current min is 26)"
-        errorLine1="  &lt;application android:name=&quot;org.chromium.chrome.browser.base.SplitMonochromeApplication&quot; android:icon=&quot;@drawable/ic_launcher&quot; android:roundIcon=&quot;@drawable/ic_launcher_round&quot; android:label=&quot;@string/app_name&quot; android:memtagMode=&quot;async&quot; android:largeHeap=&quot;false&quot; android:manageSpaceActivity=&quot;@string/manage_space_activity&quot; android:supportsRtl=&quot;true&quot; android:zygotePreloadName=&quot;org.chromium.content_public.app.ZygotePreload&quot; android:allowBackup=&quot;false&quot; android:networkSecurityConfig=&quot;@xml/network_security_config&quot; android:allowAudioPlaybackCapture=&quot;false&quot; android:appComponentFactory=&quot;org.chromium.chrome.browser.base.SplitCompatAppComponentFactory&quot; android:enableOnBackInvokedCallback=&quot;true&quot; android:multiArch=&quot;true&quot; android:extractNativeLibs=&quot;false&quot;>"
-        errorLine2="  ^">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
-            line="259"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="`&lt;org.chromium.content_public.app.ZygotePreload>` requires API level 29 (current min is 26)"
-        errorLine1="  &lt;application android:name=&quot;org.chromium.chrome.browser.base.SplitMonochromeApplication&quot; android:icon=&quot;@drawable/ic_launcher&quot; android:roundIcon=&quot;@drawable/ic_launcher_round&quot; android:label=&quot;@string/app_name&quot; android:memtagMode=&quot;async&quot; android:largeHeap=&quot;false&quot; android:manageSpaceActivity=&quot;@string/manage_space_activity&quot; android:supportsRtl=&quot;true&quot; android:zygotePreloadName=&quot;org.chromium.content_public.app.ZygotePreload&quot; android:allowBackup=&quot;false&quot; android:networkSecurityConfig=&quot;@xml/network_security_config&quot; android:allowAudioPlaybackCapture=&quot;false&quot; android:appComponentFactory=&quot;org.chromium.chrome.browser.base.SplitCompatAppComponentFactory&quot; android:enableOnBackInvokedCallback=&quot;true&quot; android:multiArch=&quot;true&quot; android:extractNativeLibs=&quot;false&quot;>"
-        errorLine2="  ^">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
-            line="259"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `clearAllContentCaptureData`"
-        errorLine1="            contentCaptureController.clearAllContentCaptureData();"
-        errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/content_capture/ContentCaptureHistoryDeletionObserver.java"
-            line="32"
-            column="38"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `clearContentCaptureDataForURLs`"
-        errorLine1="                    contentCaptureController.clearContentCaptureDataForURLs(deletedURLs);"
-        errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/content_capture/ContentCaptureHistoryDeletionObserver.java"
-            line="37"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `clearAllContentCaptureData`"
-        errorLine1="                    contentCaptureController.clearAllContentCaptureData();"
-        errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/content_capture/ContentCaptureHistoryDeletionObserver.java"
-            line="43"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `notifyViewAppeared`"
-        errorLine1="        return notifyViewAppeared(parentPlatformSessionData, data);"
-        errorLine2="               ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentCapturedTask.java"
-            line="25"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Extending NotificationTask requires API level 29 (current min is 26): `NotificationTask`"
-        errorLine1="class ContentRemovedTask extends NotificationTask {"
-        errorLine2="                                 ~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="12"
-            column="34"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `NotificationTask`"
-        errorLine1="        super(session, platformSession);"
-        errorLine2="        ~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="17"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `log`"
-        errorLine1="        log(&quot;ContentRemovedTask.removeContent&quot;);"
-        errorLine2="        ~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="27"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `buildCurrentSession`"
-        errorLine1="        PlatformSessionData platformSessionData = buildCurrentSession();"
-        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="28"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getInstance`"
-        errorLine1="        PlatformAPIWrapper.getInstance()"
-        errorLine2="                           ~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="30"
-            column="28"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `notifyViewsDisappeared`"
-        errorLine1="                .notifyViewsDisappeared("
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="31"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
-        errorLine1="                        platformSessionData.contentCaptureSession,"
-        errorLine2="                                            ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="32"
-            column="45"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getRootPlatformSessionData`"
-        errorLine1="                        mPlatformSession.getRootPlatformSessionData().autofillId,"
-        errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="33"
-            column="42"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `autofillId`"
-        errorLine1="                        mPlatformSession.getRootPlatformSessionData().autofillId,"
-        errorLine2="                                                                      ~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="33"
-            column="71"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `mPlatformSession`"
-        errorLine1="                        mPlatformSession.getRootPlatformSessionData().autofillId,"
-        errorLine2="                        ~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentRemovedTask.java"
-            line="33"
-            column="25"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getInstance`"
-        errorLine1="                PlatformAPIWrapper.getInstance()"
-        errorLine2="                                   ~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="31"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `newAutofillId`"
-        errorLine1="                        .newAutofillId("
-        errorLine2="                         ~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="32"
-            column="26"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
-        errorLine1="                                parentPlatformSessionData.contentCaptureSession,"
-        errorLine2="                                                          ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="33"
-            column="59"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getRootPlatformSessionData`"
-        errorLine1="                                mPlatformSession.getRootPlatformSessionData().autofillId,"
-        errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="34"
-            column="50"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `autofillId`"
-        errorLine1="                                mPlatformSession.getRootPlatformSessionData().autofillId,"
-        errorLine2="                                                                              ~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="34"
-            column="79"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `mPlatformSession`"
-        errorLine1="                                mPlatformSession.getRootPlatformSessionData().autofillId,"
-        errorLine2="                                ~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="34"
-            column="33"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getInstance`"
-        errorLine1="        PlatformAPIWrapper.getInstance()"
-        errorLine2="                           ~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="36"
-            column="28"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `notifyViewTextChanged`"
-        errorLine1="                .notifyViewTextChanged("
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="37"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
-        errorLine1="                        parentPlatformSessionData.contentCaptureSession,"
-        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ContentUpdateTask.java"
-            line="38"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 30 (current min is 26): `collectAndWriteAnrs`"
+        message="Call requires API level 30 (current min is 29): `collectAndWriteAnrs`"
         errorLine1="            List&lt;String> anrs = AnrCollector.collectAndWriteAnrs(anrDir);"
         errorLine2="                                             ~~~~~~~~~~~~~~~~~~~">
         <location
@@ -652,7 +80,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 34 (current min is 26): `logGestureType`"
+        message="Call requires API level 34 (current min is 29): `logGestureType`"
         errorLine1="                StylusGestureConverter.logGestureType("
         errorLine2="                                       ~~~~~~~~~~~~~~">
         <location
@@ -663,7 +91,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 34 (current min is 26): `logGestureType`"
+        message="Call requires API level 34 (current min is 29): `logGestureType`"
         errorLine1="                StylusGestureConverter.logGestureType("
         errorLine2="                                       ~~~~~~~~~~~~~~">
         <location
@@ -674,7 +102,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 34 (current min is 26): `logGestureType`"
+        message="Call requires API level 34 (current min is 29): `logGestureType`"
         errorLine1="                StylusGestureConverter.logGestureType("
         errorLine2="                                       ~~~~~~~~~~~~~~">
         <location
@@ -685,7 +113,7 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 34 (current min is 26): `logGestureType`"
+        message="Call requires API level 34 (current min is 29): `logGestureType`"
         errorLine1="                StylusGestureConverter.logGestureType("
         errorLine2="                                       ~~~~~~~~~~~~~~">
         <location
@@ -696,150 +124,18 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getDownloadUriForFileName`"
-        errorLine1="        return getDownloadUriForFileName(fileName) != null;"
-        errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/download/internal/common/android/java/src/org/chromium/components/download/DownloadCollectionBridge.java"
-            line="259"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `createPendingParams`"
-        errorLine1="                createPendingParams(fileName, mimeType, originalUrl, referrer);"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/download/internal/common/android/java/src/org/chromium/components/download/DownloadCollectionBridge.java"
-            line="375"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getDownloadUriForFileName`"
-        errorLine1="                Uri uri = DownloadCollectionBridge.getDownloadUriForFileName(file.getName());"
-        errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DuplicateDownloadClickableSpan.java"
-            line="56"
-            column="52"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 30 (current min is 26): `getExitReason`"
+        message="Call requires API level 30 (current min is 29): `getExitReason`"
         errorLine1="            int reason = ProcessExitReasonFromSystem.getExitReason(previousPid);"
         errorLine2="                                                     ~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/crash/MinidumpUploadServiceImpl.java"
-            line="152"
+            line="158"
             column="54"/>
     </issue>
 
     <issue
         id="NewApi"
-        message="Call requires API level 28 (current min is 26): `getBitmapFromIcon`"
-        errorLine1="        return getBitmapFromIcon(notification.getLargeIcon());"
-        errorLine2="               ~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/notifications/NotificationSuspender.java"
-            line="223"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 28 (current min is 26): `getBitmapFromIcon`"
-        errorLine1="        return getBitmapFromIcon(notification.getSmallIcon());"
-        errorLine2="               ~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/notifications/NotificationSuspender.java"
-            line="227"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Extending NotificationTask requires API level 29 (current min is 26): `NotificationTask`"
-        errorLine1="abstract class ProcessContentCaptureDataTask extends NotificationTask {"
-        errorLine2="                                                     ~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
-            line="19"
-            column="54"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `NotificationTask`"
-        errorLine1="        super(session, platformSession);"
-        errorLine2="        ~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
-            line="26"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `log`"
-        errorLine1="        log(&quot;ProcessContentTaskBase.processContent&quot;);"
-        errorLine2="        ~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
-            line="36"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `buildCurrentSession`"
-        errorLine1="        PlatformSessionData platformSessionData = buildCurrentSession();"
-        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
-            line="37"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `createOrGetSession`"
-        errorLine1="                createOrGetSession(parentPlatformSessionData, data);"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
-            line="46"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `PlatformSessionData`"
-        errorLine1="                    new PlatformSessionData("
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
-            line="67"
-            column="21"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
-        errorLine1="                            parentPlatformSessionData.contentCaptureSession, autofillId);"
-        errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java"
-            line="68"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 30 (current min is 26): `getExitReason`"
+        message="Call requires API level 30 (current min is 29): `getExitReason`"
         errorLine1="        recordAsEnumHistogram(umaName, getExitReason(pid));"
         errorLine2="                                       ~~~~~~~~~~~~~">
         <location
@@ -849,300 +145,14 @@
     </issue>
 
     <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getInstance`"
-        errorLine1="                                () -> PlatformContentCaptureController.getInstance()));"
-        errorLine2="                                                                       ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/init/ProcessInitializationHandler.java"
-            line="534"
-            column="72"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 28 (current min is 26): `onSelectionModified`"
-        errorLine1="                        mSmartSelectionEventProcessor.onSelectionModified("
-        errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="550"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 28 (current min is 26): `onSelectionAction`"
-        errorLine1="                        mSmartSelectionEventProcessor.onSelectionAction("
-        errorLine2="                                                      ~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="554"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 28 (current min is 26): `onSelectionStarted`"
-        errorLine1="                        mSmartSelectionEventProcessor.onSelectionStarted("
-        errorLine2="                                                      ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="563"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 28 (current min is 26): `onSelectionAction`"
-        errorLine1="                mSmartSelectionEventProcessor.onSelectionAction("
-        errorLine2="                                              ~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="1746"
-            column="47"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 28 (current min is 26): `onSelectionModified`"
-        errorLine1="                mSmartSelectionEventProcessor.onSelectionModified("
-        errorLine2="                                              ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="1920"
-            column="47"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `android.view.SurfaceControl#writeToParcel`"
-        errorLine1="            mSurfaceControl.writeToParcel(out, 0);"
-        errorLine2="                            ~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/common/SurfaceWrapper.java"
-            line="120"
-            column="29"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 27 (current min is 26): `destroy`"
-        errorLine1="        if (mNavigationBarColorController != null) mNavigationBarColorController.destroy();"
-        errorLine2="                                                                                 ~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedSystemUiCoordinator.java"
-            line="116"
-            column="82"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Extending NotificationTask requires API level 29 (current min is 26): `NotificationTask`"
-        errorLine1="public class TitleUpdateTask extends NotificationTask {"
-        errorLine2="                                     ~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="16"
-            column="38"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `NotificationTask`"
-        errorLine1="        super(null, platformSession);"
-        errorLine2="        ~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="20"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `log`"
-        errorLine1="        log(&quot;TitleUpdateTask.updateTitle&quot;);"
-        errorLine2="        ~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="30"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `buildCurrentSession`"
-        errorLine1="        PlatformSessionData parentPlatformSessionData = buildCurrentSession();"
-        errorLine2="                                                        ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="33"
-            column="57"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getInstance`"
-        errorLine1="                PlatformAPIWrapper.getInstance()"
-        errorLine2="                                   ~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="36"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `newAutofillId`"
-        errorLine1="                        .newAutofillId("
-        errorLine2="                         ~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="37"
-            column="26"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
-        errorLine1="                                parentPlatformSessionData.contentCaptureSession,"
-        errorLine2="                                                          ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="38"
-            column="59"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getRootPlatformSessionData`"
-        errorLine1="                                mPlatformSession.getRootPlatformSessionData().autofillId,"
-        errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="39"
-            column="50"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `autofillId`"
-        errorLine1="                                mPlatformSession.getRootPlatformSessionData().autofillId,"
-        errorLine2="                                                                              ~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="39"
-            column="79"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `mPlatformSession`"
-        errorLine1="                                mPlatformSession.getRootPlatformSessionData().autofillId,"
-        errorLine2="                                ~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="39"
-            column="33"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `getInstance`"
-        errorLine1="        PlatformAPIWrapper.getInstance()"
-        errorLine2="                           ~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="41"
-            column="28"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `notifyViewTextChanged`"
-        errorLine1="                .notifyViewTextChanged("
-        errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="42"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 29 (current min is 26): `contentCaptureSession`"
-        errorLine1="                        parentPlatformSessionData.contentCaptureSession,"
-        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/content_capture/android/java/src/org/chromium/components/content_capture/TitleUpdateTask.java"
-            line="43"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Extending ZygotePreload requires API level 29 (current min is 26): `ZygotePreload`"
-        errorLine1="public class TrichromeZygotePreload extends ZygotePreload {"
-        errorLine2="                                            ~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/app/TrichromeZygotePreload.java"
-            line="16"
-            column="45"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 26): `doPreloadCommon`"
-        errorLine1="        doPreloadCommon(appInfo);"
-        errorLine2="        ~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/app/TrichromeZygotePreload.java"
-            line="25"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS"
-        errorLine1="                        ? View.IMPORTANT_FOR_ACCESSIBILITY_AUTO"
-        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
-            line="568"
-            column="27"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS"
-        errorLine1="                        : View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);"
-        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
-            line="569"
-            column="27"/>
-    </issue>
-
-    <issue
         id="WrongConstant"
         message="Must be one of: PageTransition.FIRST, PageTransition.LINK, PageTransition.TYPED, PageTransition.AUTO_BOOKMARK, PageTransition.AUTO_SUBFRAME, PageTransition.MANUAL_SUBFRAME, PageTransition.GENERATED, PageTransition.AUTO_TOPLEVEL, PageTransition.FORM_SUBMIT, PageTransition.RELOAD, PageTransition.KEYWORD, PageTransition.KEYWORD_GENERATED, PageTransition.LAST_CORE, PageTransition.CORE_MASK, PageTransition.BLOCKED, PageTransition.FORWARD_BACK, PageTransition.FROM_ADDRESS_BAR, PageTransition.HOME_PAGE, PageTransition.FROM_API, PageTransition.CHAIN_START, PageTransition.CHAIN_END, PageTransition.CLIENT_REDIRECT, PageTransition.SERVER_REDIRECT, PageTransition.IS_REDIRECT_MASK, PageTransition.QUALIFIER_MASK"
         errorLine1="                    getTransitionType(type, intent, loadUrlParams.getTransitionType()));"
         errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabmodel/ChromeTabCreator.java"
-            line="300"
+            line="331"
             column="53"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ViewCompat.LAYOUT_DIRECTION_LTR, ViewCompat.LAYOUT_DIRECTION_RTL"
-        errorLine1="        if (ViewCompat.getLayoutDirection(this) == LAYOUT_DIRECTION_LTR) {"
-        errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/ClipDrawableProgressBar.java"
-            line="132"
-            column="52"/>
     </issue>
 
     <issue
@@ -1152,7 +162,7 @@
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/creator/CreatorActionDelegateImpl.java"
-            line="135"
+            line="139"
             column="62"/>
     </issue>
 
@@ -1163,18 +173,18 @@
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/creator/CreatorActionDelegateImpl.java"
-            line="165"
+            line="173"
             column="62"/>
     </issue>
 
     <issue
         id="WrongConstant"
         message="Must be one of: DownloadState.IN_PROGRESS, DownloadState.COMPLETE, DownloadState.CANCELLED, DownloadState.INTERRUPTED, DownloadState.MAX_DOWNLOAD_STATE"
-        errorLine1="        @DownloadState int state = downloadItem.getDownloadInfo().state();"
-        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="        @DownloadState int state = assumeNonNull(downloadItem.getDownloadInfo()).state();"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
-            line="1296"
+            line="1276"
             column="36"/>
     </issue>
 
@@ -1185,7 +195,7 @@
         errorLine2="                ~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
-            line="1297"
+            line="1277"
             column="17"/>
     </issue>
 
@@ -1196,7 +206,7 @@
         errorLine2="                   ~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
-            line="1298"
+            line="1278"
             column="20"/>
     </issue>
 
@@ -1207,7 +217,7 @@
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/feed/FeedActionDelegateImpl.java"
-            line="195"
+            line="201"
             column="62"/>
     </issue>
 
@@ -1218,30 +228,8 @@
         errorLine2="                                                             ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/feed/FeedActionDelegateImpl.java"
-            line="224"
+            line="234"
             column="62"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ViewCompat.LAYOUT_DIRECTION_LTR, ViewCompat.LAYOUT_DIRECTION_RTL"
-        errorLine1="        if (ViewCompat.getLayoutDirection(this) == View.LAYOUT_DIRECTION_RTL) {"
-        errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/MaterialProgressBar.java"
-            line="235"
-            column="52"/>
-    </issue>
-
-    <issue
-        id="ForegroundServicePermission"
-        message="foregroundServiceType:specialUse requires permission:[android.permission.FOREGROUND_SERVICE_SPECIAL_USE]"
-        errorLine1="    &lt;service android:name=&quot;org.chromium.android_webview.services.DeveloperUiService&quot; android:foregroundServiceType=&quot;specialUse&quot; android:exported=&quot;true&quot; android:process=&quot;:webview_service&quot; tools:ignore=&quot;ExportedService&quot;>"
-        errorLine2="    ^">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
-            line="673"
-            column="5"/>
     </issue>
 
     <issue
@@ -1283,41 +271,8 @@
         errorLine1="@VisibleForTesting"
         errorLine2="~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../android_webview/java/src/org/chromium/android_webview/policy/AwPolicyProvider.java"
-            line="18"
-            column="1"/>
-    </issue>
-
-    <issue
-        id="SupportAnnotationUsage"
-        message="Top level class can&apos;t have private or protected access level"
-        errorLine1="@VisibleForTesting"
-        errorLine2="~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsDelegate.java"
-            line="22"
-            column="1"/>
-    </issue>
-
-    <issue
-        id="SupportAnnotationUsage"
-        message="Top level class can&apos;t have private or protected access level"
-        errorLine1="@VisibleForTesting"
-        errorLine2="~~~~~~~~~~~~~~~~~~">
-        <location
             file="../../content/public/android/java/src/org/chromium/content/browser/BackgroundSyncNetworkObserver.java"
             line="47"
-            column="1"/>
-    </issue>
-
-    <issue
-        id="SupportAnnotationUsage"
-        message="Top level class can&apos;t have private or protected access level"
-        errorLine1="@VisibleForTesting"
-        errorLine2="~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/FindAddress.java"
-            line="18"
             column="1"/>
     </issue>
 
@@ -1333,201 +288,14 @@
     </issue>
 
     <issue
-        id="UseAppTint"
-        message="Must use `app:tint` instead of `android:tint`"
-        errorLine1="        android:tint=&quot;@macro/drag_handlebar_color&quot; />"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0~3, 5, 7, 8, 10~13, 15, 17, 18, 20, 21, 100, 1000, 10000, 100000, 1000000, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Mag-e-expire bukas&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="../../chrome/android/java/res/layout/custom_tabs_handle_view.xml"
-            line="35"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UseAppTint"
-        message="Must use `app:tint` instead of `android:tint`"
-        errorLine1="        android:tint=&quot;@macro/checked_item&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/multiwindow/java/res/layout/instance_switcher_item.xml"
-            line="85"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UseAppTint"
-        message="Must use `app:tint` instead of `android:tint`"
-        errorLine1="            android:tint=&quot;@color/photo_picker_tile_bg_color&quot; />"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/photo_picker/android/java/res/layout/photo_picker_bitmap_view.xml"
-            line="109"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UseAppTint"
-        message="Must use `app:tint` instead of `android:tint`"
-        errorLine1="            android:tint=&quot;@macro/default_icon_color_secondary&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/res/layout/search_widget_template.xml"
-            line="46"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UseCompatLoadingForDrawables"
-        message="Use `ResourcesCompat.getDrawable()`"
-        errorLine1="                ret = res.getDrawable(id, null);"
-        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
-            line="79"
-            column="23"/>
-    </issue>
-
-    <issue
-        id="UseCompatLoadingForDrawables"
-        message="Use `AppCompatResources.getDrawable()`"
-        errorLine1="                    iconDrawable = mContext.getDrawable(iconResId);"
-        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchQuickActionControl.java"
-            line="314"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="UseCompatLoadingForDrawables"
-        message="Use `AppCompatResources.getDrawable()`"
-        errorLine1="        Drawable clearTextIcon = getContext().getDrawable(R.drawable.ic_clear_text);"
-        errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/devui/FlagsFragment.java"
-            line="187"
-            column="34"/>
-    </issue>
-
-    <issue
-        id="UseCompatLoadingForDrawables"
-        message="Use `AppCompatResources.getDrawable()`"
-        errorLine1="                            mContext.getDrawable(R.drawable.ic_cloud_offline_24dp);"
-        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/indicator/OfflineIndicatorControllerV2.java"
-            line="150"
-            column="29"/>
-    </issue>
-
-    <issue
-        id="UseCompatLoadingForDrawables"
-        message="Use `AppCompatResources.getDrawable()`"
-        errorLine1="                    final Drawable statusIcon = mContext.getDrawable(R.drawable.ic_globe_24dp);"
-        errorLine2="                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/indicator/OfflineIndicatorControllerV2.java"
-            line="178"
-            column="49"/>
-    </issue>
-
-    <issue
-        id="UseCompatLoadingForDrawables"
-        message="Use `AppCompatResources.getDrawable()`"
-        errorLine1="                        context.getDrawable("
-        errorLine2="                        ^">
-        <location
-            file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-tl/components_strings.xml"
             line="417"
-            column="25"/>
-    </issue>
-
-    <issue
-        id="UseCompatTextViewDrawableXml"
-        message="Use `app:drawableEndCompat` instead of `android:drawableEnd`"
-        errorLine1="    android:drawableEnd=&quot;@drawable/exclamation_triangle&quot;"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/res/layout/os_version_unsupported_text.xml"
-            line="17"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="UseCompatTextViewDrawableXml"
-        message="Use `app:drawableStartCompat` instead of `android:drawableStart`"
-        errorLine1="        android:drawableStart=&quot;@drawable/ic_alert_error&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/nonembedded/java/res_devui/layout/persistent_error_message.xml"
-            line="26"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UseCompatTextViewDrawableXml"
-        message="Use `app:drawableTopCompat` instead of `android:drawableTop`"
-        errorLine1="                android:drawableTop=&quot;@drawable/delete_icon&quot;"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="42"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="UseCompatTextViewDrawableXml"
-        message="Use `app:drawableTint` instead of `android:drawableTint`"
-        errorLine1="                android:drawableTint=&quot;@color/default_icon_color_tint_list&quot;"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="43"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="UseCompatTextViewDrawableXml"
-        message="Use `app:drawableTopCompat` instead of `android:drawableTop`"
-        errorLine1="                android:drawableTop=&quot;@drawable/save_icon&quot;"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="54"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="UseCompatTextViewDrawableXml"
-        message="Use `app:drawableTint` instead of `android:drawableTint`"
-        errorLine1="                android:drawableTint=&quot;@color/default_icon_color_tint_list&quot;"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="55"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="UseCompatTextViewDrawableXml"
-        message="Use `app:drawableTopCompat` instead of `android:drawableTop`"
-        errorLine1="                android:drawableTop=&quot;@drawable/share_icon&quot;"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="65"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="UseCompatTextViewDrawableXml"
-        message="Use `app:drawableTint` instead of `android:drawableTint`"
-        errorLine1="                android:drawableTint=&quot;@color/default_icon_color_tint_list&quot;"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="66"
-            column="17"/>
+            column="3"/>
     </issue>
 
     <issue
@@ -1536,8 +304,8 @@
         errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;কাইলৈ ম্যাদ উকলিব&quot;&lt;/item>"
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-as/components_strings.xml"
-            line="357"
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-as/components_strings.xml"
+            line="428"
             column="3"/>
     </issue>
 
@@ -1547,19 +315,8 @@
         errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;আগামীকাল মেয়াদ শেষ হবে&quot;&lt;/item>"
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-bn/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;فردا منقضی می‌شود&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-fa/components_strings.xml"
-            line="357"
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-bn/components_strings.xml"
+            line="428"
             column="3"/>
     </issue>
 
@@ -1569,8 +326,8 @@
         errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Expire demain&quot;&lt;/item>"
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-fr-rCA/components_strings.xml"
-            line="357"
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-fr-rCA/components_strings.xml"
+            line="428"
             column="3"/>
     </issue>
 
@@ -1580,8 +337,8 @@
         errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Expire demain&quot;&lt;/item>"
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-fr/components_strings.xml"
-            line="357"
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-fr/components_strings.xml"
+            line="428"
             column="3"/>
     </issue>
 
@@ -1591,140 +348,41 @@
         errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;આવતીકાલે સમયસીમા સમાપ્ત થાય છે&quot;&lt;/item>"
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-gu/components_strings.xml"
-            line="357"
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-gu/components_strings.xml"
+            line="428"
             column="3"/>
     </issue>
 
     <issue
         id="ImpliedQuantity"
         message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Գործողության ժամկետը սպառվում է վաղը&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-hy/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;ਮਿਆਦ ਕੱਲ੍ਹ ਨੂੰ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-pa/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;හෙට කල් ඉකුත් වෙයි&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-si/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Kuphelelwa yisikhathi kusasa&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-zu/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0~3, 5, 7, 8, 10~13, 15, 17, 18, 20, 21, 100, 1000, 10000, 100000, 1000000, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Mag-e-expire bukas&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-tl/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 101, 201, 301, 401, 501, 601, 701, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Poteče jutri&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-sl/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Тэрмін дзеяння заканчваецца заўтра&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-be/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Ističe sutra&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-bs/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Rennur út á morgun&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-is/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Истекува утре&quot;&lt;/item>"
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Expira amanhã&quot;&lt;/item>"
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-mk/components_strings.xml"
-            line="357"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Срок действия истекает завтра&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-ru/components_strings.xml"
-            line="357"
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-pt-rBR/components_strings.xml"
+            line="429"
             column="3"/>
     </issue>
 
     <issue
         id="ImpliedQuantity"
         message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;ነገ ጊዜው ያበቃል&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Expira amanhã&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-am/components_strings.xml"
-            line="358"
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-pt-rPT/components_strings.xml"
+            line="429"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;فردا منقضی می‌شود&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-fa/components_strings.xml"
+            line="430"
             column="3"/>
     </issue>
 
@@ -1734,41 +392,30 @@
         errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;समयसीमा कल खत्म हो जाएगी&quot;&lt;/item>"
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-hi/components_strings.xml"
-            line="358"
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-hi/components_strings.xml"
+            line="430"
             column="3"/>
     </issue>
 
     <issue
         id="ImpliedQuantity"
         message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;ನಾಳೆ ಅವಧಿ ಮುಕ್ತಾಯವಾಗುತ್ತದೆ&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;ਮਿਆਦ ਕੱਲ੍ਹ ਨੂੰ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-kn/components_strings.xml"
-            line="358"
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-pa/components_strings.xml"
+            line="430"
             column="3"/>
     </issue>
 
     <issue
         id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Expira amanhã&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 101, 201, 301, 401, 501, 601, 701, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Poteče jutri&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-pt-rBR/components_strings.xml"
-            line="358"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Expira amanhã&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-pt-rPT/components_strings.xml"
-            line="358"
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-sl/components_strings.xml"
+            line="430"
             column="3"/>
     </issue>
 
@@ -1778,19 +425,96 @@
         errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Ističe sutra&quot;&lt;/item>"
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-b+sr+Latn/components_strings.xml"
-            line="358"
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-bs/components_strings.xml"
+            line="430"
             column="3"/>
     </issue>
 
     <issue
         id="ImpliedQuantity"
         message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Istječe sutra&quot;&lt;/item>"
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Rennur út á morgun&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-is/components_strings.xml"
+            line="430"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Истекува утре&quot;&lt;/item>"
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-hr/components_strings.xml"
-            line="358"
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-mk/components_strings.xml"
+            line="430"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Срок действия истекает завтра&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-ru/components_strings.xml"
+            line="430"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Գործողության ժամկետը սպառվում է վաղը&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-hy/components_strings.xml"
+            line="431"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;ನಾಳೆ ಅವಧಿ ಮುಕ್ತಾಯವಾಗುತ್ತದೆ&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-kn/components_strings.xml"
+            line="431"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;හෙට කල් ඉකුත් වෙයි&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-si/components_strings.xml"
+            line="431"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Kuphelelwa yisikhathi kusasa&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-zu/components_strings.xml"
+            line="431"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Тэрмін дзеяння заканчваецца заўтра&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-be/components_strings.xml"
+            line="431"
             column="3"/>
     </issue>
 
@@ -1800,30 +524,8 @@
         errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Galiojimo laikas baigsis rytoj&quot;&lt;/item>"
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-lt/components_strings.xml"
-            line="358"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Derīguma termiņš beigsies rīt&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-lv/components_strings.xml"
-            line="358"
-            column="3"/>
-    </issue>
-
-    <issue
-        id="ImpliedQuantity"
-        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
-        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Истиче сутра&quot;&lt;/item>"
-        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-sr/components_strings.xml"
-            line="358"
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-lt/components_strings.xml"
+            line="431"
             column="3"/>
     </issue>
 
@@ -1833,20 +535,75 @@
         errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Строк дії закінчується завтра&quot;&lt;/item>"
         errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-uk/components_strings.xml"
-            line="358"
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-uk/components_strings.xml"
+            line="431"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (0, 1), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;ነገ ጊዜው ያበቃል&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-am/components_strings.xml"
+            line="432"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Ističe sutra&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-b+sr+Latn/components_strings.xml"
+            line="432"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Istječe sutra&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-hr/components_strings.xml"
+            line="432"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Derīguma termiņš beigsies rīt&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-lv/components_strings.xml"
+            line="432"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="ImpliedQuantity"
+        message="The quantity `&apos;one&apos;` matches more than one specific number in this locale (1, 21, 31, 41, 51, 61, 71, 81, 101, 1001, …), but the message did not include a formatting argument (such as `%d`). This is usually an internationalization error. See full issue explanation for more."
+        errorLine1="  &lt;item quantity=&quot;one&quot;>&quot;Истиче сутра&quot;&lt;/item>"
+        errorLine2="  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/strings/components_strings.resources.zip/values-sr/components_strings.xml"
+            line="432"
             column="3"/>
     </issue>
 
     <issue
         id="DataExtractionRules"
         message="The attribute `android:allowBackup` is deprecated from Android 12 and higher and may be removed in future versions. Consider adding the attribute `android:dataExtractionRules` specifying an `@xml` resource which configures cloud backups and device transfers on Android 12 and higher."
-        errorLine1="  &lt;application android:name=&quot;org.chromium.chrome.browser.base.SplitMonochromeApplication&quot; android:icon=&quot;@drawable/ic_launcher&quot; android:roundIcon=&quot;@drawable/ic_launcher_round&quot; android:label=&quot;@string/app_name&quot; android:memtagMode=&quot;async&quot; android:largeHeap=&quot;false&quot; android:manageSpaceActivity=&quot;@string/manage_space_activity&quot; android:supportsRtl=&quot;true&quot; android:zygotePreloadName=&quot;org.chromium.content_public.app.ZygotePreload&quot; android:allowBackup=&quot;false&quot; android:networkSecurityConfig=&quot;@xml/network_security_config&quot; android:allowAudioPlaybackCapture=&quot;false&quot; android:appComponentFactory=&quot;org.chromium.chrome.browser.base.SplitCompatAppComponentFactory&quot; android:enableOnBackInvokedCallback=&quot;true&quot; android:multiArch=&quot;true&quot; android:extractNativeLibs=&quot;false&quot;>"
-        errorLine2="  ^">
+        errorLine1="    &lt;application />"
+        errorLine2="    ~~~~~~~~~~~~~~~">
         <location
-            file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
-            line="259"
-            column="3"/>
+            file="android_lint_cache/aars/lottie.aar/AndroidManifest.xml"
+            line="7"
+            column="5"/>
     </issue>
 
     <issue
@@ -1856,7 +613,7 @@
         errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/ContentLanguagesPreference.java"
-            line="131"
+            line="139"
             column="29"/>
     </issue>
 
@@ -1922,7 +679,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/DateDividedAdapter.java"
-            line="827"
+            line="838"
             column="9"/>
     </issue>
 
@@ -1933,7 +690,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/firstrun/FirstRunActivity.java"
-            line="291"
+            line="289"
             column="13"/>
     </issue>
 
@@ -1944,7 +701,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/history/HistoryAdapter.java"
-            line="156"
+            line="166"
             column="9"/>
     </issue>
 
@@ -1977,7 +734,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/contacts_picker/android/java/src/org/chromium/components/browser_ui/contacts_picker/PickerAdapter.java"
-            line="184"
+            line="176"
             column="9"/>
     </issue>
 
@@ -1988,7 +745,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/contacts_picker/android/java/src/org/chromium/components/browser_ui/contacts_picker/PickerAdapter.java"
-            line="213"
+            line="205"
             column="9"/>
     </issue>
 
@@ -1999,7 +756,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/contacts_picker/android/java/src/org/chromium/components/browser_ui/contacts_picker/PickerAdapter.java"
-            line="234"
+            line="226"
             column="9"/>
     </issue>
 
@@ -2021,7 +778,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/contacts_picker/android/java/src/org/chromium/components/browser_ui/contacts_picker/PickerCategoryView.java"
-            line="250"
+            line="253"
             column="9"/>
     </issue>
 
@@ -2082,6 +839,321 @@
 
     <issue
         id="UnusedResources"
+        message="The resource `R.xml.ad_services_config` appears to be unused"
+        errorLine1="&lt;ad-services-config>"
+        errorLine2="^">
+        <location
+            file="../../chrome/android/java/res/xml/ad_services_config.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.fre_activity_label` appears to be unused"
+        errorLine1="&lt;string name=&quot;fre_activity_label&quot;>&quot;Chrome se eerste laatloopervaring&quot;&lt;/string>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-af/android_chrome_strings.xml"
+            line="1141"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.bookmark_choose_folder` appears to be unused"
+        errorLine1="&lt;string name=&quot;bookmark_choose_folder&quot;>&quot;Kies vouer&quot;&lt;/string>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-af/android_chrome_strings.xml"
+            line="1463"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.bookmark_widget_description` appears to be unused"
+        errorLine1="&lt;string name=&quot;bookmark_widget_description&quot;>&quot;Kry maklik toegang tot jou boekmerke&quot;&lt;/string>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-af/android_chrome_strings.xml"
+            line="1480"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.content_provider_search_description` appears to be unused"
+        errorLine1="&lt;string name=&quot;content_provider_search_description&quot;>&quot;Boekmerke en webgeskiedenis&quot;&lt;/string>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-af/android_chrome_strings.xml"
+            line="1576"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.webapp_activity_title` appears to be unused"
+        errorLine1="&lt;string name=&quot;webapp_activity_title&quot;>&quot;Webprogram&quot;&lt;/string>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-af/android_chrome_strings.xml"
+            line="1736"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.search_widget_description` appears to be unused"
+        errorLine1="&lt;string name=&quot;search_widget_description&quot;>&quot;Begin vinnig ’n soektog in Chrome&quot;&lt;/string>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-af/android_chrome_strings.xml"
+            line="1985"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.quick_action_search_widget_description` appears to be unused"
+        errorLine1="&lt;string name=&quot;quick_action_search_widget_description&quot;>&quot;Soek met behulp van sleutelbord, stem, Incognito of kamera&quot;&lt;/string>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-af/android_chrome_strings.xml"
+            line="1991"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.dino_widget_description` appears to be unused"
+        errorLine1="&lt;string name=&quot;dino_widget_description&quot;>&quot;Spring in ’n lekker Dino-speletjie&quot;&lt;/string>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-af/android_chrome_strings.xml"
+            line="1993"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.disabled_incognito_launcher_shortcut_message` appears to be unused"
+        errorLine1="&lt;string name=&quot;disabled_incognito_launcher_shortcut_message&quot;>&quot;Verwyder hierdie kortpad en skep dit weer&quot;&lt;/string>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-af/android_chrome_strings.xml"
+            line="1994"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.xml.app_restrictions` appears to be unused"
+        errorLine1="&lt;restrictions xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
+        errorLine2="^">
+        <location
+            file="gen/chrome/app/policy/android/xml-v21/app_restrictions.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.xml.bookmark_widget_info` appears to be unused"
+        errorLine1="&lt;appwidget-provider"
+        errorLine2="^">
+        <location
+            file="../../chrome/android/java/res/xml/bookmark_widget_info.xml"
+            line="9"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.bookmark_widget_layout_preview` appears to be unused"
+        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; xmlns:aapt=&quot;http://schemas.android.com/aapt&quot;"
+        errorLine2="^">
+        <location
+            file="../../chrome/android/java/res/drawable/bookmark_widget_layout_preview.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.bookmark_widget_preview` appears to be unused">
+        <location
+            file="../../chrome/android/java/res/drawable-nodpi/bookmark_widget_preview.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.layout.bookmark_widget_preview_layout` appears to be unused"
+        errorLine1="&lt;FrameLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="../../chrome/android/java/res/layout/bookmark_widget_preview_layout.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.decoder_description` appears to be unused"
+        errorLine1="&lt;string name=&quot;decoder_description&quot;>&quot;Prentdekodeerder&quot;&lt;/string>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/browser_ui/strings/android/browser_ui_strings_grd.resources.zip/values-af/browser_ui_strings.xml"
+            line="653"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.bookmark_widget_title` appears to be unused"
+        errorLine1="    &lt;string name=&quot;bookmark_widget_title&quot; translatable=&quot;false&quot;>Chromium bookmarks&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res_chromium_base/values/channel_constants.xml"
+            line="11"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.search_widget_title` appears to be unused"
+        errorLine1="    &lt;string name=&quot;search_widget_title&quot; translatable=&quot;false&quot;>Chromium search&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res_chromium_base/values/channel_constants.xml"
+            line="12"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.quick_action_search_widget_title` appears to be unused"
+        errorLine1="    &lt;string name=&quot;quick_action_search_widget_title&quot; translatable=&quot;false&quot;>Chromium quick action search&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res_chromium_base/values/channel_constants.xml"
+            line="13"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.color_button_background` appears to be unused"
+        errorLine1="&lt;layer-list xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
+        errorLine2="^">
+        <location
+            file="../../components/embedder_support/android/java/res/drawable/color_button_background.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.baseline_neutral_70_alpha_38` appears to be unused"
+        errorLine1="    &lt;color name=&quot;baseline_neutral_70_alpha_38&quot;>#61ABABAB&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/color_palette.xml"
+            line="48"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.baseline_neutral_10_with_neutral_90_alpha_38` appears to be unused"
+        errorLine1="    &lt;color name=&quot;baseline_neutral_10_with_neutral_90_alpha_38&quot;>#696969&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/color_palette.xml"
+            line="59"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.baseline_neutral_10_with_neutral_0_alpha_30` appears to be unused"
+        errorLine1="    &lt;color name=&quot;baseline_neutral_10_with_neutral_0_alpha_30&quot;>#161616&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/color_palette.xml"
+            line="66"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.baseline_neutral_10_with_neutral_0_alpha_30_with_neutral_variant_60_alpha_15` appears to be unused"
+        errorLine1="    &lt;color name=&quot;baseline_neutral_10_with_neutral_0_alpha_30_with_neutral_variant_60_alpha_15&quot;>#282828&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/color_palette.xml"
+            line="67"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.baseline_secondary_90_with_neutral_10_alpha_8` appears to be unused"
+        errorLine1="    &lt;color name=&quot;baseline_secondary_90_with_neutral_10_alpha_8&quot;>#B3D7EF&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/color_palette.xml"
+            line="80"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.baseline_secondary_90_with_neutral_10_alpha_24` appears to be unused"
+        errorLine1="    &lt;color name=&quot;baseline_secondary_90_with_neutral_10_alpha_24&quot;>#94B7CF&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/color_palette.xml"
+            line="81"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.baseline_secondary_70_with_neutral_90_alpha_8` appears to be unused"
+        errorLine1="    &lt;color name=&quot;baseline_secondary_70_with_neutral_90_alpha_8&quot;>#53A7E1&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/color_palette.xml"
+            line="84"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.baseline_secondary_70_with_neutral_90_alpha_24` appears to be unused"
+        errorLine1="    &lt;color name=&quot;baseline_secondary_70_with_neutral_90_alpha_24&quot;>#448FC4&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/color_palette.xml"
+            line="85"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.baseline_secondary_10` appears to be unused"
+        errorLine1="    &lt;color name=&quot;baseline_secondary_10&quot;>#001D35&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/color_palette.xml"
+            line="92"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
         message="The resource `R.macro.suggestion_url_color` appears to be unused"
         errorLine1="    &lt;macro name=&quot;suggestion_url_color&quot;>@macro/default_text_color_link&lt;/macro>"
         errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
@@ -2089,6 +1161,1126 @@
             file="../../chrome/browser/ui/android/omnibox/java/res/values/colors.xml"
             line="12"
             column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.dark_action_bar_color` appears to be unused"
+        errorLine1="    &lt;color name=&quot;dark_action_bar_color&quot;>@color/google_blue_grey_900&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/colors.xml"
+            line="13"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.dark_status_bar_color` appears to be unused"
+        errorLine1="    &lt;color name=&quot;dark_status_bar_color&quot;>#161E21&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/colors.xml"
+            line="14"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.quick_action_search_widget_width` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;quick_action_search_widget_width&quot;>300dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/values/dimens.xml"
+            line="10"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.autofill_dropdown_icon_margin` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;autofill_dropdown_icon_margin&quot;>8dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/autofill/android/java/res/values/dimens.xml"
+            line="11"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.color_button_height` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;color_button_height&quot;>60dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/embedder_support/android/java/res/values/dimens.xml"
+            line="14"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.context_menu_list_vertical_padding` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;context_menu_list_vertical_padding&quot;>16dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/embedder_support/android/java/res/values/dimens.xml"
+            line="21"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.context_menu_small_vertical_margin` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;context_menu_small_vertical_margin&quot;>10dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/embedder_support/android/java/res/values/dimens.xml"
+            line="22"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.editor_dialog_checkbox_min_height` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;editor_dialog_checkbox_min_height&quot;>48dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/autofill/android/java/res/values/dimens.xml"
+            line="32"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.context_menu_popup_border_radius` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;context_menu_popup_border_radius&quot;>16dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/embedder_support/android/java/res/values/dimens.xml"
+            line="34"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.editable_option_section_logo_horizontal_padding` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;editable_option_section_logo_horizontal_padding&quot;>5dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/autofill/android/java/res/values/dimens.xml"
+            line="39"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.editable_option_section_logo_vertical_padding` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;editable_option_section_logo_vertical_padding&quot;>13dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/autofill/android/java/res/values/dimens.xml"
+            line="40"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.menu_footer_chip_end_padding` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;menu_footer_chip_end_padding&quot;>8dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/dimens.xml"
+            line="54"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.quick_action_search_widget_dino_min_size` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;quick_action_search_widget_dino_min_size&quot;>110dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/values/dimens.xml"
+            line="82"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.list_menu_popup_min_width` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;list_menu_popup_min_width&quot;>112dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/dimens.xml"
+            line="108"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.list_menu_popup_max_width` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;list_menu_popup_max_width&quot;>280dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/dimens.xml"
+            line="109"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.list_menu_item_min_height` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;list_menu_item_min_height&quot;>48dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/dimens.xml"
+            line="116"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.xml.file_paths` appears to be unused"
+        errorLine1="&lt;paths xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
+        errorLine2="^">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/android/chrome_public_apk_template_resources.resources.zip/xml/file_paths.xml"
+            line="11"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.hairline_border` appears to be unused"
+        errorLine1="&lt;shape xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
+        errorLine2="^">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable/hairline_border.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.ic_apps_blue_24dp` appears to be unused"
+        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="../../ui/android/java/res/drawable/ic_apps_blue_24dp.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.ic_launcher` appears to be unused"
+        errorLine1="&lt;adaptive-icon xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; >"
+        errorLine2="^">
+        <location
+            file="../../chrome/android/java/res_base/drawable/ic_launcher.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.ic_launcher_round` appears to be unused"
+        errorLine1="&lt;adaptive-icon xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; >"
+        errorLine2="^">
+        <location
+            file="../../chrome/android/java/res_base/drawable/ic_launcher_round.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.xml.launchershortcuts` appears to be unused"
+        errorLine1="&lt;shortcuts xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; >"
+        errorLine2="^">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/android/chrome_public_apk_template_resources.resources.zip/xml/launchershortcuts.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.mipmap.layered_app_icon` appears to be unused">
+        <location
+            file="../../chrome/android/java/res_chromium_base/mipmap-hdpi/layered_app_icon.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.mipmap.layered_app_icon_background` appears to be unused">
+        <location
+            file="../../chrome/android/java/res_chromium_base/mipmap-hdpi/layered_app_icon_background.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.mipmap.layered_app_icon_foreground` appears to be unused"
+        errorLine1="&lt;shape xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
+        errorLine2="^">
+        <location
+            file="../../chrome/android/java/res_chromium_base/mipmap-nodpi/layered_app_icon_foreground.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.list_divider` appears to be unused"
+        errorLine1="&lt;shape"
+        errorLine2="^">
+        <location
+            file="../../components/browser_ui/settings/android/java/res/drawable/list_divider.xml"
+            line="11"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.xml.network_security_config` appears to be unused"
+        errorLine1="&lt;network-security-config>"
+        errorLine2="^">
+        <location
+            file="../../chrome/android/java/res_base/xml/network_security_config.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.green_50` appears to be unused"
+        errorLine1="    &lt;color name=&quot;green_50&quot;>#E6F4EA&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/one_off_colors.xml"
+            line="24"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.xml.quick_action_search_widget_dino_info` appears to be unused"
+        errorLine1="&lt;appwidget-provider"
+        errorLine2="^">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/xml/quick_action_search_widget_dino_info.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.quick_action_search_widget_dino_preview` appears to be unused">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable-nodpi/quick_action_search_widget_dino_preview.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.layout.quick_action_search_widget_dino_preview_layout` appears to be unused"
+        errorLine1="&lt;FrameLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/layout/quick_action_search_widget_dino_preview_layout.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.xml.quick_action_search_widget_small_info` appears to be unused"
+        errorLine1="&lt;appwidget-provider xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/xml/quick_action_search_widget_small_info.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.quick_action_search_widget_small_preview` appears to be unused">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/drawable-nodpi/quick_action_search_widget_small_preview.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.layout.quick_action_search_widget_small_preview_layout` appears to be unused"
+        errorLine1="&lt;FrameLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="../../chrome/browser/ui/android/quickactionsearchwidget/java/res/layout/quick_action_search_widget_small_preview_layout.xml"
+            line="7"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.xml.search_widget_info` appears to be unused"
+        errorLine1="&lt;appwidget-provider"
+        errorLine2="^">
+        <location
+            file="../../chrome/android/java/res/xml/search_widget_info.xml"
+            line="9"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.xml.searchable` appears to be unused"
+        errorLine1="&lt;searchable xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/chrome/android/chrome_public_apk_template_resources.resources.zip/xml/searchable.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.default_text_color_on_accent2_container_baseline` appears to be unused"
+        errorLine1="    &lt;color name=&quot;default_text_color_on_accent2_container_baseline&quot;>@color/baseline_secondary_10&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_adaptive.xml"
+            line="20"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.default_icon_color_on_accent1_baseline` appears to be unused"
+        errorLine1="    &lt;color name=&quot;default_icon_color_on_accent1_baseline&quot;>@color/default_icon_color_on_accent1_light&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_adaptive.xml"
+            line="26"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.default_icon_color_on_accent1_container_baseline` appears to be unused"
+        errorLine1="    &lt;color name=&quot;default_icon_color_on_accent1_container_baseline&quot;>@color/default_icon_color_on_accent1_container_light&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_adaptive.xml"
+            line="27"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.default_icon_color_disabled_baseline` appears to be unused"
+        errorLine1="    &lt;color name=&quot;default_icon_color_disabled_baseline&quot;>@color/default_icon_color_disabled_dark&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_adaptive.xml"
+            line="30"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.default_bg_color_elev_4_baseline` appears to be unused"
+        errorLine1="    &lt;color name=&quot;default_bg_color_elev_4_baseline&quot;>@color/default_bg_color_light_elev_4_baseline&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_adaptive.xml"
+            line="44"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.legacy_bg_color_elev_4` appears to be unused"
+        errorLine1="    &lt;color name=&quot;legacy_bg_color_elev_4&quot;>@color/legacy_bg_color_light_elev_4&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_adaptive.xml"
+            line="48"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.incognito_icon_filled_bg_color` appears to be unused"
+        errorLine1="    &lt;color name=&quot;incognito_icon_filled_bg_color&quot;>@color/incognito_icon_filled_bg_color_dark&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_adaptive.xml"
+            line="69"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.menu_action_bar_bg_color_baseline` appears to be unused"
+        errorLine1="    &lt;color name=&quot;menu_action_bar_bg_color_baseline&quot;>@color/menu_action_bar_bg_color_light_baseline&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_adaptive.xml"
+            line="85"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.menu_action_bar_bg_color_light_baseline` appears to be unused"
+        errorLine1="    &lt;color name=&quot;menu_action_bar_bg_color_light_baseline&quot;>@color/default_bg_color_light_elev_1_baseline&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_adaptive.xml"
+            line="86"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.menu_action_bar_bg_color_dark_baseline` appears to be unused"
+        errorLine1="    &lt;color name=&quot;menu_action_bar_bg_color_dark_baseline&quot;>@color/default_bg_color_dark_elev_6_baseline&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_adaptive.xml"
+            line="87"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.section_header_active_tab_bg_color_baseline` appears to be unused"
+        errorLine1="    &lt;color name=&quot;section_header_active_tab_bg_color_baseline&quot;>@color/default_bg_color_baseline&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_adaptive.xml"
+            line="102"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.section_header_bg_color_baseline` appears to be unused"
+        errorLine1="    &lt;color name=&quot;section_header_bg_color_baseline&quot;>@color/default_bg_color_light_elev_2_baseline&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_adaptive.xml"
+            line="103"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.section_header_bg_color_disabled_baseline` appears to be unused"
+        errorLine1="    &lt;color name=&quot;section_header_bg_color_disabled_baseline&quot;>@color/default_bg_color_elev_1_baseline&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_adaptive.xml"
+            line="104"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.gm3_baseline_surface` appears to be unused"
+        errorLine1="    &lt;color name=&quot;gm3_baseline_surface&quot;>@color/gm3_baseline_surface_light&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_adaptive.xml"
+            line="112"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.default_icon_color_on_accent1_light` appears to be unused"
+        errorLine1="    &lt;color name=&quot;default_icon_color_on_accent1_light&quot;>@color/baseline_primary_100&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_non_adaptive.xml"
+            line="26"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.default_icon_color_on_accent1_container_light` appears to be unused"
+        errorLine1="    &lt;color name=&quot;default_icon_color_on_accent1_container_light&quot;>@color/baseline_primary_30&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_non_adaptive.xml"
+            line="29"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.default_icon_color_on_accent1_container_dark` appears to be unused"
+        errorLine1="    &lt;color name=&quot;default_icon_color_on_accent1_container_dark&quot;>@color/baseline_primary_90&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_non_adaptive.xml"
+            line="30"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.legacy_bg_color_light_elev_4` appears to be unused"
+        errorLine1="    &lt;color name=&quot;legacy_bg_color_light_elev_4&quot;>@color/modern_white&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_non_adaptive.xml"
+            line="76"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.legacy_bg_color_dark_elev_4` appears to be unused"
+        errorLine1="    &lt;color name=&quot;legacy_bg_color_dark_elev_4&quot;>@color/baseline_neutral_10_with_surface_tint_dark_alpha_12&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_non_adaptive.xml"
+            line="84"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.incognito_icon_filled_bg_color_dark` appears to be unused"
+        errorLine1="    &lt;color name=&quot;incognito_icon_filled_bg_color_dark&quot;>@color/baseline_neutral_20&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_non_adaptive.xml"
+            line="133"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.incognito_icon_filled_bg_color_light` appears to be unused"
+        errorLine1="    &lt;color name=&quot;incognito_icon_filled_bg_color_light&quot;>@color/baseline_neutral_70&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_non_adaptive.xml"
+            line="134"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.gm3_baseline_outline_variant_dark` appears to be unused"
+        errorLine1="    &lt;color name=&quot;gm3_baseline_outline_variant_dark&quot;>@color/baseline_neutral_30&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/semantic_colors_non_adaptive.xml"
+            line="185"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.shortcut_newtab` appears to be unused">
+        <location
+            file="../../chrome/android/java/res/drawable-hdpi/shortcut_newtab.png"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.DropdownPopupWindow` appears to be unused"
+        errorLine1="    &lt;style name=&quot;DropdownPopupWindow&quot; parent=&quot;@android:style/Widget.ListPopupWindow&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/styles.xml"
+            line="10"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.LauncherTheme` appears to be unused"
+        errorLine1="    &lt;style name=&quot;LauncherTheme&quot; parent=&quot;Theme.BrowserUI.NoDisplay&quot; />"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="11"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium&quot; parent=&quot;Base.Theme.Chromium&quot; />"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="31"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.PreferenceTheme` appears to be unused"
+        errorLine1="    &lt;style name=&quot;PreferenceTheme&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/browser_ui/settings/android/java/res/values/styles.xml"
+            line="35"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_Activity` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.Activity&quot; parent=&quot;Theme.Chromium.WithWindowAnimation&quot; />"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="39"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Base_Theme_Chromium_Activity_Fullscreen` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Base.Theme.Chromium.Activity.Fullscreen&quot; parent=&quot;Theme.BrowserUI.DayNight&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="42"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.SettingsFragment` appears to be unused"
+        errorLine1="    &lt;style name=&quot;SettingsFragment&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/browser_ui/settings/android/java/res/values/styles.xml"
+            line="45"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.SettingsFragmentList` appears to be unused"
+        errorLine1="    &lt;style name=&quot;SettingsFragmentList&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/browser_ui/settings/android/java/res/values/styles.xml"
+            line="49"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_Activity_Fullscreen` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.Activity.Fullscreen&quot; parent=&quot;Base.Theme.Chromium.Activity.Fullscreen&quot; />"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="49"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_Activity_Fullscreen_Transparent` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.Activity.Fullscreen.Transparent&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="51"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.PreferenceItem` appears to be unused"
+        errorLine1="    &lt;style name=&quot;PreferenceItem&quot; parent=&quot;Preference.Material&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/browser_ui/settings/android/java/res/values/styles.xml"
+            line="54"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.DialogPreference` appears to be unused"
+        errorLine1="    &lt;style name=&quot;DialogPreference&quot; parent=&quot;PreferenceItem&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/browser_ui/settings/android/java/res/values/styles.xml"
+            line="60"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_Activity_FakeTranslucent` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.Activity.FakeTranslucent&quot; parent=&quot;Theme.Chromium.Activity&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="60"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.CheckBoxPreference` appears to be unused"
+        errorLine1="    &lt;style name=&quot;CheckBoxPreference&quot; parent=&quot;Preference.CheckBoxPreference.Material&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/browser_ui/settings/android/java/res/values/styles.xml"
+            line="64"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_SearchActivity` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.SearchActivity&quot; parent=&quot;Theme.Chromium.WithWindowAnimation&quot; />"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="72"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_Webapp` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.Webapp&quot; parent=&quot;Theme.Chromium.WithWindowAnimation&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="75"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_Webapp_Translucent` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.Webapp.Translucent&quot; parent=&quot;Theme.Chromium.Webapp&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="80"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Base_Theme_Chromium_Settings` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Base.Theme.Chromium.Settings&quot; parent=&quot;Theme.Chromium&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="84"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_Settings` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.Settings&quot; parent=&quot;Base.Theme.Chromium.Settings&quot; />"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="102"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.TextAppearance_TextAccentLarge` appears to be unused"
+        errorLine1="    &lt;style name=&quot;TextAppearance.TextAccentLarge&quot; parent=&quot;TextAppearance.TextLarge&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/styles.xml"
+            line="104"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_Settings_ManageSpace` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.Settings.ManageSpace&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="120"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Base_Theme_Chromium_SigninAndHistorySyncActivity` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Base.Theme.Chromium.SigninAndHistorySyncActivity&quot;"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="139"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_SigninAndHistorySyncActivity` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.SigninAndHistorySyncActivity&quot;"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="146"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.SigninAndHistorySyncActivityAnimation` appears to be unused"
+        errorLine1="    &lt;style name=&quot;SigninAndHistorySyncActivityAnimation&quot; parent=&quot;@android:style/Animation.Dialog&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="154"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_Chromium_ClearDataDialogActivity` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.Chromium.ClearDataDialogActivity&quot;"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="160"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.TextAppearance_TextSmallThick_Secondary_Baseline_Light` appears to be unused"
+        errorLine1="    &lt;style name=&quot;TextAppearance.TextSmallThick.Secondary.Baseline.Light&quot;"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/styles.xml"
+            line="188"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.SettingsToolbarStyle` appears to be unused"
+        errorLine1="    &lt;style name=&quot;SettingsToolbarStyle&quot; parent=&quot;Widget.Material3Expressive.Toolbar&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="232"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.TextAppearance_TextMediumThick_Green` appears to be unused"
+        errorLine1="    &lt;style name=&quot;TextAppearance.TextMediumThick.Green&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/styles.xml"
+            line="241"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.TextAppearance_TextMediumThick_Green_Dark` appears to be unused"
+        errorLine1="    &lt;style name=&quot;TextAppearance.TextMediumThick.Green.Dark&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/styles.xml"
+            line="244"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.ManageSpaceActionBarModern` appears to be unused"
+        errorLine1="    &lt;style name=&quot;ManageSpaceActionBarModern&quot; parent=&quot;Widget.MaterialComponents.ActionBar.Primary&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="245"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.ManageSpaceActionBarTheme` appears to be unused"
+        errorLine1="    &lt;style name=&quot;ManageSpaceActionBarTheme&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="251"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.ManageSpaceToolbarStyle` appears to be unused"
+        errorLine1="    &lt;style name=&quot;ManageSpaceToolbarStyle&quot; parent=&quot;SettingsToolbarStyle&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res/values/styles.xml"
+            line="256"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.TextAppearance_Headline2_Primary_Baseline` appears to be unused"
+        errorLine1="    &lt;style name=&quot;TextAppearance.Headline2.Primary.Baseline&quot; parent=&quot;TextAppearance.Headline2&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/styles.xml"
+            line="304"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.TextAppearance_TextAccentLarge_Primary_Baseline` appears to be unused"
+        errorLine1="    &lt;style name=&quot;TextAppearance.TextAccentLarge.Primary.Baseline&quot; parent=&quot;TextAppearance.TextAccentLarge&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/styles.xml"
+            line="315"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.TextAppearance_TextMedium_Error` appears to be unused"
+        errorLine1="    &lt;style name=&quot;TextAppearance.TextMedium.Error&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/styles.xml"
+            line="350"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.TextAppearance_Toast` appears to be unused"
+        errorLine1="    &lt;style name=&quot;TextAppearance.Toast&quot; parent=&quot;TextAppearance.TextSmall&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../ui/android/java/res/values/styles.xml"
+            line="357"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.themed_app_icon` appears to be unused"
+        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="../../chrome/android/java/res_chromium_base/drawable/themed_app_icon.xml"
+            line="8"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_BrowserUI_DayNight_AlertDialog_NoActionBar` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.BrowserUI.DayNight.AlertDialog.NoActionBar&quot; parent=&quot;Theme.BrowserUI.Dark.AlertDialog.NoActionBar&quot;/>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../components/browser_ui/theme/android/java/res/values-night/themes.xml"
+            line="11"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_BrowserUI_Light_AlertDialog_NoActionBar` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.BrowserUI.Light.AlertDialog.NoActionBar&quot; parent=&quot;Theme.Material3Expressive.Light.Dialog.Alert&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/browser_ui/theme/android/theme_template_resources.resources.zip/values/themes.xml"
+            line="363"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_BrowserUI_Dark_AlertDialog_NoActionBar` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.BrowserUI.Dark.AlertDialog.NoActionBar&quot; parent=&quot;Theme.Material3Expressive.Dark.Dialog.Alert&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/browser_ui/theme/android/theme_template_resources.resources.zip/values/themes.xml"
+            line="875"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_BrowserUI_NoDisplay` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.BrowserUI.NoDisplay&quot; parent=&quot;Theme.BrowserUI.DayNight&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/browser_ui/theme/android/theme_template_resources.resources.zip/values/themes.xml"
+            line="1054"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_BrowserUI_Translucent` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.BrowserUI.Translucent&quot; parent=&quot;Theme.BrowserUI.DayNight&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/browser_ui/theme/android/theme_template_resources.resources.zip/values/themes.xml"
+            line="1065"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.Theme_BrowserUI_Translucent_NoTitleBar` appears to be unused"
+        errorLine1="    &lt;style name=&quot;Theme.BrowserUI.Translucent.NoTitleBar&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="gen/chrome/android/chrome_public_apk__lint/RESZIPS/obj/components/browser_ui/theme/android/theme_template_resources.resources.zip/values/themes.xml"
+            line="1071"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.manage_space_activity` appears to be unused"
+        errorLine1="    &lt;string translatable=&quot;false&quot; name=&quot;manage_space_activity&quot;>org.chromium.chrome.browser.site_settings.ManageSpaceActivity&lt;/string>"
+        errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../chrome/android/java/res_base/values/values.xml"
+            line="8"
+            column="34"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.widget_preview` appears to be unused">
+        <location
+            file="../../chrome/android/java/res/drawable-nodpi/widget_preview.png"/>
     </issue>
 
     <issue
@@ -2109,7 +2301,7 @@
         errorLine2="                                                                   ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/OMADownloadHandler.java"
-            line="350"
+            line="347"
             column="68"/>
     </issue>
 
@@ -2120,7 +2312,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/OfflinePageUtils.java"
-            line="194"
+            line="201"
             column="47"/>
     </issue>
 
@@ -2131,19 +2323,8 @@
         errorLine2="                                                   ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/download/internal/android/java/src/org/chromium/chrome/browser/download/home/storage/StorageSummaryProvider.java"
-            line="97"
+            line="98"
             column="52"/>
-    </issue>
-
-    <issue
-        id="Autofill"
-        message="Missing `autofillHints` attribute"
-        errorLine1="        &lt;EditText"
-        errorLine2="         ~~~~~~~~">
-        <location
-            file="../../android_webview/nonembedded/java/res_devui/layout/fragment_flags.xml"
-            line="25"
-            column="10"/>
     </issue>
 
     <issue
@@ -2153,7 +2334,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/bottomsheet/android/internal/java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheet.java"
-            line="278"
+            line="287"
             column="20"/>
     </issue>
 
@@ -2164,7 +2345,7 @@
         errorLine2="        ^">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/browsing_data/ClearBrowsingDataCheckBoxPreference.java"
-            line="54"
+            line="60"
             column="9"/>
     </issue>
 
@@ -2175,7 +2356,7 @@
         errorLine2="                ^">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/browsing_data/ClearBrowsingDataCheckBoxPreference.java"
-            line="55"
+            line="61"
             column="17"/>
     </issue>
 
@@ -2186,7 +2367,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/CompositorViewHolder.java"
-            line="689"
+            line="751"
             column="20"/>
     </issue>
 
@@ -2197,51 +2378,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../components/embedder_support/android/java/src/org/chromium/components/embedder_support/view/ContentView.java"
-            line="395"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="ClickableViewAccessibility"
-        message="Custom view ``EditText`` has `setOnTouchListener` called on it but does not override `performClick`"
-        errorLine1="            editText.setOnTouchListener("
-        errorLine2="            ^">
-        <location
-            file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/devui/FlagsFragment.java"
-            line="203"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="ClickableViewAccessibility"
-        message="`onTouch` lambda should call `View#performClick` when a click is detected"
-        errorLine1="                    (View v, MotionEvent event) -> {"
-        errorLine2="                    ^">
-        <location
-            file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/devui/FlagsFragment.java"
-            line="204"
-            column="21"/>
-    </issue>
-
-    <issue
-        id="ClickableViewAccessibility"
-        message="Custom view ``EditText`` has `setOnTouchListener` called on it but does not override `performClick`"
-        errorLine1="            editText.setOnTouchListener(null);"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/devui/FlagsFragment.java"
-            line="219"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="ClickableViewAccessibility"
-        message="Custom view `FullScreenView` overrides `onTouchEvent` but not `performClick`"
-        errorLine1="    public boolean onTouchEvent(final MotionEvent event) {"
-        errorLine2="                   ~~~~~~~~~~~~">
-        <location
-            file="../../android_webview/java/src/org/chromium/android_webview/FullScreenView.java"
-            line="109"
+            line="459"
             column="20"/>
     </issue>
 
@@ -2285,7 +2422,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButton.java"
-            line="85"
+            line="86"
             column="9"/>
     </issue>
 
@@ -2296,19 +2433,8 @@
         errorLine2="                ^">
         <location
             file="../../components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogView.java"
-            line="351"
+            line="360"
             column="17"/>
-    </issue>
-
-    <issue
-        id="ClickableViewAccessibility"
-        message="Custom view `NoSwipeViewPager` overrides `onTouchEvent` but not `performClick`"
-        errorLine1="    public boolean onTouchEvent(MotionEvent event) {"
-        errorLine2="                   ~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/NoSwipeViewPager.java"
-            line="22"
-            column="20"/>
     </issue>
 
     <issue
@@ -2340,7 +2466,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/scrim/ScrimView.java"
-            line="81"
+            line="95"
             column="20"/>
     </issue>
 
@@ -2351,7 +2477,7 @@
         errorLine2="                                             ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectableListLayout.java"
-            line="324"
+            line="349"
             column="46"/>
     </issue>
 
@@ -2362,7 +2488,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarControlContainer.java"
-            line="787"
+            line="931"
             column="20"/>
     </issue>
 
@@ -2373,7 +2499,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="542"
+            line="648"
             column="20"/>
     </issue>
 
@@ -2395,19 +2521,8 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../ui/android/java/src/org/chromium/ui/DropdownPopupWindowImpl.java"
-            line="178"
+            line="167"
             column="13"/>
-    </issue>
-
-    <issue
-        id="AccessibilityWindowStateChangedEvent"
-        message="Manually populating or sending TYPE_WINDOW_STATE_CHANGED events should be avoided. They may be ignored on certain versions of Android. Prefer setting UI metadata using `View.onInitializeAccessibilityNodeInfo`, `Activity.setTitle`, `ViewCompat.setAccessibilityPaneTitle`, etc. to inform users of crucial changes to the UI."
-        errorLine1="        sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryView.java"
-            line="206"
-            column="9"/>
     </issue>
 
     <issue
@@ -2417,7 +2532,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabSideSheetStrategy.java"
-            line="261"
+            line="264"
             column="13"/>
     </issue>
 

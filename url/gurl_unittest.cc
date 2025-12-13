@@ -145,41 +145,41 @@ TEST_F(GURLTest, Components) {
   // This is the narrow version of the URL, which should match the wide input.
   EXPECT_EQ("http://user:pass@google.com:99/foo;bar?q=a#ref", url.spec());
 
-  EXPECT_EQ("http", url.scheme());
-  EXPECT_EQ("user", url.username());
-  EXPECT_EQ("pass", url.password());
-  EXPECT_EQ("google.com", url.host());
-  EXPECT_EQ("99", url.port());
+  EXPECT_EQ("http", url.GetScheme());
+  EXPECT_EQ("user", url.GetUsername());
+  EXPECT_EQ("pass", url.GetPassword());
+  EXPECT_EQ("google.com", url.GetHost());
+  EXPECT_EQ("99", url.GetPort());
   EXPECT_EQ(99, url.IntPort());
-  EXPECT_EQ("/foo;bar", url.path());
-  EXPECT_EQ("q=a", url.query());
-  EXPECT_EQ("ref", url.ref());
+  EXPECT_EQ("/foo;bar", url.GetPath());
+  EXPECT_EQ("q=a", url.GetQuery());
+  EXPECT_EQ("ref", url.GetRef());
 
   // Test parsing userinfo with special characters.
   GURL url_special_pass("http://user:%40!$&'()*+,;=:@google.com:12345");
   EXPECT_TRUE(url_special_pass.is_valid());
   // GURL canonicalizes some delimiters.
-  EXPECT_EQ("%40!$&%27()*+,%3B%3D%3A", url_special_pass.password());
-  EXPECT_EQ("google.com", url_special_pass.host());
-  EXPECT_EQ("12345", url_special_pass.port());
+  EXPECT_EQ("%40!$&%27()*+,%3B%3D%3A", url_special_pass.GetPassword());
+  EXPECT_EQ("google.com", url_special_pass.GetHost());
+  EXPECT_EQ("12345", url_special_pass.GetPort());
 
   // Test path collapsing.
   GURL url_path_collapse("http://example.com/a/./b/c/d/../../e");
-  EXPECT_EQ("/a/b/e", url_path_collapse.path());
+  EXPECT_EQ("/a/b/e", url_path_collapse.GetPath());
 
   // Test an IDNA (Internationalizing Domain Names in Applications) host.
   GURL url_idna("http://Bücher.exAMple/");
-  EXPECT_EQ("xn--bcher-kva.example", url_idna.host());
+  EXPECT_EQ("xn--bcher-kva.example", url_idna.GetHost());
 
   // Test non-ASCII characters, outside of the host (IDNA).
   GURL url_non_ascii("http://example.com/foo/aβc%2Etxt?q=r🙂s");
-  EXPECT_EQ("/foo/a%CE%B2c.txt", url_non_ascii.path());
-  EXPECT_EQ("q=r%F0%9F%99%82s", url_non_ascii.query());
+  EXPECT_EQ("/foo/a%CE%B2c.txt", url_non_ascii.GetPath());
+  EXPECT_EQ("q=r%F0%9F%99%82s", url_non_ascii.GetQuery());
 
   // Test already percent-escaped strings.
   GURL url_percent_escaped("http://example.com/a/./%2e/i%2E%2F%2fj?q=r%2Es");
-  EXPECT_EQ("/a/i.%2F%2fj", url_percent_escaped.path());
-  EXPECT_EQ("q=r%2Es", url_percent_escaped.query());
+  EXPECT_EQ("/a/i.%2F%2fj", url_percent_escaped.GetPath());
+  EXPECT_EQ("q=r%2Es", url_percent_escaped.GetQuery());
 }
 
 TEST_F(GURLTest, Empty) {
@@ -187,15 +187,15 @@ TEST_F(GURLTest, Empty) {
   EXPECT_FALSE(url.is_valid());
   EXPECT_EQ("", url.spec());
 
-  EXPECT_EQ("", url.scheme());
-  EXPECT_EQ("", url.username());
-  EXPECT_EQ("", url.password());
-  EXPECT_EQ("", url.host());
-  EXPECT_EQ("", url.port());
+  EXPECT_EQ("", url.GetScheme());
+  EXPECT_EQ("", url.GetUsername());
+  EXPECT_EQ("", url.GetPassword());
+  EXPECT_EQ("", url.GetHost());
+  EXPECT_EQ("", url.GetPort());
   EXPECT_EQ(PORT_UNSPECIFIED, url.IntPort());
-  EXPECT_EQ("", url.path());
-  EXPECT_EQ("", url.query());
-  EXPECT_EQ("", url.ref());
+  EXPECT_EQ("", url.GetPath());
+  EXPECT_EQ("", url.GetQuery());
+  EXPECT_EQ("", url.GetRef());
 }
 
 TEST_F(GURLTest, Copy) {
@@ -205,30 +205,30 @@ TEST_F(GURLTest, Copy) {
   EXPECT_TRUE(url2.is_valid());
 
   EXPECT_EQ("http://user:pass@google.com:99/foo;bar?q=a#ref", url2.spec());
-  EXPECT_EQ("http", url2.scheme());
-  EXPECT_EQ("user", url2.username());
-  EXPECT_EQ("pass", url2.password());
-  EXPECT_EQ("google.com", url2.host());
-  EXPECT_EQ("99", url2.port());
+  EXPECT_EQ("http", url2.GetScheme());
+  EXPECT_EQ("user", url2.GetUsername());
+  EXPECT_EQ("pass", url2.GetPassword());
+  EXPECT_EQ("google.com", url2.GetHost());
+  EXPECT_EQ("99", url2.GetPort());
   EXPECT_EQ(99, url2.IntPort());
-  EXPECT_EQ("/foo;bar", url2.path());
-  EXPECT_EQ("q=a", url2.query());
-  EXPECT_EQ("ref", url2.ref());
+  EXPECT_EQ("/foo;bar", url2.GetPath());
+  EXPECT_EQ("q=a", url2.GetQuery());
+  EXPECT_EQ("ref", url2.GetRef());
 
   // Copying of invalid URL should be invalid
   GURL invalid;
   GURL invalid2(invalid);
   EXPECT_FALSE(invalid2.is_valid());
   EXPECT_EQ("", invalid2.spec());
-  EXPECT_EQ("", invalid2.scheme());
-  EXPECT_EQ("", invalid2.username());
-  EXPECT_EQ("", invalid2.password());
-  EXPECT_EQ("", invalid2.host());
-  EXPECT_EQ("", invalid2.port());
+  EXPECT_EQ("", invalid2.GetScheme());
+  EXPECT_EQ("", invalid2.GetUsername());
+  EXPECT_EQ("", invalid2.GetPassword());
+  EXPECT_EQ("", invalid2.GetHost());
+  EXPECT_EQ("", invalid2.GetPort());
   EXPECT_EQ(PORT_UNSPECIFIED, invalid2.IntPort());
-  EXPECT_EQ("", invalid2.path());
-  EXPECT_EQ("", invalid2.query());
-  EXPECT_EQ("", invalid2.ref());
+  EXPECT_EQ("", invalid2.GetPath());
+  EXPECT_EQ("", invalid2.GetQuery());
+  EXPECT_EQ("", invalid2.GetRef());
 }
 
 TEST_F(GURLTest, Assign) {
@@ -239,15 +239,15 @@ TEST_F(GURLTest, Assign) {
   EXPECT_TRUE(url2.is_valid());
 
   EXPECT_EQ("http://user:pass@google.com:99/foo;bar?q=a#ref", url2.spec());
-  EXPECT_EQ("http", url2.scheme());
-  EXPECT_EQ("user", url2.username());
-  EXPECT_EQ("pass", url2.password());
-  EXPECT_EQ("google.com", url2.host());
-  EXPECT_EQ("99", url2.port());
+  EXPECT_EQ("http", url2.GetScheme());
+  EXPECT_EQ("user", url2.GetUsername());
+  EXPECT_EQ("pass", url2.GetPassword());
+  EXPECT_EQ("google.com", url2.GetHost());
+  EXPECT_EQ("99", url2.GetPort());
   EXPECT_EQ(99, url2.IntPort());
-  EXPECT_EQ("/foo;bar", url2.path());
-  EXPECT_EQ("q=a", url2.query());
-  EXPECT_EQ("ref", url2.ref());
+  EXPECT_EQ("/foo;bar", url2.GetPath());
+  EXPECT_EQ("q=a", url2.GetQuery());
+  EXPECT_EQ("ref", url2.GetRef());
 
   // Assignment of invalid URL should be invalid
   GURL invalid;
@@ -255,15 +255,15 @@ TEST_F(GURLTest, Assign) {
   invalid2 = invalid;
   EXPECT_FALSE(invalid2.is_valid());
   EXPECT_EQ("", invalid2.spec());
-  EXPECT_EQ("", invalid2.scheme());
-  EXPECT_EQ("", invalid2.username());
-  EXPECT_EQ("", invalid2.password());
-  EXPECT_EQ("", invalid2.host());
-  EXPECT_EQ("", invalid2.port());
+  EXPECT_EQ("", invalid2.GetScheme());
+  EXPECT_EQ("", invalid2.GetUsername());
+  EXPECT_EQ("", invalid2.GetPassword());
+  EXPECT_EQ("", invalid2.GetHost());
+  EXPECT_EQ("", invalid2.GetPort());
   EXPECT_EQ(PORT_UNSPECIFIED, invalid2.IntPort());
-  EXPECT_EQ("", invalid2.path());
-  EXPECT_EQ("", invalid2.query());
-  EXPECT_EQ("", invalid2.ref());
+  EXPECT_EQ("", invalid2.GetPath());
+  EXPECT_EQ("", invalid2.GetQuery());
+  EXPECT_EQ("", invalid2.GetRef());
 }
 
 // This is a regression test for http://crbug.com/309975.
@@ -280,27 +280,27 @@ TEST_F(GURLTest, CopyFileSystem) {
   EXPECT_TRUE(url2.is_valid());
 
   EXPECT_EQ("filesystem:https://google.com:99/t/foo;bar?q=a#ref", url2.spec());
-  EXPECT_EQ("filesystem", url2.scheme());
-  EXPECT_EQ("", url2.username());
-  EXPECT_EQ("", url2.password());
-  EXPECT_EQ("", url2.host());
-  EXPECT_EQ("", url2.port());
+  EXPECT_EQ("filesystem", url2.GetScheme());
+  EXPECT_EQ("", url2.GetUsername());
+  EXPECT_EQ("", url2.GetPassword());
+  EXPECT_EQ("", url2.GetHost());
+  EXPECT_EQ("", url2.GetPort());
   EXPECT_EQ(PORT_UNSPECIFIED, url2.IntPort());
-  EXPECT_EQ("/foo;bar", url2.path());
-  EXPECT_EQ("q=a", url2.query());
-  EXPECT_EQ("ref", url2.ref());
+  EXPECT_EQ("/foo;bar", url2.GetPath());
+  EXPECT_EQ("q=a", url2.GetQuery());
+  EXPECT_EQ("ref", url2.GetRef());
 
   const GURL* inner = url2.inner_url();
   ASSERT_TRUE(inner);
-  EXPECT_EQ("https", inner->scheme());
-  EXPECT_EQ("", inner->username());
-  EXPECT_EQ("", inner->password());
-  EXPECT_EQ("google.com", inner->host());
-  EXPECT_EQ("99", inner->port());
+  EXPECT_EQ("https", inner->GetScheme());
+  EXPECT_EQ("", inner->GetUsername());
+  EXPECT_EQ("", inner->GetPassword());
+  EXPECT_EQ("google.com", inner->GetHost());
+  EXPECT_EQ("99", inner->GetPort());
   EXPECT_EQ(99, inner->IntPort());
-  EXPECT_EQ("/t", inner->path());
-  EXPECT_EQ("", inner->query());
-  EXPECT_EQ("", inner->ref());
+  EXPECT_EQ("/t", inner->GetPath());
+  EXPECT_EQ("", inner->GetQuery());
+  EXPECT_EQ("", inner->GetRef());
 }
 
 TEST_F(GURLTest, IsValid) {
@@ -341,8 +341,8 @@ TEST_F(GURLTest, ExtraSlashesBeforeAuthority) {
   // must use only two slashes; GURL intentionally just ignores extra slashes
   // if there are more than 2, and parses the following part as an authority.
   GURL url("http:///host");
-  EXPECT_EQ("host", url.host());
-  EXPECT_EQ("/", url.path());
+  EXPECT_EQ("host", url.GetHost());
+  EXPECT_EQ("/", url.GetPath());
 }
 
 // Given invalid URLs, we should still get most of the components.
@@ -378,15 +378,15 @@ TEST_F(GURLTest, ComponentGettersWorkEvenForInvalidURL) {
     const GURL url(e.url);
     EXPECT_FALSE(url.is_valid());
     EXPECT_EQ(e.spec, url.possibly_invalid_spec());
-    EXPECT_EQ(e.scheme, url.scheme());
-    EXPECT_EQ("", url.username());
-    EXPECT_EQ("", url.password());
-    EXPECT_EQ(e.host, url.host());
-    EXPECT_EQ(e.port, url.port());
+    EXPECT_EQ(e.scheme, url.GetScheme());
+    EXPECT_EQ("", url.GetUsername());
+    EXPECT_EQ("", url.GetPassword());
+    EXPECT_EQ(e.host, url.GetHost());
+    EXPECT_EQ(e.port, url.GetPort());
     EXPECT_EQ(PORT_INVALID, url.IntPort());
-    EXPECT_EQ(e.path, url.path());
-    EXPECT_EQ("", url.query());
-    EXPECT_EQ("", url.ref());
+    EXPECT_EQ(e.path, url.GetPath());
+    EXPECT_EQ("", url.GetQuery());
+    EXPECT_EQ("", url.GetRef());
   }
 }
 
@@ -900,7 +900,7 @@ TEST(GURLTypedTest, ClearFragmentOnDataUrl) {
   EXPECT_TRUE(import_url.is_valid());
   EXPECT_EQ(url_no_ref, import_url);
   EXPECT_EQ("data: one ", import_url.spec());
-  EXPECT_EQ(" one ", import_url.path());
+  EXPECT_EQ(" one ", import_url.GetPath());
 
   // For completeness, test that re-parsing the same URL rather than importing
   // it trims the trailing whitespace.
@@ -1025,7 +1025,7 @@ TEST_F(GURLTest, HostNoBrackets) {
   });
   for (const auto& i : cases) {
     GURL url(i.input);
-    EXPECT_EQ(i.expected_host, url.host());
+    EXPECT_EQ(i.expected_host, url.GetHost());
     EXPECT_EQ(i.expected_plainhost, url.HostNoBrackets());
     EXPECT_EQ(i.expected_plainhost, url.HostNoBracketsPiece());
   }
@@ -1058,7 +1058,7 @@ TEST_F(GURLTest, DomainIs) {
 
   GURL url_with_escape_chars("https://www.,.test");
   EXPECT_TRUE(url_with_escape_chars.is_valid());
-  EXPECT_EQ(url_with_escape_chars.host(), "www.,.test");
+  EXPECT_EQ(url_with_escape_chars.GetHost(), "www.,.test");
   EXPECT_TRUE(url_with_escape_chars.DomainIs(",.test"));
 }
 
@@ -1262,7 +1262,7 @@ TEST_F(GURLTest, PathForNonStandardURLs) {
 
   for (const auto& test : cases) {
     GURL url(test.url);
-    EXPECT_EQ(test.expected, url.path()) << test.url;
+    EXPECT_EQ(test.expected, url.GetPath()) << test.url;
   }
 }
 
@@ -1347,7 +1347,7 @@ TEST_F(GURLTest, InvalidHost) {
   // The invalid percent escape becomes an escaped percent sign (%25), and the
   // invalid UTF-8 character becomes REPLACEMENT CHARACTER' (U+FFFD) encoded as
   // UTF-8.
-  EXPECT_EQ(url.host_piece(), "%25t%EF%BF%BD");
+  EXPECT_EQ(url.host(), "%25t%EF%BF%BD");
 }
 
 TEST_F(GURLTest, PortZero) {
@@ -1357,17 +1357,17 @@ TEST_F(GURLTest, PortZero) {
   // ASCII digits (this excludes negative numbers) and 2) cannot be greater than
   // 2^16-1.  This means that port=0 should be valid.
   EXPECT_TRUE(port_zero_url.is_valid());
-  EXPECT_EQ("0", port_zero_url.port());
-  EXPECT_EQ("127.0.0.1", port_zero_url.host());
-  EXPECT_EQ("http", port_zero_url.scheme());
+  EXPECT_EQ("0", port_zero_url.GetPort());
+  EXPECT_EQ("127.0.0.1", port_zero_url.GetHost());
+  EXPECT_EQ("http", port_zero_url.GetScheme());
 
   // https://crbug.com/1065532: SchemeHostPort would previously incorrectly
   // consider port=0 to be invalid.
   SchemeHostPort scheme_host_port(port_zero_url);
   EXPECT_TRUE(scheme_host_port.IsValid());
-  EXPECT_EQ(port_zero_url.scheme(), scheme_host_port.scheme());
-  EXPECT_EQ(port_zero_url.host(), scheme_host_port.host());
-  EXPECT_EQ(port_zero_url.port(),
+  EXPECT_EQ(port_zero_url.GetScheme(), scheme_host_port.scheme());
+  EXPECT_EQ(port_zero_url.GetHost(), scheme_host_port.host());
+  EXPECT_EQ(port_zero_url.GetPort(),
             base::NumberToString(scheme_host_port.port()));
 
   // https://crbug.com/1065532: The SchemeHostPort problem above would lead to
@@ -1377,9 +1377,10 @@ TEST_F(GURLTest, PortZero) {
   url::Origin resolved_origin =
       url::Origin::Resolve(port_zero_url, another_origin);
   EXPECT_FALSE(resolved_origin.opaque());
-  EXPECT_EQ(port_zero_url.scheme(), resolved_origin.scheme());
-  EXPECT_EQ(port_zero_url.host(), resolved_origin.host());
-  EXPECT_EQ(port_zero_url.port(), base::NumberToString(resolved_origin.port()));
+  EXPECT_EQ(port_zero_url.GetScheme(), resolved_origin.scheme());
+  EXPECT_EQ(port_zero_url.GetHost(), resolved_origin.host());
+  EXPECT_EQ(port_zero_url.GetPort(),
+            base::NumberToString(resolved_origin.port()));
 
   // port=0 and default HTTP port are different.
   GURL default_port("http://127.0.0.1/foo");

@@ -6,19 +6,22 @@
 
 namespace features {
 
-BASE_FEATURE(kPrewarm, "Prewarm", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrewarm, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(std::string, kPrewarmUrl, &kPrewarm, "url", "");
 BASE_FEATURE_PARAM(bool,
                    kPrewarmZeroSuggestTrigger,
                    &kPrewarm,
                    "zero_suggest_trigger",
                    false);
+BASE_FEATURE_PARAM(bool,
+                   kForceEnableWithDevTools,
+                   &kPrewarm,
+                   "force_enable_with_devtools",
+                   false);
 
 BASE_FEATURE(kPrerender2WarmUpCompositorForBookmarkBar,
-             "Prerender2WarmUpCompositorForBookmarkBar",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPrerender2WarmUpCompositorForNewTabPage,
-             "Prerender2WarmUpCompositorForNewTabPage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

@@ -20,7 +20,6 @@
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "ash/wallpaper/wallpaper_daily_refresh_scheduler.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"

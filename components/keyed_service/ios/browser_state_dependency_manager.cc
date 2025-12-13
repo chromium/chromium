@@ -56,8 +56,3 @@ void BrowserStateDependencyManager::DoCreateBrowserStateServices(
                "BrowserStateDependencyManager::DoCreateBrowserStateServices");
   DependencyManager::CreateContextServices(context, is_testing_context);
 }
-
-#ifndef NDEBUG
-void BrowserStateDependencyManager::DumpContextDependencies(
-    void* context) const {}
-#endif  // NDEBUG

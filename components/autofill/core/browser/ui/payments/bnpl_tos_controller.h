@@ -12,30 +12,9 @@
 
 namespace autofill {
 
-// Contains a string of text and the location of a substring for a link as well
-// as the url for where the link should lead to.
-struct TextWithLink {
-  std::u16string text;
-  gfx::Range offset;
-  GURL url;
-};
-
-// BnplTosModel holds the data required to show the BNPL ToS view.
-struct BnplTosModel {
-  BnplTosModel();
-
-  BnplTosModel(const BnplTosModel& other);
-  BnplTosModel(BnplTosModel&& other);
-  BnplTosModel& operator=(const BnplTosModel& other);
-  BnplTosModel& operator=(BnplTosModel&& other);
-
-  ~BnplTosModel();
-
-  // Used to show the BNPL Issuer logo and name.
-  BnplIssuer issuer;
-  // Used to show the legal message.
-  LegalMessageLines legal_message_lines;
-};
+namespace payments {
+struct TextWithLink;
+}  // namespace payments
 
 // Interface that exposes controller functionality to BnplTosView.
 class BnplTosController {
@@ -50,7 +29,7 @@ class BnplTosController {
   virtual std::u16string GetTitle() const = 0;
   virtual std::u16string GetReviewText() const = 0;
   virtual std::u16string GetApproveText() const = 0;
-  virtual TextWithLink GetLinkText() const = 0;
+  virtual payments::TextWithLink GetLinkText() const = 0;
   virtual const LegalMessageLines& GetLegalMessageLines() const = 0;
   // Returns the account info of the signed-in user.
   virtual AccountInfo GetAccountInfo() const = 0;

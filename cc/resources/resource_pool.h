@@ -24,7 +24,6 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/resources/resource_id.h"
-#include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -44,7 +43,8 @@ class RasterContextProvider;
 
 namespace cc {
 
-class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
+class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider,
+                               public base::MemoryPressureListener {
   class PoolResource;
 
  public:
@@ -187,7 +187,6 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     // installs a backing for this resource that is itself backed by that SI.
     void InstallGpuBacking(gpu::SharedImageInterface* sii,
                            bool is_overlay_candidate,
-                           bool use_gpu_rasterization,
                            std::string_view debug_label) const;
 
     // Creates a software SharedImage based on the configuration of this
@@ -287,8 +286,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level) override;
 
   size_t GetTotalMemoryUsageForTesting() const {
     return total_memory_usage_bytes_;
@@ -484,7 +482,8 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   // Map from the PoolResource |unique_id| to the PoolResource.
   std::map<size_t, std::unique_ptr<PoolResource>> in_use_resources_;
 
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::AsyncMemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 
   base::TimeTicks flush_evicted_resources_deadline_;
 

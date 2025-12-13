@@ -586,6 +586,29 @@ enum TerminationStatus {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   TERMINATION_STATUS_TWELVE = 12,
 #endif
+
+  TERMINATION_STATUS_THIRTEEN = 13,
+
+#if BUILDFLAG(IS_POSIX)
+  TERMINATION_STATUS_FOURTEEN = 14,
+#endif
+
+#if !BUILDFLAG(IS_WIN)
+  // This should be included.
+  TERMINATION_STATUS_FIFTEEN = 15,
+#endif
+#if !BUILDFLAG(IS_ANDROID)
+  // This should NOT be included.
+  TERMINATION_STATUS_SIXTEEN = 16,
+#endif
+#if !BUILDFLAG(IS_POSIX)
+  // This should NOT be included.
+  TERMINATION_STATUS_SEVENTEEN = 17,
+#endif
+
+#if BUILDFLAG(IS_WIN)
+  TERMINATION_STATUS_LAST = 1000,
+#endif
 };
     """.split('\n')
     definitions = HeaderParser(test_data).ParseDefinitions()
@@ -606,6 +629,9 @@ enum TerminationStatus {
             # INTEGRITY_FAILURE value should not appear here.
             # TEN and ELEVEN should not appear here.
             ('TWELVE', '12'),
+            ('THIRTEEN', '13'),
+            ('FOURTEEN', '14'),
+            ('FIFTEEN', '15'),
         ]),
         definition.entries)
     self.assertEqual(
@@ -616,6 +642,7 @@ enum TerminationStatus {
              'On Android processes are spawned from the system Zygote and we ' +
              'do not get the termination status.'),
             ('OOM', 'Out of memory.'),
+            ('FIFTEEN', 'This should be included.'),
         ]), definition.comments)
 
   def testParseEnumStruct(self):

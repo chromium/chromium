@@ -19,29 +19,39 @@ NtpPromoRegistry::~NtpPromoRegistry() = default;
 
 const NtpPromoSpecification* NtpPromoRegistry::GetNtpPromoSpecification(
     const NtpPromoIdentifier& id) const {
-  auto pair = ntp_promo_registry_.find(id);
-  if (pair == ntp_promo_registry_.end()) {
+  auto pair = registry_.find(id);
+  if (pair == registry_.end()) {
     return nullptr;
   }
   return &pair->second;
 }
 
-std::vector<NtpPromoIdentifier> NtpPromoRegistry::GetNtpPromoIdentifiers()
-    const {
-  std::vector<NtpPromoIdentifier> id_strings;
-  std::ranges::transform(ntp_promo_registry_, std::back_inserter(id_strings),
-                         &Registry::value_type::first);
-  return id_strings;
+const std::vector<NtpPromoIdentifier>&
+NtpPromoRegistry::GetNtpPromoIdentifiers() const {
+  return identifiers_;
 }
 
 void NtpPromoRegistry::AddPromo(NtpPromoSpecification specification) {
   auto [it, inserted] =
-      ntp_promo_registry_.emplace(specification.id(), std::move(specification));
+      registry_.emplace(specification.id(), std::move(specification));
   CHECK(inserted);
+  identifiers_.push_back(it->first);
 }
 
 bool NtpPromoRegistry::AreAnyPromosRegistered() const {
-  return ntp_promo_registry_.size() > 0;
+  return registry_.size() > 0;
+}
+
+void NtpPromoRegistry::ClearPromoForTesting(const NtpPromoIdentifier& id) {
+  registry_.erase(id);
+  std::erase_if(identifiers_, [id](const NtpPromoIdentifier& identifier) {
+    return identifier == id;
+  });
+}
+
+void NtpPromoRegistry::ClearPromosForTesting() {
+  registry_.clear();
+  identifiers_.clear();
 }
 
 }  // namespace user_education

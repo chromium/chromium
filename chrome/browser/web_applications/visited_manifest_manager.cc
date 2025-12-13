@@ -17,7 +17,6 @@ namespace web_app {
 
 // TODO(crbug.com/366323698): Clean this up after m131 hits stable.
 BASE_FEATURE(kBlockMlPromotionInNestedPagesNoManifest,
-             "BlockMlPromotionInNestedPagesNoManifest",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 VisitedManifestManager::VisitedManifestManager(base::Clock* clock)

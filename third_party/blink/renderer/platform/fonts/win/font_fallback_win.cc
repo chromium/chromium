@@ -29,11 +29,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/win/font_fallback_win.h"
 
 #include <unicode/uchar.h>
@@ -59,28 +54,7 @@ inline bool IsFontPresent(const char* font_name_utf8,
                           const SkFontMgr& font_manager) {
   sk_sp<SkTypeface> tf(
       font_manager.matchFamilyStyle(font_name_utf8, SkFontStyle()));
-  if (!tf)
-    return false;
-
-  if (RuntimeEnabledFeatures::FontPresentWinEnabled()) {
-    return true;
-  }
-
-  const String font_name = String::FromUTF8(font_name_utf8);
-  SkTypeface::LocalizedStrings* actual_families =
-      tf->createFamilyNameIterator();
-  bool matches_requested_family = false;
-  SkTypeface::LocalizedString actual_family;
-  while (actual_families->next(&actual_family)) {
-    if (DeprecatedEqualIgnoringCase(
-            font_name, String::FromUTF8(actual_family.fString.c_str()))) {
-      matches_requested_family = true;
-      break;
-    }
-  }
-  actual_families->unref();
-
-  return matches_requested_family;
+  return !!tf;
 }
 
 const char* FirstAvailableFont(
@@ -119,11 +93,14 @@ class ScriptToFontMap {
  public:
   static constexpr UScriptCode kSize = USCRIPT_CODE_LIMIT;
 
-  FontMapping& operator[](UScriptCode script) { return mappings_[script]; }
+  FontMapping& operator[](UScriptCode script) {
+    return UNSAFE_TODO(mappings_[script]);
+  }
 
   void Set(base::span<const ScriptToFontFamilies> families) {
     for (const auto& family : families) {
-      mappings_[family.script].candidate_family_names = family.families;
+      UNSAFE_TODO(mappings_[family.script]).candidate_family_names =
+          family.families;
     }
   }
 
@@ -182,7 +159,7 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
   static const char* const kGurmukhiFonts[] = {"Nirmala UI", "Raavi"};
   static const char* const kHangulFonts[] = {"Noto Sans KR", "Noto Sans CJK KR",
                                              "Malgun Gothic", "Gulim"};
-  static const char* const kHangulFontsNoNoto[] = {"Malgun Gothic", "Gulim"};
+
   static const char* const kHebrewFonts[] = {"David", "Segoe UI"};
   static const char* const kImperialAramaicFonts[] = {"Segoe UI Historic"};
   static const char* const kInscriptionalPahlaviFonts[] = {"Segoe UI Historic"};
@@ -193,8 +170,7 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
   static const char* const kKatakanaOrHiraganaFonts[] = {
       "Noto Sans JP", "Noto Sans CJK JP", "Meiryo",
       "Yu Gothic",    "MS PGothic",       "Microsoft YaHei"};
-  static const char* const kKatakanaOrHiraganaFontsNoNoto[] = {
-      "Meiryo", "Yu Gothic", "MS PGothic", "Microsoft YaHei"};
+
   static const char* const kKharoshthiFonts[] = {"Segoe UI Historic"};
   // Try Khmer OS before Vista fonts as it goes along better with Latin
   // and looks better/larger for the same size.
@@ -233,8 +209,7 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
   static const char* const kShavianFonts[] = {"Segoe UI Historic"};
   static const char* const kSimplifiedHanFonts[] = {
       "Noto Sans SC", "Noto Sans CJK SC", "Microsoft YaHei", "simsun"};
-  static const char* const kSimplifiedHanFontsNoNoto[] = {"Microsoft YaHei",
-                                                          "simsun"};
+
   static const char* const kSinhalaFonts[] = {"Iskoola Pota", "AksharUnicode",
                                               "Nirmala UI"};
   static const char* const kSoraSompengFonts[] = {"Nirmala UI"};
@@ -252,8 +227,7 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
   static const char* const kTifinaghFonts[] = {"Ebrima"};
   static const char* const kTraditionalHanFonts[] = {
       "Noto Sans TC", "Noto Sans CJK TC", "Microsoft JhengHei", "pmingli"};
-  static const char* const kTraditionalHanFontsNoNoto[] = {"Microsoft JhengHei",
-                                                           "pmingli"};
+
   static const char* const kVaiFonts[] = {"Ebrima"};
   static const char* const kYiFonts[] = {"Microsoft Yi Baiti", "Nuosu SIL",
                                          "Code2000"};
@@ -335,19 +309,6 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
       {USCRIPT_YI, kYiFonts}};
   script_font_map.Set(kScriptToFontFamilies);
 
-  if (!RuntimeEnabledFeatures::FontSystemFallbackNotoCjkEnabled())
-      [[unlikely]] {
-    const ScriptToFontFamilies no_noto[] = {
-        {USCRIPT_HANGUL, kHangulFontsNoNoto},
-        {USCRIPT_HIRAGANA, kKatakanaOrHiraganaFontsNoNoto},
-        {USCRIPT_KATAKANA, kKatakanaOrHiraganaFontsNoNoto},
-        {USCRIPT_KATAKANA_OR_HIRAGANA, kKatakanaOrHiraganaFontsNoNoto},
-        {USCRIPT_SIMPLIFIED_HAN, kSimplifiedHanFontsNoNoto},
-        {USCRIPT_TRADITIONAL_HAN, kTraditionalHanFontsNoNoto},
-    };
-    script_font_map.Set(no_noto);
-  }
-
   // Initialize the locale-dependent mapping from system locale.
   UScriptCode han_script = LayoutLocale::GetSystem().GetScriptForHan();
   DCHECK_NE(han_script, USCRIPT_HAN);
@@ -358,49 +319,13 @@ void InitializeScriptFontMap(ScriptToFontMap& script_font_map) {
   }
 }
 
-// There are a lot of characters in USCRIPT_COMMON that can be covered
-// by fonts for scripts closely related to them. See
-// http://unicode.org/cldr/utility/list-unicodeset.jsp?a=[:Script=Common:]
-// FIXME: make this more efficient with a wider coverage
-UScriptCode GetScriptBasedOnUnicodeBlock(int ucs4) {
-  UBlockCode block = ublock_getCode(ucs4);
-  switch (block) {
-    case UBLOCK_CJK_SYMBOLS_AND_PUNCTUATION:
-      return USCRIPT_HAN;
-    case UBLOCK_HIRAGANA:
-    case UBLOCK_KATAKANA:
-      return USCRIPT_KATAKANA_OR_HIRAGANA;
-    case UBLOCK_ARABIC:
-      return USCRIPT_ARABIC;
-    case UBLOCK_THAI:
-      return USCRIPT_THAI;
-    case UBLOCK_GREEK:
-      return USCRIPT_GREEK;
-    case UBLOCK_DEVANAGARI:
-      // For Danda and Double Danda (U+0964, U+0965), use a Devanagari
-      // font for now although they're used by other scripts as well.
-      // Without a context, we can't do any better.
-      return USCRIPT_DEVANAGARI;
-    case UBLOCK_ARMENIAN:
-      return USCRIPT_ARMENIAN;
-    case UBLOCK_GEORGIAN:
-      return USCRIPT_GEORGIAN;
-    case UBLOCK_KANNADA:
-      return USCRIPT_KANNADA;
-    case UBLOCK_GOTHIC:
-      return USCRIPT_GOTHIC;
-    default:
-      return USCRIPT_COMMON;
-  }
-}
-
 UScriptCode GetScript(int ucs4) {
   ICUError err;
   UScriptCode script = uscript_getScript(ucs4, &err);
   // If script is invalid, common or inherited or there's an error,
   // infer a script based on the unicode block of a character.
   if (script <= USCRIPT_INHERITED || U_FAILURE(err))
-    script = GetScriptBasedOnUnicodeBlock(ucs4);
+    script = Character::GetScriptBasedOnUnicodeBlock(ucs4);
   return script;
 }
 
@@ -551,7 +476,7 @@ const AtomicString& GetFontFamilyForScript(
     std::optional<AtomicString> families[ScriptToFontMap::kSize];
   };
   DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicFamilies, families, ());
-  std::optional<AtomicString>& family = families.families[script];
+  std::optional<AtomicString>& family = UNSAFE_TODO(families.families[script]);
   if (family) {
     return *family;
   }
@@ -608,7 +533,7 @@ const AtomicString& GetFallbackFamily(
     script = USCRIPT_HAN;
 
   if (script == USCRIPT_COMMON)
-    script = GetScriptBasedOnUnicodeBlock(character);
+    script = Character::GetScriptBasedOnUnicodeBlock(character);
 
   // For unified-Han scripts, try the lang attribute, system, or
   // accept-languages.
@@ -642,7 +567,15 @@ const AtomicString& GetFallbackFamily(
       DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kPlane1, ("code2001"));
       return kPlane1;
     }
-    case 2:
+    case 2: {
+      // Extension I (category IX) is part of Plane 2: U+2EBF0–U+2EE5F. As per
+      // GB18030-2022, these characters must be rendered using simsun-extg
+      // because simsun-extg supports these newer and extended ideographs.
+      if (character >= 0x2EBF0 && character <= 0x2EE5F) {
+        DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kPlane2exti,
+                                        ("simsun-extg"));
+        return kPlane2exti;
+      }
       // Use a Traditional Chinese ExtB font if in Traditional Chinese locale.
       // Otherwise, use a Simplified Chinese ExtB font. Windows Japanese
       // fonts do support a small subset of ExtB (that are included in JIS X
@@ -656,6 +589,15 @@ const AtomicString& GetFallbackFamily(
       DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kPlane2zhs,
                                       ("simsun-extb"));
       return kPlane2zhs;
+    }
+    case 3:
+      // Plane 3 includes Extension G (category GX): U+30000–U+3134F and
+      // Extension H (category HX): U+31350–U+323AF. Both are required by
+      // GB18030-2022 and must be rendered using simsun-extg because simsun-extg
+      // supports these newer and extended ideographs.
+      DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kPlane3extgh,
+                                      ("simsun-extg"));
+      return kPlane3extgh;
   }
 
   DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kLastResort,

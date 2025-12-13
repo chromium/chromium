@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/app_list/search/app_search_data_source.h"
 
 #include <algorithm>
@@ -15,6 +10,7 @@
 
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
+#include "base/compiler_specific.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
@@ -69,7 +65,7 @@ constexpr bool kStripDiacritics = true;
 //    -1 if the app is not a default app.
 int GetDefaultAppRank(const std::string& app_id) {
   for (size_t i = 0; i < std::size(ranked_default_app_ids); ++i) {
-    if (app_id == ranked_default_app_ids[i]) {
+    if (app_id == UNSAFE_TODO(ranked_default_app_ids[i])) {
       return i;
     }
   }

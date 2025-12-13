@@ -45,9 +45,10 @@ NSValue* TabGroupIdentifierKeyforTabGroupItem(TabGroupItem* group_item) {
 void OnFaviconFetched(TabSnapshotAndFavicon* tab_snapshot_and_favicon,
                       UIImageConfiguration* configuration,
                       TabSnapshotAndFaviconConfigurator::Completion completion,
-                      FaviconAttributes* attributes) {
+                      FaviconAttributes* attributes,
+                      bool cached) {
   // Nothing to do if the favicon returned is the default favicon.
-  if (attributes.usesDefaultImage) {
+  if (cached && !attributes.faviconImage) {
     return;
   }
 

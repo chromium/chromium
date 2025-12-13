@@ -146,8 +146,6 @@ class RestrictedToken {
   std::vector<base::win::Sid> sids_for_deny_only_;
   // The list of sids to add to the default DACL of the restricted token.
   std::vector<base::win::ExplicitAccessEntry> sids_for_default_dacl_;
-  // The token to restrict, this is only used for testing.
-  std::optional<base::win::AccessToken> effective_token_;
   // The token integrity level RID.
   std::optional<DWORD> integrity_rid_;
   // Lockdown the default DACL when creating new tokens.

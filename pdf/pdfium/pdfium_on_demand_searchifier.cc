@@ -85,11 +85,17 @@ void PDFiumOnDemandSearchifier::OnOcrDisconnected() {
       // will try to connect to the service again.
       return;
 
+    case State::kWaitingForPageAvailability:
+      // If waiting for page availability takes long, OCR service may shutdown
+      // to release resources. Disconnection is expected in this case and the
+      // service will reconnect on next request.
+      return;
+
     case State::kWaitingForResults:
       // Assume OCR cannot be used anymore if it gets disconnected while
       // waiting for results. Therefore cancel all pending requests and move
       // to failed state.
-      current_page_ = nullptr;
+      ClearCurrentPage();
       pages_queue_.clear();
       state_ = State::kFailed;
       engine_->OnSearchifyStateChange(/*busy=*/false);
@@ -103,7 +109,7 @@ void PDFiumOnDemandSearchifier::OnOcrDisconnected() {
   NOTREACHED();
 }
 
-bool PDFiumOnDemandSearchifier::IsPageScheduled(int page_index) const {
+bool PDFiumOnDemandSearchifier::IsPageScheduled(uint32_t page_index) const {
   if (current_page_ && current_page_->index() == page_index) {
     return true;
   }
@@ -111,8 +117,7 @@ bool PDFiumOnDemandSearchifier::IsPageScheduled(int page_index) const {
   return base::Contains(pages_queue_, page_index);
 }
 
-void PDFiumOnDemandSearchifier::SchedulePage(int page_index) {
-  CHECK_GE(page_index, 0);
+void PDFiumOnDemandSearchifier::SchedulePage(uint32_t page_index) {
   CHECK_NE(state_, State::kFailed);
   if (IsPageScheduled(page_index)) {
     return;
@@ -121,7 +126,9 @@ void PDFiumOnDemandSearchifier::SchedulePage(int page_index) {
     engine_->OnSearchifyStateChange(/*busy=*/true);
   }
   pages_queue_.push_back(page_index);
-  if (state_ == State::kWaitingForResults || perform_ocr_callback_.is_null()) {
+  if (state_ == State::kWaitingForResults ||
+      state_ == State::kWaitingForPageAvailability ||
+      perform_ocr_callback_.is_null()) {
     return;
   }
 
@@ -195,14 +202,20 @@ void PDFiumOnDemandSearchifier::SearchifyNextImage() {
 }
 
 void PDFiumOnDemandSearchifier::CommitResultsToPage() {
+  CHECK(state_ == State::kWaitingForResults ||
+        state_ == State::kWaitingForPageAvailability);
   // Ignore the results if the page got unloaded before committing them.
   if (!current_page_) {
     current_page_ocr_results_.clear();
   }
 
   if (!current_page_ocr_results_.empty()) {
-    // If the page is being painted, wait for paint to finish.
-    if (engine_->IsPageScheduledForPaint(current_page_->index())) {
+    // If the page is being painted or cannot be unloaded, wait.
+    if (!current_page_->PageCanBeUnloaded() ||
+        engine_->IsPageScheduledForPaint(current_page_->index())) {
+      if (state_ == State::kWaitingForResults) {
+        state_ = State::kWaitingForPageAvailability;
+      }
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&PDFiumOnDemandSearchifier::CommitResultsToPage,
@@ -228,17 +241,19 @@ void PDFiumOnDemandSearchifier::CommitResultsToPage() {
     }
   }
 
-  if (!current_page_was_loaded_) {
-    engine_->MaybeUnloadPage(current_page_->index());
-  }
-  current_page_ = nullptr;
+  // `kWaitingForPageAvailability` is only set by this function, hence change
+  // the state back to `kWaitingForResults` in case it is changed.
+  state_ = State::kWaitingForResults;
+
+  ClearCurrentPage();
 
   // Searchify next page.
   // If none of the scheduled pages are visible, post the task with more delay
   // to reduce CPU load.
-  bool long_delay = std::ranges::none_of(pages_queue_, [this](int page_index) {
-    return this->engine_->IsPageVisible(page_index);
-  });
+  bool long_delay =
+      std::ranges::none_of(pages_queue_, [this](uint32_t page_index) {
+        return this->engine_->IsPageVisible(page_index);
+      });
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PDFiumOnDemandSearchifier::SearchifyNextPage,
@@ -274,6 +289,13 @@ void PDFiumOnDemandSearchifier::OnGotOcrResult(
                                            image_size);
   }
   SearchifyNextImage();
+}
+
+void PDFiumOnDemandSearchifier::ClearCurrentPage() {
+  if (current_page_ && !current_page_was_loaded_) {
+    engine_->MaybeUnloadPage(current_page_->index());
+  }
+  current_page_ = nullptr;
 }
 
 }  // namespace chrome_pdf

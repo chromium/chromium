@@ -13,9 +13,7 @@ namespace device {
 // implementation is used on Windows 10 1709 (RS3) and beyond.
 //
 // Disabled due to crbug/1120338.
-BASE_FEATURE(kNewBLEGattSessionHandling,
-             "NewBLEGattSessionHandling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNewBLEGattSessionHandling, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace features {
@@ -24,7 +22,6 @@ namespace features {
 // Controls whether Web Bluetooth should support confirm-only and confirm-PIN
 // pairing mode on Win/Linux
 BASE_FEATURE(kWebBluetoothConfirmPairingSupport,
-             "WebBluetoothConfirmPairingSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
@@ -32,24 +29,19 @@ BASE_FEATURE(kWebBluetoothConfirmPairingSupport,
 // Controls whether to use uncached mode when triggering GATT discovery for
 // creating a GATT connection.
 BASE_FEATURE(kUncachedGattDiscoveryForGattConnection,
-             "UncachedGattDiscoveryForGattConnection",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_ANDROID)
-// Controls whether to enable Bluetooth RFCOMM support on Android for Web
-// Serial.
-BASE_FEATURE(kBluetoothRfcommAndroid,
-             "BluetoothRfcommAndroid",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
 // Controls whether to override LocationRequest parameters in
 // LocationProviderGmsCore
 BASE_FEATURE(kGmsCoreLocationRequestParamOverride,
-             "GmsCoreLocationRequestParamOverride",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+// Controls whether to enable Web Serial API for wired devices on Android.
+BASE_FEATURE(kWebSerialWiredDevicesAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace features

@@ -31,15 +31,21 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.ShadowUrlBarData;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.test.R;
+import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -53,7 +59,7 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.function.Supplier;
 
 /** Tests for {@link BasicSuggestionProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -63,7 +69,7 @@ import java.util.Optional;
 public class BasicSuggestionProcessorUnitTest {
     private static final @DrawableRes int ICON_BOOKMARK = R.drawable.star_outline_24dp;
     private static final @DrawableRes int ICON_GLOBE = R.drawable.ic_globe_24dp;
-    private static final @DrawableRes int ICON_HISTORY = R.drawable.ic_history_googblue_24dp;
+    private static final @DrawableRes int ICON_HISTORY = R.drawable.ic_history_24dp;
     private static final @DrawableRes int ICON_MAGNIFIER = R.drawable.ic_suggestion_magnifier;
     private static final @DrawableRes int ICON_TRENDS = R.drawable.trending_up_black_24dp;
     private static final @DrawableRes int ICON_VOICE = R.drawable.ic_mic_white_24dp;
@@ -114,6 +120,8 @@ public class BasicSuggestionProcessorUnitTest {
     private @Mock UrlBarEditingTextStateProvider mUrlBarText;
     private @Mock Bitmap mBitmap;
     private @Mock OmniboxImageSupplier mImageSupplier;
+    private @Mock Supplier<Tab> mTabSupplier;
+    private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
 
     private BasicSuggestionProcessor mProcessor;
     private AutocompleteMatch mSuggestion;
@@ -134,13 +142,17 @@ public class BasicSuggestionProcessorUnitTest {
     @Before
     public void setUp() {
         doReturn("").when(mUrlBarText).getTextWithoutAutocomplete();
-        mProcessor =
-                new BasicSuggestionProcessor(
+        AutocompleteUIContext uiContext =
+                new AutocompleteUIContext(
                         ContextUtils.getApplicationContext(),
                         mSuggestionHost,
                         mUrlBarText,
-                        Optional.of(mImageSupplier),
-                        mIsBookmarked);
+                        mImageSupplier,
+                        mIsBookmarked,
+                        mTabSupplier,
+                        mShareDelegateSupplier,
+                        new ObservableSupplierImpl<>(ControlsPosition.TOP));
+        mProcessor = new BasicSuggestionProcessor(uiContext);
         mInput = new AutocompleteInput();
         OmniboxResourceProvider.disableCachesForTesting();
     }
@@ -179,8 +191,25 @@ public class BasicSuggestionProcessorUnitTest {
     }
 
     /** Create switch to tab suggestion for test. */
-    private void createSwitchToTabSuggestion(int type, String title) {
-        mSuggestion = createSuggestionBuilder(type, title).setHasTabMatch(true).build();
+    private void createSwitchToTabSuggestion(int type) {
+        mSuggestion =
+                new AutocompleteMatchBuilder(type)
+                        .setIsSearch(true)
+                        .setHasTabMatch(true)
+                        .setUrl(JUnitTestGURLs.URL_1)
+                        .setDisplayText("tab switch")
+                        .setActions(
+                                List.of(
+                                        new OmniboxActionInSuggest(
+                                                0,
+                                                "tab switch",
+                                                "tab switch",
+                                                SuggestTemplateInfo.TemplateAction.ActionType
+                                                        .CHROME_TAB_SWITCH_VALUE,
+                                                "https://google.com",
+                                                /* tabId= */ 0,
+                                                /* showAsActionButton= */ true)))
+                        .build();
         mModel = mProcessor.createModel();
         mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
     }
@@ -364,7 +393,7 @@ public class BasicSuggestionProcessorUnitTest {
         Assert.assertEquals(1, actions.size());
         final OmniboxDrawableState iconState = actions.get(0).icon;
         Assert.assertEquals(
-                R.drawable.btn_suggestion_refine,
+                R.drawable.btn_suggestion_refine_up,
                 shadowOf(iconState.drawable).getCreatedFromResId());
     }
 
@@ -380,11 +409,10 @@ public class BasicSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void switchTabIconShownForSwitchToTabSuggestions() {
-        final String tabMatch = "tab match";
         mInput.setPageClassification(
                 PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
 
-        createSwitchToTabSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, tabMatch);
+        createSwitchToTabSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED);
         PropertyModel model = mProcessor.createModel();
 
         mProcessor.populateModel(mInput, mSuggestion, model, 0);

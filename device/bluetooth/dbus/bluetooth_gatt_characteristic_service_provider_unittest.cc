@@ -43,10 +43,9 @@ TEST(BluetoothGattCharacteristicServiceProviderTest, ReadValueSuccess) {
         EXPECT_EQ(response->GetMessageType(), DBUS_MESSAGE_TYPE_METHOD_RETURN);
         dbus::MessageReader reader(response.get());
         EXPECT_EQ(reader.GetDataType(), dbus::Message::ARRAY);
-        const uint8_t* bytes = nullptr;
-        size_t length = 0;
-        EXPECT_TRUE(reader.PopArrayOfBytes(&bytes, &length));
-        EXPECT_EQ(length, read_value.size());
+        base::span<const uint8_t> bytes;
+        EXPECT_TRUE(reader.PopArrayOfBytes(&bytes));
+        EXPECT_EQ(bytes.size(), read_value.size());
         callback_called = true;
       }),
       /*error_code=*/std::nullopt, read_value);
@@ -77,9 +76,8 @@ TEST(BluetoothGattCharacteristicServiceProviderTest, ReadValueFailure) {
             EXPECT_EQ(response->GetMessageType(), DBUS_MESSAGE_TYPE_ERROR);
             dbus::MessageReader reader(response.get());
             EXPECT_NE(reader.GetDataType(), dbus::Message::ARRAY);
-            const uint8_t* bytes = nullptr;
-            size_t length = 0;
-            EXPECT_FALSE(reader.PopArrayOfBytes(&bytes, &length));
+            base::span<const uint8_t> bytes;
+            EXPECT_FALSE(reader.PopArrayOfBytes(&bytes));
             callback_called = true;
           }),
       device::BluetoothGattService::GattErrorCode::kFailed, read_value);

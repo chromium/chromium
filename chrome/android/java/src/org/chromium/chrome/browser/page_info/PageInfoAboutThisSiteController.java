@@ -16,7 +16,6 @@ import android.widget.TextView;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -40,6 +39,8 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.url.GURL;
 
+import java.util.function.Supplier;
+
 /** Class for controlling the page info 'About This Site' section. */
 @NullMarked
 public class PageInfoAboutThisSiteController {
@@ -47,14 +48,14 @@ public class PageInfoAboutThisSiteController {
     private static final String TAG = "PageInfo";
 
     private final PageInfoMainController mMainController;
-    private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+    private final @Nullable Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private final PageInfoRowView mRowView;
     private final PageInfoControllerDelegate mDelegate;
     private final WebContents mWebContents;
     private @Nullable SiteInfo mSiteInfo;
     private @Nullable EphemeralTabCoordinator mEphemeralTabCoordinator;
     private @Nullable EphemeralTabObserver mEphemeralTabObserver;
-    private final TabCreator mTabCreator;
+    private final @Nullable TabCreator mTabCreator;
 
     static boolean isFeatureEnabled() {
         return PageInfoAboutThisSiteControllerJni.get().isFeatureEnabled();
@@ -62,11 +63,11 @@ public class PageInfoAboutThisSiteController {
 
     public PageInfoAboutThisSiteController(
             PageInfoMainController mainController,
-            Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            @Nullable Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             PageInfoRowView rowView,
             PageInfoControllerDelegate delegate,
             WebContents webContents,
-            TabCreator tabCreator) {
+            @Nullable TabCreator tabCreator) {
         mMainController = mainController;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mRowView = rowView;
@@ -149,6 +150,7 @@ public class PageInfoAboutThisSiteController {
     }
 
     private void openInNewTab(String url) {
+        if (mTabCreator == null) return;
         mTabCreator.createNewTab(
                 new LoadUrlParams(url, PageTransition.LINK),
                 TabLaunchType.FROM_LINK,

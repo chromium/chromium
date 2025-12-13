@@ -16,11 +16,14 @@
 #include "gin/function_template.h"
 #include "gin/handle.h"
 #include "gin/public/isolate_holder.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "gin/test/v8_test.h"
 #include "gin/wrappable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "v8/include/cppgc/allocation.h"
 #include "v8/include/v8-container.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-isolate.h"
@@ -46,10 +49,10 @@ typedef V8Test ConverterTest;
 TEST_F(ConverterTest, Bool) {
   HandleScope handle_scope(instance_->isolate());
 
-  EXPECT_TRUE(Converter<bool>::ToV8(instance_->isolate(), true)->StrictEquals(
-      Boolean::New(instance_->isolate(), true)));
-  EXPECT_TRUE(Converter<bool>::ToV8(instance_->isolate(), false)->StrictEquals(
-      Boolean::New(instance_->isolate(), false)));
+  EXPECT_TRUE(Converter<bool>::ToV8(instance_->isolate(), true)
+                  ->StrictEquals(Boolean::New(instance_->isolate(), true)));
+  EXPECT_TRUE(Converter<bool>::ToV8(instance_->isolate(), false)
+                  ->StrictEquals(Boolean::New(instance_->isolate(), false)));
 
   struct TestData {
     Local<Value> input;
@@ -120,7 +123,7 @@ TEST_F(ConverterTest, Int32) {
   for (size_t i = 0; i < std::size(test_data_to); ++i) {
     EXPECT_TRUE(Converter<int32_t>::ToV8(instance_->isolate(), test_data_to[i])
                     ->StrictEquals(
-                          Integer::New(instance_->isolate(), test_data_to[i])));
+                        Integer::New(instance_->isolate(), test_data_to[i])));
   }
 
   struct TestDataFrom {
@@ -157,8 +160,9 @@ TEST_F(ConverterTest, Int32) {
     bool success = Converter<int32_t>::FromV8(instance_->isolate(),
                                               test_data_from[i].input, &result);
     EXPECT_EQ(test_data_from[i].expect_success, success) << i;
-    if (success)
+    if (success) {
       EXPECT_EQ(test_data_from[i].expected_result, result) << i;
+    }
   }
 }
 
@@ -187,7 +191,8 @@ TEST_F(ConverterTest, VectorOfVectors) {
   HandleScope handle_scope(instance_->isolate());
 
   std::vector<std::vector<int>> vector_of_vectors = {
-      {1, 2, 3}, {4, 5, 6},
+      {1, 2, 3},
+      {4, 5, 6},
   };
 
   v8::Local<v8::Value> v8_value =
@@ -199,16 +204,18 @@ TEST_F(ConverterTest, VectorOfVectors) {
 
 namespace {
 
-class MyObject : public DeprecatedWrappable<MyObject> {
+class MyObject : public Wrappable<MyObject> {
  public:
-  static DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr WrapperInfo kWrapperInfo = {{kEmbedderNativeGin},
+                                               kTestObject};
 
-  static gin::Handle<MyObject> Create(v8::Isolate* isolate) {
-    return CreateHandle(isolate, new MyObject());
+  static MyObject* Create(v8::Isolate* isolate) {
+    return cppgc::MakeGarbageCollected<MyObject>(
+        isolate->GetCppHeap()->GetAllocationHandle());
   }
-};
 
-DeprecatedWrapperInfo MyObject::kWrapperInfo = {kEmbedderNativeGin};
+  const WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
+};
 
 }  // namespace
 
@@ -216,8 +223,8 @@ TEST_F(ConverterTest, VectorOfWrappables) {
   v8::Isolate* isolate = instance_->isolate();
   v8::HandleScope handle_scope(isolate);
 
-  Handle<MyObject> obj = MyObject::Create(isolate);
-  std::vector<MyObject*> vector = {obj.get()};
+  MyObject* obj = MyObject::Create(isolate);
+  std::vector<MyObject*> vector = {obj};
   v8::MaybeLocal<v8::Value> maybe = ConvertToV8(isolate, vector);
   v8::Local<v8::Value> array;
   ASSERT_TRUE(maybe.ToLocal(&array));

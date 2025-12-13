@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 window.addEventListener('unload', function() {
@@ -20,6 +20,6 @@ window.addEventListener('message', function(message: MessageEvent) {
   }
   if (payload.hasOwnProperty('type') &&
       payload.type === 'org.chromium.registerForFrameMessaging') {
-    gCrWebLegacy.message.getExistingFrames();
+    gCrWeb.getExistingFrames();
   }
 });

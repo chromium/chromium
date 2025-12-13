@@ -21,6 +21,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
@@ -86,7 +87,7 @@ class MockAutoCompleteController : public AutocompleteController {
   MockAutoCompleteController()
       : AutocompleteController(
             std::make_unique<FakeAutocompleteProviderClient>(),
-            0) {}
+            AutocompleteControllerConfig{}) {}
   MockAutoCompleteController(const MockAutoCompleteController&) = delete;
   MockAutoCompleteController& operator=(const MockAutoCompleteController&) =
       delete;
@@ -168,7 +169,7 @@ class OmniboxProviderTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<AppListControllerDelegate> list_controller_;
 
@@ -311,9 +312,7 @@ TEST_F(OmniboxProviderTest, UnhandledUrls) {
 TEST_F(OmniboxProviderTest, WebSearchControl) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitWithFeatures(
-      {ash::features::kLauncherSearchControl,
-       ash::features::kFeatureManagementLocalImageSearch},
-      {});
+      {ash::features::kFeatureManagementLocalImageSearch}, {});
   DisableWebSearch();
 
   StartSearch(u"query");

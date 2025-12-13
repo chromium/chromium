@@ -43,6 +43,10 @@ class BrowserChildProcessHostProxy {
     return browser_child_process_host_id_;
   }
 
+  content::ChildProcessId child_process_id() const {
+    return content::ChildProcessId(browser_child_process_host_id().value());
+  }
+
   static BrowserChildProcessHostProxy CreateForTesting(
       BrowserChildProcessHostId browser_child_process_host_id);
 

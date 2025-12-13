@@ -92,8 +92,7 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetch
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider.MultiThumbnailMetadata;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData.TabActionButtonType;
+import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
@@ -214,8 +213,8 @@ public class TabListViewHolderTest {
                             Tab.INVALID_TAB_ID, false, false, null));
     private final AtomicInteger mThumbnailFetchedCount = new AtomicInteger();
 
-    private final TabListMediator.TabActionListener mMockCloseListener =
-            new TabListMediator.TabActionListener() {
+    private final TabActionListener mMockCloseListener =
+            new TabActionListener() {
                 @Override
                 public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
                     mCloseClicked.set(true);
@@ -229,8 +228,8 @@ public class TabListViewHolderTest {
     private final AtomicBoolean mCloseClicked = new AtomicBoolean();
     private final AtomicInteger mCloseTabId = new AtomicInteger();
 
-    private final TabListMediator.TabActionListener mMockSelectedListener =
-            new TabListMediator.TabActionListener() {
+    private final TabActionListener mMockSelectedListener =
+            new TabActionListener() {
                 @Override
                 public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
                     mSelectClicked.set(true);
@@ -244,8 +243,8 @@ public class TabListViewHolderTest {
     private final AtomicBoolean mSelectClicked = new AtomicBoolean();
     private final AtomicInteger mSelectTabId = new AtomicInteger();
 
-    private final TabListMediator.TabActionListener mMockCreateGroupButtonListener =
-            new TabListMediator.TabActionListener() {
+    private final TabActionListener mMockCreateGroupButtonListener =
+            new TabActionListener() {
                 @Override
                 public void run(View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
                     mCreateGroupButtonClicked.set(true);

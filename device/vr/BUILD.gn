@@ -55,6 +55,8 @@ if (enable_vr) {
     sources = [
       "create_anchor_request.cc",
       "create_anchor_request.h",
+      "hit_test_subscription_data.cc",
+      "hit_test_subscription_data.h",
       "vr_device_base.cc",
       "vr_device_base.h",
       "vr_gl_util.cc",
@@ -86,8 +88,6 @@ if (enable_vr) {
       "util/fps_meter.h",
       "util/gamepad_builder.cc",
       "util/gamepad_builder.h",
-      "util/hit_test_subscription_data.cc",
-      "util/hit_test_subscription_data.h",
       "util/sample_queue.cc",
       "util/sample_queue.h",
       "util/sliding_average.cc",
@@ -103,7 +103,6 @@ if (enable_vr) {
     deps = [
       "//base",
       "//device/vr/public/mojom:isolated_xr_service",
-      "//device/vr/public/mojom:vr_service",
       "//ui/gfx",
     ]
 
@@ -136,7 +135,7 @@ if (enable_vr) {
       ":vr_base",
       ":vr_util",
       "//base",
-      "//components/ukm:ukm",
+      "//components/ukm",
       "//device/base",
       "//device/vr/buildflags",
       "//device/vr/public/mojom:isolated_xr_service",
@@ -159,6 +158,10 @@ if (enable_vr) {
         "openxr/fb/openxr_hand_tracker_fb.h",
         "openxr/msft/openxr_anchor_manager_msft.cc",
         "openxr/msft/openxr_anchor_manager_msft.h",
+        "openxr/msft/openxr_hit_test_manager_msft.cc",
+        "openxr/msft/openxr_hit_test_manager_msft.h",
+        "openxr/msft/openxr_plane_manager_msft.cc",
+        "openxr/msft/openxr_plane_manager_msft.h",
         "openxr/msft/openxr_scene_bounds_msft.cc",
         "openxr/msft/openxr_scene_bounds_msft.h",
         "openxr/msft/openxr_scene_msft.cc",
@@ -177,6 +180,8 @@ if (enable_vr) {
         "openxr/openxr_anchor_manager.h",
         "openxr/openxr_api_wrapper.cc",
         "openxr/openxr_api_wrapper.h",
+        "openxr/openxr_composition_layer.cc",
+        "openxr/openxr_composition_layer.h",
         "openxr/openxr_controller.cc",
         "openxr/openxr_controller.h",
         "openxr/openxr_debug_util.cc",
@@ -198,6 +203,8 @@ if (enable_vr) {
         "openxr/openxr_hand_tracker.h",
         "openxr/openxr_hand_utils.cc",
         "openxr/openxr_hand_utils.h",
+        "openxr/openxr_hit_test_manager.cc",
+        "openxr/openxr_hit_test_manager.h",
         "openxr/openxr_input_helper.cc",
         "openxr/openxr_input_helper.h",
         "openxr/openxr_interaction_profile_paths.h",
@@ -209,6 +216,8 @@ if (enable_vr) {
         "openxr/openxr_light_estimator.h",
         "openxr/openxr_path_helper.cc",
         "openxr/openxr_path_helper.h",
+        "openxr/openxr_plane_manager.cc",
+        "openxr/openxr_plane_manager.h",
         "openxr/openxr_platform.h",
         "openxr/openxr_platform_helper.cc",
         "openxr/openxr_platform_helper.h",
@@ -216,23 +225,45 @@ if (enable_vr) {
         "openxr/openxr_render_loop.h",
         "openxr/openxr_scene_understanding_manager.cc",
         "openxr/openxr_scene_understanding_manager.h",
+        "openxr/openxr_space_based_anchor_manager.cc",
+        "openxr/openxr_space_based_anchor_manager.h",
+        "openxr/openxr_spatial_anchor_manager.cc",
+        "openxr/openxr_spatial_anchor_manager.h",
+        "openxr/openxr_spatial_capability_configuration_base.cc",
+        "openxr/openxr_spatial_capability_configuration_base.h",
+        "openxr/openxr_spatial_framework_manager.cc",
+        "openxr/openxr_spatial_framework_manager.h",
+        "openxr/openxr_spatial_hit_test_manager.cc",
+        "openxr/openxr_spatial_hit_test_manager.h",
+        "openxr/openxr_spatial_plane_manager.cc",
+        "openxr/openxr_spatial_plane_manager.h",
+        "openxr/openxr_spatial_utils.cc",
+        "openxr/openxr_spatial_utils.h",
         "openxr/openxr_stage_bounds_provider.h",
         "openxr/openxr_stage_bounds_provider_basic.cc",
         "openxr/openxr_stage_bounds_provider_basic.h",
+        "openxr/openxr_swapchain_info.cc",
+        "openxr/openxr_swapchain_info.h",
         "openxr/openxr_unbounded_space_provider.cc",
         "openxr/openxr_unbounded_space_provider.h",
         "openxr/openxr_util.cc",
         "openxr/openxr_util.h",
         "openxr/openxr_view_configuration.cc",
         "openxr/openxr_view_configuration.h",
+        "openxr/openxr_visibility_mask_handler.cc",
+        "openxr/openxr_visibility_mask_handler.h",
+        "openxr/scoped_openxr_object.h",
       ]
 
-      deps += [ ":vr_test_hook" ]
+      deps += [
+        ":vr_test_hook",
+        "//third_party/blink/public:blink_headers",
+      ]
 
       if (is_win) {
         libs = [
           "d3d11.lib",
-          "DXGI.lib",
+          "dxgi.lib",
         ]
 
         sources += [
@@ -260,13 +291,15 @@ if (enable_vr) {
           "openxr/android/openxr_depth_sensor_android.h",
           "openxr/android/openxr_graphics_binding_open_gles.cc",
           "openxr/android/openxr_graphics_binding_open_gles.h",
+          "openxr/android/openxr_hit_test_manager_android.cc",
+          "openxr/android/openxr_hit_test_manager_android.h",
           "openxr/android/openxr_light_estimator_android.cc",
           "openxr/android/openxr_light_estimator_android.h",
+          "openxr/android/openxr_plane_manager_android.cc",
+          "openxr/android/openxr_plane_manager_android.h",
           "openxr/android/openxr_platform_helper_android_statics.cc",
           "openxr/android/openxr_scene_understanding_manager_android.cc",
           "openxr/android/openxr_scene_understanding_manager_android.h",
-          "openxr/android/openxr_stage_bounds_provider_android.cc",
-          "openxr/android/openxr_stage_bounds_provider_android.h",
           "openxr/android/openxr_unbounded_space_provider_android.cc",
           "openxr/android/openxr_unbounded_space_provider_android.h",
         ]
@@ -289,17 +322,12 @@ if (enable_vr) {
     }
   }
 
-  component("vr_test_hook") {
-    defines = [ "IS_VR_TEST_HOOK_IMPL" ]
-
-    sources = [
-      "test/test_hook.cc",
-      "test/test_hook.h",
-    ]
+  source_set("vr_test_hook") {
+    sources = [ "test/test_hook.h" ]
 
     deps = [
-      "//device/vr/public/mojom:test_mojom",
       "//device/vr/public/mojom:vr_service",
+      "//device/vr/public/mojom/test:test_mojom",
       "//ui/gfx",
       "//ui/gfx/mojom",
     ]
@@ -345,7 +373,7 @@ if (enable_vr) {
 
       libs = [
         "d3d11.lib",
-        "DXGI.lib",
+        "dxgi.lib",
       ]
 
       deps = [ "//base" ]
@@ -413,8 +441,8 @@ if (enable_openxr) {
         "//base",
         "//components/version_info",
         "//device/gamepad/public/cpp:shared_with_blink",
-        "//device/vr/public/mojom:test_mojom",
         "//device/vr/public/mojom:vr_service",
+        "//device/vr/public/mojom/test:test_mojom",
         "//third_party/openxr:openxr_headers",
       ]
 
@@ -422,7 +450,7 @@ if (enable_openxr) {
         sources += [ "openxr/test/openxr.def" ]
         libs = [
           "d3d11.lib",
-          "DXGI.lib",
+          "dxgi.lib",
         ]
       } else if (is_android) {
         configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
@@ -444,6 +472,10 @@ if (enable_openxr) {
       public_deps = [ ":openxr_data" ]
 
       data_deps = [ "//device/vr:json_mock" ]
+
+      # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+      # enable the diagnostic by removing this line.
+      configs += [ "//build/config/compiler:no_exit_time_destructors" ]
     }
 
     if (is_android) {

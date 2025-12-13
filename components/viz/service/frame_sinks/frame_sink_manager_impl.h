@@ -45,6 +45,7 @@
 #include "components/viz/service/surfaces/surface_observer.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/ipc/common/surface_handle.h"
+#include "mojo/public/cpp/bindings/direct_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -114,7 +115,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // Mac |task_runner| will be the resize helper task runner. May only be called
   // once.
   void BindAndSetClient(
-      mojo::PendingReceiver<mojom::FrameSinkManager> receiver,
+      mojo::PendingReceiver<mojom::FrameSinkManager> interface_receiver,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       mojo::PendingRemote<mojom::FrameSinkManagerClient> client,
       SharedImageInterfaceProvider* shared_image_interface_provider);
@@ -134,7 +135,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // mojom::FrameSinkManager implementation:
   void RegisterFrameSinkId(const FrameSinkId& frame_sink_id,
                            bool report_activation) override;
-  void InvalidateFrameSinkId(const FrameSinkId& frame_sink_id) override;
+  void InvalidateFrameSinkId(const FrameSinkId& frame_sink_id,
+                             InvalidateFrameSinkIdCallback callback) override;
   void SetFrameSinkDebugLabel(const FrameSinkId& frame_sink_id,
                               const std::string& debug_label) override;
   void CreateRootCompositorFrameSink(
@@ -162,7 +164,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void AddVideoDetectorObserver(
       mojo::PendingRemote<mojom::VideoDetectorObserver> observer) override;
   void CreateVideoCapturer(
-      mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver) override;
+      mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver,
+      uint32_t capture_version_source) override;
   void EvictSurfaces(const std::vector<SurfaceId>& surface_ids) override;
   void RequestCopyOfOutput(const SurfaceId& surface_id,
                            std::unique_ptr<CopyOutputRequest> request,
@@ -234,6 +237,12 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   std::string_view GetFrameSinkDebugLabel(
       const FrameSinkId& frame_sink_id) const override;
   void AggregatedFrameSinksChanged() override;
+  void AddObserver(FrameSinkObserver* obs) override;
+  void RemoveObserver(FrameSinkObserver* obs) override;
+  // Check if `transition_token_to_animation_manager_` contains entry for
+  // `transition_token`.
+  bool HasViewTransitionToken(
+      const blink::ViewTransitionToken& transition_token) override;
 
   // HitTestDataProvider implementation.
   // This is required to allow RenderWidgetHostInputEventRouter to find target
@@ -297,9 +306,6 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
 
   void OnFrameSinkMobileOptimizedChanged(const FrameSinkId& frame_sink_id,
                                          bool is_mobile_optimized);
-
-  void AddObserver(FrameSinkObserver* obs);
-  void RemoveObserver(FrameSinkObserver* obs);
 
   // Returns ids of all FrameSinks that were registered.
   std::vector<FrameSinkId> GetRegisteredFrameSinkIds() const;
@@ -381,6 +387,12 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // This call is only valid after BindAndSetClient().
   gpu::SharedImageInterface* GetSharedImageInterface();
 
+  // Returns a callback that triggers the resource capture signal.
+  // This encapsulates the binding logic so clients don't need to know the
+  // implementation details.
+  base::OnceCallback<void(const blink::ViewTransitionToken&)>
+  GetViewTransitionResourcesCapturedCallback();
+
   ReservedResourceIdTracker* reserved_resource_id_tracker() {
     return &reserved_resource_id_tracker_;
   }
@@ -394,6 +406,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   GpuServiceImpl* GetGpuService();
 
  private:
+  void OnViewTransitionResourcesCaptured(
+      const blink::ViewTransitionToken& transition_token);
+
   friend class FrameSinkManagerTest;
   friend class CompositorFrameSinkSupportTestBase;
   friend class FlingSchedulerTest;
@@ -600,7 +615,9 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   //     |client_|. Used for some unit tests.
   raw_ptr<mojom::FrameSinkManagerClient, DanglingUntriaged> client_ = nullptr;
 
-  mojo::Receiver<mojom::FrameSinkManager> frame_sink_manager_receiver_{this};
+  using Receiver = mojo::Receiver<mojom::FrameSinkManager>;
+  using DirectReceiver = mojo::DirectReceiver<mojom::FrameSinkManager>;
+  std::variant<Receiver, DirectReceiver> frame_sink_manager_receiver_;
   mojo::Receiver<mojom::FrameSinksMetricsRecorder> metrics_receiver_{this};
   mojo::Receiver<mojom::FrameSinkManagerTestApi> test_api_receiver_{this};
 

@@ -118,6 +118,7 @@ executable("lca_agent") {
   ]
 
   public_deps = [ ":libagentsdk" ]
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 proto_library("proto") {

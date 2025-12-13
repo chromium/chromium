@@ -307,6 +307,19 @@ void CaretDisplayItemClient::InvalidatePaintInCurrentLayoutBlock(
       .InvalidateDisplayItemClient(*this, PaintInvalidationReason::kCaret);
 }
 
+void CaretDisplayItemClient::SetNeedsNonCompositedPaintInvalidation() {
+  if (!layout_block_) {
+    return;
+  }
+  // Elements under canvas can only be rendered with `drawElementImage` and do
+  // not support compositing.
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+      IsA<Element>(layout_block_->GetNode()) &&
+      To<Element>(layout_block_->GetNode())->IsInCanvasSubtree()) {
+    needs_paint_invalidation_ = true;
+  }
+}
+
 void CaretDisplayItemClient::PaintCaret(
     GraphicsContext& context,
     const PhysicalOffset& paint_offset,

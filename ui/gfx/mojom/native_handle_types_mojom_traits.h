@@ -28,6 +28,10 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_APPLE)
+#include "ui/gfx/mac/io_surface.h"
+#endif
+
 namespace mojo {
 
 #if BUILDFLAG(IS_ANDROID)
@@ -148,10 +152,9 @@ struct COMPONENT_EXPORT(GFX_NATIVE_HANDLE_TYPES_SHARED_MOJOM_TRAITS)
 
   base::apple::ScopedMachSendRight mach_send_right;
 #if BUILDFLAG(IS_IOS)
-  static constexpr size_t kMaxPlanes = 3;
   base::UnsafeSharedMemoryRegion shared_memory_region;
-  std::array<uint32_t, kMaxPlanes> plane_strides;
-  std::array<uint32_t, kMaxPlanes> plane_offsets;
+  std::array<uint32_t, gfx::kMaxIOSurfacePlanes> plane_strides;
+  std::array<uint32_t, gfx::kMaxIOSurfacePlanes> plane_offsets;
 #endif
 };
 
@@ -168,12 +171,12 @@ struct COMPONENT_EXPORT(GFX_NATIVE_HANDLE_TYPES_SHARED_MOJOM_TRAITS)
     return handle.shared_memory_region;
   }
 
-  static std::array<uint32_t, IOSurfaceHandle::kMaxPlanes>& plane_strides(
+  static std::array<uint32_t, gfx::kMaxIOSurfacePlanes>& plane_strides(
       IOSurfaceHandle& handle) {
     return handle.plane_strides;
   }
 
-  static std::array<uint32_t, IOSurfaceHandle::kMaxPlanes>& plane_offsets(
+  static std::array<uint32_t, gfx::kMaxIOSurfacePlanes>& plane_offsets(
       IOSurfaceHandle& handle) {
     return handle.plane_offsets;
   }

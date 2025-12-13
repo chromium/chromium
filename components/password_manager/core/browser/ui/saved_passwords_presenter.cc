@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -23,13 +24,17 @@
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/ui/actor_login_permission.h"
+#include "components/password_manager/core/browser/ui/affiliated_group.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/password_undo_helper.h"
 #include "components/password_manager/core/browser/ui/passwords_grouper.h"
+#include "components/sync/service/sync_service.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 #include "url/gurl.h"
@@ -178,6 +183,23 @@ bool SavedPasswordsPresenter::RemoveCredential(
   }
   undo_helper_->EndGroupingActions();
   return !forms_to_delete.empty();
+}
+bool SavedPasswordsPresenter::RemoveBackupPassword(
+    const CredentialUIEntry& credential) {
+  std::vector<PasswordForm> forms_to_update =
+      GetCorrespondingPasswordForms(credential);
+  undo_helper_->StartGroupingActions();
+  for (const auto& current_form : forms_to_update) {
+    PasswordForm without_backup(current_form);
+    without_backup.DeletePasswordBackupNote();
+    // |current_form| is unchanged result obtained from
+    // 'OnGetPasswordStoreResultsFrom'. So it can be present only in one
+    // store at a time.
+    GetStoreFor(current_form).UpdateLogin(without_backup);
+    undo_helper_->BackupPasswordRemoved(current_form);
+  }
+  undo_helper_->EndGroupingActions();
+  return !forms_to_update.empty();
 }
 
 void SavedPasswordsPresenter::DeleteAllData(
@@ -419,6 +441,56 @@ std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetBlockedSites() {
   return passwords_grouper_->GetBlockedSites();
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+base::flat_set<ActorLoginPermission>
+SavedPasswordsPresenter::GetActorLoginPermissions(
+    syncer::SyncService* sync_service) const {
+  std::vector<ActorLoginPermission> permissions;
+  std::vector<AffiliatedGroup> groups =
+      passwords_grouper_->GetAffiliatedGroupsWithGroupingInfo();
+  for (const AffiliatedGroup& group : groups) {
+    for (const auto& credential : group.GetCredentials()) {
+      std::vector<CredentialUIEntry::DomainInfo> affiliated_domains =
+          credential.GetAffiliatedDomains();
+      for (const auto& form : GetCorrespondingPasswordForms(credential)) {
+        if (form.actor_login_approved) {
+          auto form_domain_info_it = std::ranges::find_if(
+              affiliated_domains.begin(), affiliated_domains.end(),
+              [&form](const CredentialUIEntry::DomainInfo& domain_info) {
+                return form.signon_realm == domain_info.signon_realm;
+              });
+          // This can happen if a user has credentials stored for 2 app versions
+          // with the same app package name. Affiliated domains are unique per
+          // URL, which in the case of such 2 versions of an app, would be
+          // identical.
+          if (form_domain_info_it == affiliated_domains.end()) {
+            continue;
+          }
+          permissions.emplace_back(*form_domain_info_it, form.username_value,
+                                   group.GetAllowedIconUrl(sync_service));
+        }
+      }
+    }
+  }
+  return base::flat_set<ActorLoginPermission>(std::move(permissions));
+}
+
+void SavedPasswordsPresenter::RevokeActorLoginPermission(
+    const std::u16string& username,
+    const std::string& signon_realm) {
+  for (const auto& credential : passwords_grouper_->GetAllCredentials()) {
+    for (const auto& form : GetCorrespondingPasswordForms(credential)) {
+      if (form.signon_realm == signon_realm &&
+          form.username_value == username) {
+        PasswordForm updated_form = form;
+        updated_form.actor_login_approved = false;
+        GetStoreFor(updated_form).UpdateLogin(updated_form);
+      }
+    }
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 std::vector<PasswordForm>
 SavedPasswordsPresenter::GetCorrespondingPasswordForms(
     const CredentialUIEntry& credential) const {
@@ -606,8 +678,10 @@ void SavedPasswordsPresenter::MaybeGroupCredentials(
   std::vector<PasskeyCredential> passkeys;
 #if !BUILDFLAG(IS_ANDROID)
   if (passkey_store_) {
-    passkeys = PasskeyCredential::FromCredentialSpecifics(
-        passkey_store_->GetAllPasskeys());
+    passkeys =
+        PasskeyCredential::FromCredentialSpecifics(passkey_store_->GetPasskeys(
+            webauthn::PasskeyModel::AnyRp(),
+            webauthn::PasskeyModel::ShadowedCredentials::kInclude));
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

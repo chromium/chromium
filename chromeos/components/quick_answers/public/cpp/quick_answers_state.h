@@ -66,6 +66,42 @@ class QuickAnswersStateObserver : public base::CheckedObserver {
 //   Answers capabpility.
 // - Hmr feature: a feature called Hmr. It provides Mahi and Quick Answers
 //   capability.
+//
+// ## Quick Answers pref model
+//
+// The table below shows the behavior of the Quick Answers feature based on its
+// two main preferences.
+//
+// | Enabled         | Consent Status       | Behavior         |
+// |:----------------|:---------------------|:-----------------|
+// | false (default) | `kUnknown` (default) | Shows consent UI |
+// | false           | `kAccepted`          | Disabled         |
+// | false           | `kRejected`          | Disabled         |
+// | true            | `kUnknown`           | N/A              |
+// | true            | `kAccepted`          | Shows QA UI      |
+// | true            | `kRejected`          | N/A              |
+//
+// ## Pref model differences between Quick Answers and Magic Boost
+//
+// Quick Answers feature and Hmr feature have different pref values model and
+// default values.
+//
+// For Quick Answers, `kQuickAnswersEnabled` is false by default, and
+// `kQuickAnswersConsentStatus` is `kUnknown`. The consent UI is triggered when
+// the feature is not enabled and the consent status is `kUnknown`. The feature
+// UI is shown when the feature is enabled.
+//
+// For Magic Boost (HMR), `kHmrEnabled` is true by default, but the
+// `kHMRConsentStatus` is `kUnset`. This blocks the feature from being provided
+// initially. The consent UI is triggered when HMR is enabled but the consent is
+// not approved. The feature UI is shown only when HMR is enabled and the
+// consent has been approved.
+//
+// Read `magic_boost_state.h` for details of its pref model.
+//
+// `QuickAnswersState` works as an abstraction layer. All Quick Answers code
+// expects the above Quick Answers pref value model even if it's running as part
+// of HMR.
 class QuickAnswersState : chromeos::MagicBoostState::Observer {
  public:
   enum class FeatureType {
@@ -114,7 +150,7 @@ class QuickAnswersState : chromeos::MagicBoostState::Observer {
   void RemoveObserver(QuickAnswersStateObserver* observer);
 
   // chromeos::MagicBoostState::Observer:
-  void OnMagicBoostAvailableUpdated(bool available) override;
+  void OnUserEligibleForGenAIFeaturesUpdated(bool eligible) override;
   void OnHMREnabledUpdated(bool enabled) override;
   void OnHMRConsentStatusUpdated(
       chromeos::HMRConsentStatus consent_status) override;

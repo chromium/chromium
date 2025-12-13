@@ -106,7 +106,7 @@ void CrxDownloaderTest::SetUp() {
           base::MakeRefCounted<NetworkFetcherChromiumFactory>(
               test_shared_url_loader_factory_,
               base::BindRepeating([](const GURL& url) { return false; })))
-          ->MakeCrxDownloader(false);
+          ->MakeCrxDownloader("CrxDownloaderTest", false);
   crx_downloader_->set_progress_callback(progress_callback_);
 
   test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(

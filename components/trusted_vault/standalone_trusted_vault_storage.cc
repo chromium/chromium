@@ -27,8 +27,7 @@ namespace trusted_vault {
 // This is a separate function and not in `namespace {}` so it can be friended
 // by crypto/obsolete/md5, as required for using that class.
 std::string MD5StringForTrustedVault(const std::string& local_trusted_value) {
-  return base::ToLowerASCII(
-      base::HexEncode(crypto::obsolete::Md5::Hash(local_trusted_value)));
+  return base::HexEncodeLower(crypto::obsolete::Md5::Hash(local_trusted_value));
 }
 
 namespace {

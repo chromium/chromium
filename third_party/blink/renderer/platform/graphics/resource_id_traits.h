@@ -15,10 +15,6 @@
 namespace blink {
 
 template <>
-struct CrossThreadCopier<viz::ResourceId>
-    : public CrossThreadCopierPassThrough<viz::ResourceId> {};
-
-template <>
 struct HashTraits<viz::ResourceId> : GenericHashTraits<viz::ResourceId> {
   static uint32_t GetHash(const viz::ResourceId& id) {
     return blink::GetHash(id.GetUnsafeValue());

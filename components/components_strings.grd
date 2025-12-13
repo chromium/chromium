@@ -337,10 +337,13 @@
       <part file="tab_resume_strings.grdp" />
       <part file="translate_strings.grdp" />
       <part file="undo_strings.grdp" />
+      <part file="user_data_importer_strings.grdp" />
       <part file="user_education_strings.grdp" />
       <part file="version_ui_strings.grdp" />
       <part file="webapps_strings.grdp" />
+      <part file="wallet_strings.grdp" />
       <part file="collaboration_strings.grdp" />
+      <part file="contextual_tasks_strings.grdp" />
       <if expr="is_android">
         <part file="android_system_error_page_strings.grdp" />
         <part file="external_intents_strings.grdp" />
@@ -369,6 +372,16 @@
       <message name="IDS_LEARN_MORE" desc="Learn more text">
         Learn more
       </message>
+      <if expr="use_titlecase">
+        <message name="IDS_LEARN_MORE_MAYBE_TITLE_CASE" desc="Learn more text, displayed as a link. This is title-cased.">
+          Learn More
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_LEARN_MORE_MAYBE_TITLE_CASE" desc="Learn more text, displayed as a link.">
+          Learn more
+        </message>
+      </if>
       <message name="IDS_OK" desc="Used for OK on buttons">
         OK
       </message>
@@ -544,6 +557,9 @@
         Safety check
       </message>
 
+      <message name="IDS_CONTENT_BOOKMARK_PARSER_SERVICE_DISPLAY_NAME" desc="The display name (in the system task manager, etc) of the service process used for parsing a bookmarks file.">
+        Content Bookmark Parser Service
+      </message>
       <message name="IDS_PATCH_SERVICE_DISPLAY_NAME" desc="The display name (in the system task manager, etc) of the service process used for patching file operations.">
         Patch Service
       </message>

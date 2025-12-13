@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
+#include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,7 +39,7 @@ void SaveUpdateAddressProfileMessageController::DisplayMessage(
     content::WebContents* web_contents,
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
-    bool is_migration_to_account,
+    SaveUpdateAddressProfilePromptMode prompt_mode,
     AutofillClient::AddressProfileSavePromptCallback
         save_address_profile_callback,
     PrimaryActionCallback primary_action_callback) {
@@ -53,7 +54,7 @@ void SaveUpdateAddressProfileMessageController::DisplayMessage(
   web_contents_ = web_contents;
   profile_ = profile;
   original_profile_ = original_profile;
-  is_migration_to_account_ = is_migration_to_account;
+  prompt_mode_ = prompt_mode;
   save_address_profile_callback_ = std::move(save_address_profile_callback);
   primary_action_callback_ = std::move(primary_action_callback);
 
@@ -75,8 +76,8 @@ void SaveUpdateAddressProfileMessageController::DisplayMessage(
   message_->SetPrimaryButtonText(GetPrimaryButtonText());
   message_->SetPrimaryButtonTextMaxLines(1);
   message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
-      is_migration_to_account ? IDR_ANDROID_AUTOFILL_UPLOAD_ADDRESS
-                              : IDR_ANDROID_AUTOFILL_ADDRESS));
+      IsMigrationToAccount() ? IDR_ANDROID_AUTOFILL_UPLOAD_ADDRESS
+                             : IDR_ANDROID_AUTOFILL_ADDRESS));
 
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents, messages::MessageScopeType::WEB_CONTENTS,
@@ -87,10 +88,34 @@ bool SaveUpdateAddressProfileMessageController::IsMessageDisplayed() {
   return !!message_;
 }
 
+void SaveUpdateAddressProfileMessageController::OnPrimaryActionForTest() {
+  OnPrimaryAction();
+}
+
+void SaveUpdateAddressProfileMessageController::DismissMessageForTest(
+    messages::DismissReason reason) {
+  if (message_) {
+    messages::MessageDispatcherBridge::Get()->DismissMessage(message_.get(),
+                                                             reason);
+  }
+}
+
+messages::MessageWrapper*
+SaveUpdateAddressProfileMessageController::GetMessageForTest() {
+  return message_.get();
+}
+
+void SaveUpdateAddressProfileMessageController::DismissMessage() {
+  if (message_) {
+    messages::MessageDispatcherBridge::Get()->DismissMessage(
+        message_.get(), messages::DismissReason::UNKNOWN);
+  }
+}
+
 void SaveUpdateAddressProfileMessageController::OnPrimaryAction() {
   std::move(primary_action_callback_)
       .Run(web_contents_.get(), *profile_, original_profile_.get(),
-           is_migration_to_account_, std::move(save_address_profile_callback_));
+           prompt_mode_, std::move(save_address_profile_callback_));
 }
 
 void SaveUpdateAddressProfileMessageController::OnMessageDismissed(
@@ -122,21 +147,6 @@ void SaveUpdateAddressProfileMessageController::OnMessageDismissed(
   web_contents_ = nullptr;
 }
 
-void SaveUpdateAddressProfileMessageController::DismissMessageForTest(
-    messages::DismissReason reason) {
-  if (message_) {
-    messages::MessageDispatcherBridge::Get()->DismissMessage(message_.get(),
-                                                             reason);
-  }
-}
-
-void SaveUpdateAddressProfileMessageController::DismissMessage() {
-  if (message_) {
-    messages::MessageDispatcherBridge::Get()->DismissMessage(
-        message_.get(), messages::DismissReason::UNKNOWN);
-  }
-}
-
 void SaveUpdateAddressProfileMessageController::RunSaveAddressProfileCallback(
     AutofillClient::AddressPromptUserDecision decision) {
   std::move(save_address_profile_callback_).Run(decision, std::nullopt);
@@ -144,11 +154,11 @@ void SaveUpdateAddressProfileMessageController::RunSaveAddressProfileCallback(
 }
 
 std::u16string SaveUpdateAddressProfileMessageController::GetTitle() {
-  if (original_profile_) {
+  if (original_profile_ && !original_profile_->IsHomeAndWorkProfile()) {
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
   }
 
-  if (is_migration_to_account_) {
+  if (IsMigrationToAccount()) {
     return l10n_util::GetStringUTF16(
         IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE);
   }
@@ -164,7 +174,7 @@ std::u16string SaveUpdateAddressProfileMessageController::GetDescription() {
                                  /*include_address_and_contacts=*/true);
   }
 
-  if (is_migration_to_account_ || profile_->IsAccountProfile()) {
+  if (IsMigrationToAccount() || profile_->IsAccountProfile()) {
     return GetRecordTypeNotice();
   }
 
@@ -183,7 +193,7 @@ SaveUpdateAddressProfileMessageController::GetRecordTypeNotice() {
     return std::u16string();
   }
 
-  return is_migration_to_account_
+  return IsMigrationToAccount()
              ? l10n_util::GetStringUTF16(
                    IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_MIGRATION_RECORD_TYPE_NOTICE)
              : l10n_util::GetStringFUTF16(
@@ -193,9 +203,23 @@ SaveUpdateAddressProfileMessageController::GetRecordTypeNotice() {
 
 std::u16string
 SaveUpdateAddressProfileMessageController::GetPrimaryButtonText() {
+  if (original_profile_ && !original_profile_->IsHomeAndWorkProfile()) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
+  }
   return l10n_util::GetStringUTF16(
-      original_profile_ ? IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL
-                        : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
+      IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL);
+}
+
+bool SaveUpdateAddressProfileMessageController::IsMigrationToAccount() const {
+  switch (prompt_mode_) {
+    case SaveUpdateAddressProfilePromptMode::kMigrateProfile:
+      return true;
+    case SaveUpdateAddressProfilePromptMode::kCreateNewProfile:
+    case SaveUpdateAddressProfilePromptMode::kSaveNewProfile:
+    case SaveUpdateAddressProfilePromptMode::kUpdateProfile:
+      return false;
+  }
 }
 
 }  // namespace autofill

@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "overview_controller.cc": [
+    "+chromeos/components/kiosk/kiosk_utils.h",
+  ],
+}

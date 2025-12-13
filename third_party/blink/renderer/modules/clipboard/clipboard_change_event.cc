@@ -8,19 +8,26 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 
 namespace blink {
-ClipboardChangeEvent::ClipboardChangeEvent(const Vector<String>& types)
+ClipboardChangeEvent::ClipboardChangeEvent(const Vector<String>& types,
+                                           const BigInt& change_id)
     : Event(event_type_names::kClipboardchange, Bubbles::kNo, Cancelable::kNo),
-      types_(types) {}
+      types_(types),
+      change_id_(change_id) {}
 
 ClipboardChangeEvent::ClipboardChangeEvent(
     const ClipboardChangeEventInit* initializer)
     : Event(event_type_names::kClipboardchange, initializer),
-      types_(initializer->types()) {}
+      types_(initializer->types()),
+      change_id_(initializer->changeId()) {}
 
 ClipboardChangeEvent::~ClipboardChangeEvent() = default;
 
 Vector<String> ClipboardChangeEvent::types() const {
   return types_;
+}
+
+blink::BigInt ClipboardChangeEvent::changeId() const {
+  return change_id_;
 }
 
 void ClipboardChangeEvent::Trace(Visitor* visitor) const {

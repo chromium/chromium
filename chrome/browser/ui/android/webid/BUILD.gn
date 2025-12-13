@@ -31,6 +31,7 @@ android_library("public_java") {
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/IdentityCredentialTokenError.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/IdentityProviderData.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/IdentityProviderMetadata.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/data/RelyingPartyData.java",
   ]
 }
 
@@ -41,6 +42,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/IdentityCredentialTokenError.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/IdentityProviderData.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/data/IdentityProviderMetadata.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/data/RelyingPartyData.java",
   ]
   public_deps = [ "//chrome/browser/ui/android/webid/internal:jni" ]
 }

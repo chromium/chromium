@@ -126,8 +126,8 @@ TEST_F(ShadowControllerTest, ShadowBounds) {
 // the window bounds.
 TEST_F(ShadowControllerTest, ShadowBoundsDetached) {
   const gfx::Rect kInitialBounds(20, 30, 400, 300);
-  std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithBounds(kInitialBounds, root_window()));
+  std::unique_ptr<aura::Window> window = aura::test::CreateTestWindow(
+      {.parent = root_window(), .bounds = kInitialBounds});
   window->Show();
   const ui::Shadow* shadow = ShadowController::GetShadowForWindow(window.get());
   ASSERT_TRUE(shadow);
@@ -317,6 +317,10 @@ class TestShadowControllerDelegate : public wm::ShadowControllerDelegate {
 
   ~TestShadowControllerDelegate() override = default;
 
+  bool ShouldObserveWindow(const aura::Window* window) override {
+    return window->GetType() != aura::client::WINDOW_TYPE_CONTROL;
+  }
+
   bool ShouldShowShadowForWindow(const aura::Window* window) override {
     return window->parent();
   }
@@ -338,18 +342,33 @@ class TestShadowControllerDelegate : public wm::ShadowControllerDelegate {
 
 TEST_F(ShadowControllerTest, UpdateShadowWhenAddedToParent) {
   InstallShadowController(std::make_unique<TestShadowControllerDelegate>());
-  std::unique_ptr<aura::Window> window1(new aura::Window(nullptr));
-  window1->SetType(aura::client::WINDOW_TYPE_NORMAL);
-  window1->Init(ui::LAYER_TEXTURED);
-  window1->SetBounds(gfx::Rect(10, 20, 300, 400));
-  window1->Show();
-  EXPECT_FALSE(ShadowController::GetShadowForWindow(window1.get()));
+  {
+    std::unique_ptr<aura::Window> window(new aura::Window(nullptr));
+    window->SetType(aura::client::WINDOW_TYPE_NORMAL);
+    window->Init(ui::LAYER_TEXTURED);
+    window->SetBounds(gfx::Rect(10, 20, 300, 400));
+    window->Show();
+    EXPECT_FALSE(ShadowController::GetShadowForWindow(window.get()));
 
-  ParentWindow(window1.get());
+    ParentWindow(window.get());
 
-  ASSERT_TRUE(ShadowController::GetShadowForWindow(window1.get()));
-  EXPECT_TRUE(
-      ShadowController::GetShadowForWindow(window1.get())->layer()->visible());
+    ASSERT_TRUE(ShadowController::GetShadowForWindow(window.get()));
+    EXPECT_TRUE(
+        ShadowController::GetShadowForWindow(window.get())->layer()->visible());
+  }
+  {
+    // The creation of shadow for TYPE_CONTROL is blocked by the delegate.
+    std::unique_ptr<aura::Window> embedded(new aura::Window(nullptr));
+    embedded->SetType(aura::client::WINDOW_TYPE_CONTROL);
+    embedded->Init(ui::LAYER_TEXTURED);
+    embedded->SetBounds(gfx::Rect(10, 20, 300, 400));
+    embedded->Show();
+    EXPECT_FALSE(ShadowController::GetShadowForWindow(embedded.get()));
+
+    ParentWindow(embedded.get());
+
+    ASSERT_FALSE(ShadowController::GetShadowForWindow(embedded.get()));
+  }
 }
 
 }  // namespace wm

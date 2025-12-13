@@ -180,7 +180,7 @@ void MockSurface::SendFrameCallback() {
       frame_callback_,
       0 /* trequest-specific data for the callback. not used */);
   wl_client_flush(wl_resource_get_client(frame_callback_));
-  wl_resource_destroy(frame_callback_);
+  wl_resource_destroy(frame_callback_.ExtractAsDangling());
   frame_callback_ = nullptr;
 }
 

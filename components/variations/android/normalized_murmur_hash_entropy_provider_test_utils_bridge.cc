@@ -8,14 +8,14 @@
 #include "components/variations/variations_murmur_hash.h"
 
 // static
-jint JNI_NormalizedMurmurHashEntropyProviderTestUtilsBridge_MurmurHash16(
+static jint JNI_NormalizedMurmurHashEntropyProviderTestUtilsBridge_MurmurHash16(
     JNIEnv* env,
     jint seed,
     jint data) {
   return variations::internal::VariationsMurmurHash::Hash16(seed, data);
 }
 
-jdouble
+static jdouble
 JNI_NormalizedMurmurHashEntropyProviderTestUtilsBridge_GetEntropyForTrial(
     JNIEnv* env,
     jint randomization_seed,
@@ -27,3 +27,5 @@ JNI_NormalizedMurmurHashEntropyProviderTestUtilsBridge_GetEntropyForTrial(
       entropy_value);
   return entropy_provider.GetEntropyForTrial("", randomization_seed);
 }
+
+DEFINE_JNI(NormalizedMurmurHashEntropyProviderTestUtilsBridge)

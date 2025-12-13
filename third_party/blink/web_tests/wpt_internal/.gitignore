@@ -1,0 +1,17 @@
+# This file also tells `wpt lint` files to skip. Borrow entries from
+# `external/wpt/.gitignore` as needed.
+*#
+*.py[co]
+*.sw[po]
+*~
+/MANIFEST.json
+\#*
+_certs
+.virtualenv
+config.json
+node_modules
+scratch
+.vscode/
+.DS_Store
+*.rej
+_venv

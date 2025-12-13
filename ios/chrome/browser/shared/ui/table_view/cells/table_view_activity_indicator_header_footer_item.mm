@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_activity_indicator_header_footer_item.h"
 
-#import <MaterialComponents/MaterialActivityIndicator.h>
-
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -73,9 +71,9 @@
     verticalStack.axis = UILayoutConstraintAxisVertical;
 
     // Activity Indicator.
-    MDCActivityIndicator* activityIndicator =
-        [[MDCActivityIndicator alloc] init];
-    activityIndicator.cycleColors = @[ [UIColor colorNamed:kBlueColor] ];
+    UIActivityIndicatorView* activityIndicator =
+        [[UIActivityIndicatorView alloc] init];
+    activityIndicator.color = [UIColor colorNamed:kBlueColor];
     [activityIndicator startAnimating];
     [activityIndicator
         setContentHuggingPriority:UILayoutPriorityDefaultHigh

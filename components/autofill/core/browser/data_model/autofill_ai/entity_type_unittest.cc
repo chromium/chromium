@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -17,8 +18,6 @@ using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAre;
 
 TEST(AutofillAttributeTypeTest, Relationships) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillAiNoTagTypes};
   AttributeType a = AttributeType(AttributeTypeName::kPassportName);
   EXPECT_EQ(a.entity_type(), EntityType(EntityTypeName::kPassport));
   EXPECT_THAT(a.field_subtypes(),
@@ -90,16 +89,32 @@ TEST(AutofillEntityTypeTest, DisambiguationOrder) {
   EXPECT_FALSE(lt(kPassportNumber, kPassportIssueDate));
 }
 
-TEST(AutofillEntityTypeTest, Syncable) {
-  using enum EntityTypeName;
-  EXPECT_FALSE(EntityType(kPassport).syncable());
-}
-
 TEST(AutofillEntityTypeTest, Disabled) {
   using enum EntityTypeName;
   EXPECT_TRUE(EntityType(kPassport).enabled());
   EXPECT_TRUE(EntityType(kDriversLicense).enabled());
   EXPECT_TRUE(EntityType(kVehicle).enabled());
+}
+
+// Tests that specifying an "excluded geo-ip" disabled the entity in countries
+// with that geo ip.
+TEST(AutofillEntityTypeTest, Enabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillAiNationalIdCard);
+  EntityType e = EntityType(EntityTypeName::kNationalIdCard);
+  EXPECT_FALSE(e.enabled());
+  EXPECT_FALSE(e.enabled(GeoIpCountryCode("US")));
+}
+
+// Tests that specifying an "excluded geo-ip" disabled the entity in countries
+// with that geo ip.
+TEST(AutofillEntityTypeTest, EnabledWithCountryCode) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiNationalIdCard};
+  EntityType e = EntityType(EntityTypeName::kNationalIdCard);
+  EXPECT_TRUE(e.enabled(GeoIpCountryCode("US")));
+  EXPECT_TRUE(e.enabled(GeoIpCountryCode("DE")));
+  EXPECT_FALSE(e.enabled(GeoIpCountryCode("IN")));
 }
 
 TEST(AutofillEntityTypeTest, EntityGetNameForI18n) {
@@ -132,6 +147,12 @@ TEST(AutofillEntityTypeTest, DataType) {
   EXPECT_EQ(c.data_type(), AttributeType::DataType::kDate);
   EXPECT_EQ(d.data_type(), AttributeType::DataType::kState);
   EXPECT_EQ(e.data_type(), AttributeType::DataType::kString);
+}
+
+TEST(AutofillEntityTypeTest, ReadOnly) {
+  using enum EntityTypeName;
+  EXPECT_FALSE(EntityType(kPassport).read_only());
+  EXPECT_TRUE(EntityType(kFlightReservation).read_only());
 }
 
 }  // namespace

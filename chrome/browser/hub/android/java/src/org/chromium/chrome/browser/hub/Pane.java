@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.hub;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -24,8 +26,7 @@ public interface Pane extends BackPressHandler {
     ViewGroup getRootView();
 
     /** Returns the {@link MenuOrKeyboardActionHandler} for the Pane. */
-    @Nullable
-    MenuOrKeyboardActionHandler getMenuOrKeyboardActionHandler();
+    @Nullable MenuOrKeyboardActionHandler getMenuOrKeyboardActionHandler();
 
     /** Returns whether the menu button should be visible for the Pane. */
     boolean getMenuButtonVisible();
@@ -57,13 +58,13 @@ public interface Pane extends BackPressHandler {
     ObservableSupplier<FullButtonData> getActionButtonDataSupplier();
 
     /** Returns the visuals for creating a button to navigate to this pane. */
-    ObservableSupplier<@Nullable DisplayButtonData> getReferenceButtonDataSupplier();
+    NullableObservableSupplier<DisplayButtonData> getReferenceButtonDataSupplier();
 
     /** Returns whether to show the hairline for the pane. */
-    ObservableSupplier<Boolean> getHairlineVisibilitySupplier();
+    NonNullObservableSupplier<Boolean> getHairlineVisibilitySupplier();
 
     /** Returns a supplier for a view to overlay the hub with. */
-    ObservableSupplier<@Nullable View> getHubOverlayViewSupplier();
+    NullableObservableSupplier<View> getHubOverlayViewSupplier();
 
     /** Returns an optional listener for animation progress. */
     @Nullable HubLayoutAnimationListener getHubLayoutAnimationListener();
@@ -87,5 +88,8 @@ public interface Pane extends BackPressHandler {
             HubContainerView hubContainerView);
 
     /** Returns whether to enable the state of hub search. */
-    ObservableSupplier<Boolean> getHubSearchEnabledStateSupplier();
+    NonNullObservableSupplier<Boolean> getHubSearchEnabledStateSupplier();
+
+    /** Returns whether the hub search box should be visible. */
+    NonNullObservableSupplier<Boolean> getHubSearchBoxVisibilitySupplier();
 }

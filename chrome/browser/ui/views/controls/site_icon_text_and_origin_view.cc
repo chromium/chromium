@@ -26,6 +26,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
@@ -131,7 +132,8 @@ void SiteIconTextAndOriginView::ContentsChanged(
   }
 
   auto* const modal_dialog_host =
-      modal_dialog_manager->delegate()->GetWebContentsModalDialogHost();
+      modal_dialog_manager->delegate()->GetWebContentsModalDialogHost(
+          web_contents_);
   if (!modal_dialog_host) {
     return;
   }

@@ -3,32 +3,24 @@
 // found in the LICENSE file.
 
 #include "content/browser/preloading/prefetch/prefetch_features.h"
-#include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/common/content_client.h"
+
 #include "base/feature_list.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
 
 namespace features {
 
-BASE_FEATURE(kPrefetchTesting,
-             "PrefetchTesting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrefetchTesting, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // 4MiB, 2**20 * 4.
 const base::FeatureParam<int> kPrefetchReusableBodySizeLimit{
     &kPrefetchTesting, "kPrefetchReusableBodySizeLimit", 4194304};
 
-BASE_FEATURE(kPrefetchUseContentRefactor,
-             "PrefetchUseContentRefactor",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPrefetchUseContentRefactor, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrefetchNIKScope,
-             "PrefetchNIKScope",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrefetchNIKScope, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrefetchClientHints,
-             "PrefetchClientHints",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPrefetchClientHints, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<PrefetchClientHintsCrossSiteBehavior>::Option
     kPrefetchClientHintsCrossSiteBehaviorOptions[] = {
@@ -43,7 +35,6 @@ const base::FeatureParam<PrefetchClientHintsCrossSiteBehavior>
         &kPrefetchClientHintsCrossSiteBehaviorOptions};
 
 BASE_FEATURE(kPrefetchStateContaminationMitigation,
-             "PrefetchStateContaminationMitigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool>
@@ -51,20 +42,15 @@ const base::FeatureParam<bool>
         &kPrefetchStateContaminationMitigation, "swaps_bcg", true};
 
 BASE_FEATURE(kPrefetchServiceWorkerNoFetchHandlerFix,
-             "PrefetchServiceWorkerNoFetchHandlerFix",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrefetchNetworkPriorityForEmbedders,
-             "PrefetchNetworkPriorityForEmbedders",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrefetchBumpNetworkPriorityAfterBeingServed,
-             "PrefetchBumpNetworkPriorityAfterBeingServed",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrefetchServiceWorker,
-             "PrefetchServiceWorker",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrefetchServiceWorker, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsPrefetchServiceWorkerEnabled(content::BrowserContext* browser_context) {
   return base::FeatureList::IsEnabled(kPrefetchServiceWorker) &&
@@ -72,19 +58,11 @@ bool IsPrefetchServiceWorkerEnabled(content::BrowserContext* browser_context) {
              browser_context);
 }
 
-BASE_FEATURE(kPrefetchBrowsingDataRemoval,
-             "PrefetchBrowsingDataRemoval",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPrefetchScheduler,
-             "PrefetchScheduler",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrefetchScheduler, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kPrefetchSchedulerProgressSyncBestEffort{
     &kPrefetchScheduler, "kPrefetchSchedulerProgressSyncBestEffort", true};
 
-BASE_FEATURE(kPrefetchSchedulerTesting,
-             "PrefetchSchedulerTesting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrefetchSchedulerTesting, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<size_t>
     kPrefetchSchedulerTestingActiveSetSizeLimitForBase{
         &kPrefetchSchedulerTesting,
@@ -94,19 +72,20 @@ const base::FeatureParam<size_t>
         &kPrefetchSchedulerTesting,
         "kPrefetchSchedulerTestingActiveSetSizeLimitForBurst", 1};
 
-BASE_FEATURE(kPrefetchQueueingPartialFixWithoutScheduler,
-             "PrefetchQueueingPartialFixWithoutScheduler",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPrefetchCanaryCheckerParams,
-             "PrefetchCanaryCheckerParams",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPrefetchCanaryCheckerParams, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrefetchMultipleActiveSetSizeLimitForBase,
-             "PrefetchMultipleActiveSetSizeLimitForBase",
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<size_t>
     kPrefetchMultipleActiveSetSizeLimitForBaseValue{
         &kPrefetchMultipleActiveSetSizeLimitForBase,
         "prefetch_multiple_active_set_size_limit_for_base_value", 2};
+
+BASE_FEATURE(kPreloadServingMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPrefetchGracefulNotification, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPrefetchAsyncCancelOnCookiesChange,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

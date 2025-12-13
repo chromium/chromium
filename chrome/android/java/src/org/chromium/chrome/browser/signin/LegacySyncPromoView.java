@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.signin;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -15,6 +17,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
@@ -35,6 +40,7 @@ import org.chromium.ui.base.DeviceFormFactor;
  * {@link LegacySyncPromoView#setInitializeNotRequired()} must be called before attaching this View
  * to a ViewGroup.
  */
+@NullMarked
 public class LegacySyncPromoView extends FrameLayout
         implements SyncService.SyncStateChangedListener {
     private SyncService mSyncService;
@@ -73,7 +79,6 @@ public class LegacySyncPromoView extends FrameLayout
     /** Constructor for inflating from xml. */
     public LegacySyncPromoView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
     }
 
     @Override
@@ -121,11 +126,11 @@ public class LegacySyncPromoView extends FrameLayout
      * @param profile The {@link Profile} associated with the sync promotion.
      * @param accessPoint Where this UI component is used.
      */
+    @Initializer
     public void init(Profile profile, @SigninAccessPoint int accessPoint) {
-        mSyncService = SyncServiceFactory.getForProfile(profile);
         // This promo is about enabling sync, so no sense in showing it if
         // syncing isn't possible.
-        assert mSyncService != null;
+        mSyncService = assertNonNull(SyncServiceFactory.getForProfile(profile));
 
         mAccessPoint = accessPoint;
         mInitialized = true;
@@ -175,7 +180,7 @@ public class LegacySyncPromoView extends FrameLayout
      */
     private static class ViewState {
         private int mDescriptionText;
-        private ButtonState mPositiveButtonState;
+        private @Nullable ButtonState mPositiveButtonState;
         private int mEmptyStateTitleText;
         private int mEmptyStateDescriptionText;
         private int mEmptyStateImageResource;
@@ -215,6 +220,7 @@ public class LegacySyncPromoView extends FrameLayout
                 View emptyStateView,
                 MaterialCardViewNoShadow oldEmptyCardView) {
             description.setText(mDescriptionText);
+            assert mPositiveButtonState != null;
             mPositiveButtonState.apply(positiveButton);
             oldEmptyCardView.setVisibility(View.VISIBLE);
             if (emptyStateView != null) {

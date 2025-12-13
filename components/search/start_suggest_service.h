@@ -6,6 +6,7 @@
 #define COMPONENTS_SEARCH_START_SUGGEST_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/search_engines/template_url.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
 
 class AutocompleteSchemeClassifier;
@@ -83,9 +83,7 @@ class StartSuggestService : public KeyedService {
   // Handles request response from the server.
   void SuggestResponseLoaded(network::SimpleURLLoader* loader,
                              SuggestResultCallback callback,
-                             std::unique_ptr<std::string> response);
-  void SuggestionsParsed(SuggestResultCallback callback,
-                         data_decoder::DataDecoder::ValueOrError result);
+                             std::optional<std::string> response);
 
   // Cannot be null. Must outlive `this`.
   raw_ptr<TemplateURLService> template_url_service_;

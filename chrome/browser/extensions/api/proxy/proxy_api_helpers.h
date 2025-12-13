@@ -8,13 +8,15 @@
 #define CHROME_BROWSER_EXTENSIONS_API_PROXY_PROXY_API_HELPERS_H_
 
 #include <array>
-#include <memory>
 #include <optional>
 #include <string>
 
 #include "base/values.h"
 #include "components/proxy_config/proxy_prefs.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/proxy_resolution/proxy_config.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class ProxyConfigDictionary;
 

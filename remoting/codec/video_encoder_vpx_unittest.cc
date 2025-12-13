@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/codec/video_encoder_vpx.h"
 
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "remoting/codec/codec_test.h"
 #include "remoting/proto/video.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,12 +27,13 @@ const uint32_t kGreenColor = 0x00ff00;
 // in the updated_region().
 static std::unique_ptr<webrtc::DesktopFrame> CreateTestFrame(
     const webrtc::DesktopSize& frame_size) {
-  std::unique_ptr<webrtc::DesktopFrame> frame(
-      new webrtc::BasicDesktopFrame(frame_size));
+  auto frame = std::make_unique<webrtc::BasicDesktopFrame>(frame_size,
+                                                           webrtc::FOURCC_ARGB);
   for (int x = 0; x < frame_size.width(); ++x) {
     for (int y = 0; y < frame_size.height(); ++y) {
-      uint8_t* pixel_u8 = frame->data() + (y * frame->stride()) +
-                          (x * webrtc::DesktopFrame::kBytesPerPixel);
+      uint8_t* pixel_u8 =
+          UNSAFE_TODO(frame->data() + (y * frame->stride()) +
+                      (x * webrtc::DesktopFrame::kBytesPerPixel));
       *(reinterpret_cast<uint32_t*>(pixel_u8)) =
           ((x + y) & 1) ? kGreenColor : kBlueColor;
     }

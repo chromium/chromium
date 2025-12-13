@@ -14,8 +14,8 @@ Design doc: https://docs.google.com/document/d/1MtdbUcWBDZyvmV0FOdsTWw_Jv16YtE6K
 import logging
 from typing import Mapping
 
-from blinkpy.w3c.common import WPT_REVISION_FOOTER, WPT_GH_URL
-from blinkpy.w3c.gerrit import GerritError
+from blinkpy.w3c.common import CHANGE_ID_FOOTER, WPT_REVISION_FOOTER, WPT_GH_URL
+from blinkpy.w3c.gerrit import GerritCL, GerritError
 from blinkpy.w3c.wpt_github import GitHubError
 
 _log = logging.getLogger(__name__)
@@ -26,6 +26,11 @@ RELEVANT_TASKCLUSTER_CHECKS = [
 
 
 class ExportNotifier(object):
+    OWNERS_TEAMS = {
+        'interop',
+        'wpt-core-team',
+    }
+
     def __init__(self, host, wpt_github, gerrit, dry_run=True):
         self.host = host
         self.wpt_github = wpt_github
@@ -67,7 +72,7 @@ class ExportNotifier(object):
             gerrit_id = self.wpt_github.extract_metadata(
                 'Change-Id: ', pr.body)
             if not gerrit_id:
-                _log.error('Can not retrieve Change-Id for %s.', pr.number)
+                _log.warning('Can not retrieve Change-Id for %s.', pr.number)
                 continue
 
             gerrit_sha = self.wpt_github.extract_metadata(
@@ -77,6 +82,49 @@ class ExportNotifier(object):
 
         self.process_failing_prs(prs_by_change_id)
         return prs_by_change_id
+
+    def notify_gerrit_of_blocked_pr(self, pull_request):
+        change_id = self.wpt_github.extract_metadata(CHANGE_ID_FOOTER,
+                                                     pull_request.body)
+        if not change_id:
+            _log.warning('Could not find Change-Id for PR #%d',
+                         pull_request.number)
+            return
+
+        # Detect if the PR is pending owner approval. This is based on whether a
+        # review is requested from an owners team.
+        requested_team_slugs = {
+            team.get('slug')
+            for team in pull_request.requested_teams
+        }
+        approving_teams = self.OWNERS_TEAMS.intersection(requested_team_slugs)
+
+        if not approving_teams:
+            _log.info('PR #%d is blocked, but not pending owner approval.',
+                      pull_request.number)
+            return
+
+        message = ('The exported PR for this CL requires approval from the ' +
+                   ', '.join(sorted(approving_teams)) +
+                   ' team(s) on GitHub. Please see the PR for details: ' +
+                   f'{self.wpt_github.url}pull/{pull_request.number}')
+
+        try:
+            cl = self.gerrit.query_cl_comments_and_revisions(change_id)
+            if any(message in m['message'] for m in cl.messages):
+                _log.info(
+                    'A notification for pending approval already exists on CL %s.',
+                    change_id)
+                return
+        except (GerritError, KeyError):
+            _log.exception('Could not retrieve comments for CL %s.',
+                           change_id)
+            return
+
+        _log.info('Posting notification for pending approval to CL %s.',
+                  change_id)
+        if not self.dry_run:
+            cl.post_comment(message)
 
     def get_check_runs(self, number):
         """Retrieves check runs through a PR number.

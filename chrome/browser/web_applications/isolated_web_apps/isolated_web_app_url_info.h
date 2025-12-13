@@ -11,6 +11,7 @@
 #include "base/types/expected.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -71,19 +72,13 @@ class IsolatedWebAppUrlInfo {
       const std::string& partition_name,
       bool in_memory) const;
 
-  bool operator==(const IsolatedWebAppUrlInfo& other) const;
+  bool operator<=>(const IsolatedWebAppUrlInfo& other) const = default;
 
  private:
-  explicit IsolatedWebAppUrlInfo(
-      const web_package::SignedWebBundleId& web_bundle_id);
+  explicit IsolatedWebAppUrlInfo(const IwaOrigin& iwa_origin);
 
-  // Returns the storage partition domain, which is the SHA256 hash of the App
-  // ID in base64 encoding.
-  std::string partition_domain() const;
-
-  url::Origin origin_;
+  IwaOrigin iwa_origin_;
   webapps::AppId app_id_;
-  web_package::SignedWebBundleId web_bundle_id_;
 };
 
 }  // namespace web_app

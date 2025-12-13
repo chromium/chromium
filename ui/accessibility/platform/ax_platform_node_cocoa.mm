@@ -56,7 +56,7 @@ using AXRange = ui::AXPlatformNodeDelegate::AXRange;
 namespace {
 
 // Same length as web content/WebKit.
-int kLiveRegionDebounceMillis = 20;
+constexpr int kLiveRegionDebounceMillis = 20;
 
 using RoleMap = std::map<ax::mojom::Role, NSString*>;
 using EventMap = std::map<ax::mojom::Event, NSString*>;
@@ -910,6 +910,8 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       return NSAccessibilityMenuItemRole;
     case ax::mojom::Role::kMenuItemRadio:
       return NSAccessibilityMenuItemRole;
+    case ax::mojom::Role::kMenuItemSeparator:
+      return NSAccessibilityMenuItemRole;
     case ax::mojom::Role::kMenuListOption:
       return NSAccessibilityMenuItemRole;
     case ax::mojom::Role::kMenuListPopup:
@@ -927,7 +929,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     case ax::mojom::Role::kRadioGroup:
       return NSAccessibilityRadioGroupRole;
     case ax::mojom::Role::kRootWebArea:
-      return CrNSAccessibilityWebAreaRole;
+      return NSAccessibilityWebAreaRole;
     case ax::mojom::Role::kRow:
       return NSAccessibilityRowRole;
     case ax::mojom::Role::kRowHeader:
@@ -1125,33 +1127,87 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     ui::AXNode* anchor = leafTextRange.focus()->GetAnchor();
     DCHECK(anchor) << "A non-null position should have a non-null anchor node.";
 
+    // Document markers are stored on the static text parent of an inline text
+    // box. If this node is an inline text box, create equivalent positions in
+    // its parent static text node so that the markers can be retrieved.
+    AXRange markersTextRange(leafTextRange.anchor()->Clone(),
+                             leafTextRange.focus()->Clone());
+    ui::AXNode* markers_anchor = leafTextRange.anchor()->GetAnchor();
+    if (leafTextRange.focus()->GetAnchor()->GetRole() ==
+        ax::mojom::Role::kInlineTextBox) {
+      markersTextRange = AXRange(leafTextRange.anchor()->CreateParentPosition(),
+                                 leafTextRange.focus()->CreateParentPosition());
+      markers_anchor = markersTextRange.anchor()->GetAnchor();
+
+      DCHECK(markersTextRange.anchor()->GetAnchor() ==
+             markersTextRange.focus()->GetAnchor());
+      DCHECK(markers_anchor) << "Markers anchor should not be null.";
+      DCHECK(markers_anchor->GetRole() == ax::mojom::Role::kStaticText);
+    }
+
     // Add misspelling information
     const std::vector<int32_t>& markerTypes =
-        anchor->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
-    const std::vector<int>& markerStarts =
-        anchor->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts);
-    const std::vector<int>& markerEnds =
-        anchor->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds);
+        markers_anchor->GetIntListAttribute(
+            ax::mojom::IntListAttribute::kMarkerTypes);
+    const std::vector<int>& markerStarts = markers_anchor->GetIntListAttribute(
+        ax::mojom::IntListAttribute::kMarkerStarts);
+    const std::vector<int>& markerEnds = markers_anchor->GetIntListAttribute(
+        ax::mojom::IntListAttribute::kMarkerEnds);
+    const std::vector<int32_t>& highlightTypes =
+        markers_anchor->GetIntListAttribute(
+            ax::mojom::IntListAttribute::kHighlightTypes);
 
     DCHECK_EQ(markerTypes.size(), markerStarts.size());
     DCHECK_EQ(markerTypes.size(), markerEnds.size());
+    DCHECK_EQ(markerTypes.size(), highlightTypes.size());
 
     for (size_t i = 0; i < markerTypes.size(); ++i) {
-      if (!(markerTypes[i] &
-            static_cast<int32_t>(ax::mojom::MarkerType::kSpelling))) {
+      const bool is_spelling_marker =
+          (markerTypes[i] &
+           static_cast<int32_t>(ax::mojom::MarkerType::kSpelling)) ||
+          ((markerTypes[i] &
+            static_cast<int32_t>(ax::mojom::MarkerType::kHighlight)) &&
+           (highlightTypes[i] ==
+            static_cast<int32_t>(ax::mojom::HighlightType::kSpellingError)));
+
+      const bool is_custom_highlight_marker =
+          (markerTypes[i] &
+           static_cast<int32_t>(ax::mojom::MarkerType::kHighlight)) &&
+          (highlightTypes[i] ==
+           static_cast<int32_t>(ax::mojom::HighlightType::kHighlight));
+
+      NSString* attribute;
+      if (is_spelling_marker) {
+        attribute = NSAccessibilityMarkedMisspelledTextAttribute;
+      } else if (is_custom_highlight_marker) {
+        attribute = @"AXHighlight";
+      } else {
         continue;
       }
 
-      int misspellingStart = anchorStartOffset + markerStarts[i];
-      int misspellingEnd = anchorStartOffset + markerEnds[i];
-      int misspellingLength = misspellingEnd - misspellingStart;
-      DCHECK_LE(static_cast<unsigned long>(misspellingEnd),
-                [attributedString length]);
-      DCHECK_GT(misspellingLength, 0);
-      [attributedString
-          addAttribute:NSAccessibilityMarkedMisspelledTextAttribute
-                 value:@YES
-                 range:NSMakeRange(misspellingStart, misspellingLength)];
+      // Calculate the intersection of the marker range and the current text
+      // range. These offsets are relative to the static text node, not the leaf
+      // inline text.
+      int markerStartOffset =
+          std::max(markerStarts[i], markersTextRange.anchor()->text_offset());
+      int markerEndOffset =
+          std::min(markerEnds[i], markersTextRange.focus()->text_offset());
+      if (markerEndOffset <= markerStartOffset) {
+        continue;
+      }
+
+      // Convert the intersection so it's relative to the text range of the
+      // attributed string we're building.
+      int rangeStart = markerStartOffset -
+                       markersTextRange.anchor()->text_offset() +
+                       anchorStartOffset;
+      int rangeEnd = markerEndOffset -
+                     markersTextRange.anchor()->text_offset() +
+                     anchorStartOffset;
+      int rangeLength = rangeEnd - rangeStart;
+      [attributedString addAttribute:attribute
+                               value:@YES
+                               range:NSMakeRange(rangeStart, rangeLength)];
     }
 
     CollectAncestorRoles(*anchor, ancestor_roles);
@@ -1489,7 +1545,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
   // These attributes are required on all accessibility objects.
   NSArray* const kAllRoleAttributes = @[
-    CrNSAccessibilityBlockQuoteLevelAttribute, NSAccessibilityChildrenAttribute,
+    NSAccessibilityBlockQuoteLevelAttribute, NSAccessibilityChildrenAttribute,
     NSAccessibilityDOMClassList, NSAccessibilityDOMIdentifierAttribute,
     NSAccessibilityDescriptionAttribute, NSAccessibilityElementBusyAttribute,
     NSAccessibilityParentAttribute, NSAccessibilityPositionAttribute,
@@ -1502,9 +1558,8 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     // Attributes which are not required, but are general to all roles.
     NSAccessibilityRoleDescriptionAttribute, NSAccessibilityEnabledAttribute,
     NSAccessibilityFocusedAttribute, NSAccessibilityHelpAttribute,
-    NSAccessibilityTopLevelUIElementAttribute,
-    CrNSAccessibilityVisitedAttribute, NSAccessibilityWindowAttribute,
-    NSAccessibilityChromeAXNodeIdAttribute
+    NSAccessibilityTopLevelUIElementAttribute, NSAccessibilityVisitedAttribute,
+    NSAccessibilityWindowAttribute, NSAccessibilityChromeAXNodeIdAttribute
   ];
   // Attributes required for user-editable controls.
   NSArray* const kValueAttributes = @[ NSAccessibilityValueAttribute ];
@@ -1608,7 +1663,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   if (ui::IsSetLike(role))
     [axAttributes addObject:@"AXARIASetSize"];
 
-  if ([[self accessibilityRole] isEqualToString:CrNSAccessibilityWebAreaRole]) {
+  if ([[self accessibilityRole] isEqualToString:NSAccessibilityWebAreaRole]) {
     [axAttributes addObjectsFromArray:@[
       NSAccessibilityLoadedAttribute, NSAccessibilityLoadingProgressAttribute
     ]];
@@ -1726,12 +1781,12 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
                "role=", ui::ToString([self internalRole]));
 
   if (![self instanceActive]) {
-    DUMP_WILL_BE_NOTREACHED() << "Stale object in tree, no AXPlatformNode.";
+    LOG(ERROR) << "Stale object in tree, no AXPlatformNode.";
     return @[];
   }
 
   if (!_node->GetDelegate()) {
-    DUMP_WILL_BE_NOTREACHED() << "Stale object in tree, no delegate.";
+    LOG(ERROR) << "Stale object in tree, no delegate.";
     return @[];
   }
 
@@ -2285,8 +2340,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 }
 
 - (NSNumber*)AXEnabled {
-  return
-      @(_node->GetData().GetRestriction() != ax::mojom::Restriction::kDisabled);
+  return @([self isAccessibilityEnabled]);
 }
 
 - (BOOL)isAccessibilityExpanded {
@@ -2641,6 +2695,12 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   if (!_node)
     return NO;
 
+  // Native menus expose separators as disabled menu items. Chromium mirrors
+  // this behavior.
+  if (_node->GetRole() == ax::mojom::Role::kMenuItemSeparator) {
+    return NO;
+  }
+
   return _node->GetData().GetRestriction() != ax::mojom::Restriction::kDisabled;
 }
 
@@ -2926,7 +2986,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     case ax::mojom::Role::kHeader:  // Default: IDS_AX_ROLE_HEADER
       return l10n_util::GetNSString(IDS_AX_ROLE_BANNER);
     case ax::mojom::Role::kRootWebArea: {
-      if ([role isEqualToString:CrNSAccessibilityWebAreaRole]) {
+      if ([role isEqualToString:NSAccessibilityWebAreaRole]) {
         return l10n_util::GetNSString(IDS_AX_ROLE_WEB_AREA);
       }
       // Preserve platform default of "group" in the case of the child
@@ -3520,7 +3580,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     return nil;
 
   std::string url;
-  if ([[self accessibilityRole] isEqualToString:CrNSAccessibilityWebAreaRole]) {
+  if ([[self accessibilityRole] isEqualToString:NSAccessibilityWebAreaRole]) {
     url = _node->GetDelegate()->GetTreeData().url;
   } else {
     url = _node->GetStringAttribute(ax::mojom::StringAttribute::kUrl);

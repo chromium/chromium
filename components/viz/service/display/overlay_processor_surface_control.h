@@ -27,14 +27,24 @@ class VIZ_SERVICE_EXPORT OverlayProcessorSurfaceControl
   // Override OverlayProcessorUsingStrategy.
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override;
   void SetViewportSize(const gfx::Size& size) override;
-  void AdjustOutputSurfaceOverlay(
-      std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
   void CheckOverlaySupportImpl(
-      const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
+      const std::optional<OverlayCandidate>& primary_plane,
       OverlayCandidateList* candidates) override;
   gfx::Rect GetOverlayDamageRectForOutputSurface(
       const OverlayCandidate& overlay) const override;
   bool SupportsFlipRotateTransform() const override;
+
+  void AdjustPrimaryPlaneForDisplayTransformForTesting(
+      OverlayCandidate& primary_plane) const {
+    AdjustPrimaryPlaneForDisplayTransform(primary_plane);
+  }
+
+ protected:
+  void InsertPrimaryPlane(OverlayCandidate primary_plane,
+                          OverlayCandidateList& candidates) override;
+
+  virtual void AdjustPrimaryPlaneForDisplayTransform(
+      OverlayCandidate& primary_plane) const;
 
  private:
   gfx::OverlayTransform display_transform_ = gfx::OVERLAY_TRANSFORM_NONE;

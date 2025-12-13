@@ -132,7 +132,7 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
       const gfx::Rect& content_rect,
       mojo::PendingRemote<mojom::FrameSinkVideoConsumerFrameCallbacks>
           callbacks) final;
-  void OnNewSubCaptureTargetVersion(uint32_t sub_capture_target_version) final;
+  void OnNewCaptureVersion(const media::CaptureVersion& capture_version) final;
   void OnFrameWithEmptyRegionCapture() final;
   void OnStopped() final;
   void OnLog(const std::string& message) final;
@@ -162,7 +162,7 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
   std::optional<VideoCaptureTarget> target_;
   std::optional<bool> animated_content_sampler_enabled_;
   std::optional<float> majority_damaged_pixel_min_ratio_;
-  uint32_t sub_capture_target_version_ = 0;
+  uint32_t sub_capture_version_ = 0;
   // Overlays are owned by the callers of CreateOverlay().
   std::vector<raw_ptr<Overlay, VectorExperimental>> overlays_;
   bool is_started_ = false;

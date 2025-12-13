@@ -113,12 +113,14 @@ std::string DebugString(const NotificationEntry* entry) {
            << " : " << static_cast<int>(mapping.second);
   }
 
-  if (base::Contains(entry->icons_uuid, IconType::kSmallIcon))
+  if (base::Contains(entry->icons_uuid, IconType::kSmallIcon)) {
     stream << " \n small_icons_id:"
            << entry->icons_uuid.at(IconType::kSmallIcon);
-  if (base::Contains(entry->icons_uuid, IconType::kLargeIcon))
+  }
+  if (base::Contains(entry->icons_uuid, IconType::kLargeIcon)) {
     stream << " \n large_icons_id:"
            << entry->icons_uuid.at(IconType::kLargeIcon);
+  }
 
   return stream.str();
 }
@@ -136,15 +138,15 @@ std::string DebugString(const ClientState* client_state) {
 
   if (client_state->last_negative_event_ts.has_value()) {
     std::ostringstream stream;
-    stream << "last negative event timestamp: ",
-        client_state->last_negative_event_ts.value();
+    stream << "last negative event timestamp: "
+           << client_state->last_negative_event_ts.value();
     log += stream.str();
   }
 
   if (client_state->last_shown_ts.has_value()) {
     std::ostringstream stream;
-    stream << "last shown notification timestamp: ",
-        client_state->last_shown_ts.value();
+    stream << "last shown notification timestamp: "
+           << client_state->last_shown_ts.value();
     log += stream.str();
   }
 

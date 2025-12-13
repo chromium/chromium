@@ -1,0 +1,1 @@
+This test suite is for tests of speculation rules prefetch Devtools UA override. See https://crbug.com/422193319

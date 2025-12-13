@@ -26,15 +26,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/background/extensions/background_application_list_model.h"
-#include "chrome/browser/background/extensions/background_mode_optimizer.h"
-#include "chrome/browser/background/startup_launch_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -44,6 +39,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/startup/startup_launch_manager.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/browser.h"
@@ -54,6 +50,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/web_applications/extensions/launch.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -76,6 +73,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_family.h"
+#include "ui/gfx/image/image_skia.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/win/app_icon.h"
@@ -313,7 +311,6 @@ BackgroundModeManager::BackgroundModeManager(
     // in a mode that doesn't open a browser window. It will be resumed when the
     // first browser window is opened.
     SuspendBackgroundMode();
-    optimizer_ = BackgroundModeOptimizer::Create();
   }
 
   // If the --keep-alive-for-test flag is passed, then always keep the browser
@@ -412,13 +409,12 @@ void BackgroundModeManager::LaunchBackgroundApplication(
     Profile* profile,
     const Extension* extension) {
 #if !BUILDFLAG(IS_CHROMEOS)
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParams(
-          CreateAppLaunchParamsUserContainer(
-              profile, extension, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-              apps::LaunchSource::kFromBackgroundMode),
-          base::DoNothing());
+  web_app::LaunchExtensionOrWebApp(
+      profile,
+      CreateAppLaunchParamsUserContainer(
+          profile, extension, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          apps::LaunchSource::kFromBackgroundMode),
+      base::DoNothing());
 #else
   // background mode is not used in Chrome OS platform.
   // TODO(crbug.com/40212901): Remove the background mode manager from Chrome OS
@@ -644,7 +640,6 @@ void BackgroundModeManager::ExecuteCommand(int command_id, int event_flags) {
 //  BackgroundModeManager, private
 void BackgroundModeManager::ReleaseStartupKeepAliveCallback() {
   keep_alive_for_startup_.reset();
-  optimizer_ = BackgroundModeOptimizer::Create();
 }
 
 void BackgroundModeManager::ReleaseStartupKeepAlive() {
@@ -848,7 +843,7 @@ void BackgroundModeManager::UpdateEnableLaunchOnStartup() {
   launch_on_startup_enabled_.emplace(new_launch_on_startup);
 
   StartupLaunchManager* const launch_manager =
-      StartupLaunchManager::GetInstance();
+      StartupLaunchManager::From(g_browser_process);
   if (launch_on_startup_enabled_.value()) {
     launch_manager->RegisterLaunchOnStartup(StartupLaunchReason::kExtensions);
   } else {

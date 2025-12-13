@@ -15,34 +15,28 @@
 
 StartSurfaceRecentTabBrowserAgent::StartSurfaceRecentTabBrowserAgent(
     Browser* browser)
-    : BrowserUserData(browser), favicon_driver_observer_(this) {
-  browser_->AddObserver(this);
-  browser_->GetWebStateList()->AddObserver(this);
+    : BrowserUserData(browser) {
+  StartObserving(browser_,
+                 TabsDependencyInstaller::Policy::kAccordingToFeature);
 }
 
-StartSurfaceRecentTabBrowserAgent::~StartSurfaceRecentTabBrowserAgent() =
-    default;
+StartSurfaceRecentTabBrowserAgent::~StartSurfaceRecentTabBrowserAgent() {
+  StopObserving();
+  favicon_driver_observation_.Reset();
+}
 
 #pragma mark - Public
 
 void StartSurfaceRecentTabBrowserAgent::SaveMostRecentTab() {
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
-  if (most_recent_tab_ != active_web_state) {
-    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kTabResumption,
-                                browser_->GetProfile()->GetPrefs());
-    most_recent_tab_ = active_web_state;
-    DCHECK(favicon::WebFaviconDriver::FromWebState(most_recent_tab_));
-    if (favicon_driver_observer_.IsObserving()) {
-      favicon_driver_observer_.Reset();
-    }
-    favicon_driver_observer_.Observe(
-        favicon::WebFaviconDriver::FromWebState(most_recent_tab_));
-    if (web_state_observation_.IsObserving()) {
-      web_state_observation_.Reset();
-    }
-    web_state_observation_.Observe(most_recent_tab_.get());
+  CHECK(active_web_state);
+
+  if (most_recent_tab_ == active_web_state) {
+    return;
   }
+
+  SetMostRecentTab(active_web_state);
 }
 
 void StartSurfaceRecentTabBrowserAgent::AddObserver(
@@ -56,75 +50,45 @@ void StartSurfaceRecentTabBrowserAgent::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-#pragma mark - BrowserObserver
-
-void StartSurfaceRecentTabBrowserAgent::BrowserDestroyed(Browser* browser) {
-  browser_->GetWebStateList()->RemoveObserver(this);
-  browser_->RemoveObserver(this);
-  favicon_driver_observer_.Reset();
-  web_state_observation_.Reset();
+void StartSurfaceRecentTabBrowserAgent::OnWebStateInserted(
+    web::WebState* web_state) {
+  // Nothing to do.
 }
 
-#pragma mark - WebStateListObserver
-
-void StartSurfaceRecentTabBrowserAgent::WebStateListDidChange(
-    WebStateList* web_state_list,
-    const WebStateListChange& change,
-    const WebStateListStatus& status) {
-  switch (change.type()) {
-    case WebStateListChange::Type::kStatusOnly:
-      // Do nothing when a WebState is selected and its status is updated.
-      break;
-    case WebStateListChange::Type::kDetach: {
-      if (!most_recent_tab_) {
-        return;
-      }
-
-      const WebStateListChangeDetach& detach_change =
-          change.As<WebStateListChangeDetach>();
-      if (most_recent_tab_.get() == detach_change.detached_web_state()) {
-        for (auto& observer : observers_) {
-          observer.MostRecentTabRemoved(most_recent_tab_);
-        }
-        favicon_driver_observer_.Reset();
-        web_state_observation_.Reset();
-        most_recent_tab_ = nullptr;
-        return;
-      }
-      break;
-    }
-    case WebStateListChange::Type::kMove:
-      // Do nothing when a WebState is moved.
-      break;
-    case WebStateListChange::Type::kReplace:
-      // Do nothing when a WebState is replaced.
-      break;
-    case WebStateListChange::Type::kInsert:
-      // Do nothing when a WebState is inserted.
-      break;
-    case WebStateListChange::Type::kGroupCreate:
-      // Do nothing when a group is created.
-      break;
-    case WebStateListChange::Type::kGroupVisualDataUpdate:
-      // Do nothing when a tab group's visual data are updated.
-      break;
-    case WebStateListChange::Type::kGroupMove:
-      // Do nothing when a tab group is moved.
-      break;
-    case WebStateListChange::Type::kGroupDelete:
-      // Do nothing when a group is deleted.
-      break;
+void StartSurfaceRecentTabBrowserAgent::OnWebStateRemoved(
+    web::WebState* web_state) {
+  if (web_state != most_recent_tab_) {
+    return;
   }
+
+  SetMostRecentTab(nullptr);
+}
+
+void StartSurfaceRecentTabBrowserAgent::OnWebStateDeleted(
+    web::WebState* web_state) {
+  // Nothing to do.
+}
+
+void StartSurfaceRecentTabBrowserAgent::OnActiveWebStateChanged(
+    web::WebState* old_active,
+    web::WebState* new_active) {
+  // Nothing to do.
 }
 
 #pragma mark - WebStateObserver
 
 void StartSurfaceRecentTabBrowserAgent::WebStateDestroyed(
     web::WebState* web_state) {
-  favicon_driver_observer_.Reset();
-  web_state_observation_.Reset();
-  most_recent_tab_ = nullptr;
+  NOTREACHED();
 }
+
+void StartSurfaceRecentTabBrowserAgent::TitleWasSet(web::WebState* web_state) {
+  for (auto& observer : observers_) {
+    observer.MostRecentTabTitleUpdated(web_state, web_state->GetTitle());
+  }
+}
+
+#pragma mark - favicon::FaviconDriverObserver
 
 void StartSurfaceRecentTabBrowserAgent::OnFaviconUpdated(
     favicon::FaviconDriver* driver,
@@ -143,8 +107,31 @@ void StartSurfaceRecentTabBrowserAgent::OnFaviconUpdated(
   }
 }
 
-void StartSurfaceRecentTabBrowserAgent::TitleWasSet(web::WebState* web_state) {
-  for (auto& observer : observers_) {
-    observer.MostRecentTabTitleUpdated(web_state, web_state->GetTitle());
+#pragma mark - Private methods
+
+void StartSurfaceRecentTabBrowserAgent::SetMostRecentTab(
+    web::WebState* web_state) {
+  CHECK_NE(web_state, most_recent_tab_);
+
+  // Stop observing the old tab.
+  most_recent_tab_observation_.Reset();
+  favicon_driver_observation_.Reset();
+
+  if (web_state) {
+    // If the tab is cleared, then notify the observers.
+    for (auto& observer : observers_) {
+      observer.MostRecentTabRemoved(most_recent_tab_);
+    }
+  }
+
+  most_recent_tab_ = web_state;
+  if (most_recent_tab_) {
+    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kTabResumption,
+                                browser_->GetProfile()->GetPrefs());
+
+    // Start observing the new tab.
+    most_recent_tab_observation_.Observe(most_recent_tab_);
+    favicon_driver_observation_.Observe(
+        favicon::WebFaviconDriver::FromWebState(most_recent_tab_));
   }
 }

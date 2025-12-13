@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/metrics/metrics_state_manager.h"
 
 #include <cstddef>
@@ -21,6 +16,7 @@
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -36,6 +32,7 @@
 #include "base/uuid.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/cloned_install_detector.h"
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/entropy_state.h"
@@ -89,7 +86,7 @@ std::unique_ptr<metrics::ClientInfo> NoOpLoadClientInfoBackup() {
 // Exits the browser with a helpful error message if an invalid,
 // field-trial-related command-line flag was specified.
 void ExitWithMessage(const std::string& message) {
-  puts(message.c_str());
+  UNSAFE_TODO(puts(message.c_str()));
   exit(1);
 }
 
@@ -130,8 +127,9 @@ class MetricsStateMetricsProvider : public MetricsProvider {
 
     ClonedInstallInfo cloned =
         ClonedInstallDetector::ReadClonedInstallInfo(local_state_);
-    if (cloned.reset_count == 0)
+    if (cloned.reset_count == 0) {
       return;
+    }
     auto* cloned_install_info = system_profile->mutable_cloned_install_info();
     if (metrics_ids_were_reset_) {
       // Only report the cloned from client_id in the resetting session.
@@ -173,7 +171,7 @@ class MetricsStateMetricsProvider : public MetricsProvider {
   }
 
  private:
-  const raw_ptr<PrefService> local_state_;
+  const raw_ptr<PrefService, DanglingUntriaged> local_state_;
   const bool metrics_ids_were_reset_;
   // |previous_client_id_| is set only (if known) when
   // |metrics_ids_were_reset_|
@@ -181,7 +179,8 @@ class MetricsStateMetricsProvider : public MetricsProvider {
   // The client id that was used to randomize field trials. An empty string if
   // the low entropy source was used to do randomization.
   const std::string initial_client_id_;
-  const raw_ref<const ClonedInstallDetector> cloned_install_detector_;
+  const raw_ref<const ClonedInstallDetector, DanglingUntriaged>
+      cloned_install_detector_;
 };
 
 bool ShouldEnableBenchmarking(bool force_benchmarking_mode) {
@@ -529,6 +528,7 @@ void MetricsStateManager::RegisterPrefs(PrefRegistrySimple* registry) {
 
   EntropyState::RegisterPrefs(registry);
   ClonedInstallDetector::RegisterPrefs(registry);
+  CleanExitBeacon::RegisterPrefs(registry);
 }
 
 void MetricsStateManager::BackUpCurrentClientInfo() {
@@ -543,8 +543,9 @@ std::unique_ptr<ClientInfo> MetricsStateManager::LoadClientInfo() {
   // If a cloned install was detected, loading ClientInfo from backup will be
   // a race condition with clearing the backup. Skip all backup reads for this
   // session.
-  if (metrics_ids_were_reset_)
+  if (metrics_ids_were_reset_) {
     return nullptr;
+  }
 
   std::unique_ptr<ClientInfo> client_info = load_client_info_.Run();
 
@@ -586,8 +587,9 @@ std::string MetricsStateManager::GetHighEntropySource() {
 
 void MetricsStateManager::UpdateEntropySourceReturnedValue(
     EntropySourceType type) {
-  if (entropy_source_returned_ != ENTROPY_SOURCE_NONE)
+  if (entropy_source_returned_ != ENTROPY_SOURCE_NONE) {
     return;
+  }
 
   entropy_source_returned_ = type;
   base::UmaHistogramEnumeration("UMA.EntropySourceType", type,
@@ -595,8 +597,9 @@ void MetricsStateManager::UpdateEntropySourceReturnedValue(
 }
 
 void MetricsStateManager::ResetMetricsIDsIfNecessary() {
-  if (!ShouldResetClientIdsOnClonedInstall())
+  if (!ShouldResetClientIdsOnClonedInstall()) {
     return;
+  }
   metrics_ids_were_reset_ = true;
   previous_client_id_ = ReadClientId(local_state_);
 
@@ -632,8 +635,9 @@ bool MetricsStateManager::ShouldGenerateProvisionalClientId(bool is_first_run) {
   // We should only generate a provisional client ID on the first run. If for
   // some reason there is already a client ID, we do not generate one either.
   // This can happen if metrics reporting is managed by a policy.
-  if (!is_first_run || !client_id_.empty())
+  if (!is_first_run || !client_id_.empty()) {
     return false;
+  }
 
   // Return false if |kMetricsReportingEnabled| is managed by a policy. For
   // example, if metrics reporting is disabled by a policy, then
@@ -642,8 +646,9 @@ bool MetricsStateManager::ShouldGenerateProvisionalClientId(bool is_first_run) {
   // by a policy, then the default value of |kMetricsReportingEnabled| will be
   // true, and so a client ID will have already been generated (we would have
   // returned false already because of the previous check).
-  if (local_state_->IsManagedPreference(prefs::kMetricsReportingEnabled))
+  if (local_state_->IsManagedPreference(prefs::kMetricsReportingEnabled)) {
     return false;
+  }
 
   // If this is a non-Google-Chrome-branded build, we do not want to generate a
   // provisional client ID because metrics reporting is not enabled on those

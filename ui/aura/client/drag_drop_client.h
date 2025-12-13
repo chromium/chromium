@@ -9,7 +9,7 @@
 
 #include "ui/aura/aura_export.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace gfx {
 class ImageSkia;

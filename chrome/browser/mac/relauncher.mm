@@ -26,7 +26,6 @@
 #include "base/apple/bundle_locations.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/mac/launch_application.h"

@@ -49,6 +49,8 @@ android_resources("java_resources") {
     "java/res/layout/icon_row_menu_item.xml",
     "java/res/layout/menu_item.xml",
     "java/res/layout/menu_item_start_with_icon.xml",
+    "java/res/layout/menu_item_with_submenu.xml",
+    "java/res/layout/submenu_header.xml",
     "java/res/layout/title_button_menu_item.xml",
     "java/res/values/dimens.xml",
   ]
@@ -58,6 +60,7 @@ android_resources("java_resources") {
   deps = [
     "//chrome/browser/ui/android/appmenu:java_resources",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/theme/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
   ]
 }
@@ -94,6 +97,7 @@ android_library("unit_device_javatests") {
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",

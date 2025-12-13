@@ -61,7 +61,7 @@ class WTF_EXPORT StringView {
       size_t size = length * sizeof(CharT);
       if (size > sizeof(stackbuf16_)) [[unlikely]] {
         heapbuf_.reset(reinterpret_cast<char*>(
-            WTF::Partitions::BufferMalloc(size, "StackBackingStore")));
+            Partitions::BufferMalloc(size, "StackBackingStore")));
         // SAFETY: `heapbuf_` is the result of BufferMalloc() for `length`.
         return UNSAFE_BUFFERS(
             base::span(reinterpret_cast<CharT*>(heapbuf_.get()), length));
@@ -80,7 +80,7 @@ class WTF_EXPORT StringView {
 
    public:
     struct BufferDeleter {
-      void operator()(void* buffer) { WTF::Partitions::BufferFree(buffer); }
+      void operator()(void* buffer) { Partitions::BufferFree(buffer); }
     };
 
     static_assert(sizeof(UChar) != sizeof(char),
@@ -198,18 +198,6 @@ class WTF_EXPORT StringView {
     })
   }
 
-  // Use Span16() instead.
-  UNSAFE_BUFFER_USAGE const LChar* Characters8() const {
-    DCHECK(Is8Bit());
-    return static_cast<const LChar*>(bytes_);
-  }
-
-  // Use Span16() instead.
-  UNSAFE_BUFFER_USAGE const UChar* Characters16() const {
-    DCHECK(!Is8Bit());
-    return static_cast<const UChar*>(bytes_);
-  }
-
   base::span<const LChar> Span8() const {
     DCHECK(Is8Bit());
     // SAFETY: bytes_ have length_ elements.
@@ -261,7 +249,7 @@ class WTF_EXPORT StringView {
     // with a zero offset and the same length we can just access the impl
     // directly since this == StringView(m_impl).
     if (impl_->RawByteSpan().data() == Bytes() && length_ == impl_->length()) {
-      return WTF::GetPtr(impl_);
+      return GetPtr(impl_);
     }
     return nullptr;
   }
@@ -328,9 +316,9 @@ inline StringView::StringView(const StringView& view,
   // SAFETY: Invariants are checked last two line.
   UNSAFE_BUFFERS({
     if (Is8Bit()) {
-      bytes_ = view.Characters8() + offset;
+      bytes_ = view.Span8().data() + offset;
     } else {
-      bytes_ = view.Characters16() + offset;
+      bytes_ = view.Span16().data() + offset;
     }
   });
 }
@@ -410,17 +398,19 @@ inline bool EqualIgnoringASCIICase(const StringView& a,
                     : EqualIgnoringASCIICase(a.Span16(), span);
 }
 
-// TODO(esprehn): Can't make this an overload of WTF::equal since that makes
-// calls to equal() that pass literal strings ambiguous. Figure out if we can
-// replace all the callers with equalStringView and then rename it to equal().
+WTF_EXPORT int CodeUnitCompareIgnoringAsciiCase(StringView a, StringView b);
+inline bool CodeUnitCompareIgnoringAsciiCaseLessThan(StringView a,
+                                                     StringView b) {
+  return CodeUnitCompareIgnoringAsciiCase(a, b) < 0;
+}
+
+// TODO(esprehn): Can't make this an overload of blink::Equal since that makes
+// calls to Equal() that pass literal strings ambiguous. Figure out if we can
+// replace all the callers with EqualStringView and then rename it to Equal().
 WTF_EXPORT bool EqualStringView(const StringView&, const StringView&);
 
 inline bool operator==(const StringView& a, const StringView& b) {
   return EqualStringView(a, b);
-}
-
-inline bool operator!=(const StringView& a, const StringView& b) {
-  return !(a == b);
 }
 
 inline wtf_size_t StringView::Find(CharacterMatchFunctionPtr match_function,

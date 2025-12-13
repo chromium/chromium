@@ -15,11 +15,11 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/strings/string_view_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 
 namespace extensions {
 
@@ -103,7 +103,8 @@ std::optional<ComputedHashes> ComputedHashes::CreateFromFile(
     return std::nullopt;
   }
 
-  std::optional<base::Value> top_dictionary = base::JSONReader::Read(contents);
+  std::optional<base::Value> top_dictionary =
+      base::JSONReader::Read(contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   base::Value::Dict* dictionary =
       top_dictionary ? top_dictionary->GetIfDict() : nullptr;
   if (!dictionary) {
@@ -296,17 +297,11 @@ std::vector<std::string> ComputedHashes::GetHashesForContent(
   // Even when the contents is empty, we want to output at least one hash
   // block (the hash of the empty string).
   do {
-    const char* block_start = &contents[offset];
-    DCHECK(offset <= contents.size());
+    DCHECK_LE(offset, contents.size());
     size_t bytes_to_read = std::min(contents.size() - offset, block_size);
-    std::unique_ptr<crypto::SecureHash> hash(
-        crypto::SecureHash::Create(crypto::SecureHash::SHA256));
-    hash->Update(block_start, bytes_to_read);
-
-    std::string buffer;
-    buffer.resize(crypto::kSHA256Length);
-    hash->Finish(std::data(buffer), buffer.size());
-    hashes.push_back(std::move(buffer));
+    std::string_view data =
+        std::string_view(contents).substr(offset, bytes_to_read);
+    hashes.emplace_back(base::as_string_view(crypto::hash::Sha256(data)));
 
     // If |contents| is empty, then we want to just exit here.
     if (bytes_to_read == 0) {

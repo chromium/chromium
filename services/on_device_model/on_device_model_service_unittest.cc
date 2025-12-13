@@ -7,6 +7,7 @@
 #include "base/files/scoped_temp_file.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -14,6 +15,8 @@
 #include "services/on_device_model/fake/fake_chrome_ml_api.h"
 #include "services/on_device_model/fake/on_device_model_fake.h"
 #include "services/on_device_model/ml/chrome_ml_types.h"
+#include "services/on_device_model/ml/gpu_blocklist.h"
+#include "services/on_device_model/on_device_model_mojom_impl.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/cpp/test_support/test_response_holder.h"
@@ -178,6 +181,8 @@ class OnDeviceModelServiceTest : public testing::Test {
  private:
   mojo::Remote<mojom::OnDeviceModelService> service_;
   OnDeviceModelService service_impl_;
+  base::test::ScopedFeatureList feature_list_{
+      ml::kOnDeviceModelAllowGpuForTesting};
 };
 
 TEST_F(OnDeviceModelServiceTest, IdleTimeout) {
@@ -654,6 +659,31 @@ TEST_F(OnDeviceModelServiceTest, CloneTextSafety) {
   }
 }
 
+TEST_F(OnDeviceModelServiceTest, GpuBlocked) {
+  // The fake implementation of ChromeML always blocks GPU by default.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(ml::kOnDeviceModelAllowGpuForTesting);
+
+  mojo::Remote<mojom::OnDeviceModel> remote;
+  auto params = mojom::LoadModelParams::New();
+  params->backend_type = ml::ModelBackendType::kGpuBackend;
+  params->max_tokens = 8000;
+  params->assets = ModelAssets::FromPath(base::FilePath());
+  base::test::TestFuture<mojom::LoadModelResult> future;
+  service()->LoadModel(std::move(params), remote.BindNewPipeAndPassReceiver(),
+                       future.GetCallback());
+  EXPECT_EQ(future.Get(), mojom::LoadModelResult::kGpuBlocked);
+}
+
+TEST_F(OnDeviceModelServiceTest, CpuModel) {
+  // The fake implementation of ChromeML always blocks GPU by default.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(ml::kOnDeviceModelAllowGpuForTesting);
+
+  auto model = LoadModel(ml::ModelBackendType::kCpuBackend);
+  EXPECT_THAT(GetResponses(*model, "foo"), ElementsAre("CPU backend", "foo"));
+}
+
 TEST_F(OnDeviceModelServiceTest, PerformanceHint) {
   auto model = LoadModel(ml::ModelBackendType::kGpuBackend,
                          ml::ModelPerformanceHint::kFastestInference);
@@ -926,6 +956,63 @@ TEST_F(OnDeviceModelServiceTest, JSONSchemaConstraint) {
   EXPECT_THAT(response.responses(), ElementsAre(R"({"Rating":1})"));
 }
 
+TEST_F(OnDeviceModelServiceTest, JSONSchemaConstraintWithPrefix) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  session->Append(MakeInput({"a", ml::Token::kModel, "{\"Rating\""}), {});
+
+  auto options = mojom::GenerateOptions::New();
+  options->constraint = mojom::ResponseConstraint::NewJsonSchema(R"({
+    "type": "object",
+    "required": ["Rating"],
+    "additionalProperties": false,
+    "properties": {
+      "Rating": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 5
+      }
+    }
+  })");
+  session->Generate(std::move(options), response.BindRemote());
+  response.WaitForCompletion();
+
+  EXPECT_THAT(response.responses(), ElementsAre("aModel: {\"Rating\"", ":1}"));
+}
+
+TEST_F(OnDeviceModelServiceTest, JSONSchemaConstraintWithInvalidPrefix) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  session->Append(MakeInput({"a", ml::Token::kModel, "{\"bad\""}), {});
+
+  auto options = mojom::GenerateOptions::New();
+  options->constraint = mojom::ResponseConstraint::NewJsonSchema(R"({
+    "type": "object",
+    "required": ["Rating"],
+    "additionalProperties": false,
+    "properties": {
+      "Rating": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 5
+      }
+    }
+  })");
+  session->Generate(std::move(options), response.BindRemote());
+  response.WaitForCompletion();
+
+  // For now invalid prefix will cause a disconnect.
+  // TODO:crbug.com/434766400 - Add better error messages.
+  EXPECT_THAT(response.responses(), ElementsAre());
+  EXPECT_TRUE(response.disconnected());
+}
+
 TEST_F(OnDeviceModelServiceTest, JSONSchemaConstraintInvalid) {
   auto model = LoadModel();
 
@@ -958,6 +1045,58 @@ TEST_F(OnDeviceModelServiceTest, RegexConstraint) {
 
   EXPECT_THAT(response.responses(), ElementsAre("hello"));
 }
+
+TEST_F(OnDeviceModelServiceTest, RegexConstraintIgnoresUserPrefix) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  session->Append(MakeInput({ml::Token::kUser, "hel"}), {});
+
+  auto options = mojom::GenerateOptions::New();
+  options->constraint = mojom::ResponseConstraint::NewRegex("hello");
+  session->Generate(std::move(options), response.BindRemote());
+  response.WaitForCompletion();
+
+  EXPECT_THAT(response.responses(), ElementsAre("User: hel", "hello"));
+}
+
+TEST_F(OnDeviceModelServiceTest, RegexConstraintWithPrefix) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  session->Append(MakeInput({"a", ml::Token::kModel, "hel"}), {});
+
+  auto options = mojom::GenerateOptions::New();
+  options->constraint = mojom::ResponseConstraint::NewRegex("hello");
+  session->Generate(std::move(options), response.BindRemote());
+  response.WaitForCompletion();
+
+  EXPECT_THAT(response.responses(), ElementsAre("aModel: hel", "lo"));
+}
+
+TEST_F(OnDeviceModelServiceTest, RegexConstraintWithInvalidPrefix) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  session->Append(MakeInput({ml::Token::kModel, "boo"}), {});
+
+  auto options = mojom::GenerateOptions::New();
+  options->constraint = mojom::ResponseConstraint::NewRegex("^hello$");
+  session->Generate(std::move(options), response.BindRemote());
+  response.WaitForCompletion();
+
+  // For now invalid prefix will cause a disconnect.
+  // TODO:crbug.com/434766400 - Add better error messages.
+  EXPECT_THAT(response.responses(), ElementsAre());
+  EXPECT_TRUE(response.disconnected());
+}
+
 #endif
 
 }  // namespace

@@ -66,7 +66,7 @@ EmojiSegmentationCategory GetEmojiSegmentationCategory(UChar32 codepoint) {
   if (Character::IsEmojiTextDefault(codepoint)) {
     return EmojiSegmentationCategory::EMOJI_TEXT_PRESENTATION;
   }
-  if (Character::IsEmoji(codepoint)) {
+  if (Character::IsEmojiIncludingReserved(codepoint)) {
     return EmojiSegmentationCategory::EMOJI;
   }
 

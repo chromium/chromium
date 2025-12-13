@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/task/single_thread_task_runner.h"

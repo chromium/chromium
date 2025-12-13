@@ -8,7 +8,6 @@ source_set("utils") {
   sources = [
     "sync_error_infobar_delegate.h",
     "sync_error_infobar_delegate.mm",
-    "sync_presenter.h",
     "sync_util.h",
     "sync_util.mm",
   ]
@@ -61,6 +60,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/sync/model",
@@ -83,9 +83,9 @@ source_set("eg2_tests") {
     "//components/browser_sync:switches",
     "//components/sync/base",
     "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
-    "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/bookmarks/test:eg_test_support+eg2",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/reading_list/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled/google_services:constants",

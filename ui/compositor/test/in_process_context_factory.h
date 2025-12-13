@@ -20,7 +20,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/viz/privileged/mojom/compositing/vsync_parameter_observer.mojom.h"
 #include "ui/compositor/compositor.h"
 namespace viz {

@@ -20,8 +20,13 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_deletion_observer.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -41,54 +46,57 @@ Profile* CreateProfile() {
 
 // An observer returns back to test code after brower window associated with
 // the profile is activated.
-class ExpectBrowserActivationForProfile : public BrowserListObserver {
+class ExpectBrowserActivationForProfile : public BrowserCollectionObserver {
  public:
-  explicit ExpectBrowserActivationForProfile(Profile* profile)
-      : profile_(profile) {
-    BrowserList::AddObserver(this);
+  explicit ExpectBrowserActivationForProfile(Profile* profile) {
+    profile_browser_collection_observation_.Observe(
+        ProfileBrowserCollection::GetForProfile(profile));
   }
 
-  ~ExpectBrowserActivationForProfile() override {
-    BrowserList::RemoveObserver(this);
-  }
+  ~ExpectBrowserActivationForProfile() override = default;
 
   void Wait() { loop_.Run(); }
 
  protected:
-  void OnBrowserSetLastActive(Browser* browser) override {
-    if (browser->profile() == profile_) {
-      loop_.Quit();
-    }
+  // BrowserCollectionObserver:
+  void OnBrowserActivated(BrowserWindowInterface* browser) override {
+    loop_.Quit();
   }
 
  private:
-  raw_ptr<Profile> profile_;
   base::RunLoop loop_;
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      profile_browser_collection_observation_{this};
 };
 
 // An observer that returns back to test code after a new browser is added to
 // the BrowserList.
-class BrowserAddedObserver : public BrowserListObserver {
+class BrowserCreatedObserver : public BrowserCollectionObserver {
  public:
-  BrowserAddedObserver() { BrowserList::AddObserver(this); }
+  BrowserCreatedObserver() {
+    global_browser_collection_observation_.Observe(
+        GlobalBrowserCollection::GetInstance());
+  }
 
-  ~BrowserAddedObserver() override { BrowserList::RemoveObserver(this); }
+  ~BrowserCreatedObserver() override = default;
 
-  Browser* Wait() {
+  BrowserWindowInterface* Wait() {
     run_loop_.Run();
     return browser_;
   }
 
  protected:
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override {
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
     browser_ = browser;
     run_loop_.Quit();
   }
 
  private:
-  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   base::RunLoop run_loop_;
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      global_browser_collection_observation_{this};
 };
 
 }  // namespace
@@ -109,30 +117,31 @@ class ProfileHelperTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ProfileHelperTest, OpenNewWindowForProfile) {
-  BrowserList* browser_list = BrowserList::GetInstance();
-
-  Browser* original_browser = browser();
-  Profile* original_profile = original_browser->profile();
+  BrowserWindowInterface* original_browser = browser();
+  Profile* original_profile = original_browser->GetProfile();
   std::unique_ptr<ExpectBrowserActivationForProfile> activation_observer;
 
   // Sanity checks.
-  EXPECT_EQ(1u, browser_list->size());
-  EXPECT_TRUE(base::Contains(*browser_list, original_browser));
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(GetLastActiveBrowserWindowInterfaceWithAnyProfile(),
+            original_browser);
 
   // Opening existing browser profile shouldn't open additional browser windows.
   webui::OpenNewWindowForProfile(original_profile);
-  EXPECT_EQ(1u, browser_list->size());
-  EXPECT_EQ(original_browser, browser_list->GetLastActive());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(original_browser,
+            GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 
   // Opening additional browser will add new window and activate it.
   Profile* additional_profile = CreateProfile();
   activation_observer =
       std::make_unique<ExpectBrowserActivationForProfile>(additional_profile);
   webui::OpenNewWindowForProfile(additional_profile);
-  EXPECT_EQ(2u, browser_list->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   activation_observer->Wait();
-  Browser* additional_browser = browser_list->GetLastActive();
-  EXPECT_EQ(additional_profile, additional_browser->profile());
+  BrowserWindowInterface* const additional_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  EXPECT_EQ(additional_profile, additional_browser->GetProfile());
 
 // On Macs OpenNewWindowForProfile does not activate existing browser
 // while non of the browser windows have focus. BrowserWindowCocoa::Show() got
@@ -144,61 +153,64 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, OpenNewWindowForProfile) {
   activation_observer =
       std::make_unique<ExpectBrowserActivationForProfile>(original_profile);
   webui::OpenNewWindowForProfile(original_profile);
-  EXPECT_EQ(2u, browser_list->size());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   activation_observer->Wait();
-  EXPECT_EQ(original_profile, browser_list->GetLastActive()->profile());
+  EXPECT_EQ(original_profile,
+            GetLastActiveBrowserWindowInterfaceWithAnyProfile()->GetProfile());
 #endif
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteSoleProfile) {
   content::TestWebUI web_ui;
-  Browser* original_browser = browser();
+  BrowserWindowInterface* original_browser = browser();
   ProfileAttributesStorage& storage =
       g_browser_process->profile_manager()->GetProfileAttributesStorage();
   base::FilePath original_browser_profile_path =
-      original_browser->profile()->GetPath();
+      original_browser->GetProfile()->GetPath();
 
-  BrowserList* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(1u, browser_list->size());
-  EXPECT_TRUE(base::Contains(*browser_list, original_browser));
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(GetLastActiveBrowserWindowInterfaceWithAnyProfile(),
+            original_browser);
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 
   // Original browser will be closed, and browser with the new profile created.
-  BrowserAddedObserver added_observer;
-  webui::DeleteProfileAtPath(original_browser->profile()->GetPath(),
+  BrowserCreatedObserver created_observer;
+  webui::DeleteProfileAtPath(original_browser->GetProfile()->GetPath(),
                              ProfileMetrics::DELETE_PROFILE_SETTINGS);
   ui_test_utils::WaitForBrowserToClose(original_browser);
-  Browser* new_browser = added_observer.Wait();
+  BrowserWindowInterface* new_browser = created_observer.Wait();
 
   content::RunAllTasksUntilIdle();
 
-  EXPECT_EQ(1u, browser_list->size());
-  EXPECT_NE(original_browser_profile_path, new_browser->profile()->GetPath());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_NE(original_browser_profile_path,
+            new_browser->GetProfile()->GetPath());
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileHelperTest, DeleteActiveProfile) {
   content::TestWebUI web_ui;
-  Browser* original_browser = browser();
+  BrowserWindowInterface* original_browser = browser();
   ProfileAttributesStorage& storage =
       g_browser_process->profile_manager()->GetProfileAttributesStorage();
 
-  BrowserList* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(1u, browser_list->size());
-  EXPECT_TRUE(base::Contains(*browser_list, original_browser));
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(GetLastActiveBrowserWindowInterfaceWithAnyProfile(),
+            original_browser);
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 
   Profile* additional_profile = CreateProfile();
   EXPECT_EQ(2u, storage.GetNumberOfProfiles());
 
   // Original browser will be closed, and browser with the new profile created.
-  webui::DeleteProfileAtPath(original_browser->profile()->GetPath(),
+  webui::DeleteProfileAtPath(original_browser->GetProfile()->GetPath(),
                              ProfileMetrics::DELETE_PROFILE_SETTINGS);
   ui_test_utils::WaitForBrowserToClose(original_browser);
-  content::RunAllTasksUntilIdle();
 
-  EXPECT_EQ(1u, browser_list->size());
-  EXPECT_EQ(additional_profile, browser_list->get(0)->profile());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  BrowserWindowInterface* const additional_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  EXPECT_EQ(additional_profile, additional_browser->GetProfile());
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 }
 
@@ -225,13 +237,14 @@ class ProfileHelperTestWithDestroyProfile
 IN_PROC_BROWSER_TEST_P(ProfileHelperTestWithDestroyProfile,
                        DISABLED_DeleteInactiveProfile) {
   content::TestWebUI web_ui;
-  Browser* original_browser = browser();
+  BrowserWindowInterface* original_browser = browser();
   ProfileAttributesStorage& storage =
       g_browser_process->profile_manager()->GetProfileAttributesStorage();
 
-  BrowserList* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(1u, browser_list->size());
-  EXPECT_TRUE(base::Contains(*browser_list, original_browser));
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+
+  EXPECT_EQ(GetLastActiveBrowserWindowInterfaceWithAnyProfile(),
+            original_browser);
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 
   Profile* additional_profile = CreateProfile();
@@ -255,8 +268,9 @@ IN_PROC_BROWSER_TEST_P(ProfileHelperTestWithDestroyProfile,
     inhibitor.ContinueToCompletion();
   }
 
-  EXPECT_EQ(1u, browser_list->size());
-  EXPECT_TRUE(base::Contains(*browser_list, original_browser));
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(GetLastActiveBrowserWindowInterfaceWithAnyProfile(),
+            original_browser);
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 
   if (destroy_profile) {

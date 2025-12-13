@@ -18,10 +18,6 @@
 
 struct addrinfo;
 
-namespace base {
-class Value;
-}
-
 namespace net {
 
 class IPAddress;
@@ -78,6 +74,7 @@ class NET_EXPORT AddressList {
 
   using iterator = std::vector<IPEndPoint>::iterator;
   using const_iterator = std::vector<IPEndPoint>::const_iterator;
+  using value_type = IPEndPoint;
 
   size_t size() const { return endpoints_.size(); }
   bool empty() const { return endpoints_.empty(); }

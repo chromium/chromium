@@ -98,12 +98,9 @@ class MockPasswordProtectionService : public PasswordProtectionService {
                     const safe_browsing::LoginReputationClientResponse*));
   MOCK_METHOD2(CanShowInterstitial,
                bool(ReusedPasswordAccountType, const GURL&));
-  MOCK_METHOD5(MaybeStartPasswordFieldOnFocusRequest,
-               void(content::WebContents*,
-                    const GURL&,
-                    const GURL&,
-                    const GURL&,
-                    const std::string&));
+  MOCK_METHOD4(
+      MaybeStartPasswordFieldOnFocusRequest,
+      void(content::WebContents*, const GURL&, const GURL&, const GURL&));
   MOCK_METHOD6(
       MaybeStartProtectedPasswordEntryRequest,
       void(content::WebContents*,
@@ -112,6 +109,10 @@ class MockPasswordProtectionService : public PasswordProtectionService {
            PasswordType,
            const std::vector<password_manager::MatchingReusedCredential>&,
            bool));
+  MOCK_METHOD3(MaybeStartOtpPhishingRequest,
+               void(content::WebContents*,
+                    const GURL&,
+                    PasswordProtectionRequest::OtpPhishingVerdictCallback));
 };
 
 }  // namespace safe_browsing

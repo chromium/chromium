@@ -13,6 +13,10 @@
 class PrefRegistrySimple;
 class PrefService;
 
+namespace base {
+class Time;
+}
+
 namespace metrics {
 
 class MachineIdProvider;

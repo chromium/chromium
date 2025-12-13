@@ -17,6 +17,7 @@ class TabGroupSyncService;
 
 @protocol RegularGridMediatorDelegate;
 class ShareKitService;
+@protocol QuickDeleteCommands;
 
 // Mediates between model layer and regular grid UI layer.
 @interface RegularGridMediator : BaseGridMediator
@@ -29,6 +30,8 @@ class ShareKitService;
 
 // Regular delegate.
 @property(nonatomic, weak) id<RegularGridMediatorDelegate> regularDelegate;
+
+@property(nonatomic, weak) id<QuickDeleteCommands> quickDeleteCommandHandler;
 
 // Designated initialized. `tabGroupSyncService`, `shareKitService` and
 // `messagingService`: can be `nullptr`.

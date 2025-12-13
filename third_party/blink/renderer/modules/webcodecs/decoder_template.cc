@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace blink {
 
@@ -83,6 +84,8 @@ DecoderTemplate<Traits>::DecoderTemplate(ScriptState* script_state,
 
   logger_ = std::make_unique<CodecLogger<media::DecoderStatus>>(
       context, main_thread_task_runner_);
+
+  logger_->SendPlayerNameInformation(*context, Traits::GetName());
 
   logger_->log()->SetProperty<media::MediaLogProperty::kFrameUrl>(
       context->Url().GetString().Ascii());
@@ -193,7 +196,7 @@ void DecoderTemplate<Traits>::decode(const InputType* chunk,
     request->status = std::move(status_or_buffer).error();
     if (request->status == media::DecoderStatus::Codes::kKeyFrameRequired) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                        request->status.message().c_str());
+                                        String(request->status.message()));
       return;
     }
   }
@@ -316,11 +319,10 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
   if (!request->media_config) {
     main_thread_task_runner_->PostTask(
         FROM_HERE,
-        WTF::BindOnce(&DecoderTemplate<Traits>::Shutdown,
-                      WrapWeakPersistent(this),
-                      WrapPersistent(MakeGarbageCollected<DOMException>(
-                          DOMExceptionCode::kNotSupportedError,
-                          request->js_error_message))));
+        BindOnce(&DecoderTemplate<Traits>::Shutdown, WrapWeakPersistent(this),
+                 WrapPersistent(MakeGarbageCollected<DOMException>(
+                     DOMExceptionCode::kNotSupportedError,
+                     request->js_error_message))));
     return false;
   }
 
@@ -354,6 +356,7 @@ void DecoderTemplate<Traits>::ContinueConfigureWithGpuFactories(
   if (MaybeAbortRequest(request)) {
     DCHECK_EQ(request, pending_request_);
     pending_request_.Release()->EndTracing();
+    ProcessRequests();
     return;
   }
 
@@ -374,10 +377,9 @@ void DecoderTemplate<Traits>::ContinueConfigureWithGpuFactories(
     initializing_sync_ = true;
     Traits::InitializeDecoder(
         *decoder(), request->low_delay.value(), *request->media_config,
-        WTF::BindOnce(&DecoderTemplate::OnInitializeDone,
-                      WrapWeakPersistent(this)),
-        WTF::BindRepeating(&DecoderTemplate::OnOutput, WrapWeakPersistent(this),
-                           reset_generation_));
+        BindOnce(&DecoderTemplate::OnInitializeDone, WrapWeakPersistent(this)),
+        blink::BindRepeating(&DecoderTemplate::OnOutput,
+                             WrapWeakPersistent(this), reset_generation_));
     initializing_sync_ = false;
     return;
   }
@@ -385,7 +387,7 @@ void DecoderTemplate<Traits>::ContinueConfigureWithGpuFactories(
   // Processing continues in OnFlushDone().
   decoder()->Decode(
       media::DecoderBuffer::CreateEOSBuffer(),
-      WTF::BindOnce(&DecoderTemplate::OnFlushDone, WrapWeakPersistent(this)));
+      BindOnce(&DecoderTemplate::OnFlushDone, WrapWeakPersistent(this)));
 }
 
 template <typename Traits>
@@ -438,10 +440,9 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
         GetTraceNames()->decode.c_str(), *request->decoder_buffer);
   }
 
-  decoder()->Decode(
-      std::move(request->decoder_buffer),
-      WTF::BindOnce(&DecoderTemplate::OnDecodeDone, WrapWeakPersistent(this),
-                    pending_decode_id_));
+  decoder()->Decode(std::move(request->decoder_buffer),
+                    BindOnce(&DecoderTemplate::OnDecodeDone,
+                             WrapWeakPersistent(this), pending_decode_id_));
   return true;
 }
 
@@ -470,7 +471,7 @@ bool DecoderTemplate<Traits>::ProcessFlushRequest(Request* request) {
 
   decoder()->Decode(
       media::DecoderBuffer::CreateEOSBuffer(),
-      WTF::BindOnce(&DecoderTemplate::OnFlushDone, WrapWeakPersistent(this)));
+      BindOnce(&DecoderTemplate::OnFlushDone, WrapWeakPersistent(this)));
   return true;
 }
 
@@ -491,7 +492,7 @@ bool DecoderTemplate<Traits>::ProcessResetRequest(Request* request) {
 
     // Processing continues in OnResetDone().
     decoder()->Reset(
-        WTF::BindOnce(&DecoderTemplate::OnResetDone, WrapWeakPersistent(this)));
+        BindOnce(&DecoderTemplate::OnResetDone, WrapWeakPersistent(this)));
   }
 
   return true;
@@ -539,6 +540,7 @@ void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
   error_cb_.Release();
 
   // Prevent any further logging from being reported.
+  logger_->log()->OnWebMediaPlayerDestroyed();
   logger_->Neuter();
 
   // Clear decoding and JS-visible queue state. Use DeleteSoon() to avoid
@@ -630,10 +632,9 @@ void DecoderTemplate<Traits>::OnFlushDone(media::DecoderStatus status) {
   Traits::InitializeDecoder(
       *decoder(), is_flush ? low_delay_ : pending_request_->low_delay.value(),
       is_flush ? *active_config_ : *pending_request_->media_config,
-      WTF::BindOnce(&DecoderTemplate::OnInitializeDone,
-                    WrapWeakPersistent(this)),
-      WTF::BindRepeating(&DecoderTemplate::OnOutput, WrapWeakPersistent(this),
-                         reset_generation_));
+      BindOnce(&DecoderTemplate::OnInitializeDone, WrapWeakPersistent(this)),
+      blink::BindRepeating(&DecoderTemplate::OnOutput, WrapWeakPersistent(this),
+                           reset_generation_));
 }
 
 template <typename Traits>
@@ -792,9 +793,8 @@ void DecoderTemplate<Traits>::ScheduleDequeueEvent() {
   event->async_task_context()->Schedule(GetExecutionContext(), event->type());
 
   main_thread_task_runner_->PostTask(
-      FROM_HERE,
-      WTF::BindOnce(&DecoderTemplate<Traits>::DispatchDequeueEvent,
-                    WrapWeakPersistent(this), WrapPersistent(event)));
+      FROM_HERE, BindOnce(&DecoderTemplate<Traits>::DispatchDequeueEvent,
+                          WrapWeakPersistent(this), WrapPersistent(event)));
 }
 
 template <typename Traits>
@@ -898,7 +898,8 @@ void DecoderTemplate<Traits>::Request::StartTracing() {
   DCHECK(!is_tracing);
   is_tracing = true;
 #endif
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(kCategory, TraceNameFromType(), this);
+  TRACE_EVENT_BEGIN(kCategory, perfetto::DynamicString(TraceNameFromType()),
+                    perfetto::Track::FromPointer(this));
 }
 
 template <typename Traits>
@@ -907,8 +908,8 @@ void DecoderTemplate<Traits>::Request::EndTracing(bool shutting_down) {
   DCHECK(is_tracing);
   is_tracing = false;
 #endif
-  TRACE_EVENT_NESTABLE_ASYNC_END1(kCategory, TraceNameFromType(), this,
-                                  "completed", !shutting_down);
+  TRACE_EVENT_END(kCategory, perfetto::Track::FromPointer(this), "completed",
+                  !shutting_down);
 }
 
 template <typename Traits>

@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">برتقال</translation>
 <translation id="1275718070701477396">تم التحديد</translation>
 <translation id="1290331692326790741">إشارة ضعيفة</translation>
+<translation id="1292474106138697109">شاشة "أدوات الدراسة"</translation>
 <translation id="1300115153046603471">اسم نقطة الوصول من النوع التلقائي و<ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">‏بروتوكول GSM</translation>
 <translation id="1301340234286078471">تحويل</translation>
@@ -279,7 +280,7 @@
 <translation id="2056550196601855911">‫IPv4/IPv6</translation>
 <translation id="2068472557797646626">عرض ثلاثي الأبعاد لكرات كروم وأشكال كروية على خلفية من العناصر المعمارية تحمل علامات كروم. يمثّل التكوين مفهومًا حديثًا وبسيطًا للإعلان أو وضع العلامة التجارية أو العرض مع ترك مساحة للنصوص. قوس كبير أمام خلفية مجردة بأسلوب بسيط. إضاءة استوديو لقطة مقرّبة</translation>
 <translation id="2073232437457681324">محيط شاسع</translation>
-<translation id="2080070583977670716">مزيد من الإعدادات</translation>
+<translation id="2080070583977670716">إعدادات إضافية</translation>
 <translation id="2082932131694554252">مفتاح لوحة المفاتيح المخصَّص</translation>
 <translation id="2085089206770112532">تقليل سطوع الشاشة</translation>
 <translation id="2086091080968010660">قد لا تكون التغييرات المستنِدة إلى الوقت دقيقة. فعِّل إذن الوصول إلى الموقع الجغرافي للنظام ضمن الإعدادات.</translation>
@@ -335,7 +336,7 @@
 <translation id="2276999893457278469">أهم مقالات المحتوى المساعِد ذات الصلة</translation>
 <translation id="2277631741861284101">تسجيل الصوت ومشاركته بسهولة</translation>
 <translation id="2279051792571591988">استعادة الإعدادات التلقائية</translation>
-<translation id="2286454467119466181">بسيطة</translation>
+<translation id="2286454467119466181">بسيط</translation>
 <translation id="2287186687001756809">لا تتوفّر صور. لإضافة صور، انتقِل إلى <ph name="LINK" />.</translation>
 <translation id="2294577623958216786">تم ضبط الجدول الزمني الحالي على <ph name="SUNRISE" /> إلى <ph name="SUNSET" />. لتعديل الجدول الزمني لغروب الشمس وشروقها تلقائيًا، يجب تفعيل إذن الوصول إلى الموقع الجغرافي للنظام.</translation>
 <translation id="2305172810646967500">أسود</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> صورة</translation>
 <translation id="4300272766492248925">فتح التطبيق</translation>
 <translation id="430786093962686457">الشيفون</translation>
+<translation id="4309762678330556039">يمكنك تلقائيًا إنشاء النصوص، والبحث في الملفات الصوتية، وإنشاء التسجيلات حتى في حال عدم الاتصال بالإنترنت.</translation>
 <translation id="4310735698903592804">‏أحدث الخلفيات المستندة إلى تكنولوجيات الذكاء الاصطناعي من Google</translation>
 <translation id="4320904097188876154">وردي نيون</translation>
 <translation id="432961742358282111">يمكنك النقر بزر الماوس الأيمن أو الضغط مع الاستمرار للحصول على تعريفات أو ترجمات أو تحويلات الوحدات. ولإدارة هذه الميزة، عليك استخدام مفتاحَي السهمَين المتّجهَين لليمين أو لليسار.</translation>
@@ -966,7 +968,7 @@
 <translation id="5227902338748591677">الجدول الزمني للمظهر الداكن</translation>
 <translation id="5229104491259541281">تحويل "<ph name="QUERY" />"</translation>
 <translation id="5229344016299762883">الخروج من وضع ملء الشاشة</translation>
-<translation id="5234764350956374838">تجاهل</translation>
+<translation id="5234764350956374838">إغلاق</translation>
 <translation id="5236119614998611749">تعذَّر إنشاء الملخّص</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{لقد ضبط مشرفك "<ph name="APP_NAME" />" لبدء تشغيله تلقائيًا في كل مرة يتم فيها تسجيل الدخول.}=2{لقد ضبط مشرفك "<ph name="APP_NAME" />" وتطبيقًا آخر لبدء تشغيلهما تلقائيًا في كل مرة يتم فيها تسجيل الدخول.}zero{لقد ضبط مشرفك "<ph name="APP_NAME" />" و# تطبيق آخر لبدء تشغيلها تلقائيًا في كل مرة يتم فيها تسجيل الدخول.}few{لقد ضبط مشرفك "<ph name="APP_NAME" />" و# تطبيقات أخرى لبدء تشغيلها تلقائيًا في كل مرة يتم فيها تسجيل الدخول.}many{لقد ضبط مشرفك "<ph name="APP_NAME" />" و# تطبيقًا آخر لبدء تشغيلها تلقائيًا في كل مرة يتم فيها تسجيل الدخول.}other{لقد ضبط مشرفك "<ph name="APP_NAME" />" و# تطبيق آخر لبدء تشغيلها تلقائيًا في كل مرة يتم فيها تسجيل الدخول.}}</translation>
 <translation id="5248419081947706722">أزرق</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="5600027863942488546">تم اختبار المفتاح <ph name="KEY_NAME" />.</translation>
 <translation id="5606865426897221650">‏مفتاح Tab</translation>
+<translation id="5612205513582918357">تتم مشاركة شاشتك مع "<ph name="RECEIVER_NAME" />" من خلال "أدوات الدراسة"</translation>
 <translation id="5613201299517339763">لقد سجّلت الخروج</translation>
 <translation id="5620281292257375798">داخلي فقط</translation>
 <translation id="5628106863521633649">اللغات المتاحة</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">منظر انسيابي للسُحب</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">لا يتوفّر ماسح ضوئي.</translation>
-<translation id="6231648282154119906">‏ستفحص ميزة "التصفّح الآمن من Google" الملفات المريبة تلقائيًا كجزء من إجراءات الحماية المحسَّنة التي اختَرتها</translation>
 <translation id="6232017090690406397">البطارية</translation>
 <translation id="6234024205316847054">عرض المخططات</translation>
 <translation id="6243280677745499710">المحدّدة حاليًا</translation>
@@ -1451,7 +1453,7 @@
 <translation id="7343649194310845056">أجهزة الشبكات</translation>
 <translation id="7344788170842919262">ترابية</translation>
 <translation id="7346768383111016081">خصِّص لكل إجراء في اللعبة مفتاحًا معيّنًا لتلعب باستخدام لوحة المفاتيح</translation>
-<translation id="7352651011704765696">حدث خطأ ما</translation>
+<translation id="7352651011704765696">حدث خطأ</translation>
 <translation id="7353413232959255829">‏نتيجة البحث <ph name="LIST_POSITION" /> من <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. اضغط على مفتاح Enter للانتقال إلى الاختصار.</translation>
 <translation id="7359657277149375382">نوع الملف</translation>
 <translation id="73631062356239394">مشاركة بيانات التشخيص</translation>
@@ -1866,7 +1868,7 @@
 <translation id="921080052717160800">تم ضبط الصورة كخلفية للكاميرا</translation>
 <translation id="9211490828691860325">جميع أسطح المكتب</translation>
 <translation id="9218016617214286986">‏عرض أسماء نقاط الوصول (APN) المعروفة</translation>
-<translation id="932327136139879170">الصفحة الرئيسية</translation>
+<translation id="932327136139879170">المنزل</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">إرسال ملاحظات</translation>
 <translation id="950520315903467048">لم يتم تخصيص مفتاح لـ <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>

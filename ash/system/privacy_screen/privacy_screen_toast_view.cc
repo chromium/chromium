@@ -6,7 +6,6 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/system/privacy_screen/privacy_screen_toast_controller.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/feature_pod_button.h"
@@ -14,6 +13,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/button.h"
@@ -25,7 +26,7 @@ namespace ash {
 
 namespace {
 
-void ConfigureLabel(views::Label* label, SkColor color, int font_size) {
+void ConfigureLabel(views::Label* label, ui::ColorId color, int font_size) {
   label->SetAutoColorReadabilityEnabled(false);
   label->SetSubpixelRenderingEnabled(false);
   label->SetEnabledColor(color);
@@ -53,21 +54,16 @@ class PrivacyScreenToastManagedView : public views::View {
     views::Label* label = new views::Label();
     views::ImageView* icon = new views::ImageView();
 
-    const AshColorProvider* color_provider = AshColorProvider::Get();
-    const SkColor label_color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorSecondary);
-    ConfigureLabel(label, label_color, kPrivacyScreenToastSubLabelFontSize);
+    ConfigureLabel(label, cros_tokens::kTextColorSecondary,
+                   kPrivacyScreenToastSubLabelFontSize);
 
     label->SetText(l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_PRIVACY_SCREEN_ENTERPRISE_MANAGED));
 
     icon->SetPreferredSize(
         gfx::Size(kUnifiedSystemInfoHeight, kUnifiedSystemInfoHeight));
-
-    const SkColor icon_color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorSecondary);
-    icon->SetImage(
-        ui::ImageModel::FromVectorIcon(kSystemTrayManagedIcon, icon_color));
+    icon->SetImage(ui::ImageModel::FromVectorIcon(
+        kSystemTrayManagedIcon, cros_tokens::kTextColorSecondary));
 
     AddChildViewRaw(label);
     AddChildViewRaw(icon);
@@ -95,11 +91,7 @@ class PrivacyScreenToastLabelView : public views::View {
     AddChildViewRaw(label_.get());
     AddChildViewRaw(managed_view_.get());
 
-    const AshColorProvider* color_provider = AshColorProvider::Get();
-    const SkColor primary_text_color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary);
-
-    ConfigureLabel(label_, primary_text_color,
+    ConfigureLabel(label_, cros_tokens::kTextColorPrimary,
                    kPrivacyScreenToastMainLabelFontSize);
   }
 

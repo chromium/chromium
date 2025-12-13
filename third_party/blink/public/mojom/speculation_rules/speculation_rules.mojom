@@ -21,7 +21,14 @@ import "url/mojom/url.mojom";
 interface SpeculationHost {
   // Pushes a new set of speculation candidates, which replaces any previously
   // sent.
-  UpdateSpeculationCandidates(array<SpeculationCandidate> candidates);
+  // `enable_cross_origin_prerender_iframes` is enabled via OT token and
+  // overrides features::kPrerender2CrossOriginIframes.
+  // Once this is true for the page, kPrerender2CrossOriginIframes never been
+  // false to avoid confusing.
+  // TODO(https://crbug.com/440387014): Remove the flag param once OT
+  // is finished.
+  UpdateSpeculationCandidates(array<SpeculationCandidate> candidates,
+                              bool enable_cross_origin_prerender_iframes);
 
   // Called when LCP is predicted.
   OnLCPPredicted();
@@ -116,13 +123,17 @@ struct SpeculationCandidate {
   //
   // Mapping:
   // - An empty string tag is represented as
-  //   - empty `WTF::String` in blink/
+  //   - empty `blink::String` in blink/
   //   - empty `std::string` in content/
   // - No tag (null tag) is represented as
-  //   - null `WTF::String` in blink/
+  //   - null `blink::String` in blink/
   //   - nullopt `std::optional<std::string>` in content/
   //
   // This must not be empty, as when no tags are specified in rules, this should
   // contain the null tag.
   array<string?> tags;
+
+  // If true, this prerender attempt will be set to be a form submission. And
+  // this value should be used for prerender only.
+  bool form_submission = false;
 };

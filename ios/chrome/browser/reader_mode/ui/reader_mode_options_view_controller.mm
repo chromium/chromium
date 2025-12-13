@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_mutator.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -18,76 +20,108 @@ namespace {
 // The horizontal inset for the main stack view.
 constexpr CGFloat kMainStackViewInset = 16.0;
 
+// Top and bottom padding.
+constexpr CGFloat kTopPadding = 8.0;
+constexpr CGFloat kBottomPadding = 54.0;
+
 // The spacing between items in the main stack view.
 constexpr CGFloat kMainStackViewSpacing = 16.0;
 
-// The corner radius for the "Hide Reader Mode" button.
-constexpr CGFloat kHideReaderModeButtonCornerRadius = 12.0;
+// The corner radius for the controls view.
+constexpr CGFloat kControlsViewMinimumCornerRadius = 24.0;
 
-// The minimum height for the "Hide Reader Mode" button.
-constexpr CGFloat kHideReaderModeButtonMinHeight = 50.0;
-
-// The identifier for the custom content detent.
-NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
-    @"kReaderModeOptionsViewControllerCustomDetentIdentifier";
-
+// Opacity of the controls view when using a blur effect background.
+constexpr CGFloat kBlurEffectBackgroundControlsOpacity = 0.95;
 }  // namespace
 
 @interface ReaderModeOptionsViewController ()
 
-// Root view controller. Lazily created.
-@property(nonatomic, readonly) UIViewController* contentViewController;
 // Main stack view. Lazily created.
 @property(nonatomic, readonly) UIStackView* mainStackView;
+
+// Button to turn off Reader mode. Lazily created.
+@property(nonatomic, readonly) UIButton* hideReaderModeButton;
 
 @end
 
 @implementation ReaderModeOptionsViewController
 
 @synthesize controlsView = _controlsView;
-@synthesize contentViewController = _contentViewController;
 @synthesize mainStackView = _mainStackView;
-
-- (instancetype)init {
-  return [super initWithRootViewController:self.contentViewController];
-}
+@synthesize hideReaderModeButton = _hideReaderModeButton;
 
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-  [super viewDidLoad];
+  self.title = l10n_util::GetNSString(IDS_IOS_READER_MODE_OPTIONS_TITLE);
+  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                           target:self
+                           action:@selector(hideReaderModeOptions)];
+  self.navigationItem.rightBarButtonItem.accessibilityIdentifier =
+      kReaderModeOptionsCloseButtonAccessibilityIdentifier;
+  self.view.accessibilityIdentifier =
+      kReaderModeOptionsViewAccessibilityIdentifier;
 
-  // Initialize custom content detent.
-  UISheetPresentationControllerDetent* contentDetent =
-      [self createCustomContentDetent];
-  self.sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
-  self.sheetPresentationController.detents = @[ contentDetent ];
-  self.sheetPresentationController.largestUndimmedDetentIdentifier =
-      contentDetent.identifier;
+  // Add blurred background.
+  UIBlurEffect* blurEffect =
+      [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterial];
+  UIVisualEffectView* blurEffectView =
+      [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+  blurEffectView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:blurEffectView];
+  AddSameConstraints(blurEffectView, self.view);
+
+  UIView* mainStackView = self.mainStackView;
+  [self.view addSubview:mainStackView];
+
+  UILayoutGuide* safeAreaLayoutGuide = self.view.safeAreaLayoutGuide;
+  [NSLayoutConstraint activateConstraints:@[
+    [mainStackView.topAnchor
+        constraintEqualToAnchor:safeAreaLayoutGuide.topAnchor
+                       constant:kTopPadding],
+    [mainStackView.centerXAnchor
+        constraintEqualToAnchor:safeAreaLayoutGuide.centerXAnchor],
+    [mainStackView.widthAnchor
+        constraintEqualToAnchor:safeAreaLayoutGuide.widthAnchor
+                       constant:-2 * kMainStackViewInset]
+  ]];
+
+  [super viewDidLoad];
 }
 
 - (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
   __weak __typeof(self) weakSelf = self;
   [self.sheetPresentationController animateChanges:^{
     [weakSelf.sheetPresentationController invalidateDetents];
   }];
 }
 
-#pragma mark - Private
+#pragma mark - Public properties
+
+- (void)updateHideReaderModeButtonVisibility:(BOOL)visible {
+  self.hideReaderModeButton.hidden = !visible;
+}
+
+#pragma mark - Public
 
 - (CGFloat)resolveDetentValueForSheetPresentation:
     (id<UISheetPresentationControllerDetentResolutionContext>)context {
-  CGFloat detentValue =
-      [self.mainStackView
-          systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
-          .height +
-      self.navigationBar.frame.size.height;
-  // If there is no safe area inset preventing the bottom of the main stack
-  // from touching the bottom of `self.view`, then add an inset manually.
-  if (self.view.safeAreaInsets.bottom == 0) {
-    detentValue += kMainStackViewInset;
+  CGFloat bottomPadding = kBottomPadding;
+  if (self.view.window.traitCollection.horizontalSizeClass ==
+      UIUserInterfaceSizeClassRegular) {
+    bottomPadding = kMainStackViewInset;
   }
-  return detentValue;
+
+  CGFloat bottomPaddingAboveSafeArea =
+      bottomPadding - self.view.safeAreaInsets.bottom;
+  return [self.mainStackView
+             systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
+             .height +
+         kTopPadding +
+         self.navigationController.navigationBar.frame.size.height +
+         bottomPaddingAboveSafeArea;
 }
 
 #pragma mark - UI actions
@@ -102,47 +136,6 @@ NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
 
 #pragma mark - UI creation helpers
 
-// Lazily creates and returns the root view controller.
-- (UIViewController*)contentViewController {
-  if (_contentViewController) {
-    return _contentViewController;
-  }
-
-  UIViewController* contentViewController = [[UIViewController alloc] init];
-  contentViewController.title =
-      l10n_util::GetNSString(IDS_IOS_READER_MODE_OPTIONS_TITLE);
-  contentViewController.navigationItem.rightBarButtonItem =
-      [[UIBarButtonItem alloc]
-          initWithBarButtonSystemItem:UIBarButtonSystemItemClose
-                               target:self
-                               action:@selector(hideReaderModeOptions)];
-  contentViewController.navigationItem.rightBarButtonItem
-      .accessibilityIdentifier =
-      kReaderModeOptionsCloseButtonAccessibilityIdentifier;
-  contentViewController.view.accessibilityIdentifier =
-      kReaderModeOptionsViewAccessibilityIdentifier;
-  contentViewController.view.backgroundColor =
-      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-
-  UIView* mainStackView = self.mainStackView;
-  [contentViewController.view addSubview:mainStackView];
-
-  UILayoutGuide* safeAreaLayoutGuide =
-      contentViewController.view.safeAreaLayoutGuide;
-  [NSLayoutConstraint activateConstraints:@[
-    [safeAreaLayoutGuide.topAnchor
-        constraintEqualToAnchor:mainStackView.topAnchor],
-    [safeAreaLayoutGuide.centerXAnchor
-        constraintEqualToAnchor:mainStackView.centerXAnchor],
-    [safeAreaLayoutGuide.widthAnchor
-        constraintEqualToAnchor:mainStackView.widthAnchor
-                       constant:2 * kMainStackViewInset]
-  ]];
-
-  _contentViewController = contentViewController;
-  return _contentViewController;
-}
-
 // Lazily creates and returns the main stack view.
 - (UIStackView*)mainStackView {
   if (_mainStackView) {
@@ -155,7 +148,7 @@ NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
   mainStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
   [mainStackView addArrangedSubview:self.controlsView];
-  [mainStackView addArrangedSubview:[self createHideReaderModeButton]];
+  [mainStackView addArrangedSubview:self.hideReaderModeButton];
 
   _mainStackView = mainStackView;
   return _mainStackView;
@@ -170,40 +163,34 @@ NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
   ReaderModeOptionsControlsView* controlsView =
       [[ReaderModeOptionsControlsView alloc] init];
   controlsView.translatesAutoresizingMaskIntoConstraints = NO;
+  controlsView.backgroundColor =
+      [[UIColor colorNamed:kGroupedSecondaryBackgroundColor]
+          colorWithAlphaComponent:kBlurEffectBackgroundControlsOpacity];
+
+  if (@available(iOS 26, *)) {
+    controlsView.cornerConfiguration = [UICornerConfiguration
+        configurationWithUniformRadius:
+            [UICornerRadius containerConcentricRadiusWithMinimum:
+                                kControlsViewMinimumCornerRadius]];
+  } else {
+    controlsView.layer.cornerRadius = kPrimaryButtonCornerRadius;
+  }
 
   _controlsView = controlsView;
   return _controlsView;
 }
 
 // Returns the button to hide Reader mode.
-- (UIButton*)createHideReaderModeButton {
-  // Create button title attributed string.
-  UIFontDescriptor* boldDescriptor = [[UIFontDescriptor
-      preferredFontDescriptorWithTextStyle:UIFontTextStyleBody]
-      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-  UIFont* fontAttribute = [UIFont fontWithDescriptor:boldDescriptor size:0.0];
-  UIColor* textColor = [UIColor colorNamed:kSolidWhiteColor];
-  NSDictionary* attributes = @{
-    NSFontAttributeName : fontAttribute,
-    NSForegroundColorAttributeName : textColor
-  };
-  NSMutableAttributedString* attributedTitle =
-      [[NSMutableAttributedString alloc]
-          initWithString:l10n_util::GetNSString(
-                             IDS_IOS_READER_MODE_OPTIONS_HIDE_BUTTON_LABEL)
-              attributes:attributes];
+- (UIButton*)hideReaderModeButton {
+  if (_hideReaderModeButton) {
+    return _hideReaderModeButton;
+  }
 
-  // Create button configuration.
-  UIButtonConfiguration* configuration =
-      [UIButtonConfiguration filledButtonConfiguration];
-  configuration.baseBackgroundColor = [UIColor colorNamed:kBlue600Color];
-  configuration.background.cornerRadius = kHideReaderModeButtonCornerRadius;
-  configuration.attributedTitle = attributedTitle;
+  ChromeButton* button =
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
+  button.title =
+      l10n_util::GetNSString(IDS_IOS_READER_MODE_OPTIONS_HIDE_BUTTON_LABEL);
 
-  // Create button.
-  UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
-  button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.configuration = configuration;
   button.maximumContentSizeCategory = UIContentSizeCategoryExtraExtraLarge;
   button.accessibilityIdentifier =
       kReaderModeOptionsTurnOffButtonAccessibilityIdentifier;
@@ -211,25 +198,8 @@ NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
                 action:@selector(hideReaderMode)
       forControlEvents:UIControlEventTouchUpInside];
 
-  [button.heightAnchor
-      constraintGreaterThanOrEqualToConstant:kHideReaderModeButtonMinHeight]
-      .active = YES;
-
-  return button;
-}
-
-// Returns the custom content detent.
-- (UISheetPresentationControllerDetent*)createCustomContentDetent {
-  __weak __typeof(self) weakSelf = self;
-  return [UISheetPresentationControllerDetent
-      customDetentWithIdentifier:
-          kReaderModeOptionsViewControllerCustomDetentIdentifier
-                        resolver:^CGFloat(
-                            id<UISheetPresentationControllerDetentResolutionContext>
-                                context) {
-                          return [weakSelf
-                              resolveDetentValueForSheetPresentation:context];
-                        }];
+  _hideReaderModeButton = button;
+  return _hideReaderModeButton;
 }
 
 @end

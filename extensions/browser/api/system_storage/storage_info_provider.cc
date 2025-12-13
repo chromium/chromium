@@ -75,8 +75,9 @@ double StorageInfoProvider::GetStorageFreeSpaceFromTransientIdAsync(
   // Lookup the matched storage info by |device_id|.
   for (const auto& info : storage_list) {
     if (device_id == info.device_id()) {
-      return static_cast<double>(base::SysInfo::AmountOfFreeDiskSpace(
-          base::FilePath(info.location())));
+      return static_cast<double>(
+          base::SysInfo::AmountOfFreeDiskSpace(base::FilePath(info.location()))
+              .value_or(-1));
     }
   }
 

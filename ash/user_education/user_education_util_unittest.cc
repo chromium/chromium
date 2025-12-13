@@ -15,7 +15,6 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/test_widget_builder.h"
 #include "ash/user_education/user_education_types.h"
 #include "components/account_id/account_id.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
@@ -26,6 +25,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/metadata/view_factory.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -46,7 +46,7 @@ std::unique_ptr<views::Widget> ShowFramelessTestWidgetOnDisplay(
     std::unique_ptr<views::View> contents_view) {
   auto* manager = Shell::Get()->window_tree_host_manager();
   auto widget =
-      TestWidgetBuilder()
+      views::test::TestWidgetBuilder()
           .SetWidgetType(views::Widget::InitParams::TYPE_WINDOW_FRAMELESS)
           .SetParent(manager->GetRootWindowForDisplayId(display_id))
           .BuildOwnsNativeWidget();

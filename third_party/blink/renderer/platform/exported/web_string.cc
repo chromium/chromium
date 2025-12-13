@@ -142,7 +142,7 @@ size_t WebString::Find(const WebString& s) const {
     return std::string::npos;
   }
   wtf_size_t pos = impl_->Find(s.impl_.get());
-  return pos != WTF::kNotFound ? pos : std::string::npos;
+  return pos != kNotFound ? pos : std::string::npos;
 }
 
 size_t WebString::Find(std::string_view characters) const {
@@ -150,21 +150,21 @@ size_t WebString::Find(std::string_view characters) const {
     return std::string::npos;
   }
   wtf_size_t pos = impl_->Find(characters.data());
-  return pos != WTF::kNotFound ? pos : std::string::npos;
+  return pos != kNotFound ? pos : std::string::npos;
 }
 
 bool WebString::operator<(const WebString& other) const {
-  return WTF::CodeUnitCompare(impl_.get(), other.impl_.get()) < 0;
+  return CodeUnitCompare(impl_.get(), other.impl_.get()) < 0;
 }
 
-WebString::WebString(const WTF::String& s) : impl_(s.Impl()) {}
+WebString::WebString(const String& s) : impl_(s.Impl()) {}
 
-WebString& WebString::operator=(const WTF::String& s) {
+WebString& WebString::operator=(const String& s) {
   impl_ = s.Impl();
   return *this;
 }
 
-WebString::operator WTF::String() const {
+WebString::operator String() const {
   return impl_.get();
 }
 

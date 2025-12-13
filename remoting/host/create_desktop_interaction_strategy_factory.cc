@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/desktop_interaction_strategy.h"
@@ -15,6 +14,9 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "remoting/host/linux/gnome_interaction_strategy.h"
+#include "remoting/host/linux/gnome_remote_desktop_session.h"
+#include "remoting/host/linux/portal_interaction_strategy.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
 namespace remoting {
@@ -26,8 +28,12 @@ CreateDesktopInteractionStrategyFactory(
     scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> input_task_runner) {
 #if BUILDFLAG(IS_LINUX)
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch("enable-wayland")) {
-    return std::make_unique<GnomeInteractionStrategyFactory>(ui_task_runner);
+  if (webrtc::DesktopCapturer::IsRunningUnderWayland()) {
+    if (GnomeRemoteDesktopSession::IsRunningUnderGnome()) {
+      return std::make_unique<GnomeInteractionStrategyFactory>(ui_task_runner);
+    } else {
+      return std::make_unique<PortalInteractionStrategyFactory>();
+    }
   }
 #endif  // BUILDFLAG(IS_LINUX)
 

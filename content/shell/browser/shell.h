@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/session_storage_namespace.h"
@@ -19,7 +18,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/shell/browser/shell_platform_delegate.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class GURL;
 

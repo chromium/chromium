@@ -13,9 +13,7 @@ namespace optimization_guide {
 namespace features {
 
 // Whether the on-device model validation checks are enabled.
-BASE_FEATURE(kOnDeviceModelValidation,
-             "OnDeviceModelValidation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOnDeviceModelValidation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsOnDeviceModelValidationEnabled() {
   return base::FeatureList::IsEnabled(kOnDeviceModelValidation);

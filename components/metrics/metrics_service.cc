@@ -128,8 +128,10 @@
 #include <utility>
 
 #include "base/callback_list.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_flattener.h"
@@ -217,7 +219,6 @@ class DiscardingFlattener : public base::HistogramFlattener {
   }
 };
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // Emits a histogram upon instantiation, and on destruction. Used to measure how
 // often the browser is ungracefully killed between two different points. In
 // particular, currently, this is used on mobile to measure how often the
@@ -278,7 +279,6 @@ class ScopedTerminationChecker {
   // this object will do nothing.
   bool active_ = false;
 };
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // The delay, in seconds, after starting recording before doing expensive
 // initialization work.
@@ -313,7 +313,6 @@ void RecordUserLogStoreState(UserLogStoreState state) {
 
 // static
 void MetricsService::RegisterPrefs(PrefRegistrySimple* registry) {
-  CleanExitBeacon::RegisterPrefs(registry);
   MetricsStateManager::RegisterPrefs(registry);
   MetricsLog::RegisterPrefs(registry);
   StabilityMetricsProvider::RegisterPrefs(registry);
@@ -455,8 +454,9 @@ void MetricsService::Stop() {
 }
 
 void MetricsService::EnableReporting() {
-  if (reporting_service_.reporting_active())
+  if (reporting_service_.reporting_active()) {
     return;
+  }
   reporting_service_.EnableReporting();
   StartSchedulerIfNecessary();
 }
@@ -488,8 +488,9 @@ bool MetricsService::WasLastShutdownClean() const {
 void MetricsService::EnableRecording() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (recording_state_ == ACTIVE)
+  if (recording_state_ == ACTIVE) {
     return;
+  }
   recording_state_ = ACTIVE;
 
   state_manager_->ForceClientIdCreation();
@@ -559,8 +560,9 @@ void MetricsService::HandleIdleSinceLastTransmission(bool in_idle) {
   // If there wasn't a lot of action, maybe the computer was asleep, in which
   // case, the log transmissions should have stopped.  Here we start them up
   // again.
-  if (!in_idle && idle_since_last_transmission_)
+  if (!in_idle && idle_since_last_transmission_) {
     StartSchedulerIfNecessary();
+  }
   idle_since_last_transmission_ = in_idle;
 }
 
@@ -703,6 +705,26 @@ void MetricsService::OnAppEnterForeground(bool force_open_new_log) {
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
+void MetricsService::Flush() {
+  if (recording_active() && !IsTooEarlyToCloseLog()) {
+#if BUILDFLAG(IS_ANDROID)
+    client_->MergeSubprocessHistograms();
+#endif  // BUILDFLAG(IS_ANDROID)
+    {
+      ScopedTerminationChecker scoped_termination_checker(
+          "UMA.MetricsService.OnFlushScopedTerminationChecker");
+      // Trim and store unsent logs so that they're not lost in case of a crash
+      // before upload time. However, the in-memory log store is unchanged.
+      // I.e., logs that are trimmed will still be available in memory. After
+      // uploading (whether successful or not), the log store is trimmed and
+      // stored again, and at that time, the in-memory log store will be
+      // updated.
+      log_store()->TrimAndPersistUnsentLogs(
+          /*overwrite_in_memory_store=*/false);
+    }
+  }
+}
+
 void MetricsService::OnPageLoadStarted() {
   delegating_provider_.OnPageLoadStarted();
 }
@@ -731,8 +753,9 @@ void MetricsService::MarkCurrentHistogramsAsReported() {
 #if BUILDFLAG(IS_CHROMEOS)
 void MetricsService::SetUserLogStore(
     std::unique_ptr<UnsentLogStore> user_log_store) {
-  if (log_store()->has_alternate_ongoing_log_store())
+  if (log_store()->has_alternate_ongoing_log_store()) {
     return;
+  }
 
   if (state_ >= SENDING_LOGS) {
     // Closes the current log so that a new log can be opened in the user log
@@ -845,8 +868,9 @@ bool MetricsService::StageCurrentLogForTest() {
 
   MetricsLogStore* const log_store = reporting_service_.metrics_log_store();
   log_store->StageNextLog();
-  if (!log_store->has_staged_log())
+  if (!log_store->has_staged_log()) {
     return false;
+  }
 
   OpenNewLog();
   return true;
@@ -919,8 +943,9 @@ void MetricsService::InitializeMetricsState() {
   // number of different edge cases, such as if the last version crashed before
   // it could save off a system profile or if UMA reporting is disabled (which
   // normally results in stats being accumulated).
-  if (version_changed && !has_initial_stability_log)
+  if (version_changed && !has_initial_stability_log) {
     ClearSavedStabilityMetrics();
+  }
 
   // If the version changed, the system profile is obsolete and needs to be
   // cleared. This is to avoid the stability data misattribution that could
@@ -929,8 +954,9 @@ void MetricsService::InitializeMetricsState() {
   // stability log, an operation that requires the previous version's system
   // profile. At this point, stability metrics pertaining to the previous
   // version have been cleared.
-  if (version_changed)
+  if (version_changed) {
     recorder.ClearEnvironmentFromPrefs();
+  }
 
   // Update session ID.
   ++session_id_;
@@ -1098,8 +1124,9 @@ void MetricsService::CloseCurrentLog(
   // as how much memory is being used) before reporting.
   base::PersistentHistogramAllocator* allocator =
       base::GlobalHistogramAllocator::Get();
-  if (allocator)
+  if (allocator) {
     allocator->UpdateTrackingHistograms();
+  }
 
   // Put incremental data (histogram deltas, and realtime stats deltas) at the
   // end of all log transmissions (initial log handles this separately).
@@ -1221,8 +1248,9 @@ void MetricsService::PushPendingLogsToPersistentStorage(
 
 void MetricsService::StartSchedulerIfNecessary() {
   // Never schedule cutting or uploading of logs in test mode.
-  if (test_mode_active_)
+  if (test_mode_active_) {
     return;
+  }
 
   // Even if reporting is disabled, the scheduler is needed to trigger the
   // creation of the first ongoing log, which must be done in order for any logs
@@ -1634,8 +1662,8 @@ MetricsService::FinalizedLog MetricsService::FinalizeLog(
 
   FinalizedLog finalized_log;
   finalized_log.uncompressed_log_size = log_data.size();
-  finalized_log.log_info = std::make_unique<UnsentLogStore::LogInfo>();
-  finalized_log.log_info->Init(log_data, signing_key, log->log_metadata());
+  finalized_log.log_info = std::make_unique<UnsentLogStore::LogInfo>(
+      log_data, signing_key, log->log_metadata());
   return finalized_log;
 }
 

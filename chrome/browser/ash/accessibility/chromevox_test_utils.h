@@ -28,14 +28,19 @@ class ChromeVoxTestUtils {
   ChromeVoxTestUtils(const ChromeVoxTestUtils&) = delete;
   ChromeVoxTestUtils& operator=(const ChromeVoxTestUtils&) = delete;
 
-  // Enables and sets up ChromeVox.
-  void EnableChromeVox(bool check_for_intro = true);
+  // Enables and sets up ChromeVox. Set `check_for_speech` to true to wait for
+  // the ChromeVox welcome message to be spoken. This helps ensure that
+  // ChromeVox is in a stable state. Set `check_for_speech` to false to skip the
+  // welcome message. This can be helpful if the associated test doesn't care
+  // about the specific utterances being spoken.
+  void EnableChromeVox(bool check_for_speech = true);
   // Exposes the module, specified by `name`, on the `globalThis` object. This
   // allows tests to call directly into various ChromeVox methods.
   void GlobalizeModule(const std::string& name);
   void DisableEarcons();
   void WaitForReady();
   void WaitForValidRange();
+  void WaitForPunctuationEcho(int punctuationEcho);
 
   void ExecuteCommandHandlerCommand(std::string command);
 

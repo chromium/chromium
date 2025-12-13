@@ -28,6 +28,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/base/locale_util.h"
@@ -65,7 +66,6 @@
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_configuration_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
@@ -73,7 +73,6 @@
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
-#include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
@@ -93,6 +92,7 @@
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/display_size_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/fjord_station_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fjord_touch_controller_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
@@ -102,6 +102,7 @@
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/remote_activity_notification_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/touchpad_scroll_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_required_screen_handler.h"
@@ -115,7 +116,8 @@
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/location_fetcher.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/http_auth_dialog/http_auth_dialog.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -534,7 +536,9 @@ class WizardControllerFlowTest : public WizardControllerTest {
     WaitForOobeUI();
     wizard_controller->SetSharedURLLoaderFactoryForTesting(
         test_url_loader_factory_.GetSafeWeakWrapper());
-    SimpleGeolocationProvider::GetInstance()
+    SystemLocationProvider::GetInstance()
+        ->GetLocationProviderForTesting()
+        ->GetLocationFetcherForTesting()
         ->SetSharedUrlLoaderFactoryForTesting(
             test_url_loader_factory_.GetSafeWeakWrapper());
 
@@ -662,18 +666,6 @@ class WizardControllerFlowTest : public WizardControllerTest {
         policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
   }
 
-  void InitNetworkPortalDetector() {
-    network_portal_detector_ = new NetworkPortalDetectorTestImpl();
-    network_portal_detector::InitializeForTesting(network_portal_detector_);
-
-    // Default networks defaults to "eth1" in tests.
-    const NetworkState* default_network =
-        NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
-    ASSERT_TRUE(default_network);
-    network_portal_detector_->SetDefaultNetworkForTesting(
-        default_network->guid());
-  }
-
   void WaitUntilTimezoneResolved() {
     base::RunLoop loop;
     if (!WizardController::default_controller()
@@ -695,11 +687,9 @@ class WizardControllerFlowTest : public WizardControllerTest {
 
     test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
         [&](const network::ResourceRequest& request) {
-          if (base::StartsWith(
-                  request.url.spec(),
-                  SimpleGeolocationProvider::DefaultGeolocationProviderURL()
-                      .spec(),
-                  base::CompareCase::SENSITIVE)) {
+          if (base::StartsWith(request.url.spec(),
+                               LocationFetcher::kDefaultGeolocationProviderUrl,
+                               base::CompareCase::SENSITIVE)) {
             test_url_loader_factory_.AddResponse(request.url.spec(),
                                                  kGeolocationResponseBody);
           } else if (base::StartsWith(request.url.spec(),
@@ -719,12 +709,10 @@ class WizardControllerFlowTest : public WizardControllerTest {
     CheckCurrentScreen(NetworkScreenView::kScreenId);
     EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
 
-    InitNetworkPortalDetector();
-
     EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
     mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
 
-    EXPECT_NE(SimpleGeolocationProvider::GetInstance(), nullptr);
+    EXPECT_NE(SystemLocationProvider::GetInstance(), nullptr);
 
     // Let update screen smooth time process (time = 0ms).
     content::RunAllPendingInMessageLoop();
@@ -802,8 +790,6 @@ class WizardControllerFlowTest : public WizardControllerTest {
   network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
-  raw_ptr<NetworkPortalDetectorTestImpl, DanglingUntriaged>
-      network_portal_detector_ = nullptr;
   std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
 };
 
@@ -872,8 +858,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest, ControlFlowSkipUpdateEnroll) {
-  InitNetworkPortalDetector();
-
   CheckCurrentScreen(WelcomeView::kScreenId);
   EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(0);
   EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);
@@ -1439,7 +1423,9 @@ class WizardControllerFjordOOBETest
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerFjordOOBETest,
-                       TouchControllerScreenShowsAfterEnroll) {
+                       TouchControllerScreenShowsAndExitsToStationSetup) {
+  WizardController* const wizard_controller =
+      WizardController::default_controller();
   ScopedEnrollmentStateFetcherFactory fetcher_factory(
       auto_enrollment_controller());
   ProgressUntilAutoEnrollmentCheckScreen();
@@ -1464,6 +1450,37 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFjordOOBETest,
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());
   CheckCurrentScreen(FjordTouchControllerScreenView::kScreenId);
+
+  EXPECT_TRUE(wizard_controller->ExitFjordTouchControllerScreen());
+  CheckCurrentScreen(FjordStationSetupScreenView::kScreenId);
+  EXPECT_TRUE(wizard_controller->ExitFjordTouchControllerScreen());
+}
+
+IN_PROC_BROWSER_TEST_F(WizardControllerFjordOOBETest,
+                       ExitTouchControllerScreenDoesNothing) {
+  WizardController* const wizard_controller =
+      WizardController::default_controller();
+  ScopedEnrollmentStateFetcherFactory fetcher_factory(
+      auto_enrollment_controller());
+  ProgressUntilAutoEnrollmentCheckScreen();
+  fetcher_factory.WaitUntilEnrollmentStateFetcherCreated();
+
+  EXPECT_CALL(*mock_auto_enrollment_check_screen_, HideImpl());
+  EXPECT_CALL(*mock_enrollment_screen_, ShowImpl());
+  base::Value::Dict device_state;
+  device_state.Set(
+      policy::kDeviceStateMode,
+      base::Value(policy::kDeviceStateRestoreModeReEnrollmentEnforced));
+  g_browser_process->local_state()->SetDict(prefs::kServerBackedDeviceState,
+                                            std::move(device_state));
+  fetcher_factory.ReportEnrollmentState(
+      policy::AutoEnrollmentResult::kEnrollment);
+
+  CheckCurrentScreen(EnrollmentScreenView::kScreenId);
+
+  // Expect that Exit has no affect since TC setup screen is not showing.
+  EXPECT_FALSE(wizard_controller->ExitFjordTouchControllerScreen());
+  CheckCurrentScreen(EnrollmentScreenView::kScreenId);
 }
 
 class WizardControllerScreenPriorityOOBETest : public OobeBaseTest {
@@ -1630,16 +1647,8 @@ class WizardControllerProxyAuthOnSigninTest : public OobeBaseTest {
       net::test_server::EmbeddedTestServer::Type::TYPE_HTTP};
 };
 
-// TODO(crbug.com/1286218): Flakes on CrOS.
-// TODO(crbug.com/41486698): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ProxyAuthDialogOnSigninScreen \
-  DISABLED_ProxyAuthDialogOnSigninScreen
-#else
-#define MAYBE_ProxyAuthDialogOnSigninScreen ProxyAuthDialogOnSigninScreen
-#endif
 IN_PROC_BROWSER_TEST_F(WizardControllerProxyAuthOnSigninTest,
-                       MAYBE_ProxyAuthDialogOnSigninScreen) {
+                       ProxyAuthDialogOnSigninScreen) {
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   ASSERT_TRUE(base::test::RunUntil(
       []() { return HttpAuthDialog::GetAllDialogsForTest().size() == 1; }));
@@ -2091,7 +2100,9 @@ class WizardControllerOobeResumeTest : public WizardControllerTest {
     WaitForOobeUI();
     wizard_controller->SetSharedURLLoaderFactoryForTesting(
         test_url_loader_factory_.GetSafeWeakWrapper());
-    SimpleGeolocationProvider::GetInstance()
+    SystemLocationProvider::GetInstance()
+        ->GetLocationProviderForTesting()
+        ->GetLocationFetcherForTesting()
         ->SetSharedUrlLoaderFactoryForTesting(
             test_url_loader_factory_.GetSafeWeakWrapper());
 
@@ -2104,6 +2115,8 @@ class WizardControllerOobeResumeTest : public WizardControllerTest {
             base::BindRepeating(
                 &WizardController::OnAutoEnrollmentCheckScreenExit,
                 base::Unretained(wizard_controller))));
+    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+        true;
   }
 
   void TearDownOnMainThread() override {
@@ -2533,14 +2546,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerTest, TransitionToGaiaInfo) {
   OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(WizardControllerTest, TransitionFromGaiaInfo) {
-  WaitForOobeUI();
-  WizardController::default_controller()->AdvanceToScreen(
-      GaiaInfoScreenView::kScreenId);
-  test::OobeJS().ClickOnPath({"gaia-info", "nextButton"});
-  OobeScreenWaiter(GaiaView::kScreenId).Wait();
-}
-
 IN_PROC_BROWSER_TEST_F(WizardControllerTest, SkipGaiaInfoForChildAccount) {
   WaitForOobeUI();
   WizardController::default_controller()->AdvanceToScreen(
@@ -2570,6 +2575,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerTest, SystemTrayShouldBeDisabledOnKioskSp
 class WizardControllerGaiaTest : public WizardControllerTest {
  protected:
   FakeGaiaMixin fake_gaia_{&mixin_host_};
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerGaiaTest, GoBackToGaiaInfo) {
@@ -2610,10 +2617,20 @@ IN_PROC_BROWSER_TEST_F(WizardControllerGaiaTest,
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
 }
 
+IN_PROC_BROWSER_TEST_F(WizardControllerGaiaTest, TransitionFromGaiaInfo) {
+  WaitForOobeUI();
+  WizardController::default_controller()->AdvanceToScreen(
+      GaiaInfoScreenView::kScreenId);
+  test::OobeJS().ClickOnPath({"gaia-info", "nextButton"});
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+}
+
 class GoingBackFromGaiaScreenInChildFlowTest
     : public WizardControllerTest,
       public testing::WithParamInterface<std::tuple<bool, std::string>> {
   FakeGaiaMixin fake_gaia_{&mixin_host_};
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_UNOWNED};
 };
 
 IN_PROC_BROWSER_TEST_P(GoingBackFromGaiaScreenInChildFlowTest,
@@ -2656,6 +2673,93 @@ INSTANTIATE_TEST_SUITE_P(
                     std::make_tuple(true, "childSignInButton"),
                     std::make_tuple(false, "childCreateButton"),
                     std::make_tuple(false, "childSignInButton")));
+
+class WizardControllerFlowWithAutoEnrollmentCheckForcedTest
+    : public WizardControllerFlowTest {
+ public:
+  WizardControllerFlowWithAutoEnrollmentCheckForcedTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kOobeAutoEnrollmentCheckForced);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WizardControllerFlowWithAutoEnrollmentCheckForcedTest,
+                       OobeMarkedCompleted) {
+  WaitForOobeUI();
+  CheckCurrentScreen(WelcomeView::kScreenId);
+  EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(0);
+  EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);
+  EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
+  mock_welcome_screen_->ExitScreen(WelcomeScreen::Result::kNext);
+
+  CheckCurrentScreen(NetworkScreenView::kScreenId);
+  EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
+  EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+
+  // Let update screen smooth time process (time = 0ms).
+  content::RunAllPendingInMessageLoop();
+  CheckCurrentScreen(UpdateView::kScreenId);
+
+  EXPECT_CALL(*mock_update_screen_, HideImpl()).Times(1);
+  mock_update_screen_->RunExit(UpdateScreen::Result::UPDATE_NOT_REQUIRED);
+  base::RunLoop().RunUntilIdle();
+
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+  EXPECT_TRUE(StartupUtils::IsOobeCompleted());
+}
+
+IN_PROC_BROWSER_TEST_F(WizardControllerFlowWithAutoEnrollmentCheckForcedTest,
+                       OobeNotMarkedCompleted) {
+  WaitForOobeUI();
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->skip_auto_enrollment_check_for_tests = true;
+  CheckCurrentScreen(WelcomeView::kScreenId);
+  EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(0);
+  EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);
+  EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
+  mock_welcome_screen_->ExitScreen(WelcomeScreen::Result::kNext);
+
+  CheckCurrentScreen(NetworkScreenView::kScreenId);
+  EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
+  EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+
+  // Let update screen smooth time process (time = 0ms).
+  content::RunAllPendingInMessageLoop();
+  CheckCurrentScreen(UpdateView::kScreenId);
+
+  EXPECT_CALL(*mock_update_screen_, HideImpl()).Times(1);
+  mock_update_screen_->RunExit(UpdateScreen::Result::UPDATE_NOT_REQUIRED);
+  base::RunLoop().RunUntilIdle();
+
+  OobeScreenWaiter(SignInFatalErrorView::kScreenId).Wait();
+  EXPECT_FALSE(StartupUtils::IsOobeCompleted());
+}
+
+IN_PROC_BROWSER_TEST_F(WizardControllerFlowWithAutoEnrollmentCheckForcedTest,
+                       ShowFatalErrorOnGaiaAdvanceWhenOobeIncomplete) {
+  WaitForOobeUI();
+
+  WizardController::default_controller()->AdvanceToScreen(GaiaView::kScreenId);
+
+  OobeScreenWaiter(SignInFatalErrorView::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(WizardControllerFlowWithAutoEnrollmentCheckForcedTest,
+                       NoFatalErrorOnGaiaAdvanceWhenOobeComplete) {
+  StartupUtils::MarkOobeCompleted();
+  WaitForOobeUI();
+
+  WizardController::default_controller()->AdvanceToScreen(GaiaView::kScreenId);
+
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+}
+
 // TODO(nkostylev): Add test for WebUI accelerators http://crosbug.com/22571
 
 // TODO(merkulova): Add tests for bluetooth HID detection screen variations when

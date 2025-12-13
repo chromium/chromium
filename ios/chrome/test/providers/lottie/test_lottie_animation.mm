@@ -43,6 +43,10 @@
 - (void)setColorValue:(UIColor*)color forKeypath:(NSString*)keypath {
 }
 
+- (void)setGradientValue:(NSArray<UIColor*>*)colors
+              forKeypath:(NSString*)keypath {
+}
+
 // Called to set a dictionary text provider.
 - (void)setDictionaryTextProvider:
     (NSDictionary<NSString*, NSString*>*)dictionaryTextProvider {

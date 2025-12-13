@@ -11,6 +11,8 @@
 #include <sanitizer/asan_interface.h>
 #endif
 
+namespace blink {
+
 #if defined(ADDRESS_SANITIZER)
 #define ASAN_REGION_IS_POISONED(addr, size) \
   __asan_region_is_poisoned(addr, size)
@@ -44,6 +46,8 @@ class AsanUnpoisonScope {
   ~AsanUnpoisonScope() {}
 };
 #endif
+
+}  // namespace blink
 
 #if defined(LEAK_SANITIZER)
 #include <sanitizer/lsan_interface.h>

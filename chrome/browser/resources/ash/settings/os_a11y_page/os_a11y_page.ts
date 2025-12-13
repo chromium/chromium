@@ -219,6 +219,11 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
     window.open(
         'https://chrome.google.com/webstore/category/collection/3p_accessibility_extensions');
   }
+
+  private onDisabilitySupportClick_(): void {
+    window.open(
+        'http://support.google.com/accessibility/android?p=ChromeOS-A11Y_setting');
+  }
 }
 
 declare global {

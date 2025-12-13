@@ -9,7 +9,6 @@
 #include "components/printing/common/print.mojom-forward.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
 namespace content {
 class RenderFrameHost;

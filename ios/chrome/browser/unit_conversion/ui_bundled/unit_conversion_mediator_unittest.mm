@@ -22,11 +22,11 @@ const double kExpectedTargetUnitValue = 1000;
 const double kExpectedDefaultValue = 0;
 
 // Source and target units value fields in valid format.
-NSString* kValidSourceUnitValueField = @"1";
-NSString* kValidTargetUnitValueField = @"1000";
+NSString* const kValidSourceUnitValueField = @"1";
+NSString* const kValidTargetUnitValueField = @"1000";
 
 // Source/Target unit value field in invalid format.
-NSString* kInvalidUnitValueField = @"&1";
+NSString* const kInvalidUnitValueField = @"&1";
 
 }  // namespace
 

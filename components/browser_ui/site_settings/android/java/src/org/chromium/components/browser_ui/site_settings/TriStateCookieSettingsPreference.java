@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.RadioGroup;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordUserAction;
@@ -22,6 +21,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.settings.ContainedRadioButtonGroupPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
@@ -29,7 +29,7 @@ import org.chromium.components.content_settings.CookieControlsMode;
 
 /** A 3-state radio group Preference used for the Third-Party Cookies subpage of SiteSettings. */
 @NullMarked
-public class TriStateCookieSettingsPreference extends Preference
+public class TriStateCookieSettingsPreference extends ContainedRadioButtonGroupPreference
         implements RadioGroup.OnCheckedChangeListener,
                 RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener {
     @SuppressWarnings("NullAway.Init")
@@ -46,23 +46,16 @@ public class TriStateCookieSettingsPreference extends Preference
         // An enum indicating when to block third-party cookies.
         public @CookieControlsMode int cookieControlsMode;
 
-        // Whether the incognito mode is enabled.
-        public boolean isIncognitoModeEnabled;
-
         // Whether third-party blocking is enforced.
         public boolean cookieControlsModeEnforced;
         // Whether Related Website Sets are enabled.
         public boolean isRelatedWebsiteSetsDataAccessEnabled;
-        // Whether 3pcs are always blocked in incognito.
-        public boolean isAlwaysBlock3pcsIncognitoEnabled;
     }
 
     // Keeps the params that are applied to the UI if the params are set before the UI is ready.
-    private @Nullable Params mInitializationParams;
-    private boolean mIsAlwaysBlock3pcsIncognitoEnabled;
+    private @Nullable Params mParams;
 
     // UI Elements.
-    private RadioButtonWithDescription mAllowButton;
     private RadioButtonWithDescriptionAndAuxButton mBlockThirdPartyIncognitoButton;
     private RadioButtonWithDescriptionAndAuxButton mBlockThirdPartyButton;
     private @Nullable RadioGroup mRadioGroup;
@@ -81,28 +74,28 @@ public class TriStateCookieSettingsPreference extends Preference
 
     /** Sets the cookie settings state and updates the radio buttons. */
     public void setState(Params state) {
+        mParams = state;
         if (mRadioGroup != null) {
-            setBlockThirdPartyCookieDescription(state);
-            configureRadioButtons(state);
-        } else {
-            mInitializationParams = state;
+            setBlockThirdPartyCookieDescription(mParams);
+            configureRadioButtons(mParams);
         }
+        notifyChanged();
     }
 
-    /** @return The state that is currently selected. */
+    /**
+     * @return The state that is currently selected.
+     */
     public @CookieControlsMode @Nullable Integer getState() {
-        if (mRadioGroup == null && mInitializationParams == null) {
+        if (mRadioGroup == null && mParams == null) {
             return null;
         }
 
-        // Calculate the state from mInitializationParams if the UI is not initialized yet.
-        if (mInitializationParams != null) {
-            return getActiveState(mInitializationParams);
+        // Calculate the state from mParams if the UI is not initialized yet.
+        if (mParams != null) {
+            return getActiveState(mParams);
         }
 
-        if (mAllowButton.isChecked()) {
-            return CookieControlsMode.OFF;
-        } else if (mBlockThirdPartyIncognitoButton.isChecked()) {
+        if (mBlockThirdPartyIncognitoButton.isChecked()) {
             return CookieControlsMode.INCOGNITO_ONLY;
         } else {
             assert mBlockThirdPartyButton.isChecked();
@@ -112,14 +105,21 @@ public class TriStateCookieSettingsPreference extends Preference
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
-        if (mIsAlwaysBlock3pcsIncognitoEnabled) {
-            if (checkedId == mBlockThirdPartyButton.getId()) {
-                RecordUserAction.record("Settings.ThirdPartyCookies.Block");
-            } else if (checkedId == mBlockThirdPartyIncognitoButton.getId()) {
-                RecordUserAction.record("Settings.ThirdPartyCookies.Allow");
-            }
+        @CookieControlsMode int state;
+        if (checkedId == mBlockThirdPartyButton.getId()) {
+            RecordUserAction.record("Settings.ThirdPartyCookies.Block");
+            state = CookieControlsMode.BLOCK_THIRD_PARTY;
+        } else if (checkedId == mBlockThirdPartyIncognitoButton.getId()) {
+            RecordUserAction.record("Settings.ThirdPartyCookies.Allow");
+            state = CookieControlsMode.INCOGNITO_ONLY;
+        } else {
+            return;
         }
-        callChangeListener(getState());
+
+        if (mParams != null) {
+            setBlockThirdPartyCookieDescription(mParams);
+        }
+        callChangeListener(state);
     }
 
     @Override
@@ -128,7 +128,6 @@ public class TriStateCookieSettingsPreference extends Preference
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        mAllowButton = (RadioButtonWithDescription) assertNonNull(holder.findViewById(R.id.allow));
         mBlockThirdPartyIncognitoButton =
                 (RadioButtonWithDescriptionAndAuxButton)
                         holder.findViewById(R.id.block_third_party_incognito_with_aux);
@@ -145,9 +144,9 @@ public class TriStateCookieSettingsPreference extends Preference
                 (TextViewWithCompoundDrawables)
                         assertNonNull(holder.findViewById(R.id.managed_disclaimer_text));
 
-        if (mInitializationParams != null) {
-            setBlockThirdPartyCookieDescription(mInitializationParams);
-            configureRadioButtons(mInitializationParams);
+        if (mParams != null) {
+            setBlockThirdPartyCookieDescription(mParams);
+            configureRadioButtons(mParams);
         }
     }
 
@@ -156,19 +155,12 @@ public class TriStateCookieSettingsPreference extends Preference
     }
 
     private void setBlockThirdPartyCookieDescription(Params params) {
-        int blockSublabelId;
-        if (params.isRelatedWebsiteSetsDataAccessEnabled) {
-            blockSublabelId =
-                    params.isAlwaysBlock3pcsIncognitoEnabled
-                            ? R.string
-                                    .settings_cookies_block_third_party_settings_block_sublabel_rws_enabled
-                            : R.string
-                                    .website_settings_third_party_cookies_page_block_radio_sub_label_rws_enabled;
-        } else {
-            blockSublabelId =
-                    R.string
-                            .website_settings_third_party_cookies_page_block_radio_sub_label_rws_disabled;
-        }
+        final int blockSublabelId =
+                params.isRelatedWebsiteSetsDataAccessEnabled
+                        ? R.string
+                        .settings_cookies_block_third_party_settings_block_sublabel_rws_enabled
+                        : R.string
+                                .website_settings_third_party_cookies_page_block_radio_sub_label_rws_disabled;
         mBlockThirdPartyButton.setDescriptionText(getResources().getString(blockSublabelId));
     }
 
@@ -188,31 +180,13 @@ public class TriStateCookieSettingsPreference extends Preference
     }
 
     private @CookieControlsMode int getActiveState(Params params) {
-        if (params.isAlwaysBlock3pcsIncognitoEnabled) {
-            if (params.cookieControlsMode == CookieControlsMode.OFF) {
-                return CookieControlsMode.INCOGNITO_ONLY;
-            }
-        } else if (params.cookieControlsMode == CookieControlsMode.INCOGNITO_ONLY
-                && !params.isIncognitoModeEnabled) {
-            return CookieControlsMode.OFF;
-        }
-        return params.cookieControlsMode;
+        return params.cookieControlsMode == CookieControlsMode.OFF
+                ? CookieControlsMode.INCOGNITO_ONLY
+                : params.cookieControlsMode;
     }
 
     private void configureRadioButtons(Params params) {
         assert (mRadioGroup != null);
-        mAllowButton.setVisibility(
-                params.isAlwaysBlock3pcsIncognitoEnabled ? View.GONE : View.VISIBLE);
-        if (params.isAlwaysBlock3pcsIncognitoEnabled) {
-            mIsAlwaysBlock3pcsIncognitoEnabled = params.isAlwaysBlock3pcsIncognitoEnabled;
-            int allowLabelId = R.string.website_settings_third_party_cookies_page_allow_radio_label;
-            mBlockThirdPartyIncognitoButton.setPrimaryText(getResources().getString(allowLabelId));
-            int allowSublabelId =
-                    R.string.settings_cookies_block_third_party_settings_allow_sublabel;
-            mBlockThirdPartyIncognitoButton.setDescriptionText(
-                    getResources().getString(allowSublabelId));
-        }
-        mAllowButton.setEnabled(true);
         mBlockThirdPartyIncognitoButton.setEnabled(true);
         mBlockThirdPartyButton.setEnabled(true);
         for (RadioButtonWithDescription button : getEnforcedButtons(params)) {
@@ -224,8 +198,6 @@ public class TriStateCookieSettingsPreference extends Preference
         // Always want to enable the selected option.
         button.setEnabled(true);
         button.setChecked(true);
-
-        mInitializationParams = null;
     }
 
     /** A helper function to return a button array from a variable number of arguments. */
@@ -237,7 +209,6 @@ public class TriStateCookieSettingsPreference extends Preference
     public RadioButtonWithDescription getButton(@CookieControlsMode int state) {
         switch (state) {
             case CookieControlsMode.OFF:
-                return mAllowButton;
             case CookieControlsMode.INCOGNITO_ONLY:
                 return mBlockThirdPartyIncognitoButton;
             case CookieControlsMode.BLOCK_THIRD_PARTY:
@@ -249,18 +220,13 @@ public class TriStateCookieSettingsPreference extends Preference
 
     /**
      * @return An array of radio buttons that have to be disabled as they can't be selected due to
-     *         policy restrictions.
+     *     policy restrictions.
      */
     private RadioButtonWithDescription[] getEnforcedButtons(Params params) {
-        // Nothing is enforced.
-        if (!params.cookieControlsModeEnforced) {
-            if (!params.isIncognitoModeEnabled) {
-                return buttons(mBlockThirdPartyIncognitoButton);
-            } else {
-                return buttons();
-            }
+        if (params.cookieControlsModeEnforced) {
+            return buttons(mBlockThirdPartyIncognitoButton, mBlockThirdPartyButton);
         }
-        return buttons(mAllowButton, mBlockThirdPartyIncognitoButton, mBlockThirdPartyButton);
+        return buttons();
     }
 
     public boolean isButtonEnabledForTesting(@CookieControlsMode int state) {
@@ -271,10 +237,5 @@ public class TriStateCookieSettingsPreference extends Preference
     public boolean isButtonCheckedForTesting(@CookieControlsMode int state) {
         assert getButton(state) != null;
         return getButton(state).isChecked();
-    }
-
-    public boolean isButtonVisibleForTesting(@CookieControlsMode int state) {
-        assert getButton(state) != null;
-        return getButton(state).getVisibility() == View.VISIBLE;
     }
 }

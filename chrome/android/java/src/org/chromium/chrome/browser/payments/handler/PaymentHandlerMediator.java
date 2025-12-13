@@ -13,6 +13,8 @@ import androidx.annotation.IntDef;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
 import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator.PaymentHandlerUiObserver;
@@ -41,6 +43,7 @@ import java.lang.annotation.RetentionPolicy;
  * PaymentHandler mediator, which is responsible for receiving events from the view and notifies the
  * backend (the coordinator).
  */
+@NullMarked
 /* package */ class PaymentHandlerMediator extends WebContentsObserver
         implements BottomSheetObserver, PaymentHandlerToolbarObserver, View.OnLayoutChangeListener {
     // The value is picked in order to allow users to see the tab behind this UI.
@@ -65,9 +68,9 @@ import java.lang.annotation.RetentionPolicy;
     private final InputProtector mInputProtector;
 
     /** A token held while the payment sheet is obscuring all visible tabs. */
-    private TabObscuringHandler.Token mTabObscuringToken;
+    private TabObscuringHandler.@Nullable Token mTabObscuringToken;
 
-    private PropertyModel mScrimProperties;
+    private @Nullable PropertyModel mScrimProperties;
     private boolean mIsDestroyed;
 
     @IntDef({
@@ -262,13 +265,14 @@ import java.lang.annotation.RetentionPolicy;
 
     // Implement BottomSheetObserver:
     @Override
-    public void onSheetContentChanged(BottomSheetContent newContent) {}
+    public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {}
 
     private void hideScrim() {
         setObscureState(false);
 
         ScrimManager coordinator = mBottomSheetController.getScrimManager();
         if (coordinator != null && coordinator.isShowingScrim()) {
+            assert mScrimProperties != null;
             coordinator.hideScrim(mScrimProperties, /* animate= */ true);
             mScrimProperties = null;
         }

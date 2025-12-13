@@ -34,7 +34,7 @@ class TestPrefetchWatcher {
 
   // Waits until the specific prefetch request searched by its
   // document token and url (which correspond the properties of
-  // `PrefetchContainer::Key`) is successfully completed. Returns a
+  // `PrefetchKey`) is successfully completed. Returns a
   // test-specific id for `PrefetchContainer`.
   PrefetchContainerIdForTesting WaitUntilPrefetchResponseCompleted(
       const std::optional<blink::DocumentToken>& document_token,

@@ -4,11 +4,13 @@
 
 #import "ios/chrome/credential_provider_extension/ui/multi_profile_passkey_creation_view_controller.h"
 
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/credential_provider_extension/favicon_util.h"
+#import "ios/chrome/credential_provider_extension/generated_localized_strings.h"
 #import "ios/chrome/credential_provider_extension/passkey_request_details.h"
 
 namespace {
@@ -139,8 +141,7 @@ NSAttributedString* AsAttributedString(NSString* text,
   self.bannerName = @"passkey_generic_banner";
   self.bannerSize = BannerImageSizeType::kExtraShort;
 
-  self.titleText = NSLocalizedString(
-      @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEYS_CREATE", @"Create a passkey for");
+  self.titleText = CredentialProviderPasskeysCreateString();
 
   self.titleTopMarginWhenNoHeaderImage = kTitleHorizontalAndTopMargin;
   self.titleHorizontalMargin = kTitleHorizontalAndTopMargin;
@@ -148,10 +149,10 @@ NSAttributedString* AsAttributedString(NSString* text,
   self.specificContentView = [self createSpecificContentView];
   self.subtitleBottomMargin = 0;
 
-  self.primaryActionString = NSLocalizedString(
-      @"IDS_IOS_CREDENTIAL_PROVIDER_EXTENSION_CREATE", @"Create");
-  self.secondaryActionString = NSLocalizedString(
-      @"IDS_IOS_CREDENTIAL_PROVIDER_EXTENSION_CANCEL", @"Cancel");
+  self.configuration.primaryActionString =
+      CredentialProviderExtensionCreateString();
+  self.configuration.secondaryActionString =
+      CredentialProviderExtensionCancelString();
 
   [super viewDidLoad];
 
@@ -272,9 +273,7 @@ NSAttributedString* AsAttributedString(NSString* text,
 // Creates and configures the account information label.
 - (UIView*)accountInformationLabel {
   CHECK(_userEmail);
-  NSString* firstLine =
-      NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEYS_ACCOUNT",
-                        @"Passkeys are saved in Google Password Manager for");
+  NSString* firstLine = CredentialProviderPasskeysAccountString();
 
   NSMutableAttributedString* full_text =
       [[NSMutableAttributedString alloc] init];

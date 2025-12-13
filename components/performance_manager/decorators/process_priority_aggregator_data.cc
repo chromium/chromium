@@ -11,6 +11,8 @@
 
 namespace performance_manager {
 
+ProcessPriorityAggregatorData::ProcessPriorityAggregatorData() = default;
+
 void ProcessPriorityAggregatorData::Decrement(base::TaskPriority priority) {
   switch (priority) {
     case base::TaskPriority::LOWEST:

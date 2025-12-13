@@ -23,6 +23,8 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
 
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -110,19 +112,24 @@ TabFetcher::Tab FindLocalTabAndroid(const Profile* profile,
 
 // Returns a list of all tabs from tab strip model.
 std::vector<TabFetcher::TabEntry> FetchTabs(const Profile* profile) {
-  const BrowserList* browser_list = BrowserList::GetInstance();
   std::vector<TabFetcher::TabEntry> tabs;
-  for (const Browser* browser : *browser_list) {
-    if (browser->profile() != profile) {
-      continue;
-    }
-    for (int i = 0; i < browser->tab_strip_model()->GetTabCount(); ++i) {
-      auto* web_contents = browser->tab_strip_model()->GetWebContentsAt(i);
-      auto* tab_delegate =
-          BrowserSyncedTabDelegate::FromWebContents(web_contents);
-      tabs.emplace_back(tab_delegate->GetSessionId(), web_contents, nullptr);
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [profile, &tabs](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() != profile) {
+          return true;
+        }
+        const TabStripModel* const tab_strip_model =
+            browser->GetTabStripModel();
+        for (int i = 0; i < tab_strip_model->count(); ++i) {
+          content::WebContents* const web_contents =
+              tab_strip_model->GetWebContentsAt(i);
+          auto* const tab_delegate =
+              BrowserSyncedTabDelegate::FromWebContents(web_contents);
+          tabs.emplace_back(tab_delegate->GetSessionId(), web_contents,
+                            nullptr);
+        }
+        return true;
+      });
   return tabs;
 }
 

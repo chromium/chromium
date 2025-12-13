@@ -1,6 +1,8 @@
 include_rules = [
   "+components/collaboration/public",
+  "+components/saved_tab_groups/public",
   "+ios/chrome/browser/banner_promo/model",
+  "+ios/chrome/browser/bubble/ui_bundled",
   "+ios/chrome/browser/collaboration/model/messaging",
   "+ios/chrome/browser/contextual_panel/model",
   "+ios/chrome/browser/default_browser/model",
@@ -17,6 +19,7 @@ include_rules = [
   "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/ntp/ui_bundled",
   "+ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h",
+  "+ios/chrome/browser/omnibox/model/omnibox_position/omnibox_state_provider.h",
   "+ios/chrome/browser/omnibox/ui",
   "+ios/chrome/browser/omnibox/coordinator",
   "+ios/chrome/browser/omnibox/public",
@@ -24,6 +27,7 @@ include_rules = [
   "+ios/chrome/browser/overlays/model/public",
   "+ios/chrome/browser/policy/model/policy_util.h",
   "+ios/chrome/browser/prerender/model",
+  "+ios/chrome/browser/reader_mode/model",
   "+ios/chrome/browser/saved_tab_groups/model",
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h",
@@ -36,6 +40,7 @@ include_rules = [
   "+ios/chrome/browser/popup_menu/ui_bundled/public",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web/model/web_navigation_browser_agent.h",
+  "+ios/chrome/browser/composebox/public/composebox_animation_base.h"
 ];
 
 specific_include_rules = {

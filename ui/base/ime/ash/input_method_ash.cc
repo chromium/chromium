@@ -75,12 +75,6 @@ AutocapitalizationMode ConvertAutocapitalizationMode(int flags) {
   return AutocapitalizationMode::kUnspecified;
 }
 
-// Returns whether `url` refers to Terminal/crosh.
-bool IsTerminalOrCrosh(const GURL& url) {
-  return url.spec().starts_with("chrome-untrusted://terminal") ||
-         url.spec().starts_with("chrome-untrusted://crosh");
-}
-
 }  // namespace
 
 TextInputMethod* GetEngine() {
@@ -180,9 +174,7 @@ ui::EventDispatchDetails InputMethodAsh::DispatchKeyEvent(ui::KeyEvent* event) {
   // Simply forward the key event if there's no focused TextInputClient.
   // Dead keys cannot be supported in this case because composition and commit
   // are not supported.
-  if (base::FeatureList::IsEnabled(
-          features::kInputMethodDeadKeyFixForNoInputField) &&
-      GetTextInputClient() == nullptr) {
+  if (GetTextInputClient() == nullptr) {
     return DispatchKeyEventPostIME(event);
   }
 
@@ -716,9 +708,7 @@ ui::EventDispatchDetails InputMethodAsh::ProcessFilteredKeyPressEvent(
     // TODO(b/289319217): Investigate if we need to distinguish between a dead
     // key that is handled by the character composer or is handled by the input
     // method.
-    if ((base::FeatureList::IsEnabled(features::kInputMethodDeadKeyFix) ||
-         (focused_url_.is_valid() && IsTerminalOrCrosh(focused_url_))) &&
-        event->GetDomKey().IsDeadKey()) {
+    if (event->GetDomKey().IsDeadKey()) {
       return DispatchKeyEventPostIME(event);
     }
   }

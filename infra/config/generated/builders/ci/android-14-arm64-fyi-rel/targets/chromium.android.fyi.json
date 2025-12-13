@@ -2,6 +2,8 @@
   "android-14-arm64-fyi-rel": {
     "scripts": [
       {
+        "module_name": "check_network_annotations",
+        "module_scheme": "single",
         "name": "check_network_annotations",
         "resultdb": {
           "enable": true,

@@ -40,9 +40,13 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.MessageService.Message;
+import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageData;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
@@ -50,7 +54,6 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Integration tests for MessageCardProvider component. */
@@ -70,14 +73,14 @@ public class MessageCardProviderTest {
     private TabListModel mModelList;
     private SimpleRecyclerViewAdapter mAdapter;
 
-    private MessageCardProviderCoordinator mCoordinator;
-    private MessageService mTestingService;
-    private MessageService mPriceService;
+    private MessageCardProviderCoordinator<@MessageType Integer, @UiType Integer> mCoordinator;
+    private MessageService<@MessageType Integer, @UiType Integer> mTestingService;
+    private MessageService<@MessageType Integer, @UiType Integer> mPriceService;
 
-    private final MessageCardView.DismissActionProvider mUiDismissActionProvider =
+    private final ServiceDismissActionProvider<@MessageType Integer> mServiceDismissActionProvider =
             (messageType) -> {};
 
-    @Mock private PriceMessageService.PriceMessageData mPriceMessageData;
+    @Mock private PriceMessageData mPriceMessageData;
 
     @Mock private Profile mProfile;
 
@@ -139,12 +142,22 @@ public class MessageCardProviderTest {
 
                     view.addView(mRecyclerView);
 
-                    mTestingService = new MessageService(MessageType.FOR_TESTING);
-                    mPriceService = new MessageService(MessageType.PRICE_MESSAGE);
+                    mTestingService =
+                            new MessageService<>(
+                                    MessageType.FOR_TESTING,
+                                    UiType.IPH_MESSAGE,
+                                    R.layout.tab_grid_message_card_item,
+                                    MessageCardViewBinder::bind);
+                    mPriceService =
+                            new MessageService<>(
+                                    MessageType.PRICE_MESSAGE,
+                                    UiType.IPH_MESSAGE,
+                                    R.layout.tab_grid_message_card_item,
+                                    MessageCardViewBinder::bind);
 
                     mCoordinator =
-                            new MessageCardProviderCoordinator(
-                                    sActivity, () -> mProfile, mUiDismissActionProvider);
+                            new MessageCardProviderCoordinator<>(
+                                    sActivity, mServiceDismissActionProvider);
                     mCoordinator.subscribeMessageService(mTestingService);
                     mCoordinator.subscribeMessageService(mPriceService);
                 });
@@ -155,7 +168,7 @@ public class MessageCardProviderTest {
     public void testPriceMessage() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPriceService.sendAvailabilityNotification(mPriceMessageData);
+                    sendAvailabilityNotification();
                     addMessageCards();
                 });
 
@@ -166,11 +179,11 @@ public class MessageCardProviderTest {
     @SmallTest
     public void testReviewPriceMessage() {
         AtomicBoolean reviewed = new AtomicBoolean();
-        when(mPriceMessageData.getReviewActionProvider()).thenReturn(() -> reviewed.set(true));
+        when(mPriceMessageData.getAcceptActionProvider()).thenReturn(() -> reviewed.set(true));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPriceService.sendAvailabilityNotification(mPriceMessageData);
+                    sendAvailabilityNotification();
                     addMessageCards();
                 });
 
@@ -185,12 +198,11 @@ public class MessageCardProviderTest {
     @SmallTest
     public void testDismissPriceMessage() {
         AtomicBoolean dismissed = new AtomicBoolean();
-        when(mPriceMessageData.getDismissActionProvider())
-                .thenReturn((type) -> dismissed.set(true));
+        when(mPriceMessageData.getDismissActionProvider()).thenReturn(() -> dismissed.set(true));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mPriceService.sendAvailabilityNotification(mPriceMessageData);
+                    sendAvailabilityNotification();
                     addMessageCards();
                 });
 
@@ -202,14 +214,26 @@ public class MessageCardProviderTest {
     }
 
     private void addMessageCards() {
-        List<MessageCardProviderMediator.Message> messageList = mCoordinator.getMessageItems();
-        for (int i = 0; i < messageList.size(); i++) {
-            MessageCardProviderMediator.Message message = messageList.get(i);
+        for (MessageService<@MessageType Integer, @UiType Integer> service :
+                mCoordinator.getMessageServices()) {
+            Message<@MessageType Integer> message =
+                    mCoordinator.getNextMessageItemForType(service.getMessageType());
+            if (message == null) continue;
             if (message.type == MessageType.PRICE_MESSAGE) {
                 mModelList.add(new MVCListAdapter.ListItem(UiType.PRICE_MESSAGE, message.model));
             } else {
                 mModelList.add(new MVCListAdapter.ListItem(UiType.IPH_MESSAGE, message.model));
             }
         }
+    }
+
+    private void sendAvailabilityNotification() {
+        mPriceService.sendAvailabilityNotification(
+                (a, b) ->
+                        PriceMessageCardViewModel.create(
+                                sActivity,
+                                c -> {},
+                                mPriceMessageData,
+                                new PriceDropNotificationManagerImpl(mProfile)));
     }
 }

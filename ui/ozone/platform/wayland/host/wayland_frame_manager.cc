@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -358,8 +359,8 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
 
   DCHECK(empty_frame || !connection_->presentation() ||
          frame->pending_feedback || frame->feedback.has_value());
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "wayland", "WaylandFrameManager.PlaybackFrame", frame->frame_id);
+  TRACE_EVENT_BEGIN("wayland", "WaylandFrameManager.PlaybackFrame",
+                    perfetto::Track(frame->frame_id));
   root_surface->Commit(true);
 
   frame->root_config = wl::WaylandOverlayConfig();
@@ -404,8 +405,8 @@ std::optional<bool> WaylandFrameManager::ApplySurfaceConfigure(
   // Besides the actual wayland surface scale, `config.surface_scale_factor`
   // also contains chromium's ui scale, which is irrelevant to the wayland
   // compositor, thus it must be factored out here. This assumes that:
-  // - window's ui_scale will always be set to 1 when neither per-surface
-  // scaling nor kWaylandUiScale feature is enabled.
+  // - window's ui_scale will always be set to 1 when per-surface scaling is not
+  //   enabled.
   // - frame's window state has already been latched, which is usually done in
   // `MaybeProcessSubmittedFrames`, before calling into this function.
   const float surface_buffer_scale =
@@ -424,8 +425,9 @@ std::optional<bool> WaylandFrameManager::ApplySurfaceConfigure(
   surface->set_contains_video(
       config.priority_hint == gfx::OverlayPriorityHint::kHardwareProtection ||
       config.priority_hint == gfx::OverlayPriorityHint::kVideo);
-  surface->set_color_space(
-      config.color_space.value_or(gfx::ColorSpace::CreateSRGB()));
+  surface->SetImageDescription(
+      config.color_space.value_or(gfx::ColorSpace::CreateSRGB()),
+      config.hdr_metadata);
   if (set_opaque_region) {
     auto region_px =
         config.enable_blend
@@ -884,8 +886,8 @@ void WaylandFrameManager::MaybeProcessSubmittedFrames() {
 
       // The presentation info entries are sent with the last OnSubmission()
       // call.
-      TRACE_EVENT_NESTABLE_ASYNC_END0(
-          "wayland", "WaylandFrameManager.PlaybackFrame", (*iter)->frame_id);
+      TRACE_EVENT_END("wayland", /*"WaylandFrameManager.PlaybackFrame"*/
+                      perfetto::Track((*iter)->frame_id));
       auto swap_result = (*iter)->swap_result_recreate_buffers
                              ? gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS
                              : gfx::SwapResult::SWAP_ACK;

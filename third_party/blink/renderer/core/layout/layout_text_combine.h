@@ -104,6 +104,9 @@ class CORE_EXPORT LayoutTextCombine final : public LayoutBlockFlow {
   // Returns true if |layout_object| is a child of |LayoutTextCombine|.
   static bool ShouldBeParentOf(const LayoutObject& layout_object);
 
+  // Returns true if `mode` is a supported writing-mode.
+  static bool IsSupportedMode(WritingMode mode);
+
  private:
   bool IsLayoutTextCombine() const final {
     NOT_DESTROYED();
@@ -131,18 +134,21 @@ class CORE_EXPORT LayoutTextCombine final : public LayoutBlockFlow {
   Member<const Font> compressed_font_;
 };
 
+inline bool LayoutTextCombine::IsSupportedMode(WritingMode mode) {
+  if (!RuntimeEnabledFeatures::TextCombineNoSidewaysEnabled()) {
+    return !blink::IsHorizontalWritingMode(mode);
+  }
+  return !blink::IsHorizontalTypographicMode(mode);
+}
+
 // static
 inline bool LayoutTextCombine::ShouldBeParentOf(
     const LayoutObject& layout_object) {
-  if (layout_object.IsHorizontalWritingMode() || !layout_object.IsText() ||
-      layout_object.IsSVGInlineText()) [[likely]] {
+  if (!IsSupportedMode(layout_object.StyleRef().GetWritingMode()) ||
+      !layout_object.IsText() || layout_object.IsSVGInlineText()) [[likely]] {
     return false;
   }
-  if (layout_object.StyleRef().HasTextCombine() &&
-      layout_object.IsLayoutNGObject()) [[unlikely]] {
-    return true;
-  }
-  return false;
+  return layout_object.StyleRef().HasTextCombine();
 }
 
 template <>

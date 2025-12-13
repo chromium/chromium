@@ -11,13 +11,7 @@ include_rules = [
   # refactor ash codes in //chrome to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/plugin_vm",
-  "+chrome/browser/ash/settings/scoped_testing_cros_settings.h",
-  "+chrome/browser/ash/settings/stub_cros_settings_provider.h",
   "+chrome/browser/profiles/profile.h",
-  "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_navigator.h",
-  "+chrome/browser/ui/browser_navigator_params.h",
-  "+chrome/browser/ui/test",
   "+chrome/common",
   "+chrome/grit",
 ]
@@ -25,6 +19,8 @@ include_rules = [
 specific_include_rules = {
   "plugin_vm_installer_view_browsertest\\.cc": [
     "+chrome/browser/ash/login/test/device_state_mixin.h",
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/test",
     "+chrome/test",
   ]
 }

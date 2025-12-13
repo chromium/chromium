@@ -13,7 +13,9 @@ const valid_signature = `signature=:gHim9e5Pk2H7c9BStOmxSmkyc8+ioZgoxynu3d4INAT4
   await dp.Audits.enable();
   const url = 'inspector-protocol/network/resources/hello-world.html';
   await page.navigate(url);
-  const issuePromise = dp.Audits.onceIssueAdded();
+  const issuePromise = dp.Audits.onceIssueAdded(e => {
+    return e.params.issue.code === 'SRIMessageSignatureIssue';
+  });
 
   let testURL = new URL('/inspector-protocol/resources/sri-message-signature-test.php', self.origin);
   testURL.searchParams.set('signature', valid_signature);

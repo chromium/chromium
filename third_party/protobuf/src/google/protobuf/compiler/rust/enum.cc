@@ -25,6 +25,7 @@
 #include "google/protobuf/compiler/rust/context.h"
 #include "google/protobuf/compiler/rust/naming.h"
 #include "google/protobuf/descriptor.h"
+#include "upb/reflection/def.hpp"
 
 namespace google {
 namespace protobuf {
@@ -68,30 +69,34 @@ void TypeConversions(Context& ctx, const EnumDescriptor& desc) {
       return;
     case Kernel::kUpb:
       ctx.Emit(R"rs(
-            impl $pbr$::UpbTypeConversions for $name$ {
-                fn upb_type() -> $pbr$::CType {
-                    $pbr$::CType::Enum
-                }
-
-                fn to_message_value(
-                    val: $pb$::View<'_, Self>) -> $pbr$::upb_MessageValue {
-                    $pbr$::upb_MessageValue { int32_val: val.0 }
-                }
-
-                unsafe fn into_message_value_fuse_if_required(
-                  _raw_parent_arena: $pbr$::RawArena,
-                  val: Self) -> $pbr$::upb_MessageValue {
-                    $pbr$::upb_MessageValue { int32_val: val.0 }
-                }
-
-                unsafe fn from_message_value<'msg>(val: $pbr$::upb_MessageValue)
-                    -> $pb$::View<'msg, Self> {
-                  $name$(unsafe { val.int32_val })
-                }
+            impl $pbr$::EntityType for $name$ {
+                type Tag = $pbr$::EnumTag;
             }
             )rs");
       return;
   }
+}
+
+void MiniTable(Context& ctx, const EnumDescriptor& desc,
+               upb::EnumDefPtr upb_enum) {
+  if (ctx.is_cpp() || !desc.is_closed()) {
+    return;
+  }
+  std::string mini_descriptor = upb_enum.MiniDescriptorEncode();
+  ctx.Emit({{"mini_descriptor", mini_descriptor},
+            {"mini_descriptor_length", mini_descriptor.size()}},
+           R"rs(
+    unsafe impl $pbr$::AssociatedMiniTableEnum for $name$ {
+      fn mini_table() -> $pbr$::MiniTableEnumPtr {
+        static MINI_TABLE: $std$::sync::OnceLock<$pbr$::MiniTableEnumInitPtr> =
+            $std$::sync::OnceLock::new();
+        MINI_TABLE.get_or_init(|| unsafe {
+          $pbr$::MiniTableEnumInitPtr(
+              $pbr$::build_enum_mini_table("$mini_descriptor$"))
+        }).0
+      }
+    }
+  )rs");
 }
 
 }  // namespace
@@ -135,7 +140,8 @@ std::vector<RustEnumValue> EnumValues(
   return result;
 }
 
-void GenerateEnumDefinition(Context& ctx, const EnumDescriptor& desc) {
+void GenerateEnumDefinition(Context& ctx, const EnumDescriptor& desc,
+                            upb::EnumDefPtr upb_enum) {
   std::string name = EnumRsName(desc);
   ABSL_CHECK(desc.value_count() > 0);
   std::vector<RustEnumValue> values =
@@ -221,6 +227,7 @@ void GenerateEnumDefinition(Context& ctx, const EnumDescriptor& desc) {
              }
            }},
           {"type_conversions_impl", [&] { TypeConversions(ctx, desc); }},
+          {"mini_table", [&] { MiniTable(ctx, desc, upb_enum); }},
       },
       R"rs(
       #[repr(transparent)]
@@ -287,6 +294,26 @@ void GenerateEnumDefinition(Context& ctx, const EnumDescriptor& desc) {
         }
       }
 
+      // SAFETY: this is an enum type
+      unsafe impl $pbi$::Enum for $name$ {
+        const NAME: &'static str = "$name$";
+
+        fn is_known(value: i32) -> bool {
+          matches!(value, $known_values_pattern$)
+        }
+      }
+
+      $type_conversions_impl$
+
+      $mini_table$
+      )rs");
+
+  if (ctx.is_cpp()) {
+    ctx.Emit(
+        {
+            {"name", name},
+        },
+        R"rs(
       unsafe impl $pb$::ProxiedInRepeated for $name$ {
         fn repeated_new(_private: $pbi$::Private) -> $pb$::Repeated<Self> {
           $pbr$::new_enum_repeated()
@@ -350,18 +377,8 @@ void GenerateEnumDefinition(Context& ctx, const EnumDescriptor& desc) {
             $pbr$::reserve_enum_repeated_mut(r, additional);
         }
       }
-
-      // SAFETY: this is an enum type
-      unsafe impl $pbi$::Enum for $name$ {
-        const NAME: &'static str = "$name$";
-
-        fn is_known(value: i32) -> bool {
-          matches!(value, $known_values_pattern$)
-        }
-      }
-
-      $type_conversions_impl$
-      )rs");
+        )rs");
+  }
 }
 
 }  // namespace rust

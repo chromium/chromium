@@ -89,7 +89,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "chrome/browser/download/download_prompt_status.h"
 #endif
 
@@ -886,7 +886,7 @@ class TestDownloadMessageBridge : public DownloadMessageBridge {
 }  // namespace
 
 TEST_F(ChromeDownloadManagerDelegateTest, InterceptDownloadForAutomotive) {
-  if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (!base::android::device_info::is_automotive()) {
     GTEST_SKIP() << "This test should only run on automotive.";
   }
   base::HistogramTester histograms;
@@ -2438,7 +2438,6 @@ TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
   run_loop.Run();
 }
 
-// TODO(crbug.com/41328715) Add a Windows version of this test.
 #if !BUILDFLAG(IS_WIN)
 TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
        TrustedSourcesPolicyTrusted) {

@@ -29,7 +29,7 @@ TEST(ComplexFeatureTest, MultipleRulesAllowlist) {
     // Rule: "extension", allowlist "foo".
     std::unique_ptr<SimpleFeature> simple_feature(new SimpleFeature());
     simple_feature->set_allowlist({kIdFoo.value().c_str()});
-    simple_feature->set_extension_types({Manifest::TYPE_EXTENSION});
+    simple_feature->set_extension_types({Manifest::Type::kExtension});
     features.push_back(simple_feature.release());
   }
 
@@ -37,16 +37,16 @@ TEST(ComplexFeatureTest, MultipleRulesAllowlist) {
     // Rule: "legacy_packaged_app", allowlist "bar".
     std::unique_ptr<SimpleFeature> simple_feature(new SimpleFeature());
     simple_feature->set_allowlist({kIdBar.value().c_str()});
-    simple_feature->set_extension_types({Manifest::TYPE_LEGACY_PACKAGED_APP});
+    simple_feature->set_extension_types({Manifest::Type::kLegacyPackagedApp});
     features.push_back(simple_feature.release());
   }
 
   std::unique_ptr<ComplexFeature> feature(new ComplexFeature(&features));
 
   // Test match 1st rule.
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
-                ->IsAvailableToManifest(kIdFoo, Manifest::TYPE_EXTENSION,
+                ->IsAvailableToManifest(kIdFoo, Manifest::Type::kExtension,
                                         ManifestLocation::kInvalidLocation,
                                         Feature::UNSPECIFIED_PLATFORM,
                                         Feature::GetCurrentPlatform(),
@@ -55,28 +55,28 @@ TEST(ComplexFeatureTest, MultipleRulesAllowlist) {
 
   // Test match 2nd rule.
   EXPECT_EQ(
-      Feature::IS_AVAILABLE,
+      Feature::AvailabilityResult::kIsAvailable,
       feature
           ->IsAvailableToManifest(
-              kIdBar, Manifest::TYPE_LEGACY_PACKAGED_APP,
+              kIdBar, Manifest::Type::kLegacyPackagedApp,
               ManifestLocation::kInvalidLocation, Feature::UNSPECIFIED_PLATFORM,
               Feature::GetCurrentPlatform(), kUnspecifiedContextId)
           .result());
 
   // Test allowlist with wrong extension type.
-  EXPECT_NE(Feature::IS_AVAILABLE,
+  EXPECT_NE(Feature::AvailabilityResult::kIsAvailable,
             feature
-                ->IsAvailableToManifest(kIdBar, Manifest::TYPE_EXTENSION,
+                ->IsAvailableToManifest(kIdBar, Manifest::Type::kExtension,
                                         ManifestLocation::kInvalidLocation,
                                         Feature::UNSPECIFIED_PLATFORM,
                                         Feature::GetCurrentPlatform(),
                                         kUnspecifiedContextId)
                 .result());
   EXPECT_NE(
-      Feature::IS_AVAILABLE,
+      Feature::AvailabilityResult::kIsAvailable,
       feature
           ->IsAvailableToManifest(
-              kIdFoo, Manifest::TYPE_LEGACY_PACKAGED_APP,
+              kIdFoo, Manifest::Type::kLegacyPackagedApp,
               ManifestLocation::kInvalidLocation, Feature::UNSPECIFIED_PLATFORM,
               Feature::GetCurrentPlatform(), kUnspecifiedContextId)
           .result());
@@ -104,20 +104,21 @@ TEST(ComplexFeatureTest, Dependencies) {
   std::unique_ptr<ComplexFeature> feature(new ComplexFeature(&features));
 
   // Available to extensions because of the content_security_policy rule.
-  EXPECT_EQ(
-      Feature::IS_AVAILABLE,
-      feature
-          ->IsAvailableToManifest(
-              HashedExtensionId(std::string(32, 'a')), Manifest::TYPE_EXTENSION,
-              ManifestLocation::kInvalidLocation, Feature::UNSPECIFIED_PLATFORM,
-              Feature::GetCurrentPlatform(), kUnspecifiedContextId)
-          .result());
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
+            feature
+                ->IsAvailableToManifest(HashedExtensionId(std::string(32, 'a')),
+                                        Manifest::Type::kExtension,
+                                        ManifestLocation::kInvalidLocation,
+                                        Feature::UNSPECIFIED_PLATFORM,
+                                        Feature::GetCurrentPlatform(),
+                                        kUnspecifiedContextId)
+                .result());
 
   // Available to platform apps because of the videoCapture rule.
-  EXPECT_EQ(Feature::IS_AVAILABLE,
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
             feature
                 ->IsAvailableToManifest(HashedExtensionId(std::string(32, 'b')),
-                                        Manifest::TYPE_PLATFORM_APP,
+                                        Manifest::Type::kPlatformApp,
                                         ManifestLocation::kInvalidLocation,
                                         Feature::UNSPECIFIED_PLATFORM,
                                         Feature::GetCurrentPlatform(),
@@ -125,10 +126,10 @@ TEST(ComplexFeatureTest, Dependencies) {
                 .result());
 
   // Not available to hosted apps.
-  EXPECT_EQ(Feature::INVALID_TYPE,
+  EXPECT_EQ(Feature::AvailabilityResult::kInvalidType,
             feature
                 ->IsAvailableToManifest(HashedExtensionId(std::string(32, 'c')),
-                                        Manifest::TYPE_HOSTED_APP,
+                                        Manifest::Type::kHostedApp,
                                         ManifestLocation::kInvalidLocation,
                                         Feature::UNSPECIFIED_PLATFORM,
                                         Feature::GetCurrentPlatform(),
@@ -205,7 +206,7 @@ TEST(ComplexFeatureTest, RequiresDelegatedAvailabilityCheck) {
 
     // This feature should be available the second time that the delegated
     // availability check is called.
-    EXPECT_EQ(Feature::IS_AVAILABLE,
+    EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
               complex_feature
                   .IsAvailableToContext(
                       /*extension=*/nullptr, mojom::ContextType::kUnspecified,

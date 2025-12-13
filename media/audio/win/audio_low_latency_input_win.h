@@ -85,6 +85,7 @@
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
+#include "media/base/sample_format.h"
 
 namespace media {
 
@@ -169,6 +170,10 @@ class MEDIA_EXPORT WASAPIAudioInputStream
     async_activation_timeout_ms_ = async_activation_timeout_ms;
   }
 
+  // Triggers a call to OnError() on the sink to simulate a stream error.
+  // This method is for testing purposes only.
+  void SimulateErrorForTesting();
+
  private:
   class DataDiscontinuityReporter;
   class EchoCancellationConfig;
@@ -230,15 +235,19 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // converter.
   HRESULT CreateFifoIfNeeded();
 
+  // Sets up `input_format_` and `output_format_` based on `params_`.
+  bool UpdateFormats();
+
   // Our creator, the audio manager needs to be notified when we close.
   const raw_ptr<AudioManagerWin> manager_;
 
-  // Used to aggregate and report glitch metrics to UMA (periodically) and to
-  // text logs (when a stream ends).
-  SystemGlitchReporter glitch_reporter_;
+  // AudioParameters used to configure the stream formats in UpdateFormats().
+  const AudioParameters params_;
 
-  // Accumulates glitch info to be passed on to OnData().
-  media::AudioGlitchInfo::Accumulator glitch_accumulator_;
+  // This is the SampleFormat we request from CoreAudio. Used to create
+  // WAVEFORMATs as well as for the fifo to know the format of the data being
+  // pushed. We choose a SampleFormat based on the SharedModeMixFormat.
+  SampleFormat sample_format_ = kUnknownSampleFormat;
 
   AmplitudePeakDetector peak_detector_;
 
@@ -381,17 +390,33 @@ class MEDIA_EXPORT WASAPIAudioInputStream
   // Will be set to nullptr during construction if AEC is not supported.
   std::unique_ptr<EchoCancellationConfig> aec_config_;
 
+  // Set to true if the capture stream is a loopback stream. No distinction is
+  // made between application and process loopback. We need to check this every
+  // time a glitch is reported and it is therefore cheaper to cache it.
+  const bool is_loopback_capture_;
+
   // Process loopback captures do not get audio from an endpoint device but
-  // from a specified process IDs instead. It's is possible to check this using
-  // an internal helper method called IsProcessLoopbackDevice. However, we need
-  // to perform this check every time we need to pull data from the audio
-  // engine, which can be expensive. Checking the variable is cheaper than
-  // calling the function.
+  // from a specified process IDs instead. It's is possible to check this
+  // using an internal helper method called IsProcessLoopbackDevice.
+  // However, we need to perform this check every time we need to pull data
+  // from the audio engine, which can be expensive. Checking the variable is
+  // cheaper than calling the function.
   const bool is_process_loopback_capture_;
+
+  // Used to aggregate and report glitch metrics to UMA (periodically) and to
+  // text logs (when a stream ends).
+  SystemGlitchReporter glitch_reporter_;
+
+  // Accumulates glitch info to be passed on to OnData().
+  media::AudioGlitchInfo::Accumulator glitch_accumulator_;
 
   // Timeout period for waiting on the OS to activate the audio interface for
   // application loopback capture.
   base::TimeDelta async_activation_timeout_ms_ = base::Seconds(10);
+
+  bool simulate_error_for_testing_ = false;
+
+  bool use_device_sample_format_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

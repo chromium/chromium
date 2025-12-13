@@ -1,4 +1,4 @@
-<html class="test-wait reftest-wait">
+<html class="test-wait">
 <style>
 #a {
   float: none;
@@ -26,10 +26,11 @@ function func_0() {
 }
 document.addEventListener("DOMContentLoaded", () => {
   window.ontransitionend = func_0
+  details.open = "true"
   document.execCommand("outdent", false)
 })
 </script>
-<details ontoggle="func_0()" open="">
+<details ontoggle="func_0()" id="details">
 <summary id="a" contenteditable="true">
 <table id="b">
 <tr id="c">

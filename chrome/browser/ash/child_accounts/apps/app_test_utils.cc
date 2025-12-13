@@ -44,7 +44,7 @@ scoped_refptr<extensions::Extension> CreateExtension(
   manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
   manifest.SetByDottedPath(extensions::manifest_keys::kLaunchWebURL, url);
 
-  std::string error;
+  std::u16string error;
   extensions::Extension::InitFromValueFlags flags =
       extensions::Extension::NO_FLAGS;
   scoped_refptr<extensions::Extension> extension =

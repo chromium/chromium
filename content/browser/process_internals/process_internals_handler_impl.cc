@@ -55,7 +55,7 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
   frame_info->site_instance = ::mojom::SiteInstanceInfo::New();
   frame_info->site_instance->id = site_instance->GetId().value();
   frame_info->site_instance->locked =
-      site_instance->GetProcess()->GetProcessLock().is_locked_to_site();
+      site_instance->GetProcess()->GetProcessLock().IsLockedToSite();
   frame_info->site_instance->site_url =
       site_instance->HasSite()
           ? std::make_optional(site_instance->GetSiteInfo().site_url())
@@ -89,16 +89,17 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
   // Only send a process lock URL if it's different from the site URL.  In the
   // common case they are the same, so we avoid polluting the UI with two
   // identical URLs.
-  bool should_show_lock_url = frame_info->site_instance->locked &&
-                              site_instance->GetSiteInfo().process_lock_url() !=
-                                  site_instance->GetSiteInfo().site_url();
+  bool should_show_lock_url =
+      frame_info->site_instance->locked &&
+      site_instance->GetSiteInfo().GetProcessLockURL() !=
+          site_instance->GetSiteInfo().site_url();
   frame_info->site_instance->process_lock_url =
       should_show_lock_url
-          ? std::make_optional(site_instance->GetSiteInfo().process_lock_url())
+          ? std::make_optional(site_instance->GetSiteInfo().GetProcessLockURL())
           : std::nullopt;
 
   frame_info->site_instance->requires_origin_keyed_process =
-      site_instance->GetSiteInfo().requires_origin_keyed_process();
+      site_instance->GetSiteInfo().agent_cluster_key().IsOriginKeyed();
 
   return frame_info;
 }
@@ -205,14 +206,21 @@ void ProcessInternalsHandlerImpl::GetProcessCountInfo(
 void ProcessInternalsHandlerImpl::GetIsolationMode(
     GetIsolationModeCallback callback) {
   std::vector<std::string_view> modes;
-  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
+  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
     modes.push_back("Site Per Process");
-  if (SiteIsolationPolicy::AreIsolatedOriginsEnabled())
+  }
+  if (SiteIsolationPolicy::AreIsolatedOriginsEnabled()) {
     modes.push_back("Isolate Origins");
-  if (SiteIsolationPolicy::IsStrictOriginIsolationEnabled())
+  }
+  if (SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()) {
+    modes.push_back("Origin Keyed Processes by Default");
+  }
+  if (SiteIsolationPolicy::IsStrictOriginIsolationEnabled()) {
     modes.push_back("Strict Origin Isolation");
-  if (SiteIsolationPolicy::IsSiteIsolationForCOOPEnabled())
+  }
+  if (SiteIsolationPolicy::IsSiteIsolationForCOOPEnabled()) {
     modes.push_back("COOP");
+  }
 
   // Retrieve any additional site isolation modes controlled by the embedder.
   std::vector<std::string> additional_modes =

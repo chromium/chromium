@@ -48,6 +48,7 @@ class TestStreamFactory : public audio::FakeStreamFactory {
       mojo::PendingRemote<media::mojom::AudioLog> log,
       const std::string& device_id,
       const media::AudioParameters& params,
+      const base::UnguessableToken& group_id,
       uint32_t shared_memory_count,
       bool enable_agc,
       media::mojom::AudioProcessingConfigPtr processing_config,

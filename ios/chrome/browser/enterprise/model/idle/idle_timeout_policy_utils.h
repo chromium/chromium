@@ -5,9 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_ENTERPRISE_MODEL_IDLE_IDLE_TIMEOUT_POLICY_UTILS_H_
 #define IOS_CHROME_BROWSER_ENTERPRISE_MODEL_IDLE_IDLE_TIMEOUT_POLICY_UTILS_H_
 
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-
 class PrefService;
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 namespace enterprise_idle {
 
@@ -19,7 +20,8 @@ struct ActionSet {
 
 // Returns the action set based on the value of `IdleTimeoutActions`.
 // The action set only contains `signout` if the user is signed in.
-ActionSet GetActionSet(PrefService* prefs, AuthenticationService* auth_service);
+ActionSet GetActionSet(PrefService* prefs,
+                       signin::IdentityManager* identity_manager);
 
 }  // namespace enterprise_idle
 

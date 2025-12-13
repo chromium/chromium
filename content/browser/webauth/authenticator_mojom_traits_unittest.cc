@@ -6,14 +6,14 @@
 
 #include <vector>
 
-#include "device/fido/authenticator_selection_criteria.h"
-#include "device/fido/cable/cable_discovery_data.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/public_key_credential_descriptor.h"
-#include "device/fido/public_key_credential_params.h"
-#include "device/fido/public_key_credential_rp_entity.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/authenticator_selection_criteria.h"
+#include "device/fido/public/cable_discovery_data.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
+#include "device/fido/public/public_key_credential_params.h"
+#include "device/fido/public/public_key_credential_rp_entity.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"

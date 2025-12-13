@@ -5,6 +5,7 @@
 #include <array>
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
@@ -21,23 +22,22 @@
 #include "chrome/browser/enterprise/idle/idle_service.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/idle_bubble.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/idle/idle_pref_names.h"
 #include "components/enterprise/idle/metrics.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -49,6 +49,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/idle/idle_polling_service.h"
 #include "ui/base/idle/idle_time_provider.h"
 #include "ui/base/ozone_buildflags.h"
@@ -76,28 +77,36 @@ class MockIdleTimeProvider : public ui::IdleTimeProvider {
   MOCK_METHOD0(CheckIdleStateIsLocked, bool());
 };
 
-class BrowserCloseWaiter : public BrowserListObserver {
+class BrowserCloseWaiter {
  public:
   explicit BrowserCloseWaiter(
-      std::set<raw_ptr<Browser, SetExperimental>> browsers) {
-    BrowserList::AddObserver(this);
-    waiting_browsers_ = std::move(browsers);
-  }
-
-  // BrowserListObserver:
-  void OnBrowserRemoved(Browser* browser) override {
-    waiting_browsers_.erase(browser);
-    if (waiting_browsers_.size() == 0) {
-      BrowserList::RemoveObserver(this);
-      run_loop_.QuitWhenIdle();
+      std::set<raw_ptr<BrowserWindowInterface, SetExperimental>>
+          browser_window_interfaces) {
+    for (BrowserWindowInterface* browser_window_interface :
+         browser_window_interfaces) {
+      waiting_browsers_.insert(browser_window_interface);
+      browser_close_subscriptions_[browser_window_interface] =
+          browser_window_interface->RegisterBrowserDidClose(base::BindRepeating(
+              &BrowserCloseWaiter::OnBrowserDidClose, base::Unretained(this)));
     }
   }
 
   void Wait() { run_loop_.Run(); }
 
  private:
+  void OnBrowserDidClose(BrowserWindowInterface* browser_window_interface) {
+    waiting_browsers_.erase(browser_window_interface);
+    browser_close_subscriptions_.erase(browser_window_interface);
+    if (waiting_browsers_.empty()) {
+      run_loop_.QuitWhenIdle();
+    }
+  }
+
   base::RunLoop run_loop_;
-  std::set<raw_ptr<Browser, SetExperimental>> waiting_browsers_;
+  std::set<raw_ptr<BrowserWindowInterface, SetExperimental>> waiting_browsers_;
+  absl::flat_hash_map<raw_ptr<BrowserWindowInterface>,
+                      base::CallbackListSubscription>
+      browser_close_subscriptions_;
 };
 
 }  // namespace
@@ -134,8 +143,13 @@ class IdleServiceTest : public InProcessBrowserTest {
       policy::PushProfilePolicyConnectorProviderForTesting(&provider);
     }
 
+    // TODO(crbug.com/431671320): This test uses keep-alive to prevent the
+    // Browser process from being unpinned before the ProfilePicker is destroyed
+    // during test cleanup, to work around its use of the mock time task runner.
+    // This keep-alive should be removed and tear-down issues resulting from
+    // use of the custom task runner resolved.
     keep_alive_ = std::make_unique<ScopedKeepAlive>(
-        KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
+        KeepAliveOrigin::CHROME_APP_DELEGATE, KeepAliveRestartOption::DISABLED);
 
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
@@ -151,7 +165,8 @@ class IdleServiceTest : public InProcessBrowserTest {
 
     // If there are no active browsers, BrowserProcessImpl::Unpin() runs too
     // early and interrupts test teardown. `keep_alive_` solves this problem.
-    if (chrome::GetTotalBrowserCount() > 0) {
+    if (KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+            KeepAliveOrigin::BROWSER)) {
       // It's safe to release this keepalive here, because browser windows are
       // already doing the same thing.
       keep_alive_.reset();
@@ -203,11 +218,13 @@ class IdleServiceTest : public InProcessBrowserTest {
 
   int GetBrowserCount(Profile* profile) {
     int count = 0;
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      if (browser->profile() == profile) {
-        count++;
-      }
-    }
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [profile, &count](BrowserWindowInterface* browser_window_interface) {
+          if (browser_window_interface->GetProfile() == profile) {
+            count++;
+          }
+          return true;
+        });
     return count;
   }
 
@@ -216,22 +233,22 @@ class IdleServiceTest : public InProcessBrowserTest {
         ->IsDialogOpenForTesting();
   }
 
-  void ActivateBrowser(Browser* browser) {
+  void ActivateBrowser(BrowserWindowInterface* browser_window_interface) {
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_WAYLAND)
     // TODO(nicolaso): BrowserActivationWaiter times out on Wayland. Figure out
     // why.
 #else
-    ActivateBrowserImpl(browser);
+    ActivateBrowserImpl(browser_window_interface);
 #endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_WAYLAND)
   }
 
-  void ActivateBrowserImpl(Browser* browser) {
-    if (GetIdleBubble(browser)) {
+  void ActivateBrowserImpl(BrowserWindowInterface* browser_window_interface) {
+    if (GetIdleBubble(browser_window_interface)) {
       return;
     }
-    CHECK(browser);
-    ui_test_utils::BrowserActivationWaiter waiter(browser);
-    browser->window()->Activate();
+    CHECK(browser_window_interface);
+    ui_test_utils::BrowserActivationWaiter waiter(browser_window_interface);
+    browser_window_interface->GetWindow()->Activate();
     waiter.WaitForActivation();
   }
 
@@ -252,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, Basic) {
       .WillOnce(Return(base::Seconds(58)));
   std::unique_ptr<base::HistogramTester> histogram_tester =
       std::make_unique<base::HistogramTester>();
-  Profile* profile = browser()->profile();
+  Profile* profile = GetProfile();
   SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/0);
 
   EXPECT_EQ(1, GetBrowserCount(profile));
@@ -306,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, Basic) {
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, DidNotClose) {
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(59)));
-  Profile* profile = browser()->profile();
+  Profile* profile = GetProfile();
   SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1);
 
   EXPECT_EQ(1, GetBrowserCount(profile));
@@ -338,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, TenMinutes) {
   // Set the IdleTimeout policy to 10 minutes.
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(599)));
-  Profile* profile = browser()->profile();
+  Profile* profile = GetProfile();
   SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/10);
 
   EXPECT_EQ(1, GetBrowserCount(profile));
@@ -384,8 +401,8 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, MAYBE_MultiProfile) {
   // `profile` has the IdleTimeout policy set to 5 minutes.
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(299)));
-  Profile* profile = browser()->profile();
-  Browser* browser2 = CreateBrowser(profile);
+  Profile* profile = GetProfile();
+  BrowserWindowInterface* browser2 = CreateBrowser(profile);
   SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/5);
 
   // `profile2` has the policy set to 5 minutes, so it will close at the same
@@ -398,7 +415,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, MAYBE_MultiProfile) {
             "Profile 2"));
     SetIdleTimeoutPolicies(policy_provider(1), /*idle_timeout=*/5);
   }
-  Browser* browser3 = CreateBrowser(profile2);
+  BrowserWindowInterface* browser3 = CreateBrowser(profile2);
 
   // `profile3` doesn't have the IdleTimeout policy set, so it will
   // never close.
@@ -462,8 +479,8 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest,
   // `profile` has the IdleTimeout policy set to 5 minutes.
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(299)));
-  Profile* profile = browser()->profile();
-  Browser* browser2 = CreateBrowser(profile);
+  Profile* profile = GetProfile();
+  BrowserWindowInterface* browser2 = CreateBrowser(profile);
   SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/5);
 
   // `profile2` has the policy set to 6 minutes, so it will close one minute
@@ -476,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest,
             "Profile 2"));
     SetIdleTimeoutPolicies(policy_provider(1), /*idle_timeout=*/6);
   }
-  Browser* browser3 = CreateBrowser(profile2);
+  BrowserWindowInterface* browser3 = CreateBrowser(profile2);
 
   EXPECT_EQ(2, GetBrowserCount(profile));
   EXPECT_EQ(1, GetBrowserCount(profile2));
@@ -533,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, DialogDismissedByUser) {
       .WillOnce(Return(base::Seconds(58)));
   std::unique_ptr<base::HistogramTester> histogram_tester =
       std::make_unique<base::HistogramTester>();
-  Profile* profile = browser()->profile();
+  Profile* profile = GetProfile();
   SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1);
 
   EXPECT_EQ(1, GetBrowserCount(profile));
@@ -580,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, DialogDismissedByUser) {
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, NoActions) {
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(58)));
-  Profile* profile = browser()->profile();
+  Profile* profile = GetProfile();
   SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1,
                          /*idle_timeout_actions=*/{});
 
@@ -616,7 +633,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, NoActions) {
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, JustCloseBrowsers) {
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(58)));
-  Profile* profile = browser()->profile();
+  Profile* profile = GetProfile();
   SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1,
                          /*idle_timeout_actions=*/{"close_browsers"});
 
@@ -653,7 +670,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, JustCloseBrowsers) {
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, JustShowProfilePicker) {
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(58)));
-  Profile* profile = browser()->profile();
+  Profile* profile = GetProfile();
   SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1,
                          /*idle_timeout_actions=*/{"show_profile_picker"});
 
@@ -678,19 +695,19 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, JustShowProfilePicker) {
 }
 
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, ReloadPages) {
-  auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(0);
+  auto* web_contents = browser()->GetTabStripModel()->GetWebContentsAt(0);
 
   // TODO(crbug.com/430613676): Determine why about:blank refreshes are causing
   // timeouts with RenderDocument enabled and revert this test to being
   // navigated to about:blank.
   ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL main_url = ui_test_utils::GetTestUrl(
+  const GURL main_url = chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("empty.html")));
   EXPECT_TRUE(NavigateToURL(web_contents, main_url));
 
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(58)));
-  Profile* profile = browser()->profile();
+  Profile* profile = GetProfile();
   SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1,
                          /*idle_timeout_actions=*/{"reload_pages"});
 
@@ -726,15 +743,14 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, ReloadPages) {
 }
 
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, ShowBubbleImmediately) {
-  browser()->window()->Activate();
-  BrowserList::SetLastActive(browser());
+  browser()->GetWindow()->Activate();
 
   // Use "reload_pages" as our action, because:
   // - It runs synchronously (succeeds immediately).
   // - It doesn't close browsers.
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(58)));
-  Profile* profile = browser()->profile();
+  Profile* profile = GetProfile();
   SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1,
                          /*idle_timeout_actions=*/{"reload_pages"});
 
@@ -773,15 +789,14 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, ShowBubbleImmediately) {
 #endif
 IN_PROC_BROWSER_TEST_F(IdleServiceTest,
                        MAYBE_CanFocusBubbleWithFocusDialogHotkey) {
-  browser()->window()->Activate();
-  BrowserList::SetLastActive(browser());
+  browser()->GetWindow()->Activate();
 
   // Use "reload_pages" as our action, because:
   // - It runs synchronously (succeeds immediately).
   // - It doesn't close browsers.
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(58)));
-  Profile* profile = browser()->profile();
+  Profile* profile = GetProfile();
   SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1,
                          /*idle_timeout_actions=*/{"reload_pages"});
 
@@ -827,15 +842,14 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest,
 #endif
 IN_PROC_BROWSER_TEST_F(IdleServiceTest,
                        MAYBE_CanFocusBubbleWithRotatePaneFocusHotkey) {
-  browser()->window()->Activate();
-  BrowserList::SetLastActive(browser());
+  browser()->GetWindow()->Activate();
 
   // Use "reload_pages" as our action, because:
   // - It runs synchronously (succeeds immediately).
   // - It doesn't close browsers.
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(58)));
-  Profile* profile = browser()->profile();
+  Profile* profile = GetProfile();
   SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1,
                          /*idle_timeout_actions=*/{"reload_pages"});
 
@@ -875,7 +889,7 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest,
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, PRE_ShowBubbleOnStartup) {
   EXPECT_CALL(idle_time_provider(), CalculateIdleTime())
       .WillOnce(Return(base::Seconds(58)));
-  Profile* profile = browser()->profile();
+  Profile* profile = GetProfile();
   SetIdleTimeoutPolicies(policy_provider(0), /*idle_timeout=*/1);
 
   EXPECT_EQ(1, GetBrowserCount(profile));

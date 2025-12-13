@@ -169,7 +169,8 @@ class TestHttpClient {
     auto headers =
         base::MakeRefCounted<HttpResponseHeaders>(HttpUtil::AssembleRawHeaders(
             std::string_view(response.data(), end_of_headers)));
-    return body_size >= headers->GetContentLength();
+    std::optional<base::ByteCount> content_length = headers->GetContentLength();
+    return !content_length || body_size >= content_length->InBytes();
   }
 
   scoped_refptr<IOBufferWithSize> read_buffer_;

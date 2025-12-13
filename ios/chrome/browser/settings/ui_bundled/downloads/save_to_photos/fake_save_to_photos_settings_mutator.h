@@ -7,11 +7,13 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_mutator.h"
 
+class GaiaId;
+
 // Fake implementation for the SaveToPhotosSettingsMutator protocol.
 @interface FakeSaveToPhotosSettingsMutator
     : NSObject <SaveToPhotosSettingsMutator>
 
-@property(nonatomic, copy) NSString* selectedIdentityGaiaID;
+@property(nonatomic, assign) GaiaId selectedIdentityGaiaID;
 
 @property(nonatomic, assign) BOOL askWhichAccountToUseEveryTime;
 

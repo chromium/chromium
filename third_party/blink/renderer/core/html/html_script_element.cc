@@ -27,6 +27,7 @@
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlscriptelement_svgscriptelement.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedscript.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_stringlegacynulltoemptystring_trustedscript.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedscripturl_usvstring.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -48,6 +49,7 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
@@ -66,7 +68,9 @@ HTMLScriptElement::HTMLScriptElement(Document& document,
 const AttrNameToTrustedType& HTMLScriptElement::GetCheckedAttributeTypes()
     const {
   DEFINE_STATIC_LOCAL(AttrNameToTrustedType, attribute_map,
-                      ({{"src", SpecificTrustedType::kScriptURL}}));
+                      ({{trusted_types_names::kSrc,
+                         std::pair{SpecificTrustedType::kScriptURL,
+                                   trusted_types_names::kHTMLScriptElement}}}));
   return attribute_map;
 }
 
@@ -166,9 +170,32 @@ void HTMLScriptElement::setInnerTextForBinding(
     const V8UnionStringLegacyNullToEmptyStringOrTrustedScript*
         string_or_trusted_script,
     ExceptionState& exception_state) {
+  // Old behaviour: Run the Trusted Type script when the super-classes
+  //   innerText property is set.
+  // New behaviour (TrustedTypesHTML): Run only the superclass' behaviour.
+  //   Only when HTMLScriptElement's own innerText property is set, run the
+  //   Trusted Types check (in setScriptInnerTextForBinding, below).
+  //
+  // This can be simplified once TrustedTypesHTMLEnabled is removed.
+  if (RuntimeEnabledFeatures::TrustedTypesHTMLEnabled()) {
+    const String string =
+        string_or_trusted_script->IsStringLegacyNullToEmptyString()
+            ? string_or_trusted_script->GetAsStringLegacyNullToEmptyString()
+            : string_or_trusted_script->GetAsTrustedScript()->toString();
+    HTMLElement::setInnerText(string);
+  } else {
+    setScriptInnerTextForBinding(string_or_trusted_script, exception_state);
+  }
+}
+
+void HTMLScriptElement::setScriptInnerTextForBinding(
+    const V8UnionStringLegacyNullToEmptyStringOrTrustedScript*
+        string_or_trusted_script,
+    ExceptionState& exception_state) {
   const String& value = TrustedTypesCheckForScript(
-      string_or_trusted_script, GetExecutionContext(), "HTMLScriptElement",
-      "innerText", exception_state);
+      string_or_trusted_script, GetExecutionContext(),
+      trusted_types_names::kHTMLScriptElement, trusted_types_names::kInnerText,
+      exception_state);
   if (exception_state.HadException())
     return;
   // https://w3c.github.io/trusted-types/dist/spec/#setting-slot-values
@@ -181,9 +208,29 @@ void HTMLScriptElement::setInnerTextForBinding(
 void HTMLScriptElement::setTextContentForBinding(
     const V8UnionStringOrTrustedScript* value,
     ExceptionState& exception_state) {
+  // Old behaviour: Run the Trusted Type script when the super-class'
+  //   textContent property is set.
+  // New behaviour (TrustedTypesHTML): Run only the superclass' behaviour.
+  //   Only when HTMLScriptElement's own textContent property is set, run the
+  //   Trusted Types check (in setScriptTextContentForBinding, below).
+  //
+  // This can be simplified once TrustedTypesHTMLEnabled is removed.
+  if (RuntimeEnabledFeatures::TrustedTypesHTMLEnabled()) {
+    const String string = value->IsString()
+                              ? value->GetAsString()
+                              : value->GetAsTrustedScript()->toString();
+    HTMLElement::setTextContent(string);
+  } else {
+    setScriptTextContentForBinding(value, exception_state);
+  }
+}
+
+void HTMLScriptElement::setScriptTextContentForBinding(
+    const V8UnionStringOrTrustedScript* value,
+    ExceptionState& exception_state) {
   const String& string = TrustedTypesCheckForScript(
-      value, GetExecutionContext(), "HTMLScriptElement", "textContent",
-      exception_state);
+      value, GetExecutionContext(), trusted_types_names::kHTMLScriptElement,
+      trusted_types_names::kTextContent, exception_state);
   if (exception_state.HadException())
     return;
   setTextContent(string);
@@ -197,15 +244,24 @@ void HTMLScriptElement::setTextContent(const String& string) {
   Node::setTextContent(string);
 }
 
+V8UnionStringOrTrustedScript* HTMLScriptElement::scriptTextContentForBinding() {
+  return textContentForBinding();
+}
+
+V8UnionStringLegacyNullToEmptyStringOrTrustedScript*
+HTMLScriptElement::scriptInnerTextForBinding() {
+  return innerTextForBinding();
+}
+
 V8UnionStringOrTrustedScript* HTMLScriptElement::text() {
   return MakeGarbageCollected<V8UnionStringOrTrustedScript>(TextFromChildren());
 }
 
 void HTMLScriptElement::setText(V8UnionStringOrTrustedScript* value,
                                 ExceptionState& exception_state) {
-  String compliant_value =
-      TrustedTypesCheckForScript(value, GetExecutionContext(),
-                                 "HTMLScriptElement", "text", exception_state);
+  String compliant_value = TrustedTypesCheckForScript(
+      value, GetExecutionContext(), trusted_types_names::kHTMLScriptElement,
+      trusted_types_names::kText, exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -224,8 +280,8 @@ V8UnionTrustedScriptURLOrUSVString* HTMLScriptElement::src() {
 void HTMLScriptElement::setSrc(const V8UnionTrustedScriptURLOrUSVString* value,
                                ExceptionState& exception_state) {
   String compliant_value = TrustedTypesCheckForScriptURL(
-      value, GetExecutionContext(), "HTMLScriptElement", "src",
-      exception_state);
+      value, GetExecutionContext(), trusted_types_names::kHTMLScriptElement,
+      trusted_types_names::kSrc, exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -343,7 +399,7 @@ const AtomicString& HTMLScriptElement::GetNonceForElement() const {
 
 bool HTMLScriptElement::AllowInlineScriptForCSP(
     const AtomicString& nonce,
-    const WTF::OrdinalNumber& context_line,
+    const OrdinalNumber& context_line,
     const String& script_content) {
   // Support 'inline-speculation-rules' source.
   // https://wicg.github.io/nav-speculation/speculation-rules.html#content-security-policy
@@ -392,11 +448,12 @@ ScriptElementBase::Type HTMLScriptElement::GetScriptElementType() {
 }
 
 Element& HTMLScriptElement::CloneWithoutAttributesAndChildren(
-    Document& factory) const {
+    Document& factory,
+    CustomElementRegistry* registry) const {
   CreateElementFlags flags =
       CreateElementFlags::ByCloneNode().SetAlreadyStarted(
           loader_->AlreadyStarted());
-  return *factory.CreateElement(TagQName(), flags, IsValue());
+  return *factory.CreateElement(TagQName(), flags, IsValue(), registry);
 }
 
 bool HTMLScriptElement::IsPotentiallyRenderBlocking() const {
@@ -405,13 +462,6 @@ bool HTMLScriptElement::IsPotentiallyRenderBlocking() const {
 
   if (loader_->IsParserInserted() &&
       loader_->GetScriptType() == ScriptLoader::ScriptTypeAtPrepare::kClassic) {
-    // If ForceInOrderScript is enabled, treat the script having src attribute
-    // as non-render blocking even if it has neither async nor defer attribute.
-    // Because the script is force-in-order'ed, which behaves like the scripts
-    // categorized ScriptSchedulingType::kInOrder. Those're not render blocking.
-    if (base::FeatureList::IsEnabled(features::kForceInOrderScript) &&
-        HasSourceAttribute())
-      return false;
     return !AsyncAttributeValue() && !DeferAttributeValue();
   }
 
@@ -427,6 +477,10 @@ bool HTMLScriptElement::supports(const AtomicString& type) {
   if (type == script_type_names::kImportmap)
     return true;
 
+  if (type == script_type_names::kRoutemap &&
+      RuntimeEnabledFeatures::RouteMatchingEnabled()) {
+    return true;
+  }
   if (type == script_type_names::kSpeculationrules) {
     return true;
   }

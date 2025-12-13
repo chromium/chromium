@@ -34,7 +34,7 @@
 <translation id="1189258430971676908">연습 영역: 드롭다운 목록</translation>
 <translation id="1193484659698721586">.input {$$COUNT :number} .match $$COUNT 1{{}} *{{nested level {$$COUNT}}}</translation>
 <translation id="1195238899008218998">후기</translation>
-<translation id="1197088940767939838">오렌지색</translation>
+<translation id="1197088940767939838">주황색</translation>
 <translation id="1198865190323699001">터치 동작</translation>
 <translation id="1202112913213080585">취소</translation>
 <translation id="1206619573307042055">marquee</translation>
@@ -530,7 +530,7 @@
 <translation id="4271220233568730077">다음 수식</translation>
 <translation id="4275397969489577657">이벤트 스트림 로깅 사용</translation>
 <translation id="4278486392851938658">이전 방문한 링크가 없습니다</translation>
-<translation id="4281245629646759298">라이트 옐로우</translation>
+<translation id="4281245629646759298">연한 노란색</translation>
 <translation id="4289540628985791613">개요</translation>
 <translation id="4294967782363273192">오름차순 정렬</translation>
 <translation id="4300318234632215983">링크 이면의 URL 알림</translation>

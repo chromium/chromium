@@ -1409,7 +1409,7 @@ TEST_F(CrosNetworkConfigTest, PortalState) {
   EXPECT_EQ(mojom::ConnectionStateType::kPortal, network->connection_state);
   EXPECT_EQ(mojom::PortalState::kPortalSuspected, network->portal_state);
   ASSERT_TRUE(network->portal_probe_url);
-  EXPECT_EQ(captive_portal::CaptivePortalDetector::kDefaultURL,
+  EXPECT_EQ(captive_portal::CaptivePortalDetector::GetDefaultUrl(),
             *network->portal_probe_url);
 
   helper()->ConfigureService(
@@ -4167,12 +4167,13 @@ TEST_F(CrosNetworkConfigTest, SetCellularSimState) {
 
 TEST_F(CrosNetworkConfigTest, SelectCellularMobileNetwork) {
   // Create fake list of found networks.
-  std::optional<base::Value> found_networks_list =
-      base::JSONReader::Read(base::StringPrintf(
+  std::optional<base::Value> found_networks_list = base::JSONReader::Read(
+      base::StringPrintf(
           R"([{"network_id": "network1", "technology": "GSM",
                "status": "current"},
               {"network_id": "network2", "technology": "GSM",
-               "status": "available"}])"));
+               "status": "available"}])"),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   helper()->device_test()->SetDeviceProperty(
       kCellularDevicePath, shill::kFoundNetworksProperty, *found_networks_list,
       /*notify_changed=*/true);

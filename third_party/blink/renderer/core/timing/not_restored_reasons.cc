@@ -16,12 +16,12 @@ NotRestoredReasons::NotRestoredReasons(
     HeapVector<Member<NotRestoredReasons>>* children)
     : src_(src), id_(id), name_(name), url_(url) {
   if (reasons) {
-    for (auto reason : *reasons) {
+    for (const auto& reason : *reasons) {
       reasons_.push_back(reason);
     }
   }
   if (children) {
-    for (auto& child : *children) {
+    for (const auto& child : *children) {
       children_.push_back(child);
     }
   }

@@ -337,8 +337,7 @@ void RegistryTestHarness::InstallStringListPolicy(
 void RegistryTestHarness::InstallDictionaryPolicy(
     const std::string& policy_name,
     const base::Value::Dict& policy_value) {
-  std::string json;
-  base::JSONWriter::Write(policy_value, &json);
+  std::string json = base::WriteJson(policy_value).value_or("");
   RegKey key(hive_, kTestPolicyKey, KEY_ALL_ACCESS);
   ASSERT_TRUE(key.Valid());
   key.WriteValue(base::UTF8ToWide(policy_name).c_str(),
@@ -589,12 +588,10 @@ TEST_F(PolicyLoaderWinTest, LoadStringEncodedValues) {
   list.Append(policy.Clone());
   policy.Set("list", list.Clone());
   // Encode |policy| before adding the "dict" entry.
-  std::string encoded_dict;
-  base::JSONWriter::Write(policy, &encoded_dict);
+  std::string encoded_dict = base::WriteJson(policy).value_or("");
   ASSERT_FALSE(encoded_dict.empty());
   policy.Set("dict", policy.Clone());
-  std::string encoded_list;
-  base::JSONWriter::Write(list, &encoded_list);
+  std::string encoded_list = base::WriteJson(list).value_or("");
   ASSERT_FALSE(encoded_list.empty());
   base::Value::Dict encoded_policy;
   encoded_policy.Set("bool", "1");

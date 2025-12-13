@@ -5,6 +5,7 @@
 #include "components/performance_manager/graph/policies/bfcache_policy.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/time/time.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
@@ -27,10 +28,9 @@ class LenientMockBFCachePolicy : public BFCachePolicy {
   MOCK_METHOD(void,
               MaybeFlushBFCache,
               (const PageNode* page_node,
-               MemoryPressureLevel memory_pressure_level),
+               base::MemoryPressureLevel memory_pressure_level),
               (override));
 };
-using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
 using MockBFCachePolicy = ::testing::StrictMock<LenientMockBFCachePolicy>;
 
 }  // namespace
@@ -80,21 +80,27 @@ TEST_F(BFCachePolicyTest, BFCacheFlushedOnMemoryPressure) {
   page_node_->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
   ::testing::Mock::VerifyAndClearExpectations(policy_);
 
-  EXPECT_CALL(
-      *policy_,
-      MaybeFlushBFCache(page_node_.get(),
-                        MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE));
-  GetSystemNode()->OnMemoryPressureForTesting(
-      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE);
-  ::testing::Mock::VerifyAndClearExpectations(policy_);
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*policy_,
+                MaybeFlushBFCache(page_node_.get(),
+                                  base::MEMORY_PRESSURE_LEVEL_MODERATE));
+    base::MemoryPressureListener::SimulatePressureNotificationAsync(
+        base::MEMORY_PRESSURE_LEVEL_MODERATE, run_loop.QuitClosure());
+    run_loop.Run();
+    ::testing::Mock::VerifyAndClearExpectations(policy_);
+  }
 
-  EXPECT_CALL(
-      *policy_,
-      MaybeFlushBFCache(page_node_.get(),
-                        MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL));
-  GetSystemNode()->OnMemoryPressureForTesting(
-      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  ::testing::Mock::VerifyAndClearExpectations(policy_);
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*policy_,
+                MaybeFlushBFCache(page_node_.get(),
+                                  base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+    base::MemoryPressureListener::SimulatePressureNotificationAsync(
+        base::MEMORY_PRESSURE_LEVEL_CRITICAL, run_loop.QuitClosure());
+    run_loop.Run();
+    ::testing::Mock::VerifyAndClearExpectations(policy_);
+  }
 }
 
 }  // namespace performance_manager::policies

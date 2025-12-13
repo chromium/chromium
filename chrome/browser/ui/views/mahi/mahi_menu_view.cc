@@ -61,6 +61,7 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -402,7 +403,7 @@ void MahiMenuView::OnWidgetVisibilityChanged(views::Widget* widget,
 }
 
 void MahiMenuView::OnButtonPressed(ButtonType button_type) {
-  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
+  auto display = display::Screen::Get()->GetDisplayNearestWindow(
       GetWidget()->GetNativeWindow());
   if (surface_ == Surface::kBrowser) {
     chromeos::MahiWebContentsManager::Get()->OnContextMenuClicked(
@@ -449,7 +450,7 @@ void MahiMenuView::OnButtonPressed(ButtonType button_type) {
 }
 
 void MahiMenuView::OnQuestionSubmitted() {
-  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
+  auto display = display::Screen::Get()->GetDisplayNearestWindow(
       GetWidget()->GetNativeWindow());
   if (surface_ == Surface::kBrowser) {
     chromeos::MahiWebContentsManager::Get()->OnContextMenuClicked(

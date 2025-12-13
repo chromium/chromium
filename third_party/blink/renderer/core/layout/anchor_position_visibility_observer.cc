@@ -32,14 +32,18 @@ void AnchorPositionVisibilityObserver::MonitorAnchor(const Element* anchor) {
     auto* anchor_object = anchor_element_->GetLayoutObject();
     if (anchored_object && anchor_object) {
       auto* anchored_container = anchored_object->Container();
-      // Use the ancestor just below anchored_container as the intersection
-      // observer root. The clip of anchored_container is not included because
-      // it's not an "intervening box".
+      // Use the clipping ancestor just below anchored_container as the
+      // intersection observer root. The clip of anchored_container itself is
+      // not included because it's not an "intervening box".
       auto* intersection_root = anchor_object;
       for (auto* anchor_container = anchor_object->Container();
            anchor_container && anchor_container != anchored_container;
            anchor_container = anchor_container->Container()) {
-        intersection_root = anchor_container;
+        if (!RuntimeEnabledFeatures::
+                PositionVisibilityIgnoreNonClipAncestorsEnabled() ||
+            anchor_container->ShouldClipOverflowAlongEitherAxis()) {
+          intersection_root = anchor_container;
+        }
       }
 
       // The anchor is always visible if the anchor and the anchored have the
@@ -52,9 +56,9 @@ void AnchorPositionVisibilityObserver::MonitorAnchor(const Element* anchor) {
 
       observer_ = IntersectionObserver::Create(
           anchor_element_->GetDocument(),
-          WTF::BindRepeating(&AnchorPositionVisibilityObserver::
-                                 OnIntersectionVisibilityChanged,
-                             WrapWeakPersistent(this)),
+          BindRepeating(&AnchorPositionVisibilityObserver::
+                            OnIntersectionVisibilityChanged,
+                        WrapWeakPersistent(this)),
           // Do not record metrics for this internal intersection observer.
           std::nullopt,
           IntersectionObserver::Params{
@@ -91,11 +95,12 @@ void AnchorPositionVisibilityObserver::UpdateForCssAnchorVisibility() {
 }
 
 void AnchorPositionVisibilityObserver::UpdateForChainedAnchorVisibility(
-    const HeapHashSet<WeakMember<ScrollSnapshotClient>>& clients) {
+    const HeapHashSet<WeakMember<PostLayoutSnapshotClient>>& clients) {
   HeapVector<Member<AnchorPositionVisibilityObserver>>
       observers_with_chained_anchor;
   for (auto& client : clients) {
-    if (auto* scroll_data = DynamicTo<AnchorPositionScrollData>(client.Get())) {
+    auto* scroll_data = DynamicTo<AnchorPositionScrollData>(client.Get());
+    if (scroll_data && scroll_data->IsActive()) {
       if (auto* observer = scroll_data->GetAnchorPositionVisibilityObserver()) {
         observer->SetLayerInvisible(
             LayerPositionVisibility::kChainedAnchorsVisible, false);

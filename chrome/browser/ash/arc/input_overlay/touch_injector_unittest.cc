@@ -333,8 +333,8 @@ class TouchInjectorTest : public views::ViewsTestBase {
 };
 
 TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
   CheckActions(injector_.get(), /*expect_size=*/2u,
                /*expect_types=*/{ActionType::TAP, ActionType::TAP},
@@ -456,8 +456,8 @@ TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
 }
 
 TEST_F(TouchInjectorTest, TestActionTypeChangeWithProtoConversion) {
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
   EXPECT_EQ(2u, injector_->actions().size());
   EXPECT_EQ(0, injector_->actions()[0]->id());
@@ -517,11 +517,11 @@ TEST_F(TouchInjectorTest, TestActionTypeChangeWithProtoConversion) {
 }
 
 TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
   // Extra Action with the same ID is removed.
-  EXPECT_EQ(2, (int)injector_->actions().size());
+  EXPECT_EQ(2u, injector_->actions().size());
   auto* actionA = injector_->actions()[0].get();
   auto* actionB = injector_->actions()[1].get();
   injector_->RegisterEventRewriter();
@@ -530,7 +530,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(actionA->touch_id());
   EXPECT_TRUE(event_capturer_.key_events().empty());
-  EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(1u, event_capturer_.touch_events().size());
   auto* event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::kTouchPressed, event->type());
   auto expectA1 =
@@ -541,7 +541,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, kTolerance);
   EXPECT_FALSE(actionA->touch_id());
   EXPECT_TRUE(event_capturer_.key_events().empty());
-  EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(2u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[1].get();
   EXPECT_EQ(ui::EventType::kTouchReleased, event->type());
   EXPECT_POINTF_NEAR(expectA1, event->root_location_f(), kTolerance);
@@ -551,23 +551,23 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   // Unregister the event rewriter to see if extra events are sent.
   injector_->UnRegisterEventRewriter();
 
-  EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(2u, event_capturer_.touch_events().size());
   event_capturer_.Clear();
   injector_->RegisterEventRewriter();
 
   // Press and release key C, it should receive key event, not touch event.
   event_generator_->PressKey(ui::VKEY_C, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer_.touch_events().empty());
-  EXPECT_EQ(1, (int)event_capturer_.key_events().size());
+  EXPECT_EQ(1u, event_capturer_.key_events().size());
   event_generator_->ReleaseKey(ui::VKEY_C, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer_.touch_events().empty());
-  EXPECT_EQ(2, (int)event_capturer_.key_events().size());
+  EXPECT_EQ(2u, event_capturer_.key_events().size());
   event_capturer_.Clear();
 
   // Test multi-key tap: Press B -> Press A -> Release A -> Release B.
   event_generator_->PressKey(ui::VKEY_B, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer_.key_events().empty());
-  EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(1u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::kTouchPressed, event->type());
   auto expectB =
@@ -577,7 +577,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
 
   event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer_.key_events().empty());
-  EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(2u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[1].get();
   EXPECT_EQ(ui::EventType::kTouchPressed, event->type());
   auto expectA2 =
@@ -587,7 +587,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
 
   event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer_.key_events().empty());
-  EXPECT_EQ(3, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(3u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[2].get();
   EXPECT_EQ(ui::EventType::kTouchReleased, event->type());
   EXPECT_POINTF_NEAR(expectA2, event->root_location_f(), kTolerance);
@@ -595,7 +595,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
 
   event_generator_->ReleaseKey(ui::VKEY_B, ui::EF_NONE, kTolerance);
   EXPECT_TRUE(event_capturer_.key_events().empty());
-  EXPECT_EQ(4, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(4u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[3].get();
   EXPECT_EQ(ui::EventType::kTouchReleased, event->type());
   EXPECT_POINTF_NEAR(expectB, event->root_location_f(), kTolerance);
@@ -605,7 +605,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   // Test multi-key tap: Press B -> Press A -> Release B -> Release A.
   event_generator_->PressKey(ui::VKEY_B, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer_.key_events().empty());
-  EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(1u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::kTouchPressed, event->type());
   EXPECT_POINTF_NEAR(expectB, event->root_location_f(), kTolerance);
@@ -613,7 +613,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
 
   event_generator_->PressKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer_.key_events().empty());
-  EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(2u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[1].get();
   EXPECT_EQ(ui::EventType::kTouchPressed, event->type());
   EXPECT_POINTF_NEAR(expectA1, event->root_location_f(), kTolerance);
@@ -621,7 +621,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
 
   event_generator_->ReleaseKey(ui::VKEY_B, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer_.key_events().empty());
-  EXPECT_EQ(3, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(3u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[2].get();
   EXPECT_EQ(ui::EventType::kTouchReleased, event->type());
   EXPECT_POINTF_NEAR(expectB, event->root_location_f(), kTolerance);
@@ -629,7 +629,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
 
   event_generator_->ReleaseKey(ui::VKEY_A, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(event_capturer_.key_events().empty());
-  EXPECT_EQ(4, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(4u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[3].get();
   EXPECT_EQ(ui::EventType::kTouchReleased, event->type());
   EXPECT_POINTF_NEAR(expectA1, event->root_location_f(), kTolerance);
@@ -640,7 +640,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   event_generator_->PressKey(ui::VKEY_B, ui::EF_NONE, /*source_device_id=*/1);
   event_generator_->PressKey(ui::VKEY_B, ui::EF_IS_REPEAT,
                              /*source_device_id=*/1);
-  EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(1u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[0].get();
   EXPECT_POINTF_NEAR(expectB, event->root_location_f(), kTolerance);
   event_generator_->ReleaseKey(ui::VKEY_B, ui::EF_NONE, /*source_device_id=*/1);
@@ -651,7 +651,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   EXPECT_TRUE(actionB->touch_id());
   injector_->UnRegisterEventRewriter();
   EXPECT_FALSE(actionB->touch_id());
-  EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(2u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events().back().get();
   EXPECT_EQ(ui::EventType::kTouchReleased, event->type());
   EXPECT_POINTF_NEAR(expectB, event->root_location_f(), kTolerance);
@@ -661,7 +661,7 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   injector_->RegisterEventRewriter();
   event_generator_->PressKey(ui::VKEY_B, ui::EF_NONE, /*source_device_id=*/1);
   EXPECT_TRUE(actionB->touch_id());
-  EXPECT_EQ(1, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(1u, event_capturer_.touch_events().size());
   event = event_capturer_.touch_events()[0].get();
   EXPECT_EQ(ui::EventType::kTouchPressed, event->type());
   EXPECT_POINTF_NEAR(expectB, event->root_location_f(), kTolerance);
@@ -672,8 +672,8 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
 
 TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
   injector_->set_enable_mouse_lock(true);
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapMouse);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapMouse, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(json_value.has_value() && json_value->is_dict());
   injector_->ParseActions(json_value->GetDict());
   EXPECT_EQ(2u, injector_->actions().size());
@@ -742,8 +742,8 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
 }
 
 TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionMoveKey);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionMoveKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
   EXPECT_EQ(1u, injector_->actions().size());
   auto* action = injector_->actions()[0].get();
@@ -840,8 +840,8 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
 
 TEST_F(TouchInjectorTest, TestEventRewriterActionMoveMouse) {
   injector_->set_enable_mouse_lock(true);
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionMoveMouse);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionMoveMouse, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(json_value.has_value() && json_value->is_dict());
   injector_->ParseActions(json_value->GetDict());
   EXPECT_EQ(2u, injector_->actions().size());
@@ -929,8 +929,8 @@ TEST_F(TouchInjectorTest, TestEventRewriterActionMoveMouse) {
 }
 
 TEST_F(TouchInjectorTest, TestEventRewriterWithModifierKeyOnActionTap) {
-  const auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  const auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
   const auto* first_action_ptr = injector_->actions()[0].get();
   injector_->RegisterEventRewriter();
@@ -994,8 +994,8 @@ TEST_F(TouchInjectorTest, TestEventRewriterWithModifierKeyOnActionTap) {
 }
 
 TEST_F(TouchInjectorTest, TestEventRewriterWithModifierKeyOnActionMove) {
-  const auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionMoveKey);
+  const auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionMoveKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
   const auto* first_action_ptr = injector_->actions()[0].get();
   injector_->RegisterEventRewriter();
@@ -1062,8 +1062,8 @@ TEST_F(TouchInjectorTest, TestEventRewriterWithModifierKeyOnActionMove) {
 
 TEST_F(TouchInjectorTest, TestCleanupTouchEvents) {
   // Setup.
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
   injector_->RegisterEventRewriter();
   EXPECT_FALSE(GetHasPendingTouchEvents());
@@ -1096,8 +1096,8 @@ TEST_F(TouchInjectorTest, TestCleanupTouchEvents) {
 
 TEST_F(TouchInjectorTest, TestActivePlayMode) {
   // Setup.
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
   injector_->RegisterEventRewriter();
   EXPECT_FALSE(GetHasPendingTouchEvents());
@@ -1177,8 +1177,8 @@ TEST_F(TouchInjectorTest, TestActivePlayMode) {
 
 TEST_F(TouchInjectorTest, TestProtoConversion) {
   // Check whether AppDataProto is serialized correctly.
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
   // Change input binding on actions[1].
   auto new_input = InputElement::CreateActionTapKeyElement(ui::DomCode::US_C);
@@ -1226,10 +1226,10 @@ TEST_F(TouchInjectorTest, TestProtoConversion) {
 }
 
 TEST_F(TouchInjectorTest, TestPlayWithGameControlsHistogramHistogramsYes) {
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
-  EXPECT_EQ(2, (int)injector_->actions().size());
+  EXPECT_EQ(2u, injector_->actions().size());
   injector_->RegisterEventRewriter();
 
   base::HistogramTester histograms;
@@ -1245,7 +1245,7 @@ TEST_F(TouchInjectorTest, TestPlayWithGameControlsHistogramHistogramsYes) {
   // Press and release key A, it plays with Game Controls.
   event_generator_->PressAndReleaseKey(ui::VKEY_A, ui::EF_NONE,
                                        /*source_device_id=*/1);
-  EXPECT_EQ(2, (int)event_capturer_.touch_events().size());
+  EXPECT_EQ(2u, event_capturer_.touch_events().size());
   VerifyPlayWithGameControlsHistogram(
       histograms, std::vector<int>{0, /*played_with_game_controls==true*/ 1});
   VerifyPlayGameWithGameControlsUkmEvent(
@@ -1264,10 +1264,10 @@ TEST_F(TouchInjectorTest, TestPlayWithGameControlsHistogramHistogramsYes) {
 }
 
 TEST_F(TouchInjectorTest, TestPlayWithGameControlsHistogramHistogramsNo) {
-  auto json_value =
-      base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  auto json_value = base::JSONReader::ReadAndReturnValueWithError(
+      kValidJsonActionTapKey, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   injector_->ParseActions(json_value->GetDict());
-  EXPECT_EQ(2, (int)injector_->actions().size());
+  EXPECT_EQ(2u, injector_->actions().size());
   injector_->RegisterEventRewriter();
 
   base::HistogramTester histograms;

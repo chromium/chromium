@@ -30,7 +30,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   auto result = std::make_unique<net::test_server::BasicHttpResponse>();
   result->set_code(net::HTTP_OK);
 
-  if (request.GetURL().path() == "/") {
+  if (request.GetURL().GetPath() == "/") {
     result->set_content(
         "<a id='mobileconfig' href='/mobileconfig'>Mobileconfig</a>"
         "<br>"
@@ -38,15 +38,15 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
         "<br>"
         "<a id='apple-wallet-order' href='/apple-wallet-order'>Apple Wallet "
         "Order</a>");
-  } else if (request.GetURL().path() == "/mobileconfig") {
+  } else if (request.GetURL().GetPath() == "/mobileconfig") {
     result->AddCustomHeader("Content-Type", kMobileConfigurationType);
     result->set_content(
         testing::GetTestFileContents(testing::kMobileConfigFilePath));
-  } else if (request.GetURL().path() == "/calendar") {
+  } else if (request.GetURL().GetPath() == "/calendar") {
     result->AddCustomHeader("Content-Type", kCalendarMimeType);
     result->set_content(
         testing::GetTestFileContents(testing::kCalendarFilePath));
-  } else if (request.GetURL().path() == "/apple-wallet-order") {
+  } else if (request.GetURL().GetPath() == "/apple-wallet-order") {
     result->AddCustomHeader("Content-Type", kAppleWalletOrderMimeType);
     result->set_content(
         testing::GetTestFileContents(testing::kAppleWalletOrderFilePath));

@@ -109,7 +109,8 @@ TEST(JSONValueConverterTest, ParseSimpleMessage) {
       "  \"ints\": [1, 2]"
       "}\n";
 
-  std::optional<Value> value = base::JSONReader::Read(normal_data);
+  std::optional<Value> value =
+      base::JSONReader::Read(normal_data, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
   SimpleMessage message;
   base::JSONValueConverter<SimpleMessage> converter;
@@ -119,8 +120,8 @@ TEST(JSONValueConverterTest, ParseSimpleMessage) {
   EXPECT_EQ("bar", message.bar);
   EXPECT_TRUE(message.baz);
   EXPECT_EQ(SimpleMessage::FOO, message.simple_enum);
-  EXPECT_EQ(2, static_cast<int>(message.ints.size()));
-  ASSERT_EQ(2U, message.string_values.size());
+  EXPECT_EQ(2u, message.ints.size());
+  ASSERT_EQ(2u, message.string_values.size());
   EXPECT_EQ("value_1", *message.string_values[0]);
   EXPECT_EQ("value_2", *message.string_values[1]);
   EXPECT_EQ(1, *(message.ints[0]));
@@ -152,7 +153,8 @@ TEST(JSONValueConverterTest, ParseNestedMessage) {
       "  }]\n"
       "}\n";
 
-  std::optional<Value> value = base::JSONReader::Read(normal_data);
+  std::optional<Value> value =
+      base::JSONReader::Read(normal_data, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
   NestedMessage message;
   base::JSONValueConverter<NestedMessage> converter;
@@ -167,7 +169,7 @@ TEST(JSONValueConverterTest, ParseNestedMessage) {
   EXPECT_EQ("value_1", *message.child.string_values[0]);
   EXPECT_EQ("value_2", *message.child.string_values[1]);
 
-  EXPECT_EQ(2, static_cast<int>(message.children.size()));
+  EXPECT_EQ(2u, message.children.size());
   const SimpleMessage* first_child = message.children[0].get();
   ASSERT_TRUE(first_child);
   EXPECT_EQ(2, first_child->foo);
@@ -195,7 +197,8 @@ TEST(JSONValueConverterTest, ParseFailures) {
       "  \"ints\": [1, 2]"
       "}\n";
 
-  std::optional<Value> value = base::JSONReader::Read(normal_data);
+  std::optional<Value> value =
+      base::JSONReader::Read(normal_data, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
   SimpleMessage message;
   base::JSONValueConverter<SimpleMessage> converter;
@@ -212,7 +215,8 @@ TEST(JSONValueConverterTest, ParseWithMissingFields) {
       "  \"ints\": [1, 2]"
       "}\n";
 
-  std::optional<Value> value = base::JSONReader::Read(normal_data);
+  std::optional<Value> value =
+      base::JSONReader::Read(normal_data, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
   SimpleMessage message;
   base::JSONValueConverter<SimpleMessage> converter;
@@ -221,7 +225,7 @@ TEST(JSONValueConverterTest, ParseWithMissingFields) {
 
   EXPECT_EQ(1, message.foo);
   EXPECT_TRUE(message.baz);
-  EXPECT_EQ(2, static_cast<int>(message.ints.size()));
+  EXPECT_EQ(2u, message.ints.size());
   EXPECT_EQ(1, *(message.ints[0]));
   EXPECT_EQ(2, *(message.ints[1]));
 }
@@ -236,7 +240,8 @@ TEST(JSONValueConverterTest, EnumParserFails) {
       "  \"ints\": [1, 2]"
       "}\n";
 
-  std::optional<Value> value = base::JSONReader::Read(normal_data);
+  std::optional<Value> value =
+      base::JSONReader::Read(normal_data, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
   SimpleMessage message;
   base::JSONValueConverter<SimpleMessage> converter;
@@ -254,7 +259,8 @@ TEST(JSONValueConverterTest, RepeatedValueErrorInTheMiddle) {
       "  \"ints\": [1, false]"
       "}\n";
 
-  std::optional<Value> value = base::JSONReader::Read(normal_data);
+  std::optional<Value> value =
+      base::JSONReader::Read(normal_data, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
   SimpleMessage message;
   base::JSONValueConverter<SimpleMessage> converter;

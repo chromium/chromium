@@ -13,7 +13,7 @@ source_set("test_support") {
   deps = [
     "//components/keyed_service/content",
     "//components/prefs:test_support",
-    "//components/user_prefs:user_prefs",
+    "//components/user_prefs",
     "//content/test:test_support",
   ]
 }

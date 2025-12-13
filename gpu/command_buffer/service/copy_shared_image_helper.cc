@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/copy_shared_image_helper.h"
 
+#include <array>
 #include <memory>
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -218,15 +215,17 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
     GLint yoffset,
     GLint x,
     GLint y,
-    GLsizei width,
-    GLsizei height,
+    GLsizei src_width,
+    GLsizei src_height,
+    GLsizei dst_width,
+    GLsizei dst_height,
     const volatile GLbyte* mailboxes) {
   Mailbox source_mailbox = Mailbox::FromVolatile(
       reinterpret_cast<const volatile Mailbox*>(mailboxes)[0]);
   DLOG_IF(ERROR, !source_mailbox.Verify())
       << "CopySubTexture was passed an invalid mailbox";
   Mailbox dest_mailbox = Mailbox::FromVolatile(
-      reinterpret_cast<const volatile Mailbox*>(mailboxes)[1]);
+      UNSAFE_TODO(reinterpret_cast<const volatile Mailbox*>(mailboxes)[1]));
   DLOG_IF(ERROR, !dest_mailbox.Verify())
       << "CopySubTexture was passed an invalid mailbox";
 
@@ -252,7 +251,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
   }
 
   gfx::Size dest_size = dest_shared_image->size();
-  gfx::Rect dest_rect(xoffset, yoffset, width, height);
+  gfx::Rect dest_rect(xoffset, yoffset, dst_width, dst_height);
   if (!gfx::Rect(dest_size).Contains(dest_rect)) {
     return base::unexpected(GLError(GL_INVALID_VALUE, "glCopySubTexture",
                                     "destination texture bad dimensions."));
@@ -292,7 +291,9 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
          new_cleared_rect.Contains(old_cleared_rect));
 
   // Attempt to upload directly from CPU shared memory to destination texture.
-  if (CopyPixelsToTexture(xoffset, yoffset, x, y, width, height,
+  // Only do this if no scaling is happening.
+  if (src_width == dst_width && src_height == dst_height &&
+      CopyPixelsToTexture(xoffset, yoffset, x, y, src_width, src_height,
                           new_cleared_rect, source_mailbox,
                           dest_shared_image.get(), dest_scoped_access.get(),
                           representation_factory_, shared_context_state_,
@@ -312,11 +313,31 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
   // uncleared destination later, we do clear destination rect with black
   // color.
   if (!source_shared_image) {
-    auto* canvas = dest_scoped_access->surface()->getCanvas();
+    if (dest_format.is_single_plane()) {
+      auto* canvas = dest_scoped_access->surface()->getCanvas();
+      SkAutoCanvasRestore autoRestore(canvas, /*doSave=*/true);
+      canvas->clipRect(gfx::RectToSkRect(dest_rect));
+      canvas->clear(SkColors::kBlack);
+    } else {
+      std::array<SkSurface*, SkYUVAInfo::kMaxPlanes> yuva_sk_surfaces = {};
+      for (int plane_index = 0; plane_index < dest_format.NumberOfPlanes();
+           plane_index++) {
+        // Get surface per plane from destination scoped write access.
+        yuva_sk_surfaces[plane_index] =
+            dest_scoped_access->surface(plane_index);
+      }
 
-    SkAutoCanvasRestore autoRestore(canvas, /*doSave=*/true);
-    canvas->clipRect(gfx::RectToSkRect(dest_rect));
-    canvas->clear(SkColors::kBlack);
+      // TODO(crbug.com/41380578): This should really default to rec709.
+      SkYUVColorSpace yuv_color_space = kRec601_SkYUVColorSpace;
+      dest_shared_image->color_space().ToSkYUVColorSpace(
+          dest_format.MultiplanarBitDepth(), &yuv_color_space);
+
+      SkYUVAInfo yuva_info(gfx::SizeToSkISize(dest_shared_image->size()),
+                           ToSkYUVAPlaneConfig(dest_format),
+                           ToSkYUVASubsampling(dest_format), yuv_color_space);
+      skia::BlitRGBAToYUVA(/*src_image=*/nullptr, yuva_sk_surfaces, yuva_info,
+                           gfx::RectToSkRect(dest_rect));
+    }
 
     if (!dest_shared_image->IsCleared()) {
       dest_shared_image->SetClearedRect(new_cleared_rect);
@@ -329,7 +350,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
   }
 
   gfx::Size source_size = source_shared_image->size();
-  gfx::Rect source_rect(x, y, width, height);
+  gfx::Rect source_rect(x, y, src_width, src_height);
   if (!gfx::Rect(source_size).Contains(source_rect)) {
     return base::unexpected(GLError(GL_INVALID_VALUE, "glCopySubTexture",
                                     "source texture bad dimensions."));
@@ -380,7 +401,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
                             gfx::RectToSkRect(dest_rect), SkSamplingOptions(),
                             &paint, SkCanvas::kStrict_SrcRectConstraint);
     } else {
-      SkSurface* yuva_sk_surfaces[SkYUVAInfo::kMaxPlanes] = {};
+      std::array<SkSurface*, SkYUVAInfo::kMaxPlanes> yuva_sk_surfaces = {};
       for (int plane_index = 0; plane_index < dest_format.NumberOfPlanes();
            plane_index++) {
         // Get surface per plane from destination scoped write access.
@@ -407,7 +428,12 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
       // (non-multiplanar SI) behavior in RenderableGMBVideoFramePool, so it is
       // not a regression. Nonetheless, this behavior should
       // ideally be changed to that described above for correctness.
-      skia::BlitRGBAToYUVA(source_image.get(), yuva_sk_surfaces, yuva_info);
+      if (dst_width != dest_size.width() || dst_height != dest_size.height()) {
+        dest_rect = gfx::Rect(dest_size);
+      }
+      skia::BlitRGBAToYUVA(source_image.get(), yuva_sk_surfaces, yuva_info,
+                           gfx::RectToSkRect(dest_rect), false,
+                           gfx::RectToSkRect(source_rect));
       dest_shared_image->SetCleared();
     }
 
@@ -576,9 +602,9 @@ bool GraphiteImageReadPixels(GraphiteSharedContext* graphite_shared_context,
     // When `src_rect` was originally contained in the src image bounds, this
     // is equal to the original `pixel_address`.
     uint8_t* subset_pixel_addr =
-        static_cast<uint8_t*>(pixel_address) +
-        (src_rect.y() - src_y) * row_bytes +
-        (src_rect.x() - src_x) * dst_info.bytesPerPixel();
+        UNSAFE_TODO(static_cast<uint8_t*>(pixel_address) +
+                    (src_rect.y() - src_y) * row_bytes +
+                    (src_rect.x() - src_x) * dst_info.bytesPerPixel());
     SkImageInfo subset_dst_info =
         dst_info.makeWH(src_rect.width(), src_rect.height());
 

@@ -11,12 +11,12 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
-#include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/output_device_info.h"
 
 namespace media {
 
+class AudioBus;
 struct AudioGlitchInfo;
 
 // AudioRendererSink is an interface representing the end-point for

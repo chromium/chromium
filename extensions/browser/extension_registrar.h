@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 
+#include "base/auto_reset.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
@@ -18,6 +19,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/string_ordinal.h"
 #include "extensions/browser/blocklist_state.h"
+#include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/process_manager.h"
@@ -37,7 +39,6 @@ class DevToolsAgentHost;
 }  // namespace content
 
 namespace extensions {
-class DelayedInstallManager;
 class Extension;
 class ExtensionHost;
 class ExtensionPrefs;
@@ -49,7 +50,9 @@ class RendererStartupHelper;
 // extensions for a BrowserContext. It uses the ExtensionRegistry to track
 // extension states. Other classes may query the ExtensionRegistry directly,
 // but eventually only ExtensionRegistrar will be able to make changes to it.
-class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
+class ExtensionRegistrar : public KeyedService,
+                           public ProcessManagerObserver,
+                           public DelayedInstallManager::Observer {
  public:
   // Delegate for embedder-specific functionality like policy and permissions.
   class Delegate {
@@ -160,6 +163,10 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   // KeyedService overrides:
   // Called when the associated Profile is going to be destroyed.
   void Shutdown() override;
+
+  // DelayedInstallManager::Observer:
+  void OnDelayedInstallFinished(
+      scoped_refptr<const Extension> extension) override;
 
   // Adds the extension to the ExtensionRegistry. The extension will be added to
   // the enabled, disabled, blocklisted or blocked set. If the extension is
@@ -334,6 +341,11 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   void GreylistExtensionForTest(const std::string& extension_id,
                                 const BitMapBlocklistState& state);
 
+  // Disables the automatic spin-up of lazy contexts. This should only be used
+  // in tests.
+  [[nodiscard]]
+  static base::AutoReset<bool> DisableLazyContextSpinupForTest();
+
   // Deactivates the extension, adding its id to the list of terminated
   // extensions.
   void TerminateExtension(const ExtensionId& extension_id);
@@ -481,6 +493,9 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
 
   base::ScopedObservation<ProcessManager, ProcessManagerObserver>
       process_manager_observation_{this};
+  base::ScopedObservation<DelayedInstallManager,
+                          DelayedInstallManager::Observer>
+      delayed_install_manager_observation_{this};
   base::WeakPtrFactory<ExtensionRegistrar> weak_factory_{this};
 };
 

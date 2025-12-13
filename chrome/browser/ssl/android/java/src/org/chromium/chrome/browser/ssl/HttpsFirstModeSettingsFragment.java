@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.AdvancedProtectionStatusManagerAndroidBridge;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -195,4 +196,10 @@ public class HttpsFirstModeSettingsFragment extends ChromeBaseSettingsFragment {
     public @AnimationType int getAnimationType() {
         return AnimationType.PROPERTY;
     }
+
+    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(
+                    HttpsFirstModeSettingsFragment.class.getName(),
+                    R.xml.https_first_mode_settings);
 }

@@ -26,7 +26,7 @@ static_library("projector_app") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/projector",
     "//chrome/common",
-    "//chrome/common:channel_info",
+    "//chromeos/ash/components/channel",
     "//components/version_info:channel",
     "//third_party/blink/public/common:headers",
   ]

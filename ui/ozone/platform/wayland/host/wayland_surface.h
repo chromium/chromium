@@ -17,15 +17,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/gpu_fence_handle.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/hdr_metadata.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_color_space.h"
 
 struct wp_content_type_v1;
 struct wp_fractional_scale_v1;
@@ -39,7 +40,7 @@ class WaylandConnection;
 class WaylandOutput;
 class WaylandWindow;
 class WaylandBufferHandle;
-class WaylandZcrColorManagementSurface;
+class WaylandWpColorManagementSurface;
 
 // Wrapper of a wl_surface, owned by a WaylandWindow or a WlSubsurface.
 class WaylandSurface {
@@ -66,6 +67,10 @@ class WaylandSurface {
 
   const std::vector<uint32_t>& entered_outputs() const {
     return entered_outputs_;
+  }
+
+  WaylandWpColorManagementSurface* wp_color_management_surface() const {
+    return wp_color_management_surface_.get();
   }
 
   // Requests an explicit release for the next commit.
@@ -188,8 +193,9 @@ class WaylandSurface {
   // be removed.
   void RemoveEnteredOutput(uint32_t id);
 
-  // Set surface ColorSpace
-  void set_color_space(gfx::ColorSpace color_space);
+  // Set surface ColorSpace and HDR metadata.
+  void SetImageDescription(const gfx::ColorSpace& color_space,
+                           const gfx::HDRMetadata& hdr_metadata);
 
   // Validates the |pending_state_| and generates the corresponding requests.
   // Then copy |pending_states_| to |states_|.
@@ -214,6 +220,10 @@ class WaylandSurface {
   std::optional<float> preferred_scale_factor() const {
     return preferred_scale_factor_;
   }
+
+  // Some states do not take effect if the surface commit has no buffer.
+  // E.g. `xdg_surface.set_window_geometry`
+  bool has_buffer() const { return state_.buffer_id; }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandWindowTest,
@@ -252,8 +262,9 @@ class WaylandSurface {
     std::vector<gfx::Rect> opaque_region_px;
     std::vector<gfx::Rect> input_region_px;
 
-    // The current color space of the surface.
-    scoped_refptr<WaylandZcrColorSpace> color_space = nullptr;
+    // The current color space and HDR metadata of the surface.
+    gfx::ColorSpace color_space;
+    gfx::HDRMetadata hdr_metadata;
 
     // The acquire gpu fence to associate with the surface buffer.
     gfx::GpuFenceHandle acquire_fence;
@@ -265,7 +276,7 @@ class WaylandSurface {
     // buffer_handle owning this wl_buffer is destroyed. Accessing this field
     // should ensure wl_buffer exists by calling
     // WaylandBufferManagerHost::EnsureBufferHandle(buffer_id).
-    raw_ptr<wl_buffer, AcrossTasksDanglingUntriaged> buffer = nullptr;
+    base::WeakPtr<WaylandBufferHandle> buffer;
     gfx::Size buffer_size_px;
 
     // The buffer scale refers to the ratio between the buffer size and the
@@ -353,8 +364,7 @@ class WaylandSurface {
   wl::Object<overlay_prioritized_surface> overlay_priority_surface_;
   wl::Object<wp_content_type_v1> content_type_;
   wl::Object<wp_fractional_scale_v1> fractional_scale_;
-  std::unique_ptr<WaylandZcrColorManagementSurface>
-      zcr_color_management_surface_;
+  std::unique_ptr<WaylandWpColorManagementSurface> wp_color_management_surface_;
   ExplicitReleaseCallback next_explicit_release_request_;
 
   // A cached copy of connection->supports_viewporter_surface_scaling(). While

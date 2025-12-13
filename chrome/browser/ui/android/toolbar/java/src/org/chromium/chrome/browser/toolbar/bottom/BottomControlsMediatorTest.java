@@ -34,7 +34,8 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -46,14 +47,16 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerImpl;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeManager;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.function.Supplier;
 
 /** Unit tests for {@link BottomControlsMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -89,7 +92,8 @@ public class BottomControlsMediatorTest {
     @Mock EdgeToEdgeManager mEdgeToEdgeManager;
 
     private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
-    private final ObservableSupplierImpl<Tab> mTabObservableSupplier = new ObservableSupplierImpl();
+    private final SettableNullableObservableSupplier<Tab> mTabObservableSupplier =
+            ObservableSuppliers.createNullable();
     private final ObservableSupplierImpl<Boolean> mOverlayPanelVisibilitySupplier =
             new ObservableSupplierImpl();
 
@@ -169,8 +173,7 @@ public class BottomControlsMediatorTest {
                         mEdgeToEdgeManager,
                         mBrowserControlsStateProvider,
                         new ObservableSupplierImpl<>(mLayoutManager),
-                        mFullscreenManager,
-                        null);
+                        mFullscreenManager);
         BottomControlsMediator plainMediator =
                 new BottomControlsMediator(
                         mWindowAndroid,
@@ -202,8 +205,7 @@ public class BottomControlsMediatorTest {
                         mEdgeToEdgeManager,
                         mBrowserControlsStateProvider,
                         new ObservableSupplierImpl<>(mLayoutManager),
-                        mFullscreenManager,
-                        null);
+                        mFullscreenManager);
         new BottomControlsMediator(
                 mWindowAndroid,
                 mModel,

@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/metrics/chrome_metrics_service_client.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
+#include "chrome/browser/metrics/chrome_metrics_service_client.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -33,6 +33,7 @@
 #include "components/metrics/unsent_log_store.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/ukm_pref_names.h"
@@ -42,6 +43,7 @@
 #include "components/unified_consent/unified_consent_service.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_entry_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -182,7 +184,7 @@ class MockSyncService : public syncer::TestSyncService {
   }
 
   // The list of observers of the SyncService state.
-  base::ObserverList<syncer::SyncServiceObserver>::Unchecked observers_;
+  base::ObserverList<syncer::SyncServiceObserver> observers_;
 };
 
 struct IndependentAppMetricsTestParams {
@@ -237,10 +239,6 @@ class ChromeMetricsServiceClientTestIgnoredForAppMetrics
     ash::multidevice_setup::MultiDeviceSetupClientImpl::Factory::
         SetFactoryForTesting(nullptr);
 
-    // ChromeMetricsServiceClient::Initialize() initializes
-    // IdentifiabilityStudySettings as part of creating the
-    // PrivacyBudgetUkmEntryFilter. Reset them after the test.
-    blink::IdentifiabilityStudySettings::ResetStateForTesting();
     profile_manager_.reset();
   }
 

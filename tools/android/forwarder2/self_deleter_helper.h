@@ -12,7 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 

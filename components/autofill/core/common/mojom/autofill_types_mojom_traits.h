@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_MOJOM_AUTOFILL_TYPES_MOJOM_TRAITS_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_MOJOM_AUTOFILL_TYPES_MOJOM_TRAITS_H_
 
-#include <map>
 #include <optional>
 #include <string>
 #include <utility>
@@ -77,6 +76,15 @@ struct StructTraits<autofill::mojom::FieldRendererIdDataView,
 
   static bool Read(autofill::mojom::FieldRendererIdDataView data,
                    autofill::FieldRendererId* out);
+};
+
+template <>
+struct StructTraits<autofill::mojom::FillIdDataView, autofill::FillId> {
+  static const base::UnguessableToken& id(const autofill::FillId& r) {
+    return r.value();
+  }
+
+  static bool Read(autofill::mojom::FillIdDataView data, autofill::FillId* out);
 };
 
 template <>
@@ -186,6 +194,10 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
   static const std::u16string& aria_description(
       const autofill::FormFieldData& r) {
     return r.aria_description();
+  }
+
+  static const std::u16string& nonce(const autofill::FormFieldData& r) {
+    return r.nonce();
   }
 
   static autofill::FieldRendererId renderer_id(
@@ -414,6 +426,11 @@ struct StructTraits<autofill::mojom::FormFieldDataPredictionsDataView,
     return r.heuristic_type;
   }
 
+  static const std::string& pwm_ml_type(
+      const autofill::FormFieldDataPredictions& r) {
+    return r.pwm_ml_type;
+  }
+
   static const std::optional<std::string>& server_type(
       const autofill::FormFieldDataPredictions& r) {
     return r.server_type;
@@ -427,11 +444,6 @@ struct StructTraits<autofill::mojom::FormFieldDataPredictionsDataView,
   static const std::string& overall_type(
       const autofill::FormFieldDataPredictions& r) {
     return r.overall_type;
-  }
-
-  static const std::string& autofill_ai_type(
-      const autofill::FormFieldDataPredictions& r) {
-    return r.autofill_ai_type;
   }
 
   static const std::string& attribute_types(
@@ -496,6 +508,11 @@ struct StructTraits<autofill::mojom::FormDataPredictionsDataView,
   static const std::string& alternative_signature(
       const autofill::FormDataPredictions& r) {
     return r.alternative_signature;
+  }
+
+  static const std::string& structural_form_signature(
+      const autofill::FormDataPredictions& r) {
+    return r.structural_form_signature;
   }
 
   static const std::vector<autofill::FormFieldDataPredictions>& fields(

@@ -84,6 +84,9 @@ GetOpenXrInputProfilesMap() {
             // Oculus says this will soon be the name OpenXR reports
             {"Oculus Quest2",
              {"oculus-touch-v3", "oculus-touch-v2", "oculus-touch",
+              "generic-trigger-squeeze-thumbstick"}},
+            {"Moohan",
+             {"samsung-galaxyxr", "oculus-touch",
               "generic-trigger-squeeze-thumbstick"}}}},
 
           // Valve Index

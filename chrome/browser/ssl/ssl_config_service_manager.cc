@@ -41,6 +41,14 @@
 
 namespace {
 
+// Pref value identifying the compliance regime specified by the Commercial
+// National Security Algorithm Suite 2.0 (CNSA 2.0).
+const char kPrefStringValueCnsa2[] = "cnsa2";
+
+// Pref value identifying the compliance regime specified by the Commercial
+// National Security Algorithm Suite versions 1.0 and 2.0 (CNSA 1.0 and 2.0).
+const char kPrefStringValueCnsa[] = "cnsa";
+
 // Converts a `base::Value::List` of StringValues into a vector of strings. Any
 // values which cannot be converted will be skipped.
 std::vector<std::string> ValueListToStringVector(
@@ -100,9 +108,8 @@ std::vector<std::string> CanonicalizeHostnamePatterns(
     std::string canon_pattern;
     url::Component canon_component;
     url::StdStringCanonOutput canon_output(&canon_pattern);
-    if (!url::CanonicalizeHost(pattern.data(),
-                               url::Component(0, pattern.size()), &canon_output,
-                               &canon_component)) {
+    if (!url::CanonicalizeHost(pattern, url::Component(0, pattern.size()),
+                               &canon_output, &canon_component)) {
       continue;
     }
     canon_output.Complete();
@@ -140,6 +147,10 @@ SSLConfigServiceManager::SSLConfigServiceManager(PrefService* local_state) {
 #endif
   ech_enabled_.Init(prefs::kEncryptedClientHelloEnabled, local_state,
                     local_state_callback);
+  key_exchange_compliance_.Init(prefs::kPreferSlowKexAlgorithms, local_state,
+                                local_state_callback);
+  tls13_cipher_compliance_.Init(prefs::kPreferSlowCiphers, local_state,
+                                local_state_callback);
 
   local_state_change_registrar_.Init(local_state);
   local_state_change_registrar_.Add(prefs::kCipherSuiteBlacklist,
@@ -166,6 +177,11 @@ void SSLConfigServiceManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kH2ClientCertCoalescingHosts);
   registry->RegisterBooleanPref(prefs::kEncryptedClientHelloEnabled,
                                 default_context_config.ech_enabled);
+  // The following two prefs for SSL compliance policies are used here as
+  // local_state prefs, but the same pref names are also used as Profile prefs
+  // in certain Profiles. Their value is only used if managed.
+  registry->RegisterStringPref(prefs::kPreferSlowKexAlgorithms, std::string());
+  registry->RegisterStringPref(prefs::kPreferSlowCiphers, std::string());
 
   // Default value for these prefs don't matter since they are only used when
   // managed.
@@ -186,8 +202,10 @@ void SSLConfigServiceManager::AddToNetworkContextParams(
 }
 
 void SSLConfigServiceManager::UpdateTrustAnchorIDs(
-    std::vector<std::vector<uint8_t>> trust_anchor_ids) {
+    std::vector<std::vector<uint8_t>> trust_anchor_ids,
+    std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids) {
   trust_anchor_ids_ = std::move(trust_anchor_ids);
+  mtc_trust_anchor_ids_ = std::move(mtc_trust_anchor_ids);
   network::mojom::SSLConfigPtr new_config = GetNewSSLConfig();
   network::mojom::SSLConfig* raw_config = new_config.get();
 
@@ -265,7 +283,11 @@ network::mojom::SSLConfigPtr SSLConfigServiceManager::GetNewSSLConfig() const {
       trust_anchor_ids_.has_value()
           ? trust_anchor_ids_.value()
           : net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
+  config->mtc_trust_anchor_ids = mtc_trust_anchor_ids_;
 #endif
+
+  ConfigureSSLComplianceSettings(key_exchange_compliance_,
+                                 tls13_cipher_compliance_, config.get());
 
   return config;
 }
@@ -275,4 +297,28 @@ void SSLConfigServiceManager::OnDisabledCipherSuitesChange(
   const base::Value::List& list =
       local_state->GetList(prefs::kCipherSuiteBlacklist);
   disabled_cipher_suites_ = ParseCipherSuites(ValueListToStringVector(list));
+}
+
+// static
+void SSLConfigServiceManager::ConfigureSSLComplianceSettings(
+    const StringPrefMember& key_exchange_compliance_pref,
+    const StringPrefMember& tls13_cipher_compliance_pref,
+    network::mojom::SSLConfig* config) {
+  if (base::FeatureList::IsEnabled(features::kCryptographyComplianceCnsa)) {
+    config->named_groups_preset = network::mojom::SSLNamedGroupsPreset::kCnsa2;
+    config->tls13_cipher_prefer_aes_256 = true;
+    return;
+  }
+
+  if (key_exchange_compliance_pref.IsManaged()) {
+    config->named_groups_preset =
+        key_exchange_compliance_pref.GetValue() == kPrefStringValueCnsa2
+            ? network::mojom::SSLNamedGroupsPreset::kCnsa2
+            : network::mojom::SSLNamedGroupsPreset::kDefault;
+  }
+
+  if (tls13_cipher_compliance_pref.IsManaged()) {
+    config->tls13_cipher_prefer_aes_256 =
+        tls13_cipher_compliance_pref.GetValue() == kPrefStringValueCnsa;
+  }
 }

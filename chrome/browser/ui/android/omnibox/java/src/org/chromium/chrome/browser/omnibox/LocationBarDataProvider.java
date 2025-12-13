@@ -10,9 +10,12 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.url.GURL;
 
@@ -142,13 +145,17 @@ public interface LocationBarDataProvider {
     @ConnectionSecurityLevel
     int getSecurityLevel();
 
+    /** Returns the current {@link ConnectionMaliciousContentStatus}. */
+    @ConnectionMaliciousContentStatus
+    int getMaliciousContentStatus();
+
     /**
      * Returns the current page classification.
      *
-     * @param isPrefetch If the page classification for prefetching is requested.
+     * @param prefetch whether retrieving page class in prefetch context.
      * @return Integer value representing the {@code OmniboxEventProto.PageClassification}.
      */
-    int getPageClassification(boolean isPrefetch);
+    int getPageClassification(boolean prefetch);
 
     /**
      * Returns the resource ID of the icon that should be displayed or 0 if no icon should be shown.
@@ -165,4 +172,7 @@ public interface LocationBarDataProvider {
     /** Returns the resource ID of the content description for the security icon. */
     @StringRes
     int getSecurityIconContentDescriptionResourceId();
+
+    /** Returns the user-selected placement of the Toolbar. */
+    NonNullObservableSupplier<@ControlsPosition Integer> getToolbarPositionSupplier();
 }

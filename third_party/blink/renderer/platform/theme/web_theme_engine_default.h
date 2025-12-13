@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include "build/build_config.h"
+#include "third_party/blink/public/mojom/css/preferred_contrast.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "ui/color/color_provider.h"
 
@@ -25,8 +27,9 @@ class WebThemeEngineDefault : public WebThemeEngine {
              WebThemeEngine::State state,
              const gfx::Rect& rect,
              const WebThemeEngine::ExtraParams* extra_params,
-             mojom::ColorScheme color_scheme,
-             bool in_forced_colors,
+             bool forced_colors,
+             mojom::blink::ColorScheme color_scheme,
+             mojom::blink::PreferredContrast contrast,
              const ui::ColorProvider* color_provider,
              const std::optional<SkColor>& accent_color) override;
   gfx::Insets GetScrollbarSolidColorThumbInsets(Part part) const override;
@@ -47,8 +50,6 @@ class WebThemeEngineDefault : public WebThemeEngine {
                                     int32_t vertical_arrow_bitmap_height,
                                     int32_t horizontal_arrow_bitmap_width);
 #endif
-  bool IsFluentScrollbarEnabled() const override;
-  bool IsFluentOverlayScrollbarEnabled() const override;
   int GetPaintedScrollbarTrackInset() const override;
 };
 

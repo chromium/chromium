@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "device/fido/cable/v2_handshake.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "device/fido/cable/v2_handshake.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/obj.h"
@@ -44,7 +41,7 @@ constexpr std::array<uint8_t, 32> kTestLocalSeed = {
 }  // namespace
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* raw_data, size_t size) {
-  auto input = base::span(raw_data, size);
+  auto input = UNSAFE_TODO(base::span(raw_data, size));
   if (input.empty()) {
     return 0;
   }

@@ -146,6 +146,7 @@ class RendererFreezerTest : public testing::Test {
 
   void SimulateRenderProcessHostCreated(content::RenderProcessHost* rph) {
     renderer_freezer_->OnRenderProcessHostCreated(rph);
+    renderer_freezer_->OnRenderProcessLaunched(rph);
   }
 
  protected:

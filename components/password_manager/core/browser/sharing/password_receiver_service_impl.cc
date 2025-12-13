@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
@@ -17,7 +16,6 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
-#include "components/prefs/pref_service.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/service/sync_service.h"
 
@@ -215,16 +213,12 @@ void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResults(
 }
 
 PasswordReceiverServiceImpl::PasswordReceiverServiceImpl(
-    const PrefService* pref_service,
     std::unique_ptr<IncomingPasswordSharingInvitationSyncBridge> sync_bridge,
     PasswordStoreInterface* profile_password_store,
     PasswordStoreInterface* account_password_store)
-    : pref_service_(pref_service),
-      sync_bridge_(std::move(sync_bridge)),
+    : sync_bridge_(std::move(sync_bridge)),
       profile_password_store_(profile_password_store),
       account_password_store_(account_password_store) {
-  CHECK(pref_service_);
-
   // |sync_bridge_| can be empty in tests.
   if (sync_bridge_) {
     sync_bridge_->SetPasswordReceiverService(this);
@@ -241,9 +235,12 @@ void PasswordReceiverServiceImpl::ProcessIncomingSharingInvitation(
   // server. In case, `sync_service_` is null (e.g. due to a weird corner case
   // of destruction of sync service after delivering the invitation), both
   // checks below evaluate to false and hence the invitation will be ignored.
-  if (features_util::IsAccountStorageEnabled(pref_service_, sync_service_)) {
+  if (features_util::IsAccountStorageEnabled(sync_service_)) {
     password_store = account_password_store_;
   } else if (sync_service_ && sync_service_->IsSyncFeatureEnabled()) {
+    // TODO(crbug.com/40066949): Remove this branch once IsSyncFeatureEnabled()
+    // is removed from the codebase. See ConsentLevel::kSync documentation for
+    // details.
     password_store = profile_password_store_;
   }
   // `password_store` shouldn't generally be null, since in those scenarios no

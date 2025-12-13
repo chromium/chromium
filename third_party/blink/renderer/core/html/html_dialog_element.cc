@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -195,13 +196,7 @@ void HTMLDialogElement::close(const String& return_value,
 
     ScheduleCloseEvent();
 
-    if (RuntimeEnabledFeatures::DialogCloseWhenOpenRemovedEnabled()) {
-      if (isConnected()) {
-        DCHECK(close_watcher_);
-        close_watcher_->destroy();
-        close_watcher_ = nullptr;
-      }
-    } else if (close_watcher_) {
+    if (close_watcher_) {
       close_watcher_->destroy();
       close_watcher_ = nullptr;
     }
@@ -275,15 +270,15 @@ void HTMLDialogElement::setClosedBy(const String& new_value) {
 namespace {
 
 const HTMLDialogElement* FindNearestDialog(const Node& target_node,
-                                           const PointerEvent& pointer_event) {
+                                           double client_x,
+                                           double client_y) {
   // First check if this is a click on a dialog's backdrop, which will show up
   // as a click on the dialog directly.
   if (auto* dialog = DynamicTo<HTMLDialogElement>(target_node);
       dialog && dialog->IsOpenAndActive() && dialog->IsModal()) {
     DOMRect* dialog_rect =
         const_cast<HTMLDialogElement*>(dialog)->GetBoundingClientRect();
-    if (!dialog_rect->IsPointInside(pointer_event.clientX(),
-                                    pointer_event.clientY())) {
+    if (!dialog_rect->IsPointInside(client_x, client_y)) {
       return nullptr;  // Return nullptr for a backdrop click.
     }
   }
@@ -305,6 +300,7 @@ const HTMLDialogElement* FindNearestDialog(const Node& target_node,
 void HTMLDialogElement::HandleDialogLightDismiss(
     const PointerEvent& pointer_event,
     const Node& target_node) {
+  CHECK(!RuntimeEnabledFeatures::LightDismissFromClickEnabled());
   CHECK(pointer_event.isTrusted());
   // PointerEventManager will call this function before actually dispatching
   // the event.
@@ -318,8 +314,8 @@ void HTMLDialogElement::HandleDialogLightDismiss(
   }
 
   const AtomicString& event_type = pointer_event.type();
-  const HTMLDialogElement* ancestor_dialog =
-      FindNearestDialog(target_node, pointer_event);
+  const HTMLDialogElement* ancestor_dialog = FindNearestDialog(
+      target_node, pointer_event.clientX(), pointer_event.clientY());
   if (event_type == event_type_names::kPointerdown) {
     document.SetDialogPointerdownTarget(ancestor_dialog);
   } else if (event_type == event_type_names::kPointerup) {
@@ -340,6 +336,36 @@ void HTMLDialogElement::HandleDialogLightDismiss(
   }
 }
 
+// static
+// https://html.spec.whatwg.org/interactive-elements.html#light-dismiss-open-dialogs
+void HTMLDialogElement::HandleDialogLightDismissForClick(
+    const PointerEventFactory::PointerTarget& pointer_down_target,
+    const PointerEventFactory::PointerTarget& pointer_up_target) {
+  CHECK(RuntimeEnabledFeatures::LightDismissFromClickEnabled());
+
+  // If there aren't any open dialogs, there's nothing to light dismiss.
+  auto& document = pointer_down_target.node->GetDocument();
+  if (document.AllOpenDialogs().empty()) {
+    return;
+  }
+
+  const HTMLDialogElement* pointer_down_dialog =
+      FindNearestDialog(*pointer_down_target.node, pointer_down_target.client_x,
+                        pointer_down_target.client_y);
+  const HTMLDialogElement* pointer_up_dialog =
+      FindNearestDialog(*pointer_up_target.node, pointer_up_target.client_x,
+                        pointer_up_target.client_y);
+  if (pointer_down_dialog == pointer_up_dialog) {
+    HTMLDialogElement* topmost_dialog = document.AllOpenDialogs().back();
+    if (pointer_down_dialog == topmost_dialog) {
+      return;
+    }
+    if (topmost_dialog->ClosedBy() == ClosedByState::kAny) {
+      topmost_dialog->requestClose(String(), ASSERT_NO_EXCEPTION);
+    }
+  }
+}
+
 bool HTMLDialogElement::IsValidBuiltinCommand(HTMLElement& invoker,
                                               CommandEventType command) {
   return HTMLElement::IsValidBuiltinCommand(invoker, command) ||
@@ -351,8 +377,9 @@ bool HTMLDialogElement::IsValidBuiltinCommand(HTMLElement& invoker,
 
 bool HTMLDialogElement::HandleCommandInternal(HTMLElement& invoker,
                                               CommandEventType command) {
-  CHECK(IsValidBuiltinCommand(invoker, command));
-
+  if (!IsValidBuiltinCommand(invoker, command)) {
+    return false;
+  }
   if (HTMLElement::HandleCommandInternal(invoker, command)) {
     return true;
   }
@@ -614,13 +641,10 @@ void HTMLDialogElement::RemovedFrom(ContainerNode& insertion_point) {
 
   SetIsModal(false);
   document.RemoveFromTopLayerImmediately(this);
-  if (FastHasAttribute(html_names::kOpenAttr)) {
-    GetDocument().AllOpenDialogs().erase(this);
-    DCHECK(close_watcher_);
+  GetDocument().AllOpenDialogs().erase(this);
+  if (close_watcher_) {
     close_watcher_->destroy();
     close_watcher_ = nullptr;
-  } else {
-    DCHECK(!GetDocument().AllOpenDialogs().Contains(this));
   }
 }
 
@@ -710,8 +734,8 @@ bool HTMLDialogElement::DispatchToggleEvents(bool opening,
                           old_state, new_state, source);
   pending_toggle_event_task_ = PostCancellableTask(
       *GetDocument().GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
-      WTF::BindOnce(&HTMLDialogElement::DispatchPendingToggleEvent,
-                    WrapPersistent(this)));
+      BindOnce(&HTMLDialogElement::DispatchPendingToggleEvent,
+               WrapPersistent(this)));
   return true;
 }
 
@@ -764,9 +788,10 @@ void HTMLDialogElement::ParseAttribute(
       } else {
         DCHECK(GetDocument().AllOpenDialogs().Contains(this));
         GetDocument().AllOpenDialogs().erase(this);
-        DCHECK(close_watcher_);
-        close_watcher_->destroy();
-        close_watcher_ = nullptr;
+        if (close_watcher_) {
+          close_watcher_->destroy();
+          close_watcher_ = nullptr;
+        }
       }
     } else if (params.old_value.IsNull() && isConnected()) {
       // The `open` attribute is being added, and the element is already

@@ -104,12 +104,12 @@ class PageNodeImpl
   GetNotificationPermissionStatus() const override;
   base::TimeDelta GetTimeSinceLastNavigation() const override;
   const GURL& GetMainFrameUrl() const override;
-  uint64_t EstimateMainFramePrivateFootprintSize() const override;
+  base::ByteCount EstimateMainFramePrivateFootprintSize() const override;
   bool HadFormInteraction() const override;
   bool HadUserEdits() const override;
   base::WeakPtr<content::WebContents> GetWebContents() const override;
-  uint64_t EstimateResidentSetSize() const override;
-  uint64_t EstimatePrivateFootprintSize() const override;
+  base::ByteCount EstimateResidentSetSize() const override;
+  base::ByteCount EstimatePrivateFootprintSize() const override;
   base::WeakPtr<PageNode> GetWeakPtr() override;
   base::WeakPtr<const PageNode> GetWeakPtr() const override;
 
@@ -119,7 +119,7 @@ class PageNodeImpl
 
   // Returns a Perfetto track that can record trace events for the page. This
   // function can be called from any thread.
-  const perfetto::NamedTrack& tracing_track() const { return tracing_track_; }
+  const perfetto::NamedTrack& tracing_track() const { return *tracing_track_; }
 
   void SetType(PageType type);
   void SetIsFocused(bool is_focused);
@@ -197,6 +197,7 @@ class PageNodeImpl
 
   // Functions meant to be called by a FrameNodeImpl:
   void AddFrame(base::PassKey<FrameNodeImpl>, FrameNodeImpl* frame_node);
+  void TraceFrame(base::PassKey<FrameNodeImpl>, FrameNodeImpl* frame_node);
   void RemoveFrame(base::PassKey<FrameNodeImpl>, FrameNodeImpl* frame_node);
 
   // Function meant to be called by FrozenFrameAggregator.
@@ -261,10 +262,6 @@ class PageNodeImpl
       const GURL& url,
       std::optional<int64_t> navigation_id = std::nullopt) const;
 
-  // Emits the beginning or end of a trace event when the LoadingState changes
-  // to `loading_state`.
-  void EmitLoadingTraceEvent(LoadingState loading_state) const;
-
   // The WebContents associated with this page.
   const base::WeakPtr<content::WebContents> web_contents_;
 
@@ -272,7 +269,9 @@ class PageNodeImpl
   const PageToken page_token_;
 
   // Perfetto track that can record trace events for the page.
-  const perfetto::NamedTrack tracing_track_;
+  const base::trace_event::TrackRegistration<perfetto::NamedTrack>
+      tracing_track_;
+  const perfetto::NamedTrack loading_track_;
 
   // The main frame nodes of this page. There can be more than one main frame
   // in a page, among other reasons because during main frame navigation, the
@@ -320,7 +319,6 @@ class PageNodeImpl
   // navigation.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
       std::optional<blink::mojom::PermissionStatus>,
-      std::optional<blink::mojom::PermissionStatus>,
       &PageNodeObserver::OnPageNotificationPermissionStatusChange>
       notification_permission_status_ GUARDED_BY_CONTEXT(sequence_checker_);
 
@@ -338,24 +336,26 @@ class PageNodeImpl
   // The type of the page.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
       PageType,
-      PageType,
       &PageNodeObserver::OnTypeChanged>
       type_ GUARDED_BY_CONTEXT(sequence_checker_){PageType::kUnknown};
 
   // Whether or not the page is focused. Driven by browser instrumentation.
   ObservedProperty::NotifiesOnlyOnChanges<bool,
-                                          &PageNodeObserver::OnIsFocusedChanged>
-      is_focused_ GUARDED_BY_CONTEXT(sequence_checker_){false};
+                                          &PageNodeObserver::OnIsFocusedChanged,
+                                          TracedWrapper<bool>>
+      is_focused_ GUARDED_BY_CONTEXT(sequence_checker_);
   // Whether or not the page is visible. Driven by browser instrumentation.
   // Initialized on construction.
   ObservedProperty::NotifiesOnlyOnChanges<bool,
-                                          &PageNodeObserver::OnIsVisibleChanged>
-      is_visible_ GUARDED_BY_CONTEXT(sequence_checker_){false};
+                                          &PageNodeObserver::OnIsVisibleChanged,
+                                          TracedWrapper<bool>>
+      is_visible_ GUARDED_BY_CONTEXT(sequence_checker_);
   // Whether or not the page is audible. Driven by browser instrumentation.
   // Initialized on construction.
   ObservedProperty::NotifiesOnlyOnChanges<bool,
-                                          &PageNodeObserver::OnIsAudibleChanged>
-      is_audible_ GUARDED_BY_CONTEXT(sequence_checker_){false};
+                                          &PageNodeObserver::OnIsAudibleChanged,
+                                          TracedWrapper<bool>>
+      is_audible_ GUARDED_BY_CONTEXT(sequence_checker_);
   // Whether or not the page is displaying content in picture-in-picture. Driven
   // by browser instrumentation. Initialized on construction.
   ObservedProperty::NotifiesOnlyOnChanges<
@@ -376,10 +376,9 @@ class PageNodeImpl
   // process.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
       LoadingState,
-      LoadingState,
-      &PageNodeObserver::OnLoadingStateChanged>
-      loading_state_ GUARDED_BY_CONTEXT(sequence_checker_){
-          LoadingState::kLoadingNotStarted};
+      &PageNodeObserver::OnLoadingStateChanged,
+      TracedWrapper<LoadingState>>
+      loading_state_ GUARDED_BY_CONTEXT(sequence_checker_);
   // The UKM source ID associated with the URL of the main frame of this page.
   ObservedProperty::NotifiesOnlyOnChanges<
       ukm::SourceId,

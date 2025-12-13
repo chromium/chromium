@@ -32,8 +32,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.test.R;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** Tests for {@link OmniboxResourceProvider}. */
@@ -52,8 +52,7 @@ public class OmniboxResourceProviderTest {
                         new ContextThemeWrapper(
                                 ContextUtils.getApplicationContext(),
                                 R.style.Theme_BrowserUI_DayNight));
-        mDefaultColor =
-                SurfaceColorUpdateUtils.getDefaultThemeColor(mContext, /* isIncognito= */ false);
+        mDefaultColor = ChromeColors.getDefaultThemeColor(mContext, /* isIncognito= */ false);
     }
 
     @Test
@@ -392,15 +391,16 @@ public class OmniboxResourceProviderTest {
     @EnableFeatures(ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES)
     public void getDrawableCached() {
         Drawable drawable =
-                OmniboxResourceProvider.getDrawable(mContext, R.drawable.btn_suggestion_refine);
+                OmniboxResourceProvider.getDrawable(mContext, R.drawable.btn_suggestion_refine_up);
         ConstantState constantState = drawable.getConstantState();
 
         Assert.assertEquals(
                 constantState,
                 OmniboxResourceProvider.getDrawableCacheForTesting()
-                        .get(R.drawable.btn_suggestion_refine));
+                        .get(R.drawable.btn_suggestion_refine_up));
 
-        drawable = OmniboxResourceProvider.getDrawable(mContext, R.drawable.btn_suggestion_refine);
+        drawable =
+                OmniboxResourceProvider.getDrawable(mContext, R.drawable.btn_suggestion_refine_up);
         Assert.assertNotNull(drawable);
     }
 
@@ -455,13 +455,13 @@ public class OmniboxResourceProviderTest {
     @EnableFeatures(ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES)
     public void invalidateDrawableCache() {
         Drawable drawable =
-                OmniboxResourceProvider.getDrawable(mContext, R.drawable.btn_suggestion_refine);
+                OmniboxResourceProvider.getDrawable(mContext, R.drawable.btn_suggestion_refine_up);
         ConstantState constantState = drawable.getConstantState();
 
         Assert.assertEquals(
                 constantState,
                 OmniboxResourceProvider.getDrawableCacheForTesting()
-                        .get(R.drawable.btn_suggestion_refine));
+                        .get(R.drawable.btn_suggestion_refine_up));
 
         OmniboxResourceProvider.invalidateDrawableCache();
         Assert.assertEquals(0, OmniboxResourceProvider.getDrawableCacheForTesting().size());

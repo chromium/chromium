@@ -6,6 +6,9 @@
 
 #include <stddef.h>
 
+#include <unordered_map>
+
+#include "base/strings/stringprintf.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -96,9 +99,13 @@ void RenderPassInternal::ReplaceExistingQuadWithHolePunch(
 }
 
 void RenderPassInternal::AsValueInto(
-    base::trace_event::TracedValue* value) const {
+    base::trace_event::TracedValue* value,
+    const std::unordered_map<ResourceId, size_t>& resource_id_to_index_map)
+    const {
   cc::MathUtil::AddToTracedValue("output_rect", output_rect, value);
   cc::MathUtil::AddToTracedValue("damage_rect", damage_rect, value);
+  cc::MathUtil::AddToTracedValue("transform_to_root_target",
+                                 transform_to_root_target, value);
 
   value->SetBoolean("has_transparent_background", has_transparent_background);
   value->SetBoolean("cache_render_pass", cache_render_pass);
@@ -108,31 +115,28 @@ void RenderPassInternal::AsValueInto(
   value->SetInteger("copy_requests",
                     base::saturated_cast<int>(copy_requests.size()));
 
-  value->BeginArray("filters");
-  filters.AsValueInto(value);
-  value->EndArray();
-
-  value->BeginArray("backdrop_filters");
-  backdrop_filters.AsValueInto(value);
-  value->EndArray();
-
-  if (backdrop_filter_bounds.has_value()) {
-    cc::MathUtil::AddToTracedValue("backdrop_filter_bounds",
-                                   *backdrop_filter_bounds, value);
-  }
-
+  value->SetInteger("shared_quad_state_list_size",
+                    shared_quad_state_list.size());
+  std::unordered_map<const SharedQuadState*, size_t> sqs_pointer_to_index_map;
+  size_t index = 0;
   value->BeginArray("shared_quad_state_list");
   for (auto* shared_quad_state : shared_quad_state_list) {
     value->BeginDictionary();
+    sqs_pointer_to_index_map.emplace(shared_quad_state, index);
     shared_quad_state->AsValueInto(value);
+    value->SetInteger("index", index++);
     value->EndDictionary();
   }
   value->EndArray();
 
+  value->SetInteger("quad_list_size", quad_list.size());
+  index = 0;
   value->BeginArray("quad_list");
   for (auto* quad : quad_list) {
     value->BeginDictionary();
-    quad->AsValueInto(value);
+    quad->AsValueInto(value, sqs_pointer_to_index_map,
+                      resource_id_to_index_map);
+    value->SetInteger("index", index++);
     value->EndDictionary();
   }
   value->EndArray();

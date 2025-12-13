@@ -12,7 +12,10 @@
   <message name="IDS_NETWORK_PREDICTION_ENABLED_DESCRIPTION" desc="In the advanced options tab, the text next to the checkbox that enables prediction of network actions.  Actions include browser-initiated DNS prefetching, TCP and SSL preconnection, and prerendering of webpages.">
     Use a prediction service to load pages more quickly
   </message>
-  <message name="IDS_OPTIONS_PROXIES_CONFIGURE_BUTTON" desc="The label of the 'Configure proxy settings' button">
-    Change proxy settings...
+  <message name="IDS_SYSTEM_TITLE" desc="The label of the 'System' button">
+    System
+  </message>
+  <message name="IDS_OPTIONS_PROXIES_CONFIGURE_BUTTON" desc="The label of the 'Open your computer's proxy settings' button">
+    Open your computer's proxy settings
   </message>
 </grit-part>

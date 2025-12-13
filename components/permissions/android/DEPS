@@ -1,6 +1,7 @@
 include_rules = [
   "+components/browser_ui/util/android",
   "+components/browser_ui/widget/android",
+  "+components/browser_ui/styles",
   "+components/cached_flags",
   "+components/infobars/core",
   "+components/location/android",
@@ -10,6 +11,7 @@ include_rules = [
   "+components/webxr/android",
   "+content/public/android",
   "+device/vr/public",
+  "+third_party/blink/public/common/features_generated.h",
   "+third_party/jni_zero",
   "+ui/android",
   "+ui/strings/grit/ui_strings.h",

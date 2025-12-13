@@ -44,7 +44,6 @@ extern const char kMediaQuery[];
 extern const char kNodeInserted[];
 extern const char kPictureSourceChanged[];
 extern const char kPlatformColorChange[];
-extern const char kPlaceElement[];
 extern const char kPluginChanged[];
 extern const char kPopoverVisibilityChange[];
 extern const char kPositionTryChange[];
@@ -79,6 +78,7 @@ extern const AtomicString& g_focus_visible;
 extern const AtomicString& g_focus_within;
 extern const AtomicString& g_hover;
 extern const AtomicString& g_past;
+extern const AtomicString& g_patching;
 extern const AtomicString& g_unresolved;
 
 void Init();

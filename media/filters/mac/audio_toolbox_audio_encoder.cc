@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/mac/audio_toolbox_audio_encoder.h"
 
 #include "base/apple/osstatus_logging.h"
@@ -51,13 +46,24 @@ OSStatus ProvideInputCallback(AudioConverterRef decoder,
 
   const AudioBus* bus = input_data->bus;
   buffer_list->mNumberBuffers = bus->channels();
+
+  // SAFETY: According to the answer in
+  // https://stackoverflow.com/questions/14263808/how-to-use-audioconverterfillcomplexbuffer-and-its-callback,
+  // `buffer_list` points to the 5th parameter (output_buffer_list) passed to
+  // `AudioConverterFillComplexBuffer`.
+  //
+  // In `CreateEncoder`, we have already obtained the maximum possible
+  // packet size based on the current parameters by calling
+  // `AudioConverterGetProperty`, and reserved enough space in `DoEncode`.
+  auto buffer_span = UNSAFE_BUFFERS(
+      base::span(buffer_list->mBuffers, buffer_list->mNumberBuffers));
   for (int i = 0; i < bus->channels(); ++i) {
-    buffer_list->mBuffers[i].mNumberChannels = 1;
-    buffer_list->mBuffers[i].mDataByteSize = bus->frames() * sizeof(float);
+    buffer_span[i].mNumberChannels = 1;
+    buffer_span[i].mDataByteSize = bus->frames() * sizeof(float);
 
     // A non-const version of channel(i) exists, but the compiler doesn't select
     // it for some reason.
-    buffer_list->mBuffers[i].mData = const_cast<float*>(bus->channel(i));
+    buffer_span[i].mData = const_cast<float*>(bus->channel(i).data());
   }
 
   // nFramesPerPacket is 1 for the input stream.
@@ -437,7 +443,7 @@ void AudioToolboxAudioEncoder::DoEncode(const AudioBus* input_bus) {
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     if (format == AudioEncoder::AacOutputFormat::ADTS) {
-      int adts_header_size = 0;
+      size_t adts_header_size = 0;
       packet_buffer = aac_config_parser_.CreateAdtsFromEsds(temp_output_buf_,
                                                             &adts_header_size);
       adts_conversion_ok = !packet_buffer.empty();

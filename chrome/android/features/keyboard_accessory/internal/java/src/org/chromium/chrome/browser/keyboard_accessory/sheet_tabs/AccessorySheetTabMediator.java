@@ -14,7 +14,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryToggleType;
-import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.IbanInfo;
@@ -27,6 +26,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type;
+import org.chromium.chrome.browser.keyboard_accessory.utils.ManualFillingMetricsRecorder;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -138,6 +138,9 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
         for (LoyaltyCardInfo loyaltyCardInfo : accessorySheetData.getLoyaltyCardInfoList()) {
             items.add(new AccessorySheetDataPiece(loyaltyCardInfo, Type.LOYALTY_CARD_INFO));
         }
+        if (shouldAddDivider(items, !accessorySheetData.getFooterCommands().isEmpty())) {
+            items.add(new AccessorySheetDataPiece(null, Type.DIVIDER));
+        }
         for (FooterCommand command : accessorySheetData.getFooterCommands()) {
             items.add(new AccessorySheetDataPiece(command, Type.FOOTER_COMMAND));
         }
@@ -213,5 +216,18 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
         assert false
                 : "Recording type for toggle of type " + toggle.getActionType() + "is not known.";
         return AccessoryToggleType.COUNT;
+    }
+
+    private static boolean shouldAddDivider(
+            List<AccessorySheetDataPiece> items, boolean hasFooter) {
+        if (!hasFooter) {
+            return false; // Only add a divider to separate footer commands from titles.
+        }
+        for (AccessorySheetDataPiece item : items) {
+            if (AccessorySheetDataPiece.getType(item) != Type.TITLE) {
+                return false; // Anything beyond titles should add divider(s) in its layout.
+            }
+        }
+        return items.size() > 0; // Only add a divider if any title needs dividing from the footer.
     }
 }

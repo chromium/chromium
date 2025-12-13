@@ -19,7 +19,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -27,6 +26,7 @@ import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneManager;
@@ -53,12 +53,14 @@ import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.function.DoubleConsumer;
+import java.util.function.Supplier;
 
 /** Impl class that will resolve components for tab management. */
 @NullMarked
@@ -147,6 +149,10 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                             dragDropDelegate,
                             () -> AppHeaderUtils.isAppInDesktopWindow(desktopWindowStateManager));
             tabSwitcherDragHandler.setTabModelSelector(tabModelSelector);
+            if (ChromeFeatureList.sEscCancelDrag.isEnabled()) {
+                backPressManager.addHandler(
+                        tabSwitcherDragHandler, BackPressHandler.Type.CANCEL_TAB_SWITCHER_DRAG);
+            }
         }
 
         // TODO(crbug.com/40946413): Consider making this an activity scoped singleton and possibly

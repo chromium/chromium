@@ -15,7 +15,7 @@ namespace optimization_guide {
 MqlsFeatureMetadata::MqlsFeatureMetadata(
     std::string name,
     proto::LogAiDataRequest::FeatureCase logging_feature_case,
-    EnterprisePolicyPref enterprise_policy,
+    std::optional<EnterprisePolicyPref> enterprise_policy,
     const base::Feature* field_trial_feature,
     UserFeedbackCallback get_user_feedback_callback)
     : name_(name),
@@ -26,6 +26,12 @@ MqlsFeatureMetadata::MqlsFeatureMetadata(
   CHECK(base::IsStringASCII(name));
   CHECK(field_trial_feature_);
   CHECK(get_user_feedback_callback);
+
+  // Please do not add exceptions to this CHECK without first getting approval
+  // from Chrome Enterprise.
+  if (!enterprise_policy_.has_value()) {
+    CHECK_EQ(name_, "ActorLogin");
+  }
 }
 
 MqlsFeatureMetadata::~MqlsFeatureMetadata() = default;

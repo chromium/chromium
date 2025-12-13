@@ -5,6 +5,7 @@
 #ifndef FUCHSIA_WEB_SHELL_REMOTE_DEBUGGING_PORT_H_
 #define FUCHSIA_WEB_SHELL_REMOTE_DEBUGGING_PORT_H_
 
+#include <cstdint>
 #include <optional>
 
 extern const char kRemoteDebuggingPortSwitch[];

@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <list>
 #include <map>
 #include <memory>
 #include <optional>
@@ -57,12 +58,22 @@ class TabGroupModel {
 
   std::vector<tab_groups::TabGroupId> ListTabGroups() const;
 
+  // Returns the TabGroupId of the group that most recently contained the active
+  // tab. Returns std::nullopt if there are no groups.
+  std::optional<tab_groups::TabGroupId> GetMostRecentTabGroupId() const;
+
+  void OnTabGroupActivated(const tab_groups::TabGroupId& id,
+                           base::PassKey<TabStripModel>);
+
  private:
   std::map<tab_groups::TabGroupId, raw_ptr<TabGroup>> groups_;
 
   // Used to maintain insertion order of TabGroupsIds added to the
   // TabGroupModel.
   std::vector<tab_groups::TabGroupId> group_ids_;
+
+  // Container of groups ordered according to when they had the active tab.
+  std::list<tab_groups::TabGroupId> group_ids_by_activity_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_GROUP_MODEL_H_

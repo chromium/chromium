@@ -293,7 +293,7 @@ void HTMLMarqueeElement::ContinueAnimation() {
   StringKeyframeEffectModel* effect_model = CreateEffectModel(parameters);
   Timing timing;
   OptionalEffectTiming* effect_timing = OptionalEffectTiming::Create();
-  effect_timing->setFill("forwards");
+  effect_timing->setFill(V8FillMode::Enum::kForwards);
   effect_timing->setDuration(
       MakeGarbageCollected<V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>(
           duration));

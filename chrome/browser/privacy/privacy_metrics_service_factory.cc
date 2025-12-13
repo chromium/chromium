@@ -9,8 +9,6 @@
 #include "chrome/browser/privacy/privacy_metrics_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 PrivacyMetricsServiceFactory* PrivacyMetricsServiceFactory::GetInstance() {
@@ -36,8 +34,6 @@ PrivacyMetricsServiceFactory::PrivacyMetricsServiceFactory()
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
   DependsOn(HostContentSettingsMapFactory::GetInstance());
-  DependsOn(SyncServiceFactory::GetInstance());
-  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
@@ -46,7 +42,5 @@ PrivacyMetricsServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<PrivacyMetricsService>(
       profile->GetPrefs(),
-      HostContentSettingsMapFactory::GetForProfile(profile),
-      SyncServiceFactory::GetForProfile(profile),
-      IdentityManagerFactory::GetForProfile(profile));
+      HostContentSettingsMapFactory::GetForProfile(profile));
 }

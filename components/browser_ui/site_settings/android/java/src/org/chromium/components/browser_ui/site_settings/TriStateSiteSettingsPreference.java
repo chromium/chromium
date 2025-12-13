@@ -15,13 +15,13 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 
 /** A 3-state Allowed/Ask/Blocked radio group Preference used for SiteSettings. */
 @NullMarked
 public class TriStateSiteSettingsPreference extends Preference
         implements RadioGroup.OnCheckedChangeListener {
-    private @ContentSettingValues int mSetting = ContentSettingValues.DEFAULT;
+    private @ContentSetting int mSetting = ContentSetting.DEFAULT;
     private int @Nullable [] mDescriptionIds;
     private int @Nullable [] mIconIds;
     private RadioButtonWithDescription mAllowed;
@@ -50,7 +50,7 @@ public class TriStateSiteSettingsPreference extends Preference
      *     Blocked states, in that order.
      */
     public void initialize(
-            @ContentSettingValues int setting,
+            @ContentSetting int setting,
             int @Nullable [] descriptionIds,
             int @Nullable [] iconIds,
             boolean isPermissionSiteSettingsRadioButtonFeatureEnabled,
@@ -63,19 +63,21 @@ public class TriStateSiteSettingsPreference extends Preference
         mIconMarginEnd = iconMarginEnd;
     }
 
-    /** @return The current checked setting. */
-    public @ContentSettingValues int getCheckedSetting() {
+    /**
+     * @return The current checked setting.
+     */
+    public @ContentSetting int getCheckedSetting() {
         return mSetting;
     }
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         if (mAllowed.isChecked()) {
-            mSetting = ContentSettingValues.ALLOW;
+            mSetting = ContentSetting.ALLOW;
         } else if (mAsk.isChecked()) {
-            mSetting = ContentSettingValues.ASK;
+            mSetting = ContentSetting.ASK;
         } else if (mBlocked.isChecked()) {
-            mSetting = ContentSettingValues.BLOCK;
+            mSetting = ContentSetting.BLOCK;
         }
 
         callChangeListener(mSetting);
@@ -123,14 +125,15 @@ public class TriStateSiteSettingsPreference extends Preference
         if (radioButton != null) radioButton.setChecked(true);
     }
 
-    /** @param setting The setting to find RadioButton for. */
-    private @Nullable RadioButtonWithDescription findRadioButton(
-            @ContentSettingValues int setting) {
-        if (setting == ContentSettingValues.ALLOW) {
+    /**
+     * @param setting The setting to find RadioButton for.
+     */
+    private @Nullable RadioButtonWithDescription findRadioButton(@ContentSetting int setting) {
+        if (setting == ContentSetting.ALLOW) {
             return mAllowed;
-        } else if (setting == ContentSettingValues.ASK) {
+        } else if (setting == ContentSetting.ASK) {
             return mAsk;
-        } else if (setting == ContentSettingValues.BLOCK) {
+        } else if (setting == ContentSetting.BLOCK) {
             return mBlocked;
         } else {
             return null;

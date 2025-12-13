@@ -16,7 +16,6 @@
 #include "components/sampling_profiler/process_type.h"
 
 BASE_FEATURE(kSamplingProfilerOnWorkerThreads,
-             "SamplingProfilerOnWorkerThreads",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {

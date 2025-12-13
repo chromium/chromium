@@ -17,6 +17,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
+#include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -146,7 +147,9 @@ mojom::URLResponseHeadPtr BuildResponseHead(
     bool load_with_storage_access,
     bool is_load_timing_enabled,
     bool include_load_timing_internal_info_with_response,
-    base::TimeTicks response_start);
+    base::TimeTicks response_start,
+    const raw_ptr<mojom::DevToolsObserver> devtools_observer,
+    const std::string& devtools_request_id);
 
 }  // namespace url_loader_util
 }  // namespace network

@@ -15,8 +15,10 @@
 #include "base/strings/string_util.h"
 #include "components/trusted_vault/proto/recovery_key_store.pb.h"
 #include "components/trusted_vault/proto/vault.pb.h"
+#include "crypto/evp.h"
 #include "crypto/sha2.h"
 #include "device/fido/enclave/constants.h"
+#include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -264,87 +266,26 @@ bssl::UniquePtr<EVP_PKEY> NewECKey() {
   return pkey;
 }
 
+std::vector<uint8_t> GetPublicKeyBytes(const EVP_PKEY& key) {
+  std::vector<uint8_t> spki = crypto::evp::PublicKeyToBytes(&key);
+  std::string_view spki_view =
+      std::string_view(reinterpret_cast<const char*>(spki.data()), spki.size());
+  // Extract the public key from the SPKI.
+  std::string_view ec_point_oct;
+  CHECK(net::asn1::ExtractSubjectPublicKeyFromSPKI(spki_view, &ec_point_oct));
+  // ExtractSubjectPublicKeyFromSPKI does not remove the initial octet
+  // encoding the number of unused bits in the ASN.1 BIT STRING so we do it
+  // here. The public key is always byte-aligned.
+  ec_point_oct.remove_prefix(1);
+  return std::vector<uint8_t>(ec_point_oct.begin(), ec_point_oct.end());
+}
+
 class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
  public:
   FakeRecoveryKeyStoreImpl()
       : root_key_(GetRSAKey(kRootRSAPrivateKey)),
-        sig_key_(GetRSAKey(kSigRSAPrivateKey)),
-        endpoint_key_(NewECKey()) {
-    // To avoid expiration issues, the test enclave runs at a fixed time
-    // (`kTestTime`). Certificates are generated to be valid for a week before
-    // and after that point.
-    const base::Time not_before = base::Time::FromTimeT(kTestTime - 7 * 86400);
-    const base::Time not_after = base::Time::FromTimeT(kTestTime + 7 * 86400);
-
-    // This code was used to generate the root certificate that is included
-    // in `recovery_key_store.rs`.
-#if 0
-    static const uint8_t kBasicConstraints[] = {0x55, 0x1d, 0x13};
-    static const uint8_t kIsCA[] = {0x30, 0x03, 0x01, 0x01, 0xff};
-    std::string root_cert;
-    CHECK(net::x509_util::CreateSelfSignedCert(
-        endpoint_key_.get(), net::x509_util::DIGEST_SHA256, "CN=Root",
-        /*serial_number=*/1, not_before, not_after,
-        {net::x509_util::Extension(kBasicConstraints, /*critical=*/true,
-                                   kIsCA)},
-        &root_cert));
-    const std::string root_cert_hex = base::HexEncode(root_cert);
-    write(1, root_cert_hex.data(), root_cert_hex.size());
-    write(1, "\n", 1);
-#endif
-
-    CHECK(net::x509_util::CreateCert(
-        sig_key_.get(), net::x509_util::DIGEST_SHA256, "CN=Sig",
-        /*serial_number=*/2, not_before, not_after, /*extension_specs=*/{},
-        "CN=Root", root_key_.get(), &sig_cert_der_));
-    CHECK(net::x509_util::CreateCert(
-        endpoint_key_.get(), net::x509_util::DIGEST_SHA256, "CN=Endpoint",
-        /*serial_number=*/3, not_before, not_after, /*extension_specs=*/{},
-        "CN=Root", root_key_.get(), &endpoint_cert_der_));
-
-    certs_xml_ = base::ReplaceStringPlaceholders(
-        R"(<?xml version="1.0" encoding="UTF-8"?>
-<certificate>
-  <metadata>
-    <serial>2</serial>
-    <creation-time>$1</creation-time>
-    <refresh-interval>2592000</refresh-interval>
-    <previous>
-      <serial>1</serial>
-      <hash>TQudrujnu1I9bdoDaYxGQYuRN/8SwTLjdk6vzYTOkIU=</hash>
-    </previous>
-  </metadata>
-  <intermediates>
-  </intermediates>
-  <endpoints>
-    <cert>$2</cert>
-  </endpoints>
-</certificate>
-)",
-        {base::NumberToString(kTestTime),
-         base::Base64Encode(endpoint_cert_der_)},
-        /*offsets=*/nullptr);
-
-    const auto certs_xml_hash =
-        crypto::SHA256Hash(base::as_byte_span(certs_xml_));
-    RSA* const sig_key = EVP_PKEY_get0_RSA(sig_key_.get());
-    unsigned sig_len = RSA_size(sig_key);
-    std::vector<uint8_t> sig(sig_len, 0);
-    CHECK(RSA_sign(NID_sha256, certs_xml_hash.data(), certs_xml_hash.size(),
-                   sig.data(), &sig_len, sig_key));
-
-    sig_xml_ = base::ReplaceStringPlaceholders(
-        R"(<?xml version="1.0" encoding="UTF-8"?>
-<signature>
-  <chromium-test>true</chromium-test>
-  <intermediates>
-  </intermediates>
-  <certificate>$1</certificate>
-  <value>$2</value>
-</signature>
-)",
-        {base::Base64Encode(sig_cert_der_), base::Base64Encode(sig)},
-        /*offsets=*/nullptr);
+        sig_key_(GetRSAKey(kSigRSAPrivateKey)) {
+    RegenerateKeys();
   }
 
   ~FakeRecoveryKeyStoreImpl() override = default;
@@ -370,30 +311,145 @@ class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
     return vaults_;
   }
 
+  void set_cert_xml_url(std::string url) override {
+    cert_xml_url_ = std::move(url);
+  }
+
+  void set_sig_xml_url(std::string url) override {
+    sig_xml_url_ = std::move(url);
+  }
+
   void break_cert_xml_file() override { break_cert_xml_file_ = true; }
 
   void break_sig_xml_file() override { break_sig_xml_file_ = true; }
 
-  std::array<uint8_t, 32> endpoint_private_key_bytes() const override {
-    std::array<uint8_t, 32> result;
-    CHECK(BN_bn2bin_padded(
-        result.data(), result.size(),
-        EC_KEY_get0_private_key(EVP_PKEY_get0_EC_KEY(endpoint_key_.get()))));
-    return result;
+  void DowngradeCohort() override {
+    --recovery_key_store_serial_number_;
+    RegenerateKeys();
+  }
+
+  void UpgradeCohort() override {
+    ++recovery_key_store_serial_number_;
+    RegenerateKeys();
+  }
+
+  int recovery_key_store_serial_number() override {
+    return recovery_key_store_serial_number_;
+  }
+
+  std::array<uint8_t, 32> EndpointPrivateKeyFor(
+      base::span<const uint8_t> public_key_bytes) const override {
+    for (const auto& endpoint_key : endpoint_keys_) {
+      if (GetPublicKeyBytes(*endpoint_key) != public_key_bytes) {
+        continue;
+      }
+      std::array<uint8_t, 32> result;
+      CHECK(BN_bn2bin_padded(
+          result.data(), result.size(),
+          EC_KEY_get0_private_key(EVP_PKEY_get0_EC_KEY(endpoint_key.get()))));
+      return result;
+    }
+    NOTREACHED() << "Could not find public key";
+  }
+
+  std::vector<uint8_t> CurrentEndpointPublicKeyBytes() const override {
+    return GetPublicKeyBytes(*endpoint_keys_.back());
   }
 
  private:
+  void RegenerateKeys() {
+    endpoint_keys_.push_back(NewECKey());
+
+    // To avoid expiration issues, the test enclave runs at a fixed time
+    // (`kTestTime`). Certificates are generated to be valid for a week before
+    // and after that point.
+    const base::Time not_before = base::Time::FromTimeT(kTestTime - 7 * 86400);
+    const base::Time not_after = base::Time::FromTimeT(kTestTime + 7 * 86400);
+
+    // This code was used to generate the root certificate that is included
+    // in `recovery_key_store.rs`.
+#if 0
+    static const uint8_t kBasicConstraints[] = {0x55, 0x1d, 0x13};
+    static const uint8_t kIsCA[] = {0x30, 0x03, 0x01, 0x01, 0xff};
+    std::string root_cert;
+    CHECK(net::x509_util::CreateSelfSignedCert(
+        endpoint_keys_.back().get(), net::x509_util::DIGEST_SHA256, "CN=Root",
+        /*serial_number=*/1, not_before, not_after,
+        {net::x509_util::Extension(kBasicConstraints, /*critical=*/true,
+                                   kIsCA)},
+        &root_cert));
+    const std::string root_cert_hex = base::HexEncode(root_cert);
+    write(1, root_cert_hex.data(), root_cert_hex.size());
+    write(1, "\n", 1);
+#endif
+
+    CHECK(net::x509_util::CreateCert(
+        sig_key_.get(), net::x509_util::DIGEST_SHA256, "CN=Sig",
+        /*serial_number=*/2, not_before, not_after, /*extension_specs=*/{},
+        "CN=Root", root_key_.get(), &sig_cert_der_));
+    CHECK(net::x509_util::CreateCert(
+        endpoint_keys_.back().get(), net::x509_util::DIGEST_SHA256,
+        "CN=Endpoint",
+        /*serial_number=*/3, not_before, not_after, /*extension_specs=*/{},
+        "CN=Root", root_key_.get(), &endpoint_cert_der_));
+
+    certs_xml_ = base::ReplaceStringPlaceholders(
+        R"(<?xml version="1.0" encoding="UTF-8"?>
+<certificate>
+  <metadata>
+    <serial>$3</serial>
+    <creation-time>$1</creation-time>
+    <refresh-interval>2592000</refresh-interval>
+    <previous>
+      <serial>1</serial>
+      <hash>TQudrujnu1I9bdoDaYxGQYuRN/8SwTLjdk6vzYTOkIU=</hash>
+    </previous>
+  </metadata>
+  <intermediates>
+  </intermediates>
+  <endpoints>
+    <cert>$2</cert>
+  </endpoints>
+</certificate>
+)",
+        {base::NumberToString(kTestTime),
+         base::Base64Encode(endpoint_cert_der_),
+         base::NumberToString(recovery_key_store_serial_number_)},
+        /*offsets=*/nullptr);
+
+    const auto certs_xml_hash =
+        crypto::SHA256Hash(base::as_byte_span(certs_xml_));
+    RSA* const sig_key = EVP_PKEY_get0_RSA(sig_key_.get());
+    unsigned sig_len = RSA_size(sig_key);
+    std::vector<uint8_t> sig(sig_len, 0);
+    CHECK(RSA_sign(NID_sha256, certs_xml_hash.data(), certs_xml_hash.size(),
+                   sig.data(), &sig_len, sig_key));
+
+    sig_xml_ = base::ReplaceStringPlaceholders(
+        R"(<?xml version="1.0" encoding="UTF-8"?>
+<signature>
+  <chromium-test>true</chromium-test>
+  <intermediates>
+  </intermediates>
+  <certificate>$1</certificate>
+  <value>$2</value>
+</signature>
+)",
+        {base::Base64Encode(sig_cert_der_), base::Base64Encode(sig)},
+        /*offsets=*/nullptr);
+  }
+
   MaybeResponse OnRequest(const network::ResourceRequest& request) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    if (request.url == device::enclave::kRecoveryKeyStoreCertFileURL) {
+    if (request.url == cert_xml_url_) {
       if (break_cert_xml_file_) {
         return std::make_pair(net::HTTP_NOT_FOUND, "");
       }
       return std::make_pair(net::HTTP_OK, certs_xml_);
     }
 
-    if (request.url == device::enclave::kRecoveryKeyStoreSigFileURL) {
+    if (request.url == sig_xml_url_) {
       if (break_sig_xml_file_) {
         return std::make_pair(net::HTTP_NOT_FOUND, "");
       }
@@ -425,9 +481,7 @@ class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
         vaults_, [&request](const auto& candidate) -> bool {
           const auto& candidate_params = candidate.vault_parameters();
           const auto& request_params = request.vault_parameters();
-          return candidate_params.backend_public_key() ==
-                     request_params.backend_public_key() &&
-                 candidate_params.counter_id() == request_params.counter_id() &&
+          return candidate_params.counter_id() == request_params.counter_id() &&
                  candidate_params.vault_handle() ==
                      request_params.vault_handle();
         });
@@ -444,14 +498,17 @@ class FakeRecoveryKeyStoreImpl : public FakeRecoveryKeyStore {
 
   const bssl::UniquePtr<EVP_PKEY> root_key_;
   const bssl::UniquePtr<EVP_PKEY> sig_key_;
-  const bssl::UniquePtr<EVP_PKEY> endpoint_key_;
+  std::vector<bssl::UniquePtr<EVP_PKEY>> endpoint_keys_;
   std::string sig_cert_der_;
   std::string endpoint_cert_der_;
   std::string certs_xml_;
   std::string sig_xml_;
   std::vector<trusted_vault_pb::Vault> vaults_;
+  std::string cert_xml_url_ = device::enclave::kRecoveryKeyStoreCertFileURL;
+  std::string sig_xml_url_ = device::enclave::kRecoveryKeyStoreSigFileURL;
   bool break_cert_xml_file_ = false;
   bool break_sig_xml_file_ = false;
+  int recovery_key_store_serial_number_ = 1;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<FakeRecoveryKeyStoreImpl> weak_ptr_factory_{this};
 };

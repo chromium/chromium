@@ -44,7 +44,7 @@ bool IsActiveOverlayRequestForNonCommittedHttpAuthentication(
     return false;
   }
 
-  return config->url().host() != web_state->GetLastCommittedURL().host();
+  return config->url().GetHost() != web_state->GetLastCommittedURL().GetHost();
 }
 }  // namespace
 

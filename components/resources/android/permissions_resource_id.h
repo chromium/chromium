@@ -29,7 +29,7 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_FILE_SYSTEM_ACCESS,
                     R.drawable.ic_file_save_24)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_FOLDER, R.drawable.ic_folder_blue_24dp)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_GEOLOCATION,
-                    R.drawable.gm_filled_location_on_24)
+                    R.drawable.ic_location_on_fill_24dp)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_HAND_TRACKING,
                     R.drawable.gm_filled_hand_gesture_24)
 // TODO(crbug.com/40252825): use a dedicated icon.
@@ -40,7 +40,7 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_IDLE_DETECTION,
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_LOCAL_NETWORK_ACCESS,
                     R.drawable.router_24)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_MEDIA_STREAM_CAMERA,
-                    R.drawable.gm_filled_videocam_24)
+                    R.drawable.ic_videocam_fill_24dp)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_MEDIA_STREAM_MIC,
                     R.drawable.gm_filled_mic_24)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_MIDI, R.drawable.gm_filled_piano_24)

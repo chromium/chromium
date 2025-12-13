@@ -49,7 +49,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/services/network_config/public/mojom",
     "//mojo/public/cpp/test_support:test_utils",
-    "//services/data_decoder/public/cpp:test_support",
     "//services/device/public/cpp:test_support",
     "//testing/gtest",
   ]

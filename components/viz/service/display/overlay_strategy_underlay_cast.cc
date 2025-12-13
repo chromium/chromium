@@ -50,7 +50,7 @@ void OverlayStrategyUnderlayCast::Propose(
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
-    const PrimaryPlane* primary_plane,
+    const std::optional<OverlayCandidate>& primary_plane,
     std::vector<OverlayProposedCandidate>* candidates,
     std::vector<gfx::Rect>* content_bounds) {
   auto* render_pass = render_pass_list->back().get();
@@ -100,7 +100,7 @@ bool OverlayStrategyUnderlayCast::Attempt(
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
-    const PrimaryPlane* primary_plane,
+    const std::optional<OverlayCandidate>& primary_plane,
     OverlayCandidateList* candidate_list,
     std::vector<gfx::Rect>* content_bounds,
     const OverlayProposedCandidate& proposed_candidate) {

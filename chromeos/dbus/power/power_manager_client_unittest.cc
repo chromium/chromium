@@ -348,7 +348,7 @@ class PowerManagerClientTest : public testing::Test {
   void SetUp() override {
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SYSTEM;
-    bus_ = new dbus::MockBus(options);
+    bus_ = new dbus::MockBus(std::move(options));
 
     proxy_ = new dbus::MockObjectProxy(
         bus_.get(), power_manager::kPowerManagerServiceName,
@@ -370,7 +370,7 @@ class PowerManagerClientTest : public testing::Test {
             Return(task_environment_.GetMainThreadTaskRunner().get()));
 
     // Save |client_|'s signal and name-owner-changed callbacks.
-    EXPECT_CALL(*proxy_, DoConnectToSignal(kInterface, _, _, _))
+    EXPECT_CALL(*proxy_, ConnectToSignal(kInterface, _, _, _))
         .WillRepeatedly(Invoke(this, &PowerManagerClientTest::ConnectToSignal));
     EXPECT_CALL(*proxy_, SetNameOwnerChangedCallback(_))
         .WillRepeatedly(SaveArg<0>(&name_owner_changed_callback_));
@@ -379,25 +379,24 @@ class PowerManagerClientTest : public testing::Test {
     // delays.
     EXPECT_CALL(
         *proxy_,
-        DoCallMethod(HasMember(power_manager::kRegisterSuspendDelayMethod), _,
-                     _))
+        CallMethod(HasMember(power_manager::kRegisterSuspendDelayMethod), _, _))
         .WillRepeatedly(
             Invoke(this, &PowerManagerClientTest::RegisterSuspendDelay));
     EXPECT_CALL(
         *proxy_,
-        DoCallMethod(HasMember(power_manager::kRegisterDarkSuspendDelayMethod),
-                     _, _))
+        CallMethod(HasMember(power_manager::kRegisterDarkSuspendDelayMethod), _,
+                   _))
         .WillRepeatedly(
             Invoke(this, &PowerManagerClientTest::RegisterSuspendDelay));
     // Init should request the current thermal state
     EXPECT_CALL(
         *proxy_,
-        DoCallMethod(HasMember(power_manager::kGetThermalStateMethod), _, _));
+        CallMethod(HasMember(power_manager::kGetThermalStateMethod), _, _));
     // Init should also request a fresh power status.
     EXPECT_CALL(
         *proxy_,
-        DoCallMethod(HasMember(power_manager::kGetPowerSupplyPropertiesMethod),
-                     _, _));
+        CallMethod(HasMember(power_manager::kGetPowerSupplyPropertiesMethod), _,
+                   _));
 
     PowerManagerClient::Initialize(bus_.get());
     client_ = PowerManagerClient::Get();
@@ -411,14 +410,14 @@ class PowerManagerClientTest : public testing::Test {
   void HandleGetBatterySaverModeState(
       dbus::MethodCall* method_call,
       int timeout_ms,
-      dbus::ObjectProxy::ResponseCallback* callback) {
+      dbus::ObjectProxy::ResponseCallback callback) {
     power_manager::BatterySaverModeState proto;
     proto.set_enabled(true);
 
     auto response = ::dbus::Response::CreateEmpty();
     dbus::MessageWriter(response.get()).AppendProtoAsArrayOfBytes(proto);
 
-    std::move(*callback).Run(response.get());
+    std::move(callback).Run(response.get());
   }
 
  protected:
@@ -459,8 +458,8 @@ class PowerManagerClientTest : public testing::Test {
                               int delay_id) {
     EXPECT_CALL(
         *proxy_.get(),
-        DoCallMethod(IsSuspendReadiness(method_name, suspend_id, delay_id), _,
-                     _));
+        CallMethod(IsSuspendReadiness(method_name, suspend_id, delay_id), _,
+                   _));
   }
 
   // Arbitrary delay IDs returned to |client_|.
@@ -489,20 +488,20 @@ class PowerManagerClientTest : public testing::Test {
       const std::string& interface_name,
       const std::string& signal_name,
       dbus::ObjectProxy::SignalCallback signal_callback,
-      dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
+      dbus::ObjectProxy::OnConnectedCallback on_connected_callback) {
     CHECK_EQ(interface_name, power_manager::kPowerManagerInterface);
     signal_callbacks_[signal_name] = signal_callback;
 
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(*on_connected_callback), interface_name,
+        base::BindOnce(std::move(on_connected_callback), interface_name,
                        signal_name, true /* success */));
   }
 
   // Handles calls to |proxy_|'s CallMethod() method to register suspend delays.
   void RegisterSuspendDelay(dbus::MethodCall* method_call,
                             int timeout_ms,
-                            dbus::ObjectProxy::ResponseCallback* callback) {
+                            dbus::ObjectProxy::ResponseCallback callback) {
     power_manager::RegisterSuspendDelayReply proto;
     proto.set_delay_id(method_call->GetMember() ==
                                power_manager::kRegisterDarkSuspendDelayMethod
@@ -515,7 +514,7 @@ class PowerManagerClientTest : public testing::Test {
     CHECK(dbus::MessageWriter(response.get()).AppendProtoAsArrayOfBytes(proto));
 
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(&RunResponseCallback, std::move(*callback),
+        FROM_HERE, base::BindOnce(&RunResponseCallback, std::move(callback),
                                   std::move(response)));
   }
 };
@@ -820,19 +819,18 @@ TEST_F(PowerManagerClientTest, RequestSuspend) {
   const auto expected_flavor = power_manager::REQUEST_SUSPEND_DEFAULT;
 
   EXPECT_CALL(*proxy_.get(),
-              DoCallMethod(IsRequestSuspend("RequestSuspend", expected_count,
-                                            expected_duration, expected_flavor),
-                           _, _));
+              CallMethod(IsRequestSuspend("RequestSuspend", expected_count,
+                                          expected_duration, expected_flavor),
+                         _, _));
   client_->RequestSuspend(std::nullopt, expected_duration, expected_flavor);
 
   const uint64_t expected_count2 = 18446744073709550592ULL;
   const int32_t expected_duration2 = -5;
   const auto expected_flavor2 = power_manager::REQUEST_SUSPEND_TO_DISK;
-  EXPECT_CALL(
-      *proxy_.get(),
-      DoCallMethod(IsRequestSuspend("RequestSuspend", expected_count2,
-                                    expected_duration2, expected_flavor2),
-                   _, _));
+  EXPECT_CALL(*proxy_.get(),
+              CallMethod(IsRequestSuspend("RequestSuspend", expected_count2,
+                                          expected_duration2, expected_flavor2),
+                         _, _));
   client_->RequestSuspend(expected_count2, expected_duration2,
                           expected_flavor2);
 }
@@ -841,7 +839,7 @@ TEST_F(PowerManagerClientTest, RequestSuspend) {
 TEST_F(PowerManagerClientTest, ObserverCalledAfterRequestRestart) {
   TestObserver observer(client_);
   EXPECT_CALL(*proxy_.get(),
-              DoCallMethod(IsRequestRestart("RequestRestart"), _, _));
+              CallMethod(IsRequestRestart("RequestRestart"), _, _));
   EXPECT_EQ(0, observer.num_restart_requested());
 
   client_->RequestRestart(
@@ -855,7 +853,7 @@ TEST_F(PowerManagerClientTest, ObserverCalledAfterRequestRestart) {
 TEST_F(PowerManagerClientTest, GetSetBatterySaverModeState) {
   EXPECT_CALL(
       *proxy_,
-      DoCallMethod(HasMember(power_manager::kSetBatterySaverModeState), _, _));
+      CallMethod(HasMember(power_manager::kSetBatterySaverModeState), _, _));
 
   power_manager::SetBatterySaverModeStateRequest proto;
   proto.set_enabled(true);
@@ -863,7 +861,7 @@ TEST_F(PowerManagerClientTest, GetSetBatterySaverModeState) {
 
   EXPECT_CALL(
       *proxy_,
-      DoCallMethod(HasMember(power_manager::kGetBatterySaverModeState), _, _))
+      CallMethod(HasMember(power_manager::kGetBatterySaverModeState), _, _))
       .WillOnce(Invoke(
           this, &PowerManagerClientTest::HandleGetBatterySaverModeState));
 
@@ -895,17 +893,17 @@ TEST_F(PowerManagerClientTest, SetAmbientLightSensorEnabled) {
   // Test with sensor disabled
   request.set_sensor_enabled(false);
   EXPECT_CALL(*proxy_.get(),
-              DoCallMethod(IsAmbientLightSensorEnabled(
-                               "SetAmbientLightSensorEnabled", false),
-                           _, _));
+              CallMethod(IsAmbientLightSensorEnabled(
+                             "SetAmbientLightSensorEnabled", false),
+                         _, _));
   client_->SetAmbientLightSensorEnabled(request);
 
   // Test with sensor enabled
   request.set_sensor_enabled(true);
   EXPECT_CALL(*proxy_.get(),
-              DoCallMethod(IsAmbientLightSensorEnabled(
-                               "SetAmbientLightSensorEnabled", true),
-                           _, _));
+              CallMethod(IsAmbientLightSensorEnabled(
+                             "SetAmbientLightSensorEnabled", true),
+                         _, _));
   client_->SetAmbientLightSensorEnabled(request);
 }
 
@@ -917,17 +915,17 @@ TEST_F(PowerManagerClientTest, SetKeyboardAmbientLightSensorEnabled) {
   // Test with sensor disabled
   request.set_sensor_enabled(false);
   EXPECT_CALL(*proxy_.get(),
-              DoCallMethod(IsAmbientLightSensorEnabled(
-                               "SetKeyboardAmbientLightSensorEnabled", false),
-                           _, _));
+              CallMethod(IsAmbientLightSensorEnabled(
+                             "SetKeyboardAmbientLightSensorEnabled", false),
+                         _, _));
   client_->SetKeyboardAmbientLightSensorEnabled(request);
 
   // Test with sensor enabled
   request.set_sensor_enabled(true);
   EXPECT_CALL(*proxy_.get(),
-              DoCallMethod(IsAmbientLightSensorEnabled(
-                               "SetKeyboardAmbientLightSensorEnabled", true),
-                           _, _));
+              CallMethod(IsAmbientLightSensorEnabled(
+                             "SetKeyboardAmbientLightSensorEnabled", true),
+                         _, _));
   client_->SetKeyboardAmbientLightSensorEnabled(request);
 }
 
@@ -935,15 +933,15 @@ TEST_F(PowerManagerClientTest, GetKeyboardAmbientLightSensorEnabled) {
   // The dbus method is set up to simulate a response of true from the service.
   EXPECT_CALL(
       *proxy_,
-      DoCallMethod(
+      CallMethod(
           HasMember(power_manager::kGetKeyboardAmbientLightSensorEnabledMethod),
           _, _))
       .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
-                   dbus::ObjectProxy::ResponseCallback* callback) {
+                   dbus::ObjectProxy::ResponseCallback callback) {
         auto response = ::dbus::Response::CreateEmpty();
         dbus::MessageWriter(response.get()).AppendBool(true);
 
-        std::move(*callback).Run(response.get());
+        std::move(callback).Run(response.get());
       });
 
   // Verify that the callback receives and processes the true value correctly.
@@ -955,15 +953,15 @@ TEST_F(PowerManagerClientTest, GetKeyboardAmbientLightSensorEnabled) {
   // The dbus method is set up to simulate a response of false from the service.
   EXPECT_CALL(
       *proxy_,
-      DoCallMethod(
+      CallMethod(
           HasMember(power_manager::kGetKeyboardAmbientLightSensorEnabledMethod),
           _, _))
       .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
-                   dbus::ObjectProxy::ResponseCallback* callback) {
+                   dbus::ObjectProxy::ResponseCallback callback) {
         auto response = ::dbus::Response::CreateEmpty();
         dbus::MessageWriter(response.get()).AppendBool(false);
 
-        std::move(*callback).Run(response.get());
+        std::move(callback).Run(response.get());
       });
 
   // Verify that the callback receives and processes the false value correctly.
@@ -976,15 +974,15 @@ TEST_F(PowerManagerClientTest, GetKeyboardAmbientLightSensorEnabled) {
 // Tests that |HasAmbientLightSensor| calls the DBus method with the same name.
 TEST_F(PowerManagerClientTest, HasAmbientLightSensor) {
   // Device has an ambient light sensor.
-  EXPECT_CALL(*proxy_,
-              DoCallMethod(
-                  HasMember(power_manager::kHasAmbientLightSensorMethod), _, _))
+  EXPECT_CALL(
+      *proxy_,
+      CallMethod(HasMember(power_manager::kHasAmbientLightSensorMethod), _, _))
       .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
-                   dbus::ObjectProxy::ResponseCallback* callback) {
+                   dbus::ObjectProxy::ResponseCallback callback) {
         auto response = ::dbus::Response::CreateEmpty();
         dbus::MessageWriter(response.get()).AppendBool(true);
 
-        std::move(*callback).Run(response.get());
+        std::move(callback).Run(response.get());
       });
 
   client_->HasAmbientLightSensor(
@@ -993,15 +991,15 @@ TEST_F(PowerManagerClientTest, HasAmbientLightSensor) {
       }));
 
   // Device does not have an ambient light sensor.
-  EXPECT_CALL(*proxy_,
-              DoCallMethod(
-                  HasMember(power_manager::kHasAmbientLightSensorMethod), _, _))
+  EXPECT_CALL(
+      *proxy_,
+      CallMethod(HasMember(power_manager::kHasAmbientLightSensorMethod), _, _))
       .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
-                   dbus::ObjectProxy::ResponseCallback* callback) {
+                   dbus::ObjectProxy::ResponseCallback callback) {
         auto response = ::dbus::Response::CreateEmpty();
         dbus::MessageWriter(response.get()).AppendBool(false);
 
-        std::move(*callback).Run(response.get());
+        std::move(callback).Run(response.get());
       });
 
   client_->HasAmbientLightSensor(
@@ -1144,15 +1142,15 @@ TEST_F(PowerManagerClientTest, GetAmbientLightSensorEnabled) {
   // the ambient light sensor is enabled.
   EXPECT_CALL(
       *proxy_,
-      DoCallMethod(
-          HasMember(power_manager::kGetAmbientLightSensorEnabledMethod), _, _))
+      CallMethod(HasMember(power_manager::kGetAmbientLightSensorEnabledMethod),
+                 _, _))
       .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
-                   dbus::ObjectProxy::ResponseCallback* callback) {
+                   dbus::ObjectProxy::ResponseCallback callback) {
         auto response = ::dbus::Response::CreateEmpty();
         // Return that the ambient light sensor is enabled.
         dbus::MessageWriter(response.get()).AppendBool(true);
 
-        std::move(*callback).Run(response.get());
+        std::move(callback).Run(response.get());
       });
 
   // GetAmbientLightSensorEnabled should call its callback indicating that the
@@ -1166,15 +1164,15 @@ TEST_F(PowerManagerClientTest, GetAmbientLightSensorEnabled) {
   // the ambient light sensor is not enabled.
   EXPECT_CALL(
       *proxy_,
-      DoCallMethod(
-          HasMember(power_manager::kGetAmbientLightSensorEnabledMethod), _, _))
+      CallMethod(HasMember(power_manager::kGetAmbientLightSensorEnabledMethod),
+                 _, _))
       .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
-                   dbus::ObjectProxy::ResponseCallback* callback) {
+                   dbus::ObjectProxy::ResponseCallback callback) {
         auto response = ::dbus::Response::CreateEmpty();
         // Return that the ambient light sensor is not enabled.
         dbus::MessageWriter(response.get()).AppendBool(false);
 
-        std::move(*callback).Run(response.get());
+        std::move(callback).Run(response.get());
       });
 
   // GetAmbientLightSensorEnabled should call its callback indicating that the

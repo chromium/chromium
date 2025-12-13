@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/shared_image/ozone_image_backing_factory.h"
 
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/gl_ozone_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/ozone_image_backing.h"
@@ -14,10 +15,12 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace gpu {
 
@@ -600,6 +603,37 @@ TEST_F(OzoneImageBackingFactoryTest, CorrectlyDestroysAndMarksContextLost) {
   gl_context.reset();
   EXPECT_EQ(0u, backing_ptr->per_context_cached_textures_holders_.size());
   EXPECT_EQ(0u, holder_ref1->GetNumberOfTextures());
+}
+
+TEST_F(OzoneImageBackingFactoryTest, CreateGpuMemoryBufferHandle) {
+  for (auto format : viz::GetMappableSharedImageFormatForTesting()) {
+    gfx::BufferUsage usages[] = {
+        gfx::BufferUsage::GPU_READ,
+        gfx::BufferUsage::SCANOUT,
+        gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE,
+        gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE,
+        gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
+        gfx::BufferUsage::SCANOUT_VDA_WRITE,
+        gfx::BufferUsage::PROTECTED_SCANOUT,
+        gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE,
+        gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
+        gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
+        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+        gfx::BufferUsage::SCANOUT_FRONT_RENDERING,
+    };
+    for (auto usage : usages) {
+      if (!ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
+              viz::SharedImageFormatToBufferFormat(format), usage)) {
+        continue;
+      }
+
+      gfx::GpuMemoryBufferHandle handle =
+          OzoneImageBackingFactory::CreateGpuMemoryBufferHandle(
+              /*vulkan_context_provider=*/nullptr, gfx::Size(2, 2), format,
+              usage);
+      EXPECT_EQ(handle.type, gfx::NATIVE_PIXMAP);
+    }
+  }
 }
 
 }  // namespace gpu

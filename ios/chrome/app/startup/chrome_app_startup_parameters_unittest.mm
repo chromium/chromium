@@ -355,7 +355,11 @@ TEST_F(AppStartupParametersTest, ParseSearchWidgetKit) {
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
-  EXPECT_NE([params applicationMode], ApplicationModeForTabOpening::INCOGNITO);
+  [params requestApplicationModeWithBlock:^(
+              ApplicationModeForTabOpening applicationMode) {
+    EXPECT_NE(applicationMode, ApplicationModeForTabOpening::INCOGNITO);
+  }];
+
   histogram_tester.ExpectUniqueSample(kWidgetKitActionHistogram, 1, 1);
 }
 
@@ -376,7 +380,10 @@ TEST_F(AppStartupParametersTest, ParseQuickActionsWidgetKitSearch) {
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
-  EXPECT_NE([params applicationMode], ApplicationModeForTabOpening::INCOGNITO);
+  [params requestApplicationModeWithBlock:^(
+              ApplicationModeForTabOpening applicationMode) {
+    EXPECT_NE(applicationMode, ApplicationModeForTabOpening::INCOGNITO);
+  }];
   histogram_tester.ExpectUniqueSample(kWidgetKitActionHistogram, 2, 1);
 }
 
@@ -397,7 +404,10 @@ TEST_F(AppStartupParametersTest, ParseQuickActionsWidgetKitIncognito) {
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
-  EXPECT_EQ([params applicationMode], ApplicationModeForTabOpening::INCOGNITO);
+  [params requestApplicationModeWithBlock:^(
+              ApplicationModeForTabOpening applicationMode) {
+    EXPECT_EQ(applicationMode, ApplicationModeForTabOpening::INCOGNITO);
+  }];
   histogram_tester.ExpectUniqueSample(kWidgetKitActionHistogram, 3, 1);
 }
 
@@ -542,7 +552,10 @@ TEST_F(AppStartupParametersTest, ParseLockscreenLauncherSearch) {
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
-  EXPECT_NE([params applicationMode], ApplicationModeForTabOpening::INCOGNITO);
+  [params requestApplicationModeWithBlock:^(
+              ApplicationModeForTabOpening applicationMode) {
+    EXPECT_NE(applicationMode, ApplicationModeForTabOpening::INCOGNITO);
+  }];
   histogram_tester.ExpectUniqueSample(kWidgetKitActionHistogram, 6, 1);
 }
 
@@ -562,7 +575,10 @@ TEST_F(AppStartupParametersTest, ParseLockscreenLauncherIncognito) {
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
-  EXPECT_EQ([params applicationMode], ApplicationModeForTabOpening::INCOGNITO);
+  [params requestApplicationModeWithBlock:^(
+              ApplicationModeForTabOpening applicationMode) {
+    EXPECT_EQ(applicationMode, ApplicationModeForTabOpening::INCOGNITO);
+  }];
   histogram_tester.ExpectUniqueSample(kWidgetKitActionHistogram, 7, 1);
 }
 
@@ -620,7 +636,10 @@ TEST_F(AppStartupParametersTest, ParseSearchPasswordsWidgetKit) {
 
   EXPECT_TRUE(params.externalURL.is_empty());
   EXPECT_EQ(params.postOpeningAction, SEARCH_PASSWORDS);
-  EXPECT_NE([params applicationMode], ApplicationModeForTabOpening::INCOGNITO);
+  [params requestApplicationModeWithBlock:^(
+              ApplicationModeForTabOpening applicationMode) {
+    EXPECT_NE(applicationMode, ApplicationModeForTabOpening::INCOGNITO);
+  }];
   histogram_tester.ExpectUniqueSample(kWidgetKitActionHistogram, 13, 1);
   histogram_tester.ExpectBucketCount(
       "PasswordManager.ManagePasswordsReferrer",

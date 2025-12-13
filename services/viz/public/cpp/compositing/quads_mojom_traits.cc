@@ -162,8 +162,7 @@ bool StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad>::Read(
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kClear;
   viz::OverlayPriority overlay_priority_hint = viz::OverlayPriority::kLow;
-  if (!data.ReadUvTopLeft(&quad->uv_top_left) ||
-      !data.ReadUvBottomRight(&quad->uv_bottom_right) ||
+  if (!data.ReadTexCoordRect(&quad->tex_coord_rect_) ||
       !data.ReadProtectedVideoType(&protected_video_type) ||
       !data.ReadOverlayPriorityHint(&overlay_priority_hint) ||
       !data.ReadRoundedDisplayMasksInfo(&quad->rounded_display_masks_info) ||
@@ -179,6 +178,7 @@ bool StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad>::Read(
   quad->secure_output_only = data.secure_output_only();
   quad->is_video_frame = data.is_video_frame();
   quad->force_rgbx = data.force_rgbx();
+  quad->is_normalized_coords = data.is_normalized_coords();
 
   if (!data.ReadDamageRect(&quad->damage_rect))
     return false;

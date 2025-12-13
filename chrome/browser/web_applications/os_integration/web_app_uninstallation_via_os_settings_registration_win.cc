@@ -7,9 +7,9 @@
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
-#include "base/hash/md5.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_win.h"
@@ -21,8 +21,20 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/install_static/install_util.h"
 #include "content/public/browser/browser_thread.h"
+#include "crypto/obsolete/md5.h"
 
 namespace web_app {
+
+namespace internals {
+
+// Deliberately not in namespace{} so it can be friended by
+// crypto::obsolete::Md5.
+std::wstring Md5AsHexForUninstall(const std::wstring& key) {
+  return base::ASCIIToWide(base::HexEncodeLower(
+      crypto::obsolete::Md5::Hash(base::as_byte_span(key))));
+}
+
+}  // namespace internals
 
 namespace {
 
@@ -39,9 +51,7 @@ std::wstring GetUninstallStringKey(const base::FilePath& profile_path,
   // file.).
   std::wstring key =
       base::StrCat({profile_path.value(), base::ASCIIToWide(app_id)});
-  base::MD5Digest digest;
-  base::MD5Sum(base::as_byte_span(key), &digest);
-  return base::ASCIIToWide(base::MD5DigestToBase16(digest));
+  return internals::Md5AsHexForUninstall(key);
 }
 
 // UninstallationViaOsSettingsHelper is a axilliary class for calculate the

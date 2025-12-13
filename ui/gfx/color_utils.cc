@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/color_utils.h"
 
 #include <stdint.h>
@@ -19,6 +14,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -26,12 +22,6 @@
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_palette.h"
-
-#if BUILDFLAG(IS_WIN)
-#include <windows.h>
-
-#include "skia/ext/skia_utils_win.h"
-#endif
 
 namespace color_utils {
 
@@ -171,8 +161,9 @@ SkColor PickGoogleColor(const SkColor (&colors)[kNumGoogleColors],
     // lower-contrast.
     if (it == std::cend(lum_colors) ||
         ((it != std::cbegin(lum_colors)) &&
-         (GetContrastRatio(lum, *it) > GetContrastRatio(*(it - 1), lum)))) {
-      --it;
+         (GetContrastRatio(lum, *it) >
+          GetContrastRatio(*(UNSAFE_TODO(it - 1)), lum)))) {
+      UNSAFE_TODO(--it);
     }
     return it;
   };
@@ -210,8 +201,9 @@ SkColor PickGoogleColor(const SkColor (&colors)[kNumGoogleColors],
       return std::ranges::lower_bound(begin, end, threshold, comp, proj);
     }
     const auto res_it_reversed = std::ranges::lower_bound(
-        std::make_reverse_iterator(begin + 1),
-        std::make_reverse_iterator(end + 1), threshold, comp, proj);
+        std::make_reverse_iterator(UNSAFE_TODO(begin + 1)),
+        std::make_reverse_iterator(UNSAFE_TODO(end + 1)), threshold, comp,
+        proj);
     return res_it_reversed.base() - 1;
   };
 
@@ -224,8 +216,8 @@ SkColor PickGoogleColor(const SkColor (&colors)[kNumGoogleColors],
     // `lum_colors` towards a target element with sufficient contrast. The three
     // potential targets are the two endpoints and (if there are two
     // backgrounds) the element nearest `lum_mid`.
-    std::vector<const float*> targets = {std::cbegin(lum_colors),
-                                         std::cend(lum_colors) - 1};
+    std::vector<const float*> targets = {
+        std::cbegin(lum_colors), UNSAFE_TODO(std::cend(lum_colors) - 1)};
     const bool src_darker_than_bg_a = *src_it < lum_a;
     if (one_bg) {
       // To avoid inverting the relationship between source and background,
@@ -277,7 +269,8 @@ SkColor PickGoogleColor(const SkColor (&colors)[kNumGoogleColors],
     } else {
       // `targ_it` has sufficient contrast. Since `src_it` is already known to
       // have insufficient contrast, move it one step towards `targ_it`.
-      src_it = (targ_it < src_it) ? (src_it - 1) : (src_it + 1);
+      src_it = (targ_it < src_it) ? (UNSAFE_TODO(src_it - 1))
+                                  : (UNSAFE_TODO(src_it + 1));
 
       // Now keep moving towards `targ_it` until contrast is sufficient.
       res_it = first_across_threshold(src_it, targ_it, min_contrast,
@@ -291,9 +284,9 @@ SkColor PickGoogleColor(const SkColor (&colors)[kNumGoogleColors],
     // nearer background's luminance exactly, in case `min_contrast == 0`.)
     const auto* targ_it =
         (*src_it > nearer_bg_lum)
-            ? (std::upper_bound(src_it, std::cend(lum_colors), nearer_bg_lum,
-                                std::greater<>()) -
-               1)
+            ? (UNSAFE_TODO(std::upper_bound(src_it, std::cend(lum_colors),
+                                            nearer_bg_lum, std::greater<>()) -
+                           1))
             : std::lower_bound(std::cbegin(lum_colors), src_it, nearer_bg_lum,
                                std::greater<>());
 
@@ -311,7 +304,7 @@ SkColor PickGoogleColor(const SkColor (&colors)[kNumGoogleColors],
   }
 
   // Convert `res_it` back to a color.
-  return colors[res_it - std::begin(lum_colors)];
+  return UNSAFE_TODO(colors[res_it - std::begin(lum_colors)]);
 }
 
 template <typename T>
@@ -674,15 +667,6 @@ BlendResult BlendForMinContrast(SkColor default_foreground,
 SkColor InvertColor(SkColor color) {
   return SkColorSetARGB(SkColorGetA(color), 255 - SkColorGetR(color),
                         255 - SkColorGetG(color), 255 - SkColorGetB(color));
-}
-
-SkColor GetSysSkColor(int which) {
-#if BUILDFLAG(IS_WIN)
-  return skia::COLORREFToSkColor(GetSysColor(which));
-#else
-  NOTIMPLEMENTED();
-  return SK_ColorLTGRAY;
-#endif
 }
 
 SkColor DeriveDefaultIconColor(SkColor text_color) {

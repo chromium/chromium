@@ -31,8 +31,8 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_generation_provider.h"
-#import "components/plus_addresses/features.h"
-#import "components/plus_addresses/grit/plus_addresses_strings.h"
+#import "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
+#import "components/plus_addresses/core/common/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
@@ -74,7 +74,6 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -109,19 +108,11 @@ const base::Feature* FetchIPHFeatureFromEnum(
       return &feature_engagement::kIPHPlusAddressCreateSuggestionFeature;
     case SuggestionFeatureForIPH::kHomeAndWorkAddressSuggestion:
       return &feature_engagement::kIPHAutofillHomeWorkProfileSuggestionFeature;
+    case SuggestionFeatureForIPH::kAccountNameEmailSuggestion:
+      return &feature_engagement::kIPHAutofillAccountNameEmailSuggestionFeature;
     case SuggestionFeatureForIPH::kUnknown:
       NOTREACHED();
   }
-}
-
-// Returns yes if input views can be reloaded.
-bool CanReloadInputViews() {
-  // Do not allow reloading input views in the background when skipping that in
-  // the background is enabled.
-  return !base::FeatureList::IsEnabled(
-             kFormInputAccessorySkipInputViewReloadInBackground) ||
-         UIApplication.sharedApplication.applicationState ==
-             UIApplicationStateActive;
 }
 
 }  // namespace
@@ -269,7 +260,7 @@ bool CanReloadInputViews() {
     [self.layoutGuide.owningView removeLayoutGuide:self.layoutGuide];
     [self.formInputAccessoryTapRecognizer.view
         removeGestureRecognizer:self.formInputAccessoryTapRecognizer];
-    [self maybeReloadInputViews];
+    [_formInputAccessoryMediator reloadFirstResponderInputViews];
   }
 
   _formInputAccessoryViewController = nil;
@@ -287,7 +278,7 @@ bool CanReloadInputViews() {
 - (void)reset {
   [self stopChildren];
   [self resetInputViews];
-  [self maybeReloadInputViews];
+  [_formInputAccessoryMediator reloadFirstResponderInputViews];
 }
 
 #pragma mark - Presenting Children
@@ -306,75 +297,6 @@ bool CanReloadInputViews() {
     [coordinator stop];
   }
   [self.childCoordinators removeAllObjects];
-}
-
-// Starts the password coordinator and displays its view controller.
-- (void)startPasswordsFromButton:(UIButton*)button
-        invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField {
-  web::WebState* activeWebState = [self activeWebState];
-  if (!activeWebState) {
-    return;
-  }
-
-  const GURL& URL = activeWebState->GetLastCommittedURL();
-
-  ManualFillPasswordCoordinator* passwordCoordinator =
-      [[ManualFillPasswordCoordinator alloc]
-             initWithBaseViewController:self.baseViewController
-                                browser:self.browser
-          manualFillPlusAddressMediator:nil
-                                    URL:URL
-                       injectionHandler:self.injectionHandler
-               invokedOnObfuscatedField:invokedOnObfuscatedField
-                 showAutofillFormButton:NO];
-
-  passwordCoordinator.delegate = self;
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    [passwordCoordinator presentFromButton:button];
-  } else {
-    self.formInputViewController = passwordCoordinator.viewController;
-    [self maybeReloadInputViews];
-  }
-
-  [self.childCoordinators addObject:passwordCoordinator];
-}
-
-// Starts the card coordinator and displays its view controller.
-- (void)startCardsFromButton:(UIButton*)button {
-  CardCoordinator* cardCoordinator = [[CardCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser
-                injectionHandler:self.injectionHandler
-          reauthenticationModule:self.reauthenticationModule
-          showAutofillFormButton:NO];
-  cardCoordinator.delegate = self;
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    [cardCoordinator presentFromButton:button];
-  } else {
-    self.formInputViewController = cardCoordinator.viewController;
-    [self maybeReloadInputViews];
-  }
-
-  [self.childCoordinators addObject:cardCoordinator];
-}
-
-// Starts the address coordinator and displays its view controller.
-- (void)startAddressFromButton:(UIButton*)button {
-  AddressCoordinator* addressCoordinator = [[AddressCoordinator alloc]
-         initWithBaseViewController:self.baseViewController
-                            browser:self.browser
-      manualFillPlusAddressMediator:nil
-                   injectionHandler:self.injectionHandler
-             showAutofillFormButton:NO];
-  addressCoordinator.delegate = self;
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    [addressCoordinator presentFromButton:button];
-  } else {
-    self.formInputViewController = addressCoordinator.viewController;
-    [self maybeReloadInputViews];
-  }
-
-  [self.childCoordinators addObject:addressCoordinator];
 }
 
 // Starts the expanded manual fill coordinator and displays its view controller.
@@ -404,7 +326,7 @@ bool CanReloadInputViews() {
     [expandedManualFillCoordinator presentFromButton:button];
   } else {
     self.formInputViewController = expandedManualFillCoordinator.viewController;
-    [self maybeReloadInputViews];
+    [_formInputAccessoryMediator reloadFirstResponderInputViews];
   }
 
   [self.childCoordinators addObject:expandedManualFillCoordinator];
@@ -417,8 +339,7 @@ bool CanReloadInputViews() {
 }
 
 - (void)dismissPopover {
-  if (IsKeyboardAccessoryUpgradeEnabled() &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     // Close the popover view.
     [self stopChildren];
   }
@@ -442,6 +363,10 @@ bool CanReloadInputViews() {
       case SuggestionFeatureForIPH::kHomeAndWorkAddressSuggestion:
         tracker->NotifyEvent(
             "home_work_address_create_suggestion_feature_used");
+        break;
+      case SuggestionFeatureForIPH::kAccountNameEmailSuggestion:
+        tracker->NotifyEvent(
+            "account_name_email_create_suggestion_feature_used");
         break;
       case SuggestionFeatureForIPH::kUnknown:
         NOTREACHED();
@@ -468,44 +393,9 @@ bool CanReloadInputViews() {
 
 - (void)formInputAccessoryViewController:
             (FormInputAccessoryViewController*)formInputAccessoryViewController
-                  didPressKeyboardButton:(UIButton*)keyboardButton {
-  [self reset];
-}
-
-- (void)formInputAccessoryViewController:
-            (FormInputAccessoryViewController*)formInputAccessoryViewController
-                   didPressAccountButton:(UIButton*)accountButton {
-  [self stopChildren];
-  [self startAddressFromButton:accountButton];
-  [self updateKeyboardAccessoryForManualFilling];
-}
-
-- (void)formInputAccessoryViewController:
-            (FormInputAccessoryViewController*)formInputAccessoryViewController
-                didPressCreditCardButton:(UIButton*)creditCardButton {
-  [self stopChildren];
-  [self startCardsFromButton:creditCardButton];
-  [self updateKeyboardAccessoryForManualFilling];
-}
-
-- (void)formInputAccessoryViewController:
-            (FormInputAccessoryViewController*)formInputAccessoryViewController
-                  didPressPasswordButton:(UIButton*)passwordButton {
-  [self stopChildren];
-  BOOL invokedOnObfuscatedField =
-      [_formInputAccessoryMediator lastFocusedFieldWasObfuscated];
-  [self startPasswordsFromButton:passwordButton
-        invokedOnObfuscatedField:invokedOnObfuscatedField];
-  [self updateKeyboardAccessoryForManualFilling];
-}
-
-- (void)formInputAccessoryViewController:
-            (FormInputAccessoryViewController*)formInputAccessoryViewController
                 didPressManualFillButton:(UIButton*)manualFillButton
                              forDataType:
                                  (manual_fill::ManualFillDataType)dataType {
-  CHECK(IsKeyboardAccessoryUpgradeEnabled());
-
   BOOL invokedOnObfuscatedField =
       [_formInputAccessoryMediator lastFocusedFieldWasObfuscated];
 
@@ -516,6 +406,7 @@ bool CanReloadInputViews() {
   [self startManualFillFromButton:manualFillButton
                       forDataType:dataType
          invokedOnObfuscatedField:invokedOnObfuscatedField];
+  [self updateKeyboardAccessoryForManualFilling];
 }
 
 - (void)formInputAccessoryViewController:
@@ -568,9 +459,6 @@ bool CanReloadInputViews() {
   }
 
   web::WebState* activeWebState = [self activeWebState];
-  if (!activeWebState) {
-    return;
-  }
 
   id<PasswordGenerationProvider> generationProvider =
       PasswordTabHelper::FromWebState(activeWebState)
@@ -679,6 +567,19 @@ bool CanReloadInputViews() {
     }
   }
 
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableSupportForNameAndEmail)) {
+    id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ApplicationCommands);
+    if (address.record_type() ==
+        autofill::AutofillProfile::RecordType::kAccountNameEmail) {
+      OpenNewTabCommand* command = [OpenNewTabCommand
+          commandWithURLFromChrome:GURL(kGoogleAccountNameEmailAddressEditURL)];
+      [applicationHandler openURLInNewTab:command];
+      return;
+    }
+  }
+
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   id<SettingsCommands> settingsHandler =
       HandlerForProtocol(dispatcher, SettingsCommands);
@@ -699,9 +600,6 @@ bool CanReloadInputViews() {
   [self reset];
 
   web::WebState* activeWebState = [self activeWebState];
-  if (!activeWebState) {
-    return;
-  }
 
   __weak __typeof(self) weakSelf = self;
   auto callback = base::BindOnce(^(const std::string& plusAddress) {
@@ -807,17 +705,11 @@ bool CanReloadInputViews() {
   return overrideModule ? overrideModule : _reauthenticationModule;
 }
 
-// Returns the active web state. May return nil.
+// Returns the active web state.
 - (web::WebState*)activeWebState {
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
-  if (!webState) {
-    // TODO: b/40940511 - The web state should not be nil, but we have seen
-    // cases of it being nil in the wild, so, for now, we handle the nil case
-    // gracefully, but still dump the information we need to find the root
-    // cause. This can be removed once the root cause has been fixed.
-    base::debug::DumpWithoutCrashing();
-  }
+  CHECK(webState);
   return webState;
 }
 
@@ -851,9 +743,6 @@ bool CanReloadInputViews() {
 // Shows confirmation dialog before opening Other passwords.
 - (void)showConfirmationDialogToUseOtherPassword {
   web::WebState* activeWebState = [self activeWebState];
-  if (!activeWebState) {
-    return;
-  }
 
   const GURL& URL = activeWebState->GetLastCommittedURL();
   std::u16string origin = base::ASCIIToUTF16(
@@ -928,6 +817,12 @@ bool CanReloadInputViews() {
           IDS_AUTOFILL_IPH_HOME_AND_WORK_ACCOUNT_PROFILE_SUGGESTION);
       voiceOverText = l10n_util::GetNSString(
           IDS_AUTOFILL_IPH_HOME_AND_WORK_ACCOUNT_PROFILE_SUGGESTION_SCREENREADER);
+      break;
+    case SuggestionFeatureForIPH::kAccountNameEmailSuggestion:
+      text = l10n_util::GetNSString(
+          IDS_AUTOFILL_IPH_ACCOUNT_NAME_EMAIL_SUGGESTION);
+      voiceOverText = l10n_util::GetNSString(
+          IDS_AUTOFILL_IPH_ACCOUNT_NAME_EMAIL_SUGGESTION_SCREENREADER);
       break;
     case SuggestionFeatureForIPH::kUnknown:
       NOTREACHED();
@@ -1025,7 +920,6 @@ bool CanReloadInputViews() {
 // Updates the keyboard accessory to the state it should be in when a manual
 // fill view is displayed.
 - (void)updateKeyboardAccessoryForManualFilling {
-  [_formInputAccessoryViewController lockManualFallbackView];
   _formInputAccessoryMediator.suggestionsEnabled = NO;
 }
 
@@ -1036,12 +930,6 @@ bool CanReloadInputViews() {
   id<SettingsCommands> settingsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SettingsCommands);
   [settingsHandler showPasswordDetailsForCredential:credential inEditMode:YES];
-}
-
-- (void)maybeReloadInputViews {
-  if (CanReloadInputViews()) {
-    [GetFirstResponder() reloadInputViews];
-  }
 }
 
 @end

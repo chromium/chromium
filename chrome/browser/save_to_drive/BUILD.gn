@@ -1,0 +1,106 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//pdf/features.gni")
+
+assert(enable_pdf_save_to_drive)
+
+source_set("save_to_drive") {
+  public = [
+    "content_reader.h",
+    "drive_uploader.h",
+    "multipart_drive_uploader.h",
+    "pdf_content_reader.h",
+    "resumable_drive_uploader.h",
+    "save_to_drive_event_dispatcher.h",
+    "save_to_drive_flow.h",
+    "save_to_drive_recorder.h",
+    "save_to_drive_utils.h",
+    "time_remaining_calculator.h",
+  ]
+
+  sources = [
+    "drive_uploader.cc",
+    "multipart_drive_uploader.cc",
+    "pdf_content_reader.cc",
+    "resumable_drive_uploader.cc",
+    "save_to_drive_event_dispatcher.cc",
+    "save_to_drive_flow.cc",
+    "save_to_drive_recorder.cc",
+    "save_to_drive_utils.cc",
+    "time_remaining_calculator.cc",
+  ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/download:status_text_builder_utils",
+    "//chrome/browser/extensions",
+    "//chrome/browser/pdf",
+    "//chrome/browser/signin",
+    "//chrome/browser/ui/hats",
+    "//chrome/browser/ui/save_to_drive",
+    "//chrome/common/extensions",
+    "//chrome/common/extensions/api",
+    "//components/download/public/common:public",
+    "//components/drive",
+    "//components/endpoint_fetcher",
+    "//components/pdf/browser",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//pdf:features",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "pdf_content_reader_browsertest.cc",
+    "save_to_drive_event_dispatcher_browsertest.cc",
+    "save_to_drive_flow_browsertest.cc",
+  ]
+  deps = [
+    ":save_to_drive",
+    "//chrome/browser/pdf:pdf_extension_test_utils",
+    "//chrome/browser/ui/hats:test_support",
+    "//chrome/browser/ui/save_to_drive",
+    "//chrome/common/extensions/api",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//extensions/browser:test_support",
+    "//pdf:features",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "drive_uploader_unittest.cc",
+    "multipart_drive_uploader_unittest.cc",
+    "resumable_drive_uploader_unittest.cc",
+    "save_to_drive_recorder_unittest.cc",
+    "time_remaining_calculator_unittest.cc",
+  ]
+  deps = [
+    ":save_to_drive",
+    "//chrome/browser/pdf:pdf_extension_test_utils",
+    "//chrome/browser/ui/save_to_drive",
+    "//chrome/common/extensions/api",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//extensions/browser:test_support",
+    "//pdf:features",
+    "//testing/gtest",
+    "//url",
+  ]
+}

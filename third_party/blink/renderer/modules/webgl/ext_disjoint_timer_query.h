@@ -13,6 +13,7 @@ namespace blink {
 
 class WebGLRenderingContextBase;
 class WebGLTimerQueryEXT;
+class ExecutionContext;
 
 class EXTDisjointTimerQuery final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
@@ -21,7 +22,7 @@ class EXTDisjointTimerQuery final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit EXTDisjointTimerQuery(WebGLRenderingContextBase*);
+  EXTDisjointTimerQuery(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 

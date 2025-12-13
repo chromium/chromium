@@ -3,48 +3,50 @@
     padding: 16px var(--cr-section-padding);
   }
 </style>
-<settings-toggle-button
-    id="adMeasurementToggle"
-    pref="{{prefs.privacy_sandbox.m1.ad_measurement_enabled}}"
-    label="$i18n{adMeasurementPageToggleLabel}"
-    sub-label="$i18n{adMeasurementPageToggleSubLabel}"
-    on-settings-boolean-control-change="onToggleChange_">
-</settings-toggle-button>
-<div class="settings-columned-section">
-  <div class="column">
-    <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
-    <ul class="icon-bulleted-list">
-      <li>
-        <cr-icon icon="settings20:bar-chart" aria-hidden="true"></cr-icon>
-        <div class="secondary">$i18n{adMeasurementPageEnabledBullet1}</div>
-      </li>
-      <li>
-        <cr-icon icon="settings20:auto-delete" aria-hidden="true"></cr-icon>
-        <div class="secondary">$i18n{adMeasurementPageEnabledBullet2}</div>
-      </li>
-      <li>
-        <cr-icon icon="settings20:background-replace" aria-hidden="true">
-        </cr-icon>
-        <div class="secondary">$i18n{adMeasurementPageEnabledBullet3}</div>
-      </li>
-    </ul>
+<settings-subpage page-title="$i18n{adMeasurementPageTitle}"
+    learn-more-url="$i18n{adPrivacyLearnMoreURL}"
+    route-path$="[[routePath]]">
+  <settings-toggle-button
+      id="adMeasurementToggle"
+      pref="{{prefs.privacy_sandbox.m1.ad_measurement_enabled}}"
+      label="$i18n{adMeasurementPageToggleLabel}"
+      sub-label="$i18n{adMeasurementPageToggleSubLabel}"
+      on-settings-boolean-control-change="onToggleChange_">
+  </settings-toggle-button>
+  <div class="settings-columned-section">
+    <div class="column">
+      <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:bar-chart" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{adMeasurementPageEnabledBullet1}</div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:auto-delete" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{adMeasurementPageEnabledBullet2}</div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:background-replace" aria-hidden="true">
+          </cr-icon>
+          <div class="secondary">$i18n{adMeasurementPageEnabledBullet3}</div>
+        </li>
+      </ul>
+    </div>
+    <div class="column">
+      <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:delete" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{adMeasurementPageConsiderBullet1}</div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:filter-list" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{adMeasurementPageConsiderBullet2}</div>
+        </li>
+      </ul>
+    </div>
   </div>
-  <div class="column">
-    <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
-    <ul class="icon-bulleted-list">
-      <li>
-        <cr-icon icon="settings20:delete" aria-hidden="true"></cr-icon>
-        <div class="secondary">$i18n{adMeasurementPageConsiderBullet1}</div>
-      </li>
-      <li>
-        <cr-icon icon="settings20:filter-list" aria-hidden="true"></cr-icon>
-        <div class="secondary">$i18n{adMeasurementPageConsiderBullet2}</div>
-      </li>
-    </ul>
-  </div>
-</div>
-<template is="dom-if" if="[[shouldShowV2_]]">
   <div id="disclaimer" class="cr-secondary-text hr">
     $i18nRaw{adMeasurementPageDisclaimer}
   </div>
-</template>
+</settings-subpage>

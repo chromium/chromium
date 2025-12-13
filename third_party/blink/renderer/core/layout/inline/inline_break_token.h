@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/layout/break_token.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_text_index.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {

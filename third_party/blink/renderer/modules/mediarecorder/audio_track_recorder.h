@@ -42,14 +42,6 @@ class MediaStreamComponent;
 class MODULES_EXPORT AudioTrackRecorder
     : public TrackRecorder<WebMediaStreamAudioSink> {
  public:
-  enum class CodecId {
-    // Do not change the order of codecs. Add new ones right before kLast.
-    kOpus,
-    kPcm,  // 32-bit little-endian float.
-    kAac,
-    kLast
-  };
-
   enum class BitrateMode { kConstant, kVariable };
 
   // Callback interface for AudioTrackRecorders. The methods here need to all be
@@ -71,11 +63,12 @@ class MODULES_EXPORT AudioTrackRecorder
     virtual void OnSourceReadyStateChanged() = 0;
   };
 
-  static CodecId GetPreferredCodecId(MediaTrackContainerType container_type);
+  static media::AudioCodec GetPreferredCodec(
+      MediaTrackContainerType container_type);
 
   AudioTrackRecorder(
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
-      CodecId codec,
+      media::AudioCodec codec,
       MediaStreamComponent* track,
       WeakCell<CallbackInterface>* callback_interface,
       uint32_t bits_per_second,
@@ -104,8 +97,8 @@ class MODULES_EXPORT AudioTrackRecorder
  private:
   // Creates an audio encoder from |codec|. Returns nullptr if the codec is
   // invalid.
-  WTF::SequenceBound<AudioTrackEncoder> CreateAudioEncoder(
-      CodecId codec,
+  SequenceBound<AudioTrackEncoder> CreateAudioEncoder(
+      media::AudioCodec codec,
       AudioTrackEncoder::OnEncodedAudioCB on_encoded_audio_cb,
       AudioTrackEncoder::OnEncodedAudioErrorCB on_encoded_audio_error_cb,
       uint32_t bits_per_second,
@@ -123,7 +116,7 @@ class MODULES_EXPORT AudioTrackRecorder
   const scoped_refptr<base::SequencedTaskRunner> encoder_task_runner_;
 
   // Thin wrapper around the chosen encoder.
-  WTF::SequenceBound<AudioTrackEncoder> encoder_;
+  SequenceBound<AudioTrackEncoder> encoder_;
 
   // Number of frames per chunked buffer passed to the encoder.
   int frames_per_chunk_ = 0;

@@ -198,7 +198,7 @@ class WebrtcTransport : public Transport,
       webrtc::PeerConnectionInterface::IceConnectionState new_state);
   void OnIceGatheringChange(
       webrtc::PeerConnectionInterface::IceGatheringState new_state);
-  void OnIceCandidate(const webrtc::IceCandidateInterface* candidate);
+  void OnIceCandidate(const webrtc::IceCandidate* candidate);
   void OnIceSelectedCandidatePairChanged(
       const webrtc::CandidatePairChangeEvent& event);
   void OnStatsDelivered(
@@ -249,7 +249,7 @@ class WebrtcTransport : public Transport,
   raw_ptr<EventHandler> event_handler_ = nullptr;
   SendTransportInfoCallback send_transport_info_callback_;
 
-  crypto::HMAC handshake_hmac_;
+  std::vector<uint8_t> hmac_key_;
 
   std::unique_ptr<PeerConnectionWrapper> peer_connection_wrapper_;
 
@@ -269,7 +269,7 @@ class WebrtcTransport : public Transport,
   // disconnected for the specified timeout.
   base::OneShotTimer close_after_disconnect_timer_;
 
-  std::vector<std::unique_ptr<webrtc::IceCandidateInterface>>
+  std::vector<std::unique_ptr<webrtc::IceCandidate>>
       pending_incoming_candidates_;
 
   SessionOptions session_options_;

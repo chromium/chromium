@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/scoped_environment_variable_override.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -34,19 +33,16 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/base/ui_base_switches.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 #if !BUILDFLAG(ENABLE_DICE_SUPPORT)
 #error Platform not supported
 #endif
-
-using signin::constants::kNoHostedDomainFound;
 
 // TODO(crbug.com/40242558): Move this file next to sync_confirmation_ui.cc.
 // Render the page in a browser instead of a profile_picker_view to be able to
@@ -201,8 +197,8 @@ class SyncConfirmationUIWindowPixelTest
   }
 
   void ShowUi(const std::string& name) override {
-    ui::ScopedAnimationDurationScaleMode disable_animation(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode disable_animation(
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     DCHECK(browser());
 
     SignInWithAccount(GetParam().account_management_status,
@@ -354,13 +350,15 @@ class SyncConfirmationUITest
 
   [[nodiscard]] AccountInfo FillAccountInfoWithEscapedHtmlCharacters(
       const AccountInfo& account_info) {
-    AccountInfo new_account_info = account_info;
     // The account name contains characters that are escaped in HTML.
-    new_account_info.full_name = "The name's <>&\"', James\u00a0<>&\"'";
-    new_account_info.given_name = new_account_info.full_name;
-    //  Fill all required fields to make `AccountInfo` valid.
-    new_account_info.hosted_domain = kNoHostedDomainFound;
-    new_account_info.picture_url = "https://example.org/avatar";
+    std::string name = "The name's <>&\"', James\u00a0<>&\"'";
+    AccountInfo new_account_info =
+        AccountInfo::Builder(account_info)
+            .SetFullName(name)
+            .SetGivenName(name)
+            .SetHostedDomain(std::string())
+            .SetAvatarUrl("https://example.org/avatar")
+            .Build();
     CHECK(new_account_info.IsValid());
     return new_account_info;
   }

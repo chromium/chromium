@@ -149,8 +149,7 @@ void AddSharedTabGroupDataToFakeServer(
   sync_pb::SyncEntity::CollaborationMetadata metadata;
   metadata.set_collaboration_id(collaboration_id.value());
 
-  std::string gaia_id =
-      base::SysNSStringToUTF8([FakeSystemIdentity fakeIdentity3].gaiaID);
+  std::string gaia_id = [FakeSystemIdentity fakeIdentity3].gaiaId.ToString();
   metadata.mutable_creation_attribution()->set_obfuscated_gaia_id(gaia_id);
   metadata.mutable_last_update_attribution()->set_obfuscated_gaia_id(gaia_id);
 
@@ -201,7 +200,8 @@ void TriggerSyncCycle(syncer::DataType type) {
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
-  sync_service->TriggerRefresh({type});
+  sync_service->TriggerRefresh(
+      syncer::SyncService::TriggerRefreshSource::kUnknown, {type});
 }
 
 int GetNumberOfSyncEntities(syncer::DataType type) {
@@ -443,7 +443,8 @@ void AddTypedURLToClient(const GURL& url, base::Time visitTimestamp) {
 
   historyService->AddPage(url, visitTimestamp, 0, 1, GURL(),
                           history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                          history::SOURCE_BROWSED, false);
+                          history::SOURCE_BROWSED,
+                          history::VisitResponseCodeCategory::kNot404, false);
 }
 
 void SetPageTitle(const GURL& url, const std::u16string& title) {

@@ -18,7 +18,8 @@ namespace payments {
 // tasks including payment credential creation.
 void CreateSecurePaymentConfirmationService(
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<mojom::SecurePaymentConfirmationService> receiver);
+    mojo::PendingReceiver<mojom::SecurePaymentConfirmationService> receiver,
+    std::string browser_bound_key_store_keychain_access_group);
 
 }  // namespace payments
 

@@ -10,12 +10,16 @@
 #include <tuple>
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/logging/stream_operator_util.h"
@@ -99,23 +103,79 @@ FormData& FormData::operator=(FormData&&) = default;
 FormData::~FormData() = default;
 
 // static
-bool FormData::DeepEqual(const FormData& a, const FormData& b) {
-  // We compare all unique identifiers first, including the field renderer IDs,
-  // because we expect most inequalities to be due to them.
-  if (a.global_id() != b.global_id() || a.child_frames() != b.child_frames() ||
-      !std::ranges::equal(a.fields(), b.fields(), {}, &FormFieldData::global_id,
-                          &FormFieldData::global_id)) {
-    return false;
+bool FormData::IdenticalAndEquivalentDomElements(
+    const FormData& a,
+    const FormData& b,
+    DenseSet<FormFieldData::Exclusion> exclusions) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillFixFormEquality)) {
+    // We compare all unique identifiers first, including the field renderer
+    // IDs, because we expect most inequalities to be due to them.
+    if (a.global_id() != b.global_id() ||
+        a.child_frames() != b.child_frames() ||
+        !std::ranges::equal(a.fields(), b.fields(), {},
+                            &FormFieldData::global_id,
+                            &FormFieldData::global_id)) {
+      return false;
+    }
+
+    if (a.name() != b.name() || a.id_attribute() != b.id_attribute() ||
+        a.name_attribute() != b.name_attribute() || a.url() != b.url() ||
+        a.action() != b.action() ||
+        a.likely_contains_captcha() != b.likely_contains_captcha() ||
+        !std::ranges::equal(
+            a.fields_, b.fields_,
+            [&](const FormFieldData& f, const FormFieldData& g) {
+              return FormFieldData::IdenticalAndEquivalentDomElements(
+                  f, g, exclusions);
+            })) {
+      return false;
+    }
+    return true;
   }
 
-  if (a.name() != b.name() || a.id_attribute() != b.id_attribute() ||
-      a.name_attribute() != b.name_attribute() || a.url() != b.url() ||
-      a.action() != b.action() ||
-      a.likely_contains_captcha() != b.likely_contains_captcha() ||
-      !std::ranges::equal(a.fields(), b.fields(), &FormFieldData::DeepEqual)) {
-    return false;
-  }
-  return true;
+  // LINT.IfChange(IdenticalAndEquivalentDomElements)
+  // clang-format off
+  return  // As optimization, compare the form and field IDs first.
+      a.host_frame_ == b.host_frame_ &&
+      a.renderer_id_ == b.renderer_id_ &&
+      std::ranges::equal(a.fields_, b.fields_, {}, &FormFieldData::global_id,
+                         &FormFieldData::global_id) &&
+      // Now compare the other members.
+      a.child_frames_ == b.child_frames_ &&
+      a.id_attribute_ == b.id_attribute_ &&
+      a.name_attribute_ == b.name_attribute_ &&
+      a.name_ == b.name_ &&
+      a.button_titles_ == b.button_titles_ &&
+      a.url_ == b.url_ &&
+      a.full_url_ == b.full_url_ &&
+      a.action_ == b.action_ &&
+      a.is_action_empty_ == b.is_action_empty_ &&
+      // main_frame_origin_ is not compared because by it is initialized to an
+      // opaque origin (a random number).
+      a.submission_event_ == b.submission_event_ &&
+      a.username_predictions_ == b.username_predictions_ &&
+      a.is_gaia_with_skip_save_password_form_ ==
+          b.is_gaia_with_skip_save_password_form_ &&
+      a.likely_contains_captcha_ == b.likely_contains_captcha_ &&
+      // version_ is not compared because it does not depend on the DOM.
+      std::ranges::equal(a.fields_, b.fields_,
+                         [&](const FormFieldData& f, const FormFieldData& g) {
+                           return FormFieldData::
+                               IdenticalAndEquivalentDomElements(
+                                   f, g, exclusions);
+                         });
+  // clang-format on
+  // LINT.ThenChange(form_data.h:FormDataMembers)
+}
+
+const FormFieldData* FormData::FindFieldByGlobalId(
+    const FieldGlobalId& global_id) const {
+  auto fields_it =
+      std::ranges::find(fields(), global_id, &FormFieldData::global_id);
+
+  // If the field is found, return a pointer to the field, otherwise return
+  // nullptr.
+  return fields_it != fields().end() ? &*fields_it : nullptr;
 }
 
 bool FormHasNonEmptyPasswordField(const FormData& form) {
@@ -169,16 +229,6 @@ std::ostream& PrintWithIndentation(std::ostream& os,
 }
 
 }  // namespace internal
-
-const FormFieldData* FormData::FindFieldByGlobalId(
-    const FieldGlobalId& global_id) const {
-  auto fields_it =
-      std::ranges::find(fields(), global_id, &FormFieldData::global_id);
-
-  // If the field is found, return a pointer to the field, otherwise return
-  // nullptr.
-  return fields_it != fields().end() ? &*fields_it : nullptr;
-}
 
 void SerializeFormData(const FormData& form_data, base::Pickle* pickle) {
   pickle->WriteInt(kFormDataPickleVersion);

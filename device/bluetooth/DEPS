@@ -2,6 +2,7 @@ include_rules = [
   "+chromecast/device/bluetooth",
   "+chromecast/public/bluetooth",
   "+chromeos/dbus",
+  "+components/dbus",
   "+components/prefs",
   "+crypto",
   "+dbus",
@@ -11,7 +12,7 @@ include_rules = [
   "+net/socket",
   "+net/traffic_annotation",
   "+services/data_decoder/public/mojom",
-  "+ui/base/l10n",
   "+third_party/cros_system_api/dbus",
   "+third_party/re2",
+  "+ui/base/l10n",
 ]

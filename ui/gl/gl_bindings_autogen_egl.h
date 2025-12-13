@@ -233,6 +233,10 @@ typedef EGLBoolean(GL_BINDING_CALL* eglPostSubBufferNVProc)(EGLDisplay dpy,
                                                             EGLint y,
                                                             EGLint width,
                                                             EGLint height);
+typedef EGLBoolean(GL_BINDING_CALL* eglPresentationTimeANDROIDProc)(
+    EGLDisplay dpy,
+    EGLSurface surface,
+    EGLnsecsANDROID time);
 typedef EGLenum(GL_BINDING_CALL* eglQueryAPIProc)(void);
 typedef EGLBoolean(GL_BINDING_CALL* eglQueryContextProc)(EGLDisplay dpy,
                                                          EGLContext ctx,
@@ -396,6 +400,7 @@ struct GL_EXPORT DisplayExtensionsEGL {
   bool b_EGL_ANDROID_get_frame_timestamps;
   bool b_EGL_ANDROID_get_native_client_buffer;
   bool b_EGL_ANDROID_native_fence_sync;
+  bool b_EGL_ANDROID_presentation_time;
   bool b_EGL_ANGLE_context_virtualization;
   bool b_EGL_ANGLE_create_context_backwards_compatible;
   bool b_EGL_ANGLE_create_context_client_arrays;
@@ -521,6 +526,7 @@ struct ProcsEGL {
   eglLockVulkanQueueANGLEProc eglLockVulkanQueueANGLEFn;
   eglMakeCurrentProc eglMakeCurrentFn;
   eglPostSubBufferNVProc eglPostSubBufferNVFn;
+  eglPresentationTimeANDROIDProc eglPresentationTimeANDROIDFn;
   eglQueryAPIProc eglQueryAPIFn;
   eglQueryContextProc eglQueryContextFn;
   eglQueryDebugKHRProc eglQueryDebugKHRFn;
@@ -763,6 +769,9 @@ class GL_EXPORT EGLApi {
                                           EGLint y,
                                           EGLint width,
                                           EGLint height) = 0;
+  virtual EGLBoolean eglPresentationTimeANDROIDFn(EGLDisplay dpy,
+                                                  EGLSurface surface,
+                                                  EGLnsecsANDROID time) = 0;
   virtual EGLenum eglQueryAPIFn(void) = 0;
   virtual EGLBoolean eglQueryContextFn(EGLDisplay dpy,
                                        EGLContext ctx,
@@ -955,6 +964,8 @@ class GL_EXPORT EGLApi {
   ::gl::g_current_egl_context->eglLockVulkanQueueANGLEFn
 #define eglMakeCurrent ::gl::g_current_egl_context->eglMakeCurrentFn
 #define eglPostSubBufferNV ::gl::g_current_egl_context->eglPostSubBufferNVFn
+#define eglPresentationTimeANDROID \
+  ::gl::g_current_egl_context->eglPresentationTimeANDROIDFn
 #define eglQueryAPI ::gl::g_current_egl_context->eglQueryAPIFn
 #define eglQueryContext ::gl::g_current_egl_context->eglQueryContextFn
 #define eglQueryDebugKHR ::gl::g_current_egl_context->eglQueryDebugKHRFn

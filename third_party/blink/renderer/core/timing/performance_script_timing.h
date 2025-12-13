@@ -41,8 +41,8 @@ class PerformanceScriptTiming final : public PerformanceEntry {
   DOMHighResTimeStamp forcedStyleAndLayoutDuration() const;
   DOMHighResTimeStamp pauseDuration() const;
   LocalDOMWindow* window() const;
-  WTF::String sourceURL() const;
-  WTF::String sourceFunctionName() const;
+  String sourceURL() const;
+  String sourceFunctionName() const;
   int32_t sourceCharPosition() const;
   int32_t sourceLine() const;
   int32_t sourceColumn() const;

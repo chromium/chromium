@@ -65,13 +65,12 @@ class CORE_EXPORT DragData {
       FilenameConversionPolicy filename_policy = kConvertFilenames) const;
   bool ContainsPlainText() const;
   bool ContainsCompatibleContent() const;
-  WTF::String AsURL(
-      FilenameConversionPolicy filename_policy = kConvertFilenames,
-      WTF::String* title = nullptr) const;
-  Vector<WTF::String> AsURLs(
+  String AsURL(FilenameConversionPolicy filename_policy = kConvertFilenames,
+               String* title = nullptr) const;
+  Vector<String> AsURLs(
       FilenameConversionPolicy filename_policy = kConvertFilenames) const;
-  WTF::String AsPlainText() const;
-  void AsFilePaths(Vector<WTF::String>&) const;
+  String AsPlainText() const;
+  void AsFilePaths(Vector<String>&) const;
   unsigned NumberOfFiles() const;
   DocumentFragment* AsFragment(LocalFrame*) const;
   bool CanSmartReplace() const;
@@ -79,7 +78,7 @@ class CORE_EXPORT DragData {
   bool ForceDefaultAction() const;
   int GetModifiers() const;
 
-  WTF::String DroppedFileSystemId() const;
+  String DroppedFileSystemId() const;
 
  private:
   const gfx::PointF client_position_;

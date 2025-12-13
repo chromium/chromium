@@ -6,13 +6,15 @@
 
 #include "base/auto_reset.h"
 #include "base/check_is_test.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
-#include "content/browser/preloading/prefetch/prefetch_params.h"
+#include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
+#include "content/public/browser/prefetch_priority.h"
 #include "content/public/common/content_features.h"
 
 namespace content {
@@ -62,8 +64,8 @@ size_t GetActiveSetSizeLimitForBurst() {
 
 PrefetchSchedulerPriority CalculatePriorityImpl(
     const PrefetchContainer& prefetch_container) {
-  if (prefetch_container.GetPrefetchPriority().has_value()) {
-    switch (prefetch_container.GetPrefetchPriority().value()) {
+  if (prefetch_container.request().priority().has_value()) {
+    switch (prefetch_container.request().priority().value()) {
       case PrefetchPriority::kLow:
       case PrefetchPriority::kMedium:
       case PrefetchPriority::kHigh:
@@ -105,14 +107,16 @@ bool IsReadyToStartPrefetch(const PrefetchQueue::Item& item) {
     return true;
   }
 
-  if (!item.prefetch_container->IsRendererInitiated()) {
+  auto* renderer_initiator_info =
+      item.prefetch_container->request().GetRendererInitiatorInfo();
+  if (!renderer_initiator_info) {
     // TODO(crbug.com/40946257): Revisit the resource limits and
     // conditions for starting browser-initiated prefetch.
     return true;
   }
 
   auto* prefetch_document_manager =
-      item.prefetch_container->GetPrefetchDocumentManager();
+      renderer_initiator_info->prefetch_document_manager();
   // If there is no manager in renderer-initiated prefetch (can happen
   // only in tests), just bypass the check.
   if (!prefetch_document_manager) {
@@ -192,6 +196,19 @@ bool PrefetchQueue::MaybeUpdatePriority(PrefetchContainer& prefetch_container,
   return false;
 }
 
+std::optional<int> PrefetchQueue::GetIndexForMetrics(
+    const PrefetchContainer& prefetch_container) const {
+  for (int i = 0; const auto& it : queue_) {
+    if (it.prefetch_container.get() == &prefetch_container) {
+      return i;
+    }
+
+    ++i;
+  }
+
+  return std::nullopt;
+}
+
 PrefetchScheduler::PrefetchScheduler(PrefetchService* prefetch_service)
     : prefetch_service_(prefetch_service) {}
 
@@ -218,6 +235,9 @@ PrefetchSchedulerPriority PrefetchScheduler::CalculatePriority(
 }
 
 void PrefetchScheduler::PushAndProgress(PrefetchContainer& prefetch_container) {
+  TRACE_EVENT("loading", "PrefetchScheduler::PushAndProgress",
+              prefetch_container.request().preload_pipeline_info().GetFlow());
+
   // Precondition: Pushing already registered one is not allowed.
   for (auto& it : active_set_) {
     if (it.get() == &prefetch_container) {
@@ -233,6 +253,10 @@ void PrefetchScheduler::PushAndProgress(PrefetchContainer& prefetch_container) {
 
 void PrefetchScheduler::PushAndProgressAsync(
     PrefetchContainer& prefetch_container) {
+  TRACE_EVENT("loading", "PrefetchScheduler::PushAndProgressAsync",
+              prefetch_container.request().preload_pipeline_info().GetFlow(),
+              perfetto::Flow::FromPointer(this));
+
   // Precondition: Pushing already registered one is not allowed.
   for (auto& it : active_set_) {
     if (it.get() == &prefetch_container) {
@@ -249,6 +273,10 @@ void PrefetchScheduler::PushAndProgressAsync(
 void PrefetchScheduler::RemoveAndProgressAsync(
     PrefetchContainer& prefetch_container,
     bool should_progress) {
+  TRACE_EVENT("loading", "PrefetchScheduler::RemoveAndProgressAsync",
+              prefetch_container.request().preload_pipeline_info().GetFlow(),
+              perfetto::Flow::FromPointer(this));
+
   [&]() {
     for (auto it = active_set_.cbegin(); it != active_set_.cend(); ++it) {
       if (it->get() == &prefetch_container) {
@@ -275,6 +303,11 @@ void PrefetchScheduler::RemoveAndProgressAsync(
 void PrefetchScheduler::NotifyAttributeMightChangedAndProgressAsync(
     PrefetchContainer& prefetch_container,
     bool should_progress) {
+  TRACE_EVENT("loading",
+              "PrefetchScheduler::NotifyAttributeMightChangedAndProgressAsync",
+              prefetch_container.request().preload_pipeline_info().GetFlow(),
+              perfetto::Flow::FromPointer(this));
+
   if (!should_progress) {
     return;
   }
@@ -304,10 +337,18 @@ void PrefetchScheduler::Progress() {
   base::AutoReset guard(&progress_reentrancy_guard_, true);
 #endif
 
+  TRACE_EVENT("loading", "PrefetchScheduler::Progress",
+              perfetto::TerminatingFlow::FromPointer(this));
+
   // Note that this doesn't correspond to the update in `ProgressAsync()` in 1:1
   // and there is a case updating `false` to `false` as this method can be
   // called from `PrefetchService` directly.
   is_progress_scheduled_ = false;
+
+  // Execute something that should be done for each start of `Progress()`.
+  //
+  // TODO(crbug.com/443681583)): Remove it if possible.
+  prefetch_service_->PrepareProgress(base::PassKey<PrefetchScheduler>());
 
   // #algorithm
   //
@@ -368,8 +409,14 @@ void PrefetchScheduler::ProgressOne(
 
   // Evict if needed.
   [&]() {
+    auto* renderer_initiator_info =
+        prefetch_container->request().GetRendererInitiatorInfo();
+    if (!renderer_initiator_info) {
+      return;
+    }
+
     auto* prefetch_document_manager =
-        prefetch_container->GetPrefetchDocumentManager();
+        renderer_initiator_info->prefetch_document_manager();
     if (!prefetch_document_manager) {
       return;
     }

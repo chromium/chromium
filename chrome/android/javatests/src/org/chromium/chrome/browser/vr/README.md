@@ -56,9 +56,8 @@ download these from storage.
 
 ### AR
 
-The AR instrumentation tests can be built with the
-`monochrome_public_test_ar_apk` target, which will also build
-`monochrome_public_apk` to test with.
+The AR instrumentation tests can be built with the `chrome_public_test_ar_apk`
+target, which will also build `chrome_public_apk` to test with.
 
 ### VR
 

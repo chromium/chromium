@@ -102,7 +102,7 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
   }
 
   ResourcePriority ComputeResourcePriority() const final;
-  ResourcePriority CachedResourcePriority() const final;
+  std::optional<ResourcePriority> CachedResourcePriority() const final;
   gfx::Size ComputeSpeculativeDecodeSize() const final;
   gfx::Size CachedSpeculativeDecodeSize() const final;
   InterpolationQuality ComputeSpeculativeDecodeQuality() const final;
@@ -141,7 +141,9 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
 
   void WillBeDestroyed() override;
 
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
 
   bool CanBeSelectionLeafInternal() const final {
     NOT_DESTROYED();
@@ -200,7 +202,7 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
   PhysicalRect last_paint_rect_;
 
   mutable struct {
-    ResourcePriority cached_resource_priority;
+    std::optional<ResourcePriority> cached_resource_priority;
     gfx::Size cached_speculative_decode_size;
     InterpolationQuality cached_speculative_decode_quality;
   } speculative_decode_parameters_;

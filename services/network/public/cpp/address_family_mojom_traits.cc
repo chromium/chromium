@@ -4,6 +4,8 @@
 
 #include "services/network/public/cpp/address_family_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 // static

@@ -403,7 +403,7 @@ static StringBuilder& operator<<(StringBuilder& ts,
 }
 
 static StringBuilder& operator<<(StringBuilder& ts, const LayoutSVGRoot& root) {
-  ts << " " << PhysicalRect(root.PhysicalLocation(), root.Size());
+  ts << " " << PhysicalRect(root.PhysicalLocation(), root.StitchedSize());
   WriteStyle(ts, root);
   return ts;
 }

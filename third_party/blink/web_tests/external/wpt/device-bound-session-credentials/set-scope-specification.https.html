@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>DBSC scope specification set</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="helper.js" type="module"></script>
@@ -15,7 +14,7 @@
     addCookieAndSessionCleanup(t);
 
     // Configure server to set scope specification.
-    configureServer({ scopeSpecificationItems: [{
+    await configureServer({ scopeSpecificationItems: [{
       "type": "include",
       "domain": location.hostname,
       "path": "/device-bound-session-credentials/excludeInScopeSpecification/excluded_verify_authenticated.py"
@@ -53,7 +52,7 @@
     async function expireCookieAndTriggerRequest(endpoint, expectRefresh) {
       expireCookie(expectedCookieAndAttributes);
       const authResponse = await fetch(endpoint, { credentials: "include" });
-      assert_equals(authResponse.status, expectRefresh ? 200 : 401);
+      assert_equals(authResponse.status, expectRefresh ? 200 : 403);
     }
 
     await expireCookieAndTriggerRequest("verify_authenticated.py", /*expectRefresh=*/false);

@@ -13,6 +13,7 @@
 			<string>Localizable.strings</string>
 			<key>strings</key>
 			<array>
+				<string>IDS_IOS_WIDGET_KIT_EXTENSION_AVATAR_A11Y_LABEL</string>
 				<string>IDS_IOS_WIDGET_KIT_EXTENSION_DELETED_ACCOUNT</string>
 				<string>IDS_IOS_WIDGET_KIT_EXTENSION_GAME_A11Y_LABEL</string>
 				<string>IDS_IOS_WIDGET_KIT_EXTENSION_GAME_DESCRIPTION</string>

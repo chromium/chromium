@@ -1,0 +1,23 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("common") {
+  sources = [
+    "util.h",
+    "util.mm",
+  ]
+  deps = [
+    "//components/enterprise",
+    "//components/enterprise/connectors/core",
+    "//components/policy/core/common",
+    "//components/policy/proto",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
+  ]
+
+  public_deps = [ "//components/policy/core/browser" ]
+}

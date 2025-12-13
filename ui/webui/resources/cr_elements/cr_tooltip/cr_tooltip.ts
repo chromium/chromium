@@ -7,6 +7,7 @@
  * from Polymer's paper-tooltip.
  */
 
+import {assertNotReachedCase} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -58,7 +59,7 @@ export class CrTooltipElement extends CrLitElement {
       /**
        * Positions the tooltip to the top, right, bottom, left of its content.
        */
-      position: {type: String},
+      position: {type: String, reflect: true},
 
       /**
        * If true, no parts of the tooltip will ever be shown offscreen.
@@ -76,11 +77,18 @@ export class CrTooltipElement extends CrLitElement {
        * played when showing the tooltip.
        */
       animationDelay: {type: Number},
+
+      /**
+       * The delay before the tooltip hides itself after moving the pointer
+       * away from the tooltip or target.
+       */
+      hideDelay: {type: Number},
     };
   }
 
   accessor animationDelay: number = 500;
   accessor fitToVisibleBounds: boolean = false;
+  accessor hideDelay: number = 600;
   accessor for: string = '';
   accessor manualMode: boolean = false;
   accessor offset: number = 14;
@@ -90,6 +98,7 @@ export class CrTooltipElement extends CrLitElement {
   private manualTarget_?: Element;
   private target_: Element|null = null;
   private tracker_: EventTracker = new EventTracker();
+  private hideTimeout_: number|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -100,6 +109,7 @@ export class CrTooltipElement extends CrLitElement {
     if (!this.manualMode) {
       this.removeListeners_();
     }
+    this.resetHideTimeout_();
   }
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
@@ -129,6 +139,10 @@ export class CrTooltipElement extends CrLitElement {
       } else {
         this.addListeners_();
       }
+    }
+
+    if (changedProperties.has('offset')) {
+      this.style.setProperty('--cr-tooltip-offset', `${this.offset}px`);
     }
   }
 
@@ -167,6 +181,8 @@ export class CrTooltipElement extends CrLitElement {
    * Shows the tooltip programmatically
    */
   show() {
+    this.resetHideTimeout_();
+
     // If the tooltip is already showing, there's nothing to do.
     if (this.showing_) {
       return;
@@ -217,6 +233,21 @@ export class CrTooltipElement extends CrLitElement {
     this.animationPlaying_ = true;
   }
 
+  private queueHide_() {
+    this.resetHideTimeout_();
+    this.hideTimeout_ = setTimeout(() => {
+      this.hide();
+      this.hideTimeout_ = null;
+    }, this.hideDelay);
+  }
+
+  private resetHideTimeout_() {
+    if (this.hideTimeout_ !== null) {
+      clearTimeout(this.hideTimeout_);
+      this.hideTimeout_ = null;
+    }
+  }
+
   updatePosition() {
     if (!this.target_) {
       return;
@@ -230,9 +261,9 @@ export class CrTooltipElement extends CrLitElement {
     const offset = this.offset;
     const parentRect = offsetParent.getBoundingClientRect();
     const targetRect = this.target_.getBoundingClientRect();
-    const thisRect = this.getBoundingClientRect();
-    const horizontalCenterOffset = (targetRect.width - thisRect.width) / 2;
-    const verticalCenterOffset = (targetRect.height - thisRect.height) / 2;
+    const tooltipRect = this.$.tooltip.getBoundingClientRect();
+    const horizontalCenterOffset = (targetRect.width - tooltipRect.width) / 2;
+    const verticalCenterOffset = (targetRect.height - tooltipRect.height) / 2;
     const targetLeft = targetRect.left - parentRect.left;
     const targetTop = targetRect.top - parentRect.top;
     let tooltipLeft;
@@ -240,24 +271,27 @@ export class CrTooltipElement extends CrLitElement {
     switch (this.position) {
       case TooltipPosition.TOP:
         tooltipLeft = targetLeft + horizontalCenterOffset;
-        tooltipTop = targetTop - thisRect.height - offset;
+        tooltipTop = targetTop - tooltipRect.height - offset;
         break;
       case TooltipPosition.BOTTOM:
         tooltipLeft = targetLeft + horizontalCenterOffset;
         tooltipTop = targetTop + targetRect.height + offset;
         break;
       case TooltipPosition.LEFT:
-        tooltipLeft = targetLeft - thisRect.width - offset;
+        tooltipLeft = targetLeft - tooltipRect.width - offset;
         tooltipTop = targetTop + verticalCenterOffset;
         break;
       case TooltipPosition.RIGHT:
         tooltipLeft = targetLeft + targetRect.width + offset;
         tooltipTop = targetTop + verticalCenterOffset;
         break;
+      default:
+        assertNotReachedCase(this.position);
     }
     if (this.fitToVisibleBounds) {
       // Clip the left/right side
-      if (parentRect.left + tooltipLeft + thisRect.width > window.innerWidth) {
+      if (parentRect.left + tooltipLeft + tooltipRect.width >
+          window.innerWidth) {
         this.style.right = '0px';
         this.style.left = 'auto';
       } else {
@@ -265,7 +299,8 @@ export class CrTooltipElement extends CrLitElement {
         this.style.right = 'auto';
       }
       // Clip the top/bottom side.
-      if (parentRect.top + tooltipTop + thisRect.height > window.innerHeight) {
+      if (parentRect.top + tooltipTop + tooltipRect.height >
+          window.innerHeight) {
         this.style.bottom = (parentRect.height - targetTop + offset) + 'px';
         this.style.top = 'auto';
       } else {
@@ -301,13 +336,14 @@ export class CrTooltipElement extends CrLitElement {
     if (this.target_) {
       this.tracker_.add(this.target_, 'pointerenter', () => this.show());
       this.tracker_.add(this.target_, 'focus', () => this.show());
-      this.tracker_.add(this.target_, 'pointerleave', () => this.hide());
+      this.tracker_.add(this.target_, 'pointerleave', () => this.queueHide_());
       this.tracker_.add(this.target_, 'blur', () => this.hide());
       this.tracker_.add(this.target_, 'click', () => this.hide());
     }
     this.tracker_.add(
         this.$.tooltip, 'animationend', () => this.onAnimationEnd_());
-    this.tracker_.add(this, 'pointerenter', () => this.hide());
+    this.tracker_.add(this, 'pointerenter', () => this.show());
+    this.tracker_.add(this, 'pointerleave', () => this.queueHide_());
   }
 
   private removeListeners_() {

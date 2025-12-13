@@ -1001,14 +1001,10 @@ class XcodeLogParserTest(test_runner_test.TestCase):
           'test_data/attempt_0.xcresult_diagnostic/test_module-UUID/test_module-UUID2/StandardOutputAndStandardError-org.chromium.gtest.ios-chrome-eg2tests.txt',
           'test_data/attempt_0/../attempt_0_simulator#0_StandardOutputAndStandardError-org.chromium.gtest.ios-chrome-eg2tests.txt'
       )
-    mock_copy.assert_any_call(
-      'test_data/attempt_0.xcresult_diagnostic/test_module-UUID/test_module-UUID1/StandardOutputAndStandardError.txt',
-      'test_data/attempt_0/../attempt_0_simulator#1_StandardOutputAndStandardError.txt'
-    )
-    mock_copy.assert_any_call(
-      'test_data/attempt_0.xcresult_diagnostic/test_module-UUID/test_module-UUID1/ios_internal_chrome_ui_eg2tests_module-Runner-2024-11-07-105813.ips',
-      'test_data/attempt_0/../Crash Reports/ios_internal_chrome_ui_eg2tests_module-Runner-2024-11-07-105813.ips'
-    )
+      mock_copy.assert_any_call(
+          'test_data/attempt_0.xcresult_diagnostic/test_module-UUID/test_module-UUID1/ios_chrome_eg2tests-2024-11-07-115354.ips',
+          'test_data/attempt_0/../Crash Reports/ios_chrome_eg2tests-2024-11-07-115354.ips'
+      )
 
   @mock.patch('os.path.exists', autospec=True)
   def testCollectTestResults_interruptedTests(self, mock_path_exists):
@@ -1281,14 +1277,10 @@ class Xcode16LogParserTest(test_runner_test.TestCase):
           'test_data/attempt_0.xcresult_diagnostic/test_module-UUID/test_module-UUID2/StandardOutputAndStandardError-org.chromium.gtest.ios-chrome-eg2tests.txt',
           'test_data/attempt_0/../attempt_0_simulator#0_StandardOutputAndStandardError-org.chromium.gtest.ios-chrome-eg2tests.txt'
       )
-    mock_copy.assert_any_call(
-        'test_data/attempt_0.xcresult_diagnostic/test_module-UUID/test_module-UUID1/StandardOutputAndStandardError.txt',
-        'test_data/attempt_0/../attempt_0_simulator#1_StandardOutputAndStandardError.txt'
-    )
-    mock_copy.assert_any_call(
-        'test_data/attempt_0.xcresult_diagnostic/test_module-UUID/test_module-UUID1/ios_internal_chrome_ui_eg2tests_module-Runner-2024-11-07-105813.ips',
-        'test_data/attempt_0/../Crash Reports/ios_internal_chrome_ui_eg2tests_module-Runner-2024-11-07-105813.ips'
-    )
+      mock_copy.assert_any_call(
+          'test_data/attempt_0.xcresult_diagnostic/test_module-UUID/test_module-UUID1/ios_chrome_eg2tests-2024-11-07-115354.ips',
+          'test_data/attempt_0/../Crash Reports/ios_chrome_eg2tests-2024-11-07-115354.ips'
+      )
 
   @mock.patch('subprocess.check_output')
   @mock.patch('os.makedirs')

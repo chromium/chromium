@@ -1294,8 +1294,7 @@ void ChromeAppListModelUpdater::ResetPrefSortOrderInNonTemporaryMode(
 
   order_delegate_->SetAppListPreferredOrder(ash::AppListSortOrder::kCustom);
 
-  ReportPrefOrderClearAction(event,
-                             display::Screen::GetScreen()->InTabletMode());
+  ReportPrefOrderClearAction(event, display::Screen::Get()->InTabletMode());
 }
 
 void ChromeAppListModelUpdater::MaybeUpdatePositionWhenIconColorChange(

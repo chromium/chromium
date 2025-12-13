@@ -69,6 +69,11 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 
   ConfigurationPolicyProvider* GetPlatformProvider();
 
+  // Refreshes only platform (non-cloud) policies. This is used by the
+  // --refresh-platform-policy command line switch to provide fast policy
+  // updates without triggering network requests to cloud policy servers.
+  void RefreshPlatformPolicies();
+
   ConfigurationPolicyProvider* local_test_policy_provider();
   void SetLocalTestPolicyProviderForTesting(
       ConfigurationPolicyProvider* provider);

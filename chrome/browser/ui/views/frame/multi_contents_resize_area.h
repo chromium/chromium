@@ -24,14 +24,14 @@ class MultiContentsResizeHandle : public views::View,
 
   MultiContentsResizeHandle();
 
-  void UpdateVisibility(bool visible);
+  void UpdateVisibility();
 
   // views::View:
   void AddedToWidget() override;
   void RemovedFromWidget() override;
 
   // FocusChangeListener:
-  void OnWillChangeFocus(views::View* before, views::View* now) override;
+  void OnDidChangeFocus(views::View* before, views::View* now) override;
 };
 
 // ResizeArea meant to draw in between WebContents within a MultiContentsView,

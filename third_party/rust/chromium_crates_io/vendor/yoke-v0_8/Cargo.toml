@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.81"
+rust-version = "1.82"
 name = "yoke"
-version = "0.8.0"
+version = "0.8.1"
 authors = ["Manish Goregaokar <manishsmail@gmail.com>"]
 build = false
 include = [
@@ -25,6 +25,7 @@ include = [
     "Cargo.toml",
     "LICENSE",
     "README.md",
+    "build.rs",
 ]
 autolib = false
 autobins = false
@@ -49,19 +50,18 @@ categories = [
 license = "Unicode-3.0"
 repository = "https://github.com/unicode-org/icu4x"
 
-[package.metadata.cargo-all-features]
-max_combination_size = 3
+[package.metadata.workspaces]
+independent = true
 
 [package.metadata.docs.rs]
 all-features = true
 
-[package.metadata.workspaces]
-independent = true
+[package.metadata.cargo-all-features]
+max_combination_size = 3
 
 [features]
 alloc = [
     "stable_deref_trait/alloc",
-    "serde?/alloc",
     "zerofrom/alloc",
 ]
 default = [
@@ -72,7 +72,7 @@ derive = [
     "dep:yoke-derive",
     "zerofrom/derive",
 ]
-serde = ["dep:serde"]
+serde = []
 zerofrom = ["dep:zerofrom"]
 
 [lib]
@@ -86,11 +86,6 @@ path = "tests/bincode.rs"
 [[test]]
 name = "miri"
 path = "tests/miri.rs"
-
-[dependencies.serde]
-version = "1.0.110"
-optional = true
-default-features = false
 
 [dependencies.stable_deref_trait]
 version = "1.2.0"
@@ -114,5 +109,5 @@ version = "1.0.3"
 default-features = false
 
 [dev-dependencies.serde]
-version = "1.0.110"
+version = "1.0.220"
 default-features = false

@@ -27,6 +27,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+#include "ipc/constants.mojom.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/upload_data_stream.h"
@@ -39,6 +40,8 @@
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace keys = extension_web_request_api_constants;
 
@@ -226,7 +229,7 @@ void WebRequestInfoInitParams::InitializeWebViewAndFrameData(
     }
     frame_data = navigation_ui_data->frame_data();
     parent_routing_id = navigation_ui_data->parent_routing_id();
-  } else if (frame_routing_id != MSG_ROUTING_NONE) {
+  } else if (frame_routing_id != IPC::mojom::kRoutingIdNone) {
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
     // Grab any WebView-related information if relevant.
     WebViewRendererState::WebViewInfo web_view_info;
@@ -278,6 +281,11 @@ void WebRequestInfo::AddResponseInfoFromResourceResponse(
   }
   response_ip = response.remote_endpoint.ToStringWithoutPort();
   response_from_cache = response.was_fetched_via_cache;
+}
+
+void WebRequestInfo::AddSslInfo(
+    const std::optional<net::SSLInfo>& ssl_info_opt) {
+  ssl_info = ssl_info_opt;
 }
 
 void WebRequestInfo::EraseDNRActionsForExtension(

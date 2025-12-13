@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <array>
 
 // This file contains unit tests for raster commmands
@@ -33,8 +28,9 @@ class RasterFormatTest : public testing::Test {
   static const unsigned char kInitialValue = 0xBD;
 
   void SetUp() override {
-    memset(buffer_.data(), kInitialValue,
-           (buffer_.size() * sizeof(decltype(buffer_)::value_type)));
+    UNSAFE_TODO(
+        memset(buffer_.data(), kInitialValue,
+               (buffer_.size() * sizeof(decltype(buffer_)::value_type))));
   }
 
   void TearDown() override {}

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "google_apis/classroom/classroom_api_material_response_types.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -20,33 +21,6 @@ class Value;
 }  // namespace base
 
 namespace google_apis::classroom {
-
-// https://developers.google.com/classroom/reference/rest/v1/Material
-class Material {
- public:
-  // Material type.
-  enum class Type {
-    kSharedDriveFile,
-    kYoutubeVideo,
-    kLink,
-    kForm,
-    kUnknown,
-  };
-
-  Material();
-  Material(const Material&) = delete;
-  Material& operator=(const Material&) = delete;
-  ~Material();
-
-  static bool ConvertMaterial(const base::Value* input, Material* output);
-
-  const std::string& title() const { return title_; }
-  Type type() const { return type_; }
-
- private:
-  std::string title_;
-  Type type_ = Type::kUnknown;
-};
 
 // https://developers.google.com/classroom/reference/rest/v1/courses.courseWork
 class CourseWorkItem {

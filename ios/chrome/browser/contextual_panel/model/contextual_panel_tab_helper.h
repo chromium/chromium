@@ -74,6 +74,10 @@ class ContextualPanelTabHelper
   // loud_moment_entrypoint_shown_for_curent_page_navigation_.
   bool WasLoudMomentEntrypointShown();
   void SetLoudMomentEntrypointShown(bool shown);
+  // Getter and setter for
+  // loud_moment_entrypoint_canceled_for_curent_page_navigation_.
+  bool WasLoudMomentEntrypointCanceled();
+  void SetLoudMomentEntrypointCanceled(bool canceled);
 
   // Getter and setter for metrics_data_;
   std::optional<EntrypointMetricsData>& GetMetricsData();
@@ -96,11 +100,16 @@ class ContextualPanelTabHelper
   void WasShown(web::WebState* web_state) override;
   void WasHidden(web::WebState* web_state) override;
 
+  // Invalidates the provided `configuration` from the cached list.
+  void InvalidateContextualPanelItemConfiguration(
+      ContextualPanelItemConfiguration* configuration);
+
  protected:
   // Protected to allow test overriding.
   ContextualPanelTabHelper(
       web::WebState* web_state,
-      std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models);
+      std::map<ContextualPanelItemType,
+               raw_ptr<ContextualPanelModel, DanglingUntriaged>> models);
 
  private:
   friend class web::WebStateUserData<ContextualPanelTabHelper>;
@@ -131,6 +140,9 @@ class ContextualPanelTabHelper
   // Query all the individual models for their data.
   void QueryModels();
 
+  // Updates item configurations to match model responses.
+  void UpdateItemConfigurations();
+
   // Do any necessary work after all requests are completed or time out.
   void AllRequestsFinished();
 
@@ -143,6 +155,9 @@ class ContextualPanelTabHelper
   // Whether a loud moment (large entrypoint or IPH) for the Contextual Panel
   // entrypoint has been shown for the current navigation.
   bool loud_moment_entrypoint_shown_for_curent_page_navigation_ = false;
+  // Whether showing a loud moment (large entrypoint or IPH) for the Contextual
+  // Panel entrypoint has been canceled for the current navigation.
+  bool loud_moment_entrypoint_canceled_for_curent_page_navigation_ = false;
 
   // Stores the previous URL to help decide whether this navigation is to
   // a new page.
@@ -158,7 +173,9 @@ class ContextualPanelTabHelper
   std::optional<EntrypointMetricsData> metrics_data_ = std::nullopt;
 
   // Map of the models this tab helper should query for possible panels.
-  std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models_;
+  std::map<ContextualPanelItemType,
+           raw_ptr<ContextualPanelModel, DanglingUntriaged>>
+      models_;
 
   // The time the current request began.
   base::Time request_start_time_;

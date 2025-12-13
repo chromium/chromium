@@ -23,8 +23,6 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
 
-class PrefService;
-
 namespace autofill {
 
 using CountryToStateNamesListMapping =
@@ -37,8 +35,8 @@ using CountryToStateNamesListMapping =
 // disk and adding it to the AlternativeStateNameMap.
 class AlternativeStateNameMapUpdater : public AddressDataManager::Observer {
  public:
-  AlternativeStateNameMapUpdater(PrefService* local_state,
-                                 AddressDataManager* address_data_manager);
+  explicit AlternativeStateNameMapUpdater(
+      AddressDataManager* address_data_manager);
   ~AlternativeStateNameMapUpdater() override;
   AlternativeStateNameMapUpdater(const AlternativeStateNameMapUpdater&) =
       delete;
@@ -62,9 +60,8 @@ class AlternativeStateNameMapUpdater : public AddressDataManager::Observer {
   // A wrapper around |LoadStatesData| used for testing purposes.
   void LoadStatesDataForTesting(
       CountryToStateNamesListMapping country_to_state_names_map,
-      PrefService* pref_service,
       base::OnceClosure done_callback) {
-    LoadStatesData(std::move(country_to_state_names_map), pref_service,
+    LoadStatesData(std::move(country_to_state_names_map),
                    std::move(done_callback));
   }
 
@@ -88,11 +85,6 @@ class AlternativeStateNameMapUpdater : public AddressDataManager::Observer {
     return ContainsState(stripped_alternative_state_names,
                          stripped_state_value_from_profile);
   }
-
-  // Setter for |local_state_| used for testing purposes.
-  void set_local_state_for_testing(PrefService* pref_service) {
-    local_state_ = pref_service;
-  }
 #endif  // defined(UNIT_TEST)
 
  private:
@@ -112,7 +104,6 @@ class AlternativeStateNameMapUpdater : public AddressDataManager::Observer {
   // Each call to LoadStatesData triggers loading state data files, so requests
   // should be batched up.
   void LoadStatesData(CountryToStateNamesListMapping country_to_state_names_map,
-                      PrefService* pref_service,
                       base::OnceClosure done_callback);
 
   // Each entry in |state_values_from_profiles| is compared with the states
@@ -138,9 +129,6 @@ class AlternativeStateNameMapUpdater : public AddressDataManager::Observer {
   // data and register this class as an obsever.
   const raw_ptr<AddressDataManager> address_data_manager_ = nullptr;
 
-  // The browser local_state that stores the states data installation path.
-  raw_ptr<PrefService> local_state_ = nullptr;
-
   // In case of concurrent requests to load states data, the callbacks are
   // queued in |pending_init_done_callbacks_| and triggered once the
   // |number_pending_init_tasks_| returns to 0.
@@ -165,6 +153,10 @@ class AlternativeStateNameMapUpdater : public AddressDataManager::Observer {
   // when that object is destroyed.
   base::WeakPtrFactory<AlternativeStateNameMapUpdater> weak_ptr_factory_{this};
 };
+
+// Finds a resource ID based on a 2 character uppercase country code.
+// Returns -1 in case the country code was not found.
+int32_t FindResourceIdForCountry(std::string_view country_code);
 
 }  // namespace autofill
 

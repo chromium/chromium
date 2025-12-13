@@ -122,9 +122,6 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     @ColorInt private final int mBubbleTint;
     private @Nullable TabBubbler mTabBubbler;
 
-    // Reorder state
-    @ColorInt private final int mReorderBackgroundTint;
-
     /**
      * Create a {@link StripLayoutGroupTitle} that represents the TabGroup for the {@code
      * tabGroupId}.
@@ -145,7 +142,6 @@ public class StripLayoutGroupTitle extends StripLayoutView {
         mDelegate = delegate;
         mTabGroupId = tabGroupId;
         mBubbleTint = TabUiThemeUtil.getGroupTitleBubbleColor(mContext);
-        mReorderBackgroundTint = TabUiThemeUtil.getReorderBackgroundColor(mContext, incognito);
     }
 
     @Override
@@ -314,7 +310,9 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
     /** Returns the {@link ColorInt} for the reorder background. */
     public @ColorInt int getReorderBackgroundTint() {
-        return mReorderBackgroundTint;
+        return getIsNonDragReordering()
+                ? TabUiThemeUtil.getTabStripBackgroundColor(mContext, isIncognito())
+                : TabUiThemeUtil.getReorderBackgroundColor(mContext, isIncognito());
     }
 
     /**

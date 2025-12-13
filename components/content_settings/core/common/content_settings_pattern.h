@@ -269,7 +269,10 @@ class ContentSettingsPattern {
   GURL ToRepresentativeUrl() const;
 
   // Returns scheme type of pattern.
-  ContentSettingsPattern::SchemeType GetScheme() const;
+  ContentSettingsPattern::SchemeType GetSchemeType() const;
+
+  // Returns the scheme of the pattern as a string.
+  const std::string& GetScheme() const;
 
   // Returns the host of a pattern.
   const std::string& GetHost() const;

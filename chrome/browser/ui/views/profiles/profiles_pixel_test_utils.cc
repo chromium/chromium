@@ -17,14 +17,11 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
-
-using signin::constants::kNoHostedDomainFound;
 
 AccountInfo FillAccountInfo(
     const CoreAccountInfo& core_info,
@@ -32,23 +29,19 @@ AccountInfo FillAccountInfo(
     signin::Tribool
         can_show_history_sync_opt_ins_without_minor_mode_restrictions) {
   const char kHostedDomain[] = "example.com";
-  AccountInfo account_info;
-
-  account_info.email = core_info.email;
-  account_info.gaia = core_info.gaia;
-  account_info.account_id = core_info.account_id;
-  account_info.is_under_advanced_protection =
-      core_info.is_under_advanced_protection;
-  account_info.full_name = "Test Full Name";
-  account_info.given_name = "Joe";
-  account_info.hosted_domain =
-      management_status == AccountManagementStatus::kManaged
-          ? kHostedDomain
-          : kNoHostedDomainFound;
-  account_info.locale = "en";
-  account_info.picture_url = "https://example.com";
+  AccountInfo account_info =
+      AccountInfo::Builder(core_info)
+          .SetFullName("Test Full Name")
+          .SetGivenName("Joe")
+          .SetHostedDomain(management_status ==
+                                   AccountManagementStatus::kManaged
+                               ? kHostedDomain
+                               : std::string())
+          .SetLocale("en")
+          .SetAvatarUrl("https://example.com")
+          .Build();
   AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-  mutator.set_is_subject_to_enterprise_policies(
+  mutator.set_is_subject_to_enterprise_features(
       management_status == AccountManagementStatus::kManaged);
 
   if (can_show_history_sync_opt_ins_without_minor_mode_restrictions !=

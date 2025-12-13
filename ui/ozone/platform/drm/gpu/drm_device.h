@@ -7,11 +7,13 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/ozone/platform/drm/common/drm_wrapper.h"

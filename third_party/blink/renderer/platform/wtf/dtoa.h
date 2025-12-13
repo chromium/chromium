@@ -21,27 +21,40 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_DTOA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_DTOA_H_
 
+#include <array>
+
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/numerics/safe_conversions.h"
-#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
+#include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace blink {
 
-// Size = 80 for sizeof(DtoaBuffer) + some sign bits, decimal point, 'e',
-// exponent digits.
-const unsigned kNumberToStringBufferLength = 96;
-typedef char NumberToStringBuffer[kNumberToStringBufferLength];
+class WTF_EXPORT DoubleToStringConverter {
+  STACK_ALLOCATED();
 
-WTF_EXPORT const char* NumberToString(double, NumberToStringBuffer);
-WTF_EXPORT const char* NumberToFixedPrecisionString(
-    double,
-    unsigned significant_figures,
-    NumberToStringBuffer);
-WTF_EXPORT const char* NumberToFixedWidthString(double,
-                                                unsigned decimal_places,
-                                                NumberToStringBuffer);
+ public:
+  // Size = 80 for sizeof(DtoaBuffer) + some sign bits, decimal point, 'e',
+  // exponent digits.
+  constexpr static unsigned kBufferSize = 96;
+
+  DoubleToStringConverter() = default;
+
+  // ToString*() functions serialize the specified `double` value into
+  // this instance.  The returned span points to a buffer in the instance.
+
+  base::span<const LChar> ToString(double) LIFETIME_BOUND;
+  base::span<const LChar> ToStringWithFixedPrecision(
+      double,
+      unsigned significant_figures) LIFETIME_BOUND;
+  base::span<const LChar> ToStringWithFixedWidth(double,
+                                                 unsigned decimal_places)
+      LIFETIME_BOUND;
+
+ private:
+  std::array<char, kBufferSize> buffer_;
+};
 
 WTF_EXPORT double ParseDouble(base::span<const LChar> string,
                               size_t& parsed_length);

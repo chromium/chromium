@@ -29,25 +29,6 @@ class GPU_GLES2_EXPORT DawnFallbackImageRepresentation
   void EndAccess() final;
 
  private:
-  struct StagingBuffer {
-    wgpu::Buffer buffer;
-    gfx::Size plane_size;
-    uint32_t bytes_per_row;
-  };
-
-  bool ComputeStagingBufferParams(int plane_index,
-                                  uint32_t* bytes_per_row,
-                                  size_t* bytes_per_plane) const;
-  bool AllocateStagingBuffers(wgpu::BufferUsage usage,
-                              bool map_at_creation,
-                              std::vector<StagingBuffer>* buffers);
-  SkPixmap MappedStagingBufferToPixmap(const StagingBuffer& staging_buffer,
-                                       int plane_index,
-                                       bool writable);
-
-  bool ReadbackFromBacking();
-  bool UploadToBacking();
-
   wgpu::Device device_;
   const wgpu::TextureFormat wgpu_format_;
   const std::vector<wgpu::TextureFormat> view_formats_;

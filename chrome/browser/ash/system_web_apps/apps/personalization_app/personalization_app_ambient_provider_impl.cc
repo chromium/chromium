@@ -738,7 +738,7 @@ void PersonalizationAppAmbientProviderImpl::OnMachineStatisticsReady() {
              << " customization_id= " << customization_id.value_or("null");
     previews.emplace(
         mojom::AmbientTheme::kVideo,
-        GURL(customization_id == kJupiterScreensaverCustomizationId
+        GURL(GetDefaultAmbientVideo() == AmbientVideo::kJupiter
                  ? "chrome://personalization/time_of_day/thumbnails/jupiter.jpg"
                  : "chrome://personalization/time_of_day/thumbnails/"
                    "new_mexico.jpg"));

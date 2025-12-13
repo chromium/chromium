@@ -34,7 +34,7 @@ namespace floss {
 class FlossAdapterClient;
 class FlossAdvertiserClient;
 class FlossBatteryManagerClient;
-class FlossClientBundle;
+class FlossDBusManager;
 class FlossDBusManagerSetter;
 class FlossGattManagerClient;
 class FlossLEScanClient;
@@ -46,6 +46,67 @@ class FlossSocketManager;
 #if BUILDFLAG(IS_CHROMEOS)
 class FlossAdminClient;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+// The bundle of all DBus clients used by FlossDBusManager. The bundle is used
+// to control the correct ordering of creation and deletion of clients before
+// shutting down the system bus.
+class DEVICE_BLUETOOTH_EXPORT FlossClientBundle {
+ public:
+  FlossClientBundle(const FlossClientBundle&) = delete;
+  FlossClientBundle& operator=(const FlossClientBundle&) = delete;
+
+  explicit FlossClientBundle(bool use_stubs);
+  ~FlossClientBundle();
+
+  FlossManagerClient* manager_client() { return manager_client_.get(); }
+
+  FlossAdapterClient* adapter_client() { return adapter_client_.get(); }
+
+  FlossGattManagerClient* gatt_manager_client() {
+    return gatt_manager_client_.get();
+  }
+
+  FlossSocketManager* socket_manager() { return socket_manager_.get(); }
+
+  FlossLEScanClient* lescan_client() { return lescan_client_.get(); }
+
+  FlossLoggingClient* logging_client() { return logging_client_.get(); }
+
+  FlossAdvertiserClient* advertiser_client() {
+    return advertiser_client_.get();
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  FlossAdminClient* admin_client() { return admin_client_.get(); }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  FlossBatteryManagerClient* battery_manager_client() {
+    return battery_manager_client_.get();
+  }
+
+  FlossBluetoothTelephonyClient* bluetooth_telephony_client() {
+    return bluetooth_telephony_client_.get();
+  }
+
+ private:
+  friend FlossDBusManagerSetter;
+  friend FlossDBusManager;
+
+  void ResetAdapterClients();
+
+  bool use_stubs_;
+  std::unique_ptr<FlossManagerClient> manager_client_;
+  std::unique_ptr<FlossAdapterClient> adapter_client_;
+  std::unique_ptr<FlossGattManagerClient> gatt_manager_client_;
+  std::unique_ptr<FlossSocketManager> socket_manager_;
+  std::unique_ptr<FlossLEScanClient> lescan_client_;
+  std::unique_ptr<FlossLoggingClient> logging_client_;
+  std::unique_ptr<FlossAdvertiserClient> advertiser_client_;
+  std::unique_ptr<FlossBatteryManagerClient> battery_manager_client_;
+  std::unique_ptr<FlossBluetoothTelephonyClient> bluetooth_telephony_client_;
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<FlossAdminClient> admin_client_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+};
 
 // FlossDBusManager manages the lifetimes of D-Bus connections and clients. It
 // ensures the proper ordering of shutdowns for the D-Bus thread, connections
@@ -242,6 +303,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager
 
   void OnObjectManagerSupported(dbus::Response* response);
   void OnObjectManagerNotSupported(dbus::ErrorResponse* response);
+  void OnObjectManagerResponse(dbus::Response* response,
+                               dbus::ErrorResponse* error_response);
   void OnManagerClientInitComplete();
   void OnManagerServiceAvailable(bool is_available);
   void OnWaitServiceAvailableTimeout();
@@ -354,67 +417,6 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusThreadManager {
 
   std::unique_ptr<base::Thread> dbus_thread_;
   scoped_refptr<dbus::Bus> system_bus_;
-};
-
-// The bundle of all DBus clients used by FlossDBusManager. The bundle is used
-// to control the correct ordering of creation and deletion of clients before
-// shutting down the system bus.
-class DEVICE_BLUETOOTH_EXPORT FlossClientBundle {
- public:
-  FlossClientBundle(const FlossClientBundle&) = delete;
-  FlossClientBundle& operator=(const FlossClientBundle&) = delete;
-
-  explicit FlossClientBundle(bool use_stubs);
-  ~FlossClientBundle();
-
-  FlossManagerClient* manager_client() { return manager_client_.get(); }
-
-  FlossAdapterClient* adapter_client() { return adapter_client_.get(); }
-
-  FlossGattManagerClient* gatt_manager_client() {
-    return gatt_manager_client_.get();
-  }
-
-  FlossSocketManager* socket_manager() { return socket_manager_.get(); }
-
-  FlossLEScanClient* lescan_client() { return lescan_client_.get(); }
-
-  FlossLoggingClient* logging_client() { return logging_client_.get(); }
-
-  FlossAdvertiserClient* advertiser_client() {
-    return advertiser_client_.get();
-  }
-#if BUILDFLAG(IS_CHROMEOS)
-  FlossAdminClient* admin_client() { return admin_client_.get(); }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  FlossBatteryManagerClient* battery_manager_client() {
-    return battery_manager_client_.get();
-  }
-
-  FlossBluetoothTelephonyClient* bluetooth_telephony_client() {
-    return bluetooth_telephony_client_.get();
-  }
-
- private:
-  friend FlossDBusManagerSetter;
-  friend FlossDBusManager;
-
-  void ResetAdapterClients();
-
-  bool use_stubs_;
-  std::unique_ptr<FlossManagerClient> manager_client_;
-  std::unique_ptr<FlossAdapterClient> adapter_client_;
-  std::unique_ptr<FlossGattManagerClient> gatt_manager_client_;
-  std::unique_ptr<FlossSocketManager> socket_manager_;
-  std::unique_ptr<FlossLEScanClient> lescan_client_;
-  std::unique_ptr<FlossLoggingClient> logging_client_;
-  std::unique_ptr<FlossAdvertiserClient> advertiser_client_;
-  std::unique_ptr<FlossBatteryManagerClient> battery_manager_client_;
-  std::unique_ptr<FlossBluetoothTelephonyClient> bluetooth_telephony_client_;
-#if BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<FlossAdminClient> admin_client_;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace floss

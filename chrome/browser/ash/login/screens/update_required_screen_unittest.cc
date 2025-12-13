@@ -18,14 +18,11 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ui/webui/ash/login/fake_update_required_screen_handler.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
-#include "chromeos/ash/components/network/portal_detector/mock_network_portal_detector.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,8 +36,7 @@ using ::testing::Return;
 
 class UpdateRequiredScreenUnitTest : public testing::Test {
  public:
-  UpdateRequiredScreenUnitTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  UpdateRequiredScreenUnitTest() = default;
 
   UpdateRequiredScreenUnitTest(const UpdateRequiredScreenUnitTest&) = delete;
   UpdateRequiredScreenUnitTest& operator=(const UpdateRequiredScreenUnitTest&) =
@@ -62,16 +58,8 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     network_handler_test_helper_->AddDefaultProfiles();
 
-    mock_network_portal_detector_ = new MockNetworkPortalDetector();
-    network_portal_detector::SetNetworkPortalDetector(
-        mock_network_portal_detector_);
     mock_error_screen_ =
         std::make_unique<MockErrorScreen>(mock_error_view_.AsWeakPtr());
-
-    // Ensure proper behavior of `UpdateRequiredScreen`'s supporting objects.
-    EXPECT_CALL(*mock_network_portal_detector_, IsEnabled())
-        .Times(AnyNumber())
-        .WillRepeatedly(Return(false));
 
     update_required_screen_ = std::make_unique<UpdateRequiredScreen>(
         fake_view_.get()->AsWeakPtr(), mock_error_screen_.get(),
@@ -88,7 +76,6 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
     update_required_screen_.reset();
     mock_error_screen_.reset();
 
-    network_portal_detector::Shutdown();
     network_handler_test_helper_.reset();
     UpdateEngineClient::Shutdown();
   }
@@ -103,9 +90,6 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
   MockErrorScreenView mock_error_view_;
   std::unique_ptr<MockErrorScreen> mock_error_screen_;
   std::unique_ptr<WizardContext> wizard_context_;
-  // Will be deleted in `network_portal_detector::Shutdown()`.
-  raw_ptr<MockNetworkPortalDetector, DanglingUntriaged>
-      mock_network_portal_detector_;
   // Will be deleted in `DBusThreadManager::Shutdown()`.
   raw_ptr<FakeUpdateEngineClient, DanglingUntriaged> fake_update_engine_client_;
   // Initializes NetworkHandler and required DBus clients.
@@ -114,7 +98,6 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
  private:
   // Test versions of core browser infrastructure.
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState local_state_;
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
   // This is used for `GetEnterpriseDisplayDomain`.
   ScopedStubInstallAttributes test_install_attributes_;

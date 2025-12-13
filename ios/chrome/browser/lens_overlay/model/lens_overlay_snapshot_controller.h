@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #import "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller_observer.h"
@@ -100,7 +101,7 @@ class LensOverlaySnapshotController final
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  raw_ptr<SnapshotTabHelper> snapshot_tab_helper_ = nullptr;
+  raw_ptr<SnapshotTabHelper, DanglingUntriaged> snapshot_tab_helper_ = nullptr;
   raw_ptr<FullscreenController> fullscreen_controller_ = nullptr;
   base::WeakPtr<LensOverlaySnapshotControllerDelegate> delegate_ = nullptr;
 

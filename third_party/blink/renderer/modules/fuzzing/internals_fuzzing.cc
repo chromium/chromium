@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/modules/fuzzing/internals_fuzzing.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
@@ -26,25 +28,22 @@ ScriptPromise<IDLUndefined> InternalsFuzzing::runFuzzer(
     const String& fuzzer_id,
     V8BufferSource* fuzzer_data) {
   auto* context = ExecutionContext::From(script_state);
-  const uint8_t* bytes = nullptr;
-  size_t num_bytes = 0;
+  base::span<const uint8_t> data_span;
 
   switch (fuzzer_data->GetContentType()) {
     case V8BufferSource::ContentType::kArrayBuffer: {
       DOMArrayBuffer* array = fuzzer_data->GetAsArrayBuffer();
-      bytes = static_cast<uint8_t*>(array->Data());
-      num_bytes = array->ByteLength();
+      data_span = array->ByteSpan();
       break;
     }
     case V8BufferSource::ContentType::kArrayBufferView: {
       const auto& view = fuzzer_data->GetAsArrayBufferView();
-      bytes = static_cast<uint8_t*>(view->BaseAddress());
-      num_bytes = view->byteLength();
+      data_span = view->ByteSpan();
       break;
     }
   }
 
-  std::vector<uint8_t> data(bytes, UNSAFE_TODO(bytes + num_bytes));
+  std::vector<uint8_t> data = base::ToVector(data_span);
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
@@ -61,7 +60,7 @@ ScriptPromise<IDLUndefined> InternalsFuzzing::runFuzzer(
       &context->GetBrowserInterfaceBroker(),
       Platform::Current()->GetBrowserInterfaceBroker(), associated_provider,
       fuzzer_id.Utf8(), std::move(data),
-      WTF::BindOnce(&ResolvePromise, WrapPersistent(resolver)));
+      BindOnce(&ResolvePromise, WrapPersistent(resolver)));
 
   return promise;
 }

@@ -177,10 +177,9 @@ class NearbyNotificationManagerTest : public testing::Test {
     manager_->SetSettingsOpenerForTesting(std::move(settings_opener));
 
     EXPECT_CALL(*nearby_service_, GetNotificationDelegate(testing::_))
-        .WillRepeatedly(
-            testing::Invoke([&](const std::string& notification_id) {
-              return manager_->GetNotificationDelegate(notification_id);
-            }));
+        .WillRepeatedly([&](const std::string& notification_id) {
+          return manager_->GetNotificationDelegate(notification_id);
+        });
 
     DownloadCoreServiceFactory::GetForBrowserContext(&profile_)
         ->SetDownloadManagerDelegateForTesting(

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef UI_ACCESSIBILITY_AX_POSITION_H_
 #define UI_ACCESSIBILITY_AX_POSITION_H_
 
@@ -22,10 +17,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
-#include "base/containers/fixed_flat_map.h"
 #include "base/containers/stack.h"
 #include "base/export_template.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/i18n/break_iterator.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -365,7 +362,7 @@ class AXPosition {
     // A tree ID can be serialized as a 32-byte string.
     std::string tree_id_string = tree_id_.ToString();
     DCHECK_LE(tree_id_string.size(), 32U);
-    strncpy(result.tree_id, tree_id_string.c_str(), 32);
+    UNSAFE_TODO(strncpy(result.tree_id, tree_id_string.c_str(), 32));
     result.tree_id[32] = 0;
 
     result.anchor_id = anchor_id_;

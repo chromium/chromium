@@ -90,7 +90,7 @@ MATCHER_P4(HasRepeatedField,
   const auto& expected_field_list = (expected_proto_message.*field_function)();
   using ItemType =
       typename std::decay_t<decltype(expected_field_list)>::value_type;
-  std::vector<testing::Matcher<ItemType>> matchers;
+  std::vector<testing::Matcher<const ItemType&>> matchers;
   matchers.reserve(expected_field_list.size());
   for (const auto& item : expected_field_list) {
     matchers.push_back((*item_matcher_function)(item));

@@ -9,6 +9,12 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
+#include "components/sync_bookmarks/initial_account_bookmark_deduplicator.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 namespace sync_bookmarks {
 
@@ -201,6 +207,9 @@ void BookmarkModelViewUsingLocalOrSyncableNodes::RemoveAllSyncableNodes() {
   underlying_model()->EndExtensiveChanges();
 }
 
+void BookmarkModelViewUsingLocalOrSyncableNodes::
+    MaybeRemoveUnderlyingModelDuplicatesUponInitialSync() {}
+
 const bookmarks::BookmarkNode*
 BookmarkModelViewUsingLocalOrSyncableNodes::GetNodeByUuid(
     const base::Uuid& uuid) const {
@@ -240,6 +249,30 @@ void BookmarkModelViewUsingAccountNodes::EnsurePermanentNodesExist() {
 
 void BookmarkModelViewUsingAccountNodes::RemoveAllSyncableNodes() {
   underlying_model()->RemoveAccountPermanentFolders();
+}
+
+void BookmarkModelViewUsingAccountNodes::
+    MaybeRemoveUnderlyingModelDuplicatesUponInitialSync() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  BeginExtensiveChanges();
+
+  const base::Time deduplication_start_time = base::Time::Now();
+
+  InitialAccountBookmarkDeduplicator initial_account_bookmark_deduplicator(
+      underlying_model());
+  initial_account_bookmark_deduplicator.Deduplicate();
+
+  const base::TimeDelta deduplication_duration =
+      base::Time::Now() - deduplication_start_time;
+
+  base::UmaHistogramCustomTimes("Sync.BookmarksSignInDeduplicationTime",
+                                deduplication_duration,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Seconds(60),
+                                /*buckets=*/50);
+
+  EndExtensiveChanges();
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
 const bookmarks::BookmarkNode*

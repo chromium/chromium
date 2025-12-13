@@ -25,7 +25,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/login/mock_login_display_host.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -41,6 +40,8 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
+#include "components/prefs/pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -179,6 +180,8 @@ class DemoLoginControllerTest : public testing::Test {
                          std::string client_id = "fake-client-id") {
     std::unique_ptr<policy::MockCloudPolicyStore> store =
         std::make_unique<policy::MockCloudPolicyStore>();
+    std::unique_ptr<policy::MockCloudPolicyStore> extension_install_store =
+        std::make_unique<policy::MockCloudPolicyStore>();
     std::unique_ptr<policy::MockCloudPolicyClient> cloud_policy_client =
         std::make_unique<policy::MockCloudPolicyClient>();
     policy::CloudPolicyClient* client_ptr = cloud_policy_client.get();
@@ -189,7 +192,8 @@ class DemoLoginControllerTest : public testing::Test {
     cloud_policy_client->client_id_ = client_id;
 
     cloud_policy_manager_ = std::make_unique<policy::MockCloudPolicyManager>(
-        std::move(store), task_environment_.GetMainThreadTaskRunner());
+        std::move(store), std::move(extension_install_store),
+        task_environment_.GetMainThreadTaskRunner());
     cloud_policy_manager_->core()->ConnectForTesting(
         std::move(service), std::move(cloud_policy_client));
 
@@ -226,7 +230,7 @@ class DemoLoginControllerTest : public testing::Test {
     base::RunLoop loop;
     EXPECT_CALL(login_display_host(), CompleteLogin)
         .Times(1)
-        .WillOnce(testing::Invoke([&](const UserContext& user_context) {
+        .WillOnce([&](const UserContext& user_context) {
           const auto device_id = user_context.GetDeviceId();
           EXPECT_FALSE(device_id.empty());
           EXPECT_EQ(g_browser_process->local_state()->GetString(
@@ -237,7 +241,7 @@ class DemoLoginControllerTest : public testing::Test {
                     gaia_id);
 
           loop.Quit();
-        }));
+        });
     loop.Run();
 
     EXPECT_TRUE(CrosSettings::Get()->IsUserAllowlisted(
@@ -282,7 +286,6 @@ class DemoLoginControllerTest : public testing::Test {
       policy_controller_;
 
   testing::NiceMock<ash::MockLoginDisplayHost> mock_login_display_host_;
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   system::FakeStatisticsProvider statistics_provider_;
 
   // Required for `user_manager::UserList`:
@@ -294,8 +297,9 @@ class DemoLoginControllerTest : public testing::Test {
   user_manager::ScopedUserManager user_manager_{
       std::make_unique<user_manager::UserManagerImpl>(
           std::make_unique<user_manager::FakeUserManagerDelegate>(),
-          TestingBrowserProcess::GetGlobal()->GetTestingLocalState())};
-  session_manager::SessionManager session_manager_;
+          TestingBrowserProcess::GetGlobal()->local_state())};
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   std::unique_ptr<ExistingUserController> existing_user_controller_;
 
   std::unique_ptr<policy::MockCloudPolicyManager> cloud_policy_manager_;
@@ -313,7 +317,7 @@ TEST_F(DemoLoginControllerTest, OnSetupDemoAccountSuccessFirstTime) {
   base::RunLoop loop;
   EXPECT_CALL(login_display_host(), CompleteLogin)
       .Times(1)
-      .WillOnce(testing::Invoke([&](const UserContext& user_context) {
+      .WillOnce([&](const UserContext& user_context) {
         const auto device_id = user_context.GetDeviceId();
         EXPECT_FALSE(device_id.empty());
         EXPECT_EQ(g_browser_process->local_state()->GetString(
@@ -326,7 +330,7 @@ TEST_F(DemoLoginControllerTest, OnSetupDemoAccountSuccessFirstTime) {
             DemoSessionMetricsRecorder::GetCurrentSessionTypeForTesting(),
             DemoSessionMetricsRecorder::SessionType::kSignedInDemoSession);
         loop.Quit();
-      }));
+      });
 
   // Verify demo account login gets triggered by `ExistingUserController`.
   ConfigureAutoLoginSetting();

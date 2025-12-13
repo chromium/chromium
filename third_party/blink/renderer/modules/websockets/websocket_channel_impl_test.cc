@@ -68,14 +68,14 @@ class MockWebSocketChannelClient
   MOCK_METHOD2(DidConnect, void(const String&, const String&));
   MOCK_METHOD1(DidReceiveTextMessage, void(const String&));
   void DidReceiveBinaryMessage(
-      const Vector<base::span<const char>>& data) override {
-    Vector<char> flatten;
+      const Vector<base::span<const uint8_t>>& data) override {
+    Vector<uint8_t> flatten;
     for (const auto& span : data) {
       flatten.AppendSpan(span);
     }
     DidReceiveBinaryMessageMock(flatten);
   }
-  MOCK_METHOD1(DidReceiveBinaryMessageMock, void(const Vector<char>&));
+  MOCK_METHOD1(DidReceiveBinaryMessageMock, void(const Vector<uint8_t>&));
   MOCK_METHOD0(DidError, void());
   MOCK_METHOD1(DidConsumeBufferedAmount, void(uint64_t));
   MOCK_METHOD0(DidStartClosingHandshake, void());
@@ -110,7 +110,7 @@ class WebSocketChannelImplTestBase : public PageTestBase {
 
     GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::WebSocketConnector::Name_,
-        WTF::BindRepeating(
+        blink::BindRepeating(
             &WebSocketChannelImplTestBase::BindWebSocketConnector,
             GetWeakPtr()));
 
@@ -1034,7 +1034,7 @@ TEST_F(WebSocketChannelImplTest, ReceiveBinary) {
     InSequence s;
     EXPECT_CALL(*ChannelClient(), DidConnect(_, _));
     EXPECT_CALL(*ChannelClient(),
-                DidReceiveBinaryMessageMock((Vector<char>{'F', 'O', 'O'})));
+                DidReceiveBinaryMessageMock((Vector<uint8_t>{'F', 'O', 'O'})));
   }
 
   mojo::ScopedDataPipeProducerHandle writable;
@@ -1059,7 +1059,7 @@ TEST_F(WebSocketChannelImplTest, ReceiveBinaryContinuation) {
     InSequence s;
     EXPECT_CALL(*ChannelClient(), DidConnect(_, _));
     EXPECT_CALL(*ChannelClient(),
-                DidReceiveBinaryMessageMock((Vector<char>{'B', 'A', 'Z'})));
+                DidReceiveBinaryMessageMock((Vector<uint8_t>{'B', 'A', 'Z'})));
   }
 
   mojo::ScopedDataPipeProducerHandle writable;
@@ -1086,13 +1086,13 @@ TEST_F(WebSocketChannelImplTest, ReceiveBinaryWithNullBytes) {
     InSequence s;
     EXPECT_CALL(*ChannelClient(), DidConnect(_, _));
     EXPECT_CALL(*ChannelClient(),
-                DidReceiveBinaryMessageMock((Vector<char>{'\0', 'A', '3'})));
+                DidReceiveBinaryMessageMock((Vector<uint8_t>{'\0', 'A', '3'})));
     EXPECT_CALL(*ChannelClient(),
-                DidReceiveBinaryMessageMock((Vector<char>{'B', '\0', 'Z'})));
+                DidReceiveBinaryMessageMock((Vector<uint8_t>{'B', '\0', 'Z'})));
     EXPECT_CALL(*ChannelClient(),
-                DidReceiveBinaryMessageMock((Vector<char>{'Q', 'U', '\0'})));
-    EXPECT_CALL(*ChannelClient(),
-                DidReceiveBinaryMessageMock((Vector<char>{'\0', '\0', '\0'})));
+                DidReceiveBinaryMessageMock((Vector<uint8_t>{'Q', 'U', '\0'})));
+    EXPECT_CALL(*ChannelClient(), DidReceiveBinaryMessageMock(
+                                      (Vector<uint8_t>{'\0', '\0', '\0'})));
   }
 
   mojo::ScopedDataPipeProducerHandle writable;
@@ -1120,9 +1120,8 @@ TEST_F(WebSocketChannelImplTest, ReceiveBinaryNonLatin1UTF8) {
   {
     InSequence s;
     EXPECT_CALL(*ChannelClient(), DidConnect(_, _));
-    EXPECT_CALL(*ChannelClient(),
-                DidReceiveBinaryMessageMock((Vector<char>{
-                    '\xe7', '\x8b', '\x90', '\xe0', '\xa4', '\x94'})));
+    EXPECT_CALL(*ChannelClient(), DidReceiveBinaryMessageMock((Vector<uint8_t>{
+                                      0xe7, 0x8b, 0x90, 0xe0, 0xa4, 0x94})));
   }
   mojo::ScopedDataPipeProducerHandle writable;
   mojo::ScopedDataPipeConsumerHandle readable;
@@ -1145,9 +1144,8 @@ TEST_F(WebSocketChannelImplTest, ReceiveBinaryNonLatin1UTF8Continuation) {
   {
     InSequence s;
     EXPECT_CALL(*ChannelClient(), DidConnect(_, _));
-    EXPECT_CALL(*ChannelClient(),
-                DidReceiveBinaryMessageMock((Vector<char>{
-                    '\xe7', '\x8b', '\x90', '\xe0', '\xa4', '\x94'})));
+    EXPECT_CALL(*ChannelClient(), DidReceiveBinaryMessageMock((Vector<uint8_t>{
+                                      0xe7, 0x8b, 0x90, 0xe0, 0xa4, 0x94})));
   }
 
   mojo::ScopedDataPipeProducerHandle writable;
@@ -1175,7 +1173,7 @@ TEST_F(WebSocketChannelImplTest, ReceiveBinaryNonUTF8) {
     InSequence s;
     EXPECT_CALL(*ChannelClient(), DidConnect(_, _));
     EXPECT_CALL(*ChannelClient(),
-                DidReceiveBinaryMessageMock((Vector<char>{'\x80', '\xff'})));
+                DidReceiveBinaryMessageMock((Vector<uint8_t>{0x80, 0xff})));
   }
 
   mojo::ScopedDataPipeProducerHandle writable;

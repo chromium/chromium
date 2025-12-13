@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 
 #include <atk/atk.h>
@@ -15,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/version.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -128,7 +124,7 @@ static void EnsureAtkObjectHasAttributeWithValue(
   while (current) {
     AtkAttribute* attribute = static_cast<AtkAttribute*>(current->data);
 
-    if (0 == strcmp(attribute_name, attribute->name)) {
+    if (0 == UNSAFE_TODO(strcmp(attribute_name, attribute->name))) {
       // Ensure that we only see this attribute once.
       ASSERT_FALSE(saw_attribute) << attribute_name;
 
@@ -2503,8 +2499,9 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkRelationsTargetIndex) {
     AtkRelation* relation =
         atk_relation_set_get_relation_by_type(relation_set, relation_type);
     GPtrArray* targets = atk_relation_get_target(relation);
-    ASSERT_TRUE(ATK_IS_OBJECT(g_ptr_array_index(targets, index)));
-    ASSERT_TRUE(ATK_OBJECT(g_ptr_array_index(targets, index)) == target);
+    UNSAFE_TODO(ASSERT_TRUE(ATK_IS_OBJECT(g_ptr_array_index(targets, index))));
+    UNSAFE_TODO(
+        ASSERT_TRUE(ATK_OBJECT(g_ptr_array_index(targets, index)) == target));
 
     g_object_unref(G_OBJECT(relation_set));
   };

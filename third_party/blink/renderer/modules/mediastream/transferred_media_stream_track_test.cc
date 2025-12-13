@@ -69,7 +69,8 @@ TEST_F(TransferredMediaStreamTrackTest, InitialProperties) {
   EXPECT_EQ(transferred_track_->enabled(), true);
   EXPECT_EQ(transferred_track_->muted(), false);
   EXPECT_EQ(transferred_track_->ContentHint(), "");
-  EXPECT_EQ(transferred_track_->readyState(), "live");
+  EXPECT_EQ(transferred_track_->readyState(),
+            V8MediaStreamTrackState::Enum::kLive);
   EXPECT_EQ(transferred_track_->GetReadyState(),
             MediaStreamSource::kReadyStateLive);
   EXPECT_EQ(transferred_track_->Ended(), false);
@@ -285,7 +286,7 @@ TEST_F(TransferredMediaStreamTrackTest, CloneInitialProperties) {
   EXPECT_EQ(clone->enabled(), true);
   EXPECT_EQ(clone->muted(), false);
   EXPECT_EQ(clone->ContentHint(), "");
-  EXPECT_EQ(clone->readyState(), "live");
+  EXPECT_EQ(clone->readyState(), V8MediaStreamTrackState::Enum::kLive);
   EXPECT_EQ(clone->GetReadyState(), MediaStreamSource::kReadyStateLive);
   EXPECT_EQ(clone->Ended(), false);
   EXPECT_EQ(clone->device(), std::nullopt);

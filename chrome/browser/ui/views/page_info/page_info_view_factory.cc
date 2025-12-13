@@ -26,6 +26,8 @@
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/page_info/core/features.h"
@@ -47,6 +49,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/vector_icons.h"
 
 constexpr int PageInfoViewFactory::kMinBubbleWidth;
@@ -122,12 +125,10 @@ PageInfoViewFactory::PageInfoViewFactory(
     PageInfo* presenter,
     ChromePageInfoUiDelegate* ui_delegate,
     PageInfoNavigationHandler* navigation_handler,
-    PageInfoHistoryController* history_controller,
     bool allow_extended_site_info)
     : presenter_(presenter),
       ui_delegate_(ui_delegate),
       navigation_handler_(navigation_handler),
-      history_controller_(history_controller),
       allow_extended_site_info_(allow_extended_site_info) {}
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreatePageView(
@@ -141,7 +142,7 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreatePageView(
 std::unique_ptr<views::View> PageInfoViewFactory::CreateMainPageView(
     base::OnceClosure initialized_callback) {
   return std::make_unique<PageInfoMainView>(
-      presenter_, ui_delegate_, navigation_handler_, history_controller_,
+      presenter_, ui_delegate_, navigation_handler_,
       std::move(initialized_callback), allow_extended_site_info_);
 }
 
@@ -178,17 +179,6 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateCookiesPageView() {
   return std::make_unique<PageInfoSubpageView>(
       CreateSubpageHeader(
           l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER),
-          presenter_->GetSubjectNameForDisplay()),
-      std::make_unique<PageInfoCookiesContentView>(presenter_));
-}
-
-std::unique_ptr<views::View>
-PageInfoViewFactory::CreatePrivacyAndSiteDataPageView() {
-  // Reuse `PageInfoCookiesContentView` for the "Privacy and site data" page
-  // as it has a similar UI to "Cookies and site data".
-  return std::make_unique<PageInfoSubpageView>(
-      CreateSubpageHeader(
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_PRIVACY_SITE_DATA_HEADER),
           presenter_->GetSubjectNameForDisplay()),
       std::make_unique<PageInfoCookiesContentView>(presenter_));
 }
@@ -287,19 +277,21 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
-    const PageInfo::PermissionInfo& info,
+    const PageInfo::PermissionInfo& permission,
     bool blocked_on_system_level) {
-  ContentSetting setting = info.setting == CONTENT_SETTING_DEFAULT
-                               ? info.default_setting
-                               : info.setting;
+  PermissionSetting setting =
+      permission.setting.value_or(permission.default_setting);
 
+  auto* info = content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+      permission.type);
   // For guard content settings and Automatic Picture-in-Picture, ASK is treated
   // as an "on" state.
   const bool show_blocked_badge =
-      (!permissions::PermissionUtil::IsGuardContentSetting(info.type) &&
-       info.type != ContentSettingsType::AUTO_PICTURE_IN_PICTURE)
-          ? setting == CONTENT_SETTING_BLOCK || setting == CONTENT_SETTING_ASK
-          : setting == CONTENT_SETTING_BLOCK;
+      (!permissions::PermissionUtil::IsGuardContentSetting(permission.type) &&
+       permission.type != ContentSettingsType::AUTO_PICTURE_IN_PICTURE)
+          ? std::get<ContentSetting>(setting) == CONTENT_SETTING_BLOCK ||
+                std::get<ContentSetting>(setting) == CONTENT_SETTING_ASK
+          : info->delegate().IsBlocked(setting);
 
   // TODO(crbug.com/335848275): Migrate the icons in 2 steps.
   // 1 - Copy contents of refresh icons into current non-refresh icons.
@@ -309,7 +301,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
   // instead it uses a completely different icon. This icon usually has the
   // word `Off` in the icon name.
   const gfx::VectorIcon* icon = nullptr;
-  switch (info.type) {
+  switch (permission.type) {
     case ContentSettingsType::COOKIES:
       icon = show_blocked_badge ? &vector_icons::kDatabaseOffIcon
                                 : &vector_icons::kDatabaseIcon;
@@ -356,8 +348,8 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       break;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
-      icon = show_blocked_badge ? &vector_icons::kCertificateOffIcon
-                                : &vector_icons::kCertificateIcon;
+      icon = show_blocked_badge ? &vector_icons::kSyncSavedLocallyOffIcon
+                                : &vector_icons::kSyncSavedLocallyIcon;
       break;
 #endif
     case ContentSettingsType::MIDI_SYSEX:
@@ -474,7 +466,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
           GetIconSize());
     }
 
-    if (info.is_in_use && !show_blocked_badge) {
+    if (permission.is_in_use && !show_blocked_badge) {
       return ui::ImageModel::FromVectorIcon(
           *icon, kColorPageInfoPermissionUsedIcon, GetIconSize());
     }
@@ -482,7 +474,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
   }
 
   icon = &gfx::VectorIcon::EmptyIcon();
-  switch (info.type) {
+  switch (permission.type) {
     case ContentSettingsType::COOKIES:
       icon = &vector_icons::kDatabaseIcon;
       break;

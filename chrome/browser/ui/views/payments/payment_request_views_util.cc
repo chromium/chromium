@@ -98,8 +98,10 @@ class ChromeLogoImageView : public views::ImageView {
   void OnThemeChanged() override {
     ImageView::OnThemeChanged();
     SetImage(ui::ImageModel::FromResourceId(
-        GetNativeTheme()->ShouldUseDarkColors() ? IDR_PRODUCT_LOGO_NAME_22_WHITE
-                                                : IDR_PRODUCT_LOGO_NAME_22));
+        (GetNativeTheme()->preferred_color_scheme() ==
+         ui::NativeTheme::PreferredColorScheme::kDark)
+            ? IDR_PRODUCT_LOGO_NAME_22_WHITE
+            : IDR_PRODUCT_LOGO_NAME_22));
   }
 };
 

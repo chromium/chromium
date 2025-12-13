@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/strings/utf_offset_string_conversions.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_geolocation_provider.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
@@ -37,6 +38,29 @@ namespace ash::input_method {
 namespace {
 
 constexpr std::u16string_view kAnnouncementViewName = u"Orca";
+
+std::optional<orca::mojom::ContextPtr> CreateContext(const std::u16string& text,
+                                                     gfx::Range range) {
+  std::vector<size_t> offsets = {range.start(), range.end()};
+
+  const std::string text_utf8 =
+      base::UTF16ToUTF8AndAdjustOffsets(text, &offsets);
+
+  // In some rare cases such as crbug.com/425874277, the utf16 to utf8 conversion is not
+  // successful.
+  if (offsets[0] == std::u16string::npos ||
+      offsets[1] == std::u16string::npos) {
+    LOG(ERROR) << "The selection range is not valid";
+    return std::nullopt;
+  }
+
+  auto context = orca::mojom::Context::New();
+
+  context->surrounding_text = orca::mojom::SurroundingText::New(
+      text_utf8, gfx::Range(offsets[0], offsets[1]));
+
+  return context;
+}
 
 crosapi::mojom::MagicBoostController::TransitionAction
 ConvertToMagicBoostTransitionAction(EditorNoticeTransitionAction action) {
@@ -67,8 +91,7 @@ EditorMediator::EditorMediator(
           std::make_unique<EditorConsentStore>(profile->GetPrefs(),
                                                metrics_recorder_.get())),
       announcer_(kAnnouncementViewName) {
-  editor_context_.OnTabletModeUpdated(
-      display::Screen::GetScreen()->InTabletMode());
+  editor_context_.OnTabletModeUpdated(display::Screen::Get()->InTabletMode());
 }
 
 EditorMediator::~EditorMediator() = default;
@@ -256,9 +279,9 @@ void EditorMediator::HandleTrigger(
 
 void EditorMediator::ShowNotice(
     EditorNoticeTransitionAction transition_action) {
-  if (chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()) {
+  if (chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures()) {
     ash::MagicBoostControllerAsh::Get()->ShowDisclaimerUi(
-        /*display_id=*/display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+        /*display_id=*/display::Screen::Get()->GetPrimaryDisplay().id(),
         /*action=*/
         ConvertToMagicBoostTransitionAction(transition_action),
         /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
@@ -278,14 +301,24 @@ void EditorMediator::CacheContext() {
 
   mako_bubble_coordinator_.CacheContextCaretBounds();
 
-  size_t selected_length =
+  size_t non_whitespace_selected_text_length =
       chromeos::editor_helpers::NonWhitespaceAndSymbolsLength(
           surrounding_text_.text, surrounding_text_.selection_range);
-  editor_context_.OnTextSelectionLengthChanged(selected_length);
 
-  if (IsServiceConnected()) {
+  auto context =
+      CreateContext(surrounding_text_.text, surrounding_text_.selection_range);
+
+  EditorTextSelection text_selection = {
+      .is_valid_selection = (context != std::nullopt),
+      .non_whitespace_selected_text_length =
+          non_whitespace_selected_text_length,
+  };
+
+  editor_context_.OnTextSelectionChanged(text_selection);
+
+  if (IsServiceConnected() && context.has_value()) {
     service_connection_->editor_event_proxy()->OnSurroundingTextChanged(
-        surrounding_text_.text, surrounding_text_.selection_range);
+        std::move(context.value()));
   }
 }
 

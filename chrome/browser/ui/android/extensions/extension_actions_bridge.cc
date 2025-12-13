@@ -11,21 +11,29 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/extensions/extension_actions_bridge_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/extensions/icon_with_badge_image_source.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registry.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/events/android/key_event_android.h"
 #include "ui/events/event.h"
 #include "ui/events/platform_event.h"
 #include "ui/gfx/android/java_bitmap.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_skia_rep_default.h"
+#include "ui/native_theme/native_theme.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/extensions/jni_headers/ExtensionAction_jni.h"
 #include "chrome/browser/ui/android/extensions/jni_headers/ExtensionActionsBridge_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using content::WebContents;
 
@@ -106,17 +114,67 @@ ScopedJavaLocalRef<jobject> ExtensionActionsBridge::GetAction(
                                           action->GetTitle(tab_id));
 }
 
+// TODO(crbug.com/441274093): This is a temporary solution for Android builds.
+// The ultimate goal is to remove browser dependencies from
+// ExtensionActionViewModel so it can be shared across platforms.
 ScopedJavaLocalRef<jobject> ExtensionActionsBridge::GetActionIcon(
     JNIEnv* env,
     const ToolbarActionsModel::ActionId& action_id,
-    int tab_id) {
+    int tab_id,
+    const content::WebContents* web_contents,
+    int canvas_width_dp,
+    int canvas_height_dp,
+    float scale_factor) {
   IconObserver* icon_observer = EnsureIconObserver(action_id);
   if (!icon_observer) {
     return nullptr;
   }
 
-  gfx::Image image = icon_observer->GetIcon(tab_id);
-  return gfx::ConvertToJavaBitmap(*image.ToSkBitmap());
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
+  DCHECK(registry);
+  const Extension* extension =
+      registry->enabled_extensions().GetByID(action_id);
+  if (!extension) {
+    return nullptr;
+  }
+
+  ExtensionActionManager* manager = ExtensionActionManager::Get(profile_);
+  DCHECK(manager);
+  ExtensionAction* action = manager->GetExtensionAction(*extension);
+  if (!action) {
+    return nullptr;
+  }
+
+  // Init draw
+  gfx::Size size(canvas_width_dp, canvas_height_dp);
+  auto get_color_provider_callback = base::BindRepeating(
+      [](const content::WebContents* web_contents) {
+        return web_contents
+                   ? &web_contents->GetColorProvider()
+                   : ui::ColorProviderManager::Get().GetColorProviderFor(
+                         ui::NativeTheme::GetInstanceForNativeUi()
+                             ->GetColorProviderKey(nullptr));
+      },
+      web_contents);
+  auto image_source = std::make_unique<IconWithBadgeImageSource>(
+      size, std::move(get_color_provider_callback));
+
+  // Set icon
+  gfx::Image icon = icon_observer->GetIcon(tab_id);
+  image_source->SetIcon(icon);
+
+  // Set badge text if existed
+  std::string badge_text = action->GetDisplayBadgeText(tab_id);
+  if (!badge_text.empty()) {
+    image_source->SetBadge(std::make_unique<IconWithBadgeImageSource::Badge>(
+        badge_text, action->GetBadgeTextColor(tab_id),
+        action->GetBadgeBackgroundColor(tab_id)));
+  }
+
+  // TODO(crbug.com/441273424): Add gray scale feature.
+
+  gfx::ImageSkiaRep image_rep = image_source->GetImageForScale(scale_factor);
+  return gfx::ConvertToJavaBitmap(image_rep.GetBitmap());
 }
 
 ExtensionAction::ShowAction ExtensionActionsBridge::RunAction(
@@ -144,12 +202,6 @@ ExtensionAction::ShowAction ExtensionActionsBridge::RunAction(
   }
 
   return runner->RunAction(extension, /*grant_tab_permissions=*/true);
-}
-
-bool ExtensionActionsBridge::ExtensionsEnabled(JNIEnv* env) {
-  ExtensionManagement* extension_management =
-      ExtensionManagementFactory::GetForBrowserContext(profile_);
-  return extension_management->ExtensionsEnabledForDesktopAndroid();
 }
 
 jni_zero::ScopedJavaLocalRef<jobject>
@@ -239,10 +291,23 @@ void ExtensionActionsBridge::OnToolbarIconUpdated(
 
 static ScopedJavaLocalRef<jobject> JNI_ExtensionActionsBridge_Get(
     JNIEnv* env,
-    Profile* profile) {
-  ExtensionActionsBridge* bridge = ExtensionActionsBridge::Get(profile);
+    jlong j_browser_window_interface) {
+  BrowserWindowInterface* browser =
+      reinterpret_cast<BrowserWindowInterface*>(j_browser_window_interface);
+  ExtensionActionsBridge* bridge =
+      ExtensionActionsBridge::Get(browser->GetProfile());
   DCHECK(bridge);
   return bridge->GetJavaObject();
 }
 
+static jboolean JNI_ExtensionActionsBridge_ExtensionsEnabled(JNIEnv* env,
+                                                             Profile* profile) {
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(profile);
+  return extension_management->ExtensionsEnabledForDesktopAndroid();
+}
+
 }  // namespace extensions
+
+DEFINE_JNI(ExtensionAction)
+DEFINE_JNI(ExtensionActionsBridge)

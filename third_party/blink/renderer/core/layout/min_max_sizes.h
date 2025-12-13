@@ -56,7 +56,6 @@ struct CORE_EXPORT MinMaxSizes {
   bool operator==(const MinMaxSizes& other) const {
     return min_size == other.min_size && max_size == other.max_size;
   }
-  bool operator!=(const MinMaxSizes& other) const { return !operator==(other); }
 
   void operator=(LayoutUnit value) { min_size = max_size = value; }
   MinMaxSizes& operator+=(MinMaxSizes extra) {

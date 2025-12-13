@@ -2,107 +2,37 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_wrapper.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
-src_files_manifest = "$target_gen_dir/src_files_manifest.json"
-gen_files_manifest = "$target_gen_dir/gen_files_manifest.json"
-preprocess_folder = "$target_gen_dir/preprocessed"
-grd_filename = "$target_gen_dir/resources.grd"
-
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # This is necessary since the GRD is generated during build time.
-  enable_input_discovery_for_gn_analyze = false
-
-  source = grd_filename
-  deps = [ ":build_grd" ]
-  outputs = [
-    "grit/password_change_resources.h",
-    "grit/password_change_resources_map.h",
-    "grit/password_change_resources_map.cc",
-    "password_change_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-generate_grd("build_grd") {
+build_webui("build") {
   grd_prefix = "password_change"
-  out_grd = grd_filename
-  deps = [
-    ":preprocess_gen",
-    ":preprocess_src",
-  ]
-  manifest_files = [
-    src_files_manifest,
-    gen_files_manifest,
-  ]
-}
-
-preprocess_if_expr("preprocess_src") {
-  out_folder = preprocess_folder
-  out_manifest = src_files_manifest
-  in_files = [
-    "confirm_password_change.html",
-    "confirm_password_change.js",
+  static_files = [
     "confirm_password_change_app.html",
-    "confirm_password_change_app.js",
-    "password_change.js",
     "password_change_app.html",
-    "password_change_app.js",
     "urgent_password_expiry_notification.html",
-    "urgent_password_expiry_notification_app.js",
   ]
-}
+  web_component_files = [
+    "confirm_password_change.ts",
+    "password_change.ts",
+    "urgent_password_expiry_notification_app.ts",
+  ]
+  ts_files = [
+    "confirm_password_change_app.ts",
+    "password_change_app.ts",
+  ]
 
-preprocess_if_expr("preprocess_gen") {
-  deps = [ ":html_wrapper_files" ]
-  in_folder = target_gen_dir
-  out_folder = preprocess_folder
-  out_manifest = gen_files_manifest
-  in_files = [
-    "confirm_password_change.html.js",
-    "password_change.html.js",
-    "urgent_password_expiry_notification_app.html.js",
-  ]
-}
+  ts_path_mappings = [ "//password-change/gaia_auth_host/password_change_authenticator.js|" + rebase_path(
+                           "//chrome/browser/resources/gaia_auth_host/password_change_authenticator.d.ts",
+                           target_gen_dir) ]
 
-html_to_wrapper("html_wrapper_files") {
-  in_files = [
-    "confirm_password_change.html",
-    "password_change.html",
-    "urgent_password_expiry_notification_app.html",
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/js:build_ts",
   ]
-  template = "polymer"
-  use_js = true
-}
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "js_module_root=" +
-            rebase_path("//chrome/browser/resources/gaia_auth_host/",
-                        root_build_dir),
-        "js_module_root=./gen/chrome/browser/resources/gaia_auth_host/",
-      ]
-  deps = [ ":password_change" ]
-}
-
-js_library("password_change") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//chrome/browser/resources/gaia_auth_host:password_change_authenticator",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ts_definitions = [
+    "//chrome/browser/resources/gaia_auth_host/password_change_authenticator.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
   ]
-  externs_list = [
-    "$externs_path/webview_tag.js",
-    "$externs_path/chrome_send.js",
-  ]
+  webui_context_type = "trusted"
 }

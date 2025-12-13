@@ -21,7 +21,6 @@
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/functional/callback_forward.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/menus/simple_menu_model.h"
 
@@ -62,8 +61,6 @@ class AppListTestViewDelegate : public AppListViewDelegate,
 
   // AppListViewDelegate overrides:
   bool KeyboardTraversalEngaged() override;
-  void StartAssistant(assistant::AssistantEntryPoint entry_point) override {}
-  void EndAssistant(assistant::AssistantExitPoint exit_point) override {}
   std::vector<AppListSearchControlCategory> GetToggleableCategories()
       const override;
   void StartSearch(const std::u16string& raw_query) override {}
@@ -91,10 +88,8 @@ class AppListTestViewDelegate : public AppListViewDelegate,
                                 ui::mojom::MenuSourceType source_type) override;
   bool CanProcessEventsOnApplistViews() override;
   bool ShouldDismissImmediately() override;
-  ash::AssistantViewDelegate* GetAssistantViewDelegate() override;
   void OnSearchResultVisibilityChanged(const std::string& id,
                                        bool visibility) override;
-  bool IsAssistantAllowedAndEnabled() const override;
   void OnStateTransitionAnimationCompleted(
       AppListViewState state,
       bool was_animation_interrupted) override;

@@ -1,0 +1,41 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// `Connection-Allowlist` headers govern the set of connections which can be
+// established from a given context. The design is in flux, and the
+// implementation here should be considered a flag-guarded prototype as
+// discussions continue.
+
+// Possible issues which can occur during parsing.
+enum ConnectionAllowlistIssue {
+  kInvalidHeader,
+  kMoreThanOneList,
+  kItemNotInnerList,
+  kInvalidAllowlistItemType,
+  kReportingEndpointNotToken,
+};
+
+// The result of parsing an allowlist header,
+//
+// https://github.com/mikewest/anti-exfil
+struct ConnectionAllowlist {
+  // A list of `URLPattern` strings representing the asserted allowlist.
+  // If the allowlist specifies the `response-origin` token, we'll add the
+  // serialization of the response's origin to this list.
+  //
+  // Unparsable headers will result in an empty allowlist, which, in turn,
+  // will result in fairly complete breakage.
+  array<string> allowlist;
+  string? reporting_endpoint;
+  array<ConnectionAllowlistIssue> issues;
+};
+
+// The set of allowlists associated with a given response.
+struct ConnectionAllowlists {
+  ConnectionAllowlist? enforced;
+  ConnectionAllowlist? report_only;
+};
+

@@ -96,7 +96,13 @@ bool IsValidRangeAndMarkable(const RangeInFlatTree* range) {
   Node* common_node = ephemeral_range.CommonAncestorContainer();
 
   LayoutObject* object = common_node->GetLayoutObject();
-  CHECK(object);
+  while (!object) {
+    common_node = FlatTreeTraversal::Parent(*common_node);
+    // We should exit this loop before this is false (i.e. there must be at
+    // least one ancestor node with a LayoutObject).
+    CHECK(common_node);
+    object = common_node->GetLayoutObject();
+  }
 
   PhysicalRect absolute_bounding_box =
       object->AbsoluteBoundingBoxRectForScrollIntoView();
@@ -123,13 +129,14 @@ bool IsValidRangeAndMarkable(const RangeInFlatTree* range) {
     // FindBuffer does find this text (as typically overflow: hidden can still
     // be programmatically scrolled).
     if (box->HasNonVisibleOverflow()) {
+      PhysicalSize size = box->StitchedSize();
       if (box->StyleRef().OverflowX() != EOverflow::kVisible &&
-          box->Size().width.RawValue() <= 0) {
+          size.width.RawValue() <= 0) {
         return false;
       }
 
       if (box->StyleRef().OverflowY() != EOverflow::kVisible &&
-          box->Size().height.RawValue() <= 0) {
+          size.height.RawValue() <= 0) {
         return false;
       }
     }
@@ -270,7 +277,7 @@ void AnnotationAgentImpl::Bind(
 
   // Breaking the mojo connection will cause this agent to remove itself from
   // the container.
-  receiver_.set_disconnect_handler(WTF::BindOnce(
+  receiver_.set_disconnect_handler(BindOnce(
       [](WeakPersistent<AnnotationAgentImpl> agent) {
         if (!agent || !agent->OwningContainer()) {
           return;
@@ -315,8 +322,8 @@ void AnnotationAgentImpl::Attach(AnnotationAgentContainerImpl::PassKey) {
 
   needs_attachment_ = false;
   selector_->FindRange(*search_range, AnnotationSelector::kSynchronous,
-                       WTF::BindOnce(&AnnotationAgentImpl::DidFinishFindRange,
-                                     WrapWeakPersistent(this)));
+                       BindOnce(&AnnotationAgentImpl::DidFinishFindRange,
+                                WrapWeakPersistent(this)));
 }
 
 bool AnnotationAgentImpl::IsAttached() const {
@@ -498,8 +505,8 @@ void AnnotationAgentImpl::DidFinishFindRange(const RangeInFlatTree* range) {
     // throttled iframe.
     Document& document = *owning_container_->GetSupplementable();
     document.EnqueueAnimationFrameTask(
-        WTF::BindOnce(&AnnotationAgentImpl::PerformPreAttachDOMMutation,
-                      WrapPersistent(this)));
+        BindOnce(&AnnotationAgentImpl::PerformPreAttachDOMMutation,
+                 WrapPersistent(this)));
   }
 }
 
@@ -537,17 +544,15 @@ void AnnotationAgentImpl::PerformPreAttachDOMMutation() {
     DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(
         pending_range_->ToEphemeralRange());
 
-    // If the active match is hidden inside a <details> element, then we should
-    // expand it so we can scroll to it.
-    if (HTMLDetailsElement::ExpandDetailsAncestors(first_node)) {
+    // If the active match is hidden inside a <details> element or a
+    // hidden=until-found element, then we should expand it so we can scroll to
+    // it.
+    if (DisplayLockUtilities::RevealAutoExpandableAncestors(first_node)
+            .revealed_details) {
       UseCounter::Count(
           first_node.GetDocument(),
           WebFeature::kAutoExpandedDetailsForScrollToTextFragment);
     }
-
-    // If the active match is hidden inside a hidden=until-found element, then
-    // we should reveal it so we can scroll to it.
-    DisplayLockUtilities::RevealHiddenUntilFoundAncestors(first_node);
 
     // Ensure we leave clean layout since we'll be applying markers after this.
     first_node.GetDocument().UpdateStyleAndLayout(

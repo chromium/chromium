@@ -97,6 +97,7 @@ class ReplacementFragment final {
   Node* LastChild() const;
 
   String TrivialReplacementText() const { return trivial_text_; }
+  bool IsTrivialTextOnlyFragment() const;
 
   bool IsEmpty() const;
 
@@ -273,6 +274,13 @@ ReplacementFragment::ReplacementFragment(Document* document,
 
     fragment_ = CreateFragmentFromText(selection.ToNormalizedEphemeralRange(),
                                        evt->GetText());
+
+    // Fragment may have become trivial after recreation from text
+    if (RuntimeEnabledFeatures::
+            UpdateTrivalTextAfterFragmentCreationFromTextEnabled()) {
+      UpdateTrivialReplacementText();
+    }
+
     if (!fragment_->HasChildren())
       return;
 
@@ -322,11 +330,16 @@ void ReplacementFragment::UpdateFragmentForTextArea() {
 }
 
 void ReplacementFragment::UpdateTrivialReplacementText() {
-  if (!FirstChild() || FirstChild() != LastChild() ||
-      !FirstChild()->IsTextNode()) {
+  if (!IsTrivialTextOnlyFragment()) {
     return;
   }
+
   trivial_text_ = To<Text>(FirstChild())->data();
+}
+
+bool ReplacementFragment::IsTrivialTextOnlyFragment() const {
+  return FirstChild() && FirstChild() == LastChild() &&
+         FirstChild()->IsTextNode();
 }
 
 bool ReplacementFragment::IsEmpty() const {
@@ -496,8 +509,9 @@ ReplaceSelectionCommand::ReplaceSelectionCommand(
     Document& document,
     DocumentFragment* fragment,
     CommandOptions options,
-    InputEvent::InputType input_type)
-    : CompositeEditCommand(document),
+    InputEvent::InputType input_type,
+    DataTransfer* data_transfer)
+    : CompositeEditCommand(document, data_transfer),
       select_replacement_(options & kSelectReplacement),
       smart_replace_(options & kSmartReplace),
       match_style_(options & kMatchStyle),
@@ -1345,7 +1359,16 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
-  Position placeholder = ComputePlaceholderToCollapseAt(insertion_pos);
+  Position placeholder;
+  if (RuntimeEnabledFeatures::
+          RemoveCollapsedPlaceholderForContentEditableEnabled()) {
+    placeholder = IsEditablePosition(insertion_pos) &&
+                          IsRichlyEditablePosition(insertion_pos)
+                      ? ComputePlaceholderToCollapseAt(insertion_pos)
+                      : Position();
+  } else {
+    placeholder = ComputePlaceholderToCollapseAt(insertion_pos);
+  }
 
   // If the downstream node has been removed there's no point in continuing.
   if (!MostForwardCaretPosition(insertion_pos).AnchorNode())
@@ -1508,45 +1531,21 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
 
   bool plain_text_fragment = IsPlainTextMarkup(inserted_nodes.RefNode());
 
-  if (RuntimeEnabledFeatures::EditingFastRichReplaceEnabled()) {
-    for (Node* plain_node = node; plain_text_fragment && plain_node;
-         plain_node = plain_node->nextSibling()) {
-      plain_text_fragment = IsPlainTextMarkup(plain_node);
+  for (Node* plain_node = node; plain_text_fragment && plain_node;
+       plain_node = plain_node->nextSibling()) {
+    plain_text_fragment = IsPlainTextMarkup(plain_node);
+  }
+  Node* ref_node = inserted_nodes.RefNode();
+  if (Node* last_node = fragment.LastChild()) {
+    DCHECK(node);
+    InsertNodeListAfter(*node, *ref_node, editing_state);
+    if (editing_state->IsAborted()) {
+      return;
     }
-    Node* ref_node = inserted_nodes.RefNode();
-    if (Node* last_node = fragment.LastChild()) {
-      DCHECK(node);
-      InsertNodeListAfter(*node, *ref_node, editing_state);
-      if (editing_state->IsAborted()) {
-        return;
-      }
-      DCHECK(!fragment.FirstChild()) << fragment.FirstChild();
-      inserted_nodes.RespondToNodeInsertion(*node);
-      inserted_nodes.RespondToNodeInsertion(*last_node);
-      inserted_nodes.SetRefNode(last_node);
-    }
-  } else {
-    while (node) {
-      Node* next = node->nextSibling();
-      fragment.RemoveNode(node);
-      InsertNodeAfter(node, inserted_nodes.RefNode(), editing_state);
-      if (editing_state->IsAborted()) {
-        return;
-      }
-      inserted_nodes.RespondToNodeInsertion(*node);
-
-      // Synchronous events (bug 22634) may have already removed the inserted
-      // content
-      if (!node->isConnected()) {
-        return;
-      }
-
-      inserted_nodes.SetRefNode(node);
-      if (node && plain_text_fragment) {
-        plain_text_fragment = IsPlainTextMarkup(node);
-      }
-      node = next;
-    }
+    DCHECK(!fragment.FirstChild()) << fragment.FirstChild();
+    inserted_nodes.RespondToNodeInsertion(*node);
+    inserted_nodes.RespondToNodeInsertion(*last_node);
+    inserted_nodes.SetRefNode(last_node);
   }
 
   if (IsRichlyEditablePosition(insertion_pos)) {
@@ -2204,9 +2203,9 @@ bool ReplaceSelectionCommand::PerformTrivialReplace(
   // Save the text to set event data for input events.
   input_event_data_ = fragment.TrivialReplacementText();
 
-  if (!fragment.FirstChild() || fragment.FirstChild() != fragment.LastChild() ||
-      !fragment.FirstChild()->IsTextNode())
+  if (!fragment.IsTrivialTextOnlyFragment()) {
     return false;
+  }
 
   // FIXME: Would be nice to handle smart replace in the fast path.
   if (smart_replace_ || fragment.HasInterchangeNewlineAtStart() ||

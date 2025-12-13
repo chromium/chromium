@@ -8,6 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/trace_event/typed_macros.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"

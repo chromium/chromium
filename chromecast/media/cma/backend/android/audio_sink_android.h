@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "chromecast/media/cma/backend/android/media_pipeline_backend_android.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"

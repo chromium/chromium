@@ -11,7 +11,6 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_span.h"
-#include "ipc/ipc_message.h"
 #include "mojo/public/interfaces/bindings/native_struct.mojom-forward.h"
 
 namespace IPC {

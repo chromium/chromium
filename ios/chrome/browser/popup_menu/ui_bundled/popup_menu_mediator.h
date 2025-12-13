@@ -20,7 +20,6 @@ class Tracker;
 }  // namespace feature_engagement
 
 class BrowserPolicyConnectorIOS;
-class FollowBrowserAgent;
 @protocol LensCommands;
 class OverlayPresenter;
 @protocol PopupMenuConsumer;
@@ -70,8 +69,6 @@ class WebStateList;
 @property(nonatomic, assign) TemplateURLService* templateURLService;
 // The URL loading service, used to load the reverse image search.
 @property(nonatomic, assign) UrlLoadingBrowserAgent* URLLoadingBrowserAgent;
-// The FollowBrowserAgent used to manage web channels subscriptions.
-@property(nonatomic, assign) FollowBrowserAgent* followBrowserAgent;
 // The ReadingListBrowserAgent used to add urls to reading list.
 @property(nonatomic, assign) ReadingListBrowserAgent* readingListBrowserAgent;
 

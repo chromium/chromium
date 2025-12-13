@@ -21,10 +21,10 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -86,8 +86,8 @@ void ScrollToSwitchDesks(bool scroll_left,
                          ui::test::EventGenerator* event_generator) {
   // Scrolling to switch desks with enhanced desk animations is a bit tricky
   // because it involves multiple async operations.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Start off with a fling cancel (touchpad start) to start the touchpad
   // swipe sequence.

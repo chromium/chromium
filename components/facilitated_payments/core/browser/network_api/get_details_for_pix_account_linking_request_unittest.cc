@@ -36,7 +36,8 @@ TEST_F(GetDetailsForPixAccountLinkingRequestTest,
       123, /*response_callback=*/base::DoNothing(),
       /*app_locale=*/"US", /*full_sync_enabled=*/true);
   std::optional<base::Value> response =
-      base::JSONReader::Read("{\"pix_account_linking_details\":{}}");
+      base::JSONReader::Read("{\"pix_account_linking_details\":{}}",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   request->ParseResponse(response->GetDict());
 
@@ -50,7 +51,8 @@ TEST_F(
   auto request = std::make_unique<GetDetailsForPixAccountLinkingRequest>(
       123, /*response_callback=*/base::DoNothing(),
       /*app_locale=*/"US", /*full_sync_enabled=*/true);
-  std::optional<base::Value> response = base::JSONReader::Read("{}");
+  std::optional<base::Value> response =
+      base::JSONReader::Read("{}", base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   request->ParseResponse(response->GetDict());
 
@@ -62,8 +64,8 @@ TEST_F(GetDetailsForPixAccountLinkingRequestTest, ParseResponse_Error) {
   auto request = std::make_unique<GetDetailsForPixAccountLinkingRequest>(
       123, /*response_callback=*/base::DoNothing(),
       /*app_locale=*/"US", /*full_sync_enabled=*/true);
-  std::optional<base::Value> response =
-      base::JSONReader::Read("{\"error\":\"error\"}");
+  std::optional<base::Value> response = base::JSONReader::Read(
+      "{\"error\":\"error\"}", base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   request->ParseResponse(response->GetDict());
 

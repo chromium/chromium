@@ -17,6 +17,7 @@
 #include "extensions/renderer/bindings/exception_handler.h"
 #include "extensions/renderer/bindings/listener_tracker.h"
 #include "extensions/renderer/bindings/test_js_runner.h"
+#include "gin/public/gin_embedders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "v8/include/cppgc/allocation.h"
 #include "v8/include/v8-cppgc.h"
@@ -154,7 +155,8 @@ TEST_F(EventEmitterUnittest, ListenersDestroyingContext) {
   auto listener_wrapper = [](const v8::FunctionCallbackInfo<v8::Value>& info) {
     ASSERT_TRUE(info.Data()->IsExternal());
     auto& data = *static_cast<ListenerClosureData*>(
-        info.Data().As<v8::External>()->Value());
+        info.Data().As<v8::External>()->Value(
+            gin::kEventEmitterUnittestListenerClosureDataTag));
     data.test->DisposeContextWrapper(&data.did_invalidate_context,
                                      info.GetIsolate()->GetCurrentContext());
   };
@@ -182,18 +184,21 @@ TEST_F(EventEmitterUnittest, ListenersDestroyingContext) {
   constexpr size_t kNumListeners = 3;
   for (size_t i = 0; i < kNumListeners; ++i) {
     v8::Local<v8::Function> listener =
-        v8::Function::New(context, listener_wrapper,
-                          v8::External::New(isolate(), &closure_data))
+        v8::Function::New(
+            context, listener_wrapper,
+            v8::External::New(isolate(), &closure_data,
+                              gin::kEventEmitterUnittestListenerClosureDataTag))
             .ToLocalChecked();
     v8::Local<v8::Value> args[] = {v8_event, listener};
     RunFunction(add_listener_function, context, std::size(args), args);
   }
 
-  EXPECT_EQ(kNumListeners, event_emitter->GetNumListeners());
+  EXPECT_EQ(kNumListeners, event_emitter->GetNumListenersForTesting());
 
   v8::LocalVector<v8::Value> args(isolate());
   event_emitter->Fire(context, &args, /*filter=*/nullptr,
-                      /*callback=*/v8::Local<v8::Function>());
+                      /*on_dispatched_callback=*/v8::Local<v8::Function>(),
+                      /*listener_error_callback=*/v8::Local<v8::Function>());
 
   EXPECT_TRUE(closure_data.did_invalidate_context);
 }

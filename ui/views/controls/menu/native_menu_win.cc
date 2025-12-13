@@ -45,7 +45,7 @@ static NativeMenuWin* GetNativeMenuWinFromHMENU(HMENU hmenu) {
 // NativeMenuWin, public:
 
 NativeMenuWin::NativeMenuWin(ui::MenuModel* model, HWND sysmenu_hwnd)
-    : model_(model), sysmenu_hwnd_(sysmenu_hwnd) {}
+    : model_(model->AsWeakPtr()), sysmenu_hwnd_(sysmenu_hwnd) {}
 
 NativeMenuWin::~NativeMenuWin() {
   items_.clear();
@@ -79,7 +79,6 @@ void NativeMenuWin::UpdateStates() {
     SetMenuItemState(menu_index, model_->IsEnabledAt(model_index),
                      model_->IsItemCheckedAt(model_index), false);
     if (model_->IsItemDynamicAt(model_index)) {
-      // TODO(atwilson): Update the icon as well (http://crbug.com/66508).
       SetMenuItemLabel(menu_index, model_index,
                        model_->GetLabelAt(model_index));
     }

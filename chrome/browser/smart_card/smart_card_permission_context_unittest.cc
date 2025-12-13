@@ -404,6 +404,40 @@ TEST_F(SmartCardPermissionContextTest, RevokeEphemeralPermissions) {
               testing::ElementsAre(origin_1, origin_2));
 }
 
+TEST_F(SmartCardPermissionContextTest,
+       RevokeEphemeralAndPersistentPermissionsForOrigin) {
+  auto origin_1 = url::Origin::Create(
+      GURL("isolated-app://"
+           "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
+  auto origin_2 = url::Origin::Create(
+      GURL("isolated-app://"
+           "w2gqjem6b4m7vhiqpjr3btcpp7dxfyjt6h4uuyuxklcsmygtgncaaaac"));
+
+  SmartCardPermissionContext permission_context(&profile_);
+  TestPermissionsObserver observer;
+  permission_context.AddObserver(&observer);
+
+  GrantEphemeralReaderPermission(permission_context, origin_1, kDummyReader);
+  GrantEphemeralReaderPermission(permission_context, origin_2, kDummyReader);
+
+  GrantPersistentReaderPermission(permission_context, origin_1, kDummyReader2);
+  GrantPersistentReaderPermission(permission_context, origin_2, kDummyReader2);
+
+  ASSERT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+  ASSERT_TRUE(HasReaderPermission(permission_context, origin_2, kDummyReader));
+
+  permission_context.RevokeObjectPermissions(origin_1);
+
+  EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+  EXPECT_FALSE(
+      HasReaderPermission(permission_context, origin_1, kDummyReader2));
+  EXPECT_THAT(observer.GetRevokedOriginsSequence(),
+              testing::ElementsAre(origin_1, origin_1));
+
+  EXPECT_TRUE(HasReaderPermission(permission_context, origin_2, kDummyReader));
+  EXPECT_TRUE(HasReaderPermission(permission_context, origin_2, kDummyReader2));
+}
+
 TEST_F(SmartCardPermissionContextTest, Blocked) {
   auto origin_1 = url::Origin::Create(
       GURL("isolated-app://"
@@ -472,6 +506,24 @@ TEST_F(SmartCardPermissionContextTest, BlockedByPolicy) {
   EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
 
   permission_context.RevokeObjectPermissions(origin_1);
+}
+
+TEST_F(SmartCardPermissionContextTest, AllowedAndBlockedByPolicy) {
+  auto origin_1 = url::Origin::Create(
+      GURL("isolated-app://"
+           "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai"));
+
+  SmartCardPermissionContext permission_context(&profile_);
+
+  ASSERT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+
+  SetAllowlistedByPolicy(origin_1);
+  SetBlocklistedByPolicy(origin_1);
+
+  EXPECT_FALSE(HasReaderPermission(permission_context, origin_1, kDummyReader));
+
+  EXPECT_TRUE(permission_context.GetGrantedObjects(origin_1).empty());
+  EXPECT_TRUE(permission_context.GetAllGrantedObjects().empty());
 }
 
 TEST_F(SmartCardPermissionContextTest, RevokeAllPermissions) {

@@ -7,7 +7,11 @@
 
 #include <vector>
 
-class Browser;
+namespace tab_groups {
+class TabGroupSyncService;
+}  // namespace tab_groups
+
+class BrowserWindowInterface;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -28,7 +32,10 @@ class TabMenuModelDelegate {
   // Returns a list of other existing browser windows that can accept menu
   // operations (i.e. Move tab to new window, Add tab to group) that are not the
   // current browser this was called on.
-  virtual std::vector<Browser*> GetOtherBrowserWindows(bool is_app) = 0;
+  virtual std::vector<BrowserWindowInterface*> GetOtherBrowserWindows(
+      bool is_app) = 0;
+
+  virtual tab_groups::TabGroupSyncService* GetTabGroupSyncService() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_MENU_MODEL_DELEGATE_H_

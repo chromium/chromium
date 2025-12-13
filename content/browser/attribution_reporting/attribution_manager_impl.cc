@@ -20,7 +20,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -34,6 +33,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
+#include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
@@ -60,7 +60,6 @@
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
-#include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
@@ -95,7 +94,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/network/public/mojom/network_change_manager.mojom-forward.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -324,25 +322,6 @@ ConversionReportSendOutcome ConvertToConversionReportSendOutcome(
   }
 }
 
-void RecordNetworkConnectionTypeOnFailure(
-    AttributionReport::Type report_type,
-    network::mojom::ConnectionType connection_type) {
-  switch (report_type) {
-    case AttributionReport::Type::kEventLevel:
-      base::UmaHistogramEnumeration(
-          "Conversions.EventLevelReport.NetworkConnectionTypeOnFailure",
-          connection_type);
-      break;
-    case AttributionReport::Type::kAggregatableAttribution:
-      base::UmaHistogramEnumeration(
-          "Conversions.AggregatableReport.NetworkConnectionTypeOnFailure",
-          connection_type);
-      break;
-    case AttributionReport::Type::kNullAggregatable:
-      break;
-  }
-}
-
 void RecordAssembleAggregatableReportStatus(
     AssembleAggregatableReportStatus status) {
   base::UmaHistogramEnumeration(
@@ -391,10 +370,6 @@ void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
             UMA_HISTOGRAM_COUNTS_1000(
                 "Conversions.TimeFromConversionToReportSend",
                 time_from_conversion_to_report_send.InHours());
-
-            UMA_HISTOGRAM_CUSTOM_TIMES("Conversions.SchedulerReportDelay",
-                                       now - report.report_time(),
-                                       base::Seconds(1), base::Days(1), 50);
           },
           [&](const AttributionReport::AggregatableData& data) {
             if (data.is_null()) {
@@ -416,72 +391,24 @@ void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
                     .has_value(),
                 now - report.initial_report_time(), base::Seconds(1),
                 base::Days(24), 50);
-
-            UMA_HISTOGRAM_CUSTOM_TIMES(
-                "Conversions.AggregatableReport.SchedulerReportDelay",
-                now - report.report_time(), base::Seconds(1), base::Days(1),
-                50);
           },
       },
       report.data());
 }
 
-void RecordTimeSinceLastNavigationOnReportComplete(
-    base::Time last_navigation,
-    SendResult::Status status,
-    std::string_view report_type_string) {
-  base::Time now = base::Time::Now();
-  switch (status) {
-    case SendResult::Status::kSent:
-      base::UmaHistogramCustomTimes(
-          base::StrCat(
-              {"Conversions.TimeFromLastNavigationToDelivery_Succeeded.",
-               report_type_string}),
-          now - last_navigation, base::Seconds(1), base::Days(24),
-          /*buckets=*/100);
-      break;
-    case SendResult::Status::kTransientFailure:
-    case SendResult::Status::kFailure:
-      base::UmaHistogramCustomTimes(
-          base::StrCat({"Conversions.TimeFromLastNavigationToDelivery_Failed.",
-                        report_type_string}),
-          now - last_navigation, base::Seconds(1), base::Days(24),
-          /*buckets=*/100);
-      break;
-    case SendResult::Status::kDropped:
-    case SendResult::Status::kExpired:
-    case SendResult::Status::kAssemblyFailure:
-    case SendResult::Status::kTransientAssemblyFailure:
-      break;
-  }
-}
-
 // Called when |report| is sent, failed or dropped, for logging metrics.
 void LogMetricsOnReportCompleted(const AttributionReport& report,
-                                 SendResult::Status status,
-                                 std::optional<base::Time> last_navigation) {
+                                 SendResult::Status status) {
   switch (report.GetReportType()) {
     case AttributionReport::Type::kEventLevel:
       base::UmaHistogramEnumeration(
           "Conversions.ReportSendOutcome3",
           ConvertToConversionReportSendOutcome(status));
-
-      if (last_navigation.has_value()) {
-        RecordTimeSinceLastNavigationOnReportComplete(
-            *last_navigation, status,
-            /*report_type_string=*/"EventLevelReport");
-      }
       break;
     case AttributionReport::Type::kAggregatableAttribution:
       base::UmaHistogramEnumeration(
           "Conversions.AggregatableReport.ReportSendOutcome2",
           ConvertToConversionReportSendOutcome(status));
-
-      if (last_navigation.has_value()) {
-        RecordTimeSinceLastNavigationOnReportComplete(
-            *last_navigation, status,
-            /*report_type_string=*/"AggregatableReport");
-      }
       break;
     case AttributionReport::Type::kNullAggregatable:
       break;
@@ -506,14 +433,6 @@ void LogMetricsOnReportSent(const AttributionReport& report) {
       UMA_HISTOGRAM_COUNTS_1000(
           "Conversions.TimeFromTriggerToReportSentSuccessfully",
           time_from_conversion_to_report_sent.InHours());
-      UMA_HISTOGRAM_BOOLEAN(
-          "Conversions."
-          "TimeFromTriggerToReportSentSuccessfullyExceeds30Days",
-          time_from_conversion_to_report_sent > base::Days(30));
-      UMA_HISTOGRAM_BOOLEAN(
-          "Conversions."
-          "ExtraReportDelayForSuccessfulSendExceeds30Days",
-          time_since_original_report_time > base::Days(30));
 
       RecordReportRetriesEventLevel(report.failed_send_attempts());
 
@@ -535,18 +454,10 @@ void LogMetricsOnReportSent(const AttributionReport& report) {
           time_from_conversion_to_report_sent, base::Minutes(1), base::Days(24),
           50);
 
-      UMA_HISTOGRAM_BOOLEAN(
-          "Conversions.AggregatableReport."
-          "TimeFromTriggerToReportSentSuccessfullyExceeds30Days",
-          time_from_conversion_to_report_sent > base::Days(30));
       UMA_HISTOGRAM_CUSTOM_TIMES(
           "Conversions.AggregatableReport.ExtraReportDelayForSuccessfulSend",
           time_since_original_report_time, base::Seconds(1), base::Days(24),
           /*bucket_count=*/50);
-      UMA_HISTOGRAM_BOOLEAN(
-          "Conversions.AggregatableReport."
-          "ExtraReportDelayForSuccessfulSendExceeds30Days",
-          time_since_original_report_time > base::Days(30));
 
       RecordReportRetriesAggregatable(report.failed_send_attempts());
 
@@ -627,8 +538,7 @@ base::Time GetReportExpiryTime(const AttributionReport& report) {
 std::optional<base::Time> HandleTransientFailureOnSendReport(
     const AttributionReport& report) {
   if (std::optional<base::Time> report_retry_time = GetReportTimeForRetry(
-          /*failed_send_attempts=*/report.failed_send_attempts() + 1,
-          GetReportExpiryTime(report))) {
+          /*failed_send_attempts=*/report.failed_send_attempts() + 1)) {
     return *report_retry_time;
   } else {
     switch (report.GetReportType()) {
@@ -649,23 +559,12 @@ bool g_run_in_memory = false;
 
 }  // namespace
 
-std::optional<base::Time> GetReportTimeForRetry(int failed_send_attempts,
-                                                base::Time report_expiry) {
+std::optional<base::Time> GetReportTimeForRetry(int failed_send_attempts) {
   CHECK_GT(failed_send_attempts, 0);
 
   constexpr int kMaxFailedSendAttempts = 3;
-  const int navigation_retry_attempt =
-      static_cast<int>(kAttributionReportNavigationRetryAttempt.Get());
-  const bool navigation_based_retry_enabled =
-      base::FeatureList::IsEnabled(kAttributionReportNavigationBasedRetry);
 
-  if (navigation_based_retry_enabled) {
-    if (failed_send_attempts == navigation_retry_attempt) {
-      return report_expiry;
-    } else if (failed_send_attempts > navigation_retry_attempt) {
-      return std::nullopt;
-    }
-  } else if (failed_send_attempts >= kMaxFailedSendAttempts) {
+  if (failed_send_attempts >= kMaxFailedSendAttempts) {
     return std::nullopt;
   }
   return base::Time::Now() + (failed_send_attempts == 1
@@ -1156,26 +1055,6 @@ void AttributionManagerImpl::RemoveAttributionDataByDataKey(
           weak_factory_.GetWeakPtr(), /*was_user_visible=*/true)));
 }
 
-void AttributionManagerImpl::UpdateLastNavigationTime(
-    base::Time navigation_time) {
-  last_navigation_time_ = navigation_time;
-
-  if (base::FeatureList::IsEnabled(kAttributionReportNavigationBasedRetry)) {
-    base::OnceCallback then = base::BindOnce(
-        [](base::WeakPtr<AttributionManagerImpl> manager,
-           std::optional<base::Time> new_report_time) {
-          if (manager && new_report_time.has_value()) {
-            manager->NotifyReportsChanged();
-            manager->scheduler_timer_->MaybeSet(new_report_time);
-          }
-        },
-        weak_factory_.GetWeakPtr());
-    attribution_resolver_
-        .AsyncCall(&AttributionResolver::AdjustNavigationRetryReportTimes)
-        .Then(std::move(then));
-  }
-}
-
 void AttributionManagerImpl::GetReportsToSend() {
   // We only get the next report time strictly after now, because if we are
   // sending a report now but haven't finished doing so and it is still present
@@ -1212,7 +1091,6 @@ void AttributionManagerImpl::SendReports(
   for (auto& report : reports) {
     SendReport(base::NullCallback(), now, std::move(report));
   }
-  report_sender_->SetInFirstBatch(/*in_first_batch=*/false);
 }
 
 // If `web_ui_callback` is null, assumes that `report` is being sent at its
@@ -1220,8 +1098,6 @@ void AttributionManagerImpl::SendReports(
 void AttributionManagerImpl::SendReport(base::OnceClosure web_ui_callback,
                                         const base::Time now,
                                         AttributionReport report) {
-  CHECK_LE(report.report_time(), now);
-
   bool inserted = reports_being_sent_.emplace(report.id()).second;
   if (!inserted) {
     if (web_ui_callback) {
@@ -1233,8 +1109,8 @@ void AttributionManagerImpl::SendReport(base::OnceClosure web_ui_callback,
   // Drop the report on the floor if the report is expired. We need to make sure
   // we forward that the report was "sent" to ensure it is deleted from storage,
   // etc. This simulates sending the report through a null channel.
-  if (base::FeatureList::IsEnabled(kAttributionReportExpiry) &&
-      now > GetReportExpiryTime(report)) {
+
+  if (now > GetReportExpiryTime(report)) {
     OnReportSent(std::move(web_ui_callback), std::move(report),
                  SendResult(SendResult::Expired()));
     return;
@@ -1307,14 +1183,8 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
                            LogMetricsOnReportSent(report);
                            return std::nullopt;
                          case SendResult::Sent::Result::kTransientFailure:
-                           RecordNetworkConnectionTypeOnFailure(
-                               report.GetReportType(),
-                               scheduler_timer_->connection_type());
                            return HandleTransientFailureOnSendReport(report);
                          case SendResult::Sent::Result::kFailure:
-                           RecordNetworkConnectionTypeOnFailure(
-                               report.GetReportType(),
-                               scheduler_timer_->connection_type());
                            return std::nullopt;
                        }
                      },
@@ -1370,7 +1240,7 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
       .WithArgs(report.id())
       .Then(std::move(then));
 
-  LogMetricsOnReportCompleted(report, info.status(), last_navigation_time_);
+  LogMetricsOnReportCompleted(report, info.status());
 }
 
 void AttributionManagerImpl::NotifyReportSent(bool is_debug_report,

@@ -120,8 +120,7 @@ TEST_F(FrameEvictionManagerTest, MemoryPressure) {
   manager->AddFrame(&frame2, false);
 
   // Critical memory pressure culls all unlocked frames.
-  manager->OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  manager->OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   EXPECT_FALSE(frame1.has_frame());
   EXPECT_FALSE(frame2.has_frame());
 }

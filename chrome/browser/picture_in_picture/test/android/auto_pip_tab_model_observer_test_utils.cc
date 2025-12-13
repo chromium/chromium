@@ -36,10 +36,10 @@ void RunActivationChangedCallback(bool is_activated) {
 namespace picture_in_picture {
 
 // static
-void JNI_AutoPiPTabModelObserverHelperTestUtils_Initialize(
+static void JNI_AutoPiPTabModelObserverHelperTestUtils_Initialize(
     JNIEnv* env,
     content::WebContents* web_contents,
-    const base::android::JavaParamRef<jobject>& j_callback) {
+    const base::android::JavaRef<jobject>& j_callback) {
   // Ensure no previous test state is leaking.
   CHECK(!g_test_state);
 
@@ -52,19 +52,21 @@ void JNI_AutoPiPTabModelObserverHelperTestUtils_Initialize(
 }
 
 // static
-void JNI_AutoPiPTabModelObserverHelperTestUtils_StartObserving(JNIEnv* env) {
+static void JNI_AutoPiPTabModelObserverHelperTestUtils_StartObserving(
+    JNIEnv* env) {
   CHECK(g_test_state);
   g_test_state->helper->StartObserving();
 }
 
 // static
-void JNI_AutoPiPTabModelObserverHelperTestUtils_StopObserving(JNIEnv* env) {
+static void JNI_AutoPiPTabModelObserverHelperTestUtils_StopObserving(
+    JNIEnv* env) {
   CHECK(g_test_state);
   g_test_state->helper->StopObserving();
 }
 
 // static
-void JNI_AutoPiPTabModelObserverHelperTestUtils_Destroy(JNIEnv* env) {
+static void JNI_AutoPiPTabModelObserverHelperTestUtils_Destroy(JNIEnv* env) {
   if (g_test_state) {
     delete g_test_state;
     g_test_state = nullptr;
@@ -72,3 +74,5 @@ void JNI_AutoPiPTabModelObserverHelperTestUtils_Destroy(JNIEnv* env) {
 }
 
 }  // namespace picture_in_picture
+
+DEFINE_JNI(AutoPiPTabModelObserverHelperTestUtils)

@@ -13,6 +13,7 @@
 #include "ash/shelf/shelf_observer.h"
 #include "ash/style/pill_button.h"
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"

@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
@@ -18,6 +19,10 @@
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/vulkan/buildflags.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+
+namespace viz {
+class VulkanContextProvider;
+}  // namespace viz
 
 #if BUILDFLAG(IS_WIN)
 namespace gfx {
@@ -39,8 +44,11 @@ class GPU_GLES2_EXPORT SharedImageManager
   // SharedImages that will be used in the display context have thread-safe
   // backings and therefore it is safe to create representations on the thread
   // that holds the display context.
-  explicit SharedImageManager(bool thread_safe = false,
-                              bool display_context_on_another_thread = false);
+  explicit SharedImageManager(
+      bool thread_safe = false,
+      bool display_context_on_another_thread = false,
+      viz::VulkanContextProvider* vulkan_context_provider = nullptr,
+      scoped_refptr<base::SingleThreadTaskRunner> io_runner = nullptr);
 
   SharedImageManager(const SharedImageManager&) = delete;
   SharedImageManager& operator=(const SharedImageManager&) = delete;
@@ -98,7 +106,11 @@ class GPU_GLES2_EXPORT SharedImageManager
       const Mailbox& mailbox,
       MemoryTypeTracker* ref,
       const wgpu::Device& device,
-      wgpu::BackendType backend_type);
+      wgpu::BackendType backend_type,
+      scoped_refptr<SharedContextState> context_state);
+  std::unique_ptr<WebNNTensorRepresentation> ProduceWebNNTensor(
+      const Mailbox& mailbox,
+      MemoryTypeTracker* ref);
   std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);
@@ -149,6 +161,16 @@ class GPU_GLES2_EXPORT SharedImageManager
     return display_context_on_another_thread_;
   }
 
+#if BUILDFLAG(IS_WIN)
+  scoped_refptr<base::SingleThreadTaskRunner> io_runner() { return io_runner_; }
+#endif
+
+#if BUILDFLAG(IS_OZONE)
+  viz::VulkanContextProvider* vulkan_context_provider() {
+    return vulkan_context_provider_.get();
+  }
+#endif
+
   bool SupportsScanoutImages();
 
   // Returns the NativePixmap backing |mailbox|. Returns null if the SharedImage
@@ -183,10 +205,12 @@ class GPU_GLES2_EXPORT SharedImageManager
 
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager_;
+  scoped_refptr<base::SingleThreadTaskRunner> io_runner_;
 #endif
 
 #if BUILDFLAG(IS_OZONE)
   bool supports_overlays_on_ozone_ = false;
+  scoped_refptr<viz::VulkanContextProvider> vulkan_context_provider_;
 #endif
 
   THREAD_CHECKER(thread_checker_);

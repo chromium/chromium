@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -106,10 +106,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest,
   GURL extension_url = extension->GetResourceURL("file.html");
 
   // Load the extension in two unrelated tabs.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), extension_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), extension_url));
+  NavigateToURLInNewTab(extension_url);
 
   // Sanity-check test setup: 2 frames share a renderer process, but are not in
   // a related browsing instance.
@@ -161,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionalTest, DownloadExtensionResource) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   auto file_path = download_items[0]->GetTargetFilePath();
 
-  base::FilePath expected_path = ui_test_utils::GetTestFilePath(
+  base::FilePath expected_path = chrome_test_utils::GetTestFilePath(
       base::FilePath(),
       base::FilePath().AppendASCII("extensions/download/download.dat"));
 

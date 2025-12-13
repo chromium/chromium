@@ -93,34 +93,6 @@ SourceLocation* CaptureSourceLocation(ExecutionContext* execution_context) {
       String(), 0, 0, std::move(stack_trace));
 }
 
-SourceLocation* CapturePartialSourceLocationFromStack(v8::Isolate* isolate) {
-  DCHECK(isolate);
-
-  if (!isolate->InContext()) {
-    return MakeGarbageCollected<SourceLocation>(String(), -1);
-  }
-
-  v8::Local<v8::StackTrace> stack_trace =
-      v8::StackTrace::CurrentStackTrace(isolate, /*frame_limit=*/1);
-
-  int script_position = -1;
-  String script_url;
-  if (stack_trace->GetFrameCount() > 0) {
-    v8::Local<v8::StackFrame> stack_frame = stack_trace->GetFrame(isolate, 0);
-    script_position = stack_frame->GetSourcePosition();
-    v8::Local<v8::String> script_name = stack_frame->GetScriptNameOrSourceURL();
-    script_url = ToCoreStringWithNullCheck(isolate, script_name);
-
-    if (RuntimeEnabledFeatures::LongAnimationFrameSourceLineColumnEnabled()) {
-      v8::Location location = stack_frame->GetLocation();
-      return MakeGarbageCollected<SourceLocation>(script_url, script_position,
-                                                  location.GetLineNumber(),
-                                                  location.GetColumnNumber());
-    }
-  }
-  return MakeGarbageCollected<SourceLocation>(script_url, script_position);
-}
-
 SourceLocation* CaptureSourceLocation(v8::Isolate* isolate,
                                       v8::Local<v8::Message> message,
                                       ExecutionContext* execution_context) {

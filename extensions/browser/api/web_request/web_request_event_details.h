@@ -11,8 +11,11 @@
 
 #include "base/values.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "url/origin.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace net {
 class AuthChallengeInfo;
@@ -75,6 +78,10 @@ class WebRequestEventDetails {
   // - statusLine
   void SetResponseHeaders(const WebRequestInfo& request,
                           const net::HttpResponseHeaders* response_headers);
+
+  // Sets the following keys:
+  // - securityInfo
+  void SetSecurityInfo(const WebRequestInfo& request);
 
   // Sets the following key:
   // - fromCache

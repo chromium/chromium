@@ -34,6 +34,10 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -48,14 +52,7 @@
 
 class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
  public:
-  WebUIWebViewBrowserTest() {
-#if BUILDFLAG(ENABLE_GLIC)
-    // Required to enable chrome://glic.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton},
-        /*disabled_features=*/{});
-#endif
-  }
+  WebUIWebViewBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     base::FilePath test_data_dir;
@@ -67,7 +64,7 @@ class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
     // Wait for the OOBE WebUI to be shown.
     ash::OobeScreenWaiter(ash::WelcomeView::kScreenId).Wait();
 #else
-    set_test_loader_host(GetWebViewEnabledWebUIURL().host());
+    set_test_loader_host(GetWebViewEnabledWebUIURL().GetHost());
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GetWebViewEnabledWebUIURL()));
 #endif
@@ -130,7 +127,10 @@ class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
             false);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(ENABLE_GLIC)
+  // Required to enable chrome://glic.
+  glic::GlicTestEnvironment glic_test_env_;
+#endif
 };
 
 // Checks that hiding and showing the WebUI host page doesn't break guests in
@@ -143,23 +143,43 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, DisplayNone) {
 }
 
 #if BUILDFLAG(ENABLE_GLIC)
-IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, MediaRequestAllowOnGlic) {
+// TODO(crbug.com/460836171): Enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_MediaRequestAllowOnGlic DISABLED_MediaRequestAllowOnGlic
+#else
+#define MAYBE_MediaRequestAllowOnGlic MediaRequestAllowOnGlic
+#endif
+IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, MAYBE_MediaRequestAllowOnGlic) {
   set_test_loader_host("glic");
   RunBasicTestCase("MediaRequestAllowOnGlic",
                    GetTestUrl("webview/mediarequest.html").spec());
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, MediaRequestDenyOnGlic) {
+// TODO(crbug.com/460836171): Enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_MediaRequestDenyOnGlic DISABLED_MediaRequestDenyOnGlic
+#else
+#define MAYBE_MediaRequestDenyOnGlic MediaRequestDenyOnGlic
+#endif
+IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, MAYBE_MediaRequestDenyOnGlic) {
   set_test_loader_host("glic");
   RunBasicTestCase("MediaRequestDenyOnGlic",
                    GetTestUrl("webview/mediarequest.html").spec());
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, MediaRequestAllowOnSignIn) {
+// TODO(crbug.com/444024595): Flaky on Linux and Windows
+// TODO(crbug.com/460836171): Enable on ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_MediaRequestAllowOnSignIn DISABLED_MediaRequestAllowOnSignIn
+#else
+#define MAYBE_MediaRequestAllowOnSignIn MediaRequestAllowOnSignIn
+#endif
+IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest,
+                       MAYBE_MediaRequestAllowOnSignIn) {
   RunBasicTestCase("MediaRequestAllowOnSignIn",
                    GetTestUrl("webview/mediarequest.html").spec());
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 // TODO(crbug.com/41400417) Flaky on CrOS trybots.
 #if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
@@ -230,9 +250,11 @@ class WebUIWebViewCoverageDisabledBrowserTest : public WebUIWebViewBrowserTest {
   }
 };
 
-#if BUILDFLAG(IS_CHROMEOS) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER))
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_CHROMEOS) && \
+                          (!defined(NDEBUG) || defined(ADDRESS_SANITIZER)))
 // TODO(crbug.com/40583245) Fails on CrOS dbg with --enable-features=Mash.
 // TODO(crbug.com/41419648) Flaky on CrOS ASan LSan
+// TODO(crbug.com/454729976): Fails on chromium/ci/win11-arm64-rel-tests.
 #define MAYBE_AddContentScriptsWithNewWindowAPI \
   DISABLED_AddContentScriptsWithNewWindowAPI
 #else

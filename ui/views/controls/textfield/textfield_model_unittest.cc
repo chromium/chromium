@@ -54,6 +54,11 @@ class TextfieldModelTest : public ViewsTestBase,
     composition_text_confirmed_or_cleared_ = true;
   }
 
+  void WriteTextToClipboard(ui::ClipboardBuffer clipboard_buffer,
+                            const std::u16string_view& text) override {
+    ui::ScopedClipboardWriter(clipboard_buffer).WriteText(text);
+  }
+
  protected:
   void ResetModel(TextfieldModel* model) const {
     model->SetText(std::u16string(), 0);
@@ -83,7 +88,7 @@ class TextfieldModelTest : public ViewsTestBase,
 };
 
 TEST_F(TextfieldModelTest, EditString) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   // Append two strings.
   model.Append(u"HILL");
   EXPECT_EQ(u"HILL", model.text());
@@ -126,7 +131,7 @@ TEST_F(TextfieldModelTest, EditString) {
 }
 
 TEST_F(TextfieldModelTest, EditString_SimpleRTL) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   // Append two strings.
   model.Append(u"\x05d0\x05d1\x05d2");
   EXPECT_EQ(u"\x05d0\x05d1\x05d2", model.text());
@@ -152,7 +157,7 @@ TEST_F(TextfieldModelTest, EditString_SimpleRTL) {
 }
 
 TEST_F(TextfieldModelTest, EditString_ComplexScript) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
 
   // Append two Hindi strings.
   model.Append(u"\x0915\x093f\x0915\x094d\x0915");
@@ -262,7 +267,7 @@ TEST_F(TextfieldModelTest, EditString_ComplexScript) {
 }
 
 TEST_F(TextfieldModelTest, EmptyString) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   EXPECT_EQ(std::u16string(), model.text());
   EXPECT_EQ(std::u16string(), model.GetSelectedText());
 
@@ -280,7 +285,7 @@ TEST_F(TextfieldModelTest, EmptyString) {
 }
 
 TEST_F(TextfieldModelTest, Selection) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.Append(u"HELLO");
   model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_RIGHT,
                    gfx::SELECTION_NONE);
@@ -351,7 +356,7 @@ TEST_F(TextfieldModelTest, Selection_BidiWithNonSpacingMarks) {
   // the (logical) start and end points. Selection is simply defined as
   // the portion of text between the logical positions of the start and end
   // caret positions.
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   // TODO(xji): temporarily disable in platform Win since the complex script
   // characters turned into empty square due to font regression. So, not able
   // to test 2 characters belong to the same grapheme.
@@ -467,7 +472,7 @@ TEST_F(TextfieldModelTest, Selection_BidiWithNonSpacingMarks) {
 }
 
 TEST_F(TextfieldModelTest, SelectionAndEdit) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.Append(u"HELLO");
   model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_RIGHT,
                    gfx::SELECTION_NONE);
@@ -506,7 +511,7 @@ TEST_F(TextfieldModelTest, SelectionAndEdit) {
 
 TEST_F(TextfieldModelTest, SelectionAndEdit_WithSecondarySelection) {
   // Backspace
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.Append(u"asynchronous promises make the moon spin?");
   model.SelectRange(gfx::Range(0U, 4U));
   model.SelectRange(gfx::Range(17U, 19U), false);
@@ -554,7 +559,7 @@ TEST_F(TextfieldModelTest, SelectionAndEdit_WithSecondarySelection) {
 }
 
 TEST_F(TextfieldModelTest, Word) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.Append(u"The answer to Life, the Universe, and Everything");
 #if BUILDFLAG(IS_WIN)  // Move right by word includes space/punctuation.
   model.MoveCursor(gfx::WORD_BREAK, gfx::CURSOR_RIGHT, gfx::SELECTION_NONE);
@@ -648,7 +653,7 @@ TEST_F(TextfieldModelTest, Word) {
 }
 
 TEST_F(TextfieldModelTest, SetText) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.Append(u"HELLO");
 
   // SetText moves cursor to the indicated position.
@@ -687,7 +692,7 @@ TEST_F(TextfieldModelTest, Clipboard) {
       .WriteText(initial_clipboard_text);
 
   std::u16string clipboard_text;
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.Append(u"HELLO WORLD");
 
   // Cut with an empty selection should do nothing.
@@ -789,7 +794,7 @@ TEST_F(TextfieldModelTest, Clipboard_WithSecondarySelections) {
       .WriteText(initial_clipboard_text);
 
   std::u16string clipboard_text;
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.Append(u"It's time to say HELLO.");
 
   // Cut with multiple selections should copy only the primary selection but
@@ -902,7 +907,7 @@ static void SelectWordTestVerifier(
 }
 
 TEST_F(TextfieldModelTest, SelectWordTest) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.Append(u"  HELLO  !!  WO     RLD ");
 
   // Test when cursor is at the beginning.
@@ -943,7 +948,7 @@ TEST_F(TextfieldModelTest, SelectWordTest) {
 // regression.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(TextfieldModelTest, SelectWordTest_MixScripts) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   std::vector<WordAndCursor> word_and_cursor;
   word_and_cursor.emplace_back(L"a\x05d0", 2);
   word_and_cursor.emplace_back(L"a\x05d0", 2);
@@ -977,7 +982,7 @@ TEST_F(TextfieldModelTest, SelectWordTest_MixScripts) {
 #endif
 
 TEST_F(TextfieldModelTest, RangeTest) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.Append(u"HELLO WORLD");
   model.MoveCursor(gfx::LINE_BREAK, gfx::CURSOR_LEFT, gfx::SELECTION_NONE);
   gfx::Range range = model.render_text()->selection();
@@ -1093,7 +1098,7 @@ TEST_F(TextfieldModelTest, RangeTest) {
 }
 
 TEST_F(TextfieldModelTest, SelectRangeTest) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.Append(u"HELLO WORLD");
   gfx::Range range(0, 6);
   EXPECT_FALSE(range.is_reversed());
@@ -1152,7 +1157,7 @@ TEST_F(TextfieldModelTest, SelectRangeTest) {
 }
 
 TEST_F(TextfieldModelTest, SelectionTest) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.Append(u"HELLO WORLD");
   model.MoveCursor(gfx::LINE_BREAK, gfx::CURSOR_LEFT, gfx::SELECTION_NONE);
   gfx::Range selection = model.render_text()->selection();
@@ -1206,7 +1211,7 @@ TEST_F(TextfieldModelTest, SelectionTest) {
 }
 
 TEST_F(TextfieldModelTest, SelectSelectionModelTest) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.Append(u"HELLO WORLD");
   model.SelectSelectionModel(
       gfx::SelectionModel(gfx::Range(0, 6), gfx::CURSOR_BACKWARD));
@@ -1453,7 +1458,7 @@ TEST_F(TextfieldModelTest, CompositionTextTest) {
 }
 
 TEST_F(TextfieldModelTest, UndoRedo_BasicTest) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.InsertChar('a');
   EXPECT_FALSE(model.Redo());  // There is nothing to redo.
   EXPECT_TRUE(model.Undo());
@@ -1551,7 +1556,7 @@ TEST_F(TextfieldModelTest, UndoRedo_BasicTest) {
 
 TEST_F(TextfieldModelTest, UndoRedo_SetText) {
   // This is to test the undo/redo behavior of omnibox.
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   // Simulate typing www.y while www.google.com and www.youtube.com are
   // autocompleted.
   model.InsertChar('w');  //                                    w|
@@ -1618,7 +1623,7 @@ TEST_F(TextfieldModelTest, UndoRedo_SetText) {
 
 TEST_F(TextfieldModelTest, UndoRedo_BackspaceThenSetText) {
   // This is to test the undo/redo behavior of omnibox.
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.InsertChar('w');
   EXPECT_EQ(u"w", model.text());
   EXPECT_EQ(1U, model.GetCursorPosition());
@@ -1643,7 +1648,7 @@ TEST_F(TextfieldModelTest, UndoRedo_BackspaceThenSetText) {
 }
 
 TEST_F(TextfieldModelTest, UndoRedo_CutCopyPasteTest) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.SetText(u"ABCDE", 5);
   EXPECT_FALSE(model.Redo());  // There is nothing to redo.
   // Test Cut.
@@ -1790,7 +1795,7 @@ TEST_F(TextfieldModelTest, UndoRedo_CutCopyPasteTest) {
 }
 
 TEST_F(TextfieldModelTest, UndoRedo_CursorTest) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.InsertChar('a');
   model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_LEFT, gfx::SELECTION_NONE);
   model.MoveCursor(gfx::CHARACTER_BREAK, gfx::CURSOR_RIGHT,
@@ -1811,7 +1816,7 @@ TEST_F(TextfieldModelTest, UndoRedo_CursorTest) {
 
 TEST_F(TextfieldModelTest, Undo_SelectionTest) {
   gfx::Range range = gfx::Range(2, 4);
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.SetText(u"abcdef", 0);
   model.SelectRange(range);
   EXPECT_EQ(model.render_text()->selection(), range);
@@ -1900,28 +1905,28 @@ void RunOverwriteReplaceTest(TextfieldModel* model) {
 TEST_F(TextfieldModelTest, UndoRedo_ReplaceTest) {
   {
     SCOPED_TRACE("Select forwards and insert.");
-    TextfieldModel model(nullptr);
+    TextfieldModel model(this);
     model.SetText(u"abcd", 4);
     model.SelectRange(gfx::Range(1, 3));
     RunInsertReplaceTest(&model);
   }
   {
     SCOPED_TRACE("Select reversed and insert.");
-    TextfieldModel model(nullptr);
+    TextfieldModel model(this);
     model.SetText(u"abcd", 4);
     model.SelectRange(gfx::Range(3, 1));
     RunInsertReplaceTest(&model);
   }
   {
     SCOPED_TRACE("Select forwards and overwrite.");
-    TextfieldModel model(nullptr);
+    TextfieldModel model(this);
     model.SetText(u"abcd", 4);
     model.SelectRange(gfx::Range(1, 3));
     RunOverwriteReplaceTest(&model);
   }
   {
     SCOPED_TRACE("Select reversed and overwrite.");
-    TextfieldModel model(nullptr);
+    TextfieldModel model(this);
     model.SetText(u"abcd", 4);
     model.SelectRange(gfx::Range(3, 1));
     RunOverwriteReplaceTest(&model);
@@ -1929,7 +1934,7 @@ TEST_F(TextfieldModelTest, UndoRedo_ReplaceTest) {
 }
 
 TEST_F(TextfieldModelTest, UndoRedo_CompositionText) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
 
   ui::CompositionText composition;
   composition.text = u"abc";
@@ -2008,7 +2013,7 @@ TEST_F(TextfieldModelTest, UndoRedo_CompositionText) {
 }
 
 TEST_F(TextfieldModelTest, UndoRedo_TypingWithSecondarySelections) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
 
   // Type 'ab cd' as 'prefix ab xy suffix' and 'prefix ab cd suffix' are
   // autocompleted.
@@ -2076,7 +2081,7 @@ TEST_F(TextfieldModelTest, UndoRedo_TypingWithSecondarySelections) {
 }
 
 TEST_F(TextfieldModelTest, UndoRedo_MergingEditsWithSecondarySelections) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
 
   // Test all possible merge combinations involving secondary selections.
   // I.e. an initial [replace or delete] edit with secondary selections,
@@ -2308,7 +2313,7 @@ TEST_F(TextfieldModelTest, Clipboard_WhiteSpaceStringTest) {
   // Clipboard text with a leading tab should be pasted with the tab stripped.
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste).WriteText(u"\tB");
 
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.Append(u"HELLO WORLD");
   EXPECT_EQ(u"HELLO WORLD", model.text());
   model.MoveCursor(gfx::LINE_BREAK, gfx::CURSOR_RIGHT, gfx::SELECTION_NONE);
@@ -2443,7 +2448,7 @@ TEST_F(TextfieldModelTest, Transpose) {
   std::vector<std::vector<TestCase>> all_tests = {ltr_tests, rtl_tests,
                                                   surrogate_pairs_test};
 
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
 
   EXPECT_EQ(all_tests.size(), std::size(test_strings));
 
@@ -2466,7 +2471,7 @@ TEST_F(TextfieldModelTest, Transpose) {
 }
 
 TEST_F(TextfieldModelTest, Yank) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.SetText(u"abcdefgh", 0);
   model.SelectRange(gfx::Range(1, 3));
 
@@ -2531,7 +2536,7 @@ TEST_F(TextfieldModelTest, Yank) {
 }
 
 TEST_F(TextfieldModelTest, SetCompositionFromExistingText) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.SetText(u"abcde", 0);
 
   model.SetCompositionFromExistingText(gfx::Range(0, 1));
@@ -2547,7 +2552,7 @@ TEST_F(TextfieldModelTest, SetCompositionFromExistingText) {
 }
 
 TEST_F(TextfieldModelTest, SetCompositionFromExistingText_Empty) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.SetText(u"abc", 0);
 
   model.SetCompositionFromExistingText(gfx::Range(0, 2));
@@ -2559,7 +2564,7 @@ TEST_F(TextfieldModelTest, SetCompositionFromExistingText_Empty) {
 }
 
 TEST_F(TextfieldModelTest, SetCompositionFromExistingText_OutOfBounds) {
-  TextfieldModel model(nullptr);
+  TextfieldModel model(this);
   model.SetText(std::u16string(), 0);
 
   model.SetCompositionFromExistingText(gfx::Range(0, 2));

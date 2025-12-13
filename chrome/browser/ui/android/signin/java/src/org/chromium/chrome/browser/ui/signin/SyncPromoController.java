@@ -18,8 +18,7 @@ import androidx.annotation.StringDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BuildInfo;
-import org.chromium.base.Promise;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
@@ -45,7 +44,6 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -92,8 +90,6 @@ public class SyncPromoController {
     @VisibleForTesting
     static final int NTP_SYNC_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS =
             336; // 14 days in hours.
-
-    @VisibleForTesting static final String GMAIL_DOMAIN = "gmail.com";
 
     /** Strings used for promo shown count histograms. */
     @StringDef({UserAction.CONTINUED, UserAction.DISMISSED, UserAction.SHOWN})
@@ -282,11 +278,14 @@ public class SyncPromoController {
         if (visibleAccount == null) {
             return true;
         }
-        final Promise<@Nullable AccountInfo> visibleAccountPromise =
-                AccountInfoServiceProvider.get().getAccountInfoByEmail(visibleAccount.getEmail());
 
-        AccountInfo accountInfo =
-                visibleAccountPromise.isFulfilled() ? visibleAccountPromise.getResult() : null;
+        final IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(mProfile);
+        final @Nullable AccountInfo accountInfo =
+                identityManager != null
+                        ? identityManager.findExtendedAccountInfoByEmailAddress(
+                                visibleAccount.getEmail())
+                        : null;
         return accountInfo != null;
     }
 
@@ -333,7 +332,7 @@ public class SyncPromoController {
             // If sign-in is not possible, then history sync isn't possible either.
             return false;
         }
-        return !historySyncHelper.shouldSuppressHistorySync();
+        return historySyncHelper.shouldDisplayHistorySync();
     }
 
     // Find the visible account for sync promos
@@ -504,7 +503,7 @@ public class SyncPromoController {
         }
 
         // Hide secondary button on automotive devices, as they only support one account per device
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             view.getSecondaryButton().setVisibility(View.GONE);
         } else {
             view.getSecondaryButton().setText(R.string.signin_promo_choose_another_account);
@@ -520,10 +519,11 @@ public class SyncPromoController {
                                 mBottomSheetStrings,
                                 NoAccountSigninMode.BOTTOM_SHEET,
                                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                mHistoryOptInMode)
+                                mHistoryOptInMode,
+                                context.getString(R.string.history_sync_title),
+                                context.getString(R.string.history_sync_subtitle))
                         .build();
-        @Nullable
-        Intent intent =
+        @Nullable Intent intent =
                 mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
                         context, mProfile, config, mAccessPoint);
         if (intent != null) {
@@ -538,10 +538,11 @@ public class SyncPromoController {
                                 mBottomSheetStrings,
                                 NoAccountSigninMode.BOTTOM_SHEET,
                                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                mHistoryOptInMode)
+                                mHistoryOptInMode,
+                                context.getString(R.string.history_sync_title),
+                                context.getString(R.string.history_sync_subtitle))
                         .build();
-        @Nullable
-        Intent intent =
+        @Nullable Intent intent =
                 mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
                         context, mProfile, config, mAccessPoint);
         if (intent != null) {
@@ -556,10 +557,11 @@ public class SyncPromoController {
                                 mBottomSheetStrings,
                                 NoAccountSigninMode.BOTTOM_SHEET,
                                 WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET,
-                                mHistoryOptInMode)
+                                mHistoryOptInMode,
+                                context.getString(R.string.history_sync_title),
+                                context.getString(R.string.history_sync_subtitle))
                         .build();
-        @Nullable
-        Intent intent =
+        @Nullable Intent intent =
                 mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
                         context, mProfile, config, mAccessPoint);
         if (intent != null) {

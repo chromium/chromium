@@ -18,14 +18,14 @@ using CWVIdentityTest = PlatformTest;
 TEST_F(CWVIdentityTest, Initialization) {
   NSString* email = @"john.doe@chromium.org";
   NSString* full_name = @"John Doe";
-  NSString* gaia_id = @"123456789";
+  NSString* gaia_id_string = @"123456789";
 
   CWVIdentity* identity = [[CWVIdentity alloc] initWithEmail:email
                                                     fullName:full_name
-                                                      gaiaID:gaia_id];
+                                                      gaiaID:gaia_id_string];
   EXPECT_NSEQ(email, identity.email);
   EXPECT_NSEQ(full_name, identity.fullName);
-  EXPECT_NSEQ(gaia_id, identity.gaiaID);
+  EXPECT_NSEQ(gaia_id_string, identity.gaiaID);
 }
 
 }  // namespace ios_web_view

@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -80,7 +81,7 @@ struct AX_BASE_EXPORT AXTreeData final {
   // Metadata from an HTML HEAD, such as <meta> tags. Stored here
   // unparsed because the only applications that need these just want
   // raw strings. Only included if the kHTMLMetadata AXMode is enabled.
-  std::vector<std::string> metadata;
+  std::optional<std::vector<std::string>> metadata;
 };
 
 AX_BASE_EXPORT bool operator==(const AXTreeData& lhs, const AXTreeData& rhs);

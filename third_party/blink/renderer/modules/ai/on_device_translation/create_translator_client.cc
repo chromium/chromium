@@ -145,8 +145,8 @@ CreateTranslatorClient::CreateTranslatorClient(
       ->TranslationAvailable(
           mojom::blink::TranslatorLanguageCode::New(options->sourceLanguage()),
           mojom::blink::TranslatorLanguageCode::New(options->targetLanguage()),
-          WTF::BindOnce(&CreateTranslatorClient::OnGotAvailability,
-                        WrapPersistent(this)));
+          BindOnce(&CreateTranslatorClient::OnGotAvailability,
+                   WrapPersistent(this)));
 }
 CreateTranslatorClient::~CreateTranslatorClient() = default;
 
@@ -162,8 +162,8 @@ void CreateTranslatorClient::OnResult(
     mojom::blink::TranslatorLanguageCodePtr source_language,
     mojom::blink::TranslatorLanguageCodePtr target_language) {
   // Call `Cleanup` when this function returns.
-  RunOnDestruction run_on_destruction(WTF::BindOnce(
-      &CreateTranslatorClient::Cleanup, WrapWeakPersistent(this)));
+  RunOnDestruction run_on_destruction(
+      BindOnce(&CreateTranslatorClient::Cleanup, WrapWeakPersistent(this)));
 
   if (!GetResolver()) {
     // The request was aborted. Note: Currently abort signal is not supported.
@@ -258,18 +258,13 @@ void CreateTranslatorClient::OnGotAvailability(
     progress_observer = monitor_->BindRemote();
   }
 
-  bool add_fake_download_delay =
-      result ==
-      CanCreateTranslatorResult::kAfterDownloadTranslatorCreationRequired;
-
   AIInterfaceProxy::GetTranslationManagerRemote(GetExecutionContext())
       ->CreateTranslator(
           std::move(client),
           mojom::blink::TranslatorCreateOptions::New(
               mojom::blink::TranslatorLanguageCode::New(source_language_),
               mojom::blink::TranslatorLanguageCode::New(target_language_),
-              std::move(progress_observer)),
-          add_fake_download_delay);
+              std::move(progress_observer)));
 }
 
 void CreateTranslatorClient::ResetReceiver() {

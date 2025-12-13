@@ -29,9 +29,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.data_sharing.ui.versioning.VersioningModalDialog;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
-import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.DismissActionProvider;
-import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ReviewActionProvider;
-import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageData;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ActionProvider;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_group_sync.MessageType;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -53,32 +51,32 @@ public class PersistentVersioningMessageMediator {
      * This is the data type that this mediator uses to create a message card. It holds the data
      * necessary to display the card.
      */
-    private static class TabGroupListVersioningMessageData implements MessageData {
+    private static class TabGroupListVersioningMessageModel {
         private final Context mContext;
-        private final ReviewActionProvider mActionProvider;
-        private final DismissActionProvider mDismissActionProvider;
+        private final ActionProvider mAcceptActionProvider;
+        private final ActionProvider mDismissActionProvider;
 
         /**
          * @param context The context used obtaining the message strings.
-         * @param actionProvider The provider for the primary action.
+         * @param acceptActionProvider The provider for the primary action.
          * @param dismissActionProvider The provider for the dismiss action.
          */
-        TabGroupListVersioningMessageData(
+        TabGroupListVersioningMessageModel(
                 Context context,
-                ReviewActionProvider actionProvider,
-                DismissActionProvider dismissActionProvider) {
+                ActionProvider acceptActionProvider,
+                ActionProvider dismissActionProvider) {
             mContext = context;
-            mActionProvider = actionProvider;
+            mAcceptActionProvider = acceptActionProvider;
             mDismissActionProvider = dismissActionProvider;
         }
 
         /** The provider for the review action callback. */
-        public ReviewActionProvider getActionProvider() {
-            return mActionProvider;
+        public ActionProvider getAcceptActionProvider() {
+            return mAcceptActionProvider;
         }
 
         /** The provider for the dismiss action callback. */
-        public DismissActionProvider getDismissActionProvider() {
+        public ActionProvider getDismissActionProvider() {
             return mDismissActionProvider;
         }
 
@@ -132,8 +130,8 @@ public class PersistentVersioningMessageMediator {
         }
 
         removeMessageCard();
-        TabGroupListVersioningMessageData messageData =
-                new TabGroupListVersioningMessageData(
+        TabGroupListVersioningMessageModel messageData =
+                new TabGroupListVersioningMessageModel(
                         mContext, this::onPrimaryAction, this::onDismiss);
 
         mModelList.add(new ListItem(VERSION_OUT_OF_DATE, createPropertyModel(messageData)));
@@ -146,7 +144,7 @@ public class PersistentVersioningMessageMediator {
         mVersioningModalDialog.show();
     }
 
-    private void onDismiss(@MessageService.MessageType int type) {
+    private void onDismiss() {
         removeMessageCard();
         mVersioningMessageController.onMessageUiDismissed(
                 MessageType.VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE);
@@ -168,13 +166,13 @@ public class PersistentVersioningMessageMediator {
         return model.containsKey(MESSAGE_TYPE) && model.get(MESSAGE_TYPE) == VERSION_OUT_OF_DATE;
     }
 
-    private static PropertyModel createPropertyModel(TabGroupListVersioningMessageData data) {
+    private static PropertyModel createPropertyModel(TabGroupListVersioningMessageModel data) {
         String dismissButtonDescription = data.getDismissButtonDescription();
 
         return new PropertyModel.Builder(TabGroupMessageCardViewProperties.ALL_KEYS)
                 .with(MESSAGE_IDENTIFIER, DEFAULT_MESSAGE_IDENTIFIER)
                 .with(ACTION_BUTTON_VISIBLE, true)
-                .with(UI_ACTION_PROVIDER, data.getActionProvider())
+                .with(UI_ACTION_PROVIDER, data.getAcceptActionProvider())
                 .with(ACTION_TEXT, data.getActionButtonText())
                 .with(UI_DISMISS_ACTION_PROVIDER, data.getDismissActionProvider())
                 .with(SHOULD_KEEP_AFTER_REVIEW, true)
@@ -207,6 +205,8 @@ public class PersistentVersioningMessageMediator {
 
         VersioningMessageController versioningMessageController =
                 tabGroupSyncService.getVersioningMessageController();
+        if (versioningMessageController == null) return null;
+
         VersioningModalDialog versioningModalDialog =
                 new VersioningModalDialog(context, modalDialogManager, /* exitRunnable= */ null);
 

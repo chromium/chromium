@@ -287,15 +287,15 @@ std::optional<double> ScrollTimeline::GetCurrentScrollPosition() const {
                                                      : scroll_offset.y();
 }
 
-void ScrollTimeline::AddAnimationTrigger(AnimationTrigger* trigger) {
-  AnimationTimeline::AddAnimationTrigger(trigger);
+void ScrollTimeline::AddTrigger(TimelineTrigger* trigger) {
+  AnimationTimeline::AddTrigger(trigger);
   if (RetainingElement()) {
     RetainingElement()->RegisterScrollTimeline(this);
   }
 }
 
-void ScrollTimeline::RemoveAnimationTrigger(AnimationTrigger* trigger) {
-  AnimationTimeline::RemoveAnimationTrigger(trigger);
+void ScrollTimeline::RemoveTrigger(TimelineTrigger* trigger) {
+  AnimationTimeline::RemoveTrigger(trigger);
   if (RetainingElement() && triggers_.empty() && !HasAnimations()) {
     RetainingElement()->UnregisterScrollTimeline(this);
   }

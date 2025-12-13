@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
+namespace {
 
 TEST(HistogramManager, HistogramBucketFields) {
   // Capture histograms at the start of the test to avoid later GetDeltas()
@@ -54,4 +55,5 @@ TEST(HistogramManager, HistogramBucketFields) {
   EXPECT_EQ(1, histogram_proto2.bucket(0).count());
 }
 
+}  // namespace
 }  // namespace metrics

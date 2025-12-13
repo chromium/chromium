@@ -451,11 +451,7 @@ TEST_F(MenuControllerTest, Execute) {
 
   // Fake selecting the menu item, we expect the delegate to be told to execute
   // a command.
-  NSMenuItem* item = [menu.menu itemAtIndex:0];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-  [item.target performSelector:item.action withObject:item];
-#pragma clang diagnostic pop
+  [menu.menu performActionForItemAtIndex:0];
   EXPECT_EQ(1, delegate.execute_count_);
 }
 
@@ -611,7 +607,6 @@ TEST_F(MenuControllerTest, OwningDelegate) {
     delegate = new OwningDelegate(&did_delete, &did_dealloc);  // Self deleting.
     delegate->auto_close_ = false;
 
-    // Unretained reference to the controller.
     MenuControllerCocoa* controller = delegate->controller();
 
     item = [controller.menu itemAtIndex:0];
@@ -625,16 +620,14 @@ TEST_F(MenuControllerTest, OwningDelegate) {
   EXPECT_FALSE(did_dealloc);
   EXPECT_FALSE(did_delete);
 
-  // On 10.15+, [NSMenuItem target] indirectly causes an extra
-  // retain+autorelease of the target. That avoids bugs caused by the
-  // NSMenuItem's action causing destruction of the target, but also causes the
-  // NSMenuItem to get cleaned up later than this test expects. Deal with that
-  // by creating an explicit autorelease pool here.
+  // The `target` property of NSMenuItem is marked as weak, and therefore,
+  // accessing it turns it into a strong reference, with a corresponding release
+  // (or even autorelease) to come later. That's good to avoid bugs caused by
+  // the NSMenuItem's action causing destruction of the target, but also causes
+  // the NSMenuItem to get cleaned up later than this test expects. Deal with
+  // that by creating an explicit autorelease pool here.
   @autoreleasepool {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-    [item.target performSelector:item.action withObject:item];
-#pragma clang diagnostic pop
+    [item.menu performActionForItemAtIndex:0];
   }
   EXPECT_TRUE(did_dealloc);
   EXPECT_TRUE(did_delete);

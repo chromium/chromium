@@ -15,8 +15,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.Observer;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
@@ -213,7 +212,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
         final Resources resources = mContext.getResources();
         mBarBackgroundColor = ChromeSemanticColorUtils.getOverlayPanelBarBackgroundColor(mContext);
         mIconColor = SemanticColorUtils.getDefaultIconColor(context);
-        mDragHandlebarColor = SemanticColorUtils.getDragHandlebarColor(context);
+        mDragHandlebarColor = SemanticColorUtils.getDragHandleColor(context);
         mProgressBarBackgroundColor = SemanticColorUtils.getDefaultControlColorActive(context);
         mProgressBarColor = SemanticColorUtils.getDefaultControlColorActive(context);
         mButtonPaddingDps =
@@ -415,7 +414,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
     /**
      * @return Supplier of whether the Panel is showing.
      */
-    public ObservableSupplier<Boolean> isShowingSupplier() {
+    public SettableNonNullObservableSupplier<Boolean> isShowingSupplier() {
         return mIsShowingSupplier;
     }
 
@@ -515,8 +514,8 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
     private float mOffsetY;
     private float mHeight;
     private boolean mIsMaximized;
-    private final ObservableSupplierImpl<Boolean> mIsShowingSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mIsShowingSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     /**
      * @return The horizontal offset of the Overlay Panel in DPs.

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/service/surfaces/surface_saved_frame.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
@@ -22,9 +23,9 @@ std::unique_ptr<SurfaceSavedFrame> CreateFrameWithResult(
   CompositorFrameTransitionDirective::SharedElement element;
   auto directive = CompositorFrameTransitionDirective::CreateSave(
       blink::ViewTransitionToken(), /*maybe_cross_frame_sink=*/false, 1,
-      {element}, {});
-  auto frame = SurfaceSavedFrame::CreateForTesting(std::move(directive),
-                                                   shared_image_interface);
+      {element}, {}, false);
+  auto frame = SurfaceSavedFrame::CreateForTesting(
+      std::move(directive), shared_image_interface, base::DoNothing());
   frame->CompleteSavedFrameForTesting();
   return frame;
 }
@@ -42,7 +43,7 @@ class TransferableResourceTrackerTest : public testing::Test {
 
   // Returns if the software SharedImage for the |resource| is valid.
   bool HasSharedImageForSoftwareResource(const TransferableResource& resource) {
-    DCHECK(resource.is_software);
+    DCHECK(resource.GetIsSoftware());
 
     return shared_image_interface()->CheckSharedImageExists(resource.mailbox());
   }
@@ -75,14 +76,19 @@ TEST_F(TransferableResourceTrackerTest, IdInRange) {
 
   EXPECT_GE(resource2->resource.id, resource1->resource.id);
 
+  gpu::Mailbox mailbox1 = resource1->resource.mailbox();
   tracker.ReturnFrame(frame1);
-  EXPECT_FALSE(HasSharedImageForSoftwareResource(resource1->resource));
+  frame1 = TransferableResourceTracker::ResourceFrame();
+  EXPECT_FALSE(shared_image_interface()->CheckSharedImageExists(mailbox1));
 
-  tracker.RefResource(resource2->resource.id);
+  gpu::Mailbox mailbox2 = resource2->resource.mailbox();
+  ResourceId id2 = resource2->resource.id;
+  tracker.RefResource(id2);
   tracker.ReturnFrame(frame2);
-  EXPECT_TRUE(HasSharedImageForSoftwareResource(resource2->resource));
-  tracker.UnrefResource(resource2->resource.id, 1, gpu::SyncToken());
-  EXPECT_FALSE(HasSharedImageForSoftwareResource(resource2->resource));
+  frame2 = TransferableResourceTracker::ResourceFrame();
+  EXPECT_TRUE(shared_image_interface()->CheckSharedImageExists(mailbox2));
+  tracker.UnrefResource(id2, 1, gpu::SyncToken());
+  EXPECT_FALSE(shared_image_interface()->CheckSharedImageExists(mailbox2));
 }
 
 TEST_F(TransferableResourceTrackerTest, ExhaustedIdLoops) {
@@ -109,9 +115,10 @@ TEST_F(TransferableResourceTrackerTest, ExhaustedIdLoops) {
     frames.push_back(std::move(frame));
   }
   for (auto& frame : frames) {
+    gpu::Mailbox mailbox = frame.shared.at(0)->resource.mailbox();
     tracker.ReturnFrame(frame);
-    EXPECT_FALSE(
-        HasSharedImageForSoftwareResource(frame.shared.at(0)->resource));
+    frame = TransferableResourceTracker::ResourceFrame();
+    EXPECT_FALSE(shared_image_interface()->CheckSharedImageExists(mailbox));
   }
 }
 
@@ -166,9 +173,10 @@ TEST_F(TransferableResourceTrackerTest,
     frames.push_back(std::move(frame));
   }
   for (auto& frame : frames) {
+    gpu::Mailbox mailbox = frame.shared.at(0)->resource.mailbox();
     tracker.ReturnFrame(frame);
-    EXPECT_FALSE(
-        HasSharedImageForSoftwareResource(frame.shared.at(0)->resource));
+    frame = TransferableResourceTracker::ResourceFrame();
+    EXPECT_FALSE(shared_image_interface()->CheckSharedImageExists(mailbox));
   }
 }
 

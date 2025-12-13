@@ -94,7 +94,8 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
       AttributionSuitableContext suitable_context,
       const blink::AttributionSrcToken& attribution_src_token,
       int64_t navigation_id,
-      std::string devtools_request_id) override;
+      std::string devtools_request_id,
+      bool from_context_menu) override;
   bool NotifyNavigationRegistrationData(
       const blink::AttributionSrcToken& attribution_src_token,
       const net::HttpResponseHeaders* headers,

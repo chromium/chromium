@@ -14,8 +14,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/completion_once_callback.h"
@@ -93,6 +91,100 @@ class ServiceWorkerCacheWriter::ReadResponseHeadCallbackAdapter
   base::WeakPtr<ServiceWorkerCacheWriter> owner_;
   bool async_ = false;
   int result_ = net::ERR_IO_PENDING;
+};
+
+class ServiceWorkerCacheWriter::DataPipeReader {
+ public:
+  DataPipeReader(storage::mojom::ServiceWorkerResourceReader* reader,
+                 ServiceWorkerCacheWriter* owner,
+                 scoped_refptr<base::SequencedTaskRunner> runner)
+      : reader_(reader),
+        owner_(owner),
+        watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL, runner),
+        task_runner_(runner) {}
+
+  // Reads the body up to |num_bytes| bytes. |callback| is always called
+  // asynchronously.
+  using ReadCallback = base::OnceCallback<void(int /* result */)>;
+  void Read(scoped_refptr<net::IOBuffer> buffer,
+            int num_bytes,
+            ReadCallback callback) {
+    DCHECK(buffer);
+    buffer_ = std::move(buffer);
+    num_bytes_to_read_ = base::checked_cast<size_t>(num_bytes);
+    callback_ = std::move(callback);
+
+    if (!data_.is_valid()) {
+      // This is the initial call of Read(). Call PrepareReadData() to get a
+      // data pipe to read the body.
+      reader_->PrepareReadData(
+          -1, base::BindOnce(
+                  &ServiceWorkerCacheWriter::DataPipeReader::OnReadDataPrepared,
+                  weak_factory_.GetWeakPtr()));
+      return;
+    }
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ServiceWorkerCacheWriter::DataPipeReader::ReadInternal,
+                       weak_factory_.GetWeakPtr(), MOJO_RESULT_OK));
+  }
+
+ private:
+  void ReadInternal(MojoResult) {
+    MojoResult result =
+        data_->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                        buffer_->first(num_bytes_to_read_), num_bytes_to_read_);
+    if (result == MOJO_RESULT_SHOULD_WAIT) {
+      watcher_.ArmOrNotify();
+      return;
+    }
+    if (result != MOJO_RESULT_OK) {
+      // Disconnected means it's the end of the body or an error occurs during
+      // reading the body.
+      // TODO(crbug.com/40120038): notify of errors.
+      num_bytes_to_read_ = 0;
+    }
+    owner_->AsyncDoLoop(base::checked_cast<int>(num_bytes_to_read_));
+  }
+
+  void OnReadDataPrepared(mojo::ScopedDataPipeConsumerHandle data) {
+    // An invalid handle can be returned when creating a data pipe fails on the
+    // other side of the endpoint.
+    if (!data) {
+      owner_->AsyncDoLoop(net::ERR_FAILED);
+      return;
+    }
+
+    data_ = std::move(data);
+    watcher_.Watch(data_.get(),
+                   MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+                   base::BindRepeating(
+                       &ServiceWorkerCacheWriter::DataPipeReader::ReadInternal,
+                       weak_factory_.GetWeakPtr()));
+    ReadInternal(MOJO_RESULT_OK);
+
+    // TODO(crbug.com/40120038): provide a callback to notify of errors
+    // if any.
+    reader_->ReadData({});
+  }
+
+  // Parameters set on Read().
+  scoped_refptr<net::IOBuffer> buffer_;
+  size_t num_bytes_to_read_ = 0;
+  ReadCallback callback_;
+
+  // |reader_| is safe to be kept as a rawptr because |owner_| owns |this| and
+  // |reader_|, and |owner_| keeps |reader_| until it's destroyed.
+  const raw_ptr<storage::mojom::ServiceWorkerResourceReader> reader_;
+  const raw_ptr<ServiceWorkerCacheWriter> owner_;
+
+  // Mojo data pipe and the watcher is set up when Read() is called for the
+  // first time.
+  mojo::ScopedDataPipeConsumerHandle data_;
+  mojo::SimpleWatcher watcher_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  base::WeakPtrFactory<DataPipeReader> weak_factory_{this};
 };
 
 int ServiceWorkerCacheWriter::DoLoop(int status) {
@@ -175,8 +267,7 @@ ServiceWorkerCacheWriter::ServiceWorkerCacheWriter(
       copy_reader_(std::move(copy_reader)),
       writer_(std::move(writer)),
       writer_resource_id_(writer_resource_id),
-      checksum_update_timing_(checksum_update_timing),
-      checksum_(crypto::SecureHash::Create(crypto::SecureHash::SHA256)) {
+      checksum_update_timing_(checksum_update_timing) {
   if (compare_reader_) {
     compare_reader_.set_disconnect_handler(
         base::BindOnce(&ServiceWorkerCacheWriter::OnRemoteDisconnected,
@@ -293,7 +384,7 @@ net::Error ServiceWorkerCacheWriter::MaybeWriteData(
 
   if (checksum_update_timing_ == ChecksumUpdateTiming::kAlways &&
       len_to_write_ > 0) {
-    checksum_->Update(data_to_write_->data(), len_to_write_);
+    checksum_.Update(data_to_write_->first(len_to_write_));
   }
 
   if (comparing_)
@@ -704,100 +795,6 @@ int ServiceWorkerCacheWriter::ReadResponseHead(
   return adapter->result();
 }
 
-class ServiceWorkerCacheWriter::DataPipeReader {
- public:
-  DataPipeReader(storage::mojom::ServiceWorkerResourceReader* reader,
-                 ServiceWorkerCacheWriter* owner,
-                 scoped_refptr<base::SequencedTaskRunner> runner)
-      : reader_(reader),
-        owner_(owner),
-        watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL, runner),
-        task_runner_(runner) {}
-
-  // Reads the body up to |num_bytes| bytes. |callback| is always called
-  // asynchronously.
-  using ReadCallback = base::OnceCallback<void(int /* result */)>;
-  void Read(scoped_refptr<net::IOBuffer> buffer,
-            int num_bytes,
-            ReadCallback callback) {
-    DCHECK(buffer);
-    buffer_ = std::move(buffer);
-    num_bytes_to_read_ = base::checked_cast<size_t>(num_bytes);
-    callback_ = std::move(callback);
-
-    if (!data_.is_valid()) {
-      // This is the initial call of Read(). Call PrepareReadData() to get a
-      // data pipe to read the body.
-      reader_->PrepareReadData(
-          -1, base::BindOnce(
-                  &ServiceWorkerCacheWriter::DataPipeReader::OnReadDataPrepared,
-                  weak_factory_.GetWeakPtr()));
-      return;
-    }
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ServiceWorkerCacheWriter::DataPipeReader::ReadInternal,
-                       weak_factory_.GetWeakPtr(), MOJO_RESULT_OK));
-  }
-
- private:
-  void ReadInternal(MojoResult) {
-    MojoResult result =
-        data_->ReadData(MOJO_READ_DATA_FLAG_NONE,
-                        buffer_->first(num_bytes_to_read_), num_bytes_to_read_);
-    if (result == MOJO_RESULT_SHOULD_WAIT) {
-      watcher_.ArmOrNotify();
-      return;
-    }
-    if (result != MOJO_RESULT_OK) {
-      // Disconnected means it's the end of the body or an error occurs during
-      // reading the body.
-      // TODO(crbug.com/40120038): notify of errors.
-      num_bytes_to_read_ = 0;
-    }
-    owner_->AsyncDoLoop(base::checked_cast<int>(num_bytes_to_read_));
-  }
-
-  void OnReadDataPrepared(mojo::ScopedDataPipeConsumerHandle data) {
-    // An invalid handle can be returned when creating a data pipe fails on the
-    // other side of the endpoint.
-    if (!data) {
-      owner_->AsyncDoLoop(net::ERR_FAILED);
-      return;
-    }
-
-    data_ = std::move(data);
-    watcher_.Watch(data_.get(),
-                   MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-                   base::BindRepeating(
-                       &ServiceWorkerCacheWriter::DataPipeReader::ReadInternal,
-                       weak_factory_.GetWeakPtr()));
-    ReadInternal(MOJO_RESULT_OK);
-
-    // TODO(crbug.com/40120038): provide a callback to notify of errors
-    // if any.
-    reader_->ReadData({});
-  }
-
-  // Parameters set on Read().
-  scoped_refptr<net::IOBuffer> buffer_;
-  size_t num_bytes_to_read_ = 0;
-  ReadCallback callback_;
-
-  // |reader_| is safe to be kept as a rawptr because |owner_| owns |this| and
-  // |reader_|, and |owner_| keeps |reader_| until it's destroyed.
-  const raw_ptr<storage::mojom::ServiceWorkerResourceReader> reader_;
-  const raw_ptr<ServiceWorkerCacheWriter> owner_;
-
-  // Mojo data pipe and the watcher is set up when Read() is called for the
-  // first time.
-  mojo::ScopedDataPipeConsumerHandle data_;
-  mojo::SimpleWatcher watcher_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  base::WeakPtrFactory<DataPipeReader> weak_factory_{this};
-};
-
 int ServiceWorkerCacheWriter::ReadDataHelper(
     storage::mojom::ServiceWorkerResourceReader* reader,
     std::unique_ptr<DataPipeReader>& data_pipe_reader,
@@ -864,10 +861,10 @@ int ServiceWorkerCacheWriter::WriteDataToResponseWriter(
   // If |checksum_update_timing_| is kAlways, the checksum update should be
   // handled in MaybeWriteData().
   if (checksum_update_timing_ == ChecksumUpdateTiming::kCacheMismatch) {
-    checksum_->Update(data->data(), length);
+    checksum_.Update(data->first(length));
   }
 
-  mojo_base::BigBuffer big_buffer(base::as_bytes(data->span().first(length)));
+  mojo_base::BigBuffer big_buffer(base::as_bytes(data->first(length)));
   writer_->WriteData(
       std::move(big_buffer),
       base::BindOnce(&AsyncOnlyCompletionCallbackAdaptor::WrappedCallback,
@@ -948,10 +945,8 @@ void ServiceWorkerCacheWriter::AsyncDoLoop(int result) {
 
 std::string ServiceWorkerCacheWriter::GetSha256Checksum() {
   DCHECK_EQ(STATE_DONE, state_);
-  DCHECK(checksum_);
-  uint8_t result[crypto::kSHA256Length];
-  checksum_->Finish(result, crypto::kSHA256Length);
-  checksum_ = nullptr;
+  std::array<uint8_t, crypto::hash::kSha256Size> result;
+  checksum_.Finish(result);
   return base::HexEncode(result);
 }
 

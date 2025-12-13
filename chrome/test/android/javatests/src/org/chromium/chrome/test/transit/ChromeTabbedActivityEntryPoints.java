@@ -11,6 +11,7 @@ import com.google.errorprone.annotations.CheckReturnValue;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.EntryPointSentinelStation;
 import org.chromium.base.test.transit.TripBuilder;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -33,6 +34,18 @@ public class ChromeTabbedActivityEntryPoints {
 
         return sentinel.runTo(ctaTestRule::startMainActivityOnBlankPage)
                 .arriveAt(WebPageStation.newBuilder().withEntryPoint().build());
+    }
+
+    /** Start the ChromeTabbedActivity in an incognito blank page. */
+    public static WebPageStation startOnIncognitoBlankPage(
+            ChromeTabbedActivityTestRule ctaTestRule) {
+        disableFirstRunFlow();
+
+        EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
+        sentinel.setAsEntryPoint();
+
+        return sentinel.runTo(ctaTestRule::startMainActivityOnIncognitoBlankPage)
+                .arriveAt(WebPageStation.newBuilder().withEntryPoint().withIncognito(true).build());
     }
 
     /** Start the ChromeTabbedActivity in a web page at the given |url|. */
@@ -102,7 +115,7 @@ public class ChromeTabbedActivityEntryPoints {
     /** Start the ChromeTabbedActivity with an Intent, adding a URL to it. */
     @CheckReturnValue
     public static TripBuilder startWithIntentPlusUrlTo(
-            ChromeTabbedActivityTestRule ctaTestRule, Intent intent, String url) {
+            ChromeTabbedActivityTestRule ctaTestRule, Intent intent, @Nullable String url) {
         disableFirstRunFlow();
 
         EntryPointSentinelStation sentinel = new EntryPointSentinelStation();

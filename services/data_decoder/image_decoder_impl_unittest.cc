@@ -2,21 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/data_decoder/image_decoder_impl.h"
 
 #include <array>
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -110,15 +106,14 @@ class BlinkInitializer : public blink::Platform {
   ~BlinkInitializer() override = default;
 };
 
-base::LazyInstance<BlinkInitializer>::Leaky g_blink_initializer =
-    LAZY_INSTANCE_INITIALIZER;
-
 class ImageDecoderImplTest : public testing::Test {
  public:
   ImageDecoderImplTest() = default;
   ~ImageDecoderImplTest() override = default;
 
-  void SetUp() override { g_blink_initializer.Get(); }
+  void SetUp() override {
+    static base::NoDestructor<BlinkInitializer> instance;
+  }
 
  protected:
   ImageDecoderImpl* decoder() { return &decoder_; }
@@ -182,8 +177,8 @@ TEST_F(ImageDecoderImplTest, DecodeImageSizeLimit) {
 TEST_F(ImageDecoderImplTest, DecodeImageFailed) {
   // The "jpeg" is just some "random" data;
   const char kRandomData[] = "u gycfy7xdjkhfgui bdui ";
-  std::vector<unsigned char> jpg(kRandomData,
-                                 kRandomData + sizeof(kRandomData));
+  std::vector<unsigned char> jpg(
+      kRandomData, UNSAFE_TODO(kRandomData + sizeof(kRandomData)));
 
   Request request(decoder());
   request.DecodeImage(jpg, false);

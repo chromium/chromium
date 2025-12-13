@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/platform/drm/gpu/screen_manager.h"
 
 #include <drm_fourcc.h>
@@ -18,7 +13,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
@@ -97,13 +94,14 @@ std::unique_ptr<HardwareDisplayControllerInfo> GetDisplayInfo(
   connector->count_props = 0;
   connector->count_modes = kNumModes;
   connector->modes = DrmAllocator<drmModeModeInfo>(kNumModes);
-  std::memcpy(connector->modes, &modes[0], kNumModes * sizeof(drmModeModeInfo));
+  UNSAFE_TODO(std::memcpy(connector->modes, &modes[0],
+                          kNumModes * sizeof(drmModeModeInfo)));
 
   // Initialize a CRTC.
   ScopedDrmCrtcPtr crtc(DrmAllocator<drmModeCrtc>());
   crtc->crtc_id = crtc_id;
   crtc->mode_valid = 1;
-  crtc->mode = connector->modes[kNumModes - 1];
+  crtc->mode = UNSAFE_TODO(connector->modes[kNumModes - 1]);
 
   return std::make_unique<HardwareDisplayControllerInfo>(
       std::move(connector), std::move(crtc), index,
@@ -2139,14 +2137,7 @@ TEST_F(ScreenManagerTest, ReplaceDisplayControllersCrtcs) {
 }
 
 // TODO(b/322831691): Deterministic failure.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ReplaceDisplayControllersCrtcsNonexistent \
-  DISABLED_ReplaceDisplayControllersCrtcsNonexistent
-#else
-#define MAYBE_ReplaceDisplayControllersCrtcsNonexistent \
-  ReplaceDisplayControllersCrtcsNonexistent
-#endif
-TEST_F(ScreenManagerTest, MAYBE_ReplaceDisplayControllersCrtcsNonexistent) {
+TEST_F(ScreenManagerTest, DISABLED_ReplaceDisplayControllersCrtcsNonexistent) {
   // Initializes 2 CRTC-Connector pairs.
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
   uint32_t crtc_id = drm_->crtc_property(0).id;

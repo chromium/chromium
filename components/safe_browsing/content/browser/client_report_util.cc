@@ -161,6 +161,12 @@ GetSecurityInterstitialInteractionFromCommand(
     case security_interstitials::CMD_ERROR:
     case security_interstitials::CMD_REQUEST_SITE_ACCESS_PERMISSION:
     case security_interstitials::CMD_OPEN_ANDROID_ADVANCED_PROTECTION_SETTINGS:
+    case security_interstitials::CMD_OPEN_HELP_CENTER_IN_NEW_TAB:
+    case security_interstitials::CMD_OPEN_DIAGNOSTIC_IN_NEW_TAB:
+    case security_interstitials::CMD_OPEN_REPORTING_PRIVACY_IN_NEW_TAB:
+    case security_interstitials::CMD_OPEN_WHITEPAPER_IN_NEW_TAB:
+    case security_interstitials::CMD_REPORT_PHISHING_ERROR_IN_NEW_TAB:
+    case security_interstitials::CMD_SHOW_CERTIFICATE_VIEWER:
       break;
   }
   return CSBRR::InterstitialInteraction::UNSPECIFIED;

@@ -337,7 +337,7 @@ bool ExtractSHA256HashValueFromString(std::string_view value,
       decoded.size() != out->size()) {
     return false;
   }
-  UNSAFE_TODO(memcpy(out->data(), decoded.data(), out->size()));
+  base::span(*out).copy_from(base::as_byte_span(decoded));
   return true;
 }
 

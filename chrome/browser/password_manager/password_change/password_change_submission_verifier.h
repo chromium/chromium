@@ -13,17 +13,22 @@
 #include "base/timer/timer.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/password_manager/core/browser/password_form.h"
+
+class AnnotatedPageContentCapturer;
+class ModelQualityLogsUploader;
 
 namespace content {
 class WebContents;
 }
-class ModelQualityLogsUploader;
 
 // Helper class which verifies whether password change was successful or not.
 class PasswordChangeSubmissionVerifier {
  public:
+  static char kPasswordChangeVerificationTimeHistogram[];
+  static char kSubmissionOutcomeHistogramName[];
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //
@@ -47,9 +52,6 @@ class PasswordChangeSubmissionVerifier {
 
   using FormSubmissionResultCallback = base::OnceCallback<void(bool)>;
 
-  static constexpr char kPasswordChangeVerificationTimeHistogram[] =
-      "PasswordManager.PasswordChangeVerificationTime";
-
   PasswordChangeSubmissionVerifier(content::WebContents* web_contents,
                                    ModelQualityLogsUploader* logs_uploader);
   ~PasswordChangeSubmissionVerifier();
@@ -57,27 +59,23 @@ class PasswordChangeSubmissionVerifier {
   void CheckSubmissionOutcome(FormSubmissionResultCallback callback);
 
 #if defined(UNIT_TEST)
-  void set_annotated_page_callback(
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
-          callback) {
-    capture_annotated_page_content_ = std::move(callback);
-  }
+  AnnotatedPageContentCapturer* capturer() { return capturer_.get(); }
 #endif
 
  private:
   void CheckSubmissionSuccessful(
-      std::optional<optimization_guide::AIPageContentResult> page_content);
+      optimization_guide::AIPageContentResultOrError page_content);
   void OnExecutionResponseCallback(
-      base::Time request_time,
       optimization_guide::OptimizationGuideModelExecutionResult
           execution_result,
       std::unique_ptr<
           optimization_guide::proto::PasswordChangeSubmissionLoggingData>
           logging_data);
+  void OnPageLoadCompleted();
 
+  const base::Time creation_time_;
   const raw_ptr<content::WebContents> web_contents_;
-  base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
-      capture_annotated_page_content_;
+  std::unique_ptr<AnnotatedPageContentCapturer> capturer_;
   FormSubmissionResultCallback callback_;
   raw_ptr<ModelQualityLogsUploader> logs_uploader_;
 

@@ -5,9 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_BACK_FORWARD_CACHE_DISABLING_FEATURE_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_BACK_FORWARD_CACHE_DISABLING_FEATURE_TRACKER_H_
 
-#include <bitset>
-#include <utility>
-
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -39,6 +36,7 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
   // instance except for tests.
   BackForwardCacheDisablingFeatureTracker(
       TraceableVariableController* tracing_controller,
+      perfetto::Track parent_track,
       ThreadSchedulerBase* scheduler);
 
   // Sets the delegate to notify the feature usage update. This must be called
@@ -66,7 +64,7 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
   void Remove(FeatureAndJSLocationBlockingBFCache feature_and_js_location);
 
   // Gets a hash set of feature usages for metrics.
-  WTF::HashSet<SchedulingPolicy::Feature>
+  HashSet<SchedulingPolicy::Feature>
   GetActiveFeaturesTrackedForBackForwardCacheMetrics();
 
   // Gets a list of non sticky features and their JS locations.
@@ -99,18 +97,16 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
   // Called when a usage of |feature| is added.
   void AddFeatureInternal(SchedulingPolicy::Feature feature);
 
+  perfetto::NamedTrack GetTrackForFeature(
+      SchedulingPolicy::Feature traced_feature) const;
+
+  perfetto::Track parent_track_;
+
   base::flat_map<SchedulingPolicy::Feature, int>
       back_forward_cache_disabling_feature_counts_{};
-  // TODO(crbug.com/1366675): Remove back_forward_cache_disabling_features_.
-  std::bitset<static_cast<size_t>(SchedulingPolicy::Feature::kMaxValue) + 1>
-      back_forward_cache_disabling_features_{};
   TraceableState<bool, TRACE_DISABLED_BY_DEFAULT("renderer.scheduler")>
       opted_out_from_back_forward_cache_;
 
-  // The last set of features passed to FrameOrWorkerScheduler::Delegate::
-  // UpdateBackForwardCacheDisablingFeatures.
-  // TODO(yuzus): Remove the feature mask.
-  uint64_t last_uploaded_bfcache_disabling_features_ = 0;
   BFCacheBlockingFeatureAndLocations last_reported_non_sticky_;
   BFCacheBlockingFeatureAndLocations last_reported_sticky_;
   bool feature_report_scheduled_ = false;

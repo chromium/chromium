@@ -5,6 +5,7 @@
 #include "content/public/browser/tracing_delegate.h"
 
 #include "base/functional/bind.h"
+#include "components/tracing/common/background_tracing_state_manager.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <utility>

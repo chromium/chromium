@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service_factory.h"
 
+#import "components/policy/core/browser/url_list/policy_blocklist_service.h"
 #import "components/policy/core/common/policy_pref_names.h"
-#import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
@@ -30,10 +30,19 @@ PolicyBlocklistServiceFactory::~PolicyBlocklistServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 PolicyBlocklistServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
-  PrefService* prefs = ProfileIOS::FromBrowserState(browser_state)->GetPrefs();
+    ProfileIOS* profile) const {
+  PrefService* prefs = profile->GetPrefs();
+  auto url_blocklist_manager = std::make_unique<policy::URLBlocklistManager>(
+      prefs, policy::policy_prefs::kUrlBlocklist,
+      policy::policy_prefs::kUrlAllowlist);
+  std::unique_ptr<policy::URLBlocklistManager> incognito_url_blocklist_manager;
+  if (profile->IsOffTheRecord()) {
+    incognito_url_blocklist_manager =
+        std::make_unique<policy::URLBlocklistManager>(
+            prefs, policy::policy_prefs::kIncognitoModeBlocklist,
+            policy::policy_prefs::kIncognitoModeAllowlist);
+  }
   return std::make_unique<PolicyBlocklistService>(
-      std::make_unique<policy::URLBlocklistManager>(
-          prefs, policy::policy_prefs::kUrlBlocklist,
-          policy::policy_prefs::kUrlAllowlist));
+      std::move(url_blocklist_manager),
+      std::move(incognito_url_blocklist_manager), prefs);
 }

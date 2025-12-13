@@ -6,7 +6,7 @@
 #define COMPONENTS_WEB_MODAL_MODAL_DIALOG_HOST_H_
 
 #include "components/web_modal/web_modal_export.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace gfx {
 class Point;
@@ -45,7 +45,7 @@ class WEB_MODAL_EXPORT ModalDialogHost {
   // bounds of the modal host. True by default. Please consult with
   // //constrained_window OWNERS if you intend to release the bounds constraint
   // for your WebContents container (i.e. returning false from this function).
-  virtual bool ShouldDialogBoundsConstrainedByHost();
+  virtual bool ShouldConstrainDialogBoundsByHost();
 
   // Add/remove observer. The host must implement these methods, store the
   // observers in a list, and call OnHostDestroying() on each before host

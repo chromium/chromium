@@ -25,7 +25,6 @@ namespace video_capture {
 
 using testing::_;
 using testing::Exactly;
-using testing::Invoke;
 using testing::InvokeWithoutArgs;
 
 // Test fixture that creates a video_capture::ServiceImpl and sets up a

@@ -32,6 +32,7 @@
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/security_state/content/content_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -135,15 +136,6 @@ void ChromeSecurityStateTabHelper::DidStartNavigation(
   if (!navigation_handle->IsFormSubmission()) {
     return;
   }
-  UMA_HISTOGRAM_ENUMERATION("Security.SecurityLevel.FormSubmission",
-                            GetSecurityLevel(),
-                            security_state::SECURITY_LEVEL_COUNT);
-  if (navigation_handle->IsInMainFrame() &&
-      !security_state::IsSchemeCryptographic(GetVisibleSecurityState()->url)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Security.SecurityLevel.InsecureMainFrameFormSubmission",
-        GetSecurityLevel(), security_state::SECURITY_LEVEL_COUNT);
-  }
 
   if (navigation_handle->GetURL().SchemeIs(url::kHttpsScheme)) {
     ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
@@ -158,21 +150,11 @@ void ChromeSecurityStateTabHelper::DidStartNavigation(
 
 void ChromeSecurityStateTabHelper::PrimaryPageChanged(content::Page& page) {
   net::CertStatus cert_status = GetVisibleSecurityState()->cert_status;
-  if (net::IsCertStatusError(cert_status) &&
-      !page.GetMainDocument().IsErrorDocument()) {
-    // Record each time a user visits a site after having clicked through a
-    // certificate warning interstitial. This is used as a baseline for
-    // interstitial.ssl.did_user_revoke_decision2 in order to determine how
-    // many times the re-enable warnings button is clicked, as a fraction of
-    // the number of times it was available.
-    UMA_HISTOGRAM_BOOLEAN("interstitial.ssl.visited_site_after_warning", true);
-  }
-
   MaybeShowKnownInterceptionDisclosureDialog(web_contents(), cert_status);
 }
 
 security_state::MaliciousContentStatus
-ChromeSecurityStateTabHelper::GetMaliciousContentStatus() const {
+ChromeSecurityStateTabHelper::GetMaliciousContentStatus() {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   using enum safe_browsing::SBThreatType;
 

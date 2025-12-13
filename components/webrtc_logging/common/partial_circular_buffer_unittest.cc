@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // The test buffer data is 52 bytes, wrap position is set to 20 (this is
 // arbitrarily chosen). The total buffer size is allocated dynamically based on
 // the actual header size. This gives:
@@ -24,6 +19,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webrtc_logging {
@@ -88,7 +84,8 @@ TEST_F(PartialCircularBufferTest, NoWrapBeginningPartOnly) {
   EXPECT_EQ(sizeof(output_data),
             pcb_read_->Read(output_data, sizeof(output_data)));
 
-  EXPECT_EQ(0, memcmp(kInputData, output_data, sizeof(kInputData)));
+  UNSAFE_TODO(
+      EXPECT_EQ(0, memcmp(kInputData, output_data, sizeof(kInputData))));
 
   EXPECT_EQ(0u, pcb_read_->Read(output_data, sizeof(output_data)));
 }
@@ -105,7 +102,8 @@ TEST_F(PartialCircularBufferTest, NoWrapBeginningAndEndParts) {
   const uint8_t output_ref_data[2 * sizeof(kInputData)] = {
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
-  EXPECT_EQ(0, memcmp(output_ref_data, output_data, sizeof(output_data)));
+  UNSAFE_TODO(
+      EXPECT_EQ(0, memcmp(output_ref_data, output_data, sizeof(output_data))));
 
   EXPECT_EQ(0u, pcb_read_->Read(output_data, sizeof(output_data)));
 }
@@ -119,7 +117,8 @@ TEST_F(PartialCircularBufferTest, WrapOnce) {
   EXPECT_EQ(sizeof(output_data),
             pcb_read_->Read(output_data, sizeof(output_data)));
 
-  EXPECT_EQ(0, memcmp(kOutputRefDataWrap, output_data, sizeof(output_data)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(kOutputRefDataWrap, output_data, sizeof(output_data))));
 
   EXPECT_EQ(0u, pcb_read_->Read(output_data, sizeof(output_data)));
 }
@@ -133,7 +132,8 @@ TEST_F(PartialCircularBufferTest, WrapTwice) {
   EXPECT_EQ(sizeof(output_data),
             pcb_read_->Read(output_data, sizeof(output_data)));
 
-  EXPECT_EQ(0, memcmp(kOutputRefDataWrap, output_data, sizeof(output_data)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(kOutputRefDataWrap, output_data, sizeof(output_data))));
 
   EXPECT_EQ(0u, pcb_read_->Read(output_data, sizeof(output_data)));
 }
@@ -147,13 +147,14 @@ TEST_F(PartialCircularBufferTest, WrapOnceSmallerOutputBuffer) {
   const uint32_t size_per_read = 16;
   uint32_t read = 0;
   for (; read + size_per_read <= sizeof(output_data); read += size_per_read) {
-    EXPECT_EQ(size_per_read,
-              pcb_read_->Read(output_data + read, size_per_read));
+    UNSAFE_TODO(EXPECT_EQ(size_per_read,
+                          pcb_read_->Read(output_data + read, size_per_read)));
   }
-  EXPECT_EQ(sizeof(output_data) - read,
-            pcb_read_->Read(output_data + read, size_per_read));
+  UNSAFE_TODO(EXPECT_EQ(sizeof(output_data) - read,
+                        pcb_read_->Read(output_data + read, size_per_read)));
 
-  EXPECT_EQ(0, memcmp(kOutputRefDataWrap, output_data, sizeof(output_data)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(kOutputRefDataWrap, output_data, sizeof(output_data))));
 
   EXPECT_EQ(0u, pcb_read_->Read(output_data, sizeof(output_data)));
 }
@@ -169,7 +170,8 @@ TEST_F(PartialCircularBufferTest, WrapOnceWithAppend) {
   EXPECT_EQ(sizeof(output_data),
             pcb_read_->Read(output_data, sizeof(output_data)));
 
-  EXPECT_EQ(0, memcmp(kOutputRefDataWrap, output_data, sizeof(output_data)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(kOutputRefDataWrap, output_data, sizeof(output_data))));
 
   EXPECT_EQ(0u, pcb_read_->Read(output_data, sizeof(output_data)));
 }
@@ -185,7 +187,8 @@ TEST_F(PartialCircularBufferTest, WrapTwiceWithAppend) {
   EXPECT_EQ(sizeof(output_data),
             pcb_read_->Read(output_data, sizeof(output_data)));
 
-  EXPECT_EQ(0, memcmp(kOutputRefDataWrap, output_data, sizeof(output_data)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(kOutputRefDataWrap, output_data, sizeof(output_data))));
 
   EXPECT_EQ(0u, pcb_read_->Read(output_data, sizeof(output_data)));
 }
@@ -201,7 +204,8 @@ TEST_F(PartialCircularBufferTest, WrapOnceThenOverwriteWithNoWrap) {
   EXPECT_EQ(sizeof(output_data),
             pcb_read_->Read(output_data, sizeof(output_data)));
 
-  EXPECT_EQ(0, memcmp(kInputData, output_data, sizeof(kInputData)));
+  UNSAFE_TODO(
+      EXPECT_EQ(0, memcmp(kInputData, output_data, sizeof(kInputData))));
 
   EXPECT_EQ(0u, pcb_read_->Read(output_data, sizeof(output_data)));
 }
@@ -211,7 +215,7 @@ TEST_F(PartialCircularBufferTest, WrapTwiceWithSingleWrite) {
   const size_t kLargeSize = kInputSize * 7;
   uint8_t large_input[kLargeSize] = {};
   for (size_t offset = 0; offset < kLargeSize; offset += kInputSize)
-    memcpy(large_input + offset, kInputData, kInputSize);
+    UNSAFE_TODO(memcpy(large_input + offset, kInputData, kInputSize));
 
   InitWriteBuffer(false);
   pcb_write_->Write(large_input, kLargeSize);
@@ -221,7 +225,8 @@ TEST_F(PartialCircularBufferTest, WrapTwiceWithSingleWrite) {
   EXPECT_EQ(sizeof(output_data),
             pcb_read_->Read(output_data, sizeof(output_data)));
 
-  EXPECT_EQ(0, memcmp(kOutputRefDataWrap, output_data, sizeof(output_data)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(kOutputRefDataWrap, output_data, sizeof(output_data))));
 
   EXPECT_EQ(0u, pcb_read_->Read(output_data, sizeof(output_data)));
 }

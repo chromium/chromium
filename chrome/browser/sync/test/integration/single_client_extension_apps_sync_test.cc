@@ -84,6 +84,11 @@ class SingleClientExtensionAppsSyncTest : public SyncTest {
   SingleClientExtensionAppsSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientExtensionAppsSyncTest() override = default;
 
+  // Apps sync is only supported with Sync-the-feature.
+  SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
+
  private:
 #if BUILDFLAG(IS_WIN)
   // This stops extension installation from creating a shortcut in the real

@@ -1,0 +1,25 @@
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsKeyboardLock}"
+    search-label="$i18n{siteSettingsAllSitesFilter}"
+    search-icon="settings20:filter-list"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+  <div class="content-settings-header secondary">
+    $i18n{siteSettingsKeyboardLockDescription}
+  </div>
+  <settings-category-default-radio-group
+      category="[[contentSettingsTypesEnum_.KEYBOARD_LOCK]]"
+      allow-option-label=
+          "$i18n{siteSettingsKeyboardLockAllowed}"
+      allow-option-icon="settings20:keyboard-lock"
+      block-option-label="$i18n{siteSettingsKeyboardLockBlocked}"
+      block-option-icon="settings20:keyboard-lock-off">
+  </settings-category-default-radio-group>
+  <category-setting-exceptions
+      category="[[contentSettingsTypesEnum_.KEYBOARD_LOCK]]"
+      allow-header=
+          "$i18n{siteSettingsKeyboardLockAllowedExceptions}"
+      block-header=
+          "$i18n{siteSettingsKeyboardLockBlockedExceptions}"
+      search-filter="[[searchTerm]]">
+  </category-setting-exceptions>
+</settings-subpage>

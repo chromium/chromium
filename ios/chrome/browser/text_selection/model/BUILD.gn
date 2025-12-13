@@ -56,5 +56,6 @@ source_set("test_support") {
     "//components/optimization_guide/core",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
 }

@@ -93,10 +93,10 @@ class JSChecker(object):
     for i in range(0, len(affected_js_files_paths), files_per_command):
       args = parameters + affected_js_files_paths[i:i + files_per_command]
 
-      try:
-        output = eslint.Run(os_path=os_path, args=args)
-      except RuntimeError as err:
-        results.append(self.output_api.PresubmitError(str(err)))
+      exitcode, stdout, stderr = eslint.Run(os_path=os_path, args=args)
+      if exitcode != 0:
+        err = stderr if len(stderr) > 0 else stdout
+        results.append(self.output_api.PresubmitError(err))
     return results
 
   def VariableNameCheck(self, i, line):

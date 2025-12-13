@@ -26,22 +26,20 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/audio/biquad.h"
 
+#include <stdio.h>
+
+#include <algorithm>
+#include <complex>
+
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/fdlibm/ieee754.h"
-
-#include <stdio.h>
-#include <algorithm>
-#include <complex>
 #if BUILDFLAG(IS_MAC)
 #include <Accelerate/Accelerate.h>
 #endif
@@ -103,10 +101,11 @@ void Biquad::Process(const float* source_p,
 
     for (int k = 0; k < n; ++k) {
       // FIXME: this can be optimized by pipelining the multiply adds...
-      float x = *source_p++;
-      float y = b0[k] * x + b1[k] * x1 + b2[k] * x2 - a1[k] * y1 - a2[k] * y2;
+      float x = *UNSAFE_TODO(source_p++);
+      float y = UNSAFE_TODO(b0[k] * x + b1[k] * x1 + b2[k] * x2 - a1[k] * y1 -
+                            a2[k] * y2);
 
-      *dest_p++ = y;
+      *UNSAFE_TODO(dest_p++) = y;
 
       // Update state variables
       x2 = x1;
@@ -139,9 +138,9 @@ void Biquad::Process(const float* source_p,
     // filtering with variable coefficients (i.e., with automations) to
     // fixed coefficients (without automations).
     input_p[0] = x2_;
-    input_p[1] = x1_;
+    UNSAFE_TODO(input_p[1]) = x1_;
     output_p[0] = y2_;
-    output_p[1] = y1_;
+    UNSAFE_TODO(output_p[1]) = y1_;
 
     // Use vecLib if available
     ProcessFast(source_p, dest_p, frames_to_process);
@@ -152,10 +151,10 @@ void Biquad::Process(const float* source_p,
     // sourceP and destP can be the same block of memory, we can't read from
     // sourceP to get the last inputs.  Fortunately, processFast has put the
     // last inputs in input[0] and input[1].
-    x1_ = input_p[1];
+    x1_ = UNSAFE_TODO(input_p[1]);
     x2_ = input_p[0];
-    y1_ = dest_p[frames_to_process - 1];
-    y2_ = dest_p[frames_to_process - 2];
+    y1_ = UNSAFE_TODO(dest_p[frames_to_process - 1]);
+    y2_ = UNSAFE_TODO(dest_p[frames_to_process - 2]);
 
 #else
     int n = frames_to_process;
@@ -174,10 +173,10 @@ void Biquad::Process(const float* source_p,
 
     while (n--) {
       // FIXME: this can be optimized by pipelining the multiply adds...
-      float x = *source_p++;
+      float x = *UNSAFE_TODO(source_p++);
       float y = b0 * x + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2;
 
-      *dest_p++ = y;
+      *UNSAFE_TODO(dest_p++) = y;
 
       // Update state variables
       x2 = x1;
@@ -213,8 +212,8 @@ void Biquad::ProcessFast(const float* source_p,
   double* input_p = input_buffer_.Data();
   double* output_p = output_buffer_.Data();
 
-  double* input2p = input_p + 2;
-  double* output2p = output_p + 2;
+  double* input2p = UNSAFE_TODO(input_p + 2);
+  double* output2p = UNSAFE_TODO(output_p + 2);
 
   // Break up processing into smaller slices (kBiquadBufferSize) if necessary.
 
@@ -225,13 +224,13 @@ void Biquad::ProcessFast(const float* source_p,
 
     // Copy input to input buffer
     for (int i = 0; i < frames_this_time; ++i)
-      input2p[i] = *source_p++;
+      UNSAFE_TODO(input2p[i]) = *UNSAFE_TODO(source_p++);
 
     ProcessSliceFast(input_p, output_p, filter_coefficients, frames_this_time);
 
     // Copy output buffer to output (converts float -> double).
     for (int i = 0; i < frames_this_time; ++i)
-      *dest_p++ = static_cast<float>(output2p[i]);
+      *UNSAFE_TODO(dest_p++) = static_cast<float>(UNSAFE_TODO(output2p[i]));
 
     n -= frames_this_time;
   }
@@ -248,10 +247,10 @@ void Biquad::ProcessSliceFast(double* source_p,
   // m_outputBuffer respectively.  These buffers are allocated (in the
   // constructor) with space for two extra samples so it's OK to access array
   // values two beyond framesToProcess.
-  source_p[0] = source_p[frames_to_process - 2 + 2];
-  source_p[1] = source_p[frames_to_process - 1 + 2];
-  dest_p[0] = dest_p[frames_to_process - 2 + 2];
-  dest_p[1] = dest_p[frames_to_process - 1 + 2];
+  source_p[0] = UNSAFE_TODO(source_p[frames_to_process - 2 + 2]);
+  UNSAFE_TODO(source_p[1]) = UNSAFE_TODO(source_p[frames_to_process - 1 + 2]);
+  dest_p[0] = UNSAFE_TODO(dest_p[frames_to_process - 2 + 2]);
+  UNSAFE_TODO(dest_p[1]) = UNSAFE_TODO(dest_p[frames_to_process - 1 + 2]);
 }
 
 #endif  // BUILDFLAG(IS_MAC)
@@ -261,11 +260,11 @@ void Biquad::Reset() {
   // Two extra samples for filter history
   double* input_p = input_buffer_.Data();
   input_p[0] = 0;
-  input_p[1] = 0;
+  UNSAFE_TODO(input_p[1]) = 0;
 
   double* output_p = output_buffer_.Data();
   output_p[0] = 0;
-  output_p[1] = 0;
+  UNSAFE_TODO(output_p[1]) = 0;
 
 #endif
   x1_ = x2_ = y1_ = y2_ = 0;
@@ -559,10 +558,13 @@ void Biquad::SetBandpassParams(int index, double frequency, double q) {
   }
 }
 
-void Biquad::GetFrequencyResponse(int n_frequencies,
-                                  const float* frequency,
-                                  float* mag_response,
-                                  float* phase_response) const {
+void Biquad::GetFrequencyResponse(base::span<const float> frequency,
+                                  base::span<float> mag_response,
+                                  base::span<float> phase_response) const {
+  DCHECK(!frequency.empty());
+  DCHECK(!mag_response.empty());
+  DCHECK(!phase_response.empty());
+
   // Evaluate the Z-transform of the filter at given normalized
   // frequency from 0 to 1.  (1 corresponds to the Nyquist
   // frequency.)
@@ -586,7 +588,7 @@ void Biquad::GetFrequencyResponse(int n_frequencies,
   double a1 = a1_[0];
   double a2 = a2_[0];
 
-  for (int k = 0; k < n_frequencies; ++k) {
+  for (size_t k = 0; k < frequency.size(); ++k) {
     if (frequency[k] < 0 || frequency[k] > 1) {
       // Out-of-bounds frequencies should return NaN.
       mag_response[k] = std::nanf("");

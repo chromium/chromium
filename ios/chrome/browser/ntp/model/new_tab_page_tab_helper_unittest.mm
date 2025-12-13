@@ -12,6 +12,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -74,7 +75,8 @@ class NewTabPageTabHelperTest : public PlatformTest {
   std::unique_ptr<WebStateList> web_state_list_;
   FakeWebStateListDelegate web_state_list_delegate_;
   std::unique_ptr<web::NavigationItem> pending_item_;
-  raw_ptr<web::FakeNavigationManager> fake_navigation_manager_;
+  raw_ptr<web::FakeNavigationManager, DanglingUntriaged>
+      fake_navigation_manager_;
   web::FakeWebState fake_web_state_;
 };
 
@@ -83,7 +85,7 @@ TEST_F(NewTabPageTabHelperTest, TestAlreadyNTP) {
   GURL url(kChromeUINewTabURL);
   fake_web_state_.SetVisibleURL(url);
   CreateTabHelper();
-  EXPECT_TRUE(tab_helper()->IsActive());
+  EXPECT_TRUE(IsVisibleURLNewTabPage(&fake_web_state_));
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_NEW_TAB_TITLE),
               base::SysUTF16ToNSString(pending_item_->GetTitle()));
 }
@@ -93,7 +95,7 @@ TEST_F(NewTabPageTabHelperTest, TestAlreadyAboutNTP) {
   GURL url(kChromeUIAboutNewTabURL);
   fake_web_state_.SetVisibleURL(url);
   CreateTabHelper();
-  EXPECT_TRUE(tab_helper()->IsActive());
+  EXPECT_TRUE(IsVisibleURLNewTabPage(&fake_web_state_));
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_NEW_TAB_TITLE),
               base::SysUTF16ToNSString(pending_item_->GetTitle()));
 }
@@ -103,14 +105,14 @@ TEST_F(NewTabPageTabHelperTest, TestNotNTP) {
   GURL url(kTestURL);
   fake_web_state_.SetVisibleURL(url);
   CreateTabHelper();
-  EXPECT_FALSE(tab_helper()->IsActive());
+  EXPECT_FALSE(IsVisibleURLNewTabPage(&fake_web_state_));
   EXPECT_NSEQ(@"", base::SysUTF16ToNSString(pending_item_->GetTitle()));
 }
 
 // Tests navigating back and forth between an NTP and non-NTP page.
 TEST_F(NewTabPageTabHelperTest, TestToggleToAndFromNTP) {
   CreateTabHelper();
-  EXPECT_FALSE(tab_helper()->IsActive());
+  EXPECT_FALSE(IsVisibleURLNewTabPage(&fake_web_state_));
 
   GURL url(kChromeUIAboutNewTabURL);
   fake_web_state_.SetCurrentURL(url);
@@ -118,18 +120,18 @@ TEST_F(NewTabPageTabHelperTest, TestToggleToAndFromNTP) {
   context.SetUrl(url);
   fake_navigation_manager_->SetLastCommittedItem(pending_item_.get());
   fake_web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  EXPECT_TRUE(tab_helper()->IsActive());
+  EXPECT_TRUE(IsVisibleURLNewTabPage(&fake_web_state_));
 
   GURL not_ntp_url(kTestURL);
   context.SetUrl(not_ntp_url);
   pending_item_->SetURL(not_ntp_url);
   fake_navigation_manager_->SetPendingItem(pending_item_.get());
   fake_web_state_.OnNavigationStarted(&context);
-  EXPECT_FALSE(tab_helper()->IsActive());
+  EXPECT_FALSE(IsVisibleURLNewTabPage(&fake_web_state_));
   fake_web_state_.SetCurrentURL(not_ntp_url);
   fake_navigation_manager_->SetLastCommittedItem(pending_item_.get());
   fake_web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  EXPECT_FALSE(tab_helper()->IsActive());
+  EXPECT_FALSE(IsVisibleURLNewTabPage(&fake_web_state_));
 
   pending_item_->SetURL(url);
   context.SetUrl(url);
@@ -140,16 +142,16 @@ TEST_F(NewTabPageTabHelperTest, TestToggleToAndFromNTP) {
   fake_web_state_.SetCurrentURL(url);
   fake_navigation_manager_->SetLastCommittedItem(pending_item_.get());
   fake_web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  EXPECT_TRUE(tab_helper()->IsActive());
+  EXPECT_TRUE(IsVisibleURLNewTabPage(&fake_web_state_));
 
   context.SetUrl(not_ntp_url);
   pending_item_->SetURL(url);
   fake_web_state_.SetCurrentURL(not_ntp_url);
   fake_web_state_.OnNavigationStarted(&context);
-  EXPECT_FALSE(tab_helper()->IsActive());
+  EXPECT_FALSE(IsVisibleURLNewTabPage(&fake_web_state_));
   fake_navigation_manager_->SetLastCommittedItem(pending_item_.get());
   fake_web_state_.OnNavigationFinished(&context);
-  EXPECT_FALSE(tab_helper()->IsActive());
+  EXPECT_FALSE(IsVisibleURLNewTabPage(&fake_web_state_));
 }
 
 // Tests double navigations from an NTP and non-NTP page at the same time.

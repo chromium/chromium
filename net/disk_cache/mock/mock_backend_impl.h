@@ -74,10 +74,6 @@ class BackendMock : public Backend {
               GetEntryInMemoryData,
               (const std::string& key),
               (override));
-  MOCK_METHOD(void,
-              SetEntryInMemoryData,
-              (const std::string& key, uint8_t data),
-              (override));
   MOCK_METHOD(int64_t, MaxFileSize, (), (const, override));
 };
 

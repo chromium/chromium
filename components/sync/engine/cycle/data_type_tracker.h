@@ -196,8 +196,8 @@ class DataTypeTracker {
   // download or commit data until the specified time.
   base::TimeTicks unblock_time_;
 
-  // Current wait state.  Null if we're not in backoff or throttling.
-  std::unique_ptr<WaitInterval> wait_interval_;
+  // Current wait state. `Nullopt` if we're not in backoff or throttling.
+  std::optional<WaitInterval> wait_interval_;
 
   // The amount of time to delay a sync cycle by when a local change for this
   // type occurs.

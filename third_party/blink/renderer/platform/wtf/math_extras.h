@@ -48,6 +48,8 @@
 #include <sys/types.h>
 #endif
 
+namespace blink {
+
 constexpr double kPiDouble = M_PI;
 constexpr float kPiFloat = static_cast<float>(M_PI);
 
@@ -344,5 +346,7 @@ static constexpr size_t GreatestCommonDivisor(size_t a, size_t b) {
 constexpr size_t LowestCommonMultiple(size_t a, size_t b) {
   return a && b ? a / GreatestCommonDivisor(a, b) * b : 0;
 }
+
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_MATH_EXTRAS_H_

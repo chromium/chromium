@@ -43,7 +43,9 @@ class LayoutSVGRect final : public LayoutSVGShape {
   }
 
  private:
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
 
   gfx::RectF UpdateShapeFromElement() override;
   bool ShapeDependentStrokeContains(const HitTestLocation&) override;

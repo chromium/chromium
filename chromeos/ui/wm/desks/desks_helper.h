@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/functional/callback.h"
 
 namespace aura {
 class Window;
@@ -20,11 +19,8 @@ namespace chromeos {
 // Desks feature.
 class COMPONENT_EXPORT(CHROMEOS_UI_WM) DesksHelper {
  public:
-  // Returns DesksHelper instance by window.
-  // It is OK to pass nullptr when called from ash if there is no accessible
-  // window at that moment.
-  // But window must be passed to get DesksHelper when called from lacros.
-  static DesksHelper* Get(aura::Window* window);
+  // Returns DesksHelper instance.
+  static DesksHelper* Get();
 
   DesksHelper(const DesksHelper&) = delete;
   DesksHelper& operator=(const DesksHelper&) = delete;

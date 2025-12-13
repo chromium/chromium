@@ -1,17 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
-<translation id="1036348656032585052">ปิด</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{สร้างเมื่อ <ph name="NUM_WEEKS_ONE" /> สัปดาห์ที่ผ่านมา}other{สร้างเมื่อ <ph name="NUM_WEEKS_MANY" /> สัปดาห์ที่ผ่านมา}}</translation>
 <translation id="1063300264396686489">เปิดกลุ่มแท็บจากอุปกรณ์อื่นๆ โดยอัตโนมัติ</translation>
 <translation id="1075622780330595106">คุณไม่ได้ใช้แท็บ <ph name="NUMBER_OF_TABS" /> แท็บมาระยะหนึ่งแล้ว ปิดแท็บเหล่านั้นไหม</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{สร้างเมื่อ <ph name="NUM_YEARS_ONE" /> ปีที่ผ่านมา}other{สร้างเมื่อ <ph name="NUM_YEARS_MANY" /> ปีที่ผ่านมา}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{แท็บและกลุ่มที่ไม่ได้ใช้งานจะปิดหลังจากผ่านไป 1 เดือน}other{แท็บและกลุ่มที่ไม่ได้ใช้งานจะปิดหลังจากผ่านไป <ph name="MONTH_COUNT_MANY" /> เดือน}}</translation>
 <translation id="1173894706177603556">เปลี่ยนชื่อ</translation>
-<translation id="1197088940767939838">สีส้ม</translation>
+<translation id="1203747227183434426">กำลังบันทึกสื่อ</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{เปิด <ph name="TITLE_OF_GROUP" /> ที่มี <ph name="TAB_COUNT2" /> แท็บ}other{เปิด <ph name="TITLE_OF_GROUP" /> ที่มี <ph name="TAB_COUNT2" /> แท็บ}}</translation>
 <translation id="1273910660700874265">ตัวเลือกกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1300188005269437765">เลือกว่าจะย้ายแท็บและกลุ่มแท็บไปยังส่วนที่ไม่ได้ใช้งานโดยอัตโนมัติเมื่อใด</translation>
+<translation id="1321004960118052490">รายการที่ไม่ได้ใช้งานจะไม่สะสม</translation>
 <translation id="1329584516321524826">เพิ่งอัปเดตเมื่อสักครู่นี้</translation>
 <translation id="1340839264183302272">ออกจากกลุ่ม</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{ขยายกลุ่มแท็บ "<ph name="TITLE_OF_GROUP" />" ที่แชร์ซึ่งมี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" /> พร้อมป้ายกำกับ "<ph name="CARD_LABEL" />"}other{ขยายกลุ่มแท็บ "<ph name="TITLE_OF_GROUP" />" ที่แชร์ซึ่งมี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" /> พร้อมป้ายกำกับ "<ph name="CARD_LABEL" />"}}</translation>
@@ -20,23 +20,25 @@
 <translation id="1499635324672558517">ปิดแท็บที่ไม่ระบุตัวตนทั้งหมดใช่ไหม</translation>
 <translation id="1501480321619201731">ลบกลุ่ม</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{รายการที่ไม่ได้ใช้งาน <ph name="TABS_COUNT_ONE" /> รายการ}other{รายการที่ไม่ได้ใช้งาน <ph name="TABS_COUNT_MANY" /> รายการ}}</translation>
-<translation id="1555130319947370107">สีน้ำเงิน</translation>
-<translation id="161042844686301425">สีฟ้า</translation>
 <translation id="1645759014353344461">จัดกลุ่มไว้ <ph name="TABS_COUNT_MANY" /> แท็บ</translation>
 <translation id="1657719826150349398">ย้ายแท็บลงล่าง</translation>
+<translation id="1670942869417022142">เสียงปิดอยู่</translation>
 <translation id="1697284962337958118">เพิ่มลงใน</translation>
 <translation id="1713541401465507417">ปิดแท็บและกลุ่มทั้งหมด</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{กลุ่มแท็บ <ph name="TAB_GROUPS_COUNT_ONE" /> กลุ่มใช้งานไม่ได้อีกต่อไป}other{กลุ่มแท็บ <ph name="TAB_GROUPS_COUNT_MANY" /> กลุ่มใช้งานไม่ได้อีกต่อไป}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073">จัดกลุ่มไว้ <ph name="TABS_COUNT_ONE" /> แท็บ</translation>
+<translation id="1844381456014878100">หลังจากไม่มีการใช้งาน 7 วัน</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> แท็บ}other{<ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="1909810060368225529">ประกาศ: ทุกคนจะเห็นการเปลี่ยนแปลงที่เกิดขึ้นกับกลุ่มแท็บที่แชร์นี้ ทุกคนจะเปลี่ยนแปลงกลุ่มแท็บที่แชร์ของคุณได้</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{ปักหมุดแท็บ}other{ปักหมุดแท็บ}}</translation>
 <translation id="1982637982196732906">ย้ายไปยังส่วนที่ไม่ได้ใช้งาน</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{บุ๊กมาร์กแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{บุ๊กมาร์กแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="2055057176188061528">เลือกกลุ่มแท็บหรือสร้างกลุ่มแท็บใหม่</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome จะปิดรายการในส่วนที่ไม่ได้ใช้งานซึ่งคุณไม่ได้ใช้เป็นเวลา <ph name="AUTO_DELETE_DELAY_ONE" /> เดือนโดยอัตโนมัติ คุณจะปิดฟีเจอร์นี้ในการตั้งค่าเลยหรือเมื่อใดก็ได้}other{Chrome จะปิดรายการในส่วนที่ไม่ได้ใช้งานซึ่งคุณไม่ได้ใช้เป็นเวลา <ph name="AUTO_DELETE_DELAY_MANY" /> เดือนโดยอัตโนมัติ คุณจะปิดฟีเจอร์นี้ในการตั้งค่าเลยหรือเมื่อใดก็ได้}}</translation>
+<translation id="2074527029802029717">ยกเลิกการปักหมุดแท็บ</translation>
 <translation id="2118649612461486615">ข้อมูลร้านค้า</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{แท็บและกลุ่มที่ปิดไว้สามารถเปิดอีกครั้งได้ในส่วน "แท็บล่าสุด" และส่วน "กลุ่มแท็บ" แท็บที่ไม่ระบุตัวตนจะไม่พร้อมใช้งาน}other{แท็บและกลุ่มที่ปิดไว้สามารถเปิดอีกครั้งได้ในส่วน "แท็บล่าสุด" และส่วน "กลุ่มแท็บ" แท็บที่ไม่ระบุตัวตน # แท็บจะไม่พร้อมใช้งาน}}</translation>
+<translation id="2153899164605463849">{TAB_COUNT,plural, =1{เลิกซ่อนเว็บไซต์}other{เลิกซ่อนเว็บไซต์}}</translation>
 <translation id="2162620598375156287">ตอนนี้ราคา <ph name="CURRENT_PRICE" /> ใน <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{เลิกจัดกลุ่มแท็บ}other{เลิกจัดกลุ่มแท็บ}}</translation>
 <translation id="2271452184061378400">กลุ่มแท็บจะบันทึกไว้ที่นี่</translation>
@@ -61,7 +63,10 @@
 <translation id="2801787514987684416">ดูข้อมูลร้านค้าไหม</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{ปิดแล้ว <ph name="ONE_CLOSED" /> แท็บ}other{ปิดแล้ว <ph name="MANY_CLOSED" /> แท็บ}}</translation>
 <translation id="2894757982205307093">แท็บใหม่ในกลุ่ม</translation>
+<translation id="2918484639460781603">ไปที่การตั้งค่า</translation>
 <translation id="2928243913527329289">Google | เกี่ยวกับร้านนี้</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{เลือกไว้ <ph name="ITEMS_COUNT_ONE" /> รายการ}other{เลือกไว้ <ph name="ITEMS_COUNT_MANY" /> รายการ}}</translation>
+<translation id="2991702137079525605">{TABS_COUNT,plural, =1{ปักหมุดแท็บ}other{ปักหมุดแท็บ}}</translation>
 <translation id="3008554597174452548">หยุดติดตามผลิตภัณฑ์</translation>
 <translation id="3026391124054406831">สร้างกลุ่มเพื่อจัดระเบียบแท็บ</translation>
 <translation id="3051031624272448591">คุณกู้คืนแท็บเหล่านี้ได้เสมอในประวัติการเข้าชม</translation>
@@ -78,20 +83,24 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{ปิดรายการ}other{ปิดรายการ}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">ภาพแบบย่อตัวอย่างชีตที่แชร์</translation>
+<translation id="3776329373944672717">ชื่อกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">จัดการ</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{เลิกปักหมุดแท็บ}other{เลิกปักหมุดแท็บ}}</translation>
 <translation id="3940195383040445971">ติดตามราคาในแท็บ</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{แท็บใหม่ <ph name="ONE_ADDED" /> แท็บ ปิดไปแล้ว <ph name="ANY_CLOSED" /> แท็บ}other{แท็บใหม่ <ph name="MANY_ADDED" /> แท็บ ปิดไปแล้ว <ph name="ANY_CLOSED" /> แท็บ}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{จัดกลุ่มแท็บ}other{จัดกลุ่มแท็บ}}</translation>
+<translation id="3962134438902735041">{TABS_COUNT,plural, =1{เลิกปักหมุดแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{เลิกปักหมุดแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{สร้างเมื่อ <ph name="NUM_DAYS_ONE" /> วันที่ผ่านมา}other{สร้างเมื่อ <ph name="NUM_DAYS_MANY" /> วันที่ผ่านมา}}</translation>
 <translation id="4076226664360336092">รายการกลุ่มแท็บที่เปิดอยู่แบบเต็มความสูง</translation>
 <translation id="4133493477912226187">ดูเหมือนว่ามีแท็บที่เกี่ยวข้อง <ph name="NUMBER_OF_TABS" /> แท็บ ต้องการจัดกลุ่มแท็บไหม</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{ปิดกลุ่ม<ph name="TITLE_OF_GROUP" />ที่มี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" />}other{ปิดกลุ่ม<ph name="TITLE_OF_GROUP" />ที่มี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" />}}</translation>
-<translation id="4159784952369912983">ม่วง</translation>
 <translation id="4203448675570432781">ปิดประกาศเกี่ยวกับการเปลี่ยนแปลงการลบแท็บอัตโนมัติแล้ว</translation>
 <translation id="427987768447457592">กลุ่มแท็บใหม่</translation>
 <translation id="4371591986692297148">ไม่ได้ใช้งาน</translation>
-<translation id="4429658455677831355">{TAB_COUNT,plural, =1{กู้คืนรายการ}other{กู้คืนรายการ}}</translation>
+<translation id="4429658455677831355">{TAB_COUNT,plural, =1{คืนค่ารายการ}other{คืนค่ารายการ}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{อัปเดตเมื่อ <ph name="NUM_DAYS_ONE" /> วันที่ผ่านมา}other{อัปเดตเมื่อ <ph name="NUM_DAYS_MANY" /> วันที่ผ่านมา}}</translation>
+<translation id="4496868141611329150">ย้ายกลุ่มแท็บไปทางซ้าย</translation>
+<translation id="4653140634010630594">{TAB_COUNT,plural, =1{ซ่อนเว็บไซต์}other{ซ่อนเว็บไซต์}}</translation>
 <translation id="4686942373615810936">สร้างเมื่อสักครู่</translation>
 <translation id="4783638485675352219">แชร์ชื่อและ URL ของแท็บที่เปิดอยู่จากอุปกรณ์นี้กับระบบปฏิบัติการ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> รีวิว)}other{(<ph name="REVIEWS_COUNT_MANY" /> รีวิว)}}</translation>
@@ -103,17 +112,19 @@
 <translation id="4871719318659334896">ปิดกลุ่ม</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{คืนค่าและเปิดกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /> ที่มี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" />}other{คืนค่าและเปิดกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /> ที่มี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" />}}</translation>
 <translation id="4881695831933465202">เปิด</translation>
+<translation id="4894777338623123366">กำลังแชร์หน้าจอแท็บ</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{ปิดแท็บ}other{ปิดแท็บ}}</translation>
 <translation id="4908147833782857886">บันทึกแล้ว <ph name="USER_EMAIL" /> กลุ่ม (จะปิดแท็บและลบกลุ่ม)</translation>
 <translation id="492284538114688557">พบการลดราคา</translation>
 <translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{ขยายกลุ่มแท็บที่แชร์ซึ่งมี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" /> พร้อมป้ายกำกับ "<ph name="CARD_LABEL" />"}other{ขยายกลุ่มแท็บที่แชร์ซึ่งมี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" /> พร้อมป้ายกำกับ "<ph name="CARD_LABEL" />"}}</translation>
 <translation id="5007392906805964215">ดู</translation>
+<translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{ย้ายแท็บไปยังหน้าต่างใหม่}other{ย้ายหลายแท็บไปยังหน้าต่างใหม่}}</translation>
 <translation id="5073204694187207510">ซ่อนตารางกริดแบบเต็มหน้าจอ</translation>
 <translation id="5076161749301278626">ดูรีวิวร้านค้าไหม</translation>
 <translation id="5161254044473106830">ต้องระบุชื่อ</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome จะปิดแท็บและกลุ่มแท็บที่ไม่ได้ใช้งานโดยอัตโนมัติหลังจากผ่านไป <ph name="AUTO_DELETE_DELAY_ONE" /> เดือน คุณเปลี่ยนค่านี้ได้ในการตั้งค่า}other{Chrome จะปิดแท็บและกลุ่มแท็บที่ไม่ได้ใช้งานโดยอัตโนมัติหลังจากผ่านไป <ph name="AUTO_DELETE_DELAY_MANY" /> เดือน คุณเปลี่ยนค่านี้ได้ในการตั้งค่า}}</translation>
 <translation id="5339733443032484186">แท็บสุดท้าย</translation>
 <translation id="5380159289133845234">เก็บแท็บที่ซ้ำกัน</translation>
-<translation id="5400836586163650660">สีเทา</translation>
 <translation id="5446043142172831860">นำแท็บออกและออกจากกลุ่ม</translation>
 <translation id="5490235265819901748">ขยายกลุ่มแท็บแล้ว</translation>
 <translation id="5494920125229734069">เลือกทั้งหมด</translation>
@@ -121,22 +132,24 @@
 <translation id="5556417849629758491">ดูข้อมูลร้านค้า ตัวเลือกจะอยู่ตรงบริเวณด้านบนของหน้าจอ</translation>
 <translation id="5627941783489838464">ไม่มีการอัปเดตแท็บ</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ลิงก์จาก Chrome}other{<ph name="TABS_COUNT_MANY" /> ลิงก์จาก Chrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{ย้ายแท็บไปทางซ้าย}other{ย้ายแท็บไปทางซ้าย}}</translation>
 <translation id="5746204836956568669">จัดกลุ่มแท็บ <ph name="NUMBER_OF_TABS" /> แท็บเพื่อให้ทํางานได้เร็วขึ้นไหม</translation>
 <translation id="5773295109010386583">ปิดรายการที่ไม่ได้ใช้งานโดยอัตโนมัติ</translation>
 <translation id="58326064309361797">ลากแท็บเพื่อจัดกลุ่ม</translation>
-<translation id="5901630391730855834">สีเหลือง</translation>
 <translation id="5972844218283131174">ยกเลิกการเลือกทั้งหมด</translation>
-<translation id="6017514345406065928">สีเขียว</translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6051432659151380973">ระบบจะบันทึกกลุ่มแท็บโดยอัตโนมัติ</translation>
 <translation id="6054741997831917303">ราคาสินค้านี้เพิ่งลดลงจาก <ph name="PREVIOUS_PRICE" /> เหลือ <ph name="NEW_PRICE" /></translation>
 <translation id="6109251075362363230">ตอนนี้ระบบจะเก็บแท็บที่ซ้ำกันทั้งหมดด้วย ยกเว้นสำเนาที่ใช้ล่าสุด</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{ปิดรายการที่เลือก <ph name="TABS_COUNT_ONE" /> รายการ}other{ปิดรายการที่เลือก <ph name="TABS_COUNT_MANY" /> รายการ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ย้ายกลุ่มไปยังหน้าต่างใหม่}other{ย้ายกลุ่มไปยังหน้าต่างอื่น}}</translation>
-<translation id="6220820548421939212">ได้ ตกลง</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{ย้ายแท็บไปทางขวา}other{ย้ายแท็บไปทางขวา}}</translation>
 <translation id="6228793724645064692">(คะแนนร้านค้า)</translation>
+<translation id="6251046978189636310">กำลังเล่นเสียง</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{นำแท็บออกจากกลุ่ม}other{นำแท็บออกจากกลุ่ม}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{เพิ่มแท็บไปยังกลุ่มใหม่}other{เพิ่มแท็บไปยังกลุ่มใหม่}}</translation>
 <translation id="6333260925957816943">ข้อมูลเกี่ยวกับร้านนี้</translation>
+<translation id="6344715021569694246">{TABS_COUNT,plural, =1{ปักหมุดแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{ปักหมุดแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="6381032505162537930">คุณจะเห็นกลุ่มแท็บที่นี่</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{เลิกจัดกลุ่มแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{เลิกจัดกลุ่มแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="6499296376514955580">ปิดประกาศเกี่ยวกับการเปลี่ยนแปลงกลุ่มแท็บที่แชร์ไว้แล้ว</translation>
@@ -153,18 +166,21 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{เพิ่มไปยังกลุ่มชื่อ <ph name="TITLE_OF_GROUP" /> ที่มี <ph name="TAB_COUNT1" /> แท็บ}other{เพิ่มไปยังกลุ่มชื่อ <ph name="TITLE_OF_GROUP" /> ที่มี <ph name="TAB_COUNT1" /> แท็บ}}</translation>
 <translation id="6818926723028410516">เลือกรายการ</translation>
 <translation id="6856809498882026482">ซ่อนโหมดเลือกหลายรายการ</translation>
+<translation id="6957436309971790274">หลังจากไม่มีการใช้งาน 21 วัน</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{ขยายกลุ่มแท็บ "<ph name="TITLE_OF_GROUP" />" ที่แชร์ซึ่งมี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" />}other{ขยายกลุ่มแท็บ "<ph name="TITLE_OF_GROUP" />" ที่แชร์ซึ่งมี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" />}}</translation>
 <translation id="709473454666962555">เลือกกลุ่มแท็บ</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{แชร์แท็บ}other{แชร์แท็บ}}</translation>
 <translation id="7129458170538955174">เปิดข้อมูลเกี่ยวกับร้านนี้ที่ระดับความสูงครึ่งหนึ่งของหน้าจอแล้ว</translation>
 <translation id="7204204600596740190">โหมดเลือกหลายรายการ</translation>
-<translation id="7211038039686180558">กลุ่มแท็บจะบันทึกและอัปเดตโดยอัตโนมัติในอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้</translation>
+<translation id="7211038039686180558">ระบบจะบันทึกและอัปเดตกลุ่มแท็บโดยอัตโนมัติในอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้</translation>
 <translation id="731648547091221002">เลือก <ph name="COLOR_NAME" /> อยู่</translation>
 <translation id="7326879924029668159">ดูนโยบายคืนสินค้าและอื่นๆ</translation>
 <translation id="7352298686197644113">ดูสินค้าราคาต่ำกว่าในแท็บที่เปิดอยู่</translation>
 <translation id="7369451074646620503">กลุ่มแท็บ "<ph name="TAB_GROUP_NAME" />" ใช้งานไม่ได้อีกต่อไป</translation>
+<translation id="7402375256128852434">เพิ่มแท็บล่าสุด</translation>
 <translation id="7452985128687107478">กลุ่มแท็บจะบันทึกและอัปเดตโดยอัตโนมัติในอุปกรณ์ทั้งหมด</translation>
 <translation id="747459581954555080">คืนค่าทั้งหมด</translation>
+<translation id="7489558427602531799">ย้ายกลุ่มแท็บไปทางขวา</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> รายการ}other{<ph name="TABS_COUNT_MANY" /> รายการ}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{กู้คืนรายการที่เลือก <ph name="TABS_COUNT_ONE" /> รายการ}other{กู้คืนรายการที่เลือก <ph name="TABS_COUNT_MANY" /> รายการ}}</translation>
 <translation id="753732157349120914">ตัวสลับแท็บ</translation>
@@ -183,9 +199,8 @@
 <translation id="7853202427316060426">กิจกรรม</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ การให้คะแนน <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> รีวิว}other{การให้คะแนน <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> รีวิว}}</translation>
 <translation id="7885132941432959125">ย้ายแท็บไปทางขวา</translation>
-<translation id="788914896430720926">เก็บส่วนที่ไม่ได้ใช้งานไว้ให้เรียบร้อยไหม</translation>
+<translation id="7887334752153342268">ทำซ้ำ</translation>
 <translation id="7939917283308035850">ไม่ได้เลือก <ph name="COLOR_NAME" /> อยู่</translation>
-<translation id="7942349550061667556">สีแดง</translation>
 <translation id="7961015016161918242">ไม่ต้องเลย</translation>
 <translation id="7966321538264951561">ปิดคำแนะนำ</translation>
 <translation id="796696298310625748">{WINDOW_COUNT,plural, =1{ย้ายแท็บไปที่หน้าต่างใหม่}other{ย้ายแท็บไปที่หน้าต่างใหม่}}</translation>
@@ -193,7 +208,9 @@
 <translation id="8029301326595421733">เปิดข้อมูลเกี่ยวกับร้านนี้ที่ระดับเต็มความสูงของหน้าจอแล้ว</translation>
 <translation id="8053770993984522566">รายการกลุ่มแท็บที่เปิดอยู่แบบครึ่งหน้า</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{เพิ่มแท็บไปยังกลุ่ม}other{เพิ่มแท็บไปยังกลุ่ม}}</translation>
+<translation id="8138067144082174140">หลังจากไม่มีการใช้งาน 14 วัน</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{ขยายกลุ่มแท็บ<ph name="TITLE_OF_GROUP" />ที่มี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" />}other{ขยายกลุ่มแท็บ<ph name="TITLE_OF_GROUP" />ที่มี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" />}}</translation>
+<translation id="8195186926670288294">{TABS_COUNT,plural, =1{เลิกปักหมุดแท็บ}other{เลิกปักหมุดแท็บ}}</translation>
 <translation id="8205266828577616993">เลื่อนแท็บขึ้น</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{อัปเดตเมื่อ <ph name="NUM_MINS_ONE" /> นาทีที่ผ่านมา}other{อัปเดตเมื่อ <ph name="NUM_MINS_MANY" /> นาทีที่ผ่านมา}}</translation>
 <translation id="8236097722223016103">เพิ่มลงในบุ๊กมาร์ก</translation>
@@ -206,6 +223,7 @@
 <translation id="8428213095426709021">การตั้งค่า</translation>
 <translation id="855081842937141170">ปักหมุดแท็บ</translation>
 <translation id="8633025649649592204">กิจกรรมล่าสุด</translation>
+<translation id="8635822281281406185">เพิ่มไฟล์ แท็บ หรือรูปภาพได้สูงสุด 10 รายการ</translation>
 <translation id="8712637175834984815">รับทราบ</translation>
 <translation id="8714939927607906138">ราคาต่ำกว่า</translation>
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
@@ -221,6 +239,5 @@
 <translation id="9187834032751045001">ประกาศเกี่ยวกับการลบแท็บอัตโนมัติที่ระดับความสูงครึ่งหนึ่งของหน้าจอ</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{ขยายกลุ่มแท็บที่มี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" />}other{ขยายกลุ่มแท็บที่มี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" />}}</translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
-<translation id="992256792861109788">สีชมพู</translation>
 <translation id="994514002078791059">{TAB_COUNT,plural, =1{ปิด 1 รายการที่ไม่ได้ใช้งานใช่ไหม}other{ปิด <ph name="TAB_COUNT_MANY" /> รายการที่ไม่ได้ใช้งานใช่ไหม}}</translation>
 </translationbundle>

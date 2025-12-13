@@ -6,9 +6,14 @@
 
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/math_transform.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -27,6 +32,26 @@ class SerializationTest : public EditingTestBase {
                             .SetShouldResolveURLs(kResolveNonLocalURLs)
                             .Build())
         .Utf8();
+  }
+
+  String AsciiToItalicMathVariant(char ascii) {
+    UChar32 math_char = blink::unicode::ItalicMathVariant(ascii);
+    StringBuilder builder;
+    builder.Append(math_char);
+    return builder.ToString();
+  }
+
+  Element* GetFirstChildElementNamed(const Node& parent,
+                                     const AtomicString& tag_name) {
+    for (Node* child = parent.firstChild(); child;
+         child = child->nextSibling()) {
+      if (auto* element = DynamicTo<Element>(child)) {
+        if (element->nodeName() == tag_name) {
+          return element;
+        }
+      }
+    }
+    return nullptr;
   }
 };
 
@@ -62,6 +87,34 @@ TEST_F(SerializationTest, CreateFragmentWithDataUrlCrash) {
   const String html =
       "<div style=\"filter: url(data:image/gif;base64,xx);\">"
       "<style>body {background: url(data:image/gif;base64,xx);}</style>";
+  DocumentFragment* strictly_processed_fragment =
+      CreateStrictlyProcessedFragmentFromMarkupWithContext(
+          GetDocument(), html, 0, html.length(), KURL());
+  EXPECT_TRUE(strictly_processed_fragment);
+}
+
+// Regression test for https://crbug.com/464761431
+// A test to confirm that a crash does not occur even if an external URL
+// request is requested during serialization.
+TEST_F(SerializationTest, CreateFragmentWithDataExternalUrlCrash) {
+  const String html =
+      "<link rel=\"stylesheet\" href=\"https://example.com/1\">"
+      "<style></style>";
+  DocumentFragment* strictly_processed_fragment =
+      CreateStrictlyProcessedFragmentFromMarkupWithContext(
+          GetDocument(), html, 0, html.length(), KURL());
+  EXPECT_TRUE(strictly_processed_fragment);
+}
+
+// Regression test for https://crbug.com/464761431
+// A test to confirm that SingleRequestURLLoaderFactory returned by
+// EmptyLocalFrameClientWithFailingLoaderFactory is not used multiple times by
+// mistake.
+TEST_F(SerializationTest, CreateFragmentWithDataExternalUrlsCrash) {
+  const String html =
+      "<link rel=\"stylesheet\" href=\"https://example.com/1\">"
+      "<link rel=\"stylesheet\" href=\"https://example.com/2\">"
+      "<style></style>";
   DocumentFragment* strictly_processed_fragment =
       CreateStrictlyProcessedFragmentFromMarkupWithContext(
           GetDocument(), html, 0, html.length(), KURL());
@@ -154,6 +207,219 @@ TEST_F(SerializationTest, CSSFontFaceLoadCrash) {
   // This is a crash test. We don't verify the content of the strictly processed
   // markup as it is not interesting.
   EXPECT_TRUE(sanitized_markup);
+}
+
+// Tests that the entire <math> element is serialized and deserialized with
+// proper structure and namespace.
+TEST_F(SerializationTest, MathML_EntireMathElement) {
+  SetBodyContent(
+      "<math xmlns='http://www.w3.org/1998/Math/MathML'>"
+      "<mrow><mi>x</mi><mo>+</mo><mi>y</mi></mrow>"
+      "</math>");
+  const auto& original_math_element = *GetDocument().body()->firstChild();
+  std::string serialized_markup = SerailizeToHTMLText(original_math_element);
+
+  SetBodyContent(serialized_markup);
+
+  const auto& math_root = *GetDocument().body()->firstChild();
+  EXPECT_EQ(math_root.nodeName(), "math");
+  EXPECT_TRUE(To<Element>(math_root).hasAttribute(AtomicString("xmlns")));
+  EXPECT_EQ(To<Element>(math_root).getAttribute(AtomicString("xmlns")),
+            mathml_names::kNamespaceURI);
+
+  const auto* math_row =
+      GetFirstChildElementNamed(math_root, AtomicString("mrow"));
+  ASSERT_NE(math_row, nullptr) << "mrow element not found";
+  EXPECT_EQ(math_row->parentNode(), &math_root);
+
+  int mi_count = 0;
+  bool found_mo = false;
+  String mo_content;
+
+  for (Node* child = math_row->firstChild(); child;
+       child = child->nextSibling()) {
+    const auto& name = child->nodeName();
+    if (name == "mi") {
+      ++mi_count;
+    } else if (name == "mo") {
+      found_mo = true;
+      mo_content = child->textContent().SimplifyWhiteSpace();
+    }
+  }
+
+  EXPECT_EQ(mi_count, 2);
+  EXPECT_TRUE(found_mo);
+  EXPECT_EQ(mo_content, "+");
+}
+
+// Tests that partial selection inside <math> preserves ancestor structure and
+// serializes math italic characters.
+TEST_F(SerializationTest, MathML_PartialSelectionInsideMath) {
+  SetBodyContent(
+      "<math xmlns='http://www.w3.org/1998/Math/MathML'>"
+      "<mrow><mi>x</mi><mo>+</mo><mi>y</mi></mrow>"
+      "<mrow><mi>a</mi><mo>+</mo><mi>b</mi></mrow>"
+      "</math>");
+  const auto& mrow = *GetDocument().body()->firstChild()->firstChild();
+  const auto& mo = *mrow.firstChild()->nextSibling();
+  const auto& mi_y = *mrow.lastChild();
+
+  std::string serialized_markup =
+      CreateMarkup(Position::BeforeNode(mo), Position::AfterNode(mi_y),
+                   CreateMarkupOptions::Builder()
+                       .SetShouldAnnotateForInterchange(true)
+                       .Build())
+          .Utf8();
+
+  SetBodyContent(serialized_markup);
+
+  const auto& math_root = *GetDocument().body()->firstChild();
+  EXPECT_EQ(math_root.nodeName(), "math");
+  EXPECT_TRUE(To<Element>(math_root).hasAttribute(AtomicString("xmlns")));
+  EXPECT_EQ(To<Element>(math_root).getAttribute(AtomicString("xmlns")),
+            mathml_names::kNamespaceURI);
+
+  const auto* math_row =
+      GetFirstChildElementNamed(math_root, AtomicString("mrow"));
+  ASSERT_NE(math_row, nullptr) << "mrow element not found";
+
+  // Verify that serialized markup contains only one mrow (from partial
+  // selection)
+  int mrow_count = 0;
+  for (Node* child = math_root.firstChild(); child;
+       child = child->nextSibling()) {
+    if (child->nodeName() == "mrow") {
+      ++mrow_count;
+    }
+  }
+  EXPECT_EQ(mrow_count, 1)
+      << "Should have exactly one mrow from partial selection";
+
+  bool found_mo = false;
+  bool found_mi = false;
+  String mo_content, mi_content;
+
+  for (Node* child = math_row->firstChild(); child;
+       child = child->nextSibling()) {
+    const auto& name = child->nodeName();
+    if (name == "mo") {
+      found_mo = true;
+      mo_content = child->textContent().SimplifyWhiteSpace();
+    } else if (name == "mi") {
+      found_mi = true;
+      mi_content = child->textContent().SimplifyWhiteSpace();
+    }
+  }
+
+  EXPECT_TRUE(found_mo);
+  EXPECT_EQ(mo_content, "+");
+  EXPECT_TRUE(found_mi);
+  EXPECT_EQ(mi_content, AsciiToItalicMathVariant('y'));
+}
+
+// Tests that <mfrac> with nested <msup> and <msub> elements preserves correct
+// structure and semantic characters.
+TEST_F(SerializationTest, MathML_FractionWithSuperscript) {
+  SetBodyContent(
+      "<math xmlns='http://www.w3.org/1998/Math/MathML'>"
+      "<mfrac>"
+      "<msup><mi>x</mi><mn>2</mn></msup>"
+      "<msub><mi>y</mi><mn>1</mn></msub>"
+      "</mfrac>"
+      "</math>");
+  const auto& math_root = *GetDocument().body()->firstChild();
+  std::string serialized_markup = SerailizeToHTMLText(math_root);
+  SetBodyContent(serialized_markup);
+
+  const auto& parsed_math = *GetDocument().body()->firstChild();
+  EXPECT_EQ(parsed_math.nodeName(), "math");
+
+  const auto* math_fraction =
+      GetFirstChildElementNamed(parsed_math, AtomicString("mfrac"));
+  ASSERT_NE(math_fraction, nullptr) << "mfrac element not found";
+  EXPECT_EQ(math_fraction->parentNode(), &parsed_math);
+
+  Node* first_child = math_fraction->firstChild();
+  Node* second_child = first_child ? first_child->nextSibling() : nullptr;
+
+  ASSERT_TRUE(first_child && second_child);
+  EXPECT_EQ(first_child->nodeName(), "msup");
+  EXPECT_EQ(second_child->nodeName(), "msub");
+
+  Node* msup_first = first_child->firstChild();
+  Node* msup_second = msup_first ? msup_first->nextSibling() : nullptr;
+
+  ASSERT_TRUE(msup_first && msup_second);
+  EXPECT_EQ(msup_first->nodeName(), "mi");
+  EXPECT_EQ(msup_second->nodeName(), "mn");
+  EXPECT_EQ(msup_first->textContent().SimplifyWhiteSpace(),
+            AsciiToItalicMathVariant('x'));
+  EXPECT_EQ(msup_second->textContent().SimplifyWhiteSpace(), "2");
+
+  Node* msub_first = second_child->firstChild();
+  Node* msub_second = msub_first ? msub_first->nextSibling() : nullptr;
+
+  ASSERT_TRUE(msub_first && msub_second);
+  EXPECT_EQ(msub_first->nodeName(), "mi");
+  EXPECT_EQ(msub_second->nodeName(), "mn");
+  EXPECT_EQ(msub_first->textContent().SimplifyWhiteSpace(),
+            AsciiToItalicMathVariant('y'));
+  EXPECT_EQ(msub_second->textContent().SimplifyWhiteSpace(), "1");
+}
+
+// Tests that selection of <mtr> in a MathML table preserves full ancestor
+// hierarchy and cell content.
+TEST_F(SerializationTest, MathML_TableWithTextElements) {
+  SetBodyContent(
+      "<math xmlns='http://www.w3.org/1998/Math/MathML'>"
+      "<mtable>"
+      "<mtr>"
+      "<mtd><mtext>sin</mtext></mtd>"
+      "<mtd><ms>result</ms></mtd>"
+      "</mtr>"
+      "</mtable>"
+      "</math>");
+  const auto& mtable = *GetDocument().body()->firstChild()->firstChild();
+  const auto& row = *mtable.firstChild();
+
+  std::string serialized_markup =
+      CreateMarkup(Position::BeforeNode(row), Position::AfterNode(row),
+                   CreateMarkupOptions::Builder()
+                       .SetShouldAnnotateForInterchange(true)
+                       .Build())
+          .Utf8();
+
+  SetBodyContent(serialized_markup);
+
+  const auto& math_root = *GetDocument().body()->firstChild();
+  EXPECT_EQ(math_root.nodeName(), "math");
+
+  const auto* math_table =
+      GetFirstChildElementNamed(math_root, AtomicString("mtable"));
+  ASSERT_NE(math_table, nullptr) << "mtable element not found";
+  EXPECT_EQ(math_table->parentNode(), &math_root);
+
+  const auto* table_row =
+      GetFirstChildElementNamed(*math_table, AtomicString("mtr"));
+  ASSERT_NE(table_row, nullptr) << "mtr element not found";
+  EXPECT_EQ(table_row->parentNode(), math_table);
+
+  Node* first_cell = table_row->firstChild();
+  Node* second_cell = first_cell ? first_cell->nextSibling() : nullptr;
+
+  ASSERT_TRUE(first_cell && second_cell);
+  EXPECT_EQ(first_cell->nodeName(), "mtd");
+  EXPECT_EQ(second_cell->nodeName(), "mtd");
+
+  Node* mtext_element = first_cell->firstChild();
+  ASSERT_TRUE(mtext_element);
+  EXPECT_EQ(mtext_element->nodeName(), "mtext");
+  EXPECT_EQ(mtext_element->textContent().SimplifyWhiteSpace(), "sin");
+
+  Node* ms_element = second_cell->firstChild();
+  ASSERT_TRUE(ms_element);
+  EXPECT_EQ(ms_element->nodeName(), "ms");
+  EXPECT_EQ(ms_element->textContent().SimplifyWhiteSpace(), "result");
 }
 
 }  // namespace blink

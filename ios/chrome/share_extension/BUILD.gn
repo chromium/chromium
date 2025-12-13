@@ -15,10 +15,16 @@ group("resources") {
   deps = [ "//ios/chrome/share_extension/strings" ]
 }
 
-extension_repack_all_locales("packed_resources") {
-  extension = "share_extension"
+repack_locales("packed_resources") {
   input_locales = platform_pak_locales
   output_locales = locales_as_apple_outputs
+
+  source_patterns = [
+    "$root_gen_dir/ios/share_extension/ios_share_extension_branded_strings_",
+    "$root_gen_dir/ios/share_extension/ios_share_extension_strings_",
+  ]
+
+  deps = [ "//ios/chrome/share_extension/strings" ]
 }
 
 source_set("share") {
@@ -60,6 +66,7 @@ source_set("share") {
     ]
     deps += [
       "//build:branding_buildflags",
+      "//ios/chrome/common/ui/button_stack",
       "//ios/chrome/common/ui/confirmation_alert",
       "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
       "//ios/chrome/share_extension/resources",

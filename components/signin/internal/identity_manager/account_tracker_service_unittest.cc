@@ -202,7 +202,7 @@ class AccountTrackerServiceTest : public testing::Test {
 #if BUILDFLAG(IS_ANDROID)
     // Mock AccountManagerFacade in java code for tests that require its
     // initialization.
-    signin::SetUpMockAccountManagerFacade();
+    signin::SetUpFakeAccountManagerFacade();
 #endif
 
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
@@ -258,7 +258,7 @@ class AccountTrackerServiceTest : public testing::Test {
     EXPECT_EQ(AccountKeyToAccountId(account_key), info.account_id);
     EXPECT_EQ(AccountKeyToGaiaId(account_key), info.gaia);
     EXPECT_EQ(AccountKeyToEmail(account_key), info.email);
-    EXPECT_EQ(kNoHostedDomainFound, info.hosted_domain);
+    EXPECT_EQ(std::string(), info.GetHostedDomain());
     EXPECT_EQ(AccountKeyToFullName(account_key), info.full_name);
     EXPECT_EQ(AccountKeyToGivenName(account_key), info.given_name);
     EXPECT_EQ(AccountKeyToLocale(account_key), info.locale);
@@ -1074,11 +1074,12 @@ TEST_F(AccountTrackerServiceTest, SeedAccountInfo) {
 }
 
 TEST_F(AccountTrackerServiceTest, SeedAccountInfoFull) {
-  AccountInfo info;
-  info.gaia = AccountKeyToGaiaId(kAccountKeyAlpha);
-  info.email = AccountKeyToEmail(kAccountKeyAlpha);
-  info.full_name = AccountKeyToFullName(kAccountKeyAlpha);
-  info.account_id = account_tracker()->SeedAccountInfo(info);
+  AccountInfo info = AccountInfo::Builder(AccountKeyToGaiaId(kAccountKeyAlpha),
+                                          AccountKeyToEmail(kAccountKeyAlpha))
+                         .SetFullName(AccountKeyToFullName(kAccountKeyAlpha))
+                         .Build();
+  CoreAccountId account_id = account_tracker()->SeedAccountInfo(info);
+  info = AccountInfo::Builder(info).SetAccountId(account_id).Build();
 
   // Validate that seeding an unexisting account works and sends a
   // notification.
@@ -1092,10 +1093,12 @@ TEST_F(AccountTrackerServiceTest, SeedAccountInfoFull) {
 
   // Validate that seeding new full informations to an existing account works
   // and sends a notification.
-  info.given_name = AccountKeyToGivenName(kAccountKeyAlpha);
-  info.hosted_domain = kNoHostedDomainFound;
-  info.locale = AccountKeyToLocale(kAccountKeyAlpha);
-  info.picture_url = AccountKeyToPictureURL(kAccountKeyAlpha);
+  info = AccountInfo::Builder(info)
+             .SetGivenName(AccountKeyToGivenName(kAccountKeyAlpha))
+             .SetHostedDomain(kNoHostedDomainFound)
+             .SetLocale(AccountKeyToLocale(kAccountKeyAlpha))
+             .SetAvatarUrl(AccountKeyToPictureURL(kAccountKeyAlpha))
+             .Build();
   account_tracker()->SeedAccountInfo(info);
   stored_info = account_tracker()->GetAccountInfo(info.account_id);
   EXPECT_EQ(info.gaia, stored_info.gaia);
@@ -1660,61 +1663,3 @@ TEST_F(AccountTrackerServiceTest,
       testing::ElementsAre(base::Bucket(1, 1)));
 }
 #endif
-
-TEST_F(AccountTrackerServiceTest, CapabilityPrefNameMigration) {
-  base::ScopedTempDir scoped_user_data_dir;
-  ASSERT_TRUE(scoped_user_data_dir.CreateUniqueTempDir());
-
-  // Create a tracker and add an account. This should cause the account to be
-  // saved to persistence.
-  ResetAccountTrackerWithPersistence(scoped_user_data_dir.GetPath());
-  SimulateTokenAvailable(kAccountKeyAlpha);
-  ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
-
-  // The capability is unknown, and none of the capability-related keys should
-  // be set.
-  EXPECT_EQ(
-      signin::Tribool::kUnknown,
-      account_tracker()
-          ->GetAccountInfo(AccountKeyToAccountId(kAccountKeyAlpha))
-          .capabilities
-          .can_show_history_sync_opt_ins_without_minor_mode_restrictions());
-  ScopedListPrefUpdate update(prefs(), prefs::kAccountInfo);
-  ASSERT_FALSE(update->empty());
-  base::Value::Dict* dict = (*update)[0].GetIfDict();
-  ASSERT_TRUE(dict);
-  const char kDeprecatedCapabilityKey[] =
-      "accountcapabilities.can_offer_extended_chrome_sync_promos";
-  const char kNewCapabilityKey[] =
-      "accountcapabilities.accountcapabilities/gi2tklldmfya";
-  // The deprecated key is not set.
-  EXPECT_FALSE(dict->FindIntByDottedPath(kDeprecatedCapabilityKey));
-  EXPECT_TRUE(dict->FindIntByDottedPath(kNewCapabilityKey));
-
-  // Set the capability using the deprecated key, and reload the account.
-  dict->SetByDottedPath(kDeprecatedCapabilityKey, 1);
-  dict->RemoveByDottedPath(kNewCapabilityKey);
-  ClearAccountTrackerEvents();
-  ResetAccountTrackerWithPersistence(scoped_user_data_dir.GetPath());
-  EXPECT_TRUE(CheckAccountTrackerEvents(
-      {TrackingEvent(UPDATED, AccountKeyToAccountId(kAccountKeyAlpha),
-                     AccountKeyToGaiaId(kAccountKeyAlpha),
-                     AccountKeyToEmail(kAccountKeyAlpha))}));
-
-  // Check that the migration happened.
-  std::vector<AccountInfo> infos = account_tracker()->GetAccounts();
-  ASSERT_EQ(1u, infos.size());
-  CheckAccountDetails(kAccountKeyAlpha, infos[0]);
-  // The deprecated key has been read.
-  EXPECT_EQ(
-      signin::Tribool::kTrue,
-      infos[0]
-          .capabilities
-          .can_show_history_sync_opt_ins_without_minor_mode_restrictions());
-  // The deprecated key has been removed.
-  EXPECT_FALSE(dict->FindIntByDottedPath(kDeprecatedCapabilityKey));
-  // The new key has been written.
-  std::optional<int> new_key = dict->FindIntByDottedPath(kNewCapabilityKey);
-  ASSERT_TRUE(new_key.has_value());
-  EXPECT_EQ(static_cast<int>(signin::Tribool::kTrue), new_key.value());
-}

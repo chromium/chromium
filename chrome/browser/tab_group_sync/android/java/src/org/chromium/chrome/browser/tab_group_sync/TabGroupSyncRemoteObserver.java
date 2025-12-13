@@ -8,7 +8,6 @@ import android.text.TextUtils;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -20,6 +19,8 @@ import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TriggerSource;
+
+import java.util.function.Supplier;
 
 /**
  * Observes {@link TabGroupSyncService} for any incoming tab group updates from sync for the current

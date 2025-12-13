@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.settings;
 
+import static com.google.common.truth.Truth.assertWithMessage;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -35,6 +37,7 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -48,12 +51,15 @@ import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.settings.SettingsActivityUnitTest.ShadowProfileManagerUtils;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.PaddedItemDecorationWithDivider;
+import org.chromium.ui.display.DisplayUtil;
 
 import java.util.concurrent.TimeoutException;
 
 /** Unit tests for {@link SettingsActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = ShadowProfileManagerUtils.class)
+@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+@EnableFeatures({ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES})
 public class SettingsActivityUnitTest {
     /** Shadow class to bypass the real call to ProfileManagerUtils. */
     @Implements(ProfileManagerUtils.class)
@@ -82,6 +88,35 @@ public class SettingsActivityUnitTest {
             mActivityScenario.close();
             mActivityScenario = null;
         }
+    }
+
+    @Test
+    @Config(qualifiers = "w720dp-h1024dp")
+    public void testApplyOverrides() {
+        startSettings(TestEmbeddableFragment.class.getName());
+        mActivityScenario.moveToState(State.CREATED);
+        assertEquals(
+                "SmallestScreenWidthDp should be overridden.",
+                720,
+                mSettingsActivity.getResources().getConfiguration().smallestScreenWidthDp);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.AUTOMOTIVE_BACK_BUTTON_BAR_STREAMLINE})
+    public void testAutomotiveBackButtonBarStreamline_hidesToolbarOnStart() {
+        // Required for the feature flag check to pass.
+        DisplayUtil.setCarmaPhase1Version2ComplianceForTesting(true);
+        DeviceInfo.setIsAutomotiveForTesting(true);
+
+        startSettings(TestEmbeddableFragment.class.getName());
+        mActivityScenario.moveToState(State.CREATED);
+
+        View backButtonToolbar = mSettingsActivity.findViewById(R.id.back_button_toolbar);
+        assertNotNull("The back button toolbar should exist in the xml layout.", backButtonToolbar);
+        assertEquals(
+                "The back button toolbar should be gone when the settings page is opened.",
+                View.GONE,
+                backButtonToolbar.getVisibility());
     }
 
     @Test
@@ -303,8 +338,32 @@ public class SettingsActivityUnitTest {
         }
     }
 
+    @Test
+    public void testEscapeKey_HandledByFragment() throws TimeoutException {
+        startSettings(TestStandaloneFragment.class.getName());
+        TestStandaloneFragment mainFragment =
+                (TestStandaloneFragment) mSettingsActivity.getMainFragment();
+        mainFragment.getHandleBackPressChangedSupplier().set(true);
+        assertTrue(mSettingsActivity.getOnBackPressedDispatcher().hasEnabledCallbacks());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE);
+                    assertTrue(mSettingsActivity.dispatchKeyEvent(event));
+                });
+
+        // Check that the back press was triggered. More of a confidence check.
+        mainFragment.getBackPressCallback().waitForOnly();
+
+        // Check that #finish was not triggered, to verify it went down the path of escape handling.
+        assertFalse(
+                "Finishing the activity should not have been triggered with a handler ready to act"
+                    + " on the event.",
+                mSettingsActivity.isFinishing());
+    }
+
     private void startSettings(String fragmentName) {
-        assert mActivityScenario == null : "Should be called once per test.";
+        assertWithMessage("Should be called once per test.").that(mActivityScenario).isNull();
         Intent intent =
                 SettingsIntentUtil.createIntent(
                         ContextUtils.getApplicationContext(), fragmentName, null);

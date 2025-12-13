@@ -22,7 +22,7 @@ class Profile;
 class PasswordStoreBridge
     : public password_manager::SavedPasswordsPresenter::Observer {
  public:
-  PasswordStoreBridge(const base::android::JavaParamRef<jobject>& java_bridge,
+  PasswordStoreBridge(const base::android::JavaRef<jobject>& java_bridge,
                       Profile* profile);
   ~PasswordStoreBridge() override;
 
@@ -32,20 +32,20 @@ class PasswordStoreBridge
   // Called by Java to store a new credential into the profile password store.
   void InsertPasswordCredentialInProfileStoreForTesting(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& credential);
+      const base::android::JavaRef<jobject>& credential);
 
   // Called by Java to store a new credential into the account password store.
   void InsertPasswordCredentialInAccountStoreForTesting(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& credential);
+      const base::android::JavaRef<jobject>& credential);
 
   void BlocklistForTesting(JNIEnv* env,
-                           const base::android::JavaParamRef<jstring>& jurl);
+                           const base::android::JavaRef<jstring>& jurl);
 
   // Called by Java to edit a credential.
   bool EditPassword(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& credential,
-                    const base::android::JavaParamRef<jstring>& new_password);
+                    const base::android::JavaRef<jobject>& credential,
+                    const base::android::JavaRef<jstring>& new_password);
 
   // Called by Java to get the number of stored credentials for both profile and
   // account stores.
@@ -62,7 +62,7 @@ class PasswordStoreBridge
   // Called by Java to get all stored credentials.
   void GetAllCredentials(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& java_credentials) const;
+      const base::android::JavaRef<jobjectArray>& java_credentials) const;
 
   // Called by Java to clear all stored passwords.
   void ClearAllPasswords(JNIEnv* env);

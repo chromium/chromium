@@ -13,7 +13,7 @@ class OmniboxPositionBrowserAgent;
 
 /// Presenter that displays accessories over or next to the toolbar. Note that
 /// there are different presentations styles for iPhone (Compact Toolbar) vs.
-/// iPad. This is used by Find in Page.
+/// iPad.
 @interface ToolbarAccessoryPresenter : NSObject <ContainedPresenter>
 
 /// Whether the presenter is currently presenting a view.

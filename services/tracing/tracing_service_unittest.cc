@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -278,8 +280,8 @@ TEST_F(TracingServiceTest, PerfettoClientConsumerLegacyJson) {
   session->ReadTrace([&wait_for_data_loop, &tokenizer, &json](
                          perfetto::TracingSession::ReadTraceCallbackArgs args) {
     if (args.size) {
-      auto packets = tokenizer.Parse(
-          reinterpret_cast<const uint8_t*>(args.data), args.size);
+      auto packets = tokenizer.Parse(UNSAFE_TODO(
+          base::span(reinterpret_cast<const uint8_t*>(args.data), args.size)));
       for (const auto& packet : packets) {
         for (const auto& slice : packet.slices()) {
           json += std::string(reinterpret_cast<const char*>(slice.start),
@@ -293,7 +295,8 @@ TEST_F(TracingServiceTest, PerfettoClientConsumerLegacyJson) {
   wait_for_data_loop.Run();
   DCHECK(!tokenizer.has_more());
 
-  std::optional<base::Value> result = base::JSONReader::Read(json);
+  std::optional<base::Value> result =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(result.has_value());
   EXPECT_TRUE(result->GetDict().contains("traceEvents"));
 }

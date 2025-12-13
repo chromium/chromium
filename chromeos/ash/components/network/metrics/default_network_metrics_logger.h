@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_METRICS_DEFAULT_NETWORK_METRICS_LOGGER_H_
 
 #include "base/component_export.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 

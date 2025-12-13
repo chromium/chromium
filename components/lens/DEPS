@@ -1,16 +1,36 @@
 include_rules = [
   "+components/base32",
+  "+components/optimization_guide/content/browser",
+  "+components/pdf/browser",
   "+components/prefs",
+  "+components/sessions/content",
+  "+components/sessions/core",
   "+components/signin/public/identity_manager",
   "+components/sync",
   "+components/sync_preferences",
+  "+components/tabs",
   "+components/variations",
+  "+components/viz/common",
   "+components/unified_consent",
+  "+content/public/browser",
   "+google_apis",
+  "+mojo/public/cpp/bindings",
   "+net",
+  "+pdf/buildflags.h",
+  "+pdf/mojom/pdf.mojom.h",
+  "+pdf/pdf_features.h",
   "+services/metrics/public/cpp",
+  "+third_party/blink/public/common/associated_interfaces",
   "+third_party/skia",
   "+third_party/lens_server_proto",
+  "+third_party/zstd",
+  "+ui/base",
   "+ui/gfx",
   "+ui/gfx/geometry/size_f.h",
 ]
+
+specific_include_rules = {
+  "tab_contextualization_controller.cc": [
+    "+third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h",
+  ],
+}

@@ -27,6 +27,7 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 
 namespace content {
@@ -140,6 +141,90 @@ IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,
 
   // 5) Verify that we haven't received any notifications.
   ASSERT_FALSE(HasExistingNotification());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,
+                       IssueForSkippableNavigationEntry_MainFrame) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL non_skippable_url(
+      embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), non_skippable_url));
+
+  GURL skippable_url(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), skippable_url));
+
+  // Navigate to a new document from the renderer without a user gesture.
+  GURL redirected_url(embedded_test_server()->GetURL("c.com", "/title3.html"));
+  EXPECT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(shell(), redirected_url));
+
+  // Open DevTools and enable Audits domain.
+  Attach();
+  SendCommandSync("Audits.enable");
+
+  // Verify that we have received the notification for issue.
+  base::Value::Dict notification =
+      WaitForNotification("Audits.issueAdded", true);
+
+  EXPECT_EQ(*notification.FindStringByDottedPath("issue.code"),
+            protocol::Audits::InspectorIssueCodeEnum::GenericIssue);
+
+  EXPECT_EQ(*notification.FindStringByDottedPath(
+                "issue.details.genericIssueDetails.errorType"),
+            protocol::Audits::GenericIssueErrorTypeEnum::
+                NavigationEntryMarkedSkippable);
+
+  EXPECT_THAT(*notification.FindStringByDottedPath(
+                  "issue.details.genericIssueDetails.request.url"),
+              testing::HasSubstr("/title2.html"));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsIssueStorageBrowserTest,
+                       IssueForSkippableNavigationEntry_SubFrame) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL page_with_iframe_url =
+      embedded_test_server()->GetURL("/devtools/page-with-oopif.html");
+  EXPECT_TRUE(NavigateToURL(shell(), page_with_iframe_url));
+
+  RenderFrameHostImpl* main_frame = main_frame_host();
+
+  // This navigation is renderer-initiated, so the previous entry
+  // ('/devtools/page-with-oopif.html' which has 'title1.html' in iframe) should
+  // be marked skippable. An issue should be reported for this.
+  GURL next_url(embedded_test_server()->GetURL("bar.com", "/title2.html"));
+
+  EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(
+      main_frame->child_at(0)->current_frame_host(), next_url));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  RenderFrameHost* child_frame = main_frame->child_at(0)->current_frame_host();
+  EXPECT_TRUE(child_frame);
+
+  // Verify that both main and child frame point to their designated url
+  EXPECT_EQ(child_frame->GetLastCommittedURL(), next_url);
+  EXPECT_EQ(main_frame->GetLastCommittedURL(), page_with_iframe_url);
+
+  // Open DevTools in the child frame and enable Audits domain.
+  AttachToFrameTreeHost(child_frame);
+  SendCommandSync("Audits.enable");
+
+  // Verify that we have received the notification for the issue.
+  // The issue should be about the navigation to 'title1.html' in the iframe
+  // being skippable.
+  base::Value::Dict notification =
+      WaitForNotification("Audits.issueAdded", true);
+
+  EXPECT_EQ(*notification.FindStringByDottedPath("issue.code"),
+            protocol::Audits::InspectorIssueCodeEnum::GenericIssue);
+
+  EXPECT_EQ(*notification.FindStringByDottedPath(
+                "issue.details.genericIssueDetails.errorType"),
+            protocol::Audits::GenericIssueErrorTypeEnum::
+                NavigationEntryMarkedSkippable);
+
+  EXPECT_THAT(*notification.FindStringByDottedPath(
+                  "issue.details.genericIssueDetails.request.url"),
+              testing::HasSubstr("/title1.html"));
 }
 
 class DevToolsIssueStorageWithBackForwardCacheBrowserTest

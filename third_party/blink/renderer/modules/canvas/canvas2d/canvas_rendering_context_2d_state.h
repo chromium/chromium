@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
 #include "third_party/blink/renderer/platform/geometry/path_types.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_high_entropy_op_type.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/graphics/pattern.h"
@@ -179,6 +180,10 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
     }
   }
   void SetStrokePattern(CanvasPattern* pattern) {
+    if (pattern->HasHighEntropyCanvasOpTypes()) {
+      AddHighEntropyCanvasOpTypes(pattern->HighEntropyCanvasOpTypes() |
+                                  HighEntropyCanvasOpType::kCopyFromCanvas);
+    }
     stroke_style_.SetPattern(pattern);
   }
   void SetStrokeGradient(CanvasGradient* gradient) {
@@ -192,6 +197,10 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
     }
   }
   void SetFillPattern(CanvasPattern* pattern) {
+    if (pattern->HasHighEntropyCanvasOpTypes()) {
+      AddHighEntropyCanvasOpTypes(pattern->HighEntropyCanvasOpTypes() |
+                                  HighEntropyCanvasOpType::kCopyFromCanvas);
+    }
     fill_style_.SetPattern(pattern);
   }
   void SetFillGradient(CanvasGradient* gradient) {
@@ -225,16 +234,18 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   void SetLang(const String& lang);
   String GetLang() const { return lang_; }
 
-  void SetDirection(V8CanvasDirection direction) { direction_ = direction; }
-  V8CanvasDirection GetDirection() const { return direction_; }
+  void SetDirection(V8CanvasDirection::Enum direction) {
+    direction_ = direction;
+  }
+  V8CanvasDirection::Enum GetDirection() const { return direction_; }
 
-  void SetTextAlign(V8CanvasTextAlign align) { text_align_ = align; }
-  V8CanvasTextAlign GetTextAlign() const { return text_align_; }
+  void SetTextAlign(V8CanvasTextAlign::Enum align) { text_align_ = align; }
+  V8CanvasTextAlign::Enum GetTextAlign() const { return text_align_; }
 
-  void SetTextBaseline(V8CanvasTextBaseline baseline) {
+  void SetTextBaseline(V8CanvasTextBaseline::Enum baseline) {
     text_baseline_ = baseline;
   }
-  V8CanvasTextBaseline GetTextBaseline() const { return text_baseline_; }
+  V8CanvasTextBaseline::Enum GetTextBaseline() const { return text_baseline_; }
 
   void SetLetterSpacing(const String& letter_spacing,
                         UniqueFontSelector* selector);
@@ -243,9 +254,9 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   void SetWordSpacing(const String& word_spacing, UniqueFontSelector* selector);
   String GetWordSpacing() const { return parsed_word_spacing_; }
 
-  void SetTextRendering(V8CanvasTextRendering text_rendering,
+  void SetTextRendering(V8CanvasTextRendering::Enum text_rendering,
                         UniqueFontSelector* selector);
-  V8CanvasTextRendering GetTextRendering() const {
+  V8CanvasTextRendering::Enum GetTextRendering() const {
     return text_rendering_mode_;
   }
 
@@ -253,9 +264,9 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
                       UniqueFontSelector* selector);
   FontDescription::Kerning GetFontKerning() const { return font_kerning_; }
 
-  void SetFontStretch(V8CanvasFontStretch font_stretch,
+  void SetFontStretch(V8CanvasFontStretch::Enum font_stretch,
                       UniqueFontSelector* selector);
-  V8CanvasFontStretch GetFontStretch() const { return font_stretch_; }
+  V8CanvasFontStretch::Enum GetFontStretch() const { return font_stretch_; }
 
   void SetFontVariantCaps(FontDescription::FontVariantCaps font_kerning,
                           UniqueFontSelector* selector);
@@ -361,6 +372,14 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   sk_sp<PaintFilter>& ShadowOnlyImageFilter() const;
   sk_sp<PaintFilter>& ShadowAndForegroundImageFilter() const;
 
+  void AddHighEntropyCanvasOpTypes(HighEntropyCanvasOpType types) {
+    high_entropy_canvas_op_types_ |= types;
+  }
+
+  HighEntropyCanvasOpType HighEntropyCanvasOpTypes() const {
+    return high_entropy_canvas_op_types_;
+  }
+
  private:
   void UpdateLineDash() const;
   void UpdateFilterQuality() const;
@@ -370,6 +389,7 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   sk_sp<cc::DrawLooper>& EmptyDrawLooper() const;
   sk_sp<cc::DrawLooper>& ShadowOnlyDrawLooper() const;
   sk_sp<cc::DrawLooper>& ShadowAndForegroundDrawLooper() const;
+  float ShadowBlurAsSigma() const;
 
   TraceWrapperV8Reference<v8::String> unparsed_stroke_color_;
   TraceWrapperV8Reference<v8::String> unparsed_fill_color_;
@@ -390,6 +410,8 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   mutable sk_sp<PaintFilter> shadow_and_foreground_image_filter_;
 
   double global_alpha_ = 1.f;
+  // The default behavior of a 2D canvas is to tone map to SDR (HDR headroom
+  // zero).
   double global_hdr_headroom_ = 0.f;
   AffineTransform transform_;
   Vector<double> line_dash_;
@@ -413,9 +435,10 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
 
   // Text state.
   String lang_ = "inherit";
-  V8CanvasTextAlign text_align_{V8CanvasTextAlign::Enum::kStart};
-  V8CanvasTextBaseline text_baseline_{V8CanvasTextBaseline::Enum::kAlphabetic};
-  V8CanvasDirection direction_{V8CanvasDirection::Enum::kInherit};
+  V8CanvasTextAlign::Enum text_align_{V8CanvasTextAlign::Enum::kStart};
+  V8CanvasTextBaseline::Enum text_baseline_{
+      V8CanvasTextBaseline::Enum::kAlphabetic};
+  V8CanvasDirection::Enum direction_{V8CanvasDirection::Enum::kInherit};
   float letter_spacing_{0};
   CSSPrimitiveValue::UnitType letter_spacing_unit_{
       CSSPrimitiveValue::UnitType::kPixels};
@@ -425,10 +448,10 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   CSSPrimitiveValue::UnitType word_spacing_unit_{
       CSSPrimitiveValue::UnitType::kPixels};
   String parsed_word_spacing_;
-  V8CanvasTextRendering text_rendering_mode_{
+  V8CanvasTextRendering::Enum text_rendering_mode_{
       V8CanvasTextRendering::Enum::kAuto};
   FontDescription::Kerning font_kerning_{FontDescription::kAutoKerning};
-  V8CanvasFontStretch font_stretch_{V8CanvasFontStretch::Enum::kNormal};
+  V8CanvasFontStretch::Enum font_stretch_{V8CanvasFontStretch::Enum::kNormal};
   FontDescription::FontVariantCaps font_variant_caps_{
       FontDescription::kCapsNormal};
 
@@ -447,6 +470,8 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   ClipList clip_list_;
 
   const SaveType save_type_ = SaveType::kInitial;
+
+  HighEntropyCanvasOpType high_entropy_canvas_op_types_;
 };
 
 ALWAYS_INLINE bool CanvasRenderingContext2DState::ShouldDrawShadows() const {

@@ -45,13 +45,26 @@ public interface SuggestionHost {
     void onOmniboxActionClicked(OmniboxAction action, int position);
 
     /**
-     * Triggered when the user long presses the omnibox suggestion. Deletes the entire
-     * AutocompleteMatch. Execution of this method implies removal of the AutocompleteMatch.
+     * Triggered when the user long presses the omnibox suggestion. A delete confirmation dialog
+     * will be shown.
      *
-     * @param suggestion Long-pressed Suggestion.
-     * @param titleText The title to display in the delete dialog.
+     * <p>Deletes the entire AutocompleteMatch. Execution of this method implies removal of the
+     * AutocompleteMatch.
+     *
+     * @param suggestion The Suggestion to delete.
+     * @param titleText The title to display in the delete dialog. Delete the match
      */
-    void onDeleteMatch(AutocompleteMatch suggestion, String titleText);
+    void confirmDeleteMatch(AutocompleteMatch suggestion, String titleText);
+
+    /**
+     * Triggered when the user clicks on the remove button to delete the suggestion immediately.
+     *
+     * <p>Deletes the entire AutocompleteMatch. Execution of this method implies removal of the
+     * AutocompleteMatch.
+     *
+     * @param suggestion The Suggestion to delete.
+     */
+    void deleteMatch(AutocompleteMatch suggestion);
 
     /**
      * Triggered when the user long presses the omnibox suggestion element (eg. tile). Performs
@@ -63,14 +76,6 @@ public interface SuggestionHost {
      * @param element Element of the suggestion to be deleted.
      */
     void onDeleteMatchElement(AutocompleteMatch suggestion, String titleText, int element);
-
-    /**
-     * Triggered when the user selects a switch to tab action.
-     *
-     * @param suggestion Suggestion for which a corresponding tab is already open.
-     * @param position The position of the suggestion on the list.
-     */
-    void onSwitchToTab(AutocompleteMatch suggestion, int position);
 
     /**
      * Update the content of the Omnibox without triggering the Navigation.

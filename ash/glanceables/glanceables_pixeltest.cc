@@ -16,6 +16,7 @@
 #include "ash/system/unified/glanceable_tray_bubble_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -28,7 +29,9 @@ constexpr char kDueDate[] = "2 Aug 2025 10:00 GMT";
 
 namespace ash {
 
-class GlanceablesTasksPixelTest : public AshTestBase {
+class GlanceablesTasksPixelTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*enable_system_blur=*/bool> {
  public:
   GlanceablesTasksPixelTest() {
     time_override_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
@@ -66,7 +69,9 @@ class GlanceablesTasksPixelTest : public AshTestBase {
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams();
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = GetParam();
+    return init_params;
   }
 
   DateTray* GetDateTray() {
@@ -84,14 +89,20 @@ class GlanceablesTasksPixelTest : public AshTestBase {
   std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_override_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    GlanceablesTasksPixelTest,
+    testing::Bool());
+
 // Pixel test for default / basic glanceables functionality.
-TEST_F(GlanceablesTasksPixelTest, Smoke) {
+TEST_P(GlanceablesTasksPixelTest, Smoke) {
   ASSERT_FALSE(GetDateTray()->is_active());
   ToggleGlanceables();
   ASSERT_TRUE(GetDateTray()->is_active());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "glanceables_smoke", /*revision_number=*/1,
+      GenerateScreenshotName("glanceables_smoke"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
       GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));
 }
 
@@ -149,25 +160,36 @@ class GlanceablesTimeManagementPixelTest : public GlanceablesTasksPixelTest {
   raw_ptr<GlanceableTrayBubbleView> view_ = nullptr;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    GlanceablesTimeManagementPixelTest,
+    testing::Bool());
+
 // Pixel test for default / basic glanceables functionality.
-TEST_F(GlanceablesTimeManagementPixelTest, Smoke) {
+TEST_P(GlanceablesTimeManagementPixelTest, Smoke) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "expanded_tasks_top", /*revision_number=*/2,
+      GenerateScreenshotName("expanded_tasks_top"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 2 : 0,
       GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));
+
   GetTasksScrollView()->ScrollToPosition(
       GetTasksScrollView()->vertical_scroll_bar(), INT_MAX);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "expanded_tasks_bottom", /*revision_number=*/2,
+      GenerateScreenshotName("expanded_tasks_bottom"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 2 : 0,
       GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));
 
   GetClassroomView()->SetExpandState(true, /*expand_by_overscroll=*/false);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "expanded_classroom_top", /*revision_number=*/2,
+      GenerateScreenshotName("expanded_classroom_top"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 2 : 0,
       GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));
+
   GetClassroomScrollView()->ScrollToPosition(
       GetClassroomScrollView()->vertical_scroll_bar(), INT_MAX);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "expanded_classroom_bottom", /*revision_number=*/2,
+      GenerateScreenshotName("expanded_classroom_bottom"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 2 : 0,
       GetDateTray()->glanceables_bubble_for_test()->GetBubbleView()));
 }
 

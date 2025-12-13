@@ -939,7 +939,6 @@ synthetic_gestures/smooth-scroll-tiny-delta.html
 
 virtual/prefer_compositing_to_lcd_text/scrollbars/custom-scroll-corner-crash.html
 virtual/prefer_compositing_to_lcd_text/scrollbars/viewport-scrollbar-corner-with-percent-padding-crash.html
-virtual/stable/fast/css3-text/css3-text-decoration/stable/getComputedStyle-text-decoration.html
 virtual/stable/http/tests/navigation/location-assign-adds-history-item.html
 virtual/stable/http/tests/navigation/replacestate-base-legal.html
 virtual/stable/http/tests/navigation/useragent.php

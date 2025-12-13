@@ -25,7 +25,8 @@ struct GPUInfo;
 namespace viz {
 
 class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
-    : public VulkanContextProvider {
+    : public VulkanContextProvider,
+      public base::MemoryPressureListener {
  public:
   // if |sync_cpu_memory_limit| is set and greater than zero,
   // |cooldown_duration_at_memory_pressure_critical| is the duration of applying
@@ -84,8 +85,7 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
       std::unique_ptr<gpu::VulkanDeviceQueue> vulkan_device_queue);
 
   // Memory pressure handler, called by |memory_pressure_listener_|.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level) override;
 
 #if BUILDFLAG(ENABLE_VULKAN)
   sk_sp<GrDirectContext> gr_context_;
@@ -97,7 +97,8 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanInProcessContextProvider
   base::TimeTicks critical_memory_pressure_expiration_time_;
 #endif
 
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::AsyncMemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 };
 
 }  // namespace viz

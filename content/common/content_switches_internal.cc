@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "content/common/content_switches_internal.h"
 
 #include <string>
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/process/process_handle.h"
@@ -113,8 +109,7 @@ void WaitForDebugger(const std::string& label) {
              << ") paused waiting for debugger to attach. "
              << "Send SIGUSR1 to unpause.";
   // Install a signal handler so that pause can be woken.
-  struct sigaction sa;
-  memset(&sa, 0, sizeof(sa));
+  struct sigaction sa = {};
   sa.sa_handler = SigUSR1Handler;
   sigaction(SIGUSR1, &sa, nullptr);
 

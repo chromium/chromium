@@ -54,26 +54,28 @@ export class TestScanningBrowserProxy extends TestBrowserProxy implements
   getPluralString(name: string, count: number): Promise<string> {
     let pluralString = '';
     switch (name) {
-      case ('fileSavedText'):
+      case 'fileSavedText':
         pluralString = count === 1 ?
             'Your file has been successfully scanned and saved to ' +
                 '<a id="folderLink">$1</a>.' :
             'Your files have been successfully scanned and saved to ' +
                 '<a id="folderLink">$1</a>.';
         break;
-      case ('editButtonLabel'):
+      case 'editButtonLabel':
         pluralString = count === 1 ? 'Edit file' : 'Edit files';
         break;
-      case ('scanButtonText'):
+      case 'scanButtonText':
         pluralString = count === 0 ? 'Scan' : 'Scan page ' + count;
         break;
-      case ('removePageDialogTitle'):
+      case 'removePageDialogTitle':
         pluralString =
             count === 0 ? 'Remove page?' : 'Remove page ' + count + '?';
         break;
-      case ('rescanPageDialogTitle'):
+      case 'rescanPageDialogTitle':
         pluralString =
             count === 0 ? 'Rescan page?' : 'Rescan page ' + count + '?';
+        break;
+      default:
         break;
     }
     return Promise.resolve(

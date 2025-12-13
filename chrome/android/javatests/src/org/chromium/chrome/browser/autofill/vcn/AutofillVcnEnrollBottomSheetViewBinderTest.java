@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill.vcn;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -52,10 +54,9 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.concurrent.TimeoutException;
 
@@ -301,9 +302,9 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
                         Comparator.comparingInt((IssuerIcon issuerIcon) -> issuerIcon.mIconResource)
                                 .thenComparing(
                                         (IssuerIcon issuerIcon) ->
-                                                Optional.of(issuerIcon.mIconUrl)
-                                                        .map(Object::toString)
-                                                        .orElse(null)));
+                                                issuerIcon.mIconUrl != null
+                                                        ? issuerIcon.mIconUrl.toString()
+                                                        : null));
 
         private void putBitmap(IssuerIcon issuerIcon, Bitmap bitmap) {
             mIconBitmapLookup.put(issuerIcon, bitmap);
@@ -320,7 +321,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
             }
             // IssuerIcon#mBitmap must not be set when
             // AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER is enabled.
-            assert icon.mBitmap == null;
+            assertThat(icon.mBitmap).isNull();
             return new BitmapDrawable(mIconBitmapLookup.get(icon));
         }
     }
@@ -394,14 +395,14 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
                 mModelBuilder.with(
                         property,
                         new LegalMessages(
-                                new LinkedList<>(),
+                                new ArrayList<>(),
                                 VirtualCardEnrollmentLinkType
                                         .VIRTUAL_CARD_ENROLLMENT_ISSUER_TOS_LINK,
                                 /* linkOpener= */ this)));
         assertThat(String.valueOf(view.getText()), isEmptyString());
         assertThat(view.getVisibility(), equalTo(View.GONE));
 
-        LinkedList<LegalMessageLine> lines = new LinkedList<>();
+        ArrayList<LegalMessageLine> lines = new ArrayList<>();
         lines.add(new LegalMessageLine("Legal message line"));
         bind(
                 mModelBuilder.with(
@@ -416,7 +417,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
 
         LegalMessageLine line = new LegalMessageLine("Legal message line");
         line.links.add(new Link(0, 5, "https://example.test"));
-        lines = new LinkedList<>();
+        lines = new ArrayList<>();
         lines.add(line);
         bind(
                 mModelBuilder.with(

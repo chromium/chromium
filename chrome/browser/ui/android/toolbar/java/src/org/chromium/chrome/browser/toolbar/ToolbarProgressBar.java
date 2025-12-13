@@ -9,6 +9,8 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.TimeAnimator;
 import android.animation.TimeAnimator.TimeListener;
+import android.animation.ValueAnimator;
+import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
@@ -18,6 +20,7 @@ import android.view.animation.Interpolator;
 import android.widget.ProgressBar;
 
 import androidx.core.view.ViewCompat;
+import androidx.core.view.animation.PathInterpolatorCompat;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
@@ -25,8 +28,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.ui.interpolators.Interpolators;
@@ -68,17 +71,30 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
 
     private static final long HIDE_DELAY_MS = 100;
 
+    // Android progress bar animation constants
     private static final float THEMED_BACKGROUND_WHITE_FRACTION = 0.2f;
     private static final float ANIMATION_WHITE_FRACTION = 0.4f;
 
     private static final long PROGRESS_FRAME_TIME_CAP_MS = 50;
     private static final long ALPHA_ANIMATION_DURATION_MS = 140;
 
+    // Composited progress bar animation constants
+    private static final long LOADING_ANIMATION_DURATION_MS = 3000;
+    private static final long FINISH_ANIMATION_DURATION_MS = 1000;
+
+    @Nullable private Integer mCachedFpsCap;
+
     /** Whether or not the progress bar has started processing updates. */
     private boolean mIsStarted;
 
     /** The target progress the smooth animation should move to (when animating smoothly). */
     private float mTargetProgress;
+
+    private long mTimeSinceLastFrameMs;
+    private long mLastUpdateTimeMs;
+
+    /** The current progress displayed by the animation. */
+    private float mAnimatedProgress;
 
     /** The logic used to animate the progress bar during smooth animation. */
     private final AnimationLogic mAnimationLogic;
@@ -99,9 +115,18 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
             new Runnable() {
                 @Override
                 public void run() {
-                    if (!mIsStarted) return;
+                    if (!mIsStarted
+                            || ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.ANDROID_PB_DISABLE_PULSE_ANIMATION)) {
+                        return;
+                    }
                     mAnimationLogic.reset(getProgress());
-                    mSmoothProgressAnimator.start();
+
+                    if (!ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.ANDROID_PB_DISABLE_SMOOTH_ANIMATION)
+                            && !shouldAnimateCompositedLayer()) {
+                        mSmoothProgressAnimator.start();
+                    }
 
                     if (mAnimatingView != null) {
                         int width =
@@ -109,48 +134,113 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
                                         getDrawable().getBounds().right
                                                 - getDrawable().getBounds().left);
                         mAnimatingView.update(getProgress() * width);
+                        if (shouldAnimateCompositedLayer()) {
+                            mAnimatingView.setVisibility(VISIBLE);
+                        }
                         mAnimatingView.startAnimation();
                     }
                 }
             };
 
     private final TimeAnimator mSmoothProgressAnimator = new TimeAnimator();
+    TimeListener mSmoothProgressAnimatorListener =
+            new TimeListener() {
+                @Override
+                public void onTimeUpdate(
+                        TimeAnimator animation, long totalTimeMs, long deltaTimeMs) {
+                    // If we are at the target progress already, do nothing.
+                    if (MathUtils.areFloatsEqual(getProgress(), mTargetProgress)) return;
+
+                    // Cap progress bar animation frame time so that it doesn't jump too much
+                    // even when the animation is janky.
+                    float progress =
+                            mAnimationLogic.updateProgress(
+                                    mTargetProgress,
+                                    Math.min(deltaTimeMs, PROGRESS_FRAME_TIME_CAP_MS) * 0.001f,
+                                    getWidth());
+                    progress = Math.max(progress, 0);
+
+                    // TODO(mdjones): Find a sane way to have this call setProgressInternal so
+                    // the finish logic can be recycled. Consider stopping the progress
+                    // throttle if the smooth animation is running.
+                    ToolbarProgressBar.super.setProgress(progress);
+
+                    if (mAnimatingView != null) {
+                        int width =
+                                Math.abs(
+                                        getDrawable().getBounds().right
+                                                - getDrawable().getBounds().left);
+                        mAnimatingView.update(progress * width);
+                    }
+
+                    // If progress is at 100%, start hiding the progress bar.
+                    if (MathUtils.areFloatsEqual(getProgress(), 1.f)) finish(true);
+                }
+            };
+
+    private final TimeAnimator mCompositedProgressBarAnimation = new TimeAnimator();
+    TimeListener mCompositedProgressBarAnimationListener =
+            new TimeListener() {
+                @Override
+                public void onTimeUpdate(
+                        TimeAnimator animation, long totalTimeMs, long deltaTimeMs) {
+                    if (MathUtils.areFloatsEqual(mAnimatedProgress, mTargetProgress)
+                            || mAnimatedProgress > mTargetProgress) {
+                        mCompositedProgressBarAnimation.cancel();
+                    }
+
+                    // deltaTimeMs is always 0 on the first frame
+                    if (deltaTimeMs != 0) {
+                        mTimeSinceLastFrameMs += deltaTimeMs;
+                        long fps = (long) (1000 * 1.0f / mTimeSinceLastFrameMs);
+                        long fpsCap = getCompositedAnimationFpsCap();
+                        if (fpsCap > 0 && fps > fpsCap) {
+                            return;
+                        }
+                        mTimeSinceLastFrameMs = 0;
+                    }
+
+                    // TODO(peilinwang): Maybe introduce a max increment to reduce jank?
+                    mAnimatedProgress += (deltaTimeMs / ((float) LOADING_ANIMATION_DURATION_MS));
+                    mAnimatedProgress = Math.min(mAnimatedProgress, mTargetProgress);
+                    ToolbarProgressBar.super.setProgress(mAnimatedProgress);
+                    if (MathUtils.areFloatsEqual(getProgress(), 1.f)) finish(true);
+                }
+            };
+
+    private final ValueAnimator mProgressBarAnimationBc25 = ValueAnimator.ofFloat(0, 1);
+    AnimatorUpdateListener mProgressBarAnimationBc25Listener =
+            new AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    float progress = (float) animation.getAnimatedValue();
+                    mAnimatedProgress = progress;
+                    if (MathUtils.areFloatsEqual(mAnimatedProgress, 1.f)) {
+                        ToolbarProgressBar.super.setProgress(mAnimatedProgress);
+                        finish(true);
+                    } else {
+                        long currentTime = animation.getCurrentPlayTime();
+                        // currentTime is always 0 on the first frame
+                        if (currentTime != 0) {
+                            mTimeSinceLastFrameMs = currentTime - mLastUpdateTimeMs;
+                            long fps = (long) (1000 * 1.0f / mTimeSinceLastFrameMs);
+                            long fpsCap = getCompositedAnimationFpsCap();
+                            if (fpsCap > 0 && fps > fpsCap) {
+                                return;
+                            }
+                            mTimeSinceLastFrameMs = 0;
+                        }
+                        ToolbarProgressBar.super.setProgress(mAnimatedProgress);
+                        mLastUpdateTimeMs = currentTime;
+                    }
+                }
+            };
 
     {
-        mSmoothProgressAnimator.setTimeListener(
-                new TimeListener() {
-                    @Override
-                    public void onTimeUpdate(
-                            TimeAnimator animation, long totalTimeMs, long deltaTimeMs) {
-                        // If we are at the target progress already, do nothing.
-                        if (MathUtils.areFloatsEqual(getProgress(), mTargetProgress)) return;
-
-                        // Cap progress bar animation frame time so that it doesn't jump too much
-                        // even when the animation is janky.
-                        float progress =
-                                mAnimationLogic.updateProgress(
-                                        mTargetProgress,
-                                        Math.min(deltaTimeMs, PROGRESS_FRAME_TIME_CAP_MS) * 0.001f,
-                                        getWidth());
-                        progress = Math.max(progress, 0);
-
-                        // TODO(mdjones): Find a sane way to have this call setProgressInternal so
-                        // the finish logic can be recycled. Consider stopping the progress
-                        // throttle if the smooth animation is running.
-                        ToolbarProgressBar.super.setProgress(progress);
-
-                        if (mAnimatingView != null) {
-                            int width =
-                                    Math.abs(
-                                            getDrawable().getBounds().right
-                                                    - getDrawable().getBounds().left);
-                            mAnimatingView.update(progress * width);
-                        }
-
-                        // If progress is at 100%, start hiding the progress bar.
-                        if (MathUtils.areFloatsEqual(getProgress(), 1.f)) finish(true);
-                    }
-                });
+        // manually selected to look like bc25 mocks
+        mProgressBarAnimationBc25.setInterpolator(
+                PathInterpolatorCompat.create(0.57f, 0f, 0.12f, 1.0f));
+        mProgressBarAnimationBc25.setDuration(FINISH_ANIMATION_DURATION_MS);
     }
 
     /**
@@ -163,7 +253,10 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
         setAlpha(0.0f);
         mAnimationLogic = new ProgressAnimationSmooth();
 
-        setVisibility(View.VISIBLE);
+        if (!(ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()
+                || ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled())) {
+            setVisibility(View.VISIBLE);
+        }
 
         // This tells accessibility services that progress bar changes are important enough to
         // announce to the user even when not focused.
@@ -178,6 +271,13 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
 
     public void setAnimatingView(ToolbarProgressBarAnimatingView animatingView) {
         mAnimatingView = animatingView;
+
+        // TODO(peilinwang): after AndroidAnimatedCompositedProgressBar launches, make the xml
+        // property for this view default invisible and remove this.
+        if (shouldAnimateCompositedLayer()) {
+            mAnimatingView.setVisibility(INVISIBLE);
+        }
+
         if (useGradientDrawable()) {
             mAnimatingView.setCornerRadius((float) mProgressBarHeight / 2);
         }
@@ -198,11 +298,31 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
     }
 
     @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        mSmoothProgressAnimator.setTimeListener(mSmoothProgressAnimatorListener);
+
+        if (shouldAnimateCompositedLayer()) {
+            mCompositedProgressBarAnimation.setTimeListener(
+                    mCompositedProgressBarAnimationListener);
+            mProgressBarAnimationBc25.addUpdateListener(mProgressBarAnimationBc25Listener);
+        }
+    }
+
+    @Override
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
 
         mSmoothProgressAnimator.setTimeListener(null);
         mSmoothProgressAnimator.cancel();
+
+        if (shouldAnimateCompositedLayer()) {
+            mCompositedProgressBarAnimation.setTimeListener(null);
+            mCompositedProgressBarAnimation.cancel();
+            mProgressBarAnimationBc25.removeAllUpdateListeners();
+            mProgressBarAnimationBc25.cancel();
+        }
     }
 
     @Override
@@ -228,7 +348,13 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
         removeCallbacks(mStartSmoothIndeterminate);
         postDelayed(mStartSmoothIndeterminate, ANIMATION_START_THRESHOLD);
 
+        if (shouldAnimateCompositedLayer()) {
+            mProgressBarAnimationBc25.cancel();
+            mCompositedProgressBarAnimation.cancel();
+        }
+
         super.setProgress(0.0f);
+        mAnimatedProgress = 0.0f;
         mAnimationLogic.reset(0.0f);
         animateAlphaTo(1.0f);
     }
@@ -256,14 +382,29 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
             // If any of the animators are running while this method is called, set the internal
             // progress and wait for the animation to end.
             setProgress(1.0f);
+            if (fadeOut
+                    && shouldAnimateCompositedLayer()
+                    && !mProgressBarAnimationBc25.isRunning()) {
+                mCompositedProgressBarAnimation.cancel();
+                mLastUpdateTimeMs = 0;
+                mProgressBarAnimationBc25.setFloatValues(mAnimatedProgress, 1.0f);
+                mProgressBarAnimationBc25.start();
+            }
             if (areProgressAnimatorsRunning() && fadeOut) return;
+        }
+
+        if (shouldAnimateCompositedLayer()) {
+            mCompositedProgressBarAnimation.cancel();
+            mProgressBarAnimationBc25.cancel();
         }
 
         mIsStarted = false;
         mTargetProgress = 0;
 
         removeCallbacks(mStartSmoothIndeterminate);
-        if (mAnimatingView != null) mAnimatingView.cancelAnimation();
+        if (mAnimatingView != null) {
+            mAnimatingView.cancelAnimation();
+        }
         mSmoothProgressAnimator.cancel();
 
         if (fadeOut) {
@@ -282,6 +423,9 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
 
         if (mIsStarted) return;
         if (!animate) animate().cancel();
+        if (shouldAnimateCompositedLayer() && mAnimatingView != null) {
+            mAnimatingView.setVisibility(INVISIBLE);
+        }
 
         // Make invisible.
         if (animate) {
@@ -295,7 +439,12 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
      * @return Whether any animator that delays the showing of progress is running.
      */
     private boolean areProgressAnimatorsRunning() {
-        return mSmoothProgressAnimator.isRunning();
+        boolean areCompositedAnimationsRunning =
+                shouldAnimateCompositedLayer()
+                        ? mCompositedProgressBarAnimation.isRunning()
+                                || mProgressBarAnimationBc25.isRunning()
+                        : false;
+        return mSmoothProgressAnimator.isRunning() || areCompositedAnimationsRunning;
     }
 
     /**
@@ -353,9 +502,19 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
         // smooth-indeterminate animation.
         removeCallbacks(mStartSmoothIndeterminate);
 
-        if (!mSmoothProgressAnimator.isRunning()) {
-            postDelayed(mStartSmoothIndeterminate, ANIMATION_START_THRESHOLD);
-            super.setProgress(mTargetProgress);
+        if (shouldAnimateCompositedLayer()) {
+            if (mAnimatingView != null && !mAnimatingView.isRunning()) {
+                postDelayed(mStartSmoothIndeterminate, ANIMATION_START_THRESHOLD);
+            }
+        } else {
+            if (!mSmoothProgressAnimator.isRunning()) {
+                postDelayed(mStartSmoothIndeterminate, ANIMATION_START_THRESHOLD);
+                super.setProgress(mTargetProgress);
+            }
+        }
+
+        if (shouldAnimateCompositedLayer() && !mCompositedProgressBarAnimation.isRunning()) {
+            mCompositedProgressBarAnimation.start();
         }
 
         sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_SELECTED);
@@ -367,15 +526,33 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
         if (mThemeColor != 0) {
             setThemeColor(mThemeColor, false);
         } else {
-            setThemeColor(SurfaceColorUpdateUtils.getDefaultThemeColor(getContext(), false), false);
+            setThemeColor(ChromeColors.getDefaultThemeColor(getContext(), false), false);
         }
+    }
+
+    private int getCompositedAnimationFpsCap() {
+        if (mCachedFpsCap == null) {
+            mCachedFpsCap = ChromeFeatureList.sAndroidAnimatedProgressBarFpsCap.getValue();
+        }
+        return mCachedFpsCap;
     }
 
     @Override
     public void setVisibility(int visibility) {
         // Hide the progress bar if it is being forced externally.
         super.setVisibility(visibility);
-        if (mAnimatingView != null) mAnimatingView.setVisibility(visibility);
+        if (mAnimatingView != null) {
+            boolean shouldUpdateAnimatingView = true;
+            if (shouldAnimateCompositedLayer()
+                    && visibility == VISIBLE
+                    && !mAnimatingView.isRunning()) {
+                shouldUpdateAnimatingView = false;
+            }
+
+            if (shouldUpdateAnimatingView) {
+                mAnimatingView.setVisibility(visibility);
+            }
+        }
     }
 
     /**

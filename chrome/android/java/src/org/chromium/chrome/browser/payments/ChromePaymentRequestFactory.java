@@ -6,9 +6,10 @@ package org.chromium.chrome.browser.payments;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -31,10 +32,11 @@ import org.chromium.payments.mojom.PaymentRequest;
 import org.chromium.services.service_manager.InterfaceFactory;
 
 /** Creates an instance of PaymentRequest for use in Chrome. */
-public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequest> {
+@NullMarked
+public class ChromePaymentRequestFactory implements InterfaceFactory<@Nullable PaymentRequest> {
     // Tests can inject behaviour on future PaymentRequests via these objects.
-    public static ChromePaymentRequestService.Delegate sDelegateForTest;
-    @Nullable private static ChromePaymentRequestDelegateImplObserverForTest sObserverForTest;
+    public static ChromePaymentRequestService.@Nullable Delegate sDelegateForTest;
+    private static @Nullable ChromePaymentRequestDelegateImplObserverForTest sObserverForTest;
     private final RenderFrameHost mRenderFrameHost;
 
     /** Observes the {@link ChromePaymentRequestDelegateImpl} for testing. */
@@ -79,7 +81,7 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
         }
 
         @Override
-        public String getInvalidSslCertificateErrorMessage() {
+        public @Nullable String getInvalidSslCertificateErrorMessage() {
             WebContents liveWebContents =
                     PaymentRequestServiceUtil.getLiveWebContents(mRenderFrameHost);
             if (liveWebContents == null) return null;
@@ -130,7 +132,7 @@ public class ChromePaymentRequestFactory implements InterfaceFactory<PaymentRequ
     }
 
     @Override
-    public PaymentRequest createImpl() {
+    public @Nullable PaymentRequest createImpl() {
         if (mRenderFrameHost == null) return new InvalidPaymentRequest();
         if (!mRenderFrameHost.isFeatureEnabled(PermissionsPolicyFeature.PAYMENT)) {
             mRenderFrameHost.terminateRendererDueToBadMessage(241 /*PAYMENTS_WITHOUT_PERMISSION*/);

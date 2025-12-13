@@ -21,11 +21,12 @@ void TabStripEventRecorder::StopNotificationAndStartRecording() {
 }
 
 void TabStripEventRecorder::PlayRecordingsAndStartNotification() {
+  std::vector<Event> events;
   while (HasRecordedEvents()) {
-    auto event = std::move(recorded_.front());
+    events.push_back(std::move(recorded_.front()));
     recorded_.pop();
-    Notify(event);
   }
+  Notify(events);
   mode_ = Mode::kPassthrough;
 }
 
@@ -33,38 +34,68 @@ bool TabStripEventRecorder::HasRecordedEvents() const {
   return !recorded_.empty();
 }
 
-void TabStripEventRecorder::Notify(Event& event) {
+void TabStripEventRecorder::Notify(const std::vector<Event>& event) {
   event_notification_callback_.Run(event);
 }
 
 void TabStripEventRecorder::Handle(Event event) {
   if (mode_ == Mode::kPassthrough) {
-    Notify(event);
+    std::vector<Event> bundled;
+    bundled.push_back(std::move(event));
+    Notify(bundled);
   } else {
     recorded_.push(std::move(event));
   }
+}
+
+void TabStripEventRecorder::Handle(std::vector<Event> events) {
+  for (auto& event : events) {
+    Handle(std::move(event));
+  }
+}
+
+void TabStripEventRecorder::OnChildrenAdded(
+    const tabs::TabCollection::Position& position,
+    const tabs::TabCollectionNodes& handles,
+    bool insert_from_detached) {
+  for (const auto& handle : handles) {
+    if (const auto* tab_handle_ptr = std::get_if<tabs::TabHandle>(&handle)) {
+      Handle(ToEvent(*tab_handle_ptr, position, tab_strip_model_adapter_));
+    } else if (const auto* collection_handle_ptr =
+                   std::get_if<tabs::TabCollectionHandle>(&handle)) {
+      Handle(ToEvent(*collection_handle_ptr, position, tab_strip_model_adapter_,
+                     insert_from_detached));
+    }
+  }
+}
+
+void TabStripEventRecorder::OnChildrenRemoved(
+    const tabs::TabCollection::Position& position,
+    const tabs::TabCollectionNodes& handles) {
+  Handle(ToEvent(handles));
+}
+
+void TabStripEventRecorder::OnChildMoved(
+    const tabs::TabCollection::Position& to_position,
+    const NodeData& node_data) {
+  const tabs::TabCollection::Position& from_position = node_data.position;
+  const tabs::TabCollection::NodeHandle node_handle = node_data.handle;
+
+  Handle(ToEvent(to_position, from_position, node_handle));
 }
 
 void TabStripEventRecorder::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  switch (change.type()) {
-    case TabStripModelChange::Type::kSelectionOnly:
-      NOTIMPLEMENTED();
-      break;
-    case TabStripModelChange::Type::kInserted:
-      Handle(ToEvent(*change.GetInsert(), tab_strip_model));
-      break;
-    case TabStripModelChange::Type::kRemoved:
-      Handle(ToEvent(*change.GetRemove()));
-      break;
-    case TabStripModelChange::Type::kMoved:
-      Handle(ToEvent(*change.GetMove()));
-      break;
-    case TabStripModelChange::Type::kReplaced:
-      NOTIMPLEMENTED();
-      break;
+  // Avoid listening to add, remove and move changes as this is handled by the
+  // TabCollection observation methods.
+  if (change.type() == TabStripModelChange::Type::kReplaced) {
+    NOTIMPLEMENTED();
+  }
+
+  if (selection.active_tab_changed() || selection.selection_changed()) {
+    Handle(ToEvent(selection, tab_strip_model_adapter_));
   }
 }
 
@@ -74,36 +105,22 @@ void TabStripEventRecorder::TabChangedAt(content::WebContents* contents,
   Handle(ToEvent(tab_strip_model_adapter_, index, change_type));
 }
 
-void TabStripEventRecorder::OnTabGroupChanged(const TabGroupChange& change) {
-  switch (change.type) {
-    case TabGroupChange::Type::kCreated:
-      Handle(ToTabGroupCreatedEvent(change));
-      break;
-    case TabGroupChange::Type::kEditorOpened:
-      NOTIMPLEMENTED();
-      break;
-    case TabGroupChange::Type::kVisualsChanged:
-      Handle(ToTabGroupVisualsChangedEvent(change));
-      break;
-    case TabGroupChange::Type::kMoved:
-      NOTIMPLEMENTED();
-      break;
-    case TabGroupChange::Type::kClosed:
-      NOTIMPLEMENTED();
-      break;
-  }
-  // When opening a saved tab group from the bookmark, OnTabGroupAdded() won't
-  // be called. However, OnTabGroupChanged() is called with the added group.
+void TabStripEventRecorder::TabBlockedStateChanged(
+    content::WebContents* contents,
+    int index) {
+  TabChangedAt(contents, index, TabChangeType::kAll);
 }
 
-void TabStripEventRecorder::TabGroupedStateChanged(
-    TabStripModel* tab_strip_model,
-    std::optional<tab_groups::TabGroupId> old_group,
-    std::optional<tab_groups::TabGroupId> new_group,
-    tabs::TabInterface* tab,
-    int index) {
-  Handle(FromTabGroupedStateChangedToTabMovedEvent(tab_strip_model, old_group,
-                                                   new_group, tab, index));
+void TabStripEventRecorder::OnTabGroupChanged(const TabGroupChange& change) {
+  if (change.type == TabGroupChange::Type::kEditorOpened) {
+    NOTIMPLEMENTED();
+    return;
+  }
+
+  if (change.type == TabGroupChange::Type::kVisualsChanged) {
+    Handle(ToEvent(change));
+    return;
+  }
 }
 
 }  // namespace tabs_api::events

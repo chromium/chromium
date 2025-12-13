@@ -9,52 +9,39 @@
 
 namespace blink {
 
+// Unlike the garbage-collected `SourceLocation`, a `CrossThreadSourceLocation`
+// is safe to move across threads.
 class PLATFORM_EXPORT CrossThreadSourceLocation {
-  friend struct CrossThreadCopier<CrossThreadSourceLocation>;
-
  public:
-  CrossThreadSourceLocation(
-      const String& url,
-      const String& function,
-      unsigned line_number,
-      unsigned column_number,
-      std::unique_ptr<v8_inspector::V8StackTrace> stack_trace_clone,
-      int script_id)
-      : url(url),
-        function(function),
-        line_number(line_number),
-        column_number(column_number),
-        stack_trace(std::move(stack_trace_clone)),
-        script_id(script_id) {}
+  CrossThreadSourceLocation() = default;
 
-  explicit CrossThreadSourceLocation(SourceLocation* source_location) {
-    if (!source_location) {
-      return;
-    }
+  explicit CrossThreadSourceLocation(const SourceLocation& location)
+      : url_(location.Url()),
+        function_(location.Function()),
+        line_number_(location.LineNumber()),
+        column_number_(location.ColumnNumber()),
+        // `v8_inspector::V8Stacktrace` contains thread-hostile fields, but
+        // calling `clone()` drops those fields.
+        stack_trace_(location.StackTrace() ? location.StackTrace()->clone()
+                                           : nullptr),
+        script_id_(location.ScriptId()) {}
 
-    url = source_location->Url();
-    function = source_location->Function();
-    line_number = source_location->LineNumber();
-    column_number = source_location->ColumnNumber();
-    stack_trace = source_location->HasStackTrace()
-                      ? source_location->StackTrace()->clone()
-                      : nullptr;
-    script_id = source_location->ScriptId();
-  }
-
-  SourceLocation* CreateSourceLocation() const {
+  // TODO(crbug.com/462588571): Delete this if all the places that do
+  // conversions never actually pass a null SourceLocation.
+  static CrossThreadSourceLocation From(const SourceLocation* location);
+  SourceLocation* ToSourceLocation() const {
     return MakeGarbageCollected<SourceLocation>(
-        url, function, line_number, column_number,
-        stack_trace ? stack_trace->clone() : nullptr, script_id);
+        url_, function_, line_number_, column_number_,
+        stack_trace_ ? stack_trace_->clone() : nullptr, script_id_);
   }
 
  private:
-  String url;
-  String function;
-  unsigned line_number = 0;
-  unsigned column_number = 0;
-  std::unique_ptr<v8_inspector::V8StackTrace> stack_trace;
-  int script_id = 0;
+  String url_;
+  String function_;
+  unsigned line_number_ = 0;
+  unsigned column_number_ = 0;
+  std::unique_ptr<v8_inspector::V8StackTrace> stack_trace_;
+  int script_id_ = 0;
 };
 
 }  // namespace blink

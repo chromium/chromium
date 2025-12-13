@@ -32,7 +32,7 @@ mojom("policy_fetch_reason_mojom") {
   ]
 
   visibility = [
-    "//chrome/enterprise_companion/mojom:mojom",
+    "//chrome/enterprise_companion/mojom",
     "//chrome/updater/mojom:*",
   ]
 }

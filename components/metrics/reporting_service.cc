@@ -78,8 +78,9 @@ void ReportingService::Stop() {
 
 void ReportingService::EnableReporting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (reporting_active_)
+  if (reporting_active_) {
     return;
+  }
   reporting_active_ = true;
   Start();
 }
@@ -122,8 +123,12 @@ void ReportingService::OnAppEnterForeground() {
   // or foregrounding), they don't get uploaded because the next attempt is
   // scheduled far in the future, which in turn results in an accumulation of
   // logs on the device, which in turn results in logs being trimmed, which in
-  // turn results in data loss.
-  // See crbug.com/420459511.
+  // turn results in data loss. See crbug.com/420459511.
+  // TODO: crbug.com/420459511 - This strategy mitigates data loss, but doesn't
+  // fix the underlying issue where periodic ongoing logs stop being created and
+  // uploaded while in the background (which is supposed to be controlled by the
+  // `UMABackgroundSessions` feature). The proper solution would be to integrate
+  // with JobScheduler (see b/417198480#comment139).
 
   // There are two scenarios of interest when the user foregrounds.
   // First, the user foregrounds while we're waiting for the next scheduled
@@ -136,9 +141,7 @@ void ReportingService::OnAppEnterForeground() {
   // start succeeding -- this is handled in OnLogUploadComplete() below.
   if (upload_scheduler_ && upload_scheduler_->IsRunning() &&
       !log_upload_in_progress_ &&
-      failures_started_from_background_.value_or(false) &&
-      base::FeatureList::IsEnabled(
-          features::kResetMetricsUploadBackoffOnForeground)) {
+      failures_started_from_background_.value_or(false)) {
     upload_scheduler_->RestartWithUnsentLogsInterval();
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -214,8 +217,9 @@ void ReportingService::SendNextLog() {
 void ReportingService::SendStagedLog() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(log_store()->has_staged_log());
-  if (!log_store()->has_staged_log())
+  if (!log_store()->has_staged_log()) {
     return;
+  }
 
   CHECK(!log_upload_in_progress_);
   log_upload_in_progress_ = true;
@@ -312,8 +316,9 @@ void ReportingService::OnLogUploadComplete(
     }
 
     if (discard_log) {
-      if (upload_succeeded)
+      if (upload_succeeded) {
         log_store()->MarkStagedLogAsSent();
+      }
 
       log_store()->DiscardStagedLog(discard_reason);
       // Store the updated list to disk now that the removed log is uploaded.
@@ -371,9 +376,7 @@ void ReportingService::OnLogUploadComplete(
     // logic in this case since there's probably nothing wrong with the server
     // (but only if the failures started happening from the background --
     // otherwise, something wrong is probably going on).
-    if (*failures_started_from_background_ && is_in_foreground_ &&
-        base::FeatureList::IsEnabled(
-            features::kResetMetricsUploadBackoffOnForeground)) {
+    if (*failures_started_from_background_ && is_in_foreground_) {
       server_is_healthy = true;
     }
   } else {

@@ -17,12 +17,12 @@ if (is_android && safe_browsing_mode == 2) {
     output_dir = target_gen_dir
     output_basename = "real_time_url_checks_allowlist.pb"
     python_path_safe_browsing =
-        "$proto_python_root/components/safe_browsing/android/proto"
+        "$proto_python_root/components/safe_browsing/core/common/proto"
 
     inputs = [ input_filename ]
 
     deps = [
-      "//components/safe_browsing/android:realtimeallowlist_proto",
+      "//components/safe_browsing/core/common/proto:realtimeallowlist_proto",
       "//third_party/protobuf:py_proto",
     ]
 
@@ -42,40 +42,40 @@ if (is_android && safe_browsing_mode == 2) {
       rebase_path(python_path_safe_browsing, root_build_dir),
     ]
   }
+}
 
-  # Generate the android real time allowlist binary proto.  This is only run
-  # manually when pushing the file to GCS for the component-updater to pick up.
-  action("make_real_time_url_allowlist_protobuf_for_gcs") {
-    script = "gen_real_time_url_allowlist_proto.py"
+# Generate the android real time allowlist binary proto. This is run by linux
+# builder to push the file to GCS for the component-updater to pick up.
+action("make_real_time_url_allowlist_protobuf_for_gcs") {
+  script = "gen_real_time_url_allowlist_proto.py"
 
-    input_filename = "real_time_url_allowlist.asciipb"
-    output_dir = "$target_gen_dir/allowlist"
-    output_basename = "real_time_url_checks_allowlist.pb"
-    python_path_safe_browsing =
-        "$proto_python_root/components/safe_browsing/android/proto"
+  input_filename = "real_time_url_allowlist.asciipb"
+  output_dir = "$target_gen_dir/allowlist"
+  output_basename = "real_time_url_checks_allowlist.pb"
+  python_path_safe_browsing =
+      "$proto_python_root/components/safe_browsing/core/common/proto"
 
-    inputs = [ input_filename ]
+  inputs = [ input_filename ]
 
-    deps = [
-      "//components/safe_browsing/android:realtimeallowlist_proto",
-      "//third_party/protobuf:py_proto",
-    ]
+  deps = [
+    "//components/safe_browsing/core/common/proto:realtimeallowlist_proto",
+    "//third_party/protobuf:py_proto",
+  ]
 
-    outputs = [ output_dir ]
+  outputs = [ output_dir ]
 
-    args = [
-      "-w",
-      "-g",
-      "-i",
-      rebase_path(input_filename, root_build_dir),
-      "-d",
-      rebase_path(output_dir, root_build_dir),
-      "-o",
-      output_basename,
-      "-p",
-      rebase_path(proto_python_root, root_build_dir),
-      "-p",
-      rebase_path(python_path_safe_browsing, root_build_dir),
-    ]
-  }
+  args = [
+    "-w",
+    "-g",
+    "-i",
+    rebase_path(input_filename, root_build_dir),
+    "-d",
+    rebase_path(output_dir, root_build_dir),
+    "-o",
+    output_basename,
+    "-p",
+    rebase_path(proto_python_root, root_build_dir),
+    "-p",
+    rebase_path(python_path_safe_browsing, root_build_dir),
+  ]
 }

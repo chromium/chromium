@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -249,9 +248,7 @@ std::string OfficeFallbackDialog::GetDialogArgs() const {
   args.Set("instructionsMessage", instructions_message_);
   args.Set("enableRetryOption", enable_retry_option_);
   args.Set("enableQuickOfficeOption", enable_quick_office_option_);
-  std::string json;
-  base::JSONWriter::Write(args, &json);
-  return json;
+  return base::WriteJson(args).value_or("");
 }
 
 void OfficeFallbackDialog::GetDialogSize(gfx::Size* size) const {

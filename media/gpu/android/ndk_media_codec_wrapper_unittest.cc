@@ -4,7 +4,6 @@
 
 #include "media/gpu/android/ndk_media_codec_wrapper.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"

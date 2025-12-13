@@ -43,7 +43,7 @@ const int kElevatedHostTimeoutSeconds = 300;
 #endif  // BUILDFLAG(IS_WIN)
 
 // Features supported in addition to the base protocol.
-const char* kSupportedFeatures[] = {
+constexpr const char* kSupportedFeatures[] = {
     "pairingRegistry",
     "oauthClient",
     "getRefreshTokenFromAuthCode",
@@ -93,7 +93,7 @@ void Me2MeNativeMessagingHost::OnMessage(const std::string& message) {
 
   base::Value::Dict response;
   std::optional<base::Value::Dict> message_dict =
-      base::JSONReader::ReadDict(message);
+      base::JSONReader::ReadDict(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!message_dict) {
     OnError("Received a message that's not a dictionary.");
     return;
@@ -245,16 +245,12 @@ void Me2MeNativeMessagingHost::ProcessGetPinHash(base::Value::Dict message,
 
   std::string* host_id = message.FindString("hostId");
   if (!host_id) {
-    std::string message_json;
-    base::JSONWriter::Write(message, &message_json);
-    OnError("'hostId' not found: " + message_json);
+    OnError("'hostId' not found: " + base::WriteJson(message).value_or(""));
     return;
   }
   std::string* pin = message.FindString("pin");
   if (!pin) {
-    std::string message_json;
-    base::JSONWriter::Write(message, &message_json);
-    OnError("'pin' not found: " + message_json);
+    OnError("'pin' not found: " + base::WriteJson(message).value_or(""));
     return;
   }
   response.Set("hash", MakeHostPinHash(std::move(*host_id), std::move(*pin)));
@@ -554,9 +550,7 @@ void Me2MeNativeMessagingHost::SendCredentialsResponse(
 void Me2MeNativeMessagingHost::SendMessageToClient(
     base::Value::Dict message) const {
   DCHECK(task_runner()->BelongsToCurrentThread());
-  std::string message_json;
-  base::JSONWriter::Write(message, &message_json);
-  client_->PostMessageFromNativeHost(message_json);
+  client_->PostMessageFromNativeHost(base::WriteJson(message).value_or(""));
 }
 
 void Me2MeNativeMessagingHost::OnError(const std::string& error_message) {

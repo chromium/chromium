@@ -19,7 +19,6 @@
 #include "ash/ambient/resources/ambient_dlc_background_installer.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ash_export.h"
-#include "ash/assistant/model/assistant_interaction_model_observer.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/screen_backlight_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -68,7 +67,6 @@ class ASH_EXPORT AmbientController
       public device::mojom::FingerprintObserver,
       public ui::UserActivityObserver,
       public ui::EventHandler,
-      public AssistantInteractionModelObserver,
       public AmbientUiLauncher::Observer {
  public:
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -120,9 +118,6 @@ class ASH_EXPORT AmbientController
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
-
-  // AssistantInteractionModelObserver:
-  void OnInteractionStateChanged(InteractionState interaction_state) override;
 
   // AmbientUiLauncher::Observer:
   void OnReadyStateChanged(bool is_ready) override;

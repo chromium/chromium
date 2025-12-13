@@ -37,12 +37,11 @@ class ExtensionSettingsQuotaTest : public testing::Test {
   }
 
   void ValidateByteValues() {
-    std::string validate_sizes;
-    base::JSONWriter::Write(byte_value_1_, &validate_sizes);
+    std::string validate_sizes = base::WriteJson(byte_value_1_).value_or("");
     ASSERT_EQ(1u, validate_sizes.size());
-    base::JSONWriter::Write(byte_value_16_, &validate_sizes);
+    validate_sizes = base::WriteJson(byte_value_16_).value_or("");
     ASSERT_EQ(16u, validate_sizes.size());
-    base::JSONWriter::Write(byte_value_256_, &validate_sizes);
+    validate_sizes = base::WriteJson(byte_value_256_).value_or("");
     ASSERT_EQ(256u, validate_sizes.size());
   }
 

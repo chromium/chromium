@@ -56,7 +56,7 @@ std::string MaybeConcatenateParentAppManifestId(
 const char kCrxAppPrefix[] = "_crx_";
 
 std::string GenerateApplicationNameFromURL(const GURL& url) {
-  return base::StrCat({url.host_piece(), "_", url.path_piece()});
+  return base::StrCat({url.host(), "_", url.path()});
 }
 
 std::string GenerateApplicationNameFromAppId(const webapps::AppId& app_id) {
@@ -156,8 +156,9 @@ bool IsValidWebAppUrl(const GURL& app_url) {
          app_url.SchemeIs(url::kHttpsScheme) ||
          (allow_extension_apps && app_url.SchemeIs("chrome-extension")) ||
          (app_url.SchemeIs(content::kChromeUIScheme) &&
-          ((app_url.host() == password_manager::kChromeUIPasswordManagerHost) ||
-           ValidChromeUrlHosts().contains(app_url.host())));
+          ((app_url.GetHost() ==
+            password_manager::kChromeUIPasswordManagerHost) ||
+           ValidChromeUrlHosts().contains(app_url.GetHost())));
 }
 
 base::ScopedClosureRunner AddValidWebAppChromeUrlHostForTesting(  // IN-TEST

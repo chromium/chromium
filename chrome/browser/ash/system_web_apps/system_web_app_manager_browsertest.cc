@@ -90,6 +90,7 @@
 #include "extensions/common/constants.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/scoped_set_idle_state.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
@@ -1057,17 +1058,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerUninstallBrowserTest, Uninstall) {
 }
 
 // Test that all registered System Apps can be re-installed.
-class SystemWebAppManagerInstallAllAppsBrowserTest
-    : public TestProfileTypeMixin<SystemWebAppBrowserTestBase> {
- public:
-  SystemWebAppManagerInstallAllAppsBrowserTest() {
-    features_.InitAndEnableFeature(features::kEnableAllSystemWebApps);
-  }
-  ~SystemWebAppManagerInstallAllAppsBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList features_;
-};
+using SystemWebAppManagerInstallAllAppsBrowserTest =
+    TestProfileTypeMixin<SystemWebAppBrowserTestBase>;
 
 // TODO(crbug.com/40162953): At the moment, PRE_Test failures aren't
 // reported in test summary, thus won't fail the CI build job. So we need a
@@ -1146,9 +1138,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
         ->AppRegistryCache()
         .ForOneApp(*app_id, [&](const apps::AppUpdate& app) {
           app_found = true;
-          EXPECT_EQ(
-              app.Name(),
-              base::UTF16ToUTF8(type_and_info.second->GetWebAppInfo()->title));
+          EXPECT_EQ(app.Name(),
+                    base::UTF16ToUTF8(
+                        type_and_info.second->GetWebAppInfo()->title.value()));
         });
     EXPECT_TRUE(app_found) << "System Web App "
                            << type_and_info.second->GetInternalName()
@@ -1794,6 +1786,15 @@ class SystemWebAppAccessibilityTest : public SystemWebAppSingleWindowTest {};
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppAccessibilityTest,
                        CanCycleToWindowControlButtons) {
+  if (::features::IsAccessibilityManifestV3EnabledForChromeVox()) {
+    // TODO(https://crbug.com/388867840): Re-enable this test. This test
+    // currently fails when ChromeVox runs in manifest v3 due to complex timing
+    // issues. In manifest v2, pressing F6 jumps to the correct pane, but it
+    // doesn't work in manifest v3 because the accelerator shortcut isn't
+    // properly bound.
+    return;
+  }
+
   ChromeVoxTestUtils chromevox_test_utils;
   chromevox_test_utils.EnableChromeVox();
   WaitForTestSystemAppInstall();
@@ -1872,6 +1873,10 @@ class SystemWebAppIconHealthMetricsTest
         .Post(FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      ::features::kWebAppUsePrimaryIcon};
 };
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppIconHealthMetricsTest, ReportsMetrics) {
@@ -1899,7 +1904,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppIconHealthMetricsTest,
       SystemWebAppManager::GetWebAppProvider(browser()->profile())
           ->icon_manager()
           .GetIconFilePathForTesting(app_id, web_app::IconPurpose::ANY, 32);
-
+  CHECK(!icon_path.empty());
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     base::WriteFile(icon_path, "Not a PNG file");

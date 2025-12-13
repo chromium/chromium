@@ -23,7 +23,7 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/corewm/tooltip_aura.h"
 #include "ui/views/corewm/tooltip_controller.h"
 #include "ui/views/corewm/tooltip_controller_test_helper.h"

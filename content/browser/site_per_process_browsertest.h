@@ -54,6 +54,7 @@ class SitePerProcessBrowserTest
       public ::testing::WithParamInterface<std::string> {
  public:
   SitePerProcessBrowserTest();
+  ~SitePerProcessBrowserTest() override;
 
   SitePerProcessBrowserTest(const SitePerProcessBrowserTest&) = delete;
   SitePerProcessBrowserTest& operator=(const SitePerProcessBrowserTest&) =

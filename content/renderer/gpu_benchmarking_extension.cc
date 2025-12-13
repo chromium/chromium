@@ -69,6 +69,7 @@
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/docs/SkMultiPictureDocument.h"
 #include "third_party/skia/include/docs/SkXPSDocument.h"
+#include "third_party/skia/include/encode/SkPngRustEncoder.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -189,7 +190,7 @@ class SkPictureSerializer {
       DCHECK(file.isValid());
 
       SkSerialProcs procs{
-          .fImageProc = [](SkImage* img, void*) -> sk_sp<SkData> {
+          .fImageProc = [](SkImage* img, void*) -> SkSerialReturnType {
             // Note: if the picture contains texture-backed (gpu) images, they
             // will fail to be read-back and therefore fail to be encoded unless
             // we can thread the correct GrDirectContext through to here.
@@ -588,7 +589,12 @@ static sk_sp<SkDocument> MakeXPSDocument(SkWStream* s) {
     LOG(ERROR) << "CoCreateInstance(CLSID_XpsOMObjectFactory, ...) failed:"
                << logging::SystemErrorCodeToString(hr);
   }
-  return SkXPS::MakeDocument(s, factory.Get());
+
+  SkXPS::Options opts;
+  opts.pngEncoder = [](SkWStream* dst, const SkPixmap& src) {
+    return SkPngRustEncoder::Encode(dst, src, {});
+  };
+  return SkXPS::MakeDocument(s, factory.Get(), opts);
 }
 #endif
 }  // namespace

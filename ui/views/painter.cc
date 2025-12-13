@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_owner.h"
@@ -95,14 +97,14 @@ void SolidRoundRectPainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
   }
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setColor(bg_color_);
-  SkPath fill_path;
-  const std::array<SkScalar, 8> scaled_radii = {
-      {radii_.upper_left() * scale, radii_.upper_left() * scale,
-       radii_.upper_right() * scale, radii_.upper_right() * scale,
-       radii_.lower_right() * scale, radii_.lower_right() * scale,
-       radii_.lower_left() * scale, radii_.lower_left() * scale}};
+  const std::array<SkVector, 4> scaled_radii = {
+      {{radii_.upper_left() * scale, radii_.upper_left() * scale},
+       {radii_.upper_right() * scale, radii_.upper_right() * scale},
+       {radii_.lower_right() * scale, radii_.lower_right() * scale},
+       {radii_.lower_left() * scale, radii_.lower_left() * scale}}};
 
-  fill_path.addRoundRect(gfx::RectFToSkRect(fill_rect), scaled_radii);
+  const SkPath fill_path = SkPath::RRect(SkRRect::MakeRectRadii(
+      gfx::RectFToSkRect(fill_rect), scaled_radii.data()));
   canvas->DrawPath(fill_path, flags);
 
   if (stroke_color_ != SK_ColorTRANSPARENT) {
@@ -113,13 +115,14 @@ void SolidRoundRectPainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
     flags.setStrokeWidth(stroke_width);
     flags.setColor(stroke_color_);
 
-    SkPath stroke_path;
-    std::array<SkScalar, 8> stroke_radii;
-    for (size_t i = 0; i < 8; i++) {
-      stroke_radii[i] = scaled_radii[i] - stroke_width / 2;
+    std::array<SkVector, 4> stroke_radii;
+    for (size_t i = 0; i < 4; i++) {
+      stroke_radii[i] =
+          scaled_radii[i] - SkVector{stroke_width / 2, stroke_width / 2};
     }
 
-    stroke_path.addRoundRect(gfx::RectFToSkRect(stroke_rect), stroke_radii);
+    const SkPath stroke_path = SkPath::RRect(SkRRect::MakeRectRadii(
+        gfx::RectFToSkRect(stroke_rect), stroke_radii.data()));
     canvas->DrawPath(stroke_path, flags);
   }
 }

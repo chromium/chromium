@@ -18,6 +18,12 @@ include_rules = [
 ]
 
 specific_include_rules = {
+    "cached_metadata_handler_test.cc" : [
+        "+components/persistent_cache"
+    ],
+    "resource_request_sender_unittest.cc": [
+        "+components/persistent_cache"
+    ],
     "request_conversion.cc" : [
         "+media/media_buildflags.h"
     ],

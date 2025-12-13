@@ -5,15 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_READING_LIST_MODEL_FAVICON_WEB_STATE_DISPATCHER_IMPL_H_
 #define IOS_CHROME_BROWSER_READING_LIST_MODEL_FAVICON_WEB_STATE_DISPATCHER_IMPL_H_
 
+#include <map>
 #include <memory>
-#include <vector>
 
-#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/reading_list/ios/favicon_web_state_dispatcher.h"
 
+class ProfileIOS;
 namespace web {
-class BrowserState;
+class WebState;
+class WebStateID;
 }
 
 namespace reading_list {
@@ -21,10 +24,12 @@ namespace reading_list {
 // Implementation of the FaviconWebStateDispatcher.
 class FaviconWebStateDispatcherImpl : public FaviconWebStateDispatcher {
  public:
-  // Constructor for keeping the WebStates alive for `keep_alive_second`
-  // seconds. If `keep_alive_second` < 0 then the default value is used.
-  FaviconWebStateDispatcherImpl(web::BrowserState* browser_state,
-                                int64_t keep_alive_second);
+  // Constructor for keeping the WebStates alive for `keep_alive`.
+  FaviconWebStateDispatcherImpl(ProfileIOS* profile,
+                                base::TimeDelta keep_alive);
+
+  // Constructor using a default value for `keep_alive`.
+  explicit FaviconWebStateDispatcherImpl(ProfileIOS* profile);
   ~FaviconWebStateDispatcherImpl() override;
 
   // FaviconWebStateDispatcher implementation.
@@ -33,12 +38,17 @@ class FaviconWebStateDispatcherImpl : public FaviconWebStateDispatcher {
   void ReleaseAll() override;
 
  private:
-  raw_ptr<web::BrowserState> browser_state_;
+  // Release the WebState with given identifier.
+  void ReleaseWebStateWithId(web::WebStateID web_state_id);
+
+  // The profile.
+  raw_ptr<ProfileIOS> profile_;
   // Map of the WebStates currently alive.
-  std::vector<std::unique_ptr<web::WebState>> web_states_;
+  std::map<web::WebStateID, std::unique_ptr<web::WebState>> web_states_;
   // Time during which the WebState will be kept alive after being returned.
-  int64_t keep_alive_second_;
-  base::WeakPtrFactory<FaviconWebStateDispatcherImpl> weak_ptr_factory_;
+  base::TimeDelta keep_alive_;
+  // Factory for weak pointers.
+  base::WeakPtrFactory<FaviconWebStateDispatcherImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace reading_list

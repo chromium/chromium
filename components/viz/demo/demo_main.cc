@@ -181,7 +181,7 @@ class DemoWindow : public ui::PlatformWindowDelegate {
   void OnWillDestroyAcceleratedWidget() override {}
   void OnAcceleratedWidgetDestroyed() override {}
   void OnActivationChanged(bool active) override {}
-  void OnMouseEnter() override {}
+  void OnCursorUpdate() override {}
   int64_t OnStateUpdate(const State& old, const State& latest) override {
     return -1;
   }
@@ -245,7 +245,8 @@ int main(int argc, char** argv) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   const bool use_gpu = command_line->HasSwitch(switches::kVizDemoUseGPU);
   if (use_gpu) {
-    command_line->AppendSwitchASCII(switches::kUseGL, gl::kGLImplementationEGLName);
+    command_line->AppendSwitchASCII(switches::kUseGL,
+                                    gl::kGLImplementationANGLEName);
     base::WaitableEvent done(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                              base::WaitableEvent::InitialState::NOT_SIGNALED);
     rendering_thread.task_runner()->PostTask(

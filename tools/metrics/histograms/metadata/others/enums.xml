@@ -33,6 +33,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="BuyerAndSellerReportingId"/>
 </enum>
 
+<enum name="BooleanRelroAvailableImmediately">
+  <int value="0" label="Available Later"/>
+  <int value="1" label="Available Immediately"/>
+</enum>
+
 <!-- LINT.IfChange(DetachKernelDriverOutcome) -->
 
 <enum name="DetachKernelDriverOutcome">
@@ -46,53 +51,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//services/device/usb/usb_device_handle_usbfs.cc:DetachKernelDriverOutcome) -->
-
-<enum name="EmbeddingModelLoadDlcStatus">
-  <int value="0" label="kSuccess"/>
-  <int value="1" label="kInvalidUuid"/>
-  <int value="2" label="kReadJsonFailed"/>
-  <int value="3" label="kParseJsonFailed"/>
-  <int value="4" label="kNoModelType"/>
-  <int value="5" label="kNoModelVersion"/>
-  <int value="6" label="kNoTfliteInfo"/>
-  <int value="7" label="kUnknownModelType"/>
-  <int value="8" label="kNoTflitePath"/>
-  <int value="9" label="kNoBuiltinSpm"/>
-  <int value="10" label="kNoSpmPath"/>
-  <int value="11" label="kNoDelegate"/>
-  <int value="12" label="kInstallFailed"/>
-</enum>
-
-<enum name="EmbeddingModelLoadEmbeddingStatus">
-  <int value="0" label="kSuccess"/>
-  <int value="1" label="kRetryBlocked"/>
-  <int value="2" label="kBuildRunnerFailed"/>
-  <int value="3" label="kRunnerLoadFailed"/>
-</enum>
-
-<enum name="EmbeddingModelTfliteRunnerLoadStatus">
-  <int value="0" label="kSuccess"/>
-  <int value="1" label="kUnsupportedDelegate"/>
-  <int value="2" label="kNoOdmlShim"/>
-  <int value="3" label="kFailedToLoadTokenizer"/>
-  <int value="4" label="kFailedToLoadFlatBufferModel"/>
-  <int value="5" label="kCantResolveModelOps"/>
-  <int value="6" label="kNoGpuOpenClDelegate"/>
-  <int value="7" label="kGpuOpenClDelegateModifyFailed"/>
-  <int value="8" label="kCantAllocateTensors"/>
-  <int value="9" label="kIncorrectInputSize"/>
-  <int value="10" label="kIncorrectOutputSize"/>
-</enum>
-
-<enum name="EmbeddingModelTfliteRunnerRunStatus">
-  <int value="0" label="kSuccess"/>
-  <int value="1" label="kNotLoaded"/>
-  <int value="2" label="kNoFormatFunctionInShim"/>
-  <int value="3" label="kFormatFailed"/>
-  <int value="4" label="kTokenizeFailed"/>
-  <int value="5" label="kTooLong"/>
-  <int value="6" label="kInvokeFailed"/>
-</enum>
 
 <enum name="EncryptionPrefixVersion">
   <int value="0" label="No prefix found"/>
@@ -197,6 +155,28 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failed after retry limit"/>
 </enum>
 
+<!-- LINT.IfChange(MojoAdoptPipeResult) -->
+
+<enum name="MojoAdoptPipeResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kTransportNotConnected"/>
+  <int value="2" label="kPutFailed"/>
+</enum>
+
+<!-- LINT.ThenChange(//mojo/public/cpp/bindings/direct_receiver.cc:MojoAdoptPipeResult)
+-->
+
+<!-- LINT.IfChange(MojoMergePortalsResult) -->
+
+<enum name="MojoMergePortalsResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kNotAttempted"/>
+  <int value="2" label="kGetFailed"/>
+</enum>
+
+<!-- LINT.ThenChange(//mojo/public/cpp/bindings/direct_receiver.cc:MojoMergePortalsResult)
+-->
+
 <enum name="RedactionToolCaller">
   <summary>The caller of the redaction tool.</summary>
   <int value="1" label="System Logs Uploader"/>
@@ -213,6 +193,24 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Feedback Tool Hot Rod"/>
   <int value="13" label="Feedback Tool User Descriptions"/>
   <int value="14" label="Feedback Tool System Logs"/>
+</enum>
+
+<enum name="RelroSharingStatus">
+  <int value="0" label="Using shared RELRO failed: other reasons"/>
+  <int value="1" label="Using shared RELRO succeeded"/>
+  <int value="2" label="Using shared RELRO failed: contents did not match"/>
+  <int value="3" label="Using shared RELRO failed: RELRO FD was not provided"/>
+  <int value="4"
+      label="Using shared RELRO failed: RELRO region not found in the current
+             process"/>
+  <int value="5"
+      label="Using shared RELRO failed: could not find shared memory
+             functions"/>
+  <int value="6"
+      label="Using shared RELRO failed: failed to mmap on top of previous
+             RELRO"/>
+  <int value="7" label="Using shared RELRO failed: invalid RELRO information"/>
+  <int value="8" label="Using shared RELRO failed: load address was reset"/>
 </enum>
 
 <enum name="RequestWorkletServiceOutcome">
@@ -256,6 +254,18 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Silent push with generic notification"/>
 </enum>
 
+<enum name="SubscriptionEligibilityAiSubscriptionTierStatus">
+  <int value="0" label="Value not set"/>
+  <int value="1" label="No profiles have an AI subscription tier"/>
+  <int value="2"
+      label="Some profiles have an AI subscription tier, some do not"/>
+  <int value="3" label="All profiles subscribed for AI but at different tiers"/>
+  <int value="4" label="All profiles subscribed for AI but at an unknown tier"/>
+  <int value="5" label="All profiles subscribed for AI at tier=1"/>
+  <int value="6" label="All profiles subscribed for AI at tier=2"/>
+  <int value="7" label="All profiles subscribed for AI at tier=3"/>
+</enum>
+
 <!--
   Names are converted to ASCII before hashing - generate new hashes with:
   cpp: static_cast<int32_t>(base::HashMetricName(base::WideToASCII(name)))
@@ -293,6 +303,7 @@ chromium-metrics-reviews@google.com.
   <int value="-685636232" label="icdcnl.dll"/>
   <int value="-629812910" label="fwhook.dll"/>
   <int value="-570442231" label="npggNT.des"/>
+  <int value="-551159708" label="kwsui64.dll"/>
   <int value="-534417221" label="mdnsnsp.dll"/>
   <int value="-434631356" label="cmsetac.dll"/>
   <int value="-432495155" label="radhslib.dll"/>

@@ -7,8 +7,14 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
+#include "net/base/proxy_chain.h"
+#include "net/base/proxy_delegate.h"
 #include "net/proxy_resolution/proxy_info.h"
+#include "url/gurl.h"
 
 namespace cronet {
 
@@ -37,9 +43,11 @@ void CronetProxyDelegate::OnResolveProxy(
     for (int i = 0; i < proxy_options_.proxies_size(); ++i) {
       const auto& proxy_server = proxy_options_.proxies(i);
       if (proxy_server.scheme() == cronet::proto::ProxyScheme::DIRECT) {
-        proxy_list.AddProxyChain(
+        auto chain =
             net::ProxyChain::WithOpaqueData(std::vector<net::ProxyServer>(),
-                                            /*opaque_data=*/i));
+                                            /*opaque_data=*/i);
+        CHECK(chain.IsValid());
+        proxy_list.AddProxyChain(std::move(chain));
       } else {
         net::ProxyServer::Scheme scheme =
             net::ProxyServer::Scheme::SCHEME_INVALID;
@@ -53,16 +61,25 @@ void CronetProxyDelegate::OnResolveProxy(
           default:
             NOTREACHED();
         }
-        proxy_list.AddProxyChain(net::ProxyChain::WithOpaqueData(
+        auto chain = net::ProxyChain::WithOpaqueData(
             std::vector<net::ProxyServer>{net::ProxyServer(
                 scheme,
                 net::HostPortPair(proxy_server.host(), proxy_server.port()))},
-            /*opaque_data=*/i));
+            /*opaque_data=*/i);
+        CHECK(chain.IsValid());
+        proxy_list.AddProxyChain(std::move(chain));
       }
     }
     result->UseProxyList(proxy_list);
   }();
   TRACE_EVENT_END("cronet", "resulting_proxy_info", result->ToDebugString());
+}
+
+std::optional<bool> CronetProxyDelegate::CanFalloverToNextProxyOverride(
+    const net::ProxyChain& proxy_chain,
+    int net_error) {
+  // We promise this in org.chromium.net.ProxyOptions's documentation.
+  return true;
 }
 
 void CronetProxyDelegate::OnSuccessfulRequestAfterFailures(
@@ -77,58 +94,40 @@ void CronetProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
                       bad_chain.ToDebugString(), "net_error", net_error);
 }
 
-net::Error CronetProxyDelegate::OnBeforeTunnelRequest(
-    // Don't be confused, this is the index of the proxy within the chain, not
-    // the index of the chain itself.
+base::expected<net::HttpRequestHeaders, net::Error>
+CronetProxyDelegate::OnBeforeTunnelRequest(
     const net::ProxyChain& proxy_chain,
-    size_t chain_index,
-    net::HttpRequestHeaders* extra_headers) {
+    size_t proxy_index,
+    OnBeforeTunnelRequestCallback callback) {
   TRACE_EVENT_BEGIN("cronet", "CronetProxyDelegate::OnBeforeTunnelRequest",
-                    "proxy_chain", proxy_chain.ToDebugString(), "chain_index",
-                    chain_index);
+                    "proxy_chain", proxy_chain.ToDebugString(), "proxy_index",
+                    proxy_index);
   CHECK(proxy_chain.opaque_data().has_value());
-  auto result = [&] {
-    if (network_tasks_->OnBeforeTunnelRequest(*proxy_chain.opaque_data(),
-                                              extra_headers)) {
-      return net::OK;
-    }
-    // TODO(https://crbug.com/422428959): Decide whether we want to propagate
-    // org.chromium.net.Proxy.Callback canceling a tunnel establishment request
-    // as net::ERR_TUNNEL_CONNECTION_FAILED. This is currently not possible, as
-    // net::ProxyFallback::CanFalloverToNextProxy does not try the next proxy in
-    // the list for net::ERR_TUNNEL_CONNECTION_FAILED, unless the chain is for
-    // IP Protection. For the time being, we return another error for which the
-    // next proxy is in the list is always attempted.
-    return net::ERR_CONNECTION_CLOSED;
-  }();
+  // org.chromium.net.Proxy.Callback#onBeforeTunnelRequest always continues
+  // asynchronously. So, from //net's perspective, this always ends up in
+  // `net::ERR_IO_PENDING`.
+  network_tasks_->OnBeforeTunnelRequest(*proxy_chain.opaque_data(),
+                                        std::move(callback));
+  const auto result = net::ERR_IO_PENDING;
   TRACE_EVENT_END("cronet", "result", result);
-  return result;
+  return base::unexpected(result);
 }
 
 net::Error CronetProxyDelegate::OnTunnelHeadersReceived(
-    // Don't be confused, this is the index of the proxy within the chain, not
-    // the index of the chain itself.
     const net::ProxyChain& proxy_chain,
-    size_t chain_index,
-    const net::HttpResponseHeaders& response_headers) {
+    size_t proxy_index,
+    const net::HttpResponseHeaders& response_headers,
+    net::CompletionOnceCallback callback) {
   TRACE_EVENT_BEGIN("cronet", "CronetProxyDelegate::OnTunnelHeadersReceived",
-                    "proxy_chain", proxy_chain.ToDebugString(), "chain_index",
-                    chain_index);
+                    "proxy_chain", proxy_chain.ToDebugString(), "proxy_index",
+                    proxy_index);
   CHECK(proxy_chain.opaque_data().has_value());
-  auto result = [&] {
-    if (network_tasks_->OnTunnelHeadersReceived(*proxy_chain.opaque_data(),
-                                                response_headers)) {
-      return net::OK;
-    }
-    // TODO(https://crbug.com/422428959): Decide whether we want to propagate
-    // org.chromium.net.Proxy.Callback canceling a tunnel establishment request
-    // as net::ERR_TUNNEL_CONNECTION_FAILED. This is currently not possible, as
-    // net::ProxyFallback::CanFalloverToNextProxy does not try the next proxy in
-    // the list for net::ERR_TUNNEL_CONNECTION_FAILED, unless the chain is for
-    // IP Protection. For the time being, we return another error for which the
-    // next proxy is in the list is always attempted.
-    return net::ERR_CONNECTION_CLOSED;
-  }();
+  // org.chromium.net.Proxy.Callback#onTunnelHeadersReceived always continues
+  // asynchronously. So, from //net's perspective, this always ends up in
+  // `net::ERR_IO_PENDING`.
+  network_tasks_->OnTunnelHeadersReceived(
+      *proxy_chain.opaque_data(), response_headers, std::move(callback));
+  const auto result = net::ERR_IO_PENDING;
   TRACE_EVENT_END("cronet", "result", result);
   return result;
 }

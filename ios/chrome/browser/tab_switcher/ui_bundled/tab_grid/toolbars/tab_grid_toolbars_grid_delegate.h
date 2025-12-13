@@ -18,6 +18,9 @@
 - (void)closeSelectedTabs:(id)sender;
 - (void)shareSelectedTabs:(id)sender;
 - (void)selectTabsButtonTapped:(id)sender;
+- (void)pageActionMenuEntrypointTapped:(id)sender;
+- (void)createNewTabGroupButtonTapped:(id)sender;
+- (void)deleteBrowsingDataButtonTapped:(id)sender;
 
 @end
 

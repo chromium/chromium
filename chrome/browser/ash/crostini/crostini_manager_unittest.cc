@@ -20,8 +20,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
-#include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_test_util.h"
@@ -38,10 +36,8 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
-#include "chrome/browser/ui/views/crostini/crostini_ansible_software_config_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
@@ -155,8 +151,6 @@ class CrostiniManagerTest : public testing::Test {
   CrostiniManagerTest()
       : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        local_state_(std::make_unique<ScopedTestingLocalState>(
-            TestingBrowserProcess::GetGlobal())),
         browser_part_(g_browser_process->platform_part()) {
     ash::AnomalyDetectorClient::InitializeFake();
     ash::ChunneldClient::InitializeFake();
@@ -256,7 +250,6 @@ class CrostiniManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
  private:
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
   scoped_refptr<component_updater::FakeComponentManagerAsh> component_manager_;
   BrowserProcessPlatformPartTestApi browser_part_;
 };
@@ -605,7 +598,6 @@ TEST_F(CrostiniManagerTest, RegisterCreateOptions) {
                                 {});
   CrostiniManager::RestartOptions options;
   options.container_username = "penguininadesert";
-  options.ansible_playbook = base::FilePath("pob.yaml");
   options.disk_size_bytes = 9001;
   options.image_server_url = "https://suspiciouswebsite.com";
   options.image_alias = "nothingtoseehereofficer";
@@ -619,7 +611,6 @@ TEST_F(CrostiniManagerTest, RegisterCreateOptions_FalseWhenExists) {
                                 {});
   CrostiniManager::RestartOptions options;
   options.container_username = "penguininadesert";
-  options.ansible_playbook = base::FilePath("pob.yaml");
   options.disk_size_bytes = 9001;
   options.image_server_url = "https://suspiciouswebsite.com";
   options.image_alias = "nothingtoseehereofficer";
@@ -636,7 +627,6 @@ TEST_F(CrostiniManagerTest, SetCreateOptionsUsed) {
   CrostiniManager::RestartOptions options;
 
   options.container_username = "penguininadesert";
-  options.ansible_playbook = base::FilePath("pob.yaml");
   options.disk_size_bytes = 9001;
   options.image_server_url = "https://suspiciouswebsite.com";
   options.image_alias = "nothingtoseehereofficer";
@@ -660,7 +650,6 @@ TEST_F(CrostiniManagerTest, FetchCreateOptions_MergesSharePaths) {
   options.share_paths = {base::FilePath("ah"), base::FilePath("ah"),
                          base::FilePath("ah"), base::FilePath("ah")};
   options.container_username = "penguininadesert";
-  options.ansible_playbook = base::FilePath("pob.yaml");
   options.disk_size_bytes = 9001;
   options.image_server_url = "https://suspiciouswebsite.com";
   options.image_alias = "nothingtoseehereofficer";
@@ -678,7 +667,6 @@ TEST_F(CrostiniManagerTest, FetchCreateOptions_MergesSharePaths) {
       testing::ContainerEq(std::vector<base::FilePath>(
           {base::FilePath("oh"), base::FilePath("ah"), base::FilePath("ah"),
            base::FilePath("ah"), base::FilePath("ah")})));
-  EXPECT_TRUE(options.ansible_playbook == options2.ansible_playbook);
   EXPECT_TRUE(options.disk_size_bytes == options2.disk_size_bytes);
   EXPECT_TRUE(options.image_server_url == options2.image_server_url);
   EXPECT_TRUE(options.image_alias == options2.image_alias);
@@ -689,7 +677,6 @@ TEST_F(CrostiniManagerTest, FetchCreateOptions_FalseWhenUnused) {
                                 {});
   CrostiniManager::RestartOptions options;
   options.container_username = "penguininadesert";
-  options.ansible_playbook = base::FilePath("pob.yaml");
   options.disk_size_bytes = 9001;
   options.image_server_url = "https://suspiciouswebsite.com";
   options.image_alias = "nothingtoseehereofficer";
@@ -701,7 +688,6 @@ TEST_F(CrostiniManagerTest, FetchCreateOptions_FalseWhenUnused) {
   EXPECT_FALSE(crostini_manager()->FetchCreateOptions(
       crostini::DefaultContainerId(), &options2));
   EXPECT_TRUE(options.container_username == options2.container_username);
-  EXPECT_TRUE(options.ansible_playbook == options2.ansible_playbook);
   EXPECT_TRUE(options.disk_size_bytes == options2.disk_size_bytes);
   EXPECT_TRUE(options.image_server_url == options2.image_server_url);
   EXPECT_TRUE(options.image_alias == options2.image_alias);
@@ -712,7 +698,6 @@ TEST_F(CrostiniManagerTest, FetchCreateOptions_TrueWhenUsed) {
                                 {});
   CrostiniManager::RestartOptions options;
   options.container_username = "penguininadesert";
-  options.ansible_playbook = base::FilePath("pob.yaml");
   options.disk_size_bytes = 9001;
   options.image_server_url = "https://suspiciouswebsite.com";
   options.image_alias = "nothingtoseehereofficer";
@@ -726,7 +711,6 @@ TEST_F(CrostiniManagerTest, FetchCreateOptions_TrueWhenUsed) {
   EXPECT_TRUE(crostini_manager()->FetchCreateOptions(
       crostini::DefaultContainerId(), &options2));
   EXPECT_TRUE(options.container_username == options2.container_username);
-  EXPECT_TRUE(options.ansible_playbook == options2.ansible_playbook);
   EXPECT_TRUE(options.disk_size_bytes == options2.disk_size_bytes);
   EXPECT_TRUE(options.image_server_url == options2.image_server_url);
   EXPECT_TRUE(options.image_alias == options2.image_alias);
@@ -2020,8 +2004,8 @@ TEST_F(CrostiniManagerTest, ExportDiskImageFailure) {
                                       export_path.path(), false,
                                       result_future.GetCallback());
 
-  EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 1);
   EXPECT_EQ(result_future.Get<0>(), CrostiniResult::DISK_IMAGE_FAILED);
+  EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 1);
 }
 
 TEST_F(CrostiniManagerTest, ExportDiskImageNoSpaceFailure) {
@@ -2042,10 +2026,10 @@ TEST_F(CrostiniManagerTest, ExportDiskImageNoSpaceFailure) {
 
   crostini_manager()->ExportDiskImage(container_id(), "my_cool_user_id_hash",
                                       export_path.path(), false,
-                                      result_future.GetCallback());
+                                      result_future.GetSequenceBoundCallback());
 
-  EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 1);
   EXPECT_EQ(result_future.Get<0>(), CrostiniResult::DISK_IMAGE_FAILED_NO_SPACE);
+  EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 1);
 }
 
 TEST_F(CrostiniManagerTest, ExportDiskImageSuccess) {
@@ -2068,8 +2052,8 @@ TEST_F(CrostiniManagerTest, ExportDiskImageSuccess) {
                                       export_path.path(), false,
                                       result_future.GetCallback());
 
-  EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 1);
   EXPECT_EQ(result_future.Get<0>(), CrostiniResult::SUCCESS);
+  EXPECT_EQ(fake_concierge_client_->export_disk_image_call_count(), 1);
 }
 
 TEST_F(CrostiniManagerTest, ImportDiskImageFailure) {
@@ -2086,8 +2070,8 @@ TEST_F(CrostiniManagerTest, ImportDiskImageFailure) {
                                       import_path.path(),
                                       result_future.GetCallback());
 
-  EXPECT_EQ(fake_concierge_client_->import_disk_image_call_count(), 1);
   EXPECT_EQ(result_future.Get<0>(), CrostiniResult::DISK_IMAGE_FAILED);
+  EXPECT_EQ(fake_concierge_client_->import_disk_image_call_count(), 1);
 }
 
 TEST_F(CrostiniManagerTest, ImportDiskImageNoSpaceFailure) {
@@ -2114,8 +2098,8 @@ TEST_F(CrostiniManagerTest, ImportDiskImageNoSpaceFailure) {
                                       import_path.path(),
                                       result_future.GetCallback());
 
-  EXPECT_EQ(fake_concierge_client_->import_disk_image_call_count(), 1);
   EXPECT_EQ(result_future.Get<0>(), CrostiniResult::DISK_IMAGE_FAILED_NO_SPACE);
+  EXPECT_EQ(fake_concierge_client_->import_disk_image_call_count(), 1);
 }
 
 TEST_F(CrostiniManagerTest, ImportDiskImageSuccess) {
@@ -2142,8 +2126,8 @@ TEST_F(CrostiniManagerTest, ImportDiskImageSuccess) {
                                       import_path.path(),
                                       result_future.GetCallback());
 
-  EXPECT_EQ(fake_concierge_client_->import_disk_image_call_count(), 1);
   EXPECT_EQ(result_future.Get<0>(), CrostiniResult::SUCCESS);
+  EXPECT_EQ(fake_concierge_client_->import_disk_image_call_count(), 1);
 }
 
 TEST_F(CrostiniManagerTest, ExportContainerSuccess) {
@@ -2451,79 +2435,6 @@ TEST_F(CrostiniManagerTest, StartLxdSuccess) {
   crostini_manager()->StartLxd(kVmName, result_future.GetCallback());
 
   EXPECT_EQ(result_future.Get(), CrostiniResult::SUCCESS);
-}
-
-class CrostiniManagerAnsibleInfraTest : public CrostiniManagerRestartTest {
- public:
-  void SetUp() override {
-    CrostiniManagerTest::SetUp();
-    mock_ansible_management_service_ =
-        AnsibleManagementTestHelper::SetUpMockAnsibleManagementService(
-            profile_.get());
-    ansible_management_test_helper_ =
-        std::make_unique<AnsibleManagementTestHelper>(profile_.get());
-    ansible_management_test_helper_->SetUpAnsiblePlaybookPreference();
-    SetUpViewsEnvironmentForTesting();
-  }
-
-  void TearDown() override {
-    base::RunLoop().RunUntilIdle();
-
-    TearDownViewsEnvironmentForTesting();
-
-    ansible_management_test_helper_.reset();
-    CrostiniManagerTest::TearDown();
-  }
-
- protected:
-  MockAnsibleManagementService* mock_ansible_management_service() {
-    return mock_ansible_management_service_;
-  }
-
-  std::unique_ptr<AnsibleManagementTestHelper> ansible_management_test_helper_;
-  raw_ptr<MockAnsibleManagementService, DanglingUntriaged>
-      mock_ansible_management_service_;
-};
-
-TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerFailure) {
-  EXPECT_CALL(*mock_ansible_management_service(), ConfigureContainer).Times(1);
-  ON_CALL(*mock_ansible_management_service(), ConfigureContainer)
-      .WillByDefault([](const guest_os::GuestId& container_id,
-                        base::FilePath playbook,
-                        base::OnceCallback<void(bool success)> callback) {
-        std::move(callback).Run(false);
-      });
-
-  CrostiniManager::RestartOptions ansible_restart;
-  ansible_restart.ansible_playbook = profile_->GetPrefs()->GetFilePath(
-      prefs::kCrostiniAnsiblePlaybookFilePath);
-
-  TestFuture<CrostiniResult> result_future;
-  RestartCrostiniWithOptions(DefaultContainerId(), std::move(ansible_restart),
-                             result_future.GetCallback(), this);
-
-  EXPECT_EQ(CrostiniResult::CONTAINER_CONFIGURATION_FAILED,
-            result_future.Get());
-}
-
-TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerSuccess) {
-  EXPECT_CALL(*mock_ansible_management_service(), ConfigureContainer).Times(1);
-  ON_CALL(*mock_ansible_management_service(), ConfigureContainer)
-      .WillByDefault([](const guest_os::GuestId& container_id,
-                        base::FilePath playbook,
-                        base::OnceCallback<void(bool success)> callback) {
-        std::move(callback).Run(true);
-      });
-
-  CrostiniManager::RestartOptions ansible_restart;
-  ansible_restart.ansible_playbook = profile_->GetPrefs()->GetFilePath(
-      prefs::kCrostiniAnsiblePlaybookFilePath);
-
-  TestFuture<CrostiniResult> result_future;
-  RestartCrostiniWithOptions(DefaultContainerId(), std::move(ansible_restart),
-                             result_future.GetCallback(), this);
-
-  EXPECT_EQ(CrostiniResult::SUCCESS, result_future.Get());
 }
 
 class CrostiniManagerUpgradeContainerTest

@@ -262,8 +262,8 @@ ExtensionActionSetPopupFunction::RunExtensionAction() {
   GURL popup_url;
 
   // If an empty string is passed, remove the explicitly set popup. Setting it
-  // back to an empty string (URL) will cause it to fall back to the default set
-  // in the manifest.
+  // back to an empty string (URL) will cause no popup to be shown (even if
+  // one is specified in the manifest).
   if (!popup_string->empty()) {
     popup_url = extension()->ResolveExtensionURL(*popup_string);
     if (!popup_url.is_valid()) {

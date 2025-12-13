@@ -12,7 +12,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.HOME_MODULE_PREF_REFACTOR;
 import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.getEducationalTipModuleList;
+import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.getSettingsPreferenceKey;
 
 import android.text.TextUtils;
 import android.view.ViewGroup;
@@ -23,12 +25,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager.HomeModulesStateListener;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -46,6 +51,7 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 public class HomeModulesConfigManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private HomeModulesStateListener mListener;
 
     private final List<ModuleConfigChecker> mModuleConfigCheckerList = new ArrayList<>();
     private HomeModulesConfigManager mHomeModulesConfigManager;
@@ -80,6 +86,7 @@ public class HomeModulesConfigManagerUnitTest {
         mModuleRegistry =
                 new ModuleRegistry(
                         mHomeModulesConfigManager, mock(ActivityLifecycleDispatcher.class));
+        mHomeModulesConfigManager.addListener(mListener);
     }
 
     @After
@@ -115,6 +122,7 @@ public class HomeModulesConfigManagerUnitTest {
     }
 
     @Test
+    @DisableFeatures(HOME_MODULE_PREF_REFACTOR)
     public void testGetEnabledModuleList() {
         registerModuleConfigChecker(1);
 
@@ -134,6 +142,33 @@ public class HomeModulesConfigManagerUnitTest {
     }
 
     @Test
+    @EnableFeatures(HOME_MODULE_PREF_REFACTOR)
+    public void testGetEnabledModuleSet_allCardsOff_restoresOnAndOffTypes() {
+        registerModuleConfigCheckerWithEligibility(ModuleType.SINGLE_TAB, true);
+        registerModuleConfigCheckerWithEligibility(ModuleType.PRICE_CHANGE, false);
+
+        mHomeModulesConfigManager.setPrefModuleTypeEnabled(ModuleType.SINGLE_TAB, true);
+        mHomeModulesConfigManager.setPrefModuleTypeEnabled(ModuleType.PRICE_CHANGE, false);
+
+        Set<Integer> enabledModulesBeforeToggleOff = Set.of(ModuleType.SINGLE_TAB);
+        Assert.assertEquals(
+                enabledModulesBeforeToggleOff, mHomeModulesConfigManager.getEnabledModuleSet());
+
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED, false);
+
+        Set<Integer> enabledModulesAfterToggleOff = mHomeModulesConfigManager.getEnabledModuleSet();
+        Assert.assertTrue(enabledModulesAfterToggleOff.isEmpty());
+
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED, true);
+        Set<Integer> enabledModulesAfterToggleOn = mHomeModulesConfigManager.getEnabledModuleSet();
+
+        Assert.assertEquals(enabledModulesBeforeToggleOff, enabledModulesAfterToggleOn);
+    }
+
+    @Test
+    @EnableFeatures(HOME_MODULE_PREF_REFACTOR)
     public void testGetModuleListShownInSettings() {
         registerModuleConfigChecker(1);
 
@@ -145,6 +180,19 @@ public class HomeModulesConfigManagerUnitTest {
         when(mModuleConfigCheckerList.get(0).isEligible()).thenReturn(true);
         List<Integer> expectedList = List.of(0);
         assertEquals(expectedList, mHomeModulesConfigManager.getModuleListShownInSettings());
+    }
+
+    @Test
+    public void testGetModuleListShownInSettings_featureDisabled() {
+        registerModuleConfigChecker(1);
+
+        // Verifies that there isn't any module shown in the settings.
+        when(mModuleConfigCheckerList.get(0).isEligible()).thenReturn(false);
+        assertTrue(mHomeModulesConfigManager.getModuleListShownInSettings().isEmpty());
+
+        // Verifies the list contains the module which eligible to build.
+        when(mModuleConfigCheckerList.get(0).isEligible()).thenReturn(true);
+        assertEquals(List.of(0), mHomeModulesConfigManager.getModuleListShownInSettings());
     }
 
     @Test
@@ -232,30 +280,42 @@ public class HomeModulesConfigManagerUnitTest {
         assertFalse(TextUtils.equals(singleTabPreferenceKey, priceChangePreferenceKey));
         assertFalse(TextUtils.equals(defaultBrowserPromoPreferenceKey, priceChangePreferenceKey));
 
-        assertEquals(
-                singleTabPreferenceKey,
-                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.SINGLE_TAB));
+        assertEquals(singleTabPreferenceKey, getSettingsPreferenceKey(ModuleType.SINGLE_TAB));
 
         // Verifies that all the educational tip modules are shared with the same preference key.
         assertEquals(
                 defaultBrowserPromoPreferenceKey,
-                mHomeModulesConfigManager.getSettingsPreferenceKey(
-                        ModuleType.DEFAULT_BROWSER_PROMO));
+                getSettingsPreferenceKey(ModuleType.DEFAULT_BROWSER_PROMO));
         assertEquals(
                 defaultBrowserPromoPreferenceKey,
-                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.TAB_GROUP_PROMO));
+                getSettingsPreferenceKey(ModuleType.TAB_GROUP_PROMO));
         assertEquals(
                 defaultBrowserPromoPreferenceKey,
-                mHomeModulesConfigManager.getSettingsPreferenceKey(
-                        ModuleType.TAB_GROUP_SYNC_PROMO));
+                getSettingsPreferenceKey(ModuleType.TAB_GROUP_SYNC_PROMO));
         assertEquals(
                 defaultBrowserPromoPreferenceKey,
-                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.QUICK_DELETE_PROMO));
+                getSettingsPreferenceKey(ModuleType.QUICK_DELETE_PROMO));
 
         // Verifies that the PRICE_CHANGE has its own preference key.
-        assertEquals(
-                priceChangePreferenceKey,
-                mHomeModulesConfigManager.getSettingsPreferenceKey(ModuleType.PRICE_CHANGE));
+        assertEquals(priceChangePreferenceKey, getSettingsPreferenceKey(ModuleType.PRICE_CHANGE));
+    }
+
+    @Test
+    @EnableFeatures(HOME_MODULE_PREF_REFACTOR)
+    public void testSetPrefAllCardsEnabled() {
+        mHomeModulesConfigManager.setPrefAllCardsEnabled(false);
+        assertFalse(
+                "Expected HOME_MODULE_CARDS_ENABLED preference to be false",
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED, true));
+        verify(mListener).allCardsConfigChanged(eq(false));
+
+        mHomeModulesConfigManager.setPrefAllCardsEnabled(true);
+        assertTrue(
+                "Expected HOME_MODULE_CARDS_ENABLED preference to be true",
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED, false));
+        verify(mListener).allCardsConfigChanged(eq(true));
     }
 
     private void registerModuleConfigChecker(int size) {

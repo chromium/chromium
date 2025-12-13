@@ -2,16 +2,18 @@
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
-
 assert(is_chromeos)
 
 static_library("classroom") {
   sources = [
+    "classroom_api_course_work_materials_response_types.cc",
+    "classroom_api_course_work_materials_response_types.h",
     "classroom_api_course_work_response_types.cc",
     "classroom_api_course_work_response_types.h",
     "classroom_api_courses_response_types.cc",
     "classroom_api_courses_response_types.h",
+    "classroom_api_list_course_work_materials_request.cc",
+    "classroom_api_list_course_work_materials_request.h",
     "classroom_api_list_course_work_request.cc",
     "classroom_api_list_course_work_request.h",
     "classroom_api_list_courses_request.cc",
@@ -20,6 +22,8 @@ static_library("classroom") {
     "classroom_api_list_student_submissions_request.h",
     "classroom_api_list_students_request.cc",
     "classroom_api_list_students_request.h",
+    "classroom_api_material_response_types.cc",
+    "classroom_api_material_response_types.h",
     "classroom_api_student_submissions_response_types.cc",
     "classroom_api_student_submissions_response_types.h",
     "classroom_api_students_response_types.cc",
@@ -28,8 +32,8 @@ static_library("classroom") {
 
   deps = [
     "//base",
-    "//google_apis:google_apis",
-    "//google_apis/common:common",
+    "//google_apis",
+    "//google_apis/common",
     "//net",
     "//services/network/public/cpp",
   ]
@@ -41,12 +45,14 @@ source_set("classroom_unittests") {
   testonly = true
 
   sources = [
+    "classroom_api_course_work_materials_response_types_unittest.cc",
     "classroom_api_course_work_response_types_unittest.cc",
     "classroom_api_courses_response_types_unittest.cc",
     "classroom_api_list_course_work_request_unittest.cc",
     "classroom_api_list_courses_request_unittest.cc",
     "classroom_api_list_student_submissions_request_unittest.cc",
     "classroom_api_list_students_request_unittest.cc",
+    "classroom_api_material_response_types_unittest.cc",
     "classroom_api_student_submissions_response_types_unittest.cc",
     "classroom_api_students_response_types_unittest.cc",
   ]

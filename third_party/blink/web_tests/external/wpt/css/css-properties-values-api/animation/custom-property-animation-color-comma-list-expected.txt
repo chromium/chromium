@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Animating a custom property of type <color># with iterationComposite
-  assert_equals: expected "rgb(125, 125, 125), rgb(250, 250, 250)" but got "rgb(25, 25, 25), rgb(50, 50, 50)"
-Harness: the test ran to completion.
-

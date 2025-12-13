@@ -7,6 +7,8 @@ import("//remoting/remoting_options.gni")
 if (is_linux) {
   executable("remoting_client_main") {
     sources = [
+      "logging_audio_stream_consumer.cc",
+      "logging_audio_stream_consumer.h",
       "logging_frame_consumer.cc",
       "logging_frame_consumer.h",
       "remoting_client_main.cc",

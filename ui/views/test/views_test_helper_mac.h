@@ -9,9 +9,9 @@
 #include <optional>
 
 #include "ui/base/test/scoped_fake_full_keyboard_access.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_context_factories.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/views_test_helper.h"
 
 namespace ui::test {
@@ -38,8 +38,8 @@ class ViewsTestHelperMac : public ViewsTestHelper {
   ui::TestContextFactories context_factories_{false};
 
   // Disable animations during tests.
-  ui::ScopedAnimationDurationScaleMode zero_duration_mode_{
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION};
+  gfx::ScopedAnimationDurationScaleMode zero_duration_mode_{
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION};
 
   // When using desktop widgets on Mac, window activation is asynchronous
   // because the window server is involved. A window may also be deactivated by

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<link rel=stylesheet href="resources/select-multiple-popup-auto-styles.css">
+
+<div class=auto-select-button>
+  <span class=auto-select-innerelement>3 selected</span>
+</div>
+<div popover=manual class=auto-select-popover>
+  <div class="auto-select-option selected">selected one</div>
+  <div class="auto-select-option selected">selected two</div>
+  <div class=auto-select-option>unselected</div>
+  <div class=auto-select-optgroup>
+    <div class=auto-select-legend>optgroup label attribute</div>
+    <div class=auto-select-option>option in optgroup one</div>
+  </div>
+  <div class=auto-select-optgroup>
+    <div class=auto-select-legend>optgroup legend element</div>
+    <div class=auto-select-option>option in optgroup two</div>
+  </div>
+  <div class="auto-select-option disabled">disabled option</div>
+  <div class="auto-select-option disabled selected">selected disabled option</div>
+</div>
+
+<script>
+  document.querySelector('[popover]').showPopover();
+</script>

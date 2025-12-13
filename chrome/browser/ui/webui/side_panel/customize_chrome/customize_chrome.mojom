@@ -4,6 +4,7 @@
 
 module side_panel.mojom;
 
+import "components/ntp_tiles/tile_type.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "url/mojom/url.mojom";
@@ -101,6 +102,7 @@ struct ManagementNoticeState {
 };
 
 enum CustomizeChromeSection {
+  kUnspecified,
   kAppearance,
   kShortcuts,
   kModules,
@@ -138,8 +140,9 @@ interface CustomizeChromePageHandlerFactory {
 
 // Browser-side handler for requests from WebUI page.
 interface CustomizeChromePageHandler {
-  // Sets the visibility of NTP tiles and whether custom links are enabled.
-  SetMostVisitedSettings(bool custom_links_enabled, bool shortcuts_visible);
+  // Sets the visibility of NTP tiles and the shortcuts type.
+  SetMostVisitedSettings(array<ntp_tiles.mojom.TileType> shortcuts_types,
+    bool shortcuts_visible, bool personal_shortcuts_visible);
 
   // Triggers a call to |CustomizeChromePage.SetPageMostVisitedSettings|.
   UpdateMostVisitedSettings();
@@ -210,6 +213,12 @@ interface CustomizeChromePageHandler {
   // Disables module with ID `module_id` if `disabled`. Enables otherwise.
   SetModuleDisabled(string module_id, bool disabled);
 
+  // If |visible| the NTP tool chips will be shown.
+  SetToolChipsVisible(bool visible);
+
+  // Triggers a call to |CustomizeChromePage.SetToolsSettings()|.
+  UpdateToolChipsSettings();
+
   // Triggers a call to |CustomizeChromePage.UpdateScrollToSection()|.
   UpdateScrollToSection();
 
@@ -232,8 +241,14 @@ interface CustomizeChromePage {
   // enabled status, visibility and managed state.
   SetModulesSettings(array<ModuleSettings> modules_settings, bool managed,
       bool visible);
-  // Sets the visibility of NTP tiles and whether custom links are enabled.
-  SetMostVisitedSettings(bool custom_links_enabled, bool visible);
+  // Sets the visibility of NTP tiles, shortcuts type to select, and shortcut
+  // types that should be hidden in the customization menu.
+  SetMostVisitedSettings(array<ntp_tiles.mojom.TileType> shortcuts_types,
+    bool visible,
+    bool personal_shortcuts_visible,
+    array<ntp_tiles.mojom.TileType> disabled_shortcuts);
+  // Sets the tools visibility settings of the NTP tool chips.
+  SetToolsSettings(bool visible);
   // Sets the visibility and disabled state of the NTP Footer.
   SetFooterSettings(bool visible,
                     bool extension_policy_enabled,
@@ -245,7 +260,7 @@ interface CustomizeChromePage {
   SetThemeEditable(bool is_theme_editable);
   // Scrolls side panel to |section|. Possibly a response to a call to
   // |CustomizeChromePageHandler.UpdateScrollToSection()|.
-  ScrollToSection(CustomizeChromeSection section);
+  ScrollToSection(side_panel.mojom.CustomizeChromeSection section);
   // Sets Information about the tab that is attached to the CustomizeChromePage.
   AttachedTabStateUpdated(NewTabPageType ntp_type);
   // Sets the name and description of the system that manages the new tab page,

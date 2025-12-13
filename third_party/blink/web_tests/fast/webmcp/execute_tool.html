@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+async function echo(obj) {
+  return obj.text;
+}
+
+navigator.modelContext.registerTool({
+  execute: echo,
+  name: "echo",
+  description: "echo input",
+  inputSchema: {
+      type: "object",
+      properties: {
+          "text": {
+              description: "Value to echo",
+              type: "string",
+          }
+      },
+      required: ["text"]
+  },
+});
+
+function print(message) {
+    document.getElementById("console").appendChild(document.createTextNode(message + "\n"));
+}
+
+async function runTests() {
+    if (window.testRunner) {
+        testRunner.dumpAsText();
+        testRunner.waitUntilDone();
+    }
+
+    if (!window.navigator.modelContext) {
+        print("FAIL: modelContext API disabled");
+        return;
+    }
+
+    if (!window.navigator.modelContextTesting) {
+        print("FAIL: Testing API disabled");
+        return;
+    }
+
+    // Correct case
+    try {
+        const inputArgs = JSON.stringify({ text: "Hello world" });
+        const result = await navigator.modelContextTesting.executeTool("echo", inputArgs);
+
+        if (result === "Hello world") {
+            print("PASS");
+        } else {
+            print(`FAIL: Expected 'Hello world' but got '${result}'`);
+        }
+    } catch (error) {
+        print(`FAIL: ${error.message}`);
+    }
+
+    // Test case for a non-existent tool
+    try {
+        const result = await navigator.modelContextTesting.executeTool("nonExistentTool", "{}");
+        print(`FAIL: executeTool should have thrown an error for a non-existent tool but got '${result}'`);
+    } catch (error) {
+        print(`INFO: Received expected error for non-existent tool: ${error.name}`);
+    }
+
+    // Test case for invalid JSON input
+    try {
+        const result = await navigator.modelContextTesting.executeTool("echo", "{invalid_json: 'test'");
+        print(`FAIL: executeTool should have thrown an error for invalid JSON input but got '${result}'`);
+    } catch (error) {
+        print(`INFO: Received expected error for invalid JSON: ${error.name}`);
+    }
+
+    // Test case for input that doesn't match schema
+    try {
+        const result = await navigator.modelContextTesting.executeTool("echo", JSON.stringify({ wrong_property: "test" }));
+        // TODO(khushalsagar): Add input schema validation, see crbug.com/454460142.
+        print(`FAIL: executeTool should have thrown an error for input mismatching schema but got '${result}'`);
+    } catch (error) {
+        print(`INFO: Received expected error for schema mismatch: ${error.name}`);
+    }
+
+    if (window.testRunner) {
+        testRunner.notifyDone();
+    }
+}
+
+</script>
+</head>
+<body onload="runTests();">
+This tests that document.navigator.modelContextTesting works correctly.
+<pre id="console">
+</pre>
+</body>
+</html>

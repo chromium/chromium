@@ -51,8 +51,6 @@ inline constexpr char kDoNotRegisterForUpdateLaunch[] =
     "do_not_register_for_update_launch";
 // String.  Specifies the file path to write logging info to.
 inline constexpr char kLogFile[] = "log_file";
-// Boolean. Register Chrome as default browser. Cmd line override present.
-inline constexpr char kMakeChromeDefault[] = "make_chrome_default";
 // Boolean. Register Chrome as default browser for the current user.
 inline constexpr char kMakeChromeDefaultForUser[] =
     "make_chrome_default_for_user";
@@ -74,6 +72,15 @@ inline constexpr char kSystemLevel[] = "system_level";
 inline constexpr char kVerboseLogging[] = "verbose_logging";
 // Name of the block that contains the extensions on the initial preferences.
 inline constexpr char kExtensionsBlock[] = "extensions.settings";
+// A preference that indicates the name of the provider of the initial
+// extensions list.
+inline constexpr char kInitialExtensionsProviderName[] =
+    "initial_extensions.provider_name";
+// Name of the block that contains the extensions ids in the initial
+// preferences.
+inline constexpr char kInitialExtensionsList[] = "initial_extensions.list";
+// Name of the block that contains the bookmarks on the initial preferences.
+inline constexpr char kBookmarksBlock[] = "bookmarks";
 // Boolean. Allow Chrome to be downgraded to a previous version if true.
 inline constexpr char kAllowDowngrade[] = "allow_downgrade";
 

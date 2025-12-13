@@ -19,11 +19,8 @@ static_library("internal") {
   ]
 
   sources = [
-    "android/fake_preview_server_proxy.cc",
-    "android/fake_preview_server_proxy.h",
     "avatar_fetcher.cc",
     "avatar_fetcher.h",
-    "client_version_info.h",
     "collaboration_group_sync_bridge.cc",
     "collaboration_group_sync_bridge.h",
     "data_sharing_network_loader_impl.cc",
@@ -47,13 +44,13 @@ static_library("internal") {
   deps = [
     "//components/data_sharing/internal/protocol",
     "//components/data_sharing/public:logger",
-    "//components/endpoint_fetcher:endpoint_fetcher",
-    "//components/image_fetcher/core:core",
+    "//components/endpoint_fetcher",
+    "//components/image_fetcher/core",
     "//components/signin/public/identity_manager",
     "//components/sqlite_proto",
-    "//components/sync/base:base",
-    "//components/sync/model:model",
-    "//components/sync/protocol:protocol",
+    "//components/sync/base",
+    "//components/sync/model",
+    "//components/sync/protocol",
     "//google_apis/common",
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
@@ -77,6 +74,8 @@ static_library("internal") {
       "android/data_sharing_sdk_delegate_android.h",
       "android/data_sharing_service_android.cc",
       "android/data_sharing_service_android.h",
+      "android/fake_preview_server_proxy.cc",
+      "android/fake_preview_server_proxy.h",
     ]
 
     deps += [
@@ -84,6 +83,21 @@ static_library("internal") {
       "//components/data_sharing/public:android_utils",
     ]
   }
+}
+
+static_library("personal_collaboration_data_internal") {
+  sources = [
+    "personal_collaboration_data/personal_collaboration_data_service_impl.cc",
+    "personal_collaboration_data/personal_collaboration_data_service_impl.h",
+    "personal_collaboration_data/personal_collaboration_data_sync_bridge.cc",
+    "personal_collaboration_data/personal_collaboration_data_sync_bridge.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/data_sharing/public:personal_collaboration_data",
+    "//components/keyed_service/core",
+  ]
 }
 
 source_set("unit_tests") {
@@ -101,6 +115,8 @@ source_set("unit_tests") {
     "group_data_proto_utils_unittest.cc",
     "group_data_store_unittest.cc",
     "logger_impl_unittest.cc",
+    "personal_collaboration_data/personal_collaboration_data_service_impl_unittest.cc",
+    "personal_collaboration_data/personal_collaboration_data_sync_bridge_unittest.cc",
     "preview_server_proxy_unittest.cc",
   ]
 
@@ -114,13 +130,15 @@ source_set("unit_tests") {
 
   deps = [
     ":internal",
+    ":personal_collaboration_data_internal",
     "//base",
     "//base/test:test_support",
+    "//components/data_sharing:personal_collaboration_data_test_support_proto",
     "//components/data_sharing:test_support",
     "//components/data_sharing/public:logger",
     "//components/endpoint_fetcher",
     "//components/endpoint_fetcher:test_support",
-    "//components/image_fetcher/core:core",
+    "//components/image_fetcher/core",
     "//components/image_fetcher/core:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
@@ -129,7 +147,7 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gtest",
-    "//ui/base:base",
+    "//ui/base",
     "//ui/gfx:test_support",
   ]
 

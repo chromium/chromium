@@ -1,6 +1,6 @@
 Name: JavaPoet
 Short Name: javapoet
-URL: http://github.com/square/javapoet/
+URL: https://repo.maven.apache.org/maven2/com/squareup/javapoet/1.13.0/javapoet-1.13.0.jar
 Version: 1.13.0
 Update Mechanism: Manual
 License: Apache-2.0
@@ -11,6 +11,9 @@ Shipped: no
 
 Description:
 Use beautiful Java code to generate beautiful Java code.
+
+See also: http://github.com/square/javapoet/
+
 
 Local Modifications:
 No modifications.

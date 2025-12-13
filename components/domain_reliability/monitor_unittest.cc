@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/domain_reliability/monitor.h"
 
 #include <stddef.h>
@@ -18,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -356,7 +352,7 @@ TEST_F(DomainReliabilityMonitorTest, BakedInAndGoogleConfigs) {
 
   // Count the number of baked-in configs.
   size_t num_baked_in_configs = 0u;
-  for (const char* const* p = kBakedInJsonConfigs; *p; ++p) {
+  for (const char* const* p = kBakedInJsonConfigs; *p; UNSAFE_TODO(++p)) {
     ++num_baked_in_configs;
   }
   EXPECT_GT(num_baked_in_configs, 0u);
@@ -647,8 +643,9 @@ TEST_F(DomainReliabilityMonitorTest, RealRequest) {
   EXPECT_EQ("http.response.empty", beacons[0]->status);
   EXPECT_EQ("", beacons[0]->quic_error);
   EXPECT_EQ(net::ERR_EMPTY_RESPONSE, beacons[0]->chrome_error);
-  EXPECT_EQ(test_server.base_url().host() + ":" + test_server.base_url().port(),
-            beacons[0]->server_ip);
+  EXPECT_EQ(
+      test_server.base_url().GetHost() + ":" + test_server.base_url().GetPort(),
+      beacons[0]->server_ip);
   EXPECT_FALSE(beacons[0]->was_proxied);
   EXPECT_EQ("HTTP", beacons[0]->protocol);
   EXPECT_FALSE(beacons[0]->details.quic_broken);

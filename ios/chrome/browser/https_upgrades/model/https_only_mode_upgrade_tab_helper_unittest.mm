@@ -9,9 +9,6 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
-#import "ios/chrome/browser/prerender/model/fake_prerender_service.h"
-#import "ios/chrome/browser/prerender/model/prerender_service.h"
-#import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -43,13 +40,8 @@ enum class HttpsUpgradesTestType {
 };
 }
 
-std::unique_ptr<KeyedService> BuildFakePrerenderService(
-    web::BrowserState* context) {
-  return std::make_unique<FakePrerenderService>();
-}
-
 std::unique_ptr<KeyedService> BuildFakeHttpsUpgradeService(
-    web::BrowserState* context) {
+    ProfileIOS* profile) {
   return std::make_unique<FakeHttpsUpgradeService>();
 }
 
@@ -58,8 +50,6 @@ class HttpsOnlyModeUpgradeTabHelperTest
  protected:
   HttpsOnlyModeUpgradeTabHelperTest() {
     TestProfileIOS::Builder builder;
-    builder.AddTestingFactory(PrerenderServiceFactory::GetInstance(),
-                              base::BindRepeating(&BuildFakePrerenderService));
     builder.AddTestingFactory(
         HttpsUpgradeServiceFactory::GetInstance(),
         base::BindRepeating(&BuildFakeHttpsUpgradeService));
@@ -104,7 +94,6 @@ class HttpsOnlyModeUpgradeTabHelperTest
 
     HttpsOnlyModeUpgradeTabHelper::CreateForWebState(
         &web_state_, profile_->GetPrefs(),
-        PrerenderServiceFactory::GetForProfile(profile_.get()),
         HttpsUpgradeServiceFactory::GetForProfile(profile_.get()));
     HttpsOnlyModeContainer::CreateForWebState(&web_state_);
   }

@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/delivery/prediction_model_fetcher_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -52,13 +54,17 @@ bool PredictionModelFetcherImpl::FetchOptimizationGuideServiceModels(
     ModelsFetchedCallback models_fetched_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  TRACE_EVENT(
+      "optimization_guide",
+      "PredictionModelFetcherImpl::FetchOptimizationGuideServiceModels");
+
   if (url_loader_) {
     return false;
   }
 
   // If there are no models to request, do not make a GetModelsRequest.
   if (models_request_info.empty()) {
-    std::move(models_fetched_callback).Run(std::nullopt);
+    std::move(models_fetched_callback).Run(nullptr);
     return false;
   }
 
@@ -136,9 +142,8 @@ void PredictionModelFetcherImpl::HandleResponse(
     const std::string& get_models_response_data,
     int net_status,
     int response_code) {
-  std::unique_ptr<optimization_guide::proto::GetModelsResponse>
-      get_models_response =
-          std::make_unique<optimization_guide::proto::GetModelsResponse>();
+  auto get_models_response =
+      std::make_unique<optimization_guide::proto::GetModelsResponse>();
 
   if (response_code >= 0 && response_code <= net::HTTP_VERSION_NOT_SUPPORTED) {
     UMA_HISTOGRAM_ENUMERATION(
@@ -177,17 +182,20 @@ void PredictionModelFetcherImpl::HandleResponse(
       get_models_response->ParseFromString(get_models_response_data)) {
     std::move(models_fetched_callback_).Run(std::move(get_models_response));
   } else {
-    std::move(models_fetched_callback_).Run(std::nullopt);
+    std::move(models_fetched_callback_).Run(nullptr);
   }
 }
 
 void PredictionModelFetcherImpl::OnURLLoadComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
+  TRACE_EVENT("optimization_guide",
+              "PredictionModelFetcherImpl::OnURLLoadComplete");
+
   int response_code = -1;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
     response_code = url_loader_->ResponseInfo()->headers->response_code();
   }
-  HandleResponse(response_body ? *response_body : "", url_loader_->NetError(),
+  HandleResponse(std::move(response_body).value_or(""), url_loader_->NetError(),
                  response_code);
   url_loader_.reset();
 }

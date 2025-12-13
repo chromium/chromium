@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "chrome/utility/image_writer/image_writer.h"
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOBSD.h>
@@ -20,6 +17,7 @@
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/mac/scoped_ioobject.h"
@@ -31,7 +29,6 @@
 #include "chrome/common/extensions/image_writer/image_writer_util_mac.h"
 #include "chrome/utility/image_writer/disk_unmounter_mac.h"
 #include "chrome/utility/image_writer/error_message_strings.h"
-#include "chrome/utility/image_writer/image_writer.h"
 
 namespace image_writer {
 
@@ -143,7 +140,7 @@ bool ImageWriter::OpenDevice() {
 
     if (cmsg_socket_header && cmsg_socket_header->cmsg_level == SOL_SOCKET &&
         cmsg_socket_header->cmsg_type == SCM_RIGHTS) {
-      fd = *reinterpret_cast<int*>(CMSG_DATA(cmsg_socket_header));
+      fd = *reinterpret_cast<int*>(UNSAFE_TODO(CMSG_DATA(cmsg_socket_header)));
     }
   }
 

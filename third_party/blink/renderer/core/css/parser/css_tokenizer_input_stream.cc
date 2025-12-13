@@ -14,13 +14,13 @@ namespace blink {
 void CSSTokenizerInputStream::AdvanceUntilNonWhitespace() {
   // Using HTML space here rather than CSS space since we don't do preprocessing
   if (string_.Is8Bit()) {
-    const LChar* characters = UNSAFE_TODO(string_.Characters8());
+    const LChar* characters = string_.Span8().data();
     while (offset_ < string_length_ &&
            IsHTMLSpace(UNSAFE_TODO(characters[offset_]))) {
       ++offset_;
     }
   } else {
-    const UChar* characters = UNSAFE_TODO(string_.Characters16());
+    const UChar* characters = string_.Span16().data();
     while (offset_ < string_length_ &&
            IsHTMLSpace(UNSAFE_TODO(characters[offset_]))) {
       ++offset_;
@@ -50,7 +50,7 @@ double CSSTokenizerInputStream::GetNaturalNumberAsDouble(unsigned start,
   // complicated rounding machinery of CharactersToDouble(),
   // and can do with a much faster variant.
   if (start < end && string_.Is8Bit() && end - start <= 14) {
-    const LChar* ptr = UNSAFE_TODO(string_.Characters8() + offset_ + start);
+    const LChar* ptr = UNSAFE_TODO(string_.Span8().data() + offset_ + start);
     double result = ptr[0] - '0';
     for (unsigned i = 1; i < end - start; ++i) {
       result = result * 10 + (UNSAFE_TODO(ptr[i]) - '0');

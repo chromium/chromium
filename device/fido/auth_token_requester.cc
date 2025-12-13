@@ -15,7 +15,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_supported_options.h"
 #include "device/fido/fido_authenticator.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 

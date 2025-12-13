@@ -19,7 +19,7 @@ MockCertProvisioningInvalidatorFactory::
     ~MockCertProvisioningInvalidatorFactory() = default;
 
 void MockCertProvisioningInvalidatorFactory::ExpectCreateReturnNull() {
-  EXPECT_CALL(*this, Create).WillRepeatedly(testing::Invoke(FakeCreate));
+  EXPECT_CALL(*this, Create).WillRepeatedly(FakeCreate);
 }
 
 //============= MockCertProvisioningInvalidator ================================

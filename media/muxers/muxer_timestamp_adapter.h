@@ -50,6 +50,10 @@ class MEDIA_EXPORT MuxerTimestampAdapter {
   // be output instead.
   void SetLiveAndEnabled(bool track_live_and_enabled, bool is_video);
 
+  // Call to handle video ending. This enables the muxer to emit data callbacks
+  // not waiting for more of the relevant data.
+  void OnVideoEnded();
+
   // Calling `Pause()` will cause the muxer to modify the timestamps of inputs,
   // setting them to the last received value before the pause. This effectively
   // removes the input data from the presentation, while still preserving it.

@@ -45,6 +45,7 @@
 #include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 using testing::HasSubstr;
@@ -157,7 +158,6 @@ class ControlledFrameApiTest : public ControlledFrameTestBase {
     ControlledFrameTestBase::SetUpOnMainThread();
     StartContentServer("web_apps/simple_isolated_app");
   }
-
 };
 
 // This test checks if the Controlled Frame is able to intercept URL navigation
@@ -555,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsGetSetAttributes) {
         }
       }
 
-      const frame = new ControlledFrame();
+      const frame = new HTMLControlledFrameElement();
       const url = 'data:text/html,<body>Guest</body>';
       frame.src = url;
       assertEq(url, frame.src);
@@ -588,7 +588,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsBackForward) {
 
   ASSERT_THAT(EvalJs(app_frame, R"(
     new Promise((resolve, reject) => {
-      const frame = new ControlledFrame();
+      const frame = new HTMLControlledFrameElement();
       // The back and forward methods are implemented in terms of go. Make sure
       // they don't call an overwritten version.
       frame.go = makeUnreached();
@@ -708,7 +708,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, Histograms) {
       guest_view::GuestViewHistogramValue::kControlledFrame, 0);
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::kControlledFrameElement, 0);
+      blink::mojom::WebFeature::kHTMLControlledFrameElement, 0);
 
   ASSERT_TRUE(CreateControlledFrame(
       app_frame, embedded_https_test_server().GetURL("/index.html")));
@@ -720,7 +720,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, Histograms) {
       guest_view::GuestViewHistogramValue::kControlledFrame, 1);
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::kControlledFrameElement, 1);
+      blink::mojom::WebFeature::kHTMLControlledFrameElement, 1);
 }
 
 class ControlledFrameWebSocketApiTest : public ControlledFrameApiTest {
@@ -1080,30 +1080,7 @@ class ControlledFrameAvailabilityTest
   // via defaults but instead by overrides. As a result, any feature that's
   // enabled or disabled by ScopedFeatureList will appear as an override.
   bool DetermineExpectedState() {
-    if (feature_setting() == FeatureSetting::DISABLED) {
-      return false;
-    }
-
-    if (feature_setting() == FeatureSetting::NONE &&
-        flag_setting() == FlagSetting::NONE) {
-      return false;
-    }
-
-    if (feature_setting() == FeatureSetting::ENABLED &&
-        (flag_setting() == FlagSetting::EXPERIMENTAL ||
-         flag_setting() == FlagSetting::CONTROLLED_FRAME)) {
-      return true;
-    }
-
-    // In Blink's runtime flags, if the base::Feature is overridden and that
-    // feature is enabled via the override, then the corresponding Blink
-    // runtime flag is also enabled.
-    if (feature_setting() == FeatureSetting::ENABLED &&
-        flag_setting() == FlagSetting::NONE) {
-      return true;
-    }
-
-    return false;
+    return feature_setting() != FeatureSetting::DISABLED;
   }
 };
 
@@ -1316,90 +1293,90 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameRequestHeaderTest,
   EXPECT_THAT(last_seen_sec_ch_ua(), HasSubstr("ControlledFrame"));
 }
 
-// Validating if URLPatterns can be turned into Match Patterns (for extensions).
-class ControlledFrameURLPatternTest : public ControlledFrameApiTest {};
+class ControlledFrameSecurityInfoApiTest : public ControlledFrameApiTest {
+ public:
+  // Tests WebRequest.SecurityInfo.
+  // It is a very high level test, that only checks that new
+  // WebRequestInterceptorOptions are respected and
+  // SecurityInfo is returned in correct data format.
+  // Tests that check more cases comprehensively are located in
+  // chrome/browser/extensions/api/web_request/web_request_apitest.cc.
+  void RunWebRequestSecurityInfoTest(bool raw_der) {
+    web_app::IsolatedWebAppUrlInfo url_info =
+        CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+    content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
-IN_PROC_BROWSER_TEST_F(ControlledFrameURLPatternTest,
-                       URLPatternToMatchPatternValidation) {
-  content::RenderFrameHost* app_frame =
-      OpenApp(CreateAndInstallEmptyApp(web_app::ManifestBuilder()).app_id());
-  ASSERT_TRUE(CreateControlledFrame(
-      app_frame, embedded_https_test_server().GetURL("/index.html")));
+    const GURL& kOriginalControlledFrameUrl =
+        embedded_https_test_server().GetURL("/index.html");
+    ASSERT_TRUE(CreateControlledFrame(app_frame, kOriginalControlledFrameUrl));
 
-  struct PatternTestCase {
-    const char* input_url_pattern;
-    bool valid;
-  };
-
-  const PatternTestCase kTestCases[] = {
-      {"http://*/*", true},
-      {"*://*/*", true},
-      {"*://asdf.com/*", true},
-      {"https://*.asdf.com/fdsa", true},
-      {"ws://*.asdf.com/*", true},
-      {"wss://*/asdf/*/fdsa", true},
-      {"https://*", true},
-      {"https://*/", true},
-      {"https://*/asdf", true},
-      {"http://asdf.com", true},
-      {"http://asdf.com/", true},
-      {"http://asdf.com/fdsa*", true},
-      {"http://asdf.com/fdsa/*", true},
-      {"http://asdf.com*", false},
-      {"ftp://asdf.com/", false},
-      {"asdf://asdf.com/", false},
-      {"http://*.asdf.com/", true},
-      {"http://*.asdf.com", true},
-      {"http://*asdf.com/", false},
-      {"http://asdf.*.com/", false},
-      {"http:/asdf.com", false},
-      {"http://asdf.com:8080/fdsa", true},
-      {"*://asdf.com:8080/fdsa", false},
-      {"http://asdf.com:80*/fdsa", false},
-      {"http://asdf.com:*80/fdsa", false},
-      {"*://asdf.com:*/fdsa", true},
-      {"http://asdf.com:*/fdsa", true},
-      {"http://asdf.com:fdsa/asdf", false},
-      {"http://asdf.com/fdsa?query", true},
-      {"http://asdf.com/?query=fdsa&query2=asdf", true},
-      {"http://asdf.com?query", true},
-      {"http://asdf.com/fdsa#hash", true},
-      {"http://asdf.com/#hash", true},
-      {"http://asdf.com#hash", true},
-      {"http://asdf.com/fdsa?query#hash", true},
-      {"http://asdf.com/#asdf?query", false},
-      {"http://user@asdf.com/fdsa", false},
-      {"http://user:pass@asdf.com/fdsa", false},
-      {"http://asdf.com/:group", false},
-      {"http://:asdf.com/", false},
-  };
-
-  for (const auto& test : kTestCases) {
-    ASSERT_TRUE(ExecJs(app_frame,
-                       content::JsReplace(R"(
-      new Promise((resolve, reject) => {
-        var frame = document.getElementsByTagName('controlledframe')[0];
-        try {
-          var interceptor = frame.request.createWebRequestInterceptor({
-              urlPatterns: [$1],
-              blocking: true,
-            });
-          if ($2) {
-            resolve();
-          } else {
-            reject();
+    std::string script = R"(
+        new Promise((resolve, reject) => {
+          const frame = document.getElementsByTagName('controlledframe')[0];
+          if (!frame || !frame.request) {
+            return reject('controlled frame element is not found');
           }
-        } catch(e) {
-          if (!$2) {
-            resolve();
-          } else {
-            reject();
-          }
-        }
-      });)",
-                                          test.input_url_pattern, test.valid)))
-        << "Pattern: " << test.input_url_pattern;
+
+          const requestUrl = $1;
+          const useRawDer = $2;
+
+          frame.request.createWebRequestInterceptor({
+            urlPatterns: [requestUrl],
+            securityInfo: true,
+            securityInfoRawDer: useRawDer
+          }).addEventListener('headersreceived', (details) => {
+            if (!('securityInfo' in details)) {
+              return reject('securityInfo must be present');
+            }
+            // It is fine if for some reason the connection is not trusted by chrome.
+            if (details.securityInfo.state in ['secure', 'broken']) {
+              return reject('state must be secure or broken, but was ' + details.securityInfo.state);
+            }
+            if (details.securityInfo.certificates.length == 0) {
+              return reject('certificates must be present');
+            }
+            if (!('sha256' in details.securityInfo.certificates[0].fingerprint)) {
+              return reject('sha256 must be present');
+            }
+
+            if (useRawDer) {
+              if (!('rawDER' in details.securityInfo.certificates[0])) {
+                return reject('rawDER must be present');
+              }
+            } else {
+              if ('rawDER' in details.securityInfo.certificates[0]) {
+                return reject('rawDER must NOT be present');
+              }
+            }
+
+            resolve(true);
+          });
+
+          frame.src = requestUrl;
+        });
+      )";
+
+    EXPECT_EQ(true, content::EvalJs(
+                        app_frame,
+                        content::JsReplace(
+                            std::move(script),
+                            embedded_https_test_server().GetURL("/simple.html"),
+                            raw_der)));
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kControlledFrameWebRequestSecurityInfo};
+};
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameSecurityInfoApiTest,
+                       WebRequestSecurityInfo) {
+  RunWebRequestSecurityInfoTest(/*raw_der=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameSecurityInfoApiTest,
+                       WebRequestSecurityInfoRawDer) {
+  RunWebRequestSecurityInfoTest(/*raw_der=*/true);
 }
 
 }  // namespace controlled_frame

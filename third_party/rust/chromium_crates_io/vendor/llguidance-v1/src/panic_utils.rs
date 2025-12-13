@@ -24,7 +24,7 @@ pub fn mk_panic_error(info: &Box<dyn Any + Send>) -> String {
     let b = BACKTRACE.with(|b| b.take());
 
     if let Some(b) = b {
-        format!("panic: {msg}\n{b}")
+        format!("panic: {msg}\n<backtrace>\n{b}\n</backtrace>")
     } else {
         format!("panic: {msg}")
     }

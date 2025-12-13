@@ -12,6 +12,7 @@
 #import "base/time/time.h"
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/browsing_data/model/fake_browsing_data_remover.h"
 #import "ios/chrome/browser/enterprise/model/idle/action_runner_impl.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -27,6 +28,7 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -53,6 +55,7 @@ class IdleActionTest : public PlatformTest {
     incognito_browsing_data_remover_ =
         std::make_unique<FakeBrowsingDataRemover>();
     action_factory_ = std::make_unique<ActionFactory>();
+    identity_manager_ = IdentityManagerFactory::GetForProfile(profile());
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
@@ -135,11 +138,12 @@ class IdleActionTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  raw_ptr<AuthenticationService> authentication_service_;
+  raw_ptr<AuthenticationService, DanglingUntriaged> authentication_service_;
   // ScopedTestingLocalState needed for the authentication service.
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   std::unique_ptr<ActionFactory> action_factory_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<FakeBrowsingDataRemover> main_browsing_data_remover_;
   std::unique_ptr<FakeBrowsingDataRemover> incognito_browsing_data_remover_;
   raw_ptr<TestProfileIOS> profile_;
@@ -256,8 +260,8 @@ TEST_F(IdleActionTest, SignOut) {
   // Check that the right action is added.
   EXPECT_EQ(static_cast<int>(ActionType::kSignOut), actions.top()->priority());
   SignIn();
-  ASSERT_TRUE(authentication_service_->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   base::RunLoop run_loop;
   // The test needs to wait for the call so that the action is not removed
   // before sign out completes.
@@ -265,8 +269,8 @@ TEST_F(IdleActionTest, SignOut) {
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   actions.top()->Run(profile(), continuation.Get());
   run_loop.Run();
-  ASSERT_FALSE(authentication_service_->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   actions.pop();
   histogram_tester_->ExpectUniqueSample(
       "Enterprise.IdleTimeoutPolicies.Success.SignOut", true, 1);

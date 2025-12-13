@@ -63,8 +63,8 @@ class GPU_IPC_COMMON_EXPORT GpuSurfaceTracker : public gpu::GpuSurfaceLookup {
   ~GpuSurfaceTracker() override;
 
   mutable base::Lock surface_map_lock_;
-  SurfaceMap surface_map_;
-  int next_surface_handle_;
+  SurfaceMap surface_map_ GUARDED_BY(surface_map_lock_);
+  int next_surface_handle_ GUARDED_BY(surface_map_lock_);
 };
 
 }  // namespace ui

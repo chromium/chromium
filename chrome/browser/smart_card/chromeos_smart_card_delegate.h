@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SMART_CARD_CHROMEOS_SMART_CARD_DELEGATE_H_
 
 #include "content/public/browser/smart_card_delegate.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 class ChromeOsSmartCardDelegate : public content::SmartCardDelegate {
  public:

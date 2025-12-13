@@ -671,3 +671,5 @@ TEST_F(ProxyConfigServiceAndroidTest, HttpProxySupercedesSocks) {
 }
 
 }  // namespace net
+
+DEFINE_JNI(AndroidProxyConfigServiceTestUtil)

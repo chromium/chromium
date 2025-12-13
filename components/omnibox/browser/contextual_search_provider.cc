@@ -41,7 +41,6 @@
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
-#include "components/search/search.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
@@ -143,21 +142,21 @@ struct EligibleMatchesAndActions {
             input, client, toolbelt_config.show_lens_action_on_non_ntp,
             toolbelt_config.show_lens_action_on_ntp, std::nullopt) &&
         (toolbelt_config.always_include_lens_action ||
-         LensEntrypointEligible(input, client));
+         ContextualSearchProvider::LensEntrypointEligible(input, client));
 
-    // - Restricted to DSE google
-    // - Restricted to locale EN
-    // - Restricted to when `kAIModeSettings` policy is enabled
+    // When the AIM page action is enabled, we need to suppress the AIM toolbelt
+    // action in order to ensure that there's at most one AIM entrypoint shown
+    // in the Omnibox.
+    bool is_aim_page_action_enabled =
+        OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(
+            client->GetAimEligibilityService());
     toolbelt_ai_mode =
         toolbelt &&
-        search::DefaultSearchProviderIsGoogle(
-            client->GetTemplateURLService()) &&
-        l10n_util::GetLanguage(client->GetApplicationLocale()) == "en" &&
-        omnibox::IsAimAllowedByPolicy(client->GetPrefs()) &&
         ToolbeltActionEligible(
             input, client, toolbelt_config.show_ai_mode_action_on_non_ntp,
             toolbelt_config.show_ai_mode_action_on_ntp,
-            template_url_starter_pack_data::StarterPackId::kAiMode);
+            template_url_starter_pack_data::StarterPackId::kAiMode) &&
+        !is_aim_page_action_enabled;
 
     toolbelt_history =
         toolbelt &&
@@ -194,11 +193,14 @@ struct EligibleMatchesAndActions {
     //   inputs. `lens_entry_match`, `toolbelt_lens` is not restricted to zero
     //   inputs.
     // - Only shown if toolbelt lens not shown.
+    // - Only shown if "lens search chip" (Omnibox Next) is not enabled.
     const auto& contextual_search_config =
         omnibox_feature_configs::ContextualSearch::Get();
-    lens_entry_match = contextual_search_config.show_open_lens_action &&
-                       !toolbelt_lens && input.IsZeroSuggest() &&
-                       LensEntrypointEligible(input, client);
+    lens_entry_match =
+        contextual_search_config.show_open_lens_action && !toolbelt_lens &&
+        input.IsZeroSuggest() &&
+        ContextualSearchProvider::LensEntrypointEligible(input, client) &&
+        !client->IsOmniboxNextFeatureParamEnabled("ShowLensSearchChip");
 
     // - Check feature/params.
     // - Disabled if either `toolbelt` or `contextual_search_config` are shown.
@@ -217,19 +219,6 @@ struct EligibleMatchesAndActions {
     // - Hidden on zero input.
     page_suggestions = page_verbatim && !input.text().empty() &&
                        !input.omit_asynchronous_matches();
-  }
-
-  // Show on web & SRP, but not NTP.
-  // Http, https, & local files are allowed but not other local schemes.
-  // Do not show if Lens is already opened.
-  static bool LensEntrypointEligible(const AutocompleteInput& input,
-                                     AutocompleteProviderClient* client) {
-    return (omnibox::IsOtherWebPage(input.current_page_classification()) ||
-            omnibox::IsSearchResultsPage(
-                input.current_page_classification())) &&
-           (input.current_url().SchemeIsHTTPOrHTTPS() ||
-            input.current_url().SchemeIs(url::kFileScheme)) &&
-           client->IsLensEnabled() && client->AreLensEntrypointsVisible();
   }
 
   // - Show on non-NTP depending on finch param passed in via
@@ -394,6 +383,17 @@ bool ContextualSearchProvider::HasToolbeltLensAction() const {
   });
 }
 
+// static
+bool ContextualSearchProvider::LensEntrypointEligible(
+    const AutocompleteInput& input,
+    const AutocompleteProviderClient* client) {
+  return (omnibox::IsOtherWebPage(input.current_page_classification()) ||
+          omnibox::IsSearchResultsPage(input.current_page_classification())) &&
+         (input.current_url().SchemeIsHTTPOrHTTPS() ||
+          input.current_url().SchemeIs(url::kFileScheme)) &&
+         client->IsLensEnabled() && client->AreLensEntrypointsVisible();
+}
+
 ContextualSearchProvider::ContextualSearchProvider(
     AutocompleteProviderClient* client,
     AutocompleteProviderListener* listener)
@@ -470,7 +470,7 @@ void ContextualSearchProvider::SuggestRequestCompleted(
     AutocompleteInput input,
     const network::SimpleURLLoader* source,
     const int response_code,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK(!done_);
   DCHECK_EQ(loader_.get(), source);
 
@@ -569,7 +569,7 @@ void ContextualSearchProvider::AddLensEntrypointMatch(
   match.takeover_action =
       base::MakeRefCounted<ContextualSearchOpenLensAction>();
   match.contents =
-      base::UTF8ToUTF16(url_formatter::StripWWW(input.current_url().host()));
+      base::UTF8ToUTF16(url_formatter::StripWWW(input.current_url().GetHost()));
   if (!match.contents.empty()) {
     match.contents_class = {{0, ACMatchClassification::DIM}};
   }

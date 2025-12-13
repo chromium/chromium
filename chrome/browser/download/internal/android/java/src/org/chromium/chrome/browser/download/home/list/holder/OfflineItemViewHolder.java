@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.download.home.list.holder;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.browser_ui.widget.ListItemBuilder.buildSimpleMenuItem;
 
+import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -36,6 +37,7 @@ import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.Toast;
 
 /** Helper that supports all typical actions for OfflineItems. */
 @NullMarked
@@ -57,6 +59,7 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
     // flag to hide rename list menu option for offline pages
     private boolean mCanRename;
     private boolean mCanShare;
+    private boolean mShowRemoveFromHistory;
     private boolean mCanShowWarningBypassDialog;
 
     /** Creates a new instance of a {@link OfflineItemViewHolder}. */
@@ -76,6 +79,7 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
         OfflineItem offlineItem = ((ListItem.OfflineItemListItem) item).item;
         mCanRename = offlineItem.canRename;
         mCanShare = UiUtils.canShare(offlineItem);
+        mShowRemoveFromHistory = DownloadUtils.isBlockedSensitiveDownload(offlineItem);
         mCanShowWarningBypassDialog = canShowWarningBypassDialog(offlineItem);
 
         // Push 'interaction' state
@@ -128,6 +132,12 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
                         properties
                                 .get(ListProperties.CALLBACK_SHOW_WARNING_BYPASS_DIALOG)
                                 .onResult(offlineItem);
+                    } else if (DownloadUtils.isBlockedSensitiveDownload(offlineItem)) {
+                        Context context = mMore.getContext();
+                        String text =
+                                context.getString(
+                                        R.string.download_message_single_download_blocked);
+                        Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
                     } else {
                         properties.get(ListProperties.CALLBACK_OPEN).onResult(offlineItem);
                     }
@@ -190,11 +200,13 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
             listItems.add(buildSimpleMenuItem(R.string.download_warning_heed_menu_action_delete));
             listItems.add(
                     buildSimpleMenuItem(R.string.download_warning_bypass_menu_action_download));
+        } else if (mShowRemoveFromHistory) {
+            listItems.add(buildSimpleMenuItem(R.string.download_warning_heed_menu_action_delete));
         } else {
             listItems.add(buildSimpleMenuItem(R.string.delete));
         }
         ListMenu.Delegate delegate =
-                (model) -> {
+                (model, view) -> {
                     int textId = model.get(ListMenuItemProperties.TITLE_ID);
                     if (textId == R.string.share) {
                         if (mShareCallback != null) mShareCallback.run();

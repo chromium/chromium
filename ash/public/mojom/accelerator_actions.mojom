@@ -29,7 +29,6 @@ enum AcceleratorAction {
   kDesksActivate7,
   kDesksToggleAssignToAllDesks,
   kDisableCapsLock,
-  kEnableSelectToSpeak,
   kEnableOrToggleDictation,
   kExit,
   kFocusCameraPreview,
@@ -73,6 +72,8 @@ enum AcceleratorAction {
   kOpenFeedbackPage,
   kOpenFileManager,
   kOpenGetHelp,
+  // Similar to kToggleClipboardHistory but is used to paste plain
+  // text only when clipboard history menu is already open.
   kPasteClipboardHistoryPlainText,
   kPowerPressed,
   kPowerReleased,
@@ -92,6 +93,7 @@ enum AcceleratorAction {
   kStopScreenRecording,
   kSuspend,
   kSwapPrimaryDisplay,
+  // Switch to another IME depending on the accelerator.
   kSwitchIme,
   kSwitchToLastUsedIme,
   kSwitchToNextIme,
@@ -139,6 +141,7 @@ enum AcceleratorAction {
   kVolumeMuteToggle,
   kToggleQuickInsert,
   kAccessibilityAction,
+  kEnableSelectToSpeak,
   kTilingWindowResizeLeft,
   kTilingWindowResizeRight,
   kTilingWindowResizeUp,
@@ -149,8 +152,9 @@ enum AcceleratorAction {
   kToggleDoNotDisturb,
   kToggleCameraAllowed,
   kStartSunfishSession,
-  // The following are DEBUG actions with an offset. This is to keep the enum
-  // in sync with `AcceleratorActions` in ash/public/cpp/accelerator_actions.h.
+  // Debug actions are kept at an offset.  This offset should be kept consistent
+  // with the enum `AcceleratorAction` in
+  // tools/metrics/histograms/metadata/chromeos/enums.xml
   kDebugClearUseKMeansPref = 9000,
   kDebugKeyboardBacklightToggle,
   kDebugMicrophoneMuteToggle,
@@ -160,11 +164,9 @@ enum AcceleratorAction {
   kDebugShowInformedRestore,
   kDebugShowToast,
   kDebugShowSystemNudge,
-  kDebugShowTestWindow,
   kDebugSystemUiStyleViewer,
   kDebugToggleDarkMode,
   kDebugToggleDynamicColor,
-  kDebugToggleFocusModeState,
   kDebugTogglePowerButtonMenu,
   kDebugToggleShowDebugBorders,
   kDebugToggleShowFpsCounter,
@@ -174,11 +176,16 @@ enum AcceleratorAction {
   kDebugToggleTabletMode,
   kDebugToggleVideoConferenceCameraTrayIcon,
   kDebugToggleWallpaperMode,
+  // Intentionally crash the ash process.
   kDebugTriggerCrash,
   kDebugToggleHudDisplay,
   kDebugToggleVirtualTrackpad,
   kDevAddRemoveDisplay,
+  // Different than kToggleAppList to ignore search-as-modifier-key
+  // rules for enabling the accelerator.
   kDevToggleAppList,
   kDevToggleUnifiedDesktop,
+  kDebugToggleFocusModeState,
   kDebugStartSunfishSession,
+  kDebugShowTestWindow,
 };

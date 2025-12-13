@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,7 +27,7 @@ class MockInstallIsolatedWebApp : public InstallIsolatedWebAppCommand {
   MockInstallIsolatedWebApp(
       const IsolatedWebAppUrlInfo& url_info,
       const IsolatedWebAppInstallSource& install_source,
-      const std::optional<base::Version>& expected_version,
+      const std::optional<IwaVersion>& expected_version,
       std::unique_ptr<content::WebContents> web_contents,
       std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
@@ -57,7 +58,7 @@ class MockInstallIsolatedWebApp : public InstallIsolatedWebAppCommand {
         CompleteAndSelfDestruct(
             CommandResult::kSuccess,
             InstallIsolatedWebAppCommandSuccess(
-                url_info_, base::Version(),
+                url_info_, *IwaVersion::Create("0"),
                 IsolatedWebAppStorageLocation::OwnedBundle(
                     /*dir_name_ascii=*/"some_dir", /*dev_mode=*/false)));
         break;
@@ -92,7 +93,7 @@ MockIwaInstallCommandWrapper::~MockIwaInstallCommandWrapper() = default;
 void MockIwaInstallCommandWrapper::Install(
     const IsolatedWebAppInstallSource& install_source,
     const IsolatedWebAppUrlInfo& url_info,
-    const base::Version& expected_version,
+    const IwaVersion& expected_version,
     WebAppCommandScheduler::InstallIsolatedWebAppCallback callback) {
   install_source_ = install_source;
   url_info_ = url_info;
@@ -119,9 +120,7 @@ void MockIwaInstallCommandWrapper::ScheduleCommand() {
           /*optional_profile_keep_alive=*/nullptr, std::move(*callback_),
           std::make_unique<IsolatedWebAppInstallCommandHelper>(
               *url_info_,
-              provider_->web_contents_manager().CreateDataRetriever(),
-              IsolatedWebAppInstallCommandHelper::
-                  CreateDefaultResponseReaderFactory(*profile_)),
+              provider_->web_contents_manager().CreateDataRetriever()),
           execution_mode_));
 }
 

@@ -39,7 +39,7 @@ class IDBDatabaseGetAllResultSinkImpl
 
   bool IsWaiting() const { return active_; }
 
-  void ReceiveResults(WTF::Vector<mojom::blink::IDBRecordPtr> results,
+  void ReceiveResults(Vector<mojom::blink::IDBRecordPtr> results,
                       bool done) override {
     CHECK(active_);
     CHECK_LE(results.size(),
@@ -264,8 +264,8 @@ bool IDBRequestQueueItem::MaybeCreateLoader() {
   if (IDBValueUnwrapper::IsWrapped(records_.values)) {
     loader_ = MakeGarbageCollected<IDBRequestLoader>(
         std::move(records_.values), request_->GetExecutionContext(),
-        WTF::BindOnce(&IDBRequestQueueItem::OnLoadComplete,
-                      weak_factory_.GetWeakPtr()));
+        blink::BindOnce(&IDBRequestQueueItem::OnLoadComplete,
+                        weak_factory_.GetWeakPtr()));
     return true;
   }
   return false;

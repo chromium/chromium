@@ -15,10 +15,6 @@ namespace ash {
 namespace android_sms {
 
 // Test AndroidSmsAppManager implementation.
-//
-// TODO(https://crbug.com/920781): Delete
-// multidevice_setup::FakeAndroidSmsAppHelperDelegate and move its functions to
-// this class instead, then remove virtual inheritance in that class.
 class FakeAndroidSmsAppManager
     : public AndroidSmsAppManager,
       public multidevice_setup::FakeAndroidSmsAppHelperDelegate {

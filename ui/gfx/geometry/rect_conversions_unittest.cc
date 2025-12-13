@@ -7,6 +7,8 @@
 #include <limits>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace gfx {
 

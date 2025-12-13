@@ -33,7 +33,7 @@ using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 using sync_sessions::OpenTabsUIDelegate;
@@ -89,7 +89,7 @@ bool ShouldSkipSession(const SyncedSession& session) {
   return true;
 }
 
-void JNI_ForeignSessionHelper_CopyTabToJava(
+static void JNI_ForeignSessionHelper_CopyTabToJava(
     JNIEnv* env,
     const sessions::SessionTab& tab,
     ScopedJavaLocalRef<jobject>& j_window) {
@@ -109,7 +109,7 @@ void JNI_ForeignSessionHelper_CopyTabToJava(
       tab.last_active_time.InMillisecondsSinceUnixEpoch(), tab.tab_id.id());
 }
 
-void JNI_ForeignSessionHelper_CopyWindowToJava(
+static void JNI_ForeignSessionHelper_CopyWindowToJava(
     JNIEnv* env,
     const sessions::SessionWindow& window,
     ScopedJavaLocalRef<jobject>& j_window) {
@@ -124,7 +124,7 @@ void JNI_ForeignSessionHelper_CopyWindowToJava(
   }
 }
 
-void JNI_ForeignSessionHelper_CopySessionToJava(
+static void JNI_ForeignSessionHelper_CopySessionToJava(
     JNIEnv* env,
     const SyncedSession& session,
     ScopedJavaLocalRef<jobject>& j_session) {
@@ -186,12 +186,14 @@ void ForeignSessionHelper::TriggerSessionSync(JNIEnv* env) {
     return;
   }
 
-  service->TriggerRefresh({syncer::SESSIONS});
+  service->TriggerRefresh(
+      syncer::SyncService::TriggerRefreshSource::kForeignSessionHelper,
+      {syncer::SESSIONS});
 }
 
 void ForeignSessionHelper::SetOnForeignSessionCallback(
     JNIEnv* env,
-    const JavaParamRef<jobject>& callback) {
+    const JavaRef<jobject>& callback) {
   callback_.Reset(env, callback);
 }
 
@@ -206,7 +208,7 @@ void ForeignSessionHelper::FireForeignSessionCallback() {
 
 jboolean ForeignSessionHelper::GetForeignSessions(
     JNIEnv* env,
-    const JavaParamRef<jobject>& result) {
+    const JavaRef<jobject>& result) {
   OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(profile_);
   if (!open_tabs) {
     return false;
@@ -258,7 +260,7 @@ jboolean ForeignSessionHelper::GetForeignSessions(
 
 jboolean ForeignSessionHelper::GetMobileAndTabletForeignSessions(
     JNIEnv* env,
-    const JavaParamRef<jobject>& result) {
+    const JavaRef<jobject>& result) {
   OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(profile_);
   if (!open_tabs) {
     return false;
@@ -296,8 +298,8 @@ jboolean ForeignSessionHelper::GetMobileAndTabletForeignSessions(
 
 jboolean ForeignSessionHelper::OpenForeignSessionTab(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_tab,
-    const JavaParamRef<jstring>& session_tag,
+    const JavaRef<jobject>& j_tab,
+    const JavaRef<jstring>& session_tag,
     jint session_tab_id,
     jint j_disposition) {
   OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(profile_);
@@ -338,7 +340,7 @@ jboolean ForeignSessionHelper::OpenForeignSessionTab(
 
 void ForeignSessionHelper::DeleteForeignSession(
     JNIEnv* env,
-    const JavaParamRef<jstring>& session_tag) {
+    const JavaRef<jstring>& session_tag) {
   OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(profile_);
   if (open_tabs) {
     open_tabs->DeleteForeignSession(ConvertJavaStringToUTF8(env, session_tag));
@@ -358,9 +360,9 @@ void ForeignSessionHelper::SetInvalidationsForSessionsEnabled(
 
 jint ForeignSessionHelper::OpenForeignSessionTabsAsBackgroundTabs(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_tab,
-    const JavaParamRef<jintArray>& j_session_tab_ids,
-    const JavaParamRef<jstring>& session_tag) {
+    const JavaRef<jobject>& j_tab,
+    const JavaRef<jintArray>& j_session_tab_ids,
+    const JavaRef<jstring>& session_tag) {
   std::vector<int> session_tab_ids;
   base::android::JavaIntArrayToIntVector(env, j_session_tab_ids,
                                          &session_tab_ids);
@@ -372,18 +374,16 @@ jint ForeignSessionHelper::OpenForeignSessionTabsAsBackgroundTabs(
   }
 
   // Open the first tab in the list with a renderer and web contents.
-  if (!ForeignSessionHelper::RestoreTabWithRenderer(session_tag, j_tab,
-                                                    session_tab_ids[0])) {
-    return 0;
-  }
-  content::WebContents* web_contents = tab_android->web_contents();
+  content::WebContents* web_contents =
+      ForeignSessionHelper::RestoreTabWithRenderer(session_tag, j_tab,
+                                                   session_tab_ids[0]);
   if (!web_contents) {
     return 0;
   }
   int num_tabs_restored = 1;
 
   // Using the web contents of the first tab, load the rest of the tabs
-  // with no renderer and as background tabs.
+  // as background tabs without a renderer.
   for (int i = 1; i < tabs_android_count; i++) {
     if (ForeignSessionHelper::RestoreTabNoRenderer(
             session_tag, session_tab_ids[i], web_contents)) {
@@ -393,14 +393,14 @@ jint ForeignSessionHelper::OpenForeignSessionTabsAsBackgroundTabs(
   return num_tabs_restored;
 }
 
-bool ForeignSessionHelper::RestoreTabWithRenderer(
-    const JavaParamRef<jstring>& session_tag,
-    const JavaParamRef<jobject>& j_tab,
+content::WebContents* ForeignSessionHelper::RestoreTabWithRenderer(
+    const JavaRef<jstring>& session_tag,
+    const JavaRef<jobject>& j_tab,
     int session_tab_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
   OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(profile_);
   if (!open_tabs) {
-    return false;
+    return nullptr;
   }
 
   const sessions::SessionTab* foreground_session_tab;
@@ -408,30 +408,29 @@ bool ForeignSessionHelper::RestoreTabWithRenderer(
   if (!open_tabs->GetForeignTab(ConvertJavaStringToUTF8(env, session_tag),
                                 SessionID::FromSerializedValue(session_tab_id),
                                 &foreground_session_tab)) {
-    return false;
+    return nullptr;
   }
 
   if (foreground_session_tab->navigations.empty()) {
-    return false;
+    return nullptr;
   }
 
   TabAndroid* tab_android = TabAndroid::GetNativeTab(env, j_tab);
   if (!tab_android) {
-    return false;
+    return nullptr;
   }
   content::WebContents* web_contents = tab_android->web_contents();
   if (!web_contents) {
-    return false;
+    return nullptr;
   }
 
-  SessionRestore::RestoreForeignSessionTab(web_contents,
-                                           *foreground_session_tab,
-                                           WindowOpenDisposition::CURRENT_TAB);
-  return true;
+  return SessionRestore::RestoreForeignSessionTab(
+      web_contents, *foreground_session_tab,
+      WindowOpenDisposition::CURRENT_TAB);
 }
 
 bool ForeignSessionHelper::RestoreTabNoRenderer(
-    const JavaParamRef<jstring>& session_tag,
+    const JavaRef<jstring>& session_tag,
     int session_tab_id,
     content::WebContents* web_contents) {
   OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(profile_);
@@ -458,3 +457,5 @@ bool ForeignSessionHelper::RestoreTabNoRenderer(
       WindowOpenDisposition::NEW_BACKGROUND_TAB, true);
   return true;
 }
+
+DEFINE_JNI(ForeignSessionHelper)

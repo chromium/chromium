@@ -8,6 +8,7 @@
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 
 import type {VolumeManager} from '../../background/js/volume_manager.js';
 import type {FilesAppEntry} from '../../common/js//files_app_entry_types.js';
@@ -174,6 +175,10 @@ export class Crostini {
           this.unregisterSharedPath(event.vmName, assert(entry));
         }
         break;
+      case CrostiniEventType.DROP_FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED:
+        break;
+      default:
+        assertNotReachedCase(event.eventType);
     }
   }
 

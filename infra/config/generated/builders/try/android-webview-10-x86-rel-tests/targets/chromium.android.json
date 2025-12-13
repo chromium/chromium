@@ -17,6 +17,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_trichrome_cts_tests",
+        "module_scheme": "junit",
         "name": "webview_trichrome_cts_tests full_mode",
         "resultdb": {
           "enable": true,
@@ -75,6 +77,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_trichrome_cts_tests",
+        "module_scheme": "junit",
         "name": "webview_trichrome_cts_tests instant_mode",
         "resultdb": {
           "enable": true,

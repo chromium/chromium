@@ -103,8 +103,7 @@ BreakpadServer::BreakpadServer() {
     return;
   }
 
-  SECURITY_DESCRIPTOR security_descriptor;
-  sd.ToAbsolute(security_descriptor);
+  SECURITY_DESCRIPTOR security_descriptor = sd.ToAbsolute();
 
   SECURITY_ATTRIBUTES security_attributes = {0};
   security_attributes.nLength = sizeof(security_attributes);

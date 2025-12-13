@@ -2,6 +2,7 @@ Name: URL Pattern Library
 Short Name: liburlpattern
 URL: This is the canonical public repository
 Version: N/A
+Update Mechanism: Static (https://crbug.com/419413580)
 License: MIT
 License File: LICENSE
 Security Critical: yes

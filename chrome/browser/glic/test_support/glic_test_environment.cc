@@ -6,20 +6,26 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
-#include "chrome/browser/glic/glic_enabling.h"
-#include "chrome/browser/glic/glic_keyed_service.h"
-#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-namespace glic {
-namespace internal {
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
+namespace glic {
+
+namespace internal {
 GlicTestEnvironmentConfig& GetConfig() {
   static GlicTestEnvironmentConfig config;
   return config;
@@ -44,9 +50,8 @@ class TestCookieSynchronizer : public glic::GlicCookieSynchronizer {
         /*for_fre=*/true);
     TestCookieSynchronizer* fre_cookie_synchronizer_ptr =
         fre_cookie_synchronizer.get();
-    service->window_controller()
-        .fre_controller()
-        ->GetAuthControllerForTesting()
+    service->fre_controller()
+        .GetAuthControllerForTesting()
         .SetCookieSynchronizerForTesting(std::move(fre_cookie_synchronizer));
 
     return std::make_pair(ptr, fre_cookie_synchronizer_ptr);
@@ -105,13 +110,24 @@ class GlicTestEnvironmentServiceFactory : public ProfileKeyedServiceFactory {
 
 }  // namespace internal
 
+std::vector<base::test::FeatureRef> GetDefaultEnabledGlicTestFeatures() {
+  return {features::kGlic, features::kTabstripComboButton,
+          features::kGlicRollout,
+#if BUILDFLAG(IS_CHROMEOS)
+          chromeos::features::kFeatureManagementGlic
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  };
+}
+std::vector<base::test::FeatureRef> GetDefaultDisabledGlicTestFeatures() {
+  return {features::kGlicWarming, features::kGlicFreWarming};
+}
+
 GlicTestEnvironment::GlicTestEnvironment(
     const GlicTestEnvironmentConfig& config,
     std::vector<base::test::FeatureRef> enabled_features,
-    std::vector<base::test::FeatureRef> disabled_features) {
+    std::vector<base::test::FeatureRef> disabled_features)
+    : shared_(enabled_features, disabled_features) {
   internal::GetConfig() = config;
-
-  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
   // The service factory needs to be created before any services are created.
   internal::GlicTestEnvironmentServiceFactory::GetInstance();
@@ -126,7 +142,7 @@ GlicTestEnvironment::~GlicTestEnvironment() = default;
 
 void GlicTestEnvironment::SetForceSigninAndModelExecutionCapability(
     bool force) {
-  internal::GetConfig().force_signin_and_model_execution_capability = force;
+  internal::GetConfig().force_signin_and_glic_capability = force;
 }
 
 void GlicTestEnvironment::SetFreStatusForNewProfiles(
@@ -140,6 +156,10 @@ GlicTestEnvironmentService* GlicTestEnvironment::GetService(Profile* profile,
                                                                     create);
 }
 
+void GlicTestEnvironmentService::SetModelExecutionCapability(bool enabled) {
+  ::glic::SetGlicCapability(profile_, enabled);
+}
+
 void GlicTestEnvironment::OnWillCreateBrowserContextKeyedServices(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
@@ -148,10 +168,24 @@ void GlicTestEnvironment::OnWillCreateBrowserContextKeyedServices(
                     "ineligible profile.";
     return;
   }
-  if (internal::GetConfig().force_signin_and_model_execution_capability) {
+  if (internal::GetConfig().force_signin_and_glic_capability) {
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
+
+  auto observation =
+      std::make_unique<base::ScopedObservation<Profile, ProfileObserver>>(this);
+  observation->Observe(profile);
+  profile_observations_.push_back(std::move(observation));
+}
+
+void GlicTestEnvironment::OnProfileWillBeDestroyed(Profile* profile) {
+  std::erase_if(profile_observations_, [&profile](const auto& observation) {
+    return observation->GetSource() == profile;
+  });
+}
+
+void GlicTestEnvironment::OnProfileInitializationComplete(Profile* profile) {
   GetService(profile, true);
 }
 
@@ -168,9 +202,28 @@ GlicTestEnvironmentService::GlicTestEnvironmentService(Profile* profile)
   if (config.fre_status) {
     SetFRECompletion(*config.fre_status);
   }
-  if (config.force_signin_and_model_execution_capability) {
+  if (config.force_signin_and_glic_capability) {
+#if BUILDFLAG(IS_CHROMEOS)
+    // SigninWithPrimaryAccount below internally runs RunLoop to wait for an
+    // async task completion. This is the test only behavior.
+    // However, that has side effect that other tasks in the queue also runs.
+    // Specifically, some of the queued tasks will require communicating with
+    // SigninBrowserContext, and if it's not existing, the instance is created.
+    // Because this running inside a KeyedService construction,
+    // KeyedServiceTemplatedFactory temporarily keeps the map entry between
+    // the current browser context and the info of this KeyedService instance.
+    // However, the entry is invalidated if another BrowserContext is created,
+    // like SigninBrowserContext case explained above, regardless of whether
+    // the newly created BrowserContext will create this service or not.
+    // Thus, after returning from this function, it will cause crashes.
+    // To avoid such crashes, while running the async task, we temporarily
+    // disable the creation of new BrowserContext for the workaround.
+    // See also crbug.com/460334478 for details.
+    auto disabled = ash::BrowserContextHelper::
+        DisableImplicitBrowserContextCreationForTest();
+#endif
     SigninWithPrimaryAccount(profile);
-    SetModelExecutionCapability(profile, true);
+    SetModelExecutionCapability(true);
   }
 }
 
@@ -191,6 +244,29 @@ void GlicTestEnvironmentService::SetResultForFutureCookieSyncInFre(
 
 void GlicTestEnvironmentService::SetFRECompletion(prefs::FreStatus fre_status) {
   ::glic::SetFRECompletion(profile_, fre_status);
+}
+
+GlicUnitTestEnvironment::GlicUnitTestEnvironment(
+    const GlicTestEnvironmentConfig& config)
+    : config_(config),
+      shared_(GetDefaultEnabledGlicTestFeatures(),
+              GetDefaultDisabledGlicTestFeatures()) {}
+
+GlicUnitTestEnvironment::~GlicUnitTestEnvironment() = default;
+
+void GlicUnitTestEnvironment::SetupProfile(Profile* profile) {
+  if (config_.force_signin_and_glic_capability) {
+    ::glic::ForceSigninAndGlicCapability(profile);
+  }
+  if (config_.fre_status) {
+    glic::SetFRECompletion(profile, *config_.fre_status);
+  }
+}
+
+internal::GlicTestEnvironmentShared::GlicTestEnvironmentShared(
+    std::vector<base::test::FeatureRef> enabled_features,
+    std::vector<base::test::FeatureRef> disabled_features) {
+  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
 }  // namespace glic

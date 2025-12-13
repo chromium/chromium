@@ -12,33 +12,6 @@ import("//testing/test.gni")
 
 import("//third_party/inspector_protocol/inspector_protocol.gni")
 
-viz_component("shared_image_format") {
-  output_name = "viz_shared_image_format"
-
-  defines = [ "IS_VIZ_SHARED_IMAGE_FORMAT_IMPL" ]
-
-  sources = [
-    "resources/resource_sizes.h",
-    "resources/shared_image_format.cc",
-    "resources/shared_image_format.h",
-    "resources/shared_image_format_utils.cc",
-    "resources/shared_image_format_utils.h",
-  ]
-  public_deps = [
-    "//base",
-    "//mojo/public/cpp/bindings",
-    "//services/viz/public/mojom:singleplanar_format",
-  ]
-  deps = [
-    "//base",
-    "//cc/base",
-    "//skia",
-    "//third_party/angle:includes",
-    "//ui/gfx:buffer_types",
-    "//ui/gfx/geometry",
-  ]
-}
-
 always_enable_blending_for_primary = is_castos || is_cast_android
 assert(enable_cast_overlay_strategy || !always_enable_blending_for_primary)
 
@@ -113,6 +86,7 @@ viz_component("common") {
     "frame_sinks/copy_output_util.h",
     "frame_sinks/delay_based_time_source.cc",
     "frame_sinks/delay_based_time_source.h",
+    "frame_timing_details.cc",
     "frame_timing_details.h",
     "frame_timing_details_map.h",
     "gpu/context_cache_controller.cc",
@@ -131,6 +105,7 @@ viz_component("common") {
     "hit_test/hit_test_region_list.cc",
     "hit_test/hit_test_region_list.h",
     "hit_test/hit_test_region_observer.h",
+    "input/viz_touch_state.h",
     "performance_hint_utils.cc",
     "performance_hint_utils.h",
     "quads/aggregated_render_pass.cc",
@@ -184,6 +159,7 @@ viz_component("common") {
     "quads/texture_draw_quad.h",
     "quads/tile_draw_quad.cc",
     "quads/tile_draw_quad.h",
+    "quads/trees_in_viz_timing.h",
     "quads/video_hole_draw_quad.cc",
     "quads/video_hole_draw_quad.h",
     "resources/peak_gpu_memory_callback.cc",
@@ -254,12 +230,12 @@ viz_component("common") {
     "//gpu/command_buffer/client:raster",
     "//gpu/command_buffer/client:raster_interface",
     "//gpu/config",
-    "//gpu/ipc/common:common",
+    "//gpu/ipc/common",
     "//gpu/vulkan:buildflags",
     "//media:media_buildflags",
     "//mojo/public/cpp/base",
     "//mojo/public/cpp/system",
-    "//services/tracing/public/cpp:cpp",
+    "//services/tracing/public/cpp",
     "//third_party/blink/public/common/tokens:tokens_headers",
     "//third_party/libyuv",
     "//ui/base",
@@ -300,7 +276,7 @@ viz_component("common") {
 
   public_deps = [
     ":buildflags",
-    ":shared_image_format",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/common",
     "//mojo/public/cpp/bindings",
@@ -329,7 +305,6 @@ viz_source_set("unit_tests") {
     "quads/offset_tag_unittest.cc",
     "quads/render_pass_io_unittest.cc",
     "resources/peak_gpu_memory_tracker_util_unittest.cc",
-    "resources/resource_sizes_unittest.cc",
     "resources/shared_image_format_unittest.cc",
     "resources/shared_image_format_utils_unittest.cc",
     "surfaces/child_local_surface_id_allocator_unittest.cc",

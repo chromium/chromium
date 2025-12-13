@@ -19,7 +19,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/files/scoped_temp_file.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"

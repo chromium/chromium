@@ -30,16 +30,13 @@
 #include "device/fido/attestation_statement.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/p256_public_key.h"
+#include "device/fido/public/fido_constants.h"
 #include "device/fido/public_key.h"
 
 namespace webauthn::passkey_model_utils {
 
 namespace {
-
-// The byte length of the WebauthnCredentialSpecifics `sync_id` field.
-constexpr size_t kSyncIdLength = 16u;
 
 // The byte length of the WebauthnCredentialSpecifics `credential_id` field.
 constexpr size_t kCredentialIdLength = 16u;
@@ -164,6 +161,11 @@ std::vector<uint8_t> ExtensionInputData::EvaluateHMAC(
                           : base::as_byte_span(hmac_secret));
 }
 
+SerializedAttestationObject::SerializedAttestationObject() = default;
+SerializedAttestationObject::SerializedAttestationObject(
+    SerializedAttestationObject&& other) = default;
+SerializedAttestationObject::~SerializedAttestationObject() = default;
+
 std::vector<sync_pb::WebauthnCredentialSpecifics> FilterShadowedCredentials(
     base::span<const sync_pb::WebauthnCredentialSpecifics> passkeys) {
   // Collect all explicitly shadowed credentials.
@@ -190,10 +192,7 @@ std::vector<sync_pb::WebauthnCredentialSpecifics> FilterShadowedCredentials(
       std::make_move_iterator(grouped.end()));
 }
 
-bool IsPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey) {
-  // The maximum byte length of the WebauthnCredentialSpecifics `user_id` field.
-  static constexpr size_t kUserIdMaxLength = 64u;
-
+bool IsGpmPasskeyValid(const sync_pb::WebauthnCredentialSpecifics& passkey) {
   return passkey.sync_id().size() == kSyncIdLength &&
          passkey.credential_id().size() == kCredentialIdLength &&
          !passkey.rp_id().empty() &&
@@ -330,20 +329,24 @@ bool EncryptWebauthnCredentialSpecificsData(
   return true;
 }
 
-std::vector<uint8_t> MakeAuthenticatorDataForAssertion(std::string_view rp_id) {
+std::vector<uint8_t> MakeAuthenticatorDataForAssertion(std::string_view rp_id,
+                                                       bool did_complete_uv) {
   using Flag = device::AuthenticatorData::Flag;
   uint8_t flags = base::strict_cast<uint8_t>(Flag::kTestOfUserPresence) |
-                  base::strict_cast<uint8_t>(Flag::kTestOfUserVerification) |
                   base::strict_cast<uint8_t>(Flag::kBackupEligible) |
                   base::strict_cast<uint8_t>(Flag::kBackupState);
+  if (did_complete_uv) {
+    flags |= base::strict_cast<uint8_t>(Flag::kTestOfUserVerification);
+  }
   return device::AuthenticatorData(crypto::hash::Sha256(rp_id), flags,
                                    kSignatureCounter, /*data=*/std::nullopt,
                                    /*extensions=*/std::nullopt)
       .SerializeToByteArray();
 }
 
-std::vector<uint8_t> MakeAttestationObjectForCreation(
+SerializedAttestationObject MakeAttestationObjectForCreation(
     std::string_view rp_id,
+    bool did_complete_uv,
     base::span<const uint8_t> credential_id,
     base::span<const uint8_t> public_key_spki_der) {
   static constexpr std::array<const uint8_t, 16> kGpmAaguid{
@@ -358,18 +361,26 @@ std::vector<uint8_t> MakeAttestationObjectForCreation(
   device::AttestedCredentialData attested_credential_data(
       kGpmAaguid, credential_id, std::move(public_key));
   uint8_t flags = base::strict_cast<uint8_t>(Flag::kTestOfUserPresence) |
-                  base::strict_cast<uint8_t>(Flag::kTestOfUserVerification) |
                   base::strict_cast<uint8_t>(Flag::kBackupEligible) |
                   base::strict_cast<uint8_t>(Flag::kBackupState) |
                   base::strict_cast<uint8_t>(Flag::kAttestation);
+  if (did_complete_uv) {
+    flags |= base::strict_cast<uint8_t>(Flag::kTestOfUserVerification);
+  }
   device::AuthenticatorData authenticator_data(
       crypto::hash::Sha256(rp_id), flags, kSignatureCounter,
       std::move(attested_credential_data), /*extensions=*/std::nullopt);
+  SerializedAttestationObject serialized_attestation_object;
+  serialized_attestation_object.authenticator_data =
+      authenticator_data.SerializeToByteArray();
+
   device::AttestationObject attestationObject(
       std::move(authenticator_data),
       std::make_unique<device::NoneAttestationStatement>());
+  serialized_attestation_object.attestation_object =
+      cbor::Writer::Write(device::AsCBOR(attestationObject)).value();
 
-  return cbor::Writer::Write(device::AsCBOR(attestationObject)).value();
+  return serialized_attestation_object;
 }
 
 std::optional<std::vector<uint8_t>> GenerateEcSignature(

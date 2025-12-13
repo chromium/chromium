@@ -77,9 +77,13 @@ bool StructTraits<webnn::mojom::OperandDescriptorDataView,
   mojo::ArrayDataView<uint32_t> shape;
   data.GetShapeDataView(&shape);
 
+  mojo::ArrayDataView<uint32_t> pending_permutation;
+  data.GetPendingPermutationDataView(&pending_permutation);
+
   base::expected<webnn::OperandDescriptor, std::string> descriptor =
       webnn::OperandDescriptor::CreateForDeserialization(
-          FromMojoDataType(data.data_type()), base::span(shape));
+          FromMojoDataType(data.data_type()), base::span(shape),
+          base::span(pending_permutation));
 
   if (!descriptor.has_value()) {
     return false;

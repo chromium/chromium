@@ -24,7 +24,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/cronet/android/cronet_tests_jni_headers/ExperimentalOptionsTest_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace cronet {
 
@@ -58,7 +58,7 @@ void WriteToHostCacheOnNetworkThread(jlong jcontext_adapter,
 static void JNI_ExperimentalOptionsTest_WriteToHostCache(
     JNIEnv* env,
     jlong jcontext_adapter,
-    const JavaParamRef<jstring>& jaddress) {
+    const JavaRef<jstring>& jaddress) {
   TestUtil::RunAfterContextInit(
       jcontext_adapter,
       base::BindOnce(&WriteToHostCacheOnNetworkThread, jcontext_adapter,
@@ -72,3 +72,5 @@ JNI_ExperimentalOptionsTest_ExperimentalOptionsParsingIsAllowedToFail(
 }
 
 }  // namespace cronet
+
+DEFINE_JNI(ExperimentalOptionsTest)

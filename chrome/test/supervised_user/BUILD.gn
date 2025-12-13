@@ -18,7 +18,7 @@ static_library("test_support") {
   public_deps = [
     ":child_accounts",
     "//base",
-    "//chrome/test:sync_integration_test_support",
+    "//chrome/browser/sync/test/integration:sync_integration_test_support",
     "//chrome/test:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/supervised_user/test_support",
@@ -35,7 +35,7 @@ static_library("child_accounts") {
   public_deps = [
     "//base",
     "//net:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
   ]
 }
 

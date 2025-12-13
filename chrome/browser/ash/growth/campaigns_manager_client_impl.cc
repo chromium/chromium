@@ -145,7 +145,7 @@ bool CampaignsManagerClientImpl::IsAppIconOnShelf(
 
   // Shelf is always considered hidden when in tablet mode, but the Hotseat can
   // still be expanded.
-  const bool is_tablet_mode = display::Screen::GetScreen()->InTabletMode();
+  const bool is_tablet_mode = display::Screen::Get()->InTabletMode();
 
   if (!is_shelf_visible && !is_tablet_mode) {
     growth::RecordCampaignsManagerError(
@@ -277,12 +277,6 @@ void CampaignsManagerClientImpl::RecordEvent(const std::string& event_name,
   tracker->NotifyEvent(AddEventPrefix(event_name));
 
   if (!trigger_campaigns) {
-    return;
-  }
-
-  // If the App Mall app is not enabled, do not trigger by the event.
-  if (event_name == growth::kGrowthCampaignsEventHotseatHover &&
-      !chromeos::features::IsCrosMallSwaEnabled()) {
     return;
   }
 

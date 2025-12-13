@@ -421,7 +421,6 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithSysInfo) {
       "data": {},
       "name": "C:\\fakepath\\chrome_40px.svg"
     },
-    "assistantDebugInfoAllowed": true,
     "attachedFileBlobUuid": "2e3996de-db9e-4c3d-b62c-80d19b6418b9",
     "autofillMetadata": "",
     "categoryTag": "test-tag",
@@ -429,7 +428,6 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithSysInfo) {
     "descriptionPlaceholder": "",
     "email": "tester@test.com",
     "flow": "regular",
-    "fromAssistant": true,
     "fromAutofill": false,
     "includeBluetoothLogs": true,
     "pageUrl": "https://test.com",
@@ -470,8 +468,6 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithSysInfo) {
             feedback_data->screenshot_uuid());
   EXPECT_EQ("https://test.com", feedback_data->page_url());
 
-  EXPECT_TRUE(feedback_data->from_assistant());
-  EXPECT_TRUE(feedback_data->assistant_debug_info_allowed());
   EXPECT_TRUE(feedback_data->sys_info());
   EXPECT_TRUE(feedback_data->sys_info()->count("mem_usage_with_title"));
 }
@@ -483,14 +479,12 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithoutSysInfo) {
       "data": {},
       "name":""
     },
-    "assistantDebugInfoAllowed": false,
     "autofillMetadata": "",
     "categoryTag": "",
     "description": "test-desc",
     "descriptionPlaceholder": "",
     "email": "",
     "flow": "regular",
-    "fromAssistant": false,
     "fromAutofill": false,
     "includeBluetoothLogs": false,
     "pageUrl": "",
@@ -525,8 +519,6 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithoutSysInfo) {
   EXPECT_EQ("", feedback_data->screenshot_uuid());
   EXPECT_EQ("", feedback_data->page_url());
 
-  EXPECT_FALSE(feedback_data->from_assistant());
-  EXPECT_FALSE(feedback_data->assistant_debug_info_allowed());
   EXPECT_TRUE(feedback_data->sys_info());
   EXPECT_FALSE(feedback_data->sys_info()->count("mem_usage_with_title"));
 }
@@ -587,8 +579,6 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsTrue) {
             feedback_data->screenshot_uuid());
   EXPECT_EQ("https://test.com", feedback_data->page_url());
 
-  EXPECT_TRUE(feedback_data->from_assistant());
-  EXPECT_TRUE(feedback_data->assistant_debug_info_allowed());
   EXPECT_TRUE(feedback_data->sys_info());
   EXPECT_TRUE(feedback_data->sys_info()->size() == 0);
 }
@@ -644,8 +634,6 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsFalse) {
   EXPECT_EQ("", feedback_data->screenshot_uuid());
   EXPECT_EQ("", feedback_data->page_url());
 
-  EXPECT_FALSE(feedback_data->from_assistant());
-  EXPECT_FALSE(feedback_data->assistant_debug_info_allowed());
   EXPECT_TRUE(feedback_data->sys_info());
   EXPECT_TRUE(feedback_data->sys_info()->size() == 0);
 }
@@ -705,8 +693,6 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithAutofillInfo) {
   EXPECT_EQ("https://test.com", feedback_data->page_url());
   EXPECT_EQ("test-metadata", feedback_data->autofill_metadata());
 
-  EXPECT_FALSE(feedback_data->from_assistant());
-  EXPECT_TRUE(feedback_data->assistant_debug_info_allowed());
   EXPECT_TRUE(feedback_data->sys_info());
 }
 

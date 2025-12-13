@@ -15,7 +15,10 @@
 #include "components/sync/base/command_line_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/test/result_catcher.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::ResultCatcher;
 
@@ -106,8 +109,8 @@ const Extension* GcmApiTest::LoadTestExtension(
   if (extension) {
     const GURL extension_url = extension->GetResourceURL(page_name);
     EXPECT_TRUE(extension_url.is_valid());
-    EXPECT_TRUE(NavigateToURL(extension_url));
-    EXPECT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
+    auto* web_contents = GetActiveWebContents();
+    EXPECT_TRUE(NavigateToURL(web_contents, extension_url));
   }
   return extension;
 }

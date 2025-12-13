@@ -86,7 +86,7 @@ class MODULES_EXPORT PresentationAvailabilityState final
 
     ~AvailabilityListener();
 
-    const WTF::Vector<KURL> urls;
+    const Vector<KURL> urls;
     HeapHashSet<WeakMember<PresentationAvailability>> availabilities;
     HeapVector<Member<PresentationAvailabilityObserver>> availability_observers;
 
@@ -123,7 +123,7 @@ class MODULES_EXPORT PresentationAvailabilityState final
   ListeningStatus* GetListeningStatus(const KURL&) const;
 
   // ListeningStatus for known URLs.
-  WTF::Vector<std::unique_ptr<ListeningStatus>> availability_listening_status_;
+  Vector<std::unique_ptr<ListeningStatus>> availability_listening_status_;
 
   // Set of AvailabilityListener for known PresentationRequests.
   HeapVector<Member<AvailabilityListener>> availability_listeners_;

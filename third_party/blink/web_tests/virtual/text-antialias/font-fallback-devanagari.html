@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <style>
+    div {
+      font-family: 'Segoe UI', sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <p>Test for
+    <i><a href="https://crbug.com/406917902">
+        https://crbug.com/406917902</a>
+      U+0951 is rendered expectedly.
+    </i></p>
+  <div>◯ &#x0951;</div>
+  <div>◯◯ &#x0951;</div>
+  <div>&#x0915;&#x0951;</div>
+  <div>&#x0905;&#x0951;</div>
+  <div>&#x0951;</div>
+  <div>&#x0951;&#x0952;</div>
+</body>
+</html>

@@ -38,9 +38,8 @@ bool MetricsServiceAccessor::IsMetricsReportingEnabled(
   return IsMetricsReportingEnabledForOfficialBuild(local_state);
 #else
   // In non-official builds, disable metrics reporting completely.
-  return g_force_official_enabled_test
-             ? IsMetricsReportingEnabledForOfficialBuild(local_state)
-             : false;
+  return g_force_official_enabled_test &&
+         IsMetricsReportingEnabledForOfficialBuild(local_state);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
@@ -50,8 +49,9 @@ bool MetricsServiceAccessor::RegisterSyntheticFieldTrial(
     std::string_view trial_name,
     std::string_view group_name,
     variations::SyntheticTrialAnnotationMode annotation_mode) {
-  if (!metrics_service)
+  if (!metrics_service) {
     return false;
+  }
 
   variations::SyntheticTrialGroup trial_group(trial_name, group_name,
                                               annotation_mode);

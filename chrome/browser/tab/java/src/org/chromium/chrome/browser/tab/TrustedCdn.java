@@ -8,7 +8,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -28,38 +27,40 @@ public class TrustedCdn extends TabWebContentsUserData {
     private final long mNativeTrustedCdn;
 
     /**
-     * UnownedUserData shared across all tabs to get the publisher url visibility.
-     * This hangs off of an activity via WindowAndroid.
+     * UnownedUserData shared across all tabs to get the publisher url visibility. This hangs off of
+     * an activity via WindowAndroid.
      */
-    public static interface PublisherUrlVisibility extends UnownedUserData {
+    public interface PublisherUrlVisibility {
         /** The key for accessing this object on an {@link UnownedUserDataHost}. */
-        public static final UnownedUserDataKey<PublisherUrlVisibility> KEY =
-                new UnownedUserDataKey<>(PublisherUrlVisibility.class);
+        UnownedUserDataKey<PublisherUrlVisibility> KEY = new UnownedUserDataKey<>();
 
         /**
-         * Get the Activity's {@link PublisherUrlVisibility} from the provided
-         * {@link WindowAndroid}.
+         * Get the Activity's {@link PublisherUrlVisibility} from the provided {@link
+         * WindowAndroid}.
+         *
          * @param window The window to get the validator from.
          * @return The Activity's {@link PublisherUrlVisibility}.
          */
-        public static @Nullable PublisherUrlVisibility from(WindowAndroid window) {
+        static @Nullable PublisherUrlVisibility from(WindowAndroid window) {
             return KEY.retrieveDataFromHost(window.getUnownedUserDataHost());
         }
 
         /**
          * Make this instance of PublisherUrlVisibility available through the activity's window.
+         *
          * @param window A {@link WindowAndroid} to attach to.
          * @param validator The {@link PublisherUrlVisibility} to attach.
          */
-        public static void attach(WindowAndroid window, PublisherUrlVisibility validator) {
+        static void attach(WindowAndroid window, PublisherUrlVisibility validator) {
             KEY.attachToHost(window.getUnownedUserDataHost(), validator);
         }
 
         /**
          * Detach the provided PublisherUrlVisibility from any host it is associated with.
+         *
          * @param validator The {@link PublisherUrlVisibility} to detach.
          */
-        public static void detach(PublisherUrlVisibility validator) {
+        static void detach(PublisherUrlVisibility validator) {
             KEY.detachFromAllHosts(validator);
         }
 

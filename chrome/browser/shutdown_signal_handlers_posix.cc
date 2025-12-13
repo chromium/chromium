@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/shutdown_signal_handlers_posix.h"
 
 #include <limits.h>
@@ -16,6 +11,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -38,8 +34,7 @@ int g_shutdown_pipe_read_fd = -1;
 // Common code between SIG{HUP, INT, TERM}Handler.
 void GracefulShutdownHandler(int signal) {
   // Reinstall the default handler.  We had one shot at graceful shutdown.
-  struct sigaction action;
-  memset(&action, 0, sizeof(action));
+  struct sigaction action = {};
   action.sa_handler = SIG_DFL;
   RAW_CHECK(sigaction(signal, &action, nullptr) == 0);
 
@@ -49,10 +44,10 @@ void GracefulShutdownHandler(int signal) {
   RAW_CHECK(g_pipe_pid == getpid());
   size_t bytes_written = 0;
   do {
-    int rv = HANDLE_EINTR(
+    int rv = UNSAFE_TODO(HANDLE_EINTR(
         write(g_shutdown_pipe_write_fd,
               reinterpret_cast<const char*>(&signal) + bytes_written,
-              sizeof(signal) - bytes_written));
+              sizeof(signal) - bytes_written)));
     RAW_CHECK(rv >= 0);
     bytes_written += rv;
   } while (bytes_written < sizeof(signal));
@@ -123,9 +118,9 @@ void ShutdownDetector::ThreadMain() {
   size_t bytes_read = 0;
   ssize_t ret;
   do {
-    ret = HANDLE_EINTR(read(shutdown_fd_,
-                            reinterpret_cast<char*>(&signal) + bytes_read,
-                            sizeof(signal) - bytes_read));
+    ret = UNSAFE_TODO(HANDLE_EINTR(
+        read(shutdown_fd_, reinterpret_cast<char*>(&signal) + bytes_read,
+             sizeof(signal) - bytes_read)));
     if (ret < 0) {
       NOTREACHED() << "Unexpected error: " << strerror(errno);
     } else if (ret == 0) {
@@ -190,8 +185,7 @@ void InstallShutdownSignalHandlers(
 
   // We need to handle SIGTERM, because that is how many POSIX-based distros
   // ask processes to quit gracefully at shutdown time.
-  struct sigaction action;
-  memset(&action, 0, sizeof(action));
+  struct sigaction action = {};
   action.sa_handler = SIGTERMHandler;
   CHECK_EQ(0, sigaction(SIGTERM, &action, nullptr));
 

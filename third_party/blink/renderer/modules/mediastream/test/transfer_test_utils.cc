@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediastream/test/transfer_test_utils.h"
 
+#include "base/functional/callback_helpers.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_capturer_source.h"
@@ -24,9 +25,9 @@ void SetFromTransferredStateImplForTesting(
 ScopedMockMediaStreamTrackFromTransferredState::
     ScopedMockMediaStreamTrackFromTransferredState() {
   SetFromTransferredStateImplForTesting(
-      WTF::BindRepeating(&ScopedMockMediaStreamTrackFromTransferredState::Impl,
-                         // The destructor removes this callback.
-                         WTF::Unretained(this)));
+      BindRepeating(&ScopedMockMediaStreamTrackFromTransferredState::Impl,
+                    // The destructor removes this callback.
+                    Unretained(this)));
 }
 ScopedMockMediaStreamTrackFromTransferredState::
     ~ScopedMockMediaStreamTrackFromTransferredState() {

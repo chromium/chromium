@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/mac/io_surface.h"
 
 #include <Availability.h>
@@ -22,7 +17,7 @@
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
-#include "ui/gfx/buffer_format_util.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/icc_profile.h"
 #include "ui/gfx/mac/color_space_util.h"
@@ -39,91 +34,44 @@ void AddIntegerValue(CFMutableDictionaryRef dictionary,
   CFDictionaryAddValue(dictionary, key, number.get());
 }
 
-int32_t BytesPerElement(gfx::BufferFormat format, int plane) {
-  switch (format) {
-    case gfx::BufferFormat::R_8:
-      DCHECK_EQ(plane, 0);
-      return 1;
-    case gfx::BufferFormat::R_16:
-      DCHECK_EQ(plane, 0);
-      return 2;
-    case gfx::BufferFormat::RG_88:
-      DCHECK_EQ(plane, 0);
-      return 2;
-    case gfx::BufferFormat::RG_1616:
-      DCHECK_EQ(plane, 0);
-      return 4;
-    case gfx::BufferFormat::BGRA_8888:
-    case gfx::BufferFormat::BGRX_8888:
-    case gfx::BufferFormat::RGBA_8888:
-    case gfx::BufferFormat::RGBX_8888:
-    case gfx::BufferFormat::BGRA_1010102:
-      DCHECK_EQ(plane, 0);
-      return 4;
-    case gfx::BufferFormat::RGBA_F16:
-      DCHECK_EQ(plane, 0);
-      return 8;
-    case gfx::BufferFormat::YUV_420_BIPLANAR: {
-      constexpr int32_t bytes_per_element[] = {1, 2};
-      DCHECK_LT(static_cast<size_t>(plane), std::size(bytes_per_element));
-      return bytes_per_element[plane];
-    }
-    case gfx::BufferFormat::YUVA_420_TRIPLANAR: {
-      constexpr int32_t bytes_per_element[] = {1, 2, 1};
-      DCHECK_LT(static_cast<size_t>(plane), std::size(bytes_per_element));
-      return bytes_per_element[plane];
-    }
-    case gfx::BufferFormat::P010: {
-      constexpr int32_t bytes_per_element[] = {2, 4};
-      DCHECK_LT(static_cast<size_t>(plane), std::size(bytes_per_element));
-      return bytes_per_element[plane];
-    }
-    case gfx::BufferFormat::BGR_565:
-    case gfx::BufferFormat::RGBA_4444:
-    case gfx::BufferFormat::RGBA_1010102:
-    case gfx::BufferFormat::YVU_420:
-      NOTREACHED();
+// Return the expected four character code pixel format for an IOSurface with
+// the specified viz::SharedImageFormat.
+uint32_t SharedImageFormatToIOSurfacePixelFormat(viz::SharedImageFormat format,
+                                                 bool override_rgba_to_bgra) {
+  if (format == viz::SinglePlaneFormat::kR_8) {
+    return 'L008';
+  } else if (format == viz::SinglePlaneFormat::kR_F16) {
+    return 'L00h';
+  } else if (format == viz::SinglePlaneFormat::kRG_88) {
+    return '2C08';
+  } else if (format == viz::SinglePlaneFormat::kR_16) {
+    return 'L016';
+  } else if (format == viz::SinglePlaneFormat::kRG_1616) {
+    return '2C16';
+  } else if (format == viz::SinglePlaneFormat::kBGRA_1010102) {
+    return 'l10r';  // little-endian ARGB2101010 full-range ARGB
+  } else if (format == viz::SinglePlaneFormat::kBGRA_8888 ||
+             format == viz::SinglePlaneFormat::kBGRX_8888) {
+    return 'BGRA';
+  } else if (format == viz::SinglePlaneFormat::kRGBA_8888 ||
+             format == viz::SinglePlaneFormat::kRGBX_8888) {
+    return override_rgba_to_bgra ? 'BGRA' : 'RGBA';
+  } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+    return 'RGhA';
+  } else if (format == viz::MultiPlaneFormat::kNV12) {
+    return '420v';
+  } else if (format == viz::MultiPlaneFormat::kNV12A) {
+    return 'v0a8';
+  } else if (format == viz::MultiPlaneFormat::kP010) {
+    return 'x420';
+  } else {
+    // Technically RGBA_1010102 should be accepted as 'R10k', but then it won't
+    // be supported by CGLTexImageIOSurface2D(), so it's best to reject it here.
+    NOTREACHED();
   }
 }
 
 }  // namespace
-
-uint32_t BufferFormatToIOSurfacePixelFormat(gfx::BufferFormat format,
-                                            bool override_rgba_to_bgra) {
-  switch (format) {
-    case gfx::BufferFormat::R_8:
-      return 'L008';
-    case gfx::BufferFormat::RG_88:
-      return '2C08';
-    case gfx::BufferFormat::R_16:
-      return 'L016';
-    case gfx::BufferFormat::RG_1616:
-      return '2C16';
-    case gfx::BufferFormat::BGRA_1010102:
-      return 'l10r';  // little-endian ARGB2101010 full-range ARGB
-    case gfx::BufferFormat::BGRA_8888:
-    case gfx::BufferFormat::BGRX_8888:
-      return 'BGRA';
-    case gfx::BufferFormat::RGBA_8888:
-    case gfx::BufferFormat::RGBX_8888:
-      return override_rgba_to_bgra ? 'BGRA' : 'RGBA';
-    case gfx::BufferFormat::RGBA_F16:
-      return 'RGhA';
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-      return '420v';
-    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
-      return 'v0a8';
-    case gfx::BufferFormat::P010:
-      return 'x420';
-    case gfx::BufferFormat::BGR_565:
-    case gfx::BufferFormat::RGBA_4444:
-    case gfx::BufferFormat::RGBA_1010102:
-    // Technically RGBA_1010102 should be accepted as 'R10k', but then it won't
-    // be supported by CGLTexImageIOSurface2D(), so it's best to reject it here.
-    case gfx::BufferFormat::YVU_420:
-      return 0;
-  }
-}
 
 namespace internal {
 
@@ -233,11 +181,10 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
 
 }  // namespace internal
 
-base::apple::ScopedCFTypeRef<IOSurfaceRef> CreateIOSurface(
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    bool should_clear,
-    bool override_rgba_to_bgra) {
+ScopedIOSurface CreateIOSurface(const gfx::Size& size,
+                                viz::SharedImageFormat format,
+                                bool should_clear,
+                                bool override_rgba_to_bgra) {
   TRACE_EVENT0("ui", "CreateIOSurface");
   base::TimeTicks start_time = base::TimeTicks::Now();
 
@@ -249,22 +196,25 @@ base::apple::ScopedCFTypeRef<IOSurfaceRef> CreateIOSurface(
   AddIntegerValue(properties.get(), kIOSurfaceHeight, size.height());
   AddIntegerValue(
       properties.get(), kIOSurfacePixelFormat,
-      BufferFormatToIOSurfacePixelFormat(format, override_rgba_to_bgra));
+      SharedImageFormatToIOSurfacePixelFormat(format, override_rgba_to_bgra));
 
   // Don't specify plane information unless there are indeed multiple planes
   // because DisplayLink drivers do not support this.
   // http://crbug.com/527556
-  size_t num_planes = gfx::NumberOfPlanesForLinearBufferFormat(format);
+  size_t num_planes = format.NumberOfPlanes();
   if (num_planes > 1) {
     base::apple::ScopedCFTypeRef<CFMutableArrayRef> planes(CFArrayCreateMutable(
         kCFAllocatorDefault, num_planes, &kCFTypeArrayCallBacks));
     size_t total_bytes_alloc = 0;
     for (size_t plane = 0; plane < num_planes; ++plane) {
-      const size_t factor =
-          gfx::SubsamplingFactorForBufferFormat(format, plane);
-      const size_t plane_width = (size.width() + factor - 1) / factor;
-      const size_t plane_height = (size.height() + factor - 1) / factor;
-      const size_t plane_bytes_per_element = BytesPerElement(format, plane);
+      const gfx::Size plane_size = format.GetPlaneSize(plane, size);
+      const size_t plane_width = plane_size.width();
+      const size_t plane_height = plane_size.height();
+      size_t plane_bytes_per_element = format.NumChannelsInPlane(plane);
+      if (format.channel_format() !=
+          viz::SharedImageFormat::ChannelFormat::k8) {
+        plane_bytes_per_element *= 2;
+      }
       const size_t plane_bytes_per_row =
           IOSurfaceAlignProperty(kIOSurfacePlaneBytesPerRow,
                                  base::bits::AlignUp(plane_width, size_t{2}) *
@@ -296,7 +246,7 @@ base::apple::ScopedCFTypeRef<IOSurfaceRef> CreateIOSurface(
         IOSurfaceAlignProperty(kIOSurfaceAllocSize, total_bytes_alloc);
     AddIntegerValue(properties.get(), kIOSurfaceAllocSize, total_bytes_alloc);
   } else {
-    const size_t bytes_per_element = BytesPerElement(format, 0);
+    const size_t bytes_per_element = format.BytesPerPixel();
     const size_t bytes_per_row = IOSurfaceAlignProperty(
         kIOSurfaceBytesPerRow,
         base::bits::AlignUp(static_cast<size_t>(size.width()), size_t{2}) *
@@ -311,33 +261,81 @@ base::apple::ScopedCFTypeRef<IOSurfaceRef> CreateIOSurface(
     AddIntegerValue(properties.get(), kIOSurfaceAllocSize, bytes_alloc);
   }
 
-  base::apple::ScopedCFTypeRef<IOSurfaceRef> surface(
-      IOSurfaceCreate(properties.get()));
-  if (!surface) {
+  ScopedIOSurface io_surface(IOSurfaceCreate(properties.get()));
+  if (!io_surface) {
     LOG(ERROR) << "Failed to allocate IOSurface of size " << size.ToString()
                << ".";
-    return base::apple::ScopedCFTypeRef<IOSurfaceRef>();
+    return ScopedIOSurface();
   }
 
   if (should_clear) {
     // Zero-initialize the IOSurface. Calling IOSurfaceLock/IOSurfaceUnlock
     // appears to be sufficient. https://crbug.com/584760#c17
-    kern_return_t r = IOSurfaceLock(surface.get(), 0, nullptr);
+    kern_return_t r = IOSurfaceLock(io_surface.get(), 0, nullptr);
     DCHECK_EQ(KERN_SUCCESS, r);
-    r = IOSurfaceUnlock(surface.get(), 0, nullptr);
+    r = IOSurfaceUnlock(io_surface.get(), 0, nullptr);
     DCHECK_EQ(KERN_SUCCESS, r);
   }
 
   // Ensure that all IOSurfaces start as sRGB.
-  IOSurfaceSetValue(surface.get(), CFSTR("IOSurfaceColorSpace"),
+  IOSurfaceSetValue(io_surface.get(), CFSTR("IOSurfaceColorSpace"),
                     kCGColorSpaceSRGB);
 
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "GPU.IOSurface.CreationTimeUs", base::TimeTicks::Now() - start_time,
       base::Microseconds(1), base::Milliseconds(50), /*bucket_count=*/100);
 
-  return surface;
+  return io_surface;
 }
+
+#if BUILDFLAG(IS_IOS)
+void ExportIOSurfaceSharedMemoryRegion(
+    IOSurfaceRef io_surface,
+    base::UnsafeSharedMemoryRegion& shared_memory_region,
+    std::array<uint32_t, kMaxIOSurfacePlanes>& plane_strides,
+    std::array<uint32_t, kMaxIOSurfacePlanes>& plane_offsets) {
+  CHECK(io_surface);
+
+  const void* io_surface_base_addr = IOSurfaceGetBaseAddress(io_surface);
+  const size_t io_surface_alloc_size = IOSurfaceGetAllocSize(io_surface);
+
+  memory_object_size_t alloc_size = io_surface_alloc_size;
+  base::apple::ScopedMachSendRight named_right;
+  kern_return_t kr = mach_make_memory_entry_64(
+      mach_task_self(), &alloc_size,
+      reinterpret_cast<memory_object_offset_t>(io_surface_base_addr),
+      VM_PROT_READ | VM_PROT_WRITE,
+      base::apple::ScopedMachSendRight::Receiver(named_right).get(),
+      MACH_PORT_NULL);
+  MACH_CHECK(kr == KERN_SUCCESS, kr) << "mach_make_memory_entry_64";
+  CHECK_GE(alloc_size, io_surface_alloc_size);
+
+  using base::subtle::PlatformSharedMemoryRegion;
+  auto platform_shared_memory_region = PlatformSharedMemoryRegion::Take(
+      std::move(named_right), PlatformSharedMemoryRegion::Mode::kUnsafe,
+      alloc_size, base::UnguessableToken::Create());
+  CHECK(platform_shared_memory_region.IsValid());
+
+  shared_memory_region = base::UnsafeSharedMemoryRegion::Deserialize(
+      std::move(platform_shared_memory_region));
+  CHECK(shared_memory_region.IsValid());
+
+  // IOSurfaceGetPlaneCount returns 0 for single-plane surfaces.
+  const size_t plane_count = std::max(1ul, IOSurfaceGetPlaneCount(io_surface));
+  plane_strides = {};
+  plane_offsets = {};
+  for (size_t plane = 0; plane < plane_count; plane++) {
+    plane_strides[plane] = base::checked_cast<uint32_t>(
+        IOSurfaceGetBytesPerRowOfPlane(io_surface, plane));
+
+    const void* io_surface_plane_addr =
+        IOSurfaceGetBaseAddressOfPlane(io_surface, plane);
+    plane_offsets[plane] = base::checked_cast<uint32_t>(
+        reinterpret_cast<intptr_t>(io_surface_plane_addr) -
+        reinterpret_cast<intptr_t>(io_surface_base_addr));
+  }
+}
+#endif
 
 bool IOSurfaceCanSetColorSpace(const ColorSpace& color_space) {
   return internal::IOSurfaceSetColorSpace(nullptr, color_space);
@@ -353,7 +351,7 @@ void IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
 
 ScopedIOSurface IOSurfaceMachPortToIOSurface(
     ScopedRefCountedIOSurfaceMachPort io_surface_mach_port) {
-  base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface;
+  ScopedIOSurface io_surface;
   if (!io_surface_mach_port) {
     DLOG(ERROR) << "Invalid mach port.";
     return io_surface;

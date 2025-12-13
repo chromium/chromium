@@ -14,6 +14,7 @@ include_rules = [
   "+chrome/browser/chromeos/cros_apps/cros_apps_test_utils.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_finder.h",
   "+chrome/browser/ui/browser_list.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/tabs/tab_strip_model.h",

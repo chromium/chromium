@@ -6,6 +6,7 @@
 #define UI_BASE_DEVICE_FORM_FACTOR_H_
 
 #include "base/component_export.h"
+#include "base/containers/enum_set.h"
 
 namespace ui {
 
@@ -16,7 +17,15 @@ enum DeviceFormFactor {
   DEVICE_FORM_FACTOR_TV = 3,
   DEVICE_FORM_FACTOR_AUTOMOTIVE = 4,
   DEVICE_FORM_FACTOR_FOLDABLE = 5,
+  DEVICE_FORM_FACTOR_XR = 6,
+
+  DEVICE_FORM_FACTOR_MIN_VALUE = DEVICE_FORM_FACTOR_DESKTOP,
+  DEVICE_FORM_FACTOR_MAX_VALUE = DEVICE_FORM_FACTOR_XR,
 };
+
+using DeviceFormFactorSet = base::EnumSet<DeviceFormFactor,
+                                          DEVICE_FORM_FACTOR_MIN_VALUE,
+                                          DEVICE_FORM_FACTOR_MAX_VALUE>;
 
 // Returns the form factor of current device. For platforms other than Android
 // and iOS, DEVICE_FORM_FACTOR_DESKTOP is always returned.

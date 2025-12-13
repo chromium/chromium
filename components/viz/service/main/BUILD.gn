@@ -23,6 +23,7 @@ source_set("main") {
   deps = [
     "//components/discardable_memory/client",
     "//components/discardable_memory/public/mojom",
+    "//components/performance_manager/scenario_api",
     "//components/viz/service",
     "//gpu/command_buffer/service:gles2",
     "//gpu/ipc/common",
@@ -40,7 +41,7 @@ source_set("main") {
   public_deps = [ "//services/network/public/mojom" ]
 
   if (use_ozone) {
-    deps += [ "//ui/ozone:ozone" ]
+    deps += [ "//ui/ozone" ]
   }
 
   if (is_chromeos) {

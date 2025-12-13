@@ -1,0 +1,27 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for an Android Canary AVD on google_apis on x86_64
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "v8yrLOpMlE0if7NxVuSlX0Etnq0k_FLX_hmYksbVSm0C"  # 36.1.9 (Stable)
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-36.0-canary/google_apis/x86_64"
+  version: "fcE7TWZd9NuVeIXn1sjC53AjiVgPrP-4ObkTdz-AzzQC"  # r3, BP22.250325.006
+}
+system_image_name: "system-images;android-36.0-CANARY;google_apis;x86_64"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-36.0-canary/google_apis/x86_64"
+  # Created in https://ci.chromium.org/ui/b/8704259089352535745
+  version: "-I-WTFU_Uy_iYYQqwbYhQjFj4fvsLRxQktZMp85_DbUC"
+}
+avd_name: "android_canary_google_apis_x64"
+
+avd_launch_settings {
+  gpu_mode: "lavapipe"
+}

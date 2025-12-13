@@ -105,9 +105,10 @@ public class AnimationPerformanceTracker {
     public interface Listener {
         /**
          * Called when the animation ends.
+         *
          * @param metrics The {@link AnimationMetrics} for the completed animation.
          */
-        public void onAnimationEnd(AnimationMetrics metrics);
+        void onAnimationEnd(AnimationMetrics metrics);
     }
 
     private final ObserverList<Listener> mListeners = new ObserverList<>();

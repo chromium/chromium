@@ -6,66 +6,44 @@
 
 namespace blink {
 
-const IfCondition* IfCondition::Not(const IfCondition* operand) {
-  if (!operand) {
-    return nullptr;
-  }
-  return MakeGarbageCollected<IfConditionNot>(operand);
-}
-
-const IfCondition* IfCondition::And(const IfCondition* left,
-                                    const IfCondition* right) {
-  if (!left || !right) {
-    return nullptr;
-  }
-  return MakeGarbageCollected<IfConditionAnd>(left, right);
-}
-
-const IfCondition* IfCondition::Or(const IfCondition* left,
-                                   const IfCondition* right) {
-  if (!left || !right) {
-    return nullptr;
-  }
-  return MakeGarbageCollected<IfConditionOr>(left, right);
-}
-
-void IfConditionNot::Trace(Visitor* visitor) const {
-  visitor->Trace(operand_);
-  IfCondition::Trace(visitor);
-}
-
-void IfConditionAnd::Trace(Visitor* visitor) const {
-  visitor->Trace(left_);
-  visitor->Trace(right_);
-  IfCondition::Trace(visitor);
-}
-
-void IfConditionOr::Trace(Visitor* visitor) const {
-  visitor->Trace(left_);
-  visitor->Trace(right_);
-  IfCondition::Trace(visitor);
-}
-
-void IfTestStyle::Trace(Visitor* visitor) const {
-  visitor->Trace(style_test_);
-  IfCondition::Trace(visitor);
-}
-
 void IfTestMedia::Trace(Visitor* visitor) const {
   visitor->Trace(media_test_);
-  IfCondition::Trace(visitor);
+  ConditionalExpNode::Trace(visitor);
+}
+
+KleeneValue IfTestMedia::Evaluate(ConditionalExpNodeVisitor& visitor) const {
+  return visitor.EvaluateMediaQuerySet(*media_test_);
+}
+
+void IfTestMedia::SerializeTo(StringBuilder& builder) const {
+  // No serialization needed inside if().
+  NOTREACHED();
 }
 
 void IfTestSupports::Trace(Visitor* visitor) const {
-  IfCondition::Trace(visitor);
+  ConditionalExpNode::Trace(visitor);
 }
 
-void IfConditionUnknown::Trace(Visitor* visitor) const {
-  IfCondition::Trace(visitor);
+KleeneValue IfTestSupports::Evaluate(ConditionalExpNodeVisitor&) const {
+  return result_ ? KleeneValue::kTrue : KleeneValue::kFalse;
+}
+
+void IfTestSupports::SerializeTo(StringBuilder&) const {
+  // No serialization needed inside if().
+  NOTREACHED();
 }
 
 void IfConditionElse::Trace(Visitor* visitor) const {
-  IfCondition::Trace(visitor);
+  ConditionalExpNode::Trace(visitor);
+}
+
+KleeneValue IfConditionElse::Evaluate(ConditionalExpNodeVisitor&) const {
+  return KleeneValue::kTrue;
+}
+
+void IfConditionElse::SerializeTo(StringBuilder&) const {
+  // No serialization needed inside if().
+  NOTREACHED();
 }
 
 }  // namespace blink

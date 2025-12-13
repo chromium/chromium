@@ -19,25 +19,16 @@ inline constexpr int kMaxFileOpenAttempts = 3;
 
 namespace ash::cfm {
 
-namespace {
-
-// Byte cap for each call to log source's `RetrieveNextLogs()`.
-// Ensures that we are not sending back a large amount of data
-// when calling `GetNextData()`. Example: we have a log file
-// that has unexpectedly large lines consecutively, which leads
-// to a larger-than-usual batch.
-constexpr size_t kLogBatchByteLimit = 100 * 1000;  // 100Kb
-
-}  // namespace
-
 LogSource::LogSource(const std::string& filepath,
+                     size_t data_buffer_size_limit,
                      base::TimeDelta poll_rate,
-                     size_t batch_size)
-    : LocalDataSource(poll_rate,
-                      /*data_needs_redacting=*/true,
+                     size_t num_lines_per_batch)
+    : LocalDataSource(data_buffer_size_limit,
+                      poll_rate,
+                      /*data_needs_redacting=*/false,
                       /*is_incremental=*/true),
       log_file_(filepath),
-      batch_size_(batch_size) {
+      num_lines_per_batch_(num_lines_per_batch) {
   recovery_offset_ = GetLastKnownOffsetFromStorage();
   InitializeFile();
 }
@@ -59,19 +50,25 @@ bool LogSource::InitializeFile() {
 }
 
 std::unique_ptr<LogSource> LogSource::Create(const std::string& filename,
+                                             size_t data_buffer_size_limit,
                                              base::TimeDelta poll_rate,
-                                             size_t batch_size) {
+                                             size_t num_lines_per_batch) {
   if (filename == kCfmAuditLogFile) {
-    return std::make_unique<AuditLogSource>(poll_rate, batch_size);
+    return std::make_unique<AuditLogSource>(data_buffer_size_limit, poll_rate,
+                                            num_lines_per_batch);
   } else if (filename == kCfmBiosInfoLogFile) {
-    return std::make_unique<BiosInfoLogSource>(poll_rate, batch_size);
+    return std::make_unique<BiosInfoLogSource>(data_buffer_size_limit,
+                                               poll_rate, num_lines_per_batch);
   } else if (filename == kCfmEventlogLogFile) {
-    return std::make_unique<EventlogLogSource>(poll_rate, batch_size);
+    return std::make_unique<EventlogLogSource>(data_buffer_size_limit,
+                                               poll_rate, num_lines_per_batch);
   } else if (filename == kCfmVariationsListLogFile) {
-    return std::make_unique<VariationsListLogSource>(poll_rate, batch_size);
+    return std::make_unique<VariationsListLogSource>(
+        data_buffer_size_limit, poll_rate, num_lines_per_batch);
   }
 
-  return std::make_unique<LogSource>(filename, poll_rate, batch_size);
+  return std::make_unique<LogSource>(filename, data_buffer_size_limit,
+                                     poll_rate, num_lines_per_batch);
 }
 
 void LogSource::Fetch(FetchCallback callback) {
@@ -141,7 +138,8 @@ std::vector<std::string> LogSource::GetNextData() {
     log_file_.Refresh();
   }
 
-  return log_file_.RetrieveNextLogs(batch_size_, kLogBatchByteLimit);
+  return log_file_.RetrieveNextLogs(num_lines_per_batch_,
+                                    data_buffer_size_limit_);
 }
 
 int LogSource::GetCurrentFileInode() {

@@ -11,33 +11,30 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace signin {
 
 PrimaryAccountAccessTokenFetcher::PrimaryAccountAccessTokenFetcher(
-    const std::string& oauth_consumer_name,
+    OAuthConsumerId oauth_consumer_id,
     IdentityManager* identity_manager,
-    const ScopeSet& scopes,
     Mode mode,
     ConsentLevel consent)
-    : oauth_consumer_name_(oauth_consumer_name),
+    : oauth_consumer_id_(oauth_consumer_id),
       identity_manager_(identity_manager),
-      scopes_(scopes),
       mode_(mode),
       consent_(consent) {
   identity_manager_observation_.Observe(identity_manager_.get());
 }
 
 PrimaryAccountAccessTokenFetcher::PrimaryAccountAccessTokenFetcher(
-    const std::string& oauth_consumer_name,
+    OAuthConsumerId oauth_consumer_id,
     IdentityManager* identity_manager,
-    const ScopeSet& scopes,
     AccessTokenFetcher::TokenCallback callback,
     Mode mode,
     ConsentLevel consent)
-    : PrimaryAccountAccessTokenFetcher(oauth_consumer_name,
+    : PrimaryAccountAccessTokenFetcher(oauth_consumer_id,
                                        identity_manager,
-                                       scopes,
                                        mode,
                                        consent) {
   Start(std::move(callback));
@@ -86,7 +83,7 @@ void PrimaryAccountAccessTokenFetcher::StartAccessTokenRequest() {
   // token available. AccessTokenFetcher used in
   // |kWaitUntilRefreshTokenAvailable| mode would guarantee only the latter.
   access_token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
-      GetAccountId(), oauth_consumer_name_, scopes_,
+      GetAccountId(), oauth_consumer_id_,
       base::BindOnce(
           &PrimaryAccountAccessTokenFetcher::OnAccessTokenFetchComplete,
           base::Unretained(this)),

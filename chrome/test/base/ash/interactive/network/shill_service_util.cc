@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_service_client.h"

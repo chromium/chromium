@@ -27,7 +27,7 @@ found in the LICENSE file.
 
         <org.chromium.chrome.browser.toolbar.home_button.HomeButton
             android:id="@+id/home_button"
-            style="@style/ToolbarHoverableButton"
+            style="@style/ToolbarHoverableButton.AdaptiveDensity"
             android:src="@drawable/btn_toolbar_home"
             android:contentDescription="@string/accessibility_toolbar_btn_home"
             android:tooltipText="@string/accessibility_toolbar_btn_home"
@@ -39,7 +39,7 @@ found in the LICENSE file.
 
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/back_button"
-            style="@style/ToolbarHoverableButton"
+            style="@style/ToolbarHoverableButton.AdaptiveDensity"
             android:src="@drawable/btn_back"
             android:contentDescription="@string/accessibility_toolbar_btn_back"
             android:tooltipText="@string/accessibility_toolbar_btn_back"
@@ -47,7 +47,7 @@ found in the LICENSE file.
 
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/forward_button"
-            style="@style/ToolbarHoverableButton"
+            style="@style/ToolbarHoverableButton.AdaptiveDensity"
             android:src="@drawable/btn_forward"
             android:contentDescription="@string/accessibility_toolbar_btn_forward"
             android:tooltipText="@string/accessibility_toolbar_btn_forward"
@@ -60,7 +60,7 @@ found in the LICENSE file.
             android:contentDescription="@string/accessibility_btn_refresh"
             android:tooltipText="@string/accessibility_btn_refresh"
             app:tint="@color/default_icon_color_tint_list"
-            style="@style/ToolbarHoverableButton" />
+            style="@style/ToolbarHoverableButton.AdaptiveDensity" />
 
         <org.chromium.chrome.browser.omnibox.LocationBarTablet
             android:id="@+id/location_bar"
@@ -72,11 +72,12 @@ found in the LICENSE file.
             android:paddingEnd="@dimen/location_bar_end_padding"
             android:clipToPadding="false" />
 
+        <!-- TODO(crbug.com/433976037): Reset horizontal margins when optional button expands to action chip. -->
         <ViewStub
             android:id="@+id/optional_button_stub"
             android:inflatedId="@+id/optional_toolbar_button"
             android:layout="@layout/optional_toolbar_button"
-            style="@style/ToolbarButton"
+            style="@style/ToolbarHoverableButton.AdaptiveDensity"
             android:paddingStart="8dp"
             android:visibility="gone" />
 
@@ -86,8 +87,6 @@ found in the LICENSE file.
             android:layout="@layout/incognito_indicator"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginVertical="@dimen/location_bar_vertical_margin"
-            android:layout_marginHorizontal="@dimen/incognito_indicator_lateral_margin"
             android:visibility="gone" />
 
         <ViewStub
@@ -98,8 +97,7 @@ found in the LICENSE file.
 
         <org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton
             android:id="@+id/tab_switcher_button"
-            style="@style/ToolbarHoverableButton"
-            android:layout_gravity="top"
+            style="@style/ToolbarHoverableButton.AdaptiveDensity"
             android:visibility="visible"
             app:menuMaxWidth="@dimen/tab_switcher_menu_width"
             app:menuVerticalOverlapAnchor="false" />

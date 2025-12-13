@@ -84,7 +84,7 @@ TEST(DigitalGoodsTypeConvertersTest, MojoItemDetailsToIdl_WithOptionalFields) {
             introductory_price_period);
   EXPECT_EQ(idl_item_details->introductoryPriceCycles(),
             introductory_price_cycles);
-  EXPECT_EQ(idl_item_details->type(), "subscription");
+  EXPECT_EQ(idl_item_details->type(), V8ItemType::Enum::kSubscription);
   ASSERT_EQ(idl_item_details->iconURLs().size(), 2u);
   EXPECT_EQ(idl_item_details->iconURLs()[0], icon_url_1);
   EXPECT_EQ(idl_item_details->iconURLs()[1], icon_url_2);

@@ -26,9 +26,9 @@ class IOSChromeLargeIconCacheFactory : public ProfileKeyedServiceFactoryIOS {
   IOSChromeLargeIconCacheFactory();
   ~IOSChromeLargeIconCacheFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_FAVICON_MODEL_IOS_CHROME_LARGE_ICON_CACHE_FACTORY_H_

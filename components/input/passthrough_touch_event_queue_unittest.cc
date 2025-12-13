@@ -90,6 +90,13 @@ class PassthroughTouchEventQueueTest : public testing::Test,
     }
     last_acked_event_ = event.event;
     last_acked_event_state_ = ack_result;
+
+    if (will_start_scrolling_on_touch_move_ack_) {
+      DCHECK_NE(event_id_for_scroll_, -1);
+      PrependTouchScrollNotification(event_id_for_scroll_);
+      will_start_scrolling_on_touch_move_ack_ = false;
+      event_id_for_scroll_ = -1;
+    }
   }
 
   void OnFilteringTouchEvent(const blink::WebTouchEvent& touch_event) override {
@@ -189,6 +196,11 @@ class PassthroughTouchEventQueueTest : public testing::Test,
     followup_touch_event_ = std::make_unique<WebTouchEvent>(event);
   }
 
+  void SetWillStartScrollingOnTouchMoveAck(int primary_unique_touch_event_id) {
+    event_id_for_scroll_ = primary_unique_touch_event_id;
+    will_start_scrolling_on_touch_move_ack_ = true;
+  }
+
   void SetSyncAckResult(blink::mojom::InputEventResultState sync_ack_result) {
     sync_ack_result_ =
         std::make_unique<blink::mojom::InputEventResultState>(sync_ack_result);
@@ -262,8 +274,8 @@ class PassthroughTouchEventQueueTest : public testing::Test,
     SendTouchEvent();
   }
 
-  void PrependTouchScrollNotification() {
-    queue_->PrependTouchScrollNotification();
+  void PrependTouchScrollNotification(int primary_unique_touch_event_id = 0) {
+    queue_->PrependTouchScrollNotification(primary_unique_touch_event_id);
   }
 
   void AdvanceTouchTime(double seconds) {
@@ -353,6 +365,8 @@ class PassthroughTouchEventQueueTest : public testing::Test,
   std::vector<WebTouchEvent> sent_events_;
   blink::mojom::InputEventResultState last_acked_event_state_;
   SyntheticWebTouchEvent touch_event_;
+  int event_id_for_scroll_ = -1;
+  bool will_start_scrolling_on_touch_move_ack_ = false;
   std::unique_ptr<WebTouchEvent> followup_touch_event_;
   std::unique_ptr<blink::mojom::InputEventResultState> sync_ack_result_;
   double slop_length_dips_;
@@ -1988,6 +2002,73 @@ TEST_F(PassthroughTouchEventQueueTest, TouchMoveUnfilteredWithForwardAll) {
 
   EXPECT_EQ(PassthroughTouchEventQueue::PreFilterResult::kUnfiltered,
             FilterBeforeForwarding(event));
+}
+
+// Testing sequence: TouchDown1, TouchMove1, TouchMove2, TouchMove1Ack.
+// Test that the TouchMove2 is immediately ack'd, when TouchMove1Ack starts a
+// scroll.
+TEST_F(PassthroughTouchEventQueueTest,
+       TouchMoveBetweenScrollStartingTouchMoveAndAckSentAsync) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kAsyncTouchMovesImmediatelyAfterScroll);
+
+  // A touch sequence that will turn into a scroll.
+  PressTouchPoint(0, 1);
+  int primary_unique_touch_event_id = GetUniqueTouchEventID();
+  SendTouchEventAck(blink::mojom::InputEventResultState::kNotConsumed);
+  EXPECT_EQ(1U, GetAndResetSentEventCount());
+  EXPECT_EQ(1U, GetAndResetAckedEventCount());
+  EXPECT_EQ(0U, queued_event_count());
+
+  // Send two touch moves. Both will be sent to the renderer.
+  MoveTouchPoint(0, 20, 5);
+  EXPECT_EQ(1U, GetAndResetSentEventCount());
+  EXPECT_EQ(1U, queued_event_count());
+
+  MoveTouchPoint(0, 40, 10);
+  EXPECT_EQ(1U, GetAndResetSentEventCount());
+  EXPECT_EQ(2U, queued_event_count());
+
+  // A scroll gesture is generated from the first touch move. The compositor
+  // consumes the gesture.
+  SetWillStartScrollingOnTouchMoveAck(primary_unique_touch_event_id);
+  SendTouchEventAck(blink::mojom::InputEventResultState::kNotConsumed);
+
+  // The second touch move should be acked immediately as ignored.
+  EXPECT_EQ(2U, GetAndResetAckedEventCount());
+}
+
+// Testing sequence: TouchDown1, TouchMove1, TouchMove1Ack, TouchMove2, GSUAck.
+// Test that the TouchMove2 is sent async.
+TEST_F(PassthroughTouchEventQueueTest, TouchMoveGSUAckSentAsync) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kAsyncTouchMovesImmediatelyAfterScroll);
+
+  // A touch sequence that will turn into a scroll.
+  PressTouchPoint(0, 1);
+  int primary_unique_touch_event_id = GetUniqueTouchEventID();
+  SendTouchEventAck(blink::mojom::InputEventResultState::kNotConsumed);
+  EXPECT_EQ(1U, GetAndResetSentEventCount());
+  EXPECT_EQ(1U, GetAndResetAckedEventCount());
+  EXPECT_EQ(0U, queued_event_count());
+
+  // Send two touch moves. Both will be sent to the renderer.
+  MoveTouchPoint(0, 20, 5);
+  EXPECT_EQ(1U, GetAndResetSentEventCount());
+  EXPECT_EQ(1U, queued_event_count());
+
+  // A scroll gesture is generated from the first touch move. The compositor
+  // consumes the gesture.
+  SetWillStartScrollingOnTouchMoveAck(primary_unique_touch_event_id);
+  SendTouchEventAck(blink::mojom::InputEventResultState::kNotConsumed);
+
+  MoveTouchPoint(0, 40, 10);
+  EXPECT_EQ(sent_event().dispatch_type,
+            WebInputEvent::DispatchType::kEventNonBlocking);
+  EXPECT_EQ(sent_event().GetType(), WebInputEvent::Type::kTouchMove);
+  EXPECT_EQ(2U, GetAndResetSentEventCount());
 }
 
 }  // namespace input

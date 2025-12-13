@@ -9,6 +9,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "components/crx_file/id_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
@@ -18,6 +19,8 @@
 #include "extensions/common/switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -109,7 +112,7 @@ TEST_F(InitValueManifestTest, InitFromValueInvalid) {
       Testcase("init_invalid_short_name_type.json", errors::kInvalidShortName),
   };
 
-  RunTestcases(testcases, EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, ExpectType::kError);
 }
 
 TEST_F(InitValueManifestTest, InitFromValueValid) {
@@ -124,7 +127,7 @@ TEST_F(InitValueManifestTest, InitFromValueValid) {
   EXPECT_EQ("1.0.0.0", extension->VersionString());
   EXPECT_EQ("my extension", extension->name());
   EXPECT_EQ(extension->name(), extension->short_name());
-  EXPECT_EQ(extension->id(), extension->url().host());
+  EXPECT_EQ(extension->id(), extension->url().GetHost());
   EXPECT_EQ(extension->path(), path);
   EXPECT_EQ(path, extension->path());
 
@@ -136,9 +139,9 @@ TEST_F(InitValueManifestTest, InitFromValueValid) {
   // Test with an options page.
   extension = LoadAndExpectSuccess("init_valid_options.json");
   EXPECT_EQ(extensions::kExtensionScheme,
-            OptionsPageInfo::GetOptionsPage(extension.get()).scheme());
+            OptionsPageInfo::GetOptionsPage(extension.get()).GetScheme());
   EXPECT_EQ("/options.html",
-            OptionsPageInfo::GetOptionsPage(extension.get()).path());
+            OptionsPageInfo::GetOptionsPage(extension.get()).GetPath());
 
   // Test optional short_name field.
   extension = LoadAndExpectSuccess("init_valid_short_name.json");
@@ -170,7 +173,7 @@ TEST_F(InitValueManifestTest, InitFromValueValid) {
       // distinguish between API and host permissions.
       Testcase("init_valid_permissions_unknown.json")};
 
-  RunTestcases(testcases, EXPECT_TYPE_SUCCESS);
+  RunTestcases(testcases, ExpectType::kSuccess);
 }
 
 TEST_F(InitValueManifestTest, InitFromValueValidNameInRTL) {

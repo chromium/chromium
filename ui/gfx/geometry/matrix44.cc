@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/geometry/matrix44.h"
 
 #include <algorithm>
@@ -14,6 +9,8 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
 
 namespace gfx {
@@ -106,14 +103,18 @@ ALWAYS_INLINE bool InverseWithDouble4Cols(Double4& c0,
 
 }  // anonymous namespace
 
-void Matrix44::GetColMajor(double dst[16]) const {
-  const double* src = &matrix_[0][0];
-  std::copy(src, src + 16, dst);
+void Matrix44::GetColMajor(base::span<double, 16> dst) const {
+  base::span UNSAFE_TODO(src{&matrix_[0][0], base::fixed_extent<16>()});
+  dst.copy_from(src);
 }
 
-void Matrix44::GetColMajorF(float dst[16]) const {
-  const double* src = &matrix_[0][0];
-  std::copy(src, src + 16, dst);
+void Matrix44::GetColMajorF(base::span<float, 16> dst) const {
+  base::span UNSAFE_TODO(src{&matrix_[0][0], base::fixed_extent<16>()});
+
+  // TODO: It's surprising that this isn't flagged as unsafe.
+  //       It'd be nice if copy_from() supported differing element types,
+  //       then this would be statically safe.
+  std::ranges::copy(src, dst.begin());
 }
 
 void Matrix44::PreTranslate(double dx, double dy) {
@@ -156,7 +157,7 @@ void Matrix44::PostTranslate3d(double dx, double dy, double dz) {
     SetCol(3, Col(3) + t);
   } else {
     for (int i = 0; i < 4; ++i)
-      SetCol(i, Col(i) + t * matrix_[i][3]);
+      SetCol(i, Col(i) + t * UNSAFE_TODO(matrix_[i])[3]);
   }
 }
 
@@ -412,7 +413,7 @@ void Matrix44::Zoom(double zoom_factor) {
   matrix_[3][2] *= zoom_factor;
 }
 
-double Matrix44::MapVector2(double vec[2]) const {
+double Matrix44::MapVector2(base::span<double, 2> vec) const {
   double v0 = vec[0];
   double v1 = vec[1];
   double x = v0 * matrix_[0][0] + v1 * matrix_[1][0] + matrix_[3][0];

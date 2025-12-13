@@ -10,6 +10,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -238,23 +239,17 @@ constexpr CGFloat kSymbolSize = 22;
 
 // Handles taps on the dismiss button.
 - (void)didTapDismissBarButton {
-  if ([self.actionHandler
-          respondsToSelector:@selector(confirmationAlertDismissAction)]) {
-    [self.actionHandler confirmationAlertDismissAction];
-  }
+  [self.delegate QRGeneratorViewControllerDidTapDismiss:self];
 }
 
 // Handles taps on the help button.
 - (void)didTapHelpButton {
-  if ([self.actionHandler
-          respondsToSelector:@selector(confirmationAlertLearnMoreAction)]) {
-    [self.actionHandler confirmationAlertLearnMoreAction];
-  }
+  [self.delegate QRGeneratorViewControllerDidTapLearnMore:self];
 }
 
 // Handles taps on the primary action button.
 - (void)didTapPrimaryActionButton {
-  [self.actionHandler confirmationAlertPrimaryAction];
+  [self.delegate QRGeneratorViewControllerDidTapConfirm:self];
 }
 
 // Helper to create the image view.
@@ -305,12 +300,13 @@ constexpr CGFloat kSymbolSize = 22;
 
 // Helper to create the primary action button.
 - (UIButton*)createPrimaryActionButton {
-  UIButton* primaryActionButton = PrimaryActionButton(YES);
+  ChromeButton* primaryActionButton =
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
   [primaryActionButton addTarget:self
                           action:@selector(didTapPrimaryActionButton)
                 forControlEvents:UIControlEventTouchUpInside];
-  SetConfigurationTitle(primaryActionButton,
-                        l10n_util::GetNSString(IDS_IOS_SHARE_BUTTON_LABEL));
+  primaryActionButton.title =
+      l10n_util::GetNSString(IDS_IOS_SHARE_BUTTON_LABEL);
   [primaryActionButton
       setContentHuggingPriority:UILayoutPriorityDefaultHigh + 1
                         forAxis:UILayoutConstraintAxisVertical];

@@ -613,7 +613,7 @@ class TestWebFrameClient : public WebLocalFrameClient {
   // Callback to run when |FrameDetached| is called.
   base::OnceClosure frame_detached_callback_ = base::DoNothing();
 
-  WTF::Vector<std::unique_ptr<WebViewHelper>> child_web_views_;
+  Vector<std::unique_ptr<WebViewHelper>> child_web_views_;
   base::WeakPtrFactory<TestWebFrameClient> weak_factory_{this};
 };
 
@@ -628,7 +628,7 @@ class TestWidgetInputHandlerHost : public mojom::blink::WidgetInputHandlerHost {
   void ImeCancelComposition() override;
   void ImeCompositionRangeChanged(
       const gfx::Range& range,
-      const std::optional<WTF::Vector<gfx::Rect>>& character_bounds) override;
+      const std::optional<Vector<gfx::Rect>>& character_bounds) override;
   void SetMouseCapture(bool capture) override;
   void SetAutoscrollSelectionActiveInMainFrame(
       bool autoscroll_selection) override;

@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/page_info/page_info_ui.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "net/cert/x509_certificate.h"
@@ -22,15 +23,15 @@
 #include "ui/base/l10n/l10n_util.h"
 
 using base::android::ConvertUTF16ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using net::x509_util::CryptoBufferAsStringPiece;
 
 // static
 static jlong JNI_PageInfoConnectionSecurityController_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& java_web_contents) {
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& java_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
   return reinterpret_cast<intptr_t>(
@@ -76,11 +77,9 @@ ScopedJavaLocalRef<jobjectArray> CertToJavaArray(
     const scoped_refptr<net::X509Certificate>& cert) {
   std::vector<std::string> cert_chain;
   if (cert) {
-    cert_chain.reserve(1 + cert->intermediate_buffers().size());
-    cert_chain.emplace_back(
-        net::x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()));
-    for (const auto& intermediate : cert->intermediate_buffers()) {
-      cert_chain.emplace_back(CryptoBufferAsStringPiece(intermediate.get()));
+    cert_chain.reserve(cert->cert_buffers().size());
+    for (const auto& handle : cert->cert_buffers()) {
+      cert_chain.emplace_back(CryptoBufferAsStringPiece(handle.get()));
     }
   }
   return base::android::ToJavaArrayOfByteArray(env, cert_chain);
@@ -134,3 +133,5 @@ void ConnectionSecurityControllerAndroid::SetIdentityInfo(
 void ConnectionSecurityControllerAndroid::ResetCertDecisions(JNIEnv* env) {
   presenter_->OnRevokeSSLErrorBypassButtonPressed();
 }
+
+DEFINE_JNI(PageInfoConnectionSecurityController)

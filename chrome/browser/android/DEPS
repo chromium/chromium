@@ -10,6 +10,7 @@ include_rules = [
   "+components/browser_ui/site_settings/android",
   "+components/browser_ui/sms/android",
   "+components/browser_ui/util/android/url_constants.h",
+  "+components/omnibox/composebox",
   "+components/query_tiles",
   "+components/session_proto_db",
   "+components/webapk",
@@ -21,13 +22,13 @@ include_rules = [
   "+third_party/gvr-android-sdk",
   "+third_party/blink/public/common",
   "+third_party/blink/public/mojom/unhandled_tap_notifier/unhandled_tap_notifier.mojom.h",
+  "+ui/base/unowned_user_data",
 ]
 
 specific_include_rules = {
-  # Special-case where monochrome composes chrome+webview+weblayer
+  # Special-case where monochrome composes chrome+webview
   "monochrome_entry_point\.cc": [
     "+android_webview",
-    "+weblayer",
   ],
   # Allowed for test setup.
   "chrome_entry_point_for_test\.cc": [

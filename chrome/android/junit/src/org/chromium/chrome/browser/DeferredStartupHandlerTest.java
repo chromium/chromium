@@ -9,11 +9,13 @@ import android.os.MessageQueue.IdleHandler;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
@@ -28,6 +30,7 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class DeferredStartupHandlerTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private final List<IdleHandler> mIdleHandlers = new ArrayList<>();
 
     @Mock private MessageQueue mMessageQueue;
@@ -36,7 +39,6 @@ public class DeferredStartupHandlerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mDeferredStartupHandler = new DeferredStartupHandler(mMessageQueue);
         Mockito.doAnswer(
                         invocation -> {

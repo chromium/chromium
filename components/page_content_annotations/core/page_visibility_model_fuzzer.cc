@@ -20,6 +20,8 @@ class PageVisiblityExecutorFuzzer {
         // timeout behavior here, libfuzzer will take care of hangs.
         /*model_inference_timeout=*/base::Minutes(60),
         optimization_guide::proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY,
+        /*model_loading_task_runner=*/
+        task_environment_.GetMainThreadTaskRunner(),
         /*execution_task_runner=*/task_environment_.GetMainThreadTaskRunner(),
         /*reply_task_runner=*/task_environment_.GetMainThreadTaskRunner());
 

@@ -121,7 +121,7 @@ void MultiBuffer::GlobalLRU::SchedulePrune() {
     PostDelayedCrossThreadTask(
         *task_runner_, FROM_HERE,
         CrossThreadBindOnce(&MultiBuffer::GlobalLRU::PruneTask,
-                            WTF::RetainedRef(this)),
+                            blink::RetainedRef(this)),
         base::Seconds(kBlockPruneInterval));
     background_pruning_pending_ = true;
   }
@@ -186,7 +186,7 @@ MultiBuffer::~MultiBuffer() {
   DCHECK_EQ(max_size_, 0);
   // Remove all blocks from the LRU.
   for (const auto& i : data_) {
-    lru_->Remove(this, i.first);
+    lru_->Remove(this, i.key);
   }
   lru_->IncrementDataSize(-static_cast<int64_t>(data_.size()));
   lru_->IncrementMaxSize(-max_size_);
@@ -285,7 +285,7 @@ void MultiBuffer::ReleaseBlocks(const std::vector<MultiBufferBlockId>& blocks) {
   {
     base::AutoLock auto_lock(data_lock_);
     for (MultiBufferBlockId to_free : blocks) {
-      DCHECK(data_[to_free]);
+      DCHECK(data_.Contains(to_free));
       DCHECK_EQ(pinned_[to_free], 0);
       DCHECK_EQ(present_[to_free], 1);
       data_.erase(to_free);
@@ -412,7 +412,7 @@ void MultiBuffer::OnDataProviderEvent(DataProvider* provider_tmp) {
       }
       DCHECK_GE(pos, 0);
       scoped_refptr<media::DataBuffer> data = provider->Read();
-      data_[pos] = data;
+      data_.Set(pos, data);
       eof = data->end_of_stream();
       if (!pinned_[pos])
         lru_->Use(this, pos);
@@ -462,9 +462,9 @@ void MultiBuffer::MergeFrom(MultiBuffer* other) {
     // Import data and update LRU.
     size_t data_size = data_.size();
     for (const auto& data : other->data_) {
-      if (data_.insert(std::make_pair(data.first, data.second)).second) {
-        if (!pinned_[data.first]) {
-          lru_->Insert(this, data.first);
+      if (data_.insert(data.key, data.value).is_new_entry) {
+        if (!pinned_[data.key]) {
+          lru_->Insert(this, data.key);
         }
       }
     }
@@ -496,8 +496,8 @@ void MultiBuffer::GetBlocksThreadsafe(
   base::AutoLock auto_lock(data_lock_);
   auto i = data_.find(from);
   BlockId j = from;
-  while (j <= to && i != data_.end() && i->first == j) {
-    output->push_back(i->second);
+  while (j <= to && i != data_.end() && i->key == j) {
+    output->push_back(i->value);
     ++j;
     ++i;
   }

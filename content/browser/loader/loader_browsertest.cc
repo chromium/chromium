@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -407,7 +408,8 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, CrossSiteNoUnloadOn204) {
 // app isn't stripped of debug symbols, this takes about five minutes to
 // complete and isn't conducive to quick turnarounds. As we don't currently
 // strip the app on the build bots, this is bad times.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/440535492): Flaky on Win dbg. Re-enable this test.
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && !defined(NDEBUG))
 #define MAYBE_CrossSiteAfterCrash DISABLED_CrossSiteAfterCrash
 #else
 #define MAYBE_CrossSiteAfterCrash CrossSiteAfterCrash

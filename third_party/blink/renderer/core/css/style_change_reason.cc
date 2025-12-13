@@ -43,7 +43,6 @@ const char kMediaQuery[] = "Media Query changed";
 const char kNodeInserted[] = "Node was inserted into tree";
 const char kPictureSourceChanged[] = "PictureSourceChange";
 const char kPlatformColorChange[] = "PlatformColorChange";
-const char kPlaceElement[] = "placeElement";
 const char kPluginChanged[] = "Plugin Changed";
 const char kPopoverVisibilityChange[] = "Popover Visibility Change";
 const char kPositionTryChange[] = "@position-try change";
@@ -77,6 +76,7 @@ DEFINE_GLOBAL(, AtomicString, g_focus_visible);
 DEFINE_GLOBAL(, AtomicString, g_focus_within);
 DEFINE_GLOBAL(, AtomicString, g_hover);
 DEFINE_GLOBAL(, AtomicString, g_past);
+DEFINE_GLOBAL(, AtomicString, g_patching);
 DEFINE_GLOBAL(, AtomicString, g_unresolved);
 
 void Init() {
@@ -98,6 +98,8 @@ void Init() {
       AtomicString(":focus-within");
   new (base::NotNullTag::kNotNull, (void*)&g_hover) AtomicString(":hover");
   new (base::NotNullTag::kNotNull, (void*)&g_past) AtomicString(":past");
+  new (base::NotNullTag::kNotNull, (void*)&g_patching)
+      AtomicString(":patching");
   new (base::NotNullTag::kNotNull, (void*)&g_unresolved)
       AtomicString(":unresolved");
 }

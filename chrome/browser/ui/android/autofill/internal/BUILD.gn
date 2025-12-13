@@ -25,17 +25,23 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialogView.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialogViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/data/AuthenticatorOption.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/ephemeraltab/PaymentsWindowBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/ephemeraltab/PaymentsWindowCoordinator.java",
   ]
   deps = [
     ":java_resources",
     "//base:base_java",
     "//build/android:build_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/android/ephemeraltab:java",
     "//components/autofill/android:main_autofill_java",
+    "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
+    "//url:url_java",
   ]
 
   resources_package = "org.chromium.chrome.browser.ui.autofill.internal"
@@ -44,13 +50,14 @@ android_library("java") {
 generate_jni("jni_headers") {
   visibility = [
     ":*",
-    "//chrome/browser/ui:ui",
+    "//chrome/browser/ui",
   ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/autofill/AuthenticatorSelectionDialogBridge.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AutofillErrorDialogBridge.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AutofillProgressDialogBridge.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialogBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/ephemeraltab/PaymentsWindowBridge.java",
   ]
 }
 
@@ -62,6 +69,8 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/ui/autofill/AutofillErrorDialogBridgeTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AutofillProgressDialogBridgeTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/OtpVerificationDialogTest.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/ephemeraltab/PaymentsWindowBridgeTest.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/ephemeraltab/PaymentsWindowCoordinatorTest.java",
   ]
   deps = [
     ":java",
@@ -69,18 +78,23 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/android/ephemeraltab:java",
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/autofill/android:main_autofill_java",
+    "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/google-truth:google_truth_java",
     "//third_party/jni_zero:jni_zero_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_java_test_support",
+    "//url:url_java",
   ]
 }
 

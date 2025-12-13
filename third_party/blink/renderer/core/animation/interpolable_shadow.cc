@@ -68,7 +68,7 @@ InterpolableShadow* InterpolableShadow::Create(
   return MakeGarbageCollected<InterpolableShadow>(
       InterpolableLength::CreatePixels(shadow_data.X() / zoom),
       InterpolableLength::CreatePixels(shadow_data.Y() / zoom),
-      InterpolableLength::CreatePixels(shadow_data.Blur() / zoom),
+      InterpolableLength::CreatePixels(shadow_data.BlurValue() / zoom),
       InterpolableLength::CreatePixels(shadow_data.Spread() / zoom),
       CSSColorInterpolationType::CreateInterpolableColor(
           shadow_data.GetColor(), color_scheme, color_provider),

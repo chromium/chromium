@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/transferable_directory.mojom.h"

@@ -13,6 +13,10 @@
 #include "components/enterprise/client_certificates/core/upload_client_error.h"
 #include "components/leveldb_proto/public/proto_database.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/enterprise/client_certificates/android/browser_binding/browser_key.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace client_certificates {
 
 // Captures terminal failure states of the certificate provisioning flow. Do not
@@ -58,6 +62,10 @@ void LogPrivateKeyCreationSource(const std::string& logging_context,
 
 void LogLevelDBInitStatus(leveldb_proto::Enums::InitStatus status,
                           bool with_retry);
+
+#if BUILDFLAG(IS_ANDROID)
+void RecordClankKeySecurityLevel(BrowserKey::SecurityLevel security_level);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace client_certificates
 

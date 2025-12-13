@@ -14,6 +14,16 @@ enum RecordingPersistence {
   kMemoryBuffer,
 };
 
+// Choices of renderer-computed coordinates, for use during capture.
+enum ClipCoordOverride {
+  // Not overridden.
+  kNone,
+  // A coordinate centered around the scroll offset (given `clip_rect`'s size).
+  kCenterOnScrollOffset,
+  // A coordinate placed at the scroll offset.
+  kScrollOffset,
+};
+
 // Corresponds to |paint_preview::SerializedRecording| in
 // components/paint_preview/common/serialized_recording.h
 union SerializedRecording {

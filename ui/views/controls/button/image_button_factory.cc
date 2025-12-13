@@ -153,7 +153,7 @@ void SetImageFromVectorIconWithColorId(ImageButton* button,
 
   button->SetImageModel(Button::STATE_NORMAL, normal_image);
   button->SetImageModel(Button::STATE_DISABLED, disabled_image);
-  InkDrop::Get(button)->SetBaseColorId(icon_color_id);
+  InkDrop::Get(button)->SetBaseColor(icon_color_id);
 }
 
 void SetToggledImageFromVectorIconWithColorId(

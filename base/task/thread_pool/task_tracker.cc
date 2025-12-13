@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"

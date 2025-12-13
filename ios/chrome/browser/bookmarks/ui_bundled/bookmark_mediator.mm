@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_mediator.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/i18n/message_formatter.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
@@ -25,7 +23,8 @@
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -49,7 +48,7 @@ using bookmarks::BookmarkNode;
   raw_ptr<syncer::SyncService> _syncService;
 }
 
-+ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
++ (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   registry->RegisterInt64Pref(
       prefs::kIosBookmarkLastUsedFolderReceivingBookmarks,
       kLastUsedBookmarkFolderNone);
@@ -80,9 +79,9 @@ using bookmarks::BookmarkNode;
   _syncService = nullptr;
 }
 
-- (MDCSnackbarMessage*)addBookmarkWithTitle:(NSString*)title
-                                        URL:(const GURL&)URL
-                                 editAction:(void (^)())editAction {
+- (SnackbarMessage*)addBookmarkWithTitle:(NSString*)title
+                                     URL:(const GURL&)URL
+                              editAction:(void (^)())editAction {
   RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts, _prefs);
   base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
 
@@ -91,25 +90,23 @@ using bookmarks::BookmarkNode;
   _bookmarkModel->AddNewURL(defaultFolder, defaultFolder->children().size(),
                             base::SysNSStringToUTF16(title), URL);
 
-  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
   action.handler = editAction;
   action.title =
       l10n_util::GetNSString(IDS_IOS_BOOKMARK_SNACKBAR_EDIT_BOOKMARK);
-  action.accessibilityIdentifier = @"Edit";
 
   NSString* text = bookmark_utils_ios::messageForAddingBookmarksInFolder(
       defaultFolder, _bookmarkModel.get(), !IsLastUsedBookmarkFolderSet(_prefs),
       /*showCount=*/false, /*count=*/1, _authenticationService, _syncService);
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  MDCSnackbarMessage* message = CreateSnackbarMessage(text);
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:text];
   message.action = action;
-  message.category = bookmark_utils_ios::kBookmarksSnackbarCategory;
   return message;
 }
 
-- (MDCSnackbarMessage*)bulkAddBookmarksWithURLs:(NSArray<NSURL*>*)URLs
-                                     viewAction:(void (^)())viewAction {
-  DCHECK([URLs count] > 0);
+- (SnackbarMessage*)bulkAddBookmarksWithURLs:(NSArray<NSURL*>*)URLs
+                                  viewAction:(void (^)())viewAction {
+  CHECK([URLs count] > 0, base::NotFatalUntil::M152);
   base::RecordAction(base::UserMetricsAction("IOSBookmarksAddedInBulk"));
 
   const BookmarkNode* defaultFolder =
@@ -126,11 +123,11 @@ using bookmarks::BookmarkNode;
 
     // Construct the title from domain + path (stripping trailing slash from
     // path).
-    std::string path = URL.GetWithoutRef().GetWithoutFilename().path();
+    std::string path = URL.GetWithoutRef().GetWithoutFilename().GetPath();
     if (path.length() > 0) {
       path.pop_back();
     }
-    NSString* title = base::SysUTF8ToNSString(URL.host() + path);
+    NSString* title = base::SysUTF8ToNSString(URL.GetHost() + path);
 
     const BookmarkNode* existingBookmark =
         _bookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
@@ -146,7 +143,7 @@ using bookmarks::BookmarkNode;
                               successfullyAddedBookmarks);
 
   // Create snackbar message.
-  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
   action.handler = viewAction;
   action.title =
       l10n_util::GetNSString(IDS_IOS_BOOKMARK_SNACKBAR_VIEW_BOOKMARKS);
@@ -157,15 +154,14 @@ using bookmarks::BookmarkNode;
       _syncService);
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  MDCSnackbarMessage* message = CreateSnackbarMessage(result);
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:result];
   message.action = action;
-  message.category = bookmark_utils_ios::kBookmarksSnackbarCategory;
 
   return message;
 }
 
-- (MDCSnackbarMessage*)addBookmarks:(NSArray<URLWithTitle*>*)URLs
-                           toFolder:(const BookmarkNode*)folder {
+- (SnackbarMessage*)addBookmarks:(NSArray<URLWithTitle*>*)URLs
+                        toFolder:(const BookmarkNode*)folder {
   for (URLWithTitle* urlWithTitle in URLs) {
     RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts,
                                 _prefs);
@@ -179,32 +175,8 @@ using bookmarks::BookmarkNode;
       folder, _bookmarkModel.get(), /*choosenByUser=*/YES,
       /*showCount=*/false, URLs.count, _authenticationService, _syncService);
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  MDCSnackbarMessage* message = CreateSnackbarMessage(text);
-  message.category = bookmark_utils_ios::kBookmarksSnackbarCategory;
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:text];
   return message;
 }
 
-#pragma mark - Private
-
-// The localized string that appears to users for bulk adding bookmarks.
-- (NSString*)messageForBulkAddingBookmarks:
-                 (BookmarkStorageType)bookmarkStorageType
-                successfullyAddedBookmarks:(int)count {
-  std::u16string result;
-
-  BOOL savedIntoAccount = bookmark_utils_ios::bookmarkSavedIntoAccount(
-      bookmarkStorageType, _authenticationService, _syncService);
-  if (savedIntoAccount) {
-    id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
-        signin::ConsentLevel::kSignin);
-    result = base::i18n::MessageFormatter::FormatWithNamedArgs(
-        l10n_util::GetStringUTF16(IDS_IOS_BOOKMARKS_BULK_SAVED_ACCOUNT),
-        "count", count, "email", base::SysNSStringToUTF16(identity.userEmail));
-  } else {
-    result =
-        l10n_util::GetPluralStringFUTF16(IDS_IOS_BOOKMARKS_BULK_SAVED, count);
-  }
-
-  return base::SysUTF16ToNSString(result);
-}
 @end

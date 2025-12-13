@@ -375,4 +375,38 @@ TEST_F(PrefsCertificateStoreTest, GetIdentity_LoadPrivateKeyFailure) {
   EXPECT_THAT(test_future.Get(), ErrorIs(StoreError::kLoadKeyFailed));
 }
 
+TEST_F(PrefsCertificateStoreTest, DeleteIdentities_Success) {
+  base::Value::Dict identity;
+  identity.Set(kCertificate, "some_cert");
+  prefs_.SetDict(kTestIdentityName, identity.Clone());
+  prefs_.SetDict(kOtherTestIdentityName, identity.Clone());
+  ASSERT_TRUE(prefs_.HasPrefPath(kTestIdentityName));
+  ASSERT_TRUE(prefs_.HasPrefPath(kOtherTestIdentityName));
+
+  base::test::TestFuture<std::optional<StoreError>> test_future;
+  store_->DeleteIdentities({kTestIdentityName, kOtherTestIdentityName},
+                           test_future.GetCallback());
+
+  EXPECT_EQ(test_future.Get(), std::nullopt);
+  EXPECT_FALSE(prefs_.HasPrefPath(kTestIdentityName));
+  EXPECT_FALSE(prefs_.HasPrefPath(kOtherTestIdentityName));
+}
+
+TEST_F(PrefsCertificateStoreTest, DeleteIdentities_NotFound) {
+  ASSERT_FALSE(prefs_.HasPrefPath(kTestIdentityName));
+
+  base::test::TestFuture<std::optional<StoreError>> test_future;
+  store_->DeleteIdentities({kTestIdentityName}, test_future.GetCallback());
+
+  EXPECT_EQ(test_future.Get(), std::nullopt);
+  EXPECT_FALSE(prefs_.HasPrefPath(kTestIdentityName));
+}
+
+TEST_F(PrefsCertificateStoreTest, DeleteIdentities_InvalidName) {
+  base::test::TestFuture<std::optional<StoreError>> test_future;
+  store_->DeleteIdentities({kTestIdentityName, ""}, test_future.GetCallback());
+
+  EXPECT_EQ(test_future.Get(), StoreError::kInvalidIdentityName);
+}
+
 }  // namespace client_certificates

@@ -785,7 +785,7 @@ TEST(CanonicalCookieTest, CreateWithDomainAsIP) {
                                 CookieSourceType::kUnknown, &status);
     if (test.expectedResult) {
       ASSERT_TRUE(cookie.get());
-      EXPECT_EQ(test.url.host(), cookie->Domain());
+      EXPECT_EQ(test.url.GetHost(), cookie->Domain());
     } else {
       EXPECT_EQ(nullptr, cookie.get());
       EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
@@ -1045,7 +1045,7 @@ TEST(CanonicalCookieTest, CreateWithExpires) {
 
   // Expires in the far future using CreateUnsafeCookieForTesting.
   cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
-      "A", "1", url.host(), url.path(), creation_time, base::Time::Max(),
+      "A", "1", url.GetHost(), url.GetPath(), creation_time, base::Time::Max(),
       base::Time(), base::Time(), true, false, CookieSameSite::UNSPECIFIED,
       COOKIE_PRIORITY_HIGH, std::nullopt /* cookie_partition_key */,
       CookieSourceScheme::kSecure, 443);
@@ -1060,10 +1060,10 @@ TEST(CanonicalCookieTest, CreateWithExpires) {
   // Expires in the far future using FromStorage.
   cookie = CanonicalCookie::FromStorage(
       "A", "B", "www.foo.com", "/bar", creation_time, base::Time::Max(),
-      base::Time(), base::Time(), false /*secure*/, false /*httponly*/,
+      base::Time(), base::Time(), /*secure=*/false, /*httponly=*/false,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure, 443,
-      CookieSourceType::kUnknown);
+      /*partition_key=*/std::nullopt, CookieSourceScheme::kSecure, 443,
+      CookieSourceType::kUnknown, CanonicalCookieFromStorageCallSite::kTests);
   EXPECT_TRUE(cookie.get());
   EXPECT_TRUE(cookie->IsPersistent());
   EXPECT_FALSE(cookie->IsExpired(creation_time));
@@ -1122,7 +1122,7 @@ TEST(CanonicalCookieTest, CreateWithLastUpdate) {
 
   // Creating a sanitized cookie sets the last update date as now.
   cookie = CanonicalCookie::CreateSanitizedCookie(
-      url, "A", "1", url.host(), url.path(), creation_time, base::Time(),
+      url, "A", "1", url.GetHost(), url.GetPath(), creation_time, base::Time(),
       creation_time, /*secure=*/true,
       /*http_only=*/false, CookieSameSite::NO_RESTRICTION,
       COOKIE_PRIORITY_DEFAULT,
@@ -1133,7 +1133,7 @@ TEST(CanonicalCookieTest, CreateWithLastUpdate) {
 
   // Creating an unsafe cookie allows us to set the last update date.
   cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
-      "A", "1", url.host(), url.path(), creation_time, base::Time(),
+      "A", "1", url.GetHost(), url.GetPath(), creation_time, base::Time(),
       base::Time(), last_update_time, /*secure=*/true,
       /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
       COOKIE_PRIORITY_DEFAULT,
@@ -1144,12 +1144,13 @@ TEST(CanonicalCookieTest, CreateWithLastUpdate) {
 
   // Loading a cookie from storage allows us to set the last update date.
   cookie = CanonicalCookie::FromStorage(
-      "A", "1", url.host(), url.path(), creation_time, base::Time(),
+      "A", "1", url.GetHost(), url.GetPath(), creation_time, base::Time(),
       base::Time(), last_update_time, /*secure=*/true,
       /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
       COOKIE_PRIORITY_DEFAULT,
       /*partition_key=*/std::nullopt, CookieSourceScheme::kSecure,
-      /*source_port=*/443, CookieSourceType::kUnknown);
+      /*source_port=*/443, CookieSourceType::kUnknown,
+      CanonicalCookieFromStorageCallSite::kTests);
   ASSERT_TRUE(cookie.get());
   EXPECT_EQ(last_update_time, cookie->LastUpdateDate());
 }
@@ -3053,7 +3054,7 @@ TEST(CanonicalCookieTest, HostCookiePrefix) {
   GURL http_url("http://www.example.test");
   base::Time creation_time = base::Time::Now();
   std::optional<base::Time> server_time = std::nullopt;
-  std::string domain = https_url.host();
+  std::string domain = https_url.GetHost();
   CookieInclusionStatus status;
 
   // A __Host- cookie must be Secure.
@@ -4945,10 +4946,10 @@ TEST(CanonicalCookieTest, FromStorage) {
 
   std::unique_ptr<CanonicalCookie> cc = CanonicalCookie::FromStorage(
       "A", "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
-      one_hour_ago, one_hour_ago, false /*secure*/, false /*httponly*/,
+      one_hour_ago, one_hour_ago, /*secure=*/false, /*httponly=*/false,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure, 87,
-      CookieSourceType::kUnknown);
+      /*partition_key=*/std::nullopt, CookieSourceScheme::kSecure, 87,
+      CookieSourceType::kUnknown, CanonicalCookieFromStorageCallSite::kTests);
   EXPECT_TRUE(cc);
   EXPECT_EQ("A", cc->Name());
   EXPECT_EQ("B", cc->Value());
@@ -4971,38 +4972,40 @@ TEST(CanonicalCookieTest, FromStorage) {
   // contains a newline character.
   EXPECT_FALSE(CanonicalCookie::FromStorage(
       "A\n", "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
-      one_hour_ago, one_hour_ago, false /*secure*/, false /*httponly*/,
+      one_hour_ago, one_hour_ago, /*secure=*/false, /*httponly=*/false,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure, 80,
-      CookieSourceType::kUnknown));
+      /*partition_key=*/std::nullopt, CookieSourceScheme::kSecure, 80,
+      CookieSourceType::kUnknown, CanonicalCookieFromStorageCallSite::kTests));
 
   // If the port information gets corrupted out of the valid range
   // FromStorage() should result in a PORT_INVALID.
   std::unique_ptr<CanonicalCookie> cc2 = CanonicalCookie::FromStorage(
       "A", "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
-      one_hour_ago, one_hour_ago, false /*secure*/, false /*httponly*/,
+      one_hour_ago, one_hour_ago, /*secure=*/false, /*httponly=*/false,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure, 80000,
-      CookieSourceType::kUnknown);
+      /*partition_key=*/std::nullopt, CookieSourceScheme::kSecure, 80000,
+      CookieSourceType::kUnknown, CanonicalCookieFromStorageCallSite::kTests);
 
   EXPECT_EQ(cc2->SourcePort(), url::PORT_INVALID);
 
   // Test port edge cases: unspecified.
   std::unique_ptr<CanonicalCookie> cc3 = CanonicalCookie::FromStorage(
       "A", "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
-      one_hour_ago, one_hour_ago, false /*secure*/, false /*httponly*/,
+      one_hour_ago, one_hour_ago, /*secure=*/false, /*httponly=*/false,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure,
-      url::PORT_UNSPECIFIED, CookieSourceType::kUnknown);
+      /*partition_key=*/std::nullopt, CookieSourceScheme::kSecure,
+      url::PORT_UNSPECIFIED, CookieSourceType::kUnknown,
+      CanonicalCookieFromStorageCallSite::kTests);
   EXPECT_EQ(cc3->SourcePort(), url::PORT_UNSPECIFIED);
 
   // Test port edge cases: invalid.
   std::unique_ptr<CanonicalCookie> cc4 = CanonicalCookie::FromStorage(
       "A", "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
-      one_hour_ago, one_hour_ago, false /*secure*/, false /*httponly*/,
+      one_hour_ago, one_hour_ago, /*secure=*/false, /*httponly=*/false,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure,
-      url::PORT_INVALID, CookieSourceType::kUnknown);
+      /*partition_key=*/std::nullopt, CookieSourceScheme::kSecure,
+      url::PORT_INVALID, CookieSourceType::kUnknown,
+      CanonicalCookieFromStorageCallSite::kTests);
   EXPECT_EQ(cc4->SourcePort(), url::PORT_INVALID);
 }
 
@@ -5870,9 +5873,10 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext_RedirectDowngradeWarning) {
 }
 
 TEST(CanonicalCookieTest, TestIsCanonicalWithInvalidSizeHistograms) {
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
   base::HistogramTester histograms;
   const char kFromStorageWithValidLengthHistogram[] =
-      "Cookie.FromStorageWithValidLength";
+      "Cookie.FromStorageWithValidLength.Tests.Subsampled";
   const base::HistogramBase::Sample32 kInValid = 0;
   const base::HistogramBase::Sample32 kValid = 1;
 
@@ -5883,10 +5887,10 @@ TEST(CanonicalCookieTest, TestIsCanonicalWithInvalidSizeHistograms) {
   // Test a cookie that is canonical and valid size
   EXPECT_TRUE(CanonicalCookie::FromStorage(
       "A", "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
-      one_hour_ago, one_hour_ago, false /*secure*/, false /*httponly*/,
+      one_hour_ago, one_hour_ago, /*secure=*/false, /*httponly=*/false,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure, 87,
-      CookieSourceType::kUnknown));
+      /*partition_key=*/std::nullopt, CookieSourceScheme::kSecure, 87,
+      CookieSourceType::kUnknown, CanonicalCookieFromStorageCallSite::kTests));
 
   histograms.ExpectBucketCount(kFromStorageWithValidLengthHistogram, kInValid,
                                0);
@@ -5897,16 +5901,16 @@ TEST(CanonicalCookieTest, TestIsCanonicalWithInvalidSizeHistograms) {
   const std::string kCookieBig(4096, 'a');
   EXPECT_TRUE(CanonicalCookie::FromStorage(
       kCookieBig, "B", "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
-      one_hour_ago, one_hour_ago, false /*secure*/, false /*httponly*/,
+      one_hour_ago, one_hour_ago, /*secure=*/false, /*httponly=*/false,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure, 87,
-      CookieSourceType::kUnknown));
+      /*partition_key=*/std::nullopt, CookieSourceScheme::kSecure, 87,
+      CookieSourceType::kUnknown, CanonicalCookieFromStorageCallSite::kTests));
   EXPECT_TRUE(CanonicalCookie::FromStorage(
       "A", kCookieBig, "www.foo.com", "/bar", two_hours_ago, one_hour_from_now,
-      one_hour_ago, one_hour_ago, false /*secure*/, false /*httponly*/,
+      one_hour_ago, one_hour_ago, /*secure=*/false, /*httponly=*/false,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
-      std::nullopt /*partition_key*/, CookieSourceScheme::kSecure, 87,
-      CookieSourceType::kUnknown));
+      /*partition_key=*/std::nullopt, CookieSourceScheme::kSecure, 87,
+      CookieSourceType::kUnknown, CanonicalCookieFromStorageCallSite::kTests));
 
   histograms.ExpectBucketCount(kFromStorageWithValidLengthHistogram, kInValid,
                                2);

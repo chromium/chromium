@@ -113,7 +113,7 @@ def _ReadJson(path):
 
 
 def _RunGnGen(output_dir, args=None):
-  cmd = [os.path.join(_DEPOT_TOOLS_PATH, 'gn'), 'gen', output_dir]
+  cmd = [os.path.join(_DEPOT_TOOLS_PATH, 'gn.py'), 'gen', output_dir]
   if args:
     cmd.extend(args)
   logging.info('Running: %r', cmd)
@@ -809,9 +809,13 @@ def main():
   if args.extra_targets:
     targets_from_args.update(args.extra_targets)
 
+  if args.all and args.native_targets:
+    gn_args = ['--ide=json']
+  else:
+    gn_args = None
+  _RunGnGen(output_dir, gn_args)
+
   if args.all:
-    if args.native_targets:
-      _RunGnGen(output_dir, ['--ide=json'])
     # Query siso for all __build_config_crbug_908819 targets.
     targets = _QueryForAllGnTargets(output_dir)
   else:
@@ -820,10 +824,6 @@ def main():
         re.sub(r'_test_apk$', _INSTRUMENTATION_TARGET_SUFFIX, t)
         for t in targets_from_args
     ]
-    # Necessary after "gn clean"
-    if not os.path.exists(
-        os.path.join(output_dir, gn_helpers.BUILD_VARS_FILENAME)):
-      _RunGnGen(output_dir)
 
   main_entries = [_ProjectEntry.FromGnTarget(t) for t in targets]
   build_vars = gn_helpers.ReadBuildVars(output_dir)

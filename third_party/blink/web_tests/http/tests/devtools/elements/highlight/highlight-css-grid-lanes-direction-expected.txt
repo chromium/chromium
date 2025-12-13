@@ -1,0 +1,887 @@
+This test verifies that grid-lanes layouts with direction rtl and ltr are correctly highlighted.
+
+ltrGridLanes{
+  "paths": [
+    {
+      "path": [
+        "M",
+        10,
+        50,
+        "L",
+        110,
+        50,
+        "L",
+        110,
+        150,
+        "L",
+        10,
+        150,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        10,
+        50,
+        "L",
+        110,
+        50,
+        "L",
+        110,
+        150,
+        "L",
+        10,
+        150,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        10,
+        50,
+        "L",
+        110,
+        50,
+        "L",
+        110,
+        150,
+        "L",
+        10,
+        150,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        10,
+        50,
+        "L",
+        110,
+        50,
+        "L",
+        110,
+        150,
+        "L",
+        10,
+        150,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "ltrGridLanes",
+    "className": ".grid-lanes.ltr-dir",
+    "nodeWidth": "100",
+    "nodeHeight": "100",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutGridLanes",
+    "showAccessibilityInfo": true
+  },
+  "gridInfo": [
+    {
+      "rotationAngle": 0,
+      "writingMode": "horizontal-tb",
+      "columns": [
+        "M",
+        10,
+        50,
+        "L",
+        10,
+        150,
+        "M",
+        30,
+        50,
+        "L",
+        30,
+        150,
+        "M",
+        80,
+        150,
+        "L",
+        80,
+        50
+      ],
+      "columnGaps": [
+        "M",
+        30,
+        50,
+        "L",
+        30,
+        50,
+        "L",
+        30,
+        150,
+        "L",
+        30,
+        150,
+        "Z"
+      ],
+      "rows": [],
+      "rowGaps": [],
+      "columnTrackSizes": [
+        {
+          "x": 20,
+          "y": 50,
+          "computedSize": 20,
+          "authoredSize": "20px"
+        },
+        {
+          "x": 55,
+          "y": 50,
+          "computedSize": 50,
+          "authoredSize": "50px"
+        }
+      ],
+      "positiveColumnLineNumberPositions": [
+        {
+          "x": 10,
+          "y": 50
+        },
+        {
+          "x": 30,
+          "y": 50
+        },
+        {
+          "x": 80,
+          "y": 50
+        }
+      ],
+      "negativeColumnLineNumberPositions": [
+        {
+          "x": 10,
+          "y": 150
+        },
+        {
+          "x": 30,
+          "y": 150
+        },
+        {
+          "x": 80,
+          "y": 150
+        }
+      ],
+      "areaNames": {},
+      "columnLineNameOffsets": [],
+      "gridBorder": [
+        "M",
+        10,
+        50,
+        "L",
+        80,
+        50,
+        "L",
+        80,
+        150,
+        "L",
+        10,
+        150,
+        "Z"
+      ],
+      "gridHighlightConfig": {
+        "gridBorderDash": false,
+        "rowLineDash": true,
+        "columnLineDash": true,
+        "showGridExtensionLines": true,
+        "showPositiveLineNumbers": true,
+        "showNegativeLineNumbers": true,
+        "showAreaNames": true,
+        "showLineNames": true,
+        "gridBorderColor": "rgba(255, 0, 0, 0)",
+        "rowLineColor": "rgba(128, 0, 0, 0)",
+        "columnLineColor": "rgba(128, 0, 0, 0)",
+        "rowGapColor": "rgba(0, 255, 0, 0)",
+        "columnGapColor": "rgba(0, 0, 255, 0)",
+        "rowHatchColor": "rgba(255, 255, 255, 0)",
+        "columnHatchColor": "rgba(128, 128, 128, 0)",
+        "areaBorderColor": "rgba(255, 0, 0, 0)",
+        "gridBackgroundColor": "rgba(255, 0, 0, 0)"
+      }
+    }
+  ]
+}
+rtlGridLanes{
+  "paths": [
+    {
+      "path": [
+        "M",
+        10,
+        50,
+        "L",
+        110,
+        50,
+        "L",
+        110,
+        150,
+        "L",
+        10,
+        150,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        10,
+        50,
+        "L",
+        110,
+        50,
+        "L",
+        110,
+        150,
+        "L",
+        10,
+        150,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        10,
+        50,
+        "L",
+        110,
+        50,
+        "L",
+        110,
+        150,
+        "L",
+        10,
+        150,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        10,
+        50,
+        "L",
+        110,
+        50,
+        "L",
+        110,
+        150,
+        "L",
+        10,
+        150,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "rtlGridLanes",
+    "className": ".grid-lanes.rtl-dir",
+    "nodeWidth": "100",
+    "nodeHeight": "100",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutGridLanes",
+    "showAccessibilityInfo": true
+  },
+  "gridInfo": [
+    {
+      "rotationAngle": 0,
+      "writingMode": "horizontal-tb",
+      "columns": [
+        "M",
+        90,
+        50,
+        "L",
+        90,
+        150,
+        "M",
+        110,
+        150,
+        "L",
+        110,
+        50,
+        "M",
+        40,
+        50,
+        "L",
+        40,
+        150
+      ],
+      "columnGaps": [
+        "M",
+        90,
+        50,
+        "L",
+        90,
+        50,
+        "L",
+        90,
+        150,
+        "L",
+        90,
+        150,
+        "Z"
+      ],
+      "rows": [],
+      "rowGaps": [],
+      "columnTrackSizes": [
+        {
+          "x": 100,
+          "y": 50,
+          "computedSize": 20,
+          "authoredSize": "20px"
+        },
+        {
+          "x": 65,
+          "y": 50,
+          "computedSize": 50,
+          "authoredSize": "50px"
+        }
+      ],
+      "positiveColumnLineNumberPositions": [
+        {
+          "x": 110,
+          "y": 50
+        },
+        {
+          "x": 90,
+          "y": 50
+        },
+        {
+          "x": 40,
+          "y": 50
+        }
+      ],
+      "negativeColumnLineNumberPositions": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 90,
+          "y": 150
+        },
+        {
+          "x": 40,
+          "y": 150
+        }
+      ],
+      "areaNames": {},
+      "columnLineNameOffsets": [],
+      "gridBorder": [
+        "M",
+        40,
+        50,
+        "L",
+        110,
+        50,
+        "L",
+        110,
+        150,
+        "L",
+        40,
+        150,
+        "Z"
+      ],
+      "gridHighlightConfig": {
+        "gridBorderDash": false,
+        "rowLineDash": true,
+        "columnLineDash": true,
+        "showGridExtensionLines": true,
+        "showPositiveLineNumbers": true,
+        "showNegativeLineNumbers": true,
+        "showAreaNames": true,
+        "showLineNames": true,
+        "gridBorderColor": "rgba(255, 0, 0, 0)",
+        "rowLineColor": "rgba(128, 0, 0, 0)",
+        "columnLineColor": "rgba(128, 0, 0, 0)",
+        "rowGapColor": "rgba(0, 255, 0, 0)",
+        "columnGapColor": "rgba(0, 0, 255, 0)",
+        "rowHatchColor": "rgba(255, 255, 255, 0)",
+        "columnHatchColor": "rgba(128, 128, 128, 0)",
+        "areaBorderColor": "rgba(255, 0, 0, 0)",
+        "gridBackgroundColor": "rgba(255, 0, 0, 0)"
+      }
+    }
+  ]
+}
+ltrGridLanesGap{
+  "paths": [
+    {
+      "path": [
+        "M",
+        10,
+        50,
+        "L",
+        110,
+        50,
+        "L",
+        110,
+        150,
+        "L",
+        10,
+        150,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        10,
+        50,
+        "L",
+        110,
+        50,
+        "L",
+        110,
+        150,
+        "L",
+        10,
+        150,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        10,
+        50,
+        "L",
+        110,
+        50,
+        "L",
+        110,
+        150,
+        "L",
+        10,
+        150,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        10,
+        50,
+        "L",
+        110,
+        50,
+        "L",
+        110,
+        150,
+        "L",
+        10,
+        150,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "ltrGridLanesGap",
+    "className": ".grid-lanes.ltr-dir.with-gap",
+    "nodeWidth": "100",
+    "nodeHeight": "100",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutGridLanes",
+    "showAccessibilityInfo": true
+  },
+  "gridInfo": [
+    {
+      "rotationAngle": 0,
+      "writingMode": "horizontal-tb",
+      "columns": [
+        "M",
+        10,
+        50,
+        "L",
+        10,
+        150,
+        "M",
+        30,
+        150,
+        "L",
+        30,
+        50,
+        "M",
+        46,
+        50,
+        "L",
+        46,
+        150,
+        "M",
+        96,
+        150,
+        "L",
+        96,
+        50
+      ],
+      "columnGaps": [
+        "M",
+        30,
+        50,
+        "L",
+        46,
+        50,
+        "L",
+        46,
+        150,
+        "L",
+        30,
+        150,
+        "Z"
+      ],
+      "rows": [],
+      "rowGaps": [],
+      "columnTrackSizes": [
+        {
+          "x": 20,
+          "y": 50,
+          "computedSize": 20,
+          "authoredSize": "20px"
+        },
+        {
+          "x": 71,
+          "y": 50,
+          "computedSize": 50,
+          "authoredSize": "50px"
+        }
+      ],
+      "positiveColumnLineNumberPositions": [
+        {
+          "x": 10,
+          "y": 50
+        },
+        {
+          "x": 38,
+          "y": 50
+        },
+        {
+          "x": 96,
+          "y": 50
+        }
+      ],
+      "negativeColumnLineNumberPositions": [
+        {
+          "x": 10,
+          "y": 150
+        },
+        {
+          "x": 38,
+          "y": 150
+        },
+        {
+          "x": 96,
+          "y": 150
+        }
+      ],
+      "areaNames": {},
+      "columnLineNameOffsets": [],
+      "gridBorder": [
+        "M",
+        10,
+        50,
+        "L",
+        96,
+        50,
+        "L",
+        96,
+        150,
+        "L",
+        10,
+        150,
+        "Z"
+      ],
+      "gridHighlightConfig": {
+        "gridBorderDash": false,
+        "rowLineDash": true,
+        "columnLineDash": true,
+        "showGridExtensionLines": true,
+        "showPositiveLineNumbers": true,
+        "showNegativeLineNumbers": true,
+        "showAreaNames": true,
+        "showLineNames": true,
+        "gridBorderColor": "rgba(255, 0, 0, 0)",
+        "rowLineColor": "rgba(128, 0, 0, 0)",
+        "columnLineColor": "rgba(128, 0, 0, 0)",
+        "rowGapColor": "rgba(0, 255, 0, 0)",
+        "columnGapColor": "rgba(0, 0, 255, 0)",
+        "rowHatchColor": "rgba(255, 255, 255, 0)",
+        "columnHatchColor": "rgba(128, 128, 128, 0)",
+        "areaBorderColor": "rgba(255, 0, 0, 0)",
+        "gridBackgroundColor": "rgba(255, 0, 0, 0)"
+      }
+    }
+  ]
+}
+rtlGridLanesGap{
+  "paths": [
+    {
+      "path": [
+        "M",
+        10,
+        50,
+        "L",
+        110,
+        50,
+        "L",
+        110,
+        150,
+        "L",
+        10,
+        150,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        10,
+        50,
+        "L",
+        110,
+        50,
+        "L",
+        110,
+        150,
+        "L",
+        10,
+        150,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        10,
+        50,
+        "L",
+        110,
+        50,
+        "L",
+        110,
+        150,
+        "L",
+        10,
+        150,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        10,
+        50,
+        "L",
+        110,
+        50,
+        "L",
+        110,
+        150,
+        "L",
+        10,
+        150,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "rtlGridLanesGap",
+    "className": ".grid-lanes.rtl-dir.with-gap",
+    "nodeWidth": "100",
+    "nodeHeight": "100",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutGridLanes",
+    "showAccessibilityInfo": true
+  },
+  "gridInfo": [
+    {
+      "rotationAngle": 0,
+      "writingMode": "horizontal-tb",
+      "columns": [
+        "M",
+        90,
+        50,
+        "L",
+        90,
+        150,
+        "M",
+        110,
+        150,
+        "L",
+        110,
+        50,
+        "M",
+        24,
+        50,
+        "L",
+        24,
+        150,
+        "M",
+        74,
+        150,
+        "L",
+        74,
+        50
+      ],
+      "columnGaps": [
+        "M",
+        74,
+        50,
+        "L",
+        90,
+        50,
+        "L",
+        90,
+        150,
+        "L",
+        74,
+        150,
+        "Z"
+      ],
+      "rows": [],
+      "rowGaps": [],
+      "columnTrackSizes": [
+        {
+          "x": 100,
+          "y": 50,
+          "computedSize": 20,
+          "authoredSize": "20px"
+        },
+        {
+          "x": 49,
+          "y": 50,
+          "computedSize": 50,
+          "authoredSize": "50px"
+        }
+      ],
+      "positiveColumnLineNumberPositions": [
+        {
+          "x": 110,
+          "y": 50
+        },
+        {
+          "x": 82,
+          "y": 50
+        },
+        {
+          "x": 24,
+          "y": 50
+        }
+      ],
+      "negativeColumnLineNumberPositions": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 82,
+          "y": 150
+        },
+        {
+          "x": 24,
+          "y": 150
+        }
+      ],
+      "areaNames": {},
+      "columnLineNameOffsets": [],
+      "gridBorder": [
+        "M",
+        24,
+        50,
+        "L",
+        110,
+        50,
+        "L",
+        110,
+        150,
+        "L",
+        24,
+        150,
+        "Z"
+      ],
+      "gridHighlightConfig": {
+        "gridBorderDash": false,
+        "rowLineDash": true,
+        "columnLineDash": true,
+        "showGridExtensionLines": true,
+        "showPositiveLineNumbers": true,
+        "showNegativeLineNumbers": true,
+        "showAreaNames": true,
+        "showLineNames": true,
+        "gridBorderColor": "rgba(255, 0, 0, 0)",
+        "rowLineColor": "rgba(128, 0, 0, 0)",
+        "columnLineColor": "rgba(128, 0, 0, 0)",
+        "rowGapColor": "rgba(0, 255, 0, 0)",
+        "columnGapColor": "rgba(0, 0, 255, 0)",
+        "rowHatchColor": "rgba(255, 255, 255, 0)",
+        "columnHatchColor": "rgba(128, 128, 128, 0)",
+        "areaBorderColor": "rgba(255, 0, 0, 0)",
+        "gridBackgroundColor": "rgba(255, 0, 0, 0)"
+      }
+    }
+  ]
+}
+

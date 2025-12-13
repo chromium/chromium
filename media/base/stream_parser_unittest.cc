@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/stream_parser.h"
 
 #include <stddef.h>
@@ -16,6 +11,8 @@
 #include <map>
 #include <sstream>
 
+#include "base/containers/span.h"
+#include "base/notreached.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/test_data_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,11 +40,11 @@ static bool IsVideo(scoped_refptr<StreamParserBuffer> buffer) {
 // their sequence of decode timestamps; a |kEnd| timestamp indicates the
 // end of the sequence and no buffer is appended for it. Each new buffer's
 // type will be |type| with track ID set to |track_id|.
-static void GenerateBuffers(const int* decode_timestamps,
+static void GenerateBuffers(base::span<const int> decode_timestamps,
                             StreamParserBuffer::Type type,
                             TrackId track_id,
                             BufferQueue* queue) {
-  DCHECK(decode_timestamps);
+  DCHECK(!decode_timestamps.empty());
   DCHECK(queue);
   DCHECK_NE(type, DemuxerStream::UNKNOWN);
   DCHECK_LE(type, DemuxerStream::TYPE_MAX);
@@ -88,14 +85,14 @@ class StreamParserTest : public testing::Test {
 
   // Appends test audio buffers in the sequence described by |decode_timestamps|
   // to |audio_buffers_|. See GenerateBuffers() for |decode_timestamps| format.
-  void GenerateAudioBuffers(const int* decode_timestamps) {
+  void GenerateAudioBuffers(base::span<const int> decode_timestamps) {
     GenerateBuffers(decode_timestamps, DemuxerStream::AUDIO, kAudioTrackId,
                     &buffer_queue_map_[kAudioTrackId]);
   }
 
   // Appends test video buffers in the sequence described by |decode_timestamps|
   // to |video_buffers_|. See GenerateBuffers() for |decode_timestamps| format.
-  void GenerateVideoBuffers(const int* decode_timestamps) {
+  void GenerateVideoBuffers(base::span<const int> decode_timestamps) {
     GenerateBuffers(decode_timestamps, DemuxerStream::VIDEO, kVideoTrackId,
                     &buffer_queue_map_[kVideoTrackId]);
   }

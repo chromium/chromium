@@ -14,7 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/public/common/content_switches.h"
-#include "content/shell/app/paths_mac.h"
+#include "content/shell/app/paths_apple.h"
 #include "content/shell/browser/shell_application_mac.h"
 #include "content/shell/common/shell_switches.h"
 
@@ -48,13 +48,13 @@ void EnsureCorrectResolutionSettings() {
 
   const base::CommandLine::StringVector& original_argv =
       base::CommandLine::ForCurrentProcess()->argv();
-  char** argv = new char*[original_argv.size() + 1];
-  for (unsigned i = 0; i < original_argv.size(); ++i) {
-    UNSAFE_TODO(argv[i]) = const_cast<char*>(original_argv.at(i).c_str());
+  std::vector<char*> argv;
+  for (const auto& arg : original_argv) {
+    argv.push_back(const_cast<char*>(arg.c_str()));
   }
-  UNSAFE_TODO(argv[original_argv.size()]) = nullptr;
+  argv.push_back(nullptr);
 
-  CHECK(execvp(argv[0], argv));
+  CHECK(execvp(argv[0], argv.data()));
 }
 
 void RegisterShellCrApp() {

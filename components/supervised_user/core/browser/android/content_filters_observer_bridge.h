@@ -11,37 +11,39 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
+#include "base/observer_list.h"
+
+// Required to veto Android Parental Control changes if the user is already
+// subject to parental controls.
+class PrefService;
 
 namespace supervised_user {
-// Bridge between the C++ and Java sides for a content filters observer. Used to
-// observe the Android's secure settings, can be a component of a service.
-// observer. Instances of FakeContentFiltersObserverBridge for testing purposes
-// are available from SupervisedUserTestEnvironment.
+// Forward-declared to go around dependency-cycle.
+bool IsSubjectToParentalControls(const PrefService& pref_service);
+
+// Bridge between the C++ and Java sides for a content filters observer. Used
+// to observe the Android's secure settings, can be a component of a service.
+// observer. Instances of FakeContentFiltersObserverBridge for testing
+// purposes are available from SupervisedUserTestEnvironment.
 class ContentFiltersObserverBridge {
  public:
-  // Factory for creating ContentFiltersObserverBridge instances. They should
-  // accept the setting name, two callbacks to be called when the setting is
-  // enabled or disabled.
-  using Factory =
-      base::RepeatingCallback<std::unique_ptr<ContentFiltersObserverBridge>(
-          std::string_view,
-          base::RepeatingClosure,
-          base::RepeatingClosure)>;
-
-  // Creates a ContentFiltersObserverBridge instance.
-  static std::unique_ptr<ContentFiltersObserverBridge> Create(
-      std::string_view setting_name,
-      base::RepeatingClosure on_enabled,
-      base::RepeatingClosure on_disabled);
+  // Observers will receive notifications about changes to underlying settings
+  // storage.
+  class Observer {
+   public:
+    virtual void OnContentFiltersObserverEnabled(
+        std::string_view setting_name) {}
+    virtual void OnContentFiltersObserverDisabled(
+        std::string_view setting_name) {}
+  };
 
   ContentFiltersObserverBridge(std::string_view setting_name,
-                               base::RepeatingClosure on_enabled,
-                               base::RepeatingClosure on_disabled);
+                               const PrefService& pref_service);
 
   ContentFiltersObserverBridge(const ContentFiltersObserverBridge&) = delete;
-  ContentFiltersObserverBridge& operator=(
-      const ContentFiltersObserverBridge&) = delete;
+  ContentFiltersObserverBridge& operator=(const ContentFiltersObserverBridge&) =
+      delete;
   virtual ~ContentFiltersObserverBridge();
 
   // Initializes and shuts down the java class.
@@ -49,23 +51,35 @@ class ContentFiltersObserverBridge {
   virtual void Shutdown();
 
   // Called after creating the bridge and when the setting is enabled or
-  // disabled.
+  // disabled. Triggers observers.
   void OnChange(JNIEnv* env, bool enabled);
 
   // Reads the last broadcasted value of the setting from the Java side.
   bool IsEnabled() const;
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+  void SetEnabledForTesting(bool enabled);
+
+  base::WeakPtr<ContentFiltersObserverBridge> GetWeakPtr();
+
  protected:
-  virtual void SetEnabled(bool enabled);
+  void SetEnabled(bool enabled);
+
+  // Notifies observers about the current state of the setting.
+  void NotifyObservers();
 
  private:
-  // This value is set exclusively from Java, and reflects the last broadcasted
-  // value of the setting.
+  // In prod environment set from Java via JNI and reflects the current state
+  // of the setting in the operating system. In test environment that removes
+  // Java native storage backend, it might be controlled explicitly.
   bool enabled_ = false;
   std::string setting_name_;
-  base::RepeatingClosure on_enabled_;
-  base::RepeatingClosure on_disabled_;
+  raw_ref<const PrefService> pref_service_;
   base::android::ScopedJavaGlobalRef<jobject> bridge_;
+  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::WeakPtrFactory<ContentFiltersObserverBridge> weak_ptr_factory_{this};
 };
 }  // namespace supervised_user
 

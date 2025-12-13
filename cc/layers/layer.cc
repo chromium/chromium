@@ -159,7 +159,7 @@ void Layer::SetLayerTreeHost(LayerTreeHost* host) {
 
     layer_tree_host()->UnregisterLayer(this);
     if (element_id)
-      layer_tree_host()->UnregisterElement(element_id);
+      layer_tree_host()->UnregisterElement(element_id, this);
     if (!IsUsingLayerLists()) {
       layer_tree_host()->property_trees()->set_needs_rebuild(true);
       property_tree_indices_invalid = true;
@@ -1198,6 +1198,20 @@ void Layer::SetWheelEventRegion(Region wheel_event_region) {
   SetNeedsCommit();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void Layer::SetXrHitTestOrder(std::vector<ElementId> xr_hit_test_order) {
+  CHECK(IsPropertyChangeAllowed());
+  const auto& rare_inputs = inputs_.Read(*this).rare_inputs;
+  if (!rare_inputs && xr_hit_test_order.empty()) {
+    return;
+  }
+  if (rare_inputs && rare_inputs->xr_hit_test_order == xr_hit_test_order) {
+    return;
+  }
+  EnsureRareInputs().xr_hit_test_order = std::move(xr_hit_test_order);
+}
+#endif
+
 RenderSurfaceReason Layer::GetRenderSurfaceReason() const {
   if (!IsAttached())
     return RenderSurfaceReason::kNone;
@@ -1514,7 +1528,7 @@ void Layer::PushDirtyPropertiesTo(LayerImpl* layer,
     update_rect_.Write(*this) = gfx::Rect();
   }
 
-  layer->SetNeedsPushProperties();
+  layer->SetNeedsPushProperties(dirty_flag);
 }
 
 void Layer::PushPropertiesTo(LayerImpl* layer_impl,
@@ -1690,7 +1704,7 @@ void Layer::SetElementId(ElementId id) {
                "element", id.ToString());
   auto& inputs = inputs_.Write(*this);
   if (IsAttached() && inputs.element_id)
-    layer_tree_host()->UnregisterElement(inputs.element_id);
+    layer_tree_host()->UnregisterElement(inputs.element_id, this);
 
   inputs.element_id = id;
 

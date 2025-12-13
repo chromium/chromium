@@ -184,6 +184,10 @@ interface ComposeSessionUntrustedPageHandler {
   // page.
   OpenComposeLearnMorePage();
 
+  // Asks the Browser to open a new tab navigated to the Chrome Generative AI
+  // features and policies page.
+  OpenEnterpriseComposeLearnMorePage();
+
   // Asks the Browser to open a new tab navigated to the Dogfood feedback
   // survey.
   OpenFeedbackSurveyLink();

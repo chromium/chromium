@@ -51,12 +51,11 @@ static protocol::Response ToResponse(
   if (!exception_state.HadException())
     return protocol::Response::Success();
 
-  String name_prefix = IsDOMExceptionCode(exception_state.Code())
-                           ? DOMException::GetErrorName(
-                                 exception_state.CodeAs<DOMExceptionCode>()) +
-                                 " "
-                           : g_empty_string;
-  String msg = name_prefix + exception_state.Message();
+  String msg = IsDOMExceptionCode(exception_state.Code())
+                   ? StrCat({DOMException::GetErrorName(
+                                 exception_state.CodeAs<DOMExceptionCode>()),
+                             " ", exception_state.Message()})
+                   : exception_state.Message();
   return protocol::Response::ServerError(msg.Utf8());
 }
 
@@ -184,8 +183,7 @@ std::unique_ptr<protocol::DOMStorage::StorageId>
 InspectorDOMStorageAgent::GetStorageId(const BlinkStorageKey& storage_key,
                                        bool is_local_storage) {
   return protocol::DOMStorage::StorageId::create()
-      .setStorageKey(
-          WTF::String(static_cast<StorageKey>(storage_key).Serialize()))
+      .setStorageKey(String(static_cast<StorageKey>(storage_key).Serialize()))
       .setSecurityOrigin(storage_key.GetSecurityOrigin()->ToRawString())
       .setIsLocalStorage(is_local_storage)
       .build();

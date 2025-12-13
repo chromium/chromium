@@ -1,0 +1,25 @@
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsCapturedSurfaceControl}"
+    search-label="$i18n{siteSettingsAllSitesFilter}"
+    search-icon="settings20:filter-list"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+  <div class="content-settings-header secondary">
+    $i18n{siteSettingsCapturedSurfaceControlDescription}
+  </div>
+  <settings-category-default-radio-group
+      category="[[contentSettingsTypesEnum_.CAPTURED_SURFACE_CONTROL]]"
+      allow-option-label=
+          "$i18n{siteSettingsCapturedSurfaceControlAllowed}"
+      allow-option-icon="settings:touchpad-mouse"
+      block-option-label="$i18n{siteSettingsCapturedSurfaceControlBlocked}"
+      block-option-icon="settings:touchpad-mouse-off">
+  </settings-category-default-radio-group>
+  <category-setting-exceptions
+      category="[[contentSettingsTypesEnum_.CAPTURED_SURFACE_CONTROL]]"
+      allow-header=
+          "$i18n{siteSettingsCapturedSurfaceControlAllowedExceptions}"
+      block-header=
+          "$i18n{siteSettingsCapturedSurfaceControlBlockedExceptions}"
+      search-filter="[[searchTerm]]">
+  </category-setting-exceptions>
+</settings-subpage>

@@ -81,6 +81,7 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
 #endif  // BUILDFLAG(IS_IOS)
 
   registry->RegisterIntegerPref(kLastClearBrowsingDataTab, 0);
+  registry->RegisterBooleanPref(kQuickDeleteEverUsed, false);
 }
 
 #if BUILDFLAG(IS_IOS)

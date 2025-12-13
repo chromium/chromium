@@ -16,6 +16,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
+#include "chrome/browser/signin/bound_session_credentials/unexportable_key_provider_config.h"
 #include "chrome/browser/signin/bound_session_credentials/unexportable_key_service_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/base/account_consistency_method.h"
@@ -70,14 +71,14 @@ BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
 
   Profile* profile = Profile::FromBrowserContext(context);
   if (!switches::IsBoundSessionCredentialsEnabled(profile->GetPrefs()) &&
-      !base::FeatureList::IsEnabled(
-          kEnableBoundSessionCredentialsWsbetaBypass) &&
       !base::FeatureList::IsEnabled(kEnableBoundSessionCredentialsContinuity)) {
     return nullptr;
   }
 
   unexportable_keys::UnexportableKeyService* key_service =
-      UnexportableKeyServiceFactory::GetForProfile(profile);
+      UnexportableKeyServiceFactory::GetForProfileAndPurpose(
+          profile, unexportable_keys::KeyPurpose::
+                       kDeviceBoundSessionCredentialsPrototype);
 
   if (!key_service) {
     // A bound session requires a crypto provider.
@@ -89,9 +90,7 @@ BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
   bool should_create_service =
       account_consistency_method ==
           signin::AccountConsistencyMethod::kDisabled ||
-      (account_consistency_method == signin::AccountConsistencyMethod::kDice &&
-       switches::kEnableBoundSessionCredentialsDiceSupport.Get() ==
-           switches::EnableBoundSessionCredentialsDiceSupport::kEnabled);
+      account_consistency_method == signin::AccountConsistencyMethod::kDice;
 
   if (!should_create_service) {
     return nullptr;

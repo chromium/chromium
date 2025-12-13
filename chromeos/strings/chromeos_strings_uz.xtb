@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">apelsinlar</translation>
 <translation id="1275718070701477396">Tanlandi</translation>
 <translation id="1290331692326790741">Signal kuchsiz</translation>
+<translation id="1292474106138697109">Class Tools displeyi</translation>
 <translation id="1300115153046603471">APN turi: standart va <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Oʻgirish</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ta rasm</translation>
 <translation id="4300272766492248925">Ilovani ochish</translation>
 <translation id="430786093962686457">shifon</translation>
+<translation id="4309762678330556039">Transkripsiyalarni avtomatik yaratish va audio ichidan qidirish. Ovozli yozuvlarni hatto internetsiz yarating.</translation>
 <translation id="4310735698903592804">Google AI yaratgan oxirgi fon rasmlari</translation>
 <translation id="4320904097188876154">neonli pushti</translation>
 <translation id="432961742358282111">Tavsiflar, tarjimalarni olish yoki birliklarni oʻgirish uchun oʻng klikni bosing yoki ustiga bosib turing. Bu funksiya chapga va oʻngga strelkalar orqali boshqariladi.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Boshqa sozlamalar</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> tugmasi sinaldi</translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">Class Tools ekraningizni foydalanuvchiga (<ph name="RECEIVER_NAME" />) ulashmoqda</translation>
 <translation id="5613201299517339763">Siz tizimdan chiqdingiz</translation>
 <translation id="5620281292257375798">Maxfiy</translation>
 <translation id="5628106863521633649">Mavjud tillar</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Bulutlar</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Hech qanday skaner mavjud emas</translation>
-<translation id="6231648282154119906">Kuchaytirilgan himoya tanlangani sababli Google Saytlarni xavfsiz kezish tizimi shubhali fayllarni avtomatik tekshiradi</translation>
 <translation id="6232017090690406397">Batareya</translation>
 <translation id="6234024205316847054">Konturlarni chiqarish</translation>
 <translation id="6243280677745499710">Hozirda tanlangan</translation>

@@ -31,8 +31,7 @@ class TabMatcherDesktop : public TabMatcher {
 
   bool IsStrippedURLEqualToWebContentsURL(
       const GURL& stripped_url,
-      content::WebContents* web_contents,
-      const bool keep_search_intent_params) const;
+      content::WebContents* web_contents) const;
 
   raw_ptr<const TemplateURLService> template_url_service_;
   raw_ptr<Profile> profile_ = nullptr;

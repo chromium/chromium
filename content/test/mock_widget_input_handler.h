@@ -260,8 +260,11 @@ class MockWidgetInputHandler : public blink::mojom::WidgetInputHandler {
   void RequestCompositionUpdates(bool immediate_request,
                                  bool monitor_request) override;
 
-  void DispatchEvent(std::unique_ptr<blink::WebCoalescedInputEvent> event,
-                     DispatchEventCallback callback) override;
+  void DispatchEvent(
+      std::unique_ptr<blink::WebCoalescedInputEvent> event,
+      std::optional<std::unique_ptr<blink::WebCoalescedInputEvent>>
+          original_event_for_gesture,
+      DispatchEventCallback callback) override;
   void DispatchNonBlockingEvent(
       std::unique_ptr<blink::WebCoalescedInputEvent> event) override;
   void WaitForInputProcessed(WaitForInputProcessedCallback callback) override;

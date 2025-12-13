@@ -8,7 +8,8 @@ import type {CrSearchFieldElement} from './cr_search_field.js';
 
 export function getHtml(this: CrSearchFieldElement) {
   return html`
-<cr-icon id="searchIcon" icon="cr:search" part="searchIcon"></cr-icon>
+<cr-icon id="searchIcon" icon="${this.iconOverride}"
+  part="searchIcon"></cr-icon>
 <cr-input id="searchInput" part="searchInput"
     @search="${this.onSearchTermSearch}" @input="${this.onSearchTermInput}"
     aria-label="${this.label}" type="search" ?autofocus="${this.autofocus}"

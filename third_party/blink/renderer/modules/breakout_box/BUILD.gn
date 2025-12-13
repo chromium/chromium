@@ -35,8 +35,8 @@ blink_modules_sources("breakout_box") {
     "video_track_generator.h",
   ]
   deps = [
-    "//third_party/blink/renderer/modules/mediastream:mediastream",
-    "//third_party/blink/renderer/modules/webcodecs:webcodecs",
+    "//third_party/blink/renderer/modules/mediastream",
+    "//third_party/blink/renderer/modules/webcodecs",
   ]
 }
 
@@ -57,12 +57,12 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    "//testing/gmock:gmock",
-    "//testing/gtest:gtest",
+    "//testing/gmock",
+    "//testing/gtest",
     "//third_party/blink/public:test_headers",
     "//third_party/blink/renderer/controller:blink_bindings_test_sources",
     "//third_party/blink/renderer/core:unit_test_support",
-    "//third_party/blink/renderer/modules:modules",
+    "//third_party/blink/renderer/modules",
     "//third_party/blink/renderer/modules/mediastream:test_support",
   ]
 

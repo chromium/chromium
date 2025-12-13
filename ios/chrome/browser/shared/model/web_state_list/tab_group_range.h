@@ -90,6 +90,9 @@ class TabGroupRange {
 
     int operator*() const { return current_; }
     void operator++() { ++current_; }
+    bool operator==(const iterator& other) const {
+      return current_ == other.current_;
+    }
     bool operator!=(const iterator& other) const {
       return current_ != other.current_;
     }

@@ -33,6 +33,18 @@ chromium-metrics-reviews@google.com.
                saved state to resume.."/>
   <variant name="ComposeProactiveNudge"
       summary="For Compose feature; shown on autofill popup."/>
+  <variant name="DevToolsAiAssistanceFileAgent"
+      summary="Promotion for DevTools AI Assistance File Agent."/>
+  <variant name="DevToolsAiAssistanceNetworkAgent"
+      summary="Promotion for DevTools AI Assistance Network Agent."/>
+  <variant name="DevToolsAiAssistancePerformanceAgent"
+      summary="Promotion for DevTools AI Assistance Performance Agent."/>
+  <variant name="DevToolsAiDebugWithAi"
+      summary="Promotion for DevTools AI Debug with AI menu item."/>
+  <variant name="DevToolsAiSubmenuPrompts"
+      summary="Promotion for DevTools AI submenu prompts."/>
+  <variant name="DevToolsFreestyler"
+      summary="Promotion for DevTools AI Assistance Freestyler Agent."/>
   <variant name="Glic" summary="Glic toggle on settings page."/>
   <variant name="GlicAppMenuNewBadge"
       summary="Glic menu item in the three dot menu."/>
@@ -59,6 +71,27 @@ chromium-metrics-reviews@google.com.
       summary="Promotion for Close Unused Tabs in the app menu."/>
 </variants>
 
+<!-- LINT.IfChange(NtpPromoActions) -->
+
+<variants name="NtpPromoAction">
+  <variant name="Clicked" summary="Promo was clicked"/>
+  <variant name="Completed" summary="Promo was completed"/>
+  <variant name="Shown" summary="Promo was shown"/>
+  <variant name="ShownTopSpot" summary="Promo was shown in the top spot"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/user_education/common/ntp_promo/ntp_promo_controller.cc:NtpPromoActions) -->
+
+<!-- LINT.IfChange(NtpPromoIdentifiers) -->
+
+<variants name="NtpPromoIdentifier">
+  <variant name="Customization" summary="Customize Chrome promo"/>
+  <variant name="Extensions" summary="Extensions promo"/>
+  <variant name="SignIn" summary="Sign-In promo"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/user_education/ntp_promo_identifiers.h:NtpPromoIdentifiers) -->
+
 <variants name="TutorialID">
   <variant name="" summary="any tutorial"/>
   <variant name="CustomizeChromeSidePanel"
@@ -69,6 +102,7 @@ chromium-metrics-reviews@google.com.
   <variant name="SavedTabGroup" summary="the tutorial for the saved tab group"/>
   <variant name="SidePanelReadingList"
       summary="the tutorial for the side panel reading list"/>
+  <variant name="SplitView" summary="the tutorial for the split view feature"/>
   <variant name="TabGroup" summary="the tutorial for tab groups"/>
   <variant name="Test" summary="the tutorial used for testing only"/>
 </variants>
@@ -84,6 +118,11 @@ chromium-metrics-reviews@google.com.
       summary="the module for Generative Theming"/>
   <variant name="GlicIntro" summary="the module for Glic Intro"/>
   <variant name="GlicLearnMore" summary="the module for Glic Learn More"/>
+  <variant name="GlitterAIFeaturesVideo"
+      summary="the module for Glitter AI Features Video"/>
+  <variant name="GlitterAIMode" summary="the module for Glitter AI Mode"/>
+  <variant name="GlitterPermissionsAI"
+      summary="the module for Glitter Permissions AI"/>
   <variant name="GoogleLens" summary="the module for Google Lens"/>
   <variant name="Googlepayreauth" summary="the module for Google Pay Re-auth"/>
   <variant name="HelpMeWrite" summary="the module for Help Me Write"/>
@@ -95,6 +134,8 @@ chromium-metrics-reviews@google.com.
       summary="the module for Lens Overlay Full Page Translate"/>
   <variant name="Mobilepasswords"
       summary="the module for getting passwords on mobile"/>
+  <variant name="PdfInk2" summary="the module for PDF Ink Signatures"/>
+  <variant name="PdfSaveToDrive" summary="the module for PDF Save to Drive"/>
   <variant name="PerformanceInterventionUI"
       summary="the module for Performance Intervention"/>
   <variant name="ReadAnythingReadAloud" summary="Read Anything Read Aloud"/>
@@ -105,7 +146,10 @@ chromium-metrics-reviews@google.com.
   <variant name="SaveTabGroups" summary="the module for Saved Tab Groups"/>
   <variant name="SearchBoxSuggestions"
       summary="the module for Search Box Suggestions"/>
+  <variant name="SideBySide" summary="the module for Split View"/>
   <variant name="SidePanelPinning" summary="the module for Side Panel Pinning"/>
+  <variant name="SyncAccountSettings"
+      summary="the module for Wallet integration in Autofill"/>
   <variant name="TabGroupsSync" summary="the module for Tab Groups that Sync"/>
   <variant name="TabOrganizer" summary="the module for Tab Organizer"/>
   <variant name="TestDefaultModule"
@@ -190,8 +234,49 @@ chromium-metrics-reviews@google.com.
   <token key="TutorialID" variants="TutorialID"/>
 </histogram>
 
+<histogram
+    name="UserEducation.DesktopToIOSPromo.{PromoType}.BubbleView.Created"
+    enum="DesktopToIOSPromoBubbleType" expires_after="2026-06-04">
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    The type of Desktop-to-iOS Promo Bubble that was created (shown) to the
+    user.
+  </summary>
+  <token key="PromoType">
+    <variant name="Address" summary="Address"/>
+    <variant name="EnhancedBrowsing" summary="Enhanced Browsing"/>
+    <variant name="Lens" summary="Lens"/>
+    <variant name="Password" summary="Password"/>
+    <variant name="Payment" summary="Payment"/>
+  </token>
+</histogram>
+
+<histogram
+    name="UserEducation.DesktopToIOSPromo.{PromoType}.{BubbleType}.Action"
+    enum="DesktopToIOSPromoActionType" expires_after="2026-06-04">
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    The action taken by the user on the Desktop-to-iOS Promo Bubble.
+  </summary>
+  <token key="PromoType">
+    <variant name="Address" summary="Address"/>
+    <variant name="EnhancedBrowsing" summary="Enhanced Browsing"/>
+    <variant name="Lens" summary="Lens"/>
+    <variant name="Password" summary="Password"/>
+    <variant name="Payment" summary="Payment"/>
+  </token>
+  <token key="BubbleType">
+    <variant name="QRCode" summary="QR Code Bubble"/>
+    <variant name="Reminder" summary="Reminder Bubble"/>
+    <variant name="ReminderConfirmation"
+        summary="Reminder Confirmation Bubble"/>
+  </token>
+</histogram>
+
 <histogram name="UserEducation.MessageNotShown" enum="PromoFailure"
-    expires_after="2026-01-04">
+    expires_after="2026-05-10">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -214,7 +299,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.MessageNotShown.TimeInQueue" units="ms"
-    expires_after="2025-11-23">
+    expires_after="2026-05-31">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -222,21 +307,6 @@ chromium-metrics-reviews@google.com.
     shown. Is not recorded for promos that are immediately rejected due to
     failed requirements, promos which are explicitly canceled, or promos which
     are actually shown (see UserEducation.MessageShown.TimeInQueue).
-  </summary>
-</histogram>
-
-<histogram name="UserEducation.MessageShown.RotatingPromoIndex" units="Index"
-    expires_after="2025-08-31">
-  <expired_intentionally>
-    Deprecated. Replaced by UserEducation.RotatingPromoIndex.{IPHFeature}.
-  </expired_intentionally>
-  <owner>dfried@chromium.org</owner>
-  <owner>frizzle-team@google.com</owner>
-  <summary>
-    Record the index of a rotating promo when it is shown to the user. This can
-    be used to determine how deep in the rotation of rotating promos users are
-    going, and also what proportion of users have seen a particular promo from a
-    rotating promo set.
   </summary>
 </histogram>
 
@@ -258,7 +328,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.MessageShown.TimeInQueue" units="ms"
-    expires_after="2025-12-14">
+    expires_after="2026-04-26">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -321,8 +391,33 @@ chromium-metrics-reviews@google.com.
   <token key="NewBadgeFeature" variants="NewBadgeFeature"/>
 </histogram>
 
+<histogram
+    name="UserEducation.NtpPromos.Promos.{NtpPromoIdentifier}.{NtpPromoAction}"
+    units="int" expires_after="2026-09-01">
+  <owner>cjgrant@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records when the NTP {NtpPromoIdentifier} promo sees a {NtpPromoAction}
+    event. Logged on desktop platforms.
+  </summary>
+  <token key="NtpPromoIdentifier" variants="NtpPromoIdentifier"/>
+  <token key="NtpPromoAction" variants="NtpPromoAction"/>
+</histogram>
+
+<histogram name="UserEducation.NtpPromos.ShowResult" enum="ShowNtpPromosResult"
+    expires_after="2026-09-01">
+  <owner>dfried@chromium.org</owner>
+  <owner>cjgrant@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Recorded when the NTP decides whether or not to show NTP promos, and why.
+    Recorded every time a fresh NTP is loaded. This is intended as a health
+    check for the NTP promo system, to better understand why promos do not show.
+  </summary>
+</histogram>
+
 <histogram name="UserEducation.Session.ActivePeriodDuration.Min.Under1Hour"
-    units="minutes" expires_after="2026-01-04">
+    units="minutes" expires_after="2026-03-22">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -334,7 +429,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.ActivePeriodDuration.Min.Under24Hours"
-    units="minutes" expires_after="2025-11-02">
+    units="minutes" expires_after="2026-03-22">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -346,7 +441,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.IdlePeriodDuration.Hr.Under28Days"
-    units="hours" expires_after="2026-01-04">
+    units="hours" expires_after="2026-03-22">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -358,7 +453,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.IdlePeriodDuration.Min.Under24Hours"
-    units="minutes" expires_after="2026-01-04">
+    units="minutes" expires_after="2026-03-22">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -370,7 +465,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.LongTermCount" units="count"
-    expires_after="2026-01-04">
+    expires_after="2026-03-22">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -381,7 +476,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.MonthlyActiveDays" units="count"
-    expires_after="2026-01-04">
+    expires_after="2026-05-24">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -393,7 +488,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.RecentActiveDays" units="count"
-    expires_after="2026-01-04">
+    expires_after="2026-05-24">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -405,7 +500,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.RecentActiveWeeks" units="count"
-    expires_after="2026-01-04">
+    expires_after="2026-05-24">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -417,7 +512,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.RecentSuperActiveWeeks" units="count"
-    expires_after="2025-11-02">
+    expires_after="2026-03-22">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -429,7 +524,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.ShortTermCount" units="count"
-    expires_after="2025-11-02">
+    expires_after="2026-03-22">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -437,6 +532,22 @@ chromium-metrics-reviews@google.com.
     sessions in the &quot;short-term&quot; window, which is 7 days. This helps
     us understand how frequently new sessions are triggered.
   </summary>
+</histogram>
+
+<!-- expires-never: this is a meta-histogram that provides performance data for
+     "What's New" page modules. Since the modules change every release, this
+     cannot be allowed to expire or no telemetry would be returned for new
+     modules. -->
+
+<histogram name="UserEducation.WhatsNew.ExpandMedia.{ModuleName}"
+    enum="BooleanYesNo" expires_after="never">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records that the media in the {ModuleName} module on the What's New page was
+    expanded/collapsed.
+  </summary>
+  <token key="ModuleName" variants="WhatsNewModule"/>
 </histogram>
 
 <!-- expires-never: since the content of the "What's New" page changes from
@@ -517,6 +628,20 @@ chromium-metrics-reviews@google.com.
     section.
   </summary>
   <token key="ModuleName" variants="WhatsNewModule"/>
+</histogram>
+
+<!-- expires-never: since the content of the "What's New" page changes from
+     release to release, this is an important health metric for the performance
+     of any particular release. It should not be allowed to expire. -->
+
+<histogram name="UserEducation.WhatsNew.QrCodeExpanded" enum="BooleanYesNo"
+    expires_after="never">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Records when the user expands or collapses the QR code section of the What's
+    New page.
+  </summary>
 </histogram>
 
 <!-- expires-never: this is a meta-histogram that provides performance data for
@@ -611,7 +736,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WhatsNew.LoadEvent" enum="WhatsNewLoadEvent"
-    expires_after="2026-01-04">
+    expires_after="2026-05-10">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -626,7 +751,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WhatsNew.LoadResponseCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-01-04">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-05-10">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
@@ -637,7 +762,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WhatsNew.StartupType" enum="WhatsNewStartupType"
-    expires_after="2026-01-04">
+    expires_after="2026-05-10">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>

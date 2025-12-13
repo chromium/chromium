@@ -487,6 +487,13 @@ void AXPlatformNodeBase::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   }
 }
 
+AXPlatformNodeDelegate* AXPlatformNodeBase::SetDelegateForTesting(  // IN-TEST
+    AXPlatformNodeDelegate* delegate) {
+  auto pre_delegate = delegate_;
+  delegate_ = delegate;
+  return pre_delegate;
+}
+
 #if BUILDFLAG(IS_APPLE)
 void AXPlatformNodeBase::AnnounceTextAs(const std::u16string& text,
                                         AnnouncementType announcement_type) {}

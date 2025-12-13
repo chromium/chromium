@@ -105,8 +105,6 @@ template("chrome_bundle") {
 
   if (defined(invoker.min_sdk_version)) {
     _min_sdk_version = invoker.min_sdk_version
-  } else if (_is_trichrome) {
-    _min_sdk_version = 29
   } else {
     _min_sdk_version = default_min_sdk_version
   }
@@ -210,10 +208,6 @@ template("chrome_bundle") {
     # testing easier. This removes the need to manually specify, e.g.,
     # "-m dev_ui" on every install or run.
     default_modules_for_testing = [ "dev_ui" ]
-
-    if (!is_java_debug && _is_monochrome) {
-      proguard_android_sdk_dep = webview_framework_dep
-    }
 
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
   }

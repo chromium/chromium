@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/commands/get_isolated_web_app_browsing_data_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/get_isolated_web_app_size_job.h"
 #include "chrome/browser/web_applications/jobs/get_progressive_web_app_size_job.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 
 namespace web_app {
@@ -42,7 +43,7 @@ void ComputeAppSizeCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
     return;
   }
 
-  if (registrar.IsIsolated(app_id_)) {
+  if (registrar.AppMatches(app_id_, WebAppFilter::IsIsolatedApp())) {
     get_isolated_web_app_size_job_ = std::make_unique<GetIsolatedWebAppSizeJob>(
         profile_.get(), app_id_, GetMutableDebugValue(),
         base::BindOnce(&ComputeAppSizeCommand::OnIsolatedAppSizeComputed,

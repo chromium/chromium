@@ -16,8 +16,6 @@ namespace {
 
 using performance_scenarios::InputScenario;
 using performance_scenarios::LoadingScenario;
-using performance_scenarios::MatchingScenarioObserver;
-using performance_scenarios::PerformanceScenarioObserver;
 using performance_scenarios::ScenarioState;
 
 const ScenarioState& GetScenarioStateForProcess(const ProcessNode* process) {
@@ -45,16 +43,6 @@ bool CurrentProcessScenariosMatch(
   return performance_scenarios::ScenariosMatch(
       GetProcessLoadingScenario(process), GetProcessInputScenario(process),
       pattern);
-}
-
-base::ObserverList<performance_scenarios::PerformanceScenarioObserver>&
-GetScenarioObserversForProcess(const ProcessNode* process) {
-  return PerformanceScenarioData::GetOrCreate(process).observers();
-}
-
-base::ObserverList<performance_scenarios::MatchingScenarioObserver>&
-GetMatchingScenarioObserversForProcess(const ProcessNode* process) {
-  return PerformanceScenarioData::GetOrCreate(process).matching_observers();
 }
 
 }  // namespace performance_manager

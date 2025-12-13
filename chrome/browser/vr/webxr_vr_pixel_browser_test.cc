@@ -20,19 +20,19 @@ namespace vr {
 class MyXRMock : public MockXRDeviceHookBase {
  public:
   void ProcessSubmittedFrameUnlocked(
-      std::vector<device_test::mojom::ViewDataPtr> views) final;
+      const std::vector<device::ViewData>& views) final;
 
   base::Lock color_lock;
-  device_test::mojom::ColorPtr last_submitted_color_ GUARDED_BY(color_lock);
+  device::Color last_submitted_color_ GUARDED_BY(color_lock);
 };
 
 void MyXRMock::ProcessSubmittedFrameUnlocked(
-    std::vector<device_test::mojom::ViewDataPtr> views) {
+    const std::vector<device::ViewData>& views) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
   base::AutoLock lock(color_lock);
   // Since we clear the entire context to a single color (see onXRFrame() in
   // webxr_boilerplate.js), every view in the frame has the same color.
-  last_submitted_color_ = std::move(views[0]->color);
+  last_submitted_color_ = views[0].color;
 }
 
 // Pixel test for WebXR - start presentation, submit frames, get data back
@@ -59,14 +59,14 @@ void TestPresentationPixelsImpl(WebXrVrBrowserTestBase* t,
   my_mock.WaitForTotalFrameCount(1);
 
   base::AutoLock lock(my_mock.color_lock);
-  auto expected = device_test::mojom::Color::New(0, 0, 255, 255);
-  EXPECT_EQ(expected->r, my_mock.last_submitted_color_->r)
+  device::Color expected(0, 0, 255, 255);
+  EXPECT_EQ(expected.r, my_mock.last_submitted_color_.r)
       << "Red channel of submitted color does not match expectation";
-  EXPECT_EQ(expected->g, my_mock.last_submitted_color_->g)
+  EXPECT_EQ(expected.g, my_mock.last_submitted_color_.g)
       << "Green channel of submitted color does not match expectation";
-  EXPECT_EQ(expected->b, my_mock.last_submitted_color_->b)
+  EXPECT_EQ(expected.b, my_mock.last_submitted_color_.b)
       << "Blue channel of submitted color does not match expectation";
-  EXPECT_EQ(expected->a, my_mock.last_submitted_color_->a)
+  EXPECT_EQ(expected.a, my_mock.last_submitted_color_.a)
       << "Alpha channel of submitted color does not match expectation";
 }
 

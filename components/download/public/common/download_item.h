@@ -19,13 +19,12 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list_types.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
@@ -239,7 +238,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   virtual DownloadState GetState() const = 0;
 
   virtual void SetStateForTesting(DownloadState state);
-  virtual void SetDownloadUrlForTesting(GURL url);
+  virtual void SetDownloadUrlForTesting(const GURL& url);
 
   // Returns the most recent interrupt reason for this download. Returns
   // |DOWNLOAD_INTERRUPT_REASON_NONE| if there is no previous interrupt reason.
@@ -448,10 +447,11 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // Gets whether the download is triggered from external app.
   virtual bool IsFromExternalApp() = 0;
 
-  // Whether the original URL must be downloded, e.g. triggered by context
-  // menu or from the download service, or has "content-disposition: attachment"
-  // in header.
-  virtual bool IsMustDownload() = 0;
+  // Whether the original URL can be auto opened after download. Certain
+  // download shouldn't be auto-opened after completion, e.g. triggered by
+  // context menu or from the download service, or has "content-disposition:
+  // attachment" in header.
+  virtual bool AllowAutoOpenAfterCompletion() = 0;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   //    Progress State accessors -----------------------------------------------

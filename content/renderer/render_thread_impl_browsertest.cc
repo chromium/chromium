@@ -124,7 +124,7 @@ class RenderThreadImplBrowserTest : public testing::Test,
 
     InitializeMojo();
     process_host_ = ChildProcessHost::Create(this);
-    process_host_->CreateChannelMojo();
+    process_host_->CreateChannel();
 
     CHECK(!process_.get());
     process_ = std::make_unique<RenderProcess>();
@@ -198,8 +198,6 @@ class RenderThreadImplBrowserTest : public testing::Test,
   const base::Process& GetProcess() override { return null_process_; }
 
  protected:
-  IPC::Sender* sender() { return process_host_.get(); }
-
   void SetBackgroundState(base::Process::Priority process_priority) {
     mojom::Renderer* renderer_interface = thread_;
     const mojom::RenderProcessVisibleState visible_state =
@@ -265,26 +263,20 @@ TEST_F(RenderThreadImplBrowserTest, RendererStateTransitionVisible) {
   // Going from an unknown to a visible state should mark the renderer as
   // foregrounded and visible.
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(false));
-  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(false));
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(true)).Times(0);
-  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(true)).Times(0);
   SetVisibleState(mojom::RenderProcessVisibleState::kVisible);
   testing::Mock::VerifyAndClear(main_thread_scheduler_);
 
   // Going from a hidden to a visible state should mark the renderer as visible.
   SetVisibleState(mojom::RenderProcessVisibleState::kHidden);
-  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(false));
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(false)).Times(0);
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(true)).Times(0);
-  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(true)).Times(0);
   SetVisibleState(mojom::RenderProcessVisibleState::kVisible);
   testing::Mock::VerifyAndClear(main_thread_scheduler_);
 
   // Going from a visible to a hidden state should mark the renderer as hidden.
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(false)).Times(0);
-  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(false)).Times(0);
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(true)).Times(0);
-  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(true));
   SetVisibleState(mojom::RenderProcessVisibleState::kHidden);
   testing::Mock::VerifyAndClear(main_thread_scheduler_);
 
@@ -295,9 +287,7 @@ TEST_F(RenderThreadImplBrowserTest, RendererStateTransitionHidden) {
   // Going from an unknown to a visible state should mark the renderer as
   // foregrounded and hidden.
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(false));
-  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(true));
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(true)).Times(0);
-  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(false)).Times(0);
   SetVisibleState(mojom::RenderProcessVisibleState::kHidden);
   testing::Mock::VerifyAndClear(main_thread_scheduler_);
 
@@ -307,9 +297,7 @@ TEST_F(RenderThreadImplBrowserTest, RendererStateTransitionHidden) {
 TEST_F(RenderThreadImplBrowserTest, RendererStateTransitionBackgrounded) {
   // Going from an unknown to a backgrounded state should mark the renderer as
   // backgrounded but not hidden.
-  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(true)).Times(0);
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(true));
-  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(false));
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(false)).Times(0);
   SetBackgroundState(base::Process::Priority::kBestEffort);
   testing::Mock::VerifyAndClear(main_thread_scheduler_);
@@ -317,8 +305,6 @@ TEST_F(RenderThreadImplBrowserTest, RendererStateTransitionBackgrounded) {
   // Going from a backgrounded to a foregrounded state should mark the renderer
   // as foregrounded.
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(true)).Times(0);
-  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(true)).Times(0);
-  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(false)).Times(0);
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(false));
   SetBackgroundState(base::Process::Priority::kUserBlocking);
   testing::Mock::VerifyAndClear(main_thread_scheduler_);
@@ -326,17 +312,13 @@ TEST_F(RenderThreadImplBrowserTest, RendererStateTransitionBackgrounded) {
   // Going from a foregrounded state to another foregrounded state should not
   // remark the renderer as foregrounded.
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(true)).Times(0);
-  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(true)).Times(0);
-  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(false)).Times(0);
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(false)).Times(0);
   SetBackgroundState(base::Process::Priority::kUserVisible);
   testing::Mock::VerifyAndClear(main_thread_scheduler_);
 
   // Going from a foregrounded to a backgrounded state should mark the renderer
   // as backgrounded.
-  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(true)).Times(0);
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(true));
-  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(false)).Times(0);
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(false)).Times(0);
   SetBackgroundState(base::Process::Priority::kBestEffort);
   testing::Mock::VerifyAndClear(main_thread_scheduler_);
@@ -348,9 +330,7 @@ TEST_F(RenderThreadImplBrowserTest, RendererStateTransitionForegrounded) {
   // Going from an unknown to a foregrounded state should mark the renderer as
   // foregrounded and visible.
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(false));
-  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(true)).Times(0);
   EXPECT_CALL(*main_thread_scheduler_, SetRendererBackgrounded(true)).Times(0);
-  EXPECT_CALL(*main_thread_scheduler_, SetRendererHidden(false));
   SetBackgroundState(base::Process::Priority::kUserBlocking);
   testing::Mock::VerifyAndClear(main_thread_scheduler_);
 

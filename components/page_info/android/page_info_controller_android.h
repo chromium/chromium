@@ -12,6 +12,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/page_info/page_info_ui.h"
 
 namespace content {
@@ -49,7 +50,7 @@ class PageInfoControllerAndroid : public PageInfoUI {
   // displayed in Page Info. Most permissions will only be displayed if they are
   // set to some non-default value, but there are some permissions which require
   // customized behavior.
-  std::optional<ContentSetting> GetSettingToDisplay(
+  std::optional<PermissionSetting> GetSettingToDisplay(
       const PageInfo::PermissionInfo& permission);
 
   // The presenter that controlls the Page Info UI.

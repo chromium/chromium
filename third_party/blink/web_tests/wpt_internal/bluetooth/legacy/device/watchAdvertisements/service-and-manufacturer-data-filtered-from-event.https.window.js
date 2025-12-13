@@ -2,6 +2,7 @@
 // META: script=/resources/testdriver-vendor.js
 // META: script=/bluetooth/resources/bluetooth-test.js
 // META: script=/bluetooth/resources/bluetooth-fake-devices.js
+// META: timeout=long
 'use strict';
 const test_desc = `Service and Manufacturer that were not granted with ` +
     `requestDevice() are filtered from the advertisement event.`;

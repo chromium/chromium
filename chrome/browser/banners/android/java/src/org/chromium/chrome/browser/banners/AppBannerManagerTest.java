@@ -12,7 +12,6 @@ import android.app.Instrumentation.ActivityMonitor;
 import android.app.Instrumentation.ActivityResult;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.ImageView;
@@ -32,7 +31,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -163,7 +161,6 @@ public class AppBannerManagerTest {
     }
 
     private MockAppDetailsDelegate mDetailsDelegate;
-    @Mock private PackageManager mPackageManager;
     private EmbeddedTestServer mTestServer;
     private UiDevice mUiDevice;
     private BottomSheetController mBottomSheetController;
@@ -226,7 +223,7 @@ public class AppBannerManagerTest {
 
     private void navigateToUrlAndWaitForBannerManager(
             ChromeActivityTestRule<? extends ChromeActivity> rule, String url) throws Exception {
-        Tab tab = rule.getActivity().getActivityTab();
+        Tab tab = rule.getActivityTab();
         new TabLoadObserver(tab).fullyLoadUrl(url);
         waitForBannerManager(tab);
     }
@@ -236,10 +233,21 @@ public class AppBannerManagerTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     AppBannerManager manager =
-                            getAppBannerManager(
-                                    rule.getActivity().getActivityTab().getWebContents());
+                            getAppBannerManager(rule.getActivityTab().getWebContents());
                     Criteria.checkThat(mDetailsDelegate.mNumRetrieved, Matchers.is(numExpected));
                     Criteria.checkThat(manager.isRunningForTesting(), Matchers.is(false));
+                });
+    }
+
+    private void checkPromotabilityStatus(
+            ChromeActivityTestRule<? extends ChromeActivity> rule,
+            final boolean isProbablyPromotable) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            AppBannerManager.isProbablyPromotable(
+                                    rule.getActivity().getActivityTab().getWebContents()),
+                            isProbablyPromotable);
                 });
     }
 
@@ -270,7 +278,7 @@ public class AppBannerManagerTest {
         rule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         navigateToUrlAndWaitForBannerManager(rule, url);
 
-        Tab tab = rule.getActivity().getActivityTab();
+        Tab tab = rule.getActivityTab();
         tapAndWaitForModalBanner(tab);
 
         if (!installApp) return;
@@ -291,7 +299,7 @@ public class AppBannerManagerTest {
         Assert.assertEquals(expectedReferrer, mDetailsDelegate.mReferrer);
 
         final ChromeActivity activity = rule.getActivity();
-        tapAndWaitForModalBanner(activity.getActivityTab());
+        tapAndWaitForModalBanner(rule.getActivityTab());
         if (!installApp) return;
 
         // Click the button to trigger the installation.
@@ -330,7 +338,7 @@ public class AppBannerManagerTest {
             waitUntilAppDetailsRetrieved(rule, 1);
         }
 
-        Tab tab = rule.getActivity().getActivityTab();
+        Tab tab = rule.getActivityTab();
         tapAndWaitForModalBanner(tab);
 
         // Explicitly dismiss the banner. We should be able to show the banner after dismissing.
@@ -350,8 +358,7 @@ public class AppBannerManagerTest {
         navigateToUrlAndWaitForBannerManager(rule, url);
 
         if (click) {
-            final ChromeActivity activity = rule.getActivity();
-            TouchCommon.singleClickView(activity.getActivityTab().getView());
+            TouchCommon.singleClickView(rule.getActivityTab().getView());
             waitUntilBottomSheetStatus(BottomSheetController.SheetState.FULL);
             return;
         }
@@ -380,10 +387,14 @@ public class AppBannerManagerTest {
 
         // The appinstalled event should fire (and cause the title to change).
         new TabTitleObserver(
-                        mTabbedActivityTestRule.getActivity().getActivityTab(),
+                        mTabbedActivityTestRule.getActivityTab(),
                         "Got appinstalled: listener, attr")
                 .waitForTitleUpdate(3);
 
+        // In most test environments, the install action will fail and a shortcut
+        // will be added instead. This does not affect the promotability status since
+        // a new APK was not installed.
+        checkPromotabilityStatus(mTabbedActivityTestRule.getActivityTestRule(), true);
         ThreadUtils.runOnUiThread(
                 () -> {
                     Assert.assertEquals(
@@ -414,10 +425,11 @@ public class AppBannerManagerTest {
 
         // The appinstalled event should fire (and cause the title to change).
         new TabTitleObserver(
-                        mCustomTabActivityTestRule.getActivity().getActivityTab(),
+                        mCustomTabActivityTestRule.getActivityTab(),
                         "Got appinstalled: listener, attr")
                 .waitForTitleUpdate(3);
 
+        checkPromotabilityStatus(mCustomTabActivityTestRule, true);
         ThreadUtils.runOnUiThread(
                 () -> {
                     Assert.assertEquals(
@@ -447,11 +459,10 @@ public class AppBannerManagerTest {
 
         // The userChoice promise should resolve (and cause the title to change). appinstalled is
         // not fired for native apps
-        new TabTitleObserver(
-                        mTabbedActivityTestRule.getActivity().getActivityTab(),
-                        "Got userChoice: accepted")
+        new TabTitleObserver(mTabbedActivityTestRule.getActivityTab(), "Got userChoice: accepted")
                 .waitForTitleUpdate(3);
 
+        checkPromotabilityStatus(mTabbedActivityTestRule.getActivityTestRule(), false);
         Assert.assertEquals(
                 0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
@@ -471,11 +482,10 @@ public class AppBannerManagerTest {
 
         // The userChoice promise should resolve (and cause the title to change). appinstalled is
         // not fired for native apps
-        new TabTitleObserver(
-                        mTabbedActivityTestRule.getActivity().getActivityTab(),
-                        "Got userChoice: accepted")
+        new TabTitleObserver(mTabbedActivityTestRule.getActivityTab(), "Got userChoice: accepted")
                 .waitForTitleUpdate(3);
 
+        checkPromotabilityStatus(mTabbedActivityTestRule.getActivityTestRule(), false);
         Assert.assertEquals(
                 0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
@@ -500,10 +510,10 @@ public class AppBannerManagerTest {
 
         // The appinstalled event should fire (and cause the title to change).
         new TabTitleObserver(
-                        mCustomTabActivityTestRule.getActivity().getActivityTab(),
-                        "Got userChoice: accepted")
+                        mCustomTabActivityTestRule.getActivityTab(), "Got userChoice: accepted")
                 .waitForTitleUpdate(3);
 
+        checkPromotabilityStatus(mCustomTabActivityTestRule, false);
         Assert.assertEquals(
                 0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
@@ -522,9 +532,10 @@ public class AppBannerManagerTest {
         clickButton(activity, ButtonType.NEGATIVE);
 
         // Ensure userChoice is resolved.
-        new TabTitleObserver(activity.getActivityTab(), "Got userChoice: dismissed")
+        new TabTitleObserver(mTabbedActivityTestRule.getActivityTab(), "Got userChoice: dismissed")
                 .waitForTitleUpdate(3);
 
+        checkPromotabilityStatus(mTabbedActivityTestRule.getActivityTestRule(), true);
         Assert.assertEquals(
                 0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
@@ -545,9 +556,10 @@ public class AppBannerManagerTest {
         clickButton(activity, ButtonType.NEGATIVE);
 
         // Ensure userChoice is resolved.
-        new TabTitleObserver(activity.getActivityTab(), "Got userChoice: dismissed")
+        new TabTitleObserver(mTabbedActivityTestRule.getActivityTab(), "Got userChoice: dismissed")
                 .waitForTitleUpdate(3);
 
+        checkPromotabilityStatus(mTabbedActivityTestRule.getActivityTestRule(), false);
         Assert.assertEquals(
                 0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));
     }
@@ -718,7 +730,7 @@ public class AppBannerManagerTest {
 
         // The appinstalled event should fire (and cause the title to change).
         new TabTitleObserver(
-                        mTabbedActivityTestRule.getActivity().getActivityTab(),
+                        mTabbedActivityTestRule.getActivityTab(),
                         "Got appinstalled: listener, attr")
                 .waitForTitleUpdate(3);
 
@@ -758,9 +770,7 @@ public class AppBannerManagerTest {
         waitUntilBottomSheetStatus(BottomSheetController.SheetState.HIDDEN);
 
         // Ensure userChoice is resolved.
-        new TabTitleObserver(
-                        mTabbedActivityTestRule.getActivity().getActivityTab(),
-                        "Got userChoice: dismissed")
+        new TabTitleObserver(mTabbedActivityTestRule.getActivityTab(), "Got userChoice: dismissed")
                 .waitForTitleUpdate(3);
 
         Assert.assertEquals(
@@ -820,7 +830,13 @@ public class AppBannerManagerTest {
                 /* incognito= */ false,
                 /* waitForNtpLoad= */ true);
 
-        Tab backgroundTab = mTabbedActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0);
+        Tab backgroundTab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                mTabbedActivityTestRule
+                                        .getActivity()
+                                        .getCurrentTabModel()
+                                        .getTabAt(0));
         Assert.assertTrue(backgroundTab != null);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -849,7 +865,7 @@ public class AppBannerManagerTest {
         mTabbedActivityTestRule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule.getActivityTestRule(), url);
 
-        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mTabbedActivityTestRule.getActivityTab();
         tapAndWaitForModalBanner(tab);
 
         // Navigate and check that the dialog was dismissed.

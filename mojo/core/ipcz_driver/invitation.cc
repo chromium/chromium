@@ -94,7 +94,7 @@ IpczDriverHandle CreateTransportForMojoEndpoint(
     return IPCZ_INVALID_DRIVER_HANDLE;
   }
 
-  auto transport = base::MakeRefCounted<Transport>(
+  auto transport = Transport::Create(
       endpoint_types, PlatformChannelEndpoint(std::move(handle)),
       std::move(remote_process), remote_process_trust);
   transport->SetErrorHandler(error_handler, error_handler_context);
@@ -304,6 +304,8 @@ MojoResult Invitation::Send(
   }
 
   if (num_attachments_ == 0 || max_attachment_index_ != num_attachments_ - 1) {
+    // The transport was created above but will not be used. Ensure it's closed.
+    ObjectBase::TakeFromHandle(transport);
     return MOJO_RESULT_FAILED_PRECONDITION;
   }
 

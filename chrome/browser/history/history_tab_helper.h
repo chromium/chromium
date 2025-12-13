@@ -8,9 +8,12 @@
 #include <optional>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/history/core/browser/history_service_observer.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/translate/core/browser/translate_driver.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -24,6 +27,7 @@ class HistoryService;
 class HistoryTabHelper
     : public content::WebContentsObserver,
       public translate::TranslateDriver::LanguageDetectionObserver,
+      public history::HistoryServiceObserver,
       public content::WebContentsUserData<HistoryTabHelper> {
  public:
   HistoryTabHelper(const HistoryTabHelper&) = delete;
@@ -51,7 +55,9 @@ class HistoryTabHelper
 
 #if BUILDFLAG(IS_ANDROID)
   // Sets App ID that that goes into visit database.
-  void SetAppId(const std::string& app_id) { app_id_ = app_id; }
+  void SetAppId(std::optional<std::string> app_id) { app_id_ = app_id; }
+  void SetClearAppIdAfterFirstCommit();
+  std::optional<std::string> GetAppId() { return app_id_; }
 #endif
 
  private:
@@ -86,6 +92,10 @@ class HistoryTabHelper
                            ui::PageTransition transition,
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
+
+  // history::HistoryServiceObserver.
+  void OnURLVisited(history::HistoryService* history_service,
+                    const history::VisitedURLInfo& visited_url_info) override;
 
   // TranslateDriver::LanguageDetectionObserver implementation.
   void OnLanguageDetermined(
@@ -132,6 +142,13 @@ class HistoryTabHelper
   // The `WebContents` that opened the `WebContents` associated with `this` via
   // "Open in New Tab", "Open in New Window", window.open(), etc.
   base::WeakPtr<content::WebContents> opener_web_contents_;
+
+  bool clear_app_id_after_first_commit_;
+
+  // Set only when the history service observer event was invoked. Used to
+  // remove HistoryTabHelper object from the observer list in the destructor
+  // where |GetHistoryService()| doesn't work any longer.
+  raw_ptr<history::HistoryService> history_service_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

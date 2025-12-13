@@ -18,7 +18,6 @@ import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -26,20 +25,20 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
- * PersistedTabData is Tab data persisted across restarts
- * A constructor of taking a Tab, a PersistedTabDataStorage and
- * PersistedTabDataID (identifier for {@link PersistedTabData}
- * in storage) is required as reflection is used to build
- * the object after acquiring the serialized object from storage.
+ * PersistedTabData is Tab data persisted across restarts A constructor of taking a Tab, a
+ * PersistedTabDataStorage and PersistedTabDataID (identifier for {@link PersistedTabData} in
+ * storage) is required as reflection is used to build the object after acquiring the serialized
+ * object from storage.
  */
 @NullMarked
 public abstract class PersistedTabData implements UserData {
@@ -54,8 +53,7 @@ public abstract class PersistedTabData implements UserData {
     private final String mPersistedTabDataId;
     private long mLastUpdatedMs = LAST_UPDATE_UNKNOWN;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public @Nullable ObservableSupplierImpl<Boolean> mIsTabSaveEnabledSupplier;
+    @VisibleForTesting public @Nullable ObservableSupplierImpl<Boolean> mIsTabSaveEnabledSupplier;
 
     private @Nullable Callback<Boolean> mTabSaveEnabledToggleCallback;
     private boolean mFirstSaveDone;
@@ -348,7 +346,7 @@ public abstract class PersistedTabData implements UserData {
     private static <T extends PersistedTabData> void addCallback(
             String key, Callback<@Nullable T> callback) {
         if (!sCachedCallbacks.containsKey(key)) {
-            sCachedCallbacks.put(key, new LinkedList<>());
+            sCachedCallbacks.put(key, new ArrayList<>());
         }
         sCachedCallbacks.get(key).add(callback);
     }

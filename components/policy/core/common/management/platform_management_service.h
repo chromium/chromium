@@ -15,7 +15,7 @@ namespace policy {
 
 // This class gives information related to the OS and device's management
 // state.
-// For more imformation please read
+// For more information please read
 // //components/policy/core/common/management/management_service.md
 class POLICY_EXPORT PlatformManagementService : public ManagementService {
  public:

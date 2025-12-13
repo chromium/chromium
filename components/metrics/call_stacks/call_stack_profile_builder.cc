@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
 
 #include <algorithm>
@@ -18,6 +13,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
@@ -55,7 +51,7 @@ uint64_t HashModuleFilename(const base::FilePath& filename) {
   size_t basename_length_in_bytes =
       basename.size() * sizeof(base::FilePath::CharType);
   std::string name_bytes(basename_length_in_bytes, '\0');
-  memcpy(&name_bytes[0], &basename[0], basename_length_in_bytes);
+  UNSAFE_TODO(memcpy(&name_bytes[0], &basename[0], basename_length_in_bytes));
   return base::HashMetricName(name_bytes);
 }
 

@@ -7,9 +7,19 @@ package org.chromium.chrome.browser.toolbar.settings;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.widget.ImageView;
 
 import androidx.fragment.app.FragmentManager;
@@ -23,22 +33,38 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.prefs.LocalStatePrefs;
+import org.chromium.chrome.browser.prefs.LocalStatePrefsJni;
+import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
+import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment.HighlightedOption;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.base.TestActivity;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Unit tests for {@link AddressBarSettingsFragment}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AddressBarSettingsFragmentUnitTest {
+    @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -50,11 +76,29 @@ public class AddressBarSettingsFragmentUnitTest {
     private RadioButtonWithDescription mBottomButton;
     private Preference mAddressBarTitle;
     private ImageView mToolbarPositionImage;
+    private @Mock LocalStatePrefs.Natives mLocalStatePrefsNatives;
+    private @Mock PrefService mLocalPrefService;
 
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
         mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        LocalStatePrefs.setNativePrefsLoadedForTesting(true);
+        LocalStatePrefsJni.setInstanceForTesting(mLocalStatePrefsNatives);
+        when(mLocalStatePrefsNatives.getPrefService()).thenReturn(mLocalPrefService);
+
+        AtomicReference<@Nullable Boolean> localPrefValue = new AtomicReference<>();
+        doAnswer(
+                        invocation -> {
+                            localPrefValue.set(invocation.getArgument(1));
+                            return null;
+                        })
+                .when(mLocalPrefService)
+                .setBoolean(eq(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION), anyBoolean());
+        when(mLocalPrefService.hasPrefPath(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION))
+                .thenAnswer(invocation -> localPrefValue.get() != null);
+        when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION))
+                .thenAnswer(invocation -> localPrefValue.get() != null && localPrefValue.get());
     }
 
     @After
@@ -66,7 +110,25 @@ public class AddressBarSettingsFragmentUnitTest {
         mActivity = (TestActivity) activity;
     }
 
-    private void launchFragment() {
+    @Test
+    @SmallTest
+    public void testBottomButtonHighlight() {
+        launchFragmentWithArgs(
+                AddressBarSettingsFragment.createArguments(HighlightedOption.BOTTOM_TOOLBAR));
+
+        ColorDrawable initialBackground = (ColorDrawable) mBottomButton.getBackground();
+        assertEquals(
+                SemanticColorUtils.getSettingsBackgroundColor(mActivity),
+                initialBackground.getColor());
+
+        // Run delayed animation that reverts the color.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        ColorDrawable finalBackground = (ColorDrawable) mBottomButton.getBackground();
+        assertEquals(SemanticColorUtils.getDefaultBgColor(mActivity), finalBackground.getColor());
+    }
+
+    private void launchFragmentWithArgs(Bundle args) {
         FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
         mSettings =
                 (AddressBarSettingsFragment)
@@ -75,6 +137,7 @@ public class AddressBarSettingsFragmentUnitTest {
                                 .instantiate(
                                         AddressBarSettingsFragment.class.getClassLoader(),
                                         AddressBarSettingsFragment.class.getName());
+        mSettings.setArguments(args);
 
         fragmentManager.beginTransaction().replace(android.R.id.content, mSettings).commit();
         mActivityScenarioRule.getScenario().moveToState(State.STARTED);
@@ -101,9 +164,10 @@ public class AddressBarSettingsFragmentUnitTest {
     @Test
     @SmallTest
     public void testTopAndThenSelectBottom() {
-        mSharedPreferencesManager.writeBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true);
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, ToolbarPositionAndSource.TOP_SETTINGS);
 
-        launchFragment();
+        launchFragmentWithArgs(null);
         assertEquals(
                 mActivity.getString(R.string.address_bar_settings_description),
                 mAddressBarTitle.getSummary());
@@ -113,38 +177,70 @@ public class AddressBarSettingsFragmentUnitTest {
         assertEquals(
                 mActivity.getString(R.string.address_bar_settings_currently_on_top),
                 mToolbarPositionImage.getContentDescription());
+        clearInvocations(mLocalPrefService);
 
         mBottomButton.performClick();
 
         assertFalse(mTopButton.isChecked());
         assertTrue(mBottomButton.isChecked());
-        assertFalse(
-                mSharedPreferencesManager.readBoolean(
-                        ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true));
+        assertEquals(
+                ToolbarPositionAndSource.BOTTOM_SETTINGS,
+                mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
         assertFalse(mToolbarPositionImage.isSelected());
         assertEquals(
                 mActivity.getString(R.string.address_bar_settings_currently_on_bottom),
                 mToolbarPositionImage.getContentDescription());
+        verify(mLocalPrefService, times(1)).setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
     }
 
     @Test
     @SmallTest
     public void testBottomAndThenSelectTop() {
-        mSharedPreferencesManager.writeBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false);
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                ToolbarPositionAndSource.BOTTOM_SETTINGS);
 
-        launchFragment();
+        launchFragmentWithArgs(null);
         assertFalse(mTopButton.isChecked());
         assertTrue(mBottomButton.isChecked());
         assertFalse(mToolbarPositionImage.isSelected());
+        clearInvocations(mLocalPrefService);
 
         mTopButton.performClick();
 
         assertTrue(mTopButton.isChecked());
         assertFalse(mBottomButton.isChecked());
-        assertTrue(
-                mSharedPreferencesManager.readBoolean(
-                        ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, false));
+        assertEquals(
+                ToolbarPositionAndSource.TOP_SETTINGS,
+                mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
         assertTrue(mToolbarPositionImage.isSelected());
+        verify(mLocalPrefService, times(1)).setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
+        verify(mLocalPrefService, never()).setBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, true);
+    }
+
+    @Test
+    @SmallTest
+    public void testBottomAndThenSelectTop_localPrefNotInitialized() {
+        LocalStatePrefs.setNativePrefsLoadedForTesting(false);
+        mSharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
+                ToolbarPositionAndSource.BOTTOM_SETTINGS);
+
+        launchFragmentWithArgs(null);
+        assertFalse(mTopButton.isChecked());
+        assertTrue(mBottomButton.isChecked());
+        assertFalse(mToolbarPositionImage.isSelected());
+        clearInvocations(mLocalPrefService);
+
+        mTopButton.performClick();
+
+        assertTrue(mTopButton.isChecked());
+        assertFalse(mBottomButton.isChecked());
+        assertEquals(
+                ToolbarPositionAndSource.TOP_SETTINGS,
+                mSharedPreferencesManager.readInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED));
+        assertTrue(mToolbarPositionImage.isSelected());
+        verify(mLocalStatePrefsNatives, never()).getPrefService();
     }
 
     @Test
@@ -156,7 +252,7 @@ public class AddressBarSettingsFragmentUnitTest {
         shadowPackageManager.setSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE, true);
         mSharedPreferencesManager.writeBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true);
 
-        launchFragment();
+        launchFragmentWithArgs(null);
         assertEquals(
                 mActivity.getString(R.string.address_bar_settings_description_foldable),
                 mAddressBarTitle.getSummary());

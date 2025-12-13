@@ -6,7 +6,6 @@
 
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "skia/rusty_png_feature.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <basetsd.h>  // Included before jpeglib.h because of INT32 clash
@@ -25,11 +24,13 @@ bool ImageEncoder::Encode(Vector<unsigned char>* dst,
   return SkJpegEncoder::Encode(&dst_stream, src, options);
 }
 
-bool ImageEncoder::Encode(Vector<unsigned char>* dst,
-                          const SkPixmap& src,
-                          const SkPngEncoder::Options& options) {
+bool ImageEncoder::Encode(
+    Vector<unsigned char>* dst,
+    const SkPixmap& src,
+    SkPngRustEncoder::CompressionLevel compression_level) {
   VectorWStream dst_stream(dst);
-  return skia::EncodePng(&dst_stream, src, options);
+  SkPngRustEncoder::Options options = {.fCompressionLevel = compression_level};
+  return SkPngRustEncoder::Encode(&dst_stream, src, options);
 }
 
 bool ImageEncoder::Encode(Vector<unsigned char>* dst,
@@ -58,10 +59,7 @@ bool ImageEncoder::Encode(Vector<unsigned char>* dst,
       return Encode(dst, src, options);
     }
     case kMimeTypePng: {
-      SkPngEncoder::Options options;
-      options.fFilterFlags = SkPngEncoder::FilterFlag::kSub;
-      options.fZLibLevel = 3;
-      return Encode(dst, src, options);
+      return Encode(dst, src, SkPngRustEncoder::CompressionLevel::kLow);
     }
   }
 }
@@ -83,10 +81,11 @@ std::unique_ptr<ImageEncoder> ImageEncoder::Create(
 std::unique_ptr<ImageEncoder> ImageEncoder::Create(
     Vector<unsigned char>* dst,
     const SkPixmap& src,
-    const SkPngEncoder::Options& options) {
+    SkPngRustEncoder::CompressionLevel compression_level) {
   std::unique_ptr<ImageEncoder> image_encoder(new ImageEncoder(dst));
+  SkPngRustEncoder::Options options = {.fCompressionLevel = compression_level};
   image_encoder->encoder_ =
-      skia::MakePngEncoder(&image_encoder->dst_, src, options);
+      SkPngRustEncoder::Make(&image_encoder->dst_, src, options);
   if (!image_encoder->encoder_) {
     return nullptr;
   }

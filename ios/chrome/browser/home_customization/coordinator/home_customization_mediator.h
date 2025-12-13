@@ -16,19 +16,19 @@ class DiscoverFeedVisibilityBrowserAgent;
 @protocol HomeCustomizationNavigationDelegate;
 class PrefService;
 
-namespace image_fetcher {
-class ImageFetcherService;
-}
+namespace commerce {
+class ShoppingService;
+}  // namespace commerce
 
 // The mediator for the Home surface's customization menu.
 @interface HomeCustomizationMediator : NSObject <HomeCustomizationMutator>
 
-// Initializes this mediator with a pref service.
+// Initializes this mediator with all dependencies.
 - (instancetype)initWithPrefService:(PrefService*)prefService
     discoverFeedVisibilityBrowserAgent:
         (DiscoverFeedVisibilityBrowserAgent*)discoverFeedVisibilityBrowserAgent
-                   imageFetcherService:
-                       (image_fetcher::ImageFetcherService*)imageFetcherService
+                       shoppingService:
+                           (commerce::ShoppingService*)shoppingService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

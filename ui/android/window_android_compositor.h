@@ -16,7 +16,7 @@
 
 namespace viz {
 class SurfaceId;
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }
 
 namespace ui {

@@ -83,8 +83,6 @@ class PowerButtonControllerTestApi {
 
   PowerButtonScreenshotController* GetScreenshotController();
 
-  void SetPowerButtonType(PowerButtonController::ButtonType button_type);
-
   void SetTickClock(const base::TickClock* tick_clock);
 
   void SetShowMenuAnimationDone(bool show_menu_animation_done);

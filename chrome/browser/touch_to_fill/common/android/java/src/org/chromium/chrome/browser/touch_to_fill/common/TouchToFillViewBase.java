@@ -38,7 +38,7 @@ import java.util.Set;
 /** This is a base class for the Touch to Fill View classes. */
 @NullMarked
 public abstract class TouchToFillViewBase implements BottomSheetContent {
-    private static final int MAX_FULLY_VISIBLE_CREDENTIAL_COUNT = 3;
+    public static final int MAX_FULLY_VISIBLE_SUGGESTION_COUNT = 3;
 
     private final BottomSheetController mBottomSheetController;
     private final RelativeLayout mContentView;
@@ -127,18 +127,18 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
 
     /**
      * Used as a helper for the suggestion list height calculation.
-     * @return the item type of the footer on the {@link BottomSheet}.
+     *
+     * @return the item types of the footer on the {@link BottomSheet}.
      */
-    protected abstract int footerItemType();
+    protected abstract Set<Integer> footerItemTypes();
 
     /**
      * @param bottomSheetController The {@link BottomSheetController} used to show/hide the sheet.
      * @param contentView The content of the bottom sheet.
      * @param suppressCollectionA11y Disables/enables setting the collection related a11y node info,
-     *                               basically removing the "2 of 4" part in a regular RecycleView
-     *                               item announcement. Setting it to `true` implies that the item
-     *                               content description is updated accordingly for items that are
-     *                               eligible for indexing from the UI perspective.
+     *     basically removing the "2 of 4" part in a regular RecycleView item announcement. Setting
+     *     it to `true` implies that the item content description is updated accordingly for items
+     *     that are eligible for indexing from the UI perspective.
      */
     public TouchToFillViewBase(
             BottomSheetController bottomSheetController,
@@ -282,7 +282,7 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
                 // If we want to show only the initial items, the footer should remain hidden.
                 return totalHeight + getConclusiveMarginHeightPx();
             }
-            if (showOnlyInitialItems && visibleItems > MAX_FULLY_VISIBLE_CREDENTIAL_COUNT) {
+            if (showOnlyInitialItems && visibleItems > MAX_FULLY_VISIBLE_SUGGESTION_COUNT) {
                 // If the current item is the last to be shown, skip remaining elements and margins.
                 totalHeight += getHeightWithMarginsPx(child, true);
                 return totalHeight;
@@ -322,6 +322,15 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
                         MeasureSpec.UNSPECIFIED);
     }
 
+    protected void removeObserver(BottomSheetObserver observer) {
+        mBottomSheetController.removeObserver(observer);
+    }
+
+    protected boolean isFullyExtended() {
+        return mBottomSheetController.getCurrentOffset()
+                == Math.min(getMaximumSheetHeightPx(), mBottomSheetController.getContainerHeight());
+    }
+
     private @Px int getInsetDisplayWidthPx() {
         return mContentView.getContext().getResources().getDisplayMetrics().widthPixels
                 - 2 * getSideMarginPx();
@@ -339,7 +348,8 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
         int posInAdapter =
                 assumeNonNull(mSheetItemListView).getChildAdapterPosition(childInSheetView);
         assumeNonNull(mSheetItemListView.getAdapter());
-        return mSheetItemListView.getAdapter().getItemViewType(posInAdapter) == footerItemType();
+        return footerItemTypes()
+                .contains(mSheetItemListView.getAdapter().getItemViewType(posInAdapter));
     }
 
     @Override

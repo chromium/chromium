@@ -10,7 +10,7 @@
 #import "base/test/mock_callback.h"
 #import "base/test/task_environment.h"
 #import "base/test/test.pb.h"
-#import "ios/chrome/test/app/mock_reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 

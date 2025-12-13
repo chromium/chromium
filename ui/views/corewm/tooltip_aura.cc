@@ -69,6 +69,21 @@ bool ShouldIgnoreScreenBounds() {
 
 namespace views::corewm {
 
+class TooltipAura::TooltipWidget : public Widget {
+ public:
+  TooltipWidget() = default;
+  ~TooltipWidget() override = default;
+
+  TooltipViewAura* GetTooltipView() { return tooltip_view_; }
+
+  void SetTooltipView(std::unique_ptr<TooltipViewAura> tooltip_view) {
+    tooltip_view_ = SetContentsView(std::move(tooltip_view));
+  }
+
+ private:
+  raw_ptr<TooltipViewAura> tooltip_view_ = nullptr;
+};
+
 // static
 const char TooltipAura::kWidgetName[] = "TooltipAura";
 
@@ -103,21 +118,6 @@ void TooltipAura::AdjustToCursor(gfx::Rect* anchor_point) {
   // TODO(crbug.com/40254494): Should adjust with actual cursor size.
   anchor_point->Offset(kCursorOffsetX, kCursorOffsetY);
 }
-
-class TooltipAura::TooltipWidget : public Widget {
- public:
-  TooltipWidget() = default;
-  ~TooltipWidget() override = default;
-
-  TooltipViewAura* GetTooltipView() { return tooltip_view_; }
-
-  void SetTooltipView(std::unique_ptr<TooltipViewAura> tooltip_view) {
-    tooltip_view_ = SetContentsView(std::move(tooltip_view));
-  }
-
- private:
-  raw_ptr<TooltipViewAura> tooltip_view_ = nullptr;
-};
 
 const gfx::RenderText* TooltipAura::GetRenderTextForTest() const {
   DCHECK(widget_);
@@ -168,7 +168,7 @@ gfx::Rect TooltipAura::GetTooltipBounds(const gfx::Size& tooltip_size,
     return tooltip_rect;
   }
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   gfx::Rect display_bounds(
       screen->GetDisplayNearestPoint(anchor_point).bounds());
 
@@ -231,7 +231,7 @@ void TooltipAura::DestroyWidget() {
 }
 
 int TooltipAura::GetMaxWidth(const gfx::Point& location) const {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   gfx::Rect display_bounds(screen->GetDisplayNearestPoint(location).bounds());
   return std::min(max_width_, (display_bounds.width() + 1) / 2);
 }

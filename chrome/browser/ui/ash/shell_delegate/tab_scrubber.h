@@ -8,13 +8,14 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_observer.h"
 #include "ui/events/event_handler.h"
 
-class Browser;
 class BrowserView;
 class ImmersiveRevealedLock;
 class Tab;
@@ -26,10 +27,12 @@ class Point;
 
 namespace ash {
 
+class BrowserDelegate;
+
 // Class to enable quick tab switching via horizontal X finger swipes (see
 // kFingerCount definition).
 class TabScrubber : public ui::EventHandler,
-                    public BrowserListObserver,
+                    public BrowserController::Observer,
                     public TabStripObserver {
  public:
   static constexpr int kFingerCount = 3;
@@ -68,14 +71,12 @@ class TabScrubber : public ui::EventHandler,
   void OnScrollEvent(ui::ScrollEvent* event) override;
 
   // BrowserListObserver overrides:
-  void OnBrowserRemoved(Browser* browser) override;
+  void OnBrowserClosed(BrowserDelegate* browser) override;
 
   // TabStripObserver overrides.
   void OnTabAdded(int index) override;
   void OnTabMoved(int from_index, int to_index) override;
   void OnTabRemoved(int index) override;
-
-  Browser* GetActiveBrowser();
 
   void BeginScrub(BrowserView* browser_view, float x_offset);
   // Returns true if it does finish the ongoing scrubbing.
@@ -94,11 +95,14 @@ class TabScrubber : public ui::EventHandler,
 
   bool GetEnabledForTesting() const { return enabled_; }
 
+  base::ScopedObservation<BrowserController, BrowserController::Observer>
+      browser_controller_observation_{this};
+
   // Are we currently scrubbing?.
   bool scrubbing_ = false;
   // The last browser we used for scrubbing, NULL if |scrubbing_| is false and
   // there is no pending work.
-  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<BrowserDelegate> browser_ = nullptr;
   // The TabStrip of the active browser we're scrubbing.
   raw_ptr<TabStrip> tab_strip_ = nullptr;
   // The current accumulated x and y positions of a swipe, in the coordinates

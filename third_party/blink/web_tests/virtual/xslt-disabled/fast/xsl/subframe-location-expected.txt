@@ -1,0 +1,2 @@
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been removed in this browser. See https://chromestatus.com/feature/4709671889534976.
+Test that a document in a subframe processed with XSLT has a correct location. (bug 18259).

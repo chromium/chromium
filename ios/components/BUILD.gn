@@ -35,6 +35,7 @@ test("ios_components_unittests") {
   deps = [
     ":run_all_unittests",
     "//base",
+    "//components/test/ios:unit_tests",
     "//ios/components/cookie_util:unit_tests",
     "//ios/components/credential_provider_extension:unit_tests",
     "//ios/components/io_thread:unit_tests",
@@ -43,6 +44,7 @@ test("ios_components_unittests") {
     "//ios/components/security_interstitials/lookalikes:unit_tests",
     "//ios/components/security_interstitials/safe_browsing:unit_tests",
     "//ios/components/ui_util:unit_tests",
+    "//ios/web/test:packed_resources",
   ]
 
   assert_no_deps = ios_assert_no_deps

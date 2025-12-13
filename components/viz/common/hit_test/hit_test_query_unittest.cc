@@ -976,7 +976,7 @@ TEST_F(HitTestQueryTest, RootHitTestAskFlag) {
   active_data_.push_back(AggregatedHitTestRegion(
       e_id, HitTestRegionFlags::kHitTestAsk | HitTestRegionFlags::kHitTestMouse,
       e_bounds, transform_e_to_e, 0,
-      AsyncHitTestReasons::kUseDrawQuadData));  // e
+      AsyncHitTestReasons::kIrregularClip));  // e
   SendHitTestData();
 
   // All points are in e's coordinate system when we reach this case.

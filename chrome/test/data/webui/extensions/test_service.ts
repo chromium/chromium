@@ -52,6 +52,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'loadUnpacked',
       'loadUnpackedFromDrag',
       'notifyDragInstallInProgress',
+      'openDevToolsForError',
       'openUrl',
       'packExtension',
       'recordUserAction',
@@ -75,6 +76,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'shouldIgnoreUpdate',
       'showInFolder',
       'showItemOptionsPage',
+      'showSiteSettings',
       'updateAllExtensions',
       'updateExtensionCommandKeybinding',
       'updateExtensionCommandScope',
@@ -147,6 +149,10 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
 
   inspectItemView(id: string, view: chrome.developerPrivate.ExtensionView) {
     this.methodCalled('inspectItemView', [id, view]);
+  }
+
+  openDevToolsForError(error: chrome.developerPrivate.RuntimeError) {
+    this.methodCalled('openDevToolsForError', [error]);
   }
 
   removeRuntimeHostPermission(id: string, host: string) {
@@ -417,5 +423,9 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
   uploadItemToAccount(id: string) {
     this.methodCalled('uploadItemToAccount', id);
     return Promise.resolve(false);
+  }
+
+  showSiteSettings(id: string) {
+    this.methodCalled('showSiteSettings', id);
   }
 }

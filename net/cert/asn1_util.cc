@@ -7,6 +7,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/strings/string_view_util.h"
 #include "third_party/boringssl/src/pki/input.h"
 #include "third_party/boringssl/src/pki/parse_certificate.h"
 #include "third_party/boringssl/src/pki/parser.h"
@@ -212,7 +213,7 @@ bool ExtractSubjectFromDERCert(std::string_view cert,
   bssl::der::Input subject;
   if (!parser.ReadRawTLV(&subject))
     return false;
-  *subject_out = subject.AsStringView();
+  *subject_out = base::as_string_view(subject);
   return true;
 }
 
@@ -228,7 +229,7 @@ bool ExtractIssuerAndSubjectFromDERCert(
   if (!parser.ReadRawTLV(&issuer)) {
     return false;
   }
-  *issuer_out = issuer.AsSpan();
+  *issuer_out = issuer;
   // skip validity
   if (!parser.SkipTag(CBS_ASN1_SEQUENCE)) {
     return false;
@@ -237,7 +238,7 @@ bool ExtractIssuerAndSubjectFromDERCert(
   if (!parser.ReadRawTLV(&subject)) {
     return false;
   }
-  *subject_out = subject.AsSpan();
+  *subject_out = subject;
   return true;
 }
 
@@ -249,7 +250,7 @@ bool ExtractSPKIFromDERCert(std::string_view cert, std::string_view* spki_out) {
   bssl::der::Input spki;
   if (!parser.ReadRawTLV(&spki))
     return false;
-  *spki_out = spki.AsStringView();
+  *spki_out = base::as_string_view(spki);
   return true;
 }
 
@@ -280,7 +281,7 @@ bool ExtractSubjectPublicKeyFromSPKI(std::string_view spki,
   if (!spki_parser.ReadTag(CBS_ASN1_BITSTRING, &spk)) {
     return false;
   }
-  *spk_out = spk.AsStringView();
+  *spk_out = base::as_string_view(spk);
   return true;
 }
 
@@ -353,8 +354,8 @@ bool ExtractSignatureAlgorithmsFromDERCert(
   if (!certificate.ReadRawTLV(&cert_algorithm))
     return false;
 
-  *cert_signature_algorithm_sequence = cert_algorithm.AsStringView();
-  *tbs_signature_algorithm_sequence = tbs_algorithm.AsStringView();
+  *cert_signature_algorithm_sequence = base::as_string_view(cert_algorithm);
+  *tbs_signature_algorithm_sequence = base::as_string_view(tbs_algorithm);
   return true;
 }
 
@@ -376,7 +377,7 @@ bool ExtractExtensionFromDERCert(std::string_view cert,
     return true;
 
   *out_extension_critical = extension.critical;
-  *out_contents = extension.value.AsStringView();
+  *out_contents = base::as_string_view(extension.value);
   return true;
 }
 

@@ -23,7 +23,6 @@
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
 #include "chrome/browser/metrics/testing/metrics_consent_override.h"
 #include "chrome/browser/metrics/testing/metrics_reporting_pref_helper.h"
-#include "chrome/browser/metrics/testing/sync_metrics_test_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -224,7 +223,8 @@ class UkmBrowserTestBase : public SyncTest {
   std::unique_ptr<SyncServiceImplHarness> EnableSyncForProfile(
       Profile* profile) {
     std::unique_ptr<SyncServiceImplHarness> harness =
-        test::InitializeProfileForSync(profile, GetFakeServer()->AsWeakPtr());
+        SyncServiceImplHarness::Create(
+            profile, SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
 
     EXPECT_TRUE(harness->SetupSync());
 
@@ -276,10 +276,21 @@ class UkmBrowserTest : public UkmBrowserTestBase {
     // Having an empty TabModelList allows us to simply add the appropriate
     // TabModel.
     EXPECT_EQ(1U, TabModelList::models().size());
-    TabModelList::RemoveTabModel(TabModelList::models()[0]);
+    initial_tab_model_ = TabModelList::models()[0].get();
+    TabModelList::RemoveTabModel(initial_tab_model_);
     EXPECT_EQ(0U, TabModelList::models().size());
   }
+
+  void PostRunTestOnMainThread() override {
+    // Restore the initial tab model so the browser can shut down cleanly.
+    TabModelList::AddTabModel(initial_tab_model_);
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+ private:
+#if BUILDFLAG(IS_ANDROID)
+  raw_ptr<TabModel> initial_tab_model_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 class UkmBrowserTestWithSyncTransport : public UkmBrowserTestBase {
@@ -298,13 +309,6 @@ class UkmBrowserTestWithSyncTransport : public UkmBrowserTestBase {
     test_signin_client_subscription_ =
         secondary_account_helper::SetUpSigninClient(&test_url_loader_factory_);
     UkmBrowserTestBase::SetUpInProcessBrowserTestFixture();
-  }
-
-  void SetUpOnMainThread() override {
-#if BUILDFLAG(IS_CHROMEOS)
-    secondary_account_helper::InitNetwork();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-    UkmBrowserTestBase::SetUpOnMainThread();
   }
 
  private:
@@ -832,12 +836,12 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, SingleDisableExtensionsSyncCheck) {
   EXPECT_NE(0U, original_client_id);
 
   ASSERT_TRUE(
-      harness->DisableSyncForType(syncer::UserSelectableType::kExtensions));
+      harness->DisableSelectableType(syncer::UserSelectableType::kExtensions));
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   EXPECT_FALSE(ukm_test_helper.IsExtensionRecordingEnabled());
 
   ASSERT_TRUE(
-      harness->EnableSyncForType(syncer::UserSelectableType::kExtensions));
+      harness->EnableSelectableType(syncer::UserSelectableType::kExtensions));
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   EXPECT_TRUE(ukm_test_helper.IsExtensionRecordingEnabled());
   // Client ID should not be reset.
@@ -881,12 +885,12 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MultiDisableExtensionsSyncCheck) {
 #endif
 
   ASSERT_TRUE(
-      harness2->DisableSyncForType(syncer::UserSelectableType::kExtensions));
+      harness2->DisableSelectableType(syncer::UserSelectableType::kExtensions));
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   EXPECT_FALSE(ukm_test_helper.IsExtensionRecordingEnabled());
 
   ASSERT_TRUE(
-      harness2->EnableSyncForType(syncer::UserSelectableType::kExtensions));
+      harness2->EnableSelectableType(syncer::UserSelectableType::kExtensions));
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
   EXPECT_TRUE(ukm_test_helper.IsExtensionRecordingEnabled());
   EXPECT_EQ(original_client_id, ukm_test_helper.GetClientId());
@@ -1184,7 +1188,8 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTestWithSyncTransport,
   // should trigger starting the Sync machinery in standalone transport mode.
   Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
   std::unique_ptr<SyncServiceImplHarness> harness =
-      test::InitializeProfileForSync(profile, GetFakeServer()->AsWeakPtr());
+      SyncServiceImplHarness::Create(
+          profile, SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
 
@@ -1195,7 +1200,6 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTestWithSyncTransport,
   ASSERT_TRUE(harness->AwaitSyncTransportActive());
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             sync_service->GetTransportState());
-  ASSERT_FALSE(sync_service->IsSyncFeatureEnabled());
 
   // History Sync is not active.
   ASSERT_FALSE(sync_service->GetActiveDataTypes().Has(syncer::HISTORY));

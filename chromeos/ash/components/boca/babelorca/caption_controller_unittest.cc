@@ -20,6 +20,7 @@
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,6 +44,12 @@ void VerifyStyle(const ui::CaptionStyle& style,
   EXPECT_THAT(style.background_color, testing::HasSubstr(base::NumberToString(
                                           kCaptionsBackgroundOpacity / 100.0)));
   EXPECT_THAT(style.text_shadow, testing::HasSubstr(kCaptionsTextShadow));
+}
+
+media::mojom::LanguageIdentificationEventPtr GetLanguageIdentificationEvent() {
+  return media::mojom::LanguageIdentificationEvent::New(
+      "ar-EG", media::mojom::ConfidenceLevel::kConfident,
+      media::mojom::AsrSwitchResult::kSwitchSucceeded);
 }
 
 TEST(CaptionControllerTest, SetStyleOnStartLiveCaption) {
@@ -124,7 +131,8 @@ TEST(CaptionControllerTest, OnLanguageIdentificationEventBeforeStart) {
       /*caption_bubble_context=*/nullptr, &pref_service, kApplicationLocale,
       /*caption_bubble_settings=*/nullptr, std::move(delegate));
 
-  caption_controller.OnLanguageIdentificationEvent(nullptr);
+  caption_controller.OnLanguageIdentificationEvent(
+      GetLanguageIdentificationEvent());
 
   EXPECT_EQ(delegate_ptr->GetOnLanguageIdentificationEventCount(), 0u);
 }
@@ -139,7 +147,8 @@ TEST(CaptionControllerTest, OnLanguageIdentificationEvent) {
       /*caption_bubble_settings=*/nullptr, std::move(delegate));
 
   caption_controller.StartLiveCaption();
-  caption_controller.OnLanguageIdentificationEvent(nullptr);
+  caption_controller.OnLanguageIdentificationEvent(
+      GetLanguageIdentificationEvent());
 
   EXPECT_EQ(delegate_ptr->GetOnLanguageIdentificationEventCount(), 1u);
 }
@@ -155,7 +164,8 @@ TEST(CaptionControllerTest, OnLanguageIdentificationEventAfterStop) {
 
   caption_controller.StartLiveCaption();
   caption_controller.StopLiveCaption();
-  caption_controller.OnLanguageIdentificationEvent(nullptr);
+  caption_controller.OnLanguageIdentificationEvent(
+      GetLanguageIdentificationEvent());
 
   EXPECT_EQ(delegate_ptr->GetOnLanguageIdentificationEventCount(), 0u);
 }

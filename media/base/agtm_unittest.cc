@@ -9,34 +9,32 @@
 
 namespace media {
 
-TEST(GetHdrMetadataAgtmFromItutT35, HasMetadata) {
+TEST(GetSerializedAgtmItutT35, HasMetadata) {
   const uint8_t t35_country_code = 0xB5;
-  const std::vector<uint8_t> data = {0x58, 0x90, 0x69, 0x42, 0x05,
+  const std::vector<uint8_t> data = {0x00, 0x90, 0x00, 0x01, 0x01,
                                      0x00, 0x01, 0x02, 0x03};
-  const std::optional<gfx::HdrMetadataAgtm> agtm =
-      GetHdrMetadataAgtmFromItutT35(t35_country_code, data);
-  ASSERT_TRUE(agtm.has_value());
-  EXPECT_EQ(agtm->payload->size(), 3u);
-  const std::vector<uint8_t> expected = {0x01, 0x02, 0x03};
-  EXPECT_TRUE(agtm->payload->equals(
+  const auto agtm = GetSerializedAgtmItutT35(t35_country_code, data);
+  ASSERT_TRUE(agtm);
+  EXPECT_EQ(agtm->size(), 5u);
+  const std::vector<uint8_t> expected = {0x01, 0x00, 0x01, 0x02, 0x03};
+  EXPECT_TRUE(SkData::Equals(
+      agtm.get(),
       SkData::MakeWithCopy(expected.data(), expected.size()).get()));
 }
 
-TEST(GetHdrMetadataAgtmFromItutT35, WrongType) {
+TEST(GetSerializedAgtmItutT35, WrongType) {
   const uint8_t t35_country_code = 0xB5;
   const std::vector<uint8_t> data = {
-      0x58, 0x90, 0x69, 0xff /* wrong value*/, 0x05, 0x00, 0x01, 0x02, 0x03};
-  const std::optional<gfx::HdrMetadataAgtm> agtm =
-      GetHdrMetadataAgtmFromItutT35(t35_country_code, data);
-  ASSERT_FALSE(agtm.has_value());
+      0x00, 0x90, 0x00, 0xff /* wrong value*/, 0x01, 0x00, 0x01, 0x02, 0x03};
+  const auto agtm = GetSerializedAgtmItutT35(t35_country_code, data);
+  ASSERT_FALSE(agtm);
 }
 
-TEST(GetHdrMetadataAgtmFromItutT35, DataTooShort) {
+TEST(GetSerializedAgtmItutT35, DataTooShort) {
   const uint8_t t35_country_code = 0xB5;
   const std::vector<uint8_t> data = {0x58, 0x90, 0x69};
-  const std::optional<gfx::HdrMetadataAgtm> agtm =
-      GetHdrMetadataAgtmFromItutT35(t35_country_code, data);
-  ASSERT_FALSE(agtm.has_value());
+  const auto agtm = GetSerializedAgtmItutT35(t35_country_code, data);
+  ASSERT_FALSE(agtm);
 }
 
 }  // namespace media

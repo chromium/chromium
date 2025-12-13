@@ -8,8 +8,11 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_accessed_callback.h"
 #include "content/common/content_export.h"
-#include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
+#include "net/base/isolation_info.h"
+
+namespace network {
+struct ResourceRequest;
+}
 
 namespace content {
 
@@ -79,15 +82,21 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
     return weak_factory_.GetWeakPtr();
   }
 
+  static std::optional<url::Origin> TopFrameOriginForInitializeForRequest(
+      const network::ResourceRequest& resource_request);
+
   // Updates `ServiceWorkerClient` and `isolation_info_` for the next request.
   // Must be called on the initial request and every redirect requests.
+  // `url` and `top_frame_origin` must come from the same ResourceRequest
+  // through network::ResourceRequest::url and the above
+  // TopFrameOriginForInitializeForRequest();
   // `client_for_prefetch` is non-null when serving the request from prefetch
   // and inheriting the controller from `client_for_prefetch`.
   // Returns `false` if `client_for_prefetch` is set but can't be used. In such
   // cases, `this` and underlying `service_worker_client()` remains unchanged.
-  bool InitializeForRequest(
-      const network::ResourceRequest& tentative_resource_request,
-      const ServiceWorkerClient* client_for_prefetch);
+  bool InitializeForRequest(const GURL& url,
+                            std::optional<url::Origin> top_frame_origin,
+                            const ServiceWorkerClient* client_for_prefetch);
 
  private:
   // In term of the spec, this is the request's reserved client

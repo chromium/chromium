@@ -232,7 +232,8 @@ WorkletAnimation* WorkletAnimation::Create(
           animator_name)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "The animator '" + animator_name + "' has not yet been registered.");
+        StrCat({"The animator '", animator_name,
+                "' has not yet been registered."}));
     return nullptr;
   }
 
@@ -370,7 +371,7 @@ std::optional<double> WorkletAnimation::startTime() {
   return ToMilliseconds(start_time_.value());
 }
 
-void WorkletAnimation::pause(ExceptionState& exception_state) {
+void WorkletAnimation::pause() {
   DCHECK(IsMainThread());
   if (play_state_ == V8AnimationPlayState::Enum::kPaused) {
     return;

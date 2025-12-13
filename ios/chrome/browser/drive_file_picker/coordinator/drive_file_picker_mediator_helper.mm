@@ -24,29 +24,28 @@ namespace {
 constexpr NSInteger kFirstPageSize = 20;
 // Number of items to fetch for the next pages.
 constexpr NSInteger kNextPageSize = 50;
-// The size of the drive file picker item icon.
-constexpr CGFloat kDriveFilePickerItemIconSize = 18;
 
 // extra_term parameter for the Starred view.
-NSString* kStarredExtraTerm = @"starred=true";
+NSString* const kStarredExtraTerm = @"starred=true";
 // extra_term parameter for the Recent view.
-NSString* kRecentExtraTerm = @"mimeType!='application/vnd.google-apps.folder'";
+NSString* const kRecentExtraTerm =
+    @"mimeType!='application/vnd.google-apps.folder'";
 // order_by parameter for the Recent view.
-NSString* kRecentOrderBy = @"recency desc";
+NSString* const kRecentOrderBy = @"recency desc";
 // extra_term parameter for the Shared with me view.
-NSString* kSharedWithMeExtraTerm = @"sharedWithMe=true";
+NSString* const kSharedWithMeExtraTerm = @"sharedWithMe=true";
 // order_by parameter for the Shared with me view.
-NSString* kSharedWithMeOrderBy = @"sharedWithMeTime desc";
+NSString* const kSharedWithMeOrderBy = @"sharedWithMeTime desc";
 // The key word to sort items in an ascending order.
-NSString* kAscendingQueryOrder = @"asc";
+NSString* const kAscendingQueryOrder = @"asc";
 // The key word to sort items in an descending order.
-NSString* kDescendingQueryOrder = @"desc";
+NSString* const kDescendingQueryOrder = @"desc";
 // The key word to sort items by name.
-NSString* kQueryOrderNameType = @"name";
+NSString* const kQueryOrderNameType = @"name";
 // The key word to sort items by opening time.
-NSString* kQueryOrderOpeningType = @"viewedByMeTime";
+NSString* const kQueryOrderOpeningType = @"viewedByMeTime";
 // The key word to sort items by modification time.
-NSString* kQueryOrderModifiedType = @"modifiedTime";
+NSString* const kQueryOrderModifiedType = @"modifiedTime";
 // String representing any audio MIME type.
 const char kAnyAudioFileMimeType[] = "audio/*";
 // String representing any video MIME type.
@@ -54,7 +53,7 @@ const char kAnyVideoFileMimeType[] = "video/*";
 // String representing any image MIME type.
 const char kAnyImageFileMimeType[] = "image/*";
 // extra_term parameter for the "Archives" filter.
-NSString* kOnlyShowArchivesExtraTerm =
+NSString* const kOnlyShowArchivesExtraTerm =
     @"(mimeType='application/zip' or"
      " mimeType='application/x-7z-compressed' or"
      " mimeType='application/x-rar-compressed' or"
@@ -66,25 +65,20 @@ NSString* kOnlyShowArchivesExtraTerm =
      " mimeType='application/java-archive' or"
      " mimeType='application/gzip')";
 // extra_term parameter for the "Audio" filter.
-NSString* kOnlyShowAudioExtraTerm = @"mimeType contains 'audio/'";
+NSString* const kOnlyShowAudioExtraTerm = @"mimeType contains 'audio/'";
 // extra_term parameter for the "Video" filter.
-NSString* kOnlyShowVideosExtraTerm = @"mimeType contains 'video/'";
+NSString* const kOnlyShowVideosExtraTerm = @"mimeType contains 'video/'";
 // extra_term parameter for the "Photos & Images" filter.
-NSString* kOnlyShowImagesExtraTerm = @"mimeType contains 'image/'";
+NSString* const kOnlyShowImagesExtraTerm = @"mimeType contains 'image/'";
 // extra_term parameter for the "PDFs" filter.
-NSString* kOnlyShowPDFsExtraTerm = @"mimeType='application/pdf'";
+NSString* const kOnlyShowPDFsExtraTerm = @"mimeType='application/pdf'";
 // extra_term parameter to add folders to a filter.
-NSString* kAlsoShowFoldersExtraTerm =
+NSString* const kAlsoShowFoldersExtraTerm =
     @"mimeType='application/vnd.google-apps.folder'";
 // Prefix of MIME types associated with Google apps.
-NSString* kGoogleAppsMIMETypePrefix = @"application/vnd.google-apps.";
+NSString* const kGoogleAppsMIMETypePrefix = @"application/vnd.google-apps.";
 // MIME type for folder items.
-NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
-// Prefix of MIME types associated with images.
-NSString* kImageMIMETypePrefix = @"image/";
-// Prefix of the icon link for shortcuts.
-NSString* kShortcutImageLinkPrefix =
-    @"https://drive-thirdparty.googleusercontent.com/64/type/";
+NSString* const kFolderMIMEType = @"application/vnd.google-apps.folder";
 
 // Replaces `/` and `\` characters with `_` in `file_path` and returns the
 // result.
@@ -139,38 +133,39 @@ NSArray<UTType*>* UTTypesAcceptedForEvent(const ChooseFileEvent& event) {
   return types;
 }
 
-void ApplySortToDriveListQuery(DriveItemsSortingType sorting_criteria,
-                               DriveItemsSortingOrder sorting_direction,
-                               bool folders_first,
-                               DriveListQuery& query) {
-  NSString* sorting_criteria_str;
-  switch (sorting_criteria) {
-    case DriveItemsSortingType::kName:
-      sorting_criteria_str = kQueryOrderNameType;
+void ApplySortToDriveListQuery(
+    DriveFilePickerSortingCriterion sorting_criterion,
+    DriveFilePickerSortingDirection sorting_direction,
+    bool folders_first,
+    DriveListQuery& query) {
+  NSString* sorting_criterion_str;
+  switch (sorting_criterion) {
+    case DriveFilePickerSortingCriterion::kName:
+      sorting_criterion_str = kQueryOrderNameType;
       break;
-    case DriveItemsSortingType::kOpeningTime:
-      sorting_criteria_str = kQueryOrderOpeningType;
+    case DriveFilePickerSortingCriterion::kOpeningTime:
+      sorting_criterion_str = kQueryOrderOpeningType;
       break;
-    case DriveItemsSortingType::kModificationTime:
-      sorting_criteria_str = kQueryOrderModifiedType;
+    case DriveFilePickerSortingCriterion::kModificationTime:
+      sorting_criterion_str = kQueryOrderModifiedType;
       break;
   }
   NSString* sorting_direction_str;
   switch (sorting_direction) {
-    case DriveItemsSortingOrder::kAscending:
+    case DriveFilePickerSortingDirection::kAscending:
       sorting_direction_str = kAscendingQueryOrder;
       break;
-    case DriveItemsSortingOrder::kDescending:
+    case DriveFilePickerSortingDirection::kDescending:
       sorting_direction_str = kDescendingQueryOrder;
       break;
   }
   if (folders_first) {
     query.order_by =
-        [NSString stringWithFormat:@"folder,%@ %@", sorting_criteria_str,
+        [NSString stringWithFormat:@"folder,%@ %@", sorting_criterion_str,
                                    sorting_direction_str];
   } else {
-    query.order_by = [NSString
-        stringWithFormat:@"%@ %@", sorting_criteria_str, sorting_direction_str];
+    query.order_by = [NSString stringWithFormat:@"%@ %@", sorting_criterion_str,
+                                                sorting_direction_str];
   }
 }
 
@@ -217,9 +212,7 @@ void ApplyFilterToDriveListQuery(DriveFilePickerFilter filter,
 DriveListQuery CreateDriveListQuery(
     DriveFilePickerCollectionType collection_type,
     NSString* folder_identifier,
-    DriveFilePickerFilter filter,
-    DriveItemsSortingType sorting_criteria,
-    DriveItemsSortingOrder sorting_direction,
+    DriveFilePickerOptions options,
     BOOL should_show_search_items,
     NSString* search_text,
     NSString* page_token) {
@@ -237,9 +230,11 @@ DriveListQuery CreateDriveListQuery(
       query.order_by = kRecentOrderBy;
     } else {
       query.filename_prefix = search_text;
-      ApplySortToDriveListQuery(sorting_criteria, sorting_direction,
+      ApplySortToDriveListQuery(options.sorting_criterion,
+                                options.sorting_direction,
                                 /* folders_first= */ false, query);
-      ApplyFilterToDriveListQuery(filter, /* include_folders= */ false, query);
+      ApplyFilterToDriveListQuery(options.filter, /* include_folders= */ false,
+                                  query);
     }
     return query;
   }
@@ -253,15 +248,19 @@ DriveListQuery CreateDriveListQuery(
       break;
     case DriveFilePickerCollectionType::kFolder:
       query.folder_identifier = folder_identifier;
-      ApplySortToDriveListQuery(sorting_criteria, sorting_direction,
+      ApplySortToDriveListQuery(options.sorting_criterion,
+                                options.sorting_direction,
                                 /* folders_first= */ true, query);
-      ApplyFilterToDriveListQuery(filter, /* include_folders= */ true, query);
+      ApplyFilterToDriveListQuery(options.filter, /* include_folders= */ true,
+                                  query);
       break;
     case DriveFilePickerCollectionType::kStarred:
       query.extra_term = kStarredExtraTerm;
-      ApplySortToDriveListQuery(sorting_criteria, sorting_direction,
+      ApplySortToDriveListQuery(options.sorting_criterion,
+                                options.sorting_direction,
                                 /* folders_first= */ false, query);
-      ApplyFilterToDriveListQuery(filter, /* include_folders= */ false, query);
+      ApplyFilterToDriveListQuery(options.filter, /* include_folders= */ false,
+                                  query);
       break;
     case DriveFilePickerCollectionType::kRecent:
       query.extra_term = kRecentExtraTerm;
@@ -270,7 +269,8 @@ DriveListQuery CreateDriveListQuery(
     case DriveFilePickerCollectionType::kSharedWithMe:
       query.extra_term = kSharedWithMeExtraTerm;
       query.order_by = kSharedWithMeOrderBy;
-      ApplyFilterToDriveListQuery(filter, /* include_folders= */ false, query);
+      ApplyFilterToDriveListQuery(options.filter, /* include_folders= */ false,
+                                  query);
       break;
   }
 
@@ -408,7 +408,7 @@ NSString* DriveFilePickerItemSubtitleRecent(const DriveItem& item) {
 NSString* DriveFilePickerItemSubtitle(
     const DriveItem& item,
     DriveFilePickerCollectionType collection_type,
-    DriveItemsSortingType sorting_criteria,
+    DriveFilePickerSortingCriterion sorting_criterion,
     BOOL should_show_search_items,
     NSString* search_text) {
   // Handling search separately.
@@ -417,13 +417,13 @@ NSString* DriveFilePickerItemSubtitle(
       // Zero-state search items are sorted by recency.
       return DriveFilePickerItemSubtitleRecent(item);
     }
-    switch (sorting_criteria) {
-      case DriveItemsSortingType::kName:
-      case DriveItemsSortingType::kModificationTime:
+    switch (sorting_criterion) {
+      case DriveFilePickerSortingCriterion::kName:
+      case DriveFilePickerSortingCriterion::kModificationTime:
         // If the sorting criteria is by name or modification time, then the
         // subtitle presented for each item is the last modification time.
         return DriveFilePickerItemSubtitleModified(item);
-      case DriveItemsSortingType::kOpeningTime:
+      case DriveFilePickerSortingCriterion::kOpeningTime:
         return DriveFilePickerItemSubtitleOpened(item);
     }
   }
@@ -441,13 +441,13 @@ NSString* DriveFilePickerItemSubtitle(
       return DriveFilePickerItemSubtitleShareWithMe(item);
     case DriveFilePickerCollectionType::kFolder:
     case DriveFilePickerCollectionType::kStarred:
-      switch (sorting_criteria) {
-        case DriveItemsSortingType::kName:
-        case DriveItemsSortingType::kModificationTime:
+      switch (sorting_criterion) {
+        case DriveFilePickerSortingCriterion::kName:
+        case DriveFilePickerSortingCriterion::kModificationTime:
           // If the sorting criteria is by name or modification time, then the
           // subtitle presented for each item is the last modification time.
           return DriveFilePickerItemSubtitleModified(item);
-        case DriveItemsSortingType::kOpeningTime:
+        case DriveFilePickerSortingCriterion::kOpeningTime:
           return DriveFilePickerItemSubtitleOpened(item);
       }
   }
@@ -456,11 +456,9 @@ NSString* DriveFilePickerItemSubtitle(
 DriveFilePickerItem* DriveItemToDriveFilePickerItem(
     const DriveItem& item,
     DriveFilePickerCollectionType collection_type,
-    DriveItemsSortingType sorting_criteria,
+    DriveFilePickerSortingCriterion sorting_criterion,
     BOOL should_show_search_items,
-    NSString* search_text,
-    UIImage* fetched_icon,
-    NSString* fetched_icon_link) {
+    NSString* search_text) {
   BOOL item_is_shortcut_to_folder =
       item.is_shortcut &&
       [item.shortcut_target_mime_type isEqualToString:kFolderMIMEType];
@@ -472,20 +470,17 @@ DriveFilePickerItem* DriveItemToDriveFilePickerItem(
   } else {
     type = DriveItemType::kFile;
   }
-  UIImage* icon =
-      fetched_icon ? fetched_icon : GetPlaceholderIconForDriveItem(item);
   DriveFilePickerItem* drive_file_picker_item = [[DriveFilePickerItem alloc]
       initWithIdentifier:item.identifier
                    title:item.name
                 subtitle:DriveFilePickerItemSubtitle(
-                             item, collection_type, sorting_criteria,
+                             item, collection_type, sorting_criterion,
                              should_show_search_items, search_text)
-                    icon:icon
+                    icon:item.GetPlaceholderImage()
                     type:type];
-  drive_file_picker_item.shouldFetchIcon =
-      (fetched_icon == nil && fetched_icon_link != nil);
+  drive_file_picker_item.shouldFetchIcon = item.GetImageLink() != nil;
   drive_file_picker_item.iconIsThumbnail =
-      [fetched_icon_link isEqualToString:item.thumbnail_link];
+      item.GetImageType() == DriveItem::ImageType::kThumbnail;
   drive_file_picker_item.isShortcut = item.is_shortcut;
   return drive_file_picker_item;
 }
@@ -542,42 +537,6 @@ std::optional<base::FilePath> DriveFilePickerGenerateDownloadFilePath(
 
   CHECK(download_dir.IsParent(download_file_path));
   return download_file_path;
-}
-
-UIImage* GetPlaceholderIconForDriveItem(const DriveItem& item) {
-  if (item.is_shared_drive) {
-    return [DriveFilePickerItem sharedDrivesItem].icon;
-  } else if (item.is_folder) {
-    return DefaultSymbolWithPointSize(kFolderSymbol,
-                                      kDriveFilePickerItemIconSize);
-  } else if (item.is_shortcut) {
-    return DefaultSymbolWithPointSize(kArrowUTurnForwardSymbol,
-                                      kDriveFilePickerItemIconSize);
-  } else {
-    return DefaultSymbolWithPointSize(kDocSymbol, kDriveFilePickerItemIconSize);
-  }
-}
-
-NSString* GetImageLinkForDriveItem(const DriveItem& item) {
-  NSString* imageLink = nil;
-  if (item.is_shared_drive) {
-    // If this is a shared drive, the background image link should be fetched.
-    imageLink = item.background_image_link;
-  } else if ([item.mime_type hasPrefix:kImageMIMETypePrefix] &&
-             item.thumbnail_link) {
-    imageLink = item.thumbnail_link;
-  } else if (item.is_shortcut) {
-    if (item.shortcut_target_mime_type) {
-      // Icon links are expected to have the following format:
-      // https://drive-thirdparty.googleusercontent.com/64/type/<MIME type>
-      imageLink = [kShortcutImageLinkPrefix
-          stringByAppendingString:item.shortcut_target_mime_type];
-    }
-  } else {
-    // Otherwise the icon link should be fetched.
-    imageLink = item.icon_link;
-  }
-  return imageLink;
 }
 
 NSString* GetDisplayStringForFileUrls(NSArray<NSURL*>* file_urls) {

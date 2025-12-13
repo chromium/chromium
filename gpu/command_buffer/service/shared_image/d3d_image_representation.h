@@ -86,6 +86,27 @@ class DawnD3DBufferRepresentation : public DawnBufferRepresentation {
   wgpu::Buffer buffer_;
 };
 
+// Representation of a D3DImageBacking as a tensor.
+class WebNND3DTensorRepresentation : public WebNNTensorRepresentation {
+ public:
+  WebNND3DTensorRepresentation(SharedImageManager* manager,
+                               SharedImageBacking* backing,
+                               MemoryTypeTracker* tracker);
+  ~WebNND3DTensorRepresentation() override;
+
+ private:
+  bool BeginAccess() override;
+  void EndAccess() override;
+
+  Microsoft::WRL::ComPtr<ID3D12Resource> GetD3D12Buffer() const override;
+  scoped_refptr<gfx::D3DSharedFence> GetAcquireFence() const override;
+  void SetReleaseFence(
+      scoped_refptr<gfx::D3DSharedFence> release_fence) override;
+
+  scoped_refptr<gfx::D3DSharedFence> acquire_fence_;
+  scoped_refptr<gfx::D3DSharedFence> release_fence_;
+};
+
 // Representation of a D3DImageBacking as an overlay.
 class OverlayD3DImageRepresentation : public OverlayImageRepresentation {
  public:
@@ -112,7 +133,7 @@ class D3D11VideoImageRepresentation : public VideoImageRepresentation {
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
-      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture);
+      D3D11TextureAndArrayIndex d3d11_texture);
   ~D3D11VideoImageRepresentation() override;
 
  private:
@@ -120,10 +141,10 @@ class D3D11VideoImageRepresentation : public VideoImageRepresentation {
   void EndWriteAccess() override;
   bool BeginReadAccess() override;
   void EndReadAccess() override;
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> GetD3D11Texture() const override;
+  D3D11TextureAndArrayIndex GetD3D11Texture() const override;
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
+  D3D11TextureAndArrayIndex d3d11_texture_;
 };
 
 class D3D11VideoImageCopyRepresentation : public VideoImageRepresentation {
@@ -142,7 +163,7 @@ class D3D11VideoImageCopyRepresentation : public VideoImageRepresentation {
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
       ID3D11Device* d3d_device,
-      ID3D11Texture2D* texture,
+      D3D11TextureAndArrayIndex src_texture,
       std::string_view debug_label,
       ID3D11Device* texture_device);
 
@@ -158,7 +179,7 @@ class D3D11VideoImageCopyRepresentation : public VideoImageRepresentation {
   void EndWriteAccess() override;
   bool BeginReadAccess() override;
   void EndReadAccess() override;
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> GetD3D11Texture() const override;
+  D3D11TextureAndArrayIndex GetD3D11Texture() const override;
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_;
 };
@@ -171,7 +192,7 @@ class D3DSkiaGraphiteDawnImageRepresentation
   ~D3DSkiaGraphiteDawnImageRepresentation() override;
 
   bool SupportsMultipleConcurrentReadAccess() override;
-  bool NeedGraphiteContextSubmitBeforeEndAccess() override;
+  bool SupportsDeferredGraphiteSubmit() override;
 
  private:
   std::vector<scoped_refptr<GraphiteTextureHolder>> WrapBackendTextures(

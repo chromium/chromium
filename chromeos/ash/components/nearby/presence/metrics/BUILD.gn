@@ -14,6 +14,6 @@ static_library("metrics") {
     "//base",
     "//chromeos/ash/components/nearby/common/client",
     "//chromeos/ash/components/nearby/presence:enums",
-    "//chromeos/ash/services/nearby/public/cpp:cpp",
+    "//chromeos/ash/services/nearby/public/cpp",
   ]
 }

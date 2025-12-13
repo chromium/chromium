@@ -15,8 +15,9 @@ import './privacy_guide_fragment_shared.css.js';
 import '../../controls/settings_toggle_button.js';
 import '../../icons.html.js';
 
-import type {SyncBrowserProxy, SyncPrefs} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from '/shared/settings/people_page/sync_browser_proxy.js';
+import type {SyncBrowserProxy, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {SignedInState, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -37,8 +38,8 @@ export interface PrivacyGuideHistorySyncFragmentElement {
   };
 }
 
-const PrivacyGuideHistorySyncFragmentElementBase =
-    RouteObserverMixin(WebUiListenerMixin(BaseMixin(PolymerElement)));
+const PrivacyGuideHistorySyncFragmentElementBase = RouteObserverMixin(
+    WebUiListenerMixin(I18nMixin(BaseMixin(PolymerElement))));
 
 export class PrivacyGuideHistorySyncFragmentElement extends
     PrivacyGuideHistorySyncFragmentElementBase {
@@ -63,6 +64,39 @@ export class PrivacyGuideHistorySyncFragmentElement extends
           };
         },
       },
+
+      /** @private */
+      syncStatus_: Object,
+
+      /**
+       * The header for the history sync card. It changes depending on whether
+       * the user is signed in.
+       * @private
+       */
+      historySyncCardHeader_: {
+        type: String,
+        computed: 'computeHistorySyncCardHeader_(syncStatus_)',
+      },
+
+      /**
+       * The label for the history sync toggle. It changes depending on whether
+       * the user is signed in.
+       * @private
+       */
+      historySyncToggleLabel_: {
+        type: String,
+        computed: 'computeHistorySyncToggleLabel_(syncStatus_)',
+      },
+
+      /**
+       * The first line of the feature description. It changes depending on
+       * whether the user is signed in.
+       * @private
+       */
+      historySyncFeatureDescription1_: {
+        type: String,
+        computed: 'computeHistorySyncFeatureDescription1_(syncStatus_)',
+      },
     };
   }
 
@@ -86,11 +120,21 @@ export class PrivacyGuideHistorySyncFragmentElement extends
    */
   private firstSyncPrefUpdate_: boolean = true;
 
+  declare private syncStatus_: SyncStatus;
+  declare private historySyncCardHeader_: string;
+  declare private historySyncToggleLabel_: string;
+  declare private historySyncFeatureDescription1_: string;
+
   override ready() {
     super.ready();
     this.addEventListener('view-enter-start', this.onViewEnterStart_);
     this.addEventListener('view-exit-finish', this.onViewExitFinish_);
 
+    this.addWebUiListener(
+        'sync-status-changed',
+        (syncStatus: SyncStatus) => this.onSyncStatusChanged_(syncStatus));
+    this.syncBrowserProxy_.getSyncStatus().then(
+        (syncStatus: SyncStatus) => this.onSyncStatusChanged_(syncStatus));
     this.addWebUiListener(
         'sync-prefs-changed',
         (syncPrefs: SyncPrefs) => this.onSyncPrefsChange_(syncPrefs));
@@ -139,22 +183,45 @@ export class PrivacyGuideHistorySyncFragmentElement extends
     }
   }
 
+  private onSyncStatusChanged_(syncStatus: SyncStatus) {
+    this.syncStatus_ = syncStatus;
+    this.updateHistorySyncVirtualPrefValue_();
+  }
+
   private onSyncPrefsChange_(syncPrefs: SyncPrefs) {
     this.syncPrefs_ = syncPrefs;
     if (this.syncAllCache_ === null) {
       this.syncAllCache_ = this.syncPrefs_.syncAllDataTypes;
     }
-    this.set(
-        'historySyncVirtualPref_.value',
-        this.syncPrefs_.syncAllDataTypes || this.syncPrefs_.typedUrlsSynced);
-
     if (this.firstSyncPrefUpdate_) {
       this.startStateHistorySyncOn_ = this.syncPrefs_.typedUrlsSynced;
       this.firstSyncPrefUpdate_ = false;
     }
+    this.updateHistorySyncVirtualPrefValue_();
+  }
+
+  private updateHistorySyncVirtualPrefValue_() {
+    if (!this.syncPrefs_) {
+      return;
+    }
+    if (!this.syncStatus_ ||
+        this.syncStatus_.signedInState === SignedInState.SIGNED_IN) {
+      const mergedToggleValue = this.syncPrefs_.typedUrlsSynced ||
+          this.syncPrefs_.tabsSynced || this.syncPrefs_.savedTabGroupsSynced;
+      this.set('historySyncVirtualPref_.value', mergedToggleValue);
+    } else {
+      this.set(
+          'historySyncVirtualPref_.value',
+          this.syncPrefs_.syncAllDataTypes || this.syncPrefs_.typedUrlsSynced);
+    }
   }
 
   private onToggleClick_() {
+    if (!this.syncStatus_ ||
+        this.syncStatus_.signedInState === SignedInState.SIGNED_IN) {
+      this.syncPrefs_.tabsSynced = this.historySyncVirtualPref_.value;
+      this.syncPrefs_.savedTabGroupsSynced = this.historySyncVirtualPref_.value;
+    }
     this.syncPrefs_.typedUrlsSynced = this.historySyncVirtualPref_.value;
     this.syncPrefs_.syncAllDataTypes = this.shouldSyncAllBeOn_();
     this.syncBrowserProxy_.setSyncDatatypes(this.syncPrefs_);
@@ -192,6 +259,28 @@ export class PrivacyGuideHistorySyncFragmentElement extends
       return false;
     }
     return true;
+  }
+
+  private computeHistorySyncCardHeader_(syncStatus: SyncStatus): string {
+    if (syncStatus && syncStatus.signedInState === SignedInState.SIGNED_IN) {
+      return this.i18n('privacyGuideHistoryAndTabsSyncCardHeader');
+    }
+    return this.i18n('privacyGuideHistorySyncCardHeader');
+  }
+
+  private computeHistorySyncToggleLabel_(syncStatus: SyncStatus): string {
+    if (syncStatus && syncStatus.signedInState === SignedInState.SIGNED_IN) {
+      return this.i18n('privacyGuideHistoryAndTabsSyncSettingLabel');
+    }
+    return this.i18n('privacyGuideHistorySyncSettingLabel');
+  }
+
+  private computeHistorySyncFeatureDescription1_(syncStatus: SyncStatus):
+      string {
+    if (syncStatus && syncStatus.signedInState === SignedInState.SIGNED_IN) {
+      return this.i18n('privacyGuideHistoryAndTabsSyncFeatureDescription1');
+    }
+    return this.i18n('privacyGuideHistorySyncFeatureDescription1');
   }
 }
 declare global {

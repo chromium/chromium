@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/scoped_observation.h"
@@ -50,23 +49,27 @@ class PromiseAppServiceTest : public testing::Test,
                               public PromiseAppRegistryCache::Observer {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
     url_loader_factory_ = std::make_unique<network::TestURLLoaderFactory>();
-    testing::Test::SetUp();
+    arc_app_test_.PreProfileSetUp();
+
     TestingProfile::Builder profile_builder;
     profile_builder.SetSharedURLLoaderFactory(
         url_loader_factory_->GetSafeWeakWrapper());
     profile_ = profile_builder.Build();
-    arc_test_.SetUp(profile_.get());
-    test_shared_loader_factory_ = url_loader_factory_->GetSafeWeakWrapper();
+
+    arc_app_test_.PostProfileSetUp(profile_.get());
     service_ = proxy()->PromiseAppService();
     service_->SetSkipApiKeyCheckForTesting(true);
     service_->SetSkipAlmanacForTesting(false);
   }
 
   void TearDown() override {
-    arc_test_.StopArcInstance();
-    arc_test_.TearDown();
+    service_ = nullptr;
+    arc_app_test_.StopArcInstance();
+    arc_app_test_.PreProfileTearDown();
+    profile_.reset();
+    arc_app_test_.PostProfileTearDown();
+    url_loader_factory_.reset();
   }
 
   network::TestURLLoaderFactory* url_loader_factory() {
@@ -147,20 +150,18 @@ class PromiseAppServiceTest : public testing::Test,
   }
 
  private:
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> wait_run_loop_;
   std::unique_ptr<Profile> profile_;
-  ArcAppTest arc_test_;
+  ArcAppTest arc_app_test_;
   raw_ptr<apps::PromiseAppService> service_;
   std::unique_ptr<network::TestURLLoaderFactory> url_loader_factory_;
   base::ScopedObservation<PromiseAppRegistryCache,
                           PromiseAppRegistryCache::Observer>
       obs_{this};
-  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList feature_list_;
 
   // Tracks how many times we should expect OnPromiseAppUpdate to be called
   // before proceeding with a unit test.

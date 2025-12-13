@@ -22,10 +22,6 @@ class DocumentScanAsh : public mojom::DocumentScan {
   void BindReceiver(mojo::PendingReceiver<mojom::DocumentScan> receiver);
 
   // crosapi::mojom::DocumentScan:
-  void GetScannerNames(GetScannerNamesCallback callback) override;
-  void GetScannerList(const std::string& client_id,
-                      mojom::ScannerEnumFilterPtr filter,
-                      GetScannerListCallback callback) override;
   void OpenScanner(const std::string& client_id,
                    const std::string& scanner_id,
                    OpenScannerCallback callback) override;

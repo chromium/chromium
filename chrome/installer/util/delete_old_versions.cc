@@ -115,8 +115,9 @@ bool DeleteExecutablesWithoutMatchingDirectory(
     const auto& executables_for_version = version_and_executables.second;
 
     // Don't delete the executables if they have a matching directory.
-    if (base::Contains(directories, version_dir_name))
+    if (base::Contains(directories, version_dir_name)) {
       continue;
+    }
 
     // Delete executables for version |version_dir_name|.
     for (const auto& executable_path : executables_for_version) {

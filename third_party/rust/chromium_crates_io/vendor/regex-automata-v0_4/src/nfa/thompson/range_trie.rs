@@ -235,7 +235,7 @@ impl RangeTrie {
     /// Clear this range trie such that it is empty. Clearing a range trie
     /// and reusing it can beneficial because this may reuse allocations.
     pub fn clear(&mut self) {
-        self.free.extend(self.states.drain(..));
+        self.free.append(&mut self.states);
         self.add_empty(); // final
         self.add_empty(); // root
     }
@@ -296,7 +296,7 @@ impl RangeTrie {
         assert!(!ranges.is_empty());
         assert!(ranges.len() <= 4);
 
-        let mut stack = mem::replace(&mut self.insert_stack, vec![]);
+        let mut stack = core::mem::replace(&mut self.insert_stack, vec![]);
         stack.clear();
 
         stack.push(NextInsert::new(ROOT, ranges));
@@ -866,10 +866,10 @@ impl Split {
 
 impl fmt::Debug for RangeTrie {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        writeln!(f, "")?;
+        writeln!(f)?;
         for (i, state) in self.states.iter().enumerate() {
             let status = if i == FINAL.as_usize() { '*' } else { ' ' };
-            writeln!(f, "{}{:06}: {:?}", status, i, state)?;
+            writeln!(f, "{status}{i:06}: {state:?}")?;
         }
         Ok(())
     }
@@ -880,10 +880,10 @@ impl fmt::Debug for State {
         let rs = self
             .transitions
             .iter()
-            .map(|t| format!("{:?}", t))
+            .map(|t| format!("{t:?}"))
             .collect::<Vec<String>>()
             .join(", ");
-        write!(f, "{}", rs)
+        write!(f, "{rs}")
     }
 }
 

@@ -6,12 +6,15 @@
 #define CHROME_BROWSER_NAVIGATION_PREDICTOR_SEARCH_ENGINE_PRECONNECTOR_H_
 
 #include "base/feature_list.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/predictors/preconnect_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/preconnect_manager.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "url/origin.h"
 
@@ -23,6 +26,18 @@ class WebContents;
 namespace features {
 BASE_DECLARE_FEATURE(kPreconnectFromKeyedService);
 BASE_DECLARE_FEATURE(kPreconnectToSearch);
+
+// Enum to represent the event that triggers the rebinding of the receiver.
+// This is used to control the rebinding frequency.
+enum class RebindReceiverEvent {
+  // Rebind the receiver every time the preconnect occurs.
+  kEverytime = 0,
+  // Rebind the receiver only when the connection is closed or failed.
+  kOnlyOnConnectionClosedOrFailed = 1,
+};
+
+BASE_DECLARE_FEATURE(kRebindPreconnectReceivers);
+BASE_DECLARE_FEATURE_PARAM(RebindReceiverEvent, kRebindReceiverEvent);
 }  // namespace features
 
 // Class to keep track of the current visibility. It is used to determine if the
@@ -63,7 +78,7 @@ class WebContentVisibilityManager {
 // Class to preconnect to the user's default search engine at regular intervals.
 // Preconnects are made by |this| if the browser app is likely in foreground.
 class SearchEnginePreconnector
-    : public predictors::PreconnectManager::Delegate,
+    : public content::PreconnectManager::Delegate,
       public WebContentVisibilityManager,
       public KeyedService,
       public network::mojom::ConnectionChangeObserverClient {
@@ -90,7 +105,9 @@ class SearchEnginePreconnector
   void PreconnectInitiated(const GURL& url,
                            const GURL& preconnect_url) override {}
   void PreconnectFinished(
-      std::unique_ptr<predictors::PreconnectStats> stats) override {}
+      std::unique_ptr<content::PreconnectStats> stats) override {}
+
+  bool IsPreconnectEnabled() override;
 
   // network::mojom::ConnectionChangeObserverClient
   void OnSessionClosed() override;
@@ -98,7 +115,7 @@ class SearchEnginePreconnector
   void OnConnectionFailed() override;
 
   // Lazily creates the PreconnectManager instance.
-  predictors::PreconnectManager& GetPreconnectManager();
+  content::PreconnectManager& GetPreconnectManager();
 
   // WebContentVisibilityManager methods
   // TODO(crbug.com/406022435): Update to observe the
@@ -133,6 +150,9 @@ class SearchEnginePreconnector
   FRIEND_TEST_ALL_PREFIXES(
       SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
       PreconnectSearchAfterOnConnect);
+  FRIEND_TEST_ALL_PREFIXES(
+      SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
+      CheckConnectionKeepAliveConfig);
 
   // Enum to represent the preconnect triggering event. This is used to record
   // the histogram.
@@ -170,11 +190,20 @@ class SearchEnginePreconnector
   // back-to-back connections.
   bool IsShortSession() const;
 
+  bool ShouldSavePower() const;
+
   // Invoked when the mojo pipe to the reconnect observer is disconnected.
   void OnReconnectObserverPipeDisconnected();
 
+  // Resets the receiver.
+  void ResetReceiver();
+
   void RecordPreconnectAttemptHistogram(base::TimeDelta delay,
                                         PreconnectTriggerEvent event);
+
+  // Returns the connection keepalive config to be used for preconnect. The
+  // returned config will change when the device is in low power mode.
+  net::ConnectionKeepAliveConfig GetConnectionKeepAliveConfig();
 
   base::WeakPtr<SearchEnginePreconnector> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -189,7 +218,7 @@ class SearchEnginePreconnector
   // Used to preconnect regularly.
   base::OneShotTimer timer_;
 
-  std::unique_ptr<predictors::PreconnectManager> preconnect_manager_;
+  std::unique_ptr<content::PreconnectManager> preconnect_manager_;
 
   std::optional<base::TimeTicks> last_preconnect_attempt_time_;
 

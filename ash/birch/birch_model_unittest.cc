@@ -31,7 +31,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/unguessable_token.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -171,10 +171,6 @@ class BirchModelTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  void RecordProviderHiddenHistograms() {
-    Shell::Get()->birch_model()->RecordProviderHiddenHistograms();
-  }
-
   // Disables all data type prefs except the given exceptions.
   void DisableAllDataTypePrefsExcept(std::vector<const char*> exceptions) {
     PrefService* pref_service =
@@ -274,98 +270,6 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   model->SetCoralItems({});
 
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0", "1"));
-}
-
-TEST_F(BirchModelTest, RequestBirchDataFetchRecordsHistograms) {
-  base::HistogramTester histograms;
-  BirchModel* model = Shell::Get()->birch_model();
-  TestModelConsumer consumer;
-  EXPECT_TRUE(model);
-
-  // Make a data fetch request.
-  model->RequestBirchDataFetch(/*is_post_login=*/false,
-                               base::BindOnce(&TestModelConsumer::OnItemsReady,
-                                              base::Unretained(&consumer),
-                                              /*id=*/"0"));
-
-  // Simulate each data provider replying.
-  model->SetCalendarItems({});
-  model->SetAttachmentItems({});
-  model->SetRecentTabItems({});
-  model->SetLastActiveItems({});
-  model->SetMostVisitedItems({});
-  model->SetSelfShareItems({});
-  model->SetLostMediaItems({});
-  model->SetFileSuggestItems({});
-  model->SetWeatherItems({});
-  model->SetReleaseNotesItems({});
-  model->SetCoralItems({});
-
-  // Callback is called.
-  EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
-
-  // Histograms were recorded for each type.
-  histograms.ExpectTotalCount("Ash.Birch.Latency.Calendar", 1);
-  histograms.ExpectTotalCount("Ash.Birch.Latency.File", 1);
-  histograms.ExpectTotalCount("Ash.Birch.Latency.Tab", 1);
-  histograms.ExpectTotalCount("Ash.Birch.Latency.LastActive", 1);
-  histograms.ExpectTotalCount("Ash.Birch.Latency.MostVisited", 1);
-  histograms.ExpectTotalCount("Ash.Birch.Latency.SelfShare", 1);
-  histograms.ExpectTotalCount("Ash.Birch.Latency.Weather", 1);
-  histograms.ExpectTotalCount("Ash.Birch.Latency.ReleaseNotes", 1);
-
-  // Total latency was recorded.
-  histograms.ExpectTotalCount("Ash.Birch.TotalLatency", 1);
-
-  // Simulate a data provider replying outside of a fetch.
-  model->SetFileSuggestItems({});
-
-  // Histograms didn't change.
-  histograms.ExpectTotalCount("Ash.Birch.Latency.File", 1);
-  histograms.ExpectTotalCount("Ash.Birch.TotalLatency", 1);
-}
-
-TEST_F(BirchModelTest, RequestBirchDataFetchRecordsTotalLatencyHistogram) {
-  base::HistogramTester histograms;
-  BirchModel* model = Shell::Get()->birch_model();
-
-  // Make a data fetch request for post-login.
-  model->RequestBirchDataFetch(/*is_post_login=*/true, base::DoNothing());
-
-  // Simulate each data provider replying.
-  model->SetCalendarItems({});
-  model->SetAttachmentItems({});
-  model->SetRecentTabItems({});
-  model->SetLastActiveItems({});
-  model->SetMostVisitedItems({});
-  model->SetSelfShareItems({});
-  model->SetLostMediaItems({});
-  model->SetFileSuggestItems({});
-  model->SetWeatherItems({});
-  model->SetReleaseNotesItems({});
-  model->SetCoralItems({});
-
-  // Total latency post login was recorded.
-  histograms.ExpectTotalCount("Ash.Birch.TotalLatencyPostLogin", 1);
-
-  // Make a data fetch request for non-post-login.
-  model->RequestBirchDataFetch(/*is_post_login=*/false, base::DoNothing());
-
-  // Simulate each data provider replying.
-  model->SetCalendarItems({});
-  model->SetAttachmentItems({});
-  model->SetRecentTabItems({});
-  model->SetLastActiveItems({});
-  model->SetMostVisitedItems({});
-  model->SetSelfShareItems({});
-  model->SetLostMediaItems({});
-  model->SetFileSuggestItems({});
-  model->SetWeatherItems({});
-  model->SetReleaseNotesItems({});
-  model->SetCoralItems({});
-
-  // Regular latency histogram was recorded.
-  histograms.ExpectTotalCount("Ash.Birch.TotalLatency", 1);
 }
 
 TEST_F(BirchModelTest, DataFetchForNonPrimaryUserClearsModel) {
@@ -1261,7 +1165,7 @@ TEST_F(BirchModelTest, WeatherItemsClearedWhenGeolocationDisabled) {
   BirchModel* model = Shell::Get()->birch_model();
 
   // Geolocation starts as allowed.
-  auto* geolocation_provider = SimpleGeolocationProvider::GetInstance();
+  auto* geolocation_provider = SystemLocationProvider::GetInstance();
   ASSERT_EQ(geolocation_provider->GetGeolocationAccessLevel(),
             GeolocationAccessLevel::kAllowed);
 
@@ -1645,41 +1549,6 @@ TEST_F(BirchModelTest, SetClientObservation) {
   // Set the client and expect model observer to be notified.
   model->SetClientAndInit(&stub_birch_client_);
   EXPECT_TRUE(test_observer.birch_client_set());
-}
-
-TEST_F(BirchModelTest, RemoveItemRecordsHistogram) {
-  base::HistogramTester histograms;
-  BirchModel* model = Shell::Get()->birch_model();
-
-  // Add a calendar item to the model.
-  std::vector<BirchCalendarItem> calendar_item_list =
-      MakeCalendarItemList(/*event_count=*/1);
-  model->SetCalendarItems(calendar_item_list);
-
-  // Remove the calendar item, as if a user hid the suggestion chip.
-  model->RemoveItem(&calendar_item_list[0]);
-
-  // Histogram was recorded.
-  histograms.ExpectBucketCount("Ash.Birch.Chip.Hidden",
-                               BirchItemType::kCalendar, 1);
-}
-
-TEST_F(BirchModelTest, RecordProviderHiddenHistograms) {
-  base::HistogramTester histograms;
-
-  // Disable all the prefs, as if the user had hidden each data type.
-  DisableAllDataTypePrefsExcept(std::vector<const char*>());
-
-  // Record histograms.
-  RecordProviderHiddenHistograms();
-
-  // Histograms are recorded. All types are hidden.
-  histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.Calendar", true, 1);
-  histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.FileSuggest", true, 1);
-  histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.ChromeTabs", true, 1);
-  histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.Weather", true, 1);
-  histograms.ExpectBucketCount("Ash.Birch.ProviderHidden.ReleaseNotes", true,
-                               1);
 }
 
 TEST_F(BirchModelTest, LastActiveItemShownByTime) {

@@ -199,6 +199,8 @@ class ManagementUIManagedStatusTest
     command_line->AppendSwitchASCII(switches::kGaiaUrl, base_url.spec());
     command_line->AppendSwitchASCII(switches::kLsoUrl, base_url.spec());
     command_line->AppendSwitchASCII(switches::kGoogleApisUrl, base_url.spec());
+    command_line->AppendSwitchASCII(switches::kOAuthAccountManagerUrl,
+                                    base_url.spec());
     policy::ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting();
     fake_gaia_.Initialize();
     // Configure Sync server
@@ -272,7 +274,7 @@ class ManagementUIManagedStatusTest
 
     // Redirect to the policy server.
     GURL::Replacements replace_query;
-    std::string query = r.GetURL().query();
+    std::string query = r.GetURL().GetQuery();
     replace_query.SetQueryStr(query);
     std::string dest =
         policy_server_->GetServiceURL().ReplaceComponents(replace_query).spec();

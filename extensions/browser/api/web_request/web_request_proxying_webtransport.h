@@ -7,6 +7,9 @@
 
 #include "content/public/browser/content_browser_client.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class GURL;
 

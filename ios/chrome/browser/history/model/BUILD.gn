@@ -10,8 +10,8 @@ source_set("model") {
     "history_backend_client_impl.h",
     "history_client_impl.cc",
     "history_client_impl.h",
-    "history_service_factory.cc",
     "history_service_factory.h",
+    "history_service_factory.mm",
     "top_sites_factory.cc",
     "top_sites_factory.h",
     "web_history_service_factory.cc",
@@ -32,10 +32,12 @@ source_set("model") {
     "//components/sync",
     "//components/version_info",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ios/web/public/thread",
 
     # TODO(crbug.com/325586862): This should depend on

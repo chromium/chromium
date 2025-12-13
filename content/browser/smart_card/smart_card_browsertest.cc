@@ -1873,9 +1873,9 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, NoCoiPermission) {
   ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
 
   EXPECT_EQ(false, EvalJs(shell(), "self.crossOriginIsolated"));
-  EXPECT_THAT(
-      EvalJs(shell(), "navigator.smartCard.establishContext()").error,
-      HasSubstr("Frame is not sufficiently isolated to use smart cards."));
+  EXPECT_THAT(EvalJs(shell(), "navigator.smartCard.establishContext()"),
+              EvalJsResult::ErrorIs(HasSubstr(
+                  "Frame is not sufficiently isolated to use smart cards.")));
 }
 
 /* Tests the situation where a transaction callback erroneously returns while an

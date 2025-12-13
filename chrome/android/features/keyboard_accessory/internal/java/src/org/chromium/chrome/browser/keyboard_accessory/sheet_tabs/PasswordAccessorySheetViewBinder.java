@@ -51,6 +51,7 @@ class PasswordAccessorySheetViewBinder {
             case AccessorySheetDataPiece.Type.TITLE:
                 return new AccessorySheetTabViewBinder.TitleViewHolder(parent);
             case AccessorySheetDataPiece.Type.FOOTER_COMMAND:
+            case AccessorySheetDataPiece.Type.DIVIDER:
             case AccessorySheetDataPiece.Type.OPTION_TOGGLE:
                 return AccessorySheetTabViewBinder.create(parent, viewType);
         }
@@ -98,9 +99,17 @@ class PasswordAccessorySheetViewBinder {
                                     : View.VISIBLE);
             if (info.isBackupCredential()) {
                 view.getTitle().setText(R.string.password_accessory_recovery_password_title);
+                view.setContentDescription(
+                        view.getResources()
+                                .getString(
+                                        R.string
+                                                .recovery_password_accessory_sheet_content_description));
             } else {
                 // Strip the trailing slash (for aesthetic reasons):
                 view.getTitle().setText(stripScheme(info.getOrigin()).replaceFirst("/$", ""));
+                view.setContentDescription(
+                        view.getResources()
+                                .getString(R.string.password_accessory_sheet_content_description));
             }
 
             if (info.isBackupCredential()) {
@@ -130,7 +139,7 @@ class PasswordAccessorySheetViewBinder {
             chip.getPrimaryTextView().setText(field.getDisplayText());
             chip.getPrimaryTextView().setContentDescription(field.getA11yDescription());
             if (field.getIconId() != 0) {
-                chip.setIcon(field.getIconId(), /* tintWithTextColor= */ true);
+                chip.setIconWithTint(field.getIconId(), /* tintWithTextColor= */ true);
             }
             View.OnClickListener listener = null;
             if (field.isSelectable()) {

@@ -24,7 +24,7 @@ RemoteObjectGatewayImpl* RemoteObjectGatewayImpl::From(LocalFrame& frame) {
   return Supplement<LocalFrame>::From<RemoteObjectGatewayImpl>(frame);
 }
 
-void RemoteObjectGatewayImpl::InjectNamed(const WTF::String& object_name,
+void RemoteObjectGatewayImpl::InjectNamed(const String& object_name,
                                           int32_t object_id) {
   ScriptState* script_state = ToScriptStateForMainWorld(GetSupplementable());
   ScriptState::Scope scope(script_state);
@@ -33,22 +33,21 @@ void RemoteObjectGatewayImpl::InjectNamed(const WTF::String& object_name,
       isolate, ToMicrotaskQueue(script_state),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Local<v8::Context> context = script_state->GetContext();
-  if (context.IsEmpty())
+  if (context.IsEmpty()) {
     return;
+  }
 
   remote_objects_.erase(object_id);
   RemoteObject* object = GetRemoteObject(isolate, object_id);
 
   v8::Context::Scope context_scope(context);
   v8::Local<v8::Object> global = context->Global();
-  gin::Handle<RemoteObject> controller = gin::CreateHandle(isolate, object);
-
-  // WrappableBase instance deletes itself in case of a wrapper
-  // creation failure, thus there is no need to delete |object|.
-  if (controller.IsEmpty())
+  v8::Local<v8::Value> controller;
+  if (!gin::ConvertToV8(isolate, object).ToLocal(&controller)) {
     return;
+  }
 
-  global->Set(context, V8AtomicString(isolate, object_name), controller.ToV8())
+  global->Set(context, V8AtomicString(isolate, object_name), controller)
       .Check();
   object_host_->AcquireObject(object_id);
 }
@@ -58,8 +57,9 @@ void RemoteObjectGatewayImpl::BindMojoReceiver(
     LocalFrame* frame,
     mojo::PendingRemote<mojom::blink::RemoteObjectHost> host,
     mojo::PendingReceiver<mojom::blink::RemoteObjectGateway> receiver) {
-  if (!frame || !frame->IsAttached())
+  if (!frame || !frame->IsAttached()) {
     return;
+  }
 
   DCHECK(!RemoteObjectGatewayImpl::From(*frame));
 
@@ -85,24 +85,25 @@ RemoteObjectGatewayImpl::RemoteObjectGatewayImpl(
 }
 
 void RemoteObjectGatewayImpl::OnClearWindowObjectInMainWorld() {
-  for (const auto& pair : named_objects_)
+  for (const auto& pair : named_objects_) {
     InjectNamed(pair.key, pair.value);
+  }
 }
 
 void RemoteObjectGatewayImpl::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   visitor->Trace(object_host_);
+  visitor->Trace(remote_objects_);
   Supplement<LocalFrame>::Trace(visitor);
 }
 
-void RemoteObjectGatewayImpl::AddNamedObject(const WTF::String& name,
-                                             int32_t id) {
+void RemoteObjectGatewayImpl::AddNamedObject(const String& name, int32_t id) {
   // Added objects only become available after page reload, so here they
   // are only added into the internal map.
   named_objects_.insert(name, id);
 }
 
-void RemoteObjectGatewayImpl::RemoveNamedObject(const WTF::String& name) {
+void RemoteObjectGatewayImpl::RemoveNamedObject(const String& name) {
   // Removal becomes in effect on next reload. We simply remove the entry
   // from the map here.
   auto iter = named_objects_.find(name);
@@ -119,9 +120,11 @@ void RemoteObjectGatewayImpl::BindRemoteObjectReceiver(
 void RemoteObjectGatewayImpl::ReleaseObject(int32_t object_id,
                                             RemoteObject* remote_object) {
   auto iter = remote_objects_.find(object_id);
-  CHECK(iter != remote_objects_.end());
-  if (iter->value == remote_object)
+  // The object may have been released by DidClearWindowObject if a new document
+  // was loaded.
+  if (iter != remote_objects_.end() && iter->value.Get() == remote_object) {
     remote_objects_.erase(iter);
+  }
   object_host_->ReleaseObject(object_id);
 }
 
@@ -129,13 +132,16 @@ RemoteObject* RemoteObjectGatewayImpl::GetRemoteObject(v8::Isolate* isolate,
                                                        int32_t object_id) {
   auto iter = remote_objects_.find(object_id);
   if (iter != remote_objects_.end()) {
-    // Decrease a reference count in the browser side when we reuse RemoteObject
-    // getting from the map.
+    RemoteObject* object = iter->value.Get();
+    CHECK(object);
+    // Decrease a reference count in the browser side when we reuse
+    // RemoteObject getting from the map.
     object_host_->ReleaseObject(object_id);
-    return iter->value;
+    return object;
   }
 
-  auto* remote_object = new RemoteObject(this, object_id);
+  auto* remote_object = cppgc::MakeGarbageCollected<RemoteObject>(
+      isolate->GetCppHeap()->GetAllocationHandle(), this, object_id);
   remote_objects_.insert(object_id, remote_object);
   return remote_object;
 }

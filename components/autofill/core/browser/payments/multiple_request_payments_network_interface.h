@@ -43,7 +43,7 @@ class MultipleRequestPaymentsNetworkInterface
       GetDetailsForCreateCardCallback callback);
 
   // Sends a request to save the card.
-  RequestId CreateCard(
+  virtual RequestId CreateCard(
       const UploadCardRequestDetails& details,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               const std::string&)> callback);
@@ -51,7 +51,7 @@ class MultipleRequestPaymentsNetworkInterface
   // Retrieve information necessary for the enrollment from the server. This is
   // invoked before we show the bubble to request user consent for the
   // enrollment.
-  RequestId GetVirtualCardEnrollmentDetails(
+  virtual RequestId GetVirtualCardEnrollmentDetails(
       const GetDetailsForEnrollmentRequestDetails& request_details,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               const GetDetailsForEnrollmentResponseDetails&)>
@@ -61,7 +61,7 @@ class MultipleRequestPaymentsNetworkInterface
   // Send the necessary information for the server to identify the credit card
   // for which virtual-card enrollment will be updated, as well as metadata so
   // that the server understands the context for the request.
-  RequestId UpdateVirtualCardEnrollment(
+  virtual RequestId UpdateVirtualCardEnrollment(
       const UpdateVirtualCardEnrollmentRequestDetails& request_details,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult)>
           callback);

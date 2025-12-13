@@ -102,15 +102,17 @@ void ReadWin32BaseBoard(const ComPtr<IWbemServices>& services,
       ScopedBstr(L"WQL").Get(), ScopedBstr(kQueryProcessor).Get(),
       WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, nullptr,
       &enumerator_base_board);
-  if (FAILED(hr) || !enumerator_base_board.Get())
+  if (FAILED(hr) || !enumerator_base_board.Get()) {
     return;
+  }
 
   ComPtr<IWbemClassObject> class_object;
   ULONG items_returned = 0;
   hr = enumerator_base_board->Next(WBEM_INFINITE, 1, &class_object,
                                    &items_returned);
-  if (FAILED(hr) || !items_returned)
+  if (FAILED(hr) || !items_returned) {
     return;
+  }
   *manufacturer = ReadStringMember(class_object, kManufacturer);
   *model = ReadStringMember(class_object, kProduct);
 }
@@ -128,15 +130,17 @@ void ReadWin32Bios(const ComPtr<IWbemServices>& services,
       ScopedBstr(L"WQL").Get(), ScopedBstr(kQueryProcessor).Get(),
       WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, nullptr,
       &enumerator_base_board);
-  if (FAILED(hr) || !enumerator_base_board.Get())
+  if (FAILED(hr) || !enumerator_base_board.Get()) {
     return;
+  }
 
   ComPtr<IWbemClassObject> class_object;
   ULONG items_returned = 0;
   hr = enumerator_base_board->Next(WBEM_INFINITE, 1, &class_object,
                                    &items_returned);
-  if (FAILED(hr) || !items_returned)
+  if (FAILED(hr) || !items_returned) {
     return;
+  }
   *bios_manufacturer = ReadStringMember(class_object, kManufacturer);
   *bios_version = ReadStringMember(class_object, kVersion);
 }
@@ -159,8 +163,9 @@ MotherboardDetails ReadMotherboardDetails() {
                                                 base::BlockingType::MAY_BLOCK);
   ComPtr<IWbemServices> services;
   MotherboardDetails details;
-  if (!base::win::CreateLocalWmiConnection(true, &services))
+  if (!base::win::CreateLocalWmiConnection(true, &services)) {
     return details;
+  }
   ReadWin32BaseBoard(services, &details.manufacturer, &details.model);
   ReadWin32Bios(services, &details.bios_manufacturer, &details.bios_version);
   ReadFirmwareType(&details.bios_type);

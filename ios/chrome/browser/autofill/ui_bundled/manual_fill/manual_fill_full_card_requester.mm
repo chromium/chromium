@@ -75,10 +75,10 @@ class CreditCard;
   if (recordType == kVirtualCard) {
     virtualCard = autofill::CreditCard::CreateVirtualCard(card);
   }
-  autofill::CreditCardAccessManager& creditCardAccessManager =
+  autofill::CreditCardAccessManager* creditCardAccessManager =
       autofillManager.GetCreditCardAccessManager();
   __weak __typeof(self) weakSelf = self;
-  creditCardAccessManager.FetchCreditCard(
+  creditCardAccessManager->FetchCreditCard(
       (recordType == kVirtualCard ? &virtualCard : &card),
       base::BindOnce(^(const autofill::CreditCard& fetchedCard) {
         [weakSelf onCreditCardFetched:fetchedCard fieldType:fieldType];

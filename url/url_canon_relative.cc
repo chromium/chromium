@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // Canonicalizer functions for working with and resolving relative URLs.
 
 #include <algorithm>
@@ -37,19 +32,17 @@ namespace {
 // against the canonical scheme of the base.
 //
 // The base URL should always be canonical, therefore it should be ASCII.
-template<typename CHAR>
-bool AreSchemesEqual(const char* base,
-                     const Component& base_scheme,
-                     const CHAR* cmp,
-                     const Component& cmp_scheme) {
-  if (base_scheme.len != cmp_scheme.len)
+template <typename CHAR>
+bool AreSchemesEqual(std::string_view base, std::basic_string_view<CHAR> cmp) {
+  if (base.length() != cmp.length()) {
     return false;
-  for (int i = 0; i < base_scheme.len; i++) {
+  }
+  for (size_t i = 0; i < base.length(); ++i) {
     // We assume the base is already canonical, so we don't have to
     // canonicalize it.
-    if (CanonicalSchemeChar(cmp[cmp_scheme.begin + i]) !=
-        base[base_scheme.begin + i])
+    if (CanonicalSchemeChar(cmp[i]) != base[i]) {
       return false;
+    }
   }
   return true;
 }
@@ -60,21 +53,23 @@ bool AreSchemesEqual(const char* base,
 // consistent about URL paths beginning with slashes. This function is like
 // DoesBeginWindowsDrivePath except that it also requires a slash at the
 // beginning.
-template<typename CHAR>
-bool DoesBeginSlashWindowsDriveSpec(const CHAR* spec, int start_offset,
-                                    int spec_len) {
-  if (start_offset >= spec_len)
+template <typename CHAR>
+bool DoesBeginSlashWindowsDriveSpec(std::basic_string_view<CHAR> spec,
+                                    size_t start_offset) {
+  if (start_offset >= spec.length()) {
     return false;
+  }
   return IsSlashOrBackslash(spec[start_offset]) &&
-         DoesBeginWindowsDriveSpec(spec, start_offset + 1, spec_len);
+         DoesBeginWindowsDriveSpec(spec.data(), start_offset + 1,
+                                   spec.length());
 }
 
 #endif  // WIN32
 
 template <typename CHAR>
-bool IsValidScheme(const CHAR* url, const Component& scheme) {
+bool IsValidScheme(std::basic_string_view<CHAR> scheme) {
   // Caller should ensure that the |scheme| is not empty.
-  DCHECK_NE(0, scheme.len);
+  DCHECK_NE(0u, scheme.length());
 
   // From https://url.spec.whatwg.org/#scheme-start-state:
   //   scheme start state:
@@ -84,8 +79,9 @@ bool IsValidScheme(const CHAR* url, const Component& scheme) {
   //        state, and decrease pointer by one.
   //     3. Otherwise, validation error, return failure.
   // Note that both step 2 and step 3 mean that the scheme was not valid.
-  if (!base::IsAsciiAlpha(url[scheme.begin]))
+  if (!base::IsAsciiAlpha(scheme[0])) {
     return false;
+  }
 
   // From https://url.spec.whatwg.org/#scheme-state:
   //   scheme state:
@@ -93,32 +89,31 @@ bool IsValidScheme(const CHAR* url, const Component& scheme) {
   //        (.), append c, lowercased, to buffer.
   //     2. Otherwise, if c is U+003A (:), then [...]
   //
-  // We begin at |scheme.begin + 1|, because the character at |scheme.begin| has
-  // already been checked by base::IsAsciiAlpha above.
-  int scheme_end = scheme.end();
-  for (int i = scheme.begin + 1; i < scheme_end; i++) {
-    if (!CanonicalSchemeChar(url[i]))
+  // We begin at `1`, because the character at `scheme[0]` has already been
+  // checked by base::IsAsciiAlpha above.
+  for (size_t i = 1; i < scheme.length(); ++i) {
+    if (!CanonicalSchemeChar(scheme[i])) {
       return false;
+    }
   }
 
   return true;
 }
 
-// See IsRelativeURL in the header file for usage.
-template<typename CHAR>
-bool DoIsRelativeURL(const char* base,
+// See IsRelativeUrl in the header file for usage.
+template <typename CHAR>
+bool DoIsRelativeUrl(std::string_view base,
                      const Parsed& base_parsed,
-                     const CHAR* url,
-                     int url_len,
+                     std::basic_string_view<CHAR> input_url,
                      bool is_base_hierarchical,
                      bool* is_relative,
                      Component* relative_component) {
   *is_relative = false;  // So we can default later to not relative.
 
   // Trim whitespace and construct a new range for the substring.
-  int begin = 0;
-  TrimURL(url, &begin, &url_len);
-  if (begin >= url_len) {
+  auto [begin, end] = TrimUrl(input_url);
+  std::basic_string_view<CHAR> url = input_url.substr(begin, end - begin);
+  if (url.empty()) {
     // Empty URLs are relative, but do nothing.
     if (!is_base_hierarchical) {
       // Don't allow relative URLs if the base scheme doesn't support it.
@@ -141,9 +136,10 @@ bool DoIsRelativeURL(const char* base,
   //
   // We require strict backslashes when detecting UNC since two forward
   // slashes should be treated a a relative URL with a hostname.
-  if (DoesBeginWindowsDriveSpec(url, begin, url_len) ||
-      DoesBeginUNCPath(url, begin, url_len, true))
+  if (DoesBeginWindowsDriveSpec(url.data(), 0, url.length()) ||
+      DoesBeginUNCPath(url.data(), 0, url.length(), true)) {
     return true;
+  }
 #endif  // WIN32
 
   // See if we've got a scheme, if not, we know this is a relative URL.
@@ -151,10 +147,9 @@ bool DoIsRelativeURL(const char* base,
   // "http:foo.html" is a relative URL with path "foo.html". If the scheme is
   // empty, we treat it as relative (":foo"), like IE does.
   Component scheme;
-  const bool scheme_is_empty =
-      !ExtractScheme(url, url_len, &scheme) || scheme.len == 0;
+  const bool scheme_is_empty = !ExtractScheme(url, &scheme) || scheme.len == 0;
   if (scheme_is_empty) {
-    if (url[begin] == '#') {
+    if (url[0] == '#') {
       // |url| is a bare fragment (e.g. "#foo"). This can be resolved against
       // any base. Fall-through.
     } else if (!is_base_hierarchical) {
@@ -162,21 +157,22 @@ bool DoIsRelativeURL(const char* base,
       return false;
     }
 
-    *relative_component = MakeRange(begin, url_len);
+    *relative_component = MakeRange(begin, begin + url.length());
     *is_relative = true;
     return true;
   }
 
   // If the scheme isn't valid, then it's relative.
-  if (!IsValidScheme(url, scheme)) {
-    if (url[begin] == '#') {
+  std::basic_string_view<CHAR> url_scheme = scheme.AsViewOn(url);
+  if (!IsValidScheme(url_scheme)) {
+    if (url[0] == '#') {
       // |url| is a bare fragment (e.g. "#foo:bar"). This can be resolved
       // against any base. Fall-through.
     } else if (!is_base_hierarchical) {
       // Don't allow relative URLs if the base scheme doesn't support it.
       return false;
     }
-    *relative_component = MakeRange(begin, url_len);
+    *relative_component = MakeRange(begin, begin + url.length());
     *is_relative = true;
     return true;
   }
@@ -189,8 +185,9 @@ bool DoIsRelativeURL(const char* base,
   // scheme state:
   // > 2.6. Otherwise, if url is special, base is non-null, and base’s scheme is
   // >      url’s scheme:
-  if (!IsStandard(base_parsed.scheme.maybe_as_string_view_on(base)) ||
-      !AreSchemesEqual(base, base_parsed.scheme, url, scheme)) {
+  auto maybe_base_scheme = base_parsed.scheme.MaybeAsViewOn(base);
+  if (!IsStandard(maybe_base_scheme) ||
+      !AreSchemesEqual(*maybe_base_scheme, url_scheme)) {
     return true;
   }
 
@@ -204,19 +201,21 @@ bool DoIsRelativeURL(const char* base,
 
   // If it's a filesystem URL, the only valid way to make it relative is not to
   // supply a scheme. There's no equivalent to e.g. http:index.html.
-  if (CompareSchemeComponent(url, scheme, kFileSystemScheme))
+  if (CompareSchemeComponent(url, scheme, kFileSystemScheme)) {
     return true;
+  }
 
   // ExtractScheme guarantees that the colon immediately follows what it
   // considers to be the scheme. CountConsecutiveSlashes will handle the
   // case where the begin offset is the end of the input.
-  int num_slashes = CountConsecutiveSlashes(url, colon_offset + 1, url_len);
+  int num_slashes = CountConsecutiveSlashesOrBackslashes(url, colon_offset + 1);
 
   if (num_slashes == 0 || num_slashes == 1) {
     // No slashes means it's a relative path like "http:foo.html". One slash
     // is an absolute path. "http:/home/foo.html"
     *is_relative = true;
-    *relative_component = MakeRange(colon_offset + 1, url_len);
+    *relative_component =
+        MakeRange(begin + colon_offset + 1, begin + url.length());
     return true;
   }
 
@@ -230,7 +229,7 @@ bool DoIsRelativeURL(const char* base,
 //
 // For stardard URLs the input should be canonical, but when resolving relative
 // URLs on a non-standard base (like "data:") the input can be anything.
-void CopyToLastSlash(const char* spec,
+void CopyToLastSlash(std::string_view spec,
                      int begin,
                      int end,
                      CanonOutput* output) {
@@ -254,7 +253,7 @@ void CopyToLastSlash(const char* spec,
 // when resolving relative URLs and a given component is unchanged. Since the
 // source should already be canonical, we don't have to do anything special,
 // and the input is ASCII.
-void CopyOneComponent(const char* source,
+void CopyOneComponent(std::string_view source,
                       const Component& source_component,
                       CanonOutput* output,
                       Component* output_component) {
@@ -282,28 +281,26 @@ void CopyOneComponent(const char* source,
 // there is no drive letter, the slash at the beginning of the path, or
 // the end of the base. This can be used as the starting offset for further
 // path processing.
-template<typename CHAR>
-int CopyBaseDriveSpecIfNecessary(const char* base_url,
+template <typename CHAR>
+int CopyBaseDriveSpecIfNecessary(std::string_view base_url,
                                  int base_path_begin,
                                  int base_path_end,
-                                 const CHAR* relative_url,
-                                 int path_start,
-                                 int relative_url_len,
+                                 std::basic_string_view<CHAR> relative_url,
                                  CanonOutput* output) {
   if (base_path_begin >= base_path_end)
     return base_path_begin;  // No path.
 
   // If the relative begins with a drive spec, don't do anything. The existing
   // drive spec in the base will be replaced.
-  if (DoesBeginWindowsDriveSpec(relative_url, path_start, relative_url_len)) {
+  if (DoesBeginWindowsDriveSpec(relative_url.data(), 0,
+                                relative_url.length())) {
     return base_path_begin;  // Relative URL path is "C:/foo"
   }
 
   // The path should begin with a slash (as all canonical paths do). We check
   // if it is followed by a drive letter and copy it.
-  if (DoesBeginSlashWindowsDriveSpec(base_url,
-                                     base_path_begin,
-                                     base_path_end)) {
+  if (DoesBeginSlashWindowsDriveSpec(base_url.substr(0, base_path_end),
+                                     base_path_begin)) {
     // Copy the two-character drive spec to the output. It will now look like
     // "file:///C:" so the rest of it can be treated like a standard path.
     output->push_back('/');
@@ -317,14 +314,13 @@ int CopyBaseDriveSpecIfNecessary(const char* base_url,
 
 #endif  // WIN32
 
-// A subroutine of DoResolveRelativeURL, this resolves the URL knowning that
+// A subroutine of DoResolveRelativeUrl, this resolves the URL knowing that
 // the input is a relative path or less (query or ref).
 template <typename CHAR>
-bool DoResolveRelativePath(const char* base_url,
+bool DoResolveRelativePath(std::string_view base_url,
                            const Parsed& base_parsed,
                            bool base_is_file,
-                           const CHAR* relative_url,
-                           const Component& relative_component,
+                           std::basic_string_view<CHAR> relative_url,
                            CharsetConverter* query_converter,
                            CanonMode canon_mode,
                            CanonOutput* output,
@@ -334,7 +330,7 @@ bool DoResolveRelativePath(const char* base_url,
   // We know the authority section didn't change, copy it to the output. We
   // also know we have a path so can copy up to there.
   Component path, query, ref;
-  ParsePathInternal(relative_url, relative_component, &path, &query, &ref);
+  ParsePathInternal(relative_url, Component(relative_url), &path, &query, &ref);
 
   // Canonical URLs always have a path, so we can use that offset. Reserve
   // enough room for the base URL, the new path, and some extra bytes for
@@ -346,7 +342,7 @@ bool DoResolveRelativePath(const char* base_url,
   if (base_parsed.path.is_empty()) {
     // A non-special URL may have an empty path (e.g. "git://host"). In these
     // cases, attempting to use `base_parsed.path` is invalid.
-    output->Append(base_url, base_parsed.Length());
+    output->Append(base_url.substr(0, base_parsed.Length()));
   } else if (!base_parsed.host.is_valid() &&
              // Exclude a file URL and an URL with an inner-path because we are
              // interested in only non-special URLs here.
@@ -365,10 +361,10 @@ bool DoResolveRelativePath(const char* base_url,
     // Fortunately, we can use `base_parsed.scheme.end()` here because we don't
     // need to append a user, a password, a host, nor a port when a host is
     // invalid.
-    output->Append(base_url, base_parsed.scheme.end());
+    output->Append(base_url.substr(0, base_parsed.scheme.end()));
     output->Append(":");
   } else {
-    output->Append(base_url, base_parsed.path.begin);
+    output->Append(base_url.substr(0, base_parsed.path.begin));
   }
 
   if (path.is_nonempty()) {
@@ -384,8 +380,7 @@ bool DoResolveRelativePath(const char* base_url,
     if (base_is_file) {
       base_path_begin = CopyBaseDriveSpecIfNecessary(
           base_url, base_parsed.path.begin, base_parsed.path.end(),
-          relative_url, relative_component.begin, relative_component.end(),
-          output);
+          relative_url, output);
       // Now the output looks like either "file://" or "file:///C:"
       // and we can start appending the rest of the path. |base_path_begin|
       // points to the character in the base that comes next.
@@ -397,7 +392,7 @@ bool DoResolveRelativePath(const char* base_url,
       // just replace everything from the path on with the new versions.
       // Since the input should be canonical hierarchical URL, we should
       // always have a path.
-      success &= CanonicalizePath(path.as_string_view_on(relative_url), output,
+      success &= CanonicalizePath(path.AsViewOn(relative_url), output,
                                   &out_parsed->path);
     } else {
       // Relative path, replace the query, and reference. We take the
@@ -417,7 +412,7 @@ bool DoResolveRelativePath(const char* base_url,
       CopyToLastSlash(base_url, base_path_begin, base_parsed.path.end(),
                       output);
       success &= CanonicalizePartialPathInternal(
-          path.as_string_view_on(relative_url), path_begin, canon_mode, output);
+          path.AsViewOn(relative_url), path_begin, canon_mode, output);
       out_parsed->path = MakeRange(path_begin, output->length());
 
       // Copy the rest of the stuff after the path from the relative path.
@@ -431,8 +426,7 @@ bool DoResolveRelativePath(const char* base_url,
     // > url.href
     // => The result should be "git:/.//path", instead of "git://path".
     if (!base_parsed.host.is_valid() && out_parsed->path.is_valid() &&
-        out_parsed->path.as_string_view_on(output->view().data())
-            .starts_with("//")) {
+        out_parsed->path.AsViewOn(output->view()).starts_with("//")) {
       size_t prior_output_length = output->length();
       output->Insert(out_parsed->path.begin, "/.");
       // Adjust path.
@@ -440,10 +434,9 @@ bool DoResolveRelativePath(const char* base_url,
       true_path_begin = out_parsed->path.begin;
     }
     // Finish with the query and reference part (these can't fail).
-    CanonicalizeQuery(query.maybe_as_string_view_on(relative_url),
-                      query_converter, output, &out_parsed->query);
-    CanonicalizeRef(ref.maybe_as_string_view_on(relative_url), output,
-                    &out_parsed->ref);
+    CanonicalizeQuery(query.MaybeAsViewOn(relative_url), query_converter,
+                      output, &out_parsed->query);
+    CanonicalizeRef(ref.MaybeAsViewOn(relative_url), output, &out_parsed->ref);
 
     // Fix the path beginning to add back the "C:" we may have written above.
     out_parsed->path = MakeRange(true_path_begin, out_parsed->path.end());
@@ -456,10 +449,9 @@ bool DoResolveRelativePath(const char* base_url,
   if (query.is_valid()) {
     // Just the query specified, replace the query and reference (ignore
     // failures for refs)
-    CanonicalizeQuery(query.as_string_view_on(relative_url), query_converter,
-                      output, &out_parsed->query);
-    CanonicalizeRef(ref.maybe_as_string_view_on(relative_url), output,
-                    &out_parsed->ref);
+    CanonicalizeQuery(query.AsViewOn(relative_url), query_converter, output,
+                      &out_parsed->query);
+    CanonicalizeRef(ref.MaybeAsViewOn(relative_url), output, &out_parsed->ref);
     return success;
   }
 
@@ -472,8 +464,7 @@ bool DoResolveRelativePath(const char* base_url,
 
   if (ref.is_valid()) {
     // Just the reference specified: replace it (ignoring failures).
-    CanonicalizeRef(ref.as_string_view_on(relative_url), output,
-                    &out_parsed->ref);
+    CanonicalizeRef(ref.AsViewOn(relative_url), output, &out_parsed->ref);
     return success;
   }
 
@@ -486,28 +477,25 @@ bool DoResolveRelativePath(const char* base_url,
 // Resolves a relative URL that contains a host. Typically, these will
 // be of the form "//www.google.com/foo/bar?baz#ref" and the only thing which
 // should be kept from the original URL is the scheme.
-template<typename CHAR>
-bool DoResolveRelativeHost(const char* base_url,
+template <typename CHAR>
+bool DoResolveRelativeHost(std::string_view base_url,
                            const Parsed& base_parsed,
-                           const CHAR* relative_url,
-                           const Component& relative_component,
+                           std::basic_string_view<CHAR> relative_url,
                            CharsetConverter* query_converter,
                            CanonOutput* output,
                            Parsed* out_parsed) {
   SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
   const bool is_standard_scheme = GetStandardSchemeType(
-      base_parsed.scheme.maybe_as_string_view_on(base_url), &scheme_type);
+      base_parsed.scheme.MaybeAsViewOn(base_url), &scheme_type);
 
   // Parse the relative URL, just like we would for anything following a
   // scheme.
   Parsed relative_parsed;  // Everything but the scheme is valid.
 
   if (!is_standard_scheme) {
-    ParseAfterNonSpecialScheme(relative_url, relative_component.end(),
-                               relative_component.begin, &relative_parsed);
+    ParseAfterNonSpecialScheme(relative_url, 0, &relative_parsed);
   } else {
-    ParseAfterSpecialScheme(relative_url, relative_component.end(),
-                            relative_component.begin, &relative_parsed);
+    ParseAfterSpecialScheme(relative_url, 0, &relative_parsed);
   }
 
   // Now we can just use the replacement function to replace all the necessary
@@ -527,38 +515,34 @@ bool DoResolveRelativeHost(const char* base_url,
       replacements.components().Length() +
       base_parsed.CountCharactersBefore(Parsed::USERNAME, false));
   if (!is_standard_scheme) {
-    return ReplaceNonSpecialURL(base_url, base_parsed, replacements,
+    return ReplaceNonSpecialUrl(base_url, base_parsed, replacements,
                                 query_converter, *output, *out_parsed);
   }
 
-  return ReplaceStandardURL(base_url, base_parsed, replacements, scheme_type,
+  return ReplaceStandardUrl(base_url, base_parsed, replacements, scheme_type,
                             query_converter, output, out_parsed);
 }
 
 // Resolves a relative URL that happens to be an absolute file path. Examples
 // include: "//hostname/path", "/c:/foo", and "//hostname/c:/foo".
 template <typename CharT>
-bool DoResolveAbsoluteFile(const CharT* relative_url,
-                           const Component& relative_component,
+bool DoResolveAbsoluteFile(std::basic_string_view<CharT> relative_url,
                            CharsetConverter* query_converter,
                            CanonOutput* output,
                            Parsed* out_parsed) {
   // Parse the file URL. The file URL parsing function uses the same logic
   // as we do for determining if the file is absolute, in which case it will
   // not bother to look for a scheme.
-  return CanonicalizeFileURL(
-      &relative_url[relative_component.begin], relative_component.len,
-      ParseFileURL(std::basic_string_view(
-          &relative_url[relative_component.begin], relative_component.len)),
-      query_converter, output, out_parsed);
+  return CanonicalizeFileUrl(relative_url, ParseFileUrl(relative_url),
+                             query_converter, output, out_parsed);
 }
 
 // TODO(brettw) treat two slashes as root like Mozilla for FTP?
-template<typename CHAR>
-bool DoResolveRelativeURL(const char* base_url,
+template <typename CHAR>
+bool DoResolveRelativeUrl(std::string_view base_url,
                           const Parsed& base_parsed,
                           bool base_is_file,
-                          const CHAR* relative_url,
+                          std::basic_string_view<CHAR> relative_url,
                           const Component& relative_component,
                           CharsetConverter* query_converter,
                           CanonOutput* output,
@@ -586,12 +570,13 @@ bool DoResolveRelativeURL(const char* base_url,
     int base_len = base_parsed.Length();
     base_len -= base_parsed.ref.len + 1;
     out_parsed->ref.reset();
-    output->Append(base_url, base_len);
+    output->Append(base_url.data(), base_len);
     return true;
   }
 
-  int num_slashes = CountConsecutiveSlashes(
-      relative_url, relative_component.begin, relative_component.end());
+  auto relative_url_view = relative_component.AsViewOn(relative_url);
+  size_t num_slashes =
+      CountConsecutiveSlashesOrBackslashes(relative_url_view, 0);
 
 #ifdef WIN32
   // On Windows, two slashes for a file path (regardless of which direction
@@ -608,13 +593,13 @@ bool DoResolveRelativeURL(const char* base_url,
   // This assumes the absolute path resolver handles absolute URLs like this
   // properly. DoCanonicalize does this.
   int after_slashes = relative_component.begin + num_slashes;
-  if (DoesBeginUNCPath(relative_url, relative_component.begin,
+  if (DoesBeginUNCPath(relative_url.data(), relative_component.begin,
                        relative_component.end(), !base_is_file) ||
       ((num_slashes == 0 || base_is_file) &&
-       DoesBeginWindowsDriveSpec(
-           relative_url, after_slashes, relative_component.end()))) {
-    return DoResolveAbsoluteFile(relative_url, relative_component,
-                                 query_converter, output, out_parsed);
+       DoesBeginWindowsDriveSpec(relative_url.data(), after_slashes,
+                                 relative_component.end()))) {
+    return DoResolveAbsoluteFile(relative_url_view, query_converter, output,
+                                 out_parsed);
   }
 #else
   // Other platforms need explicit handling for file: URLs with multiple
@@ -624,74 +609,70 @@ bool DoResolveRelativeURL(const char* base_url,
   // URLs provided by DoResolveAbsoluteFile(), as opposed to the generic host
   // detection logic, for consistency with parsing file URLs from scratch.
   if (base_is_file && num_slashes >= 2) {
-    return DoResolveAbsoluteFile(relative_url, relative_component,
-                                 query_converter, output, out_parsed);
+    return DoResolveAbsoluteFile(relative_url_view, query_converter, output,
+                                 out_parsed);
   }
 #endif
 
   // Any other double-slashes mean that this is relative to the scheme.
   if (num_slashes >= 2) {
-    return DoResolveRelativeHost(base_url, base_parsed,
-                                 relative_url, relative_component,
+    return DoResolveRelativeHost(base_url, base_parsed, relative_url_view,
                                  query_converter, output, out_parsed);
   }
 
   // When we get here, we know that the relative URL is on the same host.
   return DoResolveRelativePath(
-      base_url, base_parsed, base_is_file, relative_url, relative_component,
-      query_converter,
+      base_url, base_parsed, base_is_file, relative_url_view, query_converter,
       // TODO(crbug.com/40063064): Support Non-special URLs
       CanonMode::kSpecialURL, output, out_parsed);
 }
 
 }  // namespace
 
-bool IsRelativeURL(const char* base,
+bool IsRelativeUrl(std::string_view base,
                    const Parsed& base_parsed,
-                   const char* fragment,
-                   int fragment_len,
+                   std::string_view fragment,
                    bool is_base_hierarchical,
                    bool* is_relative,
                    Component* relative_component) {
-  return DoIsRelativeURL<char>(
-      base, base_parsed, fragment, fragment_len, is_base_hierarchical,
-      is_relative, relative_component);
+  return DoIsRelativeUrl<char>(base, base_parsed, fragment,
+                               is_base_hierarchical, is_relative,
+                               relative_component);
 }
 
-bool IsRelativeURL(const char* base,
+bool IsRelativeUrl(std::string_view base,
                    const Parsed& base_parsed,
-                   const char16_t* fragment,
-                   int fragment_len,
+                   std::u16string_view fragment,
                    bool is_base_hierarchical,
                    bool* is_relative,
                    Component* relative_component) {
-  return DoIsRelativeURL<char16_t>(base, base_parsed, fragment, fragment_len,
+  return DoIsRelativeUrl<char16_t>(base, base_parsed, fragment,
                                    is_base_hierarchical, is_relative,
                                    relative_component);
 }
 
-bool ResolveRelativeURL(const char* base_url,
+bool ResolveRelativeUrl(std::string_view base_url,
                         const Parsed& base_parsed,
                         bool base_is_file,
-                        const char* relative_url,
+                        std::string_view relative_url,
                         const Component& relative_component,
                         CharsetConverter* query_converter,
                         CanonOutput* output,
                         Parsed* out_parsed) {
-  return DoResolveRelativeURL<char>(
-      base_url, base_parsed, base_is_file, relative_url,
-      relative_component, query_converter, output, out_parsed);
+  return DoResolveRelativeUrl<char>(base_url, base_parsed, base_is_file,
+                                    relative_url, relative_component,
+                                    query_converter, output, out_parsed);
 }
 
-bool ResolveRelativeURL(const char* base_url,
+bool ResolveRelativeUrl(std::string_view base_url,
                         const Parsed& base_parsed,
                         bool base_is_file,
-                        const char16_t* relative_url,
+                        std::u16string_view relative_url,
                         const Component& relative_component,
                         CharsetConverter* query_converter,
                         CanonOutput* output,
                         Parsed* out_parsed) {
-  return DoResolveRelativeURL<char16_t>(base_url, base_parsed, base_is_file,
+  return DoResolveRelativeUrl<char16_t>(base_url, base_parsed, base_is_file,
                                         relative_url, relative_component,
                                         query_converter, output, out_parsed);
 }

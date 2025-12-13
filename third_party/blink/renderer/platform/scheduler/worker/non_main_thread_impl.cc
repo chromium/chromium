@@ -25,7 +25,6 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/heap/blink_gc_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
-#include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/scheduler/common/task_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_scheduler_proxy.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_thread_scheduler.h"
@@ -64,17 +63,9 @@ NonMainThreadImpl::NonMainThreadImpl(const ThreadCreationParams& params)
       params.name ? params.name : String(), options, params.realtime_period,
       supports_gc_, const_cast<scheduler::NonMainThreadImpl*>(this),
       message_pump_type);
-  if (supports_gc_) {
-    MemoryPressureListenerRegistry::Instance().RegisterThread(
-        const_cast<scheduler::NonMainThreadImpl*>(this));
-  }
 }
 
 NonMainThreadImpl::~NonMainThreadImpl() {
-  if (supports_gc_) {
-    MemoryPressureListenerRegistry::Instance().UnregisterThread(
-        const_cast<scheduler::NonMainThreadImpl*>(this));
-  }
   thread_->Quit();
   base::ScopedAllowBaseSyncPrimitives allow_wait;
   thread_->Join();
@@ -108,7 +99,7 @@ void NonMainThreadImpl::ShutdownOnThread() {
 }
 
 NonMainThreadImpl::SimpleThreadImpl::SimpleThreadImpl(
-    const WTF::String& name_prefix,
+    const String& name_prefix,
     const base::SimpleThread ::Options& options,
     base::TimeDelta realtime_period,
     bool supports_gc,

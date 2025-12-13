@@ -79,8 +79,6 @@ class WebContentsObserverConsistencyChecker
       const MediaPlayerInfo& media_info,
       const MediaPlayerId& id,
       WebContentsObserver::MediaStoppedReason reason) override;
-  bool OnMessageReceived(const IPC::Message& message,
-                         RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
   void DidStartLoading() override;
   void DidStopLoading() override;

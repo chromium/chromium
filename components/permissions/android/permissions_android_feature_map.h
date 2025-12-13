@@ -10,6 +10,8 @@
 namespace permissions {
 // Alphabetical:
 BASE_DECLARE_FEATURE(kAndroidCancelPermissionPromptOnTouchOutside);
+BASE_DECLARE_FEATURE(kPermissionsAndroidClapperLoud);
+BASE_DECLARE_FEATURE(kPermissionsAndroidClapperQuiet);
 }  // namespace permissions
 
 #endif  // COMPONENTS_PERMISSIONS_ANDROID_PERMISSIONS_ANDROID_FEATURE_MAP_H_

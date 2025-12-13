@@ -7,6 +7,7 @@
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/sqlite/sqlite3.h"
 
 namespace persistent_cache {
 
@@ -18,19 +19,45 @@ class SandboxedFileTest : public testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(temporary_directory_.CreateUniqueTempDir());
+    shared_region_ =
+        base::UnsafeSharedMemoryRegion::Create(sizeof(SharedAtomicLock));
   }
 
   std::unique_ptr<SandboxedFile> CreateEmptyFile(const std::string& file_name) {
+    base::WritableSharedMemoryMapping mapped_shared_lock = shared_region_.Map();
+
+    base::FilePath path = temporary_directory_.GetPath().AppendASCII(file_name);
+    base::File file(path, base::File::FLAG_CREATE_ALWAYS |
+                              base::File::FLAG_READ | base::File::FLAG_WRITE);
     return std::make_unique<SandboxedFile>(
-        base::File(temporary_directory_.GetPath().AppendASCII(file_name),
-                   base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
-                       base::File::FLAG_WRITE),
-        SandboxedFile::AccessRights::kReadWrite);
+        std::move(file), SandboxedFile::AccessRights::kReadWrite,
+        std::move(mapped_shared_lock));
+  }
+
+  // A helper that takes ownership of a `SandboxedFile` and opens it for its
+  // lifetime.
+  class OpenedFile {
+   public:
+    explicit OpenedFile(std::unique_ptr<SandboxedFile> file)
+        : file_(std::move(file)) {
+      file_->OnFileOpened(
+          file_->TakeUnderlyingFile(SandboxedFile::FileType::kMainDb));
+    }
+    ~OpenedFile() { file_->Close(); }
+    SandboxedFile* operator->() { return file_.get(); }
+
+   private:
+    std::unique_ptr<SandboxedFile> file_;
+  };
+
+  OpenedFile CreateAndOpenEmptyFile(std::string_view file_name) {
+    return OpenedFile(CreateEmptyFile(std::string(file_name)));
   }
 
   // Simulate an OpenFile from the VFS delegate.
   void OpenFile(SandboxedFile* file) {
-    file->OnFileOpened(file->TakeUnderlyingFile());
+    file->OnFileOpened(
+        file->TakeUnderlyingFile(SandboxedFile::FileType::kMainDb));
   }
 
   int ReadToBuffer(SandboxedFile* file, size_t offset) {
@@ -54,6 +81,7 @@ class SandboxedFileTest : public testing::Test {
  private:
   base::ScopedTempDir temporary_directory_;
   std::vector<uint8_t> buffer_;
+  base::UnsafeSharedMemoryRegion shared_region_;
 };
 
 TEST_F(SandboxedFileTest, OpenClose) {
@@ -62,7 +90,8 @@ TEST_F(SandboxedFileTest, OpenClose) {
 
   OpenFile(file.get());
   EXPECT_TRUE(file->IsValid());
-  EXPECT_FALSE(file->TakeUnderlyingFile().IsValid());
+  EXPECT_FALSE(
+      file->TakeUnderlyingFile(SandboxedFile::FileType::kMainDb).IsValid());
 
   file->Close();
   EXPECT_FALSE(file->IsValid());
@@ -228,6 +257,212 @@ TEST_F(SandboxedFileTest, Truncate) {
             expected_buffer.begin());
 
   EXPECT_EQ(GetReadBuffer(), base::span(expected_buffer));
+}
+
+TEST_F(SandboxedFileTest, LockBasics) {
+  auto file = CreateAndOpenEmptyFile("lock");
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_NONE);
+
+  EXPECT_EQ(file->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_SHARED);
+
+  EXPECT_EQ(file->Lock(SQLITE_LOCK_RESERVED), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_RESERVED);
+
+  EXPECT_EQ(file->Lock(SQLITE_LOCK_EXCLUSIVE), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_EXCLUSIVE);
+
+  EXPECT_EQ(file->Unlock(SQLITE_LOCK_SHARED), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_SHARED);
+
+  EXPECT_EQ(file->Unlock(SQLITE_LOCK_NONE), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_NONE);
+}
+
+TEST_F(SandboxedFileTest, AcquireSameLockLevel) {
+  auto file = CreateAndOpenEmptyFile("lock");
+
+  EXPECT_EQ(file->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_SHARED);
+  EXPECT_EQ(file->Lock(SQLITE_LOCK_RESERVED), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_RESERVED);
+  EXPECT_EQ(file->Lock(SQLITE_LOCK_EXCLUSIVE), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_EXCLUSIVE);
+
+  // Re-acquire EXCLUSIVE must be valid.
+  EXPECT_EQ(file->Lock(SQLITE_LOCK_EXCLUSIVE), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_EXCLUSIVE);
+}
+
+TEST_F(SandboxedFileTest, AcquireLowerLockLevel) {
+  auto file = CreateAndOpenEmptyFile("lock");
+
+  EXPECT_EQ(file->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_SHARED);
+  EXPECT_EQ(file->Lock(SQLITE_LOCK_RESERVED), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_RESERVED);
+  EXPECT_EQ(file->Lock(SQLITE_LOCK_EXCLUSIVE), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_EXCLUSIVE);
+
+  // Acquiring the lower SHARED lock when the connection is at EXCLUSIVE must be
+  // valid.
+  EXPECT_EQ(file->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_EXCLUSIVE);
+}
+
+TEST_F(SandboxedFileTest, UnlockWhenNone) {
+  auto file = CreateAndOpenEmptyFile("lock");
+
+  EXPECT_EQ(file->Unlock(SQLITE_LOCK_NONE), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_NONE);
+}
+
+TEST_F(SandboxedFileTest, UnlockToNone) {
+  auto file = CreateAndOpenEmptyFile("lock");
+
+  EXPECT_EQ(file->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_SHARED);
+  EXPECT_EQ(file->Lock(SQLITE_LOCK_RESERVED), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_RESERVED);
+  EXPECT_EQ(file->Lock(SQLITE_LOCK_EXCLUSIVE), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_EXCLUSIVE);
+
+  // Downgrade the connection from EXCLUSIVE to NONE.
+  EXPECT_EQ(file->Unlock(SQLITE_LOCK_NONE), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_NONE);
+}
+
+TEST_F(SandboxedFileTest, UnlockToShared) {
+  auto file = CreateAndOpenEmptyFile("lock");
+
+  EXPECT_EQ(file->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_SHARED);
+  EXPECT_EQ(file->Lock(SQLITE_LOCK_RESERVED), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_RESERVED);
+  EXPECT_EQ(file->Lock(SQLITE_LOCK_EXCLUSIVE), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_EXCLUSIVE);
+
+  // Downgrade the connection from EXCLUSIVE to SHARED.
+  EXPECT_EQ(file->Unlock(SQLITE_LOCK_SHARED), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_SHARED);
+}
+
+TEST_F(SandboxedFileTest, MultipleLocks) {
+  auto reader1 = CreateAndOpenEmptyFile("multi-lock");
+  auto reader2 = CreateAndOpenEmptyFile("multi-lock");
+  auto reader3 = CreateAndOpenEmptyFile("multi-lock");
+  auto writer1 = CreateAndOpenEmptyFile("multi-lock");
+  auto writer2 = CreateAndOpenEmptyFile("multi-lock");
+
+  // Take SHARED lock for the first reader.
+  EXPECT_EQ(reader1->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
+  EXPECT_EQ(reader1->LockModeForTesting(), SQLITE_LOCK_SHARED);
+
+  // First writer is getting the RESERVED lock.
+  EXPECT_EQ(writer1->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
+  EXPECT_EQ(writer1->LockModeForTesting(), SQLITE_LOCK_SHARED);
+  EXPECT_EQ(writer1->Lock(SQLITE_LOCK_RESERVED), SQLITE_OK);
+  EXPECT_EQ(writer1->LockModeForTesting(), SQLITE_LOCK_RESERVED);
+
+  // Second reader should be able to get a SHARED lock even with the RESERVED
+  // lock.
+  EXPECT_EQ(reader2->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
+  EXPECT_EQ(reader2->LockModeForTesting(), SQLITE_LOCK_SHARED);
+
+  // Second writer can't get the RESERVED lock.
+  EXPECT_EQ(writer2->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
+  EXPECT_EQ(writer2->LockModeForTesting(), SQLITE_LOCK_SHARED);
+  EXPECT_EQ(writer2->Lock(SQLITE_LOCK_RESERVED), SQLITE_BUSY);
+  EXPECT_EQ(writer2->LockModeForTesting(), SQLITE_LOCK_SHARED);
+
+  // Try to upgrade the lock to EXCLUSIVE but fails since there are pending
+  // readers.
+  EXPECT_EQ(writer1->Lock(SQLITE_LOCK_EXCLUSIVE), SQLITE_BUSY);
+  EXPECT_EQ(writer1->LockModeForTesting(), SQLITE_LOCK_PENDING);
+
+  // No new writer can get the lock EXCLUSIVE.
+  EXPECT_EQ(writer2->Lock(SQLITE_LOCK_RESERVED), SQLITE_BUSY);
+  EXPECT_EQ(writer2->LockModeForTesting(), SQLITE_LOCK_SHARED);
+  EXPECT_EQ(writer2->Lock(SQLITE_LOCK_EXCLUSIVE), SQLITE_BUSY);
+  EXPECT_EQ(writer2->LockModeForTesting(), SQLITE_LOCK_SHARED);
+  EXPECT_EQ(writer2->Unlock(SQLITE_LOCK_NONE), SQLITE_OK);
+  EXPECT_EQ(writer2->LockModeForTesting(), SQLITE_LOCK_NONE);
+
+  // No new reader can enter while a writer has the PENDING lock.
+  EXPECT_EQ(reader3->Lock(SQLITE_LOCK_SHARED), SQLITE_BUSY);
+
+  // Release a SHARED lock.
+  EXPECT_EQ(reader1->Unlock(SQLITE_LOCK_NONE), SQLITE_OK);
+  EXPECT_EQ(reader1->LockModeForTesting(), SQLITE_LOCK_NONE);
+
+  // Try to upgrade the lock to EXCLUSIVE but fails since there are still
+  // pending readers.
+  EXPECT_EQ(writer1->Lock(SQLITE_LOCK_EXCLUSIVE), SQLITE_BUSY);
+  EXPECT_EQ(writer1->LockModeForTesting(), SQLITE_LOCK_PENDING);
+
+  // Release the last SHARED lock.
+  EXPECT_EQ(reader2->Unlock(SQLITE_LOCK_NONE), SQLITE_OK);
+  EXPECT_EQ(reader2->LockModeForTesting(), SQLITE_LOCK_NONE);
+
+  // The write lock can now be upgraded to EXCLUSIVE.
+  EXPECT_EQ(writer1->Lock(SQLITE_LOCK_EXCLUSIVE), SQLITE_OK);
+  EXPECT_EQ(writer1->LockModeForTesting(), SQLITE_LOCK_EXCLUSIVE);
+
+  // No other writer can get the lock.
+  EXPECT_EQ(writer2->Lock(SQLITE_LOCK_SHARED), SQLITE_BUSY);
+  EXPECT_EQ(writer2->LockModeForTesting(), SQLITE_LOCK_NONE);
+
+  // Unlock the writer.
+  EXPECT_EQ(writer1->Unlock(SQLITE_LOCK_NONE), SQLITE_OK);
+  EXPECT_EQ(writer1->LockModeForTesting(), SQLITE_LOCK_NONE);
+
+  // Second writer can now get the lock.
+  EXPECT_EQ(writer2->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
+  EXPECT_EQ(writer2->LockModeForTesting(), SQLITE_LOCK_SHARED);
+  EXPECT_EQ(writer2->Lock(SQLITE_LOCK_RESERVED), SQLITE_OK);
+  EXPECT_EQ(writer2->LockModeForTesting(), SQLITE_LOCK_RESERVED);
+  EXPECT_EQ(writer2->Lock(SQLITE_LOCK_EXCLUSIVE), SQLITE_OK);
+  EXPECT_EQ(writer2->LockModeForTesting(), SQLITE_LOCK_EXCLUSIVE);
+  EXPECT_EQ(writer2->Unlock(SQLITE_LOCK_NONE), SQLITE_OK);
+  EXPECT_EQ(writer2->LockModeForTesting(), SQLITE_LOCK_NONE);
+}
+
+TEST_F(SandboxedFileTest, LockHotJournal) {
+  auto file = CreateAndOpenEmptyFile("lock");
+
+  EXPECT_EQ(file->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_SHARED);
+
+  // It is valid to skip the RESERVED lock in the presence of am hot-journal.
+  // There can't be any RESERVED on any connection at that point since any
+  // attempt to open the database will get into the same state (an hot-journal
+  // that forced an exclusive lock).
+  EXPECT_EQ(file->Lock(SQLITE_LOCK_EXCLUSIVE), SQLITE_OK);
+  EXPECT_EQ(file->LockModeForTesting(), SQLITE_LOCK_EXCLUSIVE);
+}
+
+TEST_F(SandboxedFileTest, GetFile) {
+  std::unique_ptr<SandboxedFile> file = CreateEmptyFile("get_file");
+  EXPECT_FALSE(file->IsValid());
+
+  // Before opening, GetFile() should return the underlying file.
+  EXPECT_EQ(file->GetFile().GetPlatformFile(),
+            file->UnderlyingFileForTesting().GetPlatformFile());
+
+  OpenFile(file.get());
+  EXPECT_TRUE(file->IsValid());
+
+  // After opening, GetFile() should return the opened file.
+  EXPECT_EQ(file->GetFile().GetPlatformFile(),
+            file->OpenedFileForTesting().GetPlatformFile());
+
+  file->Close();
+  EXPECT_FALSE(file->IsValid());
+
+  // After closing, GetFile() should return the new underlying file, which was
+  // the opened file.
+  EXPECT_EQ(file->GetFile().GetPlatformFile(),
+            file->UnderlyingFileForTesting().GetPlatformFile());
 }
 
 }  // namespace

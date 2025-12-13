@@ -18,16 +18,17 @@
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
-#include "device/fido/features.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_test_data.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
-#include "device/fido/public_key_credential_descriptor.h"
-#include "device/fido/public_key_credential_rp_entity.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
+#include "device/fido/public/public_key_credential_rp_entity.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "device/fido/win/fake_webauthn_api.h"
+#include "device/fido/win/util.h"
 #include "device/fido/win/webauthn_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -173,6 +174,29 @@ TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_NoCredentials) {
   EXPECT_EQ(
       std::get<1>(future.Get()),
       FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential);
+}
+
+// Tests getting credential information for an empty allow-list request when
+// under RDP. Windows will report that there are no credentials, but the
+// Authenticator should relay this as an unknown result.
+TEST_F(WinAuthenticatorTest, GetCredentialInformationForRequest_Rdp) {
+  fido::win::ScopedIsRdpSessionOverride scoped_rdp_override(true);
+  PublicKeyCredentialRpEntity rp(kRpId);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, rp, user,
+                                                   kProviderName);
+  fake_webauthn_api_->set_simulate_rdp(true);
+
+  CtapGetAssertionRequest request(kRpId, /*client_data_json=*/"");
+  GetCredentialFuture future;
+  authenticator_->GetPlatformCredentialInfoForRequest(
+      std::move(request), CtapGetAssertionOptions(), future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  EXPECT_EQ(std::get<0>(future.Get()),
+            std::vector<DiscoverableCredentialMetadata>{});
+  EXPECT_EQ(std::get<1>(future.Get()),
+            FidoRequestHandlerBase::RecognizedCredential::kUnknown);
 }
 
 // Tests the authenticator handling of an unexpected error from the Windows API.

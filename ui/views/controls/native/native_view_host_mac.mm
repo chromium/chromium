@@ -10,7 +10,7 @@
 #include "base/notimplemented.h"
 #import "ui/accessibility/platform/ax_platform_node_mac.h"
 #include "ui/compositor/layer.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/widget/native_widget_mac.h"

@@ -83,6 +83,11 @@ class BASE_EXPORT Process {
 
   Process& operator=(Process&& other);
 
+  // The result code that is used when a process is killed by a bad message.
+  // Consistent with the value of RESULT_CODE_KILLED_BAD_MESSAGE in
+  // content/public/common/result_codes.h.
+  static constexpr int kResultCodeKilledBadMessage = 3;
+
   // Returns an object for the current process.
   static Process Current();
 

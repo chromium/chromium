@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//extensions/common/api/schema.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
@@ -65,6 +64,7 @@ json_features("api_features") {
   feature_type = "APIFeature"
   method_name = "AddCoreAPIFeatures"
   sources = [ "_api_features.json" ]
+  inputs = [ "_api_features.override.json" ]
   visibility = [ ":extensions_features" ]
 }
 
@@ -72,6 +72,7 @@ json_features("permission_features") {
   feature_type = "PermissionFeature"
   method_name = "AddCorePermissionFeatures"
   sources = [ "_permission_features.json" ]
+  inputs = [ "_permission_features.override.json" ]
   visibility = [ ":extensions_features" ]
 }
 
@@ -79,6 +80,7 @@ json_features("manifest_features") {
   feature_type = "ManifestFeature"
   method_name = "AddCoreManifestFeatures"
   sources = [ "_manifest_features.json" ]
+  inputs = [ "_manifest_features.override.json" ]
   visibility = [ ":extensions_features" ]
 }
 

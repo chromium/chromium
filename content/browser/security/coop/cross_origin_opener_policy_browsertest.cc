@@ -93,8 +93,7 @@ std::unique_ptr<net::test_server::HttpResponse>
 CrossOriginIsolatedCrossOriginRedirectHandler(
     const net::test_server::HttpRequest& request) {
   GURL request_url = request.GetURL();
-  std::string dest =
-      base::UnescapeBinaryURLComponent(request_url.query_piece());
+  std::string dest = base::UnescapeBinaryURLComponent(request_url.query());
   net::test_server::RequestQuery query =
       net::test_server::ParseQuery(request_url);
 
@@ -109,8 +108,7 @@ CrossOriginIsolatedCrossOriginRedirectHandler(
 
 std::unique_ptr<net::test_server::HttpResponse>
 CoopAndCspSandboxRedirectHandler(const net::test_server::HttpRequest& request) {
-  std::string dest =
-      base::UnescapeBinaryURLComponent(request.GetURL().query_piece());
+  std::string dest = base::UnescapeBinaryURLComponent(request.GetURL().query());
   net::test_server::RequestQuery query =
       net::test_server::ParseQuery(request.GetURL());
 
@@ -1276,7 +1274,12 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     TestNavigationManager coop_navigation(web_contents(), coop_page);
     shell()->LoadURL(coop_page);
     if (ShouldCreateNewHostForAllFrames()) {
-      coop_navigation.WaitForSpeculativeRenderFrameHostCreation();
+      // If the feature ResumeNavigationWithSpeculativeRFHProcessGone is
+      // enabled, the result of the navigation with a process kill depends on
+      // whether the navigation has reached the response stage. We use
+      // WaitForResponse rather than WaitForSpeculativeRenderFrameHostCreation
+      // to deflake the test.
+      EXPECT_TRUE(coop_navigation.WaitForResponse());
     } else {
       EXPECT_TRUE(coop_navigation.WaitForRequestStart());
     }
@@ -1391,7 +1394,12 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     TestNavigationManager non_coop_navigation(web_contents(), non_coop_page);
     shell()->LoadURL(non_coop_page);
     if (ShouldCreateNewHostForAllFrames()) {
-      non_coop_navigation.WaitForSpeculativeRenderFrameHostCreation();
+      // If the feature ResumeNavigationWithSpeculativeRFHProcessGone is
+      // enabled, the result of the navigation with a process kill depends on
+      // whether the navigation has reached the response stage. We use
+      // WaitForResponse rather than WaitForSpeculativeRenderFrameHostCreation
+      // to deflake the test.
+      EXPECT_TRUE(non_coop_navigation.WaitForResponse());
     } else {
       EXPECT_TRUE(non_coop_navigation.WaitForRequestStart());
     }
@@ -1508,7 +1516,12 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                                           coop_allow_popups_page);
     shell()->LoadURL(coop_allow_popups_page);
     if (ShouldCreateNewHostForAllFrames()) {
-      coop_navigation.WaitForSpeculativeRenderFrameHostCreation();
+      // If the feature ResumeNavigationWithSpeculativeRFHProcessGone is
+      // enabled, the result of the navigation with a process kill depends on
+      // whether the navigation has reached the response stage. We use
+      // WaitForResponse rather than WaitForSpeculativeRenderFrameHostCreation
+      // to deflake the test.
+      EXPECT_TRUE(coop_navigation.WaitForResponse());
     } else {
       EXPECT_TRUE(coop_navigation.WaitForRequestStart());
     }
@@ -2921,10 +2934,11 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyNoOKPBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
   SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
   EXPECT_TRUE(current_si->IsCrossOriginIsolated());
-  // Use of COOP/COEP headers should not cause SiteInfo::is_origin_keyed() to
-  // return true. The metrics that track OriginAgentCluster isolation expect
-  // is_origin_keyed() to refer only to the OriginAgentCluster header.
-  EXPECT_FALSE(current_si->GetSiteInfo().requires_origin_keyed_process());
+  // Use of COOP/COEP headers should not cause SiteInfo::oac_status() to
+  // return origin-keyed. The metrics that track OriginAgentCluster isolation
+  // expect oac_status() to refer only to the OriginAgentCluster header.
+  EXPECT_EQ(AgentClusterKey::OACStatus::kSiteKeyedByDefault,
+            current_si->GetSiteInfo().oac_status());
 }
 
 // TODO(crbug.com/40924316): Disable flaky test in Linux.
@@ -4084,7 +4098,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_1));
   int rph_id_1 = current_frame_host()->GetProcess()->GetDeprecatedID();
   bool rph_1_is_locked =
-      current_frame_host()->GetProcess()->GetProcessLock().is_locked_to_site();
+      current_frame_host()->GetProcess()->GetProcessLock().IsLockedToSite();
 
   // Start a navigation to a page on a.test that will have COOP headers.
   TestNavigationManager navigation(web_contents(), url_2);
@@ -4141,10 +4155,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   if (SiteIsolationPolicy::IsSiteIsolationForCOOPEnabled()) {
     EXPECT_NE(rph_id_2, rph_id_3);
     EXPECT_FALSE(rph_1_is_locked);
-    EXPECT_TRUE(current_frame_host()
-                    ->GetProcess()
-                    ->GetProcessLock()
-                    .is_locked_to_site());
+    EXPECT_TRUE(
+        current_frame_host()->GetProcess()->GetProcessLock().IsLockedToSite());
 
     // The metric for why we failed to reuse the process will be reported
     // differently depending on whether default SiteInstanceGroups are enabled.
@@ -4523,8 +4535,9 @@ IN_PROC_BROWSER_TEST_P(
     g_iframe.contentWindow.postMessage(sab,"*");
   )");
 
-  EXPECT_THAT(postSharedArrayBuffer.error,
-              HasSubstr("Failed to execute 'postMessage' on 'Window':"));
+  EXPECT_THAT(postSharedArrayBuffer,
+              EvalJsResult::ErrorIs(
+                  HasSubstr("Failed to execute 'postMessage' on 'Window':")));
 }
 
 // Transfer a SharedArrayBuffer in between two COOP+COEP document with a
@@ -4813,8 +4826,9 @@ IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
     g_iframe.contentWindow.postMessage(sab,"*");
   )");
 
-  EXPECT_THAT(postSharedArrayBuffer.error,
-              HasSubstr("Failed to execute 'postMessage' on 'Window'"));
+  EXPECT_THAT(postSharedArrayBuffer,
+              EvalJsResult::ErrorIs(
+                  HasSubstr("Failed to execute 'postMessage' on 'Window'")));
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

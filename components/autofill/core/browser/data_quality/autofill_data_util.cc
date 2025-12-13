@@ -287,8 +287,9 @@ bool ContainsPhone(uint32_t groups) {
 uint32_t DetermineGroups(const FormStructure& form) {
   uint32_t group_bitmask = 0;
   for (const auto& field : form) {
-    FieldType type = field->Type().GetStorableType();
-    AddGroupToBitmask(&group_bitmask, type);
+    for (FieldType type : field->Type().GetTypes()) {
+      AddGroupToBitmask(&group_bitmask, type);
+    }
   }
   return group_bitmask;
 }
@@ -482,7 +483,7 @@ std::u16string JoinNameParts(std::u16string_view given,
   const char* separator = " ";
   if (IsCJKName(given) && IsCJKName(family) && middle.empty()) {
     // LastFirst
-    std::reverse(full_name.begin(), full_name.end());
+    std::ranges::reverse(full_name);
     separator = "";
   }
 

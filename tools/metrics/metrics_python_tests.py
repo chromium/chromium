@@ -34,9 +34,9 @@ sys.exit(
             # directory to be added to sys.path *before* ukm), and that we run
             # the tests in a single process (jobs=1, below).
             'common/codegen_shared_test.py',
-            'dwa/dwa_model_test.py',
-            'dwa/dwa_xml_validations_test.py',
-            'dwa/gen_builders_test.py',
+            'private_metrics/gen_private_metrics_builders_test.py',
+            'private_metrics/private_metrics_model_shared_test.py',
+            'private_metrics/private_metrics_validations_test.py',
             'ukm/gen_builders_test.py',
             'ukm/ukm_model_test.py',
             'ukm/xml_validations_test.py',
@@ -47,6 +47,7 @@ sys.exit(
             'histograms/merge_xml_test.py',
             'histograms/PRESUBMIT_test.py',
             'histograms/pretty_print_test.py',
+            "histograms/print_expanded_histograms_test.py",
             'histograms/validate_token_test.py',
             '../json_comment_eater/json_comment_eater_test.py',
             '../json_to_struct/element_generator_test.py',

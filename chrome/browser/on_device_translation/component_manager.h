@@ -11,7 +11,7 @@
 
 #include "base/auto_reset.h"
 #include "base/files/file_path.h"
-#include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom-forward.h"
+#include "components/on_device_translation/public/mojom/on_device_translation_service.mojom-forward.h"
 
 namespace on_device_translation {
 

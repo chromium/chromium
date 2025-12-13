@@ -18,9 +18,12 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
@@ -41,7 +44,8 @@ UMABrowsingActivityObserver* g_uma_browsing_activity_observer_instance =
 void UMABrowsingActivityObserver::Init() {
   DCHECK(!g_uma_browsing_activity_observer_instance);
   // Must be created before any Browsers are.
-  DCHECK_EQ(0U, chrome::GetTotalBrowserCount());
+  DCHECK(!KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::BROWSER));
   g_uma_browsing_activity_observer_instance = new UMABrowsingActivityObserver;
 }
 
@@ -98,44 +102,46 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
   int customized_tab_group_count = 0;
   int pinned_tab_count = 0;
 
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    // Record how many tabs each window has open.
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Tabs.TabCountPerWindow",
-                                browser->tab_strip_model()->count(), 1, 200,
-                                50);
-    TabStripModel* const tab_strip_model = browser->tab_strip_model();
-    tab_count += tab_strip_model->count();
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        TabStripModel* const tab_strip_model = browser->GetTabStripModel();
 
-    for (int i = 0; i < tab_strip_model->count(); ++i) {
-      if (tab_strip_model->IsTabPinned(i)) {
-        pinned_tab_count++;
-      }
-    }
+        // Record how many tabs each window has open.
+        UMA_HISTOGRAM_CUSTOM_COUNTS("Tabs.TabCountPerWindow",
+                                    tab_strip_model->count(), 1, 200, 50);
+        tab_count += tab_strip_model->count();
 
-    if (tab_strip_model->group_model()) {
-      const std::vector<tab_groups::TabGroupId>& groups =
-          tab_strip_model->group_model()->ListTabGroups();
-      tab_group_count += groups.size();
-      for (const tab_groups::TabGroupId& group_id : groups) {
-        const TabGroup* const tab_group =
-            tab_strip_model->group_model()->GetTabGroup(group_id);
-        if (tab_group->IsCustomized() ||
-            !tab_group->visual_data()->title().empty()) {
-          ++customized_tab_group_count;
+        for (int i = 0; i < tab_strip_model->count(); ++i) {
+          if (tab_strip_model->IsTabPinned(i)) {
+            pinned_tab_count++;
+          }
         }
-        if (tab_group->visual_data()->is_collapsed()) {
-          ++collapsed_tab_group_count;
-        }
-      }
-    }
 
-    if (browser->IsActive()) {
-      // Record how many tabs the active window has open.
-      UMA_HISTOGRAM_CUSTOM_COUNTS("Tabs.TabCountActiveWindow",
-                                  browser->tab_strip_model()->count(), 1, 200,
-                                  50);
-    }
-  }
+        if (tab_strip_model->group_model()) {
+          const std::vector<tab_groups::TabGroupId>& groups =
+              tab_strip_model->group_model()->ListTabGroups();
+          tab_group_count += groups.size();
+          for (const tab_groups::TabGroupId& group_id : groups) {
+            const TabGroup* const tab_group =
+                tab_strip_model->group_model()->GetTabGroup(group_id);
+            if (tab_group->IsCustomized() ||
+                !tab_group->visual_data()->title().empty()) {
+              ++customized_tab_group_count;
+            }
+            if (tab_group->visual_data()->is_collapsed()) {
+              ++collapsed_tab_group_count;
+            }
+          }
+        }
+
+        if (browser->IsActive()) {
+          // Record how many tabs the active window has open.
+          UMA_HISTOGRAM_CUSTOM_COUNTS("Tabs.TabCountActiveWindow",
+                                      tab_strip_model->count(), 1, 200, 50);
+        }
+
+        return true;
+      });
 
   // Record how many tabs total are open (across all windows).
   UMA_HISTOGRAM_CUSTOM_COUNTS("Tabs.TabCountPerLoad", tab_count, 1, 200, 50);
@@ -148,9 +154,10 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
 
   // Record how many tabs are in the current group. Records 0 if the active tab
   // is not in a group.
-  const Browser* current_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const current_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   if (current_browser) {
-    TabStripModel* const tab_strip_model = current_browser->tab_strip_model();
+    TabStripModel* const tab_strip_model = current_browser->GetTabStripModel();
     if (tab_strip_model->group_model()) {
       const std::optional<tab_groups::TabGroupId> active_group =
           tab_strip_model->GetTabGroupForTab(tab_strip_model->active_index());

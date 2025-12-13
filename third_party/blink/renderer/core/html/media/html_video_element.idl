@@ -27,9 +27,9 @@
 
 [
     Exposed=Window,
-    HTMLConstructor,
     ActiveScriptWrappable
 ] interface HTMLVideoElement : HTMLMediaElement {
+    [HTMLConstructor] constructor();
     [CEReactions, Reflect] attribute unsigned long width;
     [CEReactions, Reflect] attribute unsigned long height;
     readonly attribute unsigned long videoWidth;
@@ -38,11 +38,11 @@
 
     // The number of frames that have been decoded and made available for
     // playback.
-    [HighEntropy=Direct, MeasureAs=PrefixedVideoDecodedFrameCount] readonly attribute unsigned long webkitDecodedFrameCount;
+    [MeasureAs=PrefixedVideoDecodedFrameCount] readonly attribute unsigned long webkitDecodedFrameCount;
 
     // The number of decoded frames that have been dropped by the player
     // for performance reasons during playback.
-    [HighEntropy=Direct, MeasureAs=PrefixedVideoDroppedFrameCount] readonly attribute unsigned long webkitDroppedFrameCount;
+    [MeasureAs=PrefixedVideoDroppedFrameCount] readonly attribute unsigned long webkitDroppedFrameCount;
 
     [CEReactions, Reflect] attribute boolean playsInline;
 };

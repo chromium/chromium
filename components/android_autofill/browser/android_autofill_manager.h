@@ -43,14 +43,22 @@ class AndroidAutofillManager : public AutofillManager,
 
   void OnFocusOnNonFormFieldImpl() override;
 
-  void OnDidFillAutofillFormDataImpl(const FormData& form,
-                                     const base::TimeTicks timestamp) override;
+  void OnDidAutofillFormImpl(const FormData& form) override;
+
+  void SuppressAutomaticRefillsImpl(const FillId& fill_id) override {}
+
+  void RequestRefillImpl(const FillId& fill_id) override {}
 
   void OnDidEndTextFieldEditingImpl() override {}
   void OnHidePopupImpl() override;
-  void OnSelectFieldOptionsDidChangeImpl(const FormData& form) override {}
+  void OnSelectFieldOptionsDidChangeImpl(
+      const FormData& form,
+      const FieldGlobalId& field_id) override {}
 
   void ReportAutofillWebOTPMetrics(bool used_web_otp) override {}
+
+  CreditCardAccessManager* GetCreditCardAccessManager() override;
+  const CreditCardAccessManager* GetCreditCardAccessManager() const override;
 
   bool has_server_prediction(FormGlobalId form) const {
     return forms_with_server_predictions_.contains(form);
@@ -106,8 +114,7 @@ class AndroidAutofillManager : public AutofillManager,
       const std::u16string& old_value) override {}
 
   void OnLoadedServerPredictionsImpl(
-      base::span<const raw_ptr<FormStructure, VectorExperimental>> forms)
-      override {}
+      base::span<const raw_ref<FormStructure>> forms) override {}
 
   bool ShouldParseForms() override;
 

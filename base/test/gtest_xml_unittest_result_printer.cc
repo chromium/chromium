@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/test/gtest_xml_unittest_result_printer.h"
 
 #include <string_view>
@@ -14,6 +9,7 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_util.h"
@@ -79,11 +75,11 @@ void XmlUnitTestResultPrinter::AddLink(const std::string& name,
   // theory it should not be possible to reach here and the info is null.
   DCHECK(info);
 
-  fprintf(output_file_.get(),
-          "    <link name=\"%s\" classname=\"%s\" "
-          "link_name=\"%s\">%s</link>\n",
-          info->name(), info->test_suite_name(), name.c_str(),
-          escaped_url.c_str());
+  UNSAFE_TODO(fprintf(output_file_.get(),
+                      "    <link name=\"%s\" classname=\"%s\" "
+                      "link_name=\"%s\">%s</link>\n",
+                      info->name(), info->test_suite_name(), name.c_str(),
+                      escaped_url.c_str()));
   fflush(output_file_);
 }
 
@@ -101,11 +97,11 @@ void XmlUnitTestResultPrinter::AddTag(const std::string& name,
   // theory it should not be possible to reach here and the info is null.
   DCHECK(info);
 
-  fprintf(output_file_.get(),
-          "    <tag name=\"%s\" classname=\"%s\" "
-          "tag_name=\"%s\">%s</tag>\n",
-          info->name(), info->test_suite_name(), name.c_str(),
-          escaped_value.c_str());
+  UNSAFE_TODO(fprintf(output_file_.get(),
+                      "    <tag name=\"%s\" classname=\"%s\" "
+                      "tag_name=\"%s\">%s</tag>\n",
+                      info->name(), info->test_suite_name(), name.c_str(),
+                      escaped_value.c_str()));
   fflush(output_file_);
 }
 
@@ -123,11 +119,12 @@ void XmlUnitTestResultPrinter::AddSubTestResult(
   // which violates this function's preconditions.
   CHECK(info);
 
-  fprintf(output_file_.get(),
-          "    <x-sub-test-result name=\"%s\" classname=\"%s\" "
-          "subname=\"%s\" time=\"%.3f\"",
-          info->name(), info->test_suite_name(), name.data(),
-          static_cast<double>(elapsed_time) / Time::kMillisecondsPerSecond);
+  UNSAFE_TODO(fprintf(
+      output_file_.get(),
+      "    <x-sub-test-result name=\"%s\" classname=\"%s\" "
+      "subname=\"%s\" time=\"%.3f\"",
+      info->name(), info->test_suite_name(), name.data(),
+      static_cast<double>(elapsed_time) / Time::kMillisecondsPerSecond));
   if (failure_message) {
     std::string encoded = base::Base64Encode(*failure_message);
     fprintf(output_file_.get(), " failure_message=\"%s\"", encoded.c_str());
@@ -176,26 +173,28 @@ void XmlUnitTestResultPrinter::OnTestStart(const testing::TestInfo& test_info) {
   // This is our custom extension - it helps to recognize which test was
   // running when the test binary crashed. Note that we cannot even open the
   // <testcase> tag here - it requires e.g. run time of the test to be known.
-  fprintf(output_file_.get(),
-          "    <x-teststart name=\"%s\" classname=\"%s\" timestamp=\"%s\" />\n",
-          test_info.name(), test_info.test_suite_name(),
-          TimeFormatAsIso8601(Time::Now()).c_str());
+  UNSAFE_TODO(fprintf(
+      output_file_.get(),
+      "    <x-teststart name=\"%s\" classname=\"%s\" timestamp=\"%s\" />\n",
+      test_info.name(), test_info.test_suite_name(),
+      TimeFormatAsIso8601(Time::Now()).c_str()));
   fflush(output_file_);
   test_running_ = true;
 }
 
 void XmlUnitTestResultPrinter::OnTestEnd(const testing::TestInfo& test_info) {
   DCHECK(test_running_);
-  fprintf(output_file_.get(),
-          "    <testcase name=\"%s\" status=\"run\" time=\"%.3f\""
-          " classname=\"%s\" timestamp=\"%s\">\n",
-          test_info.name(),
-          static_cast<double>(test_info.result()->elapsed_time()) /
-              Time::kMillisecondsPerSecond,
-          test_info.test_suite_name(),
-          TimeFormatAsIso8601(Time::FromMillisecondsSinceUnixEpoch(
-                                  test_info.result()->start_timestamp()))
-              .c_str());
+  UNSAFE_TODO(
+      fprintf(output_file_.get(),
+              "    <testcase name=\"%s\" status=\"run\" time=\"%.3f\""
+              " classname=\"%s\" timestamp=\"%s\">\n",
+              test_info.name(),
+              static_cast<double>(test_info.result()->elapsed_time()) /
+                  Time::kMillisecondsPerSecond,
+              test_info.test_suite_name(),
+              TimeFormatAsIso8601(Time::FromMillisecondsSinceUnixEpoch(
+                                      test_info.result()->start_timestamp()))
+                  .c_str()));
   if (test_info.result()->Failed()) {
     fprintf(output_file_.get(),
             "      <failure message=\"\" type=\"\"></failure>\n");
@@ -207,7 +206,8 @@ void XmlUnitTestResultPrinter::OnTestEnd(const testing::TestInfo& test_info) {
     std::string limit_str =
         CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             switches::kTestLauncherTestPartResultsLimit);
-    int test_part_results_limit = std::strtol(limit_str.c_str(), nullptr, 10);
+    int test_part_results_limit =
+        UNSAFE_TODO(std::strtol(limit_str.c_str(), nullptr, 10));
     if (test_part_results_limit >= 0) {
       limit = std::min(limit, test_part_results_limit);
     }
@@ -267,12 +267,13 @@ void XmlUnitTestResultPrinter::WriteTestPartResult(
   }
   std::string summary_encoded = base::Base64Encode(summary);
   std::string message_encoded = base::Base64Encode(message);
-  fprintf(output_file_.get(),
-          "      <x-test-result-part type=\"%s\" file=\"%s\" line=\"%d\">\n"
-          "        <summary>%s</summary>\n"
-          "        <message>%s</message>\n"
-          "      </x-test-result-part>\n",
-          type, file, line, summary_encoded.c_str(), message_encoded.c_str());
+  UNSAFE_TODO(fprintf(
+      output_file_.get(),
+      "      <x-test-result-part type=\"%s\" file=\"%s\" line=\"%d\">\n"
+      "        <summary>%s</summary>\n"
+      "        <message>%s</message>\n"
+      "      </x-test-result-part>\n",
+      type, file, line, summary_encoded.c_str(), message_encoded.c_str()));
   fflush(output_file_);
 }
 

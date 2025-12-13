@@ -21,8 +21,6 @@ AccessorySheetData CreateAccessorySheetData(
     data.add_user_info(std::move(user_info_item));
   }
 
-  // TODO(crbug.com/40601211): Generalize options (both adding to footer, and
-  // handling selection).
   for (FooterCommand& footer_command : std::move(footer_commands)) {
     data.add_footer_command(std::move(footer_command));
   }

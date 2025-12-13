@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_WIN_WINRT_FOUNDATION_HELPERS_H_
 #define BASE_WIN_WINRT_FOUNDATION_HELPERS_H_
 
@@ -15,9 +10,11 @@
 
 #include <algorithm>
 #include <optional>
+#include <type_traits>
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 
 // This file provides helpers for WinRT types.
 
@@ -107,7 +104,7 @@ HRESULT CopyN(
     unsigned count,
     T** result) {
   for (unsigned i = 0; i < count; ++i) {
-    CopyTo(*first++, result++);
+    CopyTo(*first++, UNSAFE_TODO(result++));
   }
   return S_OK;
 }

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FEED_CORE_V2_STREAM_MODEL_H_
 #define COMPONENTS_FEED_CORE_V2_STREAM_MODEL_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>

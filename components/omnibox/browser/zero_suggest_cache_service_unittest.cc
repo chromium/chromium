@@ -10,6 +10,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
@@ -48,7 +49,7 @@ struct TestCacheEntry {
   std::string response;
 };
 
-class ZeroSuggestCacheServiceTest : public testing::TestWithParam<bool> {
+class ZeroSuggestCacheServiceTest : public testing::Test {
  public:
   ZeroSuggestCacheServiceTest() = default;
 
@@ -60,13 +61,6 @@ class ZeroSuggestCacheServiceTest : public testing::TestWithParam<bool> {
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
     ZeroSuggestProvider::RegisterProfilePrefs(prefs_->registry());
 
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          omnibox::kZeroSuggestInMemoryCaching);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          omnibox::kZeroSuggestInMemoryCaching);
-    }
   }
 
   void TearDown() override { prefs_.reset(); }
@@ -78,49 +72,9 @@ class ZeroSuggestCacheServiceTest : public testing::TestWithParam<bool> {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, ZeroSuggestCacheServiceTest, testing::Bool());
-
-TEST_P(ZeroSuggestCacheServiceTest, CacheStartsEmpty) {
+TEST_F(ZeroSuggestCacheServiceTest, StoreResponseUpdatesExistingEntry) {
   ZeroSuggestCacheService cache_svc(std::make_unique<TestSchemeClassifier>(),
-                                    GetPrefs(), 1);
-  EXPECT_TRUE(cache_svc.IsInMemoryCacheEmptyForTesting());
-}
-
-TEST_P(ZeroSuggestCacheServiceTest, StoreResponseRecordsMemoryUsageHistogram) {
-  // Cache memory usage histogram is only logged when using the in-memory cache.
-  if (!GetParam()) {
-    return;
-  }
-
-  base::HistogramTester histogram_tester;
-  ZeroSuggestCacheService cache_svc(std::make_unique<TestSchemeClassifier>(),
-                                    GetPrefs(), 1);
-
-  const std::string page_url = "https://www.google.com";
-  const std::string response = "foo";
-  const std::string histogram = "Omnibox.ZeroSuggestProvider.CacheMemoryUsage";
-
-  cache_svc.StoreZeroSuggestResponse(page_url, response);
-  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(page_url).response_json,
-            response);
-  histogram_tester.ExpectTotalCount(histogram, 2);
-
-  cache_svc.StoreZeroSuggestResponse(page_url, "");
-  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(page_url).response_json, "");
-  histogram_tester.ExpectTotalCount(histogram, 3);
-
-  cache_svc.StoreZeroSuggestResponse("", response);
-  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse("").response_json, response);
-  histogram_tester.ExpectTotalCount(histogram, 4);
-
-  cache_svc.StoreZeroSuggestResponse("", "");
-  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse("").response_json, "");
-  histogram_tester.ExpectTotalCount(histogram, 5);
-}
-
-TEST_P(ZeroSuggestCacheServiceTest, StoreResponseUpdatesExistingEntry) {
-  ZeroSuggestCacheService cache_svc(std::make_unique<TestSchemeClassifier>(),
-                                    GetPrefs(), 1);
+                                    GetPrefs());
 
   const std::string page_url = "https://www.google.com";
   const std::string old_response = "foo";
@@ -135,9 +89,9 @@ TEST_P(ZeroSuggestCacheServiceTest, StoreResponseUpdatesExistingEntry) {
             new_response);
 }
 
-TEST_P(ZeroSuggestCacheServiceTest, StoreResponseNotifiesObservers) {
+TEST_F(ZeroSuggestCacheServiceTest, StoreResponseNotifiesObservers) {
   ZeroSuggestCacheService cache_svc(std::make_unique<TestSchemeClassifier>(),
-                                    GetPrefs(), 2);
+                                    GetPrefs());
 
   const std::string goog_url = "https://www.google.com";
   const std::string fb_url = "https://www.facebook.com";
@@ -187,41 +141,9 @@ TEST_P(ZeroSuggestCacheServiceTest, StoreResponseNotifiesObservers) {
   EXPECT_EQ(fb_observer.GetData().response_json, "bar");
 }
 
-TEST_P(ZeroSuggestCacheServiceTest, LeastRecentItemIsEvicted) {
-  // LRU (recency) logic only takes effect when using in-memory caching.
-  if (!GetParam()) {
-    return;
-  }
-
+TEST_F(ZeroSuggestCacheServiceTest, ReadResponseWillRetrieveMatchingData) {
   ZeroSuggestCacheService cache_svc(std::make_unique<TestSchemeClassifier>(),
-                                    GetPrefs(), 2);
-
-  TestCacheEntry entry1 = {"https://www.facebook.com", "foo"};
-  TestCacheEntry entry2 = {"https://www.google.com", "bar"};
-  TestCacheEntry entry3 = {"https://www.example.com", "eggs"};
-
-  cache_svc.StoreZeroSuggestResponse(entry1.url, entry1.response);
-  cache_svc.StoreZeroSuggestResponse(entry2.url, entry2.response);
-
-  // Fill up the zero suggest cache to max capacity.
-  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(entry1.url).response_json,
-            entry1.response);
-  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(entry2.url).response_json,
-            entry2.response);
-
-  cache_svc.StoreZeroSuggestResponse(entry3.url, entry3.response);
-
-  // "Least recently used" entry should now have been evicted from the cache.
-  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(entry1.url).response_json, "");
-  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(entry2.url).response_json,
-            entry2.response);
-  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(entry3.url).response_json,
-            entry3.response);
-}
-
-TEST_P(ZeroSuggestCacheServiceTest, ReadResponseWillRetrieveMatchingData) {
-  ZeroSuggestCacheService cache_svc(std::make_unique<TestSchemeClassifier>(),
-                                    GetPrefs(), 1);
+                                    GetPrefs());
 
   const std::string page_url = "https://www.google.com";
   const std::string response = "foo";
@@ -231,45 +153,12 @@ TEST_P(ZeroSuggestCacheServiceTest, ReadResponseWillRetrieveMatchingData) {
             response);
 }
 
-TEST_P(ZeroSuggestCacheServiceTest, ReadResponseUpdatesRecency) {
-  // LRU (recency) logic only takes effect when using in-memory caching.
-  if (!GetParam()) {
-    return;
-  }
-
-  ZeroSuggestCacheService cache_svc(std::make_unique<TestSchemeClassifier>(),
-                                    GetPrefs(), 2);
-
-  TestCacheEntry entry1 = {"https://www.google.com", "foo"};
-  TestCacheEntry entry2 = {"https://www.facebook.com", "bar"};
-  TestCacheEntry entry3 = {"https://www.example.com", "eggs"};
-
-  // Fill up the zero suggest cache to max capacity.
-  cache_svc.StoreZeroSuggestResponse(entry1.url, entry1.response);
-  cache_svc.StoreZeroSuggestResponse(entry2.url, entry2.response);
-
-  // Read the oldest entry in the cache, thereby marking the more recent entry
-  // as "least recently used".
-  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(entry1.url).response_json,
-            entry1.response);
-
-  cache_svc.StoreZeroSuggestResponse(entry3.url, entry3.response);
-
-  // Since the second request was the "least recently used", it should have been
-  // evicted.
-  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(entry2.url).response_json, "");
-  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(entry1.url).response_json,
-            entry1.response);
-  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(entry3.url).response_json,
-            entry3.response);
-}
-
-TEST_P(ZeroSuggestCacheServiceTest, ClearCacheResultsInEmptyCache) {
+TEST_F(ZeroSuggestCacheServiceTest, ClearCacheResultsInEmptyCache) {
   TestCacheEntry ntp_entry = {"", "foo"};
   TestCacheEntry srp_entry = {"https://www.google.com/search?q=bar", "bar"};
 
   ZeroSuggestCacheService cache_svc(std::make_unique<TestSchemeClassifier>(),
-                                    GetPrefs(), 2);
+                                    GetPrefs());
 
   cache_svc.StoreZeroSuggestResponse(ntp_entry.url, ntp_entry.response);
   cache_svc.StoreZeroSuggestResponse(srp_entry.url, srp_entry.response);
@@ -287,67 +176,7 @@ TEST_P(ZeroSuggestCacheServiceTest, ClearCacheResultsInEmptyCache) {
       cache_svc.ReadZeroSuggestResponse(srp_entry.url).response_json.empty());
 }
 
-TEST_P(ZeroSuggestCacheServiceTest, CacheLoadsFromPrefsOnStartup) {
-  // Persistence logic only executes when using in-memory cache.
-  if (!GetParam()) {
-    return;
-  }
-
-  TestCacheEntry ntp_entry = {"", "foo"};
-  TestCacheEntry srp_entry = {"https://www.google.com/search?q=bar", "bar"};
-  TestCacheEntry web_entry = {"https://www.example.com", "eggs"};
-
-  base::Value::Dict prefs_dict;
-  prefs_dict.Set(ntp_entry.url, ntp_entry.response);
-  prefs_dict.Set(srp_entry.url, srp_entry.response);
-  prefs_dict.Set(web_entry.url, web_entry.response);
-
-  PrefService* prefs = GetPrefs();
-  prefs->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
-                 std::move(prefs_dict));
-
-  ZeroSuggestCacheService cache_svc(std::make_unique<TestSchemeClassifier>(),
-                                    prefs, 3);
-
-  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(ntp_entry.url).response_json,
-            ntp_entry.response);
-  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(srp_entry.url).response_json,
-            srp_entry.response);
-  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(web_entry.url).response_json,
-            web_entry.response);
-}
-
-TEST_P(ZeroSuggestCacheServiceTest, CacheDumpsToPrefsOnShutdown) {
-  // Persistence logic only executes when using in-memory cache.
-  if (!GetParam()) {
-    return;
-  }
-
-  TestCacheEntry ntp_entry = {"", "foo"};
-  TestCacheEntry srp_entry = {"https://www.google.com/search?q=bar", "bar"};
-  TestCacheEntry web_entry = {"https://www.example.com", "eggs"};
-
-  PrefService* prefs = GetPrefs();
-  {
-    ZeroSuggestCacheService cache_svc(std::make_unique<TestSchemeClassifier>(),
-                                      prefs, 3);
-    cache_svc.StoreZeroSuggestResponse(ntp_entry.url, ntp_entry.response);
-    cache_svc.StoreZeroSuggestResponse(srp_entry.url, srp_entry.response);
-    cache_svc.StoreZeroSuggestResponse(web_entry.url, web_entry.response);
-  }
-
-  EXPECT_EQ(omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
-                prefs, ntp_entry.url),
-            ntp_entry.response);
-  EXPECT_EQ(omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
-                prefs, srp_entry.url),
-            srp_entry.response);
-  EXPECT_EQ(omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
-                prefs, web_entry.url),
-            web_entry.response);
-}
-
-TEST_P(ZeroSuggestCacheServiceTest, ClearCacheResultsInEmptyPersistencePrefs) {
+TEST_F(ZeroSuggestCacheServiceTest, ClearCacheResultsInEmptyPersistencePrefs) {
   PrefService* prefs = GetPrefs();
 
   TestCacheEntry ntp_entry = {"", "foo"};
@@ -378,13 +207,9 @@ TEST_P(ZeroSuggestCacheServiceTest, ClearCacheResultsInEmptyPersistencePrefs) {
 
   {
     ZeroSuggestCacheService cache_svc(std::make_unique<TestSchemeClassifier>(),
-                                      GetPrefs(), 3);
-    if (GetParam()) {
-      EXPECT_FALSE(cache_svc.IsInMemoryCacheEmptyForTesting());
-    }
+                                      GetPrefs());
 
     cache_svc.ClearCache();
-    EXPECT_TRUE(cache_svc.IsInMemoryCacheEmptyForTesting());
   }
 
   // Relevant prefs should now be empty.
@@ -399,13 +224,14 @@ TEST_P(ZeroSuggestCacheServiceTest, ClearCacheResultsInEmptyPersistencePrefs) {
                   .empty());
 }
 
-TEST_P(ZeroSuggestCacheServiceTest,
+TEST_F(ZeroSuggestCacheServiceTest,
        GetSuggestResultsReturnsEmptyListForInvalidResponseJson) {
   ZeroSuggestCacheService cache_svc(std::make_unique<TestSchemeClassifier>(),
-                                    GetPrefs(), 1);
+                                    GetPrefs());
 
   AutocompleteInput ac_input(u"", metrics::OmniboxEventProto::OTHER,
                              TestSchemeClassifier());
+  base::test::TaskEnvironment task_environment;
   FakeAutocompleteProviderClient client;
 
   const std::vector<TestCacheEntry> invalid_json_responses = {

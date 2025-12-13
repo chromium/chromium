@@ -34,7 +34,7 @@ TEST(BoxedV8ModuleTest, equalAndHash) {
   EXPECT_TRUE(Traits::Equal(module_a, module_a));
   EXPECT_FALSE(Traits::Equal(module_a, module_b));
 
-  EXPECT_NE(WTF::GetHash(module_a), WTF::GetHash(module_b));
+  EXPECT_NE(GetHash(module_a), GetHash(module_b));
 }
 
 }  // namespace

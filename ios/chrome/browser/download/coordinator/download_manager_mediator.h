@@ -16,6 +16,8 @@
 
 @protocol DownloadManagerConsumer;
 
+class DownloadRecordService;
+
 namespace drive {
 class DriveService;
 }
@@ -56,6 +58,9 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
 
   // Sets the pref service.
   void SetPrefService(PrefService* pref_service);
+
+  // Sets the download record service.
+  void SetDownloadRecordService(DownloadRecordService* download_record_service);
 
   // Sets download manager consumer. Not retained by mediator.
   void SetConsumer(id<DownloadManagerConsumer> consumer);
@@ -130,6 +135,7 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
       identity_manager_observation_{this};
   raw_ptr<drive::DriveService> drive_service_ = nullptr;
   raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<DownloadRecordService> download_record_service_ = nullptr;
   bool is_incognito_;
   raw_ptr<web::DownloadTask> download_task_ = nullptr;
   raw_ptr<UploadTask> upload_task_ = nullptr;
@@ -137,9 +143,7 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
   // Observers for NSNotificationCenter notifications.
   __strong id<NSObject> application_foregrounding_observer_;
   bool is_google_drive_app_installed_ = false;
-#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
   bool should_show_origin_ = false;
-#endif
 
   base::WeakPtrFactory<DownloadManagerMediator> weak_ptr_factory_;
 };

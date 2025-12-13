@@ -33,7 +33,7 @@ OomInterventionConfig::OomInterventionConfig()
   // If no threshold is specified, set blink_workload_threshold to 10% of the
   // RAM size.
   renderer_detection_args_->private_footprint_threshold =
-      base::SysInfo::AmountOfPhysicalMemory() * 0.14;
+      base::SysInfo::AmountOfPhysicalMemory().InBytesUnsigned() * 0.14;
 }
 
 // static

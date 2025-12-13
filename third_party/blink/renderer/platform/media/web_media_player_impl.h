@@ -16,7 +16,6 @@
 #include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -32,6 +31,7 @@
 #include "media/base/eme_constants.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_observer.h"
+#include "media/base/media_player_logging_id.h"
 #include "media/base/media_tracks.h"
 #include "media/base/overlay_info.h"
 #include "media/base/picture_in_picture_events_info.h"
@@ -52,14 +52,12 @@
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
-#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
-#include "third_party/blink/renderer/platform/media/learning_experiment_helper.h"
 #include "third_party/blink/renderer/platform/media/media_player_client.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer_data_source.h"
-#include "third_party/blink/renderer/platform/media/smoothness_helper.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "url/gurl.h"
+
+class GURL;
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -86,10 +84,6 @@ class MediaLog;
 class MemoryDumpProviderProxy;
 class PipelineController;
 class SwitchableAudioRendererSink;
-
-namespace learning {
-class LearningTaskController;
-}
 }  // namespace media
 
 namespace viz {
@@ -97,8 +91,10 @@ class RasterContextProvider;
 }
 
 namespace blink {
+
 class BufferedDataSourceHostImpl;
 class PowerStatusHelper;
+class KURL;
 class ThreadSafeBrowserInterfaceBrokerProxy;
 class UrlIndex;
 class VideoDecodeStatsReporter;
@@ -130,8 +126,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
       public media::Pipeline::Client,
       public media::MediaObserverClient,
       public media::DemuxerManager::Client,
-      public WebSurfaceLayerBridgeObserver,
-      public SmoothnessHelper::Client {
+      public WebSurfaceLayerBridgeObserver {
  public:
   // Constructs a WebMediaPlayer implementation using Chromium's media stack.
   // |delegate| and |renderer_factory_selector| must not be null.
@@ -155,7 +150,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
       WebContentDecryptionModule* initial_cdm,
       media::RequestRoutingTokenCallback request_routing_token_cb,
       base::WeakPtr<media::MediaObserver> media_observer,
-      bool enable_instant_source_buffer_gc,
       bool embedded_media_experience_enabled,
       mojo::PendingRemote<media::mojom::blink::MediaMetricsProvider>
           metrics_provider,
@@ -208,7 +202,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // ImageBitmap, printing and capturing capabilities.
   void Paint(cc::PaintCanvas* canvas,
              const gfx::Rect& rect,
-             cc::PaintFlags& flags) override;
+             const cc::PaintFlags& flags) override;
   scoped_refptr<media::VideoFrame> GetCurrentFrameThenUpdate() override;
   std::optional<media::VideoFrame::ID> CurrentFrameId() const override;
   media::PaintCanvasVideoRenderer* GetPaintCanvasVideoRenderer() override;
@@ -254,8 +248,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   uint64_t AudioDecodedByteCount() const override;
   uint64_t VideoDecodedByteCount() const override;
 
-  bool PassedTimingAllowOriginCheck() const override;
-
   void SetVolumeMultiplier(double multiplier) override;
   void SetPersistentState(bool persistent) override;
   void SetPowerExperimentState(bool state) override;
@@ -294,7 +286,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void RequestMediaRemoting() override;
 
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(https://crbug.com/839651): Rename Flinging[Started/Stopped] to
+  // TODO(crbug.com/41387054): Rename Flinging[Started/Stopped] to
   // RemotePlayback[Started/Stopped] once the other RemotePlayback methods have
   // been removed
   void FlingingStarted() override;
@@ -452,8 +444,10 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void DemuxerRequestsSeek(base::TimeDelta seek_time) override;
 
 #if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
-  void AddMediaTrack(const media::MediaTrack&) override;
-  void RemoveMediaTrack(const media::MediaTrack&) override;
+  void AddTrack(const media::MediaTrack&) override;
+  void RemoveTrack(const media::MediaTrack&) override;
+  void SetTrackState(const media::MediaTrack&,
+                     media::MediaTrack::State) override;
 #endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
@@ -500,7 +494,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Called by GpuVideoDecoder on Android to request a surface to render to (if
   // necessary).
   void OnOverlayInfoRequested(
-      bool decoder_requires_restart_for_overlay,
       media::ProvideOverlayInfoCB provide_overlay_info_cb);
 
   // Creates a Renderer via the |renderer_factory_selector_|. If the
@@ -568,11 +561,11 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void ReportMemoryUsage();
   void FinishMemoryUsageReport(int64_t demuxer_memory_usage);
 
-  void OnMainThreadMemoryDump(int32_t id,
+  void OnMainThreadMemoryDump(media::MediaPlayerLoggingID player_id,
                               const base::trace_event::MemoryDumpArgs& args,
                               base::trace_event::ProcessMemoryDump* pmd);
   static void OnMediaThreadMemoryDump(
-      int32_t id,
+      media::MediaPlayerLoggingID player_id,
       media::Demuxer* demuxer,
       const base::trace_event::MemoryDumpArgs& args,
       base::trace_event::ProcessMemoryDump* pmd);
@@ -650,7 +643,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Must be called when either of the following happens:
   // - right after the video was shown,
   // - right before the pipeline is requested to resume
-  //   (see https://crbug.com/678374),
+  //   (see https://crbug.com/41293579),
   // - right after the pipeline has resumed if the video is not hidden.
   void EnableVideoTrackIfNeeded();
 
@@ -692,8 +685,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 
   // Returns the current time without clamping to Duration() as required by
   // HTMLMediaElement for handling ended. This method will never return a
-  // negative or kInfiniteDuration value. See http://crbug.com/409280,
-  // http://crbug.com/645998, and http://crbug.com/751823 for reasons why.
+  // negative or kInfiniteDuration value. See http://crbug.com/40382058,
+  // http://crbug.com/41274857, and http://crbug.com/40533294 for reasons why.
   base::TimeDelta GetCurrentTimeInternal() const;
 
   // Called by the compositor the very first time a frame is received.
@@ -723,16 +716,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // the amount of data the DataSource buffers. Does nothing prior to reaching
   // kReadyStateHaveEnoughData for the first time.
   void MaybeUpdateBufferSizesForPlayback();
-
-  // Create / recreate |smoothness_helper_|, with current features.  Will take
-  // no action if we already have a smoothness helper with the same features
-  // that we want now.  Will destroy the helper if we shouldn't be measuring
-  // smoothness right now.
-  void UpdateSmoothnessHelper();
-
-  // Get the LearningTaskController for |task_name|.
-  std::unique_ptr<media::learning::LearningTaskController>
-  GetLearningTaskController(const char* task_name);
 
   // Returns whether the player has an audio track and whether it should be
   // allowed to play it.
@@ -833,7 +816,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   bool pending_suspend_resume_cycle_ = false;
 
   // TODO(scherkus): Replace with an explicit ended signal to HTMLMediaElement,
-  // see http://crbug.com/409280
+  // see http://crbug.com/40382058.
   bool ended_ = false;
 
   // Tracks whether to issue time changed notifications during buffering state
@@ -845,9 +828,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Cors and Caching flags set during `Load` and used while creating demuxers.
   CorsMode cors_mode_ = kCorsModeUnspecified;
   bool is_cache_disabled_ = false;
-
-  // Whether the current decoder requires a restart on overlay transitions.
-  bool decoder_requires_restart_for_overlay_ = false;
 
   const raw_ptr<MediaPlayerClient> client_;
   const raw_ptr<WebMediaPlayerEncryptedMediaClient> encrypted_client_;
@@ -934,7 +914,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
 
   // Tracks if we are currently flinging a video (e.g. in a RemotePlayback
   // session). Used to prevent videos from being paused when hidden.
-  // TODO(https://crbug.com/839651): remove or rename this flag, when removing
+  // TODO(crbug.com/41387054): remove or rename this flag, when removing
   // IsRemote().
   bool is_flinging_ = false;
 
@@ -1121,8 +1101,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Whether background video optimization is supported on current platform.
   bool is_background_video_track_optimization_supported_ = true;
 
-  const bool should_pause_background_muted_audio_;
-
   bool was_suspended_for_frame_closed_or_frozen_ = false;
 
   // Request pipeline to suspend. It should not block other signals after
@@ -1140,13 +1118,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   media::RendererType renderer_type_ = media::RendererType::kRendererImpl;
   media::SimpleWatchTimer simple_watch_timer_;
 
-  LearningExperimentHelper will_play_helper_;
-
   std::unique_ptr<PowerStatusHelper> power_status_helper_;
-
-  // Created while playing, deleted otherwise.
-  std::unique_ptr<SmoothnessHelper> smoothness_helper_;
-  std::optional<int> last_reported_fps_;
 
   // Time of the last call to GetCurrentFrameFromCompositor(). Used to prevent
   // background optimizations from being applied when capturing is active.

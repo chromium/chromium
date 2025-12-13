@@ -12,9 +12,20 @@ import {getRequiredElement} from '//resources/js/util.js';
  * specific event sections based on flags.
  */
 function populateConnectorsSection() {
+  // Browser/profile reporting section. If both are active, only show the
+  // browser reporting section.
+  const browserReportingEnabled =
+      loadTimeData.getBoolean('browserReportingEnabled');
+  const profileReportingEnabled =
+      loadTimeData.getBoolean('profileReportingEnabled');
+  if (browserReportingEnabled) {
+    getRequiredElement('browser-reporting-info').classList.remove('hidden');
+  } else if (profileReportingEnabled) {
+    getRequiredElement('profile-reporting-info').classList.remove('hidden');
+  }
+
   const pageVisitEnabled = loadTimeData.getBoolean('pageVisitEventEnabled');
   const securityEventEnabled = loadTimeData.getBoolean('securityEventEnabled');
-
   const connectorsSectionVisible = pageVisitEnabled || securityEventEnabled;
 
   // Check if there are connectors enabled.

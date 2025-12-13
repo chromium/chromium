@@ -98,7 +98,7 @@ StudyGroupNames& StudyGroupNames::operator=(const StudyGroupNames& src) =
     default;
 
 std::vector<StudyGroupNames> GetStudiesAvailableToForce(
-    VariationsSeed seed,
+    const VariationsSeed& seed,
     const EntropyProviders& entropy_providers,
     const ClientFilterableState& client_filterable_state) {
   std::vector<StudyGroupNames> result;

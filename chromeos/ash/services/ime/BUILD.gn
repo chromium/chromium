@@ -56,7 +56,7 @@ source_set("lib") {
     "//ash/constants",
     "//base",
     "//chromeos/ash/services/ime/public/cpp/shared_lib:interfaces",
-    "//chromeos/ash/services/ime/public/cpp/shared_lib/proto:proto",
+    "//chromeos/ash/services/ime/public/cpp/shared_lib/proto",
     "//chromeos/ash/services/ime/public/mojom",
   ]
 }
@@ -86,7 +86,7 @@ source_set("services_unittests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/services/ime/public/cpp/shared_lib:interfaces",
-    "//chromeos/ash/services/ime/public/cpp/shared_lib/proto:proto",
+    "//chromeos/ash/services/ime/public/cpp/shared_lib/proto",
     "//chromeos/ash/services/ime/public/mojom",
     "//mojo/public/cpp/bindings",
     "//services/network:test_support",

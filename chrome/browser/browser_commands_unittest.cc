@@ -14,7 +14,6 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
@@ -60,7 +59,8 @@ class BrowserCommandsTest : public BrowserWithTestWindowTest {
   void WaitForTabGroupSyncServiceInitialized() {
     auto observer =
         std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
-            tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile()));
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+                browser()->profile()));
     observer->Wait();
   }
 };
@@ -321,6 +321,82 @@ TEST_F(BrowserCommandsTest, BackForwardInNewTabWithGroup) {
 
   // The new tab should have inherited the tab group from the old tab.
   EXPECT_EQ(group_id, browser()->tab_strip_model()->GetTabGroupForTab(2));
+}
+TEST_F(BrowserCommandsTest, GroupAllUngroupedTabs) {
+  GURL url("http://www.google.com");
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
+
+  AddTab(browser(), url);
+  AddTab(browser(), url);
+  AddTab(browser(), url);
+  AddTab(browser(), url);
+
+  // Ensure the service is initialized before making any changes to tab groups.
+  WaitForTabGroupSyncServiceInitialized();
+
+  ASSERT_EQ(tab_strip_model->count(), 4);
+
+  // Group the middle two tabs. The outer two tabs are ungrouped for now.
+  const tab_groups::TabGroupId group_1 = tab_strip_model->AddToNewGroup({1, 2});
+
+  const tabs::TabInterface* ungrouped_tab_0 = tab_strip_model->GetTabAtIndex(0);
+  const tabs::TabInterface* ungrouped_tab_1 = tab_strip_model->GetTabAtIndex(3);
+
+  chrome::GroupAllUngroupedTabs(browser());
+
+  // Get the new group and make sure it is distinct from
+  // the first group.
+  std::optional<tab_groups::TabGroupId> group_2_opt =
+      ungrouped_tab_0->GetGroup();
+  ASSERT_TRUE(group_2_opt.has_value());
+  const tab_groups::TabGroupId group_2 = *group_2_opt;
+  EXPECT_NE(group_1, group_2);
+
+  EXPECT_TRUE(ungrouped_tab_1->GetGroup());
+  EXPECT_EQ(group_2, *ungrouped_tab_1->GetGroup());
+}
+
+TEST_F(BrowserCommandsTest, GroupAllUngroupedTabsWithPinnedTabs) {
+  GURL url("http://www.google.com");
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
+
+  AddTab(browser(), url);
+  AddTab(browser(), url);
+  AddTab(browser(), url);
+  AddTab(browser(), url);
+  ASSERT_EQ(tab_strip_model->count(), 4);
+
+  // Ensure the service is initialized before making any changes to tab groups.
+  WaitForTabGroupSyncServiceInitialized();
+
+  // Pin the first and third tabs. Then call group ungrouped tabs.
+  tab_strip_model->SetTabPinned(0, true);
+  tab_strip_model->SetTabPinned(1, true);
+
+  chrome::GroupAllUngroupedTabs(browser());
+  // Get the new group made from |GroupAllUngroupedTabs| and make sure it is
+  // distinct from the previous group.
+  std::optional<tab_groups::TabGroupId> group_opt =
+      tab_strip_model->GetTabGroupForTab(2);
+  ASSERT_TRUE(group_opt.has_value());
+  const tab_groups::TabGroupId group = *group_opt;
+
+  // Check the groups of the tab strip. Pinned tabs should not have a group.
+  EXPECT_EQ(std::nullopt, tab_strip_model->GetTabGroupForTab(0));
+  EXPECT_EQ(std::nullopt, tab_strip_model->GetTabGroupForTab(1));
+  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(2));
+  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(3));
+
+  // Check the pinned tabs are still pinned.
+  EXPECT_TRUE(tab_strip_model->IsTabPinned(0));
+  EXPECT_TRUE(tab_strip_model->IsTabPinned(1));
+  EXPECT_FALSE(tab_strip_model->IsTabPinned(2));
+  EXPECT_FALSE(tab_strip_model->IsTabPinned(3));
 }
 
 TEST_F(BrowserCommandsTest, OnMaxZoomIn) {

@@ -28,7 +28,6 @@ source_set("model") {
     "url_downloader.mm",
   ]
   deps = [
-    ":constants",
     "//base",
     "//components/browser_sync",
     "//components/dom_distiller/ios",
@@ -55,15 +54,14 @@ source_set("model") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/shared/public/snackbar",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/shared/ui/util:snackbar_util",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/sync/model:data_type_store_service_factory",
     "//ios/chrome/common",
     "//ios/components/webui:url_constants",
-    "//ios/third_party/material_components_ios",
     "//ios/web/common",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
@@ -99,13 +97,6 @@ source_set("reading_list_remover") {
   ]
 }
 
-source_set("constants") {
-  sources = [
-    "reading_list_constants.h",
-    "reading_list_constants.mm",
-  ]
-}
-
 source_set("test_support") {
   testonly = true
   sources = [
@@ -117,6 +108,8 @@ source_set("test_support") {
     "//components/reading_list/core:test_support",
     "//components/sync/base",
     "//components/sync/model",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
   public_deps = [
     "//components/reading_list/core",

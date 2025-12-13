@@ -148,8 +148,8 @@
     </Expand>
   </Type>
   <Type Name="blink::Length">
-    <DisplayString Condition="is_float_">{(blink::Length::Type)type_} {float_value_}</DisplayString>
-    <DisplayString>{(blink::Length::Type)type_} {int_value_}</DisplayString>
+    <DisplayString Condition="type_ == blink::Length::kCalculated">{(blink::Length::Type)type_} {calculation_handle_}</DisplayString>
+    <DisplayString>{(blink::Length::Type)type_} {value_}</DisplayString>
   </Type>
   <Type Name="blink::LogicalOffset">
     <DisplayString>({inline_offset}, {block_offset})</DisplayString>

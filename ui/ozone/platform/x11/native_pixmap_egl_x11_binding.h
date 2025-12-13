@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/glx.h"
@@ -21,14 +22,14 @@ namespace ui {
 // within the context of X11.
 class NativePixmapEGLX11Binding : public NativePixmapGLBinding {
  public:
-  explicit NativePixmapEGLX11Binding(gfx::BufferFormat format);
+  NativePixmapEGLX11Binding();
   ~NativePixmapEGLX11Binding() override;
 
-  static bool IsBufferFormatSupported(gfx::BufferFormat format);
+  static bool IsSharedImageFormatSupported(viz::SharedImageFormat format);
 
   static std::unique_ptr<NativePixmapGLBinding> Create(
       scoped_refptr<gfx::NativePixmap> pixmap,
-      gfx::BufferFormat plane_format,
+      viz::SharedImageFormat plane_format,
       gfx::Size plane_size,
       GLenum target,
       GLuint texture_id);

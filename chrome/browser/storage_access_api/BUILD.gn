@@ -28,13 +28,14 @@ source_set("storage_access_api") {
   deps = [
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/first_party_sets",
+    "//chrome/browser/webid",
     "//chrome/common",
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
     "//components/guest_view/buildflags",
-    "//components/metrics/dwa",
     "//components/metrics/dwa:dwa_builders",
+    "//components/metrics/private_metrics",
     "//content/public/browser",
     "//services/network/public/mojom",
   ]

@@ -22,11 +22,14 @@
 #include "third_party/blink/public/common/mediastream/media_stream_controls.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_string.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_audio.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_sets.h"
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -55,6 +58,32 @@ using EchoCancellationModeSet =
 // The sample size is set to 16 due to the Signed-16 format representation.
 int32_t GetSampleSize() {
   return media::SampleFormatToBitsPerChannel(media::kSampleFormatS16);
+}
+
+enum class AudioCaptureApi {
+  // Standard microphone capture using getUserMedia
+  kGumMicrophone,
+  // All forms of screen capture via extension APIs, including tab, window and
+  // desktop/system capture
+  kExtensionScreenShare,
+  // All other capture, including getDisplayMedia
+  kOther,
+};
+
+AudioCaptureApi GetAudioCaptureApi(mojom::blink::MediaStreamType stream_type,
+                                   const std::string& media_stream_source) {
+  if (stream_type == mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
+    return AudioCaptureApi::kGumMicrophone;
+  }
+  return media_stream_source.empty() ? AudioCaptureApi::kOther
+                                     : AudioCaptureApi::kExtensionScreenShare;
+}
+
+// Returns true if kAll and kRemoteOnly should be added as choices for a given
+// device if supported.
+bool ShouldSupportExtendedEchoCancellationModes(AudioCaptureApi capture_type) {
+  return RuntimeEnabledFeatures::GetUserMediaEchoCancellationModesEnabled() &&
+         (capture_type == AudioCaptureApi::kGumMicrophone);
 }
 
 // This class encapsulates two values that together build up the score of each
@@ -210,7 +239,7 @@ class StringContainer {
       std::string default_setting) const {
     DCHECK(!IsEmpty());
     if (constraint.HasIdeal()) {
-      for (const WTF::String& ideal_candidate : constraint.Ideal()) {
+      for (const String& ideal_candidate : constraint.Ideal()) {
         std::string candidate = ideal_candidate.Utf8();
         if (allowed_values_.Contains(candidate))
           return std::make_tuple(1.0, candidate);
@@ -388,7 +417,8 @@ using IntegerDiscreteContainer =
     NumericDiscreteSetContainer<int, blink::LongConstraint>;
 
 EchoCancellationModeSet EchoCancellationModeSetFromConstraint(
-    const BooleanOrStringConstraint& constraint) {
+    const BooleanOrStringConstraint& constraint,
+    AudioCaptureApi api) {
   if (!constraint.HasExact()) {
     return EchoCancellationModeSet::UniversalSet();
   }
@@ -397,17 +427,38 @@ EchoCancellationModeSet EchoCancellationModeSetFromConstraint(
                                         ? EchoCancellationMode::kBrowserDecides
                                         : EchoCancellationMode::kDisabled});
   }
-  // TODO(crbug.com/428856440): Add support for valid strings.
+  if (ShouldSupportExtendedEchoCancellationModes(api)) {
+    String mode = constraint.ExactString();
+    if (mode == kEchoCancellationModeRemoteOnly) {
+      return EchoCancellationModeSet({EchoCancellationMode::kRemoteOnly});
+    }
+    if (mode == kEchoCancellationModeAll) {
+      return EchoCancellationModeSet({EchoCancellationMode::kAll});
+    }
+  }
   return EchoCancellationModeSet::EmptySet();
 }
 
 std::optional<EchoCancellationMode> IdealEchoCancellationModeFromConstraint(
-    const BooleanOrStringConstraint& constraint) {
+    const BooleanOrStringConstraint& constraint,
+    AudioCaptureApi api) {
+  if (!constraint.HasIdeal()) {
+    return std::nullopt;
+  }
   if (constraint.HasIdealBoolean()) {
     return constraint.IdealBoolean() ? EchoCancellationMode::kBrowserDecides
                                      : EchoCancellationMode::kDisabled;
   }
-  // TODO(crbug.com/428856440): Add support for valid strings.
+  if (ShouldSupportExtendedEchoCancellationModes(api)) {
+    CHECK(constraint.HasIdealString());
+    String mode = constraint.IdealString();
+    if (mode == kEchoCancellationModeRemoteOnly) {
+      return EchoCancellationMode::kRemoteOnly;
+    }
+    if (mode == kEchoCancellationModeAll) {
+      return EchoCancellationMode::kAll;
+    }
+  }
   return std::nullopt;
 }
 
@@ -422,16 +473,16 @@ class EchoCancellationContainer {
   EchoCancellationContainer()
       : ec_allowed_values_(EchoCancellationModeSet::EmptySet()),
         device_parameters_(media::AudioParameters::UnavailableDeviceParams()),
-        is_device_capture_(true) {}
+        api_(AudioCaptureApi::kGumMicrophone) {}
 
   EchoCancellationContainer(Vector<EchoCancellationMode> allowed_values,
                             std::optional<SourceInfo> source_info,
-                            bool is_device_capture,
+                            AudioCaptureApi api,
                             media::AudioParameters device_parameters,
                             bool is_reconfiguration_allowed)
       : ec_allowed_values_(EchoCancellationModeSet(std::move(allowed_values))),
         device_parameters_(device_parameters),
-        is_device_capture_(is_device_capture) {
+        api_(api) {
     if (!source_info) {
       return;
     }
@@ -467,8 +518,8 @@ class EchoCancellationContainer {
 
   const char* ApplyConstraintSet(const ConstraintSet& constraint_set) {
     // Convert the constraints into discrete sets.
-    EchoCancellationModeSet ec_set =
-        EchoCancellationModeSetFromConstraint(constraint_set.echo_cancellation);
+    EchoCancellationModeSet ec_set = EchoCancellationModeSetFromConstraint(
+        constraint_set.echo_cancellation, api_);
 
     // Apply echoCancellation constraint.
     ec_allowed_values_ = ec_allowed_values_.Intersection(ec_set);
@@ -504,13 +555,16 @@ class EchoCancellationContainer {
   bool GetDefaultValueForAudioProperties(
       const BooleanOrStringConstraint& ec_constraint) const {
     std::optional<EchoCancellationMode> ideal_mode =
-        IdealEchoCancellationModeFromConstraint(ec_constraint);
+        IdealEchoCancellationModeFromConstraint(ec_constraint, api_);
     if (ideal_mode && ec_allowed_values_.Contains(*ideal_mode)) {
-      return is_device_capture_ && IsEnabledEchoCancellationMode(*ideal_mode);
+      return (api_ != AudioCaptureApi::kExtensionScreenShare) &&
+             IsEnabledEchoCancellationMode(*ideal_mode);
     }
 
-    if (ec_allowed_values_.Contains(EchoCancellationMode::kBrowserDecides)) {
-      return is_device_capture_;
+    if (ec_allowed_values_.Contains(EchoCancellationMode::kBrowserDecides) ||
+        ec_allowed_values_.Contains(EchoCancellationMode::kAll) ||
+        ec_allowed_values_.Contains(EchoCancellationMode::kRemoteOnly)) {
+      return api_ != AudioCaptureApi::kExtensionScreenShare;
     }
 
     return false;
@@ -532,12 +586,12 @@ class EchoCancellationContainer {
 
   EchoCancellationMode SelectBestEcMode(
       const ConstraintSet& constraint_set) const {
-    DCHECK(!IsEmpty());
+    CHECK(!IsEmpty());
 
     // Try to use an ideal candidate, if supplied.
     std::optional<EchoCancellationMode> ideal_mode =
         IdealEchoCancellationModeFromConstraint(
-            constraint_set.echo_cancellation);
+            constraint_set.echo_cancellation, api_);
     if (ideal_mode && ec_allowed_values_.Contains(*ideal_mode)) {
       return *ideal_mode;
     }
@@ -548,21 +602,33 @@ class EchoCancellationContainer {
       return ec_allowed_values_.FirstElement();
     }
 
-    // For device (microphone) capture, kBrowserDecides is the preferred option.
-    if (is_device_capture_) {
-      if (ec_allowed_values_.Contains(EchoCancellationMode::kBrowserDecides)) {
-        return EchoCancellationMode::kBrowserDecides;
-      }
-      CHECK(ec_allowed_values_.Contains(EchoCancellationMode::kDisabled));
-      return EchoCancellationMode::kDisabled;
-    }
+    switch (api_) {
+      case AudioCaptureApi::kGumMicrophone:
+      case AudioCaptureApi::kOther:
+        if (ec_allowed_values_.Contains(
+                EchoCancellationMode::kBrowserDecides)) {
+          return EchoCancellationMode::kBrowserDecides;
+        }
+        if (RuntimeEnabledFeatures::
+                GetUserMediaEchoCancellationModesEnabled()) {
+          if (ec_allowed_values_.Contains(EchoCancellationMode::kAll)) {
+            return EchoCancellationMode::kAll;
+          }
+          if (ec_allowed_values_.Contains(EchoCancellationMode::kRemoteOnly)) {
+            return EchoCancellationMode::kRemoteOnly;
+          }
+        }
+        CHECK(ec_allowed_values_.Contains(EchoCancellationMode::kDisabled));
+        return EchoCancellationMode::kDisabled;
 
-    // For content (screen) capture, kDisabled is the preferred option.
-    if (ec_allowed_values_.Contains(EchoCancellationMode::kDisabled)) {
-      return EchoCancellationMode::kDisabled;
+      case AudioCaptureApi::kExtensionScreenShare:
+        if (ec_allowed_values_.Contains(EchoCancellationMode::kDisabled)) {
+          return EchoCancellationMode::kDisabled;
+        }
+        CHECK(
+            ec_allowed_values_.Contains(EchoCancellationMode::kBrowserDecides));
+        return EchoCancellationMode::kBrowserDecides;
     }
-    CHECK(ec_allowed_values_.Contains(EchoCancellationMode::kBrowserDecides));
-    return EchoCancellationMode::kBrowserDecides;
   }
 
   // This function computes the fitness score of the given |ec_mode|. The
@@ -572,7 +638,7 @@ class EchoCancellationContainer {
   double Fitness(EchoCancellationMode ec_mode,
                  const BooleanOrStringConstraint& ec_constraint) const {
     std::optional<EchoCancellationMode> ideal_mode =
-        IdealEchoCancellationModeFromConstraint(ec_constraint);
+        IdealEchoCancellationModeFromConstraint(ec_constraint, api_);
     if (!ideal_mode) {
       return 1.0;
     }
@@ -583,15 +649,15 @@ class EchoCancellationContainer {
       case EchoCancellationMode::kDisabled:
         return ec_mode == EchoCancellationMode::kDisabled;
       case EchoCancellationMode::kAll:
+        return ec_mode == EchoCancellationMode::kAll;
       case EchoCancellationMode::kRemoteOnly:
-        // TODO(crbug.com/428856440): Support these values.
-        return 0;
+        return ec_mode == EchoCancellationMode::kRemoteOnly;
     }
   }
 
   EchoCancellationModeSet ec_allowed_values_;
   media::AudioParameters device_parameters_;
-  bool is_device_capture_;
+  AudioCaptureApi api_;
 };
 
 class AutoGainControlContainer {
@@ -704,23 +770,32 @@ class ProcessingBasedContainer {
   // properties settings.
   static ProcessingBasedContainer CreateApmProcessedContainer(
       std::optional<SourceInfo> source_info,
-      mojom::blink::MediaStreamType stream_type,
-      bool is_device_capture,
+      AudioCaptureApi api,
       const media::AudioParameters& device_parameters,
       bool is_reconfiguration_allowed) {
+    Vector<EchoCancellationMode> echo_cancellation_modes;
+    echo_cancellation_modes.push_back(EchoCancellationMode::kBrowserDecides);
+    if (ShouldSupportExtendedEchoCancellationModes(api)) {
+      // kRemoteOnly is not supported on mobile platforms.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+      echo_cancellation_modes.push_back(EchoCancellationMode::kRemoteOnly);
+#endif
+      if (EchoCanceller::IsSystemWideAecAvailable(
+              device_parameters.effects())) {
+        echo_cancellation_modes.push_back(EchoCancellationMode::kAll);
+      }
+    }
+    echo_cancellation_modes.push_back(EchoCancellationMode::kDisabled);
     return ProcessingBasedContainer(
-        ProcessingType::kApmProcessed,
-        {EchoCancellationMode::kBrowserDecides,
-         EchoCancellationMode::kDisabled},
-        BoolSet(),                                  /* auto_gain_control_set */
-        BoolSet(),                                  /* noise_suppression_set */
-        BoolSet(),                                  /* voice_isolation_set */
-        IntRangeSet::FromValue(GetSampleSize()),    /* sample_size_range */
-        GetApmSupportedChannels(device_parameters), /* channels_set */
-        IntRangeSet::FromValue(
-            media::WebRtcAudioProcessingSampleRateHz()), /* sample_rate_range */
-        source_info, is_device_capture, device_parameters,
-        is_reconfiguration_allowed);
+        ProcessingType::kApmProcessed, std::move(echo_cancellation_modes),
+        /*auto_gain_control_set=*/BoolSet(),
+        /*noise_suppression_set=*/BoolSet(),
+        /*voice_isolation_set=*/BoolSet(),
+        /*sample_size_range=*/IntRangeSet::FromValue(GetSampleSize()),
+        /*channels_set=*/GetApmSupportedChannels(device_parameters),
+        /*sample_rate_range=*/
+        IntRangeSet::FromValue(media::WebRtcAudioProcessingSampleRateHz()),
+        source_info, api, device_parameters, is_reconfiguration_allowed);
   }
 
   // Creates an instance of ProcessingBasedContainer for the processed source
@@ -729,20 +804,19 @@ class ProcessingBasedContainer {
   // processing properties settings cannot be enabled.
   static ProcessingBasedContainer CreateNoApmProcessedContainer(
       std::optional<SourceInfo> source_info,
-      bool is_device_capture,
+      AudioCaptureApi api,
       const media::AudioParameters& device_parameters,
       bool is_reconfiguration_allowed) {
     return ProcessingBasedContainer(
         ProcessingType::kNoApmProcessed, {EchoCancellationMode::kDisabled},
-        BoolSet({false}),                        /* auto_gain_control_set */
-        BoolSet({false}),                        /* noise_suppression_set */
-        BoolSet(),                               /* voice_isolation_set */
-        IntRangeSet::FromValue(GetSampleSize()), /* sample_size_range */
-        {device_parameters.channels()},          /* channels_set */
-        IntRangeSet::FromValue(
-            device_parameters.sample_rate()), /* sample_rate_range */
-        source_info, is_device_capture, device_parameters,
-        is_reconfiguration_allowed);
+        /*auto_gain_control_set=*/BoolSet({false}),
+        /*noise_suppression_set=*/BoolSet({false}),
+        /*voice_isolation_set=*/BoolSet(),
+        /*sample_size_range=*/IntRangeSet::FromValue(GetSampleSize()),
+        /*channels_set=*/{device_parameters.channels()},
+        /*sample_rate_range=*/
+        IntRangeSet::FromValue(device_parameters.sample_rate()), source_info,
+        api, device_parameters, is_reconfiguration_allowed);
   }
 
   // Creates an instance of ProcessingBasedContainer for the unprocessed source
@@ -751,20 +825,19 @@ class ProcessingBasedContainer {
   // properties settings cannot be enabled.
   static ProcessingBasedContainer CreateUnprocessedContainer(
       std::optional<SourceInfo> source_info,
-      bool is_device_capture,
+      AudioCaptureApi api,
       const media::AudioParameters& device_parameters,
       bool is_reconfiguration_allowed) {
     return ProcessingBasedContainer(
         ProcessingType::kUnprocessed, {EchoCancellationMode::kDisabled},
-        BoolSet({false}),                        /* auto_gain_control_set */
-        BoolSet({false}),                        /* noise_suppression_set */
-        BoolSet({false}),                        /* voice_isolation_set */
-        IntRangeSet::FromValue(GetSampleSize()), /* sample_size_range */
-        {device_parameters.channels()},          /* channels_set */
-        IntRangeSet::FromValue(
-            device_parameters.sample_rate()), /* sample_rate_range */
-        source_info, is_device_capture, device_parameters,
-        is_reconfiguration_allowed);
+        /*auto_gain_control_set=*/BoolSet({false}),
+        /*noise_suppression_set=*/BoolSet({false}),
+        /*voice_isolation_set=*/BoolSet({false}),
+        /*sample_size_range=*/IntRangeSet::FromValue(GetSampleSize()),
+        /*channels_set=*/{device_parameters.channels()},
+        /*sample_rate_range=*/
+        IntRangeSet::FromValue(device_parameters.sample_rate()), source_info,
+        api, device_parameters, is_reconfiguration_allowed);
   }
 
   const char* ApplyConstraintSet(const ConstraintSet& constraint_set) {
@@ -912,9 +985,6 @@ class ProcessingBasedContainer {
   // Private constructor intended to instantiate different variants of this
   // class based on the initial values provided. The appropriate way to
   // instantiate this class is via the three factory methods provided.
-  // TODO(crbug.com/428856440): Do not explicitly include
-  // EchoCancellationMode::kAll in `echo_cancellation_modes`. It should be
-  // added automatically based on the value of |device_parameters|.
   ProcessingBasedContainer(ProcessingType processing_type,
                            Vector<EchoCancellationMode> echo_cancellation_modes,
                            BoolSet auto_gain_control_set,
@@ -924,7 +994,7 @@ class ProcessingBasedContainer {
                            Vector<int> channels_set,
                            IntRangeSet sample_rate_range,
                            std::optional<SourceInfo> source_info,
-                           bool is_device_capture,
+                           AudioCaptureApi api,
                            media::AudioParameters device_parameters,
                            bool is_reconfiguration_allowed)
       : processing_type_(processing_type),
@@ -933,18 +1003,23 @@ class ProcessingBasedContainer {
         sample_rate_container_(sample_rate_range),
         latency_container_(
             GetAllowedLatency(processing_type, device_parameters)) {
-    // If the parameters indicate that system echo cancellation is available, we
-    // add support in the allowed values for `echo_cancellation_modes`.
-    // TODO(crbug.com/428856440): Also add EchoCancellationMode::kAll
-    if ((device_parameters.effects() &
-         media::AudioParameters::ECHO_CANCELLER) &&
-        !base::Contains(echo_cancellation_modes,
-                        EchoCancellationMode::kBrowserDecides)) {
-      echo_cancellation_modes.push_back(EchoCancellationMode::kBrowserDecides);
+    // If the device parameters indicate that system echo cancellation is
+    // available, add support for it to `echo_cancellation_modes`.
+    if (EchoCanceller::IsPlatformAecAvailable(device_parameters.effects())) {
+      if (!base::Contains(echo_cancellation_modes,
+                          EchoCancellationMode::kBrowserDecides)) {
+        echo_cancellation_modes.push_back(
+            EchoCancellationMode::kBrowserDecides);
+      }
+      if (ShouldSupportExtendedEchoCancellationModes(api) &&
+          !base::Contains(echo_cancellation_modes,
+                          EchoCancellationMode::kAll)) {
+        echo_cancellation_modes.push_back(EchoCancellationMode::kAll);
+      }
     }
     echo_cancellation_container_ = EchoCancellationContainer(
-        std::move(echo_cancellation_modes), source_info, is_device_capture,
-        device_parameters, is_reconfiguration_allowed);
+        std::move(echo_cancellation_modes), source_info, api, device_parameters,
+        is_reconfiguration_allowed);
 
     auto_gain_control_container_ =
         AutoGainControlContainer(auto_gain_control_set);
@@ -1037,7 +1112,7 @@ class DeviceContainer {
  public:
   DeviceContainer(const AudioDeviceCaptureCapability& capability,
                   mojom::blink::MediaStreamType stream_type,
-                  bool is_device_capture,
+                  AudioCaptureApi api,
                   bool is_reconfiguration_allowed)
       : device_parameters_(capability.Parameters()) {
     if (!capability.DeviceID().empty()) {
@@ -1062,21 +1137,18 @@ class DeviceContainer {
     // unprocessed, processed by WebRTC, or processed by other means.
     processing_based_containers_.push_back(
         ProcessingBasedContainer::CreateUnprocessedContainer(
-            source_info, is_device_capture, device_parameters_,
-            is_reconfiguration_allowed));
+            source_info, api, device_parameters_, is_reconfiguration_allowed));
     processing_based_containers_.push_back(
         ProcessingBasedContainer::CreateNoApmProcessedContainer(
-            source_info, is_device_capture, device_parameters_,
-            is_reconfiguration_allowed));
-      processing_based_containers_.push_back(
-          ProcessingBasedContainer::CreateApmProcessedContainer(
-              source_info, stream_type, is_device_capture, device_parameters_,
-              is_reconfiguration_allowed));
-      DCHECK_EQ(processing_based_containers_.size(), 3u);
+            source_info, api, device_parameters_, is_reconfiguration_allowed));
+    processing_based_containers_.push_back(
+        ProcessingBasedContainer::CreateApmProcessedContainer(
+            source_info, api, device_parameters_, is_reconfiguration_allowed));
+    DCHECK_EQ(processing_based_containers_.size(), 3u);
 
-      if (!source_info) {
-        return;
-      }
+    if (!source_info) {
+      return;
+    }
 
     blink::MediaStreamAudioSource* source = capability.source();
     boolean_containers_[kDisableLocalEcho] =
@@ -1258,9 +1330,9 @@ class CandidatesContainer {
                       std::string& default_device_id,
                       bool is_reconfiguration_allowed)
       : default_device_id_(default_device_id) {
-    const bool is_device_capture = media_stream_source.empty();
+    AudioCaptureApi api = GetAudioCaptureApi(stream_type, media_stream_source);
     for (const auto& capability : capabilities) {
-      devices_.emplace_back(capability, stream_type, is_device_capture,
+      devices_.emplace_back(capability, stream_type, api,
                             is_reconfiguration_allowed);
       DCHECK(!devices_.back().IsEmpty());
     }
@@ -1326,6 +1398,39 @@ std::string GetMediaStreamSource(const MediaConstraints& constraints) {
 
 }  // namespace
 
+V8UnionBooleanOrString* EchoCancellationModeToBooleanOrString(
+    EchoCancellationMode mode) {
+  switch (mode) {
+    case EchoCancellationMode::kDisabled:
+      return MakeGarbageCollected<V8UnionBooleanOrString>(false);
+    case EchoCancellationMode::kBrowserDecides:
+      return MakeGarbageCollected<V8UnionBooleanOrString>(true);
+    case EchoCancellationMode::kAll:
+      return MakeGarbageCollected<V8UnionBooleanOrString>(
+          String(kEchoCancellationModeAll));
+    case EchoCancellationMode::kRemoteOnly:
+      return MakeGarbageCollected<V8UnionBooleanOrString>(
+          String(kEchoCancellationModeRemoteOnly));
+  }
+}
+
+Vector<EchoCancellationMode> GetSupportedEchoCancellationModes(
+    int platform_effects,
+    mojom::blink::MediaStreamType type) {
+  Vector<EchoCancellationMode> result = {EchoCancellationMode::kBrowserDecides,
+                                         EchoCancellationMode::kDisabled};
+  if (RuntimeEnabledFeatures::GetUserMediaEchoCancellationModesEnabled() &&
+      type == mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    result.push_back(EchoCancellationMode::kRemoteOnly);
+#endif
+    if (EchoCanceller::IsSystemWideAecAvailable(platform_effects)) {
+      result.push_back(EchoCancellationMode::kAll);
+    }
+  }
+  return result;
+}
+
 AudioDeviceCaptureCapability::AudioDeviceCaptureCapability()
     : parameters_(media::AudioParameters::UnavailableDeviceParams()) {}
 
@@ -1373,9 +1478,11 @@ AudioCaptureSettings SelectSettingsAudioCapture(
 
   std::string media_stream_source = GetMediaStreamSource(constraints);
   std::string default_device_id;
-  bool is_device_capture = media_stream_source.empty();
-  if (is_device_capture)
+  AudioCaptureApi api = GetAudioCaptureApi(stream_type, media_stream_source);
+  if ((api != AudioCaptureApi::kExtensionScreenShare) &&
+      !capabilities.empty()) {
     default_device_id = capabilities.begin()->DeviceID().Utf8();
+  }
 
   CandidatesContainer candidates(capabilities, stream_type, media_stream_source,
                                  default_device_id, is_reconfiguration_allowed);

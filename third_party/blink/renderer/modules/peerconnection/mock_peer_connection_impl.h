@@ -63,6 +63,9 @@ class FakeRtpSender : public webrtc::RtpSenderInterface {
   void SetEncoderToPacketizerFrameTransformer(
       webrtc::scoped_refptr<webrtc::FrameTransformerInterface>
           frame_transformer) override {}
+  void SetFrameTransformer(
+      webrtc::scoped_refptr<webrtc::FrameTransformerInterface>
+          frame_transformer) override {}
   void SetEncoderSelector(
       std::unique_ptr<webrtc::VideoEncoderFactory::EncoderSelectorInterface>
           encoder_selector) override {}
@@ -295,8 +298,8 @@ class MockPeerConnectionImpl : public webrtc::MockPeerConnectionInterface {
   webrtc::RTCError SetConfiguration(
       const RTCConfiguration& configuration) override;
 
-  bool AddIceCandidate(const webrtc::IceCandidateInterface* candidate) override;
-  void AddIceCandidate(std::unique_ptr<webrtc::IceCandidateInterface> candidate,
+  bool AddIceCandidate(const webrtc::IceCandidate* candidate) override;
+  void AddIceCandidate(std::unique_ptr<webrtc::IceCandidate> candidate,
                        std::function<void(webrtc::RTCError)> callback) override;
   void AddRemoteStream(webrtc::MediaStreamInterface* stream);
 
@@ -307,8 +310,8 @@ class MockPeerConnectionImpl : public webrtc::MockPeerConnectionInterface {
   const std::string& sdp_mid() const { return sdp_mid_; }
   int sdp_mline_index() const { return sdp_mline_index_; }
   const std::string& ice_sdp() const { return ice_sdp_; }
-  webrtc::SessionDescriptionInterface* created_session_description() const {
-    return created_sessiondescription_.get();
+  bool created_session_description() const {
+    return created_session_description_;
   }
   webrtc::PeerConnectionObserver* observer() { return observer_; }
   void set_setconfiguration_error_type(webrtc::RTCErrorType error_type) {
@@ -338,8 +341,7 @@ class MockPeerConnectionImpl : public webrtc::MockPeerConnectionInterface {
   Vector<webrtc::scoped_refptr<FakeRtpTransceiver>> transceivers_;
   std::unique_ptr<webrtc::SessionDescriptionInterface> local_desc_;
   std::unique_ptr<webrtc::SessionDescriptionInterface> remote_desc_;
-  std::unique_ptr<webrtc::SessionDescriptionInterface>
-      created_sessiondescription_;
+  bool created_session_description_ = false;
   bool hint_audio_;
   bool hint_video_;
   bool getstats_result_;

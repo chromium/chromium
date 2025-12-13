@@ -39,5 +39,6 @@ found in the LICENSE file.
         android:layout_height="@dimen/ntp_customization_bottom_sheet_list_item_icon_size"
         android:layout_marginEnd="@dimen/ntp_customization_edit_icon_margin"
         android:layout_marginVertical="@dimen/ntp_customization_edit_icon_margin"
+        android:layoutDirection="locale"
         tools:ignore="ContentDescription" />
 </org.chromium.chrome.browser.ntp_customization.BottomSheetListItemView>

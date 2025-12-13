@@ -16,7 +16,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/feed/android/jni_headers/FeedImageFetchClient_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace feed {
 namespace {
@@ -43,10 +43,10 @@ FeedApi* GetFeedStream() {
 
 }  // namespace
 
-jint JNI_FeedImageFetchClient_SendRequest(
+static jint JNI_FeedImageFetchClient_SendRequest(
     JNIEnv* env,
     std::string& url,
-    const JavaParamRef<jobject>& j_response_callback) {
+    const JavaRef<jobject>& j_response_callback) {
   // Keep the callback as a ScopedJavaGlobalRef to enable binding it for use
   // with OnFetchFinished.
   base::android::ScopedJavaGlobalRef<jobject> callback(j_response_callback);
@@ -63,7 +63,7 @@ jint JNI_FeedImageFetchClient_SendRequest(
       .GetUnsafeValue();
 }
 
-void JNI_FeedImageFetchClient_Cancel(JNIEnv* env, jint j_request_id) {
+static void JNI_FeedImageFetchClient_Cancel(JNIEnv* env, jint j_request_id) {
   FeedApi* stream = GetFeedStream();
   if (!stream)
     return;
@@ -72,3 +72,5 @@ void JNI_FeedImageFetchClient_Cancel(JNIEnv* env, jint j_request_id) {
 }
 
 }  // namespace feed
+
+DEFINE_JNI(FeedImageFetchClient)

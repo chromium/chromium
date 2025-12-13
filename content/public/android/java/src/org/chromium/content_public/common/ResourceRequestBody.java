@@ -45,7 +45,7 @@ public final class ResourceRequestBody {
         return new ResourceRequestBody(encodedNativeForm);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     public byte[] getEncodedNativeForm() {
         return mEncodedNativeForm;

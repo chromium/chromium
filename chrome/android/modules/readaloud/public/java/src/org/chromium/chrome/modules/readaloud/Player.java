@@ -114,6 +114,10 @@ public interface Player {
         void onNegativeFeedback(NegativeFeedbackReason negativeFeedbackReason);
 
         ObservableSupplier<FeedbackType> getFeedbackTypeSupplier();
+
+        void moveToPrevious();
+
+        void moveToNext();
     }
 
     /** Observer interface to provide updates about player UI. */

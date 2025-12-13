@@ -79,6 +79,9 @@ class LevelDbCertificateStore : public CertificateStore {
       const std::string& identity_name,
       base::OnceCallback<void(StoreErrorOr<std::optional<ClientIdentity>>)>
           callback) override;
+  void DeleteIdentities(
+      const std::vector<std::string>& identity_names,
+      base::OnceCallback<void(std::optional<StoreError>)> callback) override;
 
  private:
   enum class DatabaseState {

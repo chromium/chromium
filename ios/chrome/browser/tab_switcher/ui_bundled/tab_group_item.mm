@@ -12,7 +12,7 @@
 
 @implementation TabGroupItem {
   base::WeakPtr<const TabGroup> _tabGroup;
-  raw_ptr<const void> _tabGroupIdentifier;
+  raw_ptr<const void, DanglingUntriaged> _tabGroupIdentifier;
 }
 
 - (instancetype)initWithTabGroup:(const TabGroup*)tabGroup {

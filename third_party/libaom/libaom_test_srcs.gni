@@ -9,6 +9,7 @@ aom_unit_test_common_sources = [
   "//third_party/libaom/source/libaom/test/av1_config_test.cc",
   "//third_party/libaom/source/libaom/test/av1_key_value_api_test.cc",
   "//third_party/libaom/source/libaom/test/av1_scale_test.cc",
+  "//third_party/libaom/source/libaom/test/bitwriter_buffer_test.cc",
   "//third_party/libaom/source/libaom/test/block_test.cc",
   "//third_party/libaom/source/libaom/test/cdef_test.cc",
   "//third_party/libaom/source/libaom/test/codec_factory.h",

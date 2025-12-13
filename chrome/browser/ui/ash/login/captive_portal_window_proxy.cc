@@ -129,7 +129,9 @@ void CaptivePortalWindowProxy::Show(const std::string& network_name) {
       web_modal::WebContentsModalDialogManager::FromWebContents(web_contents_);
   widget_ = CreateWindowAsFramelessChild(
       profile_, std::move(delegate),
-      manager->delegate()->GetWebContentsModalDialogHost()->GetHostView());
+      manager->delegate()
+          ->GetWebContentsModalDialogHost(web_contents_)
+          ->GetHostView());
   portal->Init();
   widget_->AddObserver(this);
   constrained_window::ShowModalDialog(widget_->GetNativeView(), web_contents_);

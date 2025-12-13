@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -51,21 +52,22 @@ static NSString* kSectionIdChallengeOptions = @"SectionIdChallengeOptions";
       kCardUnmaskAuthenticationSelectionCancelButtonAccessibilityIdentifier;
   self.navigationItem.leftBarButtonItem = cancelBarButtonItem;
 
+  UITableView* tableView = self.tableView;
   // Configure the table items.
-  self.tableView.allowsSelection = YES;
-  RegisterTableViewCell<TableViewDetailIconCell>(self.tableView);
-  RegisterTableViewHeaderFooter<CardUnmaskHeaderView>(self.tableView);
-  RegisterTableViewHeaderFooter<TableViewLinkHeaderFooterView>(self.tableView);
+  tableView.allowsSelection = YES;
+  [TableViewCellContentConfiguration registerCellForTableView:tableView];
+  RegisterTableViewHeaderFooter<CardUnmaskHeaderView>(tableView);
+  RegisterTableViewHeaderFooter<TableViewLinkHeaderFooterView>(tableView);
   __weak __typeof(self) weakSelf = self;
   _challengeOptionsDataSource = [[UITableViewDiffableDataSource alloc]
-      initWithTableView:self.tableView
-           cellProvider:^(UITableView* tableView, NSIndexPath* indexPath,
+      initWithTableView:tableView
+           cellProvider:^(UITableView* innerTableView, NSIndexPath* indexPath,
                           NSNumber* itemId) {
-             return [weakSelf provideCellForTableView:tableView
+             return [weakSelf provideCellForTableView:innerTableView
                                             indexPath:indexPath
                                  challengeOptionIndex:itemId.integerValue];
            }];
-  self.tableView.dataSource = _challengeOptionsDataSource;
+  tableView.dataSource = _challengeOptionsDataSource;
   NSDiffableDataSourceSnapshot<NSString*, NSNumber*>* snapshot =
       [_challengeOptionsDataSource snapshot];
   [snapshot appendSectionsWithIdentifiers:@[ kSectionIdChallengeOptions ]];
@@ -124,6 +126,8 @@ static NSString* kSectionIdChallengeOptions = @"SectionIdChallengeOptions";
   self.tableView.allowsSelection = NO;
   UIActivityIndicatorView* activityIndicator = [[UIActivityIndicatorView alloc]
       initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+  activityIndicator.accessibilityIdentifier =
+      kCardUnmaskAuthenticationActivityIndicatorAccessibilityIdentifier;
   [activityIndicator startAnimating];
   self.navigationItem.rightBarButtonItem =
       [[UIBarButtonItem alloc] initWithCustomView:activityIndicator];
@@ -173,18 +177,18 @@ static NSString* kSectionIdChallengeOptions = @"SectionIdChallengeOptions";
 - (UITableViewCell*)provideCellForTableView:(UITableView*)tableView
                                   indexPath:(NSIndexPath*)indexPath
                        challengeOptionIndex:(NSInteger)challengeOptionIndex {
-  TableViewDetailIconCell* cell =
-      DequeueTableViewCell<TableViewDetailIconCell>(self.tableView);
-  cell.textLabel.text = _challengeOptions[indexPath.row].modeLabel;
-  [cell setDetailText:_challengeOptions[indexPath.row].challengeInfo];
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title = _challengeOptions[indexPath.row].modeLabel;
+  configuration.subtitle = _challengeOptions[indexPath.row].challengeInfo;
+
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
+  cell.contentConfiguration = configuration;
 
   [cell setAccessoryType:_selectedChallengeOptionIndex == challengeOptionIndex
                              ? UITableViewCellAccessoryCheckmark
                              : UITableViewCellAccessoryNone];
-  [cell setTextLayoutConstraintAxis:UILayoutConstraintAxisVertical];
-
-  [cell setDetailTextNumberOfLines:0];  // Use as many lines as needed.
-  [cell setIconCenteredVertically:YES];
   return cell;
 }
 

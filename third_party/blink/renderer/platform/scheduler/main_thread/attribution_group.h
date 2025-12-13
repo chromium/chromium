@@ -18,7 +18,7 @@ struct AttributionGroup {
   explicit AttributionGroup(WebInputEventAttribution attribution)
       : attribution(attribution) {}
 
-  explicit AttributionGroup(WTF::HashTableDeletedValueType)
+  explicit AttributionGroup(HashTableDeletedValueType)
       : is_deleted_value(true) {}
 
   AttributionGroup() = default;

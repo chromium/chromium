@@ -135,14 +135,24 @@ std::string GetStringNameForOptimizationType(
       return "AutofillAblationSitesList6";
     case proto::OptimizationType::AMOUNT_EXTRACTION_ALLOWLIST:
       return "AmountExtractionAllowlist";
-    case proto::OptimizationType::AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST:
-      return "AutofillPredictionImprovementsAllowlist";
     case proto::OptimizationType::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM:
-      return "BuyNowPayLaterAllowlistAffirm";
+      return "BuyNowPayLaterAllowlistAffirmDesktop";
     case proto::OptimizationType::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP:
-      return "BuyNowPayLaterAllowlistZip";
+      return "BuyNowPayLaterAllowlistZipDesktop";
     case proto::OptimizationType::BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA:
-      return "BuyNowPayLaterAllowlistKlarna";
+      return "BuyNowPayLaterAllowlistKlarnaDesktop";
+    case proto::OptimizationType::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM_ANDROID:
+      return "BuyNowPayLaterAllowlistAffirmAndroid";
+    case proto::OptimizationType::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP_ANDROID:
+      return "BuyNowPayLaterAllowlistZipAndroid";
+    case proto::OptimizationType::BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA_ANDROID:
+      return "BuyNowPayLaterAllowlistKlarnaAndroid";
+    case proto::OptimizationType::BUY_NOW_PAY_LATER_BLOCKLIST_AFFIRM:
+      return "BuyNowPayLaterBlocklistAffirm";
+    case proto::OptimizationType::BUY_NOW_PAY_LATER_BLOCKLIST_ZIP:
+      return "BuyNowPayLaterBlocklistZip";
+    case proto::OptimizationType::BUY_NOW_PAY_LATER_BLOCKLIST_KLARNA:
+      return "BuyNowPayLaterBlocklistKlarna";
     case proto::OptimizationType::SAVED_TAB_GROUP:
       return "SavedTabGroup";
     case proto::OptimizationType::TEXT_CLASSIFIER_ENTITY_DETECTION:
@@ -192,6 +202,23 @@ std::string GetStringNameForOptimizationType(
       return "SharedCreditCardFlatRateBenefitBlocklist";
     case proto::OptimizationType::WALLETABLE_PASS_DETECTION_ALLOWLIST:
       return "WalletablePassDetectionAllowlist";
+    case proto::OptimizationType::LENS_OVERLAY_EDU_ACTION_CHIP_BLOCKLIST:
+      return "LensOverlayEduActionChipBlocklist";
+    case proto::OptimizationType::LENS_OVERLAY_EDU_ACTION_CHIP_ALLOWLIST:
+      return "LensOverlayEduActionChipAllowlist";
+    case proto::OptimizationType::WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST:
+      return "WalletablePassDetectionLoyaltyAllowlist";
+    case proto::OptimizationType::
+        WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST:
+      return "WalletablePassDetectionBoardingPassAllowlist";
+    case proto::OptimizationType::NTP_NEXT_DEEP_DIVE_ACTION_CHIP_BLOCKLIST:
+      return "NtpNextDeepDiveActionChipBlocklist";
+    case proto::OptimizationType::NTP_NEXT_DEEP_DIVE_ACTION_CHIP_ALLOWLIST:
+      return "NtpNextDeepDiveActionChipAllowlist";
+    case proto::OptimizationType::READER_MODE_ELIGIBLE:
+      return "ReaderModeEligible";
+    case proto::OptimizationType::AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST:
+      return "AutofillActorIframeOriginAllowlist";
   }
 
   // The returned string is used to record histograms for the optimization type.

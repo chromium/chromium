@@ -36,6 +36,11 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="AndroidLocationProviderType">
+  <int value="0" label="ANDROID"/>
+  <int value="1" label="GMS_CORE"/>
+</enum>
+
 <enum name="CoreLocationErrorCode">
   <int value="0" label="kCLErrorLocationUnknown"/>
   <int value="1" label="kCLErrorDenied"/>
@@ -114,7 +119,7 @@ chromium-metrics-reviews@google.com.
 <enum name="NetworkLocationRequestSource">
   <int value="0" label="kNetworkLocationProvider"/>
   <int value="1" label="kPublicIpAddressGeolocator"/>
-  <int value="2" label="kSimpleGeolocationProvider"/>
+  <int value="2" label="kSystemLocationProvider"/>
 </enum>
 
 <enum name="WindowsDevicesGeolocationPositionSource">

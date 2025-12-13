@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">የመተግበሪያ ዕይታ፦ <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">ይህ ቅጥያ የቁልፍ ፋይል «<ph name="KEY_PATH" />»ን ያካትታል። ይህንን ማድረግ ላይፈልጉ ይችላሉ።</translation>
 <translation id="5486326529110362464">ለግላዊ ቁልፍ የሚገባ እሴት መኖር አለበት።</translation>
+<translation id="5707185214361380026">ቅጥያዎችን ከሚከተለው መጫን አልተቻለም፦</translation>
 <translation id="5972529113578162692">የዚህ ማሽን አስተዳዳሪ <ph name="EXTENSION_NAME" /> እንዲጫን ይፈልጋል። ከተጫነ በኋላ ሊራገፍ አይችልም።</translation>
 <translation id="6027032947578871493">ያልታወቀ ምርት <ph name="PRODUCT_ID" /> ከ<ph name="VENDOR_NAME" /> (ተከታታይ ቁጥር <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> ከ<ph name="VENDOR_ID" /> ሻጭ</translation>
+<translation id="6220413761270491930">ቅጥያ መጫን ላይ ስህተት</translation>
 <translation id="6322279351188361895">ግላዊ ቁልፍን ማንበብ አልተሳካም።</translation>
 <translation id="6391538222494443604">የግብአት ማውጫ መኖር ይኖርበታል።</translation>
 <translation id="641087317769093025">ቅጥያውን መበተን አልተቻለም</translation>

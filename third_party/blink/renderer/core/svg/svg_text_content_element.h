@@ -59,7 +59,7 @@ class CORE_EXPORT SVGTextContentElement : public SVGGraphicsElement {
   SVGPointTearOff* getEndPositionOfChar(unsigned charnum, ExceptionState&);
   SVGRectTearOff* getExtentOfChar(unsigned charnum, ExceptionState&);
   float getRotationOfChar(unsigned charnum, ExceptionState&);
-  int getCharNumAtPosition(DOMPointInit*, ExceptionState&);
+  int getCharNumAtPosition(const DOMPointInit*);
   void selectSubString(unsigned charnum, unsigned nchars, ExceptionState&);
 
   static SVGTextContentElement* ElementFromLineLayoutItem(

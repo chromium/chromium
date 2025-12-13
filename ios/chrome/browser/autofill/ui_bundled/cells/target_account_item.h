@@ -21,7 +21,7 @@
 @end
 
 // Cell class for TargetAccountItem.
-@interface TargetAccountCell : TableViewCell
+@interface TargetAccountCell : LegacyTableViewCell
 
 // A left-aligned round badge showing the account avatar.
 @property(nonatomic, readonly, strong) UIImageView* avatarBadge;

@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.82"
 name = "calendrical_calculations"
-version = "0.2.0"
+version = "0.2.3"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -50,11 +50,11 @@ categories = [
 license = "Apache-2.0"
 repository = "https://github.com/unicode-org/icu4x"
 
-[package.metadata.docs.rs]
-all-features = true
-
 [package.metadata.workspaces]
 independent = true
+
+[package.metadata.docs.rs]
+all-features = true
 
 [features]
 logging = ["dep:log"]

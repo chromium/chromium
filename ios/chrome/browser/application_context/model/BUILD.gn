@@ -22,7 +22,9 @@ source_set("model") {
     "//components/net_log",
     "//components/network_time",
     "//components/optimization_guide:optimization_guide_buildflags",
+    "//components/optimization_guide/core",
     "//components/os_crypt/async/browser",
+    "//components/os_crypt/async/browser:keychain_key_provider",
     "//components/prefs",
     "//components/sessions",
     "//components/signin/core/browser",
@@ -40,6 +42,7 @@ source_set("model") {
     "//ios/chrome/browser/gcm/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/metrics/model",
+    "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/prefs/model",
     "//ios/chrome/browser/profile/model",
@@ -65,11 +68,4 @@ source_set("model") {
     "//services/network:network_service",
     "//ui/base",
   ]
-
-  if (build_with_internal_optimization_guide) {
-    deps += [
-      "//components/optimization_guide/core",
-      "//ios/chrome/browser/optimization_guide/model",
-    ]
-  }
 }

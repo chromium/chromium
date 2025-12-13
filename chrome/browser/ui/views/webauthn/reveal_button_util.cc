@@ -15,6 +15,7 @@
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace {
 constexpr int kEyeIconSize = 20;

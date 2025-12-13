@@ -9,16 +9,15 @@ import android.view.KeyEvent;
 import android.view.ViewStub;
 import android.widget.LinearLayout;
 
-import org.chromium.base.Callback;
 import org.chromium.base.lifetime.LifetimeAssert;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.ServiceImpl;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
 import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.ui.base.WindowAndroid;
@@ -28,27 +27,21 @@ import org.chromium.ui.base.WindowAndroid;
 @ServiceImpl(ExtensionToolbarCoordinator.class)
 public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordinator {
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
-    private final Callback<Profile> mProfileUpdatedCallback =
-            (profile) -> mCurrentProfile = profile;
 
-    private ObservableSupplier<Profile> mProfileSupplier;
+    private ChromeAndroidTask mTask;
     private ExtensionActionListCoordinator mExtensionActionListCoordinator;
-    private ExtensionsMenuButtonCoordinator mExtensionsMenuButtonCoordinator;
-
-    private @Nullable Profile mCurrentProfile;
+    private ExtensionsMenuCoordinator mExtensionsMenuCoordinator;
 
     @Override
-    public void initialize(
+    public void initializeWithNative(
             Context context,
             ViewStub extensionToolbarStub,
             WindowAndroid windowAndroid,
-            ObservableSupplier<Profile> profileSupplier,
-            ObservableSupplier<Tab> currentTabSupplier,
+            ChromeAndroidTask task,
+            NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
             ThemeColorProvider themeColorProvider) {
-        mProfileSupplier = profileSupplier;
-        mProfileSupplier.addObserver(mProfileUpdatedCallback);
-
+        mTask = task;
         extensionToolbarStub.setLayoutResource(R.layout.extension_toolbar_container);
         LinearLayout container = (LinearLayout) extensionToolbarStub.inflate();
         mExtensionActionListCoordinator =
@@ -56,24 +49,22 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
                         context,
                         container.findViewById(R.id.extension_action_list),
                         windowAndroid,
-                        profileSupplier,
+                        task,
                         currentTabSupplier);
-        mExtensionsMenuButtonCoordinator =
-                new ExtensionsMenuButtonCoordinator(
+        mExtensionsMenuCoordinator =
+                new ExtensionsMenuCoordinator(
                         context,
                         container.findViewById(R.id.extensions_menu_button),
-                        container.findViewById(R.id.extensions_divider),
                         themeColorProvider,
-                        profileSupplier,
+                        task,
                         currentTabSupplier,
                         tabCreator);
     }
 
     @Override
     public void destroy() {
-        mExtensionsMenuButtonCoordinator.destroy();
+        mExtensionsMenuCoordinator.destroy();
         mExtensionActionListCoordinator.destroy();
-        mProfileSupplier.removeObserver(mProfileUpdatedCallback);
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
     }
 
@@ -84,11 +75,7 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
             return false;
         }
 
-        if (mCurrentProfile == null) {
-            return false;
-        }
-
-        ExtensionActionsBridge bridge = ExtensionActionsBridge.get(mCurrentProfile);
+        ExtensionActionsBridge bridge = ExtensionActionsBridge.get(mTask);
         if (bridge == null) {
             return false;
         }
@@ -103,5 +90,10 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
 
         mExtensionActionListCoordinator.click(result.actionId);
         return true;
+    }
+
+    @Override
+    public void updateMenuButtonBackground(int backgroundResource) {
+        mExtensionsMenuCoordinator.updateButtonBackground(backgroundResource);
     }
 }

@@ -28,33 +28,6 @@
   "content_shell.filter so that they can be run in blink_wpt_tests step.",
   "TODO(crbug.com/380755410): Find a way to do this systematically.",
 
-  {
-    "prefix": "align-surface-layer",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "compositing/video/video-subpixel.html",
-      "http/tests/html/scaled-oopif-text-not-blurry.html",
-      "http/tests/html/scaled-oopif-scrollbar-both.html",
-      "http/tests/html/scaled-oopif-scrollbar-vertical.html",
-      "http/tests/html/scaled-oopif-scrollbar-horizontal.html",
-      "http/tests/html/translated-oopif-text-not-blurry.html",
-      "http/tests/html/translated-oopif-scrollbar-both.html",
-      "http/tests/html/translated-oopif-scrollbar-vertical.html",
-      "http/tests/html/translated-oopif-scrollbar-horizontal.html"
-    ],
-    "args": [
-      "--enable-features=AlignSurfaceLayerImplToPixelGrid"
-    ],
-    "owners": [
-      "wjmaclean@chromium.org",
-      "pdr@chromium.org"
-    ],
-    "expires": "Sep 1, 2025"
-  },
   "This suite tests some android features on Linux and should never expire.",
   {
     "prefix": "android",
@@ -65,7 +38,7 @@
       "fullscreen"
     ],
     "args": [
-      "--enable-features=OverlayScrollbar",
+      "--enable-features=OverlayScrollbar,FluentOverlayScrollbar",
       "--enable-threaded-compositing",
       "--enable-prefer-compositing-to-lcd-text",
       "--enable-overscroll-notifications",
@@ -121,25 +94,6 @@
     "expires": "Jul 2, 2026"
   },
   {
-    "prefix": "attribution-reporting-in-browser-migration",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "http/tests/inspector-protocol/attribution-reporting"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=KeepAliveInBrowserMigration,AttributionReportingInBrowserMigration"
-    ],
-    "owners": [
-      "linnan@chromium.org"
-    ],
-    "expires": "Jul 2, 2025"
-  },
-  {
     "prefix": "autoplay-policy-no-user-gesture-required",
     "owners": [
       "leimy@google.com"
@@ -174,7 +128,7 @@
     "args": [
       "--enable-features=BackfaceVisibilityInterop"
     ],
-    "expires": "Nov 15, 2025"
+    "expires": "Nov 15, 2026"
   },
   {
     "prefix": "blur-on-remove",
@@ -191,6 +145,56 @@
       "--disable-blink-features=OmitBlurEventOnElementRemoval"
     ],
     "expires": "Sep 1, 2024"
+  },
+  {
+    "prefix": "canvas-draw-element-in-subtree",
+    "owners": [
+      "pdr@chromium.org",
+      "paint-dev@chromium.org"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [],
+    "args": [
+      "--enable-blink-features=CanvasDrawElementInSubtree"
+    ],
+    "expires": "Jan 15, 2026"
+  },
+  {
+    "prefix": "content-extraction",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "compositing/geometry/layer-due-to-layer-children-deep.html",
+      "compositing/iframes/content-visibility-hidden-frame.html",
+      "compositing/overflow/nested-render-surfaces-with-rotation.html",
+      "compositing/squashing/squash-transform-repainting-transformed-child.html",
+      "css3/filters/nested-filter.html",
+      "fast/dom/HTMLObjectElement/update-data.html",
+      "fast/dynamic/position-change-to-absolute-with-positioned-child-crash.html",
+      "fast/events/touch/touch-rect-assert-first-layer-special.html",
+      "fast/forms/datalist/input-appearance-range-with-transform.html",
+      "fast/sub-pixel/sub-pixel-accumulates-to-layers.html",
+      "fast/sub-pixel/transformed-iframe-copy-on-scroll.html",
+      "paint/invalidation/compositing/subpixel-offset-scaled-will-change-transform.html",
+      "paint/invalidation/transform/subpixel-offset-scaled-transform.html",
+      "transforms/3d/hit-testing/hover-rotated-with-children-negative-z.html",
+      "transforms/3d/point-mapping/3d-point-mapping-deep.html",
+      "transforms/rotate.html"
+    ],
+    "args": [
+      "--enable-blink-features=AIPageContentBuildOnLoadForTesting"
+    ],
+    "owners": [
+      "aleventhal@chromium.org"
+    ],
+    "expires": "never"
   },
   "---------------------------- Close watchers -------------------------------",
   "TODO(https://crbug.com/1495208): These cannot be run in the normal web ",
@@ -266,21 +270,13 @@
     "expires": "Jan 1, 2026"
   },
   {
-    "prefix": "container-style-queries-range",
-    "owners": [
-      "moonira@google.com"
-    ],
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [
-      "external/wpt/css/css-conditional/container-queries/",
-      "external/wpt/css/css-values/if-conditionals.html"
-    ],
-    "args": [
-      "--disable-features=CSSContainerStyleQueriesRange"
-    ],
-    "expires": "May 15, 2026"
+    "prefix": "connection-allowlist",
+    "owners": [ "mkwst@chromium.org" ],
+    "platforms": [ "Linux" ],
+    "bases": [ "external/wpt/connection-allowlist" ],
+    "exclusive_tests": "ALL",
+    "args": [ "--enable-features=ConnectionAllowlists" ],
+    "expires": "Jul 1, 2026"
   },
   {
     "prefix": "controls-refresh-hc",
@@ -301,26 +297,6 @@
       "--force-high-contrast"
     ],
     "expires": "Jul 1, 2026"
-  },
-  {
-    "prefix": "cookie-deprecation-label",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/cookie-deprecation-label"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=CookieDeprecationFacilitatedTesting:label/label_test"
-    ],
-    "expires": "Dec 6, 2025",
-    "owners": [
-      "linnan@chromium.org",
-      "johnidel@chromium.org"
-    ]
   },
   {
     "prefix": "cookie-reject-domain-non-ascii",
@@ -385,6 +361,25 @@
     "expires": "never"
   },
   {
+    "prefix": "cpu-performance",
+    "owners": [
+      "nikolaos@chromium.org"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/cpu-performance"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=CpuPerformance"
+    ],
+    "expires": "Dec 31, 2025"
+  },
+  {
     "prefix": "cross-partition-blob-url",
     "platforms": [
       "Linux"
@@ -393,6 +388,7 @@
       "external/wpt/FileAPI/BlobURL/cross-partition.https.html",
       "external/wpt/FileAPI/BlobURL/cross-partition-worker-creation.https.html",
       "external/wpt/FileAPI/BlobURL/cross-partition-navigation.https.html",
+      "external/wpt/FileAPI/BlobURL/cross-partition-self-fetch.https.html",
       "external/wpt/storage-access-api/storage-access-beyond-cookies.blobStorage.sub.https.window.html",
       "external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLDedicatedWorker.sub.https.tentative.window.html",
       "external/wpt/html/cross-origin-embedder-policy/blob.https.html",
@@ -402,10 +398,29 @@
     "args": [
       "--disable-features=BlockCrossPartitionBlobUrlFetching,EnforceNoopenerOnBlobURLNavigation"
     ],
-    "expires": "Sep 1, 2025",
+    "expires": "Apr 1, 2026",
     "owners": [
       "awillia@chromium.org"
     ]
+  },
+  {
+    "prefix": "css-anchor-update-disabled",
+    "owners": [
+      "ikilpatrick@chromium.org",
+      "rendering-core-dev@chromium.org"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/css/css-anchor-position"
+    ],
+    "args": [
+      "--disable-blink-features=CSSAnchorUpdate"
+    ],
+    "expires": "Aug 13, 2026"
   },
   {
     "prefix": "css-gap-decorations-disabled",
@@ -425,6 +440,28 @@
     "args": ["--disable-blink-features=CSSGapDecoration"],
     "expires": "June 1, 2026",
     "owners": ["samomekarajr@microsoft.com", "almaher@microsoft.com", "javiercon@microsoft.com"]
+  },
+  {
+    "prefix": "computed-width-values-depend-on-style-values",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/css/css-typed-om/the-stylepropertymap/properties/border-width.html",
+      "external/wpt/css/css-typed-om/the-stylepropertymap/properties/outline-width.html",
+      "fast/replaced/no-focus-ring-object.html",
+      "fast/replaced/no-focus-ring-embed.html",
+      "external/wpt/css/css-gaps/parsing",
+      "fast/css/getComputedStyle/getComputedStyle-column-rule.html",
+      "fast/css/getComputedStyle/getComputedStyle-outline-shorthand.html",
+      "external/wpt/css/css-multicol/animation/column-rule-width-interpolation.html",
+      "external/wpt/css/css-multicol/parsing/",
+      "external/wpt/css/css-ui/parsing/canonical-order-outline-sub-properties-001.html",
+      "external/wpt/css/css-ui/parsing/outline-width-computed.html",
+      "external/wpt/css/cssom/cssom-getPropertyValue-common-checks.html"
+    ],
+    "args": ["--disable-blink-features=DecoupleComputedBorderWidthFromStyle",
+             "--disable-blink-features=DecoupleResolvedColumnRuleWidthFromStyle"],
+    "expires": "Apr 30, 2026",
+    "owners": ["samomekarajr@microsoft.com", "kbabbitt@microsoft.com"]
   },
   {
     "prefix": "css-line-clamp-line-breaking-ellipsis",
@@ -456,6 +493,12 @@
       "external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-004.html",
       "external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-005.html",
       "external/wpt/css/css-text/white-space/text-wrap-pretty-line-clamp-crash-001.html",
+      "external/wpt/css/css-ui/text-overflow-string-001.html",
+      "external/wpt/css/css-ui/text-overflow-string-002.html",
+      "external/wpt/css/css-ui/text-overflow-string-003.html",
+      "external/wpt/css/css-ui/text-overflow-string-004.html",
+      "external/wpt/css/css-ui/text-overflow-string-005.html",
+      "external/wpt/css/css-ui/text-overflow-string-006.tentative.html",
       "fast/deprecated-flexbox/dynamically-change-line-clamp.html",
       "fast/deprecated-flexbox/line-clamp-crash.html",
       "fast/deprecated-flexbox/line-clamp-removed-dynamically.html",
@@ -473,48 +516,16 @@
     ]
   },
   {
-    "prefix": "customizable-select-disabled",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "accessibility/native-select-activedescendant.html",
-      "accessibility/role-attribute.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-native-computed-style.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-native-horizontal.optional.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-native-vertical.optional.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-none-horizontal.optional.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-none-vertical-lr.optional.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-none-vertical-rl.optional.html",
-      "external/wpt/html/infrastructure/common-dom-interfaces/collections/htmloptionscollection.html",
-      "external/wpt/html/semantics/forms/the-select-element",
-      "external/wpt/html/syntax/parsing",
-      "fast/forms/color-scheme/select",
-      "fast/forms/select",
-      "fast/forms/select-popup",
-      "fast/parser/inselect-tokenization.html",
-      "html5lib/generated"
-    ],
-    "args": [
-      "--disable-features=CustomizableSelect,SelectParserRelaxation"
-    ],
-    "expires": "Oct 1, 2025",
-    "owners": [
-      "jarhar@chromium.org",
-      "dom-dev@google.com"
-    ]
-  },
-  {
     "prefix": "customizable-select-in-page-disabled",
     "platforms": [
       "Linux"
     ],
-    "bases": [],
+    "bases": [
+      "external/wpt/html/semantics/forms/the-select-element",
+      "wpt_internal/html/semantics/forms/the-select-element"
+    ],
     "args": [
-      "--disable-features=CustomizableSelectInPage",
-      "--enable-features=CustomizableSelect"
+      "--disable-features=CustomizableSelectInPage"
     ],
     "expires": "Aug 1, 2026",
     "owners": [
@@ -552,26 +563,6 @@
     "expires": "never"
   },
   {
-    "prefix": "dark-mode-classifier-transparency-and-num-colors",
-    "owners": [
-      "peconn@chromium.org",
-      "pdr@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "dark-mode/images"
-    ],
-    "args": [
-      "--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true",
-      "--dark-mode-settings=ImageClassifierPolicy=1"
-    ],
-    "expires": "Jul 1, 2026"
-  },
-  {
     "prefix": "dark-mode-default",
     "owners": [
       "peconn@chromium.org",
@@ -592,46 +583,6 @@
     "expires": "Jul 1, 2026"
   },
   {
-    "prefix": "dark-mode-images-filter-all",
-    "owners": [
-      "peconn@chromium.org",
-      "pdr@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "dark-mode/images"
-    ],
-    "args": [
-      "--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true",
-      "--dark-mode-settings=ImagePolicy=0"
-    ],
-    "expires": "Jul 1, 2026"
-  },
-  {
-    "prefix": "dark-mode-images-filter-none",
-    "owners": [
-      "peconn@chromium.org",
-      "pdr@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "dark-mode/images"
-    ],
-    "args": [
-      "--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true",
-      "--dark-mode-settings=ImagePolicy=1"
-    ],
-    "expires": "Jul 1, 2026"
-  },
-  {
     "prefix": "dbsc-enabled",
     "owners": [
       "thefrog@chromium.org",
@@ -647,10 +598,29 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=EnableBoundSessionCredentialsSoftwareKeysForManualTesting,DeviceBoundSessions",
-      "--disable-features=DeviceBoundSessionsRefreshQuota"
+      "--enable-features=EnableBoundSessionCredentialsSoftwareKeysForManualTesting,DeviceBoundSessions:RefreshQuota/false/OriginTrialFeedback/true,DeviceBoundSessionsFederatedRegistration",
+      "--disable-features=TrackingProtection3pcd"
     ],
     "expires": "never"
+  },
+  {
+    "prefix": "file-system-access-write-mode",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/file-system-access",
+      "external/wpt/fs"
+    ],
+    "args": [
+      "--enable-features=FileSystemAccessWriteMode"
+    ],
+    "expires": "Sep 10, 2026",
+    "owners": [
+      "mych@chromium.org"
+    ]
   },
   {
     "prefix": "delay-async-when-lcp-in-html",
@@ -734,6 +704,7 @@
     "bases": [
       "external/wpt/css/css-overflow/line-clamp",
       "external/wpt/css/css-overflow/parsing",
+      "external/wpt/css/css-overflow/inheritance.html",
       "external/wpt/css/css-inline/text-box-trim/text-box-trim-line-clamp-001.html",
       "external/wpt/css/css-text/white-space/text-wrap-balance-005.html",
       "external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-001.html",
@@ -752,7 +723,7 @@
     ]
   },
   {
-    "prefix": "disable-css-masonry-layout",
+    "prefix": "disable-css-grid-lanes-layout",
     "platforms": [
       "Win"
     ],
@@ -760,7 +731,7 @@
       "external/wpt/css/css-grid/parsing"
     ],
     "args": [
-      "--disable-blink-features=CSSMasonryLayout"
+      "--disable-blink-features=CSSGridLanesLayout"
     ],
     "owners": [
       "almaher@microsoft.com"
@@ -785,25 +756,6 @@
       "--disable-features=FrequencyCappingForOverlayPopupDetection"
     ],
     "expires": "Jul 1, 2025"
-  },
-  {
-    "prefix": "disable-purpose-prefetch-header",
-    "owners": [
-      "stevenwei@microsoft.com"
-    ],
-    "platforms": [
-      "Mac",
-      "Win",
-      "Linux"
-    ],
-    "bases": [
-      "external/wpt/preload/prefetch-headers.https.html"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=RemovePurposeHeaderForPrefetch"
-    ],
-    "expires": "Nov 27, 2025"
   },
   "Exclusive tests due to crbug.com/349939555",
   {
@@ -834,25 +786,6 @@
       "wangxianzhu@chromium.org"
     ],
     "expires": "Dev 31, 2024"
-  },
-  {
-    "prefix": "do-not-hide-visited-color",
-    "owners": [
-      "sesse@google.com"
-    ],
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [
-      "external/wpt/css/css-animations/",
-      "external/wpt/css/css-cascade/",
-      "external/wpt/css/css-color/",
-      "external/wpt/css/css-pseudo/"
-    ],
-    "args": [
-      "--enable-features=CSSDoNotHideVisitedColor"
-    ],
-    "expires": "Jun 3, 2026"
   },
   {
     "prefix": "document-picture-in-picture-user-activation",
@@ -908,6 +841,27 @@
     ],
     "expires": "Jun 1, 2026"
   },
+  {
+    "prefix": "echo-cancellation-mode-all",
+    "platforms": [
+      "Win11",
+      "Mac14",
+      "Mac15"
+    ],
+    "bases": [
+      "external/wpt/mediacapture-streams/GUM-echoCancellation-all.https.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=SystemLoopbackAsAecReference,GetUserMediaEchoCancellationModes"
+    ],
+    "owners": [
+      "guidou@chromium.org",
+      "olka@chromium.org"
+    ],
+    "expires": "Nov 29, 2025"
+  },
+
   "The elastic-overscroll virtual suite is testing a feature that is enabled",
   "or not based on platform and settings, so it should not expire.",
   {
@@ -928,6 +882,44 @@
     ]
   },
   {
+    "prefix": "enable-prefetch-devtools-ua-override",
+    "owners": [
+      "robertlin@chromium.org"
+    ],
+    "platforms": [
+      "Mac",
+      "Win",
+      "Linux"
+    ],
+    "bases": [
+      "http/tests/inspector-protocol/prefetch/prefetch-ua-override.js"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=PrefetchDevtoolsUserAgentOverride"
+    ],
+    "expires": "Aug 1, 2026"
+  },
+  {
+    "prefix": "enable-purpose-prefetch-header",
+    "owners": [
+      "stevenwei@microsoft.com"
+    ],
+    "platforms": [
+      "Mac",
+      "Win",
+      "Linux"
+    ],
+    "bases": [
+      "http/tests/misc/prefetch-purpose.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--disable-features=RemovePurposeHeaderForPrefetch"
+    ],
+    "expires": "Aug 1, 2026"
+  },
+  {
     "prefix": "enable-system-cursor-size-for-svg",
     "owners": [
       "gerchiko@microsoft.com"
@@ -944,7 +936,7 @@
       "--enable-features=SystemCursorSizeSupported",
       "--disable-headless-mode"
     ],
-    "expires": "Dec 1, 2025"
+    "expires": "Dec 1, 2026"
   },
   {
     "prefix": "exotic-color-space",
@@ -1026,27 +1018,70 @@
     "args": [
       "--enable-features=FedCmLightweightMode"
     ],
-    "expires": "Aug 1, 2025"
+    "expires": "Aug 1, 2026"
   },
   {
-    "prefix": "fedcm-alternative-identifiers",
-    "owners": [
-      "cbiesinger@chromium.org",
-      "web-identity-eng@google.com"
-    ],
+    "prefix": "fedcm-flexible-tokens",
     "platforms": [
       "Linux",
       "Mac",
       "Win"
     ],
     "bases": [
-      "external/wpt/fedcm/alternative-identifiers/"
+      "external/wpt/fedcm/fedcm-flexible-token/"
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=FedCmAlternativeIdentifiers"
+      "--enable-features=FedCmNonStringToken"
     ],
-    "expires": "Aug 1, 2025"
+    "owners": [
+      "npm@chromium.org",
+      "cbiesinger@chromium.org",
+      "goto@chromium.org"
+    ],
+    "expires": "Aug 1, 2026"
+  },
+  {
+    "prefix": "fedcm-well-known-validation",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/fedcm/fedcm-well-known-validation/"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=FedCmWellKnownEndpointValidation,FedCmPreservePortsForTesting"
+    ],
+    "owners": [
+      "npm@chromium.org",
+      "cbiesinger@chromium.org",
+      "goto@chromium.org"
+    ],
+    "expires": "Aug 1, 2026"
+  },
+  {
+    "prefix": "fedcm-third-party-iframe",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/fedcm/third-party-iframe/"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=FedCmIframeOrigin"
+    ],
+    "owners": [
+      "cbiesinger@chromium.org",
+      "npm@chromium.org",
+      "goto@chromium.org"
+    ],
+    "expires": "Aug 1, 2026"
   },
   {
     "prefix": "fedcm-register",
@@ -1067,7 +1102,28 @@
       "cbiesinger@chromium.org",
       "goto@chromium.org"
     ],
-    "expires": "Aug 1, 2025"
+    "expires": "Aug 1, 2026"
+  },
+  {
+    "prefix": "fedcm-error-attribute",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/fedcm/fedcm-error-attribute"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=FedCmErrorAttribute"
+    ],
+    "owners": [
+      "npm@chromium.org",
+      "cbiesinger@chromium.org",
+      "goto@chromium.org"
+    ],
+    "expires": "Aug 1, 2026"
   },
   {
     "prefix": "fenced-frame-mparch",
@@ -1114,10 +1170,12 @@
       "Win"
     ],
     "bases": [
-      "wpt_internal/fenced_frame"
+      "wpt_internal/fenced_frame",
+      "wpt_internal/shared-worker/back-forward-cache/shared-worker-with-fenced-frame-client.https.window.js"
     ],
     "exclusive_tests": [
-      "wpt_internal/fenced_frame"
+      "wpt_internal/fenced_frame",
+      "wpt_internal/shared-worker/back-forward-cache/shared-worker-with-fenced-frame-client.https.window.js"
     ],
     "args": [
       "--enable-features=PrivacySandboxAdsAPIsOverride,Fledge,AdInterestGroupAPI,FencedFramesEnforceFocus,FencedFramesLocalUnpartitionedDataAccess,ExemptUrlFromNetworkRevocationForTesting,FencedFramesCrossOriginEventReportingAllTraffic,FencedFramesReportEventHeaderChanges,FencedFramesDefaultMode"
@@ -1138,7 +1196,7 @@
       "--test-third-party-cookie-phaseout",
       "--use-related-website-set={\"primary\":\"https://firstparty.test\",\"associatedSites\":[\"https://cookie.test\"]}"
     ],
-    "expires": "Dec 1, 2025",
+    "expires": "Jun 1, 2026",
     "owners": [
       "chrome-first-party-sets@chromium.org"
     ]
@@ -1186,27 +1244,6 @@
     "expires": "Jul 14, 2025"
   },
   {
-    "prefix": "fledge-bidding-and-auction-kanonymity",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "owners": [
-      "behamilton@google.com",
-      "pauljensen@chromium.org"
-    ],
-    "bases": [
-      "external/wpt/fledge/tentative/get-interest-group-auction-data.https.window.js",
-      "external/wpt/fledge/tentative/server-response.https.window.js"
-    ],
-    "args": [
-      "--enable-features=FledgeConsiderKAnonymity,FledgeEnforceKAnonymity,EnableBandAKAnonEnforcement,EnableBandATriggeredUpdates,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fweb-platform.test%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}",
-      "--disable-features=CookieDeprecationFacilitatedTesting"
-    ],
-    "expires": "Jul 14, 2025"
-  },
-  {
     "prefix": "fledge-bidding-and-auction-private-aggregation",
     "platforms": [
       "Linux",
@@ -1225,63 +1262,6 @@
     "args": [
       "--private-aggregation-developer-mode",
       "--enable-features=EnableBandAPrivateAggregation,AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform.test%3A8444,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fweb-platform.test%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}"
-    ],
-    "expires": "Jul 14, 2025"
-  },
-  {
-    "prefix": "fledge-kanon-enforcement",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "owners": [
-      "behamilton@google.com",
-      "caraitto@chromium.org",
-      "pauljensen@chromium.org",
-      "mmenke@chromium.org",
-      "morlovich@chromium.org",
-      "qingxinwu@google.com"
-    ],
-    "bases": [
-      "external/wpt/fledge/tentative/abort.https.window.js",
-      "external/wpt/fledge/tentative/additional-bids.https.window.js",
-      "external/wpt/fledge/tentative/auction-config.https.window.js",
-      "external/wpt/fledge/tentative/auction-config-passed-to-worklets.https.window.js",
-      "external/wpt/fledge/tentative/clear-origin-joined-ad-interest-groups.https.window.js",
-      "external/wpt/fledge/tentative/component-ads.https.window.js",
-      "external/wpt/fledge/tentative/component-auction.https.window.js",
-      "external/wpt/fledge/tentative/cross-origin.https.window.js",
-      "external/wpt/fledge/tentative/currency.https.window.js",
-      "external/wpt/fledge/tentative/deprecated-render-url-replacements.https.window.js",
-      "external/wpt/fledge/tentative/direct-from-seller-signals.https.window.js",
-      "external/wpt/fledge/tentative/generate-bid-browser-signals.https.window.js",
-      "external/wpt/fledge/tentative/get-interest-group-auction-data.https.window.js",
-      "external/wpt/fledge/tentative/insecure-context.window.js",
-      "external/wpt/fledge/tentative/interest-group-passed-to-generate-bid.https.window.js",
-      "external/wpt/fledge/tentative/interest-group-update.https.window.js",
-      "external/wpt/fledge/tentative/join-leave-ad-interest-group.https.window.js",
-      "external/wpt/fledge/tentative/join-leave-ad-interest-group-in-fenced-frame.https.window.js",
-      "external/wpt/fledge/tentative/network.https.window.js",
-      "external/wpt/fledge/tentative/no-winner.https.window.js",
-      "external/wpt/fledge/tentative/private-aggregation.https.window.js",
-      "external/wpt/fledge/tentative/real-time-reporting.https.window.js",
-      "external/wpt/fledge/tentative/register-ad-beacon.https.window.js",
-      "external/wpt/fledge/tentative/reporting-arguments.https.window.js",
-      "external/wpt/fledge/tentative/reporting-ids.https.window.js",
-      "external/wpt/fledge/tentative/round-a-value.https.window.js",
-      "external/wpt/fledge/tentative/score-ad-browser-signals.https.window.js",
-      "external/wpt/fledge/tentative/send-report-to.https.window.js",
-      "external/wpt/fledge/tentative/server-response.https.window.js",
-      "external/wpt/fledge/tentative/service-worker-request-visibility.https.window.js",
-      "external/wpt/fledge/tentative/tie.https.window.js",
-      "external/wpt/fledge/tentative/trusted-bidding-signals.https.window.js",
-      "external/wpt/fledge/tentative/trusted-scoring-signals.https.window.js",
-      "http/tests/inspector-protocol/storage/interest-groups.js"
-    ],
-    "args": [
-      "--enable-features=InterestGroupStorage,PrivacySandboxAdsAPIsOverride,FencedFrames:implementation_type/mparch,FledgeConsiderKAnonymity,FledgeEnforceKAnonymity",
-      "--disable-features=CookieDeprecationFacilitatedTesting"
     ],
     "expires": "Jul 14, 2025"
   },
@@ -1323,7 +1303,6 @@
       "Win"
     ],
     "bases": [
-      "external/wpt/partitioned-popins/partitioned-popins.localStorage.tentative.sub.https.window.html",
       "external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLDedicatedWorker.sub.https.tentative.window.html",
       "external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLSharedWorker.sub.https.tentative.window.html",
       "external/wpt/storage-access-api/storage-access-beyond-cookies.BroadcastChannel.sub.https.window.html",
@@ -1337,8 +1316,7 @@
       "external/wpt/storage-access-api/storage-access-beyond-cookies.locks.sub.https.window.html",
       "external/wpt/storage-access-api/storage-access-beyond-cookies.none.sub.https.window.html",
       "external/wpt/storage-access-api/storage-access-beyond-cookies.sessionStorage.sub.https.window.html",
-      "external/wpt/storage-access-api/storage-access-beyond-cookies.thirdPartyBlobStorage.sub.https.window.html",
-      "external/wpt/storage-access-api/storage-access-beyond-cookies.unpartitioned.sub.https.window.html"
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.thirdPartyBlobStorage.sub.https.window.html"
     ],
     "args": [
       "--enable-features=ForceAllowStorageAccess"
@@ -1373,7 +1351,7 @@
     ],
     "owners": [
       "dtseng@chromium.org",
-      "aleventhal@chromium.org"
+      "lucasradaelli@google.com"
     ],
     "bases": [
       "accessibility/accessibility-beforematch-marker-crash.html",
@@ -1381,6 +1359,7 @@
       "accessibility/slot-poison.html",
       "accessibility/createAttributeNS06-crash.html",
       "external/wpt/accessibility/",
+      "external/wpt/css/css-highlight-api/crashtests/highlight-overlap-with-aria-invalid-crash.html",
       "external/wpt/dom/ranges/Range-deleteContents.html",
       "external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-initially-empty-is-updated.html",
       "external/wpt/html/semantics/interactive-elements/the-dialog-element/inert-svg-hittest.html",
@@ -1399,7 +1378,7 @@
     ],
     "owners": [
       "dtseng@chromium.org",
-      "aleventhal@chromium.org"
+      "lucasradaelli@google.com"
     ],
     "bases": [
       "external/wpt/accessibility/crashtests/removed-from-flat-tree.html"
@@ -1461,6 +1440,26 @@
       "--enable-blink-features=FractionalScrollOffsets"
     ],
     "expires": "Jun 1, 2025"
+  },
+  {
+    "prefix": "fragmented-oof-in-cb",
+    "owners": [ "mstensho@chromium.org" ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/css/css-anchor-position",
+      "external/wpt/css/css-break",
+      "external/wpt/css/css-multicol",
+      "external/wpt/css/css-page",
+      "fast/multicol",
+      "fragmentation",
+      "printing"
+    ],
+    "args": [ "--enable-blink-features=FragmentedOofInCb" ],
+    "expires": "May 17, 2026"
   },
   {
     "prefix": "fsa-incognito",
@@ -1614,6 +1613,44 @@
     "expires": "Jun 1, 2026"
   },
   {
+    "prefix": "http-cache-default-backend",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/fetch/http-cache"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=DiskCacheBackendExperiment:backend/default"
+    ],
+    "expires": "Jul 25, 2026",
+    "owners": [
+      "horo@chromium.org"
+    ]
+  },
+  {
+    "prefix": "http-cache-sql-backend",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/fetch/http-cache"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=DiskCacheBackendExperiment:backend/sql"
+    ],
+    "expires": "Jul 25, 2026",
+    "owners": [
+      "horo@chromium.org"
+    ]
+  },
+  {
     "prefix": "image-disabled",
     "owners": [
       "leimy@google.com"
@@ -1641,11 +1678,33 @@
       "chrome-storage-team@google.com"
     ],
     "platforms": [
-      "Linux"
+      "Linux",
+      "Win"
     ],
     "bases": [
       "external/wpt/IndexedDB",
-      "storage/indexeddb"
+      "storage/indexeddb",
+      "wpt_internal/IndexedDB",
+      "crypto/subtle/rsa-indexeddb.html",
+      "external/wpt/clear-site-data/storage.https.html",
+      "external/wpt/fs/FileSystemBaseHandle-IndexedDB.https.any.html",
+      "external/wpt/html/anonymous-iframe/indexeddb.tentative.https.window.html",
+      "external/wpt/html/infrastructure/common-dom-interfaces/collections/domstringlist.html",
+      "external/wpt/presentation-api/receiving-ua/PresentationReceiver_create-manual.https.html",
+      "external/wpt/service-workers/service-worker/indexeddb.https.html",
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.indexedDB.sub.https.window.html",
+      "external/wpt/storage/buckets/bucket-quota-indexeddb.tentative.https.any.html",
+      "external/wpt/storage/estimate-indexeddb.https.any.html",
+      "external/wpt/storage/estimate-usage-details-indexeddb.https.tentative.any.html",
+      "external/wpt/storage/partitioned-estimate-usage-details-indexeddb.tentative.https.sub.html",
+      "external/wpt/wasm/webapi/historical.any.html",
+      "external/wpt/webcodecs/video-frame-serialization.any.html",
+      "external/wpt/workers/data-url-shared.html",
+      "external/wpt/workers/data-url.html",
+      "fast/dom/domstringlist.html",
+      "http/tests/devtools/indexeddb/database-names.js",
+      "http/tests/devtools/indexeddb/upgrade-events.js",
+      "http/tests/inspector-protocol/storage/indexed-db-storage-key-request-database-names.js"
     ],
     "args": [
       "--enable-features=IdbSqliteBackingStore"
@@ -1658,7 +1717,7 @@
       "Linux"
     ],
     "bases": [
-      "external/wpt/html/semantics/forms/the-select-element/customizable-select/select-parsing.tentative.html"
+      "external/wpt/html/semantics/forms/the-select-element/customizable-select/select-parsing.html"
     ],
     "args": [
       "--enable-features=InputClosesSelect,SelectParserRelaxation"
@@ -1898,7 +1957,7 @@
       "hchao@chromium.org",
       "chrome-secure-web-and-net@chromium.org"
     ],
-    "expires": "Dec 2, 2025"
+    "expires": "June 1, 2026"
   },
   {
     "prefix": "log-dns-prefetch-and-preconnect",
@@ -2136,13 +2195,12 @@
     ],
     "bases": [],
     "args": [
-      "--disable-features=OverlayScrollbar"
+      "--disable-features=OverlayScrollbar,FluentOverlayScrollbar"
     ],
     "expires": "never",
     "owners": [
       "gastonr@microsoft.com",
-      "gerchiko@microsoft.com",
-      "yshalivskyy@microsoft.com"
+      "gerchiko@microsoft.com"
     ]
   },
   "This suite is incompatible with the default WPT Origin Isolation mode of",
@@ -2302,7 +2360,6 @@
     "prefix": "overlay-scrollbar",
     "platforms": [
       "Linux",
-      "Mac",
       "Win"
     ],
     "bases": [
@@ -2310,7 +2367,7 @@
       "external/wpt/css/css-ui/pointer-events-no-scrollbars-002.html"
     ],
     "args": [
-      "--enable-features=OverlayScrollbar"
+      "--enable-features=OverlayScrollbar,FluentOverlayScrollbar"
     ],
     "expires": "never",
     "owners": [
@@ -2357,25 +2414,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "partitioned-popins-disabled",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/partitioned-popins/"
-    ],
-    "args": [
-      "--disable-blink-features=PartitionedPopins"
-    ],
-    "owners": [
-      "arichiv@chromium.org",
-      "johannhof@chromium.org"
-    ],
-    "expires": "Sep 1, 2025"
-  },
-  {
     "prefix": "permission-element",
     "platforms": [
       "Linux",
@@ -2400,122 +2438,12 @@
     ],
     "bases": [],
     "args": [
-      "--disable-blink-features=PermissionElement,GeolocationElement"
+      "--disable-blink-features=PermissionElement,GeolocationElement,InstallElement"
     ],
     "owners": [
       "permissions-core@google.com"
     ],
-    "expires": "Jul 1, 2025"
-  },
-  {
-    "prefix": "pna-navigations-enabled",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "win"
-    ],
-    "bases": [
-      "external/wpt/fetch/private-network-access"
-    ],
-    "args": [
-      "--enable-features=LocalNetworkAccessChecks,PrivateNetworkAccessForNavigations",
-      "--disable-features=LocalNetworkAccessChecks"
-    ],
-    "exclusive_tests": "ALL",
-    "owners": [
-      "cthomp@chromium.org",
-      "hchao@chromium.org",
-      "chrome-secure-web-and-net@chromium.org"
-    ],
-    "expires": "July 31, 2025"
-  },
-  {
-    "prefix": "pna-navigations-warning",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "win"
-    ],
-    "bases": [
-      "external/wpt/fetch/private-network-access"
-    ],
-    "args": [
-      "--enable-features=PrivateNetworkAccessForNavigations,PrivateNetworkAccessForNavigationsWarningOnly",
-      "--disable-features=LocalNetworkAccessChecks"
-    ],
-    "exclusive_tests": "ALL",
-    "owners": [
-      "cthomp@chromium.org",
-      "hchao@chromium.org",
-      "chrome-secure-web-and-net@chromium.org"
-    ],
-    "expires": "July 31, 2025"
-  },
-  "All PNA tests are only tested exclusively in Virtual Test Suites as we move",
-  "over to LNA. All suites will be removed after PNA is removed.",
-  {
-    "prefix": "pna-only-force-lna-off",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/fetch/private-network-access"
-    ],
-    "args": [
-      "--disable-features=LocalNetworkAccessChecks"
-    ],
-    "exclusive_tests": "ALL",
-    "owners": [
-      "cthomp@chromium.org",
-      "hchao@chromium.org",
-      "chrome-secure-web-and-net@chromium.org"
-    ],
-    "expires": "July 31, 2025"
-  },
-  {
-    "prefix": "pna-workers-disabled",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/fetch/private-network-access"
-    ],
-    "args": [
-      "--disable-features=LocalNetworkAccessChecks,PrivateNetworkAccessForWorkers"
-    ],
-    "exclusive_tests": "ALL",
-    "owners": [
-      "cthomp@chromium.org",
-      "hchao@chromium.org",
-      "chrome-secure-web-and-net@chromium.org"
-    ],
-    "expires": "July 31, 2025"
-  },
-  {
-    "prefix": "pna-workers-enabled",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/fetch/private-network-access"
-    ],
-    "args": [
-      "--enable-features=PrivateNetworkAccessForWorkers",
-      "--disable-features=LocalNetworkAccessChecks,PrivateNetworkAccessForWorkersWarningOnly"
-    ],
-    "exclusive_tests": "ALL",
-    "owners": [
-      "cthomp@chromium.org",
-      "hchao@chromium.org",
-      "chrome-secure-web-and-net@chromium.org"
-    ],
-    "expires": "July 31, 2025"
+    "expires": "Jul 1, 2026"
   },
   {
     "prefix": "port-bound-cookies",
@@ -2525,6 +2453,7 @@
       "Win"
     ],
     "bases": [
+      "external/wpt/cookies/origin-bound-cookies/port-bound-cookies.html",
       "http/tests/inspector-protocol/issues/port-mismatch-exclusion.js",
       "http/tests/inspector-protocol/network/blocked-cookie-port-mismatch.js"
     ],
@@ -2607,58 +2536,14 @@
       "Win"
     ],
     "bases": [
-      "external/wpt/speculation-rules/prefetch/anonymous-client.https.html",
-      "external/wpt/speculation-rules/prefetch/cross-origin-cookies-anonymous-client-ip-duplicate.https.html"
+      "external/wpt/speculation-rules/prefetch/anonymous/anonymous-client.https.html",
+      "external/wpt/speculation-rules/prefetch/anonymous/cross-origin-cookies-anonymous-client-ip-duplicate.https.html"
     ],
     "exclusive_tests": "ALL",
     "args": [
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
     "expires": "never"
-  },
-  "These tests require the experimental speculative prefetch feature, and",
-  "requires extra switches to enable content implementation of speculation",
-  "rules prefetch.",
-  {
-    "prefix": "prefetch",
-    "owners": [
-      "jbroman@chromium.org",
-      "liviutinta@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/speculation-rules/prefetch",
-      "http/tests/inspector-protocol/prefetch"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--disable-features=PrefetchServiceWorker"
-    ],
-    "expires": "Oct 1, 2025"
-  },
-  {
-    "prefix": "prefetch-sw",
-    "owners": [
-      "hiroshige@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/speculation-rules/prefetch",
-      "http/tests/inspector-protocol/prefetch"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=Prerender2FallbackPrefetchSpecRules,PrefetchServiceWorker"
-    ],
-    "expires": "Oct 1, 2025"
   },
   {
     "prefix": "preload-link-rel-dataurls-disabled",
@@ -2701,6 +2586,7 @@
       "Win"
     ],
     "bases": [
+      "http/tests/inspector-protocol/prefetch",
       "http/tests/inspector-protocol/preload",
       "http/tests/inspector-protocol/prerender",
       "http/tests/inspector-protocol/tracing/prerender.js"
@@ -2716,37 +2602,13 @@
     ],
     "expires": "Nov 30, 2025"
   },
-  "prerender2-fallback-prefetch-spec-rules for exclusive tests http/tests/inspector-protocol/prefetch",
-  "We maintain this separated from prerender2-fallback-prefetch-spec-rules because",
-  "- http/tests/inspector-protocol/prefetch is `exclusive_tests` in `prefetch`.",
-  "  If other suite wants to execute it, it needs include the directry to its `exclusive_tests`.",
-  "- It requires lots of feature flags. We don't need to mix them up.",
-  {
-    "prefix": "prerender2-fallback-prefetch-spec-rules-prefetch",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "http/tests/inspector-protocol/prefetch"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=Prerender2FallbackPrefetchSpecRules",
-      "--disable-features=PrefetchServiceWorker",
-      "--disable-threaded-compositing",
-      "--disable-threaded-animation"
-    ],
-    "owners": [
-      "kenoss@chromium.org"
-    ],
-    "expires": "Nov 30, 2025"
-  },
   {
     "prefix": "presentation",
     "owners": [
-      "mfoltz@chromium.org"
+      "mfoltz@chromium.org",
+      "muyaoxu@google.com",
+      "jophba@chromium.org",
+      "openscreen-eng@google.com"
     ],
     "platforms": [
       "Linux",
@@ -2757,7 +2619,7 @@
     "args": [
       "--force-presentation-receiver-for-testing"
     ],
-    "expires": "Oct 1, 2025"
+    "expires": "never"
   },
   {
     "prefix": "private-aggregation",
@@ -2776,9 +2638,9 @@
     ],
     "owners": [
       "alexmt@chromium.org",
-      "dmcardle@chromium.org"
+      "linnan@chromium.org"
     ],
-    "expires": "Jul 1, 2025"
+    "expires": "Jul 1, 2026"
   },
   {
     "prefix": "private-aggregation-developer-mode",
@@ -2800,9 +2662,9 @@
     ],
     "owners": [
       "alexmt@chromium.org",
-      "dmcardle@chromium.org"
+      "linnan@chromium.org"
     ],
-    "expires": "Jul 1, 2025"
+    "expires": "Jul 1, 2026"
   },
   {
     "prefix": "produce-compile-hints",
@@ -2874,6 +2736,46 @@
     "expires": "Apr 30, 2025"
   },
   {
+    "prefix": "restrict-own-audio",
+    "platforms": [
+      "Win11",
+      "Mac14",
+      "Mac15"
+    ],
+    "bases": [
+      "external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=MacCatapLoopbackAudioForScreenShare,RestrictOwnAudio"
+    ],
+    "owners": [
+      "guidou@chromium.org",
+      "olka@chromium.org"
+    ],
+    "expires": "Nov 29, 2025"
+  },
+  {
+    "prefix": "run-snapshot-post-layout",
+    "owners": [
+      "futhark@chromium.org",
+      "flackr@chromium.org"
+    ],
+    "platforms": [
+      "Linux"
+    ],
+    "bases": [
+      "external/wpt/css/css-anchor-position/",
+      "external/wpt/css/css-conditional/container-queries/scroll-state/",
+      "external/wpt/scroll-animations/",
+      "fast/animation/scroll-animations/"
+    ],
+    "args": [
+      "--enable-blink-features=RunSnapshotPostLayoutStateSteps"
+    ],
+    "expires": "Jan 1, 2026"
+  },
+  {
     "prefix": "sandbox-allow-same-site-none-cookies-3PC-blocked",
     "platforms": [
       "Linux",
@@ -2886,28 +2788,11 @@
     "args": [
       "--enable-features=AllowSameSiteNoneCookiesInSandbox,ForceThirdPartyCookieBlockingEnabled"
     ],
-    "expires": "Dec 1, 2025",
+    "expires": "May 1, 2026",
     "owners": [
       "anushamuley@chromium.org",
       "dylancutler@google.com"
     ]
-  },
-  {
-    "prefix": "sanitizer-api",
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [
-      "external/wpt/sanitizer-api/"
-    ],
-    "args": [
-      "--enable-features=SanitizerAPI"
-    ],
-    "expires": "Jul 18, 2025",
-    "owners": [
-      "vogelheim@google.com"
-    ],
-    "exclusive_tests": "ALL"
   },
   {
     "prefix": "scalefactor150",
@@ -2920,7 +2805,13 @@
       "fast/events/wheel/wheelevent-in-scrolling-div.html",
       "fast/hidpi/static",
       "external/wpt/css/css-ui/caret-shape-block-zoom.html",
-      "external/wpt/css/css-ui/caret-shape-block-color-001.html"
+      "external/wpt/css/css-ui/caret-shape-block-color-001.html",
+      "wpt_internal/html/canvas/drawElementImage/ink-overflow.html",
+      "wpt_internal/html/canvas/drawElementImage/scale.html",
+      "wpt_internal/html/canvas/drawElementImage/webgl-css-transform-on-div.html",
+      "wpt_internal/html/canvas/drawElementImage/webgl-scaling.html",
+      "wpt_internal/html/canvas/drawElementImage/get-element-transform.html",
+      "wpt_internal/html/canvas/drawElementImage/draw-element-image-returned-matrix.html"
     ],
     "exclusive_tests": [
       "fast/hidpi/static"
@@ -2949,6 +2840,9 @@
       "external/wpt/element-timing",
       "external/wpt/css/filter-effects",
       "external/wpt/css/css-grid/animation",
+      "external/wpt/css/css-sizing/responsive-iframe/responsive-iframe.tentative.html",
+      "external/wpt/css/css-sizing/responsive-iframe/responsive-iframe-dom-content-loaded.tentative.html",
+      "external/wpt/css/css-sizing/responsive-iframe/responsive-iframe-fallback.tentative.html",
       "external/wpt/css/printing",
       "external/wpt/largest-contentful-paint",
       "fast/forms/file/file-appearance-no-default-width.html",
@@ -2957,7 +2851,13 @@
       "http/tests/inspector-protocol/page/page-captureScreenshot-clip-emulation.js",
       "inspector-protocol/emulation/device-emulation-no-size.js",
       "external/wpt/css/css-ui/caret-shape-block-zoom.html",
-      "external/wpt/css/css-ui/caret-shape-block-color-001.html"
+      "external/wpt/css/css-ui/caret-shape-block-color-001.html",
+      "wpt_internal/html/canvas/drawElementImage/ink-overflow.html",
+      "wpt_internal/html/canvas/drawElementImage/scale.html",
+      "wpt_internal/html/canvas/drawElementImage/webgl-css-transform-on-div.html",
+      "wpt_internal/html/canvas/drawElementImage/webgl-scaling.html",
+      "wpt_internal/html/canvas/drawElementImage/get-element-transform.html",
+      "wpt_internal/html/canvas/drawElementImage/draw-element-image-returned-matrix.html"
     ],
     "exclusive_tests": [
       "fast/hidpi/static"
@@ -2978,6 +2878,7 @@
       "Win"
     ],
     "bases": [
+      "external/wpt/cookies/origin-bound-cookies/scheme-bound-cookies.https.html",
       "http/tests/inspector-protocol/issues/scheme-mismatch-exclusion.js",
       "http/tests/inspector-protocol/network/blocked-cookie-scheme-mismatch.js"
     ],
@@ -2991,21 +2892,21 @@
     ]
   },
   {
-    "prefix": "scoped-custom-element-registry-disabled",
+    "prefix": "scoped-custom-element-registry",
     "owners": [
       "masonf@chromium.org",
-      "tgivens@microsoft.com"
+      "tgivens@microsoft.com",
+      "jaysonchen@microsoft.com"
     ],
     "platforms": [
       "Linux",
-      "Mac",
       "Win"
     ],
     "bases": [
-      "external/wpt/custom-elements/registries/"
+      "external/wpt/custom-elements/"
     ],
     "args": [
-      "--disable-blink-features=ScopedCustomElementRegistry"
+      "--enable-blink-features=ScopedCustomElementRegistry"
     ],
     "expires": "Jun 1, 2026"
   },
@@ -3020,7 +2921,14 @@
       "external/wpt/audio-output",
       "external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/setSinkId-with-MediaElementAudioSourceNode.https.html"
     ],
-    "exclusive_tests": "ALL",
+    "exclusive_tests": [
+      "external/wpt/audio-output/enumerateDevices-with-selectAudioOutput.https.html",
+      "external/wpt/audio-output/removeTrack-after-setSinkId.https.html",
+      "external/wpt/audio-output/selectAudioOutput-permissions-policy.https.sub.html",
+      "external/wpt/audio-output/selectAudioOutput-sans-user-activation.https.html",
+      "external/wpt/audio-output/setSinkId-with-selectAudioOutput.https.html",
+      "external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/setSinkId-with-MediaElementAudioSourceNode.https.html"
+    ],
     "args": [
       "--enable-features=SelectAudioOutput"
     ],
@@ -3028,65 +2936,7 @@
       "agpalak@chromium.org",
       "guidou@chromium.org"
     ],
-    "expires": "Nov 11, 2025"
-  },
-  "select-parser-relaxation is needed in addition to",
-  "customizable-select-disabled because we might launch parser changes first.",
-  {
-    "prefix": "select-parser-relaxation",
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [
-      "accessibility/native-select-activedescendant.html",
-      "accessibility/role-attribute.html",
-      "fast/events/select-element.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-native-computed-style.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-native-horizontal.optional.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-native-vertical.optional.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-none-horizontal.optional.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-none-vertical-lr.optional.html",
-      "external/wpt/css/css-writing-modes/forms/select-appearance-none-vertical-rl.optional.html",
-      "external/wpt/html/infrastructure/common-dom-interfaces/collections/htmloptionscollection.html",
-      "external/wpt/html/semantics/forms/the-select-element",
-      "external/wpt/html/syntax/parsing",
-      "fast/forms/color-scheme/select",
-      "fast/forms/select",
-      "fast/forms/select-popup",
-      "fast/parser/inselect-tokenization.html",
-      "html5lib/generated"
-    ],
-    "args": [
-      "--enable-features=SelectParserRelaxation",
-      "--disable-features=CustomizableSelect"
-    ],
-    "expires": "Oct 1, 2025",
-    "owners": [
-      "jarhar@chromium.org",
-      "dom-dev@google.com"
-    ]
-  },
-  "This verifies that the origin trial opt-out for select-parser-relaxation",
-  "works, even when other flags are explicitly enabled. Note that there are a",
-  "number of other flags that have `depends_on` SelectParserRelaxation. All",
-  "should be manually enabled in this virtual suite.",
-  {
-    "prefix": "select-parser-relaxation-opt-out",
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [
-      "external/wpt/html/semantics/forms/the-select-element",
-      "external/wpt/html/syntax/parsing"
-    ],
-    "args": [
-      "--enable-features=SelectParserRelaxationOptOut,SelectParserRelaxation,CustomizableSelect,SelectListBoxSlotAnything,InputClosesSelect"
-    ],
-    "expires": "Oct 1, 2025",
-    "owners": [
-      "masonf@chromium.org",
-      "dom-dev@google.com"
-    ]
+    "expires": "Nov 11, 2026"
   },
   {
     "prefix": "shadow-realm-enabled",
@@ -3096,90 +2946,102 @@
       "Win"
     ],
     "bases": [
-      "external/wpt/compression/compression-bad-chunks.tentative.any.shadowrealm-in-dedicatedworker.html",
-      "external/wpt/compression/compression-bad-chunks.tentative.any.shadowrealm-in-shadowrealm.html",
-      "external/wpt/compression/compression-bad-chunks.tentative.any.shadowrealm-in-sharedworker.html",
-      "external/wpt/compression/compression-bad-chunks.tentative.any.shadowrealm-in-window.html",
-      "external/wpt/compression/compression-bad-chunks.tentative.https.any.shadowrealm-in-audioworklet.html",
-      "external/wpt/compression/compression-bad-chunks.tentative.https.any.shadowrealm-in-serviceworker.html",
-      "external/wpt/compression/compression-constructor-error.tentative.any.shadowrealm-in-dedicatedworker.html",
-      "external/wpt/compression/compression-constructor-error.tentative.any.shadowrealm-in-shadowrealm.html",
-      "external/wpt/compression/compression-constructor-error.tentative.any.shadowrealm-in-sharedworker.html",
-      "external/wpt/compression/compression-constructor-error.tentative.any.shadowrealm-in-window.html",
-      "external/wpt/compression/compression-constructor-error.tentative.https.any.shadowrealm-in-audioworklet.html",
-      "external/wpt/compression/compression-constructor-error.tentative.https.any.shadowrealm-in-serviceworker.html",
-      "external/wpt/compression/compression-including-empty-chunk.tentative.any.shadowrealm-in-dedicatedworker.html",
-      "external/wpt/compression/compression-including-empty-chunk.tentative.any.shadowrealm-in-shadowrealm.html",
-      "external/wpt/compression/compression-including-empty-chunk.tentative.any.shadowrealm-in-sharedworker.html",
-      "external/wpt/compression/compression-including-empty-chunk.tentative.any.shadowrealm-in-window.html",
-      "external/wpt/compression/compression-including-empty-chunk.tentative.https.any.shadowrealm-in-audioworklet.html",
-      "external/wpt/compression/compression-including-empty-chunk.tentative.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/compression/compression-bad-chunks.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/compression/compression-bad-chunks.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/compression/compression-bad-chunks.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/compression/compression-bad-chunks.any.shadowrealm-in-window.html",
+      "external/wpt/compression/compression-bad-chunks.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/compression/compression-bad-chunks.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/compression/compression-constructor-error.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/compression/compression-constructor-error.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/compression/compression-constructor-error.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/compression/compression-constructor-error.any.shadowrealm-in-window.html",
+      "external/wpt/compression/compression-constructor-error.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/compression/compression-constructor-error.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/compression/compression-including-empty-chunk.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/compression/compression-including-empty-chunk.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/compression/compression-including-empty-chunk.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/compression/compression-including-empty-chunk.any.shadowrealm-in-window.html",
+      "external/wpt/compression/compression-including-empty-chunk.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/compression/compression-including-empty-chunk.https.any.shadowrealm-in-serviceworker.html",
       "external/wpt/compression/compression-large-flush-output.any.shadowrealm-in-dedicatedworker.html",
       "external/wpt/compression/compression-large-flush-output.any.shadowrealm-in-shadowrealm.html",
       "external/wpt/compression/compression-large-flush-output.any.shadowrealm-in-sharedworker.html",
       "external/wpt/compression/compression-large-flush-output.any.shadowrealm-in-window.html",
       "external/wpt/compression/compression-large-flush-output.https.any.shadowrealm-in-audioworklet.html",
       "external/wpt/compression/compression-large-flush-output.https.any.shadowrealm-in-serviceworker.html",
-      "external/wpt/compression/compression-multiple-chunks.tentative.any.shadowrealm-in-dedicatedworker.html",
-      "external/wpt/compression/compression-multiple-chunks.tentative.any.shadowrealm-in-shadowrealm.html",
-      "external/wpt/compression/compression-multiple-chunks.tentative.any.shadowrealm-in-sharedworker.html",
-      "external/wpt/compression/compression-multiple-chunks.tentative.any.shadowrealm-in-window.html",
-      "external/wpt/compression/compression-multiple-chunks.tentative.https.any.shadowrealm-in-audioworklet.html",
-      "external/wpt/compression/compression-multiple-chunks.tentative.https.any.shadowrealm-in-serviceworker.html",
-      "external/wpt/compression/compression-output-length.tentative.any.shadowrealm-in-dedicatedworker.html",
-      "external/wpt/compression/compression-output-length.tentative.any.shadowrealm-in-shadowrealm.html",
-      "external/wpt/compression/compression-output-length.tentative.any.shadowrealm-in-sharedworker.html",
-      "external/wpt/compression/compression-output-length.tentative.any.shadowrealm-in-window.html",
-      "external/wpt/compression/compression-output-length.tentative.https.any.shadowrealm-in-audioworklet.html",
-      "external/wpt/compression/compression-output-length.tentative.https.any.shadowrealm-in-serviceworker.html",
-      "external/wpt/compression/compression-stream.tentative.any.shadowrealm-in-dedicatedworker.html",
-      "external/wpt/compression/compression-stream.tentative.any.shadowrealm-in-shadowrealm.html",
-      "external/wpt/compression/compression-stream.tentative.any.shadowrealm-in-sharedworker.html",
-      "external/wpt/compression/compression-stream.tentative.any.shadowrealm-in-window.html",
-      "external/wpt/compression/compression-stream.tentative.https.any.shadowrealm-in-audioworklet.html",
-      "external/wpt/compression/compression-stream.tentative.https.any.shadowrealm-in-serviceworker.html",
-      "external/wpt/compression/decompression-bad-chunks.tentative.any.shadowrealm-in-dedicatedworker.html",
-      "external/wpt/compression/decompression-bad-chunks.tentative.any.shadowrealm-in-shadowrealm.html",
-      "external/wpt/compression/decompression-bad-chunks.tentative.any.shadowrealm-in-sharedworker.html",
-      "external/wpt/compression/decompression-bad-chunks.tentative.any.shadowrealm-in-window.html",
-      "external/wpt/compression/decompression-bad-chunks.tentative.https.any.shadowrealm-in-audioworklet.html",
-      "external/wpt/compression/decompression-bad-chunks.tentative.https.any.shadowrealm-in-serviceworker.html",
-      "external/wpt/compression/decompression-buffersource.tentative.any.shadowrealm-in-dedicatedworker.html",
-      "external/wpt/compression/decompression-buffersource.tentative.any.shadowrealm-in-shadowrealm.html",
-      "external/wpt/compression/decompression-buffersource.tentative.any.shadowrealm-in-sharedworker.html",
-      "external/wpt/compression/decompression-buffersource.tentative.any.shadowrealm-in-window.html",
-      "external/wpt/compression/decompression-buffersource.tentative.https.any.shadowrealm-in-audioworklet.html",
-      "external/wpt/compression/decompression-buffersource.tentative.https.any.shadowrealm-in-serviceworker.html",
-      "external/wpt/compression/decompression-constructor-error.tentative.any.shadowrealm-in-dedicatedworker.html",
-      "external/wpt/compression/decompression-constructor-error.tentative.any.shadowrealm-in-shadowrealm.html",
-      "external/wpt/compression/decompression-constructor-error.tentative.any.shadowrealm-in-sharedworker.html",
-      "external/wpt/compression/decompression-constructor-error.tentative.any.shadowrealm-in-window.html",
-      "external/wpt/compression/decompression-constructor-error.tentative.https.any.shadowrealm-in-audioworklet.html",
-      "external/wpt/compression/decompression-constructor-error.tentative.https.any.shadowrealm-in-serviceworker.html",
-      "external/wpt/compression/decompression-correct-input.tentative.any.shadowrealm-in-dedicatedworker.html",
-      "external/wpt/compression/decompression-correct-input.tentative.any.shadowrealm-in-shadowrealm.html",
-      "external/wpt/compression/decompression-correct-input.tentative.any.shadowrealm-in-sharedworker.html",
-      "external/wpt/compression/decompression-correct-input.tentative.any.shadowrealm-in-window.html",
-      "external/wpt/compression/decompression-correct-input.tentative.https.any.shadowrealm-in-audioworklet.html",
-      "external/wpt/compression/decompression-correct-input.tentative.https.any.shadowrealm-in-serviceworker.html",
-      "external/wpt/compression/decompression-empty-input.tentative.any.shadowrealm-in-dedicatedworker.html",
-      "external/wpt/compression/decompression-empty-input.tentative.any.shadowrealm-in-shadowrealm.html",
-      "external/wpt/compression/decompression-empty-input.tentative.any.shadowrealm-in-sharedworker.html",
-      "external/wpt/compression/decompression-empty-input.tentative.any.shadowrealm-in-window.html",
-      "external/wpt/compression/decompression-empty-input.tentative.https.any.shadowrealm-in-audioworklet.html",
-      "external/wpt/compression/decompression-empty-input.tentative.https.any.shadowrealm-in-serviceworker.html",
-      "external/wpt/compression/decompression-split-chunk.tentative.any.shadowrealm-in-dedicatedworker.html",
-      "external/wpt/compression/decompression-split-chunk.tentative.any.shadowrealm-in-shadowrealm.html",
-      "external/wpt/compression/decompression-split-chunk.tentative.any.shadowrealm-in-sharedworker.html",
-      "external/wpt/compression/decompression-split-chunk.tentative.any.shadowrealm-in-window.html",
-      "external/wpt/compression/decompression-split-chunk.tentative.https.any.shadowrealm-in-audioworklet.html",
-      "external/wpt/compression/decompression-split-chunk.tentative.https.any.shadowrealm-in-serviceworker.html",
-      "external/wpt/compression/decompression-uint8array-output.tentative.any.shadowrealm-in-dedicatedworker.html",
-      "external/wpt/compression/decompression-uint8array-output.tentative.any.shadowrealm-in-shadowrealm.html",
-      "external/wpt/compression/decompression-uint8array-output.tentative.any.shadowrealm-in-sharedworker.html",
-      "external/wpt/compression/decompression-uint8array-output.tentative.any.shadowrealm-in-window.html",
-      "external/wpt/compression/decompression-uint8array-output.tentative.https.any.shadowrealm-in-audioworklet.html",
-      "external/wpt/compression/decompression-uint8array-output.tentative.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/compression/compression-multiple-chunks.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/compression/compression-multiple-chunks.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/compression/compression-multiple-chunks.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/compression/compression-multiple-chunks.any.shadowrealm-in-window.html",
+      "external/wpt/compression/compression-multiple-chunks.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/compression/compression-multiple-chunks.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/compression/compression-output-length.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/compression/compression-output-length.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/compression/compression-output-length.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/compression/compression-output-length.any.shadowrealm-in-window.html",
+      "external/wpt/compression/compression-output-length.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/compression/compression-output-length.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/compression/compression-stream.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/compression/compression-stream.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/compression/compression-stream.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/compression/compression-stream.any.shadowrealm-in-window.html",
+      "external/wpt/compression/compression-stream.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/compression/compression-stream.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/compression/decompression-bad-chunks.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/compression/decompression-bad-chunks.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/compression/decompression-bad-chunks.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/compression/decompression-bad-chunks.any.shadowrealm-in-window.html",
+      "external/wpt/compression/decompression-bad-chunks.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/compression/decompression-bad-chunks.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/compression/decompression-buffersource.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/compression/decompression-buffersource.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/compression/decompression-buffersource.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/compression/decompression-buffersource.any.shadowrealm-in-window.html",
+      "external/wpt/compression/decompression-buffersource.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/compression/decompression-buffersource.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/compression/decompression-constructor-error.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/compression/decompression-constructor-error.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/compression/decompression-constructor-error.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/compression/decompression-constructor-error.any.shadowrealm-in-window.html",
+      "external/wpt/compression/decompression-constructor-error.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/compression/decompression-constructor-error.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/compression/decompression-correct-input.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/compression/decompression-correct-input.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/compression/decompression-correct-input.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/compression/decompression-correct-input.any.shadowrealm-in-window.html",
+      "external/wpt/compression/decompression-correct-input.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/compression/decompression-correct-input.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/compression/decompression-corrupt-input.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/compression/decompression-corrupt-input.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/compression/decompression-corrupt-input.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/compression/decompression-corrupt-input.any.shadowrealm-in-window.html",
+      "external/wpt/compression/decompression-corrupt-input.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/compression/decompression-corrupt-input.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/compression/decompression-empty-input.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/compression/decompression-empty-input.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/compression/decompression-empty-input.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/compression/decompression-empty-input.any.shadowrealm-in-window.html",
+      "external/wpt/compression/decompression-empty-input.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/compression/decompression-empty-input.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/compression/decompression-extra-input.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/compression/decompression-extra-input.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/compression/decompression-extra-input.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/compression/decompression-extra-input.any.shadowrealm-in-window.html",
+      "external/wpt/compression/decompression-extra-input.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/compression/decompression-extra-input.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/compression/decompression-split-chunk.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/compression/decompression-split-chunk.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/compression/decompression-split-chunk.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/compression/decompression-split-chunk.any.shadowrealm-in-window.html",
+      "external/wpt/compression/decompression-split-chunk.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/compression/decompression-split-chunk.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/compression/decompression-uint8array-output.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/compression/decompression-uint8array-output.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/compression/decompression-uint8array-output.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/compression/decompression-uint8array-output.any.shadowrealm-in-window.html",
+      "external/wpt/compression/decompression-uint8array-output.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/compression/decompression-uint8array-output.https.any.shadowrealm-in-serviceworker.html",
       "external/wpt/compression/idlharness.https.any.shadowrealm-in-window.html",
       "external/wpt/console/console-is-a-namespace.any.shadowrealm-in-dedicatedworker.html",
       "external/wpt/console/console-is-a-namespace.any.shadowrealm-in-shadowrealm.html",
@@ -3792,6 +3654,78 @@
       "external/wpt/wasm/jsapi/constructor/validate.any.shadowrealm-in-window.html",
       "external/wpt/wasm/jsapi/constructor/validate.https.any.shadowrealm-in-audioworklet.html",
       "external/wpt/wasm/jsapi/constructor/validate.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/exports.tentative.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/exports.tentative.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/wasm/jsapi/esm-integration/exports.tentative.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/exports.tentative.any.shadowrealm-in-window.html",
+      "external/wpt/wasm/jsapi/esm-integration/exports.tentative.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/wasm/jsapi/esm-integration/exports.tentative.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/global-exports-live-bindings.tentative.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/global-exports-live-bindings.tentative.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/wasm/jsapi/esm-integration/global-exports-live-bindings.tentative.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/global-exports-live-bindings.tentative.any.shadowrealm-in-window.html",
+      "external/wpt/wasm/jsapi/esm-integration/global-exports-live-bindings.tentative.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/wasm/jsapi/esm-integration/global-exports-live-bindings.tentative.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/global-exports.tentative.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/global-exports.tentative.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/wasm/jsapi/esm-integration/global-exports.tentative.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/global-exports.tentative.any.shadowrealm-in-window.html",
+      "external/wpt/wasm/jsapi/esm-integration/global-exports.tentative.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/wasm/jsapi/esm-integration/global-exports.tentative.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/js-wasm-cycle.tentative.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/js-wasm-cycle.tentative.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/wasm/jsapi/esm-integration/js-wasm-cycle.tentative.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/js-wasm-cycle.tentative.any.shadowrealm-in-window.html",
+      "external/wpt/wasm/jsapi/esm-integration/js-wasm-cycle.tentative.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/wasm/jsapi/esm-integration/js-wasm-cycle.tentative.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/mutable-global-sharing.tentative.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/mutable-global-sharing.tentative.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/wasm/jsapi/esm-integration/mutable-global-sharing.tentative.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/mutable-global-sharing.tentative.any.shadowrealm-in-window.html",
+      "external/wpt/wasm/jsapi/esm-integration/mutable-global-sharing.tentative.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/wasm/jsapi/esm-integration/mutable-global-sharing.tentative.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/namespace-instance.tentative.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/namespace-instance.tentative.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/wasm/jsapi/esm-integration/namespace-instance.tentative.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/namespace-instance.tentative.any.shadowrealm-in-window.html",
+      "external/wpt/wasm/jsapi/esm-integration/namespace-instance.tentative.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/wasm/jsapi/esm-integration/namespace-instance.tentative.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/resolve-export.tentative.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/resolve-export.tentative.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/wasm/jsapi/esm-integration/resolve-export.tentative.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/resolve-export.tentative.any.shadowrealm-in-window.html",
+      "external/wpt/wasm/jsapi/esm-integration/resolve-export.tentative.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/wasm/jsapi/esm-integration/resolve-export.tentative.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/source-phase-string-builtins.tentative.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/source-phase-string-builtins.tentative.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/wasm/jsapi/esm-integration/source-phase-string-builtins.tentative.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/source-phase-string-builtins.tentative.any.shadowrealm-in-window.html",
+      "external/wpt/wasm/jsapi/esm-integration/source-phase-string-builtins.tentative.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/wasm/jsapi/esm-integration/source-phase-string-builtins.tentative.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/source-phase.tentative.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/source-phase.tentative.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/wasm/jsapi/esm-integration/source-phase.tentative.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/source-phase.tentative.any.shadowrealm-in-window.html",
+      "external/wpt/wasm/jsapi/esm-integration/source-phase.tentative.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/wasm/jsapi/esm-integration/source-phase.tentative.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/string-builtins.tentative.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/string-builtins.tentative.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/wasm/jsapi/esm-integration/string-builtins.tentative.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/string-builtins.tentative.any.shadowrealm-in-window.html",
+      "external/wpt/wasm/jsapi/esm-integration/string-builtins.tentative.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/wasm/jsapi/esm-integration/string-builtins.tentative.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/v128-tdz.tentative.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/v128-tdz.tentative.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/wasm/jsapi/esm-integration/v128-tdz.tentative.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/v128-tdz.tentative.any.shadowrealm-in-window.html",
+      "external/wpt/wasm/jsapi/esm-integration/v128-tdz.tentative.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/wasm/jsapi/esm-integration/v128-tdz.tentative.https.any.shadowrealm-in-serviceworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/wasm-import-wasm-export.tentative.any.shadowrealm-in-dedicatedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/wasm-import-wasm-export.tentative.any.shadowrealm-in-shadowrealm.html",
+      "external/wpt/wasm/jsapi/esm-integration/wasm-import-wasm-export.tentative.any.shadowrealm-in-sharedworker.html",
+      "external/wpt/wasm/jsapi/esm-integration/wasm-import-wasm-export.tentative.any.shadowrealm-in-window.html",
+      "external/wpt/wasm/jsapi/esm-integration/wasm-import-wasm-export.tentative.https.any.shadowrealm-in-audioworklet.html",
+      "external/wpt/wasm/jsapi/esm-integration/wasm-import-wasm-export.tentative.https.any.shadowrealm-in-serviceworker.html",
       "external/wpt/wasm/jsapi/exception/basic.tentative.any.shadowrealm-in-dedicatedworker.html",
       "external/wpt/wasm/jsapi/exception/basic.tentative.any.shadowrealm-in-shadowrealm.html",
       "external/wpt/wasm/jsapi/exception/basic.tentative.any.shadowrealm-in-sharedworker.html",
@@ -4116,7 +4050,7 @@
     "args": [
       "--enable-features=SharedStorageAPI,SharedStorageWebLocks,InterestGroupsInSharedStorageWorklet,Fledge,AdInterestGroupAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode,SharedStorageAPIEnableWALForDatabase,FencedFramesEnforceFocus,FencedFramesReportEventHeaderChanges,SharedStorageSelectURLSavedQueries,SharedStorageCreateWorkletCustomDataOrigin,SharedStorageTransactionalBatchUpdate"
     ],
-    "expires": "Oct 31, 2025"
+    "expires": "May 31, 2026"
   },
   {
     "prefix": "shared-storage-selecturl-limit",
@@ -4138,7 +4072,7 @@
     "args": [
       "--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges,FencedFramesDefaultMode,FencedFramesEnforceFocus,PrivacySandboxAdsAPIsOverride,SharedStorageSelectURLLimit:SharedStorageSelectURLBitBudgetPerPageLoad/6/SharedStorageSelectURLBitBudgetPerSitePerPageLoad/3,SharedStorageAPIEnableWALForDatabase,SharedStorageSelectURLSavedQueries,SharedStorageCreateWorkletCustomDataOrigin"
     ],
-    "expires": "Oct 31, 2025"
+    "expires": "May 31, 2026"
   },
   {
     "prefix": "shared_array_buffer_on_desktop",
@@ -4204,33 +4138,18 @@
     "expires": "Jul 1, 2026"
   },
   {
-    "prefix": "soft-navigation-heuristics-pre-paint-attribution",
-    "owners": ["shaseley@google.com", "mmocny@google.com"],
-    "platforms": ["Linux"],
-    "bases": [
-      "external/wpt/soft-navigation-heuristics/"
-    ],
-    "args": [
-      "--enable-features=SoftNavigationDetectionPrePaintBasedAttribution"
-    ],
-    "expires": "Dec 1, 2025"
-  },
-  {
-    "prefix": "speculation-rules-prerender-target-hint",
+    "prefix": "speculation-rules-prerender-cross-origin-iframes",
     "platforms": [
       "Linux",
       "Mac",
       "Win"
     ],
     "bases": [
-      "external/wpt/speculation-rules/prerender",
-      "http/tests/inspector-protocol/prerender/prerender-failure-status-update-with-target-hint.js",
-      "http/tests/inspector-protocol/prerender/prerender-status-update-with-target-hint.js"
+      "external/wpt/speculation-rules/prerender/cross-origin-iframe-prerender.https.html"
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=SharedStorageAPI,PrivacySandboxAdsAPIsOverride,Prerender2AllowActivationInBackground,LCPTimingPredictorPrerender2",
-      "--disable-features=KeepAliveInBrowserMigration,Prerender2FallbackPrefetchSpecRules"
+      "--enable-features=Prerender2CrossOriginIframes"
     ],
     "owners": [
       "nhiroki@chromium.org",
@@ -4305,24 +4224,6 @@
       "jkarlin@chromium.org"
     ]
   },
-  {
-    "prefix": "sri-message-signatures",
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [
-      "external/wpt/subresource-integrity/signatures/tentative/server-initiated.window.html",
-      "http/tests/inspector-protocol/issues/sri-message-signatures/"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=SRIMessageSignatureEnforcement"
-    ],
-    "owners": [
-      "mkwst@chromium.org"
-    ],
-    "expires": "May 1, 2025"
-  },
   "The stable suite tests for conformance to HTML/web specifications, and",
   "detects unintentional changes to web exposed surface, so should not expire.",
   "Owners are part of third_party/blink/API_OWNERS.",
@@ -4362,33 +4263,12 @@
     "expires": "never"
   },
   {
-    "prefix": "static-routing-api",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/service-workers/service-worker/tentative/static-router",
-      "http/tests/inspector-protocol/service-worker/tentative/static-router"
-    ],
-    "args": [
-      "--enable-features=ServiceWorkerStaticRouterTimingInfo"
-    ],
-    "expires": "Dec 5, 2025",
-    "owners": [
-      "suzukikeita@chromium.org",
-      "yyanagisawa@chromium.org",
-      "sisidovski@chromium.org"
-    ]
-  },
-  {
     "prefix": "enable-shared-worker-bfcache",
     "owners": ["annasato@chromium.org"],
     "platforms": ["Mac", "Win", "Linux"],
     "bases": [
-      "wpt_internal/shared-worker/back-forward-cache/shared-worker-allows-bfcache.window.js",
-      "wpt_internal/shared-worker/back-forward-cache/shared-worker-evict-on-message.window.js"
+      "wpt_internal/shared-worker/back-forward-cache/shared-worker-client-postmessage-transferred-port.window.js",
+      "wpt_internal/shared-worker/back-forward-cache/shared-worker-client-postmessage.window.js"
     ],
     "exclusive_tests": "ALL",
     "args": [
@@ -4487,6 +4367,26 @@
       "--text-gamma=0.0"
     ],
     "expires": "Jan 1, 2026"
+  },
+  {
+    "prefix": "text-autosizing",
+    "owners": [
+      "dgrogan@chromium.org"
+    ],
+    "platforms": [
+      "Linux"
+    ],
+    "bases": [
+      "fast/text-autosizing",
+      "http/tests/devtools/text-autosizing-override.js",
+      "http/tests/text-autosizing/narrow-iframe.html",
+      "http/tests/text-autosizing/wide-iframe.html"
+    ],
+    "args": [
+      "--disable-features=ForceOffTextAutosizing"
+    ],
+    "exclusive_tests": "ALL",
+    "expires": "June 1, 2026"
   },
   {
     "prefix": "text-contrast-gamma",
@@ -4642,6 +4542,12 @@
       "compositing/visibility",
       "compositing/webgl",
       "external/wpt/animation-worklet",
+      "external/wpt/css/css-anchor-position/transform-010.html",
+      "external/wpt/css/css-anchor-position/transform-011.html",
+      "external/wpt/css/css-anchor-position/transform-012.html",
+      "external/wpt/css/css-anchor-position/transform-013.html",
+      "external/wpt/css/css-anchor-position/transform-014.html",
+      "external/wpt/css/css-anchor-position/transform-015.html",
       "external/wpt/css/css-backgrounds",
       "external/wpt/css/css-view-transitions",
       "external/wpt/css/css-overflow/scroll-markers-updated-by-programmatic-scroll.html",
@@ -4651,7 +4557,9 @@
       "external/wpt/fetch/compression-dictionary/dictionary-fetch-with-link-header.tentative.https.html",
       "external/wpt/html/canvas/offscreen/manual/convert-to-blob",
       "external/wpt/html/semantics/embedded-content/the-img-element/decode",
-      "external/wpt/long-animation-frame/tentative",
+      "external/wpt/intersection-observer/animating.html",
+      "external/wpt/intersection-observer/v2/animated-opacity.html",
+      "external/wpt/long-animation-frame",
       "external/wpt/permissions-policy/experimental-features",
       "external/wpt/requestidlecallback",
       "external/wpt/scheduler/tentative/yield/yield-priority-idle-callbacks.html",
@@ -4668,8 +4576,19 @@
       "synthetic_gestures",
       "transitions",
       "view-transition",
+      "wpt_internal/html/script-execution",
       "wpt_internal/scheduler/integration_tests",
-      "wpt_internal/view-transition"
+      "wpt_internal/view-transition",
+      "external/wpt/trusted-types/navigate-to-javascript-url-001.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-002.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-003.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-004.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-005.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-006.sub.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-007-crash.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-csp-headers.html",
+      "external/wpt/trusted-types/trusted-types-navigation.html",
+      "external/wpt/trusted-types/trusted-types-reporting.html"
     ],
     "exclusive_tests": [
       "external/wpt/feature-policy/experimental-features/vertical-scroll-touch-block-manual.tentative.html",
@@ -4680,6 +4599,7 @@
       "external/wpt/scheduler/tentative/yield/yield-priority-idle-callbacks.html",
       "http/tests/devtools/isolated-code-cache",
       "external/wpt/css/css-view-transitions",
+      "wpt_internal/html/script-execution",
       "wpt_internal/scheduler/integration_tests",
       "wpt_internal/view-transition",
       "view-transition",
@@ -4687,7 +4607,17 @@
       "inspector-protocol/css/css-view-transition-set-style-text.js",
       "inspector-protocol/css/css-get-keyframes-for-view-transitions.js",
       "inspector-protocol/dom/dom-get-dom-for-view-transition.js",
-      "external/wpt/soft-navigation-heuristics/navigation-api-view-transition.tentative.html"
+      "external/wpt/soft-navigation-heuristics/navigation-api-view-transition.tentative.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-001.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-002.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-003.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-004.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-005.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-006.sub.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-007-crash.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-csp-headers.html",
+      "external/wpt/trusted-types/trusted-types-navigation.html",
+      "external/wpt/trusted-types/trusted-types-reporting.html"
     ],
     "args": [
       "--disable-features=DeprecateUnload",
@@ -4813,6 +4743,22 @@
     "expires": "Jul 1, 2023"
   },
   {
+    "prefix": "usermedia-disabled",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [],
+    "args": [
+      "--disable-features=UserMediaElement"
+    ],
+    "owners": [
+      "permissions-core@google.com"
+    ],
+    "expires": "never"
+  },
+  {
     "prefix": "unload-allowed",
     "platforms": [
       "Linux",
@@ -4861,6 +4807,8 @@
       "external/wpt/html/webappapis/scripting/events/event-handler-attributes-body-window.html",
       "external/wpt/html/webappapis/scripting/events/event-handler-attributes-frameset-window.html",
       "external/wpt/html/webappapis/scripting/events/event-handler-attributes-windowless-body.html",
+      "external/wpt/navigation-api/ordering-and-transition/back-cross-document-event-order.html",
+      "external/wpt/navigation-api/ordering-and-transition/navigate-cross-document-event-order.html",
       "external/wpt/navigation-timing/nested-unload-timing.html",
       "external/wpt/permissions-policy/experimental-features/unload-allowed-by-default.tentative.window.js",
       "external/wpt/permissions-policy/experimental-features/unload-disallowed-subframe.tentative.window.js",
@@ -4871,6 +4819,17 @@
     ],
     "args": [
       "--disable-features=DeprecateUnload"
+    ],
+    "exclusive_tests": [
+      "external/wpt/html/browsers/browsing-the-web/unloading-documents/001.html",
+      "external/wpt/html/browsers/browsing-the-web/unloading-documents/002.html",
+      "external/wpt/html/browsers/browsing-the-web/unloading-documents/003.html",
+      "external/wpt/html/browsers/browsing-the-web/unloading-documents/004.html",
+      "external/wpt/html/browsers/browsing-the-web/unloading-documents/005.html",
+      "external/wpt/html/browsers/browsing-the-web/unloading-documents/unload/004.html",
+      "external/wpt/html/browsers/browsing-the-web/unloading-documents/unload/007.html",
+      "external/wpt/html/browsers/browsing-the-web/unloading-documents/unload/unload-main-frame-same-origin.window.js",
+      "external/wpt/html/browsers/browsing-the-web/unloading-documents/unload/unload-main-frame-cross-origin.window.js"
     ],
     "expires": "Jun 1, 2026",
     "owners": [
@@ -5090,6 +5049,7 @@
       "external/wpt/webnn/conformance_tests/arg_min_max.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/averagePool2d.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/batch_normalization.https.any.html?cpu",
+      "external/wpt/webnn/conformance_tests/batch_normalization_constant.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/byob_readtensor.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/byob_readtensor.https.any.serviceworker.html?cpu",
       "external/wpt/webnn/conformance_tests/byob_readtensor.https.any.sharedworker.html?cpu",
@@ -5133,6 +5093,8 @@
       "external/wpt/webnn/conformance_tests/inputs-are-not-modified.https.any.worker.html?cpu",
       "external/wpt/webnn/conformance_tests/inputs-with-special-names.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/instance_normalization.https.any.html?cpu",
+      "external/wpt/webnn/conformance_tests/is_nan.https.any.html?cpu",
+      "external/wpt/webnn/conformance_tests/is_infinite.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/l2Pool2d.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/layer_normalization.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/leaky_relu.https.any.html?cpu",
@@ -5150,6 +5112,7 @@
       "external/wpt/webnn/conformance_tests/max.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/maxPool2d.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/min.https.any.html?cpu",
+      "external/wpt/webnn/conformance_tests/mlNumber.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/mul.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/neg.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/not_equal.https.any.html?cpu",
@@ -5180,6 +5143,7 @@
       "external/wpt/webnn/conformance_tests/resample2d.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/reshape.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/reverse.https.any.html?cpu",
+      "external/wpt/webnn/conformance_tests/round_even.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/scalars.https.any.html?cpu",
       "external/wpt/webnn/conformance_tests/scalars.https.any.serviceworker.html?cpu",
       "external/wpt/webnn/conformance_tests/scalars.https.any.sharedworker.html?cpu",
@@ -5263,6 +5227,8 @@
       "external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?op=logicalOr&device=cpu",
       "external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?op=logicalXor&device=cpu",
       "external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?op=logicalNot&device=cpu",
+      "external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?op=isNaN&device=cpu",
+      "external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?op=isInfinite&device=cpu",
       "external/wpt/webnn/validation_tests/elementwise-unary.https.any.html?cpu",
       "external/wpt/webnn/validation_tests/elu.https.any.html?cpu",
       "external/wpt/webnn/validation_tests/expand.https.any.html?cpu",
@@ -5324,7 +5290,8 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=WebMachineLearningNeuralNetwork"
+      "--enable-features=WebMachineLearningNeuralNetwork,WebNNDirectML",
+      "--disable-features=WebNNOnnxRuntime"
     ],
     "expires": "Jun 1, 2026",
     "owners": [
@@ -5352,6 +5319,7 @@
       "external/wpt/webnn/conformance_tests/arg_min_max.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/averagePool2d.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/batch_normalization.https.any.html?npu",
+      "external/wpt/webnn/conformance_tests/batch_normalization_constant.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/byob_readtensor.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/byob_readtensor.https.any.serviceworker.html?npu",
       "external/wpt/webnn/conformance_tests/byob_readtensor.https.any.sharedworker.html?npu",
@@ -5395,6 +5363,8 @@
       "external/wpt/webnn/conformance_tests/inputs-are-not-modified.https.any.worker.html?npu",
       "external/wpt/webnn/conformance_tests/inputs-with-special-names.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/instance_normalization.https.any.html?npu",
+      "external/wpt/webnn/conformance_tests/is_nan.https.any.html?npu",
+      "external/wpt/webnn/conformance_tests/is_infinite.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/l2Pool2d.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/layer_normalization.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/leaky_relu.https.any.html?npu",
@@ -5412,6 +5382,7 @@
       "external/wpt/webnn/conformance_tests/max.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/maxPool2d.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/min.https.any.html?npu",
+      "external/wpt/webnn/conformance_tests/mlNumber.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/mul.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/neg.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/not_equal.https.any.html?npu",
@@ -5442,6 +5413,7 @@
       "external/wpt/webnn/conformance_tests/resample2d.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/reshape.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/reverse.https.any.html?npu",
+      "external/wpt/webnn/conformance_tests/round_even.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/scalars.https.any.html?npu",
       "external/wpt/webnn/conformance_tests/scalars.https.any.serviceworker.html?npu",
       "external/wpt/webnn/conformance_tests/scalars.https.any.sharedworker.html?npu",
@@ -5525,6 +5497,8 @@
       "external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?op=logicalOr&device=npu",
       "external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?op=logicalXor&device=npu",
       "external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?op=logicalNot&device=npu",
+      "external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?op=isNaN&device=npu",
+      "external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?op=isInfinite&device=npu",
       "external/wpt/webnn/validation_tests/elementwise-unary.https.any.html?npu",
       "external/wpt/webnn/validation_tests/elu.https.any.html?npu",
       "external/wpt/webnn/validation_tests/expand.https.any.html?npu",
@@ -5586,7 +5560,8 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=WebMachineLearningNeuralNetwork"
+      "--enable-features=WebMachineLearningNeuralNetwork,WebNNDirectML",
+      "--disable-features=WebNNOnnxRuntime"
     ],
     "expires": "Jun 1, 2026",
     "owners": [
@@ -5605,6 +5580,7 @@
   {
     "prefix": "webnn-service-with-gpu",
     "platforms": [
+      "Linux",
       "Win",
       "Mac"
     ],
@@ -5614,6 +5590,7 @@
       "external/wpt/webnn/conformance_tests/arg_min_max.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/averagePool2d.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/batch_normalization.https.any.html?gpu",
+      "external/wpt/webnn/conformance_tests/batch_normalization_constant.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/byob_readtensor.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/byob_readtensor.https.any.serviceworker.html?gpu",
       "external/wpt/webnn/conformance_tests/byob_readtensor.https.any.sharedworker.html?gpu",
@@ -5657,6 +5634,8 @@
       "external/wpt/webnn/conformance_tests/inputs-are-not-modified.https.any.worker.html?gpu",
       "external/wpt/webnn/conformance_tests/inputs-with-special-names.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/instance_normalization.https.any.html?gpu",
+      "external/wpt/webnn/conformance_tests/is_nan.https.any.html?gpu",
+      "external/wpt/webnn/conformance_tests/is_infinite.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/l2Pool2d.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/layer_normalization.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/leaky_relu.https.any.html?gpu",
@@ -5674,6 +5653,7 @@
       "external/wpt/webnn/conformance_tests/max.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/maxPool2d.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/min.https.any.html?gpu",
+      "external/wpt/webnn/conformance_tests/mlNumber.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/mul.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/neg.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/not_equal.https.any.html?gpu",
@@ -5704,6 +5684,7 @@
       "external/wpt/webnn/conformance_tests/resample2d.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/reshape.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/reverse.https.any.html?gpu",
+      "external/wpt/webnn/conformance_tests/round_even.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/scalars.https.any.html?gpu",
       "external/wpt/webnn/conformance_tests/scalars.https.any.serviceworker.html?gpu",
       "external/wpt/webnn/conformance_tests/scalars.https.any.sharedworker.html?gpu",
@@ -5787,6 +5768,8 @@
       "external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?op=logicalOr&device=gpu",
       "external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?op=logicalXor&device=gpu",
       "external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?op=logicalNot&device=gpu",
+      "external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?op=isNaN&device=gpu",
+      "external/wpt/webnn/validation_tests/elementwise-logical.https.any.html?op=isInfinite&device=gpu",
       "external/wpt/webnn/validation_tests/elementwise-unary.https.any.html?gpu",
       "external/wpt/webnn/validation_tests/elu.https.any.html?gpu",
       "external/wpt/webnn/validation_tests/expand.https.any.html?gpu",
@@ -5849,7 +5832,8 @@
     "exclusive_tests": "ALL",
     "args": [
       "--use-gpu-in-tests",
-      "--enable-features=WebMachineLearningNeuralNetwork"
+      "--enable-features=WebMachineLearningNeuralNetwork,WebNNDirectML",
+      "--disable-features=WebNNOnnxRuntime"
     ],
     "expires": "Jun 1, 2026",
     "owners": [
@@ -5860,6 +5844,26 @@
       "phillis@chromium.org",
       "reillyg@chromium.org"
     ]
+  },
+  "Run selected WPTs with webui browser.",
+  {
+    "prefix": "webui-browser",
+    "owners": [
+      "lzhao@microsoft.com",
+      "kerenzhu@chromium.org",
+      "tluk@chromium.org"
+    ],
+    "platforms": [
+      "Linux",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/html/browsers/windows/nested-browsing-contexts/window-top.html"
+    ],
+    "args": [
+      "--enable-features=AttachUnownedInnerWebContents,Webium"
+    ],
+    "expires": "Sep 15, 2026"
   },
   {
     "prefix": "wide-gamut",
@@ -5898,6 +5902,125 @@
     "args": [
       "--enable-features=ScriptSrcHashesV1"
     ],
-    "expires": "Aug 1, 2025"
+    "expires": "Nov 1, 2025"
+  },
+  {
+    "prefix": "unrestricted-spellcheck",
+    "owners": [
+      "arichiv@chromium.org",
+      "katabolism-finch@google.com"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "editing/spelling"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--disable-features=RestrictSpellingAndGrammarHighlights"
+    ],
+    "expires": "Oct 24, 2026"
+  },
+  "Currently, XSLT is disabled on ToT for tests, via the",
+  "fieldtrial_testing_config.json file which enables the XSLTSpecialTrial",
+  "flag and disables the XSLT flag. The `xslt-enabled` virtual suite just",
+  "enables the XSLT flag, via the base::Feature, which should re-enable",
+  "XSLT. The `xslt-disabled` virtual suite just disables the XSLTSpecialTrial",
+  "flag, and leaves the main XSLT flag disabled, which should just change the",
+  "console messages, keeping XSLT disabled.",
+  {
+    "prefix": "xslt-enabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "fast/parser",
+      "fast/xsl",
+      "external/wpt/dom/xslt",
+      "http/tests/xsl",
+      "external/wpt/content-security-policy/xslt/xsltprocessor-include-blocked.html",
+      "external/wpt/fetch/metadata/xslt.https.sub.html",
+      "fast/css/dumpAsText/xml-stylesheet-pi-not-in-prolog.xml",
+      "http/tests/document-policy/resources/document-policy-in-xsl.xslt",
+      "http/tests/inspector-protocol/issues/xsltpi-issue.js",
+      "http/tests/inspector-protocol/issues/xsltprocessor-issue.js",
+      "http/tests/loading/css-no-cache-revalidation.html",
+      "http/tests/misc/xslt-bad-import.html",
+      "http/tests/permissions-policy/permissions-policy-frame-policy-in-xsl.html",
+      "http/tests/security/contentSecurityPolicy/xsl-blocked.php",
+      "http/tests/security/contentSecurityPolicy/xsl-unaffected-by-style-src-1.php",
+      "inspector-protocol/debugger/unpause-after-xslt-commit.js",
+      "loader/resources/document-updated-by-xslt.svg",
+      "svg/custom/invalid-xslt-crash.svg",
+      "xmlviewer/long-multi-byte-char.xml"
+    ],
+    "exclusive_tests": [
+      "http/tests/inspector-protocol/issues/xsltpi-issue.js",
+      "http/tests/inspector-protocol/issues/xsltprocessor-issue.js",
+      "http/tests/loading/css-no-cache-revalidation.html",
+      "http/tests/permissions-policy/permissions-policy-frame-policy-in-xsl.html"
+    ],
+    "args": ["--enable-features=XSLT"],
+    "owners": [
+      "masonf@chromium.org"
+    ],
+    "expires": "Aug 1, 2026"
+  },
+  "This suite just verifies that both XSLT-disabled flags work. The main ToT",
+  "code verifies XSLTSpecialTrial, since it is enabled via fieldtrial testing",
+  "config. This virtual suite checks XSLTSpecialTrial=false.",
+  {
+    "prefix": "xslt-disabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "fast/css/dumpAsText/xml-stylesheet-pi-not-in-prolog.xml",
+      "fast/parser",
+      "fast/xsl",
+      "external/wpt/dom/xslt",
+      "http/tests/xsl",
+      "http/tests/document-policy/resources/document-policy-in-xsl.xslt",
+      "http/tests/misc/xslt-bad-import.html",
+      "loader/resources/document-updated-by-xslt.svg",
+      "svg/custom/invalid-xslt-crash.svg",
+      "external/wpt/fetch/metadata/xslt.https.sub.html"
+    ],
+    "args": ["--disable-blink-features=XSLTSpecialTrial"],
+    "owners": [
+      "masonf@chromium.org"
+    ],
+    "expires": "Aug 1, 2026"
+  },
+  {
+    "prefix": "rust-xml",
+    "platforms": ["Linux"],
+    "bases": [
+      "fast/xmlhttprequest/",
+      "external/wpt/custom-elements/parser/parser-uses-create-an-element-for-a-token-svg.svg",
+      "external/wpt/svg/painting",
+      "http/tests/security/contentTypeOptions/xml-external-entity.xml"
+    ],
+    "args": [ "--enable-features=XMLParsingRust" ],
+    "owners": [
+      "drott@chromium.org"
+    ],
+    "expires": "Nov 1, 2026"
+  },
+  {
+    "prefix": "xml-no-ext-entities",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/html/webappapis/dynamic-markup-insertion/the-innerhtml-property/innerhtml-and-xml-namespaces.svg",
+      "fast/parser/external-entities-in-xslt.xml",
+      "fast/xsl/dtd-in-source-document.xml",
+      "fast/xsl/xslt-second-level-import.xml",
+      "http/tests/security/contentTypeOptions/xml-external-entity.xml",
+      "http/tests/xmlviewer/external-entities.xml"
+    ],
+    "args": [ "--enable-features=XMLNoExternalEntities" ],
+    "owners": [
+      "drott@chromium.org"
+    ],
+    "expires": "Mar 20, 2026"
   }
 ]

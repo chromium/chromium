@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -12,7 +16,8 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "components/omnibox/common/omnibox_features.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_aim_popup_webui_content.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -23,6 +28,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/view_factory.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
@@ -212,35 +218,42 @@ class TopBackgroundView : public views::View {
 BEGIN_METADATA(TopBackgroundView)
 END_METADATA
 
-// Insets used to position |contents_| within |contents_host_|.
-gfx::Insets GetContentInsets() {
-  return gfx::Insets::TLBR(
-      RoundedOmniboxResultsFrame::GetNonResultSectionHeight(), 0, 0, 0);
-}
+BEGIN_VIEW_BUILDER(/* no export*/, TopBackgroundView, views::View)
+END_VIEW_BUILDER
 
 }  // namespace
 
+DEFINE_VIEW_BUILDER(/* no export */, TopBackgroundView)
+
 RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
     views::View* contents,
-    LocationBarView* location_bar)
-    : contents_(contents) {
-  // Host the contents in its own View to simplify layout and customization.
-  contents_host_ = new views::View();
-  contents_host_->SetBackground(
-      views::CreateSolidBackground(kColorOmniboxResultsBackground));
-  contents_host_->SetPaintToLayer();
-  contents_host_->layer()->SetFillsBoundsOpaquely(false);
-
-  // Use rounded corners.
+    LocationBarView* location_bar,
+    bool forward_mouse_events)
+    : contents_(contents), forward_mouse_events_(forward_mouse_events) {
   const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::ShapeContextTokens::kOmniboxExpandedRadius);
-  contents_host_->layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF(corner_radius));
-  contents_host_->layer()->SetIsFastRoundedCorner(true);
+  // Host the contents in its own View to simplify layout and customization.
+  auto contents_host_builder =
+      views::Builder<views::View>()
+          .CopyAddressTo(&contents_host_)
+          .SetBackground(
+              views::CreateSolidBackground(kColorOmniboxResultsBackground))
+          .SetPaintToLayer()
+          .CustomConfigure(base::BindOnce(
+              [](const int corner_radius, views::View* view) {
+                view->layer()->SetFillsBoundsOpaquely(false);
+                // Use rounded corners.
+                view->layer()->SetRoundedCornerRadius(
+                    gfx::RoundedCornersF(corner_radius));
+                view->layer()->SetIsFastRoundedCorner(true);
+              },
+              corner_radius))
+          .AddChild(views::Builder<TopBackgroundView>(
+                        std::make_unique<TopBackgroundView>(location_bar))
+                        .CopyAddressTo(&top_background_));
 
-  top_background_ = new TopBackgroundView(location_bar);
-  contents_host_->AddChildViewRaw(top_background_.get());
-  contents_host_->AddChildViewRaw(contents_.get());
+  auto contents_host = std::move(contents_host_builder).Build();
+  contents_host->AddChildViewRaw(contents_.get());
 
   // Initialize the shadow.
   auto border = std::make_unique<views::BubbleBorder>(
@@ -250,7 +263,7 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
   border->set_md_shadow_elevation(kElevation);
   SetBorder(std::move(border));
 
-  AddChildViewRaw(contents_host_.get());
+  AddChildView(std::move(contents_host));
 }
 
 RoundedOmniboxResultsFrame::~RoundedOmniboxResultsFrame() = default;
@@ -277,9 +290,10 @@ void RoundedOmniboxResultsFrame::OnBeforeWidgetInit(
 }
 
 // static
-int RoundedOmniboxResultsFrame::GetNonResultSectionHeight() {
-  return GetLayoutConstant(LOCATION_BAR_HEIGHT) +
-         GetLocationBarAlignmentInsets().height();
+int RoundedOmniboxResultsFrame::GetNonResultSectionHeight(bool include_cutout) {
+  return include_cutout ? GetLayoutConstant(LOCATION_BAR_HEIGHT) +
+                              GetLocationBarAlignmentInsets().height()
+                        : 0;
 }
 
 // static
@@ -295,30 +309,61 @@ gfx::Insets RoundedOmniboxResultsFrame::GetShadowInsets() {
   return views::BubbleBorder::GetBorderAndShadowInsets(kElevation);
 }
 
+std::unique_ptr<views::View> RoundedOmniboxResultsFrame::ExtractContents() {
+  auto contents = std::exchange(contents_, nullptr);
+  return contents_host_->RemoveChildViewT<views::View>(contents);
+}
+
+views::View* RoundedOmniboxResultsFrame::GetContents() {
+  return contents_;
+}
+
+void RoundedOmniboxResultsFrame::SetCutoutVisibility(bool visible) {
+  if (visible == top_background_->GetVisible()) {
+    return;
+  }
+  top_background_->SetVisible(visible);
+}
+
 void RoundedOmniboxResultsFrame::Layout(PassKey) {
   // This is called when the Widget resizes due to results changing. Resizing
   // the Widget is fast on ChromeOS, but slow on other platforms, and can't be
   // animated smoothly.
   // TODO(tapted): Investigate using a static Widget size.
-  const gfx::Rect bounds = GetContentsBounds();
+  gfx::Rect bounds = GetContentsBounds();
   contents_host_->SetBoundsRect(bounds);
 
-  gfx::Rect top_bounds(contents_host_->GetContentsBounds());
-  top_bounds.set_height(GetNonResultSectionHeight());
-  top_bounds.Inset(GetLocationBarAlignmentInsets());
-  top_background_->SetBoundsRect(top_bounds);
+  if (top_background_->GetVisible()) {
+    gfx::Rect top_bounds(contents_host_->GetContentsBounds());
+    top_bounds.set_height(GetNonResultSectionHeight(true));
+    top_bounds.Inset(GetLocationBarAlignmentInsets());
+    top_background_->SetBoundsRect(top_bounds);
+  }
 
   gfx::Rect results_bounds(contents_host_->GetContentsBounds());
   results_bounds.Inset(GetContentInsets());
+
+  // Workaround for 1px visual artifact. The WebUI requests a 1px minimum height
+  // when empty, creating a visual artifact. Clamping to 0 hides the widget and
+  // breaks future resize events. Instead, clamp to a 1x1 centered rect to keep
+  // the widget active while making the artifact unnoticeable.
+  // TODO(crbug.com/460908495) WebUI should not be sending min height resize
+  // requests.
+  if (results_bounds.height() <= 1) {
+    results_bounds.ClampToCenteredSize(gfx::Size(1, 1));
+  }
   contents_->SetBoundsRect(results_bounds);
 }
 
 void RoundedOmniboxResultsFrame::AddedToWidget() {
 #if defined(USE_AURA)
+  if (!forward_mouse_events_) {
+    return;
+  }
   // Use a ui::EventTargeter that allows mouse and touch events in the top
   // portion of the Widget to pass through to the omnibox beneath it.
   auto results_targeter = std::make_unique<aura::WindowTargeter>();
-  results_targeter->SetInsets(GetInsets() + GetContentInsets());
+  results_targeter->SetInsets(GetContentInsets());
   GetWidget()->GetNativeWindow()->SetEventTargeter(std::move(results_targeter));
 #endif  // USE_AURA
 }
@@ -348,6 +393,12 @@ void RoundedOmniboxResultsFrame::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 #endif  // !USE_AURA
+
+// Insets used to position |contents_| within |contents_host_|.
+gfx::Insets RoundedOmniboxResultsFrame::GetContentInsets() {
+  return gfx::Insets::TLBR(
+      GetNonResultSectionHeight(top_background_->GetVisible()), 0, 0, 0);
+}
 
 BEGIN_METADATA(RoundedOmniboxResultsFrame)
 END_METADATA

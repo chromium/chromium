@@ -122,6 +122,7 @@ INSTANTIATE_TEST_SUITE_P(EditorMetricsRecorderTest,
                              EditorStates::kBlockedByUnsupportedCapability,
                              EditorStates::kBlockedByUnknownCapability,
                              EditorStates::kBlockedByPolicy,
+                             EditorStates::kBlockedByInvalidSelection,
                          }));
 
 TEST_P(EditorStateMetrics, RecordsForWrite) {

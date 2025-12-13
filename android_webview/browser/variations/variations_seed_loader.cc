@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "android_webview/browser/variations/variations_seed_loader.h"
+
 #include <errno.h>
 #include <fcntl.h>
 #include <jni.h>
+
 #include <memory>
 #include <string>
-
-#include "android_webview/browser/variations/variations_seed_loader.h"
 
 #include "android_webview/proto/aw_variations_seed.pb.h"
 #include "base/android/jni_string.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -23,7 +23,7 @@
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace android_webview {
 
@@ -89,7 +89,7 @@ static jboolean JNI_VariationsSeedLoader_ParseAndSaveSeedProto(
 
 static jboolean JNI_VariationsSeedLoader_ParseAndSaveSeedProtoFromByteArray(
     JNIEnv* env,
-    const JavaParamRef<jbyteArray>& seed_as_bytes) {
+    const JavaRef<jbyteArray>& seed_as_bytes) {
   // Parse the proto.
   std::unique_ptr<AwVariationsSeed> seed =
       std::make_unique<AwVariationsSeed>(AwVariationsSeed::default_instance());
@@ -124,3 +124,5 @@ void CacheSeedFreshness(long freshness) {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(VariationsSeedLoader)

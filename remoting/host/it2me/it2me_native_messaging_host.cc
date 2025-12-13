@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "remoting/host/it2me/it2me_native_messaging_host.h"
 
 #include <memory>
@@ -221,9 +216,7 @@ void It2MeNativeMessagingHost::Start(Client* client) {
 void It2MeNativeMessagingHost::SendMessageToClient(
     base::Value::Dict message) const {
   DCHECK(task_runner()->BelongsToCurrentThread());
-  std::string message_json;
-  base::JSONWriter::Write(message, &message_json);
-  client_->PostMessageFromNativeHost(message_json);
+  client_->PostMessageFromNativeHost(base::WriteJson(message).value_or(""));
 }
 
 void It2MeNativeMessagingHost::ProcessHello(base::Value::Dict message,

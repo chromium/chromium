@@ -72,8 +72,8 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](web::BrowserState* context) -> std::unique_ptr<KeyedService> {
+        base::BindOnce(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               return std::make_unique<syncer::TestSyncService>();
             }));
     builder.AddTestingFactory(
@@ -125,7 +125,7 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
 
   base::test::ScopedFeatureList feature_list_;
 
-  raw_ptr<syncer::TestSyncService> sync_service_;
+  raw_ptr<syncer::TestSyncService, DanglingUntriaged> sync_service_;
   std::unique_ptr<TestProfileIOS> profile_;
 
   ManageSyncSettingsMediator* mediator_ = nullptr;
@@ -159,7 +159,6 @@ TEST_F(ManageSyncSettingsMediatorTest,
 // for a signed in account along with manage accounts items.
 TEST_F(ManageSyncSettingsMediatorTest,
        CheckSignOutSectionItemsForSignedInAccount) {
-  feature_list_.InitAndDisableFeature(kIOSManageAccountStorage);
   CreateManageSyncSettingsMediator();
   sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
 
@@ -173,33 +172,37 @@ TEST_F(ManageSyncSettingsMediatorTest,
   ASSERT_GE([items count], 2u);
   EXPECT_EQ(ManageGoogleAccountItemType,
             base::apple::ObjCCastStrict<TableViewItem>(items[0]).type);
-  EXPECT_EQ(ManageAccountsItemType,
+  EXPECT_EQ(ManageAccountStorageType,
             base::apple::ObjCCastStrict<TableViewItem>(items[1]).type);
+  EXPECT_EQ(ManageAccountsItemType,
+            base::apple::ObjCCastStrict<TableViewItem>(items[2]).type);
   EXPECT_NSEQ(l10n_util::GetNSString(
                   IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_GOOGLE_ACCOUNT_ITEM),
               base::apple::ObjCCastStrict<TableViewTextItem>(items[0]).text);
   EXPECT_NSEQ(l10n_util::GetNSString(
-                  IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_ACCOUNTS_ITEM),
+                  IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_STORAGE_ITEM),
               base::apple::ObjCCastStrict<TableViewTextItem>(items[1]).text);
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_ACCOUNTS_ITEM),
+              base::apple::ObjCCastStrict<TableViewTextItem>(items[2]).text);
 
   // The "Sign out" item only exists in this section if
   // kSeparateProfilesForManagedAccounts is disabled.
   if (!AreSeparateProfilesForManagedAccountsEnabled()) {
-    ASSERT_EQ([items count], 3u);
+    ASSERT_EQ([items count], 4u);
     EXPECT_EQ(SignOutItemType,
               base::apple::ObjCCastStrict<TableViewItem>(items[2]).type);
     EXPECT_NSEQ(
         l10n_util::GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM),
         base::apple::ObjCCastStrict<TableViewTextItem>(items[2]).text);
   } else {
-    ASSERT_EQ([items count], 2u);
+    ASSERT_EQ([items count], 3u);
   }
 }
 
 // Tests the signout section items when manage storage is enabled.
 TEST_F(ManageSyncSettingsMediatorTest,
        CheckSignOutSectionItemsForSignedInNotSyncingAccountWithStorage) {
-  feature_list_.InitAndEnableFeature(kIOSManageAccountStorage);
   CreateManageSyncSettingsMediator();
   sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
 

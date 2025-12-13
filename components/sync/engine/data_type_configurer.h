@@ -35,7 +35,7 @@ class DataTypeConfigurer {
 
     ~ConfigureParams();
 
-    ConfigureReason reason = CONFIGURE_REASON_UNKNOWN;
+    ConfigureReason reason = ConfigureReason::kUnknown;
     DataTypeSet to_download;
 
     base::OnceCallback<void(DataTypeSet succeeded, DataTypeSet failed)>

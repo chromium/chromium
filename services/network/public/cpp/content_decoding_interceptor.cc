@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/types/pass_key.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -44,6 +45,7 @@ constexpr auto kClientTypeToMetricsSuffix =
          "NavigationPreload"},
         {ContentDecodingInterceptor::ClientType::kSignedExchange,
          "SignedExchange"},
+        {ContentDecodingInterceptor::ClientType::kDevTools, "DevTools"},
     });
 
 static_assert(
@@ -385,6 +387,28 @@ void ContentDecodingInterceptor::InterceptOnNetworkService(
   body = std::move(data_pipe_pair.second);
   endpoints = network::mojom::URLLoaderClientEndpoints::New(
       std::move(new_url_loader), std::move(new_url_loader_client));
+}
+
+// static
+void ContentDecodingInterceptor::DecodeOnNetworkService(
+    mojom::NetworkService& network_service,
+    const std::vector<net::SourceStreamType>& types,
+    mojo::ScopedDataPipeConsumerHandle& body,
+    ClientType client_type,
+    base::OnceCallback<void(net::Error)> callback) {
+  auto data_pipe_pair = CreateDataPipePair(client_type);
+  if (!data_pipe_pair) {
+    std::move(callback).Run(net::ERR_INSUFFICIENT_RESOURCES);
+    return;
+  }
+  network_service.DecodeContentEncoding(
+      types, std::move(body), std::move(data_pipe_pair->first),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce([](int32_t error) {
+            return static_cast<net::Error>(error);
+          }).Then(std::move(callback)),
+          net::ERR_FAILED));
+  body = std::move(data_pipe_pair->second);
 }
 
 // static

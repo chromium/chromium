@@ -8,9 +8,9 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {SettingsPrefs} from '../common.js';
-import {ReadAloudSettingsChange} from '../metrics_browser_proxy.js';
-import {ReadAnythingLogger} from '../read_anything_logger.js';
+import type {SettingsPrefs} from '../content/read_anything_types.js';
+import {ReadAloudSettingsChange} from '../shared/metrics_browser_proxy.js';
+import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import type {MenuStateItem} from './menu_util.js';
 import {getIndexOfSetting} from './menu_util.js';
@@ -23,7 +23,11 @@ export interface RateMenuElement {
   };
 }
 
-export const RATE_OPTIONS: number[] = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4];
+// 3x and 4x speeds are hidden on non-ChromeOS because natural voices on
+// non-ChromeOS do not currently support 3x and 4x speeds.
+export const RATE_OPTIONS: number[] = chrome.readingMode.isChromeOsAsh ?
+    [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4] :
+    [0.5, 0.8, 1, 1.2, 1.5, 2];
 
 const RateMenuElementBase = WebUiListenerMixinLit(CrLitElement);
 

@@ -6,7 +6,7 @@
 #define CHROMEOS_ASH_EXPERIENCES_ARC_VIDEO_ACCELERATOR_PROTECTED_BUFFER_ALLOCATOR_H_
 
 #include "base/files/scoped_file.h"
-#include "ui/gfx/buffer_types.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace arc {
@@ -32,7 +32,7 @@ class ProtectedBufferAllocator {
   // referred to via |dummy_fd| as the dummy handle.
   // Returns whether the allocation is successful.
   virtual bool AllocateProtectedNativePixmap(base::ScopedFD dummy_fd,
-                                             gfx::BufferFormat format,
+                                             viz::SharedImageFormat format,
                                              const gfx::Size& size) = 0;
 
   // Releases reference to ProtectedSharedMemory or ProtectedNativePixmap
@@ -41,4 +41,5 @@ class ProtectedBufferAllocator {
 };
 
 }  // namespace arc
+
 #endif  // CHROMEOS_ASH_EXPERIENCES_ARC_VIDEO_ACCELERATOR_PROTECTED_BUFFER_ALLOCATOR_H_

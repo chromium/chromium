@@ -43,8 +43,8 @@ void ManifestChangeNotifier::DidChangeManifest() {
     report_task_scheduled_ = true;
     window_->GetTaskRunner(TaskType::kInternalLoading)
         ->PostTask(FROM_HERE,
-                   WTF::BindOnce(&ManifestChangeNotifier::ReportManifestChange,
-                                 WrapWeakPersistent(this)));
+                   BindOnce(&ManifestChangeNotifier::ReportManifestChange,
+                            WrapWeakPersistent(this)));
     return;
   }
   ReportManifestChange();

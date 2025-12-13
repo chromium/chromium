@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//chromeos/ash/components/assistant/assistant.gni")
 import("//components/services/on_device_translation/buildflags/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//media/gpu/args.gni")
@@ -12,7 +11,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//services/accessibility/buildflags.gni")
 import("//services/screen_ai/buildflags/features.gni")
-import("//services/video_effects/args.gni")
 
 source_set("utility") {
   # Only the public target should depend on this. All other targets (even
@@ -76,18 +74,9 @@ source_set("utility") {
     "//services/tracing/public/mojom",
     "//services/video_capture:lib",
     "//services/video_capture/public/mojom:constants",
-    "//services/video_effects/buildflags",
     "//third_party/blink/public:blink_headers",
     "//url",
   ]
-
-  if (enable_video_effects) {
-    deps += [ "//services/video_effects:service" ]
-
-    if (is_linux) {
-      deps += [ "//services/video_effects:sandbox_hook" ]
-    }
-  }
 
   # When library CDMs are supported, we support running the CDM in the utility
   # process using mojo MediaService. On Windows, we use MediaFoundationService.
@@ -128,17 +117,10 @@ source_set("utility") {
     }
   }
 
-  if (is_chromeos && is_chrome_branded) {
+  if (is_win || ((is_chromeos || is_linux) && is_chrome_branded)) {
     deps += [
       "//services/shape_detection:lib",
       "//services/shape_detection/public/mojom",
-    ]
-  }
-
-  if (is_chromeos && enable_cros_libassistant) {
-    deps += [
-      "//chromeos/ash/services/libassistant:sandbox_hook",
-      "//chromeos/assistant/internal:libassistant",
     ]
   }
 

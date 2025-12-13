@@ -129,8 +129,7 @@ public class HistoricalTabSaverImplUnitTest {
     @Test
     public void testCreateHistoricalTab_FromBulk_NonNullBuffer() {
         ByteBuffer buf = ByteBuffer.allocateDirect(3);
-        WebContentsState tempState = new WebContentsState(buf);
-        tempState.setVersion(1);
+        WebContentsState tempState = new WebContentsState(buf, /* version= */ 1);
 
         MockTab tab = MockTab.createAndInitialize(0, mProfile);
         TabTestUtils.setWebContentsState(tab, tempState);
@@ -148,11 +147,10 @@ public class HistoricalTabSaverImplUnitTest {
         Tab tab1 = new MockTab(1, mProfile);
 
         // Also test duplicates are allowed.
-        Tab[] tabList = new Tab[] {tab0, tab1};
+        List<Tab> tabList = List.of(tab0, tab1);
         Token tabGroupId = new Token(728L, 324789L);
         HistoricalEntry group =
-                new HistoricalEntry(
-                        tabGroupId, "Foo", TabGroupColorId.GREY, Arrays.asList(tabList));
+                new HistoricalEntry(tabGroupId, "Foo", TabGroupColorId.GREY, tabList);
         mHistoricalTabSaver.createHistoricalBulkClosure(Collections.singletonList(group));
 
         byte[] bytes = new byte[0];
@@ -178,11 +176,10 @@ public class HistoricalTabSaverImplUnitTest {
         Tab tab1 = new MockTab(1, mIncognitoProfile);
 
         // Also test duplicates are allowed.
-        Tab[] tabList = new Tab[] {tab0, tab1};
+        List<Tab> tabList = List.of(tab0, tab1);
         Token tabGroupId = new Token(1L, 2L);
         HistoricalEntry group =
-                new HistoricalEntry(
-                        tabGroupId, "Foo", TabGroupColorId.GREY, Arrays.asList(tabList));
+                new HistoricalEntry(tabGroupId, "Foo", TabGroupColorId.GREY, tabList);
         mHistoricalTabSaver.createHistoricalTabOrGroup(group);
 
         byte[] bytes = new byte[0];
@@ -196,7 +193,7 @@ public class HistoricalTabSaverImplUnitTest {
                         eq(""),
                         eq("Foo"),
                         eq(TabGroupColorId.GREY),
-                        eq(new Tab[] {tab0}),
+                        eq(List.of(tab0)),
                         eq(buffers),
                         eq(versions));
     }
@@ -208,8 +205,7 @@ public class HistoricalTabSaverImplUnitTest {
 
         Token tabGroupId = new Token(1L, 2L);
         HistoricalEntry group =
-                new HistoricalEntry(
-                        tabGroupId, "Foo", TabGroupColorId.GREY, Arrays.asList(new Tab[] {tab}));
+                new HistoricalEntry(tabGroupId, "Foo", TabGroupColorId.GREY, List.of(tab));
         mHistoricalTabSaver.createHistoricalTabOrGroup(group);
 
         byte[] bytes = new byte[0];
@@ -223,7 +219,7 @@ public class HistoricalTabSaverImplUnitTest {
                         eq(""),
                         eq("Foo"),
                         eq(TabGroupColorId.GREY),
-                        eq(new Tab[] {tab}),
+                        eq(List.of(tab)),
                         eq(buffers),
                         eq(versions));
     }
@@ -236,11 +232,10 @@ public class HistoricalTabSaverImplUnitTest {
         Tab tab2 = new MockTab(2, mProfile);
 
         // Also test duplicates are allowed.
-        Tab[] tabList = new Tab[] {tab0, tab1, tab2};
+        List<Tab> tabList = List.of(tab0, tab1, tab2);
         Token tabGroupId = new Token(4L, 5L);
         HistoricalEntry group =
-                new HistoricalEntry(
-                        tabGroupId, "Foo", TabGroupColorId.GREY, Arrays.asList(tabList));
+                new HistoricalEntry(tabGroupId, "Foo", TabGroupColorId.GREY, tabList);
         mHistoricalTabSaver.createHistoricalTabOrGroup(group);
 
         byte[] bytes = new byte[0];
@@ -254,7 +249,7 @@ public class HistoricalTabSaverImplUnitTest {
                         eq(""),
                         eq("Foo"),
                         eq(TabGroupColorId.GREY),
-                        eq(new Tab[] {tab0, tab2}),
+                        eq(List.of(tab0, tab2)),
                         eq(buffers),
                         eq(versions));
     }
@@ -265,11 +260,10 @@ public class HistoricalTabSaverImplUnitTest {
         Tab tab0 = new MockTab(0, mProfile);
 
         // Also test duplicates are allowed.
-        Tab[] tabList = new Tab[] {tab0, tab0, tab0};
+        List<Tab> tabList = List.of(tab0, tab0, tab0);
         Token tabGroupId = new Token(4L, 5L);
         HistoricalEntry group =
-                new HistoricalEntry(
-                        tabGroupId, "Foo", TabGroupColorId.GREY, Arrays.asList(tabList));
+                new HistoricalEntry(tabGroupId, "Foo", TabGroupColorId.GREY, tabList);
         mHistoricalTabSaver.createHistoricalTabOrGroup(group);
 
         byte[] bytes = new byte[0];
@@ -310,12 +304,12 @@ public class HistoricalTabSaverImplUnitTest {
         verify(mHistoricalTabSaverJni)
                 .createHistoricalBulkClosure(
                         eq(mTabModel),
-                        eq(new Token[0]),
-                        eq(new String[0]),
-                        eq(new String[0]),
+                        eq(new ArrayList<Token>()),
+                        eq(new ArrayList<String>()),
+                        eq(new ArrayList<String>()),
                         eq(new int[0]),
-                        eq(new Token[] {null, null, null}),
-                        eq(new Tab[] {tab1, tab2, tab2}),
+                        eq(Arrays.asList(new Token[] {null, null, null})),
+                        eq(List.of(tab1, tab2, tab2)),
                         eq(buffers),
                         eq(versions));
     }
@@ -371,23 +365,27 @@ public class HistoricalTabSaverImplUnitTest {
         Token tabGroupId3 = new Token(289L, 7489L);
         entries.add(
                 new HistoricalEntry(
-                        tabGroupId3,
-                        "Group 3",
-                        TabGroupColorId.RED,
-                        Arrays.asList(new Tab[] {tab10, tab11})));
+                        tabGroupId3, "Group 3", TabGroupColorId.RED, List.of(tab10, tab11)));
         mHistoricalTabSaver.createHistoricalBulkClosure(entries);
 
-        Token[] tabGroupIds = new Token[] {tabGroupId1, tabGroupId2, tabGroupId3};
-        String[] groupTitles = new String[] {"Group 1", "Group 2", "Group 3"};
+        List<Token> tabGroupIds = List.of(tabGroupId1, tabGroupId2, tabGroupId3);
+        List<String> groupTitles = List.of("Group 1", "Group 2", "Group 3");
         int[] groupColors =
                 new int[] {TabGroupColorId.GREY, TabGroupColorId.BLUE, TabGroupColorId.RED};
-        Token[] perTabTabGroupIds =
-                new Token[] {
-                    null, tabGroupId1, tabGroupId1, null, tabGroupId2, tabGroupId3, tabGroupId3
-                };
-        Tab[] tabs = new Tab[] {tab0, tab4, tab6, tab7, tab8, tab10, tab11};
+        List<Token> perTabTabGroupIds =
+                Arrays.asList(
+                        new Token[] {
+                            null,
+                            tabGroupId1,
+                            tabGroupId1,
+                            null,
+                            tabGroupId2,
+                            tabGroupId3,
+                            tabGroupId3
+                        });
+        List<Tab> tabs = List.of(tab0, tab4, tab6, tab7, tab8, tab10, tab11);
 
-        String[] savedTabGroupIds = new String[] {"", "", ""};
+        List<String> savedTabGroupIds = List.of("", "", "");
         byte[] bytes = new byte[0];
         ByteBuffer buf = ByteBuffer.wrap(bytes);
         ByteBuffer[] buffers = new ByteBuffer[] {buf, buf, buf, buf, buf, buf, buf};

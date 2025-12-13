@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -77,13 +76,13 @@ class BrowserSigninDetectorServiceTest : public testing::Test {
     identity_test_env()->SetTestURLLoaderFactory(&test_url_loader_factory_);
   }
 
-  // This initialization of the DIPS service will instantiate a copy of the
+  // This initialization of the BTM service will instantiate a copy of the
   // detector under test.
   void InitBtmService() {
     BtmBrowserSigninDetectorFactory::GetInstance()
         ->EnableWaitForServiceForTesting();
-    dips_service_ = content::BtmService::Get(profile_.get());
-    EXPECT_NE(dips_service_, nullptr);
+    btm_service_ = content::BtmService::Get(profile_.get());
+    EXPECT_NE(btm_service_, nullptr);
     BtmBrowserSigninDetectorFactory::GetInstance()->WaitForServiceForTesting(
         profile_.get());
   }
@@ -98,7 +97,7 @@ class BrowserSigninDetectorServiceTest : public testing::Test {
     return identity_test_environment_profile_adaptor_->identity_test_env();
   }
 
-  content::BtmService* dips_service() { return dips_service_; }
+  content::BtmService* btm_service() { return btm_service_; }
 
   GURL GetURL(std::string_view domain) {
     return GURL(base::StrCat({"http://", domain}));
@@ -117,7 +116,7 @@ class BrowserSigninDetectorServiceTest : public testing::Test {
 
   bool DidSiteHaveUserActivation(std::string_view domain) {
     base::test::TestFuture<bool> future;
-    dips_service()->DidSiteHaveUserActivationSince(
+    btm_service()->DidSiteHaveUserActivationSince(
         GetURL(domain), base::Time::Min(), future.GetCallback());
     return future.Get();
   }
@@ -135,7 +134,7 @@ class BrowserSigninDetectorServiceTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_environment_profile_adaptor_;
-  raw_ptr<content::BtmService> dips_service_;
+  raw_ptr<content::BtmService> btm_service_;
 };
 
 TEST_F(BrowserSigninDetectorServiceTest, AccountWithNoExtendedAccountInfo) {

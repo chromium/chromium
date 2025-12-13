@@ -18,6 +18,7 @@ class XRCompositionLayer;
 class XRProjectionLayer;
 class XRSession;
 class XRViewData;
+class XRFrameTransportDelegate;
 
 // Base class for XRWebGLBinding and XRGPUBinding, which helps facilitate type
 // checking when layers are passed in to get sub images.
@@ -36,6 +37,8 @@ class XRGraphicsBinding : public GarbageCollectedMixin {
 
   virtual gfx::Rect GetViewportForView(XRProjectionLayer* layer,
                                        XRViewData* view) = 0;
+
+  virtual XRFrameTransportDelegate* GetTransportDelegate() = 0;
 
   void Trace(Visitor*) const override;
 

@@ -16,24 +16,9 @@
 namespace internal {
 
 const char kSuffixResponseFromCache[] = ".ResponseFromCache";
-const char kSuffixRTTBelow200[] = ".RTTBelow200";
-const char kSuffixRTT200to450[] = ".RTT200To450";
-const char kSuffixRTTAbove450[] = ".RTTAbove450";
 const char kIncognito[] = ".Incognito";
 
 }  // namespace internal
-
-const char* ChromeGWSAbandonedPageLoadMetricsObserver::GetSuffixForRTT(
-    std::optional<base::TimeDelta> rtt) {
-  if (rtt.value().InMilliseconds() < 200) {
-    return internal::kSuffixRTTBelow200;
-  }
-  if (rtt.value().InMilliseconds() <= 450) {
-    return internal::kSuffixRTT200to450;
-  }
-
-  return internal::kSuffixRTTAbove450;
-}
 
 ChromeGWSAbandonedPageLoadMetricsObserver::
     ChromeGWSAbandonedPageLoadMetricsObserver() = default;
@@ -52,25 +37,15 @@ ChromeGWSAbandonedPageLoadMetricsObserver::GetAdditionalSuffixes() const {
       suffixes.push_back(suffix + internal::kIncognito);
     }
   }
-  // Make sure each histogram logged will log a version without connection type,
-  // and a version with the connection type, to allow filtering if needed.
-  // TODO(https://crbug.com/347706997): Consider doing this for the WebView
-  // version as well.
-  std::vector<std::string> suffixes_with_rtt;
+  std::vector<std::string> suffixes_from_cache;
   for (std::string& base_suffix : suffixes) {
-    suffixes_with_rtt.push_back(base_suffix);
+    suffixes_from_cache.push_back(base_suffix);
     if (IsResponseFromCache()) {
-      suffixes_with_rtt.push_back(base_suffix +
-                                  internal::kSuffixResponseFromCache);
-    } else {
-      std::optional<base::TimeDelta> rtt =
-          g_browser_process->network_quality_tracker()->GetHttpRTT();
-      if (rtt.has_value()) {
-        suffixes_with_rtt.push_back(base_suffix + GetSuffixForRTT(rtt));
-      }
+      suffixes_from_cache.push_back(base_suffix +
+                                    internal::kSuffixResponseFromCache);
     }
   }
-  return suffixes_with_rtt;
+  return suffixes_from_cache;
 }
 
 void ChromeGWSAbandonedPageLoadMetricsObserver::AddSRPMetricsToUKMIfNeeded(

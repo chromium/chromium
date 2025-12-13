@@ -6,6 +6,7 @@
 
 #import "base/compiler_specific.h"
 #import "base/debug/dump_without_crashing.h"
+#import "base/functional/callback_helpers.h"
 #import "base/immediate_crash.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/task/bind_post_task.h"
@@ -14,8 +15,7 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
-#import "ios/chrome/browser/prerender/model/prerender_service.h"
-#import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
+#import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -194,7 +194,7 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
   // NOTE: This check for the Crash Host URL is here to avoid the URL from
   // ending up in the history causing the app to crash at every subsequent
   // restart.
-  if (web_params.url.host() == kChromeUIBrowserCrashHost) {
+  if (web_params.url.GetHost() == kChromeUIBrowserCrashHost) {
     CrashReporterURLObserver::GetSharedInstance()->RecordURL(
         web_params.url, current_web_state, /*pending=*/true);
     InduceBrowserCrash(web_params.url);
@@ -204,8 +204,8 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
     return;
   }
 
-  PrerenderService* prerender_service =
-      PrerenderServiceFactory::GetForProfile(profile);
+  PrerenderBrowserAgent* prerender_browser_agent =
+      PrerenderBrowserAgent::FromBrowser(browser_);
 
   // Some URLs are not allowed while in incognito.  If we are in incognito and
   // load a disallowed URL, instead create a new tab not in the incognito state.
@@ -213,8 +213,8 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
   // to open in, so this also redirects to a new tab.
   if (!current_web_state ||
       (profile->IsOffTheRecord() && !IsURLAllowedInIncognito(web_params.url))) {
-    if (prerender_service) {
-      prerender_service->CancelPrerender();
+    if (prerender_browser_agent) {
+      prerender_browser_agent->CancelPrerender();
     }
     notifier_->TabFailedToLoadUrl(web_params.url, web_params.transition_type);
 
@@ -234,9 +234,9 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
 
   // Ask the prerender service to load this URL if it can, and return if it does
   // so.
-  if (prerender_service &&
-      prerender_service->MaybeLoadPrerenderedURL(
-          web_params.url, web_params.transition_type, browser_)) {
+  if (prerender_browser_agent &&
+      prerender_browser_agent->ValidatePrerender(web_params.url,
+                                                 web_params.transition_type)) {
     notifier_->TabDidPrerenderUrl(web_params.url, web_params.transition_type);
     return;
   }

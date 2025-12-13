@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -23,10 +24,9 @@
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_shared_image_interface.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
+#include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gl/gl_context.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -147,13 +147,6 @@ void SharedImageStub::ExecuteDeferredRequest(
       break;
 
 #if BUILDFLAG(IS_WIN)
-    case mojom::DeferredSharedImageRequest::Tag::kCreateSwapChain:
-      OnCreateSwapChain(std::move(request->get_create_swap_chain()));
-      break;
-
-    case mojom::DeferredSharedImageRequest::Tag::kPresentSwapChain:
-      OnPresentSwapChain(request->get_present_swap_chain()->mailbox);
-      break;
     case mojom::DeferredSharedImageRequest::Tag::kRegisterDxgiFence: {
       auto& reg = *request->get_register_dxgi_fence();
       OnRegisterDxgiFence(reg.mailbox, reg.dxgi_token,
@@ -338,8 +331,32 @@ void SharedImageStub::OnCreateSharedImageWithBuffer(
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImageWithBuffer", "width",
                params->si_info->meta.size.width(), "height",
                params->si_info->meta.size.height());
+  gfx::GpuMemoryBufferHandle buffer_handle = std::move(params->buffer_handle);
+
+#if BUILDFLAG(IS_OZONE)
+  if (channel_->enable_extra_handles_validation() &&
+      buffer_handle.type == gfx::NATIVE_PIXMAP) {
+    const auto& pixmap_handle = buffer_handle.native_pixmap_handle();
+    auto format = params->si_info->meta.format;
+    if (!gfx::CanFitImageForSizeAndFormat(
+            pixmap_handle, params->si_info->meta.size, format,
+            /*assume_single_memory_object=*/false)) {
+      LOG(ERROR)
+          << "SharedImageStub: Unable to import buffer, failed validation.";
+      OnError();
+      return;
+    }
+    if (gfx::CloneHandleForIPC(pixmap_handle).planes.empty()) {
+      LOG(ERROR) << "SharedImageStub: Unable to import buffer, failed to dup "
+                    "buffer fds.";
+      OnError();
+      return;
+    }
+  }
+#endif  // BUILDFLAG(IS_OZONE)
+
   if (!CreateSharedImage(
-          params->mailbox, std::move(params->buffer_handle),
+          params->mailbox, std::move(buffer_handle),
           params->si_info->meta.format, params->si_info->meta.size,
           params->si_info->meta.color_space,
           params->si_info->meta.surface_origin,
@@ -409,39 +426,6 @@ void SharedImageStub::CopyToGpuMemoryBufferAsync(
                                             std::move(split_cb.first))) {
     DLOG(ERROR) << "SharedImageStub: Unable to update shared GMB";
     std::move(split_cb.second).Run(false);
-    OnError();
-    return;
-  }
-}
-
-void SharedImageStub::OnCreateSwapChain(
-    mojom::CreateSwapChainParamsPtr params) {
-  TRACE_EVENT0("gpu", "SharedImageStub::OnCreateSwapChain");
-  if (!MakeContextCurrent()) {
-    OnError();
-    return;
-  }
-
-  if (!factory_->CreateSwapChain(params->front_buffer_mailbox,
-                                 params->back_buffer_mailbox, params->format,
-                                 params->size, params->color_space,
-                                 params->surface_origin, params->alpha_type,
-                                 SharedImageUsageSet(params->usage))) {
-    DLOG(ERROR) << "SharedImageStub: Unable to create swap chain";
-    OnError();
-    return;
-  }
-}
-
-void SharedImageStub::OnPresentSwapChain(const Mailbox& mailbox) {
-  TRACE_EVENT0("gpu", "SharedImageStub::OnPresentSwapChain");
-  if (!MakeContextCurrent()) {
-    OnError();
-    return;
-  }
-
-  if (!factory_->PresentSwapChain(mailbox)) {
-    DLOG(ERROR) << "SharedImageStub: Unable to present swap chain";
     OnError();
     return;
   }
@@ -621,7 +605,7 @@ ContextResult SharedImageStub::Initialize() {
 }
 
 void SharedImageStub::OnError() {
-  channel_->OnChannelError();
+  channel_->Stop();
 }
 
 SharedImageStub::SharedImageDestructionCallback

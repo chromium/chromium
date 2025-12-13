@@ -103,6 +103,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="KEYBOARD_LOCK_REQUESTED"/>
   <int value="5" label="POINTER_LOCK_REQUESTED"/>
   <int value="6" label="VIBRATION_API"/>
+  <int value="7" label="FULLSCREEN_API"/>
+  <int value="8" label="CLIPBOARD_COPY_API"/>
+  <int value="9" label="CREDIT_CARD_FORM"/>
+  <int value="10" label="IMAGE_EMBEDDING_MATCH"/>
 </enum>
 
 <enum name="ClientSidePhishingImageEmbeddingResult">
@@ -133,6 +137,90 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Visual extraction failed"/>
 </enum>
 
+<enum name="CreditCardFormEvent">
+  <summary>
+    Enumerates all permutations of loggable details when an event fires that may
+    trigger a CDS ping.
+  </summary>
+  <int value="0"
+      label="Unknown site visits, no referring app, no detection heuristic"/>
+  <int value="1"
+      label="Unknown site visits, no referring app, Autofill local heuristic"/>
+  <int value="2"
+      label="Unknown site visits, no referring app, Autofill server heuristic"/>
+  <int value="10"
+      label="Unknown site visits, other referring app, NoDetectionHeuristic"/>
+  <int value="11"
+      label="Unknown site visits, other referring app, Autofill local
+             heuristic"/>
+  <int value="12"
+      label="Unknown site visits, other referring app, Autofill server
+             heuristic"/>
+  <int value="20"
+      label="Unknown site visits, Chrome referring app, NoDetectionHeuristic"/>
+  <int value="21"
+      label="Unknown site visits, Chrome referring app, Autofill local
+             heuristic"/>
+  <int value="22"
+      label="Unknown site visits, Chrome referring app, Autofill server
+             heuristic"/>
+  <int value="30"
+      label="Unknown site visits, SMS referring app, NoDetectionHeuristic"/>
+  <int value="31"
+      label="Unknown site visits, SMS referring app, Autofill local heuristic"/>
+  <int value="32"
+      label="Unknown site visits, SMS referring app, Autofill server
+             heuristic"/>
+  <int value="100"
+      label="First visit, no referring app, no detection heuristic"/>
+  <int value="101"
+      label="First visit, no referring app, Autofill local heuristic"/>
+  <int value="102"
+      label="First visit, no referring app, Autofill server heuristic"/>
+  <int value="110"
+      label="First visit, other referring app, NoDetectionHeuristic"/>
+  <int value="111"
+      label="First visit, other referring app, Autofill local heuristic"/>
+  <int value="112"
+      label="First visit, other referring app, Autofill server heuristic"/>
+  <int value="120"
+      label="First visit, Chrome referring app, NoDetectionHeuristic"/>
+  <int value="121"
+      label="First visit, Chrome referring app, Autofill local heuristic"/>
+  <int value="122"
+      label="First visit, Chrome referring app, Autofill server heuristic"/>
+  <int value="130"
+      label="First visit, SMS referring app, NoDetectionHeuristic"/>
+  <int value="131"
+      label="First visit, SMS referring app, Autofill local heuristic"/>
+  <int value="132"
+      label="First visit, SMS referring app, Autofill server heuristic"/>
+  <int value="200"
+      label="Repeat visit, no referring app, NoDetectionHeuristic"/>
+  <int value="201"
+      label="Repeat visit, no referring app, Autofill local heuristic"/>
+  <int value="202"
+      label="Repeat visit, no referring app, Autofill server heuristic"/>
+  <int value="210"
+      label="Repeat visit, other referring app, NoDetectionHeuristic"/>
+  <int value="211"
+      label="Repeat visit, other referring app, Autofill local heuristic"/>
+  <int value="212"
+      label="Repeat visit, other referring app, Autofill server heuristic"/>
+  <int value="220"
+      label="Repeat visit, Chrome referring app, NoDetectionHeuristic"/>
+  <int value="221"
+      label="Repeat visit, Chrome referring app, Autofill local heuristic"/>
+  <int value="222"
+      label="Repeat visit, Chrome referring app, Autofill server heuristic"/>
+  <int value="230"
+      label="Repeat visit, SMS referring app, NoDetectionHeuristic"/>
+  <int value="231"
+      label="Repeat visit, SMS referring app, Autofill local heuristic"/>
+  <int value="232"
+      label="Repeat visit, SMS referring app, Autofill server heuristic"/>
+</enum>
+
 <enum name="IntelligentScanVerdict">
   <int value="0" label="Unspecified"/>
   <int value="1" label="Intelligent scan verdict safe"/>
@@ -140,6 +228,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Scam experiment verdict 2"/>
   <int value="999" label="Scam experiment verdict catch all enforcement"/>
   <int value="1000" label="Scam experiment verdict catch all telemetry"/>
+</enum>
+
+<enum name="OptimizationGuideOnDeviceModelUnavailableReason">
+  <int value="0" label="Unknown"/>
+  <int value="2" label="NotSupported"/>
+  <int value="3" label="PendingAssets"/>
+  <int value="4" label="PendingUsage"/>
 </enum>
 
 <!-- LINT.IfChange(SafeBrowsingAndroidGetReferringAppInfoResult) -->
@@ -274,6 +369,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="ASYNC_LOCAL_PASSWORD_SCANNING"/>
   <int value="19" label="BLOCKED_SCAN_FAILED"/>
   <int value="20" label="IMMEDIATE_DEEP_SCAN"/>
+  <int value="21" label="FORCE_SAVE_TO_GDRIVE"/>
 </enum>
 
 <enum name="SBClientDownloadUserGestureFileTypeAttributes">

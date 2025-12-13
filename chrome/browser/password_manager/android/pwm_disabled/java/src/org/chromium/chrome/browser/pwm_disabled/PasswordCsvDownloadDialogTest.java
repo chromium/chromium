@@ -38,7 +38,7 @@ import org.robolectric.shadows.ShadowDialog;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
-import org.chromium.components.browser_ui.test.BrowserUiDummyFragmentActivity;
+import org.chromium.components.browser_ui.test.BrowserUiTestFragmentActivity;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
@@ -63,7 +63,7 @@ public class PasswordCsvDownloadDialogTest {
     @Before
     public void setUp() {
         mActivity =
-                Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class)
+                Robolectric.buildActivity(BrowserUiTestFragmentActivity.class)
                         .create()
                         .start()
                         .resume()

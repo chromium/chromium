@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/extensions/api/messaging/native_message_process_host.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -196,8 +192,9 @@ void NativeMessageProcessHost::OnMessage(const std::string& json) {
   static_assert(sizeof(uint32_t) == kMessageHeaderSize,
                 "kMessageHeaderSize is incorrect");
   const uint32_t message_size = base::checked_cast<uint32_t>(json.size());
-  memcpy(buffer->data(), reinterpret_cast<const char*>(&message_size),
-         kMessageHeaderSize);
+  UNSAFE_TODO(memcpy(buffer->data(),
+                     reinterpret_cast<const char*>(&message_size),
+                     kMessageHeaderSize));
 
   buffer->span()
       .subspan(kMessageHeaderSize)
@@ -217,8 +214,6 @@ void NativeMessageProcessHost::Start(Client* client) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(!client_);
   client_ = client;
-  // It's safe to use base::Unretained() here because NativeMessagePort always
-  // deletes us on the IO thread.
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&NativeMessageProcessHost::LaunchHostProcess,
                                 weak_factory_.GetWeakPtr()));

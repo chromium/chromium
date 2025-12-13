@@ -12,14 +12,40 @@ mojom("mojo_bindings") {
     "customize_toolbar/customize_toolbar.mojom",
     "wallpaper_search/wallpaper_search.mojom",
   ]
-  webui_module_path = "/"
   public_deps = [
+    "//components/ntp_tiles:mojo_bindings",
     "//mojo/public/mojom/base",
     "//skia/public/mojom",
     "//url/mojom:url_mojom_gurl",
+  ]
+
+  webui_module_path = "/"
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "side_panel.mojom.CustomizeChromeSection"
+          cpp = "::CustomizeChromeSection"
+        },
+      ]
+      traits_headers = [ "customize_chrome_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
+    },
   ]
 }
 
 source_set("customize_chrome") {
   sources = [ "customize_chrome_section.h" ]
+}
+
+source_set("mojom_traits") {
+  sources = [ "customize_chrome_mojom_traits.h" ]
+
+  deps = [ ":customize_chrome" ]
+
+  public_deps = [
+    ":mojo_bindings_shared_cpp_sources",
+    "//base",
+  ]
 }

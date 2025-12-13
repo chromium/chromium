@@ -57,6 +57,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck crbug.com/40147906
 #endif
 
 using content::WebContents;
@@ -435,11 +438,16 @@ void CoreTabHelper::DidStartLoading() {
 // Update back/forward buttons for web_contents that are active.
 void CoreTabHelper::NavigationEntriesDeleted() {
 #if !BUILDFLAG(IS_ANDROID)
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (web_contents() == browser->tab_strip_model()->GetActiveWebContents()) {
-      browser->command_controller()->TabStateChanged();
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser) {
+        if (web_contents() ==
+            browser->GetTabStripModel()->GetActiveWebContents()) {
+          browser->GetFeatures()
+              .browser_command_controller()
+              ->TabStateChanged();
+        }
+        return true;
+      });
 #endif
 }
 

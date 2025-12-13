@@ -5,13 +5,14 @@
 #include "net/quic/crypto/proof_source_chromium.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "crypto/openssl_util.h"
+#include "crypto/sign.h"
 #include "net/cert/x509_util.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
-#include "third_party/boringssl/src/include/openssl/digest.h"
-#include "third_party/boringssl/src/include/openssl/evp.h"
-#include "third_party/boringssl/src/include/openssl/rsa.h"
 
 using std::string;
 
@@ -51,9 +52,8 @@ bool ProofSourceChromium::Initialize(const base::FilePath& cert_path,
     return false;
   }
 
-  const uint8_t* p = reinterpret_cast<const uint8_t*>(key_data.data());
-  std::vector<uint8_t> input(p, UNSAFE_TODO(p + key_data.size()));
-  private_key_ = crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(input);
+  private_key_ = crypto::keypair::PrivateKey::FromPrivateKeyInfo(
+      base::as_byte_span(key_data));
   if (!private_key_) {
     DLOG(FATAL) << "Unable to create private key.";
     return false;
@@ -80,46 +80,19 @@ bool ProofSourceChromium::GetProofInner(
     quiche::QuicheReferenceCountedPointer<quic::ProofSource::Chain>* out_chain,
     quic::QuicCryptoProof* proof) {
   DCHECK(proof != nullptr);
-  DCHECK(private_key_.get()) << " this: " << this;
+  DCHECK(private_key_) << " this: " << this;
 
-  crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
-  bssl::ScopedEVP_MD_CTX sign_context;
-  EVP_PKEY_CTX* pkey_ctx;
+  crypto::sign::Signer signer(crypto::sign::RSA_PSS_SHA256, *private_key_);
+  signer.Update(
+      base::byte_span_with_nul_from_cstring(quic::kProofSignatureLabel));
+  uint32_t chlo_hash_len = chlo_hash.length();
+  signer.Update(base::byte_span_from_ref(chlo_hash_len));
+  signer.Update(base::as_byte_span(chlo_hash));
+  signer.Update(base::as_byte_span(server_config));
+  std::vector<uint8_t> signature = signer.Finish();
 
-  uint32_t len_tmp = chlo_hash.length();
-  if (!EVP_DigestSignInit(sign_context.get(), &pkey_ctx, EVP_sha256(), nullptr,
-                          private_key_->key()) ||
-      !EVP_PKEY_CTX_set_rsa_padding(pkey_ctx, RSA_PKCS1_PSS_PADDING) ||
-      !EVP_PKEY_CTX_set_rsa_pss_saltlen(pkey_ctx, -1) ||
-      !EVP_DigestSignUpdate(
-          sign_context.get(),
-          reinterpret_cast<const uint8_t*>(quic::kProofSignatureLabel),
-          sizeof(quic::kProofSignatureLabel)) ||
-      !EVP_DigestSignUpdate(sign_context.get(),
-                            reinterpret_cast<const uint8_t*>(&len_tmp),
-                            sizeof(len_tmp)) ||
-      !EVP_DigestSignUpdate(sign_context.get(),
-                            reinterpret_cast<const uint8_t*>(chlo_hash.data()),
-                            len_tmp) ||
-      !EVP_DigestSignUpdate(
-          sign_context.get(),
-          reinterpret_cast<const uint8_t*>(server_config.data()),
-          server_config.size())) {
-    return false;
-  }
-  // Determine the maximum length of the signature.
-  size_t len = 0;
-  if (!EVP_DigestSignFinal(sign_context.get(), nullptr, &len)) {
-    return false;
-  }
-  std::vector<uint8_t> signature(len);
-  // Sign it.
-  if (!EVP_DigestSignFinal(sign_context.get(), signature.data(), &len)) {
-    return false;
-  }
-  signature.resize(len);
-  proof->signature.assign(reinterpret_cast<const char*>(signature.data()),
-                          signature.size());
+  proof->signature.assign(base::as_string_view(signature));
+
   *out_chain = chain_;
   VLOG(1) << "signature: " << base::HexEncode(proof->signature);
   proof->leaf_cert_scts = signed_certificate_timestamp_;
@@ -169,32 +142,10 @@ void ProofSourceChromium::ComputeTlsSignature(
     uint16_t signature_algorithm,
     std::string_view in,
     std::unique_ptr<SignatureCallback> callback) {
-  crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
-  bssl::ScopedEVP_MD_CTX sign_context;
-  EVP_PKEY_CTX* pkey_ctx;
-
-  size_t siglen;
-  string sig;
-  if (!EVP_DigestSignInit(sign_context.get(), &pkey_ctx, EVP_sha256(), nullptr,
-                          private_key_->key()) ||
-      !EVP_PKEY_CTX_set_rsa_padding(pkey_ctx, RSA_PKCS1_PSS_PADDING) ||
-      !EVP_PKEY_CTX_set_rsa_pss_saltlen(pkey_ctx, -1) ||
-      !EVP_DigestSignUpdate(sign_context.get(),
-                            reinterpret_cast<const uint8_t*>(in.data()),
-                            in.size()) ||
-      !EVP_DigestSignFinal(sign_context.get(), nullptr, &siglen)) {
-    callback->Run(false, std::move(sig), nullptr);
-    return;
-  }
-  sig.resize(siglen);
-  if (!EVP_DigestSignFinal(
-          sign_context.get(),
-          reinterpret_cast<uint8_t*>(const_cast<char*>(sig.data())), &siglen)) {
-    callback->Run(false, std::move(sig), nullptr);
-    return;
-  }
-  sig.resize(siglen);
-  callback->Run(true, std::move(sig), nullptr);
+  DCHECK(private_key_);
+  std::vector<uint8_t> sig = crypto::sign::Sign(
+      crypto::sign::RSA_PSS_SHA256, *private_key_, base::as_byte_span(in));
+  callback->Run(true, std::string(base::as_string_view(sig)), nullptr);
 }
 
 absl::InlinedVector<uint16_t, 8>

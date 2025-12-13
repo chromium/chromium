@@ -47,8 +47,9 @@
 #include "ui/menus/simple_menu_model.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #endif
 
@@ -224,17 +225,7 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest,
   EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(1).has_value());
 }
 
-class TabMenuModelSplitTabsTest : public TabMenuModelBrowserTest {
- public:
-  TabMenuModelSplitTabsTest() {
-    feature_list_.InitAndEnableFeature(features::kSideBySide);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(TabMenuModelSplitTabsTest, ActiveTabNotSplit) {
+IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, ActiveTabNotSplit) {
   chrome::NewTab(browser());
   chrome::NewTab(browser());
   chrome::NewTab(browser());
@@ -300,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelSplitTabsTest, ActiveTabNotSplit) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(TabMenuModelSplitTabsTest, SplitActiveTab) {
+IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, SplitActiveTab) {
   chrome::NewTab(browser());
   chrome::NewTab(browser());
   chrome::NewTab(browser());
@@ -349,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelSplitTabsTest, SplitActiveTab) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(TabMenuModelSplitTabsTest, MultiSelectTabs) {
+IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, MultiSelectTabs) {
   chrome::NewTab(browser());
   chrome::NewTab(browser());
   chrome::NewTab(browser());
@@ -389,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelSplitTabsTest, MultiSelectTabs) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(TabMenuModelSplitTabsTest, SwapWithActiveTab) {
+IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, SwapWithActiveTab) {
   // Add 3 tabs to the browser.
   chrome::NewTab(browser());
   chrome::NewTab(browser());
@@ -420,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelSplitTabsTest, SwapWithActiveTab) {
   EXPECT_EQ(tab_strip_model->active_index(), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(TabMenuModelSplitTabsTest, SwapWithInactiveTab) {
+IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, SwapWithInactiveTab) {
   // Add 3 tabs to the browser.
   chrome::NewTab(browser());
   chrome::NewTab(browser());

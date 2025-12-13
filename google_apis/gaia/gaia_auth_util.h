@@ -98,15 +98,6 @@ COMPONENT_EXPORT(GOOGLE_APIS)
 bool ParseBinaryListAccountsData(const std::string& data,
                                  std::vector<ListedAccount>* accounts);
 
-// Parses JSON data returned by /ListAccounts call, returning a vector of
-// email/valid pairs.  An email addresses is considered valid if a passive
-// login would succeed (i.e. the user does not need to reauthenticate).
-// If there an error parsing the JSON, then false is returned.
-// If |accounts| is null, accounts returned from /ListAccounts will be ignored.
-COMPONENT_EXPORT(GOOGLE_APIS)
-bool ParseListAccountsData(std::string_view data,
-                           std::vector<ListedAccount>* accounts);
-
 // Parses base64url encoded protobuf message returned by the remote consent
 // flow, returning whether the consent was approved and the gaia id of the user
 // that was shown the consent page.

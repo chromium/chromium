@@ -23,8 +23,8 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/tracing_controller.h"
@@ -41,6 +41,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/accessibility/accessibility_switches.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_tree.h"
@@ -329,7 +330,7 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
                        TestRendererAccessibilityEnabled) {
   StartEmbeddedTestServer();
   const GURL url = GetURLForPath(kDomain, "/index.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
 
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
   content::WebContents* const tab =
@@ -350,7 +351,7 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, ServiceWorker) {
   StartEmbeddedTestServer();
   const GURL url = GetURLForPath(kDomain, "/index.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
 
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
   content::WebContents* const tab =
@@ -376,11 +377,11 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, SanityCheck) {
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, ImageLabels) {
   StartEmbeddedTestServer();
   const GURL url = GetURLForPath(kDomain, "/index.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
 
   // Enable image labels.
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kAccessibilityImageLabelsEnabled, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kAccessibilityImageLabelsEnabled,
+                                    true);
 
   // Initially there should be no accessibility mode set.
   ASSERT_EQ(1, browser()->tab_strip_model()->count());
@@ -736,17 +737,17 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
   display::test::DisplayManagerTestApi display_manager_test_api(
       shell_test_api.display_manager());
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   int64_t display2 = display_manager_test_api.GetSecondaryDisplay().id();
   screen->SetDisplayForNewWindows(display2);
   // Run the test in the browser in the non-primary display.
   // Open a browser on the secondary display, which is default for new windows.
-  CreateBrowser(browser()->profile());
+  BrowserWindowInterface* const new_browser = CreateBrowser(profile());
   // Close the browser which was already opened on the primary display.
   CloseBrowserSynchronously(browser());
   // Sets browser() to return the one created above, instead of the one which
   // was closed.
-  SelectFirstBrowser();
+  SetBrowser(new_browser);
   // The test will run in browser().
   ASSERT_TRUE(
       CreateExtensionAndRunTest("desktop/hit_test.js", kPermissionsWindows))
@@ -835,8 +836,8 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
       content::TracingController::CreateStringEndpoint(
           stop_tracing_future.GetCallback()));
 
-  std::optional<base::Value> trace_data =
-      base::JSONReader::Read(*stop_tracing_future.Take());
+  std::optional<base::Value> trace_data = base::JSONReader::Read(
+      *stop_tracing_future.Take(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(trace_data && trace_data->is_dict());
 
   const base::Value::List* trace_events =

@@ -22,7 +22,7 @@
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
-#include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/cable/pairing.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"

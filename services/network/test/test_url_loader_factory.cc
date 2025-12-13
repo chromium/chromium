@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_future.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"

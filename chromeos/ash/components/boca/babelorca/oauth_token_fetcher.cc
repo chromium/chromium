@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -39,10 +38,13 @@ bool IsOAuthTokenFetchRetryableError(
 
 }  // namespace
 
-OAuthTokenFetcher::OAuthTokenFetcher(signin::IdentityManager* identity_manager,
-                                     const std::string& scope,
-                                     const std::string& uma_name)
-    : identity_manager_(identity_manager), scope_(scope), uma_name_(uma_name) {}
+OAuthTokenFetcher::OAuthTokenFetcher(
+    signin::IdentityManager* identity_manager,
+    const signin::OAuthConsumerId oauth_consumer_id,
+    const std::string& uma_name)
+    : identity_manager_(identity_manager),
+      oauth_consumer_id_(oauth_consumer_id),
+      uma_name_(uma_name) {}
 
 OAuthTokenFetcher::~OAuthTokenFetcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -62,10 +64,9 @@ void OAuthTokenFetcher::FetchTokenInternal(TokenFetchCallback callback,
                                            int retry_num) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(identity_manager_);
-  static constexpr char kOauthConsumerName[] = "babel_orca";
   access_token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      kOauthConsumerName, {scope_},
+      oauth_consumer_id_,
       base::BindOnce(
           &OAuthTokenFetcher::OnOAuthTokenRequestCompleted,
           // base::Unretained is safe, `this` owns `access_token_fetcher_`.
@@ -102,7 +103,8 @@ void OAuthTokenFetcher::OnOAuthTokenRequestCompleted(
         std::move(access_token_info.token), access_token_info.expiration_time));
     return;
   }
-  VLOG(1) << "OAuth token fetch failed for scope: " << scope_
+  VLOG(1) << "OAuth token fetch failed for consumer id:"
+          << static_cast<int>(oauth_consumer_id_)
           << " with error: " << error.state();
   std::move(callback).Run(std::nullopt);
 }

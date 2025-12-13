@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 
@@ -37,6 +36,7 @@ source_set("cpp") {
     }
 
     deps += [
+      "//components/enterprise/obfuscation/core:enterprise_obfuscation",
       "//components/services/filesystem:lib",
       "//content/public/browser",
     ]
@@ -66,6 +66,7 @@ if (safe_browsing_mode == 1) {
       "//chrome/common/safe_browsing:archive_analyzer_results",
       "//chrome/services/file_util",
       "//chrome/services/file_util:test_support",
+      "//components/enterprise/obfuscation/core:enterprise_obfuscation",
       "//components/safe_browsing/content/common:file_type_policies",
       "//components/safe_browsing/core/common",
       "//content/test:test_support",

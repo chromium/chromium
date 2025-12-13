@@ -228,7 +228,7 @@ By default, the script hides the output of the tool. The easiest way to change
 that is to `return 1` from the `main()` function of the clang tool.
 
 ## Testing
-Synposis:
+Synopsis:
 
 ```shell
 tools/clang/scripts/test_tool.py <tool name> [--apply-edits]

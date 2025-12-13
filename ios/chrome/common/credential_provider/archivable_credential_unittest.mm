@@ -5,6 +5,8 @@
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 
 #import "base/test/ios/wait_util.h"
+#import "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
@@ -26,6 +28,7 @@ ArchivableCredential* TestCredential() {
                                       recordIdentifier:@"recordIdentifier"
                                      serviceIdentifier:@"serviceIdentifier"
                                            serviceName:@"serviceName"
+                              registryControlledDomain:@"example.com"
                                               username:@"user"
                                                   note:@"note"];
 }
@@ -44,7 +47,10 @@ ArchivableCredential* TestPasskeyCredential() {
                                          privateKey:StringToData("privateKey")
                                           encrypted:StringToData("encrypted")
                                        creationTime:kJan1st2024
-                                       lastUsedTime:kJan1st2024];
+                                       lastUsedTime:kJan1st2024
+                                             hidden:NO
+                                         hiddenTime:kJan1st2024
+                                       editedByUser:NO];
 }
 
 // Tests that an ArchivableCredential can be created.
@@ -57,6 +63,7 @@ TEST_F(ArchivableCredentialTest, create) {
                                    recordIdentifier:@"recordIdentifier"
                                   serviceIdentifier:@"serviceIdentifier"
                                         serviceName:@"serviceName"
+                           registryControlledDomain:@"example.com"
                                            username:@"user"
                                                note:@"note"];
   EXPECT_TRUE(credential);
@@ -83,7 +90,10 @@ TEST_F(ArchivableCredentialTest, createPasskey) {
                                          privateKey:StringToData("test")
                                           encrypted:nil
                                        creationTime:kJan1st2024
-                                       lastUsedTime:kJan1st2024];
+                                       lastUsedTime:kJan1st2024
+                                             hidden:NO
+                                         hiddenTime:kJan1st2024
+                                       editedByUser:NO];
   EXPECT_TRUE(credential);
   EXPECT_TRUE(credential.isPasskey);
 
@@ -100,7 +110,10 @@ TEST_F(ArchivableCredentialTest, createPasskey) {
                                          privateKey:nil
                                           encrypted:StringToData("test")
                                        creationTime:kJan1st2024
-                                       lastUsedTime:kJan1st2024];
+                                       lastUsedTime:kJan1st2024
+                                             hidden:NO
+                                         hiddenTime:kJan1st2024
+                                       editedByUser:NO];
   EXPECT_TRUE(credential);
   EXPECT_TRUE(credential.isPasskey);
 }
@@ -156,6 +169,8 @@ TEST_F(ArchivableCredentialTest, retrieveData) {
   EXPECT_NSEQ(credential.serviceIdentifier,
               unarchivedCredential.serviceIdentifier);
   EXPECT_NSEQ(credential.serviceName, unarchivedCredential.serviceName);
+  EXPECT_NSEQ(credential.registryControlledDomain,
+              unarchivedCredential.registryControlledDomain);
   EXPECT_NSEQ(credential.username, unarchivedCredential.username);
 }
 
@@ -190,6 +205,9 @@ TEST_F(ArchivableCredentialTest, retrievePasskeyData) {
   EXPECT_NSEQ(credential.privateKey, unarchivedCredential.privateKey);
   EXPECT_NSEQ(credential.encrypted, unarchivedCredential.encrypted);
   EXPECT_EQ(credential.creationTime, unarchivedCredential.creationTime);
+  EXPECT_EQ(credential.hidden, unarchivedCredential.hidden);
+  EXPECT_EQ(credential.hiddenTime, unarchivedCredential.hiddenTime);
+  EXPECT_EQ(credential.editedByUser, unarchivedCredential.editedByUser);
 }
 
 // Tests ArchivableCredential equality.
@@ -207,11 +225,12 @@ TEST_F(ArchivableCredentialTest, equality) {
                                    recordIdentifier:@"recordIdentifier"
                                   serviceIdentifier:@"other_serviceIdentifier"
                                         serviceName:@"other_serviceName"
+                           registryControlledDomain:@"otherexample.com"
                                            username:@"other_user"
                                                note:@"other_note"];
   EXPECT_NSNE(credential, credentialSameIdentifier);
 
-  ArchivableCredential* credentialDiferentIdentifier =
+  ArchivableCredential* credentialDifferentIdentifier =
       [[ArchivableCredential alloc] initWithFavicon:@"favicon"
                                                gaia:nil
                                            password:@"123456789"
@@ -219,9 +238,10 @@ TEST_F(ArchivableCredentialTest, equality) {
                                    recordIdentifier:@"other_recordIdentifier"
                                   serviceIdentifier:@"serviceIdentifier"
                                         serviceName:@"serviceName"
+                           registryControlledDomain:@"otherexample.com"
                                            username:@"user"
                                                note:@"note"];
-  EXPECT_NSNE(credential, credentialDiferentIdentifier);
+  EXPECT_NSNE(credential, credentialDifferentIdentifier);
 
   EXPECT_NSNE(credential, nil);
 }
@@ -246,7 +266,10 @@ TEST_F(ArchivableCredentialTest, passkeyEquality) {
             privateKey:StringToData("other_privateKey")
              encrypted:StringToData("other_encrypted")
           creationTime:kJan1st2024 + 10
-          lastUsedTime:kJan1st2024 + 10];
+          lastUsedTime:kJan1st2024 + 10
+                hidden:NO
+            hiddenTime:kJan1st2024 + 10
+          editedByUser:NO];
   EXPECT_NSNE(credential, credentialSameIdentifier);
 
   ArchivableCredential* credentialDiferentIdentifier =
@@ -262,10 +285,35 @@ TEST_F(ArchivableCredentialTest, passkeyEquality) {
                                          privateKey:StringToData("privateKey")
                                           encrypted:StringToData("encrypted")
                                        creationTime:kJan1st2024
-                                       lastUsedTime:kJan1st2024];
+                                       lastUsedTime:kJan1st2024
+                                             hidden:NO
+                                         hiddenTime:kJan1st2024
+                                       editedByUser:NO];
   EXPECT_NSNE(credential, credentialDiferentIdentifier);
 
   EXPECT_NSNE(credential, nil);
+}
+
+TEST_F(ArchivableCredentialTest, HiddenTimeNotSetForNotHiddenPasskey) {
+  ArchivableCredential* credential =
+      [[ArchivableCredential alloc] initWithFavicon:@"favicon"
+                                               gaia:nil
+                                   recordIdentifier:@"recordIdentifier"
+                                             syncId:StringToData("syncId")
+                                           username:@"username"
+                                    userDisplayName:@"userDisplayName"
+                                             userId:StringToData("userId")
+                                       credentialId:StringToData("credentialId")
+                                               rpId:@"rpId"
+                                         privateKey:StringToData("test")
+                                          encrypted:nil
+                                       creationTime:kJan1st2024
+                                       lastUsedTime:kJan1st2024
+                                             hidden:NO
+                                         hiddenTime:0
+                                       editedByUser:NO];
+
+  EXPECT_FALSE(PasskeyFromCredential(credential).has_hidden_time());
 }
 
 }  // namespace

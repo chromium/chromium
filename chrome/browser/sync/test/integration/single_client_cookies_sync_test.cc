@@ -96,6 +96,11 @@ class SingleClientCookiesSyncTest : public SyncTest {
     SyncTest::SetUpInProcessBrowserTestFixture();
   }
 
+  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
+
   void SetFloatingSsoEnabledPolicy(bool policy_value) {
     policy::PolicyMap policy;
     policy.Set(policy::key::kFloatingSsoEnabled, policy::POLICY_LEVEL_MANDATORY,

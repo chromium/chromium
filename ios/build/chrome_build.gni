@@ -5,7 +5,6 @@
 import("//build/config/apple/mobile_config.gni")
 import("//build/config/apple/symbols.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/features.gni")
 import("//build/config/ios/config.gni")
 import("//build/config/ios/ios_sdk.gni")
 
@@ -14,10 +13,14 @@ assert(target_platform == "iphoneos",
 
 # LINT.IfChange
 
-# Xcode 16.0 or higher is required to build Chromium on iOS. This file should
+# Xcode 26.0 or higher is required to build Chromium on iOS. This file should
 # only be included when building Chromium, not other related projects (cronet,
 # webrtc, ...).
-assert(xcode_version_int >= 1600, "Xcode 16.0 or higher is required.")
+#
+# TODO(crbug.com/6910795): remove `|| taget_environment == "catalyst"` when
+# the catalyst bot has been updated to use Xcode 26.0+.
+assert(xcode_version_int >= 2600 || target_environment == "catalyst",
+       "Xcode 26.0 or higher is required ($xcode_version_verbatim detected).")
 
 # LINT.ThenChange(//docs/ios/build_instructions.md)
 
@@ -50,9 +53,11 @@ declare_args() {
   # Overridden when using the Google-internal repository to build Chrome on iOS.
   ios_account_verification_provider_target = "//ios/chrome/credential_provider_extension:account_verification_provider_implementation"
 
-  # Label of the target providing implementation for PasskeyKeychainProvider.
+  # Label of the targets providing implementation for PasskeyKeychainProvider.
+  # Different for Chrome and extensions due to different internal dependencies.
   # Overridden when using the Google-internal repository to build Chrome on iOS.
-  ios_passkey_keychain_provider_target = "//ios/chrome/credential_provider_extension:passkey_keychain_provider_implementation"
+  ios_passkey_keychain_provider_chrome_target = "//ios/chrome/common/credential_provider:passkey_keychain_provider_implementation"
+  ios_passkey_keychain_provider_extension_target = "//ios/chrome/common/credential_provider:passkey_keychain_provider_implementation"
 
   # Label of the target providing implementation for FontProvider.
   # Overridden when using the Google-internal repository to build Chrome on iOS.
@@ -63,8 +68,8 @@ declare_args() {
   # Overridden when using the Google-internal repository to build Chrome on iOS.
   ios_push_notification_service_extension_target = "//ios/chrome/push_notification_service_extension:push_notification_service_extension_implementation"
 
-  # Enable passkey capabilities in the Credential Provider Extension (CPE).
-  ios_cpe_enable_passkey_capabilities = true
+  # Enable credential exchange capability in the Credential Provider Extension (CPE).
+  ios_cpe_enable_credential_exchange = true
 
   # The API key to query Google services in the Credential Provider Extension.
   ios_credential_provider_extension_api_key = ""
@@ -76,7 +81,7 @@ declare_args() {
   ios_enable_background_mode = true
 
   # Enable iOS 17 widgets improvements to support multi profile.
-  ios_enable_widgets_for_mim = false
+  ios_enable_widgets_for_mim = true
 
   # Enable iOS 26 liquid glass.
   ios_enable_liquid_glass = true

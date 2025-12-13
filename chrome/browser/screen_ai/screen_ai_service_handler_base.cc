@@ -181,10 +181,10 @@ void ScreenAIServiceHandlerBase::OnScreenAIServiceDisconnected() {
   CallPendingStatusRequests(false);
 
   if (resource_monitor_) {
-    if (resource_monitor_->get_max_resident_memory_kb()) {
+    if (!resource_monitor_->get_max_resident_memory().is_zero()) {
       base::UmaHistogramMemoryMB(
           GetMetricFullName("MaxMemoryLoad"),
-          resource_monitor_->get_max_resident_memory_kb() / 1000);
+          resource_monitor_->get_max_resident_memory().InKiB() / 1000);
     }
     resource_monitor_.reset();
 
@@ -300,8 +300,10 @@ void ScreenAIServiceHandlerBase::OnServiceLaunched(
 void ScreenAIServiceHandlerBase::CreateResourceMonitor(
     const std::string& process_name) {
   CHECK(!resource_monitor_);
+  // Resource monitor creation may [rarely] fail if the process name is not
+  // found in process registry. It is only used for metrics and does not affect
+  // user experience.
   resource_monitor_ = ResourceMonitor::CreateForProcess(process_name);
-  CHECK(resource_monitor_);
 }
 
 void ScreenAIServiceHandlerBase::InitializeServiceIfNeeded() {

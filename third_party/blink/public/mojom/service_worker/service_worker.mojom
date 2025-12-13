@@ -275,6 +275,10 @@ interface ServiceWorker {
   // content, or null.
   DispatchPushEvent(string? payload)
       => (ServiceWorkerEventStatus status);
+  // Like DispatchPushEvent, but records any network requests made during the
+  // push event in |requested_urls|.
+  DispatchPushEventRecordingNetworkRequests(string? payload)
+      => (ServiceWorkerEventStatus status, array<url.mojom.Url>? requested_urls);
   // Whenever a PushSubscription changes, a change event is generated with
   // (optionally) the previous subscription and the new subscription.
   // |old_subscription| can be null when there was a partial database corruption

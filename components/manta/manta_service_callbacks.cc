@@ -10,6 +10,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"

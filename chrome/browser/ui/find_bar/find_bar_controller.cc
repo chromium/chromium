@@ -8,12 +8,18 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_platform_helper.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -32,6 +38,9 @@ FindBarController::~FindBarController() {
 }
 
 void FindBarController::Show(bool find_next, bool forward_direction) {
+  // Close any overlapping bubbles before showing the find bar.
+  find_bar_->CloseOverlappingBubbles();
+
   find_in_page::FindTabHelper* find_tab_helper =
       find_in_page::FindTabHelper::FromWebContents(web_contents());
 
@@ -61,7 +70,8 @@ void FindBarController::Show(bool find_next, bool forward_direction) {
 
   std::u16string selected_text = GetSelectedText();
   auto selected_length = selected_text.length();
-  if (selected_length > 0 && selected_length <= 250) {
+  if (selected_length > 0 && selected_length <= 250 &&
+      find_bar_->CanPopulateFromSelectedText()) {
     find_bar_->SetFindTextAndSelectedRange(
         selected_text, gfx::Range(0, selected_text.length()));
   }
@@ -315,4 +325,42 @@ std::u16string FindBarController::GetSelectedText() {
   // bar.
   base::TrimWhitespace(selected_text, base::TRIM_ALL, &selected_text);
   return selected_text;
+}
+
+void FindBarController::UpdatePageAction() {
+  CHECK(IsPageActionMigrated(PageActionIconType::kFind));
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  // On ChromeOS it's possible that the active tab's contents are discarded.
+  // The tab may be null during discarding, which triggers a visibility change
+  // that leads to this. Changing web contents before discarding does not work
+  // either because the replacement contents don't have the required tab helpers
+  // set up.
+  //
+  // TODO(crbug.com/461909461): This is a bandaid fix. Instead, the
+  // FindBarController should properly handle tab discarding events by
+  // unregistering observations, and ensuring they get it gets re-registered
+  // when the tab has valid contents after the discard.
+  if (!tab) {
+    return;
+  }
+
+  tabs::TabFeatures* tab_features = tab->GetTabFeatures();
+  if (!tab_features) {
+    return;
+  }
+  // Page actions don't exist for non-normal windows.
+  page_actions::PageActionController* controller =
+      tab_features->page_action_controller();
+  if (!controller) {
+    return;
+  }
+
+  if (!find_bar_->IsFindBarVisible()) {
+    find_bar_page_action_activity_.reset();
+    controller->Hide(kActionFind);
+  } else {
+    controller->Show(kActionFind);
+    find_bar_page_action_activity_ = controller->AddActivity(kActionFind);
+  }
 }

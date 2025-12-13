@@ -70,7 +70,10 @@ class CORE_EXPORT ImageResource final
                                const DOMWrapperWorld* world);
   static ImageResource* CreateForTest(const KURL&);
 
-  static constexpr int kSpeculativeDecodeMinImageSize = 25;
+  // This restricts speculative decoding to images that are relatively expensive
+  // to decode.
+  static constexpr int kSpeculativeDecodeMinImageSize = 10000;
+  static bool IsAboveSpeculativeDecodeSizeThreshold(const gfx::Size&);
 
   ImageResource(const ResourceRequest&,
                 const ResourceLoaderOptions&,
@@ -102,8 +105,8 @@ class CORE_EXPORT ImageResource final
   bool ShouldIgnoreHTTPStatusCodeErrors() const override { return true; }
 
   void UpdateResourceInfoFromObservers() override;
-  std::pair<ResourcePriority, ResourcePriority> PriorityFromObservers()
-      const override;
+  std::pair<std::optional<ResourcePriority>, std::optional<ResourcePriority>>
+  PriorityFromObservers() const override;
   bool IsAboveSpeculativeDecodeSizeThreshold() const override;
 
   // MultipartImageResourceParser::Client

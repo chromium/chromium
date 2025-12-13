@@ -154,7 +154,7 @@ public class DisplayCutoutTestRule<T extends ChromeActivity> extends ChromeActiv
         super.before();
 
         startActivity();
-        mTab = getActivity().getActivityTab();
+        mTab = getActivityTab();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

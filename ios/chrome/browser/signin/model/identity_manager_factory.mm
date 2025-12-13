@@ -23,7 +23,7 @@
 #import "ios/chrome/browser/signin/model/device_accounts_provider_impl.h"
 #import "ios/chrome/browser/signin/model/signin_client_factory.h"
 
-void IdentityManagerFactory::RegisterBrowserStatePrefs(
+void IdentityManagerFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   signin::IdentityManager::RegisterProfilePrefs(registry);
 }
@@ -50,9 +50,7 @@ IdentityManagerFactory* IdentityManagerFactory::GetInstance() {
 }
 
 std::unique_ptr<KeyedService> IdentityManagerFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   signin::IdentityManagerBuildParams params;
   params.account_consistency = signin::AccountConsistencyMethod::kMirror;
   params.device_accounts_provider =

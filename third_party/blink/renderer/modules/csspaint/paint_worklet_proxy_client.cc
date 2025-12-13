@@ -117,8 +117,8 @@ void PaintWorkletProxyClient::RegisterCSSPaintDefinition(
       document_definition_map_.Set(name, nullptr);
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
-          "A class with name:'" + name +
-              "' was registered with a different definition.");
+          StrCat({"A class with name:'", name,
+                  "' was registered with a different definition."}));
       return;
     }
   } else {
@@ -136,21 +136,13 @@ void PaintWorkletProxyClient::RegisterCSSPaintDefinition(
   // named paint definition (with the same definition as well).
   if (document_definition->GetRegisteredDefinitionCount() ==
       PaintWorklet::kNumGlobalScopesPerThread) {
-    const Vector<AtomicString>& custom_properties =
-        definition->CustomInvalidationProperties();
-    // Make a deep copy of the |custom_properties| into a Vector<String> so that
-    // CrossThreadCopier can pass that cross thread boundaries.
-    Vector<String> passed_custom_properties;
-    for (const auto& property : custom_properties)
-      passed_custom_properties.push_back(property.GetString());
-
     PostCrossThreadTask(
         *main_thread_runner_, FROM_HERE,
         CrossThreadBindOnce(
             &PaintWorklet::RegisterMainThreadDocumentPaintDefinition,
             MakeUnwrappingCrossThreadWeakHandle(paint_worklet_), name,
             definition->NativeInvalidationProperties(),
-            std::move(passed_custom_properties),
+            definition->CustomInvalidationProperties(),
             definition->InputArgumentTypes(),
             definition->GetPaintRenderingContext2DSettings()->alpha()));
   }

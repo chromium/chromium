@@ -33,7 +33,7 @@ class AV1BuilderTest : public ::testing::Test {
 
   AV1BitstreamBuilder::SequenceHeader MakeSequenceHeader() {
     AV1BitstreamBuilder::SequenceHeader seq_hdr{};
-    seq_hdr.profile = 1;
+    seq_hdr.profile = 0;
     seq_hdr.operating_points_cnt_minus_1 = 0;
     seq_hdr.level.at(0) = 12;
     seq_hdr.tier.at(0) = 0;
@@ -184,7 +184,7 @@ TEST_F(AV1BuilderTest, AV1BitstreamBuilderAppendBitstreamBuffer) {
 
 TEST_F(AV1BuilderTest, BuildSequenceHeaderOBU) {
   const std::vector<uint8_t> expected_packed_data = {
-      0b00100000, 0b00000000, 0b00000000, 0b01100011, 0b11111100,
+      0b00000000, 0b00000000, 0b00000000, 0b01100011, 0b11111100,
       0b00010011, 0b11111100, 0b00001011, 0b00111101, 0b11111111,
       0b11001111, 0b11000000, 0b10100000};
   AV1BitstreamBuilder seq_header_obu =
@@ -196,7 +196,7 @@ TEST_F(AV1BuilderTest, BuildSequenceHeaderOBU) {
 
 TEST_F(AV1BuilderTest, BuildTemporalSequenceHeaderOBU) {
   const std::vector<uint8_t> expected_packed_data = {
-      0b00100000, 0b00100001, 0b00000111, 0b01100000, 0b01000000, 0b11011000,
+      0b00000000, 0b00100001, 0b00000111, 0b01100000, 0b01000000, 0b11011000,
       0b00010000, 0b00010110, 0b00111111, 0b11000001, 0b00111111, 0b11000000,
       0b10110011, 0b11011111, 0b11111100, 0b11111100, 0b00001010};
   AV1BitstreamBuilder::SequenceHeader seq_hdr = MakeSequenceHeader();
@@ -307,7 +307,7 @@ TEST_F(AV1BuilderTest, BuildFrameOBUWithSegmentation) {
             pic_hdr.feature_data[1][2]);
 }
 
-TEST_F(AV1BuilderTest, BuildSeqHeaderWithColorConfig) {
+TEST_F(AV1BuilderTest, BuildSeqHeaderWithColorConfigProfile0) {
   AV1BitstreamBuilder::SequenceHeader seq_hdr = MakeDefaultSequenceHeader();
   seq_hdr.color_description_present_flag = true;
   seq_hdr.color_primaries = kLibgav1ColorPrimaryBt709;
@@ -351,6 +351,63 @@ TEST_F(AV1BuilderTest, BuildSeqHeaderWithColorConfig) {
 
   EXPECT_EQ(status, libgav1::kStatusOk);
   auto sequence_header = parser->sequence_header();
+  EXPECT_EQ(sequence_header.color_config.color_primary,
+            kLibgav1ColorPrimaryBt709);
+  EXPECT_EQ(sequence_header.color_config.transfer_characteristics,
+            kLibgav1TransferCharacteristicsBt709);
+  EXPECT_EQ(sequence_header.color_config.matrix_coefficients,
+            kLibgav1MatrixCoefficientsBt709);
+  EXPECT_EQ(sequence_header.color_config.color_range, kLibgav1ColorRangeStudio);
+  EXPECT_EQ(sequence_header.color_config.chroma_sample_position,
+            kLibgav1ChromaSamplePositionUnknown);
+}
+
+TEST_F(AV1BuilderTest, BuildSeqHeaderWithColorConfigProfile1) {
+  AV1BitstreamBuilder::SequenceHeader seq_hdr = MakeDefaultSequenceHeader();
+  seq_hdr.profile = 1;
+  seq_hdr.color_description_present_flag = true;
+  seq_hdr.color_primaries = kLibgav1ColorPrimaryBt709;
+  seq_hdr.transfer_characteristics = kLibgav1TransferCharacteristicsBt709;
+  seq_hdr.matrix_coefficients = kLibgav1MatrixCoefficientsBt709;
+  seq_hdr.color_range = kLibgav1ColorRangeStudio;
+  seq_hdr.chroma_sample_position = kLibgav1ChromaSamplePositionUnknown;
+  AV1BitstreamBuilder seq_header_obu =
+      AV1BitstreamBuilder::BuildSequenceHeaderOBU(seq_hdr);
+
+  AV1BitstreamBuilder packed_frame;
+  packed_frame.WriteOBUHeader(/*type=*/libgav1::kObuTemporalDelimiter,
+                              /*has_size=*/true);
+  packed_frame.WriteValueInLeb128(0);
+
+  packed_frame.WriteOBUHeader(libgav1::kObuSequenceHeader, /*has_size=*/true);
+  EXPECT_EQ(seq_header_obu.OutstandingBits() % 8, 0ull);
+  packed_frame.WriteValueInLeb128(seq_header_obu.OutstandingBits() / 8);
+  packed_frame.AppendBitstreamBuffer(std::move(seq_header_obu));
+
+  AV1BitstreamBuilder::FrameHeader pic_hdr = MakeFrameHeader(0);
+  packed_frame.WriteOBUHeader(libgav1::kObuFrame, /*has_size=*/true);
+  AV1BitstreamBuilder frame_obu =
+      AV1BitstreamBuilder::BuildFrameHeaderOBU(seq_hdr, pic_hdr);
+  EXPECT_EQ(frame_obu.OutstandingBits() % 8, 0ull);
+  // Fake tile_group_obu with only dummy data.
+  static const uint8_t tile_group_obu[] = {0x00, 0x80};
+  packed_frame.WriteValueInLeb128(frame_obu.OutstandingBits() / 8 +
+                                  std::size(tile_group_obu));
+  packed_frame.AppendBitstreamBuffer(std::move(frame_obu));
+  for (const uint8_t byte : tile_group_obu) {
+    packed_frame.Write(byte, 8);
+  }
+  std::vector<uint8_t> chunk = std::move(packed_frame).Flush();
+  auto parser = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
+      chunk.data(), chunk.size(), 0, buffer_pool_.get(),
+      av1_decoder_state_.get()));
+
+  libgav1::RefCountedBufferPtr current_frame;
+  libgav1::StatusCode status = parser->ParseOneFrame(&current_frame);
+
+  EXPECT_EQ(status, libgav1::kStatusOk);
+  auto sequence_header = parser->sequence_header();
+  EXPECT_EQ(sequence_header.profile, libgav1::kProfile1);
   EXPECT_EQ(sequence_header.color_config.color_primary,
             kLibgav1ColorPrimaryBt709);
   EXPECT_EQ(sequence_header.color_config.transfer_characteristics,

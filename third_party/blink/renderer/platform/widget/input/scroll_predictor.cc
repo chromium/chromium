@@ -65,7 +65,8 @@ void ScrollPredictor::ResetOnGestureScrollBegin(const WebGestureEvent& event) {
 std::unique_ptr<EventWithCallback> ScrollPredictor::ResampleScrollEvents(
     std::unique_ptr<EventWithCallback> event_with_callback,
     base::TimeTicks frame_time,
-    base::TimeDelta frame_interval) {
+    base::TimeDelta frame_interval,
+    const WebInputEvent* next_event) {
   if (!should_resample_scroll_events_)
     return event_with_callback;
 
@@ -100,6 +101,16 @@ std::unique_ptr<EventWithCallback> ScrollPredictor::ResampleScrollEvents(
     for (auto& coalesced_event : original_events)
       UpdatePrediction(coalesced_event.event_->Event(), frame_time);
 
+    // Update the predictor with the next event in the queue (the first to
+    // arrive after the `sample_time` cutoff). This improves prediction accuracy
+    // by incorporating a more current data point than the historical events in
+    // `original_events`.
+    if (next_event) {
+      DCHECK(next_event->GetType() ==
+             WebInputEvent::Type::kGestureScrollUpdate);
+      UpdatePredictionForEventAfterSampleTime(*next_event);
+    }
+
     if (should_resample_scroll_events_) {
       ResampleEvent(frame_time, frame_interval,
                     event_with_callback->event_pointer(), trace_id);
@@ -130,7 +141,7 @@ ScrollPredictor::GenerateSyntheticScrollUpdate(
     base::TimeDelta frame_interval,
     mojom::blink::GestureDevice gesture_device,
     int modifiers) {
-  if (!HasPrediction()) {
+  if (!should_resample_scroll_events_ && !HasPrediction(frame_time)) {
     return nullptr;
   }
   WebGestureEvent gesture_event(WebInputEvent::Type::kGestureScrollUpdate,
@@ -153,12 +164,13 @@ ScrollPredictor::GenerateSyntheticScrollUpdate(
           /*is_inertial=*/false,
           cc::ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
           /*delta=*/gesture_event.data.scroll_update.delta_y,
-          /*timestamp=*/frame_time,
-          /*arrived_in_browser_main_timestamp=*/frame_time,
-          /*blocking_touch_dispatched_to_renderer=*/frame_time,
+          /*timestamp=*/gesture_event.TimeStamp(),
+          /*arrived_in_browser_main_timestamp=*/gesture_event.TimeStamp(),
+          /*blocking_touch_dispatched_to_renderer=*/gesture_event.TimeStamp(),
           /*trace_id=*/
           base::IdType64<class ui::LatencyInfo>(latency_info.trace_id()));
   metrics->set_predicted_delta(gesture_event.data.scroll_update.delta_y);
+  metrics->set_is_synthetic(true);
   return std::make_unique<EventWithCallback>(
       std::make_unique<WebCoalescedInputEvent>(std::move(gesture_event),
                                                latency_info),
@@ -183,7 +195,16 @@ ScrollPredictor::GenerateSyntheticScrollUpdate(
       std::move(metrics));
 }
 
-bool ScrollPredictor::HasPrediction() const {
+bool ScrollPredictor::HasPrediction(base::TimeTicks frame_time) const {
+  // If the last real user event is too old, stop generating synthetic events
+  // to avoid creating "phantom" scroll motion. We use MaxResampleTime() as
+  // the timeout, which is 20ms.
+  if (!last_prediction_update_timestamp_.is_null() &&
+      frame_time - last_prediction_update_timestamp_ >
+          predictor_->MaxResampleTime()) {
+    return false;
+  }
+
   return predictor_->HasPrediction();
 }
 
@@ -194,7 +215,34 @@ void ScrollPredictor::Reset() {
   }
   current_event_accumulated_delta_ = gfx::PointF();
   last_predicted_accumulated_delta_ = gfx::PointF();
+  last_prediction_update_timestamp_ = base::TimeTicks();  // Reset the timestamp
   metrics_handler_.Reset();
+}
+
+base::TimeDelta ScrollPredictor::ResampleLatency(
+    base::TimeDelta frame_interval) const {
+  return predictor_->ResampleLatency(frame_interval);
+}
+
+void ScrollPredictor::UpdatePredictionForEventAfterSampleTime(
+    const WebInputEvent& event) {
+  CHECK(event.GetType() == WebInputEvent::Type::kGestureScrollUpdate);
+  const WebGestureEvent& gesture_event =
+      static_cast<const WebGestureEvent&>(event);
+
+  if (gesture_event.data.scroll_update.inertial_phase ==
+      WebGestureEvent::InertialPhaseState::kMomentum) {
+    return;
+  }
+
+  if (last_prediction_update_timestamp_ < gesture_event.TimeStamp()) {
+    predictor_->Update(
+        {current_event_accumulated_delta_ +
+             gfx::Vector2dF(gesture_event.data.scroll_update.delta_x,
+                            gesture_event.data.scroll_update.delta_y),
+         gesture_event.TimeStamp()});
+    last_prediction_update_timestamp_ = gesture_event.TimeStamp();
+  }
 }
 
 void ScrollPredictor::UpdatePrediction(const WebInputEvent& event,
@@ -215,7 +263,16 @@ void ScrollPredictor::UpdatePrediction(const WebInputEvent& event,
   ui::InputPredictor::InputData data = {current_event_accumulated_delta_,
                                         gesture_event.TimeStamp()};
 
-  predictor_->Update(data);
+  // This check prevents the predictor from processing the same event data
+  // twice. An event might be sent to the predictor in
+  // `UpdatePredictionForEventAfterSampleTime` and then later appear in the
+  // `original_events` list within `ResampleScrollEvents`, which calls this
+  // function. The timestamp comparison ensures the predictor only updates with
+  // each event once.
+  if (last_prediction_update_timestamp_ < gesture_event.TimeStamp()) {
+    predictor_->Update(data);
+    last_prediction_update_timestamp_ = gesture_event.TimeStamp();
+  }
 
   metrics_handler_.AddRealEvent(current_event_accumulated_delta_,
                                 gesture_event.TimeStamp(), frame_time,

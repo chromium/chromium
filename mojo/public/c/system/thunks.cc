@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/c/system/thunks.h"
 
 #include <cstddef>
@@ -43,7 +38,7 @@ MojoResult NotImplemented(const char* name) {
   }
 
   LOG(FATAL) << "Mojo has not been initialized in this process. You must call "
-             << "either mojo::core::Init() as an embedder.";
+             << "mojo::core::Init() as an embedder.";
 }
 
 }  // namespace
@@ -563,7 +558,7 @@ MojoResult MojoAppendMessageData32(MojoMessageHandle message,
                                    uint32_t* buffer_size) {
   std::vector<MojoHandle> handles64(num_handles);
   for (size_t i = 0; i < num_handles; ++i) {
-    handles64[i] = handles[i];
+    handles64[i] = UNSAFE_TODO(handles[i]);
   }
   return MojoAppendMessageData(message, payload_size, handles64.data(),
                                num_handles, options, buffer, buffer_size);
@@ -580,7 +575,7 @@ MojoResult MojoGetMessageData32(MojoMessageHandle message,
                                          handles64.data(), num_handles);
   if (result == MOJO_RESULT_OK && num_handles) {
     for (size_t i = 0; i < *num_handles; ++i) {
-      handles[i] = static_cast<MojoHandle32>(handles64[i]);
+      UNSAFE_TODO(handles[i]) = static_cast<MojoHandle32>(handles64[i]);
     }
   }
   return result;
@@ -770,7 +765,8 @@ void MojoEmbedderSetSystemThunks(const MojoSystemThunks2* thunks) {
   // This should only have to check that the |g_thunks->size| is zero, but we
   // have multiple Mojo Core initializations in some test suites still. For now
   // we allow double calls as long as they're the same thunks as before.
-  DCHECK(g_thunks.size == 0 || !memcmp(&g_thunks, thunks, sizeof(g_thunks)))
+  UNSAFE_TODO(DCHECK(g_thunks.size == 0 ||
+                     !memcmp(&g_thunks, thunks, sizeof(g_thunks))))
       << "Cannot set embedder thunks after Mojo API calls have been made.";
 
   g_thunks = *thunks;

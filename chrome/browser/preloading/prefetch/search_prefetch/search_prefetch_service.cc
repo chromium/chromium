@@ -461,7 +461,7 @@ bool SearchPrefetchService::MaybePrefetchURL(
                          base::Unretained(this)));
 
   DCHECK(prefetch_request);
-  if (!prefetch_request->StartPrefetchRequest(profile_)) {
+  if (!prefetch_request->StartPrefetchRequest(profile_, *web_contents)) {
     recorder.reason_ = SearchPrefetchEligibilityReason::kThrottled;
     // We don't consider Throttled as an ineligibility reason is because we
     // can't replicate this behaviour in our other experiment group. To prevent
@@ -628,13 +628,23 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
 SearchPrefetchURLLoader::RequestHandler
 SearchPrefetchService::TakePrefetchResponseFromDiskCache(
     const GURL& navigation_url) {
-  DCHECK(!IsNoVarySearchDiskCacheEnabled());
+  CHECK(!IsNoVarySearchDiskCacheEnabled() ||
+        CacheAliasLoaderDryRunModeEnabled());
   GURL navigation_url_without_ref(net::SimplifyUrlForRequest(navigation_url));
   if (prefetch_cache_.find(navigation_url_without_ref) ==
       prefetch_cache_.end()) {
     return {};
   }
 
+  if (IsNoVarySearchDiskCacheEnabled()) {
+    if (!CacheAliasLoaderDryRunModeEnabled()) {
+      return {};
+    }
+    auto loader = std::make_unique<CacheAliasSearchPrefetchURLLoader>(
+        profile_, SearchPrefetchRequest::NetworkAnnotationForPrefetch());
+    return CacheAliasSearchPrefetchURLLoader::
+        GetServingResponseHandlerFromLoader(std::move(loader));
+  }
   auto loader = std::make_unique<CacheAliasSearchPrefetchURLLoader>(
       profile_, SearchPrefetchRequest::NetworkAnnotationForPrefetch(),
       prefetch_cache_[navigation_url_without_ref].first);
@@ -898,9 +908,13 @@ void SearchPrefetchService::OnTemplateURLServiceChanged() {
 }
 
 void SearchPrefetchService::ClearCacheEntry(const GURL& navigation_url) {
-  if (IsNoVarySearchDiskCacheEnabled()) {
+  // Only update the profile data when disk cache is disabled or dry run mode is
+  // enabled.
+  if (IsNoVarySearchDiskCacheEnabled() &&
+      !CacheAliasLoaderDryRunModeEnabled()) {
     return;
   }
+
   GURL navigation_url_without_ref(net::SimplifyUrlForRequest(navigation_url));
   if (prefetch_cache_.find(navigation_url_without_ref) ==
       prefetch_cache_.end()) {
@@ -912,7 +926,6 @@ void SearchPrefetchService::ClearCacheEntry(const GURL& navigation_url) {
 }
 
 void SearchPrefetchService::UpdateServeTime(const GURL& navigation_url) {
-  DCHECK(!IsNoVarySearchDiskCacheEnabled());
   GURL navigation_url_without_ref(net::SimplifyUrlForRequest(navigation_url));
   if (prefetch_cache_.find(navigation_url_without_ref) == prefetch_cache_.end())
     return;
@@ -923,11 +936,15 @@ void SearchPrefetchService::UpdateServeTime(const GURL& navigation_url) {
 
 void SearchPrefetchService::AddCacheEntry(const GURL& navigation_url,
                                           const GURL& prefetch_url) {
-  // Disk cache is responsible for retrieving the cache and we do not need to
-  // modify the URL to help the disk cache retrieve the cache.
-  if (IsNoVarySearchDiskCacheEnabled()) {
+  // Only update the profile data when disk cache is disabled or dry run mode is
+  // enabled.
+  if (IsNoVarySearchDiskCacheEnabled() &&
+      !CacheAliasLoaderDryRunModeEnabled()) {
     return;
   }
+
+  // Disk cache is responsible for retrieving the cache and we do not need to
+  // modify the URL to help the disk cache retrieve the cache.
   GURL navigation_url_without_ref(net::SimplifyUrlForRequest(navigation_url));
   GURL prefetch_url_without_ref(net::SimplifyUrlForRequest(prefetch_url));
   if (navigation_url_without_ref == prefetch_url_without_ref) {

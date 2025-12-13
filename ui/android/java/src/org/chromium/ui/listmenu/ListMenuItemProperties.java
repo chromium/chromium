@@ -31,6 +31,11 @@ public class ListMenuItemProperties {
     public static final WritableIntPropertyKey TITLE_ID = new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<CharSequence> TITLE =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<CharSequence> SUBTITLE =
+            new WritableObjectPropertyKey<>();
+    public static final ReadableBooleanPropertyKey IS_SUBTITLE_ELLIPSIZED_AT_END =
+            new ReadableBooleanPropertyKey();
+
     // A11y content description of menu item
     public static final WritableObjectPropertyKey<@Nullable String> CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
@@ -60,6 +65,10 @@ public class ListMenuItemProperties {
     public static final WritableIntPropertyKey MENU_ITEM_ID = new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<View.@Nullable OnClickListener> CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<View.@Nullable OnHoverListener> HOVER_LISTENER =
+            new WritableObjectPropertyKey<>();
+    public static final WritableBooleanPropertyKey IS_HIGHLIGHTED =
+            new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<@Nullable Intent> INTENT =
             new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey ENABLED = new WritableBooleanPropertyKey();
@@ -71,9 +80,19 @@ public class ListMenuItemProperties {
     public static final ReadableBooleanPropertyKey KEEP_START_ICON_SPACING_WHEN_HIDDEN =
             new ReadableBooleanPropertyKey();
 
+    public static final WritableObjectPropertyKey<View.OnKeyListener> KEY_LISTENER =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<View.OnTouchListener> TOUCH_LISTENER =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableIntPropertyKey ORDER = new WritableIntPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = {
         TITLE_ID,
         TITLE,
+        SUBTITLE,
+        IS_SUBTITLE_ELLIPSIZED_AT_END,
         CONTENT_DESCRIPTION,
         START_ICON_ID,
         START_ICON_DRAWABLE,
@@ -82,11 +101,16 @@ public class ListMenuItemProperties {
         GROUP_ID,
         MENU_ITEM_ID,
         CLICK_LISTENER,
+        HOVER_LISTENER,
+        IS_HIGHLIGHTED,
         INTENT,
         ENABLED,
         ICON_TINT_COLOR_STATE_LIST_ID,
         TEXT_APPEARANCE_ID,
         IS_TEXT_ELLIPSIZED_AT_END,
-        KEEP_START_ICON_SPACING_WHEN_HIDDEN
+        KEEP_START_ICON_SPACING_WHEN_HIDDEN,
+        KEY_LISTENER,
+        TOUCH_LISTENER,
+        ORDER
     };
 }

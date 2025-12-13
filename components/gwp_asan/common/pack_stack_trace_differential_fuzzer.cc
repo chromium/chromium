@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <string.h>
 
 #include <algorithm>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "components/gwp_asan/common/pack_stack_trace.h"
 
@@ -23,8 +19,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* Data, size_t Size) {
     return 0;
 
   size_t unpacked_max_size = reinterpret_cast<const size_t*>(Data)[0];
-  size_t packed_max_size = reinterpret_cast<const size_t*>(Data)[1];
-  Data += sizeof(size_t) * 2;
+  size_t packed_max_size =
+      UNSAFE_TODO(reinterpret_cast<const size_t*>(Data)[1]);
+  UNSAFE_TODO(Data += sizeof(size_t) * 2);
   Size -= sizeof(size_t) * 2;
 
   size_t entries = Size / sizeof(uintptr_t);
@@ -50,7 +47,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* Data, size_t Size) {
   if (packed_max_size > packed_array_size &&
       unpacked_out != unpacked_array_size)
     __builtin_trap();
-  if (memcmp(Data, unpacked.data(), unpacked_out * sizeof(uintptr_t))) {
+  if (UNSAFE_TODO(
+          memcmp(Data, unpacked.data(), unpacked_out * sizeof(uintptr_t)))) {
     __builtin_trap();
   }
   return 0;

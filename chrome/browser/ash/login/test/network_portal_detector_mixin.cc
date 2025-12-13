@@ -6,7 +6,6 @@
 
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_service_client.h"
@@ -48,31 +47,26 @@ void NetworkPortalDetectorMixin::SetDefaultNetwork(
     const std::string& network_type,
     NetworkStatus status) {
   SetShillDefaultNetwork(network_guid, network_type, status);
-  network_portal_detector_->SetDefaultNetworkForTesting(network_guid);
 
   SimulateDefaultNetworkState(status);
 }
 
 void NetworkPortalDetectorMixin::SimulateNoNetwork() {
   SetShillDefaultNetwork("", "", NetworkStatus::kOffline);
-  network_portal_detector_->SetDefaultNetworkForTesting("");
 }
 
 void NetworkPortalDetectorMixin::SimulateDefaultNetworkState(
     NetworkStatus status) {
-  std::string default_network_guid =
-      network_portal_detector_->GetDefaultNetworkGuid();
-  DCHECK(!default_network_guid.empty());
+  DCHECK(!default_network_guid_.empty());
   std::string default_network_type =
-      default_network_guid.compare(0, 4, "wifi") == 0 ? shill::kTypeWifi
-                                                      : shill::kTypeEthernet;
+      default_network_guid_.compare(0, 4, "wifi") == 0 ? shill::kTypeWifi
+                                                       : shill::kTypeEthernet;
 
   if (NetworkHandler::IsInitialized()) {
     const NetworkState* default_network =
         NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
-    if (default_network_guid != default_network_guid_ || !default_network ||
-        default_network->guid() != default_network_guid) {
-      SetShillDefaultNetwork(default_network_guid, default_network_type,
+    if (!default_network || default_network->guid() != default_network_guid_) {
+      SetShillDefaultNetwork(default_network_guid_, default_network_type,
                              status);
     } else {
       std::string state = StatusToState(status);
@@ -84,16 +78,8 @@ void NetworkPortalDetectorMixin::SimulateDefaultNetworkState(
 }
 
 void NetworkPortalDetectorMixin::SetUpOnMainThread() {
-  // Setup network portal detector to return online for the default network.
-  network_portal_detector_ = new NetworkPortalDetectorTestImpl();
-  network_portal_detector::InitializeForTesting(network_portal_detector_);
-  network_portal_detector_->Enable();
   SetDefaultNetwork(FakeShillManagerClient::kFakeEthernetNetworkGuid,
                     shill::kTypeEthernet, NetworkStatus::kOnline);
-}
-
-void NetworkPortalDetectorMixin::TearDownOnMainThread() {
-  network_portal_detector::Shutdown();
 }
 
 void NetworkPortalDetectorMixin::SetShillDefaultNetwork(

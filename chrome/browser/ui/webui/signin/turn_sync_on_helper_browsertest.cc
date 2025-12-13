@@ -9,13 +9,13 @@
 #include <variant>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
@@ -27,6 +27,7 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,7 +67,10 @@ class Delegate : public TurnSyncOnHelper::Delegate {
   ~Delegate() override = default;
 
   // TurnSyncOnHelper::Delegate:
-  void ShowLoginError(const SigninUIError& error) override { NOTREACHED(); }
+  void ShowLoginError(const SigninUIError& error) override {
+    ADD_FAILURE() << "ShowLoginError() invoked unpexectedly with error: "
+                  << error.message();
+  }
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
@@ -203,6 +207,17 @@ class TurnSyncOnHelperBrowserTestWithParam
  public:
   TurnSyncOnHelperBrowserTestWithParam()
       : SigninBrowserTestBase(/*use_main_profile=*/false) {
+    // Class `TurnSyncOnHelper` is only reachable and usable if the feature is
+    // disabled.
+    scoped_feature_list_.InitAndDisableFeature(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+
+  void SetUpOnMainThread() override {
+    SigninBrowserTestBase::SetUpOnMainThread();
+    disclaimer_service_resetter_ =
+        enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
+            GetProfile());
   }
 
  protected:
@@ -211,6 +226,9 @@ class TurnSyncOnHelperBrowserTestWithParam
   TurnSyncOnHelper::SigninAbortedMode aborted_mode() const {
     return std::get<TurnSyncOnHelper::SigninAbortedMode>(GetParam());
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::ScopedClosureRunner disclaimer_service_resetter_;
 };
 
 // Tests that aborting a Sync opt-in flow started with a secondary account
@@ -329,7 +347,23 @@ INSTANTIATE_TEST_SUITE_P(
 class TurnSyncOnHelperBrowserTest : public SigninBrowserTestBase {
  public:
   TurnSyncOnHelperBrowserTest()
-      : SigninBrowserTestBase(/*use_main_profile=*/false) {}
+      : SigninBrowserTestBase(/*use_main_profile=*/false) {
+    // Class `TurnSyncOnHelper` is only reachable and usable if the feature is
+    // disabled.
+    scoped_feature_list_.InitAndDisableFeature(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+
+  void SetUpOnMainThread() override {
+    SigninBrowserTestBase::SetUpOnMainThread();
+    disclaimer_service_resetter_ =
+        enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
+            GetProfile());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::ScopedClosureRunner disclaimer_service_resetter_;
 };
 
 // Regression test for https://crbug.com/1404961

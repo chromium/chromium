@@ -1,6 +1,6 @@
 include_rules = [
-  "+components/miracle_parameter",
   "+components/network_time/time_tracker",
+  "+components/unexportable_keys",
   "+crypto",
   "+net/net_jni_headers",
   "+third_party/apple_apsl",
@@ -82,6 +82,10 @@ specific_include_rules = {
   # Fuzzers may also be included in unit tests.
   ".*test\.cc": [
     "+third_party/fuzztest",
+  ],
+
+  "cookie_monster_unittest.cc": [
+    "+base/i18n/time_formatting.h",
   ],
 }
 

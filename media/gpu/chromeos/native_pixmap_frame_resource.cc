@@ -19,18 +19,11 @@
 #include "media/base/format_utils.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/switches.h"
 
 namespace media {
 
 namespace {
-gfx::GenericSharedMemoryId GetNextSharedMemoryId() {
-  // This uses the same ID generator that is used for creating ID's for GPU
-  // memory buffers. Doing so avoids overlapping ID's. No cast is necessary
-  // since gfx::GpuMemoryBufferId is an alias of gfx::GenericSharedMemoryId.
-  return GetNextGpuMemoryBufferId();
-}
 
 // IsValidSize() performs size validity checks similar to those in
 // VideoFrame::IsValidConfigInternal().
@@ -83,14 +76,14 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
     return nullptr;
   }
 
-  auto buffer_format = VideoPixelFormatToGfxBufferFormat(pixel_format);
+  auto si_format = VideoPixelFormatToSharedImageFormat(pixel_format);
   // Using CHECK() here is fine. AllocateGpuMemoryBufferHandle() won't return a
   // gfx::GpuMemoryBufferHandle if this conversion fails.
-  CHECK(buffer_format.has_value());
+  CHECK(si_format.has_value());
 
   return Create(visible_rect, natural_size, timestamp, buffer_usage,
                 base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
-                    coded_size, *buffer_format,
+                    coded_size, *si_format,
                     std::move(gmb_handle).native_pixmap_handle()));
 }
 
@@ -116,13 +109,11 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
     return nullptr;
   }
 
-  // This converts |layout|'s VideoPixelFormat to a gfx::BufferFormat, which is
-  // needed by the NativePixmapFrameResource constructor.
-  auto buffer_format = VideoPixelFormatToGfxBufferFormat(layout.format());
-  if (!buffer_format) {
+  auto si_format = VideoPixelFormatToSharedImageFormat(layout.format());
+  if (!si_format) {
     DLOGF(ERROR) << " Unable to convert pixel format "
                  << VideoPixelFormatToString(layout.format())
-                 << " to BufferFormat";
+                 << " to SharedImageFormat";
     return nullptr;
   }
 
@@ -141,11 +132,10 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
 
   // Note: |buffer_usage| is not set. As a result, the constructed
   // NativePixmapFrameResource cannot be converted to a
-  // STORAGE_GPU_MEMORY_BUFFER VideoFrame.
+  // STORAGE_MAPPABLE_SHARED_IMAGE VideoFrame.
   return base::MakeRefCounted<NativePixmapFrameResource>(
       base::PassKey<NativePixmapFrameResource>(), layout, visible_rect,
-      natural_size, timestamp, *buffer_format, GetNextSharedMemoryId(),
-      base::UnguessableToken::Create(),
+      natural_size, timestamp, *si_format, base::UnguessableToken::Create(),
       /*buffer_usage=*/std::nullopt, std::move(handle));
 }
 
@@ -165,20 +155,18 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
     return nullptr;
   }
 
-  const auto& buffer_format = pixmap->GetBufferFormat();
-  auto pixel_format = GfxBufferFormatToVideoPixelFormat(buffer_format);
+  auto si_format = pixmap->GetSharedImageFormat();
+  auto pixel_format = SharedImageFormatToVideoPixelFormat(si_format);
   if (!pixel_format) {
-    DLOGF(ERROR) << " Unable to convert buffer format "
-                 << gfx::BufferFormatToString(buffer_format)
-                 << " to PixelFormat";
+    DLOGF(ERROR) << " Unable to convert shared image format "
+                 << si_format.ToString() << " to PixelFormat";
     return nullptr;
   }
 
   // Checks that the number of planes matches the expectation for the buffer
   // format.
   const size_t num_planes = pixmap->GetNumberOfPlanes();
-  const size_t expected_number_of_planes =
-      NumberOfPlanesForLinearBufferFormat(buffer_format);
+  const size_t expected_number_of_planes = si_format.NumberOfPlanes();
   if (num_planes != expected_number_of_planes) {
     DLOGF(ERROR) << "Invalid number of planes=" << num_planes
                  << ", expected number of planes=" << expected_number_of_planes;
@@ -203,8 +191,8 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
 
   return base::MakeRefCounted<NativePixmapFrameResource>(
       base::PassKey<NativePixmapFrameResource>(), *layout, visible_rect,
-      natural_size, timestamp, GetNextSharedMemoryId(),
-      base::UnguessableToken::Create(), buffer_usage, std::move(pixmap));
+      natural_size, timestamp, base::UnguessableToken::Create(), buffer_usage,
+      std::move(pixmap));
 }
 
 NativePixmapFrameResource::NativePixmapFrameResource(
@@ -213,8 +201,7 @@ NativePixmapFrameResource::NativePixmapFrameResource(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     base::TimeDelta timestamp,
-    gfx::BufferFormat buffer_format,
-    gfx::GenericSharedMemoryId id,
+    viz::SharedImageFormat si_format,
     const base::UnguessableToken& tracking_token,
     std::optional<gfx::BufferUsage> buffer_usage,
     gfx::NativePixmapHandle handle)
@@ -224,11 +211,10 @@ NativePixmapFrameResource::NativePixmapFrameResource(
           visible_rect,
           natural_size,
           timestamp,
-          id,
           tracking_token,
           buffer_usage,
           base::MakeRefCounted<gfx::NativePixmapDmaBuf>(layout.coded_size(),
-                                                        buffer_format,
+                                                        si_format,
                                                         std::move(handle))) {}
 
 NativePixmapFrameResource::NativePixmapFrameResource(
@@ -237,12 +223,10 @@ NativePixmapFrameResource::NativePixmapFrameResource(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     base::TimeDelta timestamp,
-    gfx::GenericSharedMemoryId id,
     const base::UnguessableToken& tracking_token,
     std::optional<gfx::BufferUsage> buffer_usage,
     scoped_refptr<const gfx::NativePixmapDmaBuf> pixmap)
     : pixmap_(std::move(pixmap)),
-      id_(id),
       buffer_usage_(buffer_usage),
       layout_(layout),
       visible_rect_(visible_rect),
@@ -314,10 +298,9 @@ NativePixmapFrameResource::CreateGpuMemoryBufferHandle() const {
   return gmb_handle;
 }
 
-std::unique_ptr<VideoFrame::ScopedMapping>
-NativePixmapFrameResource::MapGMBOrSharedImage() const {
-  // This accessor is used for frames with STORAGE_GPU_MEMORY_BUFFER. This class
-  // is coded to advertise STORAGE_DMABUFS, so this always returns nullptr.
+scoped_refptr<gpu::ClientSharedImage>
+NativePixmapFrameResource::GetSharedImage() const {
+  // This class does not hold a ClientSharedImage internally.
   return nullptr;
 }
 
@@ -365,13 +348,12 @@ void NativePixmapFrameResource::set_color_space(
   color_space_ = color_space;
 }
 
-const std::optional<gfx::HDRMetadata>& NativePixmapFrameResource::hdr_metadata()
-    const {
+const gfx::HDRMetadata& NativePixmapFrameResource::hdr_metadata() const {
   return hdr_metadata_;
 }
 
 void NativePixmapFrameResource::set_hdr_metadata(
-    const std::optional<gfx::HDRMetadata>& hdr_metadata) {
+    const gfx::HDRMetadata& hdr_metadata) {
   hdr_metadata_ = hdr_metadata;
 }
 
@@ -429,7 +411,7 @@ scoped_refptr<FrameResource> NativePixmapFrameResource::CreateWrappingFrame(
   // constructor.
   auto wrapping_frame = base::MakeRefCounted<NativePixmapFrameResource>(
       base::PassKey<NativePixmapFrameResource>(), layout(), visible_rect,
-      natural_size, timestamp(), id_, tracking_token(), buffer_usage_, pixmap_);
+      natural_size, timestamp(), tracking_token(), buffer_usage_, pixmap_);
 
   // All other metadata is copied to the "wrapping" frame.
   wrapping_frame->metadata().MergeMetadataFrom(metadata());
@@ -461,8 +443,9 @@ std::string NativePixmapFrameResource::AsHumanReadableString() const {
 
 gfx::GpuMemoryBufferHandle
 NativePixmapFrameResource::GetGpuMemoryBufferHandleForTesting() const {
-  // This accessor is used for frames with STORAGE_GPU_MEMORY_BUFFER. This class
-  // is coded to advertise STORAGE_DMABUFS, so this always returns empty handle.
+  // This accessor is used for frames with STORAGE_MAPPABLE_SHARED_IMAGE. This
+  // class is coded to advertise STORAGE_DMABUFS, so this always returns empty
+  // handle.
   return gfx::GpuMemoryBufferHandle();
 }
 

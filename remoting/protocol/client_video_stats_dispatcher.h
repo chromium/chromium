@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "remoting/base/constants.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"

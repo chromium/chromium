@@ -53,6 +53,14 @@
   // NO-OP
 }
 
+- (void)setHUDViewHidden:(BOOL)hidden {
+  // NO-OP
+}
+
+- (void)setGuidanceViewHidden:(BOOL)hidden {
+  // NO-OP
+}
+
 - (void)disableFlyoutMenu:(BOOL)disable {
   // NO-OP
 }
@@ -74,6 +82,10 @@
 }
 
 - (void)updateGuidanceViewVisibility:(BOOL)visible animated:(BOOL)animated {
+  // NO-OP
+}
+
+- (void)zoomImageToCenter:(UIEdgeInsets)insets {
   // NO-OP
 }
 

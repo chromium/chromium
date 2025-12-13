@@ -25,9 +25,6 @@
 // destruction.
 class DownloadUiContextMenu : public ui::SimpleMenuModel::Delegate {
  public:
-  // Only show a context menu for a dangerous download if it is malicious.
-  static bool WantsContextMenu(DownloadUIModel* download_model);
-
   DownloadUiContextMenu(const DownloadUiContextMenu&) = delete;
   DownloadUiContextMenu& operator=(const DownloadUiContextMenu&) = delete;
 

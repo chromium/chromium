@@ -12,7 +12,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -31,7 +30,7 @@ class TransformableAudioFrameInterface;
 
 namespace blink {
 
-using TransformerCallback = WTF::CrossThreadRepeatingFunction<void(
+using TransformerCallback = CrossThreadRepeatingFunction<void(
     std::unique_ptr<webrtc::TransformableAudioFrameInterface>)>;
 
 class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
@@ -40,7 +39,7 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
   // cross-thread safe weak pointer to a Transformer object. This allows us to
   // post tasks to the Transformer from classes the transformer owns without
   // creating a circular reference.
-  class PLATFORM_EXPORT Broker : public WTF::ThreadSafeRefCounted<Broker> {
+  class PLATFORM_EXPORT Broker : public ThreadSafeRefCounted<Broker> {
    public:
     void RegisterTransformedFrameCallback(
         webrtc::scoped_refptr<webrtc::TransformedFrameCallback>

@@ -34,7 +34,7 @@ class FilledCardInformationBubbleViews : public AutofillLocationBarBubble {
 
   // The bubble will be anchored to the |anchor_view|.
   FilledCardInformationBubbleViews(
-      views::View* anchor_view,
+      views::BubbleAnchor anchor_view,
       content::WebContents* web_contents,
       FilledCardInformationBubbleController* controller);
   ~FilledCardInformationBubbleViews() override;

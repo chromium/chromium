@@ -15,6 +15,8 @@ source_set("data_controls") {
     "chrome_dlp_rules_manager.h",
     "chrome_rules_service.cc",
     "chrome_rules_service.h",
+    "data_controls_dialog_factory.cc",
+    "data_controls_dialog_factory.h",
   ]
 
   public_deps = [
@@ -29,6 +31,7 @@ source_set("data_controls") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
     "//components/enterprise/common/proto:dlp_policy_event_proto",
+    "//components/enterprise/connectors/core:constants",
     "//components/enterprise/content",
     "//components/keyed_service/core",
     "//components/policy/core/browser",
@@ -61,12 +64,13 @@ source_set("data_controls") {
     ]
     if (safe_browsing_mode != 0) {
       sources += [
-        "reporting_service.cc",
-        "reporting_service.h",
+        # TODO(crbug.com/435459809): Uncomment these lines to compile these
+        # files in the proper long-term target.
+        # "reporting_service.cc",
+        # "reporting_service.h",
       ]
     }
     deps += [
-      "//chrome/browser/enterprise/data_protection",
       "//components/constrained_window",
       "//components/guest_view/browser",
       "//components/reporting/client:report_queue",
@@ -137,18 +141,18 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "chrome_rules_service_unittest.cc" ]
+  sources = [
+    "chrome_rules_service_unittest.cc",
+    "reporting_unittest.cc",
+  ]
   deps = [
     ":data_controls",
     ":test_support",
+    "//chrome/browser/enterprise/connectors/test:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
     "//components/enterprise/data_controls/core/browser:unit_tests",
   ]
-  if (!is_android) {
-    sources += [ "reporting_service_unittest.cc" ]
-    deps += [ "//chrome/browser/enterprise/connectors/test:test_support" ]
-  }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.

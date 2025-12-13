@@ -7,22 +7,21 @@
 #include <vector>
 
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
-#include "components/optimization_guide/content/mojom/ai_page_content_metadata.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom.h"
 
 TEST(PageContextEligibilityTest, GetFrameMetadataFromPageContent) {
   optimization_guide::AIPageContentResult result;
-  optimization_guide::mojom::PageMetadataPtr page_metadata =
-      optimization_guide::mojom::PageMetadata::New();
-  std::vector<optimization_guide::mojom::FrameMetadataPtr> frame_metadata_list;
+  blink::mojom::PageMetadataPtr page_metadata =
+      blink::mojom::PageMetadata::New();
+  std::vector<blink::mojom::FrameMetadataPtr> frame_metadata_list;
 
-  optimization_guide::mojom::FrameMetadataPtr frame_metadata =
-      optimization_guide::mojom::FrameMetadata::New();
+  blink::mojom::FrameMetadataPtr frame_metadata =
+      blink::mojom::FrameMetadata::New();
   frame_metadata->url = GURL("https://www.google.com/search?q=text#someref");
 
-  std::vector<optimization_guide::mojom::MetaTagPtr> meta_tags;
-  optimization_guide::mojom::MetaTagPtr meta_tag =
-      optimization_guide::mojom::MetaTag::New();
+  std::vector<blink::mojom::MetaTagPtr> meta_tags;
+  blink::mojom::MetaTagPtr meta_tag = blink::mojom::MetaTag::New();
   meta_tag->name = "meta-tag-name";
   meta_tag->content = "meta-tag-content";
   meta_tags.push_back(std::move(meta_tag));

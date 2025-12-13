@@ -63,10 +63,8 @@ std::string SignDataWithTestKey(const std::string& data,
   }
 
   auto key = PolicyBuilder::CreateTestSigningKey();
-  auto wrapped_key =
-      crypto::keypair::PrivateKey::FromDeprecatedRSAPrivateKey(key.get());
   std::vector<uint8_t> result =
-      crypto::sign::Sign(kind, wrapped_key, base::as_byte_span(data));
+      crypto::sign::Sign(kind, key, base::as_byte_span(data));
 
   return std::string(result.begin(), result.end());
 }

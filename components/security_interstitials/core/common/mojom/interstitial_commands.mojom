@@ -17,9 +17,19 @@ interface InterstitialCommands {
   DontReport();
   OpenReportingPrivacy();
   OpenWhitepaper();
+  OpenHelpCenterInNewTab();
+  OpenDiagnosticInNewTab();
+  OpenReportingPrivacyInNewTab();
+  OpenWhitepaperInNewTab();
+  ReportPhishingErrorInNewTab();
   ReportPhishingError();
   // Opens the enhanced protection settings in a new tab.
   OpenEnhancedProtectionSettings();
+
+  // Opens the certificate viewer showing the certificate on the SSL error that
+  // triggered the interstitial. Only meaningful for SSL error interstitials.
+  [EnableIfNot=is_android|is_ios]
+  ShowCertificateViewer();
 
   // Opens advanced protection settings native-UI.
   [EnableIf=is_android]

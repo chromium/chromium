@@ -210,9 +210,6 @@ class ImageResource::ImageResourceInfoImpl final
     return resource_->IsAccessAllowed(
         does_current_frame_has_single_security_origin);
   }
-  bool HasCacheControlNoStoreHeader() const override {
-    return resource_->HasCacheControlNoStoreHeader();
-  }
   std::optional<ResourceError> GetResourceError() const override {
     if (resource_->LoadFailedOrCanceled())
       return resource_->GetResourceError();
@@ -478,8 +475,8 @@ void ImageResource::AppendData(
           std::max(base::TimeDelta(), last_flush_time_ - now + kFlushDelay);
       task_runner->PostDelayedTask(
           FROM_HERE,
-          WTF::BindOnce(&ImageResource::FlushImageIfNeeded,
-                        WrapWeakPersistent(this)),
+          blink::BindOnce(&ImageResource::FlushImageIfNeeded,
+                          WrapWeakPersistent(this)),
           flush_delay);
       is_pending_flushing_ = true;
     }
@@ -595,15 +592,23 @@ void ImageResource::UpdateResourceInfoFromObservers() {
   GetContent()->UpdateResourceInfoFromObservers();
 }
 
-std::pair<ResourcePriority, ResourcePriority>
+std::pair<std::optional<ResourcePriority>, std::optional<ResourcePriority>>
 ImageResource::PriorityFromObservers() const {
   return GetContent()->PriorityFromObservers();
 }
 
+// static
+bool ImageResource::IsAboveSpeculativeDecodeSizeThreshold(
+    const gfx::Size& size) {
+  return size.GetCheckedArea().ValueOrDefault(0) >=
+         ImageResource::kSpeculativeDecodeMinImageSize;
+}
+
 bool ImageResource::IsAboveSpeculativeDecodeSizeThreshold() const {
   // Images with too few pixels will not be speculatively decoded.
-  return GetContent()->MaxSize().GetCheckedArea().ValueOrDefault(0) >=
-         kSpeculativeDecodeMinImageSize;
+  CHECK(GetContent()->GetImage());
+  return IsAboveSpeculativeDecodeSizeThreshold(
+      GetContent()->GetImage()->Size());
 }
 
 void ImageResource::OnePartInMultipartReceived(

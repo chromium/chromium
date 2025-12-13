@@ -83,7 +83,10 @@ source_set("sandbox_unittests") {
 test("sandbox_mac_fuzztests") {
   sources = [ "sandbox_serializer_fuzztest.cc" ]
 
-  fuzztests = [ "SandboxSerializerFuzzTest.CanDeserializeWithoutCrashing" ]
+  fuzztests = [
+    "SandboxSerializerFuzzTest.CanApplySerializedPolicyWithoutCrashing",
+    "SandboxSerializerFuzzTest.CanDeserializeWithoutCrashing",
+  ]
 
   deps = [
     ":seatbelt",

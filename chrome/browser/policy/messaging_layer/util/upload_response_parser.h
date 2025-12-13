@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_UTIL_UPLOAD_RESPONSE_PARSER_H_
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UTIL_UPLOAD_RESPONSE_PARSER_H_
 
-#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "components/reporting/proto/synced/configuration_file.pb.h"

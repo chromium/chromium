@@ -47,6 +47,17 @@ chromium-metrics-reviews@google.com.
   <int value="1003" label="No such file"/>
 </enum>
 
+<!-- LINT.IfChange(SeedSource) -->
+
+<enum name="SeedSource">
+  <int value="0" label="No Source"/>
+  <int value="1" label="Local State"/>
+  <int value="2" label="Seed File"/>
+  <int value="3" label="Old Seed File"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/variations/seed_reader_writer.h:SeedSource) -->
+
 <enum name="UserChannels">
   <int value="-1" label="Unknown"/>
   <int value="0" label="Canary"/>
@@ -154,14 +165,29 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Experiment has an invalid name"/>
   <int value="13" label="Feature has an invalid name"/>
   <int value="14" label="Forcing flag has an invalid name"/>
+  <int value="15" label="Unsupported study consistency"/>
+  <int value="16" label="Unsupported study activation type"/>
+  <int value="17" label="Invalid consistency for sticky study"/>
+  <int value="18" label="Unsupported expiry_date field"/>
+  <int value="19" label="Sticky activation study specifies an experiment ID"/>
+  <int value="20" label="Query activation study specifies an experiment ID"/>
 </enum>
 
 <enum name="VariationsLimitedEntropySeedRejectionReason">
   <int value="0" label="Exceeds entropy limit"/>
-  <int value="1" label="More than one limited layer"/>
-  <int value="2" label="Limited layer is active but has invalid slot bounds"/>
-  <int value="3" label="Limited layer is active but does not contain slots"/>
-  <int value="4" label="Limited layer is not active"/>
+  <int value="1" label="More than one active limited layer"/>
+  <int value="2" label="Layer has invalid slot bounds"/>
+  <int value="3" label="Layer does not contain slots"/>
+  <int value="4" label="Invalid Layer ID"/>
+  <int value="5" label="Multiple layers with the same ID"/>
+  <int value="6" label="Invalid layer ID reference"/>
+  <int value="7" label="Dangling layer reference"/>
+  <int value="8" label="Dangling layer member reference"/>
+  <int value="9" label="Empty layer reference"/>
+  <int value="10"
+      label="Incomplete layer validation (errors found post validation)"/>
+  <int value="11"
+      label="Simultaneously active low and limited entropy systems"/>
 </enum>
 
 <enum name="VariationsLogInvalidValue">
@@ -231,6 +257,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Day changed"/>
 </enum>
 
+<!-- LINT.IfChange(VariationsSeedLoadResult) -->
+
 <enum name="VariationsSeedLoadResult">
   <int value="0" label="Seed Loaded Successfully"/>
   <int value="1" label="Seed Empty"/>
@@ -243,7 +271,13 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Seed Load Interrupted"/>
   <int value="9" label="Seed Load Other Failure"/>
   <int value="10" label="Seed Exceeds Uncompressed Size Limit"/>
+  <int value="11" label="Error Reading Seed File"/>
+  <int value="12" label="Seed Error Parsing To Proto"/>
+  <int value="13" label="ZSTD Content Size Error"/>
+  <int value="14" label="Seed Corrupt ZSTD Data"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/variations/metrics.h:LoadSeedResult) -->
 
 <enum name="VariationsSeedStoreResult">
   <int value="0" label="Success"/>
@@ -283,6 +317,8 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Safe seed for future milestone">No seed used</int>
   <int value="11" label="Unloadable safe seed">No seed used</int>
   <int value="12" label="Null seed used">No seed used</int>
+  <int value="13" label="Misconfigured regular seed not used">No seed used</int>
+  <int value="14" label="Misconfigured safe seed not used">No seed used</int>
 </enum>
 
 <!-- LINT.IfChange(VariationsStateEncryptionStatus) -->
@@ -295,6 +331,12 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//components/variations/net/variations_command_line.h:VariationsStateEncryptionStatus) -->
+
+<enum name="VariationsTimeSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Local"/>
+  <int value="2" label="Network"/>
+</enum>
 
 </enums>
 

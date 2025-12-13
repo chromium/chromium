@@ -45,45 +45,43 @@ class OfflineContentAggregatorBridge : public OfflineContentProvider::Observer,
   void OpenItem(JNIEnv* env,
                 jint launch_location,
                 jboolean j_open_in_incognito,
-                const base::android::JavaParamRef<jstring>& j_namespace,
-                const base::android::JavaParamRef<jstring>& j_id);
+                const base::android::JavaRef<jstring>& j_namespace,
+                const base::android::JavaRef<jstring>& j_id);
   void RemoveItem(JNIEnv* env,
-                  const base::android::JavaParamRef<jstring>& j_namespace,
-                  const base::android::JavaParamRef<jstring>& j_id);
+                  const base::android::JavaRef<jstring>& j_namespace,
+                  const base::android::JavaRef<jstring>& j_id);
   void CancelDownload(JNIEnv* env,
-                      const base::android::JavaParamRef<jstring>& j_namespace,
-                      const base::android::JavaParamRef<jstring>& j_id);
+                      const base::android::JavaRef<jstring>& j_namespace,
+                      const base::android::JavaRef<jstring>& j_id);
   void PauseDownload(JNIEnv* env,
-                     const base::android::JavaParamRef<jstring>& j_namespace,
-                     const base::android::JavaParamRef<jstring>& j_id);
+                     const base::android::JavaRef<jstring>& j_namespace,
+                     const base::android::JavaRef<jstring>& j_id);
   void ResumeDownload(JNIEnv* env,
-                      const base::android::JavaParamRef<jstring>& j_namespace,
-                      const base::android::JavaParamRef<jstring>& j_id);
+                      const base::android::JavaRef<jstring>& j_namespace,
+                      const base::android::JavaRef<jstring>& j_id);
   void ValidateDangerousDownload(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_namespace,
-      const base::android::JavaParamRef<jstring>& j_id);
+      const base::android::JavaRef<jstring>& j_namespace,
+      const base::android::JavaRef<jstring>& j_id);
   void GetItemById(JNIEnv* env,
-                   const base::android::JavaParamRef<jstring>& j_namespace,
-                   const base::android::JavaParamRef<jstring>& j_id,
-                   const base::android::JavaParamRef<jobject>& jcallback);
+                   const base::android::JavaRef<jstring>& j_namespace,
+                   const base::android::JavaRef<jstring>& j_id,
+                   const base::android::JavaRef<jobject>& jcallback);
   void GetAllItems(JNIEnv* env,
-                   const base::android::JavaParamRef<jobject>& jcallback);
-  void GetVisualsForItem(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_namespace,
-      const base::android::JavaParamRef<jstring>& j_id,
-      const base::android::JavaParamRef<jobject>& j_callback);
-  void GetShareInfoForItem(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_namespace,
-      const base::android::JavaParamRef<jstring>& j_id,
-      const base::android::JavaParamRef<jobject>& j_callback);
+                   const base::android::JavaRef<jobject>& jcallback);
+  void GetVisualsForItem(JNIEnv* env,
+                         const base::android::JavaRef<jstring>& j_namespace,
+                         const base::android::JavaRef<jstring>& j_id,
+                         const base::android::JavaRef<jobject>& j_callback);
+  void GetShareInfoForItem(JNIEnv* env,
+                           const base::android::JavaRef<jstring>& j_namespace,
+                           const base::android::JavaRef<jstring>& j_id,
+                           const base::android::JavaRef<jobject>& j_callback);
   void RenameItem(JNIEnv* env,
-                  const base::android::JavaParamRef<jstring>& j_namespace,
-                  const base::android::JavaParamRef<jstring>& j_id,
-                  const base::android::JavaParamRef<jstring>& j_name,
-                  const base::android::JavaParamRef<jobject>& j_callback);
+                  const base::android::JavaRef<jstring>& j_namespace,
+                  const base::android::JavaRef<jstring>& j_id,
+                  const base::android::JavaRef<jstring>& j_name,
+                  const base::android::JavaRef<jobject>& j_callback);
 
  private:
   OfflineContentAggregatorBridge(OfflineContentAggregator* aggregator);

@@ -21,7 +21,8 @@ class InstanceIDDriver;
 
 namespace invalidation {
 class InvalidationListener;
-}
+class LegacyTopicsCleaner;
+}  // namespace invalidation
 
 namespace policy {
 class ChromeBrowserCloudManagementRegisterWatcher;
@@ -107,6 +108,9 @@ class ChromeBrowserCloudManagementControllerDesktop
 
   // Responsible for storing and retrieving browser-level managed identities.
   std::unique_ptr<client_certificates::CertificateStore> certificate_store_;
+
+  // Unsubscribes any remaining invalidation topics.
+  std::unique_ptr<invalidation::LegacyTopicsCleaner> legacy_topics_cleaner_;
 };
 
 }  // namespace policy

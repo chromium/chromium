@@ -7,14 +7,13 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_receiver_bridge.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -35,7 +34,6 @@ PasswordStoreAndroidBackendBridgeHelper::Create(
     password_manager::IsAccountStore is_account_store) {
   // The bridge is not supposed to be created when UPM is completely unusable.
   // But it should be created for non-syncing users if sync is enabled later.
-  CHECK(password_manager_android_util::AreMinUpmRequirementsMet());
   return std::make_unique<PasswordStoreAndroidBackendBridgeHelperImpl>(
       is_account_store);
 }
@@ -89,9 +87,9 @@ PasswordStoreAndroidBackendBridgeHelperImpl::
 
 bool PasswordStoreAndroidBackendBridgeHelperImpl::
     CanUseGetAffiliatedPasswordsAPI() {
-  base::android::BuildInfo* info = base::android::BuildInfo::GetInstance();
   int current_gms_core_version;
-  if (!base::StringToInt(info->gms_version_code(), &current_gms_core_version)) {
+  if (!base::StringToInt(base::android::device_info::gms_version_code(),
+                         &current_gms_core_version)) {
     return false;
   }
   if (kGMSCoreMinVersionForGetAffiliatedAPI > current_gms_core_version) {
@@ -103,9 +101,9 @@ bool PasswordStoreAndroidBackendBridgeHelperImpl::
 
 bool PasswordStoreAndroidBackendBridgeHelperImpl::
     CanUseGetAllLoginsWithBrandingInfoAPI() {
-  base::android::BuildInfo* info = base::android::BuildInfo::GetInstance();
   int current_gms_core_version;
-  if (!base::StringToInt(info->gms_version_code(), &current_gms_core_version)) {
+  if (!base::StringToInt(base::android::device_info::gms_version_code(),
+                         &current_gms_core_version)) {
     return false;
   }
   if (kGMSCoreMinVersionForGetAllLoginsWithBrandingAPI >

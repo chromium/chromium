@@ -23,12 +23,9 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.PayloadCallbackHelper;
-import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHelper;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
-import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
-
-import java.util.Optional;
+import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordManagerUnavailableException;
 
 /** Tests for {@link FakePasswordCheckupClientHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -59,7 +56,7 @@ public class FakePasswordCheckupClientHelperTest {
     public void testGetPasswordCheckupIntentForLocalCheckupSucceeds() {
         mFakeHelper.getPasswordCheckupIntent(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.empty(),
+                null,
                 mSuccessCallbackHelper::notifyCalled,
                 mFailureCallbackHelper::notifyCalled);
 
@@ -76,7 +73,7 @@ public class FakePasswordCheckupClientHelperTest {
     public void testGetPasswordCheckupIntentForAccountCheckupSucceeds() {
         mFakeHelper.getPasswordCheckupIntent(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_ACCOUNT),
+                TEST_ACCOUNT,
                 mSuccessCallbackHelper::notifyCalled,
                 mFailureCallbackHelper::notifyCalled);
 
@@ -92,8 +89,7 @@ public class FakePasswordCheckupClientHelperTest {
 
     @Test
     public void testGetPasswordCheckupIntentReturnsError() {
-        final Exception expectedException =
-                new PasswordCheckBackendException("test", CredentialManagerError.UNCATEGORIZED);
+        final Exception expectedException = new PasswordManagerUnavailableException();
         mFakeHelper.setError(expectedException);
 
         final PayloadCallbackHelper<PendingIntent> successCallbackHelper =
@@ -103,7 +99,7 @@ public class FakePasswordCheckupClientHelperTest {
 
         mFakeHelper.getPasswordCheckupIntent(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_ACCOUNT),
+                TEST_ACCOUNT,
                 successCallbackHelper::notifyCalled,
                 failureCallbackHelper::notifyCalled);
 
@@ -123,7 +119,7 @@ public class FakePasswordCheckupClientHelperTest {
 
         mFakeHelper.runPasswordCheckupInBackground(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_ACCOUNT),
+                TEST_ACCOUNT,
                 successCallbackHelper::notifyCalled,
                 failureCallbackHelper::notifyCalled);
 
@@ -137,8 +133,7 @@ public class FakePasswordCheckupClientHelperTest {
 
     @Test
     public void testRunPasswordCheckupInBackgroundReturnsError() {
-        final Exception expectedException =
-                new PasswordCheckBackendException("test", CredentialManagerError.UNCATEGORIZED);
+        final Exception expectedException = new PasswordManagerUnavailableException();
         mFakeHelper.setError(expectedException);
 
         final PayloadCallbackHelper<Void> successCallbackHelper = new PayloadCallbackHelper<>();
@@ -147,7 +142,7 @@ public class FakePasswordCheckupClientHelperTest {
 
         mFakeHelper.runPasswordCheckupInBackground(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_ACCOUNT),
+                TEST_ACCOUNT,
                 successCallbackHelper::notifyCalled,
                 failureCallbackHelper::notifyCalled);
 
@@ -170,7 +165,7 @@ public class FakePasswordCheckupClientHelperTest {
 
         mFakeHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_ACCOUNT),
+                TEST_ACCOUNT,
                 successCallbackHelper::notifyCalled,
                 failureCallbackHelper::notifyCalled);
 
@@ -184,8 +179,7 @@ public class FakePasswordCheckupClientHelperTest {
 
     @Test
     public void testGetBreachedCredentialsCountReturnsError() {
-        final Exception expectedException =
-                new PasswordCheckBackendException("test", CredentialManagerError.UNCATEGORIZED);
+        final Exception expectedException = new PasswordManagerUnavailableException();
         mFakeHelper.setError(expectedException);
 
         final PayloadCallbackHelper<Integer> successCallbackHelper = new PayloadCallbackHelper<>();
@@ -194,7 +188,7 @@ public class FakePasswordCheckupClientHelperTest {
 
         mFakeHelper.getBreachedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_ACCOUNT),
+                TEST_ACCOUNT,
                 successCallbackHelper::notifyCalled,
                 failureCallbackHelper::notifyCalled);
 

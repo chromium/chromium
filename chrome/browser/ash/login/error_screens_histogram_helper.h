@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_ERROR_SCREENS_HISTOGRAM_HELPER_H_
 #define CHROME_BROWSER_ASH_LOGIN_ERROR_SCREENS_HISTOGRAM_HELPER_H_
 
-#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 

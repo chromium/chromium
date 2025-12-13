@@ -10,4 +10,5 @@ dictionary AudioContextOptions {
     (AudioContextLatencyCategory or double) latencyHint = "interactive";
     float sampleRate;
     (DOMString or AudioSinkOptions) sinkId;
+    [RuntimeEnabled=WebAudioConfigurableRenderQuantum] (AudioContextRenderSizeCategory or unsigned long) renderSizeHint = "default";
 };

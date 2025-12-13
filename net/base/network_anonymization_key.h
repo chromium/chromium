@@ -9,10 +9,14 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <tuple>
+#include <utility>
 
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
 #include "net/base/network_isolation_partition.h"
 #include "net/base/schemeful_site.h"
 
@@ -21,6 +25,8 @@ class Value;
 }
 
 namespace net {
+
+class NetworkIsolationKey;
 
 // NetworkAnonymizationKey (NAK) is used to partition shared network state based
 // on the context in which requests were made. Most network state is divided
@@ -71,14 +77,6 @@ class NET_EXPORT NetworkAnonymizationKey {
       const NetworkAnonymizationKey& network_anonymization_key);
   NetworkAnonymizationKey& operator=(
       NetworkAnonymizationKey&& network_anonymization_key);
-
-  // Compare keys for equality, true if all enabled fields are equal.
-  friend bool operator==(const NetworkAnonymizationKey&,
-                         const NetworkAnonymizationKey&) = default;
-
-  // Provide an ordering for keys based on all enabled fields.
-  friend auto operator<=>(const NetworkAnonymizationKey&,
-                          const NetworkAnonymizationKey&) = default;
 
   // Create a `NetworkAnonymizationKey` from a `top_frame_site`, assuming it is
   // same-site (see comment on the class, above) and has no nonce.
@@ -146,19 +144,19 @@ class NET_EXPORT NetworkAnonymizationKey {
 
   // Getters for the top frame, frame site, nonce and is cross site flag.
   const std::optional<SchemefulSite>& GetTopFrameSite() const {
-    return top_frame_site_;
+    return data_->top_frame_site();
   }
 
-  bool IsCrossSite() const { return is_cross_site_; }
+  bool IsCrossSite() const { return data_->is_cross_site(); }
 
   bool IsSameSite() const { return !IsCrossSite(); }
 
   const std::optional<base::UnguessableToken>& GetNonce() const {
-    return nonce_;
+    return data_->nonce();
   }
 
   net::NetworkIsolationPartition network_isolation_partition() const {
-    return network_isolation_partition_;
+    return data_->network_isolation_partition();
   }
 
   // Returns a representation of |this| as a base::Value. Returns false on
@@ -185,8 +183,92 @@ class NET_EXPORT NetworkAnonymizationKey {
   static void ClearGlobalsForTesting();
 
  private:
+  // Holds all the data of a NetworkAnonymizationKey. This is ref-counted to
+  // make copying NetworkAnonymizationKey objects cheaper.
+  class Data : public base::RefCountedThreadSafe<Data> {
+   public:
+    static scoped_refptr<Data> GetEmptyData();
+
+    // Conctruct an empty data.
+    explicit Data(base::PassKey<Data>);
+
+    Data(const std::optional<SchemefulSite>& top_frame_site,
+         bool is_cross_site,
+         std::optional<base::UnguessableToken> nonce,
+         NetworkIsolationPartition network_isolation_partition);
+
+    // The origin/etld+1 of the top frame of the page making the request.
+    const std::optional<SchemefulSite>& top_frame_site() const {
+      return top_frame_site_;
+    }
+
+    // True if the frame site is cross site when compared to the top frame site.
+    bool is_cross_site() const { return is_cross_site_; }
+
+    // for non-opaque origins.
+    const std::optional<base::UnguessableToken>& nonce() const {
+      return nonce_;
+    }
+
+    NetworkIsolationPartition network_isolation_partition() const {
+      return network_isolation_partition_;
+    }
+
+    bool is_empty() const { return !top_frame_site_.has_value(); }
+
+    friend bool operator==(const Data& a, const Data& b) {
+      return std::tie(a.top_frame_site_, a.is_cross_site_, a.nonce_,
+                      a.network_isolation_partition_) ==
+             std::tie(b.top_frame_site_, b.is_cross_site_, b.nonce_,
+                      b.network_isolation_partition_);
+    }
+
+    friend auto operator<=>(const Data& a, const Data& b) {
+      return std::tie(a.top_frame_site_, a.is_cross_site_, a.nonce_,
+                      a.network_isolation_partition_) <=>
+             std::tie(b.top_frame_site_, b.is_cross_site_, b.nonce_,
+                      b.network_isolation_partition_);
+    }
+
+    template <typename H>
+    friend H AbslHashValue(H h, const Data& data) {
+      return H::combine(std::move(h), data.top_frame_site_, data.is_cross_site_,
+                        data.nonce_, data.network_isolation_partition_);
+    }
+
+   private:
+    friend class base::RefCountedThreadSafe<Data>;
+    ~Data();
+
+    const std::optional<SchemefulSite> top_frame_site_;
+    const bool is_cross_site_;
+    const std::optional<base::UnguessableToken> nonce_;
+    const NetworkIsolationPartition network_isolation_partition_;
+  };
+
+ public:
+  // Compare keys for equality, true if all enabled fields are equal.
+  friend bool operator==(const NetworkAnonymizationKey& a,
+                         const NetworkAnonymizationKey& b) {
+    return *a.data_ == *b.data_;
+  }
+
+  // Provide an ordering for keys based on all enabled fields.
+  friend auto operator<=>(const NetworkAnonymizationKey& a,
+                          const NetworkAnonymizationKey& b) {
+    return *a.data_ <=> *b.data_;
+  }
+
+  template <typename H>
+  friend H AbslHashValue(
+      H h,
+      const NetworkAnonymizationKey& network_anonymization_key) {
+    return H::combine(std::move(h), *network_anonymization_key.data_);
+  }
+
+ private:
   NetworkAnonymizationKey(
-      const SchemefulSite& top_frame_site,
+      const std::optional<SchemefulSite>& top_frame_site,
       bool is_cross_site,
       std::optional<base::UnguessableToken> nonce = std::nullopt,
       NetworkIsolationPartition network_isolation_partition =
@@ -198,18 +280,8 @@ class NET_EXPORT NetworkAnonymizationKey {
   static std::optional<std::string> SerializeSiteWithNonce(
       const SchemefulSite& site);
 
-  // The origin/etld+1 of the top frame of the page making the request. This
-  // will always be populated unless all other fields are also nullopt.
-  std::optional<SchemefulSite> top_frame_site_;
-
-  // True if the frame site is cross site when compared to the top frame site.
-  // This is always false for a non-fully-populated NAK.
-  bool is_cross_site_;
-
-  // for non-opaque origins.
-  std::optional<base::UnguessableToken> nonce_;
-
-  NetworkIsolationPartition network_isolation_partition_;
+  // A non-null Data.
+  scoped_refptr<const Data> data_;
 };
 
 NET_EXPORT std::ostream& operator<<(std::ostream& os,

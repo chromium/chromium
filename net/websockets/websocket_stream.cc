@@ -148,8 +148,7 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
     if (cookie_util::ShouldAddInitialStorageAccessApiOverride(
             url.SchemeIsWSOrWSS() ? ChangeWebSocketSchemeToHttpScheme(url)
                                   : url,
-            storage_access_api_status, url_request_->initiator(),
-            /*emit_metrics=*/true, /*credentials_mode_include=*/true)) {
+            storage_access_api_status, url_request_->initiator())) {
       url_request_->cookie_setting_overrides().Put(
           CookieSettingOverride::kStorageAccessGrantEligible);
     }
@@ -373,8 +372,8 @@ class SSLErrorCallbacks : public WebSocketEventInterface::SSLErrorCallbacks {
 int Delegate::OnConnected(URLRequest* request,
                           const TransportInfo& info,
                           CompletionOnceCallback callback) {
-  owner_->connect_delegate()->OnURLRequestConnected(request, info);
-  return OK;
+  return owner_->connect_delegate()->OnURLRequestConnected(request, info,
+                                                           std::move(callback));
 }
 
 void Delegate::OnReceivedRedirect(URLRequest* request,

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
@@ -36,6 +38,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -196,7 +199,7 @@ public class CustomTabExternalNavigationTest {
         setUpTwa();
         OverrideUrlLoadingResult result =
                 getOverrideUrlLoadingResult("customtab://customtabtest/intent");
-        Assert.assertEquals(
+        assertEquals(
                 OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT, result.getResultType());
     }
 
@@ -210,7 +213,7 @@ public class CustomTabExternalNavigationTest {
 
         // AuthTab does not launch an external intent for a custom scheme URL, but passes
         // the result back to the calling app and closes itself.
-        Assert.assertEquals(
+        assertEquals(
                 OverrideUrlLoadingResultType.OVERRIDE_CLOSING_AFTER_AUTH, result.getResultType());
         Assert.assertTrue(mAuthTab.isFinishing());
     }
@@ -221,11 +224,11 @@ public class CustomTabExternalNavigationTest {
     public void testAuthTabReturnAsActivityResult_httpsRedirectUrl() throws TimeoutException {
         setUpAuthTab();
         var result = getOverrideUrlLoadingResult(AUTH_TAB_OTHER_URL);
-        Assert.assertEquals(OverrideUrlLoadingResultType.NO_OVERRIDE, result.getResultType());
-        Assert.assertFalse("AuthTab should keep running", mAuthTab.isFinishing());
+        assertEquals(OverrideUrlLoadingResultType.NO_OVERRIDE, result.getResultType());
+        assertFalse("AuthTab should keep running", mAuthTab.isFinishing());
 
         result = getOverrideUrlLoadingResult(AUTH_TAB_HTTPS_REDIRECT_URL);
-        Assert.assertEquals(
+        assertEquals(
                 OverrideUrlLoadingResultType.OVERRIDE_CLOSING_AFTER_AUTH, result.getResultType());
         Assert.assertTrue("AuthTab should be closed", mAuthTab.isFinishing());
     }
@@ -248,7 +251,7 @@ public class CustomTabExternalNavigationTest {
                             mNavigationDelegate.resumeDelayedVerificationForTesting();
                             return override;
                         });
-        Assert.assertEquals(
+        assertEquals(
                 OverrideUrlLoadingResultType.OVERRIDE_CLOSING_AFTER_AUTH, result.getResultType());
         Assert.assertTrue(mAuthTab.isFinishing());
     }
@@ -273,7 +276,7 @@ public class CustomTabExternalNavigationTest {
                         .setRedirectHandler(redirectHandler)
                         .build();
         OverrideUrlLoadingResult result = mUrlHandler.shouldOverrideUrlLoading(params);
-        Assert.assertEquals(OverrideUrlLoadingResultType.NO_OVERRIDE, result.getResultType());
+        assertEquals(OverrideUrlLoadingResultType.NO_OVERRIDE, result.getResultType());
     }
 
     private @VerificationStatus int getCurrentPageVerifierStatus() {
@@ -287,21 +290,65 @@ public class CustomTabExternalNavigationTest {
      */
     @Test
     @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER})
     public void testShouldDisableExternalIntentRequestsForUrl() throws TimeoutException {
         setUpTwa();
+        mNavigationDelegate.setTabLaunchTypeForTesting(TabLaunchType.FROM_LONGPRESS_FOREGROUND);
+
         GURL insideVerifiedOriginUrl =
                 new GURL(mTestServer.getURL("/chrome/test/data/android/simple.html"));
         GURL outsideVerifiedOriginUrl = new GURL("https://example.com/test.html");
 
         TrustedWebActivityTestUtil.waitForCurrentPageVerifierToFinish(
                 mCustomTabActivityTestRule.getActivity());
-        Assert.assertEquals(VerificationStatus.SUCCESS, getCurrentPageVerifierStatus());
+        assertEquals(VerificationStatus.SUCCESS, getCurrentPageVerifierStatus());
 
-        assertTrue(
-                mNavigationDelegate.shouldDisableExternalIntentRequestsForUrl(
-                        insideVerifiedOriginUrl));
-        Assert.assertFalse(
-                mNavigationDelegate.shouldDisableExternalIntentRequestsForUrl(
-                        outsideVerifiedOriginUrl));
+        Intent intent = new Intent();
+
+        // The link is verified for the current TWA
+        ExternalNavigationParams params1 =
+                new ExternalNavigationParams.Builder(
+                                insideVerifiedOriginUrl,
+                                /* isIncognito */ false,
+                                /* referrer */ GURL.emptyGURL(),
+                                /* pageTransition */ 0,
+                                /* isRedirect */ false)
+                        .setRedirectHandler(RedirectHandler.create())
+                        .setIsTabInPWA(false)
+                        .setIsInitialNavigationInFrame(true)
+                        .build();
+        assertTrue(mNavigationDelegate.shouldDisableExternalIntentRequestsForUrl(params1, intent));
+        assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) == 0);
+
+        // The link is not verified for the current TWA
+        ExternalNavigationParams params2 =
+                new ExternalNavigationParams.Builder(
+                                outsideVerifiedOriginUrl,
+                                /* isIncognito */ false,
+                                /* referrer */ GURL.emptyGURL(),
+                                /* pageTransition */ 0,
+                                /* isRedirect */ false)
+                        .setRedirectHandler(RedirectHandler.create())
+                        .setIsTabInPWA(true)
+                        .setIsInitialNavigationInFrame(true)
+                        .build();
+        assertFalse(mNavigationDelegate.shouldDisableExternalIntentRequestsForUrl(params2, intent));
+        assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) == 0);
+
+        // The link is verified for the current TWA but the specific navigation case allows for
+        // external intents
+        ExternalNavigationParams params3 =
+                new ExternalNavigationParams.Builder(
+                                insideVerifiedOriginUrl,
+                                /* isIncognito */ false,
+                                /* referrer */ GURL.emptyGURL(),
+                                /* pageTransition */ 0,
+                                /* isRedirect */ false)
+                        .setRedirectHandler(RedirectHandler.create())
+                        .setIsTabInPWA(true)
+                        .setIsInitialNavigationInFrame(true)
+                        .build();
+        assertFalse(mNavigationDelegate.shouldDisableExternalIntentRequestsForUrl(params3, intent));
+        assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_MULTIPLE_TASK) != 0);
     }
 }

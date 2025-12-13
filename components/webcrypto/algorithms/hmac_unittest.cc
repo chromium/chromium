@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -16,6 +11,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -577,8 +573,8 @@ TEST_F(WebCryptoHmacTest, ImportRawKeyTooLarge) {
   const void* invalid_data = reinterpret_cast<void*>(1);
   // Invalid data of big length. This span is invalid, but ImportKey should fail
   // before actually reading the bytes, as the key is too large.
-  base::span<const uint8_t> big_data(static_cast<const uint8_t*>(invalid_data),
-                                     UINT_MAX);
+  base::span<const uint8_t> UNSAFE_TODO(
+      big_data(static_cast<const uint8_t*>(invalid_data), UINT_MAX));
 
   blink::WebCryptoKey key;
   EXPECT_EQ(Status::ErrorDataTooLarge(),

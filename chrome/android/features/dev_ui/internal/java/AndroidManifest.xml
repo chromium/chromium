@@ -10,8 +10,16 @@ found in the LICENSE file.
     featureSplit="dev_ui">
 
     <dist:module
-        dist:onDemand="true"
         dist:title="@string/dev_ui_module_title">
+        <dist:delivery>
+            <dist:on-demand/>
+            <dist:install-time>
+                <dist:conditions>
+                    <!-- Install DevUI for desktop devices at install time -->
+                    <dist:device-feature dist:name="com.google.desktop.gms"/>
+                </dist:conditions>
+            </dist:install-time>
+        </dist:delivery>
         <dist:fusing dist:include="true" />
     </dist:module>
 

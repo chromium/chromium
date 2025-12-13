@@ -1039,11 +1039,6 @@ error::Error DoSetReadbackBufferShadowAllocationINTERNAL(GLuint buffer_id,
                                                          GLuint shm_offset,
                                                          GLuint size);
 error::Error DoMaxShaderCompilerThreadsKHR(GLuint count);
-error::Error DoInitializeDiscardableTextureCHROMIUM(
-    GLuint texture_id,
-    ServiceDiscardableHandle&& discardable_handle);
-error::Error DoUnlockDiscardableTextureCHROMIUM(GLuint texture_id);
-error::Error DoLockDiscardableTextureCHROMIUM(GLuint texture_id);
 error::Error DoCreateAndTexStorage2DSharedImageINTERNAL(
     GLuint client_id,
     const volatile GLbyte* mailbox);

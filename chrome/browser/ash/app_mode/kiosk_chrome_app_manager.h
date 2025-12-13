@@ -12,6 +12,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -27,6 +28,7 @@
 
 class GURL;
 class PrefRegistrySimple;
+class PrefService;
 class Profile;
 
 namespace base {
@@ -37,14 +39,17 @@ namespace extensions {
 class Extension;
 }
 
+namespace network {
+class SharedURLLoaderFactory;
+}
+
 namespace ash {
 
 class KioskAppData;
 class KioskExternalUpdater;
+class KioskCryptohomeRemover;
 
-extern const char kKioskPrimaryAppInstallErrorHistogram[];
 extern const char kKioskPrimaryAppUpdateResultHistogram[];
-extern const char kKioskExternalUpdateSuccessHistogram[];
 
 // KioskChromeAppManager manages cached app data.
 class KioskChromeAppManager : public KioskAppManagerBase,
@@ -117,7 +122,12 @@ class KioskChromeAppManager : public KioskAppManagerBase,
   // be applied to Kiosk, because a Kiosk session has a special user profile.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  KioskChromeAppManager();
+  // `local_state` must be non-null, and must outlive `this`.
+  // `cryptohome_remover` must be non-null, and must outlive `this`.
+  KioskChromeAppManager(
+      PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      KioskCryptohomeRemover* cryptohome_remover);
   KioskChromeAppManager(const KioskChromeAppManager&) = delete;
   KioskChromeAppManager& operator=(const KioskChromeAppManager&) = delete;
   ~KioskChromeAppManager() override;
@@ -249,6 +259,9 @@ class KioskChromeAppManager : public KioskAppManagerBase,
   // Converts kiosk app data from internal representation KioskAppData to
   // App.
   App ConstructApp(const KioskAppData& data) const;
+
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
 
   std::vector<std::unique_ptr<KioskAppData>> apps_;
   std::string auto_launch_app_id_;

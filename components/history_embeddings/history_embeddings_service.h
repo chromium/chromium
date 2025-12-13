@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
@@ -324,7 +323,7 @@ class HistoryEmbeddingsService
   void ComputeAndStorePassageEmbeddingsWithExistingData(
       UrlData url_data,
       std::vector<std::string> passages,
-      std::optional<base::ElapsedTimer> database_access_timer,
+      base::ElapsedTimer database_access_timer,
       std::optional<UrlData> existing_url_data);
 
   // Invoked after the embeddings for `passages` has been computed. Stores the

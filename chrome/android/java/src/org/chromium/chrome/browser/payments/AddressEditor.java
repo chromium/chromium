@@ -20,7 +20,11 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALIDATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.DROPDOWN;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.NOTICE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.NOTICE_ALL_KEYS;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.NOTICE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FIELD_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
@@ -49,7 +53,7 @@ import org.chromium.chrome.browser.autofill.SubKeyRequesterFactory;
 import org.chromium.chrome.browser.autofill.editors.EditorBase;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogViewBinder;
 import org.chromium.chrome.browser.autofill.editors.EditorFieldValidator;
-import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
+import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorItem;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType;
 import org.chromium.components.autofill.AutofillAddressEditorUiInfo;
 import org.chromium.components.autofill.AutofillAddressUiComponent;
@@ -517,12 +521,12 @@ public class AddressEditor extends EditorBase<AutofillAddress>
     @RequiresNonNull("mAdminAreaField")
     private void addAddressFieldsToEditor(String countryCode, String languageCode) {
         assert isShowingEditPrompt();
-        ListModel<FieldItem> editorFields = new ListModel<>();
+        ListModel<EditorItem> editorFields = new ListModel<>();
         mEditorUiInfo =
                 mAutofillProfileBridge.getAddressEditorUiInfo(
                         countryCode, languageCode, AddressValidationType.PAYMENT_REQUEST);
         // In terms of order, country must be the first field.
-        editorFields.add(new FieldItem(DROPDOWN, mCountryField, /* isFullLine= */ true));
+        editorFields.add(new EditorItem(DROPDOWN, mCountryField, /* isFullLine= */ true));
         for (AutofillAddressUiComponent component : mEditorUiInfo.getComponents()) {
             final PropertyModel field;
             final @ItemType int fieldType;
@@ -560,11 +564,24 @@ public class AddressEditor extends EditorBase<AutofillAddress>
                     component.isFullLine
                             || component.id == FieldType.ADDRESS_HOME_CITY
                             || component.id == FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY;
-            editorFields.add(new FieldItem(fieldType, field, isFullLine));
+            editorFields.add(new EditorItem(fieldType, field, isFullLine));
         }
         // Phone number (and email if applicable) are the last fields of the address.
         mPhoneField.set(VALIDATOR, getPhoneValidator(countryCode));
-        editorFields.add(new FieldItem(TEXT_INPUT, mPhoneField, /* isFullLine= */ true));
+        editorFields.add(new EditorItem(TEXT_INPUT, mPhoneField, /* isFullLine= */ true));
+        editorFields.add(
+                new EditorItem(
+                        NOTICE,
+                        new PropertyModel.Builder(NOTICE_ALL_KEYS)
+                                .with(
+                                        NOTICE_TEXT,
+                                        mContext.getString(
+                                                R.string.payments_required_field_message))
+                                // Required fields are indicated by an asterisk (*) and announced
+                                // separately by screen readers. Don't announce the message itself.
+                                .with(IMPORTANT_FOR_ACCESSIBILITY, false)
+                                .build(),
+                        /* isFullLine= */ true));
         mEditorModel.set(EDITOR_FIELDS, editorFields);
     }
 

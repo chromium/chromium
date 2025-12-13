@@ -36,7 +36,7 @@ void PictureInPictureTucker::Tuck() {
   // Get a list of all displays that we could move into if we only move
   // horizontally.
   std::vector<display::Display> possible_displays;
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
     if (VerticallyIntersects(display.work_area(), current_bounds)) {
       possible_displays.push_back(display);
     }
@@ -46,9 +46,8 @@ void PictureInPictureTucker::Tuck() {
   // the display we're on should count, but in certain test scenarios this could
   // be the case), then just add the display we're currently on.
   if (possible_displays.empty()) {
-    possible_displays.push_back(
-        display::Screen::GetScreen()->GetDisplayNearestWindow(
-            pip_widget_->GetNativeWindow()));
+    possible_displays.push_back(display::Screen::Get()->GetDisplayNearestWindow(
+        pip_widget_->GetNativeWindow()));
   }
 
   gfx::Rect combined_work_area;

@@ -32,6 +32,9 @@ chromium-metrics-reviews@google.com.
       summary="gesture-scroll-update events that are non-inertial (i.e. not
                generated due to a user fling) and not the first one in a
                scroll sequence"/>
+  <variant name="InertialGestureScrollEnd"
+      summary="gesture-scroll-end events that are inertial (i.e. generated
+               due to a user fling)"/>
   <variant name="InertialGestureScrollUpdate"
       summary="gesture-scroll-update events that are inertial (i.e. generated
                due to a user fling)"/>
@@ -49,16 +52,54 @@ chromium-metrics-reviews@google.com.
   <variant name="Sum" summary="sum of missed vsyncs across all frames"/>
 </variants>
 
-<variants name="ScrollLength">
-  <variant name="" summary="all scrolls"/>
-  <variant name=".Large"
-      summary="large scrolls - number of presented frames more than 64"/>
-  <variant name=".Medium"
-      summary="medium length scrolls - number of presented frames between
-               [17,64]"/>
-  <variant name=".Small"
-      summary="small scrolls - number of presented frames between [1,16]"/>
+<!-- LINT.IfChange(ScrollJankReasonV4) -->
+
+<variants name="ScrollJankReasonV4">
+  <variant name="" summary="any scroll jank reason"/>
+  <variant name=".MissedVsyncAtStartOfFling"
+      summary="Chrome missed one or more VSyncs during the transition from a
+               fast regular scroll to a fling (violates fling continuity
+               rule)"/>
+  <variant name=".MissedVsyncDueToDeceleratingInputFrameDelivery"
+      summary="Chrome missed one or more VSyncs due to decelerating
+               input→frame delivery (violates running consistency rule)"/>
+  <variant name=".MissedVsyncDuringFastScroll"
+      summary="Chrome missed one or more VSyncs in the middle of a fast
+               regular scroll. (violates fast scroll continuity rule)"/>
+  <variant name=".MissedVsyncDuringFling"
+      summary="Chrome missed one or more VSyncs in the middle of a fast
+               regular scroll (violates fling continuity rule)"/>
 </variants>
+
+<!-- LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:JankReason,//cc/metrics/scroll_jank_v4_result.h:JankReason) -->
+
+<histogram name="Event.Android.GestureScrollEnd.TimeSpentInBinder" units="ms"
+    expires_after="2026-05-12">
+  <owner>nafisabedin@google.com</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Android-only. Records the time spent handling Binder IPCs between a
+    GestureScrollBegin and the corresponding GestureScrollEnd event. Recorded
+    when a GestureScrollEnd is received.
+
+    The underlying mechanism used to determine this relies on undocumented
+    Android APIs, meaning that it may break in the future.
+  </summary>
+</histogram>
+
+<histogram name="Event.Android.GestureScrollEnd.TotalBinderTransactions"
+    units="counts" expires_after="2026-05-12">
+  <owner>nafisabedin@google.com</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Android-only. Records the number of Binder IPCs made between a
+    GestureScrollBegin and the corresponding GestureScrollEnd event. Recorded
+    when a GestureScrollEnd is received.
+
+    The underlying mechanism used to determine this relies on undocumented
+    Android APIs, meaning that it may break in the future.
+  </summary>
+</histogram>
 
 <histogram name="Event.AndroidActionDown.ToolType" enum="MotionEventToolType"
     expires_after="never">
@@ -79,7 +120,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Event.DownEventCount.PerInputFormFactorDestinationCombination2"
     enum="DownEventInputFormFactorDestinationCombination2"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The number of down events received per destination, input and form factor
@@ -91,6 +132,20 @@ chromium-metrics-reviews@google.com.
     counted including those that don't have an effect. For example: Tapping on a
     disabled button inside the browser frame will be treated as down events on
     browser window.
+  </summary>
+</histogram>
+
+<histogram name="Event.DragDrop.Tool" enum="DragAndDropToolType"
+    expires_after="2026-08-01">
+  <owner>mustaq@chromium.org</owner>
+  <owner>gastonr@microsoft.com</owner>
+  <owner>gerchiko@microsoft.com</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Records the completion of a drag and drop operation using the enumerated
+    tool as the device for the drag. The tool used for drags is not discernible
+    when the drag is initiated outside of the browser's window, so those drags
+    will be recorded as using the unknown tool.
   </summary>
 </histogram>
 
@@ -119,7 +174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.GestureScrollEnd.BrowserCompositorFrame.Count"
-    units="counts" expires_after="2026-01-11">
+    units="counts" expires_after="2026-05-17">
   <owner>peilinwang@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
@@ -198,7 +253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Jank.PredictorJankyFramePercentage2" units="%"
-    expires_after="2025-12-14">
+    expires_after="2026-04-19">
   <owner>jonross@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -220,7 +275,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Jank.ScrollUpdate.{ScrollSpeed}.{VsyncStatus}.FrameAboveJankyThreshold2"
-    units="ratio * 100" expires_after="2025-11-23">
+    units="ratio * 100" expires_after="2026-05-31">
   <owner>jonross@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -249,11 +304,12 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Event.Latency.OS2.{EventType}" units="ms"
-    expires_after="2025-12-28">
+<histogram name="Event.Latency.OS2{EventType}" units="ms"
+    expires_after="2026-05-03">
   <owner>flackr@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
   <owner>input-dev@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time between input event received by OS and sent to Chrome, recorded for
     each event when it is received by Chrome. Replaced Event.Latency.OS which
@@ -270,12 +326,13 @@ chromium-metrics-reviews@google.com.
     tick), hence a -16ms shift is expected in the distribution.
   </summary>
   <token key="EventType">
-    <variant name="KEY_PRESSED"/>
-    <variant name="MOUSE_PRESSED"/>
-    <variant name="MOUSE_WHEEL"/>
-    <variant name="TOUCH_MOVED"/>
-    <variant name="TOUCH_PRESSED"/>
-    <variant name="TOUCH_RELEASED"/>
+    <variant name=""/>
+    <variant name=".KEY_PRESSED"/>
+    <variant name=".MOUSE_PRESSED"/>
+    <variant name=".MOUSE_WHEEL"/>
+    <variant name=".TOUCH_MOVED"/>
+    <variant name=".TOUCH_PRESSED"/>
+    <variant name=".TOUCH_RELEASED"/>
   </token>
 </histogram>
 
@@ -523,59 +580,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.ScrollJank.DelayedFramesPercentage.FixedWindow3"
-    units="%" expires_after="2026-03-17">
-  <owner>petrcermak@chromium.org</owner>
+<histogram name="Event.ScrollJank.DelayedFramesPercentage.PerScroll" units="%"
+    expires_after="2026-06-07">
   <owner>kartarsingh@google.com</owner>
   <owner>jonross@chromium.org</owner>
   <owner>woa-performance-team@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
-    NOTE: This metric is a new experimental version of
-    Event.ScrollJank.DelayedFramesPercentage.FixedWindow. This new metric aims
-    to address the old metric's shortcomings and eventually replace it. For now,
-    we recommend you still use the old metric
-    (Event.ScrollJank.DelayedFramesPercentage.FixedWindow) for performance
-    analysis.
-
-    The percentage of frames not presented during a scroll or a fling[1],
-    meaning frame production took longer than expected and the frame was
-    skipped.
-
-    This metric is different from traditional graphics smoothness metrics as it
-    considers performance degradation on all threads and processes including
-    Browser and IO, unlike graphics' smoothness metrics which focus on the core
-    graphics pipeline (Renderer/GPU).
-
-    This metric is only recorded when 64 frames are presented, for example if a
-    scroll only has 12 frames, the next scroll has 40 frames and the scroll
-    after has 12 frames, the metric only will be emitted after the 3rd scroll.
-    This means the last incomplete window might not get reported as the browser
-    terminates.
-
-    For more details about this metric, please check
-    http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY
-
-    [1]Fling is a finger boosted scroll, meaning the screen is moving after the
-    user has accelerated their finger on the screen and removed it.
-  </summary>
-</histogram>
-
-<histogram name="Event.ScrollJank.DelayedFramesPercentage.PerScroll3" units="%"
-    expires_after="2026-03-17">
-  <owner>petrcermak@chromium.org</owner>
-  <owner>kartarsingh@google.com</owner>
-  <owner>jonross@chromium.org</owner>
-  <owner>woa-performance-team@google.com</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    NOTE: This metric is a new experimental version of
-    Event.ScrollJank.DelayedFramesPercentage.PerScroll. This new metric aims to
-    address the old metric's shortcomings and eventually replace it. For now, we
-    recommend you still use the old metric
-    (Event.ScrollJank.DelayedFramesPercentage.PerScroll) for performance
-    analysis.
-
     A frame is deemed janky during a scroll if there was no presented frame in
     the previous vsync, and the current frame contains input that was not
     presented during the missed frame. Missed input is determined by comparing
@@ -590,30 +601,135 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.ScrollJank.DelayedFramesPercentage.PerScroll{Length}"
-    units="%" expires_after="2025-12-28">
+<histogram name="Event.ScrollJank.DelayedFramesPercentage4.FixedWindow{Reason}"
+    units="%" expires_after="2026-05-17">
+  <owner>petrcermak@chromium.org</owner>
   <owner>kartarsingh@google.com</owner>
   <owner>jonross@chromium.org</owner>
   <owner>woa-performance-team@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
-    A frame is deemed janky during a scroll if there was no presented frame in
-    the previous vsync, and the current frame contains input that was not
-    presented during the missed frame. Missed input is determined by comparing
-    the timestamp of the earliest input of the current frame, to that of the
-    last input of the previously presented frame. If the delta of the timestamps
-    is less than a vsync + vsync/2, then the input is considered to have been
-    intended for the missed frame. This metric reports the percentage of delayed
-    frames within a scroll. This metric gets reported for {Length}.
+    NOTE: This 'scroll jank v4 metric' is a new refined version of
+    Event.ScrollJank.DelayedFramesPercentage.FixedWindow. This new metric aims
+    to address the old metric's shortcomings and eventually replace it.
+
+    The percentage of frames in a window of 64 frames containing (regular and/or
+    inertial[1]) scroll updates which Chrome didn't present on time, meaning
+    frame production took longer than expected and Chrome consequently missed
+    (didn't present any inputs in) a VSync. This metric considers a frame
+    delayed if it violates any of the following three rules:
+
+    1. Running consistency: Chrome's input→frame delivery must not slow down to
+    the point that Chrome misses a VSync in which Chrome would have been able to
+    present an input had it maintained consistent input→frame delivery.
+
+    2. Fast scroll continuity: There must be no missed VSyncs between
+    consecutive frames containing scroll updates with absolute total raw scroll
+    delta greater than or equal to 3 pixels.
+
+    3. Fling continuity: There must be no missed VSyncs during the transition
+    from a regular scroll to a fling UNLESS the regular scroll is slow with
+    absolute total raw scroll delta less than 3 pixels per frame. There must
+    also be no missed VSyncs between consecutive inertial frames EXCEPT towards
+    the end of a fling if the absolute total raw scroll delta drops below 0.2
+    pixels per frame.
+
+    This metric is different from traditional graphics smoothness metrics as it
+    considers performance degradation on all threads and processes including
+    Browser and IO, unlike graphics' smoothness metrics which focus on the core
+    graphics pipeline (Renderer/GPU).
+
+    This metric is only recorded when 64 frames are presented, for example if a
+    scroll only has 12 frames, the next scroll has 40 frames and the scroll
+    after has 12 frames, the metric only will be emitted after the 3rd scroll.
+    This means the last incomplete window might not get reported as the browser
+    terminates. This metric emits zero in the case when no frames were delayed
+    in a window of 64 frames.
 
     For more details about this metric, please check
-    http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY
+    https://docs.google.com/document/d/1AaBvTIf8i-c-WTKkjaL4vyhQMkSdynxo3XEiwpofdeA
+
+    [1] An inertial scroll (aka a fling) is a finger boosted scroll, meaning the
+    screen is moving after the user has accelerated their finger on the screen
+    and removed it.
   </summary>
-  <token key="Length" variants="ScrollLength"/>
+  <token key="Reason" variants="ScrollJankReasonV4"/>
+</histogram>
+
+<histogram name="Event.ScrollJank.DelayedFramesPercentage4.PerScroll" units="%"
+    expires_after="2026-05-17">
+  <owner>petrcermak@chromium.org</owner>
+  <owner>kartarsingh@google.com</owner>
+  <owner>jonross@chromium.org</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    NOTE: This 'scroll jank v4 metric' is a new refined version of
+    Event.ScrollJank.DelayedFramesPercentage.PerScroll. This new metric aims to
+    address the old metric's shortcomings and eventually replace it.
+
+    The percentage of frames in a (regular and/or inertial[1]) scroll which
+    Chrome didn't present on time, meaning frame production took longer than
+    expected and Chrome consequently missed (didn't present any inputs in) a
+    VSync. This metric considers a frame delayed if it violates any of the
+    following three rules:
+
+    1. Running consistency: Chrome's input→frame delivery must not slow down to
+    the point that Chrome misses a VSync in which Chrome would have been able to
+    present an input had it maintained consistent input→frame delivery.
+
+    2. Fast scroll continuity: There must be no missed VSyncs between
+    consecutive frames containing scroll updates with absolute total raw scroll
+    delta greater than or equal to 3 pixels.
+
+    3. Fling continuity: There must be no missed VSyncs during the transition
+    from a regular scroll to a fling UNLESS the regular scroll is slow with
+    absolute total raw scroll delta less than 3 pixels per frame. There must
+    also be no missed VSyncs between consecutive inertial frames EXCEPT towards
+    the end of a fling if the absolute total raw scroll delta drops below 0.2
+    pixels per frame.
+
+    This metric is different from traditional graphics smoothness metrics as it
+    considers performance degradation on all threads and processes including
+    Browser and IO, unlike graphics' smoothness metrics which focus on the core
+    graphics pipeline (Renderer/GPU).
+
+    This metric emits zero in the case when no frames were delayed in a scroll.
+
+    For more details about this metric, please check
+    https://docs.google.com/document/d/1AaBvTIf8i-c-WTKkjaL4vyhQMkSdynxo3XEiwpofdeA
+
+    [1] An inertial scroll (aka a fling) is a finger boosted scroll, meaning the
+    screen is moving after the user has accelerated their finger on the screen
+    and removed it.
+  </summary>
+</histogram>
+
+<histogram name="Event.ScrollJank.EmptyGestureScrollUpdateFrame" enum="Boolean"
+    expires_after="M146">
+  <owner>oksamyt@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    Whether an empty gesture scroll update caused a frame to be produced when it
+    is the only input (as a result of resampling).
+  </summary>
+</histogram>
+
+<histogram name="Event.ScrollJank.FrameStageCalculationResult"
+    enum="ScrollJankFrameStageCalculationResult" expires_after="2026-05-31">
+  <owner>petrcermak@chromium.org</owner>
+  <owner>kartarsingh@google.com</owner>
+  <owner>jonross@chromium.org</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    Results and issues encountered by the
+    `cc::ScrollJankV4FrameStage::CalculateStages()` method when processing
+    scroll events in a single frame.
+  </summary>
 </histogram>
 
 <histogram name="Event.ScrollJank.MissedVsyncs.PerFrame" units="counts"
-    expires_after="2025-12-28">
+    expires_after="2026-05-03">
   <owner>kartarsingh@google.com</owner>
   <owner>jonross@chromium.org</owner>
   <owner>woa-performance-team@google.com</owner>
@@ -637,173 +753,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.ScrollJank.MissedVsyncsPercentage.FixedWindow" units="%"
-    expires_after="2025-12-07">
-  <owner>jonross@chromium.org</owner>
-  <owner>woa-performance-team@google.com</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    NOTE: This metric is experimental, for performance analysis, please use
-    Event.ScrollJank.DelayedFramesPercentage.FixedWindow.
-
-    A vsync is deemed janky during a scroll if there was no presented frame in
-    the vsync and the next frame contained late input that was not presented
-    during the janky vsync. Missed input is determined by comparing the
-    timestamp of the earliest input of the current frame, to that of the last
-    input of the previously presented frame. If the delta of the timestamps is
-    less than a vsync + vsync/2, then the input is considered to have been
-    intended for the missed frame. This metric reports the percentage of janky
-    vsyncs within a window of size 64.
-
-    For more details about this metric, please check
-    http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY
-  </summary>
-</histogram>
-
-<histogram name="Event.ScrollJank.MissedVsyncsPercentage.FixedWindow3"
-    units="%" expires_after="2026-03-17">
-  <owner>petrcermak@chromium.org</owner>
-  <owner>jonross@chromium.org</owner>
-  <owner>woa-performance-team@google.com</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    NOTE: This metric is a new experimental version of
-    Event.ScrollJank.MissedVsyncsPercentage.FixedWindow. This new metric aims to
-    address the old metric's shortcomings and eventually replace it. For now, we
-    recommend you still use the old metric
-    (Event.ScrollJank.MissedVsyncsPercentage.FixedWindow) for performance
-    analysis.
-
-    A vsync is deemed janky during a scroll if there was no presented frame in
-    the vsync and the next frame contained late input that was not presented
-    during the janky vsync. Missed input is determined by comparing the
-    timestamp of the earliest input of the current frame, to that of the last
-    input of the previously presented frame. If the delta of the timestamps is
-    less than a vsync + vsync/2, then the input is considered to have been
-    intended for the missed frame. This metric reports the percentage of janky
-    vsyncs within a window of size 64.
-
-    For more details about this metric, please check
-    http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY
-  </summary>
-</histogram>
-
-<histogram name="Event.ScrollJank.MissedVsyncsPercentage.PerScroll3" units="%"
-    expires_after="2026-03-17">
-  <owner>petrcermak@chromium.org</owner>
-  <owner>kartarsingh@google.com</owner>
-  <owner>jonross@chromium.org</owner>
-  <owner>woa-performance-team@google.com</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    NOTE: This metric is a new experimental version of
-    Event.ScrollJank.MissedVsyncsPercentage.PerScroll. This new metric aims to
-    address the old metric's shortcomings and eventually replace it. For now, we
-    recommend you still use the old metric
-    (Event.ScrollJank.MissedVsyncsPercentage.PerScroll) for performance
-    analysis.
-
-    A vsync is deemed janky during a scroll if there was no presented frame in
-    the vsync and the next frame contained late input that was not presented
-    during the janky vsync. Missed input is determined by comparing the
-    timestamp of the earliest input of the current frame, to that of the last
-    input of the previously presented frame. If the delta of the timestamps is
-    less than a vsync + vsync/2, then the input is considered to have been
-    intended for the missed frame. This metric reports percentage of missed
-    vsyncs in a scroll in scroll. Metric emits zeros as well i.e. the case when
-    no frames were delayed.
-
-    For more details about this metric, please check
-    http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY
-  </summary>
-</histogram>
-
-<histogram name="Event.ScrollJank.MissedVsyncsPercentage.PerScroll{Length}"
-    units="%" expires_after="2025-12-07">
-  <owner>kartarsingh@google.com</owner>
-  <owner>jonross@chromium.org</owner>
-  <owner>woa-performance-team@google.com</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    A vsync is deemed janky during a scroll if there was no presented frame in
-    the vsync and the next frame contained late input that was not presented
-    during the janky vsync. Missed input is determined by comparing the
-    timestamp of the earliest input of the current frame, to that of the last
-    input of the previously presented frame. If the delta of the timestamps is
-    less than a vsync + vsync/2, then the input is considered to have been
-    intended for the missed frame. This metric reports percentage of missed
-    vsyncs in a scroll in scroll. Metric emits zeros as well i.e. the case when
-    no frames were delayed. The metric gets reported for {Length}.
-
-    Please see Event.ScrollJank.MissedVsyncsPercentage.PerScroll for
-    unaggregated version of this histogram.
-
-    For more details about this metric, please check
-    http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY
-  </summary>
-  <token key="Length" variants="ScrollLength"/>
-</histogram>
-
-<histogram name="Event.ScrollJank.MissedVsyncsSum.FixedWindow3" units="counts"
-    expires_after="2026-03-17">
-  <owner>petrcermak@chromium.org</owner>
-  <owner>kartarsingh@google.com</owner>
-  <owner>jonross@chromium.org</owner>
-  <owner>woa-performance-team@google.com</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    NOTE: This metric is a new experimental version of
-    Event.ScrollJank.MissedVsyncsSum.FixedWindow. This new metric aims to
-    address the old metric's shortcomings and eventually replace it. For now, we
-    recommend you still use the old metric
-    (Event.ScrollJank.MissedVsyncsSum.FixedWindow) for performance analysis.
-
-    A vsync is deemed janky during a scroll if there was no presented frame in
-    the vsync and the next frame contained late input that was not presented
-    during the janky vsync. Missed input is determined by comparing the
-    timestamp of the earliest input of the current frame, to that of the last
-    input of the previously presented frame. If the delta of the timestamps is
-    less than a vsync + vsync/2, then the input is considered to have been
-    intended for the missed frame. This metric reports the sum of missed vsyncs
-    in a window of size 64. Metric emits zeros as well i.e. the case when no
-    frames were delayed.
-
-    For more details about this metric, please check
-    http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY
-  </summary>
-</histogram>
-
-<histogram name="Event.ScrollJank.MissedVsyncsSum.PerScroll3" units="counts"
-    expires_after="2026-03-17">
-  <owner>petrcermak@chromium.org</owner>
-  <owner>kartarsingh@google.com</owner>
-  <owner>jonross@chromium.org</owner>
-  <owner>woa-performance-team@google.com</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    NOTE: This metric is a new experimental version of
-    Event.ScrollJank.MissedVsyncsSum.PerScroll. This new metric aims to address
-    the old metric's shortcomings and eventually replace it. For now, we
-    recommend you still use the old metric
-    (Event.ScrollJank.MissedVsyncsSum.PerScroll) for performance analysis.
-
-    A frame is deemed janky during a scroll if there was no presented frame in
-    the previous vsync, and the current frame contains input that was not
-    presented during the missed frame. Missed input is determined by comparing
-    the timestamp of the earliest input of the current frame, to that of the
-    last input of the previously presented frame. If the delta of the timestamps
-    is less than a vsync + vsync/2, then the input is considered to have been
-    intended for the missed frame. This metric reports the sum of missed vsyncs
-    in a scroll. Metric emits zeros as well i.e. the case when no frames were
-    delayed.
-
-    For more details about this metric, please check
-    http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY
-  </summary>
-</histogram>
-
 <histogram name="Event.ScrollJank.MissedVsyncs{Operator}.FixedWindow"
-    units="counts" expires_after="2025-12-07">
+    units="counts" expires_after="2026-04-12">
   <owner>kartarsingh@google.com</owner>
   <owner>jonross@chromium.org</owner>
   <owner>woa-performance-team@google.com</owner>
@@ -828,33 +779,8 @@ chromium-metrics-reviews@google.com.
   <token key="Operator" variants="ScrollJankOperator"/>
 </histogram>
 
-<histogram name="Event.ScrollJank.MissedVsyncs{Operator}.FixedWindow2"
-    units="counts" expires_after="2025-12-21">
-  <owner>jonross@chromium.org</owner>
-  <owner>woa-performance-team@google.com</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    NOTE: This metric is experimental, for performance analysis, please use
-    Event.ScrollJank.MissedVsyncs{Operator}.FixedWindow.
-
-    A vsync is deemed janky during a scroll if there was no presented frame in
-    the vsync and the next frame contained late input that was not presented
-    during the janky vsync. Missed input is determined by comparing the
-    timestamp of the earliest input of the current frame, to that of the last
-    input of the previously presented frame. If the delta of the timestamps is
-    less than a vsync + vsync/2, then the input is considered to have been
-    intended for the missed frame. This metric reports the {Operator} in window
-    of size 64. Metric emits zeros as well i.e. the case when no frames were
-    delayed.
-
-    For more details about this metric, please check
-    http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY
-  </summary>
-  <token key="Operator" variants="ScrollJankOperator"/>
-</histogram>
-
-<histogram name="Event.ScrollJank.MissedVsyncs{Operator}.PerScroll{Length}"
-    units="counts" expires_after="2025-12-07">
+<histogram name="Event.ScrollJank.MissedVsyncs{Operator}.PerScroll"
+    units="counts" expires_after="2026-04-12">
   <owner>kartarsingh@google.com</owner>
   <owner>jonross@chromium.org</owner>
   <owner>woa-performance-team@google.com</owner>
@@ -867,8 +793,7 @@ chromium-metrics-reviews@google.com.
     last input of the previously presented frame. If the delta of the timestamps
     is less than a vsync + vsync/2, then the input is considered to have been
     intended for the missed frame. This metric reports the {Operator} in scroll.
-    Metric emits zeros as well i.e. the case when no frames were delayed. The
-    metric gets reported for {Length}.
+    Metric emits zeros as well i.e. the case when no frames were delayed.
 
     Please see Event.ScrollJank.MissedVsyncs.PerFrame for unaggregated version
     of this histogram.
@@ -877,7 +802,61 @@ chromium-metrics-reviews@google.com.
     http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY
   </summary>
   <token key="Operator" variants="ScrollJankOperator"/>
-  <token key="Length" variants="ScrollLength"/>
+</histogram>
+
+<histogram name="Event.ScrollJank.MissedVsyncs{Operator}4.FixedWindow"
+    units="counts" expires_after="2026-05-17">
+  <owner>petrcermak@chromium.org</owner>
+  <owner>kartarsingh@google.com</owner>
+  <owner>jonross@chromium.org</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    NOTE: This 'scroll jank v4 metric' is a new refined version of
+    Event.ScrollJank.MissedVsyncs{Operator}.FixedWindow. This new metric aims to
+    address the old metric's shortcomings and eventually replace it.
+
+    The {Operator} over the number of VSyncs in a window of 64 frames containing
+    (regular and/or inertial[1]) scroll updates which Chrome missed (didn't
+    present any inputs in) because it didn't present a frame on time. This
+    metric considers a frame delayed if it violates any of the following three
+    rules:
+
+    1. Running consistency: Chrome's input→frame delivery must not slow down to
+    the point that Chrome misses a VSync in which Chrome would have been able to
+    present an input had it maintained consistent input→frame delivery.
+
+    2. Fast scroll continuity: There must be no missed VSyncs between
+    consecutive frames containing scroll updates with absolute total raw scroll
+    delta greater than or equal to 3 pixels.
+
+    3. Fling continuity: There must be no missed VSyncs during the transition
+    from a regular scroll to a fling UNLESS the regular scroll is slow with
+    absolute total raw scroll delta less than 3 pixels per frame. There must
+    also be no missed VSyncs between consecutive inertial frames EXCEPT towards
+    the end of a fling if the absolute total raw scroll delta drops below 0.2
+    pixels per frame.
+
+    This metric is different from traditional graphics smoothness metrics as it
+    considers performance degradation on all threads and processes including
+    Browser and IO, unlike graphics' smoothness metrics which focus on the core
+    graphics pipeline (Renderer/GPU).
+
+    This metric is only recorded when 64 frames are presented, for example if a
+    scroll only has 12 frames, the next scroll has 40 frames and the scroll
+    after has 12 frames, the metric only will be emitted after the 3rd scroll.
+    This means the last incomplete window might not get reported as the browser
+    terminates. This metric emits zero in the case when no VSyncs were missed in
+    a window of 64 frames.
+
+    For more details about this metric, please check
+    https://docs.google.com/document/d/1AaBvTIf8i-c-WTKkjaL4vyhQMkSdynxo3XEiwpofdeA
+
+    [1] An inertial scroll (aka a fling) is a finger boosted scroll, meaning the
+    screen is moving after the user has accelerated their finger on the screen
+    and removed it.
+  </summary>
+  <token key="Operator" variants="ScrollJankOperator"/>
 </histogram>
 
 <histogram name="Event.Touch.TimedOutOnDesktopSite" enum="BooleanTimedOut"
@@ -935,6 +914,7 @@ chromium-metrics-reviews@google.com.
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     When a user performs a scroll using touchscreen, a sequence of touch-move
     events are generated leading to a sequence of gesture-scroll-update events.
@@ -952,9 +932,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency2"
-    units="microseconds" expires_after="2025-12-07">
+    units="microseconds" expires_after="2026-04-12">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     When a user performs a scroll using touchscreen, a sequence of touch-move
     events are generated leading to a sequence of gesture-scroll-update events.
@@ -974,9 +955,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="EventLatency.GestureScrollUpdate.{NonTouchscreenScrollInputType}.TotalLatency2"
-    units="microseconds" expires_after="2025-12-14">
+    units="microseconds" expires_after="2026-04-26">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Tracks total latency of {NonTouchscreenScrollInputType}
     gesture-scroll-update events that are non-inertial (i.e. not generated due
@@ -995,9 +977,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EventLatency.TotalLatency" units="microseconds"
-    expires_after="2025-12-28">
+    expires_after="2026-05-03">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Tracks total latency of all event types, from when the user input causing
     the event is performed until the frame caused by the event is submitted by
@@ -1009,9 +992,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="EventLatency.{NonGsuScrollEventType}.{ScrollInputType}.TotalLatency2"
-    units="microseconds" expires_after="2025-12-28">
+    units="microseconds" expires_after="2026-05-03">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Tracks total latency of {ScrollInputType} {NonGsuScrollEventType}, from when
     the user input causing the event is performed until the frame caused by the
@@ -1032,6 +1016,9 @@ chromium-metrics-reviews@google.com.
                  Event.Latency.ScrollUpdate.Touch.TimeToScrollUpdateSwapBegin4.
                  This tracks GestureScrollBegin"/>
     <variant name="GestureScrollEnd" summary="gesture-scroll-end events"/>
+    <variant name="InertialGestureScrollEnd"
+        summary="gesture-scroll-end events that are inertial (i.e. generated
+                 due to a user fling)"/>
     <variant name="InertialGestureScrollUpdate"
         summary="gesture-scroll-update events that are inertial (i.e.
                  generated due to a user fling)"/>
@@ -1039,9 +1026,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EventLatency.{NonScrollPinchEventType}.TotalLatency"
-    units="microseconds" expires_after="2025-12-07">
+    units="microseconds" expires_after="2026-04-12">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Tracks total latency of {NonScrollPinchEventType}, from when the user input
     causing the event is performed generated until the frame caused by the event
@@ -1075,9 +1063,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EventLatency.{PinchEventType}.{PinchInputType}.TotalLatency"
-    units="microseconds" expires_after="2025-12-28">
+    units="microseconds" expires_after="2026-05-03">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Tracks total latency of {PinchInputType} {PinchEventType}, from when the
     user input causing the event is performed until the frame caused by the
@@ -1099,9 +1088,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EventLatency.{ScrollEventType}.GenerationToBrowserMain"
-    units="microseconds" expires_after="2026-01-11">
+    units="microseconds" expires_after="2026-05-17">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Tracks latency from when the user input causing the event is generated until
     the the event is first processed on the Browser Main Thread. Reported for
@@ -1113,9 +1103,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EventLatency.{ScrollEventType}.TotalLatency2"
-    units="microseconds" expires_after="2025-12-14">
+    units="microseconds" expires_after="2026-04-19">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Tracks total latency of {ScrollEventType}, from when the user input causing
     the event is performed generated until the frame caused by the event is
@@ -1126,30 +1117,8 @@ chromium-metrics-reviews@google.com.
   <token key="ScrollEventType" variants="ScrollEventType"/>
 </histogram>
 
-<histogram name="EventLatency.{ScrollEventType}.{DispatchStage}.{RatioType}"
-    units="%" expires_after="2025-12-28">
-  <owner>jonross@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Tracks the latency of {ScrollEventType}, as a ratio from {DispatchStage} to
-    the VSync time. This is normalized by the frame interval. This is reported
-    when the stage occurs {RatioType}.
-  </summary>
-  <token key="ScrollEventType" variants="ScrollEventType"/>
-  <token key="DispatchStage">
-    <variant name="ArrivedInRendererVsVSyncRatio"
-        summary="when the event arrived in the Renderer"/>
-    <variant name="GenerationVsVsyncRatio"
-        summary="when the event was generated"/>
-  </token>
-  <token key="RatioType">
-    <variant name="AfterVSync" summary="after the VSync timestamp"/>
-    <variant name="BeforeVSync" summary="before the VSync timestamp"/>
-  </token>
-</histogram>
-
 <histogram name="EventLatency.{ScrollEventType}.{TopControls}"
-    units="microseconds" expires_after="2026-01-11">
+    units="microseconds" expires_after="2026-05-17">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>

@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 import android.graphics.PointF;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTabDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 
@@ -58,5 +60,29 @@ public interface ReorderStrategy {
     void stopReorderMode(StripLayoutView[] stripViews, StripLayoutGroupTitle[] groupTitles);
 
     /** Returns the dragged {@link StripLayoutView} for the reorder. */
-    StripLayoutView getInteractingView();
+    @Nullable StripLayoutView getInteractingView();
+
+    /**
+     * Called to trigger an animated reorder when not in reorder mode. This can be triggered through
+     * keyboard shortcuts.
+     *
+     * @param tabDelegate The {@link StripLayoutTabDelegate} for updating tab visuals.
+     * @param stripViews The list of {@link StripLayoutView}.
+     * @param groupTitles The list of {@link StripLayoutGroupTitle}.
+     * @param stripTabs The list of {@link StripLayoutTab}.
+     * @param reorderingView The view to reorder.
+     * @param toLeft {@code True} if reordering the view to the left.
+     */
+    void reorderViewInDirection(
+            StripLayoutTabDelegate tabDelegate,
+            StripLayoutView[] stripViews,
+            StripLayoutGroupTitle[] groupTitles,
+            StripLayoutTab[] stripTabs,
+            StripLayoutView reorderingView,
+            boolean toLeft);
+
+    /** Returns true if auto-scroll is allowed during reorder. */
+    default boolean shouldAllowAutoScroll() {
+        return true;
+    }
 }

@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PRERENDER_HANDLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PRERENDER_HANDLE_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"

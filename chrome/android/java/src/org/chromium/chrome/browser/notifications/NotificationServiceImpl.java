@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.notifications;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
@@ -21,6 +23,9 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.base.SplitCompatIntentService;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
@@ -34,7 +39,8 @@ import java.util.UUID;
  * The Notification service receives intents fired as responses to user actions issued on Android
  * notifications displayed in the notification tray.
  */
-public class NotificationServiceImpl extends NotificationService.Impl {
+@NullMarked
+public class NotificationServiceImpl extends SplitCompatIntentService.Impl {
     private static final String TAG = NotificationServiceImpl.class.getSimpleName();
 
     /**
@@ -111,10 +117,10 @@ public class NotificationServiceImpl extends NotificationService.Impl {
             }
 
             recordJobIsAlreadyPendingHistogram(scheduler, taskId, intent);
+            String action = assumeNonNull(intent.getAction());
             NotificationUmaTracker.getInstance()
                     .recordIntentHandlerJobStage(
-                            NotificationUmaTracker.IntentHandlerJobStage.SCHEDULE_JOB,
-                            intent.getAction());
+                            NotificationUmaTracker.IntentHandlerJobStage.SCHEDULE_JOB, action);
 
             JobInfo job = jobBuilder.build();
             int result = scheduler.schedule(job);
@@ -124,7 +130,7 @@ public class NotificationServiceImpl extends NotificationService.Impl {
                 NotificationUmaTracker.getInstance()
                         .recordIntentHandlerJobStage(
                                 NotificationUmaTracker.IntentHandlerJobStage.SCHEDULE_JOB_FAILED,
-                                intent.getAction());
+                                action);
             }
 
             recordJobScheduleResultHistogram(result, intent);
@@ -181,7 +187,8 @@ public class NotificationServiceImpl extends NotificationService.Impl {
      * @param intent The intent containing the specific information.
      */
     @Override
-    public void onHandleIntent(final Intent intent) {
+    public void onHandleIntent(final @Nullable Intent intent) {
+        if (intent == null) return;
         if (!intent.hasExtra(NotificationConstants.EXTRA_NOTIFICATION_ID)
                 || !intent.hasExtra(NotificationConstants.EXTRA_NOTIFICATION_INFO_ORIGIN)) {
             return;
@@ -222,6 +229,7 @@ public class NotificationServiceImpl extends NotificationService.Impl {
      * @param intent The intent containing the notification's information.
      */
     static void dispatchIntentOnUiThread(Intent intent) {
+        String action = assumeNonNull(intent.getAction());
         final BrowserParts parts =
                 new EmptyBrowserParts() {
                     @Override
@@ -238,7 +246,7 @@ public class NotificationServiceImpl extends NotificationService.Impl {
                         NotificationUmaTracker.getInstance()
                                 .recordIntentHandlerJobStage(
                                         NotificationUmaTracker.IntentHandlerJobStage.DISPATCH_EVENT,
-                                        intent.getAction());
+                                        action);
                         if (!NotificationPlatformBridge.dispatchNotificationEvent(intent)) {
                             Log.w(TAG, "Unable to dispatch the notification event to Chrome.");
                         }
@@ -250,8 +258,7 @@ public class NotificationServiceImpl extends NotificationService.Impl {
 
         NotificationUmaTracker.getInstance()
                 .recordIntentHandlerJobStage(
-                        NotificationUmaTracker.IntentHandlerJobStage.NATIVE_STARTUP,
-                        intent.getAction());
+                        NotificationUmaTracker.IntentHandlerJobStage.NATIVE_STARTUP, action);
 
         // Try to load native.
         ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(parts);

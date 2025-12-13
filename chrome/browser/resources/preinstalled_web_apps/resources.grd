@@ -23,6 +23,7 @@
         <include name="IDR_PREINSTALLED_WEB_APPS_GEMINI_ICON_192_PNG" file="internal/gemini_192.png" type="BINDATA" />
         <include name="IDR_PREINSTALLED_WEB_APPS_GOOGLE_CALENDAR_ICON_192_PNG" file="internal/google_calendar_192.png" type="BINDATA" />
         <include name="IDR_PREINSTALLED_WEB_APPS_NOTEBOOK_LM_ICON_512_PNG" file="internal/notebook_lm_512.png" type="BINDATA" />
+        <include name="IDR_PREINSTALLED_WEB_APPS_VIDS_ICON_192_PNG" file="internal/vids_192.png" type="BINDATA" />
       </if>
     </includes>
   </release>

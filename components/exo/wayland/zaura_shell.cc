@@ -592,9 +592,7 @@ void AuraSurface::ComputeAndSendOcclusion(
   switch (occlusion_state) {
     case aura::Window::OcclusionState::VISIBLE: {
       const gfx::Rect display_bounds_in_screen =
-          display::Screen::GetScreen()
-              ->GetDisplayNearestWindow(window)
-              .bounds();
+          display::Screen::Get()->GetDisplayNearestWindow(window).bounds();
       const gfx::Rect bounds_in_screen = GetTransformedBoundsInScreen(window);
       const int tracked_area =
           bounds_in_screen.width() * bounds_in_screen.height();
@@ -1049,7 +1047,7 @@ void AuraToplevel::OnConfigure(
       AddState(&states, XDG_TOPLEVEL_STATE_FULLSCREEN);
     } else if (state_type == chromeos::WindowStateType::kPinned) {
       AddState(&states, ZAURA_TOPLEVEL_STATE_PINNED);
-    } else if (state_type == chromeos::WindowStateType::kTrustedPinned) {
+    } else if (state_type == chromeos::WindowStateType::kLockedFullscreen) {
       AddState(&states, ZAURA_TOPLEVEL_STATE_TRUSTED_PINNED);
     }
 
@@ -1262,10 +1260,10 @@ class WaylandAuraShell : public ash::DesksController::Observer,
       : aura_shell_resource_(aura_shell_resource), seat_(display->seat()) {
     ash::DesksController::Get()->AddObserver(this);
     ash::Shell::Get()->overview_controller()->AddObserver(this);
-    display::Screen::GetScreen()->AddObserver(this);
+    display::Screen::Get()->AddObserver(this);
     if (wl_resource_get_version(aura_shell_resource_) >=
         ZAURA_SHELL_LAYOUT_MODE_SINCE_VERSION) {
-      auto layout_mode = display::Screen::GetScreen()->InTabletMode()
+      auto layout_mode = display::Screen::Get()->InTabletMode()
                              ? ZAURA_SHELL_LAYOUT_MODE_TABLET
                              : ZAURA_SHELL_LAYOUT_MODE_WINDOWED;
       zaura_shell_send_layout_mode(aura_shell_resource_, layout_mode);
@@ -1306,7 +1304,7 @@ class WaylandAuraShell : public ash::DesksController::Observer,
   WaylandAuraShell(const WaylandAuraShell&) = delete;
   WaylandAuraShell& operator=(const WaylandAuraShell&) = delete;
   ~WaylandAuraShell() override {
-    display::Screen::GetScreen()->RemoveObserver(this);
+    display::Screen::Get()->RemoveObserver(this);
     ash::Shell::Get()->overview_controller()->RemoveObserver(this);
     ash::DesksController::Get()->RemoveObserver(this);
     if (seat_)

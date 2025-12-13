@@ -11,8 +11,6 @@
 <translation id="1032891413405719768">स्टाइलस की बैटरी कम हो गई है</translation>
 <translation id="1036073649888683237">सूचनाएं मैनेज करने के लिए, सेटिंग में जाएं</translation>
 <translation id="1036348656032585052">बंद करें</translation>
-<translation id="1036672894875463507">मैं आपकी Google Assistant हूं. मैं दिन भर के कामों में आपकी मदद करूंगी!
-आप शुरुआत करने के लिए, यहां दी गई कुछ चीज़ें आज़मा सकते हैं.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> को जोड़ा गया</translation>
 <translation id="1038106730571050514">सुझाव दिखाएं</translation>
 <translation id="1047017786576569492">पार्शियल</translation>
@@ -26,11 +24,9 @@
 <translation id="1073899992769346247">बैटरी बदलें या उसे रीचार्ज करें</translation>
 <translation id="1081015718268701546">फ़िलहाल, Linux ऐप्लिकेशन काम नहीं कर रहे हैं. अन्य ऐप्लिकेशन सेव हो जाएंगे.</translation>
 <translation id="108486256082349153">मोबाइल (सेल्युलर): <ph name="ADDRESS" /></translation>
-<translation id="1087110696012418426">गुड आफ़्टरनून <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242"><ph name="CATEGORY" />, फ़ाइलें, ऐप्लिकेशन, और दूसरी चीज़ें खोजें. ऐप्लिकेशन को नेविगेट करने के लिए, ऐरो वाले बटनों का इस्तेमाल करें.</translation>
 <translation id="1093645050124056515">ctrl + alt + डाउन ऐरो</translation>
 <translation id="1094756674036064790">क्या आपको ब्लूटूथ बंद करना है?</translation>
-<translation id="109942774857561566">मुझे बोरियत हो रही है</translation>
 <translation id="1104084341931202936">सुलभता सेटिंग दिखाएं</translation>
 <translation id="1104621072296271835">साथ मिलकर आपके डिवाइस और बेहतर काम करते हैं</translation>
 <translation id="1111021433905331574">सेटिंग &gt; <ph name="APP_TITLE" /> में जाकर, अपने कीबोर्ड की बैकलाइट का रंग बदलने का विकल्प उपलब्ध है</translation>
@@ -79,13 +75,11 @@
 <translation id="1242198791279543032">सूचनाएं म्यूट की गई हैं</translation>
 <translation id="1242883863226959074">डिवाइस</translation>
 <translation id="1245476784081715330">बहुत बढ़िया!</translation>
-<translation id="1245644940275736236">Assistant पर जाएं</translation>
 <translation id="124678866338384709">वर्तमान टैब को बंद करें</translation>
 <translation id="1246890715821376239">काम नहीं करने वाले ऐप्लिकेशन</translation>
 <translation id="1247372569136754018">माइक्रोफ़ोन (आंतरिक)</translation>
 <translation id="1247519845643687288">हाल ही में इस्तेमाल किए गए ऐप्लिकेशन</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> से चार्ज हो रहा है</translation>
-<translation id="1255033239764210633">मौसम कैसा है?</translation>
 <translation id="1256734167083229794">आपने पूरी स्क्रीन को बड़ा करके दिखाने की सुविधा के लिए कीबोर्ड शॉर्टकट दबाया है. ज़ूम इन करने के लिए <ph name="ZOOM_IN_ACCELERATOR" /> और ज़ूम आउट करने के लिए <ph name="ZOOM_OUT_ACCELERATOR" /> का इस्तेमाल करें. ज़ूम इन किए गए व्यू में एक से दूसरी जगह पर जाने के लिए, ctrl+alt+ऐरो का इस्तेमाल करें.</translation>
 <translation id="1269405891096105529">मेहमान मोड चालू होने पर, सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह) काम नहीं करते.</translation>
 <translation id="1270290102613614947">ऑन-स्‍क्रीन कीबोर्ड अक्षम है</translation>
@@ -207,7 +201,6 @@
 <translation id="1639239467298939599">लोड हो रही है</translation>
 <translation id="1647986356840967552">पिछला पेज</translation>
 <translation id="1651914502370159744">'इतिहास' पेज खोलें</translation>
-<translation id="1654477262762802994">बोलकर खोजना शुरू करें</translation>
 <translation id="1668469839109562275">पहले से मौजूद वीपीएन</translation>
 <translation id="1673232940951031776">फ़ोकस मोड बंद करें. <ph name="REMAINING_TIME" /> का समय बाकी है.</translation>
 <translation id="1675570947608765064">इस टास्क में किए गए आपके बदलाव, लोगों को दिखेंगे</translation>
@@ -219,7 +212,6 @@
 <translation id="1680659827022803830">वीडियो कॉल की सेटिंग</translation>
 <translation id="169515659049020177">Shift</translation>
 <translation id="1696984622403682083">सेटिंग में जाकर, इसे किसी भी समय बंद किया जा सकता है. <ph name="LINK_TO_LEARN_MORE" /></translation>
-<translation id="1698080062160024910"><ph name="TOTAL_TIME" /> टाइमर · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6 पता: <ph name="ADDRESS" /></translation>
 <translation id="1700782710852683371">फ़िलहाल, दिए गए ब्यौरे के हिसाब से इमेज नहीं बनाई जा सकतीं. इसलिए, ब्यौरे में बदलाव करें. ध्यान रखें कि लोगों की इमेज और नुकसान पहुंचाने वाला या अश्लील कॉन्टेंट नहीं बनाया जा सकता.</translation>
 <translation id="1703117532528082099">चालू विंडो को बाईं तरफ़ डॉक किया गया है.</translation>
@@ -293,7 +285,6 @@
 <translation id="1929331825127010451">सवाल-जवाब वाले पेज पर वापस जाएं</translation>
 <translation id="1946615340060705561">माउस बटन को छोड़ने के लिए "c" दबाएं</translation>
 <translation id="1948405482892809935">अगले उपयोगकर्ता पर स्विच करने के लिए</translation>
-<translation id="1951012854035635156">Assistant</translation>
 <translation id="1954252331066828794">स्क्रीन रिकॉर्डिंग पूरी हुई</translation>
 <translation id="1956087014741188812">कीबोर्ड से माउस के बटन इस्तेमाल करने की सुविधा रोकें</translation>
 <translation id="1957958912175573503">अपनी भाषा सेट करें</translation>
@@ -303,9 +294,7 @@
 <translation id="1967970931040389207">हॉटस्पॉट चालू करें</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">डेस्क और विंडो हटा दी गई हैं. इस कार्रवाई को पहले जैसा करने के लिए, Control + Z दबाएं.</translation>
-<translation id="1972950159383891558">नमस्ते, <ph name="USERNAME" /></translation>
 <translation id="1977686871076551563">रंग बदलने का मोड चालू है. इसे बंद करने के लिए, <ph name="ACCELERATOR" /> को फिर से दबाएं.</translation>
-<translation id="1978498689038657292">टेक्स्ट इनपुट</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" /> में शामिल हों</translation>
 <translation id="1982717156487272186">पिछले हफ़्ते के इवेंट दिखाएं</translation>
 <translation id="1986150224850161328">यह देख लें कि आपका फ़ोन और Chromebook एक ही नेटवर्क से कनेक्ट हों. इसके बाद, फिर से कोशिश करें. <ph name="LEARN_MORE" /></translation>
@@ -315,9 +304,7 @@
 <translation id="1996162290124031907">अगले टैब पर जाएं</translation>
 <translation id="1998100899771863792">मौजूदा डेस्क</translation>
 <translation id="2001444736072756133"><ph name="CATEGORY" />, फ़ाइलें, ऐप्लिकेशन, और दूसरी चीज़ें खोजें.</translation>
-<translation id="2016340657076538683">कोई मैसेज लिखें</translation>
 <translation id="2017998995161831444">Explore ऐप्लिकेशन में "सहायता" खोलें</translation>
-<translation id="2018630726571919839">मुझे कोई चुटकुला सुनाओ</translation>
 <translation id="2021864487439853900">क्लिक करके अनलॉक करें</translation>
 <translation id="2034971124472263449">फिर भी सेव करें</translation>
 <translation id="2041220428661959602">बैटरी लेवल: <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -329,13 +316,14 @@
 <translation id="2067602449040652523">कीबोर्ड की रोशनी</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> को टॉगल करें. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> है</translation>
 <translation id="2079545284768500474">पहले जैसा करें</translation>
-<translation id="2083190527011054446">गुड नाइट <ph name="GIVEN_NAME" />,</translation>
 <translation id="2086334242442703436">इमोजी पिकर खोलें</translation>
 <translation id="2088116547584365419">गेम</translation>
+<translation id="2093792000875799555">Chromebook के लिए Steam से जुड़ी खबरें</translation>
 <translation id="209965399369889474">नेटवर्क से जुड़ा हुआ नहीं है</translation>
 <translation id="2107581415810719320">अन्य बटन <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">आपकी यूएसबी-सी केबल Thunderbolt पर काम नहीं करती है. डिवाइस की परफ़ॉर्मेंस पर बुरा असर पड़ सकता है.</translation>
 <translation id="2108303511227308752">Alt + Backspace कीबोर्ड शॉर्टकट बदल गया है. Delete बटन का इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + backspace दबाएं.</translation>
+<translation id="2115680839221566783">बैटरी <ph name="PERCENTAGE" />% है. इसे चार्ज होने से रोक दिया गया है.</translation>
 <translation id="2126242104232412123">नया डेस्क</translation>
 <translation id="2132302418721800944">फ़ुल स्क्रीन रिकॉर्ड करें</translation>
 <translation id="2135456203358955318">स्क्रीन पर कर्सर वाले हिस्से को बड़ा करके दिखाने की सुविधा</translation>
@@ -400,7 +388,6 @@
 <translation id="2367186422933365202">आपके Chromebook में साइन इन नहीं हो पाया</translation>
 <translation id="2367972762794486313">ऐप्स  दिखाएं</translation>
 <translation id="2368828502825385061">फ़ोन का पता लगाएं</translation>
-<translation id="2369165858548251131">चाइनीज़ भाषा में "नमस्ते" कैसे बोलते हैं</translation>
 <translation id="2370971919968699910">इससे डेटा खर्च हो सकता है.
 <ph name="DEVICECOUNT" /> डिवाइस कनेक्ट हैं.</translation>
 <translation id="2383521554963939360">ऐप्लिकेशन और टैब ग्रुप</translation>
@@ -467,12 +454,12 @@
 <translation id="2549711466868162843">रोशनी बढ़ाना</translation>
 <translation id="2549985041256363841">रिकॉर्ड करना शुरू करें</translation>
 <translation id="255671100581129685">सार्वजनिक सत्र में Google Assistant उपलब्ध नहीं है.</translation>
+<translation id="2562459326218811217">डिवाइस को प्लग इन किया गया है, लेकिन चार्ज नहीं हो रहा है. ज़्यादा वॉट (W) वाले चार्जर का इस्तेमाल करें या अपने ओरिजनल चार्जर का इस्तेमाल करें.</translation>
 <translation id="256712445991462162">सामग्री को बड़ा दिखाने की डॉक की गई सुविधा</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> कनेक्ट नहीं किया जा सका</translation>
 <translation id="2575685495496069081">एक से ज़्यादा 'साइन इन' को बंद कर दिया गया है</translation>
 <translation id="2579264398927991698">फ़र्मवेयर से जुड़े अपडेट</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
-<translation id="2595239820337756193">5 हज़ार कितने मील होता है</translation>
 <translation id="2596078834055697711">विंडो का स्क्रीनशॉट लें</translation>
 <translation id="2598725286293895280">डेस्क में ऐसे ऐप्लिकेशन मौजूद हैं जो काम नहीं करते</translation>
 <translation id="2607678425161541573">ऑनलाइन साइन इन करना ज़रूरी है</translation>
@@ -537,6 +524,7 @@
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">ऐप्लिकेशन</translation>
 <translation id="2814448776515246190">पार्शियल कैप्चर</translation>
+<translation id="2815594810045873507">ज़्यादा वॉट (W) वाले चार्जर का इस्तेमाल करें या अपने ओरिजनल चार्जर का इस्तेमाल करें.</translation>
 <translation id="2819276065543622893">अब आप प्रस्थान कर जाएंगे.</translation>
 <translation id="2822551631199737692">कैमरा इस्तेमाल हो रहा है</translation>
 <translation id="2825619548187458965">शेल्फ़</translation>
@@ -580,7 +568,6 @@
 <translation id="2949420361496057765"><ph name="MODIFIER" /> दबाएं और किसी लिंक पर क्लिक करें</translation>
 <translation id="2957159466053076448">सेटिंग में जाकर, इन सुविधाओं को किसी भी समय बंद किया जा सकता है. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">डिवाइस का ऑडियो</translation>
-<translation id="2961963223658824723">कुछ गड़बड़ी हो गई. कुछ सेकंड में फिर से कोशिश करें.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">माइक्रोफ़ोन का ऐक्सेस देना है?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> स्पीच फ़ाइलें डाउनलोड नहीं की जा सकीं</translation>
@@ -603,11 +590,9 @@
 <translation id="3026897869154397692">Calendar में जोड़ा गया</translation>
 <translation id="3033545621352269033">चालू है</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> के साथ जोड़ें</translation>
-<translation id="3036649622769666520">फ़ाइलें खोलें</translation>
 <translation id="3039939407102840004">स्टाइलस बैटरी <ph name="PERCENTAGE" /> प्रतिशत बची है.</translation>
 <translation id="304097922505898963">Keyboard Shortcuts ऐप्लिकेशन खोलें</translation>
 <translation id="304417730895741346">शेल्फ़ में, आपके पिन किए गए और खुले हुए ऐप्लिकेशन मौजूद हैं. किसी ऐप्लिकेशन को शेल्फ़ में पिन करने के लिए, ऐप्लिकेशन पर राइट क्लिक करें या अपने टचपैड पर दो उंगलियों से टैप करें.</translation>
-<translation id="3045488863354895414">गुड आफ़्टरनून,</translation>
 <translation id="3045670165536837541">हैंडल, चुने गए हिस्से के सबसे ऊपर दाईं ओर मौजूद है. हैंडल को मूव करने के लिए, ऐरो बटन इस्तेमाल करें</translation>
 <translation id="3047761520276763270">यह बोलकर देखें:</translation>
 <translation id="3053407068093039599">कैमरा इस्तेमाल करने की सुविधा चालू/बंद करें</translation>
@@ -653,7 +638,6 @@
 <translation id="3176221688814061633">आपके ब्लूटूथ डिवाइस या Chromebook में, ब्लूटूथ के पुराने वर्शन का इस्तेमाल किया जा रहा है. बेहतर ऑडियो क्वालिटी के लिए, ब्लूटूथ सुपर रिज़ॉल्यूशन को चालू करें या इंटरनल माइक्रोफ़ोन का इस्तेमाल करें.</translation>
 <translation id="3181441307743005334">रीस्टार्ट होने में कुछ समय लगेगा</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{किसी डिवाइस से कनेक्ट है}one{# डिवाइस से कनेक्ट है}other{# डिवाइस से कनेक्ट है}}</translation>
-<translation id="320207200541803018">टाइमर सेट करो</translation>
 <translation id="3203405173652969239">ऐक्सेस करने का तरीका बदलने की सुविधा चालू है</translation>
 <translation id="3206735939915734551">Caps Lock चालू/बंद करें</translation>
 <translation id="3207953481422525583">उपयोगकर्ता सेटिंग</translation>
@@ -668,7 +652,6 @@
 <translation id="324366796737464147">ग़ैर-ज़रूरी आवाज़ें कम करने की सुविधा</translation>
 <translation id="3249513730522716925">Window <ph name="WINDOW_TITLE" /> को डेस्क <ph name="ACTIVE_DESK" /> से डेस्क <ph name="TARGET_DESK" /> पर सेट कर दिया गया है</translation>
 <translation id="3253743281242075461">क्लासवर्क का टाइप: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
-<translation id="3255483164551725916">तुम क्या-क्या कर सकती हो?</translation>
 <translation id="3256109297135787951">अपने शेल्फ़ पर मौजूद किसी आइटम से हाइलाइट हटाएं</translation>
 <translation id="3260969790895726815">बोली को स्थानीय तौर पर प्रोसेस किया जाता है और बोलकर लिखवाने की सुविधा ऑफ़लाइन काम करती है. हालांकि, बोले गए कुछ निर्देश काम नहीं करेंगे.</translation>
 <translation id="3264031581203585083">Google Drive के सभी सुझाव छिपाएं</translation>
@@ -692,7 +675,6 @@
 <translation id="3339826665088060472">स्क्रीन कैप्चर, यानी कि स्क्रीनशॉट और स्क्रीन रिकॉर्ड करने के लिए टूल</translation>
 <translation id="3340978935015468852">सेटिंग</translation>
 <translation id="3341303451326249809">स्क्रीनशॉट कैप्चर किया गया</translation>
-<translation id="334252345105450327">स्क्रीनशॉट लो</translation>
 <translation id="3346728094401457853"><ph name="EMAIL" /> के लिए डिवाइस का पासवर्ड डालें</translation>
 <translation id="334927402682780278">कर्सर जहां मौजूद है, वहां से लेकर लाइन के आखिर तक का टेक्स्ट चुनें</translation>
 <translation id="3349345708646875009">टास्क मैनेजर खोलने के लिए</translation>
@@ -719,7 +701,6 @@
 <translation id="3430396595145920809">वापस जाने के लिए, स्क्रीन की दाईं ओर से स्वाइप करें</translation>
 <translation id="3431517721463707585">डेस्क 14</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="343571671045587506">रिमाइंडर बदलें</translation>
 <translation id="3435967511775410570">फ़िंगरप्रिंट पहचाना गया</translation>
 <translation id="3437677362970530951">Play Store और अन्य गेमिंग प्लैटफ़ॉर्म पर मौजूद गेम</translation>
 <translation id="3439896670700055005">कैश मेमोरी में सेव किए गए कॉन्टेंट का इस्तेमाल किए बिना, मौजूदा पेज फिर से लोड करें</translation>
@@ -818,7 +799,6 @@
 <translation id="3694122362646626770">वेबसाइट</translation>
 <translation id="3697991387880191195">स्क्रीनशॉट लेने का शॉर्टकट दबाएं</translation>
 <translation id="3702809606464356667">मौजूदा डेस्क की विंडो दिखाई जा रही हैं, सभी डेस्क की विंडो दिखाने के लिए, अप ऐरो बटन दबाएं</translation>
-<translation id="3702846122927433391">नाइजीरिया की जनसंख्या बताओ</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">मनोरंजन</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> और <ph name="UNAVAILABLE_DLC_TWO" /> की सुविधा उपलब्ध नहीं है.</translation>
@@ -847,7 +827,6 @@
 <translation id="3796215473395753611">alt + अप ऐरो</translation>
 <translation id="3798670284305777884">स्पीकर (आंतरिक)</translation>
 <translation id="3799080171973636491">आपने 'सामग्री को फ़ुल-स्क्रीन पर बड़ा दिखाने वाली सेवा' का कीबोर्ड शॉर्टकट दबाया है. क्या आप इसे चालू करना चाहते हैं?</translation>
-<translation id="380165613292957338">नमस्ते, मैं आपके लिए क्या कर सकती हूं?</translation>
 <translation id="3804737937830804242">कैमरा छोटा करें</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 इमोजी. कोई और नतीजा नहीं मिला.}one{# इमोजी. कोई और नतीजा नहीं मिला.}other{# इमोजी. कोई और नतीजा नहीं मिला.}}</translation>
 <translation id="3822403841174077928">टेक्स्ट को फ़ॉर्मैटिंग के साथ कॉपी नहीं किया जा सका</translation>
@@ -858,7 +837,6 @@
 <translation id="383629559565718788">कीबोर्ड सेटिंग दिखाएं</translation>
 <translation id="384082539148746321">क्या आपको टेंप्लेट मिटाना है?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> फिर <ph name="KEY_ONE" /> या <ph name="KEY_TWO" /> या <ph name="KEY_THREE" /> या <ph name="KEY_FOUR" /></translation>
-<translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">कोई नेटवर्क जानकारी उपलब्ध नहीं</translation>
 <translation id="3848526302597027234">ऐप्लिकेशन को इन्हें ऐक्सेस करने की अनुमति दें:</translation>
 <translation id="385051799172605136">वापस जाएं</translation>
@@ -872,9 +850,7 @@
 <translation id="3891340733213178823">साइन आउट करने के लिए दो बार Ctrl+Shift+Q दबाएं.</translation>
 <translation id="3892148308691398805">टेक्स्ट कॉपी करें</translation>
 <translation id="3893630138897523026">ChromeVox (बोला गया फ़ीडबैक)</translation>
-<translation id="3897533311200664389">एक टेक्स्ट क्वेरी शुरू करें</translation>
 <translation id="3898464793473355515">स्क्रीन को घड़ी की दिशा में 90 डिग्री घुमाएं</translation>
-<translation id="3899995891769452915">ध्‍वनि इनपुट</translation>
 <translation id="3900355044994618856">आपका सत्र <ph name="SESSION_TIME_REMAINING" /> में खत्म होने वाला है</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> से कनेक्‍ट हो रहा है</translation>
 <translation id="3904768293285573640">बाईं ओर से विंडो की टाइल का साइज़ बदलें</translation>
@@ -899,6 +875,7 @@
 <translation id="397105322502079400">गणना की जा रही है...</translation>
 <translation id="397726367135689299">बैटरी को चार्ज करने वाला सोर्स भरोसेमंद नहीं है.</translation>
 <translation id="3977512764614765090">बैटरी <ph name="PERCENTAGE" />% बाकी है और चार्ज हो रही है.</translation>
+<translation id="3978162107953847778">अपने ब्राउज़िंग इतिहास और Google Drive जैसी जगहों से लिंक जोड़ें. इमोजी, इमेज फ़ाइलें वगैरह भी जोड़ी जा सकती हैं. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">क्या आपको ऑडियो आउटपुट बदलना है?</translation>
 <translation id="3984536049089846927">अगला पेज</translation>
 <translation id="3986082989454912832">जवाब दें</translation>
@@ -915,7 +892,6 @@
 <translation id="4024840464866786680">अगर आपको अपना पिन और पासवर्ड याद नहीं है या आपने हाल ही में अपने Google खाते का पासवर्ड बदला है, तो इस खाते का पासवर्ड रीसेट करें.</translation>
 <translation id="4026843240379844265">कार्रवाई विंडो को डिसप्ले के बीच ले जाएं</translation>
 <translation id="4028481283645788203">ज़्यादा सुरक्षा के लिए पासवर्ड की ज़रूरत है</translation>
-<translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4032988577476260673"><ph name="LAUNCHER_KEY_NAME" /> + लेफ़्ट ऐरो</translation>
 <translation id="4039699481424758547">विंडो का स्क्रीनशॉट लेने के लिए, Enter दबाएं: <ph name="WINDOW_TITLE" /></translation>
 <translation id="4042660782729322247">आप अपनी स्क्रीन शेयर कर रहे हैं</translation>
@@ -946,7 +922,6 @@
 <translation id="4136724716305260864">यह सुविधा सूरज उगने तक चालू रहेगी</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + राइट ऐरो</translation>
 <translation id="4146671046252289537">अगले शब्‍द के अंत में जाएं</translation>
-<translation id="4146833061457621061">गाने चलाओ</translation>
 <translation id="4150201353443180367">डिसप्ले</translation>
 <translation id="4151054805501931758">अपने लुक को बेहतर बनाएं</translation>
 <translation id="4156293514828496577">बैटरी <ph name="PERCENTAGE" />% बची है (करीब <ph name="TIME_LEFT" />).
@@ -1002,7 +977,6 @@
 <translation id="428715201724021596">प्रोफ़ाइल से कनेक्ट किया जा रहा है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="4287250812980588583">Chrome विंडो</translation>
 <translation id="4291322857434980285">{NUM_APPS,plural, =1{माइक का वॉल्यूम, <ph name="APP_NAME" /> से कंट्रोल किया जा रहा है}one{माइक का वॉल्यूम, # ऐप्लिकेशन से कंट्रोल किया जा रहा है}other{माइक का वॉल्यूम, # ऐप्लिकेशन से कंट्रोल किया जा रहा है}}</translation>
-<translation id="4294319844246081198">गुड मॉर्निंग <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">सभी <ph name="COUNT" /> सूचनाएं हटाएं</translation>
 <translation id="4300272766492248925">ऐप्लिकेशन खोलें</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> को <ph name="FOLDER_NAME" /> में ले जाया गया</translation>
@@ -1052,9 +1026,7 @@
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 ज़रूरी सूचना}one{# ज़रूरी सूचना}other{# ज़रूरी सूचनाएं}}</translation>
 <translation id="4450893287417543264">फिर से न दिखाएं</translation>
 <translation id="4451374464530248585">Alt + डाउन ऐरो कीबोर्ड शॉर्टकट बदल गया है. Page Down बटन का इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + डाउन ऐरो को दबाएं.</translation>
-<translation id="4453876312474547652">Ctrl + V को दबाकर रखने पर, आपको क्लिपबोर्ड दिखेगा. इस शॉर्टकट को बंद करने के लिए, chrome://flags में #clipboard-history-longpress फ़्लैग बंद करें. अगर Lacros का इस्तेमाल किया जा रहा है, तो os://flags में जाकर बंद करें.</translation>
 <translation id="445765352722456792">सुझावों को पसंद के मुताबिक बनाएं</translation>
-<translation id="445864333228800152">गुड ईवनिंग,</translation>
 <translation id="4458688154122353284">स्क्रीन को रिकॉर्ड करना बंद करें</translation>
 <translation id="445923051607553918">वाई-फ़ाई  नेटवर्क से जुड़ें</translation>
 <translation id="4471354919263203780">बोली पहचानने वाली फाइलें डाउनलोड हो रही हैं... <ph name="PERCENT" />%</translation>
@@ -1094,7 +1066,6 @@
 <translation id="4566144812051858745">किसी भी सुझाव में दिलचस्पी नहीं है</translation>
 <translation id="4569753163207712681">अपने फ़ोन में मौजूद हाल ही की फ़ोटो, कॉन्टेंट, और ऐप्लिकेशन देखें</translation>
 <translation id="4573176682887762361">"[शब्द / वाक्यांश] टाइप करें"</translation>
-<translation id="4577274620589681794">समय खत्म हुआ · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">झलक दिखाएं</translation>
 <translation id="4578906031062871102">सेटिंग मेन्यू खोला गया</translation>
 <translation id="458210817642223147">GIF रिकॉर्ड करें</translation>
@@ -1150,7 +1121,6 @@
 <translation id="4759238208242260848">डाउनलोड</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + अप ऐरो</translation>
 <translation id="4762573482154983647">ऐप्लिकेशन छिपाएं</translation>
-<translation id="4762802395013012237">पांच फ़ीट मीटर में</translation>
 <translation id="4763885921995354846">इससे ऐसे सभी ऐप्लिकेशन और वेबसाइटों को कैमरा का ऐक्सेस मिलता है जिनके पास इसकी अनुमति है. आपको वेब पेज को रीफ़्रेश या ऐप्लिकेशन को रीस्टार्ट करना पड़ सकता है.</translation>
 <translation id="4774338217796918551">कल <ph name="COME_BACK_TIME" /> बजे फिर से देखें.</translation>
 <translation id="4776584068981882959">आपके पासवर्ड की अब भी पुष्टि नहीं की जा सकी. कृपया फिर से कोशिश करें.</translation>
@@ -1203,7 +1173,6 @@
 <translation id="491504982845934899">डिवाइस सेटअप होने के बाद, <ph name="NETWORK_NAME" /> को चालू करें</translation>
 <translation id="4917385247580444890">मज़बूत</translation>
 <translation id="4918086044614829423">स्वीकार करें</translation>
-<translation id="491907188205944472">आपको जो चाहिए उसे सीधे लॉन्चर में खोजें</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" />, फ़िलहाल आपके कैमरे का इस्तेमाल कर रहा है</translation>
 <translation id="492453977506755176">कैप्चर मोड वाला बटन</translation>
 <translation id="4925542575807923399">इस खाते के एडमिन के लिए यह ज़रूरी है कि किसी एक से ज़्यादा साइन-इन वाले सत्र में यह खाता पहला साइन इन खाता हो.</translation>
@@ -1223,7 +1192,6 @@
 <translation id="4961318399572185831">स्‍क्रीन कास्‍ट करें</translation>
 <translation id="4964188651935955085">ब्लूटूथ बंद करने पर, यह बाहरी डिवाइस आपके <ph name="DEVICE_TYPE" /> से डिसकनेक्ट हो जाएगा:</translation>
 <translation id="4966431234408005599">आवाज़ बढ़ाएं</translation>
-<translation id="4969092041573468113"><ph name="HOURS" />घं॰ <ph name="MINUTES" />मि॰ <ph name="SECONDS" />से॰</translation>
 <translation id="496999337731226334"><ph name="TOTAL_STEPS" /> में से <ph name="STEP" /> चरण. वाई-फ़ाई, ब्लूटूथ, और आवाज़ जैसी अक्सर इस्तेमाल होने वाली चीज़ों को क्विक सेटिंग से कंट्रोल किया जा सकता है. यहां से स्क्रीनशॉट भी लिए जा सकते हैं. क्विक सेटिंग खोलने के लिए, Alt + Shift + S दबाएं.</translation>
 <translation id="4975771730019223894">ऐप बैजिंग</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
@@ -1259,7 +1227,6 @@
 <translation id="5077936103761694531">क्या आपको यह रिज़ॉल्यूशन इस्तेमाल करना है?</translation>
 <translation id="5078796286268621944">गलत पिन</translation>
 <translation id="5083035541015925118">ctrl + alt + अप ऐरो</translation>
-<translation id="5083553833479578423">Assistant की और भी सुविधाओं के बारे में जानें.</translation>
 <translation id="5091636240353511739">पिन दिखाएं</translation>
 <translation id="5092436659250499817">कीबोर्ड की बैकलाइट चालू/बंद करें</translation>
 <translation id="5094577350232361255">इसके बारे में</translation>
@@ -1318,7 +1285,6 @@
 <translation id="5277869901083657836">स्टाइलस टूल को टॉगल करें</translation>
 <translation id="5278086053818066789">ChromeVox (बोलकर दिए जाने वाले जवाब की सुविधा) को चालू या बंद करने के लिए</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> पर एक सूचना है.</translation>
-<translation id="5283198616748585639">एक मिनट जोड़ें</translation>
 <translation id="528468243742722775">खत्म</translation>
 <translation id="5286194356314741248">स्‍कैन हो रहा है</translation>
 <translation id="528641622273682395">माइक की जांच करने के लिए टॉगल करें</translation>
@@ -1372,6 +1338,7 @@
 <translation id="5429993543155113935">फ़िलहाल, गुप्त विंडो के लिए यह सुविधा उपलब्ध नहीं है</translation>
 <translation id="5431318178759467895">रंग</translation>
 <translation id="5433020815079095860">ऑडियो इनपुट</translation>
+<translation id="543584294741034249">आपके पास ज़्यादा से ज़्यादा <ph name="DISPLAY_LIMIT" /> बाहरी डिसप्ले कनेक्ट करने का विकल्प होता है.</translation>
 <translation id="544691375626129091">सभी उपलब्‍ध उपयोगकर्ता पहले से इस सत्र में जोड़ दिए गए हैं.</translation>
 <translation id="54609108002486618">प्रबंधित</translation>
 <translation id="5460938382730614333">मार्कर चालू है.</translation>
@@ -1389,7 +1356,6 @@
 <translation id="5519005148254860683">Google Tasks को बड़ा करें</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">आपके एडमिन ने सभी ई-सिम प्रोफ़ाइलों को हटा दिया है. ज़्यादा जानकारी के लिए, अपने एडमिन से संपर्क करें.</translation>
-<translation id="5520909879404821039">फ़्रेंच में नमस्ते</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> कनेक्ट हो रहा है.</translation>
 <translation id="5529587891732734495">कास्ट करना रोकें</translation>
 <translation id="5532994612895037630">फ़ुल स्क्रीन को रिकॉर्ड करने के लिए कहीं भी टैप करें</translation>
@@ -1589,6 +1555,7 @@
 <translation id="612734058257491180">Google Assistant की सुविधा मेहमान के तौर पर ब्राउज़ करने के सेशन में उपलब्ध नहीं है.</translation>
 <translation id="6127395413317891856">आप ऑफ़लाइन हैं. अपने इंटरनेट कनेक्शन की जांच करें और दोबारा कोशिश करें.</translation>
 <translation id="6129953537138746214">Space</translation>
+<translation id="6136872094979134163">Chromebook के लिए Steam से जुड़ी खबरें नहीं मिल सकीं.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> के लिए, खाता हटाएं वाला डायलॉग खोलें</translation>
 <translation id="6141205840878048728">आपको किस काम पर फ़ोकस करना है?</translation>
 <translation id="6141988275892716286">डाउनलोड की पुष्टि करें</translation>
@@ -1604,7 +1571,6 @@
 <translation id="6166852626429024716">अपने डिवाइस, ऐप्लिकेशन, सेटिंग के साथ-साथ वेब पर भी खोजें...</translation>
 <translation id="6168318496333165060">Diagnostics ऐप्लिकेशन खोलने के लिए</translation>
 <translation id="6168622430237609329">आपके इंस्टॉल किए गए ऐप्लिकेशन</translation>
-<translation id="6179832488876878285">आप अपनी ज़रूरी फ़ाइलों को यहां पिन कर सकते हैं. शुरू करने के लिए, फ़ाइल ऐप्लिकेशन खोलें.</translation>
 <translation id="6180193585172850042">'वापस जाएं' बटन</translation>
 <translation id="6180651297859206670">'आगे जाएं' बटन</translation>
 <translation id="6182592640011875895">डेस्क खोलें</translation>
@@ -1632,10 +1598,10 @@
 <translation id="6247728804802644171">सूचनाएं खोलने के लिए</translation>
 <translation id="6249795363855770621">'पूरा हो गया' के तौर पर मार्क नहीं किया जा सका. ऑनलाइन होने पर फिर से कोशिश करें.</translation>
 <translation id="6254629735336163724">क्षैतिज पर लॉक किया गया</translation>
-<translation id="6259254695169772643">चुनने के लिए अपने स्टाइलस का इस्तेमाल करें</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: सक्रिय हो रहा है...</translation>
 <translation id="6274202259872570803">स्क्रीनकास्ट</translation>
+<translation id="6274422179279280249">लिंक, इमोजी वगैरह जोड़ें. आप चाहें, तो Google के एआई से कॉन्टेंट लिखने में मदद पाएं. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276708887952587684">पेज का स्रोत देखें</translation>
 <translation id="6285871695023807425">कैलेंडर में जोड़ें</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> काे माता-पिता की अनुमति से, बाद में जोड़ा जा सकता है.</translation>
@@ -1679,6 +1645,7 @@
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> पर <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">सीपीयू</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> इवेंट</translation>
+<translation id="6448529022565414427">बैटरी को चार्ज होने से रोक दिया गया है</translation>
 <translation id="6449483711453944360">फ़िलहाल, Linux ऐप्लिकेशन और गुप्त विंडो के लिए यह सुविधा उपलब्ध नहीं है</translation>
 <translation id="6450245544201845082">फ़िलहाल, राइट क्लिक शॉर्टकट बंद है</translation>
 <translation id="6452181791372256707">अस्‍वीकार करें</translation>
@@ -1717,7 +1684,6 @@
 <translation id="655633303491376835"><ph name="APP_NAME" />
 अभी इंस्टॉल किया गया है</translation>
 <translation id="6559158502366839560">ज़्यादा ऐप्लिकेशन और गेम एक्सप्लोर करें</translation>
-<translation id="6559976592393364813">एडमिन से पूछें</translation>
 <translation id="6562447480759345110">फ़ोकस मोड बंद करें</translation>
 <translation id="6565007273808762236">ई-सिम कनेक्शन मौजूद नहीं है</translation>
 <translation id="6570831796530454248">{0,plural, =1{डिवाइस को 1 घंटे के अंदर अपडेट करें}one{डिवाइस को # घंटे के अंदर अपडेट करें}other{डिवाइस को # घंटों के अंदर अपडेट करें}}</translation>
@@ -1729,6 +1695,7 @@
 <translation id="6582012689384648647">आपकी दिलचस्पी के हिसाब से बनाई गई, फ़ोकस करने में मदद करने वाली प्लेलिस्ट पाने के लिए, YouTube Music को ऐक्सेस करने की अनुमति दें</translation>
 <translation id="6582034443359256692">बैटरी के चार्जिंग लेवल का हिसाब लगाया जा रहा है.</translation>
 <translation id="6585808820553845416">सत्र <ph name="SESSION_TIME_REMAINING" /> में खत्म होने वाला है.</translation>
+<translation id="6586685375736417639">डिवाइस चार्ज नहीं किया जा सकता</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">कैमरा इनपुट की झलक, अब नीचे बाएं कोने में दिखेगी. ऐसा, सिस्टम पर दूसरे ऐप्लिकेशन के साथ ओवरलैप होने की वजह से किया गया है.</translation>
 <translation id="6605415194043280389">फ़ोकस मोड चालू है</translation>
@@ -1845,7 +1812,6 @@
 <translation id="696267987219125751">ऑटो फ़्रेमिंग की सुविधा बंद है.</translation>
 <translation id="6965382102122355670">ठीक है</translation>
 <translation id="6972629891077993081">एचआईडी डिवाइस</translation>
-<translation id="6972754398087986839">शुरू करें</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">insert</translation>
 <translation id="6981291220124935078">ऐक्सेस चालू करें</translation>
@@ -1874,7 +1840,6 @@
 <translation id="7064351585062927183">अगला <ph name="DAY_OF_WEEK" /></translation>
 <translation id="7066646422045619941">यह नेटवर्क आपके व्यवस्थापक द्वारा अक्षम किया गया है.</translation>
 <translation id="7067196344162293536">अपने आप घूमना</translation>
-<translation id="7068360136237591149">फ़ाइल खोलो</translation>
 <translation id="7076293881109082629">साइन इन किया जा रहा है</translation>
 <translation id="7076878155205969899">आवाज़ म्यूट करें</translation>
 <translation id="7083848064787091821">फ़ोकस मोड</translation>
@@ -1907,7 +1872,6 @@
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
 <translation id="7181691792034457084">नमस्ते. <ph name="PRODUCT_NAME" />, अन्य प्रॉडक्ट के मुकाबले थोड़ा अलग है.</translation>
 <translation id="7188494361780961876">मेन्यू, स्क्रीन के सबसे ऊपर बाएं कोने में चला गया है.</translation>
-<translation id="7189412385142492784">धरती से शुक्र ग्रह कितना दूर है</translation>
 <translation id="7198435252016571249">कैमरा इनपुट की झलक, अब नीचे दाएं कोने में दिखेगी. ऐसा, सिस्टम पर दूसरे ऐप्लिकेशन के साथ ओवरलैप होने की वजह से किया गया है.</translation>
 <translation id="7219573373513695352">कोई डिवाइस कनेक्ट नहीं है</translation>
 <translation id="7228968829656641943">खोजने के लिए, स्क्रीन का कोई हिस्सा चुनें. कीबोर्ड का इस्तेमाल करके नेविगेट करने के लिए, tab और फिर space दबाएं.</translation>
@@ -1921,13 +1885,11 @@
 <translation id="7256634071279256947">पीछे वाला माइक्रोफ़ोन</translation>
 <translation id="7258828758145722155">इसमें, कल बदलाव किया गया था</translation>
 <translation id="726276584504105859">दो स्क्रीन का इस्तेमाल करने के लिए यहां खींचें और छोड़ें</translation>
-<translation id="7262906531272962081">रिमाइंडर लगाएं</translation>
 <translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> कम करें</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">स्क्रीनशॉट लेने के लिए, क्विक सेटिंग में जाकर स्क्रीन कैप्चर टूल का इस्तेमाल करें</translation>
 <translation id="7301826272005790482">विंडो के सुझाव खारिज करें</translation>
 <translation id="7302889331339392448">लाइव कैप्शन की सुविधा बंद है.</translation>
-<translation id="7303365578352795231">दूसरे डिवाइस पर जवाब देना.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7311244614769792472">कोई नतीजा नहीं मिला</translation>
 <translation id="7312210124139670355">आपका एडमिन ई-सिम को रीसेट कर रहा है. इसमें कुछ मिनट लग सकते हैं.</translation>
@@ -1968,7 +1930,6 @@
 <translation id="7413851974711031813">बंद करने के लिए escape बटन दबाएं</translation>
 <translation id="7416471219712049036">मौजूदा पेज को सेव करें</translation>
 <translation id="742594950370306541">कैमरे का उपयोग हो रहा है.</translation>
-<translation id="742608627846767349">गुड मॉर्निंग,</translation>
 <translation id="743058460480092004">कैमरे और माइक्रोफ़ोन का उपयोग हो रहा है.</translation>
 <translation id="7440404390546433462">Google Search</translation>
 <translation id="7441711280402516925">वीडियो चल रहा है · टैब पर स्विच करें</translation>
@@ -2093,7 +2054,6 @@
 <translation id="7825412704590278437">आने वाला कैलेंडर इवेंट</translation>
 <translation id="7829386189513694949">मज़बूत सिग्नल</translation>
 <translation id="7830453190047749513">आपके पास <ph name="PERIPHERAL_NAME" /> के लिए, बटन से होने वाली कार्रवाइयों, कर्सर की स्पीड वगैरह को अपने मनमुताबिक सेट करने का विकल्प है</translation>
-<translation id="7837740436429729974">समय खत्म हुआ</translation>
 <translation id="7842569679327885685">चेतावनी: यह फ़ीचर प्रयोग के लिए है</translation>
 <translation id="7846634333498149051">कीबोर्ड</translation>
 <translation id="7848989271541991537">पेज <ph name="PAGE_NUMBER" />, लाइन <ph name="ROW_NUMBER" />, कॉलम <ph name="COLUMN_NUMBER" /> पर जाएं.</translation>
@@ -2108,11 +2068,9 @@
 <translation id="7884902759927478774">टैब को खींचकर छोड़ने की कार्रवाई रद्द करें</translation>
 <translation id="7886169021410746335">निजता सेटिंग समायोजित करें</translation>
 <translation id="7886277072580235377">जब आप साइन आउट करेंगे तो आपके इंटरनेट सत्र की जानकारी हटा दी जाएगी. <ph name="LEARN_MORE" /></translation>
-<translation id="788781083998633524">ईमेल भेजो</translation>
 <translation id="7893503627044934815">इस फ़ाइल को न दिखाया जाए</translation>
-<translation id="7893547474469215105">ज़ेनिथ की परिभाषा</translation>
 <translation id="7895348134893321514">टोट</translation>
-<translation id="7896681766480521542">कोई टास्क जोड़ें</translation>
+<translation id="7896681766480521542">टास्क जोड़ें</translation>
 <translation id="7897375687985782769">आपने 'स्क्रीन घुमाने' की सुविधा का कीबोर्ड शॉर्टकट दबाया है. क्या आप स्क्रीन को घुमाना चाहते हैं?</translation>
 <translation id="7897626842031123113">स्टेटस ट्रे, समय <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -2130,7 +2088,6 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> डिवाइस कनेक्ट हैं</translation>
 <translation id="7921565901396407357">आपके पिन की पुष्टि नहीं की जा सकी. फिर से कोशिश करें.</translation>
-<translation id="7923534281713082605">मौसम</translation>
 <translation id="7926080067315048321">वेब पर Google Tasks में सभी टास्क देखें</translation>
 <translation id="7930731167419639574">स्पीच को स्थानीय तौर पर प्रोसेस किया जाता है और लिखवाने की सुविधा ऑफ़लाइन काम करती है</translation>
 <translation id="7932451802722951285">Google Calendar में खोलें</translation>
@@ -2235,6 +2192,7 @@
 <translation id="8237964652943995219">अगला डेस्क: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> में से <ph name="DESK_INDEX" /> डेस्क.</translation>
 <translation id="8238817965863339552"><ph name="PRODUCT_NAME" /> इस्तेमाल करने का तरीका फटाफट देखें. सिर्फ़ पांच चरणों में इसे इस्तेमाल करने का तरीका जानें.</translation>
 <translation id="8239034820133090126">दाईं ओर मौजूद डेस्क को चालू करें</translation>
+<translation id="8241650983304689286">नए स्प्लिट व्यू में देखने के लिए टैब जोड़ें</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, फ़ोन की बैटरी <ph name="BATTERY_STATUS" /></translation>
 <translation id="825129991941217170">Google Drive में मौजूद सारा कॉन्टेंट दिखाएं</translation>
 <translation id="8257510091797044096">अपना डिवाइस सेट अप करें</translation>
@@ -2253,7 +2211,6 @@
 <translation id="8315514906653279104">चालू किया जा रहा है...</translation>
 <translation id="8331351032546853669">अब डाउनलोड किया जाना बाकी है</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
-<translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
 <translation id="834414266279889566">खराब आउटपुट</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> विंडो को चुना गया है</translation>
 <translation id="8349826889576450703">लॉन्चर</translation>
@@ -2261,12 +2218,10 @@
 <translation id="8351131234907093545">नोट बनाएं</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> इस्तेमाल में है.</translation>
 <translation id="8369166482916924789">सेव किया गया डेस्क, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
-<translation id="8370414029565771236"><ph name="TEXT" /> खोजें</translation>
 <translation id="8371779926711439835">एक वर्ण आगे जाएं</translation>
 <translation id="8371991222807690464">हो सकता है कि मेहमान मोड में आपके सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह) पूरी तरह काम न कर पाएं</translation>
 <translation id="8374601332003098278">स्क्रीन के किसी खास हिस्से को रिकॉर्ड करने के लिए, Enter दबाएं</translation>
 <translation id="8375916635258623388">यह <ph name="DEVICE_NAME" /> और आपका फ़ोन, अपने आप कनेक्ट हो जाएंगे</translation>
-<translation id="8380784334203145311">गुड नाइट,</translation>
 <translation id="8382715499079447151">व्यूइंग प्रोटेक्शन</translation>
 <translation id="8383614331548401927">वेलकम रीकैप</translation>
 <translation id="838540623579162843">Music Premium की सदस्यता लें</translation>
@@ -2278,7 +2233,6 @@
 <translation id="8416730306157376817">केस में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है</translation>
 <translation id="8420205633584771378">यह सुझाव हटा दें?</translation>
 <translation id="8421270167862077762">इस डिवाइस पर <ph name="UNAVAILABLE_APPS" /> मौजूद नहीं है.</translation>
-<translation id="8426708595819210923">गुड ईवनिंग <ph name="GIVEN_NAME" />,</translation>
 <translation id="8428213095426709021">सेटिंग</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> से <ph name="KEY_TWO" /></translation>
 <translation id="8429547770382807369">टैब ग्रुप को बाद में इस्तेमाल करने के लिए सेव करें</translation>
@@ -2320,10 +2274,8 @@
 <translation id="8558521694042102707">ऐसा हो सकता है कि जनरेटिव एआई से मिले जवाब गलत हों. जैसे, यह किसी व्यक्ति के बारे में गलत जानकारी दिखा सकता है. इसलिए, इसके जवाबों की दोबारा जांच कर लें.</translation>
 <translation id="8559845965695780508"><ph name="USER" /> के बदलाव करने का समय</translation>
 <translation id="8569146227972631631">°F</translation>
-<translation id="8569751806372591456">आज़माने के लिए यहां कुछ सुझाव दिए गए हैं</translation>
 <translation id="857201607579416096">मेन्यू, स्क्रीन के सबसे नीचे दाएं कोने में चला गया है.</translation>
 <translation id="8581946341807941670"><ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> दबाएं और किसी लिंक पर क्लिक करें</translation>
-<translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">अपने ऐप्लिकेशन को नाम या रंग के हिसाब से क्रम में लगाएं</translation>
 <translation id="8609384513243082612">नया टैब खोलें</translation>
 <translation id="861045123704058818">ऐप्लिकेशन कुछ समय के लिए, कैटगरी के हिसाब से व्यवस्थित किए जाते हैं</translation>
@@ -2342,13 +2294,11 @@
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> बाकी</translation>
 <translation id="8640470573049727749">टैब ग्रुप के सभी सुझाव छिपाएं</translation>
 <translation id="8641510901370802679"><ph name="ANSWER_TYPE" /> की जानकारी दिखाई जा रही है</translation>
-<translation id="8646417893960517480"><ph name="TOTAL_TIME" /> टाइमर</translation>
 <translation id="8647931990447795414">किसी व्यक्ति को जोड़ने के लिए, अपने Family Link का अभिभावक ऐक्सेस कोड डालें</translation>
 <translation id="8649597172973390955">अब शेल्फ़ हर समय उपलब्ध है</translation>
 <translation id="8652175077544655965">सेटिंग बंद करें</translation>
 <translation id="8653151467777939995">सूचना सेटिंग दिखाएं. सूचनाएं चालू हैं</translation>
 <translation id="8657066291275741003">लोअरकेस</translation>
-<translation id="8660331759611631213">71 का वर्गमूल बताओ</translation>
 <translation id="8662921061190671299">Calendar में नहीं जोड़ा जा सका</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">स्क्रीन के किसी खास हिस्से का स्क्रीनशॉट लेने के लिए, Enter दबाएं</translation>
@@ -2381,7 +2331,6 @@
 <translation id="8756799553341497810">इस व्यू से बाहर निकलने के बाद, ऐप्लिकेशन के लेआउट को पसंद के मुताबिक बनाया जा सकता है.</translation>
 <translation id="8759408218731716181">एक से ज़्यादा साइन-इन सेट अप नहीं किया जा सका</translation>
 <translation id="8763883995157866248">डिवाइस को स्लीप मोड में रखने के लिए</translation>
-<translation id="877404052021108314">90°F सेल्सियस में</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, इंस्टॉल किया गया ऐप्लिकेशन, ब्लॉक किया गया</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> से कनेक्ट करें</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
@@ -2415,7 +2364,6 @@
 <translation id="8875021410787719674">निचले दाएं कोने, लॉन्चर, पता बार, बुकमार्क बार, खुली हुई वेबसाइट, और डाउनलोड के बीच स्विच करने के लिए</translation>
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" /> में से <ph name="EVENT_POSITION" /> इवेंट</translation>
 <translation id="8876661425082386199">अपने कनेक्शन की जांच करें</translation>
-<translation id="8877788021141246043">रिमाइंडर लगाओ</translation>
 <translation id="8885424115080869847">YouTube Music से कनेक्ट नहीं किया जा सका</translation>
 <translation id="888982883502837004">आपके डिवाइस के लिए, फ़र्मवेयर के अपडेट उपलब्ध हैं. अपडेट देखने और उन्हें इंस्टॉल करने के लिए क्लिक करें.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> को हमेशा के लिए मिटा दिया जाएगा</translation>
@@ -2466,7 +2414,7 @@
 <translation id="9050999376345823055">छोड़ने के लिए "." दबाएं</translation>
 <translation id="906458777597946297">विंडो को बड़ा करें</translation>
 <translation id="9065203028668620118">बदलाव करें</translation>
-<translation id="9070640332319875144">Assistant की सेटिंग</translation>
+<translation id="9068849894565669697">रंग चुनें</translation>
 <translation id="9071966355747967534"><ph name="FEATURE_NAME" /> की सुविधा उपलब्ध नहीं है</translation>
 <translation id="9072519059834302790">बैटरी खाली होने में<ph name="TIME_LEFT" /> का समय बाकी है.</translation>
 <translation id="9074432941673450836">अपने <ph name="PRODUCT_NAME" /> पर ज़रूरत के मुताबिक हर काम करने के लिए, ऐप्लिकेशन इस्तेमाल करें. अपने ऐप्लिकेशन, लॉन्चर में खोजे जा सकते हैं. इसके अलावा, कीबोर्ड पर लॉन्चर बटन (बाईं ओर वाले Shift बटन के ऊपर) को भी दबाया जा सकता है.</translation>
@@ -2522,7 +2470,6 @@
 <translation id="92580429198593979">आपने रंग बदलने की सुविधा के लिए कीबोर्ड शॉर्टकट दबाया है. क्या आपको इस सुविधा को बंद करना है?</translation>
 <translation id="925832987464884575">झलक छिपाएं</translation>
 <translation id="938407504481277932">मौजूदा डेस्क: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_COUNT" /> में से <ph name="DESK_INDEX" /> डेस्क.</translation>
-<translation id="938963181863597773">मेरे कैलेंडर पर आज के लिए क्या काम हैं?</translation>
 <translation id="94468042118567862">डिवाइस अप-टू-डेट नहीं है</translation>
 <translation id="945383118875625837">लिंक को बुकमार्क बार में खीचें और छोड़ें</translation>
 <translation id="945522503751344254">फ़ीडबैक भेजें</translation>

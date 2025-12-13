@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/test_lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/test_lens_overlay_query_controller.h"
+#include "chrome/browser/ui/lens/test_lens_search_contextualization_controller.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
@@ -52,6 +53,11 @@ lens::Text CreateTestText(const std::vector<std::string>& words) {
 }
 
 }  // namespace
+
+MockLensSearchController::MockLensSearchController(tabs::TabInterface* tab)
+    : LensSearchController(tab) {}
+
+MockLensSearchController::~MockLensSearchController() = default;
 
 std::unique_ptr<LensOverlayController>
 TestLensSearchController::CreateLensOverlayController(
@@ -111,6 +117,12 @@ TestLensSearchController::CreateLensQueryController(
   interaction_response.set_encoded_response(kTestSuggestSignals);
   fake_query_controller->set_fake_interaction_response(interaction_response);
   return fake_query_controller;
+}
+
+std::unique_ptr<lens::LensSearchContextualizationController>
+TestLensSearchController::CreateLensSearchContextualizationController() {
+  return std::make_unique<lens::TestLensSearchContextualizationController>(
+      this);
 }
 
 }  // namespace lens

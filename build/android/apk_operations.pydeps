@@ -38,6 +38,7 @@
 ../../third_party/catapult/devil/devil/android/sdk/bundletool.py
 ../../third_party/catapult/devil/devil/android/sdk/intent.py
 ../../third_party/catapult/devil/devil/android/sdk/keyevent.py
+../../third_party/catapult/devil/devil/android/sdk/shared_prefs.py
 ../../third_party/catapult/devil/devil/android/sdk/split_select.py
 ../../third_party/catapult/devil/devil/android/sdk/version_codes.py
 ../../third_party/catapult/devil/devil/android/tools/__init__.py
@@ -84,6 +85,7 @@
 ../action_helpers.py
 ../gn_helpers.py
 ../print_python_deps.py
+../util/android_chrome_version.py
 ../zip_helpers.py
 adb_command_line.py
 apk_operations.py

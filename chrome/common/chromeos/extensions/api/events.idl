@@ -468,7 +468,7 @@ namespace os.events {
         static void onStylusConnectedEvent(StylusConnectedEventInfo event_info);
     };
 
-  // LINT.ThenChange(//docs/telemetry_extension/api_overview.md)
+  // LINT.ThenChange(/docs/telemetry_extension/api_overview.md)
   // The following is an empty definition, since the IDL compiler only accepts
   // comments over valid definitions.
   callback EOF = void();

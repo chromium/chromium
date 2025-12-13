@@ -227,7 +227,7 @@ component("browser") {
     "//base:i18n",
     "//build:chromeos_buildflags",
     "//components/crash/core/common:crash_key",
-    "//components/file_access:file_access",
+    "//components/file_access",
     "//components/services/storage/public/cpp",
     "//components/services/storage/public/cpp/filesystem",
     "//mojo/public/cpp/bindings",
@@ -327,7 +327,7 @@ source_set("unittests") {
     ":test_support",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
-    "//components/file_access:file_access",
+    "//components/file_access",
     "//components/file_access:test_support",
     "//components/services/filesystem/public/mojom",
     "//components/services/storage/public/cpp",
@@ -342,6 +342,10 @@ source_set("unittests") {
     "//third_party/leveldatabase",
     "//third_party/sqlite",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 static_library("test_support") {
@@ -398,7 +402,7 @@ static_library("test_support") {
     ":browser",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
-    "//components/file_access:file_access",
+    "//components/file_access",
     "//components/services/storage/public/cpp",
     "//components/services/storage/public/mojom",
     "//net:test_support",

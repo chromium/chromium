@@ -55,12 +55,12 @@
 //       virtual void OnBar(MyWidget* w, int x, int y) = 0;
 //     };
 //
-//     void AddObserver(Observer* obs) {
-//       observers_.AddObserver(obs);
+//     void AddObserver(Observer* observer) {
+//       observers_.AddObserver(observer);
 //     }
 //
-//     void RemoveObserver(Observer* obs) {
-//       observers_.RemoveObserver(obs);
+//     void RemoveObserver(Observer* observer) {
+//       observers_.RemoveObserver(observer);
 //     }
 //
 //     void NotifyFoo() {
@@ -71,8 +71,8 @@
 //       // Use manual iteration when Notify() is not suitable, e.g.
 //       // if passing different args to different observers is needed.
 //       for (Observer& observer : observers_) {
-//         gfx::Point local_point = GetLocalPoint(obs, x, y);
-//         obs.OnBar(this, local_point.x(), local_point.y());
+//         gfx::Point local_point = GetLocalPoint(observer, x, y);
+//         observer.OnBar(this, local_point.x(), local_point.y());
 //       }
 //     }
 //
@@ -309,25 +309,25 @@ class ObserverList {
   // list more than once.
   //
   // Precondition: observer != nullptr
-  // Precondition: !HasObserver(obs)
-  void AddObserver(ObserverType* obs) {
-    DCHECK(obs);
+  // Precondition: !HasObserver(observer)
+  void AddObserver(ObserverType* observer) {
+    DCHECK(observer);
     // TODO(crbug.com/40063488): Turn this into a CHECK once very prevalent
     // failures are weeded out.
-    if (HasObserver(obs)) {
+    if (HasObserver(observer)) {
       DUMP_WILL_BE_NOTREACHED() << "Observers can only be added once!";
       return;
     }
     ++observers_count_;
-    observers_.emplace_back(ObserverStorageType(obs));
+    observers_.emplace_back(ObserverStorageType(observer));
   }
 
   // Removes the given observer from this list. Does nothing if this observer is
   // not in this list.
-  void RemoveObserver(const ObserverType* obs) {
-    DCHECK(obs);
+  void RemoveObserver(const ObserverType* observer) {
+    DCHECK(observer);
     const auto it = std::ranges::find_if(
-        observers_, [obs](const auto& o) { return o.IsEqual(obs); });
+        observers_, [observer](const auto& o) { return o.IsEqual(observer); });
     if (it == observers_.end()) {
       return;
     }

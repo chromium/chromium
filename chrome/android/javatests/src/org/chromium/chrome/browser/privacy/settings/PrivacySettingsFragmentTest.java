@@ -9,13 +9,11 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
-import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -24,8 +22,6 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.components.privacy_sandbox.FingerprintingProtectionSettingsFragment.FP_PROTECTION_ENABLED_USER_ACTION;
-import static org.chromium.components.privacy_sandbox.IpProtectionSettingsFragment.IP_PROTECTION_ENABLED_USER_ACTION;
 import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
 
 import android.text.TextUtils;
@@ -56,13 +52,13 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -84,7 +80,7 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -100,28 +96,18 @@ import java.util.concurrent.TimeUnit;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Child account can leak to other tests in the suite.")
-@EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
-// Disable TrackingProtection3pcd as we use prefs instead of the feature in these tests.
-@DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
+@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class PrivacySettingsFragmentTest {
     // Index of the Privacy Sandbox row entry in the settings list.
     public static final int PRIVACY_SANDBOX_V4_POS_IDX = 4;
     // Name of the histogram to record the entry on Privacy Guide via the S&P link-row.
     public static final String ENTRY_EXIT_HISTOGRAM = "Settings.PrivacyGuide.EntryExit";
 
-    private static final int IPP_TOGGLE_LABEL =
-            R.string.incognito_tracking_protections_ip_protection_toggle_label;
-    private static final int IPP_TOGGLE_SUBLABEL =
-            R.string.incognito_tracking_protections_ip_protection_toggle_sublabel;
-    private static final int FPP_TOGGLE_LABEL =
-            R.string.incognito_tracking_protections_fingerprinting_protection_toggle_label;
-    private static final int FPP_TOGGLE_SUBLABEL =
-            R.string.incognito_tracking_protections_fingerprinting_protection_toggle_sublabel;
-
     public final SettingsActivityTestRule<PrivacySettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(PrivacySettings.class);
 
     public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    private static final int RENDER_TEST_REVISION = 2;
 
     @Rule
     public final AdvancedProtectionTestRule mAdvancedProtectionRule =
@@ -135,7 +121,7 @@ public class PrivacySettingsFragmentTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_SETTINGS_PRIVACY)
-                    .setRevision(1)
+                    .setRevision(RENDER_TEST_REVISION)
                     .build();
 
     @Rule public MockitoRule mockito = MockitoJUnit.rule();
@@ -160,21 +146,20 @@ public class PrivacySettingsFragmentTest {
     }
 
     private View getIncognitoReauthSettingView(PrivacySettings privacySettings) {
-        String incognito_lock_title =
-                mSettingsActivityTestRule
-                        .getActivity()
-                        .getString(R.string.settings_incognito_tab_lock_title);
+        int titleResId =
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        ? R.string.settings_incognito_window_lock_title
+                        : R.string.settings_incognito_tab_lock_title;
+        String incognitoLockTitle = mSettingsActivityTestRule.getActivity().getString(titleResId);
         onView(withId(R.id.recycler_view))
-                .perform(
-                        RecyclerViewActions.scrollTo(
-                                hasDescendant(withText(incognito_lock_title))));
-        onView(withText(incognito_lock_title)).check(matches(isDisplayed()));
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(withText(incognitoLockTitle))));
+        onView(withText(incognitoLockTitle)).check(matches(isDisplayed()));
         for (int i = 0; i < privacySettings.getListView().getChildCount(); ++i) {
             View view = privacySettings.getListView().getChildAt(i);
             TextView titleView = view.findViewById(android.R.id.title);
             if (titleView != null) {
                 String title = titleView.getText().toString();
-                if (TextUtils.equals(incognito_lock_title, title)) {
+                if (TextUtils.equals(incognitoLockTitle, title)) {
                     return view;
                 }
             }
@@ -196,43 +181,6 @@ public class PrivacySettingsFragmentTest {
                                 .getBoolean(Pref.PRIVACY_GUIDE_VIEWED));
     }
 
-    private void setShowTrackingProtection(boolean show) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                                .setBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED, show));
-    }
-
-    private void setIpProtection(boolean ipProtectionEnabled) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                                .setBoolean(Pref.IP_PROTECTION_ENABLED, ipProtectionEnabled));
-    }
-
-    private boolean isIpProtectionEnabled() throws ExecutionException {
-        return ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                                .getBoolean(Pref.IP_PROTECTION_ENABLED));
-    }
-
-    private void setFpProtection(boolean fpProtectionEnabled) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                                .setBoolean(
-                                        Pref.FINGERPRINTING_PROTECTION_ENABLED,
-                                        fpProtectionEnabled));
-    }
-
-    private boolean isFpProtectionEnabled() throws ExecutionException {
-        return ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                                .getBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED));
-    }
-
     @Before
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
@@ -249,6 +197,7 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testRenderTopView() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
@@ -263,6 +212,7 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testRenderBottomView() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
@@ -283,6 +233,7 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testRenderWhenPrivacyGuideViewed() throws IOException {
         setPrivacyGuideViewed(true);
         mSettingsActivityTestRule.startSettingsActivity();
@@ -298,6 +249,7 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testRenderWhenPrivacyGuideNotViewed() throws IOException {
         setPrivacyGuideViewed(false);
         mSettingsActivityTestRule.startSettingsActivity();
@@ -371,8 +323,8 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
+    @EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
     public void testTrackingProtection() throws IOException {
-        setShowTrackingProtection(true);
         mSettingsActivityTestRule.startSettingsActivity();
 
         // Verify that the 3PC and DNT rows are shown instead of Tracking Protection.
@@ -392,69 +344,8 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.IP_PROTECTION_UX)
-    public void clickingIpProtectionToggleEnablesPref() throws ExecutionException {
-        setIpProtection(false);
-        setShowTrackingProtection(false);
-        mSettingsActivityTestRule.startSettingsActivity();
-        // Scroll down and open the Incognito tracking protections page.
-        scrollToSetting(withText(R.string.incognito_tracking_protections_page_title));
-        onView(withText(R.string.incognito_tracking_protections_page_title)).perform(click());
-        assertTrue(
-                mActionTester
-                        .getActions()
-                        .contains(PrivacySettings.TRACKING_PROTECTIONS_OPENED_USER_ACTION));
-        onView(withText(R.string.incognito_tracking_protections_ip_protection_toggle_sublabel_off))
-                .check(matches(isDisplayed()));
-        // Scroll to the IP protections preference and go to the IP protections page.
-        scrollToSetting(withText(IPP_TOGGLE_LABEL));
-        onView(withText(IPP_TOGGLE_LABEL)).perform(click());
-        onView(
-                        allOf(
-                                withText(IPP_TOGGLE_LABEL),
-                                hasSibling(withText(IPP_TOGGLE_SUBLABEL)),
-                                isDisplayed()))
-                .perform(click());
-        assertTrue(isIpProtectionEnabled());
-        assertTrue(mActionTester.getActions().contains(IP_PROTECTION_ENABLED_USER_ACTION));
-    }
-
-    @Test
-    @LargeTest
-    @Features.EnableFeatures(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX)
-    public void clickingFingerprintingProtectionToggleEnablesPref() throws ExecutionException {
-        setFpProtection(false);
-        setShowTrackingProtection(false);
-        mSettingsActivityTestRule.startSettingsActivity();
-        // Scroll down and open the Incognito tracking protections page.
-        scrollToSetting(withText(R.string.incognito_tracking_protections_page_title));
-        onView(withText(R.string.incognito_tracking_protections_page_title)).perform(click());
-        // Verify that the user action is emitted when privacy guide is clicked
-        assertTrue(
-                mActionTester
-                        .getActions()
-                        .contains(PrivacySettings.TRACKING_PROTECTIONS_OPENED_USER_ACTION));
-        onView(
-                        withText(
-                                R.string
-                                        .incognito_tracking_protections_fingerprinting_protection_toggle_sublabel_off))
-                .check(matches(isDisplayed()));
-        // Scroll to the FPP preference and go to the FPP page.
-        scrollToSetting(withText(FPP_TOGGLE_LABEL));
-        onView(withText(FPP_TOGGLE_LABEL)).perform(click());
-        onView(
-                        allOf(
-                                withText(FPP_TOGGLE_LABEL),
-                                hasSibling(withText(FPP_TOGGLE_SUBLABEL)),
-                                isDisplayed()))
-                .perform(click());
-        assertTrue(isFpProtectionEnabled());
-        assertTrue(mActionTester.getActions().contains(FP_PROTECTION_ENABLED_USER_ACTION));
-    }
-
-    @Test
-    @LargeTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testRenderIncognitoLockView_DeviceScreenLockDisabled() throws IOException {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
 
@@ -470,6 +361,7 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testRenderIncognitoLockView_DeviceScreenLockEnabled() throws IOException {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
         IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(true);
@@ -587,7 +479,7 @@ public class PrivacySettingsFragmentTest {
                     WebsitePreferenceBridge.setDefaultContentSetting(
                             ProfileManager.getLastUsedRegularProfile(),
                             ContentSettingsType.JAVASCRIPT_OPTIMIZER,
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                 });
         mSettingsActivityTestRule.startSettingsActivity();
         int javascriptOptimizerLabel =
@@ -605,7 +497,7 @@ public class PrivacySettingsFragmentTest {
                     WebsitePreferenceBridge.setDefaultContentSetting(
                             ProfileManager.getLastUsedRegularProfile(),
                             ContentSettingsType.JAVASCRIPT_OPTIMIZER,
-                            ContentSettingValues.BLOCK);
+                            ContentSetting.BLOCK);
                 });
         mSettingsActivityTestRule.startSettingsActivity();
         int javascriptOptimizerLabel =

@@ -14,12 +14,8 @@ constexpr base::TimeDelta kMinDuration = base::Microseconds(1);
 constexpr base::TimeDelta kMaxDuration = base::Milliseconds(10);
 constexpr int kDurationBucketCount = 100;
 
-}  // namespace
-
-void RecordTextFormattingTextLengthHistogram(
-    int length,
-    std::optional<bool> has_style_data) {
-  if (!has_style_data || *has_style_data) {
+void RecordTextLength(int length, bool has_style_data) {
+  if (has_style_data) {
     UMA_HISTOGRAM_COUNTS_1000(kTextFormattingTextLengthMetric, length);
   } else {
     UMA_HISTOGRAM_COUNTS_1000(kTextFormattingTextLengthNoStyleDataMetric,
@@ -27,12 +23,12 @@ void RecordTextFormattingTextLengthHistogram(
   }
 }
 
-void RecordTextFormattingDurationHistogram(TextFormattingMetric metric,
-                                           base::TimeDelta duration,
-                                           std::optional<bool> has_style_data) {
+void RecordDuration(TextFormattingMetric metric,
+                    base::TimeDelta duration,
+                    bool has_style_data) {
   switch (metric) {
     case TextFormattingMetric::kTotalDuration:
-      if (!has_style_data || *has_style_data) {
+      if (has_style_data) {
         UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
             kTextFormattingTotalDurationMetric, duration, kMinDuration,
             kMaxDuration, kDurationBucketCount);
@@ -42,8 +38,19 @@ void RecordTextFormattingDurationHistogram(TextFormattingMetric metric,
             kMinDuration, kMaxDuration, kDurationBucketCount);
       }
       break;
+    case TextFormattingMetric::kCheckAXFocusDuration:
+      if (has_style_data) {
+        UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+            kTextFormattingCheckAXFocusDurationMetric, duration, kMinDuration,
+            kMaxDuration, kDurationBucketCount);
+      } else {
+        UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+            kTextFormattingCheckAXFocusDurationNoStyleDataMetric, duration,
+            kMinDuration, kMaxDuration, kDurationBucketCount);
+      }
+      break;
     case TextFormattingMetric::kGetTextContentDuration:
-      if (!has_style_data || *has_style_data) {
+      if (has_style_data) {
         UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
             kTextFormattingGetTextContentDurationMetric, duration, kMinDuration,
             kMaxDuration, kDurationBucketCount);
@@ -54,7 +61,7 @@ void RecordTextFormattingDurationHistogram(TextFormattingMetric metric,
       }
       break;
     case TextFormattingMetric::kToJavaDataDuration:
-      if (!has_style_data || *has_style_data) {
+      if (has_style_data) {
         UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
             kTextFormattingToJavaDataDurationMetric, duration, kMinDuration,
             kMaxDuration, kDurationBucketCount);
@@ -65,7 +72,7 @@ void RecordTextFormattingDurationHistogram(TextFormattingMetric metric,
       }
       break;
     case TextFormattingMetric::kSetAniTextDuration:
-      if (!has_style_data || *has_style_data) {
+      if (has_style_data) {
         UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
             kTextFormattingSetAniTextDurationMetric, duration, kMinDuration,
             kMaxDuration, kDurationBucketCount);
@@ -76,6 +83,43 @@ void RecordTextFormattingDurationHistogram(TextFormattingMetric metric,
       }
       break;
   }
+}
+
+}  // namespace
+
+TextFormattingMetricsRecorder::TextFormattingMetricsRecorder() {
+  // Reserve enough for all TextFormattingMetric values.
+  timers_.reserve(5);
+}
+
+TextFormattingMetricsRecorder::~TextFormattingMetricsRecorder() = default;
+
+void TextFormattingMetricsRecorder::StartTimer(TextFormattingMetric metric) {
+  timers_[metric];
+}
+
+void TextFormattingMetricsRecorder::StopTimer(TextFormattingMetric metric) {
+  auto it = timers_.find(metric);
+  CHECK(it != timers_.end());
+  auto& [timer, duration] = it->second;
+  duration = timer.Elapsed();
+}
+
+void TextFormattingMetricsRecorder::EmitHistograms(int text_length,
+                                                   bool has_style_data) const {
+  RecordTextLength(text_length, has_style_data);
+  for (const auto& entry : timers_) {
+    if (const std::optional<base::TimeDelta>& duration = entry.second.second) {
+      RecordDuration(entry.first, *duration, has_style_data);
+    }
+  }
+}
+
+base::TimeDelta TextFormattingMetricsRecorder::GetTotalDuration() const {
+  CHECK(timers_.contains(TextFormattingMetric::kTotalDuration));
+  const auto& [timer, duration] =
+      timers_.at(TextFormattingMetric::kTotalDuration);
+  return duration ? *duration : timer.Elapsed();
 }
 
 void RecordTextFormattingRangeCountsForTextLengthHistogram(

@@ -13,6 +13,8 @@ source_set("test_support_common") {
     "graph_impl.h",
     "page_aggregator.cc",
     "page_aggregator.h",
+    "page_node_utils.cc",
+    "page_node_utils.h",
     "resource_attribution/gtest_util.h",
     "test_browser_child_process.cc",
     "test_browser_child_process.h",

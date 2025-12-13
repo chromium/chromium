@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_coordinator.h"
 
-#import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
+#import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_coordinator+Testing.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/fakes/fake_ui_navigation_controller.h"
@@ -28,7 +28,8 @@ class PasswordsCoordinatorTest : public PlatformTest {
                                  browser:browser_.get()];
 
     ASSERT_TRUE([coordinator_
-        conformsToProtocol:@protocol(ReauthenticationCoordinatorDelegate)]);
+        conformsToProtocol:@protocol(
+                               LocalReauthenticationCoordinatorDelegate)]);
 
     trusted_vault_reauthentication_coordinator_mock_ =
         OCMStrictClassMock([TrustedVaultReauthenticationCoordinator class]);
@@ -53,7 +54,7 @@ TEST_F(
   OCMExpect([trusted_vault_reauthentication_coordinator_mock_ stop]);
   OCMExpect([trusted_vault_reauthentication_coordinator_mock_ setDelegate:nil]);
 
-  [(id<ReauthenticationCoordinatorDelegate>)
+  [(id<LocalReauthenticationCoordinatorDelegate>)
           coordinator_ willPushReauthenticationViewController];
 
   EXPECT_OCMOCK_VERIFY(trusted_vault_reauthentication_coordinator_mock_);

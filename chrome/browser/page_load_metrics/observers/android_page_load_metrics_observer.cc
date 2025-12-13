@@ -361,3 +361,5 @@ bool AndroidPageLoadMetricsObserver::IsPrerendering() {
   return GetDelegate().GetPrerenderingState() !=
          page_load_metrics::PrerenderingState::kNoPrerendering;
 }
+
+DEFINE_JNI(PageLoadMetrics)

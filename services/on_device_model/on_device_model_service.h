@@ -10,7 +10,6 @@
 #include "base/component_export.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
-#include "base/threading/sequence_bound.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -25,8 +24,6 @@
 
 namespace on_device_model {
 
-inline constexpr base::TimeDelta kDefaultModelIdleTimeout = base::Minutes(5);
-
 class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
     : public mojom::OnDeviceModelService {
  public:
@@ -35,12 +32,12 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
       const ml::ChromeML& impl);
   OnDeviceModelService(
       mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
-      std::unique_ptr<Backend> backend);
+      scoped_refptr<Backend> backend);
 
   // Creates a service bound to the receiver.
   static std::unique_ptr<mojom::OnDeviceModelService> Create(
       mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
-      std::unique_ptr<Backend> backend = nullptr);
+      scoped_refptr<Backend> backend = nullptr);
 
   ~OnDeviceModelService() override;
 
@@ -56,21 +53,20 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
   void LoadTextSafetyModel(
       mojom::TextSafetyModelParamsPtr params,
       mojo::PendingReceiver<mojom::TextSafetyModel> model) override;
-  void GetDevicePerformanceInfo(
-      GetDevicePerformanceInfoCallback callback) override;
+  void GetDeviceAndPerformanceInfo(
+      GetDeviceAndPerformanceInfoCallback callback) override;
 
   size_t NumModelsForTesting() const { return models_.size(); }
 
   void SetForceQueueingForTesting(bool force_queueing);
 
  private:
-  on_device_model::mojom::PerformanceClass GetEstimatedPerformanceClassImpl();
   void DeleteModel(base::WeakPtr<mojom::OnDeviceModel> model);
 
   mojo::Receiver<mojom::OnDeviceModelService> receiver_;
   std::set<std::unique_ptr<mojom::OnDeviceModel>, base::UniquePtrComparator>
       models_;
-  std::unique_ptr<Backend> backend_;
+  scoped_refptr<Backend> backend_;
   base::WeakPtrFactory<OnDeviceModelService> weak_factory_{this};
 };
 

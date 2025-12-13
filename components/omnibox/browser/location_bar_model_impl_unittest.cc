@@ -20,6 +20,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "url/gurl.h"
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -29,7 +30,6 @@
 
 using metrics::OmniboxEventProto;
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 using testing::WithArg;
 
@@ -141,7 +141,7 @@ TEST_F(LocationBarModelImplTest, FormatsReaderModeUrls) {
       dom_distiller::kDomDistillerScheme, http_url, "title");
   // Ensure the test is set up properly by checking the reader mode URL has
   // the reader mode scheme.
-  EXPECT_EQ(dom_distiller::kDomDistillerScheme, distilled.scheme());
+  EXPECT_EQ(dom_distiller::kDomDistillerScheme, distilled.GetScheme());
   delegate()->SetURL(distilled);
 
   // The user should see the same URL seen for the original article.
@@ -246,11 +246,10 @@ TEST_F(LocationBarModelImplTest, GetPageClassification) {
             model.GetPageClassification(/*is_prefetch=*/true));
 
   // Simulate the page being the 1P NTP.
-  EXPECT_CALL(delegate, GetURL(_))
-      .WillRepeatedly(WithArg<0>(Invoke([](GURL* url) {
-        *url = GURL("https://foobar.com");
-        return url->is_valid();
-      })));
+  EXPECT_CALL(delegate, GetURL(_)).WillRepeatedly(WithArg<0>([](GURL* url) {
+    *url = GURL("https://foobar.com");
+    return url->is_valid();
+  }));
   EXPECT_CALL(delegate, IsNewTabPage()).WillRepeatedly(Return(true));
 
   // Verify the page classification for prefetch and non-prefetch requests.
@@ -277,11 +276,11 @@ TEST_F(LocationBarModelImplTest, GetPageClassification) {
 
   // Simulate the page URL being successfully retrieved, and is the SRP.
   EXPECT_CALL(delegate, GetURL(_))
-      .WillRepeatedly(WithArg<0>(Invoke([&delegate](GURL* url) {
+      .WillRepeatedly(WithArg<0>([&delegate](GURL* url) {
         auto* turl_service = delegate.GetTemplateURLService();
         *url = turl_service->GenerateSearchURLForDefaultSearchProvider(u"foo");
         return url->is_valid();
-      })));
+      }));
   EXPECT_CALL(delegate, IsNewTabPageURL(_)).WillRepeatedly(Return(false));
 
   // Verify the page classification for prefetch and non-prefetch requests.
@@ -295,11 +294,10 @@ TEST_F(LocationBarModelImplTest, GetPageClassification) {
                                                      /*is_prefetch=*/true));
 
   // Simulate the page URL being successfully retrieved, and is non-empty.
-  EXPECT_CALL(delegate, GetURL(_))
-      .WillRepeatedly(WithArg<0>(Invoke([](GURL* url) {
-        *url = GURL("https://foobar.com");
-        return url->is_valid();
-      })));
+  EXPECT_CALL(delegate, GetURL(_)).WillRepeatedly(WithArg<0>([](GURL* url) {
+    *url = GURL("https://foobar.com");
+    return url->is_valid();
+  }));
 
   // Verify the page classification for prefetch and non-prefetch requests.
   EXPECT_EQ(OmniboxEventProto::OTHER, model.GetPageClassification());

@@ -48,7 +48,7 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimeline) {
 
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
   options->setSource(scroller);
-  options->setAxis("block");
+  options->setAxis(V8ScrollAxis::Enum::kBlock);
   ScrollTimeline* timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
 

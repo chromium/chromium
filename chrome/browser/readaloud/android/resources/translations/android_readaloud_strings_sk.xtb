@@ -57,6 +57,7 @@
 <translation id="7221920857098237570">Jemný</translation>
 <translation id="7237590978482584900">Uvoľnený</translation>
 <translation id="7282547042039404307">Plynulá</translation>
+<translation id="7514257690823355037">Prejsť na ďalšie</translation>
 <translation id="8004767876552422827">Pole</translation>
 <translation id="8136852699834914183">Prehrávanie nie je pre túto stránku k dispozícii.</translation>
 <translation id="8198036737896977997">Vzduch</translation>
@@ -68,5 +69,6 @@
 <translation id="8756370108715456837">Nie je fakticky správne</translation>
 <translation id="8953618380150219653">Prehrávač „Vypočuť obsah tejto stránky“ bol otvorený na plnú výšku.</translation>
 <translation id="9087782179025630211">Posúvač. Uplynutý čas: <ph name="ELAPSED" /> z <ph name="TOTAL" />.</translation>
+<translation id="9193673272519126093">Prejsť na predchádzajúce</translation>
 <translation id="978117257931832348">Tlmený a tichý</translation>
 </translationbundle>

@@ -68,9 +68,16 @@ class HistoryDeleteDirectivesEqualityChecker
   const size_t num_expected_directives_;
 };
 
-class SingleClientHistoryDeleteDirectivesSyncTest : public SyncTest {
+class SingleClientHistoryDeleteDirectivesSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientHistoryDeleteDirectivesSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientHistoryDeleteDirectivesSyncTest() : SyncTest(SINGLE_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
 
   SingleClientHistoryDeleteDirectivesSyncTest(
       const SingleClientHistoryDeleteDirectivesSyncTest&) = delete;
@@ -78,6 +85,10 @@ class SingleClientHistoryDeleteDirectivesSyncTest : public SyncTest {
       const SingleClientHistoryDeleteDirectivesSyncTest&) = delete;
 
   ~SingleClientHistoryDeleteDirectivesSyncTest() override = default;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
 
   bool WaitForHistoryDeleteDirectives(size_t num_expected_directives) {
     return HistoryDeleteDirectivesEqualityChecker(
@@ -97,6 +108,7 @@ class SingleClientHistoryDeleteDirectivesSyncTest : public SyncTest {
     history_service->GetHistoryCount(
         /*begin_time=*/time,
         /*end_time=*/time + base::Microseconds(1),
+        history::VisitQuery404sPolicy::kInclude404s,
         base::BindLambdaForTesting([&](history::HistoryCountResult result) {
           ASSERT_TRUE(result.success);
           exists = (result.count != 0);
@@ -106,9 +118,17 @@ class SingleClientHistoryDeleteDirectivesSyncTest : public SyncTest {
     loop.Run();
     return exists;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistoryDeleteDirectivesSyncTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientHistoryDeleteDirectivesSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientHistoryDeleteDirectivesSyncTest,
                        ShouldCommitTimeRangeDeleteDirective) {
   const GURL kPageUrl = GURL("http://foo.com");
   const base::Time kHistoryEntryTime = base::Time::Now();
@@ -129,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistoryDeleteDirectivesSyncTest,
   EXPECT_TRUE(WaitForHistoryDeleteDirectives(1));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistoryDeleteDirectivesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientHistoryDeleteDirectivesSyncTest,
                        ShouldCommitUrlDeleteDirective) {
   const GURL kPageUrl = GURL("http://foo.com");
   const base::Time kHistoryEntryTime = base::Time::Now();
@@ -146,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistoryDeleteDirectivesSyncTest,
   EXPECT_TRUE(WaitForHistoryDeleteDirectives(1));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientHistoryDeleteDirectivesSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientHistoryDeleteDirectivesSyncTest,
                        ShouldProcessDeleteDirectiveDuringStartup) {
   const GURL kPageUrl = GURL("http://foo.com");
   const base::Time kHistoryEntryTime = base::Time::Now();

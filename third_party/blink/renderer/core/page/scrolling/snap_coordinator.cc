@@ -266,9 +266,7 @@ cc::SnapAreaData SnapCoordinator::CalculateSnapAreaData(
     area_rect.UniteIfNonZero(PhysicalRect::EnclosingRect(quad.BoundingBox()));
   }
 
-  PhysicalBoxStrut area_margin(
-      area_style->ScrollMarginTop(), area_style->ScrollMarginRight(),
-      area_style->ScrollMarginBottom(), area_style->ScrollMarginLeft());
+  PhysicalBoxStrut area_margin = area_style->ScrollMarginStrut();
   area_rect.Expand(area_margin);
   snap_area_data.rect = gfx::RectF(area_rect);
 

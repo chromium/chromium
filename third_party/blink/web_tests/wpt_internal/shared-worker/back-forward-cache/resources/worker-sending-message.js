@@ -8,6 +8,9 @@ self.onconnect = (event) => {
     if (message === 'register') {
       targetPort = port;
       targetPort.postMessage('done');
+    } else if (message.type === 'transfer') {
+      targetPort = e.ports[0];
+      port.postMessage('done');
     } else if (message === 'message') {
       if (targetPort) {
         targetPort.postMessage('evict');

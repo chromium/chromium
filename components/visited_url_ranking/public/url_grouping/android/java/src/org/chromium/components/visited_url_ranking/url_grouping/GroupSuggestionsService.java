@@ -56,6 +56,9 @@ public interface GroupSuggestionsService {
     /**
      * Returns the cached suggestions for the given window/scope.
      *
+     * <p>If a non-null value is returned, {@link CachedSuggestions#userResponseMetadataCallback}
+     * must either be called once or destroyed before it goes out of scope.
+     *
      * @param windowId The ID of the window or tab model scope.
      * @return {@link CachedSuggestions} containing suggestions for the window, or null if none are
      *     cached.

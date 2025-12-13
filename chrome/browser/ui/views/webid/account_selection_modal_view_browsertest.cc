@@ -31,6 +31,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace webid {
 namespace {
@@ -164,20 +165,18 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
                            bool expect_visible_idp_icon = true,
                            bool expect_visible_combined_icons = false) {
     // Perform some basic dialog checks.
-    EXPECT_FALSE(dialog()->ShouldShowCloseButton());
-    EXPECT_FALSE(dialog()->ShouldShowWindowTitle());
+    auto* delegate = dialog_delegate();
+    ASSERT_TRUE(delegate);
+
+    EXPECT_FALSE(delegate->ShouldShowCloseButton());
+    EXPECT_FALSE(delegate->ShouldShowWindowTitle());
 
     // Default buttons should not be shown.
-    EXPECT_FALSE(dialog()->GetOkButton());
-    EXPECT_FALSE(dialog()->GetCancelButton());
+    EXPECT_FALSE(delegate->GetOkButton());
+    EXPECT_FALSE(delegate->GetCancelButton());
 
-    bool has_subtitle = !iframe_for_display_.empty();
-
-    // Order: Brand icon, title and body for non loading UI.
+    // Order: Brand icon, title, and body for non loading UI.
     std::vector<std::string> expected_class_names = {"View", "Label"};
-    if (has_subtitle) {
-      expected_class_names.push_back("Label");
-    }
     bool is_loading_dialog =
         !expect_visible_idp_icon && !expect_visible_combined_icons;
     if (!is_loading_dialog) {
@@ -277,29 +276,28 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     // Check title text.
     views::Label* title_view = static_cast<views::Label*>(header_children[1]);
     ASSERT_TRUE(title_view);
-    if (has_subtitle) {
+    if (iframe_for_display_.empty()) {
+      EXPECT_EQ(title_view->GetText(), kTitleSignIn);
+      EXPECT_EQ(dialog()->GetDialogTitle(), base::UTF16ToUTF8(kTitleSignIn));
+    } else {
       EXPECT_EQ(title_view->GetText(), kTitleIframeSignIn);
       EXPECT_EQ(dialog()->GetDialogTitle(),
                 base::UTF16ToUTF8(kTitleIframeSignIn));
-
-      views::Label* subtitle_view =
-          static_cast<views::Label*>(header_children[2]);
-      ASSERT_TRUE(subtitle_view);
-      EXPECT_EQ(subtitle_view->GetText(), kSubtitleIframeSignIn);
-      EXPECT_EQ(dialog()->GetDialogSubtitle(),
-                base::UTF16ToUTF8(kSubtitleIframeSignIn));
-    } else {
-      EXPECT_EQ(title_view->GetText(), kTitleSignIn);
-      EXPECT_EQ(dialog()->GetDialogTitle(), base::UTF16ToUTF8(kTitleSignIn));
-      EXPECT_EQ(dialog()->GetDialogSubtitle(), std::nullopt);
     }
 
     if (!is_loading_dialog) {
       // Check body text.
-      views::Label* body_view =
-          static_cast<views::Label*>(header_children[has_subtitle ? 3 : 2]);
+      views::Label* body_view = static_cast<views::Label*>(header_children[2]);
       ASSERT_TRUE(body_view);
-      EXPECT_EQ(body_view->GetText(), kBodySignIn);
+
+      if (iframe_for_display_.empty()) {
+        EXPECT_EQ(body_view->GetText(), kBodySignIn);
+        EXPECT_EQ(dialog()->GetDialogSubtitle(), std::nullopt);
+      } else {
+        EXPECT_EQ(body_view->GetText(), kSubtitleIframeSignIn);
+        EXPECT_EQ(dialog()->GetDialogSubtitle(),
+                  base::UTF16ToUTF8(kSubtitleIframeSignIn));
+      }
       EXPECT_EQ(body_view->GetVisible(), expect_visible_body_label_);
     }
   }
@@ -473,7 +471,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     // Order: Header, single account chooser, button row
     ASSERT_EQ(children.size(), 3u);
 
-    expect_visible_body_label_ = false;
+    expect_visible_body_label_ = !iframe_for_display_.empty();
     bool expect_combined_icons =
         !idp_brand_icon_url.empty() && !rp_brand_icon_url.empty();
     PerformHeaderChecks(
@@ -588,7 +586,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
         kIdpETLDPlusOne, idp_data_->idp_metadata,
         content::IdentityCredentialTokenError(error_code, error_url));
     auto header_view = dialog()->children()[0];
-    // header icon view, title_label and body_label
+    // header icon view, title_label, and body_label
     ASSERT_EQ(header_view->children().size(), 3u);
 
     auto* title_label = static_cast<views::Label*>(header_view->children()[1]);
@@ -707,6 +705,13 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
   }
 
   AccountSelectionModalView* dialog() { return dialog_; }
+
+  views::DialogDelegate* dialog_delegate() {
+    if (auto* widget = dialog()->GetWidget()) {
+      return widget->widget_delegate()->AsDialogDelegate();
+    }
+    return nullptr;
+  }
 
   IdentityProviderDataPtr idp_data() { return idp_data_; }
 

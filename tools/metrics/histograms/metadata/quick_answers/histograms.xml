@@ -37,7 +37,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="QuickAnswers.ActiveImpression" enum="QuickAnswersResultType"
-    expires_after="2026-02-01">
+    expires_after="2026-06-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.Click" enum="QuickAnswersResultType"
-    expires_after="2026-02-01">
+    expires_after="2026-06-07">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -150,7 +150,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.FeatureEnabled" enum="BooleanEnabled"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -161,7 +161,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.Intent" enum="QuickAnswersIntentType"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -172,7 +172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.Loading.Duration" units="ms"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -286,7 +286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickAnswers.V2.Consent" units="impressions"
-    expires_after="2026-02-01">
+    expires_after="2026-04-05">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -313,7 +313,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="QuickAnswers.V2.Consent.Impression{QuickAnswersV2ConsentResultType}"
-    units="impressions" expires_after="2026-02-01">
+    units="impressions" expires_after="2026-04-05">
   <owner>yawano@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>

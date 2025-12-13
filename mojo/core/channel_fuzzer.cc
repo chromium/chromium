@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/channel.h"
 
 #include <stdint.h>
@@ -18,49 +13,22 @@
 #include "base/task/single_thread_task_executor.h"
 #include "build/build_config.h"
 #include "mojo/core/connection_params.h"
-#include "mojo/core/entrypoints.h"
-#include "mojo/core/ipcz_driver/envelope.h"
+#include "mojo/core/fuzzing_utils.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
-// A fake delegate for each Channel endpoint. By the time an incoming message
-// reaches a Delegate, all interesting message parsing at the lowest protocol
-// layer has already been done by the receiving Channel implementation, so this
-// doesn't need to do any work.
-class FakeChannelDelegate : public mojo::core::Channel::Delegate {
- public:
-  FakeChannelDelegate() = default;
-  ~FakeChannelDelegate() override = default;
-
-  void OnChannelMessage(
-      const void* payload,
-      size_t payload_size,
-      std::vector<mojo::PlatformHandle> handles,
-      scoped_refptr<mojo::core::ipcz_driver::Envelope> envelope) override {}
-  void OnChannelError(mojo::core::Channel::Error error) override {}
-};
-
-// Message deserialization may register handles in the global handle table. We
-// need to initialize Core for that to be OK.
-struct Environment {
-  Environment() : main_thread_task_executor(base::MessagePumpType::IO) {
-    mojo::core::InitializeCore();
-  }
-
-  base::SingleThreadTaskExecutor main_thread_task_executor;
-};
-
 extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
-  static base::NoDestructor<Environment> environment;
+  static base::NoDestructor<mojo::core::Environment> environment;
 
   // Platform-specific implementation of an OS IPC primitive that is normally
   // used to carry messages between processes.
   mojo::PlatformChannel channel;
 
-  FakeChannelDelegate receiver_delegate;
+  mojo::core::FakeChannelDelegate receiver_delegate{
+      /*is_ipcz_transport=*/false};
   auto receiver = mojo::core::Channel::Create(
       &receiver_delegate,
       mojo::core::ConnectionParams(channel.TakeLocalEndpoint()),
@@ -80,7 +48,7 @@ extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
 
   receiver->Start();
 
-  FakeChannelDelegate sender_delegate;
+  mojo::core::FakeChannelDelegate sender_delegate{/*is_ipcz_transport=*/false};
   auto sender = mojo::core::Channel::Create(
       &sender_delegate,
       mojo::core::ConnectionParams(channel.TakeRemoteEndpoint()),
@@ -88,8 +56,10 @@ extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
       environment->main_thread_task_executor.task_runner());
   sender->Start();
 
-  sender->Write(mojo::core::Channel::Message::CreateRawForFuzzing(
-      base::span(data, size)));
+  // SAFETY: required from fuzzer.
+  auto payload = UNSAFE_BUFFERS(base::span(data, size));
+
+  sender->Write(mojo::core::Channel::Message::CreateRawForFuzzing(payload));
 
   // Make sure |receiver| does whatever work it's gonna do in response to our
   // message. By the time the loop goes idle, all parsing will be done.

@@ -35,6 +35,8 @@ build_webui("build") {
     "customize_toolbar/toolbar.ts",
     "footer.html.ts",
     "footer.ts",
+    "tools.html.ts",
+    "tools.ts",
     "hover_button.html.ts",
     "hover_button.ts",
     "shortcuts.html.ts",
@@ -62,6 +64,7 @@ build_webui("build") {
     "check_mark_wrapper.css",
     "customize_toolbar/toolbar.css",
     "footer.css",
+    "tools.css",
     "hover_button.css",
     "shortcuts.css",
     "theme_snapshot.css",
@@ -72,11 +75,15 @@ build_webui("build") {
     "wallpaper_search/wallpaper_search_tile.css",
   ]
 
-  mojo_files_deps = [ "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings_ts__generator" ]
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings_ts__generator",
+    "//components/ntp_tiles:mojo_bindings_ts__generator",
+  ]
   mojo_files = [
     "$root_gen_dir/chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search.mojom-webui.ts",
+    "$root_gen_dir/components/ntp_tiles/tile_type.mojom-webui.ts",
   ]
 
   ts_composite = true

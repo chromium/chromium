@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import <UIKit/UIKit.h>
+
+#import <array>
 
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/functional/bind.h"
-#import "base/functional/callback_forward.h"
+#import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -32,6 +29,84 @@ namespace {
 
 const NSUInteger kSnapshotCount = 10;
 const NSUInteger kSnapshotPixelSize = 8;
+
+// Guesses the order of the color channels in the image.
+// Supports RGB, BGR, RGBA, BGRA, ARGB, ABGR.
+// Returns the position of each channel between 0 and 3.
+void ComputeColorComponents(CGImageRef cgImage,
+                            int* red,
+                            int* green,
+                            int* blue) {
+  CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(cgImage);
+  CGBitmapInfo byteOrder =
+      CGImageGetBitmapInfo(cgImage) & kCGBitmapByteOrderInfoMask;
+
+  *red = 0;
+  *green = 1;
+  *blue = 2;
+
+  if (alphaInfo == kCGImageAlphaLast ||
+      alphaInfo == kCGImageAlphaPremultipliedLast ||
+      alphaInfo == kCGImageAlphaNoneSkipLast) {
+    *red = 1;
+    *green = 2;
+    *blue = 3;
+  }
+
+  if (byteOrder != kCGImageByteOrder32Host) {
+    int lastChannel = (CGImageGetBitsPerPixel(cgImage) == 24) ? 2 : 3;
+    *red = lastChannel - *red;
+    *green = lastChannel - *green;
+    *blue = lastChannel - *blue;
+  }
+}
+
+// Compares the first pixel of `image1` and `image2` and returns whether
+// they are similar enough (allow for a bit of variation caused by the
+// compression).
+void ExpectSimilarImages(CGImageRef image1, CGImageRef image2) {
+  ASSERT_TRUE(image1);
+  ASSERT_TRUE(image2);
+
+  // Number of color components (R, G, B).
+  static constexpr size_t kColorComponents = 3;
+
+  // Extract information about the first image.
+  std::array<int, kColorComponents> indices1;
+  ComputeColorComponents(image1, &indices1[0], &indices1[1], &indices1[2]);
+  base::apple::ScopedCFTypeRef<CFDataRef> image1_data(
+      CGDataProviderCopyData(CGImageGetDataProvider(image1)));
+  base::span<const uint8_t> image1_span =
+      base::apple::NSDataToSpan((__bridge NSData*)image1_data.get());
+
+  // Extract information about the second image.
+  std::array<int, kColorComponents> indices2;
+  ComputeColorComponents(image2, &indices2[0], &indices2[1], &indices2[2]);
+  base::apple::ScopedCFTypeRef<CFDataRef> image2_data(
+      CGDataProviderCopyData(CGImageGetDataProvider(image2)));
+  base::span<const uint8_t> image2_span =
+      base::apple::NSDataToSpan((__bridge NSData*)image2_data.get());
+
+  // Colors may not be axactly the same due to compression or roundind
+  // errors, thus allow a small difference.
+  for (size_t index = 0; index < kColorComponents; ++index) {
+    EXPECT_NEAR(image1_span[indices1[index]], image2_span[indices2[index]], 1);
+  }
+}
+
+// Loads image at `path` and compare it with `reference` image, returning
+// whether they similar enough (allow for a bit of variation caused by the
+// compression).
+//
+// Note that as images are composed of a single color, this only compare
+// the rgb values of the first pixel.
+void ExpectImageAtPathSimilarToReference(NSString* path, UIImage* reference) {
+  ASSERT_TRUE(reference);
+  UIImage* image = [UIImage imageWithContentsOfFile:path];
+  ASSERT_TRUE(image);
+
+  ExpectSimilarImages(image.CGImage, reference.CGImage);
+}
 
 class LegacyImageFileManagerTest : public PlatformTest {
  protected:
@@ -56,8 +131,7 @@ class LegacyImageFileManagerTest : public PlatformTest {
     }
 
     image_file_manager_ = [[LegacyImageFileManager alloc]
-        initWithStoragePath:scoped_temp_directory_.GetPath()
-                 legacyPath:base::FilePath()];
+        initWithStoragePath:scoped_temp_directory_.GetPath()];
 
     CGFloat scale = [SnapshotImageScale floatImageScaleForDevice];
 
@@ -152,37 +226,6 @@ class LegacyImageFileManagerTest : public PlatformTest {
     EXPECT_FALSE(foundImage);
   }
 
-  // Guesses the order of the color channels in the image.
-  // Supports RGB, BGR, RGBA, BGRA, ARGB, ABGR.
-  // Returns the position of each channel between 0 and 3.
-  void ComputeColorComponents(CGImageRef cgImage,
-                              int* red,
-                              int* green,
-                              int* blue) {
-    CGBitmapInfo bitmapInfo = CGImageGetBitmapInfo(cgImage);
-    CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(cgImage);
-    int byteOrder = bitmapInfo & kCGBitmapByteOrderMask;
-
-    *red = 0;
-    *green = 1;
-    *blue = 2;
-
-    if (alphaInfo == kCGImageAlphaLast ||
-        alphaInfo == kCGImageAlphaPremultipliedLast ||
-        alphaInfo == kCGImageAlphaNoneSkipLast) {
-      *red = 1;
-      *green = 2;
-      *blue = 3;
-    }
-
-    if (byteOrder != kCGBitmapByteOrder32Host) {
-      int lastChannel = (CGImageGetBitsPerPixel(cgImage) == 24) ? 2 : 3;
-      *red = lastChannel - *red;
-      *green = lastChannel - *green;
-      *blue = lastChannel - *blue;
-    }
-  }
-
   web::WebTaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_directory_;
   LegacyImageFileManager* image_file_manager_;
@@ -208,40 +251,8 @@ TEST_F(LegacyImageFileManagerTest, CheckImageColors) {
 
     // Check image colors by comparing the first pixel against the reference
     // image.
-    UIImage* image =
-        [UIImage imageWithContentsOfFile:base::SysUTF8ToNSString(path.value())];
-    CGImageRef cgImage = [image CGImage];
-    ASSERT_TRUE(cgImage != nullptr);
-
-    base::apple::ScopedCFTypeRef<CFDataRef> pixelData(
-        CGDataProviderCopyData(CGImageGetDataProvider(cgImage)));
-    const char* pixels =
-        reinterpret_cast<const char*>(CFDataGetBytePtr(pixelData.get()));
-    EXPECT_TRUE(pixels);
-
-    CGImageRef referenceCgImage = [reference_image CGImage];
-    base::apple::ScopedCFTypeRef<CFDataRef> referenceData(
-        CGDataProviderCopyData(CGImageGetDataProvider(referenceCgImage)));
-    const char* referencePixels =
-        reinterpret_cast<const char*>(CFDataGetBytePtr(referenceData.get()));
-    EXPECT_TRUE(referencePixels);
-
-    if (pixels != nil && referencePixels != nil) {
-      // Color components may not be in the same order,
-      // because of writing to disk and reloading.
-      int red, green, blue;
-      ComputeColorComponents(cgImage, &red, &green, &blue);
-
-      int referenceRed, referenceGreen, referenceBlue;
-      ComputeColorComponents(referenceCgImage, &referenceRed, &referenceGreen,
-                             &referenceBlue);
-
-      // Colors may not be exactly the same (compression or rounding errors)
-      // thus a small difference is allowed.
-      EXPECT_NEAR(referencePixels[referenceRed], pixels[red], 1);
-      EXPECT_NEAR(referencePixels[referenceGreen], pixels[green], 1);
-      EXPECT_NEAR(referencePixels[referenceBlue], pixels[blue], 1);
-    }
+    ExpectImageAtPathSimilarToReference(base::apple::FilePathToNSString(path),
+                                        reference_image);
   }
 }
 
@@ -286,36 +297,6 @@ TEST_F(LegacyImageFileManagerTest, PurgeImagesOlderThan) {
       EXPECT_FALSE(base::PathExists(path));
     }
   }
-}
-
-// Tests that migration code correctly rename the specified files and leave
-// the other files untouched.
-TEST_F(LegacyImageFileManagerTest, RenameSnapshots) {
-  LegacyImageFileManager* file_manager = GetImageFileManager();
-  ASSERT_TRUE(file_manager);
-
-  // This snapshot will be renamed.
-  NSString* image1_id = [[NSUUID UUID] UUIDString];
-  base::FilePath image1_path =
-      [file_manager legacyImagePathForSnapshotID:image1_id];
-  ASSERT_TRUE(base::WriteFile(image1_path, "image1"));
-
-  // This snapshot will not be renamed.
-  NSString* image2_id = [[NSUUID UUID] UUIDString];
-  base::FilePath image2_path =
-      [file_manager legacyImagePathForSnapshotID:image2_id];
-  ASSERT_TRUE(base::WriteFile(image2_path, "image2"));
-
-  SnapshotID new_id = SnapshotID(SessionID::NewUnique().id());
-  [file_manager renameSnapshotsWithIDs:@[ image1_id ] toIDs:{new_id}];
-  FlushRunLoops();
-
-  // image1 should have been moved.
-  EXPECT_FALSE(base::PathExists(image1_path));
-  EXPECT_TRUE(base::PathExists([file_manager imagePathForSnapshotID:new_id]));
-
-  // image2 should not have moved.
-  EXPECT_TRUE(base::PathExists(image2_path));
 }
 
 // Tests that image size and scale are preserved when writing and reading
@@ -440,17 +421,11 @@ class ImageFileManagerTest : public PlatformTest {
     if (!scoped_temp_directory_.CreateUniqueTempDir()) {
       return false;
     }
-    if (!scoped_temp_directory_for_legacy_path_.CreateUniqueTempDir()) {
-      return false;
-    }
 
     NSURL* storage_url =
         base::apple::FilePathToNSURL(scoped_temp_directory_.GetPath());
-    NSURL* legacy_url = base::apple::FilePathToNSURL(
-        scoped_temp_directory_for_legacy_path_.GetPath());
     image_file_manager_ =
-        [[ImageFileManager alloc] initWithStorageDirectoryUrl:storage_url
-                                           legacyDirectoryUrl:legacy_url];
+        [[ImageFileManager alloc] initWithStorageDirectoryUrl:storage_url];
     // Make sure that the storage directory is ready.
     FlushRunLoops();
 
@@ -547,40 +522,8 @@ class ImageFileManagerTest : public PlatformTest {
     EXPECT_FALSE(foundImage);
   }
 
-  // Guesses the order of the color channels in the image.
-  // Supports RGB, BGR, RGBA, BGRA, ARGB, ABGR.
-  // Returns the position of each channel between 0 and 3.
-  void ComputeColorComponents(CGImageRef cgImage,
-                              int* red,
-                              int* green,
-                              int* blue) {
-    CGBitmapInfo bitmapInfo = CGImageGetBitmapInfo(cgImage);
-    CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(cgImage);
-    int byteOrder = bitmapInfo & kCGBitmapByteOrderMask;
-
-    *red = 0;
-    *green = 1;
-    *blue = 2;
-
-    if (alphaInfo == kCGImageAlphaLast ||
-        alphaInfo == kCGImageAlphaPremultipliedLast ||
-        alphaInfo == kCGImageAlphaNoneSkipLast) {
-      *red = 1;
-      *green = 2;
-      *blue = 3;
-    }
-
-    if (byteOrder != kCGBitmapByteOrder32Host) {
-      int lastChannel = (CGImageGetBitsPerPixel(cgImage) == 24) ? 2 : 3;
-      *red = lastChannel - *red;
-      *green = lastChannel - *green;
-      *blue = lastChannel - *blue;
-    }
-  }
-
   web::WebTaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_directory_;
-  base::ScopedTempDir scoped_temp_directory_for_legacy_path_;
   ImageFileManager* image_file_manager_;
   std::map<SnapshotIDWrapper*, UIImage*> test_images_;
 };
@@ -608,39 +551,7 @@ TEST_F(ImageFileManagerTest, CheckImageColors) {
 
     // Check image colors by comparing the first pixel against the reference
     // image.
-    UIImage* image = [UIImage imageWithContentsOfFile:[image_url path]];
-    CGImageRef cgImage = [image CGImage];
-    ASSERT_TRUE(cgImage != nullptr);
-
-    base::apple::ScopedCFTypeRef<CFDataRef> pixelData(
-        CGDataProviderCopyData(CGImageGetDataProvider(cgImage)));
-    const char* pixels =
-        reinterpret_cast<const char*>(CFDataGetBytePtr(pixelData.get()));
-    EXPECT_TRUE(pixels);
-
-    CGImageRef referenceCgImage = [reference_image CGImage];
-    base::apple::ScopedCFTypeRef<CFDataRef> referenceData(
-        CGDataProviderCopyData(CGImageGetDataProvider(referenceCgImage)));
-    const char* referencePixels =
-        reinterpret_cast<const char*>(CFDataGetBytePtr(referenceData.get()));
-    EXPECT_TRUE(referencePixels);
-
-    if (pixels != nil && referencePixels != nil) {
-      // Color components may not be in the same order,
-      // because of writing to disk and reloading.
-      int red, green, blue;
-      ComputeColorComponents(cgImage, &red, &green, &blue);
-
-      int referenceRed, referenceGreen, referenceBlue;
-      ComputeColorComponents(referenceCgImage, &referenceRed, &referenceGreen,
-                             &referenceBlue);
-
-      // Colors may not be exactly the same (compression or rounding errors)
-      // thus a small difference is allowed.
-      EXPECT_NEAR(referencePixels[referenceRed], pixels[red], 1);
-      EXPECT_NEAR(referencePixels[referenceGreen], pixels[green], 1);
-      EXPECT_NEAR(referencePixels[referenceBlue], pixels[blue], 1);
-    }
+    ExpectImageAtPathSimilarToReference([image_url path], reference_image);
   }
 }
 
@@ -694,40 +605,6 @@ TEST_F(ImageFileManagerTest, PurgeImagesOlderThan) {
           [[NSFileManager defaultManager] fileExistsAtPath:[image_url path]]);
     }
   }
-}
-
-// Tests that migration code correctly rename the specified files and leave
-// the other files untouched.
-TEST_F(ImageFileManagerTest, RenameSnapshots) {
-  ImageFileManager* file_manager = GetImageFileManager();
-  ASSERT_TRUE(file_manager);
-
-  // This snapshot will be renamed.
-  NSString* image1_id = [[NSUUID UUID] UUIDString];
-  NSURL* image1_url = [file_manager legacyImagePathWithSnapshotID:image1_id];
-  ASSERT_TRUE(base::WriteFile(
-      base::FilePath(base::SysNSStringToUTF8([image1_url path])), "image1"));
-
-  // This snapshot will not be renamed.
-  NSString* image2_id = [[NSUUID UUID] UUIDString];
-  NSURL* image2_url = [file_manager legacyImagePathWithSnapshotID:image2_id];
-  ASSERT_TRUE(base::WriteFile(
-      base::FilePath(base::SysNSStringToUTF8([image2_url path])), "image2"));
-
-  SnapshotIDWrapper* new_id = [[SnapshotIDWrapper alloc]
-      initWithSnapshotID:SnapshotID(SessionID::NewUnique().id())];
-  [file_manager renameSnapshotsWithOldIDs:@[ image1_id ] newIDs:@[ new_id ]];
-  FlushRunLoops();
-
-  // image1 should have been moved.
-  EXPECT_FALSE(
-      [[NSFileManager defaultManager] fileExistsAtPath:[image1_url path]]);
-  EXPECT_TRUE([[NSFileManager defaultManager]
-      fileExistsAtPath:[[file_manager imagePathWithSnapshotID:new_id] path]]);
-
-  // image2 should not have moved.
-  EXPECT_TRUE(
-      [[NSFileManager defaultManager] fileExistsAtPath:[image2_url path]]);
 }
 
 // Tests that image size and scale are preserved when writing and reading

@@ -129,8 +129,6 @@ class InstallFromSyncCommand
   std::unique_ptr<WebAppInstallInfo> install_info_;
   std::unique_ptr<WebAppInstallInfo> fallback_install_info_;
 
-  InstallErrorLogEntry install_error_log_entry_;
-
   base::OnceCallback<void(webapps::InstallResultCode code)>
       fallback_triggered_for_testing_;
 

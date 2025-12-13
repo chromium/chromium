@@ -12,13 +12,16 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/types/optional_util.h"
 #include "net/base/cronet_buildflags.h"
 #include "net/base/features.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/network_isolation_partition.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
+#include "url/gurl.h"
 
 #if !BUILDFLAG(CRONET_BUILD)
 #include "mojo/public/cpp/bindings/default_construct_tag.h"

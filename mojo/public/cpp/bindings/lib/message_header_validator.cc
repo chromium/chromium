@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/cpp/bindings/message_header_validator.h"
 
+#include "base/compiler_specific.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/validate_params.h"
 #include "mojo/public/cpp/bindings/lib/validation_context.h"
@@ -101,7 +97,8 @@ bool IsValidMessageHeader(const internal::MessageHeader* header,
     size_t num_ids = header_v2->payload_interface_ids.Get()->size();
     const uint32_t* ids = header_v2->payload_interface_ids.Get()->storage();
     for (size_t i = 0; i < num_ids; ++i) {
-      if (!IsValidInterfaceId(ids[i]) || IsPrimaryInterfaceId(ids[i])) {
+      if (!IsValidInterfaceId(UNSAFE_TODO(ids[i])) ||
+          IsPrimaryInterfaceId(UNSAFE_TODO(ids[i]))) {
         internal::ReportValidationError(
             validation_context,
             internal::VALIDATION_ERROR_ILLEGAL_INTERFACE_ID);

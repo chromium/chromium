@@ -52,7 +52,6 @@ public class LocationBarTabletUnitTest {
     @Test
     public void testOnLongClick() {
         longClickAndVerifyToast(R.id.bookmark_button, R.string.menu_bookmark);
-        longClickAndVerifyToast(R.id.save_offline_button, R.string.menu_download);
     }
 
     private void longClickAndVerifyToast(int viewId, int stringId) {

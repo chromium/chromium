@@ -103,15 +103,14 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, TilingAndTileLifecycle) {
   auto tile1_solid = mojom::Tile::New();
   tile1_solid->column_index = kTileIndex1.i;
   tile1_solid->row_index = kTileIndex1.j;
+  tile1_solid->update_damage = true;
   tile1_solid->contents =
       mojom::TileContents::NewSolidColor(SkColors::kMagenta);
   tiling1->tiles.push_back(std::move(tile1_solid));
-  EXPECT_TRUE(layer_context_impl_
-                  ->DoUpdateDisplayTiling(std::move(tiling1),
-                                          /*update_damage=*/true)
+  EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTiling(std::move(tiling1))
                   .has_value());
 
-  const cc::TileDisplayLayerImpl::Tiling* tiling_impl1 =
+  const cc::TileDisplayLayerTiling* tiling_impl1 =
       layer_impl->GetTilingForTesting(kScaleKey1);
   ASSERT_NE(nullptr, tiling_impl1);
   EXPECT_EQ(tiling_impl1->tile_size(), kTileSize);
@@ -128,6 +127,7 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, TilingAndTileLifecycle) {
   auto tile2_resource = mojom::Tile::New();
   tile2_resource->column_index = kTileIndex2.i;
   tile2_resource->row_index = kTileIndex2.j;
+  tile2_resource->update_damage = true;
   auto resource_contents = mojom::TileResource::New();
   resource_contents->resource = MakeFakeResource(kTileSize);
   ;
@@ -135,10 +135,9 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, TilingAndTileLifecycle) {
   tile2_resource->contents =
       mojom::TileContents::NewResource(std::move(resource_contents));
   tiling1_update->tiles.push_back(std::move(tile2_resource));
-  EXPECT_TRUE(layer_context_impl_
-                  ->DoUpdateDisplayTiling(std::move(tiling1_update),
-                                          /*update_damage=*/true)
-                  .has_value());
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTiling(std::move(tiling1_update))
+          .has_value());
   ASSERT_NE(nullptr, tiling_impl1->TileAt(kTileIndex1));  // Should still exist.
   ASSERT_NE(nullptr, tiling_impl1->TileAt(kTileIndex2));
   EXPECT_TRUE(tiling_impl1->TileAt(kTileIndex2)->resource().has_value());
@@ -153,13 +152,12 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, TilingAndTileLifecycle) {
   auto tile3_solid = mojom::Tile::New();
   tile3_solid->column_index = kTileIndex1.i;
   tile3_solid->row_index = kTileIndex1.j;
+  tile3_solid->update_damage = true;
   tile3_solid->contents = mojom::TileContents::NewSolidColor(SkColors::kCyan);
   tiling2->tiles.push_back(std::move(tile3_solid));
-  EXPECT_TRUE(layer_context_impl_
-                  ->DoUpdateDisplayTiling(std::move(tiling2),
-                                          /*update_damage=*/true)
+  EXPECT_TRUE(layer_context_impl_->DoUpdateDisplayTiling(std::move(tiling2))
                   .has_value());
-  const cc::TileDisplayLayerImpl::Tiling* tiling_impl2 =
+  const cc::TileDisplayLayerTiling* tiling_impl2 =
       layer_impl->GetTilingForTesting(kScaleKey2);
   ASSERT_NE(nullptr, tiling_impl2);
 
@@ -169,8 +167,7 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, TilingAndTileLifecycle) {
   tiling1_deleted_marker->scale_key = kScaleKey1;
   tiling1_deleted_marker->is_deleted = true;
   EXPECT_TRUE(layer_context_impl_
-                  ->DoUpdateDisplayTiling(std::move(tiling1_deleted_marker),
-                                          /*update_damage=*/true)
+                  ->DoUpdateDisplayTiling(std::move(tiling1_deleted_marker))
                   .has_value());
   EXPECT_EQ(nullptr, layer_impl->GetTilingForTesting(kScaleKey1));
   EXPECT_NE(nullptr, layer_impl->GetTilingForTesting(kScaleKey2));
@@ -187,13 +184,13 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, TilingAndTileLifecycle) {
   auto tile_deleted_marker = mojom::Tile::New();
   tile_deleted_marker->column_index = kTileIndex1.i;
   tile_deleted_marker->row_index = kTileIndex1.j;
+  tile_deleted_marker->update_damage = true;
   tile_deleted_marker->contents = mojom::TileContents::NewMissingReason(
       cc::mojom::MissingTileReason::kTileDeleted);  // Mark for deletion
   tiling2_empty_update->tiles.push_back(std::move(tile_deleted_marker));
 
   EXPECT_TRUE(layer_context_impl_
-                  ->DoUpdateDisplayTiling(std::move(tiling2_empty_update),
-                                          /*update_damage=*/true)
+                  ->DoUpdateDisplayTiling(std::move(tiling2_empty_update))
                   .has_value());
   EXPECT_EQ(nullptr, layer_impl->GetTilingForTesting(kScaleKey2));
 
@@ -205,8 +202,7 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, TilingAndTileLifecycle) {
       CreateSolidColorTile(kTileIndex1, SkColors::kRed));
   EXPECT_TRUE(
       layer_context_impl_
-          ->DoUpdateDisplayTiling(std::move(tiling1_recreate_for_size_change),
-                                  /*update_damage=*/true)
+          ->DoUpdateDisplayTiling(std::move(tiling1_recreate_for_size_change))
           .has_value());
   tiling_impl1 = layer_impl->GetTilingForTesting(kScaleKey1);
   ASSERT_NE(nullptr, tiling_impl1);
@@ -219,10 +215,9 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, TilingAndTileLifecycle) {
   // kTileIndex1.
   tiling1_size_update->tiles.push_back(
       CreateSolidColorTile(kTileIndex3, SkColors::kGreen));
-  EXPECT_TRUE(layer_context_impl_
-                  ->DoUpdateDisplayTiling(std::move(tiling1_size_update),
-                                          /*update_damage=*/true)
-                  .has_value());
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTiling(std::move(tiling1_size_update))
+          .has_value());
   EXPECT_EQ(tiling_impl1, layer_impl->GetTilingForTesting(
                               kScaleKey1));  // Tiling should be the same
   EXPECT_EQ(tiling_impl1->tile_size(), kNewTileSize);
@@ -235,10 +230,9 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, TilingAndTileLifecycle) {
   auto tiling1_rect_update =
       CreateTiling(kLayerId, kScaleKey1, kNewTileSize, kNewTilingRect);
   // No new tiles added in this update, just changing the rect.
-  EXPECT_TRUE(layer_context_impl_
-                  ->DoUpdateDisplayTiling(std::move(tiling1_rect_update),
-                                          /*update_damage=*/true)
-                  .has_value());
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTiling(std::move(tiling1_rect_update))
+          .has_value());
   EXPECT_EQ(tiling_impl1, layer_impl->GetTilingForTesting(
                               kScaleKey1));  // Tiling should be the same
   EXPECT_EQ(tiling_impl1->tiling_rect(), kNewTilingRect);
@@ -270,8 +264,7 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, InvalidTilingUpdate) {
   tiling_for_wrong_layer->tile_size = kValidTileSize;
   tiling_for_wrong_layer->tiling_rect = kValidTilingRect;
   auto result1 = layer_context_impl_->DoUpdateDisplayTiling(
-      std::move(tiling_for_wrong_layer),
-      /*update_damage=*/true);
+      std::move(tiling_for_wrong_layer));
   ASSERT_FALSE(result1.has_value());
   EXPECT_EQ(result1.error(), "Invalid tile update");
 
@@ -282,9 +275,8 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, InvalidTilingUpdate) {
   tiling_invalid_size->raster_scale = gfx::Vector2dF(kScaleKey, kScaleKey);
   tiling_invalid_size->tile_size = gfx::Size(0, 10);
   tiling_invalid_size->tiling_rect = kValidTilingRect;
-  auto result2 =
-      layer_context_impl_->DoUpdateDisplayTiling(std::move(tiling_invalid_size),
-                                                 /*update_damage=*/true);
+  auto result2 = layer_context_impl_->DoUpdateDisplayTiling(
+      std::move(tiling_invalid_size));
   ASSERT_FALSE(result2.has_value());
   EXPECT_EQ(result2.error(), "Invalid tile_size dimensions in Tiling");
 
@@ -298,6 +290,7 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, InvalidTilingUpdate) {
   auto tile_invalid_resource_tile = mojom::Tile::New();
   tile_invalid_resource_tile->column_index = 0;
   tile_invalid_resource_tile->row_index = 0;
+  tile_invalid_resource_tile->update_damage = true;
   auto resource_contents = mojom::TileResource::New();
   resource_contents->resource = MakeFakeResource(kValidTileSize);
   resource_contents->resource.id = kInvalidResourceId;
@@ -306,10 +299,24 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, InvalidTilingUpdate) {
   tiling_invalid_resource->tiles.push_back(
       std::move(tile_invalid_resource_tile));
   auto result3 = layer_context_impl_->DoUpdateDisplayTiling(
-      std::move(tiling_invalid_resource),
-      /*update_damage=*/true);
+      std::move(tiling_invalid_resource));
   ASSERT_FALSE(result3.has_value());
   EXPECT_EQ(result3.error(), "Invalid tile resource");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTilingTest,
+       TilingWithInvalidLayerIdIsIgnored) {
+  constexpr int kInvalidLayerId = 999;  // An ID that doesn't exist.
+
+  auto tiling = CreateTiling(kInvalidLayerId, 1.0f, gfx::Size(64, 64),
+                             gfx::Rect(100, 100));
+  tiling->tiles.push_back(
+      CreateSolidColorTile(cc::TileIndex(0, 0), SkColors::kRed));
+
+  // An update for a non-existent layer should be silently ignored and not
+  // cause a crash or return an error.
+  auto result = layer_context_impl_->DoUpdateDisplayTiling(std::move(tiling));
+  EXPECT_TRUE(result.has_value());
 }
 
 }  // namespace

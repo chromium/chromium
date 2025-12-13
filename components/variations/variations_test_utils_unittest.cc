@@ -15,6 +15,7 @@
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace variations {
+namespace {
 
 using SignedSeedDataTest = ::testing::TestWithParam<SignedSeedData>;
 
@@ -50,7 +51,7 @@ TEST_P(SignedSeedDataTest, HasValidSignature) {
   const auto verify_signature_result =
       VariationsSeedStore::VerifySeedSignatureForTesting(
           decoded_uncompressed_data, signed_seed_data.base64_signature);
-  EXPECT_EQ(VerifySignatureResult::VALID_SIGNATURE, verify_signature_result);
+  EXPECT_EQ(VerifySignatureResult::kValidSignature, verify_signature_result);
 }
 
 TEST_P(SignedSeedDataTest, HasStudyNames) {
@@ -71,4 +72,5 @@ INSTANTIATE_TEST_SUITE_P(VariationsTestUtils,
                          SignedSeedDataTest,
                          ::testing::Values(kTestSeedData, kCrashingSeedData));
 
+}  // namespace
 }  // namespace variations

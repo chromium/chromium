@@ -7,7 +7,6 @@
 #include "base/no_destructor.h"
 #include "extensions/common/message_bundle.h"
 #include "extensions/common/mojom/renderer_host.mojom.h"
-#include "ipc/ipc_sender.h"
 
 namespace extensions {
 
@@ -26,8 +25,9 @@ std::string SharedL10nMap::GetMessage(const ExtensionId& extension_id,
 
   const L10nMessagesMap* extension_map =
       GetMapForExtension(extension_id, ipc_target);
-  if (!extension_map)
+  if (!extension_map) {
     return std::string();
+  }
 
   return MessageBundle::GetL10nMessage(message_name, *extension_map);
 }
@@ -39,8 +39,9 @@ bool SharedL10nMap::ReplaceMessages(const ExtensionId& extension_id,
 
   const L10nMessagesMap* extension_map =
       GetMapForExtension(extension_id, ipc_target);
-  if (!extension_map)
+  if (!extension_map) {
     return false;
+  }
 
   std::string error_unused;
   return MessageBundle::ReplaceMessagesWithExternalDictionary(
@@ -64,8 +65,9 @@ const SharedL10nMap::L10nMessagesMap* SharedL10nMap::GetMapForExtension(
   lock_.AssertAcquired();
 
   auto iter = map_.find(extension_id);
-  if (iter != map_.end())
+  if (iter != map_.end()) {
     return &iter->second;
+  }
 
   if (!ipc_target) {
     return nullptr;
@@ -77,9 +79,7 @@ const SharedL10nMap::L10nMessagesMap* SharedL10nMap::GetMapForExtension(
   // TODO(devlin): Wait, what?! A synchronous call to the browser to perform
   // potentially blocking work reading files from disk? That's Bad.
   base::flat_map<std::string, std::string> table;
-  // TODO(crbug.com/414486674): upgrade to CHECK once we ensure that validation
-  // is always working.
-  DCHECK(!extension_id.empty());
+  CHECK(!extension_id.empty());
   ipc_target->GetMessageBundle(extension_id, &table);
   l10n_messages = L10nMessagesMap(table.begin(), table.end());
 

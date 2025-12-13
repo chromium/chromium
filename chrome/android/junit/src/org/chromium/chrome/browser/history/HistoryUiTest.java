@@ -9,6 +9,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -58,12 +60,14 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history.AppFilterCoordinator.AppInfo;
 import org.chromium.chrome.browser.history.HistoryManagerToolbar.InfoHeaderPref;
@@ -79,6 +83,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewHolder;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.NavigationButton;
@@ -94,6 +99,7 @@ import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
@@ -105,7 +111,10 @@ import java.util.Date;
 /** Tests the History UI. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({ChromeFeatureList.APP_SPECIFIC_HISTORY})
-@EnableFeatures({SigninFeatures.HISTORY_PAGE_HISTORY_SYNC_PROMO})
+@EnableFeatures({
+    ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES,
+    SigninFeatures.ENABLE_SEAMLESS_SIGNIN
+})
 public class HistoryUiTest {
     private static final int PAGE_INCREMENT = 2;
     private static final String HISTORY_SEARCH_QUERY = "some page";
@@ -129,6 +138,7 @@ public class HistoryUiTest {
     private int mHeight;
     private OnBackPressedDispatcher mOnBackPressedDispatcher;
     private LifecycleOwner mLifecycleOwner;
+    private BackPressManager mBackPressManager;
 
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Profile mProfile;
@@ -183,6 +193,7 @@ public class HistoryUiTest {
                         });
         boolean isAppSpecificHistoryEnabled =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.APP_SPECIFIC_HISTORY);
+        mBackPressManager = new BackPressManager();
         mHistoryManager =
                 new HistoryManager(
                         mActivity,
@@ -248,7 +259,7 @@ public class HistoryUiTest {
         Assert.assertEquals(0, mAdapter.getItemCount());
         Assert.assertEquals(2, mHistoryProvider.markItemForRemovalCallback.getCallCount());
         Assert.assertEquals(1, mHistoryProvider.removeItemsCallback.getCallCount());
-        Assert.assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
+        assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
         Assert.assertEquals(View.GONE, mRecyclerView.getVisibility());
         Assert.assertEquals(View.VISIBLE, mHistoryManager.getEmptyViewForTests().getVisibility());
     }
@@ -331,8 +342,8 @@ public class HistoryUiTest {
                         .getContentManagerForTests()
                         .getOpenUrlIntent(mItem1.getUrl(), null, false);
         Assert.assertEquals(mItem1.getUrl().getSpec(), intent.getDataString());
-        Assert.assertFalse(intent.hasExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB));
-        Assert.assertFalse(intent.hasExtra(Browser.EXTRA_CREATE_NEW_TAB));
+        assertFalse(intent.hasExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB));
+        assertFalse(intent.hasExtra(Browser.EXTRA_CREATE_NEW_TAB));
         Assert.assertEquals(
                 PageTransition.AUTO_BOOKMARK,
                 intent.getIntExtra(IntentHandler.EXTRA_PAGE_TRANSITION_TYPE, -1));
@@ -360,7 +371,7 @@ public class HistoryUiTest {
         mAdapter.onHistoryDeleted();
 
         // The selection should be cleared and the items in the adapter should be reloaded.
-        Assert.assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
+        assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
         Assert.assertEquals(3, mAdapter.getItemCount());
     }
 
@@ -386,7 +397,7 @@ public class HistoryUiTest {
 
         // Turn selection off and check the remove button is visible.
         toggleItemSelection(2);
-        Assert.assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
+        assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
         Assert.assertEquals(View.VISIBLE, item.getRemoveButtonForTests().getVisibility());
 
         // Now check the behaviour for supervised users.
@@ -407,7 +418,7 @@ public class HistoryUiTest {
 
         // Make sure selection is no longer enabled.
         toggleItemSelection(2);
-        Assert.assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
+        assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
         Assert.assertEquals(View.VISIBLE, item.getRemoveButtonForTests().getVisibility());
 
         signOut();
@@ -424,7 +435,7 @@ public class HistoryUiTest {
         Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
 
         toggleItemSelection(2);
-        Assert.assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
+        assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
         Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
     }
 
@@ -443,7 +454,7 @@ public class HistoryUiTest {
         performMenuAction(R.id.search_menu_id);
 
         // The selection should be cleared when a search is started.
-        Assert.assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
+        assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
         Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
         Assert.assertEquals(View.VISIBLE, toolbarSearchView.getVisibility());
 
@@ -455,7 +466,7 @@ public class HistoryUiTest {
 
         // Clear the selection and assert that the search view is showing again.
         toggleItemSelection(2);
-        Assert.assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
+        assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
         Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
         Assert.assertEquals(View.VISIBLE, toolbarSearchView.getVisibility());
 
@@ -492,12 +503,12 @@ public class HistoryUiTest {
         performMenuAction(R.id.search_menu_id);
 
         // Verify the button starts disabled.
-        Assert.assertFalse(isAppFilterButtonEnabled());
+        assertFalse(isAppFilterButtonEnabled());
 
         // Verify the button remains disabled if the query app result is empty.
         var result = new ArrayList<String>();
         mAdapter.onQueryAppsComplete(result);
-        Assert.assertFalse(isAppFilterButtonEnabled());
+        assertFalse(isAppFilterButtonEnabled());
 
         // Verify the button becomes enabled if the app result is non-empty.
         final String app1 = "org.chromium.chrome.Ernie";
@@ -583,13 +594,13 @@ public class HistoryUiTest {
         when(mPackageManager.getApplicationInfo(eq(app2), anyInt()))
                 .thenThrow(NameNotFoundException.class);
         AppInfo appInfo2 = appInfoCache.get(app2);
-        Assert.assertFalse("Bad appId should return invalid AppInfo", appInfo2.isValid());
+        assertFalse("Bad appId should return invalid AppInfo", appInfo2.isValid());
         clearInvocations(mPackageManager);
 
         // Verify that a call with the same non-exisitent app ID won't invoke the system API again.
         appInfo2 = appInfoCache.get(app2);
         verify(mPackageManager, never()).getApplicationInfo(eq(app2), anyInt());
-        Assert.assertFalse("Bad appID should return invalid AppInfo again", appInfo2.isValid());
+        assertFalse("Bad appID should return invalid AppInfo again", appInfo2.isValid());
     }
 
     @Test
@@ -612,7 +623,7 @@ public class HistoryUiTest {
         // Press back press to unselect item and the search view is showing again.
         Assert.assertTrue(mHistoryManager.getHandleBackPressChangedSupplier().get());
         ThreadUtils.runOnUiThreadBlocking(mOnBackPressedDispatcher::onBackPressed);
-        Assert.assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
+        assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
         Assert.assertEquals(View.GONE, toolbarShadow.getVisibility());
         Assert.assertEquals(View.VISIBLE, toolbarSearchView.getVisibility());
 
@@ -630,7 +641,7 @@ public class HistoryUiTest {
         final MenuItem infoMenuItem = toolbar.getItemById(R.id.info_menu_id);
 
         // Not signed in
-        Assert.assertFalse(infoMenuItem.isVisible());
+        assertFalse(infoMenuItem.isVisible());
         DateDividedAdapter.ItemGroup headerGroup = mAdapter.getFirstGroupForTests();
         Assert.assertTrue(mAdapter.hasListHeader());
         Assert.assertEquals(1, headerGroup.size());
@@ -639,7 +650,7 @@ public class HistoryUiTest {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         setHasOtherFormsOfBrowsingData(false);
         toolbar.onSignInStateChange();
-        Assert.assertFalse(infoMenuItem.isVisible());
+        assertFalse(infoMenuItem.isVisible());
 
         // Signed in, synced, has other forms and has items
         // Privacy disclaimers should be shown by default
@@ -672,7 +683,7 @@ public class HistoryUiTest {
 
         // Hide disclaimers to simulate setup for https://crbug.com/1071468.
         mHistoryManager.onMenuItemClick(infoMenuItem);
-        Assert.assertFalse(
+        assertFalse(
                 "Privacy disclaimers should be hidden.",
                 mHistoryManager
                         .getContentManagerForTests()
@@ -681,7 +692,7 @@ public class HistoryUiTest {
         // Simulate call indicating there are not other forms of browsing data.
         setHasOtherFormsOfBrowsingData(false);
         layoutRecyclerView();
-        Assert.assertFalse("Info menu item should be hidden.", infoMenuItem.isVisible());
+        assertFalse("Info menu item should be hidden.", infoMenuItem.isVisible());
 
         // Simulate call indicating there are other forms of browsing data.
         setHasOtherFormsOfBrowsingData(true);
@@ -695,7 +706,7 @@ public class HistoryUiTest {
         final MenuItem infoMenuItem = toolbar.getItemById(R.id.info_menu_id);
 
         // Sign in and set has other forms of browsing data to true.
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         setHasOtherFormsOfBrowsingData(true);
 
         toolbar.onSignInStateChange();
@@ -712,9 +723,47 @@ public class HistoryUiTest {
 
         ShadowLooper.idleMainLooper();
         firstGroup = mAdapter.getFirstGroupForTests();
-        Assert.assertFalse(infoMenuItem.isVisible());
+        assertFalse(infoMenuItem.isVisible());
         // The first group should be the history item group from SetUp()
-        Assert.assertFalse(mAdapter.hasListHeader());
+        assertFalse(mAdapter.hasListHeader());
+        Assert.assertEquals(3, firstGroup.size());
+    }
+
+    @Test
+    @SmallTest
+    @Config(qualifiers = "sw600dp")
+    public void testInfoHeaderInSearchModeOnLFFDevice() {
+        DeviceInput.setSupportsKeyboardForTesting(true);
+        mHistoryManager =
+                new HistoryManager(
+                        mActivity,
+                        true,
+                        mSnackbarManager,
+                        mProfile,
+                        /* bottomSheetController= */ null,
+                        /* Supplier<Tab>= */ null,
+                        mHistoryProvider,
+                        new HistoryUmaRecorder(),
+                        /* clientPackageName= */ null,
+                        /* shouldShowClearData= */ true,
+                        /* launchedForApp= */ false,
+                        /* showAppFilter= */ true,
+                        /* openHistoryItemCallback= */ null,
+                        /* edgeToEdgePadAdjusterGenerator= */ null);
+        mContentManager = mHistoryManager.getContentManagerForTests();
+        mAdapter = mContentManager.getAdapter();
+        mRecyclerView = mContentManager.getRecyclerView();
+
+        final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
+
+        // Sign in and set has other forms of browsing data to true.
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        setHasOtherFormsOfBrowsingData(true);
+
+        ShadowLooper.idleMainLooper();
+        DateDividedAdapter.ItemGroup firstGroup = mAdapter.getFirstGroupForTests();
+        Assert.assertNull(toolbar.getItemById(R.id.search_menu_id));
+        Assert.assertTrue(mAdapter.hasListHeader());
         Assert.assertEquals(3, firstGroup.size());
     }
 
@@ -796,13 +845,13 @@ public class HistoryUiTest {
                         /* openHistoryItemCallback= */ null,
                         /* edgeToEdgePadAdjusterGenerator= */ null);
         InfoHeaderPref headerPref = mHistoryManager.getInfoHeaderPrefForTests();
-        Assert.assertFalse(headerPref.isVisible());
+        assertFalse(headerPref.isVisible());
         HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         MenuItem infoMenuItem = toolbar.getItemById(R.id.info_menu_id);
         mHistoryManager.onMenuItemClick(infoMenuItem);
 
         // Verify that the toggled state is not persisted to preference storage.
-        Assert.assertFalse(headerPref.isVisible());
+        assertFalse(headerPref.isVisible());
     }
 
     @Test
@@ -815,7 +864,7 @@ public class HistoryUiTest {
         mAdapter.setPrivacyDisclaimer();
 
         DateDividedAdapter.ItemGroup firstGroup = mAdapter.getFirstGroupForTests();
-        Assert.assertFalse(mAdapter.hasListHeader());
+        assertFalse(mAdapter.hasListHeader());
         Assert.assertEquals(3, firstGroup.size());
     }
 
@@ -842,7 +891,7 @@ public class HistoryUiTest {
         // Check that the copy link item is not visible when more than one item is selected.
         toggleItemSelection(2);
         toggleItemSelection(3);
-        Assert.assertFalse(toolbar.getItemById(R.id.selection_mode_copy_link).isVisible());
+        assertFalse(toolbar.getItemById(R.id.selection_mode_copy_link).isVisible());
     }
 
     @Test
@@ -923,6 +972,101 @@ public class HistoryUiTest {
                 itemCount + PAGE_INCREMENT);
     }
 
+    @Test
+    @SmallTest
+    public void testBackPress_clearsSelection() {
+        BackPressHandler testHandler =
+                new BackPressHandler() {
+                    @Override
+                    public @BackPressResult int handleBackPress() {
+                        return mHistoryManager.handleBackPress();
+                    }
+
+                    @Override
+                    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+                        return mHistoryManager.getHandleBackPressChangedSupplier();
+                    }
+                };
+        BackPressHelper.create(mLifecycleOwner, mOnBackPressedDispatcher, testHandler);
+
+        assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
+        toggleItemSelection(2);
+        assertTrue(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
+        assertTrue(mHistoryManager.getHandleBackPressChangedSupplier().get());
+
+        ThreadUtils.runOnUiThreadBlocking(mOnBackPressedDispatcher::onBackPressed);
+
+        assertFalse(mHistoryManager.getSelectionDelegateForTests().isSelectionEnabled());
+    }
+
+    @Test
+    @SmallTest
+    @Config(qualifiers = "sw600dp") // Simulate a tablet screen width.
+    public void testBackPress_onTabletInSearch_clearsText() {
+        // Arrange 1: Re-initialize HistoryManager in a tablet-with-keyboard configuration.
+        DeviceInput.setSupportsKeyboardForTesting(true);
+        HistoryManager historyManager =
+                new HistoryManager(
+                        mActivity,
+                        true,
+                        mSnackbarManager,
+                        mProfile,
+                        null,
+                        null,
+                        mHistoryProvider,
+                        new HistoryUmaRecorder(),
+                        null,
+                        true,
+                        false,
+                        false,
+                        null,
+                        null);
+
+        // Arrange 2: Create a test-only handler that delegates to THIS specific historyManager.
+        BackPressHandler testHandler =
+                new BackPressHandler() {
+                    @Override
+                    public @BackPressResult int handleBackPress() {
+                        return historyManager.handleBackPress();
+                    }
+
+                    @Override
+                    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+                        return historyManager.getHandleBackPressChangedSupplier();
+                    }
+                };
+        BackPressHelper.create(mLifecycleOwner, mOnBackPressedDispatcher, testHandler);
+
+        HistoryManagerToolbar toolbar = historyManager.getToolbarForTests();
+        EditText searchText = toolbar.getSearchTextForTest();
+        assertNotNull(searchText);
+
+        // Act 1 & Assert 1: Search mode is automatic. Type text and verify handler is enabled.
+        assertEquals(
+                "Search box should be visible on tablet startup.",
+                View.VISIBLE,
+                searchText.getVisibility());
+        ThreadUtils.runOnUiThreadBlocking(() -> searchText.setText("query"));
+        assertTrue(
+                "Handler should be enabled when search bar has text.",
+                historyManager.getHandleBackPressChangedSupplier().get());
+
+        // Act 2: Trigger a back press.
+        ThreadUtils.runOnUiThreadBlocking(mOnBackPressedDispatcher::onBackPressed);
+
+        // Assert 2: Text is cleared, view is visible, and handler is now disabled.
+        assertTrue(
+                "Search text should be empty after back press.",
+                searchText.getText().toString().isEmpty());
+        assertEquals(
+                "Search box should be visible after back press.",
+                View.VISIBLE,
+                searchText.getVisibility());
+        assertFalse(
+                "Handler should be disabled when search bar is empty.",
+                historyManager.getHandleBackPressChangedSupplier().get());
+    }
+
     private void toggleItemSelection(int position) {
         final SelectableItemView<HistoryItem> itemView = getItemView(position);
         itemView.performLongClick();
@@ -949,7 +1093,7 @@ public class HistoryUiTest {
     private void signInToSupervisedAccount() {
         // Sign in to account. Note that if supervised user is set before sign in, the supervised
         // user setting will be reset.
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         doReturn(true).when(mProfile).isChild();
         doReturn("ChildAccountSUID").when(mPrefService).getString(Pref.SUPERVISED_USER_ID);
         IncognitoUtils.setEnabledForTesting(false);

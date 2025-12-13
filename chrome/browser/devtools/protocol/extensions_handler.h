@@ -29,7 +29,7 @@ class ExtensionsHandler : public protocol::Extensions::Backend {
   void OnLoaded(std::unique_ptr<LoadUnpackedCallback> callback,
                 const extensions::Extension* extension,
                 const base::FilePath&,
-                const std::string&);
+                const std::u16string& err);
   void Uninstall(const protocol::String& id,
                  std::unique_ptr<UninstallCallback> callback) override;
   void OnUninstalled(std::unique_ptr<UninstallCallback> callback);

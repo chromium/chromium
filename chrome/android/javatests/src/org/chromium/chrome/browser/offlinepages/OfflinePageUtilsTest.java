@@ -236,7 +236,7 @@ public class OfflinePageUtilsTest {
         String testUrl = mTestServer.getURL(TEST_PAGE);
         mActivityTestRule.loadUrl(testUrl);
 
-        int tabId = mActivityTestRule.getActivity().getActivityTab().getId();
+        int tabId = mActivityTestRule.getActivityTab().getId();
 
         // Act.  This needs to be called from the UI thread.
         PostTask.runOrPostTask(

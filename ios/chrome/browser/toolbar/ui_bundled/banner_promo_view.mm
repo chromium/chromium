@@ -133,13 +133,13 @@ UIButton* CloseButton(void (^handler)(UIAction*)) {
       [_logoView.widthAnchor constraintEqualToAnchor:_logoView.heightAnchor],
     ]];
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     UIImage* logo = MakeSymbolMulticolor(
         CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kLogoPointSize));
 #else
     UIImage* logo =
         CustomSymbolWithPointSize(kChromeProductSymbol, kLogoPointSize);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     UIImageView* logoImageView = [[UIImageView alloc] initWithImage:logo];
     logoImageView.translatesAutoresizingMaskIntoConstraints = NO;
     [_logoView addSubview:logoImageView];
@@ -178,16 +178,14 @@ UIButton* CloseButton(void (^handler)(UIAction*)) {
                                         constant:kContentVerticalMargin],
     ]];
 
-    if (@available(iOS 17, *)) {
-      UITraitChangeHandler traitChangeHandler =
-          ^(id<UITraitEnvironment> traitEnvironment,
-            UITraitCollection* previousCollection) {
-            [weakSelf updateFontOnTraitChange:previousCollection];
-          };
-      [self
-          registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
-                      withHandler:traitChangeHandler];
-    }
+    UITraitChangeHandler traitChangeHandler =
+        ^(id<UITraitEnvironment> traitEnvironment,
+          UITraitCollection* previousCollection) {
+          [weakSelf updateFontOnTraitChange:previousCollection];
+        };
+    [self
+    registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
+                withHandler:traitChangeHandler];
 
     UITapGestureRecognizer* tap = [[UITapGestureRecognizer alloc]
         initWithTarget:self
@@ -198,17 +196,6 @@ UIButton* CloseButton(void (^handler)(UIAction*)) {
 }
 
 #pragma mark - UIView
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateFontOnTraitChange:previousTraitCollection];
-}
-#endif
 
 - (CGSize)intrinsicContentSize {
   // Promo should be the same height as the toolbar.

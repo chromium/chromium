@@ -156,7 +156,7 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
     }
 
     // If we've shifted our children we can't rely on their position.
-    if (physical_fragment.HasMovedChildrenInBlockDirection()) {
+    if (physical_fragment.HasMovedChildren()) {
       return nullptr;
     }
 
@@ -522,7 +522,7 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
     // We haven't actually performed simplified layout. Skip the checks for no
     // fragmentation, since it's okay to be fragmented in this case.
     cloned_cached_layout_result->CheckSameForSimplifiedLayout(
-        *cached_layout_result, /* check_same_block_size */ true,
+        *cached_layout_result,
         /* check_no_fragmentation*/ false);
 #endif
   }
@@ -530,7 +530,7 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
   // Optimization: TableConstraintSpaceData can be large, and it is shared
   // between all the rows in a table. Make constraint space table data for
   // reused row fragment be identical to the one used by other row fragments.
-  if (IsTableRow() && IsLayoutNGObject()) {
+  if (IsTableRow()) {
     const_cast<ConstraintSpace&>(
         cached_layout_result->GetConstraintSpaceForCaching())
         .ReplaceTableRowData(*new_space.TableData(), new_space.TableRowIndex());

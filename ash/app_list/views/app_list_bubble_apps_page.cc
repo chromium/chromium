@@ -37,6 +37,7 @@
 #include "ash/style/typography.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -49,9 +50,9 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_type.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/border.h"
@@ -378,7 +379,7 @@ void AppListBubbleAppsPage::PrepareForHideLauncher() {
 
 void AppListBubbleAppsPage::AnimateShowPage() {
   // If skipping animations, just update visibility.
-  if (ui::ScopedAnimationDurationScaleMode::is_zero()) {
+  if (gfx::ScopedAnimationDurationScaleMode::is_zero()) {
     SetVisible(true);
     return;
   }
@@ -437,7 +438,7 @@ void AppListBubbleAppsPage::AnimateShowPage() {
 
 void AppListBubbleAppsPage::AnimateHidePage() {
   // If skipping animations, just update visibility.
-  if (ui::ScopedAnimationDurationScaleMode::is_zero()) {
+  if (gfx::ScopedAnimationDurationScaleMode::is_zero()) {
     SetVisible(false);
     return;
   }

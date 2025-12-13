@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <set>
@@ -25,11 +24,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/process/process_handle.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "base/types/optional_ref.h"
 #include "base/unguessable_token.h"
@@ -55,8 +55,7 @@
 #include "content/renderer/content_security_policy_util.h"
 #include "content/renderer/local_resource_url_loader_factory.h"
 #include "content/renderer/media/media_factory.h"
-#include "ipc/ipc_message.h"
-#include "ipc/ipc_platform_file.h"
+#include "content/renderer/navigation_client.h"
 #include "media/base/routing_token_callback.h"
 #include "media/base/speech_recognition_client.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -147,7 +146,6 @@ class WebString;
 class WebURL;
 struct FramePolicy;
 struct JavaScriptFrameworkDetectionResult;
-struct SoftNavigationMetrics;
 }  // namespace blink
 
 namespace gfx {
@@ -172,6 +170,7 @@ class DocumentState;
 class MediaPermissionDispatcher;
 class MHTMLPartsGenerationDelegateImpl;
 class NavigationClient;
+class NavigationState;
 class RenderAccessibilityManager;
 class RenderFrameObserver;
 
@@ -554,11 +553,13 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::mojom::SameDocumentNavigationType same_document_navigation_type,
       bool is_client_redirect,
       const std::optional<blink::SameDocNavigationScreenshotDestinationToken>&
-          screenshot_destination) override;
+          screenshot_destination,
+      base::UnguessableToken same_document_metrics_token) override;
   void DidFailAsyncSameDocumentCommit() override;
   void WillFreezePage() override;
   void DidOpenDocumentInputStream(const blink::WebURL& url) override;
-  void DidSetPageLifecycleState(bool restoring_from_bfcache) override;
+  void DidSetPageLifecycleState(
+      blink::BFCacheStateChange bfcache_change) override;
   void NotifyCurrentHistoryItemChanged() override;
   void DidUpdateCurrentHistoryItem() override;
   base::UnguessableToken GetDevToolsFrameToken() override;
@@ -570,9 +571,8 @@ class CONTENT_EXPORT RenderFrameImpl
       const gfx::Rect& main_frame_intersection_rect) override;
   void OnMainFrameViewportRectangleChanged(
       const gfx::Rect& main_frame_viewport_rect) override;
-  void OnMainFrameImageAdRectangleChanged(
-      int element_id,
-      const gfx::Rect& image_ad_rect) override;
+  void OnMainFrameAdRectangleChanged(int element_id,
+                                     const gfx::Rect& ad_rect) override;
   void FinalizeRequest(blink::WebURLRequest& request) override;
   std::optional<blink::WebURL> WillSendRequest(
       const blink::WebURL& target,
@@ -599,7 +599,8 @@ class CONTENT_EXPORT RenderFrameImpl
       const blink::SubresourceLoadMetrics& subresource_load_metrics) override;
   void DidObserveNewFeatureUsage(
       const blink::UseCounterFeature& feature) override;
-  void DidObserveSoftNavigation(blink::SoftNavigationMetrics metrics) override;
+  void DidObserveSoftNavigation(
+      blink::SoftNavigationMetricsForReporting metrics) override;
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
   void DidCreateScriptContext(v8::Local<v8::Context> context,
                               int world_id) override;
@@ -642,6 +643,8 @@ class CONTENT_EXPORT RenderFrameImpl
       override;
 
   base::ScopedClosureRunner CreateScopedClientNavigationThrottler() override;
+
+  bool IsForInitialWebUI() const override;
 
   // Dispatches the current state of selection on the webpage to the browser if
   // it has changed or if the forced flag is passed. The forced flag is used
@@ -777,6 +780,22 @@ class CONTENT_EXPORT RenderFrameImpl
   blink::ChildURLLoaderFactoryBundle* GetLoaderFactoryBundle() override;
 
   void SetNewFeatureUsageCallback(NewFeatureUsageCallback callback) override;
+  void SetSubresourceLoadCallback(SubresourceLoadCallback callback) override;
+  void SetLoadFromMemoryCacheCallback(
+      LoadFromMemoryCacheCallback callback) override;
+  void SetDidStartResponseCallback(DidStartResponseCallback callback) override;
+  void SetDidCompleteResponseCallback(
+      DidCompleteResponseCallback callback) override;
+  void SetDidCancelResponseCallback(
+      DidCancelResponseCallback callback) override;
+
+  std::unique_ptr<NavigationClient> TakeNavigationClient() {
+    return std::move(navigation_client_impl_);
+  }
+
+  void set_navigation_client_impl(std::unique_ptr<NavigationClient> client) {
+    navigation_client_impl_ = std::move(client);
+  }
 
  protected:
   explicit RenderFrameImpl(CreateParams params);
@@ -938,21 +957,8 @@ class CONTENT_EXPORT RenderFrameImpl
 
   void InitializeMediaStreamDeviceObserver();
 
-  // Called when the RenderFrameImpl is created. This either:
-  // - creates and initializes the WebFrameWidget with a new compositor, i.e.
-  //   the "typical" case or
-  // - stashes the creation params for later use. Experimental mode used only
-  //   for local -> local RenderFrame swaps. Widget creation will be deferred
-  //   until commit; when created, the widget will reuse the previous
-  //   RenderFrame's compositor.
-  void MaybeInitializeWidget(mojom::CreateFrameWidgetParamsPtr widget_params);
-
-  // Called during a LocalFrame<->LocalFrame swap. This creates and initializes
-  // the WebFrameWidget if it was deferred when the RenderFrameImpl was created,
-  // see `MaybeInitializeWidget()` above.
-  void InitializeWidgetAtSwap(blink::WebLocalFrame& previous_frame);
-
-  // Sends a FrameHostMsg_BeginNavigation to the browser
+  // Sends a `BeginNavigation()` mojo IPC via the mojom::FrameHost interface to
+  // the browser.
   void BeginNavigationInternal(std::unique_ptr<blink::WebNavigationInfo> info,
                                bool is_history_navigation_in_new_child_frame,
                                base::TimeTicks renderer_before_unload_start,
@@ -1047,6 +1053,7 @@ class CONTENT_EXPORT RenderFrameImpl
   mojom::DidCommitProvisionalLoadParamsPtr MakeDidCommitProvisionalLoadParams(
       blink::WebHistoryCommitType commit_type,
       ui::PageTransition transition,
+      NavigationState* navigation_state,
       const network::ParsedPermissionsPolicy& permissions_policy_header,
       const blink::DocumentPolicyFeatureState& document_policy_header,
       const std::optional<base::UnguessableToken>& embedding_token,
@@ -1056,7 +1063,8 @@ class CONTENT_EXPORT RenderFrameImpl
   // This could result either in the creation of a new entry or a modification
   // of the current entry or nothing. If a new entry was created,
   // returns true, false otherwise.
-  void UpdateNavigationHistory(blink::WebHistoryCommitType commit_type);
+  void UpdateNavigationHistory(blink::WebHistoryCommitType commit_type,
+                               NavigationState* navigation_state);
 
   // Notify render_view_ observers that a commit happened.
   void NotifyObserversOfNavigationCommit(ui::PageTransition transition);
@@ -1064,7 +1072,8 @@ class CONTENT_EXPORT RenderFrameImpl
   // Updates the internal state following a navigation commit. This should be
   // called before notifying the FrameHost of the commit.
   void UpdateStateForCommit(blink::WebHistoryCommitType commit_type,
-                            ui::PageTransition transition);
+                            ui::PageTransition transition,
+                            NavigationState* navigation_state);
 
   // Internal function used by same document navigation as well as cross
   // document navigation that updates the state of the RenderFrameImpl and sends
@@ -1072,6 +1081,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void DidCommitNavigationInternal(
       blink::WebHistoryCommitType commit_type,
       ui::PageTransition transition,
+      NavigationState* navigation_state,
       const network::ParsedPermissionsPolicy& permissions_policy_header,
       const blink::DocumentPolicyFeatureState& document_policy_header,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params,
@@ -1250,6 +1260,17 @@ class CONTENT_EXPORT RenderFrameImpl
   // The callback to send the feature usage to the browser process through
   // PageLoadMetrics.
   NewFeatureUsageCallback new_feature_usage_callback_;
+  // The callback to send the loaded subresource info to the browser process
+  // through PageLoadMetrics.
+  SubresourceLoadCallback subresource_load_callback_;
+  // The callback to send the loaded resource info from memory cache to the
+  // browser process through PageLoadMetrics.
+  LoadFromMemoryCacheCallback load_from_memory_cache_callback_;
+  // The callback to handle response. These are used in `DidStartResponse()`,
+  // `DidCompleteResponse()`, and `DidCancelResponse()`, respectively.
+  DidStartResponseCallback did_start_response_callback_;
+  DidCompleteResponseCallback did_complete_response_callback_;
+  DidCancelResponseCallback did_cancel_response_callback_;
 
   // The text selection the last time DidChangeSelection got called. May contain
   // additional characters before and after the selected text, for IMEs. The
@@ -1566,29 +1587,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // contents) should be sent to the browser immediately. This is normally
   // false, but set to true by some tests.
   bool send_content_state_immediately_ = false;
-
-  // The RenderFrameImpl can be created in 2 modes.
-  //
-  // 1. The associated WebFrameWidget and its compositor is initialized at
-  //    creation time. This is default mode.
-  //
-  // 2. The associated WebFrameWidget and its compositor is initialized at
-  //    commit time. This is done for local RF->local RF navigations to reuse
-  //    the compositor from the previous RFH. This is purely a performance
-  //    optimization.
-  //
-  // When in mode 2, the parameters to create the WebFrameWidget (which are
-  // part of the IPC that created this frame) are cached until commit to lazily
-  // create the WebFrameWidget.
-  mojom::CreateFrameWidgetParamsPtr widget_params_for_lazy_widget_creation_;
-
-  // Set when this RenderFrame is being swapped for
-  // `provisional_frame_for_local_root_swap_`.
-  base::WeakPtr<RenderFrameImpl> provisional_frame_for_local_root_swap_ =
-      nullptr;
-
-  // Set if this RenderFrameImpl is for a main frame which is not top-level.
-  const bool is_for_nested_main_frame_;
 
   // Used by DevTools to defer async client navigations for the duration of
   // handling a CDP command.

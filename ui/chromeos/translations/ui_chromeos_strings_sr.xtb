@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Директна веза са интернетом</translation>
 <translation id="1272293450992660632">PIN-ови се не подударају.</translation>
+<translation id="1279040297980392566">Чека се да се скенирање заврши, пробајте поново касније</translation>
 <translation id="1280820357415527819">Траже се мобилне мреже</translation>
 <translation id="1293556467332435079">Фајлови</translation>
 <translation id="1297922636971898492">Google диск тренутно није доступан. Отпремање ће се аутоматски поново покренути када Google диск постане доступан.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">Изабрана је 1 датотека</translation>
 <translation id="3817579325494460411">Није наведено</translation>
 <translation id="3819448694985509187">Нетачан PIN. Имате још 1 покушај.</translation>
-<translation id="3822559385185038546">Администратор је наметнуо овај прокси</translation>
 <translation id="3830674330436234648">Репродукција није доступна</translation>
 <translation id="383652340667548381">српски</translation>
 <translation id="3839045880592694915">Мобилни оператер није дозволио да се модем повеже. Више детаља потражите од мобилног оператера.</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Још опција</translation>
 <translation id="5602622065581044566">бугарски са фонетском тастатуром</translation>
 <translation id="5605830556594064952">америчка Дворак</translation>
+<translation id="560739212255190568">Администратор је подесио правила замене проксија поред примењивања следећег проксија</translation>
 <translation id="5618330573454123917">Овај фајл је осмишљен за рачунар који користи Macintosh софтвер. Није компатибилан са вашим уређајем, који користи Chrome ОС. <ph name="BEGIN_LINK_HELP" />Сазнајте више<ph name="END_LINK_HELP" /> о отварању фајлова у Chrome ОС-у.</translation>
 <translation id="5625294776298156701">тамилски са тастатуром Tamil99</translation>
 <translation id="5633226425545095130">Премештањем ове ставке делите је са свима који могу да виде дељени фолдер <ph name="DESTINATION_NAME" />.</translation>
@@ -787,7 +788,7 @@
 <translation id="7075931588889865715">тајски са тастатуром TIS 820-2531</translation>
 <translation id="708278670402572152">Прекините везу да бисте омогућили скенирање</translation>
 <translation id="7086590977277044826">тамилски са индијском тастатуром</translation>
-<translation id="7088615885725309056">Старије</translation>
+<translation id="7088615885725309056">Старија</translation>
 <translation id="7103992300314999525">македонски</translation>
 <translation id="7104338189998813914">Дошло је до проблема при приступу OneDrive налогу</translation>
 <translation id="7106346894903675391">Купи још меморијског простора...</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, детаљи</translation>
 <translation id="8545476925160229291">енглески (САД)</translation>
 <translation id="854655314928502177">URL за аутоматско откривање веб-проксија:</translation>
+<translation id="8547747809824590510">Администратор је подесио правила за замену проксија</translation>
 <translation id="8549186985808798022">италијански</translation>
 <translation id="8551494947769799688">летонски</translation>
 <translation id="8560515948038859357">кантонски</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Датотека „<ph name="FILE_NAME" />“ већ постоји. Одаберите други назив.</translation>
 <translation id="9046895021617826162">Повезивање није успело</translation>
 <translation id="9065512565307033593">Ако верификација не успе, приступ мрежи ће бити онемогућен.</translation>
+<translation id="9079844694307518094">Администратор примењује следећи прокси</translation>
 <translation id="908378762078012445">руски са фонетском тастатуром AATSEEL</translation>
 <translation id="9086302186042011942">Синхронизовање</translation>
 <translation id="9099674669267916096">Број страница</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">Инсталација је започета.</translation>
 <translation id="9219103736887031265">Слике</translation>
 <translation id="9219908252191632183">Месечева површина</translation>
+<translation id="931652069802536959">Мрежа је блокирана смерницама</translation>
 <translation id="938470336146445890">Инсталирајте кориснички сертификат.</translation>
 <translation id="939736085109172342">Нови фолдер</translation>
 <translation id="943972244133411984">Изменио/ла</translation>

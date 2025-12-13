@@ -49,9 +49,7 @@ class CORE_EXPORT ViewTransitionTypeSet
  protected:
   void AddInternal(const String&);
   // blink::ValueSyncIterable override:
-  IterationSource* CreateIterationSource(
-      ScriptState* script_state,
-      ExceptionState& exception_state) override;
+  IterationSource* CreateIterationSource(ScriptState* script_state) override;
 
   void InvalidateStyle();
 

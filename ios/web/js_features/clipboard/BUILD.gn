@@ -1,0 +1,68 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/config.gni")
+import("//ios/web/public/js_messaging/compile_ts.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
+source_set("clipboard") {
+  deps = [
+    ":clipboard_js",
+    ":paste_handler_js",
+    "//base",
+    "//ios/components/enterprise/data_controls:metrics",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+
+  sources = [
+    "clipboard_constants.h",
+    "clipboard_java_script_feature.h",
+    "clipboard_java_script_feature.mm",
+  ]
+}
+
+compile_ts("clipboard_util_js") {
+  sources = [ "resources/clipboard_util.ts" ]
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
+}
+
+optimize_ts("clipboard_js") {
+  visibility = [ ":clipboard" ]
+  sources = [ "resources/clipboard.ts" ]
+  deps = [
+    ":clipboard_util_js",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
+}
+
+optimize_ts("paste_handler_js") {
+  visibility = [ ":clipboard" ]
+  sources = [ "resources/paste_handler.ts" ]
+  deps = [ ":clipboard_util_js" ]
+}
+
+source_set("unittests") {
+  testonly = true
+  deps = [
+    ":clipboard",
+    "//base/test:test_support",
+    "//ios/components/enterprise/data_controls:metrics",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/js_messaging:web_view_js_utils",
+    "//ios/web/public/test",
+    "//ios/web/public/test:javascript_test",
+    "//ios/web/public/test:test_fixture",
+    "//ios/web/public/test:util",
+    "//ios/web/public/test/fakes",
+    "//ios/web/test/fakes",
+    "//testing/gtest",
+  ]
+
+  sources = [
+    "clipboard_java_script_feature_unittest.mm",
+    "clipboard_js_unittest.mm",
+  ]
+}

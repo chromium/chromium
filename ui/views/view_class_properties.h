@@ -21,6 +21,7 @@ namespace views {
 class BoxLayoutFlexSpecification;
 class DialogDelegate;
 class FlexSpecification;
+class FocusManager;
 class HighlightPathGenerator;
 class Widget;
 
@@ -98,6 +99,11 @@ VIEWS_EXPORT extern const ui::ClassProperty<bool>* const
 // Tag for the view associated with ui::ElementTracker.
 VIEWS_EXPORT extern const ui::ClassProperty<ui::ElementIdentifier>* const
     kElementIdentifierKey;
+
+// A property to store a FocusManager* that should be used for a view that is
+// not (yet) attached to a widget. This makes View::GetFocusManager() work.
+VIEWS_EXPORT extern const ui::ClassProperty<FocusManager*>* const
+    kDetachedViewFocusManagerKey;
 
 }  // namespace views
 

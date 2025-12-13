@@ -7,7 +7,7 @@
 
 #include "base/win/windows_types.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/views_export.h"
 
 class SkPath;
@@ -105,6 +105,10 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
   virtual void ResetWindowControls() = 0;
 
   virtual gfx::NativeViewAccessible GetNativeViewAccessible() = 0;
+
+  // Returns the NativeViewAccessible for the parent Widget's RootView if the
+  // parent is a Views-owned Widget; otherwise nullptr.
+  virtual gfx::NativeViewAccessible GetParentNativeViewAccessible() = 0;
 
   // TODO(beng): Investigate migrating these methods to On* prefixes once
   // HWNDMessageHandler is the WindowImpl.

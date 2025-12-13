@@ -11,8 +11,8 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/extensions/install_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "extensions/browser/install_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 

@@ -27,10 +27,12 @@
 #include "components/history/core/browser/top_sites.h"
 #include "components/history/core/browser/top_sites_observer.h"
 #include "components/ntp_tiles/custom_links_manager.h"
+#include "components/ntp_tiles/enterprise/enterprise_shortcuts_manager.h"
 #include "components/ntp_tiles/ntp_tile.h"
 #include "components/ntp_tiles/popular_sites.h"
 #include "components/ntp_tiles/section_type.h"
 #include "components/ntp_tiles/tile_source.h"
+#include "components/ntp_tiles/tile_type.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "components/webapps/common/constants.h"
 #include "url/gurl.h"
@@ -125,8 +127,8 @@ class MostVisitedSites :
   // Construct a MostVisitedSites instance.
   //
   // |prefs| are required and may not be null. |top_sites|,
-  // |popular_sites|, |custom_links|, |identity_manager|,
-  // |supervised_user_service| and |homepage_client| are
+  // |popular_sites|, |custom_links|, |enterprise_shortcuts|,
+  // |identity_manager|, |supervised_user_service| and |homepage_client| are
   //  optional and if null, the associated features will be disabled.
   MostVisitedSites(
       PrefService* prefs,
@@ -135,9 +137,9 @@ class MostVisitedSites :
       scoped_refptr<history::TopSites> top_sites,
       std::unique_ptr<PopularSites> popular_sites,
       std::unique_ptr<CustomLinksManager> custom_links,
+      std::unique_ptr<EnterpriseShortcutsManager> enterprise_shortcuts,
       std::unique_ptr<IconCacher> icon_cacher,
-      bool is_default_chrome_app_migrated,
-      bool is_custom_links_mixable);
+      bool is_default_chrome_app_migrated);
 
   MostVisitedSites(const MostVisitedSites&) = delete;
   MostVisitedSites& operator=(const MostVisitedSites&) = delete;
@@ -165,6 +167,19 @@ class MostVisitedSites :
   // visited sites to return.
   virtual void AddMostVisitedURLsObserver(Observer* observer,
                                           size_t max_num_sites);
+
+  // Adds the observer and immediately fetches the current suggestions, but with
+  // a maximum number of non-custom sites. If |max_num_non_custom_sites| is
+  // unset, there is no limit to the number of non custom sites to be returned
+  // as long as the total number of sites does not exceed |max_num_sites|.
+  //
+  // Note: like |max_num_sites|, only observers that require the same
+  // |max_num_non_custom_sites| could observe the same MostVisitedSites
+  // instance. Otherwise, a new Instance should be created for the observer.
+  void AddMostVisitedURLsObserver(
+      Observer* observer,
+      size_t max_num_sites,
+      std::optional<size_t> max_num_non_custom_sites);
 
   // Removes the observer.
   virtual void RemoveMostVisitedURLsObserver(Observer* observer);
@@ -194,18 +209,48 @@ class MostVisitedSites :
 
   // Returns true if custom links has been initialized and not disabled, false
   // otherwise.
-  bool IsCustomLinksInitialized();
+  bool IsCustomLinksInitialized() const;
 
-  // Returns whether custom links should be the only data source.
-  bool IsExclusivelyCustomLinks();
+  // TODO(crbug.com/454775651): Look into renaming this to a more accurate
+  // description like `AssignTileTypesEnablement()`.
+  // Options for MostVisitedSites::EnableTileTypes. By default, all tile types
+  // are disabled.
+  struct EnableTileTypesOptions {
+    EnableTileTypesOptions& with_top_sites(bool b) {
+      enable_top_sites = b;
+      return *this;
+    }
 
-  // Enables or disables custom links, but does not (un)initialize them. Called
-  // when the user switches between custom links and Most Visited sites on the
-  // 1P Desktop NTP.
-  void EnableCustomLinks(bool enable);
+    EnableTileTypesOptions& with_custom_links(bool b) {
+      enable_custom_links = b;
+      return *this;
+    }
+
+    EnableTileTypesOptions& with_enterprise_shortcuts(bool b) {
+      enable_enterprise_shortcuts = b;
+      return *this;
+    }
+
+    bool operator==(const EnableTileTypesOptions&) const = default;
+
+    bool enable_top_sites = false;
+    bool enable_custom_links = false;
+    bool enable_enterprise_shortcuts = false;
+  };
+
+  // Sets the type of shortcuts to show, but does not (un)initialize them.
+  // Called when the user switches between custom links and Most Visited sites
+  // on the 1P Desktop NTP.
+  void EnableTileTypes(const EnableTileTypesOptions& options);
+
+  // Returns whether top sites are enabled.
+  bool IsTopSitesEnabled() const;
 
   // Returns whether custom links are enabled.
   bool IsCustomLinksEnabled() const;
+
+  // Returns whether managed shortcuts are enabled.
+  bool IsEnterpriseShortcutsEnabled() const;
 
   // Sets the visibility of the NTP tiles.
   void SetShortcutsVisible(bool visible);
@@ -255,6 +300,29 @@ class MostVisitedSites :
   void UndoCustomLinkAction();
 
   size_t GetCustomLinkNum();
+
+  // Restores the enterprise shortcuts to the state defined by policy.
+  void RestoreEnterpriseShortcutsDefaults();
+
+  // Updates the title of the enterprise shortcut specified by |url|. Returns
+  // false and does nothing if enterprise shortcuts are not enabled or |url|
+  // does not exist.
+  bool UpdateEnterpriseShortcut(const GURL& url, const std::u16string& title);
+
+  // Moves the enterprise shortcut specified by |url| to the index |new_pos|.
+  // Returns false and does nothing if enterprise shortcuts are not enabled,
+  // |url| does not exist, or |new_pos| is invalid.
+  bool ReorderEnterpriseShortcut(const GURL& url, size_t new_pos);
+
+  // Hides the enterprise shortcut with the specified |url|. Returns false and
+  // does nothing if enterprise shortcuts are not enabled or |url| does not
+  // exist.
+  bool DeleteEnterpriseShortcut(const GURL& url);
+
+  // Restores the previous state of enterprise shortcuts before the last action
+  // that modified them. Returns false and does nothing if enterprise shortcuts
+  // are not enabled or there is no previous state to restore.
+  bool UndoEnterpriseShortcutAction();
 
   void AddOrRemoveBlockedUrl(const GURL& url, bool add_url);
   void ClearBlockedUrls();
@@ -312,6 +380,9 @@ class MostVisitedSites :
   // Initialize the query to Top Sites.
   void InitiateTopSitesQuery(bool is_user_triggered);
 
+  // Returns enterprise shortcut tiles.
+  NTPTilesVector GetEnterpriseShortcutTiles();
+
   // Callback for when data is available from TopSites.
   void OnMostVisitedURLsAvailable(
       bool is_user_triggered,
@@ -339,8 +410,18 @@ class MostVisitedSites :
   // action was successful.
   bool ApplyCustomLinksAction(base::OnceCallback<bool()> custom_links_action);
 
+  // Ensures |enterprise_shortcuts_manager_| exists and
+  // |is_enterprise_shortcuts_enabled_| is true, then runs
+  // |enterprise_shortcuts_action|. Does nothing if action fails. Returns
+  // whether the action was successful.
+  bool ApplyEnterpriseShortcutsAction(
+      base::OnceCallback<bool()> enterprise_shortcuts_action);
+
   // Callback for when an update is reported by CustomLinksManager.
   void OnCustomLinksChanged();
+
+  // Callback for when an update is reported by EnterpriseShortcutsManager.
+  void OnEnterpriseShortcutsChanged();
 
   // Clears |custom_links_cache_|, then if custom links are initialized,
   // populate it with |custom_links_manager_->GetLinks()| data up to
@@ -363,6 +444,10 @@ class MostVisitedSites :
   // Creates a new tiles vector consisting of |custom_links_cache_| combined
   // with |tiles|.
   NTPTilesVector ImposeCustomLinks(NTPTilesVector tiles);
+
+  // Creates a new tiles vector consisting of GetEnterpriseShortcutTiles()
+  // combined with |tiles|.
+  NTPTilesVector ImposeEnterpriseShortcuts(NTPTilesVector tiles);
 
   // Saves the new tiles and notifies the observer if the tiles were actually
   // changed.
@@ -393,6 +478,9 @@ class MostVisitedSites :
   // Returns true if there is a valid homepage that can be pinned as tile.
   bool ShouldAddHomeTile() const;
 
+  // Returns true if top sites should be queried.
+  bool ShouldQueryTopSites() const;
+
   // history::TopSitesObserver implementation.
   void TopSitesLoaded(history::TopSites* top_sites) override;
   void TopSitesChanged(history::TopSites* top_sites,
@@ -410,28 +498,34 @@ class MostVisitedSites :
   scoped_refptr<history::TopSites> top_sites_;
   std::unique_ptr<PopularSites> const popular_sites_;
   std::unique_ptr<CustomLinksManager> const custom_links_manager_;
+  std::unique_ptr<EnterpriseShortcutsManager> const
+      enterprise_shortcuts_manager_;
   std::unique_ptr<IconCacher> const icon_cacher_;
   std::unique_ptr<HomepageClient> homepage_client_;
   bool is_default_chrome_app_migrated_;
-  bool is_custom_links_mixable_;
 
   base::ObserverList<Observer> observers_;
 
   // The maximum number of most visited sites to return.
   // Do not use directly. Use GetMaxNumSites() instead.
-  size_t max_num_sites_;
+  size_t max_num_sites_ = 0u;
+
+  // The maximum number of non-custom sites. Optional.
+  std::optional<size_t> max_num_non_custom_sites_ = std::nullopt;
 
   // Number of actions after custom link initialization. Set to -1 and not
   // incremented if custom links was not initialized during this session.
   int custom_links_action_count_ = -1;
 
-  bool is_custom_links_enabled_ = true;
+  EnableTileTypesOptions enabled_tile_types_ =
+      EnableTileTypesOptions().with_custom_links(true);
   bool is_shortcuts_visible_ = true;
 
   base::ScopedObservation<history::TopSites, history::TopSitesObserver>
       top_sites_observation_{this};
 
   base::CallbackListSubscription custom_links_subscription_;
+  base::CallbackListSubscription enterprise_shortcuts_subscription_;
 
   // Cached custom links data that also supports URL existence query.
   CustomLinksCache custom_links_cache_;

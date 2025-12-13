@@ -54,6 +54,13 @@ class WebAppUninstallCommandTest : public WebAppTest {
 
     file_utils_wrapper_ =
         base::MakeRefCounted<testing::StrictMock<MockFileUtilsWrapper>>();
+    // The log directory may or may not be attempted to be deleted during the
+    // test run.
+    EXPECT_CALL(*file_utils_wrapper_,
+                DeleteFileRecursively(
+                    GetWebAppsRootDirectory(profile()).AppendASCII("Logs")))
+        .Times(testing::AnyNumber())
+        .WillRepeatedly(testing::Return(true));
     fake_provider().SetFileUtils(file_utils_wrapper_);
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
@@ -65,7 +72,7 @@ class WebAppUninstallCommandTest : public WebAppTest {
 
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
 
-  scoped_refptr<testing::StrictMock<MockFileUtilsWrapper>> file_utils_wrapper_;
+  scoped_refptr<MockFileUtilsWrapper> file_utils_wrapper_;
 };
 
 TEST_F(WebAppUninstallCommandTest, SimpleUninstallInternal) {

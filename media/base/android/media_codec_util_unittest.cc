@@ -3,14 +3,11 @@
 // found in the LICENSE file.
 
 #include "media/base/android/media_codec_util.h"
-#include "base/android/build_info.h"
+
+#include "base/android/android_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
-
-// These will come from mockable BuildInfo, once it exists.
-using base::android::SDK_VERSION_NOUGAT;
-using base::android::SDK_VERSION_NOUGAT_MR1;
 
 class MediaCodecUtilTest : public testing::Test {
  public:
@@ -33,18 +30,22 @@ TEST_F(MediaCodecUtilTest, GuessCodedSizeAlignment) {
   const gfx::Size kWeirdSoftwareAlignmentSv2(128, 2);
   EXPECT_EQ(kWeirdSoftwareAlignmentSv2,
             MediaCodecUtil::LookupCodedSizeAlignment(
-                "c2.android.avc.decoder", base::android::SDK_VERSION_Sv2));
+                "c2.android.avc.decoder",
+                base::android::android_info::SDK_VERSION_Sv2));
   EXPECT_EQ(kWeirdSoftwareAlignmentSv2,
             MediaCodecUtil::LookupCodedSizeAlignment(
-                "c2.android.hevc.decoder", base::android::SDK_VERSION_Sv2));
+                "c2.android.hevc.decoder",
+                base::android::android_info::SDK_VERSION_Sv2));
 
   const gfx::Size kWeirdSoftwareAlignmentNougat(64, 2);
   EXPECT_EQ(kWeirdSoftwareAlignmentNougat,
             MediaCodecUtil::LookupCodedSizeAlignment(
-                "c2.android.avc.decoder", base::android::SDK_VERSION_NOUGAT));
+                "c2.android.avc.decoder",
+                base::android::android_info::SDK_VERSION_Q));
   EXPECT_EQ(kWeirdSoftwareAlignmentNougat,
             MediaCodecUtil::LookupCodedSizeAlignment(
-                "c2.android.hevc.decoder", base::android::SDK_VERSION_NOUGAT));
+                "c2.android.hevc.decoder",
+                base::android::android_info::SDK_VERSION_Q));
 }
 
 }  // namespace media

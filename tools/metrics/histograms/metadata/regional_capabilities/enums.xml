@@ -25,6 +25,21 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(ActiveRegionalProgram) -->
+
+<enum name="ActiveRegionalProgram">
+  <int value="0" label="Unknown">This value is not emitted by the client.</int>
+  <int value="1" label="Default"/>
+  <int value="2" label="Mixed">
+    There is more than one non-Default program (eg. Waffle and Taiyaki). If
+    there is one non-Default program then the value of that program is emitted.
+  </int>
+  <int value="3" label="Waffle"/>
+  <int value="4" label="Taiyaki"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_metrics.h:ActiveRegionalProgram) -->
+
 <!-- LINT.IfChange(CountryMatchingStatus) -->
 
 <enum name="CountryMatchingStatus">
@@ -50,6 +65,44 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_metrics.h:LoadedCountrySource) -->
+
+<!-- LINT.IfChange(RegionalCapabilitiesFunnelStage) -->
+
+<enum name="RegionalCapabilitiesFunnelStage">
+  <int value="0" label="NotInRegionalScope"/>
+  <int value="1" label="AlreadyCompleted"/>
+  <int value="2" label="Eligible"/>
+  <int value="3" label="NotEligible"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_metrics.h:FunnelStage) -->
+
+<!-- LINT.IfChange(RegionalProgramAndLocationMatch) -->
+
+<enum name="RegionalProgramAndLocationMatch">
+  <int value="0" label="SameAsProfileCountry"/>
+  <int value="1" label="SameRegionAsProgram"/>
+  <int value="2" label="NoMatch"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_metrics.h:ProgramAndLocationMatch) -->
+
+<!-- LINT.IfChange(RegionalProgramSpecificExclusion) -->
+
+<enum name="RegionalProgramSpecificExclusion">
+  <int value="0" label="NotRecordingChoiceFromSettings">
+    User choices made from the Chrome settings that will not result in a search
+    engine choice being seen as valid choice. Recorded at the moment of the
+    choice.
+  </int>
+  <int value="1" label="NotPreservingChoiceFromOtherProgram">
+    Pre-existing user choices made in the context of a program that is not the
+    currently active one, and that are not being seen as valid choices for this
+    active program. Recorded on each evaluation of the validity of the choice.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/regional_capabilities/regional_capabilities_metrics.h:ProgramSpecificExclusion) -->
 
 </enums>
 

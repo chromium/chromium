@@ -14,12 +14,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/calendar/calendar_keyed_service.h"
-#include "chrome/browser/ash/calendar/calendar_keyed_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "components/policy/content/policy_blocklist_service.h"
-#include "components/policy/core/browser/url_blocklist_manager.h"
+#include "components/policy/core/browser/url_list/policy_blocklist_service.h"
+#include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -33,16 +30,23 @@ constexpr char kCalendarUrl[] = "https://calendar.google.com/";
 
 }  // namespace
 
-CalendarClientImpl::CalendarClientImpl(Profile* profile) : profile_(profile) {}
+CalendarClientImpl::CalendarClientImpl(
+    PrefService* pref_service,
+    apps::AppServiceProxy* app_service_proxy,
+    PolicyBlocklistService* policy_blocklist_service,
+    CalendarKeyedService* calendar_keyed_service)
+    : pref_service_(pref_service),
+      app_service_proxy_(app_service_proxy),
+      policy_blocklist_service_(policy_blocklist_service),
+      calendar_keyed_service_(calendar_keyed_service) {}
 
 CalendarClientImpl::~CalendarClientImpl() = default;
 
 bool CalendarClientImpl::IsDisabledByAdmin() const {
   // 1) Check the Calendar pref.
-  const auto* const pref_service = profile_->GetPrefs();
-  if (!pref_service ||
-      !pref_service->GetBoolean(prefs::kCalendarIntegrationEnabled) ||
-      !base::Contains(pref_service->GetList(
+  if (!pref_service_ ||
+      !pref_service_->GetBoolean(prefs::kCalendarIntegrationEnabled) ||
+      !base::Contains(pref_service_->GetList(
                           prefs::kContextualGoogleIntegrationsConfiguration),
                       prefs::kGoogleCalendarIntegrationName)) {
     RecordContextualGoogleIntegrationStatus(
@@ -52,17 +56,15 @@ bool CalendarClientImpl::IsDisabledByAdmin() const {
   }
 
   // 2) Check if the Calendar app is disabled by policy.
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
-          profile_)) {
+  if (!app_service_proxy_) {
     return true;
   }
   auto calendar_app_readiness = apps::Readiness::kUnknown;
-  apps::AppServiceProxyFactory::GetForProfile(profile_)
-      ->AppRegistryCache()
-      .ForOneApp(ash::kGoogleCalendarAppId,
-                 [&calendar_app_readiness](const apps::AppUpdate& update) {
-                   calendar_app_readiness = update.Readiness();
-                 });
+  app_service_proxy_->AppRegistryCache().ForOneApp(
+      ash::kGoogleCalendarAppId,
+      [&calendar_app_readiness](const apps::AppUpdate& update) {
+        calendar_app_readiness = update.Readiness();
+      });
   if (calendar_app_readiness == apps::Readiness::kDisabledByPolicy) {
     RecordContextualGoogleIntegrationStatus(
         prefs::kGoogleCalendarIntegrationName,
@@ -71,10 +73,8 @@ bool CalendarClientImpl::IsDisabledByAdmin() const {
   }
 
   // 3) Check if the Calendar URL is blocked by policy.
-  const auto* const policy_blocklist_service =
-      PolicyBlocklistFactory::GetForBrowserContext(profile_);
-  if (!policy_blocklist_service ||
-      policy_blocklist_service->GetURLBlocklistState(GURL(kCalendarUrl)) ==
+  if (!policy_blocklist_service_ ||
+      policy_blocklist_service_->GetURLBlocklistState(GURL(kCalendarUrl)) ==
           policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
     RecordContextualGoogleIntegrationStatus(
         prefs::kGoogleCalendarIntegrationName,
@@ -95,12 +95,9 @@ base::OnceClosure CalendarClientImpl::GetCalendarList(
     return base::DoNothing();
   }
 
-  CalendarKeyedService* service =
-      CalendarKeyedServiceFactory::GetInstance()->GetService(profile_);
-
-  // For non-gaia users this `service` is not set.
-  if (service) {
-    return service->GetCalendarList(std::move(callback));
+  // For non-gaia users this `calendar_keyed_service_` is not set.
+  if (calendar_keyed_service_) {
+    return calendar_keyed_service_->GetCalendarList(std::move(callback));
   }
 
   std::move(callback).Run(google_apis::OTHER_ERROR, /*calendars=*/nullptr);
@@ -117,12 +114,11 @@ base::OnceClosure CalendarClientImpl::GetEventList(
     return base::DoNothing();
   }
 
-  CalendarKeyedService* service =
-      CalendarKeyedServiceFactory::GetInstance()->GetService(profile_);
-
-  // For non-gaia users this `service` is not set.
-  if (service)
-    return service->GetEventList(std::move(callback), start_time, end_time);
+  // For non-gaia users this `calendar_keyed_service_` is not set.
+  if (calendar_keyed_service_) {
+    return calendar_keyed_service_->GetEventList(std::move(callback),
+                                                 start_time, end_time);
+  }
 
   std::move(callback).Run(google_apis::OTHER_ERROR, /*events=*/nullptr);
 
@@ -140,13 +136,11 @@ base::OnceClosure CalendarClientImpl::GetEventList(
     return base::DoNothing();
   }
 
-  CalendarKeyedService* service =
-      CalendarKeyedServiceFactory::GetInstance()->GetService(profile_);
-
-  // For non-gaia users this `service` is not set.
-  if (service) {
-    return service->GetEventList(std::move(callback), start_time, end_time,
-                                 calendar_id, calendar_color_id);
+  // For non-gaia users this `calendar_keyed_service_` is not set.
+  if (calendar_keyed_service_) {
+    return calendar_keyed_service_->GetEventList(
+        std::move(callback), start_time, end_time, calendar_id,
+        calendar_color_id);
   }
 
   std::move(callback).Run(google_apis::OTHER_ERROR, /*events=*/nullptr);

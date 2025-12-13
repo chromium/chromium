@@ -22,6 +22,9 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;

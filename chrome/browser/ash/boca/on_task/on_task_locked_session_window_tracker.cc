@@ -22,13 +22,15 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/boca/on_task/on_task_pod_controller_impl.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_window_observer.h"
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
@@ -40,23 +42,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 
-// static
-Browser* LockedSessionWindowTracker::GetBrowserWithTab(
-    content::WebContents* tab) {
-  BrowserList* const browser_list = BrowserList::GetInstance();
-  for (auto browser_iterator =
-           browser_list->begin_browsers_ordered_by_activation();
-       browser_iterator != browser_list->end_browsers_ordered_by_activation();
-       ++browser_iterator) {
-    Browser* const browser = *browser_iterator;
-    if (browser && browser->tab_strip_model()->GetIndexOfWebContents(tab) !=
-                       TabStripModel::kNoTab) {
-      return browser;
-    }
-  }
-  return nullptr;
-}
-
 LockedSessionWindowTracker::LockedSessionWindowTracker(
     std::unique_ptr<OnTaskBlocklist> on_task_blocklist,
     content::BrowserContext* context)
@@ -67,13 +52,14 @@ LockedSessionWindowTracker::LockedSessionWindowTracker(
   // Set up window tracker to observe app instances only on consumer devices.
   // This will enable us to filter out unmanaged app instances.
   if (is_consumer_profile_) {
-    BrowserList::GetInstance()->AddObserver(this);
+    browser_controller_observation_.Observe(
+        ash::BrowserController::GetInstance());
   }
 }
 
 LockedSessionWindowTracker::~LockedSessionWindowTracker() {
   if (is_consumer_profile_) {
-    BrowserList::GetInstance()->RemoveObserver(this);
+    browser_controller_observation_.Reset();
   }
   CleanupWindowTracker();
 }
@@ -91,7 +77,7 @@ void LockedSessionWindowTracker::RemoveObserver(
 }
 
 void LockedSessionWindowTracker::InitializeBrowserInfoForTracking(
-    Browser* browser) {
+    ash::BrowserDelegate* browser) {
   if (browser_ && browser_ != browser) {
     CleanupWindowTracker();
   }
@@ -99,7 +85,8 @@ void LockedSessionWindowTracker::InitializeBrowserInfoForTracking(
     return;
   }
   browser_ = browser;
-  browser_->tab_strip_model()->AddObserver(this);
+  browser_->GetBrowser().tab_strip_model()->AddObserver(this);
+
   if (ash::features::IsBocaOnTaskPodEnabled()) {
     on_task_pod_controller_ =
         std::make_unique<ash::OnTaskPodControllerImpl>(browser_);
@@ -107,23 +94,17 @@ void LockedSessionWindowTracker::InitializeBrowserInfoForTracking(
 }
 
 void LockedSessionWindowTracker::RefreshUrlBlocklist() {
-  if (!browser_ || !browser_->tab_strip_model()->GetActiveWebContents() ||
-      !browser_->tab_strip_model()
-           ->GetActiveWebContents()
-           ->GetLastCommittedURL()
-           .is_valid()) {
+  if (!browser_ || !browser_->GetActiveWebContents() ||
+      !browser_->GetActiveWebContents()->GetLastCommittedURL().is_valid()) {
     return;
   }
 
-  on_task_blocklist_->RefreshForUrlBlocklist(
-      browser_->tab_strip_model()->GetActiveWebContents());
+  on_task_blocklist_->RefreshForUrlBlocklist(browser_->GetActiveWebContents());
 }
 
 void LockedSessionWindowTracker::MaybeCloseBrowser(
-    base::WeakPtr<Browser> weak_browser_ptr) {
-  if (!weak_browser_ptr) {
-    return;
-  }
+    ash::BrowserDelegate* browser) {
+  pending_close_tasks_.erase(browser);
 
   // The browser window needs to be closed if:
   // 1. It is a duplicate instance of the Boca SWA outside the one being
@@ -136,24 +117,24 @@ void LockedSessionWindowTracker::MaybeCloseBrowser(
   //
   // The inverse checks below ensure we do not attempt to close the window if
   // they do not fall under any of the scenarios outlined above.
-  Browser* const browser = weak_browser_ptr.get();
   if (browser == browser_) {
     // Same instance as the one being tracked. Skip close.
     return;
   }
-  if (!browser_ && browser->IsLockedForOnTask()) {
+  if (!browser_ && browser->GetBrowser().IsLockedForOnTask()) {
     // New instance that has been prepared for OnTask but is not being tracked
     // yet. Skip close because it is a managed instance.
     return;
   }
-  if (browser->is_type_app_popup() && oauth_in_progress_) {
+  if (browser->GetType() == ash::BrowserType::kAppPopup && oauth_in_progress_) {
     // Oauth popup and oauth is still in progress. Skip close.
     return;
   }
 
-  bool is_boca_app_instance =
-      ash::IsBrowserForSystemWebApp(browser, ash::SystemWebAppType::BOCA);
-  if (browser_ && !platform_util::IsBrowserLockedFullscreen(browser_) &&
+  bool is_boca_app_instance = ash::IsBrowserForSystemWebApp(
+      &browser->GetBrowser(), ash::SystemWebAppType::BOCA);
+  if (browser_ &&
+      !platform_util::IsBrowserLockedFullscreen(&browser_->GetBrowser()) &&
       !is_boca_app_instance) {
     // New instance that is not a Boca SWA instance and was spawned when the
     // Boca SWA instance being tracked is not in locked fullscreen mode. Skip
@@ -165,7 +146,7 @@ void LockedSessionWindowTracker::MaybeCloseBrowser(
     // no Boca SWA instance being tracked. Skip close for now.
     return;
   }
-  browser->window()->Close();
+  browser->Close();
 }
 
 void LockedSessionWindowTracker::MaybeCloseWebContents(
@@ -175,14 +156,15 @@ void LockedSessionWindowTracker::MaybeCloseWebContents(
       on_task_blocklist()->IsParentTab(tab)) {
     return;
   }
-  if (browser_->tab_strip_model()->count() > 1) {
-    int index = browser_->tab_strip_model()->GetIndexOfWebContents(tab);
+  if (browser_->GetWebContentsCount() > 1) {
+    int index =
+        browser_->GetBrowser().tab_strip_model()->GetIndexOfWebContents(tab);
     if (index == TabStripModel::kNoTab) {
       return;
     }
     on_task_blocklist()->RemoveChildFilter(tab);
-    browser_->tab_strip_model()->CloseWebContentsAt(index,
-                                                    TabCloseTypes::CLOSE_NONE);
+    browser_->GetBrowser().tab_strip_model()->CloseWebContentsAt(
+        index, TabCloseTypes::CLOSE_NONE);
   }
 }
 
@@ -202,8 +184,7 @@ void LockedSessionWindowTracker::OnPauseModeChanged(bool paused) {
   // in certain scenarios (like switching to tablet mode), we monitor the
   // browsing instance for such anomalies.
   auto* const immersive_mode_controller =
-      BrowserView::GetBrowserViewForBrowser(browser_)
-          ->immersive_mode_controller();
+      ImmersiveModeController::From(&browser_->GetBrowser());
   if (paused) {
     immersive_mode_controller->SetEnabled(false);
     immersive_mode_controller_observation_.Reset();
@@ -211,7 +192,7 @@ void LockedSessionWindowTracker::OnPauseModeChanged(bool paused) {
   } else {
     immersive_mode_controller_observation_.Reset();
     bool enable_immersive_mode =
-        platform_util::IsBrowserLockedFullscreen(browser_);
+        platform_util::IsBrowserLockedFullscreen(&browser_->GetBrowser());
     immersive_mode_controller->SetEnabled(enable_immersive_mode);
   }
 }
@@ -227,7 +208,7 @@ OnTaskBlocklist* LockedSessionWindowTracker::on_task_blocklist() {
 }
 
 Browser* LockedSessionWindowTracker::browser() {
-  return browser_;
+  return browser_ ? &browser_->GetBrowser() : nullptr;
 }
 
 bool LockedSessionWindowTracker::CanOpenNewPopup() {
@@ -236,16 +217,18 @@ bool LockedSessionWindowTracker::CanOpenNewPopup() {
 
 void LockedSessionWindowTracker::CleanupWindowTracker() {
   if (browser_) {
-    browser_->tab_strip_model()->RemoveObserver(this);
+    browser_->GetBrowser().tab_strip_model()->RemoveObserver(this);
   }
   if (on_task_blocklist_) {
     on_task_blocklist_->CleanupBlocklist();
   }
   on_task_pod_controller_.reset();
   immersive_mode_controller_observation_.Reset();
+
   browser_ = nullptr;
   can_open_new_popup_ = true;
   oauth_in_progress_ = false;
+
   for (auto& observer : observers_) {
     observer.OnWindowTrackerCleanedup();
     RemoveObserver(&observer);
@@ -280,12 +263,13 @@ void LockedSessionWindowTracker::TabChangedAt(content::WebContents* contents,
   // When all tabs are closing, the tab strip model is still active, but the
   // active tab is no longer valid. This can cause a crash if we try to access
   // the navigation context of the active tab.
-  if (!browser_->tab_strip_model()->closing_all() &&
-      !browser_->tab_strip_model()->empty() && on_task_pod_controller_) {
+  if (!browser_->GetBrowser().tab_strip_model()->closing_all() &&
+      browser_->GetWebContentsCount() && on_task_pod_controller_) {
     on_task_pod_controller_->OnPageNavigationContextChanged();
   }
 
-  if (browser_ && browser_->tab_strip_model()->active_index() == index) {
+  if (browser_ &&
+      browser_->GetBrowser().tab_strip_model()->active_index() == index) {
     // Only fire for active tab.
     for (auto& observer : observers_) {
       observer.OnActiveTabChanged(contents->GetTitle());
@@ -332,7 +316,8 @@ void LockedSessionWindowTracker::OnTabStripModelChanged(
     // app homepage, then we set `active_tab_id` to be invalid.
     if (old_contents &&
         (TabStripModel::kNoTab !=
-         browser_->tab_strip_model()->GetIndexOfWebContents(old_contents)) &&
+         browser_->GetBrowser().tab_strip_model()->GetIndexOfWebContents(
+             old_contents)) &&
         (old_contents->GetVisibleURL() !=
          GURL(ash::boca::kChromeBocaAppUntrustedIndexURL))) {
       active_tab_id = sessions::SessionTabHelper::IdForTab(old_contents);
@@ -371,17 +356,19 @@ void LockedSessionWindowTracker::WillCloseAllTabs(
   browser->set_force_skip_warning_user_on_close(true);
 }
 
-// BrowserListObserver Implementation
-void LockedSessionWindowTracker::OnBrowserClosing(Browser* browser) {
+// ash::BrowserController::Observer Implementation
+void LockedSessionWindowTracker::OnBrowserClosed(
+    ash::BrowserDelegate* browser) {
+  pending_close_tasks_.erase(browser);
   if (browser == browser_) {
     // Notify not in workbook when boca closed.
     for (auto& observer : observers_) {
       observer.OnActiveTabChanged(
           l10n_util::GetStringUTF16(IDS_NOT_IN_CLASS_TOOLS));
     }
-    CleanupWindowTracker();
+    CleanupWindowTracker();  // Will reset `browser_`.
   }
-  if (browser->type() == Browser::Type::TYPE_APP_POPUP) {
+  if (browser->GetType() == ash::BrowserType::kAppPopup) {
     ash::Shell::Get()
         ->screen_pinning_controller()
         ->SetAllowWindowStackingWithPinnedWindow(false);
@@ -390,8 +377,9 @@ void LockedSessionWindowTracker::OnBrowserClosing(Browser* browser) {
   }
 }
 
-void LockedSessionWindowTracker::OnBrowserAdded(Browser* browser) {
-  if (browser->type() == Browser::Type::TYPE_APP_POPUP) {
+void LockedSessionWindowTracker::OnBrowserCreated(
+    ash::BrowserDelegate* browser) {
+  if (browser->GetType() == ash::BrowserType::kAppPopup) {
     ash::Shell::Get()
         ->screen_pinning_controller()
         ->SetAllowWindowStackingWithPinnedWindow(true);
@@ -402,18 +390,15 @@ void LockedSessionWindowTracker::OnBrowserAdded(Browser* browser) {
     aura::Window* const top_container =
         ash::Shell::GetContainer(ash::Shell::GetPrimaryRootWindow(),
                                  ash::kShellWindowId_AlwaysOnTopContainer);
-    top_container->StackChildAtTop(browser->window()->GetNativeWindow());
+    top_container->StackChildAtTop(browser->GetNativeWindow());
     can_open_new_popup_ = false;
   } else {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&LockedSessionWindowTracker::MaybeCloseBrowser,
-                       weak_pointer_factory_.GetWeakPtr(),
-                       browser->AsWeakPtr()));
+    EnsureMaybeCloseBrowserTaskPosted(browser);
   }
 }
 
-void LockedSessionWindowTracker::OnBrowserSetLastActive(Browser* browser) {
+void LockedSessionWindowTracker::OnBrowserActivated(
+    ash::BrowserDelegate* browser) {
   if (!browser || !browser_) {
     return;
   }
@@ -424,30 +409,26 @@ void LockedSessionWindowTracker::OnBrowserSetLastActive(Browser* browser) {
     }
     return;
   }
-  if (!browser->GetActiveTabInterface() ||
-      !browser->GetActiveTabInterface()->GetContents()) {
+  if (!browser_->GetActiveWebContents()) {
     return;
   }
+  const std::u16string& title = browser_->GetActiveWebContents()->GetTitle();
   for (auto& observer : observers_) {
-    observer.OnActiveTabChanged(
-        browser->GetActiveTabInterface()->GetContents()->GetTitle());
+    observer.OnActiveTabChanged(title);
   }
 }
 
 // content::WebContentsObserver Impl
 void LockedSessionWindowTracker::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  Browser* const browser =
-      GetBrowserWithTab(navigation_handle->GetWebContents());
+  ash::BrowserDelegate* const browser =
+      ash::BrowserController::GetInstance()->GetBrowserForTab(
+          navigation_handle->GetWebContents());
   if (!browser || !browser_) {
     return;
   }
   if (browser != browser_) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&LockedSessionWindowTracker::MaybeCloseBrowser,
-                       weak_pointer_factory_.GetWeakPtr(),
-                       browser->AsWeakPtr()));
+    EnsureMaybeCloseBrowserTaskPosted(browser);
   } else {
     content::WebContents* const tab = navigation_handle->GetWebContents();
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -467,4 +448,17 @@ void LockedSessionWindowTracker::OnImmersiveRevealStarted() {
 
 void LockedSessionWindowTracker::OnImmersiveModeControllerDestroyed() {
   immersive_mode_controller_observation_.Reset();
+}
+
+void LockedSessionWindowTracker::EnsureMaybeCloseBrowserTaskPosted(
+    ash::BrowserDelegate* browser) {
+  if (pending_close_tasks_.contains(browser)) {
+    return;
+  }
+  auto task = std::make_unique<base::CancelableOnceClosure>(
+      base::BindOnce(&LockedSessionWindowTracker::MaybeCloseBrowser,
+                     weak_pointer_factory_.GetWeakPtr(), browser));
+  pending_close_tasks_.emplace(browser, std::move(task));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, pending_close_tasks_[browser]->callback());
 }

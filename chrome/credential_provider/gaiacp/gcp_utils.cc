@@ -36,6 +36,7 @@
 #include "base/json/json_writer.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_number_conversions_win.h"
@@ -406,17 +407,17 @@ HRESULT ScopedStartupInfo::SetStdHandles(base::win::ScopedHandle* hstdin,
   // standard handle if no handle is given for some of the handles. This tells
   // the process it can create its own local handles for these pipes as needed.
   info_.dwFlags |= STARTF_USESTDHANDLES;
-  if (hstdin && hstdin->IsValid()) {
+  if (hstdin && hstdin->is_valid()) {
     info_.hStdInput = hstdin->Take();
   } else {
     info_.hStdInput = ::GetStdHandle(STD_INPUT_HANDLE);
   }
-  if (hstdout && hstdout->IsValid()) {
+  if (hstdout && hstdout->is_valid()) {
     info_.hStdOutput = hstdout->Take();
   } else {
     info_.hStdOutput = ::GetStdHandle(STD_OUTPUT_HANDLE);
   }
-  if (hstderr && hstderr->IsValid()) {
+  if (hstderr && hstderr->is_valid()) {
     info_.hStdError = hstderr->Take();
   } else {
     info_.hStdError = ::GetStdHandle(STD_ERROR_HANDLE);
@@ -567,7 +568,7 @@ HRESULT CreateJobForSignin(base::win::ScopedHandle* job) {
   DCHECK(job);
 
   job->Set(::CreateJobObject(nullptr, nullptr));
-  if (!job->IsValid()) {
+  if (!job->is_valid()) {
     HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "CreateJobObject hr=" << putHR(hr);
     return hr;
@@ -605,7 +606,7 @@ HRESULT CreatePipeForChildProcess(bool child_reads,
         ::CreateFileW(L"nul:", FILE_GENERIC_READ | FILE_GENERIC_WRITE,
                       FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE,
                       &sa, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr));
-    if (!h.IsValid()) {
+    if (!h.is_valid()) {
       HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
       LOGFN(ERROR) << "CreateFile(nul) hr=" << putHR(hr);
       return hr;
@@ -1266,7 +1267,7 @@ HRESULT SetGaiaEndpointCommandLineIfNeeded(const wchar_t* override_registry_key,
       command_line->AppendSwitchASCII(switches::kGaiaUrl,
                                       endpoint_url.GetWithEmptyPath().spec());
       command_line->AppendSwitchASCII(kGcpwEndpointPathSwitch,
-                                      endpoint_url.path().substr(1));
+                                      endpoint_url.GetPath().substr(1));
     }
     return S_OK;
   }

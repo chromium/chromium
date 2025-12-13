@@ -6,16 +6,17 @@ package org.chromium.chrome.browser.webapps;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.components.webapps.WebApkDistributor;
 
 /** LaunchCauseMetrics for WebappActivity. */
+@NullMarked
 public class WebappLaunchCauseMetrics extends LaunchCauseMetrics {
-    @Nullable private final WebappInfo mWebappInfo;
+    private final @Nullable WebappInfo mWebappInfo;
 
     public WebappLaunchCauseMetrics(Activity activity, @Nullable WebappInfo info) {
         super(activity);

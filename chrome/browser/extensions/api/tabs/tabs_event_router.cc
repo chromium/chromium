@@ -26,14 +26,18 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -53,6 +57,7 @@ namespace {
 
 constexpr char kFromIndexKey[] = "fromIndex";
 constexpr char kGroupIdKey[] = "groupId";
+constexpr char kSplitIdKey[] = "splitViewId";
 constexpr char kNewPositionKey[] = "newPosition";
 constexpr char kNewWindowIdKey[] = "newWindowId";
 constexpr char kOldPositionKey[] = "oldPosition";
@@ -75,7 +80,8 @@ bool WillDispatchTabUpdatedEvent(
     const Extension* extension,
     const base::Value::Dict* listener_filter,
     std::optional<base::Value::List>& event_args_out,
-    mojom::EventFilteringInfoPtr& event_filtering_info_out) {
+    mojom::EventFilteringInfoPtr& event_filtering_info_out,
+    bool* dispatch_separate_event_out) {
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
       ExtensionTabUtil::GetScrubTabBehavior(extension, target_context,
                                             contents);
@@ -105,7 +111,8 @@ bool WillDispatchTabCreatedEvent(
     const Extension* extension,
     const base::Value::Dict* listener_filter,
     std::optional<base::Value::List>& event_args_out,
-    mojom::EventFilteringInfoPtr& event_filtering_info_out) {
+    mojom::EventFilteringInfoPtr& event_filtering_info_out,
+    bool* dispatch_separate_event_out) {
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
       ExtensionTabUtil::GetScrubTabBehavior(extension, target_context,
                                             contents);
@@ -208,9 +215,10 @@ TabsEventRouter::~TabsEventRouter() {
   BrowserList::RemoveObserver(this);
 }
 
-bool TabsEventRouter::ShouldTrackBrowser(Browser* browser) {
-  return profile_->IsSameOrParent(browser->profile()) &&
-         ExtensionTabUtil::BrowserSupportsTabs(browser);
+bool TabsEventRouter::ShouldTrackBrowser(BrowserWindowInterface* browser) {
+  return profile_->IsSameOrParent(browser->GetProfile()) &&
+         ExtensionTabUtil::BrowserSupportsTabs(
+             browser->GetBrowserForMigrationOnly());
 }
 
 void TabsEventRouter::OnBrowserSetLastActive(Browser* browser) {
@@ -237,7 +245,9 @@ void TabsEventRouter::OnTabStripModelChanged(
     case TabStripModelChange::kRemoved: {
       for (const auto& contents : change.GetRemove()->contents) {
         if (contents.remove_reason ==
-            TabStripModelChange::RemoveReason::kDeleted) {
+                TabStripModelChange::RemoveReason::kDeleted ||
+            contents.remove_reason ==
+                TabStripModelChange::RemoveReason::kInsertedIntoSidePanel) {
           DispatchTabClosingAt(tab_strip_model, contents.contents,
                                contents.index);
         }
@@ -319,6 +329,31 @@ void TabsEventRouter::OnTabGroupChanged(const TabGroupChange& change) {
   }
 }
 
+void TabsEventRouter::OnSplitTabChanged(const SplitTabChange& change) {
+  if (change.type == SplitTabChange::Type::kAdded &&
+      change.GetAddedChange()->reason() !=
+          SplitTabChange::SplitTabAddReason::kInsertedFromAnotherTabstrip) {
+    for (const std::pair<tabs::TabInterface*, int>& tab :
+         change.GetAddedChange()->tabs()) {
+      std::set<std::string> changed_property_names;
+      changed_property_names.insert(kSplitIdKey);
+      DispatchTabUpdatedEvent(tab.first->GetContents(),
+                              std::move(changed_property_names));
+    }
+  }
+  if (change.type == SplitTabChange::Type::kRemoved &&
+      change.GetRemovedChange()->reason() !=
+          SplitTabChange::SplitTabRemoveReason::kDetachedToAnotherTabstrip) {
+    for (const std::pair<tabs::TabInterface*, int>& tab :
+         change.GetRemovedChange()->tabs()) {
+      std::set<std::string> changed_property_names;
+      changed_property_names.insert(kSplitIdKey);
+      DispatchTabUpdatedEvent(tab.first->GetContents(),
+                              std::move(changed_property_names));
+    }
+  }
+}
+
 void TabsEventRouter::TabGroupedStateChanged(
     TabStripModel* tab_strip_model,
     std::optional<tab_groups::TabGroupId> old_group,
@@ -378,8 +413,7 @@ void TabsEventRouter::OnFaviconUpdated(
 
 void TabsEventRouter::OnLifecycleUnitStateChanged(
     resource_coordinator::LifecycleUnit* lifecycle_unit,
-    ::mojom::LifecycleUnitState previous_state,
-    ::mojom::LifecycleUnitStateChangeReason reason) {
+    ::mojom::LifecycleUnitState previous_state) {
   const ::mojom::LifecycleUnitState new_state = lifecycle_unit->GetState();
   auto previous_or_new_state_is = [&](::mojom::LifecycleUnitState state) {
     return previous_state == state || new_state == state;
@@ -543,12 +577,15 @@ void TabsEventRouter::DispatchTabSelectionChanged(
   base::Value::Dict select_info;
 
   int window_id = -1;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->tab_strip_model() == tab_strip_model) {
-      window_id = ExtensionTabUtil::GetWindowId(browser);
-      break;
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [tab_strip_model,
+       &window_id](BrowserWindowInterface* browser_window_interface) {
+        if (browser_window_interface->GetTabStripModel() == tab_strip_model) {
+          window_id = ExtensionTabUtil::GetWindowId(browser_window_interface);
+          return false;
+        }
+        return true;
+      });
 
   select_info.Set(tabs_constants::kWindowIdKey, window_id);
 

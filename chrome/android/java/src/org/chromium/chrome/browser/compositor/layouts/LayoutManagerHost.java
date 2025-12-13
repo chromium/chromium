@@ -8,34 +8,37 @@ import android.content.Context;
 import android.graphics.RectF;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
+import org.chromium.chrome.browser.layouts.components.VirtualView;
 
 /**
  * This is the minimal interface of the host view from the layout side. Any of these functions may
  * be called on the GL thread.
  */
+@NullMarked
 public interface LayoutManagerHost {
     /**
-     * If set to true, the time it takes for ContentView to become ready will be
-     * logged to the screen.
+     * If set to true, the time it takes for ContentView to become ready will be logged to the
+     * screen.
      */
-    static final boolean LOG_CHROME_VIEW_SHOW_TIME = false;
+    boolean LOG_CHROME_VIEW_SHOW_TIME = false;
 
     /** Requests a refresh of the visuals. */
     void requestRender();
 
     /**
      * Requests a refresh of the visuals.
+     *
      * @param onUpdateEffective Callback that will be called when there is a buffer swap for the
-     *                          requested update. The rendered frame for this request won't be
-     *                          visible until a buffer swap occurs. Note that there is no guarantee
-     *                          the updated buffer is the one currently being displayed for pre-Q.
+     *     requested update. The rendered frame for this request won't be visible until a buffer
+     *     swap occurs. Note that there is no guarantee the updated buffer is the one currently
+     *     being displayed for pre-Q.
      */
-    default void requestRender(Runnable onUpdateEffective) {}
+    default void requestRender(@Nullable Runnable onUpdateEffective) {}
 
     /**
      * @return The Android context of the host view.
@@ -113,10 +116,18 @@ public interface LayoutManagerHost {
      *
      * @param sceneOverlay The {@link SceneOverlay} to request keyboard focus for.
      */
-    void requestKeyboardFocus(@NonNull SceneOverlay sceneOverlay);
+    void requestKeyboardFocus(SceneOverlay sceneOverlay);
+
+    /**
+     * Requests keyboard focus for {@param view} (within {@param SceneOverlay}).
+     *
+     * @param sceneOverlay The {@link SceneOverlay} to request keyboard focus for.
+     * @param view The {@link VirtualView} to focus on.
+     */
+    void requestKeyboardFocus(SceneOverlay sceneOverlay, VirtualView view);
 
     /**
      * @return Whether {@param SceneOverlay} contains keyboard focus.
      */
-    boolean containsKeyboardFocus(@NonNull SceneOverlay sceneOverlay);
+    boolean containsKeyboardFocus(SceneOverlay sceneOverlay);
 }

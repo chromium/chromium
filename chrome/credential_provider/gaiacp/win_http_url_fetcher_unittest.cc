@@ -46,8 +46,7 @@ TEST_P(GcpWinHttpUrlFetcherTest,
   auto expected_result = base::Value::Dict()
                              .Set("response-str-key", "response-str-value")
                              .Set("response-int-key", 4321);
-  std::string expected_response;
-  base::JSONWriter::Write(expected_result, &expected_response);
+  std::string expected_response = base::WriteJson(expected_result).value_or("");
 
   std::string response;
   if (invalid_response) {
@@ -118,8 +117,8 @@ TEST_P(GcpWinHttpUrlFetcherTest,
               request_data.headers.at("Authorization").find(access_token));
     ASSERT_EQ(1u, request_data.headers.count(header1));
     ASSERT_EQ(header1_value, request_data.headers.at(header1));
-    std::optional<base::Value> body_value =
-        base::JSONReader::Read(request_data.body);
+    std::optional<base::Value> body_value = base::JSONReader::Read(
+        request_data.body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_EQ(request, body_value->GetDict());
   }
 }
@@ -143,8 +142,7 @@ TEST_P(GcpWinHttpUrlFetcherTest,
   auto expected_result = base::Value::Dict()
                              .Set("response-str-key", "response-str-value")
                              .Set("response-int-key", 4321);
-  std::string expected_response;
-  base::JSONWriter::Write(expected_result, &expected_response);
+  std::string expected_response = base::WriteJson(expected_result).value_or("");
 
   fake_http_url_fetcher_factory()->SetFakeResponse(
       test_url, FakeWinHttpUrlFetcher::Headers(), expected_response);

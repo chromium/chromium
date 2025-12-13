@@ -41,6 +41,6 @@ source_set("unit_tests") {
     "//chromeos/constants",
     "//components/policy/core/common",
     "//components/prefs:test_support",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }

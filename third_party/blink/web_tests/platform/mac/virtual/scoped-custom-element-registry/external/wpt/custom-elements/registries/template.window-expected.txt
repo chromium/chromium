@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Serializing a ShadowRoot with a null registry with a scoped registry host document
+  assert_equals: expected "<template shadowrootmode=\\"closed\\" shadowrootserializable=\\"\\" shadowrootcustomelementregistry=\\"\\"></template>" but got "<template shadowrootmode=\\"closed\\" shadowrootserializable=\\"\\"></template>"
+Harness: the test ran to completion.
+

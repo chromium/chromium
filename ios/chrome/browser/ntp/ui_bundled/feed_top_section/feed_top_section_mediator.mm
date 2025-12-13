@@ -16,7 +16,7 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_util.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/utils.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/public/set_up_list_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
 #import "ios/chrome/browser/push_notification/model/provisional_push_notification_service.h"
@@ -214,7 +214,7 @@ using base::UserMetricsAction;
   // Check if user has notifications enabled at the Chime level.
   BOOL isChimeEnabled =
       push_notification_settings::IsMobileNotificationsEnabledForAnyClient(
-          GaiaId(identity.gaiaID), self.prefService);
+          identity.gaiaId, self.prefService);
   if (isChimeEnabled) {
     return true;
   }
@@ -238,8 +238,7 @@ using base::UserMetricsAction;
     return true;
   }
 
-  if (!IsContentNotificationExperimentEnabled() ||
-      !IsContentNotificationPromoEnabled([self isUserSignedIn],
+  if (!IsContentNotificationPromoEnabled([self isUserSignedIn],
                                          self.isDefaultSearchEngine,
                                          self.prefService)) {
     return false;

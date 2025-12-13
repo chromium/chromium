@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/rand_util.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
@@ -29,11 +30,14 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_string_map.h"
 #include "chrome/browser/ui/webui/theme_handler.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_customize_chrome_resources.h"
 #include "chrome/grit/side_panel_customize_chrome_resources_map.h"
 #include "chrome/grit/side_panel_shared_resources.h"
 #include "chrome/grit/side_panel_shared_resources_map.h"
+#include "components/ntp_tiles/features.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_frame_host.h"
@@ -99,6 +103,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"cardsHeader", IDS_NTP_CUSTOMIZE_MENU_MODULES_LABEL},
       {"categoriesHeader", IDS_NTP_CUSTOMIZE_THEMES_HEADER},
       {"footerHeader", IDS_NTP_CUSTOMIZE_FOOTER_HEADER},
+      {"toolsHeader", IDS_NTP_CUSTOMIZE_TOOLS_HEADER},
       {"shortcutsHeader", IDS_NTP_CUSTOMIZE_MENU_SHORTCUTS_LABEL},
       {"toolbarHeader", IDS_NTP_CUSTOMIZE_MENU_TOOLBAR_LABEL},
       {"extensionsHeader", IDS_NTP_CUSTOMIZE_MENU_EXTENSIONS_LABEL},
@@ -134,12 +139,21 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"managedBySearchEngine", IDS_NTP_MANAGED_BY_SEARCH_ENGINE},
       {"newTabPageManagedByA11yLabel",
        IDS_NTP_CUSTOMIZE_CHROME_MANAGED_NEW_TAB_PAGE_ACCESSIBILITY},
+      // Tools strings.
+      {"showChipsToggleTitle", IDS_NTP_CUSTOMIZE_SHOW_CHIPS_LABEL},
       // Shortcut strings.
-      {"mostVisited", IDS_NTP_CUSTOMIZE_MOST_VISITED_LABEL},
+      {"topSites", IDS_NTP_CUSTOMIZE_MOST_VISITED_LABEL},
       {"myShortcuts", IDS_NTP_CUSTOMIZE_MY_SHORTCUTS_LABEL},
+      {"enterpriseShortcuts", IDS_NTP_CUSTOMIZE_ENTERPRISE_SHORTCUTS_LABEL},
       {"shortcutsCurated", IDS_NTP_CUSTOMIZE_MY_SHORTCUTS_DESC},
       {"shortcutsSuggested", IDS_NTP_CUSTOMIZE_MOST_VISITED_DESC},
+      {"enterpriseShortcutsCurated",
+       IDS_NTP_CUSTOMIZE_ENTERPRISE_SHORTCUTS_DESC},
       {"showShortcutsToggle", IDS_NTP_CUSTOMIZE_SHOW_SHORTCUTS_LABEL},
+      {"showPersonalShortcutsToggle",
+       IDS_NTP_CUSTOMIZE_SHOW_PERSONAL_SHORTCUTS_LABEL},
+      {"showPersonalShortcutsToggleDescription",
+       IDS_NTP_CUSTOMIZE_SHOW_PERSONAL_SHORTCUTS_DESC},
       // Card strings.
       {"showCardsToggleTitle", IDS_NTP_CUSTOMIZE_SHOW_CARDS_LABEL},
       // Footer strings.
@@ -269,6 +283,9 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           ntp_features::kCustomizeChromeSidePanelExtensionsCard));
 
+  source->AddBoolean(
+      "ntpNextFeaturesEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kNtpNextFeatures));
   source->AddBoolean("wallpaperSearchEnabled", wallpaper_search_enabled);
   source->AddBoolean(
       "wallpaperSearchInspirationCardEnabled",
@@ -284,8 +301,19 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
                      base::FeatureList::IsEnabled(
                          ntp_features::kNtpBackgroundImageErrorDetection));
 
+  const auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile_);
+  source->AddBoolean("aimPolicyEnabled",
+                     aim_eligibility_service &&
+                         aim_eligibility_service->IsDeepSearchEligible() &&
+                         aim_eligibility_service->IsCreateImagesEligible());
+
   source->AddBoolean("footerEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpFooter));
+  source->AddBoolean(
+      "ntpEnterpriseShortcutsMixingAllowed",
+      base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) &&
+          ntp_tiles::kNtpEnterpriseShortcutsAllowMixingParam.Get());
 
   webui::SetupWebUIDataSource(
       source, kSidePanelCustomizeChromeResources,
@@ -376,13 +404,6 @@ void CustomizeChromeUI::BindInterface(
   }
   theme_color_picker_handler_factory_receiver_.Bind(
       std::move(pending_receiver));
-}
-
-void CustomizeChromeUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
 }
 
 void CustomizeChromeUI::BindInterface(

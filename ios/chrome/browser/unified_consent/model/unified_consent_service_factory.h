@@ -30,9 +30,9 @@ class UnifiedConsentServiceFactory : public ProfileKeyedServiceFactoryIOS {
   UnifiedConsentServiceFactory();
   ~UnifiedConsentServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_UNIFIED_CONSENT_MODEL_UNIFIED_CONSENT_SERVICE_FACTORY_H_

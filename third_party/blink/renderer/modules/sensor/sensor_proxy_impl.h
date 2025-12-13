@@ -90,7 +90,7 @@ class SensorProxyImpl final : public SensorProxy,
   std::pair<double, double> frequency_limits_;
   bool suspended_ = false;
 
-  WTF::Vector<double> active_frequencies_;
+  Vector<double> active_frequencies_;
   HeapTaskRunnerTimer<SensorProxyImpl> polling_timer_;
 };
 

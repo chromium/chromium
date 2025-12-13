@@ -39,6 +39,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -46,6 +47,8 @@
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
@@ -76,10 +79,18 @@ void BrowserWithTestWindowTest::SetUp() {
     ash::disks::DiskMountManager::InitializeForTesting(
         new ash::disks::FakeDiskMountManager());
   }
+
+  CHECK(session_manager::SessionManager::Get());
+
+  ash_test_helper_.emplace();
+
   if (!user_manager::UserManager::IsInitialized()) {
     user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>(
         g_browser_process->local_state()));
   }
+  session_manager::SessionManager::Get()->OnUserManagerCreated(
+      user_manager::UserManager::Get());
+
   {
     ash::AshTestHelper::InitParams ash_init;
     ash_init.local_state = g_browser_process->local_state();
@@ -89,7 +100,8 @@ void BrowserWithTestWindowTest::SetUp() {
     // TestingProfile.
     ash_init.auto_create_prefs_services = false;
 
-    ash_test_helper_.SetUp(std::move(ash_init));
+    ash_test_helper_->SetUp(std::move(ash_init));
+    OnAshTestHelperCreated();
   }
 #endif
 
@@ -106,7 +118,12 @@ void BrowserWithTestWindowTest::SetUp() {
 
 #if BUILDFLAG(IS_CHROMEOS)
   manager_ = std::make_unique<crosapi::CrosapiManager>();
-  kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
+  kiosk_cryptohome_remover_ = std::make_unique<ash::KioskCryptohomeRemover>(
+      TestingBrowserProcess::GetGlobal()->local_state());
+  kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>(
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+      kiosk_cryptohome_remover_.get());
 #endif
 
   // Subclasses can provide their own Profile name.
@@ -120,10 +137,11 @@ void BrowserWithTestWindowTest::SetUp() {
     SwitchActiveUser(*profile_name);
 #endif
 
-    window_ = CreateBrowserWindow();
+    auto window = CreateBrowserWindow();
+    window_ = window.get();
 
     browser_ =
-        CreateBrowser(profile(), browser_type_, hosted_app_, window_.get());
+        CreateBrowser(profile(), browser_type_, hosted_app_, window.release());
   }
 }
 
@@ -133,12 +151,12 @@ void BrowserWithTestWindowTest::TearDown() {
   base::RunLoop().RunUntilIdle();
 
   // Close the browser tabs and destroy the browser and window instances.
+  window_ = nullptr;
   if (browser_) {
     browser_->tab_strip_model()->CloseAllTabs();
     browser_->GetFeatures().TearDownPreBrowserWindowDestruction();
     browser_.reset();
   }
-  window_.reset();
 
 #if defined(TOOLKIT_VIEWS)
   constrained_window::SetConstrainedWindowViewsClient(nullptr);
@@ -152,12 +170,13 @@ void BrowserWithTestWindowTest::TearDown() {
 #if BUILDFLAG(IS_CHROMEOS)
   manager_.reset();
   kiosk_chrome_app_manager_.reset();
+  kiosk_cryptohome_remover_.reset();
 #endif
 
   user_performance_tuning_manager_environment_.TearDown();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  ash_test_helper_.TearDown();
+  ash_test_helper_->TearDown();
 #endif
 
   // Calling DeleteAllTestingProfiles() first can cause issues in some tests, if
@@ -166,6 +185,12 @@ void BrowserWithTestWindowTest::TearDown() {
   profile_manager_.reset();
 
 #if BUILDFLAG(IS_CHROMEOS)
+  ash_test_helper_.reset();
+
+  // To match production behavior, SessionManager must be destroyed before
+  // UserManager even though it got created first.
+  session_manager_.reset();
+
   test_views_delegate_.reset();
   user_manager_.Reset();
   ash::disks::DiskMountManager::Shutdown();
@@ -196,9 +221,14 @@ void BrowserWithTestWindowTest::SetUpProfileManager(
       profile_manager_->SetUp(profiles_path, std::move(profile_manager)));
 }
 
+std::unique_ptr<Browser> BrowserWithTestWindowTest::release_browser() {
+  window_ = nullptr;
+  return std::move(browser_);
+}
+
 gfx::NativeWindow BrowserWithTestWindowTest::GetContext() {
 #if BUILDFLAG(IS_CHROMEOS)
-  return ash_test_helper_.GetContext();
+  return ash_test_helper_->GetContext();
 #elif defined(TOOLKIT_VIEWS)
   return views_test_helper_->GetContext();
 #else
@@ -306,13 +336,26 @@ std::unique_ptr<Browser> BrowserWithTestWindowTest::CreateBrowser(
   return Browser::DeprecatedCreateOwnedForTesting(params);
 }
 
+std::unique_ptr<Browser> BrowserWithTestWindowTest::CreateBrowser(
+    Profile* profile,
+    Browser::Type browser_type,
+    bool hosted_app) {
+  auto browser_window = CreateBrowserWindow();
+  return CreateBrowser(profile, browser_type, hosted_app,
+                       browser_window.release());
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
+void BrowserWithTestWindowTest::OnAshTestHelperCreated() {}
+
 void BrowserWithTestWindowTest::LogIn(std::string_view email,
                                       const GaiaId& gaia_id) {
   const AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
   user_manager_->AddGaiaUser(account_id, user_manager::UserType::kRegular);
-  user_manager_->UserLoggedIn(
-      account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
+  session_manager::SessionManager::Get()->CreateSession(
+      account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
+      /*new_user=*/false,
+      /*has_active_session=*/false);
 }
 
 void BrowserWithTestWindowTest::OnUserProfileCreated(const std::string& email,

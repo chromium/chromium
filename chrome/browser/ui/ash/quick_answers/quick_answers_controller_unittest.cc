@@ -140,6 +140,20 @@ class QuickAnswersControllerTest : public ChromeQuickAnswersTestBase {
     return controller()->quick_answers_ui_controller();
   }
 
+  void SetUpMockSendRequestForPreprocessingCall() {
+    ON_CALL(*mock_quick_answers_client_, SendRequestForPreprocessing)
+        .WillByDefault([this](const quick_answers::QuickAnswersRequest&
+                                  quick_answers_request) {
+          quick_answers::QuickAnswersRequest processed_request =
+              quick_answers_request;
+          processed_request.preprocessed_output.query =
+              "Define " + quick_answers_request.selected_text;
+          processed_request.preprocessed_output.intent_info.intent_type =
+              quick_answers::IntentType::kDictionary;
+          controller()->OnRequestPreprocessFinished(processed_request);
+        });
+  }
+
  protected:
   raw_ptr<quick_answers::MockQuickAnswersClient> mock_quick_answers_client_ =
       nullptr;
@@ -227,17 +241,15 @@ TEST_F(QuickAnswersControllerTest, DismissUserConsentView) {
   EXPECT_FALSE(ui_controller()->IsShowingUserConsentView());
 }
 
-TEST_F(QuickAnswersControllerTest, NoUserConsentView) {
-  // Note that `kMahi` is associated with the Magic Boost feature.
-  // `chromeos::features::IsMagicBoostEnabled()` is only accessible from Ash
-  // build. This test code is currently only included by Ash build.
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatures(
-      {chromeos::features::kMahi, chromeos::features::kFeatureManagementMahi},
-      {});
+TEST_F(QuickAnswersControllerTest,
+       ShouldShowConsentViewIfAvailableWithMagicBoostAvailableAndUnsetStatus) {
+  QuickAnswersState::Get()->set_use_text_annotator_for_testing();
+  SetUpMockSendRequestForPreprocessingCall();
 
   chromeos::test::FakeMagicBoostState fake_magic_boost_state;
   fake_magic_boost_state.SetAvailability(true);
+  fake_magic_boost_state.SetMagicBoostEnabled(true);
+  fake_magic_boost_state.AsyncWriteHMREnabled(true);
   fake_magic_boost_state.AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus::kUnset);
 
@@ -252,9 +264,40 @@ TEST_F(QuickAnswersControllerTest, NoUserConsentView) {
 
   ShowConsentView();
 
-  EXPECT_FALSE(ui_controller()->IsShowingUserConsentView())
-      << "No consent UI should be shown for kHmr as it should be handled by "
-         "MagicBoost";
+  EXPECT_TRUE(ui_controller()->IsShowingUserConsentView())
+      << "Magic Boost consent UI should be shown for kHmr";
+  // TODO: b:414391121 - Adds a check to indicate the user consent view is the
+  // magic boost consent view.
+}
+
+TEST_F(
+    QuickAnswersControllerTest,
+    ShouldShowConsentViewIfAvailableWithMagicBoostUnavailableAndUnsetStatus) {
+  QuickAnswersState::Get()->set_use_text_annotator_for_testing();
+  SetUpMockSendRequestForPreprocessingCall();
+
+  chromeos::test::FakeMagicBoostState fake_magic_boost_state;
+  fake_magic_boost_state.SetAvailability(false);
+  fake_magic_boost_state.SetMagicBoostEnabled(true);
+  fake_magic_boost_state.AsyncWriteHMREnabled(true);
+  fake_magic_boost_state.AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kUnset);
+
+  ASSERT_EQ(QuickAnswersState::FeatureType::kQuickAnswers,
+            QuickAnswersState::GetFeatureType());
+  ASSERT_EQ(quick_answers::prefs::ConsentStatus::kUnknown,
+            QuickAnswersState::GetConsentStatusAs(
+                QuickAnswersState::FeatureType::kQuickAnswers));
+  ASSERT_EQ(quick_answers::prefs::ConsentStatus::kUnknown,
+            QuickAnswersState::GetConsentStatusAs(
+                QuickAnswersState::FeatureType::kHmr));
+
+  ShowConsentView();
+
+  EXPECT_TRUE(ui_controller()->IsShowingUserConsentView())
+      << "Non-Magic-Boost consent UI should be shown for kQuickAnswer";
+  // TODO: b:414391121 - Adds a check to indicate the user consent view is the
+  // non-magic-boost consent view.
 }
 
 TEST_F(QuickAnswersControllerTest, DismissQuickAnswersView) {
@@ -366,19 +409,7 @@ TEST_F(QuickAnswersControllerTest, PartialNullptrResultReceived) {
 
 TEST_F(QuickAnswersControllerTest, IntentTypeConversion) {
   QuickAnswersState::Get()->set_use_text_annotator_for_testing();
-
-  ON_CALL(*mock_quick_answers_client_, SendRequestForPreprocessing)
-      .WillByDefault(
-          [this](
-              const quick_answers::QuickAnswersRequest& quick_answers_request) {
-            quick_answers::QuickAnswersRequest processed_request =
-                quick_answers_request;
-            processed_request.preprocessed_output.query =
-                "Define " + quick_answers_request.selected_text;
-            processed_request.preprocessed_output.intent_info.intent_type =
-                quick_answers::IntentType::kDictionary;
-            controller()->OnRequestPreprocessFinished(processed_request);
-          });
+  SetUpMockSendRequestForPreprocessingCall();
 
   AcceptConsent();
   ShowView();

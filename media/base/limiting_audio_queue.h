@@ -7,11 +7,12 @@
 
 #include "base/functional/callback.h"
 #include "media/base/audio_buffer.h"
-#include "media/base/audio_bus.h"
 #include "media/base/audio_limiter.h"
 #include "media/base/media_export.h"
 
 namespace media {
+
+class AudioBus;
 
 // Simple wrapper around an AudioLimiter which takes in input as a AudioBus,
 // limits the audio to the [-1.0, 1.0] range, and outputs it as an AudioBuffer.

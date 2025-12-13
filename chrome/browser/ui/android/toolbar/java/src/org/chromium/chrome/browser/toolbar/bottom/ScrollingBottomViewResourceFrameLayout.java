@@ -13,9 +13,10 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.ConstraintsChecker;
 import org.chromium.chrome.browser.toolbar.R;
@@ -143,7 +144,8 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
     /**
      * @param constraintsSupplier Used to access current constraints of the browser controls.
      */
-    public void setConstraintsSupplier(ObservableSupplier<Integer> constraintsSupplier) {
+    public void setConstraintsSupplier(
+            NullableObservableSupplier<@BrowserControlsState Integer> constraintsSupplier) {
         assert mConstraintsChecker == null;
         mConstraintsChecker =
                 new ConstraintsChecker(

@@ -14,6 +14,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/timer/timer.h"
 #include "media/audio/audio_io.h"

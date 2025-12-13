@@ -299,14 +299,15 @@ std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions(
   old_updater_path = old_updater_path.Append("cipd");
 #endif
 
+  const base::FilePath updater_bundle_path =
+      old_updater_path.Append(PRODUCT_FULLNAME_STRING "_test.app");
   const base::FilePath updater_setup_path =
-      old_updater_path.Append(PRODUCT_FULLNAME_STRING "_test.app")
-          .Append("Contents")
+      updater_bundle_path.Append("Contents")
           .Append("MacOS")
           .Append(PRODUCT_FULLNAME_STRING "_test");
   return {{updater_setup_path,
            base::Version(base::UTF16ToUTF8(
-               FileVersionInfo::CreateFileVersionInfo(updater_setup_path)
+               FileVersionInfo::CreateFileVersionInfo(updater_bundle_path)
                    ->file_version()))}};
 }
 
@@ -388,7 +389,7 @@ void InstallApp(UpdaterScope scope,
                 const base::Version& version) {
   RegistrationRequest registration;
   registration.app_id = app_id;
-  registration.version = version;
+  registration.version = version.GetString();
   RegisterApp(scope, registration);
 }
 

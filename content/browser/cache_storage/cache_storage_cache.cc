@@ -319,9 +319,8 @@ std::vector<std::string> FindDuplicateOperations(
   // have the same URL.  This results in an average complexity of O(n log n).
   // If the entire list has entries with the same URL and different VARY
   // headers then this devolves into O(n^2).
-  for (BatchOperation* const* outer = sorted.cbegin(); outer != sorted.cend();
-       UNSAFE_TODO(++outer)) {
-    const BatchOperation* outer_op = *outer;
+  for (size_t i = 0; i < sorted.size(); ++i) {
+    const BatchOperation* outer_op = sorted[i];
 
     // Note, the spec checks CacheQueryOptions like ignoreSearch, etc, but
     // currently there is no way for script to trigger a batch operation with
@@ -338,9 +337,8 @@ std::vector<std::string> FindDuplicateOperations(
       continue;
     }
 
-    for (BatchOperation* const* inner = std::next(outer);
-         inner != sorted.cend(); UNSAFE_TODO(++inner)) {
-      const BatchOperation* inner_op = *inner;
+    for (size_t j = i + 1; j < sorted.size(); ++j) {
+      const BatchOperation* inner_op = sorted[j];
       // Since the list is sorted we can stop looking at neighbors after
       // the first different URL.
       if (outer_op->request->url != inner_op->request->url) {
@@ -443,11 +441,6 @@ blink::mojom::FetchAPIRequestPtr CreateRequest(
 blink::mojom::FetchAPIResponsePtr CreateResponse(
     const proto::CacheMetadata& metadata,
     const std::u16string& cache_name) {
-  // We no longer support Responses with only a single URL entry.  This field
-  // was deprecated in M57.
-  if (metadata.response().has_url())
-    return nullptr;
-
   std::vector<GURL> url_list;
   url_list.reserve(metadata.response().url_list_size());
   for (int i = 0; i < metadata.response().url_list_size(); ++i)
@@ -1897,7 +1890,7 @@ void CacheStorageCache::PutDidCreateEntry(
   proto::CacheRequest* request_metadata = metadata.mutable_request();
   request_metadata->set_method(put_context->request->method);
   if (put_context->request->url.has_ref())
-    request_metadata->set_fragment(put_context->request->url.ref());
+    request_metadata->set_fragment(put_context->request->url.GetRef());
 
   for (const auto& header : put_context->request->headers) {
     DCHECK_EQ(std::string::npos, header.first.find('\0'));
@@ -2505,6 +2498,7 @@ void CacheStorageCache::CreateBackend(ErrorCallback callback) {
   disk_cache::BackendResult result = disk_cache::CreateCacheBackend(
       cache_type, net::CACHE_BACKEND_SIMPLE, /*file_operations=*/nullptr, path_,
       max_bytes, disk_cache::ResetHandling::kNeverReset, /*net_log=*/nullptr,
+      /*cache_encryption_delegate=*/nullptr,
       base::BindOnce(&CacheStorageCache::DeleteBackendCompletedIO,
                      weak_ptr_factory_.GetWeakPtr()),
       std::move(split_callback.first));

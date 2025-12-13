@@ -63,8 +63,6 @@ NSString* const kToolbarShareButtonIdentifier =
     @"kToolbarShareButtonIdentifier";
 NSString* const kToolbarNewTabButtonIdentifier =
     @"kToolbarNewTabButtonIdentifier";
-NSString* const kToolbarCancelOmniboxEditButtonIdentifier =
-    @"kToolbarCancelOmniboxEditButtonIdentifier";
 
 const NSInteger kTabGridButtonFontSize = 13;
 

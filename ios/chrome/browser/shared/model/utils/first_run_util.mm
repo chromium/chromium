@@ -33,3 +33,12 @@ BOOL IsFirstRunRecent(const base::TimeDelta& time_delta) {
   BOOL is_first_run_recent = base::Time::Now() - first_run_time < time_delta;
   return is_first_run_recent;
 }
+
+base::TimeDelta ClientAge() {
+  std::optional<base::File::Info> info = FirstRun::GetSentinelInfo();
+  if (!info.has_value()) {
+    return base::TimeDelta();
+  }
+  base::Time first_run_time = info.value().creation_time;
+  return base::Time::Now() - first_run_time;
+}

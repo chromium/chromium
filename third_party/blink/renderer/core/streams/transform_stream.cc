@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/streams/transform_stream.h"
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -31,10 +32,10 @@ class TransformStream::FlushAlgorithm final : public StreamAlgorithm {
   explicit FlushAlgorithm(TransformStreamTransformer* transformer)
       : transformer_(transformer) {}
 
-  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) override {
-    DCHECK_EQ(argc, 0);
+  ScriptPromise<IDLUndefined> Run(
+      ScriptState* script_state,
+      base::span<v8::Local<v8::Value>> argv) override {
+    DCHECK_EQ(argv.size(), 0u);
     DCHECK(controller_);
     v8::Isolate* isolate = script_state->GetIsolate();
     auto* transformer_script_state = transformer_->GetScriptState();
@@ -82,10 +83,10 @@ class TransformStream::TransformAlgorithm final : public StreamAlgorithm {
   explicit TransformAlgorithm(TransformStreamTransformer* transformer)
       : transformer_(transformer) {}
 
-  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) override {
-    DCHECK_EQ(argc, 1);
+  ScriptPromise<IDLUndefined> Run(
+      ScriptState* script_state,
+      base::span<v8::Local<v8::Value>> argv) override {
+    DCHECK_EQ(argv.size(), 1u);
     DCHECK(controller_);
     v8::Isolate* isolate = script_state->GetIsolate();
     auto* transformer_script_state = transformer_->GetScriptState();
@@ -178,8 +179,10 @@ TransformStream* TransformStream::Create(
   auto* stream = Create(script_state, CreateTrivialStartAlgorithm(),
                         transform_algorithm, flush_algorithm, 1, size_algorithm,
                         0, size_algorithm, exception_state);
-  DCHECK(stream);
-  DCHECK(!exception_state.HadException());
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+  CHECK(stream);
   TransformStreamDefaultController* controller =
       stream->transform_stream_controller_;
   transform_algorithm->SetController(controller);
@@ -229,6 +232,9 @@ TransformStream* TransformStream::Create(
              writable_size_algorithm, readable_high_water_mark,
              readable_size_algorithm, exception_state);
 
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
   // 10. Let controller be ObjectCreate(the original value of
   //     TransformStreamDefaultController's prototype property).
   auto* controller = MakeGarbageCollected<TransformStreamDefaultController>();
@@ -246,7 +252,6 @@ TransformStream* TransformStream::Create(
     CHECK(rethrow_scope.HasCaught());
     return nullptr;
   }
-
   // 13. Resolve startPromise with startResult.
   start_promise->Resolve(start_result);
 
@@ -310,10 +315,10 @@ class TransformStream::DefaultSinkWriteAlgorithm final
   explicit DefaultSinkWriteAlgorithm(TransformStream* stream)
       : stream_(stream) {}
 
-  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) override {
-    DCHECK_EQ(argc, 1);
+  ScriptPromise<IDLUndefined> Run(
+      ScriptState* script_state,
+      base::span<v8::Local<v8::Value>> argv) override {
+    DCHECK_EQ(argv.size(), 1u);
     const auto chunk = argv[0];
 
     // https://streams.spec.whatwg.org/#transform-stream-default-sink-write-algorithm
@@ -407,10 +412,10 @@ class TransformStream::DefaultSinkAbortAlgorithm final
   explicit DefaultSinkAbortAlgorithm(TransformStream* stream)
       : stream_(stream) {}
 
-  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) override {
-    DCHECK_EQ(argc, 1);
+  ScriptPromise<IDLUndefined> Run(
+      ScriptState* script_state,
+      base::span<v8::Local<v8::Value>> argv) override {
+    DCHECK_EQ(argv.size(), 1u);
     const auto reason = argv[0];
 
     // https://streams.spec.whatwg.org/#transform-stream-default-sink-abort-algorithm
@@ -436,21 +441,19 @@ class TransformStream::DefaultSinkCloseAlgorithm final
   explicit DefaultSinkCloseAlgorithm(TransformStream* stream)
       : stream_(stream) {}
 
-  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) override {
-    DCHECK_EQ(argc, 0);
+  ScriptPromise<IDLUndefined> Run(
+      ScriptState* script_state,
+      base::span<v8::Local<v8::Value>> argv) override {
+    DCHECK_EQ(argv.size(), 0u);
     // https://streams.spec.whatwg.org/#transform-stream-default-sink-close-algorithm
     // 1. Let readable be stream.[[readable]].
-
     // 2. Let controller be stream.[[transformStreamController]].
     TransformStreamDefaultController* controller =
         stream_->transform_stream_controller_;
 
     // 3. Let flushPromise be the result of performing
     //    controller.[[flushAlgorithm]].
-    auto flush_promise =
-        controller->flush_algorithm_->Run(script_state, 0, nullptr);
+    auto flush_promise = controller->flush_algorithm_->Run(script_state, {});
 
     // 4. Perform ! TransformStreamDefaultControllerClearAlgorithms(controller).
     TransformStreamDefaultController::ClearAlgorithms(controller);
@@ -542,10 +545,10 @@ class TransformStream::DefaultSourcePullAlgorithm final
   explicit DefaultSourcePullAlgorithm(TransformStream* stream)
       : stream_(stream) {}
 
-  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) override {
-    DCHECK_EQ(argc, 0);
+  ScriptPromise<IDLUndefined> Run(
+      ScriptState* script_state,
+      base::span<v8::Local<v8::Value>> argv) override {
+    DCHECK_EQ(argv.size(), 0u);
 
     // https://streams.spec.whatwg.org/#transform-stream-default-source-pull
     // 1. Assert: stream.[[backpressure]] is true.
@@ -578,10 +581,10 @@ class TransformStream::DefaultSourceCancelAlgorithm final
   explicit DefaultSourceCancelAlgorithm(TransformStream* stream)
       : stream_(stream) {}
 
-  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) override {
-    DCHECK_EQ(argc, 1);
+  ScriptPromise<IDLUndefined> Run(
+      ScriptState* script_state,
+      base::span<v8::Local<v8::Value>> argv) override {
+    DCHECK_EQ(argv.size(), 1u);
 
     // https://streams.spec.whatwg.org/#initialize-transform-stream
     // 7. Let cancelAlgorithm be the following steps, taking a reason argument:
@@ -782,7 +785,11 @@ void TransformStream::Initialize(
       script_state, start_algorithm, write_algorithm, close_algorithm,
       abort_algorithm, writable_high_water_mark, writable_size_algorithm,
       exception_state);
-  DCHECK(!exception_state.HadException());
+  if (exception_state.HadException()) {
+    return;
+  }
+
+  CHECK(stream->writable_);
 
   // 6. Let pullAlgorithm be the following steps:
   //    a. Return ! TransformStreamDefaultSourcePullAlgorithm(stream).
@@ -802,7 +809,10 @@ void TransformStream::Initialize(
   stream->readable_ = ReadableStream::Create(
       script_state, start_algorithm, pull_algorithm, cancel_algorithm,
       readable_high_water_mark, readable_size_algorithm, exception_state);
-  DCHECK(!exception_state.HadException());
+  if (exception_state.HadException()) {
+    return;
+  }
+  CHECK(stream->readable_);
 
   //  9. Set stream.[[backpressure]] and stream.[[backpressureChangePromise]] to
   //     undefined.

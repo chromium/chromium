@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Директна интернет-врска</translation>
 <translation id="1272293450992660632">PIN-вредностите не се совпаѓаат.</translation>
+<translation id="1279040297980392566">Се чека да се доврши скенирањето, обидете се повторно подоцна</translation>
 <translation id="1280820357415527819">Се пребаруваат мобилни мрежи</translation>
 <translation id="1293556467332435079">Датотеки</translation>
 <translation id="1297922636971898492">Google Диск не е достапен во моментов. Поставувањето автоматски ќе се рестартира штом ќе се активира Google Диск.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">Избрана е 1 датотека</translation>
 <translation id="3817579325494460411">Не е обезбедена</translation>
 <translation id="3819448694985509187">Погрешен PIN. Имате уште 1 обид.</translation>
-<translation id="3822559385185038546">Ова прокси го наметнува администраторот</translation>
 <translation id="3830674330436234648">Не е достапна репродукција</translation>
 <translation id="383652340667548381">српска</translation>
 <translation id="3839045880592694915">Вашиот модем не може да се поврзе поради забрана од операторот. За повеќе детали, контактирајте со операторот.</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Повеќе опции</translation>
 <translation id="5602622065581044566">бугарски со фонетска тастатура</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
+<translation id="560739212255190568">Администраторот постави правила за отфрлање прокси покрај наметнувањето на следново прокси</translation>
 <translation id="5618330573454123917">Датотекава е создадена за компјутер што користи софтвер на Macintosh. Таа не е компатибилна со вашиот уред што извршува Chrome OS. <ph name="BEGIN_LINK_HELP" />Дознајте повеќе<ph name="END_LINK_HELP" /> за отворање датотеки во Chrome OS.</translation>
 <translation id="5625294776298156701">тамилски со тастатура Tamil99</translation>
 <translation id="5633226425545095130">Ако ја преместите ставкава, таа ќе биде споделена со сите кои можат да ја видат споделената папка „<ph name="DESTINATION_NAME" />“.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, детали</translation>
 <translation id="8545476925160229291">англиски (САД)</translation>
 <translation id="854655314928502177">Автоматско откривање линк на прокси на веб:</translation>
+<translation id="8547747809824590510">Администраторот постави правила за отфрлање прокси</translation>
 <translation id="8549186985808798022">италијански</translation>
 <translation id="8551494947769799688">летонски</translation>
 <translation id="8560515948038859357">кантонски</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Веќе постои датотека со име „<ph name="FILE_NAME" />“. Одберете друго име.</translation>
 <translation id="9046895021617826162">Поврзувањето не успеа</translation>
 <translation id="9065512565307033593">Ако не успеете да потврдите, пристапот до мрежата ќе ви биде оневозможен.</translation>
+<translation id="9079844694307518094">Администраторот го наметнува следниов прокси</translation>
 <translation id="908378762078012445">руски со фонетска тастатура AATSEEL</translation>
 <translation id="9086302186042011942">Синхронизирање</translation>
 <translation id="9099674669267916096">Број на страници</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">Инсталирањето успешно започна.</translation>
 <translation id="9219103736887031265">Слики</translation>
 <translation id="9219908252191632183">Месечина</translation>
+<translation id="931652069802536959">Мрежата е блокирана со правило</translation>
 <translation id="938470336146445890">Инсталирајте сертификат на корисник.</translation>
 <translation id="939736085109172342">Нова папка</translation>
 <translation id="943972244133411984">Изменето од</translation>

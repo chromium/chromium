@@ -87,6 +87,9 @@ public class PageInfoAdPersonalizationController extends PageInfoPreferenceSubpa
     public void updateRowIfNeeded() {}
 
     @Override
+    public void updateSubpageIfNeeded() {}
+
+    @Override
     public void onSubpageRemoved() {
         removeSubpageFragment();
         mSubPage = null;

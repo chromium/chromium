@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
@@ -189,8 +188,6 @@ class TranslateAgentBrowserTest : public ChromeRenderViewTest {
  protected:
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(
-        translate::kTFLiteLanguageDetectionEnabled);
     translate_agent_ = new TestTranslateAgent(GetMainRenderFrame());
 
     GetMainRenderFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
@@ -212,7 +209,6 @@ class TranslateAgentBrowserTest : public ChromeRenderViewTest {
 
   raw_ptr<TestTranslateAgent, DanglingUntriaged> translate_agent_;
   FakeContentTranslateDriver fake_translate_driver_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that the browser gets notified of the translation failure if the

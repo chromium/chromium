@@ -136,6 +136,8 @@ base::Value::Dict SyncHandler::GetSyncInfo() const {
   syncer::UserSelectableTypeSet types =
       sync_service->GetUserSettings()->GetSelectedTypes();
 
+  // TODO(crbug.com/40066949): Clean this up once Sync-the-feature users are
+  // migrated to ConsentLevel::kSignin.
   dict.Set("isSyncingPasswords",
            (sync_service->IsSyncFeatureEnabled() &&
             types.Has(syncer::UserSelectableType::kPasswords)));
@@ -226,6 +228,12 @@ void SyncHandler::OnStateChanged(syncer::SyncService* sync_service) {
         base::BindOnce(&SyncHandler::FireOnGetLocalDataDescriptionReceived,
                        weak_ptr_factory_.GetWeakPtr()));
   }
+}
+
+void SyncHandler::OnSyncShutdown(syncer::SyncService* sync_service) {
+  // Unreachable, since this class is tied to UI which gets destroyed before the
+  // Profile and its KeyedServices.
+  NOTREACHED();
 }
 
 void SyncHandler::FireOnGetLocalDataDescriptionReceived(

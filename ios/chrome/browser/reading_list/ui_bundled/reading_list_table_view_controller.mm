@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_table_view_controller.h"
+
+#import <array>
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
@@ -42,7 +39,6 @@
 #import "ios/chrome/browser/shared/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -259,13 +255,10 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   self.tableView.dragDelegate = self.dragDropHandler;
   self.tableView.dragInteractionEnabled = true;
   self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitPreferredContentSizeCategory.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(verifyTableIsEmpty)];
-  }
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitPreferredContentSizeCategory.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(verifyTableIsEmpty)];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -390,6 +383,12 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 - (UIContextMenuConfiguration*)tableView:(UITableView*)tableView
     contextMenuConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath
                                         point:(CGPoint)point {
+  // TODO(crbug.com/428177163): Remove this workaround when the underlying iOS
+  // issue handling context menu presentation during an active drag/drop session
+  // is resolved.
+  if (tableView.hasActiveDrag || tableView.hasActiveDrop) {
+    return nil;
+  }
   if (self.isEditing) {
     // Don't show the context menu when currently in editing mode.
     return nil;
@@ -1169,11 +1168,10 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   TableViewModel* model = self.tableViewModel;
   __block NSUInteger removedSectionCount = 0;
   void (^updates)(void) = ^{
-    ReadingListSectionIdentifier sections[] = {kSectionIdentifierRead,
-                                               kSectionIdentifierUnread};
-    for (size_t i = 0; i < std::size(sections); ++i) {
-      ReadingListSectionIdentifier section = sections[i];
-
+    static constexpr auto kSections =
+        std::to_array<ReadingListSectionIdentifier>(
+            {kSectionIdentifierRead, kSectionIdentifierUnread});
+    for (ReadingListSectionIdentifier section : kSections) {
       if ([model hasSectionForSectionIdentifier:section] &&
           ![self hasItemInSection:section]) {
         // If `section` has no items, remove it from the model and the table

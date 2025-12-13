@@ -14,7 +14,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -29,8 +28,10 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_logging.h"
 #include "chrome/browser/web_applications/web_app_profile_deletion_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
@@ -40,6 +41,7 @@ namespace web_app {
 
 WebAppCommandManager::WebAppCommandManager(Profile* profile)
     : profile_(profile) {}
+
 WebAppCommandManager::~WebAppCommandManager() {
   // Make sure that unittests & browsertests correctly shut down the manager.
   // This ensures that all tests also cover shutdown.
@@ -55,6 +57,10 @@ void WebAppCommandManager::SetProvider(base::PassKey<WebAppProvider>,
 
 void WebAppCommandManager::Start() {
   started_ = true;
+  log_ = PersistableLog::Create(
+      PersistableLog::GetLogPath(profile_, "CommandManager.log"),
+      PersistableLog::GetMode(), PersistableLog::GetMaxInMemoryLogEntries(),
+      provider_->file_utils());
   std::vector<std::pair<std::unique_ptr<internal::CommandBase>, base::Location>>
       to_schedule;
   std::swap(commands_waiting_for_start_, to_schedule);
@@ -71,6 +77,7 @@ void WebAppCommandManager::ScheduleCommand(
 
   command->SetScheduledLocation(base::PassKey<WebAppCommandManager>(),
                                 location);
+  command->SetScheduledAt(base::PassKey<WebAppCommandManager>());
   command->SetCommandManager(base::PassKey<WebAppCommandManager>(), this);
   internal::CommandBase::Id command_id = command->id();
   CHECK(!base::Contains(commands_, command_id));
@@ -164,11 +171,6 @@ void WebAppCommandManager::Shutdown() {
 }
 
 base::Value WebAppCommandManager::ToDebugValue() {
-  base::Value::List command_log;
-  for (const auto& command_value : command_debug_log_) {
-    command_log.Append(command_value.Clone());
-  }
-
   base::Value::List queued;
   for (const auto& [command, location] : commands_waiting_for_start_) {
     queued.Append(command->GetDebugValue().Clone());
@@ -178,18 +180,16 @@ base::Value WebAppCommandManager::ToDebugValue() {
   }
 
   base::Value::Dict state;
-  state.Set("command_log", std::move(command_log));
+  if (log_) {
+    state.Set("command_log", log_->CloneToList());
+  }
   state.Set("command_queue", base::Value(std::move(queued)));
   return base::Value(std::move(state));
 }
 
-void WebAppCommandManager::LogToInstallManager(base::Value::Dict log) {
-#if DCHECK_IS_ON()
-  // This is wrapped with DCHECK_IS_ON() to prevent calling DebugString() in
-  // production builds.
-  DVLOG(1) << log.DebugString();
-#endif
-  provider_->install_manager().TakeCommandErrorLog(PassKey(), std::move(log));
+const PersistableLog& WebAppCommandManager::log() const {
+  CHECK(log_);
+  return *log_;
 }
 
 bool WebAppCommandManager::IsInstallingForWebContents(
@@ -298,22 +298,15 @@ void WebAppCommandManager::ClearSharedWebContentsIfUnused() {
 
 void WebAppCommandManager::AddCommandToLog(
     const internal::CommandBase& command) {
-  AddValueToLog(base::Value(command.GetDebugValue().Clone()));
+  if (log_) {
+    log_->Append(command.GetDebugValue().Clone());
+  }
 }
 
 void WebAppCommandManager::AddValueToLog(base::Value value) {
   DCHECK(!value.is_none());
-#if DCHECK_IS_ON()
-  // This is wrapped with DCHECK_IS_ON() to prevent calling DebugString() in
-  // production builds.
-  DVLOG(1) << value.DebugString();
-#endif
-  static const size_t kMaxLogLength =
-      base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo) ? 1000
-                                                                     : 20;
-  command_debug_log_.push_front(std::move(value));
-  if (command_debug_log_.size() > kMaxLogLength) {
-    command_debug_log_.resize(kMaxLogLength);
+  if (log_) {
+    log_->AppendValue(std::move(value));
   }
 }
 

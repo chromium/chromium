@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_CALCULATION_EXPRESSION_NODE_H_
 
 #include "base/check_op.h"
+#include "third_party/blink/renderer/platform/geometry/color_channel_keyword.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -47,6 +48,7 @@ enum class CalculationOperator {
   kAcos,
   kAtan,
   kAtan2,
+  kRandom,
 };
 
 // Represents an expression composed of numbers, |PixelsAndPercent| and multiple
@@ -60,9 +62,6 @@ class PLATFORM_EXPORT CalculationExpressionNode
   virtual float Evaluate(float max_value, const EvaluationInput&) const = 0;
   bool operator==(const CalculationExpressionNode& other) const {
     return Equals(other);
-  }
-  bool operator!=(const CalculationExpressionNode& other) const {
-    return !operator==(other);
   }
 
   bool HasAuto() const { return has_auto_; }

@@ -5,13 +5,14 @@
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
 import android.content.Context;
-import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger;
+import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.Event;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.ui.signin.ConfirmManagedSyncDataDialogCoordinator;
@@ -25,8 +26,6 @@ import java.lang.annotation.RetentionPolicy;
 /** Helper for showing management notice dialog and record metrics during the fre sign-in flow. */
 @NullMarked
 final class FreManagementNoticeDialogHelper {
-    private static final String UNMANAGED_SIGNIN_DURATION_NAME =
-            "Signin.Android.FREUnmanagedAccountSigninDuration";
     private static final String FRE_SIGNIN_EVENTS_NAME = "Signin.Android.FRESigninEvents";
 
     @IntDef({
@@ -87,19 +86,16 @@ final class FreManagementNoticeDialogHelper {
     static void checkAccountManagementAndSignIn(
             CoreAccountInfo coreAccountInfo,
             SigninManager signinManager,
+            SigninFlowTimestampsLogger signinFlowLogger,
             @SigninAccessPoint int accessPoint,
             @Nullable SignInCallback callback,
             Context context,
             ModalDialogManager modalDialogManager) {
-        long startTimeMillis = SystemClock.uptimeMillis();
         if (signinManager.getUserAcceptedAccountManagement()) {
             SignInCallback wrappedCallback =
                     new WrappedSigninCallback(callback) {
                         @Override
                         public void onSignInComplete() {
-                            RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                                    UNMANAGED_SIGNIN_DURATION_NAME,
-                                    SystemClock.uptimeMillis() - startTimeMillis);
                             recordFREEvent(FRESigninEvents.SIGNIN_COMPLETE_UNMANAGED);
                             super.onSignInComplete();
                         }
@@ -122,11 +118,11 @@ final class FreManagementNoticeDialogHelper {
                             isAccountManaged,
                             coreAccountInfo,
                             signinManager,
+                            signinFlowLogger,
                             accessPoint,
                             callback,
                             context,
-                            modalDialogManager,
-                            startTimeMillis);
+                            modalDialogManager);
                 });
     }
 
@@ -134,19 +130,17 @@ final class FreManagementNoticeDialogHelper {
             Boolean isAccountManaged,
             CoreAccountInfo coreAccountInfo,
             SigninManager signinManager,
+            SigninFlowTimestampsLogger signinFlowLogger,
             @SigninAccessPoint int accessPoint,
             @Nullable SignInCallback callback,
             Context context,
-            ModalDialogManager modalDialogManager,
-            long startTimeMillis) {
+            ModalDialogManager modalDialogManager) {
+        signinFlowLogger.recordTimestamp(Event.MANAGEMENT_STATUS_LOADED);
         if (!isAccountManaged) {
             SignInCallback wrappedCallback =
                     new WrappedSigninCallback(callback) {
                         @Override
                         public void onSignInComplete() {
-                            RecordHistogram.deprecatedRecordMediumTimesHistogram(
-                                    UNMANAGED_SIGNIN_DURATION_NAME,
-                                    SystemClock.uptimeMillis() - startTimeMillis);
                             recordFREEvent(FRESigninEvents.SIGNIN_COMPLETE_UNMANAGED);
                             super.onSignInComplete();
                         }
@@ -183,6 +177,7 @@ final class FreManagementNoticeDialogHelper {
                 new ConfirmManagedSyncDataDialogCoordinator.Listener() {
                     @Override
                     public void onConfirm() {
+                        signinFlowLogger.onManagementNoticeAccepted();
                         signinManager.setUserAcceptedAccountManagement(true);
                         recordFREEvent(FRESigninEvents.SIGNING_IN_MANAGED);
                         signinManager.signin(coreAccountInfo, accessPoint, wrappedCallback);
@@ -200,6 +195,7 @@ final class FreManagementNoticeDialogHelper {
                 modalDialogManager,
                 listener,
                 signinManager.extractDomainName(coreAccountInfo.getEmail()));
+        signinFlowLogger.onManagementNoticeShown();
     }
 
     private static void recordFREEvent(@FRESigninEvents int event) {

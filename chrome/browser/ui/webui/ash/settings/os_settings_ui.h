@@ -47,15 +47,10 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom-forward.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
-
-namespace ui {
-class ColorChangeHandler;
-}  // namespace ui
 
 class AppManagementPageHandlerFactory;
 
@@ -216,11 +211,6 @@ class OSSettingsUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<chromeos::auth::mojom::InSessionAuth> receiver);
 
-  // Binds to the Jelly dynamic color Mojo
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          receiver);
-
   // Binds to the Google Drive page handler mojo.
   void BindInterface(
       mojo::PendingReceiver<google_drive::mojom::PageHandlerFactory> receiver);
@@ -267,9 +257,6 @@ class OSSettingsUI : public ui::MojoWebUIController {
   std::unique_ptr<DateTimeHandlerFactory> date_time_handler_factory_;
   std::unique_ptr<MagicBoostNoticePageHandlerFactory>
       magic_boost_notice_page_handler_factory_;
-
-  // This handler notifies the WebUI when the color provider changes.
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

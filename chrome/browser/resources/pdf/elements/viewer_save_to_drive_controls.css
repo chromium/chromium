@@ -15,7 +15,7 @@
   align-items: center;
 }
 
-:host([uploading]) #save {
+:host([state='uploading']) #save {
   z-index: 1;
 
   /* The following is to force using the same dark mode color even

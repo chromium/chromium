@@ -7,14 +7,12 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/apps/app_service",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/fileapi",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/browser_process.h",
-  "+chrome/browser/chromeos/extensions/file_system_provider",
   "+chrome/browser/extensions/chrome_app_icon_loader.h",
   "+chrome/browser/extensions/chrome_extension_system_factory.h",
   "+chrome/browser/extensions/window_controller_list.h",

@@ -7,6 +7,7 @@
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_permission_mode.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/async_iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_async_iterator_file_system_directory_handle.h"
@@ -66,10 +67,10 @@ class MODULES_EXPORT FileSystemDirectoryHandle final
   class IterationSource;
 
   void QueryPermissionImpl(
-      bool writable,
+      mojom::blink::FileSystemAccessPermissionMode mode,
       base::OnceCallback<void(mojom::blink::PermissionStatus)>) override;
   void RequestPermissionImpl(
-      bool writable,
+      mojom::blink::FileSystemAccessPermissionMode mode,
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                               mojom::blink::PermissionStatus)>) override;
   void MoveImpl(
@@ -89,7 +90,7 @@ class MODULES_EXPORT FileSystemDirectoryHandle final
       override;
   void GetUniqueIdImpl(
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
-                              const WTF::String&)>) override;
+                              const String&)>) override;
   void GetCloudIdentifiersImpl(
       base::OnceCallback<void(
           mojom::blink::FileSystemAccessErrorPtr,

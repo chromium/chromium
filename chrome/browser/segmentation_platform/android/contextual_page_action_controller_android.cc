@@ -21,7 +21,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ContextualPageActionController_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 // TODO(shaktisahu): Split this file to extract a JNI independent class that
 // can be unit tested.
@@ -65,8 +65,8 @@ void RunGetClassificationResultCallback(
 static void JNI_ContextualPageActionController_ComputeContextualPageAction(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& j_input_context,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jobject>& j_input_context,
+    const JavaRef<jobject>& j_callback) {
   if (!profile) {
     RunGetClassificationResultCallback(
         j_callback, segmentation_platform::ClassificationResult(
@@ -97,3 +97,5 @@ static void JNI_ContextualPageActionController_ComputeContextualPageAction(
       base::BindOnce(&RunGetClassificationResultCallback,
                      base::android::ScopedJavaGlobalRef<jobject>(j_callback)));
 }
+
+DEFINE_JNI(ContextualPageActionController)

@@ -215,8 +215,11 @@ void DirectManipulationHelper::SetSizeInPixels(
 }
 
 void DirectManipulationHelper::OnPointerHitTest(WPARAM w_param) {
+  if (!event_handler_) {
+    return;
+  }
+
   // Update the device scale factor.
-  DCHECK(event_handler_);
   event_handler_->SetDeviceScaleFactor(
       display::win::GetScreenWin()->GetScaleFactorForHWND(window_));
 

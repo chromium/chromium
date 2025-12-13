@@ -4,14 +4,11 @@
 
 source_set("modals") {
   sources = [
-    "infobar_edit_address_profile_modal_consumer.h",
     "infobar_save_address_profile_modal_consumer.h",
     "infobar_save_address_profile_modal_consumer.mm",
     "infobar_save_address_profile_modal_delegate.h",
-    "infobar_save_address_profile_table_view_controller.h",
-    "infobar_save_address_profile_table_view_controller.mm",
-    "legacy_infobar_edit_address_profile_table_view_controller.h",
-    "legacy_infobar_edit_address_profile_table_view_controller.mm",
+    "infobar_save_address_profile_view_controller.h",
+    "infobar_save_address_profile_view_controller.mm",
   ]
   deps = [
     "//base",
@@ -30,8 +27,10 @@ source_set("modals") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:styler",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
     "//url",
   ]
@@ -39,10 +38,7 @@ source_set("modals") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "infobar_save_address_profile_table_view_controller_unittest.mm",
-    "legacy_infobar_edit_address_profile_table_view_controller_unittest.mm",
-  ]
+  sources = [ "infobar_save_address_profile_view_controller_unittest.mm" ]
   deps = [
     ":modals",
     "//base/test:test_support",
@@ -53,11 +49,13 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/ui_bundled:ui_type",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor:autofill_shared_ui",
+    "//ios/chrome/browser/autofill/ui_bundled/address_editor:constants",
     "//ios/chrome/browser/infobars/ui_bundled/modals",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/common/ui/util",
     "//ios/chrome/test:test_support",
     "//testing/gtest",
     "//third_party/ocmock",

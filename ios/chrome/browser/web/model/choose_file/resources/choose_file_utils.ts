@@ -55,6 +55,15 @@ enum AcceptType {
   APPLE_ACCEPT = 9,
 }
 
+// The capture type sent to the browser.
+// LINT.IfChange
+enum CaptureType {
+  NONE = 0,
+  USER = 1,
+  ENVIRONMENT = 2,
+}
+// LINT.ThenChange(/ios/chrome/browser/web/model/choose_file/choose_file_util.h)
+
 // Converts a single accept string to an AcceptType
 function stringToAcceptType(acceptString: string): AcceptType {
   let accept = acceptString.trim().toLowerCase();
@@ -116,6 +125,18 @@ function multipleStringToAcceptType(acceptString: string): AcceptType {
     return AcceptType.MIXED_ACCEPT;
   }
   return acceptType;
+}
+
+// Converts a capture string to a CaptureType
+function stringToCaptureType(captureString: string|null): CaptureType {
+  const capture = captureString?.trim().toLowerCase();
+  if (capture === undefined) {
+    return CaptureType.NONE;
+  }
+  if (capture === 'user') {
+    return CaptureType.USER;
+  }
+  return CaptureType.ENVIRONMENT;
 }
 
 // Returns whether `ch` is a string with a single UTF-16 code unit which is a
@@ -210,11 +231,15 @@ function parseAcceptAttributeFileExtensions(acceptString: string): string {
 // Describes the state of a file input which was just clicked.
 interface HtmlInputElementState {
   hasMultiple: boolean;
+  hasWebkitdirectory: boolean;
   acceptType: AcceptType;
   mimeTypes: string;
   fileExtensions: string;
   hasSelectedFile: boolean;
   documentContainsInput: boolean;
+  screenLocation: {x: number, y: number};
+  pointerType: string;
+  capture: CaptureType;
 }
 
 /**
@@ -222,11 +247,13 @@ interface HtmlInputElementState {
  * `target` after it was clicked. Otherwise returns `null`.
  *
  * @param target - The HTMLInputElement that was clicked.
+ * @param screenLocation - The location of the click event.
  * @returns An object describing the state of the input element, or null if the
  *     target is not a file input.
  */
-export function processHTMLInputElementClick(target: HTMLInputElement):
-    HtmlInputElementState|null {
+export function processHTMLInputElementClick(
+    target: HTMLInputElement,
+    pointerEvent: PointerEvent|null): HtmlInputElementState|null {
   if (target.type.toLowerCase() !== 'file') {
     return null;
   }
@@ -240,13 +267,20 @@ export function processHTMLInputElementClick(target: HTMLInputElement):
     hasFiles = true;
   }
 
+  const capture = stringToCaptureType(target.getAttribute('capture'));
+
   acceptString = acceptString ? acceptString : '';
   return {
     hasMultiple: target.hasAttribute('multiple'),
+    hasWebkitdirectory: target.hasAttribute('webkitdirectory'),
     acceptType: accept,
     mimeTypes: parseAcceptAttributeMimeTypes(acceptString),
     fileExtensions: parseAcceptAttributeFileExtensions(acceptString),
     hasSelectedFile: hasFiles,
     documentContainsInput: document.contains(target),
+    screenLocation:
+        {x: pointerEvent?.screenX ?? 0, y: pointerEvent?.screenY ?? 0},
+    pointerType: pointerEvent?.pointerType ?? '',
+    capture: capture,
   };
 }

@@ -94,6 +94,12 @@ class NET_EXPORT ContextHostResolver : public HostResolver {
   }
 
  private:
+  std::unique_ptr<ResolveHostRequest> CreateRequestInternal(
+      HostResolver::Host host,
+      NetworkAnonymizationKey network_anonymization_key,
+      NetLogWithSource net_log,
+      std::optional<ResolveHostParameters> optional_parameters);
+
   std::unique_ptr<HostResolverManager> owned_manager_;
   // `manager_` might point to `owned_manager_`. It must be declared last and
   // cleared first.

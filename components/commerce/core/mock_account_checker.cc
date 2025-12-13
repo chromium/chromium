@@ -5,9 +5,11 @@
 #include "components/commerce/core/mock_account_checker.h"
 
 #include "components/commerce/core/pref_names.h"
+#include "components/commerce/core/prefs.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace commerce {
 
@@ -70,7 +72,7 @@ void MockAccountChecker::SetPrefs(PrefService* prefs) {
 }
 
 void MockAccountChecker::RegisterCommercePrefs(PrefRegistrySimple* registry) {
-  RegisterPrefs(registry);
+  RegisterProfilePrefs(registry);
 
   registry->RegisterIntegerPref(
       optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed,

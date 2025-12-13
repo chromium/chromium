@@ -94,6 +94,7 @@ class WTF_EXPORT StringImpl {
   void* operator new(size_t);
   void* operator new(size_t, void* ptr) { return ptr; }
   void operator delete(void*);
+  void operator delete(void*, size_t);
 
   // Used to construct static strings, which have a special ref_count_ that can
   // never hit zero. This means that the static string will never be destroyed.
@@ -226,6 +227,8 @@ class WTF_EXPORT StringImpl {
   size_t CharactersSizeInBytes() const {
     return length() * (Is8Bit() ? sizeof(LChar) : sizeof(UChar));
   }
+
+  ALWAYS_INLINE size_t GetAllocatedSize() const;
 
   bool IsAtomic() const {
     return hash_and_flags_.load(std::memory_order_acquire) & kIsAtomic;
@@ -700,6 +703,13 @@ ALWAYS_INLINE bool StringImpl::ContainsOnlyASCIIOrEmpty() const {
   return ComputeASCIIFlags() & kContainsOnlyAscii;
 }
 
+ALWAYS_INLINE size_t StringImpl::GetAllocatedSize() const {
+  const size_t size = CharactersSizeInBytes() + sizeof(StringImpl);
+  DCHECK(Is8Bit() ? size == AllocationSize<LChar>(length())
+                  : size == AllocationSize<UChar>(length()));
+  return size;
+}
+
 ALWAYS_INLINE bool StringImpl::IsLowerASCII() const {
   uint32_t flags = hash_and_flags_.load(std::memory_order_relaxed);
   if (flags & kAsciiPropertyCheckDone)
@@ -746,6 +756,12 @@ WTF_EXPORT int CodeUnitCompareIgnoringASCIICase(const StringImpl*,
                                                 const StringImpl*);
 WTF_EXPORT int CodeUnitCompareIgnoringASCIICase(const StringImpl*,
                                                 const LChar*);
+
+template <typename CharacterType1, typename CharacterType2>
+int CodeUnitCompareIgnoringAsciiCase(base::span<const CharacterType1> c1,
+                                     base::span<const CharacterType2> c2) {
+  return CodeUnitCompare(c1, c2, [](auto c) { return ToASCIILower(c); });
+}
 
 template <typename CharType>
 inline wtf_size_t Find(base::span<const CharType> characters,
@@ -799,7 +815,7 @@ inline wtf_size_t Find(base::span<const CharType> characters,
 }
 
 // Search the `characters` span for `match_character` from the end of the span,
-// and returns the found index or WTF::kNotFound.
+// and returns the found index or kNotFound.
 //
 // If the optional `index` parameter is specified, this function searches from
 // characters[min(index, characters.size()-1)] to characters[0].

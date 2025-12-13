@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/modules/webaudio/oscillator_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/periodic_wave.h"
@@ -111,10 +107,10 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
     vst1q_u32(r1, read_index_1);
 
     for (int m = 0; m < 4; ++m) {
-      sample1_lower[m] = lower_wave_data[r0[m]];
-      sample2_lower[m] = lower_wave_data[r1[m]];
-      sample1_higher[m] = higher_wave_data[r0[m]];
-      sample2_higher[m] = higher_wave_data[r1[m]];
+      UNSAFE_TODO(sample1_lower[m]) = UNSAFE_TODO(lower_wave_data[r0[m])];
+      UNSAFE_TODO(sample2_lower[m]) = UNSAFE_TODO(lower_wave_data[r1[m])];
+      UNSAFE_TODO(sample1_higher[m]) = UNSAFE_TODO(higher_wave_data[r0[m])];
+      UNSAFE_TODO(sample2_higher[m]) = UNSAFE_TODO(higher_wave_data[r1[m])];
     }
 
     const float32x4_t s1_low = vld1q_f32(sample1_lower);
@@ -132,7 +128,7 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
         sample_higher,
         vmulq_f32(v_table_factor, vsubq_f32(sample_lower, sample_higher)));
 
-    vst1q_f32(dest_p + k, sample);
+    UNSAFE_TODO(vst1q_f32(dest_p + k, sample));
 
     // Increment virtual read index and wrap virtualReadIndex into the range
     // 0 -> periodicWaveSize.
@@ -169,7 +165,8 @@ double OscillatorHandler::ProcessARateVectorKernel(
   double incr_sum[4];
   incr_sum[0] = phase_increments[0];
   for (int m = 1; m < 4; ++m) {
-    incr_sum[m] = incr_sum[m - 1] + phase_increments[m];
+    UNSAFE_TODO(incr_sum[m]) =
+        UNSAFE_TODO(incr_sum[m - 1] + phase_increments[m]);
   }
 
   // It's really important for accuracy that we use doubles instead of
@@ -214,13 +211,13 @@ double OscillatorHandler::ProcessARateVectorKernel(
 
   // Read the samples from the wave tables
   for (int m = 0; m < 4; ++m) {
-    DCHECK_LT(read0[m], periodic_wave_size);
-    DCHECK_LT(read1[m], periodic_wave_size);
+    UNSAFE_TODO(DCHECK_LT(read0[m], periodic_wave_size));
+    UNSAFE_TODO(DCHECK_LT(read1[m], periodic_wave_size));
 
-    sample1_lower[m] = lower_wave_data[m][read0[m]];
-    sample2_lower[m] = lower_wave_data[m][read1[m]];
-    sample1_higher[m] = higher_wave_data[m][read0[m]];
-    sample2_higher[m] = higher_wave_data[m][read1[m]];
+    UNSAFE_TODO(sample1_lower[m]) = UNSAFE_TODO(lower_wave_data[m][read0[m])];
+    UNSAFE_TODO(sample2_lower[m]) = UNSAFE_TODO(lower_wave_data[m][read1[m])];
+    UNSAFE_TODO(sample1_higher[m]) = UNSAFE_TODO(higher_wave_data[m][read0[m])];
+    UNSAFE_TODO(sample2_higher[m]) = UNSAFE_TODO(higher_wave_data[m][read1[m])];
   }
 
   // Compute factor for linear interpolation within a wave table.

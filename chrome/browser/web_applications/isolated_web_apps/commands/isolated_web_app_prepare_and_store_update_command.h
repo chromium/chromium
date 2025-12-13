@@ -20,7 +20,7 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
@@ -30,7 +30,6 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class Profile;
 
@@ -47,13 +46,13 @@ namespace web_app {
 // Represents a successful preparation and storage of a pending IWA update.
 struct IsolatedWebAppUpdatePrepareAndStoreCommandSuccess {
   IsolatedWebAppUpdatePrepareAndStoreCommandSuccess(
-      base::Version update_version,
+      IwaVersion update_version,
       IsolatedWebAppStorageLocation destination_location);
   IsolatedWebAppUpdatePrepareAndStoreCommandSuccess(
       const IsolatedWebAppUpdatePrepareAndStoreCommandSuccess& other);
   ~IsolatedWebAppUpdatePrepareAndStoreCommandSuccess();
 
-  base::Version update_version;
+  IwaVersion update_version;
   IsolatedWebAppStorageLocation location;
 };
 
@@ -75,7 +74,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo {
  public:
   IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo(
       IwaSourceWithModeAndFileOp source,
-      std::optional<base::Version> expected_version,
+      std::optional<IwaVersion> expected_version,
       bool allow_downgrades = false);
   ~IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo();
 
@@ -87,14 +86,14 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandUpdateInfo {
   base::Value AsDebugValue() const;
 
   const IwaSourceWithModeAndFileOp& source() const { return source_; }
-  const std::optional<base::Version>& expected_version() const {
+  const std::optional<IwaVersion>& expected_version() const {
     return expected_version_;
   }
   bool allow_downgrades() const { return allow_downgrades_; }
 
  private:
   IwaSourceWithModeAndFileOp source_;
-  std::optional<base::Version> expected_version_;
+  std::optional<IwaVersion> expected_version_;
   bool allow_downgrades_;
 };
 
@@ -148,13 +147,13 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
                      std::string>;
 
   void ReportFailure(std::string_view message);
-  void ReportSuccess(const base::Version& update_version);
+  void ReportSuccess(const IwaVersion& update_version);
 
   Profile& profile();
 
   void ReportVersionValidationFailure(
       VersionChangeValidationResult validation_result,
-      const base::Version& expected_version);
+      const IwaVersion& expected_version);
 
   void CheckIfUpdateIsStillApplicable(base::OnceClosure next_step_callback);
 
@@ -177,14 +176,14 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
 
   void SetPendingUpdateInfo(PrepareInstallInfoJob::InstallInfoOrFailure result);
 
-  void OnFinalized(const base::Version& update_version, bool success);
+  void OnFinalized(const IwaVersion& update_version, bool success);
 
   std::unique_ptr<AppLock> lock_;
 
   const std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper_;
 
   const IsolatedWebAppUrlInfo url_info_;
-  const std::optional<base::Version> expected_version_;
+  const std::optional<IwaVersion> expected_version_;
   bool allow_downgrades_;
 
   // The inferred integrity block data of the update bundle being processed.
@@ -195,7 +194,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
   std::optional<IwaSourceWithModeAndFileOp> update_source_;
   std::optional<IwaSourceWithMode> destination_location_;
   std::optional<IsolatedWebAppStorageLocation> destination_storage_location_;
-  std::optional<base::Version> installed_version_;
+  std::optional<IwaVersion> installed_version_;
 
   std::unique_ptr<content::WebContents> web_contents_;
 

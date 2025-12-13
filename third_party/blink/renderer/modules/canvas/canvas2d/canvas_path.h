@@ -33,13 +33,11 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_dompointinit_unrestricteddouble.h"
-#include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_enums.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_high_entropy_op_type.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -50,7 +48,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 
 // https://github.com/include-what-you-use/include-what-you-use/issues/1546
-// IWYU pragma: no_forward_declare WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
+// IWYU pragma: no_forward_declare internal::__thisIsHereToForceASemicolonAfterThisMacro
 
 // IWYU pragma: no_include "third_party/blink/renderer/platform/heap/visitor.h"
 
@@ -138,8 +136,12 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
     return AffineTransform();
   }
 
-  IdentifiableToken GetIdentifiableToken() const {
-    return identifiability_study_helper_.GetToken();
+  // Returns the path types that would result in a high entropy canvas operation
+  // when these are drawn on the canvas. Because of the high entropy associated
+  // with the operation, this reveals information about the user's device and
+  // thus could be used for fingerprinting.
+  HighEntropyCanvasOpType HighEntropyPathOpTypes() const {
+    return high_entropy_path_op_types_;
   }
 
   virtual ExecutionContext* GetTopExecutionContext() const = 0;
@@ -182,16 +184,6 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
   // than necessary.
   gfx::RectF BoundingRect() const;
 
-  bool HasTriggerForIntervention() const {
-    return triggers_for_intervention_ != CanvasOperationType::kNone;
-  }
-
-  CanvasOperationType GetTriggersForIntervention() const {
-    return triggers_for_intervention_;
-  }
-
-  void Trace(Visitor*) const override;
-
  protected:
   CanvasPath() { path_builder_.SetIsVolatile(true); }
   explicit CanvasPath(const Path& path) : path_builder_(path) {
@@ -212,12 +204,6 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
     return path_builder_;
   }
 
-  // Called when a canvas operation is made that would trigger a canvas
-  // intervention.
-  void AddTriggersForCanvasIntervention(CanvasOperationType type) {
-    triggers_for_intervention_ |= type;
-  }
-
   // This mirrors state that is stored in CanvasRenderingContext2DState.  We
   // replicate it here so that IsTransformInvertible() can be a non-virtual
   // inline-able call.  We do not replicate the whole CTM. Therefore
@@ -225,9 +211,10 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin {
   // code paths that handle non-invertible transforms.
   bool is_transform_invertible_ = true;
 
-  IdentifiabilityStudyHelper identifiability_study_helper_;
-
-  CanvasOperationType triggers_for_intervention_ = CanvasOperationType::kNone;
+  // The path types that would result in a high entropy canvas operation when
+  // these are drawn on the canvas. These could be used for fingerprinting.
+  HighEntropyCanvasOpType high_entropy_path_op_types_ =
+      HighEntropyCanvasOpType::kNone;
 
  private:
   // Used to build up a line.

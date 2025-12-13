@@ -36,7 +36,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_source.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"

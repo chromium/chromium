@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "headless/public/headless_shell.h"
 
 #include <memory>
@@ -14,6 +9,7 @@
 #include "base/base_switches.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -21,6 +17,7 @@
 #include "base/version_info/version_info.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "components/os_crypt/common/os_crypt_switches.h"
 #include "content/public/app/content_main.h"
 #include "content/public/common/content_switches.h"
 #include "headless/lib/browser/headless_browser_impl.h"
@@ -32,10 +29,6 @@
 #include "headless/public/switches.h"
 #include "net/base/filename_util.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "components/os_crypt/sync/os_crypt_switches.h"  // nogncheck
-#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
@@ -274,8 +267,8 @@ int HeadlessShellMain(content::ContentMainParams params) {
 #endif
 
   if (command_line.HasSwitch(switches::kVersion)) {
-    printf("%s %s\n", version_info::GetProductName().data(),
-           version_info::GetVersionNumber().data());
+    UNSAFE_TODO(printf("%s %s\n", version_info::GetProductName().data(),
+                       version_info::GetVersionNumber().data()));
     return EXIT_SUCCESS;
   }
 

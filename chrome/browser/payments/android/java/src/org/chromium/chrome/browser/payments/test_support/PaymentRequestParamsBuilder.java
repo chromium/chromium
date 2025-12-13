@@ -136,7 +136,7 @@ public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.
     }
 
     @Override
-    public String getInvalidSslCertificateErrorMessage() {
+    public @Nullable String getInvalidSslCertificateErrorMessage() {
         return null;
     }
 

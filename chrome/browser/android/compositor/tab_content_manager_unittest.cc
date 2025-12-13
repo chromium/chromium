@@ -83,35 +83,30 @@ TEST_F(TabContentManagerTest, UpdateTabIdsForStaticLayerCache) {
       { EXPECT_FALSE(tab_content_manager().GetStaticLayer(kTabId2)); }, "");
 
   auto jarr = base::android::ToJavaIntArray(env, std::vector<int>({kTabId1}));
-  tab_content_manager().UpdateVisibleIds(
-      env, base::android::JavaParamRef<jintArray>(env, jarr.obj()), kTabId1);
+  tab_content_manager().UpdateVisibleIds(env, jarr, kTabId1);
   EXPECT_TRUE(tab_content_manager().GetStaticLayer(kTabId1));
   EXPECT_DCHECK(
       { EXPECT_FALSE(tab_content_manager().GetStaticLayer(kTabId2)); }, "");
 
-  tab_content_manager().UpdateVisibleIds(
-      env, base::android::JavaParamRef<jintArray>(env, jarr.obj()), -1);
+  tab_content_manager().UpdateVisibleIds(env, jarr, -1);
   EXPECT_TRUE(tab_content_manager().GetStaticLayer(kTabId1));
   EXPECT_DCHECK(
       { EXPECT_FALSE(tab_content_manager().GetStaticLayer(kTabId2)); }, "");
 
   jarr =
       base::android::ToJavaIntArray(env, std::vector<int>({kTabId1, kTabId2}));
-  tab_content_manager().UpdateVisibleIds(
-      env, base::android::JavaParamRef<jintArray>(env, jarr.obj()), -1);
+  tab_content_manager().UpdateVisibleIds(env, jarr, -1);
   EXPECT_TRUE(tab_content_manager().GetStaticLayer(kTabId1));
   EXPECT_TRUE(tab_content_manager().GetStaticLayer(kTabId2));
 
   jarr = base::android::ToJavaIntArray(env, std::vector<int>({kTabId2}));
-  tab_content_manager().UpdateVisibleIds(
-      env, base::android::JavaParamRef<jintArray>(env, jarr.obj()), -1);
+  tab_content_manager().UpdateVisibleIds(env, jarr, -1);
   EXPECT_DCHECK(
       { EXPECT_FALSE(tab_content_manager().GetStaticLayer(kTabId1)); }, "");
   EXPECT_TRUE(tab_content_manager().GetStaticLayer(kTabId2));
 
   jarr = base::android::ToJavaIntArray(env, std::vector<int>({}));
-  tab_content_manager().UpdateVisibleIds(
-      env, base::android::JavaParamRef<jintArray>(env, jarr.obj()), -1);
+  tab_content_manager().UpdateVisibleIds(env, jarr, -1);
   EXPECT_DCHECK(
       { EXPECT_FALSE(tab_content_manager().GetStaticLayer(kTabId1)); }, "");
   EXPECT_DCHECK(

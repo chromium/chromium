@@ -10,11 +10,13 @@
 #include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/android/omnibox/composebox_query_controller_bridge.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "content/public/browser/browser_context.h"
+#include "third_party/omnibox_proto/aim_tools_and_models.pb.h"
 
 class AutocompleteResult;
 class ChromeAutocompleteProviderClient;
@@ -40,28 +42,33 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   ~AutocompleteControllerAndroid() override;
 
   // Methods that forward to AutocompleteController:
-  void Start(JNIEnv* env,
-             const base::android::JavaRef<jstring>& j_text,
-             jint j_cursor_pos,
-             const base::android::JavaRef<jstring>& j_desired_tld,
-             const base::android::JavaRef<jstring>& j_current_url,
-             jint j_page_classification,
-             bool prevent_inline_autocomplete,
-             bool prefer_keyword,
-             bool allow_exact_keyword_match,
-             bool want_asynchronous_matches);
-  void StartPrefetch(JNIEnv* env,
-                     const base::android::JavaRef<jstring>& j_current_url,
-                     jint j_page_classification);
+  void Start(
+      JNIEnv* env,
+      const base::android::JavaRef<jstring>& j_text,
+      jint j_cursor_pos,
+      const base::android::JavaRef<jstring>& j_desired_tld,
+      const base::android::JavaRef<jstring>& j_current_url,
+      ::metrics::OmniboxEventProto::PageClassification page_classification,
+      omnibox::ChromeAimToolsAndModels tool_mode,
+      bool prevent_inline_autocomplete,
+      bool prefer_keyword,
+      bool allow_exact_keyword_match,
+      bool want_asynchronous_matches);
+  void StartPrefetch(
+      JNIEnv* env,
+      const base::android::JavaRef<jstring>& j_current_url,
+      ::metrics::OmniboxEventProto::PageClassification page_classification,
+      const base::android::JavaRef<jobject>& j_web_contents);
   base::android::ScopedJavaLocalRef<jobject> Classify(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_text);
+      const base::android::JavaRef<jstring>& j_text);
   void OnOmniboxFocused(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_omnibox_text,
-      const base::android::JavaParamRef<jstring>& j_current_url,
-      jint j_page_classification,
-      const base::android::JavaParamRef<jstring>& j_current_title);
+      const base::android::JavaRef<jstring>& j_omnibox_text,
+      const base::android::JavaRef<jstring>& j_current_url,
+      ::metrics::OmniboxEventProto::PageClassification page_classification,
+      omnibox::ChromeAimToolsAndModels tool_mode,
+      const base::android::JavaRef<jstring>& j_current_title);
   void Stop(JNIEnv* env, bool clear_result);
   void ResetSession(JNIEnv* env);
 
@@ -70,16 +77,17 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       uintptr_t match_ptr,
       int suggestion_line,
       const jint j_window_open_disposition,
-      const base::android::JavaParamRef<jstring>& j_current_url,
-      jint j_page_classification,
+      const base::android::JavaRef<jstring>& j_current_url,
+      ::metrics::OmniboxEventProto::PageClassification page_classification,
       jlong elapsed_time_since_first_modified,
       jint completed_length,
-      const base::android::JavaParamRef<jobject>& j_web_contents);
+      const base::android::JavaRef<jobject>& j_web_contents,
+      jlong omnibox_action_ptr);
   jboolean OnSuggestionTouchDown(
       JNIEnv* env,
       uintptr_t match_ptr,
       int match_index,
-      const base::android::JavaParamRef<jobject>& j_web_contents);
+      const base::android::JavaRef<jobject>& j_web_contents);
   void DeleteMatch(JNIEnv* env, uintptr_t match_ptr);
   void DeleteMatchElement(JNIEnv* env, uintptr_t match_ptr, jint element_index);
   base::android::ScopedJavaLocalRef<jobject>
@@ -101,11 +109,16 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
 
   static void EnsureFactoryBuilt();
 
+  // Pass an instance of the ComposeboxQueryControllerBridge to improve Suggest.
+  void SetComposeboxQueryControllerBridge(
+      JNIEnv* env,
+      uintptr_t composebox_controller_bridge_ptr);
+
   // Pass detected voice matches down to VoiceSuggestionsProvider.
   void SetVoiceMatches(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& j_voice_matches,
-      const base::android::JavaParamRef<jfloatArray>& j_confidence_scores);
+      const base::android::JavaRef<jobjectArray>& j_voice_matches,
+      const base::android::JavaRef<jfloatArray>& j_confidence_scores);
 
   // Pass the information about the suggestion dropdown height changes to the
   // Grouping framework.
@@ -149,7 +162,6 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   };
 
  private:
-
   // AutocompleteController::Observer implementation.
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;
@@ -195,10 +207,14 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   // destroyed.
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
 
+  // The ComposeBoxQueryController instance related to the same input session.
+  // This may and often will be unset.
+  base::WeakPtr<ComposeboxQueryControllerBridge>
+      composebox_query_controller_bridge_;
+
   // Factory used to create asynchronously invoked callbacks.
   // Retained throughout the lifetime of the AutocompleteControllerAndroid.
-  const base::WeakPtrFactory<AutocompleteControllerAndroid> weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<AutocompleteControllerAndroid> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_ANDROID_OMNIBOX_AUTOCOMPLETE_CONTROLLER_ANDROID_H_

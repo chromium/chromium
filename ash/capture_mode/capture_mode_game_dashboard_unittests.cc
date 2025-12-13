@@ -462,7 +462,7 @@ TEST_F(GameDashboardCaptureModeTest, MultiDisplay) {
   EXPECT_EQ(displays[0].size(), gfx::Size(800, 700));
   EXPECT_EQ(displays[1].size(), gfx::Size(900, 800));
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   auto* controller = StartGameCaptureModeSession();
   BaseCaptureModeSession* capture_mode_session =
       controller->capture_mode_session();

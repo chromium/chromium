@@ -6,6 +6,7 @@
 #define COMPONENTS_OMNIBOX_BROWSER_DOCUMENT_SUGGESTIONS_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -46,7 +47,7 @@ class DocumentSuggestionsService : public KeyedService,
                               const std::string& request_body)>;
   using CompletionCallback =
       base::OnceCallback<void(const network::SimpleURLLoader* source,
-                              std::unique_ptr<std::string> response_body)>;
+                              std::optional<std::string> response_body)>;
 
   // Returns whether the user's primary account is available.
   bool HasPrimaryAccount();
@@ -66,8 +67,8 @@ class DocumentSuggestionsService : public KeyedService,
   // Stops creating the request. Already created requests aren't affected.
   void StopCreatingDocumentSuggestionsRequest();
 
-  signin::Tribool account_is_subject_to_enterprise_policies() {
-    return account_is_subject_to_enterprise_policies_;
+  signin::Tribool account_is_workspace_managed() {
+    return account_is_workspace_managed_;
   }
 
   bool should_backoff() { return should_backoff_; }
@@ -76,9 +77,9 @@ class DocumentSuggestionsService : public KeyedService,
   }
 
  private:
-  // Returns whether Enterprise policies are applied to the primary account -
+  // Returns whether Enterprise features are applied to the primary account -
   // aka Dasher account, obtained from the user account capability.
-  signin::Tribool IsAccountSubjectToEnterprisePolicies();
+  signin::Tribool IsAccountWorkspaceManaged();
 
   // Called when an access token request completes (successfully or not).
   void AccessTokenAvailable(std::unique_ptr<network::ResourceRequest> request,
@@ -115,12 +116,12 @@ class DocumentSuggestionsService : public KeyedService,
 
   // Override for HasPrimaryAccount(). For testing only.
   bool has_primary_account_for_testing_ = false;
-  // Override for IsAccountSubjectToEnterprisePolicies(). For testing only.
-  bool account_is_subject_to_enterprise_policies_for_testing_ = false;
+  // Override for IsAccountWorkspaceManaged(). For testing only.
+  bool account_is_workspace_managed_for_testing_ = false;
 
   // Whether the primary account is a Dasher one. Obtained from the user account
   // capability. Updated when primary account signin state or capability change.
-  signin::Tribool account_is_subject_to_enterprise_policies_;
+  signin::Tribool account_is_workspace_managed_;
 
   // Helper for fetching OAuth2 access tokens. Non-null when we have a token
   // available, or while a token fetch is in progress.

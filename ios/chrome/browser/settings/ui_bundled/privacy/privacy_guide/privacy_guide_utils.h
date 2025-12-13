@@ -7,25 +7,23 @@
 
 #import <UIKit/UIKit.h>
 
-@class SettingsImageDetailTextCell;
 @class SelfSizingTableView;
-@class TableViewSwitchCell;
 @class TableViewTextHeaderFooterView;
 
-// Dequeues a SettingsImageDetailTextCell from the table view and configures it
+// Dequeues a UITableViewCell from the table view and configures it
 // appropriately for the Privacy Guide.
-SettingsImageDetailTextCell* PrivacyGuideExplanationCell(
-    UITableView* table_view,
-    int text_id,
-    NSString* symbol_name);
+UITableViewCell* PrivacyGuideExplanationCell(UITableView* table_view,
+                                             int text_id,
+                                             NSString* symbol_name);
 
-// Dequeues a TableViewSwitchCell from the table view and configures it
+// Dequeues a UITableViewCell from the table view and configures it
 // appropriately for the Privacy Guide.
-TableViewSwitchCell* PrivacyGuideSwitchCell(UITableView* table_view,
-                                            int text_id,
-                                            BOOL switch_enabled,
-                                            BOOL switch_on,
-                                            NSString* switch_id);
+UITableViewCell* PrivacyGuideSwitchCell(UITableView* table_view,
+                                        int text_id,
+                                        BOOL switch_on,
+                                        NSString* accessibility_id,
+                                        id target,
+                                        SEL selector);
 
 // Dequeues a TableViewTextHeaderFooterView from the table view and configures
 // it appropriately for the Privacy Guide.

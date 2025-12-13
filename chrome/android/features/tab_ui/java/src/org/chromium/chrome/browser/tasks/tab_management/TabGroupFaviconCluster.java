@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -195,6 +196,8 @@ public class TabGroupFaviconCluster extends ConstraintLayout {
         trackingFaviconResolver.runOnCompletion(onFaviconCompletion);
     }
 
+    private boolean mContainmentEnabled;
+
     /** Constructor for inflation. */
     public TabGroupFaviconCluster(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -206,6 +209,7 @@ public class TabGroupFaviconCluster extends ConstraintLayout {
         for (int corner = Corner.TOP_LEFT; corner <= Corner.BOTTOM_LEFT; corner++) {
             TabGroupFaviconQuarter quarter = getTabGroupFaviconQuarter(corner);
             quarter.adjustPositionForCorner(corner, getId());
+            quarter.setContainmentEnabled(mContainmentEnabled);
         }
     }
 
@@ -227,5 +231,18 @@ public class TabGroupFaviconCluster extends ConstraintLayout {
 
     private TabGroupFaviconQuarter getTabGroupFaviconQuarter(@Corner int corner) {
         return (TabGroupFaviconQuarter) getChildAt(corner);
+    }
+
+    void setContainmentEnabled(boolean isEnabled) {
+        mContainmentEnabled = isEnabled;
+
+        setBackgroundTintList(
+                ColorStateList.valueOf(
+                        TabUiThemeProvider.getTabGroupClusterBackgroundTint(
+                                getContext(), isEnabled)));
+        for (int corner = Corner.TOP_LEFT; corner <= Corner.BOTTOM_LEFT; corner++) {
+            TabGroupFaviconQuarter quarter = getTabGroupFaviconQuarter(corner);
+            quarter.setContainmentEnabled(mContainmentEnabled);
+        }
     }
 }

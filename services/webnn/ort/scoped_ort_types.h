@@ -9,7 +9,7 @@
 
 #include "base/scoped_generic.h"
 #include "services/webnn/ort/platform_functions_ort.h"
-#include "third_party/onnxruntime_headers/src/include/onnxruntime/core/session/onnxruntime_c_api.h"
+#include "third_party/windows_app_sdk_headers/src/inc/abi/winml/winml/onnxruntime_c_api.h"
 
 namespace webnn::ort {
 
@@ -118,6 +118,13 @@ struct ScopedOrtTypeTraitsHelper<OrtModel*> {
   }
 };
 
+template <>
+struct ScopedOrtTypeTraitsHelper<OrtAllocator*> {
+  static void Free(OrtAllocator* value) {
+    PlatformFunctions::GetInstance()->ort_api()->ReleaseAllocator(value);
+  }
+};
+
 template <typename T>
 using ScopedOrtType = base::ScopedGeneric<T*, ScopedOrtTypeTraits<T*>>;
 
@@ -137,6 +144,7 @@ using ScopedOrtValueInfo = internal::ScopedOrtType<OrtValueInfo>;
 using ScopedOrtNode = internal::ScopedOrtType<OrtNode>;
 using ScopedOrtGraph = internal::ScopedOrtType<OrtGraph>;
 using ScopedOrtModel = internal::ScopedOrtType<OrtModel>;
+using ScopedOrtAllocator = internal::ScopedOrtType<OrtAllocator>;
 
 }  // namespace webnn::ort
 

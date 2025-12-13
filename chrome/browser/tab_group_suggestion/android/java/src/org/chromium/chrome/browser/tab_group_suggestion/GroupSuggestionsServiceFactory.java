@@ -10,6 +10,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestionsService;
 
@@ -30,6 +31,13 @@ public final class GroupSuggestionsServiceFactory {
     public static GroupSuggestionsService getForProfile(Profile profile) {
         if (sGroupSuggestionsServiceForTesting != null) {
             return sGroupSuggestionsServiceForTesting;
+        }
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.GROUP_SUGGESTION_SERVICE)) {
+            throw new IllegalStateException("GroupSuggestionsService is not enabled.");
+        }
+        if (profile.isOffTheRecord()) {
+            throw new IllegalStateException(
+                    "GroupSuggestionsService is not supported in incognito.");
         }
         return GroupSuggestionsServiceFactoryJni.get().getForProfile(profile);
     }

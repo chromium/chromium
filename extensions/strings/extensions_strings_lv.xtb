@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Lietotnes skats: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Šis paplašinājums ietver atslēgas failu <ph name="KEY_PATH" />. Iespējams, jūs to nevēlaties izmantot.</translation>
 <translation id="5486326529110362464">Privātās atslēgas ievades vērtībai jābūt.</translation>
+<translation id="5707185214361380026">Neizdevās ielādēt paplašinājumu no:</translation>
 <translation id="5972529113578162692">Šīs ierīces administrators pieprasa, lai būtu instalēts paplašinājums <ph name="EXTENSION_NAME" />. To nevar atinstalēt.</translation>
 <translation id="6027032947578871493">Nezināms produkts (ID: <ph name="PRODUCT_ID" />), ko piedāvā <ph name="VENDOR_NAME" /> (sērijas numurs: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" />, ko piedāvā <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Paplašinājuma ielādes kļūda</translation>
 <translation id="6322279351188361895">Neizdevās nolasīt privāto atslēgu.</translation>
 <translation id="6391538222494443604">Ievades katalogam jābūt.</translation>
 <translation id="641087317769093025">Paplašinājumu nevarēja izgūt no ZIP arhīva.</translation>

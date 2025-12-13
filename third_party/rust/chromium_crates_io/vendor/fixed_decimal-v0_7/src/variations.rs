@@ -21,11 +21,14 @@ pub enum Sign {
 }
 
 /// Configuration for when to render the minus sign or plus sign.
+///
+/// **The primary definition of this type is in the [`fixed_decimal`](https://docs.rs/fixed_decimal) crate. Other ICU4X crates re-export it for convenience.**
 #[non_exhaustive]
-#[derive(Debug, Eq, PartialEq, Clone, Copy)]
+#[derive(Debug, Eq, PartialEq, Clone, Copy, Default)]
 pub enum SignDisplay {
     /// Render the sign according to locale preferences. In most cases, this means a minus sign
     /// will be shown on negative numbers, and no sign will be shown on positive numbers.
+    #[default]
     Auto,
 
     /// Do not display the sign. Positive and negative numbers are indistinguishable.

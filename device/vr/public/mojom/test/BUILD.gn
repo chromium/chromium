@@ -1,0 +1,73 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("test_mojom") {
+  sources = [ "browser_test_interfaces.mojom" ]
+
+  public_deps = [
+    "//device/vr/public/mojom:vr_service",
+    "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/mojom",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "device_test.mojom.ViewData"
+          cpp = "::device::ViewData"
+        },
+        {
+          mojom = "device_test.mojom.DeviceConfig"
+          cpp = "::device::DeviceConfig"
+        },
+        {
+          mojom = "device_test.mojom.ControllerFrameData"
+          cpp = "::device::ControllerFrameData"
+        },
+        {
+          mojom = "device_test.mojom.XRVisibilityMask"
+          cpp = "::device::VisibilityMaskData"
+        },
+        {
+          mojom = "device_test.mojom.ControllerRole"
+          cpp = "::device::ControllerRole"
+        },
+      ]
+      traits_headers = [
+        "//device/vr/public/mojom/test/browser_test_interfaces_mojom_traits.h",
+      ]
+      traits_public_deps = [ ":vr_public_test_typemaps" ]
+    },
+  ]
+}
+
+component("vr_public_test_typemaps") {
+  output_name = "device_vr_public_test_typemaps"
+
+  defines = [ "IS_VR_PUBLIC_TEST_TYPEMAPS_IMPL" ]
+
+  sources = [
+    "color.h",
+    "controller_frame_data.cc",
+    "controller_frame_data.h",
+    "device_config.h",
+    "view_data.h",
+    "visibility_mask.h",
+  ]
+
+  deps = [
+    "//base",
+    "//ui/gfx/geometry",
+    "//ui/gfx/mojom",
+  ]
+
+  public_deps = [
+    ":test_mojom_shared",
+    "//device/vr/public/mojom:vr_service_shared",
+  ]
+}

@@ -179,10 +179,7 @@ class DataAndEncodedFileOrBlobBytesConsumer final : public BytesConsumer {
           break;
       }
     }
-    // Here we handle m_formData->boundary() as a C-style string. See
-    // FormDataEncoder::generateUniqueBoundaryString.
-    blob_data->SetContentType(AtomicString("multipart/form-data; boundary=") +
-                              form_data_->Boundary().data());
+    blob_data->SetContentType(form_data_->FormatContentTypeWithBoundary());
     auto size = blob_data->length();
     blob_bytes_consumer_ = MakeGarbageCollected<BlobBytesConsumer>(
         execution_context, BlobDataHandle::Create(std::move(blob_data), size));
@@ -268,8 +265,8 @@ class DataPipeGetterConsumer : public BytesConsumer {
 
     data_pipe_getter->Read(
         std::move(pipe_producer_handle),
-        WTF::BindOnce(&DataPipeGetterConsumer::DataPipeGetterCallback,
-                      WrapWeakPersistent(consumer)));
+        BindOnce(&DataPipeGetterConsumer::DataPipeGetterCallback,
+                 WrapWeakPersistent(consumer)));
     return consumer;
   }
 

@@ -8,13 +8,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_unique_name_lookup.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
-#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
-
-// While the size of these caches should usually be small (up to tens), we
-// protect against the possibility of it growing quickly to thousands when
-// animating variable font parameters.
-static constexpr size_t kCachesMaxSize = 250;
 
 namespace blink {
 
@@ -37,8 +31,10 @@ FontGlobalContext* FontGlobalContext::TryGet() {
 }
 
 FontGlobalContext::FontGlobalContext(PassKey)
-    : typeface_digest_cache_(kCachesMaxSize),
-      postscript_name_digest_cache_(kCachesMaxSize) {}
+    : memory_pressure_listener_registration_(
+          FROM_HERE,
+          base::MemoryPressureListenerTag::kFontGlobalContext,
+          this) {}
 
 FontGlobalContext::~FontGlobalContext() = default;
 
@@ -50,53 +46,20 @@ FontUniqueNameLookup* FontGlobalContext::GetFontUniqueNameLookup() {
   return Get().font_unique_name_lookup_.get();
 }
 
-IdentifiableToken FontGlobalContext::GetOrComputeTypefaceDigest(
-    const FontPlatformData& source) {
-  SkTypeface* typeface = source.Typeface();
-  if (!typeface)
-    return 0;
-
-  SkTypefaceID font_id = typeface->uniqueID();
-
-  auto iter = typeface_digest_cache_.Get(font_id);
-  if (iter == typeface_digest_cache_.end())
-    iter = typeface_digest_cache_.Put(font_id, source.ComputeTypefaceDigest());
-  DCHECK(iter->second == source.ComputeTypefaceDigest());
-  return iter->second;
-}
-
-IdentifiableToken FontGlobalContext::GetOrComputePostScriptNameDigest(
-    const FontPlatformData& source) {
-  SkTypeface* typeface = source.Typeface();
-  if (!typeface)
-    return IdentifiableToken();
-
-  SkTypefaceID font_id = typeface->uniqueID();
-
-  auto iter = postscript_name_digest_cache_.Get(font_id);
-  if (iter == postscript_name_digest_cache_.end())
-    iter = postscript_name_digest_cache_.Put(
-        font_id, IdentifiabilityBenignStringToken(source.GetPostScriptName()));
-  DCHECK(iter->second ==
-         IdentifiabilityBenignStringToken(source.GetPostScriptName()));
-  return iter->second;
-}
-
-void FontGlobalContext::ClearMemory() {
-  FontGlobalContext* const context = TryGet();
-  if (!context)
-    return;
-
-  context->font_cache_.Invalidate();
-  context->typeface_digest_cache_.Clear();
-  context->postscript_name_digest_cache_.Clear();
-}
-
 void FontGlobalContext::Init() {
   DCHECK(IsMainThread());
   if (auto* name_lookup = FontGlobalContext::Get().GetFontUniqueNameLookup())
     name_lookup->Init();
   HarfBuzzFace::Init();
+}
+
+void FontGlobalContext::OnMemoryPressure(
+    base::MemoryPressureLevel memory_pressure_level) {
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    return;
+  }
+
+  font_cache_.Invalidate();
 }
 
 }  // namespace blink

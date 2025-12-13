@@ -9,7 +9,6 @@
 
 #include "chromecast/browser/mojom/cast_web_contents.mojom.h"
 #include "chromecast/browser/web_types.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/gfx/geometry/rect.h"

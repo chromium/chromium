@@ -90,8 +90,7 @@ class CORE_EXPORT Headers final : public ScriptWrappable,
 
     bool FetchNextItem(ScriptState* script_state,
                        String& key,
-                       String& value,
-                       ExceptionState& exception) override;
+                       String& value) override;
 
     void Trace(Visitor*) const override;
 
@@ -118,8 +117,7 @@ class CORE_EXPORT Headers final : public ScriptWrappable,
   // Allow setting forbidden headers on fetch() requests.
   bool bypass_request_forbidden_header_check_ = false;
 
-  IterationSource* CreateIterationSource(ScriptState*,
-                                         ExceptionState&) override;
+  IterationSource* CreateIterationSource(ScriptState*) override;
 
   HeapHashSet<WeakMember<HeadersIterationSource>> iterators_;
 };

@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
+#include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_resource.h"
 #include "media/base/pipeline_status.h"
@@ -24,21 +25,29 @@ StarboardRenderer::StarboardRenderer(
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     const base::UnguessableToken& overlay_plane_id,
     bool enable_buffering,
-    VideoGeometrySetterService* geometry_setter_service)
+    VideoGeometrySetterService* geometry_setter_service,
+    chromecast::metrics::CastMetricsHelper* cast_metrics_helper)
     : starboard_(std::move(starboard)),
       media_task_runner_(std::move(media_task_runner)),
       geometry_change_handler_(geometry_setter_service,
                                starboard_.get(),
                                overlay_plane_id),
+      cast_metrics_helper_(cast_metrics_helper),
       enable_buffering_(enable_buffering) {
   CHECK(starboard_);
   CHECK(media_task_runner_);
+  CHECK(cast_metrics_helper_);
   LOG(INFO) << "Constructed StarboardRenderer. Buffering is "
             << (enable_buffering_ ? "enabled" : "disabled");
 }
 
 StarboardRenderer::~StarboardRenderer() {
   CHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  // player_manager_ being non-null implies that StarboardRenderer::Initialize
+  // was called.
+  if (player_manager_ && !end_reported_) {
+    cast_metrics_helper_->RecordApplicationEvent("Cast.Platform.Ended");
+  }
 }
 
 void StarboardRenderer::Initialize(::media::MediaResource* media_resource,
@@ -53,8 +62,8 @@ void StarboardRenderer::Initialize(::media::MediaResource* media_resource,
       media_resource->GetFirstStream(::media::DemuxerStream::Type::VIDEO);
 
   player_manager_ = StarboardPlayerManager::Create(
-      starboard_.get(), audio_stream, video_stream, client, media_task_runner_,
-      enable_buffering_);
+      starboard_.get(), audio_stream, video_stream, client,
+      cast_metrics_helper_, media_task_runner_, enable_buffering_);
 
   if (!player_manager_) {
     LOG(ERROR) << "Unable to create StarboardPlayerManager";
@@ -103,16 +112,30 @@ void StarboardRenderer::Flush(base::OnceClosure flush_cb) {
   CHECK(media_task_runner_->RunsTasksInCurrentSequence());
   player_manager_->Flush();
   std::move(flush_cb).Run();
+  cast_metrics_helper_->RecordApplicationEvent("Cast.Platform.Ended");
+  end_reported_ = true;
 }
 
 void StarboardRenderer::StartPlayingFrom(base::TimeDelta time) {
   CHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  LOG(INFO) << "StartPlayingFrom t=" << time;
   player_manager_->StartPlayingFrom(time);
+  cast_metrics_helper_->RecordApplicationEvent("Cast.Platform.Playing");
+
+  end_reported_ = false;
 }
 
 void StarboardRenderer::SetPlaybackRate(double playback_rate) {
   CHECK(media_task_runner_->RunsTasksInCurrentSequence());
   player_manager_->SetPlaybackRate(playback_rate);
+
+  if (playback_rate == 0.0f) {
+    cast_metrics_helper_->RecordApplicationEvent("Cast.Platform.Pause");
+  } else {
+    cast_metrics_helper_->RecordApplicationEvent("Cast.Platform.Playing");
+  }
+
+  end_reported_ = false;
 }
 
 void StarboardRenderer::SetVolume(float volume) {

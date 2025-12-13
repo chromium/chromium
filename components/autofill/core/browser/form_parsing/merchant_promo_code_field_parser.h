@@ -23,7 +23,7 @@ class AutofillScanner;
 class MerchantPromoCodeFieldParser : public FormFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                                AutofillScanner* scanner);
+                                                AutofillScanner& scanner);
   explicit MerchantPromoCodeFieldParser(FieldAndMatchInfo match);
 
   MerchantPromoCodeFieldParser(const MerchantPromoCodeFieldParser&) = delete;

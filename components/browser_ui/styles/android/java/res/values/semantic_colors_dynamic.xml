@@ -29,8 +29,7 @@ found in the LICENSE file.
     <macro name="default_text_color_link">?attr/colorPrimary</macro>
 
     <macro name="hairline_stroke_color">?attr/colorOutline</macro>
-    <macro name="divider_line_bg_color">@color/drag_handlebar_color_list</macro>
-    <macro name="drag_handlebar_color">@color/drag_handlebar_color_list</macro>
+    <macro name="drag_handle_color">@color/divider_color</macro>
 
     <macro name="chip_bg_color">@macro/default_bg_color</macro>
     <macro name="chip_bg_selected_color">?attr/colorSecondaryContainer</macro>
@@ -46,6 +45,9 @@ found in the LICENSE file.
 
     <macro name="progress_bar_bg_color" tools:ignore="UnusedResources">?attr/colorSurfaceContainerHighest</macro>
 
+    <macro name="settings_bg_color">?attr/colorSurfaceContainerHigh</macro>
+    <macro name="settings_container_background_color">?attr/colorSurfaceBright</macro>
+
     <macro name="sheet_bg_color" tools:ignore="UnusedResources">?attr/colorSurface</macro>
     <macro name="sheet_container_bg_color" tools:ignore="UnusedResources">?attr/colorSurfaceContainer</macro>
     <macro name="sheet_chrome_icon_bg" tools:ignore="UnusedResources">?attr/colorSurfaceContainerHigh</macro>
@@ -59,5 +61,6 @@ found in the LICENSE file.
     <macro name="circular_progress_outer_circle_progress_color_small">?attr/colorPrimary</macro>
 
     <macro name="default_card_bg_color">?attr/colorSurfaceContainer</macro>
+    <macro name="menu_bg_color">?attr/colorSurfaceBright</macro>
     <!-- LINT.ThenChange(//components/browser_ui/styles/android/java/src/org/chromium/components/browser_ui/styles/SemanticColorUtils.java) -->
 </resources>

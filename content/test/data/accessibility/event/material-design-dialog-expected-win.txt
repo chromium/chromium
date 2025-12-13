@@ -1,0 +1,5 @@
+EVENT_OBJECT_FOCUS on <button#button.button> role=ROLE_SYSTEM_PUSHBUTTON name="OK" FOCUSED,FOCUSABLE
+EVENT_OBJECT_HIDE on <md-divider> role=ROLE_SYSTEM_GROUPING
+EVENT_OBJECT_HIDE on <md-divider> role=ROLE_SYSTEM_GROUPING
+EVENT_OBJECT_SHOW on <dialog.has-headline has-actions scrollable show-top-divider show-bottom-divider> role=ROLE_SYSTEM_DIALOG name="Test Dialog" FOCUSABLE IA2_STATE_MODAL
+EVENT_OBJECT_SHOW on <div#status> role=ROLE_SYSTEM_GROUPING name="Ready"

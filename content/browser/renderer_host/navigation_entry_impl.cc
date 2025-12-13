@@ -73,8 +73,9 @@ void RecursivelyGenerateFrameEntries(
   // TODO(creis): Grant access to this list for each process that renders
   // this page, even for OOPIFs.  Eventually keep track of a verified list of
   // files per frame, so that we only grant access to processes that need it.
-  if (referenced_files.size() > 0)
+  if (referenced_files.size() > 0) {
     page_state.referenced_files = referenced_files;
+  }
 
   page_state.top = state;
   std::string data;
@@ -138,8 +139,9 @@ void RecursivelyGenerateFrameEntries(
 }
 
 std::optional<std::u16string> UrlToOptionalString16(const GURL& url) {
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return std::nullopt;
+  }
   return base::UTF8ToUTF16(url.spec());
 }
 
@@ -199,8 +201,9 @@ void RecursivelyGenerateFrameState(
   // Copy the frame's files into the PageState's |referenced_files|.
   referenced_files->reserve(referenced_files->size() +
                             exploded_page_state.referenced_files.size());
-  for (auto& file : exploded_page_state.referenced_files)
+  for (auto& file : exploded_page_state.referenced_files) {
     referenced_files->emplace_back(file);
+  }
 
   state->children.resize(node->children.size());
   for (size_t i = 0; i < node->children.size(); ++i) {
@@ -218,8 +221,9 @@ bool InSameTreePosition(FrameTreeNode* frame_tree_node,
   FrameTreeNode* ftn = FrameTreeNode::From(frame_tree_node->parent());
   NavigationEntryImpl::TreeNode* current_node = node->parent;
   while (ftn && current_node) {
-    if (!current_node->MatchesFrame(ftn))
+    if (!current_node->MatchesFrame(ftn)) {
       return false;
+    }
 
     if ((!current_node->parent && ftn->parent()) ||
         (current_node->parent && !ftn->parent())) {
@@ -238,12 +242,19 @@ void RegisterOriginsRecursive(NavigationEntryImpl::TreeNode* node,
     const url::Origin node_origin =
         node->frame_entry->committed_origin().value();
     SiteInstanceImpl* site_instance = node->frame_entry->site_instance();
-    if (site_instance && origin == node_origin)
+    // Sandboxed frame origins are treated as equivalent to their non-sandboxed
+    // precursors in the per-BrowsingInstance Origin-Agent-Cluster state, so it
+    // is important to compare and register precursors as well. See
+    // https://crbug.com/446157743.
+    if (site_instance && origin.GetTupleOrPrecursorTupleIfOpaque() ==
+                             node_origin.GetTupleOrPrecursorTupleIfOpaque()) {
       site_instance->RegisterAsDefaultOriginIsolation(node_origin);
+    }
   }
 
-  for (auto& child : node->children)
+  for (auto& child : node->children) {
     RegisterOriginsRecursive(child.get(), origin);
+  }
 }
 
 }  // namespace
@@ -261,10 +272,11 @@ NavigationEntryImpl::TreeNode::TreeNode(
 NavigationEntryImpl::TreeNode::~TreeNode() {}
 
 bool NavigationEntryImpl::TreeNode::MatchesFrame(
-    FrameTreeNode* frame_tree_node) const {
+    const FrameTreeNode* frame_tree_node) const {
   // The root node is for the main frame whether the unique name matches or not.
-  if (!parent)
+  if (!parent) {
     return frame_tree_node->IsMainFrame();
+  }
 
   // Otherwise check the unique name for subframes.
   return !frame_tree_node->IsMainFrame() &&
@@ -307,8 +319,9 @@ NavigationEntryImpl::TreeNode::CloneAndReplace(
     }
     if (!new_entry) {
       new_entry = frame_entry->Clone();
-      if (restore_context)
+      if (restore_context) {
         restore_context->AddFrameNavigationEntry(new_entry.get());
+      }
     }
   }
 
@@ -341,16 +354,23 @@ NavigationEntryImpl::TreeNode::CloneAndReplace(
         size_t index = j;
         // If the two lists of children are the same length, start looking at
         // the same index as |child|.
-        if (children.size() == ftn_child_count)
+        if (children.size() == ftn_child_count) {
           index = (i + j) % ftn_child_count;
+        }
 
         if (current_frame_tree_node->child_at(index)->unique_name() ==
             child->frame_entry->frame_unique_name()) {
-          // Found |child| in the tree.  Clone it and break out of inner loop.
-          copy->children.push_back(child->CloneAndReplace(
-              frame_navigation_entry, clone_children_of_target,
-              target_frame_tree_node, current_frame_tree_node->child_at(index),
-              copy.get(), restore_context, clone_policy));
+          // Found |child| in the tree. Clone it if the RFH isn't pending
+          // deletion and break out of inner loop.
+          if (!current_frame_tree_node->child_at(index)
+                   ->current_frame_host()
+                   ->IsPendingDeletion()) {
+            copy->children.push_back(child->CloneAndReplace(
+                frame_navigation_entry, clone_children_of_target,
+                target_frame_tree_node,
+                current_frame_tree_node->child_at(index), copy.get(),
+                restore_context, clone_policy));
+          }
           break;
         }
       }
@@ -439,6 +459,8 @@ NavigationEntryImpl::NavigationEntryImpl(
       started_from_context_menu_(false),
       ssl_error_(false),
       should_skip_on_back_forward_ui_(false),
+      is_entry_created_by_ad_(false),
+      is_ad_entry_creator_(false),
       initial_navigation_entry_state_(
           is_initial_entry
               ? InitialNavigationEntryState::kInitialNotForSynchronousAboutBlank
@@ -462,11 +484,11 @@ NavigationEntryImpl::~NavigationEntryImpl() {
   }
 }
 
-int NavigationEntryImpl::GetUniqueID() {
+int NavigationEntryImpl::GetUniqueID() const {
   return unique_id_;
 }
 
-PageType NavigationEntryImpl::GetPageType() {
+PageType NavigationEntryImpl::GetPageType() const {
   return page_type_;
 }
 
@@ -483,7 +505,7 @@ void NavigationEntryImpl::SetBaseURLForDataURL(const GURL& url) {
   base_url_for_data_url_ = url;
 }
 
-const GURL& NavigationEntryImpl::GetBaseURLForDataURL() {
+const GURL& NavigationEntryImpl::GetBaseURLForDataURL() const {
   return base_url_for_data_url_;
 }
 
@@ -499,7 +521,7 @@ void NavigationEntryImpl::SetDataURLAsString(
 }
 
 const scoped_refptr<const base::RefCountedString>&
-NavigationEntryImpl::GetDataURLAsString() {
+NavigationEntryImpl::GetDataURLAsString() const {
   return data_url_as_string_;
 }
 #endif
@@ -508,7 +530,7 @@ void NavigationEntryImpl::SetReferrer(const Referrer& referrer) {
   frame_tree_->frame_entry->set_referrer(referrer);
 }
 
-const Referrer& NavigationEntryImpl::GetReferrer() {
+const Referrer& NavigationEntryImpl::GetReferrer() const {
   return frame_tree_->frame_entry->referrer();
 }
 
@@ -526,7 +548,7 @@ void NavigationEntryImpl::SetTitle(std::u16string title) {
   cached_display_title_.clear();
 }
 
-const std::u16string& NavigationEntryImpl::GetTitle() {
+const std::u16string& NavigationEntryImpl::GetTitle() const {
   return title_;
 }
 
@@ -535,8 +557,8 @@ void NavigationEntryImpl::SetApplicationTitle(
   application_title_ = application_title;
 }
 
-const std::optional<std::u16string>&
-NavigationEntryImpl::GetApplicationTitle() {
+const std::optional<std::u16string>& NavigationEntryImpl::GetApplicationTitle()
+    const {
   return application_title_;
 }
 
@@ -554,8 +576,9 @@ void NavigationEntryImpl::SetPageState(const blink::PageState& state,
   // TODO(creis): It would be good to verify that this NavigationEntry hasn't
   // been loaded yet in cases that SetPageState is called while subframe
   // entries exist, but there's currently no way to check that.
-  if (!frame_tree_->children.empty())
+  if (!frame_tree_->children.empty()) {
     frame_tree_->children.clear();
+  }
 
   // If the PageState can't be parsed, store a clean PageState for the URL
   // without recursively creating subframe entries. This ensures that the
@@ -576,7 +599,7 @@ void NavigationEntryImpl::SetPageState(const blink::PageState& state,
       exploded_state.top, exploded_state.referenced_files, frame_tree_.get());
 }
 
-blink::PageState NavigationEntryImpl::GetPageState() {
+blink::PageState NavigationEntryImpl::GetPageState() const {
   // Each FrameNavigationEntry has a frame-specific PageState.  We combine these
   // into an ExplodedPageState tree and generate a full PageState from it.
   blink::ExplodedPageState exploded_state;
@@ -588,16 +611,18 @@ blink::PageState NavigationEntryImpl::GetPageState() {
   return blink::PageState::CreateFromEncodedData(encoded_data);
 }
 
-const std::u16string& NavigationEntryImpl::GetTitleForDisplay() {
+const std::u16string& NavigationEntryImpl::GetTitleForDisplay() const {
   // Most pages have real titles. Don't even bother caching anything if this is
   // the case.
-  if (!title_.empty())
+  if (!title_.empty()) {
     return title_;
+  }
 
   // More complicated cases will use the URLs as the title. This result we will
   // cache since it's more complicated to compute.
-  if (!cached_display_title_.empty())
+  if (!cached_display_title_.empty()) {
     return cached_display_title_;
+  }
 
   // Use the virtual URL first if any, and fall back on using the real URL.
   std::u16string title;
@@ -618,15 +643,17 @@ const std::u16string& NavigationEntryImpl::GetTitleForDisplay() {
     std::u16string::size_type refpos = title.find('#');
     std::u16string::size_type querypos = title.find('?');
     std::u16string::size_type lastpos;
-    if (refpos == std::u16string::npos)
+    if (refpos == std::u16string::npos) {
       lastpos = querypos;
-    else if (querypos == std::u16string::npos)
+    } else if (querypos == std::u16string::npos) {
       lastpos = refpos;
-    else
+    } else {
       lastpos = (refpos < querypos) ? refpos : querypos;
+    }
     std::u16string::size_type slashpos = title.rfind('/', lastpos);
-    if (slashpos != std::u16string::npos)
+    if (slashpos != std::u16string::npos) {
       title = title.substr(slashpos + 1);
+    }
 
   } else if (GetURL().SchemeIs(kChromeUIUntrustedScheme)) {
     // For chrome-untrusted:// URLs, leave title blank until the page loads.
@@ -654,7 +681,7 @@ const std::u16string& NavigationEntryImpl::GetTitleForDisplay() {
   return cached_display_title_;
 }
 
-bool NavigationEntryImpl::IsViewSourceMode() {
+bool NavigationEntryImpl::IsViewSourceMode() const {
   return virtual_url_.SchemeIs(kViewSourceScheme);
 }
 
@@ -663,11 +690,11 @@ void NavigationEntryImpl::SetTransitionType(
   transition_type_ = transition_type;
 }
 
-ui::PageTransition NavigationEntryImpl::GetTransitionType() {
+ui::PageTransition NavigationEntryImpl::GetTransitionType() const {
   return transition_type_;
 }
 
-const GURL& NavigationEntryImpl::GetUserTypedURL() {
+const GURL& NavigationEntryImpl::GetUserTypedURL() const {
   return user_typed_url_;
 }
 
@@ -675,7 +702,7 @@ void NavigationEntryImpl::SetHasPostData(bool has_post_data) {
   frame_tree_->frame_entry->set_method(has_post_data ? "POST" : "GET");
 }
 
-bool NavigationEntryImpl::GetHasPostData() {
+bool NavigationEntryImpl::GetHasPostData() const {
   return frame_tree_->frame_entry->method() == "POST";
 }
 
@@ -683,7 +710,7 @@ void NavigationEntryImpl::SetPostID(int64_t post_id) {
   frame_tree_->frame_entry->set_post_id(post_id);
 }
 
-int64_t NavigationEntryImpl::GetPostID() {
+int64_t NavigationEntryImpl::GetPostID() const {
   return frame_tree_->frame_entry->post_id();
 }
 
@@ -692,7 +719,8 @@ void NavigationEntryImpl::SetPostData(
   post_data_ = static_cast<network::ResourceRequestBody*>(data.get());
 }
 
-scoped_refptr<network::ResourceRequestBody> NavigationEntryImpl::GetPostData() {
+const scoped_refptr<const network::ResourceRequestBody>
+NavigationEntryImpl::GetPostData() const {
   return post_data_.get();
 }
 
@@ -708,7 +736,7 @@ void NavigationEntryImpl::SetOriginalRequestURL(const GURL& original_url) {
   original_request_url_ = original_url;
 }
 
-const GURL& NavigationEntryImpl::GetOriginalRequestURL() {
+const GURL& NavigationEntryImpl::GetOriginalRequestURL() const {
   return original_request_url_;
 }
 
@@ -716,7 +744,7 @@ void NavigationEntryImpl::SetIsOverridingUserAgent(bool override_ua) {
   is_overriding_user_agent_ = override_ua;
 }
 
-bool NavigationEntryImpl::GetIsOverridingUserAgent() {
+bool NavigationEntryImpl::GetIsOverridingUserAgent() const {
   return is_overriding_user_agent_;
 }
 
@@ -724,7 +752,7 @@ void NavigationEntryImpl::SetTimestamp(base::Time timestamp) {
   timestamp_ = timestamp;
 }
 
-base::Time NavigationEntryImpl::GetTimestamp() {
+base::Time NavigationEntryImpl::GetTimestamp() const {
   return timestamp_;
 }
 
@@ -732,7 +760,7 @@ void NavigationEntryImpl::SetHttpStatusCode(int http_status_code) {
   http_status_code_ = http_status_code;
 }
 
-int NavigationEntryImpl::GetHttpStatusCode() {
+int NavigationEntryImpl::GetHttpStatusCode() const {
   return http_status_code_;
 }
 
@@ -741,44 +769,49 @@ void NavigationEntryImpl::SetRedirectChain(
   root_node()->frame_entry->set_redirect_chain(redirect_chain);
 }
 
-const std::vector<GURL>& NavigationEntryImpl::GetRedirectChain() {
+const std::vector<GURL>& NavigationEntryImpl::GetRedirectChain() const {
   return root_node()->frame_entry->redirect_chain();
 }
 
 const std::optional<ReplacedNavigationEntryData>&
-NavigationEntryImpl::GetReplacedEntryData() {
+NavigationEntryImpl::GetReplacedEntryData() const {
   return replaced_entry_data_;
 }
 
-bool NavigationEntryImpl::IsRestored() {
+bool NavigationEntryImpl::IsRestored() const {
   return restore_type_ == RestoreType::kRestored;
 }
 
-std::string NavigationEntryImpl::GetExtraHeaders() {
+std::string NavigationEntryImpl::GetExtraHeaders() const {
   return extra_headers_;
 }
 
 void NavigationEntryImpl::AddExtraHeaders(
     const std::string& more_extra_headers) {
   DCHECK(!more_extra_headers.empty());
-  if (!extra_headers_.empty())
+  if (!extra_headers_.empty()) {
     extra_headers_ += "\r\n";
+  }
   extra_headers_ += more_extra_headers;
 }
 
-int64_t NavigationEntryImpl::GetMainFrameDocumentSequenceNumber() {
+int64_t NavigationEntryImpl::GetMainFrameDocumentSequenceNumber() const {
   return frame_tree_->frame_entry->document_sequence_number();
+}
+
+bool NavigationEntryImpl::IsPossiblySkippableAdEntryForTesting() const {
+  return is_possibly_skippable_ad_entry();
 }
 
 void NavigationEntryImpl::SetCanLoadLocalResources(bool allow) {
   can_load_local_resources_ = allow;
 }
 
-bool NavigationEntryImpl::GetCanLoadLocalResources() {
+bool NavigationEntryImpl::GetCanLoadLocalResources() const {
   return can_load_local_resources_;
 }
 
-bool NavigationEntryImpl::IsInitialEntry() {
+bool NavigationEntryImpl::IsInitialEntry() const {
   return initial_navigation_entry_state_ !=
          InitialNavigationEntryState::kNonInitial;
 }
@@ -859,6 +892,8 @@ NavigationEntryImpl::CloneAndReplaceInternal(
   copy->CloneDataFrom(*this);
   copy->replaced_entry_data_ = replaced_entry_data_;
   copy->should_skip_on_back_forward_ui_ = should_skip_on_back_forward_ui_;
+  copy->is_entry_created_by_ad_ = is_entry_created_by_ad_;
+  copy->is_ad_entry_creator_ = is_ad_entry_creator_;
   copy->initial_navigation_entry_state_ = initial_navigation_entry_state_;
 
   if (navigation_transition_data().cache_hit_or_miss_reason() ==
@@ -929,7 +964,6 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
     int current_history_list_length,
     const blink::FramePolicy& frame_policy,
     bool ancestor_or_self_has_cspee,
-    blink::mojom::SystemEntropy system_entropy_at_navigation_start,
     std::optional<blink::scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id) {
   // Set the redirect chain to the navigation's redirects, unless returning to a
@@ -1004,13 +1038,13 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           net::StorageAccessApiStatus::kNone,
           /*browsing_context_group_info=*/std::nullopt,
           /*lcpp_hint=*/nullptr, blink::CreateDefaultRendererContentSettings(),
-          /*cookie_deprecation_label=*/std::nullopt,
           /*visited_link_salt=*/std::nullopt,
           /*local_surface_id=*/std::nullopt,
           /*initial_permission_statuses=*/std::nullopt,
           /*should_skip_screenshot*/ false,
           /*force_new_document_sequence_number=*/false,
-          /*navigation_metrics_token=*/base::UnguessableToken::Create());
+          /*navigation_metrics_token=*/base::UnguessableToken::Create(),
+          /*commit_target_frame_token=*/std::nullopt);
 #if BUILDFLAG(IS_ANDROID)
   // `data_url_as_string` is saved in NavigationEntry but should only be used by
   // main frames, because loadData* navigations can only happen on the main
@@ -1022,9 +1056,6 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
     commit_params->data_url_as_string = string->as_string();
   }
 #endif
-
-  commit_params->navigation_timing->system_entropy_at_navigation_start =
-      system_entropy_at_navigation_start;
 
   return commit_params;
 }
@@ -1046,20 +1077,22 @@ void NavigationEntryImpl::ResetForCommit(FrameNavigationEntry* frame_entry) {
   }
 }
 
-NavigationEntryImpl::TreeNode* NavigationEntryImpl::GetTreeNode(
+const NavigationEntryImpl::TreeNode* NavigationEntryImpl::GetTreeNode(
     FrameTreeNode* frame_tree_node) const {
-  NavigationEntryImpl::TreeNode* node = nullptr;
-  base::queue<NavigationEntryImpl::TreeNode*> work_queue;
+  const NavigationEntryImpl::TreeNode* node = nullptr;
+  base::queue<const NavigationEntryImpl::TreeNode*> work_queue;
   work_queue.push(root_node());
   while (!work_queue.empty()) {
     node = work_queue.front();
     work_queue.pop();
-    if (node->MatchesFrame(frame_tree_node))
+    if (node->MatchesFrame(frame_tree_node)) {
       return node;
+    }
 
     // Enqueue any children and keep looking.
-    for (const auto& child : node->children)
+    for (const auto& child : node->children) {
       work_queue.push(child.get());
+    }
   }
   return nullptr;
 }
@@ -1150,8 +1183,9 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
       // If the document of the FrameNavigationEntry is changing, we must clear
       // any child FrameNavigationEntries.
       if (child->frame_entry->document_sequence_number() !=
-          document_sequence_number)
+          document_sequence_number) {
         child->children.clear();
+      }
 
       // Update the existing FrameNavigationEntry (e.g., for replaceState).
       child->frame_entry->UpdateEntry(
@@ -1179,9 +1213,9 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
                                                       std::move(frame_entry)));
 }
 
-FrameNavigationEntry* NavigationEntryImpl::GetFrameEntry(
+const FrameNavigationEntry* NavigationEntryImpl::GetFrameEntry(
     FrameTreeNode* frame_tree_node) const {
-  NavigationEntryImpl::TreeNode* tree_node = GetTreeNode(frame_tree_node);
+  const NavigationEntryImpl::TreeNode* tree_node = GetTreeNode(frame_tree_node);
   return tree_node ? tree_node->frame_entry.get() : nullptr;
 }
 
@@ -1197,15 +1231,16 @@ void NavigationEntryImpl::ForEachFrameEntry(
     on_frame_entry(node->frame_entry.get());
 
     // Enqueue any children.
-    for (const auto& child : node->children)
+    for (const auto& child : node->children) {
       work_queue.push(child.get());
+    }
   }
 }
 
 base::flat_map<std::string, bool> NavigationEntryImpl::GetSubframeUniqueNames(
     FrameTreeNode* frame_tree_node) const {
   base::flat_map<std::string, bool> names;
-  NavigationEntryImpl::TreeNode* tree_node = GetTreeNode(frame_tree_node);
+  const NavigationEntryImpl::TreeNode* tree_node = GetTreeNode(frame_tree_node);
   if (tree_node) {
     // Return the names of all immediate children.
     for (const auto& child : tree_node->children) {
@@ -1226,8 +1261,9 @@ base::flat_map<std::string, bool> NavigationEntryImpl::GetSubframeUniqueNames(
               &exploded_page_state)) {
         blink::ExplodedFrameState frame_state = exploded_page_state.top;
         if (UTF16ToUTF8(frame_state.url_string.value_or(std::u16string())) ==
-            url::kAboutBlankURL)
+            url::kAboutBlankURL) {
           is_about_blank = true;
+        }
       }
 
       names[child->frame_entry->frame_unique_name()] = is_about_blank;
@@ -1241,8 +1277,9 @@ void NavigationEntryImpl::RemoveEntryForFrame(FrameTreeNode* frame_tree_node,
   DCHECK(!frame_tree_node->IsMainFrame());
 
   NavigationEntryImpl::TreeNode* node = GetTreeNode(frame_tree_node);
-  if (!node)
+  if (!node) {
     return;
+  }
 
   // Remove the |node| from the tree if either 1) |only_if_different_position|
   // was not asked for or 2) if it is not in the same position in the tree of

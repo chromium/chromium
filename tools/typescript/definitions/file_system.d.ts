@@ -11,8 +11,14 @@ interface FileSystemFileEntry {
   createWriter(callback: (writer: FileWriter) => void): void;
 }
 
+// TODO(crbug.com/373852607): `onwriteend`, `onerror`, and `error` definitions
+// are used in PDF Viewer extension only. Remove them when the migration to the
+// new API is launched (PdfUseShowSaveFilePicker flag).
 interface FileWriter {
   write(data: Blob): void;
+  onwriteend: ((this: FileWriter, ev: ProgressEvent) => void);
+  onerror: ((this: FileWriter, ev: ProgressEvent) => void);
+  error: DOMException;
 }
 
 declare namespace chrome {

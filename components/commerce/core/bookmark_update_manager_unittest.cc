@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/commerce/core/bookmark_update_manager.h"
+
 #include <math.h>
+
 #include <map>
 #include <memory>
 #include <vector>
@@ -17,10 +20,10 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
-#include "components/commerce/core/bookmark_update_manager.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/pref_names.h"
+#include "components/commerce/core/prefs.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
@@ -50,7 +53,7 @@ class BookmarkUpdateManagerTest : public testing::Test {
     // The update manager should not have an update scheduled by default.
     EXPECT_FALSE(IsUpdateScheduled());
 
-    RegisterPrefs(pref_service_->registry());
+    RegisterProfilePrefs(pref_service_->registry());
     pref_service_->SetTime(kShoppingListBookmarkLastUpdateTime, base::Time());
   }
 

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_POLICY_ENTERPRISE_STARTUP_DIALOG_MAC_UTIL_H_
 #define CHROME_BROWSER_UI_VIEWS_POLICY_ENTERPRISE_STARTUP_DIALOG_MAC_UTIL_H_
 
-#import "ui/gfx/native_widget_types.h"
+#import "ui/gfx/native_ui_types.h"
 
 namespace policy {
 

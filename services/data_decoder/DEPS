@@ -5,7 +5,6 @@ include_rules = [
   "+device/bluetooth/public",
   "+gin",
   "+net",
-  "+services/data_decoder/public/cpp/android/safe_json_jni_headers",
   "+skia",
   "+third_party/fuzztest",
   "+third_party/libxml/chromium",

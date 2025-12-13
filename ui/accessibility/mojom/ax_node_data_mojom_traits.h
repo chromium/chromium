@@ -12,6 +12,21 @@
 namespace mojo {
 
 template <>
+struct StructTraits<ax::mojom::AXBitsetDataDataView,
+                    ui::AXBitset<ax::mojom::BoolAttribute>> {
+  static uint32_t set_bits(const ui::AXBitset<ax::mojom::BoolAttribute>& p) {
+    return p.GetSetBits();
+  }
+
+  static uint32_t values(const ui::AXBitset<ax::mojom::BoolAttribute>& p) {
+    return p.GetValues();
+  }
+
+  static bool Read(ax::mojom::AXBitsetDataDataView data,
+                   ui::AXBitset<ax::mojom::BoolAttribute>* out);
+};
+
+template <>
 struct StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData> {
   static int32_t id(const ui::AXNodeData& p) { return p.id; }
   static ax::mojom::Role role(const ui::AXNodeData& p) { return p.role; }
@@ -29,17 +44,9 @@ struct StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData> {
   float_attributes(const ui::AXNodeData& p) {
     return p.float_attributes.container();
   }
-  static base::flat_map<ax::mojom::BoolAttribute, bool> bool_attributes(
-      const ui::AXNodeData& p) {
-    if (p.bool_attributes->IsBitset()) {
-      base::flat_map<ax::mojom::BoolAttribute, bool> result;
-      p.bool_attributes->GetBitsetStore().ForEach(
-          [&result](ax::mojom::BoolAttribute attr, bool value) {
-            result[attr] = value;
-          });
-      return result;
-    }
-    return p.bool_attributes->GetVectorStore().container();
+  static std::optional<ui::AXBitset<ax::mojom::BoolAttribute>>
+  bool_attributes_data(const ui::AXNodeData& p) {
+    return p.bool_attributes;
   }
   static const base::flat_map<ax::mojom::IntListAttribute,
                               std::vector<int32_t>>&

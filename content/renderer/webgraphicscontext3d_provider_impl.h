@@ -6,7 +6,7 @@
 #define CONTENT_RENDERER_WEBGRAPHICSCONTEXT3D_PROVIDER_IMPL_H_
 
 #include "base/containers/flat_map.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -50,7 +50,6 @@ class WebGraphicsContext3DProviderImpl
   gpu::webgpu::WebGPUInterface* WebGPUInterface() override;
   gpu::ContextSupport* ContextSupport() override;
   bool IsContextLost() override;
-  GrDirectContext* GetGrContext() override;
   const gpu::Capabilities& GetCapabilities() const override;
   const gpu::GpuFeatureInfo& GetGpuFeatureInfo() const override;
   const blink::WebglPreferences& GetWebglPreferences() const override;
@@ -61,8 +60,6 @@ class WebGraphicsContext3DProviderImpl
   cc::ImageDecodeCache* ImageDecodeCache(SkColorType color_type) override;
   gpu::SharedImageInterface* SharedImageInterface() override;
   viz::RasterContextProvider* RasterContextProvider() const override;
-  unsigned int GetGrGLTextureFormat(
-      viz::SharedImageFormat format) const override;
 
  private:
   // viz::ContextLostObserver implementation.

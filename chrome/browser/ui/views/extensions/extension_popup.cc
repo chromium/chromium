@@ -83,11 +83,11 @@ ExtensionPopup* ExtensionPopup::last_popup_for_testing() {
 void ExtensionPopup::ShowPopup(
     Browser* browser,
     std::unique_ptr<extensions::ExtensionViewHost> host,
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     views::BubbleBorder::Arrow arrow,
     PopupShowAction show_action,
     ShowPopupCallback callback) {
-  auto* popup = new ExtensionPopup(browser, std::move(host), anchor_view, arrow,
+  auto* popup = new ExtensionPopup(browser, std::move(host), anchor, arrow,
                                    show_action, std::move(callback));
   views::BubbleDialogDelegateView::CreateBubble(popup);
 
@@ -141,7 +141,12 @@ void ExtensionPopup::AddedToWidget() {
 
 void ExtensionPopup::OnWidgetDestroying(views::Widget* widget) {
   BubbleDialogDelegateView::OnWidgetDestroying(widget);
+  scoped_devtools_observation_.reset();
   anchor_widget_observation_.Reset();
+  extension_registry_observation_.Reset();
+  extension_view_ = nullptr;
+  host_.reset();
+  browser_ = nullptr;
 }
 
 void ExtensionPopup::OnWidgetTreeActivated(views::Widget* root_widget,
@@ -184,7 +189,7 @@ gfx::Size ExtensionPopup::GetMaxBounds() {
   gfx::Size max_size = kMaxSize;
   max_size.SetToMin(
       BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(
-          GetAnchorView(), arrow(), adjust_if_offscreen(),
+          GetAnchor(), arrow(), adjust_if_offscreen(),
           views::BubbleFrameView::PreferredArrowAdjustment::kMirror));
   max_size.SetToMax(kMinSize);
 
@@ -251,11 +256,11 @@ void ExtensionPopup::DevToolsAgentHostDetached(
 ExtensionPopup::ExtensionPopup(
     Browser* browser,
     std::unique_ptr<extensions::ExtensionViewHost> host,
-    views::View* anchor_view,
+    views::BubbleAnchor anchor,
     views::BubbleBorder::Arrow arrow,
     PopupShowAction show_action,
     ShowPopupCallback callback)
-    : BubbleDialogDelegateView(anchor_view,
+    : BubbleDialogDelegateView(anchor,
                                arrow,
                                views::BubbleBorder::STANDARD_SHADOW,
                                /*autosize=*/true),

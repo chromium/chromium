@@ -19,7 +19,6 @@
 #include "base/observer_list.h"
 #include "base/observer_list_threadsafe.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
-#include "content/browser/service_worker/service_worker_identifiability_metrics.h"
 #include "content/browser/service_worker/service_worker_process_manager.h"
 #include "content/browser/service_worker/service_worker_registry.h"
 #include "content/common/content_export.h"
@@ -28,7 +27,6 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_running_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
@@ -179,6 +177,9 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
                              ServiceWorkerVersion::Status status) override;
   void OnWindowOpened(const GURL& script_url, const GURL& url) override;
   void OnClientNavigated(const GURL& script_url, const GURL& url) override;
+  void OnPushEventFinished(
+      const GURL& script_url,
+      const std::optional<std::vector<GURL>>& requested_urls) override;
 
   // ServiceWorkerContext implementation:
   void AddObserver(ServiceWorkerContextObserver* observer) override;
@@ -597,8 +598,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // to dispatch OnVersionStartedRunning()/OnVersionStoppedRunning() events.
   base::flat_map<int64_t /* version_id */, ServiceWorkerRunningInfo>
       running_service_workers_;
-
-  std::unique_ptr<ServiceWorkerIdentifiabilityMetrics> identifiability_metrics_;
 
   // These fields are used to (re)create `storage_control_`.
   base::FilePath user_data_directory_;

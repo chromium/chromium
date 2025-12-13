@@ -143,7 +143,7 @@ SurfaceTreeHost::~SurfaceTreeHost() {
     auto* context_factory = aura::Env::GetInstance()->context_factory();
     auto* host_frame_sink_manager = context_factory->GetHostFrameSinkManager();
     host_frame_sink_manager->InvalidateFrameSinkId(frame_sink_id_,
-                                                   host_window());
+                                                   host_window(), {});
   }
 }
 
@@ -319,8 +319,7 @@ void SurfaceTreeHost::OnFrameSinkLost() {
 // SurfaceTreeHost, protected:
 
 void SurfaceTreeHost::UpdateDisplayOnTree() {
-  auto display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(host_window());
+  auto display = display::Screen::Get()->GetDisplayNearestWindow(host_window());
   if (output_display_id_ != display.id()) {
     if (root_surface_) {
       if (root_surface_->UpdateDisplay(output_display_id_, display.id())) {
@@ -407,7 +406,7 @@ void SurfaceTreeHost::SubmitCompositorFrame() {
     }
     frame.metadata.content_color_usage =
         std::max(frame.metadata.content_color_usage,
-                 resource.color_space.GetContentColorUsage());
+                 resource.GetColorSpace().GetContentColorUsage());
   }
 
   frame.metadata.may_contain_video = root_surface_->ContainsVideo();

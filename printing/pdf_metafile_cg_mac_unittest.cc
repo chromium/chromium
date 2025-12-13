@@ -86,7 +86,8 @@ void RenderedPdfSha1(const base::FilePath::StringType& pdf_filename,
   base::apple::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
       rendered_bitmap.data(), dest_size.width(), dest_size.height(),
       kBitsPerComponent, kStride, color_space.get(),
-      uint32_t{kCGImageAlphaPremultipliedFirst} | kCGBitmapByteOrder32Little));
+      static_cast<CGBitmapInfo>(kCGImageAlphaPremultipliedFirst) |
+          kCGImageByteOrder32Little));
 
   // Render using metafile and calculate the output hash.
   ASSERT_TRUE(pdf_cg->RenderPage(page_number, context.get(),

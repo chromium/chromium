@@ -14,7 +14,6 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -35,6 +34,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/configurator.h"
+#include "components/update_client/crx_cache.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
@@ -416,20 +416,22 @@ bool CrxUpdateService::CheckForUpdates(
     return true;
   }
 
-  update_client_->Update(
+  config_->GetCrxCache()->RemoveIfNot(
       components_order_,
-      base::BindOnce(&CrxUpdateService::GetCrxComponents,
-                     weak_ptr_factory_.GetWeakPtr()),
-      {}, false,
-      base::BindOnce(&CrxUpdateService::OnUpdateComplete,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::BindOnce(
-                         [](UpdateScheduler::OnFinishedCallback on_finished,
-                            update_client::Error /*error*/) {
-                           std::move(on_finished).Run();
-                         },
-                         std::move(on_finished)),
-                     base::TimeTicks::Now()));
+      base::BindOnce(
+          &UpdateClient::Update, update_client_, components_order_,
+          base::BindOnce(&CrxUpdateService::GetCrxComponents,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::DoNothing(), false,
+          base::BindOnce(&CrxUpdateService::OnUpdateComplete,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         base::BindOnce(
+                             [](UpdateScheduler::OnFinishedCallback on_finished,
+                                update_client::Error /*error*/) {
+                               std::move(on_finished).Run();
+                             },
+                             std::move(on_finished)),
+                         base::TimeTicks::Now())));
   return true;
 }
 

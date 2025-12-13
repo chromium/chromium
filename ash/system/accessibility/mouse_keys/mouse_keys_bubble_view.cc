@@ -15,6 +15,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 
@@ -46,7 +47,7 @@ std::unique_ptr<views::Label> CreateLabelView(
 }
 
 aura::Window* FindRootWindowAtMousePosition() {
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   CHECK(screen);
   auto display = screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint());
   return Shell::GetRootWindowForDisplayId(display.id());
@@ -57,7 +58,7 @@ aura::Window* FindRootWindowAtMousePosition() {
 MouseKeysBubbleView::MouseKeysBubbleView() {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   CHECK(screen);
   auto display = screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint());
 

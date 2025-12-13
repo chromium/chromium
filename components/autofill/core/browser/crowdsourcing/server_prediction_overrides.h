@@ -116,12 +116,12 @@ enum class OverrideFormat {
   //
   //   {
   //     "12345": {
-  //        "123": {
+  //        "123": [ {
   //          "predictions": ["NAME_FIRST"]
-  //        },
-  //        "456": {
+  //        } ],
+  //        "456": [ {
   //          "predictions": ["NAME_FIRST", "PASSPORT_NUMBER"]
-  //        },
+  //        } ]
   //     },
   //     "67890": {
   //        "789": [ {
@@ -132,7 +132,7 @@ enum class OverrideFormat {
   //          "predictions": [172],
   //          "format_string_type": "DATE",
   //          "format_string": "DD/MM/YYYY"
-  //        } ],
+  //        } ]
   //     }
   //   }
   kJson

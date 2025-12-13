@@ -4,6 +4,7 @@
 
 #include "chrome/browser/task_manager/providers/browser_process_task.h"
 
+#include "base/byte_count.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -17,8 +18,7 @@ gfx::ImageSkia* BrowserProcessTask::s_icon_ = nullptr;
 BrowserProcessTask::BrowserProcessTask()
     : Task(l10n_util::GetStringUTF16(IDS_TASK_MANAGER_WEB_BROWSER_CELL_TEXT),
            FetchIcon(IDR_PRODUCT_LOGO_16, &s_icon_),
-           base::GetCurrentProcessHandle()),
-      used_sqlite_memory_(-1) {}
+           base::GetCurrentProcessHandle()) {}
 
 BrowserProcessTask::~BrowserProcessTask() = default;
 
@@ -37,7 +37,8 @@ void BrowserProcessTask::Refresh(const base::TimeDelta& update_interval,
   Task::Refresh(update_interval, refresh_flags);
 
   if (refresh_flags & REFRESH_TYPE_SQLITE_MEMORY) {
-    used_sqlite_memory_ = sql::SqlMemoryDumpProvider::GetMemoryUse();
+    used_sqlite_memory_ =
+        base::ByteCount(sql::SqlMemoryDumpProvider::GetMemoryUse());
   }
 }
 
@@ -49,7 +50,7 @@ int BrowserProcessTask::GetChildProcessUniqueID() const {
   return 0;
 }
 
-int64_t BrowserProcessTask::GetSqliteMemoryUsed() const {
+base::ByteCount BrowserProcessTask::GetSqliteMemoryUsed() const {
   return used_sqlite_memory_;
 }
 

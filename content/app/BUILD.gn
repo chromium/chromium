@@ -4,7 +4,6 @@
 
 import("//build/config/apple/mobile_config.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/features.gni")
 import("//third_party/tflite/features.gni")
 
 extra_configs = [
@@ -54,6 +53,14 @@ if (is_ios && target_platform == "iphoneos") {
   content_app_deps += [ "//content/app/ios/appex:child_process_bridge" ]
 }
 
+if (is_android) {
+  config("javaless_renderers_define") {
+    if (enable_javaless_renderers) {
+      defines = [ "JAVALESS_RENDERERS" ]
+    }
+  }
+}
+
 # Compile content_main_runner_impl.[h, cc] in a separate target to exempt from
 # GN header checking without exempting any other source file. These files
 # includes headers of all process types and varies significantly per platform
@@ -88,6 +95,25 @@ source_set("content_main_runner_app") {
   }
 }
 
+if (is_android && enable_javaless_renderers) {
+  # Since javaless renderers provide their own entry point into the shared
+  # library, for component builds to work, we require this to fall into the root
+  # component. Thus, you must add this directly to the shared_library target
+  # this should end up in.
+  source_set("javaless_renderer") {
+    configs += [ ":javaless_renderers_define" ]
+    sources = [ "android/javaless_child_process_service.cc" ]
+    deps = [
+      ":app",
+      "//base",
+      "//base:build_info_aidl_native",
+      "//base:process_launcher_aidl_native",
+      "//content/common",
+      "//content/public/app",
+    ]
+  }
+}
+
 source_set("app") {
   # TODO(thakis): The comment above content_main_runner_app suggests this
   # line shouldn't be here; try removing it.
@@ -111,6 +137,7 @@ source_set("app") {
   # internal content ones) should depend on the public one.
   visibility = [
     ":for_content_tests",  # See top of //content/BUILD.gn for why.
+    ":javaless_renderer",
     "//content/public/app:*",
   ]
 

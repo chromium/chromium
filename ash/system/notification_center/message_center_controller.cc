@@ -125,10 +125,6 @@ MessageCenterController::MessageCenterController() {
 }
 
 MessageCenterController::~MessageCenterController() {
-  for (auto& observer : observers_) {
-    observer.OnArcNotificationInitializerDestroyed(this);
-  }
-
   // These members all depend on the MessageCenter instance, so must be
   // destroyed first.
   all_popup_blocker_.reset();
@@ -142,10 +138,10 @@ MessageCenterController::~MessageCenterController() {
   message_center::MessageCenter::Shutdown();
 }
 
-void MessageCenterController::SetArcNotificationManagerInstance(
-    std::unique_ptr<ArcNotificationManagerBase> manager_instance) {
+void MessageCenterController::SetArcNotificationManager(
+    std::unique_ptr<ArcNotificationManagerBase> arc_notification_manager) {
   CHECK(!arc_notification_manager_);
-  arc_notification_manager_ = std::move(manager_instance);
+  arc_notification_manager_ = std::move(arc_notification_manager);
   arc_notification_manager_->Init(
       std::make_unique<ArcNotificationManagerDelegateImpl>(),
       Shell::Get()
@@ -155,12 +151,13 @@ void MessageCenterController::SetArcNotificationManagerInstance(
       message_center::MessageCenter::Get());
 
   for (auto& observer : observers_) {
-    observer.OnSetArcNotificationsInstance(arc_notification_manager_.get());
+    observer.OnArcNotificationManagerInitialized(
+        arc_notification_manager_.get());
   }
 }
 
 ArcNotificationManagerBase*
-MessageCenterController::GetArcNotificationManagerInstance() {
+MessageCenterController::GetArcNotificationManager() {
   return arc_notification_manager_.get();
 }
 

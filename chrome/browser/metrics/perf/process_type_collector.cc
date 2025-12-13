@@ -24,17 +24,11 @@ void SkipLine(std::string_view* contents) {
   RE2::Consume(contents, *kSkipLine);
 }
 
-// Matches both Ash-Chrome and Lacros binaries.
-const LazyRE2 kChromeExePathMatcher = {
-    R"((/opt/google/chrome/chrome|\S*lacros\S*/chrome))"};
+const LazyRE2 kChromeExePathMatcher = {R"(/opt/google/chrome/chrome)"};
 
-// Matches Lacros binaries.
-const LazyRE2 kLacrosExePathMatcher = {R"((\S*lacros\S*/chrome))"};
 }  // namespace
 
-std::map<uint32_t, Process> ProcessTypeCollector::ChromeProcessTypes(
-    std::vector<uint32_t>& lacros_pids,
-    std::string& lacros_path) {
+std::map<uint32_t, Process> ProcessTypeCollector::ChromeProcessTypes() {
   std::string output;
   if (!base::GetAppOutput(std::vector<std::string>({"ps", "-ewwo", "pid,cmd"}),
                           &output)) {
@@ -43,7 +37,7 @@ std::map<uint32_t, Process> ProcessTypeCollector::ChromeProcessTypes(
     return std::map<uint32_t, Process>();
   }
 
-  return ParseProcessTypes(output, lacros_pids, lacros_path);
+  return ParseProcessTypes(output);
 }
 
 std::map<uint32_t, Thread> ProcessTypeCollector::ChromeThreadTypes() {
@@ -60,9 +54,7 @@ std::map<uint32_t, Thread> ProcessTypeCollector::ChromeThreadTypes() {
 }
 
 std::map<uint32_t, Process> ProcessTypeCollector::ParseProcessTypes(
-    std::string_view contents,
-    std::vector<uint32_t>& lacros_pids,
-    std::string& lacros_path) {
+    std::string_view contents) {
   static const LazyRE2 kLineMatcher = {
       R"(\s*(\d+))"    // PID
       R"(\s+(.+)\n?)"  // COMMAND LINE
@@ -93,18 +85,8 @@ std::map<uint32_t, Process> ProcessTypeCollector::ParseProcessTypes(
       continue;
     }
 
-    std::string_view cmd;
-    if (!RE2::Consume(&cmd_line, *kChromeExePathMatcher, &cmd)) {
+    if (!RE2::Consume(&cmd_line, *kChromeExePathMatcher)) {
       continue;
-    }
-
-    // Use a second match to record any Lacros PID.
-    std::string_view lacros_cmd;
-    if (RE2::Consume(&cmd, *kLacrosExePathMatcher, &lacros_cmd)) {
-      lacros_pids.emplace_back(pid);
-      if (lacros_path.empty()) {
-        lacros_path = lacros_cmd;
-      }
     }
 
     std::string type;

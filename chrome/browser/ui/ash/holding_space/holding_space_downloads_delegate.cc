@@ -16,6 +16,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "base/byte_count.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -330,16 +331,18 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload
       // If `total_bytes` is known, `secondary_text` will be something of the
       // form "10/100 MB", where the first number is the number of received
       // bytes and the second number is the total number of bytes expected.
-      const ui::DataUnits units = ui::GetByteDisplayUnits(total_bytes.value());
+      const ui::DataUnits units =
+          ui::GetByteDisplayUnits(base::ByteCount(total_bytes.value()));
       secondary_text = l10n_util::GetStringFUTF16(
           IDS_ASH_HOLDING_SPACE_IN_PROGRESS_DOWNLOAD_SIZE_INFO,
-          ui::FormatBytesWithUnits(received_bytes, units, /*show_units=*/false),
-          ui::FormatBytesWithUnits(total_bytes.value(), units,
+          ui::FormatBytesWithUnits(base::ByteCount(received_bytes), units,
+                                   /*show_units=*/false),
+          ui::FormatBytesWithUnits(base::ByteCount(total_bytes.value()), units,
                                    /*show_units=*/true));
     } else {
       // If `total_bytes` is not known, `secondary_text` will be something of
       // the form "10 MB", indicating only the number of received bytes.
-      secondary_text = ui::FormatBytes(received_bytes);
+      secondary_text = ui::FormatBytes(base::ByteCount(received_bytes));
     }
 
     if (IsPaused()) {

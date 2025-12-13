@@ -28,6 +28,9 @@ HeuristicSource GetActiveHeuristicSource();
 // `source` is using regexes. Otherwise, nullopt is returned.
 std::optional<PatternFile> HeuristicSourceToPatternFile(HeuristicSource source);
 
+// Converts a `HeuristicSource` into a string used to record logs.
+std::string_view HeuristicSourceToString(HeuristicSource source);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_HEURISTIC_SOURCE_H_

@@ -21,8 +21,15 @@ suite('ProfileSwitchTest', function() {
   setup(function() {
     browserProxy = new TestManageProfilesBrowserProxy();
     ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
+
+    // Setting the expected profile path in the url params.
+    const url = new URL(window.location.href);
+    url.searchParams.set(
+        'profileSwitchPath', browserProxy.profileSample.profilePath);
+    window.history.replaceState({}, '', url);
+
     getSwitchProfilePromiseResolver = new PromiseResolver();
-    browserProxy.setGetSwitchProfilePromise(
+    browserProxy.setGetProfileStatePromise(
         getSwitchProfilePromiseResolver.promise);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     profileSwitchElement = document.createElement('profile-switch');
@@ -33,7 +40,7 @@ suite('ProfileSwitchTest', function() {
     assertTrue(profileSwitchElement.$.switchButton.disabled);
 
     getSwitchProfilePromiseResolver.resolve(browserProxy.profileSample);
-    await browserProxy.whenCalled('getSwitchProfile');
+    await browserProxy.whenCalled('getProfileState');
     await microtasksFinished();
 
     assertFalse(profileSwitchElement.$.switchButton.disabled);
@@ -54,7 +61,7 @@ suite('ProfileSwitchTest', function() {
     profileState.avatarBadge = 'cr:domain';
 
     getSwitchProfilePromiseResolver.resolve(profileState);
-    await browserProxy.whenCalled('getSwitchProfile');
+    await browserProxy.whenCalled('getProfileState');
     await microtasksFinished();
 
     assertFalse(profileSwitchElement.$.iconContainer.hidden);
@@ -62,7 +69,7 @@ suite('ProfileSwitchTest', function() {
 
   test('confirmSwitch', async function() {
     getSwitchProfilePromiseResolver.resolve(browserProxy.profileSample);
-    await browserProxy.whenCalled('getSwitchProfile');
+    await browserProxy.whenCalled('getProfileState');
     await microtasksFinished();
 
     assertFalse(profileSwitchElement.$.switchButton.disabled);
@@ -79,7 +86,7 @@ suite('ProfileSwitchTest', function() {
 
   test('cancelSwitch_afterGetSwitchProfile', async function() {
     getSwitchProfilePromiseResolver.resolve(browserProxy.profileSample);
-    await browserProxy.whenCalled('getSwitchProfile');
+    await browserProxy.whenCalled('getProfileState');
     await microtasksFinished();
 
     assertFalse(profileSwitchElement.$.cancelButton.disabled);

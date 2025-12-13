@@ -18,7 +18,7 @@
 namespace {
 
 // The string template to use for parsing the end and start date/time.
-NSString* kDateTimeTemplate = @"dd/MM/yyyy HH:mm";
+NSString* const kDateTimeTemplate = @"dd/MM/yyyy HH:mm";
 
 // String template to use for adding additional information to the calendar
 // event summary.

@@ -69,8 +69,8 @@ int VcEffectsDelegate::GetNumEffects() {
 }
 
 const VcHostedEffect* VcEffectsDelegate::GetEffectById(VcEffectId effect_id) {
-  if (effects_.contains(effect_id)) {
-    return effects_[effect_id].get();
+  if (auto it = effects_.find(effect_id); it != effects_.end()) {
+    return it->second.get();
   }
   return nullptr;
 }

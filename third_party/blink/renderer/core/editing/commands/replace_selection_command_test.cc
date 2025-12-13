@@ -73,7 +73,8 @@ TEST_F(ReplaceSelectionCommandTest, pasteSpanInText) {
       SetSelectionOptions());
 
   DocumentFragment* fragment = GetDocument().createDocumentFragment();
-  fragment->ParseHTML("<span><div>bar</div></span>", b_element);
+  fragment->ParseHTML("<span><div>bar</div></span>", b_element,
+                      /*registry*/ nullptr);
 
   ReplaceSelectionCommand::CommandOptions options = 0;
   auto* command = MakeGarbageCollected<ReplaceSelectionCommand>(
@@ -119,7 +120,7 @@ TEST_F(ReplaceSelectionCommandTest, TextAutosizingDoesntInflateText) {
       SetSelectionOptions());
 
   DocumentFragment* fragment = GetDocument().createDocumentFragment();
-  fragment->ParseHTML("baz", span);
+  fragment->ParseHTML("baz", span, /*registry*/ nullptr);
 
   ReplaceSelectionCommand::CommandOptions options =
       ReplaceSelectionCommand::kMatchStyle;
@@ -139,7 +140,8 @@ TEST_F(ReplaceSelectionCommandTest, TrailingNonVisibleTextCrash) {
                            SetSelectionOptions());
 
   DocumentFragment* fragment = GetDocument().createDocumentFragment();
-  fragment->ParseHTML("<div>bar</div> ", QuerySelector("div"));
+  fragment->ParseHTML("<div>bar</div> ", QuerySelector("div"),
+                      /*registry*/ nullptr);
   ReplaceSelectionCommand::CommandOptions options = 0;
   auto* command = MakeGarbageCollected<ReplaceSelectionCommand>(
       GetDocument(), fragment, options);
@@ -315,6 +317,32 @@ TEST_F(ReplaceSelectionCommandTest, InsertLineFeedsToTextArea) {
         GetSelectionTextInFlatTreeFromBody(
             Selection().ComputeVisibleSelectionInFlatTree().AsSelection()));
   }
+}
+
+TEST_F(ReplaceSelectionCommandTest, TrivialFragmentTextDataForInputEvent) {
+  SetBodyContent("<textarea></textarea>");
+  Element* textarea = QuerySelector("textarea");
+  textarea->Focus();
+
+  // Create a fragment with span wrapper around text content
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  Element* span = GetDocument().CreateRawElement(html_names::kSpanTag);
+  span->appendChild(Text::Create(GetDocument(), "test content"));
+  fragment.appendChild(span);
+
+  // Use insertFromDrop input type to test the TextDataForInputEvent
+  // functionality
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, /* options */ 0,
+      InputEvent::InputType::kInsertFromDrop);
+
+  // Apply the command
+  EXPECT_TRUE(command.Apply()) << "ReplaceSelectionCommand should succeed";
+
+  // After Apply(), verify TextDataForInputEvent returns the correct text.
+  String result = command.TextDataForInputEvent();
+  EXPECT_EQ("test content", result) << "TextDataForInputEvent should return "
+                                       "the correct trivial text after Apply";
 }
 
 }  // namespace blink

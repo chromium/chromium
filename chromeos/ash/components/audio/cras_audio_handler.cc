@@ -1947,8 +1947,7 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   GetNumberOfInputStreamsWithPermissionInternal();
   GetNumStreamIgnoreUiGains();
   GetNumberOfArcStreams();
-  CrasAudioClient::Get()->SetFixA2dpPacketSize(
-      base::FeatureList::IsEnabled(features::kBluetoothFixA2dpPacketSize));
+  CrasAudioClient::Get()->SetFixA2dpPacketSize(false);
 
   // Sets Floss enabled based on feature flag.
   CrasAudioClient::Get()->SetFlossEnabled(floss::features::IsFlossEnabled());

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "device/fido/hid/fido_hid_device.h"
 
 #include <limits>
@@ -14,6 +9,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
@@ -21,6 +17,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/random.h"
@@ -258,7 +255,8 @@ std::optional<uint32_t> FidoHidDevice::ParseInitReply(
   // 15: Build device version
   // 16: Capabilities
   DCHECK_EQ(8u, nonce.size());
-  if (payload.size() != 17 || memcmp(nonce.data(), payload.data(), 8) != 0) {
+  if (payload.size() != 17 ||
+      UNSAFE_TODO(memcmp(nonce.data(), payload.data(), 8)) != 0) {
     return std::nullopt;
   }
 
@@ -598,12 +596,8 @@ static std::string VidPidToString(const mojom::HidDeviceInfoPtr& device_info) {
                 "vendor_id must be uint16_t");
   static_assert(sizeof(device_info->product_id) == 2,
                 "product_id must be uint16_t");
-  uint16_t vendor_id = ((device_info->vendor_id & 0xff) << 8) |
-                       ((device_info->vendor_id & 0xff00) >> 8);
-  uint16_t product_id = ((device_info->product_id & 0xff) << 8) |
-                        ((device_info->product_id & 0xff00) >> 8);
-  return base::ToLowerASCII(base::HexEncode(&vendor_id, 2) + ":" +
-                            base::HexEncode(&product_id, 2));
+  return base::StringPrintf("%02x:%02x", device_info->vendor_id,
+                            device_info->product_id);
 }
 
 std::string FidoHidDevice::GetDisplayName() const {

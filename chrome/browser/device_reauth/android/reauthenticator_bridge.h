@@ -17,8 +17,8 @@ class Profile;
 // biometric authentication requests.
 class ReauthenticatorBridge {
  public:
-  ReauthenticatorBridge(const base::android::JavaParamRef<jobject>& java_bridge,
-                        const base::android::JavaParamRef<jobject>& activity,
+  ReauthenticatorBridge(const base::android::JavaRef<jobject>& java_bridge,
+                        const base::android::JavaRef<jobject>& activity,
                         Profile* profile,
                         jint requester);
   ~ReauthenticatorBridge();

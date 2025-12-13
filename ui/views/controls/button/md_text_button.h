@@ -17,7 +17,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/label_button_image_container.h"
-#include "ui/views/controls/focus_ring.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 
 namespace actions {
@@ -25,6 +25,8 @@ class ActionItem;
 }
 
 namespace views {
+
+enum class PropertyEffects;
 
 // A button class that implements the Material Design text button spec.
 class VIEWS_EXPORT MdTextButton : public LabelButton {

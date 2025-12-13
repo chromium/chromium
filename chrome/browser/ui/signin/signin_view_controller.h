@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/signin/signin_modal_dialog.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/url_constants.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -171,8 +172,12 @@ class SigninViewController {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // Shows the modal history sync opt in dialog as a browser-modal dialog on top
-  // of the `browser_`'s window.
-  void ShowModalHistorySyncOptInDialog();
+  // of the `browser_`'s window. Executes the provided callback when the dialog
+  // closes.
+  void ShowModalHistorySyncOptInDialog(
+      bool should_close_modal_dialog,
+      HistorySyncOptinHelper::FlowCompletedCallback
+          history_optin_completed_callback);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   // Shows the modal managed user notice dialog as a browser-modal dialog on
@@ -217,26 +222,21 @@ class SigninViewController {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserTest,
-                           EmailConfirmationDefaultFocus);
-  FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserTest,
                            ErrorDialogDefaultFocus);
-  FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserTest,
-                           EnterpriseConfirmationDefaultFocus);
-  FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserOIDCAccountTest,
-                           EnterpriseConfirmationDefaultFocus);
-  FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserOIDCAccountTest,
-                           EnterpriseConfirmationCancel);
   FRIEND_TEST_ALL_PREFIXES(SigninViewControllerDelegateViewsBrowserTest,
                            CloseImmediately);
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,
                            CreateLocalProfile);
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,
                            CancelLocalProfileCreation);
+  FRIEND_TEST_ALL_PREFIXES(
+      ProfilePickerWithReducedFrictionRemoveSigninBrowserTest,
+      CreateLocalProfileWithoutSigninStep);
   FRIEND_TEST_ALL_PREFIXES(SyncSettingsInteractiveTest,
                            PressingSignOutButtonsSignsOutUser);
   friend class ChromeSignoutConfirmationPromptPixelTest;
   friend class login_ui_test_utils::SigninViewControllerTestUtil;
-  friend class SigninInterceptFirstRunExperienceDialogBrowserTest;
+  friend class SigninInterceptFirstRunExperienceDialogBrowserTestBase;
   friend class SyncConfirmationUIDialogPixelTest;
   friend class SigninViewControllerBrowserTestBase;
   friend class ProfileMenuViewSignoutTest;
@@ -272,6 +272,7 @@ class SigninViewController {
   // prompt.
   void ShowSignoutConfirmationPrompt(
       ChromeSignoutConfirmationPromptVariant prompt_variant,
+      size_t unsynced_data_count,
       SignoutConfirmationCallback callback);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

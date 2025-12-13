@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <map>
 #include <set>
 #include <utility>
@@ -27,11 +28,11 @@
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_util.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/hash_util.h"
 #include "components/sync/base/sync_invalidation_adapter.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/bookmark_update_preprocessing.h"
@@ -51,10 +52,6 @@ namespace syncer {
 
 namespace {
 
-const char kUndecryptablePendingUpdatesDroppedHistogramName[] =
-    "Sync.DataTypeUndecryptablePendingUpdatesDropped";
-const char kBlockedByUndecryptableUpdateHistogramName[] =
-    "Sync.DataTypeBlockedDueToUndecryptableUpdate";
 const char kPasswordNotesStateHistogramName[] =
     "Sync.PasswordNotesStateInUpdate";
 constexpr char kEntityEncryptionResultHistogramName[] =
@@ -91,12 +88,6 @@ void LogEncryptionResult(DataType type, bool success) {
       success);
 }
 
-void LogCrossUserSharingDecryptionResult(
-    CrossUserSharingDecryptionResult result) {
-  base::UmaHistogramEnumeration("Sync.CrossUserSharingDecryptionResult",
-                                result);
-}
-
 void LogNudgedUpdateLatency(DataType type, base::TimeDelta latency) {
   base::UmaHistogramLongTimes(base::StrCat({"Sync.NudgedUpdateLatency.",
                                             DataTypeToHistogramSuffix(type)}),
@@ -130,54 +121,67 @@ class CommitQueueProxy : public CommitQueue {
       base::SequencedTaskRunner::GetCurrentDefault();
 };
 
-void AdaptClientTagForFullUpdateData(DataType data_type,
-                                     syncer::EntityData* data) {
+void MaybeAdaptClientTagIfMissing(DataType data_type,
+                                  syncer::EntityData& data) {
+  CHECK(!data.specifics.has_encrypted());
+  if (!data.client_tag_hash.value().empty()) {
+    // Client tag hash is already set, nothing to do.
+    return;
+  }
   // Server does not send any client tags for wallet data entities or offer data
   // entities. This code manually asks the bridge to create the client tags for
   // each entity, so that we can use ClientTagBasedDataTypeProcessor for
   // AUTOFILL_WALLET_DATA or AUTOFILL_WALLET_OFFER.
-  if (data->legacy_parent_id == "0") {
+  if (data.legacy_parent_id == "0") {
     // Ignore the permanent root node as that one should have no client tag
     // hash.
     return;
   }
-  DCHECK(!data->specifics.has_encrypted());
-  if (data_type == AUTOFILL_WALLET_DATA) {
-    CHECK(data->specifics.has_autofill_wallet());
-    data->client_tag_hash = ClientTagHash::FromUnhashed(
-        AUTOFILL_WALLET_DATA, GetUnhashedClientTagFromAutofillWalletSpecifics(
-                                  data->specifics.autofill_wallet()));
-  } else if (data_type == AUTOFILL_WALLET_OFFER) {
-    CHECK(data->specifics.has_autofill_offer());
-    data->client_tag_hash = ClientTagHash::FromUnhashed(
-        AUTOFILL_WALLET_OFFER, GetUnhashedClientTagFromAutofillOfferSpecifics(
-                                   data->specifics.autofill_offer()));
-  } else if (data_type == AUTOFILL_VALUABLE) {
-    CHECK(data->specifics.has_autofill_valuable());
-    data->client_tag_hash = ClientTagHash::FromUnhashed(
-        AUTOFILL_VALUABLE, GetUnhashedClientTagFromAutofillValuableSpecifics(
-                               data->specifics.autofill_valuable()));
-  } else {
-    NOTREACHED();
+  switch (data_type) {
+    case AUTOFILL_WALLET_DATA:
+      CHECK(data.specifics.has_autofill_wallet());
+      data.client_tag_hash = ClientTagHash::FromUnhashed(
+          AUTOFILL_WALLET_DATA,
+          autofill::GetUnhashedClientTagFromAutofillWalletSpecifics(
+              data.specifics.autofill_wallet()));
+      break;
+    case AUTOFILL_WALLET_OFFER:
+      CHECK(data.specifics.has_autofill_offer());
+      data.client_tag_hash = ClientTagHash::FromUnhashed(
+          AUTOFILL_WALLET_OFFER,
+          autofill::GetUnhashedClientTagFromAutofillOfferSpecifics(
+              data.specifics.autofill_offer()));
+      break;
+    case AUTOFILL_VALUABLE:
+      CHECK(data.specifics.has_autofill_valuable());
+      data.client_tag_hash = ClientTagHash::FromUnhashed(
+          AUTOFILL_VALUABLE,
+          autofill::GetUnhashedClientTagFromAutofillValuableSpecifics(
+              data.specifics.autofill_valuable()));
+      break;
+    default:
+      // Other datatypes populate the client tag hash in the protocol and there
+      // is no need to infer it client-side.
+      break;
   }
 }
 
-void AdaptWebAuthnClientTagHash(syncer::EntityData* data) {
+void AdaptWebAuthnClientTagHash(syncer::EntityData& data) {
   // Google Play Services may create entities where the client_tag_hash doesn't
   // conform to the form expected by Chromium. These values are the hex-encoded,
   // 16-byte random `sync_id` value, and will therefore always be 32 bytes long.
   // Valid ClientTagHash values are Base64(SHA1(protobuf_prefix + client_tag))
   // and therefore always 28 bytes.
-  const std::string& client_tag_hash = data->client_tag_hash.value();
+  const std::string& client_tag_hash = data.client_tag_hash.value();
   std::string sync_id;
   if (client_tag_hash.size() == 32 &&
       base::HexStringToString(client_tag_hash, &sync_id) &&
       // Deletions don't include the specifics, only the client_tag_hash.
-      (!data->specifics.has_webauthn_credential() ||
+      (!data.specifics.has_webauthn_credential() ||
        // Otherwise, check that the client_tag_hash really is the hex encoded
        // sync_id.
-       sync_id == data->specifics.webauthn_credential().sync_id())) {
-    data->client_tag_hash =
+       sync_id == data.specifics.webauthn_credential().sync_id())) {
+    data.client_tag_hash =
         ClientTagHash::FromUnhashed(DataType::WEBAUTHN_CREDENTIAL, sync_id);
   }
 }
@@ -282,8 +286,6 @@ bool DecryptIncomingPasswordSharingInvitationSpecifics(
     sync_pb::PasswordSharingInvitationData* unencrypted_invitation_data) {
   if (!invitation.has_encrypted_password_sharing_invitation_data() ||
       !invitation.sender_info().has_cross_user_sharing_public_key()) {
-    LogCrossUserSharingDecryptionResult(
-        CrossUserSharingDecryptionResult::kInvitationMissingFields);
     DLOG(ERROR) << "The invitation is missing required fields";
     return false;
   }
@@ -297,22 +299,16 @@ bool DecryptIncomingPasswordSharingInvitationSpecifics(
                                  .x25519_public_key()),
           invitation.recipient_key_version());
   if (!decrypted) {
-    LogCrossUserSharingDecryptionResult(
-        CrossUserSharingDecryptionResult::kFailedToDecryptInvitation);
     DLOG(ERROR) << "Failed to decrypt the invitation";
     return false;
   }
 
   if (!unencrypted_invitation_data->ParseFromArray(decrypted->data(),
                                                    decrypted->size())) {
-    LogCrossUserSharingDecryptionResult(
-        CrossUserSharingDecryptionResult::kFailedToParseDecryptedInvitation);
     DLOG(ERROR) << "Failed to parse the decrypted invitation";
     return false;
   }
 
-  LogCrossUserSharingDecryptionResult(
-      CrossUserSharingDecryptionResult::kSuccess);
   return true;
 }
 
@@ -351,27 +347,26 @@ DataTypeWorker::DataTypeWorker(DataType type,
     // DataTypeWorker::ctor(), but sync cycle is not scheduled. New sync
     // cycle has to be triggered right after we loaded persisted
     // invalidations.
-    for (int i = 0; i < data_type_state_.invalidations_size(); ++i) {
+    for (const sync_pb::DataTypeState::Invalidation& invalidation :
+         data_type_state_.invalidations()) {
       // Do not populate `received_time` on load from the disk because it is not
       // persisted.
       pending_invalidations_.emplace_back(
           std::make_unique<SyncInvalidationAdapter>(
-              data_type_state_.invalidations(i).hint(),
-              data_type_state_.invalidations(i).has_version()
-                  ? std::optional<int64_t>(
-                        data_type_state_.invalidations(i).version())
+              invalidation.hint(),
+              invalidation.has_version()
+                  ? std::optional<int64_t>(invalidation.version())
                   : std::nullopt),
           /*is_processed=*/false,
           /*received_time=*/std::nullopt);
     }
 
-    bool is_version_order_correct = true;
-    for (size_t i = 1; i < pending_invalidations_.size(); ++i) {
-      is_version_order_correct &= (SyncInvalidation::LessThanByVersion(
-          *pending_invalidations_[i - 1].pending_invalidation,
-          *pending_invalidations_[i].pending_invalidation));
-    }
-    if (!is_version_order_correct) {
+    if (!std::is_sorted(
+            pending_invalidations_.begin(), pending_invalidations_.end(),
+            [](const PendingInvalidation& a, const PendingInvalidation& b) {
+              return SyncInvalidation::LessThanByVersion(
+                  *a.pending_invalidation, *b.pending_invalidation);
+            })) {
       DVLOG(1) << "Cleaning invalidations in `data_type_state` due to "
                   "incorrect version order.";
       pending_invalidations_.clear();
@@ -521,6 +516,9 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
       // received which means that all existing data should be cleaned up.
       pending_updates_.clear();
       entries_pending_decryption_.clear();
+      // Since there are no more entries pending decryption, there are also no
+      // more unknown encryption keys.
+      unknown_encryption_keys_by_name_.clear();
     }
 
     // Ignore collaboration GC for non-shared types.
@@ -615,12 +613,6 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
   // Some updates pending decryption might have been overwritten by decryptable
   // ones. So some encryption keys may no longer fit the definition of unknown.
   RemoveKeysNoLongerUnknown();
-
-  if (!entries_pending_decryption_.empty() &&
-      (!encryption_enabled_ || cryptographer_->CanEncrypt())) {
-    base::UmaHistogramEnumeration(kBlockedByUndecryptableUpdateHistogramName,
-                                  DataTypeHistogramValue(type_));
-  }
 
   // Usually, updates must only be applied at the end of a sync cycle, once all
   // updates have been downloaded. This is mostly important during initial sync,
@@ -731,13 +723,10 @@ DataTypeWorker::DecryptionStatus DataTypeWorker::PopulateUpdateResponseData(
     // because the logic requires access to tracked entities. Hence, it is
     // done by BookmarkDataTypeProcessor, with logic implemented in
     // components/sync_bookmarks/parent_guid_preprocessing.cc.
-  } else if (data_type == AUTOFILL_WALLET_DATA ||
-             data_type == AUTOFILL_WALLET_OFFER ||
-             data_type == AUTOFILL_VALUABLE) {
-    AdaptClientTagForFullUpdateData(data_type, &data);
   } else if (data_type == WEBAUTHN_CREDENTIAL) {
-    AdaptWebAuthnClientTagHash(&data);
+    AdaptWebAuthnClientTagHash(data);
   }
+  MaybeAdaptClientTagIfMissing(data_type, data);
 
   response_data->entity = std::move(data);
   return SUCCESS;
@@ -1172,9 +1161,9 @@ void DataTypeWorker::DeduplicatePendingUpdatesBasedOnOriginatorClientItemId() {
 
 bool DataTypeWorker::ShouldIgnoreUpdatesEncryptedWith(
     const std::string& key_name) {
-  return unknown_encryption_keys_by_name_.contains(key_name) &&
-         unknown_encryption_keys_by_name_.at(key_name)
-                 .get_updates_while_should_have_been_known >=
+  auto it = unknown_encryption_keys_by_name_.find(key_name);
+  return it != unknown_encryption_keys_by_name_.end() &&
+         it->second.get_updates_while_should_have_been_known >=
              kMinGuResponsesToIgnoreKey;
 }
 
@@ -1184,22 +1173,9 @@ void DataTypeWorker::MaybeDropPendingUpdatesEncryptedWith(
     return;
   }
 
-  size_t updates_before_dropping = entries_pending_decryption_.size();
   std::erase_if(entries_pending_decryption_, [&](const auto& id_and_update) {
     return key_name == GetEncryptionKeyName(id_and_update.second);
   });
-
-  // If updates were dropped, record how many.
-  const size_t dropped_updates =
-      updates_before_dropping - entries_pending_decryption_.size();
-  if (dropped_updates > 0) {
-    base::UmaHistogramCounts1000(
-        kUndecryptablePendingUpdatesDroppedHistogramName, dropped_updates);
-    base::UmaHistogramCounts1000(
-        base::StrCat({kUndecryptablePendingUpdatesDroppedHistogramName, ".",
-                      DataTypeToHistogramSuffix(type_)}),
-        dropped_updates);
-  }
 }
 
 void DataTypeWorker::RemoveKeysNoLongerUnknown() {

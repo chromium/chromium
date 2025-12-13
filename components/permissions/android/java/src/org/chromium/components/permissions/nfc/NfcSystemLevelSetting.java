@@ -13,9 +13,9 @@ import android.os.Process;
 import android.provider.Settings;
 
 import org.jni_zero.CalledByNative;
-import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.JniOnceRunnable;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -65,24 +65,16 @@ public class NfcSystemLevelSetting {
 
     @CalledByNative
     private static void promptToEnableNfcSystemLevelSetting(
-            WebContents webContents, final long nativeCallback) {
+            WebContents webContents, JniOnceRunnable callback) {
         WindowAndroid window = webContents.getTopLevelNativeWindow();
         if (window == null) {
             // Consuming code may not expect a sync callback to happen.
-            PostTask.postTask(
-                    TaskTraits.UI_DEFAULT,
-                    () ->
-                            NfcSystemLevelSettingJni.get()
-                                    .onNfcSystemLevelPromptCompleted(nativeCallback));
+            PostTask.postTask(TaskTraits.UI_DEFAULT, callback);
             return;
         }
 
         NfcSystemLevelPrompt prompt = new NfcSystemLevelPrompt();
-        prompt.show(
-                window,
-                () ->
-                        NfcSystemLevelSettingJni.get()
-                                .onNfcSystemLevelPromptCompleted(nativeCallback));
+        prompt.show(window, callback);
     }
 
     public static @Nullable Intent getNfcSystemLevelSettingIntent() {
@@ -104,10 +96,5 @@ public class NfcSystemLevelSetting {
     public static void setNfcSupportForTesting(Boolean enabled) {
         sNfcSupportForTesting = enabled;
         ResettersForTesting.register(() -> sNfcSupportForTesting = null);
-    }
-
-    @NativeMethods
-    interface Natives {
-        void onNfcSystemLevelPromptCompleted(long callback);
     }
 }

@@ -8,10 +8,12 @@
 #include <stdint.h>
 
 #include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/types/expected.h"
 #include "crypto/hash.h"
 #include "net/base/net_export.h"
 #include "net/cert/x509_certificate.h"
@@ -84,7 +86,8 @@ class NET_EXPORT_PRIVATE TwoQwacCertBinding {
   // Parses a TLS Certificate Binding structure that contains a 2-QWAC
   // certificate chain. This function also performs steps 1-7 of RFC 7515
   // section 5.2 (signature verification).
-  static std::optional<TwoQwacCertBinding> Parse(std::string_view jws);
+  static base::expected<TwoQwacCertBinding, std::string> Parse(
+      std::string_view jws);
 
   // This function verifies the signature in the TLS Certificate Binding,
   // performing steps 8-10 of RFC 7515 section 5.2 (signature verification). If

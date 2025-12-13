@@ -31,7 +31,7 @@ class SimpleCdmVideoFrame final : public VideoFrameImpl {
   // VideoFrameImpl implementation.
   scoped_refptr<media::VideoFrame> TransformToVideoFrame(
       gfx::Size natural_size) override {
-    CHECK(FrameBuffer(), base::NotFatalUntil::M140);
+    CHECK(FrameBuffer());
 
     cdm::Buffer* buffer = FrameBuffer();
     // SAFETY: cdm::Buffer is like `span` from CDM stable interface.

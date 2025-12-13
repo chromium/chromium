@@ -26,10 +26,10 @@
 namespace blink {
 
 PropertyTreeManager::EffectState::EffectState(const CurrentEffectState& other)
-    : effect_id(other.effect_id),
-      effect(other.effect),
+    : effect(other.effect),
       clip(other.clip),
       transform(other.transform),
+      effect_id(other.effect_id),
       may_be_2d_axis_misaligned_to_render_surface(
           other.may_be_2d_axis_misaligned_to_render_surface),
       contained_by_non_render_surface_synthetic_rounded_clip(
@@ -37,10 +37,10 @@ PropertyTreeManager::EffectState::EffectState(const CurrentEffectState& other)
 
 PropertyTreeManager::CurrentEffectState::CurrentEffectState(
     const EffectState& other)
-    : effect_id(other.effect_id),
-      effect(other.effect),
+    : effect(other.effect),
       clip(other.clip),
       transform(other.transform),
+      effect_id(other.effect_id),
       may_be_2d_axis_misaligned_to_render_surface(
           other.may_be_2d_axis_misaligned_to_render_surface),
       contained_by_non_render_surface_synthetic_rounded_clip(
@@ -460,7 +460,7 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
 
   compositor_node.should_undo_overscroll =
       transform_node.RequiresCompositingForFixedToViewport();
-  if (transform_node.NodeChangeAffectsRaster()) {
+  if (transform_node.NodeChanged() != PaintPropertyChangeType::kUnchanged) {
     compositor_node.SetTransformChanged(cc::DamageReason::kUntracked);
   } else {
     compositor_node.ClearTransformChanged();
@@ -475,13 +475,9 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
     compositor_node.moved_by_outer_viewport_bounds_delta_y = true;
     transform_tree_.AddNodeAffectedByOuterViewportBoundsDelta(id);
   }
-
-  if (base::FeatureList::IsEnabled(
-          features::kDynamicSafeAreaInsetsSupportedByCC)) {
-    if (transform_node.IsAffectedBySafeAreaBottom()) {
-      compositor_node.moved_by_safe_area_bottom = true;
-      transform_tree_.AddNodeAffectedBySafeAreaInsetBottom(id);
-    }
+  if (transform_node.IsAffectedBySafeAreaBottom()) {
+    compositor_node.moved_by_safe_area_bottom = true;
+    transform_tree_.AddNodeAffectedBySafeAreaInsetBottom(id);
   }
 
   compositor_node.in_subtree_of_page_scale_layer =
@@ -1329,7 +1325,8 @@ void PropertyTreeManager::PopulateCcEffectNode(
     effect_node.filters = filter->AsCcFilterOperations();
   }
   effect_node.double_sided = !transform.IsBackfaceHidden();
-  effect_node.effect_changed = effect.NodeChangeAffectsRaster();
+  effect_node.effect_changed =
+      effect.NodeChanged() != PaintPropertyChangeType::kUnchanged;
 
   effect_node.view_transition_element_resource_id =
       effect.ViewTransitionElementResourceId();
@@ -1362,8 +1359,7 @@ void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
   for (int id = tree_size - 1; id > cc::kSecondaryRootPropertyNodeId; id--) {
     auto* effect = effect_tree_.Node(id);
 
-    if (RuntimeEnabledFeatures::RenderSurfaceFor2DScaleTransformEnabled() &&
-        effect->render_surface_reason == cc::RenderSurfaceReason::kNone &&
+    if (effect->render_surface_reason == cc::RenderSurfaceReason::kNone &&
         effect->needs_effect_for_2d_scale_transform &&
         effect_layer_counts[id] >= 2 && !has_text[id]) {
       effect->render_surface_reason =

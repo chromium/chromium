@@ -7,6 +7,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/widget_promo_instructions/widget_promo_instructions_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/instruction_view/instruction_view.h"
@@ -59,27 +60,11 @@
       [imageView.heightAnchor constraintEqualToConstant:0];
   [self updateImageViewVisibility];
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(updateImageViewVisibility)];
-  }
+  NSArray<UITrait>* traits =
+      TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(updateImageViewVisibility)];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if (self.traitCollection.verticalSizeClass !=
-      previousTraitCollection.verticalSizeClass) {
-    [self updateImageViewVisibility];
-  }
-}
-#endif
 
 #pragma mark - Private
 
@@ -107,9 +92,8 @@
   instructionsViewController.subtitleString =
       l10n_util::GetNSString(IDS_IOS_WIDGET_PROMO_INSTRUCTIONS_SUBTITLE);
   instructionsViewController.subtitleTextStyle = UIFontTextStyleBody;
-  instructionsViewController.secondaryActionString =
+  instructionsViewController.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_CLOSE);
-  instructionsViewController.showDismissBarButton = NO;
   instructionsViewController.topAlignedLayout = YES;
   instructionsViewController.imageHasFixedSize = YES;
   instructionsViewController.actionHandler = self.actionHandler;

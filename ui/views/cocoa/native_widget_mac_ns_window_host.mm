@@ -39,7 +39,7 @@
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/native_theme/native_theme_mac.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/cocoa/immersive_mode_reveal_client.h"
@@ -106,6 +106,8 @@ class BridgedNativeWidgetHostDummy
                                 bool full_keyboard_access_enabled) override {}
   void OnWindowStateRestorationDataChanged(
       const std::vector<uint8_t>& data) override {}
+  void OnSheetModalShown() override {}
+  void OnSheetModalClosed() override {}
   void OnImmersiveFullscreenToolbarRevealChanged(bool is_revealed) override {}
   void OnImmersiveFullscreenMenuBarRevealChanged(
       double reveal_amount) override {}
@@ -133,6 +135,7 @@ class BridgedNativeWidgetHostDummy
     std::move(callback).Run(event_swallowed, key_event->handled());
   }
   void DispatchMonitorEvent(std::unique_ptr<ui::Event> event,
+                            bool target_is_this_window,
                             DispatchMonitorEventCallback callback) override {
     bool event_handled = false;
     std::move(callback).Run(event_handled);
@@ -455,7 +458,6 @@ void NativeWidgetMacNSWindowHost::InitWindow(
   if (!is_tooltip) {
     tooltip_manager_ = std::make_unique<TooltipManagerMac>(GetNSWindowMojo());
   }
-  is_headless_mode_window_ = params.ShouldInitAsHeadless();
 
   if (params.workspace.length()) {
     std::string restoration_data;
@@ -473,7 +475,6 @@ void NativeWidgetMacNSWindowHost::InitWindow(
     window_params->modal_type = widget->widget_delegate()->GetModalType();
     window_params->is_translucent =
         params.opacity == Widget::InitParams::WindowOpacity::kTranslucent;
-    window_params->is_headless_mode_window = is_headless_mode_window_;
     window_params->is_tooltip = is_tooltip;
 
     // macOS likes to put shadows on most things. However, frameless windows
@@ -656,7 +657,7 @@ void NativeWidgetMacNSWindowHost::CreateCompositor(
   // frames for screenshooting and screencasting.
   UpdateCompositorProperties();
   layer()->SetVisible(is_visible_);
-  if (is_visible_ || is_headless_mode_window_) {
+  if (is_visible_ || display::Screen::Get()->IsHeadless()) {
     compositor_->Unsuspend();
   }
 
@@ -1041,6 +1042,12 @@ void NativeWidgetMacNSWindowHost::OnApplicationHostDestroying(
   while (!children_.empty()) {
     children_.front()->OnApplicationHostDestroying(host);
   }
+  // Allow the process hosting this window to clean away any window state in its
+  // environment before the mojo remote is destroyed and the host process is
+  // terminated.
+  if (GetNSWindowMojo()) {
+    GetNSWindowMojo()->CloseWindowNow();
+  }
   OnWindowHasClosed();
 }
 
@@ -1135,6 +1142,7 @@ bool NativeWidgetMacNSWindowHost::DispatchKeyEventToMenuControllerRemote(
 
 bool NativeWidgetMacNSWindowHost::DispatchMonitorEvent(
     std::unique_ptr<ui::Event> event,
+    bool target_is_this_window,
     bool* event_handled) {
   // The calls to NativeWidgetMacEventMonitorOnEvent can add or remove monitors,
   // so take a snapshot of `event_monitors_` before making any calls.
@@ -1151,8 +1159,8 @@ bool NativeWidgetMacNSWindowHost::DispatchMonitorEvent(
     if (!base::Contains(event_monitors_, event_monitor)) {
       continue;
     }
-    event_monitor->client_->NativeWidgetMacEventMonitorOnEvent(event.get(),
-                                                               event_handled);
+    event_monitor->client_->NativeWidgetMacEventMonitorOnEvent(
+        event.get(), target_is_this_window, event_handled);
     if (!weak_this) {
       return true;
     }
@@ -1367,6 +1375,10 @@ void NativeWidgetMacNSWindowHost::OnWindowFullscreenTransitionComplete(
     bool actual_fullscreen_state) {
   in_fullscreen_transition_ = false;
 
+  // `target_fullscreen_state_` might be different from
+  // `actual_fullscreen_state` if the window failed to enter or exit fullscreen.
+  target_fullscreen_state_ = actual_fullscreen_state;
+
   // Notify that fullscreen state has changed.
   native_widget_mac_->OnWindowFullscreenTransitionComplete();
 
@@ -1451,6 +1463,18 @@ void NativeWidgetMacNSWindowHost::OnWindowKeyStatusChanged(
   is_window_key_ = is_key;
   native_widget_mac_->OnWindowKeyStatusChanged(is_key,
                                                is_content_first_responder);
+}
+
+void NativeWidgetMacNSWindowHost::OnSheetModalShown() {
+  if (Widget* widget = GetWidget()) {
+    widget->OnWindowModalVisibilityChanged(true);
+  }
+}
+
+void NativeWidgetMacNSWindowHost::OnSheetModalClosed() {
+  if (Widget* widget = GetWidget()) {
+    widget->OnWindowModalVisibilityChanged(false);
+  }
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowStateRestorationDataChanged(
@@ -1680,9 +1704,10 @@ void NativeWidgetMacNSWindowHost::DispatchKeyEventToMenuControllerRemote(
 
 void NativeWidgetMacNSWindowHost::DispatchMonitorEvent(
     std::unique_ptr<ui::Event> event,
+    bool target_is_this_window,
     DispatchMonitorEventCallback callback) {
   bool event_handled = false;
-  DispatchMonitorEvent(std::move(event), &event_handled);
+  DispatchMonitorEvent(std::move(event), target_is_this_window, &event_handled);
   std::move(callback).Run(event_handled);
 }
 
@@ -1696,7 +1721,8 @@ void NativeWidgetMacNSWindowHost::GetHasMenuController(
 void NativeWidgetMacNSWindowHost::GetHitTestResult(
     const gfx::Point& location_in_content,
     GetHitTestResultCallback callback) {
-  remote_cocoa::mojom::HitTestResult hit_test_result;
+  remote_cocoa::mojom::HitTestResult hit_test_result =
+      remote_cocoa::mojom::HitTestResult::kOther;
   GetHitTestResult(location_in_content, &hit_test_result);
   std::move(callback).Run(hit_test_result);
 }

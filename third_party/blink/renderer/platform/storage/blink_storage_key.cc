@@ -69,7 +69,7 @@ BlinkStorageKey BlinkStorageKey::Create(
 
 // static
 BlinkStorageKey BlinkStorageKey::CreateFromStringForTesting(
-    const WTF::String& origin) {
+    const String& origin) {
   return BlinkStorageKey::CreateFirstParty(
       SecurityOrigin::CreateFromString(origin));
 }

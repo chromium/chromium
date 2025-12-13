@@ -788,7 +788,7 @@ off_t UDIFBlockChunkReadStream::Seek(off_t offset, int whence) {
 bool UDIFBlockChunkReadStream::CopyOutZeros(base::span<uint8_t> buf,
                                             size_t* bytes_read) {
   *bytes_read = std::min(buf.size(), length_in_bytes_ - offset_);
-  UNSAFE_TODO(bzero(buf.data(), *bytes_read));
+  std::ranges::fill(buf.first(*bytes_read), 0);
   offset_ += *bytes_read;
   return true;
 }

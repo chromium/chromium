@@ -7,7 +7,7 @@
 
 #include "base/observer_list_types.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/smart_card.mojom-forward.h"
 #include "url/origin.h"
 

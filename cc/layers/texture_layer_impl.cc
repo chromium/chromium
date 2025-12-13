@@ -13,7 +13,6 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "cc/base/features.h"
 #include "cc/trees/layer_tree_frame_sink.h"
@@ -24,6 +23,7 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/platform_color.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace cc {
 
@@ -71,11 +71,13 @@ bool TextureLayerImpl::WillDraw(
   // compositing but the client thinks it is in software, or vice versa. These
   // should only happen transiently, and should resolve when the client hears
   // about the mode switch.
-  if (draw_mode == DRAW_MODE_HARDWARE && transferable_resource_.is_software) {
+  if (draw_mode == DRAW_MODE_HARDWARE &&
+      transferable_resource_.GetIsSoftware()) {
     DLOG(ERROR) << "Gpu compositor has software resource in TextureLayer";
     return false;
   }
-  if (draw_mode == DRAW_MODE_SOFTWARE && !transferable_resource_.is_software) {
+  if (draw_mode == DRAW_MODE_SOFTWARE &&
+      !transferable_resource_.GetIsSoftware()) {
     DLOG(ERROR) << "Software compositor has gpu resource in TextureLayer";
     return false;
   }
@@ -106,6 +108,27 @@ bool TextureLayerImpl::WillDraw(
           /* main_thread_release_callback= */ std::move(release_callback_),
           /* evicted_callback= */ std::move(evicted_cb));
       DCHECK(resource_id_);
+
+      // Mark the layer to push its resource to viz.
+      // Under TreesInViz, SerializeTextureLayerExtra() sends the resource only
+      // if |needs_set_resource_push_| is true and |resource_id_| is valid.
+      // Since the resource is imported here in WillDraw() to generate a valid
+      // |resource_id_|, we must set this flag to ensure the resource gets
+      // serialized to Viz on the next frame. Without this, the layer may appear
+      // blank when it first becomes visible.
+      needs_set_resource_push_ = true;
+
+      // When TreesInViz is enabled, the renderer's active tree no longer runs
+      // MoveChangeTrackingToLayers(). This means that property tree changes
+      // (like a layer becoming visible) no longer implicitly trigger
+      // SetNeedsPushProperties() on individual layers.
+      // For TextureLayerImpl, the resource is imported and becomes valid
+      // *during* WillDraw() on the active tree. To ensure this newly valid
+      // resource is serialized to Viz, we must explicitly call
+      // SetNeedsPushProperties() here. This adds the layer to the list of
+      // layers whose properties need to be pushed in the next frame, allowing
+      // SerializeTextureLayerExtra() to pick up the resource.
+      SetNeedsPushProperties();
     }
     own_resource_ = false;
   }
@@ -144,11 +167,18 @@ void TextureLayerImpl::AppendQuads(const AppendQuadsContext& context,
   const bool nearest_neighbor =
       GetFilterQuality() == PaintFlags::FilterQuality::kNone;
 
+  gfx::PointF top_left = uv_top_left_;
+  gfx::PointF bottom_right = uv_bottom_right_;
+
+  const gfx::Size resource_size = transferable_resource_.GetSize();
+  top_left.Scale(resource_size.width(), resource_size.height());
+  bottom_right.Scale(resource_size.width(), resource_size.height());
+
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect, needs_blending,
-               resource_id_, uv_top_left_, uv_bottom_right_, bg_color,
-               nearest_neighbor,
-               /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+               resource_id_, top_left, bottom_right, bg_color, nearest_neighbor,
+               /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
+               /*is_tex_coords_normalized=*/false);
   quad->dynamic_range_limit = GetDynamicRangeLimit();
   ValidateQuadResources(quad);
 }
@@ -177,15 +207,16 @@ void TextureLayerImpl::OnPurgeMemory() {
 void TextureLayerImpl::ReleaseResources() {
   // Gpu resources are lost when the LayerTreeFrameSink is lost. But software
   // resources are still valid, and we can keep them here in that case.
-  if (!transferable_resource_.is_software)
+  if (!transferable_resource_.GetIsSoftware()) {
     FreeTransferableResource();
+  }
 }
 
 gfx::ContentColorUsage TextureLayerImpl::GetContentColorUsage() const {
   if (transferable_resource_.hdr_metadata.extended_range.has_value()) {
     return gfx::ContentColorUsage::kHDR;
   }
-  return transferable_resource_.color_space.GetContentColorUsage();
+  return transferable_resource_.GetColorSpace().GetContentColorUsage();
 }
 
 void TextureLayerImpl::SetBlendBackgroundColor(bool blend) {
@@ -255,7 +286,7 @@ void TextureLayerImpl::SetInInvisibleLayerTree() {
   //
   // In this case, main is responsible for giving us the transferable resource
   // (and making sure that the layer properties are pushed) next time the tree
-  // becomes visible. See Canvas2DLayerBridge::PageVisibilityChanged().
+  // becomes visible. See CanvasRenderingContext2D::PageVisibilityChanged().
   if (base::FeatureList::IsEnabled(
           features::kClearCanvasResourcesInBackground) &&
       transferable_resource_.resource_source ==
@@ -263,7 +294,7 @@ void TextureLayerImpl::SetInInvisibleLayerTree() {
       own_resource_) {
     DCHECK(
         MayEvictResourceInBackground(transferable_resource_.resource_source));
-    if (!transferable_resource_.is_software) {
+    if (!transferable_resource_.GetIsSoftware()) {
       FreeTransferableResource();
     }
   }

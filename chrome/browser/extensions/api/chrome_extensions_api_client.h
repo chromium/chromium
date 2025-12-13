@@ -9,6 +9,9 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/extensions_api_client.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -58,8 +61,8 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
                          bool clear_badge_text) override;
   void ClearActionCount(content::BrowserContext* context,
                         const Extension& extension) override;
-  void OpenFileUrl(const GURL& file_url,
-                   content::BrowserContext* browser_context) override;
+  void OpenFileUrlForTesting(const GURL& file_url,
+                             content::BrowserContext* browser_context) override;
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   std::unique_ptr<AppViewGuestDelegate> CreateAppViewGuestDelegate()
       const override;

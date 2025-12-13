@@ -7,7 +7,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -22,6 +21,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tabwindow.WindowId;
@@ -29,6 +29,8 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.TabGroupSyncController;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.user_prefs.UserPrefs;
+
+import java.util.function.Supplier;
 
 /**
  * Performs the same purpose as the other orchestrators, but does not currently share any interface
@@ -55,8 +57,8 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
         mTabModelSelector = new HeadlessTabModelSelectorImpl(profile, tabCreatorManager);
         TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
         mTabPersistentStore =
-                new TabPersistentStore(
-                        TabPersistentStore.CLIENT_TAG_HEADLESS,
+                new TabPersistentStoreImpl(
+                        TabPersistentStoreImpl.CLIENT_TAG_HEADLESS,
                         policy,
                         mTabModelSelector,
                         tabCreatorManager,
@@ -83,7 +85,7 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
 
         mTabPersistentStore.onNativeLibraryReady();
         mTabPersistentStore.loadState(/* ignoreIncognitoFiles= */ false);
-        mTabPersistentStore.restoreTabs(/* setActiveTab= */ false);
+        mTabPersistentStore.restoreTabs(/* setActiveTab= */ true);
 
         TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
         assumeNonNull(tabGroupSyncService);

@@ -540,8 +540,9 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Eligible) {
       static_cast<BrowserAccessibilityAndroid*>(
           manager->GetBrowserAccessibilityRoot()->PlatformGetChild(1));
 
+  EXPECT_EQ(u"image_name", image_rtl->GetContentDescription());
   EXPECT_EQ(
-      u"image_name, This image isn't labeled. Double tap on the more options "
+      u"This image isn't labeled. Double tap on the more options "
       u"button at the top of the browser to get image descriptions.",
       image_rtl->GetTextContentUTF16());
   EXPECT_EQ(std::u16string(), image_rtl->GetSupplementalDescription());
@@ -659,8 +660,11 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Ineligible) {
           manager->GetBrowserAccessibilityRoot()->PlatformGetChild(3));
 
   EXPECT_EQ(std::u16string(), image_none->GetTextContentUTF16());
-  EXPECT_EQ(u"image_name", image_scheme->GetTextContentUTF16());
+
+  EXPECT_EQ(u"image_name", image_scheme->GetContentDescription());
+  EXPECT_EQ(std::u16string(), image_scheme->GetTextContentUTF16());
   EXPECT_EQ(std::u16string(), image_scheme->GetSupplementalDescription());
+
   EXPECT_EQ(std::u16string(), image_ineligible->GetTextContentUTF16());
   EXPECT_EQ(std::u16string(), image_silent->GetTextContentUTF16());
 }
@@ -705,8 +709,16 @@ TEST_F(BrowserAccessibilityAndroidTest,
           manager->GetBrowserAccessibilityRoot()->PlatformGetChild(1));
 
   EXPECT_EQ(u"test_annotation", image_succeeded->GetTextContentUTF16());
-  EXPECT_EQ(u"image_name, test_annotation",
+
+  // contentDescription holds the author-provided, non-visible, alt text, while
+  // textContent holds visible text. Generated annontations act as a proxy for
+  // visible text so they should also be mapped to textContent.
+  // TODO: b/443306111 - Investigate mapping of non-visible text to `text`
+  // property.
+  EXPECT_EQ(u"image_name", image_succeeded_with_name->GetContentDescription());
+  EXPECT_EQ(u"test_annotation",
             image_succeeded_with_name->GetTextContentUTF16());
+
   EXPECT_EQ(std::u16string(),
             image_succeeded_with_name->GetSupplementalDescription());
 }

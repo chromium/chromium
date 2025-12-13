@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/android/supervised_user_service_platform_delegate.h"
+#include "chrome/browser/supervised_user/supervised_user_content_filters_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -30,48 +31,53 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
-  // Test Supervised User Service also substitutes the content filters with
-  // fakes.
-  return std::make_unique<TestSupervisedUserService>(
+  return std::make_unique<SupervisedUserService>(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       *profile->GetPrefs(),
       *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
           profile->GetProfileKey()),
+      SupervisedUserContentFiltersServiceFactory::GetInstance()->GetForKey(
+          profile->GetProfileKey()),
       SyncServiceFactory::GetInstance()->GetForProfile(profile),
       std::make_unique<SupervisedUserURLFilter>(
           *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),
           std::make_unique<safe_search_api::FakeURLCheckerClient>()),
-      std::make_unique<SupervisedUserServicePlatformDelegate>(*profile));
+      std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
+#if BUILDFLAG(IS_ANDROID)
+      std::make_unique<ContentFiltersObserverBridge>(
+          kBrowserContentFiltersSettingName, *profile->GetPrefs()),
+      std::make_unique<ContentFiltersObserverBridge>(
+          kSearchContentFiltersSettingName, *profile->GetPrefs())
+#endif  // BUILDFLAG(IS_ANDROID)
+  );
 }
-
-TestSupervisedUserService* GetTestSupervisedUserService(Profile* profile) {
-  return static_cast<TestSupervisedUserService*>(
-      SupervisedUserServiceFactory::GetInstance()->GetForBrowserContext(
-          profile));
-}
-
 }  // namespace
 
-void JNI_SupervisedUserServiceTestBridge_Init(JNIEnv* env, Profile* profile) {
+static void JNI_SupervisedUserServiceTestBridge_Init(JNIEnv* env,
+                                                     Profile* profile) {
   SupervisedUserServiceFactory::GetInstance()->SetTestingFactoryAndUse(
       profile, base::BindRepeating(&BuildSupervisedUserService));
 }
 
-void JNI_SupervisedUserServiceTestBridge_EnableBrowserContentFilters(
+static void JNI_SupervisedUserServiceTestBridge_EnableBrowserContentFilters(
     JNIEnv* env,
     Profile* profile) {
-  GetTestSupervisedUserService(profile)
-      ->browser_content_filters_observer_weak_ptr()
-      ->SetEnabled(true);
+  SupervisedUserServiceFactory::GetInstance()
+      ->GetForBrowserContext(profile)
+      ->GetBrowserContentFiltersObserverWeakPtrForTesting()
+      ->SetEnabledForTesting(true);
 }
 
-void JNI_SupervisedUserServiceTestBridge_EnableSearchContentFilters(
+static void JNI_SupervisedUserServiceTestBridge_EnableSearchContentFilters(
     JNIEnv* env,
     Profile* profile) {
-  GetTestSupervisedUserService(profile)
-      ->search_content_filters_observer_weak_ptr()
-      ->SetEnabled(true);
+  SupervisedUserServiceFactory::GetInstance()
+      ->GetForBrowserContext(profile)
+      ->GetSearchContentFiltersObserverWeakPtrForTesting()
+      ->SetEnabledForTesting(true);
 }
 }  // namespace supervised_user
+
+DEFINE_JNI(SupervisedUserServiceTestBridge)

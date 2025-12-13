@@ -5,10 +5,11 @@
 package org.chromium.chrome.browser.ntp_customization.theme;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.CHROME_COLORS;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.CHROME_DEFAULT;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.THEME_COLLECTIONS;
-import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection.UPLOAD_AN_IMAGE;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.CHROME_COLOR;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.COLOR_FROM_HEX;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -16,19 +17,17 @@ import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
-
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
+import android.widget.ScrollView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.R;
-import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator.NTPThemeBottomSheetSection;
 
 /** The view of the "New tab page appearance" bottom sheet. */
 @NullMarked
-public class NtpThemeBottomSheetView extends ConstraintLayout {
-    private NtpThemeListItemView mChromeDefaultSection;
+public class NtpThemeBottomSheetView extends ScrollView {
+    private NtpThemeListItemView mDefaultSection;
     private NtpThemeListItemView mUploadImageSection;
     private NtpThemeListItemView mChromeColorsSection;
     private NtpThemeListItemView mThemeCollectionsSection;
@@ -45,13 +44,13 @@ public class NtpThemeBottomSheetView extends ConstraintLayout {
         LayoutInflater inflater = LayoutInflater.from(getContext());
 
         // Inflate and add each theme section.
-        mChromeDefaultSection =
+        mDefaultSection =
                 (NtpThemeListItemView)
                         inflater.inflate(
                                 R.layout.ntp_customization_theme_list_chrome_default_item_layout,
                                 container,
                                 false);
-        container.addView(mChromeDefaultSection);
+        container.addView(mDefaultSection);
 
         mUploadImageSection =
                 (NtpThemeListItemView)
@@ -79,33 +78,33 @@ public class NtpThemeBottomSheetView extends ConstraintLayout {
     }
 
     void destroy() {
-        for (int i = 0; i < NTPThemeBottomSheetSection.NUM_ENTRIES; i++) {
+        for (int i = 0; i < NtpBackgroundImageType.NUM_ENTRIES; i++) {
+            if (i == COLOR_FROM_HEX) continue;
+
             NtpThemeListItemView child = assumeNonNull(getItemBySectionType(i));
             child.destroy();
         }
     }
 
     void setSectionTrailingIconVisibility(
-            @NTPThemeBottomSheetSection int sectionType, boolean visible) {
+            @NtpBackgroundImageType int sectionType, boolean visible) {
         NtpThemeListItemView ntpThemeListItemView =
                 assumeNonNull(getItemBySectionType(sectionType));
         ntpThemeListItemView.setTrailingIconVisibility(visible);
     }
 
     void setSectionOnClickListener(
-            @NTPThemeBottomSheetSection int sectionType, OnClickListener onClickListener) {
+            @NtpBackgroundImageType int sectionType, OnClickListener onClickListener) {
         NtpThemeListItemView ntpThemeListItemView =
                 assumeNonNull(getItemBySectionType(sectionType));
         ntpThemeListItemView.setOnClickListener(onClickListener);
     }
 
-    void setLeadingIconForThemeCollections(Pair<Integer, Integer> drawableSourcePair) {
-        Drawable primaryDrawable =
-                ContextCompat.getDrawable(getContext(), drawableSourcePair.first);
-        Drawable secondaryDrawable =
-                ContextCompat.getDrawable(getContext(), drawableSourcePair.second);
+    void setLeadingIconForThemeCollections(Pair<Drawable, Drawable> drawablePair) {
+        Drawable primaryDrawable = drawablePair.first;
+        Drawable secondaryDrawable = drawablePair.second;
         NtpThemeListItemView themeCollectionsItemView =
-                assumeNonNull(getItemBySectionType(THEME_COLLECTIONS));
+                assumeNonNull(getItemBySectionType(THEME_COLLECTION));
         NtpThemeListThemeCollectionItemIconView themeCollectionsItemIconView =
                 themeCollectionsItemView.findViewById(
                         org.chromium.chrome.browser.ntp_customization.R.id.leading_icon);
@@ -113,16 +112,16 @@ public class NtpThemeBottomSheetView extends ConstraintLayout {
                 new Pair<>(primaryDrawable, secondaryDrawable));
     }
 
-    @Nullable NtpThemeListItemView getItemBySectionType(
-            @NTPThemeBottomSheetSection int sectionType) {
+    @Nullable NtpThemeListItemView getItemBySectionType(@NtpBackgroundImageType int sectionType) {
         switch (sectionType) {
-            case CHROME_DEFAULT:
-                return mChromeDefaultSection;
-            case UPLOAD_AN_IMAGE:
+            case DEFAULT:
+                return mDefaultSection;
+            case IMAGE_FROM_DISK:
                 return mUploadImageSection;
-            case CHROME_COLORS:
+            case CHROME_COLOR:
+            case COLOR_FROM_HEX:
                 return mChromeColorsSection;
-            case THEME_COLLECTIONS:
+            case THEME_COLLECTION:
                 return mThemeCollectionsSection;
             default:
                 assert false : "Section type not supported!";

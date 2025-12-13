@@ -28,7 +28,7 @@
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "chrome/browser/ui/webauthn/transport_hover_list_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -393,6 +393,7 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
     case Step::kRecoverSecurityDomain:
     case Step::kGPMReauthForPinReset:
     case Step::kPasswordOsAuth:
+    case Step::kPlatformAuthenticator:
       sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
           std::make_unique<PlaceholderSheetModel>(dialog_model));
       break;

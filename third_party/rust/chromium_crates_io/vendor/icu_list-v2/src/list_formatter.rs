@@ -139,6 +139,8 @@ impl ListFormatter {
 
     /// Returns a [`String`] composed of the input [`Writeable`]s and the language-dependent
     /// formatting.
+    ///
+    /// ✨ *Enabled with the `alloc` Cargo feature.*
     #[cfg(feature = "alloc")]
     pub fn format_to_string<W: Writeable, I: Iterator<Item = W> + Clone>(
         &self,

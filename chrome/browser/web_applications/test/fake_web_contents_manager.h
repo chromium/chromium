@@ -38,6 +38,10 @@ namespace web_app {
 // http://b/262606416.
 class FakeWebContentsManager : public WebContentsManager {
  public:
+  static constexpr std::string_view kBasicInstallIconUrl =
+      "https://www.example.com/icon.png";
+  static constexpr int kBasicInstallIconSize = 144;
+
   // Some helper methods.
   static webapps::mojom::WebPageMetadataPtr CreateMetadataWithTitle(
       std::u16string title);
@@ -54,10 +58,6 @@ class FakeWebContentsManager : public WebContentsManager {
     ~FakePageState();
     FakePageState(FakePageState&&);
     FakePageState& operator=(FakePageState&&);
-
-    webapps::AppId PopulateWithBasicManifest(GURL install_url,
-                                             GURL manifest_url,
-                                             GURL start_url);
 
     // `WebAppUrlLoader::LoadUrl`:
     // If this is populated, then a redirection is always assumed. If the
@@ -98,9 +98,16 @@ class FakeWebContentsManager : public WebContentsManager {
   struct FakeIconState {
     FakeIconState();
     ~FakeIconState();
+    FakeIconState(FakeIconState&&);
+    FakeIconState& operator=(FakeIconState&&);
 
     int http_status_code = 200;
     std::vector<SkBitmap> bitmaps;
+
+    // Runs whenever `WebAppIconDownloader::Start()` is called, can be used to
+    // mimic things like system shutdown happening asynchronously.
+    base::OnceClosure on_icon_fetched;
+
     // This can be used to test the early-exit normally caused by the
     // WebContents closing or navigating away.
     bool trigger_primary_page_changed_if_fetched = false;
@@ -111,13 +118,15 @@ class FakeWebContentsManager : public WebContentsManager {
 
   void SetUrlLoaded(content::WebContents* web_contents, const GURL& url);
 
+  // WebContentsManager implementation:
   std::unique_ptr<webapps::WebAppUrlLoader> CreateUrlLoader() override;
   std::unique_ptr<WebAppDataRetriever> CreateDataRetriever() override;
   std::unique_ptr<WebAppIconDownloader> CreateIconDownloader() override;
+  FakeWebContentsManager* AsFakeWebContentsManagerForTesting() override;
 
   // Set the behavior for calls to `GetIcons` from wrappers returned by this
   // fake class.
-  void SetIconState(const GURL& icon_url, const FakeIconState& icon_state);
+  void SetIconState(const GURL& icon_url, FakeIconState icon_state);
   FakeIconState& GetOrCreateIconState(const GURL& icon_url);
   void DeleteIconState(const GURL& icon_url);
 

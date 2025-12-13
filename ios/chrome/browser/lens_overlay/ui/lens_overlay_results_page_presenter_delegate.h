@@ -7,9 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_sheet_detent_state.h"
 
-@class LensOverlayResultsPagePresenter;
+@protocol LensOverlayResultsPagePresenting;
 
 // The methods adopted by the object you use to manage user interactions with
 // the Lens result page.
@@ -18,23 +19,34 @@
 // Informs the delegate that a user swipe has caused the bottom sheet to cross
 // the close threshold, resulting in its dismissal.
 - (void)lensOverlayResultsPagePresenterWillInitiateGestureDrivenDismiss:
-    (LensOverlayResultsPagePresenter*)presenter;
+    (id<LensOverlayResultsPagePresenting>)presenter;
 
 // Tells the delegate that the results bottom sheet detent dimension has
 // changed.
 - (void)lensOverlayResultsPagePresenter:
-            (LensOverlayResultsPagePresenter*)presenter
+            (id<LensOverlayResultsPagePresenting>)presenter
                 didUpdateDimensionState:(SheetDimensionState)state;
+
+// Notifies the delegate that the side panel is shown.
+- (void)lensOverlayResultsPagePresenter:
+            (id<LensOverlayResultsPagePresenting>)presenter
+        updateHorizontalOcclusionOffset:(CGFloat)horizontalOffset;
 
 // Asks the delegate to update the vertical occlusion offset to the given value.
 - (void)lensOverlayResultsPagePresenter:
-            (LensOverlayResultsPagePresenter*)presenter
+            (id<LensOverlayResultsPagePresenting>)presenter
           updateVerticalOcclusionOffset:(CGFloat)offsetNeeded;
 
 // Tells the delegate that the layout guide for the visible area was adjusted.
 - (void)lensOverlayResultsPagePresenter:
-            (LensOverlayResultsPagePresenter*)presenter
+            (id<LensOverlayResultsPagePresenting>)presenter
         didAdjustVisibleAreaLayoutGuide:(UILayoutGuide*)visibleAreaLayoutGuide;
+
+// Offers the dependent UI a chance to gracefully exit before the bottom sheet
+// dismisses completely.
+- (void)lensOverlayResultsPagePresenter:
+            (id<LensOverlayResultsPagePresenting>)presenter
+    animateAttachedUIDismissWithCompletion:(ProceduralBlock)completion;
 
 @end
 

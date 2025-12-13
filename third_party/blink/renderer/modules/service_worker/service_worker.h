@@ -32,7 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SERVICE_WORKER_SERVICE_WORKER_H_
 
 #include <memory>
-#include "base/memory/scoped_refptr.h"
+
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_object_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"

@@ -52,6 +52,8 @@ namespace blink {
 
 namespace {
 
+constexpr wtf_size_t kDefaultBeginInstanceTimesThreshold = 100;
+
 // Compute the next time an interval with a certain (non-zero) simple duration
 // will repeat, relative to a certain presentation time.
 SMILTime ComputeNextRepeatTime(SMILTime interval_begin,
@@ -103,6 +105,60 @@ void SMILInstanceTimeList::RemoveWithOrigin(SMILTimeOrigin origin) {
   instance_times_.Shrink(
       static_cast<wtf_size_t>(tail - instance_times_.begin()));
   time_origins_.Remove(origin);
+}
+
+void SMILInstanceTimeList::RemoveBeforeWithOrigin(SMILTime before_time,
+                                                  SMILTimeOrigin origin) {
+  if (!time_origins_.Has(origin)) {
+    return;
+  }
+
+  auto tail = std::remove_if(
+      instance_times_.begin(), instance_times_.end(),
+      [origin, before_time](const SMILTimeWithOrigin& instance_time) {
+        return instance_time.Origin() == origin &&
+               instance_time.Time() < before_time;
+      });
+
+  instance_times_.Shrink(
+      static_cast<wtf_size_t>(tail - instance_times_.begin()));
+
+  // If we removed all instances of this origin, remove it from the set
+  RemoveTimeOriginIfNotFound(origin);
+}
+
+void SMILInstanceTimeList::RemoveBelowThresholdWithOrigin(
+    wtf_size_t num_to_remove,
+    const Vector<SMILTime>& times_to_keep,
+    SMILTimeOrigin origin) {
+  if (!time_origins_.Has(origin)) {
+    return;
+  }
+
+  Vector<SMILTimeWithOrigin> new_instances_list;
+
+  for (const auto& instance_time : instance_times_) {
+    if (num_to_remove > 0 && instance_time.Origin() == origin &&
+        times_to_keep.Find(instance_time.Time()) == kNotFound) {
+      --num_to_remove;
+    } else {
+      new_instances_list.push_back(instance_time);
+    }
+  }
+
+  instance_times_ = std::move(new_instances_list);
+
+  // If we removed all instances of this origin, remove it from the set
+  RemoveTimeOriginIfNotFound(origin);
+}
+
+void SMILInstanceTimeList::RemoveTimeOriginIfNotFound(SMILTimeOrigin origin) {
+  if (!std::ranges::any_of(instance_times_,
+                           [origin](const SMILTimeWithOrigin& instance_time) {
+                             return instance_time.Origin() == origin;
+                           })) {
+    time_origins_.Remove(origin);
+  }
 }
 
 void SMILInstanceTimeList::Sort() {
@@ -179,8 +235,8 @@ void SVGSMILElement::Condition::ConnectSyncBase(SVGSMILElement& timed_element) {
   auto* svg_smil_element =
       DynamicTo<SVGSMILElement>(SVGURIReference::ObserveTarget(
           base_id_observer_, timed_element.GetTreeScope(), base_id_,
-          WTF::BindRepeating(&SVGSMILElement::BuildPendingResource,
-                             WrapWeakPersistent(&timed_element))));
+          BindRepeating(&SVGSMILElement::BuildPendingResource,
+                        WrapWeakPersistent(&timed_element))));
   if (!svg_smil_element)
     return;
   base_element_ = svg_smil_element;
@@ -208,8 +264,8 @@ void SVGSMILElement::Condition::ConnectEventBase(
   } else {
     target = SVGURIReference::ObserveTarget(
         base_id_observer_, timed_element.GetTreeScope(), base_id_,
-        WTF::BindRepeating(&SVGSMILElement::BuildPendingResource,
-                           WrapWeakPersistent(&timed_element)));
+        BindRepeating(&SVGSMILElement::BuildPendingResource,
+                      WrapWeakPersistent(&timed_element)));
   }
   if (!target)
     return;
@@ -237,6 +293,7 @@ SVGSMILElement::SVGSMILElement(const QualifiedName& tag_name, Document& doc)
       target_element_(nullptr),
       conditions_connected_(false),
       has_end_event_conditions_(false),
+      has_end_attribute_specified_(false),
       is_waiting_for_first_interval_(true),
       is_scheduled_(false),
       interval_(SMILInterval::Unresolved()),
@@ -338,7 +395,7 @@ Node::InsertionNotificationRequest SVGSMILElement::InsertedInto(
 void SVGSMILElement::RemovedFrom(ContainerNode& root_parent) {
   if (root_parent.isConnected()) {
     ClearResourceAndEventBaseReferences();
-    ClearConditions();
+    DisconnectConditions();
     SetTargetElement(nullptr);
     time_container_ = nullptr;
   }
@@ -470,8 +527,19 @@ bool SVGSMILElement::ParseCondition(const String& value,
       type, begin_or_end, AtomicString(base_id), AtomicString(name_string),
       offset, repeat));
 
-  if (type == Condition::kEventBase && begin_or_end == kEnd)
-    has_end_event_conditions_ = true;
+  if (RuntimeEnabledFeatures::SvgSmilPruneInstanceTimesEnabled()) {
+    if (begin_or_end == kEnd) {
+      has_end_attribute_specified_ = true;
+      if (type == Condition::kEventBase || type == Condition::kAccessKey ||
+          repeat != -1) {
+        has_end_event_conditions_ = true;
+      }
+    }
+  } else {
+    if (type == Condition::kEventBase && begin_or_end == kEnd) {
+      has_end_event_conditions_ = true;
+    }
+  }
 
   return true;
 }
@@ -479,8 +547,10 @@ bool SVGSMILElement::ParseCondition(const String& value,
 void SVGSMILElement::ParseBeginOrEnd(const String& parse_string,
                                      BeginOrEnd begin_or_end) {
   auto& time_list = begin_or_end == kBegin ? begin_times_ : end_times_;
-  if (begin_or_end == kEnd)
+  if (begin_or_end == kEnd) {
     has_end_event_conditions_ = false;
+    has_end_attribute_specified_ = false;
+  }
 
   // Remove any previously added offset-values.
   // TODO(fs): Ought to remove instance times originating from sync-bases,
@@ -491,10 +561,15 @@ void SVGSMILElement::ParseBeginOrEnd(const String& parse_string,
   parse_string.Split(';', split_string);
   for (const auto& item : split_string) {
     SMILTime value = ParseClockValue(item);
-    if (value.IsUnresolved())
+    if (value.IsUnresolved()) {
       ParseCondition(item, begin_or_end);
-    else
+    } else {
       time_list.Append(value, SMILTimeOrigin::kAttribute);
+
+      if (begin_or_end == kEnd) {
+        has_end_attribute_specified_ = true;
+      }
+    }
   }
   // "If no attribute is present, the default begin value (an offset-value of 0)
   // must be evaluated."
@@ -766,9 +841,16 @@ SMILTime SVGSMILElement::ResolveActiveEnd(SMILTime resolved_begin) const {
   if (!end_times_.IsEmpty()) {
     SMILTime next_end = end_times_.NextAfter(resolved_begin);
     if (next_end.IsUnresolved()) {
-      // If we have no pending end conditions, don't generate a new interval.
-      if (!has_end_event_conditions_)
+      // Allow open ended intervals if there are pending end events conditions
+      // or no end attribute is specified.
+      bool allow_open_ended =
+          RuntimeEnabledFeatures::SvgSmilPruneInstanceTimesEnabled()
+              ? (has_end_event_conditions_ || !has_end_attribute_specified_)
+              : has_end_event_conditions_;
+
+      if (!allow_open_ended) {
         return SMILTime::Unresolved();
+      }
     } else {
       resolved_end = next_end;
     }
@@ -1007,6 +1089,11 @@ void SVGSMILElement::UpdateInterval(SMILTime presentation_time) {
     return;
   }
   SetNewInterval(next_interval);
+
+  if (RuntimeEnabledFeatures::SvgSmilPruneInstanceTimesEnabled()) {
+    PruneOldInstanceTimes(begin_times_);
+    PruneOldInstanceTimes(end_times_);
+  }
 }
 
 void SVGSMILElement::AddedToTimeContainer() {
@@ -1351,9 +1438,46 @@ void SVGSMILElement::StartedActiveInterval() {
   is_waiting_for_first_interval_ = false;
 }
 
+void SVGSMILElement::PruneOldInstanceTimes(
+    SMILInstanceTimeList& instance_times) {
+  // Filter instance times based on previous interval end time
+  if (previous_interval_.IsResolved()) {
+    instance_times.RemoveBeforeWithOrigin(previous_interval_.end,
+                                          SMILTimeOrigin::kScript);
+  }
+
+  // Filter instance times if they overflowed based on a fixed
+  // threshold. Since, the list is sorted we removed the oldest script
+  // orginated instance times.
+  if (instance_times.size() > kDefaultBeginInstanceTimesThreshold) {
+    wtf_size_t num_to_remove =
+        instance_times.size() - kDefaultBeginInstanceTimesThreshold;
+
+    // Collect important times to preserve:
+    // - the current interval begin time
+    // - the previous interval begin time
+    // - the previous interval end time
+    Vector<SMILTime> times_to_keep;
+
+    if (interval_.IsResolved()) {
+      times_to_keep.push_back(interval_.begin);
+    }
+
+    if (previous_interval_.IsResolved()) {
+      times_to_keep.push_back(previous_interval_.begin);
+      times_to_keep.push_back(previous_interval_.end);
+    }
+
+    instance_times.RemoveBelowThresholdWithOrigin(num_to_remove, times_to_keep,
+                                                  SMILTimeOrigin::kScript);
+  }
+}
+
 void SVGSMILElement::EndedActiveInterval() {
-  begin_times_.RemoveWithOrigin(SMILTimeOrigin::kScript);
-  end_times_.RemoveWithOrigin(SMILTimeOrigin::kScript);
+  if (!RuntimeEnabledFeatures::SvgSmilPruneInstanceTimesEnabled()) {
+    begin_times_.RemoveWithOrigin(SMILTimeOrigin::kScript);
+    end_times_.RemoveWithOrigin(SMILTimeOrigin::kScript);
+  }
 }
 
 bool SVGSMILElement::HasValidTarget() const {

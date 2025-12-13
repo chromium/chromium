@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/channel.h"
 
 #include <lib/fdio/fd.h>
@@ -21,6 +16,7 @@
 #include <memory>
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/scoped_file.h"
 #include "base/fuchsia/fuchsia_logging.h"
@@ -105,7 +101,7 @@ class MessageView {
   ~MessageView() = default;
 
   const void* data() const {
-    return static_cast<const char*>(message_->data()) + offset_;
+    return UNSAFE_TODO(static_cast<const char*>(message_->data()) + offset_);
   }
 
   size_t data_num_bytes() const { return message_->data_num_bytes() - offset_; }
@@ -125,13 +121,13 @@ class MessageView {
     // the extra header to note which belong to FDIO.
     auto* handles_info = reinterpret_cast<Channel::Message::HandleInfoEntry*>(
         message_->mutable_extra_header());
-    memset(handles_info, 0, message_->extra_header_size());
+    UNSAFE_TODO(memset(handles_info, 0, message_->extra_header_size()));
 
     // Since file descriptors unwrap to a single handle, we can unwrap in-place
     // in the |handles_| vector.
     for (size_t i = 0; i < handles_.size(); i++) {
       if (!UnwrapFdioHandle(std::move(handles_[i]), &handles_[i],
-                            &handles_info[i])) {
+                            UNSAFE_TODO(&handles_info[i]))) {
         return std::vector<PlatformHandleInTransit>();
       }
     }
@@ -206,8 +202,7 @@ class ChannelFuchsia : public Channel,
                               size_t num_handles,
                               const void* extra_header,
                               size_t extra_header_size,
-                              std::vector<PlatformHandle>* handles,
-                              bool* deferred) override {
+                              std::vector<PlatformHandle>* handles) override {
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
     if (num_handles > std::numeric_limits<uint16_t>::max())
       return false;
@@ -230,7 +225,7 @@ class ChannelFuchsia : public Channel,
     handles->reserve(num_handles);
     for (size_t i = 0; i < num_handles; ++i) {
       handles->emplace_back(WrapFdioHandle(std::move(incoming_handles_.front()),
-                                           handles_info[i]));
+                                           UNSAFE_TODO(handles_info[i])));
       DCHECK(handles->back().is_valid());
       incoming_handles_.pop_front();
     }
@@ -316,7 +311,7 @@ class ChannelFuchsia : public Channel,
                        &bytes_read, &handles_read);
       if (read_result == ZX_OK) {
         for (size_t i = 0; i < handles_read; ++i) {
-          incoming_handles_.emplace_back(handles[i]);
+          incoming_handles_.emplace_back(UNSAFE_TODO(handles[i]));
         }
         total_bytes_read += bytes_read;
         if (!OnReadComplete(bytes_read, &next_read_size)) {
@@ -362,7 +357,8 @@ class ChannelFuchsia : public Channel,
       DCHECK_LE(handles_count, std::size(handles));
       for (size_t i = 0; i < handles_count; ++i) {
         DCHECK(outgoing_handles[i].handle().is_valid());
-        handles[i] = outgoing_handles[i].handle().GetHandle().get();
+        UNSAFE_TODO(handles[i]) =
+            outgoing_handles[i].handle().GetHandle().get();
       }
 
       write_bytes = std::min(message_view.data_num_bytes(),

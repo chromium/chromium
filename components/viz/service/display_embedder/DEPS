@@ -63,9 +63,6 @@ specific_include_rules = {
     "+cc/test",
     "+third_party/khronos/GLES2",
   ],
-  "skia_output_device_dcomp\.cc": [
-    "+third_party/microsoft_dxheaders/src/include/composition",
-  ],
   "software_output_device_ozone_unittest.cc": [
     "+ui/compositor",
     "+ui/gl",

@@ -32,7 +32,6 @@
 #include <list>
 #include <memory>
 
-#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

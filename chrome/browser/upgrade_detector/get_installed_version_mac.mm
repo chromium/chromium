@@ -11,7 +11,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
-#include "chrome/browser/updater/browser_updater_client_util.h"
+#include "chrome/browser/updater/updater.h"
 
 void GetInstalledVersion(InstalledVersionCallback callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -20,7 +20,7 @@ void GetInstalledVersion(InstalledVersionCallback callback) {
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce([] {
         return InstalledAndCriticalVersion(
-            base::Version(CurrentlyInstalledVersion()));
+            updater::CurrentlyInstalledVersion());
       }),
       std::move(callback));
 }

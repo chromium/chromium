@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "testing/libfuzzer/confirm_fuzztest_init_buildflags.h"
+#include "testing/libfuzzer/buildflags.h"
 #include "testing/libfuzzer/fuzztest_init_helper.h"
 #include "third_party/fuzztest/src/fuzztest/init_fuzztest.h"
 

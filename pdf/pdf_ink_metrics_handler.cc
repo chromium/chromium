@@ -88,6 +88,8 @@ constexpr auto kHighlighterColors =
 // LINT.ThenChange(//chrome/browser/resources/pdf/elements//ink_annotation_brush_mixin.ts:HighlighterColors)
 
 constexpr char kStrokeInputDeviceMetricName[] = "PDF.Ink2StrokeInputDeviceType";
+constexpr char kTextHighlightInputDeviceMetricName[] =
+    "PDF.Ink2TextHighlightInputDeviceType";
 
 void ReportStrokeTypeAndMaybeSize(StrokeMetricBrushType type,
                                   std::optional<StrokeMetricBrushSize> size) {
@@ -106,6 +108,14 @@ void ReportStrokeTypeAndMaybeSize(StrokeMetricBrushType type,
   }
   CHECK(size_metric);
   base::UmaHistogramEnumeration(size_metric, size.value());
+}
+
+void ReportTextHighlighterColor(const ink::Brush& brush) {
+  SkColor sk_color = GetSkColorFromInkBrush(brush);
+  auto color_iter = kHighlighterColors.find(sk_color);
+  CHECK(color_iter != kHighlighterColors.end());
+  base::UmaHistogramEnumeration("PDF.Ink2TextHighlighterColor",
+                                color_iter->second);
 }
 
 StrokeMetricInputDeviceType GetStrokeInputDeviceType(
@@ -160,13 +170,15 @@ void ReportEraseStroke(ink::StrokeInput::ToolType tool_type) {
 
 void ReportTextHighlight(const ink::Brush& brush,
                          ink::StrokeInput::ToolType tool_type) {
-  SkColor sk_color = GetSkColorFromInkBrush(brush);
-  auto color_iter = kHighlighterColors.find(sk_color);
-  CHECK(color_iter != kHighlighterColors.end());
-  base::UmaHistogramEnumeration("PDF.Ink2TextHighlighterColor",
-                                color_iter->second);
-  base::UmaHistogramEnumeration("PDF.Ink2TextHighlightInputDeviceType",
+  ReportTextHighlighterColor(brush);
+  base::UmaHistogramEnumeration(kTextHighlightInputDeviceMetricName,
                                 GetStrokeInputDeviceType(tool_type));
+}
+
+void ReportKeyboardTextHighlight(const ink::Brush& brush) {
+  ReportTextHighlighterColor(brush);
+  base::UmaHistogramEnumeration(kTextHighlightInputDeviceMetricName,
+                                StrokeMetricInputDeviceType::kKeyboard);
 }
 
 void RecordPdfLoadedWithV2InkAnnotations(

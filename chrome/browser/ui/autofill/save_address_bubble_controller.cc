@@ -21,10 +21,10 @@
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -40,24 +40,31 @@ SaveAddressBubbleController::SaveAddressBubbleController(
     base::WeakPtr<AddressBubbleControllerDelegate> delegate,
     content::WebContents* web_contents,
     const AutofillProfile& address_profile,
-    bool is_migration_to_account)
+    AutofillClient::SaveAddressBubbleType save_address_bubble_type)
     : content::WebContentsObserver(web_contents),
       delegate_(delegate),
       address_profile_(address_profile),
-      is_migration_to_account_(is_migration_to_account) {}
+      save_address_bubble_type_(save_address_bubble_type) {}
 
 SaveAddressBubbleController::~SaveAddressBubbleController() = default;
 
 std::u16string SaveAddressBubbleController::GetWindowTitle() const {
-  return l10n_util::GetStringUTF16(
-      is_migration_to_account_
-          ? IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE
-          : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
+  return l10n_util::GetStringUTF16([this] {
+    switch (save_address_bubble_type_) {
+      case AutofillClient::SaveAddressBubbleType::kSave:
+        return IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE;
+      case autofill::AutofillClient::SaveAddressBubbleType::kMigrateToAccount:
+        return IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE;
+      case autofill::AutofillClient::SaveAddressBubbleType::
+          kHomeWorkNameEmailMerge:
+        return IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_NAME_EMAIL_HOME_WORK_MERGE_PROMPT_TITLE;
+    }
+  }());
 }
 
 std::optional<SaveAddressBubbleController::HeaderImages>
 SaveAddressBubbleController::GetHeaderImages() const {
-  if (is_migration_to_account_ && web_contents()) {
+  if (IsMigrationToAccount() && web_contents()) {
     std::optional<AccountInfo> account =
         GetPrimaryAccountInfoFromBrowserContext(
             web_contents()->GetBrowserContext());
@@ -82,7 +89,7 @@ SaveAddressBubbleController::GetHeaderImages() const {
 }
 
 std::u16string SaveAddressBubbleController::GetBodyText() const {
-  if (is_migration_to_account_ && web_contents()) {
+  if (IsMigrationToAccount() && web_contents()) {
     PersonalDataManager& pdm =
         ContentAutofillClient::FromWebContents(web_contents())
             ->GetPersonalDataManager();
@@ -91,11 +98,7 @@ std::u16string SaveAddressBubbleController::GetBodyText() const {
         GetPrimaryAccountInfoFromBrowserContext(
             web_contents()->GetBrowserContext());
 
-    const bool is_syncing =
-        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-            ? pdm.address_data_manager().IsAutofillUserSelectableTypeEnabled()
-            : pdm.address_data_manager().IsSyncFeatureEnabledForAutofill();
-    int string_id = is_syncing
+    int string_id = pdm.address_data_manager().IsSyncFeatureEnabledForAutofill()
                         ? IDS_AUTOFILL_SYNCABLE_PROFILE_MIGRATION_PROMPT_NOTICE
                         : IDS_AUTOFILL_LOCAL_PROFILE_MIGRATION_PROMPT_NOTICE;
 
@@ -109,7 +112,7 @@ std::u16string SaveAddressBubbleController::GetBodyText() const {
 std::u16string SaveAddressBubbleController::GetAddressSummary() const {
   // Use a shorter version of the address summary for migration, it has
   // a fixed set of fields and doesn't depend on libaddressinput.
-  if (is_migration_to_account_) {
+  if (IsMigrationToAccount()) {
     static constexpr std::array fields = {
         NAME_FULL, ADDRESS_HOME_LINE1, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER};
     std::vector<std::u16string> values;
@@ -137,7 +140,7 @@ std::u16string SaveAddressBubbleController::GetAddressSummary() const {
 std::u16string SaveAddressBubbleController::GetProfileEmail() const {
   // Email is not shown as a separate field in the migration flow,
   // it is included in the address summary, see GetAddressSummary().
-  if (is_migration_to_account_) {
+  if (IsMigrationToAccount()) {
     return {};
   }
 
@@ -149,20 +152,40 @@ std::u16string SaveAddressBubbleController::GetProfileEmail() const {
 std::u16string SaveAddressBubbleController::GetProfilePhone() const {
   // Phone is not shown as a separate field in the migration flow,
   // it is included in the address summary, see GetAddressSummary().
-  if (is_migration_to_account_) {
+  if (IsMigrationToAccount()) {
     return {};
   }
 
-  return address_profile_.GetInfo(
-      PHONE_HOME_WHOLE_NUMBER,
+  return autofill::i18n::GetFormattedPhoneNumberForDisplay(
+      address_profile_,
       g_browser_process->GetFeatures()->application_locale_storage()->Get());
 }
 
 std::u16string SaveAddressBubbleController::GetOkButtonLabel() const {
-  return l10n_util::GetStringUTF16(
-      is_migration_to_account_
-          ? IDS_AUTOFILL_MIGRATE_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE
-          : IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE);
+  return l10n_util::GetStringUTF16([this] {
+    switch (save_address_bubble_type_) {
+      case AutofillClient::SaveAddressBubbleType::kSave:
+        return IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE;
+      case autofill::AutofillClient::SaveAddressBubbleType::kMigrateToAccount:
+        return IDS_AUTOFILL_MIGRATE_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE;
+      case autofill::AutofillClient::SaveAddressBubbleType::
+          kHomeWorkNameEmailMerge:
+        return IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_NAME_EMAIL_HOME_WORK_MERGE_OK_BUTTON_LABEL;
+    }
+  }());
+}
+
+std::u16string SaveAddressBubbleController::GetNegativeButtonLabel() const {
+  return l10n_util::GetStringUTF16([this] {
+    switch (save_address_bubble_type_) {
+      case AutofillClient::SaveAddressBubbleType::kSave:
+      case autofill::AutofillClient::SaveAddressBubbleType::kMigrateToAccount:
+        return IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL;
+      case autofill::AutofillClient::SaveAddressBubbleType::
+          kHomeWorkNameEmailMerge:
+        return IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_NAME_EMAIL_HOME_WORK_MERGE_CANCEL_BUTTON_LABEL;
+    }
+  }());
 }
 
 AutofillClient::AddressPromptUserDecision
@@ -170,7 +193,7 @@ SaveAddressBubbleController::GetCancelCallbackValue() const {
   // The migration prompt should not be shown again if the user explicitly
   // rejects it (for a particular address, due to legal and privacy
   // requirements). In other cases it is acceptable to show it a few times more.
-  return is_migration_to_account_
+  return IsMigrationToAccount()
              ? AutofillClient::AddressPromptUserDecision::kNever
              : AutofillClient::AddressPromptUserDecision::kDeclined;
 }
@@ -190,7 +213,7 @@ std::u16string SaveAddressBubbleController::GetFooterMessage() const {
 }
 
 std::u16string SaveAddressBubbleController::GetEditorFooterMessage() const {
-  if (is_migration_to_account_ && web_contents()) {
+  if (IsMigrationToAccount() && web_contents()) {
     std::optional<AccountInfo> account =
         GetPrimaryAccountInfoFromBrowserContext(
             web_contents()->GetBrowserContext());
@@ -222,6 +245,11 @@ void SaveAddressBubbleController::OnBubbleClosed() {
   if (delegate_) {
     delegate_->OnBubbleClosed();
   }
+}
+
+bool SaveAddressBubbleController::IsMigrationToAccount() const {
+  return save_address_bubble_type_ ==
+         AutofillClient::SaveAddressBubbleType::kMigrateToAccount;
 }
 
 }  // namespace autofill

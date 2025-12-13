@@ -5,12 +5,12 @@
 #include "chrome/browser/ui/views/autofill/address_bubbles_icon_view.h"
 
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/address_bubbles_icon_controller.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/autofill/address_bubble_base_view.h"
 #include "chrome/browser/ui/views/promos/ios_promo_bubble.h"
+#include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -54,7 +54,8 @@ void AddressBubblesIconView::UpdateImpl() {
 
   // Show the icon if the Desktop to iOS address promo is currently being shown.
   should_show =
-      should_show || IOSPromoBubble::IsPromoTypeVisible(IOSPromoType::kAddress);
+      should_show || IOSPromoBubble::IsPromoTypeVisible(
+                         desktop_to_mobile_promos::PromoType::kAddress);
 
   SetVisible(should_show);
   GetViewAccessibility().SetName(GetTextForTooltipAndAccessibleName());
@@ -70,7 +71,7 @@ std::u16string AddressBubblesIconView::GetTextForTooltipAndAccessibleName()
     // sure the accessible name isn't empty to avoid test flakiness.
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
   }
-  return controller->GetPageActionIconTootip();
+  return controller->GetPageActionIconTooltip();
 }
 
 void AddressBubblesIconView::OnExecuting(

@@ -140,12 +140,12 @@ static void google_protobuf_Any_ModuleInit() {
 
 zend_class_entry* GPBMetadata_Google_Protobuf_Api_ce;
 
-const char google_protobuf_api_proto_descriptor [751] = {
+const char google_protobuf_api_proto_descriptor [793] = {
 '\n', '\031', 'g', 'o', 'o', 'g', 'l', 'e', '/', 'p', 'r', 'o', 't', 'o', 'b', 'u', 'f', '/', 'a', 'p', 'i', '.', 'p', 'r', 'o', 
 't', 'o', '\022', '\017', 'g', 'o', 'o', 'g', 'l', 'e', '.', 'p', 'r', 'o', 't', 'o', 'b', 'u', 'f', '\032', '$', 'g', 'o', 'o', 'g', 
 'l', 'e', '/', 'p', 'r', 'o', 't', 'o', 'b', 'u', 'f', '/', 's', 'o', 'u', 'r', 'c', 'e', '_', 'c', 'o', 'n', 't', 'e', 'x', 
 't', '.', 'p', 'r', 'o', 't', 'o', '\032', '\032', 'g', 'o', 'o', 'g', 'l', 'e', '/', 'p', 'r', 'o', 't', 'o', 'b', 'u', 'f', '/', 
-'t', 'y', 'p', 'e', '.', 'p', 'r', 'o', 't', 'o', '\"', '\201', '\002', '\n', '\003', 'A', 'p', 'i', '\022', '\014', '\n', '\004', 'n', 'a', 'm', 
+'t', 'y', 'p', 'e', '.', 'p', 'r', 'o', 't', 'o', '\"', '\222', '\002', '\n', '\003', 'A', 'p', 'i', '\022', '\014', '\n', '\004', 'n', 'a', 'm', 
 'e', '\030', '\001', ' ', '\001', '(', '\t', '\022', '(', '\n', '\007', 'm', 'e', 't', 'h', 'o', 'd', 's', '\030', '\002', ' ', '\003', '(', '\013', '2', 
 '\027', '.', 'g', 'o', 'o', 'g', 'l', 'e', '.', 'p', 'r', 'o', 't', 'o', 'b', 'u', 'f', '.', 'M', 'e', 't', 'h', 'o', 'd', '\022', 
 '(', '\n', '\007', 'o', 'p', 't', 'i', 'o', 'n', 's', '\030', '\003', ' ', '\003', '(', '\013', '2', '\027', '.', 'g', 'o', 'o', 'g', 'l', 'e', 
@@ -155,23 +155,24 @@ const char google_protobuf_api_proto_descriptor [751] = {
 '.', 'S', 'o', 'u', 'r', 'c', 'e', 'C', 'o', 'n', 't', 'e', 'x', 't', '\022', '&', '\n', '\006', 'm', 'i', 'x', 'i', 'n', 's', '\030', 
 '\006', ' ', '\003', '(', '\013', '2', '\026', '.', 'g', 'o', 'o', 'g', 'l', 'e', '.', 'p', 'r', 'o', 't', 'o', 'b', 'u', 'f', '.', 'M', 
 'i', 'x', 'i', 'n', '\022', '\'', '\n', '\006', 's', 'y', 'n', 't', 'a', 'x', '\030', '\007', ' ', '\001', '(', '\016', '2', '\027', '.', 'g', 'o', 
-'o', 'g', 'l', 'e', '.', 'p', 'r', 'o', 't', 'o', 'b', 'u', 'f', '.', 'S', 'y', 'n', 't', 'a', 'x', '\"', '\325', '\001', '\n', '\006', 
-'M', 'e', 't', 'h', 'o', 'd', '\022', '\014', '\n', '\004', 'n', 'a', 'm', 'e', '\030', '\001', ' ', '\001', '(', '\t', '\022', '\030', '\n', '\020', 'r', 
-'e', 'q', 'u', 'e', 's', 't', '_', 't', 'y', 'p', 'e', '_', 'u', 'r', 'l', '\030', '\002', ' ', '\001', '(', '\t', '\022', '\031', '\n', '\021', 
-'r', 'e', 'q', 'u', 'e', 's', 't', '_', 's', 't', 'r', 'e', 'a', 'm', 'i', 'n', 'g', '\030', '\003', ' ', '\001', '(', '\010', '\022', '\031', 
-'\n', '\021', 'r', 'e', 's', 'p', 'o', 'n', 's', 'e', '_', 't', 'y', 'p', 'e', '_', 'u', 'r', 'l', '\030', '\004', ' ', '\001', '(', '\t', 
-'\022', '\032', '\n', '\022', 'r', 'e', 's', 'p', 'o', 'n', 's', 'e', '_', 's', 't', 'r', 'e', 'a', 'm', 'i', 'n', 'g', '\030', '\005', ' ', 
-'\001', '(', '\010', '\022', '(', '\n', '\007', 'o', 'p', 't', 'i', 'o', 'n', 's', '\030', '\006', ' ', '\003', '(', '\013', '2', '\027', '.', 'g', 'o', 
-'o', 'g', 'l', 'e', '.', 'p', 'r', 'o', 't', 'o', 'b', 'u', 'f', '.', 'O', 'p', 't', 'i', 'o', 'n', '\022', '\'', '\n', '\006', 's', 
-'y', 'n', 't', 'a', 'x', '\030', '\007', ' ', '\001', '(', '\016', '2', '\027', '.', 'g', 'o', 'o', 'g', 'l', 'e', '.', 'p', 'r', 'o', 't', 
-'o', 'b', 'u', 'f', '.', 'S', 'y', 'n', 't', 'a', 'x', '\"', '#', '\n', '\005', 'M', 'i', 'x', 'i', 'n', '\022', '\014', '\n', '\004', 'n', 
-'a', 'm', 'e', '\030', '\001', ' ', '\001', '(', '\t', '\022', '\014', '\n', '\004', 'r', 'o', 'o', 't', '\030', '\002', ' ', '\001', '(', '\t', 'B', 'v', 
-'\n', '\023', 'c', 'o', 'm', '.', 'g', 'o', 'o', 'g', 'l', 'e', '.', 'p', 'r', 'o', 't', 'o', 'b', 'u', 'f', 'B', '\010', 'A', 'p', 
-'i', 'P', 'r', 'o', 't', 'o', 'P', '\001', 'Z', ',', 'g', 'o', 'o', 'g', 'l', 'e', '.', 'g', 'o', 'l', 'a', 'n', 'g', '.', 'o', 
-'r', 'g', '/', 'p', 'r', 'o', 't', 'o', 'b', 'u', 'f', '/', 't', 'y', 'p', 'e', 's', '/', 'k', 'n', 'o', 'w', 'n', '/', 'a', 
-'p', 'i', 'p', 'b', '\242', '\002', '\003', 'G', 'P', 'B', '\252', '\002', '\036', 'G', 'o', 'o', 'g', 'l', 'e', '.', 'P', 'r', 'o', 't', 'o', 
-'b', 'u', 'f', '.', 'W', 'e', 'l', 'l', 'K', 'n', 'o', 'w', 'n', 'T', 'y', 'p', 'e', 's', 'b', '\006', 'p', 'r', 'o', 't', 'o', 
-'3', 
+'o', 'g', 'l', 'e', '.', 'p', 'r', 'o', 't', 'o', 'b', 'u', 'f', '.', 'S', 'y', 'n', 't', 'a', 'x', '\022', '\017', '\n', '\007', 'e', 
+'d', 'i', 't', 'i', 'o', 'n', '\030', '\010', ' ', '\001', '(', '\t', '\"', '\356', '\001', '\n', '\006', 'M', 'e', 't', 'h', 'o', 'd', '\022', '\014', 
+'\n', '\004', 'n', 'a', 'm', 'e', '\030', '\001', ' ', '\001', '(', '\t', '\022', '\030', '\n', '\020', 'r', 'e', 'q', 'u', 'e', 's', 't', '_', 't', 
+'y', 'p', 'e', '_', 'u', 'r', 'l', '\030', '\002', ' ', '\001', '(', '\t', '\022', '\031', '\n', '\021', 'r', 'e', 'q', 'u', 'e', 's', 't', '_', 
+'s', 't', 'r', 'e', 'a', 'm', 'i', 'n', 'g', '\030', '\003', ' ', '\001', '(', '\010', '\022', '\031', '\n', '\021', 'r', 'e', 's', 'p', 'o', 'n', 
+'s', 'e', '_', 't', 'y', 'p', 'e', '_', 'u', 'r', 'l', '\030', '\004', ' ', '\001', '(', '\t', '\022', '\032', '\n', '\022', 'r', 'e', 's', 'p', 
+'o', 'n', 's', 'e', '_', 's', 't', 'r', 'e', 'a', 'm', 'i', 'n', 'g', '\030', '\005', ' ', '\001', '(', '\010', '\022', '(', '\n', '\007', 'o', 
+'p', 't', 'i', 'o', 'n', 's', '\030', '\006', ' ', '\003', '(', '\013', '2', '\027', '.', 'g', 'o', 'o', 'g', 'l', 'e', '.', 'p', 'r', 'o', 
+'t', 'o', 'b', 'u', 'f', '.', 'O', 'p', 't', 'i', 'o', 'n', '\022', '+', '\n', '\006', 's', 'y', 'n', 't', 'a', 'x', '\030', '\007', ' ', 
+'\001', '(', '\016', '2', '\027', '.', 'g', 'o', 'o', 'g', 'l', 'e', '.', 'p', 'r', 'o', 't', 'o', 'b', 'u', 'f', '.', 'S', 'y', 'n', 
+'t', 'a', 'x', 'B', '\002', '\030', '\001', '\022', '\023', '\n', '\007', 'e', 'd', 'i', 't', 'i', 'o', 'n', '\030', '\010', ' ', '\001', '(', '\t', 'B', 
+'\002', '\030', '\001', '\"', '#', '\n', '\005', 'M', 'i', 'x', 'i', 'n', '\022', '\014', '\n', '\004', 'n', 'a', 'm', 'e', '\030', '\001', ' ', '\001', '(', 
+'\t', '\022', '\014', '\n', '\004', 'r', 'o', 'o', 't', '\030', '\002', ' ', '\001', '(', '\t', 'B', 'v', '\n', '\023', 'c', 'o', 'm', '.', 'g', 'o', 
+'o', 'g', 'l', 'e', '.', 'p', 'r', 'o', 't', 'o', 'b', 'u', 'f', 'B', '\010', 'A', 'p', 'i', 'P', 'r', 'o', 't', 'o', 'P', '\001', 
+'Z', ',', 'g', 'o', 'o', 'g', 'l', 'e', '.', 'g', 'o', 'l', 'a', 'n', 'g', '.', 'o', 'r', 'g', '/', 'p', 'r', 'o', 't', 'o', 
+'b', 'u', 'f', '/', 't', 'y', 'p', 'e', 's', '/', 'k', 'n', 'o', 'w', 'n', '/', 'a', 'p', 'i', 'p', 'b', '\242', '\002', '\003', 'G', 
+'P', 'B', '\252', '\002', '\036', 'G', 'o', 'o', 'g', 'l', 'e', '.', 'P', 'r', 'o', 't', 'o', 'b', 'u', 'f', '.', 'W', 'e', 'l', 'l', 
+'K', 'n', 'o', 'w', 'n', 'T', 'y', 'p', 'e', 's', 'b', '\006', 'p', 'r', 'o', 't', 'o', '3', 
 };
 
 static void google_protobuf_api_proto_AddDescriptor() {
@@ -319,6 +320,13 @@ static PHP_METHOD(google_protobuf_Api, setSourceContext) {
   RETURN_COPY(getThis());
 }
 
+static PHP_METHOD(google_protobuf_Api, hasSourceContext) {
+  Message* intern = (Message*)Z_OBJ_P(getThis());
+  const upb_FieldDef *f = upb_MessageDef_FindFieldByName(
+      intern->desc->msgdef, "source_context");
+  RETVAL_BOOL(upb_Message_HasFieldByDef(intern->msg, f));
+}
+
 static PHP_METHOD(google_protobuf_Api, getMixins) {
   Message* intern = (Message*)Z_OBJ_P(getThis());
   const upb_FieldDef *f = upb_MessageDef_FindFieldByName(
@@ -363,6 +371,28 @@ static PHP_METHOD(google_protobuf_Api, setSyntax) {
   RETURN_COPY(getThis());
 }
 
+static PHP_METHOD(google_protobuf_Api, getEdition) {
+  Message* intern = (Message*)Z_OBJ_P(getThis());
+  const upb_FieldDef *f = upb_MessageDef_FindFieldByName(
+      intern->desc->msgdef, "edition");
+  zval ret;
+  Message_get(intern, f, &ret);
+  RETURN_COPY_VALUE(&ret);
+}
+
+static PHP_METHOD(google_protobuf_Api, setEdition) {
+  Message* intern = (Message*)Z_OBJ_P(getThis());
+  const upb_FieldDef *f = upb_MessageDef_FindFieldByName(
+      intern->desc->msgdef, "edition");
+  zval *val;
+  if (zend_parse_parameters(ZEND_NUM_ARGS(), "z", &val)
+      == FAILURE) {
+    return;
+  }
+  Message_set(intern, f, val);
+  RETURN_COPY(getThis());
+}
+
 static zend_function_entry google_protobuf_Api_phpmethods[] = {
   PHP_ME(google_protobuf_Api, __construct, arginfo_construct, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Api, getName, arginfo_void, ZEND_ACC_PUBLIC)
@@ -375,10 +405,13 @@ static zend_function_entry google_protobuf_Api_phpmethods[] = {
   PHP_ME(google_protobuf_Api, setVersion, arginfo_setter, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Api, getSourceContext, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Api, setSourceContext, arginfo_setter, ZEND_ACC_PUBLIC)
+  PHP_ME(google_protobuf_Api, hasSourceContext, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Api, getMixins, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Api, setMixins, arginfo_setter, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Api, getSyntax, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Api, setSyntax, arginfo_setter, ZEND_ACC_PUBLIC)
+  PHP_ME(google_protobuf_Api, getEdition, arginfo_void, ZEND_ACC_PUBLIC)
+  PHP_ME(google_protobuf_Api, setEdition, arginfo_setter, ZEND_ACC_PUBLIC)
   ZEND_FE_END
 };
 
@@ -557,6 +590,28 @@ static PHP_METHOD(google_protobuf_Method, setSyntax) {
   RETURN_COPY(getThis());
 }
 
+static PHP_METHOD(google_protobuf_Method, getEdition) {
+  Message* intern = (Message*)Z_OBJ_P(getThis());
+  const upb_FieldDef *f = upb_MessageDef_FindFieldByName(
+      intern->desc->msgdef, "edition");
+  zval ret;
+  Message_get(intern, f, &ret);
+  RETURN_COPY_VALUE(&ret);
+}
+
+static PHP_METHOD(google_protobuf_Method, setEdition) {
+  Message* intern = (Message*)Z_OBJ_P(getThis());
+  const upb_FieldDef *f = upb_MessageDef_FindFieldByName(
+      intern->desc->msgdef, "edition");
+  zval *val;
+  if (zend_parse_parameters(ZEND_NUM_ARGS(), "z", &val)
+      == FAILURE) {
+    return;
+  }
+  Message_set(intern, f, val);
+  RETURN_COPY(getThis());
+}
+
 static zend_function_entry google_protobuf_Method_phpmethods[] = {
   PHP_ME(google_protobuf_Method, __construct, arginfo_construct, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Method, getName, arginfo_void, ZEND_ACC_PUBLIC)
@@ -573,6 +628,8 @@ static zend_function_entry google_protobuf_Method_phpmethods[] = {
   PHP_ME(google_protobuf_Method, setOptions, arginfo_setter, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Method, getSyntax, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Method, setSyntax, arginfo_setter, ZEND_ACC_PUBLIC)
+  PHP_ME(google_protobuf_Method, getEdition, arginfo_void, ZEND_ACC_PUBLIC)
+  PHP_ME(google_protobuf_Method, setEdition, arginfo_setter, ZEND_ACC_PUBLIC)
   ZEND_FE_END
 };
 
@@ -1183,12 +1240,20 @@ static PHP_METHOD(google_protobuf_Struct_FieldsEntry, setValue) {
   RETURN_COPY(getThis());
 }
 
+static PHP_METHOD(google_protobuf_Struct_FieldsEntry, hasValue) {
+  Message* intern = (Message*)Z_OBJ_P(getThis());
+  const upb_FieldDef *f = upb_MessageDef_FindFieldByName(
+      intern->desc->msgdef, "value");
+  RETVAL_BOOL(upb_Message_HasFieldByDef(intern->msg, f));
+}
+
 static zend_function_entry google_protobuf_Struct_FieldsEntry_phpmethods[] = {
   PHP_ME(google_protobuf_Struct_FieldsEntry, __construct, arginfo_construct, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Struct_FieldsEntry, getKey, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Struct_FieldsEntry, setKey, arginfo_setter, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Struct_FieldsEntry, getValue, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Struct_FieldsEntry, setValue, arginfo_setter, ZEND_ACC_PUBLIC)
+  PHP_ME(google_protobuf_Struct_FieldsEntry, hasValue, arginfo_void, ZEND_ACC_PUBLIC)
   ZEND_FE_END
 };
 
@@ -1235,6 +1300,13 @@ static PHP_METHOD(google_protobuf_Value, setNullValue) {
   RETURN_COPY(getThis());
 }
 
+static PHP_METHOD(google_protobuf_Value, hasNullValue) {
+  Message* intern = (Message*)Z_OBJ_P(getThis());
+  const upb_FieldDef *f = upb_MessageDef_FindFieldByName(
+      intern->desc->msgdef, "null_value");
+  RETVAL_BOOL(upb_Message_HasFieldByDef(intern->msg, f));
+}
+
 static PHP_METHOD(google_protobuf_Value, getNumberValue) {
   Message* intern = (Message*)Z_OBJ_P(getThis());
   const upb_FieldDef *f = upb_MessageDef_FindFieldByName(
@@ -1255,6 +1327,13 @@ static PHP_METHOD(google_protobuf_Value, setNumberValue) {
   }
   Message_set(intern, f, val);
   RETURN_COPY(getThis());
+}
+
+static PHP_METHOD(google_protobuf_Value, hasNumberValue) {
+  Message* intern = (Message*)Z_OBJ_P(getThis());
+  const upb_FieldDef *f = upb_MessageDef_FindFieldByName(
+      intern->desc->msgdef, "number_value");
+  RETVAL_BOOL(upb_Message_HasFieldByDef(intern->msg, f));
 }
 
 static PHP_METHOD(google_protobuf_Value, getStringValue) {
@@ -1279,6 +1358,13 @@ static PHP_METHOD(google_protobuf_Value, setStringValue) {
   RETURN_COPY(getThis());
 }
 
+static PHP_METHOD(google_protobuf_Value, hasStringValue) {
+  Message* intern = (Message*)Z_OBJ_P(getThis());
+  const upb_FieldDef *f = upb_MessageDef_FindFieldByName(
+      intern->desc->msgdef, "string_value");
+  RETVAL_BOOL(upb_Message_HasFieldByDef(intern->msg, f));
+}
+
 static PHP_METHOD(google_protobuf_Value, getBoolValue) {
   Message* intern = (Message*)Z_OBJ_P(getThis());
   const upb_FieldDef *f = upb_MessageDef_FindFieldByName(
@@ -1299,6 +1385,13 @@ static PHP_METHOD(google_protobuf_Value, setBoolValue) {
   }
   Message_set(intern, f, val);
   RETURN_COPY(getThis());
+}
+
+static PHP_METHOD(google_protobuf_Value, hasBoolValue) {
+  Message* intern = (Message*)Z_OBJ_P(getThis());
+  const upb_FieldDef *f = upb_MessageDef_FindFieldByName(
+      intern->desc->msgdef, "bool_value");
+  RETVAL_BOOL(upb_Message_HasFieldByDef(intern->msg, f));
 }
 
 static PHP_METHOD(google_protobuf_Value, getStructValue) {
@@ -1323,6 +1416,13 @@ static PHP_METHOD(google_protobuf_Value, setStructValue) {
   RETURN_COPY(getThis());
 }
 
+static PHP_METHOD(google_protobuf_Value, hasStructValue) {
+  Message* intern = (Message*)Z_OBJ_P(getThis());
+  const upb_FieldDef *f = upb_MessageDef_FindFieldByName(
+      intern->desc->msgdef, "struct_value");
+  RETVAL_BOOL(upb_Message_HasFieldByDef(intern->msg, f));
+}
+
 static PHP_METHOD(google_protobuf_Value, getListValue) {
   Message* intern = (Message*)Z_OBJ_P(getThis());
   const upb_FieldDef *f = upb_MessageDef_FindFieldByName(
@@ -1345,6 +1445,13 @@ static PHP_METHOD(google_protobuf_Value, setListValue) {
   RETURN_COPY(getThis());
 }
 
+static PHP_METHOD(google_protobuf_Value, hasListValue) {
+  Message* intern = (Message*)Z_OBJ_P(getThis());
+  const upb_FieldDef *f = upb_MessageDef_FindFieldByName(
+      intern->desc->msgdef, "list_value");
+  RETVAL_BOOL(upb_Message_HasFieldByDef(intern->msg, f));
+}
+
 static PHP_METHOD(google_protobuf_Value, getKind) {
   Message* intern = (Message*)Z_OBJ_P(getThis());
   const upb_OneofDef *oneof = upb_MessageDef_FindOneofByName(
@@ -1357,16 +1464,22 @@ static zend_function_entry google_protobuf_Value_phpmethods[] = {
   PHP_ME(google_protobuf_Value, __construct, arginfo_construct, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Value, getNullValue, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Value, setNullValue, arginfo_setter, ZEND_ACC_PUBLIC)
+  PHP_ME(google_protobuf_Value, hasNullValue, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Value, getNumberValue, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Value, setNumberValue, arginfo_setter, ZEND_ACC_PUBLIC)
+  PHP_ME(google_protobuf_Value, hasNumberValue, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Value, getStringValue, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Value, setStringValue, arginfo_setter, ZEND_ACC_PUBLIC)
+  PHP_ME(google_protobuf_Value, hasStringValue, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Value, getBoolValue, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Value, setBoolValue, arginfo_setter, ZEND_ACC_PUBLIC)
+  PHP_ME(google_protobuf_Value, hasBoolValue, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Value, getStructValue, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Value, setStructValue, arginfo_setter, ZEND_ACC_PUBLIC)
+  PHP_ME(google_protobuf_Value, hasStructValue, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Value, getListValue, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Value, setListValue, arginfo_setter, ZEND_ACC_PUBLIC)
+  PHP_ME(google_protobuf_Value, hasListValue, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Value, getKind, arginfo_void, ZEND_ACC_PUBLIC)
   ZEND_FE_END
 };
@@ -1836,6 +1949,13 @@ static PHP_METHOD(google_protobuf_Type, setSourceContext) {
   RETURN_COPY(getThis());
 }
 
+static PHP_METHOD(google_protobuf_Type, hasSourceContext) {
+  Message* intern = (Message*)Z_OBJ_P(getThis());
+  const upb_FieldDef *f = upb_MessageDef_FindFieldByName(
+      intern->desc->msgdef, "source_context");
+  RETVAL_BOOL(upb_Message_HasFieldByDef(intern->msg, f));
+}
+
 static PHP_METHOD(google_protobuf_Type, getSyntax) {
   Message* intern = (Message*)Z_OBJ_P(getThis());
   const upb_FieldDef *f = upb_MessageDef_FindFieldByName(
@@ -1892,6 +2012,7 @@ static zend_function_entry google_protobuf_Type_phpmethods[] = {
   PHP_ME(google_protobuf_Type, setOptions, arginfo_setter, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Type, getSourceContext, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Type, setSourceContext, arginfo_setter, ZEND_ACC_PUBLIC)
+  PHP_ME(google_protobuf_Type, hasSourceContext, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Type, getSyntax, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Type, setSyntax, arginfo_setter, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Type, getEdition, arginfo_void, ZEND_ACC_PUBLIC)
@@ -2444,6 +2565,13 @@ static PHP_METHOD(google_protobuf_Enum, setSourceContext) {
   RETURN_COPY(getThis());
 }
 
+static PHP_METHOD(google_protobuf_Enum, hasSourceContext) {
+  Message* intern = (Message*)Z_OBJ_P(getThis());
+  const upb_FieldDef *f = upb_MessageDef_FindFieldByName(
+      intern->desc->msgdef, "source_context");
+  RETVAL_BOOL(upb_Message_HasFieldByDef(intern->msg, f));
+}
+
 static PHP_METHOD(google_protobuf_Enum, getSyntax) {
   Message* intern = (Message*)Z_OBJ_P(getThis());
   const upb_FieldDef *f = upb_MessageDef_FindFieldByName(
@@ -2498,6 +2626,7 @@ static zend_function_entry google_protobuf_Enum_phpmethods[] = {
   PHP_ME(google_protobuf_Enum, setOptions, arginfo_setter, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Enum, getSourceContext, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Enum, setSourceContext, arginfo_setter, ZEND_ACC_PUBLIC)
+  PHP_ME(google_protobuf_Enum, hasSourceContext, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Enum, getSyntax, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Enum, setSyntax, arginfo_setter, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Enum, getEdition, arginfo_void, ZEND_ACC_PUBLIC)
@@ -2668,12 +2797,20 @@ static PHP_METHOD(google_protobuf_Option, setValue) {
   RETURN_COPY(getThis());
 }
 
+static PHP_METHOD(google_protobuf_Option, hasValue) {
+  Message* intern = (Message*)Z_OBJ_P(getThis());
+  const upb_FieldDef *f = upb_MessageDef_FindFieldByName(
+      intern->desc->msgdef, "value");
+  RETVAL_BOOL(upb_Message_HasFieldByDef(intern->msg, f));
+}
+
 static zend_function_entry google_protobuf_Option_phpmethods[] = {
   PHP_ME(google_protobuf_Option, __construct, arginfo_construct, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Option, getName, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Option, setName, arginfo_setter, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Option, getValue, arginfo_void, ZEND_ACC_PUBLIC)
   PHP_ME(google_protobuf_Option, setValue, arginfo_setter, ZEND_ACC_PUBLIC)
+  PHP_ME(google_protobuf_Option, hasValue, arginfo_void, ZEND_ACC_PUBLIC)
   ZEND_FE_END
 };
 

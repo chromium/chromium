@@ -1,0 +1,37 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/grit_rule.gni")
+
+grit("grit") {
+  if (is_chrome_branded) {
+    source = "internal/browser_resources.grd"
+  } else {
+    source = "browser_resources.grd"
+  }
+  use_brotli = true
+  outputs = [
+    "actor_browser_resources.pak",
+    "grit/actor_browser_resources.h",
+  ]
+}
+
+grit("common_resources") {
+  source = "common_resources.grd"
+  outputs = [
+    "actor_common_resources.pak",
+    "grit/actor_common_resources.h",
+  ]
+}
+
+source_set("browser_resources") {
+  public_deps = [
+    ":common_resources",
+    ":grit",
+  ]
+  deps = [
+    "//base",
+    "//chrome/common:chrome_features",
+  ]
+}

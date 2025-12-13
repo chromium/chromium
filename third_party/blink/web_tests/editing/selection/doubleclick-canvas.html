@@ -27,7 +27,7 @@
     assert_equals(selection.anchorNode, null, "Selection should be empty initially.");
     assert_false(doubleClickEventFired);
 
-    // Double cick on the canvas.
+    // Double click on the canvas.
     await generateDoubleClickSequence().send();
 
     assert_true(doubleClickEventFired, "dblclick event should be fired.");

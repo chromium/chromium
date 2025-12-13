@@ -16,14 +16,13 @@ found in the LICENSE file.
   <LinearLayout
       android:id="@+id/new_window"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
+      android:layout_height="@dimen/instance_switcher_dialog_list_item_height"
       android:orientation="horizontal"
       android:visibility="gone"
-      android:paddingVertical="5dp"
       android:background="@drawable/list_item_background_bottom">
     <ImageView
         android:id="@+id/favicon"
-        android:src="@drawable/ic_add"
+        android:src="@drawable/ic_add_24dp"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginStart="@dimen/instance_switcher_dialog_favicon_start_margin"
@@ -34,6 +33,7 @@ found in the LICENSE file.
         app:tint="@macro/default_icon_color_accent1"
         android:importantForAccessibility="no" />
     <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/new_window_text"
         android:text="@string/menu_new_window"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

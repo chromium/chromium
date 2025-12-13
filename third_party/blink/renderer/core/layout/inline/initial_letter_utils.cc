@@ -35,10 +35,7 @@ LayoutUnit ComputeInitialLetterBoxBlockOffset(
   // English font.
   const LayoutUnit line_height = paragraph_style.ComputedLineHeightAsFixed();
 
-  const int size =
-      std::ceil(RuntimeEnabledFeatures::InitialLetterRaiseBySpecifiedEnabled()
-                    ? initial_letter.Size()
-                    : block_size / line_height.ToFloat());
+  const int size = std::ceil(initial_letter.Size());
   const int sink = initial_letter.IsRaise() || initial_letter.IsIntegerSink()
                        ? initial_letter.Sink()
                        : size;

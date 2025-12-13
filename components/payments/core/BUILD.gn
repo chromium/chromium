@@ -115,7 +115,7 @@ static_library("currency_formatter") {
     "currency_formatter.h",
   ]
   deps = [ "//base" ]
-  public_deps = [ "//third_party/icu:icu" ]
+  public_deps = [ "//third_party/icu" ]
 }
 
 static_library("error_strings") {
@@ -159,7 +159,7 @@ static_library("test_support") {
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
-    "//components/leveldb_proto:leveldb_proto",
+    "//components/leveldb_proto",
     "//components/pref_registry",
     "//components/prefs",
     "//net:test_support",
@@ -213,7 +213,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
-    "//components/leveldb_proto:leveldb_proto",
+    "//components/leveldb_proto",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/strings:components_strings_grit",

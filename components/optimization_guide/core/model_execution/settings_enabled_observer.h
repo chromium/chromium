@@ -7,7 +7,6 @@
 
 #include "base/observer_list_types.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/proto/model_execution.pb.h"
 
 namespace optimization_guide {
 

@@ -8,9 +8,9 @@ Attached to the new page: {
             browserContextId : <string>
             canAccessOpener : false
             targetId : <string>
-            title : 
+            title :
             type : page
-            url : 
+            url :
         }
         waitingForDebugger : true
     }

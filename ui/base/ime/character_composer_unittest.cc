@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/ime/character_composer.h"
 
 #include <stdint.h>
@@ -14,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -389,11 +385,11 @@ TEST_F(CharacterComposerTest, MainTableIsCorrectlyOrdered) {
     subtrees.push_back(index);
     for (int t = 0; t < kTypes; ++t) {
       // Skip the internal table and verify the next index is within the data.
-      index += 1 + 2 * kCompositions.tree[index];
+      index += 1 + 2 * UNSAFE_TODO(kCompositions.tree[index]);
       EXPECT_GT(kCompositions.tree_entries, index);
       // Skip the leaf table and verify that the next index is not past the
       // end of the data.
-      index += 1 + 2 * kCompositions.tree[index];
+      index += 1 + 2 * UNSAFE_TODO(kCompositions.tree[index]);
       EXPECT_GE(kCompositions.tree_entries, index);
     }
   }
@@ -407,11 +403,11 @@ TEST_F(CharacterComposerTest, MainTableIsCorrectlyOrdered) {
     for (int t = 0; t < kTypes; ++t) {
       // Check the internal subtable.
       uint16_t previous_key = 0;
-      uint16_t size = kCompositions.tree[index++];
+      uint16_t size = UNSAFE_TODO(kCompositions.tree[index++]);
       for (uint16_t i = 0; i < size; ++i) {
         // Verify that the subtable is sorted.
-        uint16_t key = kCompositions.tree[index];
-        uint16_t value = kCompositions.tree[index + 1];
+        uint16_t key = UNSAFE_TODO(kCompositions.tree[index]);
+        uint16_t value = UNSAFE_TODO(kCompositions.tree[index + 1]);
         if (i)
           EXPECT_LT(previous_key, key) << index;
         previous_key = key;
@@ -421,10 +417,10 @@ TEST_F(CharacterComposerTest, MainTableIsCorrectlyOrdered) {
       }
       // Check the leaf subtable.
       previous_key = 0;
-      size = kCompositions.tree[index++];
+      size = UNSAFE_TODO(kCompositions.tree[index++]);
       for (uint16_t i = 0; i < size; ++i) {
         // Verify that the subtable is sorted.
-        uint16_t key = kCompositions.tree[index];
+        uint16_t key = UNSAFE_TODO(kCompositions.tree[index]);
         if (i)
           EXPECT_LT(previous_key, key) << index;
         previous_key = key;

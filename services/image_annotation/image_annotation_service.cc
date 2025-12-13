@@ -7,24 +7,22 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "url/gurl.h"
 
 namespace image_annotation {
 
-BASE_FEATURE(kImageAnnotationServiceExperimental,
-             "ImageAnnotationServiceExperimental",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+namespace {
 
-constexpr base::FeatureParam<std::string>
-    ImageAnnotationService::kPixelsServerUrl;
-constexpr base::FeatureParam<std::string>
-    ImageAnnotationService::kLangsServerUrl;
-constexpr base::FeatureParam<std::string> ImageAnnotationService::kApiKey;
-constexpr base::FeatureParam<int> ImageAnnotationService::kThrottleMs;
-constexpr base::FeatureParam<int> ImageAnnotationService::kBatchSize;
-constexpr base::FeatureParam<double> ImageAnnotationService::kMinOcrConfidence;
+constexpr char kPixelsServerUrl[] =
+    "https://ckintersect-pa.googleapis.com/v1/intersect/pixels";
+constexpr char kLangsServerUrl[] =
+    "https://ckintersect-pa.googleapis.com/v1/intersect/langs";
+constexpr int kThrottleMs = 300;
+constexpr int kBatchSize = 10;
+constexpr double kMinOcrConfidence = 0.7;
+
+}  // namespace
 
 ImageAnnotationService::ImageAnnotationService(
     mojo::PendingReceiver<mojom::ImageAnnotationService> receiver,
@@ -33,12 +31,12 @@ ImageAnnotationService::ImageAnnotationService(
     std::unique_ptr<manta::AnchovyProvider> anchovy_provider,
     std::unique_ptr<Annotator::Client> annotator_client)
     : receiver_(this, std::move(receiver)),
-      annotator_(GURL(kPixelsServerUrl.Get()),
-                 GURL(kLangsServerUrl.Get()),
-                 kApiKey.Get().empty() ? std::move(api_key) : kApiKey.Get(),
-                 base::Milliseconds(kThrottleMs.Get()),
-                 kBatchSize.Get(),
-                 kMinOcrConfidence.Get(),
+      annotator_(GURL(kPixelsServerUrl),
+                 GURL(kLangsServerUrl),
+                 std::move(api_key),
+                 base::Milliseconds(kThrottleMs),
+                 kBatchSize,
+                 kMinOcrConfidence,
                  shared_url_loader_factory,
                  std::move(anchovy_provider),
                  std::move(annotator_client)) {}

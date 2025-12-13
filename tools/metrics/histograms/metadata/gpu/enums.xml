@@ -1033,6 +1033,14 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="GPU process crash limit reached"/>
 </enum>
 
+<enum name="GpuPersistentCacheLoadResult">
+  <summary>The cache hit/miss results of GpuPersistentCache.</summary>
+  <int value="0" label="Miss"/>
+  <int value="1" label="Miss (disk cache not available)"/>
+  <int value="10" label="Hit (memory)"/>
+  <int value="11" label="Hit (disk)"/>
+</enum>
+
 <enum name="GPUProcessExitCode">
   <summary>
     The exit code returned by the GPU process when it terminated. These match
@@ -1168,6 +1176,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <!-- LINT.ThenChange(//gpu/config/gpu_info.h:IntelGpuSeriesType) -->
+
+<enum name="IntelNpuDeviceId">
+  <int value="25662" label="0x643e, Intel Lunarlake"/>
+  <int value="32029" label="0x7d1d, Intel Meteorlake"/>
+  <int value="44317" label="0xad1d, Intel Arrowlake"/>
+  <int value="45118" label="0xb03e, Intel Pantherlake"/>
+</enum>
 
 <enum name="MaximumGLESVersion">
   <summary>The maximum GLES version supported.</summary>
@@ -1437,6 +1452,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="Non-Occluding Damage Only"/>
   <int value="2" label="Occluding Damage Only (Deprecated)"/>
   <int value="3" label="Occluding and Non-Occluding Damages"/>
+</enum>
+
+<enum name="WebGPURequestAdapterStatus">
+  <int value="1" label="Success"/>
+  <int value="2" label="CallbackCancelled"/>
+  <int value="3" label="Unavailable"/>
+  <int value="4" label="Error"/>
 </enum>
 
 <enum name="WebGPUSupport">

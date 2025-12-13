@@ -18,10 +18,8 @@ class Browser;
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
 - (NSDirectionalEdgeInsets)directionalEdgeInsetsForLayoutRegion:
     (UIViewLayoutRegion*)layoutRegion API_AVAILABLE(ios(26.0));
-#endif
 
 @end
 

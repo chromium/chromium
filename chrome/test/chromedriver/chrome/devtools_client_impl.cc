@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
 
 #include <cstring>
@@ -249,7 +244,7 @@ bool ParseCdpTunnelMessage(base::Value::Dict payload,
     if (cdp_result) {
       command_response.result = std::move(*cdp_result);
     } else if (cdp_error) {
-      base::JSONWriter::Write(*cdp_error, &command_response.error);
+      command_response.error = base::WriteJson(*cdp_error).value_or("");
     } else {
       command_response.result = base::Value::Dict();
     }
@@ -1452,7 +1447,7 @@ bool ParseInspectorMessage(const std::string& message,
       command_response.result = std::move(*unscoped_result);
     } else if (base::Value::Dict* unscoped_error =
                    message_dict->FindDict("error")) {
-      base::JSONWriter::Write(*unscoped_error, &command_response.error);
+      command_response.error = base::WriteJson(*unscoped_error).value_or("");
     } else {
       command_response.result = base::Value::Dict();
     }
@@ -1462,7 +1457,8 @@ bool ParseInspectorMessage(const std::string& message,
 }
 
 Status ParseInspectorError(const std::string& error_json) {
-  std::optional<base::Value> error = base::JSONReader::Read(error_json);
+  std::optional<base::Value> error =
+      base::JSONReader::Read(error_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   base::Value::Dict* error_dict = error ? error->GetIfDict() : nullptr;
   if (!error_dict)
     return Status(kUnknownError, "inspector error with no error message");

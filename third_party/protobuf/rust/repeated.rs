@@ -159,7 +159,7 @@ where
     ///
     /// Returns `None` if `index >= len`.
     #[inline]
-    pub fn get(&self, index: usize) -> Option<View<T>> {
+    pub fn get(&self, index: usize) -> Option<View<'_, T>> {
         self.as_view().get(index)
     }
 
@@ -198,7 +198,7 @@ where
     /// # Safety
     /// Undefined behavior if `index >= len`.
     #[inline]
-    pub unsafe fn get_unchecked(&self, index: usize) -> View<T> {
+    pub unsafe fn get_unchecked(&self, index: usize) -> View<'_, T> {
         // SAFETY: in-bounds as promised
         unsafe { self.as_view().get_unchecked(index) }
     }
@@ -232,7 +232,7 @@ where
     }
 
     /// Iterates over the values in the repeated field.
-    pub fn iter(&self) -> RepeatedIter<T> {
+    pub fn iter(&self) -> RepeatedIter<'_, T> {
         self.as_view().into_iter()
     }
 
@@ -251,7 +251,7 @@ impl<T> Repeated<T>
 where
     T: ProxiedInRepeated,
 {
-    pub fn as_view(&self) -> View<Repeated<T>> {
+    pub fn as_view(&self) -> View<'_, Repeated<T>> {
         RepeatedView { raw: self.inner.raw(), _phantom: PhantomData }
     }
 
@@ -356,6 +356,7 @@ pub unsafe trait ProxiedInRepeated: Proxied + SealedInternal {
 }
 
 /// An iterator over the values inside of a [`View<Repeated<T>>`](RepeatedView).
+#[derive(Clone)]
 pub struct RepeatedIter<'msg, T> {
     view: RepeatedView<'msg, T>,
     current_index: usize,
@@ -688,8 +689,14 @@ mod tests {
     }
 
     #[gtest]
-    fn test_repeated_iter_into_proxied() {
+    fn test_repeated_iter() {
         let r: Repeated<i32> = [0, 1, 2, 3].into_iter().into_proxied(Private);
         assert_that!(r.as_view(), elements_are![eq(0), eq(1), eq(2), eq(3)]);
+
+        let mut iter = r.as_view().into_iter();
+        assert_that!(iter.next(), eq(Some(0)));
+        let mut clone = iter.clone();
+        assert_that!(clone.next(), eq(Some(1)));
+        assert_that!(iter.next(), eq(Some(1)));
     }
 }

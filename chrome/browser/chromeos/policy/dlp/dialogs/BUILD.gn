@@ -26,6 +26,7 @@ static_library("dialogs") {
     "//ui/base/metadata",
     "//ui/base/mojom",
     "//ui/chromeos/strings",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/views",

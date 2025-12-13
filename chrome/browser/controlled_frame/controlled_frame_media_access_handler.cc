@@ -137,7 +137,7 @@ void ControlledFrameMediaAccessHandler::HandleRequest(
           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
     std::move(callback).Run(
         blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::PERMISSION_DISMISSED,
+        blink::mojom::MediaStreamRequestResult::INVALID_DEVICE_TYPE_REQUEST,
         std::unique_ptr<content::MediaStreamUI>());
     return;
   }
@@ -176,7 +176,9 @@ void ControlledFrameMediaAccessHandler::HandleRequest(
   content::GlobalRenderFrameHostId embedder_rfh_id =
       web_view->embedder_rfh()->GetGlobalId();
   content::MediaStreamRequest embedder_request = request;
-  embedder_request.render_process_id = embedder_rfh_id.child_id;
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+  embedder_request.render_process_id =
+      embedder_rfh_id.child_id.GetUnsafeValue();
   embedder_request.render_frame_id = embedder_rfh_id.frame_routing_id;
   embedder_request.url_origin = embedder_origin;
   embedder_request.security_origin = embedder_request.url_origin.GetURL();

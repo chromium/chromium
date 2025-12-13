@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<title>Script Tools: provideContext duplicate tool names</title>
+<link rel="author" href="mailto:brwalder@microsoft.com">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+promise_test(async () => {
+  async function echo1(obj) {
+    return "echo1: " + obj.text;
+  }
+
+  async function echo2(obj) {
+    return "echo2: " + obj.text;
+  }
+
+  const modelContext = navigator.modelContext;
+
+  // Register a tool first to ensure previous state is preserved
+  modelContext.registerTool({
+    execute: async () => "existing",
+    name: "existing",
+    description: "Existing tool"
+  });
+
+  assert_throws_dom(
+    'InvalidStateError',
+    () => {
+      modelContext.provideContext({
+        tools: [
+          {
+            execute: echo1,
+            name: "duplicate",
+            description: "First duplicate"
+          },
+          {
+            execute: echo2,
+            name: "duplicate", // Same name - should throw
+            description: "Second duplicate"
+          }
+        ]
+      });
+    },
+    "provideContext should throw on duplicate tool names"
+  );
+
+  // Verify existing tool is still registered after failed provideContext
+  // by testing that unregisterTool doesn't throw.
+  modelContext.unregisterTool("existing");
+}, "provideContext throws on duplicate tool names and preserves existing tools");
+</script>

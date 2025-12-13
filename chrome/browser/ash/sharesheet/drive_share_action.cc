@@ -42,10 +42,10 @@ void DriveShareAction::LaunchAction(
     apps::IntentPtr intent) {
   controller_ = controller;
   DCHECK(intent->drive_share_url.has_value());
-  if (!ash::NewWindowDelegate::GetPrimary()) {
+  if (!ash::NewWindowDelegate::GetInstance()) {
     return;
   }
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       intent->drive_share_url.value(),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);

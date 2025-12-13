@@ -153,19 +153,18 @@ struct OptChangeRequestDetails {
 
   std::string app_locale;
 
-  // TODO(crbug.com/428228981): Update to use enum class, kCamelCase, and add
-  // kMaxValue.
   // The reason for making the request.
-  enum Reason {
+  enum class Reason {
     // Unknown default.
-    UNKNOWN_REASON = 0,
+    kUnknownReason = 0,
     // The user wants to enable FIDO authentication for card unmasking.
-    ENABLE_FIDO_AUTH = 1,
+    kEnableFidoAuth = 1,
     // The user wants to disable FIDO authentication for card unmasking.
-    DISABLE_FIDO_AUTH = 2,
+    kDisableFidoAuth = 2,
     // The user is authorizing a new card for future FIDO authentication
     // unmasking.
-    ADD_CARD_FOR_FIDO_AUTH = 3,
+    kAddCardForFidoAuth = 3,
+    kMaxValue = kAddCardForFidoAuth,
   };
 
   // Reason for the request.
@@ -302,24 +301,23 @@ struct GetDetailsForEnrollmentResponseDetails {
   LegalMessageLines issuer_legal_message;
 };
 
-// TODO(crbug.com/428228981): Update to use enum class, kCamelCase, and add
-// kMaxValue.
 // An enum set in the GetCardUploadDetailsRequest indicating the source of the
 // request when uploading a card to Google Payments. It should stay consistent
 // with the same enum in Google Payments server code.
-enum UploadCardSource {
+enum class UploadCardSource {
   // Source unknown.
-  UNKNOWN_UPLOAD_CARD_SOURCE,
+  kUnknown,
   // Single card is being uploaded from the normal credit card offer-to-save
   // prompt during a checkout flow.
-  UPSTREAM_CHECKOUT_FLOW,
+  kUpstreamCheckoutFlow,
   // Single card is being uploaded from chrome://settings/payments.
-  UPSTREAM_SETTINGS_PAGE,
+  kUpstreamSettingsPage,
   // Single card is being uploaded after being scanned by OCR.
-  UPSTREAM_CARD_OCR,
+  kUpstreamCardOcr,
   // Single card is being uploaded from the Save and Fill dialog during a
   // non-post-checkout flow.
-  UPSTREAM_SAVE_AND_FILL,
+  kUpstreamSaveAndFill,
+  kMaxValue = kUpstreamSaveAndFill,
 };
 
 // A collection of the information required to make a credit card upload
@@ -338,8 +336,7 @@ struct UploadCardRequestDetails {
   std::string risk_data;
   std::string app_locale;
   std::vector<ClientBehaviorConstants> client_behavior_signals;
-  UploadCardSource upload_card_source =
-      UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE;
+  UploadCardSource upload_card_source = UploadCardSource::kUnknown;
 };
 
 // A collection of information required to make an IBAN upload request.
@@ -413,7 +410,10 @@ struct GetDetailsForCreateBnplPaymentInstrumentRequestDetails {
   // `app_locale` is the Chrome locale.
   std::string app_locale;
   // The billing customer number for the account this request is sent to.
-  int64_t billing_customer_number;
+  int64_t billing_customer_number = 0;
+  // A vector of signals used to share client behavior with the Payments
+  // server.
+  std::vector<ClientBehaviorConstants> client_behavior_signals;
   // The ID of the BNPL partner to be linked. i.e. Affirm
   std::string issuer_id;
 };
@@ -435,7 +435,7 @@ struct CreateBnplPaymentInstrumentRequestDetails {
   // `app_locale` is the Chrome locale.
   std::string app_locale;
   // The billing customer number for the account this request is sent to.
-  int64_t billing_customer_number;
+  int64_t billing_customer_number = 0;
   // The ID of the BNPL partner to be linked. i.e. Affirm
   std::string issuer_id;
   // An opaque token used to chain consecutive payments requests together.
@@ -458,7 +458,7 @@ struct GetBnplPaymentInstrumentForFetchingVcnRequestDetails {
   ~GetBnplPaymentInstrumentForFetchingVcnRequestDetails();
 
   // The number for the Google Payments account this request is sent to.
-  int64_t billing_customer_number;
+  int64_t billing_customer_number = 0;
   // The instrument ID is used by the server to identify a specific BNPL issuer.
   std::string instrument_id;
   // The fingerprint data for the user and the device.
@@ -506,7 +506,7 @@ struct GetBnplPaymentInstrumentForFetchingUrlRequestDetails {
   ~GetBnplPaymentInstrumentForFetchingUrlRequestDetails();
 
   // The number for the Google Payments account this request is sent to.
-  int64_t billing_customer_number;
+  int64_t billing_customer_number = 0;
   // The instrument ID is used by the server to identify a specific BNPL issuer.
   std::string_view instrument_id;
   // The fingerprint data for the user and the device.
@@ -514,7 +514,7 @@ struct GetBnplPaymentInstrumentForFetchingUrlRequestDetails {
   // The merchant domain (including the scheme).
   GURL merchant_domain;
   // The total purchase amount (in micros) from the merchant checkout page.
-  uint64_t total_amount;
+  int64_t total_amount = 0;
   // Currency of the amount represented by a three-letter currency code.
   std::string_view currency;
 };
@@ -569,11 +569,17 @@ struct GetDetailsForUpdateBnplPaymentInstrumentRequestDetails {
   // `app_locale` is the Chrome locale.
   std::string app_locale;
   // The billing customer number for the account this request is sent to.
-  int64_t billing_customer_number;
+  int64_t billing_customer_number = 0;
+  // A vector of signals used to share client behavior with the Payments
+  // server.
+  std::vector<ClientBehaviorConstants> client_behavior_signals;
   // The platform identifier for the instrument being updated.
-  int64_t instrument_id;
+  int64_t instrument_id = 0;
   // The type of the GetDetailsForUpdateBnplPaymentInstrument request.
-  GetDetailsForUpdateBnplPaymentInstrumentType type;
+  GetDetailsForUpdateBnplPaymentInstrumentType type =
+      GetDetailsForUpdateBnplPaymentInstrumentType::kUnknown;
+  // The BNPL issuer ID this request is being sent for.
+  std::string issuer_id;
 };
 
 // A collection of information required to create an update BNPL payment
@@ -603,17 +609,18 @@ struct UpdateBnplPaymentInstrumentRequestDetails {
   // `app_locale` is the Chrome locale.
   std::string app_locale;
   // The billing customer number for the account this request is sent to.
-  int64_t billing_customer_number;
+  int64_t billing_customer_number = 0;
   // The ID of the BNPL partner to be linked. i.e. Affirm
   std::string issuer_id;
   // The platform identifier for the instrument being updated.
-  int64_t instrument_id;
+  int64_t instrument_id = 0;
   // An opaque token used to chain consecutive payments requests together.
   std::string context_token;
   // Client encoded risk data.
   std::string risk_data;
   // The type of the UpdateBnplPaymentInstrument request.
-  UpdateBnplPaymentInstrumentType type;
+  UpdateBnplPaymentInstrumentType type =
+      UpdateBnplPaymentInstrumentType::kUnknown;
 };
 
 }  // namespace autofill::payments

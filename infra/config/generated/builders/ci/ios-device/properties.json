@@ -13,7 +13,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-mac-archive",
               "builder_group": "chromium.mac",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -47,7 +46,8 @@
         }
       ],
       "retry_failed_shards": true,
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/ios-device/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/ios-device/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {
@@ -79,5 +79,5 @@
     "chromium",
     "ios"
   ],
-  "xcode_build_version": "16c5032a"
+  "xcode_build_version": "17a400"
 }

@@ -1,0 +1,40 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/chrome_build.gni")
+import("//ios/public/provider/chrome/browser/build_config.gni")
+import("//testing/test.gni")
+
+group("all_tests") {
+  testonly = true
+  deps = [ ":ios_credential_provider_extension_unittests" ]
+}
+
+source_set("run_all_unittests") {
+  testonly = true
+  sources = [ "run_all_unittests.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//mojo/core/embedder",
+  ]
+}
+
+test("ios_credential_provider_extension_unittests") {
+  deps = [ ":run_all_unittests" ]
+  if (ios_enable_credential_provider_extension) {
+    deps += [
+      "//ios/chrome/credential_provider_extension:unit_tests",
+      "//ios/chrome/credential_provider_extension/ui:unit_tests",
+      ios_account_verification_provider_target,
+      ios_font_provider_target,
+    ]
+  }
+
+  bundle_deps = ios_providers_resources_targets
+  assert_no_deps = [
+    "//ios/chrome/app/*",
+    "//ios/chrome/browser/*",
+  ]
+}

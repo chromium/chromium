@@ -257,6 +257,11 @@ struct LegacyTechEventCodeLocation {
   uint64 column;
 };
 
+// The maximum allowed size of a crash report storage shared memory buffer. This
+// is used when the renderer requests a shared memory buffer for crash report
+// data; see `CreateCrashReportStorage()`.
+const uint64 kMaxCrashReportStorageSize = 5242880; // 5 * 1024 * 1024.
+
 // Implemented in Browser, this interface defines frame-specific methods that
 // will be invoked from the render process (e.g. content::RenderFrameHostImpl).
 //
@@ -627,8 +632,8 @@ interface LocalFrameHost {
   // |untrusted_stack_trace| should only be printed or sent to other services;
   // it's untrusted and should not be parsed to get a structured stack trace.
   // The stack trace is only present if
-  // FrameNavigationControl.SetWantErrorMessageStackTrace has been called for
-  // this frame and the log_level is kError.
+  // content.mojom.Frame.SetWantErrorMessageStackTrace has been called for this
+  // frame and the log_level is kError.
   DidAddMessageToConsole(
       ConsoleMessageLevel log_level,
       mojo_base.mojom.BigString16 msg,
@@ -815,11 +820,30 @@ interface LocalFrameHost {
   // Sets the StorageAccessApiStatus for the given frame.
   SetStorageAccessApiStatus(network.mojom.StorageAccessApiStatus status);
 
+  // This IPC lets the browser initialize memory reserved for crash reporting
+  // API of size `length`. Note that the maximum allowed size is
+  // `kMaxCrashReportStorageSize`. In the future, if we decide that shared
+  // memory is to be the backing storage mechanism for this feature, then this
+  // method's async callback will contain an `UnsafeSharedMemoryRegion` that the
+  // renderer can use to write crash report data that the browser will read,
+  // instead of using the two synchronous IPCs below.
+  //
+  // Note that this API must be called, and its callback run in the renderer,
+  // before the below set and remove IPCs are called. A renderer process that
+  // does not obey this requirement will be terminated.
+  InitializeCrashReportStorage(uint64 length) => ();
+
   // Called by `blink::CrashReportStorage`.
   // TODO(https://crbug.com/400432195): Consider removing this IPC, and
   // refactoring the implementation to use a shared memory region with the
   // browser process, and some abstraction that serializes the internal map to
   // bytes in the shared memory region.
+  //
+  // This and the following IPC needs to be synchronous so that the browser
+  // process can obtain the relevant crash data before the JavaScript that
+  // triggered this IPC moves to the next line of code, which might crash the
+  // renderer process. See
+  // https://github.com/WICG/crash-reporting/blob/gh-pages/crashReport-explainer.md.
   [Sync]
   SetCrashReportStorageKey(string key, string value) => ();
 
@@ -869,11 +893,23 @@ interface LocalFrame {
       => (mojo_base.mojom.String16 content, uint32 start_offset,
           uint32 end_offset);
 
-  // Creates an intervention report in the frame with contents |id| and
-  // |message|, returns once the report has been queued. |id| identifies the
-  // intervention that occurred. |message| is a human-readable string that
-  // can provide additional context to the cause of the intervention.
-  SendInterventionReport(string id, string message);
+  // Queues an intervention report for this frame or a specific child frame.
+  //
+  // This report is always sent via the context of *this* frame.
+  //
+  // Args:
+  //   `id`: Identifies the intervention type (e.g., "HeavyAdIntervention").
+  //   `message`: A human-readable string providing additional context about
+  //       why the intervention occurred.
+  //   `child_frame_token`:
+  //       - If null, the intervention report pertains directly to *this* frame.
+  //       - If provided, the intervention report pertains to the specified
+  //         child frame (which could be a LocalFrame or RemoteFrame proxy).
+  //         `message` may be augmented with additional info about the child
+  //         frame. The report is still sent from this frame, which contains
+  //         the child frame's owner element.
+  SendInterventionReport(string id, string message,
+                         blink.mojom.FrameToken? child_frame_token);
 
   // Updates this frame's FrameOwner properties, such as scrolling, margin,
   // or allowfullscreen.  This is used when this frame's parent is in
@@ -890,10 +926,6 @@ interface LocalFrame {
   // Notifies the |LocalFrame| about the Virtual keyboard rectangle that is
   // occluding the web content.
   NotifyVirtualKeyboardOverlayRect(gfx.mojom.Rect keyboard_rect);
-
-  // Notifies the |LocalFrame| about the available space left uncovered by a
-  // context menu for `interestfor` invokers.
-  NotifyContextMenuInsetsObservers(gfx.mojom.Rect safe_area);
 
   // This call will "show interest" in the Element with the provided DOMNodeID,
   // which is presumed to have an `interestfor` attribute.
@@ -1024,17 +1056,30 @@ interface LocalFrame {
   // e.g. if the frame gets set a "display: none" or "visibility: hidden" style.
   OnFrameVisibilityChanged(blink.mojom.FrameVisibility visibility);
 
-  // Posts a message from a frame in another process to the current renderer.
+  // Posts a message from a frame in another process to the current renderer:
+  //
   // |source_frame_token| is the frame token of the RemoteFrame in the current
   // renderer representing the frame (from a different renderer) where this
-  // message is coming from. |source_origin| is the origin of the source frame
-  // when the message was sent, and |target_origin| specifies what the origin of
-  // the target frame must be for the message to be dispatched. An empty string
-  // allows the message to be dispatched to any origin. |message| is the encoded
-  // data, and any extra properties such as transferred ports or blobs.
+  // message is coming from.
+  //
+  // |source_origin| is the origin of the source from which the message was
+  // sent. This will usually be the origin of the execution context that posted
+  // a message but can be null in a few cases. Most notably, messages posted
+  // via a `MessagePort` (which includes those posted from Dedicated Workers)
+  // do not set an origin. Certain embedders, like WebView, also provide APIs
+  // which result in messages being posted without an associated origin.
+  //
+  // |target_origin| specifies the origin of the message's intended target. If
+  // the intended origin does not match the destination frame's origin, the
+  // message will be discarded. If |target_origin| is null, then the caller
+  // has specified a wildcard, allowing the message to be delivered regardless
+  // of the destination frame's origin.
+  //
+  // |message| is the encoded data, and any extra properties such as
+  // transferred ports or blobs.
   PostMessageEvent(blink.mojom.RemoteFrameToken? source_frame_token,
-                   mojo_base.mojom.String16 source_origin,
-                   mojo_base.mojom.String16 target_origin,
+                   url.mojom.Origin? source_origin,
+                   url.mojom.Origin? target_origin,
                    blink.mojom.TransferableMessage message);
 
   // Request for the renderer to execute a given JavaScript method on a given
@@ -1242,6 +1287,10 @@ interface LocalFrame {
 
   // Retrieves the scroll position of the frame.
   GetScrollPosition() => (gfx.mojom.Point scroll_position);
+
+  // Request to perform spell check for full text content.
+  [EnableIf=is_android]
+  PerformSpellCheck();
 };
 
 // Implemented in Blink, this interface defines main-frame-specific methods that
@@ -1318,7 +1367,7 @@ interface LocalMainFrame {
 
   // Replaces the active document with an empty document to free resources,
   // e.g. for supporting tab discard.
-  Discard();
+  Discard() => ();
 
   // Updates the frame's finalized locally differentially private
   // navigation confidence.
@@ -1387,18 +1436,22 @@ interface LocalMainFrameHost {
 
   // Request browser to maximize window. Link to I2P:
   // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ
+  [EnableIfNot=is_android|is_ios]
   Maximize();
 
   // Request browser to minimize window. Link to I2P:
   // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ
+  [EnableIfNot=is_android|is_ios]
   Minimize();
 
   // Request browser to restore window. Link to I2P:
   // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ
+  [EnableIfNot=is_android|is_ios]
   Restore();
 
   // Set the browser window to resizable or not. Link to I2P:
   // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ
+  [EnableIfNot=is_android|is_ios]
   SetResizable(bool resizable);
 
   // Notify the browser that the draggable regions defined by the app-region
@@ -1406,5 +1459,5 @@ interface LocalMainFrameHost {
   DraggableRegionsChanged(array<DraggableRegion> regions);
 
   // Called when the main frame did a first contentful paint.
-  OnFirstContentfulPaint();
+  OnFirstContentfulPaint(mojo_base.mojom.TimeDelta duration);
 };

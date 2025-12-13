@@ -6,7 +6,7 @@ import("//build/config/chrome_build.gni")
 import("//build/config/compiler/compiler.gni")
 
 declare_args() {
-  if (is_chrome_branded && is_chromeos) {
+  if (is_chrome_branded && (is_chromeos || is_linux || is_win)) {
     build_with_internal_shape_detection = true
   } else {
     build_with_internal_shape_detection = false

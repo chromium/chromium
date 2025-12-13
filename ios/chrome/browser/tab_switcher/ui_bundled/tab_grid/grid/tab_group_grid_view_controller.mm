@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/tab_group_activity_summary_cell.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/tab_group_header.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/legacy_grid_transition_layout.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
+#import "ui/base/device_form_factor.h"
 
 @interface TabGroupGridViewController () <TabGroupActivitySummaryCellDelegate>
 @end
@@ -75,17 +77,15 @@
 
 #pragma mark - Parent's functions
 
-- (LegacyGridTransitionLayout*)transitionLayout {
-  LegacyGridTransitionLayout* transitionLayout = [super transitionLayout];
-  if (IsContainedTabGroupEnabled()) {
-    // When the user is entering the TabGrid from a Tab in a group, the
-    // non-selected tabs should not animate otherwise they will be
-    // displayed outside of the container.
-    transitionLayout = [LegacyGridTransitionLayout
-        layoutWithInactiveItems:@[]
-                     activeItem:transitionLayout.activeItem
-                  selectionItem:transitionLayout.selectionItem];
-  }
+- (LegacyGridTransitionLayout*)legacyTransitionLayout {
+  LegacyGridTransitionLayout* transitionLayout = [super legacyTransitionLayout];
+  // When the user is entering the TabGrid from a Tab in a group, the
+  // non-selected tabs should not animate otherwise they will be
+  // displayed outside of the container.
+  transitionLayout = [LegacyGridTransitionLayout
+      layoutWithInactiveItems:@[]
+                   activeItem:transitionLayout.activeItem
+                selectionItem:transitionLayout.selectionItem];
   return transitionLayout;
 }
 
@@ -145,6 +145,16 @@
   if (self.activitySummaryCellText != nil) {
     [self addActivitySummaryCellInSnapshot:snapshot];
   }
+}
+
+- (EmptyThumbnailLayoutType)layoutTypeForContainerSize:(CGSize)containerSize
+                                            isGridCell:(BOOL)isGridCell {
+  const CGFloat aspectRatio = TabGridItemAspectRatio(containerSize);
+  if (aspectRatio < 1 &&
+      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    return EmptyThumbnailLayoutTypeLandscapeLeading;
+  }
+  return EmptyThumbnailLayoutTypeCenteredPortrait;
 }
 
 #pragma mark - Private

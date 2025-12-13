@@ -18,7 +18,6 @@
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace ash {

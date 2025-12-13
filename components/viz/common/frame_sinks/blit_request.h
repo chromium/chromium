@@ -12,12 +12,14 @@
 
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/viz_common_export.h"
-#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace gpu {
+class ClientSharedImage;
+}
 namespace viz {
 
 // `BlendBitmap` can be added to `BlitRequest`, and signifies that the caller
@@ -69,6 +71,7 @@ enum class LetterboxingBehavior {
 // in textures that they own.
 class VIZ_COMMON_EXPORT BlitRequest {
  public:
+  BlitRequest();
   // `shared_image` must not be null
   explicit BlitRequest(const gfx::Point& destination_region_offset,
                        LetterboxingBehavior letterboxing_behavior,

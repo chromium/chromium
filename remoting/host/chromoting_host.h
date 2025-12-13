@@ -93,6 +93,7 @@ class ChromotingHost : public ClientSession::EventHandler,
   ChromotingHost(
       DesktopEnvironmentFactory* desktop_environment_factory,
       std::unique_ptr<protocol::SessionManager> session_manager,
+      std::unique_ptr<protocol::SessionManager> secondary_session_manager,
       scoped_refptr<protocol::TransportContext> transport_context,
       scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner,
@@ -194,6 +195,7 @@ class ChromotingHost : public ClientSession::EventHandler,
   // Parameters specified when the host was created.
   raw_ptr<DesktopEnvironmentFactory> desktop_environment_factory_;
   std::unique_ptr<protocol::SessionManager> session_manager_;
+  std::unique_ptr<protocol::SessionManager> secondary_session_manager_;
   scoped_refptr<protocol::TransportContext> transport_context_;
   scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner_;

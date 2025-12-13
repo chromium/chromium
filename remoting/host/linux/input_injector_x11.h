@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

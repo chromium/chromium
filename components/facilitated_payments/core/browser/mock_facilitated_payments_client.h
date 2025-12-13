@@ -15,17 +15,19 @@
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
+#include "components/facilitated_payments/core/browser/payment_link_manager.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
 class PaymentsDataManager;
-class StrikeDatabase;
 }  // namespace autofill
 
-namespace payments::facilitated {
+namespace strike_database {
+class StrikeDatabase;
+}  // namespace strike_database
 
-class FacilitatedPaymentsNetworkInterface;
+namespace payments::facilitated {
 
 // A mock for the facilitated payment "client" interface.
 class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
@@ -49,10 +51,6 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               GetFacilitatedPaymentsNetworkInterface,
               (),
               (override));
-  MOCK_METHOD(MultipleRequestFacilitatedPaymentsNetworkInterface*,
-              GetMultipleRequestFacilitatedPaymentsNetworkInterface,
-              (),
-              (override));
   MOCK_METHOD(std::optional<CoreAccountInfo>,
               GetCoreAccountInfo,
               (),
@@ -74,12 +72,20 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               ShowPaymentLinkPrompt,
               (base::span<const autofill::Ewallet> ewallet_suggestions,
                std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
-               base::OnceCallback<void(int64_t)>),
+               base::OnceCallback<void(SelectedFopData)>),
               (override));
   MOCK_METHOD(void, ShowProgressScreen, (), (override));
   MOCK_METHOD(void, ShowErrorScreen, (), (override));
   MOCK_METHOD(void, DismissPrompt, (), (override));
-  MOCK_METHOD(autofill::StrikeDatabase*, GetStrikeDatabase, (), (override));
+  MOCK_METHOD(void,
+              SetUiEventListener,
+              (base::RepeatingCallback<void(payments::facilitated::UiEvent)>
+                   ui_event_listener),
+              (override));
+  MOCK_METHOD(strike_database::StrikeDatabase*,
+              GetStrikeDatabase,
+              (),
+              (override));
   MOCK_METHOD(void,
               InitPixAccountLinkingFlow,
               (const url::Origin& pix_payment_page_origin),
@@ -90,6 +96,7 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
                base::OnceCallback<void()> on_declined),
               (override));
   MOCK_METHOD(bool, HasScreenlockOrBiometricSetup, (), (override));
+  MOCK_METHOD(bool, IsInChromeCustomTabMode, (), (override));
 };
 
 }  // namespace payments::facilitated

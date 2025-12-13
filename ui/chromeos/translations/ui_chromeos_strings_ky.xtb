@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Интернетке түз туташуу</translation>
 <translation id="1272293450992660632">PIN коддор дал келген жок.</translation>
+<translation id="1279040297980392566">Скандалып жатат. Кийинчерээк кайталап көрүңүз</translation>
 <translation id="1280820357415527819">Мобилдик тармактар изделүүдө</translation>
 <translation id="1293556467332435079">Файлдар</translation>
 <translation id="1297922636971898492">Google Drive учурда жеткиликтүү эмес. Google Drive кайтып келгенден кийин жүктөп берүү аракети автоматтык түрдө кайра аткарылат.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">1 файл тандалды</translation>
 <translation id="3817579325494460411">Көрсөтүлгөн эмес</translation>
 <translation id="3819448694985509187">PIN код туура эмес. 1 жолу аракет кыла аласыз.</translation>
-<translation id="3822559385185038546">Бул проксини администраторуңуз күчүнө киргизген</translation>
 <translation id="3830674330436234648">Ойното турган нерсе жок</translation>
 <translation id="383652340667548381">Сербче</translation>
 <translation id="3839045880592694915">Байланыш оператору модемге тууташууга уруксат бербейт. Көбүрөөк маалымат алуу үчүн байланыш операторуңузга кайрылыңыз.</translation>
@@ -535,7 +535,7 @@
 <translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Азырынча түзмөгүңүздү суурубай туруңуз!<ph name="END_BOLD" />
    <ph name="LINE_BREAKS" />
    Түзмөгүңүз колдонулуп жатканда суурулса, дайындар жоголуп кетиши мүмкүн. Иш-аракет аяктагыча күтүп, андан соң түзмөктү Файлдар колдонмосу аркылуу чыгарып салыңыз.</translation>
-<translation id="5163869187418756376">Бөлүшүлбөй калды. Туташууңузду текшерип туруп, бир аздан кийин кайталап көрүңүз.</translation>
+<translation id="5163869187418756376">Бөлүшүлбөй калды. Байланышыңызды текшерип туруп, бир аздан кийин кайталап көрүңүз.</translation>
 <translation id="516592729076796170">АКШ Программачы Dvorak</translation>
 <translation id="5177526793333269655">Бармакбасым көрүнүшү</translation>
 <translation id="5181896909298187506">Жаңы файлдар жок</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Дагы параметрлер</translation>
 <translation id="5602622065581044566">Болгарча (фонетикалык баскычтоп)</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
+<translation id="560739212255190568">Администраторуңуз төмөнкү проксини колдонуудан тышкары, проксини өзгөртүү эрежелерин койду</translation>
 <translation id="5618330573454123917">Бул файл Macintosh программасын колдонгон компьютер үчүн түзүлгөн. Ал ChromeOS негизинде иштеген түзмөгүңүзгө дал келбейт. Файлдарды ChromeOS'то ачуу жөнүндө <ph name="BEGIN_LINK_HELP" />кеңири маалымат<ph name="END_LINK_HELP" /> алыңыз.</translation>
 <translation id="5625294776298156701">Тамилче (Tamil99 баскычтобу)</translation>
 <translation id="5633226425545095130">Эгер бул нерсени жылдырсаңыз, ал "<ph name="DESTINATION_NAME" />" бөлүшүлгөн папкасын көрө алган адамдардын баары менен бөлүшүлөт.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Чоо-жайы</translation>
 <translation id="8545476925160229291">Англисче (АКШ)</translation>
 <translation id="854655314928502177">Веб проксини авто табуу URL'и:</translation>
+<translation id="8547747809824590510">Администраторуңуз проксини өзгөртүү эрежелерин койду</translation>
 <translation id="8549186985808798022">Италиянча</translation>
 <translation id="8551494947769799688">Латвияча</translation>
 <translation id="8560515948038859357">Кантончо</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" деген файл мурунтан эле бар. Файлды башкача атаңыз.</translation>
 <translation id="9046895021617826162">Туташпай калды</translation>
 <translation id="9065512565307033593">Эгер текшерүүдөн өтпөсөңүз, тармакка кирүү мүмкүнчүлүгү өчүрүлөт.</translation>
+<translation id="9079844694307518094">Администраторуңуз төмөнкү проксини колдонууга мажбурлап жатат</translation>
 <translation id="908378762078012445">Орусча (AATSEEL фонетикалык баскычтобу)</translation>
 <translation id="9086302186042011942">Шайкештештирилүүдө</translation>
 <translation id="9099674669267916096">Барактардын саны</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">Орнотуу ийгиликтүү башталды.</translation>
 <translation id="9219103736887031265">Сүрөттөр</translation>
 <translation id="9219908252191632183">Айлуу</translation>
+<translation id="931652069802536959">Эрежелерге ылайык тармак бөгөттөлдү</translation>
 <translation id="938470336146445890">Колдонуучунун тастыктамасын орнотуңуз.</translation>
 <translation id="939736085109172342">Жаңы папка</translation>
 <translation id="943972244133411984">Өзгөрткөн:</translation>

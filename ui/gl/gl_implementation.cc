@@ -26,6 +26,7 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_gl_api_implementation.h"
+#include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_version_info.h"
 
 namespace gl {
@@ -233,12 +234,24 @@ GLImplementationParts GetNamedGLImplementation(const std::string& gl_name,
   return GLImplementationParts(kGLImplementationNone);
 }
 
-GLImplementationParts GetSoftwareGLImplementation() {
-#if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kAllowD3D11WarpFallback)) {
+GLImplementationParts GetSoftwareGLImplementation(
+    const base::CommandLine* command_line) {
+  // Software GL implementation selection logic:
+  // 1. If SwiftShader is allowed (via policy or command line), use SwiftShader.
+  // 2. If WARP is allowed (via policy), use D3D11 WARP for better compatibility
+  //    on Windows.
+  // 3. Otherwise, return SwiftShader implementation.
+
+  if (features::IsSwiftShaderAllowed(command_line)) {
+    return GLImplementationParts(ANGLEImplementation::kSwiftShader);
+  }
+
+  if (features::IsWARPAllowed(command_line)) {
     return GLImplementationParts(ANGLEImplementation::kD3D11Warp);
   }
-#endif
+
+  // TODO(crbug.com/40277080): Return ANGLEImplementation::kNone in the fallback
+  // case and handle all tests relies on fallback to SwiftShader behaviour.
   return GLImplementationParts(ANGLEImplementation::kSwiftShader);
 }
 
@@ -250,6 +263,9 @@ bool IsSoftwareGLImplementation(GLImplementationParts implementation) {
 GL_EXPORT bool IsSwiftShaderGLImplementation(
     GLImplementationParts implementation) {
   return implementation.angle == ANGLEImplementation::kSwiftShader;
+}
+GL_EXPORT bool IsWARPGLImplementation(GLImplementationParts implementation) {
+  return implementation.angle == ANGLEImplementation::kD3D11Warp;
 }
 
 void SetGLImplementationCommandLineSwitches(
@@ -266,7 +282,8 @@ void SetGLImplementationCommandLineSwitches(
 }
 
 void SetSoftwareGLCommandLineSwitches(base::CommandLine* command_line) {
-  GLImplementationParts implementation = GetSoftwareGLImplementation();
+  GLImplementationParts implementation =
+      GetSoftwareGLImplementation(command_line);
   SetGLImplementationCommandLineSwitches(implementation, command_line);
 }
 
@@ -276,16 +293,30 @@ void SetSoftwareWebGLCommandLineSwitches(base::CommandLine* command_line) {
   command_line->RemoveSwitch(switches::kUseGL);
   command_line->RemoveSwitch(switches::kUseANGLE);
 
-#if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kAllowD3D11WarpFallback)) {
+  // Software WebGL switch appending logic:
+  // 1. If SwiftShader is allowed (via policy or command line), use SwiftShader.
+  // 2. If WARP is allowed (via policy), use D3D11 WARP for better compatibility
+  //    on Windows.
+  // 3. Otherwise, use SwiftShader implementation.
+  if (features::IsSwiftShaderAllowed(command_line)) {
+    command_line->AppendSwitchASCII(switches::kUseGL,
+                                    kGLImplementationANGLEName);
+    command_line->AppendSwitchASCII(
+        switches::kUseANGLE, kANGLEImplementationSwiftShaderForWebGLName);
+    return;
+  }
+
+  if (features::IsWARPAllowed(command_line)) {
     command_line->AppendSwitchASCII(switches::kUseGL,
                                     kGLImplementationANGLEName);
     command_line->AppendSwitchASCII(switches::kUseANGLE,
                                     kANGLEImplementationD3D11WarpForWebGLName);
     return;
   }
-#endif
 
+  // TODO(crbug.com/40277080): Return kANGLEImplementationNoneName in the
+  // fallback case and handle all tests relies on fallback to SwiftShader
+  // behaviour.
   command_line->AppendSwitchASCII(switches::kUseGL, kGLImplementationANGLEName);
   command_line->AppendSwitchASCII(switches::kUseANGLE,
                                   kANGLEImplementationSwiftShaderForWebGLName);
@@ -315,7 +346,7 @@ GetRequestedGLImplementationFromCommandLine(
   }
 #endif
   if (overrideUseSoftwareGL) {
-    return GetSoftwareGLImplementation();
+    return GetSoftwareGLImplementation(command_line);
   }
 
   if (!command_line->HasSwitch(switches::kUseGL) &&

@@ -5,7 +5,6 @@ include_rules = [
   "+chromeos/ash/components/dbus/cryptohome",
   "+chromeos/ash/components/dbus/session_manager",
   "+chromeos/ash/components/dbus/userdataauth",
-  "+chromeos/dbus/cryptohome",
   "+chromeos/dbus/power",
   "+third_party/cros_system_api",
 

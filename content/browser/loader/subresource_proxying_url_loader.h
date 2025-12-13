@@ -9,7 +9,6 @@
 #include <optional>
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

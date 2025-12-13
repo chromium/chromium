@@ -16,8 +16,7 @@ found in the LICENSE file.
         android:id="@+id/close_button"
         style="@style/ToolbarButton"
         android:layout_width="@dimen/toolbar_button_width"
-        android:paddingStart="16dp"
-        android:paddingEnd="8dp"
+        android:paddingHorizontal="@dimen/custom_tabs_toolbar_button_horizontal_padding"
         android:layout_gravity="start|center_vertical"
         android:contentDescription="@string/close_tab" />
     <ViewStub
@@ -36,7 +35,8 @@ found in the LICENSE file.
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:scaleType="center"
-        app:srcCompat="@drawable/ic_incognito_cct_24dp"
+        app:srcCompat="@drawable/ic_incognito_fill_18dp"
+        app:tint="@color/default_icon_color_light"
         android:visibility="gone"
         android:contentDescription="@string/accessibility_incognito_badge"/>
     <!-- LINT.ThenChange(//chrome/android/java/res/layout/custom_tab_incognito_icon.xml) -->
@@ -145,7 +145,7 @@ found in the LICENSE file.
         <ViewStub
             android:id="@+id/optional_button_stub"
             android:inflatedId="@+id/optional_toolbar_button_container"
-            android:layout_gravity="top"
+            android:layout_gravity="center_vertical"
             android:visibility="gone"
             style="@style/ToolbarHoverableButton" />
     </LinearLayout>
@@ -165,21 +165,17 @@ found in the LICENSE file.
             android:clickable="true"
             android:focusable="true"
             android:layout_width="@dimen/toolbar_button_width"
-            android:paddingStart="8dp"
-            android:paddingEnd="16dp"
+            android:paddingHorizontal="@dimen/custom_tabs_toolbar_button_horizontal_padding"
             android:contentDescription="@string/accessibility_toolbar_btn_menu"
             android:tooltipText="@string/accessibility_toolbar_btn_menu"
             android:background="@null"
             app:tint="@color/default_icon_color_tint_list" />
        <ImageView
            android:id="@+id/menu_dot"
-           style="@style/ToolbarMenuButton"
+           android:layout_height="8dp"
+           android:layout_width="8dp"
            android:src="@drawable/menu_dot"
            android:importantForAccessibility="no"
-           android:paddingTop="6dp"
-           android:paddingBottom="34dp"
-           android:paddingStart="30dp"
-           android:paddingEnd="10dp"
            android:layout_gravity="top|end"
            android:background="@null"
            android:visibility="gone" />

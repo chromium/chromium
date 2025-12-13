@@ -73,7 +73,7 @@
 #include "ui/display/screen_info.h"
 #include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/native_theme/native_theme_utils.h"
+#include "ui/native_theme/native_theme.h"
 
 using blink::WebURLRequest;
 
@@ -106,8 +106,6 @@ class RenderFrameImplTest : public RenderViewTest {
   ~RenderFrameImplTest() override = default;
 
   void SetUp() override {
-    blink::WebRuntimeFeatures::EnableOverlayScrollbars(
-        ui::IsOverlayScrollbarEnabled());
     RenderViewTest::SetUp();
     EXPECT_TRUE(GetMainRenderFrame()->is_main_frame_);
 
@@ -1357,7 +1355,8 @@ TEST_F(RenderFrameImplTest, ContentSettingsSameDocumentNavigation) {
       /*is_synchronously_committed=*/true,
       blink::mojom::SameDocumentNavigationType::kFragment,
       /*is_client_redirect=*/false,
-      /*screenshot_destination=*/std::nullopt);
+      /*screenshot_destination=*/std::nullopt,
+      /*same_document_metrics_token=*/base::UnguessableToken::Create());
 
   // Verify that the script was not blocked.
   EXPECT_FALSE(HasText(GetMainFrame(), "JS_DISABLED"));

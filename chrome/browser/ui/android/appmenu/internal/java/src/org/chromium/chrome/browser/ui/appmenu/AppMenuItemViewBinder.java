@@ -10,14 +10,12 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import com.google.android.material.button.MaterialButton;
@@ -54,8 +52,6 @@ class AppMenuItemViewBinder {
     };
 
     public static void bindStandardItem(PropertyModel model, View view, PropertyKey key) {
-        AppMenuUtil.bindStandardItemEnterAnimation(model, view, key);
-
         if (key == AppMenuItemProperties.MENU_ITEM_ID) {
             int id = model.get(AppMenuItemProperties.MENU_ITEM_ID);
             view.setId(id);
@@ -75,38 +71,7 @@ class AppMenuItemViewBinder {
                 ViewHighlighter.turnOffHighlight(view);
             }
         } else if (key == AppMenuItemProperties.ICON) {
-            Drawable icon = model.get(AppMenuItemProperties.ICON);
-            ChromeImageView imageView = view.findViewById(R.id.menu_item_icon);
-
-            @ColorRes int colorResId = model.get(AppMenuItemProperties.ICON_COLOR_RES);
-            if (colorResId == 0) {
-                // If there is no color assigned to the icon, use the default color.
-                colorResId = R.color.default_icon_color_secondary_tint_list;
-            }
-            ColorStateList tintList =
-                    AppCompatResources.getColorStateList(imageView.getContext(), colorResId);
-
-            if (model.get(AppMenuItemProperties.ICON_SHOW_BADGE)) {
-                // Draw the icon with a red badge on top.
-                icon =
-                        UiUtils.drawIconWithBadge(
-                                imageView.getContext(),
-                                icon,
-                                colorResId,
-                                R.dimen.menu_item_icon_badge_size,
-                                R.dimen.menu_item_icon_badge_border_size,
-                                R.color.default_red);
-                // `colorResId` has already been applied by `drawIconWithBadge` and thus, passing
-                // `tintList` is not required.
-                // Note that tint is set to null to clear any tint previously set via XML.
-                tintList = null;
-            }
-
-            imageView.setImageDrawable(icon);
-            imageView.setVisibility(icon == null ? View.GONE : View.VISIBLE);
-
-            // tint the icon
-            ImageViewCompat.setImageTintList(imageView, tintList);
+            setIcon(view, model);
         } else if (key == AppMenuItemProperties.CLICK_HANDLER) {
             view.setOnTouchListener(
                     new OnPeripheralClickListener(
@@ -116,6 +81,12 @@ class AppMenuItemViewBinder {
                                             .onItemClick(model, triggeringMotion)));
             view.setOnClickListener(
                     v -> model.get(AppMenuItemProperties.CLICK_HANDLER).onItemClick(model));
+        } else if (key == AppMenuItemProperties.HOVER_LISTENER) {
+            view.setOnHoverListener(model.get(AppMenuItemProperties.HOVER_LISTENER));
+        } else if (key == AppMenuItemProperties.HAS_HOVER_BACKGROUND) {
+            view.setHovered(model.get(AppMenuItemProperties.HAS_HOVER_BACKGROUND));
+        } else if (key == AppMenuItemProperties.KEY_LISTENER) {
+            view.setOnKeyListener(model.get(AppMenuItemProperties.KEY_LISTENER));
         }
     }
 
@@ -194,23 +165,14 @@ class AppMenuItemViewBinder {
 
     public static void bindIconRowItem(PropertyModel model, View view, PropertyKey key) {
         if (key == AppMenuItemProperties.ADDITIONAL_ICONS) {
-            ViewGroup root = (ViewGroup) view;
-
             // Obtain from the current theme a typed array containing all the attributes.
             TypedArray typedArray =
                     view.getContext().getTheme().obtainStyledAttributes(R.styleable.AppMenuIconRow);
-            int paddingPx =
-                    typedArray.getDimensionPixelSize(
-                            R.styleable.AppMenuIconRow_appMenuIconRowPadding, 0);
             int drawableResId =
                     typedArray.getResourceId(
                             R.styleable.AppMenuIconRow_overflowMenuActionBarBgDrawable, 0);
 
             typedArray.recycle();
-
-            // The padding applied will be 0 for the baseline theme.
-            ViewCompat.setPaddingRelative(
-                    root, paddingPx, paddingPx, paddingPx, root.getPaddingBottom());
 
             // Set the background by resolving it from the current theme.
             if (drawableResId != 0) {
@@ -266,6 +228,55 @@ class AppMenuItemViewBinder {
         }
     }
 
+    public static void bindItemWithSubmenu(PropertyModel model, View view, PropertyKey key) {
+        if (key == AppMenuItemProperties.MENU_ITEM_ID) {
+            int id = model.get(AppMenuItemProperties.MENU_ITEM_ID);
+            view.setId(id);
+        } else if (key == AppMenuItemProperties.TITLE) {
+            ((TextView) view.findViewById(R.id.menu_item_text))
+                    .setText(model.get(AppMenuItemProperties.TITLE));
+        } else if (key == AppMenuItemProperties.TITLE_CONDENSED) {
+            setContentDescription(view.findViewById(R.id.menu_item_text), model);
+        } else if (key == AppMenuItemProperties.ENABLED) {
+            boolean enabled = model.get(AppMenuItemProperties.ENABLED);
+            view.setEnabled(enabled);
+        } else if (key == AppMenuItemProperties.HIGHLIGHTED) {
+            if (model.get(AppMenuItemProperties.HIGHLIGHTED)) {
+                ViewHighlighter.turnOnHighlight(
+                        view, new HighlightParams(HighlightShape.RECTANGLE));
+            } else {
+                ViewHighlighter.turnOffHighlight(view);
+            }
+        } else if (key == AppMenuItemProperties.ICON) {
+            setIcon(view, model);
+        } else if (key == AppMenuItemWithSubmenuProperties.CLICK_LISTENER) {
+            view.setOnClickListener(model.get(AppMenuItemWithSubmenuProperties.CLICK_LISTENER));
+        } else if (key == AppMenuItemProperties.HOVER_LISTENER) {
+            view.setOnHoverListener(model.get(AppMenuItemProperties.HOVER_LISTENER));
+        } else if (key == AppMenuItemProperties.HAS_HOVER_BACKGROUND) {
+            view.setHovered(model.get(AppMenuItemProperties.HAS_HOVER_BACKGROUND));
+        } else if (key == AppMenuItemProperties.KEY_LISTENER) {
+            view.setOnKeyListener(model.get(AppMenuItemProperties.KEY_LISTENER));
+        }
+    }
+
+    public static void bindSubmenuHeader(PropertyModel model, View view, PropertyKey key) {
+        if (key == AppMenuItemProperties.MENU_ITEM_ID) {
+            int id = model.get(AppMenuItemProperties.MENU_ITEM_ID);
+            view.setId(id);
+        } else if (key == AppMenuItemProperties.TITLE) {
+            ((TextView) view.findViewById(R.id.menu_item_text))
+                    .setText(model.get(AppMenuItemProperties.TITLE));
+        } else if (key == AppMenuItemProperties.ENABLED) {
+            boolean enabled = model.get(AppMenuItemProperties.ENABLED);
+            view.setEnabled(enabled);
+        } else if (key == AppMenuItemWithSubmenuProperties.CLICK_LISTENER) {
+            view.setOnClickListener(model.get(AppMenuItemWithSubmenuProperties.CLICK_LISTENER));
+        } else if (key == AppMenuItemProperties.KEY_LISTENER) {
+            view.setOnKeyListener(model.get(AppMenuItemProperties.KEY_LISTENER));
+        }
+    }
+
     public static void setContentDescription(View view, final PropertyModel model) {
         CharSequence titleCondensed = model.get(AppMenuItemProperties.TITLE_CONDENSED);
         if (TextUtils.isEmpty(titleCondensed)) {
@@ -273,6 +284,41 @@ class AppMenuItemViewBinder {
         } else {
             view.setContentDescription(titleCondensed);
         }
+    }
+
+    private static void setIcon(View view, final PropertyModel model) {
+        Drawable icon = model.get(AppMenuItemProperties.ICON);
+        ChromeImageView imageView = view.findViewById(R.id.menu_item_icon);
+
+        @ColorRes int colorResId = model.get(AppMenuItemProperties.ICON_COLOR_RES);
+        if (colorResId == 0) {
+            // If there is no color assigned to the icon, use the default color.
+            colorResId = R.color.default_icon_color_secondary_tint_list;
+        }
+        ColorStateList tintList =
+                AppCompatResources.getColorStateList(imageView.getContext(), colorResId);
+
+        if (model.get(AppMenuItemProperties.ICON_SHOW_BADGE)) {
+            // Draw the icon with a red badge on top.
+            icon =
+                    UiUtils.drawIconWithBadge(
+                            imageView.getContext(),
+                            icon,
+                            colorResId,
+                            R.dimen.menu_item_icon_badge_size,
+                            R.dimen.menu_item_icon_badge_border_size,
+                            R.color.default_red);
+            // `colorResId` has already been applied by `drawIconWithBadge` and thus, passing
+            // `tintList` is not required.
+            // Note that tint is set to null to clear any tint previously set via XML.
+            tintList = null;
+        }
+
+        imageView.setImageDrawable(icon);
+        imageView.setVisibility(icon == null ? View.GONE : View.VISIBLE);
+
+        // tint the icon
+        ImageViewCompat.setImageTintList(imageView, tintList);
     }
 
     private static void setupImageButton(

@@ -72,7 +72,7 @@ DynamicComponentHost::DynamicComponentHost(
   if (services) {
     // Link the service-directory to offer to the CFv2 component.
     zx_status_t status = DynamicComponentCapabilitiesDir()->AddEntry(
-        child_id_, std::make_unique<vfs::RemoteDir>(std::move(services)));
+        child_id_, std::make_unique<vfs::RemoteDir>(services.TakeChannel()));
     ZX_CHECK(status == ZX_OK, status);
     create_args.mutable_dynamic_offers()->push_back(
         fuchsia::component::decl::Offer::WithDirectory(std::move(

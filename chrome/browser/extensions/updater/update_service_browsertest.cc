@@ -86,7 +86,8 @@ class UpdateServiceTest : public ExtensionUpdateClientBaseTest {
     }
 
     const std::string update_request = std::get<0>(requests[index]);
-    std::optional<base::Value> root = base::JSONReader::Read(update_request);
+    std::optional<base::Value> root = base::JSONReader::Read(
+        update_request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!root) {
       return std::nullopt;
     }
@@ -255,8 +256,9 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, SuccessfulUpdate) {
   const base::FilePath crx_path = test_data_dir_.AppendASCII("updater/v1.crx");
   set_interceptor_hook(base::BindLambdaForTesting(
       [&](content::URLLoaderInterceptor::RequestParams* params) {
-        if (params->url_request.url.path() != "/download/v1.crx")
+        if (params->url_request.url.GetPath() != "/download/v1.crx") {
           return false;
+        }
 
         content::URLLoaderInterceptor::WriteResponse(crx_path,
                                                      params->client.get());
@@ -314,8 +316,9 @@ IN_PROC_BROWSER_TEST_F(UpdateServiceTest, PolicyCorrupted) {
   const base::FilePath crx_path = test_data_dir_.AppendASCII("updater/v1.crx");
   set_interceptor_hook(base::BindLambdaForTesting(
       [&](content::URLLoaderInterceptor::RequestParams* params) {
-        if (params->url_request.url.path() != "/download/v1.crx")
+        if (params->url_request.url.GetPath() != "/download/v1.crx") {
           return false;
+        }
 
         content::URLLoaderInterceptor::WriteResponse(crx_path,
                                                      params->client.get());
@@ -468,42 +471,43 @@ class PolicyUpdateServiceTest : public ExtensionUpdateClientBaseTest,
         test_data_dir_.AppendASCII("updater/v1.crx");
     set_interceptor_hook(base::BindLambdaForTesting(
         [=](content::URLLoaderInterceptor::RequestParams* params) {
-          if (params->url_request.url.path() != "/download/v1.crx")
+          if (params->url_request.url.GetPath() != "/download/v1.crx") {
             return false;
+          }
 
           content::URLLoaderInterceptor::WriteResponse(crx_path,
                                                        params->client.get());
           return true;
         }));
-      const base::FilePath update_response =
-          test_data_dir_.AppendASCII("updater/updatecheck_reply_update_1.json");
-      const base::FilePath ping_response =
-          test_data_dir_.AppendASCII("updater/ping_reply_1.json");
+    const base::FilePath update_response =
+        test_data_dir_.AppendASCII("updater/updatecheck_reply_update_1.json");
+    const base::FilePath ping_response =
+        test_data_dir_.AppendASCII("updater/ping_reply_1.json");
 
-      ASSERT_TRUE(update_interceptor_->ExpectRequest(
-          std::make_unique<update_client::PartialMatch>(R"("updatecheck":{)"),
-          update_response));
-      ASSERT_TRUE(update_interceptor_->ExpectRequest(
-          std::make_unique<update_client::PartialMatch>(R"("updatecheck":{)"),
-          update_response));
-      ASSERT_TRUE(update_interceptor_->ExpectRequest(
-          std::make_unique<update_client::PartialMatch>(R"("updatecheck":{)"),
-          update_response));
-      ASSERT_TRUE(update_interceptor_->ExpectRequest(
-          std::make_unique<update_client::PartialMatch>(R"("updatecheck":{)"),
-          update_response));
-      ASSERT_TRUE(ping_interceptor_->ExpectRequest(
-          std::make_unique<update_client::PartialMatch>(R"("eventtype":)"),
-          ping_response));
-      ASSERT_TRUE(ping_interceptor_->ExpectRequest(
-          std::make_unique<update_client::PartialMatch>(R"("eventtype":)"),
-          ping_response));
-      ASSERT_TRUE(ping_interceptor_->ExpectRequest(
-          std::make_unique<update_client::PartialMatch>(R"("eventtype":)"),
-          ping_response));
-      ASSERT_TRUE(ping_interceptor_->ExpectRequest(
-          std::make_unique<update_client::PartialMatch>(R"("eventtype":)"),
-          ping_response));
+    ASSERT_TRUE(update_interceptor_->ExpectRequest(
+        std::make_unique<update_client::PartialMatch>(R"("updatecheck":{)"),
+        update_response));
+    ASSERT_TRUE(update_interceptor_->ExpectRequest(
+        std::make_unique<update_client::PartialMatch>(R"("updatecheck":{)"),
+        update_response));
+    ASSERT_TRUE(update_interceptor_->ExpectRequest(
+        std::make_unique<update_client::PartialMatch>(R"("updatecheck":{)"),
+        update_response));
+    ASSERT_TRUE(update_interceptor_->ExpectRequest(
+        std::make_unique<update_client::PartialMatch>(R"("updatecheck":{)"),
+        update_response));
+    ASSERT_TRUE(ping_interceptor_->ExpectRequest(
+        std::make_unique<update_client::PartialMatch>(R"("eventtype":)"),
+        ping_response));
+    ASSERT_TRUE(ping_interceptor_->ExpectRequest(
+        std::make_unique<update_client::PartialMatch>(R"("eventtype":)"),
+        ping_response));
+    ASSERT_TRUE(ping_interceptor_->ExpectRequest(
+        std::make_unique<update_client::PartialMatch>(R"("eventtype":)"),
+        ping_response));
+    ASSERT_TRUE(ping_interceptor_->ExpectRequest(
+        std::make_unique<update_client::PartialMatch>(R"("eventtype":)"),
+        ping_response));
   }
 
   std::vector<GURL> GetUpdateUrls() const override {
@@ -525,7 +529,8 @@ class PolicyUpdateServiceTest : public ExtensionUpdateClientBaseTest,
     }
 
     const std::string update_request = std::get<0>(requests[index]);
-    std::optional<base::Value> root = base::JSONReader::Read(update_request);
+    std::optional<base::Value> root = base::JSONReader::Read(
+        update_request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!root) {
       return std::nullopt;
     }

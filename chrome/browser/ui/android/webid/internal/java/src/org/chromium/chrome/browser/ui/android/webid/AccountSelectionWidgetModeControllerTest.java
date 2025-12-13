@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.C
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
+import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -58,7 +59,8 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
                     .thenReturn(true);
             mIdpData.setRpContext(rpContext);
             mMediator.showAccounts(
-                    mTestEtldPlusOne,
+                    new RelyingPartyData(
+                            mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
                     Arrays.asList(mNewUserAccount),
                     Arrays.asList(mIdpData),
                     /* newAccounts= */ Collections.EMPTY_LIST);
@@ -78,7 +80,11 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
             when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
                     .thenReturn(true);
             mIdpData.setRpContext(rpContext);
-            mMediator.showVerifyingDialog(mAnaAccount, /* isAutoReauthn= */ true);
+            mMediator.showVerifyingDialog(
+                    new RelyingPartyData(
+                            mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                    mAnaAccount,
+                    /* isAutoReauthn= */ true);
 
             assertEquals(1, mSheetAccountItems.size());
             assertEquals(
@@ -91,7 +97,8 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
     @Test
     public void testShowAccountsWithoutBrandIcons() {
         mMediator.showAccounts(
-                mTestEtldPlusOne,
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
                 Arrays.asList(mAnaAccountWithoutBrandIcons),
                 Arrays.asList(mIdpDataWithoutIcons),
                 /* newAccounts= */ Collections.EMPTY_LIST);
@@ -108,7 +115,8 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
             when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
                     .thenReturn(true);
             mMediator.showErrorDialog(
-                    mTestEtldPlusOne,
+                    new RelyingPartyData(
+                            mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
                     mTestEtldPlusOne2,
                     mIdpMetadata,
                     rpContext,
@@ -177,7 +185,12 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
             when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
                     .thenReturn(true);
             mMediator.showErrorDialog(
-                    mTestEtldPlusOne, mTestEtldPlusOne2, mIdpMetadata, rpContext, mTokenError);
+                    new RelyingPartyData(
+                            mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                    mTestEtldPlusOne2,
+                    mIdpMetadata,
+                    rpContext,
+                    mTokenError);
             assertEquals(0, mSheetAccountItems.size());
             assertEquals(HeaderType.SIGN_IN_ERROR, mModel.get(ItemProperties.HEADER).get(TYPE));
             verify(mMockDelegate, never()).onAccountsDisplayed();

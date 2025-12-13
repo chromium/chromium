@@ -360,19 +360,6 @@ public class PaymentDetailsUpdateServiceHelperTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testBindHistogramRecordedWhenConnected() throws Throwable {
-        try (var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "PaymentRequest.PaymentDetailsUpdateService.Bind", true)) {
-            // No payment flow needs to be happening for recording the metric of a service
-            // connection to Chrome.
-            startPaymentDetailsUpdateService();
-        }
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Payments"})
     public void testSuccessfulChangePaymentMethod() throws Throwable {
         installAndInvokePaymentApp();
         startPaymentDetailsUpdateService();

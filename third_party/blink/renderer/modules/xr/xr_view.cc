@@ -57,15 +57,11 @@ XRViewport* XRView::Viewport(double framebuffer_scale) {
 }
 
 V8XREye XRView::eye() const {
-  switch (eye_) {
-    case device::mojom::blink::XREye::kLeft:
-      return V8XREye(V8XREye::Enum::kLeft);
-    case device::mojom::blink::XREye::kRight:
-      return V8XREye(V8XREye::Enum::kRight);
-    case device::mojom::blink::XREye::kNone:
-      return V8XREye(V8XREye::Enum::kNone);
-  }
-  NOTREACHED();
+  return GetV8Eye(eye_);
+}
+
+unsigned XRView::index() const {
+  return view_data_->index();
 }
 
 XRFrame* XRView::frame() const {
@@ -77,11 +73,12 @@ XRSession* XRView::session() const {
 }
 
 NotShared<DOMFloat32Array> XRView::projectionMatrix() const {
-  if (!projection_matrix_ || !projection_matrix_->Data()) {
+  if (!projection_matrix_ || projection_matrix_->IsDetached()) {
     // A page may take the projection matrix value and detach it so
     // projection_matrix_ is a detached array buffer.  This breaks the
     // inspector, so return an empty array instead.
-    return NotShared<DOMFloat32Array>(DOMFloat32Array::Create(0));
+    projection_matrix_ =
+        transformationMatrixToDOMFloat32Array(view_data_->ProjectionMatrix());
   }
 
   return projection_matrix_;
@@ -190,6 +187,9 @@ void XRViewData::UpdateView(device::mojom::blink::XRViewPtr view,
   if (depth_manager_) {
     depth_manager_->ProcessDepthInformation(std::move(view->depth_data));
   }
+
+  visibility_mask_ = std::move(view->visibility_mask);
+  visibility_mask_id_ = view->visibility_mask_id;
 }
 
 XRCPUDepthInformation* XRViewData::GetCpuDepthInformation(
@@ -245,6 +245,18 @@ bool XRViewData::ApplyViewportScaleForFrame() {
   SetViewportModifiable(false);
 
   return changed;
+}
+
+void XRViewData::OnVisibilityMaskChangeEvent() {
+  last_evented_visibility_mask_id_ = visibility_mask_id_;
+}
+
+bool XRViewData::NeedsVisibilityMaskChangeEvent() const {
+  if (!last_evented_visibility_mask_id_) {
+    return true;
+  }
+
+  return last_evented_visibility_mask_id_.value() != visibility_mask_id_;
 }
 
 void XRViewData::Trace(Visitor* visitor) const {

@@ -14,59 +14,23 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ui/base/device_form_factor.h"
 
-#pragma mark - Constants
-
-const char kDeprecateFeedHeaderParameterRemoveLabel[] = "remove-feed-label";
-const char kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox[] =
-    "enlarge-logo-n-fakebox";
-const char kDeprecateFeedHeaderParameterTopPadding[] = "top-padding";
-const char kDeprecateFeedHeaderParameterSearchFieldTopMargin[] =
-    "search-field-top-margin";
-const char kDeprecateFeedHeaderParameterSpaceBetweenModules[] =
-    "space-between-modules";
-const char kDeprecateFeedHeaderParameterHeaderBottomPadding[] =
-    "header-bottom-padding";
-
 #pragma mark - Feature declarations
-
-BASE_FEATURE(kEnableDiscoverFeedStaticResourceServing,
-             "EnableDiscoverFeedStaticResourceServing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableDiscoverFeedDiscoFeedEndpoint,
-             "EnableDiscoFeedEndpoint",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableNTPViewHierarchyRepair,
              "NTPViewHierarchyRepair",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOverrideFeedSettings,
-             "OverrideFeedSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOverrideFeedSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebFeedFeedbackReroute,
-             "WebFeedFeedbackReroute",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWebFeedFeedbackReroute, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableSignedOutViewDemotion,
-             "EnableSignedOutViewDemotion",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableiPadFeedGhostCards, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableiPadFeedGhostCards,
-             "EnableiPadFeedGhostCards",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFeedSwipeInProductHelp, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIdentityDiscAccountMenu,
-             "IdentityDiscAccountMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseFeedEligibilityService, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFeedSwipeInProductHelp,
-             "FeedSwipeInProductHelp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kUseFeedEligibilityService,
-             "UseFeedEligibilityService",
+BASE_FEATURE(kMostVisitedTilesCustomizationIOS,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #pragma mark - Feature parameters
@@ -115,48 +79,8 @@ bool IsWebFeedFeedbackRerouteEnabled() {
   return base::FeatureList::IsEnabled(kWebFeedFeedbackReroute);
 }
 
-bool IsSignedOutViewDemotionEnabled() {
-  return base::FeatureList::IsEnabled(kEnableSignedOutViewDemotion);
-}
-
 bool IsiPadFeedGhostCardsEnabled() {
   return base::FeatureList::IsEnabled(kEnableiPadFeedGhostCards);
-}
-
-bool ShouldRemoveDiscoverLabel(bool is_google_default_search_engine) {
-  return is_google_default_search_engine && ShouldDeprecateFeedHeader() &&
-         base::GetFieldTrialParamByFeatureAsBool(
-             kDeprecateFeedHeader, kDeprecateFeedHeaderParameterRemoveLabel,
-             false);
-}
-
-bool ShouldEnlargeLogoAndFakebox() {
-  if (ShouldEnlargeNTPFakeboxForMIA()) {
-    return YES;
-  }
-
-  return ShouldDeprecateFeedHeader() &&
-         base::GetFieldTrialParamByFeatureAsBool(
-             kDeprecateFeedHeader,
-             kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox, false);
-}
-
-double TopPaddingToNTP() {
-  return ShouldDeprecateFeedHeader()
-             ? base::GetFieldTrialParamByFeatureAsDouble(
-                   kDeprecateFeedHeader,
-                   kDeprecateFeedHeaderParameterTopPadding, 0)
-             : 0;
-}
-
-double GetDeprecateFeedHeaderParameterValueAsDouble(
-    const std::string& param_name,
-    double default_value) {
-  if (!ShouldDeprecateFeedHeader()) {
-    return default_value;
-  }
-  return base::GetFieldTrialParamByFeatureAsDouble(kDeprecateFeedHeader,
-                                                   param_name, default_value);
 }
 
 FeedSwipeIPHVariation GetFeedSwipeIPHVariation() {
@@ -187,8 +111,15 @@ NTPMIAEntrypointVariation GetNTPMIAEntrypointVariation() {
   } else if (feature_param ==
              kNTPMIAEntrypointParamEnlargedFakeboxNoIncognito) {
     return NTPMIAEntrypointVariation::kEnlargedFakeboxNoIncognito;
+  } else if (feature_param == kNTPMIAEntrypointParamAIMInQuickActions) {
+    return NTPMIAEntrypointVariation::kAIMInQuickAction;
   } else {
-    return NTPMIAEntrypointVariation::kDisabled;
+    // Disabled on iPad.
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+      return NTPMIAEntrypointVariation::kDisabled;
+    }
+    // Default value.
+    return NTPMIAEntrypointVariation::kAIMInQuickAction;
   }
 }
 
@@ -202,12 +133,19 @@ bool ShowOnlyMIAEntrypointInNTPFakebox() {
 }
 
 bool ShouldShowQuickActionsRow() {
-  return ShowOnlyMIAEntrypointInNTPFakebox();
+  NTPMIAEntrypointVariation variation = GetNTPMIAEntrypointVariation();
+  return ShowOnlyMIAEntrypointInNTPFakebox() ||
+         variation == NTPMIAEntrypointVariation::kAIMInQuickAction;
 }
 
 bool ShouldEnlargeNTPFakeboxForMIA() {
   NTPMIAEntrypointVariation variation = GetNTPMIAEntrypointVariation();
   return variation ==
              NTPMIAEntrypointVariation::kOmniboxContainedEnlargedFakebox ||
-         variation == NTPMIAEntrypointVariation::kEnlargedFakeboxNoIncognito;
+         variation == NTPMIAEntrypointVariation::kEnlargedFakeboxNoIncognito ||
+         variation == NTPMIAEntrypointVariation::kAIMInQuickAction;
+}
+
+bool IsContentSuggestionsCustomizable() {
+  return base::FeatureList::IsEnabled(kMostVisitedTilesCustomizationIOS);
 }

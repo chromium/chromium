@@ -27,9 +27,9 @@ class BrowsingDataRemoverFactory : public ProfileKeyedServiceFactoryIOS {
   BrowsingDataRemoverFactory();
   ~BrowsingDataRemoverFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_FACTORY_H_

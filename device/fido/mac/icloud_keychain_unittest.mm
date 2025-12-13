@@ -22,22 +22,20 @@
 #include "base/notreached.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_make_credential_request.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_request_handler_base.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/mac/fake_icloud_keychain_sys.h"
 #include "device/fido/mac/icloud_keychain_sys.h"
-#include "device/fido/public_key_credential_params.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
+#include "device/fido/public/public_key_credential_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device::fido::icloud_keychain {
@@ -146,7 +144,8 @@ static const uint8_t kCredentialID[] = {
     0x69, 0x71, 0xB3, 0x4E, 0xD3, 0x27, 0xFE, 0x7A, 0x4C,
 };
 
-class iCloudKeychainTest : public testing::Test, FidoDiscoveryBase::Observer {
+class iCloudKeychainTest : public testing::Test,
+                           public FidoDiscoveryBase::Observer {
  public:
   void SetUp() override {
     if (@available(macOS 13.5, *)) {
@@ -194,8 +193,6 @@ class iCloudKeychainTest : public testing::Test, FidoDiscoveryBase::Observer {
   std::unique_ptr<FidoDiscoveryBase> discovery_;
   raw_ptr<FidoAuthenticator> authenticator_ = nullptr;
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kWebAuthnLargeBlobForICloudKeychain};
 };
 
 TEST_F(iCloudKeychainTest, RequestAuthorization) {

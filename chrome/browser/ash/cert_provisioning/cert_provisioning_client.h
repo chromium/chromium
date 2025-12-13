@@ -74,7 +74,6 @@ class CertProvisioningClient {
       std::optional<enterprise_management::
                         ClientCertificateProvisioningResponse::Error> error,
       std::optional<int64_t> try_later,
-      const std::string& invalidation_topic,
       const std::string& va_challenge,
       enterprise_management::HashingAlgorithm hash_algorithm,
       std::vector<uint8_t> data_to_sign)>;

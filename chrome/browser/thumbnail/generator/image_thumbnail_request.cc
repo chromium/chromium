@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/files/file_util.h"
+#include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"

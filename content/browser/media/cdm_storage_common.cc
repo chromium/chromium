@@ -4,6 +4,7 @@
 
 #include "content/browser/media/cdm_storage_common.h"
 
+#include "base/strings/strcat.h"
 #include "content/public/common/content_features.h"
 
 namespace content {

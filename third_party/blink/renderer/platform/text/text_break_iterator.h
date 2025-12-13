@@ -29,6 +29,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/character_break_iterator.h"
@@ -64,12 +65,12 @@ AcquireLineBreakIterator(StringView, const AtomicString& locale);
 // platform UI conventions. One notable example where this can be different
 // from character break iterator is Thai prepend characters, see bug 24342.
 // Use this for insertion point and selection manipulations.
-PLATFORM_EXPORT TextBreakIterator* CursorMovementIterator(
+PLATFORM_EXPORT TextBreakIterator* CursorMovementIteratorDeprecated(
     base::span<const UChar>);
-PLATFORM_EXPORT TextBreakIterator* WordBreakIterator(const String&,
-                                                     wtf_size_t start,
-                                                     wtf_size_t length);
+PLATFORM_EXPORT TextBreakIterator* WordBreakIterator(const StringView&);
 PLATFORM_EXPORT TextBreakIterator* WordBreakIterator(base::span<const UChar>);
+PLATFORM_EXPORT std::unique_ptr<TextBreakIterator>
+CreateWordBreakIteratorForTest(const StringView&, const String& locale);
 PLATFORM_EXPORT TextBreakIterator* SentenceBreakIterator(
     base::span<const UChar>);
 

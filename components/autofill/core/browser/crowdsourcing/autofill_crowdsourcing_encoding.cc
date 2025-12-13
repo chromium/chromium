@@ -18,6 +18,7 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_ref.h"
@@ -29,6 +30,8 @@
 #include "components/autofill/core/browser/form_structure_sectioning_util.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
+#include "components/autofill/core/browser/proto/server.pb.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -355,11 +358,10 @@ void PopulateRandomizedFieldMetadata(
   }
 }
 
-// Populates the three-bit hashes of the upload contents for form metadata.
-void PopulateThreeBitHashedFormMetadata(const FormStructure& form,
-                                        AutofillUploadContents& upload) {
-  ThreeBitHashedFormMetadata* form_metadata =
-      upload.mutable_three_bit_hashed_form_metadata();
+// Populates the three-bit hashes for a given `form`.
+void PopulateThreeBitHashedFormMetadata(
+    const FormStructure& form,
+    ThreeBitHashedFormMetadata* form_metadata) {
   if (!form.id_attribute().empty()) {
     form_metadata->set_id(StrToHash3Bit(form.id_attribute()));
   }
@@ -377,13 +379,10 @@ void PopulateThreeBitHashedFormMetadata(const FormStructure& form,
   }
 }
 
-// Populates the three-bit hashes of the upload contents for a single field.
+// Populates the three-bit hashes for a single field.
 void PopulateThreeBitHashedFieldMetadata(
     const AutofillField& field,
-    AutofillUploadContents::Field& upload_field) {
-  ThreeBitHashedFieldMetadata* field_metadata =
-      upload_field.mutable_three_bit_hashed_field_metadata();
-
+    ThreeBitHashedFieldMetadata* field_metadata) {
   if (!field.id_attribute().empty()) {
     field_metadata->set_id(StrToHash3Bit(field.id_attribute()));
   }
@@ -434,7 +433,9 @@ void EncodeFormFieldsForUpload(
     }
     // Do not upload fields that were filled with a fallback type, as this would
     // introduce unnecessary noise in the field votes.
-    if (field->WasAutofilledWithFallback()) {
+    if (field->WasAutofilledWithFallback() &&
+        !base::FeatureList::IsEnabled(
+            features::kAutofillUploadManualFallbackFieldsToServer)) {
       continue;
     }
 
@@ -460,8 +461,8 @@ void EncodeFormFieldsForUpload(
     // TODO(crbug.com/40286837): Understand and document why the type is
     // relevant.
     if (!field->initial_value().empty() &&
-        ((field->Type().GetStorableType() != NO_SERVER_DATA &&
-          field->Type().GetStorableType() != UNKNOWN_TYPE) ||
+        (!field->Type().GetTypes().contains_any(
+             {NO_SERVER_DATA, UNKNOWN_TYPE}) ||
          !field->possible_types().empty())) {
       added_field->set_initial_value_changed(field->initial_value() !=
                                              field->value());
@@ -469,15 +470,7 @@ void EncodeFormFieldsForUpload(
 
     if (field_options) {
       for (const auto& [type, string] : field_options->format_strings) {
-        DCHECK([&]() {
-          switch (type) {
-            case FormatString_Type_AFFIX:
-              return data_util::IsValidAffixFormat(string);
-            case FormatString_Type_DATE:
-              return data_util::IsValidDateFormat(string);
-          }
-          return false;
-        }());
+        DCHECK(AutofillFormatString::IsValid(string, type));
         auto* added_format_string = added_field->add_format_string();
         added_format_string->set_type(type);
         added_format_string->set_format_string(base::UTF16ToUTF8(string));
@@ -497,7 +490,8 @@ void EncodeFormFieldsForUpload(
     }
 
     if (base::FeatureList::IsEnabled(features::kAutofillServerUploadMoreData)) {
-      PopulateThreeBitHashedFieldMetadata(*field, *added_field);
+      PopulateThreeBitHashedFieldMetadata(
+          *field, added_field->mutable_three_bit_hashed_field_metadata());
     }
 
     if (field_options) {
@@ -539,16 +533,25 @@ void EncodeFormForQuery(const FormStructure& form,
   // `form`).
   auto AddFormIf =
       [&](const std::vector<std::unique_ptr<AutofillField>>& fields,
-          FormSignature form, FormSignature alternative_signature,
+          FormSignature form_signature, FormSignature alternative_signature,
           auto necessary_condition) mutable {
-        if (!processed_forms.insert(form).second) {
+        if (!processed_forms.insert(form_signature).second) {
           return;
         }
 
         AutofillPageQueryRequest::Form* query_form = query.add_forms();
-        query_form->set_signature(form.value());
+        query_form->set_signature(form_signature.value());
         query_form->set_alternative_signature(alternative_signature.value());
-        queried_form_signatures.push_back(form);
+
+        if (base::FeatureList::IsEnabled(
+                features::kAutofillServerExperimentalSignatures)) {
+          query_form->set_structural_signature(
+              form.structural_form_signature().value());
+          PopulateThreeBitHashedFormMetadata(
+              form, query_form->mutable_three_bit_hashed_form_metadata());
+        }
+
+        queried_form_signatures.push_back(form_signature);
 
         for (const auto& field : fields) {
           if (IsCheckable(field->check_status()) ||
@@ -559,6 +562,12 @@ void EncodeFormForQuery(const FormStructure& form,
           AutofillPageQueryRequest::Form::Field* added_field =
               query_form->add_fields();
           added_field->set_signature(field->GetFieldSignature().value());
+
+          if (base::FeatureList::IsEnabled(
+                  features::kAutofillServerExperimentalSignatures)) {
+            PopulateThreeBitHashedFieldMetadata(
+                *field, added_field->mutable_three_bit_hashed_field_metadata());
+          }
         }
       };
 
@@ -695,6 +704,9 @@ std::optional<FieldSuggestion> GetFieldSuggestion(
       alternative_field_suggestion};
   base::optional_ref<FieldSuggestion> preferred_field_suggestion =
       *std::ranges::max_element(suggestions, {}, get_suggestion_priority);
+  if (!preferred_field_suggestion) {
+    return std::nullopt;
+  }
 
   // Add predictions for PasswordManager from `iframe_field_suggestions` if
   // `field_suggestion` is missing them. This is only relevant for
@@ -706,9 +718,7 @@ std::optional<FieldSuggestion> GetFieldSuggestion(
     MergePasswordManagerPredictions(*iframe_field_suggestion,
                                     *preferred_field_suggestion);
   }
-  return preferred_field_suggestion.has_value()
-             ? std::optional(std::move(*preferred_field_suggestion))
-             : std::nullopt;
+  return std::move(*preferred_field_suggestion);
 }
 
 // Builds a map from a pair of (form_signature, field_signature) to all the
@@ -735,16 +745,16 @@ GetSuggestionsMapFromResponse(
   }
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (base::FeatureList::IsEnabled(
-          features::test::kAutofillOverridePredictions)) {
+          features::debug::kAutofillOverridePredictions)) {
     if (std::string param =
-            features::test::kAutofillOverridePredictionsSpecification.Get();
+            features::debug::kAutofillOverridePredictionsSpecification.Get();
         !param.empty()) {
       InsertParsedOverrides(
           ParseServerPredictionOverrides(param, OverrideFormat::kSpec),
           fields_suggestions);
     }
     if (std::string param =
-            features::test::kAutofillOverridePredictionsJson.Get();
+            features::debug::kAutofillOverridePredictionsJson.Get();
         !param.empty()) {
       InsertParsedOverrides(
           ParseServerPredictionOverrides(param, OverrideFormat::kJson),
@@ -776,7 +786,7 @@ base::flat_set<FormSignature> GetFormsForWhichToRunAiModel(
 void MaybeMergeServerPredictions(
     std::vector<FieldPrediction>& server_predictions) {
   const auto server_types =
-      DenseSet<FieldType>(server_predictions, [](const FieldPrediction& pred) {
+      FieldTypeSet(server_predictions, [](const FieldPrediction& pred) {
         return ToSafeFieldType(pred.type(), UNKNOWN_TYPE);
       });
 
@@ -827,18 +837,18 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
       std::string(version_info::GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form.form_signature().value());
   if (base::FeatureList::IsEnabled(
-          features::kUseStructuralSignatureInsteadOfSecondary)) {
+          features::kAutofillUseStructuralSignatureInsteadOfSecondary)) {
     upload.set_structural_form_signature(
         form.structural_form_signature().value());
   } else {
     upload.set_secondary_form_signature(
         form.alternative_form_signature().value());
-  };
+  }
   upload.set_autofill_used(false);
   upload.set_data_present(data_present);
   upload.set_has_form_tag(form.is_form_element());
-  if (!form.current_page_language()->empty() && options.encoder) {
-    upload.set_language(form.current_page_language().value());
+  if (!options.current_page_language->empty() && options.encoder) {
+    upload.set_language(options.current_page_language.value());
   }
 
   if (options.form_associations.last_address_form_submitted) {
@@ -878,12 +888,12 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
   }
 
   if (base::FeatureList::IsEnabled(features::kAutofillServerUploadMoreData)) {
-    PopulateThreeBitHashedFormMetadata(form, upload);
+    PopulateThreeBitHashedFormMetadata(
+        form, upload.mutable_three_bit_hashed_form_metadata());
   }
 
-  std::vector<AutofillField*> upload_fields(form.fields().size());
-  std::ranges::transform(form.fields(), upload_fields.begin(),
-                         &std::unique_ptr<AutofillField>::get);
+  std::vector<AutofillField*> upload_fields =
+      base::ToVector(form.fields(), &std::unique_ptr<AutofillField>::get);
   EncodeFormFieldsForUpload(form, options.encoder, options.fields,
                             upload_fields, &upload);
   std::vector<AutofillUploadContents> uploads = {std::move(upload)};
@@ -960,7 +970,7 @@ EncodeAutofillPageQueryRequest(
 
 void ParseServerPredictionsQueryResponse(
     std::string_view payload,
-    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
+    const std::vector<raw_ref<FormStructure>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
     LogManager* log_manager) {
   AutofillMetrics::LogServerQueryMetric(
@@ -987,7 +997,7 @@ void ParseServerPredictionsQueryResponse(
 
 void ProcessServerPredictionsQueryResponse(
     const AutofillQueryResponse& response,
-    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
+    const std::vector<raw_ref<FormStructure>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
     LogManager* log_manager) {
   AutofillMetrics::LogServerQueryMetric(AutofillMetrics::QUERY_RESPONSE_PARSED);
@@ -1005,7 +1015,7 @@ void ProcessServerPredictionsQueryResponse(
       GetFormsForWhichToRunAiModel(response, queried_form_signatures);
 
   // Copy the field types into the actual form.
-  for (FormStructure* form : forms) {
+  for (const raw_ref<FormStructure>& form : forms) {
     form->set_may_run_autofill_ai_model(
         forms_for_which_to_run_ai_model.contains(form->form_signature()));
 
@@ -1027,7 +1037,7 @@ void ProcessServerPredictionsQueryResponse(
           field_suggestion->predictions().end()};
       MaybeMergeServerPredictions(server_predictions);
       field->set_server_predictions(std::move(server_predictions));
-      if (heuristic_type != field->Type().GetStorableType()) {
+      if (!field->Type().GetTypes().contains(heuristic_type)) {
         query_response_overrode_heuristics = true;
       }
       if (field_suggestion->has_password_requirements()) {
@@ -1035,14 +1045,15 @@ void ProcessServerPredictionsQueryResponse(
             field_suggestion->password_requirements());
       }
       if (field_suggestion->has_format_string()) {
-        switch (field_suggestion->format_string().type()) {
-          case FormatString_Type_AFFIX:
-          case FormatString_Type_DATE:
-            field->set_format_string_unless_overruled(
-                base::UTF8ToUTF16(
-                    field_suggestion->format_string().format_string()),
-                AutofillField::FormatStringSource::kServer);
-            break;
+        std::u16string format_string_value = base::UTF8ToUTF16(
+            field_suggestion->format_string().format_string());
+        if (AutofillFormatString::IsValid(
+                format_string_value,
+                field_suggestion->format_string().type())) {
+          field->set_format_string_unless_overruled(
+              AutofillFormatString(format_string_value,
+                                   field_suggestion->format_string().type()),
+              AutofillFormatStringSource::kServer);
         }
       }
       ++field_rank_map[field->GetFieldSignature()];

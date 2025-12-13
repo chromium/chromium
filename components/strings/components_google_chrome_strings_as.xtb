@@ -30,15 +30,14 @@
           আৰু "<ph name="NO_PREFETCH_DESCRIPTION" />"ক বাছনিৰ পৰা আঁতৰাওক
           এনে কৰিলেও যদি সমস্যাটো সমাধান নহয়, তেন্তে আমি উন্নত প্ৰদৰ্শনৰ বাবে
           আকৌ এই বিকল্পটো বাছনি কৰাৰ চুপাৰিছ কৰোঁ।</translation>
-<translation id="6855094794438142393">Chrome মেনু &gt;
+<translation id="6581867098636731226">Chromeৰ মেনু &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
-          <ph name="ADVANCED_TITLE" />
+          <ph name="SYSTEM_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
-          &gt;
-          LAN ছেটিঙলৈ যাওক আৰু 
-          "আপোনাৰ LANৰ বাবে প্ৰক্সি"ক বাছনিৰ পৰা আঁতৰাওক।</translation>
+          নেটৱৰ্ক আৰু ইণ্টাৰনেট &gt; প্ৰক্সীলৈ যাওক
+          আৰু তাৰ পাছত "স্বয়ংক্ৰিয়ভাৱে ছেটিং চিনাক্ত কৰক" বাছনিৰ পৰা আঁতৰাওক।</translation>
 <translation id="7230956101631259640">আপুনি এখন সুৰক্ষিত Chrome পৃষ্ঠা চায় আছে</translation>
 <translation id="8232971017369963250"><ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> মুক্ত উৎসৰ প্ৰ’জেক্টৰ জৰিয়তে Chrome ব্যৱহাৰযোগ্য কৰা হৈছে।</translation>
 <translation id="8279509328145658601">আন <ph name="BEGIN_LINK_OSS" />মুক্ত উৎসৰ ছফ্টৱেৰ<ph name="END_LINK_OSS" />ৰ জৰিয়তেও Chrome ব্যৱহাৰযোগ্য কৰা হৈছে।</translation>

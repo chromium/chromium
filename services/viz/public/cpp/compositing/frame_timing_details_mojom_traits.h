@@ -45,6 +45,26 @@ struct StructTraits<viz::mojom::FrameTimingDetailsDataView,
     return frame_timing_details.frame_id;
   }
 
+  static base::TimeTicks start_update_display_tree(
+      const viz::FrameTimingDetails& frame_timing_details) {
+    return frame_timing_details.start_update_display_tree;
+  }
+
+  static base::TimeTicks start_prepare_to_draw(
+      const viz::FrameTimingDetails& frame_timing_details) {
+    return frame_timing_details.start_prepare_to_draw;
+  }
+
+  static base::TimeTicks start_draw_layers(
+      const viz::FrameTimingDetails& frame_timing_details) {
+    return frame_timing_details.start_draw_layers;
+  }
+
+  static base::TimeTicks submit_compositor_frame(
+      const viz::FrameTimingDetails& frame_timing_details) {
+    return frame_timing_details.submit_compositor_frame;
+  }
+
   static bool Read(viz::mojom::FrameTimingDetailsDataView data,
                    viz::FrameTimingDetails* out);
 };

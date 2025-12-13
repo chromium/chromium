@@ -7,18 +7,15 @@
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
     <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
     <script src="../resources/fft.js"></script>
     <script src="../resources/realtimeanalyser-testing.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
-      let sampleRate = 44100;
-      let renderFrames = 2048;
+    <script>
+      const sampleRate = 44100;
+      const renderFrames = 2048;
 
-      let audit = Audit.createTaskRunner();
-
-      let testConfigs = [
+      const testConfigs = [
         {channelCount: 1, message: 'mono', floatRelError: 6.3283e-8},
         {channelCount: 2, message: 'stereo', floatRelError: 1.1681e-7},
         {channelCount: 4, message: 'quad', floatRelError: 4.9793e-7},
@@ -26,42 +23,35 @@
         {channelCount: 3, message: '3-channel', floatRelError: 6.3283e-8}
       ];
 
-      // Create tasks for each entry in testConfigs
-      for (k in testConfigs) {
-        audit.define(testConfigs[k].message, (function(config) {
-                       return function(task, should) {
-                         runTest(config, should).then(() => task.done());
-                       };
-                     })(testConfigs[k]));
+      // Create tests for each entry in testConfigs
+      for (const config of testConfigs) {
+        promise_test(async (t) => {
+          await runTest(config);
+        }, `Analyser downmix ${config.message} to mono`);
       }
-
-      audit.run();
 
       // Test downmixing of the AnalyserNode time data.  We use the downmixing
       // that automatically happens in the destination node to generate the
       // reference data which is compared to the data that the Analyser node has
       // captured.
-      function runTest(options, should) {
+      function runTest(options) {
         // Context MUST have exactly one channel so that we downmix the source
         // to mono to generate the reference.
-        let context = new OfflineAudioContext(1, renderFrames, sampleRate);
+        const context = new OfflineAudioContext(1, renderFrames, sampleRate);
 
-        let channels = options.channelCount || 1;
-        let source = context.createBufferSource();
+        const channels = options.channelCount || 1;
+        const source = context.createBufferSource();
 
         // The signals in each channel. Doesn't matter much what is in here, but
         // it's best if the values aren't linearly increasing so that the
         // average of the values isn't one of the values (in case the
         // implementation does something silly).  Only need to support up to 6
         // channels.
-        let bufferValues = [1, 2, 3, 4, 5, 6].map(function(x) {
-          return x * x
-        });
-        ;
+        const bufferValues = [1, 2, 3, 4, 5, 6].map((x) => x * x);
         source.buffer = createConstantBuffer(
             context, renderFrames, bufferValues.slice(0, channels));
 
-        let analyser = context.createAnalyser();
+        const analyser = context.createAnalyser();
         analyser.smoothingTimeConstant = 0;
         analyser.fftSize = 256;
 
@@ -71,34 +61,34 @@
         source.connect(analyser);
         source.connect(context.destination);
 
-        let timeData = new Float32Array(analyser.fftSize);
-        let freqData = new Float32Array(analyser.frequencyBinCount);
+        const timeData = new Float32Array(analyser.fftSize);
+        const freqData = new Float32Array(analyser.frequencyBinCount);
 
-        let suspendFrame = analyser.fftSize;
+        const suspendFrame = analyser.fftSize;
         context.suspend(suspendFrame / context.sampleRate)
-            .then(function() {
+            .then(() => {
               analyser.getFloatTimeDomainData(timeData);
               analyser.getFloatFrequencyData(freqData);
             })
             .then(context.resume.bind(context));
 
         source.start();
-        return context.startRendering().then(function(renderedBuffer) {
+        return context.startRendering().then((renderedBuffer) => {
           // Verify the time domain data is correct.
-          let prefix = 'Analyser downmix ' + options.message + ' to mono'
-          should(timeData, prefix + ' time data')
-              .beEqualToArray(renderedBuffer.getChannelData(0).subarray(
-                  0, analyser.fftSize));
+          const prefix = 'Analyser downmix ' + options.message + ' to mono';
+          assert_array_equals(
+              timeData,
+              renderedBuffer.getChannelData(0).subarray(0, analyser.fftSize),
+              prefix + ' time data');
 
-          let expectedTimeData =
+          const expectedTimeData =
               renderedBuffer.getChannelData(0).subarray(0, analyser.fftSize);
-          let fftOrder = Math.floor(Math.log2(analyser.fftSize));
-          let expectedFreqData =
+          const fftOrder = Math.floor(Math.log2(analyser.fftSize));
+          const expectedFreqData =
               computeFFTMagnitude(expectedTimeData, fftOrder).map(linearToDb);
 
-          compareFloatFreq(
-              prefix + ' freq data', freqData, expectedFreqData, should, {
-                precision: 6,
+          compareFloatFreq_W3CTH(
+              prefix + ' freq data', freqData, expectedFreqData, {
                 floatRelError: options.floatRelError,
               });
         });

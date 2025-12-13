@@ -96,11 +96,19 @@ struct CORE_EXPORT InsetModifiedContainingBlock {
   bool has_auto_inline_inset = false;
   bool has_auto_block_inset = false;
 
-  // Indicates how the insets were calculated. Besides, when we need to clamp
-  // the IMCB size, the stronger inset (i.e., the inset we are biased towards)
-  // stays at the same place, and the weaker inset is moved; If both insets are
-  // equally strong, both are moved by the same amount.
+  // If the special "default alignment overflow" behaviour applies.
+  bool inline_has_default_alignment_overflow = false;
+  bool block_has_default_alignment_overflow = false;
+
+  // The InsetBias is used to indicate which side(s) of the IMCB should be moved
+  // when calculating the insets.
+  // If both insets are equally strong, they are moved by the same amount.
   enum class InsetBias { kStart, kEnd, kEqual };
+
+  // The primary bias, this is dependent on which insets are set:
+  //  - If no insets (statically positioned), it is the static position bias.
+  //  - If a single inset, it is the bias for that inset.
+  //  - If both insets, it is based off the alignment.
   InsetBias inline_inset_bias = InsetBias::kStart;
   InsetBias block_inset_bias = InsetBias::kStart;
 
@@ -171,6 +179,7 @@ ComputeIMCBForPositionFallback(const LogicalSize& available_size,
 // Will return true if |BlockNode::ComputeMinMaxSizes| was called.
 CORE_EXPORT bool ComputeOofInlineDimensions(
     const BlockNode&,
+    const BlockBreakToken*,
     const ComputedStyle& style,
     const ConstraintSpace&,
     const InsetModifiedContainingBlock&,
@@ -186,6 +195,7 @@ CORE_EXPORT bool ComputeOofInlineDimensions(
 // otherwise it will return nullptr.
 CORE_EXPORT const LayoutResult* ComputeOofBlockDimensions(
     const BlockNode&,
+    const BlockBreakToken*,
     const ComputedStyle& style,
     const ConstraintSpace&,
     const InsetModifiedContainingBlock&,

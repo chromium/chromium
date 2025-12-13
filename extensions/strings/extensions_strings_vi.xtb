@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Tiện ích này bao gồm tệp khóa '<ph name="KEY_PATH" />'. Bạn có thể không muốn thực hiện việc đó.</translation>
 <translation id="5486326529110362464">Giá trị dữ liệu nhập cho khóa cá nhân phải tồn tại.</translation>
+<translation id="5707185214361380026">Không tải được tiện ích từ:</translation>
 <translation id="5972529113578162692">Quản trị viên của máy này yêu cầu cài đặt <ph name="EXTENSION_NAME" />. Không thể gỡ cài đặt tiện ích này.</translation>
 <translation id="6027032947578871493">Sản phẩm không xác định <ph name="PRODUCT_ID" /> từ <ph name="VENDOR_NAME" /> (số sê-ri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> từ nhà cung cấp <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Lỗi khi tải tiện ích</translation>
 <translation id="6322279351188361895">Không thể đọc khóa cá nhân.</translation>
 <translation id="6391538222494443604">Thư mục dữ liệu nhập phải tồn tại.</translation>
 <translation id="641087317769093025">Không thể giải nén tiện ích</translation>

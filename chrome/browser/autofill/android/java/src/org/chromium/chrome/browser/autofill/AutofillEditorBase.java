@@ -30,9 +30,11 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.ui.text.EmptyTextWatcher;
 
@@ -100,6 +102,11 @@ public abstract class AutofillEditorBase extends Fragment
         LinearLayout contentLayout = (LinearLayout) scrollView.findViewById(R.id.content);
         inflater.inflate(getLayoutId(), contentLayout, true);
         inflater.inflate(R.layout.autofill_editor_base_buttons, contentLayout, true);
+
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            baseView.findViewById(R.id.button_bar)
+                    .setBackgroundColor(SemanticColorUtils.getSettingsBackgroundColor(mContext));
+        }
 
         return baseView;
     }

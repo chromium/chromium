@@ -24,7 +24,7 @@
   // TODO(crbug.com/40228520): View controllers should not have access to
   // model-layer objects. Create a mediator to connect model-layer class
   // `UrlLoadingBrowserAgent` to the view controller.
-  raw_ptr<UrlLoadingBrowserAgent> _URLLoader;  // weak
+  raw_ptr<UrlLoadingBrowserAgent, DanglingUntriaged> _URLLoader;  // weak
 }
 
 - (instancetype)initWithUrlLoader:(UrlLoadingBrowserAgent*)URLLoader {

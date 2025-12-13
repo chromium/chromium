@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
+#include "chrome/browser/ui/signin/dice_migration_service.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -44,6 +45,8 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/webauthn/passkey_unlock_manager.h"
+#include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -351,11 +354,7 @@ bool AvatarToolbarButton::ShouldPaintBorder() const {
 }
 
 bool AvatarToolbarButton::ShouldBlendHighlightColor() const {
-  if (base::FeatureList::IsEnabled(
-          features::kEnableAppMenuButtonColorsForDefaultAvatarButtonStates)) {
-    return false;
-  }
-  return GetWidget() && GetWidget()->GetCustomTheme();
+  return false;
 }
 
 base::ScopedClosureRunner AvatarToolbarButton::SetExplicitButtonState(
@@ -400,8 +399,9 @@ void AvatarToolbarButton::MaybeShowProfileSwitchIPH() {
     // Installable PasswordManager WebUI is the only web app that has an avatar
     // toolbar button.
     auto app_url = browser_->app_controller()->GetAppStartUrl();
-    CHECK(content::HasWebUIScheme(app_url) &&
-          (app_url.host() == password_manager::kChromeUIPasswordManagerHost));
+    CHECK(
+        content::HasWebUIScheme(app_url) &&
+        (app_url.GetHost() == password_manager::kChromeUIPasswordManagerHost));
     BrowserUserEducationInterface::From(browser_)->MaybeShowStartupFeaturePromo(
         feature_engagement::kIPHPasswordsWebAppProfileSwitchFeature);
   }
@@ -451,6 +451,52 @@ void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH() {
   BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
       std::move(params));
 }
+
+void AvatarToolbarButton::MaybeShowSignInBenefitsIPH() {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos) ||
+      !base::FeatureList::IsEnabled(
+          feature_engagement::kIPHSignInBenefitsFeature)) {
+    return;
+  }
+
+  // Prevent showing the IPH bubble right when the browser was created. Wait a
+  // small delay for a smoother animation.
+  base::TimeDelta time_since_creation = base::TimeTicks::Now() - creation_time_;
+  if (time_since_creation < g_iph_min_delay_after_creation) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AvatarToolbarButton::MaybeShowSignInBenefitsIPH,
+                       weak_ptr_factory_.GetWeakPtr()),
+        g_iph_min_delay_after_creation - time_since_creation);
+    return;
+  }
+
+  Profile* profile = browser_->profile();
+  CHECK(profile);
+
+  // The IPH only concerns signed-in, non-syncing profiles.
+  signin::IdentityManager* const identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager ||
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    return;
+  }
+
+  PrefService* prefs = profile->GetPrefs();
+  CHECK(prefs);
+
+  // Users who sign in after the migration and users migrated from DICe will be
+  // notified with other promos communicating sign-in benefits.
+  if (prefs->GetBoolean(prefs::kPrimaryAccountSetAfterSigninMigration) ||
+      prefs->GetBoolean(kDiceMigrationMigrated)) {
+    return;
+  }
+
+  BrowserUserEducationInterface::From(browser_)->MaybeShowStartupFeaturePromo(
+      feature_engagement::kIPHSignInBenefitsFeature);
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 void AvatarToolbarButton::MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(
@@ -461,13 +507,6 @@ void AvatarToolbarButton::MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(
   params.title_params = base::UTF8ToUTF16(account_info.given_name);
   BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
       std::move(params));
-}
-
-void AvatarToolbarButton::MaybeShowWebSignoutIPH(const GaiaId& gaia_id) {
-  BrowserUserEducationInterface::From(browser_)->MaybeShowFeaturePromo(
-      user_education::FeaturePromoParams(
-          feature_engagement::kIPHSignoutWebInterceptFeature,
-          gaia_id.ToString()));
 }
 
 void AvatarToolbarButton::OnMouseExited(const ui::MouseEvent& event) {
@@ -512,7 +551,24 @@ void AvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
             feature_engagement::kIPHPasswordsSavePrimingPromoFeature,
             FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   }
+
+  if (webauthn::PasskeyUnlockManager::IsPasskeyUnlockErrorUiEnabled()) {
+    webauthn::PasskeyUnlockManager* passkey_unlock_manager =
+        webauthn::PasskeyUnlockManagerFactory::GetForProfile(
+            browser_->profile());
+    if (passkey_unlock_manager &&
+        passkey_unlock_manager->ShouldDisplayErrorUi()) {
+      webauthn::PasskeyUnlockManager::RecordErrorUIEventType(
+          webauthn::PasskeyUnlockManager::ErrorUIEventType::
+              kAvatarButtonPressed);
+    }
+  }
 #endif
+
+  // Notify observers before the action is performed to allow them to close any
+  // open dialogs.
+  observer_list_.Notify(&Observer::OnButtonPressed);
+
   CHECK(state_manager_);
   StateProvider* active_state_provider =
       state_manager_->GetActiveStateProvider();
@@ -574,31 +630,6 @@ void AvatarToolbarButton::OnExtendedAccountInfoUpdated(
   }
 }
 
-void AvatarToolbarButton::OnErrorStateOfRefreshTokenUpdatedForAccount(
-    const CoreAccountInfo& account_info,
-    const GoogleServiceAuthError& error,
-    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
-  Profile* profile = browser_->profile();
-  CHECK(profile);
-  PrefService* prefs = profile->GetPrefs();
-  CHECK(prefs);
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  CHECK(identity_manager);
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) &&
-      prefs->GetBoolean(prefs::kExplicitBrowserSignin) &&
-      account_info == identity_manager->GetPrimaryAccountInfo(
-                          signin::ConsentLevel::kSignin) &&
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
-      error.state() ==
-          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS &&
-      token_operation_source == signin_metrics::SourceForRefreshTokenOperation::
-                                    kDiceResponseHandler_Signout) {
-    MaybeShowWebSignoutIPH(account_info.gaia);
-  }
-}
-
 void AvatarToolbarButton::AfterPropertyChange(const void* key,
                                               int64_t old_value) {
   if (key == user_education::kHasInProductHelpPromoKey) {
@@ -610,30 +641,10 @@ void AvatarToolbarButton::AfterPropertyChange(const void* key,
 }
 
 SkColor AvatarToolbarButton::GetForegroundColor(ButtonState state) const {
-  if (base::FeatureList::IsEnabled(
-          features::kEnableAppMenuButtonColorsForDefaultAvatarButtonStates)) {
-    if (IsLabelPresentAndVisible()) {
-      return GetHighlightTextColor().value_or(GetColorProvider()->GetColor(
-          kColorAvatarButtonHighlightDefaultForeground));
-    }
-  } else {
-    const bool has_custom_theme =
-        this->GetWidget() && this->GetWidget()->GetCustomTheme();
-
-    // If there is a custom theme use the `ToolbarButton` version of
-    // `GetForegroundColor()` This is to avoid creating new colorIds for icons
-    // for all the different states. With chrome refresh and without any custom
-    // theme, the color would be same as the label color.
-    if (!has_custom_theme && IsLabelPresentAndVisible()) {
-      const std::optional<SkColor> foreground_color = GetHighlightTextColor();
-      const auto* const color_provider = GetColorProvider();
-      return foreground_color.has_value()
-                 ? foreground_color.value()
-                 : color_provider->GetColor(
-                       kColorAvatarButtonHighlightDefaultForeground);
-    }
+  if (IsLabelPresentAndVisible()) {
+    return GetHighlightTextColor().value_or(GetColorProvider()->GetColor(
+        kColorAvatarButtonHighlightDefaultForeground));
   }
-
   return ToolbarButton::GetForegroundColor(state);
 }
 
@@ -684,6 +695,11 @@ base::AutoReset<std::optional<base::TimeDelta>> AvatarToolbarButton::
     CreateScopedZeroDelayOverrideSigninPendingTextForTesting() {
   return AvatarToolbarButtonStateManager::
       CreateScopedZeroDelayOverrideSigninPendingTextForTesting();
+}
+
+void AvatarToolbarButton::ForceShowingPromoForTesting() {
+  CHECK(state_manager_);
+  state_manager_->ForceShowingPromoForTesting();
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

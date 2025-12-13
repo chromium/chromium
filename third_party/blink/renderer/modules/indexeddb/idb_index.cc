@@ -29,6 +29,7 @@
 #include <memory>
 #include <utility>
 
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_get_all_options.h"
@@ -42,6 +43,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db_blink_mojom_traits.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -194,7 +196,7 @@ IDBRequest* IDBIndex::count(ScriptState* script_state,
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
   db().Count(transaction_->Id(), object_store_->Id(), Id(), key_range,
-             WTF::BindOnce(&IDBRequest::OnCount, WrapWeakPersistent(request)));
+             BindOnce(&IDBRequest::OnCount, WrapWeakPersistent(request)));
   return request;
 }
 
@@ -303,6 +305,11 @@ IDBRequest* IDBIndex::getAllRecords(ScriptState* script_state,
   TRACE_EVENT1("IndexedDB", "IDBIndex::getAllRecords", "index_name",
                metadata_->name.Utf8());
 
+  // Explicitly count `kIndexedDBGetAllRecords` usage because the IDL definition
+  // for `getAllRecords()` already has a [Measure] recording `kIndexedDBRead`.
+  UseCounter::Count(ExecutionContext::From(script_state),
+                    WebFeature::kIndexedDBGetAllRecords);
+
   return CreateGetAllRequest(
       IDBRequest::TypeForMetrics::kIndexGetAllRecords, script_state, *options,
       mojom::blink::IDBGetAllResultType::Records, exception_state);
@@ -353,7 +360,7 @@ IDBRequest* IDBIndex::GetInternal(ScriptState* script_state,
   IDBRequest* request = IDBRequest::Create(
       script_state, this, transaction_.Get(), std::move(metrics));
   db().Get(transaction_->Id(), object_store_->Id(), Id(), key_range, key_only,
-           WTF::BindOnce(&IDBRequest::OnGet, WrapPersistent(request)));
+           BindOnce(&IDBRequest::OnGet, WrapPersistent(request)));
   return request;
 }
 

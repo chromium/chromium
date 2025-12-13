@@ -14,6 +14,8 @@ source_set("renderer") {
     "aw_print_render_frame_helper_delegate.h",
     "aw_render_frame_ext.cc",
     "aw_render_frame_ext.h",
+    "aw_render_frame_observer.cc",
+    "aw_render_frame_observer.h",
     "aw_render_thread_observer.cc",
     "aw_render_thread_observer.h",
     "aw_render_view_ext.cc",

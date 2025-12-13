@@ -9,7 +9,6 @@
 #include <DXGI1_4.h>
 #include <wrl.h>
 
-#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/win/scoped_handle.h"
 #include "gpu/command_buffer/common/sync_token.h"

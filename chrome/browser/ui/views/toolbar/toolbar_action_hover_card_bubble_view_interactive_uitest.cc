@@ -4,9 +4,6 @@
 
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
-#include "chrome/browser/extensions/install_verifier.h"
-#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
-#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -24,6 +21,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_action_manager.h"
+#include "extensions/browser/install_verifier.h"
+#include "extensions/browser/permissions/scripting_permissions_modifier.h"
+#include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -102,7 +102,7 @@ class ToolbarActionHoverCardBubbleViewUITest : public ExtensionsToolbarUITest {
     // We don't use ToolbarActionView::OnMouseEntered here to invoke the hover
     // card because that path is disabled in browser tests. If we enabled it,
     // the real mouse might interfere with the test.
-    GetExtensionsToolbarContainer()->UpdateToolbarActionHoverCard(
+    GetExtensionsToolbarContainer()->UpdateHoverCard(
         action_view, ToolbarActionHoverCardUpdateType::kHover);
   }
 
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
 
 // Verify hover card content and anchor is correctly updated when moving hover
 // from one action view to another. Note that hover card content based on site
-// access is tested more in depth in ExtensionActionViewController unittest,
+// access is tested more in depth in ExtensionActionViewModel unittest,
 // since such class computes the hover card state.
 IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
                        WidgetUpdatedWhenHoveringBetweenActionViews) {

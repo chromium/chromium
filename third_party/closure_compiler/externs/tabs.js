@@ -59,6 +59,7 @@ chrome.tabs.MutedInfo;
  *   id: (number|undefined),
  *   index: number,
  *   groupId: number,
+ *   splitViewId: number,
  *   windowId: number,
  *   openerTabId: (number|undefined),
  *   selected: boolean,
@@ -126,6 +127,13 @@ chrome.tabs.WindowType = {
   APP: 'app',
   DEVTOOLS: 'devtools',
 };
+
+/**
+ * An ID that represents the absence of a split tab.
+ * @type {number}
+ * @see https://developer.chrome.com/extensions/tabs#type-SPLIT_VIEW_ID_NONE
+ */
+chrome.tabs.SPLIT_VIEW_ID_NONE;
 
 /**
  * An ID that represents the absence of a browser tab.
@@ -258,6 +266,7 @@ chrome.tabs.duplicate = function(tabId, callback) {};
  *   title: (string|undefined),
  *   url: ((string|!Array<string>)|undefined),
  *   groupId: (number|undefined),
+ *   splitViewId: (number|undefined),
  *   windowId: (number|undefined),
  *   windowType: (!chrome.tabs.WindowType|undefined),
  *   index: (number|undefined)

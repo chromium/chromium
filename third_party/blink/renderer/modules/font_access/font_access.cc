@@ -94,7 +94,7 @@ ScriptPromise<IDLSequence<FontMetadata>> FontAccess::QueryLocalFontsImpl(
         remote_.BindNewPipeAndPassReceiver(
             context->GetTaskRunner(TaskType::kFontLoading)));
     remote_.set_disconnect_handler(
-        WTF::BindOnce(&FontAccess::OnDisconnect, WrapWeakPersistent(this)));
+        BindOnce(&FontAccess::OnDisconnect, WrapWeakPersistent(this)));
   }
   DCHECK(remote_.is_bound());
 
@@ -103,8 +103,8 @@ ScriptPromise<IDLSequence<FontMetadata>> FontAccess::QueryLocalFontsImpl(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   remote_->EnumerateLocalFonts(resolver->WrapCallbackInScriptScope(
-      WTF::BindOnce(&FontAccess::DidGetEnumerationResponse,
-                    WrapWeakPersistent(this), WrapPersistent(options))));
+      blink::BindOnce(&FontAccess::DidGetEnumerationResponse,
+                      WrapWeakPersistent(this), WrapPersistent(options))));
 
   return promise;
 }

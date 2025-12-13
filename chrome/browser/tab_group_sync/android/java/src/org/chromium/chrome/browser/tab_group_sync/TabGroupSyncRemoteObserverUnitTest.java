@@ -24,7 +24,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -46,6 +45,7 @@ import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.url.GURL;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Unit tests for the {@link TabGroupSyncRemoteObserver}. */
 @RunWith(BaseRobolectricTestRunner.class)

@@ -34,6 +34,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -110,7 +111,7 @@ MojoVideoDecoder::MojoVideoDecoder(
 MojoVideoDecoder::~MojoVideoDecoder() {
   DVLOG(1) << __func__;
   if (request_overlay_info_cb_ && overlay_info_requested_)
-    request_overlay_info_cb_.Run(false, base::NullCallback());
+    request_overlay_info_cb_.Run(base::NullCallback());
 }
 
 bool MojoVideoDecoder::IsPlatformDecoder() const {
@@ -210,8 +211,7 @@ void MojoVideoDecoder::OnInitializeDone(const DecoderStatus& status,
                                         int32_t max_decode_requests,
                                         VideoDecoderType decoder_type,
                                         bool needs_transcryption) {
-  DVLOG(1) << __func__ << ": status = " << status.group() << ":"
-           << static_cast<int>(status.code());
+  status.DebugLog(1);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   initialized_ = status.is_ok();
   needs_bitstream_conversion_ = needs_bitstream_conversion;
@@ -281,11 +281,10 @@ void MojoVideoDecoder::OnVideoFrameDecoded(
     const auto decode_start_time = timestamp_it->second;
     const auto decode_end_time = base::TimeTicks::Now();
 
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        "media", "MojoVideoDecoder::Decode", timestamp, decode_start_time);
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
-        "media", "MojoVideoDecoder::Decode", timestamp, decode_end_time,
-        "timestamp", timestamp);
+    TRACE_EVENT_BEGIN("media", "MojoVideoDecoder::Decode",
+                      perfetto::Track(timestamp), decode_start_time);
+    TRACE_EVENT_END("media", perfetto::Track(timestamp), decode_end_time,
+                    "timestamp", timestamp);
     UMA_HISTOGRAM_TIMES("Media.MojoVideoDecoder.Decode",
                         decode_end_time - decode_start_time);
   }
@@ -433,14 +432,13 @@ void MojoVideoDecoder::OnWaiting(WaitingReason reason) {
   waiting_cb_.Run(reason);
 }
 
-void MojoVideoDecoder::RequestOverlayInfo(bool restart_for_transitions) {
+void MojoVideoDecoder::RequestOverlayInfo() {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(request_overlay_info_cb_);
 
   overlay_info_requested_ = true;
   request_overlay_info_cb_.Run(
-      restart_for_transitions,
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &MojoVideoDecoder::OnOverlayInfoChanged, weak_this_)));
 }

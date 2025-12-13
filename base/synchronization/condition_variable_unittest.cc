@@ -12,6 +12,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -133,7 +134,7 @@ class WorkQueue : public PlatformThread::Delegate {
 
   const int thread_count_;
   int waiting_thread_count_ = 0;
-  std::unique_ptr<PlatformThreadHandle[]> thread_handles_;
+  base::HeapArray<PlatformThreadHandle> thread_handles_;
   std::vector<int> assignment_history_;  // Number of assignment per worker.
   std::vector<int> completion_history_;  // Number of completions per worker.
   int thread_started_counter_ = 0;       // Used to issue unique id to workers.
@@ -155,7 +156,9 @@ TEST_F(ConditionVariableTest, StartupShutdownTest) {
   Lock lock;
 
   // First try trivial startup/shutdown.
-  { ConditionVariable cv1(&lock); }  // Call for cv1 destruction.
+  {
+    ConditionVariable cv1(&lock);
+  }  // Call for cv1 destruction.
 
   // Exercise with at least a few waits.
   ConditionVariable cv(&lock);
@@ -492,7 +495,8 @@ WorkQueue::WorkQueue(int thread_count)
       all_threads_have_ids_(&lock_),
       no_more_tasks_(&lock_),
       thread_count_(thread_count),
-      thread_handles_(new PlatformThreadHandle[thread_count]),
+      thread_handles_(
+          base::HeapArray<PlatformThreadHandle>::WithSize(thread_count)),
       assignment_history_(thread_count),
       completion_history_(thread_count) {
   EXPECT_GE(thread_count_, 1);

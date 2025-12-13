@@ -18,6 +18,8 @@ AX_TEST_F('DictationLocaleInfoTest', 'AllowSmartCapAndSpacing', function() {
   assertTrue(LocaleInfo.allowSmartCapAndSpacing());
   LocaleInfo.locale = 'es';
   assertTrue(LocaleInfo.allowSmartCapAndSpacing());
+  LocaleInfo.locale = 'pl';
+  assertTrue(LocaleInfo.allowSmartCapAndSpacing());
 
   LocaleInfo.locale = 'ja-JP';
   assertFalse(LocaleInfo.allowSmartCapAndSpacing());

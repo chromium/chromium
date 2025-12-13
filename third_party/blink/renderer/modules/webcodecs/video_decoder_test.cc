@@ -69,7 +69,7 @@ class FakeVideoDecoder : public VideoDecoder {
         .WillOnce([](Unused, media::VideoDecoder::DecodeCB& decode_cb) {
           scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
               FROM_HERE,
-              WTF::BindOnce(std::move(decode_cb), media::OkStatus()));
+              blink::BindOnce(std::move(decode_cb), media::OkStatus()));
         });
 
     EXPECT_CALL(*mock_decoder_, Initialize_(_, _, _, _, _, _))
@@ -77,7 +77,8 @@ class FakeVideoDecoder : public VideoDecoder {
                                  media::VideoDecoder::InitCB& init_cb, Unused,
                                  Unused) {
           scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
-              FROM_HERE, WTF::BindOnce(std::move(init_cb), media::OkStatus()));
+              FROM_HERE,
+              blink::BindOnce(std::move(init_cb), media::OkStatus()));
           scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
               FROM_HERE, std::move(quit_closure));
         });

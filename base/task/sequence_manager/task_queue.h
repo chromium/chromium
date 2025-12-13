@@ -163,6 +163,13 @@ class BASE_EXPORT TaskQueue {
       return *this;
     }
 
+    // Some queues for internal control messages should be exempt from
+    // ScopedExecutionFences.
+    Spec SetScopedExecutionFencesAllowed(bool allow_scoped_execution_fences) {
+      scoped_execution_fence_allowed = allow_scoped_execution_fences;
+      return *this;
+    }
+
     Spec SetNonWaking(bool non_waking_in) {
       non_waking = non_waking_in;
       return *this;
@@ -172,6 +179,7 @@ class BASE_EXPORT TaskQueue {
     bool should_monitor_quiescence = false;
     bool should_notify_observers = true;
     bool delayed_fence_allowed = false;
+    bool scoped_execution_fence_allowed = true;
     bool non_waking = false;
   };
 
@@ -448,6 +456,11 @@ class BASE_EXPORT TaskQueue {
   // (>1000), making it worthwhile to traverse it to reclaim memory. Should only
   // be called in a context where it's safe to call the destructor of tasks.
   virtual void RemoveCancelledTasks() = 0;
+
+  // Returns true if tasks posted to this queue should be blocked by
+  // ScopedExecutionFences. (This is the default behaviour unless the queue was
+  // created with `scoped_execution_fence_allowed` false in the Spec.)
+  virtual bool IsBlockedByScopedExecutionFences() = 0;
 
  protected:
   TaskQueue() = default;

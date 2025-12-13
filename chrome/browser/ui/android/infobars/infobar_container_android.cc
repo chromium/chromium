@@ -17,7 +17,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/InfoBarContainer_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 // InfoBarContainerAndroid ----------------------------------------------------
 
@@ -33,7 +33,7 @@ InfoBarContainerAndroid::~InfoBarContainerAndroid() {
 
 void InfoBarContainerAndroid::SetWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& web_contents) {
+    const JavaRef<jobject>& web_contents) {
   infobars::ContentInfoBarManager* infobar_manager =
       web_contents
           ? infobars::ContentInfoBarManager::FromWebContents(
@@ -100,9 +100,11 @@ void InfoBarContainerAndroid::PlatformSpecificRemoveInfoBar(
 
 // Native JNI methods ---------------------------------------------------------
 
-jlong JNI_InfoBarContainer_Init(JNIEnv* env,
-                                const jni_zero::JavaParamRef<jobject>& obj) {
+static jlong JNI_InfoBarContainer_Init(JNIEnv* env,
+                                       const jni_zero::JavaRef<jobject>& obj) {
   InfoBarContainerAndroid* infobar_container =
       new InfoBarContainerAndroid(env, obj);
   return reinterpret_cast<intptr_t>(infobar_container);
 }
+
+DEFINE_JNI(InfoBarContainer)

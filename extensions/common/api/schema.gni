@@ -11,10 +11,11 @@ import("//extensions/buildflags/buildflags.gni")
 extensions_api_schema_files_ = [
   "alarms.webidl",
   "declarative_net_request.idl",
-  "dns.idl",
+  "dns.webidl",
   "events.json",
   "extension_types.json",
   "file_handlers.idl",
+  "icon_variants.idl",
   "i18n.json",
   "idle.json",
   "management.json",
@@ -24,9 +25,9 @@ extensions_api_schema_files_ = [
   "protocol_handlers.idl",
   "runtime.json",
   "storage.json",
-  "system_cpu.idl",
-  "system_memory.idl",
-  "system_network.idl",
+  "system_cpu.webidl",
+  "system_memory.webidl",
+  "system_network.webidl",
   "test.json",
   "types.json",
   "user_scripts.idl",
@@ -37,6 +38,7 @@ extensions_api_schema_files_ = [
 # In many cases, this includes schemas used to generate types used in manifest
 # parsing.
 extensions_types_only_schema_files_ = [
+  "chrome_url_overrides.idl",
   "content_scripts.idl",
   "cross_origin_isolation.idl",
   "extensions_manifest_types.json",
@@ -51,25 +53,24 @@ extensions_types_only_schema_files_ = [
 # APIs that are not currently supported on the experimental desktop-android.
 if (enable_extensions) {
   extensions_api_schema_files_ += [
-    "app_current_window_internal.idl",
-    "app_runtime.idl",
+    "app_current_window_internal.webidl",
+    "app_runtime.webidl",
     "app_view_guest_internal.json",
     "app_window.idl",
-    "audio.idl",
+    "audio.webidl",
     "automation_internal.idl",
     "automation.idl",
-    "bluetooth_low_energy.idl",
+    "bluetooth_low_energy.webidl",
     "bluetooth_private.idl",
-    "bluetooth_socket.idl",
-    "bluetooth.idl",
-    "cec_private.idl",
-    "clipboard.idl",
-    "extension_options_internal.idl",
+    "bluetooth_socket.webidl",
+    "bluetooth.webidl",
+    "cec_private.webidl",
+    "clipboard.webidl",
+    "extension_options_internal.webidl",
     "feedback_private.idl",
     "file_system.idl",
     "guest_view_internal.json",
     "hid.idl",
-    "icon_variants.idl",
     "mime_handler_private.idl",
     "mime_handler_view_guest_internal.json",
     "mojo_private.idl",
@@ -82,19 +83,19 @@ if (enable_extensions) {
     "sockets_tcp_server.idl",
     "sockets_tcp.idl",
     "sockets_udp.idl",
-    "system_display.idl",
-    "system_storage.idl",
-    "usb.idl",
+    "system_display.webidl",
+    "system_storage.webidl",
+    "usb.webidl",
     "virtual_keyboard_private.json",
-    "virtual_keyboard.idl",
+    "virtual_keyboard.webidl",
     "web_view_internal.json",
   ]
 
   if (is_chromeos) {
     extensions_api_schema_files_ += [
-      "diagnostics.idl",
+      "diagnostics.webidl",
       "media_perception_private.idl",
-      "webcam_private.idl",
+      "webcam_private.webidl",
     ]
   }
 }
@@ -105,13 +106,12 @@ if (enable_extensions) {
 # API by moving these entries to the `extensions_api_schema_files_` above.
 if (enable_desktop_android_extensions) {
   extensions_types_only_schema_files_ += [
-    "clipboard.idl",
-    "icon_variants.idl",
+    "clipboard.webidl",
     "scripts_internal.idl",
-    "system_display.idl",
-    "usb.idl",
+    "system_display.webidl",
+    "usb.webidl",
     "virtual_keyboard_private.json",
-    "virtual_keyboard.idl",
+    "virtual_keyboard.webidl",
   ]
 }
 

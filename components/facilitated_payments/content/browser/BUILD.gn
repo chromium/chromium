@@ -30,7 +30,10 @@ static_library("browser") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "content_facilitated_payments_driver_unittest.cc" ]
+  sources = [
+    "content_facilitated_payments_driver_factory_unittest.cc",
+    "content_facilitated_payments_driver_unittest.cc",
+  ]
 
   deps = [
     ":browser",

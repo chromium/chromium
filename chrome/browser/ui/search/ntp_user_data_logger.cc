@@ -22,18 +22,33 @@
 #include "components/ntp_tiles/metrics.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace {
 
 constexpr char kUIEventCategory[] = "ui";
 
 // Logs CustomizedShortcutSettings on the NTP.
-void LogCustomizedShortcutSettings(bool using_most_visited, bool is_visible) {
+void LogCustomizedShortcutSettings(bool using_most_visited,
+                                   bool using_custom_links,
+                                   bool using_enterprise_shortcuts,
+                                   bool is_visible) {
   CustomizedShortcutSettings setting;
-  if (is_visible && using_most_visited) {
+  if (!is_visible) {
+    setting = CustomizedShortcutSettings::CUSTOMIZED_SHORTCUT_SETTINGS_HIDDEN;
+  } else if (using_enterprise_shortcuts && using_most_visited) {
+    setting = CustomizedShortcutSettings::
+        CUSTOMIZED_SHORTCUT_SETTINGS_ENTERPRISE_SHORTCUTS_AND_MOST_VISITED;
+  } else if (using_enterprise_shortcuts && using_custom_links) {
+    setting = CustomizedShortcutSettings::
+        CUSTOMIZED_SHORTCUT_SETTINGS_ENTERPRISE_SHORTCUTS_AND_CUSTOM_LINKS;
+  } else if (using_enterprise_shortcuts) {
+    setting = CustomizedShortcutSettings::
+        CUSTOMIZED_SHORTCUT_SETTINGS_ENTERPRISE_SHORTCUTS;
+  } else if (using_most_visited) {
     setting =
         CustomizedShortcutSettings::CUSTOMIZED_SHORTCUT_SETTINGS_MOST_VISITED;
-  } else if (is_visible && !using_most_visited) {
+  } else if (using_custom_links) {
     setting =
         CustomizedShortcutSettings::CUSTOMIZED_SHORTCUT_SETTINGS_CUSTOM_LINKS;
   } else {
@@ -120,6 +135,23 @@ CustomizeShortcutAction LoggingEventToCustomizeShortcutAction(
     case NTP_CUSTOMIZE_SHORTCUT_TOGGLE_VISIBILITY:
       return CustomizeShortcutAction::
           CUSTOMIZE_SHORTCUT_ACTION_TOGGLE_VISIBILITY;
+    case NTP_CUSTOMIZE_PERSONAL_SHORTCUT_TOGGLE_VISIBILITY:
+      return CustomizeShortcutAction::
+          CUSTOMIZE_PERSONAL_SHORTCUT_ACTION_TOGGLE_VISIBILITY;
+    case NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_UPDATE:
+      return CustomizeShortcutAction::
+          CUSTOMIZE_ENTERPRISE_SHORTCUT_ACTION_UPDATE;
+    case NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_REMOVE:
+      return CustomizeShortcutAction::
+          CUSTOMIZE_ENTERPRISE_SHORTCUT_ACTION_REMOVE;
+    case NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_UNDO:
+      return CustomizeShortcutAction::CUSTOMIZE_ENTERPRISE_SHORTCUT_ACTION_UNDO;
+    case NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_RESTORE_ALL:
+      return CustomizeShortcutAction::
+          CUSTOMIZE_ENTERPRISE_SHORTCUT_ACTION_RESTORE_ALL;
+    case NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_TOGGLE_VISIBILITY:
+      return CustomizeShortcutAction::
+          CUSTOMIZE_ENTERPRISE_SHORTCUT_ACTION_TOGGLE_VISIBILITY;
     default:
       break;
   }
@@ -326,6 +358,12 @@ void NTPUserDataLogger::LogEvent(NTPLoggingEventType event,
     case NTP_CUSTOMIZE_SHORTCUT_RESTORE_ALL:
     case NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE:
     case NTP_CUSTOMIZE_SHORTCUT_TOGGLE_VISIBILITY:
+    case NTP_CUSTOMIZE_PERSONAL_SHORTCUT_TOGGLE_VISIBILITY:
+    case NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_UPDATE:
+    case NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_REMOVE:
+    case NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_UNDO:
+    case NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_RESTORE_ALL:
+    case NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_TOGGLE_VISIBILITY:
       UMA_HISTOGRAM_ENUMERATION("NewTabPage.CustomizeShortcutAction",
                                 LoggingEventToCustomizeShortcutAction(event));
       break;
@@ -369,8 +407,11 @@ void NTPUserDataLogger::LogEvent(NTPLoggingEventType event,
 
 void NTPUserDataLogger::LogMostVisitedLoaded(base::TimeDelta time,
                                              bool using_most_visited,
+                                             bool using_custom_links,
+                                             bool using_enterprise_shortcuts,
                                              bool is_visible) {
-  EmitNtpStatistics(time, using_most_visited, is_visible);
+  EmitNtpStatistics(time, using_most_visited, using_custom_links,
+                    using_enterprise_shortcuts, is_visible);
 }
 
 void NTPUserDataLogger::LogMostVisitedImpression(
@@ -402,6 +443,8 @@ bool NTPUserDataLogger::CustomBackgroundIsConfigured() const {
 
 void NTPUserDataLogger::EmitNtpStatistics(base::TimeDelta load_time,
                                           bool using_most_visited,
+                                          bool using_custom_links,
+                                          bool using_enterprise_shortcuts,
                                           bool is_visible) {
   // We only send statistics once per page.
   if (has_emitted_) {
@@ -445,9 +488,10 @@ void NTPUserDataLogger::EmitNtpStatistics(base::TimeDelta load_time,
   }
 
   if (is_google) {
-    LogCustomizedShortcutSettings(using_most_visited, is_visible);
+    LogCustomizedShortcutSettings(using_most_visited, using_custom_links,
+                                  using_enterprise_shortcuts, is_visible);
 
-    if (!using_most_visited) {
+    if (using_custom_links) {
       UMA_HISTOGRAM_ENUMERATION(
           "NewTabPage.Customized",
           LoggingEventToCustomizedFeature(NTP_SHORTCUT_CUSTOMIZED));
@@ -466,12 +510,11 @@ void NTPUserDataLogger::EmitNtpStatistics(base::TimeDelta load_time,
 
 void NTPUserDataLogger::EmitNtpTraceEvent(const char* event_name,
                                           base::TimeDelta duration) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(kUIEventCategory, event_name,
-                                                   TRACE_ID_LOCAL(this),
-                                                   ntp_navigation_start_time_);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kUIEventCategory, event_name, TRACE_ID_LOCAL(this),
-      ntp_navigation_start_time_ + duration);
+  TRACE_EVENT_BEGIN(kUIEventCategory, perfetto::DynamicString(event_name),
+                    perfetto::Track::FromPointer(this),
+                    ntp_navigation_start_time_);
+  TRACE_EVENT_END(kUIEventCategory, perfetto::Track::FromPointer(this),
+                  ntp_navigation_start_time_ + duration);
 }
 
 void NTPUserDataLogger::RecordDoodleImpression(base::TimeDelta time,

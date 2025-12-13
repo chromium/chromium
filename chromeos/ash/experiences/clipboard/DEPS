@@ -1,0 +1,8 @@
+include_rules = [
+  "+ash/clipboard/clipboard_history_controller_delegate.h",
+  "+ash/public/cpp",
+  "+components/user_manager",
+  "+components/viz/common",
+  "+content/public/browser",
+  "+services/data_decoder/public/cpp/decode_image.h",
+]

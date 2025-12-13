@@ -37,7 +37,7 @@ class RenderProcessHostTaskProvider
   Task* GetTaskOfUrlRequest(int child_id, int route_id) override;
 
   // content::RenderProcessHostCreationObserver:
-  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
+  void OnRenderProcessLaunched(content::RenderProcessHost* host) override;
 
   // content::RenderProcessHostObserver:
   void RenderProcessExited(

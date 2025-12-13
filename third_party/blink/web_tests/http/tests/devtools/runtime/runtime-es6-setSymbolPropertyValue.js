@@ -28,7 +28,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   async function dumpAndClearConsoleMessages() {
     await ConsoleTestRunner.dumpConsoleMessages();
-    Console.ConsoleView.ConsoleView.clearConsole();
+    Console.ConsoleView.ConsoleView.instance().clearConsole();
   }
 
   TestRunner.runTestSuite([
@@ -36,9 +36,9 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       TestRunner.evaluateInPage('dumpSymbolProperty(\'Initial\')', step0);
 
       async function step0() {
-        var result = await TestRunner.RuntimeAgent.evaluate('object1');
+        var {result} = await TestRunner.RuntimeAgent.invoke_evaluate({expression: 'object1'});
         obj1 = TestRunner.runtimeModel.createRemoteObject(result);
-        result = await TestRunner.RuntimeAgent.evaluate('symbol1');
+        ({result} = await TestRunner.RuntimeAgent.invoke_evaluate({expression: 'symbol1'}));
         name = SDK.RemoteObject.RemoteObject.toCallArgument(TestRunner.runtimeModel.createRemoteObject(result));
         await dumpAndClearConsoleMessages();
         next();

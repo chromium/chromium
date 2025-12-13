@@ -7,12 +7,11 @@
 // the Apache License, Version 2.0 which can be found at the calendrical_calculations
 // package root or at http://www.apache.org/licenses/LICENSE-2.0.
 
-use crate::helpers::{i64_to_i32, I32CastError};
+use crate::helpers::{i64_to_i32, k_day_after, I32CastError};
 use crate::rata_die::RataDie;
 
-// Julian epoch is equivalent to fixed_from_iso of December 30th of 0 year
-// 1st Jan of 1st year Julian is equivalent to December 30th of 0th year of ISO year
-const JULIAN_EPOCH: RataDie = RataDie::new(-1);
+// 1st Jan of 1st year proleptic Julian is equivalent to December 30th of 0th year proleptic Gregorian
+const JULIAN_EPOCH: RataDie = crate::gregorian::fixed_from_gregorian(0, 12, 30);
 
 /// Lisp code reference: <https://github.com/EdReingold/calendar-code2/blob/1ee51ecfaae6f856b0d7de3e36e9042100b4f424/calendar.l#L1684-L1687>
 #[inline(always)]
@@ -114,4 +113,29 @@ pub const fn fixed_from_julian_book_version(book_year: i32, month: u8, day: u8) 
         month,
         day,
     )
+}
+
+/// Calculates the date of Easter in the given year
+pub fn easter(year: i32) -> RataDie {
+    let shifted_epact = (14 + 11 * year.rem_euclid(19)) % 30;
+    let paschal_moon = fixed_from_julian(year, 4, 19) - shifted_epact as i64;
+    k_day_after(0, paschal_moon)
+}
+
+#[test]
+fn test_easter() {
+    // https://en.wikipedia.org/wiki/List_of_dates_for_Easter, dates in Gregorian
+    for (y, m, d) in [
+        (2021, 5, 2),
+        (2022, 4, 24),
+        (2023, 4, 16),
+        (2024, 5, 5),
+        (2025, 4, 20),
+        (2026, 4, 12),
+        (2027, 5, 2),
+        (2028, 4, 16),
+        (2029, 4, 8),
+    ] {
+        assert_eq!(easter(y), crate::gregorian::fixed_from_gregorian(y, m, d));
+    }
 }

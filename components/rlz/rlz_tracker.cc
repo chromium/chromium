@@ -232,6 +232,10 @@ RLZTracker::RLZTracker()
       omnibox_used_(false),
       homepage_used_(false),
       app_list_used_(false),
+      enterprise_enrollment_recorded_(false),
+      enterprise_unenrollment_recorded_(false),
+      enterprise_enrolled_activate_recorded_(false),
+      enterprise_enrolled_first_search_recorded_(false),
       min_init_delay_(kMinInitDelay),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock(),
@@ -542,6 +546,80 @@ bool* RLZTracker::GetAccessPointRecord(rlz_lib::AccessPoint point) {
     return &app_list_used_;
 #endif  // !BUILDFLAG(IS_IOS)
   NOTREACHED();
+}
+
+void RLZTracker::ScheduleRecordEnterpriseEvent(rlz_lib::Event event_id) {
+  if (!delegate_->IsOnUIThread()) {
+    return;
+  }
+
+  background_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RLZTracker::RecordEnterpriseEvent,
+                     weak_ptr_factory_.GetWeakPtr(), event_id));
+}
+
+void RLZTracker::RecordEnterpriseEvent(rlz_lib::Event event_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  bool* recorded_flag = nullptr;
+  switch (event_id) {
+    case rlz_lib::ENTERPRISE_ENROLLMENT:
+      recorded_flag = &enterprise_enrollment_recorded_;
+      break;
+    case rlz_lib::ENTERPRISE_UNENROLLMENT:
+      recorded_flag = &enterprise_unenrollment_recorded_;
+      break;
+    case rlz_lib::ENTERPRISE_ENROLLED_ACTIVATE:
+      recorded_flag = &enterprise_enrolled_activate_recorded_;
+      break;
+    case rlz_lib::ENTERPRISE_ENROLLED_FIRST_SEARCH:
+      recorded_flag = &enterprise_enrolled_first_search_recorded_;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  if (*recorded_flag) {
+    return;
+  }
+
+  if (RecordProductEvent(rlz_lib::CHROME, ChromeOmnibox(), event_id)) {
+    *recorded_flag = true;
+  }
+}
+
+// static
+void RLZTracker::RecordEnterpriseEnrollment() {
+  RLZTracker* tracker = GetInstance();
+  if (tracker->delegate_) {
+    tracker->ScheduleRecordEnterpriseEvent(rlz_lib::ENTERPRISE_ENROLLMENT);
+  }
+}
+
+// static
+void RLZTracker::RecordEnterpriseUnenrollment() {
+  RLZTracker* tracker = GetInstance();
+  if (tracker->delegate_) {
+    tracker->ScheduleRecordEnterpriseEvent(rlz_lib::ENTERPRISE_UNENROLLMENT);
+  }
+}
+
+// static
+void RLZTracker::RecordEnterpriseEnrolledActivate() {
+  RLZTracker* tracker = GetInstance();
+  if (tracker->delegate_) {
+    tracker->ScheduleRecordEnterpriseEvent(rlz_lib::ENTERPRISE_ENROLLED_ACTIVATE);
+  }
+}
+
+// static
+void RLZTracker::RecordEnterpriseEnrolledFirstSearch() {
+  RLZTracker* tracker = GetInstance();
+  if (tracker->delegate_) {
+    tracker->ScheduleRecordEnterpriseEvent(
+        rlz_lib::ENTERPRISE_ENROLLED_FIRST_SEARCH);
+  }
 }
 
 // static

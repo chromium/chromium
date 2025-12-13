@@ -67,7 +67,12 @@ enum class LaunchMode {
   kWebAppFileTypeHandler = 27,
   // Web App launched as a registered protocol handler.
   kWebAppProtocolHandler = 28,
-  kMaxValue = kWebAppProtocolHandler,
+
+  // Windows-only, Chrome launched with an AppId in STARTUPINFOW. This most
+  // likely means Chrome was launched from the Windows taskbar or start menu.
+  // These launches were previously in the kOther bucket.
+  kWithAppId = 29,
+  kMaxValue = kWithAppId,
 };
 
 // Computes and records the launch mode based on `command_line` and process

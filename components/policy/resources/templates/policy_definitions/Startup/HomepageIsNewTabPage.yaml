@@ -14,7 +14,6 @@ features:
   dynamic_refresh: true
   per_profile: true
 future_on:
-- android
 - fuchsia
 items:
 - caption: Use New Tab Page as homepage
@@ -27,8 +26,10 @@ owners:
 - chrome-desktop-ntp@google.com
 schema:
   type: boolean
+sensitive: true
 supported_on:
 - chrome.*:8-
 - chrome_os:11-
+- android:144-
 tags: []
 type: main

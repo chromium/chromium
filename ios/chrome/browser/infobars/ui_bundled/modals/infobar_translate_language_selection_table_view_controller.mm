@@ -51,7 +51,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-  self.styler.cellBackgroundColor = [UIColor colorNamed:kBackgroundColor];
   self.tableView.sectionHeaderHeight = 0;
   [self.tableView
       setSeparatorInset:UIEdgeInsetsMake(0, kTableViewHorizontalSpacing, 0, 0)];
@@ -85,6 +84,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
+  cell.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   // All items should be a TableViewTextItem and of just one type
   // kItemTypeEnumZero. They are populated in the mediator with this assumption.
   TableViewTextItem* item = static_cast<TableViewTextItem*>(

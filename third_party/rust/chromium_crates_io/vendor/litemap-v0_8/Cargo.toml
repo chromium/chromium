@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.82"
 name = "litemap"
-version = "0.8.0"
+version = "0.8.1"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -45,18 +45,18 @@ keywords = [
 license = "Unicode-3.0"
 repository = "https://github.com/unicode-org/icu4x"
 
-[package.metadata.docs.rs]
-all-features = true
-
 [package.metadata.workspaces]
 independent = true
+
+[package.metadata.docs.rs]
+all-features = true
 
 [features]
 alloc = []
 databake = ["dep:databake"]
 default = ["alloc"]
 serde = [
-    "dep:serde",
+    "dep:serde_core",
     "alloc",
 ]
 testing = ["alloc"]
@@ -110,8 +110,8 @@ version = "0.2.0"
 optional = true
 default-features = false
 
-[dependencies.serde]
-version = "1.0.110"
+[dependencies.serde_core]
+version = "1.0.220"
 features = ["alloc"]
 optional = true
 default-features = false
@@ -137,8 +137,8 @@ version = "0.9"
 version = "0.7"
 features = ["validation"]
 
-[dev-dependencies.serde]
-version = "1.0.110"
+[dev-dependencies.serde_core]
+version = "1.0.220"
 default-features = false
 
 [dev-dependencies.serde_json]

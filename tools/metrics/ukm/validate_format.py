@@ -29,13 +29,15 @@ def main():
       validator.checkMetricTypeIsSpecified())
     aggregationCheckSuccess, aggregationCheckErrors = (
       validator.checkLocalMetricIsAggregated())
+    statisticCheckSuccess, statisticCheckErrors = (
+        validator.checkStatisticsNonEmptyValid())
 
     results = dict();
 
-    if (not ownerCheckSuccess or not metricCheckSuccess or
-        not aggregationCheckSuccess):
+    if (not ownerCheckSuccess or not metricCheckSuccess
+        or not aggregationCheckSuccess or not statisticCheckSuccess):
       results['Errors'] = (ownerCheckErrors + metricCheckErrors +
-                           aggregationCheckErrors)
+                           aggregationCheckErrors + statisticCheckErrors)
     if metricCheckWarnings and not IGNORE_METRIC_CHECK_WARNINGS:
       results['Warnings'] = metricCheckWarnings
 

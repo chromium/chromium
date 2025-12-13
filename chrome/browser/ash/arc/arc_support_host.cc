@@ -10,16 +10,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
-#include "base/hash/sha1.h"
 #include "base/i18n/timezone.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/values.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -28,6 +25,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/extensions/app_launch_params.h"
+#include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -38,17 +37,27 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
+#include "crypto/obsolete/sha1.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_util.h"
+#include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 using sync_pb::UserConsentTypes;
+
+namespace arc {
+std::string GetSha1HashForArcPlayTermsOfService(std::string_view tos_content) {
+  return std::string(
+      base::as_string_view(crypto::obsolete::Sha1::Hash(tos_content)));
+}
+}  // namespace arc
 
 namespace {
 constexpr char kAction[] = "action";
@@ -150,9 +159,21 @@ constexpr char kDisplayWorkareaWidth[] = "displayWorkareaWidth";
 constexpr char kDisplayWorkareaHeight[] = "displayWorkareaHeight";
 
 void RequestOpenApp(Profile* profile) {
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->BrowserAppLauncher()
-      ->LaunchPlayStoreWithExtensions();
+  // Launch the extension directly. Because the PlayStore app and the extension
+  // share the ID historically, so AppService blocklists the extension to avoid
+  // the conflict. Here, it bypasses the AppService to launch the extension.
+  // Note that, if PlayStore app is enabled, but ARC is not yet enabled,
+  // the event is forwarded to here, so it launches the extension to let
+  // the user enter into the enabling flow, including concenting the ToS.
+  const extensions::Extension* extension =
+      extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
+          arc::kPlayStoreAppId);
+  CHECK(extension);
+  CHECK(extensions::util::IsAppLaunchable(arc::kPlayStoreAppId, profile));
+  ::OpenApplication(profile,
+                    CreateAppLaunchParamsUserContainer(
+                        profile, extension, WindowOpenDisposition::NEW_WINDOW,
+                        apps::LaunchSource::kFromChromeInternal));
 }
 
 std::ostream& operator<<(std::ostream& os, ArcSupportHost::UIPage ui_page) {
@@ -731,7 +752,7 @@ void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
     if (tos_shown.value()) {
       play_consent.set_play_terms_of_service_text_length(tos_content->length());
       play_consent.set_play_terms_of_service_hash(
-          base::SHA1HashString(*tos_content));
+          arc::GetSha1HashForArcPlayTermsOfService(*tos_content));
     }
     ConsentAuditorFactory::GetForProfile(profile_)->RecordArcPlayConsent(
         gaia_id, play_consent);
@@ -820,7 +841,7 @@ void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
   } else if (*event == kEventOnOpenPrivacySettingsPageClicked) {
     chrome::ShowSettingsSubPageForProfile(profile_, chrome::kPrivacySubPage);
   } else if (*event == kEventRequestWindowBounds) {
-    SetWindowBound(display::Screen::GetScreen()->GetDisplayForNewWindows());
+    SetWindowBound(display::Screen::Get()->GetDisplayForNewWindows());
   } else {
     NOTREACHED() << "Unknown message: " << *event;
   }

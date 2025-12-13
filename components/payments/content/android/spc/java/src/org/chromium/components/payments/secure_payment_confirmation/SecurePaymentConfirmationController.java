@@ -304,10 +304,10 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
             //
             // https://w3c.github.io/secure-payment-confirmation/#sctn-transaction-ux-test-automation
             switch (mTransactionMode) {
-                case SPCTransactionMode.AUTOACCEPT:
+                case SPCTransactionMode.AUTO_ACCEPT:
                     onContinue();
                     break;
-                case SPCTransactionMode.AUTOAUTHANOTHERWAY:
+                case SPCTransactionMode.AUTO_AUTH_ANOTHER_WAY:
                     // To best mimic the underlying dialog, in mInformOnly mode we still click on
                     // the 'Continue' button.
                     if (mInformOnly) {
@@ -316,10 +316,10 @@ public class SecurePaymentConfirmationController implements ControllerDelegate {
                         onVerifyAnotherWay();
                     }
                     break;
-                case SPCTransactionMode.AUTOOPTOUT:
+                case SPCTransactionMode.AUTO_OPT_OUT:
                     onOptOut();
                     break;
-                case SPCTransactionMode.AUTOREJECT:
+                case SPCTransactionMode.AUTO_REJECT:
                     onCancel();
                     break;
             }

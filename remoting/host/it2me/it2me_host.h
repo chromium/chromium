@@ -100,7 +100,8 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   It2MeHost& operator=(const It2MeHost&) = delete;
 
   // Session parameters provided by the remote command infrastructure when the
-  // session is started from the admin console for a managed Chrome OS device.
+  // session is started from the admin console or Class Tools (boca) for a
+  // managed Chrome OS device.
   void set_chrome_os_enterprise_params(ChromeOsEnterpriseParams params);
   // Callers should call is_enterprise_session() first to ensure the params are
   // present and retrievable.
@@ -111,6 +112,13 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   // for a managed Chrome OS device.
   bool is_enterprise_session() const {
     return chrome_os_enterprise_params_.has_value();
+  }
+  // Indicates whether this support session was initiated by Class tools
+  // for a managed Chrome OS device.
+  bool is_class_management_session() const {
+    return chrome_os_enterprise_params_.has_value() &&
+           chrome_os_enterprise_params_->request_origin ==
+               remoting::ChromeOsEnterpriseRequestOrigin::kClassManagement;
   }
 
   // If set, only |authorized_helper| will be allowed to connect to this host.
@@ -279,7 +287,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   std::optional<bool> last_reported_relay_connections_allowed_ = false;
 
   // Set when the session was initiated for a managed Chrome OS device by an
-  // admin using the admin console.
+  // admin using the admin console or Class Tools (boca).
   std::optional<ChromeOsEnterpriseParams> chrome_os_enterprise_params_;
 
   // Only the username stored in |authorized_helper_| will be allowed to connect

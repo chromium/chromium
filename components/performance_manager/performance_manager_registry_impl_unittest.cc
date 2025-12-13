@@ -51,8 +51,8 @@ TEST_F(PerformanceManagerRegistryImplTest, ObserverWorks) {
 
   // Expect a tear down notification, and use it to unregister ourselves.
   EXPECT_CALL(observer, OnBeforePerformanceManagerDestroyed())
-      .WillOnce(testing::Invoke(
-          [&registry, &observer]() { registry->RemoveObserver(&observer); }));
+      .WillOnce(
+          [&registry, &observer]() { registry->RemoveObserver(&observer); });
   TearDownNow();
 }
 

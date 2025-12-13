@@ -888,6 +888,8 @@ test.util.async.fakeDragLeaveOrDrop =
             event = new DragEvent('dragend', sourceOptions);
             result = source.dispatchEvent(event);
             break;
+          default:
+            break;
         }
 
         if (!result) {

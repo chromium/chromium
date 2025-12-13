@@ -5,19 +5,23 @@
 #include "chrome/browser/ash/app_mode/kiosk_network_state_observer.h"
 
 #include <cstddef>
+#include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
-#include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/app_mode/test/fake_origin_test_server_mixin.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
-#include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
+#include "chrome/browser/ash/app_mode/test/fake_cws_chrome_apps.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_simulated_result.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -31,28 +35,40 @@
 
 namespace ash {
 
+using kiosk::test::OfflineEnabledChromeAppV1;
+using kiosk::test::WaitKioskLaunched;
+
 namespace {
 
-struct WifiInfo {
+// Encapsulates the data needed by `NetworkStateTestHelper` to add a new test
+// WiFi network.
+struct WiFiServiceInfo {
   std::string service_path;
-  std::string wifi_guid;
-  std::string wifi_name;
-  bool is_active;
+  std::string guid;
+  std::string name;
+  std::string state = shill::kStateIdle;
   std::optional<std::string> passphrase;
   bool auto_connect = true;
   bool save_credentials = true;
 };
 
-const WifiInfo kActiveWifi = {"stub_wifi", "wifi_guid_test",
-                              "wifi-test-network",
-                              /*is_active=*/true, "test-password"};
+constexpr WiFiServiceInfo kOnlineService = {/*service_path=*/"stub_wifi",
+                                            /*guid=*/"wifi_guid_test",
+                                            /*name=*/"test-wifi-network",
+                                            /*state=*/shill::kStateOnline,
+                                            /*passphrase=*/"test-password"};
 
-const WifiInfo kInactiveWifi = {"stub_wifi2", "wifi_guid_test2",
-                                "wifi-test-network2",
-                                /*is_active=*/false};
+constexpr WiFiServiceInfo kIdleService = {/*service_path=*/"stub_wifi2",
+                                          /*guid=*/"wifi_guid_test2",
+                                          /*name=*/"test-wifi-network2",
+                                          /*state=*/shill::kStateIdle};
 
-const char kDevicePath[] = "/device/stub_wifi_device";
-const char kDeviceName[] = "stub_wifi_device";
+WiFiServiceInfo ServiceInfoWithSuffix(std::string suffix) {
+  return {/*service_path=*/base::StrCat({"ServicePath_", suffix}),
+          /*guid=*/base::StrCat({"Guid_", suffix}),
+          /*name=*/base::StrCat({"NetworkName_", suffix}),
+          /*state=*/shill::kStateOnline};
+}
 
 bool IsPropertyValueEqualsTo(std::string key,
                              base::Value expected_value,
@@ -61,9 +77,22 @@ bool IsPropertyValueEqualsTo(std::string key,
   return !!value && (*value == expected_value);
 }
 
+KioskNetworkStateObserver& GetNetworkStateObserver() {
+  return KioskController::Get()
+      .GetKioskSystemSession()
+      ->network_state_observer_for_testing();
+}
+
+bool KioskIsObservingNetworkState() {
+  return NetworkHandler::Get()->network_state_handler()->HasObserver(
+      &GetNetworkStateObserver());
+}
+
 }  // namespace
 
-class KioskNetworkStateObserverTest : public WebKioskBaseTest {
+class KioskNetworkStateObserverTest
+    : public MixinBasedInProcessBrowserTest,
+      public testing::WithParamInterface<KioskMixin::Config> {
  public:
   KioskNetworkStateObserverTest() = default;
 
@@ -72,62 +101,64 @@ class KioskNetworkStateObserverTest : public WebKioskBaseTest {
       const KioskNetworkStateObserverTest&) = delete;
 
   void SetUpOnMainThread() override {
-    WebKioskBaseTest::SetUpOnMainThread();
-    SetAppInstallUrl(server_mixin_.GetUrl("/title3.html"));
-    network_state_test_helper().device_test()->AddDevice(
-        kDevicePath, shill::kTypeWifi, kDeviceName);
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    network_helper_ = std::make_unique<NetworkStateTestHelper>(
+        /*use_default_devices_and_services=*/false);
+    network_helper().device_test()->AddDevice(
+        /*device_path=*/"/device/stub_wifi_device",
+        /*type=*/shill::kTypeWifi,
+        /*name=*/"stub_wifi_device");
+  }
+
+  void TearDownOnMainThread() override {
+    network_helper_.reset();
+    MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
 
   void UpdateActiveWiFiCredentialsScopeChangePolicy(bool enable) {
-    profile()->GetPrefs()->SetBoolean(
+    kiosk::test::CurrentProfile().GetPrefs()->SetBoolean(
         prefs::kKioskActiveWiFiCredentialsScopeChangeEnabled, enable);
   }
 
-  KioskNetworkStateObserver& network_state_observer() const {
-    return kiosk_system_session()->network_state_observer_for_testing();
-  }
+  void AddNetworkService(WiFiServiceInfo info) {
+    network_helper().service_test()->AddService(info.service_path, info.guid,
+                                                info.name, shill::kTypeWifi,
+                                                info.state, /*visible=*/true);
+    network_helper().service_test()->SetServiceProperty(
+        info.service_path, shill::kConnectableProperty, base::Value(true));
+    network_helper().service_test()->SetServiceProperty(
+        info.service_path, shill::kProfileProperty,
+        base::Value(network_helper().ProfilePathUser()));
 
-  void SetUpWifi(WifiInfo wifi_info) {
-    network_state_test_helper().service_test()->AddService(
-        wifi_info.service_path, wifi_info.wifi_guid, wifi_info.wifi_name,
-        shill::kTypeWifi,
-        (wifi_info.is_active ? shill::kStateOnline : shill::kStateIdle), true);
-    network_state_test_helper().service_test()->SetServiceProperty(
-        wifi_info.service_path, shill::kConnectableProperty, base::Value(true));
-    network_state_test_helper().service_test()->SetServiceProperty(
-        wifi_info.service_path, shill::kProfileProperty,
-        base::Value(network_state_test_helper().ProfilePathUser()));
-
-    if (wifi_info.passphrase.has_value()) {
-      network_state_test_helper().service_test()->SetServiceProperty(
-          wifi_info.service_path, shill::kPassphraseProperty,
-          base::Value(wifi_info.passphrase.value()));
-      network_state_test_helper().service_test()->SetServiceProperty(
-          kActiveWifi.service_path, shill::kSecurityClassProperty,
+    if (info.passphrase.has_value()) {
+      network_helper().service_test()->SetServiceProperty(
+          info.service_path, shill::kPassphraseProperty,
+          base::Value(info.passphrase.value()));
+      network_helper().service_test()->SetServiceProperty(
+          info.service_path, shill::kSecurityClassProperty,
           base::Value(shill::kSecurityClassPsk));
     }
-    network_state_test_helper().service_test()->SetServiceProperty(
-        kActiveWifi.service_path, shill::kAutoConnectProperty,
-        base::Value(kActiveWifi.auto_connect));
-    network_state_test_helper().service_test()->SetServiceProperty(
-        kActiveWifi.service_path, shill::kSaveCredentialsProperty,
-        base::Value(kActiveWifi.save_credentials));
+    network_helper().service_test()->SetServiceProperty(
+        info.service_path, shill::kAutoConnectProperty,
+        base::Value(info.auto_connect));
+    network_helper().service_test()->SetServiceProperty(
+        info.service_path, shill::kSaveCredentialsProperty,
+        base::Value(info.save_credentials));
   }
 
-  void InitializeKiosk() {
-    InitializeRegularOnlineKiosk(/*simulate_online=*/false);
-    network_state_observer().SetWifiExposureAttemptCallbackForTesting(
-        wifi_exposure_attempt_callback_.GetRepeatingCallback());
+  void MonitorWifiExposureAttempts() {
+    GetNetworkStateObserver().SetWifiExposureAttemptCallbackForTesting(
+        exposure_attempt_.GetRepeatingCallback());
   }
 
-  bool IsWiFiSuccessfullyExposedToDeviceLevel(WifiInfo wifi) {
+  bool IsWiFiSuccessfullyExposedToDeviceLevel(WiFiServiceInfo wifi) {
     // Taking the value is required here. Otherwise next time this function will
     // not wait for a new callback call.
-    if (!wifi_exposure_attempt_callback_.Take()) {
+    if (!exposure_attempt_.Take()) {
       return false;
     }
     const base::Value::Dict* service_properties =
-        network_state_test_helper().service_test()->GetServiceProperties(
+        network_helper().service_test()->GetServiceProperties(
             wifi.service_path);
     if (!service_properties) {
       return false;
@@ -145,8 +176,7 @@ class KioskNetworkStateObserverTest : public WebKioskBaseTest {
         IsPropertyValueEqualsTo(shill::kSecurityClassProperty,
                                 base::Value(shill::kSecurityClassPsk),
                                 service_properties) &&
-        IsPropertyValueEqualsTo(shill::kGuidProperty,
-                                base::Value(wifi.wifi_guid),
+        IsPropertyValueEqualsTo(shill::kGuidProperty, base::Value(wifi.guid),
                                 service_properties) &&
         IsPropertyValueEqualsTo(shill::kAutoConnectProperty,
                                 base::Value(wifi.auto_connect),
@@ -162,90 +192,82 @@ class KioskNetworkStateObserverTest : public WebKioskBaseTest {
                                 service_properties);
   }
 
-  void CreateWifiToTriggerObservers(std::string name_suffix) {
-    WifiInfo new_wifi =
-        WifiInfo(base::StrCat({"ServicePath_", name_suffix}),
-                 base::StrCat({"WifiGuid_", name_suffix}),
-                 base::StrCat({"WifiNetworkName_", name_suffix}),
-                 /*is_active=*/true);
-    SetUpWifi(new_wifi);
-  }
-
   void RetryWifiExposureMaxAttempts() {
     for (size_t attempt = 1; attempt <= kMaxWifiExposureAttempts; ++attempt) {
-      if (attempt == 1) {
-        // First attempt is with newly set up WiFi.
-      } else {
-        CreateWifiToTriggerObservers(base::NumberToString(attempt));
+      // The first attempt happens from an existing network. Create new networks
+      // to trigger following attempts.
+      if (attempt > 1) {
+        AddNetworkService(ServiceInfoWithSuffix(base::NumberToString(attempt)));
       }
-      // WiFi exposure is failed, but it continues to observe the WiFi changes.
-      EXPECT_FALSE(IsWiFiSuccessfullyExposedToDeviceLevel(kActiveWifi));
 
-      if (attempt == kMaxWifiExposureAttempts) {
-        // After the last attempt the observation should be stopped.
-        EXPECT_FALSE(
-            NetworkHandler::Get()->network_state_handler()->HasObserver(
-                &network_state_observer()));
+      EXPECT_FALSE(IsWiFiSuccessfullyExposedToDeviceLevel(kOnlineService));
+
+      // The observer remains registered until the last attempt.
+      if (attempt < kMaxWifiExposureAttempts) {
+        EXPECT_TRUE(KioskIsObservingNetworkState());
       } else {
-        EXPECT_TRUE(NetworkHandler::Get()->network_state_handler()->HasObserver(
-            &network_state_observer()));
+        EXPECT_FALSE(KioskIsObservingNetworkState());
       }
     }
   }
 
- protected:
-  base::test::TestFuture<bool> wifi_exposure_attempt_callback_;
+  NetworkStateTestHelper& network_helper() const {
+    return CHECK_DEREF(network_helper_.get());
+  }
 
-  FakeOriginTestServerMixin server_mixin_{
-      &mixin_host_,
-      /*origin=*/GURL("https://app.foo.com/"),
-      /*path_to_be_served=*/FILE_PATH_LITERAL("chrome/test/data")};
+ protected:
+  base::test::TestFuture<bool> exposure_attempt_;
+
+  std::unique_ptr<NetworkStateTestHelper> network_helper_;
+
+  KioskMixin kiosk_{&mixin_host_, /*cached_configuration=*/GetParam()};
 };
 
-IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest, DefaultDisabled) {
-  SetUpWifi(kActiveWifi);
-  InitializeKiosk();
+IN_PROC_BROWSER_TEST_P(KioskNetworkStateObserverTest, DefaultDisabled) {
+  AddNetworkService(kOnlineService);
+  ASSERT_TRUE(WaitKioskLaunched());
+  MonitorWifiExposureAttempts();
 
   // The policy is disabled, so WiFi should not be exposed and we should not
   // observe WiFi changes.
-  EXPECT_FALSE(network_state_observer().IsPolicyEnabled());
-  EXPECT_FALSE(NetworkHandler::Get()->network_state_handler()->HasObserver(
-      &network_state_observer()));
+  EXPECT_FALSE(GetNetworkStateObserver().IsPolicyEnabled());
+  EXPECT_FALSE(KioskIsObservingNetworkState());
 }
 
-IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest, PRE_NoActiveWiFi) {
-  SetUpWifi(kActiveWifi);
-  InitializeKiosk();
+IN_PROC_BROWSER_TEST_P(KioskNetworkStateObserverTest, PRE_NoActiveWiFi) {
+  AddNetworkService(kOnlineService);
+  ASSERT_TRUE(WaitKioskLaunched());
 }
 
-IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest, NoActiveWiFi) {
-  InitializeKiosk();
+IN_PROC_BROWSER_TEST_P(KioskNetworkStateObserverTest, NoActiveWiFi) {
+  ASSERT_TRUE(WaitKioskLaunched());
+  MonitorWifiExposureAttempts();
   UpdateActiveWiFiCredentialsScopeChangePolicy(true);
 
   // When policy is enabled, observe active WiFis.
-  EXPECT_TRUE(network_state_observer().IsPolicyEnabled());
-  EXPECT_TRUE(NetworkHandler::Get()->network_state_handler()->HasObserver(
-      &network_state_observer()));
+  EXPECT_TRUE(GetNetworkStateObserver().IsPolicyEnabled());
+  EXPECT_TRUE(KioskIsObservingNetworkState());
 }
 
-IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest, ExposeWiFi) {
-  SetUpWifi(kActiveWifi);
-  InitializeKiosk();
+IN_PROC_BROWSER_TEST_P(KioskNetworkStateObserverTest, ExposeWiFi) {
+  AddNetworkService(kOnlineService);
+  ASSERT_TRUE(WaitKioskLaunched());
+  MonitorWifiExposureAttempts();
   UpdateActiveWiFiCredentialsScopeChangePolicy(true);
 
-  EXPECT_TRUE(IsWiFiSuccessfullyExposedToDeviceLevel(kActiveWifi));
+  EXPECT_TRUE(IsWiFiSuccessfullyExposedToDeviceLevel(kOnlineService));
 }
 
-IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest,
+IN_PROC_BROWSER_TEST_P(KioskNetworkStateObserverTest,
                        PRE_ObserveNetworkChange) {
-  SetUpWifi(kActiveWifi);
-  InitializeKiosk();
+  AddNetworkService(kOnlineService);
+  ASSERT_TRUE(WaitKioskLaunched());
 }
 
-IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest, ObserveNetworkChange) {
-  InitializeKiosk();
-  EXPECT_FALSE(NetworkHandler::Get()->network_state_handler()->HasObserver(
-      &network_state_observer()));
+IN_PROC_BROWSER_TEST_P(KioskNetworkStateObserverTest, ObserveNetworkChange) {
+  ASSERT_TRUE(WaitKioskLaunched());
+  MonitorWifiExposureAttempts();
+  EXPECT_FALSE(KioskIsObservingNetworkState());
 
   // WiFi is not set up, so `KioskNetworkStateObserver` will not expose any
   // WiFi, but will observe the network change.
@@ -253,50 +275,49 @@ IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest, ObserveNetworkChange) {
   // When the policy is updated, the kiosk observer will try to expose an active
   // WiFi. But since there is no active WiFi, it will call the callback with a
   // result of failed attempt.
-  EXPECT_FALSE(IsWiFiSuccessfullyExposedToDeviceLevel(kActiveWifi));
-  EXPECT_TRUE(NetworkHandler::Get()->network_state_handler()->HasObserver(
-      &network_state_observer()));
+  EXPECT_FALSE(IsWiFiSuccessfullyExposedToDeviceLevel(kOnlineService));
+  EXPECT_TRUE(KioskIsObservingNetworkState());
 
-  SetUpWifi(kActiveWifi);
-  EXPECT_TRUE(IsWiFiSuccessfullyExposedToDeviceLevel(kActiveWifi));
+  AddNetworkService(kOnlineService);
+  EXPECT_TRUE(IsWiFiSuccessfullyExposedToDeviceLevel(kOnlineService));
   // After the successful WiFi scope change, stop observing the network.
-  EXPECT_FALSE(NetworkHandler::Get()->network_state_handler()->HasObserver(
-      &network_state_observer()));
+  EXPECT_FALSE(KioskIsObservingNetworkState());
 }
 
-IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest,
+IN_PROC_BROWSER_TEST_P(KioskNetworkStateObserverTest,
                        PRE_ExposeOnlyActiveWiFi) {
-  SetUpWifi(kActiveWifi);
-  InitializeKiosk();
+  AddNetworkService(kOnlineService);
+  ASSERT_TRUE(WaitKioskLaunched());
 }
 
-IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest, ExposeOnlyActiveWiFi) {
-  SetUpWifi(kInactiveWifi);
-  InitializeKiosk();
+IN_PROC_BROWSER_TEST_P(KioskNetworkStateObserverTest, ExposeOnlyActiveWiFi) {
+  AddNetworkService(kIdleService);
+  ASSERT_TRUE(WaitKioskLaunched());
+  MonitorWifiExposureAttempts();
   UpdateActiveWiFiCredentialsScopeChangePolicy(true);
 
-  EXPECT_FALSE(IsWiFiSuccessfullyExposedToDeviceLevel(kActiveWifi));
+  EXPECT_FALSE(IsWiFiSuccessfullyExposedToDeviceLevel(kOnlineService));
   const base::Value::Dict* service_properties =
-      network_state_test_helper().service_test()->GetServiceProperties(
-          kInactiveWifi.service_path);
+      network_helper().service_test()->GetServiceProperties(
+          kIdleService.service_path);
   ASSERT_NE(service_properties, nullptr);
   // Check that we didn't change the profile for the inactive WiFi.
   EXPECT_TRUE(IsPropertyValueEqualsTo(
-      shill::kProfileProperty,
-      base::Value(network_state_test_helper().ProfilePathUser()),
+      shill::kProfileProperty, base::Value(network_helper().ProfilePathUser()),
       service_properties));
 
-  SetUpWifi(kActiveWifi);
-  EXPECT_TRUE(IsWiFiSuccessfullyExposedToDeviceLevel(kActiveWifi));
+  AddNetworkService(kOnlineService);
+  EXPECT_TRUE(IsWiFiSuccessfullyExposedToDeviceLevel(kOnlineService));
 }
 
-IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest,
+IN_PROC_BROWSER_TEST_P(KioskNetworkStateObserverTest,
                        NoPassphraseMaxWifiExposureAttempts) {
-  WifiInfo without_passphrase = kActiveWifi;
+  WiFiServiceInfo without_passphrase = kOnlineService;
   without_passphrase.passphrase = {};
-  SetUpWifi(without_passphrase);
+  AddNetworkService(without_passphrase);
 
-  InitializeKiosk();
+  ASSERT_TRUE(WaitKioskLaunched());
+  MonitorWifiExposureAttempts();
   UpdateActiveWiFiCredentialsScopeChangePolicy(true);
 
   // Without passphrase the kiosk observer cannot copy the WiFi configuration,
@@ -305,76 +326,93 @@ IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest,
   RetryWifiExposureMaxAttempts();
 }
 
-IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest,
+IN_PROC_BROWSER_TEST_P(KioskNetworkStateObserverTest,
                        TemporaryServiceConfiguredButNotUsable) {
   // On real devices we treat the error callback with
   // `kTemporaryServiceConfiguredButNotUsable` message as success.
-  network_state_test_helper().manager_test()->SetSimulateConfigurationResult(
+  network_helper().manager_test()->SetSimulateConfigurationResult(
       FakeShillSimulatedResult::kFailure);
-  network_state_test_helper().manager_test()->SetSimulateConfigurationError(
+  network_helper().manager_test()->SetSimulateConfigurationError(
       shill::kErrorResultNotFound, kTemporaryServiceConfiguredButNotUsable);
 
-  SetUpWifi(kActiveWifi);
-  InitializeKiosk();
+  AddNetworkService(kOnlineService);
+  ASSERT_TRUE(WaitKioskLaunched());
+  MonitorWifiExposureAttempts();
   UpdateActiveWiFiCredentialsScopeChangePolicy(true);
 
-  EXPECT_TRUE(wifi_exposure_attempt_callback_.Get());
+  EXPECT_TRUE(exposure_attempt_.Get());
   // `FakeShillManagerClient::ConfigureService` behavior is different from the
   // real one. It does nothing when `FakeShillSimulatedResult::kFailure` is set,
   // so we cannot check that the WiFi is exposed to the device level. But we can
   // check that we stopped the WiFi change observation, because
   // `KioskNetworkStateObserver` think the WiFi was successfully exposed.
-  EXPECT_FALSE(NetworkHandler::Get()->network_state_handler()->HasObserver(
-      &network_state_observer()));
+  EXPECT_FALSE(KioskIsObservingNetworkState());
 }
 
-IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest,
+IN_PROC_BROWSER_TEST_P(KioskNetworkStateObserverTest,
                        ConfigFailureMaxWifiExposureAttempts) {
-  network_state_test_helper().manager_test()->SetSimulateConfigurationResult(
+  network_helper().manager_test()->SetSimulateConfigurationResult(
       FakeShillSimulatedResult::kFailure);
-  SetUpWifi(kActiveWifi);
-  InitializeKiosk();
+  AddNetworkService(kOnlineService);
+  ASSERT_TRUE(WaitKioskLaunched());
+  MonitorWifiExposureAttempts();
   UpdateActiveWiFiCredentialsScopeChangePolicy(true);
 
   RetryWifiExposureMaxAttempts();
 }
 
-IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest, SuccessfulSecondAttempt) {
-  network_state_test_helper().manager_test()->SetSimulateConfigurationResult(
+IN_PROC_BROWSER_TEST_P(KioskNetworkStateObserverTest, SuccessfulSecondAttempt) {
+  network_helper().manager_test()->SetSimulateConfigurationResult(
       FakeShillSimulatedResult::kFailure);
-  SetUpWifi(kActiveWifi);
-  InitializeKiosk();
+  AddNetworkService(kOnlineService);
+  ASSERT_TRUE(WaitKioskLaunched());
+  MonitorWifiExposureAttempts();
   UpdateActiveWiFiCredentialsScopeChangePolicy(true);
 
-  EXPECT_FALSE(IsWiFiSuccessfullyExposedToDeviceLevel(kActiveWifi));
+  EXPECT_FALSE(IsWiFiSuccessfullyExposedToDeviceLevel(kOnlineService));
 
-  network_state_test_helper().manager_test()->SetSimulateConfigurationResult(
+  network_helper().manager_test()->SetSimulateConfigurationResult(
       FakeShillSimulatedResult::kSuccess);
 
-  CreateWifiToTriggerObservers("first");
+  AddNetworkService(ServiceInfoWithSuffix("first"));
 
-  EXPECT_TRUE(IsWiFiSuccessfullyExposedToDeviceLevel(kActiveWifi));
+  EXPECT_TRUE(IsWiFiSuccessfullyExposedToDeviceLevel(kOnlineService));
   // After the last successful attempt the observation should be stopped.
-  EXPECT_FALSE(NetworkHandler::Get()->network_state_handler()->HasObserver(
-      &network_state_observer()));
+  EXPECT_FALSE(KioskIsObservingNetworkState());
 }
 
-IN_PROC_BROWSER_TEST_F(KioskNetworkStateObserverTest,
+IN_PROC_BROWSER_TEST_P(KioskNetworkStateObserverTest,
                        PolicyChangeRespectsPreviousWiFiExposureAttempt) {
-  SetUpWifi(kActiveWifi);
-  InitializeKiosk();
+  AddNetworkService(kOnlineService);
+  ASSERT_TRUE(WaitKioskLaunched());
+  MonitorWifiExposureAttempts();
   UpdateActiveWiFiCredentialsScopeChangePolicy(true);
 
-  EXPECT_TRUE(IsWiFiSuccessfullyExposedToDeviceLevel(kActiveWifi));
-  EXPECT_FALSE(NetworkHandler::Get()->network_state_handler()->HasObserver(
-      &network_state_observer()));
+  EXPECT_TRUE(IsWiFiSuccessfullyExposedToDeviceLevel(kOnlineService));
+  EXPECT_FALSE(KioskIsObservingNetworkState());
 
   UpdateActiveWiFiCredentialsScopeChangePolicy(false);
   UpdateActiveWiFiCredentialsScopeChangePolicy(true);
 
   // Do not start the WiFi observation because the WiFi was already exposed.
-  EXPECT_FALSE(NetworkHandler::Get()->network_state_handler()->HasObserver(
-      &network_state_observer()));
+  EXPECT_FALSE(KioskIsObservingNetworkState());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    KioskNetworkStateObserverTest,
+    testing::Values(
+        // TODO(crbug.com/379633748): Add IWA.
+        KioskMixin::Config{/*name=*/"WebApp",
+                           KioskMixin::AutoLaunchAccount{
+                               KioskMixin::SimpleWebAppOption().account_id},
+                           {KioskMixin::SimpleWebAppOption()}},
+        KioskMixin::Config{/*name=*/"ChromeApp",
+                           KioskMixin::AutoLaunchAccount{
+                               OfflineEnabledChromeAppV1().account_id},
+                           // The Chrome app needs to be offline enabled because
+                           // some tests will launch it while offline.
+                           {OfflineEnabledChromeAppV1()}}),
+    KioskMixin::ConfigName);
 
 }  // namespace ash

@@ -10,7 +10,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,16 +24,21 @@
 namespace variations {
 namespace {
 
-// Range of low entropy source values (8000) as variation ids for the
-// X-Client-Data header. This range is reserved in cl/333331461 (internal CL).
-const int kLowEntropySourceVariationIdRangeMin = 3320978;
-const int kLowEntropySourceVariationIdRangeMax = 3328977;
-
 VariationsIdsProvider* g_instance = nullptr;
 
 base::Lock& GetInstanceLock() {
   static base::NoDestructor<base::Lock> lock;
   return *lock;
+}
+
+// Sorts and removes duplicates from the given container. This is useful after
+// building ID collections by merging IDs from different sources, as the source
+// ID sets may intersect, yielding duplicate and out-of-order IDs.
+template <typename Container>
+void MakeSortedAndUnique(Container* container) {
+  std::sort(container->begin(), container->end());
+  container->erase(std::unique(container->begin(), container->end()),
+                   container->end());
 }
 
 }  // namespace
@@ -60,10 +64,12 @@ bool VariationsHeaderKey::operator<(const VariationsHeaderKey& other) const {
 // function variations::CreateSimpleURLLoaderWithVariationsHeader().
 
 // static
-VariationsIdsProvider* VariationsIdsProvider::Create(Mode mode) {
+VariationsIdsProvider* VariationsIdsProvider::CreateInstance(
+    Mode mode,
+    std::unique_ptr<base::Clock> clock) {
   base::AutoLock lock(GetInstanceLock());
   DCHECK(!g_instance);
-  g_instance = new VariationsIdsProvider(mode);
+  g_instance = new VariationsIdsProvider(mode, std::move(clock));
   return g_instance;
 }
 
@@ -76,10 +82,6 @@ VariationsIdsProvider* VariationsIdsProvider::GetInstance() {
 
 variations::mojom::VariationsHeadersPtr
 VariationsIdsProvider::GetClientDataHeaders(bool is_signed_in) {
-  // Lazily initialize the header, if not already done, before attempting to
-  // transmit it.
-  InitVariationIDsCacheIfNeeded();
-
   if (mode_ == Mode::kIgnoreSignedInState) {
     is_signed_in = true;
   } else if (mode_ == Mode::kDontSendSignedInVariations) {
@@ -90,10 +92,11 @@ VariationsIdsProvider::GetClientDataHeaders(bool is_signed_in) {
   std::string any_context_header_copy;
   {
     base::AutoLock lock(lock_);
-    first_party_header_copy = GetClientDataHeaderWhileLocked(
+    MaybeUpdateVariationIDsAndHeaders();
+    first_party_header_copy = GetClientDataHeader(
         is_signed_in, Study_GoogleWebVisibility_FIRST_PARTY);
-    any_context_header_copy = GetClientDataHeaderWhileLocked(
-        is_signed_in, Study_GoogleWebVisibility_ANY);
+    any_context_header_copy =
+        GetClientDataHeader(is_signed_in, Study_GoogleWebVisibility_ANY);
   }
 
   if (first_party_header_copy.empty() && any_context_header_copy.empty()) {
@@ -102,25 +105,11 @@ VariationsIdsProvider::GetClientDataHeaders(bool is_signed_in) {
 
   base::flat_map<variations::mojom::GoogleWebVisibility, std::string> headers =
       {{variations::mojom::GoogleWebVisibility::FIRST_PARTY,
-        first_party_header_copy},
-       {variations::mojom::GoogleWebVisibility::ANY, any_context_header_copy}};
+        std::move(first_party_header_copy)},
+       {variations::mojom::GoogleWebVisibility::ANY,
+        std::move(any_context_header_copy)}};
 
-  return variations::mojom::VariationsHeaders::New(headers);
-}
-
-std::string VariationsIdsProvider::GetVariationsString(
-    const std::set<IDCollectionKey>& keys) {
-  // Construct a space-separated string with leading and trailing spaces from
-  // the VariationIDs set. The IDs in the string are in sorted order as per the
-  // std::set contract.
-  std::string ids_string = " ";
-
-  for (const VariationID& id : GetVariationsVector(keys)) {
-    ids_string.append(base::NumberToString(id));
-    ids_string.push_back(' ');
-  }
-
-  return ids_string;
+  return variations::mojom::VariationsHeaders::New(std::move(headers));
 }
 
 std::string VariationsIdsProvider::GetGoogleAppVariationsString() {
@@ -163,36 +152,39 @@ void VariationsIdsProvider::SetLowEntropySourceValue(
     DCHECK_GE(low_entropy_source_value.value(), 0);
     DCHECK_LE(low_entropy_source_value.value(), 7999);
   }
+
+  base::AutoLock scoped_lock(lock_);
   low_entropy_source_value_ = low_entropy_source_value;
 }
 
 VariationsIdsProvider::ForceIdsResult VariationsIdsProvider::ForceVariationIds(
+    base::PassKey<VariationsFieldTrialCreator> pass_key,
     const std::vector<std::string>& variation_ids,
     const std::string& command_line_variation_ids) {
-  force_enabled_ids_set_.clear();
+  return ForceVariationIdsImpl(variation_ids, command_line_variation_ids);
+}
 
-  if (!AddVariationIdsToSet(variation_ids, /*should_dedupe=*/true,
-                            &force_enabled_ids_set_)) {
-    return ForceIdsResult::INVALID_VECTOR_ENTRY;
-  }
+VariationsIdsProvider::ForceIdsResult VariationsIdsProvider::ForceVariationIds(
+    base::PassKey<android_webview::AwBrowserMainParts> pass_key,
+    const std::vector<std::string>& variation_ids,
+    const std::string& command_line_variation_ids) {
+  return ForceVariationIdsImpl(variation_ids, command_line_variation_ids);
+}
 
-  if (!ParseVariationIdsParameter(command_line_variation_ids,
-                                  /*should_dedupe=*/true,
-                                  &force_enabled_ids_set_)) {
-    return ForceIdsResult::INVALID_SWITCH_ENTRY;
-  }
-  if (variation_ids_cache_initialized_) {
-    // Update the cached variation ids header value after cache initialization,
-    // otherwise the change won't be in the cache.
-    base::AutoLock scoped_lock(lock_);
-    UpdateVariationIDsHeaderValue();
-  }
-  return ForceIdsResult::SUCCESS;
+VariationsIdsProvider::ForceIdsResult
+VariationsIdsProvider::ForceVariationIdsForTesting(
+    const std::vector<std::string>& variation_ids,
+    const std::string& command_line_variation_ids) {
+  return ForceVariationIdsImpl(variation_ids, command_line_variation_ids);
 }
 
 bool VariationsIdsProvider::ForceDisableVariationIds(
     const std::string& command_line_variation_ids) {
+  base::AutoLock scoped_lock(lock_);
+
   force_disabled_ids_set_.clear();
+  ResetLastUpdateTime();
+
   // |should_dedupe| is false here in order to add the IDs specified in
   // |command_line_variation_ids| to |force_disabled_ids_set_| even if they were
   // defined before. The IDs are not marked as active; they are marked as
@@ -208,7 +200,7 @@ bool VariationsIdsProvider::ForceDisableVariationIds(
   static_assert(
       ID_COLLECTION_COUNT == 6,
       "If you add a new collection key, make sure it can be disabled here.");
-  std::set<VariationIDEntry> additional_disabled_ids;
+  VariationIDEntrySet additional_disabled_ids;
   for (const auto& entry : force_disabled_ids_set_) {
     if (entry.second == GOOGLE_WEB_PROPERTIES_ANY_CONTEXT) {
       additional_disabled_ids.insert(
@@ -222,12 +214,6 @@ bool VariationsIdsProvider::ForceDisableVariationIds(
   }
   force_disabled_ids_set_.merge(additional_disabled_ids);
 
-  if (variation_ids_cache_initialized_) {
-    // Update the cached variation ids header value after cache initialization,
-    // otherwise the change won't be in the cache.
-    base::AutoLock scoped_lock(lock_);
-    UpdateVariationIDsHeaderValue();
-  }
   return true;
 }
 
@@ -246,46 +232,72 @@ void VariationsIdsProvider::ResetForTesting() {
   base::AutoLock scoped_lock(lock_);
 
   // Stop observing field trials so that it can be restarted when this is
-  // re-inited. Note: This is a no-op if this is not currently observing.
+  // re-initialized. Note: This is a no-op if this is not currently observing.
   base::FieldTrialList::RemoveObserver(this);
-  variation_ids_cache_initialized_ = false;
-  variation_ids_set_.clear();
+  is_subscribed_to_field_trial_list_ = false;
+
+  // Reset the remaining cached state.
+  low_entropy_source_value_ = std::nullopt;
+  last_update_time_ = base::Time::Min();
+  next_update_time_ = base::Time::Min();
+  active_variation_ids_set_.clear();
   force_enabled_ids_set_.clear();
   synthetic_variation_ids_set_.clear();
   force_disabled_ids_set_.clear();
   variations_headers_map_.clear();
+  observer_list_.clear();
 }
 
-VariationsIdsProvider::VariationsIdsProvider(Mode mode)
-    : mode_(mode) {}
+VariationsIdsProvider::VariationsIdsProvider(Mode mode,
+                                             std::unique_ptr<base::Clock> clock)
+    : mode_(mode), clock_(std::move(clock)) {
+  CHECK(clock_);
+}
 
 VariationsIdsProvider::~VariationsIdsProvider() {
   base::FieldTrialList::RemoveObserver(this);
 }
 
 // static
-void VariationsIdsProvider::CreateInstanceForTesting(Mode mode) {
+VariationsIdsProvider* VariationsIdsProvider::CreateInstanceForTesting(
+    Mode mode,
+    std::unique_ptr<base::Clock> clock) {
   base::AutoLock lock(GetInstanceLock());
-  delete g_instance;
-  g_instance = new VariationsIdsProvider(mode);
+  VariationsIdsProvider* previous_instance = g_instance;
+  g_instance = new VariationsIdsProvider(mode, std::move(clock));
+  return previous_instance;
 }
 
 // static
-void VariationsIdsProvider::DestroyInstanceForTesting() {
+void VariationsIdsProvider::ResetInstanceForTesting(
+    VariationsIdsProvider* previous_instance) {
   base::AutoLock lock(GetInstanceLock());
   delete g_instance;
-  g_instance = nullptr;
+  g_instance = previous_instance;
+}
+
+std::string VariationsIdsProvider::GetVariationsString(
+    const std::set<IDCollectionKey>& keys) {
+  // Construct a space-separated string with leading and trailing spaces from
+  // the VariationIDs set. The IDs in the string are unique and in sorted order.
+  std::string ids_string = " ";
+
+  for (const VariationID& id : GetVariationsVector(keys)) {
+    ids_string.append(base::NumberToString(id));
+    ids_string.push_back(' ');
+  }
+
+  return ids_string;
 }
 
 void VariationsIdsProvider::OnFieldTrialGroupFinalized(
     const base::FieldTrial& trial,
     const std::string& group_name) {
   base::AutoLock scoped_lock(lock_);
-  const size_t old_size = variation_ids_set_.size();
-  CacheVariationsId(trial.trial_name(), group_name);
-  if (variation_ids_set_.size() != old_size) {
-    UpdateVariationIDsHeaderValue();
-  }
+  // The finalized field trial may have caused variation IDs to be added to the
+  // active set. Reset the last update time to force an update on the next call
+  // to `MaybeUpdateVariationIDsAndHeaders()`.
+  ResetLastUpdateTime();
 }
 
 void VariationsIdsProvider::OnSyntheticTrialsChanged(
@@ -295,9 +307,11 @@ void VariationsIdsProvider::OnSyntheticTrialsChanged(
   base::AutoLock scoped_lock(lock_);
 
   synthetic_variation_ids_set_.clear();
+  ResetLastUpdateTime();
+
   for (const SyntheticTrialGroup& group : groups) {
-    VariationID id = GetGoogleVariationIDFromHashes(
-        GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, group.id());
+    VariationID id =
+        GetGoogleVariationID(GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, group.id());
     // TODO(crbug.com/40214121): Handle duplicated IDs in such a way that is
     // visible to developers, but non-intrusive to users. See
     // crrev/c/3628020/comments/e278cd12_2bb863ef for discussions.
@@ -305,8 +319,7 @@ void VariationsIdsProvider::OnSyntheticTrialsChanged(
       synthetic_variation_ids_set_.insert(
           VariationIDEntry(id, GOOGLE_WEB_PROPERTIES_ANY_CONTEXT));
     }
-    id = GetGoogleVariationIDFromHashes(GOOGLE_WEB_PROPERTIES_SIGNED_IN,
-                                        group.id());
+    id = GetGoogleVariationID(GOOGLE_WEB_PROPERTIES_SIGNED_IN, group.id());
     if (id != EMPTY_ID) {
       synthetic_variation_ids_set_.insert(
           VariationIDEntry(id, GOOGLE_WEB_PROPERTIES_SIGNED_IN));
@@ -314,90 +327,147 @@ void VariationsIdsProvider::OnSyntheticTrialsChanged(
     // Google App IDs omitted because they should never be defined
     // synthetically.
   }
-  UpdateVariationIDsHeaderValue();
 }
 
-void VariationsIdsProvider::InitVariationIDsCacheIfNeeded() {
-  base::AutoLock scoped_lock(lock_);
-  if (variation_ids_cache_initialized_) {
-    return;
-  }
-
-  // Register for additional cache updates. This is done before initializing the
-  // cache to avoid a race that could cause registered FieldTrials to be missed.
-  bool success = base::FieldTrialList::AddObserver(this);
-  DCHECK(success);
-
-  base::FieldTrial::ActiveGroups initial_groups;
-  // These field trial group IDs may be sent to Google servers for web-visible
-  // studies.
-  // Low anonymity trials cannot be web-visible (enforced server-side), but as
-  // an additional safeguard we do not include them in the list of field trials
-  // we fetch here.
-  base::FieldTrialList::GetActiveFieldTrialGroups(&initial_groups);
-
-  for (const auto& entry : initial_groups) {
-    CacheVariationsId(entry.trial_name, entry.group_name);
-  }
-  UpdateVariationIDsHeaderValue();
-
-  variation_ids_cache_initialized_ = true;
-}
-
-void VariationsIdsProvider::CacheVariationsId(const std::string& trial_name,
-                                              const std::string& group_name) {
-  for (int i = 0; i < ID_COLLECTION_COUNT; ++i) {
-    IDCollectionKey key = static_cast<IDCollectionKey>(i);
-    const VariationID id = GetGoogleVariationID(key, trial_name, group_name);
-    // TODO(crbug.com/40214121): Handle duplicated IDs in such a way that is
-    // visible to developers, but non-intrusive to users. See
-    // crrev/c/3628020/comments/e278cd12_2bb863ef for discussions.
-    if (id != EMPTY_ID) {
-      variation_ids_set_.insert(VariationIDEntry(id, key));
-    }
-  }
-}
-
-void VariationsIdsProvider::UpdateVariationIDsHeaderValue() {
+void VariationsIdsProvider::MaybeUpdateVariationIDsAndHeaders() {
   lock_.AssertAcquired();
 
-  variations_headers_map_.clear();
+  // Check if an update is needed. If not, return early (the currently cached
+  // values are still valid), otherwise, update the cached values and notify
+  // observers.  See `UpdateIsNeeded()` for more details.
+  const base::Time current_time = clock_->Now();
+  if (!UpdateIsNeeded(current_time)) {
+    return;
+  }
+  SetLastUpdateTime(current_time);
+  SetNextUpdateTime(GetNextTimeWindowEvent(current_time));
 
-  // Note that the list of IDs and the header could be temporarily out of sync
-  // if IDs are added as the header is recreated. The receiving servers are OK
-  // with such discrepancies.
-  variations_headers_map_[VariationsHeaderKey{/*is_signed_in=*/false,
-                                              Study_GoogleWebVisibility_ANY}] =
-      GenerateBase64EncodedProto(/*is_signed_in=*/false,
-                                 /*is_first_party_context=*/false);
+  // Subscribe to field trials if not already subscribed.
+  if (!is_subscribed_to_field_trial_list_) {
+    const bool success = base::FieldTrialList::AddObserver(this);
+    CHECK(success);
+    is_subscribed_to_field_trial_list_ = true;
+  }
 
-  variations_headers_map_[VariationsHeaderKey{
-      /*is_signed_in=*/false, Study_GoogleWebVisibility_FIRST_PARTY}] =
-      GenerateBase64EncodedProto(/*is_signed_in=*/false,
-                                 /*is_first_party_context=*/true);
+  // Clear the active variation IDs set before adding new ones.
+  active_variation_ids_set_.clear();
 
-  variations_headers_map_[VariationsHeaderKey{/*is_signed_in=*/true,
-                                              Study_GoogleWebVisibility_ANY}] =
-      GenerateBase64EncodedProto(/*is_signed_in=*/true,
-                                 /*is_first_party_context=*/false);
+  // Populate the active variation IDs.
+  AddActiveVariationIds(current_time);
+  AddForceEnabledVariationIds();
+  AddSyntheticVariationIds();
+  AddLowEntropySourceValue();
+  RemoveForceDisabledVariationIds();
 
-  variations_headers_map_[VariationsHeaderKey{
-      /*is_signed_in=*/true, Study_GoogleWebVisibility_FIRST_PARTY}] =
-      GenerateBase64EncodedProto(/*is_signed_in=*/true,
-                                 /*is_first_party_context=*/true);
+  // Generate the header values.
+  for (bool is_signed_in : {false, true}) {
+    for (auto context : {Study_GoogleWebVisibility_ANY,
+                         Study_GoogleWebVisibility_FIRST_PARTY}) {
+      variations_headers_map_[VariationsHeaderKey{is_signed_in, context}] =
+          GenerateBase64EncodedProto(is_signed_in, context);
+    }
+  }
 
+  // Notify observers that the variation IDs header has been updated.
   for (auto* observer : observer_list_) {
     observer->VariationIdsHeaderUpdated();
   }
 }
 
+VariationsIdsProvider::ForceIdsResult
+VariationsIdsProvider::ForceVariationIdsImpl(
+    const std::vector<std::string>& variation_ids,
+    const std::string& command_line_variation_ids) {
+  base::AutoLock scoped_lock(lock_);
+
+  force_enabled_ids_set_.clear();
+  ResetLastUpdateTime();
+
+  if (!AddVariationIdsToSet(variation_ids, /*should_dedupe=*/true,
+                            &force_enabled_ids_set_)) {
+    return ForceIdsResult::INVALID_VECTOR_ENTRY;
+  }
+
+  if (!ParseVariationIdsParameter(command_line_variation_ids,
+                                  /*should_dedupe=*/true,
+                                  &force_enabled_ids_set_)) {
+    return ForceIdsResult::INVALID_SWITCH_ENTRY;
+  }
+  return ForceIdsResult::SUCCESS;
+}
+
+void VariationsIdsProvider::AddActiveVariationIds(base::Time current_time) {
+  lock_.AssertAcquired();
+
+  base::FieldTrial::ActiveGroups active_groups;
+  base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
+
+  // Add all IDs for the non-forced, timebox-active, groups.
+  for (const auto& entry : active_groups) {
+    const auto active_group_id =
+        MakeActiveGroupId(entry.trial_name, entry.group_name);
+    for (int i = 0; i < ID_COLLECTION_COUNT; ++i) {
+      const IDCollectionKey key = static_cast<IDCollectionKey>(i);
+      const VariationID id =
+          GetGoogleVariationID(key, active_group_id, current_time);
+      if (id != EMPTY_ID) {
+        active_variation_ids_set_.emplace(id, key);
+      }
+    }
+  }
+}
+
+void VariationsIdsProvider::AddLowEntropySourceValue() {
+  lock_.AssertAcquired();
+
+  // Add the low entropy source value, if it exists, which has one of
+  // 8000 possible values (between kLowEntropySourceVariationIdRange[Min/Max],
+  // ~13 bits). This is the value that has been used for deriving the variation
+  // ids included in the X-Client-Data header and therefore does not reveal
+  // additional information about the client when there are more than 13
+  // variations. A typical Chrome client has more than 13 variation ids
+  // reported.
+  //
+  // The entropy source value is used for retrospective A/A tests to validate
+  // that there's no existing bias between two randomized groups of clients for
+  // a later A/B study.
+  if (low_entropy_source_value_.has_value()) {
+    const int source_value = low_entropy_source_value_.value() +
+                             internal::kLowEntropySourceVariationIdRangeMin;
+    DCHECK_GE(source_value, internal::kLowEntropySourceVariationIdRangeMin);
+    DCHECK_LE(source_value, internal::kLowEntropySourceVariationIdRangeMax);
+    active_variation_ids_set_.emplace(source_value,
+                                      GOOGLE_WEB_PROPERTIES_ANY_CONTEXT);
+  }
+}
+
+void VariationsIdsProvider::AddForceEnabledVariationIds() {
+  lock_.AssertAcquired();
+  active_variation_ids_set_.insert(force_enabled_ids_set_.begin(),
+                                   force_enabled_ids_set_.end());
+}
+
+void VariationsIdsProvider::AddSyntheticVariationIds() {
+  lock_.AssertAcquired();
+  active_variation_ids_set_.insert(synthetic_variation_ids_set_.begin(),
+                                   synthetic_variation_ids_set_.end());
+}
+
+void VariationsIdsProvider::RemoveForceDisabledVariationIds() {
+  lock_.AssertAcquired();
+  for (const auto& entry : force_disabled_ids_set_) {
+    active_variation_ids_set_.erase(entry);
+  }
+}
+
 std::string VariationsIdsProvider::GenerateBase64EncodedProto(
     bool is_signed_in,
-    bool is_first_party_context) {
-  std::set<VariationIDEntry> all_variation_ids_set = GetAllVariationIds();
-
+    Study_GoogleWebVisibility context) {
+  lock_.AssertAcquired();
+  const bool is_first_party_context =
+      context == Study_GoogleWebVisibility_FIRST_PARTY;
   ClientVariations proto;
-  for (const VariationIDEntry& entry : all_variation_ids_set) {
+  for (const VariationIDEntry& entry : active_variation_ids_set_) {
     switch (entry.second) {
       case GOOGLE_WEB_PROPERTIES_SIGNED_IN:
         if (is_signed_in) {
@@ -430,6 +500,11 @@ std::string VariationsIdsProvider::GenerateBase64EncodedProto(
     }
   }
 
+  // Sort the ids and remove duplicates. This makes the representation of any
+  // given combination of variation ids deterministic.
+  MakeSortedAndUnique(proto.mutable_variation_id());
+  MakeSortedAndUnique(proto.mutable_trigger_variation_id());
+
   const size_t total_id_count =
       proto.variation_id_size() + proto.trigger_variation_id_size();
 
@@ -441,8 +516,8 @@ std::string VariationsIdsProvider::GenerateBase64EncodedProto(
   // here. Force a hard maximum on the ID count in case the Variations server
   // returns too many IDs and DOSs receiving servers with large requests.
   DCHECK_LE(total_id_count, 75U);
-  UMA_HISTOGRAM_COUNTS_100("Variations.Headers.ExperimentCount",
-                           total_id_count);
+  base::UmaHistogramCounts100("Variations.Headers.ExperimentCount",
+                              total_id_count);
   if (total_id_count > 100) {
     return std::string();
   }
@@ -453,18 +528,20 @@ std::string VariationsIdsProvider::GenerateBase64EncodedProto(
 }
 
 bool VariationsIdsProvider::AddVariationIdsToSet(
-    const std::vector<std::string>& variation_ids,
+    const std::vector<std::string>& variation_id_strings,
     bool should_dedupe,
-    std::set<VariationIDEntry>* target_set) {
-  for (const std::string& entry : variation_ids) {
+    VariationIDEntrySet* target_set) {
+  lock_.AssertAcquired();
+  for (const std::string& entry_string : variation_id_strings) {
+    std::string_view entry = entry_string;
     if (entry.empty()) {
       target_set->clear();
       return false;
     }
-    bool trigger_id =
+    const bool is_trigger_id =
         base::StartsWith(entry, "t", base::CompareCase::SENSITIVE);
     // Remove the "t" prefix if it's there.
-    std::string trimmed_entry = trigger_id ? entry.substr(1) : entry;
+    std::string_view trimmed_entry = is_trigger_id ? entry.substr(1) : entry;
 
     int variation_id = 0;
     if (!base::StringToInt(trimmed_entry, &variation_id)) {
@@ -478,10 +555,9 @@ bool VariationsIdsProvider::AddVariationIdsToSet(
       target_set->clear();
       return false;
     }
-
-    target_set->insert(VariationIDEntry(
-        variation_id, trigger_id ? GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT
-                                 : GOOGLE_WEB_PROPERTIES_ANY_CONTEXT));
+    target_set->emplace(
+        variation_id, is_trigger_id ? GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT
+                                    : GOOGLE_WEB_PROPERTIES_ANY_CONTEXT);
   }
   return true;
 }
@@ -489,19 +565,18 @@ bool VariationsIdsProvider::AddVariationIdsToSet(
 bool VariationsIdsProvider::ParseVariationIdsParameter(
     const std::string& command_line_variation_ids,
     bool should_dedupe,
-    std::set<VariationIDEntry>* target_set) {
+    VariationIDEntrySet* target_set) {
+  lock_.AssertAcquired();
   if (command_line_variation_ids.empty()) {
     return true;
   }
-
-  std::vector<std::string> variation_ids_from_command_line =
+  return AddVariationIdsToSet(
       base::SplitString(command_line_variation_ids, ",", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_ALL);
-  return AddVariationIdsToSet(variation_ids_from_command_line, should_dedupe,
-                              target_set);
+                        base::SPLIT_WANT_ALL),
+      should_dedupe, target_set);
 }
 
-std::string VariationsIdsProvider::GetClientDataHeaderWhileLocked(
+std::string VariationsIdsProvider::GetClientDataHeader(
     bool is_signed_in,
     Study_GoogleWebVisibility web_visibility) {
   lock_.AssertAcquired();
@@ -516,86 +591,79 @@ std::string VariationsIdsProvider::GetClientDataHeaderWhileLocked(
   return it->second;
 }
 
-std::set<VariationsIdsProvider::VariationIDEntry>
-VariationsIdsProvider::GetAllVariationIds() {
-  lock_.AssertAcquired();
-
-  std::set<VariationIDEntry> all_variation_ids_set = force_enabled_ids_set_;
-  for (const VariationIDEntry& entry : variation_ids_set_) {
-    all_variation_ids_set.insert(entry);
-  }
-  for (const VariationIDEntry& entry : synthetic_variation_ids_set_) {
-    all_variation_ids_set.insert(entry);
-  }
-  for (const VariationIDEntry& entry : force_disabled_ids_set_) {
-    all_variation_ids_set.erase(entry);
-  }
-
-  // Add the low entropy source value, if it exists, which has one of
-  // 8000 possible values (between kLowEntropySourceVariationIdRange[Min/Max],
-  // ~13 bits). This is the value that has been used for deriving the variation
-  // ids included in the X-Client-Data header and therefore does not reveal
-  // additional information about the client when there are more than 13
-  // variations. A typical Chrome client has more than 13 variation ids
-  // reported.
-  //
-  // The entropy source value is used for retrospective A/A tests to validate
-  // that there's no existing bias between two randomized groups of clients for
-  // a later A/B study.
-  if (low_entropy_source_value_.has_value()) {
-    int source_value = low_entropy_source_value_.value() +
-                       kLowEntropySourceVariationIdRangeMin;
-    DCHECK_GE(source_value, kLowEntropySourceVariationIdRangeMin);
-    DCHECK_LE(source_value, kLowEntropySourceVariationIdRangeMax);
-    all_variation_ids_set.insert(
-        VariationIDEntry(source_value, GOOGLE_WEB_PROPERTIES_ANY_CONTEXT));
-  }
-
-  return all_variation_ids_set;
-}
-
 std::vector<VariationID> VariationsIdsProvider::GetVariationsVectorImpl(
     const std::set<IDCollectionKey>& keys) {
-  InitVariationIDsCacheIfNeeded();
-
   // Get all the active variation ids while holding the lock.
-  std::set<VariationIDEntry> all_variation_ids;
+  std::vector<VariationID> result;
   {
     base::AutoLock scoped_lock(lock_);
-    all_variation_ids = GetAllVariationIds();
+    MaybeUpdateVariationIDsAndHeaders();
+
+    // Copy the requested variations to the output vector.
+    result.reserve(active_variation_ids_set_.size());
+    for (const auto& entry : active_variation_ids_set_) {
+      if (keys.find(entry.second) != keys.end()) {
+        result.push_back(entry.first);
+      }
+    }
   }
 
-  // Copy the requested variations to the output vector.
-  std::vector<VariationID> result;
-  result.reserve(all_variation_ids.size());
-  for (const VariationIDEntry& entry : all_variation_ids) {
-    if (keys.find(entry.second) != keys.end())
-      result.push_back(entry.first);
-  }
-
-  // Make sure each entry is unique. As a side effect, the output is sorted.
-  std::sort(result.begin(), result.end());
-  result.erase(std::unique(result.begin(), result.end()), result.end());
+  // Sort the ids and remove duplicates. This makes the representation of any
+  // given combination of variation ids deterministic.
+  MakeSortedAndUnique(&result);
   return result;
 }
 
 bool VariationsIdsProvider::IsDuplicateId(VariationID id) {
+  lock_.AssertAcquired();
   for (int i = 0; i < ID_COLLECTION_COUNT; ++i) {
-    IDCollectionKey key = static_cast<IDCollectionKey>(i);
+    const IDCollectionKey key = static_cast<IDCollectionKey>(i);
     // GOOGLE_APP ids may be duplicated. Further validation is done in
     // GroupMapAccessor::ValidateID().
     if (key == GOOGLE_APP) {
       continue;
     }
 
-    VariationIDEntry entry(id, key);
-    if (base::Contains(variation_ids_set_, entry) ||
-        base::Contains(force_enabled_ids_set_, entry) ||
+    const VariationIDEntry entry(id, key);
+    if (base::Contains(force_enabled_ids_set_, entry) ||
         base::Contains(synthetic_variation_ids_set_, entry)) {
       return true;
     }
   }
   return false;
+}
+
+void VariationsIdsProvider::SetLastUpdateTime(base::Time time) {
+  lock_.AssertAcquired();
+  last_update_time_ = time;
+}
+
+void VariationsIdsProvider::ResetLastUpdateTime() {
+  SetLastUpdateTime(base::Time::Min());
+}
+
+void VariationsIdsProvider::SetNextUpdateTime(base::Time time) {
+  lock_.AssertAcquired();
+  next_update_time_ = time;
+}
+
+bool VariationsIdsProvider::UpdateIsNeeded(base::Time current_time) const {
+  // The `last_update_time_` and prospective `next_update_time_` are cached
+  // whenever an update is performed. See `MaybeUpdateVariationIDsAndHeaders()`.
+  //
+  // When a new field trial is activated, `last_update_time_` is reset to
+  // `base::Time::Min()`. See `OnFieldTrialGroupFinalized()`. Similarly, if the
+  // force-enabled, force-disabled or synthetic trial ids are  updated,
+  // `last_update_time_` is reset to `base::Time::Min()`. This forces a
+  // re-calculation of the cached header values. We do this because any new
+  // ids may be time-boxed with a window that starts not only before the
+  // `current_time`, but also before the `last_update_time_`.
+  //
+  // Otherwise, the active field trials have not changed, and we can rely on
+  // the cached `next_update_time_` to determine whether an update is needed.
+  lock_.AssertAcquired();
+  return last_update_time_ == base::Time::Min() ||
+         current_time >= next_update_time_;
 }
 
 }  // namespace variations

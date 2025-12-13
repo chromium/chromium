@@ -112,7 +112,7 @@ public class BookmarkUndoController extends BookmarkModelObserver
     }
 
     @Override
-    public void bookmarkNodeAdded(BookmarkItem parent, int index) {
+    public void bookmarkNodeAdded(BookmarkItem parent, int index, boolean addedByUser) {
         // Adding a new bookmark should not affect undo.
     }
 

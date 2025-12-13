@@ -21,6 +21,7 @@
 #include "chrome/browser/feedback/feedback_dialog_utils.h"  // nogncheck
 // clang-format on
 
+#include "ash/webui/boca_receiver_app_ui/boca_receiver_ui.h"
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/color_internals/color_internals_ui.h"
 #include "ash/webui/connectivity_diagnostics/connectivity_diagnostics_ui.h"
@@ -46,7 +47,6 @@
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
 #include "ash/webui/status_area_internals/status_area_internals_ui.h"
 #include "ash/webui/vc_background_ui/vc_background_ui.h"
-#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
 #include "chrome/browser/ash/mall/chrome_mall_ui_delegate.h"
 #include "chrome/browser/ash/multidevice_debug/proximity_auth_ui_config.h"
@@ -74,11 +74,8 @@
 #include "chrome/browser/ui/webui/ash/app_install/app_install_ui.h"
 #include "chrome/browser/ui/webui/ash/arc_overview_tracing/arc_overview_tracing_ui.h"
 #include "chrome/browser/ui/webui/ash/arc_power_control/arc_power_control_ui.h"
-#include "chrome/browser/ui/webui/ash/assistant_optin/assistant_optin_ui.h"
-#include "chrome/browser/ui/webui/ash/audio/audio_ui.h"
 #include "chrome/browser/ui/webui/ash/bluetooth/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_ui.h"
-#include "chrome/browser/ui/webui/ash/borealis_motd/borealis_motd_dialog.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/mobile_setup_ui.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_ui.h"
@@ -120,7 +117,7 @@
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
-#include "chromeos/ash/components/kiosk/vision/webui/ui_controller.h"
+#include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_dialog.h"
 #include "ui/webui/webui_util.h"
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
@@ -249,9 +246,9 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<app_install::AppInstallDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<ArcOverviewTracingUIConfig>());
   map.AddWebUIConfig(std::make_unique<ArcPowerControlUIConfig>());
-  map.AddWebUIConfig(std::make_unique<AssistantOptInUIConfig>());
-  map.AddWebUIConfig(std::make_unique<AudioUIConfig>());
+
   map.AddWebUIConfig(std::make_unique<BluetoothPairingDialogUIConfig>());
+  map.AddWebUIConfig(std::make_unique<BocaReceiverUIConfig>());
   map.AddWebUIConfig(std::make_unique<borealis::BorealisMOTDUIConfig>());
   map.AddWebUIConfig(std::make_unique<BorealisCreditsUI>());
   map.AddWebUIConfig(std::make_unique<BorealisInstallerUIConfig>());
@@ -270,12 +267,6 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<EmojiUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<extended_updates::ExtendedUpdatesUIConfig>());
-  map.AddWebUIConfig(std::make_unique<ash::kiosk_vision::UIConfig>(
-      base::BindRepeating(webui::SetupWebUIDataSource),
-      base::BindRepeating([]() {
-        return ash::KioskController::Get()
-            .GetKioskVisionInternalsPageProcessor();
-      })));
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<FilesInternalsUIConfig, FilesInternalsUI,
                                       ChromeFilesInternalsUIDelegate>());

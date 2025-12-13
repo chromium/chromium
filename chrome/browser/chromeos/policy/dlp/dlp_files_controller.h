@@ -100,8 +100,6 @@ class DlpFilesController {
 
   // Gets all files inside |roots| recursively and runs |callback_| with the
   // whole files list. Deletes itself after |callback_| is run.
-  // TODO(b/259184140): Extract RootsRecursionDelegate to another file to
-  // have better testing coverage.
   class RootsRecursionDelegate {
    public:
     RootsRecursionDelegate(storage::FileSystemContext* file_system_context,

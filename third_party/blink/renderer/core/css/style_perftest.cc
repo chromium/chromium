@@ -47,7 +47,7 @@ namespace blink {
 // (occasionally even things like “display: none !important”) and so on.
 // Thus, as a kludge, we strip all <style> tags from the HTML here before
 // parsing.
-static WTF::String StripStyleTags(const WTF::String& html) {
+static String StripStyleTags(const String& html) {
   StringBuilder stripped_html;
   wtf_size_t pos = 0;
   for (;;) {
@@ -101,8 +101,7 @@ static std::unique_ptr<DummyPageHolder> LoadDumpedPage(
   Document& document = page->GetDocument();
   StyleEngine& engine = document.GetStyleEngine();
   document.documentElement()->SetInnerHTMLWithoutTrustedTypes(
-      StripStyleTags(WTF::String(*dict.FindString("html"))),
-      ASSERT_NO_EXCEPTION);
+      StripStyleTags(String(*dict.FindString("html"))), ASSERT_NO_EXCEPTION);
 
   int num_sheets = 0;
   int num_bytes = 0;
@@ -114,7 +113,7 @@ static std::unique_ptr<DummyPageHolder> LoadDumpedPage(
         MakeGarbageCollected<CSSParserContext>(document));
 
     for (int i = 0; i < parse_iterations; ++i) {
-      sheet->ParseString(WTF::String(*sheet_dict.FindString("text")),
+      sheet->ParseString(String(*sheet_dict.FindString("text")),
                          /*allow_import_rules=*/true, defer_property_parsing);
     }
     if (*sheet_dict.FindString("type") == "user") {
@@ -184,7 +183,7 @@ static StylePerfResult MeasureStyleForDumpedPage(
   size_t orig_gc_allocated_bytes =
       blink::ProcessHeap::TotalAllocatedObjectSize();
   size_t orig_partition_allocated_bytes =
-      WTF::Partitions::TotalSizeOfCommittedPages();
+      Partitions::TotalSizeOfCommittedPages();
 
   std::unique_ptr<DummyPageHolder> page;
 
@@ -199,7 +198,8 @@ static StylePerfResult MeasureStyleForDumpedPage(
       return result;
     }
     std::optional<base::Value> json =
-        base::JSONReader::Read(base::as_string_view(*serialized));
+        base::JSONReader::Read(base::as_string_view(*serialized),
+                               base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(json.has_value());
     page = LoadDumpedPage(json->GetDict(), result.parse_time, reporter);
   }
@@ -238,8 +238,7 @@ static StylePerfResult MeasureStyleForDumpedPage(
   test::RunPendingTasks();
 
   size_t gc_allocated_bytes = blink::ProcessHeap::TotalAllocatedObjectSize();
-  size_t partition_allocated_bytes =
-      WTF::Partitions::TotalSizeOfCommittedPages();
+  size_t partition_allocated_bytes = Partitions::TotalSizeOfCommittedPages();
 
   result.gc_allocated_bytes = gc_allocated_bytes - orig_gc_allocated_bytes;
   result.partition_allocated_bytes =

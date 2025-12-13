@@ -18,8 +18,6 @@
 // so the fuzzer will read both directories passed, but all new generated
 // testcases will go into ~/another_dir_to_store_corpus
 
-#include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
-
 #include <fuzzer/FuzzedDataProvider.h>
 #include <stddef.h>
 #include <stdint.h>

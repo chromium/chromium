@@ -76,7 +76,7 @@ void RegisterSodaComponent(ComponentUpdateService* cus,
 // Should only be called by SodaInstaller.
 void RegisterSodaLanguageComponent(
     ComponentUpdateService* cus,
-    const std::string& language,
+    std::string_view language,
     OnSodaLanguagePackComponentReadyCallback on_ready_callback);
 
 }  // namespace component_updater

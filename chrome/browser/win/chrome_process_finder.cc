@@ -49,14 +49,14 @@ NotifyChromeResult AttemptToNotifyRunningChrome(HWND remote_window) {
     TRACE_EVENT0(
         "startup",
         "AttemptToNotifyRunningChrome:GetWindowThreadProcessId failed");
-    return NotifyChromeResult::NOTIFY_FAILED;
+    return NotifyChromeResult::kFailed;
   }
 
   base::FilePath cur_dir;
   if (!base::GetCurrentDirectory(&cur_dir)) {
     TRACE_EVENT_INSTANT(
         "startup", "AttemptToNotifyRunningChrome:GetCurrentDirectory failed");
-    return NotifyChromeResult::NOTIFY_FAILED;
+    return NotifyChromeResult::kFailed;
   }
   base::CommandLine new_command_line(*base::CommandLine::ForCurrentProcess());
   // If this process was launched from a shortcut, add the shortcut path to
@@ -64,9 +64,11 @@ NotifyChromeResult AttemptToNotifyRunningChrome(HWND remote_window) {
   // launch mode correctly.
   STARTUPINFOW si = {sizeof(si)};
   ::GetStartupInfoW(&si);
-  if (si.dwFlags & STARTF_TITLEISLINKNAME)
+  if (si.dwFlags & STARTF_TITLEISLINKNAME) {
     new_command_line.AppendSwitchNative(switches::kSourceShortcut, si.lpTitle);
-
+  } else if (si.dwFlags & STARTF_TITLEISAPPID) {
+    new_command_line.AppendSwitch(switches::kSourceAppId);
+  }
   // Send the command line to the remote chrome window.
   // Format is "START\0<<<current directory>>>\0<<<commandline>>>".
   std::wstring to_send = base::StrCat(
@@ -88,13 +90,13 @@ NotifyChromeResult AttemptToNotifyRunningChrome(HWND remote_window) {
     if (::SendMessageTimeout(remote_window, WM_COPYDATA, NULL,
                              reinterpret_cast<LPARAM>(&cds), SMTO_ABORTIFHUNG,
                              g_timeout_in_milliseconds, &result)) {
-      return result ? NotifyChromeResult::NOTIFY_SUCCESS
-                    : NotifyChromeResult::NOTIFY_FAILED;
+      return result ? NotifyChromeResult::kSuccess
+                    : NotifyChromeResult::kFailed;
     }
   }
 
-  // If SendMessageTimeout failed to send message consider this as
-  // NOTIFY_FAILED. Timeout can be represented as either ERROR_TIMEOUT or 0...
+  // If SendMessageTimeout failed to send message consider this as kFailed.
+  // Timeout can be represented as either ERROR_TIMEOUT or 0...
   // https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendmessagetimeoutw
   // Anecdotally which error code comes out seems to depend on whether this
   // process had non-empty data to deliver via |to_send| or not.
@@ -103,20 +105,20 @@ NotifyChromeResult AttemptToNotifyRunningChrome(HWND remote_window) {
   if (!timed_out) {
     TRACE_EVENT_INSTANT("startup",
                         "AttemptToNotifyRunningChrome:Error SendFailed");
-    return NotifyChromeResult::NOTIFY_FAILED;
+    return NotifyChromeResult::kFailed;
   }
 
   // It is possible that the process owning this window may have died by now.
   if (!::IsWindow(remote_window)) {
     TRACE_EVENT_INSTANT("startup",
                         "AttemptToNotifyRunningChrome:Error RemoteDied");
-    return NotifyChromeResult::NOTIFY_FAILED;
+    return NotifyChromeResult::kFailed;
   }
 
   // If the window couldn't be notified but still exists, assume it is hung.
   TRACE_EVENT_INSTANT("startup",
                       "AttemptToNotifyRunningChrome:Error RemoteHung");
-  return NotifyChromeResult::NOTIFY_WINDOW_HUNG;
+  return NotifyChromeResult::kWindowHung;
 }
 
 base::TimeDelta SetNotificationTimeoutForTesting(base::TimeDelta new_timeout) {

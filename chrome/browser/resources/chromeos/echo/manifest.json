@@ -1,5 +1,4 @@
 {
-  // chrome-extension://kddnkjkcjddckihglkfcickdhbmaodcn/
   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCvO/P4dVdpUZlr+oT5s3ccPIOIxZl6fOch+sqcQWsROKNf+mvKZURGnVts8ttHH4oRt2+LW3I2M5PrkW9Q6ZPkOX5ZQFFuD7ujPSaUn8+Br5lC5TtlXsNzp1r+962Qaa1d8zCocwF/IZ+9M5bt61LUJ6Obe8lw+NRnC6CS6DuiewIDAQAB",
   "name": "Chrome Goodies",
   "version": "1.0.0",
@@ -37,7 +36,6 @@
     ],
     "persistent": false
   },
-  // Allow all domains listed in https://www.google.com/supported_domains
   "externally_connectable": {
     "ids": ["*"],
     "matches": [
@@ -231,7 +229,8 @@
       "*://www.google.co.zm/*chromebook/*",
       "*://www.google.co.zw/*chromebook/*",
       "*://www.google.cat/*chromebook/*",
-      "*://chromebook-dot-googwebreview.appspot.com/*chromebook/*"
+      "*://chromebook-dot-googwebreview.appspot.com/*chromebook/*",
+      "*://chromebook-dot-uat-dot-chromebook-prod.uc.r.appspot.com/*chromebook/*"
     ]
   }
 }

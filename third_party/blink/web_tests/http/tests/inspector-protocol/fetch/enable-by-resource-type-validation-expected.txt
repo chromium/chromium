@@ -1,0 +1,23 @@
+Test Fetch.enable input validation for unsupported resource types.
+
+--- Running test: [TextTrack] ---
+Unknown resource type in fetch filter: 'TextTrack'
+
+--- Running test: [Prefetch] ---
+Unknown resource type in fetch filter: 'Prefetch'
+
+--- Running test: [WebSocket] ---
+Unknown resource type in fetch filter: 'WebSocket'
+
+--- Running test: [Manifest] ---
+Unknown resource type in fetch filter: 'Manifest'
+
+--- Running test: [SignedExchange] ---
+Unknown resource type in fetch filter: 'SignedExchange'
+
+--- Running test: [Preflight] ---
+Unknown resource type in fetch filter: 'Preflight'
+
+--- Running test: [FedCM] ---
+Unknown resource type in fetch filter: 'FedCM'
+

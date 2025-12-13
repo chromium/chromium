@@ -17,6 +17,7 @@
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
+                  "clobber",
                   "mb"
                 ],
                 "config": "chromium",
@@ -40,7 +41,8 @@
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/try/win32-official/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/win32-official/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

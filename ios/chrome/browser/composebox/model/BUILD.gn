@@ -1,0 +1,29 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "ios_contextual_search_service.cc",
+    "ios_contextual_search_service.h",
+    "ios_contextual_search_service_factory.h",
+    "ios_contextual_search_service_factory.mm",
+  ]
+  deps = [
+    "//components/application_locale_storage",
+    "//components/contextual_search:public",
+    "//components/keyed_service/core",
+    "//components/omnibox/composebox/ios",
+    "//components/variations",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/variations/model/client",
+    "//ios/chrome/common",
+    "//ios/web/public",
+    "//services/network/public/cpp",
+  ]
+}

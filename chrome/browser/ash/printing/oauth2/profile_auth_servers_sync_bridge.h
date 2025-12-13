@@ -100,6 +100,7 @@ class ProfileAuthServersSyncBridge : public syncer::DataTypeSyncBridge {
       const syncer::EntityData& entity_data) const override;
   std::string GetStorageKey(
       const syncer::EntityData& entity_data) const override;
+  bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
 
  private:
   ProfileAuthServersSyncBridge(

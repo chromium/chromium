@@ -13,7 +13,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-dawn-archive",
               "builder_group": "chromium.dawn",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -40,7 +39,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-dawn-archive",
               "builder_group": "chromium.dawn",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
@@ -82,7 +80,8 @@
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/try/dawn-try-win10-x64-intel-asan/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/dawn-try-win10-x64-intel-asan/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

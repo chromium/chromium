@@ -28,6 +28,7 @@
 #include "components/input/android/input_receiver_data.h"
 #include "components/viz/service/input/android_state_transfer_handler.h"
 #include "components/viz/service/input/render_input_router_support_android.h"
+#include "components/viz/service/input/viz_touch_state_handler.h"
 #endif
 
 namespace input {
@@ -159,6 +160,8 @@ class VIZ_SERVICE_EXPORT InputManager
   void SetBeginFrameSource(const FrameSinkId& frame_sink_id,
                            BeginFrameSource* begin_frame_source);
 
+  base::ReadOnlySharedMemoryRegion DuplicateVizTouchStateRegion() const;
+
  private:
   // Recreates RenderInputRouterSupport in cases where Viz receives a
   // |CreateCompositorFrameSink| call before |CreateRootCompositorFrameSink|
@@ -196,19 +199,21 @@ class VIZ_SERVICE_EXPORT InputManager
       const FrameSinkId& frame_sink_id,
       const gpu::SurfaceHandle& surface_handle);
 
-  void DestroyReceiverData(
-      std::unique_ptr<input::InputReceiverData> receiver_data);
-
   AndroidStateTransferHandler android_state_transfer_handler_;
+  VizTouchStateHandler viz_touch_state_handler_;
 
+  // There's a platform bug on Android 16 which keeps the input surface control
+  // lingering around unless the app explicitly does a `System.gc()` call to
+  // clean it up : https://crbug.com/436302937#comment5.
+  // Since the the input surface control doesn't have any associate buffers
+  // `System.gc()` is called on every 100th destruction.
+  int pending_surface_controls_ = 0;
   std::unique_ptr<input::InputReceiverData> receiver_data_;
 
   // Allow cancelling the creation task, since it's possible for
   // DestroyCompositorFrameSink call to come before the callback is ran.
   base::flat_map<FrameSinkId, std::unique_ptr<base::CancelableOnceClosure>>
       pending_create_input_receiver_callback_;
-  // TODO(431139615): Cleanup member and crash keys after investigation.
-  int num_input_receivers_ = 0;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   friend class MockInputManager;

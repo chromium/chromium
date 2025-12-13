@@ -16,6 +16,8 @@
 #include "media/gpu/buildflags.h"
 #include "media/gpu/h264_decoder.h"
 #include "media/gpu/macros.h"
+#include "media/parsers/bit_reader_macros.h"
+#include "media/parsers/h264_bit_reader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -43,6 +45,78 @@ int VideoCodecProfileToVP9Profile(VideoCodecProfile profile) {
       LOG(ERROR) << "Unexpected video profile: " << GetProfileName(profile);
   }
   return 0;
+}
+
+struct H264PrefixNALU {
+  int nal_ref_idc;
+  int nal_unit_type;
+  bool svc_extension_flag;
+  // SVC extension NAL unit header.
+  bool idr_flag;
+  uint8_t priority_id;
+  bool no_inter_layer_pred_flag;
+  uint8_t dependency_id;
+  uint8_t quality_id;
+  uint8_t temporal_id;
+  bool use_ref_base_pic_flag;
+  bool discardable_flag;
+  bool output_flag;
+
+  // RBSP
+  bool store_ref_base_pic_flag;
+};
+
+std::optional<H264PrefixNALU> ParseH264Prefix(const H264NALU& nalu) {
+  H264PrefixNALU res;
+  constexpr auto kInvalidStream = std::nullopt;
+  res.nal_ref_idc = nalu.nal_ref_idc;
+  res.nal_unit_type = nalu.nal_unit_type;
+
+  H264BitReader br_;
+  if (!br_.Initialize(nalu.data)) {
+    return std::nullopt;
+  }
+  // Skip first one byte as it's NALU header.
+  SKIP_BITS_OR_RETURN(8);
+
+  READ_BOOL_OR_RETURN(&res.svc_extension_flag);
+
+  if (res.svc_extension_flag) {
+    READ_BOOL_OR_RETURN(&res.idr_flag);
+    READ_BITS_OR_RETURN(6, &res.priority_id);
+    READ_BOOL_OR_RETURN(&res.no_inter_layer_pred_flag);
+    READ_BITS_OR_RETURN(3, &res.dependency_id);
+    READ_BITS_OR_RETURN(4, &res.quality_id);
+    READ_BITS_OR_RETURN(3, &res.temporal_id);
+    READ_BOOL_OR_RETURN(&res.use_ref_base_pic_flag);
+    READ_BOOL_OR_RETURN(&res.discardable_flag);
+    READ_BOOL_OR_RETURN(&res.output_flag);
+
+    uint8_t reserved_three_2bits = 0;
+    READ_BITS_OR_RETURN(2, &reserved_three_2bits);
+    if (reserved_three_2bits != 3) {
+      LOG(ERROR) << "reserved_three_2bits must be 3";
+      return std::nullopt;
+    }
+  }
+
+  // RBSP
+  if (res.nal_ref_idc != 0) {
+    READ_BOOL_OR_RETURN(&res.store_ref_base_pic_flag);
+    if ((res.use_ref_base_pic_flag || res.store_ref_base_pic_flag) &&
+        res.idr_flag) {
+      LOG(ERROR) << "Don't support parsing dec_ref_base_pic_marking()";
+      return std::nullopt;
+    }
+    bool additional_prefix_nal_unit_extension_flag = false;
+    READ_BOOL_OR_RETURN(&additional_prefix_nal_unit_extension_flag);
+    if (additional_prefix_nal_unit_extension_flag) {
+      LOG(ERROR) << "additional_prefix_nal_unit_extension_flag must be false";
+      return std::nullopt;
+    }
+  }
+
+  return res;
 }
 }  // namespace
 
@@ -145,12 +219,12 @@ bool H264Validator::Validate(const DecoderBuffer* buffer,
   size_t num_frames = 0;
   H264NALU nalu;
   H264Parser::Result result;
+  std::optional<std::pair<int, H264NALU::Type>> expected_associated_slice_nal;
   while ((result = parser_.AdvanceToNextNALU(&nalu)) != H264Parser::kEOStream) {
     if (result != H264Parser::kOk) {
       LOG(ERROR) << "Failed parsing";
       return false;
     }
-
     switch (nalu.nal_unit_type) {
       case H264NALU::kIDRSlice:
         if (!seen_sps_ || !seen_pps_) {
@@ -211,6 +285,20 @@ bool H264Validator::Validate(const DecoderBuffer* buffer,
           return false;
         }
 
+        if (expected_associated_slice_nal) {
+          if (expected_associated_slice_nal->first != nalu.nal_ref_idc) {
+            LOG(ERROR) << "NALU ref_idc mismatched. Actual ref_idc: "
+                       << nalu.nal_ref_idc << ", expected ref_idc: "
+                       << expected_associated_slice_nal->first;
+            return false;
+          }
+          if (expected_associated_slice_nal->second != nalu.nal_unit_type) {
+            LOG(ERROR) << "NALU type mismatched. Actual type: "
+                       << nalu.nal_unit_type << ", expected type: "
+                       << expected_associated_slice_nal->second;
+            return false;
+          }
+        }
         break;
       }
       case H264NALU::kSPS: {
@@ -269,6 +357,76 @@ bool H264Validator::Validate(const DecoderBuffer* buffer,
         // don't check it because it is not enabled due to a hardware limitation
         // on AMD stoneyridge and picasso.
 
+        break;
+      }
+      case H264NALU::kPrefix: {
+        if (!metadata.h264) {
+          LOG(ERROR) << "Prefix NALU should be generated only if temproal "
+                        "layer encoding";
+          return false;
+        }
+
+        std::optional<H264PrefixNALU> prefix_nalu = ParseH264Prefix(nalu);
+        if (!prefix_nalu) {
+          LOG(ERROR) << "Failed parsing prefix NALU";
+          return false;
+        }
+
+        if (!prefix_nalu->svc_extension_flag) {
+          LOG(ERROR) << "svc_extesion_flag must be true";
+          return false;
+        }
+        if (prefix_nalu->idr_flag != metadata.key_frame) {
+          LOG(ERROR) << "mismatch on idr_flag and key_frame";
+          break;
+        }
+        if (prefix_nalu->priority_id != 0 || prefix_nalu->dependency_id != 0 ||
+            prefix_nalu->quality_id != 0) {
+          LOG(ERROR) << "priority_id, dependency_id, and quality_id must be 0: "
+                     << "priority_id="
+                     << static_cast<int>(prefix_nalu->priority_id)
+                     << ", dependency_id="
+                     << static_cast<int>(prefix_nalu->dependency_id)
+                     << ", quality_id="
+                     << static_cast<int>(prefix_nalu->quality_id);
+          return false;
+        }
+
+        if (!prefix_nalu->no_inter_layer_pred_flag ||
+            prefix_nalu->use_ref_base_pic_flag ||
+            !prefix_nalu->discardable_flag || !prefix_nalu->output_flag) {
+          LOG(ERROR) << "unexpected flags: "
+                     << "no_inter_layer_pred_flag="
+                     << prefix_nalu->no_inter_layer_pred_flag
+                     << ", use_ref_base_pic_flag="
+                     << prefix_nalu->use_ref_base_pic_flag
+                     << ", discardable_flag=" << prefix_nalu->discardable_flag
+                     << ", output_flag=" << prefix_nalu->output_flag;
+          return false;
+        }
+        bool is_ref = metadata.h264->temporal_idx != num_temporal_layers_ - 1;
+        int expected_nal_ref_idc = metadata.key_frame ? 3 : is_ref;
+        H264NALU::Type expected_associated_nal_unit_type =
+            metadata.key_frame ? H264NALU::kIDRSlice : H264NALU::kNonIDRSlice;
+        if (prefix_nalu->nal_ref_idc != expected_nal_ref_idc) {
+          LOG(ERROR) << "mismatch on nal_ref_idc: "
+                     << "prefix_nalu->nal_ref_idc="
+                     << static_cast<int>(prefix_nalu->nal_ref_idc)
+                     << ", expected_nal_ref_idc=" << expected_nal_ref_idc;
+          return false;
+        }
+
+        if (prefix_nalu->temporal_id != metadata.h264->temporal_idx) {
+          LOG(ERROR) << "mismatch on temporal_id: "
+                     << "prefix_nalu->temporal_id="
+                     << static_cast<int>(prefix_nalu->temporal_id)
+                     << ", metadata.h264->temporal_idx="
+                     << static_cast<int>(metadata.h264->temporal_idx);
+          return false;
+        }
+
+        expected_associated_slice_nal = std::make_pair(
+            expected_nal_ref_idc, expected_associated_nal_unit_type);
         break;
       }
       default:

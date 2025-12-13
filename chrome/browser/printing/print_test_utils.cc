@@ -75,15 +75,12 @@ base::Value::Dict GetPrintTicket(mojom::PrinterType type) {
   if (type == mojom::PrinterType::kExtension) {
     base::Value::Dict capabilities;
     capabilities.Set("duplex", true);  // non-empty
-    std::string caps_string;
-    base::JSONWriter::Write(capabilities, &caps_string);
-    ticket.Set(kSettingCapabilities, caps_string);
+    ticket.Set(kSettingCapabilities,
+               base::WriteJson(capabilities).value_or(""));
     base::Value::Dict print_ticket;
     print_ticket.Set("version", "1.0");
     print_ticket.Set("print", base::Value());
-    std::string ticket_string;
-    base::JSONWriter::Write(print_ticket, &ticket_string);
-    ticket.Set(kSettingTicket, ticket_string);
+    ticket.Set(kSettingTicket, base::WriteJson(print_ticket).value_or(""));
   }
 
   return ticket;

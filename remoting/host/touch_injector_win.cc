@@ -231,8 +231,7 @@ void TouchInjectorWin::AddNewTouchPoints(const TouchEvent& event) {
   AppendMapValuesToVector(&touches_in_contact_, &touches);
 
   for (const TouchEventPoint& touch_point : event.touch_points()) {
-    POINTER_TOUCH_INFO pointer_touch_info;
-    UNSAFE_TODO(memset(&pointer_touch_info, 0, sizeof(pointer_touch_info)));
+    POINTER_TOUCH_INFO pointer_touch_info = {};
     pointer_touch_info.pointerInfo.pointerFlags =
         POINTER_FLAG_INRANGE | POINTER_FLAG_INCONTACT | POINTER_FLAG_DOWN;
     ConvertToPointerTouchInfo(touch_point, &pointer_touch_info);
@@ -255,7 +254,7 @@ void TouchInjectorWin::MoveTouchPoints(const TouchEvent& event) {
   for (const TouchEventPoint& touch_point : event.touch_points()) {
     POINTER_TOUCH_INFO* pointer_touch_info =
         &touches_in_contact_[touch_point.id()];
-    UNSAFE_TODO(memset(pointer_touch_info, 0, sizeof(*pointer_touch_info)));
+    *pointer_touch_info = {};
     pointer_touch_info->pointerInfo.pointerFlags =
         POINTER_FLAG_INRANGE | POINTER_FLAG_INCONTACT | POINTER_FLAG_UPDATE;
     ConvertToPointerTouchInfo(touch_point, pointer_touch_info);

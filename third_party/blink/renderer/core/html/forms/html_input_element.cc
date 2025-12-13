@@ -70,7 +70,6 @@
 #include "third_party/blink/renderer/core/html/forms/html_data_list_options_collection.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/input_type.h"
 #include "third_party/blink/renderer/core/html/forms/radio_button_group_scope.h"
 #include "third_party/blink/renderer/core/html/forms/search_input_type.h"
@@ -163,7 +162,6 @@ void HTMLInputElement::Trace(Visitor* visitor) const {
   visitor->Trace(input_type_view_);
   visitor->Trace(list_attribute_target_observer_);
   visitor->Trace(image_loader_);
-  visitor->Trace(first_ancestor_select_);
   TextControlElement::Trace(visitor);
 }
 
@@ -1059,6 +1057,10 @@ bool HTMLInputElement::IsTextField() const {
   return input_type_->IsTextFieldInputType();
 }
 
+bool HTMLInputElement::InputSupportsSelectionAPI() const {
+  return input_type_->SupportsSelectionAPI();
+}
+
 bool HTMLInputElement::IsTelephone() const {
   return input_type_->IsTelephoneInputType();
 }
@@ -1080,11 +1082,6 @@ void HTMLInputElement::MaybeSetHasBeenPasswordField() {
 
 bool HTMLInputElement::HasBeenPasswordField() const {
   return has_been_password_field_;
-}
-
-void HTMLInputElement::DispatchChangeEventIfNeeded() {
-  if (isConnected() && input_type_->ShouldSendChangeEventAfterCheckedChanged())
-    DispatchChangeEvent();
 }
 
 void HTMLInputElement::DispatchInputAndChangeEventIfNeeded() {
@@ -1235,6 +1232,14 @@ void HTMLInputElement::SetSuggestedValue(const String& value) {
   }
   needs_to_update_view_value_ = true;
   String sanitized_value = SanitizeValue(value);
+
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+      IsInCanvasSubtree()) {
+    // Hide suggested values when under canvas, to prevent leaking this
+    // information to javascript.
+    sanitized_value = String();
+  }
+
   SetAutofillState(sanitized_value.empty() ? WebAutofillState::kNotFilled
                                            : WebAutofillState::kPreviewed);
   TextControlElement::SetSuggestedValue(sanitized_value);
@@ -1253,6 +1258,15 @@ void HTMLInputElement::SetSuggestedValue(const String& value) {
       kSubtreeStyleChange,
       StyleChangeReasonForTracing::Create(style_change_reason::kControlValue));
   input_type_view_->UpdateView();
+}
+
+void HTMLInputElement::DidChangeIsCanvasOrInCanvasSubtree() {
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+      IsInCanvasSubtree()) {
+    // Hide suggested values when under canvas, to prevent leaking this
+    // information to javascript.
+    SetSuggestedValue(String());
+  }
 }
 
 void HTMLInputElement::SetInnerEditorValue(const String& value) {
@@ -1440,7 +1454,7 @@ void HTMLInputElement::SetValueFromRenderer(const String& value) {
   SetAutofillState(WebAutofillState::kNotFilled);
 }
 
-EventDispatchHandlingState* HTMLInputElement::PreDispatchEventHandler(
+EventDispatchHandlingState* HTMLInputElement::LegacyPreActivationBehavior(
     Event& event) {
   if (event.type() == event_type_names::kTextInput &&
       input_type_view_->ShouldSubmitImplicitly(event)) {
@@ -1455,16 +1469,26 @@ EventDispatchHandlingState* HTMLInputElement::PreDispatchEventHandler(
       mouse_event->button() !=
           static_cast<int16_t>(WebPointerProperties::Button::kLeft))
     return nullptr;
-  return input_type_view_->WillDispatchClick();
+  return input_type_view_->LegacyPreActivationBehavior();
 }
 
-void HTMLInputElement::PostDispatchEventHandler(
+void HTMLInputElement::RunActivationBehavior(
     Event& event,
     EventDispatchHandlingState* state) {
-  if (!state)
+  if (!state) {
     return;
-  input_type_view_->DidDispatchClick(event,
-                                     *static_cast<ClickHandlingState*>(state));
+  }
+
+  // https://html.spec.whatwg.org/C#the-input-element:activation-behaviour.
+  //
+  // The activation behavior for input elements element, given event, are these
+  // steps:
+  //
+  //   [...]
+  //   2. Run element's input activation behavior, if any, and do nothing
+  //      otherwise.
+  input_type_view_->RunInputActivationBehavior(
+      event, *static_cast<ClickHandlingState*>(state));
 }
 
 void HTMLInputElement::DefaultEventHandler(Event& evt) {
@@ -1527,8 +1551,8 @@ void HTMLInputElement::DefaultEventHandler(Event& evt) {
     if (FormControlType() == FormControlType::kInputSearch) {
       GetDocument()
           .GetTaskRunner(TaskType::kUserInteraction)
-          ->PostTask(FROM_HERE, WTF::BindOnce(&HTMLInputElement::OnSearch,
-                                              WrapPersistent(this)));
+          ->PostTask(FROM_HERE, BindOnce(&HTMLInputElement::OnSearch,
+                                         WrapPersistent(this)));
     }
     // Form submission finishes editing, just as loss of focus does.
     // If there was a change, send the event now.
@@ -1909,8 +1933,7 @@ HTMLInputElement::FilteredDataListOptions() const {
   filtered.reserve(options->length());
   editor_value = editor_value.FoldCase();
 
-  TextBreakIterator* iter =
-      WordBreakIterator(editor_value, 0, editor_value.length());
+  TextBreakIterator* iter = WordBreakIterator(editor_value);
 
   Vector<bool> filtering_flag(options->length(), true);
   if (iter) {
@@ -2092,8 +2115,7 @@ bool HTMLInputElement::ShouldAppearIndeterminate() const {
   return input_type_->ShouldAppearIndeterminate();
 }
 
-HTMLFormControlElement::PopoverTriggerSupport
-HTMLInputElement::SupportsPopoverTriggering() const {
+PopoverTriggerSupport HTMLInputElement::SupportsPopoverTriggering() const {
   return input_type_->SupportsPopoverTriggering();
 }
 
@@ -2474,23 +2496,15 @@ void HTMLInputElement::SetFocused(bool is_focused,
       UserHasEditedTheField()) {
     SetUserHasEditedTheFieldAndBlurred();
   }
+
+  if (RadioButtonGroupScope* scope = GetRadioButtonGroupScope()) {
+    scope->UpdateLastFocusedState(this);
+  }
 }
 
-bool HTMLInputElement::IsFirstTextInputInAncestorSelect() const {
-  if ((!RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() &&
-       !RuntimeEnabledFeatures::SelectAccessibilityNestedInputEnabled()) ||
-      !first_ancestor_select_) {
-    return false;
-  }
-  return first_ancestor_select_->FirstDescendantTextInput() == this;
-}
-
-HTMLSelectElement* HTMLInputElement::FirstAncestorSelectElement() const {
-  if (!RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() &&
-      !RuntimeEnabledFeatures::SelectAccessibilityNestedInputEnabled()) {
-    return nullptr;
-  }
-  return first_ancestor_select_;
+bool HTMLInputElement::SupportsBaseAppearanceInternal(
+    BaseAppearanceValue value) const {
+  return input_type_->SupportsBaseAppearance(value);
 }
 
 }  // namespace blink

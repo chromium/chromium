@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/tab_android_data_provider.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab/web_contents_state.h"
 #include "chrome/browser/ui/sync/tab_contents_synced_tab_delegate.h"
 #include "components/sessions/core/session_id.h"
@@ -31,6 +32,7 @@ class WebContentsStateSyncedTabDelegate : public TabContentsSyncedTabDelegate {
   ~WebContentsStateSyncedTabDelegate() override;
 
   static std::unique_ptr<WebContentsStateSyncedTabDelegate> Create(
+      Profile* profile,
       TabAndroidDataProvider* tab_android_data_provider,
       std::unique_ptr<WebContentsStateByteBuffer> web_contents_byte_buffer);
 
@@ -47,6 +49,7 @@ class WebContentsStateSyncedTabDelegate : public TabContentsSyncedTabDelegate {
 
  private:
   WebContentsStateSyncedTabDelegate(
+      Profile* profile,
       TabAndroidDataProvider* tab_android_data_provider,
       std::unique_ptr<WebContentsStateByteBuffer> web_contents_byte_buffer);
 

@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"

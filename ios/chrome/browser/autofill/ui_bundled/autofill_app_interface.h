@@ -59,6 +59,9 @@ enum CreditCardSaveManagerObserverEvent : int {
 // manager.
 + (void)saveExampleHomeAndWorkAccountProfile;
 
+// Saves a sample account name and email profile in the data manager.
++ (void)saveExampleAccountNameEmailProfile;
+
 // Returns the name of the sample profile.
 + (NSString*)exampleProfileName;
 
@@ -72,8 +75,15 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Returns the `card.NetworkAndLastFourDigits` of the card used in the UIs.
 + (NSString*)saveLocalCreditCard;
 
+// Saves a local credit card that requires CVC to be used.
+// Returns the `card.NetworkAndLastFourDigits` of the card used in the UIs.
++ (NSString*)saveLocalCreditCardWithCvc;
+
 // Returns the number of credit cards in the local store.
 + (NSInteger)localCreditCount;
+
+// Returns the CVC of the first saved local credit card.
++ (NSString*)firstLocalCreditCardCvc;
 
 // Saves a masked credit card that requires CVC to be used.
 // Returns the `card.NetworkAndLastFourDigits` of the card used in the UIs.
@@ -147,11 +157,8 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Configs the mandatory reauth preference.
 + (void)setMandatoryReauthEnabled:(BOOL)enabled;
 
-// Returns true if the Keyboard Accessory Upgrade feature is enabled.
-+ (BOOL)isKeyboardAccessoryUpgradeEnabled;
-
-// Returns true if the dynamically loading fields on input feature is enabled.
-+ (BOOL)isDynamicallyLoadFieldsOnInputEnabled;
+// Sets the CVC storage preference.
++ (void)setPaymentCvcStorageEnabled:(BOOL)enabled;
 
 @end
 

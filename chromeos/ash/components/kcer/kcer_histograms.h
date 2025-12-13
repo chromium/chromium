@@ -50,9 +50,6 @@ enum class Pkcs12MigrationUmaEvent {
 COMPONENT_EXPORT(KCER)
 void RecordPkcs12MigrationUmaEvent(Pkcs12MigrationUmaEvent event);
 
-COMPONENT_EXPORT(KCER)
-void RecordKcerError(Error error);
-
 }  // namespace kcer
 
 #endif  // CHROMEOS_ASH_COMPONENTS_KCER_KCER_HISTOGRAMS_H_

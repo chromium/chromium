@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -58,12 +59,14 @@ id<GREYMatcher> BottomAddressBarOptionSelected() {
 - (void)setUp {
   [super setUp];
   // Resets the address bar position preference to be on top.
-  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
 }
 
 - (void)tearDownHelper {
   // Resets the address bar position preference to be on top.
-  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   [super tearDownHelper];
 }
 

@@ -11,7 +11,6 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
@@ -25,6 +24,12 @@ import java.lang.annotation.RetentionPolicy;
  */
 @NullMarked
 public class BackPressMetrics {
+    /**
+     * The delay used by the fallback of NTP smooth transition in case the restoring state is not
+     * correctly supplied.
+     */
+    public static final long MAX_FALLBACK_DELAY_NTP_SMOOTH_TRANSITION = 1500;
+
     private static final String EDGE_HISTOGRAM = "Android.BackPress.SwipeEdge";
     private static final String TAB_HISTORY_EDGE_HISTOGRAM =
             "Android.BackPress.SwipeEdge.TabHistoryNavigation";
@@ -241,19 +246,5 @@ public class BackPressMetrics {
                 "Android.PredictiveNavigationTransition.CaptureNativeViewResult",
                 reason,
                 CaptureNativeViewResult.NUM_ENTRIES);
-    }
-
-    /**
-     * The delay used by the fallback of NTP smooth transition in case the restoring state is not
-     * correctly supplied.
-     *
-     * @return The max fallback delay.
-     */
-    public static long maxFallbackDelayOfNtpSmoothTransition() {
-        return (long)
-                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.BACK_FORWARD_TRANSITIONS,
-                        "max_fallback_delay_ntp_smooth_transition",
-                        1500);
     }
 }

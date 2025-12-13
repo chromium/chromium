@@ -60,8 +60,6 @@ class CORE_EXPORT InputMethodController final
     kKeepSelection,
   };
 
-  enum class MoveCaretBehavior { kDoNotMove, kMoveCaretAfterText };
-
   explicit InputMethodController(LocalDOMWindow&, LocalFrame&);
   InputMethodController(const InputMethodController&) = delete;
   InputMethodController& operator=(const InputMethodController&) = delete;
@@ -91,11 +89,14 @@ class CORE_EXPORT InputMethodController final
                   const Vector<ImeTextSpan>& ime_text_spans,
                   int relative_caret_position);
 
-  // Replaces the text in the specified range and possibly changes the selection
-  // or the caret position.
+  // Replaces the text in the specified range and keep the current selection.
+  bool ReplaceTextAndKeepSelection(const String& text, PlainTextRange range);
+
+  // Replaces the text in the specified range and move the caret position. The
+  // relative_caret_position is relative to the end of the text being replaced.
   bool ReplaceTextAndMoveCaret(const String&,
                                PlainTextRange,
-                               MoveCaretBehavior);
+                               int relative_caret_position);
 
   // Inserts ongoing composing text; changes the selection to the end of
   // the inserting text if DoNotKeepSelection, or holds the selection if

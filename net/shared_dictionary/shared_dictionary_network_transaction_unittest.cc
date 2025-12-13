@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "crypto/hash.h"
 #include "net/base/features.h"
@@ -23,6 +24,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/shared_dictionary/shared_dictionary.h"
 #include "net/shared_dictionary/shared_dictionary_constants.h"
+#include "net/shared_dictionary/shared_dictionary_transaction_outcome.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
@@ -252,6 +254,7 @@ class SharedDictionaryNetworkTransactionTest : public ::testing::Test {
 };
 
 TEST_F(SharedDictionaryNetworkTransactionTest, SyncDictionary) {
+  base::HistogramTester histogram_tester;
   MockHttpRequest request(*scoped_mock_transaction_);
   request.dictionary_getter = base::BindRepeating(
       [](const std::optional<SharedDictionaryIsolationKey>& isolation_key,
@@ -268,6 +271,9 @@ TEST_F(SharedDictionaryNetworkTransactionTest, SyncDictionary) {
                                 NetLogWithSource()),
               test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionary.Transaction.Outcome",
+      SharedDictionaryTransactionOutcome::kDictionaryUsedBrotli, 1);
 
   scoped_refptr<IOBufferWithSize> buf =
       base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
@@ -281,6 +287,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, SyncDictionary) {
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, NotAllowedToUseDictionary) {
+  base::HistogramTester histogram_tester;
   // Change MockTransaction to check that there is no available-dictionary
   // header.
   scoped_mock_transaction_->handler =
@@ -303,6 +310,8 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NotAllowedToUseDictionary) {
                                 NetLogWithSource()),
               test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
+  histogram_tester.ExpectTotalCount("Net.SharedDictionary.Transaction.Outcome",
+                                    0);
 
   scoped_refptr<IOBufferWithSize> buf =
       base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
@@ -664,6 +673,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, WithoutValidLoadFlag) {
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, NoSbrContentEncoding) {
+  base::HistogramTester histogram_tester;
   // Change MockTransaction to remove `content-encoding: dcb`.
   scoped_mock_transaction_->response_headers = "";
 
@@ -683,6 +693,9 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoSbrContentEncoding) {
                                 NetLogWithSource()),
               test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionary.Transaction.Outcome",
+      SharedDictionaryTransactionOutcome::kDictionaryNotUsed, 1);
 
   scoped_refptr<IOBufferWithSize> buf =
       base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
@@ -1074,6 +1087,7 @@ TEST_F(SharedDictionaryNetworkTransactionTest, GetLoadState) {
 }
 
 TEST_F(SharedDictionaryNetworkTransactionTest, SharedZstd) {
+  base::HistogramTester histogram_tester;
   // Override MockTransaction to use `content-encoding: dcz`.
   scoped_mock_transaction_.reset();
   ScopedMockTransaction new_mock_transaction(kZstdDictionaryTestTransaction);
@@ -1094,6 +1108,9 @@ TEST_F(SharedDictionaryNetworkTransactionTest, SharedZstd) {
                                 NetLogWithSource()),
               test::IsError(ERR_IO_PENDING));
   EXPECT_THAT(start_callback.WaitForResult(), test::IsError(OK));
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionary.Transaction.Outcome",
+      SharedDictionaryTransactionOutcome::kDictionaryUsedZstandard, 1);
 
   scoped_refptr<IOBufferWithSize> buf =
       base::MakeRefCounted<IOBufferWithSize>(kDefaultBufferSize);
@@ -1149,48 +1166,6 @@ TEST_F(SharedDictionaryNetworkTransactionTest, NoZstdDContentEncoding) {
   EXPECT_EQ(kZstdEncodedDataString, std::string(buf->data(), read_result));
 }
 
-enum class ProtocolCheckProtocolTestCase {
-  kHttp1,
-  kHttp2,
-  kHttp3,
-};
-std::string ToString(ProtocolCheckProtocolTestCase protocol) {
-  switch (protocol) {
-    case ProtocolCheckProtocolTestCase::kHttp1:
-      return "Http1";
-    case ProtocolCheckProtocolTestCase::kHttp2:
-      return "Http2";
-    case ProtocolCheckProtocolTestCase::kHttp3:
-      return "Http3";
-  }
-}
-
-enum class ProtocolCheckHttp1TestCase {
-  kAllowHttp1,
-  kDoNotAllowHttp1,
-};
-std::string ToString(ProtocolCheckHttp1TestCase feature) {
-  switch (feature) {
-    case ProtocolCheckHttp1TestCase::kAllowHttp1:
-      return "AllowHttp1";
-    case ProtocolCheckHttp1TestCase::kDoNotAllowHttp1:
-      return "DoNotAllowHttp1";
-  }
-}
-
-enum class ProtocolCheckHttp2TestCase {
-  kAllowHttp2,
-  kDoNotAllowHttp2,
-};
-std::string ToString(ProtocolCheckHttp2TestCase feature) {
-  switch (feature) {
-    case ProtocolCheckHttp2TestCase::kAllowHttp2:
-      return "AllowHttp2";
-    case ProtocolCheckHttp2TestCase::kDoNotAllowHttp2:
-      return "DoNotAllowHttp2";
-  }
-}
-
 enum class ProtocolCheckHostTestCase {
   kLocalHost,
   kNonLocalhost,
@@ -1206,31 +1181,9 @@ std::string ToString(ProtocolCheckHostTestCase host_type) {
 
 class SharedDictionaryNetworkTransactionProtocolCheckTest
     : public SharedDictionaryNetworkTransactionTest,
-      public testing::WithParamInterface<
-          std::tuple<ProtocolCheckHttp1TestCase,
-                     ProtocolCheckHttp2TestCase,
-                     ProtocolCheckProtocolTestCase,
-                     ProtocolCheckHostTestCase>> {
+      public testing::WithParamInterface<ProtocolCheckHostTestCase> {
  public:
-  SharedDictionaryNetworkTransactionProtocolCheckTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (AllowHttp1()) {
-      enabled_features.push_back(
-          features::kCompressionDictionaryTransportOverHttp1);
-    } else {
-      disabled_features.push_back(
-          features::kCompressionDictionaryTransportOverHttp1);
-    }
-    if (AllowHttp2()) {
-      enabled_features.push_back(
-          features::kCompressionDictionaryTransportOverHttp2);
-    } else {
-      disabled_features.push_back(
-          features::kCompressionDictionaryTransportOverHttp2);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
+  SharedDictionaryNetworkTransactionProtocolCheckTest() {}
   SharedDictionaryNetworkTransactionProtocolCheckTest(
       const SharedDictionaryNetworkTransactionProtocolCheckTest&) = delete;
   SharedDictionaryNetworkTransactionProtocolCheckTest& operator=(
@@ -1243,85 +1196,22 @@ class SharedDictionaryNetworkTransactionProtocolCheckTest
     if (IsLocalHost()) {
       mock_transaction.url = "http://localhost/test";
     }
-    if (!ShuoldUseDictionary()) {
-      // Change MockTransaction to check that there is no available-dictionary
-      // header.
-      mock_transaction.handler =
-          kTestTransactionHandlerWithoutAvailableDictionary;
-    }
-    if (IsHttp2()) {
-      mock_transaction.transport_info.negotiated_protocol =
-          NextProto::kProtoHTTP2;
-    } else if (IsHttp3()) {
-      mock_transaction.transport_info.negotiated_protocol =
-          NextProto::kProtoQUIC;
-    } else {
-      mock_transaction.transport_info.negotiated_protocol =
-          NextProto::kProtoHTTP11;
-    }
     return mock_transaction;
   }
 
  private:
-  bool AllowHttp1() const {
-    return std::get<0>(GetParam()) == ProtocolCheckHttp1TestCase::kAllowHttp1;
-  }
-  bool AllowHttp2() const {
-    return std::get<1>(GetParam()) == ProtocolCheckHttp2TestCase::kAllowHttp2;
-  }
-  bool IsHttp1() const {
-    return std::get<2>(GetParam()) == ProtocolCheckProtocolTestCase::kHttp1;
-  }
-  bool IsHttp2() const {
-    return std::get<2>(GetParam()) == ProtocolCheckProtocolTestCase::kHttp2;
-  }
-  bool IsHttp3() const {
-    return std::get<2>(GetParam()) == ProtocolCheckProtocolTestCase::kHttp3;
-  }
   bool IsLocalHost() const {
-    return std::get<3>(GetParam()) == ProtocolCheckHostTestCase::kLocalHost;
+    return GetParam() == ProtocolCheckHostTestCase::kLocalHost;
   }
-  bool ShuoldUseDictionary() const {
-    if (AllowHttp1()) {
-      if (AllowHttp2()) {
-        return true;
-      } else {
-        return IsLocalHost() || IsHttp1() || IsHttp3();
-      }
-    } else {
-      if (AllowHttp2()) {
-        return IsLocalHost() || IsHttp2() || IsHttp3();
-      } else {
-        return IsLocalHost() || IsHttp3();
-      }
-    }
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     SharedDictionaryNetworkTransactionProtocolCheckTest,
-    ::testing::Combine(
-        ::testing::Values(ProtocolCheckHttp1TestCase::kAllowHttp1,
-                          ProtocolCheckHttp1TestCase::kDoNotAllowHttp1),
-        ::testing::Values(ProtocolCheckHttp2TestCase::kAllowHttp2,
-                          ProtocolCheckHttp2TestCase::kDoNotAllowHttp2),
-        ::testing::Values(ProtocolCheckProtocolTestCase::kHttp1,
-                          ProtocolCheckProtocolTestCase::kHttp2,
-                          ProtocolCheckProtocolTestCase::kHttp3),
-        ::testing::Values(ProtocolCheckHostTestCase::kLocalHost,
-                          ProtocolCheckHostTestCase::kNonLocalhost)),
-    [](const testing::TestParamInfo<std::tuple<ProtocolCheckHttp1TestCase,
-                                               ProtocolCheckHttp2TestCase,
-                                               ProtocolCheckProtocolTestCase,
-                                               ProtocolCheckHostTestCase>>&
-           info) {
-      return ToString(std::get<0>(info.param)) + "_" +
-             ToString(std::get<1>(info.param)) + "_" +
-             ToString(std::get<2>(info.param)) + "_" +
-             ToString(std::get<3>(info.param));
+    testing::ValuesIn({ProtocolCheckHostTestCase::kLocalHost,
+                       ProtocolCheckHostTestCase::kNonLocalhost}),
+    [](const testing::TestParamInfo<ProtocolCheckHostTestCase>& info) {
+      return ToString(info.param);
     });
 
 TEST_P(SharedDictionaryNetworkTransactionProtocolCheckTest, Basic) {

@@ -123,9 +123,6 @@ phone_hub_metrics::Screen PhoneConnectedView::GetScreenForMetrics() const {
 
 void PhoneConnectedView::ShowAppStreamErrorDialog(bool is_different_network,
                                                   bool is_phone_on_cellular) {
-  if (!features::IsEcheNetworkConnectionStateEnabled()) {
-    return;
-  }
   app_stream_error_dialog_ = std::make_unique<AppStreamConnectionErrorDialog>(
       this,
       base::BindOnce(&PhoneConnectedView::OnAppStreamErrorDialogClosed,

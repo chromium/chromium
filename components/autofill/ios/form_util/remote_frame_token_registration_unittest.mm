@@ -14,7 +14,6 @@
 #import "components/autofill/ios/browser/new_frame_catcher.h"
 #import "components/autofill/ios/browser/test_autofill_java_script_feature_container.h"
 #import "components/autofill/ios/common/features.h"
-#import "components/autofill/ios/form_util/autofill_renderer_id_java_script_feature.h"
 #import "components/autofill/ios/form_util/autofill_test_with_web_state.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
@@ -38,8 +37,7 @@ namespace autofill {
 class RemoteFrameTokenRegistrationTest : public web::WebTestWithWebState {
  public:
   RemoteFrameTokenRegistrationTest()
-      : web::WebTestWithWebState(std::make_unique<web::FakeWebClient>()),
-        feature_list_(kAutofillIsolatedWorldForJavascriptIos) {
+      : web::WebTestWithWebState(std::make_unique<web::FakeWebClient>()) {
     web::FakeWebClient* web_client =
         static_cast<web::FakeWebClient*>(GetWebClient());
     web_client->SetJavaScriptFeatures({
@@ -67,9 +65,10 @@ class RemoteFrameTokenRegistrationTest : public web::WebTestWithWebState {
     NewFrameCatcher* catcher_ptr = new_frame_catcher.get();
     EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
         kWaitForJSCompletionTimeout, ^bool {
-          return catcher_ptr->latest_new_frame() != nullptr;
+          return catcher_ptr->latest_new_frame_id().has_value();
         }));
-    return new_frame_catcher->latest_new_frame();
+    return web_frames_manager()->GetFrameWithId(
+        new_frame_catcher->latest_new_frame_id().value_or(""));
   }
 
   // Reads the remote frame token stored in the DOM of `frame`;
@@ -108,7 +107,6 @@ class RemoteFrameTokenRegistrationTest : public web::WebTestWithWebState {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   //  Test instances of JavaScriptFeature's that are injected in a different
   //  content world depending on kAutofillIsolatedWorldForJavascriptIos.
   //  TODO(crbug.com/359538514): Remove this variable and use

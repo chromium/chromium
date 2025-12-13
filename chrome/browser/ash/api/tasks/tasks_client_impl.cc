@@ -24,15 +24,12 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "components/policy/content/policy_blocklist_service.h"
-#include "components/policy/core/browser/url_blocklist_manager.h"
+#include "components/policy/core/browser/url_list/policy_blocklist_service.h"
+#include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "google_apis/common/api_error_codes.h"
@@ -134,11 +131,15 @@ TasksClientImpl::TasksFetchState::TasksFetchState() = default;
 TasksClientImpl::TasksFetchState::~TasksFetchState() = default;
 
 TasksClientImpl::TasksClientImpl(
-    Profile* profile,
+    PrefService* pref_service,
+    apps::AppServiceProxy* app_service_proxy,
+    PolicyBlocklistService* policy_blocklist_service,
     const TasksClientImpl::CreateRequestSenderCallback&
         create_request_sender_callback,
     net::NetworkTrafficAnnotationTag traffic_annotation_tag)
-    : profile_(profile),
+    : pref_service_(pref_service),
+      app_service_proxy_(app_service_proxy),
+      policy_blocklist_service_(policy_blocklist_service),
       create_request_sender_callback_(create_request_sender_callback),
       traffic_annotation_tag_(traffic_annotation_tag) {}
 
@@ -146,9 +147,8 @@ TasksClientImpl::~TasksClientImpl() = default;
 
 bool TasksClientImpl::IsDisabledByAdmin() const {
   // 1) Check the pref.
-  const auto* const pref_service = profile_->GetPrefs();
-  if (!pref_service ||
-      !base::Contains(pref_service->GetList(
+  if (!pref_service_ ||
+      !base::Contains(pref_service_->GetList(
                           prefs::kContextualGoogleIntegrationsConfiguration),
                       prefs::kGoogleTasksIntegrationName)) {
     RecordContextualGoogleIntegrationStatus(
@@ -158,17 +158,15 @@ bool TasksClientImpl::IsDisabledByAdmin() const {
   }
 
   // 2) Check if the Calendar app (home app for Tasks) is disabled by policy.
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
-          profile_)) {
+  if (!app_service_proxy_) {
     return true;
   }
   auto calendar_app_readiness = apps::Readiness::kUnknown;
-  apps::AppServiceProxyFactory::GetForProfile(profile_)
-      ->AppRegistryCache()
-      .ForOneApp(ash::kGoogleCalendarAppId,
-                 [&calendar_app_readiness](const apps::AppUpdate& update) {
-                   calendar_app_readiness = update.Readiness();
-                 });
+  app_service_proxy_->AppRegistryCache().ForOneApp(
+      ash::kGoogleCalendarAppId,
+      [&calendar_app_readiness](const apps::AppUpdate& update) {
+        calendar_app_readiness = update.Readiness();
+      });
   if (calendar_app_readiness == apps::Readiness::kDisabledByPolicy) {
     RecordContextualGoogleIntegrationStatus(
         prefs::kGoogleTasksIntegrationName,
@@ -177,10 +175,8 @@ bool TasksClientImpl::IsDisabledByAdmin() const {
   }
 
   // 3) Check if the Tasks URL is blocked by policy.
-  const auto* const policy_blocklist_service =
-      PolicyBlocklistFactory::GetForBrowserContext(profile_);
-  if (!policy_blocklist_service ||
-      policy_blocklist_service->GetURLBlocklistState(GURL(kTasksUrl)) ==
+  if (!policy_blocklist_service_ ||
+      policy_blocklist_service_->GetURLBlocklistState(GURL(kTasksUrl)) ==
           policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
     RecordContextualGoogleIntegrationStatus(
         prefs::kGoogleTasksIntegrationName,
@@ -278,8 +274,9 @@ void TasksClientImpl::MarkAsCompleted(const std::string& task_list_id,
   if (completed) {
     pending_completed_tasks_[task_list_id].insert(task_id);
   } else {
-    if (pending_completed_tasks_.contains(task_list_id)) {
-      pending_completed_tasks_[task_list_id].erase(task_id);
+    if (auto it = pending_completed_tasks_.find(task_list_id);
+        it != pending_completed_tasks_.end()) {
+      it->second.erase(task_id);
     }
   }
 }
@@ -683,8 +680,7 @@ google_apis::RequestSender* TasksClientImpl::GetRequestSender() {
   if (!request_sender_) {
     CHECK(create_request_sender_callback_);
     request_sender_ = std::move(create_request_sender_callback_)
-                          .Run({GaiaConstants::kTasksReadOnlyOAuth2Scope,
-                                GaiaConstants::kTasksOAuth2Scope},
+                          .Run(signin::OAuthConsumerId::kAuthServiceTasksClient,
                                traffic_annotation_tag_);
     CHECK(request_sender_);
   }

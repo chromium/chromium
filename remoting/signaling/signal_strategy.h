@@ -7,19 +7,18 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 
 #include "base/observer_list_types.h"
+#include "remoting/proto/ftl/v1/chromoting_message.pb.h"
+#include "remoting/proto/messaging_service.h"
+#include "remoting/signaling/signaling_message.h"
 
 namespace jingle_xmpp {
 class XmlElement;
 }  // namespace jingle_xmpp
 
 namespace remoting {
-
-namespace ftl {
-class ChromotingMessage;
-class Id;
-}  // namespace ftl
 
 class SignalingAddress;
 
@@ -63,7 +62,7 @@ class SignalStrategy {
         const jingle_xmpp::XmlElement* stanza) = 0;
 
     // This method is similar to OnSignalStrategyIncomingStanza(). It will be
-    // called by signal strategy that supports ChromotingMessage (i.e.
+    // called by signal strategy that supports message-based signaling (i.e.
     // FtlSignalStrategy) before OnSignalStrategyIncomingStanza() is called.
     //
     // Must return true if the message was handled, false
@@ -73,9 +72,8 @@ class SignalStrategy {
     // TODO(yuweih): Remove OnSignalStrategyIncomingStanza() and make this
     // method pure virtual.
     virtual bool OnSignalStrategyIncomingMessage(
-        const ftl::Id& sender_id,
-        const std::string& sender_registration_id,
-        const ftl::ChromotingMessage& message);
+        const SignalingAddress& sender_address,
+        const SignalingMessage& message);
   };
 
   SignalStrategy() {}
@@ -115,9 +113,9 @@ class SignalStrategy {
   // Sends a raw XMPP stanza. Returns false if the stanza couldn't be sent.
   virtual bool SendStanza(std::unique_ptr<jingle_xmpp::XmlElement> stanza) = 0;
 
-  // Sends a ChromotingMessage. Returns false if the message couldn't be sent.
+  // Sends a message. Returns false if the message couldn't be sent.
   virtual bool SendMessage(const SignalingAddress& destination_address,
-                           const ftl::ChromotingMessage& message) = 0;
+                           SignalingMessage&& message) = 0;
 
   // Returns new ID that should be used for the next outgoing IQ
   // request.

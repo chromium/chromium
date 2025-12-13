@@ -13,7 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -407,7 +407,8 @@ IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest, RequestAccessingCamera) {
 
   // Launch |app_id| in a new window.
   content::WebContents* web_content2 = OpenApplication(app_id);
-  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const app_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   ASSERT_TRUE(app_browser);
   ASSERT_NE(browser(), app_browser);
 
@@ -444,7 +445,8 @@ IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest, RequestAccessingMicrophone) {
 
   // Launch |app_id| in a new window.
   content::WebContents* web_content2 = OpenApplication(app_id);
-  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const app_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   ASSERT_TRUE(app_browser);
   ASSERT_NE(browser(), app_browser);
 
@@ -485,7 +487,8 @@ IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest, RemoveApp) {
 
   // Launch |app_id| in a new window.
   content::WebContents* web_content2 = OpenApplication(app_id);
-  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const app_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   ASSERT_TRUE(app_browser);
   ASSERT_NE(browser(), app_browser);
 
@@ -529,7 +532,8 @@ IN_PROC_BROWSER_TEST_F(MediaAccessWebAppsTest, TwoApps) {
 
   // Launch |app_id2| in a new window.
   content::WebContents* web_content2 = OpenApplication(app_id2);
-  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const app_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   ASSERT_TRUE(app_browser);
   ASSERT_NE(browser(), app_browser);
 

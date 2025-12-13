@@ -33,12 +33,13 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.net.connectivitydetector.ConnectivityDetector;
 import org.chromium.chrome.browser.net.connectivitydetector.ConnectivityDetector.ConnectionState;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
+
+import java.util.function.Supplier;
 
 /** Unit tests for {@link OfflineIndicatorControllerV2}. */
 @RunWith(BaseRobolectricTestRunner.class)

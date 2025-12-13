@@ -9,63 +9,72 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "build/build_config.h"
 
 namespace history {
 
 // Organic Repeatable Queries
+COMPONENT_EXPORT(HISTORY_FEATURES)
 BASE_DECLARE_FEATURE(kOrganicRepeatableQueries);
+COMPONENT_EXPORT(HISTORY_FEATURES)
 extern const base::FeatureParam<int> kMaxNumRepeatableQueries;
+COMPONENT_EXPORT(HISTORY_FEATURES)
 extern const base::FeatureParam<bool> kScaleRepeatableQueriesScores;
+COMPONENT_EXPORT(HISTORY_FEATURES)
 extern const base::FeatureParam<bool> kPrivilegeRepeatableQueries;
+COMPONENT_EXPORT(HISTORY_FEATURES)
 extern const base::FeatureParam<bool> kRepeatableQueriesIgnoreDuplicateVisits;
+COMPONENT_EXPORT(HISTORY_FEATURES)
 extern const base::FeatureParam<int> kRepeatableQueriesMaxAgeDays;
+COMPONENT_EXPORT(HISTORY_FEATURES)
 extern const base::FeatureParam<int> kRepeatableQueriesMinVisitCount;
 
 // When enabled, this feature flag begins populating the VisitedLinkDatabase
 // with data.
+COMPONENT_EXPORT(HISTORY_FEATURES)
 BASE_DECLARE_FEATURE(kPopulateVisitedLinkDatabase);
 
+COMPONENT_EXPORT(HISTORY_FEATURES) BASE_DECLARE_FEATURE(kVisitedLinksOn404);
+
 // Most Visited Tiles scoring function changes.
+COMPONENT_EXPORT(HISTORY_FEATURES)
 BASE_DECLARE_FEATURE(kMostVisitedTilesNewScoring);
 
-// Most Visited Tiles Visual Deduplication.
-BASE_DECLARE_FEATURE(kMostVisitedTilesVisualDeduplication);
-
 // List of values for |kMvtScoringParamRecencyFactor|
-inline constexpr char kMvtScoringParamRecencyFactor_Classic[] = "default";
-inline constexpr char kMvtScoringParamRecencyFactor_Decay[] = "decay";
-inline constexpr char kMvtScoringParamRecencyFactor_DecayStaircase[] =
-    "decay_staircase";
+COMPONENT_EXPORT(HISTORY_FEATURES)
+extern const char kMvtScoringParamRecencyFactor_Classic[];
+COMPONENT_EXPORT(HISTORY_FEATURES)
+extern const char kMvtScoringParamRecencyFactor_Decay[];
+COMPONENT_EXPORT(HISTORY_FEATURES)
+extern const char kMvtScoringParamRecencyFactor_DecayStaircase[];
 
-// The name of the recency factor strategy to use for MVT computation.
-inline constexpr base::FeatureParam<std::string> kMvtScoringParamRecencyFactor(
-    &kMostVisitedTilesNewScoring,
-    "recency_factor",
-#if BUILDFLAG(IS_ANDROID)
-    kMvtScoringParamRecencyFactor_DecayStaircase);
-#else
-    kMvtScoringParamRecencyFactor_Classic);
-#endif  // BUILDFLAG(IS_ANDROID)
+COMPONENT_EXPORT(HISTORY_FEATURES)
+extern const base::FeatureParam<std::string> kMvtScoringParamRecencyFactor;
 
-// The per-day decay factor for each visit, used by "decay" only.
-inline constexpr base::FeatureParam<double> kMvtScoringParamDecayPerDay(
-    &kMostVisitedTilesNewScoring,
-    "decay_per_day",
-    1.0);
+COMPONENT_EXPORT(HISTORY_FEATURES)
+extern const base::FeatureParam<double> kMvtScoringParamDecayPerDay;
 
-// The cap to daily visit count for each segment, used by {"decay",
-// "decay_staircase"}.
-inline constexpr base::FeatureParam<int> kMvtScoringParamDailyVisitCountCap(
-    &kMostVisitedTilesNewScoring,
-    "daily_visit_count_cap",
-#if BUILDFLAG(IS_ANDROID)
-    10);
-#else
-    INT_MAX);
-#endif  // BUILDFLAG(IS_ANDROID)
+COMPONENT_EXPORT(HISTORY_FEATURES)
+extern const base::FeatureParam<int> kMvtScoringParamDailyVisitCountCap;
+
+COMPONENT_EXPORT(HISTORY_FEATURES)
+BASE_DECLARE_FEATURE(kRazeOldHistoryDatabase);
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+COMPONENT_EXPORT(HISTORY_FEATURES)
+BASE_DECLARE_FEATURE(kBrowsingHistoryActorIntegrationM1);
+
+COMPONENT_EXPORT(HISTORY_FEATURES)
+BASE_DECLARE_FEATURE(kBrowsingHistoryActorIntegrationM2);
+
+COMPONENT_EXPORT(HISTORY_FEATURES)
+bool IsBrowsingHistoryActorIntegrationM1Enabled();
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+COMPONENT_EXPORT(HISTORY_FEATURES)
+BASE_DECLARE_FEATURE(kHistoryQueryOnlyLocalFirst);
 
 }  // namespace history
 

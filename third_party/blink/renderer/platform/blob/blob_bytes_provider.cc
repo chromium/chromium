@@ -37,10 +37,10 @@ class BlobBytesStreamer {
       : data_(std::move(data)),
         pipe_(std::move(pipe)),
         watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC) {
-    watcher_.Watch(pipe_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
-                   MOJO_WATCH_CONDITION_SATISFIED,
-                   WTF::BindRepeating(&BlobBytesStreamer::OnWritable,
-                                      WTF::Unretained(this)));
+    watcher_.Watch(
+        pipe_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
+        MOJO_WATCH_CONDITION_SATISFIED,
+        BindRepeating(&BlobBytesStreamer::OnWritable, Unretained(this)));
   }
 
   void OnWritable(MojoResult result, const mojo::HandleSignalsState& state) {
@@ -253,7 +253,7 @@ void BlobBytesProvider::IncreaseChildProcessRefCount() {
         CrossThreadBindOnce(&BlobBytesProvider::IncreaseChildProcessRefCount));
     return;
   }
-  Platform::Current()->SuddenTerminationChanged(false);
+  Platform::Current()->SetSuddenTerminationAllowed(/*allowed=*/false);
 }
 
 void BlobBytesProvider::DecreaseChildProcessRefCount() {
@@ -264,7 +264,7 @@ void BlobBytesProvider::DecreaseChildProcessRefCount() {
         CrossThreadBindOnce(&BlobBytesProvider::DecreaseChildProcessRefCount));
     return;
   }
-  Platform::Current()->SuddenTerminationChanged(true);
+  Platform::Current()->SetSuddenTerminationAllowed(/*allowed=*/true);
 }
 
 }  // namespace blink

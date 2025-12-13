@@ -7,7 +7,6 @@ package org.chromium.components.page_info;
 import android.app.Activity;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
@@ -47,7 +46,7 @@ public interface PageInfoMainController {
     /**
      * @return The Activity associated with the controller.
      */
-    @Nullable Activity getActivity();
+    Activity getActivity();
 
     /**
      * @return The GURL of the page associated with the controller.

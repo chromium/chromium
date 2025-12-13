@@ -4,6 +4,7 @@
 
 #include "chrome/browser/digital_credentials/digital_credentials_keyed_service.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,6 +14,11 @@
 #include "url/gurl.h"
 
 namespace digital_credentials {
+
+namespace {
+BASE_FEATURE(kEnableDigitalCredentialsCreationWithBrowserContext,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace
 
 DigitalCredentialsKeyedService::DigitalCredentialsKeyedService(
     OptimizationGuideKeyedService& optimization_guide_service)
@@ -77,6 +83,12 @@ DigitalCredentialsKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
   }
   return std::make_unique<DigitalCredentialsKeyedService>(
       *optimization_guide_service);
+}
+
+bool DigitalCredentialsKeyedServiceFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  return base::FeatureList::IsEnabled(
+      kEnableDigitalCredentialsCreationWithBrowserContext);
 }
 
 }  // namespace digital_credentials

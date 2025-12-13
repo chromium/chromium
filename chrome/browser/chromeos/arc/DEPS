@@ -1,14 +1,6 @@
 include_rules = [
   "+chromeos/ash/experiences/arc/intent_helper",
 
-  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
-  # details.
-  "-chrome",
-
-  # This directory is in //chrome, which violates the rule above. Allow this
-  # directory to #include its own files.
-  "+chrome/browser/chromeos/arc",
-
   # Existing dependencies within //chrome. There is an active effort to
   # refactor chromeos codes in //chrome to break these dependencies; see
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
@@ -18,13 +10,11 @@ include_rules = [
   "+chrome/browser/apps/app_service",
   "+chrome/browser/apps/link_capturing",
   "+chrome/browser/ash/arc/intent_helper",
-  "+chrome/browser/lacros/arc",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/renderer_context_menu",
   "+chrome/browser/sharing/click_to_call",
   "+chrome/browser/sharing/sharing_service_factory.h",
   "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_finder.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/intent_picker_tab_helper.h",
   "+chrome/grit",
@@ -32,14 +22,15 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "open_with_menu\.cc": [
-    "+chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h",
-  ],
-  "start_smart_selection_action_menu\.cc": [
-    "+chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h",
-  ],
-  "arc_external_protocol_dialog_unittest\.cc": [
+  "arc_external_protocol_dialog_unittest\\.cc": [
+    "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
     "+chromeos/ash/experiences/arc/test/fake_arc_icon_cache.h",
     "+chromeos/ash/experiences/arc/test/fake_arc_intent_helper_mojo.h",
+  ],
+  "open_with_menu\\.cc": [
+    "+chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h",
+  ],
+  "start_smart_selection_action_menu\\.cc": [
+    "+chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h",
   ],
 }

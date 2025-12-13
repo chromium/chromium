@@ -29,9 +29,9 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
 
   await SourcesTestRunner.startDebuggerTestPromise(/* quiet */ true);
   await SourcesTestRunner.runTestFunctionAndWaitUntilPausedPromise();
-  await TestRunner.addSnifferPromise(SourcesModule.CallStackSidebarPane.CallStackSidebarPane.prototype, 'updatedForTest');
 
   const callStackPane = SourcesModule.CallStackSidebarPane.CallStackSidebarPane.instance();
+  await callStackPane.updateComplete;
   const callStackElement = callStackPane.contentElement;
   TestRunner.addResult(`Call stack pane content: ${TestRunner.clearSpecificInfoFromStackFrames(callStackElement.deepTextContent())}`);
   TestRunner.addResult('Running the axe-core linter on the call stack sidebar pane.');

@@ -8,6 +8,7 @@
 #include <compare>
 #include <string>
 #include <tuple>
+#include <utility>
 
 #include "content/public/browser/browsing_instance_id.h"
 #include "url/origin.h"
@@ -49,6 +50,12 @@ class OriginInBrowsingInstanceContext {
   constexpr friend bool operator==(const OriginInBrowsingInstanceContext& a,
                                    const OriginInBrowsingInstanceContext& b) =
       default;
+
+  // Add OriginInBrowsingInstanceContexts to absl hashes.
+  template <typename H>
+  friend H AbslHashValue(H h, const OriginInBrowsingInstanceContext& c) {
+    return H::combine(std::move(h), c.origin_, c.browsing_instance_);
+  }
 
  private:
   url::Origin origin_;

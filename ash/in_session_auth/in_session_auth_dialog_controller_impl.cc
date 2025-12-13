@@ -61,7 +61,7 @@ AuthPurpose InSessionAuthReasonToAuthPurpose(
 // primary displays. We will need to also listen to `work_area` changes and
 // reposition the dialog accordingly when that changes.
 void CenterWidgetOnPrimaryDisplay(views::Widget* widget) {
-  auto bounds = display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  auto bounds = display::Screen::Get()->GetPrimaryDisplay().work_area();
   bounds.ClampToCenteredSize(widget->GetContentsView()->GetPreferredSize());
   widget->SetBounds(bounds);
 }

@@ -2439,7 +2439,7 @@ TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCrossOriginLNAFailure) {
   EXPECT_EQ(
       result.error(),
       base::StringPrintf("Failed to load %s error = "
-                         "net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS.",
+                         "net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS.",
                          TrustedBiddingSignalsUrl().spec().c_str()));
 }
 
@@ -2520,7 +2520,7 @@ TEST_F(TrustedSignalsFetcherTest, ScoringSignalsCrossOriginLNAFailure) {
   EXPECT_EQ(
       result.error(),
       base::StringPrintf("Failed to load %s error = "
-                         "net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS.",
+                         "net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS.",
                          TrustedScoringSignalsUrl().spec().c_str()));
 }
 

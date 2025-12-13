@@ -98,6 +98,8 @@ export class CrTabBoxElement extends CustomElement {
       case 'ArrowDown':
         delta = 1;
         break;
+      default:
+        break;
     }
 
     if (!delta) {

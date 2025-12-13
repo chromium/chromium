@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/web/webui/url_data_manager_ios_backend.h"
 
 #import <set>
@@ -62,7 +57,7 @@ bool CheckURLIsValid(const GURL& url) {
   std::vector<std::string> additional_schemes;
   DCHECK(GetWebClient()->IsAppSpecificURL(url) ||
          (GetWebClient()->GetAdditionalWebUISchemes(&additional_schemes),
-          base::Contains(additional_schemes, url.scheme())));
+          base::Contains(additional_schemes, url.GetScheme())));
 
   if (!url.is_valid()) {
     NOTREACHED();
@@ -88,17 +83,82 @@ void URLToRequestPath(const GURL& url, std::string* path) {
 // fixed one if needed, or the original one otherwise. In js modules,
 // The use of x/../../../../ui/webui/resources is mapped by webkit to
 // x/ui/webui/resources so to not go out of scope of the module.
-GURL RedirectWebUIResources(const GURL url) {
-  static std::string kWebUIResources = "/ui/webui/resources";
+GURL RedirectWebUIResources(const GURL& url) {
+  static constexpr std::string_view kWebUIResources = "/ui/webui/resources";
   if (base::StartsWith(url.path(), kWebUIResources,
                        base::CompareCase::SENSITIVE)) {
     GURL::Replacements replacements;
     replacements.SetHostStr(kWebUIResourcesHost);
-    replacements.SetPathStr(url.path().c_str() + kWebUIResources.size());
+    replacements.SetPathStr(url.path().substr(kWebUIResources.size()));
     return url.ReplaceComponents(replacements);
   }
   return url;
 }
+
+// Represents a read request.
+class ReadRequest {
+ public:
+  ReadRequest() {}
+  explicit ReadRequest(net::IOBuffer* buf, size_t buf_size)
+      : buf_(buf), buf_size_(buf_size) {}
+
+  ReadRequest(ReadRequest&&) = default;
+  ReadRequest& operator=(ReadRequest&&) = default;
+
+  ~ReadRequest() = default;
+
+  // Returns whether the request is valid.
+  bool is_valid() const { return buf_ != nullptr; }
+
+  // Returns a span that cover at most `count` bytes.
+  base::span<uint8_t> span(size_t count) {
+    CHECK(is_valid());
+    return buf_->first(std::min(buf_size_, count));
+  }
+
+ private:
+  scoped_refptr<net::IOBuffer> buf_;
+  size_t buf_size_ = 0;
+};
+
+// Represents a data buffer with an offset.
+class DataWithOffset {
+ public:
+  DataWithOffset() {}
+  explicit DataWithOffset(base::RefCountedMemory* bytes)
+      : data_(bytes), data_offset_(0) {}
+
+  DataWithOffset(DataWithOffset&&) = default;
+  DataWithOffset& operator=(DataWithOffset&&) = default;
+
+  ~DataWithOffset() = default;
+
+  // Returns whether the data has been loaded.
+  bool is_valid() const { return data_ != nullptr; }
+
+  // Reads data into request and returns the number of bytes read.
+  int ReadData(ReadRequest request) {
+    CHECK(is_valid());
+    const size_t remaining = data_->size() - data_offset_;
+    const base::span<uint8_t> buf_span = request.span(remaining);
+    const size_t read_size = buf_span.size();
+    CHECK_LE(read_size, remaining);
+
+    const base::span<const uint8_t> data_span = *data_;
+    const base::span<const uint8_t> data_view =
+        data_span.subspan(data_offset_, read_size);
+
+    std::ranges::copy(data_view, buf_span.begin());
+    data_offset_ += read_size;
+
+    CHECK_LE(data_offset_, data_->size());
+    return static_cast<int>(read_size);
+  }
+
+ private:
+  scoped_refptr<base::RefCountedMemory> data_;
+  size_t data_offset_ = 0;
+};
 
 }  // namespace
 
@@ -168,24 +228,18 @@ class URLRequestChromeJob : public net::URLRequestJob {
  private:
   friend class URLDataManagerIOSBackend;
 
-  // Do the actual copy from data_ (the data we're serving) into `buf`.
-  // Separate from ReadRawData so we can handle async I/O.
-  int CompleteRead(net::IOBuffer* buf, int buf_size);
-
   // Called asynchronously to notify of an error occuring while trying to start
   // the job.
   void NotifyStartErrorAsync();
 
-  // The actual data we're serving.  NULL until it's been fetched.
-  scoped_refptr<base::RefCountedMemory> data_;
-  // The current offset into the data that we're handing off to our
-  // callers via the Read interfaces.
-  int data_offset_;
+  // The actual data we're serving.  Invalid until fetched.
+  DataWithOffset data_;
 
   // For async reads, we keep around a pointer to the buffer that
   // we're reading into.
-  scoped_refptr<net::IOBuffer> pending_buf_;
-  int pending_buf_size_;
+  ReadRequest pending_request_;
+
+  // The mime type of the content.
   std::string mime_type_;
 
   // If true, set a header in the response to prevent it from being cached.
@@ -226,8 +280,6 @@ URLRequestChromeJob::URLRequestChromeJob(net::URLRequest* request,
                                          BrowserState* browser_state,
                                          bool is_incognito)
     : net::URLRequestJob(request),
-      data_offset_(0),
-      pending_buf_size_(0),
       allow_caching_(true),
       add_content_security_policy_(true),
       content_security_policy_object_source_("object-src 'none';"),
@@ -352,13 +404,12 @@ void URLRequestChromeJob::MimeTypeAvailable(URLDataSourceIOSImpl* source,
 void URLRequestChromeJob::DataAvailable(base::RefCountedMemory* bytes) {
   TRACE_EVENT_NESTABLE_ASYNC_END0("browser", "DataManager:Request",
                                   TRACE_ID_LOCAL(this));
+
   if (bytes) {
-    data_ = bytes;
-    if (pending_buf_.get()) {
-      CHECK(pending_buf_->data());
-      int rv = CompleteRead(pending_buf_.get(), pending_buf_size_);
-      pending_buf_.reset();
-      ReadRawDataComplete(rv);
+    CHECK(!data_.is_valid());
+    data_ = DataWithOffset(bytes);
+    if (pending_request_.is_valid()) {
+      ReadRawDataComplete(data_.ReadData(std::exchange(pending_request_, {})));
     }
   } else {
     ReadRawDataComplete(net::ERR_FAILED);
@@ -366,34 +417,22 @@ void URLRequestChromeJob::DataAvailable(base::RefCountedMemory* bytes) {
 }
 
 int URLRequestChromeJob::ReadRawData(net::IOBuffer* buf, int buf_size) {
-  if (!data_.get()) {
-    DCHECK(!pending_buf_.get());
+  if (buf_size < 0) {
+    return net::ERR_INVALID_ARGUMENT;
+  }
+
+  ReadRequest request(buf, static_cast<size_t>(buf_size));
+  if (!data_.is_valid()) {
+    CHECK(!pending_request_.is_valid());
     CHECK(buf->data());
-    pending_buf_ = buf;
-    pending_buf_size_ = buf_size;
+
+    pending_request_ = std::move(request);
     return net::ERR_IO_PENDING;  // Tell the caller we're still waiting for
                                  // data.
   }
 
   // Otherwise, the data is available.
-  return CompleteRead(buf, buf_size);
-}
-
-int URLRequestChromeJob::CompleteRead(net::IOBuffer* buf, int buf_size) {
-  // http://crbug.com/373841
-  char url_buf[128];
-  base::strlcpy(url_buf, request_->url().spec().c_str(), std::size(url_buf));
-  base::debug::Alias(url_buf);
-
-  int remaining = data_->size() - data_offset_;
-  if (buf_size > remaining) {
-    buf_size = remaining;
-  }
-  if (buf_size > 0) {
-    memcpy(buf->data(), data_->front() + data_offset_, buf_size);
-    data_offset_ += buf_size;
-  }
-  return buf_size;
+  return data_.ReadData(std::move(request));
 }
 
 void URLRequestChromeJob::NotifyStartErrorAsync() {
@@ -445,7 +484,7 @@ class ChromeProtocolHandler
   }
 
  private:
-  raw_ptr<BrowserState> browser_state_;
+  raw_ptr<BrowserState, DanglingUntriaged> browser_state_;
 
   // True when generated from an incognito profile.
   const bool is_incognito_;
@@ -553,14 +592,14 @@ URLDataSourceIOSImpl* URLDataManagerIOSBackend::GetDataSourceFromURL(
     const GURL& url) {
   // The input usually looks like: chrome://source_name/extra_bits?foo
   // so do a lookup using the host of the URL.
-  DataSourceMap::iterator i = data_sources_.find(url.host());
+  DataSourceMap::iterator i = data_sources_.find(url.GetHost());
   if (i != data_sources_.end()) {
     return i->second.get();
   }
 
   // No match using the host of the URL, so do a lookup using the scheme for
   // URLs on the form source_name://extra_bits/foo .
-  i = data_sources_.find(url.scheme() + "://");
+  i = data_sources_.find(url.GetScheme() + "://");
   if (i != data_sources_.end()) {
     return i->second.get();
   }

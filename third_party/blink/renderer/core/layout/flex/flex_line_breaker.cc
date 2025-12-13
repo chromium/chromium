@@ -268,7 +268,6 @@ FlexLineBreakerResult BreakIntoLines(base::span<FlexItem> all_items,
   base::span<FlexItem> items = all_items;
 
   while (!items.empty()) {
-    LayoutUnit sum_flex_base_size;
     LayoutUnit sum_hypothetical_main_size;
     wtf_size_t count = 0u;
 
@@ -278,21 +277,17 @@ FlexLineBreakerResult BreakIntoLines(base::span<FlexItem> all_items,
         break;
       }
 
-      sum_flex_base_size += item.FlexBaseMarginBoxSize() + gap_between_items;
       sum_hypothetical_main_size +=
           item.HypotheticalMainAxisMarginBoxSize() + gap_between_items;
       ++count;
     }
     // Take off the last gap (note we *always* have an item in the line).
     sum_hypothetical_main_size -= gap_between_items;
-    sum_flex_base_size -= gap_between_items;
 
-    auto [line_items, remaining_items] = items.split_at(count);
-    flex_lines.emplace_back(line_items, sum_flex_base_size,
-                            sum_hypothetical_main_size);
+    flex_lines.emplace_back(count, sum_hypothetical_main_size);
     max_sum_hypothetical_main_size =
         std::max(max_sum_hypothetical_main_size, sum_hypothetical_main_size);
-    items = remaining_items;
+    items = items.subspan(count);
   }
 
   return {flex_lines, max_sum_hypothetical_main_size};

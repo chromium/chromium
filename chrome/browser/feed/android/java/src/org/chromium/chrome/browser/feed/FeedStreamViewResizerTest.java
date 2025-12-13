@@ -93,8 +93,9 @@ public final class FeedStreamViewResizerTest {
     public void computePaddingPhoneLandscape() {
         mUiConfig.setDisplayStyleForTesting(
                 new DisplayStyle(HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR));
-        // expectedPadding = ((width - usableHeight * 1.778) / 2) = (820 - (390*1.778))/2 = 63;
-        int expectedPadding = 63;
+        // expectedPadding = ((width - (usableHeight - toolbarHeight) * 1.778) / 2)
+        //                 = (820 - ((390 - 56)*1.778))/2 = 113;
+        int expectedPadding = 113;
         assertPaddingEquals(expectedPadding);
     }
 

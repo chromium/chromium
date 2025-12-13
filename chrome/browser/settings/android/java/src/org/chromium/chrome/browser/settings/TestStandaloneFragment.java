@@ -9,7 +9,8 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceFragmentCompat;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -19,9 +20,8 @@ public class TestStandaloneFragment extends PreferenceFragmentCompat
         implements BackPressHandler, SettingsFragment {
     public static final String EXTRA_TITLE = "title";
 
-    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
-            new ObservableSupplierImpl<>();
-
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
+            ObservableSuppliers.createNonNull(false);
     private final CallbackHelper mBackPressCallback = new CallbackHelper();
 
     @Override
@@ -50,7 +50,7 @@ public class TestStandaloneFragment extends PreferenceFragmentCompat
     }
 
     @Override
-    public ObservableSupplierImpl<Boolean> getHandleBackPressChangedSupplier() {
+    public SettableNonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mBackPressStateSupplier;
     }
 

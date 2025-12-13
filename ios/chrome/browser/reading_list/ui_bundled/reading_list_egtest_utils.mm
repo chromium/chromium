@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_constants.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_coordinator_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -21,26 +22,23 @@ namespace reading_list_test_utils {
 id<GREYMatcher> AddedToLocalReadingListSnackbar() {
   NSString* snackbarMessage =
       l10n_util::GetNSString(IDS_IOS_READING_LIST_SNACKBAR_MESSAGE);
-  return grey_allOf(
-      grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier"),
-      grey_text(snackbarMessage), nil);
+  return grey_allOf(chrome_test_util::SnackbarViewMatcher(),
+                    grey_descendant(grey_text(snackbarMessage)), nil);
 }
 
 id<GREYMatcher> ReadingListItem(NSString* entryTitle) {
-  return grey_allOf(grey_accessibilityID(entryTitle),
-                    grey_kindOfClassName(@"TableViewURLCell"), nil);
+  return grey_accessibilityID(entryTitle);
 }
 
 id<GREYMatcher> VisibleReadingListItem(NSString* entryTitle) {
-  return grey_allOf(grey_accessibilityID(entryTitle),
-                    grey_kindOfClassName(@"TableViewURLCell"),
-                    grey_sufficientlyVisible(), nil);
+  return grey_allOf(ReadingListItem(entryTitle),
+                    grey_minimumVisiblePercent(0.95), nil);
 }
 
 id<GREYMatcher> VisibleLocalItemIcon(NSString* title) {
   return grey_allOf(grey_ancestor(ReadingListItem(title)),
-                    grey_accessibilityID(kTableViewURLCellMetadataImageID),
-                    grey_sufficientlyVisible(), nil);
+                    grey_accessibilityID(kReadingListLocalImageID),
+                    grey_minimumVisiblePercent(0.95), nil);
 }
 
 // Opens the reading list menu.
@@ -48,6 +46,14 @@ void OpenReadingList() {
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGreyUI
       tapToolsMenuButton:chrome_test_util::ReadingListDestinationButton()];
+  // It seems that sometimes there is a delay before the ReadingList is
+  // displayed. See https://crbug.com/1109202 .
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                                          kReadingListViewID)];
+}
+
+void OpenTestReadingList() {
+  [ChromeCoordinatorAppInterface startReadingListCoordinator];
   // It seems that sometimes there is a delay before the ReadingList is
   // displayed. See https://crbug.com/1109202 .
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:grey_accessibilityID(
@@ -75,9 +81,8 @@ void AddURLToReadingListWithSnackbarDismiss(const GURL& URL, NSString* email) {
         base::i18n::MessageFormatter::FormatWithNamedArgs(
             pattern, "count", 1, "email", base::SysNSStringToUTF16(email));
     NSString* snackbarMessage = base::SysUTF16ToNSString(utf16Text);
-    matcher = grey_allOf(
-        grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier"),
-        grey_text(snackbarMessage), nil);
+    matcher = grey_allOf(chrome_test_util::SnackbarViewMatcher(),
+                         grey_descendant(grey_text(snackbarMessage)), nil);
   } else {
     matcher = reading_list_test_utils::AddedToLocalReadingListSnackbar();
   }

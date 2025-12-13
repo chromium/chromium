@@ -168,7 +168,7 @@ void OnDeviceClusteringBackend::ProcessVisits(
     // The engagement score is only required for computing clusters for UI and
     // triggerability.
     if (requires_ui_and_triggerability) {
-      const std::string& visit_host = cluster_visit.normalized_url.host();
+      const std::string& visit_host = cluster_visit.normalized_url.GetHost();
       if (engagement_score_provider_) {
         auto it = engagement_score_cache_.Peek(visit_host);
         if (it != engagement_score_cache_.end()) {

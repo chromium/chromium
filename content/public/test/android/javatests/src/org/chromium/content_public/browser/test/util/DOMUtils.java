@@ -7,7 +7,6 @@ package org.chromium.content_public.browser.test.util;
 import static org.hamcrest.CoreMatchers.is;
 
 import android.app.Activity;
-import android.app.Instrumentation;
 import android.graphics.Rect;
 import android.util.JsonReader;
 import android.view.View;
@@ -493,12 +492,11 @@ public class DOMUtils {
      * @param webContents The WebContents in which the node lives.
      * @param jsCode js code that returns an element.
      */
-    public static void rightClickNodeByJs(
-            Instrumentation instrumentation, final WebContents webContents, String jsCode)
+    public static void rightClickNodeByJs(final WebContents webContents, String jsCode)
             throws TimeoutException {
         int[] clickTarget = getClickTargetForNodeByJs(webContents, jsCode);
         ClickUtils.mouseContextClickView(
-                instrumentation, getContainerView(webContents), clickTarget[0], clickTarget[1]);
+                getContainerView(webContents), clickTarget[0], clickTarget[1]);
     }
 
     /**

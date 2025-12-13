@@ -49,8 +49,8 @@ def class_accessor_expression(java_class):
 
 def header_preamble(script_name,
                     java_class,
-                    system_includes,
-                    user_includes,
+                    system_includes=None,
+                    user_includes=None,
                     header_guard=None):
   if header_guard is None:
     header_guard = f'{java_class.to_cpp()}_JNI'
@@ -65,9 +65,12 @@ def header_preamble(script_name,
 #define {header_guard}
 
 """)
-  sb.extend(f'#include <{x}>\n' for x in system_includes)
-  sb.append('\n')
-  sb.extend(f'#include "{x}"\n' for x in user_includes)
+  if system_includes:
+    sb.extend(f'#include <{x}>\n' for x in system_includes)
+    sb.append('\n')
+  if user_includes:
+    sb.extend(f'#include "{x}"\n' for x in user_includes)
+    sb.append('\n')
   preamble = ''.join(sb)
 
   epilogue = f"""

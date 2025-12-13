@@ -17,6 +17,7 @@
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"

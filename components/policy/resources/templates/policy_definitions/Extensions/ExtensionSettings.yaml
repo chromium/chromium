@@ -62,7 +62,6 @@ features:
   per_profile: true
 future_on:
 - android
-- fuchsia
 owners:
 - finnur@chromium.org
 - file://extensions/OWNERS
@@ -101,6 +100,7 @@ schema:
           enum:
           - force_pinned
           - default_unpinned
+          - default_pinned
           type: string
         update_url:
           type: string

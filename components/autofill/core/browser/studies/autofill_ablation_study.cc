@@ -17,8 +17,9 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/types/zip.h"
-#include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -46,7 +47,7 @@ using ::autofill::features::kAutofillAblationStudyAblationWeightPerMilleParam;
 using ::autofill::features::kAutofillAblationStudyEnabledForAddressesParam;
 using ::autofill::features::kAutofillAblationStudyEnabledForPaymentsParam;
 using ::autofill::features::kAutofillEnableAblationStudy;
-using ::autofill::features::test::kAutofillShowTypePredictions;
+using ::autofill::features::debug::kAutofillShowTypePredictions;
 
 namespace {
 
@@ -151,7 +152,7 @@ const AutofillAblationStudy& AutofillAblationStudy::disabled_study() {
 AblationGroup AutofillAblationStudy::GetAblationGroup(
     const GURL& url,
     FormTypeForAblationStudy form_type,
-    AutofillOptimizationGuide* autofill_optimization_guide) const {
+    AutofillOptimizationGuideDecider* autofill_optimization_guide) const {
   if (!base::FeatureList::IsEnabled(kAutofillEnableAblationStudy)) {
     return AblationGroup::kDefault;
   }

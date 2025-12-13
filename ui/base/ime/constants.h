@@ -12,16 +12,21 @@ namespace ui {
 
 // The name of the property that is attach to the key event and indicates
 // whether it was from the virtual keyboard.
+//
 // This is used where the key event is simulated by the virtual keyboard
 // (e.g. IME extension API) as well as the input field implementation (e.g.
 // Textfield).
-COMPONENT_EXPORT(UI_BASE_IME) extern const char kPropertyFromVK[];
+inline constexpr char kPropertyFromVK[] = "from_vk";
 
-// kPropertyFromVKIsMirroringIndex is an index into kPropertyFromVK
-// and is used when the key event occurs when mirroring is detected.
-COMPONENT_EXPORT(UI_BASE_IME)
-extern const size_t kPropertyFromVKIsMirroringIndex;
-COMPONENT_EXPORT(UI_BASE_IME) extern const size_t kPropertyFromVKSize;
+// Properties of the kPropertyFromVK attribute
+
+// kFromVKIsMirroring is the index of the isMirroring property on the
+// kPropertyFromVK attribute. This is non-zero if mirroring and zero if not
+// mirroring.
+inline constexpr size_t kPropertyFromVKIsMirroringIndex = 0;
+// kFromVKSize is the size of the kPropertyFromVK attribute
+// It is equal to the number of kPropertyFromVK
+inline constexpr size_t kPropertyFromVKSize = 1;
 
 }  // namespace ui
 

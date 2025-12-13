@@ -1,7 +1,8 @@
 Name: PSM (Private Set Membership) client side
-URL: This is the canonical public repository
+URL: Google Internal
 Version: N/A
 Date: 2023-09-15
+Update Mechanism: Manual (https://crbug.com/419414056)
 License: Apache-2.0
 License File: LICENSE
 Security Critical: yes

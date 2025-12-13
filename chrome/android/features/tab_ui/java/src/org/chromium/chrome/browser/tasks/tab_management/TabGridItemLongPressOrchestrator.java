@@ -11,13 +11,14 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.util.RunnableTimer;
+
+import java.util.function.Supplier;
 
 /**
  * Orchestrates the long press event on items within a {@link RecyclerView} to differentiate between

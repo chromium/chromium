@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_OWNERSHIP_OWNER_SETTINGS_SERVICE_ASH_FACTORY_H_
 #define CHROME_BROWSER_ASH_OWNERSHIP_OWNER_SETTINGS_SERVICE_ASH_FACTORY_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 

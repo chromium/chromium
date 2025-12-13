@@ -39,6 +39,7 @@ std::unique_ptr<PolicyContainer> PolicyContainer::CreateFromWebPolicyContainer(
       container->policies.cross_origin_embedder_policy;
   mojom::blink::PolicyContainerPoliciesPtr policies =
       mojom::blink::PolicyContainerPolicies::New(
+          container->policies.connection_allowlists,
           cross_origin_embedder_policy, container->policies.integrity_policy,
           container->policies.integrity_policy_report_only,
           container->policies.referrer_policy,

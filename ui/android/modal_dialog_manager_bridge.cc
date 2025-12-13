@@ -12,7 +12,7 @@
 namespace ui {
 
 ModalDialogManagerBridge::ModalDialogManagerBridge(
-    const jni_zero::JavaParamRef<jobject>& manager)
+    const jni_zero::JavaRef<jobject>& manager)
     : j_modal_dialog_manager_bridge_(manager) {}
 
 ModalDialogManagerBridge::~ModalDialogManagerBridge() = default;
@@ -50,14 +50,17 @@ void ModalDialogManagerBridge::DismissDialog(
 // `ui/android/ui_android_jni_headers/ModalDialogManagerBridge_jni.h`
 // implementations.
 
-jlong JNI_ModalDialogManagerBridge_Create(
+static jlong JNI_ModalDialogManagerBridge_Create(
     JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& manager) {
+    const jni_zero::JavaRef<jobject>& manager) {
   return reinterpret_cast<intptr_t>(new ModalDialogManagerBridge(manager));
 }
 
-void JNI_ModalDialogManagerBridge_Destroy(JNIEnv* env, jlong mNativeBridgePtr) {
+static void JNI_ModalDialogManagerBridge_Destroy(JNIEnv* env,
+                                                 jlong mNativeBridgePtr) {
   delete reinterpret_cast<ModalDialogManagerBridge*>(mNativeBridgePtr);
 }
 
 }  // namespace ui
+
+DEFINE_JNI(ModalDialogManagerBridge)

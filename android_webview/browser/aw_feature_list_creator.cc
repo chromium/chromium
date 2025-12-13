@@ -13,10 +13,8 @@
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_context_store.h"
 #include "android_webview/browser/aw_browser_process.h"
-#include "android_webview/browser/aw_feature_entries.h"
 #include "android_webview/browser/aw_metrics_service_client_delegate.h"
 #include "android_webview/browser/metrics/android_metrics_provider.h"
-#include "android_webview/browser/metrics/android_metrics_service_client.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/supervised_user/aw_supervised_user_url_classifier.h"
 #include "android_webview/browser/tracing/aw_tracing_delegate.h"
@@ -192,7 +190,7 @@ std::unique_ptr<PrefService> AwFeatureListCreator::CreatePrefService() {
   persistent_prefs.insert(std::string(metrics::prefs::kMetricsLastSeenPrefix) +
                           kBrowserMetricsName);
   persistent_prefs.insert(std::string(metrics::prefs::kMetricsLastSeenPrefix) +
-                          metrics::kCrashpadHistogramAllocatorName);
+                          kCrashpadHistogramAllocatorName);
 
   // SegregatedPrefStore may be validated with a MAC (message authentication
   // code). On Android, the store is protected by app sandboxing, so validation
@@ -274,8 +272,8 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   CacheSeedFreshness(seed_freshness_minutes);
 
   auto feature_list = std::make_unique<base::FeatureList>();
-  std::vector<std::string> variation_ids =
-      aw_feature_entries::RegisterEnabledFeatureEntries(feature_list.get());
+  // Experiment variation ids if any.
+  std::vector<std::string> variation_ids;
 
   auto* metrics_client = AwMetricsServiceClient::GetInstance();
   const base::CommandLine* command_line =
@@ -284,8 +282,8 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   // Populate FieldTrialList.
   // If you update this, consider whether "WebViewEnvironment" in
   // components/variations/variations_seed_processor_unittest.cc needs updates.
-  // TODO(b/263797385): Re-evaluate if we can add entropy source id to
-  // variations ids for WebView or not.
+  // variation_ids can be overridden by calls to ForceVariationIds in other
+  // places.
   variations_field_trial_creator_->SetUpFieldTrials(
       variation_ids,
       command_line->GetSwitchValueASCII(
@@ -293,7 +291,7 @@ void AwFeatureListCreator::SetUpFieldTrials() {
       GetSwitchDependentFeatureOverrides(*command_line),
       std::move(feature_list), metrics_client->metrics_state_manager(),
       aw_field_trials_.get(), &ignored_safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/false,
+      /*add_entropy_source_to_variations_ids=*/true,
       *metrics_client->metrics_state_manager()->CreateEntropyProviders(
           /*enable_limited_entropy_mode=*/false));
 }

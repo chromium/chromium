@@ -51,6 +51,7 @@ sandbox::mojom::Sandbox GetServiceSandboxType<content::mojom::TestService>() {
 }  // namespace content
 
 namespace metrics {
+namespace {
 
 class ContentStabilityProviderBrowserTest
     : public content::ContentBrowserTest,
@@ -196,4 +197,5 @@ IN_PROC_BROWSER_TEST_F(ContentStabilityProviderBrowserTest,
       "Stability.Counts2", StabilityEventType::kRendererFailedLaunch, 1);
 }
 
+}  // namespace
 }  // namespace metrics

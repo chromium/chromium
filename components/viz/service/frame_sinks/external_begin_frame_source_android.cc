@@ -8,7 +8,7 @@
 
 #include <utility>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -82,8 +82,8 @@ class ExternalBeginFrameSourceAndroid::AChoreographerImpl {
 std::unique_ptr<ExternalBeginFrameSourceAndroid::AChoreographerImpl>
 ExternalBeginFrameSourceAndroid::AChoreographerImpl::Create(
     ExternalBeginFrameSourceAndroid* client) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_R) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_R) {
     return nullptr;
   }
   if (!gfx::AChoreographerCompat::Get().supported)
@@ -316,3 +316,5 @@ void ExternalBeginFrameSourceAndroid::SetEnabled(bool enabled) {
 }
 
 }  // namespace viz
+
+DEFINE_JNI(ExternalBeginFrameSourceAndroid)

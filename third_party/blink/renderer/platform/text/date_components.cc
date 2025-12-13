@@ -32,6 +32,8 @@
 
 #include <limits.h>
 
+#include <cstdlib>
+
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -339,20 +341,33 @@ bool DateComponents::ParseDateTimeLocal(const String& src,
   return true;
 }
 
-static inline double PositiveFmod(double value, double divider) {
+namespace {
+
+inline double PositiveFmod(double value, double divider) {
   double remainder = fmod(value, divider);
   return remainder < 0 ? remainder + divider : remainder;
 }
 
-void DateComponents::SetMillisecondsSinceMidnightInternal(double ms_in_day) {
+int ToMillisecondsSinceMidnight(double ms) {
+  const double ms_in_day = PositiveFmod(ms, base::Time::kMillisecondsPerDay);
+  return base::ClampFloor<int>(ms_in_day);
+}
+
+}  // namespace
+
+void DateComponents::SetMillisecondsSinceMidnightInternal(int ms_in_day) {
   DCHECK_GE(ms_in_day, 0);
-  DCHECK_LT(ms_in_day, kMsPerDay);
-  millisecond_ = static_cast<int>(fmod(ms_in_day, kMsPerSecond));
-  double value = std::floor(ms_in_day / kMsPerSecond);
-  second_ = static_cast<int>(fmod(value, kSecondsPerMinute));
-  value = std::floor(value / kSecondsPerMinute);
-  minute_ = static_cast<int>(fmod(value, kMinutesPerHour));
-  hour_ = static_cast<int>(value / kMinutesPerHour);
+  DCHECK_LT(ms_in_day, base::Time::kMillisecondsPerDay);
+  const std::div_t seconds =
+      std::div(ms_in_day, static_cast<int>(base::Time::kMillisecondsPerSecond));
+  millisecond_ = seconds.rem;
+  const std::div_t minutes =
+      std::div(seconds.quot, static_cast<int>(base::Time::kSecondsPerMinute));
+  second_ = minutes.rem;
+  const std::div_t hours =
+      std::div(minutes.quot, static_cast<int>(base::Time::kMinutesPerHour));
+  minute_ = hours.rem;
+  hour_ = hours.quot;
 }
 
 bool DateComponents::SetMillisecondsSinceEpochForDateInternal(double ms) {
@@ -380,7 +395,7 @@ bool DateComponents::SetMillisecondsSinceEpochForDateTimeLocal(double ms) {
   if (!std::isfinite(ms))
     return false;
   ms = round(ms);
-  SetMillisecondsSinceMidnightInternal(PositiveFmod(ms, kMsPerDay));
+  SetMillisecondsSinceMidnightInternal(ToMillisecondsSinceMidnight(ms));
   if (!SetMillisecondsSinceEpochForDateInternal(ms))
     return false;
   if (!WithinHTMLDateLimits(year_, month_, month_day_, hour_, minute_, second_,
@@ -406,7 +421,7 @@ bool DateComponents::SetMillisecondsSinceMidnight(double ms) {
   type_ = kInvalid;
   if (!std::isfinite(ms))
     return false;
-  SetMillisecondsSinceMidnightInternal(PositiveFmod(round(ms), kMsPerDay));
+  SetMillisecondsSinceMidnightInternal(ToMillisecondsSinceMidnight(ms));
   type_ = kTime;
   return true;
 }
@@ -482,32 +497,39 @@ bool DateComponents::SetWeek(int year, int week_number) {
   return true;
 }
 
-double DateComponents::MillisecondsSinceEpochForTime() const {
+base::TimeDelta DateComponents::MillisecondsSinceEpochForTime() const {
   DCHECK(type_ == kTime || type_ == kDateTimeLocal);
-  return ((hour_ * kMinutesPerHour + minute_) * kSecondsPerMinute + second_) *
-             kMsPerSecond +
-         millisecond_;
+  base::TimeDelta time = base::Hours(hour_);
+  time += base::Minutes(minute_);
+  time += base::Seconds(second_);
+  time += base::Milliseconds(millisecond_);
+  return time;
 }
 
 double DateComponents::MillisecondsSinceEpoch() const {
+  base::TimeDelta time;
   switch (type_) {
     case kDate:
-      return DateToDaysFrom1970(year_, month_, month_day_) * kMsPerDay;
-    case kDateTimeLocal:
-      return DateToDaysFrom1970(year_, month_, month_day_) * kMsPerDay +
-             MillisecondsSinceEpochForTime();
-    case kMonth:
-      return DateToDaysFrom1970(year_, month_, 1) * kMsPerDay;
-    case kTime:
-      return MillisecondsSinceEpochForTime();
-    case kWeek:
-      return (DateToDaysFrom1970(year_, 0, 1) + OffsetTo1stWeekStart(year_) +
-              (week_ - 1) * 7) *
-             kMsPerDay;
-    case kInvalid:
+      time = base::Days(DateToDaysFrom1970(year_, month_, month_day_));
       break;
+    case kDateTimeLocal:
+      time = base::Days(DateToDaysFrom1970(year_, month_, month_day_));
+      time += MillisecondsSinceEpochForTime();
+      break;
+    case kMonth:
+      time = base::Days(DateToDaysFrom1970(year_, month_, 1));
+      break;
+    case kTime:
+      time = MillisecondsSinceEpochForTime();
+      break;
+    case kWeek:
+      time = base::Days(DateToDaysFrom1970(year_, 0, 1) +
+                        OffsetTo1stWeekStart(year_) + (week_ - 1) * 7);
+      break;
+    case kInvalid:
+      NOTREACHED();
   }
-  NOTREACHED();
+  return time.InMillisecondsF();
 }
 
 double DateComponents::MonthsSinceEpoch() const {

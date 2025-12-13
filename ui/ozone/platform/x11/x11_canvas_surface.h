@@ -14,7 +14,7 @@
 #include "ui/base/x/x11_software_bitmap_presenter.h"
 #include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/public/surface_ozone_canvas.h"
 
 class SkSurface;

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ACTIONS_CHROME_ACTION_ID_H_
 
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "ui/actions/action_id.h"
 
@@ -90,6 +91,7 @@
   E(kActionProfileMenuInAppMenu, IDC_PROFILE_MENU_IN_APP_MENU) \
   E(kActionPasswordsAndAutofillMenu, IDC_PASSWORDS_AND_AUTOFILL_MENU) \
   E(kActionShowMemorySaverChip) \
+  E(kActionShowJsOptimizationsIcon) \
   E(kActionShowCookieControls) \
   /* Page-manipulation commands that target a specified tab, which may not */ \
   /* be the active one. */ \
@@ -119,6 +121,7 @@
   E(kActionOpenGuestProfile, IDC_OPEN_GUEST_PROFILE) \
   E(kActionAddNewProfile, IDC_ADD_NEW_PROFILE) \
   E(kActionManageChromeProfiles, IDC_MANAGE_CHROME_PROFILES) \
+  E(kActionShowSignin, IDC_SHOW_SIGNIN) \
   /* Zoom */ \
   E(kActionZoomMenu, IDC_ZOOM_MENU) \
   E(kActionZoomPlus, IDC_ZOOM_PLUS) \
@@ -188,6 +191,7 @@
   E(kActionCloseSignInPromo, IDC_CLOSE_SIGN_IN_PROMO) \
   E(kActionShowFullUrls, IDC_SHOW_FULL_URLS) \
   E(kActionShowGoogleLensShortcut, IDC_SHOW_GOOGLE_LENS_SHORTCUT) \
+  E(kActionShowAiModeOmniboxButton, IDC_SHOW_AI_MODE_OMNIBOX_BUTTON) \
   E(kActionShowSearchTools, IDC_SHOW_SEARCH_TOOLS) \
   E(kActionCaretBrowsingToggle, IDC_CARET_BROWSING_TOGGLE) \
   E(kActionChromeTips, IDC_CHROME_TIPS) \
@@ -202,6 +206,8 @@
   E(kActionReadingListMenuAddTab, IDC_READING_LIST_MENU_ADD_TAB) \
   E(kActionRecentTabsLoginForDeviceTabs, \
     IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS) \
+  E(kActionRecentTabsSeeDeviceTabs, \
+    IDC_RECENT_TABS_SEE_DEVICE_TABS) \
   E(kActionOpenRecentTab, IDC_OPEN_RECENT_TAB) \
   /* Spell-check */ \
   /* Insert any additional suggestions before _LAST; these have to be */ \
@@ -279,6 +285,8 @@
   E(kActionContentContextLoadImage, IDC_CONTENT_CONTEXT_LOAD_IMAGE) \
   E(kActionContentContextSearchLensForImage, \
     IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE) \
+  E(kActionContentContextGlicShareImage, \
+    IDC_CONTENT_CONTEXT_GLICSHAREIMAGE) \
   E(kActionContentContextTranslateImageWithWeb, \
     IDC_CONTENT_CONTEXT_TRANSLATEIMAGEWITHWEB) \
   E(kActionContentContextTranslateImageWithLens, \
@@ -333,6 +341,8 @@
     IDC_CONTENT_CONTEXT_RESTART_PACKAGED_APP) \
   E(kActionContentContextLensRegionSearch, \
     IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH) \
+  E(kActionAiMode) \
+  E(kActionLensOverlayHomework) \
   E(kActionContentContextWebRegionSearch, \
     IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH) \
   E(kActionContentContextGeneratePassword, \
@@ -502,7 +512,13 @@
   /*Commerce*/ \
   E(kActionCommercePriceInsights) \
   E(kActionCommerceDiscounts) \
-  E(kActionCommerceProductSpecifications) \
+  /*Vertical Tabs*/ \
+  E(kActionToggleCollapseVertical) \
+  /*Omnibox Context Menu*/       \
+  E(kActionOmniboxContextAddImage, IDC_OMNIBOX_CONTEXT_ADD_IMAGE)\
+  E(kActionOmniboxContextAddFile, IDC_OMNIBOX_CONTEXT_ADD_FILE)  \
+  E(kActionOmniboxContextCreateImages, IDC_OMNIBOX_CONTEXT_CREATE_IMAGES)  \
+  E(kActionOmniboxContextDeepResearch, IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH)  \
 
 #if BUILDFLAG(IS_CHROMEOS)
 #define CHROME_PLATFORM_SPECIFIC_ACTION_IDS \
@@ -537,6 +553,8 @@
   E(kActionSidePanelShowCustomizeChromeFooter) \
   E(kActionSidePanelShowCustomizeChromeToolbar) \
   E(kActionSidePanelShowFeed) \
+  E(kActionSidePanelShowGlic) \
+  E(kActionSidePanelShowContextualTasks) \
   E(kActionSidePanelShowHistoryCluster) \
   E(kActionSidePanelShowHistory) \
   E(kActionSidePanelShowLens) \
@@ -574,6 +592,7 @@
   E(kActionShowPasswordsBubbleOrPage) \
   E(kActionManagePasswordsForPage, IDC_MANAGE_PASSWORDS_FOR_PAGE) \
   E(kActionCopyUrl, IDC_COPY_URL) \
+  E(kActionTabGroupsMenu, IDC_SAVED_TAB_GROUPS_MENU) \
   E(kActionTabSearch, IDC_TAB_SEARCH) \
   E(kActionSplitTab, IDC_SPLIT_TAB) \
 

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/search_box"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/settings_search_ui_height"
+    android:layout_gravity="end|center_vertical"
+    android:gravity="center_vertical"
+    android:background="@drawable/pill_background">
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:paddingStart="@dimen/settings_search_icon_padding"
+        android:paddingEnd="@dimen/settings_search_icon_padding"
+        android:src="@drawable/ic_search"
+        android:contentDescription="@string/search_in_settings_hint"
+        app:tint="@color/default_icon_color_tint_list"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:text="@string/search_in_settings_hint"/>
+</LinearLayout>

@@ -55,7 +55,7 @@ void TrayBubbleWrapper::ShowBubble(
   bubble_view_->InitializeAndShowBubble();
 
   // We need to explicitly dismiss app list bubble here due to b/1186479.
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     Shell::Get()->app_list_controller()->DismissAppList();
   }
 

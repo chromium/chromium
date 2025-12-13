@@ -32,7 +32,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/animation_builder.h"
-#include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
@@ -474,9 +474,8 @@ void BirchBarView::Clear() {
 }
 
 gfx::Size BirchBarView::GetChipSize(aura::Window* root_window) const {
-  const gfx::Rect display_bounds = display::Screen::GetScreen()
-                                       ->GetDisplayNearestWindow(root_window)
-                                       .bounds();
+  const gfx::Rect display_bounds =
+      display::Screen::Get()->GetDisplayNearestWindow(root_window).bounds();
   // Always use the longest side of the display to calculate the chip width.
   const int max_display_dim =
       std::max(display_bounds.width(), display_bounds.height());

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/common/chrome_content_client.h"
 
 #include <string>
@@ -49,25 +44,29 @@ TEST(ChromeContentClientTest, AdditionalSchemes) {
 
   // IsUrlPotentiallyTrustworthy assertions test for https://crbug.com/734581.
   constexpr const char* kChromeLayerUrlsRegisteredAsSecure[] = {
-    // The schemes below are registered both as secure and no-access.  Product
-    // code needs to treat such URLs as trustworthy, even though no-access
-    // schemes translate into an opaque origin (which is untrustworthy).
-    "chrome-native://newtab/",
-    "chrome-error://foo/",
-    // The schemes below are registered as secure (but not as no-access).
-    "chrome://foo/",
-    "chrome-untrusted://foo/",
-    "chrome-search://foo/",
-    "isolated-app://foo/",
+      // The schemes below are registered both as secure and no-access.  Product
+      // code needs to treat such URLs as trustworthy, even though no-access
+      // schemes translate into an opaque origin (which is untrustworthy).
+      "chrome-native://newtab/",
+      "chrome-error://foo/",
+      // The schemes below are registered as secure (but not as no-access).
+      "chrome://foo/",
+      "chrome-untrusted://foo/",
+      "chrome-search://foo/",
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+      "isolated-app://foo/",
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    "chrome-extension://foo/",
+      "chrome-extension://foo/",
 #endif
-    "devtools://foo/",
+      "devtools://foo/",
   };
   for (const std::string& str : kChromeLayerUrlsRegisteredAsSecure) {
     SCOPED_TRACE(str);
     GURL url(str);
-    EXPECT_TRUE(base::Contains(url::GetSecureSchemes(), url.scheme()));
+    EXPECT_TRUE(base::Contains(url::GetSecureSchemes(), url.GetScheme()));
     EXPECT_TRUE(network::IsUrlPotentiallyTrustworthy(url));
   }
 

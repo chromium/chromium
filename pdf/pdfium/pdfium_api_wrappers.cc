@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -16,6 +17,7 @@
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "pdf/pdf_rect.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "printing/units.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
@@ -34,6 +36,14 @@ using printing::kPointsPerInch;
 namespace chrome_pdf {
 
 namespace {
+
+// Check that PdfRect and FS_RECTF have the same size and member variables have
+// the same offsets, to allow for safe casting between them.
+static_assert(sizeof(PdfRect) == sizeof(FS_RECTF));
+static_assert(PdfRect::offsetof_left() == offsetof(FS_RECTF, left));
+static_assert(PdfRect::offsetof_bottom() == offsetof(FS_RECTF, bottom));
+static_assert(PdfRect::offsetof_right() == offsetof(FS_RECTF, right));
+static_assert(PdfRect::offsetof_top() == offsetof(FS_RECTF, top));
 
 int GetRenderFlagsFromSettings(
     const PDFiumEngineExports::RenderingSettings& settings) {
@@ -121,6 +131,14 @@ int CalculatePosition(FPDF_PAGE page,
 
 }  // namespace
 
+const FS_RECTF& FsRectFFromPdfRect(const PdfRect& rect) {
+  return reinterpret_cast<const FS_RECTF&>(rect);
+}
+
+FS_RECTF& FsRectFFromPdfRect(PdfRect& rect) {
+  return reinterpret_cast<FS_RECTF&>(rect);
+}
+
 ScopedFPDFDocument LoadPdfData(base::span<const uint8_t> pdf_data) {
   return LoadPdfDataWithPassword(pdf_data, std::string());
 }
@@ -129,6 +147,32 @@ ScopedFPDFDocument LoadPdfDataWithPassword(base::span<const uint8_t> pdf_data,
                                            const std::string& password) {
   return ScopedFPDFDocument(FPDF_LoadMemDocument64(
       pdf_data.data(), pdf_data.size(), password.c_str()));
+}
+
+std::optional<PdfRect> GetAnnotRect(FPDF_ANNOTATION annot) {
+  PdfRect rect;
+  if (!FPDFAnnot_GetRect(annot, &FsRectFFromPdfRect(rect))) {
+    return std::nullopt;
+  }
+  return rect;
+}
+
+std::optional<PdfRect> GetPageBoundingBox(FPDF_PAGE page) {
+  PdfRect rect;
+  if (!FPDF_GetPageBoundingBox(page, &FsRectFFromPdfRect(rect))) {
+    return std::nullopt;
+  }
+  return rect;
+}
+
+std::optional<PdfRect> GetPageObjectBounds(FPDF_PAGEOBJECT page_object) {
+  PdfRect rect;
+  if (!FPDFPageObj_GetBounds(page_object, rect.writable_left(),
+                             rect.writable_bottom(), rect.writable_right(),
+                             rect.writable_top())) {
+    return std::nullopt;
+  }
+  return rect;
 }
 
 std::u16string GetPageObjectMarkName(FPDF_PAGEOBJECTMARK mark) {
@@ -160,6 +204,20 @@ std::u16string GetPageObjectMarkName(FPDF_PAGEOBJECTMARK mark) {
   CHECK_EQ(actual_buflen_bytes, buflen_bytes);
   adapter.Close(expected_size);
   return name;
+}
+
+std::optional<PdfRect> GetTextCharBox(FPDF_TEXTPAGE text_page, int index) {
+  double left;
+  double right;
+  double bottom;
+  double top;
+  if (!FPDFText_GetCharBox(text_page, index, &left, &right, &bottom, &top)) {
+    return std::nullopt;
+  }
+  return PdfRect(/*left=*/left,
+                 /*bottom=*/bottom,
+                 /*right=*/right,
+                 /*top=*/top);
 }
 
 bool RenderPageToBitmap(FPDF_PAGE page,

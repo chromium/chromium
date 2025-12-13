@@ -148,6 +148,7 @@ class CORE_EXPORT V8ScriptValueSerializer
   SharedArrayBufferArray shared_array_buffers_;
   Options::WasmSerializationPolicy wasm_policy_;
   bool for_storage_ = false;
+  bool skip_wrapped_objects_ = false;
 #if DCHECK_IS_ON()
   bool serialize_invoked_ = false;
 #endif

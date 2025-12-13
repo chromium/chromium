@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/format_macros.h"
 #include "base/time/time.h"
@@ -63,8 +64,10 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/pointer_type_names.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_activity_logger.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
@@ -517,7 +520,6 @@ void EventTarget::SetDefaultAddEventListenerOptions(
 
 Observable* EventTarget::when(const AtomicString& event_type,
                               const ObservableEventListenerOptions* options) {
-  DCHECK(RuntimeEnabledFeatures::ObservableAPIEnabled());
   return MakeGarbageCollected<Observable>(
       GetExecutionContext(), MakeGarbageCollected<ObservableSubscribeDelegate>(
                                  this, event_type, options));
@@ -654,7 +656,7 @@ bool EventTarget::AddEventListenerInternal(
       // removeEventListener actually uses to find and remove the event
       // listener.
       AbortSignal::AlgorithmHandle* handle =
-          options->signal()->AddAlgorithm(WTF::BindOnce(
+          options->signal()->AddAlgorithm(BindOnce(
               [](EventTarget* event_target, const AtomicString& event_type,
                  const EventListener* listener, bool capture) {
                 if (event_target) {
@@ -755,21 +757,21 @@ bool EventTarget::removeEventListener(
 bool EventTarget::removeEventListener(const AtomicString& event_type,
                                       const EventListener* listener,
                                       bool use_capture) {
-  EventListenerOptions* options = EventListenerOptions::Create();
-  options->setCapture(use_capture);
+  RegisteredEventListener::OptionsForMatching options(use_capture);
   return RemoveEventListenerInternal(event_type, listener, options);
 }
 
 bool EventTarget::removeEventListener(const AtomicString& event_type,
                                       const EventListener* listener,
                                       EventListenerOptions* options) {
-  return RemoveEventListenerInternal(event_type, listener, options);
+  RegisteredEventListener::OptionsForMatching match_options(options->capture());
+  return RemoveEventListenerInternal(event_type, listener, match_options);
 }
 
 bool EventTarget::RemoveEventListenerInternal(
     const AtomicString& event_type,
     const EventListener* listener,
-    const EventListenerOptions* options) {
+    const RegisteredEventListener::OptionsForMatching& options) {
   if (!listener)
     return false;
 
@@ -870,6 +872,9 @@ DispatchEventResult EventTarget::DispatchEventInternal(Event& event) {
   event.SetCurrentTarget(this);
   event.SetEventPhase(Event::PhaseType::kAtTarget);
   DispatchEventResult dispatch_result = FireEventListeners(event);
+  if (RuntimeEnabledFeatures::ClearCurrentTargetAfterDispatchEnabled()) {
+    event.SetCurrentTarget(nullptr);
+  }
   event.SetEventPhase(Event::PhaseType::kNone);
   return dispatch_result;
 }
@@ -1024,7 +1029,27 @@ bool EventTarget::FireEventListeners(Event& event,
   }
   bool fired_listener = false;
 
+  // Animation triggers are processed first
+  {
+    ScriptForbiddenScope no_script;
+    for (auto& registered_listener : entry) {
+      if (registered_listener->IsAnimationTrigger() &&
+          registered_listener->ShouldFire(event)) {
+        EventListener* listener = registered_listener->Callback();
+        if (registered_listener->Once()) {
+          removeEventListener(event.type(), listener,
+                              registered_listener->Capture());
+        }
+        listener->Invoke(context, &event);
+      }
+    }
+  }
+
   for (auto& registered_listener : entry) {
+    if (registered_listener->IsAnimationTrigger()) {
+      continue;
+    }
+
     if (registered_listener->Removed()) [[unlikely]] {
       continue;
     }
@@ -1111,18 +1136,24 @@ void EventTarget::EnqueueEvent(Event& event, TaskType task_type) {
   event.async_task_context()->Schedule(context, event.type());
   context->GetTaskRunner(task_type)->PostTask(
       FROM_HERE,
-      WTF::BindOnce(&EventTarget::DispatchEnqueuedEvent, WrapPersistent(this),
-                    WrapPersistent(&event), WrapPersistent(context)));
+      BindOnce(&EventTarget::DispatchEnqueuedEvent, WrapPersistent(this),
+               WrapPersistent(&event), WrapPersistent(context),
+               WrapPersistent(CaptureCurrentTaskState(context))));
 }
 
-void EventTarget::DispatchEnqueuedEvent(Event* event,
-                                        ExecutionContext* context) {
+void EventTarget::DispatchEnqueuedEvent(
+    Event* event,
+    ExecutionContext* context,
+    scheduler::TaskAttributionInfo* task_state) {
   if (!GetExecutionContext()) {
     event->async_task_context()->Cancel();
     return;
   }
   this->ResetEventQueueStatus(event->type());
   probe::AsyncTask async_task(context, event->async_task_context());
+  std::optional<scheduler::TaskAttributionTracker::TaskScope> task_scope(
+      SetCurrentTaskStateIfTopLevel(task_state, GetExecutionContext(),
+                                    TaskScopeType::kMiscEvent));
   DispatchEvent(*event);
 }
 

@@ -16,10 +16,8 @@ class OverflowMenuHostingController<Content>: UIHostingController<Content> where
   init(rootView: Content, uiConfiguration: OverflowMenuUIConfiguration) {
     self.uiConfiguration = uiConfiguration
     super.init(rootView: rootView)
-    if #available(iOS 17, *) {
-      let sizeTraits: [UITrait] = [UITraitVerticalSizeClass.self, UITraitHorizontalSizeClass.self]
-      self.registerForTraitChanges(sizeTraits, action: #selector(updateUIOnTraitChange))
-    }
+    let sizeTraits: [UITrait] = [UITraitVerticalSizeClass.self, UITraitHorizontalSizeClass.self]
+    self.registerForTraitChanges(sizeTraits, action: #selector(updateUIOnTraitChange))
   }
 
   required init(coder aDecoder: NSCoder) {

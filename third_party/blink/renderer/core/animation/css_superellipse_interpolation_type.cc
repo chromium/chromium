@@ -160,7 +160,7 @@ InterpolationValue CSSSuperellipseInterpolationType::CreateNumberValue(
 InterpolationValue CSSSuperellipseInterpolationType::MaybeConvertNeutral(
     const InterpolationValue&,
     ConversionCheckers&) const {
-  return CreateNumberValue(Superellipse::Round());
+  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(0));
 }
 
 InterpolationValue CSSSuperellipseInterpolationType::MaybeConvertInitial(

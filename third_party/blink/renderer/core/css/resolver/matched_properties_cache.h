@@ -43,13 +43,16 @@ class StyleResolverState;
 class CORE_EXPORT CachedMatchedProperties final
     : public GarbageCollected<CachedMatchedProperties> {
  public:
-  // Caches data of MatchedProperties. See |MatchedPropertiesCache::Cache| for
-  // semantics.
+  // Caches the result of applying a set of MatchedProperties in order
+  // See |MatchedPropertiesCache::Cache| for semantics.
   // We use UntracedMember<> here because WeakMember<> would require using a
   // HeapHashSet which is slower to iterate.
-  Vector<
-      std::pair<UntracedMember<CSSPropertyValueSet>, MatchedProperties::Data>>
-      matched_properties;
+  struct Key {
+    UntracedMember<CSSPropertyValueSet> properties;
+    UntracedMember<const MixinParameterBindings> mixin_parameter_bindings;
+    MatchedProperties::Data data;
+  };
+  Vector<Key> matched_properties;
 
   struct Entry {
     DISALLOW_NEW();
@@ -57,9 +60,12 @@ class CORE_EXPORT CachedMatchedProperties final
    public:
     Entry(const ComputedStyle* computed_style_arg,
           const ComputedStyle* parent_computed_style_arg,
+          const ComputedStyle* originating_element_computed_style_arg,
           unsigned last_used_arg)
         : computed_style(computed_style_arg),
           parent_computed_style(parent_computed_style_arg),
+          originating_element_computed_style(
+              originating_element_computed_style_arg),
           last_used(last_used_arg) {}
 
     // Note that we don't cache the original ComputedStyle instance. It may be
@@ -67,20 +73,25 @@ class CORE_EXPORT CachedMatchedProperties final
     // for the substructures and never used as-is.
     Member<const ComputedStyle> computed_style;
     Member<const ComputedStyle> parent_computed_style;
+    // nullptr except for highlight pseudos.
+    Member<const ComputedStyle> originating_element_computed_style;
     unsigned last_used;
 
     void Trace(Visitor* visitor) const {
       visitor->Trace(computed_style);
       visitor->Trace(parent_computed_style);
+      visitor->Trace(originating_element_computed_style);
     }
   };
 
   HeapVector<Entry, 4> entries;
 
-  CachedMatchedProperties(const ComputedStyle* style,
-                          const ComputedStyle* parent_style,
-                          const MatchedPropertiesVector&,
-                          unsigned clock);
+  CachedMatchedProperties(
+      const ComputedStyle* style,
+      const ComputedStyle* parent_style,
+      const ComputedStyle* originating_element_computed_style,
+      const MatchedPropertiesVector&,
+      unsigned clock);
 
   void Clear();
 
@@ -103,7 +114,10 @@ class CORE_EXPORT MatchedPropertiesCache {
     STACK_ALLOCATED();
 
    public:
-    explicit Key(const MatchResult&);
+    struct AdditionalHash {
+      unsigned hash;
+    };
+    Key(const MatchResult&, AdditionalHash additional_hash);
 
     bool IsCacheable() const { return result_.IsCacheable(); }
 
@@ -121,7 +135,10 @@ class CORE_EXPORT MatchedPropertiesCache {
 
   const CachedMatchedProperties::Entry* Find(const Key&,
                                              const StyleResolverState&);
-  void Add(const Key&, const ComputedStyle*, const ComputedStyle* parent_style);
+  void Add(const Key&,
+           const ComputedStyle*,
+           const ComputedStyle* parent_style,
+           const ComputedStyle* originating_element_style);
 
   void Clear();
   void ClearViewportDependent();

@@ -26,6 +26,19 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- The ComposeboxUserAction enum used for Composebox UMA histograms. -->
+
+<!-- LINT.IfChange(LensComposeboxUserAction) -->
+
+<enum name="ComposeboxUserAction">
+  <summary>The user action in the user took on the composebox.</summary>
+  <int value="0" label="Focused"/>
+  <int value="1" label="Query Issued"/>
+  <int value="2" label="Query Submitted"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/lens/lens_composebox_user_action.h:LensComposeboxUserAction) -->
+
 <!-- LINT.IfChange(LensOverlayContextMenuOption) -->
 
 <enum name="LensOverlayContextMenuOption">
@@ -78,6 +91,8 @@ chromium-metrics-reviews@google.com.
   <int value="30" label="Escape key press on preselection toast"/>
   <int value="31" label="Search with camera requested"/>
   <int value="32" label="FRE promo next button"/>
+  <int value="33" label="Reader mode activated"/>
+  <int value="34" label="Tab backgrounded while initializing"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_dismissal_source.h:LensOverlayDismissalSource) -->
@@ -113,6 +128,8 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Homework action chip"/>
   <int value="12" label="AI Hub"/>
   <int value="13" label="FRE Promo"/>
+  <int value="14" label="Content area text context menu"/>
+  <int value="15" label="Content area video context menu"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_invocation_source.h:LensOverlayInvocationSource) -->
@@ -128,6 +145,28 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_new_tab_source.h:LensOverlayNewTabSource) -->
+
+<!-- LINT.IfChange(LensOverlayNonBlockingPrivacyNoticeUserAction) -->
+
+<enum name="LensOverlayNonBlockingPrivacyNoticeUserAction">
+  <summary>The user interaction with the non-blocking privacy notice</summary>
+  <int value="0" label="Lens interaction"/>
+  <int value="1" label="Composebox focus"/>
+  <int value="2" label="Closed without accepting"/>
+  <int value="3" label="Accepted"/>
+  <int value="4" label="Dismissed"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/lens/lens_overlay_non_blocking_privacy_notice_user_action.h:LensOverlayNonBlockingPrivacyNoticeUserAction) -->
+
+<!-- LINT.IfChange(LensOverlaySelectionCloseButtonEvent) -->
+
+<enum name="LensOverlaySelectionCloseButtonEvent">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Used"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/lens/overlay/metrics_utils.ts:LensOverlaySelectionCloseButtonEvent) -->
 
 <!-- LINT.IfChange(LensOverlaySidePanelMenuOption) -->
 
@@ -196,6 +235,21 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_permission_user_action.h:LensPermissionUserAction) -->
+
+<!-- LINT.IfChange(LensSidePanelIframeLoadStatus) -->
+
+<enum name="LensSidePanelIframeLoadStatus">
+  <summary>The load status of the results iframe in the Lens Overlay.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed (Connection Refused)"/>
+  <int value="2" label="Failed (Connection Reset)"/>
+  <int value="3" label="Failed (Connection Timed Out)"/>
+  <int value="4" label="Failed (Timed Out)"/>
+  <int value="5" label="Failed (Name Not Resolved)"/>
+  <int value="6" label="Failed (Other)"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/lens/lens_overlay_iframe_load_status.h:LensSidePanelIframeLoadStatus) -->
 
 <!-- LINT.IfChange(LensOverlayMimeType) -->
 

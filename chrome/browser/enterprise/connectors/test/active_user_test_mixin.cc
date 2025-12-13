@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/test/active_user_test_mixin.h"
 
+#include "base/strings/strcat.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/ui_test_utils.h"

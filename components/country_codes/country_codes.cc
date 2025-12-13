@@ -96,7 +96,7 @@ CountryId GeoIDToCountryID(GEOID geo_id) {
 
 CountryId GetCurrentCountryID() {
   // Calls to GetCurrentCountryID occur fairly frequently and incur a heavy
-  // registry hit within the GetUserGeoID api call. Registry hits can be
+  // registry hit within the Windows GetUserGeoID API call. Registry hits can be
   // impactful to perf, particularly on virtualized systems.  To mitigate this
   // we store the result of the first call in a static. The Id is only
   // updated by calls to SetUserGeoID or the user manually updating the

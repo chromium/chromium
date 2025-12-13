@@ -73,7 +73,6 @@ public final class ErrorCodeConversionHelper {
             case NetError.ERR_SSL_PROTOCOL_ERROR:
             case NetError.ERR_SSL_CLIENT_AUTH_CERT_NEEDED:
             case NetError.ERR_TUNNEL_CONNECTION_FAILED:
-            case NetError.ERR_NO_SSL_VERSIONS_ENABLED:
             case NetError.ERR_SSL_VERSION_OR_CIPHER_MISMATCH:
             case NetError.ERR_SSL_RENEGOTIATION_REQUESTED:
             case NetError.ERR_BAD_SSL_CLIENT_AUTH_CERT:

@@ -70,7 +70,7 @@ class LensOverlayTabHelperTest : public PlatformTest {
   TestProfileManagerIOS profile_manager_;
   raw_ptr<ProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> web_state_;
-  raw_ptr<LensOverlayTabHelper> helper_ = nullptr;
+  raw_ptr<LensOverlayTabHelper, DanglingUntriaged> helper_ = nullptr;
   id handler_;
   id dispatcher_;
   id mock_commands_handler_;

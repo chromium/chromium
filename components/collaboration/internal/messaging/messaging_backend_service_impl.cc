@@ -7,7 +7,6 @@
 #include <sys/types.h>
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -34,6 +33,7 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -260,9 +260,9 @@ std::optional<data_sharing::GroupId> GroupIdForTabGroup(
   return data_sharing::GroupId(tab_group.collaboration_id().value().value());
 }
 
-tab_groups::CollaborationId ToCollaborationId(
+syncer::CollaborationId ToCollaborationId(
     const data_sharing::GroupId& group_id) {
-  return tab_groups::CollaborationId(group_id.value());
+  return syncer::CollaborationId(group_id.value());
 }
 
 TabGroupMessageMetadata CreateTabGroupMessageMetadata(
@@ -387,22 +387,19 @@ std::u16string GetTitleForTabGroupRemovedMessage(
 }
 
 DirtyType GetDirtyTypeFromPersistentNotificationTypeForQuery(
-    std::optional<PersistentNotificationType> type) {
-  if (!type) {
-    // Ask for all dirty messages.
-    return DirtyType::kAll;
-  }
-  if (*type == PersistentNotificationType::DIRTY_TAB) {
-    return DirtyType::kDot;
-  } else if (*type == PersistentNotificationType::CHIP) {
-    return DirtyType::kChip;
-  } else if (*type == PersistentNotificationType::TOMBSTONED) {
-    return DirtyType::kTombstoned;
-  } else if (*type == PersistentNotificationType::INSTANT_MESSAGE) {
-    return DirtyType::kMessageOnly;
-  } else {
-    // Ask for all dirty messages.
-    return DirtyType::kAll;
+    PersistentNotificationType type) {
+  switch (type) {
+    case PersistentNotificationType::DIRTY_TAB:
+      return DirtyType::kDot;
+    case PersistentNotificationType::CHIP:
+      return DirtyType::kChip;
+    case PersistentNotificationType::TOMBSTONED:
+      return DirtyType::kTombstoned;
+    case PersistentNotificationType::INSTANT_MESSAGE:
+      return DirtyType::kMessageOnly;
+    default:
+      // Ask for all dirty messages.
+      return DirtyType::kAll;
   }
 }
 
@@ -485,6 +482,42 @@ bool HasSeenTabUpdate(const tab_groups::SavedTabGroupTab& tab) {
 
 }  // namespace
 
+// MessagingBackendServiceImpl is the central component for handling
+// collaboration messages. It integrates events from TabGroupSyncService and
+// DataSharingService, persists them to storage, and notifies UI components of
+// relevant changes.
+//
+// The initialization of this service is critical and follows a strict order to
+// ensure data consistency and prevent race conditions:
+//
+// 1. MessagingBackendStore: The service first initializes its backing store to
+//    ensure that message persistence is available.
+//
+// 2. DataSharingService Integration: It then initializes its connection to the
+//    DataSharingService via DataSharingChangeNotifier. This step is
+//    asynchronous, waiting for the DataSharingService's GroupDataModel to fully
+//    load. Crucially, the DataSharingChangeNotifier provides a callback to the
+//    MessagingBackendServiceImpl upon its own initialization. This callback
+//    acts as a gate; it is not executed immediately. Its purpose is to defer
+//    the processing of any queued or subsequent data sharing events until the
+//    entire messaging system is ready.
+//
+// 3. TabGroupSyncService Integration: After the DataSharingChangeNotifier is
+//    ready, the service proceeds to initialize its connection to the
+//    TabGroupSyncService via TabGroupChangeNotifier. This also waits for the
+//    underlying SavedTabGroupModel to load. This ordering is vital because
+//    handling shared tab group events often requires access to collaboration
+//    data, which must be available beforehand.
+//
+// 4. Finalization and Flush: Once the TabGroupChangeNotifier confirms it is
+//    initialized, the MessagingBackendServiceImpl considers itself fully
+//    online. It notifies its own observers and then, finally, executes the
+//    pending callback from the DataSharingChangeNotifier. This "flushes" any
+//    queued data sharing events, ensuring they are processed with the full
+//    context of both services being available.
+//
+// This structured sequence guarantees that events are handled correctly and
+// that dependencies are met before any actions are taken.
 MessagingBackendServiceImpl::MessagingBackendServiceImpl(
     const MessagingBackendConfiguration& configuration,
     std::unique_ptr<TabGroupChangeNotifier> tab_group_change_notifier,
@@ -541,7 +574,7 @@ bool MessagingBackendServiceImpl::IsInitialized() {
 
 std::vector<PersistentMessage> MessagingBackendServiceImpl::GetMessagesForTab(
     tab_groups::EitherTabID tab_id,
-    std::optional<PersistentNotificationType> type) {
+    PersistentNotificationType type) {
   std::optional<tab_groups::SavedTabGroupTab> tab = GetTabFromTabId(tab_id);
   if (!tab) {
     // Unable to find tab.
@@ -577,7 +610,7 @@ std::vector<PersistentMessage> MessagingBackendServiceImpl::GetMessagesForTab(
 
 std::vector<PersistentMessage> MessagingBackendServiceImpl::GetMessagesForGroup(
     tab_groups::EitherGroupID group_id,
-    std::optional<PersistentNotificationType> type) {
+    PersistentNotificationType type) {
   std::optional<data_sharing::GroupId> collaboration_group_id =
       GetCollaborationGroupId(group_id);
   if (!collaboration_group_id) {
@@ -595,7 +628,7 @@ std::vector<PersistentMessage> MessagingBackendServiceImpl::GetMessagesForGroup(
 }
 
 std::vector<PersistentMessage> MessagingBackendServiceImpl::GetMessages(
-    std::optional<PersistentNotificationType> type) {
+    PersistentNotificationType type) {
   DirtyType dirty_type =
       GetDirtyTypeFromPersistentNotificationTypeForQuery(type);
 
@@ -900,7 +933,8 @@ void MessagingBackendServiceImpl::OnTabAdded(
 
   if (dirty_type != DirtyType::kNone) {
     PersistentMessage persistent_message =
-        CreatePersistentMessage(message, std::nullopt, added_tab, std::nullopt);
+        CreatePersistentMessage(message, std::nullopt, added_tab,
+                                PersistentNotificationType::UNDEFINED);
 
     NotifyDisplayPersistentMessagesForTypes(
         persistent_message, {PersistentNotificationType::CHIP,
@@ -941,7 +975,8 @@ void MessagingBackendServiceImpl::OnTabRemoved(
 
   // Hide any existing persistent dot or chip messages already showing.
   PersistentMessage persistent_message =
-      CreatePersistentMessage(message, std::nullopt, removed_tab, std::nullopt);
+      CreatePersistentMessage(message, std::nullopt, removed_tab,
+                              PersistentNotificationType::UNDEFINED);
 
   NotifyHidePersistentMessagesForTypes(persistent_message,
                                        {PersistentNotificationType::CHIP,
@@ -991,8 +1026,10 @@ void MessagingBackendServiceImpl::OnTabUpdated(
       (is_local || triggering_user_is_self)
           ? DirtyType::kNone
           : (is_selected ? DirtyType::kChip : DirtyType::kDotAndChip);
-  if (HasSeenTabUpdate(updated_tab)) {
-    dirty_type = DirtyType::kNone;
+  if (HasSeenTabUpdate(updated_tab) && dirty_type != DirtyType::kNone) {
+    // If the tab has been seen before, we should not show dirty dots, only
+    // the chip.
+    dirty_type = DirtyType::kChip;
   }
 
   collaboration_pb::Message message =
@@ -1009,7 +1046,8 @@ void MessagingBackendServiceImpl::OnTabUpdated(
   }
 
   PersistentMessage persistent_message =
-      CreatePersistentMessage(message, std::nullopt, updated_tab, std::nullopt);
+      CreatePersistentMessage(message, std::nullopt, updated_tab,
+                              PersistentNotificationType::UNDEFINED);
 
   if (dirty_type == DirtyType::kNone) {
     NotifyHidePersistentMessagesForTypes(
@@ -1252,7 +1290,7 @@ std::u16string MessagingBackendServiceImpl::GetTruncatedTabTitleForTesting(
 
 void MessagingBackendServiceImpl::ClearPersistentMessage(
     const base::Uuid& message_id,
-    std::optional<PersistentNotificationType> type) {
+    PersistentNotificationType type) {
   store_->ClearDirtyMessage(
       message_id, GetDirtyTypeFromPersistentNotificationTypeForQuery(type));
 }
@@ -1486,7 +1524,7 @@ MessagingBackendServiceImpl::GetTabGroupFromCollaborationId(
     return std::nullopt;
   }
 
-  tab_groups::CollaborationId collaboration_group_id(collaboration_id);
+  syncer::CollaborationId collaboration_group_id(collaboration_id);
   for (const auto& group : tab_group_sync_service_->GetAllGroups()) {
     if (group.collaboration_id().has_value() &&
         group.collaboration_id().value() == collaboration_group_id) {
@@ -1551,7 +1589,7 @@ std::vector<PersistentMessage>
 MessagingBackendServiceImpl::ConvertMessagesToPersistentMessages(
     const std::vector<collaboration_pb::Message>& messages,
     DirtyType lookup_dirty_type,
-    const std::optional<PersistentNotificationType>& type) {
+    PersistentNotificationType type) {
   std::vector<PersistentMessage> result;
   for (const auto& message : messages) {
     // Each DB message might result in multiple individual PersistentMessages.
@@ -1569,7 +1607,7 @@ std::vector<PersistentMessage>
 MessagingBackendServiceImpl::ConvertMessageToPersistentMessages(
     const collaboration_pb::Message& message,
     DirtyType lookup_dirty_type,
-    const std::optional<PersistentNotificationType>& type,
+    PersistentNotificationType type,
     bool allow_dirty_tab_group_message) {
   std::vector<PersistentMessage> persistent_messages;
   std::optional<tab_groups::SavedTabGroup> tab_group =
@@ -1599,11 +1637,12 @@ MessagingBackendServiceImpl::ConvertMessageToPersistentMessages(
   bool has_dirty_dot = message.dirty() & static_cast<int>(DirtyType::kDot);
   bool looking_for_dirty_dot = lookup_dirty_type == DirtyType::kAll ||
                                lookup_dirty_type == DirtyType::kDot;
-  bool add_dirty_tab_messages =
-      !type || *type == PersistentNotificationType::DIRTY_TAB;
+  bool add_dirty_tab_messages = type == PersistentNotificationType::UNDEFINED ||
+                                type == PersistentNotificationType::DIRTY_TAB;
   bool add_dirty_tab_group_messages =
       allow_dirty_tab_group_message &&
-      (!type || *type == PersistentNotificationType::DIRTY_TAB_GROUP);
+      (type == PersistentNotificationType::UNDEFINED ||
+       type == PersistentNotificationType::DIRTY_TAB_GROUP);
   bool has_dirty_tab_messages_in_group =
       !store_
            ->GetDirtyMessagesForGroup(
@@ -1641,15 +1680,13 @@ PersistentMessage MessagingBackendServiceImpl::CreatePersistentMessage(
     const collaboration_pb::Message& message,
     const std::optional<tab_groups::SavedTabGroup>& tab_group,
     const std::optional<tab_groups::SavedTabGroupTab>& tab,
-    const std::optional<PersistentNotificationType>& type) {
+    PersistentNotificationType type) {
   PersistentMessage persistent_message;
   persistent_message.collaboration_event =
       ToCollaborationEvent(message.event_type());
   persistent_message.attribution =
       CreateMessageAttributionForTabUpdates(message, tab_group, tab);
-  if (type) {
-    persistent_message.type = *type;
-  }
+  persistent_message.type = type;
   return persistent_message;
 }
 

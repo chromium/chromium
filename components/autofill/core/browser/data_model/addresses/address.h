@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_ADDRESSES_ADDRESS_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -34,6 +35,8 @@ class Address : public FormGroup {
       ADDRESS_HOME_CITY,
       ADDRESS_HOME_STATE,
       ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_ZIP_PREFIX,
+      ADDRESS_HOME_ZIP_SUFFIX,
       ADDRESS_HOME_SORTING_CODE,
       ADDRESS_HOME_COUNTRY,
       ADDRESS_HOME_APT,
@@ -58,19 +61,20 @@ class Address : public FormGroup {
   bool operator==(const Address& other) const;
 
   // FormGroup:
+  using FormGroup::GetInfo;
   std::u16string GetInfo(const AutofillType& type,
-                         const std::string& app_locale) const override;
+                         std::string_view app_locale) const override;
   std::u16string GetRawInfo(FieldType type) const override;
   void SetRawInfoWithVerificationStatus(FieldType type,
-                                        const std::u16string& value,
+                                        std::u16string_view value,
                                         VerificationStatus status) override;
   // TODO(crbug.com/40264633): Change `AutofillType` into `FieldType`.
   bool SetInfoWithVerificationStatus(const AutofillType& type,
-                                     const std::u16string& value,
-                                     const std::string& locale,
+                                     std::u16string_view value,
+                                     std::string_view locale,
                                      VerificationStatus status) override;
-  void GetMatchingTypes(const std::u16string& text,
-                        const std::string& locale,
+  void GetMatchingTypes(std::u16string_view text,
+                        std::string_view locale,
                         FieldTypeSet* matching_types) const override;
   // Return the verification status of a structured name value.
   VerificationStatus GetVerificationStatus(FieldType type) const override;
@@ -123,7 +127,7 @@ class Address : public FormGroup {
   // Updates the address' country, builds the hierarchy model corresponding to
   // `country_code` and transfers the content of the old data model into the new
   // one.
-  void SetAddressCountryCode(const std::u16string& country_code,
+  void SetAddressCountryCode(std::u16string_view country_code,
                              VerificationStatus status);
 
   // Returns a pointer to the structured address' root node (i.e.

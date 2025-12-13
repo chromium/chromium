@@ -93,12 +93,29 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/chrome/browser/external_protocol/external_protocol_handler.cc:LoggedScheme) -->
 
+<enum name="GeolocationAccuracy">
+  <int value="0" label="Precise"/>
+  <int value="1" label="Approximate"/>
+</enum>
+
 <enum name="HandleStateType">
   <int value="0" label="Launch"/>
   <int value="1" label="Checked launch"/>
   <int value="2" label="Dont launch"/>
   <int value="3" label="Checked dont launch"/>
 </enum>
+
+<!-- LINT.IfChange(LanguageDetectionStatus) -->
+
+<enum name="LanguageDetectionStatus">
+  <int value="0" label="NoResultDueToTimeout"/>
+  <int value="1" label="ImmediatelyAvailableEnglish"/>
+  <int value="2" label="ImmediatelyAvailableNotEnglish"/>
+  <int value="3" label="DelayedDetectedEnglish"/>
+  <int value="4" label="DelayedDetectedNotEnglish"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_request_enums.h:LanguageDetectionStatus) -->
 
 <enum name="OneTimePermissionEvent">
   <summary>One-time permission events.</summary>
@@ -131,6 +148,16 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="GRANTED_ONCE"/>
 </enum>
 
+<!-- LINT.IfChange(PermissionAiRelevanceModel) -->
+
+<enum name="PermissionAiRelevanceModel">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="AIv3"/>
+  <int value="2" label="AIv4"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_request_enums.h:PermissionAiRelevanceModel) -->
+
 <enum name="PermissionChangeAction">
   <int value="0" label="Revoked"/>
   <int value="1" label="Reallowed"/>
@@ -162,12 +189,24 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(PermissionPredictionSource) -->
 
 <enum name="PermissionPredictionSource">
-  <int value="0" label="ON_DEVICE_TFLITE"/>
-  <int value="1" label="SERVER_SIDE"/>
-  <int value="2" label="ONDEVICE_AI_AND_SERVER_SIDE"/>
+  <int value="0" label="No CPSS model"/>
+  <int value="1" label="CPSSv1 model"/>
+  <int value="2" label="CPSSv3 model"/>
+  <int value="3" label="AIv1 model"/>
+  <int value="4" label="AIv3 model"/>
+  <int value="5" label="AIv4 model"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/permissions/permission_request_enums.h:PermissionPredictionSource) -->
+
+<!-- LINT.IfChange(PermissionPredictionSupportedType) -->
+
+<enum name="PermissionPredictionSupportedType">
+  <int value="0" label="Notifications"/>
+  <int value="1" label="Geolocation"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/permissions/permission_request_enums.h:PermissionPredictionSupportedType) -->
 
 <!-- LINT.IfChange(PermissionPromptDismissMethod) -->
 
@@ -200,6 +239,19 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Other"/>
 </enum>
 
+<!-- LINT.IfChange(PermissionRequestLikelihood) -->
+
+<enum name="PermissionRequestLikelihood">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Very Unlikely"/>
+  <int value="2" label="Unlikely"/>
+  <int value="3" label="Neutral"/>
+  <int value="4" label="Likely"/>
+  <int value="5" label="Very Likely"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/permissions/permission_request_enums.h:PermissionRequestLikelihood) -->
+
 <!-- LINT.IfChange(PermissionRequestRelevance) -->
 
 <enum name="PermissionRequestRelevance">
@@ -215,10 +267,11 @@ chromium-metrics-reviews@google.com.
 
 <enum name="PermissionSourceUI">
   <int value="0" label="Prompt"/>
-  <int value="1" label="Origin info bubble"/>
+  <int value="1" label="Page info bubble"/>
   <int value="2" label="Site settings"/>
   <int value="3" label="Page action bubble"/>
-  <int value="4" label="Permission settings from Android OS"/>
+  <int value="4"
+      label="Android notification channel settings (when opened from Chrome)"/>
   <int value="5" label="Inline settings as part of the event's UI"/>
   <int value="6" label="Automatic revocation from Safe Browsing"/>
   <int value="7" label="Automatic revocation from Safety Hub"/>

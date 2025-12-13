@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_EMBEDDER_SUPPORT_ANDROID_UTIL_CDN_UTILS_H_
 #define COMPONENTS_EMBEDDER_SUPPORT_ANDROID_UTIL_CDN_UTILS_H_
 
-#include "base/feature_list.h"
-
 class GURL;
 
 namespace content {
@@ -24,4 +22,4 @@ GURL GetPublisherURL(content::RenderFrameHost* rfh);
 
 }  // namespace embedder_support
 
-#endif  //  COMPONENTS_EMBEDDER_SUPPORT_ANDROID_UTIL_CDN_UTILS_H_
+#endif  // COMPONENTS_EMBEDDER_SUPPORT_ANDROID_UTIL_CDN_UTILS_H_

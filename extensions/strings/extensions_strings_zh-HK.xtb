@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Appview：<ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">這個擴充功能含有金鑰檔「<ph name="KEY_PATH" />」。請考慮是否仍要執行。</translation>
 <translation id="5486326529110362464">必須輸入私密金鑰值。</translation>
+<translation id="5707185214361380026">無法載入下列來源的擴充功能：</translation>
 <translation id="5972529113578162692">這部裝置的管理員要求安裝 <ph name="EXTENSION_NAME" />，因此您無法解除安裝該擴充功能。</translation>
 <translation id="6027032947578871493">來自 <ph name="VENDOR_NAME" /> 的不明產品 <ph name="PRODUCT_ID" /> (序號：<ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721">來自供應商 <ph name="VENDOR_ID" /> 的 <ph name="PRODUCT_NAME" /></translation>
+<translation id="6220413761270491930">載入擴充功能時發生錯誤</translation>
 <translation id="6322279351188361895">讀取私密金鑰失敗。</translation>
 <translation id="6391538222494443604">輸入項目目錄必須存在。</translation>
 <translation id="641087317769093025">無法將擴充功能解壓縮</translation>

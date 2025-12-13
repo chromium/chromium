@@ -7,22 +7,20 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/bwg_fre_view_controller_protocol.h"
 
 @protocol BWGConsentMutator;
 @protocol BWGPromoViewControllerDelegate;
 
 // BWG consent View Controller.
-@interface BWGPromoViewController : UIViewController
+@interface BWGPromoViewController
+    : UIViewController <BWGFREViewControllerProtocol>
 
 // The mutator for this view controller to communicate to the mediator.
 @property(nonatomic, weak) id<BWGConsentMutator> mutator;
 // The delegate for this view controller to communicate to the BWG
 // NavigationController.
 @property(nonatomic, weak) id<BWGPromoViewControllerDelegate> BWGPromoDelegate;
-
-// Content height of the BWG Promo UI.
-- (CGFloat)contentHeight;
 
 @end
 

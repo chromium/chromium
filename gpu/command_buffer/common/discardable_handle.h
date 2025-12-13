@@ -6,7 +6,7 @@
 #define GPU_COMMAND_BUFFER_COMMON_DISCARDABLE_HANDLE_H_
 
 #include "base/atomicops.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/types/id_type.h"
 #include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
 
@@ -53,9 +53,6 @@ class GPU_COMMAND_BUFFER_COMMON_EXPORT DiscardableHandleBase {
 
   // Ensures this is a valid allocation for use with a DiscardableHandleBase.
   static bool ValidateParameters(const Buffer* buffer, uint32_t byte_offset);
-
-  // Functions for tracing only.
-  bool IsDeletedForTracing() const;
 
   // Test only functions.
   bool IsLockedForTesting() const;

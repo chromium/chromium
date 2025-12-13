@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/ozone/evdev/event_converter_evdev_impl.h"
 
 #include <errno.h>
 #include <linux/input.h>
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
@@ -222,7 +218,7 @@ ui::StylusState EventConverterEvdevImpl::GetStylusSwitchState() {
 void EventConverterEvdevImpl::ProcessEvents(const input_event* inputs,
                                             int count) {
   for (int i = 0; i < count; ++i) {
-    const input_event& input = inputs[i];
+    const input_event& input = UNSAFE_TODO(inputs[i]);
     switch (input.type) {
       case EV_MSC:
         if (input.code == MSC_SCAN)

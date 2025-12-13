@@ -16,11 +16,14 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/test:android_browsertests",
+        "module_scheme": "gtest",
         "name": "android_browsertests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "device_os": "AP2A.240705.004",
@@ -33,6 +36,41 @@
         },
         "test": "android_browsertests",
         "test_id_prefix": "ninja://chrome/test:android_browsertests/"
+      },
+      {
+        "args": [
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "android_webview_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "module_name": "//android_webview/test:android_webview_unittests",
+        "module_scheme": "gtest",
+        "name": "android_webview_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "retry_only_failed_tests": true,
+        "swarming": {
+          "dimensions": {
+            "device_os": "AP2A.240705.004",
+            "device_os_type": "userdebug",
+            "device_type": "panther",
+            "os": "Android"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "android_webview_unittests",
+        "test_id_prefix": "ninja://android_webview/test:android_webview_unittests/"
       },
       {
         "args": [
@@ -50,6 +88,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/blink/renderer/platform:blink_platform_unittests",
+        "module_scheme": "gtest",
         "name": "blink_platform_unittests",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -60,6 +100,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "device_os": "AP2A.240705.004",
@@ -88,11 +129,14 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//cc:cc_unittests",
+        "module_scheme": "gtest",
         "name": "cc_unittests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "device_os": "AP2A.240705.004",
@@ -120,11 +164,14 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:chrome_public_smoke_test",
+        "module_scheme": "junit",
         "name": "chrome_public_smoke_test",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "device_os": "AP2A.240705.004",
@@ -155,6 +202,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:chrome_public_test_apk",
+        "module_scheme": "junit",
         "name": "chrome_public_test_apk",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -165,6 +214,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "device_os": "AP2A.240705.004",
@@ -194,6 +244,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:chrome_public_unit_test_apk",
+        "module_scheme": "junit",
         "name": "chrome_public_unit_test_apk",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -204,6 +256,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "device_os": "AP2A.240705.004",
@@ -234,11 +287,14 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//content/test:content_browsertests",
+        "module_scheme": "gtest",
         "name": "content_browsertests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "device_os": "AP2A.240705.004",
@@ -268,11 +324,14 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk",
+        "module_scheme": "junit",
         "name": "system_webview_shell_layout_test_apk",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "device_os": "AP2A.240705.004",
@@ -300,11 +359,14 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:trichrome_chrome_bundle_smoke_test",
+        "module_scheme": "junit",
         "name": "trichrome_chrome_bundle_smoke_test",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "device_os": "AP2A.240705.004",
@@ -332,11 +394,14 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//components/viz:viz_unittests",
+        "module_scheme": "gtest",
         "name": "viz_unittests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "device_os": "AP2A.240705.004",
@@ -352,7 +417,6 @@
       {
         "args": [
           "--webview-process-mode=multiple",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.14.webview_instrumentation_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -367,11 +431,14 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_instrumentation_test_apk",
+        "module_scheme": "junit",
         "name": "webview_instrumentation_test_apk_multiple_process_mode",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "device_os": "AP2A.240705.004",
@@ -402,11 +469,14 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_trichrome_64_cts_tests",
+        "module_scheme": "junit",
         "name": "webview_trichrome_64_cts_tests full_mode",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "cipd_packages": [
             {
@@ -448,11 +518,14 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_trichrome_64_cts_tests",
+        "module_scheme": "junit",
         "name": "webview_trichrome_64_cts_tests instant_mode",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "cipd_packages": [
             {
@@ -490,11 +563,14 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk",
+        "module_scheme": "junit",
         "name": "webview_ui_test_app_test_apk",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "retry_only_failed_tests": true,
         "swarming": {
           "dimensions": {
             "device_os": "AP2A.240705.004",
@@ -510,6 +586,8 @@
     ],
     "scripts": [
       {
+        "module_name": "check_network_annotations",
+        "module_scheme": "single",
         "name": "check_network_annotations",
         "resultdb": {
           "enable": true,

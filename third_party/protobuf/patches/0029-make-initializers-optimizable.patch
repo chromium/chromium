@@ -58,10 +58,10 @@ index 989734e57f5d5..f7e29d6028ebc 100644
    }
  }
 diff --git a/src/google/protobuf/port_def.inc b/src/google/protobuf/port_def.inc
-index edd6d5122598e..22c87f21587aa 100644
+index 191b5d23d7cad..16423927bd33b 100644
 --- a/src/google/protobuf/port_def.inc
 +++ b/src/google/protobuf/port_def.inc
-@@ -574,16 +574,6 @@ static_assert(PROTOBUF_ABSL_MIN(20230125, 3),
+@@ -609,17 +609,6 @@ static_assert(PROTOBUF_ABSL_MIN(20230125, 3),
  #define PROTOBUF_FINAL final
  #endif
  
@@ -70,7 +70,8 @@ index edd6d5122598e..22c87f21587aa 100644
 -#error PROTOBUF_DESCRIPTOR_WEAK_MESSAGES_ALLOWED was previously defined
 -#endif
 -#if defined(__GNUC__) && defined(__clang__) && !defined(__APPLE__) && \
--    !defined(_MSC_VER) && !defined(_WIN32)
+-    !defined(_MSC_VER) && !defined(_WIN32) && !defined(__wasm__) &&   \
+-    !defined(__EMSCRIPTEN__)
 -#define PROTOBUF_DESCRIPTOR_WEAK_MESSAGES_ALLOWED
 -#endif
 -

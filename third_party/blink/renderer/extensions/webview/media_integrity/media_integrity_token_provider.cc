@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/extensions/webview/media_integrity/media_integrity_token_provider.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/webview/webview_media_integrity.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/extensions_webview/v8/v8_media_integrity_error_name.h"
@@ -32,8 +33,8 @@ MediaIntegrityTokenProvider::MediaIntegrityTokenProvider(
   provider_remote_.Bind(std::move(provider_pending_remote),
                         context->GetTaskRunner(TaskType::kInternalDefault));
   provider_remote_.set_disconnect_handler(
-      WTF::BindOnce(&MediaIntegrityTokenProvider::OnProviderConnectionError,
-                    WrapWeakPersistent(this)));
+      blink::BindOnce(&MediaIntegrityTokenProvider::OnProviderConnectionError,
+                      WrapWeakPersistent(this)));
 }
 
 void MediaIntegrityTokenProvider::OnProviderConnectionError() {
@@ -78,9 +79,9 @@ ScriptPromise<IDLString> MediaIntegrityTokenProvider::requestToken(
   token_resolvers_.insert(resolver);
   provider_remote_->RequestToken(
       opt_content_binding,
-      WTF::BindOnce(&MediaIntegrityTokenProvider::OnRequestTokenResponse,
-                    WrapPersistent(this), WrapPersistent(script_state),
-                    WrapPersistent(resolver)));
+      blink::BindOnce(&MediaIntegrityTokenProvider::OnRequestTokenResponse,
+                      WrapPersistent(this), WrapPersistent(script_state),
+                      WrapPersistent(resolver)));
   return promise;
 }
 

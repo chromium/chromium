@@ -367,9 +367,7 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
         policy.user_allowlist().user_allowlist_size() > 0));
   new_values_cache->SetBoolean(
       kAccountsPrefFamilyLinkAccountsAllowed,
-      features::IsFamilyLinkOnSchoolDeviceEnabled() &&
-          user_allowlist_enforced &&
-          policy.has_family_link_accounts_allowed() &&
+      user_allowlist_enforced && policy.has_family_link_accounts_allowed() &&
           policy.family_link_accounts_allowed()
               .has_family_link_accounts_allowed() &&
           policy.family_link_accounts_allowed().family_link_accounts_allowed());
@@ -1733,7 +1731,7 @@ void DeviceSettingsProvider::UpdateAndProceedStoring() {
 
 bool DeviceSettingsProvider::UpdateFromService() {
   bool settings_loaded = false;
-  base::UmaHistogramEnumeration("Enterprise.DeviceSettings.UpdatedStatus",
+  base::UmaHistogramEnumeration("Enterprise.DeviceSettings.UpdatedStatus2",
                                 device_settings_service_->status());
   switch (device_settings_service_->status()) {
     case DeviceSettingsService::STORE_SUCCESS: {
@@ -1760,6 +1758,9 @@ bool DeviceSettingsProvider::UpdateFromService() {
         break;
       [[fallthrough]];
     case DeviceSettingsService::STORE_KEY_UNAVAILABLE:
+    case DeviceSettingsService::STORE_KEY_UNAVAILABLE_NOT_INITIALIZED:
+    case DeviceSettingsService::STORE_KEY_UNAVAILABLE_NOT_LOCKED:
+    case DeviceSettingsService::STORE_KEY_UNAVAILABLE_MANAGED:
       if (user_manager::UserManager::Get()->GetOwnerEmail().has_value()) {
         // On the consumer owned device Chrome is responsible for generating a
         // new key and/or policy if they are missing (which happens after the

@@ -54,7 +54,7 @@ void HistorySidePanelCoordinator::CreateAndRegisterEntry(
       SidePanelEntry::Key(SidePanelEntry::Id::kHistory),
       base::BindRepeating(&HistorySidePanelCoordinator::CreateHistoryWebView,
                           base::Unretained(this)),
-      SidePanelEntry::kSidePanelDefaultContentWidth));
+      /*default_content_width_callback=*/base::NullCallback()));
 }
 
 std::unique_ptr<views::View> HistorySidePanelCoordinator::CreateHistoryWebView(

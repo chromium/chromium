@@ -10,7 +10,6 @@
 #include <atomic>
 #include <tuple>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
@@ -27,8 +26,6 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-
-class AudioNodeOutput;
 
 // AudioParamHandler is an actual implementation of web-exposed AudioParam
 // interface. Each of AudioParam object creates and owns an AudioParamHandler,
@@ -98,13 +95,6 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
     kVariable
   };
 
-  AudioParamType GetParamType() const { return param_type_; }
-  void SetParamType(AudioParamType);
-  // Set the parameter name for an AudioWorklet.
-  void SetCustomParamName(const String name);
-  // Return a nice name for the AudioParam.
-  String GetParamName() const;
-
   static scoped_refptr<AudioParamHandler> Create(BaseAudioContext& context,
                                                  AudioParamType param_type,
                                                  double default_value,
@@ -117,41 +107,11 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
                                                 min_value, max_value));
   }
 
-  // This should be used only in audio rendering thread.
-  AudioDestinationHandler& DestinationHandler() const;
-
   // AudioSummingJunction
   void DidUpdate() override {}
 
-  void SetValueAtTime(float value,
-                      double time,
-                      ExceptionState& exception_state);
-  void LinearRampToValueAtTime(float value,
-                               double time,
-                               float initial_value,
-                               double call_time,
-                               ExceptionState& exception_state);
-  void ExponentialRampToValueAtTime(float value,
-                                    double time,
-                                    float initial_value,
-                                    double call_time,
-                                    ExceptionState& exception_state);
-  void SetTargetAtTime(float target,
-                       double time,
-                       double time_constant,
-                       ExceptionState& exception_state);
-  void SetValueCurveAtTime(const Vector<float>& curve,
-                           double time,
-                           double duration,
-                           ExceptionState& exception_state);
-  void CancelScheduledValues(double start_time,
-                             ExceptionState& exception_state);
-  void CancelAndHoldAtTime(double cancel_time, ExceptionState& exception_state);
-
-  // Intrinsic value.
   float Value();
-  void SetValue(float);
-
+  void SetValue(float value);
   AutomationRate GetAutomationRate() const {
     base::AutoLock rate_locker(RateLock());
     return automation_rate_;
@@ -160,6 +120,41 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
     base::AutoLock rate_locker(RateLock());
     automation_rate_ = automation_rate;
   }
+  float DefaultValue() const { return default_value_; }
+  float MinValue() const { return min_value_; }
+  float MaxValue() const { return max_value_; }
+  void SetValueAtTime(float value,
+                      double start_time,
+                      ExceptionState& exception_state);
+  void LinearRampToValueAtTime(float value,
+                               double end_time,
+                               float initial_value,
+                               double call_time,
+                               ExceptionState& exception_state);
+  void ExponentialRampToValueAtTime(float value,
+                                    double end_time,
+                                    float initial_value,
+                                    double call_time,
+                                    ExceptionState& exception_state);
+  void SetTargetAtTime(float target,
+                       double start_time,
+                       double time_constant,
+                       ExceptionState& exception_state);
+  void SetValueCurveAtTime(const Vector<float>& curve,
+                           double start_time,
+                           double duration,
+                           ExceptionState& exception_state);
+  void CancelScheduledValues(double cancel_time,
+                             ExceptionState& exception_state);
+  void CancelAndHoldAtTime(double cancel_time, ExceptionState& exception_state);
+
+  // Return a nice name for the AudioParam.
+  String GetParamName() const;
+  // Set the parameter name for an AudioWorklet.
+  void SetCustomParamName(const String name);
+
+  // This should be used only in audio rendering thread.
+  AudioDestinationHandler& DestinationHandler() const;
 
   bool IsAutomationRateFixed() const {
     return rate_mode_ == AutomationRateMode::kFixed;
@@ -170,27 +165,16 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // Must be called in the audio thread.
   float FinalValue();
 
-  float DefaultValue() const { return static_cast<float>(default_value_); }
-  float MinValue() const { return min_value_; }
-  float MaxValue() const { return max_value_; }
-
   // An AudioParam needs sample accurate processing if there are
   // automations scheduled or if there are connections.
-  bool HasSampleAccurateValues() const {
-    bool has_values = HasValues(destination_handler_->CurrentSampleFrame(),
-                                destination_handler_->SampleRate(),
-                                GetDeferredTaskHandler().RenderQuantumFrames());
-
-    return has_values || NumberOfRenderingConnections();
-  }
+  bool HasSampleAccurateValues() const;
 
   bool IsAudioRate() const {
     return automation_rate_ == AutomationRate::kAudio;
   }
 
-  // Calculates numberOfValues parameter values starting at the context's
-  // current time.
-  // Must be called in the context's render thread.
+  // Calculates parameter values starting at the context's current time.  Must
+  // be called in the context's render thread.
   void CalculateSampleAccurateValues(base::span<float> values);
 
   float IntrinsicValue() const {
@@ -319,7 +303,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
     // Create CancelValues event
     ParamEvent(Type, double time, std::unique_ptr<ParamEvent> saved_event);
 
-    Type type_;
+    const Type type_;
 
     // The value for the event.  The interpretation of this depends on
     // the event type. Not used for SetValueCurve. For CancelValues,
@@ -333,62 +317,37 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
 
     // Initial value and time to use for linear and exponential ramps that
     // don't have a preceding event.
-    float initial_value_;
-    double call_time_;
+    const float initial_value_;
+    const double call_time_;
 
     // Only used for SetTarget events
-    double time_constant_;
+    const double time_constant_;
 
     // The following items are only used for SetValueCurve events.
     //
     // The duration of the curve.
-    double duration_;
+    const double duration_;
     // The array of curve points.
     Vector<float> curve_;
     // The number of curve points per second. it is used to compute
     // the curve index step when running the automation.
-    double curve_points_per_second_;
+    const double curve_points_per_second_;
     // The default value to use at the end of the curve.  Normally
     // it's the last entry in m_curve, but cancelling a SetValueCurve
     // will set this to a new value.
-    float curve_end_value_;
+    const float curve_end_value_;
 
     // For CancelValues. If CancelValues is in the middle of an event, this
     // holds the event that is being cancelled, so that processing can
     // continue as if the event still existed up until we reach the actual
     // scheduled cancel time.
-    std::unique_ptr<ParamEvent> saved_event_;
+    const std::unique_ptr<ParamEvent> saved_event_;
 
     // True if a default value has been assigned to the CancelValues event.
     bool has_default_cancelled_value_;
   };
 
-  // State of the timeline for the current event.
-  struct AutomationState {
-    // Start and end frames for this automation request
-    const size_t start_frame;
-    const size_t end_frame;
-
-    // Sample rate and control rate for this request
-    const double sample_rate;
-    const double control_rate;
-
-    // Parameters needed for processing the current event.
-    const size_t fill_to_frame;
-    const size_t fill_to_end_frame;
-
-    // Value and time for the current event
-    const float value1;
-    const double time1;
-
-    // Value and time for the next event, if any.
-    const float value2;
-    const double time2;
-
-    // The current event, and its index in the event vector.
-    raw_ptr<const ParamEvent> event;
-    const int event_index;
-  };
+  friend class AudioNodeWiring;
 
   AudioParamHandler(BaseAudioContext&,
                     AudioParamType,
@@ -428,23 +387,16 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
                             float max_value,
                             unsigned render_quantum_frames);
 
-  // Returns true if the AudioParam timeline needs to run in this
-  // rendering quantum.  This means some automation is already running
-  // or is scheduled to run in the current rendering quantuym.
-  bool HasValues(size_t current_frame,
-                 double sample_rate,
-                 unsigned render_quantum_frames) const;
-
   // Returns true if the event was inserted, false if an exception occurred and
   // the event was not inserted.
   bool InsertEvent(std::unique_ptr<ParamEvent>, ExceptionState&)
       EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
-  float ValuesForFrameRangeImpl(size_t start_frame,
-                                size_t end_frame,
+  float ValuesForFrameRangeImpl(const size_t start_frame,
+                                const size_t end_frame,
                                 float default_value,
                                 base::span<float> values,
-                                double sample_rate,
-                                double control_rate,
+                                const double sample_rate,
+                                const double control_rate,
                                 unsigned render_quantum_frames)
       EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
 
@@ -515,7 +467,12 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // values to `values`.  Returns the updated `current_frame`, last
   // computed `value`, and the updated `write_index`.
   std::tuple<size_t, float, unsigned> ProcessLinearRamp(
-      const AutomationState& current_state,
+      const size_t fill_to_frame,
+      const double time1,
+      const double time2,
+      const float value1,
+      const float value2,
+      const double sample_rate,
       base::span<float> values,
       size_t current_frame,
       float value,
@@ -525,7 +482,12 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // values to `values`.  Returns the updated `current_frame`, last
   // computed `value`, and the updated `write_index`.
   std::tuple<size_t, float, unsigned> ProcessExponentialRamp(
-      const AutomationState& current_state,
+      const size_t fill_to_frame,
+      const double time1,
+      const double time2,
+      const float value1,
+      const float value2,
+      const double sample_rate,
       base::span<float> values,
       size_t current_frame,
       float value,
@@ -535,7 +497,13 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // values to `values`.  Returns the updated `current_frame`, last
   // computed `value`, and the updated `write_index`.
   std::tuple<size_t, float, unsigned> ProcessSetTarget(
-      const AutomationState& current_state,
+      const size_t fill_to_frame,
+      const double time1,
+      const float value1,
+      const double sample_rate,
+      const double control_rate,
+      const size_t fill_to_end_frame,
+      const ParamEvent* const event,
       base::span<float> values,
       size_t current_frame,
       float value,
@@ -545,7 +513,13 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // values to `values`.  Returns the updated `current_frame`, last
   // computed `value`, and the updated `write_index`.
   std::tuple<size_t, float, unsigned> ProcessSetValueCurve(
-      const AutomationState& current_state,
+      size_t fill_to_frame,
+      const double time1,
+      const double sample_rate,
+      const size_t start_frame,
+      const size_t end_frame,
+      size_t fill_to_end_frame,
+      const ParamEvent* const event,
       base::span<float> values,
       size_t current_frame,
       float value,
@@ -555,7 +529,13 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // values to `values`.  Returns the updated `current_frame`, last
   // computed `value`, and the updated `write_index`.
   std::tuple<size_t, float, unsigned> ProcessCancelValues(
-      const AutomationState& current_state,
+      const size_t fill_to_frame,
+      const double time1,
+      const double sample_rate,
+      const double control_rate,
+      const size_t fill_to_end_frame,
+      const ParamEvent* const event,
+      const int event_index,
       base::span<float> values,
       size_t current_frame,
       float value,
@@ -570,7 +550,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
                            uint32_t write_index);
 
   // When cancelling events, remove the items from `events_` starting
-  // at the given index.  Update `new_events_` too.
+  // at the given index.
   void RemoveCancelledEvents(wtf_size_t first_event_to_remove)
       EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
 
@@ -585,21 +565,22 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   void CalculateFinalValues(base::span<float> values, bool sample_accurate);
   void CalculateTimelineValues(base::span<float> values);
 
+  // Returns time clamped to current time, if needed for any new events.
+  double ClampedToCurrentTime(double time);
+
   // The type of AudioParam, indicating what this AudioParam represents and
   // what node it belongs to.  Mostly for informational purposes and doesn't
   // affect implementation.
-  AudioParamType param_type_;
+  const AudioParamType param_type_;
   // Name of the AudioParam. This is only used for printing out more
   // informative warnings, and only used for AudioWorklets.  All others have a
   // name derived from the `param_type_`.  Worklets need custom names because
   // they're defined by the user.
   String custom_param_name_;
 
-  // Intrinsic value
   std::atomic<float> intrinsic_value_;
-  void SetIntrinsicValue(float new_value);
 
-  float default_value_;
+  const float default_value_;
 
   // Protects `automation_rate_`.
   mutable base::Lock rate_lock_;
@@ -612,8 +593,8 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   const AutomationRateMode rate_mode_;
 
   // Nominal range for the value
-  float min_value_;
-  float max_value_;
+  const float min_value_;
+  const float max_value_;
 
   // Vector of all automation events for the AudioParam.
   Vector<std::unique_ptr<ParamEvent>> events_ GUARDED_BY(events_lock_);
@@ -634,8 +615,6 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
 
   // Audio bus to sum in any connections to the AudioParam.
   scoped_refptr<AudioBus> summing_bus_;
-
-  friend class AudioNodeWiring;
 };
 
 }  // namespace blink

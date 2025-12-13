@@ -33,7 +33,7 @@ namespace {
 
 constexpr size_t kCacheSize = 2;
 
-auto kURLs = std::to_array<const char*>({
+constexpr auto kURLs = std::to_array<const char*>({
     "http://www.randomsite1.com",
     "http://www.randomsite2.com",
     "http://www.randomsite3.com",

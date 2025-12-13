@@ -26,7 +26,8 @@ namespace {
 const char kNotificationBaseUrl[] = "https://example.com/directory/";
 const char kNotificationTitle[] = "My Notification";
 
-const char kNotificationDir[] = "rtl";
+const V8NotificationDirection::Enum kNotificationDir =
+    V8NotificationDirection::Enum::kRtl;
 const char kNotificationLang[] = "nl";
 const char kNotificationBody[] = "Hello, world";
 const char kNotificationTag[] = "my_tag";
@@ -43,7 +44,8 @@ const bool kNotificationRequireInteraction = true;
 
 const mojom::blink::NotificationActionType kBlinkNotificationActionType =
     mojom::blink::NotificationActionType::TEXT;
-const char kNotificationActionType[] = "text";
+const V8NotificationActionType::Enum kNotificationActionType =
+    V8NotificationActionType::Enum::kText;
 const char kNotificationActionAction[] = "my_action";
 const char kNotificationActionTitle[] = "My Action";
 const char kNotificationActionIcon[] = "https://example.com/action_icon.png";
@@ -174,7 +176,7 @@ TEST(NotificationDataTest, ActionTypeButtonWithPlaceholder) {
 
   HeapVector<Member<NotificationAction>> actions;
   NotificationAction* action = NotificationAction::Create();
-  action->setType("button");
+  action->setType(V8NotificationActionType::Enum::kButton);
   action->setPlaceholder("I'm afraid I can't do that...");
   actions.push_back(action);
 
@@ -299,12 +301,16 @@ TEST(NotificationDataTest, DirectionValues) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
-  WTF::HashMap<String, mojom::blink::NotificationDirection> mappings;
-  mappings.insert("ltr", mojom::blink::NotificationDirection::LEFT_TO_RIGHT);
-  mappings.insert("rtl", mojom::blink::NotificationDirection::RIGHT_TO_LEFT);
-  mappings.insert("auto", mojom::blink::NotificationDirection::AUTO);
+  HashMap<V8NotificationDirection::Enum, mojom::blink::NotificationDirection>
+      mappings;
+  mappings.insert(V8NotificationDirection::Enum::kLtr,
+                  mojom::blink::NotificationDirection::LEFT_TO_RIGHT);
+  mappings.insert(V8NotificationDirection::Enum::kRtl,
+                  mojom::blink::NotificationDirection::RIGHT_TO_LEFT);
+  mappings.insert(V8NotificationDirection::Enum::kAuto,
+                  mojom::blink::NotificationDirection::AUTO);
 
-  for (const String& direction : mappings.Keys()) {
+  for (const V8NotificationDirection::Enum direction : mappings.Keys()) {
     NotificationOptions* options =
         NotificationOptions::Create(scope.GetIsolate());
     options->setDir(direction);

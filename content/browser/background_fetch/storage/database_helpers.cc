@@ -193,7 +193,7 @@ bool MojoFailureReasonFromRegistrationProto(
 GURL MakeCacheUrlUnique(const GURL& url,
                         const std::string& unique_id,
                         size_t request_index) {
-  std::string query = url.query();
+  std::string query = url.GetQuery();
   query += unique_id + base::NumberToString(request_index);
 
   GURL::Replacements replacements;
@@ -205,7 +205,8 @@ GURL MakeCacheUrlUnique(const GURL& url,
 GURL RemoveUniqueParamFromCacheURL(const GURL& url,
                                    const std::string& unique_id) {
   std::vector<std::string> split = base::SplitStringUsingSubstr(
-      url.query(), unique_id, base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      url.GetQuery(), unique_id, base::KEEP_WHITESPACE,
+      base::SPLIT_WANT_NONEMPTY);
 
   GURL::Replacements replacements;
   if (split.size() == 1u) {

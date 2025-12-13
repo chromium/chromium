@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -74,7 +75,7 @@ public class UndoBarControllerTest {
     @SmallTest
     public void testCloseAll_SingleTab_Undo() throws Exception {
         assertNull(getCurrentSnackbar());
-        assertEquals(1, mTabModel.getCount());
+        assertEquals(1, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         ChromeTabUtils.closeAllTabs(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -82,19 +83,19 @@ public class UndoBarControllerTest {
         Snackbar currentSnackbar = getCurrentSnackbar();
         assertSnackbarTextEqualsAllowingTruncation("Closed about:blank");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
-        assertEquals(0, mTabModel.getCount());
+        assertEquals(0, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         clickSnackbar();
 
         assertNull(getCurrentSnackbar());
-        assertEquals(1, mTabModel.getCount());
+        assertEquals(1, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
     }
 
     @Test
     @SmallTest
     public void testCloseAll_SingleTab_Dismiss() throws Exception {
         assertNull(getCurrentSnackbar());
-        assertEquals(1, mTabModel.getCount());
+        assertEquals(1, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         ChromeTabUtils.closeAllTabs(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -102,12 +103,12 @@ public class UndoBarControllerTest {
         Snackbar currentSnackbar = getCurrentSnackbar();
         assertSnackbarTextEqualsAllowingTruncation("Closed about:blank");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
-        assertEquals(0, mTabModel.getCount());
+        assertEquals(0, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         dismissSnackbars();
 
         assertNull(getCurrentSnackbar());
-        assertEquals(0, mTabModel.getCount());
+        assertEquals(0, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
     }
 
     @Test
@@ -117,7 +118,7 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
         assertNull(getCurrentSnackbar());
-        assertEquals(2, mTabModel.getCount());
+        assertEquals(2, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         ChromeTabUtils.closeAllTabs(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -125,12 +126,12 @@ public class UndoBarControllerTest {
         Snackbar currentSnackbar = getCurrentSnackbar();
         assertSnackbarTextEqualsAllowingTruncation("2 tabs closed");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
-        assertEquals(0, mTabModel.getCount());
+        assertEquals(0, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         clickSnackbar();
 
         assertNull(getCurrentSnackbar());
-        assertEquals(2, mTabModel.getCount());
+        assertEquals(2, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
     }
 
     @Test
@@ -140,7 +141,7 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
         assertNull(getCurrentSnackbar());
-        assertEquals(2, mTabModel.getCount());
+        assertEquals(2, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         ChromeTabUtils.closeAllTabs(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -148,12 +149,12 @@ public class UndoBarControllerTest {
         Snackbar currentSnackbar = getCurrentSnackbar();
         assertSnackbarTextEqualsAllowingTruncation("2 tabs closed");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
-        assertEquals(0, mTabModel.getCount());
+        assertEquals(0, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         dismissSnackbars();
 
         assertNull(getCurrentSnackbar());
-        assertEquals(0, mTabModel.getCount());
+        assertEquals(0, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
     }
 
     @Test
@@ -166,14 +167,14 @@ public class UndoBarControllerTest {
                     mTabGroupModelFilter.mergeListOfTabsToGroup(
                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
                             mTabModel.getTabAt(0),
-                            /* notify= */ false);
+                            /* notify= */ MergeNotificationType.DONT_NOTIFY);
                     mTabGroupModelFilter.setTabGroupTitle(
                             mTabModel.getTabAt(0).getTabGroupId(), "My group");
                 });
 
         assertNull(getCurrentSnackbar());
-        assertEquals(2, mTabModel.getCount());
-        assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+        assertEquals(2, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
+        assertEquals(1, getTabGroupCount());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -187,13 +188,13 @@ public class UndoBarControllerTest {
         Snackbar currentSnackbar = getCurrentSnackbar();
         assertSnackbarTextEqualsAllowingTruncation("My group tab group closed and saved");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
-        assertEquals(0, mTabModel.getCount());
+        assertEquals(0, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         clickSnackbar();
 
         assertNull(getCurrentSnackbar());
-        assertEquals(2, mTabModel.getCount());
-        assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+        assertEquals(2, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
+        assertEquals(1, getTabGroupCount());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -212,14 +213,14 @@ public class UndoBarControllerTest {
                     mTabGroupModelFilter.mergeListOfTabsToGroup(
                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
                             mTabModel.getTabAt(0),
-                            /* notify= */ false);
+                            /* notify= */ MergeNotificationType.DONT_NOTIFY);
                     mTabGroupModelFilter.setTabGroupTitle(
                             mTabModel.getTabAt(0).getTabGroupId(), "");
                 });
 
         assertNull(getCurrentSnackbar());
-        assertEquals(2, mTabModel.getCount());
-        assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+        assertEquals(2, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
+        assertEquals(1, getTabGroupCount());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -233,13 +234,13 @@ public class UndoBarControllerTest {
         Snackbar currentSnackbar = getCurrentSnackbar();
         assertSnackbarTextEqualsAllowingTruncation("2 tabs tab group closed and saved");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
-        assertEquals(0, mTabModel.getCount());
+        assertEquals(0, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         clickSnackbar();
 
         assertNull(getCurrentSnackbar());
-        assertEquals(2, mTabModel.getCount());
-        assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+        assertEquals(2, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
+        assertEquals(1, getTabGroupCount());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -258,12 +259,12 @@ public class UndoBarControllerTest {
                     mTabGroupModelFilter.mergeListOfTabsToGroup(
                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
                             mTabModel.getTabAt(0),
-                            /* notify= */ false);
+                            /* notify= */ MergeNotificationType.DONT_NOTIFY);
                 });
 
         assertNull(getCurrentSnackbar());
-        assertEquals(2, mTabModel.getCount());
-        assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+        assertEquals(2, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
+        assertEquals(1, getTabGroupCount());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -276,13 +277,13 @@ public class UndoBarControllerTest {
         Snackbar currentSnackbar = getCurrentSnackbar();
         assertSnackbarTextEqualsAllowingTruncation("2 tabs tab group deleted");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
-        assertEquals(0, mTabModel.getCount());
+        assertEquals(0, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         clickSnackbar();
 
         assertNull(getCurrentSnackbar());
-        assertEquals(2, mTabModel.getCount());
-        assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+        assertEquals(2, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
+        assertEquals(1, getTabGroupCount());
     }
 
     @Test
@@ -298,8 +299,8 @@ public class UndoBarControllerTest {
                 });
 
         assertNull(getCurrentSnackbar());
-        assertEquals(3, mTabModel.getCount());
-        assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+        assertEquals(3, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
+        assertEquals(1, getTabGroupCount());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -315,13 +316,13 @@ public class UndoBarControllerTest {
         Snackbar currentSnackbar = getCurrentSnackbar();
         assertSnackbarTextEqualsAllowingTruncation("1 tab group, 2 tabs deleted");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
-        assertEquals(0, mTabModel.getCount());
+        assertEquals(0, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         clickSnackbar();
 
         assertNull(getCurrentSnackbar());
-        assertEquals(3, mTabModel.getCount());
-        assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+        assertEquals(3, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
+        assertEquals(1, getTabGroupCount());
     }
 
     @Test
@@ -338,8 +339,8 @@ public class UndoBarControllerTest {
                 });
 
         assertNull(getCurrentSnackbar());
-        assertEquals(3, mTabModel.getCount());
-        assertEquals(2, mTabGroupModelFilter.getTabGroupCount());
+        assertEquals(3, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
+        assertEquals(2, getTabGroupCount());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -356,13 +357,13 @@ public class UndoBarControllerTest {
         Snackbar currentSnackbar = getCurrentSnackbar();
         assertSnackbarTextEqualsAllowingTruncation("2 tab groups, 1 tab closed and saved");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
-        assertEquals(0, mTabModel.getCount());
+        assertEquals(0, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         clickSnackbar();
 
         assertNull(getCurrentSnackbar());
-        assertEquals(3, mTabModel.getCount());
-        assertEquals(2, mTabGroupModelFilter.getTabGroupCount());
+        assertEquals(3, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
+        assertEquals(2, getTabGroupCount());
     }
 
     @Test
@@ -380,12 +381,12 @@ public class UndoBarControllerTest {
                                     mTabModel.getTabAt(1),
                                     mTabModel.getTabAt(2)),
                             mTabModel.getTabAt(0),
-                            /* notify= */ false);
+                            /* notify= */ MergeNotificationType.DONT_NOTIFY);
                 });
 
         assertNull(getCurrentSnackbar());
-        assertEquals(3, mTabModel.getCount());
-        assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+        assertEquals(3, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
+        assertEquals(1, getTabGroupCount());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -398,13 +399,13 @@ public class UndoBarControllerTest {
         Snackbar currentSnackbar = getCurrentSnackbar();
         assertSnackbarTextEqualsAllowingTruncation("2 tabs closed");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
-        assertEquals(1, mTabModel.getCount());
+        assertEquals(1, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         clickSnackbar();
 
         assertNull(getCurrentSnackbar());
-        assertEquals(3, mTabModel.getCount());
-        assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+        assertEquals(3, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
+        assertEquals(1, getTabGroupCount());
     }
 
     @Test
@@ -419,8 +420,8 @@ public class UndoBarControllerTest {
                 });
 
         assertNull(getCurrentSnackbar());
-        assertEquals(2, mTabModel.getCount());
-        assertEquals(2, mTabGroupModelFilter.getTabGroupCount());
+        assertEquals(2, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
+        assertEquals(2, getTabGroupCount());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -433,13 +434,13 @@ public class UndoBarControllerTest {
         Snackbar currentSnackbar = getCurrentSnackbar();
         assertSnackbarTextEqualsAllowingTruncation("2 tab groups deleted");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
-        assertEquals(0, mTabModel.getCount());
+        assertEquals(0, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         clickSnackbar();
 
         assertNull(getCurrentSnackbar());
-        assertEquals(2, mTabModel.getCount());
-        assertEquals(2, mTabGroupModelFilter.getTabGroupCount());
+        assertEquals(2, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
+        assertEquals(2, getTabGroupCount());
     }
 
     @Test
@@ -454,8 +455,8 @@ public class UndoBarControllerTest {
                 });
 
         assertNull(getCurrentSnackbar());
-        assertEquals(2, mTabModel.getCount());
-        assertEquals(2, mTabGroupModelFilter.getTabGroupCount());
+        assertEquals(2, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
+        assertEquals(2, getTabGroupCount());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -469,13 +470,13 @@ public class UndoBarControllerTest {
         Snackbar currentSnackbar = getCurrentSnackbar();
         assertSnackbarTextEqualsAllowingTruncation("2 tab groups closed and saved");
         assertTrue(currentSnackbar.getController() instanceof UndoBarController);
-        assertEquals(0, mTabModel.getCount());
+        assertEquals(0, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         clickSnackbar();
 
         assertNull(getCurrentSnackbar());
-        assertEquals(2, mTabModel.getCount());
-        assertEquals(2, mTabGroupModelFilter.getTabGroupCount());
+        assertEquals(2, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
+        assertEquals(2, getTabGroupCount());
     }
 
     @Test
@@ -491,11 +492,13 @@ public class UndoBarControllerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.mergeListOfTabsToGroup(
-                            List.of(tab1, tab2), tab1, /* notify= */ false);
+                            List.of(tab1, tab2),
+                            tab1,
+                            /* notify= */ MergeNotificationType.DONT_NOTIFY);
                 });
 
         assertNull(getCurrentSnackbar());
-        assertEquals(3, mTabModel.getCount());
+        assertEquals(3, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         int token = ThreadUtils.runOnUiThreadBlocking(() -> undoBarController.startThrottling());
 
@@ -534,11 +537,13 @@ public class UndoBarControllerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.mergeListOfTabsToGroup(
-                            List.of(tab1, tab2), tab1, /* notify= */ false);
+                            List.of(tab1, tab2),
+                            tab1,
+                            /* notify= */ MergeNotificationType.DONT_NOTIFY);
                 });
 
         assertNull(getCurrentSnackbar());
-        assertEquals(3, mTabModel.getCount());
+        assertEquals(3, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         int token = ThreadUtils.runOnUiThreadBlocking(() -> undoBarController.startThrottling());
 
@@ -581,11 +586,13 @@ public class UndoBarControllerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.mergeListOfTabsToGroup(
-                            List.of(tab1, tab2), tab1, /* notify= */ false);
+                            List.of(tab1, tab2),
+                            tab1,
+                            /* notify= */ MergeNotificationType.DONT_NOTIFY);
                 });
 
         assertNull(getCurrentSnackbar());
-        assertEquals(3, mTabModel.getCount());
+        assertEquals(3, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         int token = ThreadUtils.runOnUiThreadBlocking(() -> undoBarController.startThrottling());
 
@@ -620,11 +627,13 @@ public class UndoBarControllerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGroupModelFilter.mergeListOfTabsToGroup(
-                            List.of(tab1, tab2), tab1, /* notify= */ false);
+                            List.of(tab1, tab2),
+                            tab1,
+                            /* notify= */ MergeNotificationType.DONT_NOTIFY);
                 });
 
         assertNull(getCurrentSnackbar());
-        assertEquals(3, mTabModel.getCount());
+        assertEquals(3, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         int token = ThreadUtils.runOnUiThreadBlocking(() -> undoBarController.startThrottling());
 
@@ -660,7 +669,7 @@ public class UndoBarControllerTest {
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
         assertNull("Snack bar should be null initially", getCurrentSnackbar());
-        assertEquals(2, mTabModel.getCount());
+        assertEquals(2, ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         ChromeTabUtils.closeCurrentTab(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -677,7 +686,10 @@ public class UndoBarControllerTest {
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));
 
         assertNull("Snack bar should be null initially", getCurrentSnackbar());
-        assertEquals("Tab Model should contain 1 tab", 1, mTabModel.getCount());
+        assertEquals(
+                "Tab Model should contain 1 tab",
+                1,
+                ChromeTabUtils.getTabCountOnUiThread(mTabModel));
 
         ChromeTabUtils.closeAllTabs(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -687,7 +699,10 @@ public class UndoBarControllerTest {
         assertTrue(
                 "Incorrect SnackbarController type",
                 currentSnackbar.getController() instanceof UndoBarController);
-        assertEquals("Tab Model should contain 0 tab after tab closed", 0, mTabModel.getCount());
+        assertEquals(
+                "Tab Model should contain 0 tab after tab closed",
+                0,
+                ChromeTabUtils.getTabCountOnUiThread(mTabModel));
     }
 
     private void clickSnackbar() {
@@ -742,6 +757,10 @@ public class UndoBarControllerTest {
                         return mSnackbarManager.getCurrentSnackbarForTesting();
                     }
                 });
+    }
+
+    private int getTabGroupCount() {
+        return ThreadUtils.runOnUiThreadBlocking(() -> mTabGroupModelFilter.getTabGroupCount());
     }
 
     private void closeTabs(TabClosureParams params) {

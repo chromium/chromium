@@ -6,7 +6,6 @@
 #define CHROMEOS_ASH_EXPERIENCES_ARC_TEST_FAKE_CHROME_FEATURE_FLAGS_INSTANCE_H_
 
 #include "chromeos/ash/experiences/arc/mojom/chrome_feature_flags.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace arc {
 

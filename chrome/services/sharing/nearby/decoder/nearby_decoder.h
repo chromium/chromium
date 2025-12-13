@@ -9,7 +9,6 @@
 
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace sharing {

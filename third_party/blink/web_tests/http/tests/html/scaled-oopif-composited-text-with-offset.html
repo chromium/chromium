@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      * {
+        margin: 0;
+      }
+    </style>
+    <script>
+      if (window.testRunner) {
+        testRunner.waitUntilDone();
+      }
+
+      function done() {
+        if (window.testRunner) {
+          requestAnimationFrame(()=> {
+            requestAnimationFrame(()=> {
+              testRunner.notifyDone();
+            });
+          });
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Mainframe with scaled OOPIF containing composited text with offset</h1>
+    This test verifies that the text within the OOP iframe is not blurry.
+    <div style="transform: scale(2.3); transform-origin: 0 0; width: 100px; height: 50px; background-color:pink">
+      <!--  Use of localhost below will make the iframe an OOPIF -->
+      <iframe style="border: none; height: 100px; width: 100px;"
+              src="http://localhost:8080/html/resources/oopif-composited-text-with-offset.html"
+              onload="done()"></iframe>
+    </div>
+  </body>
+</html>

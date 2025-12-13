@@ -11,6 +11,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,7 +33,9 @@ void UrlBlockingPolicyTest::CheckURLIsBlockedInWebContents(
 
   std::u16string blocked_page_title;
   if (url.has_host()) {
-    blocked_page_title = base::UTF8ToUTF16(url.host());
+    blocked_page_title = base::UTF8ToUTF16(url.GetHost());
+  } else if (url.SchemeIs(content::kViewSourceScheme)) {
+    blocked_page_title = base::UTF8ToUTF16(GURL(url.GetContent()).GetHost());
   } else {
     // Local file paths show the full URL.
     blocked_page_title = base::UTF8ToUTF16(url.spec());
@@ -69,7 +72,7 @@ void UrlBlockingPolicyTest::CheckViewSourceURLIsBlocked(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, view_source_url));
   content::WebContents* contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  CheckURLIsBlockedInWebContents(contents, url);
+  CheckURLIsBlockedInWebContents(contents, view_source_url);
 }
 
 }  // namespace policy

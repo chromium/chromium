@@ -10,7 +10,6 @@ include_rules = [
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/ash/assistant",
   "+chrome/browser/ash/input_method",
   "+chrome/browser/ash/magic_boost",
   "+chrome/browser/ash/lobster/lobster_service.h",
@@ -19,11 +18,9 @@ include_rules = [
   "+chrome/browser/ash/login/users/fake_chrome_user_manager.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/search_engines",
-  "+chrome/browser/ui/webui/ash/assistant_optin",
   "+chrome/browser/ui/webui/ash/settings/pages",
   "+chrome/browser/ui/webui/ash/settings/search",
   "+chrome/browser/ui/webui/settings",
-  "+chrome/browser/ui/webui/webui_util.h",
   "+chrome/common",
   "+chrome/grit",
   "+chrome/test",

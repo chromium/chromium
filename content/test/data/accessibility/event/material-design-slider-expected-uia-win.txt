@@ -1,0 +1,8 @@
+AriaProperties changed on role=slider, name=Test Slider
+RangeValueValue changed on role=slider, name=Test Slider
+=== Start Continuation ===
+AriaProperties changed on role=slider, name=Test Slider
+RangeValueValue changed on role=slider, name=Test Slider
+=== Start Continuation ===
+AriaProperties changed on role=slider, name=Test Slider
+RangeValueValue changed on role=slider, name=Test Slider

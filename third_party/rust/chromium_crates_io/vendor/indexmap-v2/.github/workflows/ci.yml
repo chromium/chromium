@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - rust: 1.63.0 # MSRV
+          - rust: 1.82.0 # MSRV
             features:
           - rust: stable
             features: arbitrary
@@ -27,6 +27,8 @@ jobs:
             features: rayon
           - rust: stable
             features: serde
+          - rust: stable
+            features: sval
           - rust: stable
             features: borsh
           - rust: stable
@@ -38,13 +40,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/cache@v4
-        if: matrix.rust == '1.63.0'
-        with:
-          path: ~/.cargo/registry/index
-          key: cargo-git-index
       - name: Lock MSRV-compatible dependencies
-        if: matrix.rust == '1.63.0'
+        if: matrix.rust == '1.82.0'
         env:
           CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS: fallback
         # Note that this uses the runner's pre-installed stable cargo
@@ -62,6 +59,10 @@ jobs:
         if: matrix.features == 'serde'
         run: |
           cargo test --verbose -p test-serde
+      - name: Tests (sval)
+        if: matrix.features == 'sval'
+        run: |
+          cargo test --verbose -p test-sval
       - name: Test run benchmarks
         if: matrix.bench != ''
         run: cargo test -v --benches
@@ -71,20 +72,15 @@ jobs:
     strategy:
       matrix:
         include:
-          - rust: 1.63.0
+          - rust: 1.82.0
             target: thumbv6m-none-eabi
           - rust: stable
             target: thumbv6m-none-eabi
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/cache@v4
-        if: matrix.rust == '1.63.0'
-        with:
-          path: ~/.cargo/registry/index
-          key: cargo-git-index
       - name: Lock MSRV-compatible dependencies
-        if: matrix.rust == '1.63.0'
+        if: matrix.rust == '1.82.0'
         env:
           CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS: fallback
         # Note that this uses the runner's pre-installed stable cargo
@@ -117,7 +113,9 @@ jobs:
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-nextest
+        if: github.event_name == 'merge_group'
       - run: cargo miri nextest run
+        if: github.event_name == 'merge_group'
       - run: cargo miri test --doc
 
   minimal-versions:
@@ -125,12 +123,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/cache@v4
-        with:
-          path: ~/.cargo/registry/index
-          key: cargo-git-index
       - uses: dtolnay/rust-toolchain@nightly
-      - uses: dtolnay/rust-toolchain@1.63.0 # MSRV
+      - uses: dtolnay/rust-toolchain@1.82.0 # MSRV
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-hack
@@ -141,7 +135,7 @@ jobs:
       - name: Build (nightly)
         run: cargo +nightly build --verbose --all-features
       - name: Build (MSRV)
-        run: cargo build --verbose --features arbitrary,quickcheck,serde,rayon
+        run: cargo build --verbose --features arbitrary,quickcheck,serde,sval,rayon
 
   # One job that "summarizes" the success state of this pipeline. This can then be added to branch
   # protection, rather than having to add each job separately.

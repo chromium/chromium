@@ -6,6 +6,7 @@
 
 #import "base/files/file_path.h"
 #import "base/run_loop.h"
+#import "base/strings/strcat.h"
 #import "base/test/bind.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/enterprise/browser/reporting/report_request.h"
@@ -151,7 +152,7 @@ TEST_F(ReportGeneratorIOSTest, GenerateBasicReport) {
   // Verify the profile report
   EXPECT_EQ(1, browser_report.chrome_user_profile_infos_size());
   auto profile_info = browser_report.chrome_user_profile_infos(0);
-  EXPECT_EQ(GetProfilePath().AsUTF8Unsafe(), profile_info.id());
+  EXPECT_EQ(base::StrCat({"/Profile/", GetProfileName()}), profile_info.id());
   EXPECT_EQ(GetProfileName(), profile_info.name());
   EXPECT_TRUE(profile_info.has_is_detail_available());
   EXPECT_TRUE(profile_info.is_detail_available());

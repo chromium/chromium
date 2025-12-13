@@ -27,7 +27,7 @@ void SessionsGlobalIdMapper::AddGlobalIdChangeObserver(
   global_id_change_observers_.push_back(std::move(callback));
 }
 
-int64_t SessionsGlobalIdMapper::GetLatestGlobalId(int64_t global_id) {
+int64_t SessionsGlobalIdMapper::GetLatestGlobalId(int64_t global_id) const {
   auto g2u_iter = global_to_unique_.find(global_id);
   if (g2u_iter != global_to_unique_.end()) {
     auto u2g_iter = unique_to_current_global_.find(g2u_iter->second);

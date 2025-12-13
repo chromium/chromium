@@ -8,6 +8,7 @@
 #import <utility>
 
 #import "base/feature_list.h"
+#import "base/features.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/singleton.h"
@@ -34,6 +35,8 @@
 #import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_invalidations_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 
 namespace {
 
@@ -93,7 +96,7 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
     std::string representative_target_id =
         GetApplicationContext()
             ->GetPushNotificationService()
-            ->GetRepresentativeTargetIdForGaiaId(gaia_id.ToNSString());
+            ->GetRepresentativeTargetIdForGaiaId(gaia_id);
     // Sharing info is not implemented on iOS, so empty structs are passed in.
     // TODO(crbug.com/352370268): Use SharingSyncPreference to hold SharingInfo.
     return syncer::DeviceInfo::SharingInfo(
@@ -188,9 +191,7 @@ DeviceInfoSyncServiceFactory::~DeviceInfoSyncServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   syncer::SyncInvalidationsService* const sync_invalidations_service =
       SyncInvalidationsServiceFactory::GetForProfile(profile);
   signin::IdentityManager* const identity_manager =
@@ -206,5 +207,9 @@ DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<syncer::DeviceInfoSyncServiceImpl>(
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
       std::move(local_device_info_provider), std::move(device_prefs),
-      std::move(device_info_sync_client), sync_invalidations_service);
+      std::move(device_info_sync_client), sync_invalidations_service,
+      /*pulse_task_runner=*/
+      base::FeatureList::IsEnabled(base::features::kReducePPMs)
+          ? web::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+          : web::GetUIThreadTaskRunner({}));
 }

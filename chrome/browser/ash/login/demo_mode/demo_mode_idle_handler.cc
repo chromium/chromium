@@ -177,7 +177,7 @@ void ShowNotification() {
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating([](std::optional<int> button_index) {
                 if (button_index.has_value() && button_index.value() == 0) {
-                  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+                  ash::NewWindowDelegate::GetInstance()->OpenUrl(
                       GURL(kGooglePoliciesURL),
                       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       ash::NewWindowDelegate::Disposition::kNewForegroundTab);

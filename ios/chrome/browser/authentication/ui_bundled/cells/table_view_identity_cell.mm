@@ -13,6 +13,8 @@ namespace {
 const CGFloat kCheckmarkMagin = 26.;
 // Leading margin for the separator.
 const CGFloat kSeparatorMargin = 80;
+// Duration of the selection animation.
+const CGFloat kSelectionAnimationDuration = 0.25;
 }  // namespace
 
 @interface TableViewIdentityCell ()
@@ -45,22 +47,56 @@ const CGFloat kSeparatorMargin = 80;
                        managed:(BOOL)managed
              identityViewStyle:(IdentityViewStyle)identityViewStyle
                     titleColor:(UIColor*)titleColor {
-  self.identityView.style =
-      checked && identityViewStyle == IdentityViewStyleConsistency
-          ? IdentityViewStyleConsistencyContained
-          : identityViewStyle;
+  [self configureCellWithTitle:title
+                      subtitle:subtitle
+                         image:image
+                       checked:checked
+                       managed:managed
+             identityViewStyle:identityViewStyle
+                    titleColor:titleColor
+                    completion:nil];
+}
 
+- (void)configureCellWithTitle:(NSString*)title
+                      subtitle:(NSString*)subtitle
+                         image:(UIImage*)image
+                       checked:(BOOL)checked
+                       managed:(BOOL)managed
+             identityViewStyle:(IdentityViewStyle)identityViewStyle
+                    titleColor:(UIColor*)titleColor
+                    completion:(ProceduralBlock)completion {
+  self.identityView.style = identityViewStyle;
   [self.identityView setTitle:title subtitle:subtitle managed:managed];
   [self.identityView setAvatar:image];
   self.identityView.titleColor = titleColor;
-  self.accessoryType = checked ? UITableViewCellAccessoryCheckmark
-                               : UITableViewCellAccessoryNone;
-  if (checked && identityViewStyle != IdentityViewStyleConsistency) {
-    self.directionalLayoutMargins =
-        NSDirectionalEdgeInsetsMake(0, 0, 0, kCheckmarkMagin);
-  } else {
-    self.directionalLayoutMargins = NSDirectionalEdgeInsetsZero;
-  }
+
+  void (^layoutUpdateBlock)(void) = ^{
+    self.identityView.style =
+        checked && identityViewStyle == IdentityViewStyleConsistency
+            ? IdentityViewStyleConsistencyContained
+            : identityViewStyle;
+    if (checked && identityViewStyle != IdentityViewStyleConsistency) {
+      self.directionalLayoutMargins =
+          NSDirectionalEdgeInsetsMake(0, 0, 0, kCheckmarkMagin);
+    } else {
+      self.directionalLayoutMargins = NSDirectionalEdgeInsetsZero;
+    }
+    self.accessoryType = checked ? UITableViewCellAccessoryCheckmark
+                                 : UITableViewCellAccessoryNone;
+    [self layoutIfNeeded];
+  };
+
+  [UIView animateWithDuration:kSelectionAnimationDuration
+                        delay:0
+       usingSpringWithDamping:0.7
+        initialSpringVelocity:0.5
+                      options:UIViewAnimationOptionCurveEaseInOut
+                   animations:layoutUpdateBlock
+                   completion:^(BOOL finished) {
+                     if (completion) {
+                       completion();
+                     }
+                   }];
 }
 
 - (void)prepareForReuse {

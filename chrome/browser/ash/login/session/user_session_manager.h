@@ -18,7 +18,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -391,9 +391,6 @@ class UserSessionManager
 
   void StartCrosSession();
   void PrepareProfile(const base::FilePath& profile_path);
-
-  // Check if the ARCVM DLC image was installed on the device.
-  void CheckArcVmDlcImageExist();
 
   // Callback for Profile::CREATE_STATUS_CREATED profile state.
   // Initializes basic preferences for newly created profile. Any other

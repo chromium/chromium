@@ -39,7 +39,6 @@
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_anchored_dialog.h"
 #include "ash/app_list/views/search_result_page_view.h"
-#include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/display/display_configuration_controller_test_api.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
@@ -90,7 +89,6 @@
 #include "ui/aura/window_targeter.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
@@ -102,6 +100,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -122,7 +121,7 @@ SearchModel* GetSearchModel() {
 }
 
 int64_t GetPrimaryDisplayId() {
-  return display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  return display::Screen::Get()->GetPrimaryDisplay().id();
 }
 
 void EnableTabletMode(bool enable) {
@@ -184,7 +183,7 @@ void SanityCheckSearchResultsAnchoredDialogBounds(
 // Returns the search box view from either the clamshell bubble or the tablet
 // mode fullscreen launcher.
 SearchBoxView* GetSearchBoxViewFromHelper(AppListTestHelper* helper) {
-  if (!Shell::Get()->IsInTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     DCHECK(Shell::Get()->app_list_controller()->IsVisible());
     return helper->GetBubbleSearchBoxView();
   }
@@ -335,6 +334,11 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
 
     // Make the display big enough to hold the app list.
     UpdateDisplay("1024x768");
+  }
+
+  void TearDown() override {
+    apps_grid_view_ = nullptr;
+    AshTestBase::TearDown();
   }
 
   AppsGridView* GetAppsGridView() {
@@ -500,7 +504,7 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
   }
 
   void EnsureLauncherShown() {
-    const bool in_tablet_mode = Shell::Get()->IsInTabletMode();
+    const bool in_tablet_mode = display::Screen::Get()->InTabletMode();
 
     // App list always visible in tablet mode, so launcher needs to explicitly
     // be shown only when in clamshell mode.
@@ -538,7 +542,7 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
   const bool tablet_mode_;
 
   std::unique_ptr<test::AppsGridViewTestApi> grid_test_api_;
-  raw_ptr<AppsGridView, DanglingUntriaged> apps_grid_view_ = nullptr;
+  raw_ptr<AppsGridView> apps_grid_view_ = nullptr;
 };
 
 // Parameterized by tablet/clamshell mode.
@@ -605,6 +609,12 @@ class PopulatedAppListTest : public AshTestBase {
 
     // Fullscreen launcher is used only in tablet mode, so enable tablet mode.
     EnableTabletMode(true);
+  }
+
+  void TearDown() override {
+    app_list_view_ = nullptr;
+    apps_grid_view_ = nullptr;
+    AshTestBase::TearDown();
   }
 
  protected:
@@ -680,8 +690,7 @@ class PopulatedAppListTest : public AshTestBase {
   }
 
   void RotateScreen() {
-    display::Display display =
-        display::Screen::GetScreen()->GetPrimaryDisplay();
+    display::Display display = display::Screen::Get()->GetPrimaryDisplay();
     display_manager()->SetDisplayRotation(
         display.id(), display::Display::ROTATE_90,
         display::Display::RotationSource::ACTIVE);
@@ -693,9 +702,8 @@ class PopulatedAppListTest : public AshTestBase {
   }
 
   std::unique_ptr<test::AppsGridViewTestApi> apps_grid_test_api_;
-  raw_ptr<AppListView, DanglingUntriaged> app_list_view_ =
-      nullptr;  // Owned by native widget.
-  raw_ptr<PagedAppsGridView, DanglingUntriaged> apps_grid_view_ =
+  raw_ptr<AppListView> app_list_view_ = nullptr;  // Owned by native widget.
+  raw_ptr<PagedAppsGridView> apps_grid_view_ =
       nullptr;  // Owned by |app_list_view_|.
 };
 
@@ -723,8 +731,8 @@ class PopulatedAppListScreenRotationTest : public PopulatedAppListTest {
 
 // Verify that open folders are closed after sorting apps grid.
 TEST_P(AppListBubbleAndTabletTest, SortingClosesOpenFolderView) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   GetAppListModel()->CreateAndPopulateFolderWithApps(4);
 
@@ -758,8 +766,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Cache the initial folder item bounds.
   const gfx::Rect original_folder_item_bounds =
@@ -829,8 +837,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -946,8 +954,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -1067,8 +1075,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -1188,8 +1196,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -1274,8 +1282,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -1374,8 +1382,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -1472,8 +1480,8 @@ TEST_P(AppListBubbleAndTabletTest,
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -1546,8 +1554,8 @@ TEST_P(AppListBubbleAndTabletTest, ReorderedFolderItemDeletionDuringShow) {
   EnsureLauncherShown();
   SetupGridTestApi();
 
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   grid_test_api_->PressItemAt(2);
   EXPECT_TRUE(AppListIsInFolderView());
@@ -1656,41 +1664,6 @@ TEST_P(AppListBubbleAndTabletTest, ClearSearchButtonClearsSearch) {
 
   EXPECT_EQ(std::vector<std::u16string>({u""}),
             client->GetAndResetPastSearchQueries());
-}
-
-// Regression test for b/204482740.
-TEST_P(AppListBubbleAndTabletTest, AppListEventTargeterForAssistantScrolling) {
-  EnableTabletMode(tablet_mode_param());
-  EnsureLauncherShown();
-
-  // A custom event targeter is installed.
-  aura::Window* window = Shell::Get()->app_list_controller()->GetWindow();
-  ASSERT_TRUE(window);
-  aura::WindowTargeter* targeter = window->targeter();
-  ASSERT_TRUE(targeter);
-
-  // Simulate an assistant card with a webview being shown, which sets a window
-  // property on its window. See AssistantCardElementView::AddedToWidget().
-  aura::Window* child =
-      aura::test::CreateTestWindowWithBounds(gfx::Rect(100, 100), window);
-  child->SetProperty(assistant::ui::kOnlyAllowMouseClickEvents, true);
-
-  // Scroll events are blocked for that window.
-  constexpr int offset = 10;
-  ui::ScrollEvent scroll_down(ui::EventType::kScroll, gfx::Point(),
-                              base::TimeTicks::Now(), ui::EF_NONE, 0, offset, 0,
-                              offset, /*finger_count=*/2);
-  EXPECT_FALSE(targeter->SubtreeShouldBeExploredForEvent(child, scroll_down));
-
-  // Click events are not blocked.
-  ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                       base::TimeTicks::Now(), ui::EF_NONE,
-                       ui::EF_LEFT_MOUSE_BUTTON);
-  ui::MouseEvent release(ui::EventType::kMouseReleased, gfx::Point(),
-                         gfx::Point(), base::TimeTicks::Now(), ui::EF_NONE,
-                         ui::EF_LEFT_MOUSE_BUTTON);
-  EXPECT_TRUE(targeter->SubtreeShouldBeExploredForEvent(child, press));
-  EXPECT_TRUE(targeter->SubtreeShouldBeExploredForEvent(child, press));
 }
 
 // Tests that apps container/page does not have a separator between apps grid
@@ -1842,8 +1815,8 @@ TEST_P(AppListPresenterTest, ClickSearchBoxInTabletMode) {
 
   // Necessary for AppListView::StateAnimationMetricsReporter::Report being
   // called when animation ends.
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   ui::test::EventGenerator* generator = GetEventGenerator();
 
@@ -2286,7 +2259,7 @@ TEST_P(AppListBubbleAndTabletTest, RotationAnimationSmoke) {
   EnableTabletMode(tablet_mode_param());
   EnsureLauncherShown();
 
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   ScreenRotationAnimator* animator =
       DisplayConfigurationControllerTestApi(
           Shell::Get()->display_configuration_controller())
@@ -2307,13 +2280,13 @@ TEST_P(AppListBubbleAndTabletTest, ShutdownDuringRotationAnimationSmoke) {
   EnableTabletMode(tablet_mode_param());
   EnsureLauncherShown();
 
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   ScreenRotationAnimator* animator =
       DisplayConfigurationControllerTestApi(
           Shell::Get()->display_configuration_controller())
           .GetScreenRotationAnimatorForDisplay(display.id());
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   animator->Rotate(display::Display::ROTATE_90,
                    display::Display::RotationSource::USER,
                    DisplayConfigurationController::ANIMATION_SYNC);
@@ -2333,7 +2306,7 @@ TEST_P(AppListBubbleAndTabletTest, RotationAnimationWithFolderSmoke) {
   GestureTapOn(apps_grid_view_->GetItemViewAt(1));
   ASSERT_TRUE(AppListIsInFolderView());
 
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   ScreenRotationAnimator* animator =
       DisplayConfigurationControllerTestApi(
           Shell::Get()->display_configuration_controller())
@@ -2372,7 +2345,7 @@ TEST_P(AppListBubbleAndTabletTest, RotationAnimationInSearchSmoke) {
   // The result list is updated asynchronously.
   base::RunLoop().RunUntilIdle();
 
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
   ScreenRotationAnimator* animator =
       DisplayConfigurationControllerTestApi(
           Shell::Get()->display_configuration_controller())
@@ -2669,8 +2642,8 @@ TEST_F(PopulatedAppListTest,
   const int kItemCount = 5;
   PopulateApps(kItemCount);
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
 
@@ -3148,7 +3121,8 @@ TEST_P(AppListPresenterTest, HideOnFocusOut) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
 
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   wm::ActivateWindow(window.get());
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckVisibility(false);
@@ -3162,8 +3136,8 @@ TEST_P(AppListPresenterTest, RemainVisibleWhenFocusingToApplistContainer) {
 
   aura::Window* applist_container = Shell::GetContainer(
       Shell::GetPrimaryRootWindow(), kShellWindowId_AppListContainer);
-  std::unique_ptr<aura::Window> window(
-      aura::test::CreateTestWindowWithId(0, applist_container));
+  std::unique_ptr<aura::Window> window = aura::test::CreateTestWindow(
+      {.parent = applist_container, .bounds = {100, 100}, .window_id = 0});
   wm::ActivateWindow(window.get());
   GetAppListTestHelper()->WaitUntilIdle();
 
@@ -3916,7 +3890,8 @@ TEST_F(AppListPresenterHomeLauncherTest,
        RunZeroStateSearchWhenShownAfterMinimizingWindows) {
   EXPECT_EQ(0, GetTestAppListClient()->start_zero_state_search_count());
   GetAppListTestHelper()->CheckVisibility(false);
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
 
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(false);
@@ -4044,7 +4019,8 @@ TEST_F(AppListPresenterHomeLauncherTest, FocusOutToDismiss) {
   // Show app list in non-tablet mode. Move focus to another window.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   wm::ActivateWindow(window.get());
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckVisibility(false);
@@ -4153,9 +4129,10 @@ TEST_F(AppListPresenterHomeLauncherTest, GoingHomeMinimizesAllWindows) {
   // Show app list in tablet mode. Maximize all windows.
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
-  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0)),
-      window2(CreateTestWindowInShellWithId(1)),
-      window3(CreateTestWindowInShellWithId(2));
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindowInShell({.window_id = 0})),
+      window2(CreateTestWindowInShell({.window_id = 1})),
+      window3(CreateTestWindowInShell({.window_id = 2}));
   WindowState* state1 = WindowState::Get(window1.get());
   WindowState* state2 = WindowState::Get(window2.get());
   WindowState* state3 = WindowState::Get(window3.get());
@@ -4190,7 +4167,8 @@ TEST_F(AppListPresenterHomeLauncherTest, GoingHomeEndsSplitViewMode) {
   // Show app list in tablet mode. Enter split view mode.
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   split_view_controller()->SnapWindow(window.get(), SnapPosition::kPrimary);
   EXPECT_TRUE(split_view_controller()->InSplitViewMode());
 
@@ -4204,7 +4182,8 @@ TEST_F(AppListPresenterHomeLauncherTest, GoingHomeEndOverviewMode) {
   // Show app list in tablet mode. Enter overview mode.
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   OverviewController* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
@@ -4222,8 +4201,10 @@ TEST_F(AppListPresenterHomeLauncherTest,
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
 
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
-  std::unique_ptr<aura::Window> dummy_window(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<aura::Window> dummy_window(
+      CreateTestWindowInShell({.window_id = 1}));
 
   OverviewController* overview_controller = OverviewController::Get();
   EnterOverview();
@@ -4316,7 +4297,8 @@ TEST_F(AppListPresenterHomeLauncherTest,
   EXPECT_EQ(nullptr, window_util::GetActiveWindow());
 
   // Activate a window.
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShell({.window_id = 0}));
   WindowState::Get(window.get())->Activate();
   EXPECT_EQ(window.get(), window_util::GetActiveWindow());
 
@@ -4610,8 +4592,8 @@ TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
 TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
        TransitionContinuesWhereItWasInterrupted) {
   EnsureAppListViewIsCached();
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   auto* const layer = GetAppListTestHelper()
                           ->GetAppListView()
                           ->GetWidget()
@@ -4657,8 +4639,8 @@ TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
 
   // Switch to tablet mode and set normal animation duration.
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   EXPECT_EQ(visibility_observer->visibility_changed_to_hidden_times(), 0);
   ash::TabletModeControllerTestApi().LeaveTabletMode();

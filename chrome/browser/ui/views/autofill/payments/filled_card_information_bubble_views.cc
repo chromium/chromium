@@ -56,7 +56,7 @@ std::unique_ptr<views::BoxLayoutView> CreateButtonContainer() {
 }  // namespace
 
 FilledCardInformationBubbleViews::FilledCardInformationBubbleViews(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor_view,
     content::WebContents* web_contents,
     FilledCardInformationBubbleController* controller)
     : AutofillLocationBarBubble(anchor_view, web_contents),

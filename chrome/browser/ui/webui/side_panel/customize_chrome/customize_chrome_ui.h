@@ -24,7 +24,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/theme_color_picker/theme_color_picker.mojom.h"
@@ -42,10 +41,6 @@ class ThemeColorPickerHandler;
 class WallpaperSearchBackgroundManager;
 class WallpaperSearchHandler;
 class WallpaperSearchStringMap;
-
-namespace ui {
-class ColorChangeHandler;
-}
 
 class CustomizeChromeUIConfig
     : public DefaultTopChromeWebUIConfig<CustomizeChromeUI> {
@@ -101,10 +96,6 @@ class CustomizeChromeUI
 
   void BindInterface(
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
-          pending_receiver);
-
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           pending_receiver);
 
   void BindInterface(
@@ -194,7 +185,6 @@ class CustomizeChromeUI
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
       help_bubble_handler_factory_receiver_{this};
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   std::unique_ptr<CustomizeColorSchemeModeHandler>
       customize_color_scheme_mode_handler_;
   mojo::Receiver<customize_color_scheme_mode::mojom::

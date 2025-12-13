@@ -36,7 +36,9 @@ class LayoutInlineListItem final : public LayoutInline {
   }
   void InsertedIntoTree() override;
   void WillBeRemovedFromTree() override;
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
   void SubtreeDidChange() final;
 
   ListItemOrdinal ordinal_;

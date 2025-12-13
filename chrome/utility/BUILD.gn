@@ -2,11 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//build/config/sysroot.gni")
 import("//chrome/common/features.gni")
 import("//chrome/services/speech/buildflags/buildflags.gni")
-import("//chromeos/ash/components/assistant/assistant.gni")
 import("//components/services/on_device_translation/buildflags/features.gni")
 import("//crypto/features.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -52,6 +50,8 @@ static_library("utility") {
     "//components/services/unzip:lib",
     "//components/strings",
     "//components/url_formatter",
+    "//components/user_data_importer/content",
+    "//components/user_data_importer/mojom",
     "//components/webapps/services/web_app_origin_association:lib",
     "//content/public/child",
     "//content/public/common",
@@ -64,7 +64,7 @@ static_library("utility") {
     "//printing/buildflags",
     "//services/data_decoder:lib",
     "//services/network:network_service",
-    "//services/passage_embeddings:passage_embeddings",
+    "//services/passage_embeddings",
     "//services/passage_embeddings/public/mojom",
     "//services/screen_ai/buildflags",
     "//services/service_manager/public/cpp",
@@ -139,9 +139,10 @@ static_library("utility") {
       "//chrome/common:mojo_bindings",
       "//chrome/common/importer:interfaces",
       "//components/autofill/core/common",
+      "//components/legion/oak_session_service",
       "//components/user_data_importer/common",
       "//components/user_data_importer/content",
-      "//components/user_data_importer/utility:safari_data_importer",
+      "//components/user_data_importer/utility:bookmarks",
       "//services/proxy_resolver:lib",
       "//services/screen_ai",
     ]
@@ -193,7 +194,7 @@ static_library("utility") {
       "//chromeos/ash/services/boca/babelorca/mojom",
       "//chromeos/ash/services/ime:lib",
       "//chromeos/ash/services/ime/public/mojom",
-      "//chromeos/ash/services/nearby/public/mojom:mojom",
+      "//chromeos/ash/services/nearby/public/mojom",
       "//chromeos/ash/services/orca",
       "//chromeos/ash/services/orca/public/mojom",
       "//chromeos/ash/services/quick_pair",
@@ -202,19 +203,10 @@ static_library("utility") {
       "//chromeos/components/mahi/public/mojom",
       "//chromeos/components/quick_answers/public/cpp",
       "//chromeos/components/quick_answers/public/mojom",
-      "//chromeos/constants:constants",
+      "//chromeos/constants",
       "//chromeos/services/tts",
       "//chromeos/services/tts/public/mojom",
     ]
-
-    if (enable_cros_libassistant) {
-      deps += [
-        "//chromeos/ash/services/assistant/audio_decoder:lib",
-        "//chromeos/ash/services/assistant/public/mojom",
-        "//chromeos/ash/services/libassistant",
-        "//chromeos/ash/services/libassistant/public/mojom",
-      ]
-    }
 
     assert(enable_pdf)
     deps += [ "//chrome/services/pdf:lib" ]
@@ -238,13 +230,6 @@ static_library("utility") {
 
     if (!is_android) {
       deps += [ "//chrome/services/printing:lib" ]
-    }
-
-    if (is_chromeos) {
-      deps += [
-        "//chrome/services/ipp_parser",
-        "//chrome/services/ipp_parser/public/mojom",
-      ]
     }
   }
 
@@ -292,7 +277,9 @@ if (!is_android) {
       "//components/favicon_base",
       "//components/user_data_importer/common",
       "//components/user_data_importer/utility:safari_data_importer",
+      "//content/test:test_support",
       "//sql",
+      "//sql:test_support",
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/zlib/google:compression_utils",

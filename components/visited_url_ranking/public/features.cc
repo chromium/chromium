@@ -11,9 +11,7 @@
 
 namespace visited_url_ranking::features {
 
-BASE_FEATURE(kVisitedURLRankingService,
-             "VisitedURLRankingService",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kVisitedURLRankingService, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<bool>
     kVisitedURLRankingHistoryFetcherDiscardZeroDurationVisits{
@@ -50,16 +48,12 @@ const char kURLAggregateCountLimit[] = "aggregate_count_limit";
 const int kURLAggregateCountLimitDefaultValue = 50;
 
 BASE_FEATURE(kVisitedURLRankingHistoryVisibilityScoreFilter,
-             "VisitedURLRankingHistoryVisibilityScoreFilter",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kVisitedURLRankingSegmentationMetricsData,
-             "VisitedURLRankingSegmentationMetricsData",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kVisitedURLRankingDeduplication,
-             "VisitedURLRankingDeduplication",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kVisitedURLRankingDeduplication, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<bool> kVisitedURLRankingDeduplicationDocs{
     &kVisitedURLRankingDeduplication, /*name=*/"url_deduplication_docs",
@@ -95,9 +89,7 @@ constexpr base::FeatureParam<std::string>
         /*name=*/"url_deduplication_excluded_prefixes",
         /*default_value=*/"www.; login.corp.; myaccount.; accounts.;"};
 
-BASE_FEATURE(kVisitedURLRankingDecorations,
-             "VisitedURLRankingDecorations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kVisitedURLRankingDecorations, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<int> kVisitedURLRankingDecorationTimeOfDay{
     &kVisitedURLRankingDecorations,
@@ -116,7 +108,6 @@ constexpr base::FeatureParam<int>
         /*default_value=*/1};
 
 BASE_FEATURE(kVisitedURLRankingScoreThreshold,
-             "VisitedURLRankingScoreThreshold",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<double>
@@ -147,9 +138,7 @@ constexpr base::FeatureParam<double> kVisitedURLRankingScoreThresholdCCTVisit{
     /*name=*/"cct_visit_score_threshold",
     /*default_value=*/0};
 
-BASE_FEATURE(kGroupSuggestionService,
-             "GroupSuggestionService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGroupSuggestionService, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<bool> kGroupSuggestionEnableRecentlyOpened{
     &kGroupSuggestionService,
@@ -179,7 +168,7 @@ constexpr base::FeatureParam<bool> kGroupSuggestionEnableTabSwitcherOnly{
 constexpr base::FeatureParam<bool> kGroupSuggestionEnableVisibilityCheck{
     &kGroupSuggestionService,
     /*name=*/"group_suggestion_enable_visibility_check",
-    /*default_value=*/true};
+    /*default_value=*/false};
 
 constexpr base::FeatureParam<bool> kGroupSuggestionTriggerCalculationOnPageLoad{
     &kGroupSuggestionService,

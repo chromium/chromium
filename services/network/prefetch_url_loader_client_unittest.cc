@@ -20,6 +20,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/referrer_policy.h"
@@ -39,7 +40,6 @@ namespace {
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::IsTrue;
 using ::testing::MockFunction;
 using ::testing::NotNull;
@@ -204,10 +204,9 @@ MATCHER(URLLoaderCompletionStatusIsOk, "URLLoaderCompletionStatus is ok") {
   // `ssl_info` is omitted as it lacks an equality operator and it's not worth
   // implementing one just for this test.
   return equals(&S::error_code) && equals(&S::extended_error_code) &&
-         equals(&S::exists_in_cache) && equals(&S::exists_in_memory_cache) &&
-         equals(&S::encoded_data_length) && equals(&S::encoded_body_length) &&
-         equals(&S::decoded_body_length) && equals(&S::cors_error_status) &&
-         equals(&S::private_network_access_preflight_result) &&
+         equals(&S::exists_in_cache) && equals(&S::encoded_data_length) &&
+         equals(&S::encoded_body_length) && equals(&S::decoded_body_length) &&
+         equals(&S::cors_error_status) &&
          equals(&S::trust_token_operation_status) &&
          equals(&S::blocked_by_response_reason) &&
          equals(&S::should_report_orb_blocking) &&
@@ -311,7 +310,7 @@ class PrefetchURLLoaderClientTest : public ::testing::Test {
     EXPECT_CALL(mock_client_,
                 OnReceiveResponse(URLResponseHeadIsOk(), _,
                                   Optional(BigBufferHasExpectedContents())))
-        .WillOnce(WithArg<1>(Invoke(CheckDataPipeContents)));
+        .WillOnce(WithArg<1>(CheckDataPipeContents));
     EXPECT_CALL(mock_client_, OnReceiveRedirect(EqualsTestRedirectInfo(),
                                                 URLResponseHeadIsOk()));
     EXPECT_CALL(mock_client_, OnUploadProgress(Eq(kTestCurrentPosition),
@@ -439,7 +438,7 @@ TEST_F(PrefetchURLLoaderClientTest, MAYBE_ReplayAfterResponse) {
     EXPECT_CALL(mock_client(),
                 OnReceiveResponse(URLResponseHeadIsOk(), _,
                                   Optional(BigBufferHasExpectedContents())))
-        .WillOnce(WithArg<1>(Invoke(CheckDataPipeContents)));
+        .WillOnce(WithArg<1>(CheckDataPipeContents));
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(mock_client(), OnComplete(URLLoaderCompletionStatusIsOk()));
     EXPECT_CALL(checkpoint, Call(2));

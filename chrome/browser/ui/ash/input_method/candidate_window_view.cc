@@ -68,7 +68,7 @@ class CandidateWindowBorder : public views::BubbleBorder {
     // because the arrow must be in the content's edge. But CandidateWindow has
     // to be visible even when |anchor_rect| is out of the screen.
     gfx::Rect work_area =
-        display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+        display::Screen::Get()->GetDisplayForNewWindows().work_area();
     if (bounds.right() > work_area.right()) {
       bounds.set_x(work_area.right() - bounds.width());
     }

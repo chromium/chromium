@@ -78,7 +78,13 @@ enum class MenuActionType {
   ShareLocalTabGroup = 65,
   LeaveSharedTabGroup = 66,
   DeleteSharedTabGroup = 67,
-  kMaxValue = DeleteSharedTabGroup,
+  GeminiWithImageAttachment = 68,
+  PinSite = 69,
+  UnpinSite = 70,
+  EditPinnedSite = 71,
+  DeleteBrowsingData = 72,
+  CreateEmptyTabGroup = 73,
+  kMaxValue = CreateEmptyTabGroup,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/mobile/enums.xml)
 

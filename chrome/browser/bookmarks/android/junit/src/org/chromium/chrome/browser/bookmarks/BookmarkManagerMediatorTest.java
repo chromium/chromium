@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -120,7 +122,6 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncService.SyncStateChangedListener;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -144,7 +145,10 @@ import java.util.function.Consumer;
 /** Unit tests for {@link BookmarkManagerMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPostTask.class})
-@EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
+@EnableFeatures({
+    ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP,
+    ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES
+})
 public class BookmarkManagerMediatorTest {
     private static final GURL EXAMPLE_URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final String EXAMPLE_URL_FORMATTED =
@@ -357,13 +361,14 @@ public class BookmarkManagerMediatorTest {
         // This just runs all of those posts synchronously to simplify test code.
         ShadowPostTask.setTestImpl(
                 (taskTraits, task, delay) -> {
-                    assert delay == 0;
-                    assert taskTraits >= TaskTraits.UI_TRAITS_START;
+                    assertThat(delay).isEqualTo(0);
+                    assertThat(taskTraits).isAtLeast(TaskTraits.UI_TRAITS_START);
                     task.run();
                 });
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     private void onActivity(Activity activity) {
         mActivity = spy(activity);
 
@@ -537,6 +542,7 @@ public class BookmarkManagerMediatorTest {
                         mOnScrollListenerConsumer,
                         mBookmarkManagerOpener,
                         mPriceDropNotificationManager);
+        mMediator.onAttachedToWindow();
         mMediator.addUiObserver(mBookmarkUiObserver);
     }
 
@@ -670,7 +676,7 @@ public class BookmarkManagerMediatorTest {
         verify(mBookmarkModel, times(0)).getTopLevelFolderIds(anyInt());
 
         finishLoading();
-        mMediator.openFolder(mBookmarkModel.getRootFolderId());
+        mMediator.openFolder(mRootFolderId);
         verify(mBookmarkModel, times(1))
                 .getTopLevelFolderIds(
                         BookmarkBarUtils.isDeviceBookmarkBarCompatible(mActivity)
@@ -863,6 +869,10 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     public void testAttachmentChanges() {
+        // The setUp() method already calls onAttachedToWindow() once. To test the detach/attach
+        // cycle cleanly, we reset the mock here.
+        reset(mBookmarkUndoController);
+
         mMediator.onAttachedToWindow();
         verify(mBookmarkUndoController).setEnabled(true);
 
@@ -1288,19 +1298,19 @@ public class BookmarkManagerMediatorTest {
         assertNotNull(menu);
 
         // Select.
-        menu.onItemClick(null, null, 0, 0);
+        clickChildAt(menu, 0);
         verify(mSelectionDelegate).toggleSelectionForItem(mBookmarkId21);
 
         // Edit.
         // TODO(crbug.com/40267749): This doesn't actually open the activity yet.
-        menu.onItemClick(null, null, 1, 0);
+        clickChildAt(menu, 1);
 
         // Move.
         // TODO(crbug.com/40267749): This doesn't actually open the activity yet.
-        menu.onItemClick(null, null, 2, 0);
+        clickChildAt(menu, 2);
 
         // Delete.
-        menu.onItemClick(null, null, 3, 0);
+        clickChildAt(menu, 3);
         verify(mBookmarkModel).deleteBookmarks(mBookmarkId21);
     }
 
@@ -1343,7 +1353,7 @@ public class BookmarkManagerMediatorTest {
         assertNotNull(menu);
 
         // Delete.
-        menu.onItemClick(null, null, 4, 0);
+        clickChildAt(menu, 4);
         verify(mPriceTrackingUtilsJniMock)
                 .setPriceTrackingStateForBookmark(
                         any(), anyLong(), anyBoolean(), any(), anyBoolean());
@@ -1903,7 +1913,7 @@ public class BookmarkManagerMediatorTest {
         assertFalse(mModelList.get(1).model.get(BookmarkManagerProperties.IS_HIGHLIGHTED));
 
         // Show in folder.
-        menu.onItemClick(null, null, 4, 0);
+        clickChildAt(menu, 4);
         assertTrue(mModelList.get(1).model.get(BookmarkManagerProperties.IS_HIGHLIGHTED));
     }
 
@@ -2343,26 +2353,6 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
-    public void onPreferenceChanged_sortOrderChanged_readsAccessibility() {
-        AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
-
-        mMediator.onBookmarkModelLoaded();
-        mMediator.openFolder(mFolderId1);
-        mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
-        verify(mRecyclerView).announceForAccessibility("Sorting from A to Z");
-    }
-
-    @Test
-    public void onPreferenceChanged_viewPreferenceUpdated_readsAccessibility() {
-        AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
-
-        mMediator.onBookmarkModelLoaded();
-        mMediator.openFolder(mFolderId1);
-        mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
-        verify(mRecyclerView).announceForAccessibility("Showing visual view");
-    }
-
-    @Test
     public void testDestroyDuringPendingRefresh() {
         // Remove test impl from setUp, to resume paused behavior.
         ShadowPostTask.reset();
@@ -2430,6 +2420,153 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
+    public void testBackPressStateSupplier_initialState() {
+        finishLoading();
+        mMediator.openFolder(mRootFolderId);
+        assertFalse("Supplier should be false in root folder.", mBackPressStateSupplier.get());
+    }
+
+    @Test
+    public void testBackPressStateSupplier_folderNavigation() {
+        finishLoading();
+        mMediator.openFolder(mRootFolderId);
+        assertFalse("Supplier should be false in root folder.", mBackPressStateSupplier.get());
+
+        // Navigate into a folder, which should enable back press.
+        mMediator.openFolder(mFolderId1);
+        assertTrue(
+                "Supplier should be true after navigating into a folder.",
+                mBackPressStateSupplier.get());
+
+        // Navigate back, which should disable it again.
+        mMediator.onBackPressed();
+        assertFalse(
+                "Supplier should be false after navigating back to root.",
+                mBackPressStateSupplier.get());
+    }
+
+    @Test
+    public void testBackPressStateSupplier_selectionMode() {
+        finishLoading();
+        mMediator.openFolder(mRootFolderId);
+        assertFalse("Supplier should be false initially.", mBackPressStateSupplier.get());
+
+        // Simulate selection starting by updating the supplier the Mediator is observing.
+        mSelectableListLayoutHandleBackPressChangedSupplier.set(true);
+        assertTrue(
+                "Supplier should be true when selection is active.", mBackPressStateSupplier.get());
+
+        // Simulate selection ending.
+        mSelectableListLayoutHandleBackPressChangedSupplier.set(false);
+        assertFalse(
+                "Supplier should be false when selection is inactive.",
+                mBackPressStateSupplier.get());
+    }
+
+    @Test
+    public void testBackPressStateSupplier_detachResetsStateAndAttachRestores() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        assertFalse("Supplier should be false initially.", mBackPressStateSupplier.get());
+
+        // Simulate selection starting by updating the supplier the Mediator is observing.
+        mSelectableListLayoutHandleBackPressChangedSupplier.set(true);
+        assertTrue(
+                "Supplier should be true when selection is active.", mBackPressStateSupplier.get());
+
+        // Detaching the view should immediately disable the handler.
+        mMediator.onDetachedFromWindow();
+        assertFalse(
+                "Supplier should be false immediately after detach.",
+                mBackPressStateSupplier.get());
+
+        // Re-attaching the view should restore the correct enabled state.
+        mMediator.onAttachedToWindow();
+        assertTrue(
+                "Supplier should be restored to true after re-attach.",
+                mBackPressStateSupplier.get());
+    }
+
+    @Test
+    public void testOnBackPressed_clearsSelection() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+
+        // Simulate selection being active, which makes the layout's handler return true.
+        doReturn(true).when(mSelectableListLayout).onBackPressed();
+
+        // Perform the back press.
+        boolean result = mMediator.onBackPressed();
+
+        // Verify that the layout's handler was called and that the event was consumed.
+        verify(mSelectableListLayout).onBackPressed();
+        assertTrue("onBackPressed should return true when selection is cleared.", result);
+
+        // Verify folder navigation did NOT happen.
+        assertEquals(
+                "State stack should not be popped when clearing selection.",
+                1,
+                mMediator.getStateStackForTesting().size());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testBackPressStateSupplier_tabletSearch() {
+        finishLoading();
+        mMediator.openFolder(mRootFolderId);
+        assertFalse("Supplier should be false initially on tablet.", mBackPressStateSupplier.get());
+
+        // Get the callback from the currently displayed search box model.
+        Callback<String> searchTextChangeCallback =
+                mModelList
+                        .get(0)
+                        .model
+                        .get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK);
+
+        // Starting a search should enable back press.
+        searchTextChangeCallback.onResult("test");
+        assertTrue(
+                "Supplier should be true when searching on tablet.", mBackPressStateSupplier.get());
+
+        // Clearing the search should disable it.
+        searchTextChangeCallback.onResult("");
+        assertFalse(
+                "Supplier should be false when search is cleared on tablet.",
+                mBackPressStateSupplier.get());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testBackPressStateSupplier_tabletSearchInSubfolder() {
+        finishLoading();
+        mMediator.openFolder(mRootFolderId);
+        assertFalse("Supplier should be false in root folder.", mBackPressStateSupplier.get());
+
+        mMediator.openFolder(mFolderId1);
+        assertTrue("Supplier should be true in a subfolder.", mBackPressStateSupplier.get());
+
+        Callback<String> searchTextChangeCallback =
+                mModelList
+                        .get(0)
+                        .model
+                        .get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK);
+        searchTextChangeCallback.onResult("test");
+        assertTrue(
+                "Supplier should remain true when searching in a subfolder.",
+                mBackPressStateSupplier.get());
+
+        searchTextChangeCallback.onResult("");
+        assertTrue(
+                "Supplier should still be true after clearing search in a subfolder.",
+                mBackPressStateSupplier.get());
+
+        mMediator.onBackPressed();
+        assertFalse(
+                "Supplier should be false after navigating back to root.",
+                mBackPressStateSupplier.get());
+    }
+
+    @Test
     public void testNativePageState() {
         finishLoading();
         mMediator.setBasicNativePage(mNativePage);
@@ -2460,5 +2597,9 @@ public class BookmarkManagerMediatorTest {
         assertEquals(2, mModelList.size());
         assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
         assertEquals(ViewType.EMPTY_STATE, mModelList.get(1).type);
+    }
+
+    private void clickChildAt(BasicListMenu menu, int i) {
+        menu.clickItemForTesting(i);
     }
 }

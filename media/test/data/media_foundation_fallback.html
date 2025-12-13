@@ -6,8 +6,11 @@
 <script src='eme_player_js/app_loader.js' type='text/javascript'></script>
 <script type='text/javascript'>
 
-  // Special key id that invokes crash in Media Foundation Clear Key CDM.
+  // Special key id that invokes a crash in the Media Foundation Clear Key CDM.
   const crashKeyId = 'crash-crashcrash';
+
+  // The number of times to crash the CDM before we expect it to be disabled.
+  const crashAttemptsBeforeFallback = 2;
 
   // This test only uses |keySystem|.
   var testConfig = new TestConfig();
@@ -30,21 +33,19 @@
     sessionTypes: ['temporary'],
   }];
 
-  var mediaKeys;
-  var mediaKeySession;
-  var mediaKeySessionId;
-
-  async function createSessionAndGenerateRequestWithCrashKeyId() {
+  // Creates a MediaKeySession and uses a special key ID to trigger a crash
+  // in the underlying CDM.
+  async function triggerCdmCrash() {
     let access = await navigator.requestMediaKeySystemAccess(testConfig.keySystem, config);
+    let mediaKeys = await access.createMediaKeys();
+    let mediaKeySession = mediaKeys.createSession();
 
-    Utils.timeLog('Creating session');
-    mediaKeys = await access.createMediaKeys();
-    mediaKeySession = await mediaKeys.createSession();
+    Utils.timeLog('Generating request with crash key ID.');
     await mediaKeySession.generateRequest(initDataType, initData);
 
     const waitForKeyStatusChangePromise =
       Utils.waitForEvent(mediaKeySession, 'keystatuseschange');
-    Utils.timeLog('Calling update()');
+    Utils.timeLog('Calling update() to trigger crash.');
     const jwkSet = Utils.createJWKData(crashKeyId, key);
     return Promise.all([
       mediaKeySession.update(jwkSet),
@@ -53,21 +54,28 @@
   }
 
   async function runTest() {
-    // Create first session.
-    await createSessionAndGenerateRequestWithCrashKeyId();
+    // This test verifies that after a CDM crashes multiple times, it is
+    // disabled, and subsequent requests for the same key system will fail.
+    try {
+      for (let i = 1; i <= crashAttemptsBeforeFallback; i++) {
+        Utils.timeLog(`Attempting CDM crash #${i}...`);
+        await triggerCdmCrash();
+      }
+    } catch (error) {
+      Utils.failTest(`One of the initial crash attempts failed unexpectedly: ${error}`);
+      return;
+    }
 
-    // Create second session.
-    await createSessionAndGenerateRequestWithCrashKeyId();
-
-    // Third session should not be allowed as fallback should be on.
-    createSessionAndGenerateRequestWithCrashKeyId()
-      .then(function () {
-        Utils.failTest('Key system should not be supported due to fallback after multiple crashes');
-      })
-      .catch(function (error) {
-        Utils.timeLog('Successfully failed with error: ' + error);
-        Utils.setResultInTitle('ENDED');
-      });
+    // The next attempt should fail because the key system should now be disabled.
+    Utils.timeLog('Attempting to create session again (expected to fail)...');
+    try {
+      await triggerCdmCrash();
+      // If we get here, the test has failed because the key system was not disabled.
+      Utils.failTest('Key system should not have been supported after multiple crashes.');
+    } catch (error) {
+      Utils.timeLog(`Successfully failed as expected with error: ${error}`);
+      Utils.setResultInTitle('ENDED');
+    }
   }
 </script>
 </html>

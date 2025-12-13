@@ -185,7 +185,7 @@ class WaylandBufferManagerTest : public WaylandTest {
       EXPECT_CALL(*callback, Run(_))
           .Times(1)
           .WillRepeatedly(
-              ::testing::Invoke([this, callback](std::string error_string) {
+              [this, callback](std::string error_string) {
                 channel_destroyed_error_message_ = error_string;
 
                 manager_host_->OnChannelDestroyed();
@@ -193,8 +193,12 @@ class WaylandBufferManagerTest : public WaylandTest {
                 manager_host_->SetTerminateGpuCallback(callback->Get());
 
                 auto interface_ptr = manager_host_->BindInterface();
-                // Recreate the gpu side manager (the production code does the
-                // same).
+
+                // Reset the surface factory's buffer manager to avoid a
+                // dangling pointer.
+                surface_factory_->SetBufferManagerForTesting(nullptr);
+                // Recreate the gpu side manager (the production code does
+                // the same).
                 buffer_manager_gpu_ =
                     std::make_unique<WaylandBufferManagerGpu>();
                 buffer_manager_gpu_->Initialize(
@@ -204,7 +208,9 @@ class WaylandBufferManagerTest : public WaylandTest {
                     /*supports_acquire_fence=*/false,
                     /*supports_overlays=*/true,
                     /*supports_single_pixel_buffer=*/true);
-              }));
+                surface_factory_->SetBufferManagerForTesting(
+                    buffer_manager_gpu_.get());
+              });
     }
   }
 
@@ -224,7 +230,7 @@ class WaylandBufferManagerTest : public WaylandTest {
     SetTerminateCallbackExpectationAndDestroyChannel(&callback_, fail);
     buffer_manager_gpu_->CreateDmabufBasedBuffer(
         std::move(fd), kDefaultSize, strides, offsets, modifiers, format,
-        planes_count, buffer_id);
+        planes_count, gfx::ColorSpace(), gfx::HDRMetadata(), buffer_id);
 
     base::RunLoop().RunUntilIdle();
   }
@@ -352,8 +358,7 @@ TEST_P(WaylandBufferManagerTest, VerifyModifiers) {
   const std::vector<uint64_t> kFormatModifiers{DRM_FORMAT_MOD_INVALID,
                                                kFormatModiferLinear};
 
-  // Tests that fourcc format is added, but invalid modifier is ignored first.
-  // Then, when valid modifier comes, it is stored.
+  // Tests that fourcc format is added.
   for (const auto& modifier : kFormatModifiers) {
     PostToServerAndWait([modifier](wl::TestWaylandServerThread* server) {
       uint32_t modifier_hi = modifier >> 32;
@@ -362,20 +367,17 @@ TEST_P(WaylandBufferManagerTest, VerifyModifiers) {
           server->zwp_linux_dmabuf_v1()->resource(), kFourccFormatR8,
           modifier_hi, modifier_lo);
     });
+  }
 
-    auto buffer_formats =
-        connection_->buffer_factory()->GetSupportedBufferFormats();
-    ASSERT_EQ(buffer_formats.size(), 1u);
-    ASSERT_EQ(buffer_formats.begin()->first,
-              GetBufferFormatFromFourCCFormat(kFourccFormatR8));
-
-    auto modifiers = buffer_formats.begin()->second;
-    if (modifier == DRM_FORMAT_MOD_INVALID) {
-      ASSERT_EQ(modifiers.size(), 0u);
-    } else {
-      ASSERT_EQ(modifiers.size(), 1u);
-      ASSERT_EQ(modifiers[0], modifier);
-    }
+  auto buffer_formats =
+      connection_->buffer_factory()->GetSupportedBufferFormats();
+  ASSERT_EQ(buffer_formats.size(), 1u);
+  ASSERT_EQ(buffer_formats.begin()->first,
+            GetBufferFormatFromFourCCFormat(kFourccFormatR8));
+  auto modifiers = buffer_formats.begin()->second;
+  ASSERT_EQ(modifiers.size(), 2u);
+  for (size_t i = 0; i < kFormatModifiers.size(); ++i) {
+    ASSERT_EQ(modifiers[i], kFormatModifiers[i]);
   }
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {

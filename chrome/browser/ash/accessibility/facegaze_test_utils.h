@@ -271,6 +271,8 @@ class FaceGazeTestUtils {
 
   void WaitForFaceLandmarker();
 
+  void StopWebCam();
+
  private:
   void ExecuteAccessibilityCommonScript(const std::string& script);
 

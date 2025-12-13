@@ -30,7 +30,6 @@ namespace {
 // When enabled, all the fields for SyncEntity are populated for commit-only
 // data types (otherwise, only `specifics` and `id_string` were populated).
 BASE_FEATURE(kSyncPopulateAllFieldsForCommitOnlyTypes,
-             "SyncPopulateAllFieldsForCommitOnlyTypes",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 CommitResponseData BuildCommitResponseData(

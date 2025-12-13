@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import './selectable_icon_button.js';
+
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -68,6 +72,8 @@ export class InkBrushSelectorElement extends CrLitElement {
       case AnnotationBrushType.PEN:
         record(UserAction.SELECT_INK2_BRUSH_PEN);
         break;
+      default:
+        assertNotReachedCase(newType);
     }
   }
 
@@ -81,6 +87,8 @@ export class InkBrushSelectorElement extends CrLitElement {
                                'pdf-ink:ink-highlighter';
       case AnnotationBrushType.PEN:
         return isCurrentType ? 'pdf-ink:ink-pen-fill' : 'pdf-ink:ink-pen';
+      default:
+        assertNotReachedCase(type);
     }
   }
 
@@ -92,6 +100,8 @@ export class InkBrushSelectorElement extends CrLitElement {
         return loadTimeData.getString('annotationHighlighter');
       case AnnotationBrushType.PEN:
         return loadTimeData.getString('annotationPen');
+      default:
+        assertNotReachedCase(type);
     }
   }
 }

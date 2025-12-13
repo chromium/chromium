@@ -44,8 +44,9 @@ int MapCrashExitCodeForHistogram(int exit_code) {
   // Since |abs(STATUS_GUARD_PAGE_VIOLATION) == MAX_INT| it causes problems in
   // histograms.cc. Solve this by remapping it to a smaller value, which
   // hopefully doesn't conflict with other codes.
-  if (static_cast<DWORD>(exit_code) == STATUS_GUARD_PAGE_VIOLATION)
+  if (static_cast<DWORD>(exit_code) == STATUS_GUARD_PAGE_VIOLATION) {
     return 0x1FCF7EC3;  // Randomly picked number.
+  }
 #endif
 
   return std::abs(exit_code);
@@ -269,6 +270,7 @@ void StabilityMetricsHelper::LogRendererCrash(
     case base::TERMINATION_STATUS_PROCESS_CRASHED:
     case base::TERMINATION_STATUS_ABNORMAL_TERMINATION:
     case base::TERMINATION_STATUS_OOM:
+    case base::TERMINATION_STATUS_EVICTED_FOR_MEMORY:
       LogRendererCrashImpl(coarse_renderer_type, exit_code);
       break;
 #if BUILDFLAG(IS_CHROMEOS)

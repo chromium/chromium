@@ -4,7 +4,6 @@
 
 #include "gpu/vulkan/android/vulkan_implementation_android.h"
 
-#include "base/android/android_hardware_buffer_compat.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"

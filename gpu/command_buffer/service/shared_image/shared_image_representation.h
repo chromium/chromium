@@ -10,9 +10,10 @@
 
 #include <memory>
 
-#include "base/functional/callback_helpers.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -48,6 +49,7 @@ class VulkanImplementation;
 
 #if BUILDFLAG(IS_APPLE)
 #include "ui/gfx/mac/io_surface.h"
+#include "ui/gfx/mac/mtl_shared_event_fence.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -58,6 +60,7 @@ extern "C" typedef struct AHardwareBuffer AHardwareBuffer;
 
 #if BUILDFLAG(IS_WIN)
 #include <d3d11.h>
+#include <d3d12.h>
 #include <wrl/client.h>
 #endif
 
@@ -203,11 +206,6 @@ class SharedImageRepresentationFactoryRef : public SharedImageRepresentation {
     handle = backing()->GetGpuMemoryBufferHandle();
     buffer_usage = backing()->buffer_usage();
   }
-  bool PresentSwapChain() { return backing()->PresentSwapChain(); }
-  void RegisterImageFactory(SharedImageFactory* factory) {
-    DCHECK(is_primary_);
-    backing()->RegisterImageFactory(factory);
-  }
   void SetSharedImagePoolId(SharedImagePoolId pool_id) {
     backing()->SetSharedImagePoolId(std::move(pool_id));
   }
@@ -333,14 +331,13 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
   class GPU_GLES2_EXPORT GraphiteTextureHolder
       : public base::RefCountedThreadSafe<GraphiteTextureHolder> {
    public:
-    explicit GraphiteTextureHolder(skgpu::graphite::BackendTexture texture)
-        : texture_(std::move(texture)) {}
+    explicit GraphiteTextureHolder(skgpu::graphite::BackendTexture texture);
 
     const skgpu::graphite::BackendTexture& texture() { return texture_; }
 
    protected:
     friend class base::RefCountedThreadSafe<GraphiteTextureHolder>;
-    virtual ~GraphiteTextureHolder() = default;
+    virtual ~GraphiteTextureHolder();
 
     skgpu::graphite::BackendTexture texture_;
   };
@@ -507,11 +504,15 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
 
   // Return whether we need to submit graphite's commands before EndAccess.
   // NOTE: Implemented only for Graphite.
-  virtual bool NeedGraphiteContextSubmitBeforeEndAccess() = 0;
+  bool NeedGraphiteContextSubmitBeforeEndAccess();
 
   virtual bool SupportsMultipleConcurrentReadAccess();
 
  protected:
+  // Return whether the graphite context submission can be deferred even after
+  // the backing is destroyed.
+  virtual bool SupportsDeferredGraphiteSubmit();
+
   virtual void EndWriteAccess() = 0;
   virtual void EndReadAccess() = 0;
 };
@@ -625,9 +626,6 @@ class GPU_GLES2_EXPORT SkiaGaneshImageRepresentation
   std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores) override;
-
-  // Return false for ganesh.
-  bool NeedGraphiteContextSubmitBeforeEndAccess() final;
 
  protected:
   friend class WrappedSkiaGaneshCompoundImageRepresentation;
@@ -764,8 +762,6 @@ class GPU_GLES2_EXPORT SkiaGraphiteImageRepresentation
   std::unique_ptr<ScopedReadAccess> BeginScopedReadAccess(
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores) override;
-
-  bool NeedGraphiteContextSubmitBeforeEndAccess() override;
 
  protected:
   friend class WrappedSkiaGraphiteCompoundImageRepresentation;
@@ -907,8 +903,54 @@ class GPU_GLES2_EXPORT DawnBufferRepresentation
   // Allows passing usages to the created Dawn buffer.
   std::unique_ptr<ScopedAccess> BeginScopedAccess(wgpu::BufferUsage usage);
 
- private:
+ protected:
+  friend class WrappedDawnBufferCompoundImageRepresentation;
   virtual wgpu::Buffer BeginAccess(wgpu::BufferUsage usage) = 0;
+  virtual void EndAccess() = 0;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+// WebNNTensorRepresentation
+
+class GPU_GLES2_EXPORT WebNNTensorRepresentation
+    : public SharedImageRepresentation {
+ public:
+  WebNNTensorRepresentation(SharedImageManager* manager,
+                            SharedImageBacking* backing,
+                            MemoryTypeTracker* tracker)
+      : SharedImageRepresentation(manager, backing, tracker) {}
+
+  class GPU_GLES2_EXPORT ScopedAccess
+      : public ScopedAccessBase<WebNNTensorRepresentation> {
+   public:
+    ScopedAccess(base::PassKey<WebNNTensorRepresentation> pass_key,
+                 WebNNTensorRepresentation* representation,
+                 AccessMode access_mode);
+    ~ScopedAccess();
+
+#if BUILDFLAG(IS_WIN)
+    scoped_refptr<gfx::D3DSharedFence> GetAcquireFence() const;
+    void SetReleaseFence(scoped_refptr<gfx::D3DSharedFence> release_fence);
+#endif
+  };
+
+  std::unique_ptr<ScopedAccess> BeginScopedAccess();
+
+#if BUILDFLAG(IS_WIN)
+  virtual Microsoft::WRL::ComPtr<ID3D12Resource> GetD3D12Buffer() const;
+#endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_APPLE)
+  virtual IOSurfaceRef GetIOSurface() const;
+#endif  // BUILDFLAG(IS_APPLE)
+ protected:
+  friend class WrappedWebNNTensorCompoundImageRepresentation;
+
+#if BUILDFLAG(IS_WIN)
+  virtual scoped_refptr<gfx::D3DSharedFence> GetAcquireFence() const = 0;
+  virtual void SetReleaseFence(
+      scoped_refptr<gfx::D3DSharedFence> release_fence) = 0;
+#endif  // BUILDFLAG(IS_WIN)
+  virtual bool BeginAccess() = 0;
   virtual void EndAccess() = 0;
 };
 
@@ -953,6 +995,9 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
 #elif BUILDFLAG(IS_APPLE)
     gfx::ScopedIOSurface GetIOSurface() const {
       return representation()->GetIOSurface();
+    }
+    std::vector<gfx::MTLSharedEventFence> GetBackpressureFences() const {
+      return representation()->GetBackpressureFences();
     }
     bool IsInUseByWindowServer() const {
       return representation()->IsInUseByWindowServer();
@@ -1001,6 +1046,7 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
   virtual std::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage();
 #elif BUILDFLAG(IS_APPLE)
   virtual gfx::ScopedIOSurface GetIOSurface() const;
+  virtual std::vector<gfx::MTLSharedEventFence> GetBackpressureFences() const;
   // Return true if the macOS WindowServer is currently using the underlying
   // storage for the image.
   virtual bool IsInUseByWindowServer() const;
@@ -1142,6 +1188,21 @@ class GPU_GLES2_EXPORT RasterImageRepresentation
 ///////////////////////////////////////////////////////////////////////////////
 // VideoImageRepresentation
 
+#if BUILDFLAG(IS_WIN)
+// Holds a D3D11 texture array, and index into it.
+struct GPU_GLES2_EXPORT D3D11TextureAndArrayIndex {
+  D3D11TextureAndArrayIndex(Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
+                            size_t array_index);
+  D3D11TextureAndArrayIndex(const D3D11TextureAndArrayIndex& other);
+  D3D11TextureAndArrayIndex(D3D11TextureAndArrayIndex&& other);
+
+  ~D3D11TextureAndArrayIndex();
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
+  size_t array_index = 0;
+};
+#endif  // BUILDFLAG(IS_WIN)
+
 class GPU_GLES2_EXPORT VideoImageRepresentation
     : public SharedImageRepresentation {
  public:
@@ -1153,7 +1214,7 @@ class GPU_GLES2_EXPORT VideoImageRepresentation
     ~ScopedWriteAccess();
 
 #if BUILDFLAG(IS_WIN)
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> GetD3D11Texture() const {
+    D3D11TextureAndArrayIndex GetD3D11Texture() const {
       return representation()->GetD3D11Texture();
     }
 #endif  // BUILDFLAG(IS_WIN)
@@ -1167,10 +1228,16 @@ class GPU_GLES2_EXPORT VideoImageRepresentation
     ~ScopedReadAccess();
 
 #if BUILDFLAG(IS_WIN)
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> GetD3D11Texture() const {
+    D3D11TextureAndArrayIndex GetD3D11Texture() const {
       return representation()->GetD3D11Texture();
     }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_ANDROID)
+    AHardwareBuffer* GetAHardwareBuffer() const {
+      return representation()->GetAHardwareBuffer();
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
   };
 
   VideoImageRepresentation(SharedImageManager* manager,
@@ -1183,8 +1250,13 @@ class GPU_GLES2_EXPORT VideoImageRepresentation
 
  protected:
 #if BUILDFLAG(IS_WIN)
-  virtual Microsoft::WRL::ComPtr<ID3D11Texture2D> GetD3D11Texture() const = 0;
+  virtual D3D11TextureAndArrayIndex GetD3D11Texture() const = 0;
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_ANDROID)
+  virtual AHardwareBuffer* GetAHardwareBuffer() const = 0;
+#endif  // BUILDFLAG(IS_ANDROID)
+
   virtual bool BeginWriteAccess() = 0;
   virtual void EndWriteAccess() = 0;
   virtual bool BeginReadAccess() = 0;

@@ -78,9 +78,6 @@ class CustomLinksManagerImpl : public CustomLinksManager,
   // created through preinstalled apps.
   void RemoveCustomLinksForPreinstalledApps();
 
-  // Returns an iterator into |custom_links_|.
-  std::vector<Link>::iterator FindLinkWithUrl(const GURL& url);
-
   // history::HistoryServiceObserver implementation.
   // Deletes any Most Visited links whose URL is in |deletion_info|. Clears
   // |previous_links_|. Does not delete entries expired by HistoryService.

@@ -7,7 +7,6 @@
 #import <memory>
 
 #import "base/check.h"
-#import "ios/chrome/browser/find_in_page/model/util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_mediator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
@@ -16,8 +15,6 @@
 @interface FullscreenSystemNotificationObserver () {
   // The disabler created when VoiceOver is enabled.
   std::unique_ptr<ScopedFullscreenDisabler> _voiceOverDisabler;
-  // The disabler created when the keyboard is visible.
-  std::unique_ptr<ScopedFullscreenDisabler> _keyboardDisabler;
 }
 // The FullscreenController being enabled/disabled for system events.
 @property(nonatomic, readonly, nonnull) FullscreenController* controller;
@@ -27,9 +24,6 @@
 // Creates or destroys `_voiceOverDisabler` depending on whether VoiceOver is
 // enabled.
 - (void)voiceOverStatusChanged;
-// Called when the keyboard is shown/hidden to reset `_keyboardDisabler`.
-- (void)keyboardWillShow;
-- (void)keyboardDidHide;
 // Called when the application is foregrounded.
 - (void)applicationWillEnterForeground;
 @end
@@ -59,15 +53,6 @@
       _voiceOverDisabler =
           std::make_unique<ScopedFullscreenDisabler>(_controller);
     }
-    // Register for keyboard visibility notifications.
-    [defaultCenter addObserver:self
-                      selector:@selector(keyboardWillShow)
-                          name:UIKeyboardWillShowNotification
-                        object:nil];
-    [defaultCenter addObserver:self
-                      selector:@selector(keyboardDidHide)
-                          name:UIKeyboardDidHideNotification
-                        object:nil];
     // Register for application lifecycle events.
     if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
       [defaultCenter addObserver:self
@@ -103,21 +88,6 @@
       UIAccessibilityIsVoiceOverRunning()
           ? std::make_unique<ScopedFullscreenDisabler>(self.controller)
           : nullptr;
-}
-
-- (void)keyboardWillShow {
-  if (IsNativeFindInPageAvailable()) {
-    // If Native Find in Page with system Find panel is active, then triggering
-    // Find in Page will show the keyboard AND make Chrome enter full screen
-    // mode.
-    return;
-  }
-  _keyboardDisabler =
-      std::make_unique<ScopedFullscreenDisabler>(self.controller);
-}
-
-- (void)keyboardDidHide {
-  _keyboardDisabler = nullptr;
 }
 
 - (void)applicationDidEnterBackground {

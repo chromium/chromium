@@ -1,0 +1,105 @@
+<!DOCTYPE HTML>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/task-ids.js"></script>
+
+<h1>Hello, World</h1>
+<div id="content"></div>
+
+<script>
+  promise_test(async t => {
+    // `initialId` should be propagated to the load event.
+    const initialId = initializeTaskId();
+
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = `resources/dummy.css?token=${token()}`
+
+    const load = new Promise(resolve => {
+      link.onload = t.step_func(() => {
+        assert_equals(scheduler.taskId, initialId);
+        resolve();
+      });
+    });
+
+    document.head.appendChild(link);
+    return load;
+  }, "Task state is propagated to style link load events");
+
+  promise_test(async t => {
+    // `initialId` should be propagated to the load event.
+    const initialId = initializeTaskId();
+
+    const url =  `resources/dummy.css?token=${token()}`;
+    let link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'style';
+    link.href = url;
+
+    const preload = new Promise(resolve => {
+      link.onload = t.step_func(() => {
+        assert_equals(scheduler.taskId, initialId);
+        resolve();
+      });
+    });
+
+    document.head.appendChild(link);
+    await preload;
+
+    // Use the preload to avoid console warnings.
+    link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = url;
+
+    const styleLoad = new Promise(resolve => {
+      link.onload = t.step_func(() => {
+        assert_equals(scheduler.taskId, initialId);
+        resolve();
+      });
+    });
+
+    document.head.appendChild(link);
+    return styleLoad;
+  }, "Task state is propagated to preload link load events");
+
+  promise_test(async t => {
+    // `initialId` should be propagated to the load event.
+    const initialId = initializeTaskId();
+
+    const {promise, resolve} = Promise.withResolvers();
+    window.handler = t.step_func(() => {
+      delete window.handler;
+      assert_equals(scheduler.taskId, initialId);
+      resolve();
+    });
+
+    content.innerHTML = `
+      <link rel="stylesheet" type="text/css" href="resources/dummy.css?token=${token()}" onload="window.handler()"></link>
+      <div class="xlarge">This is some text</div>`
+    return promise;
+  }, 'Task state is propagated to load events for links inserted with innerHTML');
+
+  promise_test(async t => {
+    // `initialId` should be propagated to the load event.
+    const initialId = initializeTaskId();
+
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = 'resources/does-not-exist.css';
+
+    const p = new Promise(resolve => {
+      link.onerror = t.step_func(() => {
+        assert_equals(scheduler.taskId, initialId);
+        resolve();
+      });
+    });
+
+    document.head.appendChild(link);
+    return p;
+  }, "Task state is propagated to link error events");
+</script>

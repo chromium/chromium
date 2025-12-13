@@ -55,7 +55,7 @@
     [CEReactions, RaisesException=Setter] attribute DOMString? nodeValue;
 
     [CEReactions, ImplementedAs=textContentForBinding, RaisesException=Setter] attribute (DOMString or TrustedScript)? textContent;
-    [CEReactions] void normalize();
+    [CEReactions] undefined normalize();
 
     [NewObject, CEReactions, RaisesException] Node cloneNode(optional boolean deep = false);
     boolean isEqualNode(Node? otherNode);

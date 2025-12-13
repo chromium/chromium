@@ -30,7 +30,6 @@
 #import "url/gurl.h"
 #import "url/origin.h"
 
-@class CRWSessionStorage;
 @class CRWWebController;
 @protocol CRWWebViewProxy;
 @protocol CRWWebViewNavigationProxy;
@@ -74,11 +73,6 @@ class WebStateImpl final : public WebState {
 
   // Constructor for WebStateImpls created for new sessions.
   explicit WebStateImpl(const CreateParams& params);
-
-  // Constructor for WebStateImpls created for deserialized sessions
-  WebStateImpl(const CreateParams& params,
-               CRWSessionStorage* session_storage,
-               NativeSessionFetcher session_fetcher);
 
   // Constructor for WebStateImpls created for deserialized sessions. The
   // callbacks are used to load the complete serialized data from disk when
@@ -324,10 +318,8 @@ class WebStateImpl final : public WebState {
   const SessionCertificatePolicyCache* GetSessionCertificatePolicyCache()
       const final;
   SessionCertificatePolicyCache* GetSessionCertificatePolicyCache() final;
-  CRWSessionStorage* BuildSessionStorage() const final;
   void LoadData(NSData* data, NSString* mime_type, const GURL& url) final;
   void ExecuteUserJavaScript(NSString* javaScript) final;
-  NSString* GetStableIdentifier() const final;
   WebStateID GetUniqueIdentifier() const final;
   const std::string& GetContentsMimeType() const final;
   bool ContentIsHTML() const final;

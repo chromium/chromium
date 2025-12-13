@@ -7,6 +7,7 @@
 #include <numbers>
 
 #include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "ui/gfx/geometry/outsets_f.h"
@@ -89,10 +90,14 @@ bool ContouredRect::IntersectsQuad(const gfx::QuadF& quad) const {
                              : GetPath().Intersects(quad);
 }
 
-void ContouredRect::OutsetForMarginOrShadow(const gfx::OutsetsF& outsets) {
-  // For ordinary rounded rects, we use the existing formula.
+void ContouredRect::OutsetWithCornerCorrection(const gfx::OutsetsF& outsets) {
+  if (RuntimeEnabledFeatures::ShadowContourFollowsBorderEnabled()) {
+    rect_.OutsetWithCornerCorrection(outsets);
+    return;
+  }
+
   if (HasRoundCurvature()) {
-    rect_.OutsetForMarginOrShadow(outsets);
+    rect_.OutsetWithCornerCorrection(outsets);
     return;
   }
 

@@ -7,13 +7,17 @@
 #include <ranges>
 
 #include "base/bits.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
+#include "media/base/media_switches.h"
 #include "media/base/win/mf_helpers.h"
+#include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/windows/d3d12_helpers.h"
 #include "media/gpu/windows/d3d12_video_encode_av1_delegate.h"
 #include "media/gpu/windows/d3d12_video_encode_h264_delegate.h"
 #include "media/gpu/windows/d3d12_video_encoder_wrapper.h"
+#include "media/gpu/windows/format_utils.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h"
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
@@ -66,12 +70,26 @@ bool IsVBRSupported(ID3D12VideoDevice3* video_device,
   return SUCCEEDED(hr) && vbr.IsSupported;
 }
 
+DXGI_FORMAT GetDxgiInputFormat(VideoCodecProfile output_profile,
+                               VideoPixelFormat input_format) {
+  if ((output_profile == H264PROFILE_HIGH10PROFILE ||
+       output_profile == HEVCPROFILE_MAIN10) &&
+      input_format == PIXEL_FORMAT_P010LE) {
+    return DXGI_FORMAT_P010;
+  } else if (output_profile == AV1PROFILE_PROFILE_HIGH) {
+    return DXGI_FORMAT_AYUV;
+  } else {
+    return DXGI_FORMAT_NV12;
+  }
+}
+
 }  // namespace
 
 // static
 VideoEncodeAccelerator::SupportedProfiles
 D3D12VideoEncodeDelegate::GetSupportedProfiles(
     ID3D12VideoDevice3* video_device,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     const std::vector<D3D12_VIDEO_ENCODER_CODEC>& codecs) {
   CHECK(video_device);
   VideoEncodeAccelerator::SupportedProfiles supported_profiles;
@@ -110,13 +128,27 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
         .RateControlMode = D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_CBR,
     };
     CHECK_FEATURE_SUPPORT(RATE_CONTROL_MODE, cbr);
+    D3D12_FEATURE_DATA_VIDEO_ENCODER_RATE_CONTROL_MODE cqp{
+        .Codec = codec,
+        .RateControlMode = D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_CQP,
+    };
+    CHECK_FEATURE_SUPPORT(RATE_CONTROL_MODE, cqp);
     // If VBR is not supported, we will fallback to CBR.
     supported_profile.rate_control_modes =
         (cbr.IsSupported ? VideoEncodeAccelerator::kConstantMode |
                                VideoEncodeAccelerator::kVariableMode
+                         : VideoEncodeAccelerator::kNoMode) |
+        (cqp.IsSupported ? VideoEncodeAccelerator::kExternalMode
                          : VideoEncodeAccelerator::kNoMode);
-    // TODO(crbug.com/40275246): support L1T2/L1T3.
-    supported_profile.scalability_modes.push_back(SVCScalabilityMode::kL1T1);
+    supported_profile.scalability_modes = {
+        SVCScalabilityMode::kL1T1,
+        SVCScalabilityMode::kL1T2,
+    };
+    if (base::FeatureList::IsEnabled(kD3D12VideoEncodeAcceleratorL1T3) &&
+        !(codec == D3D12_VIDEO_ENCODER_CODEC_AV1 &&
+          gpu_workarounds.disable_d3d12_av1_multi_ref_encoding)) {
+      supported_profile.scalability_modes.push_back(SVCScalabilityMode::kL1T3);
+    }
     supported_profile.is_software_codec = false;
 
     std::vector<std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
@@ -139,9 +171,22 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
       default:
         NOTREACHED();
     }
+    bool supports_shared_image =
+        base::FeatureList::IsEnabled(kD3D12SharedImageEncode);
     for (const auto& [profile, formats] : profiles) {
       supported_profile.profile = profile;
       supported_profile.gpu_supported_pixel_formats = formats;
+      if (supports_shared_image) {
+        static constexpr auto kSupportedPixelFormatD3D12VideoProcessing =
+            base::MakeFixedFlatSet<VideoPixelFormat>(
+                {PIXEL_FORMAT_I420, PIXEL_FORMAT_NV12, PIXEL_FORMAT_YV12,
+                 PIXEL_FORMAT_NV21, PIXEL_FORMAT_ARGB, PIXEL_FORMAT_XRGB,
+                 PIXEL_FORMAT_ABGR, PIXEL_FORMAT_XBGR});
+        std::ranges::copy(
+            kSupportedPixelFormatD3D12VideoProcessing,
+            std::back_inserter(supported_profile.gpu_supported_pixel_formats));
+        supported_profile.supports_gpu_shared_images = supports_shared_image;
+      }
       supported_profiles.push_back(supported_profile);
     }
   }
@@ -167,24 +212,28 @@ EncoderStatus D3D12VideoEncodeDelegate::Initialize(
 
   output_profile_ = config.output_profile;
 
-  CHECK(!config.HasSpatialLayer() && !config.HasTemporalLayer())
-      << "D3D12VideoEncoder only support L1T1 mode.";
-  max_num_ref_frames_ = 1;
+  if (!config.manual_reference_buffer_control) {
+    svc_layers_.emplace(
+        SVCLayers::Config({config.input_visible_size}, 0, 1,
+                          config.spatial_layers.empty()
+                              ? 1
+                              : config.spatial_layers[0].num_of_temporal_layers,
+                          SVCInterLayerPredMode::kOff));
+  } else {
+    svc_layers_.reset();
+  }
 
   input_size_.Width = config.input_visible_size.width();
   input_size_.Height = config.input_visible_size.height();
 
-  if ((output_profile_ == H264PROFILE_HIGH10PROFILE ||
-       output_profile_ == HEVCPROFILE_MAIN10) &&
-      config.input_format == PIXEL_FORMAT_P010LE) {
-    input_format_ = DXGI_FORMAT_P010;
-  } else {
-    input_format_ = DXGI_FORMAT_NV12;
-  }
+  input_format_ = GetDxgiInputFormat(output_profile_, config.input_format);
   processed_input_frame_.Reset();
 
+  bitrate_allocation_ = AllocateBitrateForDefaultEncoding(config);
+  framerate_ = config.framerate;
   rate_control_ = D3D12VideoEncoderRateControl::Create(
-      config.bitrate, config.framerate, video_device_.Get(), output_profile_);
+      bitrate_allocation_, config.framerate, video_device_.Get(),
+      output_profile_);
 
   static constexpr uint32_t kDefaultGOPLength = 3000;
   config.gop_length = config.gop_length.value_or(kDefaultGOPLength);
@@ -200,16 +249,19 @@ bool D3D12VideoEncodeDelegate::ReportsAverageQp() const {
   return false;
 }
 
-bool D3D12VideoEncodeDelegate::UpdateRateControl(const Bitrate& bitrate,
-                                                 uint32_t framerate) {
+bool D3D12VideoEncodeDelegate::UpdateRateControl(
+    const VideoBitrateAllocation& bitrate_allocation,
+    uint32_t framerate) {
   auto rate_control = D3D12VideoEncoderRateControl::Create(
-      bitrate, framerate, video_device_.Get(), output_profile_);
+      bitrate_allocation, framerate, video_device_.Get(), output_profile_);
 
   if (rate_control.GetMode() != rate_control_.GetMode() &&
       !SupportsRateControlReconfiguration()) {
     return false;
   }
 
+  bitrate_allocation_ = bitrate_allocation;
+  framerate_ = framerate;
   rate_control_ = rate_control;
   return true;
 }
@@ -221,10 +273,13 @@ D3D12VideoEncodeDelegate::Encode(
     const gfx::ColorSpace& input_frame_color_space,
     const BitstreamBuffer& bitstream_buffer,
     const VideoEncoder::EncodeOptions& options) {
+  const gfx::ColorSpace& output_color_space =
+      GetEncoderOutputColorSpaceFromInputColorSpace(input_frame_color_space);
   if (D3D12_RESOURCE_DESC input_frame_desc = input_frame->GetDesc();
       input_frame_desc.Width != input_size_.Width ||
       input_frame_desc.Height != input_size_.Height ||
-      input_frame_desc.Format != input_format_) {
+      input_frame_desc.Format != input_format_ ||
+      input_frame_color_space != output_color_space) {
     if (!processed_input_frame_) {
       D3D12_RESOURCE_DESC processed_input_frame_desc =
           CD3DX12_RESOURCE_DESC::Tex2D(input_format_, input_size_.Width,
@@ -240,7 +295,7 @@ D3D12VideoEncodeDelegate::Encode(
     bool ok = video_processor_wrapper_->ProcessFrames(
         input_frame.Get(), input_frame_subresource, input_frame_color_space,
         gfx::Rect(0, 0, input_frame_desc.Width, input_frame_desc.Height),
-        processed_input_frame_.Get(), 0, input_frame_color_space,
+        processed_input_frame_.Get(), 0, output_color_space,
         gfx::Rect(0, 0, input_size_.Width, input_size_.Height));
     if (!ok) {
       return {EncoderStatus::Codes::kSystemAPICallError,
@@ -252,9 +307,9 @@ D3D12VideoEncodeDelegate::Encode(
   }
 
   auto impl_result = EncodeImpl(input_frame.Get(), input_frame_subresource,
-                                options, input_frame_color_space);
-  if (!impl_result.has_value()) {
-    return std::move(impl_result).error();
+                                options, output_color_space);
+  if (!impl_result.is_ok()) {
+    return std::move(impl_result);
   }
 
   const base::UnsafeSharedMemoryRegion& region = bitstream_buffer.region();
@@ -265,14 +320,19 @@ D3D12VideoEncodeDelegate::Encode(
   if (!payload_size_or_error.has_value()) {
     return std::move(payload_size_or_error).error();
   }
+  metadata_.encoded_color_space = output_color_space;
+  metadata_.payload_size_bytes = std::move(payload_size_or_error).value();
+
   EncodeResult encode_result{
-      .bitstream_buffer_id_ = bitstream_buffer.id(),
-      .metadata_ = std::move(impl_result).value(),
+      .bitstream_buffer_id = bitstream_buffer.id(),
+      .metadata = metadata_,
   };
-  encode_result.metadata_.encoded_color_space = input_frame_color_space;
-  encode_result.metadata_.payload_size_bytes =
-      std::move(payload_size_or_error).value();
   return encode_result;
+}
+
+uint8_t D3D12VideoEncodeDelegate::GetNumTemporalLayers() const {
+  return svc_layers_.has_value() ? svc_layers_->config().num_temporal_layers
+                                 : 1;
 }
 
 D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::
@@ -340,15 +400,15 @@ D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::CreateCqp(
 // static
 D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl
 D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::Create(
-    Bitrate bitrate,
+    const VideoBitrateAllocation& bitrate_allocation,
     uint32_t framerate,
     ID3D12VideoDevice3* video_device,
     VideoCodecProfile output_profile) {
   D3D12VideoEncoderRateControl rate_control;
-  switch (bitrate.mode()) {
+  switch (bitrate_allocation.GetMode()) {
     case Bitrate::Mode::kConstant:
       rate_control.params_.cbr = {
-          .TargetBitRate = bitrate.target_bps(),
+          .TargetBitRate = bitrate_allocation.GetSumBps(),
       };
       rate_control.rate_control_ = {
           .Mode = D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_CBR,
@@ -361,7 +421,7 @@ D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::Create(
       if (!IsVBRSupported(video_device, output_profile)) {
         LOG(ERROR) << "Requested VBR not supported, falling back to CBR.";
         rate_control.params_.cbr = {
-            .TargetBitRate = bitrate.target_bps(),
+            .TargetBitRate = bitrate_allocation.GetSumBps(),
         };
         rate_control.rate_control_ = {
             .Mode = D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_CBR,
@@ -371,8 +431,8 @@ D3D12VideoEncodeDelegate::D3D12VideoEncoderRateControl::Create(
         };
       } else {
         rate_control.params_.vbr = {
-            .TargetAvgBitRate = bitrate.target_bps(),
-            .PeakBitRate = bitrate.peak_bps(),
+            .TargetAvgBitRate = bitrate_allocation.GetSumBps(),
+            .PeakBitRate = bitrate_allocation.GetPeakBps(),
         };
         rate_control.rate_control_ = {
             .Mode = D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_VBR,
@@ -499,42 +559,64 @@ D3D12VideoEncodeDecodedPictureBuffers<
     maxDpbSize>::~D3D12VideoEncodeDecodedPictureBuffers() = default;
 
 template <size_t maxDpbSize>
-bool D3D12VideoEncodeDecodedPictureBuffers<maxDpbSize>::InitializeTextureArray(
-    ID3D12Device* device,
-    gfx::Size texture_size,
-    DXGI_FORMAT format,
-    size_t max_num_ref_frames) {
+bool D3D12VideoEncodeDecodedPictureBuffers<
+    maxDpbSize>::InitializeTextureResources(ID3D12Device* device,
+                                            gfx::Size texture_size,
+                                            DXGI_FORMAT format,
+                                            size_t max_num_ref_frames,
+                                            bool use_texture_array) {
   CHECK_GT(max_num_ref_frames, 0u);
   CHECK_LE(max_num_ref_frames, kMaxDpbSize);
   size_ = max_num_ref_frames;
 
   // We reserve one space in extra for the current frame.
   const size_t array_size = size_ + 1;
-  resources_.resize(array_size);
+  resources_.resize(use_texture_array ? 1 : array_size);
   raw_resources_.resize(array_size);
   subresources_.resize(array_size);
+
   D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(
-      format, texture_size.width(), texture_size.height(), 1, 1);
+      format, texture_size.width(), texture_size.height(),
+      /*arraySize=*/use_texture_array ? array_size : 1, /*mipLevels=*/1);
   desc.Flags = D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE |
                D3D12_RESOURCE_FLAG_VIDEO_ENCODE_REFERENCE_ONLY;
-  for (size_t i = 0; i < array_size; i++) {
+  if (use_texture_array) {
     HRESULT hr = device->CreateCommittedResource(
         &D3D12HeapProperties::kDefault, D3D12_HEAP_FLAG_NONE, &desc,
-        D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&resources_[i]));
+        D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&resources_[0]));
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed to CreateCommittedResource for "
                     "D3D12VideoEncodeReferenceFrameList: "
                  << PrintHr(hr);
       return false;
     }
-    raw_resources_[i] = resources_[i].Get();
-    subresources_[i] = 0;
+    for (size_t i = 0; i < array_size; i++) {
+      raw_resources_[i] = resources_[0].Get();
+      // When texture array is used, this points to the array index of the first
+      // resource plane. Refer to:
+      // https://microsoft.github.io/DirectX-Specs/d3d/D3D12VideoEncoding.html#6112-struct-d3d12_video_encode_reference_frames
+      subresources_[i] = i;
+    }
+  } else {
+    for (size_t i = 0; i < array_size; i++) {
+      HRESULT hr = device->CreateCommittedResource(
+          &D3D12HeapProperties::kDefault, D3D12_HEAP_FLAG_NONE, &desc,
+          D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&resources_[i]));
+      if (FAILED(hr)) {
+        LOG(ERROR) << "Failed to CreateCommittedResource for "
+                      "D3D12VideoEncodeReferenceFrameList: "
+                   << PrintHr(hr);
+        return false;
+      }
+      raw_resources_[i] = resources_[i].Get();
+      subresources_[i] = 0;
+    }
   }
   return true;
 }
 
 template <size_t maxDpbSize>
-D3D12PictureBuffer
+D3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE
 D3D12VideoEncodeDecodedPictureBuffers<maxDpbSize>::GetCurrentFrame() const {
   // Make sure we have initialized.
   CHECK_GT(resources_.size(), 0u);

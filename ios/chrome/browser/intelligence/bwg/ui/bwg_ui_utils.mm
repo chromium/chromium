@@ -4,74 +4,56 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_ui_utils.h"
 
+#import "ios/chrome/browser/shared/ui/buildflags.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
-const CGFloat kPrimarySecondaryButtonHeight = 50.0;
-const CGFloat kPrimarySecondaryButtonCornerRadius = 15.0;
-
-@interface BWGUIUtils ()
-
-// Configures common button properties.
-+ (UIButton*)configureCommonButton;
-
-@end
-
 @implementation BWGUIUtils
 
-+ (UIButton*)configureCommonButton {
-  UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
-  button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.layer.masksToBounds = YES;
-  [NSLayoutConstraint activateConstraints:@[
-    [button.heightAnchor
-        constraintEqualToConstant:kPrimarySecondaryButtonHeight]
-  ]];
-
-  return button;
++ (UIImage*)brandedGeminiSymbolWithPointSize:(CGFloat)pointSize {
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+  return CustomSymbolWithPointSize(kGeminiBrandedLogoSymbol, pointSize);
+#else
+  return DefaultSymbolWithPointSize(kGeminiNonBrandedLogoSymbol, pointSize);
+#endif
 }
 
-+ (UIButton*)createPrimaryButtonWithTitle:(NSString*)title {
-  UIButton* primaryButton = [self configureCommonButton];
++ (UIImage*)createGradientGeminiLogo:(CGFloat)pointSize {
+  UITraitCollection* lightTraitCollection = [UITraitCollection
+      traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight];
+  NSArray<UIColor*>* colors = @[
+    [[UIColor colorNamed:kBlue700Color]
+        resolvedColorWithTraitCollection:lightTraitCollection],
+    [[UIColor colorNamed:kBlue300Color]
+        resolvedColorWithTraitCollection:lightTraitCollection]
+  ];
 
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration filledButtonConfiguration];
+  NSMutableArray<id>* gradientColorArray = [[NSMutableArray alloc] init];
+  for (UIColor* color in colors) {
+    [gradientColorArray addObject:static_cast<id>(color.CGColor)];
+  }
 
-  UIFont* font =
-      PreferredFontForTextStyle(UIFontTextStyleHeadline, UIFontWeightSemibold);
-  NSDictionary<NSAttributedStringKey, id>* attributes =
-      @{NSFontAttributeName : font};
-  NSAttributedString* attributedTitle =
-      [[NSAttributedString alloc] initWithString:title attributes:attributes];
+  UIImage* geminiIcon = [BWGUIUtils brandedGeminiSymbolWithPointSize:pointSize];
+  CGSize iconSize = [geminiIcon size];
+  CGRect iconFrame = CGRectMake(0, 0, iconSize.width, iconSize.height);
 
-  buttonConfiguration.attributedTitle = attributedTitle;
+  CAGradientLayer* gradientLayer = [CAGradientLayer layer];
+  gradientLayer.colors = gradientColorArray;
+  gradientLayer.startPoint = CGPointMake(0, 0.5);
+  gradientLayer.endPoint = CGPointMake(0.5, 0.0);
+  gradientLayer.frame = iconFrame;
 
-  buttonConfiguration.baseForegroundColor =
-      [UIColor colorNamed:kInvertedTextPrimaryColor];
-  buttonConfiguration.background.backgroundColor =
-      [UIColor colorNamed:kBlueColor];
-  buttonConfiguration.background.cornerRadius =
-      kPrimarySecondaryButtonCornerRadius;
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:iconSize];
+  UIImage* gradientImage = [renderer
+      imageWithActions:^(UIGraphicsImageRendererContext* rendererContext) {
+        CGContextClipToMask(rendererContext.CGContext, iconFrame,
+                            geminiIcon.CGImage);
+        [gradientLayer renderInContext:rendererContext.CGContext];
+      }];
 
-  primaryButton.configuration = buttonConfiguration;
-
-  return primaryButton;
-}
-
-+ (UIButton*)createSecondaryButtonWithTitle:(NSString*)title {
-  UIButton* secondaryButton = [self configureCommonButton];
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration filledButtonConfiguration];
-  buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
-  buttonConfiguration.title = title;
-  UIBackgroundConfiguration* backgroundConfig =
-      [UIBackgroundConfiguration clearConfiguration];
-  backgroundConfig.backgroundColor =
-      [UIColor colorNamed:kPrimaryBackgroundColor];
-  buttonConfiguration.background = backgroundConfig;
-  secondaryButton.configuration = buttonConfiguration;
-
-  return secondaryButton;
+  return gradientImage;
 }
 
 @end

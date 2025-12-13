@@ -229,14 +229,15 @@ class BuildFile:
             return ''
         if name.startswith('"'):
             name = name[1:-1]
-        if not name.startswith('//') and abs_path:
-            name = self._gn_rel_path + name
-        if not ':' in name:
-            name += ':' + os.path.basename(name)
-        if allow_relative:
-            base_path, target_name = name.split(':')
-            if base_path == self._gn_rel_path:
-                return ':' + target_name
+        if not name.startswith('$'):
+          if not name.startswith('//') and abs_path:
+              name = self._gn_rel_path + name
+          if not ':' in name:
+              name += ':' + os.path.basename(name)
+          if allow_relative:
+              base_path, target_name = name.split(':')
+              if base_path == self._gn_rel_path:
+                  return ':' + target_name
         return name
 
     def _find_all_list_assignments(self):

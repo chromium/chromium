@@ -53,7 +53,7 @@ class AutoTranslateSnackbarController {
   // Called by Java when the Undo action is pressed.
   void OnUndoActionPressed(
       JNIEnv* env,
-      base::android::JavaParamRef<jstring> target_language);
+      const base::android::JavaRef<jstring>& target_language);
 
   // Called by native to manually dismiss the snackbar
   void NativeDismissSnackbar();

@@ -6,22 +6,33 @@
 
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/converters/tab_converters.h"
+#include "content/public/browser/web_contents.h"
 
 namespace tabs_api {
 
 TabWalker::TabWalker(const TabStripModel* model, const tabs::TabInterface* tab)
     : model_(model), target_(tab) {}
 
-mojom::TabContainerPtr TabWalker::Walk() {
-  auto mojo_tab_container = tabs_api::mojom::TabContainer::New();
+mojom::ContainerPtr TabWalker::Walk() {
   auto idx = model_->GetIndexOfTab(target_);
   CHECK(idx != TabStripModel::kNoTab)
       << "tab disappeared while walking through the model";
-  auto mojo_tab = tabs_api::converters::BuildMojoTab(
-      target_->GetHandle(), TabRendererData::FromTabInModel(model_, idx));
 
-  mojo_tab_container->tab = std::move(mojo_tab);
-  return mojo_tab_container;
+  content::WebContents* contents = model_->GetWebContentsAt(idx);
+  CHECK(contents);
+  const ui::ColorProvider& provider = contents->GetColorProvider();
+  mojom::TabPtr mojo_tab = converters::BuildMojoTab(
+      target_->GetHandle(), TabRendererData::FromTabInModel(model_, idx),
+      // TODO(crbug.com/438632110): this is dup code with the adapter. See if
+      // we can combine state computation.
+      provider,
+      {
+          .is_active = target_->IsActivated(),
+          .is_selected = target_->IsSelected(),
+      });
+  auto node = tabs_api::mojom::Container::New();
+  node->data = mojom::Data::NewTab(std::move(mojo_tab));
+  return node;
 }
 
 }  // namespace tabs_api

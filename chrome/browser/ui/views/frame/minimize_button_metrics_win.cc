@@ -142,10 +142,7 @@ int MinimizeButtonMetrics::GetMinimizeButtonOffsetX() const {
   // consistant value we cache the last value across instances and use it until
   // we get the activate.
   if (was_activated_ || cached_minimize_button_x_delta_ == 0) {
-    const int minimize_button_offset = GetAndCacheMinimizeButtonOffsetX();
-    if (minimize_button_offset > 0) {
-      return minimize_button_offset;
-    }
+    CalculateAndCacheMinimizeButtonOffsetX();
   }
 
   // If we fail to get the minimize button offset via the WM_GETTITLEBARINFOEX
@@ -154,29 +151,22 @@ int MinimizeButtonMetrics::GetMinimizeButtonOffsetX() const {
   // CacheMinimizeButtonDelta() for more details.
   DCHECK(cached_minimize_button_x_delta_);
 
+  // In RTL the origin (for Views purposes) is the upper-right corner, and the
+  // X axis is reversed.
   if (base::i18n::IsRTL()) {
-    return cached_minimize_button_x_delta_;
-  }
-
-  RECT client_rect = {0};
-  GetClientRect(hwnd_, &client_rect);
-  return client_rect.right - cached_minimize_button_x_delta_;
-}
-
-int MinimizeButtonMetrics::GetAndCacheMinimizeButtonOffsetX() const {
-  const int minimize_button_offset = GetMinimizeButtonOffsetForWindow();
-  if (minimize_button_offset <= 0) {
-    return 0;
-  }
-
-  if (base::i18n::IsRTL()) {
-    cached_minimize_button_x_delta_ = minimize_button_offset;
-  } else {
     RECT client_rect = {0};
     GetClientRect(hwnd_, &client_rect);
-    cached_minimize_button_x_delta_ =
-        client_rect.right - minimize_button_offset;
+    return client_rect.right - cached_minimize_button_x_delta_;
   }
+
+  return cached_minimize_button_x_delta_;
+}
+
+void MinimizeButtonMetrics::CalculateAndCacheMinimizeButtonOffsetX() const {
+  const int minimize_button_offset = GetMinimizeButtonOffsetForWindow();
+  if (minimize_button_offset <= 0) {
+    return;
+  }
+  cached_minimize_button_x_delta_ = minimize_button_offset;
   last_cached_minimize_button_x_delta_ = cached_minimize_button_x_delta_;
-  return minimize_button_offset;
 }

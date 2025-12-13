@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
+import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.getSettingsPreferenceKey;
 import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.getTitleForModuleType;
 
 import android.content.Context;
@@ -15,6 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 
@@ -38,7 +40,7 @@ public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
         for (@ModuleType int moduleType : moduleTypeShownInSettings) {
             ChromeSwitchPreference currentSwitch =
                     new ChromeSwitchPreference(getStyledContext(), null);
-            currentSwitch.setKey(homeModulesConfigManager.getSettingsPreferenceKey(moduleType));
+            currentSwitch.setKey(getSettingsPreferenceKey(moduleType));
             currentSwitch.setTitle(getTitleForModuleType(moduleType, context));
 
             // Set up listeners and update the page.
@@ -75,4 +77,14 @@ public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
     public @SettingsFragment.AnimationType int getAnimationType() {
         return SettingsFragment.AnimationType.PROPERTY;
     }
+
+    @Override
+    public @Nullable String getMainMenuKey() {
+        return "home_modules_config";
+    }
+
+    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling. Any
+    // entries that need adding?
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(HomeModulesConfigSettings.class.getName(), 0);
 }

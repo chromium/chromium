@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/style/system_textfield.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 

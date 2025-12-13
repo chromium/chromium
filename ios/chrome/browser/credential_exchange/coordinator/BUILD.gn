@@ -1,0 +1,79 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("import_coordinator") {
+  sources = [
+    "credential_import_coordinator.h",
+    "credential_import_coordinator.mm",
+    "credential_import_mediator.h",
+    "credential_import_mediator.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
+  deps = [
+    "//base",
+    "//components/metrics:metrics_pref_names",
+    "//components/password_manager/core/browser/import:importer",
+    "//components/password_manager/core/browser/ui",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//components/webauthn/core/browser:passkey_model",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/affiliations/model",
+    "//ios/chrome/browser/credential_exchange/model",
+    "//ios/chrome/browser/credential_exchange/ui",
+    "//ios/chrome/browser/data_import/public",
+    "//ios/chrome/browser/data_import/ui",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/passwords/model:store_factory",
+    "//ios/chrome/browser/settings/ui_bundled/password:title_view",
+    "//ios/chrome/browser/settings/ui_bundled/password/reauthentication",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/ui/util:url_with_title",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/webauthn/model",
+    "//ios/chrome/browser/webauthn/public",
+    "//ios/chrome/common/credential_provider:passkey_keychain_provider_bridge_chrome",
+    "//ios/chrome/common/credential_provider/ui",
+    "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ui/base",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("export_coordinator") {
+  sources = [
+    "credential_export_coordinator.h",
+    "credential_export_coordinator.mm",
+    "credential_export_mediator.h",
+    "credential_export_mediator.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
+  deps = [
+    "//components/favicon_base",
+    "//components/metrics:metrics_pref_names",
+    "//components/password_manager/core/browser/ui",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//components/webauthn/core/browser:passkey_model",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/credential_exchange/model",
+    "//ios/chrome/browser/credential_exchange/ui",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/settings/ui_bundled/password:title_view",
+    "//ios/chrome/browser/settings/ui_bundled/password:ui",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/webauthn/model",
+    "//ios/chrome/browser/webauthn/public",
+    "//ios/chrome/common/credential_provider:passkey_keychain_provider_bridge_chrome",
+    "//ios/chrome/common/credential_provider/ui",
+    "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
+    "//ios/chrome/common/ui/favicon",
+    "//ui/base",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}

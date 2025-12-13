@@ -27,6 +27,7 @@
 #include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/keymaster.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/keymint.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/kiosk.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/media_session.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/memory.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/metrics.mojom.h"
@@ -154,6 +155,9 @@ void FakeArcBridgeHost::OnKeymasterInstanceReady(
 
 void FakeArcBridgeHost::OnKeyMintInstanceReady(
     mojo::PendingRemote<mojom::keymint::KeyMintInstance> keymint_remote) {}
+
+void FakeArcBridgeHost::OnKioskInstanceReady(
+    mojo::PendingRemote<mojom::KioskInstance> kiosk_remote) {}
 
 void FakeArcBridgeHost::OnMediaSessionInstanceReady(
     mojo::PendingRemote<mojom::MediaSessionInstance> media_sesssion_remote) {}

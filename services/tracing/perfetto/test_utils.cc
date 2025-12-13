@@ -146,9 +146,9 @@ void MockConsumerBase::StopTracing() {
 
 void MockConsumerBase::CloneSession(const std::string& unique_session_name) {
   CHECK(consumer_endpoint_);
-  perfetto::TracingService::ConsumerEndpoint::CloneSessionArgs args{
-      .unique_session_name = unique_session_name};
-  consumer_endpoint_->CloneSession(args);
+  perfetto::TracingService::ConsumerEndpoint::CloneSessionArgs args;
+  args.unique_session_name = unique_session_name;
+  consumer_endpoint_->CloneSession(std::move(args));
 }
 
 void MockConsumerBase::StartTracing(const perfetto::TraceConfig& trace_config) {

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/user_metrics.h"
@@ -26,6 +27,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
@@ -264,7 +266,10 @@ base::Value::Dict SearchEnginesHandler::CreateDictionaryForEngine(
     // The icon used for search aggregator is bundled with Chrome and should be
     // used as a fallback if the icon_url is not set.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    dict.Set("iconPath", "chrome://theme/IDR_GOOGLE_AGENTSPACE_LOGO");
+    dict.Set("iconPath",
+             base::FeatureList::IsEnabled(omnibox::kUseAgentspace25Logo)
+                 ? "chrome://theme/IDR_GOOGLE_AGENTSPACE_LOGO_25"
+                 : "chrome://theme/IDR_GOOGLE_AGENTSPACE_LOGO");
 #endif
   }
 
@@ -493,7 +498,7 @@ void SearchEnginesHandler::HandleSearchEngineEditCompleted(
 #if BUILDFLAG(IS_CHROMEOS)
 void SearchEnginesHandler::HandleOpenBrowserSearchSettings(
     const base::Value::List& args) {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kSearchSubPage),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kSwitchToTab);

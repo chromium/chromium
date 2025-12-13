@@ -57,6 +57,7 @@
 <translation id="7221920857098237570">Blândă</translation>
 <translation id="7237590978482584900">Degajată</translation>
 <translation id="7282547042039404307">Mișcare lină</translation>
+<translation id="7514257690823355037">Treci la următorul</translation>
 <translation id="8004767876552422827">Câmp</translation>
 <translation id="8136852699834914183">Redarea nu este disponibilă pentru această pagină.</translation>
 <translation id="8198036737896977997">Aer</translation>
@@ -68,5 +69,6 @@
 <translation id="8756370108715456837">Nu este corect</translation>
 <translation id="8953618380150219653">Playerul Ascultă pagina deschis la înălțimea completă.</translation>
 <translation id="9087782179025630211">Comanda de derulare. Timp scurs: <ph name="ELAPSED" /> din <ph name="TOTAL" />.</translation>
+<translation id="9193673272519126093">Treci la anteriorul</translation>
 <translation id="978117257931832348">Înălțime scăzută a sunetului</translation>
 </translationbundle>

@@ -93,8 +93,7 @@ base::android::ScopedJavaLocalRef<jstring> PolicyMapAndroid::GetListOrDictValue(
   else
     DCHECK(value->is_list()) << "The policy must be stored as list.";
 #endif  // DCHECK_IS_ON()
-  std::string json_string;
-  base::JSONWriter::Write(*value, &json_string);
+  std::string json_string = base::WriteJson(*value).value_or("");
   return base::android::ConvertUTF8ToJavaString(env, json_string);
 }
 
@@ -108,3 +107,5 @@ const base::Value* PolicyMapAndroid::GetValue(
 
 }  // namespace android
 }  // namespace policy
+
+DEFINE_JNI(PolicyMap)

@@ -17,6 +17,7 @@
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_info.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace viz {
 struct BeginFrameArgs;
@@ -188,7 +189,7 @@ class CC_EXPORT FrameSequenceMetrics {
     base::TimeTicks last_timestamp = base::TimeTicks::Now();
     int frame_count = 0;
     bool enabled = false;
-    uint64_t trace_id = 0u;
+    std::optional<perfetto::Track> trace_track;
 
     void Advance(base::TimeTicks start_timestamp,
                  base::TimeTicks new_timestamp,

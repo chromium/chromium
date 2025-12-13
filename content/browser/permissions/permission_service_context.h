@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -70,8 +71,8 @@ class CONTENT_EXPORT PermissionServiceContext
   void CreateSubscription(
       const blink::mojom::PermissionDescriptorPtr& permission,
       const url::Origin& origin,
-      PermissionStatus current_status,
-      PermissionStatus last_known_status,
+      PermissionResult current_result,
+      PermissionResult last_known_result,
       bool should_include_device_status,
       mojo::PendingRemote<blink::mojom::PermissionObserver> observer);
 
@@ -92,8 +93,8 @@ class CONTENT_EXPORT PermissionServiceContext
   // RenderProcessHostObserver:
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
-  void StoreStatusAtBFCacheEntry();
-  void NotifyPermissionStatusChangedIfNeeded();
+  void StoreResultAtBFCacheEntry();
+  void NotifyPermissionResultChangedIfNeeded();
 
   std::set<blink::PermissionType>& GetOnchangeEventListeners() {
     return onchange_event_listeners_;

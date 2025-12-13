@@ -6,11 +6,12 @@
 #define SERVICES_NETWORK_TRUST_TOKENS_TRUST_TOKEN_KEY_COMMITMENT_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"
 #include "url/gurl.h"
@@ -132,7 +133,7 @@ class TrustTokenKeyCommitmentController final {
 
   // On completion, parses the given response (if the request was
   // successful). Calls |completion_callback_| with an error
-  void HandleResponseBody(std::unique_ptr<std::string> response_body);
+  void HandleResponseBody(std::optional<std::string> response_body);
 
   // |url_loader_| performs the actual key commitment request.
   std::unique_ptr<SimpleURLLoader> url_loader_;

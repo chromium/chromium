@@ -3,17 +3,21 @@
 # found in the LICENSE file.
 """Definitions of builders in chromium.bedrock builder group."""
 
-load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "os")
-load("//lib/ci.star", "ci")
-load("//lib/consoles.star", "consoles")
-load("//lib/gn_args.star", "gn_args")
+load("@chromium-luci//builder_config.star", "builder_config")
+load("@chromium-luci//builders.star", "os")
+load("@chromium-luci//ci.star", "ci")
+load("@chromium-luci//consoles.star", "consoles")
+load("@chromium-luci//gn_args.star", "gn_args")
+load("//lib/ci_constants.star", "ci_constants")
 
 ci.defaults.set(
     builder_group = "chromium.bedrock",
-    pool = ci.DEFAULT_POOL,
+    pool = ci_constants.DEFAULT_POOL,
     builderless = True,
-    service_account = ci.DEFAULT_SERVICE_ACCOUNT,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
+    service_account = ci_constants.DEFAULT_SERVICE_ACCOUNT,
 )
 
 consoles.console_view(

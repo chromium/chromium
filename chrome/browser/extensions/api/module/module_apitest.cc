@@ -6,6 +6,9 @@
 #include "build/buildflag.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

@@ -8,7 +8,6 @@
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/wm/window_state.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
@@ -39,7 +38,11 @@ GameDashboardButtonRevealController::GameDashboardButtonRevealController(
 }
 
 GameDashboardButtonRevealController::~GameDashboardButtonRevealController() {
-  UpdateVisibility(/*target_visibility=*/true, /*animate=*/false);
+  // Don't attempt to update the button's visibility if the game window is
+  // already being destroyed.
+  if (!context_->game_window()->is_destroying()) {
+    UpdateVisibility(/*target_visibility=*/true, /*animate=*/false);
+  }
   context_->game_window()->RemovePreTargetHandler(this);
 }
 
@@ -199,7 +202,7 @@ bool GameDashboardButtonRevealController::IsMouseOutsideHeaderBounds(
 
 void GameDashboardButtonRevealController::OnTopEdgeHoverTimeout() {
   if (CanShowGameDashboardButton(
-          display::Screen::GetScreen()->GetCursorScreenPoint())) {
+          display::Screen::Get()->GetCursorScreenPoint())) {
     UpdateVisibility(/*target_visibility=*/true, /*animate=*/true);
   }
 }

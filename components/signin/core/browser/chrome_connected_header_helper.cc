@@ -124,13 +124,21 @@ ManageAccountsParams ChromeConnectedHeaderHelper::BuildManageAccountsParams(
 bool ChromeConnectedHeaderHelper::ShouldBuildRequestHeader(
     const GURL& url,
     const content_settings::CookieSettings* cookie_settings) {
+  return ShouldBuildRequestHeader(url, cookie_settings,
+                                  /*check_only_gaia_url=*/false);
+}
+
+bool ChromeConnectedHeaderHelper::ShouldBuildRequestHeader(
+    const GURL& url,
+    const content_settings::CookieSettings* cookie_settings,
+    bool check_only_gaia_url) {
   // Check if url is eligible for the header.
   if (!IsUrlEligibleForRequestHeader(url)) {
     return false;
   }
 
   // If signin cookies are not allowed, don't add the header.
-  return SettingsAllowSigninCookies(cookie_settings);
+  return SettingsAllowSigninCookies(cookie_settings, check_only_gaia_url);
 }
 
 bool ChromeConnectedHeaderHelper::IsUrlEligibleToIncludeGaiaId(
@@ -141,8 +149,7 @@ bool ChromeConnectedHeaderHelper::IsUrlEligibleToIncludeGaiaId(
   // usage:
   // * Avoid sending it in the cookie as not needed on iOS.
   // * Only send it in the header to Drive URLs.
-  return is_header_request ? IsDriveOrigin(url.DeprecatedGetOriginAsURL())
-                           : false;
+  return is_header_request && IsDriveOrigin(url.DeprecatedGetOriginAsURL());
 }
 
 bool ChromeConnectedHeaderHelper::IsDriveOrigin(const GURL& url) {
@@ -200,7 +207,7 @@ std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
         base::StringPrintf("%s=%s", kSourceAttrName, source.c_str()));
   }
 
-  if (base::FeatureList::IsEnabled(kNonDefaultGaiaOriginCheck) &&
+  if (base::FeatureList::IsEnabled(switches::kNonDefaultGaiaOriginCheck) &&
       !GaiaUrls::GetInstance()->IsUsingDefaultGaiaOrigin()) {
     parts.push_back(
         base::StringPrintf("%s=%s", kGaiaOriginAttrName,

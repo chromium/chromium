@@ -31,7 +31,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -39,6 +38,7 @@
 #include "base/strings/cstring_view.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -113,6 +113,10 @@ class ScopedUmaskSetter {
 bool IsOpenedInCorrectJournalMode(Database* db, bool is_wal) {
   std::string expected_mode = is_wal ? "wal" : "truncate";
   return ExecuteWithResult(db, "PRAGMA journal_mode") == expected_mode;
+}
+
+int64_t CheckedGetFileSize(const base::FilePath& file_path) {
+  return base::GetFileSize(file_path).value();
 }
 
 }  // namespace
@@ -1450,11 +1454,6 @@ TEST_P(SQLDatabaseTest, RazeAndPoison_TransactionBegin) {
   }
 }
 
-TEST_P(SQLDatabaseTest, RazeAndPoison_ComputeMmapSizeForOpen) {
-  ASSERT_TRUE(db_->RazeAndPoison());
-  EXPECT_EQ(db_->ComputeMmapSizeForOpen(), 0u);
-}
-
 TEST_P(SQLDatabaseTest, Close_IsSQLValid) {
   ASSERT_TRUE(db_->IsSQLValid("SELECT 1")) << "Incorrect test setup";
 
@@ -1580,7 +1579,6 @@ TEST_P(SQLDatabaseTest, PosixFilePermissions) {
     }
   } else {  // Truncate mode
     base::FilePath journal_path = Database::JournalPath(db_path_);
-    DLOG(ERROR) << "journal_path: " << journal_path;
     ASSERT_TRUE(base::PathExists(journal_path));
     EXPECT_TRUE(base::GetPosixFilePermissions(journal_path, &mode));
     ASSERT_EQ(mode, 0600);
@@ -1975,90 +1973,6 @@ TEST_P(SQLDatabaseTest, MmapInitiallyEnabledAltStatus) {
   EXPECT_EQ("0", ExecuteWithResult(db_.get(), "PRAGMA mmap_size"));
 }
 
-TEST_P(SQLDatabaseTest, ComputeMmapSizeForOpen) {
-  const size_t kMmapAlot = 25 * 1024 * 1024;
-  int64_t mmap_status = MetaTable::kMmapFailure;
-
-  // If there is no meta table (as for a fresh database), assume that everything
-  // should be mapped, and the status of the meta table is not affected.
-  ASSERT_TRUE(!db_->DoesTableExist("meta"));
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-  ASSERT_TRUE(!db_->DoesTableExist("meta"));
-
-  // When the meta table is first created, it sets up to map everything.
-  ASSERT_TRUE(MetaTable().Init(db_.get(), 1, 1));
-  ASSERT_TRUE(db_->DoesTableExist("meta"));
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-  ASSERT_TRUE(MetaTable::GetMmapStatus(db_.get(), &mmap_status));
-  ASSERT_EQ(MetaTable::kMmapSuccess, mmap_status);
-
-  // Preload with partial progress of one page.  Should map everything.
-  ASSERT_TRUE(db_->Execute("REPLACE INTO meta VALUES ('mmap_status', 1)"));
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-  ASSERT_TRUE(MetaTable::GetMmapStatus(db_.get(), &mmap_status));
-  ASSERT_EQ(MetaTable::kMmapSuccess, mmap_status);
-
-  // Failure status maps nothing.
-  ASSERT_TRUE(db_->Execute("REPLACE INTO meta VALUES ('mmap_status', -2)"));
-  ASSERT_EQ(0UL, db_->ComputeMmapSizeForOpen());
-
-  // Re-initializing the meta table does not re-create the key if the table
-  // already exists.
-  ASSERT_TRUE(db_->Execute("DELETE FROM meta WHERE key = 'mmap_status'"));
-  ASSERT_TRUE(MetaTable().Init(db_.get(), 1, 1));
-  ASSERT_EQ(MetaTable::kMmapSuccess, mmap_status);
-  ASSERT_TRUE(MetaTable::GetMmapStatus(db_.get(), &mmap_status));
-  ASSERT_EQ(0, mmap_status);
-
-  // With no key, map everything and create the key.
-  // TODO(shess): This really should be "maps everything after validating it",
-  // but that is more complicated to structure.
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-  ASSERT_TRUE(MetaTable::GetMmapStatus(db_.get(), &mmap_status));
-  ASSERT_EQ(MetaTable::kMmapSuccess, mmap_status);
-}
-
-TEST_P(SQLDatabaseTest, ComputeMmapSizeForOpenAltStatus) {
-  const size_t kMmapAlot = 25 * 1024 * 1024;
-
-  // At this point, Database still expects a future [meta] table.
-  ASSERT_FALSE(db_->DoesTableExist("meta"));
-  ASSERT_FALSE(db_->DoesViewExist("MmapStatus"));
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-  ASSERT_FALSE(db_->DoesTableExist("meta"));
-  ASSERT_FALSE(db_->DoesViewExist("MmapStatus"));
-
-  // Using alt status, everything should be mapped, with state in the view.
-  DatabaseOptions options = GetDBOptions()
-                                .set_mmap_alt_status_discouraged(true)
-                                .set_enable_views_discouraged(true);
-  db_ = std::make_unique<Database>(options, test::kTestTag);
-  ASSERT_TRUE(db_->Open(db_path_));
-
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-  ASSERT_FALSE(db_->DoesTableExist("meta"));
-  ASSERT_TRUE(db_->DoesViewExist("MmapStatus"));
-  EXPECT_EQ(base::NumberToString(MetaTable::kMmapSuccess),
-            ExecuteWithResult(db_.get(), "SELECT * FROM MmapStatus"));
-
-  // Also maps everything when kMmapSuccess is already in the view.
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-
-  // Preload with partial progress of one page.  Should map everything.
-  ASSERT_TRUE(db_->Execute("DROP VIEW MmapStatus"));
-  ASSERT_TRUE(db_->Execute("CREATE VIEW MmapStatus (value) AS SELECT 1"));
-  ASSERT_GT(db_->ComputeMmapSizeForOpen(), kMmapAlot);
-  EXPECT_EQ(base::NumberToString(MetaTable::kMmapSuccess),
-            ExecuteWithResult(db_.get(), "SELECT * FROM MmapStatus"));
-
-  // Failure status leads to nothing being mapped.
-  ASSERT_TRUE(db_->Execute("DROP VIEW MmapStatus"));
-  ASSERT_TRUE(db_->Execute("CREATE VIEW MmapStatus (value) AS SELECT -2"));
-  ASSERT_EQ(0UL, db_->ComputeMmapSizeForOpen());
-  EXPECT_EQ(base::NumberToString(MetaTable::kMmapFailure),
-            ExecuteWithResult(db_.get(), "SELECT * FROM MmapStatus"));
-}
-
 TEST_P(SQLDatabaseTest, GetMemoryUsage) {
   // Databases with mmap enabled may not follow the assumptions below.
   db_->Close();
@@ -2274,6 +2188,52 @@ INSTANTIATE_TEST_SUITE_P(
            std::get<1>(info.param) ? "ExclusiveLock" : "NoExclusiveLock"});
     });
 
+class SQLDatabaseTestExclusiveFileLockWithSpecialChars
+    : public testing::Test,
+      public testing::WithParamInterface<base::FilePath::StringViewType> {
+ public:
+  ~SQLDatabaseTestExclusiveFileLockWithSpecialChars() override = default;
+
+  void SetUp() override {
+    db_ = std::make_unique<Database>(
+        DatabaseOptions().set_exclusive_database_file_lock(true),
+        test::kTestTag);
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir(GetParam()));
+    db_path_ = temp_dir_.GetPath().AppendASCII("database_test_locked.sqlite");
+  }
+
+ protected:
+  base::ScopedTempDir temp_dir_;
+  base::FilePath db_path_;
+  std::unique_ptr<Database> db_;
+};
+
+TEST_P(SQLDatabaseTestExclusiveFileLockWithSpecialChars, OpenDb) {
+  ASSERT_FALSE(base::PathExists(db_path_));
+  ASSERT_TRUE(db_->Open(db_path_));
+  ASSERT_TRUE(base::PathExists(db_path_));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SQLDatabaseTestExclusiveFileLockWithSpecialChars,
+                         ::testing::Values(FILE_PATH_LITERAL("!"),
+                                           FILE_PATH_LITERAL("#"),
+                                           FILE_PATH_LITERAL("$"),
+                                           FILE_PATH_LITERAL("&"),
+                                           FILE_PATH_LITERAL("'"),
+                                           FILE_PATH_LITERAL("()"),
+                                           FILE_PATH_LITERAL("+"),
+                                           FILE_PATH_LITERAL(","),
+                                           FILE_PATH_LITERAL(";"),
+                                           FILE_PATH_LITERAL("="),
+                                           FILE_PATH_LITERAL("@"),
+                                           FILE_PATH_LITERAL("[]"),
+                                           FILE_PATH_LITERAL("%"),
+                                           FILE_PATH_LITERAL("%21"),
+                                           FILE_PATH_LITERAL("%23"),
+                                           FILE_PATH_LITERAL("%3f"),
+                                           FILE_PATH_LITERAL("_"),
+                                           FILE_PATH_LITERAL(" ")));
 #else
 
 TEST(SQLInvalidDatabaseFlagsDeathTest, ExclusiveDatabaseLock) {
@@ -2333,12 +2293,9 @@ TEST_P(SQLDatabaseTest, CheckpointDatabase) {
   if (!IsWALEnabled())
     return;
 
+  // WAL file initially not present until there are modifications to the db.
   base::FilePath wal_path = Database::WriteAheadLogPath(db_path_);
-
-  // WAL file initially empty.
-  EXPECT_TRUE(base::PathExists(wal_path));
-  std::optional<int64_t> wal_size = GetFileSize(wal_path);
-  EXPECT_THAT(wal_size, testing::Optional(0));
+  EXPECT_FALSE(base::PathExists(wal_path));
 
   ASSERT_TRUE(
       db_->Execute("CREATE TABLE foo (id INTEGER UNIQUE, value INTEGER)"));
@@ -2346,7 +2303,7 @@ TEST_P(SQLDatabaseTest, CheckpointDatabase) {
   ASSERT_TRUE(db_->Execute("INSERT INTO foo VALUES (2, 2)"));
 
   // Writes reach WAL file but not db file.
-  wal_size = GetFileSize(wal_path);
+  std::optional<int64_t> wal_size = GetFileSize(wal_path);
   ASSERT_TRUE(wal_size.has_value());
   EXPECT_GT(wal_size.value(), 0);
 
@@ -2364,6 +2321,140 @@ TEST_P(SQLDatabaseTest, CheckpointDatabase) {
             "1");
   EXPECT_EQ(ExecuteWithResult(db_.get(), "SELECT value FROM foo where id=2"),
             "2");
+}
+
+TEST_P(SQLDatabaseTest, WALCommitCallback) {
+  if (!IsWALEnabled()) {
+    GTEST_SKIP() << "WAL mode not enabled";
+  }
+
+  db_->Close();
+  Database::Delete(db_path_);
+
+  std::optional<int> wal_callback_pages;
+  Database db(DatabaseOptions()
+#if BUILDFLAG(IS_WIN)
+                  .set_exclusive_database_file_lock(true)
+#endif  // IS_WIN
+                  .set_wal_mode(true)
+                  .set_wal_commit_callback(base::BindLambdaForTesting(
+                      [&](int pages) { wal_callback_pages = pages; })),
+              test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+
+  // The value of `wal_autocheckpoint` must be 0 when the db is created with
+  // manual checkpoint options.
+  EXPECT_EQ("0", ExecuteWithResult(&db, "PRAGMA wal_autocheckpoint"));
+
+  const base::FilePath wal_path = Database::WriteAheadLogPath(db_path_);
+  // The WAL file should not exist yet.
+  ASSERT_FALSE(base::GetFileSize(wal_path).has_value());
+
+  int64_t db_size = CheckedGetFileSize(db_path_);
+  int64_t previous_db_size = db_size;
+
+  // The following CREATE TABLE statement writes some pages into the WAL log.
+  ASSERT_TRUE(
+      db.Execute("CREATE TABLE foo (id INTEGER UNIQUE, value INTEGER)"));
+
+  // The WAL callback must have been called while creating a table.
+  ASSERT_TRUE(wal_callback_pages.has_value());
+  EXPECT_GT(*wal_callback_pages, 0);
+  int previous_wal_callback_pages = *wal_callback_pages;
+
+  // The WAL file should grow.
+  int64_t wal_size = CheckedGetFileSize(wal_path);
+  int64_t previous_wal_size = wal_size;
+  ASSERT_GT(wal_size, 0);
+
+  // The db file size should not change.
+  ASSERT_EQ(CheckedGetFileSize(db_path_), previous_db_size);
+
+  for (int i = 0; i < 100; ++i) {
+    // The following INSERT INTO statement writes some pages into the WAL log.
+    ASSERT_TRUE(db.Execute(
+        base::StringPrintf("INSERT INTO foo VALUES (%d, %d)", i, i)));
+
+    // The WAL callback must have been called with a greater `pages` value.
+    ASSERT_GT(*wal_callback_pages, previous_wal_callback_pages);
+    previous_wal_callback_pages = *wal_callback_pages;
+
+    // The WAL file should grow.
+    wal_size = CheckedGetFileSize(wal_path);
+    ASSERT_GT(wal_size, previous_wal_size);
+    previous_wal_size = wal_size;
+
+    // The db file size should not change.
+    ASSERT_EQ(CheckedGetFileSize(db_path_), previous_db_size);
+  }
+
+  wal_callback_pages.reset();
+  previous_wal_callback_pages = 0;
+
+  base::HistogramTester histogram_tester;
+  db.CheckpointDatabase();
+  histogram_tester.ExpectTotalCount("Sql.Database.ManualCheckpoint.Time.Test",
+                                    1);
+  histogram_tester.ExpectUniqueSample(
+      "Sql.Database.ManualCheckpoint.Result.Test", SQLITE_OK, 1);
+  histogram_tester.ExpectTotalCount(
+      "Sql.Database.ManualCheckpoint.FrameCount.Test", 1);
+
+  // The WAL callback must not be called while running checkpoint.
+  ASSERT_FALSE(wal_callback_pages.has_value());
+
+  // The db file size should grow.
+  db_size = CheckedGetFileSize(db_path_);
+  ASSERT_GT(db_size, previous_db_size);
+  previous_db_size = db_size;
+
+  for (int i = 100; i < 200; ++i) {
+    // The following INSERT INTO statement writes some pages into the WAL log.
+    ASSERT_TRUE(db.Execute(
+        base::StringPrintf("INSERT INTO foo VALUES (%d, %d)", i, i)));
+
+    // The WAL callback must have been called with a greater `pages` value.
+    ASSERT_GT(*wal_callback_pages, previous_wal_callback_pages);
+    previous_wal_callback_pages = *wal_callback_pages;
+
+    // The db file size should not change.
+    ASSERT_EQ(CheckedGetFileSize(db_path_), previous_db_size);
+  }
+}
+
+TEST_P(SQLDatabaseTest, WalAutocheckpoint) {
+  if (!IsWALEnabled()) {
+    GTEST_SKIP() << "WAL mode not enabled";
+  }
+
+  db_->Close();
+  Database::Delete(db_path_);
+
+  Database db(DatabaseOptions().set_wal_mode(true), test::kTestTag);
+  ASSERT_TRUE(db.Open(db_path_));
+
+  // `Database` installs its own hook, so the default auto-checkpoint is off.
+  EXPECT_EQ("0", ExecuteWithResult(&db, "PRAGMA wal_autocheckpoint"));
+
+  ASSERT_TRUE(
+      db.Execute("CREATE TABLE foo (id INTEGER UNIQUE, value INTEGER)"));
+
+  base::HistogramTester histogram_tester;
+  // Cause at least 1000 commits.
+  for (int i = 0; i < 1000; ++i) {
+    ASSERT_TRUE(db.Execute(
+        base::StringPrintf("INSERT INTO foo VALUES (%d, %d)", i, i)));
+  }
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Sql.Database.AutoCheckpoint.Time.Test"),
+      testing::Not(testing::IsEmpty()));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Sql.Database.AutoCheckpoint.Result.Test"),
+      testing::Contains(
+          testing::Field(&base::Bucket::min, testing::Eq(SQLITE_OK))));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Sql.Database.AutoCheckpoint.FrameCount.Test"),
+              testing::Not(testing::IsEmpty()));
 }
 
 #if BUILDFLAG(IS_WIN)

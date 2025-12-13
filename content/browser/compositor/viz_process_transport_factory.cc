@@ -54,6 +54,10 @@
 #include "ui/gfx/win/rendering_window_manager.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "ui/compositor/display_link_mac_mojo.h"
+#endif
+
 namespace content {
 namespace {
 
@@ -68,20 +72,14 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateContextProvider(
     viz::command_buffer_metrics::ContextType type) {
   constexpr bool kAutomaticFlushes = false;
 
-  gpu::ContextCreationAttribs attributes;
-  attributes.lose_context_when_out_of_memory = true;
-  attributes.enable_gles2_interface = false;
-  attributes.enable_raster_interface = true;
-  attributes.enable_gpu_rasterization = supports_gpu_rasterization;
-
   gpu::SharedMemoryLimits memory_limits =
       gpu::SharedMemoryLimits::ForDisplayCompositor();
 
   GURL url("chrome://gpu/VizProcessTransportFactory::CreateContextProvider");
-  return base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
+  return viz::ContextProviderCommandBuffer::CreateForRaster(
       std::move(gpu_channel_host), kGpuStreamIdDefault, kGpuStreamPriorityUI,
-      std::move(url), kAutomaticFlushes, supports_locking, memory_limits,
-      attributes, type);
+      std::move(url), kAutomaticFlushes, supports_locking, memory_limits, type,
+      /*lose_context_when_out_of_memory=*/true);
 }
 
 bool IsContextLost(viz::RasterContextProvider* context_provider) {
@@ -193,6 +191,22 @@ void VizProcessTransportFactory::CreateLayerTreeFrameSink(
 #if BUILDFLAG(IS_WIN)
   gfx::RenderingWindowManager::GetInstance()->UnregisterParent(
       compositor->widget());
+#endif
+
+#if BUILDFLAG(IS_MAC)
+  // Create DisplayLinkMacMojo only after FrameSinkManager and display::Screen
+  // are available. FrameSinkManager is established in
+  // ConnectHostFrameSinkManager(), but display::Screen is not available in that
+  // function in Content Shell. (Note: display::Screen is available and not an
+  // issue there when running on Chrome.)
+  // CADisplayLink is not used in headless mode
+  // (use_external_begin_frame_control()).
+  if (!compositor->use_external_begin_frame_control() &&
+      !display_link_mac_mojo_ &&
+      ui::DisplayLinkMacMojo::SupportsDisplayLinkMacInBrowser()) {
+    display_link_mac_mojo_ =
+        std::make_unique<ui::DisplayLinkMacMojo>(GetHostFrameSinkManager());
+  }
 #endif
 
   gpu_channel_establish_factory_->EstablishGpuChannel(
@@ -323,6 +337,8 @@ void VizProcessTransportFactory::DisableGpuCompositing(
 void VizProcessTransportFactory::OnGpuProcessLost() {
   // Reconnect HostFrameSinkManager to new GPU process.
   ConnectHostFrameSinkManager();
+
+  // TODO: Reconnect VSyncIpc for display_link_mac_mojo_ on mac;
 }
 
 void VizProcessTransportFactory::OnEstablishedGpuChannel(
@@ -451,7 +467,7 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
   params.pipes.compositor_frame_sink_associated_remote = std::move(sink_remote);
   params.pipes.client_receiver = std::move(client_receiver);
 
-  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface =
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface =
       gpu_channel_host->CreateClientSharedImageInterface();
 
   auto frame_sink =
@@ -527,7 +543,7 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
     // rasterized on the GPU.
     auto worker_context_provider = CreateContextProvider(
         gpu_channel_host, /*supports_locking=*/true, enable_gpu_rasterization,
-        viz::command_buffer_metrics::ContextType::BROWSER_WORKER);
+        viz::command_buffer_metrics::ContextType::BROWSER_RASTER_WORKER);
 
     // Don't observer context loss on |worker_context_provider_| here,
     // that is already observed by LayerTreeFrameSink. The lost context will

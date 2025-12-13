@@ -8,6 +8,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "base/functional/callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {

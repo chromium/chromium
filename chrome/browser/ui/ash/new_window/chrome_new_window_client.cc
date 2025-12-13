@@ -105,13 +105,13 @@ bool IsIncognitoAllowed() {
 // Returns URL path and query without the "/" prefix. For example, for the URL
 // "chrome://settings/networks/?type=WiFi" returns "networks/?type=WiFi".
 std::string GetPathAndQuery(const GURL& url) {
-  std::string result = url.path();
+  std::string result = url.GetPath();
   if (!result.empty() && result[0] == '/') {
     result.erase(0, 1);
   }
   if (url.has_query()) {
     result += '?';
-    result += url.query();
+    result += url.GetQuery();
   }
   return result;
 }
@@ -170,20 +170,6 @@ bool OpenFilesSwa(Profile* const profile,
 
 }  // namespace
 
-ChromeNewWindowClient::ChromeNewWindowClient() {
-  arc::ArcIntentHelperBridge::SetControlCameraAppDelegate(this);
-}
-
-ChromeNewWindowClient::~ChromeNewWindowClient() {
-  arc::ArcIntentHelperBridge::SetControlCameraAppDelegate(nullptr);
-}
-
-// static
-ChromeNewWindowClient* ChromeNewWindowClient::Get() {
-  return static_cast<ChromeNewWindowClient*>(
-      ash::NewWindowDelegate::GetInstance());
-}
-
 // TabRestoreHelper is used to restore a tab. In particular when the user
 // attempts to a restore a tab if the TabRestoreService hasn't finished loading
 // this waits for it. Once the TabRestoreService finishes loading the tab is
@@ -228,10 +214,24 @@ class ChromeNewWindowClient::TabRestoreHelper
   raw_ptr<sessions::TabRestoreService> tab_restore_service_;
 };
 
+ChromeNewWindowClient::ChromeNewWindowClient() {
+  arc::ArcIntentHelperBridge::SetControlCameraAppDelegate(this);
+}
+
+ChromeNewWindowClient::~ChromeNewWindowClient() {
+  arc::ArcIntentHelperBridge::SetControlCameraAppDelegate(nullptr);
+}
+
+// static
+ChromeNewWindowClient* ChromeNewWindowClient::Get() {
+  return static_cast<ChromeNewWindowClient*>(
+      ash::NewWindowDelegate::GetInstance());
+}
+
 void ChromeNewWindowClient::NewTab() {
   Browser* browser = chrome::FindBrowserWithActiveWindow();
   if (browser && browser->is_type_normal()) {
-    chrome::NewTab(browser);
+    chrome::NewTab(browser, NewTabTypes::kNewTabCommand);
     return;
   }
 
@@ -247,7 +247,7 @@ void ChromeNewWindowClient::NewTab() {
     }
     chrome::ScopedTabbedBrowserDisplayer displayer(profile);
     browser = displayer.browser();
-    chrome::NewTab(browser);
+    chrome::NewTab(browser, NewTabTypes::kNewTabCommand);
   }
 
   browser->SetFocusToLocationBar();
@@ -340,13 +340,13 @@ void ChromeNewWindowClient::OpenUrl(const GURL& url,
        url.SchemeIs(content::kChromeUIScheme))) {
     // Show browser settings (e.g. chrome://settings). This may open in a window
     // or a tab depending on feature SplitSettings.
-    if (url.host() == chrome::kChromeUISettingsHost) {
+    if (url.GetHost() == chrome::kChromeUISettingsHost) {
       std::string sub_page = GetPathAndQuery(url);
       chrome::ShowSettingsSubPageForProfile(profile, sub_page);
       return;
     }
     // OS settings are shown in a window.
-    if (url.host() == chrome::kChromeUIOSSettingsHost) {
+    if (url.GetHost() == chrome::kChromeUIOSSettingsHost) {
       std::string sub_page = GetPathAndQuery(url);
       chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile,
                                                                    sub_page);
@@ -373,7 +373,7 @@ void ChromeNewWindowClient::OpenUrl(const GURL& url,
     // The browser window might be on another user's desktop, and hence not
     // visible. Ensure the browser becomes visible on this user's desktop.
     multi_user_util::MoveWindowToCurrentDesktop(
-        navigate_params.browser->window()->GetNativeWindow());
+        navigate_params.browser->GetWindow()->GetNativeWindow());
   }
 
   auto* tab = navigate_params.navigated_or_inserted_contents.get();
@@ -466,7 +466,7 @@ void ChromeNewWindowClient::OpenCrosh() {
 
 void ChromeNewWindowClient::OpenGetHelp() {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
-  chrome::ShowHelpForProfile(profile, chrome::HELP_SOURCE_KEYBOARD);
+  chrome::ShowHelpForProfile(profile, chrome::HelpSource::kKeyboard);
 }
 
 void ChromeNewWindowClient::RestoreTab() {

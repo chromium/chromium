@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/test/chromedriver/net/adb_client_socket.h"
 
 #include <stddef.h>
@@ -57,8 +52,8 @@ std::string EncodeMessage(const std::string& message) {
   CHECK_LE(length, 0xffffu);
   std::string result;
   result.reserve(4);
-  base::AppendHexEncodedByte(reinterpret_cast<const uint8_t*>(&length)[1],
-                             result);
+  base::AppendHexEncodedByte(
+      UNSAFE_TODO(reinterpret_cast<const uint8_t*>(&length)[1]), result);
   base::AppendHexEncodedByte(reinterpret_cast<const uint8_t*>(&length)[0],
                              result);
   return result + message;
@@ -389,7 +384,8 @@ class AdbSendFileSocket : AdbClientSocket {
     size_t offset = current_offset_;
     size_t length = std::min(content_.length() - offset, kAdbDataChunkSize);
     current_offset_ += length;
-    SendPayload(kDataCommand, length, content_.c_str() + offset, length,
+    SendPayload(kDataCommand, length, UNSAFE_TODO(content_.c_str() + offset),
+                length,
                 base::BindOnce(&AdbSendFileSocket::SendContent,
                                base::Unretained(this)));
   }

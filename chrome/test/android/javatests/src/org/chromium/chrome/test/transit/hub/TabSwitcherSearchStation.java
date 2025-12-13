@@ -20,6 +20,7 @@ import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 import android.view.KeyEvent;
 import android.view.View;
 
+import androidx.core.util.Pair;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
 
@@ -37,6 +38,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.util.OmniboxTestUtils.InputMethodManagerIsActiveCondition;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionsNotShownCondition;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionsShownCondition;
 import org.chromium.chrome.test.util.OmniboxTestUtils.UrlBarHasFocusCondition;
@@ -85,19 +87,21 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
     }
 
     public void typeInOmnibox(String query) {
-        noopTo().waitFor(new UrlBarHasFocusCondition(urlBarElement.get()));
+        noopTo().waitFor(
+                        new UrlBarHasFocusCondition(urlBarElement.value()),
+                        new InputMethodManagerIsActiveCondition(urlBarElement.value()));
         urlBarElement
                 .typeTextTo(query)
                 .withPossiblyAlreadyFulfilled()
-                .waitFor(new SuggestionsShownCondition(locationBarElement.get()));
+                .waitFor(new SuggestionsShownCondition(locationBarElement.value()));
     }
 
     public void checkSuggestionsShown() {
-        noopTo().waitFor(new SuggestionsShownCondition(locationBarElement.get()));
+        noopTo().waitFor(new SuggestionsShownCondition(locationBarElement.value()));
     }
 
     public void checkSuggestionsNotShown() {
-        noopTo().waitFor(new SuggestionsNotShownCondition(locationBarElement.get()));
+        noopTo().waitFor(new SuggestionsNotShownCondition(locationBarElement.value()));
     }
 
     /** Expect a suggestion with the given |index|, |title| and |text| combination. */
@@ -167,9 +171,21 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
             return suggestionElement.clickTo().arriveAt(buildDestinationPageStation());
         }
 
+        public Pair<RegularTabSwitcherStation, TabGroupDialogFacility> openTabGroup(
+                ChromeTabbedActivity activity, List<Integer> tabIdsInGroup, String title) {
+            RegularTabSwitcherStation tabSwitcher =
+                    RegularTabSwitcherStation.from(activity.getTabModelSelector());
+            TabGroupDialogFacility dialog =
+                    new TabGroupDialogFacility<>(tabIdsInGroup, title, null);
+            suggestionElement.clickTo().arriveAtAnd(tabSwitcher).enterFacility(dialog);
+            return new Pair<>(tabSwitcher, dialog);
+        }
+
         public WebPageStation openPagePressingEnter() {
-            UrlBar urlBar = urlBarElement.get();
-            noopTo().waitFor(new UrlBarHasFocusCondition(urlBar, /* active= */ true));
+            UrlBar urlBar = urlBarElement.value();
+            noopTo().waitFor(
+                            new UrlBarHasFocusCondition(urlBar),
+                            new InputMethodManagerIsActiveCondition(urlBar));
             return urlBarElement
                     .performViewActionTo(ViewActions.pressKey(KeyEvent.KEYCODE_ENTER))
                     .arriveAt(buildDestinationPageStation());

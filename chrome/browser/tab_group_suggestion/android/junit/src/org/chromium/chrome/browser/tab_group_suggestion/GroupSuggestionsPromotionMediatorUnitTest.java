@@ -39,12 +39,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -111,21 +111,8 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
         doReturn(mTab2).when(mTabModel).getTabById(TAB_2_ID);
         doReturn(null).when(mTabModel).getTabById(INVALID_TAB_ID_1);
         doReturn(null).when(mTabModel).getTabById(INVALID_TAB_ID_2);
-        ObservableSupplier<Tab> currentTabSupplier =
-                new ObservableSupplier<>() {
-                    @Override
-                    public @Nullable Tab addObserver(Callback<Tab> obs, int behavior) {
-                        return null;
-                    }
-
-                    @Override
-                    public void removeObserver(Callback<Tab> obs) {}
-
-                    @Override
-                    public Tab get() {
-                        return mTab1;
-                    }
-                };
+        SettableNullableObservableSupplier<Tab> currentTabSupplier =
+                ObservableSuppliers.createNullable(mTab1);
         doReturn(currentTabSupplier).when(mTabModel).getCurrentTabSupplier();
         doReturn(true).when(mBottomSheetController).requestShowContent(any(), anyBoolean());
     }
@@ -244,7 +231,10 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
                 .onClick(mock(View.class));
 
         verify(mTabGroupModelFilter)
-                .mergeListOfTabsToGroup(eq(Arrays.asList(mTab1, mTab2)), eq(mTab1), eq(true));
+                .mergeListOfTabsToGroup(
+                        eq(Arrays.asList(mTab1, mTab2)),
+                        eq(mTab1),
+                        eq(MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         verify(mBottomSheetController).hideContent(eq(currentContent), eq(true));
         assertNull(mMediator.getCurrentSheetContent());
         assertEquals(UserResponse.ACCEPTED, userResponse.get());
@@ -280,7 +270,7 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
                 .onClick(mock(View.class));
 
         verify(mTabGroupModelFilter, never())
-                .mergeListOfTabsToGroup(any(List.class), any(Tab.class), anyBoolean());
+                .mergeListOfTabsToGroup(any(List.class), any(Tab.class), anyInt());
         verify(mBottomSheetController).hideContent(eq(currentContent), eq(true));
         assertNull(mMediator.getCurrentSheetContent());
         assertEquals(UserResponse.REJECTED, userResponse.get());
@@ -315,7 +305,7 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
         mBottomSheetObserver.getValue().onSheetClosed(0);
 
         verify(mTabGroupModelFilter, never())
-                .mergeListOfTabsToGroup(any(List.class), any(Tab.class), anyBoolean());
+                .mergeListOfTabsToGroup(any(List.class), any(Tab.class), anyInt());
         verify(mBottomSheetController, never())
                 .hideContent(any(GroupSuggestionsBottomSheetContent.class), anyBoolean());
         assertNull(mMediator.getCurrentSheetContent());

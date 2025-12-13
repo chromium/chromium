@@ -316,23 +316,35 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
       break;
 
     case CSSPropertyID::kBorderBottomWidth:
-      result = Length::Fixed(style.BorderBottomWidth());
+      result =
+          RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled()
+              ? Length::Fixed(style.BorderBottomWidthInternal())
+              : Length::Fixed(style.BorderBottomWidth());
       success = true;
       break;
     case CSSPropertyID::kBorderLeftWidth:
-      result = Length::Fixed(style.BorderLeftWidth());
+      result =
+          RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled()
+              ? Length::Fixed(style.BorderLeftWidthInternal())
+              : Length::Fixed(style.BorderLeftWidth());
       success = true;
       break;
     case CSSPropertyID::kBorderRightWidth:
-      result = Length::Fixed(style.BorderRightWidth());
+      result =
+          RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled()
+              ? Length::Fixed(style.BorderRightWidthInternal())
+              : Length::Fixed(style.BorderRightWidth());
       success = true;
       break;
     case CSSPropertyID::kBorderTopWidth:
-      result = Length::Fixed(style.BorderTopWidth());
+      result =
+          RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled()
+              ? Length::Fixed(style.BorderTopWidthInternal())
+              : Length::Fixed(style.BorderTopWidth());
       success = true;
       break;
     case CSSPropertyID::kLetterSpacing:
-      result = Length::Fixed(style.LetterSpacing());
+      result = style.ComputedLetterSpacing();
       success = true;
       break;
     case CSSPropertyID::kOutlineOffset:
@@ -340,7 +352,10 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
       success = true;
       break;
     case CSSPropertyID::kOutlineWidth:
-      result = Length::Fixed(style.OutlineWidth());
+      result =
+          RuntimeEnabledFeatures::DecoupleComputedBorderWidthFromStyleEnabled()
+              ? Length::Fixed(style.OutlineWidthInternal())
+              : Length::Fixed(style.OutlineWidth());
       success = true;
       break;
     case CSSPropertyID::kWebkitBorderHorizontalSpacing:
@@ -363,12 +378,36 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
         success = true;
       }
       break;
-    case CSSPropertyID::kColumnRuleOutset:
-      result = style.ColumnRuleOutset();
+    case CSSPropertyID::kColumnRuleEdgeEndInset:
+      result = style.ColumnRuleEdgeEndInset();
       success = true;
       break;
-    case CSSPropertyID::kRowRuleOutset:
-      result = style.RowRuleOutset();
+    case CSSPropertyID::kRowRuleEdgeEndInset:
+      result = style.RowRuleEdgeEndInset();
+      success = true;
+      break;
+    case CSSPropertyID::kColumnRuleEdgeStartInset:
+      result = style.ColumnRuleEdgeStartInset();
+      success = true;
+      break;
+    case CSSPropertyID::kRowRuleEdgeStartInset:
+      result = style.RowRuleEdgeStartInset();
+      success = true;
+      break;
+    case CSSPropertyID::kColumnRuleInteriorEndInset:
+      result = style.ColumnRuleInteriorEndInset();
+      success = true;
+      break;
+    case CSSPropertyID::kRowRuleInteriorEndInset:
+      result = style.RowRuleInteriorEndInset();
+      success = true;
+      break;
+    case CSSPropertyID::kColumnRuleInteriorStartInset:
+      result = style.ColumnRuleInteriorStartInset();
+      success = true;
+      break;
+    case CSSPropertyID::kRowRuleInteriorStartInset:
+      result = style.RowRuleInteriorStartInset();
       success = true;
       break;
     case CSSPropertyID::kColumnRuleWidth:
@@ -392,7 +431,7 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
       success = true;
       break;
     case CSSPropertyID::kWordSpacing:
-      result = Length::Fixed(style.WordSpacing());
+      result = style.ComputedWordSpacing();
       success = true;
       break;
 

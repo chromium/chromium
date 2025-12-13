@@ -52,7 +52,6 @@
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/prerender_page_param.mojom-forward.h"
-#include "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom-forward.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
@@ -131,7 +130,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       std::optional<SkColor> page_base_background_color,
       const base::UnguessableToken& browsing_context_group_token,
       const ColorProviderColorMaps* color_provider_colors,
-      blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
       int32_t history_index,
       int32_t history_length);
 
@@ -234,7 +232,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   int32_t HistoryListLength() const { return history_list_length_; }
   const SessionStorageNamespaceId& GetSessionStorageNamespaceId() override;
   bool IsFencedFrameRoot() const override;
-  void SetSupportsDraggableRegions(bool supports_draggable_regions) override;
 
   // Functions to add and remove observers for this object.
   void AddObserver(WebViewObserver* observer);
@@ -322,6 +319,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       network::mojom::AttributionSupport support) override;
   void UpdateColorProviders(
       const ColorProviderColorMaps& color_provider_colors) override;
+  void SetSupportsDraggableRegions(bool supports_draggable_regions) override;
 
   void DispatchPersistedPageshow(base::TimeTicks navigation_start);
   void DispatchPagehide(mojom::blink::PagehideDispatch pagehide_dispatch);
@@ -343,7 +341,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void EnableAutoResizeMode(const gfx::Size& min_viewport_size,
                             const gfx::Size& max_viewport_size);
   void DisableAutoResizeMode();
-  void ActivateDevToolsTransform(const DeviceEmulationParams&);
+  void ActivateDevToolsTransform(
+      const DeviceEmulationParams&,
+      const mojom::blink::DeviceEmulationCacheBehavior&);
   void DeactivateDevToolsTransform();
 
   SkColor BackgroundColor() const;
@@ -596,14 +596,20 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // empty document of a main frame.
   void DidAccessInitialMainDocument();
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  using WindowShowStateChangeCallback = base::OnceCallback<void(bool)>;
   // Sends window.minimize() requests to the browser window.
-  void Minimize();
+  void Minimize(WindowShowStateChangeCallback);
   // Sends window.maximize() requests to the browser window.
-  void Maximize();
+  void Maximize(WindowShowStateChangeCallback);
   // Sends window.restore() requests to the browser window.
-  void Restore();
+  void Restore(WindowShowStateChangeCallback);
   // Sends window.setResizable() requests to the browser window.
   void SetResizable(bool resizable);
+
+  void OnWindowShowStateChanged(ui::mojom::blink::WindowShowState old_state,
+                                ui::mojom::blink::WindowShowState new_state);
+#endif  //  !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // TODO(crbug.com/1149992): This is called from the associated widget and this
   // code should eventually move out of WebView into somewhere else.
@@ -627,8 +633,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // words, after the frame has painted something.
   void DidFirstVisuallyNonEmptyPaint();
 
-  // Caleld once the first contentful paint happens on the main frame.
-  void OnFirstContentfulPaint();
+  // Called once the first contentful paint happens on the main frame.
+  void OnFirstContentfulPaint(const base::TimeDelta& duration);
 
   scheduler::WebAgentGroupScheduler& GetWebAgentGroupScheduler();
 
@@ -720,7 +726,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       std::optional<SkColor> page_base_background_color,
       const base::UnguessableToken& browsing_context_group_token,
       const ColorProviderColorMaps* color_provider_colors,
-      blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params,
       int32_t history_index,
       int32_t history_length);
   ~WebViewImpl() override;
@@ -965,14 +970,14 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   Persistent<ResizeViewportAnchor> resize_viewport_anchor_;
 
   // Handle to the local main frame host. Only valid when the MainFrame is
-  // local. It is ok to use WTF::Unretained(this) for callbacks made on this
+  // local. It is ok to use blink::Unretained(this) for callbacks made on this
   // interface because the callbacks will be associated with the lifecycle
   // of this AssociatedRemote and the lifetime of the main LocalFrame.
   mojo::AssociatedRemote<mojom::blink::LocalMainFrameHost>
       local_main_frame_host_remote_;
 
   // Handle to the remote main frame host. Only valid when the MainFrame is
-  // remote.  It is ok to use WTF::Unretained(this) for callbacks made on this
+  // remote.  It is ok to use blink::Unretained(this) for callbacks made on this
   // interface because the callbacks will be associated with the lifecycle
   // of this AssociatedRemote and the lifetime of the main RemoteFrame.
   mojo::AssociatedRemote<mojom::blink::RemoteMainFrameHost>
@@ -1012,6 +1017,16 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   // All the registered observers.
   base::ObserverList<WebViewObserver> observers_;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  enum class WindowShowStateChangeType {
+    Maximize,
+    Minimize,
+    Restore,
+  };
+  std::optional<
+      std::pair<WindowShowStateChangeType, WindowShowStateChangeCallback>>
+      window_show_state_change_callback_;
+#endif
 };
 
 // WebView is always implemented by WebViewImpl, so explicitly allow the

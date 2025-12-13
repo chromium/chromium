@@ -108,7 +108,7 @@ found in the LICENSE file.
                 android:layout_marginEnd="68dp"
                 android:layout_gravity="bottom|end"
                 android:contentDescription="@string/accessibility_mute_video"
-                app:srcCompat="@drawable/ic_volume_on_white_24dp" />
+                app:srcCompat="@drawable/ic_volume_up_fill_24dp" />
             <ImageView
                 android:id="@+id/fullscreen"
                 android:layout_width="26dp"

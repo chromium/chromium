@@ -26,7 +26,6 @@ using performance_manager::mojom::ChildProcessCoordinationUnit;
 using performance_scenarios::PerformanceScenarioTestHelper;
 using performance_scenarios::ScenarioScope;
 using ::testing::_;
-using ::testing::Invoke;
 
 using InitializeChildProcessCoordinationCallback =
     ChildProcessCoordinationUnit::InitializeChildProcessCoordinationCallback;
@@ -35,7 +34,7 @@ class MockChildProcessCoordinationUnit : public ChildProcessCoordinationUnit {
  public:
   MOCK_METHOD(void,
               InitializeChildProcessCoordination,
-              (uint64_t, InitializeChildProcessCoordinationCallback),
+              (InitializeChildProcessCoordinationCallback),
               (override));
 
   void Bind(mojo::PendingReceiver<ChildProcessCoordinationUnit> receiver) {
@@ -65,17 +64,16 @@ class ChildPerformanceCoordinatorTest : public ::testing::Test {
       base::ReadOnlySharedMemoryRegion process_region) {
     base::OnceClosure quit_closure = task_env_.QuitClosure();
     StrictMockChildProcessCoordinationUnit mock_coordination_unit;
-    EXPECT_CALL(mock_coordination_unit,
-                InitializeChildProcessCoordination(_, _))
-        .WillOnce(Invoke(
-            [&](uint64_t, InitializeChildProcessCoordinationCallback callback) {
+    EXPECT_CALL(mock_coordination_unit, InitializeChildProcessCoordination(_))
+        .WillOnce(
+            [&](InitializeChildProcessCoordinationCallback callback) {
               std::move(callback).Run(std::move(global_region),
                                       std::move(process_region));
               // `callback` will post to ChildPerformanceCoordinator. Quit the
               // runloop after the posted task.
               task_env_.GetMainThreadTaskRunner()->PostTask(
                   FROM_HERE, std::move(quit_closure));
-            }));
+            });
     mock_coordination_unit.Bind(coordinator_.InitializeAndPassReceiver());
     task_env_.RunUntilQuit();
   }

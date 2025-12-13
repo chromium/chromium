@@ -4,7 +4,10 @@
 
 source_set("webauthn") {
   sources = [
+    "shared_types.h",
     "webauthn_metrics_util.h",
+    "webauthn_pref_names.cc",
+    "webauthn_pref_names.h",
     "webauthn_switches.h",
   ]
   public_deps = []
@@ -39,44 +42,160 @@ source_set("webauthn") {
   }
 }
 
+source_set("chrome_web_authentication_delegate") {
+  sources = [
+    "chrome_web_authentication_delegate_base.cc",
+    "chrome_web_authentication_delegate_base.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    ":webauthn",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//components/prefs",
+    "//device/fido",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "chrome_web_authentication_delegate.cc",
+      "chrome_web_authentication_delegate.h",
+    ]
+
+    deps += [
+      ":unexportable_key_utils",
+      "//chrome/browser/extensions/api/web_authentication_proxy",
+      "//chrome/browser/signin",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui/passwords",
+      "//components/device_event_log",
+      "//components/webauthn/core/browser",
+    ]
+
+    if (is_chromeos) {
+      deps += [ "//chromeos/components/webauthn" ]
+    }
+  }
+}
+
 if (!is_android) {
+  source_set("local_credential_management") {
+    sources = [
+      "local_credential_management.cc",
+      "local_credential_management.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//device/fido",
+      "//third_party/icu",
+    ]
+
+    deps = [
+      "//base:i18n",
+      "//components/prefs",
+      "//net",
+    ]
+
+    if (is_win) {
+      sources += [
+        "local_credential_management_win.cc",
+        "local_credential_management_win.h",
+      ]
+      deps += [
+        "//components/pref_registry",
+        "//components/user_prefs",
+      ]
+    }
+
+    if (is_mac) {
+      sources += [
+        "local_credential_management_mac.cc",
+        "local_credential_management_mac.h",
+      ]
+      deps += [ ":chrome_web_authentication_delegate" ]
+    }
+  }
+
+  source_set("unexportable_key_utils") {
+    sources = [
+      "unexportable_key_utils.cc",
+      "unexportable_key_utils.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//crypto",
+    ]
+
+    deps = [
+      ":webauthn",
+      "//device/fido",
+    ]
+
+    if (is_chromeos) {
+      sources += [ "unexportable_key_utils_chromeos.cc" ]
+      deps += [
+        "//ash/constants",
+        "//ash/public/cpp",
+        "//chromeos/ash/components/osauth/impl",
+      ]
+    }
+  }
+
   static_library("test_support") {
     testonly = true
 
     sources = [
       "enclave_authenticator_browsertest_base.cc",
       "enclave_authenticator_browsertest_base.h",
+      "enclave_keys_waiter.cc",
+      "enclave_keys_waiter.h",
       "fake_magic_arch.cc",
       "fake_magic_arch.h",
       "fake_recovery_key_store.cc",
       "fake_recovery_key_store.h",
       "fake_security_domain_service.cc",
       "fake_security_domain_service.h",
+      "mock_enclave_manager.cc",
+      "mock_enclave_manager.h",
+      "mock_local_credential_management.cc",
+      "mock_local_credential_management.h",
       "test_util.cc",
       "test_util.h",
+      "webauthn_scoped_fake_unexportable_key_provider.cc",
+      "webauthn_scoped_fake_unexportable_key_provider.h",
     ]
 
     deps = [
+      ":local_credential_management",
+      ":unexportable_key_utils",
       ":webauthn",
       "//base",
       "//chrome/browser",
       "//chrome/browser/sync",
+      "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/ui",
-      "//chrome/test:sync_integration_test_support",
       "//chrome/test:test_support_ui",
       "//components/os_crypt/sync:test_support",
       "//components/signin/public/identity_manager:test_support",
       "//components/sync:test_support",
       "//components/trusted_vault",
       "//components/trusted_vault:test_support",
-      "//components/trusted_vault/proto:proto",
+      "//components/trusted_vault/proto",
       "//components/webauthn/core/browser",
       "//components/webauthn/core/browser:passkey_model",
       "//crypto:test_support",
-      "//device/fido:fido",
+      "//device/fido",
       "//device/fido:test_support",
       "//google_apis",
-      "//net:net",
+      "//net",
       "//testing/gmock",
       "//testing/gtest",
       "//url",

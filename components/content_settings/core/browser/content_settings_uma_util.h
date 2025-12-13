@@ -21,6 +21,12 @@ void RecordContentSettingsHistogram(const std::string& name,
 void RecordActiveExpiryEvent(content_settings::ProviderType provider_type,
                              ContentSettingsType content_setting_type);
 
+// Records a UMA histogram when a content setting is changed. This captures the
+// new value of the setting along with the type of content setting that was
+// modified.
+void RecordContentSettingChange(ContentSetting content_setting_value,
+                                ContentSettingsType content_setting_type);
+
 }  // namespace content_settings_uma_util
 
 #endif  // COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_CONTENT_SETTINGS_UMA_UTIL_H_

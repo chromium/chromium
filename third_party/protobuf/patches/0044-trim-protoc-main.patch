@@ -1,8 +1,8 @@
 diff --git a/src/google/protobuf/compiler/main.cc b/src/google/protobuf/compiler/main.cc
-index 6ffff719fa3d5..02085bb887478 100644
+index 4a093008939e7..bee5b1015c176 100644
 --- a/src/google/protobuf/compiler/main.cc
 +++ b/src/google/protobuf/compiler/main.cc
-@@ -8,16 +8,9 @@
+@@ -8,15 +8,9 @@
  #include "absl/log/initialize.h"
  #include "google/protobuf/compiler/command_line_interface.h"
  #include "google/protobuf/compiler/cpp/generator.h"
@@ -15,23 +15,23 @@ index 6ffff719fa3d5..02085bb887478 100644
  #include "google/protobuf/compiler/python/pyi_generator.h"
 -#include "google/protobuf/compiler/ruby/ruby_generator.h"
 -#include "google/protobuf/compiler/rust/generator.h"
--#include "upb_generator/minitable/generator.h"
- 
- #ifdef DISABLE_PROTOC_CONFIG
- #include "google/protobuf/compiler/allowlists/allowlist.h"
-@@ -63,11 +56,6 @@ int ProtobufMain(int argc, char* argv[]) {
-   java_generator.set_opensource_runtime(true);
+ #ifdef GOOGLE_PROTOBUF_RUNTIME_INCLUDE_BASE
+ #include "google/protobuf/compiler/code_generator_lite.h"
  #endif
+@@ -65,12 +59,6 @@ int ProtobufMain(int argc, char* argv[]) {
+   cli.RegisterGenerator("--java_out", "--java_opt", &java_generator,
+                         "Generate Java source file.");
  
 -  // Proto2 Kotlin
 -  kotlin::KotlinGenerator kt_generator;
 -  cli.RegisterGenerator("--kotlin_out", "--kotlin_opt", &kt_generator,
 -                        "Generate Kotlin file.");
 -
- 
+-
    // Proto2 Python
    python::Generator py_generator;
-@@ -83,35 +71,6 @@ int ProtobufMain(int argc, char* argv[]) {
+   cli.RegisterGenerator("--python_out", "--python_opt", &py_generator,
+@@ -85,30 +73,6 @@ int ProtobufMain(int argc, char* argv[]) {
    cli.RegisterGenerator("--pyi_out", &pyi_generator,
                          "Generate python pyi stub.");
  
@@ -59,11 +59,7 @@ index 6ffff719fa3d5..02085bb887478 100644
 -  rust::RustGenerator rust_generator;
 -  cli.RegisterGenerator("--rust_out", "--rust_opt", &rust_generator,
 -                        "Generate Rust sources.");
--
--  // upb minitables
--  upb::generator::MiniTableGenerator minitable_generator;
--  cli.RegisterGenerator("--upb_minitable_out", "--upb_minitable_opt",
--                        &minitable_generator, "Generate upb minitables");
  #ifdef DISABLE_PROTOC_CONFIG
    auto cleanup = internal::DisableAllowlistInternalOnly();
  #endif  // DISABLE_PROTOC_CONFIG
+

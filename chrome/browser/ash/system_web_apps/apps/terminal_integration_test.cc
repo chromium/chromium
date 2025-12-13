@@ -11,14 +11,14 @@
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "ui/aura/env.h"
 #include "ui/base/interaction/polling_state_observer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace {
 
 IN_PROC_BROWSER_TEST_F(AshIntegrationTest, Crosh) {
-  ui::ScopedAnimationDurationScaleMode zero_duration(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode zero_duration(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   // The terminal uses a <canvas> for output so everything is opaque to us.
   // Enabling accessibility puts it in a mode where it also outputs a DOM with

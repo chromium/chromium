@@ -12,7 +12,8 @@
       "type": "image/png"
     }
   ],
-  "start_url": "/webapps_integration/standalone/foo/basic.html",
+  "id": "/webapps_integration/standalone/foo/basic.html",
+  "start_url": "/webapps_integration/standalone/foo/basic.html?manifest=manifest_minimal_ui.json",
   "scope": "/webapps_integration/standalone/foo/",
   "display": "minimal-ui"
 }

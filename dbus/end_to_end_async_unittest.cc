@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -66,7 +67,7 @@ class EndToEndAsyncTest : public testing::Test {
     bus_options.bus_type = Bus::SESSION;
     bus_options.connection_type = Bus::PRIVATE;
     bus_options.dbus_task_runner = dbus_thread_->task_runner();
-    bus_ = new Bus(bus_options);
+    bus_ = new Bus(std::move(bus_options));
     object_proxy_ = bus_->GetObjectProxy(
         test_service_->service_name(),
         ObjectPath("/org/chromium/TestObject"));
@@ -142,7 +143,7 @@ class EndToEndAsyncTest : public testing::Test {
     bus_options.address = kInvalidAddress;
     bus_options.connection_type = Bus::PRIVATE;
     bus_options.dbus_task_runner = dbus_thread_->task_runner();
-    bus_ = new Bus(bus_options);
+    bus_ = new Bus(std::move(bus_options));
     ASSERT_TRUE(bus_->HasDBusThread());
 
     // Create new object proxy.
@@ -162,12 +163,11 @@ class EndToEndAsyncTest : public testing::Test {
 
   // Calls the method asynchronously. OnResponse() will be called once the
   // response is received without error, otherwise OnError() will be called.
-  void CallMethodWithErrorCallback(MethodCall* method_call,
-                                   int timeout_ms) {
-    object_proxy_->CallMethodWithErrorCallback(
+  void CallMethodWithErrorResponse(MethodCall* method_call, int timeout_ms) {
+    object_proxy_->CallMethodWithErrorResponse(
         method_call, timeout_ms,
-        base::BindOnce(&EndToEndAsyncTest::OnResponse, base::Unretained(this)),
-        base::BindOnce(&EndToEndAsyncTest::OnError, base::Unretained(this)));
+        base::BindOnce(&EndToEndAsyncTest::OnResponseOrError,
+                       base::Unretained(this)));
   }
 
   // Wait for the give number of responses.
@@ -191,6 +191,14 @@ class EndToEndAsyncTest : public testing::Test {
       response_strings_.push_back(std::string());
     }
     run_loop_->Quit();
+  }
+
+  void OnResponseOrError(Response* response, ErrorResponse* error_response) {
+    if (response) {
+      OnResponse(response);
+    } else {
+      OnError(error_response);
+    }
   }
 
   // Wait for the given number of errors.
@@ -266,6 +274,7 @@ class EndToEndAsyncTest : public testing::Test {
   std::string test_signal_string_;
   // Text message from "Test" signal delivered to root.
   std::string root_test_signal_string_;
+  base::WeakPtrFactory<EndToEndAsyncTest> weak_ptr_factory_{this};
 };
 
 TEST_F(EndToEndAsyncTest, Echo) {
@@ -285,7 +294,7 @@ TEST_F(EndToEndAsyncTest, Echo) {
   EXPECT_EQ(kHello, response_strings_[0]);
 }
 
-TEST_F(EndToEndAsyncTest, EchoWithErrorCallback) {
+TEST_F(EndToEndAsyncTest, EchoWithErrorResponse) {
   const char* kHello = "hello";
 
   // Create the method call.
@@ -295,7 +304,7 @@ TEST_F(EndToEndAsyncTest, EchoWithErrorCallback) {
 
   // Call the method.
   const int timeout_ms = ObjectProxy::TIMEOUT_USE_DEFAULT;
-  CallMethodWithErrorCallback(&method_call, timeout_ms);
+  CallMethodWithErrorResponse(&method_call, timeout_ms);
 
   // Check the response.
   WaitForResponses(1);
@@ -364,7 +373,7 @@ TEST_F(EndToEndAsyncTest, BrokenBus) {
   ASSERT_EQ("", response_strings_[0]);
 }
 
-TEST_F(EndToEndAsyncTest, BrokenBusWithErrorCallback) {
+TEST_F(EndToEndAsyncTest, BrokenBusWithErrorResponse) {
   const char* kHello = "hello";
 
   // Set up a broken bus.
@@ -377,7 +386,7 @@ TEST_F(EndToEndAsyncTest, BrokenBusWithErrorCallback) {
 
   // Call the method.
   const int timeout_ms = ObjectProxy::TIMEOUT_USE_DEFAULT;
-  CallMethodWithErrorCallback(&method_call, timeout_ms);
+  CallMethodWithErrorResponse(&method_call, timeout_ms);
   WaitForErrors(1);
 
   // Should fail because of the broken bus.
@@ -402,7 +411,7 @@ TEST_F(EndToEndAsyncTest, Timeout) {
   ASSERT_EQ("", response_strings_[0]);
 }
 
-TEST_F(EndToEndAsyncTest, TimeoutWithErrorCallback) {
+TEST_F(EndToEndAsyncTest, TimeoutWithErrorResponse) {
   const char* kHello = "hello";
 
   // Create the method call.
@@ -412,7 +421,7 @@ TEST_F(EndToEndAsyncTest, TimeoutWithErrorCallback) {
 
   // Call the method with timeout of 0ms.
   const int timeout_ms = 0;
-  CallMethodWithErrorCallback(&method_call, timeout_ms);
+  CallMethodWithErrorResponse(&method_call, timeout_ms);
   WaitForErrors(1);
 
   // Should fail because of timeout.
@@ -475,11 +484,11 @@ TEST_F(EndToEndAsyncTest, NonexistentMethod) {
   ASSERT_EQ("", response_strings_[0]);
 }
 
-TEST_F(EndToEndAsyncTest, NonexistentMethodWithErrorCallback) {
+TEST_F(EndToEndAsyncTest, NonexistentMethodWithErrorResponse) {
   MethodCall method_call("org.chromium.TestInterface", "Nonexistent");
 
   const int timeout_ms = ObjectProxy::TIMEOUT_USE_DEFAULT;
-  CallMethodWithErrorCallback(&method_call, timeout_ms);
+  CallMethodWithErrorResponse(&method_call, timeout_ms);
   WaitForErrors(1);
 
   // Should fail because the method is nonexistent.
@@ -498,11 +507,11 @@ TEST_F(EndToEndAsyncTest, BrokenMethod) {
   ASSERT_EQ("", response_strings_[0]);
 }
 
-TEST_F(EndToEndAsyncTest, BrokenMethodWithErrorCallback) {
+TEST_F(EndToEndAsyncTest, BrokenMethodWithErrorResponse) {
   MethodCall method_call("org.chromium.TestInterface", "BrokenMethod");
 
   const int timeout_ms = ObjectProxy::TIMEOUT_USE_DEFAULT;
-  CallMethodWithErrorCallback(&method_call, timeout_ms);
+  CallMethodWithErrorResponse(&method_call, timeout_ms);
   WaitForErrors(1);
 
   // Should fail because the method is broken.
@@ -521,7 +530,7 @@ TEST_F(EndToEndAsyncTest, InvalidServiceName) {
   MethodCall method_call("org.chromium.TestInterface", "Echo");
 
   const int timeout_ms = ObjectProxy::TIMEOUT_USE_DEFAULT;
-  CallMethodWithErrorCallback(&method_call, timeout_ms);
+  CallMethodWithErrorResponse(&method_call, timeout_ms);
   WaitForErrors(1);
 
   // Should fail because of the invalid bus name.

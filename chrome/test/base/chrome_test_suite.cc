@@ -27,6 +27,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/test_launcher.h"
 #include "extensions/common/constants.h"
 #include "media/base/media.h"
@@ -40,7 +41,9 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/bundle_locations.h"
 #include "base/apple/scoped_nsautorelease_pool.h"
+#include "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
+#include "chrome/common/chrome_switches.h"
 #endif
 
 namespace {
@@ -65,12 +68,26 @@ ChromeTestSuite::ChromeTestSuite(int argc, char** argv)
     : content::ContentTestSuiteBase(argc, argv) {
 }
 
-ChromeTestSuite::~ChromeTestSuite() = default;
+ChromeTestSuite::~ChromeTestSuite() {
+#if BUILDFLAG(IS_MAC)
+  // In most (browser) tests, closing all Browser windows during test tear down
+  // will trigger an applicationWillTerminate notification which causes
+  // app_controller_mac to release its ScopedKeepAlive. However a select few
+  // browser tests never create any Browser windows, thus never triggering this
+  // logic. Call AllowApplicationToTerminate here explicitly to ensure that in
+  // those tests the ScopedKeepAlive is released as well, allowing the test to
+  // terminate.
+  app_controller_mac::AllowApplicationToTerminate();
+#endif
+}
 
 void ChromeTestSuite::Initialize() {
 #if BUILDFLAG(IS_MAC)
   base::apple::ScopedNSAutoreleasePool autorelease_pool;
-  chrome_browser_application_mac::RegisterBrowserCrApp();
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDoNotCreateNSAppForTests)) {
+    chrome_browser_application_mac::RegisterBrowserCrApp();
+  }
 #endif
 
   if (!browser_dir_.empty()) {
@@ -97,6 +114,9 @@ void ChromeTestSuite::Initialize() {
   // Ignore this requiement for unit and browser tests to make sure that the
   // DICE feature gets the right test coverage.
   AccountConsistencyModeManager::SetIgnoreMissingOAuthClientForTesting();
+  // Some features in //components/signin only work in builds with official
+  // Chrome API keys. Ignore this requirement to get a better test coverage.
+  signin::SetIgnoreNonOfficialApiKeys();
 
 #if BUILDFLAG(IS_MAC)
   // Look in the framework bundle for resources.

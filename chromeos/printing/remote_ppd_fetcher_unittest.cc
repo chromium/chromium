@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/test/task_environment.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"

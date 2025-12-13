@@ -6,7 +6,7 @@
 #define COMPONENTS_UNEXPORTABLE_KEYS_UNEXPORTABLE_KEY_SERVICE_IMPL_H_
 
 #include <algorithm>
-#include <map>
+#include <functional>
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
@@ -20,6 +20,8 @@
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/hash_container_defaults.h"
 
 namespace unexportable_keys {
 
@@ -31,7 +33,9 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
     : public UnexportableKeyService {
  public:
   // `task_manager` must outlive `UnexportableKeyServiceImpl`.
-  explicit UnexportableKeyServiceImpl(UnexportableKeyTaskManager& task_manager);
+  explicit UnexportableKeyServiceImpl(
+      UnexportableKeyTaskManager& task_manager,
+      crypto::UnexportableKeyProvider::Config config);
 
   ~UnexportableKeyServiceImpl() override;
 
@@ -53,13 +57,29 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback)
       override;
+  void GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+      BackgroundTaskPriority priority,
+      base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
+          callback) override;
+  void CopyKeyFromOtherService(
+      const UnexportableKeyService& other_service,
+      UnexportableKeyId key_id_from_other_service,
+      BackgroundTaskPriority priority,
+      base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback)
+      override;
   void SignSlowlyAsync(
-      const UnexportableKeyId& key_id,
+      UnexportableKeyId key_id,
       base::span<const uint8_t> data,
       BackgroundTaskPriority priority,
-      size_t max_retries,
       base::OnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)> callback)
       override;
+  void DeleteKeySlowlyAsync(
+      UnexportableKeyId key_id,
+      BackgroundTaskPriority priority,
+      base::OnceCallback<void(ServiceErrorOr<void>)> callback) override;
+  void DeleteAllKeysSlowlyAsync(
+      BackgroundTaskPriority priority,
+      base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) override;
   ServiceErrorOr<std::vector<uint8_t>> GetSubjectPublicKeyInfo(
       UnexportableKeyId key_id) const override;
   ServiceErrorOr<std::vector<uint8_t>> GetWrappedKey(
@@ -68,21 +88,33 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
       UnexportableKeyId key_id) const override;
 
  private:
-  // Comparator object that allows comparing containers of different types that
+  // Hasher object that allows comparing containers of different types that
   // are convertible to base::span<const uint8_t>.
-  struct WrappedKeyCmp {
+  struct WrappedKeyHash
+      : absl::DefaultHashContainerHash<base::span<const uint8_t>> {
     using is_transparent = void;
-    bool operator()(base::span<const uint8_t> lhs,
-                    base::span<const uint8_t> rhs) const {
-      return std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(),
-                                          rhs.end());
-    }
   };
 
-  using WrappedKeyMap = std::
-      map<std::vector<uint8_t>, MaybePendingUnexportableKeyId, WrappedKeyCmp>;
-  using KeyIdMap = std::map<UnexportableKeyId,
-                            scoped_refptr<RefCountedUnexportableSigningKey>>;
+  using WrappedKeyMap = absl::flat_hash_map<std::vector<uint8_t>,
+                                            MaybePendingUnexportableKeyId,
+                                            WrappedKeyHash,
+                                            std::ranges::equal_to>;
+  using KeyIdMap =
+      absl::flat_hash_map<UnexportableKeyId,
+                          scoped_refptr<RefCountedUnexportableSigningKey>>;
+
+  // Callback for `GetAllSigningKeysForGarbageCollectionSlowlyAsync()`.
+  void OnGetAllSigningKeysForGarbageCollectionSlowly(
+      base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
+          client_callback,
+      ServiceErrorOr<
+          std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>
+          keys_or_error);
+  ServiceErrorOr<std::vector<UnexportableKeyId>>
+  OnGetAllSigningKeysForGarbageCollectionSlowlyImpl(
+      ServiceErrorOr<
+          std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>
+          keys_or_error);
 
   // Callback for `GenerateSigningKeySlowlyAsync()`.
   void OnKeyGenerated(
@@ -90,14 +122,27 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
           client_callback,
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
           key_or_error);
-
-  // Callback for `FromWrappedSigningKeySlowlyAsync()`.
-  void OnKeyCreatedFromWrappedKey(
-      WrappedKeyMap::iterator pending_entry_it,
+  ServiceErrorOr<UnexportableKeyId> OnKeyGeneratedImpl(
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
           key_or_error);
 
+  // Callback for `FromWrappedSigningKeySlowlyAsync()`.
+  void OnKeyCreatedFromWrappedKey(
+      std::vector<uint8_t> wrapped_key,
+      ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
+          key_or_error);
+
+  // Generic trampoline that runs the callback only if the WeakPtr used to bind
+  // this method is still valid.
+  template <typename... Args>
+  void RunCallbackIfAlive(base::OnceCallback<void(Args...)> callback,
+                          Args... args) {
+    std::move(callback).Run(std::forward<Args>(args)...);
+  }
+
   const raw_ref<UnexportableKeyTaskManager, DanglingUntriaged> task_manager_;
+
+  const crypto::UnexportableKeyProvider::Config config_;
 
   // Helps mapping multiple `FromWrappedSigningKeySlowlyAsync()` requests with
   // the same wrapped key into the same key ID.
@@ -107,7 +152,14 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
   // session.
   KeyIdMap key_by_key_id_;
 
-  base::WeakPtrFactory<UnexportableKeyServiceImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<UnexportableKeyServiceImpl>
+      get_all_keys_weak_ptr_factory_{this};
+  base::WeakPtrFactory<UnexportableKeyServiceImpl>
+      generate_key_weak_ptr_factory_{this};
+  base::WeakPtrFactory<UnexportableKeyServiceImpl>
+      from_wrapped_key_weak_ptr_factory_{this};
+  base::WeakPtrFactory<UnexportableKeyServiceImpl> service_weak_ptr_factory_{
+      this};
 };
 
 }  // namespace unexportable_keys

@@ -2,10 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "builder", "cpu", "defaults", "os", "siso")
-load("//lib/gn_args.star", "gn_args")
-load("//lib/targets.star", "targets")
+load("@chromium-luci//builder_config.star", "builder_config")
+load("@chromium-luci//builders.star", "builder", "cpu", "defaults", "os")
+load("@chromium-luci//gn_args.star", "gn_args")
+load("@chromium-luci//targets.star", "targets")
+load("//lib/siso.star", "siso")
 
 luci.bucket(
     name = "ci",
@@ -32,7 +33,7 @@ luci.bucket(
     name = "ci.shadow",
     shadows = "ci",
     constraints = luci.bucket_constraints(
-        pools = ["luci.chromium.ci"],
+        pools = ["luci.chromium.ci", "luci.chromium.btrfs"],
         service_accounts = ["chromium-ci-builder-dev@chops-service-accounts.iam.gserviceaccount.com"],
     ),
     bindings = [
@@ -136,7 +137,6 @@ ci_builder(
             "minimal_symbols",
             "arm64",
             "strip_debug_info",
-            "webview_monochrome",
         ],
     ),
     targets = targets.bundle(
@@ -152,7 +152,7 @@ ci_builder(
                     expiration_sec = 10800,
                 ),
             ),
-            "chromium_pixel_2_q",
+            "chromium_tests_pool",
             "has_native_resultdb_integration",
         ],
     ),
@@ -172,6 +172,9 @@ ci_builder(
             build_config = builder_config.build_config.RELEASE,
             target_platform = builder_config.target_platform.LINUX,
         ),
+    ),
+    builder_config_settings = builder_config.ci_settings(
+        retry_failed_shards = True,
     ),
     gn_args = gn_args.config(
         configs = [

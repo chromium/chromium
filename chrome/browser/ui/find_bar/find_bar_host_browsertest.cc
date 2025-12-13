@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/find_bar_host.h"
+
 #include <stddef.h>
 
 #include <string>
@@ -25,12 +27,12 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
-#include "chrome/browser/ui/find_bar/find_bar_host_unittest_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/find_result_waiter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -88,8 +90,7 @@ const int kMoveIterations = 30;
 
 class FindInPageControllerTest : public InProcessBrowserTest {
  public:
-  FindInPageControllerTest() { DisableFindBarAnimationsDuringTesting(true); }
-
+  FindInPageControllerTest() = default;
  protected:
   void SetUpOnMainThread() override {
     views::test::WaitForAnimatingLayoutManager(
@@ -222,10 +223,14 @@ class FindInPageControllerTest : public InProcessBrowserTest {
   }
 
   GURL GetURL(const std::string& filename) {
-    return ui_test_utils::GetTestUrl(
+    return chrome_test_utils::GetTestUrl(
         base::FilePath().AppendASCII("find_in_page"),
         base::FilePath().AppendASCII(filename));
   }
+
+ private:
+  base::AutoReset<bool> enable_animation_for_test_ =
+      FindBarHost::SetEnableAnimationsForTesting(false);
 };
 
 // This test loads a page with frames and starts FindInPage requests.
@@ -555,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, MAYBE_FindLongString) {
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GetURL("largepage.html")));
 
-  base::FilePath path = ui_test_utils::GetTestFilePath(
+  base::FilePath path = chrome_test_utils::GetTestFilePath(
       base::FilePath().AppendASCII("find_in_page"),
       base::FilePath().AppendASCII("LongFind.txt"));
   std::string query;
@@ -615,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, FindWholeFileContent) {
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  base::FilePath path = ui_test_utils::GetTestFilePath(
+  base::FilePath path = chrome_test_utils::GetTestFilePath(
       base::FilePath().AppendASCII("find_in_page"),
       base::FilePath().AppendASCII("find_test.txt"));
   ASSERT_TRUE(

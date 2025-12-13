@@ -17,8 +17,8 @@
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/forms_classifications.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 
@@ -53,7 +53,7 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
  public:
   AutofillAiModelExecutorImpl(
       AutofillAiModelCache* model_cache,
-      optimization_guide::OptimizationGuideModelExecutor* model_executor,
+      optimization_guide::RemoteModelExecutor* model_executor,
       optimization_guide::ModelQualityLogsUploaderService* mqls_uploader);
   ~AutofillAiModelExecutorImpl() override;
 
@@ -84,8 +84,7 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
   // The cache into which the model responses are written.
   const raw_ref<AutofillAiModelCache> model_cache_;
 
-  const raw_ref<optimization_guide::OptimizationGuideModelExecutor>
-      model_executor_;
+  const raw_ref<optimization_guide::RemoteModelExecutor> model_executor_;
   const raw_ptr<optimization_guide::ModelQualityLogsUploaderService>
       mqls_uploader_;
 

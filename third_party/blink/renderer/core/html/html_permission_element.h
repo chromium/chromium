@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -20,8 +21,9 @@
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_permission_icon_element.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
-#include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
+#include "third_party/blink/renderer/platform/geometry/length_size.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
@@ -35,10 +37,12 @@ namespace blink {
 class Page;
 class V8PermissionState;
 
-class CORE_EXPORT HTMLPermissionElement final
+// For more information, see the explainer here:
+// https://github.com/WICG/PEPC/blob/main/explainer.md
+// and the design doc here: docs/permissions/pepc.md.
+class CORE_EXPORT HTMLPermissionElement
     : public HTMLElement,
       public mojom::blink::EmbeddedPermissionControlClient,
-      public ScrollSnapshotClient,
       public LocalFrameView::LifecycleNotificationObserver,
       public CachedPermissionStatus::Client {
   DEFINE_WRAPPERTYPEINFO();
@@ -46,7 +50,8 @@ class CORE_EXPORT HTMLPermissionElement final
  public:
   static bool isTypeSupported(const AtomicString& type);
 
-  explicit HTMLPermissionElement(Document&);
+  explicit HTMLPermissionElement(Document&,
+                                 std::optional<QualifiedName> = std::nullopt);
 
   ~HTMLPermissionElement() override;
 
@@ -56,11 +61,6 @@ class CORE_EXPORT HTMLPermissionElement final
   V8PermissionState initialPermissionStatus() const;
   V8PermissionState permissionStatus() const;
 
-  // The events `kDismiss` and `kResolve` will be deprecated and replaced by
-  // `kPromptaction` and `kPromptdismiss`. We will keep both for backward
-  // compability and will remove the old events in M138.
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(resolve, kResolve)
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(dismiss, kDismiss)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(promptaction, kPromptaction)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(promptdismiss, kPromptdismiss)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(validationstatuschange,
@@ -86,8 +86,6 @@ class CORE_EXPORT HTMLPermissionElement final
   CascadeFilter GetCascadeFilter() const override;
   bool CanGeneratePseudoElement(PseudoId) const override;
 
-  bool HasInvalidStyle() const;
-  bool IsOccluded() const;
   bool IsRenderered() const;
   bool granted() const { return PermissionsGranted(); }
 
@@ -100,17 +98,107 @@ class CORE_EXPORT HTMLPermissionElement final
     return permission_text_span_;
   }
 
+  // Verify whether the element has been registered in browser process.
+  bool is_registered_in_browser_process_for_testing() const {
+    return is_registered_in_browser_process_;
+  }
+
   // HTMLElement overrides.
   bool IsHTMLPermissionElement() const final { return true; }
+
+ protected:
+  // blink::HTMLElement:
+  void AttributeChanged(const AttributeModificationParams& params) override;
+
+  // blink::Node:
+  void DefaultEventHandler(Event&) override;
+
+  void HandleActivation(Event&, base::OnceClosure on_success);
+
+  bool PermissionsGranted() const {
+    return aggregated_permission_status_.has_value() &&
+           aggregated_permission_status_ ==
+               mojom::blink::PermissionStatus::GRANTED;
+  }
+
+  void setType(const AtomicString& type);
+  uint16_t GetTranslatedMessageID(uint16_t message_id,
+                                  const AtomicString& language_string);
+  virtual void UpdateAppearance();
+
+  void UpdateIcon(mojom::blink::PermissionName permission);
+
+  // Update permission statuses and appearance based on the current statuses.
+  virtual void UpdatePermissionStatusAndAppearance();
+
+  virtual mojom::blink::EmbeddedPermissionRequestDescriptorPtr
+  CreateEmbeddedPermissionRequestDescriptor();
+
+  // Called when the |permission_status_map_| is updated to
+  // - Ensure that |aggregated_permission_status_| and
+  //   |initial_aggregated_permission_status_| are updated.
+  void UpdatePermissionStatus();
+
+  HTMLSpanElement* permission_text_span() const {
+    return permission_text_span_.Get();
+  }
+
+  void SetPreciseLocation(bool);
+
+  bool is_precise_location() const { return is_precise_location_; }
+
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
+
+  // LocalFrameView::LifecycleNotificationObserver
+  void DidFinishLifecycleUpdate(const LocalFrameView&) override;
+
+  virtual Vector<mojom::blink::PermissionDescriptorPtr> ParseType(
+      const AtomicString& type);
+
+  bool HasPendingPermissionRequest() const {
+    return pending_request_created_.has_value();
+  }
 
  private:
   // TODO(crbug.com/1315595): remove this friend class once migration
   // to blink_unittests_v2 completes.
   friend class DeferredChecker;
-  friend class RegistrationWaiter;
   friend class HTMLPermissionElementIntersectionTest;
   friend class HTMLPermissionElementLayoutChangeTest;
+  friend class HTMLGeolocationElementIntersectionTest;
+  friend class HTMLInstallElementTestBase;
+  friend class HTMLPermissionElementTestBase;
 
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTestBase, GetTypeAttribute);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
+                           GeolocationUsingLocationAppearance);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
+                           GeolocationWatchPositionAppearance);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
+                           GeolocationTranslateInnerText);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
+                           GeolocationSetInnerTextAfterRegistration);
+  FRIEND_TEST_ALL_PREFIXES(
+      HTMLGeolocationElementTest,
+      GeolocationPreciseLocationAttributeDoesNotChangeText);
+  FRIEND_TEST_ALL_PREFIXES(
+      HTMLGeolocationElementTest,
+      GeolocationPreciseLocationAttributeCamelCaseDoesNotChangeText);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest, GeolocationAccuracyMode);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
+                           GeolocationAccuracyModeCaseInsensitive);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest, GeolocationStatusChange);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
+                           PermissionStatusChangeAfterDecided);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementSimTest,
+                           GeolocationInitializeGrantedText);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementSimTest,
+                           InvalidDisplayStyleElement);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementSimTest,
+                           BadContrastDisablesElement);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementIntersectionTest,
+                           IntersectionChanged);
+  FRIEND_TEST_ALL_PREFIXES(HTMLInstallElementTestBase, RenderedText);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementClickingEnabledTest,
                            UnclickableBeforeRegistered);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
@@ -118,15 +206,13 @@ class CORE_EXPORT HTMLPermissionElement final
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
                            IntersectionChangedDisableEnableDisable);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
-                           ClickingDisablePseudoClass);
-  FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
                            ContainerDivRotates);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
                            ContainerDivOpacity);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
                            ContainerDivClipPath);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
-                           IntersectionOclluderLogging);
+                           IntersectionOccluderLogging);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,
                            IntersectionVisibleOverlapsRecentAttachedInterval);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementFencedFrameTest,
@@ -183,6 +269,9 @@ class CORE_EXPORT HTMLPermissionElement final
 
     // This element is disabled because of the element's style.
     kInvalidStyle,
+
+    // The element's attribute changed.
+    kAttributeChanged,
   };
 
   // These values are used for histograms. Entries should not be renumbered and
@@ -199,8 +288,8 @@ class CORE_EXPORT HTMLPermissionElement final
     kIntersectionWithViewportChanged = 6,
     kIntersectionVisibilityOutOfViewPortOrClipped = 7,
     kIntersectionVisibilityOccludedOrDistorted = 8,
-
-    kMaxValue = kIntersectionVisibilityOccludedOrDistorted,
+    kAttributeChanged = 9,
+    kMaxValue = kAttributeChanged,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:PermissionElementUserInteractionDeniedReason)
 
@@ -268,9 +357,8 @@ class CORE_EXPORT HTMLPermissionElement final
     void Fired() final { (element_->*function_)(this); }
 
     base::OnceClosure BindTimerClosure() final {
-      return WTF::BindOnce(&DisableReasonExpireTimer::RunInternalTrampoline,
-                           WTF::Unretained(this),
-                           WrapWeakPersistent(element_.Get()));
+      return BindOnce(&DisableReasonExpireTimer::RunInternalTrampoline,
+                      Unretained(this), WrapWeakPersistent(element_.Get()));
     }
 
    private:
@@ -319,14 +407,10 @@ class CORE_EXPORT HTMLPermissionElement final
   void EnsureUnregisterPageEmbeddedPermissionControl();
 
   // blink::Element implements
-  void AttributeChanged(const AttributeModificationParams& params) override;
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
   void AdjustStyle(ComputedStyleBuilder& builder) override;
   void DidRecalcStyle(const StyleRecalcChange change) override;
   void LangAttributeChanged() override;
-
-  // blink::Node override.
-  void DefaultEventHandler(Event&) override;
 
   // Trigger permissions requesting in browser side by calling mojo
   // PermissionService's API.
@@ -355,28 +439,6 @@ class CORE_EXPORT HTMLPermissionElement final
 
   // Dispatch validation status change event if necessary.
   void MaybeDispatchValidationChangeEvent();
-
-  // Implements ScrollSnapshotClient:
-  // Pseudoclass updates are now using the same timing internally through
-  // ScrollSnapshotClient. It could make sense to bring this in line with other
-  // features that deal with snapshotting this state, such as scroll-driven
-  // animations, scroll-state container queries, and anchor positioning.
-  void UpdateSnapshot() override;
-  bool ValidateSnapshot() override;
-  bool ShouldScheduleNextService() override { return false; }
-
-  // Update and notify CSS pseudo-class changed, which indicates PEPC is
-  // currently entering/exiting clicking disable state, such as invalid style or
-  // being occluded.
-  // Return true if the state has been changed.
-  bool NotifyClickingDisablePseudoStateChanged();
-
-  // Verify whether the element has been registered in browser process.
-  bool is_registered_in_browser_process() const {
-    return is_registered_in_browser_process_;
-  }
-
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
   // Checks whether clicking is enabled at the moment. Clicking is disabled if
   // either:
@@ -432,14 +494,6 @@ class CORE_EXPORT HTMLPermissionElement final
   //   alive temporary disabling reason".
   void RefreshDisableReasonsAndUpdateTimer();
 
-  // Called when the |permission_status_map_| is updated to
-  // - Ensure that |aggregated_permission_status_| and
-  //   |initial_aggregated_permission_status_| are updated.
-  // - Update appearance based on the current statuses.
-  void UpdatePermissionStatusAndAppearance();
-
-  void UpdateText();
-
   void AddConsoleError(String error);
   void AddConsoleWarning(String warning);
 
@@ -447,6 +501,7 @@ class CORE_EXPORT HTMLPermissionElement final
       const HeapVector<Member<IntersectionObserverEntry>>& entries);
 
   bool IsStyleValid();
+  bool IsMaskedByAncestor() const;
 
   // A wrapper method which keeps track of logging console messages before
   // calling the HTMLPermissionElementUtils::AdjustedBoundedLength method.
@@ -455,8 +510,11 @@ class CORE_EXPORT HTMLPermissionElement final
                                       std::optional<float> upper_bound,
                                       bool should_multiply_by_content_size);
 
-  // LocalFrameView::LifecycleNotificationObserver
-  void DidFinishLifecycleUpdate(const LocalFrameView&) override;
+  // A method which bounds the specified radius on the width and height sides
+  // using the provided percentage bounds.
+  LengthSize AdjustedPercentBoundedRadius(const LengthSize& length_size,
+                                          float width_percent_bound,
+                                          float height_percent_bound);
 
   // Computes the intersection rect of the element with the viewport.
   gfx::Rect ComputeIntersectionRectWithViewport(const Page* page);
@@ -475,21 +533,9 @@ class CORE_EXPORT HTMLPermissionElement final
   // revert back.
   void EnableFallbackMode();
 
-  // If there's a node covers this element, try to get some useful
-  // information from this node and add to console log.
-  void AddOccluderInfoToConsole();
-
-  bool IsClickingDisabledIndefinitely(DisableReason reason) const {
-    auto it = clicking_disabled_reasons_.find(reason);
-    return it != clicking_disabled_reasons_.end() &&
-           it->value == base::TimeTicks::Max();
-  }
-
-  bool PermissionsGranted() const {
-    return aggregated_permission_status_.has_value() &&
-           aggregated_permission_status_ ==
-               mojom::blink::PermissionStatus::GRANTED;
-  }
+  // Report an issue to the devtools issues panel, specifically related to the
+  // permission element's activation being disabled.
+  void ReportActivationDisabledAuditsIssue(DisableReason reason);
 
   IntersectionVisibility IntersectionVisibilityForTesting() const {
     return intersection_visibility_;
@@ -535,19 +581,6 @@ class CORE_EXPORT HTMLPermissionElement final
 
   // Keeps track of the time a request was created.
   std::optional<base::TimeTicks> pending_request_created_;
-
-  // Store information to notify CSS pseudo-class changed.
-  struct ClickingDisablePseudoState {
-    bool has_invalid_style = false;
-    bool is_occluded = false;
-
-    bool operator==(const ClickingDisablePseudoState& other) const {
-      return has_invalid_style == other.has_invalid_style &&
-             is_occluded == other.is_occluded;
-    }
-  };
-
-  ClickingDisablePseudoState pseudo_state_;
 
   // Observed by IntersectionObserver to indicate the fully visibility state of
   // the element on the viewport.

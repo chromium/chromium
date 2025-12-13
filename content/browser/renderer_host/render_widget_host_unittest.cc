@@ -384,20 +384,12 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
     return unhandled_keyboard_event_type_;
   }
 
-  bool prehandle_mouse_event_called() const {
-    return prehandle_mouse_event_called_;
-  }
-
   bool prehandle_keyboard_event_called() const {
     return prehandle_keyboard_event_called_;
   }
 
   WebInputEvent::Type prehandle_keyboard_event_type() const {
     return prehandle_keyboard_event_type_;
-  }
-
-  void set_prehandle_mouse_event(bool handle) {
-    prehandle_mouse_event_ = handle;
   }
 
   void set_prehandle_keyboard_event(bool handle) {
@@ -467,14 +459,6 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
               (override));
 
  protected:
-  bool PreHandleMouseEvent(const blink::WebMouseEvent& event) override {
-    prehandle_mouse_event_called_ = true;
-    if (prehandle_mouse_event_) {
-      return true;
-    }
-    return false;
-  }
-
   KeyboardEventProcessingResult PreHandleKeyboardEvent(
       const input::NativeWebKeyboardEvent& event) override {
     prehandle_keyboard_event_type_ = event.GetType();
@@ -526,8 +510,6 @@ class MockRenderWidgetHostDelegate : public RenderWidgetHostDelegate {
   }
 
  private:
-  bool prehandle_mouse_event_ = false;
-  bool prehandle_mouse_event_called_ = false;
   bool prehandle_keyboard_event_;
   bool prehandle_keyboard_event_is_shortcut_;
   bool prehandle_keyboard_event_called_;
@@ -609,7 +591,6 @@ class RenderWidgetHostTest : public testing::Test {
     site_instance_group_ =
         base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
             browser_context_.get(), process_.get()));
-    sink_ = &process_->sink();
 #if defined(USE_AURA) || BUILDFLAG(IS_APPLE)
     ImageTransportFactory::SetFactory(
         std::make_unique<TestImageTransportFactory>());
@@ -674,7 +655,6 @@ class RenderWidgetHostTest : public testing::Test {
   }
 
   void TearDown() override {
-    sink_ = nullptr;
     view_.reset();
     host_.reset();
     delegate_.reset();
@@ -848,15 +828,6 @@ class RenderWidgetHostTest : public testing::Test {
     touch_event_.ReleasePoint(index);
   }
 
-  const WebInputEvent* GetInputEventFromMessage(const IPC::Message& message) {
-    base::PickleIterator iter(message);
-    const char* data;
-    size_t data_length;
-    if (!iter.ReadData(&data, &data_length))
-      return nullptr;
-    return reinterpret_cast<const WebInputEvent*>(data);
-  }
-
   BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestBrowserContext> browser_context_;
@@ -871,7 +842,6 @@ class RenderWidgetHostTest : public testing::Test {
   bool handle_mouse_event_ = false;
   base::TimeTicks last_simulated_event_time_;
   base::TimeDelta simulated_event_time_delta_;
-  raw_ptr<IPC::TestSink> sink_;
   std::unique_ptr<FakeRenderFrameMetadataObserver>
       renderer_render_frame_metadata_observer_;
   MockWidget widget_;
@@ -1038,7 +1008,6 @@ TEST_F(RenderWidgetHostTest, SynchronizeVisualProperties) {
   // Sending out a new notification should NOT send out a new IPC message since
   // a visual properties ACK is pending.
   gfx::Rect third_size(0, 0, 120, 120);
-  process_->sink().ClearMessages();
   view_->SetBounds(third_size);
   EXPECT_FALSE(host_->SynchronizeVisualProperties());
   EXPECT_TRUE(host_->visual_properties_ack_pending_);
@@ -1556,7 +1525,6 @@ TEST_F(RenderWidgetHostTest, HideShowMessages) {
   EXPECT_TRUE(widget_.IsHidden().value());
 
   // Send it an update as from the renderer.
-  process_->sink().ClearMessages();
   cc::RenderFrameMetadata metadata;
   metadata.viewport_size_in_pixels = gfx::Size(100, 100);
   metadata.local_surface_id = std::nullopt;
@@ -1610,37 +1578,6 @@ TEST_F(RenderWidgetHostTest, SendEditCommandsBeforeKeyEvent) {
   // Send the simulated response from the renderer back.
   dispatched_events[1]->ToEvent()->CallCallback(
       blink::mojom::InputEventResultState::kConsumed);
-}
-
-TEST_F(RenderWidgetHostTest, PreHandleMouseEvent) {
-  // Simulate the situation that the browser handled the mouse event during
-  // pre-handle phrase.
-  delegate_->set_prehandle_mouse_event(true);
-
-  // Simulate a mouse event.
-  SimulateMouseEvent(WebMouseEvent::Type::kMouseDown);
-
-  EXPECT_TRUE(delegate_->prehandle_mouse_event_called());
-
-  // Make sure the mouse event is not sent to the renderer.
-  MockWidgetInputHandler::MessageVector dispatched_events =
-      host_->mock_render_input_router()->GetAndResetDispatchedMessages();
-  EXPECT_EQ(0u, dispatched_events.size());
-
-  // Simulate the situation that the browser didn't handle the mouse event
-  // during pre-handle phrase.
-  delegate_->set_prehandle_mouse_event(false);
-
-  // Simulate a mouse event.
-  SimulateMouseEvent(WebMouseEvent::Type::kMouseUp);
-
-  // Make sure the mouse event is sent to the renderer.
-  dispatched_events =
-      host_->mock_render_input_router()->GetAndResetDispatchedMessages();
-  ASSERT_EQ(1u, dispatched_events.size());
-  ASSERT_TRUE(dispatched_events[0]->ToEvent());
-  EXPECT_EQ(WebMouseEvent::Type::kMouseUp,
-            dispatched_events[0]->ToEvent()->Event()->Event().GetType());
 }
 
 TEST_F(RenderWidgetHostTest, PreHandleRawKeyDownEvent) {
@@ -2301,9 +2238,9 @@ TEST_F(RenderWidgetHostTest, RendererExitedResetsIsHidden) {
   host_->SetView(new TestView(host_.get()));
   host_->WasShown({} /* record_tab_switch_time_request */);
 
-  ASSERT_FALSE(host_->is_hidden());
+  ASSERT_FALSE(host_->IsHidden());
   host_->RendererExited();
-  ASSERT_TRUE(host_->is_hidden());
+  ASSERT_TRUE(host_->IsHidden());
 
   // Make sure the input router is in a fresh state.
   ASSERT_FALSE(host_->input_router()->HasPendingEvents());
@@ -2330,7 +2267,7 @@ TEST_F(RenderWidgetHostTest, RendererExitedNoDrag) {
 
   GURL http_url = GURL("http://www.domain.com/index.html");
   DropData drop_data;
-  drop_data.url = http_url;
+  drop_data.url_infos = {ui::ClipboardUrlInfo{http_url, u""}};
   drop_data.html_base_url = http_url;
   FileSystemAccessManagerImpl* file_system_manager =
       static_cast<StoragePartitionImpl*>(process_->GetStoragePartition())
@@ -2438,8 +2375,6 @@ TEST_F(RenderWidgetHostTest, EventDispatchPostDetach) {
   auto touch_event_consumers = blink::mojom::TouchEventConsumers::New(
       HasTouchEventHandlers(true), HasHitTestableScrollbar(false));
   host_->SetHasTouchEventConsumers(std::move(touch_event_consumers));
-  process_->sink().ClearMessages();
-
   host_->DetachDelegate();
 
   // Tests RIR::ForwardGestureEventWithLatencyInfo().
@@ -2600,7 +2535,7 @@ TEST_F(RenderWidgetHostTest, OnVerticalScrollDirectionChanged) {
   const auto NotifyVerticalScrollDirectionChanged =
       [this](viz::VerticalScrollDirection scroll_direction) {
         static uint32_t frame_token = 1u;
-        host_->frame_token_message_queue_->DidProcessFrame(
+        host_->render_frame_metadata_provider_.DidProcessFrame(
             frame_token, base::TimeTicks::Now());
 
         cc::RenderFrameMetadata metadata;

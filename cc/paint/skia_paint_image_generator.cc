@@ -21,7 +21,7 @@ SkiaPaintImageGenerator::SkiaPaintImageGenerator(
 
 SkiaPaintImageGenerator::~SkiaPaintImageGenerator() = default;
 
-sk_sp<SkData> SkiaPaintImageGenerator::onRefEncodedData() {
+sk_sp<const SkData> SkiaPaintImageGenerator::onRefEncodedData() {
   return paint_image_generator_->GetEncodedData();
 }
 

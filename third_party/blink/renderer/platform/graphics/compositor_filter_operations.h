@@ -57,18 +57,19 @@ class PLATFORM_EXPORT CompositorFilterOperations {
   void SetReferenceBox(const gfx::RectF& r) { reference_box_ = r; }
   const gfx::RectF& ReferenceBox() const { return reference_box_; }
 
+  void SetOriginTainted() { origin_tainted_ = true; }
+  bool OriginTainted() const { return origin_tainted_; }
+
   // For reference filters, this equality operator compares pointers of the
   // image_filter fields instead of their values.
   bool operator==(const CompositorFilterOperations&) const;
-  bool operator!=(const CompositorFilterOperations& o) const {
-    return !(*this == o);
-  }
 
   String ToString() const;
 
  private:
   cc::FilterOperations filter_operations_;
   gfx::RectF reference_box_;
+  bool origin_tainted_ = false;
 };
 
 }  // namespace blink

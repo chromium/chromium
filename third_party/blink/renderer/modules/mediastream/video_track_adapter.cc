@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
@@ -24,6 +25,8 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/base/limits.h"
+#include "media/base/video_frame_converter.h"
+#include "media/base/video_frame_pool.h"
 #include "media/base/video_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -35,6 +38,17 @@
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace blink {
+
+// Enabled-by-default, but exists as a kill-switch.
+// TODO(crbug.com/430230403): Remove this flag once it has been in stable for a
+// few milestones.
+BASE_FEATURE(kScaleFrameForGetDisplayMedia, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, prevents a source from being automatically muted if it is not
+// producing frames.
+// TODO(https://crbug.com/449931560): Remove this flag.
+BASE_FEATURE(kMediaStreamTrackEmptyVideoFrameMonitor,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -83,6 +97,36 @@ void ComputeFrameRate(const base::TimeDelta& frame_timestamp,
     return;
 
   *frame_rate = 200 / delta_ms + 0.8 * *frame_rate;
+}
+
+gfx::Rect ComputeLetterboxRect(const gfx::Rect& bounds,
+                               const gfx::Size& content) {
+  // Get the largest centered rectangle with the same aspect ratio of
+  // |content| that fits entirely inside of
+  // |bounds|. This will be the rect we need to crop the
+  // original frame to. From this rect, the original frame can be scaled down
+  // to |content|.
+  gfx::Rect region_in_frame = media::ComputeLetterboxRegion(bounds, content);
+
+  // Some consumers (for example
+  // ImageCaptureFrameGrabber::SingleShotFrameHandler::ConvertAndDeliverFrame)
+  // don't support pixel format conversions when the source format is YUV with
+  // UV subsampled and vsible_rect().x() being odd. The conversion ends up
+  // miscomputing the UV plane and ends up with a VU plane leading to a blue
+  // face tint. Round x() to even to avoid. See crbug.com/1307304.
+  region_in_frame.set_x(region_in_frame.x() & ~1);
+  region_in_frame.set_y(region_in_frame.y() & ~1);
+
+  // ComputeLetterboxRegion() sometimes produces odd dimensions due to
+  // internal rounding errors; allow to round upwards if there's slack
+  // otherwise round downwards.
+  bool width_has_slack = region_in_frame.right() < bounds.right();
+  region_in_frame.set_width((region_in_frame.width() + width_has_slack) & ~1);
+  bool height_has_slack = region_in_frame.bottom() < bounds.bottom();
+  region_in_frame.set_height((region_in_frame.height() + height_has_slack) &
+                             ~1);
+
+  return region_in_frame;
 }
 
 // Controls the frequency of settings updates based on frame rate changes.
@@ -139,15 +183,14 @@ VideoTrackAdapterSettings ReturnSettingsMaybeOverrideMaxFps(
 // tracks on the video task runner. All method calls must be on the video task
 // runner.
 class VideoTrackAdapter::VideoFrameResolutionAdapter
-    : public WTF::ThreadSafeRefCounted<VideoFrameResolutionAdapter> {
+    : public ThreadSafeRefCounted<VideoFrameResolutionAdapter> {
  public:
   struct VideoTrackCallbacks {
     VideoCaptureDeliverFrameInternalCallback frame_callback;
     VideoCaptureNotifyFrameDroppedInternalCallback
         notify_frame_dropped_callback;
     DeliverEncodedVideoFrameInternalCallback encoded_frame_callback;
-    VideoCaptureSubCaptureTargetVersionInternalCallback
-        sub_capture_target_version_callback;
+    VideoCaptureSubCaptureVersionInternalCallback capture_version_callback;
     VideoTrackSettingsInternalCallback settings_callback;
     VideoTrackFormatInternalCallback format_callback;
   };
@@ -156,15 +199,15 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
   VideoFrameResolutionAdapter(
       scoped_refptr<base::SingleThreadTaskRunner> reader_task_runner,
       const VideoTrackAdapterSettings& settings,
-      base::WeakPtr<MediaStreamVideoSource> media_stream_video_source);
+      bool is_video_desktop_capture_type);
 
   VideoFrameResolutionAdapter(const VideoFrameResolutionAdapter&) = delete;
   VideoFrameResolutionAdapter& operator=(const VideoFrameResolutionAdapter&) =
       delete;
 
   // Add |frame_callback|, |encoded_frame_callback| to receive video frames on
-  // the video task runner, |sub_capture_target_version_callback| to receive
-  // notifications when a new sub-capture-target version is acknowledged, and
+  // the video task runner, |capture_version_callback| to receive
+  // notifications when a new capture-target version is acknowledged, and
   // |settings_callback| to set track settings on the main thread.
   // |frame_callback| will however be released on the main render thread.
   void AddCallbacks(
@@ -173,8 +216,7 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
       VideoCaptureNotifyFrameDroppedInternalCallback
           notify_frame_dropped_callback,
       DeliverEncodedVideoFrameInternalCallback encoded_frame_callback,
-      VideoCaptureSubCaptureTargetVersionInternalCallback
-          sub_capture_target_version_callback,
+      VideoCaptureSubCaptureVersionInternalCallback capture_version_callback,
       VideoTrackSettingsInternalCallback settings_callback,
       VideoTrackFormatInternalCallback format_callback);
 
@@ -201,8 +243,8 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
   void DeliverEncodedVideoFrame(scoped_refptr<EncodedVideoFrame> frame,
                                 base::TimeTicks estimated_capture_time);
 
-  void NewSubCaptureTargetVersionOnVideoTaskRunner(
-      uint32_t sub_capture_target_version);
+  void NewCaptureVersionOnVideoTaskRunner(
+      media::CaptureVersion capture_version);
 
   // Returns true if all arguments match with the output of this adapter.
   bool SettingsMatch(const VideoTrackAdapterSettings& settings) const;
@@ -214,7 +256,7 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
 
  private:
   virtual ~VideoFrameResolutionAdapter();
-  friend class WTF::ThreadSafeRefCounted<VideoFrameResolutionAdapter>;
+  friend class ThreadSafeRefCounted<VideoFrameResolutionAdapter>;
 
   void DoDeliverFrame(
       scoped_refptr<media::VideoFrame> video_frame,
@@ -243,14 +285,14 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
   // The task runner where we will release VideoCaptureDeliverFrameCB
   // registered in AddCallbacks.
   const scoped_refptr<base::SingleThreadTaskRunner> renderer_task_runner_;
-
-  base::WeakPtr<MediaStreamVideoSource> media_stream_video_source_;
-
+  const bool is_video_desktop_capture_type_;
   const VideoTrackAdapterSettings settings_;
 
   // The target timestamp delta between video frames, corresponding to the max
   // fps.
   const std::optional<base::TimeDelta> target_delta_;
+  media::VideoFrameConverter frame_converter_;
+  media::VideoFramePool frame_pool_;
 
   // The maximum allowed deviation from |target_delta_| before dropping a frame.
   const std::optional<base::TimeDelta> max_delta_deviation_;
@@ -275,9 +317,9 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
 VideoTrackAdapter::VideoFrameResolutionAdapter::VideoFrameResolutionAdapter(
     scoped_refptr<base::SingleThreadTaskRunner> reader_task_runner,
     const VideoTrackAdapterSettings& settings,
-    base::WeakPtr<MediaStreamVideoSource> media_stream_video_source)
+    bool is_video_desktop_capture_type)
     : renderer_task_runner_(reader_task_runner),
-      media_stream_video_source_(media_stream_video_source),
+      is_video_desktop_capture_type_(is_video_desktop_capture_type),
       settings_(ReturnSettingsMaybeOverrideMaxFps(settings)),
       target_delta_(settings_.max_frame_rate()
                         ? std::make_optional(base::Seconds(
@@ -305,8 +347,7 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::AddCallbacks(
     VideoCaptureNotifyFrameDroppedInternalCallback
         notify_frame_dropped_callback,
     DeliverEncodedVideoFrameInternalCallback encoded_frame_callback,
-    VideoCaptureSubCaptureTargetVersionInternalCallback
-        sub_capture_target_version_callback,
+    VideoCaptureSubCaptureVersionInternalCallback capture_version_callback,
     VideoTrackSettingsInternalCallback settings_callback,
     VideoTrackFormatInternalCallback format_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
@@ -326,7 +367,7 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::AddCallbacks(
       std::move(frame_callback),
       std::move(notify_frame_dropped_callback),
       std::move(encoded_frame_callback),
-      std::move(sub_capture_target_version_callback),
+      std::move(capture_version_callback),
       std::move(settings_callback),
       std::move(format_callback)};
   callbacks_.emplace(track, std::move(track_callbacks));
@@ -388,47 +429,68 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverFrame(
   // textures.
   if (video_frame->HasSharedImage() &&
       video_frame->storage_type() !=
-          media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+          media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     DoDeliverFrame(std::move(video_frame), estimated_capture_time);
     return;
   }
-  // The video frame we deliver may or may not get cropping and scaling
-  // soft-applied. Ultimately the listener will decide whether to use the
-  // |delivered_video_frame|.
-  scoped_refptr<media::VideoFrame> delivered_video_frame = video_frame;
 
   gfx::Size desired_size;
   CalculateDesiredSize(is_device_rotated, video_frame->natural_size(),
                        settings_, &desired_size);
-  if (desired_size != video_frame->natural_size()) {
-    // Get the largest centered rectangle with the same aspect ratio of
-    // |desired_size| that fits entirely inside of
-    // |video_frame->visible_rect()|. This will be the rect we need to crop the
-    // original frame to. From this rect, the original frame can be scaled down
-    // to |desired_size|.
-    gfx::Rect region_in_frame = media::ComputeLetterboxRegion(
-        video_frame->visible_rect(), desired_size);
+  if (desired_size == video_frame->natural_size()) {
+    DoDeliverFrame(std::move(video_frame), estimated_capture_time);
+    return;
+  }
 
-    // Some consumers (for example
-    // ImageCaptureFrameGrabber::SingleShotFrameHandler::ConvertAndDeliverFrame)
-    // don't support pixel format conversions when the source format is YUV with
-    // UV subsampled and vsible_rect().x() being odd. The conversion ends up
-    // miscomputing the UV plane and ends up with a VU plane leading to a blue
-    // face tint. Round x() to even to avoid. See crbug.com/1307304.
-    region_in_frame.set_x(region_in_frame.x() & ~1);
-    region_in_frame.set_y(region_in_frame.y() & ~1);
+  // The video frame we deliver may or may not get cropping and scaling
+  // soft-applied. Ultimately the listener will decide whether to use the
+  // |delivered_video_frame|.
+  scoped_refptr<media::VideoFrame> delivered_video_frame;
 
-    // ComputeLetterboxRegion() sometimes produces odd dimensions due to
-    // internal rounding errors; allow to round upwards if there's slack
-    // otherwise round downwards.
-    bool width_has_slack =
-        region_in_frame.right() < video_frame->visible_rect().right();
-    region_in_frame.set_width((region_in_frame.width() + width_has_slack) & ~1);
-    bool height_has_slack =
-        region_in_frame.bottom() < video_frame->visible_rect().bottom();
-    region_in_frame.set_height((region_in_frame.height() + height_has_slack) &
-                               ~1);
+  // For screen capture tracks, we scale the frame to the desired size without
+  // cropping to not to lose any information.
+  if (base::FeatureList::IsEnabled(kScaleFrameForGetDisplayMedia) &&
+      is_video_desktop_capture_type_) {
+    gfx::Rect region_in_frame = ComputeLetterboxRect(
+        gfx::Rect(desired_size), video_frame->visible_rect().size());
+    desired_size = region_in_frame.size();
 
+    // Instead of soft-applied scaling, we convert the frame to be mappable and
+    // then scale it. This ensures that the frame has the same behavior as when
+    // the restriction is applied to the capturer.
+    if (video_frame->HasMappableSharedImage()) {
+      video_frame = ConvertToMemoryMappedFrame(video_frame);
+      if (!video_frame || !video_frame->IsMappable()) {
+        OnFrameDropped(media::VideoCaptureFrameDropReason::
+                           kResolutionAdapterFrameIsNotMappable);
+        return;
+      }
+    }
+
+    delivered_video_frame = frame_pool_.CreateFrame(
+        video_frame->format(), desired_size, gfx::Rect(desired_size),
+        desired_size, video_frame->timestamp());
+    if (!delivered_video_frame) {
+      OnFrameDropped(media::VideoCaptureFrameDropReason::
+                         kResolutionAdapterCannotCreateConvertFrame);
+      return;
+    }
+
+    delivered_video_frame->set_color_space(video_frame->ColorSpace());
+    delivered_video_frame->metadata().MergeMetadataFrom(
+        video_frame->metadata());
+    delivered_video_frame->metadata().ClearTextureFrameMetadata();
+
+    media::EncoderStatus convert_status =
+        frame_converter_.ConvertAndScale(*video_frame, *delivered_video_frame);
+    if (!convert_status.is_ok()) {
+      OnFrameDropped(media::VideoCaptureFrameDropReason::
+                         kResolutionAdapterConvertAndScaleFailed);
+      return;
+    }
+  } else {
+    gfx::Rect region_in_frame =
+        ComputeLetterboxRect(video_frame->visible_rect(), desired_size);
     delivered_video_frame = media::VideoFrame::WrapVideoFrame(
         video_frame, video_frame->format(), region_in_frame, desired_size);
     if (!delivered_video_frame) {
@@ -436,13 +498,13 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverFrame(
                          kResolutionAdapterWrappingFrameForCroppingFailed);
       return;
     }
-
-    DVLOG(3) << "desired size  " << desired_size.ToString()
-             << " output natural size "
-             << delivered_video_frame->natural_size().ToString()
-             << " output visible rect  "
-             << delivered_video_frame->visible_rect().ToString();
   }
+  DVLOG(3) << "desired size  " << desired_size.ToString()
+           << " output natural size "
+           << delivered_video_frame->natural_size().ToString()
+           << " output visible rect  "
+           << delivered_video_frame->visible_rect().ToString();
+
   DoDeliverFrame(std::move(delivered_video_frame), estimated_capture_time);
 }
 
@@ -456,12 +518,10 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverEncodedVideoFrame(
 }
 
 void VideoTrackAdapter::VideoFrameResolutionAdapter::
-    NewSubCaptureTargetVersionOnVideoTaskRunner(
-        uint32_t sub_capture_target_version) {
+    NewCaptureVersionOnVideoTaskRunner(media::CaptureVersion capture_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
   for (const auto& callback : callbacks_) {
-    callback.second.sub_capture_target_version_callback.Run(
-        sub_capture_target_version);
+    callback.second.capture_version_callback.Run(capture_version);
   }
 }
 
@@ -592,9 +652,9 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::ResetFrameRate() {
 
 VideoTrackAdapter::VideoTrackAdapter(
     scoped_refptr<base::SequencedTaskRunner> video_task_runner,
-    base::WeakPtr<MediaStreamVideoSource> media_stream_video_source)
+    bool is_video_desktop_capture_type)
     : video_task_runner_(video_task_runner),
-      media_stream_video_source_(media_stream_video_source),
+      is_video_desktop_capture_type_(is_video_desktop_capture_type),
       renderer_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       muted_state_(false),
       frame_counter_(0),
@@ -618,7 +678,7 @@ void VideoTrackAdapter::AddTrack(
       *video_task_runner_, FROM_HERE,
       CrossThreadBindOnce(
           &VideoTrackAdapter::AddTrackOnVideoTaskRunner,
-          WTF::CrossThreadUnretained(this), WTF::CrossThreadUnretained(track),
+          CrossThreadUnretained(this), CrossThreadUnretained(track),
           CrossThreadBindRepeating(
               std::move(video_stream_fallbacks.deliver_frame_cb)),
           CrossThreadBindRepeating(
@@ -626,7 +686,7 @@ void VideoTrackAdapter::AddTrack(
           CrossThreadBindRepeating(
               std::move(video_stream_fallbacks.encoded_frame_cb)),
           CrossThreadBindRepeating(
-              std::move(video_stream_fallbacks.sub_capture_target_version_cb)),
+              std::move(video_stream_fallbacks.capture_version_cb)),
           CrossThreadBindRepeating(
               std::move(video_stream_fallbacks.settings_cb)),
           CrossThreadBindRepeating(std::move(video_stream_fallbacks.format_cb)),
@@ -639,8 +699,7 @@ void VideoTrackAdapter::AddTrackOnVideoTaskRunner(
     VideoCaptureNotifyFrameDroppedInternalCallback
         notify_frame_dropped_callback,
     DeliverEncodedVideoFrameInternalCallback encoded_frame_callback,
-    VideoCaptureSubCaptureTargetVersionInternalCallback
-        sub_capture_target_version_callback,
+    VideoCaptureSubCaptureVersionInternalCallback capture_version_callback,
     VideoTrackSettingsInternalCallback settings_callback,
     VideoTrackFormatInternalCallback format_callback,
     const VideoTrackAdapterSettings& settings) {
@@ -654,16 +713,15 @@ void VideoTrackAdapter::AddTrackOnVideoTaskRunner(
   }
   if (!adapter.get()) {
     adapter = base::MakeRefCounted<VideoFrameResolutionAdapter>(
-        renderer_task_runner_, settings, media_stream_video_source_);
+        renderer_task_runner_, settings, is_video_desktop_capture_type_);
     adapters_.push_back(adapter);
   }
 
-  adapter->AddCallbacks(track, std::move(frame_callback),
-                        std::move(notify_frame_dropped_callback),
-                        std::move(encoded_frame_callback),
-                        std::move(sub_capture_target_version_callback),
-                        std::move(settings_callback),
-                        std::move(format_callback));
+  adapter->AddCallbacks(
+      track, std::move(frame_callback),
+      std::move(notify_frame_dropped_callback),
+      std::move(encoded_frame_callback), std::move(capture_version_callback),
+      std::move(settings_callback), std::move(format_callback));
 }
 
 void VideoTrackAdapter::RemoveTrack(const MediaStreamVideoTrack* track) {
@@ -690,10 +748,11 @@ void VideoTrackAdapter::StartFrameMonitoring(
     double source_frame_rate,
     const OnMutedCallback& on_muted_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+  if (base::FeatureList::IsEnabled(kMediaStreamTrackEmptyVideoFrameMonitor)) {
+    return;
+  }
   VideoTrackAdapter::OnMutedCallback bound_on_muted_callback =
       base::BindPostTaskToCurrentDefault(on_muted_callback);
-
   PostCrossThreadTask(
       *video_task_runner_, FROM_HERE,
       CrossThreadBindOnce(
@@ -865,7 +924,7 @@ void VideoTrackAdapter::ReconfigureTrackOnVideoTaskRunner(
         track, std::move(track_callbacks.frame_callback),
         std::move(track_callbacks.notify_frame_dropped_callback),
         std::move(track_callbacks.encoded_frame_callback),
-        std::move(track_callbacks.sub_capture_target_version_callback),
+        std::move(track_callbacks.capture_version_callback),
         std::move(track_callbacks.settings_callback),
         std::move(track_callbacks.format_callback), settings);
   }
@@ -911,15 +970,13 @@ void VideoTrackAdapter::OnFrameDroppedOnVideoTaskRunner(
   }
 }
 
-void VideoTrackAdapter::NewSubCaptureTargetVersionOnVideoTaskRunner(
-    uint32_t sub_capture_target_version) {
+void VideoTrackAdapter::NewCaptureVersionOnVideoTaskRunner(
+    media::CaptureVersion capture_version) {
   DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0(
-      "media",
-      "VideoTrackAdapter::NewSubCaptureTargetVersionOnVideoTaskRunner");
+  TRACE_EVENT0("media",
+               "VideoTrackAdapter::NewCaptureVersionOnVideoTaskRunner");
   for (const auto& adapter : adapters_) {
-    adapter->NewSubCaptureTargetVersionOnVideoTaskRunner(
-        sub_capture_target_version);
+    adapter->NewCaptureVersionOnVideoTaskRunner(capture_version);
   }
 }
 

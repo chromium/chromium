@@ -12,6 +12,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/test:browser_tests",
+        "module_scheme": "gtest",
         "name": "browser_tests",
         "swarming": {
           "dimensions": {
@@ -31,6 +33,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//content/test:content_browsertests",
+        "module_scheme": "gtest",
         "name": "content_browsertests",
         "swarming": {
           "dimensions": {
@@ -50,6 +54,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/test:interactive_ui_tests",
+        "module_scheme": "gtest",
         "name": "interactive_ui_tests",
         "swarming": {
           "dimensions": {
@@ -75,6 +81,8 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:blink_web_tests",
+        "module_scheme": "webtest",
         "name": "blink_web_tests",
         "resultdb": {
           "enable": true,
@@ -103,6 +111,8 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:blink_wpt_tests",
+        "module_scheme": "webtest",
         "name": "blink_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -130,6 +140,8 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:chrome_wpt_tests",
+        "module_scheme": "webtest",
         "name": "chrome_wpt_tests",
         "resultdb": {
           "enable": true,
@@ -162,6 +174,8 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:headless_shell_wpt",
+        "module_scheme": "webtest",
         "name": "headless_shell_wpt_tests",
         "resultdb": {
           "enable": true,

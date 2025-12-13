@@ -277,15 +277,15 @@ AddressNormalizerImpl::GetJavaObject() {
 
 void AddressNormalizerImpl::LoadRulesForAddressNormalization(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jregion_code) {
+    const base::android::JavaRef<jstring>& jregion_code) {
   LoadRulesForRegion(base::android::ConvertJavaStringToUTF8(env, jregion_code));
 }
 
 void AddressNormalizerImpl::StartAddressNormalization(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jprofile,
+    const base::android::JavaRef<jobject>& jprofile,
     jint jtimeout_seconds,
-    const base::android::JavaParamRef<jobject>& jdelegate) {
+    const base::android::JavaRef<jobject>& jdelegate) {
   // TODO(crbug.com/40282123): Check if existing profile needs to be passed.
   AutofillProfile profile = AutofillProfile::CreateFromJavaObject(
       jprofile, /*existing_profile=*/nullptr, app_locale_);
@@ -360,3 +360,7 @@ void AddressNormalizerImpl::AddNormalizationRequestForRegion(
 }
 
 }  // namespace autofill
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(AddressNormalizer)
+#endif

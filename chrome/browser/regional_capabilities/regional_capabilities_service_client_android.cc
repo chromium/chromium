@@ -9,10 +9,13 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/regional_capabilities/android/jni_headers/RegionalCapabilitiesServiceClientAndroid_jni.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_client.h"
 #include "components/country_codes/country_codes.h"
 #include "components/variations/service/variations_service.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/regional_capabilities/android/jni_headers/RegionalCapabilitiesServiceClientAndroid_jni.h"
 
 using ::country_codes::CountryId;
 
@@ -40,10 +43,11 @@ void RegionalCapabilitiesServiceClientAndroid::FetchCountryId(
       reinterpret_cast<intptr_t>(heap_callback.release()));
 }
 
-void JNI_RegionalCapabilitiesServiceClientAndroid_ProcessDeviceCountryResponse(
+static void
+JNI_RegionalCapabilitiesServiceClientAndroid_ProcessDeviceCountryResponse(
     JNIEnv* env,
     jlong ptr_to_native_callback,
-    const base::android::JavaParamRef<jstring>& j_device_country) {
+    const base::android::JavaRef<jstring>& j_device_country) {
   // Using base::WrapUnique ensures that the callback is deleted when this goes
   // out of scope.
   using CountryIdCallback =
@@ -59,4 +63,12 @@ void JNI_RegionalCapabilitiesServiceClientAndroid_ProcessDeviceCountryResponse(
   std::move(*heap_callback).Run(CountryId(device_country_code));
 }
 
+Program RegionalCapabilitiesServiceClientAndroid::GetDeviceProgram() {
+  return static_cast<Program>(
+      Java_RegionalCapabilitiesServiceClientAndroid_getDeviceProgramForNative(
+          jni_zero::AttachCurrentThread()));
+}
+
 }  // namespace regional_capabilities
+
+DEFINE_JNI(RegionalCapabilitiesServiceClientAndroid)

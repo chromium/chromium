@@ -239,6 +239,15 @@ export class ObjectLayerElement extends PolymerElement {
         (screenshot: ImageBitmap) => {
           renderScreenshot(this.$.highlightImgCanvas, screenshot);
         });
+    ScreenshotBitmapBrowserProxyImpl.getInstance().addOnOverlayReshownListener(
+        (screenshot: ImageBitmap) => {
+          // Clear the existing state.
+          this.clearAndCancelAnimation();
+          this.renderedObjects = [];
+          this.lastPostSelection = null;
+
+          renderScreenshot(this.$.highlightImgCanvas, screenshot);
+        });
   }
 
   override disconnectedCallback() {

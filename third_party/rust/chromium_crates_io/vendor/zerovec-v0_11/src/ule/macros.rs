@@ -15,7 +15,7 @@ macro_rules! impl_ule_from_array {
             let mut result = [$default; N];
             let mut i = 0;
             // Won't panic because i < N and arr has length N
-            #[allow(clippy::indexing_slicing)]
+            #[expect(clippy::indexing_slicing)]
             while i < N {
                 result[i] = $single(arr[i]);
                 i += 1;

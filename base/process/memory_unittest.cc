@@ -47,7 +47,7 @@
 #include "base/test/malloc_wrapper.h"
 #endif
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -188,8 +188,8 @@ class OutOfMemoryDeathTest : public OutOfMemoryTest {
   // These tests don't work properly on old x86 Android; crbug.com/1181112
   bool ShouldSkipTest() {
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
-    return base::android::BuildInfo::GetInstance()->sdk_int() <
-           base::android::SDK_VERSION_NOUGAT;
+    return base::android::android_info::sdk_int() <
+           base::android::android_info::SDK_VERSION_NOUGAT;
 #else
     return false;
 #endif
@@ -714,6 +714,23 @@ TEST_F(OutOfMemoryHandledTest, UncheckedCalloc) {
   EXPECT_FALSE(base::UncheckedCalloc(1, test_size_, &ptr));
   EXPECT_TRUE(ptr == nullptr);
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(OutOfMemoryHandledTest, UncheckedAlignedAlloc) {
+  static constexpr size_t kAlignment = 32;
+  void* ptr;
+  EXPECT_TRUE(base::UncheckedAlignedAlloc(kSafeMallocSize, kAlignment, &ptr));
+  EXPECT_TRUE(ptr != nullptr);
+  EXPECT_TRUE(base::IsAligned(ptr, 32));
+  base::UncheckedAlignedFree(ptr);
+
+  // test_size_ is too big for the aligned case. Scale it back a bit.
+  const size_t test_size =
+      std::numeric_limits<std::ptrdiff_t>::max() - 3 * base::GetPageSize();
+  EXPECT_FALSE(base::UncheckedAlignedAlloc(test_size, kAlignment, &ptr));
+  EXPECT_TRUE(ptr == nullptr);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #endif  // BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_OPENBSD) && PA_BUILDFLAG(USE_ALLOCATOR_SHIM) &&

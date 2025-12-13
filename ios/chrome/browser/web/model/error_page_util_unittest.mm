@@ -21,7 +21,7 @@ namespace {
 
 // URL string passed from ios/web layer to ios/chrome and rendered on the error
 // page.
-NSString* kTestUrl = @"https://chromium.test/";
+NSString* const kTestUrl = @"https://chromium.test/";
 
 // Returns string for the given error code.
 NSString* ErrorAsString(int net_error) {
@@ -72,7 +72,8 @@ TEST_F(ErrorPageUtilTest, PostNonOtrError) {
   EXPECT_TRUE([html containsString:@"<head>"]);
 
   EXPECT_TRUE([html containsString:ErrorAsString(ERR_CONNECTION_TIMED_OUT)]);
-  EXPECT_TRUE([html containsString:base::SysUTF8ToNSString(test_url.host())]);
+  EXPECT_TRUE(
+      [html containsString:base::SysUTF8ToNSString(test_url.GetHost())]);
   EXPECT_FALSE([html containsString:GetNSString(IDS_ERRORPAGES_BUTTON_RELOAD)]);
 }
 
@@ -106,7 +107,8 @@ TEST_F(ErrorPageUtilTest, PostOtrError) {
   EXPECT_TRUE([html containsString:@"<head>"]);
 
   EXPECT_TRUE([html containsString:ErrorAsString(ERR_CONNECTION_TIMED_OUT)]);
-  EXPECT_TRUE([html containsString:base::SysUTF8ToNSString(test_url.host())]);
+  EXPECT_TRUE(
+      [html containsString:base::SysUTF8ToNSString(test_url.GetHost())]);
   EXPECT_FALSE([html containsString:GetNSString(IDS_ERRORPAGES_BUTTON_RELOAD)]);
 }
 

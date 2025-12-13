@@ -1,0 +1,18 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("desktop_to_mobile_promos") {
+  sources = [
+    "desktop_to_mobile_promos_metrics.cc",
+    "desktop_to_mobile_promos_metrics.h",
+    "features.cc",
+    "features.h",
+    "pref_names.h",
+    "promos_types.h",
+  ]
+  deps = [
+    "//base",
+    "//components/sync_preferences:features",
+  ]
+}

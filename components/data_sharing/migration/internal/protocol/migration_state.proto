@@ -1,0 +1,39 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package data_sharing_pb;
+
+message MigrationState {
+  enum State {
+    // Default value, should not be used.
+    UNSPECIFIED = 0;
+    // The user has explicitly started the sharing flow (from the UI) on this
+    // device. This is the initiating device.
+    SHARE_INITIATED = 1;
+    // This is a remote device that has detected the existence of a sharing
+    // transition. The transition could be in-progress or complete on the
+    // initiating device but this remote device must complete the transition as
+    // well.
+    SHARE_PASSIVE = 2;
+    // Sharing flow has been completed. The UI and feature code can be notified
+    // of the completion. Both the initiating device and remote device have to
+    // proceed through this phase.
+    SHARE_COMPLETED = 3;
+    // The unshare flow has been initiated by the user on this device. This is
+    // the initiating device.
+    UNSHARE_INITIATED = 4;
+    // The unshare result is being applied to the current device. At this point,
+    // the shared group has been copied to the private storage and waiting for
+    // commit of the private group.
+    UNSHARE_PREPARED = 5;
+    // The unshare flow has been successfully completed. Both the initiating
+    // device and remote device have to proceed through this phase.
+    UNSHARE_COMPLETED = 6;
+  }
+  optional State state = 1;
+}

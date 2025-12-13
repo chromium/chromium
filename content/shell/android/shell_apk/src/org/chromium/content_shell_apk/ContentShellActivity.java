@@ -16,7 +16,11 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.cached_flags.CachedFlagUtils;
 import org.chromium.content_public.browser.BrowserStartupController;
+import org.chromium.content_public.browser.BrowserStartupController.StartupMetrics;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.DeviceUtils;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
@@ -24,6 +28,8 @@ import org.chromium.content_shell.Shell;
 import org.chromium.content_shell.ShellManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
+
+import java.util.List;
 
 /** Activity for managing the Content Shell. */
 public class ContentShellActivity extends Activity {
@@ -82,6 +88,7 @@ public class ContentShellActivity extends Activity {
         if (CommandLine.getInstance().hasSwitch(RUN_WEB_TESTS_SWITCH)) {
             BrowserStartupController.getInstance()
                     .startBrowserProcessesSync(LibraryProcessType.PROCESS_BROWSER, false, false);
+            cacheNativeFlags();
         } else {
             BrowserStartupController.getInstance()
                     .startBrowserProcessesAsync(
@@ -92,8 +99,9 @@ public class ContentShellActivity extends Activity {
                             false,
                             new BrowserStartupController.StartupCallback() {
                                 @Override
-                                public void onSuccess() {
+                                public void onSuccess(@Nullable StartupMetrics metrics) {
                                     finishInitialization(savedInstanceState);
+                                    cacheNativeFlags();
                                 }
 
                                 @Override
@@ -102,6 +110,11 @@ public class ContentShellActivity extends Activity {
                                 }
                             });
         }
+    }
+
+    // Required for cached flags to work.
+    private void cacheNativeFlags() {
+        CachedFlagUtils.cacheNativeFlags(List.of(ContentFeatureList.sCachedFlags));
     }
 
     private void finishInitialization(Bundle savedInstanceState) {

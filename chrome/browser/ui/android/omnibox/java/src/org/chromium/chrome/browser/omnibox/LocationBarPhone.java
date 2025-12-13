@@ -4,73 +4,19 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.view.TouchDelegate;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.omnibox.OmniboxFeatures;
 
 /** A location bar implementation specific for smaller/phone screens. */
 @NullMarked
 class LocationBarPhone extends LocationBarLayout {
-    private static final int ACTION_BUTTON_TOUCH_OVERFLOW_LEFT = 15;
-
-    private View mUrlBar;
-    private View mStatusView;
-
     /** Constructor used to inflate from XML. */
     public LocationBarPhone(Context context, AttributeSet attrs) {
         super(context, attrs);
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-
-        mUrlBar = findViewById(R.id.url_bar);
-        mStatusView = findViewById(R.id.location_bar_status);
-
-        Rect delegateArea = new Rect();
-        mUrlActionContainer.getHitRect(delegateArea);
-        delegateArea.left -= ACTION_BUTTON_TOUCH_OVERFLOW_LEFT;
-        TouchDelegate touchDelegate = new TouchDelegate(delegateArea, mUrlActionContainer);
-        assert mUrlActionContainer.getParent() == this;
-        assumeNonNull(mCompositeTouchDelegate).addDelegateForDescendantView(touchDelegate);
-    }
-
-    @Override
-    protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
-        boolean needsCanvasRestore = false;
-        if (child == mUrlBar && mUrlActionContainer.getVisibility() == VISIBLE) {
-            canvas.save();
-
-            // Clip the URL bar contents to ensure they do not draw under the URL actions during
-            // focus animations.  Based on the RTL state of the location bar, the url actions
-            // container can be on the left or right side, so clip accordingly.
-            if (mUrlBar.getLeft() < mUrlActionContainer.getLeft()) {
-                canvas.clipRect(0, 0, (int) mUrlActionContainer.getX(), getBottom());
-            } else {
-                canvas.clipRect(
-                        mUrlActionContainer.getX() + mUrlActionContainer.getWidth(),
-                        0,
-                        getWidth(),
-                        getBottom());
-            }
-            needsCanvasRestore = true;
-        }
-        boolean retVal = super.drawChild(canvas, child, drawingTime);
-        if (needsCanvasRestore) {
-            canvas.restore();
-        }
-        return retVal;
     }
 
     @Override
@@ -88,23 +34,17 @@ class LocationBarPhone extends LocationBarLayout {
     }
 
     /**
-     * Returns {@link FrameLayout.LayoutParams} of the LocationBar view.
+     * Returns {@link MarginLayoutParams} of the LocationBar view.
      *
      * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
      *
      * @see View#getLayoutParams()
      */
-    public FrameLayout.LayoutParams getFrameLayoutParams() {
-        return (FrameLayout.LayoutParams) getLayoutParams();
+    public MarginLayoutParams getMarginLayoutParams() {
+        return (MarginLayoutParams) getLayoutParams();
     }
 
     int getOffsetOfFirstVisibleFocusedView() {
-        if (!OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()
-                && mLocationBarDataProvider.isIncognito()
-                && mStatusView.getVisibility() != View.GONE) {
-            return mStatusView.getMeasuredWidth();
-        }
-
         return 0;
     }
 }

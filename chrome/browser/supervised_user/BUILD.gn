@@ -43,12 +43,16 @@ static_library("test_support") {
     "//testing/gtest",
   ]
   if (is_android) {
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources += [
       "android/supervised_user_service_test_bridge.cc",
       "android/supervised_user_settings_test_bridge.cc",
+      "supervised_user_browsertest_base.cc",
+      "supervised_user_browsertest_base.h",
     ]
     deps += [
       ":test_support_jni_headers",
+      "//chrome/test:test_support_ui_android",
       "//components/safe_search_api:test_support",
       "//components/signin/public/identity_manager:test_support",
       "//components/supervised_user/core/browser/android:content_filters_observer_bridge",
@@ -75,6 +79,16 @@ if (is_android) {
     ]
   }
 
+  android_library("parent_auth_delegate_provider_java") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/ParentAuthDelegateProvider.java" ]
+    deps = [
+      ":parent_auth_delegate_java",
+      "//base:base_java",
+      "//base:service_loader_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+  }
+
   android_library("supervised_user_metrics_java") {
     sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalMetrics.java" ]
     deps = [
@@ -92,6 +106,7 @@ if (is_android) {
     deps = [
       ":java_resources",
       ":parent_auth_delegate_java",
+      ":parent_auth_delegate_provider_java",
       ":supervised_user_metrics_java",
       "//base:base_java",
       "//base:service_loader_java",
@@ -117,7 +132,6 @@ if (is_android) {
     ]
 
     sources = [
-      "android/java/src/org/chromium/chrome/browser/supervised_user/ParentAuthDelegateProvider.java",
       "android/java/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApproval.java",
       "android/java/src/org/chromium/chrome/browser/supervised_user/website_approval/WebsiteApprovalCoordinator.java",
       "android/java/src/org/chromium/chrome/browser/supervised_user/website_approval/WebsiteApprovalMediator.java",
@@ -130,6 +144,42 @@ if (is_android) {
 
   generate_jni("website_parent_approval_jni_headers") {
     sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApproval.java" ]
+  }
+
+  java_cpp_enum("supervised_extension_approval_result_java_enum_srcjar") {
+    sources = [ "//extensions/browser/supervised_extension_approval_result.h" ]
+  }
+
+  android_library("extension_parent_approval_java") {
+    deps = [
+      ":java_resources",
+      ":parent_auth_delegate_java",
+      ":parent_auth_delegate_provider_java",
+      "//base:base_java",
+      "//base:service_loader_java",
+      "//build/android:build_java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/signin/services/android:java",
+      "//chrome/browser/ui/android/strings:ui_strings_grd",
+      "//components/signin/public/android:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_appcompat_appcompat_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//ui/android:ui_java",
+      "//ui/android:ui_no_recycler_view_java",
+    ]
+
+    srcjar_deps = [
+      ":extension_parent_approval_jni_headers",
+      ":supervised_extension_approval_result_java_enum_srcjar",
+    ]
+
+    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/ExtensionParentApproval.java" ]
+    resources_package = "org.chromium.chrome.browser.supervised_user"
+  }
+
+  generate_jni("extension_parent_approval_jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/ExtensionParentApproval.java" ]
   }
 
   android_library("supervised_user_service_platform_delegate_java") {
@@ -213,17 +263,20 @@ if (is_android) {
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/signin/services/android:java",
       "//chrome/browser/supervised_user:parent_auth_delegate_java",
+      "//chrome/browser/supervised_user:parent_auth_delegate_provider_java",
       "//chrome/browser/supervised_user:supervised_user_metrics_java",
       "//chrome/browser/supervised_user:website_parent_approval_java",
       "//chrome/browser/tab:java",
       "//chrome/browser/ui/android/appmenu:java",
       "//chrome/browser/ui/android/appmenu/test:test_support_java",
+      "//chrome/browser/ui/android/multiwindow:java",
       "//chrome/test/android:chrome_java_integration_test_support",
       "//chrome/test/android:chrome_java_transit",
       "//chrome/test/android:pagecontroller_utils_java",
       "//components/browser_ui/bottomsheet/android:java",
       "//components/browser_ui/bottomsheet/android:manager_java",
       "//components/browser_ui/bottomsheet/android/test:java",
+      "//components/policy/android:policy_java_test_support",
       "//components/signin/public/android:java",
       "//components/signin/public/android:signin_java_test_support",
       "//content/public/android:content_java",
@@ -233,7 +286,7 @@ if (is_android) {
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/jni_zero:jni_zero_java",
-      "//third_party/junit:junit",
+      "//third_party/junit",
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_java_test_support",
       "//ui/android:ui_no_recycler_view_java",
@@ -254,7 +307,7 @@ if (is_android) {
       "//chrome/android:chrome_java",
       "//third_party/android_deps:robolectric_all_java",
       "//third_party/androidx:androidx_test_runner_java",
-      "//third_party/junit:junit",
+      "//third_party/junit",
     ]
   }
 
@@ -262,20 +315,28 @@ if (is_android) {
     source_set("android_browser_tests") {
       testonly = true
       defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-      sources = [ "supervised_user_navigation_observer_android_browsertest.cc" ]
+      sources = [
+        "supervised_user_navigation_observer_android_browsertest.cc",
+        "supervised_user_service_android_browsertest.cc",
+      ]
       deps = [
         "//base",
         "//chrome/browser/profiles:profile",
-        "//chrome/browser/sync:sync",
+        "//chrome/browser/sync",
         "//chrome/test:test_support",
         "//components/messages/android/test:test_support_cpp",
         "//components/safe_search_api:test_support",
         "//components/supervised_user/core/browser:test_support",
         "//components/supervised_user/core/browser/android:content_filters_observer_bridge",
+        "//components/url_matcher",
         "//content/test:test_support",
         "//net:test_support",
         "//net/android:net_java_test_support_enums_srcjar",
       ]
+
+      # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+      # enable the diagnostic by removing this line.
+      configs += [ "//build/config/compiler:no_exit_time_destructors" ]
     }
   }
 }

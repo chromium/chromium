@@ -45,8 +45,8 @@ class EditingCommandTest : public EditingTestBase {};
 TEST_F(EditingCommandTest, EditorCommandOrder) {
   for (size_t i = 1; i < std::size(kCommandNameEntries); ++i) {
     EXPECT_GT(0,
-              WTF::CodeUnitCompareIgnoringASCIICase(
-                  kCommandNameEntries[i - 1].name, kCommandNameEntries[i].name))
+              CodeUnitCompareIgnoringASCIICase(kCommandNameEntries[i - 1].name,
+                                               kCommandNameEntries[i].name))
         << "EDITOR_COMMAND_MAP must be case-folding ordered. Incorrect index:"
         << i;
   }
@@ -165,6 +165,33 @@ TEST_F(EditingCommandTest, DeleteSoftLineBackwardTargetRanges) {
   EXPECT_EQ(0u, range.startOffset());
   EXPECT_EQ(range.startContainer(), range.endContainer());
   EXPECT_EQ(3u, range.endOffset());
+}
+
+TEST_F(EditingCommandTest, RemoveFormatInPlaintextOnly) {
+  Editor& editor = GetDocument().GetFrame()->GetEditor();
+  const EditorCommand command = editor.CreateCommand("RemoveFormat");
+
+  Selection().SetSelection(
+      SetSelectionTextToBody(
+          "<div contenteditable='plaintext-only'>ab^cd|ef</div>"),
+      SetSelectionOptions());
+  Element* plaintext_div = QuerySelector("div");
+  GetDocument().SetFocusedElement(
+      plaintext_div, FocusParams(SelectionBehaviorOnFocus::kNone,
+                                 mojom::blink::FocusType::kNone, nullptr));
+  EXPECT_FALSE(command.IsEnabled())
+      << "removeFormat should be disabled in plaintext-only";
+
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable='true'>ab^cd|ef</div>"),
+      SetSelectionOptions());
+  Element* richly_editable_div = QuerySelector("div");
+  GetDocument().SetFocusedElement(
+      richly_editable_div,
+      FocusParams(SelectionBehaviorOnFocus::kNone,
+                  mojom::blink::FocusType::kNone, nullptr));
+  EXPECT_TRUE(command.IsEnabled())
+      << "removeFormat should be enabled in richly editable";
 }
 
 }  // namespace blink

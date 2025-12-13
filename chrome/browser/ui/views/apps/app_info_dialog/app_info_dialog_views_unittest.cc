@@ -38,6 +38,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
@@ -97,15 +98,21 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
 
   // Overridden from testing::Test:
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
 #if BUILDFLAG(IS_CHROMEOS)
     // Sets up a fake user manager over |BrowserWithTestWindowTest| user
     // manager.
-    arc_test_ =
+    arc_app_test_ =
         std::make_unique<ArcAppTest>(ArcAppTest::UserManagerMode::kDoNothing);
-    arc_test_->SetUp(extension_environment_.profile());
+    arc_app_test_->PreProfileSetUp();
+#endif
+
+    BrowserWithTestWindowTest::SetUp();
+
+#if BUILDFLAG(IS_CHROMEOS)
+    arc_app_test_->PostProfileSetUp(extension_environment_.profile());
 
     shelf_model_ = std::make_unique<ash::ShelfModel>();
+    browser_controller_.emplace();
     chrome_shelf_controller_ = std::make_unique<ChromeShelfController>(
         extension_environment_.profile(), shelf_model_.get());
     chrome_shelf_controller_->SetProfileForTest(
@@ -126,12 +133,11 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
     chrome_app_ = nullptr;
 #if BUILDFLAG(IS_CHROMEOS)
     chrome_shelf_controller_.reset();
+    browser_controller_.reset();
     shelf_model_.reset();
-    if (arc_test_) {
-      arc_test_->TearDown();
-      arc_test_.reset();
-    }
-#endif
+    CHECK(arc_app_test_);
+    arc_app_test_->PreProfileTearDown();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     // The Browser class had dependencies on LocalState, which is owned by
     // |extension_environment_|.
@@ -146,6 +152,11 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
     extension_environment_.DeleteProfile();
 
     BrowserWithTestWindowTest::TearDown();
+
+#if BUILDFLAG(IS_CHROMEOS)
+    arc_app_test_->PostProfileTearDown();
+    arc_app_test_.reset();
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
@@ -211,8 +222,9 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
   };
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<ash::ShelfModel> shelf_model_;
+  std::optional<ash::BrowserControllerImpl> browser_controller_;
   std::unique_ptr<ChromeShelfController> chrome_shelf_controller_;
-  std::unique_ptr<ArcAppTest> arc_test_;
+  std::unique_ptr<ArcAppTest> arc_app_test_;
 #endif
 };
 
@@ -255,9 +267,6 @@ TEST_F(AppInfoDialogViewsTest, DestroyedProfileClosesDialog) {
     std::unique_ptr<Browser> browser = release_browser();
     browser->tab_strip_model()->CloseAllTabs();
     browser.reset();
-    std::unique_ptr<BrowserWindow> browser_window = release_browser_window();
-    browser_window->Close();
-    browser_window.reset();
 
     // The following serves two purposes:
     // it ensures the Widget close is being triggered by the DeleteProfile()

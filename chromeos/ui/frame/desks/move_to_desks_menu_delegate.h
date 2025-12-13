@@ -8,10 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/menus/simple_menu_model.h"
 
-namespace aura {
-class Window;
-}
-
 namespace views {
 class Widget;
 }
@@ -28,7 +24,7 @@ class MoveToDesksMenuDelegate : public ui::SimpleMenuModel::Delegate {
 
   // Returns whether the move to desks menu should be shown, i.e. there are more
   // than two desks.
-  static bool ShouldShowMoveToDesksMenu(aura::Window* window);
+  static bool ShouldShowMoveToDesksMenu();
 
   // SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;
@@ -39,7 +35,7 @@ class MoveToDesksMenuDelegate : public ui::SimpleMenuModel::Delegate {
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
-  // This is indirectly owned by BrowserFrame, and guaranteed to be destroyed
+  // This is indirectly owned by BrowserWidget, and guaranteed to be destroyed
   // before Widget.
   const raw_ptr<views::Widget> widget_;
 };

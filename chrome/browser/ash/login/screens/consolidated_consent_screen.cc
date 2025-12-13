@@ -4,15 +4,17 @@
 
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
 
+#include <string_view>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/hash/sha1.h"
 #include "base/i18n/timezone.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -42,7 +44,6 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/consent_auditor/consent_auditor.h"
@@ -51,8 +52,16 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "crypto/obsolete/sha1.h"
 
 namespace ash {
+
+namespace login {
+std::string GetHashedTosContent(std::string_view tos_content) {
+  return std::string(
+      base::as_string_view(crypto::obsolete::Sha1::Hash(tos_content)));
+}
+}  // namespace login
 
 namespace {
 
@@ -423,7 +432,7 @@ void ConsolidatedConsentScreen::RecordConsents(
     play_consent.set_play_terms_of_service_text_length(
         params.tos_content.length());
     play_consent.set_play_terms_of_service_hash(
-        base::SHA1HashString(params.tos_content));
+        login::GetHashedTosContent(params.tos_content));
   }
   consent_auditor->RecordArcPlayConsent(gaia_id, play_consent);
 
@@ -548,7 +557,6 @@ void ConsolidatedConsentScreen::ExitScreenWithAcceptedResult() {
     RecordRecoveryOptinResult(context()->recovery_setup);
   }
   StartupUtils::MarkEulaAccepted();
-  network_portal_detector::GetInstance()->Enable();
 
   const DemoSetupController* const demo_setup_controller =
       WizardController::default_controller()->demo_setup_controller();

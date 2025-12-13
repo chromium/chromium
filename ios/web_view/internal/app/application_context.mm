@@ -7,13 +7,14 @@
 #import "base/base_paths.h"
 #import "base/command_line.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "base/path_service.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/component_updater/component_updater_service.h"
-#import "components/component_updater/installer_policies/autofill_states_component_installer.h"
 #import "components/component_updater/timer_update_scheduler.h"
 #import "components/metrics/demographics/user_demographics.h"
+#import "components/os_crypt/async/browser/keychain_key_provider.h"
 #import "components/os_crypt/async/browser/os_crypt_async.h"
 #import "components/prefs/json_pref_store.h"
 #import "components/prefs/pref_registry_simple.h"
@@ -73,9 +74,12 @@ void ApplicationContext::PreCreateThreads() {
 
 void ApplicationContext::PostCreateThreads() {
   // Delegate all encryption calls to OSCrypt.
-  os_crypt_async_ = std::make_unique<os_crypt_async::OSCryptAsync>(
-      std::vector<std::pair<os_crypt_async::OSCryptAsync::Precedence,
-                            std::unique_ptr<os_crypt_async::KeyProvider>>>());
+  auto key_provider = std::make_unique<os_crypt_async::KeychainKeyProvider>();
+  std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
+      key_providers;
+  key_providers.emplace_back(/*precedence=*/10u, std::move(key_provider));
+  os_crypt_async_ =
+      std::make_unique<os_crypt_async::OSCryptAsync>(std::move(key_providers));
 
   // Trigger an instance grab on a background thread if necessary.
   os_crypt_async_->GetInstance(base::DoNothing());
@@ -125,8 +129,6 @@ PrefService* ApplicationContext::GetLocalState() {
     signin::IdentityManager::RegisterLocalStatePrefs(pref_registry.get());
     component_updater::RegisterComponentUpdateServicePrefs(pref_registry.get());
     update_client::RegisterPrefs(pref_registry.get());
-    component_updater::AutofillStatesComponentInstallerPolicy::RegisterPrefs(
-        pref_registry.get());
     metrics::RegisterDemographicsLocalStatePrefs(pref_registry.get());
     sessions::SessionIdGenerator::RegisterPrefs(pref_registry.get());
 
@@ -144,11 +146,11 @@ PrefService* ApplicationContext::GetLocalState() {
 
     sessions::SessionIdGenerator::GetInstance()->Init(local_state_.get());
 
-    int max_normal_socket_pool_count =
+    size_t max_normal_socket_pool_count =
         net::ClientSocketPoolManager::max_sockets_per_group(
             net::HttpNetworkSession::NORMAL_SOCKET_POOL);
-    int socket_count = std::max<int>(net::kDefaultMaxSocketsPerProxyChain,
-                                     max_normal_socket_pool_count);
+    size_t socket_count = std::max<size_t>(net::kDefaultMaxSocketsPerProxyChain,
+                                           max_normal_socket_pool_count);
     net::ClientSocketPoolManager::set_max_sockets_per_proxy_chain(
         net::HttpNetworkSession::NORMAL_SOCKET_POOL, socket_count);
   }

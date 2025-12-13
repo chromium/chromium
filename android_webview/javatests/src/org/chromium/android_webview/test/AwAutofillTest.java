@@ -72,10 +72,11 @@ import org.chromium.net.test.util.TestWebServer;
 
 import java.io.ByteArrayInputStream;
 import java.net.URL;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeoutException;
@@ -399,8 +400,9 @@ public class AwAutofillTest extends AwParameterizedTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             return HistogramWatcher.newSingleRecordWatcher(
-                                    AutofillProviderUMA.UMA_AUTOFILL_CREATED_BY_ACTIVITY_CONTEXT,
-                                    true);
+                                    AutofillProviderUMA.UMA_AUTOFILL_CREATION_CONTEXT,
+                                    AutofillProviderUMA.AutofillManagerCreationContext
+                                            .ACTIVITY_CONTEXT);
                         });
         mContentsClient = new AwAutofillTestClient();
         mTestContainerView =
@@ -2503,6 +2505,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"disable-features=AutofillServerCommunication"})
+    @DisabledTest(message = "crbug.com/424007303")
     public void testDatalistPopup() throws Throwable {
         final String url = getAbsoluteTestPageUrl("form_with_datalist.html");
         loadUrlSync(url);
@@ -2669,10 +2672,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                                         new int[][] {
                                             {FieldType.CREDIT_CARD_NAME_FULL},
                                             {FieldType.CREDIT_CARD_NUMBER},
-                                            {
-                                                FieldType.CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
-                                                FieldType.CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
-                                            },
+                                            {FieldType.CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
                                             {FieldType.CREDIT_CARD_VERIFICATION_CODE}
                                         }));
 
@@ -2736,7 +2736,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
                 viewStructure.getChild(2).getHtmlInfo().getAttribute("computed-autofill-hints"));
         assertEquals(
-                "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR",
+                "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
                 viewStructure
                         .getChild(2)
                         .getHtmlInfo()
@@ -2870,8 +2870,7 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals(
                 "UNKNOWN_TYPE",
                 viewStructure.getChild(0).getHtmlInfo().getAttribute("computed-autofill-hints"));
-        assertEquals(
-                "NO_SERVER_DATA",
+        assertNull(
                 viewStructure
                         .getChild(0)
                         .getHtmlInfo()
@@ -2885,8 +2884,7 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals(
                 "HTML_TYPE_EMAIL",
                 viewStructure.getChild(1).getHtmlInfo().getAttribute("computed-autofill-hints"));
-        assertEquals(
-                "NO_SERVER_DATA",
+        assertNull(
                 viewStructure
                         .getChild(1)
                         .getHtmlInfo()
@@ -2916,13 +2914,13 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals(2, viewTypes.size());
         assertEquals(viewStructure.getChild(0).getAutofillId(), viewTypes.get(0).mAutofillId);
         assertEquals("USERNAME", viewTypes.get(0).mServerType);
-        assertEquals("USERNAME", viewTypes.get(0).mComputedType);
+        assertEquals("USERNAME", viewTypes.get(0).mOverallType);
         assertArrayEquals(
                 new String[] {"USERNAME", "EMAIL_ADDRESS"},
                 viewTypes.get(0).getServerPredictions());
         assertEquals(viewStructure.getChild(1).getAutofillId(), viewTypes.get(1).mAutofillId);
         assertEquals("EMAIL_ADDRESS", viewTypes.get(1).mServerType);
-        assertEquals("HTML_TYPE_EMAIL", viewTypes.get(1).mComputedType);
+        assertEquals("HTML_TYPE_EMAIL", viewTypes.get(1).mOverallType);
         assertArrayEquals(new String[] {"EMAIL_ADDRESS"}, viewTypes.get(1).getServerPredictions());
     }
 
@@ -2963,8 +2961,7 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals(
                 "UNKNOWN_TYPE",
                 viewStructure.getChild(0).getHtmlInfo().getAttribute("computed-autofill-hints"));
-        assertEquals(
-                "NO_SERVER_DATA",
+        assertNull(
                 viewStructure
                         .getChild(0)
                         .getHtmlInfo()
@@ -2978,8 +2975,7 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals(
                 "HTML_TYPE_EMAIL",
                 viewStructure.getChild(1).getHtmlInfo().getAttribute("computed-autofill-hints"));
-        assertEquals(
-                "NO_SERVER_DATA",
+        assertNull(
                 viewStructure
                         .getChild(1)
                         .getHtmlInfo()
@@ -3006,11 +3002,11 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals(2, viewTypes.size());
         assertEquals(viewStructure.getChild(0).getAutofillId(), viewTypes.get(0).mAutofillId);
         assertEquals("USERNAME", viewTypes.get(0).mServerType);
-        assertEquals("USERNAME", viewTypes.get(0).mComputedType);
+        assertEquals("USERNAME", viewTypes.get(0).mOverallType);
         assertArrayEquals(new String[] {"USERNAME"}, viewTypes.get(0).getServerPredictions());
         assertEquals(viewStructure.getChild(1).getAutofillId(), viewTypes.get(1).mAutofillId);
         assertEquals("EMAIL_ADDRESS", viewTypes.get(1).mServerType);
-        assertEquals("HTML_TYPE_EMAIL", viewTypes.get(1).mComputedType);
+        assertEquals("HTML_TYPE_EMAIL", viewTypes.get(1).mOverallType);
         assertArrayEquals(new String[] {"EMAIL_ADDRESS"}, viewTypes.get(1).getServerPredictions());
     }
 
@@ -3051,8 +3047,7 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals(
                 "UNKNOWN_TYPE",
                 viewStructure.getChild(0).getHtmlInfo().getAttribute("computed-autofill-hints"));
-        assertEquals(
-                "NO_SERVER_DATA",
+        assertNull(
                 viewStructure
                         .getChild(0)
                         .getHtmlInfo()
@@ -3066,8 +3061,7 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals(
                 "HTML_TYPE_EMAIL",
                 viewStructure.getChild(1).getHtmlInfo().getAttribute("computed-autofill-hints"));
-        assertEquals(
-                "NO_SERVER_DATA",
+        assertNull(
                 viewStructure
                         .getChild(1)
                         .getHtmlInfo()
@@ -3097,13 +3091,13 @@ public class AwAutofillTest extends AwParameterizedTest {
         assertEquals(2, viewTypes.size());
         assertEquals(viewStructure.getChild(0).getAutofillId(), viewTypes.get(0).mAutofillId);
         assertEquals("USERNAME", viewTypes.get(0).mServerType);
-        assertEquals("USERNAME", viewTypes.get(0).mComputedType);
+        assertEquals("USERNAME", viewTypes.get(0).mOverallType);
         assertArrayEquals(
                 new String[] {"USERNAME", "EMAIL_ADDRESS"},
                 viewTypes.get(0).getServerPredictions());
         assertEquals(viewStructure.getChild(1).getAutofillId(), viewTypes.get(1).mAutofillId);
         assertEquals("EMAIL_ADDRESS", viewTypes.get(1).mServerType);
-        assertEquals("HTML_TYPE_EMAIL", viewTypes.get(1).mComputedType);
+        assertEquals("HTML_TYPE_EMAIL", viewTypes.get(1).mOverallType);
         assertArrayEquals(new String[] {"EMAIL_ADDRESS"}, viewTypes.get(1).getServerPredictions());
     }
 
@@ -3558,8 +3552,7 @@ public class AwAutofillTest extends AwParameterizedTest {
         final int maxCallsToWaitFor = 20;
         int numCallsToWaitFor = 0;
 
-        LinkedList<Integer> expectedEventsQueue =
-                new LinkedList<Integer>(Arrays.asList(expectedEvents));
+        Queue<Integer> expectedEventsQueue = new ArrayDeque<Integer>(Arrays.asList(expectedEvents));
 
         while (!expectedEventsQueue.isEmpty() && numCallsToWaitFor < maxCallsToWaitFor) {
             if (mEventQueue.isEmpty()) {

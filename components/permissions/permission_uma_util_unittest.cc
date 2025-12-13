@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -34,6 +35,7 @@
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "components/permissions/test/test_permissions_client.h"
+#include "components/safety_check/safety_check.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/render_frame_host.h"
@@ -202,14 +204,17 @@ TEST_F(PermissionUmaUtilTest, ScopedRevocationReporter) {
 
   // TODO(tsergeant): Add more comprehensive tests of PermissionUmaUtil.
   base::HistogramTester histograms;
-  HostContentSettingsMap* map =
-      PermissionsClient::Get()->GetSettingsMap(&browser_context);
+  auto* map = PermissionsClient::Get()->GetSettingsMap(&browser_context);
   GURL host("https://example.com");
   ContentSettingsPattern host_pattern =
       ContentSettingsPattern::FromURLNoWildcard(host);
   ContentSettingsPattern host_containing_wildcards_pattern =
       ContentSettingsPattern::FromString("https://[*.]example.com/");
-  ContentSettingsType type = ContentSettingsType::GEOLOCATION;
+  ContentSettingsType type =
+      base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission)
+          ? ContentSettingsType::GEOLOCATION_WITH_OPTIONS
+          : ContentSettingsType::GEOLOCATION;
   PermissionSourceUI source_ui = PermissionSourceUI::SITE_SETTINGS;
 
   // Allow->Block triggers a revocation.
@@ -375,17 +380,19 @@ TEST_F(PermissionsDelegationUmaUtilTest, UsageAndPromptInTopLevelFrame) {
               testing::ElementsAre(base::Bucket(0, 1)));
 
   PermissionUmaUtil::PermissionPromptResolved(
-      manager_->Requests(), web_contents(), PermissionAction::GRANTED,
+      manager_->Requests(), browser_context(), PermissionAction::GRANTED,
       /*time_to_decision*/ base::TimeDelta(),
       PermissionPromptDisposition::NOT_APPLICABLE,
       /* ui_reason*/ std::nullopt,
       /*variants*/ {},
       /*predicted_grant_likelihood*/ std::nullopt,
       /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ false,
       /*did_click_managed*/ false,
-      /*did_click_learn_more*/ false);
+      /*did_click_learn_more*/ false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
   histograms.ExpectTotalCount(kGeolocationPermissionsPolicyActionHistogramName,
                               0);
 }
@@ -597,8 +604,7 @@ TEST_F(PermissionUmaUtilTest, RecordPermissionRegrantForUnusedSites) {
   base::Time past(now - base::Days(5));
   content_settings::ContentSettingConstraints constraint(past);
   constraint.set_lifetime(
-      content_settings::features::
-          kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get());
+      safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold());
   hcsm->SetWebsiteSettingDefaultScope(
       origin, origin, ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
       base::Value(dict.Clone()), constraint);
@@ -714,16 +720,18 @@ TEST_F(PermissionsDelegationUmaUtilTest, SiteLevelAndOSPromptVariantsTest) {
              CreateRequest(RequestType::kCameraStream, kTopLevelUrl));
 
   PermissionUmaUtil::PermissionPromptResolved(
-      {manager_->Requests()}, web_contents(), PermissionAction::GRANTED,
+      {manager_->Requests()}, browser_context(), PermissionAction::GRANTED,
       /*time_to_decision*/ base::TimeDelta(),
       PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE,
       /* ui_reason*/ std::nullopt, variants,
       /*predicted_grant_likelihood*/ std::nullopt,
       /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ true,
       /*did_click_managed*/ false,
-      /*did_click_learn_more*/ false);
+      /*did_click_learn_more*/ false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
 
   const auto entries = ukm_recorder.GetEntriesByName("Permission");
   ASSERT_EQ(1u, entries.size());
@@ -737,6 +745,36 @@ TEST_F(PermissionsDelegationUmaUtilTest, SiteLevelAndOSPromptVariantsTest) {
       *ukm_recorder.GetEntryMetric(entry, "OsSystemSettingsScreen"),
       static_cast<int64_t>(ElementAnchoredBubbleVariant::kOsSystemSettings));
 #endif
+}
+
+TEST_F(PermissionsDelegationUmaUtilTest, PermissionAiRelevanceModelUkmTest) {
+  ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  auto* main_frame = primary_main_frame();
+  AddRequest(main_frame,
+             CreateRequest(RequestType::kCameraStream, kTopLevelUrl));
+  const std::optional<permissions::PermissionAiRelevanceModel>
+      test_relvance_model = permissions::PermissionAiRelevanceModel::kAIv4;
+
+  PermissionUmaUtil::PermissionPromptResolved(
+      manager_->Requests(), browser_context(), PermissionAction::GRANTED,
+      /*time_to_decision*/ base::TimeDelta(),
+      PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE,
+      /* ui_reason*/ std::nullopt, /*variants*/ {},
+      /*predicted_grant_likelihood*/ std::nullopt,
+      /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ test_relvance_model,
+      /*prediction_decision_held_back*/ std::nullopt,
+      /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ true,
+      /*did_click_managed*/ false,
+      /*did_click_learn_more*/ false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
+
+  const auto entries = ukm_recorder.GetEntriesByName("Permission");
+  ASSERT_EQ(1u, entries.size());
+  const auto* entry = entries.back().get();
+  EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "PermissionAiRelevanceModel"),
+            static_cast<int64_t>(test_relvance_model.value()));
 }
 
 TEST_F(PermissionsDelegationUmaUtilTest, SameOriginFrame) {
@@ -760,17 +798,19 @@ TEST_F(PermissionsDelegationUmaUtilTest, SameOriginFrame) {
   histograms.ExpectTotalCount(kGeolocationPermissionsPolicyUsageHistogramName,
                               0);
   PermissionUmaUtil::PermissionPromptResolved(
-      manager_->Requests(), web_contents(), PermissionAction::GRANTED,
+      manager_->Requests(), browser_context(), PermissionAction::GRANTED,
       /*time_to_decision*/ base::TimeDelta(),
       PermissionPromptDisposition::NOT_APPLICABLE,
       /* ui_reason*/ std::nullopt,
       /*variants*/ {},
       /*predicted_grant_likelihood*/ std::nullopt,
       /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ false,
       /*did_click_managed*/ false,
-      /*did_click_learn_more*/ false);
+      /*did_click_learn_more*/ false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
   histograms.ExpectTotalCount(kGeolocationPermissionsPolicyActionHistogramName,
                               0);
 }
@@ -928,17 +968,19 @@ TEST_P(CrossFramePermissionsDelegationUmaUtilTest, CrossOriginFrame) {
                            kCrossOriginFrameUrl2));
 
   PermissionUmaUtil::PermissionPromptResolved(
-      manager_->Requests(), web_contents(), GetParam().action,
+      manager_->Requests(), browser_context(), GetParam().action,
       /*time_to_decision*/ base::TimeDelta(),
       PermissionPromptDisposition::NOT_APPLICABLE,
       /* ui_reason*/ std::nullopt,
       /*variants*/ {},
       /*predicted_grant_likelihood*/ std::nullopt,
       /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
       /*prediction_decision_held_back*/ std::nullopt,
       /*ignored_reason*/ std::nullopt, /*did_show_prompt*/ false,
       /*did_click_managed*/ false,
-      /*did_click_learn_more*/ false);
+      /*did_click_learn_more*/ false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
   if (feature.has_value()) {
     EXPECT_THAT(
         histograms.GetAllSamples(kPermissionsPolicyActionHistogramName),
@@ -1014,7 +1056,7 @@ class UkmRecorderPermissionUmaUtilTest
 
     void GetUkmSourceId(ContentSettingsType permission_type,
                         content::BrowserContext* browser_context,
-                        content::WebContents* web_contents,
+                        content::RenderFrameHost* render_frame_host,
                         const GURL& requesting_origin,
                         GetUkmSourceIdCallback callback) override {
       // Short circuit and return a null SourceId.
@@ -1087,14 +1129,13 @@ TEST_F(UkmRecorderPermissionUmaUtilTest,
 TEST_F(UkmRecorderPermissionUmaUtilTest,
        NotificationUsageHistogramDidRecordUkmTest) {
   base::HistogramTester histograms;
-  content::TestBrowserContext browser_context;
   ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   permissions_client_.SetSimulatedHasSourceId(true);
-  PermissionUmaUtil::RecordPermissionUsage(ContentSettingsType::NOTIFICATIONS,
-                                           &browser_context, web_contents(),
-                                           GURL(kTopLevelUrl));
+  PermissionUmaUtil::RecordPermissionUsage(
+      ContentSettingsType::NOTIFICATIONS, browser_context(),
+      web_contents()->GetPrimaryMainFrame(), GURL(kTopLevelUrl));
 
   histograms.ExpectBucketCount("Permissions.Usage.Notifications.DidRecordUkm",
                                1, 1);
@@ -1109,19 +1150,236 @@ TEST_F(UkmRecorderPermissionUmaUtilTest,
 TEST_F(UkmRecorderPermissionUmaUtilTest,
        NotificationUsageHistogramDroppedUkmTest) {
   base::HistogramTester histograms;
-  content::TestBrowserContext browser_context;
 
   ukm::InitializeSourceUrlRecorderForWebContents(web_contents());
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   permissions_client_.SetSimulatedHasSourceId(false);
-  PermissionUmaUtil::RecordPermissionUsage(ContentSettingsType::NOTIFICATIONS,
-                                           &browser_context, web_contents(),
-                                           GURL(kTopLevelUrl));
+  PermissionUmaUtil::RecordPermissionUsage(
+      ContentSettingsType::NOTIFICATIONS, browser_context(),
+      web_contents()->GetPrimaryMainFrame(), GURL(kTopLevelUrl));
 
   histograms.ExpectBucketCount("Permissions.Usage.Notifications.DidRecordUkm",
                                0, 1);
   const auto entries = ukm_recorder.GetEntriesByName("PermissionUsage");
   ASSERT_EQ(0u, entries.size());
+}
+
+TEST_F(PermissionsDelegationUmaUtilTest,
+       PredictionServiceAction_Notifications_Gesture_Loud) {
+  base::HistogramTester histogram_tester_;
+  std::vector<std::unique_ptr<PermissionRequest>> requests;
+  requests.push_back(std::make_unique<MockPermissionRequest>(
+      RequestType::kNotifications, PermissionRequestGestureType::GESTURE));
+
+  PermissionUmaUtil::PermissionPromptResolved(
+      requests, browser_context(), PermissionAction::GRANTED, base::TimeDelta(),
+      PermissionPromptDisposition::ANCHORED_BUBBLE,
+      /*ui_reason=*/std::nullopt,
+      /*variants=*/{},
+      /*predicted_grant_likelihood=*/std::nullopt,
+      /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
+      /*prediction_decision_held_back=*/std::nullopt,
+      /*ignored_reason*/ std::nullopt,
+      /*did_show_prompt=*/false,
+      /*did_click_manage=*/false,
+      /*did_click_learn_more=*/false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Permissions.PredictionService.Action.Notifications.Gesture.Loud",
+      PermissionAction::GRANTED, 1);
+}
+
+TEST_F(PermissionsDelegationUmaUtilTest,
+       PredictionServiceAction_Notifications_NoGesture_Loud) {
+  base::HistogramTester histogram_tester_;
+  std::vector<std::unique_ptr<PermissionRequest>> requests;
+  requests.push_back(std::make_unique<MockPermissionRequest>(
+      RequestType::kNotifications, PermissionRequestGestureType::NO_GESTURE));
+
+  PermissionUmaUtil::PermissionPromptResolved(
+      requests, browser_context(), PermissionAction::DENIED, base::TimeDelta(),
+      PermissionPromptDisposition::ANCHORED_BUBBLE,
+      /*ui_reason=*/std::nullopt,
+      /*variants=*/{},
+      /*predicted_grant_likelihood=*/std::nullopt,
+      /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
+      /*prediction_decision_held_back=*/std::nullopt,
+      /*ignored_reason*/ std::nullopt,
+      /*did_show_prompt=*/false,
+      /*did_click_manage=*/false,
+      /*did_click_learn_more=*/false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Permissions.PredictionService.Action.Notifications.NoGesture.Loud",
+      PermissionAction::DENIED, 1);
+}
+
+TEST_F(PermissionsDelegationUmaUtilTest,
+       PredictionServiceAction_Notifications_Gesture_Quiet) {
+  base::HistogramTester histogram_tester_;
+  std::vector<std::unique_ptr<PermissionRequest>> requests;
+  requests.push_back(std::make_unique<MockPermissionRequest>(
+      RequestType::kNotifications, PermissionRequestGestureType::GESTURE));
+
+  PermissionUmaUtil::PermissionPromptResolved(
+      requests, browser_context(), PermissionAction::DISMISSED,
+      base::TimeDelta(),
+      PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP,
+      /*ui_reason=*/std::nullopt,
+      /*variants=*/{},
+      /*predicted_grant_likelihood=*/std::nullopt,
+      /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
+      /*prediction_decision_held_back=*/std::nullopt,
+      /*ignored_reason*/ std::nullopt,
+      /*did_show_prompt=*/false,
+      /*did_click_manage=*/false,
+      /*did_click_learn_more=*/false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Permissions.PredictionService.Action.Notifications.Gesture.Quiet",
+      PermissionAction::DISMISSED, 1);
+}
+
+TEST_F(PermissionsDelegationUmaUtilTest,
+       PredictionServiceAction_Notifications_NoGesture_Quiet) {
+  base::HistogramTester histogram_tester_;
+  std::vector<std::unique_ptr<PermissionRequest>> requests;
+  requests.push_back(std::make_unique<MockPermissionRequest>(
+      RequestType::kNotifications, PermissionRequestGestureType::NO_GESTURE));
+
+  PermissionUmaUtil::PermissionPromptResolved(
+      requests, browser_context(), PermissionAction::IGNORED, base::TimeDelta(),
+      PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP,
+      /*ui_reason=*/std::nullopt,
+      /*variants=*/{},
+      /*predicted_grant_likelihood=*/std::nullopt,
+      /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
+      /*prediction_decision_held_back=*/std::nullopt,
+      /*ignored_reason*/ std::nullopt,
+      /*did_show_prompt=*/false,
+      /*did_click_manage=*/false,
+      /*did_click_learn_more=*/false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Permissions.PredictionService.Action.Notifications.NoGesture.Quiet",
+      PermissionAction::IGNORED, 1);
+}
+
+TEST_F(PermissionsDelegationUmaUtilTest,
+       PredictionServiceAction_Geolocation_Gesture_Loud) {
+  base::HistogramTester histogram_tester_;
+  std::vector<std::unique_ptr<PermissionRequest>> requests;
+  requests.push_back(std::make_unique<MockPermissionRequest>(
+      RequestType::kGeolocation, PermissionRequestGestureType::GESTURE));
+
+  PermissionUmaUtil::PermissionPromptResolved(
+      requests, browser_context(), PermissionAction::GRANTED_ONCE,
+      base::TimeDelta(), PermissionPromptDisposition::ANCHORED_BUBBLE,
+      /*ui_reason=*/std::nullopt,
+      /*variants=*/{},
+      /*predicted_grant_likelihood=*/std::nullopt,
+      /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
+      /*prediction_decision_held_back=*/std::nullopt,
+      /*ignored_reason*/ std::nullopt,
+      /*did_show_prompt=*/false,
+      /*did_click_manage=*/false,
+      /*did_click_learn_more=*/false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Permissions.PredictionService.Action.Geolocation.Gesture.Loud",
+      PermissionAction::GRANTED_ONCE, 1);
+}
+
+TEST_F(PermissionsDelegationUmaUtilTest,
+       PredictionServiceAction_Geolocation_NoGesture_Loud) {
+  base::HistogramTester histogram_tester_;
+  std::vector<std::unique_ptr<PermissionRequest>> requests;
+  requests.push_back(std::make_unique<MockPermissionRequest>(
+      RequestType::kGeolocation, PermissionRequestGestureType::NO_GESTURE));
+
+  PermissionUmaUtil::PermissionPromptResolved(
+      requests, browser_context(), PermissionAction::GRANTED, base::TimeDelta(),
+      PermissionPromptDisposition::ANCHORED_BUBBLE,
+      /*ui_reason=*/std::nullopt,
+      /*variants=*/{},
+      /*predicted_grant_likelihood=*/std::nullopt,
+      /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
+      /*prediction_decision_held_back=*/std::nullopt,
+      /*ignored_reason*/ std::nullopt,
+      /*did_show_prompt=*/false,
+      /*did_click_manage=*/false,
+      /*did_click_learn_more=*/false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Permissions.PredictionService.Action.Geolocation.NoGesture.Loud",
+      PermissionAction::GRANTED, 1);
+}
+
+TEST_F(PermissionsDelegationUmaUtilTest,
+       PredictionServiceAction_Geolocation_Gesture_Quiet) {
+  base::HistogramTester histogram_tester_;
+  std::vector<std::unique_ptr<PermissionRequest>> requests;
+  requests.push_back(std::make_unique<MockPermissionRequest>(
+      RequestType::kGeolocation, PermissionRequestGestureType::GESTURE));
+
+  PermissionUmaUtil::PermissionPromptResolved(
+      requests, browser_context(), PermissionAction::DENIED, base::TimeDelta(),
+      PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP,
+      /*ui_reason=*/std::nullopt,
+      /*variants=*/{},
+      /*predicted_grant_likelihood=*/std::nullopt,
+      /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
+      /*prediction_decision_held_back=*/std::nullopt,
+      /*ignored_reason*/ std::nullopt,
+      /*did_show_prompt=*/false,
+      /*did_click_manage=*/false,
+      /*did_click_learn_more=*/false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Permissions.PredictionService.Action.Geolocation.Gesture.Quiet",
+      PermissionAction::DENIED, 1);
+}
+
+TEST_F(PermissionsDelegationUmaUtilTest,
+       PredictionServiceAction_Geolocation_NoGesture_Quiet) {
+  base::HistogramTester histogram_tester_;
+  std::vector<std::unique_ptr<PermissionRequest>> requests;
+  requests.push_back(std::make_unique<MockPermissionRequest>(
+      RequestType::kGeolocation, PermissionRequestGestureType::NO_GESTURE));
+
+  PermissionUmaUtil::PermissionPromptResolved(
+      requests, browser_context(), PermissionAction::DISMISSED,
+      base::TimeDelta(),
+      PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP,
+      /*ui_reason=*/std::nullopt,
+      /*variants=*/{},
+      /*predicted_grant_likelihood=*/std::nullopt,
+      /*permission_request_relevance*/ std::nullopt,
+      /*permission_ai_model_version*/ std::nullopt,
+      /*prediction_decision_held_back=*/std::nullopt,
+      /*ignored_reason*/ std::nullopt,
+      /*did_show_prompt=*/false,
+      /*did_click_manage=*/false,
+      /*did_click_learn_more=*/false,
+      /*initial_geolocation_accuracy_selection=*/std::nullopt);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Permissions.PredictionService.Action.Geolocation.NoGesture.Quiet",
+      PermissionAction::DISMISSED, 1);
 }
 }  // namespace permissions

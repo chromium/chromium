@@ -19,3 +19,5 @@ olivierli@chromium.org
 bzielinski@google.com
 # For BootTime.Login* histograms:
 junis@google.com
+# For BootTime.* histograms:
+uekawa@chromium.org

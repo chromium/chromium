@@ -1,0 +1,10 @@
+include_rules = [
+  "+base",
+  "+chromeos/constants",
+  "+chromeos/dbus/power",
+  "+components/prefs",
+  "+components/session_manager/core",
+  "+components/sync_device_info",
+  "+content/public/test",
+  "+testing",
+]

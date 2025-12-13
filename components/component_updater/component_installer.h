@@ -164,9 +164,6 @@ class ComponentInstaller final : public update_client::CrxInstaller {
       const base::Version& max_previous_product_version =
           base::Version(kNullVersion));
 
-  // Overrides from update_client::CrxInstaller.
-  void OnUpdateError(int error) override;
-
   void Install(const base::FilePath& unpack_path,
                const std::string& public_key,
                std::unique_ptr<InstallParams> install_params,

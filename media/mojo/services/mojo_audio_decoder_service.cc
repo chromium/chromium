@@ -11,6 +11,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "media/base/content_decryption_module.h"
@@ -33,7 +35,12 @@ MojoAudioDecoderService::MojoAudioDecoderService(
   weak_this_ = weak_factory_.GetWeakPtr();
 }
 
-MojoAudioDecoderService::~MojoAudioDecoderService() = default;
+MojoAudioDecoderService::~MojoAudioDecoderService() {
+  if (last_decode_status_) {
+    base::UmaHistogramEnumeration("Media.MojoAudioDecoder.LastDecodeStatus",
+                                  last_decode_status_->code());
+  }
+}
 
 void MojoAudioDecoderService::GetSupportedConfigs(
     GetSupportedConfigsCallback callback) {
@@ -133,7 +140,8 @@ void MojoAudioDecoderService::Reset(ResetCallback callback) {
 void MojoAudioDecoderService::OnInitialized(InitializeCallback callback,
                                             DecoderStatus status) {
   DVLOG(1) << __func__ << " success:" << status.is_ok();
-
+  base::UmaHistogramEnumeration("Media.MojoAudioDecoder.Initialized",
+                                status.code());
   if (!status.is_ok()) {
     // Do not call decoder_->NeedsBitstreamConversion() if init failed.
     std::move(callback).Run(
@@ -181,8 +189,8 @@ void MojoAudioDecoderService::OnReaderFlushDone(ResetCallback callback) {
 
 void MojoAudioDecoderService::OnDecodeStatus(DecodeCallback callback,
                                              const DecoderStatus status) {
-  DVLOG(3) << __func__ << " status=" << status.group() << ":"
-           << static_cast<int>(status.code());
+  status.DebugLog(3);
+  last_decode_status_ = status;
   std::move(callback).Run(std::move(status));
 }
 

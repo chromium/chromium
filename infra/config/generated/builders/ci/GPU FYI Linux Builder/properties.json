@@ -32,6 +32,93 @@
           {
             "builder_id": {
               "bucket": "ci",
+              "builder": "Linux FYI Experimental Release (AMD 780M)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "linux"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Linux Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Linux FYI Experimental Release (AMD 890M)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "linux"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Linux Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Linux FYI Experimental Release (Intel Arc 140V)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "linux"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Linux Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
               "builder": "Linux FYI Experimental Release (Intel UHD 630)",
               "project": "chromium"
             },
@@ -206,6 +293,35 @@
           {
             "builder_id": {
               "bucket": "ci",
+              "builder": "Linux FYI Release (NVIDIA RTX 4070 Super)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "linux"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Linux Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
               "builder": "Linux FYI Release (NVIDIA)",
               "project": "chromium"
             },
@@ -244,6 +360,21 @@
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
+          "builder": "Linux FYI Experimental Release (AMD 780M)",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
+          "builder": "Linux FYI Experimental Release (AMD 890M)",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
+          "builder": "Linux FYI Experimental Release (Intel Arc 140V)",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
           "builder": "Linux FYI Experimental Release (Intel UHD 630)",
           "project": "chromium"
         },
@@ -274,17 +405,34 @@
         },
         {
           "bucket": "ci",
+          "builder": "Linux FYI Release (NVIDIA RTX 4070 Super)",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
           "builder": "Linux FYI Release (NVIDIA)",
           "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
+          "builder": "gpu-fyi-try-linux-amd-780m-exp",
+          "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "gpu-fyi-try-linux-amd-890m-exp",
+          "group": "tryserver.chromium.linux"
+        },
+        {
           "builder": "gpu-fyi-try-linux-amd-rel",
           "group": "tryserver.chromium.linux"
         },
         {
           "builder": "gpu-fyi-try-linux-amd-rx-7600-rel",
+          "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "gpu-fyi-try-linux-intel-arc-140v-exp",
           "group": "tryserver.chromium.linux"
         },
         {
@@ -306,9 +454,14 @@
         {
           "builder": "gpu-fyi-try-linux-nvidia-rel",
           "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "gpu-fyi-try-linux-nvidia-rtx-4070-super-rel",
+          "group": "tryserver.chromium.linux"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU FYI Linux Builder/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/GPU FYI Linux Builder/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

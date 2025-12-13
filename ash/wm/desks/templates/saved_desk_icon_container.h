@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace ui {

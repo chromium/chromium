@@ -58,9 +58,10 @@ class CaptionControllerDelgateImpl : public CaptionControllerBase::Delegate {
 }  // namespace
 
 CaptionControllerBase::~CaptionControllerBase() {
-  // The caption bubble controller, if we have one, will be cleaned up as part
-  // of destruction.  Don't leave the raw ptr alias to it dangling.
-  caption_bubble_controller_ = nullptr;
+  // Both tests and production code may create the UI without destroying it
+  // before reaching here. Ensure observers are deregistered properly. This is a
+  // no-op if `!is_ui_constructed_`.
+  DestroyUI();
 }
 
 CaptionControllerBase::CaptionControllerBase(
@@ -163,6 +164,9 @@ void CaptionControllerBase::OnCaptionStyleUpdated() {
 
 void CaptionControllerBase::AddListener(std::unique_ptr<Listener> listener) {
   listeners_.push_back(std::move(listener));
+  if (listeners_.size() == 1) {
+    OnFirstListenerAdded();
+  }
 }
 
 void CaptionControllerBase::RemoveListener(Listener* listener) {
@@ -176,6 +180,10 @@ void CaptionControllerBase::RemoveListener(Listener* listener) {
     }
 
     listeners_.erase(iter);
+
+    if (listeners_.empty()) {
+      OnLastListenerRemoved();
+    }
     return;
   }
   NOTREACHED();

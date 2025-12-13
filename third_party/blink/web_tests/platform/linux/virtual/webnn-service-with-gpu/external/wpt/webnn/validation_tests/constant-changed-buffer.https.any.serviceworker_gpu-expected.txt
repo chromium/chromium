@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Constant data is unaffected by detaching the buffer
+  assert_array_equals: expected property 1 to be 10 but got 9 (expected array object "7,10" got object "7,9")
+[FAIL] Constant data is unaffected by changes to the buffer contents
+  assert_array_equals: expected property 1 to be 10 but got 9 (expected array object "7,10" got object "7,9")
+Harness: the test ran to completion.
+

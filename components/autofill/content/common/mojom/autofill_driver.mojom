@@ -81,8 +81,10 @@ interface AutofillDriver {
   SelectControlSelectionChanged(FormData form,
                                 FieldRendererId field_id);
 
-  // Notification that a select element's options were modified.
-  SelectFieldOptionsDidChange(FormData form);
+  // Notification that a select element's options were modified. `field_id` is
+  // the renderer ID of the select field that belongs to `form` and whose
+  // option values did change.
+  SelectFieldOptionsDidChange(FormData form, FieldRendererId field_id);
 
   // `FocusOnFormField()` xor `FocusOnNonFormField()` is fired when the focused
   // element changes (https://html.spec.whatwg.org/#focused):
@@ -118,7 +120,20 @@ interface AutofillDriver {
   HidePopup();
 
   // Sent when a form is filled with Autofill suggestions.
-  DidFillAutofillFormData(FormData form, mojo_base.mojom.TimeTicks timestamp);
+  DidAutofillForm(FormData form);
+
+  // Instructs the browser to not trigger an automatic refill of the operation
+  // `fill_id`. Automatic refills may otherwise happen, for example, when a
+  // field is dynamically added to a form.
+  //
+  // A renderer may send this message when a JavaScript observes the `autofill`
+  // event and may therefore programmatically trigger a refill.
+  SuppressAutomaticRefills(FillId fill_id);
+
+  // Requests a refill of the initial fill `fill_id`. The browser process may
+  // either ignore this request or respond with a
+  // mojom::AutofillAgent::ApplyFieldsAction() message with the same `fill_id`.
+  RequestRefill(FillId fill_id);
 
   // Sent when a field was in autofilled state but JavaScript modified the
   // value.

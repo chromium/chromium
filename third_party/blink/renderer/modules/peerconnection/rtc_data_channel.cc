@@ -67,13 +67,6 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<webrtc::scoped_refptr<webrtc::DataChannelInterface>>
-    : public CrossThreadCopierPassThrough<
-          webrtc::scoped_refptr<webrtc::DataChannelInterface>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 namespace {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -301,8 +294,8 @@ RTCDataChannel::RTCDataChannel(
     // to be transferred. See:
     // https://w3c.github.io/webrtc-extensions/#rtcdatachannel-transferable
     context->GetTaskRunner(TaskType::kNetworking)
-        ->PostTask(FROM_HERE, WTF::BindOnce(&RTCDataChannel::RegisterObserver,
-                                            WrapWeakPersistent(this)));
+        ->PostTask(FROM_HERE, BindOnce(&RTCDataChannel::RegisterObserver,
+                                       WrapWeakPersistent(this)));
   } else {
     RegisterObserver();
   }

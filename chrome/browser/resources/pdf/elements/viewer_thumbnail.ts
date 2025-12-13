@@ -78,7 +78,13 @@ export class ViewerThumbnailElement extends CrLitElement {
     }
 
     if (changedProperties.has('isActive') && this.isActive) {
-      this.scrollIntoView({block: 'nearest'});
+      const scrollIntoViewOptions: ScrollIntoViewOptions = {
+        block: 'nearest',
+      };
+      if (document.documentElement.hasAttribute('pdfOopifEnabled')) {
+        scrollIntoViewOptions.container = 'nearest';
+      }
+      this.scrollIntoView(scrollIntoViewOptions);
     }
   }
 
@@ -172,7 +178,8 @@ export class ViewerThumbnailElement extends CrLitElement {
   private getThumbnailCssSize_(rotated: boolean):
       {width: number, height: number} {
     const canvas = this.getCanvas_()!;
-    const isPortrait = canvas.width < canvas.height !== rotated;
+    const isPortrait = (canvas.width !== canvas.height) &&
+        (canvas.width < canvas.height !== rotated);
     const orientedWidth = rotated ? canvas.height : canvas.width;
     const orientedHeight = rotated ? canvas.width : canvas.height;
 

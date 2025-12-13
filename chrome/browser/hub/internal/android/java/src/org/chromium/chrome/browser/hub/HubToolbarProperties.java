@@ -40,9 +40,21 @@ class HubToolbarProperties {
     public static final WritableObjectPropertyKey<Runnable> SEARCH_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableBooleanPropertyKey BACK_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    public static final WritableBooleanPropertyKey BACK_BUTTON_ENABLED =
+            new WritableBooleanPropertyKey();
+
+    public static final WritableObjectPropertyKey<Runnable> BACK_BUTTON_LISTENER =
+            new WritableObjectPropertyKey<>();
+
     public static final WritableBooleanPropertyKey IS_INCOGNITO = new WritableBooleanPropertyKey();
 
     public static final WritableBooleanPropertyKey APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION =
+            new WritableBooleanPropertyKey();
+
+    public static final WritableBooleanPropertyKey HAIRLINE_VISIBILITY =
             new WritableBooleanPropertyKey();
 
     @FunctionalInterface
@@ -62,8 +74,12 @@ class HubToolbarProperties {
         SEARCH_BOX_VISIBLE,
         SEARCH_LOUPE_VISIBLE,
         SEARCH_LISTENER,
+        BACK_BUTTON_VISIBLE,
+        BACK_BUTTON_ENABLED,
+        BACK_BUTTON_LISTENER,
         IS_INCOGNITO,
         APPLY_DELAY_FOR_SEARCH_BOX_ANIMATION,
         HUB_SEARCH_ENABLED_STATE,
+        HAIRLINE_VISIBILITY,
     };
 }

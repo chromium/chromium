@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/payments/content/payment_app.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace payments {
@@ -26,6 +27,15 @@ class SecurePaymentConfirmationModel {
       delete;
   SecurePaymentConfirmationModel& operator=(
       const SecurePaymentConfirmationModel& other) = delete;
+
+  // Header logos.
+  const std::vector<PaymentApp::PaymentEntityLogo*> header_logos() const {
+    return header_logos_;
+  }
+  void set_header_logos(
+      const std::vector<PaymentApp::PaymentEntityLogo*> header_logos) {
+    header_logos_ = header_logos;
+  }
 
   // Title, e.g. "Use TouchID to verify and complete your purchase?"
   const std::u16string& title() const { return title_; }
@@ -60,10 +70,19 @@ class SecurePaymentConfirmationModel {
     instrument_label_ = instrument_label;
   }
 
-  // Label for the instrument row value, e.g. "****4444"
+  // Label for the instrument row value, e.g. "Chase Card"
   const std::u16string& instrument_value() const { return instrument_value_; }
   void set_instrument_value(const std::u16string& instrument_value) {
     instrument_value_ = instrument_value;
+  }
+
+  // Sub-label for the instrument row value, e.g. "****4444"
+  const std::u16string& instrument_details_value() const {
+    return instrument_details_value_;
+  }
+  void set_instrument_details_value(
+      const std::u16string& instrument_details_value) {
+    instrument_details_value_ = instrument_details_value;
   }
 
   // Instrument icon.
@@ -145,10 +164,6 @@ class SecurePaymentConfirmationModel {
   void set_opt_out_link_label(const std::u16string& opt_out_link_label) {
     opt_out_link_label_ = opt_out_link_label;
   }
-  bool opt_out_clicked() const { return opt_out_clicked_; }
-  void set_opt_out_clicked(const bool opt_out_clicked) {
-    opt_out_clicked_ = opt_out_clicked;
-  }
 
   // Relying Party id (origin); used in the opt out dialog.
   const std::u16string& relying_party_id() const { return relying_party_id_; }
@@ -159,6 +174,8 @@ class SecurePaymentConfirmationModel {
   base::WeakPtr<SecurePaymentConfirmationModel> GetWeakPtr();
 
  private:
+  std::vector<PaymentApp::PaymentEntityLogo*> header_logos_;
+
   std::u16string title_;
   std::u16string description_;
 
@@ -168,6 +185,7 @@ class SecurePaymentConfirmationModel {
 
   std::u16string instrument_label_;
   std::u16string instrument_value_;
+  std::u16string instrument_details_value_;
   raw_ptr<const SkBitmap> instrument_icon_ = nullptr;
 
   std::u16string total_label_;
@@ -187,7 +205,6 @@ class SecurePaymentConfirmationModel {
   bool opt_out_visible_ = false;
   std::u16string opt_out_label_;
   std::u16string opt_out_link_label_;
-  bool opt_out_clicked_ = false;
 
   std::u16string relying_party_id_;
 

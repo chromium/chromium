@@ -17,6 +17,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/lru_cache.h"
 #include "base/containers/span_reader.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -251,6 +252,10 @@ class NET_EXPORT_PRIVATE SSLClientSocketImpl
   bool was_ever_used_ = false;
 
   const raw_ptr<SSLClientContext> context_;
+
+  // Stores the value of SSLClientSessionCache's generation number at the time
+  // this socket was initialized.
+  uint64_t initial_session_cache_generation_number_ = 0;
 
   std::unique_ptr<CertVerifier::Request> cert_verifier_request_;
 

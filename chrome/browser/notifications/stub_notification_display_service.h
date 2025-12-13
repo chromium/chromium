@@ -40,7 +40,8 @@ class StubNotificationDisplayService : public NotificationDisplayServiceImpl {
       const std::string& notification_id,
       const std::optional<int>& action_index,
       const std::optional<std::u16string>& reply,
-      const std::optional<bool>& by_user)>
+      const std::optional<bool>& by_user,
+      const std::optional<bool>& is_suspicious)>
       ProcessNotificationOperationCallback;
 
   explicit StubNotificationDisplayService(Profile* profile);
@@ -112,6 +113,7 @@ class StubNotificationDisplayService : public NotificationDisplayServiceImpl {
                                     const std::optional<int>& action_index,
                                     const std::optional<std::u16string>& reply,
                                     const std::optional<bool>& by_user,
+                                    const std::optional<bool>& is_suspicious,
                                     base::OnceClosure on_complete_cb) override;
 
  private:

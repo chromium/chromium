@@ -9,8 +9,47 @@ import SwiftUI
   func doneWasTapped()
 }
 
+extension View {
+  func compatGlassButton() -> some View {
+    #if compiler(>=6.2)
+      if #available(iOS 26.0, *) {
+        return buttonStyle(.glass)
+      }
+    #endif
+    return self
+  }
+
+  func compatGlassProminentButton() -> some View {
+    #if compiler(>=6.2)
+      if #available(iOS 26.0, *) {
+        return buttonStyle(.glassProminent)
+      }
+    #endif
+    return self
+  }
+}
+
 /// View for showing the customization screen for overflow menu
 struct MenuCustomizationView: View {
+  // Compatibility helper to choose the button content between Liquid Glass button
+  // with icon and pre-Liquid Glass fallback content.
+  struct CompatGlassButtonContentView<FallbackContent: View>: View {
+    let imageName: String
+    @ViewBuilder var fallbackView: FallbackContent
+
+    var body: some View {
+      #if compiler(>=6.2)
+        if #available(iOS 26.0, *) {
+          return Image(systemName: imageName)
+            .font(.system(size: 22, weight: .regular))
+            .imageScale(.medium)
+        }
+      #endif
+      return fallbackView
+    }
+
+  }
+
   /// Leading padding for any views that require it.
   static let leadingPadding: CGFloat = 16
 
@@ -117,12 +156,17 @@ struct MenuCustomizationView: View {
       // the entire width, rather than centered between the two side buttons
       // (as they are different lengths).
       HStack {
-        Button(
-          L10nUtils.stringWithFixup(
-            messageId: IDS_IOS_OVERFLOW_MENU_CUSTOMIZE_MENU_CANCEL)
-        ) {
+        Button {
           eventHandler?.cancelWasTapped()
+        } label: {
+          CompatGlassButtonContentView(imageName: kXMarkSymbol) {
+            Text(
+              L10nUtils.stringWithFixup(
+                messageId: IDS_IOS_OVERFLOW_MENU_CUSTOMIZE_MENU_CANCEL)
+            )
+          }
         }
+        .compatGlassButton()
         .padding([.leading])
         Spacer()
       }
@@ -144,12 +188,15 @@ struct MenuCustomizationView: View {
         Button {
           eventHandler?.doneWasTapped()
         } label: {
-          Text(
-            L10nUtils.stringWithFixup(
-              messageId: IDS_IOS_OVERFLOW_MENU_CUSTOMIZE_MENU_DONE)
-          )
-          .bold()
+          CompatGlassButtonContentView(imageName: kCheckmarkSymbol) {
+            Text(
+              L10nUtils.stringWithFixup(
+                messageId: IDS_IOS_OVERFLOW_MENU_CUSTOMIZE_MENU_DONE)
+            )
+            .bold()
+          }
         }
+        .compatGlassProminentButton()
         .disabled(
           !destinationCustomizationModel.hasChanged && !actionCustomizationModel.hasChanged
         )

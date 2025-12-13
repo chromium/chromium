@@ -5,11 +5,72 @@
 #ifndef CHROME_BROWSER_UI_LENS_TEST_LENS_OVERLAY_QUERY_CONTROLLER_H_
 #define CHROME_BROWSER_UI_LENS_TEST_LENS_OVERLAY_QUERY_CONTROLLER_H_
 
-#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
+#include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
-#include "lens_overlay_query_controller.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace lens {
+
+// The commas used within the std::map type caus the C++ macros to fail.
+// This is a workaround to allow the map to be used in the mock method
+// signatures by defining the type outside of the mock method.
+using AdditionalQueryParamsMap = std::map<std::string, std::string>;
+
+class MockLensOverlayQueryController : public LensOverlayQueryController {
+ public:
+  explicit MockLensOverlayQueryController(
+      lens::LensOverlayGen204Controller* gen204_controller);
+  ~MockLensOverlayQueryController() override;
+
+  MOCK_METHOD(void,
+              StartQueryFlow,
+              (const SkBitmap&,
+               GURL,
+               std::optional<std::string>,
+               std::vector<lens::mojom::CenterRotatedBoxPtr>,
+               base::span<const lens::PageContent>,
+               lens::MimeType,
+               std::optional<uint32_t>,
+               float,
+               base::TimeTicks),
+              (override));
+
+  MOCK_METHOD(void,
+              SendRegionSearch,
+              (base::Time,
+               lens::mojom::CenterRotatedBoxPtr,
+               lens::LensOverlaySelectionType,
+               AdditionalQueryParamsMap,
+               std::optional<SkBitmap>),
+              (override));
+
+  MOCK_METHOD(void,
+              SendTextOnlyQuery,
+              (base::Time,
+               const std::string&,
+               lens::LensOverlaySelectionType,
+               AdditionalQueryParamsMap),
+              (override));
+
+  MOCK_METHOD(void,
+              SendContextualTextQuery,
+              (base::Time,
+               const std::string&,
+               lens::LensOverlaySelectionType,
+               AdditionalQueryParamsMap),
+              (override));
+
+  MOCK_METHOD(void,
+              SendMultimodalRequest,
+              (base::Time,
+               lens::mojom::CenterRotatedBoxPtr,
+               const std::string&,
+               lens::LensOverlaySelectionType,
+               AdditionalQueryParamsMap,
+               std::optional<SkBitmap>),
+              (override));
+};
 
 class FakeEndpointFetcher : public endpoint_fetcher::EndpointFetcher {
  public:
@@ -67,6 +128,18 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
       bool next_full_image_request_should_return_error) {
     next_full_image_request_should_return_error_ =
         next_full_image_request_should_return_error;
+  }
+
+  void set_next_page_content_objects_request_should_return_metadata_error(
+      bool next_page_content_objects_request_should_return_metadata_error) {
+    next_page_content_objects_request_should_return_metadata_error_ =
+        next_page_content_objects_request_should_return_metadata_error;
+  }
+
+  void set_next_page_content_objects_request_should_return_chunks_error(
+      bool next_page_content_objects_request_should_return_chunks_error) {
+    next_page_content_objects_request_should_return_chunks_error_ =
+        next_page_content_objects_request_should_return_chunks_error;
   }
 
   void set_disable_page_upload_response_callback(bool disable) {
@@ -308,6 +381,14 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
 
   // If true, the next full image request will return an error.
   bool next_full_image_request_should_return_error_ = false;
+
+  // If true, the next page content objects request will return a missing
+  // metadata error.
+  bool next_page_content_objects_request_should_return_metadata_error_ = false;
+
+  // If true, the next page content objects request will return a missing chunks
+  // error.
+  bool next_page_content_objects_request_should_return_chunks_error_ = false;
 
   // If true, the CreateEndpointFetcher will not automatically respond with a
   // complete upload to the UploadProgressCallback.

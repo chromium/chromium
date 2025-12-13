@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/gtest_prod_util.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/ntp_tile.h"
 

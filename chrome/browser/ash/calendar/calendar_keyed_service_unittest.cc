@@ -12,10 +12,13 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/calendar/calendar_keyed_service_factory.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
 #include "components/account_id/account_id.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "google_apis/calendar/calendar_api_requests.h"
@@ -39,6 +42,15 @@ constexpr char kTestGroupCalendarId[] =
     "oz2iwbysdg20tn8zdjvtqnkj12test@group.calendar.google.com";
 constexpr char kTestGroupCalendarColorId[] = "3";
 constexpr char kTestUserAgent[] = "test-user-agent";
+
+std::unique_ptr<CalendarKeyedService> BuildService(Profile* profile) {
+  return std::make_unique<CalendarKeyedService>(
+      AccountId::FromUserEmail("test@email.com"), profile->GetPrefs(),
+      apps::AppServiceProxyFactory::GetForProfile(profile),
+      AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
+      IdentityManagerFactory::GetForProfile(profile),
+      profile->GetURLLoaderFactory());
+}
 
 }  // namespace
 
@@ -216,8 +228,8 @@ TEST_F(CalendarKeyedServiceTest, SecondaryUserProfile) {
 TEST_F(CalendarKeyedServiceIOTest, GetCalendarList) {
   // Creating the service with a test profile and account ID.
   std::unique_ptr<TestingProfile> profile = std::make_unique<TestingProfile>();
-  auto calendar_service = std::make_unique<CalendarKeyedService>(
-      profile.get(), AccountId::FromUserEmail("test@email.com"));
+  std::unique_ptr<CalendarKeyedService> calendar_service =
+      BuildService(profile.get());
 
   calendar_service->set_sender_for_testing(std::move(request_sender_));
   calendar_service->SetUrlForTesting(test_server_.base_url().spec());
@@ -255,8 +267,8 @@ TEST_F(CalendarKeyedServiceIOTest, GetEventListForDefaultCalendar) {
   // this test we are using the IO thread, the service can not be created from
   // the factory.
   std::unique_ptr<TestingProfile> profile = std::make_unique<TestingProfile>();
-  auto calendar_service = std::make_unique<CalendarKeyedService>(
-      profile.get(), AccountId::FromUserEmail("test@email.com"));
+  std::unique_ptr<CalendarKeyedService> calendar_service =
+      BuildService(profile.get());
 
   calendar_service->set_sender_for_testing(std::move(request_sender_));
   calendar_service->SetUrlForTesting(test_server_.base_url().spec());
@@ -293,8 +305,8 @@ TEST_F(CalendarKeyedServiceIOTest, GetEventListForDefaultCalendar) {
 TEST_F(CalendarKeyedServiceIOTest, GetEventListForNonDefaultCalendar) {
   // Creating the service with a test profile and account ID.
   std::unique_ptr<TestingProfile> profile = std::make_unique<TestingProfile>();
-  auto calendar_service = std::make_unique<CalendarKeyedService>(
-      profile.get(), AccountId::FromUserEmail("test@email.com"));
+  std::unique_ptr<CalendarKeyedService> calendar_service =
+      BuildService(profile.get());
 
   calendar_service->set_sender_for_testing(std::move(request_sender_));
   calendar_service->SetUrlForTesting(test_server_.base_url().spec());

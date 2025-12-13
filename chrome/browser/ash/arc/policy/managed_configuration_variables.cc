@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/arc/policy/managed_configuration_variables.h"
 
 #include <string>
@@ -14,9 +9,9 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -194,8 +189,8 @@ std::string SearchAndReplace(
     DCHECK(search_input.length() >= prefix_size + capture.length());
     size_t remaining_size =
         search_input.length() - (prefix_size + capture.length());
-    search_input =
-        std::string_view(capture.data() + capture.size(), remaining_size);
+    search_input = std::string_view(
+        UNSAFE_TODO(capture.data() + capture.size()), remaining_size);
   }
   // Output the remaining |search_input|.
   output.emplace_back(search_input);

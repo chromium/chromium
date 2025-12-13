@@ -1,0 +1,18 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "scene_coordinator.h",
+    "scene_coordinator.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/coordinator/root_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",
+  ]
+}

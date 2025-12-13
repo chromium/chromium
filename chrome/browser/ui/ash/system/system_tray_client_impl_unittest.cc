@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/ui/ash/new_window/chrome_new_window_client.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -53,6 +54,10 @@ class TestSettingsWindowManager : public chrome::SettingsWindowManager {
 class SystemTrayClientImplTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
+    // Use real instance of NewWindowDelegate to forward the event properly
+    // to SettingsWindowManager. Instantiate before
+    // BrowserWithTestWindowTest::SetUp() to inject.
+    chrome_new_window_client_ = std::make_unique<ChromeNewWindowClient>();
     BrowserWithTestWindowTest::SetUp();
     client_impl_ = std::make_unique<SystemTrayClientImpl>(
         CHECK_DEREF(TestingBrowserProcess::GetGlobal()
@@ -62,18 +67,16 @@ class SystemTrayClientImplTest : public BrowserWithTestWindowTest {
                         ->platform_part()
                         ->browser_policy_connector_ash()));
     settings_window_manager_ = std::make_unique<TestSettingsWindowManager>();
-
-    chrome::SettingsWindowManager::SetInstanceForTesting(
-        settings_window_manager_.get());
   }
   void TearDown() override {
-    chrome::SettingsWindowManager::SetInstanceForTesting(nullptr);
     settings_window_manager_.reset();
     client_impl_.reset();
     BrowserWithTestWindowTest::TearDown();
+    chrome_new_window_client_.reset();
   }
 
  protected:
+  std::unique_ptr<ChromeNewWindowClient> chrome_new_window_client_;
   std::unique_ptr<SystemTrayClientImpl> client_impl_;
   std::unique_ptr<TestSettingsWindowManager> settings_window_manager_;
 };

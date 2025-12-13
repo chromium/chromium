@@ -12,7 +12,10 @@ static_library("boot_phase_monitor") {
     "arc_boot_phase_monitor_bridge.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/sessions",
+  ]
 
   deps = [
     "//base",

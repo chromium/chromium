@@ -4,6 +4,8 @@
 
 package org.chromium.components.paintpreview.player.frame;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
@@ -113,11 +115,8 @@ public class PlayerFrameMediatorTest {
 
         @Override
         public boolean equals(Object o) {
-            if (o == null) return false;
-
             if (o == this) return true;
-
-            if (o.getClass() != this.getClass()) return false;
+            if (!(o instanceof RequestedBitmap)) return false;
 
             RequestedBitmap rb = (RequestedBitmap) o;
             return rb.mClipRect.equals(mClipRect)
@@ -149,11 +148,10 @@ public class PlayerFrameMediatorTest {
 
         @Override
         public boolean equals(Object o) {
-            if (o == null) return false;
 
             if (o == this) return true;
 
-            if (o.getClass() != this.getClass()) return false;
+            if (!(o instanceof ClickedPoint)) return false;
 
             ClickedPoint cp = (ClickedPoint) o;
             return cp.mFrameGuid.equals(mFrameGuid) && cp.mX == mX && cp.mY == mY;
@@ -302,7 +300,7 @@ public class PlayerFrameMediatorTest {
     private static void assertViewportStateIs(Matrix matrix, PlayerFrameViewport viewport) {
         float[] matrixValues = new float[9];
         matrix.getValues(matrixValues);
-        assert matrixValues[Matrix.MSCALE_X] == matrixValues[Matrix.MSCALE_Y];
+        assertThat(matrixValues[Matrix.MSCALE_X]).isEqualTo(matrixValues[Matrix.MSCALE_Y]);
         assertViewportStateIs(
                 matrixValues[Matrix.MSCALE_X],
                 matrixValues[Matrix.MTRANS_X],
@@ -592,7 +590,6 @@ public class PlayerFrameMediatorTest {
         Bitmap bitmap00 = Mockito.mock(Bitmap.class);
         Bitmap bitmap10 = Mockito.mock(Bitmap.class);
         Bitmap bitmap20 = Mockito.mock(Bitmap.class);
-        Bitmap bitmap30 = Mockito.mock(Bitmap.class);
         Bitmap bitmap01 = Mockito.mock(Bitmap.class);
         Bitmap bitmap11 = Mockito.mock(Bitmap.class);
         Bitmap bitmap21 = Mockito.mock(Bitmap.class);

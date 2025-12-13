@@ -68,22 +68,23 @@ class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
  public:
   struct EndIterator {};
 
-  class VirtualPropertyIterator {
+  class VirtualPropertyIterator
+      : public GarbageCollected<VirtualPropertyIterator> {
    public:
     virtual ~VirtualPropertyIterator() = default;
     virtual void Advance(const Keyframe* keyframe) = 0;
     virtual PropertyHandle Deref(const Keyframe* keyframe) const = 0;
     virtual bool AtEnd(const Keyframe* keyframe) const = 0;
+    virtual void Trace(Visitor* visitor) const {}
   };
 
   class CORE_EXPORT PropertyIteratorWrapper {
     STACK_ALLOCATED();
 
    public:
-    explicit PropertyIteratorWrapper(
-        const Keyframe* keyframe,
-        std::unique_ptr<VirtualPropertyIterator> impl)
-        : keyframe_(keyframe), impl_(std::move(impl)) {}
+    explicit PropertyIteratorWrapper(const Keyframe* keyframe,
+                                     VirtualPropertyIterator* impl)
+        : keyframe_(keyframe), impl_(impl) {}
 
     bool operator==(EndIterator other) const { return impl_->AtEnd(keyframe_); }
 
@@ -96,7 +97,7 @@ class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
 
    private:
     const Keyframe* keyframe_;
-    std::unique_ptr<VirtualPropertyIterator> impl_;
+    VirtualPropertyIterator* impl_;
   };
 
   class CORE_EXPORT IterableProperties
@@ -248,9 +249,13 @@ class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
     virtual PropertySpecificKeyframe* NeutralKeyframe(
         double offset,
         scoped_refptr<TimingFunction> easing) const = 0;
+    // Creates an interpolation between this keyframe and 'end'.
+    // 'final_keyframe' is the keyframe at offset 1.0; it may differ from 'end'
+    // in multi-keyframe animations and it is used for iteration accumulation.
     virtual Interpolation* CreateInterpolation(
         const PropertyHandle&,
-        const Keyframe::PropertySpecificKeyframe& end) const;
+        const Keyframe::PropertySpecificKeyframe& end,
+        const Keyframe::PropertySpecificKeyframe* final_keyframe) const;
 
     virtual void Trace(Visitor*) const {}
 

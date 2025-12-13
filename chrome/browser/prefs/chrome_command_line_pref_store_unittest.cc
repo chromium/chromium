@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/prefs/chrome_command_line_pref_store.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <array>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
@@ -63,7 +59,7 @@ class TestCommandLinePrefStore : public ChromeCommandLinePrefStore {
 
     for (const base::Value& cipher_string : value->GetList()) {
       ASSERT_TRUE(cipher_string.is_string());
-      EXPECT_EQ(*ciphers++, cipher_string.GetString());
+      UNSAFE_TODO(EXPECT_EQ(*ciphers++, cipher_string.GetString()));
     }
   }
 

@@ -2,23 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/shared_image/egl_image_backing_factory.h"
 
 #include <optional>
 #include <thread>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/run_until.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/resource_sizes.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/service_utils.h"
@@ -41,7 +37,6 @@
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -211,11 +206,11 @@ class EGLImageBackingFactoryThreadSafeTest
 
     for (int i = 0; i < num_pixels; i++) {
       // Compare the pixel values.
-      const uint8_t* pixel = dst_pixels.data() + (i * 4);
+      const uint8_t* pixel = UNSAFE_TODO(dst_pixels.data() + (i * 4));
       EXPECT_EQ(pixel[0], expected_color[0]);
-      EXPECT_EQ(pixel[1], expected_color[1]);
-      EXPECT_EQ(pixel[2], expected_color[2]);
-      EXPECT_EQ(pixel[3], expected_color[3]);
+      UNSAFE_TODO(EXPECT_EQ(pixel[1], expected_color[1]));
+      UNSAFE_TODO(EXPECT_EQ(pixel[2], expected_color[2]));
+      UNSAFE_TODO(EXPECT_EQ(pixel[3], expected_color[3]));
     }
   }
 
@@ -260,11 +255,12 @@ class EGLImageBackingFactoryThreadSafeTest
     for (int row = 0; row < size.height(); row++) {
       for (int col = 0; col < size.width(); col++) {
         // Compare the pixel values.
-        const uint8_t* pixel = dst_pixels + (row * buffer_stride) + col * 4;
+        const uint8_t* pixel =
+            UNSAFE_TODO(dst_pixels + (row * buffer_stride) + col * 4);
         EXPECT_EQ(pixel[0], expected_color[0]);
-        EXPECT_EQ(pixel[1], expected_color[1]);
-        EXPECT_EQ(pixel[2], expected_color[2]);
-        EXPECT_EQ(pixel[3], expected_color[3]);
+        UNSAFE_TODO(EXPECT_EQ(pixel[1], expected_color[1]));
+        UNSAFE_TODO(EXPECT_EQ(pixel[2], expected_color[2]));
+        UNSAFE_TODO(EXPECT_EQ(pixel[3], expected_color[3]));
       }
     }
   }
@@ -680,11 +676,12 @@ CreateAndValidateSharedImageRepresentations::
   // GL.
   gpu::SharedImageUsageSet usage =
       SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_RASTER_WRITE;
-  if (!is_thread_safe)
+  if (!is_thread_safe) {
     usage |= SHARED_IMAGE_USAGE_DISPLAY_READ;
+  }
   if (upload_initial_data) {
-    std::vector<uint8_t> initial_data(
-        viz::ResourceSizes::CheckedSizeInBytes<unsigned int>(size_, format));
+    size_t required_size = format.MaybeEstimatedSizeInBytes(size_).value();
+    std::vector<uint8_t> initial_data(required_size);
     backing_ = backing_factory->CreateSharedImage(
         mailbox_, format, size_, color_space, surface_origin, alpha_type, usage,
         "TestLabel", /*is_thread_safe=*/true, initial_data);

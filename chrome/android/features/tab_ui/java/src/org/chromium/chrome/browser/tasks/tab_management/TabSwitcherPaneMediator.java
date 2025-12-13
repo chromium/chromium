@@ -9,19 +9,32 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
+import android.content.Context;
+import android.content.res.Configuration;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Px;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.TransitiveObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.hub.HubUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
@@ -32,13 +45,15 @@ import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.Pric
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
+import org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripUtils;
+import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.ui.animation.AnimationHandler;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -50,8 +65,11 @@ public class TabSwitcherPaneMediator
                 PriceWelcomeMessageReviewActionProvider,
                 TabSwitcherCustomViewManager.Delegate,
                 BackPressHandler {
-    private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
-            new ObservableSupplierImpl<>();
+
+    private static final int PINNED_TABS_SHOW_SEARCH_BOX_DURATION = 10;
+    private static final int PINNED_TABS_HIDE_SEARCH_BOX_DURATION = 100;
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressChangedSupplier =
+            ObservableSuppliers.createNonNull(false);
     private final ObservableSupplierImpl<Boolean> mIsDialogVisibleSupplier =
             new ObservableSupplierImpl<>();
     private final TabActionListener mTabGridDialogOpener =
@@ -81,14 +99,9 @@ public class TabSwitcherPaneMediator
                 }
 
                 @Override
-                public void tabPendingClosure(Tab tab, @TabClosingSource int closingSource) {
-                    notifyBackPressStateChangedInternal();
-                }
-
-                @Override
                 public void onFinishingTabClosure(Tab tab, @TabClosingSource int closingSource) {
                     // If tab is closed by the site itself rather than user's input,
-                    // tabPendingClosure & tabClosureCommitted won't be called.
+                    // onTabClosePending & tabClosureCommitted won't be called.
                     notifyBackPressStateChangedInternal();
                 }
 
@@ -98,7 +111,7 @@ public class TabSwitcherPaneMediator
                 }
 
                 @Override
-                public void multipleTabsPendingClosure(
+                public void onTabClosePending(
                         List<Tab> tabs, boolean isAllTabs, @TabClosingSource int closingSource) {
                     notifyBackPressStateChangedInternal();
                 }
@@ -142,6 +155,7 @@ public class TabSwitcherPaneMediator
         int getNthTabIndexInModel(int filterIndex);
     }
 
+    private final Context mContext;
     private final TabSwitcherResetHandler mResetHandler;
     private final ObservableSupplier<@Nullable TabGroupModelFilter> mTabGroupModelFilterSupplier;
     private final LazyOneshotSupplier<DialogController> mTabGridDialogControllerSupplier;
@@ -153,16 +167,20 @@ public class TabSwitcherPaneMediator
     private final Callback<Integer> mOnTabClickCallback;
     private final TabIndexLookup mTabIndexLookup;
     private final BottomSheetController mBottomSheetController;
-
+    private final Runnable mAddOnLayoutChangedAfterInitialScrollListener;
+    private final AnimationHandler mSupplementaryContainerAnimationHandler = new AnimationHandler();
     private @Nullable ObservableSupplier<TabListEditorController> mTabListEditorControllerSupplier;
-    private @Nullable TransitiveObservableSupplier<TabListEditorController, Boolean>
+    private final SettableNonNullObservableSupplier<Boolean> mHubSearchBoxVisibilitySupplier;
+    private @Nullable NonNullObservableSupplier<Boolean>
             mCurrentTabListEditorControllerBackSupplier;
     private @Nullable View mCustomView;
     private @Nullable Runnable mCustomViewBackPressRunnable;
+    private final @Px int mSearchBoxGapPx;
 
     private boolean mTryToShowOnFilterChanged;
 
     /**
+     * @param context The context for retrieving resources.
      * @param resetHandler The reset handler for updating the {@link TabListCoordinator}.
      * @param tabGroupModelFilterSupplier The supplier of the {@link TabGroupModelFilter}. This
      *     should usually only ever be set once.
@@ -175,8 +193,13 @@ public class TabSwitcherPaneMediator
      * @param onTabClickCallback Callback to invoke when a tab is clicked.
      * @param tabIndexLookup Lookup for scroll position from tab index.
      * @param bottomSheetController The {@link BottomSheetController} for the current activity.
+     * @param addOnLayoutChangedAfterInitialScrollListener Runnable that adds a listener after an
+     *     initial scroll event.
+     * @param hubSearchBoxVisibilitySupplier Supplier to control the visibility of the Hub search
+     *     box.
      */
     public TabSwitcherPaneMediator(
+            Context context,
             TabSwitcherResetHandler resetHandler,
             ObservableSupplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier,
             LazyOneshotSupplier<DialogController> tabGridDialogControllerSupplier,
@@ -187,7 +210,10 @@ public class TabSwitcherPaneMediator
             ObservableSupplier<Boolean> isAnimatingSupplier,
             Callback<Integer> onTabClickCallback,
             TabIndexLookup tabIndexLookup,
-            BottomSheetController bottomSheetController) {
+            BottomSheetController bottomSheetController,
+            Runnable addOnLayoutChangedAfterInitialScrollListener,
+            SettableNonNullObservableSupplier<Boolean> hubSearchBoxVisibilitySupplier) {
+        mContext = context;
         mResetHandler = resetHandler;
         mTabIndexLookup = tabIndexLookup;
         mOnTabClickCallback = onTabClickCallback;
@@ -220,6 +246,10 @@ public class TabSwitcherPaneMediator
         isAnimatingSupplier.addObserver(mOnAnimatingChanged);
         mBottomSheetController = bottomSheetController;
         mBottomSheetController.addObserver(mBottomSheetObserver);
+        mAddOnLayoutChangedAfterInitialScrollListener =
+                addOnLayoutChangedAfterInitialScrollListener;
+        mHubSearchBoxVisibilitySupplier = hubSearchBoxVisibilitySupplier;
+        mSearchBoxGapPx = mContext.getResources().getDimensionPixelSize(R.dimen.hub_search_box_gap);
 
         notifyBackPressStateChangedInternal();
     }
@@ -303,7 +333,7 @@ public class TabSwitcherPaneMediator
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mBackPressChangedSupplier;
     }
 
@@ -326,6 +356,7 @@ public class TabSwitcherPaneMediator
 
     @Override
     public void scrollToTab(int tabIndexInModel) {
+        mAddOnLayoutChangedAfterInitialScrollListener.run();
         mContainerViewModel.set(INITIAL_SCROLL_INDEX, tabIndexInModel);
     }
 
@@ -378,11 +409,8 @@ public class TabSwitcherPaneMediator
                 : "setTabListEditorControllerSupplier should be called only once.";
         mTabListEditorControllerSupplier = tabListEditorControllerSupplier;
         mCurrentTabListEditorControllerBackSupplier =
-                new TransitiveObservableSupplier<>(
-                        tabListEditorControllerSupplier,
-                        tabListEditorController -> {
-                            return tabListEditorController.getHandleBackPressChangedSupplier();
-                        });
+                tabListEditorControllerSupplier.createTransitiveNonNull(
+                        false, BackPressHandler::getHandleBackPressChangedSupplier);
         mCurrentTabListEditorControllerBackSupplier.addObserver(mNotifyBackPressedCallback);
     }
 
@@ -395,6 +423,84 @@ public class TabSwitcherPaneMediator
         if (editorController != null && editorController.isVisible()) {
             editorController.hide();
         }
+    }
+
+    /** Sets the visibility of the Hub search box. */
+    void setHubSearchBoxVisibility(boolean isVisible) {
+        mHubSearchBoxVisibilitySupplier.set(isVisible);
+    }
+
+    /** Translates the pinned strip to make space for the search box. */
+    void maybeTranslatePinnedStrip(boolean shouldShowSearchBox, boolean forced) {
+        // Show search box always when screen size is less than tablet and search box movement is
+        // disabled.
+        if (!PinnedTabStripUtils.isSearchBoxMovementEnabledForPinnedTabs()) {
+            shouldShowSearchBox = true;
+        }
+
+        Configuration config = mContext.getResources().getConfiguration();
+        boolean isTabletOrLandscape = HubUtils.isScreenWidthTablet(config.screenWidthDp);
+        boolean shouldShow = shouldShowSearchBox && !isTabletOrLandscape;
+
+        animateSupplementaryDataContainer(shouldShow, forced);
+    }
+
+    private void animateSupplementaryDataContainer(boolean isSearchBoxVisible, boolean forced) {
+        // Early out if the animation is already running.
+        if (mSupplementaryContainerAnimationHandler.isAnimationPresent()) return;
+
+        LinearLayout supplementaryDataContainer =
+                mContainerView.findViewById(R.id.supplementary_data_container);
+        int translationHeight = isSearchBoxVisible ? mSearchBoxGapPx : 0;
+
+        // Early out if we are already in the correct state.
+        if (!forced
+                && isSearchBoxVisible
+                && supplementaryDataContainer.getTranslationY() == translationHeight) {
+            return;
+        }
+
+        int duration =
+                isSearchBoxVisible
+                        ? PINNED_TABS_SHOW_SEARCH_BOX_DURATION
+                        : PINNED_TABS_HIDE_SEARCH_BOX_DURATION;
+
+        // TODO(crbug.com/455919135): Move view manipulation to View binder with relevant property.
+        ValueAnimator translateAnimator =
+                ObjectAnimator.ofFloat(
+                        supplementaryDataContainer,
+                        View.TRANSLATION_Y,
+                        supplementaryDataContainer.getTranslationY(),
+                        translationHeight);
+        translateAnimator.setDuration(duration);
+        translateAnimator.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        if (!isSearchBoxVisible) {
+                            setHubSearchBoxVisibility(false);
+                        }
+                    }
+
+                    @Override
+                    public void onAnimationEnd(@NonNull Animator animation, boolean isReverse) {
+                        if (isSearchBoxVisible) {
+                            setHubSearchBoxVisibility(true);
+                        }
+                    }
+                });
+
+        mSupplementaryContainerAnimationHandler.startAnimation(translateAnimator);
+    }
+
+    /**
+     * Adds or removes the search box space.
+     *
+     * @param isTabletOrLandscape Whether the device is a tablet or landscape.
+     */
+    void setIsTabletOrLandscape(boolean isTabletOrLandscape) {
+        mContainerViewModel.set(
+                TabListContainerProperties.IS_TABLET_OR_LANDSCAPE, isTabletOrLandscape);
     }
 
     private boolean ableToOpenDialog(Tab tab) {

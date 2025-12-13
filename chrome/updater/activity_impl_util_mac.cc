@@ -42,7 +42,7 @@ base::FilePath GetActiveFile(const base::FilePath& home_dir,
                              const std::string& id) {
   return home_dir.Append("Library")
       .Append(COMPANY_SHORTNAME_STRING)
-      .Append(COMPANY_SHORTNAME_STRING "SoftwareUpdate")
+      .Append(KEYSTONE_NAME)
       .Append("Actives")
       .Append(id);
 }

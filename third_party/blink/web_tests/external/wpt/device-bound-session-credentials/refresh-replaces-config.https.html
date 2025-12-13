@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>DBSC refresh sends back new session config</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="helper.js" type="module"></script>
@@ -29,25 +28,35 @@
       method: 'POST',
       body: expectedCookieAndValue2
     });
-    assert_equals(alternateAuthResponse.status, 401);
+    assert_equals(alternateAuthResponse.status, 403);
 
     // Configure server to change the cookie in the session config on next refresh.
-    configureServer({ cookieDetails: [{ nameAndValue: expectedCookieAndValue2 }] });
+    await configureServer({ cookieDetails: [{ nameAndValue: expectedCookieAndValue2 }] });
 
     // Expire the first cookie and send a request, which triggers the refresh with the new session config.
     expireCookie(expectedCookieAndAttributes1);
     assert_false(documentHasCookie(expectedCookieAndValue1));
     const authResponseAfterExpiry1 = await fetch('verify_authenticated.py');
-    assert_equals(authResponseAfterExpiry1.status, 401);
+    assert_equals(authResponseAfterExpiry1.status, 403);
     assert_false(documentHasCookie(expectedCookieAndValue1));
 
-    // Confirm the alternate cookie is set and included in requests.
+    // Confirm the alternate cookie is set and included in requests. This should
+    // not trigger refresh. Note that because a session can only refresh a
+    // request once, if the refresh endpoint is correctly setting cookies for
+    // the new config, but the browser rejects the config, it won't be visible
+    // from the cookie state. Terminating the session if it refreshes when it
+    // shouldn't creates a state change we can see.
+    await configureServer({ shouldRefreshEndSession: true });
     assert_true(documentHasCookie(expectedCookieAndValue2));
     const alternateAuthResponseAfterExpiry1 = await fetch('verify_authenticated.py', {
       method: 'POST',
       body: expectedCookieAndValue2
     });
     assert_equals(alternateAuthResponseAfterExpiry1.status, 200);
+
+    // Restore the server configuration so we can test that the new config does
+    // refresh when expected.
+    await configureServer({ shouldRefreshEndSession: false });
 
     // Expire the second cookie. Confirm the second cookie is refreshed, and not the first.
     expireCookie(expectedCookieAndAttributes2);
@@ -77,7 +86,7 @@
     assert_equals(authResponse.status, 200);
 
     // Configure server to change the session identifier in the session config on next refresh.
-    configureServer({ responseSessionIdOverride: 12345 });
+    await configureServer({ responseSessionIdOverride: 12345 });
 
     // Expire the first cookie and send a request, which triggers the refresh with the new session config.
     expireCookie(expectedCookieAndAttributes);
@@ -92,7 +101,7 @@
     expireCookie(expectedCookieAndAttributes);
     assert_false(documentHasCookie(expectedCookieAndValue));
     const authResponseAfterTermination = await fetch('verify_authenticated.py');
-    assert_equals(authResponseAfterTermination.status, 401);
+    assert_equals(authResponseAfterTermination.status, 403);
 
     // Because refresh failed, we still do not have the cookie
     assert_false(documentHasCookie(expectedCookieAndValue));

@@ -9,9 +9,10 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/task_environment.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
-#include "components/omnibox/browser/mock_autocomplete_provider_client.h"
+#include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,7 +30,7 @@ class ContextualSearchProviderTest : public testing::Test,
 
   void SetUp() override {
     contextual_search_config_.Get().show_open_lens_action = true;
-    client_ = std::make_unique<MockAutocompleteProviderClient>();
+    client_ = std::make_unique<FakeAutocompleteProviderClient>();
     provider_ = new ContextualSearchProvider(client_.get(), this);
   }
 
@@ -38,10 +39,11 @@ class ContextualSearchProviderTest : public testing::Test,
   void OnProviderUpdate(bool updated_matches,
                         const AutocompleteProvider* provider) override {}
 
+  base::test::TaskEnvironment task_environment_;
   omnibox_feature_configs::ScopedConfigForTesting<
       omnibox_feature_configs::ContextualSearch>
       contextual_search_config_;
-  std::unique_ptr<MockAutocompleteProviderClient> client_;
+  std::unique_ptr<FakeAutocompleteProviderClient> client_;
   scoped_refptr<ContextualSearchProvider> provider_;
 };
 

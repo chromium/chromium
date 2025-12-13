@@ -37,6 +37,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 namespace {

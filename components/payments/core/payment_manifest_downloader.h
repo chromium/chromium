@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"

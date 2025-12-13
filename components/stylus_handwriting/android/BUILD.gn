@@ -45,6 +45,7 @@ android_library("java") {
     "//base:base_java",
     "//content/public/android:content_full_java",
     "//mojo/public/mojom/base:base_java",
+    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -65,7 +66,6 @@ android_library("java") {
     "java/src/org/chromium/components/stylus_handwriting/DirectWritingTrigger.java",
     "java/src/org/chromium/components/stylus_handwriting/DisabledStylusWritingHandler.java",
     "java/src/org/chromium/components/stylus_handwriting/StylusApiOption.java",
-    "java/src/org/chromium/components/stylus_handwriting/StylusHandwritingInitiator.java",
     "java/src/org/chromium/components/stylus_handwriting/StylusWritingController.java",
     "java/src/org/chromium/components/stylus_handwriting/StylusWritingSettingsState.java",
   ]
@@ -73,7 +73,6 @@ android_library("java") {
 
 robolectric_library("junit_test_support") {
   sources = [
-    "junit/src/org/chromium/components/stylus_handwriting/test_support/ShadowDirectWritingSettingsHelper.java",
     "junit/src/org/chromium/components/stylus_handwriting/test_support/ShadowGlobalSettings.java",
     "junit/src/org/chromium/components/stylus_handwriting/test_support/ShadowSecureSettings.java",
   ]
@@ -86,7 +85,6 @@ robolectric_library("stylus_handwriting_junit_tests") {
     "junit/src/org/chromium/components/stylus_handwriting/DirectWritingServiceBinderTest.java",
     "junit/src/org/chromium/components/stylus_handwriting/DirectWritingServiceCallbackTest.java",
     "junit/src/org/chromium/components/stylus_handwriting/DirectWritingTriggerTest.java",
-    "junit/src/org/chromium/components/stylus_handwriting/StylusHandwritingInitiatorTest.java",
     "junit/src/org/chromium/components/stylus_handwriting/StylusWritingControllerTest.java",
   ]
   deps = [
@@ -101,7 +99,7 @@ robolectric_library("stylus_handwriting_junit_tests") {
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/blink/public:blink_headers_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/gfx/geometry/mojom:mojom_java",

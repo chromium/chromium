@@ -5,8 +5,6 @@
 package org.chromium.chromecast.shell;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Application;
@@ -18,10 +16,6 @@ import android.content.IntentFilter;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.test.core.app.ApplicationProvider;
 
-import org.chromium.base.ContextUtils;
-import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chromecast.shell.CastWebContentsComponent.StartParams;
-import org.chromium.content_public.browser.WebContents;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,13 +31,16 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chromecast.shell.CastWebContentsComponent.StartParams;
+import org.chromium.content_public.browser.WebContents;
+
 /** Tests for CastWebContentsComponent. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CastWebContentsComponentTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    private static final String APP_ID = "app";
 
     private static final String SESSION_ID = "123456789";
 
@@ -59,7 +56,7 @@ public class CastWebContentsComponentTest {
         mApplication = ApplicationProvider.getApplicationContext();
         ContextUtils.initApplicationContextForTests(mApplication);
         mShadowApplication = Shadows.shadowOf(mApplication);
-        mStartParams = new StartParams(mWebContents, APP_ID, false);
+        mStartParams = new StartParams(mWebContents, false);
     }
 
     @Test
@@ -185,7 +182,7 @@ public class CastWebContentsComponentTest {
         Assert.assertEquals(
                 activity.getComponent().getClassName(), CastWebContentsActivity.class.getName());
 
-        StartParams params2 = new StartParams(mWebContents, "test", true);
+        StartParams params2 = new StartParams(mWebContents, true);
         component.start(params2);
         Assert.assertTrue(component.isStarted());
         activity = mShadowApplication.getNextStartedActivity();
@@ -198,52 +195,11 @@ public class CastWebContentsComponentTest {
     }
 
     @Test
-    public void testSetMediaPlayingBroadcastsMediaStatus() {
-        CastWebContentsComponent component =
-                new CastWebContentsComponent(SESSION_ID, null, null, false, true, false);
-        Intent receivedIntent0 =
-                verifyBroadcastedIntent(
-                        new IntentFilter(CastWebContentsIntentUtils.ACTION_MEDIA_PLAYING),
-                        () -> component.setMediaPlaying(true),
-                        true);
-        Assert.assertTrue(CastWebContentsIntentUtils.isMediaPlaying(receivedIntent0));
-        Intent receivedIntent1 =
-                verifyBroadcastedIntent(
-                        new IntentFilter(CastWebContentsIntentUtils.ACTION_MEDIA_PLAYING),
-                        () -> component.setMediaPlaying(false),
-                        true);
-        Assert.assertFalse(CastWebContentsIntentUtils.isMediaPlaying(receivedIntent1));
-    }
-
-    @Test
-    public void testRequestMediaStatusBroadcastsMediaStatus() {
-        String sessionId = "abcdef0";
-        CastWebContentsComponent component =
-                new CastWebContentsComponent(sessionId, null, null, false, true, false);
-        component.start(mStartParams);
-        Assert.assertTrue(component.isStarted());
-        component.setMediaPlaying(false);
-        Intent receivedIntent0 =
-                verifyBroadcastedIntent(
-                        new IntentFilter(CastWebContentsIntentUtils.ACTION_MEDIA_PLAYING),
-                        () -> requestMediaPlayingStatus(sessionId),
-                        true);
-        Assert.assertFalse(CastWebContentsIntentUtils.isMediaPlaying(receivedIntent0));
-        component.setMediaPlaying(true);
-        Intent receivedIntent1 =
-                verifyBroadcastedIntent(
-                        new IntentFilter(CastWebContentsIntentUtils.ACTION_MEDIA_PLAYING),
-                        () -> requestMediaPlayingStatus(sessionId),
-                        true);
-        Assert.assertTrue(CastWebContentsIntentUtils.isMediaPlaying(receivedIntent1));
-    }
-
-    @Test
     public void requestsAudioFocusIfStartParamsAsks() {
         CastWebContentsComponent component =
                 new CastWebContentsComponent(SESSION_ID, null, null, false, true, true);
         CastWebContentsComponent.StartParams startParams =
-                new StartParams(mWebContents, APP_ID, true /* shouldRequestAudioFocus */);
+                new StartParams(mWebContents, /* shouldRequestAudioFocus= */ true);
         component.start(startParams);
         Intent intent = mShadowApplication.getNextStartedActivity();
         Assert.assertTrue(CastWebContentsIntentUtils.shouldRequestAudioFocus(intent));
@@ -254,34 +210,9 @@ public class CastWebContentsComponentTest {
         CastWebContentsComponent component =
                 new CastWebContentsComponent(SESSION_ID, null, null, false, true, true);
         CastWebContentsComponent.StartParams startParams =
-                new StartParams(mWebContents, APP_ID, false /* shouldRequestAudioFocus */);
+                new StartParams(mWebContents, /* shouldRequestAudioFocus= */ false);
         component.start(startParams);
         Intent intent = mShadowApplication.getNextStartedActivity();
         Assert.assertFalse(CastWebContentsIntentUtils.shouldRequestAudioFocus(intent));
-    }
-
-    private void requestMediaPlayingStatus(String sessionId) {
-        Intent intent = CastWebContentsIntentUtils.requestMediaPlayingStatus(sessionId);
-        LocalBroadcastManager.getInstance(ApplicationProvider.getApplicationContext())
-                .sendBroadcastSync(intent);
-    }
-
-    private Intent verifyBroadcastedIntent(
-            IntentFilter filter, Runnable runnable, boolean shouldExpect) {
-        BroadcastReceiver receiver = mock(BroadcastReceiver.class);
-        LocalBroadcastManager.getInstance(ApplicationProvider.getApplicationContext())
-                .registerReceiver(receiver, filter);
-        try {
-            runnable.run();
-        } finally {
-            LocalBroadcastManager.getInstance(ApplicationProvider.getApplicationContext())
-                    .unregisterReceiver(receiver);
-        }
-        if (shouldExpect) {
-            verify(receiver).onReceive(any(Context.class), mIntentCaptor.capture());
-        } else {
-            verify(receiver, times(0)).onReceive(any(Context.class), mIntentCaptor.getValue());
-        }
-        return mIntentCaptor.getValue();
     }
 }

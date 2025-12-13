@@ -13,7 +13,6 @@
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/no_destructor.h"
@@ -61,6 +60,12 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+#include "components/webapps/isolated_web_apps/scheme.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <fcntl.h>
 #include "sandbox/linux/services/credentials.h"
@@ -75,7 +80,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-#include "content/public/common/content_plugin_info.h"
+#include "content/public/common/webplugininfo.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -116,24 +121,27 @@ void ChromeContentClient::SetGpuInfo(const gpu::GPUInfo& gpu_info) {
 }
 
 void ChromeContentClient::AddPlugins(
-    std::vector<content::ContentPluginInfo>* plugins) {
+    std::vector<content::WebPluginInfo>* plugins) {
 #if BUILDFLAG(ENABLE_PDF)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  static constexpr char kPDFPluginName[] = "Chrome PDF Plugin";
+  static constexpr char16_t kPDFPluginName[] = u"Chrome PDF Plugin";
 #else
-  static constexpr char kPDFPluginName[] = "Chromium PDF Plugin";
+  static constexpr char16_t kPDFPluginName[] = u"Chromium PDF Plugin";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  static constexpr char16_t kPDFPluginDescription[] = u"Built-in PDF viewer";
   static constexpr char kPDFPluginExtension[] = "pdf";
-  static constexpr char kPDFPluginDescription[] = "Portable Document Format";
+  static constexpr char kPDFPluginExtensionDescription[] =
+      "Portable Document Format";
 
-  content::ContentPluginInfo pdf_info;
-  pdf_info.is_internal = true;
+  content::WebPluginInfo pdf_info;
   pdf_info.name = kPDFPluginName;
-  pdf_info.description = kPDFPluginDescription;
   pdf_info.path = base::FilePath(ChromeContentClient::kPDFInternalPluginPath);
-  content::WebPluginMimeType pdf_mime_type(
-      pdf::kInternalPluginMimeType, kPDFPluginExtension, kPDFPluginDescription);
+  pdf_info.desc = kPDFPluginDescription;
+  content::WebPluginMimeType pdf_mime_type(pdf::kInternalPluginMimeType,
+                                           kPDFPluginExtension,
+                                           kPDFPluginExtensionDescription);
   pdf_info.mime_types.push_back(pdf_mime_type);
+  pdf_info.type = content::WebPluginInfo::PLUGIN_TYPE_BROWSER_INTERNAL_PLUGIN;
   plugins->push_back(pdf_info);
 #endif  // BUILDFLAG(ENABLE_PDF)
 }
@@ -180,8 +188,13 @@ static const char* const kChromeStandardURLSchemes[] = {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     extensions::kExtensionScheme,
 #endif
-    chrome::kIsolatedAppScheme,   chrome::kChromeNativeScheme,
-    chrome::kChromeSearchScheme,  dom_distiller::kDomDistillerScheme,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    webapps::kIsolatedAppScheme,
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+    chrome::kChromeNativeScheme,        chrome::kChromeSearchScheme,
+    dom_distiller::kDomDistillerScheme,
 #if BUILDFLAG(IS_ANDROID)
     content::kAndroidAppScheme,
 #endif
@@ -199,7 +212,11 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->extension_schemes.push_back(extensions::kExtensionScheme);
 #endif
 
-  schemes->isolated_app_schemes.push_back(chrome::kIsolatedAppScheme);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  schemes->isolated_app_schemes.push_back(webapps::kIsolatedAppScheme);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   schemes->savable_schemes.push_back(extensions::kExtensionScheme);
@@ -244,10 +261,14 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
       url::kWebcalScheme, chrome::kChromeOSDefaultWebcalHandler);
 #endif
 
-  schemes->secure_schemes.push_back(chrome::kIsolatedAppScheme);
-  schemes->cors_enabled_schemes.push_back(chrome::kIsolatedAppScheme);
-  schemes->service_worker_schemes.push_back(chrome::kIsolatedAppScheme);
-  url::AddWebStorageScheme(chrome::kIsolatedAppScheme);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  schemes->secure_schemes.push_back(webapps::kIsolatedAppScheme);
+  schemes->cors_enabled_schemes.push_back(webapps::kIsolatedAppScheme);
+  schemes->service_worker_schemes.push_back(webapps::kIsolatedAppScheme);
+  url::AddWebStorageScheme(webapps::kIsolatedAppScheme);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
   schemes->local_schemes.push_back(content::kExternalFileScheme);

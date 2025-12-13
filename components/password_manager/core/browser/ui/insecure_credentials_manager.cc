@@ -19,16 +19,13 @@
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
-#include "build/build_config.h"
+#include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
-#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
-
-#if !BUILDFLAG(IS_ANDROID)
 #include "components/password_manager/core/browser/ui/reuse_check_utility.h"
+#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/browser/ui/weak_check_utility.h"
-#endif
 
 using password_manager::IsMuted;
 using password_manager::TriggerBackendNotification;
@@ -42,7 +39,6 @@ bool SupportsMuteOperation(InsecureType insecure_type) {
           insecure_type == InsecureType::kPhished);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 base::flat_set<std::u16string> ExtractPasswords(
     const std::vector<CredentialUIEntry>& credentials) {
   return base::MakeFlatSet<std::u16string>(credentials, {},
@@ -64,7 +60,6 @@ bool ChangeRequiresRerunningWeakCheck(const PasswordStoreChange& change) {
           change.password_changed());
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace
 
 InsecureCredentialsManager::InsecureCredentialsManager(
@@ -75,7 +70,6 @@ InsecureCredentialsManager::InsecureCredentialsManager(
 
 InsecureCredentialsManager::~InsecureCredentialsManager() = default;
 
-#if !BUILDFLAG(IS_ANDROID)
 void InsecureCredentialsManager::StartReuseCheck(
     base::OnceClosure on_check_done) {
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -97,7 +91,6 @@ void InsecureCredentialsManager::StartWeakCheck(
                      weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer())
           .Then(std::move(on_check_done)));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void InsecureCredentialsManager::SaveInsecureCredential(
     const LeakCheckCredential& leak,
@@ -152,13 +145,6 @@ InsecureCredentialsManager::GetInsecureCredentialEntries() const {
   std::vector<CredentialUIEntry> credentials =
       presenter_->GetSavedCredentials();
 
-#if BUILDFLAG(IS_ANDROID)
-  // Otherwise erase entries which aren't leaked and phished.
-  std::erase_if(credentials, [](const auto& credential) {
-    return !IsCompromised(credential);
-  });
-  return credentials;
-#else
   for (auto& credential : credentials) {
     if (weak_passwords_.contains(credential.password)) {
       credential.password_issues.insert(
@@ -180,7 +166,6 @@ InsecureCredentialsManager::GetInsecureCredentialEntries() const {
     return credential.password_issues.empty();
   });
   return credentials;
-#endif
 }
 
 void InsecureCredentialsManager::AddObserver(Observer* observer) {
@@ -223,8 +208,6 @@ void InsecureCredentialsManager::OnPartialWeakCheckDone(
 // new list of saved passwords.
 void InsecureCredentialsManager::OnSavedPasswordsChanged(
     const PasswordStoreChangeList& changes) {
-  // Disable on Android  to avoid pulling in a big dependency on zxcvbn.
-#if !BUILDFLAG(IS_ANDROID)
   base::flat_set<std::u16string> passwords_to_recheck;
   for (const auto& change : changes) {
     if (ChangeRequiresRerunningWeakCheck(change)) {
@@ -248,9 +231,6 @@ void InsecureCredentialsManager::OnSavedPasswordsChanged(
     // Notify about changes immediately.
     NotifyInsecureCredentialsChanged();
   }
-#else
-  NotifyInsecureCredentialsChanged();
-#endif
 }
 
 void InsecureCredentialsManager::NotifyInsecureCredentialsChanged() {

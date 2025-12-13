@@ -1,7 +1,9 @@
 # Overall OWNERS
+faridzad@google.com
 jeffyoon@google.com
 johnchen@chromium.org
 maxqli@google.com
+pasthana@google.com
 wenbinzhang@google.com
 
 # For gtest perf tests, perf data upload, and functional tests

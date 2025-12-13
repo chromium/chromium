@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"

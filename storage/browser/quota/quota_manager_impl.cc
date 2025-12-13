@@ -22,7 +22,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/concurrent_callbacks.h"
 #include "base/functional/concurrent_closures.h"
@@ -72,6 +71,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "third_party/blink/public/mojom/storage_key/storage_key.mojom.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 using ::blink::StorageKey;
@@ -957,7 +957,8 @@ QuotaManagerImpl::QuotaManagerImpl(
     const base::FilePath& profile_path,
     scoped_refptr<base::SingleThreadTaskRunner> io_thread,
     scoped_refptr<SpecialStoragePolicy> special_storage_policy,
-    const GetQuotaSettingsFunc& get_settings_function)
+    const GetQuotaSettingsFunc& get_settings_function,
+    bool report_static_storage_quota)
     : RefCountedDeleteOnSequence<QuotaManagerImpl>(io_thread),
       is_incognito_(is_incognito),
       profile_path_(profile_path),
@@ -965,12 +966,10 @@ QuotaManagerImpl::QuotaManagerImpl(
                                                      io_thread,
                                                      profile_path)),
       io_thread_(std::move(io_thread)),
-      db_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       get_settings_function_(get_settings_function),
       special_storage_policy_(std::move(special_storage_policy)),
-      get_volume_info_fn_(&QuotaManagerImpl::GetVolumeInfo) {
+      get_volume_info_fn_(&QuotaManagerImpl::GetVolumeInfo),
+      report_static_storage_quota_(report_static_storage_quota) {
   DCHECK_EQ(settings_.refresh_interval, base::TimeDelta::Max());
   if (!get_settings_function.is_null()) {
     // Reset the interval to ensure we use the get_settings_function
@@ -980,6 +979,17 @@ QuotaManagerImpl::QuotaManagerImpl(
         base::SingleThreadTaskRunner::GetCurrentDefault();
   }
   DETACH_FROM_SEQUENCE(sequence_checker_);
+
+  base::TaskTraits traits{base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+                          base::TaskShutdownBehavior::BLOCK_SHUTDOWN};
+  if (profile_path_.empty()) {
+    db_runner_ = base::ThreadPool::CreateSequencedTaskRunner(traits);
+  } else {
+    // Note that this path is not quite what's actually used by the database,
+    // but all it needs is to be unique relative to all other Chromium features.
+    db_runner_ = base::ThreadPool::CreateSequencedTaskRunnerForResource(
+        traits, profile_path_.AppendASCII(QuotaDatabase::kDatabaseName));
+  }
 }
 
 void QuotaManagerImpl::SetQuotaSettings(const QuotaSettings& settings) {
@@ -1233,8 +1243,7 @@ void QuotaManagerImpl::GetUsageAndReportedQuotaWithBreakdown(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
 
-  if (base::FeatureList::IsEnabled(storage::features::kStaticStorageQuota) &&
-      !IsStorageUnlimited(storage_key)) {
+  if (report_static_storage_quota_ && !IsStorageUnlimited(storage_key)) {
     HandleGetUsageAndQuotaRequest(
         storage_key,
         base::BindOnce(
@@ -1329,7 +1338,7 @@ void QuotaManagerImpl::GetBucketUsageAndReportedQuota(
     UsageAndQuotaCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (base::FeatureList::IsEnabled(storage::features::kStaticStorageQuota)) {
+  if (report_static_storage_quota_) {
     GetBucketById(
         id,
         base::BindOnce(
@@ -3160,8 +3169,9 @@ QuotaAvailability QuotaManagerImpl::CallGetVolumeInfo(
 
 // static
 QuotaAvailability QuotaManagerImpl::GetVolumeInfo(const base::FilePath& path) {
-  return QuotaAvailability(base::SysInfo::AmountOfTotalDiskSpace(path),
-                           base::SysInfo::AmountOfFreeDiskSpace(path));
+  return QuotaAvailability(
+      base::SysInfo::AmountOfTotalDiskSpace(path).value_or(-1),
+      base::SysInfo::AmountOfFreeDiskSpace(path).value_or(-1));
 }
 
 void QuotaManagerImpl::AddObserver(

@@ -25,8 +25,7 @@ typedef ExpiringCache<std::string, std::string, base::TimeTicks, std::less<>>
     Cache;
 
 struct TestFunctor {
-  bool operator()(const std::string& now,
-                  const std::string& expiration) const {
+  bool operator()(const std::string& now, const std::string& expiration) const {
     return now != expiration;
   }
 };

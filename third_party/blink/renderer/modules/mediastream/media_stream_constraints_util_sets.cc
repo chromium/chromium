@@ -126,10 +126,6 @@ bool Point::operator==(const Point& other) const {
   return height_ == other.height_ && width_ == other.width_;
 }
 
-bool Point::operator!=(const Point& other) const {
-  return !(*this == other);
-}
-
 bool Point::IsApproximatelyEqualTo(const Point& other) const {
   return AreApproximatelyEqual(height_, other.height_) &&
          AreApproximatelyEqual(width_, other.width_);
@@ -401,7 +397,7 @@ Point ResolutionSet::ClosestPointTo(const Point& point) const {
   DCHECK_GE(vertices.size(), 1U);
   Point best_candidate(0, 0);
   double best_distance = HUGE_VAL;
-  for (WTF::wtf_size_t i = 0; i < vertices.size(); ++i) {
+  for (wtf_size_t i = 0; i < vertices.size(); ++i) {
     Point candidate = Point::ClosestPointInSegment(
         point, vertices[i], vertices[(i + 1) % vertices.size()]);
     double distance = Point::SquareEuclideanDistance(point, candidate);

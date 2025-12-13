@@ -33,8 +33,7 @@ public class RemotingMediaSource implements MediaSource {
     private static final String SOURCE_PREFIX = "remote-playback:";
     private static final String ENCODED_SOURCE_KEY = "source";
 
-    // Needs to be in sync with AndroidManifest meta-data key (used both by Clank and WebLayer
-    // clients).
+    // Needs to be in sync with AndroidManifest meta-data key (used by Clank).
     private static final String REMOTE_PLAYBACK_APP_ID_KEY =
             "org.chromium.content.browser.REMOTE_PLAYBACK_APP_ID";
 

@@ -44,11 +44,10 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
   // Called from Java to notify the completion of a FetchKeys() operation
   // previously initiated from C++ and identified by |request_id|. |gaia_id|
   // must match the user's ID.
-  void FetchKeysCompleted(
-      JNIEnv* env,
-      jint request_id,
-      std::string& gaia_id,
-      const base::android::JavaParamRef<jobjectArray>& keys);
+  void FetchKeysCompleted(JNIEnv* env,
+                          jint request_id,
+                          std::string& gaia_id,
+                          const base::android::JavaRef<jobjectArray>& keys);
 
   // Called from Java to notify the completion of a MarkLocalKeysAsStale()
   // operation previously initiated from C++ and identified by |request_id|.
@@ -69,7 +68,7 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
   void AddTrustedRecoveryMethodCompleted(JNIEnv* env, jint request_id);
 
   // Called from Java to notify that the keys in the vault may have changed.
-  void NotifyKeysChanged(JNIEnv* env);
+  void NotifyKeysChanged(JNIEnv* env, std::optional<jint> trigger);
 
   // Called from Java to notify that the recoverability of the vault may have
   // changed.
@@ -82,9 +81,12 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
       const CoreAccountInfo& account_info,
       base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb)
       override;
-  void StoreKeys(const GaiaId& gaia_id,
-                 const std::vector<std::vector<uint8_t>>& keys,
-                 int last_key_version) override;
+  void StoreKeys(
+      const GaiaId& gaia_id,
+      const std::vector<std::vector<uint8_t>>& keys,
+      int last_key_version,
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger)
+      override;
   void MarkLocalKeysAsStale(const CoreAccountInfo& account_info,
                             base::OnceCallback<void(bool)> cb) override;
   void GetIsRecoverabilityDegraded(const CoreAccountInfo& account_info,

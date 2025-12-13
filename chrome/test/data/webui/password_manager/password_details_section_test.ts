@@ -5,7 +5,7 @@
 import 'chrome://password-manager/password_manager.js';
 
 // clang-format off
-import type {PasskeyDetailsCardElement, PasswordDetailsCardElement, PasswordDetailsSectionElement} from 'chrome://password-manager/password_manager.js';
+import type {PasskeyDetailsCardElement, BackupPasswordDetailsCardElement, PasswordDetailsCardElement, PasswordDetailsSectionElement} from 'chrome://password-manager/password_manager.js';
 import {Page, PasswordManagerImpl, PasswordViewPageInteractions, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -48,7 +48,7 @@ suite('PasswordDetailsSectionTest', function() {
 
     const title = section.shadowRoot!.querySelector('#title');
     assertTrue(!!title);
-    assertEquals(group.name, title.textContent!.trim());
+    assertEquals(group.name, title.textContent.trim());
   });
 
   test('Navigating directly', async function() {
@@ -82,7 +82,7 @@ suite('PasswordDetailsSectionTest', function() {
 
     const title = section.$.title;
     assertTrue(!!title);
-    assertEquals('test.com', title.textContent!.trim());
+    assertEquals('test.com', title.textContent.trim());
   });
 
   test('Navigating directly fails when group is not found', async function() {
@@ -165,15 +165,18 @@ suite('PasswordDetailsSectionTest', function() {
         section.shadowRoot!.querySelectorAll<PasswordDetailsCardElement>(
             'password-details-card');
     assertTrue(!!passwordEntries.length);
-    assertEquals(passwordEntries.length, 3);
+    assertEquals(passwordEntries.length, 2);
     // The last entry is a backup entry, do not compare it directly
     for (let index = 0; index < passwordEntries.length - 1; ++index) {
       assertDeepEquals(passwordEntries[index]!.password, group.entries[index]);
     }
-    assertTrue(passwordEntries[2]!.isBackup);
-    assertEquals(
-        passwordEntries[2]!.password.backupPassword,
-        group.entries[1]!.backupPassword);
+
+    const backupPasswordEntries =
+        section.shadowRoot!.querySelectorAll<BackupPasswordDetailsCardElement>(
+            'backup-password-details-card');
+    assertTrue(!!backupPasswordEntries.length);
+    assertEquals(backupPasswordEntries.length, 1);
+    assertDeepEquals(backupPasswordEntries[0]!.password, group.entries[1]);
 
     const passkeyEntries =
         section.shadowRoot!.querySelectorAll<PasskeyDetailsCardElement>(
@@ -391,7 +394,7 @@ suite('PasswordDetailsSectionTest', function() {
 
     assertEquals(Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
     const title = section.$.title;
-    assertEquals('test.com', title.textContent!.trim());
+    assertEquals('test.com', title.textContent.trim());
 
     const entries =
         section.shadowRoot!.querySelectorAll<PasswordDetailsCardElement>(

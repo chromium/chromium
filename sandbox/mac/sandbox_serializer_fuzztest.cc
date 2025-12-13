@@ -7,6 +7,32 @@
 
 namespace sandbox {
 
+// Tests for the specific crash in the `ApplySerializedPolicy` path.
+// Fuzz for an input that, when processed, causes the crash
+// in `std::string`'s destructor (crbug.com/40066531).
+static void CanApplySerializedPolicyWithoutCrashing(std::string input) {
+  std::string error;
+  {
+    SandboxSerializer serializer(SandboxSerializer::Target::kSource);
+    serializer.SetProfile(input);
+    std::string serialized;
+    if (serializer.SerializePolicy(serialized, error)) {
+      std::ignore = serializer.ApplySerializedPolicy(serialized);
+    }
+  }
+
+  {
+    SandboxSerializer serializer(SandboxSerializer::Target::kCompiled);
+    serializer.SetProfile(input);
+    std::string serialized;
+    if (serializer.SerializePolicy(serialized, error)) {
+      std::ignore = serializer.ApplySerializedPolicy(serialized);
+    }
+  }
+}
+
+FUZZ_TEST(SandboxSerializerFuzzTest, CanApplySerializedPolicyWithoutCrashing);
+
 static void CanDeserializeWithoutCrashing(std::string input) {
   std::string error;
   {

@@ -34,8 +34,10 @@ IN_PROC_BROWSER_TEST_F(CrashReportingContextTest, OnCloudReportingLaunched) {
       "service_provider": "google"
     }
   ])";
-  profile->GetPrefs()->Set(kOnSecurityEventPref,
-                           *base::JSONReader::Read(kConnectorsPrefValue));
+  profile->GetPrefs()->Set(
+      kOnSecurityEventPref,
+      *base::JSONReader::Read(kConnectorsPrefValue,
+                              base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   BrowserCrashEventRouter router(profile);
 

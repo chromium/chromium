@@ -34,7 +34,10 @@ class RelaunchNotificationControllerPlatformImpl : public views::WidgetObserver,
   // browser. window if it is not already open.  |on_visible| is run when the
   // notification is potentially seen to push the deadline back if the remaining
   // time is less than the grace period.
+  // If |is_notification_style_ap_required| the relaunch required notification
+  // is shown with Advanced Protection string and icon.
   void NotifyRelaunchRequired(base::Time deadline,
+                              bool is_notification_style_ap_required,
                               base::OnceCallback<base::Time()> on_visible);
 
   // Closes the bubble or dialog if either is still open.
@@ -58,8 +61,11 @@ class RelaunchNotificationControllerPlatformImpl : public views::WidgetObserver,
 
  private:
   // Shows the notification in |browser| for a relaunch that will take place
-  // at |deadline|.
-  void ShowRequiredNotification(Browser* browser, base::Time deadline);
+  // at |deadline|. If |is_notification_style_ap_required| the relaunch required
+  // notification is shown with Advanced Protection string and icon.
+  void ShowRequiredNotification(Browser* browser,
+                                base::Time deadline,
+                                bool is_notification_style_ap_required);
 
   // The widget hosting the bubble or dialog, or nullptr if neither is
   // currently shown.
@@ -72,6 +78,8 @@ class RelaunchNotificationControllerPlatformImpl : public views::WidgetObserver,
 
   // A boolean to record if the relaunch notification has been shown or not.
   bool has_shown_ = false;
+  // The relaunch notification style should be required for Advanced Protection.
+  bool is_notification_style_ap_required_ = false;
 
   // The last relaunch deadline if the relaunch notification has_shown_.
   base::Time last_relaunch_deadline_;

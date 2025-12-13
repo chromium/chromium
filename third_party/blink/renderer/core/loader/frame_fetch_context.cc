@@ -52,9 +52,11 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
+#include "third_party/blink/public/common/permissions_policy/document_policy_features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/policy_disposition.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -100,6 +102,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
+#include "third_party/blink/renderer/core/svg/svg_document_resource_tracker.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -120,6 +123,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
+#include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -458,6 +462,8 @@ void FrameFetchContext::PrepareRequest(
 
   request.SetAllowsDeviceBoundSessionRegistration(
       RuntimeEnabledFeatures::DeviceBoundSessionCredentialsEnabled(
+          GetExecutionContext()) ||
+      RuntimeEnabledFeatures::DeviceBoundSessionCredentials2Enabled(
           GetExecutionContext()));
 }
 
@@ -511,6 +517,85 @@ bool FrameFetchContext::AllowImage() const {
     }
   }
   return images_enabled;
+}
+
+// TODO(crbug.com/441240973): add browsertests once prototype has settled.
+void FrameFetchContext::CheckGuardrailsPolicyForRequest(
+    ResourceType resource_type,
+    mojom::blink::RequestContextType request_context,
+    const ResourceResponse& response,
+    const KURL& url) {
+  if (GetResourceFetcherProperties().IsDetached()) {
+    return;
+  }
+
+  // Probe the policy lists to set disposition accordingly. IsFeatureEnabled
+  // assumes a value of |false| is stricter than |true|, but that's reversed for
+  // this configuration point.
+  const DocumentPolicy* enforced_policy =
+      GetExecutionContext()->GetSecurityContext().GetDocumentPolicy();
+  bool is_enforced_policy =
+      enforced_policy &&
+      enforced_policy
+          ->GetFeatureValue(
+              mojom::blink::DocumentPolicyFeature::kNetworkEfficiencyGuardrails)
+          .BoolValue();
+
+  const DocumentPolicy* report_only_policy =
+      GetExecutionContext()->GetSecurityContext().GetReportOnlyDocumentPolicy();
+  bool is_report_only_policy =
+      report_only_policy &&
+      report_only_policy
+          ->GetFeatureValue(
+              mojom::blink::DocumentPolicyFeature::kNetworkEfficiencyGuardrails)
+          .BoolValue();
+
+  if (!is_enforced_policy && !is_report_only_policy) {
+    return;
+  }
+
+  mojom::blink::PolicyDisposition disposition =
+      is_enforced_policy ? mojom::blink::PolicyDisposition::kEnforce
+                         : mojom::blink::PolicyDisposition::kReport;
+
+  bool should_check_for_compression = false;
+  switch (resource_type) {
+    case ResourceType::kScript:
+    case ResourceType::kCSSStyleSheet:
+      should_check_for_compression = true;
+      break;
+    case ResourceType::kRaw:
+      if (MIMETypeRegistry::IsJSONMimeType(response.MimeType()) &&
+          (request_context == mojom::blink::RequestContextType::JSON ||
+           request_context == mojom::blink::RequestContextType::FETCH ||
+           request_context ==
+               mojom::blink::RequestContextType::XML_HTTP_REQUEST)) {
+        should_check_for_compression = true;
+      }
+      break;
+    // List all ResourceTypes so that we can find this by a compile error when
+    // a new ResourceType is added.
+    case ResourceType::kImage:
+    case ResourceType::kFont:
+    case ResourceType::kSVGDocument:
+    case ResourceType::kXSLStyleSheet:
+    case ResourceType::kLinkPrefetch:
+    case ResourceType::kTextTrack:
+    case ResourceType::kAudio:
+    case ResourceType::kVideo:
+    case ResourceType::kManifest:
+    case ResourceType::kSpeculationRules:
+    case ResourceType::kMock:
+    case ResourceType::kDictionary:
+      return;
+  }
+
+  if (should_check_for_compression &&
+      response.HttpHeaderField(http_names::kContentEncoding).empty()) {
+    GetExecutionContext()->ReportDocumentPolicyViolation(
+        mojom::blink::DocumentPolicyFeature::kNetworkEfficiencyGuardrails,
+        disposition, "resource compression is required", url);
+  }
 }
 
 void FrameFetchContext::ModifyRequestForMixedContentUpgrade(
@@ -906,9 +991,7 @@ void FrameFetchContext::UpgradeResourceRequestForLoader(
   AddReducedAcceptLanguageIfNecessary(request);
 }
 
-bool FrameFetchContext::StartSpeculativeImageDecode(
-    Resource* resource,
-    base::OnceClosure callback) {
+bool FrameFetchContext::StartSpeculativeImageDecode(Resource* resource) {
   CHECK(resource->GetType() == ResourceType::kImage);
   if (!document_ || !document_->GetFrame()) {
     return false;
@@ -958,29 +1041,11 @@ bool FrameFetchContext::StartSpeculativeImageDecode(
         TRACE_EVENT_SCOPE_THREAD, "url", resource->Url().GetString().Utf8(),
         "image_id", paint_image_id);
     document_->GetFrame()->GetChromeClient().RequestDecode(
-        document_->GetFrame(), draw_image,
-        WTF::BindOnce(
-            [](base::OnceClosure cb, PaintImage::Id paint_image_id, bool) {
-              TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("loading"),
-                                   "SpeculativeImageDecodeFinished",
-                                   TRACE_EVENT_SCOPE_THREAD, "image_id",
-                                   paint_image_id);
-              std::move(cb).Run();
-            },
-            std::move(callback), paint_image_id),
+        document_->GetFrame(), draw_image, base::DoNothingAs<void(bool)>(),
         /*speculative*/ true);
     return true;
   }
   return false;
-}
-
-bool FrameFetchContext::SpeculativeDecodeRequestInFlight() const {
-  if (GetResourceFetcherProperties().IsDetached()) {
-    return false;
-  }
-  return document_->GetFrame()
-      ->GetChromeClient()
-      .SpeculativeDecodeRequestInFlight(document_->GetFrame());
 }
 
 bool FrameFetchContext::IsPrerendering() const {
@@ -1246,6 +1311,16 @@ void FrameFetchContext::AddCSPHashReport(
                                                     integrity_hashes);
 }
 
+String FrameFetchContext::GetSVGCacheIdentifier() const {
+  if (GetResourceFetcherProperties().IsDetached()) {
+    return BaseFetchContext::GetSVGCacheIdentifier();
+  }
+
+  Page* page = document_->GetPage();
+  DCHECK(page);
+  return page->GetSVGDocumentResourceTracker().GetCacheIdentifier();
+}
+
 const ClientHintsPreferences FrameFetchContext::GetClientHintsPreferences()
     const {
   if (GetResourceFetcherProperties().IsDetached()) {
@@ -1313,13 +1388,18 @@ bool FrameFetchContext::CalculateIfAdSubresource(
     base::optional_ref<const KURL> alias_url,
     ResourceType type,
     const FetchInitiatorInfo& initiator_info,
+    bool scan_stack_for_ads,
     subresource_filter::ScopedRule* out_rule) {
   CHECK(!out_rule);
 
   // Mark the resource as an Ad if the BaseFetchContext thinks it's an ad.
+  // `scan_stack_for_ads` is only used by the `AdTracker` and is used later in
+  // this function, `BaseFetchContext::CalculateIfAdSubresource` doesn't need
+  // it.
   subresource_filter::ScopedRule rule;
   bool known_ad = BaseFetchContext::CalculateIfAdSubresource(
-      resource_request, alias_url, type, initiator_info, /*out_rule=*/&rule);
+      resource_request, alias_url, type, initiator_info,
+      /*scan_stack_for_ads=*/false, /*out_rule=*/&rule);
   if (GetResourceFetcherProperties().IsDetached() ||
       !GetFrame()->GetAdTracker()) {
     return known_ad;
@@ -1330,7 +1410,8 @@ bool FrameFetchContext::CalculateIfAdSubresource(
   const KURL& url =
       alias_url.has_value() ? alias_url.value() : resource_request.Url();
   return GetFrame()->GetAdTracker()->CalculateIfAdSubresource(
-      document_->domWindow(), url, type, initiator_info, known_ad, rule);
+      document_->domWindow(), url, type, initiator_info, known_ad,
+      scan_stack_for_ads, rule);
 }
 
 void FrameFetchContext::DidObserveLoadingBehavior(

@@ -24,6 +24,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "termcolor"
   cargo_pkg_description =
       "A simple cross platform library for writing colored text to a terminal."
+  cargo_pkg_repository = "https://github.com/BurntSushi/termcolor"
   cargo_pkg_version = "1.4.1"
 
   allow_unsafe = false

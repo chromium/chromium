@@ -62,13 +62,12 @@ base::TimeDelta ProbeBase::Duration() const {
 AsyncTask::AsyncTask(ExecutionContext* context,
                      AsyncTaskContext* task_context,
                      const char* step,
-                     bool enabled,
-                     AdTrackingType ad_tracking_type)
+                     bool enabled)
     : debugger_(enabled && context ? ThreadDebugger::From(context->GetIsolate())
                                    : nullptr),
       task_context_(task_context),
       recurring_(step),
-      ad_tracker_(enabled && ad_tracking_type == AdTrackingType::kReport
+      ad_tracker_(enabled && task_context->IsAdTask()
                       ? AdTracker::FromExecutionContext(context)
                       : nullptr) {
   // TODO(crbug.com/1275875): Verify that `task_context` was scheduled, but

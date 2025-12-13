@@ -82,10 +82,10 @@ void WebGLTimerQueryEXT::DeleteObjectImpl(gpu::gles2::GLES2Interface* gl) {
 void WebGLTimerQueryEXT::ScheduleAllowAvailabilityUpdate() {
   if (task_handle_.IsActive())
     return;
-  task_handle_ = PostCancellableTask(
-      *task_runner_, FROM_HERE,
-      WTF::BindOnce(&WebGLTimerQueryEXT::AllowAvailabilityUpdate,
-                    WrapWeakPersistent(this)));
+  task_handle_ =
+      PostCancellableTask(*task_runner_, FROM_HERE,
+                          BindOnce(&WebGLTimerQueryEXT::AllowAvailabilityUpdate,
+                                   WrapWeakPersistent(this)));
 }
 
 void WebGLTimerQueryEXT::AllowAvailabilityUpdate() {

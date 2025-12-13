@@ -13,6 +13,7 @@
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/record_paint_canvas.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
@@ -224,12 +225,13 @@ TEST_F(SolidColorAnalyzerTest, DrawRectClipPath) {
   SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 11, 22, 33));
   flags.setColor(color);
 
-  SkPath path;
-  path.moveTo(0, 0);
-  path.lineTo(128, 50);
-  path.lineTo(255, 0);
-  path.lineTo(255, 255);
-  path.lineTo(0, 255);
+  const SkPath path = SkPathBuilder()
+                          .moveTo(0, 0)
+                          .lineTo(128, 50)
+                          .lineTo(255, 0)
+                          .lineTo(255, 255)
+                          .lineTo(0, 255)
+                          .detach();
 
   SkRect rect = SkRect::MakeWH(200, 200);
   canvas_.clipPath(path, SkClipOp::kIntersect);

@@ -147,7 +147,12 @@ void LockScreenReauthManager::ResetOnlineReauth() {
   user_manager::UserManager::Get()->SaveForceOnlineSignin(
       primary_user_->GetAccountId(), false);
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  known_user.SetLastOnlineSignin(primary_user_->GetAccountId(), clock_->Now());
+  base::Time current_time = clock_->Now();
+  known_user.SetLastOnlineSignin(primary_user_->GetAccountId(), current_time);
+  // Also adding this information to prefs, because ephemeral users cannot
+  // access local state properly.
+  primary_profile_->GetPrefs()->SetTime(prefs::kLastOnlineSignInTime,
+                                        current_time);
 }
 
 void LockScreenReauthManager::CheckCredentials(

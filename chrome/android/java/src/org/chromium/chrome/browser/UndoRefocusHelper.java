@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assertNonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -26,13 +28,14 @@ import java.util.List;
 import java.util.Set;
 
 /** Refocus on previously selected tab if the selected tab closure was undone. */
+@NullMarked
 public class UndoRefocusHelper {
     private final Set<Integer> mTabsClosedFromTabStrip;
     private final TabModelSelector mModelSelector;
     private final ObservableSupplier<LayoutManagerImpl> mLayoutManagerObservableSupplier;
 
-    private LayoutManagerImpl mLayoutManager;
-    private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
+    private @Nullable LayoutManagerImpl mLayoutManager;
+    private LayoutStateProvider.@Nullable LayoutStateObserver mLayoutStateObserver;
     private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private int mSelectedTabIdWhenTabClosed = Tab.INVALID_TAB_ID;
     private boolean mTabSwitcherActive;
@@ -66,6 +69,7 @@ public class UndoRefocusHelper {
         mTabModelSelectorTabModelObserver.destroy();
         mLayoutManagerObservableSupplier.removeObserver(mLayoutManagerSupplierCallback);
         if (mLayoutManager != null) {
+            assertNonNull(mLayoutStateObserver);
             mLayoutManager.removeObserver(mLayoutStateObserver);
         }
     }
@@ -116,6 +120,7 @@ public class UndoRefocusHelper {
                         if (selectedTabIdx == TabList.INVALID_TAB_INDEX) return;
 
                         Tab selectedTab = mModelSelector.getModel(false).getTabAt(selectedTabIdx);
+                        assertNonNull(selectedTab);
                         maybeSetSelectedTabId(selectedTab);
                         // Record metric only once for the set.
                         // Use the selected id to track the set.
@@ -125,7 +130,7 @@ public class UndoRefocusHelper {
                     }
 
                     @Override
-                    public void didSelectTab(Tab tab, int type, int lastId) {
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                         // Undoing a selected tab closure, after manually switching tabs shouldn't
                         // switch focus to the reopened tab.
                         if (type == TabSelectionType.FROM_USER
@@ -144,8 +149,8 @@ public class UndoRefocusHelper {
                         }
 
                         mActivePendingTabClosures--;
-                        @Nullable
-                        Set<Tab> setContainingTab =
+
+                        @Nullable Set<Tab> setContainingTab =
                                 removeTabFromTabClosedTogetherListIfPresent(tab);
 
                         // if all tab closures are undone OR entire group of multiple tabs is
@@ -178,8 +183,7 @@ public class UndoRefocusHelper {
                             mTabsClosedFromTabStrip.remove(tab.getId());
                             mActivePendingTabClosures--;
 
-                            @Nullable
-                            Set<Tab> setContainingTab =
+                            @Nullable Set<Tab> setContainingTab =
                                     removeTabFromTabClosedTogetherListIfPresent(tab);
 
                             if (setContainingTab != null && setContainingTab.isEmpty()) {

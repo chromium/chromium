@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -326,24 +327,8 @@ class TrustedVaultConnectionImplTest
   std::unique_ptr<TrustedVaultConnectionImpl> connection_;
 };
 
-class TrustedVaultConnectionImplTestNoSecurityDomainFilter
-    : public TrustedVaultConnectionImplTest {
- public:
-  TrustedVaultConnectionImplTestNoSecurityDomainFilter() {
-    feature_list_.InitAndDisableFeature(
-        kEnableRegistrationStateSecurityDomainFiltering);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 INSTANTIATE_TEST_SUITE_P(ForSecurityDomain,
                          TrustedVaultConnectionImplTest,
-                         testing::ValuesIn(kAllSecurityDomainIdValues.begin(),
-                                           kAllSecurityDomainIdValues.end()));
-INSTANTIATE_TEST_SUITE_P(ForSecurityDomain,
-                         TrustedVaultConnectionImplTestNoSecurityDomainFilter,
                          testing::ValuesIn(kAllSecurityDomainIdValues.begin(),
                                            kAllSecurityDomainIdValues.end()));
 
@@ -1172,36 +1157,6 @@ TEST_P(TrustedVaultConnectionImplTest,
 
   ASSERT_TRUE(RespondToDownloadAuthenticationFactorsRegistrationStateRequest(
       /*security_domain_filter=*/{security_domain()},
-      /*recovery_factor_filter=*/{},
-      /*next_page_token=*/std::nullopt, net::HTTP_OK,
-      /*response_body=*/
-      MakeSecurityDomainMembers(
-          security_domain(),
-          {Member::kPhysical, Member::kOtherSecurityDomain,
-           Member::kUsableVirtual},
-          /*next_page_token=*/std::nullopt)
-          .SerializeAsString()));
-}
-
-TEST_P(TrustedVaultConnectionImplTestNoSecurityDomainFilter,
-       DownloadAuthenticationFactorsRegistrationState_Basic_NoServerFiltering) {
-  base::MockCallback<TrustedVaultConnection::
-                         DownloadAuthenticationFactorsRegistrationStateCallback>
-      callback;
-
-  std::unique_ptr<TrustedVaultConnection::Request> request =
-      connection()->DownloadAuthenticationFactorsRegistrationState(
-          /*account_info=*/CoreAccountInfo(), callback.Get(),
-          base::NullCallback());
-  ASSERT_THAT(request, NotNull());
-
-  EXPECT_CALL(callback,
-              Run(HasRecoveryState(
-                  DownloadAuthenticationFactorsRegistrationStateResult::State::
-                      kRecoverable)));
-
-  ASSERT_TRUE(RespondToDownloadAuthenticationFactorsRegistrationStateRequest(
-      /*security_domain_filter=*/{},
       /*recovery_factor_filter=*/{},
       /*next_page_token=*/std::nullopt, net::HTTP_OK,
       /*response_body=*/

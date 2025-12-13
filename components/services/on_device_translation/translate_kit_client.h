@@ -16,7 +16,7 @@
 #include "base/scoped_native_library.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
-#include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
+#include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/services/on_device_translation/translate_kit_structs.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -51,6 +51,8 @@ class TranslateKitClient {
    public:
     virtual ~Translator() = default;
     virtual std::optional<std::string> Translate(const std::string& text) = 0;
+    virtual std::vector<std::string> SplitSentences(
+        const std::string& text) = 0;
   };
 
   static TranslateKitClient* Get();
@@ -90,6 +92,7 @@ class TranslateKitClient {
 
     TranslatorImpl(base::PassKey<TranslatorImpl>,
                    TranslateKitClient* client,
+                   const std::string& source_lang,
                    std::uintptr_t translator_ptr);
     ~TranslatorImpl() override;
     // Not copyable.
@@ -97,10 +100,12 @@ class TranslateKitClient {
     TranslatorImpl& operator=(const TranslatorImpl&) = delete;
 
     std::optional<std::string> Translate(const std::string& text) override;
+    std::vector<std::string> SplitSentences(const std::string& text) override;
 
    private:
     // Guaranteed to exist, as `client_` owns `this`.
     raw_ptr<TranslateKitClient> client_;
+    const std::string source_lang_;
     // A pointer to a Translator instance created by the TranslateKit.
     // It should only be instantiated and deleted by the TranslateKit library.
     std::uintptr_t translator_ptr_;
@@ -179,6 +184,14 @@ class TranslateKitClient {
                                         TranslateCallbackFn,
                                         std::uintptr_t user_data);
   TranslatorTranslateFn translator_translate_func_;
+
+  typedef void (*SentenceSplitCallbackFn)(TranslateKitOutputText,
+                                          std::uintptr_t);
+  typedef bool (*TranslateKitSplitSentencesFn)(TranslateKitInputText,
+                                               TranslateKitLanguage,
+                                               SentenceSplitCallbackFn,
+                                               std::uintptr_t user_data);
+  TranslateKitSplitSentencesFn translate_kit_sentence_split_func_;
 
   // The pointer to the TranslateKit instance or 0 if not initialized or
   // error `mojom::CreateTranslatorResult` if failed to initialize.

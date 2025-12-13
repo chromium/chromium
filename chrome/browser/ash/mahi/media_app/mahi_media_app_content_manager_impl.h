@@ -15,7 +15,6 @@
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
 #include "chromeos/components/mahi/public/cpp/mahi_util.h"
-#include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "ui/aura/window_observer.h"
 
 namespace ash {

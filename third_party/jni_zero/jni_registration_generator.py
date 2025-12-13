@@ -30,13 +30,17 @@ import proxy
 _THIS_DIR = os.path.dirname(__file__)
 
 
-def _ParseHelper(package_prefix, package_prefix_filter, path):
+def _ParseHelper(package_prefix, package_prefix_filter, enable_legacy_natives,
+                 path):
   return parse.parse_java_file(path,
                                package_prefix=package_prefix,
-                               package_prefix_filter=package_prefix_filter)
+                               package_prefix_filter=package_prefix_filter,
+                               enable_legacy_natives=enable_legacy_natives,
+                               allow_private_called_by_natives=True)
 
 
-def _LoadJniObjs(paths, namespace, package_prefix, package_prefix_filter):
+def _LoadJniObjs(paths, namespace, package_prefix, package_prefix_filter, *,
+                 enable_legacy_natives):
   ret = {}
   if all(p.endswith('.jni.pickle') for p in paths):
     for pickle_path in paths:
@@ -50,7 +54,7 @@ def _LoadJniObjs(paths, namespace, package_prefix, package_prefix_filter):
       ]
   else:
     func = functools.partial(_ParseHelper, package_prefix,
-                             package_prefix_filter)
+                             package_prefix_filter, enable_legacy_natives)
     with multiprocessing.Pool() as pool:
       for pf in pool.imap_unordered(func, paths):
         ret[pf.filename] = [
@@ -62,13 +66,9 @@ def _LoadJniObjs(paths, namespace, package_prefix, package_prefix_filter):
   return ret
 
 
-def _FilterJniObjs(jni_objs_by_path, include_test_only, module_name):
+def _FilterJniObjs(jni_objs_by_path, module_name):
   for jni_objs in jni_objs_by_path.values():
-    # Remove test-only methods.
-    if not include_test_only:
-      for jni_obj in jni_objs:
-        jni_obj.RemoveTestOnlyNatives()
-    # Ignoring non-active modules and empty natives lists.
+    # Ignore non-active modules and empty natives lists.
     jni_objs[:] = [
         o for o in jni_objs if o.natives and o.module_name == module_name
     ]
@@ -121,13 +121,19 @@ def _Generate(args,
   native_sources_set = set(native_sources)
   java_sources_set = set(java_sources)
 
-  jni_objs_by_path = _LoadJniObjs(native_sources_set | java_sources_set,
-                                  args.namespace, args.package_prefix,
-                                  args.package_prefix_filter)
-  _FilterJniObjs(jni_objs_by_path, args.include_test_only, args.module_name)
+  jni_objs_by_path = _LoadJniObjs(
+      native_sources_set | java_sources_set,
+      args.namespace,
+      args.package_prefix,
+      args.package_prefix_filter,
+      enable_legacy_natives=args.enable_legacy_natives)
+  _FilterJniObjs(jni_objs_by_path, args.module_name)
 
   present_jni_objs = list(
       _Flatten(jni_objs_by_path, native_sources_set & java_sources_set))
+
+  def RemoveTestOnlyNatives(self):
+    self.natives = [n for n in self.natives if not n.is_test_only]
 
   # Can contain path not in present_jni_objs.
   priority_set = set(priority_java_sources or [])
@@ -144,7 +150,9 @@ def _Generate(args,
         priority_set,
         never_omit_switch_num=never_omit_switch_num)
     muxed_aliases_by_sig = proxy.populate_muxed_switch_num(
-        present_jni_objs, never_omit_switch_num=never_omit_switch_num)
+        present_jni_objs,
+        never_omit_switch_num=never_omit_switch_num,
+        include_test_only=args.include_test_only)
 
   java_only_jni_objs = _CheckForJavaNativeMismatch(args, jni_objs_by_path,
                                                    native_sources_set,
@@ -152,6 +160,14 @@ def _Generate(args,
 
   present_proxy_natives = _CollectNatives(present_jni_objs, jni_mode)
   absent_proxy_natives = _CollectNatives(java_only_jni_objs, jni_mode)
+
+  if not args.include_test_only:
+    absent_proxy_natives.extend(n for n in present_proxy_natives
+                                if n.is_test_only)
+    present_proxy_natives = [
+        n for n in present_proxy_natives if not n.is_test_only
+    ]
+
   boundary_proxy_natives = present_proxy_natives
   if jni_mode.is_muxing:
     boundary_proxy_natives = [
@@ -170,6 +186,10 @@ def _Generate(args,
       package_prefix_filter=args.package_prefix_filter)
 
   if args.header_path:
+    if not args.include_test_only:
+      for jni_obj in present_jni_objs:
+        jni_obj.RemoveTestOnlyNatives()
+
     if jni_mode.is_hashing or jni_mode.is_muxing:
       gen_jni_class = short_gen_jni_class
     else:
@@ -290,11 +310,15 @@ def _CreateHeader(jni_mode, jni_objs, boundary_proxy_natives, gen_jni_class,
   header_guard = os.path.splitext(args.header_path)[0].upper() + '_'
   header_guard = re.sub(r'[/.-]', '_', header_guard)
 
+  user_includes = [f'{args.include_path_prefix}jni_zero_internal.h']
+  if args.extra_includes:
+    user_includes += args.extra_includes
+
   preamble, epilogue = header_common.header_preamble(
       jni_generator.GetScriptName(),
       gen_jni_class,
       system_includes=['iterator'],  # For std::size().
-      user_includes=['third_party/jni_zero/jni_zero_internal.h'],
+      user_includes=user_includes,
       header_guard=header_guard)
 
   module_name = args.module_name or ''

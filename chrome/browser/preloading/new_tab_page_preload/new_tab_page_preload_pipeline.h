@@ -28,15 +28,20 @@ class NewTabPagePreloadPipeline {
   NewTabPagePreloadPipeline& operator=(const NewTabPagePreloadPipeline&) =
       delete;
 
-  // Returns true if prerender is started successfully or is present, false
-  // otherwise.
-  bool StartPrerender(content::WebContents& web_contents,
+  void StartPrefetch(content::WebContents& web_contents,
+                     content::PreloadingPredictor predictor);
+
+  void StartPrerender(content::WebContents& web_contents,
                       content::PreloadingPredictor predictor);
+
+  const GURL& url() const { return url_; }
 
  private:
   const scoped_refptr<content::PreloadPipelineInfo> pipeline_info_;
 
   const GURL url_;
+
+  std::unique_ptr<content::PrefetchHandle> prefetch_handle_;
 
   std::unique_ptr<content::PrerenderHandle> prerender_handle_;
 };

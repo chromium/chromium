@@ -23,7 +23,6 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -43,7 +42,7 @@ namespace gpu {
 
 namespace {
 
-auto kQualities = std::to_array<GLHelper::ScalerQuality>({
+constexpr auto kQualities = std::to_array<GLHelper::ScalerQuality>({
     GLHelper::SCALER_QUALITY_BEST,
     GLHelper::SCALER_QUALITY_GOOD,
     GLHelper::SCALER_QUALITY_FAST,
@@ -60,13 +59,9 @@ constexpr auto kQualityNames = std::to_array<const char*>({
 class GLHelperBenchmark : public testing::Test {
  protected:
   void SetUp() override {
-    ContextCreationAttribs attributes;
-    attributes.gpu_preference = gl::GpuPreference::kHighPerformance;
-
     context_ = std::make_unique<GLInProcessContext>();
     auto result = context_->Initialize(
-        viz::TestGpuServiceHolder::GetInstance()->task_executor(), attributes,
-        SharedMemoryLimits());
+        viz::TestGpuServiceHolder::GetInstance()->task_executor());
     DCHECK_EQ(result, ContextResult::kSuccess);
     gl_ = context_->GetImplementation();
     ContextSupport* support = context_->GetImplementation();

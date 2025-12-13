@@ -65,6 +65,8 @@ enum class PermissionType {
   HAND_TRACKING = 41,
   WEB_APP_INSTALLATION = 42,
   LOCAL_NETWORK_ACCESS = 43,
+  LOCAL_NETWORK = 44,
+  LOOPBACK_NETWORK = 45,
 
   // Always keep this at the end.
   NUM,

@@ -108,11 +108,12 @@ public class TabGroupRowView extends LinearLayout {
         ViewGroup.LayoutParams params = getLayoutParams();
         params.height = res.getDimensionPixelSize(R.dimen.tab_group_row_height_containment);
         setLayoutParams(params);
-        FrameLayout.MarginLayoutParams clusterParams =
-                (FrameLayout.MarginLayoutParams) mTabGroupFaviconCluster.getLayoutParams();
+        MarginLayoutParams clusterParams =
+                (MarginLayoutParams) mTabGroupFaviconCluster.getLayoutParams();
         clusterParams.setMarginStart(
                 res.getDimensionPixelSize(R.dimen.tab_group_list_first_element_margin_containment));
         mTabGroupFaviconCluster.setLayoutParams(clusterParams);
+        mTabGroupFaviconCluster.setContainmentEnabled(true);
     }
 
     void updateCornersForClusterData(ClusterData clusterData) {
@@ -196,7 +197,7 @@ public class TabGroupRowView extends LinearLayout {
         return BrowserUiListMenuUtils.getBasicListMenu(
                 getContext(),
                 listItems,
-                (item) -> onItemSelected(item, openRunnable, deleteRunnable, leaveRunnable));
+                (item, view) -> onItemSelected(item, openRunnable, deleteRunnable, leaveRunnable));
     }
 
     private void onItemSelected(

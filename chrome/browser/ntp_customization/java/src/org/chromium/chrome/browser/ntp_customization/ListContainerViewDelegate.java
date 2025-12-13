@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.ntp_customization;
 
 import android.content.Context;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.StringRes;
 import android.view.View;
+import android.widget.CompoundButton;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -74,4 +76,26 @@ public interface ListContainerViewDelegate {
     @Nullable
     @StringRes
     Integer getTrailingIconDescriptionResId(int type);
+
+    /**
+     * Returns the initial checked state for a list item that contains a switch. The default
+     * implementation returns false.
+     *
+     * @param type The type of the list item.
+     * @return True if the item's switch should be checked, false otherwise.
+     */
+    default boolean isListItemChecked(int type) {
+        return false;
+    }
+
+    /**
+     * Returns the listener to be invoked when a list item's checked state changes. The default
+     * implementation returns null.
+     *
+     * @param type The type of the list item for which to get the listener.
+     * @return The OnCheckedChangeListener for the item, or null if none is needed.
+     */
+    default CompoundButton.@Nullable OnCheckedChangeListener getOnCheckedChangeListener(int type) {
+        return null;
+    }
 }

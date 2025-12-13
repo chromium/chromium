@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/media/router/discovery/discovery_network_list.h"
 
 #include <ifaddrs.h>
@@ -18,6 +13,7 @@
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/discovery/discovery_network_list_wifi.h"
@@ -89,7 +85,7 @@ void GetDiscoveryNetworkInfoListImpl(
 
     network_info_list->push_back(
         {name, base::HexEncode(reinterpret_cast<const unsigned char*>(
-                                   SOCKET_ADDRESS(ll_addr)),
+                                   UNSAFE_TODO(SOCKET_ADDRESS(ll_addr))),
                                SOCKET_ADDRESS_LEN(ll_addr))});
   }
 }

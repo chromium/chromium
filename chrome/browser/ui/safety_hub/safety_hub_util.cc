@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/safety_check/safety_check.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/values.h"
@@ -26,8 +27,7 @@ base::TimeDelta GetCleanUpThreshold() {
           .Get()) {
     return safety_hub::kRevocationCleanUpThresholdWithDelayForTesting;
   }
-  return content_settings::features::
-      kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
+  return safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold();
 }
 
 // TODO(crbug/342210522): Refactor this to be cleaner.
@@ -114,29 +114,6 @@ bool IsAbusiveNotificationRevocationIgnored(HostContentSettingsMap* hcsm,
   }
   DCHECK(setting_val == safety_hub::kRevokeStr);
   return false;
-}
-
-void SetRevokedAbusiveNotificationPermission(
-    HostContentSettingsMap* hcsm,
-    GURL url,
-    bool is_ignored,
-    const content_settings::ContentSettingConstraints& constraints) {
-  DCHECK(url.is_valid());
-  // If the `url` should be ignore during future auto revocation, then the
-  // constraint should not expire. If the lifetime is zero, then the setting
-  // does not expire.
-  if (is_ignored) {
-    DCHECK(constraints.lifetime().is_zero());
-    DCHECK(constraints.expiration() == base::Time());
-  }
-  hcsm->SetWebsiteSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(url),
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS,
-      base::Value(base::Value::Dict().Set(
-          safety_hub::kRevokedStatusDictKeyStr,
-          is_ignored ? safety_hub::kIgnoreStr : safety_hub::kRevokeStr)),
-      constraints);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

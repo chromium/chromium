@@ -7,6 +7,7 @@
 #import <variant>
 
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/ptr_util.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"

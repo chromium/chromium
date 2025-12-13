@@ -21,6 +21,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
@@ -37,16 +38,16 @@
 #include "gpu/command_buffer/service/gpu_task_scheduler_helper.h"
 #include "gpu/command_buffer/service/gr_cache_controller.h"
 #include "gpu/command_buffer/service/program_cache.h"
-#include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/service_transfer_cache.h"
 #include "gpu/command_buffer/service/shared_image_interface_in_process.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/gl_in_process_context_export.h"
 #include "gpu/ipc/service/context_url.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gpu_preference.h"
 
@@ -65,7 +66,6 @@ class GpuProcessShmCount;
 class GpuTaskSchedulerHelper;
 class FenceSyncReleaseDelegate;
 class SharedImageInterface;
-struct ContextCreationAttribs;
 
 namespace webgpu {
 class WebGPUDecoder;
@@ -96,7 +96,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
   ~InProcessCommandBuffer() override;
 
   gpu::ContextResult Initialize(
-      const ContextCreationAttribs& attribs,
+      mojom::ContextCreationAttribsPtr attribs,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       gpu::raster::GrShaderCache* gr_shader_cache,
       GpuProcessShmCount* use_shader_cache_shm_count);
@@ -176,22 +176,21 @@ class GL_IN_PROCESS_CONTEXT_EXPORT InProcessCommandBuffer
 
  private:
   struct InitializeOnGpuThreadParams {
-    const raw_ref<const ContextCreationAttribs> attribs;
+    mojom::ContextCreationAttribsPtr attribs;
     raw_ptr<Capabilities> capabilities;       // Output.
     raw_ptr<GLCapabilities> gl_capabilities;  // Output.
     raw_ptr<gpu::raster::GrShaderCache> gr_shader_cache;
     raw_ptr<GpuProcessShmCount> use_shader_cache_shm_count;
 
-    InitializeOnGpuThreadParams(const ContextCreationAttribs& attribs,
+    InitializeOnGpuThreadParams(mojom::ContextCreationAttribsPtr attribs,
                                 Capabilities* capabilities,
                                 GLCapabilities* gl_capabilities,
                                 gpu::raster::GrShaderCache* gr_shader_cache,
-                                GpuProcessShmCount* use_shader_cache_shm_count)
-        : attribs(attribs),
-          capabilities(capabilities),
-          gl_capabilities(gl_capabilities),
-          gr_shader_cache(gr_shader_cache),
-          use_shader_cache_shm_count(use_shader_cache_shm_count) {}
+                                GpuProcessShmCount* use_shader_cache_shm_count);
+    ~InitializeOnGpuThreadParams();
+
+    InitializeOnGpuThreadParams(InitializeOnGpuThreadParams&& other);
+    InitializeOnGpuThreadParams& operator=(InitializeOnGpuThreadParams&& other);
   };
 
   // Initialize() and Destroy() are called on the client thread, but post tasks

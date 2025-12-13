@@ -10,7 +10,6 @@ import {OsBluetoothDevicesSubpageBrowserProxyImpl, Router, routes} from 'chrome:
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {setHidPreservingControllerForTesting} from 'chrome://resources/ash/common/bluetooth/hid_preserving_bluetooth_state_controller.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import type {BluetoothSystemProperties, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {BluetoothSystemState, DeviceConnectionState} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -354,7 +353,7 @@ suite('<os-settings-bluetooth-summary>', () => {
     assertEquals(
         bluetoothSummary.i18n(
             'bluetoothSummaryPageTwoDevicesDescription', device1.nickname!,
-            mojoString16ToString(device2.deviceProperties.publicName)),
+            device2.deviceProperties.publicName),
         getSecondaryLabel());
 
     // Simulate a single connected device.

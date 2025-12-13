@@ -35,7 +35,6 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/webui_util.h"
 
@@ -197,12 +196,6 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : MojoWebDialogUI(web_ui) {
 }
 
 SetTimeUI::~SetTimeUI() = default;
-
-void SetTimeUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
-}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SetTimeUI)
 

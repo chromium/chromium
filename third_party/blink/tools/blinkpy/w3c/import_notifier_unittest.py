@@ -578,7 +578,7 @@ class ImportNotifierTest(unittest.TestCase):
             'third_party/blink/web_tests/TestExpectations#100',
             bug.description.splitlines())
         checks_url = ('See ' + CHECKS_URL_TEMPLATE + ' for details.').format(
-            '12345', '1')
+            issue=12345, patchset=1, test_filter='external/wpt/foo')
         self.assertIn(checks_url, bug.description.splitlines())
         self.assertIn(
             'This bug was filed automatically due to a new WPT test failure '

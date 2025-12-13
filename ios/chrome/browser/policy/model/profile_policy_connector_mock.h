@@ -10,6 +10,7 @@
 #include "ios/chrome/browser/policy/model/profile_policy_connector.h"
 
 namespace policy {
+class CloudPolicyStore;
 class PolicyService;
 class SchemaRegistry;
 }  // namespace policy
@@ -24,7 +25,8 @@ class ProfilePolicyConnectorMock : public ProfilePolicyConnector {
  public:
   ProfilePolicyConnectorMock(
       std::unique_ptr<policy::PolicyService> policy_service,
-      policy::SchemaRegistry* schema_registry);
+      policy::SchemaRegistry* schema_registry,
+      policy::CloudPolicyStore* policy_store = nullptr);
   ~ProfilePolicyConnectorMock();
   ProfilePolicyConnectorMock(const ProfilePolicyConnectorMock&) = delete;
   ProfilePolicyConnectorMock& operator=(const ProfilePolicyConnectorMock&) =

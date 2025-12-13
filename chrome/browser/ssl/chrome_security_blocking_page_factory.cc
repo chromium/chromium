@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
+#include "components/tabs/public/tab_interface.h"
 #include "net/base/net_errors.h"
 #include "net/dns/public/secure_dns_mode.h"
 #endif
@@ -348,16 +349,9 @@ void OpenLoginTab(Browser* browser,
 }
 
 // static
-void ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents(
-    content::WebContents* web_contents,
-    bool focus) {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-
-  // If the Profile doesn't have a tabbed browser window open, do nothing.
-  if (!browser) {
-    return;
-  }
-
+void ChromeSecurityBlockingPageFactory::OpenLoginPageForBrowser(
+    base::FunctionRef<Browser*()> get_browser,
+    bool focus_tab) {
   SecureDnsConfig secure_dns_config =
       SystemNetworkContextManager::GetStubResolverConfigReader()
           ->GetSecureDnsConfiguration(
@@ -367,20 +361,34 @@ void ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents(
   // new popup windows where secure DNS will be disabled.
   if (secure_dns_config.mode() == net::SecureDnsMode::kSecure) {
     // If there is already a captive portal popup window, do not create another.
-    for (auto* contents : AllTabContentses()) {
-      captive_portal::CaptivePortalTabHelper* captive_portal_tab_helper =
+    bool found_login_tab = false;
+    tabs::ForEachTabInterface([&found_login_tab](tabs::TabInterface* tab) {
+      content::WebContents* const contents = tab->GetContents();
+      captive_portal::CaptivePortalTabHelper* const captive_portal_tab_helper =
           captive_portal::CaptivePortalTabHelper::FromWebContents(contents);
       if (captive_portal_tab_helper->IsLoginTab()) {
-        Browser* browser_with_login_tab = chrome::FindBrowserWithTab(contents);
-        browser_with_login_tab->window()->Show();
-        browser_with_login_tab->tab_strip_model()->ActivateTabAt(
-            browser_with_login_tab->tab_strip_model()->GetIndexOfWebContents(
-                contents));
-        return;
+        BrowserWindowInterface* const browser_with_login_tab =
+            tab->GetBrowserWindowInterface();
+        browser_with_login_tab->GetWindow()->Show();
+        TabStripModel* const tab_strip_model =
+            browser_with_login_tab->GetTabStripModel();
+        tab_strip_model->ActivateTabAt(tab_strip_model->GetIndexOfTab(tab));
+        found_login_tab = true;
       }
+      return !found_login_tab;
+    });
+    if (found_login_tab) {
+      return;
     }
+  }
 
-    // Otherwise, create a captive portal popup window.
+  Browser* browser = get_browser();
+  // If the Profile doesn't have a tabbed browser window open, do nothing.
+  if (!browser) {
+    return;
+  }
+  // Create a captive portal popup window.
+  if (secure_dns_config.mode() == net::SecureDnsMode::kSecure) {
     OpenLoginTab(browser, captive_portal::CaptivePortalWindowType::kPopup);
     return;
   }
@@ -395,7 +403,7 @@ void ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents(
     captive_portal::CaptivePortalTabHelper* captive_portal_tab_helper =
         captive_portal::CaptivePortalTabHelper::FromWebContents(contents);
     if (captive_portal_tab_helper->IsLoginTab()) {
-      if (focus) {
+      if (focus_tab) {
         browser->tab_strip_model()->ActivateTabAt(i);
       }
       return;
@@ -404,6 +412,39 @@ void ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents(
 
   // Otherwise, open a login tab.
   OpenLoginTab(browser, captive_portal::CaptivePortalWindowType::kTab);
+}
+
+// static
+void ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents(
+    content::WebContents* web_contents,
+    bool focus_tab) {
+  OpenLoginPageForBrowser(
+      [&web_contents]() { return chrome::FindBrowserWithTab(web_contents); },
+      focus_tab);
+}
+
+// static
+void ChromeSecurityBlockingPageFactory::
+    OpenLoginPageInAnyTabbedBrowserOrCreateOne(Profile* profile,
+                                               bool focus_tab) {
+  auto lambda = [&profile]() -> Browser* {
+    Browser* browser = chrome::FindTabbedBrowser(profile, false);
+    // Create browser if not exists.
+    if (!browser && Browser::GetCreationStatusForProfile(profile) ==
+                        Browser::CreationStatus::kOk) {
+      Browser::CreateParams params(profile, /*user_gesture=*/true);
+      browser = Browser::Create(params);
+    }
+
+    if (browser && browser->window()) {
+      browser->window()->Activate();
+      return browser;
+    } else {
+      return nullptr;
+    }
+  };
+
+  OpenLoginPageForBrowser(lambda, focus_tab);
 }
 
 #endif  // BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)

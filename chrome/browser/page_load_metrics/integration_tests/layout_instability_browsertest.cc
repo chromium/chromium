@@ -62,7 +62,7 @@ void LayoutInstabilityTest::RunWPT(const std::string& test_file,
   if (frame == ShiftFrame::LayoutShiftOnlyInMainFrame ||
       frame == ShiftFrame::LayoutShiftOnlyInBothFrames) {
     base::Value::List value =
-        EvalJs(web_contents(), "cls_run_tests").ExtractList();
+        EvalJs(web_contents(), "cls_run_tests").TakeValue().TakeList();
     for (auto& d : value) {
       expectations.Append(std::move(d));
     }
@@ -72,7 +72,7 @@ void LayoutInstabilityTest::RunWPT(const std::string& test_file,
     content::RenderFrameHost* child_frame =
         content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
     base::Value::List value =
-        EvalJs(child_frame, "cls_run_tests").ExtractList();
+        EvalJs(child_frame, "cls_run_tests").TakeValue().TakeList();
     for (auto& d : value) {
       expectations.Append(std::move(d));
     }
@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest, SimpleBlockMovement) {
 
   // Extract the startTime and score list from watcher_entry_record.
   base::Value::List entry_records_list =
-      EvalJs(web_contents(), "waitForTestFinished()").ExtractList();
+      EvalJs(web_contents(), "waitForTestFinished()").TakeValue().TakeList();
 
   // Verify that the entry_records_list has exactly 1 records.
   EXPECT_EQ(1ul, entry_records_list.size());
@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
 
   // Extract the startTime and score list from watcher_entry_record.
   base::Value::List entry_records_list =
-      EvalJs(web_contents(), "waitForTestFinished()").ExtractList();
+      EvalJs(web_contents(), "waitForTestFinished()").TakeValue().TakeList();
 
   // Verify that the entry_records_list has exactly 2 records.
   EXPECT_EQ(2ul, entry_records_list.size());
@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(LayoutInstabilityTest,
 
   // Extract the startTime and score list from watcher_entry_record.
   base::Value::List entry_records_list =
-      EvalJs(web_contents(), "waitForTestFinished()").ExtractList();
+      EvalJs(web_contents(), "waitForTestFinished()").TakeValue().TakeList();
 
   // Verify that the entry_records_list has exactly 2 records.
   EXPECT_EQ(2ul, entry_records_list.size());

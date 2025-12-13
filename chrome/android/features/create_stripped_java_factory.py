@@ -207,6 +207,14 @@ def main(args):
   with open(options.input, 'r') as f:
     content = f.read()
 
+  if '<@Nullable' in content:
+    sys.stderr.write("""
+Error: @Nullable annotations inside generic types are not supported.
+Please remove them from {file_path}.
+See https://crbug.com/433562519 for details.
+""".format(file_path=options.input))
+    sys.exit(1)
+
   java_ast = javalang.parse.parse(content)
   assert len(java_ast.types) == 1, 'Can only process Java files with one class'
   clazz = java_ast.types[0]

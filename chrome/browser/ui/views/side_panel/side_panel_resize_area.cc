@@ -147,7 +147,8 @@ void SidePanelResizeArea::Layout(PassKey) {
                               contents_bounds.x(), local_bounds.height());
   } else {
     resize_bounds = gfx::Rect(contents_bounds.right(), local_bounds.y(),
-                              local_bounds.right(), local_bounds.height());
+                              local_bounds.right() - contents_bounds.right(),
+                              local_bounds.height());
   }
 
   SetBoundsRect(resize_bounds);

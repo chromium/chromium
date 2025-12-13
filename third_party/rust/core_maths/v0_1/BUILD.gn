@@ -24,6 +24,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Robert Bastian <me@robertbastian.dev"
   cargo_pkg_name = "core_maths"
   cargo_pkg_description = "Extension trait for full float functionality in `#[no_std]` backed by `libm`."
+  cargo_pkg_repository = "https://github.com/robertbastian/core_maths"
   cargo_pkg_version = "0.1.1"
 
   allow_unsafe = false

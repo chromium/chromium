@@ -4,6 +4,7 @@
 
 #include "partition_alloc/partition_alloc_base/files/file_util.h"
 
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/posix/eintr_wrapper.h"
 
 namespace partition_alloc::internal::base {
@@ -11,8 +12,8 @@ namespace partition_alloc::internal::base {
 bool ReadFromFD(int fd, char* buffer, size_t bytes) {
   size_t total_read = 0;
   while (total_read < bytes) {
-    ssize_t bytes_read =
-        WrapEINTR(read)(fd, buffer + total_read, bytes - total_read);
+    ssize_t bytes_read = WrapEINTR(read)(
+        fd, PA_UNSAFE_TODO(buffer + total_read), bytes - total_read);
     if (bytes_read <= 0) {
       break;
     }

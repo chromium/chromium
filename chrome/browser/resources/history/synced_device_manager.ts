@@ -8,8 +8,12 @@ import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import './synced_device_card.js';
 import '/strings.m.js';
 
+// <if expr="not is_chromeos">
+import type {AccountInfo} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+// </if>
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {FocusGrid} from 'chrome://resources/js/focus_grid.js';
 import type {FocusRow} from 'chrome://resources/js/focus_row.js';
@@ -18,8 +22,8 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserServiceImpl} from './browser_service.js';
-import {SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
-import type {ForeignSession, ForeignSessionTab} from './externs.js';
+import {HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram, SyncState} from './constants.js';
+import type {ForeignSession, ForeignSessionTab, HistoryIdentityState} from './externs.js';
 import type {HistorySyncedDeviceCardElement} from './synced_device_card.js';
 import {getCss} from './synced_device_manager.css.js';
 import {getHtml} from './synced_device_manager.html.js';
@@ -49,7 +53,11 @@ export interface HistorySyncedDeviceManagerElement {
   };
 }
 
-export class HistorySyncedDeviceManagerElement extends CrLitElement {
+const HistorySyncedDeviceManagerElementBase =
+    WebUiListenerMixinLit(CrLitElement);
+
+export class HistorySyncedDeviceManagerElement extends
+    HistorySyncedDeviceManagerElementBase {
   static get is() {
     return 'history-synced-device-manager';
   }
@@ -70,7 +78,7 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
        * An array of synced devices with synced tab data.
        */
       syncedDevices_: {type: Array},
-      signInState: {type: Boolean},
+      historyIdentityState_: {type: Object},
       guestSession_: {type: Boolean},
       signInAllowed_: {type: Boolean},
       fetchingSyncedTabs_: {type: Boolean},
@@ -79,6 +87,12 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
        * The session ID referring to the currently active action menu.
        */
       actionMenuModel_: {type: String},
+
+      replaceSyncPromosWithSignInPromos_: {type: Boolean},
+
+      // <if expr="not is_chromeos">
+      accountInfo_: {type: Object},
+      // </if>
     };
   }
 
@@ -92,8 +106,19 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
       loadTimeData.getBoolean('isGuestSession');
   private accessor signInAllowed_: boolean =
       loadTimeData.getBoolean('isSignInAllowed');
+  protected accessor replaceSyncPromosWithSignInPromos_: boolean =
+      loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos');
+  private signinPausedImpressionRecorded_: boolean = false;
+  // <if expr="not is_chromeos">
+  protected accessor accountInfo_: AccountInfo|null = null;
+  private onAccountInfoDataReceivedListenerId_: number|null = null;
+  // </if>
 
-  accessor signInState: boolean = false;
+  private accessor historyIdentityState_: HistoryIdentityState = {
+    signIn: HistorySignInState.SIGNED_OUT,
+    tabsSync: SyncState.TURNED_OFF,
+    historySync: SyncState.TURNED_OFF,
+  };
   accessor searchTerm: string = '';
   accessor sessionList: ForeignSession[] = [];
 
@@ -104,14 +129,21 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
     if (changedProperties.has('sessionList')) {
       this.updateSyncedDevices_();
     }
     if (changedProperties.has('searchTerm')) {
       this.searchTermChanged_();
     }
-    if (changedProperties.has('signInState')) {
-      this.signInStateChanged_(changedProperties.get('signInState'));
+    if (changedPrivateProperties.has('historyIdentityState_')) {
+      this.onIdentityStateChanged_(
+          (changedPrivateProperties.get('historyIdentityState_') || null) as
+              HistoryIdentityState |
+          null);
     }
   }
 
@@ -124,19 +156,44 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
     BrowserServiceImpl.getInstance().recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.INITIALIZED,
         SyncedTabsHistogram.LIMIT);
+
+    BrowserServiceImpl.getInstance().getInitialIdentityState().then(
+        (identityState: HistoryIdentityState) => {
+          this.historyIdentityState_ = identityState;
+        });
+
+    this.addWebUiListener(
+        'history-identity-state-changed',
+        (identityState: HistoryIdentityState) => this.historyIdentityState_ =
+            identityState);
+
+    // <if expr="not is_chromeos">
+    this.onAccountInfoDataReceivedListenerId_ =
+        BrowserServiceImpl.getInstance()
+            .callbackRouter.sendAccountInfo.addListener(
+                this.handleAccountInfoChanged_.bind(this));
+
+    BrowserServiceImpl.getInstance().handler.requestAccountInfo().then(
+        ({accountInfo}) => this.handleAccountInfoChanged_(accountInfo));
+    // </if>
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.focusGrid_!.destroy();
+
+    // <if expr="not is_chromeos">
+    assert(this.onAccountInfoDataReceivedListenerId_);
+    BrowserServiceImpl.getInstance().callbackRouter.removeListener(
+        this.onAccountInfoDataReceivedListenerId_);
+    this.onAccountInfoDataReceivedListenerId_ = null;
+    // </if>
   }
 
   configureSignInForTest(data: {
-    signInState: boolean,
     signInAllowed: boolean,
     guestSession: boolean,
   }) {
-    this.signInState = data.signInState;
     this.signInAllowed_ = data.signInAllowed;
     this.guestSession_ = data.guestSession;
   }
@@ -189,6 +246,16 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
   protected onTurnOnSyncClick_() {
     BrowserServiceImpl.getInstance().startTurnOnSyncFlow();
   }
+
+  // <if expr="not is_chromeos">
+  protected onTurnOnHistorySyncClick_() {
+    BrowserServiceImpl.getInstance().handler.turnOnHistorySync();
+  }
+
+  private handleAccountInfoChanged_(accountInfo: AccountInfo) {
+    this.accountInfo_ = accountInfo;
+  }
+  // </if>
 
   private onOpenMenu_(e: CustomEvent<{tag: string, target: HTMLElement}>) {
     this.actionMenuModel_ = e.detail.tag;
@@ -258,15 +325,36 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
     this.syncedDevices_ = [];
   }
 
+
+  protected isSignInState_(state: HistorySignInState): boolean {
+    return this.historyIdentityState_.signIn === state;
+  }
+
+  protected shouldShowHistorySyncOptIn_(): boolean {
+    return this.replaceSyncPromosWithSignInPromos_ &&
+        !this.isTabsSyncDisabled_() &&
+        !(this.isSignInState_(HistorySignInState.SIGNED_IN) &&
+          this.isTabsSyncTurnedOn_());
+  }
+
+  protected isTabsSyncTurnedOn_(): boolean {
+    return this.historyIdentityState_.tabsSync === SyncState.TURNED_ON;
+  }
+
+  protected isTabsSyncDisabled_(): boolean {
+    return this.historyIdentityState_.tabsSync === SyncState.DISABLED;
+  }
+
   /**
    * Decide whether or not should display no synced tabs message.
    */
   protected showNoSyncedMessage_(): boolean {
-    if (this.guestSession_) {
+    if (this.guestSession_ || this.isTabsSyncDisabled_()) {
       return true;
     }
 
-    return this.signInState && this.syncedDevices_.length === 0;
+    return this.isSignInState_(HistorySignInState.SIGNED_IN) &&
+        this.isTabsSyncTurnedOn_() && this.syncedDevices_.length === 0;
   }
 
   /**
@@ -274,8 +362,8 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
    * and not in a guest session.
    */
   protected showSignInGuide_(): boolean {
-    const show =
-        !this.signInState && !this.guestSession_ && this.signInAllowed_;
+    const show = this.isSignInState_(HistorySignInState.SIGNED_OUT) &&
+        !this.guestSession_ && this.signInAllowed_;
     if (show) {
       BrowserServiceImpl.getInstance().recordAction(
           'Signin_Impression_FromRecentTabs');
@@ -333,22 +421,53 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
    * tabs page. Sign in promo gets displayed when user is signed out, and
    * different messages are shown when there are no synced tabs.
    */
-  private signInStateChanged_(previous?: boolean) {
-    if (previous === undefined) {
+  private onIdentityStateChanged_(previous: HistoryIdentityState|null) {
+    this.maybeRecordSigninPendingOffered_();
+
+    if (previous === null) {
       return;
     }
 
     this.dispatchEvent(new CustomEvent(
         'history-view-changed', {bubbles: true, composed: true}));
 
-    // User signed out, clear synced device list and show the sign in promo.
-    if (!this.signInState) {
+    if (this.replaceSyncPromosWithSignInPromos_) {
+      // User signed out, syncing without tabs, or disabled sync in general =>
+      // clear synced device list.
+      if (this.isSignInState_(HistorySignInState.SIGNED_OUT) ||
+          this.isTabsSyncDisabled_()) {
+        this.clearDisplayedSyncedDevices_();
+        return;
+      }
+    } else if (this.isSignInState_(HistorySignInState.SIGNED_OUT)) {
+      // User signed out, clear synced device list and show the sign in promo.
       this.clearDisplayedSyncedDevices_();
       return;
     }
+    this.updateSyncedDevices_();
     // User signed in, show the loading message when querying for synced
     // devices.
     this.fetchingSyncedTabs_ = true;
+  }
+
+  private maybeRecordSigninPendingOffered_() {
+    if (!this.replaceSyncPromosWithSignInPromos_) {
+      return;
+    }
+
+    // Reset the flag if the state changes away from SIGNED_IN_PAUSED.
+    if (!this.isSignInState_(HistorySignInState.SIGN_IN_PENDING)) {
+      this.signinPausedImpressionRecorded_ = false;
+      return;
+    }
+
+    // Don't record twice.
+    if (this.signinPausedImpressionRecorded_) {
+      return;
+    }
+
+    BrowserServiceImpl.getInstance().recordSigninPendingOffered();
+    this.signinPausedImpressionRecorded_ = true;
   }
 
   private searchTermChanged_() {

@@ -67,7 +67,8 @@ class MODULES_EXPORT DeferredTaskHandler final
     : public ThreadSafeRefCounted<DeferredTaskHandler> {
  public:
   static scoped_refptr<DeferredTaskHandler> Create(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      uint32_t render_quantum_frames);
   ~DeferredTaskHandler();
 
   void HandleDeferredTasks();
@@ -86,6 +87,16 @@ class MODULES_EXPORT DeferredTaskHandler final
   // Called right before handlePostRenderTasks() to handle nodes which need to
   // be pulled even when they are not connected to anything.
   void ProcessAutomaticPullNodes(uint32_t frames_to_process);
+
+  // Called by AudioHandlers on the audio thread to request a pull status
+  // update at the start of the next render cycle.
+  void RequestPullStatusUpdate(AudioHandler*);
+
+  // Called by AudioHandlers on the audio thread to request a pull status
+  // update at the start of the next render cycle. This method will check
+  // the feature flag and either request a deferred update or call
+  // UpdatePullStatusIfNeeded() directly on the handler.
+  void UpdatePullStatusWithFeatureCheck(AudioHandler*);
 
   // Keep track of AudioNode's that have their channel count mode changed. We
   // process the changes in the post rendering phase.
@@ -205,16 +216,20 @@ class MODULES_EXPORT DeferredTaskHandler final
   // The number of frames to render each time.  After construction, this value
   // is only read (never modified), and may be read by both the audio thread and
   // the main thread.
-  unsigned int RenderQuantumFrames() const { return render_quantum_frames_; }
+  uint32_t RenderQuantumFrames() const { return render_quantum_frames_; }
 
  private:
-  explicit DeferredTaskHandler(scoped_refptr<base::SingleThreadTaskRunner>);
+  explicit DeferredTaskHandler(scoped_refptr<base::SingleThreadTaskRunner>,
+                               uint32_t render_quantum_frames);
   void UpdateAutomaticPullNodes();
   void UpdateChangedChannelCountMode();
   void UpdateChangedChannelInterpretation();
   void HandleDirtyAudioSummingJunctions();
   void HandleDirtyAudioNodeOutputs();
   void DeleteHandlersOnMainThread();
+
+  // Processes the queue of deferred pull status updates.
+  void ProcessDeferredPullStatusUpdates();
 
   // Check tail processing handlers and remove any handler if the tail
   // has been processed.
@@ -229,12 +244,18 @@ class MODULES_EXPORT DeferredTaskHandler final
   Vector<scoped_refptr<AudioHandler>> rendering_automatic_pull_handlers_
       GUARDED_BY(automatic_pull_handlers_lock_);
 
+  // A set of handlers that have requested a pull status update.
+  HashSet<AudioHandler*> deferred_pull_status_updates_;
+
   // Keeps track if the `automatic_pull_handlers` storage is touched.
   bool automatic_pull_handlers_need_updating_ = false;
 
   // Number of frames to use when rendering the graph.  This is the frames to
   // process for each node.
-  unsigned int render_quantum_frames_ = 128;
+  const uint32_t render_quantum_frames_;
+
+  // Caches the value of the feature flag for deferred pull status update.
+  const bool defer_pull_status_update_;
 
   // Collection of nodes where the channel count mode has changed. We want the
   // channel count mode to change in the pre- or post-rendering phase so as

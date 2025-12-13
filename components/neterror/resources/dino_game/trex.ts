@@ -5,7 +5,10 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {DEFAULT_DIMENSIONS, FPS, IS_HIDPI} from './constants.js';
-import {Runner} from './offline.js';
+import type {ConfigProvider} from './game_config.js';
+import type {GameStateProvider} from './game_state_provider.js';
+import type {GeneratedSoundFxProvider} from './generated_sound_fx.js';
+import type {ImageSpriteProvider} from './image_sprite_provider.js';
 import {CollisionBox} from './offline_sprite_definitions.js';
 import type {SpritePosition} from './sprite_position.js';
 import {getTimeStamp} from './utils.js';
@@ -157,7 +160,6 @@ export class Trex {
   jumping: boolean = false;
   speedDrop: boolean = false;
 
-  private runner: Runner;
   private canvasCtx: CanvasRenderingContext2D;
   private spritePos: SpritePosition;
   private xInitialPos: number = 0;
@@ -176,21 +178,26 @@ export class Trex {
   private altGameModeEnabled: boolean = false;
   private flashing: boolean = false;
   private minJumpHeight: number;
+  private resourceProvider: ConfigProvider&GameStateProvider&
+      ImageSpriteProvider&GeneratedSoundFxProvider;
 
 
   /**
    * T-rex game character.
    */
-  constructor(canvas: HTMLCanvasElement, spritePos: SpritePosition) {
+  constructor(
+      canvas: HTMLCanvasElement, spritePos: SpritePosition,
+      resourceProvider: ConfigProvider&GameStateProvider&ImageSpriteProvider&
+      GeneratedSoundFxProvider) {
     const canvasContext = canvas.getContext('2d');
     assert(canvasContext);
     this.canvasCtx = canvasContext;
     this.spritePos = spritePos;
+    this.resourceProvider = resourceProvider;
     this.config = Object.assign(defaultTrexConfig, normalJumpConfig);
-    this.runner = Runner.getInstance();
 
     const runnerDefaultDimensions = DEFAULT_DIMENSIONS;
-    const runnerBottomPadding = this.runner.getConfig().bottomPad;
+    const runnerBottomPadding = this.resourceProvider.getConfig().bottomPad;
     assert(runnerDefaultDimensions);
     assert(runnerBottomPadding);
     this.groundYPos = runnerDefaultDimensions.height - this.config.height -
@@ -208,7 +215,7 @@ export class Trex {
    */
   enableSlowConfig() {
     const jumpConfig =
-        this.runner.hasSlowdown ? slowJumpConfig : normalJumpConfig;
+        this.resourceProvider.hasSlowdown ? slowJumpConfig : normalJumpConfig;
     this.config = Object.assign(defaultTrexConfig, jumpConfig);
 
     this.adjustAltGameConfigForSlowSpeed();
@@ -221,7 +228,7 @@ export class Trex {
   enableAltGameMode(spritePos: SpritePosition) {
     this.altGameModeEnabled = true;
     this.spritePos = spritePos;
-    const spriteDefinition = this.runner.getSpriteDefinition();
+    const spriteDefinition = this.resourceProvider.getSpriteDefinition();
     assert(spriteDefinition);
     const tRexSpriteDefinition =
         spriteDefinition.tRex as AltGameModeSpriteConfig;
@@ -267,7 +274,7 @@ export class Trex {
    * Slow speeds adjustments for the alt game modes.
    */
   private adjustAltGameConfigForSlowSpeed(gravityValue?: number) {
-    if (this.runner.hasSlowdown) {
+    if (this.resourceProvider.hasSlowdown) {
       if (gravityValue) {
         this.config.gravity = gravityValue / 1.5;
       }
@@ -359,7 +366,7 @@ export class Trex {
         this.config.widthCrashed! :
         this.config.width;
 
-    const runnerImageSprite = this.runner.getRunnerImageSprite();
+    const runnerImageSprite = this.resourceProvider.getRunnerImageSprite();
     assert(runnerImageSprite);
 
 
@@ -403,7 +410,7 @@ export class Trex {
         this.altGameModeEnabled && this.jumping &&
         this.status !== Status.CRASHED) {
       assert(this.config.widthJump);
-      const spriteDefinition = this.runner.getSpriteDefinition();
+      const spriteDefinition = this.resourceProvider.getSpriteDefinition();
       assert(spriteDefinition);
       assert(spriteDefinition.tRex);
       const jumpOffset =
@@ -518,8 +525,8 @@ export class Trex {
       this.reset();
       this.jumpCount++;
 
-      if (this.runner.hasAudioCues) {
-        const generatedSoundFx = this.runner.getGeneratedSoundFx();
+      if (this.resourceProvider.hasAudioCues) {
+        const generatedSoundFx = this.resourceProvider.getGeneratedSoundFx();
         assert(generatedSoundFx);
         generatedSoundFx.loopFootSteps();
       }

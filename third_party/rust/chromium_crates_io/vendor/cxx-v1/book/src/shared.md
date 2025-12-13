@@ -215,6 +215,9 @@ bridge module.
 - `Ord`
 - `PartialEq`
 - `PartialOrd`
+- `BitAnd` (enums only)
+- `BitOr` (enums only)
+- `BitXor` (enums only)
 
 Note that shared enums automatically always come with impls of `Copy`, `Clone`,
 `Eq`, and `PartialEq`, so you're free to omit those derives on an enum.
@@ -242,5 +245,28 @@ C++ data type:
 - `Hash` gives you a specialization of [`template <> struct std::hash<T>`][hash] in C++
 - `PartialEq` produces `operator==` and `operator!=`
 - `PartialOrd` produces `operator<`, `operator<=`, `operator>`, `operator>=`
+- `BitAnd` produces `operator&`
+- `BitOr` produces `operator|`
+- `BitXor` produces `operator^`
 
 [hash]: https://en.cppreference.com/w/cpp/utility/hash
+
+## Alignment
+
+The attribute `repr(align(…))` sets a minimum required alignment for a shared
+struct. The alignment value must be a power of two in the range 2<sup>0</sup> to
+2<sup>13</sup>.
+
+This turns into an [`alignas`] specifier in C++.
+
+[`alignas`]: https://en.cppreference.com/w/cpp/language/alignas.html
+
+```rust,noplayground
+#[cxx::bridge]
+mod ffi {
+    #[repr(align(4))]
+    struct ExampleStruct {
+        b: [u8; 4],
+    }
+}
+```

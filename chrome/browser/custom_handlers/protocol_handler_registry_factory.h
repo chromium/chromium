@@ -25,8 +25,10 @@ class ProtocolHandlerRegistryFactory : public ProfileKeyedServiceFactory {
   // Returns the singleton instance of the ProtocolHandlerRegistryFactory.
   static ProtocolHandlerRegistryFactory* GetInstance();
 
+  static TestingFactory GetDefaultFactory();
+
   // Returns the ProtocolHandlerRegistry that provides intent registration for
-  // |context|. Ownership stays with this factory object.
+  // `context`. Ownership stays with this factory object.
   static custom_handlers::ProtocolHandlerRegistry* GetForBrowserContext(
       content::BrowserContext* context);
 

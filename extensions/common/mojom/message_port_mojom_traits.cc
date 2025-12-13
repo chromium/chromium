@@ -4,16 +4,68 @@
 
 #include "extensions/common/mojom/message_port_mojom_traits.h"
 
+#include "extensions/common/api/messaging/message.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
+#include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "mojo/public/mojom/base/unguessable_token.mojom.h"
 
 namespace mojo {
 
+// static
+extensions::mojom::MessageDataDataView::Tag UnionTraits<
+    extensions::mojom::MessageDataDataView,
+    extensions::MessageData>::GetTag(const extensions::MessageData& data) {
+  if (std::holds_alternative<std::string>(data)) {
+    return extensions::mojom::MessageDataDataView::Tag::kJson;
+  }
+  return extensions::mojom::MessageDataDataView::Tag::kStructuredCloned;
+}
+
+// static
+extensions::StructureClonedMessageWireData
+UnionTraits<extensions::mojom::MessageDataDataView, extensions::MessageData>::
+    structured_cloned(const extensions::MessageData& data) {
+  return std::get<extensions::StructureClonedMessageWireData>(data).Clone();
+}
+
+// static
+bool UnionTraits<
+    extensions::mojom::MessageDataDataView,
+    extensions::MessageData>::Read(extensions::mojom::MessageDataDataView data,
+                                   extensions::MessageData* out) {
+  switch (data.tag()) {
+    case extensions::mojom::MessageDataDataView::Tag::kJson: {
+      std::string json;
+      if (!data.ReadJson(&json)) {
+        return false;
+      }
+      *out = std::move(json);
+      return true;
+    }
+    case extensions::mojom::MessageDataDataView::Tag::kStructuredCloned: {
+      extensions::StructureClonedMessageWireData structured_cloned;
+      if (!data.ReadStructuredCloned(&structured_cloned)) {
+        return false;
+      }
+      *out = std::move(structured_cloned);
+      return true;
+    }
+  }
+  return false;
+}
+
 bool StructTraits<extensions::mojom::MessageDataView, extensions::Message>::
     Read(extensions::mojom::MessageDataView data, extensions::Message* out) {
-  out->format = data.format();
-  out->user_gesture = data.user_gesture();
-  out->from_privileged_context = data.from_privileged_context();
-  return data.ReadData(&out->data);
+  extensions::MessageData message_data;
+  if (!data.ReadData(&message_data)) {
+    return false;
+  }
+
+  *out =
+      extensions::Message(std::move(message_data), data.format(),
+                          data.user_gesture(), data.from_privileged_context());
+  return true;
 }
 
 bool StructTraits<extensions::mojom::PortIdDataView, extensions::PortId>::Read(

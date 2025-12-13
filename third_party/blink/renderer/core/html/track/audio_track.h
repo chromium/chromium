@@ -26,7 +26,7 @@ class CORE_EXPORT AudioTrack final : public ScriptWrappable, public TrackBase {
   void Trace(Visitor*) const override;
 
   bool enabled() const { return enabled_; }
-  void setEnabled(bool);
+  void setEnabled(bool enabled, ChangeSource source = ChangeSource::kScript);
 
   // Set enabled to false without notifying the owner media element. Used when
   // an exclusive audio track is enabled, implicitly disabling this one.

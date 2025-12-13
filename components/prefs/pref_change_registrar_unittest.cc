@@ -90,6 +90,24 @@ TEST_F(PrefChangeRegistrarTest, AddAndRemove) {
   Mock::VerifyAndClearExpectations(service());
 }
 
+TEST_F(PrefChangeRegistrarTest, AddMultiple) {
+  PrefChangeRegistrar registrar;
+  registrar.Init(service());
+
+  // Test adding.
+  EXPECT_CALL(*service(), AddPrefObserver("test.pref.1", &registrar));
+  EXPECT_CALL(*service(), AddPrefObserver("test.pref.2", &registrar));
+  registrar.AddMultiple({"test.pref.1", "test.pref.2"}, DoNothingClosure());
+  EXPECT_FALSE(registrar.IsEmpty());
+
+  // Test removing.
+  Mock::VerifyAndClearExpectations(service());
+  registrar.Remove("test.pref.1");
+  EXPECT_FALSE(registrar.IsEmpty());
+  registrar.Remove("test.pref.2");
+  EXPECT_TRUE(registrar.IsEmpty());
+}
+
 TEST_F(PrefChangeRegistrarTest, AutoRemove) {
   PrefChangeRegistrar registrar;
   registrar.Init(service());

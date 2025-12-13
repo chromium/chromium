@@ -6,14 +6,6 @@ source_set("clear_browsing_data") {
   sources = [
     "browsing_data_counter_wrapper_producer.h",
     "browsing_data_counter_wrapper_producer.mm",
-    "clear_browsing_data_consumer.h",
-    "clear_browsing_data_coordinator.h",
-    "clear_browsing_data_coordinator.mm",
-    "clear_browsing_data_manager.h",
-    "clear_browsing_data_manager.mm",
-    "clear_browsing_data_table_view_controller.h",
-    "clear_browsing_data_table_view_controller.mm",
-    "clear_browsing_data_ui_delegate.h",
     "pop_up_menu_control.h",
     "pop_up_menu_control.mm",
     "quick_delete_browsing_data_coordinator.h",
@@ -38,7 +30,8 @@ source_set("clear_browsing_data") {
     "time_range_selector_table_view_controller.mm",
   ]
   deps = [
-    ":ui_constants",
+    ":constants",
+    ":features",
     ":util",
     "//components/application_locale_storage",
     "//components/browsing_data/core",
@@ -57,7 +50,6 @@ source_set("clear_browsing_data") {
     "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet",
     "//ios/chrome/browser/browsing_data/model",
     "//ios/chrome/browser/browsing_data/model:counters",
-    "//ios/chrome/browser/browsing_data/model:feature_flags",
     "//ios/chrome/browser/browsing_data/model:util",
     "//ios/chrome/browser/discover_feed/model",
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
@@ -82,17 +74,18 @@ source_set("clear_browsing_data") {
     "//ios/chrome/browser/shared/ui/elements:elements_internal",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/symbols:icons",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_ui",
     "//ios/chrome/common",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/table_view:cells_constants",
@@ -103,17 +96,16 @@ source_set("clear_browsing_data") {
   ]
 }
 
-source_set("ui_constants") {
+source_set("constants") {
   sources = [
-    "clear_browsing_data_ui_constants.h",
-    "clear_browsing_data_ui_constants.mm",
+    "quick_delete_constants.h",
+    "quick_delete_constants.mm",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "clear_browsing_data_manager_unittest.mm",
     "quick_delete_mediator_unittest.mm",
     "quick_delete_util_unittest.mm",
     "time_range_selector_table_view_controller_unittest.mm",
@@ -139,7 +131,6 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browsing_data/model",
     "//ios/chrome/browser/browsing_data/model:counters",
-    "//ios/chrome/browser/browsing_data/model:feature_flags",
     "//ios/chrome/browser/browsing_data/model:test_support",
     "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
     "//ios/chrome/browser/feature_engagement/model",
@@ -191,13 +182,11 @@ source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
-    "clear_browsing_data_egtest.mm",
-    "quick_delete_browing_data_egtest.mm",
+    "quick_delete_browsing_data_egtest.mm",
     "quick_delete_egtest.mm",
   ]
   deps = [
-    ":features",
-    ":ui_constants",
+    ":constants",
     "//base/test:test_support",
     "//components/browsing_data/core",
     "//components/browsing_data/core:cookie_or_cache_deletion_choice",
@@ -207,12 +196,11 @@ source_set("eg2_tests") {
     "//components/strings",
     "//components/sync/base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",
-    "//ios/chrome/browser/recent_tabs/ui_bundled:ui_constants",
-    "//ios/chrome/browser/settings/ui_bundled/cells:clear_browsing_data_constants",
+    "//ios/chrome/browser/recent_tabs/public:ui_constants",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
@@ -223,7 +211,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:tab_groups_constant",
     "//ios/chrome/browser/tab_switcher/ui_bundled/test:utils",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
-    "//ios/chrome/common/ui/confirmation_alert:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net",
@@ -235,14 +222,6 @@ source_set("eg2_tests") {
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-}
-
-source_set("features") {
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  public_deps = [ "//base" ]
 }
 
 source_set("util") {
@@ -257,4 +236,12 @@ source_set("util") {
     "//ios/chrome/browser/browsing_data/model:counters",
     "//ui/base",
   ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
 }

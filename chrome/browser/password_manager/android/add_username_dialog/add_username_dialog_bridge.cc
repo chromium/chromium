@@ -9,8 +9,7 @@
 #include <utility>
 
 #include "base/android/jni_string.h"
-#include "base/functional/callback_forward.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/password_manager/android/add_username_dialog/jni_headers/AddUsernameDialogBridge_jni.h"
@@ -90,3 +89,5 @@ void AddUsernameDialogBridge::OnDialogAccepted(JNIEnv* env,
 void AddUsernameDialogBridge::OnDialogDismissed(JNIEnv* env) {
   std::move(dialog_dismissed_callback_).Run();
 }
+
+DEFINE_JNI(AddUsernameDialogBridge)

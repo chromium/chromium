@@ -10,13 +10,14 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "media/midi/midi_jni_headers/MidiInputPortAndroid_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace midi {
 
-MidiInputPortAndroid::MidiInputPortAndroid(JNIEnv* env,
-                                           jobject raw,
-                                           Delegate* delegate)
+MidiInputPortAndroid::MidiInputPortAndroid(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& raw,
+    Delegate* delegate)
     : raw_port_(env, raw), delegate_(delegate) {}
 
 MidiInputPortAndroid::~MidiInputPortAndroid() {
@@ -35,7 +36,7 @@ void MidiInputPortAndroid::Close() {
 }
 
 void MidiInputPortAndroid::OnData(JNIEnv* env,
-                                  const JavaParamRef<jbyteArray>& data,
+                                  const JavaRef<jbyteArray>& data,
                                   jint offset,
                                   jint size,
                                   jlong timestamp) {
@@ -54,3 +55,5 @@ void MidiInputPortAndroid::OnData(JNIEnv* env,
 }
 
 }  // namespace midi
+
+DEFINE_JNI(MidiInputPortAndroid)

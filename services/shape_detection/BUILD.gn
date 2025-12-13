@@ -86,6 +86,8 @@ source_set("lib") {
       "barcode_detection_impl_chrome.h",
       "barcode_detection_provider_chrome.cc",
       "barcode_detection_provider_chrome.h",
+      "features.cc",
+      "features.h",
       "shape_detection_library_holder.cc",
       "shape_detection_library_holder.h",
     ]
@@ -104,7 +106,7 @@ source_set("lib") {
 
   if (is_android) {
     deps += [ ":shape_detection_jni_headers" ]
-  } else if (is_chromeos) {
+  } else if (is_chromeos || is_linux) {
     sources += [
       "shape_detection_sandbox_hook.cc",
       "shape_detection_sandbox_hook.h",

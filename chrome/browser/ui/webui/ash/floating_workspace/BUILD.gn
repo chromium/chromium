@@ -28,12 +28,12 @@ static_library("floating_workspace") {
     "//ash/public/cpp",
     "//ash/webui/common:trusted_types_util",
     "//chrome/app:generated_resources",
-    "//chrome/browser/ash/floating_workspace:floating_workspace",
+    "//chrome/browser/ash/floating_workspace",
     "//chrome/browser/resources/chromeos/floating_workspace:resources",
-    "//chrome/browser/ui/ash/login:login",
-    "//chrome/browser/ui/webui/ash/internet:internet",
-    "//chrome/browser/ui/webui/ash/login:login",
-    "//chromeos/ash/components/browser_context_helper:browser_context_helper",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/webui/ash/internet",
+    "//chrome/browser/ui/webui/ash/login",
+    "//chromeos/ash/components/browser_context_helper",
     "//content/public/browser",
     "//ui/aura",
     "//ui/base:types",
@@ -46,4 +46,24 @@ static_library("floating_workspace") {
 
   allow_circular_includes_from =
       [ "//chrome/browser/ash/floating_workspace:floating_workspace" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "floating_workspace_dialog_browsertest.cc" ]
+
+  deps = [
+    ":floating_workspace",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
 }

@@ -68,28 +68,26 @@ UIView* CreateToolbarSnapshotBackgroundView(UIView* snapshot_view,
   return toolbar_background;
 }
 
-void SetActiveGridAnchorPointToFrameCenter(UIView* active_grid_view,
-                                           CGRect frame) {
+void SetAnchorPointToFrameCenter(UIView* view, CGRect frame) {
   // Calculate the center of the frame.
   CGPoint center = CGPointMake(CGRectGetMidX(frame), CGRectGetMidY(frame));
 
-  // Convert the center point to the coordinate system of active_grid_view's
-  // superview.
-  CGPoint center_in_grid_parent =
-      [active_grid_view.superview convertPoint:center fromView:nil];
+  // Convert the center point to the coordinate system of view's superview.
+  CGPoint center_in_grid_parent = [view.superview convertPoint:center
+                                                      fromView:nil];
 
-  // Adjust the point to be relative to active_grid_view's origin.
+  // Adjust the point to be relative to view's origin.
   CGPoint center_in_grid =
-      CGPointMake(center_in_grid_parent.x - active_grid_view.frame.origin.x,
-                  center_in_grid_parent.y - active_grid_view.frame.origin.y);
+      CGPointMake(center_in_grid_parent.x - view.frame.origin.x,
+                  center_in_grid_parent.y - view.frame.origin.y);
 
-  // Calculate the relative center within `active_grid_view`.
+  // Calculate the relative center within `view`.
   CGPoint relative_center_in_grid =
-      CGPointMake(center_in_grid.x / active_grid_view.frame.size.width,
-                  center_in_grid.y / active_grid_view.frame.size.height);
+      CGPointMake(center_in_grid.x / view.frame.size.width,
+                  center_in_grid.y / view.frame.size.height);
 
-  // Set the `active_grid_view`'s anchor point to the `frame`'s center.
-  CGRect old_frame = active_grid_view.frame;
-  active_grid_view.layer.anchorPoint = relative_center_in_grid;
-  active_grid_view.frame = old_frame;
+  // Set the `view`'s anchor point to the `frame`'s center.
+  CGRect old_frame = view.frame;
+  view.layer.anchorPoint = relative_center_in_grid;
+  view.frame = old_frame;
 }

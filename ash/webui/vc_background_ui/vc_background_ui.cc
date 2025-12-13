@@ -26,7 +26,6 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash::vc_background_ui {
@@ -100,12 +99,6 @@ void VcBackgroundUI::BindInterface(
     mojo::PendingReceiver<ash::personalization_app::mojom::SeaPenProvider>
         receiver) {
   sea_pen_provider_->BindInterface(std::move(receiver));
-}
-
-void VcBackgroundUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void VcBackgroundUI::AddBooleans(content::WebUIDataSource* source) {

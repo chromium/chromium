@@ -13,6 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_service_user_test_base.h"
+#include "components/sync/model/sync_data.h"
+#include "components/sync/test/fake_sync_change_processor.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/buildflags/buildflags.h"
@@ -138,7 +140,9 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceUserTestBase,
   // files according to `delete_type`.
   void UninstallExtension(
       const std::string& id,
-      UninstallExtensionFileDeleteType delete_type = kDeleteAllVersions);
+      UninstallExtensionFileDeleteType delete_type = kDeleteAllVersions,
+      extensions::UninstallReason reason =
+          extensions::UNINSTALL_REASON_FOR_TESTING);
 
   void TerminateExtension(const std::string& id);
 
@@ -180,6 +184,42 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceUserTestBase,
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};
+};
+
+// This is a FakeSyncChangeProcessor specialization that maintains a store of
+// SyncData items, treating it like a map keyed by the extension id from the
+// SyncData. Each instance of this class should only be used for one data type
+// (which should be either extensions or apps) to match how the real sync
+// system handles things.
+class StatefulChangeProcessor : public syncer::FakeSyncChangeProcessor {
+ public:
+  explicit StatefulChangeProcessor(syncer::DataType expected_type);
+
+  StatefulChangeProcessor(const StatefulChangeProcessor&) = delete;
+  StatefulChangeProcessor& operator=(const StatefulChangeProcessor&) = delete;
+
+  ~StatefulChangeProcessor() override;
+
+  // We let our parent class, FakeSyncChangeProcessor, handle saving the
+  // changes for us, but in addition we "apply" these changes by treating
+  // the FakeSyncChangeProcessor's SyncDataList as a map keyed by extension
+  // id.
+  std::optional<syncer::ModelError> ProcessSyncChanges(
+      const base::Location& from_here,
+      const syncer::SyncChangeList& change_list) override;
+
+  // This is a helper which offers a wrapped version of this object suitable for
+  // passing in to MergeDataAndStartSyncing, which takes a
+  // std::unique_ptr<SyncChangeProcessor>, since in tests we typically don't
+  // want to give up ownership of a local change processor.
+  std::unique_ptr<syncer::SyncChangeProcessor> GetWrapped();
+
+  const syncer::SyncDataList& data() const { return data_; }
+
+ private:
+  // The expected DataType of changes that this processor will see.
+  const syncer::DataType expected_type_;
+  syncer::SyncDataList data_;
 };
 
 }  // namespace extensions

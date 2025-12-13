@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/command_updater_delegate.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
@@ -97,6 +98,8 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
   virtual void OpenAISettings();
   virtual void OpenGlic();
   virtual void OpenGlicSettings();
+  virtual void PrewarmGlicFre();
+  virtual void OpenSplitView();
   void StartTabGroupTutorial();
   void OpenNTPAndStartCustomizeChromeTutorial();
   void StartPasswordManagerTutorial();

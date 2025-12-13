@@ -13,6 +13,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.feature_engagement.Tracker;
 
+import java.util.function.Supplier;
+
 /** This factory creates Tracker for the given {@link Profile}. */
 @NullMarked
 public final class TrackerFactory {
@@ -22,26 +24,30 @@ public final class TrackerFactory {
     private TrackerFactory() {}
 
     /**
-     * A factory method to build a {@link Tracker} object. Each Profile only ever
-     * has a single {@link Tracker}, so the first this method is called (or from
-     * native), the {@link Tracker} will be created, and later calls will return
-     * the already created instance.
+     * A factory method to build a {@link Tracker} object. Each Profile only ever has a single
+     * {@link Tracker}, so the first this method is called (or from native), the {@link Tracker}
+     * will be created, and later calls will return the already created instance.
+     *
      * @return The {@link Tracker} for the given profile object.
      */
-    public static Tracker getTrackerForProfile(@Nullable Profile profile) {
+    public static Tracker getTrackerForProfile(Profile profile) {
         if (sTrackerForTesting != null) return sTrackerForTesting;
-        if (profile == null) {
-            throw new IllegalArgumentException("Profile is required for retrieving tracker.");
-        }
         profile.ensureNativeInitialized();
         return TrackerFactoryJni.get().getTrackerForProfile(profile);
+    }
+
+    public static @Nullable Tracker getTrackerForProfile(
+            Supplier<@Nullable Profile> profileSupplier) {
+        Profile p = profileSupplier.get();
+        return p == null ? null : getTrackerForProfile(p);
     }
 
     /**
      * Sets up a testing factory in C++ and pass it a Tracker object for wrapping and proxying of
      * calls back up to Java.
-     * @param The {@link profile} the current profile object.
-     * @param The {@link Tracker} the test tracker for C++ to wrap.
+     *
+     * @param profile The current profile object.
+     * @param testTracker The test tracker for C++ to wrap.
      */
     public static void setTestingFactory(Profile profile, Tracker testTracker) {
         TrackerFactoryJni.get().setTestingFactory(profile, testTracker);

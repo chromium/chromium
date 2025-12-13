@@ -27,7 +27,6 @@
 #import "ui/gfx/image/image.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::ui::test::uiimage_utils::UIImagesAreEqual;
@@ -86,7 +85,7 @@ class PlaceholderServiceTest : public PlatformTest {
 
 // Test that a bundled icon is returned for Google.
 TEST_F(PlaceholderServiceTest, TestFetchingBundledIcon) {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   const CGFloat icon_size = kDesiredSmallFaviconSizePt;
   TemplateURLData google_data;
   google_data.SetShortName(u"Google");
@@ -156,7 +155,7 @@ TEST_F(PlaceholderServiceTest, TestFetchingIconFromFaviconLoader) {
   EXPECT_EQ(callback_count, 1);
   ASSERT_TRUE(favicon_callback_block);
 
-  favicon_callback_block(fetched_attributes);
+  favicon_callback_block(fetched_attributes, /*cached*/ false);
   run_loop->Run();
 
   EXPECT_EQ(received_icon_final, fetched_image);
@@ -209,13 +208,12 @@ TEST_F(PlaceholderServiceTest, TestDSESwitchesDuringFetch) {
       CreateTestSymbolImage(icon_size);  // Can be same image for simplicity
   FaviconAttributes* dse2_fetched_attributes =
       [FaviconAttributes attributesWithImage:dse2_fetched_image];
-  ;
 
   // 3. Change DSE to DSE2 *before* DSE1 icon fetch completes
   template_url_service().SetUserSelectedDefaultSearchProvider(dse2);
 
   // 4. Complete DSE1 icon fetch (which should now be ignored)
-  dse1_favicon_callback_block(dse1_fetched_attributes);
+  dse1_favicon_callback_block(dse1_fetched_attributes, /*cached*/ true);
 
   // 5. Future call to fetch for new DSE (DSE2)
   FaviconLoader::FaviconAttributesCompletionBlock dse2_favicon_callback_block;
@@ -245,7 +243,7 @@ TEST_F(PlaceholderServiceTest, TestDSESwitchesDuringFetch) {
   ASSERT_TRUE(dse2_favicon_callback_block);
 
   // 6. Complete DSE2 icon fetch
-  dse2_favicon_callback_block(dse2_fetched_attributes);
+  dse2_favicon_callback_block(dse2_fetched_attributes, /*cached*/ true);
   run_loop->Run();
 
   // Callback for DSE1 should NOT have been called with the fetched icon

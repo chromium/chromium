@@ -140,6 +140,7 @@ DesktopDisplayInfo DesktopDisplayInfoLoaderWin::GetCurrentDisplayInfo() {
   // This matches the coordinate system used by InputInjectorWin, so that
   // the FractionalInputFilter produces correct x,y-coordinates for injection.
   DesktopDisplayInfo result;
+  result.set_pixel_type(DesktopDisplayInfo::PixelType::PHYSICAL);
   for (DisplayGeometry& info : displays) {
     info.x -= lowest_x;
     info.y -= lowest_y;

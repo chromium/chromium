@@ -25,6 +25,8 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 
 namespace blink {
 
@@ -141,31 +143,33 @@ void ScrollableAreaPainter::DrawPlatformResizerImage(
   paint_flags.setStyle(cc::PaintFlags::kStroke_Style);
   paint_flags.setStrokeWidth(std::ceil(paint_scale));
 
-  SkPath line_path;
-
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(scrollable_area_.GetLayoutBox()->StyleRef(),
                         DarkModeFilter::ElementRole::kBackground));
 
   // Draw a dark line, to ensure contrast against a light background
-  line_path.moveTo(points[0].x(), points[0].y());
-  line_path.lineTo(points[1].x(), points[1].y());
-  line_path.moveTo(points[2].x(), points[2].y());
-  line_path.lineTo(points[3].x(), points[3].y());
+  const SkPath dark_line_path = SkPathBuilder()
+                                    .moveTo(points[0].x(), points[0].y())
+                                    .lineTo(points[1].x(), points[1].y())
+                                    .moveTo(points[2].x(), points[2].y())
+                                    .lineTo(points[3].x(), points[3].y())
+                                    .detach();
   paint_flags.setColor(SkColorSetARGB(153, 0, 0, 0));
-  context.DrawPath(line_path, paint_flags, auto_dark_mode);
+  context.DrawPath(dark_line_path, paint_flags, auto_dark_mode);
 
   // Draw a light line one pixel below the light line,
   // to ensure contrast against a dark background
   int v_offset = std::ceil(paint_scale);
   int h_offset = on_left ? -v_offset : v_offset;
-  line_path.reset();
-  line_path.moveTo(points[0].x(), points[0].y() + v_offset);
-  line_path.lineTo(points[1].x() + h_offset, points[1].y());
-  line_path.moveTo(points[2].x(), points[2].y() + v_offset);
-  line_path.lineTo(points[3].x() + h_offset, points[3].y());
+  const SkPath light_line_path =
+      SkPathBuilder()
+          .moveTo(points[0].x(), points[0].y() + v_offset)
+          .lineTo(points[1].x() + h_offset, points[1].y())
+          .moveTo(points[2].x(), points[2].y() + v_offset)
+          .lineTo(points[3].x() + h_offset, points[3].y())
+          .detach();
   paint_flags.setColor(SkColorSetARGB(153, 255, 255, 255));
-  context.DrawPath(line_path, paint_flags, auto_dark_mode);
+  context.DrawPath(light_line_path, paint_flags, auto_dark_mode);
 }
 
 bool ScrollableAreaPainter::PaintOverflowControls(

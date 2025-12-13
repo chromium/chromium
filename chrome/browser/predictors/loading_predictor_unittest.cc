@@ -13,12 +13,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/predictors/loading_test_util.h"
-#include "chrome/browser/predictors/preconnect_manager.h"
 #include "chrome/browser/predictors/predictors_traffic_annotations.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/preconnect_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/preconnect_test_util.h"
 #include "content/public/test/test_utils.h"
@@ -33,7 +33,9 @@ using testing::StrictMock;
 using testing::DoAll;
 using testing::SetArgPointee;
 
+using content::PreconnectManager;
 using content::PreconnectRequest;
+using content::PreconnectStats;
 
 namespace predictors {
 
@@ -83,7 +85,8 @@ class MockPreconnectManager : public PreconnectManager {
   MOCK_METHOD1(SetObserverForTesting, void(Observer* observer));
 
   void Start(const GURL& url,
-             std::vector<PreconnectRequest> requests) override {
+             std::vector<PreconnectRequest> requests,
+             net::NetworkTrafficAnnotationTag traffic_annotation) override {
     StartProxy(url, requests);
   }
 };

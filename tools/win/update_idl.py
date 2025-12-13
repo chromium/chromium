@@ -46,7 +46,6 @@ class IDLUpdater:
         contents = (f'target_cpu="{self.target_cpu}"\n'
                     f'is_chrome_branded={self.is_chrome_branded}\n'
                     f'is_debug=true\n'
-                    f'enable_nacl=false\n'
                     f'blink_symbol_level=0\n'
                     f'v8_symbol_level=0\n').format()
         if os.path.exists(gn_args_path):

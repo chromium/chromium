@@ -62,7 +62,8 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsHandlerBrowserTest, TestShowFeedback) {
   EXPECT_EQ(chrome::kChromeUIFeedbackURL,
             FeedbackDialog::GetInstanceForTest()->GetDialogContentURL());
   std::optional<base::Value::Dict> meta_data = base::JSONReader::ReadDict(
-      FeedbackDialog::GetInstanceForTest()->GetDialogArgs());
+      FeedbackDialog::GetInstanceForTest()->GetDialogArgs(),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(meta_data.has_value());
   ASSERT_EQ(*meta_data->FindString("categoryTag"), "price_insights");
 }

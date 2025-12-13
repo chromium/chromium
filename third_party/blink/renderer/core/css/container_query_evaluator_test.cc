@@ -1059,4 +1059,62 @@ TEST_P(UseCountEvalUnknownTest, All) {
             param.contains_unknown);
 }
 
+TEST_F(ContainerQueryEvaluatorTest, FailedTreeScope_UseCounted) {
+  GetDocument().ClearUseCounterForTesting(
+      WebFeature::kContainerNameQueryFailedTreeScope);
+
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>
+      @container --foo (width >= 0px) {
+        #target { color: green; }
+      }
+    </style>
+    <div>
+      <template shadowrootmode="open">
+        <div style="container: --foo / inline-size">
+          <slot></slot>
+        </div>
+      </template>
+      <div id="target"></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  EXPECT_EQ(
+      target->ComputedStyleRef().VisitedDependentColor(GetCSSPropertyColor()),
+      Color(0, 128, 0));
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kContainerNameQueryFailedTreeScope));
+}
+
+TEST_F(ContainerQueryEvaluatorTest, FailedTreeScope_NotUseCounted) {
+  GetDocument().ClearUseCounterForTesting(
+      WebFeature::kContainerNameQueryFailedTreeScope);
+
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <div id="host" style="container: --foo / inline-size">
+      <template shadowrootmode="open">
+        <style>
+          @container --foo (width >= 0px) {
+            #target { color: green; }
+          }
+        </style>
+        <div id="target"></div>
+      </template>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetDocument()
+                        .getElementById(AtomicString("host"))
+                        ->GetShadowRoot()
+                        ->getElementById(AtomicString("target"));
+  EXPECT_EQ(
+      target->ComputedStyleRef().VisitedDependentColor(GetCSSPropertyColor()),
+      Color(0, 128, 0));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kContainerNameQueryFailedTreeScope));
+}
+
 }  // namespace blink

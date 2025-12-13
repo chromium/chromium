@@ -35,27 +35,27 @@ class ChromeAutocompleteSchemeClassifierTest : public testing::Test {
 TEST_F(ChromeAutocompleteSchemeClassifierTest, NormalSearch) {
   GURL url("pictures of puppies");
   // No url scheme; should default to search.
-  EXPECT_EQ(scheme_classifier_->GetInputTypeForScheme(url.scheme()),
+  EXPECT_EQ(scheme_classifier_->GetInputTypeForScheme(url.GetScheme()),
             metrics::OmniboxInputType::EMPTY);
 }
 TEST_F(ChromeAutocompleteSchemeClassifierTest, HttpUrl) {
   GURL url("https://google.com/search?q=puppies");
 
-  EXPECT_EQ(scheme_classifier_->GetInputTypeForScheme(url.scheme()),
+  EXPECT_EQ(scheme_classifier_->GetInputTypeForScheme(url.GetScheme()),
             metrics::OmniboxInputType::URL);
 }
 
 TEST_F(ChromeAutocompleteSchemeClassifierTest, BlockedScheme) {
   GURL url("shell://foo");
   // This should be blocked from running as a URL.
-  EXPECT_EQ(scheme_classifier_->GetInputTypeForScheme(url.scheme()),
+  EXPECT_EQ(scheme_classifier_->GetInputTypeForScheme(url.GetScheme()),
             metrics::OmniboxInputType::QUERY);
 }
 
 TEST_F(ChromeAutocompleteSchemeClassifierTest, DevToolsUrl) {
   GURL url("devtools://foo");
   // An internal scheme should also be recognized as a URL.
-  EXPECT_EQ(scheme_classifier_->GetInputTypeForScheme(url.scheme()),
+  EXPECT_EQ(scheme_classifier_->GetInputTypeForScheme(url.GetScheme()),
             metrics::OmniboxInputType::URL);
 }
 

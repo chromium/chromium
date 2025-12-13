@@ -5,11 +5,6 @@
 // NOTE: This file is only compiled when Crashpad is not used as the crash
 // reproter.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <string_view>
 
 #include "base/check_op.h"
@@ -60,19 +55,19 @@ void CrashKeyStringImpl::Set(std::string_view value) {
   // rather than _LE to account for the terminating \0.
   DCHECK_LT(strlen(name_), kCrashKeyStorageKeySize);
 
-  const size_t kValueMaxLength = index_array_count_ * kCrashKeyStorageValueSize;
+  const size_t kValueMaxLength = indexes_.size() * kCrashKeyStorageValueSize;
 
   TransitionalCrashKeyStorage* storage = GetCrashKeyStorage();
 
   value = value.substr(0, kValueMaxLength);
 
   // If there is only one slot for the value, then handle it directly.
-  if (index_array_count_ == 1) {
+  if (indexes_.size() == 1) {
     std::string value_string(value);
     if (is_set()) {
-      storage->SetValueAtIndex(index_array_[0], value_string.c_str());
+      storage->SetValueAtIndex(indexes_[0], value_string.c_str());
     } else {
-      index_array_[0] = storage->SetKeyValue(name_, value_string.c_str());
+      indexes_[0] = storage->SetKeyValue(name_, value_string.c_str());
     }
     return;
   }
@@ -80,63 +75,63 @@ void CrashKeyStringImpl::Set(std::string_view value) {
   // If the value fits in a single slot, the name of the key should not
   // end with the __1 suffix of the chunked format.
   if (value.length() < kCrashKeyStorageValueSize - 1) {
-    if (index_array_[1] != kUnsetStorageSlotSentinel) {
+    if (indexes_[1] != kUnsetStorageSlotSentinel) {
       // If switching from chunked to non-chunked, clear all the values.
       Clear();
-      index_array_[0] = storage->SetKeyValue(name_, value.data());
-    } else if (index_array_[0] != kUnsetStorageSlotSentinel) {
+      indexes_[0] = storage->SetKeyValue(name_, value.data());
+    } else if (indexes_[0] != kUnsetStorageSlotSentinel) {
       // The single entry was previously set.
-      storage->SetValueAtIndex(index_array_[0], value.data());
+      storage->SetValueAtIndex(indexes_[0], value.data());
     } else {
       // This key was not previously set.
-      index_array_[0] = storage->SetKeyValue(name_, value.data());
+      indexes_[0] = storage->SetKeyValue(name_, value.data());
     }
     return;
   }
 
   // If the key was previously set, but only using one slot, then the chunk
   // name will change (from |name| to |name__1|).
-  if (index_array_[0] != kUnsetStorageSlotSentinel &&
-      index_array_[1] == kUnsetStorageSlotSentinel) {
-    storage->RemoveAtIndex(index_array_[0]);
-    index_array_[0] = kUnsetStorageSlotSentinel;
+  if (indexes_[0] != kUnsetStorageSlotSentinel &&
+      indexes_[1] == kUnsetStorageSlotSentinel) {
+    storage->RemoveAtIndex(indexes_[0]);
+    indexes_[0] = kUnsetStorageSlotSentinel;
   }
 
   // Otherwise, break the value into chunks labeled name__1 through name__N,
-  // where N is |index_array_count_|.
+  // where N is |indexes_.size()|.
   size_t offset = 0;
-  for (size_t i = 0; i < index_array_count_; ++i) {
-    if (offset < value.length()) {
-      // The storage NUL-terminates the value, so ensure that a byte is
-      // not lost when setting individual chunks.
-      std::string_view chunk =
-          value.substr(offset, kCrashKeyStorageValueSize - 1);
-      offset += chunk.length();
+  for (size_t i = 0; i < indexes_.size(); ++i) {
+    if (offset >= value.length()) {
+      storage->RemoveAtIndex(indexes_[i]);
+      indexes_[i] = kUnsetStorageSlotSentinel;
+      continue;
+    }
 
-      if (index_array_[i] == kUnsetStorageSlotSentinel) {
-        std::string chunk_name =
-            base::StringPrintf(kChunkFormatString, name_, i + 1);
-        index_array_[i] =
-            storage->SetKeyValue(chunk_name.c_str(), chunk.data());
-      } else {
-        storage->SetValueAtIndex(index_array_[i], chunk.data());
-      }
+    // The storage NUL-terminates the value, so ensure that a byte is
+    // not lost when setting individual chunks.
+    std::string_view chunk =
+        value.substr(offset, kCrashKeyStorageValueSize - 1);
+    offset += chunk.length();
+
+    if (indexes_[i] == kUnsetStorageSlotSentinel) {
+      std::string chunk_name =
+          base::StringPrintf(kChunkFormatString, name_, i + 1);
+      indexes_[i] = storage->SetKeyValue(chunk_name.c_str(), chunk.data());
     } else {
-      storage->RemoveAtIndex(index_array_[i]);
-      index_array_[i] = kUnsetStorageSlotSentinel;
+      storage->SetValueAtIndex(indexes_[i], chunk.data());
     }
   }
 }
 
 void CrashKeyStringImpl::Clear() {
-  for (size_t i = 0; i < index_array_count_; ++i) {
-    GetCrashKeyStorage()->RemoveAtIndex(index_array_[i]);
-    index_array_[i] = kUnsetStorageSlotSentinel;
+  for (size_t& index : indexes_) {
+    GetCrashKeyStorage()->RemoveAtIndex(index);
+    index = kUnsetStorageSlotSentinel;
   }
 }
 
 bool CrashKeyStringImpl::is_set() const {
-  return index_array_[0] != kUnsetStorageSlotSentinel;
+  return indexes_[0] != kUnsetStorageSlotSentinel;
 }
 
 }  // namespace internal

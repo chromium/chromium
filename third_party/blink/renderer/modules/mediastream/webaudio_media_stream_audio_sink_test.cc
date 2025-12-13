@@ -72,8 +72,9 @@ TEST_F(WebAudioMediaStreamAudioSinkTest, VerifyDataFlow) {
 
   // Point the std::vector into memory owned by |sink_bus_|.
   std::vector<float*> audio_data(static_cast<size_t>(sink_bus_->channels()));
-  for (int i = 0; i < sink_bus_->channels(); ++i)
-    audio_data[i] = sink_bus_->channel(i);
+  for (int i = 0; i < sink_bus_->channels(); ++i) {
+    audio_data[i] = sink_bus_->channel(i).data();
+  }
 
   // Enable the |source_provider_| by asking for data. This will inject
   // source_params_.frames_per_buffer() of zero into the resampler since there
@@ -178,7 +179,7 @@ TEST_P(WebAudioMediaStreamAudioSinkFifoTest, VerifyFifo) {
   // Point the std::vector into memory owned by |sink_bus_|.
   std::vector<float*> audio_data(static_cast<size_t>(sink_bus_->channels()));
   for (int i = 0; i < sink_bus_->channels(); ++i) {
-    audio_data[i] = sink_bus_->channel(i);
+    audio_data[i] = sink_bus_->channel(i).data();
   }
 
   // FIFO simulating callbacks from AudioContext output.

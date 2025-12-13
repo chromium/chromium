@@ -22,8 +22,11 @@
 //     MLOperand input, optional MLLayerNormalizationOptions options = {});
 
 
-const getLayerNormPrecisionTolerance = () => {
-  return {metricType: 'ULP', value: 14};
+const getLayerNormPrecisionTolerance = (graphResources) => {
+  const toleranceValueDict = {float32: 14, float16: 30};
+  const expectedDataType =
+      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
+  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
 };
 
 const layerNormTests = [
@@ -1100,11 +1103,5 @@ const layerNormTests = [
   }
 ];
 
-if (navigator.ml) {
-  layerNormTests.forEach((test) => {
-    webnn_conformance_test(
-        buildAndExecuteGraph, getLayerNormPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    layerNormTests, buildAndExecuteGraph, getLayerNormPrecisionTolerance);

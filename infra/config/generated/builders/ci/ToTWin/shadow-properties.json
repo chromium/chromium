@@ -1,7 +1,8 @@
 {
   "$build/siso": {
     "configs": [
-      "builder"
+      "builder",
+      "no-remote-timeout"
     ],
     "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,

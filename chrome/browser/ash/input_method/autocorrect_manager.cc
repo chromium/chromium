@@ -1163,15 +1163,12 @@ bool AutocorrectManager::DisabledByInvalidExperimentContext() {
   }
 
   // If the user is in the autocorrect by default bucket, and the en840 model is
-  // not available or the updated parameter list is not enabled, then disable
-  // autocorrect.
-  return !(
-      suggestion_provider_ &&
-      (suggestion_provider_ ==
-           ime::AutocorrectSuggestionProvider::kUsEnglish840 ||
-       suggestion_provider_ ==
-           ime::AutocorrectSuggestionProvider::kUsEnglish840V2) &&
-      base::FeatureList::IsEnabled(ash::features::kImeFstDecoderParamsUpdate));
+  // not available, then disable autocorrect.
+  return !(suggestion_provider_ &&
+           (suggestion_provider_ ==
+                ime::AutocorrectSuggestionProvider::kUsEnglish840 ||
+            suggestion_provider_ ==
+                ime::AutocorrectSuggestionProvider::kUsEnglish840V2));
 }
 
 AutocorrectManager::PendingAutocorrectState::PendingAutocorrectState(

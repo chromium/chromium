@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+  test(() => {
+    const context = new AudioContext();
+    const buffer = new AudioBuffer({
+      numberOfChannels: 1,
+      length: 128,
+      sampleRate: context.sampleRate
+    });
+
+    const zeroLengthArray = new Float32Array(0);
+
+    // These calls should not crash UBSAN. See: crbug.com/441859583
+    buffer.copyToChannel(zeroLengthArray, 0);
+    buffer.copyFromChannel(zeroLengthArray, 0);
+
+    assert_true(true, 'Calls with zero-length Float32Array completed ' +
+        'without crashing.');
+  }, 'AudioBuffer: copyToChannel and copyFromChannel with zero-length ' +
+     'Float32Array should not crash.');
+</script>

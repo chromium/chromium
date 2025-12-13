@@ -107,8 +107,7 @@ ui::NativeTheme::State ScrollBarButton::GetNativeThemeState() const {
 }
 
 void ScrollBarButton::RepeaterNotifyClick() {
-  gfx::Point cursor_point =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
+  gfx::Point cursor_point = display::Screen::Get()->GetCursorScreenPoint();
   ui::MouseEvent event(ui::EventType::kMouseReleased, cursor_point,
                        cursor_point, ui::EventTimeForNow(),
                        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/values.h"
 #include "components/webcrypto/algorithm_dispatch.h"
@@ -98,28 +94,6 @@ std::string DecryptMustFail(blink::WebCryptoKey key,
 }
 
 class WebCryptoAesCbcTest : public WebCryptoTestBase {};
-
-TEST_F(WebCryptoAesCbcTest, InputTooLarge) {
-  std::vector<uint8_t> output;
-
-  std::vector<uint8_t> iv(16);
-
-  // Give an input that is too large. It would cause integer overflow when
-  // narrowing the ciphertext size to an int, since OpenSSL operates on signed
-  // int lengths NOT unsigned.
-  //
-  // Pretend the input is large. Don't pass data pointer as NULL in case that
-  // is special cased; the implementation shouldn't actually dereference the
-  // data.
-  base::span<const uint8_t> input(iv.data(), size_t{INT_MAX} - 3);
-
-  EXPECT_EQ(
-      Status::ErrorDataTooLarge(),
-      Encrypt(CreateAesCbcAlgorithm(iv), GetTestAesCbcKey(), input, &output));
-  EXPECT_EQ(
-      Status::ErrorDataTooLarge(),
-      Decrypt(CreateAesCbcAlgorithm(iv), GetTestAesCbcKey(), input, &output));
-}
 
 TEST_F(WebCryptoAesCbcTest, ExportKeyUnsupportedFormat) {
   std::vector<uint8_t> output;

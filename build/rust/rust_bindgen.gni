@@ -20,7 +20,10 @@ if (host_os == "win") {
 # On Windows, the libclang.dll is beside the bindgen.exe, otherwise it is in
 # ../lib.
 _libclang_path = rust_bindgen_root
-if (host_os == "win") {
+if (!use_chromium_rust_toolchain &&
+    (current_cpu == "ppc64" || current_cpu == "s390x")) {
+  _libclang_path = rust_sysroot_absolute + "/lib64"
+} else if (host_os == "win") {
   _libclang_path += "/bin"
 } else {
   _libclang_path += "/lib"
@@ -69,8 +72,8 @@ if (host_os == "win") {
 # * C header: //build/rust/tests/bindgen_test
 # * C++ header: //build/rust/tests/bindgen_cpp_test
 template("rust_bindgen") {
-  # "_generator" will be added to the rust_bindgen_generator target.
-  _rust_bindgen_generator_name = target_name + "_generator"
+  _rust_bindgen_generator_target_name = target_name + "_generator"
+
   _wrap_static_fns = false
   if (defined(invoker.wrap_static_fns) && invoker.wrap_static_fns) {
     _wrap_static_fns = true
@@ -78,13 +81,17 @@ template("rust_bindgen") {
   if (defined(invoker.crate_name)) {
     _crate_name = invoker.crate_name
   }
-  rust_bindgen_generator(_rust_bindgen_generator_name) {
+  rust_bindgen_generator(_rust_bindgen_generator_target_name) {
     forward_variables_from(invoker,
                            "*",
                            [
                                  "library_name",
                                  "output_name",
                                ] + TESTONLY_AND_VISIBILITY)
+
+    if (defined(invoker.testonly)) {
+      testonly = invoker.testonly
+    }
 
     # This will allow the rust_static_library to depend on the
     # `rust_bindgen_generator` through visibility.
@@ -94,41 +101,49 @@ template("rust_bindgen") {
     # sure that only a single bindgen is there. So rename the bindings to avoid
     # passing envflags. envflags are usually problematic for Cronet as Soong
     # does not support it (b/181221467).
+    #
+    # Because of the above, we can hard-code "bindings" name in:
+    # * `output_name` (below)
+    # * `_output_bindings_rs` (above)
+    # * `mod bindings;` (in `//build/rust/bindings.rs`)
     output_name = "bindings"
   }
 
+  # Calculate `_generated_bindings_rs`.
+  _bindgen_outputs = get_target_outputs(":$_rust_bindgen_generator_target_name")
+  _bindgen_rs_outputs = filter_include(_bindgen_outputs, [ "*.rs" ])
+  assert(len(_bindgen_rs_outputs) == 1)
+  _generated_bindings_rs = _bindgen_rs_outputs[0]
+
   rust_static_library(target_name) {
-    forward_variables_from(invoker,
-                           TESTONLY_AND_VISIBILITY + [
-                                 "crate_name",
-                                 "cpp",
-                               ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "crate_name" ])
 
     if (defined(_crate_name)) {
       crate_name = _crate_name
     }
-    crate_root = "//build/rust/bindings.rs"
+    crate_root = _generated_bindings_rs
     sources = [ crate_root ]
-    bindgen_deps = [ ":$_rust_bindgen_generator_name" ]
     allow_unsafe = true
 
-    deps = []
+    deps = [ ":$_rust_bindgen_generator_target_name" ]
     if (defined(invoker.deps)) {
       deps += invoker.deps
     }
     if (_wrap_static_fns) {
       # Add a dependency on the static_fns library for simplicity if
       # it's declared.
-      deps += [ ":${_rust_bindgen_generator_name}_static_fns" ]
+      deps += [ ":${_rust_bindgen_generator_target_name}_static_fns" ]
     }
 
-    if (defined(cpp) && cpp) {
-      # This cfg is used to control the bindings public export.
-      rustflags = [
-        "--cfg",
-        "cpp",
-      ]
-    }
+    rustflags = [
+      # Don't warn about unused code in the generated bindings.
+      "-Adead_code",
+
+      # Don't warn about C/C++-style names.
+      "-Anon_snake_case",
+      "-Anon_camel_case_types",
+      "-Anon_upper_case_globals",
+    ]
 
     # The generated crate doesn't need these dependencies.
     # And avoiding them avoids dependency cycles.

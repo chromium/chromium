@@ -51,7 +51,7 @@ namespace blink {
 // Note: empty/deleted values as defined in HashTraits are not allowed.
 template <typename ValueArg,
           typename TraitsArg = HashTraits<ValueArg>,
-          typename Allocator = WTF::PartitionAllocator>
+          typename Allocator = PartitionAllocator>
 class LinkedHashSet {
   USE_ALLOCATOR(LinkedHashSet, Allocator);
 
@@ -126,10 +126,6 @@ class LinkedHashSet {
       // iterator_'s value but only for strongifying WeakMembers for the
       // lifetime of this IteratorWrapper.
       return iterator_ == other.iterator_;
-    }
-
-    bool operator!=(const IteratorWrapper& other) const {
-      return !(*this == other);
     }
 
    protected:

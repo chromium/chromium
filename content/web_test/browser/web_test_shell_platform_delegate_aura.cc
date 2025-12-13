@@ -57,8 +57,10 @@ void WebTestShellPlatformDelegate::SetTitle(Shell* shell,
   ShellPlatformDelegate::SetTitle(shell, title);
 }
 
-void WebTestShellPlatformDelegate::MainFrameCreated(Shell* shell) {
-  ShellPlatformDelegate::MainFrameCreated(shell);
+void WebTestShellPlatformDelegate::MainFrameCreated(
+    Shell* shell,
+    RenderFrameHost* main_frame) {
+  ShellPlatformDelegate::MainFrameCreated(shell, main_frame);
 }
 
 bool WebTestShellPlatformDelegate::DestroyShell(Shell* shell) {

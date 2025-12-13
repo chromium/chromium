@@ -10,10 +10,12 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/network_isolation_partition.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/site_for_cookies.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace net {
 

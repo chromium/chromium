@@ -23,6 +23,14 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   struct PictureControlFlags {
     bool allow_screen_content_tools = false;
     bool allow_intrabc = false;
+    bool enable_auto_segmentation = false;
+  };
+
+  struct D3D12EncodingCapabilities {
+    D3D12_VIDEO_ENCODER_AV1_INTERPOLATION_FILTERS interpolation_filter;
+    D3D12_VIDEO_ENCODER_AV1_RESTORATION_CONFIG loop_restoration;
+    std::array<D3D12_VIDEO_ENCODER_AV1_TX_MODE, 2> tx_modes;
+    D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES_FLAGS post_value_flags;
   };
 
   static std::vector<
@@ -34,16 +42,17 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   ~D3D12VideoEncodeAV1Delegate() override;
 
   size_t GetMaxNumOfRefFrames() const override;
+  size_t GetMaxNumOfManualRefBuffers() const override;
 
-  EncoderStatus::Or<BitstreamBufferMetadata> EncodeImpl(
-      ID3D12Resource* input_frame,
-      UINT input_frame_subresource,
-      const VideoEncoder::EncodeOptions& options,
-      const gfx::ColorSpace& input_color_space) override;
+  EncoderStatus EncodeImpl(ID3D12Resource* input_frame,
+                           UINT input_frame_subresource,
+                           const VideoEncoder::EncodeOptions& options,
+                           const gfx::ColorSpace& input_color_space) override;
 
   bool SupportsRateControlReconfiguration() const override;
 
-  bool UpdateRateControl(const Bitrate& bitrate, uint32_t framerate) override;
+  bool UpdateRateControl(const VideoBitrateAllocation& bitrate_allocation,
+                         uint32_t framerate) override;
 
   bool ReportsAverageQp() const override;
 
@@ -56,6 +65,12 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   EncoderStatus::Or<size_t> GetEncodedBitstreamWrittenBytesCount(
       const ScopedD3D12ResourceMap& metadata) override;
 
+  void RefreshDPBAndDescriptors();
+
+  size_t PackAV1BitstreamHeader(
+      const AV1BitstreamBuilder::FrameHeader& frame_header,
+      size_t compressed_size,
+      base::span<uint8_t> bitstream_buffer);
   EncoderStatus::Or<size_t> ReadbackBitstream(
       base::span<uint8_t> bitstream_buffer) override;
 
@@ -68,11 +83,11 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
       const D3D12_VIDEO_ENCODER_AV1_POST_ENCODE_VALUES& post_encode_values,
       AV1BitstreamBuilder::FrameHeader& frame_header);
 
-  // When loop restoration is enabled, updates frame header with loop
-  // restoration parameters submitted to driver.
-  void UpdateFrameHeaderLoopRestoration(
-      const D3D12_VIDEO_ENCODER_AV1_RESTORATION_CONFIG& restoration_config,
-      AV1BitstreamBuilder::FrameHeader& frame_header);
+  // Returns true if the current picture is a key frame, should be guranteed
+  // to be called after `FillPictureControlParams()`.
+  bool IsKeyFrame() const { return picture_id_ == 0; }
+
+  uint32_t max_num_ref_frames_ = 0;
 
   D3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS input_arguments_{};
 
@@ -82,17 +97,19 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   // input_arguments_.PictureControlDesc.PictureControlCodecData
   D3D12_VIDEO_ENCODER_AV1_PICTURE_CONTROL_CODEC_DATA picture_params_{};
 
+  // picture_params_.ReferenceFramesReconPictureDescriptors
+  std::array<D3D12_VIDEO_ENCODER_AV1_REFERENCE_PICTURE_DESCRIPTOR, 8>
+      reference_descriptors_{};
+
   // Bitrate controller for CBR encoding.
   std::unique_ptr<aom::AV1RateControlRTC> software_brc_;
 
-  // Bitrate allocation in bps.
-  VideoBitrateAllocation bitrate_allocation_{Bitrate::Mode::kConstant};
+  // The `enc_caps_` is populated based on the capability of d3d12
+  // driver in `InitializeVideoEncoder()` and remains constant afterwards.
+  D3D12EncodingCapabilities enc_caps_{};
 
   // Enabled features for creating D3D12 AV1 encoder.
   D3D12_VIDEO_ENCODER_AV1_FEATURE_FLAGS enabled_features_{};
-
-  // Codec configuration support limits of D3D12 AV1 encoder.
-  D3D12_VIDEO_ENCODER_AV1_CODEC_CONFIGURATION_SUPPORT config_support_limit_{};
 
   // Picture control flags for each Encoding frame.
   PictureControlFlags picture_ctrl_{};
@@ -104,10 +121,11 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
   // The encoding content is a screen content.
   bool is_screen_ = false;
 
-  uint32_t framerate_ = 30;
   AV1BitstreamBuilder::SequenceHeader sequence_header_;
   D3D12VideoEncodeDecodedPictureBuffers<kAV1DPBMaxSize> dpb_;
   int picture_id_ = -1;
+
+  D3D12VideoEncoderRateControl current_rate_control_;
 };
 
 }  // namespace media

@@ -29,6 +29,7 @@ class DevToolsPreloadStorage : public DocumentUserData<DevToolsPreloadStorage> {
                             const std::string& request_id);
 
   void UpdatePrerenderStatus(
+      blink::mojom::SpeculationAction action,
       const GURL& prerender_url,
       std::optional<blink::mojom::SpeculationTargetHint>,
       const base::UnguessableToken& preload_pipeline_id,
@@ -65,6 +66,9 @@ class DevToolsPreloadStorage : public DocumentUserData<DevToolsPreloadStorage> {
   };
   using PrerenderDataMap = std::map<PrerenderKey, PrerenderData>;
   const PrerenderDataMap& prerender_data_map() { return prerender_data_map_; }
+  const PrerenderDataMap& prerender_until_script_data_map() {
+    return prerender_until_script_data_map_;
+  }
 
  private:
   explicit DevToolsPreloadStorage(RenderFrameHost* rfh);
@@ -74,6 +78,7 @@ class DevToolsPreloadStorage : public DocumentUserData<DevToolsPreloadStorage> {
 
   PrefetchDataMap prefetch_data_map_;
   PrerenderDataMap prerender_data_map_;
+  PrerenderDataMap prerender_until_script_data_map_;
 };
 
 }  // namespace content

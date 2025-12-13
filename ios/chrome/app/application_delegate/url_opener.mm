@@ -14,9 +14,11 @@
 #import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/components/webui/web_ui_url_constants.h"
 #import "url/gurl.h"
 
 namespace {
@@ -90,6 +92,11 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
       // connectionInformation.startupParamters can be not nil and what to do in
       // that case.
       [connectionInformation setStartupParameters:params];
+      if (params.openedViaShareExtensionScheme &&
+          (params.textQuery || params.imageSearchData)) {
+        return YES;
+      }
+
       ProceduralBlock tabOpenedCompletion = ^{
         [connectionInformation setStartupParameters:nil];
       };
@@ -109,6 +116,12 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
         gurl = [params externalURL];
       }
       UrlLoadParams urlLoadParams = UrlLoadParams::InNewTab(gurl, virtualURL);
+      if (gurl.GetScheme() == kChromeUIScheme &&
+          gurl.GetHost() == kChromeUIDinoHost) {
+        urlLoadParams.web_params.transition_type =
+            ui::PAGE_TRANSITION_AUTO_BOOKMARK;
+      }
+
       BOOL dismissOmnibox = [params postOpeningAction] != FOCUS_OMNIBOX;
 
       if (base::FeatureList::IsEnabled(kChromeStartupParametersAsync)) {

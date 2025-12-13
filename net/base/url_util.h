@@ -223,10 +223,13 @@ NET_EXPORT bool IsLocalhost(const GURL& url);
 // machine.
 NET_EXPORT bool HostStringIsLocalhost(std::string_view host);
 
-// Strip the portions of |url| that aren't core to the network request.
+// Strip the portions of `url` that aren't core to the network request.
 //   - user name / password
 //   - reference section
 NET_EXPORT GURL SimplifyUrlForRequest(const GURL& url);
+
+// Remove the name / password from `url`, if it has them. Always duplicates URL.
+NET_EXPORT GURL RemoveCredentialsFromUrl(const GURL& url);
 
 // Changes scheme "ws" to "http" and "wss" to "https". This is useful for origin
 // checks and authentication, where WebSocket URLs are treated as if they were

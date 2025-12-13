@@ -6,13 +6,13 @@ package org.chromium.components.browser_ui.accessibility;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,7 +28,6 @@ import android.provider.Settings;
 import android.view.View;
 
 import androidx.preference.Preference;
-import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -42,15 +41,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -60,7 +60,7 @@ import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.ui.accessibility.AccessibilityState;
-import org.chromium.ui.test.util.ViewUtils;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /**
@@ -74,9 +74,9 @@ import org.chromium.ui.widget.ChromeImageButton;
     ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2,
     ContentFeatureList.SMART_ZOOM
 })
+@Batch(Batch.PER_CLASS)
 public class AccessibilitySettingsTest {
     private AccessibilitySettings mAccessibilitySettings;
-    private PageZoomPreference mPageZoomPref;
 
     @Rule
     public BlankUiTestActivitySettingsTestRule mSettingsActivityTestRule =
@@ -91,14 +91,18 @@ public class AccessibilitySettingsTest {
 
     @Mock private HostZoomMapImpl.Natives mHostZoomMapBridgeMock;
 
+    @Rule // initialize mocks
+    public MockitoRule rule = MockitoJUnit.rule();
+
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         HostZoomMapImplJni.setInstanceForTesting(mHostZoomMapBridgeMock);
 
         when(mDelegate.getBrowserContextHandle()).thenReturn(mContextHandleMock);
         when(mDelegate.getForceEnableZoomAccessibilityDelegate()).thenReturn(mBoolPrefMock);
         when(mDelegate.getReaderAccessibilityDelegate()).thenReturn(mBoolPrefMock);
+        when(mDelegate.getTouchpadOverscrollHistoryNavigationAccessibilityDelegate())
+                .thenReturn(mBoolPrefMock);
         when(mDelegate.getTextSizeContrastAccessibilityDelegate()).thenReturn(mIntegerPrefMock);
         when(mDelegate.getSiteSettingsNavigation()).thenReturn(mSettingsNavigationMock);
 
@@ -106,15 +110,6 @@ public class AccessibilitySettingsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> AccessibilityState.setIsKnownScreenReaderEnabledForTesting(true));
         when(mDelegate.shouldShowImageDescriptionsSetting()).thenReturn(true);
-
-        mSettingsActivityTestRule.launchPreference(
-                AccessibilitySettings.class,
-                null,
-                (fragment) -> {
-                    ((AccessibilitySettings) fragment).setDelegate(mDelegate);
-                });
-        mAccessibilitySettings =
-                (AccessibilitySettings) mSettingsActivityTestRule.getPreferenceFragment();
     }
 
     @After
@@ -130,6 +125,7 @@ public class AccessibilitySettingsTest {
     @SmallTest
     @Feature({"Accessibility"})
     public void testForceEnableZoom() {
+        launchPreferenceUI();
         ChromeSwitchPreference forceEnableZoomPref =
                 (ChromeSwitchPreference)
                         mAccessibilitySettings.findPreference(PREF_FORCE_ENABLE_ZOOM);
@@ -158,6 +154,7 @@ public class AccessibilitySettingsTest {
     @SmallTest
     @Feature({"Accessibility"})
     public void testCaptionPreferences() {
+        launchPreferenceUI();
         Preference captionsPref =
                 mAccessibilitySettings.findPreference(AccessibilitySettings.PREF_CAPTIONS);
         Assert.assertNotNull(captionsPref);
@@ -183,6 +180,7 @@ public class AccessibilitySettingsTest {
     @SmallTest
     @Feature({"Accessibility"})
     public void testImageDescriptionsPreferences_Enabled() {
+        launchPreferenceUI();
         Preference imageDescriptionsPref =
                 mAccessibilitySettings.findPreference(PREF_IMAGE_DESCRIPTIONS);
 
@@ -198,75 +196,15 @@ public class AccessibilitySettingsTest {
         onView(withText("Image descriptions")).perform(click());
 
         CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    onView(withText("Only on Wi-Fi"))
-                            .check(
-                                    (v, e) ->
-                                            Assert.assertEquals(
-                                                    "Clicking image descriptions should open"
-                                                            + " subpage",
-                                                    View.VISIBLE,
-                                                    v.getVisibility()));
-                });
-    }
-
-    // Tests related to Page Zoom feature.
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    public void testPageZoomPreference_decreaseButtonUpdatesValue() {
-        getPageZoomPref();
-
-        int startingVal = mPageZoomPref.getZoomSliderForTesting().getProgress();
-        onView(withId(R.id.page_zoom_decrease_zoom_button)).perform(click());
-        Assert.assertTrue(startingVal > mPageZoomPref.getZoomSliderForTesting().getProgress());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    public void testPageZoomPreference_decreaseButtonProperlyDisabled() {
-        getPageZoomPref();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mPageZoomPref.setZoomValueForTesting(0);
-                });
-        onView(withId(R.id.page_zoom_decrease_zoom_button)).check(matches(sDisabled));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    public void testPageZoomPreference_increaseButtonUpdatesValue() {
-        getPageZoomPref();
-
-        int startingVal = mPageZoomPref.getZoomSliderForTesting().getProgress();
-        onView(withId(R.id.page_zoom_increase_zoom_button)).perform(click());
-        Assert.assertTrue(startingVal < mPageZoomPref.getZoomSliderForTesting().getProgress());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    public void testPageZoomPreference_increaseButtonProperlyDisabled() {
-        getPageZoomPref();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mPageZoomPref.setZoomValueForTesting(
-                            PageZoomUtils.PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE);
-                });
-        onView(withId(R.id.page_zoom_increase_zoom_button)).check(matches(sDisabled));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    public void testPageZoomPreference_zoomSliderUpdatesValue() {
-        getPageZoomPref();
-        int startingVal = mPageZoomPref.getZoomSliderForTesting().getProgress();
-        onView(withId(R.id.page_zoom_slider)).perform(ViewActions.swipeRight());
-        Assert.assertNotEquals(startingVal, mPageZoomPref.getZoomSliderForTesting().getProgress());
+                () ->
+                        onView(withText("Only on Wi-Fi"))
+                                .check(
+                                        (v, e) ->
+                                                Assert.assertEquals(
+                                                        "Clicking image descriptions should open"
+                                                                + " subpage",
+                                                        View.VISIBLE,
+                                                        v.getVisibility())));
     }
 
     // Tests related to Page Zoom Enhancements (fast-follow) feature.
@@ -275,6 +213,7 @@ public class AccessibilitySettingsTest {
     @SmallTest
     @Feature({"Accessibility"})
     public void testPageZoomPreference_savedZoomLevelsPreference() {
+        launchPreferenceUI();
         Preference zoomInfoPref =
                 mAccessibilitySettings.findPreference(AccessibilitySettings.PREF_ZOOM_INFO);
         Assert.assertNotNull(zoomInfoPref);
@@ -287,7 +226,8 @@ public class AccessibilitySettingsTest {
                                 hasDescendant(withText(R.string.zoom_info_preference_title))));
         onView(withText(R.string.zoom_info_preference_title)).perform(click());
 
-        verify(mSettingsNavigationMock).startSettings(any(Context.class), any(), any(Bundle.class));
+        verify(mSettingsNavigationMock)
+                .startSettings(any(Context.class), any(), any(Bundle.class), eq(true));
     }
 
     // Tests related to Page Zoom V2 feature (OS-level adjustment experiments).
@@ -297,6 +237,7 @@ public class AccessibilitySettingsTest {
     @Feature({"Accessibility"})
     @Features.EnableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2})
     public void testPageZoomPreference_osLevelAdjustmentPreference_visibleWhenEnabled() {
+        launchPreferenceUI();
         ChromeSwitchPreference osLevelAdjustmentPref =
                 (ChromeSwitchPreference)
                         mAccessibilitySettings.findPreference(
@@ -325,6 +266,7 @@ public class AccessibilitySettingsTest {
     @Feature({"Accessibility"})
     @DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2})
     public void testPageZoomPreference_osLevelAdjustmentPreference_hiddenWhenDisabled() {
+        launchPreferenceUI();
         Preference osLevelAdjustmentPref =
                 mAccessibilitySettings.findPreference(
                         AccessibilitySettings.PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT);
@@ -334,120 +276,11 @@ public class AccessibilitySettingsTest {
                 osLevelAdjustmentPref.isVisible());
     }
 
-    // Tests related to the Smart Zoom feature.
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    public void testPageZoomPreference_smartZoom_hiddenWhenDisabled() {
-        getPageZoomPref();
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_title), ViewUtils.VIEW_GONE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_summary), ViewUtils.VIEW_GONE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_current_value_text), ViewUtils.VIEW_GONE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_decrease_zoom_button), ViewUtils.VIEW_GONE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_slider), ViewUtils.VIEW_GONE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_increase_zoom_button), ViewUtils.VIEW_GONE);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    @EnableFeatures({ContentFeatureList.SMART_ZOOM})
-    public void testPageZoomPreference_smartZoom_visibleWhenEnabled() {
-        getPageZoomPref();
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_title), ViewUtils.VIEW_VISIBLE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_summary), ViewUtils.VIEW_VISIBLE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_current_value_text), ViewUtils.VIEW_VISIBLE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_decrease_zoom_button), ViewUtils.VIEW_VISIBLE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_slider), ViewUtils.VIEW_VISIBLE);
-        ViewUtils.waitForViewCheckingState(
-                withId(R.id.text_size_contrast_increase_zoom_button), ViewUtils.VIEW_VISIBLE);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    @EnableFeatures({ContentFeatureList.SMART_ZOOM})
-    public void testPageZoomPreference_smartZoom_decreaseButtonUpdatesValue() {
-        getPageZoomPref();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mPageZoomPref.setTextContrastValueForTesting(20);
-                });
-        int startingVal = mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress();
-        onView(withId(R.id.text_size_contrast_decrease_zoom_button)).perform(click());
-        Assert.assertTrue(
-                startingVal > mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    @EnableFeatures({ContentFeatureList.SMART_ZOOM})
-    public void testPageZoomPreference_smartZoom_decreaseButtonProperlyDisabled() {
-        getPageZoomPref();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mPageZoomPref.setTextContrastValueForTesting(0);
-                });
-        onView(withId(R.id.text_size_contrast_decrease_zoom_button)).check(matches(sDisabled));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    @EnableFeatures({ContentFeatureList.SMART_ZOOM})
-    public void testPageZoomPreference_smartZoom_increaseButtonUpdatesValue() {
-        getPageZoomPref();
-
-        int startingVal = mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress();
-        onView(withId(R.id.text_size_contrast_increase_zoom_button)).perform(click());
-        Assert.assertTrue(
-                startingVal < mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    @EnableFeatures({ContentFeatureList.SMART_ZOOM})
-    public void testPageZoomPreference_smartZoom_increaseButtonProperlyDisabled() {
-        getPageZoomPref();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mPageZoomPref.setTextContrastValueForTesting(
-                            PageZoomUtils.TEXT_SIZE_CONTRAST_MAX_LEVEL);
-                });
-        onView(withId(R.id.text_size_contrast_increase_zoom_button)).check(matches(sDisabled));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    @EnableFeatures({ContentFeatureList.SMART_ZOOM})
-    public void testPageZoomPreference_smartZoom_zoomSliderUpdatesValue() {
-        getPageZoomPref();
-        int startingVal = mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress();
-        onView(withId(R.id.text_size_contrast_slider)).perform(ViewActions.swipeRight());
-        Assert.assertNotEquals(
-                startingVal, mPageZoomPref.getTextSizeContrastSliderForTesting().getProgress());
-    }
-
     @Test
     @SmallTest
     @Feature({"Accessibility"})
     public void testReaderModePreferenceChange() {
+        launchPreferenceUI();
         ChromeSwitchPreference readerModePref =
                 (ChromeSwitchPreference)
                         mAccessibilitySettings.findPreference(
@@ -465,6 +298,39 @@ public class AccessibilitySettingsTest {
         watcher.assertExpected();
     }
 
+    @Test
+    @SmallTest
+    @Feature({"Accessibility"})
+    @Features.EnableFeatures({ContentFeatureList.ANDROID_CARET_BROWSING})
+    public void testCaretFeatureToggle() {
+        DeviceInput.setSupportsKeyboardForTesting(true);
+        launchPreferenceUI();
+        ChromeSwitchPreference caretBrowsingPref =
+                (ChromeSwitchPreference)
+                        mAccessibilitySettings.findPreference(
+                                AccessibilitySettings.PREF_CARET_BROWSING);
+        assertTrue("Caret browsing toggle should be visible", caretBrowsingPref.isVisible());
+        boolean initialValue = caretBrowsingPref.isChecked();
+
+        // The delegate has been called to fetch value when creating the page. Clear the invocations
+        // so we can verify the correct number of invocations on user click.
+        clearInvocations(mDelegate);
+
+        // First scroll to the caret browsing pref
+        onView(withId(R.id.recycler_view))
+                .perform(
+                        RecyclerViewActions.scrollTo(
+                                hasDescendant(withText(R.string.caret_browsing_title))));
+        onView(withText(R.string.caret_browsing_title)).perform(click());
+
+        assertTrue(
+                "Caret option setting was not toggled",
+                initialValue != caretBrowsingPref.isChecked());
+
+        // Verify that we did set the feature value on the delegate
+        verify(mDelegate).setCaretBrowsingEnabled(any(Boolean.class));
+    }
+
     // Helper methods.
 
     private static final BaseMatcher<View> sDisabled =
@@ -480,12 +346,14 @@ public class AccessibilitySettingsTest {
                 }
             };
 
-    private void getPageZoomPref() {
-        mPageZoomPref =
-                (PageZoomPreference)
-                        mAccessibilitySettings.findPreference(
-                                AccessibilitySettings.PREF_PAGE_ZOOM_DEFAULT_ZOOM);
-        Assert.assertNotNull(mPageZoomPref);
-        Assert.assertTrue("Page Zoom pref should be visible.", mPageZoomPref.isVisible());
+    private void launchPreferenceUI() {
+        mSettingsActivityTestRule.launchPreference(
+                AccessibilitySettings.class,
+                null,
+                (fragment) -> {
+                    ((AccessibilitySettings) fragment).setDelegate(mDelegate);
+                });
+        mAccessibilitySettings =
+                (AccessibilitySettings) mSettingsActivityTestRule.getPreferenceFragment();
     }
 }

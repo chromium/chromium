@@ -36,18 +36,22 @@ void PointerHandler::OnJavascriptDisallowed() {
 }
 
 void PointerHandler::TouchpadExists(bool exists) {
+  // TODO(crbug.com/432663438): There should no longer be any need for this.
   FireWebUIListener("has-touchpad-changed", base::Value(exists));
 }
 
 void PointerHandler::HapticTouchpadExists(bool exists) {
+  // TODO(crbug.com/432663438): There should no longer be any need for this.
   FireWebUIListener("has-haptic-touchpad-changed", base::Value(exists));
 }
 
 void PointerHandler::MouseExists(bool exists) {
+  // TODO(crbug.com/432663438): There should no longer be any need for this.
   FireWebUIListener("has-mouse-changed", base::Value(exists));
 }
 
 void PointerHandler::PointingStickExists(bool exists) {
+  // TODO(crbug.com/432663438): There should no longer be any need for this.
   FireWebUIListener("has-pointing-stick-changed", base::Value(exists));
 }
 

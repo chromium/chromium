@@ -18,6 +18,20 @@ namespace media {
 
 namespace {
 
+// To detect if a driver supports the desired resolutions, we use
+// GetVideoDecoderConfigCount (D3D11) or CheckFeatureSupport (D3D12), both of
+// which are fast to execute. If that succeeds we assume that the driver
+// supports decoding for that resolution.
+//
+// Actually creating the VideoDecoder instance only fails ~0.4% of the time and
+// the outcome is that we will offer support and then immediately fall back to
+// software; e.g., playback still works. Since these calls can take hundreds of
+// milliseconds to complete and are often executed during startup, this seems a
+// reasonably trade off.
+//
+// See the deprecated histograms Media.DXVAVDA.GetDecoderConfigStatus which
+// succeeds 100% of the time and Media.DXVAVDA.CreateDecoderStatus which
+// only succeeds 99.6% of the time (in a 28 day aggregation).
 class D3DVideoDeviceWrapper {
  public:
   virtual ~D3DVideoDeviceWrapper() = default;
@@ -120,50 +134,49 @@ class D3D12VideoDeviceWrapper : public D3DVideoDeviceWrapper {
 // hardware decode for videos above ~360p, see http://crbug.com/684792.
 constexpr gfx::Size kMinResolution(64, 64);
 
-SupportedResolutionRange GetResolutionsForGUID(
+std::optional<SupportedResolutionRange> GetResolutionsForGUID(
     D3DVideoDeviceWrapper* video_device_wrapper,
     const GUID& decoder_guid,
-    const std::vector<gfx::Size>& resolutions_to_test,
-    DXGI_FORMAT format = DXGI_FORMAT_NV12,
-    const gfx::Size& min_resolution = kMinResolution) {
-  SupportedResolutionRange result;
+    DXGI_FORMAT format = DXGI_FORMAT_NV12) {
+  constexpr auto kModernResolutions = std::to_array<gfx::Size>(
+      {gfx::Size(1920, 1080), gfx::Size(2560, 1440), gfx::Size(3840, 2160),
+       gfx::Size(4096, 2160), gfx::Size(4096, 2304), gfx::Size(4096, 4096),
+       gfx::Size(7680, 4320), gfx::Size(8192, 4352), gfx::Size(8192, 8192),
+       gfx::Size(16384, 16384)});
+  static_assert(
+      std::is_sorted(kModernResolutions.begin(), kModernResolutions.end(),
+                     [](const gfx::Size& a, const gfx::Size& b) {
+                       return a.height() < b.height();
+                     }),
+      "Resolution map must be sorted by height ascending");
 
-  // Verify input is in ascending order by height.
-  DCHECK(std::is_sorted(resolutions_to_test.begin(), resolutions_to_test.end(),
-                        [](const gfx::Size& a, const gfx::Size& b) {
-                          return a.height() < b.height();
-                        }));
-
-  for (const auto& res : resolutions_to_test) {
-    // We've chosen the least expensive test for identifying if a given
-    // resolution is supported. Actually creating the VideoDecoder instance only
-    // fails ~0.4% of the time and the outcome is that we will offer support and
-    // then immediately fall back to software; e.g., playback still works. Since
-    // these calls can take hundreds of milliseconds to complete and are often
-    // executed during startup, this seems a reasonably trade off.
-    //
-    // See the deprecated histograms Media.DXVAVDA.GetDecoderConfigStatus which
-    // succeeds 100% of the time and Media.DXVAVDA.CreateDecoderStatus which
-    // only succeeds 99.6% of the time (in a 28 day aggregation).
+  std::optional<gfx::Size> max_landscape_resolution;
+  for (const auto& res : kModernResolutions) {
     if (!video_device_wrapper->IsResolutionSupported(decoder_guid, res,
                                                      format)) {
       break;
     }
-    result.max_landscape_resolution = res;
+    max_landscape_resolution = res;
   }
+
+  if (!max_landscape_resolution) {
+    return std::nullopt;
+  }
+
+  SupportedResolutionRange result = {
+      .min_resolution = kMinResolution,
+      .max_landscape_resolution = *max_landscape_resolution,
+  };
 
   // The max supported portrait resolution should be just be a w/h flip of the
   // max supported landscape resolution.
   const gfx::Size flipped(result.max_landscape_resolution.height(),
                           result.max_landscape_resolution.width());
-  if (flipped == result.max_landscape_resolution ||
+  if (flipped != result.max_landscape_resolution &&
       video_device_wrapper->IsResolutionSupported(decoder_guid, flipped,
                                                   format)) {
     result.max_portrait_resolution = flipped;
   }
-
-  if (!result.max_landscape_resolution.IsEmpty())
-    result.min_resolution = min_resolution;
 
   return result;
 }
@@ -293,32 +306,20 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
     return supported_resolutions;
   }
 
-  // To detect if a driver supports the desired resolutions, we try and create
-  // a DXVA decoder instance for that resolution and profile. If that succeeds
-  // we assume that the driver supports decoding for that resolution.
-  // Legacy AMD drivers with UVD3 or earlier and some Intel GPU's crash while
-  // creating surfaces larger than 1920 x 1088.
-  const std::vector<gfx::Size> kModernResolutions = {
-      gfx::Size(4096, 2160),  gfx::Size(4096, 2304), gfx::Size(4096, 4096),
-      gfx::Size(7680, 4320),  gfx::Size(8192, 4352), gfx::Size(8192, 8192),
-      gfx::Size(16384, 16384)};
-
   // Enumerate supported video profiles and look for the known profile for each
   // codec. We first look through the the decoder profiles so we don't run N
   // resolution tests for a profile that's unsupported.
   for (const GUID& profile_id :
        video_device_wrapper->GetVideoDecodeProfileGuids()) {
     if (profile_id == D3D11_DECODER_PROFILE_H264_VLD_NOFGT) {
-      const auto result = GetResolutionsForGUID(
-          video_device_wrapper, profile_id,
-          {gfx::Size(2560, 1440), gfx::Size(3840, 2160), gfx::Size(4096, 2160),
-           gfx::Size(4096, 2304), gfx::Size(4096, 4096)});
+      const auto result =
+          GetResolutionsForGUID(video_device_wrapper, profile_id);
 
       // Unlike the other codecs, H.264 support is assumed up to 1080p, even if
       // our initial queries fail. If they fail, we use the defaults set above.
-      if (!result.max_landscape_resolution.IsEmpty()) {
+      if (result) {
         for (const auto profile : kSupportedH264Profiles)
-          supported_resolutions[profile] = result;
+          supported_resolutions[profile] = *result;
       }
       continue;
     }
@@ -327,17 +328,22 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
     // test for the 8-bit one (NV12).
     if (!workarounds.disable_accelerated_av1_decode) {
       if (profile_id == DXVA_ModeAV1_VLD_Profile0) {
-        supported_resolutions[AV1PROFILE_PROFILE_MAIN] = GetResolutionsForGUID(
-            video_device_wrapper, profile_id, kModernResolutions);
+        if (auto result =
+                GetResolutionsForGUID(video_device_wrapper, profile_id)) {
+          supported_resolutions.emplace(AV1PROFILE_PROFILE_MAIN,
+                                        std::move(*result));
+        }
         continue;
       }
       if (profile_id == DXVA_ModeAV1_VLD_Profile1) {
         // DXVA spec for high profile (section 7.2) does not include NV12 as
         // mandatory format, here we only test 8b-444 (AYUV) and skip check of
         // Y410.
-        supported_resolutions[AV1PROFILE_PROFILE_HIGH] =
-            GetResolutionsForGUID(video_device_wrapper, profile_id,
-                                  kModernResolutions, DXGI_FORMAT_AYUV);
+        if (auto result = GetResolutionsForGUID(video_device_wrapper,
+                                                profile_id, DXGI_FORMAT_AYUV)) {
+          supported_resolutions.emplace(AV1PROFILE_PROFILE_HIGH,
+                                        std::move(*result));
+        }
         continue;
       }
       if (profile_id == DXVA_ModeAV1_VLD_Profile2) {
@@ -347,17 +353,22 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
         // is 12-bit. However we don't know the bit depth or pixel format until
         // too late. In these cases we'll end up initializing the decoder and
         // failing on the first decode (which will trigger software fallback).
-        supported_resolutions[AV1PROFILE_PROFILE_PRO] =
-            GetResolutionsForGUID(video_device_wrapper, profile_id,
-                                  kModernResolutions, DXGI_FORMAT_YUY2);
+        if (auto result = GetResolutionsForGUID(video_device_wrapper,
+                                                profile_id, DXGI_FORMAT_YUY2)) {
+          supported_resolutions.emplace(AV1PROFILE_PROFILE_PRO,
+                                        std::move(*result));
+        }
         continue;
       }
     }
 
     if (!workarounds.disable_accelerated_vp9_decode) {
       if (profile_id == D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0) {
-        supported_resolutions[VP9PROFILE_PROFILE0] = GetResolutionsForGUID(
-            video_device_wrapper, profile_id, kModernResolutions);
+        if (auto result =
+                GetResolutionsForGUID(video_device_wrapper, profile_id)) {
+          supported_resolutions.emplace(VP9PROFILE_PROFILE0,
+                                        std::move(*result));
+        }
         continue;
       }
 
@@ -365,9 +376,11 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
       if (!workarounds.disable_accelerated_vp9_profile2_decode &&
           profile_id == D3D11_DECODER_PROFILE_VP9_VLD_10BIT_PROFILE2 &&
           base::win::GetVersion() != base::win::Version::WIN10_RS3) {
-        supported_resolutions[VP9PROFILE_PROFILE2] =
-            GetResolutionsForGUID(video_device_wrapper, profile_id,
-                                  kModernResolutions, DXGI_FORMAT_P010);
+        if (auto result = GetResolutionsForGUID(video_device_wrapper,
+                                                profile_id, DXGI_FORMAT_P010)) {
+          supported_resolutions.emplace(VP9PROFILE_PROFILE2,
+                                        std::move(*result));
+        }
         continue;
       }
     }
@@ -379,17 +392,12 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
       // Coding - 7.4, DXVA_ModeHEVC_VLD_Main GUID can be used for both main and
       // main still picture profile.
       if (profile_id == D3D11_DECODER_PROFILE_HEVC_VLD_MAIN) {
-        auto supported_resolution = GetResolutionsForGUID(
-            video_device_wrapper, profile_id, kModernResolutions);
-
-        if (supported_resolution.max_landscape_resolution.IsEmpty()) {
-          supported_resolution = GetResolutionsForGUID(
-              video_device_wrapper, profile_id, {gfx::Size(1920, 1080)});
+        const auto result =
+            GetResolutionsForGUID(video_device_wrapper, profile_id);
+        if (result) {
+          supported_resolutions[HEVCPROFILE_MAIN] = *result;
+          supported_resolutions[HEVCPROFILE_MAIN_STILL_PICTURE] = *result;
         }
-
-        supported_resolutions[HEVCPROFILE_MAIN] = supported_resolution;
-        supported_resolutions[HEVCPROFILE_MAIN_STILL_PICTURE] =
-            supported_resolution;
         continue;
       }
       // For range extensions only test main10_444 with Y410, and apply
@@ -404,15 +412,17 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
           profile_id == DXVA_ModeHEVC_VLD_Main444_10_Intel) {
         // Intel private GUID reports the same capability as DXVA GUID, so
         // it is fine to override supported resolutions here.
-        supported_resolutions[HEVCPROFILE_REXT] =
-            GetResolutionsForGUID(video_device_wrapper, profile_id,
-                                  kModernResolutions, DXGI_FORMAT_Y410);
+        if (auto result = GetResolutionsForGUID(video_device_wrapper,
+                                                profile_id, DXGI_FORMAT_Y410)) {
+          supported_resolutions.emplace(HEVCPROFILE_REXT, std::move(*result));
+        }
         continue;
       }
       if (profile_id == D3D11_DECODER_PROFILE_HEVC_VLD_MAIN10) {
-        supported_resolutions[HEVCPROFILE_MAIN10] =
-            GetResolutionsForGUID(video_device_wrapper, profile_id,
-                                  kModernResolutions, DXGI_FORMAT_P010);
+        if (auto result = GetResolutionsForGUID(video_device_wrapper,
+                                                profile_id, DXGI_FORMAT_P010)) {
+          supported_resolutions.emplace(HEVCPROFILE_MAIN10, std::move(*result));
+        }
         continue;
       }
     }

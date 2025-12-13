@@ -17,7 +17,7 @@
 namespace blink {
 
 // Interface for accessing an encoded frame
-class EncodedVideoFrame : public WTF::ThreadSafeRefCounted<EncodedVideoFrame> {
+class EncodedVideoFrame : public ThreadSafeRefCounted<EncodedVideoFrame> {
  public:
   virtual ~EncodedVideoFrame() = default;
 

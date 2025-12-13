@@ -6,7 +6,7 @@
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_MOJO_SAFE_BROWSING_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/supports_user_data.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"

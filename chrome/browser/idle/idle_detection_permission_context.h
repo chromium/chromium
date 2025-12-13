@@ -23,8 +23,7 @@ class IdleDetectionPermissionContext
 
  private:
   // PermissionContextBase:
-  void UpdateTabContext(const permissions::PermissionRequestID& id,
-                        const GURL& requesting_frame,
+  void UpdateTabContext(const permissions::PermissionRequestData& request_data,
                         bool allowed) override;
   void DecidePermission(
       std::unique_ptr<permissions::PermissionRequestData> request_data,

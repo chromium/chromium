@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/test/toolbar_test_navigation_manager.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/toolbar_consumer.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
@@ -91,6 +92,7 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
         /*enabled_features=*/
         {
             data_sharing::features::kDataSharingFeature,
+            kTabGroupInTabIconContextMenu,
         },
         /*disable_features=*/{});
 
@@ -208,8 +210,8 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   TestAdaptiveToolbarMediator* mediator_;
   std::unique_ptr<TestBrowser> test_browser_;
-  raw_ptr<web::FakeWebState> web_state_;
-  raw_ptr<ToolbarTestNavigationManager> navigation_manager_;
+  raw_ptr<web::FakeWebState, DanglingUntriaged> web_state_;
+  raw_ptr<ToolbarTestNavigationManager, DanglingUntriaged> navigation_manager_;
   std::unique_ptr<WebStateList> web_state_list_;
   FakeWebStateListDelegate web_state_list_delegate_;
   id consumer_;
@@ -485,11 +487,14 @@ TEST_F(AdaptiveToolbarMediatorTest, MenuElements) {
   UIMenu* new_tab_menu =
       [mediator_ menuForButtonOfType:AdaptiveToolbarButtonTypeNewTab];
 
-  ASSERT_EQ(4U, new_tab_menu.children.count);
+  ASSERT_EQ(5U, new_tab_menu.children.count);
   for (UIMenuElement* element in new_tab_menu.children) {
-    ASSERT_TRUE([element isKindOfClass:[UIAction class]]);
-    UIAction* action = (UIAction*)element;
-    EXPECT_EQ(0U, action.attributes);
+    if ([element isKindOfClass:[UIAction class]]) {
+      UIAction* action = (UIAction*)element;
+      EXPECT_EQ(0U, action.attributes);
+    } else {
+      ASSERT_TRUE([element isKindOfClass:[UIMenuElement class]]);
+    }
   }
 
   UIMenu* tab_grid_menu =

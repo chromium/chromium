@@ -6,6 +6,8 @@
 
 #import "base/apple/foundation_util.h"
 #include "base/containers/contains.h"
+#include "content/browser/renderer_host/render_frame_host_delegate.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -97,9 +99,11 @@ void WebTestShellPlatformDelegate::SetTitle(Shell* shell,
   }
 }
 
-void WebTestShellPlatformDelegate::MainFrameCreated(Shell* shell) {
+void WebTestShellPlatformDelegate::MainFrameCreated(
+    Shell* shell,
+    RenderFrameHost* main_frame) {
   if (!IsHeadless()) {
-    ShellPlatformDelegate::MainFrameCreated(shell);
+    ShellPlatformDelegate::MainFrameCreated(shell, main_frame);
     return;
   }
 
@@ -119,8 +123,24 @@ void WebTestShellPlatformDelegate::MainFrameCreated(Shell* shell) {
   // We use the signal that the `blink::WebView` has been created in the
   // renderer as a proxy for knowing when the top level RenderWidgetHostView is
   // created, since they are created at the same time.
-  DCHECK(shell->web_contents()->GetPrimaryMainFrame()->GetView());
   ResizeWebContent(shell, shell_data.initial_size);
+
+  // The above code changes the widget screen rects of the currently navigated
+  // RenderWidgetHostView, but not the RenderWidgetHostView of the new main
+  // frame. If there is no render frame swap (i.e. RenderDocument is disabled),
+  // then this doesn't matter. However, if there is a swap, then the new RWHV
+  // will also need to have its screen rects updated so they are not left at
+  // 0x0. Popups are left alone since there are some tests that modify the
+  // window size mid-navigation, and this code block can race with that and undo
+  // the resize.
+  if (!RenderFrameHostImpl::From(main_frame)->delegate()->IsPopup()) {
+    DCHECK(main_frame->GetView());
+    auto* rwhv_mac =
+        static_cast<RenderWidgetHostViewMac*>(main_frame->GetView());
+    if (rwhv_mac) {
+      rwhv_mac->SetWindowFrameInScreen(gfx::Rect(shell_data.initial_size));
+    }
+  }
 }
 
 bool WebTestShellPlatformDelegate::DestroyShell(Shell* shell) {

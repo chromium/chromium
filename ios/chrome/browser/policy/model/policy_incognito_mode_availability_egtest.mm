@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_matchers.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -82,7 +84,6 @@ id<GREYMatcher> TabGridButton() {
   // app, this policy data will appear under the
   // "com.apple.configuration.managed" key.
   AppLaunchConfiguration config;
-  config.relaunch_policy = NoForceRelaunchAndResetState;
   return config;
 }
 
@@ -113,6 +114,11 @@ id<GREYMatcher> TabGridButton() {
                                  @"key><integer>%d</integer></dict>",
                                  static_cast<int>(availability)]);
   config.additional_args.push_back(incognito_availability_arg);
+  config.relaunch_policy = NoForceRelaunchAndResetState;
+  if ([self
+          isRunningTest:@selector(testIncognitoTabGridWhenIncognitoDisabled)]) {
+    config.features_enabled.push_back(kTabSwitcherOverflowMenu);
+  }
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
@@ -167,14 +173,6 @@ id<GREYMatcher> TabGridButton() {
   // Long press the tab grid button.
   [[EarlGrey selectElementWithMatcher:TabGridButton()]
       performAction:grey_longPress()];
-
-  if (@available(iOS 26, *)) {
-    // TODO(crbug.com/428928323): Investigate why the keyboard appears. Remove
-    // this workaround when it's not needed anymore.
-    // On iOS 26, the keyboard appears when the button is long pressed and it
-    // hides the elements behind. Close the keyboard by typing a return key.
-    [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\\n" flags:0];
-  }
 
   AssertContextMenuItemEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
   AssertContextMenuItemDisabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
@@ -270,10 +268,10 @@ id<GREYMatcher> TabGridButton() {
                                           kDisabledIncognitoTabGridMessage)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  // Check that the edit button is disabled.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(chrome_test_util::TabGridEditButton(),
-                                          grey_sufficientlyVisible(), nil)]
+  // Check that the overflow menu button is disabled.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(chrome_test_util::TabGridOverflowMenuButton(),
+                            grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_not(grey_enabled())];
 
   GREYAssertNil([MetricsAppInterface

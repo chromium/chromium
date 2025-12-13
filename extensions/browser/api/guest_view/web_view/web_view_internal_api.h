@@ -7,6 +7,9 @@
 
 #include <stdint.h>
 
+#include <optional>
+#include <string>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -110,8 +113,7 @@ class WebViewInternalExecuteCodeFunction
   // - If yes, the content of the file.
   // This callback should match the associated LoadFileCallback types
   // specified in WebUIURLFetcher and ControlledFrameEmbedderURLFetcher.
-  using LoadFileCallback =
-      base::OnceCallback<void(bool, std::unique_ptr<std::string>)>;
+  using LoadFileCallback = base::OnceCallback<void(bool, std::string)>;
 
   WebViewInternalExecuteCodeFunction();
 
@@ -141,7 +143,7 @@ class WebViewInternalExecuteCodeFunction
                            LoadFileCallback callback);
   void DidLoadFileForEmbedder(const std::string& file,
                               bool success,
-                              std::unique_ptr<std::string> data);
+                              std::string data);
 
   // Contains extension resource built from path of file which is
   // specified in JSON arguments.

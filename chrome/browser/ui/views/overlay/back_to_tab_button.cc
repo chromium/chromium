@@ -39,17 +39,7 @@ OverlayWindowBackToTabButton::OverlayWindowBackToTabButton(
   SetTooltipText(button_label);
 }
 
-void OverlayWindowBackToTabButton::SetPosition(
-    const gfx::Size& size,
-    VideoOverlayWindowViews::WindowQuadrant quadrant) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (quadrant == VideoOverlayWindowViews::WindowQuadrant::kBottomLeft) {
-    views::ImageButton::SetPosition(gfx::Point(kBackToTabButtonHorizontalMargin,
-                                               kBackToTabButtonVerticalMargin));
-    return;
-  }
-#endif
-
+void OverlayWindowBackToTabButton::SetPosition(const gfx::Size& size) {
   views::ImageButton::SetPosition(gfx::Point(
       size.width() - kBackToTabButtonSize - kBackToTabButtonHorizontalMargin,
       kBackToTabButtonVerticalMargin));

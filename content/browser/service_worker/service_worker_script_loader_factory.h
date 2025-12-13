@@ -99,7 +99,7 @@ class CONTENT_EXPORT ServiceWorkerScriptLoaderFactory
   void OnCopyScriptFinished(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       uint32_t options,
-      const network::ResourceRequest& resource_request,
+      const GURL& resource_request_url,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       int64_t new_resource_id,
       net::Error error);

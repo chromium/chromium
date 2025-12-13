@@ -39,6 +39,22 @@ source_set("controlled_frame") {
   public_deps = [ "//chrome/browser/controlled_frame/api:api_registration" ]
 }
 
+source_set("media_access_handler") {
+  sources = [ "controlled_frame_media_access_handler.h" ]
+  public_deps = [ "//chrome/browser/media:access_handler" ]
+}
+
+source_set("media_access_handler_impl") {
+  sources = [ "controlled_frame_media_access_handler.cc" ]
+  public_deps = [ "//chrome/browser/media:access_handler" ]
+  deps = [
+    ":media_access_handler",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/profiles:profile",
+    "//extensions/browser",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
 
@@ -57,6 +73,7 @@ source_set("test_support") {
     "//base/version_info",
     "//chrome/browser",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/preloading:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",

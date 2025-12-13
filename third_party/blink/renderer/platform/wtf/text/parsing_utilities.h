@@ -35,6 +35,8 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
 
@@ -49,6 +51,15 @@ bool SkipExactly(base::span<const CharType> chars,
   return false;
 }
 
+template <typename CharType>
+bool SkipExactly(base::span<const CharType>& chars, CharType c) {
+  if (!chars.empty() && chars.front() == c) {
+    chars = chars.template subspan<1u>();
+    return true;
+  }
+  return false;
+}
+
 template <typename CharType, bool predicate(CharType)>
 bool SkipExactly(base::span<const CharType> chars, size_t& position) {
   if (position < chars.size() && predicate(chars[position])) {
@@ -58,23 +69,20 @@ bool SkipExactly(base::span<const CharType> chars, size_t& position) {
   return false;
 }
 
-// Use a span version instead.
 template <typename CharType>
-UNSAFE_BUFFER_USAGE bool SkipToken(const CharType*& position,
-                                   const CharType* end,
-                                   const char* token) {
-  const CharType* current = position;
-  while (current < end && *token) {
-    if (*current != *token)
-      return false;
-    UNSAFE_TODO(++current);
-    UNSAFE_TODO(++token);
-  }
-  if (*token)
+bool SkipToken(const base::span<const CharType> chars,
+               StringView token,
+               size_t& position) {
+  if (position + token.length() > chars.size()) {
     return false;
-
-  position = current;
-  return true;
+  }
+  auto subspan = chars.subspan(position, token.length());
+  bool matched = VisitCharacters(
+      token, [&subspan](auto token_chars) { return subspan == token_chars; });
+  if (matched) {
+    position += token.length();
+  }
+  return matched;
 }
 
 template <typename CharType>
@@ -90,13 +98,14 @@ bool SkipToken(base::span<const CharType>& chars, std::string_view token) {
   return true;
 }
 
-// Use a span version instead.
 template <typename CharType>
-UNSAFE_BUFFER_USAGE void SkipUntil(const CharType*& position,
-                                   const CharType* end,
-                                   CharType delimiter) {
-  while (position < end && *position != delimiter)
-    UNSAFE_TODO(++position);
+[[nodiscard]] size_t SkipUntil(base::span<const CharType> chars,
+                               size_t position,
+                               CharType delimiter) {
+  while (position < chars.size() && chars[position] != delimiter) {
+    ++position;
+  }
+  return position;
 }
 
 template <typename CharType, bool predicate(CharType)>

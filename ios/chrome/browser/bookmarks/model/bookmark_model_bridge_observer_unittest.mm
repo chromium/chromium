@@ -42,7 +42,7 @@
 - (instancetype)initWithModel:(bookmarks::BookmarkModel*)model
                      observer:(TestBookmarkModelBridgeObserver*)observer {
   if ((self = [super init])) {
-    DCHECK(model);
+    CHECK(model, base::NotFatalUntil::M152);
     _observer = observer;
     [_observer setOwner:self];
 

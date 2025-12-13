@@ -15,11 +15,8 @@ namespace data_controls {
 BASE_DECLARE_FEATURE(kEnableClipboardDataControlsAndroid);
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-// Controls enabling Data Controls rules for downloads on desktop
-BASE_DECLARE_FEATURE(kEnableDownloadDataControlsDesktop);
-#endif
+// Controls enabling Data Controls rules for downloads.
+BASE_DECLARE_FEATURE(kEnableDownloadDataControls);
 
 }  // namespace data_controls
 

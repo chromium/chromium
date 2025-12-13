@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 154 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 130 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SVGElement interface: attribute correspondingElement
   assert_true: The prototype object must have a property "correspondingElement" expected true got false
 [FAIL] SVGElement interface: attribute correspondingUseElement
@@ -36,24 +36,6 @@ Found 154 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "correspondingElement" not found in prototype chain
 [FAIL] SVGElement interface: objects.title must inherit property "correspondingUseElement" with the proper type
   assert_inherits: property "correspondingUseElement" not found in prototype chain
-[FAIL] SVGSymbolElement interface: existence and properties of interface object
-  assert_equals: prototype of SVGSymbolElement is not SVGGraphicsElement expected function "function SVGGraphicsElement() { [native code] }" but got function "function SVGElement() { [native code] }"
-[FAIL] SVGSymbolElement interface: existence and properties of interface prototype object
-  assert_equals: prototype of SVGSymbolElement.prototype is not SVGGraphicsElement.prototype expected object "[object SVGGraphicsElement]" but got object "[object SVGElement]"
-[FAIL] SVGGraphicsElement interface: objects.symbol must inherit property "transform" with the proper type
-  assert_inherits: property "transform" not found in prototype chain
-[FAIL] SVGGraphicsElement interface: objects.symbol must inherit property "getBBox(optional SVGBoundingBoxOptions)" with the proper type
-  assert_inherits: property "getBBox" not found in prototype chain
-[FAIL] SVGGraphicsElement interface: calling getBBox(optional SVGBoundingBoxOptions) on objects.symbol with too few arguments must throw TypeError
-  assert_inherits: property "getBBox" not found in prototype chain
-[FAIL] SVGGraphicsElement interface: objects.symbol must inherit property "getCTM()" with the proper type
-  assert_inherits: property "getCTM" not found in prototype chain
-[FAIL] SVGGraphicsElement interface: objects.symbol must inherit property "getScreenCTM()" with the proper type
-  assert_inherits: property "getScreenCTM" not found in prototype chain
-[FAIL] SVGGraphicsElement interface: objects.symbol must inherit property "requiredExtensions" with the proper type
-  assert_inherits: property "requiredExtensions" not found in prototype chain
-[FAIL] SVGGraphicsElement interface: objects.symbol must inherit property "systemLanguage" with the proper type
-  assert_inherits: property "systemLanguage" not found in prototype chain
 [FAIL] SVGElement interface: objects.symbol must inherit property "correspondingElement" with the proper type
   assert_inherits: property "correspondingElement" not found in prototype chain
 [FAIL] SVGElement interface: objects.symbol must inherit property "correspondingUseElement" with the proper type
@@ -154,8 +136,14 @@ Found 154 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "correspondingElement" not found in prototype chain
 [FAIL] SVGElement interface: objects.foreignObject must inherit property "correspondingUseElement" with the proper type
   assert_inherits: property "correspondingUseElement" not found in prototype chain
+[FAIL] SVGMarkerElement interface: constant SVG_MARKER_ORIENT_AUTO_START_REVERSE on interface object
+  assert_own_property: expected property "SVG_MARKER_ORIENT_AUTO_START_REVERSE" missing
+[FAIL] SVGMarkerElement interface: constant SVG_MARKER_ORIENT_AUTO_START_REVERSE on interface prototype object
+  assert_own_property: expected property "SVG_MARKER_ORIENT_AUTO_START_REVERSE" missing
 [FAIL] SVGMarkerElement interface: attribute orient
   assert_true: The prototype object must have a property "orient" expected true got false
+[FAIL] SVGMarkerElement interface: objects.marker must inherit property "SVG_MARKER_ORIENT_AUTO_START_REVERSE" with the proper type
+  assert_inherits: property "SVG_MARKER_ORIENT_AUTO_START_REVERSE" not found in prototype chain
 [FAIL] SVGMarkerElement interface: objects.marker must inherit property "orient" with the proper type
   assert_inherits: property "orient" not found in prototype chain
 [FAIL] SVGElement interface: objects.marker must inherit property "correspondingElement" with the proper type
@@ -186,18 +174,6 @@ Found 154 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "correspondingElement" not found in prototype chain
 [FAIL] SVGElement interface: objects.script must inherit property "correspondingUseElement" with the proper type
   assert_inherits: property "correspondingUseElement" not found in prototype chain
-[FAIL] SVGAElement interface: attribute download
-  assert_true: The prototype object must have a property "download" expected true got false
-[FAIL] SVGAElement interface: attribute ping
-  assert_true: The prototype object must have a property "ping" expected true got false
-[FAIL] SVGAElement interface: attribute hreflang
-  assert_true: The prototype object must have a property "hreflang" expected true got false
-[FAIL] SVGAElement interface: attribute type
-  assert_true: The prototype object must have a property "type" expected true got false
-[FAIL] SVGAElement interface: attribute text
-  assert_true: The prototype object must have a property "text" expected true got false
-[FAIL] SVGAElement interface: attribute referrerPolicy
-  assert_true: The prototype object must have a property "referrerPolicy" expected true got false
 [FAIL] SVGAElement interface: attribute origin
   assert_true: The prototype object must have a property "origin" expected true got false
 [FAIL] SVGAElement interface: attribute protocol
@@ -218,18 +194,6 @@ Found 154 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: The prototype object must have a property "search" expected true got false
 [FAIL] SVGAElement interface: attribute hash
   assert_true: The prototype object must have a property "hash" expected true got false
-[FAIL] SVGAElement interface: objects.a must inherit property "download" with the proper type
-  assert_inherits: property "download" not found in prototype chain
-[FAIL] SVGAElement interface: objects.a must inherit property "ping" with the proper type
-  assert_inherits: property "ping" not found in prototype chain
-[FAIL] SVGAElement interface: objects.a must inherit property "hreflang" with the proper type
-  assert_inherits: property "hreflang" not found in prototype chain
-[FAIL] SVGAElement interface: objects.a must inherit property "type" with the proper type
-  assert_inherits: property "type" not found in prototype chain
-[FAIL] SVGAElement interface: objects.a must inherit property "text" with the proper type
-  assert_inherits: property "text" not found in prototype chain
-[FAIL] SVGAElement interface: objects.a must inherit property "referrerPolicy" with the proper type
-  assert_inherits: property "referrerPolicy" not found in prototype chain
 [FAIL] SVGAElement interface: objects.a must inherit property "origin" with the proper type
   assert_inherits: property "origin" not found in prototype chain
 [FAIL] SVGAElement interface: objects.a must inherit property "protocol" with the proper type
@@ -274,7 +238,7 @@ Found 154 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "TimeEvent" expected property "TimeEvent" missing
 [FAIL] TimeEvent interface: attribute detail
   assert_own_property: self does not have own property "TimeEvent" expected property "TimeEvent" missing
-[FAIL] TimeEvent interface: operation initTimeEvent(DOMString, Window?, long)
+[FAIL] TimeEvent interface: operation initTimeEvent(DOMString, optional Window?, optional long)
   assert_own_property: self does not have own property "TimeEvent" expected property "TimeEvent" missing
 [FAIL] SVGElement interface: objects.animate must inherit property "correspondingElement" with the proper type
   assert_inherits: property "correspondingElement" not found in prototype chain
@@ -296,17 +260,5 @@ Found 154 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "correspondingElement" not found in prototype chain
 [FAIL] SVGElement interface: objects.animateTransform must inherit property "correspondingUseElement" with the proper type
   assert_inherits: property "correspondingUseElement" not found in prototype chain
-[FAIL] SVGDiscardElement interface: existence and properties of interface object
-  assert_own_property: self does not have own property "SVGDiscardElement" expected property "SVGDiscardElement" missing
-[FAIL] SVGDiscardElement interface object length
-  assert_own_property: self does not have own property "SVGDiscardElement" expected property "SVGDiscardElement" missing
-[FAIL] SVGDiscardElement interface object name
-  assert_own_property: self does not have own property "SVGDiscardElement" expected property "SVGDiscardElement" missing
-[FAIL] SVGDiscardElement interface: existence and properties of interface prototype object
-  assert_own_property: self does not have own property "SVGDiscardElement" expected property "SVGDiscardElement" missing
-[FAIL] SVGDiscardElement interface: existence and properties of interface prototype object's "constructor" property
-  assert_own_property: self does not have own property "SVGDiscardElement" expected property "SVGDiscardElement" missing
-[FAIL] SVGDiscardElement interface: existence and properties of interface prototype object's @@unscopables property
-  assert_own_property: self does not have own property "SVGDiscardElement" expected property "SVGDiscardElement" missing
 Harness: the test ran to completion.
 

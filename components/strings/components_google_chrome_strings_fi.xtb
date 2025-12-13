@@ -33,16 +33,16 @@
         ja poista valinta kohdasta <ph name="NO_PREFETCH_DESCRIPTION" />.
         Jos ongelma ei ratkea, valitse tämä vaihtoehto
         uudelleen suorituskyvyn parantamiseksi.</translation>
-<translation id="6855094794438142393">Avaa
-          Chrome-valikko &gt;
+<translation id="6581867098636731226">Siirry
+          Chrome-valikkoon &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
-          <ph name="ADVANCED_TITLE" />
+          <ph name="SYSTEM_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
           &gt;
-          Lähiverkon asetukset
-          ja poista valinta kohdasta Käytä välityspalvelinta lähiverkossa.</translation>
+          Verkko ja internet &gt; Välityspalvelin
+          ja poista valinta "Tunnista asetukset automaattisesti".</translation>
 <translation id="7230956101631259640">Tämä on suojattu Chrome-sivu</translation>
 <translation id="8232971017369963250">Chromen mahdollistivat avoimen lähdekoodin projekti <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Muu <ph name="BEGIN_LINK_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_OSS" /> tukee Chromea.</translation>

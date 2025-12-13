@@ -72,6 +72,7 @@ class WebApkSyncBridge : public syncer::DataTypeSyncBridge {
       const syncer::EntityData& entity_data) const override;
   std::string GetStorageKey(
       const syncer::EntityData& entity_data) const override;
+  bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                    delete_metadata_change_list) override;
 
@@ -79,8 +80,8 @@ class WebApkSyncBridge : public syncer::DataTypeSyncBridge {
 
   void RegisterDoneInitializingCallback(
       base::OnceCallback<void(bool)> init_done_callback);
-  void MergeSyncDataForTesting(std::vector<std::vector<std::string>> app_vector,
-                               std::vector<int> last_used_days_vector);
+  void MergeSyncDataForTesting(
+      std::vector<std::vector<std::string>> app_vector);
 
   // internal helpers, exposed for testing.
   bool AppWasUsedRecently(const sync_pb::WebApkSpecifics* specifics) const;

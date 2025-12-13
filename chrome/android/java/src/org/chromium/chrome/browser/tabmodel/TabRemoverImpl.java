@@ -11,7 +11,6 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
@@ -27,6 +26,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Implementation of {@link TabRemover} for the regular tab model. Uses a {@link TabModelRemover}
@@ -82,7 +82,7 @@ public class TabRemoverImpl implements TabRemover {
     @Override
     public void forceCloseTabs(TabClosureParams tabClosureParams) {
         PassthroughTabRemover.doCloseTabs(
-                mTabModelRemover.getTabGroupModelFilter(), tabClosureParams);
+                mTabModelRemover.getTabGroupModelFilter().getTabModel(), tabClosureParams);
     }
 
     @Override

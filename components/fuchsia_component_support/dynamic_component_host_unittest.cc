@@ -13,9 +13,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"

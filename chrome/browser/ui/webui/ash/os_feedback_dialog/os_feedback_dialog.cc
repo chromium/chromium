@@ -94,9 +94,7 @@ void OsFeedbackDialog::GetDialogSize(gfx::Size* size) const {
 }
 
 std::string OsFeedbackDialog::GetDialogArgs() const {
-  std::string data;
-  base::JSONWriter::Write(feedback_info_, &data);
-  return data;
+  return base::WriteJson(feedback_info_).value_or("");
 }
 
 }  // namespace ash

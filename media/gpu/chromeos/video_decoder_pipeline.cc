@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
@@ -219,16 +220,17 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
     mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder,
     bool in_video_decoder_process) {
   DCHECK(client_task_runner);
-  DCHECK(frame_pool);
   DCHECK(!renderable_fourccs.empty());
 
   CreateDecoderFunctionCB create_decoder_function_cb;
   bool uses_oop_video_decoder = false;
   if (oop_video_decoder) {
+    DCHECK(!frame_pool);
     create_decoder_function_cb =
         base::BindOnce(&OOPVideoDecoder::Create, std::move(oop_video_decoder));
     uses_oop_video_decoder = true;
   } else {
+    DCHECK(frame_pool);
 #if BUILDFLAG(USE_VAAPI)
     create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
 #elif BUILDFLAG(USE_V4L2_CODEC)
@@ -459,14 +461,16 @@ VideoDecoderPipeline::VideoDecoderPipeline(
   CHECK(decoder_reservation_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DETACH_FROM_SEQUENCE(decoder_sequence_checker_);
-  DCHECK(main_frame_pool_);
+  DCHECK_EQ(!main_frame_pool_, uses_oop_video_decoder_);
   DCHECK(client_task_runner_);
   CHECK(frame_converter_);
   DVLOGF(2);
 
   decoder_weak_this_ = decoder_weak_this_factory_.GetWeakPtr();
 
-  main_frame_pool_->set_parent_task_runner(decoder_task_runner_);
+  if (main_frame_pool_) {
+    main_frame_pool_->set_parent_task_runner(decoder_task_runner_);
+  }
   frame_converter_->Initialize(
       decoder_task_runner_,
       base::BindRepeating(&VideoDecoderPipeline::OnFrameConverted,
@@ -1088,6 +1092,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   // is the largest amount of reference frames seen, on an ITU-T H.264 test
   // vector (CAPCM*1_Sand_E.h264).
   CHECK_LE(num_codec_reference_frames, 32u);
+  CHECK(!uses_oop_video_decoder_);
 
   if (candidates.empty())
     return CroStatus::Codes::kNoDecoderOutputFormatCandidates;

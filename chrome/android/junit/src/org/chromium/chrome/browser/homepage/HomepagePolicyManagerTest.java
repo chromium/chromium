@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.homepage;
 
 import androidx.annotation.Nullable;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,6 +26,7 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils.BooleanPolicyState;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.url.GURL;
@@ -54,437 +54,573 @@ public class HomepagePolicyManagerTest {
 
     private SharedPreferencesManager mSharedPreferenceManager;
 
+    private class PolicyBuilder {
+        private boolean mIsHomeLocationPolicyManaged;
+        private String mHomepageLocation = "";
+        private boolean mIsButtonPolicyManaged;
+        private boolean mButtonPolicyValue;
+        private boolean mHomepageIsNtpPolicyManaged;
+        private boolean mHomepageIsNtpPolicyValue;
+        private boolean mHasButtonRecommendation;
+        private boolean mIsFollowingButtonRecommendation;
+        private boolean mHasNtpRecommendation;
+        private boolean mIsFollowingNtpRecommendation;
+        private boolean mHasLocationRecommendation;
+        private boolean mIsFollowingLocationRecommendation;
+        @Nullable private HomepagePolicyStateListener mListener;
+
+        public PolicyBuilder withHomepageLocationPolicyManaged(boolean managed) {
+            mIsHomeLocationPolicyManaged = managed;
+            return this;
+        }
+
+        public PolicyBuilder withHomepageLocation(String location) {
+            mHomepageLocation = location;
+            return this;
+        }
+
+        public PolicyBuilder withButtonPolicyManaged(boolean managed) {
+            mIsButtonPolicyManaged = managed;
+            return this;
+        }
+
+        public PolicyBuilder withButtonPolicyValue(boolean value) {
+            mButtonPolicyValue = value;
+            return this;
+        }
+
+        public PolicyBuilder withHomepageIsNtpPolicyManaged(boolean managed) {
+            mHomepageIsNtpPolicyManaged = managed;
+            return this;
+        }
+
+        public PolicyBuilder withHomepageIsNtpPolicyValue(boolean value) {
+            mHomepageIsNtpPolicyValue = value;
+            return this;
+        }
+
+        public PolicyBuilder withHasButtonRecommendation(boolean recommended) {
+            mHasButtonRecommendation = recommended;
+            return this;
+        }
+
+        public PolicyBuilder withIsFollowingButtonRecommendation(boolean following) {
+            mIsFollowingButtonRecommendation = following;
+            return this;
+        }
+
+        public PolicyBuilder withHasNtpRecommendation(boolean recommended) {
+            mHasNtpRecommendation = recommended;
+            return this;
+        }
+
+        public PolicyBuilder withIsFollowingNtpRecommendation(boolean following) {
+            mIsFollowingNtpRecommendation = following;
+            return this;
+        }
+
+        public PolicyBuilder withHasLocationRecommendation(boolean recommended) {
+            mHasLocationRecommendation = recommended;
+            return this;
+        }
+
+        public PolicyBuilder withIsFollowingLocationRecommendation(boolean following) {
+            mIsFollowingLocationRecommendation = following;
+            return this;
+        }
+
+        public PolicyBuilder withListener(@Nullable HomepagePolicyStateListener listener) {
+            mListener = listener;
+            return this;
+        }
+
+        public void build() {
+            Mockito.when(mMockPrefService.isManagedPreference(Pref.HOME_PAGE))
+                    .thenReturn(mIsHomeLocationPolicyManaged);
+            Mockito.when(mMockPrefService.getString(Pref.HOME_PAGE)).thenReturn(mHomepageLocation);
+
+            Mockito.when(mMockPrefService.isManagedPreference(Pref.SHOW_HOME_BUTTON))
+                    .thenReturn(mIsButtonPolicyManaged);
+            Mockito.when(mMockPrefService.getBoolean(Pref.SHOW_HOME_BUTTON))
+                    .thenReturn(mButtonPolicyValue);
+
+            Mockito.when(mMockPrefService.isManagedPreference(Pref.HOME_PAGE_IS_NEW_TAB_PAGE))
+                    .thenReturn(mHomepageIsNtpPolicyManaged);
+            Mockito.when(mMockPrefService.getBoolean(Pref.HOME_PAGE_IS_NEW_TAB_PAGE))
+                    .thenReturn(mHomepageIsNtpPolicyValue);
+
+            Mockito.when(mMockPrefService.hasRecommendation(Pref.SHOW_HOME_BUTTON))
+                    .thenReturn(mHasButtonRecommendation);
+            Mockito.when(mMockPrefService.isFollowingRecommendation(Pref.SHOW_HOME_BUTTON))
+                    .thenReturn(mIsFollowingButtonRecommendation);
+
+            Mockito.when(mMockPrefService.hasRecommendation(Pref.HOME_PAGE_IS_NEW_TAB_PAGE))
+                    .thenReturn(mHasNtpRecommendation);
+            Mockito.when(mMockPrefService.isFollowingRecommendation(Pref.HOME_PAGE_IS_NEW_TAB_PAGE))
+                    .thenReturn(mIsFollowingNtpRecommendation);
+
+            Mockito.when(mMockPrefService.hasRecommendation(Pref.HOME_PAGE))
+                    .thenReturn(mHasLocationRecommendation);
+            Mockito.when(mMockPrefService.isFollowingRecommendation(Pref.HOME_PAGE))
+                    .thenReturn(mIsFollowingLocationRecommendation);
+        }
+    }
+
     @Before
     public void setup() {
-
-        // Reset shared preference
+        // Reset shared preferences and mocks before each test.
         mSharedPreferenceManager = ChromeSharedPreferences.getInstance();
-        setHomepageInSharedPreference(GURL.emptyGURL());
 
         ChromeBrowserInitializer.setForTesting(mChromeBrowserInitializer);
-
-        // Disable the policy during setup
         HomepagePolicyManager.setPrefServiceForTesting(mMockPrefService);
-        setupNewHomepagePolicyManagerForTests(
-                /* isHomeLocationPolicyManaged= */ false,
-                /* homepageLocation= */ "",
-                /* isButtonPolicyManaged= */ false,
-                /* buttonPolicyValue= */ false,
-                /* homepageIsNtpPolicyManaged= */ false,
-                /* homepageIsNtpPolicyValue= */ false,
-                null);
+    }
 
-        // Verify setup
+    @Test
+    public void testInit_DefaultStateWithEmptyPrefs() {
+        mHomepagePolicyManager = new HomepagePolicyManager();
         Assert.assertFalse(
-                "#isHomepageLocationManaged == true without homepage pref setup",
+                "Manager should not be initialized", mHomepagePolicyManager.isInitialized());
+        Assert.assertFalse(
+                "Homepage location should not be managed",
                 mHomepagePolicyManager.isHomepageLocationPolicyManaged());
         Assert.assertFalse(
-                "#isShowHomeButtonPolicyManaged == true without pref setup",
+                "Show home button should not be managed",
                 mHomepagePolicyManager.isShowHomeButtonPolicyManaged());
         Assert.assertFalse(
-                "isHomepageNewTabPageManaged == true without pref setup",
+                "Homepage selection should not be managed",
                 mHomepagePolicyManager.isHomepageIsNtpPolicyManaged());
+        Assert.assertFalse(
+                "Show home button should not be recommended",
+                mHomepagePolicyManager.isShowHomeButtonPolicyRecommended());
+        Assert.assertFalse(
+                "Homepage selection should not be recommended",
+                mHomepagePolicyManager.isHomepageSelectionPolicyRecommended());
     }
 
-    private void setupNewHomepagePolicyManagerForTests(
-            boolean isHomeLocationPolicyManaged,
-            String homepageLocation,
-            boolean isButtonPolicyManaged,
-            boolean buttonPolicyValue,
-            boolean homepageIsNtpPolicyManaged,
-            boolean homepageIsNtpPolicyValue,
-            @Nullable HomepagePolicyStateListener listener) {
-        Mockito.when(mMockPrefService.isManagedPreference(Pref.HOME_PAGE))
-                .thenReturn(isHomeLocationPolicyManaged);
-        Mockito.when(mMockPrefService.getString(Pref.HOME_PAGE)).thenReturn(homepageLocation);
-
-        Mockito.when(mMockPrefService.isManagedPreference(Pref.SHOW_HOME_BUTTON))
-                .thenReturn(isButtonPolicyManaged);
-        Mockito.when(mMockPrefService.getBoolean(Pref.SHOW_HOME_BUTTON))
-                .thenReturn(buttonPolicyValue);
-
-        Mockito.when(mMockPrefService.isManagedPreference(Pref.HOME_PAGE_IS_NEW_TAB_PAGE))
-                .thenReturn(homepageIsNtpPolicyManaged);
-        Mockito.when(mMockPrefService.getBoolean(Pref.HOME_PAGE_IS_NEW_TAB_PAGE))
-                .thenReturn(homepageIsNtpPolicyValue);
-
-        mHomepagePolicyManager = new HomepagePolicyManager(mMockRegistrar, listener);
-        HomepagePolicyManager.setInstanceForTests(mHomepagePolicyManager);
-    }
-
-    private void setHomepageInSharedPreference(GURL homepageLocation) {
+    @Test
+    public void testInit_LoadsLocationFromSharedPrefs() {
         mSharedPreferenceManager.writeString(
-                ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL, homepageLocation.serialize());
-    }
-
-    @Test
-    @SmallTest
-    public void testEmptyInstance_GetFromSharedPreference() {
-        // Create a new empty instance
-        HomepagePolicyManager manager = new HomepagePolicyManager();
-
-        // Test if policy reflects the setting of shared preference
-        Assert.assertFalse(
-                "HomepagePolicyManager should be not initialized yet", manager.isInitialized());
-        Assert.assertFalse(
-                "#isHomepageLocationPolicyManaged not consistent with test setting",
-                manager.isHomepageLocationPolicyManaged());
-        Assert.assertFalse(
-                "#isShowHomeButtonPolicyManaged not consistent with test setting",
-                manager.isShowHomeButtonPolicyManaged());
-        Assert.assertFalse(
-                "#isHomepageIsNtpPolicyManaged not consistent with test setting",
-                manager.isHomepageIsNtpPolicyManaged());
-    }
-
-    @Test
-    @SmallTest
-    public void testEmptyInstance_EnabledFromSharedPreference() {
-        setHomepageInSharedPreference(new GURL(CHROME_NTP));
-
-        // Create a new empty instance
-        HomepagePolicyManager manager = new HomepagePolicyManager();
-
-        Assert.assertFalse(
-                "HomepagePolicyManager should be not initialized yet", manager.isInitialized());
+                ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL,
+                new GURL(CHROME_NTP).serialize());
+        mHomepagePolicyManager = new HomepagePolicyManager();
         Assert.assertTrue(
-                "#isHomepageLocationPolicyManaged not consistent with test setting",
-                manager.isHomepageLocationPolicyManaged());
+                "Homepage location should be managed",
+                mHomepagePolicyManager.isHomepageLocationPolicyManaged());
         Assert.assertEquals(
-                "#getHomepageUrl not consistent with test setting",
+                "Homepage URL should match value from SharedPreferences",
                 CHROME_NTP,
-                manager.getHomepageLocationPolicyUrl().getSpec());
+                mHomepagePolicyManager.getHomepageLocationPolicyUrl().getSpec());
     }
 
     @Test
-    @SmallTest
-    public void testEmptyInstance_InitializeAfterwards() {
-        // Create a new empty instance
-        HomepagePolicyManager manager = new HomepagePolicyManager();
-
-        manager.initializeWithNative(mMockRegistrar);
-        Assert.assertTrue("HomepagePolicyManager should be initialized", manager.isInitialized());
-        Mockito.verify(mMockRegistrar, Mockito.times(1)).addObserver(Pref.HOME_PAGE, manager);
-        Mockito.verify(mMockRegistrar, Mockito.times(1))
-                .addObserver(Pref.SHOW_HOME_BUTTON, manager);
-        Mockito.verify(mMockRegistrar, Mockito.times(1))
-                .addObserver(Pref.HOME_PAGE_IS_NEW_TAB_PAGE, manager);
-    }
-
-    @Test
-    @SmallTest
-    public void testInitialization() {
-        setupNewHomepagePolicyManagerForTests(
-                /* isHomeLocationPolicyManaged= */ true,
-                /* homepageLocation= */ TEST_URL,
-                /* isButtonPolicyManaged= */ true,
-                /* buttonPolicyValue= */ false,
-                /* homepageIsNtpPolicyManaged= */ true,
-                /* homepageIsNtpPolicyValue= */ false,
-                null);
-
+    public void testInit_LoadsShowHomeButtonStatesFromSharedPrefs() {
+        mSharedPreferenceManager.writeInt(
+                ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE,
+                BooleanPolicyState.MANAGED_BY_POLICY_ON);
+        mHomepagePolicyManager = new HomepagePolicyManager();
         Assert.assertTrue(
-                "#isHomepageLocationManaged not consistent with test setting",
-                HomepagePolicyManager.isHomepageLocationManaged());
+                "Button should be managed for MANAGED_BY_POLICY_ON",
+                mHomepagePolicyManager.isShowHomeButtonPolicyManaged());
+        Assert.assertTrue(
+                "Button value should be true for MANAGED_BY_POLICY_ON",
+                mHomepagePolicyManager.getShowHomeButtonPolicyValue());
+
+        mSharedPreferenceManager.writeInt(
+                ChromePreferenceKeys.SHOW_HOME_BUTTON_POLICY_STATE,
+                BooleanPolicyState.RECOMMENDED_IS_NOT_FOLLOWED);
+        mHomepagePolicyManager = new HomepagePolicyManager();
+        Assert.assertFalse(
+                "Button should not be managed for RECOMMENDED_IS_NOT_FOLLOWED",
+                mHomepagePolicyManager.isShowHomeButtonPolicyManaged());
+        Assert.assertTrue(
+                "Button should be recommended for RECOMMENDED_IS_NOT_FOLLOWED",
+                mHomepagePolicyManager.isShowHomeButtonPolicyRecommended());
+        Assert.assertFalse(
+                "User should not be following recommendation for RECOMMENDED_IS_NOT_FOLLOWED",
+                mHomepagePolicyManager.isFollowingHomepageButtonPolicyRecommendation());
+    }
+
+    @Test
+    public void testInit_LoadsHomepageSelectionStateFromSharedPrefs() {
+        mSharedPreferenceManager.writeInt(
+                ChromePreferenceKeys.HOMEPAGE_SELECTION_POLICY_STATE,
+                BooleanPolicyState.MANAGED_BY_POLICY_OFF);
+        mHomepagePolicyManager = new HomepagePolicyManager();
+        Assert.assertTrue(
+                "Selection should be managed for MANAGED_BY_POLICY_OFF",
+                mHomepagePolicyManager.isHomepageIsNtpPolicyManaged());
+        Assert.assertFalse(
+                "Selection value should be false for MANAGED_BY_POLICY_OFF",
+                mHomepagePolicyManager.getHomepageIsNtpPolicyValue());
+
+        mSharedPreferenceManager.writeInt(
+                ChromePreferenceKeys.HOMEPAGE_SELECTION_POLICY_STATE,
+                BooleanPolicyState.RECOMMENDED_IS_FOLLOWED);
+        mHomepagePolicyManager = new HomepagePolicyManager();
+        Assert.assertFalse(
+                "Selection should not be managed for RECOMMENDED_IS_FOLLOWED",
+                mHomepagePolicyManager.isHomepageIsNtpPolicyManaged());
+        Assert.assertTrue(
+                "Selection should be recommended for RECOMMENDED_IS_FOLLOWED",
+                mHomepagePolicyManager.isHomepageSelectionPolicyRecommended());
+        Assert.assertTrue(
+                "User should be following recommendation for RECOMMENDED_IS_FOLLOWED",
+                mHomepagePolicyManager.isFollowingHomepageSelectionPolicyRecommendation());
+    }
+
+    @Test
+    public void testInit_HandlesDeprecatedLocationKey() {
+        mSharedPreferenceManager.writeString(
+                ChromePreferenceKeys.DEPRECATED_HOMEPAGE_LOCATION_POLICY, TEST_URL);
+        mHomepagePolicyManager = new HomepagePolicyManager();
+        Assert.assertTrue(
+                "Homepage location should be managed via deprecated key",
+                mHomepagePolicyManager.isHomepageLocationPolicyManaged());
         Assert.assertEquals(
-                "#getHomepageUrl not consistent with test setting",
+                "Homepage URL should match deprecated key",
                 TEST_URL,
-                HomepagePolicyManager.getHomepageUrl().getSpec());
-
-        String homepageGurlSerialized =
-                mSharedPreferenceManager.readString(
-                        ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL, "");
-        GURL homepageGurl = GURL.deserialize(homepageGurlSerialized);
-        Assert.assertEquals(
-                "Updated HomepageLocation should be stored in shared preference",
-                TEST_URL,
-                homepageGurl.getSpec());
-
-        Assert.assertTrue(
-                "#ShowHomeButton policy is disabled but should be enabled",
-                HomepagePolicyManager.isShowHomeButtonManaged());
-        Assert.assertFalse(
-                "#ShowHomeButton policy has wrong value in test",
-                HomepagePolicyManager.getShowHomeButtonValue());
-
-        Assert.assertTrue(
-                "#HomepageIsNTP policy is disabled but should be enabled",
-                HomepagePolicyManager.isHomepageNewTabPageManaged());
-        Assert.assertFalse(
-                "#HomepageIsNTP policy has wrong value in test",
-                HomepagePolicyManager.getHomepageNewTabPageValue());
+                mHomepagePolicyManager.getHomepageLocationPolicyUrl().getSpec());
     }
 
     @Test
-    @SmallTest
-    public void testInitialization_NTP() {
-        setupNewHomepagePolicyManagerForTests(
-                /* isHomeLocationPolicyManaged= */ true,
-                /* homepageLocation= */ CHROME_NTP,
-                /* isButtonPolicyManaged= */ false,
-                /* buttonPolicyValue= */ false,
-                /* homepageIsNtpPolicyManaged= */ false,
-                /* homepageIsNtpPolicyValue= */ false,
-                null);
-
-        Assert.assertTrue(
-                "#isHomepageLocationManaged not consistent with test setting",
-                HomepagePolicyManager.isHomepageLocationManaged());
+    public void testInit_NewLocationKeyTakesPrecedence() {
+        mSharedPreferenceManager.writeString(
+                ChromePreferenceKeys.DEPRECATED_HOMEPAGE_LOCATION_POLICY, TEST_URL);
+        mSharedPreferenceManager.writeString(
+                ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL,
+                new GURL(CHROME_NTP).serialize());
+        mHomepagePolicyManager = new HomepagePolicyManager();
         Assert.assertEquals(
-                "#getHomepageUrl not consistent with test setting",
+                "New GURL key should take precedence",
                 CHROME_NTP,
-                HomepagePolicyManager.getHomepageUrl().getSpec());
-
-        String homepageGurlSerialized =
-                mSharedPreferenceManager.readString(
-                        ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL, "");
-        GURL homepageGurl = GURL.deserialize(homepageGurlSerialized);
-        Assert.assertEquals(
-                "Updated HomepageLocation should be stored in shared preference",
-                CHROME_NTP,
-                homepageGurl.getSpec());
+                mHomepagePolicyManager.getHomepageLocationPolicyUrl().getSpec());
     }
 
     @Test
-    @SmallTest
-    public void testDestroy() {
+    public void testNativeLifecycle_InitializationAndDestruction() {
+        mHomepagePolicyManager = new HomepagePolicyManager();
+        HomepagePolicyManager.setInstanceForTests(mHomepagePolicyManager);
+
+        // Test native initialization
+        mHomepagePolicyManager.initializeWithNative(mMockRegistrar);
+        Assert.assertTrue("Manager should be initialized", mHomepagePolicyManager.isInitialized());
+        Mockito.verify(mMockRegistrar, Mockito.times(1))
+                .addObserver(Pref.HOME_PAGE, mHomepagePolicyManager);
+        Mockito.verify(mMockRegistrar, Mockito.times(1))
+                .addObserver(Pref.SHOW_HOME_BUTTON, mHomepagePolicyManager);
+        Mockito.verify(mMockRegistrar, Mockito.times(1))
+                .addObserver(Pref.HOME_PAGE_IS_NEW_TAB_PAGE, mHomepagePolicyManager);
+
+        // Test destruction
         HomepagePolicyManager.destroy();
         Mockito.verify(mMockRegistrar).destroy();
         Assert.assertTrue(
-                "Listeners are not remove completely",
+                "Listeners should be cleared on destroy",
                 mHomepagePolicyManager.getListenersForTesting().isEmpty());
     }
 
     @Test
-    @SmallTest
-    public void testPrefRefreshToEnablePolicy() {
-        Assert.assertFalse(
-                "Policy should be disabled after set up",
-                mHomepagePolicyManager.isHomepageLocationPolicyManaged());
+    public void testStateUpdate_EnablingAndDisablingPolicies() {
+        new PolicyBuilder().withListener(mListener).build();
+        mHomepagePolicyManager = new HomepagePolicyManager(mMockRegistrar, mListener);
+        HomepagePolicyManager.setInstanceForTests(mHomepagePolicyManager);
 
-        // Add listener
-        mHomepagePolicyManager.addListener(mListener);
-
-        // A new policy URL is set, which triggers the refresh of native manager.
-        final String newUrl = JUnitTestGURLs.URL_1.getSpec();
+        // Enable HomepageLocation policy.
         Mockito.when(mMockPrefService.isManagedPreference(Pref.HOME_PAGE)).thenReturn(true);
-        Mockito.when(mMockPrefService.getString(Pref.HOME_PAGE)).thenReturn(newUrl);
-
-        // Update the preference, so that the policy will be enabled.
+        Mockito.when(mMockPrefService.getString(Pref.HOME_PAGE)).thenReturn(TEST_URL);
         mHomepagePolicyManager.onPreferenceChange();
-
-        // The homepage retrieved from homepage manager should be in sync with pref setting
         Assert.assertTrue(
-                "Policy should be enabled after refresh",
+                "Homepage location should be managed after enabling the policy.",
                 mHomepagePolicyManager.isHomepageLocationPolicyManaged());
-        Assert.assertEquals(
-                "#getHomepageUrl not consistent with test setting",
-                newUrl,
-                mHomepagePolicyManager.getHomepageLocationPolicyUrl().getSpec());
         Mockito.verify(mListener, Mockito.times(1)).onHomepagePolicyUpdate();
 
-        // Change ShowHomeButton policy same as above.
-        Assert.assertFalse(
-                "Policy should be disabled after set up",
-                mHomepagePolicyManager.isShowHomeButtonPolicyManaged());
-
+        // Enable ShowHomeButton policy.
         Mockito.when(mMockPrefService.isManagedPreference(Pref.SHOW_HOME_BUTTON)).thenReturn(true);
         Mockito.when(mMockPrefService.getBoolean(Pref.SHOW_HOME_BUTTON)).thenReturn(true);
-
         mHomepagePolicyManager.onPreferenceChange();
-
         Assert.assertTrue(
-                "#ShowHomeButton policy is disabled but should be enabled",
+                "Show home button should be managed after enabling the policy.",
                 mHomepagePolicyManager.isShowHomeButtonPolicyManaged());
-        Assert.assertTrue(
-                "#ShowHomeButton policy has wrong value in test",
-                mHomepagePolicyManager.getShowHomeButtonPolicyValue());
         Mockito.verify(mListener, Mockito.times(2)).onHomepagePolicyUpdate();
 
-        // Change HomepageIsNTP policy same as above.
-        Assert.assertFalse(
-                "Policy should be disabled after set up",
-                mHomepagePolicyManager.isHomepageIsNtpPolicyManaged());
-
+        // Enable HomepageIsNewTabPage policy.
         Mockito.when(mMockPrefService.isManagedPreference(Pref.HOME_PAGE_IS_NEW_TAB_PAGE))
                 .thenReturn(true);
         Mockito.when(mMockPrefService.getBoolean(Pref.HOME_PAGE_IS_NEW_TAB_PAGE)).thenReturn(true);
-
         mHomepagePolicyManager.onPreferenceChange();
-
         Assert.assertTrue(
-                "#HomepageIsNTP policy is disabled but should be enabled",
+                "Homepage selection should be managed after enabling the policy.",
                 mHomepagePolicyManager.isHomepageIsNtpPolicyManaged());
-        Assert.assertTrue(
-                "#HomepageIsNTP policy has wrong value in test",
-                mHomepagePolicyManager.getHomepageIsNtpPolicyValue());
         Mockito.verify(mListener, Mockito.times(3)).onHomepagePolicyUpdate();
-    }
 
-    @Test
-    @SmallTest
-    public void testPrefRefreshToDisablePolicy() {
-        // Set a new HomepagePolicyManager with policy enabled.
-        setupNewHomepagePolicyManagerForTests(
-                /* isHomeLocationPolicyManaged= */ true,
-                /* homepageLocation= */ TEST_URL,
-                /* isButtonPolicyManaged= */ true,
-                /* buttonPolicyValue= */ true,
-                /* homepageIsNtpPolicyManaged= */ true,
-                /* homepageIsNtpPolicyValue= */ true,
-                null);
-        mHomepagePolicyManager.addListener(mListener);
-
-        // The verify policyEnabled
-        Assert.assertTrue(
-                "Policy should be enabled after set up",
-                mHomepagePolicyManager.isHomepageLocationPolicyManaged());
-
-        // Update the preference, so that the policy will be disabled.
+        // Disable HomepageLocation policy.
         Mockito.when(mMockPrefService.isManagedPreference(Pref.HOME_PAGE)).thenReturn(false);
         Mockito.when(mMockPrefService.getString(Pref.HOME_PAGE)).thenReturn("");
         mHomepagePolicyManager.onPreferenceChange();
-
-        // The homepage retrieved from homepage manager should be in sync with pref setting.
         Assert.assertFalse(
-                "Policy should be disabled after refresh",
+                "Homepage location should not be managed after disabling the policy.",
                 mHomepagePolicyManager.isHomepageLocationPolicyManaged());
-        Mockito.verify(mListener, Mockito.times(1)).onHomepagePolicyUpdate();
+        Mockito.verify(mListener, Mockito.times(4)).onHomepagePolicyUpdate();
 
-        // Same as above for ShowHomeButton policy.
-        Assert.assertTrue(
-                "#ShowHomeButton policy is disabled but should be enabled",
-                mHomepagePolicyManager.isShowHomeButtonPolicyManaged());
+        // Disable ShowHomeButton policy.
         Mockito.when(mMockPrefService.isManagedPreference(Pref.SHOW_HOME_BUTTON)).thenReturn(false);
         mHomepagePolicyManager.onPreferenceChange();
         Assert.assertFalse(
-                "#ShowHomeButton policy is enabled but should be disabled",
+                "Show home button should not be managed after disabling the policy.",
                 mHomepagePolicyManager.isShowHomeButtonPolicyManaged());
-        Mockito.verify(mListener, Mockito.times(2)).onHomepagePolicyUpdate();
+        Mockito.verify(mListener, Mockito.times(5)).onHomepagePolicyUpdate();
 
-        // Same as above for HomepageIsNTP policy.
-        Assert.assertTrue(
-                "#HomepageIsNTP policy is disabled but should be enabled",
-                mHomepagePolicyManager.isHomepageIsNtpPolicyManaged());
+        // Disable HomepageIsNewTabPage policy.
         Mockito.when(mMockPrefService.isManagedPreference(Pref.HOME_PAGE_IS_NEW_TAB_PAGE))
                 .thenReturn(false);
         mHomepagePolicyManager.onPreferenceChange();
         Assert.assertFalse(
-                "#HomepageIsNTP policy is enabled but should be disabled",
+                "Homepage selection should not be managed after disabling the policy.",
                 mHomepagePolicyManager.isHomepageIsNtpPolicyManaged());
-        Mockito.verify(mListener, Mockito.times(3)).onHomepagePolicyUpdate();
+        Mockito.verify(mListener, Mockito.times(6)).onHomepagePolicyUpdate();
     }
 
     @Test
-    @SmallTest
-    public void testPrefRefreshWithoutChanges() {
-        // Set a new HomepagePolicyManager with policy enabled.
-        setupNewHomepagePolicyManagerForTests(
-                /* isHomeLocationPolicyManaged= */ true,
-                /* homepageLocation= */ TEST_URL,
-                /* isButtonPolicyManaged= */ true,
-                /* buttonPolicyValue= */ true,
-                /* homepageIsNtpPolicyManaged= */ true,
-                /* homepageIsNtpPolicyValue= */ true,
-                null);
+    public void testRefresh_NoChangeInPolicyDoesNotNotifyListeners() {
+        new PolicyBuilder()
+                .withHomepageLocationPolicyManaged(true)
+                .withHomepageLocation(TEST_URL)
+                .withButtonPolicyManaged(true)
+                .withButtonPolicyValue(true)
+                .withHomepageIsNtpPolicyManaged(true)
+                .withHomepageIsNtpPolicyValue(true)
+                .withListener(mListener)
+                .build();
+        mHomepagePolicyManager = new HomepagePolicyManager(mMockRegistrar, mListener);
+        HomepagePolicyManager.setInstanceForTests(mHomepagePolicyManager);
+        Mockito.verify(mListener).onHomepagePolicyUpdate();
 
-        // The verify policyEnabled
-        Assert.assertTrue(
-                "Policy should be enabled after set up",
-                mHomepagePolicyManager.isHomepageLocationPolicyManaged());
-        Assert.assertTrue(
-                "#ShowHomeButton policy is disabled but should be enabled",
-                mHomepagePolicyManager.isShowHomeButtonPolicyManaged());
-        Assert.assertTrue(
-                "#HomepageIsNTP policy is disabled but should be enabled",
-                mHomepagePolicyManager.isHomepageIsNtpPolicyManaged());
+        // Reset the mock to forget the initial invocation.
+        Mockito.reset(mListener);
 
-        // Perform an debounce - creating a new homepage manager with same setting, and add the
-        // listener.
-        setupNewHomepagePolicyManagerForTests(
-                /* isHomeLocationPolicyManaged= */ true,
-                /* homepageLocation= */ TEST_URL,
-                /* isButtonPolicyManaged= */ true,
-                /* buttonPolicyValue= */ true,
-                /* homepageIsNtpPolicyManaged= */ true,
-                /* homepageIsNtpPolicyValue= */ true,
-                mListener);
-
-        // Verify listeners should not receive updates.
-        Assert.assertTrue(
-                "Policy should be enabled after refresh",
-                mHomepagePolicyManager.isHomepageLocationPolicyManaged());
-        Assert.assertEquals(
-                "#getHomepageUrl not consistent with test setting",
-                TEST_URL,
-                mHomepagePolicyManager.getHomepageLocationPolicyUrl().getSpec());
-        Assert.assertTrue(
-                "#ShowHomeButton policy is disabled but should be enabled",
-                mHomepagePolicyManager.isShowHomeButtonPolicyManaged());
-        Assert.assertTrue(
-                "#ShowHomeButton policy has wrong value in test",
-                mHomepagePolicyManager.getShowHomeButtonPolicyValue());
-        Assert.assertTrue(
-                "#HomepageIsNTP policy is disabled but should be enabled",
-                mHomepagePolicyManager.isHomepageIsNtpPolicyManaged());
-        Assert.assertTrue(
-                "#HomepageIsNTP policy has wrong value in test",
-                mHomepagePolicyManager.getHomepageIsNtpPolicyValue());
-
-        // However, because the native setting is consistent with cached value in SharedPreference,
-        // listeners will not receive update.
+        // A second refresh with identical values should not trigger the listener.
+        mHomepagePolicyManager.onPreferenceChange();
         Mockito.verify(mListener, Mockito.never()).onHomepagePolicyUpdate();
     }
 
-    @Test(expected = AssertionError.class)
-    @SmallTest
-    public void testIllegal_GetHomepageUrl() {
-        setupNewHomepagePolicyManagerForTests(
-                /* isHomeLocationPolicyManaged= */ false,
-                /* homepageLocation= */ "",
-                /* isButtonPolicyManaged= */ false,
-                /* buttonPolicyValue= */ false,
-                /* homepageIsNtpPolicyManaged= */ false,
-                /* homepageIsNtpPolicyValue= */ false,
-                null);
-        HomepagePolicyManager.getHomepageUrl();
+    @Test
+    public void testHomepageSelection_ManagedByNtpPolicy() {
+        new PolicyBuilder()
+                .withHomepageIsNtpPolicyManaged(true)
+                .withHomepageIsNtpPolicyValue(true)
+                .build();
+        mHomepagePolicyManager = new HomepagePolicyManager(mMockRegistrar, mListener);
+        HomepagePolicyManager.setInstanceForTests(mHomepagePolicyManager);
+
+        Assert.assertTrue(
+                "Selection should be managed",
+                mHomepagePolicyManager.isHomepageIsNtpPolicyManaged());
+        Assert.assertTrue(
+                "Selection value should be true",
+                mHomepagePolicyManager.getHomepageIsNtpPolicyValue());
+
+        Mockito.when(mMockPrefService.getBoolean(Pref.HOME_PAGE_IS_NEW_TAB_PAGE)).thenReturn(false);
+        mHomepagePolicyManager.onPreferenceChange();
+
+        Assert.assertTrue(
+                "Selection should still be managed",
+                mHomepagePolicyManager.isHomepageIsNtpPolicyManaged());
+        Assert.assertFalse(
+                "Selection value should now be false",
+                mHomepagePolicyManager.getHomepageIsNtpPolicyValue());
     }
 
     @Test
-    @SmallTest
-    public void testGurlPreferenceKeysMigrationInConstructor() {
-        ChromeSharedPreferences.getInstance()
-                .writeString(ChromePreferenceKeys.DEPRECATED_HOMEPAGE_LOCATION_POLICY, null);
-        ChromeSharedPreferences.getInstance()
-                .writeString(ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL, null);
-        mHomepagePolicyManager = new HomepagePolicyManager();
-        Assert.assertFalse(mHomepagePolicyManager.isHomepageLocationPolicyManaged());
+    public void testRefresh_UpdatesShowHomeButtonStateWhenRecommendationChanges() {
+        // Homepage disabled for client
+        mSharedPreferenceManager.writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, false);
 
-        final String url1 = JUnitTestGURLs.URL_1.getSpec();
-        final String url2 = JUnitTestGURLs.URL_2.getSpec();
-        ChromeSharedPreferences.getInstance()
-                .writeString(ChromePreferenceKeys.DEPRECATED_HOMEPAGE_LOCATION_POLICY, url1);
-        ChromeSharedPreferences.getInstance()
-                .writeString(ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL, null);
-        mHomepagePolicyManager = new HomepagePolicyManager();
-        Assert.assertEquals(url1, mHomepagePolicyManager.getHomepageLocationPolicyUrl().getSpec());
+        // Mock that the preference is controlled by a recommendation.
+        Mockito.when(mMockPrefService.isRecommendedPreference(Pref.SHOW_HOME_BUTTON))
+                .thenReturn(true);
 
-        ChromeSharedPreferences.getInstance()
-                .writeString(ChromePreferenceKeys.DEPRECATED_HOMEPAGE_LOCATION_POLICY, null);
-        ChromeSharedPreferences.getInstance()
-                .writeString(
-                        ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL,
-                        new GURL(url1).serialize());
-        mHomepagePolicyManager = new HomepagePolicyManager();
-        Assert.assertEquals(url1, mHomepagePolicyManager.getHomepageLocationPolicyUrl().getSpec());
+        // Simulate admin recommending the button to be ON, with the user NOT following.
+        new PolicyBuilder()
+                .withButtonPolicyValue(true)
+                .withHasButtonRecommendation(true)
+                .withIsFollowingButtonRecommendation(false)
+                .build();
+        mHomepagePolicyManager = new HomepagePolicyManager(mMockRegistrar, mListener);
+        HomepagePolicyManager.setInstanceForTests(mHomepagePolicyManager);
 
-        ChromeSharedPreferences.getInstance()
-                .writeString(ChromePreferenceKeys.DEPRECATED_HOMEPAGE_LOCATION_POLICY, url1);
-        ChromeSharedPreferences.getInstance()
-                .writeString(
-                        ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY_GURL,
-                        new GURL(url2).serialize());
-        mHomepagePolicyManager = new HomepagePolicyManager();
-        Assert.assertEquals(url2, mHomepagePolicyManager.getHomepageLocationPolicyUrl().getSpec());
+        // Assert: The user's setting should be updated to match the recommendation.
+        Assert.assertTrue(
+                "HOMEPAGE_ENABLED should be true when recommendation is true",
+                mSharedPreferenceManager.readBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, false));
+
+        // Now, simulate the user is following the recommendation.
+        Mockito.when(mMockPrefService.isFollowingRecommendation(Pref.SHOW_HOME_BUTTON))
+                .thenReturn(true);
+        mHomepagePolicyManager.onPreferenceChange();
+        Assert.assertTrue(
+                "HOMEPAGE_ENABLED should remain true when already following recommendation",
+                mSharedPreferenceManager.readBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, false));
+
+        // Simulate admin changing the recommendation to be OFF. The user is now not following.
+        Mockito.when(mMockPrefService.getBoolean(Pref.SHOW_HOME_BUTTON)).thenReturn(false);
+        Mockito.when(mMockPrefService.isFollowingRecommendation(Pref.SHOW_HOME_BUTTON))
+                .thenReturn(false);
+
+        // Act: Trigger the refresh logic again.
+        mHomepagePolicyManager.onPreferenceChange();
+
+        // Assert: The user's setting should be automatically updated to 'false'.
+        Assert.assertFalse(
+                "HOMEPAGE_ENABLED should be false after recommendation changes to false",
+                mSharedPreferenceManager.readBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, true));
+    }
+
+    @Test
+    public void testRefresh_UpdatesHomepageSelectionWhenRecommendationChanges() {
+        // Arrange: Start with user setting for NTP, but admin recommends a custom URL.
+        mSharedPreferenceManager.writeBoolean(ChromePreferenceKeys.HOMEPAGE_USE_CHROME_NTP, true);
+        Mockito.when(mMockPrefService.isRecommendedPreference(Pref.HOME_PAGE)).thenReturn(true);
+        Mockito.when(mMockPrefService.isRecommendedPreference(Pref.HOME_PAGE_IS_NEW_TAB_PAGE))
+                .thenReturn(false);
+
+        new PolicyBuilder()
+                .withHomepageLocation(TEST_URL)
+                .withHasLocationRecommendation(true)
+                .withIsFollowingLocationRecommendation(false)
+                .build();
+        mHomepagePolicyManager = new HomepagePolicyManager(mMockRegistrar, mListener);
+        HomepagePolicyManager.setInstanceForTests(mHomepagePolicyManager);
+
+        // Assert: User settings should update to the recommended custom URL.
+        // NOTE: This tests logic where policy recommendations automatically update user
+        // preferences.
+        Assert.assertFalse(
+                "HOMEPAGE_USE_CHROME_NTP should be false to follow URL recommendation.",
+                mSharedPreferenceManager.readBoolean(
+                        ChromePreferenceKeys.HOMEPAGE_USE_CHROME_NTP, true));
+        Assert.assertEquals(
+                "HOMEPAGE_CUSTOM_GURL should be updated to the recommended URL.",
+                new GURL(TEST_URL).serialize(),
+                mSharedPreferenceManager.readString(
+                        ChromePreferenceKeys.HOMEPAGE_CUSTOM_GURL, null));
+
+        // Arrange: Admin now changes recommendation to NTP.
+        Mockito.when(mMockPrefService.isRecommendedPreference(Pref.HOME_PAGE)).thenReturn(false);
+        Mockito.when(mMockPrefService.hasRecommendation(Pref.HOME_PAGE)).thenReturn(false);
+        Mockito.when(mMockPrefService.isRecommendedPreference(Pref.HOME_PAGE_IS_NEW_TAB_PAGE))
+                .thenReturn(true);
+        Mockito.when(mMockPrefService.getBoolean(Pref.HOME_PAGE_IS_NEW_TAB_PAGE)).thenReturn(true);
+        Mockito.when(mMockPrefService.hasRecommendation(Pref.HOME_PAGE_IS_NEW_TAB_PAGE))
+                .thenReturn(true);
+        Mockito.when(mMockPrefService.isFollowingRecommendation(Pref.HOME_PAGE_IS_NEW_TAB_PAGE))
+                .thenReturn(false);
+
+        // Act: Refresh policies.
+        mHomepagePolicyManager.onPreferenceChange();
+
+        // Assert: User settings should update to the new NTP recommendation.
+        Assert.assertTrue(
+                "HOMEPAGE_USE_CHROME_NTP should now be true to follow NTP recommendation.",
+                mSharedPreferenceManager.readBoolean(
+                        ChromePreferenceKeys.HOMEPAGE_USE_CHROME_NTP, false));
+    }
+
+    @Test
+    public void testHomepageSelection_InferredFromLocationPolicy() {
+        new PolicyBuilder()
+                .withHomepageLocationPolicyManaged(true)
+                .withHomepageLocation(CHROME_NTP)
+                .build();
+        mHomepagePolicyManager = new HomepagePolicyManager(mMockRegistrar, mListener);
+        HomepagePolicyManager.setInstanceForTests(mHomepagePolicyManager);
+
+        Assert.assertTrue(
+                "Selection should be inferred as managed when location is NTP.",
+                mHomepagePolicyManager.isHomepageIsNtpPolicyManaged());
+        Assert.assertTrue(
+                "Selection value should be true when location is NTP.",
+                mHomepagePolicyManager.getHomepageIsNtpPolicyValue());
+
+        Mockito.when(mMockPrefService.getString(Pref.HOME_PAGE)).thenReturn(TEST_URL);
+        mHomepagePolicyManager.onPreferenceChange();
+
+        Assert.assertTrue(
+                "Selection should remain inferred as managed when location changes to a custom"
+                        + " URL.",
+                mHomepagePolicyManager.isHomepageIsNtpPolicyManaged());
+        Assert.assertFalse(
+                "Selection value should be false when location is a custom URL.",
+                mHomepagePolicyManager.getHomepageIsNtpPolicyValue());
+    }
+
+    @Test
+    public void testHomepageSelection_Recommended() {
+        new PolicyBuilder()
+                .withHasNtpRecommendation(true)
+                .withIsFollowingNtpRecommendation(true)
+                .build();
+        mHomepagePolicyManager = new HomepagePolicyManager(mMockRegistrar, mListener);
+        HomepagePolicyManager.setInstanceForTests(mHomepagePolicyManager);
+
+        Assert.assertTrue(
+                "Policy should be marked as recommended.",
+                mHomepagePolicyManager.isHomepageSelectionPolicyRecommended());
+        Assert.assertTrue(
+                "User should be marked as following the recommendation.",
+                mHomepagePolicyManager.isFollowingHomepageSelectionPolicyRecommendation());
+
+        Mockito.when(mMockPrefService.isFollowingRecommendation(Pref.HOME_PAGE_IS_NEW_TAB_PAGE))
+                .thenReturn(false);
+        mHomepagePolicyManager.onPreferenceChange();
+
+        Assert.assertTrue(
+                "Policy should still be marked as recommended even when not followed.",
+                mHomepagePolicyManager.isHomepageSelectionPolicyRecommended());
+        Assert.assertFalse(
+                "User should now be marked as not following the recommendation.",
+                mHomepagePolicyManager.isFollowingHomepageSelectionPolicyRecommendation());
+    }
+
+    @Test
+    public void testHomepageSelection_CombinedRecommendations_NotFollowed() {
+        new PolicyBuilder()
+                .withHasNtpRecommendation(true)
+                .withIsFollowingNtpRecommendation(true)
+                .withHasLocationRecommendation(true)
+                .build();
+        mHomepagePolicyManager = new HomepagePolicyManager(mMockRegistrar, mListener);
+        HomepagePolicyManager.setInstanceForTests(mHomepagePolicyManager);
+        Assert.assertTrue(
+                "Policy should be recommended",
+                mHomepagePolicyManager.isHomepageSelectionPolicyRecommended());
+        Assert.assertFalse(
+                "If either recommendation is not followed, the state should be not followed.",
+                mHomepagePolicyManager.isFollowingHomepageSelectionPolicyRecommendation());
+    }
+
+    @Test
+    public void testHomepageSelection_CombinedRecommendations_Followed() {
+        new PolicyBuilder()
+                .withHasNtpRecommendation(true)
+                .withIsFollowingNtpRecommendation(true)
+                .withHasLocationRecommendation(true)
+                .withIsFollowingLocationRecommendation(true)
+                .build();
+        mHomepagePolicyManager = new HomepagePolicyManager(mMockRegistrar, mListener);
+        HomepagePolicyManager.setInstanceForTests(mHomepagePolicyManager);
+        Assert.assertTrue(
+                "Policy should be recommended",
+                mHomepagePolicyManager.isHomepageSelectionPolicyRecommended());
+        Assert.assertTrue(
+                "If all recommendations are followed, the state should be followed.",
+                mHomepagePolicyManager.isFollowingHomepageSelectionPolicyRecommendation());
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testGetHomepageUrl_ThrowsWhenNotManaged() {
+        new PolicyBuilder().build();
+        mHomepagePolicyManager = new HomepagePolicyManager(mMockRegistrar, mListener);
+        HomepagePolicyManager.setInstanceForTests(mHomepagePolicyManager);
+        mHomepagePolicyManager.getHomepageLocationPolicyUrl(); // Should throw
     }
 }

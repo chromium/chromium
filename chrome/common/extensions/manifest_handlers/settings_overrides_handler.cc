@@ -114,7 +114,7 @@ std::optional<ChromeSettingsOverrides::SearchProvider> ParseSearchEngine(
 std::string FormatUrlForDisplay(const GURL& url) {
   // A www. prefix is not informative and thus not worth the limited real estate
   // in the permissions UI.
-  return url_formatter::StripWWW(url.host());
+  return url_formatter::StripWWW(url.GetHost());
 }
 
 }  // namespace

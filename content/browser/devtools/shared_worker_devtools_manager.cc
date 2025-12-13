@@ -39,9 +39,17 @@ void SharedWorkerDevToolsManager::WorkerCreated(
       });
   if (it == terminated_hosts_.end()) {
     *devtools_worker_token = base::UnguessableToken::Create();
-    live_hosts_[worker_host] =
-        new SharedWorkerDevToolsAgentHost(worker_host, *devtools_worker_token);
+    auto agent_host = base::MakeRefCounted<SharedWorkerDevToolsAgentHost>(
+        worker_host, *devtools_worker_token);
+    live_hosts_[worker_host] = agent_host;
     *pause_on_start = false;
+    for (auto& observer : observer_list_) {
+      bool should_pause_on_start = false;
+      observer.SharedWorkerCreated(agent_host.get(), &should_pause_on_start);
+      if (should_pause_on_start) {
+        *pause_on_start = true;
+      }
+    }
     return;
   }
 
@@ -71,6 +79,9 @@ void SharedWorkerDevToolsManager::WorkerDestroyed(
   live_hosts_.erase(worker_host);
   terminated_hosts_.insert(agent_host.get());
   agent_host->WorkerDestroyed();
+  for (auto& observer : observer_list_) {
+    observer.SharedWorkerDestroyed(agent_host.get());
+  }
 }
 
 void SharedWorkerDevToolsManager::AgentHostDestroyed(
@@ -82,6 +93,14 @@ void SharedWorkerDevToolsManager::AgentHostDestroyed(
   // and their agent hosts.
   if (it != terminated_hosts_.end())
     terminated_hosts_.erase(it);
+}
+
+void SharedWorkerDevToolsManager::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void SharedWorkerDevToolsManager::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 SharedWorkerDevToolsAgentHost* SharedWorkerDevToolsManager::GetDevToolsHost(

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/byte_count.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -59,7 +60,6 @@ struct TabRendererData {
   bool should_display_url = true;
   base::TerminationStatus crashed_status =
       base::TERMINATION_STATUS_STILL_RUNNING;
-  bool incognito = false;
   bool show_icon = true;
   bool pinned = false;
   bool blocked = false;
@@ -72,7 +72,7 @@ struct TabRendererData {
       collaboration_messaging = nullptr;
   bool should_show_discard_status = false;
   // Amount of memory saved through discarding the tab
-  int64_t discarded_memory_savings_in_bytes = 0;
+  base::ByteCount discarded_memory_savings;
   // Contains information about how much resource a tab is using
   scoped_refptr<const TabResourceUsage> tab_resource_usage;
   bool is_monochrome_favicon = false;

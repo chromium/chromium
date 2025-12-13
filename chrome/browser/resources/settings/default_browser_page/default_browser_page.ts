@@ -16,6 +16,7 @@ import '../settings_shared.css.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../i18n_setup.js';
 import {getSearchManager} from '../search_settings.js';
 import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
 
@@ -38,17 +39,25 @@ export class SettingsDefaultBrowserPageElement extends
 
   static get properties() {
     return {
+      canPin_: Boolean,
       isDefault_: Boolean,
       isSecondaryInstall_: Boolean,
       isUnknownError_: Boolean,
       maySetDefaultBrowser_: Boolean,
+      // Whether the description should use a more user-centric string.
+      userValueDefaultBrowserStringsEnabled_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
+  declare private canPin_: boolean;
   declare private isDefault_: boolean;
   declare private isSecondaryInstall_: boolean;
   declare private isUnknownError_: boolean;
   declare private maySetDefaultBrowser_: boolean;
+  declare private userValueDefaultBrowserStringsEnabled_: boolean;
   private browserProxy_: DefaultBrowserBrowserProxy =
       DefaultBrowserBrowserProxyImpl.getInstance();
 
@@ -61,9 +70,25 @@ export class SettingsDefaultBrowserPageElement extends
 
     this.browserProxy_.requestDefaultBrowserState().then(
         this.updateDefaultBrowserState_.bind(this));
+
+    // The feature flag state is fetched asynchronously on page navigation,
+    // instead of using loadTimeData, to support a Finch experiment with
+    // `starts_active = false`. This ensures that the user is activated in the
+    // experiment (e.g. the feature flag is checked) only when visiting the
+    // page. This approach relies on the fact that the settings subpages are
+    // lazily rendered, and this component's connectedCallback() is only called
+    // upon rendering of this page (happens on navigation to this subpage or
+    // on search issue in settings searchbox.
+    // TODO(crbug.com/459593729): Refactor to be called only at navigation, e.g.
+    // by using currentRouteChanged() from RouteObserverMixin.
+    this.browserProxy_.requestUserValueStringsFeatureState().then(
+        (isEnabled) => {
+          this.userValueDefaultBrowserStringsEnabled_ = isEnabled;
+        });
   }
 
   private updateDefaultBrowserState_(defaultBrowserState: DefaultBrowserInfo) {
+    this.canPin_ = defaultBrowserState.canPin;
     this.isDefault_ = false;
     this.isSecondaryInstall_ = false;
     this.isUnknownError_ = false;
@@ -82,8 +107,23 @@ export class SettingsDefaultBrowserPageElement extends
     }
   }
 
+  private getMakeDefaultLabel(): string {
+    if (this.canPin_) {
+      return loadTimeData.getString('defaultBrowserMakeDefaultAndPin');
+    }
+
+    // When the UserValueDefaultBrowserStrings feature is enabled, show a
+    // more user-centric string.
+    // TODO(crbug.com/459593729): Clean up after launch by removing the old
+    // string and this conditional logic.
+    return loadTimeData.getString(
+        this.userValueDefaultBrowserStringsEnabled_ ?
+            'defaultBrowserMakeDefaultUserValue' :
+            'defaultBrowserMakeDefault');
+  }
+
   private onSetDefaultBrowserClick_() {
-    this.browserProxy_.setAsDefaultBrowser();
+    this.browserProxy_.setAsDefaultBrowser(this.canPin_);
   }
 
   // SettingsPlugin implementation

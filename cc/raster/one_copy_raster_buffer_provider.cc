@@ -23,7 +23,6 @@
 #include "cc/base/math_util.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/platform_color.h"
-#include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -33,18 +32,12 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/buffer_format_util.h"
+#include "third_party/skia/include/core/SkColorType.h"
 #include "ui/gl/trace_util.h"
 
 namespace cc {
-namespace {
-
-// 4MiB is the size of 4 512x512 tiles, which has proven to be a good
-// default batch size for copy operations.
-const int kMaxBytesPerCopyOperation = 1024 * 1024 * 4;
-
-}  // namespace
 
 OneCopyRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     OneCopyRasterBufferProvider* client,
@@ -125,18 +118,12 @@ OneCopyRasterBufferProvider::OneCopyRasterBufferProvider(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     viz::RasterContextProvider* compositor_context_provider,
     viz::RasterContextProvider* worker_context_provider,
-    int max_copy_texture_chromium_size,
     bool use_partial_raster,
     int max_staging_buffer_usage_in_bytes,
     bool is_overlay_candidate)
     : sii_(sii),
       compositor_context_provider_(compositor_context_provider),
       worker_context_provider_(worker_context_provider),
-      max_bytes_per_copy_operation_(
-          max_copy_texture_chromium_size
-              ? std::min(kMaxBytesPerCopyOperation,
-                         max_copy_texture_chromium_size)
-              : kMaxBytesPerCopyOperation),
       use_partial_raster_(use_partial_raster),
       tile_overlay_candidate_(is_overlay_candidate),
       staging_pool_(std::move(task_runner),
@@ -153,10 +140,7 @@ std::unique_ptr<RasterBuffer>
 OneCopyRasterBufferProvider::AcquireBufferForRaster(
     const ResourcePool::InUsePoolResource& resource,
     uint64_t resource_content_id,
-    uint64_t previous_content_id,
-    bool depends_on_at_raster_decodes,
-    bool depends_on_hardware_accelerated_jpeg_candidates,
-    bool depends_on_hardware_accelerated_webp_candidates) {
+    uint64_t previous_content_id) {
   // TODO(danakj): If resource_content_id != 0, we only need to copy/upload
   // the dirty rect.
   return std::make_unique<RasterBufferImpl>(this, resource,
@@ -325,7 +309,6 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
     bool mailbox_texture_is_overlay_candidate,
     const gpu::SyncToken& sync_token) {
   const gfx::Size& resource_size = backing->size();
-  const viz::SharedImageFormat format = backing->format();
 
   DCHECK(sii_);
 
@@ -388,15 +371,12 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
 
   // Clear to ensure the resource is fully initialized and BeginAccess succeeds.
   if (needs_clear) {
-    int clear_bytes_per_row = viz::ResourceSizes::UncheckedWidthInBytes<int>(
-        resource_size.width(), format);
-    SkImageInfo dst_info = SkImageInfo::MakeN32Premul(resource_size.width(),
-                                                      resource_size.height());
+    SkImageInfo dst_info = SkImageInfo::Make(
+        {resource_size.width(), resource_size.height()},
+        ToClosestSkColorType(backing->format()), kPremul_SkAlphaType);
     SkBitmap bitmap;
-    if (bitmap.tryAllocPixels(dst_info, clear_bytes_per_row)) {
-      // SkBitmap.cpp doesn't yet have an interface for SkColor4fs
-      // https://bugs.chromium.org/p/skia/issues/detail?id=13329
-      bitmap.eraseColor(raster_source->background_color().toSkColor());
+    if (bitmap.tryAllocPixels(dst_info)) {
+      bitmap.eraseColor(raster_source->background_color());
       ri->WritePixels(backing->shared_image()->mailbox(), /*dst_x_offset=*/0,
                       /*dst_y_offset=*/0, texture_target, bitmap.pixmap());
     }

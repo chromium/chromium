@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
@@ -146,6 +148,8 @@ export class PasswordsExporterElement extends PasswordsExporterElementBase {
         this.exportErrorMessage_ =
             this.i18n('exportPasswordsFailTitle', progress.folderName);
         this.showPasswordsExportErrorDialog_ = true;
+        break;
+      default:
         break;
     }
   }

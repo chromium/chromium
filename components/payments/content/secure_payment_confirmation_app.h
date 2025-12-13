@@ -103,6 +103,11 @@ class SecurePaymentConfirmationApp : public PaymentApp,
 
   PasskeyBrowserBinder* GetPasskeyBrowserBinderForTesting();
 
+  void SetWaitForGetBrowserBoundKeyForTesting(
+      base::OnceClosure wait_for_get_bbk) {
+    wait_for_get_bbk_for_tests_ = std::move(wait_for_get_bbk);
+  }
+
  private:
   void OnGetBrowserBoundKey(
       base::WeakPtr<Delegate> delegate,
@@ -139,6 +144,9 @@ class SecurePaymentConfirmationApp : public PaymentApp,
   // This contains the logos of the entities facilitating the transaction. There
   // may be up to 2 logos.
   std::vector<PaymentEntityLogo> payment_entities_logos_;
+
+  // Used to block test completion until OnGetBrowserBoundKey is run.
+  base::OnceClosure wait_for_get_bbk_for_tests_;
 
   base::WeakPtrFactory<SecurePaymentConfirmationApp> weak_ptr_factory_{this};
 };

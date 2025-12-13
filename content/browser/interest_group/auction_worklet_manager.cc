@@ -57,6 +57,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -426,7 +427,8 @@ void AuctionWorkletManager::WorkletOwner::MaybeStartTracingProcessLaunch(
     uint64_t trace_id) {
   if (!is_worklet_ready_) {
     trace_ids_.push_back(trace_id);
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "assign_process_id", trace_id);
+    TRACE_EVENT_BEGIN("fledge", "assign_process_id",
+                      perfetto::Track::Global(trace_id));
   }
 }
 
@@ -600,8 +602,6 @@ void AuctionWorkletManager::WorkletOwner::LoadWorkletIfReady(
       base::BindRepeating(&Delegate::GetTrustedURLLoaderFactory,
                           base::Unretained(delegate)),
       base::BindOnce(&Delegate::PreconnectSocket, base::Unretained(delegate)),
-      base::BindRepeating(&Delegate::GetCookieDeprecationLabel,
-                          base::Unretained(delegate)),
       base::BindRepeating(&WorkletOwner::GetDevtoolsAuctionIds,
                           weak_ptr_factory_.GetWeakPtr()),
       /*force_reload=*/rfh->reload_type() == ReloadType::BYPASSING_CACHE,
@@ -782,7 +782,8 @@ void AuctionWorkletManager::WorkletOwner::OnThreadReady(
     return;
   }
   for (uint64_t trace_id : trace_ids_) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "assign_process_id", trace_id);
+    // Corresponds to the "assign_process_id" TRACE_EVENT_BEGIN.
+    TRACE_EVENT_END("fledge", perfetto::Track::Global(trace_id));
   }
   trace_ids_.clear();
 

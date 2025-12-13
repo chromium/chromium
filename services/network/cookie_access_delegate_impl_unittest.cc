@@ -55,7 +55,7 @@ TEST_F(CookieAccessDelegateImplTest, NullFirstPartySetsManager) {
           base::BindOnce(
               [](net::FirstPartySetMetadata,
                  net::FirstPartySetsCacheFilter::MatchInfo) { FAIL(); })),
-      Optional(std::make_pair(std::ref(expected_metadata),
+      Optional(std::make_pair(std::cref(expected_metadata),
                               net::FirstPartySetsCacheFilter::MatchInfo())));
 
   EXPECT_THAT(

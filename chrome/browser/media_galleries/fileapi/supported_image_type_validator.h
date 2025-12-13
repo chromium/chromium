@@ -9,8 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/media_galleries/fileapi/av_scanning_file_validator.h"
-#include "components/download/public/common/quarantine_connection.h"
+#include "storage/browser/file_system/copy_or_move_file_validator.h"
 
 class ImageDecoder;
 
@@ -18,7 +17,7 @@ class MediaFileValidatorFactory;
 
 // Use ImageDecoder to determine if the file decodes without error. Handles
 // image files supported by Chrome.
-class SupportedImageTypeValidator : public AVScanningFileValidator {
+class SupportedImageTypeValidator : public storage::CopyOrMoveFileValidator {
  public:
   SupportedImageTypeValidator(const SupportedImageTypeValidator&) = delete;
   SupportedImageTypeValidator& operator=(const SupportedImageTypeValidator&) =
@@ -28,14 +27,15 @@ class SupportedImageTypeValidator : public AVScanningFileValidator {
 
   static bool SupportsFileType(const base::FilePath& path);
 
+  // storage::CopyOrMoveFileValidator:
   void StartPreWriteValidation(ResultCallback result_callback) override;
+  void StartPostWriteValidation(const base::FilePath& dest_platform_path,
+                                ResultCallback result_callback) override;
 
  private:
   friend class MediaFileValidatorFactory;
 
-  SupportedImageTypeValidator(
-      const base::FilePath& file,
-      download::QuarantineConnectionCallback quarantine_connection_callback);
+  explicit SupportedImageTypeValidator(const base::FilePath& file);
 
   void OnFileOpen(std::unique_ptr<std::string> data);
 

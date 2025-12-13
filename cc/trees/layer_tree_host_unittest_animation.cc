@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/trees/layer_tree_host.h"
-
 #include <stdint.h>
+
 #include <climits>
+#include <memory>
 
 #include "base/functional/bind.h"
 #include "base/metrics/statistics_recorder.h"
@@ -29,6 +29,7 @@
 #include "cc/test/fake_picture_layer.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/trees/effect_node.h"
+#include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/target_property.h"
 #include "cc/trees/transform_node.h"
@@ -306,7 +307,7 @@ class LayerTreeHostAnimationTestCheckerboardDoesNotStarveDraws
   }
 
   DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
-                                   LayerTreeHostImpl::FrameData* frame,
+                                   FrameData* frame,
                                    DrawResult draw_result) override {
     return DrawResult::kAbortedCheckerboardAnimations;
   }
@@ -587,7 +588,7 @@ class LayerTreeHostAnimationTestLayerAddedWithAnimation
       animation_->set_animation_delegate(this);
 
       // Any valid AnimationCurve will do here.
-      std::unique_ptr<gfx::AnimationCurve> curve(new FakeFloatAnimationCurve());
+      auto curve = std::make_unique<FakeFloatAnimationCurve>();
       std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
           std::move(curve), 1, 1,
           KeyframeModel::TargetPropertyId(TargetProperty::OPACITY)));
@@ -748,7 +749,7 @@ class LayerTreeHostAnimationTestCheckerboardDoesntStartAnimations
   }
 
   DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
-                                   LayerTreeHostImpl::FrameData* frame_data,
+                                   FrameData* frame_data,
                                    DrawResult draw_result) override {
     // Don't checkerboard when the first animation wants to start.
     if (host_impl->active_tree()->source_frame_number() < 2)
@@ -2202,7 +2203,7 @@ class LayerTreeHostAnimationTestSetPotentiallyAnimatingOnLacDestruction
   }
 
   DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
-                                   LayerTreeHostImpl::FrameData* frame_data,
+                                   FrameData* frame_data,
                                    DrawResult draw_result) override {
     const bool screen_space_transform_is_animating =
         host_impl->active_tree()

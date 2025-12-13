@@ -37,7 +37,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -79,6 +79,10 @@
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/base/cocoa/appkit_utils.h"
 #endif
 
 using ui::OSExchangeData;
@@ -707,7 +711,7 @@ void MenuController::Run(Widget* parent,
     //  for more details.
     menu_open_mouse_loc_ =
         ConvertFromScreen(*to_select->GetRootMenuItem()->GetSubmenu(),
-                          display::Screen::GetScreen()->GetCursorScreenPoint());
+                          display::Screen::Get()->GetCursorScreenPoint());
   } else {
     // Set the selection, which opens the initial menu.
     SetSelection(root, SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
@@ -828,6 +832,17 @@ bool MenuController::OnMousePressed(SubmenuView* source,
   // We should either have no current_mouse_event_target_, or should have a
   // pressed state stored.
   DCHECK(!current_mouse_event_target_ || current_mouse_pressed_state_);
+
+#if BUILDFLAG(IS_MAC)
+  // Mac: If the app is inactive, the first click activates the app and keys a
+  // window (NSWindowDidBecomeKey). Our watcher closes menus on that focus
+  // change, which would dismiss the menu before mouse-release can execute the
+  // item. Fix: when inactive, ignore exactly one upcoming "become key"
+  // notification for this press.
+  if (!ui::IsActiveApplication() && menu_cocoa_watcher_) {
+    menu_cocoa_watcher_->SetIgnoreWindowKeyNotificationOnce();
+  }
+#endif
 
   // Find the root view to check. If any buttons were previously pressed, this
   // is the same root view we've been forwarding to. Otherwise, it's the root
@@ -1517,9 +1532,9 @@ ui::PostDispatchAction MenuController::OnWillDispatchKeyEvent(
 void MenuController::UpdateSubmenuSelection(SubmenuView* submenu) {
   if (submenu->IsShowing()) {
     HandleMouseLocation(
-        submenu, ConvertFromScreen(
-                     GetRootMenu(*submenu),
-                     display::Screen::GetScreen()->GetCursorScreenPoint()));
+        submenu,
+        ConvertFromScreen(GetRootMenu(*submenu),
+                          display::Screen::Get()->GetCursorScreenPoint()));
   }
 }
 
@@ -1629,18 +1644,36 @@ void MenuController::SetSelection(MenuItemView* menu_item,
       pending_state_.submenu_open !=
           !!(selection_types & SELECTION_OPEN_SUBMENU);
 
+  auto this_ref = AsWeakPtr();
+
   if (pending_item_changed && pending_state_.item) {
     SetHotTrackedButton(nullptr);
   }
 
+  // SetHotTrackedButton does some accessibility stuff that could conceivably
+  // cause `this` to be deleted, so protect against that.
+  if (!this_ref) {
+    return;
+  }
+
   // Notify an accessibility focus event on all menu items except for the root.
-  bool ensure_focus_within_popup =
+  bool should_notify_selected_child_changed =
       menu_item && pending_item_changed &&
       (MenuDepth(menu_item) != 1 ||
        menu_item->GetType() != MenuItemView::Type::kSubMenu ||
        (menu_item->GetType() == MenuItemView::Type::kActionableSubMenu &&
         (selection_types & SELECTION_OPEN_SUBMENU) == 0));
-  if (ensure_focus_within_popup) {
+  bool should_set_popup_focus_override = should_notify_selected_child_changed;
+#if BUILDFLAG(IS_MAC)
+  // On macOS, avoid setting popup focus when the app is inactive.
+  // Selecting a menu item sets popup_focus (see
+  // ui/accessibility/platform/ax_platform_node.cc). If popup_focus remains set
+  // while NSApp is inactive, clicking a menu item can activate a node in the
+  // browser window that doesn't match popup_focus and trigger a DCHECK in
+  // ui/views/accessibility/view_ax_platform_node_delegate.cc.
+  should_set_popup_focus_override &= ui::IsActiveApplication();
+#endif
+  if (should_set_popup_focus_override) {
     // The selection event is now fired when the selected state is set on the
     // accessibility cache when the MenuItem is selected. Before firing the
     // selection event, ensure that focus appears to be within the popup. This
@@ -1649,7 +1682,13 @@ void MenuController::SetSelection(MenuItemView* menu_item,
     // the focus appears to be elsewhere.
     menu_item->GetViewAccessibility().SetPopupFocusOverride();
   }
-
+  // Possible fix for https:://crbug.com/443019015, in case menu_controller is
+  // getting deleted as a side effect of accessibility code above. The crash
+  // happens when accessibility has been turned on around the same time as
+  // opening the menu.
+  if (!this_ref) {
+    return;
+  }
   // Notify the old path it isn't selected.
   MenuDelegate* current_delegate =
       current_path.empty() ? nullptr : current_path.front()->GetDelegate();
@@ -1683,6 +1722,12 @@ void MenuController::SetSelection(MenuItemView* menu_item,
   pending_state_.item = menu_item;
   pending_state_.submenu_open = (selection_types & SELECTION_OPEN_SUBMENU) != 0;
 
+  // Possible fix for https:://crbug.com/443019015, in case `this` is getting
+  // deleted as a side effect of code above. From the crash dumps, it's pretty
+  // clear that both `cancel_all_timer_` and `this` have been deleted.
+  if (!this_ref) {
+    return;
+  }
   // Stop timers.
   StopCancelAllTimer();
   // Resets show timer only when pending menu item is changed.
@@ -1696,7 +1741,7 @@ void MenuController::SetSelection(MenuItemView* menu_item,
     StartShowTimer();
   }
 
-  if (ensure_focus_within_popup) {
+  if (should_notify_selected_child_changed) {
     // Notify an accessibility selected children changed event on the parent
     // submenu.
     if (menu_item->GetParentMenuItem() &&
@@ -1932,33 +1977,26 @@ bool MenuController::OnKeyPressed(const ui::KeyEvent& event) {
       break;
 
 #if !BUILDFLAG(IS_MAC)
-    case ui::VKEY_APPS: {
-      Button* hot_view = GetFirstHotTrackedView(pending_state_.item);
-      if (hot_view) {
-        hot_view->ShowContextMenu(hot_view->GetKeyboardContextMenuLocation(),
-                                  ui::mojom::MenuSourceType::kKeyboard);
-      } else if (pending_state_.item->GetEnabled() &&
-                 pending_state_.item->GetRootMenuItem() !=
-                     pending_state_.item) {
-        // Show the context menu for the given menu item. We don't try to show
-        // the menu for the (boundless) root menu item. This can happen, e.g.,
-        // when the user hits the APPS key after opening the menu, when no item
-        // is selected, but showing a context menu for an implicitly-selected
-        // and invisible item doesn't make sense.
-        ShowContextMenu(pending_state_.item,
-                        pending_state_.item->GetKeyboardContextMenuLocation(),
-                        ui::mojom::MenuSourceType::kKeyboard);
-      }
+    case ui::VKEY_APPS:
+      ShowContextMenu();
       break;
-    }
 #endif
 
 #if BUILDFLAG(IS_WIN)
     // On Windows, pressing Alt and F10 keys should hide the menu to match the
     // OS behavior.
     case ui::VKEY_MENU:
-    case ui::VKEY_F10:
       Cancel(ExitType::kAll);
+      break;
+    // On Windows, the Shift+F10 shortcut is equivalent to ui::VKEY_APPS,
+    // and will open the context menu for the selected item or the focused
+    // control.
+    case ui::VKEY_F10:
+      if (event.IsShiftDown()) {
+        ShowContextMenu();
+      } else {
+        Cancel(ExitType::kAll);
+      }
       break;
 #endif
 
@@ -1966,6 +2004,24 @@ bool MenuController::OnKeyPressed(const ui::KeyEvent& event) {
       break;
   }
   return handled_key_code;
+}
+
+void MenuController::ShowContextMenu() {
+  Button* hot_view = GetFirstHotTrackedView(pending_state_.item);
+  if (hot_view) {
+    hot_view->ShowContextMenu(hot_view->GetKeyboardContextMenuLocation(),
+                              ui::mojom::MenuSourceType::kKeyboard);
+  } else if (pending_state_.item->GetEnabled() &&
+             pending_state_.item->GetRootMenuItem() != pending_state_.item) {
+    // Show the context menu for the given menu item. We don't try to show
+    // the menu for the (boundless) root menu item. This can happen, e.g.,
+    // when the user hits the APPS key after opening the menu, when no item
+    // is selected, but showing a context menu for an implicitly-selected
+    // and invisible item doesn't make sense.
+    ShowContextMenu(pending_state_.item,
+                    pending_state_.item->GetKeyboardContextMenuLocation(),
+                    ui::mojom::MenuSourceType::kKeyboard);
+  }
 }
 
 MenuController::MenuController(bool for_drop,
@@ -2020,8 +2076,7 @@ void MenuController::UpdateInitialLocation(const gfx::Rect& anchor_bounds,
   // Calculate the bounds of the monitor we'll show menus on. Do this once to
   // avoid repeated system queries for the info.
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(
-          anchor_bounds.origin());
+      display::Screen::Get()->GetDisplayNearestPoint(anchor_bounds.origin());
   pending_state_.monitor_bounds = display.work_area();
 
   if (!pending_state_.monitor_bounds.Contains(anchor_bounds)) {
@@ -2127,8 +2182,8 @@ bool MenuController::ShowSiblingMenu(SubmenuView* source,
   }
 
   // TODO(oshima): Replace with views only API.
-  if (!owner_ || !display::Screen::GetScreen()->IsWindowUnderCursor(
-                     owner_->GetNativeWindow())) {
+  if (!owner_ ||
+      !display::Screen::Get()->IsWindowUnderCursor(owner_->GetNativeWindow())) {
     return false;
   }
 
@@ -2437,9 +2492,14 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
             last_menu_item->SubmenuIsShowing()) {
           params.context = last_menu_item->GetSubmenu()->GetWidget();
         } else {
+          // Do not hide submenus where the parent is the top-level menu; this
+          // fixes a case where context menus from empty bookmark folders can't
+          // be dismissed. See crbug.com/446647004. This issue will eventually
+          // cause a crash. See crbug.com/446633193.
           if (state_.menu_type == MenuType::kMenuItemContextMenu &&
               PlatformSetsParentForNonTopLevelWindows() &&
-              last_menu_item->SubmenuIsShowing()) {
+              last_menu_item->SubmenuIsShowing() &&
+              last_menu_item->GetParentMenuItem()) {
             // Before showing the new menu, ensure submenu of the last menu item
             // is hidden on platforms like Linux Wayland where destroyed popup
             // needs to be topmost. Without this, clicking on an item in the new
@@ -2462,8 +2522,7 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
     // work correctly if the widget isn't shown.
     if (item->GetSubmenu()->GetWidget()) {
       const gfx::Point mouse_pos = ConvertFromScreen(
-          *item->submenu_,
-          display::Screen::GetScreen()->GetCursorScreenPoint());
+          *item->submenu_, display::Screen::Get()->GetCursorScreenPoint());
       MenuPart part_under_mouse = GetMenuPart(item->submenu_.get(), mouse_pos);
       if (part_under_mouse.type != MenuPartType::kNone) {
         menu_open_mouse_loc_ =
@@ -2807,11 +2866,16 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
             item->actual_menu_position() == MenuPosition::kAboveBounds) {
           // menu_size is expected to include not just the content size
           // but also the (border and shadow) insets, which can go offscreen.
-          max_height =
+          // When anchor_bounds is above or below monitor_bounds, max_height
+          // calculation will be larger than monitor+insets. To prevent
+          // std::clamp crashing due to y_max < y_min, std::min with current
+          // max_height.
+          max_height = std::min(
+              max_height,
               std::max(anchor_bounds.y() - monitor_bounds.y(),
                        monitor_bounds.bottom() - anchor_bounds.bottom()) -
-              (is_bubble_menu ? 0 : menu_config.touchable_anchor_offset) +
-              border_insets.height();
+                  (is_bubble_menu ? 0 : menu_config.touchable_anchor_offset) +
+                  border_insets.height());
         }
       }
       // The menu should always have a non-empty available area.
@@ -2948,8 +3012,6 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
     const int y_min = monitor_bounds.y() - border_insets.top();
     const int y_max =
         monitor_bounds.bottom() - menu_size.height() + border_insets.bottom();
-    DCHECK_LE(x_min, x_max);
-    DCHECK_LE(y_min, y_max);
     x = std::clamp(x, x_min, x_max);
     y = std::clamp(y, y_min, y_max);
   } else {
@@ -3303,7 +3365,7 @@ void MenuController::RepostEventAndCancel(SubmenuView* source,
       gfx::NativeView native_view = source->GetWidget()->GetNativeView();
       gfx::NativeWindow window =
           native_view
-              ? display::Screen::GetScreen()->GetWindowAtScreenPoint(screen_loc)
+              ? display::Screen::Get()->GetWindowAtScreenPoint(screen_loc)
               : nullptr;
 
       state_.item->GetRootMenuItem()->GetSubmenu()->ReleaseCapture();

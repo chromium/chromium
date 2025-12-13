@@ -23,7 +23,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "url/origin.h"
 

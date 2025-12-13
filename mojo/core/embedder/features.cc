@@ -9,47 +9,30 @@
 namespace mojo {
 namespace core {
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kMojoLinuxChannelSharedMem,
-             "MojoLinuxChannelSharedMem",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<int> kMojoLinuxChannelSharedMemPages{
-    &kMojoLinuxChannelSharedMem, "MojoLinuxChannelSharedMemPages", 4};
-const base::FeatureParam<bool> kMojoLinuxChannelSharedMemEfdZeroOnWake{
-    &kMojoLinuxChannelSharedMem, "MojoLinuxChannelSharedMemEfdZeroOnWake",
-    false};
+BASE_FEATURE(kMojoUseEventFd, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kMojoUseEventFdPages{&kMojoUseEventFd,
+                                                   "MojoUseEventFdPages", 4};
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 
-BASE_FEATURE(kMojoPosixUseWritev,
-             "MojoPosixUseWritev",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
-
-BASE_FEATURE(kMojoInlineMessagePayloads,
-             "MojoInlineMessagePayloads",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMojoInlineMessagePayloads, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
 #if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kMojoIpcz, "MojoIpcz", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMojoIpcz, base::FEATURE_DISABLED_BY_DEFAULT);
 #else
-BASE_FEATURE(kMojoIpcz, "MojoIpcz", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMojoIpcz, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 #endif  // BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
 
-BASE_FEATURE(kMojoIpczMemV2,
-             "MojoIpczMemV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMojoIpczMemV2, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
 // If enabled, then only handles of types Section, File, Directory and
 // DxgkSharedResource are allowed to traverse a process boundary to an untrusted
 // process via mojo.
-BASE_FEATURE(kMojoHandleTypeProtections,
-             "MojoHandleTypeProtections",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMojoHandleTypeProtections, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace core

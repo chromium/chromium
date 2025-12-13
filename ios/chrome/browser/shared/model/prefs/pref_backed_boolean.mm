@@ -4,34 +4,28 @@
 
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 
+#import <string>
+
 #import "base/functional/bind.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_service.h"
 
 @implementation PrefBackedBoolean {
   BooleanPrefMember _pref;
-
-  // Record whether -stop was called.
-  BOOL _stopped;
 }
 
 @synthesize observer = _observer;
 
-- (id)initWithPrefService:(PrefService*)prefs prefName:(const char*)prefName {
+- (id)initWithPrefService:(PrefService*)prefs
+                 prefName:(std::string_view)prefName {
   self = [super init];
   if (self) {
-    // Use weak pointer to prevent circular dependency.
-    __weak PrefBackedBoolean* weakSelf = self;
-    _pref.Init(prefName, prefs, base::BindRepeating(^() {
+    __weak __typeof(self) weakSelf = self;
+    _pref.Init(std::string(prefName), prefs, base::BindRepeating(^() {
                  [weakSelf notifyObserver];
                }));
   }
   return self;
-}
-
-- (void)dealloc {
-  CHECK(_stopped, base::NotFatalUntil::M145)
-      << "-stop should be called on PrefBackedBoolean";
 }
 
 - (BOOL)value {
@@ -43,7 +37,6 @@
 }
 
 - (void)stop {
-  _stopped = YES;
   _pref.Destroy();
 }
 

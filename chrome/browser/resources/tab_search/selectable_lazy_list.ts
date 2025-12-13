@@ -224,6 +224,8 @@ export class SelectableLazyListElement<T = object> extends CrLitElement {
         case 'End':
           this.selected = this.lastSelectableIndex_;
           break;
+        default:
+          break;
       }
     }
 

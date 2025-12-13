@@ -33,11 +33,21 @@ found in the LICENSE file.
         android:id="@+id/composeplate_view_stub"
         android:layout_width="match_parent"
         android:layout_height="@dimen/composeplate_view_height"
-        android:layout_marginTop="@dimen/composeplate_view_margin_top"
+        android:layout_marginTop="@dimen/composeplate_view_margin_top_v1"
         android:layout_marginStart="@dimen/mvt_container_lateral_margin"
         android:layout_marginEnd="@dimen/mvt_container_lateral_margin"
         android:layout="@layout/composeplate_view_layout"
-        android:visibility="gone" />
+        />
+
+    <ViewStub
+        android:id="@+id/composeplate_view_v2_stub"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/composeplate_view_height"
+        android:layout_marginTop="@dimen/composeplate_view_margin_top"
+        android:layout_marginStart="@dimen/mvt_container_lateral_margin"
+        android:layout_marginEnd="@dimen/mvt_container_lateral_margin"
+        android:layout="@layout/composeplate_view_layout_v2"
+        />
 
     <!-- Query tiles -->
     <FrameLayout
@@ -47,31 +57,28 @@ found in the LICENSE file.
         android:layout_marginTop="16dp"
         android:visibility="gone"/>
 
-    <!-- Middle spacer -->
-    <View
-        android:id="@+id/ntp_middle_spacer"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_weight="0"
-        android:visibility="invisible" />
-
-    <!-- Insertion point of the SiteSectionView, see NewTabPageLayout#insertSiteSection() -->
-
-    <!-- Site suggestion tile grid placeholder -->
     <ViewStub
-        android:id="@+id/tile_grid_placeholder_stub"
+        android:id="@+id/mv_tiles_layout_stub"
+        android:inflatedId="@+id/mv_tiles_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:inflatedId="@+id/tile_grid_placeholder"
-        android:layout="@layout/new_tab_page_tile_grid_placeholder" />
+        android:layout_marginTop="@dimen/mvt_container_top_margin"
+        android:layout_marginLeft="@dimen/mvt_container_lateral_margin"
+        android:layout_marginRight="@dimen/mvt_container_lateral_margin"
+        android:layout="@layout/mv_tiles_layout" />
+
+    <ViewStub
+        android:id="@+id/signin_promo_view_container_stub"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout="@layout/signin_promo_view_new_tab_page" />
 
     <ViewStub
         android:id="@+id/home_modules_recycler_view_stub"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout="@layout/home_modules_recycler_view_layout"
-        android:visibility="gone" />
+        />
 
     <!-- Single tab card -->
     <ViewStub

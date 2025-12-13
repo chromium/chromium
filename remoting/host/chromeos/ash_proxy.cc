@@ -105,7 +105,7 @@ class DefaultAshProxy : public AshProxy {
   }
 
  private:
-  const display::Screen* screen() const { return display::Screen::GetScreen(); }
+  const display::Screen* screen() const { return display::Screen::Get(); }
   // We can not return a const reference, as the ash shell has no const getter
   // for the display manager :/
   ash::Shell& shell() const {

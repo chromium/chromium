@@ -679,7 +679,7 @@ impl NFA {
     /// use regex_automata::{nfa::thompson::NFA, PatternID};
     ///
     /// let nfa = NFA::new(r"(a)(?P<foo>b)(c)(d)(?P<bar>e)")?;
-    /// // The first is the implicit group that is always unnammed. The next
+    /// // The first is the implicit group that is always unnamed. The next
     /// // 5 groups are the explicit groups found in the concrete syntax above.
     /// let expected = vec![None, None, Some("foo"), None, None, Some("bar")];
     /// let got: Vec<Option<&str>> =
@@ -1302,7 +1302,7 @@ impl Inner {
                         // I left the 'Dense' state type in place in case we
                         // want to revisit this, but I suspect the real way
                         // to make forward progress is a more fundamental
-                        // rearchitecting of how data in the NFA is laid out.
+                        // re-architecting of how data in the NFA is laid out.
                         // I think we should consider a single contiguous
                         // allocation instead of all this indirection and
                         // potential heap allocations for every state. But this
@@ -1338,6 +1338,8 @@ impl Inner {
             self.look_set_prefix_any =
                 self.look_set_prefix_any.union(prefix_any);
         }
+        self.states.shrink_to_fit();
+        self.start_pattern.shrink_to_fit();
         NFA(Arc::new(self))
     }
 
@@ -1471,13 +1473,13 @@ impl fmt::Debug for Inner {
         }
         let pattern_len = self.start_pattern.len();
         if pattern_len > 1 {
-            writeln!(f, "")?;
+            writeln!(f)?;
             for pid in 0..pattern_len {
                 let sid = self.start_pattern[pid];
                 writeln!(f, "START({:06?}): {:?}", pid, sid.as_usize())?;
             }
         }
-        writeln!(f, "")?;
+        writeln!(f)?;
         writeln!(
             f,
             "transition equivalence classes: {:?}",
@@ -1730,10 +1732,10 @@ impl fmt::Debug for State {
             State::Sparse(SparseTransitions { ref transitions }) => {
                 let rs = transitions
                     .iter()
-                    .map(|t| format!("{:?}", t))
+                    .map(|t| format!("{t:?}"))
                     .collect::<Vec<String>>()
                     .join(", ");
-                write!(f, "sparse({})", rs)
+                write!(f, "sparse({rs})")
             }
             State::Dense(ref dense) => {
                 write!(f, "dense(")?;
@@ -1741,7 +1743,7 @@ impl fmt::Debug for State {
                     if i > 0 {
                         write!(f, ", ")?;
                     }
-                    write!(f, "{:?}", t)?;
+                    write!(f, "{t:?}")?;
                 }
                 write!(f, ")")
             }
@@ -1754,7 +1756,7 @@ impl fmt::Debug for State {
                     .map(|id| format!("{:?}", id.as_usize()))
                     .collect::<Vec<String>>()
                     .join(", ");
-                write!(f, "union({})", alts)
+                write!(f, "union({alts})")
             }
             State::BinaryUnion { alt1, alt2 } => {
                 write!(
@@ -1819,7 +1821,7 @@ impl SparseTransitions {
         &self,
         unit: alphabet::Unit,
     ) -> Option<StateID> {
-        unit.as_u8().map_or(None, |byte| self.matches_byte(byte))
+        unit.as_u8().and_then(|byte| self.matches_byte(byte))
     }
 
     /// This follows the matching transition for a particular byte.
@@ -1899,25 +1901,22 @@ impl DenseTransitions {
     /// This follows the matching transition for any member of the alphabet.
     ///
     /// The matching transition is found by looking for a transition that
-    /// doesn't correspond to `StateID::ZERO` for the byte `at` the given
-    /// position in `haystack`.
+    /// doesn't correspond to `StateID::ZERO` for the given alphabet `unit`.
     ///
-    /// If `at >= haystack.len()` or if the given alphabet unit is
-    /// [`EOI`](alphabet::Unit::eoi), then this returns `None`.
+    /// If the given alphabet unit is [`EOI`](alphabet::Unit::eoi), then
+    /// this returns `None`.
     #[inline]
     pub(crate) fn matches_unit(
         &self,
         unit: alphabet::Unit,
     ) -> Option<StateID> {
-        unit.as_u8().map_or(None, |byte| self.matches_byte(byte))
+        unit.as_u8().and_then(|byte| self.matches_byte(byte))
     }
 
     /// This follows the matching transition for a particular byte.
     ///
     /// The matching transition is found by looking for a transition that
     /// doesn't correspond to `StateID::ZERO` for the given `byte`.
-    ///
-    /// If `at >= haystack.len()`, then this returns `None`.
     #[inline]
     pub fn matches_byte(&self, byte: u8) -> Option<StateID> {
         let next = self.transitions[usize::from(byte)];

@@ -5,11 +5,11 @@
 #ifndef ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_ASYNC_FAST_PAIR_HANDSHAKE_LOOKUP_IMPL_H_
 #define ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_ASYNC_FAST_PAIR_HANDSHAKE_LOOKUP_IMPL_H_
 
-#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
-
 #include <memory>
 
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 
 namespace device {
 class BluetoothAdapter;

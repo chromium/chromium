@@ -6,6 +6,8 @@
 #define COMPONENTS_ASSIST_RANKER_RANKER_URL_FETCHER_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/functional/callback.h"
 #include "url/gurl.h"
@@ -55,7 +57,7 @@ class RankerURLFetcher {
   State state() { return state_; }
 
  private:
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
   // URL to send the request.
   GURL url_;

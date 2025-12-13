@@ -2,13 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/393091624): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include "ipcz/message.h"
-
 #include <cstdint>
 #include <queue>
 #include <utility>
@@ -17,6 +10,7 @@
 #include "ipcz/driver_object.h"
 #include "ipcz/driver_transport.h"
 #include "ipcz/ipcz.h"
+#include "ipcz/message.h"
 #include "ipcz/message_test_types.h"
 #include "ipcz/node.h"
 #include "ipcz/test_messages.h"
@@ -24,6 +18,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "util/ref_counted.h"
+#include "util/unsafe_buffers.h"
 
 namespace ipcz {
 namespace {
@@ -52,7 +47,8 @@ class MessageTest : public testing::Test {
                             size_t num_handles, uint32_t, const void*) {
           const uint8_t* bytes = static_cast<const uint8_t*>(data);
           received_messages_.push(
-              {{bytes, bytes + num_bytes}, {handles, handles + num_handles}});
+              {{bytes, IPCZ_UNSAFE_TODO(bytes + num_bytes)},
+               {handles, IPCZ_UNSAFE_TODO(handles + num_handles)}});
           return IPCZ_RESULT_OK;
         });
 
@@ -146,7 +142,7 @@ TEST_F(MessageTest, BasicMessage) {
   EXPECT_EQ(0u, in.header().reserved0[2]);
   EXPECT_EQ(0u, in.header().reserved0[3]);
   EXPECT_EQ(0u, in.header().reserved0[4]);
-  EXPECT_EQ(SequenceNumber(0), in.header().sequence_number);
+  EXPECT_EQ(SequenceNumber(0), in.header().node_sequence_number);
   EXPECT_EQ(0u, in.header().size % 8u);
   EXPECT_EQ(0u, in.v0()->foo);
   EXPECT_EQ(0u, in.v0()->bar);
@@ -227,7 +223,8 @@ TEST_F(MessageTest, DriverObjectArray) {
                                                  0x42425555};
   DriverObject in_objects[std::size(kObjectHandles)];
   for (size_t i = 0; i < std::size(kObjectHandles); ++i) {
-    in_objects[i] = DriverObject(test::kMockDriver, kObjectHandles[i]);
+    IPCZ_UNSAFE_TODO(in_objects[i]) =
+        DriverObject(test::kMockDriver, IPCZ_UNSAFE_TODO(kObjectHandles[i]));
   }
 
   test::msg::MessageWithDriverObjectArray in;
@@ -242,7 +239,7 @@ TEST_F(MessageTest, DriverObjectArray) {
   auto objects = out.GetDriverObjectArrayView(out.v0()->objects);
   EXPECT_EQ(3u, objects.size());
   for (size_t i = 0; i < objects.size(); ++i) {
-    EXPECT_EQ(kObjectHandles[i], objects[i].release());
+    IPCZ_UNSAFE_TODO(EXPECT_EQ(kObjectHandles[i], objects[i].release()));
   }
 }
 
@@ -331,7 +328,8 @@ TEST_F(MessageTest, DriverObjectClaimedTwice) {
                                                  0x42425555};
   DriverObject in_objects[std::size(kObjectHandles)];
   for (size_t i = 0; i < std::size(kObjectHandles); ++i) {
-    in_objects[i] = DriverObject(test::kMockDriver, kObjectHandles[i]);
+    IPCZ_UNSAFE_TODO(in_objects[i]) =
+        DriverObject(test::kMockDriver, IPCZ_UNSAFE_TODO(kObjectHandles[i]));
   }
 
   test::msg::MessageWithDriverArrayAndExtraObject in;

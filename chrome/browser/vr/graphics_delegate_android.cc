@@ -4,7 +4,6 @@
 
 #include "chrome/browser/vr/graphics_delegate_android.h"
 
-#include "base/android/android_hardware_buffer_compat.h"
 #include "components/webxr/mailbox_to_surface_bridge_impl.h"
 #include "device/vr/android/xr_image_transport_base.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -159,7 +158,8 @@ bool GraphicsDelegateAndroid::EnsureMemoryBuffer() {
   // Remove reference to previous image (if any).
   shared_buffer_->local_eglimage.reset();
 
-  static constexpr gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
+  static constexpr viz::SharedImageFormat format =
+      viz::SinglePlaneFormat::kRGBA_8888;
   static constexpr gfx::BufferUsage usage = gfx::BufferUsage::SCANOUT;
   gpu::SharedImageUsageSet shared_image_usage =
       gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |

@@ -12,14 +12,12 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/message_center/message_center.h"
 
 namespace {
 constexpr char kAdbSideloadingDisallowedNotificationId[] =
@@ -88,7 +86,7 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
       break;
   }
 
-  message_center::Notification notification = ash::CreateSystemNotification(
+  auto notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, text,
       std::u16string() /*display_source*/, GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
@@ -100,11 +98,12 @@ void AdbSideloadingPolicyChangeNotification::Show(Type type) {
               weak_ptr_factory_.GetWeakPtr())),
       vector_icons::kBusinessIcon,
       message_center::SystemNotificationWarningLevel::WARNING);
-  notification.set_priority(message_center::SYSTEM_PRIORITY);
-  notification.set_pinned(pinned);
-  notification.set_buttons(notification_actions);
+  notification->set_priority(message_center::SYSTEM_PRIORITY);
+  notification->set_pinned(pinned);
+  notification->set_buttons(notification_actions);
 
-  SystemNotificationHelper::GetInstance()->Display(notification);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 }
 
 void AdbSideloadingPolicyChangeNotification::HandleNotificationClick(

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.test.transit.ntp;
 
-import android.util.Pair;
-
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.test.transit.page.WebPageStation;
@@ -28,17 +26,17 @@ public class MvtsTileContextMenuFacility extends ListMenuFacility<RegularNewTabP
     }
 
     /**
-     * Select "Remove" to remove the tile.
+     * Select "Remove" to remove a Top Sites Tile.
      *
-     * @param siteSuggestionsAfterRemoval The site suggestions after removal.
+     * @param siteSuggestionsAfterRemove The site suggestions after remove.
      * @param fakeMostVisitedSites The fake most visited sites.
-     * @return The new {@link MvtsFacility} after removal and the Undo Snackbar.
+     * @return The new {@link MvtRemovedSnackbarFacility} after removal and the Undo Snackbar.
      */
-    public Pair<MvtsFacility, MvtRemovedSnackbarFacility> selectRemove(
-            List<SiteSuggestion> siteSuggestionsAfterRemoval,
+    public MvtRemovedSnackbarFacility selectRemove(
+            List<SiteSuggestion> siteSuggestionsAfterRemove,
             FakeMostVisitedSites fakeMostVisitedSites) {
-        var mvtsAfterRemoval = new MvtsFacility(siteSuggestionsAfterRemoval);
-        var snackbar = new MvtRemovedSnackbarFacility(mMvtsFacility, mvtsAfterRemoval);
+        var mvtsAfterRemove = new MvtsFacility(siteSuggestionsAfterRemove);
+        var snackbar = new MvtRemovedSnackbarFacility(mMvtsFacility, mvtsAfterRemove);
         runTo(
                         () -> {
                             invokeMenuItem("Remove");
@@ -46,11 +44,37 @@ public class MvtsTileContextMenuFacility extends ListMenuFacility<RegularNewTabP
                             ThreadUtils.runOnUiThreadBlocking(
                                     () ->
                                             fakeMostVisitedSites.setTileSuggestions(
-                                                    siteSuggestionsAfterRemoval));
+                                                    siteSuggestionsAfterRemove));
                         })
-                .exitFacilitiesAnd(mMvtsFacility, this)
-                .enterFacilities(mvtsAfterRemoval, snackbar);
-        return Pair.create(mvtsAfterRemoval, snackbar);
+                .exitFacilitiesAnd(this)
+                .enterFacilities(mvtsAfterRemove, snackbar);
+        return snackbar;
+    }
+
+    /**
+     * Select "Unpin" to unpin a Custom Link Tile.
+     *
+     * @param siteSuggestionsAfterUnpin The site suggestions after unpin.
+     * @param fakeMostVisitedSites The fake most visited sites.
+     * @return The new {@link MvtUnpinnedSnackbarFacility} after unpin and the Undo Snackbar.
+     */
+    public MvtUnpinnedSnackbarFacility selectUnpin(
+            List<SiteSuggestion> siteSuggestionsAfterUnpin,
+            FakeMostVisitedSites fakeMostVisitedSites) {
+        var mvtsAfterUnpin = new MvtsFacility(siteSuggestionsAfterUnpin);
+        var snackbar = new MvtUnpinnedSnackbarFacility(mMvtsFacility, mvtsAfterUnpin);
+        runTo(
+                        () -> {
+                            invokeMenuItem("Unpin");
+
+                            ThreadUtils.runOnUiThreadBlocking(
+                                    () ->
+                                            fakeMostVisitedSites.setTileSuggestions(
+                                                    siteSuggestionsAfterUnpin));
+                        })
+                .exitFacilitiesAnd(this)
+                .enterFacilities(mvtsAfterUnpin, snackbar);
+        return snackbar;
     }
 
     /** Select "Open in new tab" to open the tile in a new tab in background. */
@@ -67,6 +91,19 @@ public class MvtsTileContextMenuFacility extends ListMenuFacility<RegularNewTabP
                 .arriveAt(
                         WebPageStation.newBuilder()
                                 .initOpeningNewTab()
+                                .withIncognito(true)
+                                .withExpectedUrlSubstring(url)
+                                .build());
+    }
+
+    /** Select "Open in incognito window" to open the tile in a new incognito window. */
+    public WebPageStation selectOpenInIncognitoWindow() {
+        String url = mMvtsTileFacility.getSiteSuggestion().url.getSpec();
+        return invokeMenuItemTo("Open in Incognito window")
+                .inNewTask()
+                .arriveAt(
+                        WebPageStation.newBuilder()
+                                .withEntryPoint()
                                 .withIncognito(true)
                                 .withExpectedUrlSubstring(url)
                                 .build());

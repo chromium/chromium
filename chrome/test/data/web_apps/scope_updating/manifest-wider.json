@@ -1,0 +1,14 @@
+{
+  "id": "/web_apps/scope_updating/",
+  "name": "Scope Updating App",
+  "start_url": "page.html",
+  "scope": "/web_apps/scope_updating/",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "basic-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

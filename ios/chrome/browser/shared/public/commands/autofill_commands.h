@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_AUTOFILL_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_AUTOFILL_COMMANDS_H_
 
-#import "components/plus_addresses/plus_address_types.h"
+#import "components/plus_addresses/core/browser/plus_address_types.h"
 
 namespace autofill {
 struct AutofillErrorDialogContext;
@@ -28,10 +28,10 @@ class WebState;
 // Continue the card unmask flow with the CVC authentication input dialog.
 - (void)continueCardUnmaskWithCvcAuth;
 
-// Shows the password suggestion view controller.
-- (void)showPasswordBottomSheet:(const autofill::FormActivityParams&)params;
+// Shows the credential suggestion bottom sheet view controller.
+- (void)showCredentialBottomSheet:(const autofill::FormActivityParams&)params;
 
-// Shows the payments suggestion view controller.
+// Shows the payments suggestion bottom sheet view controller.
 - (void)showPaymentsBottomSheet:(const autofill::FormActivityParams&)params;
 
 // Shows the plus address bottom sheet view controller.

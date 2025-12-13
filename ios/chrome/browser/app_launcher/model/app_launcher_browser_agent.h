@@ -8,7 +8,6 @@
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_delegate.h"
-#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 
@@ -17,14 +16,10 @@ class OverlayRequestQueue;
 
 // A browser agent that manages opening external apps for navigations that occur
 // within one of the Browser's WebStates.
-class AppLauncherBrowserAgent : public BrowserObserver,
-                                public BrowserUserData<AppLauncherBrowserAgent>,
+class AppLauncherBrowserAgent : public BrowserUserData<AppLauncherBrowserAgent>,
                                 public TabsDependencyInstaller {
  public:
   ~AppLauncherBrowserAgent() override;
-
-  // BrowserObserver
-  void BrowserDestroyed(Browser* browser) override;
 
   // TabsDependencyInstaller
   void OnWebStateInserted(web::WebState* web_state) override;

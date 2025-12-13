@@ -49,9 +49,6 @@ NtpBackgroundServiceFactory::~NtpBackgroundServiceFactory() = default;
 std::unique_ptr<KeyedService>
 NtpBackgroundServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  // TODO(crbug.com/41431683): Background service URLs should be
-  // configurable server-side, so they can be changed mid-release.
-
   return std::make_unique<NtpBackgroundService>(
       g_browser_process->GetFeatures()->application_locale_storage(),
       Profile::FromBrowserContext(context)->GetURLLoaderFactory());

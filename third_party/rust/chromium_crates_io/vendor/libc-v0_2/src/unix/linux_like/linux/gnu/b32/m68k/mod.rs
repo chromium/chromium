@@ -1,5 +1,8 @@
 use crate::prelude::*;
-use crate::{off64_t, off_t};
+use crate::{
+    off64_t,
+    off_t,
+};
 
 pub type wchar_t = i32;
 
@@ -54,21 +57,21 @@ s! {
         pub cgid: crate::gid_t,
         pub mode: crate::mode_t,
         __seq: c_ushort,
-        __pad1: c_ushort,
+        __pad1: Padding<c_ushort>,
         __glibc_reserved1: c_ulong,
         __glibc_reserved2: c_ulong,
     }
 
     pub struct stat64 {
         pub st_dev: crate::dev_t,
-        __pad1: c_ushort,
+        __pad1: Padding<c_ushort>,
         pub __st_ino: crate::ino_t,
         pub st_mode: crate::mode_t,
         pub st_nlink: crate::nlink_t,
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
-        __pad2: c_ushort,
+        __pad2: Padding<c_ushort>,
         pub st_size: off64_t,
         pub st_blksize: crate::blksize_t,
         pub st_blocks: crate::blkcnt64_t,
@@ -149,7 +152,7 @@ s! {
         pub si_signo: c_int,
         pub si_code: c_int,
         pub si_errno: c_int,
-        _pad: [c_int; 29],
+        _pad: Padding<[c_int; 29]>,
         _align: [usize; 0],
     }
 
@@ -161,7 +164,6 @@ s! {
 }
 
 s_no_extra_traits! {
-    #[allow(missing_debug_implementations)]
     #[repr(align(2))]
     pub struct max_align_t {
         priv_: [i8; 20],
@@ -191,7 +193,6 @@ pub const O_NDELAY: c_int = 0x800;
 pub const MADV_SOFT_OFFLINE: c_int = 101;
 pub const MAP_LOCKED: c_int = 0x02000;
 pub const MAP_NORESERVE: c_int = 0x04000;
-pub const MAP_32BIT: c_int = 0x0040;
 pub const MAP_ANON: c_int = 0x0020;
 pub const MAP_ANONYMOUS: c_int = 0x0020;
 pub const MAP_DENYWRITE: c_int = 0x0800;
@@ -863,3 +864,22 @@ pub const SYS_landlock_restrict_self: c_long = 446;
 pub const SYS_process_mrelease: c_long = 448;
 pub const SYS_futex_waitv: c_long = 449;
 pub const SYS_set_mempolicy_home_node: c_long = 450;
+pub const SYS_cachestat: c_long = 451;
+pub const SYS_fchmodat2: c_long = 452;
+pub const SYS_map_shadow_stack: c_long = 453;
+pub const SYS_futex_wake: c_long = 454;
+pub const SYS_futex_wait: c_long = 455;
+pub const SYS_futex_requeue: c_long = 456;
+pub const SYS_statmount: c_long = 457;
+pub const SYS_listmount: c_long = 458;
+pub const SYS_lsm_get_self_attr: c_long = 459;
+pub const SYS_lsm_set_self_attr: c_long = 460;
+pub const SYS_lsm_list_modules: c_long = 461;
+pub const SYS_mseal: c_long = 462;
+pub const SYS_setxattrat: c_long = 463;
+pub const SYS_getxattrat: c_long = 464;
+pub const SYS_listxattrat: c_long = 465;
+pub const SYS_removexattrat: c_long = 466;
+pub const SYS_open_tree_attr: c_long = 467;
+pub const SYS_file_get_attr: c_long = 468;
+pub const SYS_file_set_attr: c_long = 469;

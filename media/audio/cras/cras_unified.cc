@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -16,6 +17,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "media/audio/cras/audio_manager_cras_base.h"
 #include "media/audio/cras/cras_util.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -143,7 +145,7 @@ bool CrasUnifiedStream::Open() {
     LOG(WARNING) << "Couldn't create CRAS client.\n";
     ReportStreamOpenResult(
         StreamOpenResult::kCallbackOpenCannotCreateCrasClient);
-    client_ = NULL;
+    client_ = nullptr;
     return false;
   }
 
@@ -151,8 +153,8 @@ bool CrasUnifiedStream::Open() {
     LOG(WARNING) << "Couldn't connect CRAS client.\n";
     ReportStreamOpenResult(
         StreamOpenResult::kCallbackOpenCannotConnectToCrasClient);
-    libcras_client_destroy(client_);
-    client_ = NULL;
+    libcras_client_destroy(client_.ExtractAsDangling());
+    client_ = nullptr;
     return false;
   }
 
@@ -160,8 +162,8 @@ bool CrasUnifiedStream::Open() {
   if (libcras_client_run_thread(client_)) {
     LOG(WARNING) << "Couldn't run CRAS client.\n";
     ReportStreamOpenResult(StreamOpenResult::kCallbackOpenCannotRunCrasClient);
-    libcras_client_destroy(client_);
-    client_ = NULL;
+    libcras_client_destroy(client_.ExtractAsDangling());
+    client_ = nullptr;
     return false;
   }
   ReportStreamOpenResult(StreamOpenResult::kCallbackOpenSuccess);
@@ -172,8 +174,8 @@ bool CrasUnifiedStream::Open() {
 void CrasUnifiedStream::Close() {
   if (client_) {
     libcras_client_stop(client_);
-    libcras_client_destroy(client_);
-    client_ = NULL;
+    libcras_client_destroy(client_.ExtractAsDangling());
+    client_ = nullptr;
   }
 
   // Signal to the manager that we're closed and can be removed.
@@ -233,7 +235,7 @@ void CrasUnifiedStream::Start(AudioSourceCallback* callback) {
   // Converts to CRAS defined channels. ChannelOrder will return -1
   // for channels that does not present in params_.channel_layout().
   for (size_t i = 0; i < std::size(kChannelMap); ++i) {
-    layout[kChannelMap[i]] =
+    UNSAFE_TODO(layout[kChannelMap[i]]) =
         ChannelOrder(params_.channel_layout(), static_cast<Channels>(i));
   }
 

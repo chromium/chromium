@@ -5,16 +5,15 @@
 #ifndef COMPONENTS_DBUS_XDG_SYSTEMD_H_
 #define COMPONENTS_DBUS_XDG_SYSTEMD_H_
 
-#include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 
 namespace dbus {
 class Bus;
 }
 
-namespace dbus_xdg {
+namespace dbus_xdg::internal {
 
-enum class COMPONENT_EXPORT(COMPONENTS_DBUS) SystemdUnitStatus {
+enum class SystemdUnitStatus {
   kUnitStarted,
   kUnitNotNecessary,
   kInvalidPid,
@@ -33,15 +32,11 @@ using SystemdUnitCallback = base::OnceCallback<void(SystemdUnitStatus)>;
 // systemd scope gets created when spawning via the application launcher. Child
 // processes also inherit the scope, so if the app launcher creates a terminal
 // which the user launches the browser with, then the browser will incorrectly
-// get the terminal name. This function caches it's results and may be called
-// more than once, but must be called on the same sequence.
-COMPONENT_EXPORT(COMPONENTS_DBUS)
+// get the terminal name. This function is internal and is only used for portal
+// initialization in RequestXdgDesktopPortal.
 void SetSystemdScopeUnitNameForXdgPortal(dbus::Bus* bus,
                                          SystemdUnitCallback callback);
 
-COMPONENT_EXPORT(COMPONENTS_DBUS)
-void ResetCachedStateForTesting();
-
-}  // namespace dbus_xdg
+}  // namespace dbus_xdg::internal
 
 #endif  // COMPONENTS_DBUS_XDG_SYSTEMD_H_

@@ -7,11 +7,14 @@
 They are actually shared with a bunch other projects.
 """
 
-load("//lib/swarming.star", "swarming")
+load("@chromium-luci//swarming.star", "swarming")
 load("//project.star", "ACTIVE_MILESTONES")
 
 # Set up permissions that apply to all Chromium pools.
-swarming.root_permissions()
+swarming.root_permissions(
+    owner_group = "project-chromium-admins",
+    viewer_group = "all",
+)
 
 # Task accounts for isolated tests.
 #
@@ -45,6 +48,7 @@ swarming.task_triggerers(
     pool_realm = "@root",
     groups = [
         "mdb/chrome-browser-infra",
+        "mdb/chrome-ops-browser-build-team",
     ],
 )
 

@@ -37,7 +37,7 @@ class CONTENT_EXPORT BackgroundSyncLauncher {
   static void FireBackgroundSyncEvents(
       BrowserContext* browser_context,
       blink::mojom::BackgroundSyncType sync_type,
-      const base::android::JavaParamRef<jobject>& j_runnable);
+      const base::android::JavaRef<jobject>& j_runnable);
   base::TimeDelta TimeSinceLastBrowserWakeUpForPeriodicSync();
 #endif
 
@@ -57,7 +57,7 @@ class CONTENT_EXPORT BackgroundSyncLauncher {
   void FireBackgroundSyncEventsImpl(
       BrowserContext* browser_context,
       blink::mojom::BackgroundSyncType sync_type,
-      const base::android::JavaParamRef<jobject>& j_runnable);
+      const base::android::JavaRef<jobject>& j_runnable);
 #endif
   void GetSoonestWakeupDeltaForStoragePartition(
       blink::mojom::BackgroundSyncType sync_type,

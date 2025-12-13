@@ -70,9 +70,8 @@ blink_platform_sources("network") {
     "//media",
     "//services/metrics/public/cpp:ukm_builders",
     "//third_party/blink/renderer/platform:allow_discouraged_type",
-    "//third_party/blink/renderer/platform/blob:blob",
-    "//third_party/blink/renderer/platform/instrumentation:instrumentation",
-    "//third_party/blink/renderer/platform/scheduler:scheduler",
+    "//third_party/blink/renderer/platform/blob",
+    "//third_party/blink/renderer/platform/scheduler",
   ]
 }
 
@@ -102,7 +101,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/blink/renderer/platform:test_support",
   ]
-  public_deps = [ "//third_party/blink/renderer/platform:platform" ]
+  public_deps = [ "//third_party/blink/renderer/platform" ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.

@@ -14,9 +14,9 @@
 #include "components/apdu/apdu_response.h"
 #include "components/cbor/writer.h"
 #include "device/fido/device_response_converter.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 
@@ -150,9 +150,8 @@ void MockFidoDevice::ExpectCtap2CommandAndRespondWith(
   EXPECT_CALL(*this,
               DeviceTransactPtr(AllOf(IsCtap2Command(command), request_matcher),
                                 ::testing::_))
-      .WillOnce(::testing::DoAll(
-          ::testing::WithArg<1>(::testing::Invoke(send_response)),
-          ::testing::Return(0)));
+      .WillOnce(::testing::DoAll(::testing::WithArg<1>(send_response),
+                                 ::testing::Return(0)));
 }
 
 void MockFidoDevice::ExpectCtap2CommandAndRespondWithError(
@@ -176,9 +175,8 @@ void MockFidoDevice::ExpectRequestAndRespondWith(
   auto request_as_vector = fido_parsing_utils::Materialize(request);
   EXPECT_CALL(*this,
               DeviceTransactPtr(std::move(request_as_vector), ::testing::_))
-      .WillOnce(::testing::DoAll(
-          ::testing::WithArg<1>(::testing::Invoke(send_response)),
-          ::testing::Return(0)));
+      .WillOnce(::testing::DoAll(::testing::WithArg<1>(send_response),
+                                 ::testing::Return(0)));
 }
 
 void MockFidoDevice::ExpectCtap2CommandAndDoNotRespond(

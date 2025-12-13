@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_POOL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_POOL_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
@@ -41,6 +40,7 @@
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_revert_layer_value.h"
+#include "third_party/blink/renderer/core/css/css_revert_rule_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -63,10 +63,11 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
   using CSSUnsetValue = cssvalue::CSSUnsetValue;
   using CSSRevertValue = cssvalue::CSSRevertValue;
   using CSSRevertLayerValue = cssvalue::CSSRevertLayerValue;
+  using CSSRevertRuleValue = cssvalue::CSSRevertRuleValue;
 
   // Special keys for deleted and empty values. Use white and transparent as
   // they're common colors and worth having an early-out for.
-  struct ColorHashTraitsForCSSValuePool : WTF::GenericHashTraits<Color> {
+  struct ColorHashTraitsForCSSValuePool : GenericHashTraits<Color> {
     STATIC_ONLY(ColorHashTraitsForCSSValuePool);
     static unsigned GetHash(const Color& key) { return key.GetHash(); }
     static Color EmptyValue() { return Color::kTransparent; }
@@ -90,6 +91,7 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
   CSSUnsetValue* UnsetValue() { return unset_value_.Get(); }
   CSSRevertValue* RevertValue() { return revert_value_.Get(); }
   CSSRevertLayerValue* RevertLayerValue() { return revert_layer_value_.Get(); }
+  CSSRevertRuleValue* RevertRuleValue() { return revert_rule_value_.Get(); }
   CSSInvalidVariableValue* InvalidVariableValue() {
     return invalid_variable_value_.Get();
   }
@@ -183,6 +185,7 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
   Member<CSSUnsetValue> unset_value_;
   Member<CSSRevertValue> revert_value_;
   Member<CSSRevertLayerValue> revert_layer_value_;
+  Member<CSSRevertRuleValue> revert_rule_value_;
   Member<CSSInvalidVariableValue> invalid_variable_value_;
   Member<CSSCyclicVariableValue> cyclic_variable_value_;
   Member<CSSInitialColorValue> initial_color_value_;

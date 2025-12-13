@@ -36,6 +36,7 @@
 <translation id="1249250836236328755">Είδος</translation>
 <translation id="1254593899333212300">Άμεση σύνδεση στο διαδίκτυο</translation>
 <translation id="1272293450992660632">Οι τιμές PIN δεν ταιριάζουν.</translation>
+<translation id="1279040297980392566">Αναμονή για την ολοκλήρωση της σάρωσης, δοκιμάστε ξανά αργότερα</translation>
 <translation id="1280820357415527819">Αναζήτηση για δίκτυα κινητής τηλεφωνίας</translation>
 <translation id="1293556467332435079">Αρχεία</translation>
 <translation id="1297922636971898492">Το Google Drive δεν είναι διαθέσιμο αυτήν τη στιγμή. Η μεταφόρτωση θα ξεκινήσει ξανά, όταν το Google Drive είναι και πάλι διαθέσιμο.</translation>
@@ -103,12 +104,12 @@
 <translation id="1761091787730831947">Κοινή χρήση με το <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Το πιστοποιητικό ελέγχου ταυτότητας απορρίφθηκε τοπικά</translation>
 <translation id="1775381402323441512">Πληροφορίες βίντεο</translation>
-<translation id="180035236176489073">Πρέπει να είστε συνδεδεμένοι στο διαδίκτυο για να αποκτήσετε πρόσβαση σε αυτά τα αρχεία.</translation>
+<translation id="180035236176489073">Πρέπει να έχετε συνδεθεί στο διαδίκτυο για να αποκτήσετε πρόσβαση σε αυτά τα αρχεία.</translation>
 <translation id="1807938677607439181">Όλα τα αρχεία</translation>
 <translation id="1810764548349082891">Δεν υπάρχει διαθέσιμη προεπισκόπηση</translation>
 <translation id="1812302367230252929">Μεταγραφή σε Αμχαρικά</translation>
 <translation id="1813278315230285598">Υπηρεσίες</translation>
-<translation id="181434555916624618">Προς το παρόν, τα αποτελέσματα που περιέχουν άτομα δεν θα εμφανίζονται. Δοκιμάστε άλλη οδηγία.</translation>
+<translation id="181434555916624618">Προς το παρόν, τα αποτελέσματα που περιέχουν άτομα δεν θα εμφανίζονται. Δοκιμάστε άλλη προτροπή.</translation>
 <translation id="1829129547161959350">Πιγκουίνος</translation>
 <translation id="183183971458492120">Γίνεται φόρτωση των πληροφοριών…</translation>
 <translation id="1832073788765803750">Κατακάνα μισού πλάτους</translation>
@@ -360,7 +361,6 @@
 <translation id="3811494700605067549">έχει επιλεγεί 1 αρχείο</translation>
 <translation id="3817579325494460411">Άγνωστο</translation>
 <translation id="3819448694985509187">Εσφαλμένο PIN. Απομένει 1 ακόμη προσπάθεια.</translation>
-<translation id="3822559385185038546">Αυτός ο διακομιστής μεσολάβησης επιβάλλεται από τον διαχειριστή σας</translation>
 <translation id="3830674330436234648">Δεν διατίθεται αναπαραγωγή</translation>
 <translation id="383652340667548381">Σερβικά
 </translation>
@@ -609,6 +609,7 @@
 <translation id="5596627076506792578">Περισσότερες επιλογές</translation>
 <translation id="5602622065581044566">Βουλγαρικά με φωνητικό πληκτρολόγιο</translation>
 <translation id="5605830556594064952">Dvorak ΗΠΑ</translation>
+<translation id="560739212255190568">Ο διαχειριστής σας όρισε κανόνες παράκαμψης διακομιστή μεσολάβησης, επιπλέον της επιβολής του ακόλουθου διακομιστή μεσολάβησης</translation>
 <translation id="5618330573454123917">Αυτό το αρχείο έχει σχεδιαστεί για υπολογιστή που χρησιμοποιεί λογισμικό Macintosh. Δεν είναι συμβατό με τη συσκευή σας, η οποία εκτελεί Chrome OS. <ph name="BEGIN_LINK_HELP" />Μάθετε περισσότερα<ph name="END_LINK_HELP" /> σχετικά με το άνοιγμα αρχείων στο Chrome OS.</translation>
 <translation id="5625294776298156701">Ταμίλ με πληκτρολόγιο Tamil99</translation>
 <translation id="5633226425545095130">Με τη μετακίνηση αυτού του στοιχείου, αυτό θα κοινοποιηθεί σε όλους τους χρήστες που μπορούν να δουν τον κοινόχρηστο φάκελο "<ph name="DESTINATION_NAME" />".</translation>
@@ -801,7 +802,7 @@
 <translation id="7075931588889865715">Ταϊλανδικά με πληκτρολόγιο TIS 820-2531</translation>
 <translation id="708278670402572152">Αποσυνδεθείτε για να είναι δυνατή η σάρωση</translation>
 <translation id="7086590977277044826">Ταμίλ με πληκτρολόγιο InScript</translation>
-<translation id="7088615885725309056">Παλαιότερο</translation>
+<translation id="7088615885725309056">Παλαιότερη</translation>
 <translation id="7103992300314999525">Σλαβομακεδονικά</translation>
 <translation id="7104338189998813914">Υπάρχει κάποιο πρόβλημα με την πρόσβαση στον λογαριασμό σας στο OneDrive</translation>
 <translation id="7106346894903675391">Αγοράστε περισσότερο αποθηκευτικό χώρο...</translation>
@@ -1014,6 +1015,7 @@
 <translation id="8540608333167683902">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Λεπτομέρειες</translation>
 <translation id="8545476925160229291">Αγγλικά (ΗΠΑ)</translation>
 <translation id="854655314928502177">URL αυτόματου εντοπισμού διακομιστή μεσολάβησης ιστού</translation>
+<translation id="8547747809824590510">Ο διαχειριστής σας όρισε κανόνες παράκαμψης διακομιστή μεσολάβησης</translation>
 <translation id="8549186985808798022">Ιταλικά</translation>
 <translation id="8551494947769799688">Λετονικά
 </translation>
@@ -1078,6 +1080,7 @@
 <translation id="9038620279323455325">Το αρχείο με το όνομα "<ph name="FILE_NAME" />" υπάρχει ήδη. Επιλέξτε ένα διαφορετικό όνομα.</translation>
 <translation id="9046895021617826162">Η σύνδεση απέτυχε</translation>
 <translation id="9065512565307033593">Εάν δεν επαληθεύσετε, θα απενεργοποιηθεί η πρόσβαση δικτύου σας.</translation>
+<translation id="9079844694307518094">Ο διαχειριστής σας επιβάλλει τον ακόλουθο διακομιστή μεσολάβησης</translation>
 <translation id="908378762078012445">Ρωσικά με φωνητικό πληκτρολόγιο AATSEEL</translation>
 <translation id="9086302186042011942">Συγχρονισμός</translation>
 <translation id="9099674669267916096">Πλήθος σελίδων</translation>
@@ -1101,6 +1104,7 @@
 <translation id="9213073329713032541">Η εγκατάσταση ξεκίνησε με επιτυχία.</translation>
 <translation id="9219103736887031265">Εικόνες</translation>
 <translation id="9219908252191632183">Σεληνιακό τοπίο</translation>
+<translation id="931652069802536959">Το δίκτυο έχει αποκλειστεί από την πολιτική</translation>
 <translation id="938470336146445890">Εγκαταστήστε ένα πιστοποιητικό χρήστη.</translation>
 <translation id="939736085109172342">Νέος φάκελος</translation>
 <translation id="943972244133411984">Τροποποιήθηκε από</translation>

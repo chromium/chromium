@@ -11,8 +11,7 @@ import org.chromium.payments.mojom.PaymentResponse;
 
 /**
  * The helper class that generates a {@link PaymentResponse} with the input of payment details.
- * Compared to ChromePaymentResponseHelper, this helper does not handle the Autofill data, and so
- * can be used for WebLayerPaymentRequestService.
+ * Compared to ChromePaymentResponseHelper, this helper does not handle the Autofill data.
  */
 @NullMarked
 public class PaymentResponseHelper implements PaymentResponseHelperInterface {

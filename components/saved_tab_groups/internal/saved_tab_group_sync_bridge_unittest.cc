@@ -65,7 +65,6 @@ using syncer::ConflictResolution;
 using syncer::EntityData;
 using testing::_;
 using testing::ElementsAre;
-using testing::Invoke;
 using testing::Not;
 using testing::Pointee;
 using testing::ReturnRef;
@@ -1185,7 +1184,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, RemoveTabLocally) {
   saved_tab_group_model_.AddedLocally(std::move(group));
 
   EXPECT_CALL(processor_, Delete(tab_1_guid.AsLowercaseString(), _, _));
-  EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _)).Times(0);
+  EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _)).Times(1);
   EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _)).Times(0);
 
   saved_tab_group_model_.RemoveTabFromGroupLocally(group_guid, tab_1_guid);
@@ -1610,10 +1609,10 @@ TEST_F(SavedTabGroupSyncBridgeTest, StoreLocalIdOnRemoteUpdate) {
 
   // Simulate a reentrant call during applying remote updates.
   EXPECT_CALL(mock_model_observer_, SavedTabGroupAddedFromSync)
-      .WillOnce(Invoke([this, &kLocalGroupId](const base::Uuid& group_guid) {
+      .WillOnce([this, &kLocalGroupId](const base::Uuid& group_guid) {
         saved_tab_group_model_.OnGroupOpenedInTabStrip(group_guid,
                                                        kLocalGroupId);
-      }));
+      });
   SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
                       /*position=*/std::nullopt);
   bridge_->ApplyIncrementalSyncChanges(

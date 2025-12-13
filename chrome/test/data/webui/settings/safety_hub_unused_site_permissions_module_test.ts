@@ -16,6 +16,7 @@ import {MetricsBrowserProxyImpl, resetRouterForTesting, Router, routes, SafetyCh
 import {isMac} from 'chrome://resources/js/platform.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
@@ -63,6 +64,14 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
             },
           ]);
 
+  async function waitFor(f: () => boolean, timeoutMs: number = 5000) {
+    if (f() || timeoutMs < 0) {
+      return;
+    }
+    await new Promise(resolve => setTimeout(resolve, 50));
+    await waitFor(f, timeoutMs - 50);
+  }
+
   function assertEqualsMockData(
       siteList: UnusedSitePermissions[], mockDataLength: number) {
     // |siteList| coming from WebUI may have the additional property |detail|,
@@ -102,7 +111,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
         index = 0;
       }
       const expectedText = testElement.i18n(stringId, mockData[index]!.origin);
-      const actualText = undoToast.querySelector('div')!.textContent!.trim();
+      const actualText = undoToast.querySelector('div')!.textContent.trim();
       assertEquals(expectedText, actualText);
     }
   }
@@ -129,14 +138,15 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
 
   async function createPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testElement =
-        document.createElement('settings-safety-hub-unused-site-permissions');
+    testElement = document.createElement(
+        'settings-safety-hub-unused-site-permissions-module');
     Router.getInstance().navigateTo(routes.SAFETY_HUB);
     document.body.appendChild(testElement);
     // Wait until the element has asked for the list of revoked permissions
     // that will be shown for review.
     await browserProxy.whenCalled('getRevokedUnusedSitePermissionsList');
     await flushTasks();
+    testElement.$.module.setModelUpdateDelayMsForTesting(0);
   }
 
   /**
@@ -166,6 +176,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     const [origin] =
         await browserProxy.whenCalled('allowPermissionsAgainForUnusedSite');
     assertEquals(mockData[index]!.origin, origin);
+    browserProxy.resetResolver('allowPermissionsAgainForUnusedSite');
   }
 
   /**
@@ -195,13 +206,14 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
         'recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram');
     assertEquals(action, result);
 
-    if (!isAbusiveNotification) {
-      isAbusiveNotification = false;
-    }
     if (isAbusiveNotification) {
       const resultAbusiveNotification = await metricsBrowserProxy.whenCalled(
           'recordSafetyHubAbusiveNotificationPermissionRevocationInteractionsHistogram');
       assertEquals(action, resultAbusiveNotification);
+    } else {
+      // Verify that in non-abusive case, the abusive metric is not logged.
+      assertEquals(0, metricsBrowserProxy.getCallCount(
+        'recordSafetyHubAbusiveNotificationPermissionRevocationInteractionsHistogram'));
     }
     metricsBrowserProxy.reset();
   }
@@ -228,57 +240,52 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     assertEquals(
         mockData[0]!.origin,
         getSiteList()[0]!.querySelector(
-                             '.site-representation')!.textContent!.trim());
+                             '.site-representation')!.textContent.trim());
     assertTrue(!!getSiteList()[0]!.querySelector(
-                                      '.cr-secondary-text')!.textContent!.trim()
+                                      '.cr-secondary-text')!.textContent.trim()
                      .match(
                          'You haven\'t visited recently. ' +
                          'Chrome|Chromium removed location'));
 
     assertEquals(
         mockData[1]!.origin,
-        siteList[1]!.querySelector(
-                        '.site-representation')!.textContent!.trim());
+        siteList[1]!.querySelector('.site-representation')!.textContent.trim());
     assertTrue(
-        !!siteList[1]!.querySelector('.cr-secondary-text')!.textContent!.trim()
+        !!siteList[1]!.querySelector('.cr-secondary-text')!.textContent.trim()
               .match(
                   'You haven\'t visited recently. ' +
                   'Chrome|Chromium removed location, microphone'));
 
     assertEquals(
         mockData[2]!.origin,
-        siteList[2]!.querySelector(
-                        '.site-representation')!.textContent!.trim());
+        siteList[2]!.querySelector('.site-representation')!.textContent.trim());
     assertTrue(
-        !!siteList[2]!.querySelector('.cr-secondary-text')!.textContent!.trim()
+        !!siteList[2]!.querySelector('.cr-secondary-text')!.textContent.trim()
               .match(
                   'You haven\'t visited recently. ' +
                   'Chrome|Chromium removed location, microphone, camera'));
 
     assertEquals(
         mockData[3]!.origin,
-        siteList[3]!.querySelector(
-                        '.site-representation')!.textContent!.trim());
+        siteList[3]!.querySelector('.site-representation')!.textContent.trim());
     assertTrue(
-        !!siteList[3]!.querySelector('.cr-secondary-text')!.textContent!.trim()
+        !!siteList[3]!.querySelector('.cr-secondary-text')!.textContent.trim()
               .match(
                   'You haven\'t visited recently. ' +
                   'Chrome|Chromium removed location, microphone, and 2 more'));
 
     assertEquals(
         mockData[4]!.origin,
-        siteList[4]!.querySelector(
-                        '.site-representation')!.textContent!.trim());
+        siteList[4]!.querySelector('.site-representation')!.textContent.trim());
     assertTrue(
-        !!siteList[4]!.querySelector('.cr-secondary-text')!.textContent!.trim()
+        !!siteList[4]!.querySelector('.cr-secondary-text')!.textContent.trim()
               .match('Dangerous site. Chrome|Chromium removed notifications.'));
 
     assertEquals(
         mockData[5]!.origin,
-        siteList[5]!.querySelector(
-                        '.site-representation')!.textContent!.trim());
+        siteList[5]!.querySelector('.site-representation')!.textContent.trim());
     assertTrue(
-        !!siteList[5]!.querySelector('.cr-secondary-text')!.textContent!.trim()
+        !!siteList[5]!.querySelector('.cr-secondary-text')!.textContent.trim()
               .match(
                   'You haven\'t visited recently. ' +
                   'Chrome|Chromium removed notifications'));
@@ -298,6 +305,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     // Ensure the correctness of the browser proxy call and the undo toast.
     await assertAllowAgain();
     assertUndoToast(true, 'safetyHubUnusedSitePermissionsToastLabel');
+    assertEquals(getDeepActiveElement(), testElement.$.toastUndoButton);
 
     await browserProxy.whenCalled('recordSafetyHubInteraction');
 
@@ -323,6 +331,11 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     for (const [i, site] of getSiteList().entries()) {
       // User clicks Allow Again and then Undo.
       site.querySelector('cr-icon-button')!.click();
+      await assertAllowAgain(i);
+      await flushTasks();
+      assertUndoToast(true, 'safetyHubUnusedSitePermissionsToastLabel', i);
+      assertEquals(getDeepActiveElement(), testElement.$.toastUndoButton);
+
       metricsBrowserProxy.reset();
       testElement.$.toastUndoButton.click();
 
@@ -335,6 +348,10 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
           SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, mockData);
       flush();
 
+      await waitFor(
+          () => getDeepActiveElement() === site.querySelector('#mainButton'));
+      assertEquals(getDeepActiveElement(), site.querySelector('#mainButton'));
+
       // Ensure the metric for 'Undo Allow Again' action is recorded. The
       // last site at index 4 includes revoked notifications, so the abusive
       // notification histogram should also be recorded.
@@ -345,6 +362,7 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
         await assertInteractionMetricRecorded(Interactions.UNDO_ALLOW_AGAIN);
       }
 
+      await flushTasks();
       assertInitialUi();
     }
   });
@@ -400,6 +418,8 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     assertFalse(isVisible(testElement.$.gotItButton));
     assertTrue(isVisible(testElement.$.bulkUndoButton));
 
+    assertEquals(getDeepActiveElement(), testElement.$.bulkUndoButton);
+
     // Ensure the metric for 'Acknowledge All' action is recorded.
     await assertInteractionMetricRecorded(Interactions.ACKNOWLEDGE_ALL, true);
   });
@@ -407,6 +427,11 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
   test('Undo Got It', async function() {
     // User clicks Got It and then Bulk Undo.
     testElement.$.gotItButton.click();
+
+    // UI should be in a completion state.
+    webUIListenerCallback(SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, []);
+    await flushTasks();
+
     metricsBrowserProxy.reset();
     testElement.$.bulkUndoButton.click();
 
@@ -419,11 +444,15 @@ suite('CrSettingsSafetyHubUnusedSitePermissionsTest', function() {
     // UI should be back to its initial state.
     webUIListenerCallback(
         SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED, mockData);
+    await flushTasks();
     assertInitialUi();
 
     // Check visibility of buttons
     assertTrue(isVisible(testElement.$.gotItButton));
     assertFalse(isVisible(testElement.$.bulkUndoButton));
+
+    await waitFor(() => getDeepActiveElement() === testElement.$.gotItButton);
+    assertEquals(getDeepActiveElement(), testElement.$.gotItButton);
 
     // Ensure the metric for 'Undo Acknowledge All' action is recorded.
     await assertInteractionMetricRecorded(

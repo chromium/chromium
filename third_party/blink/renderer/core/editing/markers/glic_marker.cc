@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/markers/glic_marker.h"
 
+#include "base/time/time.h"
 #include "components/shared_highlighting/core/common/fragment_directives_constants.h"
 #include "ui/gfx/geometry/cubic_bezier.h"
 

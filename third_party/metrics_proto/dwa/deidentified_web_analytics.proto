@@ -22,9 +22,7 @@ message DeidentifiedWebAnalyticsReport {
   // Temporary identifier that gets generated once a day.
   optional fixed64 dwa_ephemeral_id = 2;
 
-  // A list of page load events, one entry per page load.
-  // This field should be cleared when a report is sent, its content should be
-  // encrypted and placed in encrypted_page_load_events.
+  // This field should not be used. Use `dwa_events` instead.
   repeated PageLoadEvents page_load_events = 3;
 
   reserved 4;
@@ -112,7 +110,7 @@ message PageLoadEvents {
   repeated DeidentifiedWebAnalyticsEvent events = 1;
 }
 
-// Next tag: 7
+// Next tag: 10
 message DeidentifiedWebAnalyticsEvent {
   // A hash of the event name/type (such as "ReportingAPIUsage").
   // Uses the same hash function as UMA.
@@ -157,6 +155,7 @@ message DeidentifiedWebAnalyticsEvent {
     repeated EntryMetrics metrics = 3;
   }
 
+  // This field should not be used. Use `content_hash` and `metrics` instead.
   repeated ContentMetric content_metrics = 2;
 
   // Field trials that we want to associate with this event, name id and
@@ -165,4 +164,18 @@ message DeidentifiedWebAnalyticsEvent {
 
   // Coarse system information associated with this event.
   optional CoarseSystemInfo coarse_system_info = 4;
+
+  // A hash of the content (e.g. hash("example.com")).
+  // Uses the same hash function as UMA.
+  // http://cs.chromium.org/chromium/src/base/metrics/metrics_hashes.cc?q=HashMetricName
+  optional fixed64 content_hash = 7;
+
+  // A single metric, which is defined by a name hash and a value.
+  message Metric {
+    optional fixed64 name_hash = 1;
+
+    optional int64 value = 2;
+  }
+
+  repeated Metric metric = 9;
 }

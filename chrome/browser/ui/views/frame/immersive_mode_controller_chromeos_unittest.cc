@@ -13,8 +13,8 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_tester.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -51,7 +51,7 @@ class ImmersiveModeControllerChromeosTest : public TestWithBrowserView {
 
     browser()->window()->Show();
 
-    controller_ = browser_view()->immersive_mode_controller();
+    controller_ = ImmersiveModeController::From(browser());
     chromeos::ImmersiveFullscreenControllerTestApi(
         static_cast<ImmersiveModeControllerChromeos*>(controller_)
             ->controller())
@@ -110,7 +110,12 @@ TEST_F(ImmersiveModeControllerChromeosTest, Layout) {
   // The browser's top chrome is completely offscreen with tapstrip visible.
   EXPECT_TRUE(tabstrip->GetVisible());
   // Tabstrip and top container view should be completely offscreen.
-  EXPECT_EQ(0, GetBoundsInWidget(tabstrip).bottom());
+  // Because of the split of tabstrip from top_container, the tabstrip must be
+  // moved into top_container during immersive. However, this happens after the
+  // animation has started but before anything actually moves, which is why
+  // tabstrip was recording bounds as if it was in browser_view. There is no
+  // visual effect on animation, and since tabstrip will live in top_container,
+  // checking just top_container bounds is sufficient.
   EXPECT_EQ(0, GetBoundsInWidget(browser_view()->top_container()).bottom());
   EXPECT_EQ(
       0, browser_view()->contents_web_view()->holder()->GetHitTestTopInset());
@@ -266,7 +271,7 @@ TEST_F(ImmersiveModeControllerChromeosTest, LayeredSpinners) {
 TEST_F(ImmersiveModeControllerChromeosTest, CallEnableForWidgetWhenNeeded) {
   ASSERT_FALSE(controller()->IsEnabled());
   chromeos::ImmersiveFullscreenController::EnableForWidget(
-      browser_view()->frame(), /*enabled=*/true);
+      browser_view()->browser_widget(), /*enabled=*/true);
   ASSERT_TRUE(controller()->IsEnabled());
   controller()->SetEnabled(/*enabled=*/false);
   ASSERT_FALSE(controller()->IsEnabled());

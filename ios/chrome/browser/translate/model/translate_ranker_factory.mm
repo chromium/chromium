@@ -31,8 +31,7 @@ TranslateRankerFactory::TranslateRankerFactory()
 TranslateRankerFactory::~TranslateRankerFactory() {}
 
 std::unique_ptr<KeyedService> TranslateRankerFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   return std::make_unique<TranslateRankerImpl>(
       TranslateRankerImpl::GetModelPath(profile->GetStatePath()),
       TranslateRankerImpl::GetModelURL(),

@@ -4,14 +4,15 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType.INCOGNITO;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.CommandLine;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -28,12 +29,13 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
  * Implements incognito tab host for the given instance of Custom Tab activity. This class exists
  * for every custom tab, but its only active if |isEnabledIncognitoCCT| returns true.
  */
+@NullMarked
 public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObserver {
     private final Activity mActivity;
     private final CustomTabActivityNavigationController mNavigationController;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
 
-    @Nullable private IncognitoCustomTabHost mIncognitoTabHost;
+    private @Nullable IncognitoCustomTabHost mIncognitoTabHost;
 
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
 
@@ -64,16 +66,10 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
             IncognitoTabHostRegistry.getInstance().unregister(mIncognitoTabHost);
         }
 
-        if (mProfileProviderSupplier.get().hasOffTheRecordProfile()) {
-            ProfileManager.destroyWhenAppropriate(
-                    mProfileProviderSupplier
-                            .get()
-                            .getOffTheRecordProfile(/* createIfNeeded= */ false));
+        Profile otrProfile = assumeNonNull(mProfileProviderSupplier.get()).getOffTheRecordProfile();
+        if (otrProfile != null) {
+            ProfileManager.destroyWhenAppropriate(otrProfile);
         }
-    }
-
-    public Profile getProfile() {
-        return mProfileProviderSupplier.get().getOffTheRecordProfile(/* createIfNeeded= */ true);
     }
 
     private void initializeIncognito() {

@@ -8,7 +8,6 @@
 #include <list>
 #include <string>
 
-#include "base/containers/fixed_flat_map.h"
 #include "base/strings/to_string.h"
 
 namespace ui {

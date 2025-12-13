@@ -4,6 +4,7 @@
 
 #![feature(portable_simd)]
 
+mod decoder_tests;
 mod lib_tests;
 mod quant_tests;
 mod selectors_tests;

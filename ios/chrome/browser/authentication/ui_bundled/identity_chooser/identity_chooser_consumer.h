@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_IDENTITY_CHOOSER_IDENTITY_CHOOSER_CONSUMER_H_
 #define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_IDENTITY_CHOOSER_IDENTITY_CHOOSER_CONSUMER_H_
 
+class GaiaId;
 @class TableViewIdentityItem;
 
 // Consumer for the IdentityChooser.
@@ -17,7 +18,7 @@
 - (void)itemHasChanged:(TableViewIdentityItem*)changedItem;
 
 // Returns an TableViewIdentityItem based on a gaia ID.
-- (TableViewIdentityItem*)tableViewIdentityItemWithGaiaID:(NSString*)gaiaID;
+- (TableViewIdentityItem*)tableViewIdentityItemWithGaiaID:(const GaiaId&)gaiaID;
 
 @end
 

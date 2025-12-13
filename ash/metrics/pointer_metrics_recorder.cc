@@ -49,7 +49,7 @@ void RecordUMA(ui::EventPointerType type, ui::EventTarget* event_target) {
   views::Widget* target = views::Widget::GetTopLevelWidgetForNativeView(
       static_cast<aura::Window*>(event_target));
   DownEventFormFactor form_factor = DownEventFormFactor::kClamshell;
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     chromeos::OrientationType screen_orientation =
         Shell::Get()->screen_orientation_controller()->GetCurrentOrientation();
     if (screen_orientation == chromeos::OrientationType::kLandscapePrimary ||

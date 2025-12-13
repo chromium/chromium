@@ -120,6 +120,10 @@ class CORE_EXPORT CompositorAnimations {
 
     kSVGTargetHasIndependentTransformProperty = 1 << 19,
 
+    // Currently the compositor does not support any iteration composite mode
+    // other than 'replace'.
+    kEffectHasNonReplaceIterationCompositeMode = 1 << 20,
+
     // When adding new values, update the count below *and* add a description
     // of the value to CompositorAnimationsFailureReason in
     // tools/metrics/histograms/enums.xml .
@@ -128,7 +132,7 @@ class CORE_EXPORT CompositorAnimations {
     // should increment this number but it should never be decremented because
     // the values are used in UMA histograms. It should also be noted that it
     // excludes the kNoFailure value.
-    kFailureReasonCount = 20,
+    kFailureReasonCount = 21,
   };
 
   static FailureReasons CheckCanStartAnimationOnCompositor(

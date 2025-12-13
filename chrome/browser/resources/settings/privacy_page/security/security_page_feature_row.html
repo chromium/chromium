@@ -1,0 +1,38 @@
+<style include="settings-shared">
+  :host {
+    display: block;
+  }
+
+  #content-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+  }
+
+  #toggleButton {
+    --cr-section-min-height: 16px;
+  }
+</style>
+<cr-expand-button class="cr-row" id="expandButton" expanded="{{expanded}}">
+  <div id="content-wrapper">
+    <div class="flex">
+      [[label]]
+      <div class="cr-secondary-text">[[subLabel]]</div>
+    </div>
+    <template is="dom-if" if="[[!expanded]]">
+      <div class="cr-secondary-text" id="stateLabel">
+        [[currentStateLabel_]]
+      </div>
+    </template>
+    <template is="dom-if" if="[[expanded]]">
+      <settings-toggle-button id="toggleButton" pref="{{pref}}"
+          numeric-unchecked-values="[[numericUncheckedValues]]"
+          numeric-checked-value="[[numericCheckedValue]]">
+      </settings-toggle-button>
+    </template>
+  </div>
+</cr-expand-button>
+<cr-collapse opened="[[expanded]]">
+  <slot name="collapse"></slot>
+</cr-collapse>

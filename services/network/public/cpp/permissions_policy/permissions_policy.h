@@ -367,6 +367,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) PermissionsPolicy {
   // inherited policy.
   bool GetFeatureValueForOrigin(
       network::mojom::PermissionsPolicyFeature feature,
+      network::PermissionsPolicyFeatureDefault default_policy,
       const url::Origin& origin) const;
 
   // The origin of the document with which this policy is associated.

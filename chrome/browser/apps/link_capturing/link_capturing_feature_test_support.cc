@@ -255,17 +255,16 @@ ResolveWebContentsWaitingForLaunchQueueFlush() {
       base::BindLambdaForTesting([&](content::WebContents& web_contents) {
         content::EvalJsResult has_function = content::EvalJs(
             &web_contents, "typeof resolveLaunchParamsFlush !== 'undefined'");
-        if (!has_function.error.empty() || !has_function.ExtractBool()) {
+        if (!has_function.is_ok() || !has_function.ExtractBool()) {
           // Sometimes the web contents is destroyed while evaluating this
           // javascript. That is fine.
-          DLOG_IF(INFO, !has_function.error.empty())
-              << "Got error: " << has_function.error;
+          DLOG_IF(INFO, !has_function.is_ok()) << "Got error: " << has_function;
           return;
         }
         content::EvalJsResult result =
             content::EvalJs(&web_contents, "resolveLaunchParamsFlush()");
-        if (!result.error.empty()) {
-          errors.push_back(result.error);
+        if (!result.is_ok()) {
+          errors.push_back(result.ExtractError());
         }
       }));
   if (!errors.empty()) {
@@ -322,7 +321,8 @@ std::vector<GURL> GetLaunchParamUrlsInContents(
                       "'" + params_variable_name + "' in window ? " +
                           params_variable_name + " : []");
   EXPECT_THAT(launchParamsResults, content::EvalJsResult::IsOk());
-  base::Value::List launchParamsTargetUrls = launchParamsResults.ExtractList();
+  const base::Value::List& launchParamsTargetUrls =
+      launchParamsResults.ExtractList();
   if (!launchParamsTargetUrls.empty()) {
     for (const base::Value& url : launchParamsTargetUrls) {
       launch_params.emplace_back(url.GetString());

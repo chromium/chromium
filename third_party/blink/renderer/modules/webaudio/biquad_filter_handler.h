@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_BIQUAD_FILTER_HANDLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_BIQUAD_FILTER_HANDLER_H_
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -42,21 +43,17 @@ class BiquadFilterHandler final : public AudioHandler {
   // have changed.
   void CheckNumberOfChannelsForInput(AudioNodeInput*) override;
 
-  // Returns the number of channels for both the input and the output.
-  unsigned NumberOfChannels();
-
   // Get the magnitude and phase response of the filter at the given
   // set of frequencies (in Hz). The phase response is in radians.
-  void GetFrequencyResponse(int n_frequencies,
-                            const float* frequency_hz,
-                            float* mag_response,
-                            float* phase_response);
+  void GetFrequencyResponse(base::span<const float> frequency_hz,
+                            base::span<float> mag_response,
+                            base::span<float> phase_response);
   V8BiquadFilterType::Enum Type() const;
   void SetType(V8BiquadFilterType::Enum type);
 
   // Expose HasConstantValues for unit testing
-  MODULES_EXPORT static bool HasConstantValuesForTesting(float* values,
-                                                         int frames_to_process);
+  MODULES_EXPORT static bool HasConstantValuesForTesting(
+      base::span<float> values);
 
  private:
   BiquadFilterHandler(AudioNode&,
@@ -68,20 +65,13 @@ class BiquadFilterHandler final : public AudioHandler {
 
   void NotifyBadState() const;
 
-  // Returns true if the first output sample of any channel is non-finite.  This
-  // is a proxy for determining if the filter state is bad.  For
-  // BiquadFilterNodes and IIRFilterNodes, if the internal state has non-finite
-  // values, the non-finite value propagates pretty much forever in the output.
-  // This is because infinities and NaNs are sticky.
-  bool HasNonFiniteOutput() const;
-
   bool RequiresTailProcessing() const override;
   double TailTime() const override;
   double LatencyTime() const override;
 
-  // Only notify the user of the once.  No need to spam the console with
-  // messages, because once we're in a bad state, it usually stays that way
-  // forever.  Only accessed from audio thread.
+  // Only notify the user once.  No need to spam the console with messages,
+  // because once we're in a bad state, it usually stays that way forever.  Only
+  // accessed from audio thread.
   bool did_warn_bad_filter_state_ = false;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

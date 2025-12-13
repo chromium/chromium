@@ -662,13 +662,12 @@ export class PrimaryTts extends AbstractTts {
   }
 
   /**
-   * Method that updates the punctuation echo level, and also persists setting
+   * Method that updates the punctuation echo level by persisting it
    * to settings prefs.
    * @param punctuationEcho The index of the desired punctuation echo
    * level in PunctuationEchoes.
    */
   updatePunctuationEcho(punctuationEcho: number): void {
-    this.currentPunctuationEcho_ = punctuationEcho;
     SettingsManager.set(TtsSettings.PUNCTUATION_ECHO, punctuationEcho);
   }
 
@@ -677,9 +676,14 @@ export class PrimaryTts extends AbstractTts {
    * @return The resulting punctuation level message id.
    */
   cyclePunctuationEcho(): string {
-    this.updatePunctuationEcho(
-        (this.currentPunctuationEcho_ + 1) % PunctuationEchoes.length);
-    return PunctuationEchoes[this.currentPunctuationEcho_].msg;
+    const nextPunctuationEcho =
+        (this.currentPunctuationEcho_ + 1) % PunctuationEchoes.length;
+    this.updatePunctuationEcho(nextPunctuationEcho);
+    return PunctuationEchoes[nextPunctuationEcho].msg;
+  }
+
+  getPunctuationEcho(): number {
+    return this.currentPunctuationEcho_;
   }
 
   /**
@@ -806,6 +810,9 @@ export class PrimaryTts extends AbstractTts {
           propertyName = TtsAudioProperty.VOLUME;
           msg = 'announce_volume';
           break;
+        case 'settings.a11y.chromevox.punctuation_echo':
+          this.currentPunctuationEcho_ = pref.value;
+          return;
         default:
           return;
       }

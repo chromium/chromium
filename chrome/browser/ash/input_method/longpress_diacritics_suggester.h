@@ -9,7 +9,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/containers/fixed_flat_map.h"
 #include "chrome/browser/ash/input_method/longpress_suggester.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "ui/events/event.h"

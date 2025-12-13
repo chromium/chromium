@@ -6,7 +6,7 @@
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/url_constants.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 
 namespace web_app {
 
@@ -29,7 +29,7 @@ void WindowManagementContentSettingObserver::OnContentSettingChanged(
     ContentSettingsTypeSet content_type_set) {
   if (content_type_set.Contains(ContentSettingsType::WINDOW_MANAGEMENT) &&
       web_contents()->GetLastCommittedURL().SchemeIs(
-          chrome::kIsolatedAppScheme) &&
+          webapps::kIsolatedAppScheme) &&
       primary_pattern.Matches(web_contents()->GetLastCommittedURL())) {
     web_contents()->OnWebPreferencesChanged();
   }

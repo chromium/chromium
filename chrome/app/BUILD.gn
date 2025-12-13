@@ -60,7 +60,7 @@ if (is_win) {
       "exit_code_watcher_win.cc",
       "exit_code_watcher_win.h",
     ]
-    public_deps = [ "//base:base" ]
+    public_deps = [ "//base" ]
   }
 
   source_set("win_unit_tests") {
@@ -71,10 +71,10 @@ if (is_win) {
     ]
     deps = [
       ":exit_code_watcher",
-      "//base:base",
+      "//base",
       "//base/test:test_support",
       "//chrome/chrome_elf:crash",
-      "//testing/gtest:gtest",
+      "//testing/gtest",
     ]
   }
 }
@@ -143,6 +143,7 @@ static_library("test_support") {
     "//components/devtools/devtools_pipe",
     "//components/memory_system",
     "//components/startup_metric_utils",
+    "//components/variations/service",
     "//components/webui/about",
     "//content/public/app",
     "//content/public/common",
@@ -153,6 +154,10 @@ static_library("test_support") {
     "//v8:v8_headers",
   ]
   public_deps = [ "//ui/lottie" ]
+
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+  }
 
   if (is_android) {
     deps += [

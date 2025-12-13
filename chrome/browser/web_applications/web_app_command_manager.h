@@ -12,17 +12,21 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/one_shot_event.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
-#include "base/values.h"
 #include "chrome/browser/web_applications/commands/internal/command_internal.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/web_app_profile_deletion_manager.h"
 #include "components/webapps/common/web_app_id.h"
 
 class Profile;
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace content {
 class WebContents;
@@ -34,6 +38,7 @@ class WebAppUrlLoader;
 
 namespace web_app {
 class WebAppProvider;
+class PersistableLog;
 
 // The command manager is used to schedule commands or callbacks to write & read
 // from the WebAppProvider system. To use, simply call `ScheduleCommand` to
@@ -72,7 +77,8 @@ class WebAppCommandManager {
   // or tests, and the format can change frequently (so do not use it).
   base::Value ToDebugValue();
 
-  void LogToInstallManager(base::Value::Dict);
+  // This will CHECK-fail if the system has not been started.
+  const PersistableLog& log() const;
 
   // Returns whether an installation is already scheduled with the same web
   // contents.
@@ -126,7 +132,6 @@ class WebAppCommandManager {
 
   bool started_ = false;
   bool is_in_shutdown_ = false;
-  std::deque<base::Value> command_debug_log_;
 
   WebAppLockManager lock_manager_;
 
@@ -135,6 +140,8 @@ class WebAppCommandManager {
 
   base::OnceClosure on_web_contents_created_for_testing_;
   std::unique_ptr<base::RunLoop> run_loop_for_testing_;
+
+  std::unique_ptr<PersistableLog> log_;
 
   base::WeakPtrFactory<WebAppCommandManager>
       weak_ptr_factory_reset_on_shutdown_{this};

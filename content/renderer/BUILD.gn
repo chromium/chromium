@@ -4,7 +4,6 @@
 
 import("//build/config/cast.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//content/common/features.gni")
 import("//media/media_options.gni")
@@ -53,6 +52,8 @@ target(link_target_type, "renderer") {
     "agent_scheduling_group.h",
     "background_resource_fetch_assets.cc",
     "background_resource_fetch_assets.h",
+    "blink_isolates_pressure_listener.cc",
+    "blink_isolates_pressure_listener.h",
     "browser_exposed_renderer_interfaces.cc",
     "browser_exposed_renderer_interfaces.h",
     "client_navigation_throttler.cc",
@@ -95,6 +96,10 @@ target(link_target_type, "renderer") {
     "media/renderer_web_media_player_delegate.h",
     "media/renderer_webaudiodevice_impl.cc",
     "media/renderer_webaudiodevice_impl.h",
+    "memory_coordinator/renderer_memory_coordinator_policy.cc",
+    "memory_coordinator/renderer_memory_coordinator_policy.h",
+    "memory_reclaimer_pressure_listener.cc",
+    "memory_reclaimer_pressure_listener.h",
     "mhtml_handle_writer.cc",
     "mhtml_handle_writer.h",
     "mojo/blink_interface_registry_impl.cc",
@@ -139,6 +144,8 @@ target(link_target_type, "renderer") {
     "service_worker/web_service_worker_provider_impl.h",
     "skia_benchmarking_extension.cc",
     "skia_benchmarking_extension.h",
+    "skia_graphics_pressure_listener.cc",
+    "skia_graphics_pressure_listener.h",
     "stats_collection_controller.cc",
     "stats_collection_controller.h",
     "v8_value_converter_impl.cc",
@@ -200,11 +207,7 @@ target(link_target_type, "renderer") {
   }
 
   if (is_win) {
-    sources += [
-      "font_data/font_data_manager.cc",
-      "font_data/font_data_manager.h",
-      "renderer_main_platform_delegate_win.cc",
-    ]
+    sources += [ "renderer_main_platform_delegate_win.cc" ]
   }
 
   if (enable_cast_renderer) {
@@ -234,10 +237,11 @@ target(link_target_type, "renderer") {
     "//cc/mojom",
     "//cc/paint",
     "//components/discardable_memory/client",
+    "//components/history/core/browser:features",
     "//components/input",
     "//components/metrics",
     "//components/metrics:single_sample_metrics",
-    "//components/services/font_data/public/mojom",
+    "//components/performance_manager/scenario_api",
     "//components/startup_metric_utils",
     "//components/url_formatter",
     "//components/variations:variations_mojom",
@@ -249,10 +253,11 @@ target(link_target_type, "renderer") {
     "//content/common",
     "//content/common:buildflags",
     "//content/common:main_frame_counter",
+    "//content/common/memory_coordinator/mojom",
     "//content/gpu:gpu_sources",
     "//content/public/child:child_sources",
     "//content/public/common:buildflags",
-    "//content/services/auction_worklet:auction_worklet",
+    "//content/services/auction_worklet",
     "//crypto",
     "//device/base/synchronization",
     "//device/gamepad/public/cpp:shared_with_blink",
@@ -280,8 +285,8 @@ target(link_target_type, "renderer") {
     "//services/device/public/cpp/generic_sensor",
     "//services/device/public/mojom",
     "//services/device/public/mojom:usb",
-    "//services/image_annotation/public/cpp:cpp",
-    "//services/image_annotation/public/mojom:mojom",
+    "//services/image_annotation/public/cpp",
+    "//services/image_annotation/public/mojom",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network:network_service",
@@ -316,7 +321,6 @@ target(link_target_type, "renderer") {
     "//ui/latency",
     "//ui/native_theme",
     "//ui/strings:auto_image_annotation_strings_grit",
-    "//ui/surface",
     "//url",
     "//v8",
   ]
@@ -325,9 +329,9 @@ target(link_target_type, "renderer") {
   if (is_android) {
     deps += [
       # Used by Android WebView only.
+      "//base/android/linker:ashmem",
       "//components/origin_matcher",
       "//components/viz/service",
-      "//third_party/ashmem",
       "//third_party/cpu_features:ndk_compat",
       "//third_party/libphonenumber",
     ]
@@ -402,9 +406,6 @@ target(link_target_type, "renderer") {
       "media/win/overlay_state_service_provider.cc",
       "media/win/overlay_state_service_provider.h",
     ]
-
-    # For font_data_manager creating FreeType font instances.
-    deps += [ "//third_party:freetype_buildflags" ]
   }
 
   if (is_linux || is_chromeos || is_android) {
@@ -434,7 +435,25 @@ target(link_target_type, "renderer") {
 group("for_content_tests") {
   visibility = [
     ":audio_decoder_fuzzer",
+    ":audio_decoder_fuzzer__apk__compile_java",
+    ":audio_decoder_fuzzer__apk__compile_resources",
+    ":audio_decoder_fuzzer__apk__create",
+    ":audio_decoder_fuzzer__apk__java",
+    ":audio_decoder_fuzzer__apk__java__dex",
+    ":audio_decoder_fuzzer__apk__java__header",
+    ":audio_decoder_fuzzer__apk__java__validate",
+    ":audio_decoder_fuzzer__library",
+    ":audio_decoder_fuzzer__library__jni_registration__native_sources",
     ":content_security_policy_util_fuzzer",
+    ":content_security_policy_util_fuzzer__apk__compile_java",
+    ":content_security_policy_util_fuzzer__apk__compile_resources",
+    ":content_security_policy_util_fuzzer__apk__create",
+    ":content_security_policy_util_fuzzer__apk__java",
+    ":content_security_policy_util_fuzzer__apk__java__dex",
+    ":content_security_policy_util_fuzzer__apk__java__header",
+    ":content_security_policy_util_fuzzer__apk__java__validate",
+    ":content_security_policy_util_fuzzer__library",
+    ":content_security_policy_util_fuzzer__library__jni_registration__native_sources",
     "//content/test/*",
     "//content/web_test:web_test_renderer_public_deps",
   ]

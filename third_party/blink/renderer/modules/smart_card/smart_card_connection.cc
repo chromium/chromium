@@ -272,7 +272,7 @@ SmartCardConnection::SmartCardConnection(
   connection_.Bind(
       std::move(pending_connection),
       execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
-  connection_.set_disconnect_handler(WTF::BindOnce(
+  connection_.set_disconnect_handler(BindOnce(
       &SmartCardConnection::CloseMojoConnection, WrapWeakPersistent(this)));
 }
 
@@ -300,8 +300,8 @@ ScriptPromise<IDLUndefined> SmartCardConnection::disconnect(
 
   connection_->Disconnect(
       ToMojomDisposition(disposition),
-      WTF::BindOnce(&SmartCardConnection::OnDisconnectDone,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+      BindOnce(&SmartCardConnection::OnDisconnectDone, WrapPersistent(this),
+               WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
@@ -341,8 +341,8 @@ ScriptPromise<DOMArrayBuffer> SmartCardConnection::transmit(
 
   connection_->Transmit(
       protocol, send_vector,
-      WTF::BindOnce(&SmartCardConnection::OnDataResult, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+      BindOnce(&SmartCardConnection::OnDataResult, WrapPersistent(this),
+               WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
@@ -360,9 +360,8 @@ ScriptPromise<SmartCardConnectionStatus> SmartCardConnection::status(
           script_state, exception_state.GetContext());
   SetOperationInProgress(resolver);
 
-  connection_->Status(WTF::BindOnce(&SmartCardConnection::OnStatusDone,
-                                    WrapPersistent(this),
-                                    WrapPersistent(resolver)));
+  connection_->Status(BindOnce(&SmartCardConnection::OnStatusDone,
+                               WrapPersistent(this), WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
@@ -391,8 +390,8 @@ ScriptPromise<DOMArrayBuffer> SmartCardConnection::control(
 
   connection_->Control(
       control_code, data_vector,
-      WTF::BindOnce(&SmartCardConnection::OnDataResult, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+      BindOnce(&SmartCardConnection::OnDataResult, WrapPersistent(this),
+               WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
@@ -411,8 +410,8 @@ ScriptPromise<DOMArrayBuffer> SmartCardConnection::getAttribute(
   SetOperationInProgress(resolver);
 
   connection_->GetAttrib(
-      tag, WTF::BindOnce(&SmartCardConnection::OnDataResult,
-                         WrapPersistent(this), WrapPersistent(resolver)));
+      tag, BindOnce(&SmartCardConnection::OnDataResult, WrapPersistent(this),
+                    WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
@@ -441,8 +440,8 @@ ScriptPromise<IDLUndefined> SmartCardConnection::setAttribute(
 
   connection_->SetAttrib(
       tag, data_vector,
-      WTF::BindOnce(&SmartCardConnection::OnPlainResult, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+      BindOnce(&SmartCardConnection::OnPlainResult, WrapPersistent(this),
+               WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
@@ -479,7 +478,7 @@ ScriptPromise<IDLUndefined> SmartCardConnection::startTransaction(
         MakeGarbageCollected<SmartCardCancelAlgorithm>(smart_card_context_));
   }
 
-  connection_->BeginTransaction(WTF::BindOnce(
+  connection_->BeginTransaction(BindOnce(
       &SmartCardConnection::OnBeginTransactionDone, WrapPersistent(this),
       WrapPersistent(resolver), WrapPersistent(transaction_callback),
       WrapPersistent(signal), WrapPersistent(abort_handle)));
@@ -732,8 +731,8 @@ void SmartCardConnection::EndTransaction(SmartCardDisposition disposition) {
   }
 
   transaction_state_->EndTransaction(
-      disposition, WTF::BindOnce(&SmartCardConnection::OnEndTransactionDone,
-                                 WrapPersistent(this)));
+      disposition, BindOnce(&SmartCardConnection::OnEndTransactionDone,
+                            WrapPersistent(this)));
 
   SetOperationInProgress(transaction_state_->GetStartTransactionRequest());
 }

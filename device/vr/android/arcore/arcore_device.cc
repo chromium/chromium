@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <optional>
 
-#include "base/android/android_hardware_buffer_compat.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -82,12 +81,11 @@ ArCoreDevice::ArCoreDevice(
         GetSupportedFeatures());
 
   // Only support camera access if the device supports shared buffers.
-  if (base::AndroidHardwareBufferCompat::IsSupportAvailable())
-    device_features.emplace_back(mojom::XRSessionFeature::CAMERA_ACCESS);
+  device_features.emplace_back(mojom::XRSessionFeature::CAMERA_ACCESS);
 
   // Only support WebGPU sessions if the appropriate feature flag is enabled
   // and shared buffers will be used.
-  if (base::FeatureList::IsEnabled(features::kWebXrWebGpuBinding)) {
+  if (base::FeatureList::IsEnabled(features::kWebXRWebGPUBinding)) {
     device_features.emplace_back(mojom::XRSessionFeature::WEBGPU);
   }
 

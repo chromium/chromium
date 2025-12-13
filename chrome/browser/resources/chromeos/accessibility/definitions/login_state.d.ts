@@ -20,6 +20,7 @@ declare global {
       export enum ProfileType {
         SIGNIN_PROFILE = 'SIGNIN_PROFILE',
         USER_PROFILE = 'USER_PROFILE',
+        LOCK_PROFILE = 'LOCK_PROFILE',
       }
 
       export enum SessionState {

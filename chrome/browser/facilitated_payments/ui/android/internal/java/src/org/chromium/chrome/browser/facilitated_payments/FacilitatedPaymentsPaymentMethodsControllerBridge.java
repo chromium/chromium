@@ -4,15 +4,11 @@
 
 package org.chromium.chrome.browser.facilitated_payments;
 
-import android.content.Context;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
-import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.facilitated_payments.core.ui_utils.UiEvent;
 
 /** JNI wrapper for C++ FacilitatedPaymentsController. */
@@ -65,23 +61,12 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
     }
 
     @Override
-    public boolean showFinancialAccountsManagementSettings(Context context) {
-        if (context == null) {
-            return false;
+    public void onPaymentAppSelected(String packageName, String activityName) {
+        if (mNativeFacilitatedPaymentsController != 0) {
+            FacilitatedPaymentsPaymentMethodsControllerBridgeJni.get()
+                    .onPaymentAppSelected(
+                            mNativeFacilitatedPaymentsController, packageName, activityName);
         }
-        SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(context, SettingsNavigation.SettingsFragment.FINANCIAL_ACCOUNTS);
-        return true;
-    }
-
-    @Override
-    public boolean showManagePaymentMethodsSettings(Context context) {
-        if (context == null) {
-            return false;
-        }
-        SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(context, SettingsNavigation.SettingsFragment.PAYMENT_METHODS);
-        return true;
     }
 
     @Override
@@ -111,5 +96,8 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
         void onPixAccountLinkingPromptAccepted(long nativeFacilitatedPaymentsController);
 
         void onPixAccountLinkingPromptDeclined(long nativeFacilitatedPaymentsController);
+
+        void onPaymentAppSelected(
+                long nativeFacilitatedPaymentsController, String packageName, String activityName);
     }
 }

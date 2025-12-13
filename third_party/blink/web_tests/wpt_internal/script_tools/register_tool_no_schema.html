@@ -12,14 +12,14 @@ promise_test(async () => {
     return "empty";
   }
 
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
 
-  automationDelegate.registerTool({
+  modelContext.registerTool({
     execute: empty,
     name: "empty",
     description: "echo empty",
   });
 
-  automationDelegate.unregisterTool("empty");
+  modelContext.unregisterTool("empty");
 }, "register tool with only required params");
 </script>

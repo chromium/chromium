@@ -37,7 +37,7 @@ class RequestHandlerForRegisterBrowserOrPolicyAgent
       const enterprise_management::RegisterBrowserRequest&
           register_browser_request) = 0;
 
-  virtual constexpr base::flat_set<std::string> allowed_policy_types() = 0;
+  virtual base::flat_set<std::string> allowed_policy_types() = 0;
 };
 
 // Handler for request type `register_browser`.
@@ -61,7 +61,7 @@ class RequestHandlerForRegisterBrowser
       const enterprise_management::RegisterBrowserRequest&
           register_browser_request) override;
 
-  constexpr base::flat_set<std::string> allowed_policy_types() override;
+  base::flat_set<std::string> allowed_policy_types() override;
 };
 
 // Handler for request type `register_policy_agent`.
@@ -86,7 +86,7 @@ class RequestHandlerForRegisterPolicyAgent
       const enterprise_management::RegisterBrowserRequest&
           register_browser_request) override;
 
-  constexpr base::flat_set<std::string> allowed_policy_types() override;
+  base::flat_set<std::string> allowed_policy_types() override;
 };
 
 }  // namespace policy

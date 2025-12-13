@@ -25,13 +25,29 @@ class FakeUnexportableKeyService : public UnexportableKeyService {
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback)
       override;
+  void GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+      BackgroundTaskPriority priority,
+      base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
+          callback) override;
+  void CopyKeyFromOtherService(
+      const UnexportableKeyService& other_service,
+      UnexportableKeyId key_id_from_other_service,
+      BackgroundTaskPriority priority,
+      base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback)
+      override;
   void SignSlowlyAsync(
-      const UnexportableKeyId& key_id,
+      UnexportableKeyId key_id,
       base::span<const uint8_t> data,
       BackgroundTaskPriority priority,
-      size_t max_retries,
       base::OnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)> callback)
       override;
+  void DeleteKeySlowlyAsync(
+      UnexportableKeyId key_id,
+      BackgroundTaskPriority priority,
+      base::OnceCallback<void(ServiceErrorOr<void>)> callback) override;
+  void DeleteAllKeysSlowlyAsync(
+      BackgroundTaskPriority priority,
+      base::OnceCallback<void(ServiceErrorOr<size_t>)> callback) override;
   ServiceErrorOr<std::vector<uint8_t>> GetSubjectPublicKeyInfo(
       UnexportableKeyId key_id) const override;
   ServiceErrorOr<std::vector<uint8_t>> GetWrappedKey(

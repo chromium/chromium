@@ -1,9 +1,9 @@
 Name: ScreenAI Library
 Short Name: screen-ai
 URL: https://source.corp.google.com/piper///depot/google3/chrome/accessibility/machine_intelligence/chrome_screen_ai
-Version: 138.0
+Version: 140.14
 Update Mechanism: Manual
-License: Apache-2.0,Apache-with-LLVM-Exception,BLAS,BSD-2-Clause,BSD-3-Clause,BSD-3-Clause-Attribution,BSD-3-Clause-OpenMPI,BSD-4-Clause,BSD-4-Clause-UC,BSD-4.3TAHOE,BSD-Source-Code,BSL-1.0,Beerware,CC-BY-3.0,CC-BY-4.0,CC0-1.0,CERN,Caffe,Entenssa,FFT2D,GNU-All-permissive-Copying-License,GPL-2.0-with-autoconf-exception,GPL-3.0-with-autoconf-exception,ICU,IJG,ISC,Khronos,Libpng,Libpng-2.0,LicenseRef-MicrosoftEnterpriseWindowsDriverKit,LicenseRef-OpenGLUT,LicenseRef-Public-Domain-Gutenberg,LicenseRef-base64-cpp,MIT,MPL-2.0,NAIST-2003,NCSA,PngSuite,Punycode,SGI-B-2.0,SolarDesigner,Spencer-86,SunPro,Unicode-3.0,Unicode-DFS-2015,Unicode-DFS-2016,WebM-Project-Patent,X11,X11-Lucent,Zlib,blessing,libtiff,unicode_org
+License: Apache-2.0,Apache-with-LLVM-Exception,BSD-2-Clause,BSD-3-Clause,BSD-3-Clause-Attribution,BSD-3-Clause-Open-MPI,BSD-4-Clause,BSD-4-Clause-UC,BSD-4.3RENO,BSD-Source-Code,BSL-1.0,Beerware,CC-BY-3.0,CC-BY-4.0,CC0-1.0,GPL-3.0-with-autoconf-exception,ICU,IJG,Libpng,LicenseRef-BLAS,LicenseRef-CERN,LicenseRef-Caffe,LicenseRef-FFT2D,LicenseRef-OpenGLUT,LicenseRef-PngSuite,LicenseRef-Public-Domain-Gutenberg,LicenseRef-Punycode,LicenseRef-WebM-Project-Patent,LicenseRef-base64-cpp,MIT,MIT-Khronos-old,MPL-2.0,Minpack,NAIST-2003,NCSA,SGI-B-2.0,SunPro,Unicode-3.0,Unicode-DFS-2015,Unicode-TOU,X11,Zlib,bcrypt-Solar-Designer,blessing,dtoa,libpng-2.0,libtiff
 
 License File: THIRD_PARTY_LICENSES
 Shipped: yes

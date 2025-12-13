@@ -6,12 +6,11 @@
 #define IOS_CHROME_BROWSER_AI_PROTOTYPING_MODEL_AI_PROTOTYPING_SERVICE_IMPL_H_
 
 #import "components/optimization_guide/optimization_guide_buildflags.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/mojom/ai_prototyping_service.mojom.h"
 #import "ios/web/public/web_state.h"
 #import "mojo/public/cpp/bindings/receiver.h"
-
-#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
-#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 
 namespace ai {
 
@@ -46,12 +45,19 @@ class AIPrototypingServiceImpl : public mojom::AIPrototypingService {
   void StartOnDeviceSession();
 
   // Retains the on-device session in memory.
-  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-      on_device_session_;
+  std::unique_ptr<optimization_guide::OnDeviceSession> on_device_session_;
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
-  // Handles the response from a server-hosted query execution.
-  std::string OnServerModelExecuteResponse(
+  // Model execution completed callback.
+  void OnExecuteModelWithLoggingCallback(
+      ExecuteServerQueryCallback query_callback,
+      optimization_guide::OptimizationGuideModelExecutionResult
+          execution_result,
+      std::unique_ptr<optimization_guide::proto::BlingPrototypingLoggingData>
+          logging_data);
+
+  // Processes the response from a server-hosted query execution.
+  std::string ProcessServerModelExecuteResponse(
       optimization_guide::OptimizationGuideModelExecutionResult result);
 
   // Service used to execute LLM queries.

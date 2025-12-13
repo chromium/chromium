@@ -129,7 +129,7 @@ if (enable_remoting_host && !is_android && !is_chromeos) {
       ":fake_connection_event_logger",
       "//base/test:test_support",
       "//remoting/base:session_policies",
-      "//remoting/protocol:protocol",
+      "//remoting/protocol",
       "//remoting/protocol:test_support",
       "//third_party/webrtc_overrides:webrtc_component",
     ]
@@ -155,7 +155,7 @@ if (enable_remoting_host && !is_android && !is_chromeos) {
     if (is_linux && remoting_use_x11) {
       deps += [
         "//build/config/linux/gtk",
-        "//ui/events/platform/x11:x11",
+        "//ui/events/platform/x11",
       ]
     }
 
@@ -200,6 +200,24 @@ if (enable_me2me_host && is_linux) {
       "//remoting/host",
       "//remoting/proto:internal_structs",
       "//services/network:network_service",
+    ]
+  }
+
+  # A binary for testing the Corp messaging service.
+  executable("corp_messaging_playground") {
+    testonly = true
+    sources = [
+      "corp_messaging_playground.cc",
+      "corp_messaging_playground.h",
+      "corp_messaging_playground_main.cc",
+    ]
+    deps = [
+      "//mojo/core/embedder",
+      "//net",
+      "//remoting/base",
+      "//remoting/signaling",
+      "//services/network:network_service",
+      "//services/network/public/cpp",
     ]
   }
 }

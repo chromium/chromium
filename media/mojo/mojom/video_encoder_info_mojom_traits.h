@@ -109,6 +109,15 @@ class StructTraits<media::mojom::VideoEncoderInfoDataView,
       const media::VideoEncoderInfo& video_encoder_info) {
     return video_encoder_info.resolution_rate_limits;
   }
+  static const std::vector<media::VideoPixelFormat>&
+  gpu_supported_pixel_formats(
+      const media::VideoEncoderInfo& video_encoder_info) {
+    return video_encoder_info.gpu_supported_pixel_formats;
+  }
+  static bool supports_gpu_shared_images(
+      const media::VideoEncoderInfo& video_encoder_info) {
+    return video_encoder_info.supports_gpu_shared_images;
+  }
 
   static bool Read(media::mojom::VideoEncoderInfoDataView data,
                    media::VideoEncoderInfo* out);

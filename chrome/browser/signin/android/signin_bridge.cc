@@ -10,11 +10,23 @@
 #include "chrome/browser/android/tab_android.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
+#include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/SigninBridge_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
+
+void SigninBridge::StartAddAccountFlow(TabAndroid* tab,
+                                       const std::string& prefilled_email,
+                                       const GURL& continue_url) {
+  if (!tab) {
+    return;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_SigninBridge_startAddAccountFlow(env, tab->GetJavaObject(),
+                                        prefilled_email, continue_url);
+}
 
 void SigninBridge::OpenAccountManagementScreen(
     ui::WindowAndroid* window,
@@ -27,7 +39,7 @@ void SigninBridge::OpenAccountManagementScreen(
 
 void SigninBridge::OpenAccountPickerBottomSheet(
     content::WebContents* web_contents,
-    const std::string& continue_url) {
+    const GURL& continue_url) {
   TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
   if (!tab) {
     return;
@@ -36,3 +48,5 @@ void SigninBridge::OpenAccountPickerBottomSheet(
   Java_SigninBridge_openAccountPickerBottomSheet(env, tab->GetJavaObject(),
                                                  continue_url);
 }
+
+DEFINE_JNI(SigninBridge)

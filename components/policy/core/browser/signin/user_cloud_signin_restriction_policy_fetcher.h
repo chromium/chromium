@@ -6,6 +6,7 @@
 #define COMPONENTS_POLICY_CORE_BROWSER_SIGNIN_USER_CLOUD_SIGNIN_RESTRICTION_POLICY_FETCHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -51,7 +52,7 @@ class POLICY_EXPORT UserCloudSigninRestrictionPolicyFetcher {
   void GetManagedAccountsSigninRestriction(
       signin::IdentityManager* identity_manager,
       const CoreAccountId& account_id,
-      base::OnceCallback<void(const ProfileSeparationPolicies&)> callback,
+      base::OnceCallback<void(ProfileSeparationPolicies)> callback,
       const std::string& response_for_testing = std::string());
 
   void SetURLLoaderFactoryForTesting(
@@ -75,14 +76,14 @@ class POLICY_EXPORT UserCloudSigninRestrictionPolicyFetcher {
   // policy using `access_token` for the authentication. Calls
   // `OnManagedAccountsSigninRestrictionResult` with the result from the API.
   void GetManagedAccountsSigninRestrictionInternal(
-      base::OnceCallback<void(const ProfileSeparationPolicies&)> callback,
+      base::OnceCallback<void(ProfileSeparationPolicies)> callback,
       const std::string& access_token);
 
   // Retrieves the policy value from `response_body` and calls `callback` with
   // that value.
   void OnManagedAccountsSigninRestrictionResult(
-      base::OnceCallback<void(const ProfileSeparationPolicies&)> callback,
-      std::unique_ptr<std::string> response_body);
+      base::OnceCallback<void(ProfileSeparationPolicies)> callback,
+      std::optional<std::string> response_body);
 
   GURL GetSecureConnectApiGetAccountSigninRestrictionUrl() const;
 

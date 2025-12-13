@@ -26,9 +26,9 @@ class TrustedVaultClientBackendFactory : public ProfileKeyedServiceFactoryIOS {
   TrustedVaultClientBackendFactory();
   ~TrustedVaultClientBackendFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_TRUSTED_VAULT_CLIENT_BACKEND_FACTORY_H_

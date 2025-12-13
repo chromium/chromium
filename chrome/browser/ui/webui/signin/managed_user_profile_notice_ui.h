@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile_statistics_common.h"
@@ -48,7 +47,8 @@ class ManagedUserProfileNoticeUI : public content::WebUIController {
     kEntepriseAccountSyncDisabled,
     kConsumerAccountSyncDisabled,
     kEnterpriseAccountCreation,
-    kEnterpriseOIDC
+    kEnterpriseOIDC,
+    kProfilePicker
   };
 
   explicit ManagedUserProfileNoticeUI(content::WebUI* web_ui);

@@ -6,7 +6,6 @@
 #define COMPONENTS_WEBRTC_MEDIA_STREAM_DEVICE_ENUMERATOR_IMPL_H_
 
 #include "components/webrtc/media_stream_device_enumerator.h"
-#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-forward.h"
 
 namespace webrtc {
 

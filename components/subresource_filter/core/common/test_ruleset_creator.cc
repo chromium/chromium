@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 
 #include <memory>
@@ -14,6 +9,8 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -49,8 +46,7 @@ std::vector<uint8_t> SerializeUnindexedRulesetWithMultipleRules(
   }
   ruleset_writer.Finish();
 
-  auto* data = reinterpret_cast<const uint8_t*>(ruleset_contents.data());
-  return std::vector<uint8_t>(data, data + ruleset_contents.size());
+  return base::ToVector(base::as_byte_span(ruleset_contents));
 }
 
 std::vector<uint8_t> SerializeIndexedRulesetWithMultipleRules(

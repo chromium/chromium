@@ -6,7 +6,6 @@
 
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#include "ios/web/public/browser_state.h"
 
 namespace autofill {
 
@@ -28,7 +27,7 @@ AutofillLogRouterFactory::AutofillLogRouterFactory()
 AutofillLogRouterFactory::~AutofillLogRouterFactory() = default;
 
 std::unique_ptr<KeyedService> AutofillLogRouterFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   return std::make_unique<LogRouter>();
 }
 

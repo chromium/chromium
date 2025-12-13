@@ -226,6 +226,9 @@ export class DirectoryTreeNamingController {
         this.commitRename_();
         event.preventDefault();
         break;
+
+      default:
+        break;
     }
   }
 }

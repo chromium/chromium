@@ -54,9 +54,7 @@ class NumberInputType final : public TextFieldInputType {
   void SetValueAsDouble(double,
                         TextFieldEventBehavior,
                         ExceptionState&) const override;
-  void SetValueAsDecimal(const Decimal&,
-                         TextFieldEventBehavior,
-                         ExceptionState&) const override;
+  void SetValueAsDecimal(const Decimal&, TextFieldEventBehavior) const override;
   bool TypeMismatch() const override;
   bool GetSizeWithDecoration(int default_size,
                              int& preferred_size) const override;

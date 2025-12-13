@@ -5,6 +5,7 @@
 #ifndef NET_DEVICE_BOUND_SESSIONS_SESSION_KEY_H_
 #define NET_DEVICE_BOUND_SESSIONS_SESSION_KEY_H_
 
+#include "base/hash/hash.h"
 #include "base/types/strong_alias.h"
 #include "net/base/schemeful_site.h"
 

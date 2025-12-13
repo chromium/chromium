@@ -140,7 +140,13 @@ class Internals final : public ScriptWrappable {
 
   // Animation testing.
   void pauseAnimations(double pause_time, ExceptionState&);
+  // An animation is composited if it is actively ticking on the compositor.
   bool isCompositedAnimation(Animation*);
+  // An animation is main thread if it is actively ticking on the main thread.
+  // Animations that don't need to tick at all are considered neither compositor
+  // nor main thread animations. Animations that fall into the neither category
+  // are those that are optimized out for having no visual effect.
+  bool isMainThreadAnimation(Animation*);
   void disableCompositedAnimation(Animation*);
   void disableCSSAdditiveAnimations();
 

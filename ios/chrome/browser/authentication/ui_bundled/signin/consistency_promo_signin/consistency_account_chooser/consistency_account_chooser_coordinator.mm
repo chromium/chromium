@@ -45,8 +45,8 @@
 }
 
 - (void)dealloc {
-  CHECK(!self.mediator, base::NotFatalUntil::M142);
-  CHECK(!self.accountChooserViewController, base::NotFatalUntil::M142);
+  CHECK(!self.mediator, base::NotFatalUntil::M144);
+  CHECK(!self.accountChooserViewController, base::NotFatalUntil::M144);
 }
 
 #pragma mark - ChromeCoordinator
@@ -94,13 +94,20 @@
 
 - (void)consistencyAccountChooserTableViewController:
             (ConsistencyAccountChooserTableViewController*)viewController
-                         didSelectIdentityWithGaiaID:(NSString*)gaiaID {
+                         didSelectIdentityWithGaiaID:(const GaiaId&)gaiaID {
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(self.profile);
 
   id<SystemIdentity> identity =
-      accountManagerService->GetIdentityOnDeviceWithGaiaID(GaiaId(gaiaID));
-  DCHECK(identity);
+      accountManagerService->GetIdentityOnDeviceWithGaiaID(gaiaID);
+  if (!identity) {
+    // Race condition where the identity was removed from the device but the
+    // view not yet updated.
+    // The mediator should have been informed through
+    // `onAccountsOnDeviceChanged`, and will update the UI asynchronously. In
+    // the meantime, do nothing.
+    return;
+  }
   self.mediator.selectedIdentity = identity;
   [self.delegate consistencyAccountChooserCoordinatorIdentitySelected:self];
 }

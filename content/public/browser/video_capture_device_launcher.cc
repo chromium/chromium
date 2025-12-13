@@ -4,17 +4,24 @@
 
 #include "content/public/browser/video_capture_device_launcher.h"
 
-#include "base/task/single_thread_task_runner.h"
-#include "content/browser/renderer_host/media/in_process_video_capture_device_launcher.h"
+#include "content/browser/renderer_host/media/media_stream_manager.h"
+#include "content/browser/renderer_host/media/video_capture_manager.h"
+#include "content/browser/renderer_host/media/video_capture_provider.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace content {
 
 // static
 std::unique_ptr<VideoCaptureDeviceLauncher>
-VideoCaptureDeviceLauncher::CreateInProcessVideoCaptureDeviceLauncher(
-    scoped_refptr<base::SingleThreadTaskRunner> device_task_runner) {
-  return std::make_unique<InProcessVideoCaptureDeviceLauncher>(
-      device_task_runner, /*picker=*/nullptr);
+VideoCaptureDeviceLauncher::CreateDeviceLauncherFromMediaStreamManager() {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  MediaStreamManager* msm = MediaStreamManager::GetInstance();
+  if (!msm || !msm->video_capture_manager()) {
+    return nullptr;
+  }
+  return msm->video_capture_manager()
+      ->video_capture_provider()
+      .CreateDeviceLauncher();
 }
 
 }  // namespace content

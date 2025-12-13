@@ -10,14 +10,10 @@
 
 #include <delayimp.h>
 
-namespace chrome {
-
 // This function is called from both the delay load failure hooks present in the
 // main EXE and the main DLL to perform any additional common processing during
 // a delay load failure event.
 FARPROC WINAPI HandleDelayLoadFailureCommon(unsigned reason,
                                             DelayLoadInfo* dll_info);
-
-}  // namespace chrome
 
 #endif  // CHROME_COMMON_WIN_DELAY_LOAD_FAILURE_SUPPORT_H_

@@ -258,6 +258,8 @@ class AuthenticatorFactory {
   virtual std::unique_ptr<Authenticator> CreateAuthenticator(
       const std::string& local_jid,
       const std::string& remote_jid) = 0;
+
+  virtual std::unique_ptr<AuthenticatorFactory> Clone() const = 0;
 };
 
 }  // namespace remoting::protocol

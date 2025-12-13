@@ -33,7 +33,7 @@ class TouchToFillPasswordGenerationBridgeImpl
 
   void OnGeneratedPasswordAccepted(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& password) override;
+      const base::android::JavaRef<jstring>& password) override;
 
   void OnGeneratedPasswordRejected(JNIEnv* env) override;
 

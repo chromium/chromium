@@ -10,7 +10,7 @@
 #  include "config.h"
 #endif
 
-#include <meta-dbus-rtkit1.h>
+#include "meta-dbus-rtkit1.h"
 
 #include <string.h>
 #ifdef G_OS_UNIX
@@ -2708,7 +2708,11 @@ meta_dbus_realtime_kit1_skeleton_dbus_interface_get_properties (GDBusInterfaceSk
 
   GVariantBuilder builder;
   guint n;
-  g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
+#else
+  g_variant_builder_init(&builder, G_VARIANT_TYPE ("a{sv}"));
+#endif
   if (_meta_dbus_realtime_kit1_interface_info.parent_struct.properties == NULL)
     goto out;
   for (n = 0; _meta_dbus_realtime_kit1_interface_info.parent_struct.properties[n] != NULL; n++)
@@ -2801,8 +2805,13 @@ _meta_dbus_realtime_kit1_emit_changed (gpointer user_data)
   guint num_changes;
 
   g_mutex_lock (&skeleton->priv->lock);
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
+  g_variant_builder_init_static (&invalidated_builder, G_VARIANT_TYPE ("as"));
+#else
   g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
   g_variant_builder_init (&invalidated_builder, G_VARIANT_TYPE ("as"));
+#endif
   for (l = skeleton->priv->changed_properties, num_changes = 0; l != NULL; l = l->next)
     {
       ChangedProperty *cp = l->data;
@@ -3861,7 +3870,11 @@ meta_dbus_dbus_properties_skeleton_dbus_interface_get_properties (GDBusInterface
 
   GVariantBuilder builder;
   guint n;
-  g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
+#else
+  g_variant_builder_init(&builder, G_VARIANT_TYPE ("a{sv}"));
+#endif
   if (_meta_dbus_dbus_properties_interface_info.parent_struct.properties == NULL)
     goto out;
   for (n = 0; _meta_dbus_dbus_properties_interface_info.parent_struct.properties[n] != NULL; n++)
@@ -4763,7 +4776,11 @@ meta_dbus_dbus_introspectable_skeleton_dbus_interface_get_properties (GDBusInter
 
   GVariantBuilder builder;
   guint n;
-  g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
+#else
+  g_variant_builder_init(&builder, G_VARIANT_TYPE ("a{sv}"));
+#endif
   if (_meta_dbus_dbus_introspectable_interface_info.parent_struct.properties == NULL)
     goto out;
   for (n = 0; _meta_dbus_dbus_introspectable_interface_info.parent_struct.properties[n] != NULL; n++)

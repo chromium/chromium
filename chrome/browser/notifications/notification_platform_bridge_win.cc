@@ -138,7 +138,8 @@ void ForwardNotificationOperationOnUiThread(
       incognito,
       base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
                      operation, notification_type, origin, notification_id,
-                     action_index, reply, by_user, base::DoNothing()));
+                     action_index, reply, by_user, /*is_suspicious=*/false,
+                     base::DoNothing()));
 }
 
 GetSettingPolicy ConvertSettingPolicy(

@@ -9,7 +9,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -58,7 +57,7 @@ namespace scheduler {
 // This is not correct in terms of the standards conformance, and we'll
 // eventually merge the queues so both Blink and V8 can use the microtask queue
 // allocated in the correct granularity.
-class PLATFORM_EXPORT EventLoop final : public WTF::RefCounted<EventLoop> {
+class PLATFORM_EXPORT EventLoop final : public RefCounted<EventLoop> {
   USING_FAST_MALLOC(EventLoop);
 
  public:
@@ -103,7 +102,7 @@ class PLATFORM_EXPORT EventLoop final : public WTF::RefCounted<EventLoop> {
   bool IsSchedulerAttachedForTest(FrameOrWorkerScheduler*);
 
  private:
-  friend class WTF::RefCounted<EventLoop>;
+  friend class RefCounted<EventLoop>;
   friend blink::Agent;
 
   EventLoop(Delegate* delegate,

@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/x/x11_cursor.h"

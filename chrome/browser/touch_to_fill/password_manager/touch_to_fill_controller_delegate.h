@@ -5,9 +5,13 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_MANAGER_TOUCH_TO_FILL_CONTROLLER_DELEGATE_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_MANAGER_TOUCH_TO_FILL_CONTROLLER_DELEGATE_H_
 
+#include <optional>
+#include <vector>
+
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
-#include "ui/gfx/native_widget_types.h"
+#include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_view.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace password_manager {
 class PasskeyCredential;
@@ -24,8 +28,7 @@ class TouchToFillControllerDelegate {
 
   // Called by the controller before the view is shown.
   virtual void OnShow(
-      base::span<const password_manager::UiCredential> credentials,
-      base::span<password_manager::PasskeyCredential> passkey_credentials) = 0;
+      base::span<const TouchToFillView::Credential> credentials) = 0;
 
   // Informs the controller that the user has made a selection. Invokes both
   // FillSuggestion() and TouchToFillDismissed() on |driver_|. No-op if
@@ -76,6 +79,13 @@ class TouchToFillControllerDelegate {
   // Indicates if the delegate requires displaying a no passkeys bottom sheet
   // when the touch to fill component does not have any credentials to display.
   virtual bool ShouldShowNoPasskeysSheetIfRequired() = 0;
+
+  // A method for the delegate providing a credential sorting that will override
+  // the `TouchToFillController` default. If the delegate does not have a custom
+  // sorting function, this returns `std::nullopt`.
+  virtual std::optional<std::vector<TouchToFillView::Credential>>
+  SortCredentials(
+      base::span<const TouchToFillView::Credential> credentials) = 0;
 
   // The web page view containing the focused field.
   virtual gfx::NativeView GetNativeView() = 0;

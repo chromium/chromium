@@ -62,9 +62,21 @@ guarantees the following invariants:
    false, and it is set to true if any document in the page adds a history entry
    without having a user activation.
 2. `NavigationController::CanGoBack()` will return false if all entries are
-   marked to be skipped on back/forward UI. On desktop this leads to the back
-   button being disabled. On Android, pressing the back button will close the
-   current tab and a previous tab could be shown as it would normally happen on
-   Android when the back button is pressed from the first entry of a tab.
+   marked to be skipped on back/forward UI. On Android, pressing the back button
+   will close the current tab and a previous tab could be shown as it would
+   normally happen on Android when the back button is pressed from the first
+   entry of a tab. On desktop, the back button will be enabled in the browser
+   UI, but clicking on it will do nothing. This will allow a user to long-press
+   the button and navigate to a skippable entry explicitly, while still
+   protecting against the same annoying/abusive experiences this intervention is
+   intended for. For additional context, see
+   `NavigationController::ShouldEnableBackButton()` and https://crbug.com/339188522.
+     * This behavior is mirrored for the forward button as well. See
+      `NavigationController::CanGoForward()` and
+      `NavigationController::ShouldEnableForwardButton()` for details.
 3. The oldest `NavigationEntryImpl` that is marked as skippable is the one
    that is pruned if max entry count is reached.
+4. When a navigation entry is deemed as skippable,
+   `NavigationControllerImpl::SetSkippableForSameDocumentEntries()` is called
+   and logs the skipped entry to the DevTools Issues Panel,
+   along with an explanatory message.

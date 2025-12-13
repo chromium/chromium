@@ -16,6 +16,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -193,10 +194,6 @@ int ParseStatus(std::string_view status, std::string& append_to) {
 }
 
 }  // namespace
-
-const char HttpResponseHeaders::kContentRange[] = "Content-Range";
-const char HttpResponseHeaders::kLastModified[] = "Last-Modified";
-const char HttpResponseHeaders::kVary[] = "Vary";
 
 struct HttpResponseHeaders::ParsedHeader {
   // A header "continuation" contains only a subsequent value for the
@@ -931,9 +928,10 @@ std::optional<base::TimeDelta>
 HttpResponseHeaders::GetCacheControlHeaderValueForTesting(
     const std::string_view directive) const {
   for (size_t iter = 0; auto value = EnumerateHeader(&iter, kCacheControl);) {
-    if (base::StartsWith(*value, directive,
-                         base::CompareCase::INSENSITIVE_ASCII)) {
-      const auto delta = ParseSeconds(value->substr(directive.size()));
+    const std::optional<std::string_view> directive_value = base::RemovePrefix(
+        *value, directive, base::CompareCase::INSENSITIVE_ASCII);
+    if (directive_value.has_value()) {
+      const auto delta = ParseSeconds(*directive_value);
       if (delta.has_value()) {
         return delta;
       }
@@ -1183,18 +1181,20 @@ HttpResponseHeaders::CacheControlFreshnessDirectives
 HttpResponseHeaders::ParseCacheControlDirectivesForFreshness() const {
   CacheControlFreshnessDirectives directives;
   for (size_t iter = 0; auto value = EnumerateHeader(&iter, kCacheControl);) {
+    // Result of calling base::RemovePrefix() for values that have prefixes.
+    // nullopt if the prefix that is searched for is not present.
+    std::optional<std::string_view> with_prefix_removed;
     if (base::EqualsCaseInsensitiveASCII(*value, kMustRevalidate)) {
       directives.must_revalidate = true;
     } else if (!directives.max_age &&
-               base::StartsWith(*value, kMaxAge,
-                                base::CompareCase::INSENSITIVE_ASCII)) {
-      // Extract just the value part after "max-age="
-      directives.max_age = ParseSeconds(value->substr(kMaxAge.size()));
+               (with_prefix_removed = base::RemovePrefix(
+                    *value, kMaxAge, base::CompareCase::INSENSITIVE_ASCII))) {
+      directives.max_age = ParseSeconds(*with_prefix_removed);
     } else if (!directives.stale_while_revalidate &&
-               base::StartsWith(*value, kStaleWhileRevalidate,
-                                base::CompareCase::INSENSITIVE_ASCII)) {
-      directives.stale_while_revalidate =
-          ParseSeconds(value->substr(kStaleWhileRevalidate.size()));
+               (with_prefix_removed =
+                    base::RemovePrefix(*value, kStaleWhileRevalidate,
+                                       base::CompareCase::INSENSITIVE_ASCII))) {
+      directives.stale_while_revalidate = ParseSeconds(*with_prefix_removed);
     }
   }
   return directives;
@@ -1517,27 +1517,31 @@ bool HttpResponseHeaders::HasValidators() const {
 
 // From RFC 2616:
 // Content-Length = "Content-Length" ":" 1*DIGIT
-int64_t HttpResponseHeaders::GetContentLength() const {
-  return GetInt64HeaderValue("content-length");
+std::optional<base::ByteCount> HttpResponseHeaders::GetContentLength() const {
+  std::optional<int64_t> result = GetInt64HeaderValue("content-length");
+  if (result.has_value()) {
+    return base::ByteCount(result.value());
+  }
+  return std::nullopt;
 }
 
-int64_t HttpResponseHeaders::GetInt64HeaderValue(
-    const std::string& header) const {
+std::optional<int64_t> HttpResponseHeaders::GetInt64HeaderValue(
+    std::string_view header) const {
   size_t iter = 0;
   std::optional<std::string_view> content_length =
       EnumerateHeader(&iter, header);
   if (!content_length || content_length->empty()) {
-    return -1;
+    return std::nullopt;
   }
 
   if ((*content_length)[0] == '+') {
-    return -1;
+    return std::nullopt;
   }
 
   int64_t result;
   bool ok = base::StringToInt64(*content_length, &result);
   if (!ok || result < 0) {
-    return -1;
+    return std::nullopt;
   }
 
   return result;

@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/cpp/bindings/lib/multiplex_router.h"
 
 #include <stdint.h>
 
+#include <atomic>
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -25,7 +22,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
-#include "mojo/public/cpp/bindings/features.h"
+#include "mojo/public/cpp/bindings/connection_group_ref.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_controller.h"
 #include "mojo/public/cpp/bindings/lib/may_auto_lock.h"
@@ -167,6 +164,21 @@ class MultiplexRouter::InterfaceEndpoint
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
     EnsureSyncWatcherExists();
+
+    {
+      MayAutoLock locker(&router_->lock_);
+      // If the peer is already closed, this could hang. To make sure the watch
+      // terminates immediately, signal the event. Additionally don't go through
+      // `SignalSyncMessageEvent()`, since sync_message_event_signaled_ might be
+      // true even though the watcher is no longer signalled. This can happen if
+      // a sync call on a different associated endpoint is made in between our
+      // peer closing and this sync watch starting.
+      if (peer_closed_) {
+        sync_watcher_->SignalEvent();
+      }
+    }
+
+    // SyncWatch may delete `this`.
     return sync_watcher_->SyncWatch(&should_stop);
   }
 
@@ -220,8 +232,11 @@ class MultiplexRouter::InterfaceEndpoint
     sync_watcher_ =
         std::make_unique<SequenceLocalSyncEventWatcher>(base::BindRepeating(
             &InterfaceEndpoint::OnSyncEventSignaled, base::Unretained(this)));
-    if (sync_message_event_signaled_)
+    // If peer_closed_ is true, we'll never be signalled again, so immediately
+    // signal the watcher event to make sure we don't hang indefinitely.
+    if (sync_message_event_signaled_ || peer_closed_) {
       sync_watcher_->SignalEvent();
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -434,7 +449,7 @@ void MultiplexRouter::SetIncomingMessageFilter(
   dispatcher_.SetFilter(std::move(filter));
 }
 
-void MultiplexRouter::SetConnectionGroup(ConnectionGroup::Ref ref) {
+void MultiplexRouter::SetConnectionGroup(ConnectionGroupRef ref) {
   connector_.SetConnectionGroup(std::move(ref));
 }
 
@@ -721,19 +736,38 @@ bool MultiplexRouter::Accept(Message* message) {
           ? ALLOW_DIRECT_CLIENT_CALLS_FOR_SYNC_MESSAGES
           : ALLOW_DIRECT_CLIENT_CALLS;
 
-  bool can_process;
+  bool can_process = false;
+  bool finishes_exclusive_sync_wait = false;
   if (exclusive_sync_wait_) {
-    can_process = CanUnblockExclusiveSameThreadSyncWait(*message);
+    finishes_exclusive_sync_wait = can_process =
+        CanUnblockExclusiveSameThreadSyncWait(*message);
   } else {
     can_process = tasks_.empty() || CanUnblockExternalSyncWait(*message);
   }
+  // Pipe control messages need to be processed right away if they are notifying
+  // us that an endpoint was closed while we're sync waiting for that endpoint.
+  if (!can_process) {
+    if (std::optional<InterfaceId> interface_id =
+            PipeControlMessageHandler::IsPeerAssociatedEndpointClosedEvent(
+                *message)) {
+      // Even if we're not currently waiting for a sync reply on the specific
+      // interface that was closed, we still need to handle the closed event
+      // right away, since we might get a sync call on the interface being
+      // closed before we get a chance to process tasks.
+      can_process = true;
+      finishes_exclusive_sync_wait =
+          exclusive_sync_wait_ &&
+          exclusive_sync_wait_->interface_id == interface_id;
+    }
+  }
+
   MessageWrapper message_wrapper(this, std::move(*message));
   const bool processed =
       can_process &&
       ProcessIncomingMessage(&message_wrapper, client_call_behavior,
                              connector_.task_runner());
 
-  if (exclusive_sync_wait_ && can_process) {
+  if (finishes_exclusive_sync_wait) {
     DCHECK(processed);
     exclusive_sync_wait_->finished = true;
   }
@@ -767,7 +801,17 @@ bool MultiplexRouter::OnPeerAssociatedEndpointClosed(
     InterfaceId id,
     const std::optional<DisconnectReason>& reason) {
   MayAutoLock locker(&lock_);
-  InterfaceEndpoint* endpoint = FindOrInsertEndpoint(id, nullptr);
+  InterfaceEndpoint* endpoint = FindEndpoint(id);
+
+  if (!endpoint) {
+    // The only legit way to get a OnPeerAssociatedEndpointClosed message for
+    // an unknown endpoint is if the remote MultiplexRouter discarded the
+    // message that would make this endpoint known to us without ever sending
+    // it. In that case ignoring the EndpointClosed message and especially not
+    // creating an Endpoint instance for it is the right thing to do, to make
+    // sure we're not accidentally leaking Endpoint instances.
+    return true;
+  }
 
   if (reason)
     endpoint->set_disconnect_reason(reason);
@@ -1222,7 +1266,7 @@ bool MultiplexRouter::InsertEndpointsForMessage(const Message& message) {
     // The IDs are from the remote side and therefore their namespace bit is
     // supposed to be different than the value that this router would use.
     if (set_interface_id_namespace_bit_ ==
-        HasInterfaceIdNamespaceBitSet(ids[i])) {
+        HasInterfaceIdNamespaceBitSet(UNSAFE_TODO(ids[i]))) {
       return false;
     }
 
@@ -1230,7 +1274,8 @@ bool MultiplexRouter::InsertEndpointsForMessage(const Message& message) {
     // is well-behaved: it might have notified us that the peer endpoint has
     // closed.
     bool inserted = false;
-    InterfaceEndpoint* endpoint = FindOrInsertEndpoint(ids[i], &inserted);
+    InterfaceEndpoint* endpoint =
+        FindOrInsertEndpoint(UNSAFE_TODO(ids[i]), &inserted);
     if (endpoint->closed() || endpoint->handle_created())
       return false;
   }
@@ -1250,7 +1295,7 @@ void MultiplexRouter::CloseEndpointsForMessage(const Message& message) {
 
   const uint32_t* ids = message.payload_interface_ids();
   for (uint32_t i = 0; i < num_ids; ++i) {
-    InterfaceEndpoint* endpoint = FindEndpoint(ids[i]);
+    InterfaceEndpoint* endpoint = FindEndpoint(UNSAFE_TODO(ids[i]));
     // If the remote side maliciously sends the same interface ID in another
     // message which has been dispatched, we could get here with no endpoint
     // for the ID, a closed endpoint, or an endpoint with handle created.
@@ -1261,7 +1306,8 @@ void MultiplexRouter::CloseEndpointsForMessage(const Message& message) {
 
     UpdateEndpointStateMayRemove(endpoint, ENDPOINT_CLOSED);
     MayAutoUnlock unlocker(&lock_);
-    control_message_proxy_.NotifyPeerEndpointClosed(ids[i], std::nullopt);
+    control_message_proxy_.NotifyPeerEndpointClosed(UNSAFE_TODO(ids[i]),
+                                                    std::nullopt);
   }
 
   ProcessTasks(NO_DIRECT_CLIENT_CALLS, nullptr);

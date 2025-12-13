@@ -120,24 +120,19 @@ class TestSnapshotManager : public SnapshotManager {
   std::vector<SnapshotItemDetails> GetUserSnapshotItemDetails() const override {
     return std::vector<SnapshotItemDetails>{
         SnapshotItemDetails(base::FilePath(kUserDataFile),
-                            SnapshotItemDetails::ItemType::kFile, 0,
-                            SnapshotItemId::kMaxValue),
+                            SnapshotItemDetails::ItemType::kFile, 0),
         SnapshotItemDetails(base::FilePath(kUserDataFolder),
-                            SnapshotItemDetails::ItemType::kDirectory, 0,
-                            SnapshotItemId::kMaxValue)};
+                            SnapshotItemDetails::ItemType::kDirectory, 0)};
   }
   std::vector<SnapshotItemDetails> GetProfileSnapshotItemDetails()
       const override {
     return std::vector<SnapshotItemDetails>{
         SnapshotItemDetails(base::FilePath(kProfileDataFile),
-                            SnapshotItemDetails::ItemType::kFile, 0,
-                            SnapshotItemId::kMaxValue),
+                            SnapshotItemDetails::ItemType::kFile, 0),
         SnapshotItemDetails(base::FilePath(kProfileDataExtFile),
-                            SnapshotItemDetails::ItemType::kFile, 0,
-                            SnapshotItemId::kMaxValue),
+                            SnapshotItemDetails::ItemType::kFile, 0),
         SnapshotItemDetails(base::FilePath(kProfileDataFolder),
-                            SnapshotItemDetails::ItemType::kDirectory, 0,
-                            SnapshotItemId::kMaxValue)};
+                            SnapshotItemDetails::ItemType::kDirectory, 0)};
   }
 };
 

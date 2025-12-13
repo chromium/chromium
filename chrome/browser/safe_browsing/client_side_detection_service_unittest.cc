@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/files/file.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -53,7 +52,6 @@
 
 using content::BrowserThread;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::StrictMock;
@@ -66,6 +64,7 @@ class ClientSidePhishingModelObserverTracker
   void AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OptimizationTarget optimization_target,
       const std::optional<optimization_guide::proto::Any>& model_metadata,
+      scoped_refptr<base::SequencedTaskRunner> model_task_runner,
       optimization_guide::OptimizationTargetModelObserver* observer) override {
     if (optimization_target ==
         optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING) {

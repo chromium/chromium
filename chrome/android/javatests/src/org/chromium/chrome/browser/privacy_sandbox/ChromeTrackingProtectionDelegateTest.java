@@ -19,9 +19,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -62,61 +59,6 @@ public class ChromeTrackingProtectionDelegateTest {
         assertTrue(mDelegate.isBlockAll3pcEnabled());
         mDelegate.setBlockAll3pc(false);
         assertFalse(mDelegate.isBlockAll3pcEnabled());
-    }
-
-    @Test
-    @UiThreadTest
-    @MediumTest
-    public void doNotTrack() {
-        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                .setBoolean(Pref.ENABLE_DO_NOT_TRACK, false);
-        assertFalse(mDelegate.isDoNotTrackEnabled());
-        mDelegate.setDoNotTrack(true);
-        assertTrue(mDelegate.isDoNotTrackEnabled());
-        mDelegate.setDoNotTrack(false);
-        assertFalse(mDelegate.isDoNotTrackEnabled());
-    }
-
-    @Test
-    @UiThreadTest
-    @MediumTest
-    public void ipProtection() {
-        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                .setBoolean(Pref.IP_PROTECTION_ENABLED, false);
-        assertFalse(mDelegate.isIpProtectionEnabled());
-        mDelegate.setIpProtection(true);
-        assertTrue(mDelegate.isIpProtectionEnabled());
-        mDelegate.setIpProtection(false);
-        assertFalse(mDelegate.isIpProtectionEnabled());
-    }
-
-    @Test
-    @UiThreadTest
-    @MediumTest
-    public void fingerprintingProtection() {
-        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                .setBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED, false);
-        assertFalse(mDelegate.isFingerprintingProtectionEnabled());
-        mDelegate.setFingerprintingProtection(true);
-        assertTrue(mDelegate.isFingerprintingProtectionEnabled());
-        mDelegate.setFingerprintingProtection(false);
-        assertFalse(mDelegate.isFingerprintingProtectionEnabled());
-    }
-
-    @Test
-    @UiThreadTest
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.DISPLAY_WILDCARD_CONTENT_SETTINGS})
-    public void displayWildcardInContentSettingsEnabled() {
-        assertTrue(mDelegate.isDisplayWildcardInContentSettingsEnabled());
-    }
-
-    @Test
-    @UiThreadTest
-    @MediumTest
-    @DisableFeatures({ChromeFeatureList.DISPLAY_WILDCARD_CONTENT_SETTINGS})
-    public void displayWildcardInContentSettingsDisabled() {
-        assertFalse(mDelegate.isDisplayWildcardInContentSettingsEnabled());
     }
 
     @Test

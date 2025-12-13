@@ -12,7 +12,7 @@
 #include "base/component_export.h"
 #include "base/pickle.h"
 #include "ipc/ipc_message.h"
-#include "ipc/ipc_param_traits.h"
+#include "ipc/param_traits.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"

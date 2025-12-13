@@ -38,33 +38,26 @@ class PluginServiceImplBrowserTest : public ContentBrowserTest {
     fake_info.path = plugin_path_;
 
     PluginServiceImpl* service = PluginServiceImpl::GetInstance();
-    service->RegisterInternalPlugin(fake_info, true);
+    service->RegisterInternalPlugin(fake_info);
     service->Init();
-
-    // Force plugins to load and wait for completion.
-    base::RunLoop run_loop;
-    service->GetPlugins(base::BindOnce(
-        [](base::OnceClosure callback,
-           const std::vector<WebPluginInfo>& ignore) {
-          std::move(callback).Run();
-        },
-        run_loop.QuitClosure()));
-    run_loop.Run();
+    service->GetPlugins();
   }
 
   base::FilePath plugin_path_;
   base::FilePath profile_dir_;
 };
 
-IN_PROC_BROWSER_TEST_F(PluginServiceImplBrowserTest, GetPluginInfoByPath) {
+IN_PROC_BROWSER_TEST_F(PluginServiceImplBrowserTest,
+                       GetPluginInfoByPathForTesting) {
   RegisterFakePlugin();
 
   PluginServiceImpl* service = PluginServiceImpl::GetInstance();
 
-  WebPluginInfo plugin_info;
-  ASSERT_TRUE(service->GetPluginInfoByPath(plugin_path_, &plugin_info));
+  std::optional<WebPluginInfo> plugin_info =
+      service->GetPluginInfoByPathForTesting(plugin_path_);
+  ASSERT_TRUE(plugin_info.has_value());
 
-  EXPECT_EQ(plugin_path_, plugin_info.path);
+  EXPECT_EQ(plugin_path_, plugin_info.value().path);
 }
 
 }  // namespace content

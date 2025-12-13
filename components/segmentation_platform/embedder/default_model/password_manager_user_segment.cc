@@ -41,11 +41,6 @@ constexpr std::array<int32_t, 1> kPasswordManagerReferrerEnumValues{
     0  // Chrome Settings.
 };
 
-// Default value for
-// PasswordManager.ProfileStore.TotalAccountsHiRes3.WithScheme.Https when no
-// values have been recorded.
-constexpr std::array<float, 1> kPasswordCountDefaultValue{0};
-
 // Enum values for PasswordManager.FillingAssistance, these buckets were
 // selected based on the calculated histogram
 // Transactions.Vitals.AssistedLogins.
@@ -83,54 +78,36 @@ constexpr std::array<int32_t, 1> kIOSCredentialExtensionEnabledValue{
 const char kPasswordManagerUserNegativeLabel[] = "Not_PasswordManagerUser";
 
 // Set UMA metrics to use as input.
-constexpr std::array<MetadataWriter::UMAFeature, 7>
-    kPasswordManagerUserUMAFeatures = {
-        // Total amount of times user opened password manager from the settings
-        // page.
-        MetadataWriter::UMAFeature::FromEnumHistogram(
-            "PasswordManager.ManagePasswordsReferrer",
-            28,
-            kPasswordManagerReferrerEnumValues.data(),
-            kPasswordManagerReferrerEnumValues.size()),
-        // Number of stored passwords.
-        MetadataWriter::UMAFeature::FromValueHistogram(
-            "PasswordManager.ProfileStore.TotalAccountsHiRes3.WithScheme.Https",
-            28,
-            proto::Aggregation::LATEST_OR_DEFAULT,
-            kPasswordCountDefaultValue.size(),
-            kPasswordCountDefaultValue.data()),
-        // Count of assisted logins of all types.
-        MetadataWriter::UMAFeature::FromEnumHistogram(
-            "PasswordManager.FillingAssistance",
-            28,
-            kFillingAssistanceEnumValues.data(),
-            kFillingAssistanceEnumValues.size()),
-        // Count of newly saved passwords that Chrome generated.
-        MetadataWriter::UMAFeature::FromEnumHistogram(
-            "PasswordManager.SavedPasswordIsGenerated",
-            28,
-            kSavedPasswordTypeEnumValues.data(),
-            kSavedPasswordTypeEnumValues.size()),
-        // Count of times user accepted a password manager UI (Save/Edit/Move
-        // password).
-        MetadataWriter::UMAFeature::FromEnumHistogram(
-            "PasswordManager.SaveUIDismissalReason",
-            28,
-            kSaveUiPositiveEnumValues.data(),
-            kSaveUiPositiveEnumValues.size()),
-        // Count of times user rejected or ignored a password manager UI
-        // (Save/Edit/Move password).
-        MetadataWriter::UMAFeature::FromEnumHistogram(
-            "PasswordManager.SaveUIDismissalReason",
-            28,
-            kSaveUiNegativeEnumValues.data(),
-            kSaveUiNegativeEnumValues.size()),
-        // [iOS only] Whether the user enabled Chrome as a credential provider.
-        MetadataWriter::UMAFeature::FromEnumHistogram(
-            "IOS.CredentialExtension.IsEnabled.Startup",
-            28,
-            kIOSCredentialExtensionEnabledValue.data(),
-            kIOSCredentialExtensionEnabledValue.size()),
+constexpr FeaturePair<PasswordManagerUserModel::Feature> kFeatures[] = {
+    {PasswordManagerUserModel::kFeaturePasswordManagerReferrer,
+     features::UMAEnum("PasswordManager.ManagePasswordsReferrer",
+                       28,
+                       kPasswordManagerReferrerEnumValues)},
+    {PasswordManagerUserModel::kFeatureStoredPasswordCount,
+     features::LatestOrDefaultValue(
+         "PasswordManager.ProfileStore.TotalAccountsHiRes3.WithScheme.Https",
+         28,
+         0)},
+    {PasswordManagerUserModel::kFeatureAssistedLoginCount,
+     features::UMAEnum("PasswordManager.FillingAssistance",
+                       28,
+                       kFillingAssistanceEnumValues)},
+    {PasswordManagerUserModel::kFeatureGeneratedPasswordCount,
+     features::UMAEnum("PasswordManager.SavedPasswordIsGenerated",
+                       28,
+                       kSavedPasswordTypeEnumValues)},
+    {PasswordManagerUserModel::kFeaturePasswordUIAcceptedCount,
+     features::UMAEnum("PasswordManager.SaveUIDismissalReason",
+                       28,
+                       kSaveUiPositiveEnumValues)},
+    {PasswordManagerUserModel::kFeaturePasswordUIDismissedCount,
+     features::UMAEnum("PasswordManager.SaveUIDismissalReason",
+                       28,
+                       kSaveUiNegativeEnumValues)},
+    {PasswordManagerUserModel::kFeatureIOSCredentialExtensionEnabled,
+     features::UMAEnum("IOS.CredentialExtension.IsEnabled.Startup",
+                       28,
+                       kIOSCredentialExtensionEnabledValue)},
 };
 }  // namespace
 
@@ -172,8 +149,7 @@ PasswordManagerUserModel::GetModelConfig() {
       /*default_ttl=*/kPasswordManagerUserResultTTLDays, proto::TimeUnit::DAY);
 
   // Set features.
-  writer.AddUmaFeatures(kPasswordManagerUserUMAFeatures.data(),
-                        kPasswordManagerUserUMAFeatures.size());
+  writer.AddFeatures<Feature>(kFeatures);
 
   return std::make_unique<ModelConfig>(std::move(intentional_user_metadata),
                                        /*model_version=*/1);
@@ -183,20 +159,23 @@ void PasswordManagerUserModel::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // Invalid inputs.
-  if (inputs.size() != kPasswordManagerUserUMAFeatures.size()) {
+  if (inputs.size() != kFeatureCount) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 
   float result = 0;
-  const int password_manager_visits = inputs[0];
-  const int stored_password_count = inputs[1];
-  const int assisted_login_count = inputs[2];
-  const int generated_password_count = inputs[3];
-  const int password_ui_accepted_count = inputs[4];
-  const int password_ui_dismissed_count = inputs[5];
-  const int ios_credential_extension_enabled = inputs[6];
+  const int password_manager_visits = inputs[kFeaturePasswordManagerReferrer];
+  const int stored_password_count = inputs[kFeatureStoredPasswordCount];
+  const int assisted_login_count = inputs[kFeatureAssistedLoginCount];
+  const int generated_password_count = inputs[kFeatureGeneratedPasswordCount];
+  const int password_ui_accepted_count =
+      inputs[kFeaturePasswordUIAcceptedCount];
+  const int password_ui_dismissed_count =
+      inputs[kFeaturePasswordUIDismissedCount];
+  const int ios_credential_extension_enabled =
+      inputs[kFeatureIOSCredentialExtensionEnabled];
 
   if (password_manager_visits > 1 ||
       stored_password_count > kStoredPasswordCountThreshold ||

@@ -7,6 +7,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -73,11 +74,12 @@ void Windows10IconPainter::PaintCloseIcon(gfx::Canvas* canvas,
   // because the button's origin isn't necessarily aligned to pixels.
   flags.setAntiAlias(true);
   canvas->ClipRect(symbol_rect);
-  SkPath path;
-  path.moveTo(symbol_rect.x(), symbol_rect.y());
-  path.lineTo(symbol_rect.right(), symbol_rect.bottom());
-  path.moveTo(symbol_rect.right(), symbol_rect.y());
-  path.lineTo(symbol_rect.x(), symbol_rect.bottom());
+  const SkPath path = SkPathBuilder()
+      .moveTo(symbol_rect.x(), symbol_rect.y())
+      .lineTo(symbol_rect.right(), symbol_rect.bottom())
+      .moveTo(symbol_rect.right(), symbol_rect.y())
+      .lineTo(symbol_rect.x(), symbol_rect.bottom())
+      .detach();
   canvas->DrawPath(path, flags);
 }
 
@@ -89,10 +91,13 @@ void Windows10IconPainter::PaintTabSearchIcon(gfx::Canvas* canvas,
   // The chevron should occupy the space between the upper and lower quarter
   // of the `symbol_rect` bounds.
   symbol_rect.Inset(gfx::Insets::VH(symbol_rect.height() / 4, 0));
-  SkPath path;
-  path.moveTo(gfx::PointToSkPoint(symbol_rect.origin()));
-  path.lineTo(gfx::PointToSkPoint(symbol_rect.bottom_center()));
-  path.lineTo(gfx::PointToSkPoint(symbol_rect.top_right()));
+  const SkPath path = SkPath::Polygon(
+      {
+          gfx::PointToSkPoint(symbol_rect.origin()),
+          gfx::PointToSkPoint(symbol_rect.bottom_center()),
+          gfx::PointToSkPoint(symbol_rect.top_right()),
+      },
+      /*isClosed=*/false);
   canvas->DrawPath(path, flags);
 }
 

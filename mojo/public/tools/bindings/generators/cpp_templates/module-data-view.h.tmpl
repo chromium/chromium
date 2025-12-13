@@ -30,12 +30,10 @@ struct MojomTypeTraits<{{kind|get_qualified_name_for_kind}}DataView> {
 #include <type_traits>
 #include <utility>
 
-{%- if not contains_only_enums %}
+{%- if structs|length or unions|length %}
 #include "mojo/public/cpp/bindings/array_data_view.h"
-#include "mojo/public/cpp/bindings/enum_traits.h"
-#include "mojo/public/cpp/bindings/interface_data_view.h"
-#include "mojo/public/cpp/bindings/map_data_view.h"
 #include "mojo/public/cpp/bindings/string_data_view.h"
+#include "mojo/public/cpp/bindings/lib/serialization.h"
 {%- endif %}
 
 #include "{{module.path}}-shared-internal.h"

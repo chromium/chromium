@@ -56,7 +56,8 @@ GCMProfileService::GCMProfileService(
     std::unique_ptr<GCMClientFactory> gcm_client_factory,
     const scoped_refptr<base::SequencedTaskRunner>& ui_task_runner,
     const scoped_refptr<base::SequencedTaskRunner>& io_task_runner,
-    scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner)
+    scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
+    os_crypt_async::OSCryptAsync* os_crypt_async)
     : identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)) {
   driver_ = CreateGCMDriverDesktop(
@@ -66,7 +67,7 @@ GCMProfileService::GCMProfileService(
                           weak_ptr_factory_.GetWeakPtr()),
       url_loader_factory_, network_connection_tracker, channel,
       product_category_for_subtypes, ui_task_runner, io_task_runner,
-      blocking_task_runner);
+      blocking_task_runner, os_crypt_async);
 
   if (identity_manager_) {
     gcm_account_tracker_ = std::make_unique<GCMAccountTracker>(

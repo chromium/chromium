@@ -30,6 +30,8 @@ class AudioHandler {
         case 'setUrl':
           this.audioElement_.src = message.url;
           break;
+        default:
+          break;
       }
     });
   }

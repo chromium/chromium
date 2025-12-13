@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/strings/strcat.h"
 #include "base/threading/thread_restrictions.h"
 #include "chromeos/ash/components/dbus/fwupd/dbus_constants.h"
 #include "chromeos/ash/components/dbus/fwupd/fake_fwupd_client.h"

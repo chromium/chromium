@@ -32,6 +32,8 @@ inline constexpr char kManagedDefaultCookiesSetting[] =
     "profile.managed_default_content_settings.cookies";
 inline constexpr char kManagedDefaultGeolocationSetting[] =
     "profile.managed_default_content_settings.geolocation";
+inline constexpr char kManagedDefaultIdleDetectionSetting[] =
+    "profile.managed_default_content_settings.idle_detection";
 inline constexpr char kManagedDefaultImagesSetting[] =
     "profile.managed_default_content_settings.images";
 inline constexpr char kManagedDefaultInsecureContentSetting[] =
@@ -104,6 +106,10 @@ inline constexpr char kManagedCookiesBlockedForUrls[] =
     "profile.managed_cookies_blocked_for_urls";
 inline constexpr char kManagedCookiesSessionOnlyForUrls[] =
     "profile.managed_cookies_sessiononly_for_urls";
+inline constexpr char kManagedPreciseGeolocationAllowedForUrls[] =
+    "profile.managed_geolocation_allowed_for_urls";
+inline constexpr char kManagedGeolocationBlockedForUrls[] =
+    "profile.managed_geolocation_blocked_for_urls";
 inline constexpr char
     kManagedAccessToGetAllScreensMediaInSessionAllowedForUrls[] =
         "profile.managed_access_to_get_all_screens_media_in_session_allowed_"
@@ -116,6 +122,10 @@ inline constexpr char kManagedInsecureContentAllowedForUrls[] =
     "profile.managed_insecure_content_allowed_for_urls";
 inline constexpr char kManagedInsecureContentBlockedForUrls[] =
     "profile.managed_insecure_content_blocked_for_urls";
+inline constexpr char kManagedIdleDetectionAllowedForUrls[] =
+    "profile.managed_idle_detection_allowed_for_urls";
+inline constexpr char kManagedIdleDetectionBlockedForUrls[] =
+    "profile.managed_idle_detection_blocked_for_urls";
 inline constexpr char kManagedJavaScriptAllowedForUrls[] =
     "profile.managed_javascript_allowed_for_urls";
 inline constexpr char kManagedJavaScriptBlockedForUrls[] =
@@ -255,6 +265,11 @@ inline constexpr char kInContextCookieControlsOpened[] =
 // Enable vibration for web notifications.
 inline constexpr char kNotificationsVibrateEnabled[] =
     "notifications.vibrate_enabled";
+
+// Boolean that indicates whether the desktop site global setting was enabled by
+// the user.
+inline constexpr char kRequestDesktopSiteGlobalSettingUserEnabled[] =
+    "Chrome.RequestDesktopSiteGlobalSetting.UserEnabled";
 
 // Window setting for request desktop site. When enabled, we will request
 // mobile site if the window is narrow.

@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/base/net_errors.h"
 #include "net/ssl/ssl_private_key.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"

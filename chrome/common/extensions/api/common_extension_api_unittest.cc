@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
@@ -496,7 +495,7 @@ scoped_refptr<Extension> CreateExtensionWithPermissions(
     manifest.Set("permissions", std::move(permissions_list));
   }
 
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension(
       Extension::Create(base::FilePath(), mojom::ManifestLocation::kUnpacked,
                         manifest, Extension::NO_FLAGS, &error));
@@ -582,7 +581,7 @@ scoped_refptr<Extension> CreateHostedApp() {
                          base::Value(base::Value::Type::LIST));
   values.SetByDottedPath(manifest_keys::kLaunchWebURL,
                          "http://www.example.com");
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension(
       Extension::Create(base::FilePath(), mojom::ManifestLocation::kInternal,
                         values, Extension::NO_FLAGS, &error));
@@ -610,7 +609,7 @@ scoped_refptr<Extension> CreatePackagedAppWithPermissions(
     manifest.Set("permissions", std::move(permissions_list));
   }
 
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension(
       Extension::Create(base::FilePath(), mojom::ManifestLocation::kInternal,
                         manifest, Extension::NO_FLAGS, &error));
@@ -873,25 +872,25 @@ static std::string GetStringChecked(const base::Value::Dict* dict,
   return *out;
 }
 
+// Returns the dictionary that has `key`: `value`.
+static const base::Value::Dict* GetDictFromList(const base::Value::List* list,
+                                                const std::string& key,
+                                                const std::string& value) {
+  for (const auto& val : *list) {
+    const base::Value::Dict* dict = val.GetIfDict();
+    if (!dict) {
+      continue;
+    }
+    if (const std::string* str = dict->FindString(key); str && *str == value) {
+      return dict;
+    }
+  }
+  return nullptr;
+}
+
 TEST(ExtensionAPITest, TypesHaveNamespace) {
   std::unique_ptr<ExtensionAPI> api(
       ExtensionAPI::CreateWithDefaultConfiguration());
-
-  // Returns the dictionary that has |key|: |value|.
-  auto get_dict_from_list =
-      [](const base::Value::List* list, const std::string& key,
-         const std::string& value) -> const base::Value::Dict* {
-    for (const auto& val : *list) {
-      const base::Value::Dict* dict = val.GetIfDict();
-      if (!dict)
-        continue;
-      if (const std::string* str = dict->FindString(key)) {
-        if (*str == value)
-          return dict;
-      }
-    }
-    return nullptr;
-  };
 
   const base::Value::Dict* schema = api->GetSchema("sessions");
   ASSERT_TRUE(schema);
@@ -900,7 +899,7 @@ TEST(ExtensionAPITest, TypesHaveNamespace) {
   ASSERT_TRUE(types);
   {
     const base::Value::Dict* session_type =
-        get_dict_from_list(types, "id", "sessions.Session");
+        GetDictFromList(types, "id", "sessions.Session");
     ASSERT_TRUE(session_type);
     const base::Value::Dict* props = GetDictChecked(session_type, "properties");
     const base::Value::Dict* tab = GetDictChecked(props, "tab");
@@ -910,7 +909,7 @@ TEST(ExtensionAPITest, TypesHaveNamespace) {
   }
   {
     const base::Value::Dict* device_type =
-        get_dict_from_list(types, "id", "sessions.Device");
+        GetDictFromList(types, "id", "sessions.Device");
     ASSERT_TRUE(device_type);
     const base::Value::Dict* props = GetDictChecked(device_type, "properties");
     const base::Value::Dict* sessions = GetDictChecked(props, "sessions");
@@ -921,13 +920,13 @@ TEST(ExtensionAPITest, TypesHaveNamespace) {
   ASSERT_TRUE(functions);
   {
     const base::Value::Dict* get_recently_closed =
-        get_dict_from_list(functions, "name", "getRecentlyClosed");
+        GetDictFromList(functions, "name", "getRecentlyClosed");
     ASSERT_TRUE(get_recently_closed);
     const base::Value::List* parameters =
         get_recently_closed->FindList("parameters");
     ASSERT_TRUE(parameters);
     const base::Value::Dict* filter =
-        get_dict_from_list(parameters, "name", "filter");
+        GetDictFromList(parameters, "name", "filter");
     ASSERT_TRUE(filter);
     EXPECT_EQ("sessions.Filter", GetStringChecked(filter, "$ref"));
   }
@@ -938,7 +937,7 @@ TEST(ExtensionAPITest, TypesHaveNamespace) {
   ASSERT_TRUE(types);
   {
     const base::Value::Dict* chrome_setting =
-        get_dict_from_list(types, "id", "types.ChromeSetting");
+        GetDictFromList(types, "id", "types.ChromeSetting");
     ASSERT_TRUE(chrome_setting);
     EXPECT_EQ("types.ChromeSetting",
               GetStringChecked(chrome_setting, "customBindings"));
@@ -1071,6 +1070,50 @@ TEST(ExtensionAPITest, GetSchemaFromDifferentThreads) {
 
   // The pointers (not only the values) must be the same.
   EXPECT_EQ(another_thread_schema, current_thread_schema);
+}
+
+// Test that the keys of RuleCondition dictionary in the declarativeNetRequest
+// API are consistent with the RuleConditionKeys enum.
+TEST(ExtensionAPITest, DNRRuleConditionKeysConsistent) {
+  ExtensionAPI* shared_instance = ExtensionAPI::GetSharedInstance();
+  ASSERT_TRUE(shared_instance);
+
+  const base::Value::Dict* schema =
+      shared_instance->GetSchema("declarativeNetRequest");
+  EXPECT_TRUE(schema);
+
+  // Get the keys of the RuleConditions dictionary.
+  const base::Value::List* types = schema->FindList("types");
+  EXPECT_TRUE(types);
+  const base::Value::Dict* rule_condition_dict =
+      GetDictFromList(types, "id", "declarativeNetRequest.RuleCondition");
+  EXPECT_TRUE(rule_condition_dict);
+  const base::Value::Dict* rule_condition_dict_properties =
+      rule_condition_dict->FindDict("properties");
+  EXPECT_TRUE(rule_condition_dict_properties);
+  std::set<std::string> rule_condition_dict_keys;
+  for (const auto [key, _] : *rule_condition_dict_properties) {
+    rule_condition_dict_keys.insert(key);
+  }
+
+  // Get the values of the RuleConditionKeys enum.
+  const base::Value::Dict* rule_condition_keys_enum =
+      GetDictFromList(types, "id", "declarativeNetRequest.RuleConditionKeys");
+  EXPECT_TRUE(rule_condition_keys_enum);
+  const base::Value::List* rule_condition_keys_enum_value_dicts =
+      rule_condition_keys_enum->FindList("enum");
+  EXPECT_TRUE(rule_condition_keys_enum_value_dicts);
+  std::set<std::string> rule_condition_keys_enum_values;
+  for (const auto& value : *rule_condition_keys_enum_value_dicts) {
+    EXPECT_TRUE(value.is_dict());
+    const std::string* name = value.GetDict().FindString("name");
+    EXPECT_TRUE(name);
+    rule_condition_keys_enum_values.insert(*name);
+  }
+
+  // Check the RuleConditionKeys enum and RuleCondition dict's keys are
+  // consistent.
+  EXPECT_EQ(rule_condition_dict_keys, rule_condition_keys_enum_values);
 }
 
 }  // namespace extensions

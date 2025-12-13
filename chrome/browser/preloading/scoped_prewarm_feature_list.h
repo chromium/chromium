@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PRELOADING_SCOPED_PREWARM_FEATURE_LIST_H_
 
 #include "base/test/scoped_feature_list.h"
-
 #include "url/gurl.h"
 
 namespace test {

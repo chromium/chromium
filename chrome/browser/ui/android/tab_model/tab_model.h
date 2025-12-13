@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "build/android_buildflags.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
@@ -16,6 +17,7 @@
 #include "components/omnibox/browser/location_bar_model_delegate.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/synced_window_delegate.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 struct NavigateParams;
 
@@ -40,6 +42,7 @@ class TabModelObserver;
 // with Android's Tabs and Tab Model.
 class TabModel : public TabListInterface {
  public:
+  DECLARE_USER_DATA(TabModel);
   // LINT.IfChange(TabLaunchType)
   // Various ways tabs can be launched.
   // Values must be numbered from 0 and can't have gaps.
@@ -148,6 +151,10 @@ class TabModel : public TabListInterface {
     // Open tab using the TabListInterface API. This tab is created
     // programmatically from operations such as OpenTab or DuplicateTab.
     FROM_TAB_LIST_INTERFACE,
+    // Open a link, creating a new window.
+    FROM_LINK_CREATING_NEW_WINDOW,
+    // Like FROM_CHROME_UI, and opens a tip notification, creating a new tab.
+    FROM_TIPS_NOTIFICATIONS,
     // Must be last.
     SIZE
   };
@@ -284,6 +291,18 @@ class TabModel : public TabListInterface {
   void BroadcastSessionRestoreComplete();
 
   LocationBarModel* GetLocationBarModel();
+
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  // Sets the |SessionID|.
+  //
+  // This is only needed on desktop Android, where |BrowserWindowInterface|
+  // should be the source of truth for |SessionID|. This function will be
+  // called when |TabModel| is associated with a |BrowserWindowInterface|.
+  //
+  // TODO(http://crbug.com/444518651): remove the if-def when
+  // |BrowserWindowInterface| is compiled into all Android builds.
+  void SetSessionId(SessionID sessionId);
+#endif
 
  private:
   raw_ptr<Profile, DanglingUntriaged> profile_;

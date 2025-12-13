@@ -34,6 +34,7 @@
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/prefs/pref_service.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/version_info/version_info.h"
@@ -80,7 +81,6 @@ namespace enterprise_reporting_private =
 using SettingValue = device_signals::SettingValue;
 using ::testing::_;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::SizeIs;
 using ::testing::StrEq;
@@ -1009,11 +1009,9 @@ class EnterpriseReportingPrivateEnqueueRecordFunctionTest
   ::reporting::Record GetTestRecord() const {
     base::Value::Dict data;
     data.Set("TEST_KEY", base::Value("TEST_VALUE"));
-    std::string serialized_data;
-    DCHECK(base::JSONWriter::Write(data, &serialized_data));
 
     ::reporting::Record record;
-    record.set_data(serialized_data);
+    record.set_data(base::WriteJson(data).value());
     record.set_destination(::reporting::Destination::TELEMETRY_METRIC);
     record.set_timestamp_us(base::Time::Now().InMillisecondsSinceUnixEpoch() *
                             base::Time::kMicrosecondsPerMillisecond);
@@ -1226,21 +1224,20 @@ class UserContextGatedTest : public ExtensionApiUnittest {
     auto* factory = enterprise_signals::SignalsAggregatorFactory::GetInstance();
     mock_aggregator_ = static_cast<device_signals::MockSignalsAggregator*>(
         factory->SetTestingFactoryAndUse(
-            browser()->profile(), base::BindRepeating(&BuildMockAggregator)));
+            profile(), base::BindRepeating(&BuildMockAggregator)));
   }
 
   void SetFakeResponse(
       const device_signals::SignalsAggregationResponse& response) {
     EXPECT_CALL(*mock_aggregator_, GetSignalsForUser(_, _, _))
-        .WillOnce(
-            Invoke([&](const device_signals::UserContext& user_context,
-                       const device_signals::SignalsAggregationRequest& request,
-                       device_signals::SignalsAggregator::GetSignalsCallback
-                           callback) {
-              EXPECT_EQ(user_context.user_id, kFakeUserId);
-              EXPECT_EQ(request.signal_names.size(), 1U);
-              std::move(callback).Run(response);
-            }));
+        .WillOnce([&](const device_signals::UserContext& user_context,
+                      const device_signals::SignalsAggregationRequest& request,
+                      device_signals::SignalsAggregator::GetSignalsCallback
+                          callback) {
+          EXPECT_EQ(user_context.user_id, kFakeUserId);
+          EXPECT_EQ(request.signal_names.size(), 1U);
+          std::move(callback).Run(response);
+        });
   }
 
 
@@ -1278,9 +1275,7 @@ class EnterpriseReportingPrivateGetFileSystemInfoTest
     request.options.push_back(GetFakeFileSystemOptionsParam());
     base::Value::List params;
     params.Append(request.ToValue());
-    std::string json_value;
-    base::JSONWriter::Write(params, &json_value);
-    return json_value;
+    return base::WriteJson(params).value_or("");
   }
 
   scoped_refptr<extensions::EnterpriseReportingPrivateGetFileSystemInfoFunction>
@@ -1450,9 +1445,7 @@ class EnterpriseReportingPrivateGetSettingsTest : public UserContextGatedTest {
     request.options.push_back(GetFakeSettingsOptionsParam());
     base::Value::List params;
     params.Append(request.ToValue());
-    std::string json_value;
-    base::JSONWriter::Write(params, &json_value);
-    return json_value;
+    return base::WriteJson(params).value_or("");
   }
 
   scoped_refptr<extensions::EnterpriseReportingPrivateGetSettingsFunction>
@@ -1601,9 +1594,7 @@ std::string GetFakeUserContextJsonParams() {
   auto user_context = GetFakeUserContext();
   base::Value::List params;
   params.Append(user_context.ToValue());
-  std::string json_value;
-  base::JSONWriter::Write(params, &json_value);
-  return json_value;
+  return base::WriteJson(params).value_or("");
 }
 
 // Tests for API enterprise.reportingPrivate.getAvInfo
@@ -1628,7 +1619,6 @@ TEST_F(EnterpriseReportingPrivateGetAvInfoTest, Success) {
   device_signals::AvProduct fake_av_product;
   fake_av_product.display_name = "Fake display name";
   fake_av_product.state = device_signals::AvProductState::kOff;
-  fake_av_product.product_id = "fake product id";
 
   device_signals::AntiVirusSignalResponse av_response;
   av_response.av_products.push_back(fake_av_product);
@@ -1657,7 +1647,6 @@ TEST_F(EnterpriseReportingPrivateGetAvInfoTest, Success) {
   EXPECT_EQ(parsed_av_signal->display_name, fake_av_product.display_name);
   EXPECT_EQ(parsed_av_signal->state,
             enterprise_reporting_private::AntiVirusProductState::kOff);
-  EXPECT_EQ(parsed_av_signal->product_id, fake_av_product.product_id);
 
   histogram_tester_.ExpectUniqueSample(
       "Enterprise.DeviceSignals.Collection.Success", signal_name(), 1);

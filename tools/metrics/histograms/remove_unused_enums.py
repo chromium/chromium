@@ -2,11 +2,7 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""
-Removes unused enums from the monolithic enums.xml file.
-
-Note: This does not handle sharded enums.xml files yet.
-"""
+"""Removes unused enums from enums.xml files."""
 
 import io
 import logging
@@ -16,42 +12,13 @@ from xml.dom import minidom
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 
-import extract_histograms
+import enums
 import histogram_configuration_model
 import histogram_paths
-import merge_xml
-import path_util
 
 
-def _get_enums_from_histogram_files(files):
-  """Finds the names of all referenced enums from the specified XML files."""
-  merged = merge_xml.MergeFiles(files)
-  histograms, _ = extract_histograms.ExtractHistogramsFromDom(merged)
-  enums_used_in_file = set()
-  for histogram_name, data in histograms.items():
-    # Skip non-enum histograms.
-    if 'enum' not in data:
-      continue
-    enum_name = data['enum']['name']
-    enums_used_in_file.add(enum_name)
-  return enums_used_in_file
-
-
-def _get_enums_from_ukm():
-  """Finds enums used by ukm.xml."""
-  with open(histogram_paths.UKM_XML, 'r') as f:
-    document = minidom.parse(f)
-
-  enums_used_in_file = set()
-  for node in document.getElementsByTagName('metric'):
-    if not 'enum' in node.attributes:
-      continue
-    enums_used_in_file.add(node.attributes['enum'].value)
-
-  return enums_used_in_file
-
-
-def _remove_enum_nodes_not_in_list(enum_names, filepath):
+def _remove_enum_nodes_not_in_list(
+    enum_names: set[str], filepath: str) -> tuple[list[minidom.Element], str]:
   """Returns the <enum> nodes not corresponding to the specified names."""
   with io.open(filepath, 'r', encoding='utf-8') as f:
     document = minidom.parse(f)
@@ -70,25 +37,27 @@ def _remove_enum_nodes_not_in_list(enum_names, filepath):
 
 def _remove_unused_enums():
   """Removes unused enums from ALL enums.xml files."""
-  print(f'Reading XML files...')
-  enum_names = _get_enums_from_histogram_files(histogram_paths.ALL_XMLS)
-  print(f'Found {len(enum_names)} enums from histograms.')
-
-  ukm_enum_names = _get_enums_from_ukm()
-  print(f'Found {len(ukm_enum_names)} enums from ukm.')
-
-  enum_names.update(ukm_enum_names)
-  print(f'Found {len(enum_names)} enums total.')
+  enum_names = enums.get_enums_used_in_files()
 
   for enum_file in histogram_paths.ENUMS_XMLS:
     enum_nodes, updated_enum_xml = _remove_enum_nodes_not_in_list(
         enum_names, enum_file)
-    print(f'Removed {len(enum_nodes)} that were not referenced.')
+    if not enum_nodes:
+      logging.info(f'All enums in {enum_file} are referenced')
+      continue
 
-    print(f'Writing updated file: {enum_file}')
+    logging.info(f'Removing {len(enum_nodes)} enum nodes from {enum_file}:')
+    for enum_node in enum_nodes:
+      enum_name = enum_node.attributes['name'].value
+      print(f' - {enum_name}')
+
     with open(enum_file, 'w', encoding='utf-8', newline='') as f:
       f.write(updated_enum_xml)
+    logging.info('File updated.')
 
 
 if __name__ == '__main__':
+  logging.basicConfig(level=logging.INFO,
+                      stream=sys.stderr,
+                      format='%(message)s')
   _remove_unused_enums()

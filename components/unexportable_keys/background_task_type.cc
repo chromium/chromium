@@ -13,12 +13,18 @@ namespace unexportable_keys {
 std::string_view GetBackgroundTaskTypeSuffixForHistograms(
     BackgroundTaskType type) {
   switch (type) {
+    case BackgroundTaskType::kGetAllKeys:
+      return ".GetAllKeys";
     case BackgroundTaskType::kGenerateKey:
       return ".GenerateKey";
     case BackgroundTaskType::kFromWrappedKey:
       return ".FromWrappedKey";
     case BackgroundTaskType::kSign:
       return ".Sign";
+    case BackgroundTaskType::kDeleteKey:
+      return ".DeleteKey";
+    case BackgroundTaskType::kDeleteAllKeys:
+      return ".DeleteAllKeys";
   }
   NOTREACHED();
 }

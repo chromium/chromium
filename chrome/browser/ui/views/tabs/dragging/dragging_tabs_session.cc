@@ -52,34 +52,6 @@ DraggingTabsSession::DraggingTabsSession(DragSessionData drag_data,
                                               start_point_in_screen)
               .x()),
       last_point_in_screen_(start_point_in_screen) {
-  if (base::FeatureList::IsEnabled(tabs::kScrollableTabStrip) &&
-      base::FeatureList::IsEnabled(tabs::kScrollableTabStripWithDragging)) {
-    const int drag_with_scroll_mode = base::GetFieldTrialParamByFeatureAsInt(
-        tabs::kScrollableTabStripWithDragging,
-        tabs::kTabScrollingWithDraggingModeName,
-        static_cast<int>(
-            TabStripScrollSession::ScrollWithDragStrategy::kConstantSpeed));
-
-    switch (drag_with_scroll_mode) {
-      case static_cast<int>(
-          TabStripScrollSession::ScrollWithDragStrategy::kConstantSpeed):
-        tab_strip_scroll_session_ =
-            std::make_unique<TabStripScrollSessionWithTimer>(
-                *this, TabStripScrollSessionWithTimer::ScrollSessionTimerType::
-                           kConstantTimer);
-        break;
-      case static_cast<int>(
-          TabStripScrollSession::ScrollWithDragStrategy::kVariableSpeed):
-        tab_strip_scroll_session_ =
-            std::make_unique<TabStripScrollSessionWithTimer>(
-                *this, TabStripScrollSessionWithTimer::ScrollSessionTimerType::
-                           kVariableTimer);
-        break;
-      default:
-        NOTREACHED();
-    }
-  }
-
   MoveAttachedImpl(start_point_in_screen, true);
 }
 
@@ -114,10 +86,6 @@ gfx::Point DraggingTabsSession::GetLastPointInScreen() {
 
 views::View* DraggingTabsSession::GetAttachedContext() {
   return attached_context_;
-}
-
-views::ScrollView* DraggingTabsSession::GetScrollView() {
-  return attached_context_->GetScrollView();
 }
 
 void DraggingTabsSession::MoveAttachedImpl(gfx::Point point_in_screen,
@@ -204,10 +172,6 @@ void DraggingTabsSession::MoveAttachedImpl(gfx::Point point_in_screen,
     }
   }
 
-  if (tab_strip_scroll_session_) {
-    tab_strip_scroll_session_->MaybeStart();
-  }
-
   if (!did_layout) {
     attached_context_->LayoutDraggedViewsAt(
         views, drag_data_.source_view_drag_data()->attached_view,
@@ -272,7 +236,7 @@ DraggingTabsSession::CalculateGroupForDraggedTabs(int to_index) {
       attached_model->GetAdjacentTabsAfterSelectedMove(
           base::PassKey<DraggingTabsSession>(), to_index);
 
-  const ui::ListSelectionModel::SelectedIndices& selected =
+  const ui::ListSelectionModel::SelectedIndices selected =
       attached_model->selection_model().selected_indices();
 
   // Pinned tabs cannot be grouped, so we only change the group membership of
@@ -309,7 +273,7 @@ DraggingTabsSession::CalculateGroupForDraggedTabs(int to_index) {
   // right of the gap. If the tab is centered in the gap, make the tab
   // ungrouped.
 
-  const Tab* left_most_selected_tab =
+  const TabSlotView* left_most_selected_tab =
       attached_context_->GetTabAt(selected_unpinned[0]);
 
   const int buffer = left_most_selected_tab->width() / 4;
@@ -321,7 +285,7 @@ DraggingTabsSession::CalculateGroupForDraggedTabs(int to_index) {
   const int tab_left_inset = TabStyle::Get()->GetTabOverlap() / 2;
 
   const auto tab_bounds_in_drag_context_coords = [this](int model_index) {
-    const Tab* const tab = attached_context_->GetTabAt(model_index);
+    const TabSlotView* const tab = attached_context_->GetTabAt(model_index);
     return ToEnclosingRect(views::View::ConvertRectToTarget(
         tab->parent(), attached_context_, gfx::RectF(tab->bounds())));
   };
@@ -357,8 +321,6 @@ DraggingTabsSession::CalculateGroupForDraggedTabs(int to_index) {
     // window. In this case, since the dragged tabs can't move further right in
     // the tabstrip, it will never go "beyond" the left_group and therefore
     // never leave it unless we add this check. See crbug.com/1134376.
-    // TODO(crbug.com/40842551): Update this to work better with Tab Scrolling
-    // once dragging near the end of the tabstrip is cleaner.
     if (tab_bounds_in_drag_context_coords(selected_unpinned.back()).right() >=
         attached_context_->TabDragAreaEndX()) {
       return std::nullopt;

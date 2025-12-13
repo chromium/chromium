@@ -79,12 +79,14 @@ class WebAppInternalsHandler : public mojom::WebAppInternalsHandler {
   void SetAllowDowngradesForIsolatedWebApp(
       bool allow_downgrades,
       const webapps::AppId& app_id) override;
+  void DeleteIsolatedWebApp(const webapps::AppId& app_id,
+                            DeleteIsolatedWebAppCallback callback) override;
 
  private:
   const raw_ref<content::WebUI> web_ui_;
   const raw_ref<Profile> profile_;
   mojo::Receiver<mojom::WebAppInternalsHandler> receiver_;
-  web_app::IwaInternalsHandler iwa_handler_;
+  std::optional<web_app::IwaInternalsHandler> iwa_handler_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEB_APP_INTERNALS_WEB_APP_INTERNALS_HANDLER_H_

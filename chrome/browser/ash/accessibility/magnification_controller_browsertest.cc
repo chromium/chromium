@@ -54,8 +54,7 @@ gfx::Rect GetViewPort() {
 }  // namespace
 
 class FullscreenMagnifierControllerTest
-    : public AccessibilityFeatureBrowserTest,
-      public ::testing::WithParamInterface<ManifestVersion> {
+    : public AccessibilityFeatureBrowserTest {
  public:
   FullscreenMagnifierControllerTest() = default;
   FullscreenMagnifierControllerTest(const FullscreenMagnifierControllerTest&) =
@@ -68,18 +67,8 @@ class FullscreenMagnifierControllerTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Make screens sufficiently wide to host 2 browsers side by side.
     command_line->AppendSwitchASCII("ash-host-window-bounds", "1200x800");
-
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    enabled_features.push_back(::features::kAccessibilityFaceGaze);
-    if (GetParam() == ManifestVersion::kTwo) {
-      disabled_features.push_back(
-          ::features::kAccessibilityManifestV3AccessibilityCommon);
-    } else if (GetParam() == ManifestVersion::kThree) {
-      enabled_features.push_back(
-          ::features::kAccessibilityManifestV3AccessibilityCommon);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{::features::kAccessibilityManifestV3AccessibilityCommon, true}});
     AccessibilityFeatureBrowserTest::SetUpCommandLine(command_line);
   }
 
@@ -106,14 +95,7 @@ class FullscreenMagnifierControllerTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(ManifestV2,
-                         FullscreenMagnifierControllerTest,
-                         ::testing::Values(ManifestVersion::kTwo));
-INSTANTIATE_TEST_SUITE_P(ManifestV3,
-                         FullscreenMagnifierControllerTest,
-                         ::testing::Values(ManifestVersion::kThree));
-
-IN_PROC_BROWSER_TEST_P(FullscreenMagnifierControllerTest,
+IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest,
                        FollowFocusOnWebButton) {
   helper()->LoadMagnifier(GetProfile());
 
@@ -140,7 +122,7 @@ IN_PROC_BROWSER_TEST_P(FullscreenMagnifierControllerTest,
   EXPECT_TRUE(GetViewPort().Contains(button_bounds));
 }
 
-IN_PROC_BROWSER_TEST_P(FullscreenMagnifierControllerTest,
+IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest,
                        AnimatesToFollowKeyboardFocus) {
   helper()->LoadMagnifier(GetProfile());
 
@@ -170,7 +152,7 @@ IN_PROC_BROWSER_TEST_P(FullscreenMagnifierControllerTest,
   } while (!GetViewPort().Contains(button_bounds));
 }
 
-IN_PROC_BROWSER_TEST_P(FullscreenMagnifierControllerTest,
+IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest,
                        MovesContinuouslyWithMouse) {
   GetProfile()->GetPrefs()->SetInteger(
       prefs::kAccessibilityScreenMagnifierMouseFollowingMode,
@@ -196,7 +178,7 @@ IN_PROC_BROWSER_TEST_P(FullscreenMagnifierControllerTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(FullscreenMagnifierControllerTest,
+IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest,
                        MovesWithMouseAtEdge) {
   GetProfile()->GetPrefs()->SetInteger(
       prefs::kAccessibilityScreenMagnifierMouseFollowingMode,
@@ -227,7 +209,7 @@ IN_PROC_BROWSER_TEST_P(FullscreenMagnifierControllerTest,
   EXPECT_GT(GetViewPort().CenterPoint().y(), initial_center.y());
 }
 
-IN_PROC_BROWSER_TEST_P(FullscreenMagnifierControllerTest,
+IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest,
                        ChangeZoomWithAccelerator) {
   helper()->LoadMagnifier(GetProfile());
 
@@ -244,7 +226,7 @@ IN_PROC_BROWSER_TEST_P(FullscreenMagnifierControllerTest,
   EXPECT_GT(scale, GetFullscreenMagnifierController()->GetScale());
 }
 
-IN_PROC_BROWSER_TEST_P(FullscreenMagnifierControllerTest, ChangeZoomWithPrefs) {
+IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest, ChangeZoomWithPrefs) {
   helper()->LoadMagnifier(GetProfile());
 
   // Change the bounds pref.

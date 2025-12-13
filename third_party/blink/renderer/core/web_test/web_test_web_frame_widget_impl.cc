@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/web_test/web_test_web_frame_widget_impl.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/web_test/renderer/event_sender.h"
 #include "content/web_test/renderer/test_runner.h"
@@ -129,6 +130,7 @@ void WebTestWebFrameWidgetImpl::UpdateAllLifecyclePhasesAndComposite(
 }
 
 void WebTestWebFrameWidgetImpl::ScheduleAnimationInternal(bool do_raster) {
+  CHECK(GetTestRunner());
   if (!GetTestRunner()->TestIsRunning()) {
     return;
   }
@@ -147,13 +149,13 @@ void WebTestWebFrameWidgetImpl::ScheduleAnimationInternal(bool do_raster) {
   if (!animation_scheduled_) {
     animation_scheduled_ = true;
 
-    WebLocalFrame* frame = LocalRoot();
-
-    frame->GetTaskRunner(TaskType::kInternalTest)
-        ->PostDelayedTask(FROM_HERE,
-                          WTF::BindOnce(&WebTestWebFrameWidgetImpl::AnimateNow,
-                                        WrapWeakPersistent(this)),
-                          base::Milliseconds(1));
+    if (WebLocalFrame* frame = LocalRoot()) {
+      frame->GetTaskRunner(TaskType::kInternalTest)
+          ->PostDelayedTask(FROM_HERE,
+                            BindOnce(&WebTestWebFrameWidgetImpl::AnimateNow,
+                                     WrapWeakPersistent(this)),
+                            base::Milliseconds(1));
+    }
   }
 }
 
@@ -286,7 +288,7 @@ void WebTestWebFrameWidgetImpl::SynchronouslyComposite(
 
   in_synchronous_composite_ = true;
 
-  auto wrapped_callback = WTF::BindOnce(
+  auto wrapped_callback = blink::BindOnce(
       [](base::OnceClosure cb, bool* in_synchronous_composite) {
         *in_synchronous_composite = false;
         if (cb) {

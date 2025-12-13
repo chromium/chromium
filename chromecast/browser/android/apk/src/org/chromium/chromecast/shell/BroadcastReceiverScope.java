@@ -36,7 +36,8 @@ public class BroadcastReceiverScope implements Scope {
                         callback.onReceive(intent);
                     }
                 };
-        mContext.registerReceiver(mReceiver, filter);
+        ContextUtils.registerExportedBroadcastReceiver(
+                mContext, mReceiver, filter, /* permission= */ null);
     }
 
     @Override

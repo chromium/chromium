@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.11.0-alpha09" type="baseline" client="" dependencies="true" name="" variant="all" version="8.11.0-alpha09">
+<issues format="6" by="lint 9.0.0-alpha14" type="baseline" client="" dependencies="true" name="" variant="all" version="9.0.0-alpha14">
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.xml.network_security_config` appears to be unused"
+        errorLine1="&lt;network-security-config>"
+        errorLine2="^">
+        <location
+            file="../../components/cronet/android/test/res/xml/network_security_config.xml"
+            line="9"
+            column="1"/>
+    </issue>
 
 </issues>

@@ -193,8 +193,9 @@ QuarantineFileResult SetInternetZoneIdentifierDirectly(
   base::win::ScopedHandle file(::CreateFile(path.c_str(), GENERIC_WRITE, kShare,
                                             nullptr, OPEN_ALWAYS,
                                             FILE_ATTRIBUTE_NORMAL, nullptr));
-  if (!file.IsValid())
+  if (!file.is_valid()) {
     return QuarantineFileResult::ANNOTATION_FAILED;
+  }
 
   static const char kReferrerUrlFormat[] = "ReferrerUrl=%s\r\n";
   static const char kHostUrlFormat[] = "HostUrl=%s\r\n";

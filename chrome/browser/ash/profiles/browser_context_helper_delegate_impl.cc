@@ -53,10 +53,11 @@ BrowserContextHelperDelegateImpl::DeprecatedGetBrowserContext(
 }
 
 content::BrowserContext*
-BrowserContextHelperDelegateImpl::GetOrCreatePrimaryOTRBrowserContext(
-    content::BrowserContext* browser_context) {
+BrowserContextHelperDelegateImpl::GetPrimaryOTRBrowserContext(
+    content::BrowserContext* browser_context,
+    bool create_if_needed) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  return profile->GetPrimaryOTRProfile(create_if_needed);
 }
 
 content::BrowserContext*

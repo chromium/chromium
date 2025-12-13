@@ -1602,23 +1602,23 @@ TEST_F(HintsManagerTest, RemoveFetchedEntriesByHintKeys_Host) {
 
   hint = get_hints_response->add_hints();
   hint->set_key_representation(proto::HOST);
-  hint->set_key(url.host());
+  hint->set_key(url.GetHost());
   page_hint = hint->add_page_hints();
   page_hint->set_page_pattern("anything/*");
 
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   hints_manager()->hint_cache()->UpdateFetchedHints(
-      std::move(get_hints_response), base::Time().Now(), {url.host()}, {url},
+      std::move(get_hints_response), base::Time().Now(), {url.GetHost()}, {url},
       run_loop->QuitClosure());
-  EXPECT_TRUE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasHint(url.GetHost()));
   EXPECT_TRUE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
 
   run_loop = std::make_unique<base::RunLoop>();
   hints_manager()->RemoveFetchedEntriesByHintKeys(
-      run_loop->QuitClosure(), proto::KeyRepresentation::HOST, {url.host()});
+      run_loop->QuitClosure(), proto::KeyRepresentation::HOST, {url.GetHost()});
   run_loop->Run();
 
-  EXPECT_FALSE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_FALSE(hints_manager()->hint_cache()->HasHint(url.GetHost()));
   EXPECT_TRUE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
 }
 
@@ -1640,15 +1640,15 @@ TEST_F(HintsManagerTest, RemoveFetchedEntriesByHintKeys_URL) {
 
   hint = get_hints_response->add_hints();
   hint->set_key_representation(proto::HOST);
-  hint->set_key(url.host());
+  hint->set_key(url.GetHost());
   page_hint = hint->add_page_hints();
   page_hint->set_page_pattern("anything/*");
 
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   hints_manager()->hint_cache()->UpdateFetchedHints(
-      std::move(get_hints_response), base::Time().Now(), {url.host()}, {url},
+      std::move(get_hints_response), base::Time().Now(), {url.GetHost()}, {url},
       run_loop->QuitClosure());
-  EXPECT_TRUE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasHint(url.GetHost()));
   EXPECT_TRUE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
 
   run_loop = std::make_unique<base::RunLoop>();
@@ -1659,7 +1659,7 @@ TEST_F(HintsManagerTest, RemoveFetchedEntriesByHintKeys_URL) {
 
   // Both the host and url entries should have been removed to support upgrading
   // hint keys from HOST to FULL_URL.
-  EXPECT_FALSE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_FALSE(hints_manager()->hint_cache()->HasHint(url.GetHost()));
   EXPECT_FALSE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
 }
 
@@ -1738,7 +1738,7 @@ class HintsManagerFetchingTest : public HintsManagerTest {
 
  private:
   size_t batch_concurrency_limit_ = 2;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   base::test::ScopedFeatureList scoped_list_;
 };
@@ -2017,9 +2017,13 @@ TEST_F(HintsManagerFetchingTest,
   RunUntilIdle();
 
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 0);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+      "PageNavigation",
+      0);
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 0);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount."
+      "PageNavigation",
+      0);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus", 0);
 }
@@ -2037,9 +2041,13 @@ TEST_F(HintsManagerFetchingTest, HintsFetchedAtNavigationTime) {
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+      "PageNavigation",
+      1, 1);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 1, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount."
+      "PageNavigation",
+      1, 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
       RaceNavigationFetchAttemptStatus::kRaceNavigationFetchHostAndURL, 1);
@@ -2061,9 +2069,13 @@ TEST_F(HintsManagerFetchingTest,
   RunUntilIdle();
 
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 0);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+      "PageNavigation",
+      0);
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 0);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount."
+      "PageNavigation",
+      0);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
       RaceNavigationFetchAttemptStatus::kRaceNavigationFetchNotAttempted, 1);
@@ -2085,7 +2097,9 @@ TEST_F(HintsManagerFetchingTest,
   CallOnNavigationStartOrRedirect(navigation_data.get(), base::DoNothing());
   RunUntilIdle();
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 0);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+      "PageNavigation",
+      0);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
       RaceNavigationFetchAttemptStatus::kRaceNavigationFetchURL, 1);
@@ -2122,9 +2136,13 @@ TEST_F(HintsManagerFetchingTest,
   CallOnNavigationStartOrRedirect(navigation_data.get(), base::DoNothing());
   RunUntilIdle();
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+      "PageNavigation",
+      1, 1);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 0, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount."
+      "PageNavigation",
+      0, 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
       RaceNavigationFetchAttemptStatus::kRaceNavigationFetchHost, 1);
@@ -2156,7 +2174,9 @@ TEST_F(HintsManagerFetchingTest, URLHintsNotFetchedAtNavigationTime) {
     RunUntilIdle();
 
     histogram_tester.ExpectTotalCount(
-        "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 0);
+        "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+        "PageNavigation",
+        0);
 
     // Make sure navigation data is populated correctly.
     EXPECT_TRUE(navigation_data->hints_fetch_latency().has_value());
@@ -2213,7 +2233,9 @@ TEST_F(HintsManagerFetchingTest, URLWithNoHintsNotRefetchedAtNavigationTime) {
     CallOnNavigationStartOrRedirect(navigation_data.get(), base::DoNothing());
     RunUntilIdle();
     histogram_tester.ExpectTotalCount(
-        "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 0);
+        "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+        "PageNavigation",
+        0);
 
     // Make sure navigation data is populated correctly.
     EXPECT_TRUE(navigation_data->hints_fetch_latency().has_value());
@@ -3576,11 +3598,7 @@ TEST_F(HintsManagerComponentSkipProcessingTest, ProcessHintsWithExistingPref) {
 
 class HintsManagerPersonalizedFetchingTest : public HintsManagerFetchingTest {
  public:
-  HintsManagerPersonalizedFetchingTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kOptimizationGuidePersonalizedFetching,
-        {{"allowed_contexts", "CONTEXT_BOOKMARKS"}});
-  }
+  HintsManagerPersonalizedFetchingTest() = default;
 
   HintsManagerPersonalizedFetchingTest(
       const HintsManagerPersonalizedFetchingTest&) = delete;
@@ -3627,7 +3645,7 @@ TEST_F(HintsManagerPersonalizedFetchingTest,
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   hints_manager()->CanApplyOptimizationOnDemand(
       {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
-      proto::RequestContext::CONTEXT_BOOKMARKS,
+      proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB,
       base::BindRepeating(
           [](base::RunLoop* run_loop, const GURL& url,
              const base::flat_map<proto::OptimizationType,
@@ -3668,7 +3686,7 @@ TEST_F(HintsManagerPersonalizedFetchingTest, TokenFailure) {
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   hints_manager()->CanApplyOptimizationOnDemand(
       {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
-      proto::RequestContext::CONTEXT_BOOKMARKS,
+      proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB,
       base::BindRepeating(
           [](base::RunLoop* run_loop, const GURL& url,
              const base::flat_map<proto::OptimizationType,
@@ -3708,7 +3726,7 @@ TEST_F(HintsManagerPersonalizedFetchingTest, NoUserSignIn) {
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   hints_manager()->CanApplyOptimizationOnDemand(
       {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
-      proto::RequestContext::CONTEXT_BOOKMARKS,
+      proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB,
       base::BindRepeating(
           [](base::RunLoop* run_loop, const GURL& url,
              const base::flat_map<proto::OptimizationType,
@@ -3767,7 +3785,7 @@ class HintsManagerProactivePersonalizationFetchingTest
   }
 
  private:
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   signin::IdentityTestEnvironment identity_test_env_;
   base::test::ScopedFeatureList scoped_list_;
@@ -3787,9 +3805,13 @@ TEST_F(HintsManagerProactivePersonalizationFetchingTest,
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+      "PageNavigation",
+      1, 1);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 1, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount."
+      "PageNavigation",
+      1, 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
       RaceNavigationFetchAttemptStatus::kRaceNavigationFetchHostAndURL, 1);
@@ -3814,9 +3836,13 @@ TEST_F(HintsManagerProactivePersonalizationFetchingTest,
   RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
+      "PageNavigation",
+      1, 1);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 1, 1);
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount."
+      "PageNavigation",
+      1, 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus",
       RaceNavigationFetchAttemptStatus::kRaceNavigationFetchHostAndURL, 1);

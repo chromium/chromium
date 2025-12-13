@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/services/sharing/webrtc/ipc_packet_socket_factory.h"
 
 #include <stddef.h>
@@ -405,7 +400,8 @@ int IpcPacketSocket::SendTo(const void* data,
   send_bytes_available_ -= data_size;
 
   uint64_t packet_id = client_->Send(
-      address_chrome, base::span(static_cast<const uint8_t*>(data), data_size),
+      address_chrome,
+      UNSAFE_TODO(base::span(static_cast<const uint8_t*>(data), data_size)),
       options);
 
   // Ensure packet_id is not 0. It can't be the case according to
@@ -460,7 +456,7 @@ int IpcPacketSocket::GetOption(webrtc::Socket::Option option, int* value) {
     return -1;
   }
 
-  *value = options_[p2p_socket_option];
+  *value = UNSAFE_TODO(options_[p2p_socket_option]);
   return 0;
 }
 
@@ -473,7 +469,7 @@ int IpcPacketSocket::SetOption(webrtc::Socket::Option option, int value) {
     return -1;
   }
 
-  options_[p2p_socket_option] = value;
+  UNSAFE_TODO(options_[p2p_socket_option]) = value;
 
   if (state_ == IS_OPEN) {
     // Options will be applied when state becomes IS_OPEN in OnOpen.
@@ -513,11 +509,13 @@ void IpcPacketSocket::OnOpen(const net::IPEndPoint& local_address,
 
   // Set all pending options if any.
   for (int i = 0; i < network::P2P_SOCKET_OPT_MAX; ++i) {
-    if (options_[i] != kDefaultNonSetOptionValue)
-      DoSetOption(static_cast<network::P2PSocketOption>(i), options_[i]);
+    if (UNSAFE_TODO(options_[i]) != kDefaultNonSetOptionValue) {
+      DoSetOption(static_cast<network::P2PSocketOption>(i),
+                  UNSAFE_TODO(options_[i]));
+    }
   }
 
-  SignalAddressReady(this, local_address_);
+  NotifyAddressReady(this, local_address_);
   if (IsTcpClientSocket(type_)) {
     // If remote address is unresolved, set resolved remote IP address received
     // in the callback. This address will be used while sending the packets
@@ -536,7 +534,7 @@ void IpcPacketSocket::OnOpen(const net::IPEndPoint& local_address,
 
     // SignalConnect after updating the |remote_address_| so that the listener
     // can get the resolved remote address.
-    SignalConnect(this);
+    NotifyConnect(this);
   }
 }
 
@@ -559,7 +557,7 @@ void IpcPacketSocket::OnSendComplete(
 
   in_flight_packet_records_.pop_front();
 
-  SignalSentPacket(this, webrtc::SentPacketInfo(send_metrics.rtc_packet_id,
+  NotifySentPacket(this, webrtc::SentPacketInfo(send_metrics.rtc_packet_id,
                                                 send_metrics.send_time_ms));
 
   if (writable_signal_expected_ && send_bytes_available_ > 0) {
@@ -568,7 +566,7 @@ void IpcPacketSocket::OnSendComplete(
     //    static_cast<int>(in_flight_packet_records_.size())));
 
     writable_signal_expected_ = false;
-    SignalReadyToSend(this);
+    NotifyReadyToSend(this);
   }
 }
 
@@ -578,7 +576,7 @@ void IpcPacketSocket::OnError() {
   state_ = IS_ERROR;
   error_ = ECONNABORTED;
   if (!was_closed) {
-    SignalClose(this, 0);
+    NotifyClosed(0);
   }
 }
 
@@ -689,7 +687,9 @@ IpcPacketSocketFactory::IpcPacketSocketFactory(
 
 IpcPacketSocketFactory::~IpcPacketSocketFactory() = default;
 
-webrtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateUdpSocket(
+std::unique_ptr<webrtc::AsyncPacketSocket>
+IpcPacketSocketFactory::CreateUdpSocket(
+    const webrtc::Environment& /*env*/,
     const webrtc::SocketAddress& local_address,
     uint16_t min_port,
     uint16_t max_port) {
@@ -701,10 +701,12 @@ webrtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateUdpSocket(
                     webrtc::SocketAddress())) {
     return nullptr;
   }
-  return socket.release();
+  return socket;
 }
 
-webrtc::AsyncListenSocket* IpcPacketSocketFactory::CreateServerTcpSocket(
+std::unique_ptr<webrtc::AsyncListenSocket>
+IpcPacketSocketFactory::CreateServerTcpSocket(
+    const webrtc::Environment& env,
     const webrtc::SocketAddress& local_address,
     uint16_t min_port,
     uint16_t max_port,
@@ -712,7 +714,9 @@ webrtc::AsyncListenSocket* IpcPacketSocketFactory::CreateServerTcpSocket(
   NOTREACHED();
 }
 
-webrtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateClientTcpSocket(
+std::unique_ptr<webrtc::AsyncPacketSocket>
+IpcPacketSocketFactory::CreateClientTcpSocket(
+    const webrtc::Environment& /*env*/,
     const webrtc::SocketAddress& local_address,
     const webrtc::SocketAddress& remote_address,
     const webrtc::PacketSocketTcpOptions& opts) {
@@ -736,7 +740,7 @@ webrtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateClientTcpSocket(
   if (!socket->Init(type, std::move(socket_client), local_address, 0, 0,
                     remote_address))
     return nullptr;
-  return socket.release();
+  return socket;
 }
 
 std::unique_ptr<webrtc::AsyncDnsResolverInterface>

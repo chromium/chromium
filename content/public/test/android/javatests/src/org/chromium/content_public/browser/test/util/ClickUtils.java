@@ -5,9 +5,11 @@
 package org.chromium.content_public.browser.test.util;
 
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
+
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Instrumentation;
 import android.os.SystemClock;
@@ -34,10 +36,7 @@ public class ClickUtils {
                 () -> {
                     // Post the actual click to the button's message queue, to ensure that it has
                     // been inflated before the click is received.
-                    button.post(
-                            () -> {
-                                button.performClick();
-                            });
+                    button.post(button::performClick);
                 });
     }
 
@@ -50,7 +49,7 @@ public class ClickUtils {
      * @param y Relative y location to the view.
      */
     public static void mouseSingleClickView(Instrumentation instrumentation, View v, int x, int y) {
-        int location[] = TestTouchUtils.getAbsoluteLocationFromRelative(v, x, y);
+        int[] location = TestTouchUtils.getAbsoluteLocationFromRelative(v, x, y);
         int absoluteX = location[0];
         int absoluteY = location[1];
         mouseSingleClick(instrumentation, absoluteX, absoluteY);
@@ -72,13 +71,11 @@ public class ClickUtils {
      * Sends (synchronously) a single mouse context i.e. right click to the View at the specified
      * coordinates.
      *
-     * @param instrumentation Instrumentation object used by the test.
      * @param v The view the coordinates are relative to.
      * @param x Relative x location to the view.
      * @param y Relative y location to the view.
      */
-    public static void mouseContextClickView(
-            Instrumentation instrumentation, View v, int x, int y) {
+    public static void mouseContextClickView(View v, int x, int y) {
         onViewWaiting(allOf(is(v), isDisplayed()));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -87,7 +84,6 @@ public class ClickUtils {
                     long downTime = SystemClock.uptimeMillis();
                     v.dispatchGenericMotionEvent(
                             createMouseClickEvent(
-                                    instrumentation,
                                     MotionEvent.ACTION_BUTTON_PRESS,
                                     downTime,
                                     x,
@@ -95,7 +91,6 @@ public class ClickUtils {
                                     MotionEvent.BUTTON_SECONDARY));
                     v.dispatchGenericMotionEvent(
                             createMouseClickEvent(
-                                    instrumentation,
                                     MotionEvent.ACTION_BUTTON_RELEASE,
                                     downTime,
                                     x,
@@ -105,38 +100,31 @@ public class ClickUtils {
     }
 
     private static MotionEvent createMouseClickEvent(
-            Instrumentation instrumentation,
-            int action,
-            long downTime,
-            float x,
-            float y,
-            int buttonState) {
+            int action, long downTime, float x, float y, int buttonState) {
         long eventTime = SystemClock.uptimeMillis();
-        MotionEvent.PointerCoords coords[] = new MotionEvent.PointerCoords[1];
+        MotionEvent.PointerCoords[] coords = new MotionEvent.PointerCoords[1];
         coords[0] = new MotionEvent.PointerCoords();
         coords[0].x = x;
         coords[0].y = y;
-        MotionEvent.PointerProperties properties[] = new MotionEvent.PointerProperties[1];
+        MotionEvent.PointerProperties[] properties = new MotionEvent.PointerProperties[1];
         properties[0] = new MotionEvent.PointerProperties();
         properties[0].id = 0;
         properties[0].toolType = MotionEvent.TOOL_TYPE_FINGER;
-        MotionEvent event =
-                MotionEvent.obtain(
-                        downTime,
-                        eventTime,
-                        action,
-                        1,
-                        properties,
-                        coords,
-                        0,
-                        buttonState,
-                        0.0f,
-                        0.0f,
-                        0,
-                        0,
-                        InputDevice.SOURCE_MOUSE,
-                        buttonState);
-        return event;
+        return MotionEvent.obtain(
+                downTime,
+                eventTime,
+                action,
+                1,
+                properties,
+                coords,
+                0,
+                buttonState,
+                0.0f,
+                0.0f,
+                0,
+                0,
+                InputDevice.SOURCE_MOUSE,
+                buttonState);
     }
 
     private static void sendMouseAction(
@@ -146,8 +134,7 @@ public class ClickUtils {
             float x,
             float y,
             int buttonState) {
-        MotionEvent event =
-                createMouseClickEvent(instrumentation, action, downTime, x, y, buttonState);
+        MotionEvent event = createMouseClickEvent(action, downTime, x, y, buttonState);
         instrumentation.sendPointerSync(event);
         instrumentation.waitForIdleSync();
     }

@@ -30,10 +30,6 @@ class CompressionStream final : public ScriptWrappable {
 
  private:
   Member<TransformStream> transform_;
-
-  // TODO(crbug.com/427166012): Remove this when the crashes in this class have
-  // been diagnosed.
-  bool initialized_ = false;
 };
 
 }  // namespace blink

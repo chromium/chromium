@@ -59,7 +59,7 @@ class UserActionsCollectorTest : public testing::Test {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   TestingPrefServiceSimple profile_prefs_;
   base::HistogramTester histogram_;

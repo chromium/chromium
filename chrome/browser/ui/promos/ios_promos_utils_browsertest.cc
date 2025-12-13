@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/promos/ios_promos_utils.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -13,16 +12,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/fake_server_network_resources.h"
 #include "content/public/test/browser_test.h"
-
-using signin::constants::kNoHostedDomainFound;
 
 class IOSPromosUtilsTest : public SyncTest {
  public:
@@ -47,11 +44,9 @@ class IOSPromosUtilsTest : public SyncTest {
         IdentityManagerFactory::GetForProfile(GetProfile(0))
             ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
     // Need to update hosted domain since it is not populated.
-    AccountInfo account_info;
-    account_info.account_id = current_info.account_id;
-    account_info.gaia = current_info.gaia;
-    account_info.email = current_info.email;
-    account_info.hosted_domain = kNoHostedDomainFound;
+    AccountInfo account_info = AccountInfo::Builder(current_info)
+                                   .SetHostedDomain(std::string())
+                                   .Build();
     signin::UpdateAccountInfoForAccount(
         IdentityManagerFactory::GetForProfile(GetProfile(0)), account_info);
 
@@ -65,20 +60,20 @@ class IOSPromosUtilsTest : public SyncTest {
 IN_PROC_BROWSER_TEST_F(IOSPromosUtilsTest, InvokeUi_passwords) {
   SetupSyncForAccount();
 
-  ios_promos_utils::VerifyIOSPromoEligibility(IOSPromoType::kPassword,
-                                              GetBrowser(0));
+  ios_promos_utils::VerifyIOSPromoEligibility(
+      desktop_to_mobile_promos::PromoType::kPassword, GetBrowser(0));
 }
 
 IN_PROC_BROWSER_TEST_F(IOSPromosUtilsTest, InvokeUi_addresses) {
   SetupSyncForAccount();
 
-  ios_promos_utils::VerifyIOSPromoEligibility(IOSPromoType::kAddress,
-                                              browser());
+  ios_promos_utils::VerifyIOSPromoEligibility(
+      desktop_to_mobile_promos::PromoType::kAddress, browser());
 }
 
 IN_PROC_BROWSER_TEST_F(IOSPromosUtilsTest, InvokeUi_payments) {
   SetupSyncForAccount();
 
-  ios_promos_utils::VerifyIOSPromoEligibility(IOSPromoType::kPayment,
-                                              browser());
+  ios_promos_utils::VerifyIOSPromoEligibility(
+      desktop_to_mobile_promos::PromoType::kPayment, browser());
 }

@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/sync/base/unique_position.h"
+#include "components/sync/protocol/account_setting_specifics.pb.h"
 #include "components/sync/protocol/app_list_specifics.pb.h"
 #include "components/sync/protocol/app_setting_specifics.pb.h"
 #include "components/sync/protocol/app_specifics.pb.h"
@@ -50,6 +51,7 @@
 #include "components/sync/protocol/search_engine_specifics.pb.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
+#include "components/sync/protocol/shared_comment_specifics.pb.h"
 #include "components/sync/protocol/sharing_message_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
@@ -334,6 +336,7 @@ class ToValueVisitor {
     return ToValueVisitor(options).ToValue(proto);                         \
   }
 
+IMPLEMENT_PROTO_TO_VALUE(AccountSettingSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(AppListSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(AppSettingSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(AppSpecifics)
@@ -341,6 +344,7 @@ IMPLEMENT_PROTO_TO_VALUE(ArcPackageSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(AutofillOfferSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(AutofillProfileSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(AutofillSpecifics)
+IMPLEMENT_PROTO_TO_VALUE(AutofillValuableMetadataSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(AutofillWalletCredentialSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(AutofillWalletSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(AutofillWalletUsageSpecifics)
@@ -398,6 +402,7 @@ IMPLEMENT_PROTO_TO_VALUE(SessionHeader)
 IMPLEMENT_PROTO_TO_VALUE(SessionSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(SessionTab)
 IMPLEMENT_PROTO_TO_VALUE(SessionWindow)
+IMPLEMENT_PROTO_TO_VALUE(SharedCommentSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(SharingMessageSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(SyncCycleCompletedEventInfo)
 IMPLEMENT_PROTO_TO_VALUE(TabNavigation)

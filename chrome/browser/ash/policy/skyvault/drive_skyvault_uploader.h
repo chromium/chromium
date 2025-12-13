@@ -10,7 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -30,7 +30,6 @@ namespace policy::local_user_files {
 // migration. Starts with moving the file to the cloud. Gets upload status by
 // observing move and Drive events. Calls the UploadCallback with once the
 // upload is completed, passing the error if any occurred.
-// TODO(b/353475473): Extract code shared with DriveUploadObserver, if possible.
 class DriveSkyvaultUploader
     : public file_manager::io_task::IOTaskController::Observer,
       drivefs::DriveFsHost::Observer,

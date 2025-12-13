@@ -17,6 +17,14 @@ bool IsNewUser();
 bool IsSafariSwitcher(
     const segmentation_platform::ClassificationResult& result);
 
+/// Whether the focused omnibox should maintain the same top / bottom position
+/// as the one in steady state.
+bool ShouldFocusedOmniboxFollowSteadyStatePosition();
+
+/// Whether the focused omnibox should always stay in the bottom regardless of
+/// the steady state position.
+bool ForceBottomOmniboxInEditState();
+
 }  // namespace omnibox
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_BUNDLED_PUBLIC_OMNIBOX_POSITION_UTIL_H_

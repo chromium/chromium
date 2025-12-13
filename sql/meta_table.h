@@ -135,8 +135,25 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   // Deletes the key from the table.
   bool DeleteKey(std::string_view key);
 
+ protected:
+  explicit MetaTable(Database& db);
+
  private:
   raw_ptr<Database, DanglingUntriaged> db_ = nullptr;
+};
+
+// Version of `MetaTable` which assumes that the meta table already exists in
+// the database. If the meta table is missing, it won't be created. This is
+// useful, for instance, to validate the table's compatibility before actually
+// opening it with `MetaTable`.
+class InitializedMetaTable : public MetaTable {
+ public:
+  explicit InitializedMetaTable(Database& db) : MetaTable(db) {}
+
+ private:
+  // Make `Init` private, the `Database` passed to this class is assumed to be
+  // already initialized.
+  using MetaTable::Init;
 };
 
 }  // namespace sql

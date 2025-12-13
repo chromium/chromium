@@ -144,10 +144,10 @@ BrowserAccessibilityManager::BrowserAccessibilityManager(
     AXPlatformTreeManagerDelegate* delegate)
     : AXPlatformTreeManager(std::make_unique<AXSerializableTree>()),
       delegate_(delegate),
+      node_id_delegate_(node_id_delegate),
       user_is_navigating_away_(false),
       device_scale_factor_(1.0f),
-      use_custom_device_scale_factor_for_testing_(false),
-      node_id_delegate_(node_id_delegate) {}
+      use_custom_device_scale_factor_for_testing_(false) {}
 
 BrowserAccessibilityManager::~BrowserAccessibilityManager() = default;
 
@@ -1072,6 +1072,19 @@ void BrowserAccessibilityManager::Collapse(const BrowserAccessibility& node) {
 
   AXActionData action_data;
   action_data.action = ax::mojom::Action::kCollapse;
+  action_data.target_node_id = node.GetId();
+  delegate_->AccessibilityPerformAction(action_data);
+  AXPlatform::GetInstance().OnActionFromAssistiveTech();
+}
+
+void BrowserAccessibilityManager::RequestLayoutBasedAction(
+    const BrowserAccessibility& node) {
+  if (!delegate_) {
+    return;
+  }
+
+  AXActionData action_data;
+  action_data.action = ax::mojom::Action::kRequestLayoutBasedAction;
   action_data.target_node_id = node.GetId();
   delegate_->AccessibilityPerformAction(action_data);
   AXPlatform::GetInstance().OnActionFromAssistiveTech();

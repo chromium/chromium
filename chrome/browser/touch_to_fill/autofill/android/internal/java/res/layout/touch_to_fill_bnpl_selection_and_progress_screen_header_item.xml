@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/ttf_for_sheet_item_margin_horizontal"
+    android:layout_marginBottom="@dimen/bnpl_header_margin_bottom">
+
+    <ImageButton
+        android:id="@+id/bnpl_header_back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/bnpl_back_button_margin_end"
+        android:background="?attr/actionBarItemBackground"
+        android:contentDescription="@string/autofill_bottom_sheet_back_button_description"
+        android:src="@drawable/ic_arrow_back_24dp"
+        app:tint="@macro/default_icon_color" />
+
+    <TextView
+        android:id="@+id/bnpl_header_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/bnpl_header_back_button"
+        android:text="@string/autofill_bnpl_pay_later_options_text"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:focusable="true"
+        style="@style/TextAppearance.Headline" />
+
+</RelativeLayout>

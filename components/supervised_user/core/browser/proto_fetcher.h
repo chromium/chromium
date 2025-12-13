@@ -30,8 +30,6 @@
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "services/network/public/mojom/fetch_api.mojom-shared.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace supervised_user {
@@ -111,7 +109,7 @@ class FetchProcess {
   virtual void OnResponse(std::optional<std::string> response_body) = 0;
   virtual void OnError(const ProtoFetcherStatus& status) = 0;
 
-  const raw_ref<signin::IdentityManager> identity_manager_;
+  const raw_ref<signin::IdentityManager, DanglingUntriaged> identity_manager_;
   const Payload payload_;
   const raw_ref<const FetcherConfig> config_;
   const FetcherConfig::PathArgs args_;

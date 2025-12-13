@@ -57,8 +57,28 @@ ServiceWorkerMainResourceHandle::service_worker_client() {
   return scoped_service_worker_client_->AsWeakPtr();
 }
 
+std::optional<url::Origin>
+ServiceWorkerMainResourceHandle::TopFrameOriginForInitializeForRequest(
+    const network::ResourceRequest& resource_request) {
+  // The storage key only has a top_level_site, not an origin, so we must
+  // extract the origin from trusted_params.
+  //
+  // TODO(https://crbug.com/367755492): Investigate why we don't use
+  // `ServiceWorkerMainResourceHandle::isolation_info_`. Currently
+  // `TopFrameOriginForInitializeForRequest()` is a static method and doesn't
+  // have direct access to `ServiceWorkerMainResourceHandle::isolation_info_`,
+  // but this code has been historically using `ResourceRequest`'s isolation
+  // info since before, even when this code had direct access to
+  // `ServiceWorkerMainResourceHandle::isolation_info_`.
+  return resource_request.trusted_params
+             ? resource_request.trusted_params->isolation_info
+                   .top_frame_origin()
+             : std::nullopt;
+}
+
 bool ServiceWorkerMainResourceHandle::InitializeForRequest(
-    const network::ResourceRequest& tentative_resource_request,
+    const GURL& url,
+    std::optional<url::Origin> top_frame_origin,
     const ServiceWorkerClient* client_for_prefetch) {
   CHECK(service_worker_client());
 
@@ -67,7 +87,7 @@ bool ServiceWorkerMainResourceHandle::InitializeForRequest(
   // corresponds to the StorageKey used to look up the service worker's
   // registration. That StorageKey will then be used later to recreate this
   // net::IsolationInfo for use by the ServiceWorker itself.
-  url::Origin new_origin = url::Origin::Create(tentative_resource_request.url);
+  url::Origin new_origin = url::Origin::Create(url);
   net::SiteForCookies new_site_for_cookies = isolation_info_.site_for_cookies();
   new_site_for_cookies.CompareWithFrameTreeOriginAndRevise(new_origin);
   auto new_isolation_info = net::IsolationInfo::Create(
@@ -75,15 +95,8 @@ bool ServiceWorkerMainResourceHandle::InitializeForRequest(
       isolation_info_.top_frame_origin().value(), new_origin,
       new_site_for_cookies, isolation_info_.nonce());
 
-  // The storage key only has a top_level_site, not an origin, so we must
-  // extract the origin from trusted_params.
-  auto top_frame_origin = tentative_resource_request.trusted_params
-                              ? tentative_resource_request.trusted_params
-                                    ->isolation_info.top_frame_origin()
-                              : std::nullopt;
-
   auto key = service_worker_client()->CalculateStorageKeyForUpdateUrls(
-      tentative_resource_request.url, new_isolation_info);
+      url, new_isolation_info);
 
   if (client_for_prefetch) {
     CHECK(base::FeatureList::IsEnabled(features::kPrefetchServiceWorker));
@@ -109,8 +122,7 @@ bool ServiceWorkerMainResourceHandle::InitializeForRequest(
   // requests/redirects before falling back to network below, so service worker
   // APIs still work even if the service worker is bypassed for request
   // interception.
-  service_worker_client()->UpdateUrls(tentative_resource_request.url,
-                                      std::move(top_frame_origin),
+  service_worker_client()->UpdateUrls(url, std::move(top_frame_origin),
                                       std::move(key));
 
   // Inherit the controller used for prefetching from `client_for_prefetch`.

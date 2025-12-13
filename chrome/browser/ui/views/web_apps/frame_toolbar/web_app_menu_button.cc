@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 
+#include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,6 +18,9 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -43,6 +47,12 @@ WebAppMenuButton::WebAppMenuButton(BrowserView* browser_view)
 
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetImageLabelSpacing(2);
+
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(browser_view->GetProfile());
+  if (provider) {
+    registrar_observation_.Observe(&provider->registrar_unsafe());
+  }
 }
 
 WebAppMenuButton::~WebAppMenuButton() = default;
@@ -77,8 +87,32 @@ bool WebAppMenuButton::IsLabelPresentAndVisible() const {
   return label()->GetVisible() && !label()->GetText().empty();
 }
 
+void WebAppMenuButton::OnWebAppPendingUpdateChanged(
+    const webapps::AppId& app_id,
+    bool has_pending_update) {
+  web_app::AppBrowserController* app_controller =
+      browser_view_->browser()->app_controller();
+  // `app_controller` can be null if this button is used in a (Chrome OS) custom
+  // tab bar view for an ARC app.
+  if (!app_controller) {
+    return;
+  }
+  if (app_id == app_controller->app_id()) {
+    UpdateTextAndHighlightColor(has_pending_update);
+  }
+}
+
+void WebAppMenuButton::OnAppRegistrarDestroyed() {
+  registrar_observation_.Observe(nullptr);
+}
+
 void WebAppMenuButton::UpdateStateForTesting() {
-  UpdateTextAndHighlightColor();
+  UpdateTextAndHighlightColor(CanShowPendingUpdate());
+}
+
+base::CallbackListSubscription WebAppMenuButton::AwaitLabelTextUpdated(
+    base::RepeatingClosure callback) {
+  return label()->AddTextChangedCallback(callback);
 }
 
 void WebAppMenuButton::ShowMenu(int run_types) {
@@ -88,7 +122,7 @@ void WebAppMenuButton::ShowMenu(int run_types) {
 }
 
 void WebAppMenuButton::OnThemeChanged() {
-  UpdateTextAndHighlightColor();
+  UpdateTextAndHighlightColor(CanShowPendingUpdate());
   AppMenuButton::OnThemeChanged();
 }
 
@@ -129,7 +163,15 @@ void WebAppMenuButton::FadeHighlightOff() {
   }
 }
 
-void WebAppMenuButton::UpdateTextAndHighlightColor() {
+bool WebAppMenuButton::CanShowPendingUpdate() {
+  web_app::AppBrowserController* app_controller =
+      browser_view_->browser()->app_controller();
+  // `app_controller` can be null if this button is used in a (Chrome OS) custom
+  // tab bar view for an ARC app.
+  return app_controller && app_controller->HasPendingUpdateNotIgnoredByUser();
+}
+
+void WebAppMenuButton::UpdateTextAndHighlightColor(bool is_pending_update) {
   web_app::AppBrowserController* app_controller =
       browser_view_->browser()->app_controller();
   // `app_controller` can be null if this button is used in a (Chrome OS) custom
@@ -137,15 +179,14 @@ void WebAppMenuButton::UpdateTextAndHighlightColor() {
 
   int tooltip_message_id;
   std::u16string text;
-  if (!app_controller || !app_controller->HasPendingUpdate()) {
-    tooltip_message_id = IDS_WEB_APP_MENU_BUTTON_TOOLTIP;
-  } else {
+  if (is_pending_update) {
     tooltip_message_id = IDS_WEB_APP_MENU_BUTTON_TOOLTIP_UPDATE_AVAILABLE;
     text = l10n_util::GetStringUTF16(IDS_WEB_APP_MENU_BUTTON_UPDATE);
+  } else {
+    tooltip_message_id = IDS_WEB_APP_MENU_BUTTON_TOOLTIP;
   }
 
   const bool label_present_and_visible = !text.empty();
-
   SetHorizontalAlignment(label_present_and_visible ? gfx::ALIGN_RIGHT
                                                    : gfx::ALIGN_CENTER);
 

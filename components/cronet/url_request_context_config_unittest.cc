@@ -30,6 +30,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -311,8 +312,6 @@ TEST(URLRequestContextConfigTest, TestExperimentalOptionParsing) {
       context->host_resolver()
           ->GetManagerForTesting()
           ->https_svcb_options_for_testing();
-  EXPECT_EQ(base::FeatureList::IsEnabled(net::features::kUseDnsHttpsSvcb),
-            https_svcb_options.enable);
   EXPECT_EQ(net::features::kUseDnsHttpsSvcbInsecureExtraTimeMax.Get(),
             https_svcb_options.insecure_extra_time_max);
   EXPECT_EQ(net::features::kUseDnsHttpsSvcbInsecureExtraTimePercent.Get(),
@@ -1563,7 +1562,6 @@ TEST(URLRequestContextConfigTest, HttpsSvcbOptions) {
       context->host_resolver()
           ->GetManagerForTesting()
           ->https_svcb_options_for_testing();
-  EXPECT_TRUE(https_svcb_options.enable);
   EXPECT_EQ(base::Milliseconds(1), https_svcb_options.insecure_extra_time_max);
   EXPECT_EQ(2, https_svcb_options.insecure_extra_time_percent);
   EXPECT_EQ(base::Milliseconds(3), https_svcb_options.insecure_extra_time_min);

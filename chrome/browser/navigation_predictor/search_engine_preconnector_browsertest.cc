@@ -10,12 +10,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "chrome/browser/battery/battery_saver.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/navigation_predictor/search_engine_preconnector_keyed_service_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
-#include "chrome/browser/predictors/preconnect_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,6 +25,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/preconnect_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/features.h"
@@ -37,7 +38,7 @@ namespace {
 
 class SearchEnginePreconnectorBrowserTest
     : public subresource_filter::SubresourceFilterBrowserTest,
-      public predictors::PreconnectManager::Observer {
+      public content::PreconnectManager::Observer {
  public:
   static constexpr char kFakeSearch[] = "https://www.fakesearch.com/";
   static constexpr char kGoogleSearch[] = "https://www.google.com/";
@@ -140,12 +141,12 @@ class SearchEnginePreconnectorBrowserTest
  protected:
   std::map<GURL, int> preresolve_counts_;
   base::test::ScopedFeatureList feature_list_;
+  std::map<GURL, std::unique_ptr<base::RunLoop>> run_loops_;
 
   mojo::Remote<network::mojom::ConnectionChangeObserverClient> remote_;
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  std::map<GURL, std::unique_ptr<base::RunLoop>> run_loops_;
 };
 
 bool SearchEnginePreconnectorBrowserTest::PreconnectFromKeyedServiceEnabled()
@@ -247,8 +248,9 @@ IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorNoDelaysBrowserTest,
   EXPECT_EQ(2, preresolve_counts_[GetTestURL("/").DeprecatedGetOriginAsURL()]);
 }
 
+// TODO(crbug.com/413293448): Flaky test
 IN_PROC_BROWSER_TEST_P(SearchEnginePreconnectorNoDelaysBrowserTest,
-                       PreconnectOnlyInForeground) {
+                       DISABLED_PreconnectOnlyInForeground) {
   constexpr char16_t kShortName[] = u"test";
   constexpr char kSearchURL[] = "/anchors_different_area.html?q={searchTerms}";
   TemplateURLService* model =
@@ -635,7 +637,9 @@ class SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest
         {features::kPreconnectToSearch, {{"startup_delay_ms", "1000000"}}},
         {net::features::kSearchEnginePreconnectInterval,
          {{"preconnect_interval", "0"}}},
-        {net::features::kSearchEnginePreconnect2, {}}};
+        {net::features::kSearchEnginePreconnect2,
+         {{"FallbackInLowPowerMode", "true"}}}};
+    battery::OverrideIsBatterySaverEnabledForTesting(false);
 
     std::vector<base::test::FeatureRef> disabled_features;
 
@@ -1078,4 +1082,124 @@ IN_PROC_BROWSER_TEST_P(
 
   // Preconnect should occur for Google search.
   EXPECT_EQ(2, preresolve_counts_[search_url]);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest,
+    CheckConnectionKeepAliveConfig) {
+  auto config = GetSearchEnginePreconnector()->GetConnectionKeepAliveConfig();
+  EXPECT_TRUE(config.enable_connection_keep_alive);
+
+  battery::OverrideIsBatterySaverEnabledForTesting(true);
+
+  config = GetSearchEnginePreconnector()->GetConnectionKeepAliveConfig();
+  EXPECT_FALSE(config.enable_connection_keep_alive);
+  EXPECT_EQ(config.idle_timeout_in_seconds, 60);
+}
+
+class SearchEnginePreconnectorWithBindReceiversEverytimeFeatureBrowserTest
+    : public SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest {
+ public:
+  SearchEnginePreconnectorWithBindReceiversEverytimeFeatureBrowserTest() {
+    feature_list_.Reset();
+    std::vector<base::test::FeatureRefAndParams> enabled_features{
+        {features::kPreconnectToSearch, {{"startup_delay_ms", "1000000"}}},
+        {net::features::kSearchEnginePreconnectInterval,
+         {{"preconnect_interval", "0"}}},
+        {net::features::kSearchEnginePreconnect2,
+         {{"FallbackInLowPowerMode", "true"}}},
+        {features::kRebindPreconnectReceivers, {}}};
+    battery::OverrideIsBatterySaverEnabledForTesting(false);
+
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (PreconnectFromKeyedServiceEnabled()) {
+      enabled_features.push_back(
+          {features::kPreconnectFromKeyedService, {{"run_on_otr", "false"}}});
+    } else {
+      disabled_features.emplace_back(features::kPreconnectFromKeyedService);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
+  void OnPreresolveFinished(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
+          observer,
+      bool success) override {
+    if (observer.is_valid()) {
+      // This will disconnect the old remote if it is bound.
+      remote_.reset();
+      remote_.Bind(std::move(observer));
+    }
+
+    const GURL origin = url.DeprecatedGetOriginAsURL();
+    if (!base::Contains(preresolve_counts_, origin)) {
+      return;
+    }
+
+    EXPECT_EQ(origin == GetTestURL("/").DeprecatedGetOriginAsURL(), success);
+
+    ++preresolve_counts_[origin];
+    if (run_loops_[origin]) {
+      run_loops_[origin]->Quit();
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SearchEnginePreconnectorWithBindReceiversEverytimeFeatureBrowserTest,
+    ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(
+    SearchEnginePreconnectorWithBindReceiversEverytimeFeatureBrowserTest,
+    BindNewRemoteOnEachPreconnect) {
+  constexpr char16_t kShortName[] = u"test";
+  TemplateURLService* model =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(model);
+  search_test_utils::WaitForTemplateURLServiceToLoad(model);
+  ASSERT_TRUE(model->loaded());
+
+  TemplateURLData data_allowed_search;
+  data_allowed_search.SetShortName(kShortName);
+  data_allowed_search.SetKeyword(data_allowed_search.short_name());
+  data_allowed_search.SetURL(kGoogleSearch);
+  data_allowed_search.preconnect_to_search_url = true;
+
+  auto* template_url =
+      model->Add(std::make_unique<TemplateURL>(data_allowed_search));
+  ASSERT_TRUE(template_url);
+  model->SetUserSelectedDefaultSearchProvider(template_url);
+
+  GetSearchEnginePreconnector()->StartPreconnecting(
+      /*with_startup_delay=*/false);
+
+  const GURL search_url = template_url->GenerateSearchURL({});
+  WaitForPreresolveCountForURL(search_url, 1);
+
+  ASSERT_TRUE(remote_.is_bound());
+  mojo::Remote<network::mojom::ConnectionChangeObserverClient> remote_1 =
+      std::move(remote_);
+
+  ASSERT_FALSE(remote_.is_bound());
+  ASSERT_TRUE(remote_1.is_bound());
+
+  base::RunLoop disconnect_run_loop;
+  remote_1.set_disconnect_handler(disconnect_run_loop.QuitClosure());
+
+  GetSearchEnginePreconnector()->OnSessionClosed();
+  WaitForPreresolveCountForURL(search_url, 2);
+
+  disconnect_run_loop.Run();
+  ASSERT_FALSE(remote_1.is_connected());
+
+  remote_1.reset_on_disconnect();
+
+  EXPECT_FALSE(remote_1.is_bound());
+  EXPECT_TRUE(remote_.is_bound());
 }

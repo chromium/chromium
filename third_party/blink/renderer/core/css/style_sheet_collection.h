@@ -32,6 +32,8 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
+#include "third_party/blink/renderer/core/css/mixin_map.h"
+#include "third_party/blink/renderer/core/dom/tree_ordered_list.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -40,17 +42,39 @@
 
 namespace blink {
 
+class MediaQueryEvaluator;
+class Node;
 class StyleSheet;
-class RuleSetDiff;
 
+// StyleSheetCollection is responsible for keeping track of which style sheets
+// are relevant for a given tree scope. Style sheets may be relevant for either
+// or both of:
+//
+//  - DOM visibility purposes (the “style sheet list”; the CSSOM spec calls this
+//    “document or shadow root CSS style sheets”), or
+//  - Style calculation (“active style sheets”; not quite what the CSSOM spec
+//    calls “the final CSS style sheets” because we remove disabled sheets)
+//
+// The style sheets are collected from places like <link> nodes, <style> nodes,
+// adopted style sheets, inspector-added style sheets and so on. (You tell the
+// collection about relevant DOM nodes by calling AddStyleSheetCandidateNode()
+// and RemoveStyleSheetCandidateNode().)
+//
+// The precise logic for which sheets are in which list (e.g., do we include
+// injected author style sheets or not?) will depend on whether the tree scope
+// is a document or a shadow tree. However, it is broadly similar between
+// the two.
+//
+// Note, however, that even for a shadow tree, StyleSheetCollection only
+// considers the list of stylesheets for _one_ tree scope, not any parent tree
+// scopes. Thus, ScopedStyleResolver also needs to consider
+// StyleSheetCollections for parent tree scopes (for nodes in Shadow DOM), since
+// style sheets there may be relevant for ::host, ::part() and similar.
 class CORE_EXPORT StyleSheetCollection
     : public GarbageCollected<StyleSheetCollection>,
       public NameClient {
  public:
-  friend class ActiveDocumentStyleSheetCollector;
-  friend class ImportedDocumentStyleSheetCollector;
-
-  StyleSheetCollection();
+  explicit StyleSheetCollection(TreeScope&);
   StyleSheetCollection(const StyleSheetCollection&) = delete;
   StyleSheetCollection& operator=(const StyleSheetCollection&) = delete;
   ~StyleSheetCollection() override = default;
@@ -61,15 +85,7 @@ class CORE_EXPORT StyleSheetCollection
   const HeapVector<Member<StyleSheet>>& StyleSheetsForStyleSheetList() const {
     return style_sheets_for_style_sheet_list_;
   }
-  const HeapVector<Member<RuleSetDiff>>& RuleSetDiffs() const {
-    return rule_set_diffs_;
-  }
 
-  void Swap(StyleSheetCollection&);
-  void SwapSheetsForSheetList(HeapVector<Member<StyleSheet>>&);
-  void AppendActiveStyleSheet(const ActiveStyleSheet&);
-  void AppendSheetForList(StyleSheet*);
-  void AppendRuleSetDiff(Member<RuleSetDiff>);
   void MarkSheetListDirty() { sheet_list_dirty_ = true; }
 
   virtual void Trace(Visitor*) const;
@@ -77,13 +93,53 @@ class CORE_EXPORT StyleSheetCollection
     return "StyleSheetCollection";
   }
 
-  void Dispose();
+  void AddStyleSheetCandidateNode(Node&);
+  void RemoveStyleSheetCandidateNode(Node& node) {
+    style_sheet_candidate_nodes_.Remove(&node);
+  }
+  bool HasStyleSheetCandidateNodes() const {
+    return !style_sheet_candidate_nodes_.IsEmpty();
+  }
 
- protected:
+  bool IsShadowTreeStyleSheetCollection() const { return is_shadow_tree_; }
+  void UpdateStyleSheetList();
+
+  const MixinMap& Mixins() const { return mixins_; }
+
+  // Updates mixins_ but not active_style_sheets_.
+  void PrepareUpdateActiveStyleSheets(const MediaQueryEvaluator&);
+
+  // Must be called once, after all PrepareUpdateActiveStyleSheets().
+  void FinishUpdateActiveStyleSheets(const MixinMap& effective_mixins);
+
+ private:
+  friend class StyleCascadeTest;
+  void AddPendingActiveStyleSheetForTest(CSSStyleSheet* sheet) {
+    pending_active_style_sheets_.push_back(std::pair(sheet, nullptr));
+  }
+
+  Document& GetDocument() const { return tree_scope_->GetDocument(); }
+
+  Member<TreeScope> tree_scope_;
   HeapVector<Member<StyleSheet>> style_sheets_for_style_sheet_list_;
+  TreeOrderedList<Node> style_sheet_candidate_nodes_;
   ActiveStyleSheetVector active_style_sheets_;
-  HeapVector<Member<RuleSetDiff>> rule_set_diffs_;
+  ActiveStyleSheetVector pending_active_style_sheets_;
+  MixinMap mixins_;
+
+  // Every time a stylesheet regenerates its list of mixins (and it is
+  // nonempty), we increment this counter. This allows us to know when
+  // we must regenerate mixin-dependent RuleSets. The special value of
+  // zero is the initial state, where the MixinMap is empty.
+  //
+  // We do not have fine-grained invalidation of mixins at this time;
+  // if any mixin changes, or if the MixinMap for any mixin-defining
+  // stylesheet is generated for another reason, all mixin-dependent
+  // RuleSets are regenerated.
+  uint64_t mixin_generation_ = 0;
+
   bool sheet_list_dirty_ = true;
+  const bool is_shadow_tree_;
 };
 
 }  // namespace blink

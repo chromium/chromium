@@ -7,13 +7,9 @@
 
 #include <string>
 
-#include "base/feature_list.h"
+#include "build/build_config.h"
 
 namespace continuous_search {
-
-BASE_DECLARE_FEATURE(kRelatedSearchesExtraction);
-
-// Config for the search results extractor.
 struct Config {
   // The ID of the related searches container.
 #if BUILDFLAG(IS_ANDROID)

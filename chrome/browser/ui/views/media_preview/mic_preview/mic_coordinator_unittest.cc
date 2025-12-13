@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
@@ -44,8 +43,7 @@ media_preview_metrics::Context GetMetricsContext() {
   // Mic coordinator is expected to narrow preview type to kMic.
   // This is verified in ExpectHistogramTotalDevices() below.
   return {media_preview_metrics::UiLocation::kPermissionPrompt,
-          media_preview_metrics::PreviewType::kCameraAndMic,
-          media_preview_metrics::PromptType::kSingle, nullptr};
+          media_preview_metrics::PreviewType::kCameraAndMic};
 }
 
 }  // namespace

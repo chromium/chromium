@@ -16,8 +16,8 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/hid/fido_hid_packet.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 

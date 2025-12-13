@@ -11,16 +11,21 @@
 #include <string>
 #include <string_view>
 
+#include "base/byte_count.h"
 #include "base/supports_user_data.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/common/bindings_policy.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
+#include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-shared.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_navigation_policy.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -223,6 +228,40 @@ class CONTENT_EXPORT RenderFrame :
   using NewFeatureUsageCallback =
       base::RepeatingCallback<void(const blink::UseCounterFeature&)>;
   virtual void SetNewFeatureUsageCallback(NewFeatureUsageCallback callback) = 0;
+
+  // Sets the callback which is called when the renderer observes a new
+  // subresource load. This is used for subresource loading metrics.
+  using SubresourceLoadCallback =
+      base::RepeatingCallback<void(const blink::SubresourceLoadMetrics&)>;
+  virtual void SetSubresourceLoadCallback(SubresourceLoadCallback callback) = 0;
+
+  using LoadFromMemoryCacheCallback =
+      base::RepeatingCallback<void(const GURL& response_url,
+                                   int request_id,
+                                   base::ByteCount encoded_body_length,
+                                   const std::string& mime_type,
+                                   bool from_archive)>;
+  virtual void SetLoadFromMemoryCacheCallback(
+      LoadFromMemoryCacheCallback callback) = 0;
+
+  // Sets the callback which is called when the renderer observes a new response
+  // start, completion, and cancellation.
+  using DidStartResponseCallback = base::RepeatingCallback<void(
+      const url::SchemeHostPort& final_response_url,
+      int request_id,
+      const network::mojom::URLResponseHead& response_head,
+      network::mojom::RequestDestination request_destination,
+      bool is_ad_resource)>;
+  using DidCompleteResponseCallback = base::RepeatingCallback<
+      void(int request_id, const network::URLLoaderCompletionStatus& status)>;
+  using DidCancelResponseCallback =
+      base::RepeatingCallback<void(int request_id)>;
+  virtual void SetDidStartResponseCallback(
+      DidStartResponseCallback callback) = 0;
+  virtual void SetDidCompleteResponseCallback(
+      DidCompleteResponseCallback callback) = 0;
+  virtual void SetDidCancelResponseCallback(
+      DidCancelResponseCallback callback) = 0;
 
  protected:
   ~RenderFrame() override {}

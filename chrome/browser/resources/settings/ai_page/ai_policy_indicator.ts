@@ -7,6 +7,7 @@
  * 'settings-ai-policy-indicator' is an indicator that informs the user if the
  * feature is controlled by policy.
  */
+import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import '../settings_shared.css.js';
 
 import {PrefControlMixin} from '/shared/settings/controls/pref_control_mixin.js';

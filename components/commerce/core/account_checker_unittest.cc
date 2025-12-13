@@ -17,6 +17,7 @@
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/pref_names.h"
+#include "components/commerce/core/prefs.h"
 #include "components/endpoint_fetcher/mock_endpoint_fetcher.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -67,11 +68,10 @@ class SpyAccountChecker : public AccountChecker {
 
   MOCK_METHOD(std::unique_ptr<EndpointFetcher>,
               CreateEndpointFetcher,
-              (const std::string& oauth_consumer_name,
+              (signin::OAuthConsumerId oauth_consumer_id,
                const GURL& url,
                const endpoint_fetcher::HttpMethod http_method,
                const std::string& content_type,
-               const std::vector<std::string>& scopes,
                const base::TimeDelta& timeout,
                const std::string& post_data,
                const net::NetworkTrafficAnnotationTag& annotation_tag),
@@ -88,7 +88,7 @@ class AccountCheckerTest : public testing::Test {
 
   void SetUp() override {
     test_features_.InitAndEnableFeature(kShoppingList);
-    RegisterPrefs(pref_service_.registry());
+    RegisterProfilePrefs(pref_service_.registry());
     scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
@@ -124,46 +124,16 @@ class AccountCheckerTest : public testing::Test {
   std::unique_ptr<SpyAccountChecker> account_checker_;
 };
 
-TEST_F(AccountCheckerTest,
-       TestFetchWaaStatusOnSignin_ReplaceSyncPromosWithSignInPromosDisabled) {
-  base::test::ScopedFeatureList test_specific_features;
-  test_specific_features.InitAndDisableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
-  const char waa_oauth_name[] = "web_history";
-  const char waa_query_url[] =
-      "https://history.google.com/history/api/lookup?client=web_app";
-  const char waa_oauth_scope[] = "https://www.googleapis.com/auth/chromesync";
-  const char waa_content_type[] = "application/json; charset=UTF-8";
-  constexpr base::TimeDelta waa_timeout = base::Milliseconds(30000);
-  const char waa_post_data[] = "";
-
-  // ReplaceSyncPromosWithSignInPromos is disabled, so signing in should not
-  // trigger WAA request.
-  EXPECT_CALL(*account_checker_,
-              CreateEndpointFetcher(waa_oauth_name, GURL(waa_query_url),
-                                    endpoint_fetcher::HttpMethod::kGet,
-                                    waa_content_type,
-                                    std::vector<std::string>{waa_oauth_scope},
-                                    waa_timeout, waa_post_data, _))
-      .Times(0);
-
-  identity_test_env_.MakePrimaryAccountAvailable("mock_email@gmail.com",
-                                                 signin::ConsentLevel::kSignin);
-  ASSERT_EQ(false, account_checker_->IsSignedIn());
-}
-
 TEST_F(AccountCheckerTest, TestFetchPriceEmailPref) {
   {
     InSequence s;
     // Fetch email pref.
     EXPECT_CALL(
         *account_checker_,
-        CreateEndpointFetcher(
-            kOAuthName, GURL(kNotificationsPrefUrl),
-            endpoint_fetcher::HttpMethod::kGet, kContentType,
-            std::vector<std::string>{GaiaConstants::kChromeMemexOAuth2Scope},
-            kTimeout, kEmptyPostData, _));
+        CreateEndpointFetcher(signin::OAuthConsumerId::kChromeMemex,
+                              GURL(kNotificationsPrefUrl),
+                              endpoint_fetcher::HttpMethod::kGet, kContentType,
+                              kTimeout, kEmptyPostData, _));
   }
 
   ASSERT_EQ(false, pref_service_.GetBoolean(kPriceEmailNotificationsEnabled));
@@ -180,13 +150,11 @@ TEST_F(AccountCheckerTest, TestSendPriceEmailPrefOnPrefChange) {
   {
     InSequence s;
     // Send email pref.
-    EXPECT_CALL(
-        *account_checker_,
-        CreateEndpointFetcher(
-            kOAuthName, GURL(kNotificationsPrefUrl),
-            endpoint_fetcher::HttpMethod::kPost, kContentType,
-            std::vector<std::string>{GaiaConstants::kChromeMemexOAuth2Scope},
-            kTimeout, kPostData, _));
+    EXPECT_CALL(*account_checker_,
+                CreateEndpointFetcher(signin::OAuthConsumerId::kChromeMemex,
+                                      GURL(kNotificationsPrefUrl),
+                                      endpoint_fetcher::HttpMethod::kPost,
+                                      kContentType, kTimeout, kPostData, _));
   }
 
   ASSERT_EQ(false, pref_service_.GetBoolean(kPriceEmailNotificationsEnabled));

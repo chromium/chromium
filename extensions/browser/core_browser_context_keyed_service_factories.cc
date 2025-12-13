@@ -10,6 +10,7 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_navigation_registry.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_prefs_helper_factory.h"
 #include "extensions/browser/extension_protocols.h"
@@ -25,10 +26,6 @@
 #include "extensions/browser/updater/update_service_factory.h"
 #include "extensions/browser/user_script_world_configuration_manager.h"
 #include "extensions/buildflags/buildflags.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/extension_navigation_registry.h"
-#endif
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_stream_manager.h"
@@ -52,6 +49,7 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
   ExtensionActionManager::GetFactory();
   ExtensionFunction::EnsureShutdownNotifierFactoryBuilt();
   ExtensionPrefsFactory::GetInstance();
+  ExtensionNavigationRegistry::GetFactoryInstance();
   ExtensionPrefsHelperFactory::GetInstance();
   ExtensionRegistrarFactory::GetInstance();
   ImageLoaderFactory::GetInstance();
@@ -67,9 +65,6 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
   ServiceWorkerTaskQueueFactory::GetInstance();
   UpdateServiceFactory::GetInstance();
   UserScriptWorldConfigurationManager::GetFactory();
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  ExtensionNavigationRegistry::GetFactoryInstance();
-#endif
   WebRequestEventRouterFactory::GetInstance();
 }
 

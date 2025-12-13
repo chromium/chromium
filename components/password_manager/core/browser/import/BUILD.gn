@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 if (is_android) {
@@ -27,7 +26,7 @@ source_set("importer") {
     "//components/password_manager/core/common:constants",
     "//components/password_manager/core/common:features",
     "//components/password_manager/services/csv_password:service",
-    "//components/sync/base:base",
+    "//components/sync/base",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
@@ -42,7 +41,7 @@ source_set("importer_unit_tests") {
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/affiliation:test_support",
     "//components/password_manager/core/common:constants",
-    "//mojo/public/cpp/bindings:bindings",
+    "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -104,7 +103,7 @@ fuzzer_test("csv_reader_fuzzer") {
   deps = [
     ":csv",
     "//base:i18n",
-    "//components/autofill/core/common:common",
+    "//components/autofill/core/common",
   ]
   seed_corpus = "password_csv_reader_corpus"
   dict = "password_csv_reader_fuzzer.dict"

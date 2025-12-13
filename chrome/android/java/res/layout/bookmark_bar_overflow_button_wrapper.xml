@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="@dimen/bookmark_bar_overflow_button_height_total"
+    android:layout_height="@dimen/bookmark_bar_overflow_button_height_total"
+    android:background="@drawable/bookmark_bar_ripple"
+    android:focusable="true"
+    android:clickable="true"
+    android:descendantFocusability="blocksDescendants"
+    android:contentDescription="@string/bookmark_bar_overflow_button_content_description">
+
+  <ImageView
+      android:id="@+id/bookmark_bar_overflow_icon"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:src="@drawable/outline_chevron_right_24dp"
+      app:tint="@color/default_icon_color_tint_list"
+      android:importantForAccessibility="no" />
+
+</FrameLayout>

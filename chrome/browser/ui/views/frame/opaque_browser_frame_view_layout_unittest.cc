@@ -25,6 +25,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/test/views_test_utils.h"
 
 namespace {
@@ -86,7 +87,6 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   bool IsFrameCondensed() const override {
     return !show_caption_buttons_ || maximized_;
   }
-  bool EverHasVisibleBackgroundTabShapes() const override { return false; }
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override {}
   bool ShouldDrawRestoredFrameShadow() const override { return true; }
 #if BUILDFLAG(IS_LINUX)

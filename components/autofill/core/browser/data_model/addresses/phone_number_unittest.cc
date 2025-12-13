@@ -168,21 +168,21 @@ TEST(PhoneNumberTest, SetInfo) {
   // Set the formatted info directly.
   EXPECT_TRUE(
       phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"(650) 234-5678", kLocale));
-  EXPECT_EQ(u"1 650-234-5678", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"+1 650-234-5678", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
   EXPECT_EQ(u"16502345678", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
 
   // Unformatted numbers should be formatted.
   EXPECT_TRUE(phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"8887776666", kLocale));
-  EXPECT_EQ(u"1 888-777-6666", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"+1 888-777-6666", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
   EXPECT_EQ(u"18887776666", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
 
   EXPECT_TRUE(phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"+18887776666", kLocale));
-  EXPECT_EQ(u"1 888-777-6666", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"+1 888-777-6666", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
   EXPECT_EQ(u"18887776666", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
 
   // Differently formatted numbers should not be left formatted as is.
   EXPECT_TRUE(phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"800-432-8765", kLocale));
-  EXPECT_EQ(u"1 800-432-8765", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"+1 800-432-8765", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
   EXPECT_EQ(u"18004328765", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
 
   // SetRawInfo should not try to format.
@@ -224,7 +224,7 @@ TEST(PhoneNumberTest, InferCountryCallingCode) {
   EXPECT_TRUE(phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"6502345678", kLocale));
   EXPECT_EQ(u"1", phone.GetInfo(PHONE_HOME_COUNTRY_CODE, kLocale));
   EXPECT_EQ(u"16502345678", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
-  EXPECT_EQ(u"1 650-234-5678", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"+1 650-234-5678", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
   EXPECT_EQ(u"6502345678", phone.GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale));
 
   // Pre-formatted number.
@@ -234,7 +234,7 @@ TEST(PhoneNumberTest, InferCountryCallingCode) {
       phone.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"(650) 234-5678", kLocale));
   EXPECT_EQ(u"1", phone.GetInfo(PHONE_HOME_COUNTRY_CODE, kLocale));
   EXPECT_EQ(u"16502345678", phone.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
-  EXPECT_EQ(u"1 650-234-5678", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_EQ(u"+1 650-234-5678", phone.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
   EXPECT_EQ(u"6502345678", phone.GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale));
 
   // Different country.
@@ -549,7 +549,7 @@ INSTANTIATE_TEST_SUITE_P(
             // the test.
             .default_country = u"US",
             // What's stored on disk.
-            .expected_stored_number = u"1 650-234-5678",
+            .expected_stored_number = u"+1 650-234-5678",
             // What's returned from GetInfo for filling.
             .expected_values = {{PHONE_HOME_COUNTRY_CODE, u"1"},
                                 {PHONE_HOME_CITY_CODE, u"650"},
@@ -564,7 +564,7 @@ INSTANTIATE_TEST_SUITE_P(
             .observed_fields = {{PHONE_HOME_CITY_CODE, u"650"},
                                 {PHONE_HOME_NUMBER, u"2345680"}},
             .default_country = u"US",
-            .expected_stored_number = u"1 650-234-5680",
+            .expected_stored_number = u"+1 650-234-5680",
             .expected_values = {{// No country code was set.
                                  PHONE_HOME_COUNTRY_CODE, u"1"},
                                 {PHONE_HOME_CITY_CODE, u"650"},
@@ -596,7 +596,7 @@ INSTANTIATE_TEST_SUITE_P(
         PhoneImportAndGetTestCase{
             .observed_fields = {{PHONE_HOME_CITY_AND_NUMBER, u"6502345681"}},
             .default_country = u"US",
-            .expected_stored_number = u"1 650-234-5681",
+            .expected_stored_number = u"+1 650-234-5681",
             // .expected_values were already covered for this format above.
         },
 
@@ -607,7 +607,7 @@ INSTANTIATE_TEST_SUITE_P(
                                 {PHONE_HOME_NUMBER_PREFIX, u"234"},
                                 {PHONE_HOME_NUMBER_SUFFIX, u"5682"}},
             .default_country = u"US",
-            .expected_stored_number = u"1 650-234-5682",
+            .expected_stored_number = u"+1 650-234-5682",
             // .expected_values were already covered for this format above.
         },
 
@@ -617,7 +617,7 @@ INSTANTIATE_TEST_SUITE_P(
         PhoneImportAndGetTestCase{
             .observed_fields = {{PHONE_HOME_CITY_AND_NUMBER, u"+16502345681"}},
             .default_country = u"US",
-            .expected_stored_number = u"1 650-234-5681",
+            .expected_stored_number = u"+1 650-234-5681",
             .expected_values = {{PHONE_HOME_COUNTRY_CODE, u"1"},
                                 {PHONE_HOME_CITY_CODE, u"650"},
                                 {PHONE_HOME_NUMBER, u"2345681"},
@@ -627,7 +627,7 @@ INSTANTIATE_TEST_SUITE_P(
             // Same number as above but without a leading +.
             .observed_fields = {{PHONE_HOME_CITY_AND_NUMBER, u"16502345681"}},
             .default_country = u"US",
-            .expected_stored_number = u"1 650-234-5681",
+            .expected_stored_number = u"+1 650-234-5681",
             // Same expectations as above.
             .expected_values = {{PHONE_HOME_COUNTRY_CODE, u"1"},
                                 {PHONE_HOME_CITY_CODE, u"650"},
@@ -646,7 +646,7 @@ INSTANTIATE_TEST_SUITE_P(
             .observed_fields = {{PHONE_HOME_WHOLE_NUMBER, u"+16502345681"}},
             .default_country = u"US",
             // The + from the input is reflected here:
-            .expected_stored_number = u"1 650-234-5681",
+            .expected_stored_number = u"+1 650-234-5681",
             // Same expectations as above.
             .expected_values = {{PHONE_HOME_COUNTRY_CODE, u"1"},
                                 {PHONE_HOME_CITY_CODE, u"650"},
@@ -657,8 +657,8 @@ INSTANTIATE_TEST_SUITE_P(
             // Same number as above but without a leading +.
             .observed_fields = {{PHONE_HOME_WHOLE_NUMBER, u"16502345681"}},
             .default_country = u"US",
-            // The lack of a + is refelected here:
-            .expected_stored_number = u"1 650-234-5681",
+            // The + added in parsing is reflected here:
+            .expected_stored_number = u"+1 650-234-5681",
             // Same expectations as above.
             .expected_values = {{PHONE_HOME_COUNTRY_CODE, u"1"},
                                 {PHONE_HOME_CITY_CODE, u"650"},
@@ -672,7 +672,7 @@ INSTANTIATE_TEST_SUITE_P(
             .observed_fields = {{PHONE_HOME_WHOLE_NUMBER, u"+1 65 02 345681"}},
             .default_country = u"US",
             // The + from the input is reflected here:
-            .expected_stored_number = u"1 650-234-5681",
+            .expected_stored_number = u"+1 650-234-5681",
             // Same expectations as above.
             .expected_values = {{PHONE_HOME_COUNTRY_CODE, u"1"},
                                 {PHONE_HOME_CITY_CODE, u"650"},
@@ -683,8 +683,8 @@ INSTANTIATE_TEST_SUITE_P(
             // Same number as above but without a leading +.
             .observed_fields = {{PHONE_HOME_WHOLE_NUMBER, u"1 65 02 345681"}},
             .default_country = u"US",
-            // The lack of a + is reflected here:
-            .expected_stored_number = u"1 650-234-5681",
+            // The + added in parsing is reflected here:
+            .expected_stored_number = u"+1 650-234-5681",
             // Same expectations as above.
             .expected_values = {{PHONE_HOME_COUNTRY_CODE, u"1"},
                                 {PHONE_HOME_CITY_CODE, u"650"},
@@ -789,7 +789,6 @@ INSTANTIATE_TEST_SUITE_P(
         PhoneImportAndGetTestCase{
             .observed_fields = {{PHONE_HOME_WHOLE_NUMBER, u"+490891234567"}},
             .default_country = u"DE",
-
             .expected_stored_number = u"+49 89 1234567",
             .expected_values = {{PHONE_HOME_COUNTRY_CODE, u"49"},
                                 {PHONE_HOME_CITY_CODE, u"89"},
@@ -845,6 +844,22 @@ INSTANTIATE_TEST_SUITE_P(
         // be stored because it consists of 11 digits, more than US phone
         // numbers allow. We don't have a test case because the number does not
         // get stored.
+
+        // An american number is observed for a German profile.
+        // The number is stored in international format and the formatted
+        // values do not get overwritten with the profile's country code.
+        // This is a regression test case for crbug.com/416705505.
+        PhoneImportAndGetTestCase{
+            .observed_fields = {{PHONE_HOME_WHOLE_NUMBER, u"+16502345681"}},
+            .default_country = u"DE",
+            .expected_stored_number = u"+1 650-234-5681",
+            // Fields are filled according to the country code of the number,
+            // not the profile's country.
+            .expected_values = {{PHONE_HOME_COUNTRY_CODE, u"1"},
+                                {PHONE_HOME_CITY_CODE, u"650"},
+                                {PHONE_HOME_NUMBER, u"2345681"},
+                                {PHONE_HOME_WHOLE_NUMBER, u"+16502345681"},
+                                {PHONE_HOME_CITY_AND_NUMBER, u"6502345681"}}},
 
         // The national German number "0891234567" (10 digits) is also invalid
         // in the US, but can still be reproduced as a PHONE_HOME_NUMBER,

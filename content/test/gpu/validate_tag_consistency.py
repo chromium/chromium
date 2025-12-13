@@ -75,6 +75,8 @@ TAG_SPECIALIZATIONS = {
     },
     'GPU_TAGS': {
         'amd': [
+            'amd-0x150e',
+            'amd-0x1900',
             'amd-0x6613',
             'amd-0x679e',
             'amd-0x67ef',
@@ -96,6 +98,7 @@ TAG_SPECIALIZATIONS = {
             'google-0xc0de',
         ],
         'imagination': [],
+        'imagination-technologies': [],
         'intel': [
             # Individual GPUs should technically fit under intel-gen-X, but we
             # only support one level of nesting, so treat the generation tags as
@@ -122,7 +125,7 @@ TAG_SPECIALIZATIONS = {
         'qualcomm': [
             # 043a = 0x41333430 = older Adreno GPU
             # 0636 = 0x36333630 = Adreno 690 GPU (such as Surface Pro 9 5G)
-            # 0c36 = 0x36334330 = Adreno 741 GPU
+            # 0c36 = 0x36334330 = Adreno 741 GPU (Snapdragon X Elite)
             'qualcomm-0x41333430',
             'qualcomm-0x36333630',
             'qualcomm-0x36334330',
@@ -189,12 +192,12 @@ TAG_HEADER = """\
 # OS
 {OS_TAGS}
 # Devices
-# tags: [ android-pixel-2 android-pixel-4 android-pixel-6
+# tags: [ android-pixel-2 android-pixel-4 android-pixel-6 android-pixel-10
 #             android-shield-android-tv android-sm-a137f android-sm-a236b
 #             android-sm-s911u1
 #         android-brya android-corsola
 #         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
-#             chromeos-board-octopus chromeos-board-volteer
+#             chromeos-board-octopus
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
 #             fuchsia-board-qemu-x64 ]
 # Platform
@@ -225,6 +228,7 @@ TAG_HEADER = """\
 # tags: [ mesa_lt_19.1
 #         mesa_ge_21.0
 #         mesa_ge_23.2
+#         mesa_ge_24.2
 #         nvidia_ge_31.0.15.4601 nvidia_lt_31.0.15.4601
 #         nvidia_ge_535.183.01 nvidia_lt_535.183.01 ]
 # ASan

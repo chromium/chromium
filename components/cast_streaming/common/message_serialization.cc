@@ -57,7 +57,7 @@ bool DeserializeCastMessage(std::string_view buffer,
                             std::string* message_namespace,
                             std::string* message) {
   std::optional<base::Value::Dict> converted_dict =
-      base::JSONReader::ReadDict(buffer);
+      base::JSONReader::ReadDict(buffer, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!converted_dict) {
     return false;
   }

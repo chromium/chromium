@@ -20,6 +20,7 @@
 #include "components/grit/components_scaled_resources.h"
 #import "ui/base/cocoa/touch_bar_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -188,7 +189,8 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
 }
 
 - (void)acceptCreditCard:(id)sender {
-  _controller->AcceptSuggestion([sender tag]);
+  _controller->AcceptSuggestion(
+      [sender tag], autofill::AutofillMetrics::SuggestionAcceptedMethod::kTap);
 }
 
 - (void)setIsCreditCardPopup:(bool)is_credit_card_popup {

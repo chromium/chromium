@@ -57,12 +57,12 @@ bool AnimatedPaintWorkletTracker::InvalidatePaintWorkletsOnPendingTree() {
     if (it == input_properties_.end()) {
       continue;
     }
-    for (PictureLayerImpl* layer : it->second.associated_layers) {
-      layer->InvalidatePaintWorklets(
-          prop_key, input_properties_.find(prop_key)->second.animation_value,
-          input_properties_.find(prop_key)->second.last_animation_value);
+    PropertyState& state = it->second;
+    for (PictureLayerImpl* layer : state.associated_layers) {
+      layer->InvalidatePaintWorklets(prop_key, state.animation_value,
+                                     state.last_animation_value);
     }
-    it->second.last_animation_value = it->second.animation_value;
+    state.last_animation_value = state.animation_value;
   }
   bool return_value = !input_properties_animated_on_impl_.empty();
   input_properties_animated_on_impl_.clear();

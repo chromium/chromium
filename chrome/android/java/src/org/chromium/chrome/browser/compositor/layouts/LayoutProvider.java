@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.compositor.layouts;
 
 import android.graphics.RectF;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -15,12 +17,13 @@ import org.chromium.ui.resources.ResourceManager;
  * Interface that give access the active layout. This is useful to isolate the renderer of all the
  * layout logic. Called from the GL thread.
  */
+@NullMarked
 public interface LayoutProvider {
     /**
      * @return The layout to be rendered. The caller may not keep a reference of that value
-     * internally because the value may change without notice.
+     *     internally because the value may change without notice.
      */
-    Layout getActiveLayout();
+    @Nullable Layout getActiveLayout();
 
     /**
      * @param rect RectF instance to be used to store the result and return. If null, it uses a new

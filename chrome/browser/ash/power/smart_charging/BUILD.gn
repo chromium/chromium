@@ -52,6 +52,7 @@ source_set("unit_tests") {
     "//chromeos/services/machine_learning/public/cpp:stub",
     "//components/assist_ranker/proto",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//testing/gtest",
     "//ui/events",

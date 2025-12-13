@@ -13,6 +13,7 @@
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_serializer.h"
+#include "ui/accessibility/test_ax_tree_update.h"
 
 namespace ui {
 
@@ -821,6 +822,33 @@ TEST(AXEventGeneratorTest, CreateAlertAndLiveRegion) {
           HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 2),
           HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 3),
           HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 4)));
+}
+
+TEST(AXEventGeneratorTest, AlertBecomingUnignored) {
+  // Test that when a node with alert role becomes unignored, an ALERT event
+  // is fired. This handles cases where role and ignored state change
+  // simultaneously (e.g. visibility:hidden->visible + role="alert").
+  TestAXTreeUpdate initial_state(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kAlert state=kIgnored
+  )HTML"));
+
+  AXTree tree(initial_state);
+  AXEventGenerator event_generator(&tree);
+  ASSERT_THAT(event_generator, IsEmpty());
+
+  // Update: make the alert node unignored.
+  AXTreeUpdate update = initial_state;
+  update.nodes[1].RemoveState(ax::mojom::State::kIgnored);
+
+  ASSERT_TRUE(tree.Unserialize(update));
+  EXPECT_THAT(
+      event_generator,
+      UnorderedElementsAre(
+          HasEventAtNode(AXEventGenerator::Event::ALERT, 2),
+          HasEventAtNode(AXEventGenerator::Event::IGNORED_CHANGED, 2),
+          HasEventAtNode(AXEventGenerator::Event::SUBTREE_CREATED, 2),
+          HasEventAtNode(AXEventGenerator::Event::CHILDREN_CHANGED, 1)));
 }
 
 TEST(AXEventGeneratorTest, LiveRegionChanged) {

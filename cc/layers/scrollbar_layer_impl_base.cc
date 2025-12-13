@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "cc/base/math_util.h"
+#include "cc/input/scroll_utils.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/scroll_node.h"
@@ -276,6 +278,11 @@ void ScrollbarLayerImplBase::SetOverlayScrollbarLayerOpacityAnimated(
   if (!layer_tree_impl())
     return;
 
+  if (layer_tree_impl()->settings().trees_in_viz_in_viz_process &&
+      !layer_tree_impl()->settings().TreeAnimationsInVizInVizProcess()) {
+    return;
+  }
+
   PropertyTrees* property_trees = layer_tree_impl()->property_trees();
 
   EffectNode* node =
@@ -330,6 +337,12 @@ bool ScrollbarLayerImplBase::IsFluentScrollbarEnabled() const {
 
 bool ScrollbarLayerImplBase::IsFluentOverlayScrollbarEnabled() const {
   return layer_tree_impl()->settings().enable_fluent_overlay_scrollbar;
+}
+
+int32_t ScrollbarLayerImplBase::ThumbLength() const {
+  return ScrollUtils::CalculateScrollbarThumbLength(
+      scroll_layer_length(), clip_layer_length(), TrackLength(),
+      MinimumThumbLength());
 }
 
 gfx::Rect ScrollbarLayerImplBase::BackButtonRect() const {

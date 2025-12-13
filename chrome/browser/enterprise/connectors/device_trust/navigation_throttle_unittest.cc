@@ -20,7 +20,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/fake_device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/mock_device_trust_service.h"
 #include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
-#include "chrome/browser/ui/device_signals_consent/mock_consent_requester.h"
+#include "chrome/browser/ui/views/device_signals_consent/consent_dialog_coordinator.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/device_signals/core/browser/mock_user_permission_service.h"
 #include "components/device_signals/core/browser/pref_names.h"
@@ -43,7 +43,6 @@
 
 using content::NavigationThrottle;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace enterprise_connectors {
@@ -116,6 +115,18 @@ scoped_refptr<net::HttpResponseHeaders> GetRedirectedHeader() {
 
 }  // namespace
 
+// Simple mock for ConsentRequester used in tests.
+class MockConsentRequester : public ConsentRequester {
+ public:
+  MockConsentRequester() = default;
+  ~MockConsentRequester() override = default;
+
+  MockConsentRequester(const MockConsentRequester&) = delete;
+  MockConsentRequester& operator=(const MockConsentRequester&) = delete;
+
+  MOCK_METHOD(void, RequestConsent, (RequestConsentCallback), (override));
+};
+
 class DeviceTrustNavigationThrottleTest : public testing::Test {
  protected:
   DeviceTrustNavigationThrottleTest() {
@@ -128,8 +139,8 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
         std::make_unique<FakeDeviceTrustConnectorService>(test_prefs_);
 
     ON_CALL(mock_device_trust_service_, Watches(_))
-        .WillByDefault(Invoke(
-            [this](const GURL& url) { return fake_connector_->Watches(url); }));
+        .WillByDefault(
+            [this](const GURL& url) { return fake_connector_->Watches(url); });
   }
 
   void CreateAndSetMockConsentRequester() {

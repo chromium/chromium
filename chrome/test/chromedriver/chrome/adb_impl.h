@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/test/chromedriver/chrome/adb.h"
 
 namespace base {

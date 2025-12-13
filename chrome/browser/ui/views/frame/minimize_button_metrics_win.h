@@ -25,6 +25,10 @@ class MinimizeButtonMetrics {
   // Obtain the X offset of the native minimize button. Since Windows can lie
   // to us if we call this at the wrong moment, this might come from a cached
   // value rather than read when called.
+  //
+  // The value is an absolute distance from the leading edge of the frame. So if
+  // the browser is in LtR, this is expected to be a large number and must be
+  // adjusted for the right side of the window.
   int GetMinimizeButtonOffsetX() const;
 
   // Must be called when hwnd_ is activated to update the minimize button
@@ -36,7 +40,7 @@ class MinimizeButtonMetrics {
 
  private:
   // Gets the value for GetMinimizeButtonOffsetX(), caching if found.
-  int GetAndCacheMinimizeButtonOffsetX() const;
+  void CalculateAndCacheMinimizeButtonOffsetX() const;
 
   int GetButtonBoundsPositionOffset(const RECT& button_bounds,
                                     const RECT& window_bounds) const;

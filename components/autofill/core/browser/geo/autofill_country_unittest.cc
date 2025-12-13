@@ -17,7 +17,7 @@
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_metadata.h"
 #if defined(ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 namespace autofill {
@@ -167,8 +167,8 @@ TEST(AutofillCountryTest, TrAddressRequirements) {
 TEST(AutofillCountryTest, AllCountryCodesHaveCountryName) {
   std::set<std::string> expected_failures;
 #if defined(ANDROID)
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_KITKAT) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_KITKAT) {
     expected_failures.insert("BQ");
     expected_failures.insert("SS");
     expected_failures.insert("XK");

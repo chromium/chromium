@@ -6,7 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/string_util.h"
-#include "base/test/metrics/action_suffix_reader.h"
+#include "base/test/metrics/action_variants_reader.h"
 #include "base/test/metrics/histogram_variants_reader.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/feature_engagement/public/configuration.h"
@@ -72,13 +72,13 @@ TEST(WhatsNewRegistrarTest, CheckModuleHistograms) {
 }
 
 TEST(WhatsNewRegistrarTest, CheckModuleActions) {
-  std::vector<base::ActionSuffixEntryMap> suffixes;
+  std::vector<base::test::ActionVariantsEntryMap> variants;
   std::vector<std::string> missing_modules;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    suffixes =
-        base::ReadActionSuffixesForAction("UserEducation.WhatsNew.ModuleShown");
-    ASSERT_EQ(1U, suffixes.size());
+    variants = base::test::ReadActionVariantsForAction(
+        "UserEducation.WhatsNew.ModuleShown", ".");
+    ASSERT_EQ(1U, variants.size());
   }
 
   whats_new::WhatsNewRegistry registry(
@@ -88,7 +88,7 @@ TEST(WhatsNewRegistrarTest, CheckModuleActions) {
   const auto& modules = registry.modules();
   for (const auto& [key, module] : modules) {
     const auto metric_name = module.unique_name();
-    if (!base::Contains(suffixes[0], metric_name)) {
+    if (!base::Contains(variants[0], metric_name)) {
       missing_modules.emplace_back(metric_name);
     }
   }
@@ -96,18 +96,18 @@ TEST(WhatsNewRegistrarTest, CheckModuleActions) {
       << "Whats's New Modules:\n"
       << base::JoinString(missing_modules, ", ")
       << "\nconfigured in whats_new_registrar.cc but no "
-         "corresponding action suffixes were added in "
+         "corresponding action variants were added in "
          "//tools/metrics/actions/actions.xml";
 }
 
 TEST(WhatsNewRegistrarTest, CheckEditionActions) {
-  std::vector<base::ActionSuffixEntryMap> suffixes;
+  std::vector<base::test::ActionVariantsEntryMap> variants;
   std::vector<std::string> missing_editions;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    suffixes = base::ReadActionSuffixesForAction(
-        "UserEducation.WhatsNew.EditionShown");
-    ASSERT_EQ(1U, suffixes.size());
+    variants = base::test::ReadActionVariantsForAction(
+        "UserEducation.WhatsNew.EditionShown", ".");
+    ASSERT_EQ(1U, variants.size());
   }
 
   whats_new::WhatsNewRegistry registry(
@@ -116,7 +116,7 @@ TEST(WhatsNewRegistrarTest, CheckEditionActions) {
   RegisterWhatsNewEditionsForTests(&registry);
   for (const auto& [key, edition] : registry.editions()) {
     const auto metric_name = edition.unique_name();
-    if (!base::Contains(suffixes[0], metric_name)) {
+    if (!base::Contains(variants[0], metric_name)) {
       missing_editions.emplace_back(metric_name);
     }
   }
@@ -124,6 +124,6 @@ TEST(WhatsNewRegistrarTest, CheckEditionActions) {
       << "Whats's New Editions:\n"
       << base::JoinString(missing_editions, ", ")
       << "\nconfigured in whats_new_registrar.cc but no "
-         "corresponding action suffixes were added in "
+         "corresponding action variants were added in "
          "//tools/metrics/actions/actions.xml";
 }

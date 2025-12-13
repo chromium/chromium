@@ -21,13 +21,13 @@ source_set("tailored_security") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/first_run/public:best_features_item",
-    "//ios/chrome/browser/first_run/public:features",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/welcome_back/model:features",
     "//ios/components/security_interstitials/safe_browsing",
   ]
 }
@@ -44,8 +44,8 @@ source_set("infobar_delegates") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/first_run/public:best_features_item",
-    "//ios/chrome/browser/first_run/public:features",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/welcome_back/model:features",
     "//ios/components/security_interstitials/safe_browsing",
     "//ios/web/public",
   ]
@@ -70,6 +70,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gmock",
     "//testing/gtest",

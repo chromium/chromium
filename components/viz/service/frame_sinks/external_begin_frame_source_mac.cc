@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/trace_event/trace_event.h"
@@ -28,14 +29,11 @@ bool AlmostEqual(base::TimeDelta a, base::TimeDelta b) {
 }
 
 BASE_FEATURE(kForceMacVSyncTimerForDebugging,
-             "ForceMacVSyncTimerForDebugging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allow CADisplayLink to handle refresh rate within the range based on the app
 // work load.
-BASE_FEATURE(kUseRefreshRateRange,
-             "UseRefreshRateRange",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseRefreshRateRange, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
@@ -425,10 +423,7 @@ void ExternalBeginFrameSourceMac::SetPreferredInterval(
 
 base::TimeDelta ExternalBeginFrameSourceMac::GetMinimumFrameInterval() {
   if (display_link_mac_) {
-    auto refresh_rate = display_link_mac_->GetRefreshRate();
-    if (refresh_rate) {
-      return base::Seconds(1) / refresh_rate;
-    }
+    return display_link_mac_->GetRefreshInterval();
   }
 
   return BeginFrameArgs::DefaultInterval();

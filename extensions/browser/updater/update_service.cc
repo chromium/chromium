@@ -12,7 +12,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -122,14 +121,13 @@ void UpdateService::OnCrxStateChange(UpdateFoundCallback update_found_callback,
       break;
     case update_client::ComponentState::kNew:
     case update_client::ComponentState::kChecking:
-    case update_client::ComponentState::kDownloadingDiff:
     case update_client::ComponentState::kDownloading:
-    case update_client::ComponentState::kUpdatingDiff:
+    case update_client::ComponentState::kDecompressing:
+    case update_client::ComponentState::kPatching:
     case update_client::ComponentState::kUpdating:
     case update_client::ComponentState::kUpdated:
     case update_client::ComponentState::kUpdateError:
     case update_client::ComponentState::kRun:
-    case update_client::ComponentState::kLastStatus:
       break;
   }
 
@@ -144,8 +142,12 @@ void UpdateService::OnCrxStateChange(UpdateFoundCallback update_found_callback,
 
 UpdateService::UpdateService(
     content::BrowserContext* browser_context,
-    scoped_refptr<update_client::UpdateClient> update_client)
-    : browser_context_(browser_context), update_client_(update_client) {
+    scoped_refptr<update_client::UpdateClient> update_client,
+    base::RepeatingCallback<void(const std::vector<std::string>&,
+                                 base::OnceClosure)> cache_retainer)
+    : browser_context_(browser_context),
+      update_client_(update_client),
+      cache_retainer_(cache_retainer) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   update_data_provider_ =
       base::MakeRefCounted<UpdateDataProvider>(browser_context_);
@@ -176,6 +178,8 @@ void UpdateService::StartUpdateCheck(
       InProgressUpdate(std::move(callback), update_params.install_immediately);
 
   ExtensionUpdateDataMap update_data;
+  std::vector<ExtensionId> all_ids;
+  all_ids.reserve(update_params.update_info.size());
   std::vector<std::vector<ExtensionId>> update_ids;
   update_ids.reserve(update_params.update_info.size());
   for (const auto& update_info : update_params.update_info) {
@@ -196,6 +200,7 @@ void UpdateService::StartUpdateCheck(
     if (update_ids.empty() || update_ids.back().size() >= 25) {
       update_ids.emplace_back();
     }
+    all_ids.push_back(extension_id);
     update_ids.back().push_back(extension_id);
     update_data.insert(std::make_pair(extension_id, data));
   }
@@ -213,17 +218,24 @@ void UpdateService::StartUpdateCheck(
           &UpdateDataProvider::GetData, update_data_provider_,
           update_params.install_immediately, std::move(update_data));
 
+  base::OnceClosure do_update_check = base::DoNothing();
   for (const std::vector<std::string>& update_id_group : update_ids) {
-    update_client_->Update(
-        update_id_group, get_data,
-        base::BindRepeating(&UpdateService::OnCrxStateChange,
-                            weak_ptr_factory_.GetWeakPtr(),
-                            update_found_callback),
-        update_params.priority == ExtensionUpdateCheckParams::FOREGROUND,
-        base::BindOnce([](base::RepeatingClosure callback,
-                          update_client::Error /*error*/) { callback.Run(); },
-                       closure));
+    do_update_check =
+        std::move(do_update_check)
+            .Then(base::BindOnce(
+                &update_client::UpdateClient::Update, update_client_,
+                update_id_group, get_data,
+                base::BindRepeating(&UpdateService::OnCrxStateChange,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    update_found_callback),
+                update_params.priority ==
+                    ExtensionUpdateCheckParams::FOREGROUND,
+                base::BindOnce(
+                    [](base::RepeatingClosure callback,
+                       update_client::Error /*error*/) { callback.Run(); },
+                    closure)));
   }
+  cache_retainer_.Run(all_ids, std::move(do_update_check));
 }
 
 void UpdateService::UpdateCheckComplete(InProgressUpdate update) {

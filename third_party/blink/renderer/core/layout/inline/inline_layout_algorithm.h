@@ -128,8 +128,11 @@ class CORE_EXPORT InlineLayoutAlgorithm final
     kTextOverflowEllipsis,
     kHide,
   };
-  LineClampState GetLineClampState(const LineInfo*,
-                                   LayoutUnit line_box_height) const;
+  // nullptr is a valid input, in which case this method ignores
+  // post-line-breaking details such as whether the line overflows or is a
+  // block-in-inline. This is used to determine whether to set the line-clamp
+  // ellipsis during line breaking.
+  LineClampState GetLineClampState(const LineInfo*) const;
 
   // Checks whether the remainder of the IFC (i.e. anything after the current
   // break token) would be able to fit in the current line if it didn't have a

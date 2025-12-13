@@ -1,0 +1,26 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+
+declare_args() {
+  # This defines targets to include branded assets.
+  ios_branded_icons = ":branded"
+}
+
+_use_branded_assets = get_label_info(":branded", "label_no_toolchain") !=
+                      get_label_info(ios_branded_icons, "label_no_toolchain")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "IOS_USE_BRANDED_ASSETS=$_use_branded_assets" ]
+}
+
+group("branded") {
+  deps = [ "//ios/chrome/browser/shared/ui/image/resources:branded_assets" ]
+}
+
+group("branded_assets") {
+  deps = [ ios_branded_icons ]
+}

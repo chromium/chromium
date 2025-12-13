@@ -23,6 +23,7 @@ class OriginMatcherRule : public net::SchemeHostPortMatcherRule {
   ~OriginMatcherRule() override;
 
   OriginMatcherRuleType type() const { return type_; }
+  virtual std::unique_ptr<OriginMatcherRule> Clone() const = 0;
 
  private:
   const OriginMatcherRuleType type_;
@@ -37,6 +38,9 @@ class MatchAllOriginsRule : public OriginMatcherRule {
   ~MatchAllOriginsRule() override;
 
   // OriginMatcherRule:
+  std::unique_ptr<OriginMatcherRule> Clone() const override;
+
+  // net::SchemeHostPortMatcherRule:
   net::SchemeHostPortMatcherResult Evaluate(const GURL& url) const override;
   std::string ToString() const override;
 };
@@ -73,6 +77,9 @@ class SubdomainMatchingRule : public OriginMatcherRule {
   int optional_port() const { return optional_port_; }
 
   // OriginMatcherRule:
+  std::unique_ptr<OriginMatcherRule> Clone() const override;
+
+  // net::SchemeHostPortMatcherRule:
   net::SchemeHostPortMatcherResult Evaluate(const GURL& url) const override;
   std::string ToString() const override;
 

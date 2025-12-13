@@ -28,7 +28,7 @@ void MutableProfileAttributesStorageIOS::AddProfile(
     std::string_view profile_name) {
   // Inserts an empty dictionary for the profile in the preferences.
   {
-    ScopedDictPrefUpdate update(prefs_, prefs::kProfileInfoCache);
+    ScopedDictPrefUpdate update(&prefs_.get(), prefs::kProfileInfoCache);
     ProfileAttributesIOS attr = ProfileAttributesIOS::CreateNew(profile_name);
     update->Set(profile_name, std::move(attr).GetStorage());
   }
@@ -41,7 +41,7 @@ void MutableProfileAttributesStorageIOS::MarkProfileForDeletion(
 
   // Detach any scene that may still be referencing this profile.
   {
-    ScopedDictPrefUpdate update(prefs_, prefs::kProfileForScene);
+    ScopedDictPrefUpdate update(&prefs_.get(), prefs::kProfileForScene);
 
     base::Value::Dict dict;
     for (auto [key, value] : update.Get()) {
@@ -55,13 +55,13 @@ void MutableProfileAttributesStorageIOS::MarkProfileForDeletion(
 
   // Remove the information about the profile from the preferences.
   {
-    ScopedDictPrefUpdate update(prefs_, prefs::kProfileInfoCache);
+    ScopedDictPrefUpdate update(&prefs_.get(), prefs::kProfileInfoCache);
     update->Remove(profile_name);
   }
 
   // Add the profile to the list of profile marked for deletion.
   {
-    ScopedListPrefUpdate update(prefs_, prefs::kProfilesToRemove);
+    ScopedListPrefUpdate update(&prefs_.get(), prefs::kProfilesToRemove);
     update->Append(profile_name);
   }
 }
@@ -78,7 +78,7 @@ void MutableProfileAttributesStorageIOS::ProfileDeletionComplete(
   }
   deleted_profiles_.insert(std::string(profile_name));
 
-  ScopedListPrefUpdate update(prefs_, prefs::kProfilesToRemove);
+  ScopedListPrefUpdate update(&prefs_.get(), prefs::kProfilesToRemove);
   update.Get().EraseIf([&profile_name](const base::Value& value) {
     return value == profile_name;
   });

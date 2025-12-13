@@ -42,8 +42,7 @@ class CORE_EXPORT PerformanceTimingForReporting final
     std::optional<base::TimeDelta> first_input_delay;
   };
 
-  using BackForwardCacheRestoreTimings =
-      WTF::Vector<BackForwardCacheRestoreTiming>;
+  using BackForwardCacheRestoreTimings = Vector<BackForwardCacheRestoreTiming>;
 
   explicit PerformanceTimingForReporting(ExecutionContext*);
 
@@ -63,6 +62,9 @@ class CORE_EXPORT PerformanceTimingForReporting final
 
   // The time the first paint operation was performed.
   uint64_t FirstPaintForMetrics() const;
+
+  // The first paint as full-resolution monotonic time.
+  base::TimeTicks FirstPaintAsMonotonicTimeForMetrics() const;
 
   // The time the first paint operation for image was performed.
   uint64_t FirstImagePaint() const;

@@ -33,18 +33,6 @@ std::string ViewportIntersectionToString(
   NOTREACHED();
 }
 
-std::string FrameNodeVisibilityToString(FrameNode::Visibility visibility) {
-  switch (visibility) {
-    // using FrameNode::Visibility;
-    case FrameNode::Visibility::kUnknown:
-      return "Unknown";
-    case FrameNode::Visibility::kVisible:
-      return "Visible";
-    case FrameNode::Visibility::kNotVisible:
-      return "Not visible";
-  }
-}
-
 }  // namespace
 
 FrameNodeImplDescriber::~FrameNodeImplDescriber() = default;
@@ -98,16 +86,17 @@ base::Value::Dict FrameNodeImplDescriber::DescribeFrameNodeData(
           impl->is_capturing_media_stream_.value());
   ret.Set("viewport_intersection",
           ViewportIntersectionToString(impl->viewport_intersection_.value()));
-  ret.Set("visibility", FrameNodeVisibilityToString(impl->visibility_.value()));
+  ret.Set("visibility", impl->visibility_->ToString());
   ret.Set("is_intersecting_large_area", impl->IsIntersectingLargeArea());
   ret.Set("is_important", impl->is_important_.value());
   ret.Set("resource_context", impl->GetResourceContext().ToString());
 
   base::Value::Dict metrics;
   metrics.Set("resident_set",
-              base::NumberToString(impl->GetResidentSetKbEstimate()));
-  metrics.Set("private_footprint",
-              base::NumberToString(impl->GetPrivateFootprintKbEstimate()));
+              base::NumberToString(impl->GetResidentSetEstimate().InKiB()));
+  metrics.Set(
+      "private_footprint",
+      base::NumberToString(impl->GetPrivateFootprintEstimate().InKiB()));
   ret.Set("metrics_estimates", std::move(metrics));
 
   return ret;

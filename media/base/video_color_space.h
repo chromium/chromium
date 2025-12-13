@@ -98,6 +98,9 @@ class MEDIA_EXPORT VideoColorSpace {
   // than INVALID or UNSPECIFIED.
   bool IsSpecified() const;
 
+  // Returns true if HDR.
+  bool IsHDR() const;
+
   // These will return INVALID if the number you give it
   // is not a valid enum value.
   static PrimaryID GetPrimaryID(int primary);

@@ -239,9 +239,9 @@ void AmbientBadgeManager::ShowAmbientBadge() {
     return;
   }
 
-  GURL url = a2hs_params_->app_type == AddToHomescreenParams::AppType::WEBAPK
-                 ? a2hs_params_->shortcut_info->url
-                 : validated_url_;
+  GURL url = a2hs_params_->app_type == AddToHomescreenParams::AppType::NATIVE
+                 ? validated_url_
+                 : a2hs_params_->shortcut_info->url;
   message_controller_.EnqueueMessage(
       web_contents(), app_name_, a2hs_params_->primary_icon,
       a2hs_params_->HasMaskablePrimaryIcon(), url);

@@ -53,8 +53,12 @@ void AXPlatformNodeTextChildProviderWin::CreateIUnknown(
     IUnknown** unknown) {
   Microsoft::WRL::ComPtr<AXPlatformNodeTextChildProviderWin>
       text_child_provider(Create(owner));
-  if (text_child_provider)
-    *unknown = text_child_provider.Detach();
+  if (!text_child_provider) {
+    *unknown = nullptr;
+    return;
+  }
+  ITextChildProvider* provider_ptr = text_child_provider.Detach();
+  *unknown = provider_ptr;
 }
 
 HRESULT AXPlatformNodeTextChildProviderWin::get_TextContainer(

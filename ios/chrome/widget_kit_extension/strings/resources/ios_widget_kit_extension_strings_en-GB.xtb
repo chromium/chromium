@@ -14,6 +14,7 @@
 <translation id="3464120926993669599">Incognito search</translation>
 <translation id="3501428580460217920">Search or navigate in a new incognito tab in Chrome.</translation>
 <translation id="3528874492835415837">Search or type a URL</translation>
+<translation id="3606473512813866845">Google Account</translation>
 <translation id="3798529146539130967">Search in Chrome using your voice.</translation>
 <translation id="405442954313519726">Search or navigate in a new tab, in Incognito mode, using your voice or with a QR code.</translation>
 <translation id="4557098988773644458">Jump into Chrome Dino game</translation>
@@ -45,7 +46,7 @@ type URL</translation>
 <translation id="8171952085734471362">Incognito search</translation>
 <translation id="8310150944719146950">Account</translation>
 <translation id="8564942608461410346">Search in Chrome with your favourite search engine.</translation>
-<translation id="8858765528951093286">The account used with the widget was removed. To select a different account, tap Edit widget.</translation>
+<translation id="8858765528951093286">The account used with the widget was removed. To select a different account, tap Edit Widget.</translation>
 <translation id="9175676375569833962">Search
 passwords</translation>
 </translationbundle>

@@ -531,8 +531,6 @@ TEST_F(VideoDecoderSelectorTest,
   this->SelectNextDecoder();
 }
 
-// TODO(crbug.com/368085608): Remove this test when the
-// `enable_priority_based_selection` parameter is removed.
 TEST_F(VideoDecoderSelectorTest,
        ClearStream_PrioritizeSoftwareDecodersFullyDisabled) {
   this->AddMockPlatformDecoder(kDecoder1, kClearOnly);

@@ -43,7 +43,6 @@ class GL_EXPORT GLContextEGL : public GLContextReal {
 
  private:
   void Destroy();
-  void ReleaseBackpressureFences();
 
   EGLContext context_ = nullptr;
   raw_ptr<GLDisplayEGL> gl_display_ = nullptr;

@@ -82,6 +82,10 @@ constexpr base::TimeDelta kTimeout = base::Seconds(30);
   }
 }
 
+- (void)controllerWillShutdown {
+  _cloudManagementControllerObserver.reset();
+}
+
 #pragma mark - CloudPolicyClientObserverBridge
 
 - (void)cloudPolicyWasFetched:(policy::CloudPolicyClient*)client {

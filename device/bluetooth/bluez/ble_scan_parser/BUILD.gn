@@ -1,0 +1,82 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_static_library.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+# The BLE scan parser is only used on ChromeOS.
+assert(is_chromeos)
+
+rust_static_library("lib") {
+  crate_root = "lib.rs"
+  sources = [
+    "cxx.rs",
+    "lib.rs",
+  ]
+
+  visibility = [
+    ":*",
+    "//device:device_unittests",
+  ]
+
+  allow_unsafe = true
+  cxx_bindings = [ "cxx.rs" ]
+  public_deps = [ ":wrapper_functions" ]
+}
+
+# C++ FFI glue for the Rust parser.
+source_set("wrapper_functions") {
+  sources = [
+    "wrapper_functions.cc",
+    "wrapper_functions.h",
+  ]
+
+  visibility = [ ":*" ]
+
+  deps = [
+    "//base",
+    "//build/rust:cxx_cppdeps",
+  ]
+
+  public_deps = [ ":common" ]
+}
+
+# Glue bits that need to be shared between the Rust implementation/bindings and the C++ entry points.
+source_set("common") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "scan_record.cc",
+    "scan_record.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//device/bluetooth/public/cpp",
+  ]
+}
+
+# C++ entry point for the Rust parser
+source_set("ble_scan_parser") {
+  sources = [
+    "ble_scan_parser.cc",
+    "ble_scan_parser.h",
+  ]
+
+  deps = [
+    ":lib",
+    ":wrapper_functions",
+  ]
+  public_deps = [
+    ":common",
+    "//base",
+  ]
+}
+
+fuzzer_test("ble_scan_parser_fuzzer") {
+  sources = [ "ble_scan_parser_fuzzer.cc" ]
+  deps = [ ":ble_scan_parser" ]
+
+  seed_corpus = "//device/bluetooth/bluez/ble_scan_parser/data"
+}

@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/pickle.h"
 #include "chrome/common/safe_browsing/ipc_protobuf_message_test.pb.h"
-#include "ipc/ipc_message.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#define IPC_MESSAGE_IMPL
-#undef CHROME_COMMON_SAFE_BROWSING_IPC_PROTOBUF_MESSAGE_TEST_MESSAGES_H_
+// Get basic type definitions.
 #include "chrome/common/safe_browsing/ipc_protobuf_message_test_messages.h"
 
 // Generate ipc protobuf traits write methods.
@@ -19,13 +18,6 @@ namespace IPC {
 
 // Generate ipc protobuf traits read methods.
 #include "chrome/common/safe_browsing/protobuf_message_read_macros.h"
-namespace IPC {
-#undef CHROME_COMMON_SAFE_BROWSING_IPC_PROTOBUF_MESSAGE_TEST_MESSAGES_H_
-#include "chrome/common/safe_browsing/ipc_protobuf_message_test_messages.h"
-}  // namespace IPC
-
-// Generate ipc protobuf traits log methods.
-#include "chrome/common/safe_browsing/protobuf_message_log_macros.h"
 namespace IPC {
 #undef CHROME_COMMON_SAFE_BROWSING_IPC_PROTOBUF_MESSAGE_TEST_MESSAGES_H_
 #include "chrome/common/safe_browsing/ipc_protobuf_message_test_messages.h"
@@ -45,7 +37,7 @@ TEST_P(IPCProtobufMessageTest, FundamentalField) {
   if (field_is_present_)
     input.set_fund_int(42);
 
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  base::Pickle msg;
   IPC::WriteParam(&msg, input);
 
   TestMessage output;
@@ -67,7 +59,7 @@ TEST_P(IPCProtobufMessageTest, StringField) {
   if (field_is_present_)
     input.set_op_comp_string("some string");
 
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  base::Pickle msg;
   IPC::WriteParam(&msg, input);
 
   TestMessage output;
@@ -89,7 +81,7 @@ TEST_P(IPCProtobufMessageTest, BytesField) {
   if (field_is_present_)
     input.set_op_comp_bytes("some string");
 
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  base::Pickle msg;
   IPC::WriteParam(&msg, input);
 
   TestMessage output;
@@ -111,7 +103,7 @@ TEST_P(IPCProtobufMessageTest, OptionalSubmessage) {
   if (field_is_present_)
     input.mutable_op_comp_sub()->set_foo(47);
 
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  base::Pickle msg;
   IPC::WriteParam(&msg, input);
 
   TestMessage output;
@@ -137,7 +129,7 @@ TEST_P(IPCProtobufMessageTest, RepeatedSubmessage) {
     input.add_rep_comp_sub()->set_foo(2);
   }
 
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  base::Pickle msg;
   IPC::WriteParam(&msg, input);
 
   TestMessage output;

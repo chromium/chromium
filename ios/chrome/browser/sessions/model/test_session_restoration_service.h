@@ -12,10 +12,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "ios/chrome/browser/sessions/model/session_restoration_observer.h"
 #include "ios/chrome/browser/sessions/model/session_restoration_service.h"
-
-namespace web {
-class BrowserState;
-}
+#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 // A test implementation of SessionRestorationService.
 //
@@ -24,8 +21,7 @@ class BrowserState;
 class TestSessionRestorationService : public SessionRestorationService {
  public:
   // Factory for the KeyedService infrastructure.
-  using TestingFactory =
-      base::OnceCallback<std::unique_ptr<KeyedService>(web::BrowserState*)>;
+  using TestingFactory = ProfileKeyedServiceFactoryIOS::TestingFactory;
 
   TestSessionRestorationService();
   ~TestSessionRestorationService() override;
@@ -38,7 +34,6 @@ class TestSessionRestorationService : public SessionRestorationService {
   void AddObserver(SessionRestorationObserver* observer) override;
   void RemoveObserver(SessionRestorationObserver* observer) override;
   void SaveSessions() override;
-  void ScheduleSaveSessions() override;
   void SetSessionID(Browser* browser, const std::string& identifier) override;
   void LoadSession(Browser* browser) override;
   void LoadWebStateStorage(Browser* browser,

@@ -20,7 +20,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import com.google.android.material.textfield.TextInputLayout;
@@ -30,6 +29,7 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsBridge.Entry;
+import org.chromium.components.browser_ui.settings.ContainedRadioButtonGroupPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 
@@ -42,7 +42,7 @@ import java.util.List;
  * Secure DNS is disabled, the SecureDnsProviderPreference is hidden.
  */
 @NullMarked
-class SecureDnsProviderPreference extends Preference
+class SecureDnsProviderPreference extends ContainedRadioButtonGroupPreference
         implements RadioGroup.OnCheckedChangeListener,
                 AdapterView.OnItemSelectedListener,
                 TextWatcher {

@@ -119,9 +119,9 @@ class EntrySet {
       auto ids = rss_url_matcher_.MatchURL(rss_url);
       matching_ids.insert(ids.begin(), ids.end());
     }
-    page_host_matcher_.Match(page_url.host(), &matching_ids);
-    host_suffix_matcher_.FindMatches(page_url.host(), matching_ids);
-    page_path_matcher_.Match(page_url.path(), &matching_ids);
+    page_host_matcher_.Match(page_url.GetHost(), &matching_ids);
+    host_suffix_matcher_.FindMatches(page_url.GetHost(), matching_ids);
+    page_path_matcher_.Match(page_url.GetPath(), &matching_ids);
 
     // Iterate through `condition_sets_` to find any which has all conditions
     // met. Because condition IDs used in condition_sets_ and matching_ids

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
+
 # Generates a C++ header file that contains a list of values under a specific variant
 # or enum. The list can be used for ensuring that values in C++ are in sync with the
 # histogram file. The header file provides a function to check if a value in is the list.
@@ -23,7 +25,7 @@
 #     Name of the generated file to be used for checking if a value exists in the list.
 #
 template("generate_allowlist_from_histograms_file") {
-  action(target_name) {
+  action_with_pydeps(target_name) {
     output_file = "$target_gen_dir/" + invoker.output_file
 
     script =

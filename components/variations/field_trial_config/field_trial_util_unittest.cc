@@ -137,8 +137,8 @@ class FieldTrialUtilTest : public ::testing::Test {
   ~FieldTrialUtilTest() override {
     // Ensure that the maps are cleared between tests, since they are stored as
     // process singletons.
-    testing::ClearAllVariationIDs();
-    testing::ClearAllVariationParams();
+    test::ClearAllVariationIDs();
+    test::ClearAllVariationParams();
   }
 
  protected:
@@ -536,8 +536,9 @@ TEST_F(FieldTrialUtilTest,
       Study::MEET_DEVICE,
   };
   for (const Study::FormFactor form_factor : all_form_factors) {
-    if (form_factor == current_form_factor)
+    if (form_factor == current_form_factor) {
       continue;
+    }
     const FieldTrialTestingExperimentParams array_kFieldTrialConfig_params[] =
         {{"x", "1"}, {"y", "2"}};
     ExperimentBuilder experiment_builder;

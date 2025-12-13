@@ -12,6 +12,8 @@ source_set("util") {
     "background_util.mm",
     "button_util.h",
     "button_util.mm",
+    "chrome_button.h",
+    "chrome_button.mm",
     "constraints_ui_util.h",
     "constraints_ui_util.mm",
     "device_util.h",

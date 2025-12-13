@@ -62,7 +62,8 @@ base::Value::Dict BuildWeeklyTimeIntervalCheckedDict(
 }
 
 base::Value::List BuildList(std::string_view json_str) {
-  std::optional<base::Value> value = base::JSONReader::Read(json_str);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(json_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value.has_value()) {
     ADD_FAILURE() << "JSON parsing failed: " << json_str;
     return {};

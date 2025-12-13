@@ -6,6 +6,7 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/functional/callback_helpers.h"
 #import "base/i18n/rtl.h"
 #import "base/test/bind.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_test.h"
@@ -16,8 +17,11 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_consumer.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_mediator+Testing.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "ios/web/common/crw_obscured_insets_controller.h"
 #import "ios/web/common/crw_web_view_content_view.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -27,6 +31,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
+#import "ios/web/web_state/crw_web_view.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -64,7 +69,7 @@ namespace {
 class SideSwipeMediatorTest : public ReaderModeTest {
  public:
   SideSwipeMediatorTest()
-      : web_view_([[WKWebView alloc]
+      : web_view_([[CRWWebView alloc]
             initWithFrame:scoped_window_.Get().bounds
             configuration:[[WKWebViewConfiguration alloc] init]]),
         content_view_([[CRWWebViewContentView alloc]
@@ -114,9 +119,9 @@ class SideSwipeMediatorTest : public ReaderModeTest {
   SideSwipeMediator* side_swipe_mediator_;
   FakeSideSwipeUIController* fake_swipe_ui_controller_;
   ScopedKeyWindow scoped_window_;
-  WKWebView* web_view_ = nil;
+  CRWWebView* web_view_ = nil;
   CRWWebViewContentView* content_view_ = nil;
-  raw_ptr<web::WebState> original_web_state_ = nil;
+  raw_ptr<web::WebState, DanglingUntriaged> original_web_state_ = nil;
   std::optional<int> active_web_state_index_;
 };
 
@@ -179,7 +184,15 @@ TEST_F(SideSwipeMediatorTest, TestEdgeNavigationEnabled) {
 }
 
 // Tests that pages with Reader Mode enabled will use Chromium native swipe.
-TEST_F(SideSwipeMediatorTest, TestEdgeNavigationEnabledForReaderMode) {
+// TODO(crbug.com/438221177): Fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_TestEdgeNavigationEnabledForReaderMode \
+  TestEdgeNavigationEnabledForReaderMode
+#else
+#define MAYBE_TestEdgeNavigationEnabledForReaderMode \
+  DISABLED_TestEdgeNavigationEnabledForReaderMode
+#endif
+TEST_F(SideSwipeMediatorTest, MAYBE_TestEdgeNavigationEnabledForReaderMode) {
   auto fake_web_state = CreateWebState();
   auto fake_navigation_manager = std::make_unique<web::FakeNavigationManager>();
   std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
@@ -191,8 +204,9 @@ TEST_F(SideSwipeMediatorTest, TestEdgeNavigationEnabledForReaderMode) {
   SetReaderModeState(fake_web_state.get(), test_url,
                      ReaderModeHeuristicResult::kReaderModeEligible, "content");
   LoadWebpage(fake_web_state.get(), test_url);
-  EnableReaderMode(fake_web_state.get());
-  WaitForReaderModeContentReady();
+  EnableReaderMode(fake_web_state.get(),
+                   ReaderModeAccessPoint::kContextualChip);
+  WaitForAvailableReaderModeContentInWebState(fake_web_state.get());
 
   [side_swipe_mediator_
       updateNavigationEdgeSwipeForWebState:fake_web_state.get()];
@@ -278,6 +292,7 @@ TEST_F(SideSwipeMediatorTest, SnapshotUpdatedWithoutActiveWebState) {
 // the snapshot state only once on completion.
 TEST_F(SideSwipeMediatorTest, SnapshotUpdatedOnceOnCallback) {
   SnapshotTabHelper::CreateForWebState(original_web_state_);
+  SnapshotSourceTabHelper::CreateForWebState(original_web_state_);
   base::RunLoop run_loop;
   int snapshot_updated = 0;
   [side_swipe_mediator_

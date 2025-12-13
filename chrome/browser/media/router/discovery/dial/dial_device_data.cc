@@ -41,7 +41,7 @@ bool DialDeviceData::IsValidUrl(const GURL& url) const {
   }
 
   net::IPAddress host_address;
-  if (!net::ParseURLHostnameToAddress(url.host(), &host_address)) {
+  if (!net::ParseURLHostnameToAddress(url.GetHost(), &host_address)) {
     return false;
   }
 

@@ -32,7 +32,7 @@ class ShelfTooltipBubbleFrameView : public views::BubbleFrameView {
  private:
   // views::BubbleFrameView:
   gfx::Rect GetAvailableScreenBounds(const gfx::Rect& rect) const override {
-    return display::Screen::GetScreen()
+    return display::Screen::Get()
         ->GetDisplayNearestPoint(rect.CenterPoint())
         .bounds();
   }
@@ -92,11 +92,10 @@ void ShelfBubble::CreateBubble() {
   GetBubbleFrameView()->SetBackgroundColor(background_color());
 }
 
-std::unique_ptr<views::NonClientFrameView>
-ShelfBubble::CreateNonClientFrameView(views::Widget* widget) {
-  auto frame = for_tooltip_
-                   ? std::make_unique<ShelfTooltipBubbleFrameView>()
-                   : BubbleDialogDelegateView::CreateNonClientFrameView(widget);
+std::unique_ptr<views::FrameView> ShelfBubble::CreateFrameView(
+    views::Widget* widget) {
+  auto frame = for_tooltip_ ? std::make_unique<ShelfTooltipBubbleFrameView>()
+                            : BubbleDialogDelegateView::CreateFrameView(widget);
   auto* frame_ptr = static_cast<views::BubbleFrameView*>(frame.get());
   frame_ptr->set_use_anchor_window_bounds(false);
 

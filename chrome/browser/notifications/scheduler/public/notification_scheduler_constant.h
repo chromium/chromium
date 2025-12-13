@@ -11,6 +11,8 @@ inline constexpr char kDefaultHelpfulButtonId[] =
     "NOTIFICATION_SCHEDULER_DEFAULT_HELPFUL_BUTTON_ID";
 inline constexpr char kDefaultUnhelpfulButtonId[] =
     "NOTIFICATION_SCHEDULER_DEFAULT_UNHELPFUL_BUTTON_ID";
+inline constexpr char kTipsNotificationsFeatureType[] =
+    "TIPS_NOTIFICATIONS_FEATURE_TYPE";
 
 }  // namespace notifications
 

@@ -124,8 +124,9 @@ class FontSizeTabHelperTest : public PlatformTest {
   }
 
   std::string ZoomMultiplierPrefKey(UIContentSizeCategory category, GURL url) {
-    return base::StringPrintf(
-        "%s.%s", base::SysNSStringToUTF8(category).c_str(), url.host().c_str());
+    return base::StringPrintf("%s.%s",
+                              base::SysNSStringToUTF8(category).c_str(),
+                              url.GetHost().c_str());
   }
 
   std::unique_ptr<PrefServiceSyncable> CreatePrefService() {

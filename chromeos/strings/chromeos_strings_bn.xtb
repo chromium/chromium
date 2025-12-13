@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">কমলা</translation>
 <translation id="1275718070701477396">নির্বাচিত</translation>
 <translation id="1290331692326790741">সিগন্যালটি ভাল নয়</translation>
+<translation id="1292474106138697109">ক্লাস টুল ডিসপ্লে</translation>
 <translation id="1300115153046603471">APN-এর ধরন হল ডিফল্ট ও <ph name="ATTACH" />।</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">কনভার্ট করুন</translation>
@@ -335,7 +336,7 @@
 <translation id="2276999893457278469">সেরা সহায়তা কন্টেন্ট</translation>
 <translation id="2277631741861284101">আপনার অডিও সহজেই রেকর্ড ও শেয়ার করা যাবে</translation>
 <translation id="2279051792571591988">ডিফল্ট ফিরিয়ে আনুন</translation>
-<translation id="2286454467119466181">সহজ</translation>
+<translation id="2286454467119466181">Simple</translation>
 <translation id="2287186687001756809">কোনও ছবি নেই। ছবি যোগ করতে, <ph name="LINK" /> লিঙ্কে যান</translation>
 <translation id="2294577623958216786">বর্তমানে শিডিউল <ph name="SUNRISE" />-<ph name="SUNSET" /> পর্যন্ত সেট করা আছে। সূর্যাস্ত ও সূর্যোদয় সংক্রান্ত শিডিউল অটোমেটিক পরিবর্তন করতে, সিস্টেম লোকেশন সংক্রান্ত অ্যাক্সেস চালু করুন।</translation>
 <translation id="2305172810646967500">ব্ল্যাক</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" />টি ছবি</translation>
 <translation id="4300272766492248925">অ্যাপ্লিকেশান খুলুন</translation>
 <translation id="430786093962686457">শিফন</translation>
+<translation id="4309762678330556039">অটোমেটিক ট্রান্সক্রিপশন তৈরি করে অডিও সার্চ করুন। আপনি ইন্টারনেটে কানেক্ট না থাকলেও রেকর্ডিং তৈরি করতে পারবেন।</translation>
 <translation id="4310735698903592804">Google AI দ্বারা পরিচালিত সাম্প্রতিক ওয়ালপেপার</translation>
 <translation id="4320904097188876154">নিয়ন পিঙ্ক</translation>
 <translation id="432961742358282111">সংজ্ঞা, অনুবাদ বা ইউনিটের কনভার্সন পেতে ডানদিকের বোতামে ক্লিক করুন বা প্রেস করে ধরে রাখুন। এই ফিচার ম্যানেজ করতে, বাঁদিক বা ডানদিকের তীরচিহ্ন কী বোতাম ব্যবহার করুন।</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> কী পরীক্ষা করা হয়েছে</translation>
 <translation id="5606865426897221650">ট্যাব</translation>
+<translation id="5612205513582918357">ক্লাস টুল আপনার স্ক্রিন <ph name="RECEIVER_NAME" />-এর সাথে শেয়ার করছে</translation>
 <translation id="5613201299517339763">আপনি সাইন-আউট করেছেন</translation>
 <translation id="5620281292257375798">শুধুমাত্র ইন্টার্নাল</translation>
 <translation id="5628106863521633649">উপলভ্য ভাষা</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">ক্লাউড ফ্লো</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">কোনও স্ক্যানার উপলভ্য নেই</translation>
-<translation id="6231648282154119906">আপনার বেছে নেওয়া উন্নত সুরক্ষার অংশ হিসেবে, Google Safe Browsing-এর মাধ্যমে সন্দেহজনক ফাইল অটোমেটিক স্ক্যান করা হবে</translation>
 <translation id="6232017090690406397">ব্যাটারি: %</translation>
 <translation id="6234024205316847054">আউটলাইন দেখুন</translation>
 <translation id="6243280677745499710">বর্তমানে সেট করা রয়েছে</translation>
@@ -1399,7 +1401,7 @@
 <translation id="7144954474087165241">প্যাগোডা</translation>
 <translation id="7147557737960578492">নতুন 'কী' বেছে নেওয়ার মাধ্যমে আবার অ্যাসাইন করুন</translation>
 <translation id="714876143603641390">Lan কানেক্টিভিটি</translation>
-<translation id="7154020516215182599">আপনার মতামত শেয়ার করুন বা সমস্যা বর্ণনা করুন। সম্ভব হলে, আপনার সমস্য়া শুরু থেকে পর্যায়ক্রমে বোঝার জন্য প্রয়োজনীয় ধাপগুলি এখানে লিখুন।</translation>
+<translation id="7154020516215182599">আপনার মতামত শেয়ার করুন বা সমস্যা বর্ণনা করুন। সম্ভব হলে, আপনার সমস্যা শুরু থেকে পর্যায়ক্রমে বোঝার জন্য প্রয়োজনীয় ধাপগুলি এখানে লিখুন।</translation>
 <translation id="7155171745945906037">ক্যামেরা বা ফাইল থেকে বিদ্যমান ফটো</translation>
 <translation id="7162487448488904999">গ্যালারি</translation>
 <translation id="7170236477717446850">প্রোফাইল ছবি</translation>

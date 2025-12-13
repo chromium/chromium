@@ -70,8 +70,8 @@ const runLinkDraggingTest = (t, params) => {
     }
 
     if (gotDrop) {
-      assert_equals(dropEffect, 'none',
-          'dataTransfer.dropEffect must always default to "none" in drop');
+      assert_equals(dropEffect, 'copy',
+        'dataTransfer.dropEffect must always default to "copy" in drop');
     }
   }));
 }

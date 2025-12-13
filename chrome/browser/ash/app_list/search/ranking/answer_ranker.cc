@@ -20,7 +20,6 @@ int GetPriority(ProviderType type) {
       return 3;
     case ProviderType::kKeyboardShortcut:
       return 2;
-      // TODO(b/263994165): Check if this is the correct priority.
     case ProviderType::kSystemInfo:
       return 1;
     default:

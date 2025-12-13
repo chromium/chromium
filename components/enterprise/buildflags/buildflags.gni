@@ -4,7 +4,6 @@
 
 import("//build/config/cast.gni")
 import("//build/config/chromeos/args.gni")
-import("//build/config/features.gni")
 import("//build/config/ui.gni")
 
 declare_args() {
@@ -19,10 +18,10 @@ declare_args() {
 
   # Indicates support for Data Control rules.
   enterprise_data_controls =
-      is_win || is_mac || is_linux || is_chromeos || is_android
+      is_win || is_mac || is_linux || is_chromeos || is_android || is_ios
 
   # Indicates support for client certificates provisioning.
-  enterprise_client_certificates = is_win || is_mac || is_linux
+  enterprise_client_certificates = is_win || is_mac || is_linux || is_android
 
   # The watermark is currently implemented using the views framework.
   enterprise_watermark =
@@ -32,6 +31,10 @@ declare_args() {
   enterprise_screenshot_protection = is_win || is_mac
 
   enterprise_telomere_reporting = is_win || is_mac || is_linux
+
+  # Support on all platforms except for iOS since it uses `WKWebView` cache.
+  enterprise_cache_encryption =
+      is_win || is_mac || is_linux || is_chromeos || is_android
 }
 
 declare_args() {

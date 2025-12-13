@@ -9,7 +9,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"

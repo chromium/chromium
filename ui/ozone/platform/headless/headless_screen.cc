@@ -14,6 +14,8 @@
 #include "base/strings/string_split.h"
 #include "components/headless/display_util/headless_display_util.h"
 #include "components/headless/screen_info/headless_screen_info.h"
+#include "ui/display/display.h"
+#include "ui/display/headless/headless_screen_manager.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/switches.h"
 #include "ui/ozone/platform/headless/headless_window.h"
@@ -36,7 +38,6 @@ namespace {
 // See //components/headless/screen_info/README.md for more details.
 
 // Ozone/headless display defaults.
-constexpr int64_t kHeadlessDisplayIdBase = 1;
 constexpr float kHeadlessDisplayScale = 1.0f;
 constexpr gfx::Size kHeadlessDisplaySize(1, 1);
 
@@ -104,9 +105,13 @@ HeadlessWindowManager& GetWindowManager() {
 
 HeadlessScreen::HeadlessScreen() : window_manager_(GetWindowManager()) {
   CreateDisplayList();
+
+  display::HeadlessScreenManager::Get()->SetDelegate(this);
 }
 
-HeadlessScreen::~HeadlessScreen() = default;
+HeadlessScreen::~HeadlessScreen() {
+  display::HeadlessScreenManager::Get()->SetDelegate(nullptr);
+}
 
 void HeadlessScreen::CreateDisplayList() {
   std::vector<HeadlessScreenInfo> screen_info = GetScreenInfo();
@@ -114,15 +119,12 @@ void HeadlessScreen::CreateDisplayList() {
   base::flat_set<int64_t> internal_display_ids;
   display::DisplayList::Type type = display::DisplayList::Type::PRIMARY;
   for (const auto& it : screen_info) {
-    static int64_t synthesized_display_id = kHeadlessDisplayIdBase;
-    display::Display display(synthesized_display_id++);
+    display::Display display(display::HeadlessScreenManager::GetNewDisplayId());
     display.set_label(it.label);
     display.set_color_depth(it.color_depth);
-    display.SetScaleAndBounds(it.device_pixel_ratio, it.bounds);
 
-    if (!it.work_area_insets.IsEmpty()) {
-      display.UpdateWorkAreaFromInsets(it.work_area_insets);
-    }
+    display::HeadlessScreenManager::SetDisplayGeometry(
+        display, it.bounds, it.work_area_insets, it.device_pixel_ratio);
 
     if (it.rotation) {
       CHECK(display::Display::IsValidRotation(it.rotation));
@@ -141,6 +143,22 @@ void HeadlessScreen::CreateDisplayList() {
   }
 
   display::SetInternalDisplayIds(std::move(internal_display_ids));
+}
+
+int64_t HeadlessScreen::AddDisplay(const display::Display& display) {
+  display::Display new_display(display);
+  new_display.set_id(display::HeadlessScreenManager::GetNewDisplayId());
+
+  bool is_primary = display_list_.displays().empty();
+  display_list_.AddDisplay(
+      new_display, is_primary ? display::DisplayList::Type::PRIMARY
+                              : display::DisplayList::Type::NOT_PRIMARY);
+  return new_display.id();
+}
+
+void HeadlessScreen::RemoveDisplay(int64_t display_id) {
+  display_list_.RemoveDisplay(display_id);
+  display::RemoveInternalDisplayId(display_id);
 }
 
 const std::vector<display::Display>& HeadlessScreen::GetAllDisplays() const {
@@ -192,12 +210,26 @@ display::Display HeadlessScreen::GetDisplayMatching(
   return GetPrimaryDisplay();
 }
 
+bool HeadlessScreen::IsScreenSaverActive() const {
+  // Headless has no screen saver.
+  return false;
+}
+
+base::TimeDelta HeadlessScreen::CalculateIdleTime() const {
+  // Headless never gets idle.
+  return base::Seconds(0);
+}
+
 void HeadlessScreen::AddObserver(display::DisplayObserver* observer) {
   display_list_.AddObserver(observer);
 }
 
 void HeadlessScreen::RemoveObserver(display::DisplayObserver* observer) {
   display_list_.RemoveObserver(observer);
+}
+
+bool HeadlessScreen::IsHeadless() const {
+  return true;
 }
 
 }  // namespace ui

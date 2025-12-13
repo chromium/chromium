@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import static org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.createMinimalCustomTabIntent;
 import static org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
@@ -17,21 +16,24 @@ import androidx.test.core.app.ApplicationProvider;
 
 import org.hamcrest.Matchers;
 
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.transit.Station;
+import org.chromium.base.test.transit.TrafficControl;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.BrowserStartupController;
+import org.chromium.content_public.browser.BrowserStartupController.StartupMetrics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -164,28 +166,40 @@ public class IncognitoDataTestUtils {
         }
     }
 
-    private static boolean isChromeTabbedActivityRunningOnTop() {
-        Activity topActivity = ApplicationStatus.getLastTrackedFocusedActivity();
-        if (topActivity == null) return false;
-        return (topActivity instanceof ChromeTabbedActivity);
-    }
-
     private static Tab launchUrlInTab(
             FreshCtaTransitTestRule testRule, String url, boolean incognito) {
-        // This helps to bring back the "existing" chrome tabbed activity to foreground
-        // in case the custom tab activity was launched before.
-        if (!isChromeTabbedActivityRunningOnTop()) {
-            testRule.startOnBlankPage();
+        List<Station<?>> stations = TrafficControl.getActiveStations();
+        if (stations.isEmpty()) {
+            WebPageStation blankStation = testRule.startOnBlankPage();
+            if (incognito) {
+                return blankStation
+                        .openNewIncognitoTabOrWindowFast()
+                        .loadWebPageProgrammatically(url)
+                        .getTab();
+            } else {
+                return blankStation.loadWebPageProgrammatically(url).getTab();
+            }
         }
 
-        Tab tab = testRule.loadUrlInNewTab(url, incognito);
+        WebPageStation activeStation = null;
+        for (int i = stations.size() - 1; i >= 0; i--) {
+            if (stations.get(i) instanceof WebPageStation) {
+                activeStation = (WebPageStation) stations.get(i);
+                break;
+            }
+        }
+        if (activeStation == null) {
+            throw new IllegalStateException("No active WebPageStation found.");
+        }
 
-        // Giving time to the WebContents to be ready.
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(tab.getWebContents(), Matchers.notNullValue()));
-
-        assertEquals(incognito, tab.getWebContents().isIncognito());
-        return tab;
+        if (incognito) {
+            return activeStation
+                    .openNewIncognitoTabOrWindowFast()
+                    .loadWebPageProgrammatically(url)
+                    .getTab();
+        } else {
+            return activeStation.openNewTabOrWindowFast().loadWebPageProgrammatically(url).getTab();
+        }
     }
 
     private static Tab launchUrlInCct(
@@ -229,7 +243,7 @@ public class IncognitoDataTestUtils {
                             .addStartupCompletedObserver(
                                     new BrowserStartupController.StartupCallback() {
                                         @Override
-                                        public void onSuccess() {
+                                        public void onSuccess(@Nullable StartupMetrics metrics) {
                                             startUpCallback.notifyCalled();
                                         }
 

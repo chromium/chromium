@@ -7,9 +7,6 @@
 
 #include <memory>
 
-#include "base/gtest_prod_util.h"
-#include "components/commerce/core/mojom/product_specifications.mojom.h"
-#include "components/commerce/core/mojom/shopping_service.mojom.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/user_education/webui/help_bubble_handler.h"
@@ -72,14 +69,8 @@ class HistoryUI : public ui::MojoWebUIController,
       mojo::PendingReceiver<page_image_service::mojom::PageImageServiceHandler>
           pending_page_handler);
   void BindInterface(
-      mojo::PendingReceiver<
-          shopping_service::mojom::ShoppingServiceHandlerFactory> receiver);
-  void BindInterface(
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
           pending_receiver);
-  void BindInterface(
-      mojo::PendingReceiver<commerce::product_specifications::mojom::
-                                ProductSpecificationsHandlerFactory> receiver);
 
   // For testing only.
   history_clusters::HistoryClustersHandler*

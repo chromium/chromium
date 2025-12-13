@@ -59,7 +59,7 @@ class ImperativeFontLoadFinishedCallback final
 
 RenderBlockingResourceManager::RenderBlockingResourceManager(Document& document)
     : element_render_blocking_links_(
-          MakeGarbageCollected<RenderBlockingElementLinkMap>(WTF::BindRepeating(
+          MakeGarbageCollected<RenderBlockingElementLinkMap>(BindRepeating(
               &RenderBlockingResourceManager::OnRenderBlockingElementLinkEmpty,
               WrapWeakPersistent(this)))),
       document_(document),
@@ -189,7 +189,7 @@ void RenderBlockingResourceManager::ClearPendingParsingElements() {
           RenderBlockingLevel::kLimitFrameRate)) {
     return;
   }
-  element_render_blocking_links_->ForEach(WTF::BindRepeating(
+  element_render_blocking_links_->ForEach(BindRepeating(
       [](Document* document, RenderBlockingLevel, const HTMLLinkElement& link) {
         document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kOther,

@@ -1,0 +1,21 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module audio.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+import "sandbox/policy/mojom/context.mojom";
+
+// This interface is exposed by the audio service to allow trusted clients
+// (like the browser process) to provide ML models for audio processing.
+[RequireContext=sandbox.mojom.Context.kBrowser]
+interface MlModelManager {
+  // Sets a model to use for residual echo estimation.
+  SetResidualEchoEstimationModel(mojo_base.mojom.ReadOnlyFile tflite_file);
+
+  // Stop using any previously set model for residual echo estimation. The model
+  // may continue to be used for the current session, but must be removed from
+  // any persistent state.
+  StopServingResidualEchoEstimationModel();
+};

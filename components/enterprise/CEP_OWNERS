@@ -1,0 +1,12 @@
+# Prefer cep-review@ to individual owners. Sending code
+# reviews to the alias allows the owners to distribute code review loads.
+cep-review@google.com
+
+# When making changes, also update CEPChromiumOwners in the GwsQ config:
+# http://google3/chrome/enterprise/gwsq/cep-review.gwsq
+domfc@chromium.org #{LAST_RESORT_SUGGESTION}
+nancylanxiao@google.com #{LAST_RESORT_SUGGESTION}
+alshawwa@chromium.org #{LAST_RESORT_SUGGESTION}
+haihan@google.com #{LAST_RESORT_SUGGESTION}
+ismaill@google.com  #{LAST_RESORT_SUGGESTION}
+xanth@google.com #{LAST_RESORT_SUGGESTION}

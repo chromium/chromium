@@ -17,6 +17,15 @@ found in the LICENSE file.
         <item name="tint">@color/default_icon_color_tint_list</item>
         <item name="android:background">@drawable/search_box_icon_background</item>
     </style>
+    <!-- This style is intended for use within a ConstraintLayout, specifically in
+    chrome/browser/ui/android/omnibox/java/res/layout/url_action_container.xml. -->
+    <style name="LocationBarActionButton.AdaptiveDensity" parent="LocationBarActionButton">
+        <item name="android:layout_width">?attr/locationBarActionButtonWidth</item>
+        <item name="android:layout_height">?attr/locationBarActionButtonHeight</item>
+        <item name="layout_constraintTop_toTopOf">?attr/locationBarActionButtonConstraintTopToTopOf</item>
+        <item name="layout_constraintBottom_toBottomOf">?attr/locationBarActionButtonConstraintBottomToBottomOf</item>
+        <item name="android:layout_marginHorizontal">?attr/locationBarActionButtonMarginHorizontal</item>
+    </style>
     <style name="LocationBarActionButtonForFakeSearchBox" parent="LocationBarActionButton">
         <item name="android:layout_height">@dimen/location_bar_action_icon_width</item>
         <item name="android:layout_width">@dimen/location_bar_action_icon_width</item>
@@ -31,7 +40,19 @@ found in the LICENSE file.
     <style name="ToolbarHoverableButton" parent="ToolbarButton">
         <item name="android:background">@drawable/default_icon_background</item>
     </style>
-    <style name="ToolbarMenuButton" parent="ToolbarButton">
+    <!-- This desktop style adjusts dimensions based on is_desktop: buttons are smaller on desktop and include margins for maintaining the same visual spacing. -->
+    <style name="ToolbarHoverableButton.AdaptiveDensity" parent="ToolbarHoverableButton">
+        <item name="android:layout_width">?attr/toolbarButtonWidth</item>
+        <item name="android:layout_height">?attr/toolbarButtonHeight</item>
+        <item name="android:layout_marginVertical">?attr/toolbarButtonMarginVertical</item>
+        <item name="android:layout_marginHorizontal">?attr/toolbarButtonMarginHorizontal</item>
+    </style>
+    <style name="ToolbarHoverableMenuButton.AdaptiveDensity" parent="ToolbarHoverableButton.AdaptiveDensity">
+        <item name="android:layout_gravity">top</item>
+        <item name="android:paddingEnd">@dimen/button_end_padding</item>
+        <item name="android:background">@drawable/toolbar_menu_button_ripple</item>
+    </style>
+    <style name="ToolbarMenuButton" parent="ToolbarHoverableButton">
         <item name="android:layout_gravity">top</item>
         <item name="android:paddingEnd">@dimen/button_end_padding</item>
         <item name="android:background">@drawable/toolbar_menu_button_ripple</item>

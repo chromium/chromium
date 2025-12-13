@@ -26,7 +26,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/page_load_metrics/observers/service_worker_page_load_metrics_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -43,7 +42,9 @@
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/page_load_metrics/browser/observers/service_worker_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
+#include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -1118,8 +1119,8 @@ class ChromeWebUIServiceWorkerTest : public ChromeServiceWorkerTest {
   // it. Returns the result of registering the Service Worker.
   blink::ServiceWorkerStatusCode CreateWebUIAndRegisterServiceWorker(
       const GURL& base_url) {
-    auto webui_config =
-        std::make_unique<TestWebUIConfig>(base_url.scheme(), base_url.host());
+    auto webui_config = std::make_unique<TestWebUIConfig>(base_url.GetScheme(),
+                                                          base_url.GetHost());
     if (base_url.SchemeIs(content::kChromeUIScheme)) {
       content::WebUIConfigMap::GetInstance().AddWebUIConfig(
           std::move(webui_config));
@@ -1153,8 +1154,8 @@ class ChromeWebUIServiceWorkerTest : public ChromeServiceWorkerTest {
   // otherwise it returns the error string.
   content::EvalJsResult CreateWebUIAndRegisterServiceWorkerInJavaScript(
       const GURL& base_url) {
-    auto webui_config =
-        std::make_unique<TestWebUIConfig>(base_url.scheme(), base_url.host());
+    auto webui_config = std::make_unique<TestWebUIConfig>(base_url.GetScheme(),
+                                                          base_url.GetHost());
     if (base_url.SchemeIs(content::kChromeUIScheme)) {
       content::WebUIConfigMap::GetInstance().AddWebUIConfig(
           std::move(webui_config));
@@ -1381,8 +1382,9 @@ class ChromeServiceWorkerNavigationPreloadTest : public InProcessBrowserTest {
     // Intercept requests to the "test" endpoint.
     GURL url = request.base_url;
     url = url.Resolve(request.relative_url);
-    if (url.path() != "/service_worker/test")
+    if (url.GetPath() != "/service_worker/test") {
       return nullptr;
+    }
 
     // Stash the request for testing. We'd typically prefer to echo back the
     // request and test the resulting page contents, but that becomes

@@ -164,8 +164,9 @@ void FrameIntervalMatcher::Inputs::WriteIntoTrace(
     // would go out of scope and be destructed before content_info_dict is
     // created. See https://crbug.com/371227621.
     {
+      std::string frame_sink_str = frame_sink_id.ToString();
       auto frame_sink_dict =
-          dict.AddDictionary(perfetto::DynamicString(frame_sink_id.ToString()));
+          dict.AddDictionary(perfetto::DynamicString(frame_sink_str));
       frame_sink_dict.Add("time_diff_us",
                           (aggregated_frame_time - interval_inputs.frame_time)
                               .InMicroseconds());
@@ -178,8 +179,10 @@ void FrameIntervalMatcher::Inputs::WriteIntoTrace(
     int index = 0;
     for (const ContentFrameIntervalInfo& content_info :
          interval_inputs.content_interval_info) {
-      auto content_info_dict = dict.AddDictionary(perfetto::DynamicString(
-          base::StringPrintf("content_info_%d", index)));
+      std::string content_info_str =
+          base::StringPrintf("content_info_%d", index);
+      auto content_info_dict =
+          dict.AddDictionary(perfetto::DynamicString(content_info_str));
       content_info_dict.Add(
           "type", ContentFrameIntervalTypeToString(content_info.type));
       content_info_dict.Add("interval_us",

@@ -5,11 +5,13 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/identity_provider.h"
 
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
+#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_v8_value_converter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_token.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_resolve_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_user_info.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_identityprovidertoken_usvstring.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -21,6 +23,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -121,7 +124,7 @@ ScriptPromise<IDLSequence<IdentityUserInfo>> IdentityProvider::getUserInfo(
       CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
   user_info_request->RequestUserInfo(
       std::move(identity_provider),
-      WTF::BindOnce(&OnRequestUserInfo, WrapPersistent(resolver)));
+      BindOnce(&OnRequestUserInfo, WrapPersistent(resolver)));
 
   return promise;
 }
@@ -183,7 +186,7 @@ ScriptPromise<IDLBoolean> IdentityProvider::registerIdentityProvider(
   auto* request =
       CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
   request->RegisterIdP(KURL(configURL),
-                       WTF::BindOnce(&OnRegisterIdP, WrapPersistent(resolver)));
+                       BindOnce(&OnRegisterIdP, WrapPersistent(resolver)));
 
   return promise;
 }
@@ -208,9 +211,8 @@ ScriptPromise<IDLUndefined> IdentityProvider::unregisterIdentityProvider(
 
   auto* request =
       CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
-  request->UnregisterIdP(
-      KURL(configURL),
-      WTF::BindOnce(&OnUnregisterIdP, WrapPersistent(resolver)));
+  request->UnregisterIdP(KURL(configURL),
+                         BindOnce(&OnUnregisterIdP, WrapPersistent(resolver)));
 
   return promise;
 }
@@ -227,17 +229,9 @@ void OnResolveTokenRequest(ScriptPromiseResolver<IDLUndefined>* resolver,
 
 ScriptPromise<IDLUndefined> IdentityProvider::resolve(
     ScriptState* script_state,
-    const V8UnionIdentityProviderTokenOrUSVString* token_union,
+    const ScriptValue& token_value,
     const IdentityResolveOptions* options) {
   DCHECK(options);
-
-  String token;
-  if (token_union->IsIdentityProviderToken()) {
-    token = token_union->GetAsIdentityProviderToken()->token();
-  } else {
-    CHECK(token_union->IsUSVString());
-    token = token_union->GetAsUSVString();
-  }
 
   String account_id;
   if (options->hasAccountId() && !options->accountId().empty()) {
@@ -250,9 +244,34 @@ ScriptPromise<IDLUndefined> IdentityProvider::resolve(
 
   auto* request =
       CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+
+  std::unique_ptr<base::Value> token_base_value;
+  if (RuntimeEnabledFeatures::FedCmNonStringTokenEnabled()) {
+    std::unique_ptr<WebV8ValueConverter> converter =
+        Platform::Current()->CreateWebV8ValueConverter();
+
+    token_base_value = converter->FromV8Value(token_value.V8Value(),
+                                              script_state->GetContext());
+    if (!token_base_value) {
+      resolver->RejectWithDOMException(DOMExceptionCode::kDataError,
+                                       "Failed to convert token value.");
+      return promise;
+    }
+  } else {
+    String token_string;
+    if (!token_value.ToString(token_string)) {
+      resolver->RejectWithDOMException(
+          DOMExceptionCode::kDataError,
+          "Failed to convert token value to string.");
+      return promise;
+    }
+
+    token_base_value = std::make_unique<base::Value>(token_string.Utf8());
+  }
+
   request->ResolveTokenRequest(
-      account_id, token,
-      WTF::BindOnce(&OnResolveTokenRequest, WrapPersistent(resolver)));
+      account_id, std::move(*token_base_value),
+      BindOnce(&OnResolveTokenRequest, WrapPersistent(resolver)));
 
   return promise;
 }

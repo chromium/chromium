@@ -5,16 +5,16 @@
 #include "content/browser/preloading/prefetch/prefetch_network_context.h"
 
 #include "base/memory/scoped_refptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
+#include "content/public/browser/child_process_host.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
-#include "net/base/isolation_info.h"
 
 namespace content {
 namespace {
@@ -116,10 +116,6 @@ TEST_F(PrefetchNetworkContextTest,
 
 TEST_F(PrefetchNetworkContextTest,
        CreateURLLoaderFactoryForBrowserInitiatedTriggersNetworkContext) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kPrefetchBrowserInitiatedTriggers);
-
   const GURL kReferringUrl = GURL("https://test.referring.origin.com");
   const url::Origin kReferringOrigin = url::Origin::Create(kReferringUrl);
 

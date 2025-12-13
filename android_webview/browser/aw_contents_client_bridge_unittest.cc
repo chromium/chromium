@@ -88,8 +88,7 @@ void AwContentsClientBridgeTest::SetUp() {
   env_ = AttachCurrentThread();
   ASSERT_THAT(env_, NotNull());
   jbridge_.Reset(
-      env_,
-      Java_MockAwContentsClientBridge_getAwContentsClientBridge(env_).obj());
+      env_, Java_MockAwContentsClientBridge_getAwContentsClientBridge(env_));
   bridge_ = std::make_unique<AwContentsClientBridge>(env_, jbridge_);
   selected_cert_ = nullptr;
   cert_selected_callbacks_ = 0;
@@ -167,3 +166,5 @@ TEST_F(AwContentsClientBridgeTest,
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(MockAwContentsClientBridge)

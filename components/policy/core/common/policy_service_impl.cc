@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "components/policy/core/common/policy_service_impl.h"
 
 #include <stddef.h>
@@ -55,9 +54,9 @@ void DowngradeMetricsReportingToRecommendedPolicy(PolicyMap* policies) {
   // Capture both the Chrome-only and device-level policies on Chrome OS.
   const std::vector<const char*> metrics_keys = {
 #if BUILDFLAG(IS_CHROMEOS)
-    policy::key::kDeviceMetricsReportingEnabled,
+      policy::key::kDeviceMetricsReportingEnabled,
 #else
-    policy::key::kMetricsReportingEnabled,
+      policy::key::kMetricsReportingEnabled,
 #endif
   };
   for (const char* policy_key : metrics_keys) {
@@ -97,8 +96,9 @@ void AddPolicyMessages(PolicyMap& policies) {
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
   // Add warning to inform users that these policies are ignored when the user
   // is unaffiliated.
-  if (policies.IsUserAffiliated())
+  if (policies.IsUserAffiliated()) {
     return;
+  }
 
   auto* cloud_user_precedence_entry =
       policies.GetMutable(key::kCloudUserPolicyOverridesCloudMachinePolicy);
@@ -176,8 +176,9 @@ PolicyServiceImpl::PolicyServiceImpl(Providers providers,
       migrators_(std::move(migrators)),
       initialization_throttled_(initialization_throttled),
       scope_for_metrics_(scope_for_metrics) {
-  for (int domain = 0; domain < POLICY_DOMAIN_SIZE; ++domain)
+  for (int domain = 0; domain < POLICY_DOMAIN_SIZE; ++domain) {
     policy_domain_status_[domain] = PolicyDomainStatus::kUninitialized;
+  }
 
   for (policy::ConfigurationPolicyProvider* provider : providers_) {
     provider->AddObserver(this);
@@ -215,8 +216,9 @@ void PolicyServiceImpl::RemoveObserver(PolicyDomain domain,
                                        PolicyService::Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = observers_.find(domain);
-  if (it == observers_.end())
+  if (it == observers_.end()) {
     return;
+  }
   it->second.RemoveObserver(observer);
   if (it->second.empty()) {
     observers_.erase(it);
@@ -267,8 +269,9 @@ void PolicyServiceImpl::RefreshPolicies(base::OnceClosure callback,
 
   VLOG_POLICY(2, POLICY_PROCESSING) << "Policy refresh starting";
 
-  if (!callback.is_null())
+  if (!callback.is_null()) {
     refresh_callbacks_.push_back(std::move(callback));
+  }
 
   if (providers_.empty()) {
     // Refresh is immediately complete if there are no providers. See the note
@@ -293,22 +296,25 @@ void PolicyServiceImpl::RefreshPolicies(base::OnceClosure callback,
 
 #if BUILDFLAG(IS_ANDROID)
 android::PolicyServiceAndroid* PolicyServiceImpl::GetPolicyServiceAndroid() {
-  if (!policy_service_android_)
+  if (!policy_service_android_) {
     policy_service_android_ =
         std::make_unique<android::PolicyServiceAndroid>(this);
+  }
   return policy_service_android_.get();
 }
 #endif
 
 void PolicyServiceImpl::UnthrottleInitialization() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!initialization_throttled_)
+  if (!initialization_throttled_) {
     return;
+  }
 
   initialization_throttled_ = false;
   std::vector<PolicyDomain> updated_domains;
-  for (int domain = 0; domain < POLICY_DOMAIN_SIZE; ++domain)
+  for (int domain = 0; domain < POLICY_DOMAIN_SIZE; ++domain) {
     updated_domains.push_back(static_cast<PolicyDomain>(domain));
+  }
   MaybeNotifyPolicyDomainStatusChange(updated_domains);
 }
 
@@ -342,14 +348,16 @@ void PolicyServiceImpl::NotifyNamespaceUpdated(const PolicyNamespace& ns,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto iterator = observers_.find(ns.domain);
   if (iterator != observers_.end()) {
-    for (auto& observer : iterator->second)
+    for (auto& observer : iterator->second) {
       observer.OnPolicyUpdated(ns, previous, current);
+    }
   }
 }
 
 void PolicyServiceImpl::NotifyProviderUpdatesPropagated() {
-  if (provider_update_pending_.empty())
+  if (provider_update_pending_.empty()) {
     return;
+  }
 
   for (auto& provider_update_observer : provider_update_observers_) {
     for (ConfigurationPolicyProvider* provider : provider_update_pending_) {
@@ -488,11 +496,13 @@ PolicyBundle PolicyServiceImpl::MergePolicyBundles(
                                      &policy_dictionary_merger};
 
   PolicyGroupMerger policy_group_merger;
-  if (atomic_policy_group_enabled)
+  if (atomic_policy_group_enabled) {
     mergers.push_back(&policy_group_merger);
+  }
 
-  for (auto& entry : bundle)
+  for (auto& entry : bundle) {
     entry.second.MergeValues(mergers);
+  }
 
   for (auto& migrator : migrators) {
     migrator->Migrate(&bundle);
@@ -511,8 +521,9 @@ std::vector<PolicyDomain> PolicyServiceImpl::UpdatePolicyDomainStatus() {
   // their first policies loaded.
   for (int domain = 0; domain < POLICY_DOMAIN_SIZE; ++domain) {
     PolicyDomain policy_domain = static_cast<PolicyDomain>(domain);
-    if (policy_domain_status_[domain] == PolicyDomainStatus::kPolicyReady)
+    if (policy_domain_status_[domain] == PolicyDomainStatus::kPolicyReady) {
       continue;
+    }
 
     PolicyDomainStatus new_status = PolicyDomainStatus::kPolicyReady;
 
@@ -525,8 +536,9 @@ std::vector<PolicyDomain> PolicyServiceImpl::UpdatePolicyDomainStatus() {
       }
     }
 
-    if (new_status == policy_domain_status_[domain])
+    if (new_status == policy_domain_status_[domain]) {
       continue;
+    }
 
     policy_domain_status_[domain] = new_status;
     updated_domains.push_back(static_cast<PolicyDomain>(domain));
@@ -536,8 +548,9 @@ std::vector<PolicyDomain> PolicyServiceImpl::UpdatePolicyDomainStatus() {
 
 void PolicyServiceImpl::MaybeNotifyPolicyDomainStatusChange(
     const std::vector<PolicyDomain>& updated_domains) {
-  if (initialization_throttled_)
+  if (initialization_throttled_) {
     return;
+  }
 
   for (const auto policy_domain : updated_domains) {
     if (policy_domain_status_[policy_domain] ==
@@ -546,8 +559,9 @@ void PolicyServiceImpl::MaybeNotifyPolicyDomainStatusChange(
     }
 
     auto iter = observers_.find(policy_domain);
-    if (iter == observers_.end())
+    if (iter == observers_.end()) {
       continue;
+    }
 
     // If and when crbug.com/1221454 gets fixed, we should drop the WeakPtr
     // construction and checks here.
@@ -589,15 +603,16 @@ void PolicyServiceImpl::MaybeNotifyPolicyDomainStatusChange(
 
 void PolicyServiceImpl::CheckRefreshComplete() {
   if (refresh_pending_.empty()) {
-    VLOG(2) << "Policy refresh complete";
+    VLOG_POLICY(2, POLICY_PROCESSING) << "Policy refresh complete";
   }
 
   // Invoke all the callbacks if a refresh has just fully completed.
   if (refresh_pending_.empty() && !refresh_callbacks_.empty()) {
     std::vector<base::OnceClosure> callbacks;
     callbacks.swap(refresh_callbacks_);
-    for (auto& callback : callbacks)
+    for (auto& callback : callbacks) {
       std::move(callback).Run();
+    }
   }
 }
 

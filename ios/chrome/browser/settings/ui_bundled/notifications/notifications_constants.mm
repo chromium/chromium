@@ -10,6 +10,15 @@ NSString* const kSettingsNotificationsPriceTrackingCellId =
 NSString* const kSettingsNotificationsContentCellId =
     @"kSettingsNotificationsContentCellId";
 
+NSString* const kSettingsNotificationsTipsCellId =
+    @"kSettingsNotificationsTipsCellId";
+
+NSString* const kSettingsNotificationsSafetyCheckCellId =
+    @"kSettingsNotificationsSafetyCheckCellId";
+
+NSString* const kSettingsNotificationsSendTabCellId =
+    @"kSettingsNotificationsSendTabCellId";
+
 NSString* const kNewspaperSFSymbol = @"newspaper";
 
 NSString* const kNotificationsBannerTableViewId =

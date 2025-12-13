@@ -91,6 +91,11 @@ class URLRequestContextGetter : public net::URLRequestContextGetter {
   net::URLRequestContext* GetURLRequestContext() override {
     if (!url_request_context_.get()) {
       net::URLRequestContextBuilder builder;
+      // Some enterprise proxies block QUIC traffic. It, and HTTP/2 (referred to
+      // as "spdy" below) are not thought to provide a tangible benefit to the
+      // enterprise companion app. See https://crbug.com/448597253.
+      builder.SetSpdyAndQuicEnabled(/*spdy_enabled=*/false,
+                                    /*quic_enabled=*/false);
       builder.DisableHttpCache();
       builder.set_proxy_config_service(std::move(proxy_config_service_));
       cert_net_fetcher_ = base::MakeRefCounted<net::CertNetFetcherURLRequest>();

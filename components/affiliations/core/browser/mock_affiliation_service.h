@@ -49,7 +49,7 @@ class MockAffiliationService : public AffiliationService {
   MOCK_METHOD(void,
               GetPSLExtensions,
               (base::OnceCallback<void(std::vector<std::string>)>),
-              (override, const));
+              (override));
   MOCK_METHOD(void,
               UpdateAffiliationsAndBranding,
               (const std::vector<FacetURI>&, base::OnceClosure),

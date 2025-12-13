@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/url_pattern_index/url_pattern_index.h"
 
 #include <algorithm>
@@ -18,6 +13,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -172,7 +168,7 @@ class UrlPatternIndexTest : public ::testing::Test {
       return false;
     const auto* data = reinterpret_cast<const uint8_t*>(rule);
     return data < flat_builder_->GetBufferPointer() ||
-           data >= flat_builder_->GetBufferPointer() + flat_builder_->GetSize();
+           data >= base::to_address(flat_builder_->GetBufferSpan().end());
   }
 
   void Reset() {

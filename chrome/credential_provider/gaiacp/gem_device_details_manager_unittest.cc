@@ -72,8 +72,8 @@ TEST_P(GemDeviceDetailsExtensionTest, WithUserDeviceContext) {
 
   auto expected_response_value = base::Value::Dict().Set(
       "deviceResourceId", base::WideToUTF8(device_resource_id));
-  std::string expected_response;
-  base::JSONWriter::Write(expected_response_value, &expected_response);
+  std::string expected_response =
+      base::WriteJson(expected_response_value).value_or("");
 
   GURL upload_device_details_url =
       GemDeviceDetailsManager::Get()->GetGemServiceUploadDeviceDetailsUrl();
@@ -103,7 +103,9 @@ TEST_P(GemDeviceDetailsExtensionTest, WithUserDeviceContext) {
     FakeWinHttpUrlFetcherFactory::RequestData request_data =
         fake_http_url_fetcher_factory()->GetRequestData(0);
     base::Value::Dict body_dict =
-        base::JSONReader::ReadDict(request_data.body).value();
+        base::JSONReader::ReadDict(request_data.body,
+                                   base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+            .value();
 
     std::string uploaded_dm_token = GetDictStringUTF8(body_dict, "dm_token");
     ASSERT_EQ(uploaded_dm_token, base::WideToUTF8(dm_token));

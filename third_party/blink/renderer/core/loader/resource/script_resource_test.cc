@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
+#include "url/gurl.h"
 
 namespace blink {
 namespace {

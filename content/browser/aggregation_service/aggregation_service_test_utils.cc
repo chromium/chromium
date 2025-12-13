@@ -379,7 +379,8 @@ base::expected<PublicKeyset, std::string> ReadAndParsePublicKeys(
 
   ASSIGN_OR_RETURN(
       base::Value value,
-      base::JSONReader::ReadAndReturnValueWithError(contents),
+      base::JSONReader::ReadAndReturnValueWithError(
+          contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS),
       [&](base::JSONReader::Error error) {
         return base::StrCat({"Failed to parse \"", contents,
                              "\" as JSON: ", std::move(error).message});

@@ -21,7 +21,7 @@ static GCedHeapHashMap<DOMNodeId, WeakMember<Node>>& IdToNodeMap() {
 
 // static
 DOMNodeId DOMNodeIds::ExistingIdForNode(Node* node) {
-  return node ? node->NodeID() : kInvalidDOMNodeId;
+  return node ? node->NodeID(base::PassKey<DOMNodeIds>()) : kInvalidDOMNodeId;
 }
 
 // static
@@ -35,7 +35,7 @@ DOMNodeId DOMNodeIds::IdForNode(Node* node) {
     return kInvalidDOMNodeId;
   }
 
-  DOMNodeId& id = node->EnsureNodeID();
+  DOMNodeId& id = node->EnsureNodeID(base::PassKey<DOMNodeIds>());
   if (id == kInvalidDOMNodeId) {
     // See WeakIdentifierMap::Next().
     static DOMNodeId last_id = 0;

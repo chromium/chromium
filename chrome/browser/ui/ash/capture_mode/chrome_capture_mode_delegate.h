@@ -5,16 +5,19 @@
 #ifndef CHROME_BROWSER_UI_ASH_CAPTURE_MODE_CHROME_CAPTURE_MODE_DELEGATE_H_
 #define CHROME_BROWSER_UI_ASH_CAPTURE_MODE_CHROME_CAPTURE_MODE_DELEGATE_H_
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "base/cancelable_callback.h"
 #include "base/files/file_path.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "chrome/browser/ash/policy/skyvault/waitable_scoped_temp_dir.h"
+#include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
@@ -30,6 +33,10 @@
 
 class ApplicationLocaleStorage;
 class PrefService;
+
+namespace network {
+class SimpleURLLoader;
+}  // namespace network
 
 namespace screen_ai {
 class OpticalCharacterRecognizer;
@@ -126,7 +133,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       const bool is_standalone_session,
       ash::OnSearchUrlFetchedCallback search_callback,
       ash::OnTextDetectionComplete text_callback,
-      base::OnceCallback<void()> error_callback) override;
+      ash::OnLensErrorCallback error_callback) override;
   bool IsNetworkConnectionOffline() const override;
   void DeleteRemoteFile(const base::FilePath& path,
                         base::OnceCallback<void(bool)> callback) override;
@@ -138,26 +145,21 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
     optical_character_recognizer_ = std::move(optical_character_recognizer);
   }
 
+  void set_video_conference_manager_ash(
+      ash::VideoConferenceManagerAsh* video_conference_manager_ash);
+
  private:
-  // TODO(b/362363034): See if we can remove these. May be needed for text
-  // detection.
-  void HandleStartQueryResponse(std::vector<lens::OverlayObject> objects,
-                                lens::Text text,
-                                bool is_error);
-  void HandleInteractionURLResponse(
-      lens::proto::LensOverlayUrlResponse response);
-  void HandleSuggestInputsResponse(
-      lens::proto::LensOverlaySuggestInputs suggest_inputs);
-  void HandleThumbnailCreated(const std::string& thumbnail_bytes);
+  // The different purposes (origins) behind requesting a new access token.
+  enum class AccessTokenPurpose {
+    kImageSearch,
+    kTextDetection,
+  };
 
   // Called back by the Drive integration service when the quota usage is
   // retrieved.
   void OnGetDriveQuotaUsage(ash::OnGotDriveFsFreeSpace callback,
                             drive::FileError error,
                             drivefs::mojom::QuotaUsagePtr usage);
-
-  // Called back once temporary directory for OneDrive is created.
-  void SetOdfsTempDir(base::ScopedTempDir temp_dir);
 
   // Called back by the OCR service after it is initialized.
   void OnOcrServiceInitialized(bool is_successful);
@@ -179,9 +181,11 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   // Gets the OAuth2 access token for the active user's primary account, used
   // for making a Lens Web API POST request.
   void GetPrimaryAccountAccessToken(
-      base::RepeatingCallback<void(const std::string& access_token)> callback);
+      base::RepeatingCallback<void(const std::string& access_token)> callback,
+      AccessTokenPurpose purpose);
   void PrimaryAccountAccessTokenAvailable(
       base::RepeatingCallback<void(const std::string& access_token)> callback,
+      AccessTokenPurpose purpose,
       GoogleServiceAuthError error,
       signin::AccessTokenInfo access_token_info);
 
@@ -200,12 +204,12 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       base::WeakPtr<const network::SimpleURLLoader> url_loader,
       const std::string& access_token,
       const int request_id,
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
   void OnDispatchCompleteForCopyText(
       base::WeakPtr<const network::SimpleURLLoader> url_loader,
       const std::string& access_token,
       const int request_id,
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
 
   // Called after the response to a /qfmetadata GET request (for text detection)
   // is received and the response body has been decoded.
@@ -235,7 +239,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
 
   // A callback that will be invoked if an error or unexpected behavior occurs
   // during image search or text detection.
-  base::OnceCallback<void()> on_error_callback_;
+  ash::OnLensErrorCallback on_error_callback_;
 
   // True when a capture mode session is currently active.
   bool is_session_active_ = false;
@@ -245,7 +249,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
 
   // Temporary directory to which files will be redirected before being uploaded
   // to OneDrive cloud. Created and destructed asynchronously.
-  base::ScopedTempDir odfs_temp_dir_;
+  const WaitableScopedTempDir odfs_temp_dir_;
 
   // OCR used to detect text in a selected capture region.
   scoped_refptr<screen_ai::OpticalCharacterRecognizer>
@@ -276,6 +280,9 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   // URLLoaderFactory used for network requests. May be null initially if the
   // creation is delayed.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  raw_ptr<ash::VideoConferenceManagerAsh> video_conference_manager_ash_ =
+      nullptr;
 
   base::WeakPtrFactory<ChromeCaptureModeDelegate> weak_ptr_factory_{this};
 };

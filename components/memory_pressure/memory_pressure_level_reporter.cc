@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -14,7 +15,7 @@
 namespace memory_pressure {
 
 MemoryPressureLevelReporter::MemoryPressureLevelReporter(
-    MemoryPressureLevel initial_pressure_level)
+    base::MemoryPressureLevel initial_pressure_level)
     : current_pressure_level_(initial_pressure_level) {
   StartPeriodicTimer();
 }
@@ -25,7 +26,7 @@ MemoryPressureLevelReporter::~MemoryPressureLevelReporter() {
 }
 
 void MemoryPressureLevelReporter::OnMemoryPressureLevelChanged(
-    MemoryPressureLevel new_level) {
+    base::MemoryPressureLevel new_level) {
   const base::TimeTicks now = base::TimeTicks::Now();
   ReportHistogram(now);
 
@@ -38,36 +39,35 @@ void MemoryPressureLevelReporter::OnMemoryPressureLevelChanged(
   // |new_level| can be equal to |periodic_reporting_timer_| if this gets called
   // by the one shot reporting timer, do nothing in this case.
   if ((new_level != current_pressure_level_) &&
-      (current_pressure_level_ !=
-       MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE)) {
+      (current_pressure_level_ != base::MEMORY_PRESSURE_LEVEL_NONE)) {
     constexpr char kHistogramPrefix[] = "Memory.PressureWindowDuration.";
     std::string histogram_name;
 
     DCHECK(!current_pressure_level_begin_.is_null());
     switch (current_pressure_level_) {
       // From:
-      case MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE: {
+      case base::MEMORY_PRESSURE_LEVEL_MODERATE: {
         // To:
-        if (new_level == MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE) {
+        if (new_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
           histogram_name = base::StrCat({kHistogramPrefix, "ModerateToNone"});
-        } else {  // MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL
+        } else {  // base::MEMORY_PRESSURE_LEVEL_CRITICAL
           histogram_name =
               base::StrCat({kHistogramPrefix, "ModerateToCritical"});
         }
         break;
       }
       // From:
-      case MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL: {
+      case base::MEMORY_PRESSURE_LEVEL_CRITICAL: {
         // To:
-        if (new_level == MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE) {
+        if (new_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
           histogram_name = base::StrCat({kHistogramPrefix, "CriticalToNone"});
-        } else {  // MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE
+        } else {  // base::MEMORY_PRESSURE_LEVEL_MODERATE
           histogram_name =
               base::StrCat({kHistogramPrefix, "CriticalToModerate"});
         }
         break;
       }
-      case MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE:
+      case base::MEMORY_PRESSURE_LEVEL_NONE:
       default:
         NOTREACHED();
     }
@@ -100,10 +100,11 @@ void MemoryPressureLevelReporter::ReportHistogram(base::TimeTicks now) {
     // We can't use UmaHistogramEnumeration here as it doesn't support
     // |AddCount|.
     base::LinearHistogram::FactoryGet(
-        "Memory.PressureLevel2", 1, MemoryPressureLevel::kMaxValue + 1,
-        MemoryPressureLevel::kMaxValue + 2,
+        "Memory.PressureLevel2", 1, base::MemoryPressureLevel::kMaxValue + 1,
+        base::MemoryPressureLevel::kMaxValue + 2,
         base::HistogramBase::kUmaTargetedHistogramFlag)
-        ->AddCount(current_pressure_level_, duration_s);
+        ->AddCount(current_pressure_level_,
+                   base::saturated_cast<int>(duration_s));
   }
 }
 

@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FONT_ACCESS_FONT_ACCESS_H_
 
 #include "base/memory/read_only_shared_memory_region.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/font_access/font_access.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"

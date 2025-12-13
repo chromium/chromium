@@ -36,7 +36,7 @@ struct URLLoaderCompletionStatus;
 }  // namespace network
 
 namespace blink {
-struct SoftNavigationMetrics;
+struct SoftNavigationMetricsForReporting;
 }  // namespace blink
 
 namespace page_load_metrics {
@@ -67,7 +67,8 @@ class PageTimingMetricsSender {
   void DidObserveSubresourceLoad(
       const blink::SubresourceLoadMetrics& subresource_load_metrics);
   void DidObserveNewFeatureUsage(const blink::UseCounterFeature& feature);
-  void DidObserveSoftNavigation(blink::SoftNavigationMetrics metrics);
+  void DidObserveSoftNavigation(
+      blink::SoftNavigationMetricsForReporting metrics);
   void DidObserveLayoutShift(double score, bool after_input_or_scroll);
 
   void DidStartResponse(const url::SchemeHostPort& final_response_url,
@@ -75,20 +76,20 @@ class PageTimingMetricsSender {
                         const network::mojom::URLResponseHead& response_head,
                         network::mojom::RequestDestination request_destination,
                         bool is_ad_resource);
-  void DidReceiveTransferSizeUpdate(int resource_id, int received_data_length);
+  void DidReceiveTransferSizeUpdate(int resource_id,
+                                    base::ByteCount received_data_length);
   void DidCompleteResponse(int resource_id,
                            const network::URLLoaderCompletionStatus& status);
   void DidCancelResponse(int resource_id);
   void DidLoadResourceFromMemoryCache(const GURL& response_url,
                                       int request_id,
-                                      int64_t encoded_body_length,
+                                      base::ByteCount encoded_body_length,
                                       const std::string& mime_type);
   void OnMainFrameIntersectionChanged(
       const gfx::Rect& main_frame_intersection_rect);
   void OnMainFrameViewportRectangleChanged(
       const gfx::Rect& main_frame_viewport_rect);
-  void OnMainFrameImageAdRectangleChanged(int element_id,
-                                          const gfx::Rect& image_ad_rect);
+  void OnMainFrameAdRectangleChanged(int element_id, const gfx::Rect& ad_rect);
 
   void DidObserveUserInteraction(base::TimeTicks max_event_start,
                                  base::TimeTicks max_event_queued_main_thread,
@@ -112,7 +113,6 @@ class PageTimingMetricsSender {
   void SetUpDroppedFramesReporting(
       base::ReadOnlySharedMemoryRegion shared_memory_dropped_frames);
 
-  void InitiateUserInteractionTiming();
   mojom::SoftNavigationMetricsPtr GetSoftNavigationMetrics() {
     return soft_navigation_metrics_->Clone();
   }

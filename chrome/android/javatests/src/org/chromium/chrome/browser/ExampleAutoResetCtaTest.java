@@ -41,6 +41,6 @@ public class ExampleAutoResetCtaTest {
     @LargeTest
     public void testOnBlankPage2() {
         WebPageStation page = mActivityTestRule.startOnBlankPage();
-        page.openNewIncognitoTabFast();
+        page.openNewIncognitoTabOrWindowFast();
     }
 }

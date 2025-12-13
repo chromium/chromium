@@ -11,8 +11,8 @@ import android.view.View;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -34,6 +34,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Responsible for providing UI resources for showing price tracking action on optional toolbar
@@ -45,7 +46,7 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
     private final SnackbarManager mSnackbarManager;
     private final Supplier<TabBookmarker> mTabBookmarkerSupplier;
     private final BottomSheetController mBottomSheetController;
-    private final ObservableSupplier<Boolean> mPriceTrackingCurrentTabStateSupplier;
+    private final NonNullObservableSupplier<Boolean> mPriceTrackingCurrentTabStateSupplier;
     private final ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final BottomSheetObserver mBottomSheetObserver;
@@ -57,14 +58,14 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
     /** Constructor. */
     public PriceTrackingButtonController(
             Context context,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            Supplier<@Nullable Tab> tabSupplier,
             ModalDialogManager modalDialogManager,
             BottomSheetController bottomSheetController,
             SnackbarManager snackbarManager,
             Supplier<TabBookmarker> tabBookmarkerSupplier,
             ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
-            ObservableSupplier<Boolean> priceTrackingCurrentTabStateSupplier) {
+            NonNullObservableSupplier<Boolean> priceTrackingCurrentTabStateSupplier) {
         super(
                 tabSupplier,
                 modalDialogManager,
@@ -111,7 +112,7 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
                 };
         mBottomSheetController.addObserver(mBottomSheetObserver);
 
-        mPriceTrackingCurrentTabStateSupplier.addObserver(mPriceTrackingStateChangedCallback);
+        mPriceTrackingCurrentTabStateSupplier.addSyncObserver(mPriceTrackingStateChangedCallback);
     }
 
     private void updateButtonIcon(boolean isCurrentTabPriceTracked) {

@@ -11,8 +11,8 @@
 #include "components/cbor/writer.h"
 #include "device/fido/attestation_statement.h"
 #include "device/fido/authenticator_data.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/opaque_attestation_statement.h"
+#include "device/fido/public/fido_constants.h"
 #include "device/fido/public_key.h"
 
 namespace device {

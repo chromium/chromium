@@ -89,6 +89,25 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Programmatic API Call"/>
 </enum>
 
+<enum name="ExtensionAlarmsNameLength">
+  <int value="0" label="Up to 10"/>
+  <int value="1" label="From 11 to 25"/>
+  <int value="2" label="From 26 to 50"/>
+  <int value="3" label="From 51 to 75"/>
+  <int value="4" label="From 76 to 100"/>
+  <int value="5" label="From 101 to 125"/>
+  <int value="6" label="From 126 to 250"/>
+  <int value="7" label="From 251 to 500"/>
+  <int value="8" label="From 501 to 1000"/>
+  <int value="9" label="From 1001 to 2000"/>
+  <int value="10" label="From 2001 to 5000"/>
+  <int value="11" label="From 5001 to 10K"/>
+  <int value="12" label="From 10K+1 to 100K"/>
+  <int value="13" label="From 100K+1 to 1M"/>
+  <int value="14" label="From 1M+1 to 100M"/>
+  <int value="15" label="Over 100M"/>
+</enum>
+
 <enum name="ExtensionAllowlistOmahaAttributeValue">
   <int value="0" label="Undefined"/>
   <int value="1" label="Allowlisted"/>
@@ -773,6 +792,11 @@ Called by update_extension_histograms.py.-->
       label="ENTERPRISE_REPORTING_PRIVATE_ON_DATA_MASKING_RULES_TRIGGERED"/>
   <int value="567"
       label="PASSWORDS_PRIVATE_ON_SHOULD_SHOW_ACCOUNT_STORAGE_SETTING_TOGGLE_CHANGED"/>
+  <int value="568" label="PDF_VIEWER_PRIVATE_ON_SAVE_TO_DRIVE_PROGRESS"/>
+  <int value="569" label="SIDE_PANEL_ON_OPENED"/>
+  <int value="570" label="SIDE_PANEL_ON_CLOSED"/>
+  <int value="571" label="ACCESSIBILITY_PRIVATE_ON_KEY_DOWN"/>
+  <int value="572" label="ACCESSIBILITY_PRIVATE_ON_KEY_UP"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_event_histogram_value.h:HistogramValue) -->
@@ -2811,15 +2835,15 @@ Called by update_extension_histograms.py.-->
   <int value="1925" label="AUTOFILLPRIVATE_ADDORUPDATEENTITYINSTANCE"/>
   <int value="1926" label="AUTOFILLPRIVATE_REMOVEENTITYINSTANCE"/>
   <int value="1927" label="ACCESSIBILITY_PRIVATE_ENABLELIVECAPTION"/>
-  <int value="1928" label="AUTOFILLPRIVATE_GETALLENTITYTYPES"/>
+  <int value="1928" label="AUTOFILLPRIVATE_GETWRITABLEENTITYTYPES"/>
   <int value="1929"
       label="AUTOFILLPRIVATE_GETALLATTRIBUTETYPESFORENTITYTYPENAME"/>
   <int value="1930" label="AUTOFILLPRIVATE_GETENTITYINSTANCEBYGUID"/>
   <int value="1931" label="AUTOFILLPRIVATE_GETPAYOVERTIMEISSUERLIST"/>
   <int value="1932" label="AUTOFILLPRIVATE_SETAUTOFILLAIOPTINSTATUS"/>
   <int value="1933" label="AUTOFILLPRIVATE_GETAUTOFILLAIOPTINSTATUS"/>
-  <int value="1934" label="EXPERIMENTALACTOR_STARTTASK"/>
-  <int value="1935" label="EXPERIMENTALACTOR_EXECUTEACTION"/>
+  <int value="1934" label="DELETED_EXPERIMENTALACTOR_STARTTASK"/>
+  <int value="1935" label="DELETED_EXPERIMENTALACTOR_EXECUTEACTION"/>
   <int value="1936" label="EXPERIMENTALACTOR_STOPTASK"/>
   <int value="1937" label="BOOKMARKMANAGERPRIVATE_OPENINNEWTABGROUP"/>
   <int value="1938" label="CONTROLLEDFRAMEINTERNAL_CONTEXTMENUSUPDATE"/>
@@ -2830,6 +2854,23 @@ Called by update_extension_histograms.py.-->
   <int value="1942" label="EXPERIMENTALACTOR_PERFORMACTIONS"/>
   <int value="1943" label="EXPERIMENTALACTOR_CREATETASK"/>
   <int value="1944" label="EXPERIMENTALACTOR_REQUESTTABOBSERVATION"/>
+  <int value="1945" label="PDFVIEWERPRIVATE_SAVETODRIVE"/>
+  <int value="1946" label="SIDEPANEL_GETLAYOUT"/>
+  <int value="1947" label="SIDEPANEL_CLOSE"/>
+  <int value="1948" label="DEVELOPERPRIVATE_SHOWSITESETTINGS"/>
+  <int value="1949"
+      label="ACCESSIBILITY_PRIVATE_PROCESSPENDINGSPOKENFEEDBACKEVENT"/>
+  <int value="1950"
+      label="ACCESSIBILITY_PRIVATE_ENABLESPOKENFEEDBACKMV3KEYHANDLING"/>
+  <int value="1951"
+      label="AUTOFILLPRIVATE_GETWALLETABLEPASSDETECTIONOPTINSTATUS"/>
+  <int value="1952"
+      label="AUTOFILLPRIVATE_SETWALLETABLEPASSDETECTIONOPTINSTATUS"/>
+  <int value="1953" label="METRICSPRIVATE_RECORDEXTENSIONUSAGEUKM"/>
+  <int value="1954"
+      label="WEBSTOREPRIVATE_SHOULDSHOWENTERPRISEPROMOTIONBANNER"/>
+  <int value="1955" label="WEBSTOREPRIVATE_LOGENTERPRISEPROMOSHOWN"/>
+  <int value="1956" label="WEBSTOREPRIVATE_ONENTERPRISEPROMOCLICK"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->
@@ -2860,6 +2901,7 @@ Called by update_extension_histograms.py.-->
   <int value="22" label="USER_CANCELED"/>
   <int value="23" label="USER_ABORTED"/>
   <int value="24" label="UPDATE_NON_EXISTING_EXTENSION"/>
+  <int value="25" label="PROFILE_SHUTTING_DOWN"/>
 </enum>
 
 <enum name="ExtensionInstallationDownloadingCacheStatus">
@@ -3314,6 +3356,19 @@ Called by update_extension_permission.py.-->
   <int value="3" label="Policy Violation"/>
 </enum>
 
+<!-- LINT.IfChange(ExtensionUsageAction) -->
+
+<enum name="ExtensionUsageAction">
+  <int value="0" label="Extension Pinned"/>
+  <int value="1" label="Extension Unpinned"/>
+  <int value="2" label="Extension Context Menu Init"/>
+  <int value="3" label="Extension Action Clicked"/>
+  <int value="4" label="Extension Enabled"/>
+  <int value="5" label="Extension Disabled"/>
+</enum>
+
+<!-- LINT.ThenChange(/extensions/common/extension_usage.h:ExtensionUsageAction) -->
+
 <enum name="ExternalItemState">
   <int value="0" label="DEPRECATED_DISABLED"/>
   <int value="1" label="DEPRECATED_ENABLED"/>
@@ -3709,6 +3764,8 @@ Called by update_extension_permission.py.-->
   <int value="5" label="asyncBlocking"/>
   <int value="6" label="requestBody"/>
   <int value="7" label="extraHeaders"/>
+  <int value="8" label="securityInfo"/>
+  <int value="9" label="securityInfoRawDer"/>
 </enum>
 
 <enum name="WebStoreInstallAllowlistParameter">

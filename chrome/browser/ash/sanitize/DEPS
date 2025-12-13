@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/lifetime",
   "+chrome/browser/profile_resetter",
   "+chrome/browser/profiles",
-  "+chrome/browser/settings_resetter",
   "+chrome/browser/ui/webui/ash/settings",
   "+chrome/test/base",
 ]

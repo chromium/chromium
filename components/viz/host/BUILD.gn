@@ -23,6 +23,8 @@ viz_component("host") {
     "host_frame_sink_client.h",
     "host_frame_sink_manager.cc",
     "host_frame_sink_manager.h",
+    "persistent_cache_sandboxed_file_factory.cc",
+    "persistent_cache_sandboxed_file_factory.h",
     "renderer_settings_creation.cc",
     "renderer_settings_creation.h",
     "viz_host_export.h",
@@ -37,10 +39,14 @@ viz_component("host") {
 
   deps = [
     "//base",
+    "//components/base32",
     "//components/input",
+    "//components/persistent_cache",
     "//gpu/ipc/client",
     "//gpu/ipc/common",
+    "//gpu/webgpu:common",
     "//services/viz/privileged/mojom",
+    "//services/webnn/host",
     "//services/webnn/public/mojom",
     "//ui/base",
     "//ui/base:ozone_buildflags",
@@ -69,6 +75,10 @@ viz_source_set("unit_tests") {
   testonly = true
 
   sources = [ "host_frame_sink_manager_unittest.cc" ]
+
+  if (enable_skia_graphite_tests) {
+    sources += [ "persistent_cache_sandboxed_file_factory_unittest.cc" ]
+  }
 
   deps = [
     ":host",

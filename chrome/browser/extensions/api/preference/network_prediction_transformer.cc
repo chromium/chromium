@@ -9,6 +9,9 @@
 #include "base/check.h"
 #include "base/values.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

@@ -11,10 +11,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/permissions/permissions_test_util.h"
 #include "chrome/browser/omnibox/autocomplete_controller_emitter_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/test/base/autocomplete_change_observer.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -22,13 +24,11 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
-#include "components/omnibox/browser/omnibox_controller.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/permissions/permissions_test_util.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/permission_set.h"
@@ -161,8 +161,7 @@ class OmniboxApiTestBase : public ExtensionApiTest {
   AutocompleteController* GetAutocompleteControllerForBrowser(
       Browser* browser) {
     return GetLocationBar(browser)
-        ->GetOmniboxView()
-        ->controller()
+        ->GetOmniboxController()
         ->autocomplete_controller();
   }
 
@@ -357,17 +356,17 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, OnInputEntered) {
   ASSERT_TRUE(extension);
 
   LocationBar* location_bar = GetLocationBar(browser());
-  OmniboxView* omnibox_view = location_bar->GetOmniboxView();
   ResultCatcher catcher;
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
 
-  auto send_input = [this, autocomplete_controller, omnibox_view](
+  auto send_input = [this, autocomplete_controller, location_bar](
                         std::u16string input_string,
                         WindowOpenDisposition disposition) {
     AutocompleteInput input(input_string, metrics::OmniboxEventProto::NTP,
                             ChromeAutocompleteSchemeClassifier(profile()));
     autocomplete_controller->Start(input);
-    omnibox_view->model()->OpenSelection(base::TimeTicks(), disposition);
+    location_bar->GetOmniboxController()->edit_model()->OpenSelectionForTesting(
+        base::TimeTicks(), disposition);
     WaitForAutocompleteDone();
   };
 
@@ -474,7 +473,10 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, IncognitoSplitMode) {
                             metrics::OmniboxEventProto::NTP,
                             ChromeAutocompleteSchemeClassifier(profile()));
     GetAutocompleteController()->Start(input);
-    GetLocationBar(browser())->GetOmniboxView()->model()->OpenSelection();
+    GetLocationBar(browser())
+        ->GetOmniboxController()
+        ->edit_model()
+        ->OpenSelectionForTesting();
   }
   {
     AutocompleteInput input(
@@ -482,9 +484,9 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, IncognitoSplitMode) {
         ChromeAutocompleteSchemeClassifier(incognito_profile));
     incognito_controller->Start(input);
     GetLocationBar(incognito_browser)
-        ->GetOmniboxView()
-        ->model()
-        ->OpenSelection();
+        ->GetOmniboxController()
+        ->edit_model()
+        ->OpenSelectionForTesting();
   }
 
   EXPECT_TRUE(on_the_record_listener.WaitUntilSatisfied());
@@ -516,7 +518,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiBackgroundPageTest, MAYBE_PopupStaysClosed) {
   omnibox_view->OnAfterPossibleChange(true);
   WaitForAutocompleteDone();
   EXPECT_TRUE(autocomplete_controller->done());
-  EXPECT_TRUE(omnibox_view->model()->PopupIsOpen());
+  EXPECT_TRUE(location_bar->GetOmniboxController()->IsPopupOpen());
 
   // Quickly type another query and accept it before getting suggestions back
   // for the query. The popup will close after accepting input - ensure that it
@@ -529,13 +531,14 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiBackgroundPageTest, MAYBE_PopupStaysClosed) {
   AutocompleteInput input(u"kw command", metrics::OmniboxEventProto::NTP,
                           ChromeAutocompleteSchemeClassifier(profile()));
   autocomplete_controller->Start(input);
-  location_bar->GetOmniboxView()->model()->OpenSelection();
+
+  location_bar->GetOmniboxController()->edit_model()->OpenSelectionForTesting();
   WaitForAutocompleteDone();
   EXPECT_TRUE(autocomplete_controller->done());
   // This checks that the keyword provider (via javascript)
   // gets told to navigate to the string "command".
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
-  EXPECT_FALSE(omnibox_view->model()->PopupIsOpen());
+  EXPECT_FALSE(location_bar->GetOmniboxController()->IsPopupOpen());
 }
 
 // Tests deleting a deletable omnibox extension suggestion result.
@@ -796,7 +799,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, SetDefaultSuggestionFailures) {
                  resolve(e.message);
                }
              });
-             let expectedError = /Opening and ending tag mismatch/;
+             let expectedError = /(Opening and ending tag mismatch|Unexpected closing tag)/;
              chrome.test.assertTrue(expectedError.test(error), error);
              chrome.test.succeed();
            }
@@ -962,16 +965,30 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_PassEmptySuggestions) {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class UnscopedOmniboxApiTest : public OmniboxApiTestBase {
+ public:
+  UnscopedOmniboxApiTest() {
+    // TODO(crbug.com/441102004): Update UnscopedExtensionZeroSuggest to support
+    //   kAiModeOmniboxEntryPoint.
+    scoped_feature_list_.InitWithFeatures(
+        {extensions_features::kExperimentalOmniboxLabs},
+        {omnibox::kAiModeOmniboxEntryPoint});
+  }
+
+  // Helper function to set the stop timer duration for the autocomplete
+  // controller.
+  void SetStopTimerDuration(base::TimeDelta duration) {
+    GetAutocompleteController()->config_.stop_timer_duration = duration;
+  }
+
+ private:
   void SetUpOnMainThread() override {
     OmniboxApiTestBase::SetUpOnMainThread();
     // Prevent the stop timer from killing the hints fetch early, which might
     // cause test flakiness due to timeout.
-    GetAutocompleteController()->SetStartStopTimerDurationForTesting(
-        base::Seconds(30));
+    SetStopTimerDuration(base::Seconds(30));
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_{
-      extensions_features::kExperimentalOmniboxLabs};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest,
@@ -1287,17 +1304,17 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, OnInputEntered) {
   ASSERT_TRUE(autocomplete_controller->done());
 
   LocationBar* location_bar = GetLocationBar(browser());
-  OmniboxView* omnibox_view = location_bar->GetOmniboxView();
 
   // This is equivalent of the user arrowing down in the omnibox.
   // We need to select the second match because the first one is for the default
   // provider.
-  omnibox_view->model()->SetPopupSelection(OmniboxPopupSelection(1));
+  location_bar->GetOmniboxController()->edit_model()->SetPopupSelection(
+      OmniboxPopupSelection(1));
 
   // Select the suggestion created by the extension, which will trigger the
   // `onInputEntered` event.
-  omnibox_view->model()->OpenSelection(base::TimeTicks(),
-                                       WindowOpenDisposition::CURRENT_TAB);
+  location_bar->GetOmniboxController()->edit_model()->OpenSelectionForTesting(
+      base::TimeTicks(), WindowOpenDisposition::CURRENT_TAB);
 
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   EXPECT_EQ("sending input", listener.message());
@@ -1473,11 +1490,10 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, OnActionExecuted) {
   ASSERT_TRUE(autocomplete_controller->done());
 
   LocationBar* location_bar = GetLocationBar(browser());
-  OmniboxView* omnibox_view = location_bar->GetOmniboxView();
 
   // This is equivalent of the user clicking on the action added to the first
   // omnibox suggestion created by the extension.
-  omnibox_view->model()->OpenSelection(
+  location_bar->GetOmniboxController()->edit_model()->OpenSelection(
       OmniboxPopupSelection(
           /*line=*/1, /*state=*/OmniboxPopupSelection::FOCUSED_BUTTON_ACTION,
           /*action_index=*/0),
@@ -1615,8 +1631,7 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, MultipleUnscopedExtensions) {
 
   // Prevent the stop timer from killing the hints fetch early, which might
   // cause test flakiness due to timeout.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(20));
+  SetStopTimerDuration(base::Seconds(20));
 
   // Test that our extension can send suggestions back to us.
   AutocompleteInput input(u"input", metrics::OmniboxEventProto::NTP,

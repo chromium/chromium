@@ -8,6 +8,7 @@
 #include "base/containers/enum_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/jobs/uninstall/uninstall_job.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"

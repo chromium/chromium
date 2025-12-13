@@ -45,9 +45,12 @@ class BlockedPopupTabHelper
   // `referrer` represents the frame which requested this popup.
   void HandlePopup(const GURL& popup_url, const web::Referrer& referrer);
 
+  // Returns the number of currently blocked popups for this tab.
+  size_t GetBlockedPopupCount() const { return popups_.size(); }
+
   // infobars::InfoBarManager::Observer implementation.
   void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
-  void OnManagerShuttingDown(
+  void OnManagerWillBeDestroyed(
       infobars::InfoBarManager* infobar_manager) override;
 
   // Encapsulates information about popup.
@@ -59,6 +62,9 @@ class BlockedPopupTabHelper
     // Referrer which requested this popup.
     const web::Referrer referrer;
   };
+
+  // Returns a copy of the currently blocked popups.
+  std::vector<Popup> GetBlockedPopups() const { return popups_; }
 
  private:
   friend class web::LazyWebStateUserData<BlockedPopupTabHelper>;
@@ -80,7 +86,7 @@ class BlockedPopupTabHelper
   // The WebState that this object is attached to.
   raw_ptr<web::WebState> web_state_;
   // The currently displayed infobar.
-  raw_ptr<infobars::InfoBar> infobar_;
+  raw_ptr<infobars::InfoBar, DanglingUntriaged> infobar_;
   // The popups to open.
   std::vector<Popup> popups_;
   // For management of infobars::InfoBarManager::Observer registration.  This

@@ -15,7 +15,7 @@ import {routes} from '../router.js';
 
 import type {SettingsContext} from './input_method_settings.js';
 import {getInputMethodSettings, SettingsType} from './input_method_settings.js';
-import {JapaneseInputMode, JapaneseKeymapStyle, JapanesePunctuationStyle, JapaneseSectionShortcut, JapaneseShiftKeyModeStyle, JapaneseSpaceInputStyle, JapaneseSymbolStyle} from './input_method_types.js';
+import {JapaneseInputMode, JapaneseKeymapStyle, JapanesePunctuationStyle, JapaneseSelectionShortcut, JapaneseShiftKeyModeStyle, JapaneseSpaceInputStyle, JapaneseSymbolStyle} from './input_method_types.js';
 
 /**
  * The prefix string shared by all first party input method ID.
@@ -83,7 +83,9 @@ export enum OptionType {
   JAPANESE_PUNCTUATION_STYLE = 'JapanesePunctuationStyle',
   JAPANESE_SYMBOL_STYLE = 'JapaneseSymbolStyle',
   JAPANESE_SPACE_INPUT_STYLE = 'JapaneseSpaceInputStyle',
-  JAPANESE_SECTION_SHORTCUT = 'JapaneseSectionShortcut',
+  // "...Section..." in the string value below is a typo, but persisted in CrOS
+  // Prefs storage so must NOT be fixed unless user data are migrated first.
+  JAPANESE_SELECTION_SHORTCUT = 'JapaneseSectionShortcut',
   JAPANESE_KEYMAP_STYLE = 'JapaneseKeymapStyle',
   JAPANESE_MANAGE_USER_DICTIONARY = 'JapaneseManageUserDictionary',
   JAPANESE_DELETE_PERSONALIZATION_DATA = 'JapaneseClearPersonalizationData',
@@ -99,7 +101,6 @@ export enum OptionType {
   PINYIN_ENABLE_LOWER_PAGING = 'pinyinEnableLowerPaging',
   PINYIN_ENABLE_UPPER_PAGING = 'pinyinEnableUpperPaging',
   PINYIN_FULL_WIDTH_CHARACTER = 'pinyinFullWidthCharacter',
-  PINYIN_FUZZY_CONFIG = 'pinyinFuzzyConfig',
   PINYIN_EN_ENG = 'en:eng',
   PINYIN_AN_ANG = 'an:ang',
   PINYIN_IAN_IANG = 'ian:iang',
@@ -144,7 +145,6 @@ export const OPTION_DEFAULT = {
   [OptionType.ENABLE_GESTURE_TYPING]: true,
   [OptionType.ENABLE_PREDICTION]: false,
   [OptionType.ENABLE_SOUND_ON_KEYPRESS]: false,
-  [OptionType.JAPANESE_NUMBER_OF_SUGGESTIONS]: 3,
   [OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL]: 0,
   [OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION]: true,
   [OptionType.PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING]: true,
@@ -158,14 +158,15 @@ export const OPTION_DEFAULT = {
       JapaneseShiftKeyModeStyle.ALPHANUMERIC,
   [OptionType.JAPANESE_USE_INPUT_HISTORY]: true,
   [OptionType.JAPANESE_USE_SYSTEM_DICTIONARY]: true,
+  [OptionType.JAPANESE_NUMBER_OF_SUGGESTIONS]: 3,
   [OptionType.JAPANESE_INPUT_MODE]: JapaneseInputMode.ROMAJI,
   [OptionType.JAPANESE_PUNCTUATION_STYLE]:
       JapanesePunctuationStyle.KUTEN_TOUTEN,
   [OptionType.JAPANESE_SYMBOL_STYLE]:
       JapaneseSymbolStyle.CORNER_BRACKET_MIDDLE_DOT,
   [OptionType.JAPANESE_SPACE_INPUT_STYLE]: JapaneseSpaceInputStyle.INPUT_MODE,
-  [OptionType.JAPANESE_SECTION_SHORTCUT]:
-      JapaneseSectionShortcut.DIGITS_123456789,
+  [OptionType.JAPANESE_SELECTION_SHORTCUT]:
+      JapaneseSelectionShortcut.DIGITS_123456789,
   [OptionType.JAPANESE_KEYMAP_STYLE]: JapaneseKeymapStyle.CHROME_OS,
   [OptionType.JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS]: false,
   // LINT.ThenChange(/chrome/browser/ash/input_method/japanese/japanese_settings.cc:JpPrefDefaults)
@@ -180,20 +181,6 @@ export const OPTION_DEFAULT = {
   [OptionType.PINYIN_ENABLE_LOWER_PAGING]: true,
   [OptionType.PINYIN_ENABLE_UPPER_PAGING]: true,
   [OptionType.PINYIN_FULL_WIDTH_CHARACTER]: false,
-  [OptionType.PINYIN_FUZZY_CONFIG]: {
-    an_ang: undefined,
-    c_ch: undefined,
-    en_eng: undefined,
-    f_h: undefined,
-    ian_iang: undefined,
-    in_ing: undefined,
-    k_g: undefined,
-    l_n: undefined,
-    r_l: undefined,
-    s_sh: undefined,
-    uan_uang: undefined,
-    z_zh: undefined,
-  },
   // Options for zhuyin input method.
   [OptionType.ZHUYIN_KEYBOARD_LAYOUT]: KeyboardLayout.STANDARD,
   [OptionType.ZHUYIN_PAGE_SIZE]: '10',
@@ -308,7 +295,7 @@ const Settings = {
         {name: OptionType.JAPANESE_PUNCTUATION_STYLE},
         {name: OptionType.JAPANESE_SYMBOL_STYLE},
         {name: OptionType.JAPANESE_SPACE_INPUT_STYLE},
-        {name: OptionType.JAPANESE_SECTION_SHORTCUT},
+        {name: OptionType.JAPANESE_SELECTION_SHORTCUT},
         {name: OptionType.JAPANESE_KEYMAP_STYLE},
       ],
     },
@@ -601,7 +588,7 @@ export function getOptionUiType(option: OptionType): UiType {
     case OptionType.JAPANESE_PUNCTUATION_STYLE:
     case OptionType.JAPANESE_SYMBOL_STYLE:
     case OptionType.JAPANESE_SPACE_INPUT_STYLE:
-    case OptionType.JAPANESE_SECTION_SHORTCUT:
+    case OptionType.JAPANESE_SELECTION_SHORTCUT:
     case OptionType.JAPANESE_KEYMAP_STYLE:
     case OptionType.JAPANESE_SHIFT_KEY_MODE_STYLE:
     case OptionType.JAPANESE_NUMBER_OF_SUGGESTIONS:
@@ -615,9 +602,6 @@ export function getOptionUiType(option: OptionType): UiType {
       return UiType.LINK;
     case OptionType.JAPANESE_DELETE_PERSONALIZATION_DATA:
       return UiType.SUBMENU_BUTTON;
-    case OptionType.PINYIN_FUZZY_CONFIG:
-      // Not implemented.
-      assertNotReached();
     default:
       assertExhaustive(option);
   }
@@ -693,8 +677,8 @@ export function getOptionLabelName(option: OptionType): string {
       return 'inputMethodOptionsJapaneseSymbolStyle';
     case OptionType.JAPANESE_SPACE_INPUT_STYLE:
       return 'inputMethodOptionsJapaneseSpaceInputStyle';
-    case OptionType.JAPANESE_SECTION_SHORTCUT:
-      return 'inputMethodOptionsJapaneseSectionShortcut';
+    case OptionType.JAPANESE_SELECTION_SHORTCUT:
+      return 'inputMethodOptionsJapaneseSelectionShortcut';
     case OptionType.JAPANESE_KEYMAP_STYLE:
       return 'inputMethodOptionsJapaneseKeymapStyle';
     case OptionType.JAPANESE_AUTOMATICALLY_SWITCH_TO_HALFWIDTH:
@@ -746,7 +730,6 @@ export function getOptionLabelName(option: OptionType): string {
     case OptionType.VIETNAMESE_TELEX_INSERT_U_HORN_ON_W:
       return 'inputMethodOptionsVietnameseTelexWShortcut';
     case OptionType.ENABLE_COMPLETION:
-    case OptionType.PINYIN_FUZZY_CONFIG:
       // Not implemented.
       assertNotReached();
     default:
@@ -927,19 +910,19 @@ export function getOptionMenuItems(option: OptionType):
           name: 'inputMethodOptionsJapaneseSpaceInputStyleHalfwidth',
         },
       ];
-    case OptionType.JAPANESE_SECTION_SHORTCUT:
+    case OptionType.JAPANESE_SELECTION_SHORTCUT:
       return [
         {
-          value: JapaneseSectionShortcut.NO_SHORTCUT,
-          name: 'inputMethodOptionsJapaneseSectionShortcutNoShortcut',
+          value: JapaneseSelectionShortcut.NO_SHORTCUT,
+          name: 'inputMethodOptionsJapaneseSelectionShortcutNoShortcut',
         },
         {
-          value: JapaneseSectionShortcut.DIGITS_123456789,
-          name: 'inputMethodOptionsJapaneseSectionShortcut123456789',
+          value: JapaneseSelectionShortcut.DIGITS_123456789,
+          name: 'inputMethodOptionsJapaneseSelectionShortcut123456789',
         },
         {
-          value: JapaneseSectionShortcut.ASDFGHJKL,
-          name: 'inputMethodOptionsJapaneseSectionShortcutAsdfghjkl',
+          value: JapaneseSelectionShortcut.ASDFGHJKL,
+          name: 'inputMethodOptionsJapaneseSelectionShortcutAsdfghjkl',
         },
       ];
     case OptionType.JAPANESE_KEYMAP_STYLE:

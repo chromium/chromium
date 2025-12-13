@@ -20,6 +20,10 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "media/gpu/android/ndk_video_encode_accelerator.h"
+#endif
+
 namespace {
 void BindVEAProvider(
     mojo::PendingReceiver<media::mojom::VideoEncodeAcceleratorProvider>
@@ -115,17 +119,24 @@ void MojoVideoEncodeAcceleratorProvider::CreateVideoEncodeAccelerator(
       create_vea_callback_, gpu_preferences_, gpu_workarounds_, gpu_device_,
       get_helper_cb, gpu_task_runner_);
 
-  if (base::FeatureList::IsEnabled(kUseTaskRunnerForMojoVEAService)) {
+  scoped_refptr<base::TaskRunner> runner;
 #if BUILDFLAG(IS_WIN)
-    base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()},
-        base::SingleThreadTaskRunnerThreadMode::DEDICATED)
-#else
-    base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
-#endif
-        ->PostTask(FROM_HERE, std::move(create_service_cb));
+  runner = base::ThreadPool::CreateCOMSTATaskRunner(
+      {base::MayBlock()}, base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+#elif BUILDFLAG(IS_APPLE)
+  runner = base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+#elif BUILDFLAG(IS_ANDROID)
+  if (media::NdkVideoEncodeAccelerator::ShouldUseSurfaceInput()) {
+    runner = base::ThreadPool::CreateSingleThreadTaskRunner(
+        {base::MayBlock(), base::WithBaseSyncPrimitives()},
+        base::SingleThreadTaskRunnerThreadMode::DEDICATED);
   } else {
-    std::move(create_service_cb).Run();
+    runner = base::SequencedTaskRunner::GetCurrentDefault();
   }
+#else
+  runner = base::SequencedTaskRunner::GetCurrentDefault();
+#endif
+  runner->PostTask(FROM_HERE, std::move(create_service_cb));
 }
 
 void MojoVideoEncodeAcceleratorProvider::

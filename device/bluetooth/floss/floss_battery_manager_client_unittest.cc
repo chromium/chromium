@@ -4,6 +4,8 @@
 
 #include "device/bluetooth/floss/floss_battery_manager_client.h"
 
+#include <utility>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -59,13 +61,13 @@ class FlossBatteryManagerClientTest : public testing::Test,
 
     // Handle method calls on the object proxy
     ON_CALL(*battery_manager_object_proxy_.get(),
-            DoCallMethodWithErrorResponse(
+            CallMethodWithErrorResponse(
                 HasMemberOf(battery_manager::kRegisterBatteryCallback),
                 testing::_, testing::_))
         .WillByDefault(Invoke(
             this, &FlossBatteryManagerClientTest::HandleRegisterCallback));
     ON_CALL(*battery_manager_object_proxy_.get(),
-            DoCallMethodWithErrorResponse(
+            CallMethodWithErrorResponse(
                 HasMemberOf(battery_manager::kGetBatteryInformation),
                 testing::_, testing::_))
         .WillByDefault(Invoke(
@@ -75,7 +77,7 @@ class FlossBatteryManagerClientTest : public testing::Test,
   void SetUp() override {
     ::dbus::Bus::Options options;
     options.bus_type = ::dbus::Bus::BusType::SYSTEM;
-    bus_ = base::MakeRefCounted<::dbus::MockBus>(options);
+    bus_ = base::MakeRefCounted<::dbus::MockBus>(std::move(options));
     callback_path_ =
         ::dbus::ObjectPath(FlossBatteryManagerClient::kExportedCallbacksPath);
     client_ = FlossBatteryManagerClient::Create();
@@ -85,25 +87,24 @@ class FlossBatteryManagerClientTest : public testing::Test,
 
   void TearDown() override { client_.reset(); }
 
-  void HandleRegisterCallback(
-      ::dbus::MethodCall* method_call,
-      int timeout_ms,
-      ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+  void HandleRegisterCallback(::dbus::MethodCall* method_call,
+                              int timeout_ms,
+                              ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
     auto response = ::dbus::Response::CreateEmpty();
     ::dbus::MessageWriter msg(response.get());
     msg.AppendUint32(kTestCallbackId);
 
-    std::move(*cb).Run(response.get(), nullptr);
+    std::move(cb).Run(response.get(), nullptr);
   }
 
   void HandleGetBatteryInformation(
       ::dbus::MethodCall* method_call,
       int timeout_ms,
-      ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+      ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
     auto response = ::dbus::Response::CreateEmpty();
     ::dbus::MessageWriter msg(response.get());
 
-    std::move(*cb).Run(response.get(), nullptr);
+    std::move(cb).Run(response.get(), nullptr);
   }
 
   void HandleGetBatteryInfo(DBusResult<std::optional<BatterySet>> result) {
@@ -121,11 +122,11 @@ class FlossBatteryManagerClientTest : public testing::Test,
                 ExportMethod(testing::_, testing::_, testing::_, testing::_))
         .WillRepeatedly(&FakeExportMethod);
     EXPECT_CALL(*battery_manager_object_proxy_.get(),
-                DoCallMethodWithErrorResponse)
+                CallMethodWithErrorResponse)
         .Times(testing::AnyNumber());
     // Expected specific method calls.
     EXPECT_CALL(*battery_manager_object_proxy_.get(),
-                DoCallMethodWithErrorResponse(
+                CallMethodWithErrorResponse(
                     HasMemberOf(battery_manager::kRegisterBatteryCallback),
                     testing::_, testing::_))
         .Times(1);
@@ -134,11 +135,11 @@ class FlossBatteryManagerClientTest : public testing::Test,
     EXPECT_EQ(client_->battery_manager_callback_id_, kTestCallbackId);
     // Expected call to UnregisterCallback when client is destroyed
     EXPECT_CALL(*battery_manager_object_proxy_.get(),
-                DoCallMethodWithErrorResponse(
+                CallMethodWithErrorResponse(
                     HasMemberOf(battery_manager::kUnregisterBatteryCallback),
                     testing::_, testing::_))
         .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
-                     ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+                     ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
           dbus::MessageReader msg(method_call);
           // D-Bus method call should have 1 parameter.
           uint32_t param1;
@@ -198,10 +199,10 @@ class FlossBatteryManagerClientTest : public testing::Test,
 
   void TestGetBatteryInfo() {
     EXPECT_CALL(*battery_manager_object_proxy_.get(),
-                DoCallMethodWithErrorResponse)
+                CallMethodWithErrorResponse)
         .Times(testing::AnyNumber());
     EXPECT_CALL(*battery_manager_object_proxy_.get(),
-                DoCallMethodWithErrorResponse(
+                CallMethodWithErrorResponse(
                     HasMemberOf(battery_manager::kGetBatteryInformation),
                     testing::_, testing::_))
         .Times(1);

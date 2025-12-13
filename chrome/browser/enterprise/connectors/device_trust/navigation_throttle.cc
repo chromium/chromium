@@ -17,7 +17,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
 #include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/device_signals_consent/consent_requester.h"
+#include "chrome/browser/ui/views/device_signals_consent/consent_dialog_coordinator.h"
 #include "components/device_signals/core/browser/pref_names.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/signals_features.h"

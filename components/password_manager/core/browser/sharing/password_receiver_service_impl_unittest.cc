@@ -22,8 +22,6 @@
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
@@ -106,65 +104,28 @@ PasswordFormToIncomingSharingInvitation(const PasswordForm& form) {
   return invitation;
 }
 
+scoped_refptr<TestPasswordStore> CreateStoreAndInit(
+    std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper) {
+  scoped_refptr<TestPasswordStore> store =
+      base::MakeRefCounted<TestPasswordStore>();
+  store->Init(std::move(affiliated_match_helper));
+  return store;
+}
+
 }  // namespace
 
-// See ShouldCreateAccountStoreParam() for the meaning of the parameters.
-class PasswordReceiverServiceImplTest : public testing::TestWithParam<bool> {
+class PasswordReceiverServiceImplTest : public testing::Test {
  public:
-  void SetUp() override {
-#if BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(features::kLoginDbDeprecationAndroid) &&
-        !ShouldCreateAccountStoreParam()) {
-      GTEST_SKIP() << "With kLoginDbDeprecationAndroid, the account store is "
-                      "always created";
-    }
-#endif  // BUILDFLAG(IS_ANDROID)
-
-    profile_password_store_ = base::MakeRefCounted<TestPasswordStore>();
-    affiliated_match_helper_profile_store_ =
-        new MockAffiliatedMatchHelper(&affiliation_service_);
-    profile_password_store_->Init(
-        /*prefs=*/nullptr,
-        base::WrapUnique(affiliated_match_helper_profile_store_.get()));
-
-#if BUILDFLAG(IS_ANDROID)
-    pref_service_.registry()->RegisterIntegerPref(
-        prefs::kPasswordsUseUPMLocalAndSeparateStores,
-        static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOff));
-#endif  // BUILDFLAG(IS_ANDROID)
-    if (ShouldCreateAccountStoreParam()) {
-#if BUILDFLAG(IS_ANDROID)
-      pref_service_.SetInteger(
-          prefs::kPasswordsUseUPMLocalAndSeparateStores,
-          static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOn));
-#endif
-      account_password_store_ = base::MakeRefCounted<TestPasswordStore>();
-      affiliated_match_helper_account_store_ =
-          new MockAffiliatedMatchHelper(&affiliation_service_);
-      account_password_store_->Init(
-          /*prefs=*/nullptr,
-          base::WrapUnique(affiliated_match_helper_account_store_.get()));
-    }
-
+  PasswordReceiverServiceImplTest() {
     sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
-
-    password_receiver_service_ = std::make_unique<PasswordReceiverServiceImpl>(
-        &pref_service_,
-        /*sync_bridge=*/nullptr, profile_password_store_.get(),
-        account_password_store_.get());
     password_receiver_service_->OnSyncServiceInitialized(&sync_service_);
   }
 
-  void TearDown() override {
+  ~PasswordReceiverServiceImplTest() override {
     affiliated_match_helper_profile_store_ = nullptr;
     affiliated_match_helper_account_store_ = nullptr;
-    if (account_password_store_) {
-      account_password_store_->ShutdownOnUIThread();
-    }
-    if (profile_password_store_) {
-      profile_password_store_->ShutdownOnUIThread();
-    }
-    testing::Test::TearDown();
+    account_password_store_->ShutdownOnUIThread();
+    profile_password_store_->ShutdownOnUIThread();
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -199,14 +160,12 @@ class PasswordReceiverServiceImplTest : public testing::TestWithParam<bool> {
   }
 
   // The PasswordStore where sync-the-feature users should store shared
-  // passwords. This depends only on the platform and feature flags. It isn't
-  // affected by whether the user under test is currently syncing or not.
+  // passwords. This depends only on the platform. It isn't affected by whether
+  // the user under test is currently syncing or not.
   TestPasswordStore& expected_password_store_for_syncing() {
 #if BUILDFLAG(IS_ANDROID)
-    // Android is different from other platforms, syncing users use the
-    // account store whenever it's present.
-    return ShouldCreateAccountStoreParam() ? account_password_store()
-                                           : profile_password_store();
+    // Android differs from the rest, syncing users use the account store.
+    return account_password_store();
 #else
     return profile_password_store();
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -214,9 +173,6 @@ class PasswordReceiverServiceImplTest : public testing::TestWithParam<bool> {
 
   // The PasswordStore where syncing users should NOT store shared passwords.
   TestPasswordStore& unexpected_password_store_for_syncing() {
-    EXPECT_TRUE(ShouldCreateAccountStoreParam())
-        << "unexpected_password_store_for_syncing() must only be called if "
-           "there are 2 PasswordStores";
 #if BUILDFLAG(IS_ANDROID)
     return profile_password_store();
 #else
@@ -241,35 +197,32 @@ class PasswordReceiverServiceImplTest : public testing::TestWithParam<bool> {
                : *affiliated_match_helper_profile_store_;
   }
 
-  TestingPrefServiceSimple& pref_service() { return pref_service_; }
   syncer::TestSyncService& sync_service() { return sync_service_; }
-
-  // Whether the test should instantiate the account-scoped PasswordStore.
-  bool ShouldCreateAccountStoreParam() { return GetParam(); }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  base::test::ScopedFeatureList feature_list_;
-  TestingPrefServiceSimple pref_service_;
-  syncer::TestSyncService sync_service_;
-  scoped_refptr<TestPasswordStore> profile_password_store_;
-  scoped_refptr<TestPasswordStore> account_password_store_;
-  std::unique_ptr<PasswordReceiverServiceImpl> password_receiver_service_;
   affiliations::FakeAffiliationService affiliation_service_;
   raw_ptr<MockAffiliatedMatchHelper> affiliated_match_helper_profile_store_ =
-      nullptr;
+      new MockAffiliatedMatchHelper(&affiliation_service_);
+  const scoped_refptr<TestPasswordStore> profile_password_store_ =
+      CreateStoreAndInit(
+          base::WrapUnique(affiliated_match_helper_profile_store_.get()));
   raw_ptr<MockAffiliatedMatchHelper> affiliated_match_helper_account_store_ =
-      nullptr;
+      new MockAffiliatedMatchHelper(&affiliation_service_);
+  const scoped_refptr<TestPasswordStore> account_password_store_ =
+      CreateStoreAndInit(
+          base::WrapUnique(affiliated_match_helper_account_store_.get()));
+  std::unique_ptr<PasswordReceiverServiceImpl> password_receiver_service_ =
+      std::make_unique<PasswordReceiverServiceImpl>(
+          /*sync_bridge=*/nullptr,
+          profile_password_store_.get(),
+          account_password_store_.get());
+  syncer::TestSyncService sync_service_;
 };
 
-TEST_P(PasswordReceiverServiceImplTest,
+TEST_F(PasswordReceiverServiceImplTest,
        ShouldAcceptIncomingInvitationWhenStoreIsEmpty) {
-  if (!ShouldCreateAccountStoreParam()) {
-    return;
-  }
-
   base::HistogramTester histogram_tester;
   sync_pb::IncomingPasswordSharingInvitationSpecifics invitation =
       CreateIncomingSharingInvitation();
@@ -304,7 +257,7 @@ TEST_P(PasswordReceiverServiceImplTest,
       1);
 }
 
-TEST_P(PasswordReceiverServiceImplTest,
+TEST_F(PasswordReceiverServiceImplTest,
        ShouldIgnoreIncomingInvitationWhenPasswordAlreadyExists) {
   base::HistogramTester histogram_tester;
   PasswordForm existing_password = CreatePasswordForm();
@@ -336,7 +289,7 @@ TEST_P(PasswordReceiverServiceImplTest,
       1);
 }
 
-TEST_P(PasswordReceiverServiceImplTest,
+TEST_F(PasswordReceiverServiceImplTest,
        ShouldIgnoreIncomingInvitationWhenConflictingPasswordExists) {
   base::HistogramTester histogram_tester;
   PasswordForm password = CreatePasswordForm();
@@ -367,20 +320,15 @@ TEST_P(PasswordReceiverServiceImplTest,
       1);
 }
 
-TEST_P(PasswordReceiverServiceImplTest,
+TEST_F(PasswordReceiverServiceImplTest,
        ShouldAcceptInvitationForNonSyncingUserWithAccountStorageEnabled) {
-  if (!ShouldCreateAccountStoreParam()) {
-    return;
-  }
-
   ASSERT_TRUE(profile_password_store().stored_passwords().empty());
   ASSERT_TRUE(account_password_store().stored_passwords().empty());
 
   // Set up an account store user (a non-syncing one, but that doesn't really
   // matter).
   sync_service().SetSignedIn(signin::ConsentLevel::kSignin);
-  ASSERT_TRUE(
-      features_util::IsAccountStorageEnabled(&pref_service(), &sync_service()));
+  ASSERT_TRUE(features_util::IsAccountStorageEnabled(&sync_service()));
 
   password_receiver_service()->ProcessIncomingSharingInvitation(
       CreateIncomingSharingInvitation());
@@ -391,13 +339,9 @@ TEST_P(PasswordReceiverServiceImplTest,
   EXPECT_EQ(1U, account_password_store().stored_passwords().size());
 }
 
-TEST_P(PasswordReceiverServiceImplTest,
+TEST_F(PasswordReceiverServiceImplTest,
        ShouldNotAcceptInvitationForNonSyncingUserWithAccountStorageDisabled) {
   base::HistogramTester histogram_tester;
-  if (!ShouldCreateAccountStoreParam()) {
-    return;
-  }
-
   ASSERT_TRUE(profile_password_store().stored_passwords().empty());
   ASSERT_TRUE(account_password_store().stored_passwords().empty());
 
@@ -405,8 +349,7 @@ TEST_P(PasswordReceiverServiceImplTest,
   sync_service().SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service().GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, false);
-  ASSERT_FALSE(
-      features_util::IsAccountStorageEnabled(&pref_service(), &sync_service()));
+  ASSERT_FALSE(features_util::IsAccountStorageEnabled(&sync_service()));
 
   password_receiver_service()->ProcessIncomingSharingInvitation(
       CreateIncomingSharingInvitation());
@@ -423,7 +366,7 @@ TEST_P(PasswordReceiverServiceImplTest,
       1);
 }
 
-TEST_P(PasswordReceiverServiceImplTest,
+TEST_F(PasswordReceiverServiceImplTest,
        ShouldRecordWhenSharedPasswordAlreadyExistsWithDifferentPassword) {
   base::HistogramTester histogram_tester;
   PasswordForm existing_password = CreatePasswordForm();
@@ -447,7 +390,7 @@ TEST_P(PasswordReceiverServiceImplTest,
       1);
 }
 
-TEST_P(
+TEST_F(
     PasswordReceiverServiceImplTest,
     ShouldRecordWhenSharedPasswordAlreadyExistsAsSharedFromSameSenderWithSamePassword) {
   base::HistogramTester histogram_tester;
@@ -474,7 +417,7 @@ TEST_P(
       1);
 }
 
-TEST_P(
+TEST_F(
     PasswordReceiverServiceImplTest,
     ShouldRecordWhenSharedPasswordAlreadyExistsAsSharedFromDifferentSenderWithSamePassword) {
   base::HistogramTester histogram_tester;
@@ -501,7 +444,7 @@ TEST_P(
       1);
 }
 
-TEST_P(
+TEST_F(
     PasswordReceiverServiceImplTest,
     ShouldRecordWhenSharedPasswordAlreadyExistsAsSharedFromSameSenderWithDifferentPassword) {
   base::HistogramTester histogram_tester;
@@ -529,7 +472,7 @@ TEST_P(
       1);
 }
 
-TEST_P(
+TEST_F(
     PasswordReceiverServiceImplTest,
     ShouldRecordWhenSharedPasswordAlreadyExistsAsSharedFromDifferentSenderWithDifferentPassword) {
   base::HistogramTester histogram_tester;
@@ -557,7 +500,7 @@ TEST_P(
       1);
 }
 
-TEST_P(PasswordReceiverServiceImplTest,
+TEST_F(PasswordReceiverServiceImplTest,
        ShouldIgnorePasswordUpdatesFromSameSenderWhenAutoApproveDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
@@ -594,7 +537,7 @@ TEST_P(PasswordReceiverServiceImplTest,
                               PasswordForm::Type::kReceivedViaSharing))));
 }
 
-TEST_P(PasswordReceiverServiceImplTest,
+TEST_F(PasswordReceiverServiceImplTest,
        ShouldAcceptPasswordUpdatesFromSameSenderWhenAutoApproveEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -631,7 +574,7 @@ TEST_P(PasswordReceiverServiceImplTest,
                               PasswordForm::Type::kReceivedViaSharing))));
 }
 
-TEST_P(PasswordReceiverServiceImplTest, ShouldAddAllCredentialsInInvitation) {
+TEST_F(PasswordReceiverServiceImplTest, ShouldAddAllCredentialsInInvitation) {
   base::HistogramTester histogram_tester;
   sync_pb::IncomingPasswordSharingInvitationSpecifics invitation =
       CreateIncomingSharingInvitation();
@@ -677,7 +620,7 @@ TEST_P(PasswordReceiverServiceImplTest, ShouldAddAllCredentialsInInvitation) {
       2);
 }
 
-TEST_P(PasswordReceiverServiceImplTest, ShouldIgnoreInvalidPasswordForm) {
+TEST_F(PasswordReceiverServiceImplTest, ShouldIgnoreInvalidPasswordForm) {
   base::HistogramTester histogram_tester;
   PasswordForm existing_password = CreatePasswordForm();
   existing_password.password_value.clear();
@@ -695,7 +638,7 @@ TEST_P(PasswordReceiverServiceImplTest, ShouldIgnoreInvalidPasswordForm) {
       1);
 }
 
-TEST_P(PasswordReceiverServiceImplTest, ShouldIgnoreGroupedCredentials) {
+TEST_F(PasswordReceiverServiceImplTest, ShouldIgnoreGroupedCredentials) {
   base::HistogramTester histogram_tester;
   PasswordForm existing_password = CreatePasswordForm();
   existing_password.scheme = PasswordForm::Scheme::kHtml;
@@ -727,16 +670,5 @@ TEST_P(PasswordReceiverServiceImplTest, ShouldIgnoreGroupedCredentials) {
           kInvitationAutoApproved,
       1);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    PasswordReceiverServiceImplTest,
-    ValuesIn({
-#if BUILDFLAG(IS_ANDROID)
-        // Android is the only platform where the account store might not be
-        // created, if kLoginDbDeprecationAndroid is disabled.
-        false,
-#endif
-        true}));
 
 }  // namespace password_manager

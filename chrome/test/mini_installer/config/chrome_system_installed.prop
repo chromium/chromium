@@ -17,8 +17,6 @@
       "condition": "'$CHROME_SHORT_NAME' != 'Chrome'",
       "exists": false
     },
-    "$PROGRAM_FILES\\$CHROME_DIR\\Application\\$MINI_INSTALLER_FILE_VERSION\\Installer\\chrome.7z":
-        {"exists": true},
     "$PROGRAM_FILES\\$CHROME_DIR\\Application\\$MINI_INSTALLER_FILE_VERSION\\Installer\\setup.exe":
         {"exists": true},
     "$PROGRAM_FILES\\$CHROME_DIR\\Application\\$MINI_INSTALLER_FILE_VERSION\\IwaKeyDistribution\\iwa-key-distribution.pb":

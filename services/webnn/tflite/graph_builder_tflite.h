@@ -24,6 +24,7 @@
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-forward.h"
+#include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 #include "third_party/tflite/src/tensorflow/compiler/mlir/lite/schema/schema_generated.h"
@@ -33,6 +34,10 @@ namespace webnn {
 class WebNNConstantOperand;
 
 namespace tflite {
+
+struct Float16 {
+  uint16_t data;
+};
 
 namespace internal {
 
@@ -44,8 +49,15 @@ namespace internal {
 template <typename T, typename... U>
 concept IsAnyOf = (std::same_as<T, U> || ...);
 template <typename T>
-concept IsSupportedTensorType =
-    IsAnyOf<T, float, int32_t, uint32_t, int64_t, int8_t, uint8_t, bool>;
+concept IsSupportedTensorType = IsAnyOf<T,
+                                        Float16,
+                                        float,
+                                        int32_t,
+                                        uint32_t,
+                                        int64_t,
+                                        int8_t,
+                                        uint8_t,
+                                        bool>;
 
 }  // namespace internal
 
@@ -208,6 +220,15 @@ class GraphBuilderTflite final {
       ::tflite::TensorType tensor_type,
       QuantizateParametersOffset quantize_params = 0);
 
+  // Same as `SerializeTemporaryTensor`, but this function checks the
+  // serialized temp tensor size and returns error if the tensor size is larger
+  // than the limit.
+  base::expected<TensorIndex, std::string>
+  SerializeTemporaryTensorWithByteSizeCheck(
+      base::span<const int32_t> dimensions,
+      ::tflite::TensorType tensor_type,
+      QuantizateParametersOffset quantize_params = 0);
+
   OperatorCodeIndex GetOperatorCodeIndex(::tflite::BuiltinOperator code,
                                          int32_t version = 1);
 
@@ -222,6 +243,8 @@ class GraphBuilderTflite final {
 
   // Get the value from constant operand and cast it to int64 data type.
   base::FixedArray<int64_t> GetConstantInt64Value(OperandId operand_id);
+  // Get quantize scale value for float16 and float32 data type.
+  base::FixedArray<float> GetQuantizeScaleValue(OperandId operand_id);
 
   // Operation serialization helpers for operations not directly declared in
   // the mojom::Operation union.
@@ -272,9 +295,10 @@ class GraphBuilderTflite final {
 
   // Serialize gather_nd indices tensor.
   template <typename DataType>
-  base::expected<TensorIndex, std::string> SerializeGatherNDIndices(
+  base::expected<TensorIndex, std::string> SerializeGatherIndices(
       const TensorInfo& indices_tensor_info,
-      const TensorInfo& input_tensor_info);
+      const TensorInfo& input_tensor_info,
+      std::optional<uint32_t> gather_axis = std::nullopt);
   TensorIndex CastGatherIndices(const TensorInfo& indices_tensor_info);
 
   // This function is called by `SerializeGatherND` to serialize WebNN
@@ -308,7 +332,41 @@ class GraphBuilderTflite final {
   std::optional<QuantizateParametersOffset> SerializeQuantizeParams(
       OperandId zero_point_operand_id,
       OperandId scale_operand_id,
-      size_t input_rank);
+      base::span<const uint32_t> input_operand_shape);
+
+  // This function is called by `SerializeResample2d` to serialize WebNN
+  // resample2d operator or used to emulate WebNN operations.
+  OperatorOffset SerializeResizeOperation(
+      mojom::Resample2d::InterpolationMode mode,
+      TensorIndex input_tensor_index,
+      TensorIndex output_tensor_index,
+      int32_t output_height,
+      int32_t output_width);
+
+  // Create a uninitialized flatbuffers vector and return the buffer as span.
+  template <typename DataType>
+  std::tuple<flatbuffers::Offset<flatbuffers::Vector<DataType>>,
+             base::span<DataType>>
+  CreateUninitializedVector(size_t length);
+  // Block-wise expand constant scale and zero point.
+  template <typename DataType>
+    requires(std::is_same_v<DataType, float> ||
+             std::is_same_v<DataType, int64_t>)
+  flatbuffers::Offset<flatbuffers::Vector<DataType>> BlockwiseExpandConstant(
+      base::span<const DataType> values,
+      uint32_t block_size);
+  // Block-wise expand the dimension of input tensor along the given axis.
+  TensorIndex BlockwiseExpandAlongAxis(
+      base::span<const int32_t> input_dimensions,
+      TensorIndex input_tensor_index,
+      uint32_t block_size,
+      uint32_t axis);
+  // Block-wise expand the scale and zero point for quantize / dequantize.
+  std::tuple<TensorIndex, TensorIndex> BlockwiseExpandScaleAndZeroPoint(
+      TensorIndex scale_tensor_index,
+      TensorIndex zero_point_tensor_index,
+      base::span<const int32_t> scale_shape,
+      base::span<const int32_t> input_shape);
 
   // This function is called by `SerializeMatmul` to serialize WebNN
   // matmul operator or used to emulate WebNN operations.
@@ -575,22 +633,21 @@ class GraphBuilderTflite final {
       std::optional<OperandId> state_operand_id,
       base::span<const int32_t> state_dimensions);
 
-  // Reshape hidden and cell state, concat the reshaped tensor if the input
-  // tensor of concat is provided.
-  TensorIndex ReshapeHiddenAndCellState(
+  // Serialize a sub graph (reshape appending concat operation) for gru /lstm.
+  TensorIndex SerializeSubGraphReshapeConcat(
       ::tflite::TensorType input_tensor_type,
       TensorIndex input_tensor_index,
       base::span<const int32_t> new_shape,
       std::optional<TensorIndex> concat_input_tensor_index,
-      base::span<const int32_t> concat_output_shape);
+      base::span<const int32_t> concat_output_shape,
+      bool backward = false);
 
   // Serialize a sub graph (slice appending squeeze operation) for gru.
   base::expected<TensorIndex, std::string> SerializeSubGraphSliceSqueeze(
       ::tflite::TensorType input_tensor_type,
       TensorIndex input_tensor_index,
       base::span<const int32_t> slice_starts,
-      base::span<const int32_t> slice_sizes,
-      int32_t squeeze_axis);
+      base::span<const int32_t> slice_sizes);
 
   // Serialize functions for members of the mojom::Operation union. Keep these
   // functions in the same order as in webnn_graph.mojom.
@@ -644,6 +701,8 @@ class GraphBuilderTflite final {
       const mojom::LeakyRelu& leaky_relu);
   base::expected<OperatorOffset, std::string> SerializeLinear(
       const mojom::Linear& linear);
+  OperatorOffset SerializeIsInfinite(const TensorInfo& input_tensor_info,
+                                     const TensorInfo& output_tensor_info);
   OperatorOffset SerializeLogicalNot(const TensorInfo& input_tensor_info,
                                      const TensorInfo& output_tensor_info);
   base::expected<OperatorOffset, std::string> SerializeLstmCell(

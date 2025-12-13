@@ -1,0 +1,119 @@
+=== Accessibility tree before go() pass 1 ===
+[document web] name='Material Web Select Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[combo box] name='Test Select'
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[section]
+++++++++++++++++++[static] name='Test Select'
+++++++++++++++[section]
+++++++++++++++++[static] name='Option 1'
+++++++++++++[section]
+++++++++++++++[image]
+=== End accessibility tree ===
+NAME-CHANGED:Option 2 role=ROLE_STATIC name='Option 2' ENABLED,SENSITIVE,SHOWING,VISIBLE
+=== Accessibility tree after go() pass 1 ===
+[document web] name='Material Web Select Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[combo box] name='Test Select'
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[section]
+++++++++++++++++++[static] name='Test Select'
+++++++++++++++[section]
+++++++++++++++++[static] name='Option 2' <<<<<< CHANGED
+++++++++++++[section]
+++++++++++++++[image]
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+[document web] name='Material Web Select Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[combo box] name='Test Select'
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[section]
+++++++++++++++++++[static] name='Test Select'
+++++++++++++++[section]
+++++++++++++++++[static] name='Option 2'
+++++++++++++[section]
+++++++++++++++[image]
+=== End accessibility tree ===
+NAME-CHANGED:Option 3 role=ROLE_STATIC name='Option 3' ENABLED,SENSITIVE,SHOWING,VISIBLE
+=== Accessibility tree after go() pass 2 ===
+[document web] name='Material Web Select Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[combo box] name='Test Select'
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[section]
+++++++++++++++++++[static] name='Test Select'
+++++++++++++++[section]
+++++++++++++++++[static] name='Option 3' <<<<<< CHANGED
+++++++++++++[section]
+++++++++++++++[image]
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+[document web] name='Material Web Select Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[combo box] name='Test Select'
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[section]
+++++++++++++++++++[static] name='Test Select'
+++++++++++++++[section]
+++++++++++++++++[static] name='Option 3'
+++++++++++++[section]
+++++++++++++++[image]
+=== End accessibility tree ===
+NAME-CHANGED:Option 1 role=ROLE_STATIC name='Option 1' ENABLED,SENSITIVE,SHOWING,VISIBLE
+=== Accessibility tree after go() pass 3 ===
+[document web] name='Material Web Select Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[combo box] name='Test Select'
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[section]
+++++++++++++++++++[static] name='Test Select'
+++++++++++++++[section]
+++++++++++++++++[static] name='Option 1' <<<<<< CHANGED
+++++++++++++[section]
+++++++++++++++[image]
+=== End accessibility tree ===

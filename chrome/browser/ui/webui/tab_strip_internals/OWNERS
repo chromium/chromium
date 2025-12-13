@@ -2,5 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-dljames@google.com
-shibalik@google.com
+dljames@chromium.org
+shibalik@chromium.org
+atharvmaan@chromium.org
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

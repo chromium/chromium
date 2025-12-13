@@ -20,4 +20,24 @@ enum FileUploadStatus {
   kUploadFailed = 5,
   // File expired.
   kUploadExpired = 6,
+  // File being processed, and suggest signals are ready.
+  kProcessingSuggestSignalsReady = 7,
+};
+
+// For upload error notifications and metrics.
+enum FileUploadErrorType {
+  // Unknown.
+  kUnknown = 0,
+  // Browser error before/during request, not covered by validation.
+  kBrowserProcessingError = 1,
+  // Network-level issue (e.g., no connectivity, DNS failure).
+  kNetworkError = 2,
+  // Server returned an error (e.g., 5xx, specific API error).
+  kServerError = 3,
+  // Server rejected due to size after upload attempt - Considered terminal.
+  kServerSizeLimitExceeded = 4,
+  // Upload aborted by user deletion or session end.
+  kAborted = 5,
+  // Image processing error.
+  kImageProcessingError = 6,
 };

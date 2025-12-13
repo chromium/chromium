@@ -34,7 +34,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "url/gurl.h"
@@ -94,7 +94,7 @@ PasswordCrossDomainConfirmationPopupViewViews::
           .Build());
   EmphasizeTokens(label, views::style::TextStyle::STYLE_BODY_3_BOLD,
                   /*tokens=*/
-                  {password_hostname, base::ASCIIToUTF16(domain.host())});
+                  {password_hostname, base::ASCIIToUTF16(domain.GetHost())});
 
   auto* controls = AddChildView(
       views::Builder<views::BoxLayoutView>()

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/streams/readable_byte_stream_controller.h"
 
+#include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/clamped_math.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -583,8 +584,7 @@ void ReadableByteStreamController::CallPullIfNeeded(
   controller->pulling_ = true;
   // 6. Let pullPromise be the result of performing
   // controller.[[pullAlgorithm]].
-  auto pull_promise =
-      controller->pull_algorithm_->Run(script_state, 0, nullptr);
+  auto pull_promise = controller->pull_algorithm_->Run(script_state, {});
 
   class ResolveFunction final
       : public ThenCallable<IDLUndefined, ResolveFunction> {
@@ -1679,7 +1679,8 @@ ScriptPromise<IDLUndefined> ReadableByteStreamController::CancelSteps(
   ResetQueue(this);
   // 3. Let result be the result of performing this.[[cancelAlgorithm]], passing
   // in reason.
-  auto result = cancel_algorithm_->Run(script_state, 1, &reason);
+  auto result =
+      cancel_algorithm_->Run(script_state, base::span_from_ref(reason));
   // 4. Perform ! ReadableByteStreamControllerClearAlgorithms(this).
   ClearAlgorithms(this);
   // 5. Return result.

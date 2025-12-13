@@ -38,3 +38,5 @@ mojom::UsbConfigurationInfoPtr UsbConfigurationAndroid::Convert(
 }
 
 }  // namespace device
+
+DEFINE_JNI(ChromeUsbConfiguration)

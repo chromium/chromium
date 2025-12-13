@@ -14,6 +14,7 @@ static_library("wm") {
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui:browser_tab_strip",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
   ]
 
@@ -63,6 +64,8 @@ source_set("browser_tests") {
     "//chrome/browser/ui/ash/birch:test_support",
     "//chrome/browser/ui/ash/new_window",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/frame",
     "//chrome/test:test_support",
     "//chrome/test/base/ash/util:test_support",
     "//chromeos/ash/services/coral/public/mojom",

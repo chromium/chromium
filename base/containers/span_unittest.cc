@@ -30,6 +30,7 @@
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/hash/hash_testing.h"
 
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
@@ -82,21 +83,19 @@ TEST(SpanTest, DeductionGuides) {
   }
 
   // Tests for span(Range&&) deduction guide.
-  {
-    const int kArray[] = {1, 2, 3};
-    static_assert(std::is_same_v<decltype(span(kArray)), span<const int, 3>>);
-  }
-  {
-    int kArray[] = {1, 2, 3};
-    static_assert(std::is_same_v<decltype(span(kArray)), span<int, 3>>);
-  }
-  static_assert(
-      std::is_same_v<decltype(span(std::declval<std::array<const bool, 3>&>())),
-                     span<const bool, 3>>);
-  static_assert(
-      std::is_same_v<decltype(span(std::declval<std::array<bool, 3>&>())),
-                     span<bool, 3>>);
 
+  // C-style arrays.
+  static_assert(std::is_same_v<decltype(span(std::declval<const int (&)[3]>())),
+                               span<const int, 3>>);
+  static_assert(
+      std::is_same_v<decltype(span(std::declval<const int (&&)[3]>())),
+                     span<const int, 3>>);
+  static_assert(
+      std::is_same_v<decltype(span(std::declval<int (&)[3]>())), span<int, 3>>);
+  static_assert(std::is_same_v<decltype(span(std::declval<int (&&)[3]>())),
+                               span<const int, 3>>);
+
+  // std::array<const T, N>.
   static_assert(
       std::is_same_v<decltype(span(
                          std::declval<const std::array<const bool, 3>&>())),
@@ -105,16 +104,28 @@ TEST(SpanTest, DeductionGuides) {
       std::is_same_v<decltype(span(
                          std::declval<const std::array<const bool, 3>&&>())),
                      span<const bool, 3>>);
+  static_assert(
+      std::is_same_v<decltype(span(std::declval<std::array<const bool, 3>&>())),
+                     span<const bool, 3>>);
   static_assert(std::is_same_v<
                 decltype(span(std::declval<std::array<const bool, 3>&&>())),
                 span<const bool, 3>>);
+
+  // std::array<T, N>.
   static_assert(
       std::is_same_v<decltype(span(std::declval<const std::array<bool, 3>&>())),
                      span<const bool, 3>>);
   static_assert(std::is_same_v<
                 decltype(span(std::declval<const std::array<bool, 3>&&>())),
                 span<const bool, 3>>);
+  static_assert(
+      std::is_same_v<decltype(span(std::declval<std::array<bool, 3>&>())),
+                     span<bool, 3>>);
+  static_assert(
+      std::is_same_v<decltype(span(std::declval<std::array<bool, 3>&&>())),
+                     span<const bool, 3>>);
 
+  // std::string.
   static_assert(
       std::is_same_v<decltype(span(std::declval<const std::string&>())),
                      span<const char>>);
@@ -123,6 +134,10 @@ TEST(SpanTest, DeductionGuides) {
                      span<const char>>);
   static_assert(
       std::is_same_v<decltype(span(std::declval<std::string&>())), span<char>>);
+  static_assert(std::is_same_v<decltype(span(std::declval<std::string&&>())),
+                               span<const char>>);
+
+  // std::u16string.
   static_assert(
       std::is_same_v<decltype(span(std::declval<const std::u16string&>())),
                      span<const char16_t>>);
@@ -131,15 +146,42 @@ TEST(SpanTest, DeductionGuides) {
                      span<const char16_t>>);
   static_assert(std::is_same_v<decltype(span(std::declval<std::u16string&>())),
                                span<char16_t>>);
+  static_assert(std::is_same_v<decltype(span(std::declval<std::u16string&&>())),
+                               span<const char16_t>>);
+
+  // std::ranges::subrange<const T*>.
   static_assert(std::is_same_v<
-                decltype(span(std::declval<const std::array<float, 9>&>())),
-                span<const float, 9>>);
+                decltype(span(
+                    std::declval<const std::ranges::subrange<const int*>&>())),
+                span<const int>>);
   static_assert(std::is_same_v<
-                decltype(span(std::declval<const std::array<float, 9>&&>())),
-                span<const float, 9>>);
+                decltype(span(
+                    std::declval<const std::ranges::subrange<const int*>&&>())),
+                span<const int>>);
   static_assert(
-      std::is_same_v<decltype(span(std::declval<std::array<float, 9>&>())),
-                     span<float, 9>>);
+      std::is_same_v<decltype(span(
+                         std::declval<std::ranges::subrange<const int*>&>())),
+                     span<const int>>);
+  static_assert(
+      std::is_same_v<decltype(span(
+                         std::declval<std::ranges::subrange<const int*>&&>())),
+                     span<const int>>);
+
+  // std::ranges::subrange<T*>.
+  static_assert(
+      std::is_same_v<decltype(span(
+                         std::declval<const std::ranges::subrange<int*>&>())),
+                     span<int>>);
+  static_assert(
+      std::is_same_v<decltype(span(
+                         std::declval<const std::ranges::subrange<int*>&&>())),
+                     span<int>>);
+  static_assert(std::is_same_v<
+                decltype(span(std::declval<std::ranges::subrange<int*>&>())),
+                span<int>>);
+  static_assert(std::is_same_v<
+                decltype(span(std::declval<std::ranges::subrange<int*>&&>())),
+                span<int>>);
 }
 
 TEST(SpanTest, DefaultConstructor) {
@@ -650,6 +692,11 @@ TEST(SpanTest, ConstructFromRange) {
       !std::constructible_from<span<const bool>, const std::vector<bool>>);
   static_assert(
       !std::constructible_from<span<const bool, 3u>, const std::vector<bool>>);
+}
+
+TEST(SpanTest, ConstructFromSubrange) {
+  std::vector<int> v = {1, 2, 3, 4, 5};
+  EXPECT_THAT(span(std::ranges::subrange(v)), ElementsAre(1, 2, 3, 4, 5));
 }
 
 TEST(SpanTest, FromRefOfMutableStackVariable) {
@@ -2419,6 +2466,63 @@ TEST(SpanTest, CopyPrefixFrom) {
   span(arr).copy_from(vals);
 }
 
+TEST(SpanTest, CopyFromVolatile) {
+  // Test basic copy from volatile memory (dynamic extent).
+  volatile int volatile_source[] = {7, 8, 9};
+  int dest[] = {1, 2, 3};
+
+  span<int> dest_span(dest);
+  span<const volatile int> source_span(volatile_source);
+
+  dest_span.copy_from(source_span);
+  EXPECT_THAT(dest, ElementsAre(7, 8, 9));
+
+  // Test with different values.
+  volatile_source[0] = 10;
+  volatile_source[1] = 20;
+  volatile_source[2] = 30;
+
+  dest_span.copy_from(source_span);
+  EXPECT_THAT(dest, ElementsAre(10, 20, 30));
+
+  // Test with empty spans.
+  span<int> empty_dest;
+  span<const volatile int> empty_source;
+  empty_dest.copy_from(empty_source);
+
+  // Test partial copy with subspans.
+  volatile int partial_source[] = {100, 200, 300, 400};
+  int partial_dest[] = {0, 0, 0, 0};
+
+  span<int>(partial_dest)
+      .first(2u)
+      .copy_from(span<const volatile int>(partial_source).first(2u));
+  EXPECT_THAT(partial_dest, ElementsAre(100, 200, 0, 0));
+
+  span<int>(partial_dest)
+      .last(2u)
+      .copy_from(span<const volatile int>(partial_source).last(2u));
+  EXPECT_THAT(partial_dest, ElementsAre(100, 200, 300, 400));
+
+  // Test fixed-extent span copying from fixed-extent volatile span.
+  volatile int fixed_source[] = {11, 22, 33};
+  int fixed_dest[] = {0, 0, 0};
+  span<int, 3> fixed_dest_span(fixed_dest);
+  span<const volatile int, 3> fixed_source_span(fixed_source);
+
+  fixed_dest_span.copy_from(fixed_source_span);
+  EXPECT_THAT(fixed_dest, ElementsAre(11, 22, 33));
+
+  // Test fixed-extent span copying from dynamic-extent volatile span.
+  volatile int dynamic_source[] = {44, 55, 66};
+  int fixed_dest2[] = {0, 0, 0};
+  span<int, 3> fixed_dest_span2(fixed_dest2);
+  span<const volatile int> dynamic_source_span(dynamic_source);
+
+  fixed_dest_span2.copy_from(dynamic_source_span);
+  EXPECT_THAT(fixed_dest2, ElementsAre(44, 55, 66));
+}
+
 TEST(SpanTest, SplitAt) {
   int arr[] = {1, 2, 3};
   span<int, 0> empty_static_span;
@@ -3104,6 +3208,57 @@ TEST(SpanTest, GTestMacroCompatibility) {
   EXPECT_NE(dynamic_span1, static_span3);
   EXPECT_NE(dynamic_span1, dynamic_span3);
   EXPECT_NE(dynamic_span1, vec3);
+}
+
+TEST(SpanTest, AbslHash) {
+  // Dynamic extent.
+  {
+    std::vector<int> empty_vec;
+    std::vector<int> vec1 = {1, 2, 3};
+    std::vector<int> vec2 = {1, 2, 3};
+    std::vector<int> vec3 = {3, 2, 1};
+    EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+        span<int>(empty_vec),
+        span<int>(vec1),
+        span<int>(vec2),
+        span<int>(vec3),
+    }));
+  }
+  // Fixed extent.
+  {
+    int arr1[] = {1, 2, 3};
+    int arr2[] = {1, 2, 3};
+    int arr3[] = {3, 2, 1};
+    EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+        span<int, 3>(arr1),
+        span<int, 3>(arr2),
+        span<int, 3>(arr3),
+    }));
+  }
+  // Const dynamic extent.
+  {
+    const std::vector<int> empty_vec;
+    const std::vector<int> vec1 = {1, 2, 3};
+    const std::vector<int> vec2 = {1, 2, 3};
+    const std::vector<int> vec3 = {3, 2, 1};
+    EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+        span<const int>(empty_vec),
+        span<const int>(vec1),
+        span<const int>(vec2),
+        span<const int>(vec3),
+    }));
+  }
+  // Const fixed extent.
+  {
+    const int arr1[] = {1, 2, 3};
+    const int arr2[] = {1, 2, 3};
+    const int arr3[] = {3, 2, 1};
+    EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+        span<const int, 3>(arr1),
+        span<const int, 3>(arr2),
+        span<const int, 3>(arr3),
+    }));
+  }
 }
 
 // These are all examples from //docs/unsafe_buffers.md, copied here to ensure

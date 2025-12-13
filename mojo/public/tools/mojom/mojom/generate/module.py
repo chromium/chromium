@@ -387,23 +387,24 @@ PRIMITIVES = (
     NULLABLE_PLATFORMHANDLE,
 )
 
-ATTRIBUTE_MIN_VERSION = 'MinVersion'
+ATTRIBUTE_ALLOWED_CONTEXT = 'AllowedContext'
 ATTRIBUTE_DEFAULT = 'Default'
+ATTRIBUTE_DIRECT_RECEIVER = 'DirectReceiver'
 ATTRIBUTE_DISPATCH_DEBUG_ALIAS = 'DispatchDebugAlias'
 ATTRIBUTE_ESTIMATE_SIZE = 'EstimateSize'
-ATTRIBUTE_SEND_VALIDATION = 'SendValidation'
 ATTRIBUTE_EXTENSIBLE = 'Extensible'
+ATTRIBUTE_INCLUDE_SEND_VALIDATION = 'IncludeSendValidation'
+ATTRIBUTE_MIN_VERSION = 'MinVersion'
 ATTRIBUTE_NO_INTERRUPT = 'NoInterrupt'
+ATTRIBUTE_REQUIRE_CONTEXT = 'RequireContext'
+ATTRIBUTE_RUNTIME_FEATURE = 'RuntimeFeature'
+ATTRIBUTE_SEND_VALIDATION = 'SendValidation'
+ATTRIBUTE_SERVICE_SANDBOX = 'ServiceSandbox'
 ATTRIBUTE_STABLE = 'Stable'
 ATTRIBUTE_SUPPORTS_URGENT = 'SupportsUrgent'
 ATTRIBUTE_SYNC = 'Sync'
 ATTRIBUTE_UNLIMITED_SIZE = 'UnlimitedSize'
 ATTRIBUTE_UUID = 'Uuid'
-ATTRIBUTE_SERVICE_SANDBOX = 'ServiceSandbox'
-ATTRIBUTE_REQUIRE_CONTEXT = 'RequireContext'
-ATTRIBUTE_ALLOWED_CONTEXT = 'AllowedContext'
-ATTRIBUTE_RUNTIME_FEATURE = 'RuntimeFeature'
-ATTRIBUTE_INCLUDE_SEND_VALIDATION = 'IncludeSendValidation'
 
 
 class NamedValue:
@@ -1165,6 +1166,11 @@ class Interface(ReferenceKind):
       enum.Stylize(stylizer)
     for constant in self.constants:
       constant.Stylize(stylizer)
+
+  @property
+  def direct_receiver(self):
+    return self.attributes.get(ATTRIBUTE_DIRECT_RECEIVER, False) \
+        if self.attributes else False
 
   @property
   def service_sandbox(self):

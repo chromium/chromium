@@ -17,9 +17,13 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1131805035311359397">Për të kontrolluar nëse fjalëkalimet e tua janë të sigurta nga nxjerrjet e paautorizuara të të dhënave dhe probleme të tjera të sigurisë, <ph name="BEGIN_LINK" />identifikohu në Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Kliko te menyja e Chromium</translation>
 <translation id="1157985233335035034">Gjuhët e fundit</translation>
+<translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ka shtuar një shtesë që mund të ndryshojë mënyrën se si funksionon Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Instalimi dështoi pasi versioni yt i Windows nuk mbështetet.</translation>
 <translation id="1185134272377778587">Rreth Chromium</translation>
 <translation id="1203500561924088507">Faleminderit që e instalove. Duhet të rinisësh shfletuesin përpara se të përdorësh <ph name="BUNDLE_NAME" />.</translation>
+<translation id="123265588161106468">Kur je i identifikuar, mund të përdorësh fjalëkalimet dhe më shumë nga "Llogaria jote e Google" në Chromium. Për ta ndryshuar këtë, shko te "Llogaria jote në Chromium".</translation>
 <translation id="1262876892872089030">Kur kjo skedë ishte joaktive, memoria u lirua që Chromium të vazhdojë të jetë i shpejtë. Mund të zgjedhësh që ta përjashtosh gjithmonë këtë sajt nga caktimi si joaktiv.</translation>
 <translation id="1265577313130862557">Chromium e bllokoi këtë shkarkim sepse skedari është i rrezikshëm</translation>
 <translation id="126567311906253476">Kur identifikohesh me <ph name="USER_EMAIL" /> në shërbimet e Google, si p.sh. Gmail ose YouTube, mund të identifikohesh automatikisht në Chromium me të njëjtën llogari</translation>
@@ -31,13 +35,16 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1345251407431278948">U gozhdua! Mund të qasesh përsëri te "Kërkimi nëpërmjet imazheve" nga butoni i ri në shiritin e veglave</translation>
 <translation id="1356661055722410047">E re! Mund të përkthesh tekstet dhe imazhet në ekranin tënd</translation>
 <translation id="1383876407941801731">Kërko</translation>
+<translation id="1397530502368084401">&amp;Menaxho profilet e Chromium</translation>
 <translation id="1414495520565016063">Je i identifikuar në Chromium!</translation>
 <translation id="141901961143729572">Ndaj mendimet e tua</translation>
 <translation id="1465192221147974788">Për të ndarë dritaren tënde, lejo regjistrimin e ekranit për Chromium te "Cilësimet e sistemit".</translation>
 <translation id="1478370723027452770">Merr ndihmë për Chrome for Testing</translation>
+<translation id="1496875977627931224">Përshëndetje <ph name="USER_NAME" />,<ph name="LINE_BREAK" />çfarë ke në mendje sot?</translation>
 <translation id="1497802159252041924">Gabim gjatë instalimit: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Kjo faqe është e mbrojtur</translation>
 <translation id="1524282610922162960">Ndaj një skedë të Chromium</translation>
+<translation id="154404805518949443">Identifikohu në Chromium</translation>
 <translation id="1547469039832541117">Përfundon detyrën e theksuar.</translation>
 <translation id="1553461853655228091">Chromium ka nevojë për leje për t'u qasur te kamera jote për të krijuar një hartë 3D të ambientit tënd rrethues</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Kjo shtesë nuk mbështetet më. Chromium rekomandon që ta heqësh atë.}other{Këto shtesa nuk mbështeten më. Chromium rekomandon që t'i heqësh ato.}}</translation>
@@ -47,6 +54,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1607715478322902680">{COUNT,plural, =0{Administratori yt kërkon që të hapësh përsëri Chromium për të zbatuar këtë përditësim}=1{Administratori yt kërkon që të hapësh përsëri Chromium për të zbatuar këtë përditësim Dritarja jote "e fshehtë" nuk do të rihapet.}other{Administratori yt kërkon që të hapësh përsëri Chromium për të zbatuar këtë përditësim # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
 <translation id="1625909126243026060">Shqyrto kontrollet kryesore të sigurisë dhe privatësisë në Chromium</translation>
 <translation id="1640672724030957280">Po shkarkohet...</translation>
+<translation id="1680687534629375545">Pyet "Kërkimin e imazheve" për këtë faqe</translation>
 <translation id="1709772298389099340">Ofron privilegje të larta për <ph name="BROWSER_NAME" />.</translation>
 <translation id="1715127912119967311">Për të ndihmuar në përmirësimin e këtyre veçorive, Chromium i dërgon Google ndërveprimet e tua me të. Këto të dhëna mund të lexohen, të përpunohen dhe të shënohen nga shqyrtues njerëzorë.</translation>
 <translation id="1722488837206509557">Kjo do të të lejojë që të zgjedhësh nga pajisjet e disponueshme dhe të shfaqësh përmbajtjet në to.</translation>
@@ -59,17 +67,17 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1779356040007214683">Për ta bërë më të sigurt Chromium, çaktivizuam disa shtesa që nuk janë të listuara në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe që mund të jenë shtuar pa dijeninë tënde.</translation>
 <translation id="1808667845054772817">Instalo përsëri Chromium</translation>
 <translation id="1820835682567584003">Chromium po përpiqet <ph name="AUTHENTICATION_PURPOSE" /></translation>
+<translation id="183031085822326697">Herën tjetër që të hapësh Chromium në <ph name="DEVICE_TYPE" />, do të shikosh një kërkesë për të përdorur "Menaxherin e fjalëkalimeve të Google".</translation>
 <translation id="1838374766361614909">Fshi kërkimin</translation>
 <translation id="18552579716432081">Për t'i fshirë të dhënat e shfletimit vetëm nga kjo pajisje, ndërkohë që i mban ato në "Llogarinë tënde të Google", <ph name="BEGIN_LINK" />dil nga llogaria në Chromium<ph name="END_LINK" />.</translation>
 <translation id="185970820835152459">Mund t'i menaxhosh "Llogaritë e Google" ku je identifikuar. "Llogaritë e tua të Google" përdoren për shfletuesin Chromium, Play Store, Gmail etj. Nëse do të shtosh një llogari për dikë tjetër, si p.sh. anëtar të familjes, shto më mirë një person të ri te <ph name="DEVICE_TYPE" /> yt. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="1862852878885210965">Kërko me "Kërkimin nëpërmjet imazheve"</translation>
-<translation id="1863308913976887472">Sajtet mund të ruajnë informacione rreth interesave të tua në Chromium. Për shembull, nëse viziton një sajt për të blerë këpucë për një maratonë, sajti mund ta përcaktojë interesin tënd si vrapim në maratona. Më vonë, nëse viziton një sajt tjetër për t'u regjistruar për një garë, ai sajt mund të të shfaqë një reklamë për këpucë vrapimi bazuar në interesat e tua.</translation>
 <translation id="1880677175115548835">Përzgjidh tekstin</translation>
 <translation id="1881322772814446296">Po identifikohesh me një llogari të menaxhuar dhe po i jep administratorit të saj kontrollin mbi profilin tënd të Chromium. Të dhënat e tua të Chromium, si aplikacionet, faqeshënuesit, historiku, fjalëkalimet dhe cilësimet e tjera do të bëhen të lidhura përgjithmonë me <ph name="USER_NAME" />. Do të mund t'i fshish këto të dhëna nëpërmjet "Panelit të llogarive të Google", por nuk do të mund t'i lidhësh këto të dhëna me një llogari tjetër. Mund të krijosh si opsion një profil të ri për t'i mbajtur më vete të dhënat ekzistuese të Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="1896836275755235458">Chromium kursen energjinë e baterisë duke kufizuar aktivitetin në sfond dhe efektet vizuale, si p.sh. lëvizjen e butë dhe shpejtësitë e kuadrove të videove. <ph name="BEGIN_LINK" />Mëso më shumë për "Kursyesin e energjisë"<ph name="END_LINK" /></translation>
+<translation id="1898804291554630487">Pyet rreth kësaj faqeje</translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
 <translation id="1911763535808217981">Duke çaktivizuar këtë, mund të identifikohesh në sajtet e Google si Gmail pa u identifikuar në Chromium</translation>
-<translation id="1916451563296275579">Hiq të dhënat e këtij aplikacioni nga Chromium</translation>
 <translation id="1929939181775079593">Chromium nuk përgjigjet. Dëshiron ta hapësh sërish tani?</translation>
 <translation id="1933341829955786215">Organizata jote, <ph name="MANAGER" />, kërkon që të identifikohesh në Chromium</translation>
 <translation id="193439633299369377">ChromiumOS ka nevojë të riniset për të zbatuar përditësimin.</translation>
@@ -81,9 +89,12 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2008474315282236005">Kjo do të fshijë 1 artikull nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chromium si <ph name="USER_EMAIL" />.</translation>
 <translation id="2018879682492276940">Instalimi nuk u krye. Provo përsëri.</translation>
 <translation id="2020032459870799438">Për të kontrolluar nëse fjalëkalimet e tjera janë të sigurta nga nxjerrjet e paautorizuara të të dhënave dhe probleme të tjera të sigurisë, <ph name="BEGIN_LINK" />identifikohu në Chromium<ph name="END_LINK" />.</translation>
+<translation id="2039417478970545937">Cilësimet.</translation>
 <translation id="2049376729098081731">Zgjidh nëse do ta përfshish historikun e Chromium për përvoja më të personalizuara në shërbimet e Google</translation>
 <translation id="2054039611381840095">Për të marrë përditësimet e ardhshme të Chromium, do të të duhet macOS 12 ose një version i mëvonshëm. Ky kompjuter përdor macOS 11.</translation>
+<translation id="2064856577282482477">Kliko te butoni "Personalizo Chromium" në faqen e skedës së re për t'i dhënë Chromium një pamje të re</translation>
 <translation id="2086476982681781442">Chromium e bllokoi këtë shkarkim sepse skedari është mashtrues dhe mund të bëjë ndryshime të papritura në pajisjen tënde</translation>
+<translation id="208726765006323911">Do të shikosh një kërkesë për të provuar <ph name="FEATURE_NAME" /> herën tjetër kur të hapësh Chromium për iOS.</translation>
 <translation id="2099452623287920103">Fjalëkalimet e tua dhe të dhënat e tjera të Chromium që ke ruajtur në "Llogarinë tënde të Google" do të hiqen nga kjo pajisje. Për t'i përdorur përsëri në Chromium, identifikohu përsëri.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organizata jote i fshin automatikisht të dhënat e shfletimit kur Chromium nuk përdoret për 1 minutë. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet. Skedat e tua do të qëndrojnë të hapura.}other{Organizata jote i fshin automatikisht të dhënat e shfletimit kur Chromium nuk përdoret për # minuta. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet. Skedat e tua do të qëndrojnë të hapura.}}</translation>
 <translation id="2126108037660393668">Skedari i shkarkuar nuk u verifikua.</translation>
@@ -94,15 +105,26 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2185166961232948079">Chromium - identifikimi në rrjet - <ph name="PAGE_TITLE" /></translation>
 <translation id="2190166659037789668">Gabim në kontrollin e përditësimeve: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Hiqe llogarinë nga Chromium</translation>
+<translation id="2210502920229141283">Qëndro më i sigurt në lëvizje me "Shfletimin e sigurt të përmirësuar" në Chromium për iOS</translation>
 <translation id="2210682093923538346">Sajt i rrezikshëm. Chromium ka hequr njoftimet.</translation>
 <translation id="2236949375853147973">Aktiviteti im</translation>
 <translation id="2238130810669087193">Për të marrë adresat etj. në të gjitha pajisjet e tua, identifikohu në Chromium. Kjo adresë do të ruhet në "Llogarinë tënde të Google" pasi të identifikohesh.</translation>
-<translation id="2240214816234246077">Nuk ke vizituar së fundi. Chromium ke hequr lejet (<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />)</translation>
 <translation id="2241627712206172106">Nëse e ndan një kompjuter, miqtë dhe familja mund të shfletojnë veçmas dhe ta konfigurojnë Chromium pikërisht ashtu si dëshirojnë.</translation>
+<translation id="2283803047247799269">Kërko në këtë skedë me "Kërkimin e imazheve"</translation>
 <translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium rekomandon vendosjen në pauzë të skedës që ngadalëson shfletuesin}other{Chromium rekomandon vendosjen në pauzë të skedave që ngadalësojnë shfletuesin}}</translation>
+<translation id="2307973900865360088">Mbaje në "Stacion"</translation>
 <translation id="2313870531055795960">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chromium. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd ose kur shkarkon një skedar të dëmshëm, Chromium mund t'i dërgojë gjithashtu URL-të, duke përfshirë pjesë të përmbajtjes së faqes, te "Shfletimi i sigurt".</translation>
-<translation id="232860113504534383">Chromium për ty, kudo</translation>
+<translation id="2332076562712130931">Ky veprim:
+        <ph name="LINE_BREAKS" />
+          • Do të rivendosë disa cilësime të Chromium dhe shkurtoret e Chromium
+          <ph name="LINE_BREAK" />
+          • Do të çaktivizojë shtesat
+          <ph name="LINE_BREAK" />
+          • Do të fshijë kukit dhe të dhënat e tjera të përkohshme të sajtit
+          <ph name="LINE_BREAKS" />
+          Faqeshënuesit, historiku dhe fjalëkalimet e ruajtura nuk do të preken.</translation>
 <translation id="2343156876103232566">Për të dërguar një numër nga këtu te telefoni yt Android, identifikohu në Chromium në të dyja pajisjet.</translation>
+<translation id="2356070529366658676">Pyet</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2361918034042471035">Shtesa "<ph name="EXTENSION_NAME" />" kërkon që të identifikohesh në Chromium</translation>
 <translation id="236943522426971115">Çaktivizo ekzekutimin e Chromium në sfond për aplikacionet</translation>
@@ -128,19 +150,20 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2620436844016719705">Sistemi</translation>
 <translation id="2629740064077610681">Organizata jote mund të shikojë dhe të menaxhojë të dhënat e shfletimit, si p.sh. faqeshënuesit, historikun dhe fjalëkalimet e tua. Ajo nuk mund të shikojë të dhënat e shfletimit në profilet e tjera të Chromium</translation>
 <translation id="2635452620547538388">Verifiko që je ti për të përdorur dhe ruajtur të dhënat e Chromium në llogarinë tënde <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="264613044588233783">Chromium funksionon më shpejt dhe veçoritë që përdorin JavaScript do të punojnë siç pritet (rekomandohet)</translation>
+<translation id="2637732208198500597">{COUNT,plural, =0{"Mbrojtja e përparuar" kërkon që të hapësh përsëri Chromium për të zbatuar një përditësim}=1{"Mbrojtja e përparuar" kërkon që të hapësh përsëri Chromium për të zbatuar një përditësim. Dritarja jote "e fshehtë" nuk do të rihapet.}other{"Mbrojtja e përparuar" kërkon që të hapësh përsëri Chromium për të zbatuar një përditësim. # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
 <translation id="2648074677641340862">Ndodhi një gabim në sistemin operativ gjatë instalimit. Shkarko përsëri Chromium.</translation>
 <translation id="2661879430930417727">Nëse e ndan një pajisje, miqtë dhe familja mund të shfletojnë veçmas dhe ta konfigurojnë Chromium pikërisht ashtu si dëshirojnë</translation>
 <translation id="2711502716910134313">Skeda Chromium</translation>
 <translation id="2718390899429598676">Për më shumë siguri, Chromium do t'i enkriptojë të dhënat e tua.</translation>
 <translation id="2721354645805494590">Për ta hequr "Llogarinë tënde të Google" nga Chromium, dil nga llogaria</translation>
+<translation id="2722636413143664436">Për të marrë fjalëkalimet, faqeshënuesit etj. në të gjitha pajisjet e tua, identifikohu në Chromium</translation>
 <translation id="2738871930057338499">Lidhja me internetin nuk mund të kryhej. HTTP 403 (E ndaluar). Kontrollo konfigurimin e proxy-t.</translation>
 <translation id="2753623023919742414">Kliko për të kërkuar</translation>
 <translation id="2768103863314748511">Cakto Chromium si shikuesin e parazgjedhur të skedarëve PDF</translation>
-<translation id="2770231113462710648">Ndrysho shfletuesin me parazgjedhje në:</translation>
 <translation id="2785438272836277133">Kjo shtesë përmban softuerë keqdashës dhe nuk është e sigurt. Hiqe atë nga Chromium që të mos arrijë të shikojë dhe të ndryshojë më të dhënat e tua në sajtin që viziton ti, duke përfshirë informacionet e tua personale.</translation>
 <translation id="2799223571221894425">Nis sërish</translation>
 <translation id="2803971713792056305">Shfletuesi yt Chromium</translation>
+<translation id="2816462166102338036">Kërkoje këtë video me "Kërkimin e imazheve"</translation>
 <translation id="2841525013647267359">Përkthe nga</translation>
 <translation id="2846251086934905009">Gabim gjatë instalimit: Instaluesi nuk përfundoi. Instalimi është ndërprerë.</translation>
 <translation id="2847479871509788944">Hiqe nga Chromium...</translation>
@@ -151,68 +174,84 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2928420929544864228">Instalimi përfundoi.</translation>
 <translation id="2933336679234709858">Të dhënat e tua janë të enkriptuara me frazën tënde të kalimit. Fute atë për të përdorur dhe ruajtur të dhënat e Chromium në "Llogarinë tënde të Google".</translation>
 <translation id="2945997411976714835">Gabim gjatë instalimit: Nisja e procesit të instaluesit dështoi.</translation>
+<translation id="2948852018303413228">Identifikohu më shpejt në sajte duke përdorur fjalëkalimet e ruajtura për Chromium në iOS</translation>
+<translation id="2966959524256557996">Shto një profil të ri të Chromium për t'i mbajtur të veçuar faqeshënuesit, fjalëkalimet dhe cilësimet.</translation>
 <translation id="2970426615109535079">Organizata jote menaxhon Chromium</translation>
 <translation id="2977470724722393594">Chromium është i përditësuar</translation>
 <translation id="2977506796191543575">Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd ose kur shkarkon një skedar të dëmshëm, Chromium mund t'i dërgojë gjithashtu URL-të, duke përfshirë pjesë të përmbajtjes së faqeve, te "Shfletimi i sigurt".</translation>
 <translation id="2981563588585023386">Për të qëndruar më i sigurt online me zgjedhjet e prindit tënd, identifikohu në Chromium</translation>
 <translation id="3003694935412297923">Të gjitha detyrat</translation>
+<translation id="3012615494352020668">{count,plural, =1{Chromium duhet të verifikojë që je ti përpara se të mund të ruhen disa të dhëna në "Llogarinë tënde të Google" dhe të përdoren në të gjitha pajisjet e tua. Nëse del tani, këto të dhëna (1 artikull) do të fshihen.}other{Chromium duhet të verifikojë që je ti përpara se të mund të ruhen disa të dhëna në "Llogarinë tënde të Google" dhe të përdoren në të gjitha pajisjet e tua. Nëse del tani, këto të dhëna ({count} artikuj) do të fshihen.}}</translation>
 <translation id="3013473503895162900">Hap <ph name="URL" /> në një skedë të re në Chromium.</translation>
 <translation id="3032706164202344641">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua. Provo përsëri më vonë.</translation>
 <translation id="3032787606318309379">Po shton në Chromium...</translation>
 <translation id="3038232873781883849">Në pritje të instalimit...</translation>
 <translation id="3045032126857188731">Gjuha e përkthyer: <ph name="LANGUAGE" /></translation>
+<translation id="3047590466164881923">Mbyll dialogun e komenteve</translation>
 <translation id="3068187312562070417">Profilet e tjera të Chromium</translation>
 <translation id="3068515742935458733">Ndihmo në përmirësimin e Chromium duke dërguar te Google raportet e ndërprerjeve aksidentale dhe <ph name="UMA_LINK" /></translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Një ose disa shtesa të Chromium kanë pasur qasje në 1 pajisje USB}=1{Një ose disa shtesa të Chromium kanë qasje në 1 pajisje USB}other{Një ose disa shtesa të Chromium kanë qasje në # pajisje USB}}</translation>
-<translation id="3101560983689755071">Historiku yt i shfletimit ndikon te reklamat që shikon dhe tek interesat sipas përllogaritjes më poshtë. Për të mbrojtur privatësinë tënde, Chromium fshin automatikisht interesat e tua në vazhdimësi çdo muaj. Interesat mund të rifreskohen, përveçse nëse ti i heq ato.</translation>
+<translation id="3095811995836568724">Historiku i Chromium</translation>
 <translation id="3103660991484857065">Instaluesi nuk arriti ta nxjerrë arkivin. Shkarko përsëri Chromium.</translation>
 <translation id="310459126943037700">Përfundimi i detyrave dështoi.</translation>
 <translation id="3130323860337406239">Chromium po përdor mikrofonin tënd.</translation>
+<translation id="3130333203120345554">Kërkim i ri</translation>
 <translation id="3137969841538672700">Zvarrit për të kërkuar</translation>
 <translation id="3144188012276422546">Kjo skedë po përdor burime shtesë. Për të përmirësuar performancën tënde, lejo që Chromium ta bëjë atë joaktive.</translation>
 <translation id="3149163023759831301">Për të ndarë ekranin, lejo regjistrimin e ekranit për Chromium te "Cilësimet e sistemit"</translation>
 <translation id="3155163173539279776">Rinis Chromium</translation>
 <translation id="3161522574479303604">Të gjitha gjuhët</translation>
 <translation id="3179665906251668410">Hape lidhjen në një dritare të fshe&amp;htë të Chromium</translation>
+<translation id="3183357154200327217">Një program tjetër në kompjuterin tënd shtoi një temë që mund të ndryshojë mënyrën se si funksionon Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Personalizo profilin tënd të ri të Chromium</translation>
 <translation id="3224847870593914902">Për ta hequr "Llogarinë tënde të Google" nga Chromium, dil nga llogaria në Chromium te faqja e "Cilësimeve"</translation>
 <translation id="3234316605225071811">Më vonë, Chromium mund të të pyesë nëse dëshiron të përdorësh informacionet e ruajtura për të plotësuar automatikisht formularët për ty</translation>
 <translation id="3258596308407688501">Chromium nuk mund të lexojë dhe shkruajë në direktorinë e tij të të dhënave:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">V8 është motori i JavaScript dhe WebAssembly i Chromium që përdoret për të përmirësuar performancën e sajteve</translation>
 <translation id="3286538390144397061">Rindiz tani</translation>
 <translation id="328888136576916638">Çelësat API të Google mungojnë. Disa funksione të Chromium do të çaktivizohen.</translation>
 <translation id="3296368748942286671">Vazhdo funksionimin e aplikacioneve në sfond kur Chromium është i mbyllur</translation>
 <translation id="3313189106987092621">Chromium do të të paralajmërojë para se të ngarkojë një sajt duke përdorur një lidhje të pasigurt</translation>
 <translation id="3316771292331273802">Do të dalësh nga shumica e sajteve kur të mbyllësh të gjitha dritaret e Chromium, përveçse nga "Llogaria jote e Google" nëse je identifikuar në Chromium. Për t'i lejuar sajtet që të të kujtojnë, <ph name="SETTINGS_LINK" />.</translation>
+<translation id="3322413454779348750">Motori i parazgjedhur i kërkimit u ndryshua nga jashtë Chromium. Për të të mbrojtur, Chromium e rivendosi atë.</translation>
 <translation id="3352986031709923790">këndi lart djathtas i zonës së kërkimit: djathtas <ph name="RIGHT" />%, lart<ph name="TOP" />%</translation>
+<translation id="3366305173356742781">Të dhënat e Chromium në llogarinë tënde</translation>
+<translation id="3369405342922656244">Kërko në këtë faqe me "Kërkimin e imazheve"</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Të kalohet te profili ekzistues i Chromium?</translation>
 <translation id="3412460710772753638">Në "Menaxherin e fjalëkalimeve" në këtë pajisje</translation>
+<translation id="3461644266919055473">Chromium po personalizohet...</translation>
 <translation id="347328004046849135">Chromium do të të njoftojë kur të identifikohesh me një fjalëkalim të komprometuar</translation>
 <translation id="3474745554856756813">Kjo do të fshijë <ph name="ITEMS_COUNT" /> artikuj nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chromium si <ph name="USER_EMAIL" />.</translation>
 <translation id="3497319089134299931"><ph name="SHORTCUT" /> mund të kalojë nga një profil i Chromium te një tjetër</translation>
 <translation id="3509308970982693815">Mbyll të gjitha dritaret e Chromium dhe provo sërish.</translation>
 <translation id="3522404737534491619">Për të ndarë dritaren tënde, lejo regjistrimin e ekranit për Chromium te "Cilësimet e sistemit"</translation>
-<translation id="3530103706039034513"><ph name="EXISTING_USER" /> është identifikuar tashmë.  Për ta mbajtur shfletimin tënd të ndarë, identifikohu në Chromium në profilin tënd si <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="3533435340678213462">Për të mbrojtur privatësinë tënde, ne fshijmë automatikisht interesat e tua që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një interes mund të shfaqet përsëri në listë. Ndryshe, mund të heqësh interesat që nuk dëshiron që Chromium të marrë parasysh.</translation>
+<translation id="3530103706039034513"><ph name="EXISTING_USER" /> është identifikuar tashmë. Për ta mbajtur shfletimin tënd të ndarë, identifikohu në Chromium në profilin tënd si <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Për të ndarë ekranin, lejo regjistrimin e ekranit për Chromium te "Cilësimet e sistemit".</translation>
-<translation id="3567254597502212821">Historiku yt i shfletimit, regjistri i sajteve që ke vizituar duke përdorur Chromium në këtë pajisje.</translation>
 <translation id="3597003331831379823">Ekzekutimi i konfigurimit me privilegje të larta dështoi. <ph name="METAINSTALLER_ERROR" /></translation>
+<translation id="3600428265489994557">Identifikohu në Chromium</translation>
 <translation id="3639635944603682591">Të dhënat e shfletimit të këtij personi do të fshihen nga kjo pajisje. Për të rikuperuar të dhënat, identifikohu në Chromium si <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Ka një përditësim të ri për Chromium dhe do të zbatohet sapo ta rinisësh.}=1{Ka një përditësim të ri për Chromium dhe do të zbatohet sapo ta rinisësh. Dritarja jote "e fshehtë" nuk do të rihapet.}other{Ka një përditësim të ri për Chromium dhe do të zbatohet sapo ta rinisësh. # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
 <translation id="3651803019964686660">Për të dërguar një numër nga <ph name="ORIGIN" /> te telefoni yt Android, identifikohu në Chromium në të dyja pajisjet.</translation>
 <translation id="3667616615096815454">Instalimi nuk mund të kryhej. Aplikacioni është i panjohur për serverin.</translation>
+<translation id="3675854891107786059">Përdor <ph name="BEGIN_LINK" />frazën tënde të kalimit<ph name="END_LINK" /> për të enkriptuar të gjitha të dhënat e Chromium në "Llogarinë tënde të Google". Mënyrat e pagesës dhe adresat nga Google Pay nuk do të enkriptohen. Historiku i shfletimit nga Chromium nuk do të sinkronizohet.</translation>
 <translation id="3685209450716071127">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua. Provo të kontrollosh lidhjen e internetit.</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Administratori yt kërkon që të hapësh përsëri Chromium për të zbatuar këtë përditësim}=1{Administratori yt kërkon që të hapësh përsëri Chromium për të zbatuar këtë përditësim Dritarja jote "e fshehtë" nuk do të rihapet.}other{Administratori yt kërkon që të hapësh përsëri Chromium për të zbatuar këtë përditësim # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
 <translation id="3713809861844741608">Hape lidhjen në një &amp;skedë të re të Chromium</translation>
 <translation id="3728124580182886854">Lidh Chromium dhe shërbimet e tjera të Google për personalizimin dhe qëllime të tjera</translation>
+<translation id="3729187154190517324">Thelloje kërkimin duke shtuar disa skeda, skedarë dhe vegla duke përdorur butonin "Shto një skedë dhe më shumë".</translation>
 <translation id="3788675262216168505">Menaxho profilet e Chromium</translation>
 <translation id="3790262771324122253">Mëso se pse Chromium i bllokon disa shkarkime</translation>
 <translation id="379589255253486813">Chromium do të të informojë nëse duhet të rishikosh diçka</translation>
+<translation id="3798048725356732506">Profilet e Chromium të ndihmojnë t'i mbash të veçuara pjesë të ndryshme të jetës sate. Shto një profil të ri tani.</translation>
 <translation id="3802055581630249637">Chromium ngarkon paraprakisht faqet që mund t'i vizitosh që ato të ngarkohen më shpejt kur t'i vizitosh</translation>
 <translation id="3810973564298564668">Menaxho</translation>
+<translation id="3846683726093018685">**Përmblidh:** Në një fjali të vetme deri në 30 fjalë, përshkruaj subjektin kryesor dhe qëllimin e përmbajtjes në pamjen e ekranit.
+
+          **Sugjero pyetje:** Gjenero një listë me pika prej 3 deri në 5 pyetje që nxisin të menduarit dhe që mund të bëhen nga një përdorues për të kuptuar më mirë pamjen e ekranit. Këto pyetje duhet të përfshijnë të paktën një pyetje që ka të bëjë në mënyrë specifike me një objekt vizual, dizajnin ose vendosjen e tij.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="3885770153807205175">Zgjedhësi i gjuhës</translation>
 <translation id="388648406173476553">Personalizo dhe kontrollo Chromium. Diçka ka nevojë për vëmendjen tënde - kliko për detaje.</translation>
@@ -220,6 +259,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3892148308691398805">Kopjo tekstin</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> është i identifikuar tashmë në këtë profil të Chromium. Për ta mbajtur shfletimin tënd të ndarë, Chromium mund të krijojë profilin tënd personal për ty.</translation>
 <translation id="3909353120217047026">Kjo shtesë shkel politikën e "Dyqanit të uebit të Chrome" dhe mund të mos jetë e sigurt. Hiqe atë nga Chromium që të mos arrijë të shikojë dhe të ndryshojë më të dhënat e tua në sajtin që viziton ti, duke përfshirë informacionet e tua personale.</translation>
+<translation id="3937491663738985329">Personalizo Chromium</translation>
 <translation id="3941890832296813527">Gabim gjatë instalimit: Emri i skedarit të instaluesit është i pavlefshëm ose nuk mbështetet.</translation>
 <translation id="3945058413678539331">Chromium po përpiqet të kopjojë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="3954172517175569325">Fjalëkalimet e tua, mënyrat e pagesës dhe adresat që ke ruajtur në "Llogarinë tënde të Google" do të hiqen nga kjo pajisje. Për t'i përdorur përsëri në Chromium, identifikohu përsëri.</translation>
@@ -233,11 +273,16 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4023601594785368013">Gjuha origjinale: <ph name="LANGUAGE" /></translation>
 <translation id="4023845192681161785">Hap lidhjet në Chromium nga çdo aplikacion. Dhe për qasje të lehtë, ai gozhdohet te shiriti yt i veglave.</translation>
 <translation id="4036079820698952681">Ndihmo në përmirësimin e Chromium duke raportuar <ph name="BEGIN_LINK" />cilësimet aktuale<ph name="END_LINK" /></translation>
+<translation id="4039097928859803404">Shfaq gjithmonë shkurtoret e "Modalitetit të IA-së"</translation>
 <translation id="4050175100176540509">Përmirësime të rëndësishme sigurie dhe funksione të reja ofrohen në versionin e fundit.</translation>
 <translation id="4055805654398742145">Men&amp;axheri i fjalëkalimeve</translation>
+<translation id="4061696872429826774">Një program tjetër në kompjuterin tënd shtoi një shtesë që mund të ndryshojë mënyrën se si funksionon Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Organizata jote e mbyll automatikisht Chromium kur ai nuk përdoret për 1 minutë. Të dhënat e shfletimit do të fshihen. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.}other{Organizata jote e mbyll automatikisht Chromium kur ai nuk përdoret për # minuta. Të dhënat e shfletimit do të fshihen. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.}}</translation>
 <translation id="4118474109249235144">Modaliteti "i fshehtë" i Chromium</translation>
 <translation id="4122186850977583290">Shko te faqja "Rreth Chromium"</translation>
+<translation id="4147856324248078748">Personalizo Chromium</translation>
 <translation id="4148957013307229264">Po instalohet...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - identifikimi në rrjet - Chromium</translation>
 <translation id="421369550622382712">Zbulo aplikacione, lojëra, shtesa dhe tema të mrekullueshme për Chromium.</translation>
@@ -251,6 +296,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4271805377592243930">Merr ndihmë me Chromium</translation>
 <translation id="4281844954008187215">Kushtet e shërbimit</translation>
 <translation id="4285930937574705105">Instalimi dështoi për shkak të një gabimi të paspecifikuar. Nëse Chromium është aktualisht në ekzekutim, mbylle dhe provo përsëri.</translation>
+<translation id="4298125729853015961">Eksporto fjalëkalimet nga Chromium</translation>
 <translation id="4304713468139749426">Menaxheri i fjalëkalimeve</translation>
 <translation id="4334241893986177674">Kërko në këtë pamje ekrani</translation>
 <translation id="4334294535648607276">Shkarkimi përfundoi</translation>
@@ -281,6 +327,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4598116752460667024">Kërko për çdo proces nga lista.</translation>
 <translation id="4613863813562375431">Versioni i ChromiumOS</translation>
 <translation id="4621240073146040695">Pothuajse i përditësuar! Hape përsëri Chromium për të përfunduar përditësimin.</translation>
+<translation id="4625064703209785397">Shpejton sajtet me motorin V8 të Chromium, por e bën Chromium disi më pak rezistent ndaj sulmeve</translation>
 <translation id="4654936675281451226">Chromium i kupton më mirë formularët dhe mund t'i plotësojë automatikisht më shpejt për ty. Ky cilësim është aktiv.</translation>
 <translation id="4665829708273112819">Paralajmërim: Chromium nuk mund të parandalojë regjistrimin e historikut të shfletimit nga shtesat. Për të çaktivizuar këtë shtesë në modalitetin "e fshehtë", anulo zgjedhjen e këtij opsioni.</translation>
 <translation id="4673151026126227699">Nëse ndan edhe raportet e përdorimit të Chromium, ato raporte përfshijnë URL-të që ti viziton</translation>
@@ -292,6 +339,8 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4724676981607797757">Instalimi dështoi për shkak të një gabimi të protokollit të pambështetur.</translation>
 <translation id="4746050847053251315">Dëshiron ta mbyllësh Chromium gjithsesi?</translation>
 <translation id="4748217263233248895">Sapo është zbatuar një përditësim special i sigurisë për Chromium. Rinise tani dhe do të restaurojmë skedat e tua.</translation>
+<translation id="4759645701210484457">Pyet Chromium</translation>
+<translation id="4771701986670315895">Nuk ke vizituar së fundi. Chromium ka hequr lejen "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" dhe <ph name="COUNT" /> më shumë.</translation>
 <translation id="4788777615168560705">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua. Provo përsëri pas 24 orësh ose <ph name="BEGIN_LINK" />kontrollo fjalëkalimet në "Llogarinë tënde të Google"<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Kjo përdor të njëjtin kontrollues drejtshkrimor që përdoret në kërkimin e Google. Teksti që shkruan në shfletues dërgohet te Google. Mund ta ndryshosh këtë sjellje gjithmonë te cilësimet.</translation>
 <translation id="4814736265800133385">Përdor Chromium pa pasur llogari</translation>
@@ -302,18 +351,23 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="494490797786467921">Kliko për të mbyllur dialogun e identifikimit në Chromium</translation>
 <translation id="4950660488495335294">Me profilet e Chromium, mund t'i ndash të gjitha gjërat e tua të Chromium. Krijo profile për miqtë dhe familjen ose ndaje punën nga argëtimi.</translation>
 <translation id="4987820182225656817">Vizitorët mund të përdorin Chromium pa lënë asgjë prapa.</translation>
+<translation id="4992938037305302429">Llogaria jote në Chromium</translation>
 <translation id="4994636714258228724">Shtoje veten te Chromium</translation>
 <translation id="5123973130450702873">Chromium ka nevojë për leje për të gjurmuar duart e tua</translation>
+<translation id="5141988424377517949">Nuk ke vizituar së fundi. Chromium ka hequr lejen "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />", "<ph name="PERMISSION_3" />".</translation>
+<translation id="5167819546851111585">Çfarë ke në mendje sot?</translation>
 <translation id="5174969993834422967">Ti i bllokon zakonisht njoftimet. Për ta lejuar këtë sajt që të të njoftojë, kliko tek ikona e njoftimit në këndin e djathtë të shiritit të vendndodhjes.</translation>
+<translation id="5174983315706567306">Nuk ka hapësirë të mjaftueshme në disk.</translation>
 <translation id="5187123684706427865">Llogaria e Chromium kërkon rivërtetim</translation>
 <translation id="5224391634244552924">Nuk ka asnjë fjalëkalim të ruajtur. Chromium mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato.</translation>
 <translation id="5231355151045086930">Dil nga Chromium</translation>
 <translation id="5234764350956374838">Hiq</translation>
+<translation id="5254739261293693943">Bëj pyetje rreth kësaj videoje</translation>
 <translation id="5277894862589591112">Për të zbatuar ndryshimet, rinis Chromium</translation>
 <translation id="5286907366254680517">Zbuluar</translation>
 <translation id="5294316920224716406">Kur shfleton në "Modalitetin 'e fshehtë'", Chromium do të të paralajmërojë para se të ngarkojë një sajt duke përdorur një lidhje të pasigurt</translation>
-<translation id="5296845517486664001">Kur provat janë aktive dhe nëse Chromium të ka vendosur rastësisht në një provë aktive, historiku yt i shfletimit ndikon te reklamat që shikon dhe tek interesat sipas përllogaritjes më poshtë. Për të mbrojtur privatësinë tënde, Chromium fshin interesat e tua në vazhdimësi çdo muaj.</translation>
 <translation id="5313228254328109263">Chromium Updater Internal Service</translation>
+<translation id="5346389065299425353">Thelloje kërkimin duke shtuar disa skeda, skedarë dhe vegla</translation>
 <translation id="5352264705793813212">Chromium gjeti disa rekomandime për sigurinë për t'u rishikuar nga ti</translation>
 <translation id="5352361688875342522">Profilet e tjera të Chromium</translation>
 <translation id="5358375970380395591">Po identifikohesh me një llogari të menaxhuar dhe po i jep administratorit të saj kontroll mbi profilin tënd të Chromium. Të dhënat e tua të Chromium, siç janë aplikacionet, faqeshënuesit, fjalëkalimet dhe cilësime të tjera do të lidhen në mënyrë të përhershme me <ph name="USER_NAME" />. Ti do të jesh në gjendje t'i fshish këto të dhëna përmes Panelit të llogarive të Google, por nuk do të jesh në gjendje t'i shoqërosh këto të dhëna me një llogari tjetër. <ph name="LEARN_MORE" /></translation>
@@ -323,17 +377,18 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="5386450000063123300">Po përditëson Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Lejo identifikimin në Chromium</translation>
 <translation id="5405650547142096840">Hiq nga Chromium</translation>
+<translation id="5424544524441439284">Zvogëlon performancën, por e bën Chromium më rezistent ndaj sulmeve</translation>
 <translation id="5427571867875391349">Caktoje Chromium si shfletuesin tënd të parazgjedhur</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium rekomandon vendosjen në pauzë të skedës që ngadalëson shfletuesin}other{Chromium rekomandon vendosjen në pauzë të skedave që ngadalësojnë shfletuesin}}</translation>
 <translation id="5473971139929175403">Chromium mund të mos funksionojë si duhet sepse nuk mbështetet më në këtë version të Linux</translation>
 <translation id="5475924890392386523">Chromium e bllokoi këtë shkarkim sepse skedari mund të dëmtojë llogaritë e tua personale dhe të rrjeteve sociale</translation>
 <translation id="5480860683791598150">Chromium ka nevojë për qasje te vendndodhja jote për të ndarë vendndodhjen tënde me këtë sajt</translation>
-<translation id="5487574057737591516">Për të mbrojtur privatësinë tënde, ne fshijmë automatikisht interesat e tua që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një interes mund të shfaqet përsëri në listë. Nëse Chromium gabohet ose nëse nuk dëshiron të shikosh reklama të caktuara, mund të heqësh një interes.</translation>
 <translation id="549669000822060376">Prit ndërsa Chromium instalon përditësimet më të fundit të sistemit.</translation>
 <translation id="5496810170689441661">Chromium po përpiqet t'i modifikojë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="5524890928877629608">këndi lart majtas i zonës së kërkimit: majtas <ph name="LEFT" />%, lart <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Hap PDF-të në Chromium</translation>
+<translation id="5536164441519929134">Pyet<ph name="LINE_BREAK" />për këtë skedë</translation>
 <translation id="5579324208890605088">Gabim në nisje: ekzekuto instaluesin si përdorues i rregullt, jo si administrator.</translation>
 <translation id="5580770360767802657">Përdor Chromium si parazgjedhje dhe gozhdoje</translation>
 <translation id="5596627076506792578">Më shumë opsione</translation>
@@ -345,7 +400,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Shfaqe Chromium në këtë gjuhë</translation>
 <translation id="569897634095159764">Lidhja me internetin nuk mund të kryhej. Serveri proxy kërkon vërtetim.</translation>
-<translation id="5761096224651992291">Nuk ke vizituar së fundi. Chromium ka hequr lejet (<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />)</translation>
+<translation id="5713518899297503106">Profilet e Chromium të lejojnë t'i mbash të veçuar shfletimin personal dhe atë të punës. Shto një profil të ri tani.</translation>
 <translation id="5768371961535086509">Chromium liron memorien nga skedat joaktive. Kjo u jep më shumë burime kompjuterike skedave aktive dhe aplikacioneve të tjera dhe bën që Chromium të jetë i shpejtë. Skedat e tua joaktive bëhen përsëri aktive në mënyrë automatike kur kthehesh tek ato. <ph name="BEGIN_LINK" />Mëso më shumë për "Kursyesin e memories"<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Nëse ke harruar frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="SETTINGS_LINK" /> të dhënat e Chromium në llogarinë tënde</translation>
 <translation id="5800158606660203929">Personalizo dhe kontrollo Chromium. Cakto Chromium si parazgjedhje.</translation>
@@ -362,11 +417,13 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="5924017743176219022">Po lidhet me internetin...</translation>
 <translation id="5941711191222866238">Minimizo</translation>
 <translation id="5949225980829865667">Për të marrë këtë faqeshënues dhe më shumë në të gjitha pajisjet e tua, identifikohu në Chromium</translation>
-<translation id="5972142260211327093">Nëse Chromium të ka vendosur rastësisht në një provë aktive, historiku yt i shfletimit ndikon te reklamat që shikon dhe tek interesat sipas përllogaritjes më poshtë. Për të mbrojtur privatësinë tënde, Chromium fshin interesat e tua në vazhdimësi çdo muaj. Interesat rifreskohen, përveçse nëse ti i heq ato.</translation>
+<translation id="5953657885167112863">Personalizo Chromium sipas dëshirës</translation>
+<translation id="5960071705175224773">Cilësimet e tua u ndryshuan nga një aplikacion i panjohur</translation>
+<translation id="5968400720580217226">Modaliteti i IA-së</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Organizata jote e mbyll automatikisht Chromium kur ai nuk përdoret për 1 minutë.}other{Organizata jote e mbyll automatikisht Chromium kur ai nuk përdoret për # minuta.}}</translation>
 <translation id="5987687638152509985">Përditëso Chromium për të nisur sinkronizimin</translation>
-<translation id="5988505247484123880">Zakonisht, sajtet që ti viziton i kujtojnë gjërat që të interesojnë për të personalizuar përvojën tënde. Gjithashtu, sajtet mund të ruajnë informacione për interesat e tua në Chromium.</translation>
 <translation id="6003112304606738118">Po shkarkohet... Kanë mbetur edhe <ph name="HOURS" /> orë</translation>
+<translation id="6009821354356307391">Kërko një përgjigje vijuese</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6058380562449900225">Për të mbrojtur të dhënat e tua, lejo që Chromium të heqë lejet nga sajtet që nuk i ke vizituar së fundi. Kjo nuk i ndalon njoftimet.</translation>
 <translation id="6063093106622310249">&amp;Hape në Chromium</translation>
@@ -375,6 +432,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="6072463441809498330">Bëje Chromium më të shpejtë</translation>
 <translation id="6096348254544841612">Personalizo dhe kontrollo Chromium. Ofrohet përditësim.</translation>
 <translation id="6107893135096467929">Aktive • Chromium nuk mund të verifikojë se nga vjen kjo shtesë</translation>
+<translation id="611228897408671387">Llogaria jote në Chromium</translation>
 <translation id="6119438414301547735">Lejo që shtesat të shfaqin kërkesat për qasje në shiritin e veglave të Chromium</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> është i rrezikshëm, prandaj Chromium e ka bllokuar.</translation>
 <translation id="6132897690380286411">Chromium do të mbyllet dhe do t'i fshijë të dhënat së shpejti</translation>
@@ -385,8 +443,12 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="6174920971222007286">Ky skedar mund të jetë i rrezikshëm<ph name="LINE_BREAK" />Chromium mund ta kontrollojë këtë shkarkim për ty nëse ti jep fjalëkalimin. Informacionet për skedarin dërgohen te "Shfletimi i sigurt i Google", por përmbajtjet dhe fjalëkalimi i skedarit qëndrojnë në pajisjen tënde.</translation>
 <translation id="6182736845697986886">Instalimi dështoi për shkak të një gabimi të brendshëm të serverit të përditësimit.</translation>
 <translation id="6183079672144801177">Sigurohu që të jesh identifikuar në Chromium në pajisjen tënde <ph name="TARGET_DEVICE_NAME" /> dhe më pas provo ta dërgosh përsëri.</translation>
+<translation id="6204922163963157461">Një program tjetër në kompjuterin tënd shtoi një aplikacion që mund të ndryshojë mënyrën se si funksionon Chromium.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6212496753309875659">Ky kompjuter e ka tashmë një version më të ri të Chromium. Nëse softueri nuk punon, çinstaloje Chromium dhe provo përsëri.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium do të hapet përsëri tani}=1{Chromium do të hapet përsëri për 1 sekondë}other{Chromium do të hapet përsëri për # sekonda}}</translation>
+<translation id="6239161312595354541">Pyet "Kërkimin e imazheve" për këtë video</translation>
 <translation id="6241367896540709610">Chromium ka nevojë për leje qasjeje te hapësira ruajtëse për të shkarkuar skedarë</translation>
 <translation id="6245734527075554892">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chromium.</translation>
 <translation id="6248213926982192922">Bëje Chromium, shfletuesin tënd të parazgjedhur</translation>
@@ -404,9 +466,11 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="6366160072964553914">Chromium e bllokoi këtë shkarkim sepse skedari nuk është shkarkuar zakonisht dhe mund të jetë i rrezikshëm</translation>
 <translation id="6373523479360886564">Je i sigurt që dëshiron ta çinstalosh Chromium?</translation>
 <translation id="6375219077595103062">Shto një shkurtore për te "Menaxheri i fjalëkalimeve"</translation>
+<translation id="6388799252195623474">më ndihmo me këtë</translation>
 <translation id="6390800440335263989">Për të vazhduar, identifikohu në Chromium si <ph name="EMAIL" />. Kjo siguron që të kesh politikat e organizatës sate.</translation>
 <translation id="6400112897226594999">Logoja e Chromium brenda një ekrani kompjuteri.</translation>
 <translation id="6403826409255603130">Chromium është një shfletues uebi që ekzekuton faqe uebi dhe aplikacione me një shpejtësi jashtëzakonisht të lartë. Është i shpejtë, i qëndrueshëm dhe i lehtë në përdorim. Shfleto në ueb në mënyrë më të sigurt, me mbrojtje të integruar në Chromium kundër mashtrimeve dhe softuerëve keqdashës.</translation>
+<translation id="642132557830635295">Chromium funksionon më shpejt dhe veçoritë që përdorin JavaScript do të punojnë siç pritet</translation>
 <translation id="6436260184216827876">"Kërkimi nëpërmjet imazheve" nuk ofrohet. Provo përsëri më vonë.</translation>
 <translation id="6442900851116057561">Rinis ChromiumOS</translation>
 <translation id="6443470774889161065">Chromium ngarkon paraprakisht edhe faqe të tjera që mund t'i vizitosh që ato të ngarkohen më shpejt kur t'i vizitosh.</translation>
@@ -417,7 +481,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="648319183876919572">"Shfletimi i sigurt i përmirësuar" bën më shumë për të të mbrojtur nga uebsajtet dhe shkarkimet e rrezikshme</translation>
 <translation id="6510925080656968729">Çinstaloje Chromium</translation>
 <translation id="651535675648445253">Shkurtoret janë hapur në Chromium</translation>
-<translation id="6524389414524528185">Kur je i identifikuar, mund të përdorësh fjalëkalimet dhe më shumë nga "Llogaria jote e Google" në Chromium. Mund ta ndryshosh këtë në çdo kohë te cilësimet.</translation>
 <translation id="6539122709674868420">Organizata jote e mbyll Chromium kur ai nuk përdoret për <ph name="TIMEOUT_DURATION" />. Të dhënat e shfletimit u fshinë. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.</translation>
 <translation id="6542839706527980775">Secili profil duhet të zotërojë informacionin e vet të Chromium, si: faqeshënuesit, historikun, fjalëkalimet etj.</translation>
 <translation id="6563921047760808519">Mëso më shumë se <ph name="BEGIN_LINK" />si Chromium i mban private të dhënat e tua<ph name="END_LINK" /></translation>
@@ -427,10 +490,12 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="6598877126913850652">Shko te "Cilësimet e njoftimeve" të Chromium</translation>
 <translation id="6600016381025017075">Kërko për çdo gjë në këtë faqe</translation>
 <translation id="6613594504749178791">Ndryshimet e tua do të hyjnë në fuqi herën tjetër kur të rinisësh Chromium.</translation>
+<translation id="6648212540664651655">Vazhdo aty ku e ke lënë: Chromium i restauroi skedat e tua nga sesioni yt i fundit. Mund ta çaktivizosh këtë te</translation>
 <translation id="665732753414869868">Chromium ka nevojë për lejen e kamerës për të krijuar një hartë 3D të ambientit tënd rrethues</translation>
 <translation id="6669284030132180248">Nëse i ruan faqeshënuesit e tu vetëm në "Llogarinë tënde të Google", mund t'i monitorosh çmimet e produkteve në Chromium dhe të marrësh njoftime kur të ulet çmimi</translation>
 <translation id="6676384891291319759">Qasu në internet</translation>
 <translation id="668175097507315160">ChromiumOS nuk mund t'i sinkronizonte të dhënat e tua për shkak të një gabimi gjatë identifikimit.</translation>
+<translation id="6691132793308828750">Hiq të dhënat e këtij aplikacioni nga Chromium</translation>
 <translation id="6692797197837897398">Chromium të jep më shumë kontroll mbi reklamat që shikon ti dhe kufizon ato që sajtet mund të mësojnë për ty kur të shfaqin reklama të personalizuara.</translation>
 <translation id="6709350901466051922">Chromium ka nevojë për lejen e mikrofonit për këtë sajt</translation>
 <translation id="6712881677154121168">Gabim shkarkimi: <ph name="DOWNLOAD_ERROR" />.</translation>
@@ -439,20 +504,23 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër profili ose përdor një version më të ri të Chromium.</translation>
 <translation id="6729124504294600478">Për të marrë personalizimin dhe veçoritë e tjera, përfshi Chromium në "Aktivitetin e uebit dhe të aplikacioneve" dhe në shërbimet e lidhura të Google</translation>
 <translation id="6734291798041940871">Chromium është i instaluar tashmë për të gjithë përdoruesit në kompjuterin tënd.</translation>
-<translation id="674245979920622322">Nuk ke vizituar së fundi. Chromium ka hequr lejet (<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dhe <ph name="COUNT" /> të tjera)</translation>
+<translation id="6742093177587589736">Për të marrë fjalëkalimet, faqeshënuesit etj. në të gjitha pajisjet e tua, identifikohu në Chromium. Ky faqeshënues do të ruhet në "Llogarinë tënde të Google" pasi të identifikohesh.</translation>
 <translation id="6751374565094704799">Shpejton sajtet me motorin V8 të Chromium, por e bën Chromium disi më pak rezistent ndaj sulmeve. Ky cilësim është aktiv.</translation>
+<translation id="6754665438209053659">{count,plural, =1{Disa nga të dhënat e tua të Chromium nuk janë ruajtur ende në "Llogarinë tënde të Google". Provo të presësh për disa minuta para se të dalësh nga ajo. Nëse del tani, këto të dhëna (1 artikull) do të fshihen.}other{Disa nga të dhënat e tua të Chromium nuk janë ruajtur ende në "Llogarinë tënde të Google". Provo të presësh për disa minuta para se të dalësh nga ajo. Nëse del tani, këto të dhëna ({count} artikuj) do të fshihen.}}</translation>
 <translation id="67706546131546258">Chromium rekomandon ta skanosh këtë skedar, sepse ai mund të jetë i rrezikshëm.</translation>
 <translation id="6779406956731413166">ChromiumOS mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6831043979455480757">Përkthe</translation>
 <translation id="6847869444787758381">Chromium të informon nëse fjalëkalimet e tua komprometohen ndonjëherë</translation>
 <translation id="684888714667046800">Lidhja me internetin nuk mund të kryhej. Nëse përdor një mur mbrojtës, sigurohu që <ph name="PRODUCT_EXE_NAME" /> të jetë në listën e lejimeve.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
+<translation id="6859580922007887573">Shtyp tastin Tab për të vazhduar</translation>
+<translation id="6862030660799253820">Kërkoje këtë imazh me "Kërkimin e imazheve"</translation>
 <translation id="6873893289264747459">Chromium vuri re se "<ph name="EXTENSION_NAME" />" përmban softuer keqdashës</translation>
 <translation id="6877155553248388166">këndi poshtë djathtas i zonës së kërkimit: djathtas <ph name="RIGHT" />%, poshtë <ph name="BOTTOM" />%</translation>
 <translation id="6896758677409633944">Kopjo</translation>
 <translation id="6901631050894301805">Cakto Chromium si shfletuesin tënd të parazgjedhur dhe gozhdoje te shiriti i detyrave</translation>
-<translation id="6929417474050522668">Kur provat janë aktive, Ad measurement lejon që sajtet që ti viziton të kërkojnë informacione nga Chromium të cilat ndihmojnë sajtin të masë cilësinë e funksionimit të reklamave të tij. Ad measurement kufizon gjurmimin nëpër sajte duke transferuar sa më pak informacion të jetë e mundur ndërmjet sajteve.</translation>
-<translation id="6940431691900807093">Më vonë, një sajt që ti viziton mund t'i kërkojë Chromium që të shikojë interesat e tua në mënyrë që të personalizojë reklamat që shikon. Chromium mund të ndajë deri në 3 interesa.</translation>
+<translation id="6909503629704372277">&amp;Menaxho profilet e Chromium</translation>
+<translation id="6934579572334859869">Pyet "Kërkimin e imazheve" për këtë imazh</translation>
 <translation id="6964305034639999644">Hape lidhjen në një dritare të fshe&amp;htë të Chromium</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6978145336957848883">Fjalëkalimet e dobëta mund të gjenden me lehtësi. Lejoje Chromium <ph name="BEGIN_LINK" />të krijojë dhe mbajë mend fjalëkalime të forta për ty<ph name="END_LINK" />.</translation>
@@ -463,20 +531,24 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër profili os
 <translation id="7024536598735240744">Gabim shpaketimi: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalimi ndaloi.</translation>
 <translation id="7045244423563602563">Bëje Chromium tëndin</translation>
+<translation id="7047386856539490735">A janë të dobishme këto rezultate?</translation>
 <translation id="705851970750939768">Përditëso Chromium</translation>
 <translation id="7067091210845072982">Nëse një imazh nuk ka një përshkrim të dobishëm, Chromium do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google.</translation>
 <translation id="7141270731789036260">Personalizo Chrome for Testing</translation>
+<translation id="7147227333672430807">Mund të përdorësh Chromium sa herë që klikon te lidhjet në mesazhe, dokumente dhe aplikacione të tjera</translation>
 <translation id="7163519456498498587">Hiq <ph name="EXTENSION_NAME" /> nga Chromium</translation>
 <translation id="7173822816570314652">Organizata jote i fshin të dhënat e Chromium kur ato nuk përdoren për <ph name="TIMEOUT_DURATION" />. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.</translation>
 <translation id="718435575166326686">Chromium ka nevojë për lejen e kamerës për këtë sajt</translation>
 <translation id="7196312274710523067">Chromium nuk mund të hapej. Provo përsëri.</translation>
 <translation id="7197677400338048821">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua. Provo përsëri pas 24 orësh.</translation>
+<translation id="7213008767289637091">Mbaje Chromium në "Stacion" për ta hapur atë me shpejtësi në çdo kohë</translation>
 <translation id="7213407614656404070">Përdor Chromium sa herë që klikon te lidhjet në mesazhe, dokumente dhe aplikacione të tjera</translation>
 <translation id="7223968959479464213">Menaxheri i detyrave - Chromium</translation>
 <translation id="7246575524853130370">Interesat e tua sipas përllogaritjes nga Chromium</translation>
 <translation id="7274695763216404502">U gozhdua! Përdor përsëri "Kërkimin nëpërmjet imazheve" nga shiriti i veglave</translation>
 <translation id="7288567540154601580">Skedat dhe shtesat</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium rekomandon që ta heqësh atë}other{Chromium rekomandon që t'i heqësh ato}}</translation>
+<translation id="7296334833518879294">Për të ndarë audion e sistemit, hap "Cilësimet e sistemit" dhe lejo "Vetëm regjistrimin e audios së sistemit" për Chromium. Më pas do të të duhet të rinisësh Chromium.</translation>
 <translation id="7309928523159922338">Ad measurement lejon që sajtet që ti viziton të kërkojnë informacione nga Chromium të cilat ndihmojnë sajtin të masë cilësinë e funksionimit të reklamave të tij. Ad measurement kufizon gjurmimin nëpër sajte duke transferuar sa më pak informacion të jetë e mundur ndërmjet sajteve.</translation>
 <translation id="731795002583552498">Po përditëson Chromium</translation>
 <translation id="7318036098707714271">Skedari i preferencave është i dëmtuar ose i pavlefshëm.
@@ -484,9 +556,13 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër profili os
 Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7339898014177206373">Dritare e re</translation>
 <translation id="734373864078049451">Këtu janë materialet e tua të uebit, të faqeshënuesve dhe të tjera nga Chromium.</translation>
+<translation id="7347827960336370838">Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të enkriptuara. Fraza e kalimit nuk dërgohet apo ruhet nga Google. Nëse e harron frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, do të të duhet të <ph name="BEGIN_LINK" />fshish të dhënat e Chromium në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="7349591376906416160">Administratori i sistemit ka konfiguruar Chromium që të hapë <ph name="ALTERNATIVE_BROWSER_NAME" /> për t'u qasur te <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7352651011704765696">Diçka shkoi keq</translation>
+<translation id="7376384068949534168">Nuk ke vizituar së fundi. Chromium ka hequr lejen "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />".</translation>
 <translation id="7384121030444253939">Kjo shtesë nuk mbështetet më. Chromium rekomandon që ta heqësh më mirë atë.</translation>
+<translation id="7413153308467572558">Vazhdo aty ku e ke lënë: Chromium i restauron skedat e tua sa herë që e rinis. Për ta çaktivizuar këtë, shko te</translation>
+<translation id="7427879960656355200">Importo fjalëkalimet në Chromium</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">Teksti u kopjua</translation>
 <translation id="7451052299415159299">Chromium ka nevojë për leje për t'u qasur te kamera jote për këtë sajt</translation>
@@ -494,12 +570,11 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7461356015007898716">Për të marrë përditësimet e ardhshme të Chromium, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 7.</translation>
 <translation id="7467949745582939695">Të niset sërish Chromium?</translation>
 <translation id="7483335560992089831">Nuk mund të instalohet i njëjti version i Chromium që po ekzekutohet aktualisht. Mbylle Chromium dhe provo përsëri.</translation>
+<translation id="7517403744065880907">Do të ruash dhe përdorësh fjalëkalimet dhe më shumë në "Llogarinë tënde të Google" në çdo kohë që je i identifikuar në Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">Sajtet ndoshta do të punojnë siç pritet. Do të dalësh nga shumica e sajteve kur të mbyllësh të gjitha dritaret e Chromium, përveçse nga "Llogaria jote e Google" nëse je identifikuar në Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium do të hapet përsëri për 1 minutë}other{Chromium do të hapet përsëri për # minuta}}</translation>
 <translation id="7565444033145385702">Për të mbrojtur të dhënat e tua, lejo që Chromium të heqë lejet nga sajtet që nuk i ke vizituar së fundi.</translation>
-<translation id="7582945390259497898">Chromium mund të përllogarisë interesat e tua. Më vonë, një sajt që ti viziton mund t'i kërkojë Chromium që të shikojë interesat e tua në mënyrë që të personalizojë reklamat që shikon.</translation>
 <translation id="7583399374488819119">Instaluesi i <ph name="COMPANY_NAME" /></translation>
-<translation id="7585391435984513350">Nuk ke vizituar së fundi. Chromium ka hequr lejet (<ph name="PERMISSION" />)</translation>
 <translation id="761356813943268536">Chromium po përdor kamerën dhe mikrofonin tënd.</translation>
 <translation id="7617377681829253106">Chromium sapo është përmirësuar</translation>
 <translation id="7622753900276619808">Tani ke më shumë veçori të disponueshme në Chromium</translation>
@@ -518,13 +593,17 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7810005234485217901">Mund të gozhdosh "Kërkimin nëpërmjet imazheve" për qasje të lehtë</translation>
 <translation id="7828947555739565424">Një profil i Chromium me këtë llogari ekziston tashmë në këtë pajisje</translation>
 <translation id="7845233973568007926">Faleminderit që e instalove. Duhet të rinisësh kompjuterin përpara se të përdorësh <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7853661403199074278">Personalizo Chromium për t'i dhënë një pamje të re</translation>
 <translation id="7859018312476869945">Kur shkruan në shiritin e adresës ose në kutinë e kërkimit, Chromium i dërgon ato që shkruan te motori i parazgjedhur i kërkimit për të marrë sugjerime më të mira. Kjo është joaktive në modalitetin "e fshehtë".</translation>
-<translation id="786097294490253281">Kur klikon tek "E kuptova", mund të ruash dhe të përdorësh fjalëkalimet dhe më shumë në "Llogarinë tënde të Google" kur je i identifikuar në Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="7867198900892795913">Chromium nuk mund të përditësohej me versionin më të fundit, kështu që të mungojnë rregullimet e sigurisë dhe funksionet e reja.</translation>
 <translation id="7872446069773932638">Po shkarkohet... Kanë mbetur edhe <ph name="SECONDS" /> sekonda</translation>
+<translation id="7873537467422636035">Nëse ke harruar frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Chromium në llogarinë tënde<ph name="END_LINK" /></translation>
+<translation id="7877212753140190672">Pyet "Rreth këtij imazhi"</translation>
+<translation id="7887929410013642057">Shfaq gjithmonë shkurtoret e "Modalitetit të IA-së"</translation>
 <translation id="7888981273428720788">Cakto Chromium si parazgjedhje</translation>
 <translation id="7934340546140346950">Chromium i përmirëson lidhjet e pasigurta automatikisht në HTTPS kur është e mundur</translation>
 <translation id="7937630085815544518">Je identifikuar në Chromium si <ph name="USER_EMAIL_ADDRESS" />. Përdor të njëjtën llogari për t'u identifikuar sërish.</translation>
+<translation id="7953047982688951904">Shkarko Chromium në telefon për të shtuar një shtresë shtesë mbrojtjeje kur je në lëvizje</translation>
 <translation id="7975919845073681630">Ky është instalim dytësor i Chromium dhe nuk mund të bëhet shfletuesi yt i parazgjedhur.</translation>
 <translation id="7997934263947464652">Shtesat, aplikacionet dhe temat nga burime të panjohura mund ta dëmtojnë pajisjen tënde. Chromium rekomandon që t'i instalosh ato vetëm nga<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8004582292198964060">Shfletuesi</translation>
@@ -550,6 +629,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8248265253516264921">Nëse një imazh nuk ka një përshkrim të dobishëm, Chromium do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google. Këtë mund ta çaktivizosh te cilësimet në çdo moment.</translation>
 <translation id="8254601181414348851">Do të identifikohesh në Chromium në një profil të ri?</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium të paralajmëron<ph name="END_LINK" /> për sajtet dhe shkarkimet e pasigurta</translation>
+<translation id="8295827201165805317">Nuk ke vizituar së fundi. Chromium ka hequr lejen "<ph name="PERMISSION" />".</translation>
 <translation id="8313851650939857356">Gabim në nisje: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Organizata jote e mbyll Chromium kur ai nuk përdoret për <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Ruaje si imazh</translation>
@@ -558,6 +638,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8359544530202147897">Përditëso Chromium për të vazhduar të përdorësh të dhënat e Chromium në "Llogarinë tënde të Google" <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8360718212975266891">Për të marrë përditësimet e ardhshme të Chromium, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 8.</translation>
 <translation id="8362914115861174987">Përkthe në</translation>
+<translation id="8367705492654390392">Pyet për çdo gjë</translation>
 <translation id="8370517070665726704">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>
 <translation id="8372327902843331129">Për të marrë fjalëkalimet etj. në të gjitha pajisjet e tua, identifikohu në Chromium. Ky fjalëkalim do të ruhet në "Llogarinë tënde të Google" pasi të identifikohesh.</translation>
 <translation id="837460953767177950">Më pas do të të duhet të rinisësh Chromium.</translation>
@@ -566,12 +647,16 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8416884904046428725">Chromium duhet të verifikojë që je ti përpara se të mund të ruhen disa të dhëna në "Llogarinë tënde të Google" dhe të përdoren në të gjitha pajisjet e tua. Nëse del tani, këto të dhëna do të fshihen.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Hap përsëri Chromium brenda një dite}other{Hap përsëri Chromium brenda # ditësh}}</translation>
 <translation id="8438543370129609977">Kur përdor "Kërkimin nëpërmjet imazheve", titulli i faqes, URL-ja dhe përmbajtja, duke përfshirë skedarët PDF, dërgohen te serveri. <ph name="LEARN_MORE" /></translation>
+<translation id="8447525028100794994">Mëso më shumë rreth kërkimit me "Kërkimin e imazheve" në Chromium</translation>
 <translation id="8453117565092476964">Arkivi i instaluesit është i dëmtuar ose i pavlefshëm. Shkarkoje Chromium përsëri.</translation>
 <translation id="8458614432758743027">Chromium kërkon Windows 10 ose një version më të lartë.</translation>
 <translation id="8463672209299734063">Opsionale: Ndihmo në përmirësimin e veçorive dhe performancës së ChromiumOS duke dërguar automatikisht te Google të dhëna diagnostikuese dhe përdorimi.</translation>
 <translation id="8471947159125090285">Për të përdorur dhe për të ruajtur të dhënat e Chromium në "Llogarinë tënde të Google", verifiko që je ti</translation>
+<translation id="8482493977473846331">Shfaq kërkesat për t'u identifikuar në Chromium</translation>
 <translation id="8493179195440786826">Chromium nuk është i përditësuar</translation>
+<translation id="850264194101621529">Faleminderit që zgjodhe Chromium si shfletuesin tënd të parazgjedhur!</translation>
 <translation id="8522801943730206384">Chromium mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato</translation>
+<translation id="8548787790260785208">Merr paralajmërim nëse Chromium gjen një nga fjalëkalimet e tua në një nxjerrje publike të paautorizuar të të dhënave</translation>
 <translation id="8555465886620020932">Gabim shërbimi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8556420416730706394">Mund të gozhdosh "Kërkimin nëpërmjet imazheve" për qasje të lehtë; kliko te butoni "Gozhdo" në krye të panelit anësor</translation>
 <translation id="856656450041460113">Kërko në listën e gjuhëve</translation>
@@ -580,31 +665,30 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8586442755830160949">Të drejtat e autorit <ph name="YEAR" /> Autorët e Chromium. Të gjitha të drejtat të rezervuara.</translation>
 <translation id="8601359445272098721">E re! Mund të përkthesh tekstet dhe imazhet në ekranin tënd duke zgjedhur butonin "përkthe ekranin"</translation>
 <translation id="8619360774459241877">Po hapet Chromium...</translation>
-<translation id="8621669128220841554">Instalimi dështoi për shkak të një gabimi të papërcaktuar. Shkarko përsëri Chromium.</translation>
+<translation id="8624541899164515475">Cilësimet, hapet në një skedë të re.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing nuk mund të bëhet shfletuesi yt i parazgjedhur.</translation>
 <translation id="8697124171261953979">Kontrollon po ashtu se cila faqe shfaqet kur nis Chromium ose kur kërkon nga Omnibox.</translation>
 <translation id="8704119203788522458">Ky është Chromium për ty</translation>
 <translation id="8712637175834984815">E kuptova</translation>
 <translation id="8719993436687031146">Do të identifikohesh në Chromium?</translation>
+<translation id="8745263398357414606">Mbaji të gjitha në Chromium</translation>
 <translation id="8747073452963259673">këndi poshtë majtas i zonës së kërkimit: majtas <ph name="LEFT" />%, poshtë <ph name="BOTTOM" />%</translation>
-<translation id="8768722695577490596">Fjalëkalimet mund të fshihen vetëm jashtë Chromium</translation>
 <translation id="878572486461146056">Gabim gjatë instalimit: Administratori i rrjetit ka zbatuar një politikë grupi që parandalon instalimin: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">Chromium ka nevojë për leje për t'u qasur te kamera dhe mikrofoni yt për këtë sajt</translation>
 <translation id="8818550178040858407">Do të identifikohesh në Chromium?</translation>
+<translation id="8823401858233292222">Bëje Chromium shfletuesin e parazgjedhur dhe gozhdoje te shiriti i veglave</translation>
 <translation id="8826492472752484139">Kliko te “Menaxheri i fjalëkalimeve”</translation>
 <translation id="8833697763442816810">Sistemi ChromiumOS</translation>
 <translation id="8852026904190808918">Kjo gjuhë përdoret për të shfaqur menytë, cilësimet, sinjalizimet dhe tekste të tjera në Chromium</translation>
-<translation id="8862326446509486874">Nuk ke të drejtat e duhura për instalimin në nivel sistemi. Provo ta ekzekutosh përsëri instaluesin si Administrator.</translation>
+<translation id="8862326446509486874">Nuk ke të drejtat e duhura për instalimin në nivel sistemi. Provo ta ekzekutosh përsëri instaluesin si "Administrator".</translation>
 <translation id="8876044221123442390">Shto profilin e Chromium</translation>
 <translation id="8880203542552872219">Nëse po, modifiko fjalëkalimin e ruajtur në Chromium që të përputhet me fjalëkalimin tënd të ri.</translation>
 <translation id="8891709362986793894">Organizata jote kërkon që të identifikohesh në Chromium</translation>
 <translation id="8907580949721785412">Chromium po përpiqet të shfaqë fjalëkalime. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
-<translation id="8931379085695076764">Chromium mund të përllogarisë interesat e tua bazuar në historikun tënd të shfletimit nga javët e fundit. Ky informacion qëndron në pajisjen tënde.</translation>
 <translation id="8941642502866065432">Chromium nuk mund të përditësohet</translation>
 <translation id="897581876605952338">Logoja e Chromium Enterprise</translation>
 <translation id="8988036198400390003">Menaxho profilet e Chromium</translation>
 <translation id="9019929317751753759">Për ta bërë më të sigurt Chromium, çaktivizuam shtesën e mëposhtme që nuk është e listuar në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe që mund të jetë shtuar pa dijeninë tënde.</translation>
-<translation id="9022552996538154597">Identifikohu në Chromium</translation>
 <translation id="904366664621834601">Chromium e bllokoi këtë shkarkim sepse skedari i arkivit përfshin skedarë të tjerë që mund të fshehin softuer keqdashës</translation>
 <translation id="9062666675513499497">Identifikohu në Chromium kur identifikohesh në shërbimet e tjera të Google</translation>
 <translation id="9078733879136747090">Chromium u mbyll automatikisht</translation>
@@ -616,9 +700,11 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="911206726377975832">Të fshihen po ashtu të dhënat e shfletimit?</translation>
 <translation id="9134482777260927479">Ndihma për detyrat e shtëpisë</translation>
 <translation id="9148058034647219655">Dil</translation>
+<translation id="9155105544013854680">Vazhdo aty ku e ke lënë: Chromium mund t'i restaurojë skedat e tua sa herë që e rinis. Për ta aktivizuar këtë, shko te</translation>
 <translation id="9158494823179993217">Administratori i sistemit ka konfiguruar Chromium që të hapë një shfletues alternativ për të pasur qasje te <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Nise përsëri për të përditësuar &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="9206863043651638213">Merr më shumë kur je i identifikuar në Chromium</translation>
 <translation id="924957577793602335">Personalizoje Chromium</translation>
 <translation id="93478295209880648">Chromium mund të mos funksionojë si duhet sepse nuk mbështetet më në Windows XP ose Windows Vista</translation>
 <translation id="945522503751344254">Dërgo komente</translation>

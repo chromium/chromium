@@ -4,9 +4,11 @@
 
 #include "ui/android/resources/etc1_utils.h"
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/memory/aligned_memory.h"
 #include "base/numerics/byte_conversions.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/android_opengl/etc1/etc1.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkData.h"
@@ -22,12 +24,6 @@
 #endif
 
 namespace ui {
-
-// Used at callsites, to lower thread priority to background while compression
-// is happening.
-BASE_FEATURE(kCompressBitmapAtBackgroundPriority,
-             "CompressBitmapAtBackgroundPriority",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -162,27 +158,6 @@ sk_sp<SkPixelRef> Etc1::CompressBitmap(SkBitmap raw_data,
   return nullptr;
 }
 
-sk_sp<SkPixelRef> Etc1::CompressBitmapAtBackgroundPriority(
-    SkBitmap raw_data,
-    bool supports_etc_npot) {
-  // ETC1 compression (which happens below) is very expensive, taking 200-300ms
-  // of a big core on high-end 2024 devices. As the thread priority is kept at
-  // 120 (default) for thread pool threads, this is potentially competing with
-  // more important threads, which either share the same priority, or are close
-  // to it in importance.
-  //
-  // Temporarily lower the thread priority, to avoid competing with those. Note
-  // that this does *not* restrict the thread to little cores only, as this is
-  // directly going to the setpriority() system call, not through Android APIs
-  // (which do not lower the thread priority either, as of Android 15 at least).
-  base::ThreadType thread_type = base::PlatformThread::GetCurrentThreadType();
-  base::PlatformThread::SetCurrentThreadType(base::ThreadType::kBackground);
-  auto result = CompressBitmap(raw_data, supports_etc_npot);
-  base::PlatformThread::SetCurrentThreadType(thread_type);
-
-  return result;
-}
-
 bool Etc1::WriteToFile(base::File* file,
                        const gfx::Size& content_size,
                        const float scale,
@@ -206,26 +181,23 @@ bool Etc1::WriteToFile(base::File* file,
   }
 
   // Write ETC1 header.
-  CHECK(compressed_data->width() >= 0);
-  CHECK(compressed_data->height() >= 0);
+  CHECK_GE(compressed_data->width(), 0);
+  CHECK_GE(compressed_data->height(), 0);
   unsigned width = static_cast<unsigned>(compressed_data->width());
   unsigned height = static_cast<unsigned>(compressed_data->height());
 
-  unsigned char etc1_buffer[ETC_PKM_HEADER_SIZE];
+  uint8_t etc1_buffer[ETC_PKM_HEADER_SIZE];
   etc1_pkm_format_header(etc1_buffer, width, height);
 
-  // SAFETY: buffer interacts with external API.
-  int header_bytes_written = UNSAFE_BUFFERS(file->WriteAtCurrentPos(
-      reinterpret_cast<char*>(etc1_buffer), ETC_PKM_HEADER_SIZE));
-  if (header_bytes_written != ETC_PKM_HEADER_SIZE) {
+  if (file->WriteAtCurrentPos(etc1_buffer) != ETC_PKM_HEADER_SIZE) {
     return false;
   }
 
-  int data_size = etc1_get_encoded_data_size(width, height);
+  const size_t data_size = etc1_get_encoded_data_size(width, height);
   // SAFETY: buffer interacts with external API.
-  int pixel_bytes_written = UNSAFE_BUFFERS(file->WriteAtCurrentPos(
-      reinterpret_cast<char*>(compressed_data->pixels()), data_size));
-  if (pixel_bytes_written != data_size) {
+  auto pixels = UNSAFE_BUFFERS(base::span(
+      reinterpret_cast<const uint8_t*>(compressed_data->pixels()), data_size));
+  if (file->WriteAtCurrentPos(pixels) != data_size) {
     return false;
   }
 
@@ -280,12 +252,8 @@ bool Etc1::ReadFromFile(base::File* file,
   out_content_size->SetSize(content_width, content_height);
 
   // Read ETC1 header.
-  int header_bytes_read = 0;
-  unsigned char etc1_buffer[ETC_PKM_HEADER_SIZE];
-  // SAFETY: buffer interacts with external API.
-  header_bytes_read = UNSAFE_BUFFERS(file->ReadAtCurrentPos(
-      reinterpret_cast<char*>(etc1_buffer), ETC_PKM_HEADER_SIZE));
-  if (header_bytes_read != ETC_PKM_HEADER_SIZE) {
+  uint8_t etc1_buffer[ETC_PKM_HEADER_SIZE];
+  if (file->ReadAtCurrentPos(etc1_buffer) != ETC_PKM_HEADER_SIZE) {
     return false;
   }
 
@@ -293,14 +261,12 @@ bool Etc1::ReadFromFile(base::File* file,
     return false;
   }
 
-  int raw_width = 0;
-  raw_width = etc1_pkm_get_width(etc1_buffer);
+  int raw_width = etc1_pkm_get_width(etc1_buffer);
   if (raw_width <= 0) {
     return false;
   }
 
-  int raw_height = 0;
-  raw_height = etc1_pkm_get_height(etc1_buffer);
+  int raw_height = etc1_pkm_get_height(etc1_buffer);
   if (raw_height <= 0) {
     return false;
   }
@@ -309,7 +275,7 @@ bool Etc1::ReadFromFile(base::File* file,
   // than the max display size of the screen.  We also can't have etc1 texture
   // data larger than the next power of 2 up from that.
   gfx::Size display_size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel();
+      display::Screen::Get()->GetPrimaryDisplay().GetSizeInPixel();
   int max_dimension = std::max(display_size.width(), display_size.height());
 
   if (content_width > max_dimension || content_height > max_dimension ||
@@ -321,9 +287,8 @@ bool Etc1::ReadFromFile(base::File* file,
   int data_size = etc1_get_encoded_data_size(raw_width, raw_height);
   sk_sp<SkData> etc1_pixel_data(SkData::MakeUninitialized(data_size));
 
-  // SAFETY: buffer interacts with external API.
-  int pixel_bytes_read = UNSAFE_BUFFERS(file->ReadAtCurrentPos(
-    reinterpret_cast<char*>(etc1_pixel_data->writable_data()), data_size));
+  std::optional<size_t> pixel_bytes_read =
+      file->ReadAtCurrentPos(skia::as_writable_byte_span(*etc1_pixel_data));
 
   if (pixel_bytes_read != data_size) {
     return false;

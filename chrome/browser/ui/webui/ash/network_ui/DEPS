@@ -24,7 +24,6 @@ include_rules = [
   "+chrome/browser/ui/ash/system",
   "+chrome/browser/ui/webui/ash/cellular_setup",
   "+chrome/browser/ui/webui/ash/internet",
-  "+chrome/browser/ui/webui/webui_util.h",
   "+chrome/common",
   "+chrome/grit",
 ]

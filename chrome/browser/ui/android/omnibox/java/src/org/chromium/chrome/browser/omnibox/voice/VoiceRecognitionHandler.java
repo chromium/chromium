@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.voice;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
@@ -247,8 +249,9 @@ public class VoiceRecognitionHandler {
             RenderFrameHost renderFrameHost = webContents.getMainFrame();
             if (renderFrameHost == null) return;
 
-            if (!mProfileSupplier.hasValue()) return;
-            if (TemplateUrlServiceFactory.getForProfile(mProfileSupplier.get())
+            Profile profile = mProfileSupplier.get();
+            if (profile == null) return;
+            if (TemplateUrlServiceFactory.getForProfile(profile)
                     .isSearchResultsPageFromDefaultSearchProvider(url)) {
                 renderFrameHost.notifyUserActivation();
             }
@@ -275,7 +278,7 @@ public class VoiceRecognitionHandler {
 
         // WindowAndroid.IntentCallback implementation:
         @Override
-        public void onIntentCompleted(int resultCode, Intent data) {
+        public void onIntentCompleted(int resultCode, @Nullable Intent data) {
             if (mCallbackComplete) {
                 return;
             }
@@ -286,7 +289,7 @@ public class VoiceRecognitionHandler {
                 mDelegate.notifyVoiceRecognitionCanceled();
                 return;
             }
-            if (resultCode != Activity.RESULT_OK || data.getExtras() == null) {
+            if (resultCode != Activity.RESULT_OK || assumeNonNull(data).getExtras() == null) {
                 recordVoiceSearchFailureEvent(mSource);
                 mDelegate.notifyVoiceRecognitionCanceled();
                 return;
@@ -346,9 +349,9 @@ public class VoiceRecognitionHandler {
                 }
             }
 
-            if (!mProfileSupplier.hasValue()) return;
-
             Profile profile = mProfileSupplier.get();
+            if (profile == null) return;
+
             AutocompleteMatch match = AutocompleteCoordinator.classify(profile, topResultQuery);
 
             String url;
@@ -387,8 +390,9 @@ public class VoiceRecognitionHandler {
             String culledString = strings.get(i).replaceAll(" ", "");
 
             AutocompleteMatch match = null;
-            if (mProfileSupplier.hasValue()) {
-                match = AutocompleteCoordinator.classify(mProfileSupplier.get(), culledString);
+            Profile profile = mProfileSupplier.get();
+            if (profile != null) {
+                match = AutocompleteCoordinator.classify(profile, culledString);
             }
 
             String urlOrSearchQuery;

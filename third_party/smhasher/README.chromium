@@ -2,6 +2,7 @@ Name: SMHasher
 URL: https://github.com/aappleby/smhasher
 Version: N/A
 Revision: 0ff96f7835817a27d0487325b6c16033e2992eb5
+Update Mechanism: Manual
 License: MIT, Unlicense
 License File: LICENSE
 Security Critical: yes

@@ -25,6 +25,7 @@ source_set("coordinator") {
     "reading_list_utils.mm",
   ]
   deps = [
+    ":reading_list_constants",
     ":ui",
     "//base",
     "//components/favicon/core",
@@ -66,6 +67,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/sharing/ui_bundled",
     "//ios/chrome/browser/sharing/ui_bundled/activity_services",
@@ -80,7 +82,6 @@ source_set("coordinator") {
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ios/chrome/common/ui/table_view",
-    "//ios/third_party/material_components_ios",
     "//ios/web",
     "//ios/web/common",
     "//ios/web/public",
@@ -91,7 +92,6 @@ source_set("coordinator") {
   ]
   allow_circular_includes_from =
       [ "//ios/chrome/browser/side_swipe/ui_bundled" ]
-  public_deps = [ "//ios/third_party/material_components_ios" ]
   frameworks = [ "UIKit.framework" ]
 }
 
@@ -206,8 +206,12 @@ source_set("unit_tests") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/test/fakes",
     "//ios/web",
@@ -234,14 +238,14 @@ source_set("eg2_tests") {
     "//components/sync/base",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/authentication/ui_bundled:authentication_constants",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",
-    "//ios/chrome/browser/reading_list/model:constants",
     "//ios/chrome/browser/settings/ui_bundled:constants",
     "//ios/chrome/browser/settings/ui_bundled/google_services:constants",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/snackbar:constants",
     "//ios/chrome/browser/shared/ui/elements:eg_test_support+eg2",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:constants",

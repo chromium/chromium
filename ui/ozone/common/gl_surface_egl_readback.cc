@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/common/gl_surface_egl_readback.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/gl/gl_bindings.h"
@@ -59,7 +55,7 @@ gfx::SwapResult GLSurfaceEglReadback::SwapBuffers(PresentationCallback callback,
 
   if (!pixels_.empty()) {
     ReadPixels(pixels_.as_span());
-    if (HandlePixels(pixels_.as_span().data())) {
+    if (UNSAFE_TODO(HandlePixels(pixels_.as_span().data()))) {
       // Swap is successful, so return SWAP_ACK and provide the current time
       // with presentation feedback.
       swap_result = gfx::SwapResult::SWAP_ACK;

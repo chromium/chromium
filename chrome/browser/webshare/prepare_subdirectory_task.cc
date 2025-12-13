@@ -5,6 +5,7 @@
 #include "chrome/browser/webshare/prepare_subdirectory_task.h"
 
 #include "base/files/file.h"
+#include "base/files/file_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"

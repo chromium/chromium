@@ -177,6 +177,13 @@ UserFolderLoadStats BookmarkLoadDetails::ComputeUserFolderStats() const {
       continue;
     }
 
+    // We want to track the number of bookmarks at the top level of the
+    // Bookmark Bar.
+    if (root_child->is_folder() &&
+        root_child->type() == BookmarkNode::BOOKMARK_BAR) {
+      stats.bookmark_bar_top_level_items = root_child->children().size();
+    }
+
     for (const auto& child : root_child->children()) {
       UpdateUserFolderStatsRecursively(*child, /*top_level=*/true, stats);
     }

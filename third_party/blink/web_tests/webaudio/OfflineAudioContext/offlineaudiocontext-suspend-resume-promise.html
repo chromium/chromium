@@ -7,85 +7,76 @@
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
     <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
-      let audit = Audit.createTaskRunner();
+    <script>
       let context;
 
       // The sample rate is multiple of the rendering quantum, so suspension
       // times fall in to the render quantum boundary.
-      let renderQuantum = 128;
+      const renderQuantum = 128;
 
-      let sampleRate = renderQuantum * 100;
-      let renderDuration = 2;
+      const sampleRate = renderQuantum * 100;
+      const renderDuration = 2;
       let scheduledSuspendTime = 0;
 
       // With the sample rate setting above, this ensures suspension time fall
       // in to the render quantum boundary.
-      let suspendInterval = 0.25;
+      const suspendInterval = 0.25;
 
-      function onSuspended(should) {
+      function onSuspended() {
         if (context.state === 'suspended' &&
             context.currentTime === scheduledSuspendTime) {
-          should(
+          assert_true(
               context.state === 'suspended' &&
                   context.currentTime === scheduledSuspendTime,
-              'Context suspended at ' + scheduledSuspendTime + ' second(s)')
-              .beTrue();
+              `Context suspended at ${scheduledSuspendTime} second(s)`);
 
           scheduledSuspendTime = context.currentTime + suspendInterval;
 
           // Scheduling a suspend before the render duration should pass.
           if (scheduledSuspendTime < renderDuration) {
-            should(
-                () => context.suspend(scheduledSuspendTime)
-                          .then(() => onSuspended(should)),
-                'Scheduling a new suspend at ' + scheduledSuspendTime +
-                    ' second(s)')
-                .notThrow();
+            context.suspend(scheduledSuspendTime)
+                .then(() => onSuspended())
+                .catch(e => assert_unreached(
+                    `Scheduling a new suspend threw ${e}`));
           }
 
           // Scheduling a suspend exactly at the render duration should be
           // rejected.
           if (scheduledSuspendTime === renderDuration) {
-            should(
-                context.suspend(scheduledSuspendTime),
-                'Scheduling at ' + renderDuration + ' seconds')
-                .beRejected();
+            context.suspend(scheduledSuspendTime)
+                .then(() => {
+                  assert_unreached(
+                      `Scheduling at ${renderDuration} ` +
+                          `seconds should be rejected`);
+                })
+                .catch(() => {
+                  // expected rejection, nothing to do
+                });
           }
 
           context.resume();
         }
       }
 
-      audit.define(
-          {
-            label: 'test',
-            description: 'Promise resolution of resume() and suspend()'
-          },
-          (task, should) => {
-            context = new OfflineAudioContext(
-                1, sampleRate * renderDuration, sampleRate);
+      promise_test(t => {
+        context = new OfflineAudioContext(
+            1, sampleRate * renderDuration, sampleRate);
 
-            // Schedule the first suspension.
-            should(
-                () => context.suspend(scheduledSuspendTime)
-                          .then(() => onSuspended(should)),
-                'Scheduling a new suspend at ' + scheduledSuspendTime +
-                    ' second(s)')
-                .notThrow();
+        // Schedule the first suspension.
+        try {
+          context.suspend(scheduledSuspendTime)
+              .then(() => onSuspended());
+        } catch (e) {
+          assert_unreached(`Scheduling a new suspend at ` +
+              `${scheduledSuspendTime} second(s) threw ${e}`);
+        }
 
-            context.startRendering()
-                .then(function() {
-                  should(context.state, 'Promise context.state')
-                      .beEqualTo('closed');
-                })
-                .then(() => task.done());
-          });
-
-      audit.run();
+        return context.startRendering().then(() => {
+          assert_equals(context.state, 'closed', 'Promise context.state');
+        });
+      }, 'Promise resolution of resume() and suspend()');
     </script>
   </body>
 </html>

@@ -30,3 +30,5 @@ std::string GetDefaultLocaleListString() {
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(LocaleUtils)

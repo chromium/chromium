@@ -8,11 +8,11 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RadioGroup;
 
-import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.browser_ui.settings.ContainedRadioButtonGroupPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 
@@ -22,7 +22,7 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayou
  * a boolean choice but displayed as a radio button group.)
  */
 @NullMarked
-class HttpsFirstModeVariantPreference extends Preference
+class HttpsFirstModeVariantPreference extends ContainedRadioButtonGroupPreference
         implements RadioGroup.OnCheckedChangeListener {
     // UI elements. These fields are assigned only once, in onBindViewHolder.
     private RadioButtonWithDescriptionLayout mGroupLayout;

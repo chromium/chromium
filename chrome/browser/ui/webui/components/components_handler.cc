@@ -89,12 +89,12 @@ std::u16string ComponentsHandler::ServiceStatusToString(
       return l10n_util::GetStringUTF16(IDS_COMPONENTS_SVC_STATUS_CHECKING);
     case update_client::ComponentState::kCanUpdate:
       return l10n_util::GetStringUTF16(IDS_COMPONENTS_SVC_STATUS_UPDATE);
-    case update_client::ComponentState::kDownloadingDiff:
-      return l10n_util::GetStringUTF16(IDS_COMPONENTS_SVC_STATUS_DNL_DIFF);
     case update_client::ComponentState::kDownloading:
       return l10n_util::GetStringUTF16(IDS_COMPONENTS_SVC_STATUS_DNL);
-    case update_client::ComponentState::kUpdatingDiff:
-      return l10n_util::GetStringUTF16(IDS_COMPONENTS_SVC_STATUS_UPDT_DIFF);
+    case update_client::ComponentState::kDecompressing:
+      return l10n_util::GetStringUTF16(IDS_COMPONENTS_SVC_STATUS_DECOMPRESSING);
+    case update_client::ComponentState::kPatching:
+      return l10n_util::GetStringUTF16(IDS_COMPONENTS_SVC_STATUS_PATCHING);
     case update_client::ComponentState::kUpdating:
       return l10n_util::GetStringUTF16(IDS_COMPONENTS_SVC_STATUS_UPDATING);
     case update_client::ComponentState::kUpdated:
@@ -103,8 +103,7 @@ std::u16string ComponentsHandler::ServiceStatusToString(
       return l10n_util::GetStringUTF16(IDS_COMPONENTS_SVC_STATUS_UPTODATE);
     case update_client::ComponentState::kUpdateError:
       return l10n_util::GetStringUTF16(IDS_COMPONENTS_SVC_STATUS_UPDATE_ERROR);
-    case update_client::ComponentState::kRun:  // Fall through.
-    case update_client::ComponentState::kLastStatus:
+    case update_client::ComponentState::kRun:
       return l10n_util::GetStringUTF16(IDS_COMPONENTS_UNKNOWN);
   }
   return l10n_util::GetStringUTF16(IDS_COMPONENTS_UNKNOWN);

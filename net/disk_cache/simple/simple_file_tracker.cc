@@ -50,9 +50,9 @@ void SimpleFileTracker::TrackedFiles::RemoveIfLinked() {
 
 void SimpleFileTracker::Register(const SimpleSynchronousEntry* owner,
                                  SubFile subfile,
-                                 std::unique_ptr<base::File> file) {
+                                 std::unique_ptr<CacheFile> file) {
   DCHECK(file->IsValid());
-  std::vector<std::unique_ptr<base::File>> files_to_close;
+  std::vector<std::unique_ptr<CacheFile>> files_to_close;
 
   {
     base::AutoLock hold_lock(lock_);
@@ -97,7 +97,7 @@ SimpleFileTracker::FileHandle SimpleFileTracker::Acquire(
     BackendFileOperations* file_operations,
     const SimpleSynchronousEntry* owner,
     SubFile subfile) {
-  std::vector<std::unique_ptr<base::File>> files_to_close;
+  std::vector<std::unique_ptr<CacheFile>> files_to_close;
 
   {
     base::AutoLock hold_lock(lock_);
@@ -135,15 +135,16 @@ bool SimpleFileTracker::TrackedFiles::Empty() const {
 }
 
 bool SimpleFileTracker::TrackedFiles::HasOpenFiles() const {
-  for (const std::unique_ptr<base::File>& file : files)
+  for (const std::unique_ptr<CacheFile>& file : files) {
     if (file != nullptr)
       return true;
+  }
   return false;
 }
 
 void SimpleFileTracker::Release(const SimpleSynchronousEntry* owner,
                                 SubFile subfile) {
-  std::vector<std::unique_ptr<base::File>> files_to_close;
+  std::vector<std::unique_ptr<CacheFile>> files_to_close;
 
   {
     base::AutoLock hold_lock(lock_);
@@ -171,7 +172,7 @@ void SimpleFileTracker::Release(const SimpleSynchronousEntry* owner,
 
 void SimpleFileTracker::Close(const SimpleSynchronousEntry* owner,
                               SubFile subfile) {
-  std::unique_ptr<base::File> file_to_close;
+  std::unique_ptr<CacheFile> file_to_close;
 
   {
     base::AutoLock hold_lock(lock_);
@@ -240,10 +241,10 @@ SimpleFileTracker::TrackedFiles* SimpleFileTracker::Find(
   return nullptr;
 }
 
-std::unique_ptr<base::File> SimpleFileTracker::PrepareClose(
+std::unique_ptr<CacheFile> SimpleFileTracker::PrepareClose(
     TrackedFiles* owners_files,
     int file_index) {
-  std::unique_ptr<base::File> file_out =
+  std::unique_ptr<CacheFile> file_out =
       std::move(owners_files->files[file_index]);
   owners_files->state[file_index] = TrackedFiles::TF_NO_REGISTRATION;
   if (owners_files->Empty()) {
@@ -264,7 +265,7 @@ std::unique_ptr<base::File> SimpleFileTracker::PrepareClose(
 }
 
 void SimpleFileTracker::CloseFilesIfTooManyOpen(
-    std::vector<std::unique_ptr<base::File>>* files_to_close) {
+    std::vector<std::unique_ptr<CacheFile>>* files_to_close) {
   TrackedFiles* node = lru_.tail()->value();
   while (open_files_ > file_limit_ && node != lru_.end()) {
     // Grab the previous node *before* we possibly remove |node| from the list.
@@ -301,8 +302,7 @@ void SimpleFileTracker::ReopenFile(BackendFileOperations* file_operations,
               base::File::FLAG_WRITE | base::File::FLAG_WIN_SHARE_DELETE;
   base::FilePath file_path =
       owners_files->owner->GetFilenameForSubfile(subfile);
-  owners_files->files[file_index] =
-      std::make_unique<base::File>(file_operations->OpenFile(file_path, flags));
+  owners_files->files[file_index] = file_operations->OpenFile(file_path, flags);
   if (owners_files->files[file_index]->IsValid()) {
     RecordFileDescripterLimiterOp(FD_LIMIT_REOPEN_FILE);
 
@@ -332,7 +332,7 @@ SimpleFileTracker::FileHandle::FileHandle() = default;
 SimpleFileTracker::FileHandle::FileHandle(SimpleFileTracker* file_tracker,
                                           const SimpleSynchronousEntry* entry,
                                           SimpleFileTracker::SubFile subfile,
-                                          base::File* file)
+                                          CacheFile* file)
     : file_tracker_(file_tracker),
       entry_(entry),
       subfile_(subfile),
@@ -361,11 +361,11 @@ SimpleFileTracker::FileHandle& SimpleFileTracker::FileHandle::operator=(
   return *this;
 }
 
-base::File* SimpleFileTracker::FileHandle::operator->() const {
+CacheFile* SimpleFileTracker::FileHandle::operator->() const {
   return file_;
 }
 
-base::File* SimpleFileTracker::FileHandle::get() const {
+CacheFile* SimpleFileTracker::FileHandle::get() const {
   return file_;
 }
 

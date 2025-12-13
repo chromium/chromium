@@ -129,6 +129,11 @@ bool RunFunction(scoped_refptr<ExtensionFunction> function,
                  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
                  FunctionMode mode);
 
+// Tests that exactly one extension loaded. If so, returns a pointer to the
+// extension. If not, returns nullptr and sets `message`.
+const Extension* GetSingleLoadedExtension(content::BrowserContext* context,
+                                          std::string& message);
+
 }  // namespace api_test_utils
 }  // namespace extensions
 

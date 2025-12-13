@@ -14,6 +14,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/wm/core/cursor_util.h"
 #include "ui/wm/core/native_cursor_manager.h"
 #include "ui/wm/core/native_cursor_manager_delegate.h"
@@ -315,6 +316,32 @@ gfx::Size CursorManager::GetSystemCursorSize() const {
   return current_state_->system_cursor_size();
 }
 
+#if BUILDFLAG(IS_WIN)
+void CursorManager::UpdateSystemCursorVisibilityForTest(bool visible) {
+  UpdateSystemCursorVisibility(visible);
+}
+#endif
+
+void CursorManager::CommitSystemCursorVisibility(bool visible) {
+  DCHECK(features::ShouldUseCursorEventHook());
+  UpdateSystemCursorVisibility(visible);
+}
+
+void CursorManager::UpdateSystemCursorVisibility(bool visible) {
+  if (visible == current_state_->visible()) {
+    return;
+  }
+
+  // Use lock to prevent ShowCursor/HideCursor when system cursor is invisible.
+  if (!visible) {
+    scoped_cursor_lock_.emplace(this);
+  } else {
+    scoped_cursor_lock_.reset();
+  }
+
+  CommitVisibility(visible);
+}
+
 void CursorManager::CommitSystemCursorSize(
     const gfx::Size& system_cursor_size) {
   current_state_->set_system_cursor_size(system_cursor_size);
@@ -336,6 +363,15 @@ void CursorManager::SetCursorImpl(gfx::NativeCursor cursor, bool forced) {
           is_visible);
     }
   }
+}
+
+CursorManager::ScopedCursorLock::ScopedCursorLock(CursorManager* cursor_manager)
+    : cursor_manager_(cursor_manager) {
+  cursor_manager_->LockCursor();
+}
+
+CursorManager::ScopedCursorLock::~ScopedCursorLock() {
+  cursor_manager_->UnlockCursor();
 }
 
 }  // namespace wm

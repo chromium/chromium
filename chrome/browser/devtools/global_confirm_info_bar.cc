@@ -10,10 +10,22 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/infobars/core/infobar.h"
 #include "ui/gfx/image/image.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/scoped_multi_source_observation.h"
+#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
+#else
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tab_strip_tracker.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#endif
 
 class GlobalConfirmInfoBar::DelegateProxy : public ConfirmInfoBarDelegate {
  public:
@@ -160,6 +172,94 @@ void GlobalConfirmInfoBar::DelegateProxy::Detach() {
   global_info_bar_.reset();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Android uses TabModel to track tabs.
+class GlobalConfirmInfoBar::TabHelper : public TabModelListObserver,
+                                        public TabModelObserver {
+ public:
+  explicit TabHelper(GlobalConfirmInfoBar* global_info_bar)
+      : global_info_bar_(global_info_bar) {}
+
+  ~TabHelper() override {
+    tab_model_observations_.RemoveAllObservations();
+    TabModelList::RemoveObserver(this);
+  }
+
+  void Init() {
+    // This is the equivalent of observing for new windows (each window has a
+    // TabModel).
+    TabModelList::AddObserver(this);
+    // Add the TabModel for each existing window.
+    for (TabModel* const model : TabModelList::models()) {
+      OnTabModelAdded(model);
+    }
+  }
+
+  void OnTabModelAdded(TabModel* tab_model) override {
+    // This is the equivalent of a new window being added. Observe for new tabs
+    // and add the infobar to all existing tabs.
+    tab_model_observations_.AddObservation(tab_model);
+    for (::tabs::TabInterface* tab : tab_model->GetAllTabs()) {
+      if (tab && tab->GetContents()) {
+        global_info_bar_->MaybeAddInfoBar(tab->GetContents());
+      }
+    }
+  }
+
+  void OnTabModelRemoved(TabModel* tab_model) override {
+    if (tab_model_observations_.IsObservingSource(tab_model)) {
+      tab_model_observations_.RemoveObservation(tab_model);
+    }
+  }
+
+  void DidAddTab(TabAndroid* tab, TabModel::TabLaunchType type) override {
+    if (tab->GetContents()) {
+      global_info_bar_->MaybeAddInfoBar(tab->GetContents());
+    }
+  }
+
+ private:
+  const raw_ptr<GlobalConfirmInfoBar> global_info_bar_;
+  base::ScopedMultiSourceObservation<TabModel, TabModelObserver>
+      tab_model_observations_{this};
+};
+
+#else
+
+// Windows/Mac/Linux uses TabStripModel to track tabs.
+class GlobalConfirmInfoBar::TabHelper : public TabStripModelObserver {
+ public:
+  explicit TabHelper(GlobalConfirmInfoBar* global_info_bar)
+      : global_info_bar_(global_info_bar) {}
+
+  ~TabHelper() override = default;
+
+  void Init() { browser_tab_strip_tracker_.Init(); }
+
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    if (change.type() != TabStripModelChange::kInserted) {
+      return;
+    }
+    for (const auto& contents : change.GetInsert()->contents) {
+      global_info_bar_->MaybeAddInfoBar(contents.contents);
+    }
+  }
+
+  void TabChangedAt(content::WebContents* web_contents,
+                    int index,
+                    TabChangeType change_type) override {
+    global_info_bar_->MaybeAddInfoBar(web_contents);
+  }
+
+ private:
+  const raw_ptr<GlobalConfirmInfoBar> global_info_bar_;
+  BrowserTabStripTracker browser_tab_strip_tracker_{this, nullptr};
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // static
 GlobalConfirmInfoBar* GlobalConfirmInfoBar::Show(
     std::unique_ptr<ConfirmInfoBarDelegate> delegate) {
@@ -169,11 +269,14 @@ GlobalConfirmInfoBar* GlobalConfirmInfoBar::Show(
 
 GlobalConfirmInfoBar::GlobalConfirmInfoBar(
     std::unique_ptr<ConfirmInfoBarDelegate> delegate)
-    : delegate_(std::move(delegate)) {
-  browser_tab_strip_tracker_.Init();
+    : delegate_(std::move(delegate)),
+      tab_helper_(std::make_unique<TabHelper>(this)) {
+  // Must be initialized after GlobalConfirmInfoBar construction completes.
+  tab_helper_->Init();
 }
 
 GlobalConfirmInfoBar::~GlobalConfirmInfoBar() {
+  tab_helper_.reset();
   while (!proxies_.empty()) {
     auto it = proxies_.begin();
     it->second->Detach();
@@ -183,34 +286,18 @@ GlobalConfirmInfoBar::~GlobalConfirmInfoBar() {
   }
 }
 
-void GlobalConfirmInfoBar::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (change.type() != TabStripModelChange::kInserted)
-    return;
-  for (const auto& contents : change.GetInsert()->contents)
-    MaybeAddInfoBar(contents.contents);
-}
-
-void GlobalConfirmInfoBar::TabChangedAt(content::WebContents* web_contents,
-                                        int index,
-                                        TabChangeType change_type) {
-  MaybeAddInfoBar(web_contents);
-}
-
 void GlobalConfirmInfoBar::OnInfoBarRemoved(infobars::InfoBar* info_bar,
                                             bool animate) {
   // Do not process alien infobars.
   for (const auto& it : proxies_) {
     if (it.second->infobar() == info_bar) {
-      OnManagerShuttingDown(info_bar->owner());
+      OnManagerWillBeDestroyed(info_bar->owner());
       break;
     }
   }
 }
 
-void GlobalConfirmInfoBar::OnManagerShuttingDown(
+void GlobalConfirmInfoBar::OnManagerWillBeDestroyed(
     infobars::InfoBarManager* manager) {
   manager->RemoveObserver(this);
   proxies_.erase(manager);
@@ -228,8 +315,9 @@ void GlobalConfirmInfoBar::MaybeAddInfoBar(content::WebContents* web_contents) {
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
   // WebContents from the tab strip must have the infobar manager.
   DCHECK(infobar_manager);
-  if (base::Contains(proxies_, infobar_manager))
+  if (base::Contains(proxies_, infobar_manager)) {
     return;
+  }
 
   auto proxy = std::make_unique<GlobalConfirmInfoBar::DelegateProxy>(
       weak_factory_.GetWeakPtr());

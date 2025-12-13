@@ -122,8 +122,7 @@ Highlight::IterationSource::IterationSource(const Highlight& highlight)
 }
 
 bool Highlight::IterationSource::FetchNextItem(ScriptState*,
-                                               AbstractRange*& value,
-                                               ExceptionState&) {
+                                               AbstractRange*& value) {
   if (index_ >= highlight_ranges_snapshot_.size())
     return false;
   value = highlight_ranges_snapshot_[index_++];
@@ -136,8 +135,7 @@ void Highlight::IterationSource::Trace(blink::Visitor* visitor) const {
 }
 
 HighlightSetIterable::IterationSource* Highlight::CreateIterationSource(
-    ScriptState*,
-    ExceptionState&) {
+    ScriptState*) {
   return MakeGarbageCollected<IterationSource>(*this);
 }
 

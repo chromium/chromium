@@ -20,9 +20,7 @@ namespace {
 // Keep the JSON conversion in one function to prevent LOG and DVLOG calls
 // from unnecessarily converting it.
 std::string ToJSON(const media::MediaLogRecord& event) {
-  std::string params_json;
-  base::JSONWriter::Write(event.params, &params_json);
-  return params_json;
+  return base::WriteJson(event.params).value_or("");
 }
 
 // Print an event to the chromium log.
@@ -76,7 +74,13 @@ void BatchingMediaLog::Stop() {
 }
 
 void BatchingMediaLog::OnWebMediaPlayerDestroyedLocked() {
+  // The inspector handler will fail to send events after this, so send queued
+  // events now.
   base::AutoLock lock(lock_);
+  if (ipc_send_pending_) {
+    SendQueuedMediaEvents_Locked();
+  }
+
   for (const auto& handler : event_handlers_)
     handler->OnWebMediaPlayerDestroyed();
 }
@@ -110,7 +114,15 @@ void BatchingMediaLog::AddLogRecordLocked(
           last_duration_changed_event_ = *event;
         } else if (*event_key == "kBufferingStateChanged") {
           // This may fire many times on poor networks; only keep the last.
-          last_buffering_state_event_ = *event;
+          if (event->params.Find("video_buffering_state")) {
+            last_video_buffering_state_ = *event;
+          } else if (event->params.Find("audio_buffering_state")) {
+            last_audio_buffering_state_ = *event;
+          } else if (event->params.Find("pipeline_buffering_state")) {
+            last_pipeline_buffering_state_ = *event;
+          } else {
+            NOTREACHED();
+          }
         } else if (*event_key == "kPlay") {
           last_play_event_ = *event;
         } else if (*event_key == "kPause") {
@@ -192,9 +204,7 @@ std::string BatchingMediaLog::MediaEventToMessageString(
         return PipelineStatusToString(
             static_cast<media::PipelineStatusCodes>(code));
       }
-      std::stringstream formatted;
-      formatted << *group << ":" << code;
-      return formatted.str();
+      return *group;
     }
     case media::MediaLogRecord::Type::kMessage: {
       const std::string* result = event.params.FindString(
@@ -217,6 +227,16 @@ void BatchingMediaLog::SendQueuedMediaEvents() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   base::AutoLock auto_lock(lock_);
 
+  // This is called as a posted task and another task may
+  // decide to immediate emit queued events, so we must
+  // check `ipc_send_pending_` first here.
+  if (ipc_send_pending_) {
+    SendQueuedMediaEvents_Locked();
+  }
+}
+
+void BatchingMediaLog::SendQueuedMediaEvents_Locked() {
+  lock_.AssertAcquired();
   DCHECK(ipc_send_pending_);
   ipc_send_pending_ = false;
 
@@ -225,9 +245,19 @@ void BatchingMediaLog::SendQueuedMediaEvents() {
     last_duration_changed_event_.reset();
   }
 
-  if (last_buffering_state_event_) {
-    queued_media_events_.push_back(*last_buffering_state_event_);
-    last_buffering_state_event_.reset();
+  if (last_video_buffering_state_) {
+    queued_media_events_.push_back(*last_video_buffering_state_);
+    last_video_buffering_state_.reset();
+  }
+
+  if (last_audio_buffering_state_) {
+    queued_media_events_.push_back(*last_audio_buffering_state_);
+    last_audio_buffering_state_.reset();
+  }
+
+  if (last_pipeline_buffering_state_) {
+    queued_media_events_.push_back(*last_pipeline_buffering_state_);
+    last_pipeline_buffering_state_.reset();
   }
 
   if (last_play_event_) {

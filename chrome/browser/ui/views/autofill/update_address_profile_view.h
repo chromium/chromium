@@ -18,10 +18,6 @@ namespace content {
 class WebContents;
 }
 
-namespace views {
-class View;
-}
-
 namespace autofill {
 
 // Shown after a user submits a form with an address profile that's slightly
@@ -34,7 +30,7 @@ class UpdateAddressProfileView : public AddressBubbleBaseView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kEditButtonViewId);
 
   UpdateAddressProfileView(
-      views::View* anchor_view,
+      views::BubbleAnchor anchor_view,
       std::unique_ptr<UpdateAddressBubbleController> controller,
       content::WebContents* web_contents);
 
@@ -54,6 +50,10 @@ class UpdateAddressProfileView : public AddressBubbleBaseView {
 
  private:
   std::unique_ptr<UpdateAddressBubbleController> controller_;
+
+  // Indicates whether the profile has empty original values meaning the prompt
+  // is shown to add info to the profile.
+  bool has_empty_original_values_ = false;
 };
 
 }  // namespace autofill

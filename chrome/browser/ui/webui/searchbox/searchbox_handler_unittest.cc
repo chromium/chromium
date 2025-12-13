@@ -2,41 +2,46 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "searchbox_handler.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_client.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
+#include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/lens/tab_contextualization_controller.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
-#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/browser/test_omnibox_client.h"
+#include "components/omnibox/browser/vector_icons.h"
 #include "components/search/ntp_features.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_web_ui.h"
 #include "content/public/test/test_web_ui_data_source.h"
+#include "content/public/test/web_contents_tester.h"
 #include "lens_searchbox_handler.h"
 #include "realbox_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
-
-namespace {
-
-class TestObserver : public OmniboxWebUIPopupChangeObserver {
- public:
-  void OnPopupElementSizeChanged(gfx::Size size) override { called_ = true; }
-  bool called() const { return called_; }
-
- private:
-  bool called_ = false;
-};
-
-}  // namespace
+#include "ui/base/webui/web_ui_util.h"
 
 class SearchboxHandlerTest : public ::testing::Test {
  public:
@@ -58,7 +63,7 @@ class SearchboxHandlerTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<content::TestWebUIDataSource> source_;
   std::unique_ptr<TestingProfile> profile_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   void SetUp() override {
@@ -69,8 +74,9 @@ class SearchboxHandlerTest : public ::testing::Test {
 
     ASSERT_EQ(
         variations::VariationsIdsProvider::ForceIdsResult::SUCCESS,
-        variations::VariationsIdsProvider::GetInstance()->ForceVariationIds(
-            /*variation_ids=*/{"100"}, /*command_line_variation_ids=*/""));
+        variations::VariationsIdsProvider::GetInstance()
+            ->ForceVariationIdsForTesting(
+                /*variation_ids=*/{"100"}, /*command_line_variation_ids=*/""));
   }
 
   void TearDown() override {
@@ -88,16 +94,18 @@ class RealboxHandlerTest : public SearchboxHandlerTest {
   ~RealboxHandlerTest() override = default;
 
  protected:
+  content::RenderViewHostTestEnabler test_render_host_factories_;
+  std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<RealboxHandler> handler_;
 
- private:
   void SetUp() override {
     SearchboxHandlerTest::SetUp();
 
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
     handler_ = std::make_unique<RealboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
-        /*web_contents=*/nullptr, /*metrics_reporter=*/nullptr,
-        /*omnibox_controller=*/nullptr);
+        web_contents_.get());
     handler_->SetPage(page_.BindAndGetRemote());
   }
 
@@ -108,70 +116,11 @@ class RealboxHandlerTest : public SearchboxHandlerTest {
 };
 
 TEST_F(RealboxHandlerTest, RealboxLensVariationsContainsVariations) {
-  RealboxHandler::SetupWebUIDataSource(source()->GetWebUIDataSource(),
-                                       profile());
+  SearchboxHandler::SetupWebUIDataSource(source()->GetWebUIDataSource(),
+                                         profile());
 
   EXPECT_EQ("CGQ", *source()->GetLocalizedStrings()->FindString(
                        "searchboxLensVariations"));
-}
-
-TEST_F(RealboxHandlerTest, RealboxUpdatesSelection) {
-  searchbox::mojom::OmniboxPopupSelectionPtr old_selection;
-  searchbox::mojom::OmniboxPopupSelectionPtr selection;
-  EXPECT_CALL(page_, UpdateSelection)
-      .Times(4)
-      .WillRepeatedly(
-          testing::Invoke([&old_selection, &selection](
-                              searchbox::mojom::OmniboxPopupSelectionPtr arg0,
-                              searchbox::mojom::OmniboxPopupSelectionPtr arg1) {
-            old_selection = std::move(arg0);
-            selection = std::move(arg1);
-          }));
-
-  handler_->UpdateSelection(
-      OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch),
-      OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL));
-  page_.FlushForTesting();
-  EXPECT_EQ(0, selection->line);
-  EXPECT_EQ(searchbox::mojom::SelectionLineState::kNormal, selection->state);
-
-  handler_->UpdateSelection(
-      OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL),
-      OmniboxPopupSelection(1, OmniboxPopupSelection::KEYWORD_MODE));
-  page_.FlushForTesting();
-  EXPECT_EQ(1, selection->line);
-  EXPECT_EQ(searchbox::mojom::SelectionLineState::kKeywordMode,
-            selection->state);
-
-  handler_->UpdateSelection(
-      OmniboxPopupSelection(2, OmniboxPopupSelection::NORMAL),
-      OmniboxPopupSelection(2, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION,
-                            4));
-  page_.FlushForTesting();
-  EXPECT_EQ(2, selection->line);
-  EXPECT_EQ(4, selection->action_index);
-  EXPECT_EQ(searchbox::mojom::SelectionLineState::kFocusedButtonAction,
-            selection->state);
-
-  handler_->UpdateSelection(
-      OmniboxPopupSelection(3, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION, 4),
-      OmniboxPopupSelection(
-          3, OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION));
-  page_.FlushForTesting();
-  EXPECT_EQ(3, selection->line);
-  EXPECT_EQ(
-      searchbox::mojom::SelectionLineState::kFocusedButtonRemoveSuggestion,
-      selection->state);
-}
-
-TEST_F(RealboxHandlerTest, RealboxObservationWorks) {
-  TestObserver observer;
-  EXPECT_FALSE(observer.called());
-  handler_->AddObserver(&observer);
-  EXPECT_TRUE(handler_->HasObserver(&observer));
-  handler_->RemoveObserver(&observer);
-  EXPECT_FALSE(handler_->HasObserver(&observer));
-  EXPECT_TRUE(observer.called());
 }
 
 TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
@@ -187,8 +136,7 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
   // Set a mock OmniboxEditModel.
   auto omnibox_edit_model =
       std::make_unique<testing::NiceMock<MockOmniboxEditModel>>(
-          handler_->omnibox_controller(),
-          /*view=*/nullptr);
+          handler_->omnibox_controller());
   omnibox_edit_model_ = omnibox_edit_model.get();
   handler_->omnibox_controller()->SetEditModelForTesting(
       std::move(omnibox_edit_model));
@@ -199,12 +147,12 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
     std::u16string input_text;
     EXPECT_CALL(*omnibox_edit_model_, SetUserText(_))
         .Times(1)
-        .WillOnce(DoAll(SaveArg<0>(&input_text)));
+        .WillOnce(SaveArg<0>(&input_text));
 
     AutocompleteInput input;
     EXPECT_CALL(*autocomplete_controller_, Start(_))
         .Times(1)
-        .WillOnce(DoAll(SaveArg<0>(&input)));
+        .WillOnce(SaveArg<0>(&input));
 
     handler_->QueryAutocomplete(u"", /*prevent_inline_autocomplete=*/false);
 
@@ -225,12 +173,12 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
     std::u16string input_text;
     EXPECT_CALL(*omnibox_edit_model_, SetUserText(_))
         .Times(1)
-        .WillOnce(DoAll(SaveArg<0>(&input_text)));
+        .WillOnce(SaveArg<0>(&input_text));
 
     AutocompleteInput input;
     EXPECT_CALL(*autocomplete_controller_, Start(_))
         .Times(1)
-        .WillOnce(DoAll(SaveArg<0>(&input)));
+        .WillOnce(SaveArg<0>(&input));
 
     handler_->QueryAutocomplete(u"a", /*prevent_inline_autocomplete=*/false);
 
@@ -246,6 +194,46 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
     testing::Mock::VerifyAndClearExpectations(omnibox_edit_model_);
     testing::Mock::VerifyAndClearExpectations(autocomplete_controller_);
   }
+}
+
+TEST_F(RealboxHandlerTest, GetPlaceholderConfig) {
+  base::test::TestFuture<searchbox::mojom::PlaceholderConfigPtr> future;
+  handler_->GetPlaceholderConfig(future.GetCallback());
+  auto config = future.Take();
+
+  ASSERT_GT(config->texts.size(), 0u);
+  ASSERT_EQ(config->change_text_animation_interval.InMilliseconds(), 2000u);
+  ASSERT_EQ(config->fade_text_animation_duration.InMilliseconds(), 250u);
+}
+
+TEST_F(RealboxHandlerTest, AddFileContext) {
+  const auto token = base::UnguessableToken::Create();
+  const std::string image_data_url = "data:image/png;base64,sometestdata";
+  const bool is_deletable = true;
+
+  // SelectedFileInfoPtr is a move-only type, so capture it in the lambda.
+  searchbox::mojom::SelectedFileInfoPtr captured_file_info;
+  EXPECT_CALL(page_, AddFileContext(token, testing::_))
+      .Times(1)
+      .WillOnce([&](const base::UnguessableToken&,
+                    searchbox::mojom::SelectedFileInfoPtr info) {
+        captured_file_info = std::move(info);
+      });
+
+  searchbox::mojom::SelectedFileInfoPtr file_info =
+      searchbox::mojom::SelectedFileInfo::New();
+  file_info->file_name = "Visual Selection";
+  file_info->mime_type = "image/png";
+  file_info->image_data_url = image_data_url;
+  file_info->is_deletable = is_deletable;
+  handler_->AddFileContextFromBrowser(token, file_info.Clone());
+  page_.FlushForTesting();
+
+  ASSERT_TRUE(captured_file_info);
+  ASSERT_EQ(captured_file_info->file_name, file_info->file_name);
+  ASSERT_EQ(captured_file_info->mime_type, file_info->mime_type);
+  ASSERT_EQ(captured_file_info->image_data_url, file_info->image_data_url);
+  ASSERT_EQ(captured_file_info->is_deletable, file_info->is_deletable);
 }
 
 class LensSearchboxHandlerTest : public SearchboxHandlerTest {
@@ -271,8 +259,7 @@ class LensSearchboxHandlerTest : public SearchboxHandlerTest {
 
     handler_ = std::make_unique<LensSearchboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
-        /*web_contents=*/nullptr, /*metrics_reporter=*/nullptr,
-        lens_searchbox_client_.get());
+        /*web_contents=*/nullptr, lens_searchbox_client_.get());
 
     handler_->SetPage(page_.BindAndGetRemote());
   }
@@ -291,8 +278,7 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
   // Set a mock OmniboxEditModel.
   auto omnibox_edit_model =
       std::make_unique<testing::NiceMock<MockOmniboxEditModel>>(
-          handler_->omnibox_controller(),
-          /*view=*/nullptr);
+          handler_->omnibox_controller());
   omnibox_edit_model_ = omnibox_edit_model.get();
   handler_->omnibox_controller()->SetEditModelForTesting(
       std::move(omnibox_edit_model));
@@ -303,12 +289,12 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
     std::u16string input_text;
     EXPECT_CALL(*omnibox_edit_model_, SetUserText(_))
         .Times(1)
-        .WillOnce(DoAll(SaveArg<0>(&input_text)));
+        .WillOnce(SaveArg<0>(&input_text));
 
     AutocompleteInput input;
     EXPECT_CALL(*autocomplete_controller_, Start(_))
         .Times(1)
-        .WillOnce(DoAll(SaveArg<0>(&input)));
+        .WillOnce(SaveArg<0>(&input));
 
     EXPECT_CALL(*lens_searchbox_client_, GetPageClassification())
         .Times(1)
@@ -355,12 +341,12 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
     std::u16string input_text;
     EXPECT_CALL(*omnibox_edit_model_, SetUserText(_))
         .Times(1)
-        .WillOnce(DoAll(SaveArg<0>(&input_text)));
+        .WillOnce(SaveArg<0>(&input_text));
 
     AutocompleteInput input;
     EXPECT_CALL(*autocomplete_controller_, Start(_))
         .Times(1)
-        .WillOnce(DoAll(SaveArg<0>(&input)));
+        .WillOnce(SaveArg<0>(&input));
 
     EXPECT_CALL(*lens_searchbox_client_, GetPageClassification())
         .Times(1)
@@ -402,4 +388,105 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
     testing::Mock::VerifyAndClearExpectations(autocomplete_controller_);
     testing::Mock::VerifyAndClearExpectations(lens_searchbox_client_.get());
   }
+  {
+    SCOPED_TRACE("Icon override");
+
+    const char search_icon[] = "//resources/images/icon_search.svg";
+    const std::string& svg_name = handler_->AutocompleteIconToResourceName(
+        omnibox::kSubdirectoryArrowRightIcon);
+
+    EXPECT_EQ(svg_name, search_icon);
+  }
+}
+
+class WebuiOmniboxHandlerTest : public SearchboxHandlerTest {
+ public:
+  WebuiOmniboxHandlerTest() = default;
+
+  WebuiOmniboxHandlerTest(const WebuiOmniboxHandlerTest&) = delete;
+  WebuiOmniboxHandlerTest& operator=(const WebuiOmniboxHandlerTest&) = delete;
+  ~WebuiOmniboxHandlerTest() override = default;
+
+ protected:
+  void SetUp() override {
+    SearchboxHandlerTest::SetUp();
+
+    omnibox_controller_ = std::make_unique<OmniboxController>(
+        std::make_unique<TestOmniboxClient>());
+
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+    web_ui_.set_web_contents(web_contents_.get());
+
+    handler_ = std::make_unique<WebuiOmniboxHandler>(
+        mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+        /*metrics_reporter=*/nullptr, omnibox_controller_.get(), &web_ui_);
+    handler_->SetPage(page_.BindAndGetRemote());
+  }
+
+  void TearDown() override {
+    handler_.reset();
+    SearchboxHandlerTest::TearDown();
+  }
+
+  content::RenderViewHostTestEnabler test_render_host_factories_;
+  std::unique_ptr<content::WebContents> web_contents_;
+  content::TestWebUI web_ui_;
+  std::unique_ptr<OmniboxPopupUI> omnibox_popup_ui_;
+  std::unique_ptr<OmniboxController> omnibox_controller_;
+  std::unique_ptr<WebuiOmniboxHandler> handler_;
+};
+
+TEST_F(WebuiOmniboxHandlerTest, WebuiOmniboxUpdatesSelection) {
+  searchbox::mojom::OmniboxPopupSelectionPtr old_selection;
+  searchbox::mojom::OmniboxPopupSelectionPtr selection;
+  EXPECT_CALL(page_, UpdateSelection)
+      .Times(4)
+      .WillRepeatedly([&old_selection, &selection](
+                          searchbox::mojom::OmniboxPopupSelectionPtr arg0,
+                          searchbox::mojom::OmniboxPopupSelectionPtr arg1) {
+        old_selection = std::move(arg0);
+        selection = std::move(arg1);
+      });
+
+  handler_->OnSelectionChanged(
+      OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch),
+      OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL));
+  page_.FlushForTesting();
+  EXPECT_EQ(0, selection->line);
+  EXPECT_EQ(searchbox::mojom::SelectionLineState::kNormal, selection->state);
+
+  handler_->OnSelectionChanged(
+      OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL),
+      OmniboxPopupSelection(1, OmniboxPopupSelection::KEYWORD_MODE));
+  page_.FlushForTesting();
+  EXPECT_EQ(1, selection->line);
+  EXPECT_EQ(searchbox::mojom::SelectionLineState::kKeywordMode,
+            selection->state);
+
+  handler_->OnSelectionChanged(
+      OmniboxPopupSelection(2, OmniboxPopupSelection::NORMAL),
+      OmniboxPopupSelection(2, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION,
+                            4));
+  page_.FlushForTesting();
+  EXPECT_EQ(2, selection->line);
+  EXPECT_EQ(4, selection->action_index);
+  EXPECT_EQ(searchbox::mojom::SelectionLineState::kFocusedButtonAction,
+            selection->state);
+
+  handler_->OnSelectionChanged(
+      OmniboxPopupSelection(3, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION, 4),
+      OmniboxPopupSelection(
+          3, OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION));
+  page_.FlushForTesting();
+  EXPECT_EQ(3, selection->line);
+  EXPECT_EQ(
+      searchbox::mojom::SelectionLineState::kFocusedButtonRemoveSuggestion,
+      selection->state);
+}
+
+TEST_F(WebuiOmniboxHandlerTest, OnShow) {
+  EXPECT_CALL(page_, OnShow());
+  handler_->OnShow();
+  page_.FlushForTesting();
 }

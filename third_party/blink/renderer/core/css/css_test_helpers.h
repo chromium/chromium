@@ -7,10 +7,10 @@
 
 #include <optional>
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -21,7 +21,9 @@ class CSSStyleSheet;
 class CSSVariableData;
 class CSSValue;
 class CSSProperty;
+class CSSRuleList;
 class PropertyRegistration;
+class PseudoIdFlags;
 
 namespace css_test_helpers {
 
@@ -107,6 +109,9 @@ CSSSelectorList* ParseSelectorList(const String&);
 CSSSelectorList* ParseSelectorList(const String&,
                                    CSSNestingType,
                                    const StyleRule* parent_rule_for_nesting);
+
+String ToString(PseudoId);
+String ToString(const PseudoIdFlags&);
 
 }  // namespace css_test_helpers
 }  // namespace blink

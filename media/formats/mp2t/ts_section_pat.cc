@@ -4,6 +4,7 @@
 
 #include "media/formats/mp2t/ts_section_pat.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/logging.h"
@@ -14,23 +15,23 @@ namespace media {
 namespace mp2t {
 
 TsSectionPat::TsSectionPat(RegisterPmtCB register_pmt_cb)
-    : register_pmt_cb_(std::move(register_pmt_cb)), version_number_(-1) {}
+    : register_pmt_cb_(std::move(register_pmt_cb)) {}
 
 TsSectionPat::~TsSectionPat() {
 }
 
 bool TsSectionPat::ParsePsiSection(BitReader* bit_reader) {
   // Read the fixed section length.
-  int table_id;
-  int section_syntax_indicator;
-  int dummy_zero;
-  int reserved;
-  int section_length;
-  int transport_stream_id;
-  int version_number;
-  int current_next_indicator;
-  int section_number;
-  int last_section_number;
+  uint8_t table_id;
+  uint8_t section_syntax_indicator;
+  uint8_t dummy_zero;
+  uint8_t reserved;
+  uint16_t section_length;
+  uint16_t transport_stream_id;
+  uint8_t version_number;
+  uint8_t current_next_indicator;
+  uint8_t section_number;
+  uint8_t last_section_number;
   RCHECK(bit_reader->ReadBits(8, &table_id));
   RCHECK(bit_reader->ReadBits(1, &section_syntax_indicator));
   RCHECK(bit_reader->ReadBits(1, &dummy_zero));
@@ -61,8 +62,8 @@ bool TsSectionPat::ParsePsiSection(BitReader* bit_reader) {
   int pmt_pid_count = (section_length - 4) / 4;
 
   // Read the variable length section: program table & crc.
-  std::vector<int> program_number_array(pmt_pid_count);
-  std::vector<int> pmt_pid_array(pmt_pid_count);
+  std::vector<uint16_t> program_number_array(pmt_pid_count);
+  std::vector<uint16_t> pmt_pid_array(pmt_pid_count);
   for (int k = 0; k < pmt_pid_count; k++) {
     RCHECK(bit_reader->ReadBits(16, &program_number_array[k]));
     RCHECK(bit_reader->ReadBits(3, &reserved));
@@ -90,12 +91,13 @@ bool TsSectionPat::ParsePsiSection(BitReader* bit_reader) {
 
   // Can now register the PMT.
 #if !defined(NDEBUG)
-  int expected_version_number = version_number;
-  if (version_number_ >= 0)
-    expected_version_number = (version_number_ + 1) % 32;
+  uint8_t expected_version_number = version_number;
+  if (version_number_) {
+    expected_version_number = (*version_number_ + 1) % 32;
+  }
   DVLOG_IF(1, version_number != expected_version_number)
-      << "Unexpected version number: "
-      << version_number << " vs " << version_number_;
+      << "Unexpected version number: " << version_number << " vs "
+      << (version_number_ ? version_number_.value() : -1);
 #endif
   for (int k = 0; k < pmt_pid_count; k++) {
     if (program_number_array[k] != 0) {
@@ -112,7 +114,7 @@ bool TsSectionPat::ParsePsiSection(BitReader* bit_reader) {
 }
 
 void TsSectionPat::ResetPsiSection() {
-  version_number_ = -1;
+  version_number_ = std::nullopt;
 }
 
 }  // namespace mp2t

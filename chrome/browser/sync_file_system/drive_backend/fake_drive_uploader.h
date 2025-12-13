@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/escape.h"
 #include "chrome/browser/sync_file_system/drive_backend/fake_drive_service_helper.h"

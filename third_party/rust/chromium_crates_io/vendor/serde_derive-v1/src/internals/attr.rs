@@ -3,14 +3,13 @@ use crate::internals::symbol::*;
 use crate::internals::{ungroup, Ctxt};
 use proc_macro2::{Spacing, Span, TokenStream, TokenTree};
 use quote::ToTokens;
-use std::borrow::Cow;
 use std::collections::BTreeSet;
 use std::iter::FromIterator;
 use syn::meta::ParseNestedMeta;
 use syn::parse::ParseStream;
 use syn::punctuated::Punctuated;
 use syn::spanned::Spanned;
-use syn::{parse_quote, token, Ident, Lifetime, Token};
+use syn::{token, Ident, Lifetime, Token};
 
 // This module handles parsing of `#[serde(...)]` attributes. The entrypoints
 // are `attr::Container::from_ast`, `attr::Variant::from_ast`, and
@@ -609,11 +608,6 @@ impl Container {
         self.serde_path.as_ref()
     }
 
-    pub fn serde_path(&self) -> Cow<syn::Path> {
-        self.custom_serde_path()
-            .map_or_else(|| Cow::Owned(parse_quote!(_serde)), Cow::Borrowed)
-    }
-
     /// Error message generated when type can't be deserialized.
     /// If `None`, default message will be used
     pub fn expecting(&self) -> Option<&str> {
@@ -1024,6 +1018,7 @@ impl Field {
         field: &syn::Field,
         attrs: Option<&Variant>,
         container_default: &Default,
+        private: &Ident,
     ) -> Self {
         let mut ser_name = Attr::none(cx, RENAME);
         let mut de_name = Attr::none(cx, RENAME);
@@ -1217,7 +1212,7 @@ impl Field {
                 };
                 let span = Span::call_site();
                 path.segments.push(Ident::new("_serde", span).into());
-                path.segments.push(Ident::new("__private", span).into());
+                path.segments.push(private.clone().into());
                 path.segments.push(Ident::new("de", span).into());
                 path.segments
                     .push(Ident::new("borrow_cow_str", span).into());
@@ -1234,7 +1229,7 @@ impl Field {
                 };
                 let span = Span::call_site();
                 path.segments.push(Ident::new("_serde", span).into());
-                path.segments.push(Ident::new("__private", span).into());
+                path.segments.push(private.clone().into());
                 path.segments.push(Ident::new("de", span).into());
                 path.segments
                     .push(Ident::new("borrow_cow_bytes", span).into());

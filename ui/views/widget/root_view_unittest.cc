@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -21,7 +20,7 @@
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/test/ax_event_counter.h"

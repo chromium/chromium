@@ -80,7 +80,7 @@ PaintOpBuffer::PaintOpBuffer(PaintOpBuffer&& other) {
 
 PaintRecord PaintOpBuffer::DeepCopyAsRecord() {
   auto result = sk_make_sp<PaintOpBuffer>();
-  if (data_) {
+  if (!data_.empty()) {
     result->ReallocBuffer(used_);
   }
 
@@ -216,7 +216,9 @@ PaintRecord PaintOpBuffer::DeepCopyAsRecord() {
       case PaintOpType::kSaveLayerFilters: {
         const auto& o = static_cast<const SaveLayerFiltersOp&>(op);
         auto f = o.filters;
-        result->push<SaveLayerFiltersOp>(std::move(f), o.flags);
+        auto bf = o.backdrop_filter;
+        result->push<SaveLayerFiltersOp>(o.bounds, std::move(f), std::move(bf),
+                                         o.flags);
       } break;
       case PaintOpType::kScale: {
         const auto& o = static_cast<const ScaleOp&>(op);
@@ -246,9 +248,8 @@ PaintOpBuffer::~PaintOpBuffer() {
 
 PaintOpBuffer& PaintOpBuffer::operator=(PaintOpBuffer&& other) {
   data_ = std::move(other.data_);
-  DCHECK(!other.data_);
+  DCHECK(other.data_.empty());
   used_ = other.used_;
-  reserved_ = other.reserved_;
   op_count_ = other.op_count_;
   num_slow_paths_up_to_min_for_MSAA_ = other.num_slow_paths_up_to_min_for_MSAA_;
   subrecord_bytes_used_ = other.subrecord_bytes_used_;
@@ -264,15 +265,14 @@ PaintOpBuffer& PaintOpBuffer::operator=(PaintOpBuffer&& other) {
   content_color_usage_ = other.content_color_usage_;
 
   // Make sure the other pob can destruct safely or is ready for reuse.
-  other.reserved_ = 0;
   other.ResetRetainingBuffer();
   return *this;
 }
 
 void PaintOpBuffer::DestroyOps() {
-  if (data_) {
+  if (!data_.empty()) {
     for (size_t offset = 0; offset < used_;) {
-      auto* op = UNSAFE_TODO(reinterpret_cast<PaintOp*>(data_.get() + offset));
+      auto* op = reinterpret_cast<PaintOp*>(&data_[offset]);
       offset += op->AlignedSize();
       op->DestroyThis();
     }
@@ -317,12 +317,10 @@ void PaintOpBuffer::Playback(SkCanvas* canvas,
 
 PaintRecord PaintOpBuffer::ReleaseAsRecord() {
   DCHECK(is_mutable());
-  const size_t old_reserved = reserved_;
   auto result = sk_make_sp<PaintOpBuffer>(std::move(*this));
-  if (BufferDataPtr old_data = result->ReallocIfNeededToFit()) {
+  if (BufferData old_data = result->ReallocIfNeededToFit(); !old_data.empty()) {
     // Reuse the original buffer for future recording.
     data_ = std::move(old_data);
-    reserved_ = old_reserved;
   }
   return PaintRecord(std::move(result));
 }
@@ -483,17 +481,21 @@ SkRect PaintOpBuffer::GetFixedScaleBounds(const SkMatrix& ctm,
       SkScalarCeilToInt(SkScalarAbs(scale.height() * bounds.height())));
 }
 
-PaintOpBuffer::BufferDataPtr PaintOpBuffer::ReallocBuffer(size_t new_size) {
+PaintOpBuffer::BufferData PaintOpBuffer::ReallocBuffer(size_t new_size) {
   DCHECK_GE(new_size, used_);
   DCHECK(is_mutable());
 
-  std::unique_ptr<char, base::AlignedFreeDeleter> new_data(
-      static_cast<char*>(base::AlignedAlloc(new_size, kPaintOpAlign)));
-  if (data_)
-    UNSAFE_TODO(memcpy(new_data.get(), data_.get(), used_));
-  BufferDataPtr old_data = std::move(data_);
+  // SAFETY: base::AlignedAlloc allocates at least `size` bytes.
+  auto new_data = UNSAFE_BUFFERS(
+      base::HeapArray<uint8_t, base::AlignedFreeDeleter>::FromOwningPointer(
+          static_cast<uint8_t*>(base::AlignedAlloc(new_size, kPaintOpAlign)),
+          new_size));
+
+  if (!data_.empty()) {
+    new_data.copy_prefix_from(data_.first(used_));
+  }
+  BufferData old_data = std::move(data_);
   data_ = std::move(new_data);
-  reserved_ = new_size;
   return old_data;
 }
 
@@ -501,15 +503,15 @@ void* PaintOpBuffer::AllocatePaintOpSlowPath(uint16_t aligned_size) {
   DCHECK(is_mutable());
 
   size_t required_size = used_ + aligned_size;
-  DCHECK_GT(required_size, reserved_) << "Should not have hit the slow path";
-  // Start reserved_ at kInitialBufferSize and then double.
+  DCHECK_GT(required_size, data_.size()) << "Should not have hit the slow path";
+  // Start size at kInitialBufferSize and then double.
   // ShrinkToFit() can make this smaller afterwards.
-  size_t new_size = reserved_ ? reserved_ : kInitialBufferSize;
+  size_t new_size = data_.empty() ? kInitialBufferSize : data_.size();
   while (required_size > new_size) {
     new_size *= 2;
   }
   ReallocBuffer(new_size);
-  DCHECK_LE(required_size, reserved_);
+  DCHECK_LE(required_size, data_.size());
 
   return AllocatePaintOp(aligned_size);
 }
@@ -518,12 +520,11 @@ void PaintOpBuffer::ShrinkToFit() {
   ReallocIfNeededToFit();
 }
 
-PaintOpBuffer::BufferDataPtr PaintOpBuffer::ReallocIfNeededToFit() {
-  if (used_ == reserved_) {
-    return nullptr;
+PaintOpBuffer::BufferData PaintOpBuffer::ReallocIfNeededToFit() {
+  if (used_ == data_.size()) {
+    return {};
   }
   if (!used_) {
-    reserved_ = 0;
     return std::move(data_);
   }
   return ReallocBuffer(used_);
@@ -570,7 +571,7 @@ void PaintOpBuffer::UpdateSaveLayerBounds(size_t offset, const SkRect& bounds) {
   CHECK_LT(offset, used_);
   CHECK_LE(offset + sizeof(PaintOp), used_);
 
-  auto* op = UNSAFE_TODO(reinterpret_cast<PaintOp*>(data_.get() + offset));
+  auto* op = reinterpret_cast<PaintOp*>(&data_[offset]);
   switch (op->GetType()) {
     case SaveLayerOp::kType:
       CHECK_LE(offset + sizeof(SaveLayerOp), used_);
@@ -579,6 +580,11 @@ void PaintOpBuffer::UpdateSaveLayerBounds(size_t offset, const SkRect& bounds) {
     case SaveLayerAlphaOp::kType:
       CHECK_LE(offset + sizeof(SaveLayerAlphaOp), used_);
       static_cast<SaveLayerAlphaOp*>(op)->bounds = bounds;
+      break;
+    case SaveLayerFiltersOp::kType:
+      CHECK_LE(offset + sizeof(SaveLayerFiltersOp), used_);
+      // Do not update the bounds. They are only used for backdrop filter
+      // as a clip for the filtered area, and must remain unchanged.
       break;
     default:
       NOTREACHED();

@@ -5,7 +5,6 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_SETTINGS_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_SETTINGS_H_
 
-#include "android_webview/browser/aw_back_forward_cache_settings.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -18,7 +17,6 @@ struct WebPreferences;
 
 namespace android_webview {
 
-class AwContentsOriginMatcher;
 class AwRenderViewHostExt;
 
 // Lifetime: WebView
@@ -71,10 +69,6 @@ class AwSettings : public content::WebContentsObserver {
   static AwSettings* FromWebContents(content::WebContents* web_contents);
   static bool GetAllowSniffingFileUrls();
 
-  // Static accessor to get the currently configured default value based
-  // on feature flags and trial config
-  static RequestedWithHeaderMode GetDefaultRequestedWithHeaderMode();
-
   AwSettings(JNIEnv* env,
              const jni_zero::JavaRef<jobject>& obj,
              content::WebContents* web_contents);
@@ -94,76 +88,72 @@ class AwSettings : public content::WebContentsObserver {
 
   // Called from Java. Methods with "Locked" suffix require that the settings
   // access lock is held during their execution.
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
-  void PopulateWebPreferencesLocked(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      jlong web_prefs);
-  void ResetScrollAndScaleState(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env, const base::android::JavaRef<jobject>& obj);
+  void PopulateWebPreferencesLocked(JNIEnv* env,
+                                    const base::android::JavaRef<jobject>& obj,
+                                    jlong web_prefs);
+  void ResetScrollAndScaleState(JNIEnv* env,
+                                const base::android::JavaRef<jobject>& obj);
   void UpdateEverythingLocked(JNIEnv* env,
-                              const base::android::JavaParamRef<jobject>& obj);
-  void UpdateInitialPageScaleLocked(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+                              const base::android::JavaRef<jobject>& obj);
+  void UpdateInitialPageScaleLocked(JNIEnv* env,
+                                    const base::android::JavaRef<jobject>& obj);
   void UpdateWillSuppressErrorStateLocked(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+      const base::android::JavaRef<jobject>& obj);
   void UpdateUserAgentLocked(JNIEnv* env,
-                             const base::android::JavaParamRef<jobject>& obj);
+                             const base::android::JavaRef<jobject>& obj);
   void UpdateWebkitPreferencesLocked(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+      const base::android::JavaRef<jobject>& obj);
   void UpdateRendererPreferencesLocked(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  void UpdateJavaScriptPolicyLocked(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  void UpdateCookiePolicyLocked(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+      const base::android::JavaRef<jobject>& obj);
+  void UpdateJavaScriptPolicyLocked(JNIEnv* env,
+                                    const base::android::JavaRef<jobject>& obj);
+  void UpdateCookiePolicyLocked(JNIEnv* env,
+                                const base::android::JavaRef<jobject>& obj);
   void UpdateOffscreenPreRasterLocked(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  void UpdateAllowFileAccessLocked(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  void UpdateMixedContentModeLocked(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+      const base::android::JavaRef<jobject>& obj);
+  void UpdateAllowFileAccessLocked(JNIEnv* env,
+                                   const base::android::JavaRef<jobject>& obj);
+  void UpdateMixedContentModeLocked(JNIEnv* env,
+                                    const base::android::JavaRef<jobject>& obj);
   void UpdateAttributionBehaviorLocked(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+      const base::android::JavaRef<jobject>& obj);
   void UpdateSpeculativeLoadingAllowedLocked(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+      const base::android::JavaRef<jobject>& obj);
   void UpdateBackForwardCacheEnabledLocked(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  void UpdateBackForwardCacheSettingsLocked(
+      const base::android::JavaRef<jobject>& obj);
+  void UpdateBackForwardCacheSettingsTimeoutLocked(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+      const base::android::JavaRef<jobject>& obj);
+  void UpdateBackForwardCacheSettingsMaxPagesInCacheLocked(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& obj);
   void UpdateGeolocationEnabledLocked(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+      const base::android::JavaRef<jobject>& obj);
 
   void PopulateWebPreferences(blink::web_pref::WebPreferences* web_prefs);
   bool GetAllowFileAccess();
   bool IsForceDarkApplied(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj);
+                          const base::android::JavaRef<jobject>& obj);
   bool PrefersDarkFromTheme(JNIEnv* env,
-                            const base::android::JavaParamRef<jobject>& obj);
+                            const base::android::JavaRef<jobject>& obj);
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   void SetEnterpriseAuthenticationAppLinkPolicyEnabled(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaRef<jobject>& obj,
       jboolean enabled);
   bool GetEnterpriseAuthenticationAppLinkPolicyEnabled(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+      const base::android::JavaRef<jobject>& obj);
   inline bool enterprise_authentication_app_link_policy_enabled() {
     return enterprise_authentication_app_link_policy_enabled_;
   }
@@ -171,8 +161,7 @@ class AwSettings : public content::WebContentsObserver {
   base::android::ScopedJavaLocalRef<jobjectArray>
   UpdateXRequestedWithAllowListOriginMatcher(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& rules);
-  scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher();
+      const base::android::JavaRef<jobjectArray>& rules);
 
   bool geolocation_enabled() { return geolocation_enabled_; }
 
@@ -191,15 +180,14 @@ class AwSettings : public content::WebContentsObserver {
   bool allow_third_party_cookies_{false};
   bool allow_file_access_{false};
   bool allow_file_access_from_file_urls_{false};
-  // TODO(b/222053757,ayushsha): Change this policy to be by
-  // default false from next Android version(Maybe Android U).
   bool enterprise_authentication_app_link_policy_enabled_{true};
   MixedContentMode mixed_content_mode_;
   AttributionBehavior attribution_behavior_;
   SpeculativeLoadingAllowedFlags speculative_loading_allowed_flags_{
       SpeculativeLoadingAllowedFlags::SPECULATIVE_LOADING_DISABLED};
   bool bfcache_enabled_in_java_settings_{false};
-  std::optional<AwBackForwardCacheSettings> aw_back_forward_cache_settings_;
+  int back_forward_cache_timeout_in_seconds_{0};
+  int back_forward_cache_max_pages_in_cache_{0};
   bool geolocation_enabled_{false};
 
   // Whether the settings that would affect the initial page scale is set to a
@@ -211,8 +199,6 @@ class AwSettings : public content::WebContentsObserver {
   // TODO(https://crbug.com/40615943): Remove this once we carry over the
   // initial page scale correctly.
   bool initial_page_scale_is_non_default_ = false;
-
-  scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;
 
   JavaObjectWeakGlobalRef aw_settings_;
 

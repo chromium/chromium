@@ -9,6 +9,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/test/mock_permission_controller.h"
+#include "content/public/test/permissions_test_utils.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -69,9 +70,10 @@ TEST_F(NFCHostTest, GetNFCTwice) {
         return blink::mojom::PermissionStatus::GRANTED;
       });
   EXPECT_CALL(mock_permission_controller(),
-              SubscribeToPermissionStatusChange(
-                  blink::PermissionType::NFC, /*render_process_host=*/nullptr,
-                  main_rfh(),
+              SubscribeToPermissionResultChange(
+                  PermissionDescriptorToPermissionTypeMatcher(
+                      blink::PermissionType::NFC),
+                  /*render_process_host=*/nullptr, main_rfh(),
                   main_rfh()->GetMainFrame()->GetLastCommittedOrigin().GetURL(),
                   /*should_include_device_status*/ false, _))
       .WillOnce(Return(kSubscriptionId));
@@ -90,7 +92,7 @@ TEST_F(NFCHostTest, GetNFCTwice) {
   EXPECT_TRUE(nfc2.is_bound());
 
   EXPECT_CALL(mock_permission_controller(),
-              UnsubscribeFromPermissionStatusChange(kSubscriptionId));
+              UnsubscribeFromPermissionResultChange(kSubscriptionId));
 
   DeleteContents();
 }

@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/privacy/privacy_indicators_tray_item_view.h"
-
 #include <memory>
+#include <tuple>
 
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
+#include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,20 +20,25 @@ namespace ash {
 // Pixel tests for privacy indicators view.
 class PrivacyIndicatorsTrayItemViewPixelTest
     : public AshTestBase,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<
+          std::tuple</*enable_dark_mode=*/bool, /*enable_system_blur=*/bool>> {
  public:
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams();
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = IsSystemBlurEnabled();
+    return init_params;
   }
 
   void SetUp() override {
     AshTestBase::SetUp();
-    DarkLightModeControllerImpl::Get()->SetDarkModeEnabledForTest(IsDarkMode());
+    DarkLightModeControllerImpl::Get()->SetDarkModeEnabledForTest(
+        IsDarkModeEnabled());
   }
 
-  bool IsDarkMode() { return GetParam(); }
+  bool IsDarkModeEnabled() const { return std::get<0>(GetParam()); }
+  bool IsSystemBlurEnabled() const { return std::get<1>(GetParam()); }
 
   // Simulates animating the view to its fully expanded state before shrinking
   // into a dot.
@@ -48,14 +54,18 @@ class PrivacyIndicatorsTrayItemViewPixelTest
         privacy_indicators_view->shorter_side_shrink_animation_.get());
   }
 
-  std::string GetScreenshotNameSuffix() {
-    return IsDarkMode() ? "_dark_mode" : "_light_mode";
+  std::string GenerateScreenshotName(const std::string& title) override {
+    std::string prefix;
+    prefix += (IsDarkModeEnabled() ? "_dark_mode" : "_light_mode");
+    return pixel_test_helper()->GenerateScreenshotName(title + prefix);
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PrivacyIndicatorsTrayItemViewPixelTest,
-                         /*IsDarkMode()=*/testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PrivacyIndicatorsTrayItemViewPixelTest,
+    testing::Combine(/*enable_dark_mode=*/testing::Bool(),
+                     /*enable_system_blur=*/testing::Bool()));
 
 TEST_P(PrivacyIndicatorsTrayItemViewPixelTest, Basics) {
   PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
@@ -74,13 +84,15 @@ TEST_P(PrivacyIndicatorsTrayItemViewPixelTest, Basics) {
 
   SimulateAnimateToFullyExpandedState(privacy_indicators_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "full_view" + GetScreenshotNameSuffix(),
-      /*revision_number=*/3, notification_center_tray));
+      GenerateScreenshotName("full_view"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 0,
+      notification_center_tray));
 
   SimulateAnimationEnded(privacy_indicators_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "dot_view" + GetScreenshotNameSuffix(),
-      /*revision_number=*/2, notification_center_tray));
+      GenerateScreenshotName("dot_view"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 2 : 0,
+      notification_center_tray));
 }
 
 }  // namespace ash

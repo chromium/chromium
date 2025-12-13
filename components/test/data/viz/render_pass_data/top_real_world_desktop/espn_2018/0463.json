@@ -1348,6 +1348,7 @@
             "green": 0.0,
             "red": 0.0
          },
+         "is_normalized_coords": true,
          "material": "kTextureContent",
          "nearest_neighbor": false,
          "needs_blending": true,
@@ -1362,11 +1363,9 @@
          "resources": [ 566 ],
          "secure_output_only": false,
          "shared_quad_state_index": 2,
-         "uv_bottom_right": {
-            "x": 1.0,
-            "y": 1.0
-         },
-         "uv_top_left": {
+         "tex_coord_rect": {
+            "height": 1.0,
+            "width": 1.0,
             "x": 0.0,
             "y": 0.0
          },
@@ -1384,6 +1383,7 @@
             "green": 0.0,
             "red": 0.0
          },
+         "is_normalized_coords": true,
          "material": "kTextureContent",
          "nearest_neighbor": false,
          "needs_blending": false,
@@ -1398,11 +1398,9 @@
          "resources": [ 567 ],
          "secure_output_only": false,
          "shared_quad_state_index": 2,
-         "uv_bottom_right": {
-            "x": 1.0,
-            "y": 1.0
-         },
-         "uv_top_left": {
+         "tex_coord_rect": {
+            "height": 1.0,
+            "width": 1.0,
             "x": 0.0,
             "y": 0.0
          },

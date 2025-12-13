@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/positioned_float.h"
 #include "third_party/blink/renderer/core/layout/relative_utils.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -117,7 +118,8 @@ const LayoutResult& BoxFragmentBuilder::LayoutResultForPropagation(
 
 void BoxFragmentBuilder::AddBreakBeforeChild(LayoutInputNode child,
                                              std::optional<BreakAppeal> appeal,
-                                             bool is_forced_break) {
+                                             bool is_forced_break,
+                                             LogicalOffset oof_start_offset) {
   // If there's a pre-set break token, we shouldn't be here.
   DCHECK(!break_token_);
 
@@ -168,7 +170,8 @@ void BoxFragmentBuilder::AddBreakBeforeChild(LayoutInputNode child,
     }
     return;
   }
-  auto* token = BlockBreakToken::CreateBreakBefore(child, is_forced_break);
+  auto* token = BlockBreakToken::CreateBreakBefore(child, is_forced_break,
+                                                   oof_start_offset);
   child_break_tokens_.push_back(token);
 }
 
@@ -387,44 +390,73 @@ EBreakBetween BoxFragmentBuilder::JoinedBreakBetweenValue(
   return JoinFragmentainerBreakValues(previous_break_after_, break_before);
 }
 
-void BoxFragmentBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
+void BoxFragmentBuilder::MoveChildrenInDirection(LayoutUnit offset,
+                                                 bool is_block_direction) {
   DCHECK(is_new_fc_);
-  DCHECK_NE(FragmentBlockSize(), kIndefiniteSize);
+  DCHECK_NE(is_block_direction ? FragmentBlockSize() : FragmentInlineSize(),
+            kIndefiniteSize);
   DCHECK(oof_positioned_descendants_.empty());
 
-  has_moved_children_in_block_direction_ = true;
+  has_moved_children_ = true;
 
-  if (delta == LayoutUnit())
-    return;
-
-  if (first_baseline_)
-    *first_baseline_ += delta;
-  if (last_baseline_)
-    *last_baseline_ += delta;
-
-  if (inflow_bounds_)
-    inflow_bounds_->offset.block_offset += delta;
-
-  for (auto& child : children_)
-    child.offset.block_offset += delta;
-
-  for (auto& child : children_with_size_dependent_propagation_) {
-    child.offset.block_offset += delta;
+  // Baselines do not apply in the inline direction.
+  if (is_block_direction) {
+    if (first_baseline_) {
+      *first_baseline_ += offset;
+    }
+    if (last_baseline_) {
+      *last_baseline_ += offset;
+    }
   }
 
-  for (auto& candidate : oof_positioned_candidates_)
-    candidate.static_position.offset.block_offset += delta;
+  if (inflow_bounds_) {
+    if (is_block_direction) {
+      inflow_bounds_->offset.block_offset += offset;
+    } else {
+      inflow_bounds_->offset.inline_offset += offset;
+    }
+  }
+
+  for (auto& child : children_) {
+    if (is_block_direction) {
+      child.offset.block_offset += offset;
+    } else {
+      child.offset.inline_offset += offset;
+    }
+  }
+
+  for (auto& child : children_with_size_dependent_propagation_) {
+    if (is_block_direction) {
+      child.offset.block_offset += offset;
+    } else {
+      child.offset.inline_offset += offset;
+    }
+  }
+
+  for (auto& candidate : oof_positioned_candidates_) {
+    if (is_block_direction) {
+      candidate.static_position.offset.block_offset += offset;
+    } else {
+      candidate.static_position.offset.inline_offset += offset;
+    }
+  }
+
   for (auto& descendant : oof_positioned_fragmentainer_descendants_) {
     // If we have already returned past (above) the containing block of the OOF
     // (but not all the way the outermost fragmentainer), the containing block
     // is affected by this shift that we just decided to make. This shift wasn't
     // known at the time of normal propagation. So shift accordingly now.
-    descendant.containing_block.IncreaseBlockOffset(delta);
-    descendant.fixedpos_containing_block.IncreaseBlockOffset(delta);
+    if (is_block_direction) {
+      descendant.containing_block.IncreaseBlockOffset(offset);
+      descendant.fixedpos_containing_block.IncreaseBlockOffset(offset);
+    } else {
+      descendant.containing_block.IncreaseInlineOffset(offset);
+      descendant.fixedpos_containing_block.IncreaseInlineOffset(offset);
+    }
   }
 
   if (FragmentItemsBuilder* items_builder = ItemsBuilder()) {
-    items_builder->MoveChildrenInBlockDirection(delta);
+    items_builder->MoveChildrenInDirection(offset, is_block_direction);
   }
 }
 
@@ -558,7 +590,8 @@ void BoxFragmentBuilder::PropagateBreakInfo(
     DCHECK(!child_layout_result.GetColumnSpannerPath());
   }
 
-  if (!child_box_fragment->IsFragmentainerBox() &&
+  if (!RuntimeEnabledFeatures::FragmentedOofInCbEnabled() &&
+      !child_box_fragment->IsFragmentainerBox() &&
       !HasOutOfFlowInFragmentainerSubtree()) {
     SetHasOutOfFlowInFragmentainerSubtree(
         child_box_fragment->HasOutOfFlowInFragmentainerSubtree());
@@ -608,8 +641,8 @@ void BoxFragmentBuilder::PropagateChildBreakValues(
 void BoxFragmentBuilder::HandleOofsAndSpecialDescendants() {
   has_final_size_ = true;
 
-  // There may be OOFs with anchor queries. So be sure to propagate any anchors
-  // that we've found so far.
+  // There may be OOFs with anchors. So be sure to propagate any anchors that
+  // we've found so far.
   PropagateSizeDependentData();
 
   OutOfFlowLayoutPart(this).Run();
@@ -697,6 +730,7 @@ const LayoutResult* BoxFragmentBuilder::ToBoxFragment(
 void BoxFragmentBuilder::AdjustFragmentainerDescendant(
     LogicalOofNodeForFragmentation& descendant,
     bool only_fixedpos_containing_block) {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   LayoutUnit previous_consumed_block_size;
   if (PreviousBreakToken())
     previous_consumed_block_size = PreviousBreakToken()->ConsumedBlockSize();
@@ -725,6 +759,7 @@ void BoxFragmentBuilder::AdjustFragmentainerDescendant(
 
 void BoxFragmentBuilder::
     AdjustFixedposContainingBlockForFragmentainerDescendants() {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   if (!HasOutOfFlowFragmentainerDescendants())
     return;
 
@@ -735,6 +770,7 @@ void BoxFragmentBuilder::
 }
 
 void BoxFragmentBuilder::AdjustFixedposContainingBlockForInnerMulticols() {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   if (!HasMulticolsWithPendingOOFs() || !PreviousBreakToken())
     return;
 
@@ -763,7 +799,7 @@ void BoxFragmentBuilder::CheckNoBlockFragmentation() const {
   DCHECK(!HasInflowChildBreakInside());
   DCHECK(!DidBreakSelf());
   DCHECK(!has_forced_break_);
-  DCHECK(GetConstraintSpace().ShouldRepeat() || !HasBreakTokenData());
+  DCHECK(!break_token_data_);
   DCHECK_EQ(minimal_space_shortage_, kIndefiniteSize);
   if (!GetConstraintSpace().ShouldPropagateChildBreakValues()) {
     DCHECK(!initial_break_before_);

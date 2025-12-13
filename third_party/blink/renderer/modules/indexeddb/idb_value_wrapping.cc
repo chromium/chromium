@@ -26,10 +26,6 @@
 
 namespace blink {
 
-BASE_FEATURE(kIdbDecompressValuesInPlace,
-             "IdbDecompressValuesInPlace",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 // V8 values are stored on disk by IndexedDB using the format implemented in
@@ -86,17 +82,6 @@ bool ShouldTransmitCompressed(size_t uncompressed_length,
     return false;
   }
 
-  // Don't keep compressed if decompressed size is large, unless `kIdbDecompressValuesInPlace`
-  // is enabled. Snappy doesn't have native support for streamed decoding, so decompressing
-  // requires O(uncompressed_length) memory more than handling an uncompressed value would.
-  // TODO(crbug.com/377441266): remove this condition. The value stored in
-  // `IDBValue::data_` is copied when being deserialized, regardless of whether
-  // it's compressed. Thus disabling compression for large values was misguided.
-  if (compressed_length > 256000U &&
-      !base::FeatureList::IsEnabled(kIdbDecompressValuesInPlace)) {
-    return false;
-  }
-
   return true;
 }
 
@@ -107,7 +92,9 @@ IDBValueWrapper::IDBValueWrapper(
     v8::Local<v8::Value> value,
     SerializedScriptValue::SerializeOptions::WasmSerializationPolicy
         wasm_policy,
-    ExceptionState& exception_state) {
+    ExceptionState& exception_state,
+    bool backend_uses_sqlite)
+    : backend_uses_sqlite_(backend_uses_sqlite) {
   SerializedScriptValue::SerializeOptions options;
   options.blob_info = &blob_info_;
   options.for_storage = SerializedScriptValue::kForStorage;
@@ -167,6 +154,10 @@ void IDBValueWrapper::DoneCloning() {
 }
 
 bool IDBValueWrapper::ShouldCompress(size_t uncompressed_length) const {
+  if (backend_uses_sqlite_) {
+    return false;
+  }
+
   static int field_trial_threshold =
       features::kIndexedDBCompressValuesWithSnappyCompressionThreshold.Get();
   return base::FeatureList::IsEnabled(
@@ -218,6 +209,10 @@ void IDBValueWrapper::MaybeCompress() {
 }
 
 void IDBValueWrapper::MaybeStoreInBlob() {
+  if (backend_uses_sqlite_) {
+    return;
+  }
+
   const unsigned wrapping_threshold =
       wrapping_threshold_override_.value_or(mojom::blink::kIDBWrapThreshold);
   if (wire_data_.size() <= wrapping_threshold) {

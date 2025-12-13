@@ -31,9 +31,7 @@ bool IsSubDirectoryOrEqual(const base::FilePath& a, const base::FilePath& b) {
 namespace cloud_synced_folder_checker {
 
 namespace features {
-BASE_FEATURE(kCloudSyncedFolderChecker,
-             "CloudSyncedFolderChecker",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCloudSyncedFolderChecker, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 CloudSyncStatus::CloudSyncStatus() = default;

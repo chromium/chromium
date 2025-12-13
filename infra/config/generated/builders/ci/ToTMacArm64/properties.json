@@ -2,6 +2,53 @@
   "$build/chromium": {
     "fail_build_on_clang_warnings": true
   },
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/ToTMacArm64/gn-args.json"
+      ],
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "ToTMacArm64",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.clang",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "clang_tot_mac",
+                "target_arch": "arm",
+                "target_bits": 64,
+                "target_platform": "mac"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "clang_tot"
+                ],
+                "config": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "ToTMacArm64",
+          "project": "chromium"
+        }
+      ],
+      "targets_spec_directory": "infra/config/generated/builders/ci/ToTMacArm64/targets",
+      "targets_spec_directory_relative_to_source_dir": true
+    }
+  },
   "$build/siso": {
     "configs": [
       "builder"

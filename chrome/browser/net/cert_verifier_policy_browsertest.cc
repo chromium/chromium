@@ -50,7 +50,6 @@
 #include "chrome/browser/net/server_certificate_database_service_factory.h"  // nogncheck
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/server_certificate_database/server_certificate_database.h"  // nogncheck
@@ -65,7 +64,7 @@ class CertVerifierServicePolicyTest : public policy::PolicyTest {
   // In some cases, we may need to wait until the certificate policy updates
   // propagate.
   void UpdateProviderPolicyAndWaitForUpdate(const policy::PolicyMap& policies) {
-    // If features::kEnableCertManagementUIV2Write is enabled, the cert verifier
+    // If the ServerCertificateDatabaseService is enabled, the cert verifier
     // service update is asynchronous and the test needs to wait for the update
     // to complete.
     // Otherwise, cert changes may not make it to the verifier in time to clear
@@ -913,14 +912,7 @@ class CertVerifierServicePolicyAndUserRootsTest
     : public CertVerifierServicePolicyTest,
       public testing::WithParamInterface<bool> {
  public:
-  CertVerifierServicePolicyAndUserRootsTest() {
-    feature_list_.InitWithFeatures({features::kEnableCertManagementUIV2,
-                                    features::kEnableCertManagementUIV2Write},
-                                   {});
-  }
   bool add_certs() const { return GetParam(); }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(CertVerifierServicePolicyAndUserRootsTest,

@@ -1967,7 +1967,7 @@ void EndTest(bool* did_run, HWND hwnd) {
   PostMessage(hwnd, WM_CLOSE, 0, 0);
 }
 
-int kMyMessageFilterCode = 0x5002;
+constexpr int kMyMessageFilterCode = 0x5002;
 
 LRESULT CALLBACK TestWndProcThunk(HWND hwnd,
                                   UINT message,

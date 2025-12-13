@@ -11,9 +11,7 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/atomicops.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"

@@ -14,9 +14,11 @@
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/sync/extension_sync_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_router.h"
@@ -27,10 +29,14 @@
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/service_worker/worker_id.h"
+#include "extensions/browser/ui_util.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/browser/warning_service.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/command.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -67,6 +73,7 @@ DeveloperPrivateEventRouterShared::DeveloperPrivateEventRouterShared(
       ExtensionManagementFactory::GetForBrowserContext(profile));
   extension_allowlist_observer_.Observe(ExtensionAllowlist::Get(profile));
   command_service_observation_.Observe(CommandService::Get(profile));
+  toolbar_actions_model_observation_.Observe(ToolbarActionsModel::Get(profile));
 
   pref_change_registrar_.Init(profile->GetPrefs());
   // The unretained is safe, since the PrefChangeRegistrar unregisters the
@@ -91,6 +98,11 @@ DeveloperPrivateEventRouterShared::DeveloperPrivateEventRouterShared(
       base::BindRepeating(
           &DeveloperPrivateEventRouterShared::OnProfilePrefChanged,
           base::Unretained(this)));
+
+  if (switches::IsExtensionsExplicitBrowserSigninEnabled()) {
+    account_extension_tracker_observation_.Observe(
+        AccountExtensionTracker::Get(profile));
+  }
 }
 
 DeveloperPrivateEventRouterShared::~DeveloperPrivateEventRouterShared() =
@@ -254,15 +266,31 @@ void DeveloperPrivateEventRouterShared::OnExtensionAllowlistWarningStateChanged(
 
 void DeveloperPrivateEventRouterShared::OnExtensionCommandAdded(
     const ExtensionId& extension_id,
-    const Command& added_command) {
+    const std::string& command_name) {
   BroadcastItemStateChanged(developer::EventType::kCommandAdded, extension_id);
 }
 
 void DeveloperPrivateEventRouterShared::OnExtensionCommandRemoved(
     const ExtensionId& extension_id,
-    const Command& removed_command) {
+    const std::string& command_name) {
   BroadcastItemStateChanged(developer::EventType::kCommandRemoved,
                             extension_id);
+}
+
+void DeveloperPrivateEventRouterShared::OnExtensionUploadabilityChanged(
+    const ExtensionId& id) {
+  BroadcastItemStateChanged(developer::EventType::kPrefsChanged, id);
+}
+
+void DeveloperPrivateEventRouterShared::OnExtensionsUploadabilityChanged() {
+  const ExtensionSet extensions =
+      ExtensionRegistry::Get(profile_)->GenerateInstalledExtensionsSet();
+  for (const auto& extension : extensions) {
+    if (sync_util::ShouldSync(profile_, extension.get())) {
+      BroadcastItemStateChanged(developer::EventType::kPrefsChanged,
+                                extension->id());
+    }
+  }
 }
 
 void DeveloperPrivateEventRouterShared::OnProfilePrefChanged() {
@@ -325,6 +353,21 @@ void DeveloperPrivateEventRouterShared::BroadcastItemStateChangedHelper(
       events::DEVELOPER_PRIVATE_ON_ITEM_STATE_CHANGED,
       developer::OnItemStateChanged::kEventName, std::move(args));
   event_router_->BroadcastEvent(std::move(event));
+}
+
+void DeveloperPrivateEventRouterShared::OnToolbarPinnedActionsChanged() {
+  // Currently, only enabled extensions are considered since they are the only
+  // ones that have extension actions.
+  // TODO(crbug.com/40280426): Since pinned info is stored as a pref, include
+  // disabled extensions in this event as well.
+  const ExtensionSet& extensions =
+      ExtensionRegistry::Get(profile_)->enabled_extensions();
+  for (const auto& extension : extensions) {
+    if (ui_util::ShouldDisplayInExtensionSettings(*extension)) {
+      BroadcastItemStateChanged(developer::EventType::kPinnedActionsChanged,
+                                extension->id());
+    }
+  }
 }
 
 }  // namespace extensions

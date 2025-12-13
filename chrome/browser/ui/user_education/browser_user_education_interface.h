@@ -8,25 +8,23 @@
 #include <concepts>
 
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_handle.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
+#include "components/user_education/common/user_education_context.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
-class AppMenuButton;
-class BrowserHelpBubble;
+class BrowserFeaturePromoControllerBase;
 class BrowserView;
 class BrowserWindowInterface;
-class UserEducationInternalsPageHandlerImpl;
+class NewTabPageUI;
+class NtpPromoHandler;
 
 namespace content {
 class WebContents;
-}
-
-namespace web_app {
-class WebAppUiManagerImpl;
 }
 
 // Describes what to do when the feature associated with an IPH is used.
@@ -54,23 +52,22 @@ class BrowserUserEducationInterface {
   virtual void Init(BrowserView*);
   virtual void TearDown();
 
-  // Gets the windows's FeaturePromoController which manages display of
-  // in-product help. Will return null in incognito and guest profiles.
-  user_education::FeaturePromoController*
-  GetFeaturePromoControllerForTesting() {
-    return GetFeaturePromoControllerImpl();
+  // Only a limited number of non-test classes are allowed direct access to the
+  // `UserEducationContext`.
+  template <typename T>
+    requires std::same_as<T, BrowserFeaturePromoControllerBase> ||
+             std::same_as<T, UserEducationInternalsPageHandlerImpl> ||
+             std::same_as<T, NtpPromoHandler> || std::same_as<T, NewTabPageUI>
+
+  const user_education::UserEducationContextPtr& GetUserEducationContext(
+      base::PassKey<T>) const {
+    return GetUserEducationContextImpl();
   }
 
-  // Only a limited number of non-test classes are allowed direct access to the
-  // feature promo controller.
-  template <typename T>
-    requires std::same_as<T, AppMenuButton> ||
-             std::same_as<T, BrowserHelpBubble> ||
-             std::same_as<T, UserEducationInternalsPageHandlerImpl> ||
-             std::same_as<T, web_app::WebAppUiManagerImpl>
-  user_education::FeaturePromoController* GetFeaturePromoController(
-      base::PassKey<T>) {
-    return GetFeaturePromoControllerImpl();
+  // Test-only accessor for user education context.
+  const user_education::UserEducationContextPtr&
+  GetUserEducationContextForTesting() {
+    return GetUserEducationContextImpl();
   }
 
   // Returns whether `iph_feature` is queued to be shown. Promos can be queued
@@ -164,10 +161,6 @@ class BrowserUserEducationInterface {
   // if you only have access ot a `BrowserContext` or `Profile`.
   virtual void NotifyNewBadgeFeatureUsed(const base::Feature& feature) = 0;
 
-  // Overrides for the promo controller used for a test.
-  virtual void SetFeaturePromoControllerForTesting(
-      std::unique_ptr<user_education::FeaturePromoController> controller) = 0;
-
   // Returns the interface associated with the browser containing `contents` in
   // its tabstrip, or null if `contents` is not a tab in any known browser.
   //
@@ -182,9 +175,8 @@ class BrowserUserEducationInterface {
   static BrowserUserEducationInterface* From(BrowserWindowInterface* browser);
 
  protected:
-  virtual const user_education::FeaturePromoController*
-  GetFeaturePromoControllerImpl() const = 0;
-  user_education::FeaturePromoController* GetFeaturePromoControllerImpl();
+  virtual const user_education::UserEducationContextPtr&
+  GetUserEducationContextImpl() const = 0;
 
  private:
   ui::ScopedUnownedUserData<BrowserUserEducationInterface>

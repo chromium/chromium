@@ -4,6 +4,9 @@
 
 #include "storage/browser/blob/blob_url_store_impl.h"
 
+#include <optional>
+#include <string>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
@@ -311,11 +314,11 @@ TEST_P(BlobURLStoreImplTestP, ResolveAsURLLoaderFactoryNonExistentURL) {
                                                  TRAFFIC_ANNOTATION_FOR_TESTS);
   base::RunLoop download_loop;
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      factory.get(), base::BindLambdaForTesting(
-                         [&](std::unique_ptr<std::string> response_body) {
-                           download_loop.Quit();
-                           EXPECT_FALSE(response_body);
-                         }));
+      factory.get(),
+      base::BindLambdaForTesting([&](std::optional<std::string> response_body) {
+        download_loop.Quit();
+        EXPECT_FALSE(response_body);
+      }));
   download_loop.Run();
 }
 TEST_P(BlobURLStoreImplTestP, ResolveAsURLLoaderFactoryInvalidURL) {
@@ -330,11 +333,11 @@ TEST_P(BlobURLStoreImplTestP, ResolveAsURLLoaderFactoryInvalidURL) {
                                                  TRAFFIC_ANNOTATION_FOR_TESTS);
   base::RunLoop download_loop;
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      factory.get(), base::BindLambdaForTesting(
-                         [&](std::unique_ptr<std::string> response_body) {
-                           download_loop.Quit();
-                           EXPECT_FALSE(response_body);
-                         }));
+      factory.get(),
+      base::BindLambdaForTesting([&](std::optional<std::string> response_body) {
+        download_loop.Quit();
+        EXPECT_FALSE(response_body);
+      }));
   download_loop.Run();
 }
 
@@ -356,12 +359,12 @@ TEST_P(BlobURLStoreImplTestP, ResolveAsURLLoaderFactory) {
                                                  TRAFFIC_ANNOTATION_FOR_TESTS);
   base::RunLoop download_loop;
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      factory.get(), base::BindLambdaForTesting(
-                         [&](std::unique_ptr<std::string> response_body) {
-                           download_loop.Quit();
-                           ASSERT_TRUE(response_body);
-                           EXPECT_EQ("hello world", *response_body);
-                         }));
+      factory.get(),
+      base::BindLambdaForTesting([&](std::optional<std::string> response_body) {
+        download_loop.Quit();
+        ASSERT_TRUE(response_body);
+        EXPECT_EQ("hello world", *response_body);
+      }));
   download_loop.Run();
 }
 
@@ -390,16 +393,16 @@ TEST_P(BlobURLStoreImplTestP,
                                                  TRAFFIC_ANNOTATION_FOR_TESTS);
   base::RunLoop download_loop;
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      factory.get(), base::BindLambdaForTesting(
-                         [&](std::unique_ptr<std::string> response_body) {
-                           download_loop.Quit();
-                           if (BlockCrossPartitionBlobUrlFetchingEnabled()) {
-                             EXPECT_FALSE(response_body);
-                           } else {
-                             ASSERT_TRUE(response_body);
-                             EXPECT_EQ("hello world", *response_body);
-                           }
-                         }));
+      factory.get(),
+      base::BindLambdaForTesting([&](std::optional<std::string> response_body) {
+        download_loop.Quit();
+        if (BlockCrossPartitionBlobUrlFetchingEnabled()) {
+          EXPECT_FALSE(response_body);
+        } else {
+          ASSERT_TRUE(response_body);
+          EXPECT_EQ("hello world", *response_body);
+        }
+      }));
   download_loop.Run();
 }
 
@@ -425,17 +428,17 @@ TEST_P(BlobURLStoreImplTestP, ResolveAsURLLoaderFactoryWithFragmentUrl) {
                                                  TRAFFIC_ANNOTATION_FOR_TESTS);
   base::RunLoop download_loop;
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      factory.get(), base::BindLambdaForTesting(
-                         [&](std::unique_ptr<std::string> response_body) {
-                           download_loop.Quit();
-                           if (BlockCrossPartitionBlobUrlFetchingEnabled() ||
-                               !StoragePartitioningEnabled()) {
-                             EXPECT_FALSE(response_body);
-                           } else {
-                             ASSERT_TRUE(response_body);
-                             EXPECT_EQ("hello world", *response_body);
-                           }
-                         }));
+      factory.get(),
+      base::BindLambdaForTesting([&](std::optional<std::string> response_body) {
+        download_loop.Quit();
+        if (BlockCrossPartitionBlobUrlFetchingEnabled() ||
+            !StoragePartitioningEnabled()) {
+          EXPECT_FALSE(response_body);
+        } else {
+          ASSERT_TRUE(response_body);
+          EXPECT_EQ("hello world", *response_body);
+        }
+      }));
   download_loop.Run();
 }
 

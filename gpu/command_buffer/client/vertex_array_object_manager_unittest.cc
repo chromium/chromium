@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/client/vertex_array_object_manager.h"
 
 #include <GLES2/gl2ext.h>
@@ -17,6 +12,7 @@
 #include <array>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
@@ -25,16 +21,9 @@ namespace gles2 {
 class VertexArrayObjectManagerTest : public testing::Test {
  protected:
   static const GLuint kMaxAttribs = 4;
-  static const GLuint kClientSideArrayBuffer = 0x1234;
-  static const GLuint kClientSideElementArrayBuffer = 0x1235;
-  static const bool kSupportClientSideArrays = true;
 
   void SetUp() override {
-    manager_.reset(new VertexArrayObjectManager(
-        kMaxAttribs,
-        kClientSideArrayBuffer,
-        kClientSideElementArrayBuffer,
-        kSupportClientSideArrays));
+    manager_ = std::make_unique<VertexArrayObjectManager>(kMaxAttribs);
   }
   void TearDown() override {}
 
@@ -42,11 +31,8 @@ class VertexArrayObjectManagerTest : public testing::Test {
 };
 
 const GLuint VertexArrayObjectManagerTest::kMaxAttribs;
-const GLuint VertexArrayObjectManagerTest::kClientSideArrayBuffer;
-const GLuint VertexArrayObjectManagerTest::kClientSideElementArrayBuffer;
 
 TEST_F(VertexArrayObjectManagerTest, Basic) {
-  EXPECT_FALSE(manager_->HaveEnabledClientSideBuffers());
   // Check out of bounds access.
   uint32_t param;
   void* ptr;
@@ -86,7 +72,7 @@ TEST_F(VertexArrayObjectManagerTest, UnbindBuffer) {
   manager_->GenVertexArrays(std::size(ids), ids);
   // Bind buffers to attribs on 2 vaos.
   for (size_t ii = 0; ii < std::size(ids); ++ii) {
-    EXPECT_TRUE(manager_->BindVertexArray(ids[ii], &changed));
+    UNSAFE_TODO(EXPECT_TRUE(manager_->BindVertexArray(ids[ii], &changed)));
     EXPECT_TRUE(manager_->SetAttribPointer(
         kBufferToUnbind, 0, 4, GL_FLOAT, false, 0, 0, GL_FALSE));
     EXPECT_TRUE(manager_->SetAttribPointer(
@@ -100,13 +86,12 @@ TEST_F(VertexArrayObjectManagerTest, UnbindBuffer) {
     }
     manager_->BindElementArray(kElementArray);
   }
-  EXPECT_FALSE(manager_->HaveEnabledClientSideBuffers());
   EXPECT_TRUE(manager_->BindVertexArray(ids[0], &changed));
+
   // Unbind the buffer.
   manager_->UnbindBuffer(kBufferToUnbind);
   manager_->UnbindBuffer(kElementArray);
-  // The attribs are still enabled but their buffer is 0.
-  EXPECT_TRUE(manager_->HaveEnabledClientSideBuffers());
+
   // Check the status of the bindings.
   static const auto expected = std::to_array<std::array<const uint32_t, 4>>({
       {
@@ -127,28 +112,17 @@ TEST_F(VertexArrayObjectManagerTest, UnbindBuffer) {
       kElementArray,
   });
   for (size_t ii = 0; ii < std::size(ids); ++ii) {
-    EXPECT_TRUE(manager_->BindVertexArray(ids[ii], &changed));
+    UNSAFE_TODO(EXPECT_TRUE(manager_->BindVertexArray(ids[ii], &changed)));
     for (size_t jj = 0; jj < 4; ++jj) {
       uint32_t param = 1;
       EXPECT_TRUE(manager_->GetVertexAttrib(
           jj, GL_VERTEX_ATTRIB_ARRAY_BUFFER_BINDING, &param));
       EXPECT_EQ(expected[ii][jj], param)
-          << "id: " << ids[ii] << ", attrib: " << jj;
+          << "id: " << UNSAFE_TODO(ids[ii]) << ", attrib: " << jj;
     }
     EXPECT_EQ(expected_element_array[ii],
               manager_->bound_element_array_buffer());
   }
-
-  // The vao that was not bound still has all service side bufferws.
-  EXPECT_FALSE(manager_->HaveEnabledClientSideBuffers());
-
-  // Make sure unbinding 0 does not effect count incorrectly.
-  EXPECT_TRUE(manager_->BindVertexArray(0, &changed));
-  EXPECT_FALSE(manager_->HaveEnabledClientSideBuffers());
-  manager_->SetAttribEnable(2, true);
-  manager_->UnbindBuffer(0);
-  manager_->SetAttribEnable(2, false);
-  EXPECT_FALSE(manager_->HaveEnabledClientSideBuffers());
 }
 
 TEST_F(VertexArrayObjectManagerTest, GetSet) {
@@ -187,24 +161,6 @@ TEST_F(VertexArrayObjectManagerTest, GetSet) {
       0, GL_VERTEX_ATTRIB_ARRAY_DIVISOR_ANGLE, &param));
 }
 
-TEST_F(VertexArrayObjectManagerTest, HaveEnabledClientSideArrays) {
-  // Check turning on an array.
-  manager_->SetAttribEnable(1, true);
-  EXPECT_TRUE(manager_->HaveEnabledClientSideBuffers());
-  // Check turning off an array.
-  manager_->SetAttribEnable(1, false);
-  EXPECT_FALSE(manager_->HaveEnabledClientSideBuffers());
-  // Check turning on an array and assigning a buffer.
-  manager_->SetAttribEnable(1, true);
-  manager_->SetAttribPointer(123, 1, 3, GL_BYTE, true, 3, nullptr, GL_FALSE);
-  EXPECT_FALSE(manager_->HaveEnabledClientSideBuffers());
-  // Check unassigning a buffer.
-  manager_->SetAttribPointer(0, 1, 3, GL_BYTE, true, 3, nullptr, GL_FALSE);
-  EXPECT_TRUE(manager_->HaveEnabledClientSideBuffers());
-  // Check disabling the array.
-  manager_->SetAttribEnable(1, false);
-  EXPECT_FALSE(manager_->HaveEnabledClientSideBuffers());
-}
 
 TEST_F(VertexArrayObjectManagerTest, BindElementArray) {
   bool changed = false;
@@ -273,14 +229,5 @@ TEST_F(VertexArrayObjectManagerTest, GenBindDelete) {
   EXPECT_FALSE(changed);
 }
 
-TEST_F(VertexArrayObjectManagerTest, IsReservedId) {
-  EXPECT_TRUE(manager_->IsReservedId(kClientSideArrayBuffer));
-  EXPECT_TRUE(manager_->IsReservedId(kClientSideElementArrayBuffer));
-  EXPECT_FALSE(manager_->IsReservedId(0));
-  EXPECT_FALSE(manager_->IsReservedId(1));
-  EXPECT_FALSE(manager_->IsReservedId(2));
-}
-
 }  // namespace gles2
 }  // namespace gpu
-

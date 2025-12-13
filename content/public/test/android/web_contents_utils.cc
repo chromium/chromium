@@ -25,7 +25,7 @@
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -35,8 +35,7 @@ namespace {
 void JavaScriptResultCallback(const ScopedJavaGlobalRef<jobject>& callback,
                               base::Value result) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  std::string json;
-  base::JSONWriter::Write(result, &json);
+  std::string json = base::WriteJson(result).value_or("");
   ScopedJavaLocalRef<jstring> j_json = ConvertUTF8ToJavaString(env, json);
   Java_WebContentsUtils_onEvaluateJavaScriptResult(env, j_json, callback);
 }
@@ -44,9 +43,9 @@ void JavaScriptResultCallback(const ScopedJavaGlobalRef<jobject>& callback,
 
 // Reports all frame submissions to the browser process, even those that do not
 // impact Browser UI.
-void JNI_WebContentsUtils_ReportAllFrameSubmissions(
+static void JNI_WebContentsUtils_ReportAllFrameSubmissions(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
+    const JavaRef<jobject>& jweb_contents,
     jboolean enabled) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   RenderFrameMetadataProviderImpl* provider =
@@ -55,19 +54,19 @@ void JNI_WebContentsUtils_ReportAllFrameSubmissions(
   provider->ReportAllFrameSubmissionsForTesting(enabled);
 }
 
-ScopedJavaLocalRef<jobject> JNI_WebContentsUtils_GetFocusedFrame(
+static ScopedJavaLocalRef<jobject> JNI_WebContentsUtils_GetFocusedFrame(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& jweb_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   return static_cast<RenderFrameHostImpl*>(web_contents->GetFocusedFrame())
       ->GetJavaRenderFrameHost();
 }
 
-void JNI_WebContentsUtils_EvaluateJavaScriptWithUserGesture(
+static void JNI_WebContentsUtils_EvaluateJavaScriptWithUserGesture(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
-    const JavaParamRef<jstring>& script,
-    const base::android::JavaParamRef<jobject>& callback) {
+    const JavaRef<jobject>& jweb_contents,
+    const JavaRef<jstring>& script,
+    const base::android::JavaRef<jobject>& callback) {
   WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
       WebContents::FromJavaWebContents(jweb_contents));
   RenderViewHost* rvh = web_contents->GetRenderViewHost();
@@ -97,18 +96,19 @@ void JNI_WebContentsUtils_EvaluateJavaScriptWithUserGesture(
       ISOLATED_WORLD_ID_GLOBAL);
 }
 
-void JNI_WebContentsUtils_CrashTab(JNIEnv* env,
-                                   const JavaParamRef<jobject>& jweb_contents) {
+static void JNI_WebContentsUtils_CrashTab(
+    JNIEnv* env,
+    const JavaRef<jobject>& jweb_contents) {
   WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
       WebContents::FromJavaWebContents(jweb_contents));
   web_contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
       RESULT_CODE_KILLED);
 }
 
-void JNI_WebContentsUtils_NotifyCopyableViewInWebContents(
+static void JNI_WebContentsUtils_NotifyCopyableViewInWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
-    const JavaParamRef<jobject>& done_callback) {
+    const JavaRef<jobject>& jweb_contents,
+    const JavaRef<jobject>& done_callback) {
   WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
       WebContents::FromJavaWebContents(jweb_contents));
 
@@ -120,11 +120,13 @@ void JNI_WebContentsUtils_NotifyCopyableViewInWebContents(
                         ScopedJavaGlobalRef<jobject>(done_callback)));
 }
 
-void JNI_WebContentsUtils_SimulateEndOfPaintHolding(
+static void JNI_WebContentsUtils_SimulateEndOfPaintHolding(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& jweb_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
 }
 
 }  // namespace content
+
+DEFINE_JNI(WebContentsUtils)

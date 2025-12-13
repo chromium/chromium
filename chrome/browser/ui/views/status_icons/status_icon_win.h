@@ -64,7 +64,7 @@ class StatusIconWin : public StatusIcon {
   void UpdatePlatformContextMenu(StatusIconMenuModel* menu) override;
 
  private:
-  void InitIconData(NOTIFYICONDATA* icon_data);
+  NOTIFYICONDATA InitIconData() const;
 
   // The tray that owns us.  Weak.
   raw_ptr<StatusTrayWin> tray_;

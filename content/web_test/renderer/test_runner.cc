@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/web_test/renderer/test_runner.h"
 
 #include <stddef.h>
@@ -19,10 +14,10 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback_helpers.h"
-#include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -47,6 +42,7 @@
 #include "content/web_test/renderer/test_preferences.h"
 #include "content/web_test/renderer/test_runner_utils.h"
 #include "content/web_test/renderer/web_frame_test_proxy.h"
+#include "crypto/obsolete/md5.h"
 #include "gin/arguments.h"
 #include "gin/array_buffer.h"
 #include "gin/dictionary.h"
@@ -61,6 +57,7 @@
 #include "printing/page_range.h"
 #include "printing/print_settings.h"
 #include "services/network/public/mojom/cors.mojom.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -1501,6 +1498,7 @@ void TestRunnerBindings::SetDisallowedSubresourcePathSuffixes(
   // Some tests rely on console loggings.
   subresource_filter::mojom::ActivationState activation_state(
       activation_level,
+      subresource_filter::mojom::SubresourceFilterDisabledReason::kUnknown,
       /*filtering_disabled_for_document=*/false,
       /*generic_blocking_rules_disabled=*/false,
       /*measure_performance=*/false,
@@ -2210,12 +2208,12 @@ void TestRunnerBindings::CopyImageThen(int x,
   frame_->GetBrowserInterfaceBroker().GetInterface(
       remote_clipboard.BindNewPipeAndPassReceiver());
 
-  blink::ClipboardSequenceNumberToken sequence_number_before;
+  absl::uint128 sequence_number_before;
   CHECK(remote_clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste,
                                             &sequence_number_before));
   GetWebFrame()->CopyImageAtForTesting(gfx::Point(x, y));
   auto sequence_number_after = sequence_number_before;
-  while (sequence_number_before.value() == sequence_number_after.value()) {
+  while (sequence_number_before == sequence_number_after) {
     // TODO(crbug.com/40588468): Ideally we would CHECK here that the mojo call
     // succeeded, but this crashes under some circumstances (crbug.com/1232810).
     remote_clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste,
@@ -3358,11 +3356,6 @@ void TestRunner::SetMainWindowAndTestConfiguration(
     }
   }
 
-  // This may be called for a local root in the same process as another local
-  // root, in which case we just keep the original config, which should match.
-  if (test_is_running_)
-    return;
-
   test_config_ = std::move(*config);
   SetTestIsRunning(true);
 
@@ -3574,7 +3567,7 @@ void TestRunner::DumpIconChanges(WebFrameTestProxy& source) {
 void TestRunner::SetAudioData(const gin::ArrayBufferView& view) {
   uint8_t* bytes = static_cast<uint8_t*>(view.bytes());
   audio_data_.resize(view.num_bytes());
-  std::copy(bytes, bytes + view.num_bytes(), audio_data_.begin());
+  std::copy(bytes, UNSAFE_TODO(bytes + view.num_bytes()), audio_data_.begin());
   dump_as_audio_ = true;
 }
 
@@ -3894,11 +3887,10 @@ void TestRunner::FinishTest(WebFrameTestProxy& source) {
         DCHECK_GT(actual.info().width(), 0);
         DCHECK_GT(actual.info().height(), 0);
 
-        base::MD5Digest digest;
-        auto bytes = base::span(static_cast<const uint8_t*>(actual.getPixels()),
-                                actual.computeByteSize());
-        base::MD5Sum(bytes, &digest);
-        dump_result->actual_pixel_hash = base::MD5DigestToBase16(digest);
+        auto bytes = UNSAFE_TODO(
+            base::span(static_cast<const uint8_t*>(actual.getPixels()),
+                       actual.computeByteSize()));
+        dump_result->actual_pixel_hash = Md5AsHexForWebTestPixels(bytes);
 
         if (dump_result->actual_pixel_hash != test_config_.expected_pixel_hash)
           dump_result->pixels = std::move(actual);

@@ -7,7 +7,6 @@
 
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash::settings {

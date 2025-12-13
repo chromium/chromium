@@ -9,7 +9,6 @@
 
 #include "base/cfi_buildflags.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -139,16 +138,13 @@ class IntentChipButtonBrowserTest
   // appear if `wait_for_browser` is true. If waiting is specified, the new
   // browser window is returned; if waiting is not specified, null is returned.
   Browser* ClickIntentChip(bool wait_for_browser) {
-    ui_test_utils::BrowserChangeObserver browser_opened(
-        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
-    views::test::ButtonTestApi test_api(GetIntentChip(browser()));
-    ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                     ui::EventTimeForNow(), 0, 0);
-    test_api.NotifyClick(e);
+    views::test::ButtonTestApi(GetIntentChip(browser()))
+        .NotifyDefaultMouseClick();
 
     if (wait_for_browser) {
-      return browser_opened.Wait();
+      return browser_created_observer.Wait();
     }
 
     return nullptr;
@@ -337,10 +333,6 @@ class IntentChipButtonBrowserUiTest
       return false;
     }
     const views::Button* intent_chip = GetIntentChip(browser());
-
-    if (!WaitForPageActionButtonVisible(browser())) {
-      return false;
-    }
 
     bool is_intent_chip_visible_and_expanded =
         intent_chip && intent_chip->GetVisible() &&

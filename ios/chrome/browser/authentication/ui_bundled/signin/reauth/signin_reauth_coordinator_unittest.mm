@@ -1,0 +1,249 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/authentication/ui_bundled/signin/reauth/signin_reauth_coordinator.h"
+
+#import <concepts>
+#import <type_traits>
+
+#import "base/apple/foundation_util.h"
+#import "base/functional/bind.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/bind.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
+#import "components/test/ios/test_utils.h"
+#import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_interaction_manager.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
+#import "ios/chrome/browser/signin/model/system_identity_interaction_manager.h"
+#import "ios/web/common/uikit_ui_util.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
+
+class SigninReauthCoordinatorTest : public PlatformTest {
+ public:
+  SigninReauthCoordinatorTest() {
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        IdentityManagerFactory::GetInstance(),
+        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
+                                BuildIdentityManagerForTests));
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
+
+    fake_system_identity_manager()->SetInteractionManagerFactory(
+        base::BindLambdaForTesting([this]() {
+          return static_cast<id<SystemIdentityInteractionManager>>(
+              mock_interaction_manager_);
+        }));
+  }
+
+  ~SigninReauthCoordinatorTest() override {
+    EXPECT_OCMOCK_VERIFY(mock_interaction_manager_);
+    EXPECT_OCMOCK_VERIFY(mock_delegate_);
+  }
+
+  OCMockObject<SigninReauthCoordinatorDelegate>* mock_delegate() {
+    return mock_delegate_;
+  }
+
+  FakeSystemIdentityManager* fake_system_identity_manager() {
+    return FakeSystemIdentityManager::FromSystemIdentityManager(
+        GetApplicationContext()->GetSystemIdentityManager());
+  }
+
+  AccountInfo MakeIdentityAvailable(id<SystemIdentity> identity) {
+    fake_system_identity_manager()->AddIdentity(identity);
+    return signin::MakeAccountAvailable(
+        IdentityManagerFactory::GetForProfile(profile_.get()),
+        signin::AccountAvailabilityOptionsBuilder()
+            .WithGaiaId(identity.gaiaId)
+            .Build(base::SysNSStringToUTF8(identity.userEmail)));
+  }
+
+ protected:
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestProfileIOS> profile_;
+  std::unique_ptr<TestBrowser> browser_;
+  OCMockObject<SystemIdentityInteractionManager>* mock_interaction_manager_ =
+      OCMStrictProtocolMock(@protocol(SystemIdentityInteractionManager));
+  OCMockObject<SigninReauthCoordinatorDelegate>* mock_delegate_ =
+      OCMStrictProtocolMock(@protocol(SigninReauthCoordinatorDelegate));
+};
+
+TEST_F(SigninReauthCoordinatorTest, ReauthCompletedSuccessfully) {
+  base::HistogramTester histogram_tester;
+  id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
+  AccountInfo account = MakeIdentityAvailable(identity);
+
+  __block SigninReauthCoordinator* reauth_coordinator =
+      [[SigninReauthCoordinator alloc]
+          initWithBaseViewController:GetAnyKeyWindow().rootViewController
+                             browser:browser_.get()
+                             account:account
+                   signinAccessPoint:signin_metrics::AccessPoint::kWebSignin];
+  __weak SigninReauthCoordinator* weak_reauth_coordinator = reauth_coordinator;
+  reauth_coordinator.delegate = mock_delegate_;
+  __block SigninCompletionBlock completion_block = nil;
+  OCMExpect([mock_interaction_manager_
+      startAuthActivityWithViewController:OCMOCK_ANY
+                                userEmail:base::SysUTF8ToNSString(account.email)
+                               completion:AssignValueToVariable(
+                                              completion_block)]);
+  [reauth_coordinator start];
+
+  OCMExpect([mock_delegate_
+                reauthFinishedWithResult:ReauthResult::kSuccess
+                                  gaiaID:ios::OCM::AnyPointer<const GaiaId>()])
+      .andCompareObjectAtIndex(identity.gaiaId, 1)
+      .andDo(^(NSInvocation* invocation) {
+        reauth_coordinator = nil;
+      });
+  CHECK(completion_block);
+  completion_block(identity, nil);
+  // Make sure the coordinator was deallocated.
+  CHECK(!weak_reauth_coordinator);
+  histogram_tester.ExpectUniqueSample("Signin.Reauth.InSigninFlow.Started",
+                                      signin_metrics::AccessPoint::kWebSignin,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Signin.Reauth.InSigninFlow.Completed",
+                                      signin_metrics::AccessPoint::kWebSignin,
+                                      1);
+}
+
+TEST_F(SigninReauthCoordinatorTest, ReauthCancelledByUser) {
+  base::HistogramTester histogram_tester;
+  AccountInfo account =
+      MakeIdentityAvailable([FakeSystemIdentity fakeIdentity1]);
+
+  __block SigninReauthCoordinator* reauth_coordinator =
+      [[SigninReauthCoordinator alloc]
+          initWithBaseViewController:GetAnyKeyWindow().rootViewController
+                             browser:browser_.get()
+                             account:account
+                   signinAccessPoint:signin_metrics::AccessPoint::kWebSignin];
+  __weak SigninReauthCoordinator* weak_reauth_coordinator = reauth_coordinator;
+  reauth_coordinator.delegate = mock_delegate_;
+
+  __block SigninCompletionBlock completion_block = nil;
+  OCMExpect([mock_interaction_manager_
+      startAuthActivityWithViewController:OCMOCK_ANY
+                                userEmail:base::SysUTF8ToNSString(account.email)
+                               completion:AssignValueToVariable(
+                                              completion_block)]);
+  [reauth_coordinator start];
+
+  OCMExpect([[(id)mock_delegate_ ignoringNonObjectArgs]
+                reauthFinishedWithResult:ReauthResult::kCancelledByUser
+                                  gaiaID:nullptr])
+      .andCallBlockWithParameterAtIndex(GaiaId, 1, ^(GaiaId* gaia_id) {
+        EXPECT_EQ(gaia_id, nil);
+        reauth_coordinator = nil;
+      });
+  CHECK(completion_block);
+  // When the passed identity is is `nil`, it means that the flow was cancelled
+  // by the user.
+  completion_block(nil, nil);
+  // Make sure the coordinator was deallocated.
+  CHECK(!weak_reauth_coordinator);
+  histogram_tester.ExpectUniqueSample("Signin.Reauth.InSigninFlow.Started",
+                                      signin_metrics::AccessPoint::kWebSignin,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Signin.Reauth.InSigninFlow.Cancelled",
+                                      signin_metrics::AccessPoint::kWebSignin,
+                                      1);
+}
+
+TEST_F(SigninReauthCoordinatorTest, ReauthInterrupted) {
+  base::HistogramTester histogram_tester;
+  AccountInfo account =
+      MakeIdentityAvailable([FakeSystemIdentity fakeIdentity1]);
+
+  __block SigninReauthCoordinator* reauth_coordinator =
+      [[SigninReauthCoordinator alloc]
+          initWithBaseViewController:GetAnyKeyWindow().rootViewController
+                             browser:browser_.get()
+                             account:account
+                   signinAccessPoint:signin_metrics::AccessPoint::kWebSignin];
+  __weak SigninReauthCoordinator* weak_reauth_coordinator = reauth_coordinator;
+  reauth_coordinator.delegate = mock_delegate_;
+
+  OCMExpect([mock_interaction_manager_
+      startAuthActivityWithViewController:OCMOCK_ANY
+                                userEmail:base::SysUTF8ToNSString(account.email)
+                               completion:OCMOCK_ANY]);
+  [reauth_coordinator start];
+
+  OCMExpect([[(id)mock_delegate_ ignoringNonObjectArgs]
+                reauthFinishedWithResult:ReauthResult::kInterrupted
+                                  gaiaID:nullptr])
+      .andCallBlockWithParameterAtIndex(GaiaId, 1, ^(GaiaId* gaia_id) {
+        EXPECT_EQ(gaia_id, nil);
+        reauth_coordinator = nil;
+      });
+  OCMExpect([mock_interaction_manager_ cancelAuthActivityAnimated:NO]);
+  [reauth_coordinator stop];
+  // Make sure the coordinator was deallocated.
+  CHECK(!weak_reauth_coordinator);
+  histogram_tester.ExpectUniqueSample("Signin.Reauth.InSigninFlow.Started",
+                                      signin_metrics::AccessPoint::kWebSignin,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Signin.Reauth.InSigninFlow.Interrupted",
+                                      signin_metrics::AccessPoint::kWebSignin,
+                                      1);
+}
+
+TEST_F(SigninReauthCoordinatorTest, ReauthCompletedSuccessfullyInExplicitFlow) {
+  base::HistogramTester histogram_tester;
+  id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
+  AccountInfo account = MakeIdentityAvailable(identity);
+
+  __block SigninReauthCoordinator* reauth_coordinator =
+      [[SigninReauthCoordinator alloc]
+          initWithBaseViewController:GetAnyKeyWindow().rootViewController
+                             browser:browser_.get()
+                             account:account
+                   reauthAccessPoint:signin_metrics::ReauthAccessPoint::
+                                         kAccountMenu];
+  __weak SigninReauthCoordinator* weak_reauth_coordinator = reauth_coordinator;
+  reauth_coordinator.delegate = mock_delegate_;
+
+  __block SigninCompletionBlock completion_block = nil;
+  OCMExpect([mock_interaction_manager_
+      startAuthActivityWithViewController:OCMOCK_ANY
+                                userEmail:base::SysUTF8ToNSString(account.email)
+                               completion:AssignValueToVariable(
+                                              completion_block)]);
+  [reauth_coordinator start];
+
+  OCMExpect([[((id)mock_delegate_) ignoringNonObjectArgs]
+                reauthFinishedWithResult:ReauthResult::kSuccess
+                                  gaiaID:ios::OCM::AnyPointer<const GaiaId>()])
+      .andCompareObjectAtIndex(identity.gaiaId, 1)
+      .andDo(^(NSInvocation* invocation) {
+        reauth_coordinator = nil;
+      });
+  CHECK(completion_block);
+  completion_block(identity, nil);
+  // Make sure the coordinator was deallocated.
+  CHECK(!weak_reauth_coordinator);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Reauth.InExplicitFlow.Started",
+      signin_metrics::ReauthAccessPoint::kAccountMenu, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Reauth.InExplicitFlow.Completed",
+      signin_metrics::ReauthAccessPoint::kAccountMenu, 1);
+}

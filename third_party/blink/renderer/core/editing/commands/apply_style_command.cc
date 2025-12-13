@@ -1559,11 +1559,30 @@ void ApplyStyleCommand::RemoveInlineStyle(EditingStyle* style,
       }
 
       if (style_to_push_down) {
+        EditingStyle* filtered_style_to_push_down = style_to_push_down;
+
+        if (RuntimeEnabledFeatures::
+                RemoveFormatFilterBackgroundColorEnabled()) {
+          // Filter out styles that should be removed - don't push down styles
+          // that conflict with the styles we're trying to remove
+          filtered_style_to_push_down = style_to_push_down->Copy();
+          if (style && style->Style() && filtered_style_to_push_down->Style()) {
+            // Remove any properties from style_to_push_down that are present in
+            // the style being removed
+            for (const CSSPropertyValue& property :
+                 style->Style()->Properties()) {
+              filtered_style_to_push_down->Style()->RemoveProperty(
+                  property.PropertyID());
+            }
+          }
+        }
+
         for (; child_node; child_node = child_node->nextSibling()) {
-          ApplyInlineStyleToPushDown(child_node, style_to_push_down,
+          ApplyInlineStyleToPushDown(child_node, filtered_style_to_push_down,
                                      editing_state);
-          if (editing_state->IsAborted())
+          if (editing_state->IsAborted()) {
             return;
+          }
         }
       }
     }

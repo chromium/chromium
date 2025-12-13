@@ -10,6 +10,7 @@
 #import "base/threading/thread_restrictions.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/field_types.h"
+#import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/model/automation/automation_action.h"
 #import "ios/chrome/browser/autofill/model/automation/automation_app_interface.h"
@@ -41,7 +42,8 @@ std::string ReadRecipeJsonFromPath(const base::FilePath& path) {
 
 // Parses recipe std::string into base::Value.
 base::Value RecipeJsonToValue(const std::string& recipe_json) {
-  std::optional<base::Value> value = base::JSONReader::Read(recipe_json);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(recipe_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   GREYAssert(value.has_value(), @"Unable to parse JSON string.");
   GREYAssert(value.value().is_dict(),
              @"Expecting a dictionary in the recipe JSON string.");
@@ -86,7 +88,7 @@ base::Value RecipeJsonToValue(const std::string& recipe_json) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(
-      autofill::features::test::kAutofillShowTypePredictions);
+      autofill::features::debug::kAutofillShowTypePredictions);
   return config;
 }
 

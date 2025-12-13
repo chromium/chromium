@@ -82,7 +82,7 @@
 <translation id="3157931365184549694">Wieder­her­stellen</translation>
 <translation id="3183922693828471536">Hierher blättern</translation>
 <translation id="3234408098842461169">Abwärtspfeil</translation>
-<translation id="3240426699337459095">Link wurde kopiert.</translation>
+<translation id="3240426699337459095">Link kopiert</translation>
 <translation id="3291688615589870984">{DAYS,plural, =1{1 Tag}other{# Tage}}</translation>
 <translation id="3295886253693811851">Anruf starten mit</translation>
 <translation id="3306688585798492231">Integriertes Display</translation>
@@ -245,7 +245,7 @@
 <translation id="9170848237812810038">&amp;Rückgängig</translation>
 <translation id="9195990613383871904">Morgen</translation>
 <translation id="928628199082367701">Super</translation>
-<translation id="932327136139879170">Startseite</translation>
+<translation id="932327136139879170">Privat</translation>
 <translation id="944069440740578670">Ungelesene Benachrichtigungen</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{vor 1 Sekunde}other{vor # Sekunden}}</translation>
 </translationbundle>

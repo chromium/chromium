@@ -37,7 +37,6 @@
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 
@@ -92,10 +91,10 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
     std::string& java_manifest_id,
     std::string& java_app_key,
     std::string& java_primary_icon_url,
-    const JavaParamRef<jbyteArray>& java_primary_icon_data,
+    const JavaRef<jbyteArray>& java_primary_icon_data,
     jboolean java_is_primary_icon_maskable,
     std::string& java_splash_icon_url,
-    const JavaParamRef<jbyteArray>& java_splash_icon_data,
+    const JavaRef<jbyteArray>& java_splash_icon_data,
     jboolean java_is_splash_icon_maskable,
     std::vector<std::string>& java_icon_urls,
     std::vector<std::string>& java_icon_hashes,
@@ -111,16 +110,16 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
     const jboolean java_share_target_param_is_method_post,
     const jboolean java_share_target_param_is_enctype_multipart,
     std::vector<std::u16string>& java_share_target_param_file_names,
-    const JavaParamRef<jobjectArray>& java_share_target_param_accepts,
-    const JavaParamRef<jobjectArray>& java_shortcuts,
-    const JavaParamRef<jobjectArray>& java_shortcut_icon_data,
+    const JavaRef<jobjectArray>& java_share_target_param_accepts,
+    const JavaRef<jobjectArray>& java_shortcuts,
+    const JavaRef<jobjectArray>& java_shortcut_icon_data,
     std::string& java_web_manifest_url,
     std::string& webapk_package,
     jint java_webapk_version,
     jboolean java_is_manifest_stale,
     jboolean java_is_app_identity_update_supported,
-    const JavaParamRef<jintArray>& java_update_reasons,
-    const JavaParamRef<jobject>& java_callback) {
+    const JavaRef<jintArray>& java_update_reasons,
+    const JavaRef<jobject>& java_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   webapps::ShortcutInfo info((GURL(java_start_url)));
@@ -257,7 +256,7 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
 static void JNI_WebApkUpdateManager_UpdateWebApkFromFile(
     JNIEnv* env,
     std::string& update_request_path,
-    const JavaParamRef<jobject>& java_callback) {
+    const JavaRef<jobject>& java_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   ScopedJavaGlobalRef<jobject> callback_ref(java_callback);
@@ -276,3 +275,5 @@ static void JNI_WebApkUpdateManager_UpdateWebApkFromFile(
       base::FilePath(update_request_path),
       base::BindOnce(&OnUpdated, callback_ref));
 }
+
+DEFINE_JNI(WebApkUpdateManager)

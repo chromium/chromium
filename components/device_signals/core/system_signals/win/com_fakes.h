@@ -152,7 +152,6 @@ class FakeWscProduct : public IWscProduct {
  public:
   FakeWscProduct();
   FakeWscProduct(const wchar_t* name,
-                 const wchar_t* id,
                  WSC_SECURITY_PRODUCT_STATE state);
 
   FakeWscProduct(const FakeWscProduct& copy) = delete;
@@ -164,8 +163,7 @@ class FakeWscProduct : public IWscProduct {
 
   enum class FailureStep {
     kProductName = 0,
-    kProductId = 1,
-    kProductState = 2,
+    kProductState = 1,
   };
 
   // IWscProduct:

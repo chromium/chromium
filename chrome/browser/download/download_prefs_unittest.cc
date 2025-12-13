@@ -33,7 +33,6 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
@@ -523,9 +522,6 @@ void ExpectValidDownloadDir(Profile* profile,
 
 TEST(DownloadPrefsTest, DownloadDirSanitization) {
   content::BrowserTaskEnvironment task_environment;
-
-  // Needed for `DriveIntegrationService`.
-  ScopedTestingLocalState local_state{TestingBrowserProcess::GetGlobal()};
 
   TestingProfile profile(base::FilePath("/home/chronos/u-0123456789abcdef"));
   DownloadPrefs prefs(&profile);

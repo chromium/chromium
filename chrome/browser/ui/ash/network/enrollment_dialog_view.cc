@@ -130,7 +130,7 @@ void EnrollmentDialogView::WindowClosing() {
   }
   NavigateParams params(profile_, GURL(target_uri_), ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.window_action = NavigateParams::WindowAction::kShowWindow;
   Navigate(&params);
 }
 
@@ -155,7 +155,7 @@ bool ShowEnrollmentDialog(const std::string& network_guid,
            enrollment_uri_list.begin();
        iter != enrollment_uri_list.end(); ++iter) {
     GURL uri(*iter);
-    if (uri.IsStandard() || uri.scheme() == extensions::kExtensionScheme) {
+    if (uri.IsStandard() || uri.GetScheme() == extensions::kExtensionScheme) {
       // If this is a "standard" scheme, like http, ftp, etc., then open that in
       // the enrollment dialog.
       NET_LOG(EVENT) << "Showing enrollment dialog for: "

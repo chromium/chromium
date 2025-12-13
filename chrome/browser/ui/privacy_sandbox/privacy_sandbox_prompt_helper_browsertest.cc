@@ -26,6 +26,7 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -521,7 +522,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptNonNormalBrowserTest,
 
   NavigateParams params(browser(), GURL(chrome::kChromeUINewTabPageURL),
                         ui::PAGE_TRANSITION_FIRST);
-  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.window_action = NavigateParams::WindowAction::kShowWindow;
   params.disposition = WindowOpenDisposition::NEW_POPUP;
   params.window_features.bounds = gfx::Rect(0, 0, 500, 500);
   ui_test_utils::NavigateToURL(&params);
@@ -548,7 +549,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptNonNormalBrowserTest,
 
   NavigateParams params(browser(), GURL(chrome::kChromeUINewTabPageURL),
                         ui::PAGE_TRANSITION_FIRST);
-  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.window_action = NavigateParams::WindowAction::kShowWindow;
   params.disposition = WindowOpenDisposition::NEW_POPUP;
   params.window_features.bounds = gfx::Rect(0, 0, 200, 200);
   ui_test_utils::NavigateToURL(&params);
@@ -588,6 +589,8 @@ class PrivacySandboxPromptHelperWithSearchEngineChoiceEnabledBrowserTest
     PrivacySandboxPromptHelperWithParamBrowserTest::SetUpCommandLine(
         command_line);
     command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry, "BE");
+    command_line->AppendSwitchASCII(
+        variations::switches::kVariationsOverrideCountry, "BE");
     command_line->AppendSwitch(
         switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
   }

@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/glic/browser_ui/theme_util.h"
 #include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -51,9 +50,12 @@ GURL GetFreURL(Profile* profile) {
   }
 
   // Add the current Chrome theme to the URL as a query parameter.
-  ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile);
-  std::string theme_value = UseDarkMode(theme_service) ? "dark" : "light";
+  const bool use_dark_mode =
+      ThemeServiceFactory::GetForProfile(profile)->BrowserUsesDarkColors();
+  std::string theme_value = use_dark_mode ? "dark" : "light";
   url = net::AppendOrReplaceQueryParameter(url, "theme", theme_value);
+
+  url = MaybeAddMultiInstanceParameter(url);
 
   // Localize to Chrome UI language.
   return GetLocalizedGuestURL(url);

@@ -4,6 +4,8 @@
 
 #include "components/policy/core/common/cloud/device_management_service.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -308,7 +310,7 @@ JobConfigurationBase::JobConfigurationBase(
   CHECK(!auth_data_.has_oauth_token()) << "Use |oauth_token| instead";
 
 #if !BUILDFLAG(IS_IOS)
-  if (oauth_token_ && auth_data.token_type() != DMAuthTokenType::kOidc) {
+  if (oauth_token_ && auth_data_.token_type() != DMAuthTokenType::kOidc) {
     // Put the oauth token in the query parameters for platforms that are not
     // iOS. On iOS we are trying the oauth token in the request headers
     // (crbug.com/1312158). We might want to use the iOS approach on all
@@ -505,7 +507,7 @@ class DeviceManagementService::JobImpl : public Job {
 
   // Callback for `SimpleURLLoader`. Extracts data from |response_body| and
   // |url_loader_| and passes it on to |OnURLLoaderCompleteInternal|.
-  void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoaderComplete(std::optional<std::string> response_body);
 
   // Interprets URL loading data and either schedules a retry or hands the data
   // off to |HandleResponseData|.
@@ -557,7 +559,7 @@ void DeviceManagementService::JobImpl::CreateUrlLoader() {
 }
 
 void DeviceManagementService::JobImpl::OnURLLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = 0;
   bool was_fetched_via_proxy = false;
   std::string mime_type;
@@ -571,12 +573,7 @@ void DeviceManagementService::JobImpl::OnURLLoaderComplete(
     }
   }
 
-  std::string response_body_str;
-  if (response_body.get()) {
-    response_body_str = std::move(*response_body.get());
-  }
-
-  OnURLLoaderCompleteInternal(response_body_str, mime_type,
+  OnURLLoaderCompleteInternal(std::move(response_body).value_or(""), mime_type,
                               url_loader_->NetError(), response_code,
                               was_fetched_via_proxy);
 }
@@ -604,9 +601,10 @@ DeviceManagementService::JobImpl::OnURLLoaderCompleteInternal(
   LOG_POLICY(WARNING, CBCM_ENROLLMENT)
       << "Request of type "
       << JobConfiguration::GetJobTypeAsString(config_->GetType())
-      << " failed (net_error = " << net_error
-      << ", response_code = " << response_code << "), retrying in "
-      << retry_delay << "ms.";
+      << " failed (net_error = " << net::ErrorToString(net_error) << " ("
+      << net_error
+      << "), response_code = " << ResponseCodeToString(response_code) << "( "
+      << response_code << ")), retrying in " << retry_delay << "ms.";
   if (!is_test) {
     task_runner_->PostDelayedTask(
         FROM_HERE,
@@ -766,6 +764,10 @@ DeviceManagementService::CreateJobForTesting(
   auto job = std::make_unique<JobImpl>(task_runner_, std::move(config));
   JobForTesting job_for_testing(job.get());  // IN-TEST
   return std::make_pair(std::move(job), std::move(job_for_testing));
+}
+
+const scoped_refptr<base::SequencedTaskRunner> DeviceManagementService::GetTaskRunnerForTesting() {
+  return task_runner_;
 }
 
 std::unique_ptr<DeviceManagementService::Job>

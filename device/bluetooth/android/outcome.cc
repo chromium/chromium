@@ -41,3 +41,5 @@ std::string Outcome::GetExceptionMessage() const {
 }
 
 }  // namespace device
+
+DEFINE_JNI(Outcome)

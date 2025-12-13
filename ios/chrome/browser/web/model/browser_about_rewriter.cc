@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ios/chrome/browser/web/model/browser_about_rewriter.h"
 
+#include <array>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/feature_list.h"
@@ -20,12 +17,20 @@
 
 namespace {
 
-const struct HostReplacement {
-  const char* old_host_name;
-  const char* new_host_name;
-} kHostReplacements[] = {
-    {"about", kChromeUIChromeURLsHost},
-    {"sync", kChromeUISyncInternalsHost},
+struct HostReplacement {
+  std::string_view old_host_name;
+  std::string_view new_host_name;
+};
+
+constexpr std::array<HostReplacement, 2> kHostReplacements = {
+    HostReplacement{
+        .old_host_name = "about",
+        .new_host_name = kChromeUIChromeURLsHost,
+    },
+    HostReplacement{
+        .old_host_name = "sync",
+        .new_host_name = kChromeUISyncInternalsHost,
+    },
 };
 
 }  // namespace
@@ -62,18 +67,18 @@ bool WillHandleWebBrowserAboutURL(GURL* url, web::BrowserState* browser_state) {
     return *url != original_url;
   }
 
-  std::string host(url->host());
-  for (size_t i = 0; i < std::size(kHostReplacements); ++i) {
-    if (host != kHostReplacements[i].old_host_name) {
+  std::string new_host(url->host());
+  for (const auto& replacement : kHostReplacements) {
+    if (new_host != replacement.old_host_name) {
       continue;
     }
 
-    host.assign(kHostReplacements[i].new_host_name);
+    new_host.assign(replacement.new_host_name);
     break;
   }
 
   GURL::Replacements replacements;
-  replacements.SetHostStr(host);
+  replacements.SetHostStr(new_host);
   *url = url->ReplaceComponents(replacements);
 
   // Having re-written the URL, make the chrome: handler process it.

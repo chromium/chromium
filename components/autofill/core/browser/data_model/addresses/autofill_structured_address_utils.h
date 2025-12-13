@@ -71,10 +71,6 @@ struct SortedTokenComparisonResult {
   SortedTokenComparisonStatus status = SortedTokenComparisonStatus::kDistinct;
   // The additional elements in the super/subsets.
   std::vector<AddressToken> additional_tokens{};
-  // Returns true if the first is a subset of the second;
-  bool IsSingleTokenSubset() const;
-  // Return true if the first is a superset of the second;
-  bool IsSingleTokenSuperset() const;
   // Return true if one is a subset of the other.
   bool OneIsSubset() const;
   // Returns true if one contains the other.
@@ -84,7 +80,7 @@ struct SortedTokenComparisonResult {
 };
 
 // Options for capturing a named group using the
-// |CaptureTypeWithPattern(...)| functions.
+// `CaptureTypeWithPattern(...)` functions.
 struct CaptureOptions {
   // A separator that must be matched after a capture group.
   // By default, a group must be either followed by a space-like character (\s)
@@ -105,12 +101,12 @@ class Re2RegExCache {
   // Returns a singleton instance.
   static Re2RegExCache* Instance();
 
-  // Returns a pointer to a constant compiled expression that matches |pattern|
+  // Returns a pointer to a constant compiled expression that matches `pattern`
   // case-sensitively.
   const RE2* GetRegEx(std::string_view pattern);
 
 #ifdef UNIT_TEST
-  // Returns true if the compiled regular expression corresponding to |pattern|
+  // Returns true if the compiled regular expression corresponding to `pattern`
   // is cached.
   bool IsRegExCachedForTesting(std::string_view pattern) {
     return regex_map_.count(pattern) > 0;
@@ -120,29 +116,29 @@ class Re2RegExCache {
  private:
   Re2RegExCache();
 
-  // Since the constructor is private, |base::NoDestructor| must be friend to be
+  // Since the constructor is private, `base::NoDestructor` must be friend to be
   // allowed to construct the cache.
   friend class base::NoDestructor<Re2RegExCache>;
 
-  // Stores a compiled regular expression keyed by its corresponding |pattern|.
+  // Stores a compiled regular expression keyed by its corresponding `pattern`.
   std::map<std::string, std::unique_ptr<const RE2>, std::less<>> regex_map_;
 
   // A lock to prevent concurrent access to the map.
   base::Lock lock_;
 };
 
-// Returns true if |name| has the characteristics of a Chinese, Japanese or
+// Returns true if `name` has the characteristics of a Chinese, Japanese or
 // Korean name:
 // * It must only contain CJK characters with at most one separator in between.
 bool HasCjkNameCharacteristics(const std::string& name);
 
-// Returns true if |name| has one of the characteristics of an Hispanic/Latinx
+// Returns true if `name` has one of the characteristics of an Hispanic/Latinx
 // name:
 // * Name contains a very common Hispanic/Latinx surname.
 // * Name uses a surname conjunction.
 bool HasHispanicLatinxNameCharacteristics(const std::string& name);
 
-// Returns true if |middle_name| has the characteristics of a containing only
+// Returns true if `middle_name` has the characteristics of a containing only
 // initials:
 // * The string contains only upper case letters that may be preceded by a
 // point.
@@ -153,7 +149,7 @@ bool HasMiddleNameInitialsCharacteristics(const std::string& middle_name);
 // Example: George walker -> GW, Hans-Peter -> HP
 std::u16string ReduceToInitials(const std::u16string& value);
 
-// Parses |value| with an regular expression defined by |pattern|.
+// Parses `value` with an regular expression defined by `pattern`.
 // If the expression is fully matched, returns the matching results, keyed by
 // the name of the capture group with the captured substrings as the value.
 // Otherwise returns `nullopt`.
@@ -165,39 +161,39 @@ std::optional<base::flat_map<std::string, std::string>>
 ParseValueByRegularExpression(const std::string& value,
                               const std::string& pattern);
 
-// Returns a compiled case sensitive regular expression for |pattern|.
+// Returns a compiled case sensitive regular expression for `pattern`.
 std::unique_ptr<const RE2> BuildRegExFromPattern(std::string_view pattern);
 
-// Returns true if |value| can be matched by the enumuerated RegEx |regex|.
+// Returns true if `value` can be matched by the enumuerated RegEx `regex`.
 bool IsPartialMatch(const std::string& value, RegEx regex);
 
-// Returns true if |value| can be matched with |pattern|.
+// Returns true if `value` can be matched with `pattern`.
 bool IsPartialMatch(const std::string& value, const std::string& pattern);
 
 // Same as above, but accepts a compiled regular expression instead of the
 // pattern.
 bool IsPartialMatch(const std::string& value, const RE2* expression);
 
-// Returns a vector that contains all partial matches of |pattern| in |value|;
+// Returns a vector that contains all partial matches of `pattern` in `value`;
 std::vector<std::string> GetAllPartialMatches(const std::string& value,
                                               const std::string& pattern);
 
-// Extracts all placeholders of the format ${PLACEHOLDER} in |value|.
+// Extracts all placeholders of the format ${PLACEHOLDER} in `value`.
 std::vector<std::string> ExtractAllPlaceholders(const std::string& value);
 
-// Returns |value| as a placeholder token: ${value}.
+// Returns `value` as a placeholder token: ${value}.
 std::string GetPlaceholderToken(std::string_view value);
 
 // Returns a named capture group created by the concatenation of the
-// string_views in |pattern_span_initializer_list|. The group is named by the
-// string representation of |type| and respects |options|.
+// string_views in `pattern_span_initializer_list`. The group is named by the
+// string representation of `type` and respects `options`.
 std::string CaptureTypeWithPattern(
     const FieldType& type,
     std::initializer_list<std::string_view> pattern_span_initializer_list,
     const CaptureOptions& options);
 
-// Same as |CaptureTypeWithPattern(type, pattern_span_initializer_list,
-// options)| but uses default options.
+// Same as `CaptureTypeWithPattern(type, pattern_span_initializer_list,
+// options)` but uses default options.
 std::string CaptureTypeWithPattern(
     const FieldType& type,
     std::initializer_list<std::string_view> pattern_span_initializer_list);
@@ -210,9 +206,9 @@ std::string NoCapturePattern(const std::string& pattern,
 // A wrapper for NoCapturePattern() that makes the match optional.
 std::string NoCapturePatternOptional(const std::string& pattern);
 
-// Returns a capture group named by the string representation of |type| that
-// matches |pattern| with an additional uncaptured |prefix_pattern| and
-// |suffix_pattern|.
+// Returns a capture group named by the string representation of `type` that
+// matches `pattern` with an additional uncaptured `prefix_pattern` and
+// `suffix_pattern`.
 std::string CaptureTypeWithAffixedPattern(
     const FieldType& type,
     const std::string& prefix_pattern,
@@ -220,24 +216,24 @@ std::string CaptureTypeWithAffixedPattern(
     const std::string& suffix_pattern,
     const CaptureOptions& options = CaptureOptions());
 
-// Convenience wrapper for |CaptureTypeWithAffixedPattern()| with an empty
-// |suffix_pattern|.
+// Convenience wrapper for `CaptureTypeWithAffixedPattern()` with an empty
+// `suffix_pattern`.
 std::string CaptureTypeWithPrefixedPattern(
     const FieldType& type,
     const std::string& prefix_pattern,
     const std::string& pattern,
     const CaptureOptions& options = CaptureOptions());
 
-// Convenience wrapper for |CaptureTypeWithAffixedPattern()| with an empty
-// |prefix_pattern|.
+// Convenience wrapper for `CaptureTypeWithAffixedPattern()` with an empty
+// `prefix_pattern`.
 std::string CaptureTypeWithSuffixedPattern(
     const FieldType& type,
     const std::string& pattern,
     const std::string& suffix_pattern,
     const CaptureOptions& options = CaptureOptions());
 
-// Convenience wrapper for |CaptureTypeWithAffixedPattern()| with an empty
-// |prefix_pattern| and |suffix_pattern|.
+// Convenience wrapper for `CaptureTypeWithAffixedPattern()` with an empty
+// `prefix_pattern` and `suffix_pattern`.
 std::string CaptureTypeWithPattern(
     const FieldType& type,
     const std::string& pattern,
@@ -248,7 +244,7 @@ std::string CaptureTypeWithPatternOptional(const FieldType& type,
                                            const std::string& pattern);
 
 // Calls CaptureTypeWithPatternOptional with a pattern created by the
-// concatenation of the string_views in |pattern_span_initializer_list|.
+// concatenation of the string_views in `pattern_span_initializer_list`.
 std::string CaptureTypeWithPatternOptional(
     const FieldType& type,
     std::initializer_list<std::string_view> pattern_span_initializer_list);
@@ -259,32 +255,37 @@ std::u16string NormalizeAndRewrite(const AddressCountryCode& country_code,
                                    const std::u16string& text,
                                    bool keep_white_space);
 
-// Collapses white spaces and line breaks, converts the string to lower case and
-// handles diactrics using rules for `country_code`.
-// If |keep_white_spaces| is true, white spaces are collapsed. Otherwise,
-// white spaces are completely removed.
-std::u16string NormalizeValue(
-    std::u16string_view value,
-    bool keep_white_space = true,
-    const AddressCountryCode& country_code = AddressCountryCode(""));
+// Determines the 2-letter country code from a given value.
+// This function handles two cases:
+// 1. The value is expected to be a country code (e.g.,
+// autocomplete="country-code").
+//   It validates the value as a 2-letter code. If validation fails,
+//   it falls back to treating it as a full country name (to handle
+//   incorrectly tagged fields).
+// 2. The value is expected to be a full country name (e.g.,
+// autocomplete="country").
+//   It attempts to find a matching country code from the name.
+std::string ParseCountryCode(const AutofillType& type,
+                             std::u16string_view value,
+                             std::string_view app_locale);
 
 // Returns true of both vectors contain the same tokens in the same order.
 bool AreSortedTokensEqual(const std::vector<AddressToken>& first,
                           const std::vector<AddressToken>& second);
 
 // Returns true if both strings contain the same tokens after normalization.
-bool AreStringTokenEquivalent(const std::u16string& one,
-                              const std::u16string& other);
+bool AreStringTokenEquivalent(std::u16string_view one,
+                              std::u16string_view other);
 
 // Returns true if all tokens from the first string are contained in the set of
 // tokens from the second string.
-bool AreStringTokenCompatible(const std::u16string& first,
-                              const std::u16string& second);
+bool AreStringTokenCompatible(std::u16string_view first,
+                              std::u16string_view second);
 
-// Returns a sorted vector containing the tokens of |value| after |value| was
-// canonicalized. |value| is tokenized by splitting it by white spaces and
+// Returns a sorted vector containing the tokens of `value` after `value` was
+// canonicalized. `value` is tokenized by splitting it by white spaces and
 // commas.
-std::vector<AddressToken> TokenizeValue(const std::u16string value);
+std::vector<AddressToken> TokenizeValue(std::u16string_view value);
 
 // Compares two vectors of sorted AddressTokens and returns the
 // SortedTokenComparisonResult;
@@ -293,8 +294,8 @@ SortedTokenComparisonResult CompareSortedTokens(
     const std::vector<AddressToken>& second);
 
 // Convenience wrapper to supply untokenized strings.
-SortedTokenComparisonResult CompareSortedTokens(const std::u16string& first,
-                                                const std::u16string& second);
+SortedTokenComparisonResult CompareSortedTokens(std::u16string_view first,
+                                                std::u16string_view second);
 
 }  // namespace autofill
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_ADDRESSES_AUTOFILL_STRUCTURED_ADDRESS_UTILS_H_

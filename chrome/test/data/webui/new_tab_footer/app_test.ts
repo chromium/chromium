@@ -6,8 +6,9 @@ import type {NewTabFooterAppElement} from 'chrome://newtab-footer/app.js';
 import {CustomizeDialogPage, FooterCustomizeChromeEntryPoint, FooterElement} from 'chrome://newtab-footer/app.js';
 import {NewTabFooterDocumentProxy} from 'chrome://newtab-footer/browser_proxy.js';
 import type {CustomizeButtonsDocumentRemote} from 'chrome://newtab-footer/customize_buttons.mojom-webui.js';
-import {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, CustomizeChromeSection, SidePanelOpenTrigger} from 'chrome://newtab-footer/customize_buttons.mojom-webui.js';
+import {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, SidePanelOpenTrigger} from 'chrome://newtab-footer/customize_buttons.mojom-webui.js';
 import {CustomizeButtonsProxy} from 'chrome://newtab-footer/customize_buttons_proxy.js';
+import {CustomizeChromeSection} from 'chrome://newtab-footer/customize_chrome.mojom-webui.js';
 import type {BackgroundAttribution, ManagementNotice, NewTabFooterDocumentRemote} from 'chrome://newtab-footer/new_tab_footer.mojom-webui.js';
 import {NewTabFooterDocumentCallbackRouter, NewTabFooterHandlerRemote, NewTabPageType} from 'chrome://newtab-footer/new_tab_footer.mojom-webui.js';
 import {WindowProxy} from 'chrome://newtab-footer/window_proxy.js';
@@ -17,7 +18,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {$$, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 type Installer<T> = (instance: T) => void;
@@ -63,7 +64,8 @@ suite('NewTabFooterAppTest', () => {
 
     element = document.createElement('new-tab-footer-app');
     document.body.appendChild(element);
-    callbackRouter.attachedTabStateUpdated(ntpType);
+    callbackRouter.attachedTabStateUpdated(
+        ntpType, /*canCustomizeChrome=*/ true);
     await callbackRouter.$.flushForTesting();
     await microtasksFinished();
   }
@@ -124,7 +126,8 @@ suite('NewTabFooterAppTest', () => {
           test(`Change NTP type to ${pageType}`, async () => {
             // Act.
             const fooName = 'foo';
-            callbackRouter.attachedTabStateUpdated(pageType);
+            callbackRouter.attachedTabStateUpdated(
+                pageType, /*canCustomizeChrome=*/ true);
             callbackRouter.setNtpExtensionName(fooName);
             await callbackRouter.$.flushForTesting();
 
@@ -399,7 +402,8 @@ suite('NewTabFooterAppTest', () => {
               `setting ntp type ${pageType} shows customize button ${expected}`,
               async () => {
                 // Act.
-                callbackRouter.attachedTabStateUpdated(pageType);
+                callbackRouter.attachedTabStateUpdated(
+                    pageType, /*canCustomizeChrome=*/ true);
                 await callbackRouter.$.flushForTesting();
 
                 // Assert.
@@ -407,6 +411,21 @@ suite('NewTabFooterAppTest', () => {
                 assertEquals(!!buttons, expected);
               });
         });
+
+    test('button hidden when `canCustomizeChrome` is false', async () => {
+      // Arrange.
+      const button = getCustomizeButton();
+      assertTrue(isVisible(button));
+
+      // Act.
+      callbackRouter.attachedTabStateUpdated(
+          NewTabPageType.kExtension, /*canCustomizeChrome=*/ false);
+      await callbackRouter.$.flushForTesting();
+
+      // Assert.
+      const buttons = $$(element, '#customizeButtons');
+      assertFalse(!!buttons);
+    });
   });
 
   suite('Misc', () => {

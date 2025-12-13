@@ -7,7 +7,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -43,10 +42,9 @@ class ProfileUserManagerControllerTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   ScopedCrosSettingsTestHelper settings_helper_;
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
-      user_manager_{
-          std::make_unique<user_manager::FakeUserManager>(local_state_.Get())};
+      user_manager_{std::make_unique<user_manager::FakeUserManager>(
+          TestingBrowserProcess::GetGlobal()->local_state())};
   // To follow the destruction order in the production, declare controller's
   // pointer first.
   std::unique_ptr<ProfileUserManagerController> controller_;

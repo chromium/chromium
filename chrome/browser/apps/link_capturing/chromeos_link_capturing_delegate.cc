@@ -66,8 +66,8 @@ GURL RedirectUrlIfSwa(Profile* profile,
   if (app_id == ash::kChromeUIUntrustedProjectorSwaAppId &&
       url.GetWithEmptyPath() == GURL(ash::kChromeUIUntrustedProjectorPwaUrl)) {
     std::string override_url = ash::kChromeUIUntrustedProjectorUrl;
-    if (url.path().length() > 1) {
-      override_url += url.path().substr(1);
+    if (url.GetPath().length() > 1) {
+      override_url += url.GetPath().substr(1);
     }
     std::stringstream ss;
     // Since ChromeOS doesn't reload an app if the URL doesn't change, the line
@@ -77,7 +77,7 @@ GURL RedirectUrlIfSwa(Profile* profile,
     ss << override_url << "?timestamp=" << clock->NowTicks();
 
     if (url.has_query()) {
-      ss << '&' << url.query();
+      ss << '&' << url.GetQuery();
     }
 
     GURL result(ss.str());

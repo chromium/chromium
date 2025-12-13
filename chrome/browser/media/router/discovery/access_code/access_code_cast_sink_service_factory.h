@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_ACCESS_CODE_ACCESS_CODE_CAST_SINK_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_ACCESS_CODE_ACCESS_CODE_CAST_SINK_SERVICE_FACTORY_H_
 
-#include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 

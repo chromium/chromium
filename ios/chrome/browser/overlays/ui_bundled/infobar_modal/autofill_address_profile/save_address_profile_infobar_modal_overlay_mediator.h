@@ -24,17 +24,9 @@ class AutofillProfile;
 // configures the new consumer.
 @property(nonatomic) id<InfobarSaveAddressProfileModalConsumer> consumer;
 
-// The consumer that is configured by this mediator for the edit address
-// profile.
-@property(nonatomic) id<InfobarEditAddressProfileModalConsumer>
-    editAddressConsumer;
-
 // Delegate to communicate user actions to change the UI presentation.
 @property(nonatomic) id<SaveAddressProfileInfobarModalOverlayMediatorDelegate>
     saveAddressProfileMediatorDelegate;
-
-// Saves the autofill `profile` that was edited in the edit modal view.
-- (void)saveEditedProfileWithProfileData:(autofill::AutofillProfile*)profile;
 
 @end
 

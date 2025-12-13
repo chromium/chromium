@@ -69,25 +69,28 @@ public class EmbeddedTestServerRule implements TestRule {
     }
 
     /**
-     * Sets the port that the server will be started with. Must be called before the first
-     * {@link #getServer()} call.
+     * Sets the port that the server will be started with. Must be called before the first {@link
+     * #getServer()} call.
      *
      * @param port the port to start the server with, or 0 for an automatically selected one.
      */
-    public void setServerPort(int port) {
+    public EmbeddedTestServerRule setServerPort(int port) {
         assert mServer == null;
         mServerPort = port;
+        return this;
     }
 
     /** Sets whether to create an HTTPS (vs HTTP) server. */
-    public void setServerUsesHttps(boolean useHttps) {
+    public EmbeddedTestServerRule setServerUsesHttps(boolean useHttps) {
         assert mServer == null;
         mUseHttps = useHttps;
+        return this;
     }
 
     /** Sets what type of certificate the server uses when running as an HTTPS server. */
-    public void setCertificateType(@ServerCertificate int certificateType) {
+    public EmbeddedTestServerRule setCertificateType(@ServerCertificate int certificateType) {
         assert mServer == null;
         mCertificateType = certificateType;
+        return this;
     }
 }

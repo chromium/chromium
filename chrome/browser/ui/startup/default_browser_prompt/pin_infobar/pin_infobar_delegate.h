@@ -16,10 +16,22 @@ class InfoBar;
 
 namespace default_browser {
 
+// Potential user interactions with the pin-to-taskbar infobar.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Exposed for testing.
+enum class PinInfoBarUserInteraction {
+  kAccepted = 0,
+  kDismissed = 1,
+  kIgnored = 2,
+  kMaxValue = kIgnored,
+};
+
 // The pin-to-taskbar infobar offers to pin Chrome to the taskbar. This class
 // customizes its appearance and behavior.
 class PinInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
+  ~PinInfoBarDelegate() override;
+
   // Creates a `PinInfoBarDelegate` instance and adds it to
   // `infobar_manager`.
   static infobars::InfoBar* Create(
@@ -34,6 +46,12 @@ class PinInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   int GetButtons() const override;
   bool Accept() override;
+  void InfoBarDismissed() override;
+
+ private:
+  // Indicates whether the user interacted with the infobar, in order to detect
+  // if the infobar was ignored.
+  bool action_taken_ = false;
 };
 
 }  // namespace default_browser

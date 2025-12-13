@@ -7,7 +7,7 @@ module extensions.mojom;
 import "extensions/common/mojom/host_id.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
-// EventDispatch is a one-per-renderer-processs interface that is responsible
+// EventDispatch is a one-per-renderer-process interface that is responsible
 // for triggering API events that extensions have registered listeners for in
 // the renderer (either the extension process renderer, for extension-origin
 // pages, or a web renderer, for content script listeners).

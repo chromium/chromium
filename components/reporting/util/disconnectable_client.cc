@@ -27,7 +27,6 @@ namespace reporting {
 // The feature is enabled by default, to be disabled as a kill switch only
 // (if it is disabled, all jobs are permitted to run, no limit)
 BASE_FEATURE(kEnableReportingDelegateJobsLimit,
-             "EnableReportingDelegateJobsLimit",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr char kMaxDelegatesRunningParamName[] = "max_running";

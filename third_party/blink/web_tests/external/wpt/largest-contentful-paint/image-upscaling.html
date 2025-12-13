@@ -4,6 +4,8 @@
 <body>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
   <script src="resources/largest-contentful-paint-helpers.js"></script>
   <script src="/common/utils.js"></script>
   <script>
@@ -12,8 +14,22 @@
     const imageURL = `${window.location.origin}/images/blue.png`;
 
     async function load_image_and_get_lcp_size(t, imageStyle = {}, containerStyle = {}) {
-      const popup = window.open();
-      t.add_cleanup(() => popup.close());
+      let popup;
+      await test_driver.bless('Open a popup', () => {
+        popup = window.open('about:blank');
+        t.add_cleanup(() => popup.close());
+      });
+
+      // Per spec, we should end up with a pagereveal event once the
+      // window is open. However, Gecko seems to load the initial
+      // about:blank synchronously and then asynchronously load the
+      // about:blank requested above, thus we also accept pageshow
+      // here as a sign the popup is ready.
+      await Promise.any([
+        new Promise(resolve => popup.addEventListener('pagereveal', () => resolve(), {'once': true})),
+        new Promise(resolve => popup.addEventListener('pageshow', () => resolve(), {'once': true})),
+      ]);
+
       const image = popup.document.createElement('img');
       image.src = imageURL;
 
@@ -72,7 +88,7 @@
     promise_test(async t => {
       const { naturalSize, lcpSize } = await load_image_and_get_lcp_size(t,
         { transform: 'scale(0.5)' });
-      assert_equals(Math.floor(lcpSize), Math.floor(naturalSize / 4));
+      assert_approx_equals(Math.floor(lcpSize), Math.floor(naturalSize / 4), 2);
     }, 'A downscaled image (using scale) should report the displayed size');
 
     promise_test(async t => {

@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
-#include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
@@ -20,9 +19,6 @@ class ComponentExtensionContentSettingsAllowlist;
 // A provider that supplies HostContentSettingsMap with a list of auto-granted
 // permissions from the underlying
 // ComponentExtensionContentSettingsAllowList.
-//
-// PartitionKey is ignored by this provider because the content settings should
-// apply across partitions.
 class ComponentExtensionContentSettingsProvider final
     : public content_settings::ObservableProvider {
  public:
@@ -39,24 +35,19 @@ class ComponentExtensionContentSettingsProvider final
   // content_settings::ObservableProvider implementation
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      bool off_the_record,
-      const content_settings::PartitionKey& partition_key) const override;
+      bool off_the_record) const override;
   std::unique_ptr<content_settings::Rule> GetRule(
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,
-      bool off_the_record,
-      const content_settings::PartitionKey& partition_key) const override;
+      bool off_the_record) const override;
   bool SetWebsiteSetting(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
       base::Value&& value,
-      const content_settings::ContentSettingConstraints& constraints,
-      const content_settings::PartitionKey& partition_key) override;
-  void ClearAllContentSettingsRules(
-      ContentSettingsType content_type,
-      const content_settings::PartitionKey& partition_key) override;
+      const content_settings::ContentSettingConstraints& constraints) override;
+  void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
   void ShutdownOnUIThread() override;
 
  private:

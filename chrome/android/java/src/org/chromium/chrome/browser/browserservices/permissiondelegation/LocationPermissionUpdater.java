@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.browserservices.permissiondelegation;
 
+import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
+
 import android.content.ComponentName;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 
@@ -23,8 +25,6 @@ import org.chromium.components.embedder_support.util.Origin;
 public class LocationPermissionUpdater {
     private static final String TAG = "TWALocations";
 
-    private static final @ContentSettingsType.EnumType int TYPE = ContentSettingsType.GEOLOCATION;
-
     private LocationPermissionUpdater() {}
 
     /**
@@ -33,7 +33,10 @@ public class LocationPermissionUpdater {
      * location permission to what it was before any client app was installed.
      */
     static void onClientAppUninstalled(Origin origin) {
-        InstalledWebappPermissionManager.resetStoredPermission(origin, TYPE);
+        InstalledWebappPermissionManager.resetStoredPermission(
+                origin, ContentSettingsType.GEOLOCATION_WITH_OPTIONS);
+        InstalledWebappPermissionManager.resetStoredPermission(
+                origin, ContentSettingsType.GEOLOCATION);
     }
 
     /**
@@ -50,7 +53,7 @@ public class LocationPermissionUpdater {
 
                             @Override
                             public void onPermission(
-                                    ComponentName app, @ContentSettingValues int settingValue) {
+                                    ComponentName app, @ContentSetting int settingValue) {
                                 if (mCalled) return;
                                 mCalled = true;
                                 updatePermission(origin, callback, app, settingValue);
@@ -61,21 +64,18 @@ public class LocationPermissionUpdater {
                                 if (mCalled) return;
                                 mCalled = true;
                                 InstalledWebappPermissionManager.resetStoredPermission(
-                                        origin, TYPE);
+                                        origin, getGeolocationType());
                                 InstalledWebappBridge.runPermissionCallback(
-                                        callback, ContentSettingValues.BLOCK);
+                                        callback, ContentSetting.BLOCK);
                             }
                         });
     }
 
     private static void updatePermission(
-            Origin origin,
-            long callback,
-            ComponentName app,
-            @ContentSettingValues int settingValue) {
-        boolean enabled = settingValue == ContentSettingValues.ALLOW;
+            Origin origin, long callback, ComponentName app, @ContentSetting int settingValue) {
+        boolean enabled = settingValue == ContentSetting.ALLOW;
         InstalledWebappPermissionManager.updatePermission(
-                origin, app.getPackageName(), TYPE, settingValue);
+                origin, app.getPackageName(), getGeolocationType(), settingValue);
         Log.d(TAG, "Updating origin location permissions to: %b", enabled);
 
         InstalledWebappBridge.runPermissionCallback(callback, settingValue);

@@ -12,7 +12,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import org.junit.Before;
@@ -25,9 +24,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentController;
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -43,12 +41,14 @@ import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.function.Supplier;
+
 @RunWith(BaseRobolectricTestRunner.class)
 public class PriceInsightsButtonControllerTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private Tab mMockTab;
-    @Mock private Supplier<TabBookmarker> mMockTabBookmarkerSupplier;
     @Mock private Supplier<Tab> mMockTabSupplier;
     @Mock private Supplier<TabModelSelector> mMockTabModelSelectorSupplier;
     @Mock private Supplier<ShoppingService> mMockShoppingServiceSupplier;
@@ -67,17 +67,15 @@ public class PriceInsightsButtonControllerTest {
     public void setUp() {
         CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
 
-        Context mockContext = mock(Context.class);
-        Resources mockResources = mock(Resources.class);
-        doReturn(mockResources).when(mockContext).getResources();
-        doReturn(mockContext).when(mMockTab).getContext();
+        Context appContext = ContextUtils.getApplicationContext();
+        doReturn(appContext).when(mMockTab).getContext();
         doReturn(mMockTab).when(mMockTabSupplier).get();
         doReturn(mMockShoppingService).when(mMockShoppingServiceSupplier).get();
     }
 
     private PriceInsightsButtonController createButtonController() {
         return new PriceInsightsButtonController(
-                mMockTab.getContext(),
+                ContextUtils.getApplicationContext(),
                 mMockTabSupplier,
                 mMockTabModelSelectorSupplier,
                 mMockShoppingServiceSupplier,

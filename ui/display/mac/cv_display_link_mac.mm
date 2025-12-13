@@ -18,6 +18,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
+#include "ui/display/mac/screen_utils_mac.h"
 
 namespace base::apple {
 
@@ -245,19 +246,18 @@ void CVDisplayLinkMac::StopDisplayLinkIfNeeded() {
   consecutive_vsyncs_with_no_callbacks_ = 0;
 }
 
-double CVDisplayLinkMac::GetRefreshRate() const {
+base::TimeDelta CVDisplayLinkMac::GetRefreshInterval() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  double refresh_rate = 0;
 
   CVTime cv_time =
       CVDisplayLinkGetNominalOutputVideoRefreshPeriod(display_link_.get());
   if (!(cv_time.flags & kCVTimeIsIndefinite)) {
-    refresh_rate = (static_cast<double>(cv_time.timeScale) /
-                    static_cast<double>(cv_time.timeValue));
+    double refresh_interval = (static_cast<double>(cv_time.timeValue) /
+                               static_cast<double>(cv_time.timeScale));
+    return (base::Seconds(1) * refresh_interval);
+  } else {
+    return display::GetNSScreenRefreshInterval(display_id_);
   }
-
-  return refresh_rate;
 }
 
 void CVDisplayLinkMac::GetRefreshIntervalRange(
@@ -266,15 +266,9 @@ void CVDisplayLinkMac::GetRefreshIntervalRange(
     base::TimeDelta& granularity) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  double refresh_rate = GetRefreshRate();
-  if (refresh_rate) {
-    min_interval = base::Seconds(1) / refresh_rate;
-    max_interval = min_interval;
-    granularity = min_interval;
-  } else {
-    min_interval = base::TimeDelta();
-    max_interval = base::TimeDelta();
-  }
+  // Force the max/min range because CVDisplayLink does not support
+  // preferredFrameRateRange.
+  min_interval = max_interval = granularity = GetRefreshInterval();
 }
 
 base::TimeTicks CVDisplayLinkMac::GetCurrentTime() const {

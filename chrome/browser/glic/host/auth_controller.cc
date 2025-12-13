@@ -5,7 +5,6 @@
 #include "chrome/browser/glic/host/auth_controller.h"
 
 #include "base/command_line.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
@@ -14,6 +13,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 namespace glic {
 
@@ -28,6 +28,12 @@ bool IsAutomationEnabled() {
 }
 
 }  // namespace
+
+bool IsPrimaryAccountGoogleInternal(signin::IdentityManager& signin_manager) {
+  return gaia::IsGoogleInternalAccountEmail(gaia::CanonicalizeEmail(
+      signin_manager.GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .email));
+}
 
 AuthController::AuthController(Profile* profile,
                                signin::IdentityManager* identity_manager,

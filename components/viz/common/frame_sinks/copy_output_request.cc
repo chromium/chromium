@@ -16,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace {
@@ -31,6 +32,8 @@ const char* ResultFormatToShortString(
       return "I420";
     case viz::CopyOutputRequest::ResultFormat::NV12:
       return "NV12";
+    case viz::CopyOutputRequest::ResultFormat::RGBAF16:
+      return "RGBAF16";
   }
 }
 
@@ -70,7 +73,8 @@ CopyOutputRequest::CopyOutputRequest(ResultFormat result_format,
          result_destination_ == ResultDestination::kSystemMemory);
 
   DCHECK(!result_callback_.is_null());
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("viz", "CopyOutputRequest", this);
+  TRACE_EVENT_BEGIN("viz", "CopyOutputRequest",
+                    perfetto::Track::FromPointer(this));
 }
 
 CopyOutputRequest::~CopyOutputRequest() {
@@ -120,7 +124,8 @@ void CopyOutputRequest::set_blit_request(BlitRequest blit_request) {
   DCHECK(!blit_request_);
   DCHECK_EQ(result_destination(), ResultDestination::kSharedImage);
   DCHECK(result_format() == ResultFormat::NV12 ||
-         result_format() == ResultFormat::RGBA);
+         result_format() == ResultFormat::RGBA ||
+         result_format() == ResultFormat::RGBAF16);
   DCHECK(has_result_selection());
 
   if (result_format() == ResultFormat::NV12) {
@@ -135,9 +140,10 @@ void CopyOutputRequest::set_blit_request(BlitRequest blit_request) {
 }
 
 void CopyOutputRequest::SendResult(std::unique_ptr<CopyOutputResult> result) {
-  TRACE_EVENT_NESTABLE_ASYNC_END2(
-      "viz", "CopyOutputRequest", this, "success", !result->IsEmpty(),
-      "has_provided_task_runner", !!result_task_runner_);
+  TRACE_EVENT_END("viz",
+                  /* CopyOutputRequest */ perfetto::Track::FromPointer(this),
+                  "success", !result->IsEmpty(), "has_provided_task_runner",
+                  !!result_task_runner_);
   CHECK(result_task_runner_);
   auto task = base::BindOnce(std::move(result_callback_), std::move(result));
 

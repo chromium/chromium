@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/public/browser/document_picture_in_picture_window_controller.h"
-
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
@@ -16,7 +18,9 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/test/widget_activation_waiter.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -52,8 +56,8 @@ class DocumentPictureInPicturePixelTest : public UiBrowserTest,
 
     // Disable animation for stability.
     animation_duration_ =
-        std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+        std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
     InProcessBrowserTest::SetUp();
   }
@@ -84,7 +88,7 @@ class DocumentPictureInPicturePixelTest : public UiBrowserTest,
   void LoadTabAndEnterPictureInPicture(
       Browser* browser,
       const gfx::Size& window_size = gfx::Size(300, 300)) {
-    GURL test_page_url = ui_test_utils::GetTestUrl(
+    GURL test_page_url = chrome_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(kPictureInPictureDocumentPipPage));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
@@ -122,6 +126,15 @@ class DocumentPictureInPicturePixelTest : public UiBrowserTest,
     EXPECT_TRUE(WaitForRenderFrameReady(contents->GetPrimaryMainFrame()));
   }
 
+  void WaitForPipWidgetActivation(content::WebContents* pip_web_contents) {
+    auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(
+        pip_web_contents->GetTopLevelNativeWindow());
+    ASSERT_TRUE(browser_view);
+    auto* pip_widget = browser_view->GetWidget();
+    ASSERT_TRUE(pip_widget);
+    views::test::WaitForWidgetActive(pip_widget, /*active=*/true);
+  }
+
   void ShowUi(const std::string& name) override {
     LoadTabAndEnterPictureInPicture(browser());
 
@@ -131,6 +144,8 @@ class DocumentPictureInPicturePixelTest : public UiBrowserTest,
 
     ASSERT_TRUE(GetRenderWidgetHostView());
     EXPECT_TRUE(GetRenderWidgetHostView()->IsShowing());
+
+    WaitForPipWidgetActivation(pip_web_contents);
     EXPECT_TRUE(GetRenderWidgetHostView()->HasFocus());
   }
 
@@ -139,7 +154,7 @@ class DocumentPictureInPicturePixelTest : public UiBrowserTest,
         BrowserWindow::FindBrowserWindowWithWebContents(
             window_controller()->GetChildWebContents()));
     auto* pip_frame_view = static_cast<PictureInPictureBrowserFrameView*>(
-        browser_view->frame()->GetFrameView());
+        browser_view->browser_widget()->GetFrameView());
 
     const auto* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
@@ -152,11 +167,15 @@ class DocumentPictureInPicturePixelTest : public UiBrowserTest,
   }
 
  private:
+ // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   raw_ptr<content::DocumentPictureInPictureWindowController>
       pip_window_controller_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
   // Used to force a zero duration animation.
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> animation_duration_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> animation_duration_;
 };
 
 }  // namespace

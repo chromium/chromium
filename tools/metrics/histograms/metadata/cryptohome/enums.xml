@@ -52,17 +52,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Mixed Backing Stores"/>
 </enum>
 
-<enum name="CryptohomeBackupKeysetCleanupResult">
-  <int value="0" label="Removed backup password"/>
-  <int value="1" label="Removed backup PIN"/>
-  <int value="2" label="Removed backup of other type"/>
-  <int value="3" label="AddResetSecret failed"/>
-  <int value="4" label="GetValidKeyset failed"/>
-  <int value="5" label="Remove file failed for PIN"/>
-  <int value="6" label="Remove file failed for password"/>
-  <int value="7" label="Remove file failed for other type"/>
-</enum>
-
 <enum name="CryptohomeCryptoError">
   <summary>
     The error enum defined in platform2/cryptohome/crypto_error.h
@@ -4168,16 +4157,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Parse certificate file failed"/>
   <int value="5" label="Verify certificate file failed"/>
   <int value="6" label="Encode certificate failed"/>
-</enum>
-
-<enum name="VkToUssMigrationStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Failed persisting to USS"/>
-  <int value="2" label="Failed constructing input"/>
-  <int value="3" label="Failed creating USS"/>
-  <int value="4" label="Failed creating USS migration secret"/>
-  <int value="5" label="Failed decrypting USS"/>
-  <int value="6" label="Failed recording migrated tag in the VK"/>
 </enum>
 
 <enum name="WrappingKeyDerivation">

@@ -20,10 +20,10 @@ import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.OptionalInt;
 
 /**
  * Tests that metric reporter correctly writes the histograms depending on the function and setting.
@@ -93,7 +93,10 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
     }
 
     private void checkFailureHistograms(
-            String functionSuffix, String settingSuffix, int errorCode, OptionalInt apiErrorCode) {
+            String functionSuffix,
+            String settingSuffix,
+            int errorCode,
+            @Nullable Integer apiErrorCode) {
         final String nameWithSuffixes =
                 HISTOGRAM_NAME_BASE + "." + functionSuffix + "." + settingSuffix;
         assertEquals(
@@ -121,29 +124,28 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         nameWithSuffixes + "." + mStoreType + ".ErrorCode", errorCode));
-        apiErrorCode.ifPresentOrElse(
-                apiError ->
-                        assertEquals(
-                                1,
-                                RecordHistogram.getHistogramValueCountForTesting(
-                                        nameWithSuffixes + ".APIError1", apiError)),
-                () ->
-                        assertEquals(
-                                0,
-                                RecordHistogram.getHistogramTotalCountForTesting(
-                                        nameWithSuffixes + ".APIError1")));
-        apiErrorCode.ifPresentOrElse(
-                apiError ->
-                        assertEquals(
-                                1,
-                                RecordHistogram.getHistogramValueCountForTesting(
-                                        nameWithSuffixes + "." + mStoreType + ".APIError1",
-                                        apiError)),
-                () ->
-                        assertEquals(
-                                0,
-                                RecordHistogram.getHistogramTotalCountForTesting(
-                                        nameWithSuffixes + "." + mStoreType + ".APIError1")));
+        if (apiErrorCode != null) {
+            assertEquals(
+                    1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            nameWithSuffixes + ".APIError1", apiErrorCode));
+        } else {
+            assertEquals(
+                    0,
+                    RecordHistogram.getHistogramTotalCountForTesting(
+                            nameWithSuffixes + ".APIError1"));
+        }
+        if (apiErrorCode != null) {
+            assertEquals(
+                    1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            nameWithSuffixes + "." + mStoreType + ".APIError1", apiErrorCode));
+        } else {
+            assertEquals(
+                    0,
+                    RecordHistogram.getHistogramTotalCountForTesting(
+                            nameWithSuffixes + "." + mStoreType + ".APIError1"));
+        }
     }
 
     @Test
@@ -185,7 +187,7 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
                 "GetSettingValue",
                 "OfferToSavePasswords",
                 AndroidBackendErrorType.UNCATEGORIZED,
-                OptionalInt.empty());
+                null);
     }
 
     @Test
@@ -200,10 +202,7 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
 
         metricsRecorder.recordMetrics(expectedException);
         checkFailureHistograms(
-                "GetSettingValue",
-                "AutoSignIn",
-                AndroidBackendErrorType.UNCATEGORIZED,
-                OptionalInt.empty());
+                "GetSettingValue", "AutoSignIn", AndroidBackendErrorType.UNCATEGORIZED, null);
     }
 
     @Test
@@ -222,7 +221,7 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
                 "GetSettingValue",
                 "OfferToSavePasswords",
                 AndroidBackendErrorType.EXTERNAL_ERROR,
-                OptionalInt.of(ChromeSyncStatusCode.AUTH_ERROR_UNRESOLVABLE));
+                ChromeSyncStatusCode.AUTH_ERROR_UNRESOLVABLE);
     }
 
     @Test
@@ -241,7 +240,7 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
                 "GetSettingValue",
                 "AutoSignIn",
                 AndroidBackendErrorType.EXTERNAL_ERROR,
-                OptionalInt.of(ChromeSyncStatusCode.AUTH_ERROR_UNRESOLVABLE));
+                ChromeSyncStatusCode.AUTH_ERROR_UNRESOLVABLE);
     }
 
     @Test
@@ -283,7 +282,7 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
                 "SetSettingValue",
                 "OfferToSavePasswords",
                 AndroidBackendErrorType.UNCATEGORIZED,
-                OptionalInt.empty());
+                null);
     }
 
     @Test
@@ -298,10 +297,7 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
 
         metricsRecorder.recordMetrics(expectedException);
         checkFailureHistograms(
-                "SetSettingValue",
-                "AutoSignIn",
-                AndroidBackendErrorType.UNCATEGORIZED,
-                OptionalInt.empty());
+                "SetSettingValue", "AutoSignIn", AndroidBackendErrorType.UNCATEGORIZED, null);
     }
 
     @Test
@@ -320,7 +316,7 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
                 "SetSettingValue",
                 "OfferToSavePasswords",
                 AndroidBackendErrorType.EXTERNAL_ERROR,
-                OptionalInt.of(ChromeSyncStatusCode.AUTH_ERROR_UNRESOLVABLE));
+                ChromeSyncStatusCode.AUTH_ERROR_UNRESOLVABLE);
     }
 
     @Test
@@ -339,7 +335,7 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
                 "SetSettingValue",
                 "AutoSignIn",
                 AndroidBackendErrorType.EXTERNAL_ERROR,
-                OptionalInt.of(ChromeSyncStatusCode.AUTH_ERROR_UNRESOLVABLE));
+                ChromeSyncStatusCode.AUTH_ERROR_UNRESOLVABLE);
     }
 
     @Test
@@ -369,7 +365,7 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
                 "GetSettingValue",
                 "BiometricReauthBeforePwdFilling",
                 AndroidBackendErrorType.UNCATEGORIZED,
-                OptionalInt.empty());
+                null);
     }
 
     @Test
@@ -388,6 +384,6 @@ public class PasswordSettingsUpdaterMetricsRecorderTest {
                 "GetSettingValue",
                 "BiometricReauthBeforePwdFilling",
                 AndroidBackendErrorType.EXTERNAL_ERROR,
-                OptionalInt.of(ChromeSyncStatusCode.AUTH_ERROR_UNRESOLVABLE));
+                ChromeSyncStatusCode.AUTH_ERROR_UNRESOLVABLE);
     }
 }

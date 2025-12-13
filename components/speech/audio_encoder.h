@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/speech/audio_buffer.h"
 #include "third_party/flac/include/FLAC/stream_encoder.h"
 

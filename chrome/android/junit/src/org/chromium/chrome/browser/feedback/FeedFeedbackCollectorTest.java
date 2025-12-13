@@ -37,8 +37,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.TestAccounts;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +54,6 @@ public class FeedFeedbackCollectorTest {
     // Enable the Features class, so we can override command line switches in the test.
     @Mock private Activity mActivity;
     @Mock private Profile mProfile;
-    @Mock private CoreAccountInfo mAccountInfo;
 
     // Test constants.
     private static final String CATEGORY_TAG = "category_tag";
@@ -113,18 +112,18 @@ public class FeedFeedbackCollectorTest {
     @Before
     public void setUp() {
         ThreadUtils.setUiThread(Looper.getMainLooper());
-        when(mAccountInfo.getEmail()).thenReturn(null);
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mock(IdentityManager.class));
         when(IdentityServicesProvider.get()
                         .getIdentityManager(any())
                         .getPrimaryAccountInfo(anyInt()))
-                .thenReturn(mAccountInfo);
+                .thenReturn(TestAccounts.ACCOUNT1);
     }
 
     @Test
     @Feature({"Feed"})
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testFeedSynchronousData() {
         @SuppressWarnings("unchecked")
         Callback<FeedbackCollector> callback = mock(Callback.class);

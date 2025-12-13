@@ -37,8 +37,14 @@ chromium-metrics-reviews@google.com.
       summary=", on a site that the user had previously visited"/>
 </variants>
 
-<variants name="SecurityInterstitialLookalikeType">
+<variants name="SecurityInterstitialLookalikeOrSSLType">
+  <variant name=""/>
+  <variant name="bad_clock." summary=""/>
+  <variant name="https_first_mode." summary=""/>
+  <variant name="legacy_tls." summary=""/>
   <variant name="lookalike." summary=""/>
+  <variant name="ssl_nonoverridable." summary=""/>
+  <variant name="ssl_overridable." summary=""/>
 </variants>
 
 <variants name="SecurityInterstitialSBType">
@@ -78,7 +84,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="interstitial.captive_portal"
-    enum="CaptivePortalBlockingPageEvent" expires_after="2025-11-16">
+    enum="CaptivePortalBlockingPageEvent" expires_after="2026-01-18">
   <owner>meacer@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -88,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.CloseReason" enum="InterstitialCloseReason"
-    expires_after="2025-10-12">
+    expires_after="2026-10-15">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -100,7 +106,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_block.decision"
-    enum="SecurityInterstitialDecision" expires_after="2026-01-21">
+    enum="SecurityInterstitialDecision" expires_after="2027-01-21">
   <owner>domfc@chromium.org</owner>
   <owner>cbe-cep-eng@google.com</owner>
   <summary>
@@ -110,7 +116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_block.decision.repeat_visit"
-    enum="SecurityInterstitialDecision" expires_after="2026-01-21">
+    enum="SecurityInterstitialDecision" expires_after="2027-01-21">
   <owner>domfc@chromium.org</owner>
   <owner>cbe-cep-eng@google.com</owner>
   <summary>
@@ -120,7 +126,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_block.interaction"
-    enum="SecurityInterstitialInteraction" expires_after="2026-01-21">
+    enum="SecurityInterstitialInteraction" expires_after="2027-01-21">
   <owner>domfc@chromium.org</owner>
   <owner>cbe-cep-eng@google.com</owner>
   <summary>
@@ -130,7 +136,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_warn.decision"
-    enum="SecurityInterstitialDecision" expires_after="2026-01-21">
+    enum="SecurityInterstitialDecision" expires_after="2027-01-21">
   <owner>domfc@chromium.org</owner>
   <owner>cbe-cep-eng@google.com</owner>
   <summary>
@@ -140,7 +146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_warn.decision.repeat_visit"
-    enum="SecurityInterstitialDecision" expires_after="2026-01-21">
+    enum="SecurityInterstitialDecision" expires_after="2027-01-21">
   <owner>domfc@chromium.org</owner>
   <owner>cbe-cep-eng@google.com</owner>
   <summary>
@@ -150,7 +156,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_warn.interaction"
-    enum="SecurityInterstitialInteraction" expires_after="2026-01-21">
+    enum="SecurityInterstitialInteraction" expires_after="2027-01-21">
   <owner>domfc@chromium.org</owner>
   <owner>cbe-cep-eng@google.com</owner>
   <summary>
@@ -328,7 +334,7 @@ chromium-metrics-reviews@google.com.
       variants="AdditionalSecurityInterstitialSBType"/>
 </histogram>
 
-<histogram name="interstitial.{SecurityInterstitialLookalikeType}decision"
+<histogram name="interstitial.{SecurityInterstitialLookalikeOrSSLType}decision"
     enum="SecurityInterstitialDecision" expires_after="never">
 <!-- expires-never: Used for long term monitoring of security errors -->
 
@@ -343,16 +349,12 @@ chromium-metrics-reviews@google.com.
     social_engineering_ads* and social_engineering_landing* interstitial reasons
     have been removed because they don't trigger interstitials.
 
-    {SecurityInterstitialLookalikeType}
+    {SecurityInterstitialLookalikeOrSSLType}
   </summary>
-  <token key="SecurityInterstitialLookalikeType"
-      variants="SecurityInterstitialLookalikeType">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram
-    name="interstitial.{SecurityInterstitialLookalikeType}decision.repeat_visit"
+    name="interstitial.{SecurityInterstitialLookalikeOrSSLType}decision.repeat_visit"
     enum="SecurityInterstitialDecision" expires_after="never">
 <!-- expires-never: Used for long term monitoring of security errors -->
 
@@ -365,15 +367,14 @@ chromium-metrics-reviews@google.com.
     social_engineering_landing* interstitial reasons are split into their own
     entries from phishing*. As of M90, social_engineering_ads* and
     social_engineering_landing* interstitial reasons have been removed because
-    they don't trigger interstitials. {SecurityInterstitialLookalikeType}
+    they don't trigger interstitials.
+
+    {SecurityInterstitialLookalikeOrSSLType}
   </summary>
-  <token key="SecurityInterstitialLookalikeType"
-      variants="SecurityInterstitialLookalikeType">
-    <variant name=""/>
-  </token>
 </histogram>
 
-<histogram name="interstitial.{SecurityInterstitialLookalikeType}interaction"
+<histogram
+    name="interstitial.{SecurityInterstitialLookalikeOrSSLType}interaction"
     enum="SecurityInterstitialInteraction" expires_after="never">
 <!-- expires-never: Used for long term monitoring of security errors -->
 
@@ -386,17 +387,14 @@ chromium-metrics-reviews@google.com.
     are split into their own entries from phishing*. As of M90,
     social_engineering_ads* and social_engineering_landing* interstitial reasons
     have been removed because they don't trigger interstitials.
-    {SecurityInterstitialLookalikeType}
+
+    {SecurityInterstitialLookalikeOrSSLType}
   </summary>
-  <token key="SecurityInterstitialLookalikeType"
-      variants="SecurityInterstitialLookalikeType">
-    <variant name=""/>
-  </token>
 </histogram>
 
 <histogram
     name="interstitial.{SecurityInterstitialSBType}decision{RepeatVisit}{IsPostCommitInterstitialSuffix}"
-    enum="SecurityInterstitialDecision" expires_after="2025-12-28">
+    enum="SecurityInterstitialDecision" expires_after="2026-05-03">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -488,7 +486,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="interstitial.{SecurityInterstitialSBType}show_delay{TimeRange}{SecurityInterstitialSBWithSourceType}"
-    units="ms" expires_after="2025-12-28">
+    units="ms" expires_after="2026-05-03">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

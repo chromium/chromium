@@ -43,9 +43,14 @@ build_webui("build") {
   ]
 
   if (is_chrome_branded) {
-    ts_path_mappings = [ "/data_sharing_sdk.js|" +
-                         rebase_path("${preprocess_folder}/data_sharing_sdk.js",
-                                     target_gen_dir) ]
+    ts_path_mappings = [
+      "/data_sharing_sdk.js|" +
+          rebase_path("${preprocess_folder}/data_sharing_sdk.js",
+                      target_gen_dir),
+      "/data_sharing_sdk_version.js|" +
+          rebase_path("${preprocess_folder}/data_sharing_sdk_version.js",
+                      target_gen_dir),
+    ]
     ts_extra_deps = [ ":copy_data_sharing_sdk" ]
     extra_grdp_deps = [ ":build_data_sharing_sdk_grdp" ]
     extra_grdp_files = [ "$target_gen_dir/data_sharing_sdk.grdp" ]
@@ -71,6 +76,7 @@ if (is_chrome_branded) {
     input_files = [
       "data_sharing_sdk.js",
       "data_sharing_sdk.css",
+      "data_sharing_sdk_version.js",
     ]
     input_files_base_dir = rebase_path(preprocess_folder, root_build_dir)
   }
@@ -79,6 +85,8 @@ if (is_chrome_branded) {
     sources = [
       "//third_party/data_sharing_sdk/data_sharing_sdk.css",
       "//third_party/data_sharing_sdk/data_sharing_sdk.js",
+      "//third_party/data_sharing_sdk/data_sharing_sdk_version.js",
+      "data_sharing_sdk_version.d.ts",
     ]
 
     outputs = [ "$preprocess_folder/{{source_file_part}}" ]

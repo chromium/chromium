@@ -13,11 +13,14 @@ import {mojo} from '//resources/mojo/mojo/public/js/bindings.js';
 
 
 
-export class IFacePendingReceiver implements
-    mojo.internal.interfaceSupport.PendingReceiver {
+export type IFacePendingReceiverEndpoint =
+  mojo.internal.interfaceSupport.Endpoint<IFacePendingReceiver>;
 
-  handle: mojo.internal.interfaceSupport.Endpoint;
-  constructor(handle: MojoHandle|mojo.internal.interfaceSupport.Endpoint) {
+export class IFacePendingReceiver implements
+    mojo.internal.interfaceSupport.PendingReceiver<IFace> {
+
+  handle: mojo.internal.interfaceSupport.Endpoint<IFacePendingReceiver>;
+  constructor(handle: MojoHandle|IFacePendingReceiverEndpoint) {
     this.handle = mojo.internal.interfaceSupport.getEndpointForReceiver(handle);
   }
 
@@ -40,7 +43,7 @@ export class IFaceRemote implements IFaceInterface {
   onConnectionError: mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
 
   constructor(
-      handle?: MojoHandle|mojo.internal.interfaceSupport.Endpoint) {
+      handle?: MojoHandle|IFacePendingReceiverEndpoint) {
     this.proxy =
         new mojo.internal.interfaceSupport.InterfaceRemoteBase(
           IFacePendingReceiver, handle);
@@ -70,9 +73,11 @@ export class IFaceRemote implements IFaceInterface {
  * interface.
  */
 export class IFaceReceiver {
-  private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<IFaceRemote>;
+  private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<
+    IFaceRemote, IFacePendingReceiver>;
 
-  $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<IFaceRemote>;
+  $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<
+    IFaceRemote, IFacePendingReceiver>;
 
   onConnectionError: mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
 
@@ -119,8 +124,10 @@ export class IFace {
  * receiver can have any number of listeners added to it.
  */
 export class IFaceCallbackRouter {
-  private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<IFaceRemote>;
-  $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<IFaceRemote>;
+  private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<
+    IFaceRemote, IFacePendingReceiver>;
+  $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<
+    IFaceRemote, IFacePendingReceiver>;
   router_: mojo.internal.interfaceSupport.CallbackRouter;
 
   method: mojo.internal.interfaceSupport.InterfaceCallbackReceiver;

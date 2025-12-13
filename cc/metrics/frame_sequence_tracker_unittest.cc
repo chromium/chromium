@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/metrics/frame_sequence_tracker.h"
 
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -32,7 +28,7 @@ namespace {
 
 const char* ParseNumber(const char* str, uint64_t* retvalue) {
   uint64_t number = 0;
-  for (; *str >= '0' && *str <= '9'; ++str) {
+  for (; *str >= '0' && *str <= '9'; UNSAFE_TODO(++str)) {
     number *= 10;
     number += *str - '0';
   }
@@ -65,7 +61,8 @@ class FrameSequenceTrackerTest : public testing::Test,
             std::make_unique<CompositorFrameReportingController>(
                 /*should_report_histograms=*/true,
                 /*should_report_ukm=*/false,
-                /*layer_tree_host_id=*/1)) {
+                /*layer_tree_host_id=*/1,
+                /*is_trees_in_viz_client=*/false)) {
     compositor_frame_reporting_controller_->SetFrameSorter(&sorter_);
     sorter_.AddObserver(this);
     tracker_ = collection_.StartScrollSequence(
@@ -134,7 +131,7 @@ class FrameSequenceTrackerTest : public testing::Test,
     const uint64_t source_id = 1;
     viz::BeginFrameArgs last_activated_main_args;
     while (*str) {
-      const char command = *str++;
+      const char command = *UNSAFE_TODO(str++);
       uint64_t sequence = 0, dummy = 0, last_activated_main = 0;
       switch (command) {
         case 'b':
@@ -146,27 +143,27 @@ class FrameSequenceTrackerTest : public testing::Test,
         case 's':
         case 'r':
           ASSERT_EQ(*str, '(') << command;
-          str = ParseNumber(++str, &sequence);
+          str = ParseNumber(UNSAFE_TODO(++str), &sequence);
           ASSERT_EQ(*str, ')');
-          ++str;
+          UNSAFE_TODO(++str);
           break;
 
         case 'N':
           ASSERT_EQ(*str, '(');
-          str = ParseNumber(++str, &dummy);
+          str = ParseNumber(UNSAFE_TODO(++str), &dummy);
           ASSERT_EQ(*str, ',');
-          str = ParseNumber(++str, &sequence);
+          str = ParseNumber(UNSAFE_TODO(++str), &sequence);
           ASSERT_EQ(*str, ')');
-          ++str;
+          UNSAFE_TODO(++str);
           break;
 
         case 'e':
           ASSERT_EQ(*str, '(');
-          str = ParseNumber(++str, &sequence);
+          str = ParseNumber(UNSAFE_TODO(++str), &sequence);
           ASSERT_EQ(*str, ',');
-          str = ParseNumber(++str, &last_activated_main);
+          str = ParseNumber(UNSAFE_TODO(++str), &last_activated_main);
           ASSERT_EQ(*str, ')');
-          ++str;
+          UNSAFE_TODO(++str);
           break;
 
         case 'R':

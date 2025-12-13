@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/translate/model/translate_ranker_factory.h"
-#import "ios/web/public/browser_state.h"
 #import "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #import "third_party/metrics_proto/translate_event.pb.h"
 

@@ -128,10 +128,6 @@ constexpr int kNoItemsIndicatorHorizontalPaddingDp = 16;
 constexpr int kNoItemsIndicatorRoundingDp = 16;
 constexpr int kNoItemsIndicatorVerticalPaddingDp = 8;
 
-// Distance from the bottom of the save desk as template button to the top of
-// the first overview item.
-constexpr int kSaveDeskAsTemplateOverviewItemSpacingDp = 45;
-
 // Distance from the bottom of the last overview item to the top of the split
 // view setup view toast widget.
 constexpr int kSplitViewSetupToastSpacingDp = 40;
@@ -303,37 +299,6 @@ class ShutdownAnimationMetricsTrackerObserver : public OverviewObserver,
   raw_ptr<ui::Compositor> compositor_;
   OverviewExitMetricsTracker metrics_tracker_;
 };
-
-// Creates `save_desk_button_container_widget_`. It contains SaveDeskAsTemplate
-// button and save for later button.
-std::unique_ptr<views::Widget> CreateSaveDeskButtonContainerWidget(
-    aura::Window* root_window) {
-  views::Widget::InitParams params(
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-      views::Widget::InitParams::TYPE_POPUP);
-  params.activatable = views::Widget::InitParams::Activatable::kYes;
-  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.name = "SaveDeskButtonContainerWidget";
-  params.accept_events = true;
-  // This widget is hidden during window dragging, but will become visible on
-  // mouse/touch release. Place it in the active desk container so it remains
-  // beneath the dragged window when it is animating back to the overview grid.
-  params.parent = desks_util::GetActiveDeskContainerForRoot(root_window);
-  params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
-  // This should not show up in the MRU list. Otherwise, it will be treated as
-  // unsupported crostini app.
-  params.init_properties_container.SetProperty(kOverviewUiKey, true);
-
-  auto widget = std::make_unique<views::Widget>();
-  widget->set_focus_on_creation(false);
-  widget->Init(std::move(params));
-  // Turn off default widget animations.
-  widget->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
-
-  aura::Window* window = widget->GetNativeWindow();
-  window->parent()->StackChildAtBottom(window);
-  return widget;
-}
 
 float GetWantedDropTargetOpacity(
     SplitViewDragIndicators::WindowDraggingState window_dragging_state) {
@@ -666,7 +631,7 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
         OverviewEnterExitType::kFadeOutExit;
     const bool single_animation_in_clamshell =
         (animate_count == 1 && !has_non_cover_animating) &&
-        !display::Screen::GetScreen()->InTabletMode();
+        !display::Screen::Get()->InTabletMode();
     // The following instance self-destructs when shutdown animation ends.
     new ShutdownAnimationMetricsTrackerObserver(
         root_window_->layer()->GetCompositor(),
@@ -786,7 +751,7 @@ void OverviewGrid::PrepareForOverview() {
   }
 
   SplitViewController::Get(root_window_)->AddObserver(this);
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     if (auto* animator = RootWindowController::ForWindow(root_window_)
                              ->GetScreenRotationAnimator()) {
       animator->AddObserver(this);
@@ -940,7 +905,7 @@ void OverviewGrid::PositionWindows(
       !item_list_.empty()) {
     bool single_animation_in_clamshell =
         animate_count == 1 && !has_non_cover_animating &&
-        !display::Screen::GetScreen()->InTabletMode();
+        !display::Screen::Get()->InTabletMode();
     bool minimized_in_tablet = overview_session_->enter_exit_overview_type() ==
                                OverviewEnterExitType::kFadeInEnter;
     metrics_tracker_ = std::make_unique<OverviewEnterMetricsTracker>(
@@ -1521,7 +1486,7 @@ void OverviewGrid::CalculateWindowListAnimationStates(
                   : items[i]->GetWindow()->GetBoundsInRootWindow();
     if (!src_bounds_temp.IsEmpty()) {
       if (transition == OverviewTransition::kEnter &&
-          display::Screen::GetScreen()->InTabletMode()) {
+          display::Screen::Get()->InTabletMode()) {
         BackdropController* backdrop_controller =
             GetActiveWorkspaceController(root_window_)
                 ->layout_manager()
@@ -2387,8 +2352,8 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   // scroll is in progress.
   const bool target_visible =
       !no_items && !overview_session_->GetCurrentDraggedOverviewItem() &&
-      !display::Screen::GetScreen()->InTabletMode() &&
-      !IsShowingSavedDeskLibrary() && desks_widget_ &&
+      !display::Screen::Get()->InTabletMode() && !IsShowingSavedDeskLibrary() &&
+      desks_widget_ &&
       (!features::IsContinuousOverviewScrollAnimationEnabled() ||
        !OverviewController::Get()->is_continuous_scroll_in_progress());
 
@@ -2399,113 +2364,9 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   // viable to be shown, then we want to record a histogram for holdback
   // purposes.
   if (target_visible && visibility_changed) {
-    if (features::IsForestFeatureEnabled()) {
-      base::UmaHistogramBoolean(kShowSavedDeskButtonsRevampEnabledHistogramName,
-                                true);
-    } else {
-      base::UmaHistogramBoolean(
-          kShowSavedDeskButtonsRevampDisabledHistogramName, true);
-    }
+    base::UmaHistogramBoolean(kShowSavedDeskButtonsRevampEnabledHistogramName,
+                              true);
   }
-
-  // If the UI revamp is enabled, we return as the buttons will not be shown.
-  if (features::IsForestFeatureEnabled()) {
-    return;
-  }
-
-  // Adds or removes the widget from the accessibility focus order when exiting
-  // the scope. Skip the update if the widget's visibility hasn't changed.
-  absl::Cleanup update_accessibility_focus = [this, visibility_changed] {
-    if (visibility_changed) {
-      overview_session_->UpdateAccessibilityFocus();
-    }
-  };
-
-  if (!target_visible) {
-    if (visibility_changed && save_desk_button_container_widget_) {
-      PerformFadeOutLayer(
-          save_desk_button_container_widget_->GetLayer(),
-          /*animate=*/true,
-          base::BindOnce(&OverviewGrid::OnSaveDeskButtonContainerFadedOut,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
-    return;
-  }
-
-  // Create `save_desk_button_container_widget_`.
-  if (!save_desk_button_container_widget_) {
-    save_desk_button_container_widget_ =
-        CreateSaveDeskButtonContainerWidget(root_window_);
-    save_desk_button_container_widget_->SetContentsView(
-        std::make_unique<SavedDeskSaveDeskButtonContainer>(
-            base::BindRepeating(
-                &OverviewGrid::OnSaveDeskAsTemplateButtonPressed,
-                weak_ptr_factory_.GetWeakPtr()),
-            base::BindRepeating(&OverviewGrid::OnSaveDeskForLaterButtonPressed,
-                                weak_ptr_factory_.GetWeakPtr())));
-  }
-
-  // If a desk animation is in progress, we don't want to animate
-  // `save_desk_button_container_widget_`.
-  const bool in_desk_animation = DesksController::Get()->animation();
-
-  // There may be an existing animation in progress triggered by
-  // `PerformFadeOutLayer()` above, which animates a widget to 0.f before
-  // calling `OnSaveDeskButtonContainerFadedOut()` to hide the widget on
-  // animation end. Stop animating so that the callbacks associated get fired,
-  // otherwise we may end up trying to show a widget that's already shown.
-  // `StopAnimating()` is a no-op if there is no animation in progress.
-  if (visibility_changed) {
-    save_desk_button_container_widget_->GetLayer()
-        ->GetAnimator()
-        ->StopAnimating();
-    save_desk_button_container_widget_->ShowInactive();
-    PerformFadeInLayer(save_desk_button_container_widget_->GetLayer(),
-                       /*animate=*/!in_desk_animation);
-  }
-
-  // Enable/disable button and update tooltip.
-  auto* container = views::AsViewClass<SavedDeskSaveDeskButtonContainer>(
-      save_desk_button_container_widget_->GetContentsView());
-  CHECK(container);
-
-  SaveDeskOptionStatus template_status =
-      GetEnableStateAndTooltipIDForTemplateType(DeskTemplateType::kTemplate);
-  SaveDeskOptionStatus save_later_status =
-      GetEnableStateAndTooltipIDForTemplateType(
-          DeskTemplateType::kSaveAndRecall);
-
-  container->UpdateButtonEnableStateAndTooltip(DeskTemplateType::kTemplate,
-                                               template_status);
-  container->UpdateButtonEnableStateAndTooltip(DeskTemplateType::kSaveAndRecall,
-                                               save_later_status);
-
-  // Set the widget position above the overview item window and default width
-  // and height.
-  gfx::RectF first_overview_item_bounds;
-  if (item_list_.front()->animating_to_close()) {
-    CHECK_GT(item_list_.size(), 1u);
-    first_overview_item_bounds = item_list_[1]->target_bounds();
-  } else {
-    first_overview_item_bounds = item_list_.front()->target_bounds();
-  }
-
-  // Animate the widget so it moves with the items. The widget's size isn't
-  // changing, so its ok to use a bounds animation as opposed to a transform
-  // animation. If the visibility has changed, skip the bounds animation and use
-  // the fade animation from above. Align the widget so it is visually aligned
-  // with the first overview item.
-  ScopedOverviewAnimationSettings settings(
-      visibility_changed || in_desk_animation
-          ? OVERVIEW_ANIMATION_NONE
-          : OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_IN_OVERVIEW,
-      save_desk_button_container_widget_->GetNativeWindow());
-  gfx::Point available_origin =
-      gfx::ToRoundedPoint(first_overview_item_bounds.origin()) +
-      gfx::Vector2d(0, -kSaveDeskAsTemplateOverviewItemSpacingDp);
-  save_desk_button_container_widget_->SetBounds(gfx::Rect(
-      available_origin, save_desk_button_container_widget_->GetContentsView()
-                            ->GetPreferredSize()));
 }
 
 void OverviewGrid::EnableSaveDeskButtonContainer() {
@@ -3464,7 +3325,7 @@ int OverviewGrid::GetDesksBarHeight() const {
 }
 
 bool OverviewGrid::ShouldUseScrollingLayout(size_t ignored_items_size) const {
-  if (Shell::Get()->IsInTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return item_list_.size() - ignored_items_size >=
            kMinimumItemsForScrollingLayout;
   }

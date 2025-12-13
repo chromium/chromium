@@ -14,9 +14,12 @@
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
+#include "extensions/buildflags/buildflags.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -153,12 +156,14 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
       mojo::PendingRemote<network::mojom::WebTransport> transport,
       mojo::PendingReceiver<network::mojom::WebTransportClient> client,
       const scoped_refptr<net::HttpResponseHeaders>& response_headers,
+      const std::optional<std::string>& selected_application_protocol,
       network::mojom::WebTransportStatsPtr initial_stats) override {
     receiver_.reset();
     pending_transport_ = std::move(transport);
     pending_client_ = std::move(client);
     initial_stats_ = std::move(initial_stats);
     response_headers_ = response_headers;
+    selected_application_protocol_ = selected_application_protocol;
 
     bool should_collapse_initiator = false;
 
@@ -207,7 +212,8 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
 
     remote_->OnConnectionEstablished(
         std::move(pending_transport_), std::move(pending_client_),
-        response.headers, std::move(initial_stats_));
+        response.headers, selected_application_protocol_,
+        std::move(initial_stats_));
 
     OnCompleted();
     // `this` is deleted.
@@ -262,6 +268,7 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
   raw_ptr<content::BrowserContext> browser_context_;
   WebRequestInfo info_;
   net::HttpRequestHeaders request_headers_;
+  std::optional<std::string> selected_application_protocol_;
   GURL redirect_url_;
   mojo::Remote<WebTransportHandshakeClient> remote_;
   mojo::Receiver<WebTransportHandshakeClient> receiver_{this};

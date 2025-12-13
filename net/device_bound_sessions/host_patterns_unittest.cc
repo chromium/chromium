@@ -23,17 +23,17 @@ TEST(HostPatterns, IsValidHostPattern) {
 }
 
 TEST(HostPatterns, MatchesHostPattern) {
-  EXPECT_TRUE(MatchesHostPattern("*", GURL("https://example.test").host()));
-  EXPECT_TRUE(
-      MatchesHostPattern("example.test", GURL("https://example.test").host()));
+  EXPECT_TRUE(MatchesHostPattern("*", GURL("https://example.test").GetHost()));
+  EXPECT_TRUE(MatchesHostPattern("example.test",
+                                 GURL("https://example.test").GetHost()));
   EXPECT_FALSE(MatchesHostPattern("*.example.test",
-                                  GURL("https://example.test").host()));
+                                  GURL("https://example.test").GetHost()));
   EXPECT_TRUE(MatchesHostPattern(
-      "*.example.test", GURL("https://subdomain.example.test").host()));
+      "*.example.test", GURL("https://subdomain.example.test").GetHost()));
   EXPECT_FALSE(MatchesHostPattern("notexample.test",
-                                  GURL("https://example.test/").host()));
+                                  GURL("https://example.test/").GetHost()));
   EXPECT_TRUE(MatchesHostPattern("[1:abcd::3:4:ff]",
-                                 GURL("https://[1:abcd::3:4:ff]/").host()));
+                                 GURL("https://[1:abcd::3:4:ff]/").GetHost()));
 }
 
 }  // namespace

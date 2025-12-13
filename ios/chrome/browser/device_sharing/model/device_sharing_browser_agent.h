@@ -5,14 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_DEVICE_SHARING_MODEL_DEVICE_SHARING_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_DEVICE_SHARING_MODEL_DEVICE_SHARING_BROWSER_AGENT_H_
 
-#import "base/memory/raw_ptr.h"
-#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
+#import "base/memory/raw_ref.h"
+#import "base/scoped_observation.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
+#import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
 
-class ActiveWebStateObservationForwarder;
 class Browser;
+class DeviceSharingManager;
 
 // A browser agent (Brower-scoped model extension) that monitors the browser's
 // web states for activations and navigations and updates the assoicated
@@ -21,7 +22,6 @@ class Browser;
 class DeviceSharingBrowserAgent
     : public BrowserUserData<DeviceSharingBrowserAgent>,
       public WebStateListObserver,
-      public BrowserObserver,
       public web::WebStateObserver {
  public:
   // Not copyable or moveable
@@ -36,7 +36,8 @@ class DeviceSharingBrowserAgent
  private:
   friend class BrowserUserData<DeviceSharingBrowserAgent>;
 
-  explicit DeviceSharingBrowserAgent(Browser* browser);
+  explicit DeviceSharingBrowserAgent(Browser* browser,
+                                     DeviceSharingManager* manager);
 
   // Update the active URL for the current web state of the browser.
   void UpdateForActiveWebState(web::WebState* active_web_state);
@@ -46,9 +47,6 @@ class DeviceSharingBrowserAgent
                              const WebStateListChange& change,
                              const WebStateListStatus& status) override;
 
-  // BrowserObserver
-  void BrowserDestroyed(Browser* browser) override;
-
   // web::WebStateObserver
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
@@ -56,11 +54,16 @@ class DeviceSharingBrowserAgent
   // web::WebStateObserver
   void TitleWasSet(web::WebState* web_state) override;
 
-  // Whether the browser state associated with `browser_` is incognito or not.
-  const bool is_incognito_ = true;
-  // Observer for the active web state in `browser_`'s browser list.
-  std::unique_ptr<ActiveWebStateObservationForwarder>
-      active_web_state_observer_;
+  // DeviceSharingManager instance.
+  raw_ref<DeviceSharingManager> manager_;
+
+  // Observation of the WebStateList.
+  base::ScopedObservation<WebStateList, WebStateListObserver>
+      web_state_list_observation_{this};
+
+  // Observation of the active WebState.
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      active_web_state_observation_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_DEVICE_SHARING_MODEL_DEVICE_SHARING_BROWSER_AGENT_H_

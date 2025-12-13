@@ -1,3 +1,41 @@
+# 2.10.0
+
+## What's Changed
+* Implement iterator for all named flags by @ssrlive in https://github.com/bitflags/bitflags/pull/465
+* Depend on serde_core instead of serde by @KodrAus in https://github.com/bitflags/bitflags/pull/467
+
+## New Contributors
+* @ssrlive made their first contribution in https://github.com/bitflags/bitflags/pull/465
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.9.4...2.10.0
+
+# 2.9.4
+
+## What's Changed
+* Add Cargo features to readme by @KodrAus in https://github.com/bitflags/bitflags/pull/460
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.9.3...2.9.4
+
+# 2.9.3
+
+## What's Changed
+* Streamline generated code by @nnethercote in https://github.com/bitflags/bitflags/pull/458
+
+## New Contributors
+* @nnethercote made their first contribution in https://github.com/bitflags/bitflags/pull/458
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.9.2...2.9.3
+
+# 2.9.2
+
+## What's Changed
+* Fix difference in the spec by @KodrAus in https://github.com/bitflags/bitflags/pull/446
+* Fix up inaccurate docs on bitflags_match by @KodrAus in https://github.com/bitflags/bitflags/pull/453
+* Remove rustc internal crate feature by @KodrAus in https://github.com/bitflags/bitflags/pull/454
+
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.9.1...2.9.2
+
 # 2.9.1
 
 ## What's Changed

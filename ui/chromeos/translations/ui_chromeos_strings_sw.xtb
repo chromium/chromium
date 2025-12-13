@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Aina</translation>
 <translation id="1254593899333212300">Muunganisho wa Mtandao wa moja kwa moja</translation>
 <translation id="1272293450992660632">Nambari za PIN hazilingani.</translation>
+<translation id="1279040297980392566">Inasubiri uchanganuzi ukamilike, jaribu tena baadaye</translation>
 <translation id="1280820357415527819">Inatafuta mitandao ya simu</translation>
 <translation id="1293556467332435079">Faili</translation>
 <translation id="1297922636971898492">Hifadhi ya Google haipatikani kwa sasa kupakia kutafungua upya kiotomatiki baada Hifadhi ya Google imerudi.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">Faili 1 imechaguliwa</translation>
 <translation id="3817579325494460411">Haijatolewa</translation>
 <translation id="3819448694985509187">PIN si sahihi. Umebakisha jaribio moja.</translation>
-<translation id="3822559385185038546">Seva hii mbadala inadhibitiwa na msimamizi wako</translation>
 <translation id="3830674330436234648">Kipengele cha kucheza hakipatikani.</translation>
 <translation id="383652340667548381">Kiserbia</translation>
 <translation id="3839045880592694915">Mtoa huduma wako haruhusu modemu yako kuunganishwa. Wasiliana na mtoa huduma wako ili upate maelezo zaidi.</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Chaguo zaidi</translation>
 <translation id="5602622065581044566">Kibulgaria kwenye kibodi ya Fonetiki</translation>
 <translation id="5605830556594064952">Dvorak ya Marekani</translation>
+<translation id="560739212255190568">Msimamizi wako ameweka kanuni za kubatilisha seva mbadala pamoja na kutekeleza seva mbadala ifuatayo</translation>
 <translation id="5618330573454123917">Faili hii imeundwa mahususi kwa ajili ya kompyuta inayotumia programu ya Macintosh. Kwa hivyo haioani na kifaa chako kinachotumia Mfumo wa Uendeshaji wa Chrome. <ph name="BEGIN_LINK_HELP" />Pata Maelezo Zaidi<ph name="END_LINK_HELP" /> kuhusu kufungua faili kwenye Mfumo wa Uendeshaji wa Chrome.</translation>
 <translation id="5625294776298156701">Kitamili kwenye kibodi ya Tamil99</translation>
 <translation id="5633226425545095130">Hatua ya kuhamisha kipengee hiki itakishiriki na kila mtu anayeweza kuona folda ya pamoja iitwayo '<ph name="DESTINATION_NAME" />'.</translation>
@@ -787,7 +788,7 @@
 <translation id="7075931588889865715">Kitai kwenye kibodi ya TIS 820-2531</translation>
 <translation id="708278670402572152">Ondoa ili uruhusu utafutaji</translation>
 <translation id="7086590977277044826">Kitamili kwenye kibodi ya Hati za Kihindi</translation>
-<translation id="7088615885725309056">Za awali</translation>
+<translation id="7088615885725309056">Nzee zaidi</translation>
 <translation id="7103992300314999525">Kimasedonia</translation>
 <translation id="7104338189998813914">Hitilafu imetokea wakati wa kufikia akaunti yako ya OneDrive</translation>
 <translation id="7106346894903675391">Nunua hifadhi zaidi...</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Maelezo</translation>
 <translation id="8545476925160229291">Kingereza (Marekani)</translation>
 <translation id="854655314928502177">URL ya Ugunduaji Kiotomatiki wa Seva Mbadala ya Wavuti:</translation>
+<translation id="8547747809824590510">Msimamizi wako ameweka kanuni za kubatilisha seva mbadala</translation>
 <translation id="8549186985808798022">Kiitaliano</translation>
 <translation id="8551494947769799688">Kilatvia</translation>
 <translation id="8560515948038859357">Kikantoni</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Faili yenye jina la "<ph name="FILE_NAME" />" tayari ipo. Tafadhali chagua jina tofauti.</translation>
 <translation id="9046895021617826162">Muunganisho umeshindikana</translation>
 <translation id="9065512565307033593">Usipothibitisha, ufikiaji wako wa mtandao utazimwa.</translation>
+<translation id="9079844694307518094">Msimamizi wako anatekeleza seva mbadala ifuatayo</translation>
 <translation id="908378762078012445">Kirusi kwenye kibodi ya Fonetiki ya AATSEEL</translation>
 <translation id="9086302186042011942">Inasawazisha</translation>
 <translation id="9099674669267916096">Idadi ya kurasa</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">Imeanza kusakinisha.</translation>
 <translation id="9219103736887031265">Picha</translation>
 <translation id="9219908252191632183">Mandhari ya mwezi mwandamo</translation>
+<translation id="931652069802536959">Mtandao umezuiwa na sera</translation>
 <translation id="938470336146445890">Tafadhali sakinisha cheti cha mtumiaji.</translation>
 <translation id="939736085109172342">Folda mpya</translation>
 <translation id="943972244133411984">Ilibadilishwa na</translation>

@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2022 The Chromium Authors
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/page_zoom_view_container"
     android:background="@drawable/page_zoom_background"
     android:layout_width="match_parent"
@@ -22,18 +25,30 @@
         android:contentDescription="@string/page_zoom_decrease_zoom_button_text"
         android:tint="@color/default_icon_color_tint_list" />
 
-    <SeekBar
+    <com.google.android.material.slider.Slider
         android:id="@+id/page_zoom_slider"
+        style="@style/Widget.PageZoomSlider"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:contentDescription="@string/page_zoom_label"
+        app:tickVisible="false"/>
+
+    <!-- TODO(crbug.com/439911511): Legacy seekbar. -->
+    <SeekBar
+        android:id="@+id/page_zoom_slider_legacy"
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="@dimen/min_touch_target_size"
+        android:visibility="gone"
         android:contentDescription="@string/page_zoom_label" />
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/page_zoom_increase_zoom_button"
         android:layout_width="@dimen/min_touch_target_size"
         android:layout_height="@dimen/min_touch_target_size"
-        android:src="@drawable/ic_add"
+        android:src="@drawable/ic_add_24dp"
         android:background="@drawable/page_zoom_ripple"
         android:contentDescription="@string/page_zoom_increase_zoom_button_text"
         android:tint="@color/default_icon_color_tint_list" />

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<title>CSS Values Test: relative units inside number producing math function CSSOM</title>
+<link rel="help" href="https://issues.chromium.org/issues/439560296">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  test(() => {
+    // This test checks that parsing a `sign()` function that can't be
+    // simplified at parse time throws an error, as it's not yet implemented
+    // in the CSSOM.
+    assert_throws_dom("SyntaxError", () => {
+      CSSNumericValue.parse("calc(2 * sign(1rem))");
+    });
+  }, "CSSOM sign() parsing error");
+  test(() => {
+    // This test checks that parsing a `sibling-index()` throws an error,
+    // as it's not yet implemented in the CSSOM.
+    assert_throws_dom("SyntaxError", () => {
+      CSSNumericValue.parse("calc(2 * sibling-index())");
+    });
+  }, "CSSOM sibling-index() parsing error");
+  test(() => {
+    // This test checks that parsing an `anchor()` throws an error,
+    // as it's not yet implemented in the CSSOM.
+    assert_throws_dom("SyntaxError", () => {
+      CSSNumericValue.parse("calc(2 * anchor(center))");
+    });
+  }, "CSSOM anchor() parsing error");
+</script>

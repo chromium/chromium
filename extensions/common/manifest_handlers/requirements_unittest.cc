@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/requirements_info.h"
 #include "extensions/common/manifest_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -33,7 +36,7 @@ TEST_F(RequirementsManifestTest, RequirementsInvalid) {
           "Error at key 'requirements.3D.features'. Manifest key is required."),
   };
 
-  RunTestcases(testcases, EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, ExpectType::kError);
 }
 
 TEST_F(RequirementsManifestTest, RequirementsValid) {
@@ -54,17 +57,17 @@ TEST_F(RequirementsManifestTest, RequirementsPlugin) {
   RunTestcase({"requirements_invalid_plugins_value.json",
                "Error at key 'requirements.plugins.npapi'. Type is invalid. "
                "Expected boolean, found integer."},
-              EXPECT_TYPE_ERROR);
+              ExpectType::kError);
 
   // Using the plugins requirement should cause an install warning.
   RunTestcase(
       {"requirements_npapi_false.json", errors::kPluginsRequirementDeprecated},
-      EXPECT_TYPE_WARNING);
+      ExpectType::kWarning);
 
   // Explicitly requesting the npapi requirement should cause an error.
   RunTestcase(
       {"requirements_npapi_true.json", errors::kNPAPIPluginsNotSupported},
-      EXPECT_TYPE_ERROR);
+      ExpectType::kError);
 }
 
 }  // namespace extensions

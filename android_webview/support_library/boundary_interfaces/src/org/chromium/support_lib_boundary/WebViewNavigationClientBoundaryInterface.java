@@ -7,6 +7,7 @@ package org.chromium.support_lib_boundary;
 import java.lang.reflect.InvocationHandler;
 
 /** Boundary interface for WebViewNavigationClient. */
+@Deprecated
 public interface WebViewNavigationClientBoundaryInterface
         extends FeatureFlagHolderBoundaryInterface {
     void onNavigationStarted(/* WebViewNavigation */ InvocationHandler navigation);

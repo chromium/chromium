@@ -17,6 +17,7 @@ import './add_languages_dialog.js';
 import './languages.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
+import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';

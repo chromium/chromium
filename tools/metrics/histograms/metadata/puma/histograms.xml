@@ -1,0 +1,144 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Profile histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="PUMA.RegionalCapabilities.FunnelStage.Eligibility"
+    enum="SearchEngineChoiceScreenConditions" expires_after="2026-08-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>ljjlee@chromium.org</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    PUMA.RegionalCapabilities.FunnelStage.Eligibility is a version of histogram
+    RegionalCapabilities.FunnelStage.Eligibility that is reported for PUMA.
+  </summary>
+</histogram>
+
+<histogram name="PUMA.RegionalCapabilities.FunnelStage.Reported"
+    enum="RegionalCapabilitiesFunnelStage" expires_after="2026-03-22">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    PUMA.RegionalCapabilities.FunnelStage.Reported is a version of histogram
+    RegionalCapabilities.FunnelStage.Reported that is reported for PUMA.
+  </summary>
+</histogram>
+
+<histogram name="PUMA.RegionalCapabilities.FunnelStage.Triggering"
+    enum="SearchEngineChoiceScreenConditions" expires_after="2026-08-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>ljjlee@chromium.org</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    PUMA.RegionalCapabilities.FunnelStage.Triggering is a version of histogram
+    RegionalCapabilities.FunnelStage.Triggering that is reported for PUMA.
+  </summary>
+</histogram>
+
+<histogram
+    name="PUMA.RegionalCapabilities.Search.ChoiceScreenDefaultSearchEngineType"
+    enum="OmniboxSearchEngineType" expires_after="2026-08-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    PUMA.RegionalCapabilities.Search.ChoiceScreenDefaultSearchEngineType is a
+    version of histogram Search.ChoiceScreenDefaultSearchEngineType that is
+    reported for PUMA.
+  </summary>
+</histogram>
+
+<histogram
+    name="PUMA.RegionalCapabilities.Search.ChoiceScreenDefaultSearchEngineType2"
+    enum="OmniboxSearchEngineType" expires_after="2026-08-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    PUMA.RegionalCapabilities.Search.ChoiceScreenDefaultSearchEngineType2 is a
+    version of histogram Search.ChoiceScreenDefaultSearchEngineType2 that is
+    reported for PUMA.
+  </summary>
+</histogram>
+
+<histogram name="PUMA.RegionalCapabilities.Search.ChoiceScreenEvents"
+    enum="SearchEngineChoiceScreenEvents" expires_after="2026-08-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>samarchehade@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    PUMA.RegionalCapabilities.Search.ChoiceScreenEvents is a version of
+    histogram Search.ChoiceScreenEvents that is reported for PUMA.
+  </summary>
+</histogram>
+
+<histogram
+    name="PUMA.RegionalCapabilities.Search.ChoiceScreenNavigationConditions"
+    enum="SearchEngineChoiceScreenConditions" expires_after="2026-08-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>ljjlee@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    PUMA.RegionalCapabilities.Search.ChoiceScreenNavigationConditions is a
+    version of histogram Search.ChoiceScreenNavigationConditions that is
+    reported for PUMA.
+  </summary>
+</histogram>
+
+<histogram
+    name="PUMA.RegionalCapabilities.Search.ChoiceScreenProfileInitConditions"
+    enum="SearchEngineChoiceScreenConditions" expires_after="2026-08-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>ljjlee@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    PUMA.RegionalCapabilities.Search.ChoiceScreenProfileInitConditions is a
+    version of histogram Search.ChoiceScreenProfileInitConditions that is
+    reported for PUMA.
+  </summary>
+</histogram>
+
+<histogram
+    name="PUMA.RegionalCapabilities.Search.ChoiceScreenSelectedEngineIndex"
+    units="index" expires_after="2026-08-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    PUMA.RegionalCapabilities.Search.ChoiceScreenSelectedEngineIndex is a
+    version of histogram Search.ChoiceScreenSelectedEngineIndex that is reported
+    for PUMA.
+  </summary>
+</histogram>
+
+<histogram name="PUMA.RegionalCapabilities.Session.TotalDuration.Recorded"
+    enum="Boolean" expires_after="2026-11-21">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <owner>ljjlee@chromium.org</owner>
+  <summary>
+    Recorded when `Session.TotalDuration` is recorded. See the
+    `Session.TotalDuration` description for more details.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

@@ -19,14 +19,19 @@ source_set("tab_model") {
   ]
   public_deps = [
     "//base",
+    "//build:android_buildflags",
     "//chrome/browser/flags:chrome_browser_flags_enums_srcjar",
     "//chrome/browser/flags:flags_android",
+    "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/browser/ui/tabs:tab_list_interface",
+    "//chrome/browser/ui/tabs:utils",
     "//components/omnibox/browser:location_bar",
     "//components/sessions",
     "//components/sync_sessions",
     "//components/tab_groups",
     "//components/tabs:public",
+    "//components/tabs/public/android",
+    "//ui/base/unowned_user_data",
     "//url",
   ]
 }
@@ -50,13 +55,24 @@ source_set("impl") {
     ":tab_model",
     "//chrome/android:chrome_jni_headers",
     "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/sessions",
     "//chrome/browser/sync",
+    "//chrome/browser/tab",
     "//chrome/browser/ui:browser_navigator_params_headers",
+    "//components/content_settings/core/browser",
     "//content/public/browser",
     "//content/public/common",
     "//ui/base:types",
   ]
+
+  if (is_desktop_android) {
+    deps += [
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window/internal",
+    ]
+  }
 }
 
 java_cpp_enum("enums_java") {
@@ -73,12 +89,17 @@ source_set("test_support") {
     ":tab_model",
     "//chrome/browser",
     "//content/test:test_support",
+    "//ui/base/unowned_user_data",
   ]
   deps = [
     "//chrome/browser/flags:flags_android",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/android/tab_model",
   ]
+
+  if (is_desktop_android) {
+    deps += [ "//chrome/browser/ui/browser_window" ]
+  }
 }
 
 source_set("unit_tests") {

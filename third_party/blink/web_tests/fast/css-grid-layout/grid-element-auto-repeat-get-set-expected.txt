@@ -63,11 +63,17 @@ PASS getComputedStyle(element, '').getPropertyValue('grid-template-columns') is 
 PASS element.style.gridTemplateColumns is "repeat(auto-fit, minmax(20px, 30px) auto)"
 PASS getComputedStyle(element, '').getPropertyValue('grid-template-rows') is "none"
 PASS element.style.gridTemplateRows is "repeat(auto-fit, minmax(20px, 30px) auto)"
+PASS getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS element.style.gridTemplateColumns is "repeat(auto-fill, 20px min-content)"
+PASS getComputedStyle(element, '').getPropertyValue('grid-template-rows') is "none"
+PASS element.style.gridTemplateRows is "repeat(auto-fill, 20px min-content)"
+PASS getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
+PASS element.style.gridTemplateColumns is "repeat(auto-fit, max-content 2em)"
+PASS getComputedStyle(element, '').getPropertyValue('grid-template-rows') is "none"
+PASS element.style.gridTemplateRows is "repeat(auto-fit, max-content 2em)"
 
 
 Test invalid repeat syntax.
-PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
-PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
 PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
 PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"
 PASS window.getComputedStyle(element, '').getPropertyValue('grid-template-columns') is "none"

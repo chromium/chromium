@@ -158,7 +158,7 @@ if (is_chromeos) {
     public_deps = [
       ":private_membership",
       ":private_membership_proto",
-      "//testing/gmock:gmock",
+      "//testing/gmock",
       "//testing/gtest:gtest_main",
       "//third_party/shell-encryption:shell_encryption_test_library",
     ]

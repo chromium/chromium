@@ -51,7 +51,7 @@ static HomogeneousCoordinate ProjectHomogeneousPoint(
   }
 
   HomogeneousCoordinate result(p.x(), p.y(), z, 1.0);
-  transform.TransformVector4(result.vec.data());
+  transform.TransformVector4(result.vec);
   return result;
 }
 
@@ -68,7 +68,7 @@ static HomogeneousCoordinate MapHomogeneousPoint(
     const gfx::Transform& transform,
     const gfx::PointF& p) {
   HomogeneousCoordinate result(p.x(), p.y(), 0.0, 1.0);
-  transform.TransformVector4(result.vec.data());
+  transform.TransformVector4(result.vec);
   return result;
 }
 
@@ -784,6 +784,24 @@ gfx::Vector2dF MathUtil::ProjectVector(const gfx::Vector2dF& source,
       gfx::DotProduct(source, destination) / destination.LengthSquared();
   return gfx::Vector2dF(projected_length * destination.x(),
                         projected_length * destination.y());
+}
+
+gfx::PointF MathUtil::ScalePointByInverse(const gfx::PointF& point,
+                                          float scale) {
+  DCHECK_GT(std::abs(scale), std::numeric_limits<float>::epsilon());
+  const float inv_scale_magnitude =
+      1.f / std::max(std::numeric_limits<float>::epsilon(), std::abs(scale));
+  gfx::PointF result = point;
+  result.Scale(std::copysign(inv_scale_magnitude, scale));
+  return result;
+}
+
+gfx::Vector2dF MathUtil::ScaleVectorByInverse(const gfx::Vector2dF& vector,
+                                              float scale) {
+  DCHECK_GT(std::abs(scale), std::numeric_limits<float>::epsilon());
+  const float inv_scale_magnitude =
+      1.f / std::max(std::numeric_limits<float>::epsilon(), std::abs(scale));
+  return gfx::ScaleVector2d(vector, std::copysign(inv_scale_magnitude, scale));
 }
 
 bool MathUtil::FromValue(const base::Value* raw_value, gfx::Rect* out_rect) {

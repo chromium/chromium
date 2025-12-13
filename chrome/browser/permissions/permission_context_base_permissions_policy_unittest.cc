@@ -18,6 +18,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
@@ -158,8 +159,8 @@ class PermissionContextBasePermissionsPolicyTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  void RequestPermissionForFrameFinished(PermissionStatus status) {
-    last_request_result_ = status;
+  void RequestPermissionForFrameFinished(content::PermissionResult result) {
+    last_request_result_ = result.status;
   }
 
   void SimulateNavigation(content::RenderFrameHost** rfh, const GURL& url) {

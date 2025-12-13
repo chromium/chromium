@@ -53,15 +53,14 @@ MallSystemAppDelegate::GetWebAppInfo() const {
 }
 
 bool MallSystemAppDelegate::IsAppEnabled() const {
-  if (apps::DetermineUserType(profile()) != apps::kUserTypeUnmanaged &&
-      !base::FeatureList::IsEnabled(chromeos::features::kCrosMallManaged)) {
+  if (apps::DetermineUserType(profile()) != apps::kUserTypeUnmanaged) {
     return false;
   }
   // Do not enable Mall on Flex devices, which do  not support apps on ARC.
   if (ash::switches::IsRevenBranding()) {
     return false;
   }
-  return chromeos::features::IsCrosMallSwaEnabled();
+  return true;
 }
 
 std::vector<std::string> MallSystemAppDelegate::GetAppIdsToUninstallAndReplace()

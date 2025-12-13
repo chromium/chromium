@@ -97,10 +97,15 @@ std::unique_ptr<SaveAndFillDialogView> CreateAndShowSaveAndFillDialog(
 // Factory function for creating and showing the BNPL issuer selection dialog.
 // This dialog is triggered when the BNPL payment method has been selected and
 // the user needs to select an issuer.
+// `has_seen_ai_terms` indicates whether the user has seen the amount extraction
+// AI terms. In the AI-based amount extraction case, if the user who clicked on
+// the payment form has seen the AI terms, the throbber has to be shown first
+// while the server-side AI is inferencing the final checkout amount.
 std::unique_ptr<payments::SelectBnplIssuerView>
 CreateAndShowBnplIssuerSelectionDialog(
     base::WeakPtr<payments::SelectBnplIssuerDialogController> controller,
-    content::WebContents* web_contents);
+    content::WebContents* web_contents,
+    bool has_seen_ai_terms);
 
 }  // namespace autofill
 

@@ -4,6 +4,7 @@
 
 #include "services/network/scheduler/network_service_task_queues.h"
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -11,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/trace_event/trace_event.h"
+#include "net/base/request_priority.h"
 #include "services/network/public/cpp/network_service_task_priority.h"
 
 namespace network {
@@ -20,28 +22,43 @@ namespace {
 using NetworkServiceTaskPriority =
     ::network::internal::NetworkServiceTaskPriority;
 using QueueName = ::perfetto::protos::pbzero::SequenceManagerTask::QueueName;
-using QueueType = ::network::NetworkServiceTaskQueues::QueueType;
 
-QueueName GetTaskQueueName(NetworkServiceTaskQueues::QueueType queue_type) {
-  switch (queue_type) {
-    case NetworkServiceTaskQueues::QueueType::kDefault:
-      return QueueName::NETWORK_SERVICE_THREAD_DEFAULT_TQ;
-    case NetworkServiceTaskQueues::QueueType::kHigh:
-      return QueueName::NETWORK_SERVICE_THREAD_HIGH_TQ;
-    default:
-      NOTREACHED();
+QueueName GetTaskQueueName(net::RequestPriority priority) {
+  switch (priority) {
+    case net::RequestPriority::THROTTLED:
+      return QueueName::NETWORK_SERVICE_THREAD_THROTTLED_TQ;
+    case net::RequestPriority::IDLE:
+      return QueueName::NETWORK_SERVICE_THREAD_IDLE_TQ;
+    case net::RequestPriority::LOWEST:
+      return QueueName::NETWORK_SERVICE_THREAD_LOWEST_TQ;
+    case net::RequestPriority::LOW:
+      return QueueName::NETWORK_SERVICE_THREAD_LOW_TQ;
+    case net::RequestPriority::MEDIUM:
+      return QueueName::NETWORK_SERVICE_THREAD_MEDIUM_TQ;
+    case net::RequestPriority::HIGHEST:
+      return QueueName::NETWORK_SERVICE_THREAD_HIGHEST_TQ;
   }
 }
 
-const char* QueueTypeToString(QueueType type) {
-  switch (type) {
-    case QueueType::kDefault:
-      return "Default";
-    case QueueType::kHigh:
-      return "High";
+// LINT.IfChange(PriorityToString)
+const char* PriorityToString(net::RequestPriority priority) {
+  switch (priority) {
+    case net::RequestPriority::THROTTLED:
+      return "Throttled";
+    case net::RequestPriority::IDLE:
+      return "Idle";
+    case net::RequestPriority::LOWEST:
+      return "Lowest";
+    case net::RequestPriority::LOW:
+      return "Low";
+    case net::RequestPriority::MEDIUM:
+      return "Medium";
+    case net::RequestPriority::HIGHEST:
+      return "Highest";
   }
   NOTREACHED();
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/network/histograms.xml:QueueName)
 
 }  // namespace
 
@@ -50,10 +67,10 @@ const char* QueueTypeToString(QueueType type) {
 class NetworkServiceTaskObserver : public base::TaskObserver {
  public:
   explicit NetworkServiceTaskObserver(
-      QueueType queue_type,
+      net::RequestPriority priority,
       base::sequence_manager::TaskQueue::Handle* queue)
-      : queue_type_(queue_type),
-        queue_name_(QueueTypeToString(queue_type)),
+      : priority_(priority),
+        queue_name_(PriorityToString(priority)),
         queue_(queue) {}
 
   void WillProcessTask(const base::PendingTask& pending_task,
@@ -61,14 +78,30 @@ class NetworkServiceTaskObserver : public base::TaskObserver {
     size_t pending_tasks = (*queue_)->GetNumberOfPendingTasks();
 
     // The track name for TRACE_COUNTER must be a const expression.
-    switch (queue_type_) {
-      case QueueType::kDefault:
+    switch (priority_) {
+      case net::RequestPriority::THROTTLED:
         TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("network"),
-                      "NumberOfPendingTasksDefaultQueue", pending_tasks);
+                      "NumberOfPendingTasksThrottledQueue", pending_tasks);
         break;
-      case QueueType::kHigh:
+      case net::RequestPriority::IDLE:
         TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("network"),
-                      "NumberOfPendingTasksHighQueue", pending_tasks);
+                      "NumberOfPendingTasksIdleQueue", pending_tasks);
+        break;
+      case net::RequestPriority::LOWEST:
+        TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("network"),
+                      "NumberOfPendingTasksLowestQueue", pending_tasks);
+        break;
+      case net::RequestPriority::LOW:
+        TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("network"),
+                      "NumberOfPendingTasksLowQueue", pending_tasks);
+        break;
+      case net::RequestPriority::MEDIUM:
+        TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("network"),
+                      "NumberOfPendingTasksMediumQueue", pending_tasks);
+        break;
+      case net::RequestPriority::HIGHEST:
+        TRACE_COUNTER(TRACE_DISABLED_BY_DEFAULT("network"),
+                      "NumberOfPendingTasksHighestQueue", pending_tasks);
         break;
     }
 
@@ -88,7 +121,7 @@ class NetworkServiceTaskObserver : public base::TaskObserver {
   void DidProcessTask(const base::PendingTask& pending_task) override {}
 
  private:
-  const NetworkServiceTaskQueues::QueueType queue_type_;
+  const net::RequestPriority priority_;
   const std::string queue_name_;
   // `queue_` outlives this task observer.
   raw_ptr<base::sequence_manager::TaskQueue::Handle> queue_;
@@ -108,19 +141,24 @@ void NetworkServiceTaskQueues::CreateTaskQueues(
   for (size_t i = 0; i < task_queues_.size(); ++i) {
     task_queues_[i] = sequence_manager->CreateTaskQueue(
         base::sequence_manager::TaskQueue::Spec(
-            GetTaskQueueName(static_cast<QueueType>(i))));
+            GetTaskQueueName(static_cast<net::RequestPriority>(i))));
+
+    // Set the priority for each task queue.
+    //
+    // Note the differing priority conventions:
+    // base::sequence_manager::TaskQueue::QueuePriority, which
+    // NetworkServiceTaskPriority extends, must be in descending order (e.g.,
+    // kHighest is 0), while net::RequestPriority is ascending (a higher index
+    // means higher priority). Therefore, we must invert the priority value.
+    task_queues_[i]->SetQueuePriority(
+        static_cast<size_t>(NetworkServiceTaskPriority::kPriorityCount) - 1 -
+        i);
+
+    // Create and attach a task observer for each queue.
     task_observers_[i] = std::make_unique<NetworkServiceTaskObserver>(
-        static_cast<QueueType>(i), &task_queues_[i]);
+        static_cast<net::RequestPriority>(i), &task_queues_[i]);
     task_queues_[i]->AddTaskObserver(task_observers_[i].get());
   }
-
-  // Default queue
-  GetTaskQueue(QueueType::kDefault)
-      ->SetQueuePriority(NetworkServiceTaskPriority::kDefaultPriority);
-
-  // High Priority queue
-  GetTaskQueue(QueueType::kHigh)
-      ->SetQueuePriority(NetworkServiceTaskPriority::kHighPriority);
 }
 
 void NetworkServiceTaskQueues::CreateNetworkServiceTaskRunners() {

@@ -6,7 +6,6 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/css/css_segmented_font_face.h"
-#include "third_party/blink/renderer/core/frame/font_matching_metrics.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -33,43 +32,6 @@ bool CSSFontSelectorBase::IsPlatformFamilyMatchAvailable(
   }
   return FontCache::Get().IsPlatformFamilyMatchAvailable(font_description,
                                                          family);
-}
-
-void CSSFontSelectorBase::ReportEmojiSegmentGlyphCoverage(
-    unsigned num_clusters,
-    unsigned num_broken_clusters) {
-  if (FontMatchingMetrics* font_matching_metrics = GetFontMatchingMetrics()) {
-    font_matching_metrics->ReportEmojiSegmentGlyphCoverage(num_clusters,
-                                                           num_broken_clusters);
-  }
-}
-
-void CSSFontSelectorBase::ReportSuccessfulFontFamilyMatch(
-    const AtomicString& font_family_name) {
-  if (FontMatchingMetrics* font_matching_metrics = GetFontMatchingMetrics()) {
-    font_matching_metrics->ReportSuccessfulFontFamilyMatch(font_family_name);
-  }
-}
-
-void CSSFontSelectorBase::ReportFailedFontFamilyMatch(
-    const AtomicString& font_family_name) {
-  if (FontMatchingMetrics* font_matching_metrics = GetFontMatchingMetrics()) {
-    font_matching_metrics->ReportFailedFontFamilyMatch(font_family_name);
-  }
-}
-
-void CSSFontSelectorBase::ReportSuccessfulLocalFontMatch(
-    const AtomicString& font_name) {
-  if (FontMatchingMetrics* font_matching_metrics = GetFontMatchingMetrics()) {
-    font_matching_metrics->ReportSuccessfulLocalFontMatch(font_name);
-  }
-}
-
-void CSSFontSelectorBase::ReportFailedLocalFontMatch(
-    const AtomicString& font_name) {
-  if (FontMatchingMetrics* font_matching_metrics = GetFontMatchingMetrics()) {
-    font_matching_metrics->ReportFailedLocalFontMatch(font_name);
-  }
 }
 
 void CSSFontSelectorBase::ReportNotDefGlyph() const {

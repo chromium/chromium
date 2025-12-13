@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -128,7 +127,8 @@ ClientStorage::ClientInfo CreateTestClientInfo() {
   client_info.device_token = kDMToken;
   client_info.allowed_policy_types.insert(
       {dm_protocol::kChromeMachineLevelUserCloudPolicyType,
-       dm_protocol::kChromeMachineLevelExtensionCloudPolicyType});
+       dm_protocol::kChromeMachineLevelExtensionCloudPolicyType,
+       dm_protocol::kChromeExtensionInstallMachineLevelCloudPolicyType});
   return client_info;
 }
 
@@ -306,7 +306,8 @@ class ChromeBrowserCloudManagementServiceIntegrationTest
         request.mutable_register_browser_request();
     register_browser_request->set_os_platform(GetOSPlatform());
     if (!machine_name.empty()) {
-      register_browser_request->set_machine_name(machine_name);
+      register_browser_request->mutable_browser_device_identifier()
+          ->set_computer_name(kMachineName);
     }
     std::string payload;
     ASSERT_TRUE(request.SerializeToString(&payload));
@@ -462,12 +463,24 @@ class MachineLevelUserCloudPolicyManagerTest : public PlatformBrowserTest {
                 {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
     policy_store->AddObserver(&observer);
 
+    std::unique_ptr<MachineLevelUserCloudPolicyStore> extension_install_store;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    extension_install_store =
+        MachineLevelUserCloudPolicyStore::CreateForExtensionInstall(
+            browser_dm_token, client_id, user_data_dir,
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
+
+    extension_install_store->AddObserver(&observer);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
     base::FilePath policy_dir = user_data_dir.Append(
         ChromeBrowserCloudManagementController::kPolicyDir);
 
     std::unique_ptr<MachineLevelUserCloudPolicyManager> manager =
         std::make_unique<MachineLevelUserCloudPolicyManager>(
-            std::move(policy_store), nullptr, policy_dir,
+            std::move(policy_store), std::move(extension_install_store),
+            nullptr, policy_dir,
             base::SingleThreadTaskRunner::GetCurrentDefault(),
             base::BindRepeating(&content::GetNetworkConnectionTracker));
     manager->Init(&schema_registry);

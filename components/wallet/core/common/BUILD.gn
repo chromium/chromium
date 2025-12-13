@@ -9,3 +9,14 @@ source_set("features") {
   ]
   deps = [ "//base" ]
 }
+
+source_set("prefs") {
+  sources = [
+    "wallet_prefs.cc",
+    "wallet_prefs.h",
+  ]
+  deps = [
+    "//base",
+    "//components/pref_registry",
+  ]
+}

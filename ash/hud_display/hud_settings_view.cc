@@ -23,16 +23,17 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/paint_throbber.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -54,7 +55,7 @@ constexpr float kActionButtonCornerRadius = 2;
 // Thickness of border around settings.
 constexpr int kHUDSettingsBorderWidth = 1;
 
-ui::ScopedAnimationDurationScaleMode* scoped_animation_duration_scale_mode =
+gfx::ScopedAnimationDurationScaleMode* scoped_animation_duration_scale_mode =
     nullptr;
 
 }  // anonymous namespace
@@ -195,7 +196,7 @@ void AnimationSpeedSlider::OnPaint(gfx::Canvas* canvas) {
   const gfx::Insets insets = GetInsets();
   const int y = insets.top() + content.height() / 2 - kTickHeight / 2;
 
-  SkPath path;
+  SkPathBuilder path;
   for (const float v : allowed_values()) {
     const float x = insets.left() + content.width() * v;
     path.moveTo(x, y);
@@ -208,7 +209,7 @@ void AnimationSpeedSlider::OnPaint(gfx::Canvas* canvas) {
   flags.setColor(GetThumbColor());
   flags.setStrokeWidth(1);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
-  canvas->DrawPath(path, flags);
+  canvas->DrawPath(path.detach(), flags);
 }
 
 // Checkbox group for setting UI animation speed.
@@ -289,7 +290,7 @@ AnimationSpeedControl::AnimationSpeedControl() {
   std::vector<float> slider_values_list;
   const float steps = multipliers.size() - 1;
   const float active_multiplier =
-      ui::ScopedAnimationDurationScaleMode::duration_multiplier();
+      gfx::ScopedAnimationDurationScaleMode::duration_multiplier();
   float slider_value = -1;
   for (size_t i = 0; i < multipliers.size(); ++i) {
     const float slider_step = i / steps;
@@ -334,7 +335,7 @@ void AnimationSpeedControl::SliderValueChanged(
   scoped_animation_duration_scale_mode = nullptr;
   if (multiplier != 1) {
     scoped_animation_duration_scale_mode =
-        new ui::ScopedAnimationDurationScaleMode(multiplier);
+        new gfx::ScopedAnimationDurationScaleMode(multiplier);
   }
 }
 

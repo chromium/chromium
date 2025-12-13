@@ -3,7 +3,7 @@ Verify inline style reports proper ranges after attr modification
 {
     cssProperties : [
     ]
-    cssText : 
+    cssText :
     range : {
         endColumn : 0
         endLine : 0

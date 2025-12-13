@@ -33,10 +33,10 @@ namespace extensions {
 class ScriptInjector {
  public:
   // The possible reasons for not injecting the script.
-  enum InjectFailureReason {
-    EXTENSION_REMOVED,  // The extension was removed before injection.
-    NOT_ALLOWED,        // The script is not allowed to inject.
-    WONT_INJECT         // The injection won't inject because the user rejected
+  enum class InjectFailureReason {
+    kExtensionRemoved,  // The extension was removed before injection.
+    kNotAllowed,        // The script is not allowed to inject.
+    kWontInject,        // The injection won't inject because the user rejected
                         // (or just did not accept) the injection.
   };
 

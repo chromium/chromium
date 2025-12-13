@@ -8,9 +8,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.view.ViewGroup;
 
-import org.chromium.base.BuildInfo;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.DeviceInfo;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -34,6 +33,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.function.Supplier;
 
 /** Coordinator object for gesture navigation. */
 @NullMarked
@@ -79,7 +80,7 @@ public class HistoryNavigationCoordinator
             ActivityLifecycleDispatcher lifecycleDispatcher,
             ViewGroup parentView,
             Runnable requestRunnable,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             InsetObserver insetObserver,
             BackActionDelegate backActionDelegate,
             Supplier<TouchEventProvider> touchEventProvider,
@@ -103,7 +104,7 @@ public class HistoryNavigationCoordinator
             WindowAndroid window,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             ViewGroup parentView,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             InsetObserver insetObserver,
             BackActionDelegate backActionDelegate,
             Supplier<TouchEventProvider> touchEventProvider,
@@ -151,8 +152,9 @@ public class HistoryNavigationCoordinator
         // if tabProvider.get() != null. Do here what we do when tab switching happens.
         // Otherwise, just initialize |mEnabled| in preparation of the initialization of
         // NavigationHandler for later tab switching/init.
-        if (tabSupplier.get() != null) {
-            mTab = tabSupplier.get();
+        Tab tab = tabSupplier.get();
+        if (tab != null) {
+            mTab = tab;
             onNavigationStateChanged();
         } else {
             mEnabled = isFeatureEnabled();
@@ -160,7 +162,7 @@ public class HistoryNavigationCoordinator
 
         mInsetObserver = insetObserver;
         insetObserver.addObserver(this);
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             mFullscreenObserver =
                     new FullscreenManager.Observer() {
                         @Override
@@ -208,7 +210,7 @@ public class HistoryNavigationCoordinator
             return mForceFeatureEnabledForTesting;
         }
 
-        if (BuildInfo.getInstance().isAutomotive && mIsFullscreen) {
+        if (DeviceInfo.isAutomotive() && mIsFullscreen) {
             return false;
         }
 

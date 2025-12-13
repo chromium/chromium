@@ -14,6 +14,11 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
+namespace base {
+class DictValue;
+class Time;
+}
+
 class GaiaId;
 class PrefService;
 class PrefRegistrySimple;
@@ -107,8 +112,20 @@ class SigninPrefs {
   void IncrementAddressSigninPromoImpressionCount(const GaiaId& gaia_id);
   int GetAddressSigninPromoImpressionCount(const GaiaId& gaia_id) const;
 
+  void IncrementBookmarkSigninPromoImpressionCount(const GaiaId& gaia_id);
+  int GetBookmarkSigninPromoImpressionCount(const GaiaId& gaia_id) const;
+
   void IncrementAutofillSigninPromoDismissCount(const GaiaId& gaia_id);
   int GetAutofillSigninPromoDismissCount(const GaiaId& gaia_id) const;
+
+  void IncrementAddressSigninPromoDismissCount(const GaiaId& gaia_id);
+  int GetAddressSigninPromoDismissCount(const GaiaId& gaia_id) const;
+
+  void IncrementBookmarkSigninPromoDismissCount(const GaiaId& gaia_id);
+  int GetBookmarkSigninPromoDismissCount(const GaiaId& gaia_id) const;
+
+  void IncrementPasswordSigninPromoDismissCount(const GaiaId& gaia_id);
+  int GetPasswordSigninPromoDismissCount(const GaiaId& gaia_id) const;
 
   void SetExtensionsExplicitBrowserSignin(const GaiaId& gaia_id, bool enabled);
   bool GetExtensionsExplicitBrowserSignin(const GaiaId& gaia_id) const;
@@ -116,11 +133,30 @@ class SigninPrefs {
   void SetBookmarksExplicitBrowserSignin(const GaiaId& gaia_id, bool enabled);
   bool GetBookmarksExplicitBrowserSignin(const GaiaId& gaia_id) const;
 
+  void SetPolicyDisclaimerLastRegistrationFailureTime(
+      const GaiaId& gaia_id,
+      base::Time last_registration_failure_time);
+  void ClearPolicyDisclaimerLastRegistrationFailureTime(const GaiaId& gaia_id);
+  std::optional<base::Time> GetPolicyDisclaimerLastRegistrationFailureTime(
+      const GaiaId& gaia_id) const;
+
+  // Sync promo on the avatar button.
   void IncrementSyncPromoIdentityPillShownCount(const GaiaId& gaia_id);
   int GetSyncPromoIdentityPillShownCount(const GaiaId& gaia_id) const;
-
   void IncrementSyncPromoIdentityPillUsedCount(const GaiaId& gaia_id);
   int GetSyncPromoIdentityPillUsedCount(const GaiaId& gaia_id) const;
+
+  // History sync promo on the history page.
+  void IncrementHistoryPageHistorySyncPromoShownCount(const GaiaId& gaia_id);
+  int GetHistoryPageHistorySyncPromoShownCount(const GaiaId& gaia_id) const;
+
+  // Returns a dictionary of the avatar button promo count for `gaia_id`, if the
+  // dictionary didn't exist it will create it.
+  // The returned dictionary will not notify observers for underlying pref
+  // changes. If this will be required later on, consider returning a
+  // `ScopedDictPrefUpdate` instead.
+  base::DictValue& GetOrCreateAvatarButtonPromoCountDictionary(
+      const GaiaId& gaia_id);
 
   // Updates the dismiss count of the promo and last time it was dismissed.
   void IncrementBookmarkBatchUploadPromoDismissCountWithLastTime(
@@ -147,6 +183,10 @@ class SigninPrefs {
       const base::flat_set<GaiaId>& gaia_ids_to_keep);
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  void MigrateObsoleteSigninPrefs();
+
+  void SetDeprecatedPrefForTesting(const GaiaId& gaia_id);
+  std::optional<int> GetDeprecatedPrefForTesting(const GaiaId& gaia_id);
 
  private:
   // Increments any specified `pref` of type int for the given `gaia_id`.

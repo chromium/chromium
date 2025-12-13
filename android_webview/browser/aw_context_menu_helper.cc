@@ -9,7 +9,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "ui/android/view_android.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace android_webview {
@@ -18,8 +17,7 @@ AwContextMenuHelper::AwContextMenuHelper(content::WebContents* web_contents)
     : content::WebContentsUserData<AwContextMenuHelper>(*web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(env, Java_AwContextMenuHelper_create(
-                           env, web_contents->GetJavaWebContents())
-                           .obj());
+                           env, web_contents->GetJavaWebContents()));
   DCHECK(!java_obj_.is_null());
 }
 
@@ -49,3 +47,5 @@ void AwContextMenuHelper::DismissContextMenu() {
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AwContextMenuHelper);
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwContextMenuHelper)

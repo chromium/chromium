@@ -30,8 +30,6 @@ const CGFloat kSpaceBetweenItem = 6;
 
 }  // namespace
 
-// TODO(crbug.com/371113934): Add smooth animation to hide this view during
-// the layout transition.
 @implementation ActivityLabelView {
   // Effect view for the background with the material regular dark color.
   UIVisualEffectView* _backgroundView;

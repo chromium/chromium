@@ -21,7 +21,7 @@ component("printing") {
     "//components/device_event_log",
     "//components/printing/common",
     "//printing/mojom",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
   ]
 
   sources = [

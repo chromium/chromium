@@ -46,7 +46,6 @@
 #endif
 
 using testing::_;
-using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
 
@@ -309,7 +308,9 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
 
   std::string GetLogEntry(const std::string& logs_json,
                           const std::string& attribute) {
-    base::Value logs = base::JSONReader::Read(logs_json).value();
+    base::Value logs =
+        base::JSONReader::Read(logs_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+            .value();
     return *logs.GetList()[0].GetDict().FindString(attribute);
   }
 

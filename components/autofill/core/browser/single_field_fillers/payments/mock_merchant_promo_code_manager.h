@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILLERS_PAYMENTS_MOCK_MERCHANT_PROMO_CODE_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILLERS_PAYMENTS_MOCK_MERCHANT_PROMO_CODE_MANAGER_H_
 
-#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

@@ -20,6 +20,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -161,6 +162,12 @@ class ContentSettingsTest : public InProcessBrowserTest {
   }
 
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+
+ private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
 };
 
 // Test the combination of different ways of accessing cookies --- JS, HTML,

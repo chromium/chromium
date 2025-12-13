@@ -10,14 +10,12 @@
 #include "base/android/scoped_java_ref.h"
 #include "chromecast/browser/cast_content_window.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 
 namespace chromecast {
 
 // Android implementation of CastContentWindow, which displays WebContents in
 // CastWebContentsActivity.
-class CastContentWindowAndroid : public CastContentWindow,
-                                 content::WebContentsObserver {
+class CastContentWindowAndroid : public CastContentWindow {
  public:
   explicit CastContentWindowAndroid(mojom::CastWebViewParamsPtr params);
 
@@ -33,15 +31,6 @@ class CastContentWindowAndroid : public CastContentWindow,
   void RevokeScreenAccess() override;
   void EnableTouchInput(bool enabled) override;
   void RequestVisibility(VisibilityPriority visibility_priority) override;
-
-  // content::WebContentsObserver implementation
-  void MediaStartedPlaying(
-      const content::WebContentsObserver::MediaPlayerInfo& video_type,
-      const content::MediaPlayerId& id) override;
-  void MediaStoppedPlaying(
-      const content::WebContentsObserver::MediaPlayerInfo& video_type,
-      const content::MediaPlayerId& id,
-      content::WebContentsObserver::MediaStoppedReason reason) override;
 
   // Called through JNI.
   void OnActivityStopped(JNIEnv* env);

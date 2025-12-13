@@ -14,7 +14,6 @@ import {PriceInsightsInfo_PriceBucket} from '//resources/cr_components/commerce/
 import type {ShoppingServiceBrowserProxy} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {ShoppingServiceBrowserProxyImpl} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './price_tracking_section.html.js';
@@ -25,10 +24,6 @@ export interface PriceTrackingSection {
     toggleAnnotation: HTMLElement,
     toggle: HTMLElement,
   };
-}
-
-function decodeString16(arr: String16) {
-  return arr.data.map(ch => String.fromCodePoint(ch)).join('');
 }
 
 export class PriceTrackingSection extends PolymerElement {
@@ -100,9 +95,9 @@ export class PriceTrackingSection extends PolymerElement {
       this.toggleAnnotationText_ =
           loadTimeData.getString('trackPriceDescription');
     } else {
-      const {name} = await this.priceTrackingProxy_
-                         .getParentBookmarkFolderNameForCurrentUrl();
-      this.folderName_ = decodeString16(name);
+      this.folderName_ = (await this.priceTrackingProxy_
+                              .getParentBookmarkFolderNameForCurrentUrl())
+                             .name;
 
       this.toggleAnnotationText_ =
           loadTimeData.getString('trackPriceSaveDescription');
@@ -184,9 +179,9 @@ export class PriceTrackingSection extends PolymerElement {
   private async onProductBookmarkMoved(product: BookmarkProductInfo) {
     if (product.info.clusterId === this.productInfo.clusterId &&
         this.isProductTracked) {
-      const {name} = await this.priceTrackingProxy_
-                         .getParentBookmarkFolderNameForCurrentUrl();
-      this.folderName_ = decodeString16(name);
+      this.folderName_ = (await this.priceTrackingProxy_
+                              .getParentBookmarkFolderNameForCurrentUrl())
+                             .name;
     }
   }
 }

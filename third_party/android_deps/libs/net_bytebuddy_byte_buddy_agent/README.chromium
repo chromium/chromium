@@ -1,7 +1,7 @@
 Name: Byte Buddy agent
 Short Name: byte-buddy-agent
-URL: https://github.com/raphw/byte-buddy
-Version: 1.14.12
+URL: https://repo.maven.apache.org/maven2/net/bytebuddy/byte-buddy-agent/1.17.6/byte-buddy-agent-1.17.6.jar
+Version: 1.17.6
 Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE

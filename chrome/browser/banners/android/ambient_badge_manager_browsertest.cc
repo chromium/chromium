@@ -5,7 +5,6 @@
 #include <string>
 
 #include "base/auto_reset.h"
-#include "base/functional/callback_forward.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"

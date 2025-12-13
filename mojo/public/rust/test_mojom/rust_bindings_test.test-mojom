@@ -1,0 +1,28 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Simple mojom target to test bindings generation
+// Obviously, don't use this for anything else
+
+module rust_bindings_test.mojom;
+
+struct Foo {
+    int8 x;
+    bool b;
+};
+
+struct Bar {
+    Foo f;
+    uint32 y;
+};
+
+interface SendStuff {
+    SendNothing();
+    SendFoo(Foo f);
+    SendBar(Bar b);
+};
+
+interface SendAndReceive {
+    SendFooBarInt(Foo f, bool b, Bar ba) => (uint16 ret);
+};

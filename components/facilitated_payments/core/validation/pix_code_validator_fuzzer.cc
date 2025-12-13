@@ -11,11 +11,11 @@
 
 namespace payments::facilitated {
 
-void IsValidPixCodeCanParseAnyString(const std::string& input) {
-  PixCodeValidator::IsValidPixCode(input);
+void GetPixQrCodeTypeCanParseAnyString(const std::string& input) {
+  PixCodeValidator::GetPixQrCodeType(input);
 }
 
-FUZZ_TEST(IsValidPixCodeTest, IsValidPixCodeCanParseAnyString)
+FUZZ_TEST(GetPixQrCodeTypeTest, GetPixQrCodeTypeCanParseAnyString)
     .WithDomains(fuzztest::InRegexp(kPixCodeValidatorFuzzerDomainRegexPattern))
     .WithSeeds({{""},
                 {"000201260063041D3D"},

@@ -15,6 +15,7 @@
 #include "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
@@ -23,6 +24,7 @@
 #include "components/signin/core/browser/chrome_connected_header_helper.h"
 #import "components/signin/ios/browser/manage_accounts_delegate.h"
 #include "components/signin/public/base/list_accounts_test_utils.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -103,7 +105,11 @@ class FakeManageAccountsDelegate : public ManageAccountsDelegate {
   void OnManageAccounts(const GURL& url) override {
     manage_accounts_call_count_++;
   }
-  void OnAddAccount(const GURL& url) override { add_account_call_count_++; }
+  void OnAddAccount(const GURL& url,
+                    const std::string& prefilled_email) override {
+    add_account_call_count_++;
+    add_account_email_ = prefilled_email;
+  }
   void OnShowConsistencyPromo(const GURL& url,
                               web::WebState* webState) override {
     show_promo_call_count_++;
@@ -121,6 +127,7 @@ class FakeManageAccountsDelegate : public ManageAccountsDelegate {
   int add_account_call_count_ = 0;
   int show_promo_call_count_ = 0;
   int go_incognito_call_count_ = 0;
+  std::string add_account_email_;
 };
 
 // FakeWebState that allows control over its policy decider.
@@ -462,8 +469,7 @@ TEST_F(AccountConsistencyServiceTest, ChromeManageAccountsDefault) {
        HTTPVersion:@"HTTP/1.1"
       headerFields:headers];
   EXPECT_CALL(*account_reconcilor_, OnReceivedManageAccountsResponse(
-                                        signin::GAIA_SERVICE_TYPE_DEFAULT))
-      .Times(1);
+                                        signin::GAIA_SERVICE_TYPE_DEFAULT));
 
   SimulateNavigateToURLWithInterruption(response, &delegate_);
 
@@ -549,8 +555,7 @@ TEST_F(AccountConsistencyServiceTest, ChromeManageAccountsShowAddAccount) {
        HTTPVersion:@"HTTP/1.1"
       headerFields:headers];
   EXPECT_CALL(*account_reconcilor_, OnReceivedManageAccountsResponse(
-                                        signin::GAIA_SERVICE_TYPE_ADDSESSION))
-      .Times(1);
+                                        signin::GAIA_SERVICE_TYPE_ADDSESSION));
 
   SimulateNavigateToURLWithInterruption(response, &delegate_);
   EXPECT_EQ(1, delegate_.total_call_count());
@@ -796,4 +801,27 @@ TEST_F(AccountConsistencyServiceTest, SetGaiaCookieUpdateAfterDelay) {
 
   // Will process the second Gaia restore event, since it is past the delay.
   CheckGaiaCookieWithUpdateTime(base::Time::Now());
+}
+
+// Tests that the email is correctly extracted from the X-Chrome-Manage-Accounts
+// header.
+TEST_F(AccountConsistencyServiceTest, ChromeAddSessionWithEmail) {
+  base::test::ScopedFeatureList enable_feature(
+      switches::kSupportAddSessionEmailPrefill);
+
+  NSDictionary* headers = [NSDictionary
+      dictionaryWithObject:@"action=ADDSESSION,email=test@gmail.com"
+                    forKey:@"X-Chrome-Manage-Accounts"];
+  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
+       initWithURL:[NSURL URLWithString:@"https://accounts.google.com/"]
+        statusCode:200
+       HTTPVersion:@"HTTP/1.1"
+      headerFields:headers];
+  EXPECT_CALL(*account_reconcilor_, OnReceivedManageAccountsResponse(
+                                        signin::GAIA_SERVICE_TYPE_ADDSESSION));
+
+  SimulateNavigateToURLWithInterruption(response, &delegate_);
+  EXPECT_EQ(1, delegate_.total_call_count());
+  EXPECT_EQ(1, delegate_.add_account_call_count_);
+  EXPECT_EQ("test@gmail.com", delegate_.add_account_email_);
 }

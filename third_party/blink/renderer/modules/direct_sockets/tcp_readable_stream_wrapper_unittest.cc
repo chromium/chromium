@@ -52,8 +52,7 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
 
     auto* script_state = scope.GetScriptState();
     stream_wrapper_ = MakeGarbageCollected<TCPReadableStreamWrapper>(
-        script_state,
-        WTF::BindOnce(&StreamCreator::Close, WrapWeakPersistent(this)),
+        script_state, BindOnce(&StreamCreator::Close, WrapWeakPersistent(this)),
         std::move(data_pipe_consumer), /*inspector_id=*/0);
 
     scope.PerformMicrotaskCheckpoint();

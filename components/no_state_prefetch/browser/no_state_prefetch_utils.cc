@@ -26,7 +26,7 @@ bool IsGoogleOriginURL(const GURL& origin_url) {
     return false;
   }
 
-  return (origin_url.path_piece() == "/") ||
+  return (origin_url.path() == "/") ||
          google_util::IsGoogleSearchUrl(origin_url);
 }
 

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.browser_controls;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
@@ -46,10 +48,6 @@ import org.chromium.ui.display.DisplayAndroid;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowLooper.class})
-@EnableFeatures({
-    ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR
-            + ":disable_bottom_controls_stacker_y_offset/false",
-})
 public class BottomControlsStackerUnitTest {
     private static final @LayerType int ZERO_HEIGHT_TOP_LAYER = LayerType.PROGRESS_BAR;
     private static final @LayerType int TOP_LAYER = LayerType.READ_ALOUD_PLAYER;
@@ -1713,7 +1711,7 @@ public class BottomControlsStackerUnitTest {
         verify(mBrowserControlsSizer).setBottomControlsHeight(170, 20);
 
         BrowserControlsOffsetTagsInfo tagsInfo = new BrowserControlsOffsetTagsInfo();
-        mBottomControlsStacker.onControlsConstraintsChanged(null, tagsInfo, 0, false);
+        mBottomControlsStacker.onOffsetTagsInfoChanged(null, tagsInfo, 0, false);
         mBottomControlsStacker.updateLayerVisibilitiesAndSizes();
 
         OffsetTag offsetTag = tagsInfo.getBottomControlsOffsetTag();
@@ -1724,7 +1722,8 @@ public class BottomControlsStackerUnitTest {
         assertLayerYOffset(top, 0);
         assertLayerYOffset(bottom, 0);
 
-        int additionalHeight = 2 * TestLayer.ADDITIONAL_HEIGHT;
+        // Only consider the additional height from the scrollable layer.
+        int additionalHeight = TestLayer.ADDITIONAL_HEIGHT;
         verify(mBrowserControlsSizer).setBottomControlsAdditionalHeight(additionalHeight);
 
         // The OffsetTagsInfo should get updated with the new OffsetTagConstraints.
@@ -1736,9 +1735,45 @@ public class BottomControlsStackerUnitTest {
                 new OffsetTagConstraints(0, 0, 0, maxScrollOffset);
         assertTrue(newConstraints.equals(expectedConstraints));
 
-        mBottomControlsStacker.onControlsConstraintsChanged(null, tagsInfo, 0, true);
+        mBottomControlsStacker.onOffsetTagsInfoChanged(null, tagsInfo, 0, true);
         assertLayerYOffset(top, -20);
         assertLayerYOffset(bottom, 0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BCIV_BOTTOM_CONTROLS)
+    public void testOnControlsConstraintsChanged_clearOffsetTag() {
+        TestLayer topLayer =
+                new TestLayer(
+                        TOP_LAYER,
+                        150,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer middleLayer =
+                new TestLayer(
+                        MID_LAYER,
+                        30,
+                        LayerScrollBehavior.NEVER_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer bottomLayer =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        20,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+
+        mBottomControlsStacker.addLayer(topLayer);
+        mBottomControlsStacker.addLayer(middleLayer);
+        mBottomControlsStacker.addLayer(bottomLayer);
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        BrowserControlsOffsetTagsInfo tagsInfo = new BrowserControlsOffsetTagsInfo();
+        mBottomControlsStacker.onOffsetTagsInfoChanged(null, tagsInfo, 0, false);
+
+        assertNotNull(
+                "Top layer is scrollable and should have offset tag.", topLayer.getOffsetTag());
+        assertNull("Mid layer should not have offset tag.", middleLayer.getOffsetTag());
+        assertNull("Bottom layer should not have offset tag.", bottomLayer.getOffsetTag());
     }
 
     // Test helpers

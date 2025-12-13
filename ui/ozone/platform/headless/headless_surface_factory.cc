@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -21,7 +22,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
-#include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/native_pixmap.h"
@@ -143,7 +144,7 @@ class FileGLSurface : public GLSurfaceEglReadback {
 
 class TestPixmap : public gfx::NativePixmap {
  public:
-  explicit TestPixmap(gfx::BufferFormat format) : format_(format) {}
+  explicit TestPixmap(viz::SharedImageFormat format) : format_(format) {}
 
   TestPixmap(const TestPixmap&) = delete;
   TestPixmap& operator=(const TestPixmap&) = delete;
@@ -154,10 +155,10 @@ class TestPixmap : public gfx::NativePixmap {
   size_t GetDmaBufOffset(size_t plane) const override { return 0; }
   size_t GetDmaBufPlaneSize(size_t plane) const override { return 0; }
   uint64_t GetBufferFormatModifier() const override { return 0; }
-  gfx::BufferFormat GetBufferFormat() const override { return format_; }
-  size_t GetNumberOfPlanes() const override {
-    return gfx::NumberOfPlanesForLinearBufferFormat(format_);
+  viz::SharedImageFormat GetSharedImageFormat() const override {
+    return format_;
   }
+  size_t GetNumberOfPlanes() const override { return format_.NumberOfPlanes(); }
   bool SupportsZeroCopyWebGPUImport() const override { return false; }
   gfx::Size GetBufferSize() const override { return gfx::Size(); }
   uint32_t GetUniqueId() const override { return 0; }
@@ -175,7 +176,7 @@ class TestPixmap : public gfx::NativePixmap {
  private:
   ~TestPixmap() override {}
 
-  gfx::BufferFormat format_;
+  viz::SharedImageFormat format_;
 };
 
 class GLOzoneEGLHeadless : public GLOzoneEGL {
@@ -258,7 +259,7 @@ scoped_refptr<gfx::NativePixmap> HeadlessSurfaceFactory::CreateNativePixmap(
     gfx::AcceleratedWidget widget,
     gpu::VulkanDeviceQueue* device_queue,
     gfx::Size size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     std::optional<gfx::Size> framebuffer_size) {
   return new TestPixmap(format);

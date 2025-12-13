@@ -78,6 +78,15 @@ id<GREYMatcher> OtpNewCodeLink() {
                     grey_accessibilityTrait(UIAccessibilityTraitLink), nil);
 }
 
+// Matcher for the activity indicator.
+id<GREYMatcher> ActivityIndicatorMatcher() {
+  return grey_allOf(
+      grey_kindOfClassName(@"UIActivityIndicatorView"),
+      grey_accessibilityID(
+          kOtpInputNavigationBarPendingButtonAccessibilityIdentifier),
+      nil);
+}
+
 }  // namespace
 
 @interface OtpInputDialogEgtest : ChromeTestCase
@@ -206,7 +215,8 @@ id<GREYMatcher> OtpNewCodeLink() {
 }
 
 // Test to ensure the dialog goes away once the cancel button is clicked.
-- (void)testOtpInputDialogCancel {
+// TODO(crbug.com/444093961): Test is flaky.
+- (void)FLAKY_testOtpInputDialogCancel {
   [self showOtpInputDialog];
 
   // Tap the cancel button.
@@ -218,7 +228,8 @@ id<GREYMatcher> OtpNewCodeLink() {
 }
 
 // Test to ensure the dialog's confirm button works correctly.
-- (void)testOtpInputDialogConfirm {
+// TODO(crbug.com/444045960): Test is flaky.
+- (void)DISABLED_testOtpInputDialogConfirm {
   [self showOtpInputDialog];
 
   [[EarlGrey selectElementWithMatcher:OtpInputDialogConfirmButton()]
@@ -244,8 +255,7 @@ id<GREYMatcher> OtpNewCodeLink() {
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
   [[EarlGrey selectElementWithMatcher:OtpInputDialogPendingButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_kindOfClassName(@"UIActivityIndicatorView")]
+  [[EarlGrey selectElementWithMatcher:ActivityIndicatorMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

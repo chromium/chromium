@@ -12,15 +12,15 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 
+import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 /** A data structure that holds all the {@link Snackbar}s managed by {@link SnackbarManager}. */
 @NullMarked
 class SnackbarCollection {
-    private final Deque<Snackbar> mSnackbars = new LinkedList<>();
-    private final Deque<Snackbar> mPersistentSnackbars = new LinkedList<>();
+    private final Deque<Snackbar> mSnackbars = new ArrayDeque<>();
+    private final Deque<Snackbar> mPersistentSnackbars = new ArrayDeque<>();
 
     /**
      * Adds a new snackbar to the collection. If the new snackbar is of

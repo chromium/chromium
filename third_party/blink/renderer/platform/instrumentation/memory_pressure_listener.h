@@ -5,36 +5,46 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_MEMORY_PRESSURE_LISTENER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_INSTRUMENTATION_MEMORY_PRESSURE_LISTENER_H_
 
+#include <optional>
+
 #include "base/memory/memory_pressure_listener.h"
-#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
-
-class NonMainThread;
 
 class PLATFORM_EXPORT MemoryPressureListener : public GarbageCollectedMixin {
  public:
   virtual ~MemoryPressureListener() = default;
 
-  virtual void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel) {}
+  virtual void OnMemoryPressure(base::MemoryPressureLevel) {}
+};
 
-  // This is called just after calling OnMemoryPressure(
-  // MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL).
-  virtual void OnPurgeMemory() {}
+// A version of base::MemoryPressureListenerRegistration that is compatible with
+// garbage-collected classes, by forcing the user to unregister the listener
+// before the destructor is called. The registration is always done
+// asynchronously, to support --single-process mode.
+// TODO(pmonette): Investigate making this sync whenever possible.
+class PLATFORM_EXPORT MemoryPressureListenerRegistration {
+ public:
+  MemoryPressureListenerRegistration(base::Location,
+                                     base::MemoryPressureListenerTag,
+                                     base::MemoryPressureListener*);
+  ~MemoryPressureListenerRegistration();
+
+  // Cancels the registration. This must be invoked manually whenever the
+  // registration is no longer needed.
+  void Dispose();
+
+ private:
+  std::optional<base::AsyncMemoryPressureListenerRegistration> registration_;
 };
 
 // MemoryPressureListenerRegistry listens to some events which could be
 // opportunities for reducing memory consumption and notifies its clients.
-class PLATFORM_EXPORT MemoryPressureListenerRegistry final
-    : public GarbageCollected<MemoryPressureListenerRegistry> {
+class PLATFORM_EXPORT MemoryPressureListenerRegistry final {
  public:
-  static MemoryPressureListenerRegistry& Instance();
-
   // See: SysUtils::IsLowEndDevice for the full details of what "low-end" means.
   // This returns true for devices that can use more extreme tradeoffs for
   // performance. Many low memory devices (<=1GB) are not considered low-end.
@@ -56,37 +66,12 @@ class PLATFORM_EXPORT MemoryPressureListenerRegistry final
   // the heap size.
   static void Initialize();
 
-  MemoryPressureListenerRegistry();
-  MemoryPressureListenerRegistry(const MemoryPressureListenerRegistry&) =
-      delete;
-  MemoryPressureListenerRegistry& operator=(
-      const MemoryPressureListenerRegistry&) = delete;
-
-  void RegisterThread(NonMainThread*) LOCKS_EXCLUDED(threads_lock_);
-  void UnregisterThread(NonMainThread*) LOCKS_EXCLUDED(threads_lock_);
-
-  // RegisterClient() and UnregisterClient() work only in the main thread.
-  void RegisterClient(MemoryPressureListener*);
-  void UnregisterClient(MemoryPressureListener*);
-
-  void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel);
-
-  void OnPurgeMemory();
-
-  void Trace(Visitor*) const;
-
  private:
   friend class Internals;
 
   static void SetIsLowEndDeviceForTesting(bool);
 
-  static void ClearThreadSpecificMemory();
-
   static bool is_low_end_device_;
-
-  HeapHashSet<WeakMember<MemoryPressureListener>> clients_;
-  HashSet<NonMainThread*> threads_ GUARDED_BY(threads_lock_);
-  base::Lock threads_lock_;
 };
 
 }  // namespace blink

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef REMOTING_HOST_MOJOM_REMOTING_MOJOM_TRAITS_H_
 #define REMOTING_HOST_MOJOM_REMOTING_MOJOM_TRAITS_H_
 
@@ -17,6 +12,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/numerics/safe_conversions.h"
@@ -39,6 +35,7 @@
 #include "remoting/host/mojom/wrapped_primitives.mojom-shared.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/proto/control.pb.h"
+#include "remoting/proto/coordinates.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/file_transfer.pb.h"
 #include "remoting/protocol/file_transfer_helpers.h"
@@ -258,8 +255,9 @@ class StructTraits<remoting::mojom::MouseCursorDataView,
         ::webrtc::DesktopFrame::kBytesPerPixel);
     buffer_size *= image_size.width();
     buffer_size *= image_size.height();
-    return base::span<const uint8_t>(cursor.image()->data(),
-                                     buffer_size.ValueOrDie());
+    CHECK_EQ(cursor.image()->pixel_format(), webrtc::FOURCC_ARGB);
+    return UNSAFE_TODO(base::span<const uint8_t>(cursor.image()->data(),
+                                                 buffer_size.ValueOrDie()));
   }
 
   static const webrtc::DesktopVector& hotspot(
@@ -1688,6 +1686,27 @@ class StructTraits<remoting::mojom::SourceLocationDataView,
 
   static bool Read(remoting::mojom::SourceLocationDataView data_view,
                    ::remoting::SourceLocation* out_source_info);
+};
+
+template <>
+class StructTraits<remoting::mojom::FractionalCoordinateDataView,
+                   ::remoting::protocol::FractionalCoordinate> {
+ public:
+  static int64_t screen_id(
+      const ::remoting::protocol::FractionalCoordinate& coordinate) {
+    return coordinate.screen_id();
+  }
+
+  static float x(const ::remoting::protocol::FractionalCoordinate& coordinate) {
+    return coordinate.x();
+  }
+
+  static float y(const ::remoting::protocol::FractionalCoordinate& coordinate) {
+    return coordinate.y();
+  }
+
+  static bool Read(remoting::mojom::FractionalCoordinateDataView data_view,
+                   ::remoting::protocol::FractionalCoordinate* out_coordinate);
 };
 
 }  // namespace mojo

@@ -15,12 +15,12 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/test/test_compositor_host.h"
 #include "ui/compositor/test/test_context_factories.h"
 #include "ui/compositor/test/test_layer_animation_observer.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 namespace {
@@ -125,8 +125,8 @@ class LayerCopyAnimatorTest : public testing::Test {
 }  // namespace
 
 TEST_F(LayerCopyAnimatorTest, Basic) {
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   auto* root_layer = root()->layer();
   auto* anim_layer = anim_root()->layer();
 
@@ -170,8 +170,8 @@ TEST_F(LayerCopyAnimatorTest, Basic) {
 }
 
 TEST_F(LayerCopyAnimatorTest, CopyAfterAnimationRequest) {
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   auto* root_layer = root()->layer();
   auto* anim_layer = anim_root()->layer();
 
@@ -222,8 +222,8 @@ TEST_F(LayerCopyAnimatorTest, CopyAfterAnimationRequest) {
 }
 
 TEST_F(LayerCopyAnimatorTest, CancelByResize) {
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   auto* root_layer = root()->layer();
   auto* anim_layer = anim_root()->layer();
 
@@ -249,8 +249,8 @@ TEST_F(LayerCopyAnimatorTest, CancelByResize) {
 }
 
 TEST_F(LayerCopyAnimatorTest, CancelByDelete) {
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   auto* root_layer = root()->layer();
   auto* anim_layer = anim_root()->layer();
 
@@ -264,8 +264,8 @@ TEST_F(LayerCopyAnimatorTest, CancelByDelete) {
 }
 
 TEST_F(LayerCopyAnimatorTest, CancelByStop) {
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   auto* root_layer = root()->layer();
   auto* anim_layer = anim_root()->layer();
 
@@ -312,8 +312,8 @@ TEST_F(LayerCopyAnimatorTest, CancelByStop) {
 }
 
 TEST_F(LayerCopyAnimatorTest, NoAnimationStopImmediately) {
-  ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   auto* root_layer = root()->layer();
   auto* anim_layer = anim_root()->layer();
 

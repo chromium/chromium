@@ -4,8 +4,8 @@
 
 module cert_verifier.mojom;
 
+import "services/network/public/mojom/ct_policy.mojom";
 import "services/network/public/mojom/ip_address.mojom";
-import "services/network/public/mojom/network_context.mojom";
 
 struct CIDR {
   network.mojom.IPAddress ip;

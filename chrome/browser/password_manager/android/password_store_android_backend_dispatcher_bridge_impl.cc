@@ -11,7 +11,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/android/protos/list_passwords_result.pb.h"
 #include "chrome/browser/password_manager/android/protos/password_with_local_data.pb.h"
 #include "chrome/browser/password_manager/android/unified_password_manager_proto_utils.h"
@@ -49,9 +48,6 @@ PasswordStoreAndroidBackendDispatcherBridge::Create() {
 PasswordStoreAndroidBackendDispatcherBridgeImpl::
     PasswordStoreAndroidBackendDispatcherBridgeImpl() {
   DETACH_FROM_THREAD(thread_checker_);
-  // The bridge is not supposed to be created when UPM is completely unusable.
-  // But it should be created for non-syncing users if sync is enabled later.
-  CHECK(password_manager_android_util::AreMinUpmRequirementsMet());
 }
 
 PasswordStoreAndroidBackendDispatcherBridgeImpl::
@@ -159,3 +155,5 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::RemoveLogin(
 }
 
 }  // namespace password_manager
+
+DEFINE_JNI(PasswordStoreAndroidBackendDispatcherBridgeImpl)

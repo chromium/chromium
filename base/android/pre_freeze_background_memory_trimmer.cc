@@ -10,7 +10,7 @@
 #include <optional>
 #include <string>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/pmf_utils.h"
 #include "base/android/self_compaction_manager.h"
 #include "base/cancelable_callback.h"
@@ -47,10 +47,6 @@ enum class MetricsFailure {
 // to finish running BEFORE collecting metrics.
 constexpr base::TimeDelta kDelayForMetrics = base::Seconds(2);
 
-uint64_t BytesToMiB(uint64_t v) {
-  return v / 1024 / 1024;
-}
-
 const char* GetProcessType() {
   CHECK(base::CommandLine::InitializedForCurrentProcess());
   const std::string type =
@@ -75,7 +71,7 @@ class PrivateMemoryFootprintMetric
   PrivateMemoryFootprintMetric()
       : PreFreezeBackgroundMemoryTrimmer::PreFreezeMetric(
             "PrivateMemoryFootprint") {}
-  std::optional<uint64_t> Measure() const override {
+  std::optional<ByteCount> Measure() const override {
     return PmfUtils::GetPrivateMemoryFootprintForCurrentProcess();
   }
 
@@ -90,35 +86,35 @@ class PrivateMemoryFootprintMetric
 
 bool PrivateMemoryFootprintMetric::did_register_ = false;
 
-void MaybeRecordPreFreezeMetric(std::optional<uint64_t> value_bytes,
+void MaybeRecordPreFreezeMetric(std::optional<ByteCount> value,
                                 std::string_view metric_name,
                                 std::string_view suffix) {
   // Skip recording the metric if we failed to get the PMF.
-  if (!value_bytes.has_value()) {
+  if (!value.has_value()) {
     return;
   }
 
   UmaHistogramMemoryMB(GetPreFreezeMetricName(metric_name, suffix),
-                       static_cast<int>(BytesToMiB(value_bytes.value())));
+                       value.value());
 }
 
-std::optional<uint64_t> Diff(std::optional<uint64_t> before,
-                             std::optional<uint64_t> after) {
+std::optional<ByteCount> Diff(std::optional<ByteCount> before,
+                              std::optional<ByteCount> after) {
   if (!before.has_value() || !before.has_value()) {
     return std::nullopt;
   }
 
-  const uint64_t before_value = before.value();
-  const uint64_t after_value = after.value();
+  const ByteCount before_value = before.value();
+  const ByteCount after_value = after.value();
 
-  return after_value < before_value ? before_value - after_value : 0;
+  return after_value < before_value ? before_value - after_value : ByteCount(0);
 }
 
 }  // namespace
 
 PreFreezeBackgroundMemoryTrimmer::PreFreezeBackgroundMemoryTrimmer()
-    : supports_modern_trim_(BuildInfo::GetInstance()->sdk_int() >=
-                            SDK_VERSION_U) {}
+    : supports_modern_trim_(base::android::android_info::sdk_int() >=
+                            base::android::android_info::SDK_VERSION_U) {}
 
 // static
 PreFreezeBackgroundMemoryTrimmer& PreFreezeBackgroundMemoryTrimmer::Instance() {
@@ -141,9 +137,9 @@ void PreFreezeBackgroundMemoryTrimmer::RecordMetrics() {
 
   for (size_t i = 0; i < metrics_.size(); i++) {
     const auto metric = metrics_[i];
-    const std::optional<uint64_t> value_before = values_before_[i];
+    const std::optional<ByteCount> value_before = values_before_[i];
 
-    std::optional<uint64_t> value_after = metric->Measure();
+    std::optional<ByteCount> value_after = metric->Measure();
 
     if (!value_after) {
       UmaHistogramEnumeration("Memory.PreFreeze2.RecordMetricsFailureType",

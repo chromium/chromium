@@ -11,7 +11,7 @@ component("fwupd") {
     "//ash/public/cpp",
     "//ash/public/mojom",
     "//ash/webui/firmware_update_ui/mojom",
-    "//base:base",
+    "//base",
     "//chromeos/ash/components/dbus/fwupd",
     "//chromeos/ash/components/network",
     "//chromeos/dbus/power",

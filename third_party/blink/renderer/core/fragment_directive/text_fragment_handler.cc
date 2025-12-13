@@ -181,8 +181,8 @@ void TextFragmentHandler::StartGeneratingForCurrentSelection() {
   }
   GetTextFragmentSelectorGenerator()->Generate(
       *current_selection_range,
-      WTF::BindOnce(&TextFragmentHandler::DidFinishSelectorGeneration,
-                    WrapWeakPersistent(this)));
+      BindOnce(&TextFragmentHandler::DidFinishSelectorGeneration,
+               WrapWeakPersistent(this)));
 }
 
 void TextFragmentHandler::Trace(Visitor* visitor) const {
@@ -253,8 +253,16 @@ void TextFragmentHandler::OpenedContextMenuOverSelection(LocalFrame* frame) {
     return;
   }
 
-  if (frame->Selection().SelectedText().empty())
-    return;
+  if (RuntimeEnabledFeatures::
+          NonEmptyVisibleTextSelectionForTextFragmentEnabled()) {
+    if (!frame->Selection().HasVisibleText()) {
+      return;
+    }
+  } else {
+    if (frame->Selection().SelectedText().empty()) {
+      return;
+    }
+  }
 
   if (!frame->GetTextFragmentHandler())
     frame->CreateTextFragmentHandler();

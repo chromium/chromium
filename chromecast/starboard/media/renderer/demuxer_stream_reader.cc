@@ -4,6 +4,9 @@
 
 #include "chromecast/starboard/media/renderer/demuxer_stream_reader.h"
 
+#include <string>
+#include <string_view>
+
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -11,11 +14,13 @@
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/starboard/chromecast/starboard_cast_api/cast_starboard_api_types.h"
 #include "chromecast/starboard/media/cdm/starboard_drm_key_tracker.h"
 #include "chromecast/starboard/media/media/starboard_resampler.h"
 #include "chromecast/starboard/media/renderer/chromium_starboard_conversions.h"
 #include "media/base/video_decoder_config.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace chromecast {
 namespace media {
@@ -23,6 +28,9 @@ namespace media {
 namespace {
 
 using ::media::DecoderBuffer;
+
+constexpr std::string_view kResolutionMetricName =
+    "Cast.Platform.VideoResolution";
 
 scoped_refptr<DecoderBuffer> ConvertPcmAudioBufferToS16(
     ::media::AudioCodec codec,
@@ -51,6 +59,27 @@ bool IsResamplingNecessary(const ::media::AudioDecoderConfig& audio_config) {
          audio_config.codec() == ::media::AudioCodec::kPCM_S24BE;
 }
 
+// Updates the VideoResolution metric. If `client` is not null, it will be
+// informed of the new resolution via OnVideoNaturalSizeChange.
+//
+// This should be called when the resolution is first specified, and again any
+// time the resolution changes.
+void HandleNewResolution(
+    int width,
+    int height,
+    ::media::RendererClient* client,
+    chromecast::metrics::CastMetricsHelper* metrics_helper) {
+  if (client) {
+    client->OnVideoNaturalSizeChange(gfx::Size(width, height));
+  }
+
+  if (metrics_helper) {
+    const int encoded_video_resolution = (width << 16) | height;
+    metrics_helper->RecordApplicationEventWithValue(
+        std::string(kResolutionMetricName), encoded_video_resolution);
+  }
+}
+
 }  // namespace
 
 DemuxerStreamReader::DemuxerStreamReader(
@@ -60,14 +89,22 @@ DemuxerStreamReader::DemuxerStreamReader(
     std::optional<StarboardVideoSampleInfo> video_sample_info,
     HandleBufferCb handle_buffer_cb,
     HandleEosCb handle_eos_cb,
-    ::media::RendererClient* client)
-    : handle_buffer_cb_(std::move(handle_buffer_cb)),
+    ::media::RendererClient* client,
+    chromecast::metrics::CastMetricsHelper* cast_metrics_helper)
+    : task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+      cast_metrics_helper_(cast_metrics_helper),
+      handle_buffer_cb_(std::move(handle_buffer_cb)),
       handle_eos_cb_(std::move(handle_eos_cb)),
       client_(client),
       audio_stream_(audio_stream),
       video_stream_(video_stream),
       audio_sample_info_(std::move(audio_sample_info)),
       video_sample_info_(std::move(video_sample_info)) {
+  if (cast_metrics_helper_ == nullptr) {
+    LOG(WARNING) << "cast_metrics_helper is null; resolution metrics will not "
+                    "be uploaded.";
+  }
+
   if (audio_stream_) {
     ::media::AudioDecoderConfig audio_config =
         audio_stream_->audio_decoder_config();
@@ -80,10 +117,25 @@ DemuxerStreamReader::DemuxerStreamReader(
       convert_audio_fn_ = base::BindRepeating(&DoNotConvertBuffer);
     }
   }
+
+  if (video_sample_info_) {
+    LOG(INFO) << "Initial resolution: " << video_sample_info_->frame_width
+              << "x" << video_sample_info_->frame_height;
+
+    // There's a bug (?) in MojoRenderer: they don't check that client_ is
+    // non-null in MojoRenderer::OnVideoNaturalSizeChange. Calling
+    // client_->OnVideoNaturalSizeChange here will cause a crash, presumably
+    // since the MojoRenderer has not finished initializing at this point.
+    //
+    // If that bug is resolved, we can pass client_ to HandleNewResolution.
+    HandleNewResolution(video_sample_info_->frame_width,
+                        video_sample_info_->frame_height,
+                        /*client=*/nullptr, cast_metrics_helper_);
+  }
 }
 
 DemuxerStreamReader::~DemuxerStreamReader() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
 
   for (const auto& [token, unused] : token_to_drm_key_cb_) {
     StarboardDrmKeyTracker::GetInstance().UnregisterCallback(token);
@@ -91,22 +143,35 @@ DemuxerStreamReader::~DemuxerStreamReader() {
 }
 
 void DemuxerStreamReader::ReadBuffer(int seek_ticket, StarboardMediaType type) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
 
+  if (pending_read_[type]) {
+    LOG(ERROR) << "Starboard requested "
+               << (type == StarboardMediaType::kStarboardMediaTypeAudio
+                       ? "an audio "
+                       : "a video ")
+               << "buffer while the corresponding demuxer read was still "
+                  "pending. Ignoring.";
+    return;
+  }
+
+  pending_read_[type] = true;
   ::media::DemuxerStream* stream =
       type == StarboardMediaType::kStarboardMediaTypeAudio ? audio_stream_
                                                            : video_stream_;
   CHECK(stream);
-  stream->Read(1,
-               base::BindOnce(&DemuxerStreamReader::OnReadBuffer,
-                              weak_factory_.GetWeakPtr(), type, seek_ticket));
+  stream->Read(
+      1, base::BindPostTask(
+             task_runner_,
+             base::BindOnce(&DemuxerStreamReader::OnReadBuffer,
+                            weak_factory_.GetWeakPtr(), type, seek_ticket)));
 }
 
 void DemuxerStreamReader::HandleNonOkDemuxerStatus(
     ::media::DemuxerStream::Status status,
     StarboardMediaType type,
     int seek_ticket) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
 
   switch (status) {
     case ::media::DemuxerStream::Status::kAborted: {
@@ -118,21 +183,23 @@ void DemuxerStreamReader::HandleNonOkDemuxerStatus(
     }
     case ::media::DemuxerStream::Status::kConfigChanged: {
       if (type == StarboardMediaType::kStarboardMediaTypeAudio) {
-        UpdateAudioConfig();
-
-        // Keep reading more data.
-        audio_stream_->Read(
-            1, base::BindOnce(&DemuxerStreamReader::OnReadBuffer,
-                              weak_factory_.GetWeakPtr(), type, seek_ticket));
+        if (!UpdateAudioConfig()) {
+          client_->OnError(::media::DECODER_ERROR_NOT_SUPPORTED);
+          return;
+        }
       } else {
         CHECK_EQ(type, StarboardMediaType::kStarboardMediaTypeVideo);
-        UpdateVideoConfig();
-
-        // Keep reading more data.
-        video_stream_->Read(
-            1, base::BindOnce(&DemuxerStreamReader::OnReadBuffer,
-                              weak_factory_.GetWeakPtr(), type, seek_ticket));
+        if (!UpdateVideoConfig()) {
+          client_->OnError(::media::DECODER_ERROR_NOT_SUPPORTED);
+          return;
+        }
       }
+      // Keep reading more data. Post the task, so that the current read
+      // finishes first.
+      task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&DemuxerStreamReader::ReadBuffer,
+                         weak_factory_.GetWeakPtr(), seek_ticket, type));
       return;
     }
     case ::media::DemuxerStream::Status::kError:
@@ -154,7 +221,8 @@ void DemuxerStreamReader::OnReadBuffer(
     int seek_ticket,
     ::media::DemuxerStream::Status status,
     std::vector<scoped_refptr<DecoderBuffer>> buffers) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
+  pending_read_[type] = false;
 
   if (status != ::media::DemuxerStream::Status::kOk) {
     DCHECK(buffers.empty());
@@ -177,7 +245,7 @@ void DemuxerStreamReader::OnReadBuffer(
 
   StarboardSampleInfo sample_info = {};
   sample_info.type = type;
-  sample_info.buffer = buffer->data();
+  sample_info.buffer = base::span(*buffer).data();
   sample_info.buffer_size = buffer->size();
   sample_info.timestamp = buffer->timestamp().InMicroseconds();
   sample_info.side_data = base::span<const StarboardSampleSideData>();
@@ -231,7 +299,7 @@ void DemuxerStreamReader::WaitForKey(DrmInfoWrapper drm_info,
                                      StarboardSampleInfo sample_info,
                                      scoped_refptr<DecoderBuffer> buffer,
                                      int seek_ticket) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
 
   StarboardDrmSampleInfo* const drm_sample_info = drm_info.GetDrmSampleInfo();
   const std::string drm_key(
@@ -272,7 +340,7 @@ void DemuxerStreamReader::WaitForKey(DrmInfoWrapper drm_info,
 }
 
 void DemuxerStreamReader::RunPendingDrmKeyCallback(int64_t token) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (auto it = token_to_drm_key_cb_.find(token);
       it != token_to_drm_key_cb_.end()) {
@@ -281,14 +349,31 @@ void DemuxerStreamReader::RunPendingDrmKeyCallback(int64_t token) {
   }
 }
 
-void DemuxerStreamReader::UpdateAudioConfig() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+bool DemuxerStreamReader::UpdateAudioConfig() {
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
 
   CHECK(audio_stream_);
   chromium_audio_config_ = audio_stream_->audio_decoder_config();
   LOG(INFO) << "Audio config changed to "
             << chromium_audio_config_.AsHumanReadableString();
-  audio_sample_info_ = ToStarboardAudioSampleInfo(chromium_audio_config_);
+
+  std::optional<StarboardAudioSampleInfo> new_sample_info =
+      ToStarboardAudioSampleInfo(chromium_audio_config_);
+
+  if (!new_sample_info) {
+    LOG(ERROR) << "Audio config could not be converted to a starboard config.";
+    return false;
+  }
+
+  if (audio_sample_info_ &&
+      audio_sample_info_->codec != new_sample_info->codec) {
+    LOG(ERROR)
+        << "Mid-playback audio codec changes are not supported (changed from "
+        << audio_sample_info_->codec << " to " << new_sample_info->codec << ")";
+    return false;
+  }
+
+  audio_sample_info_ = std::move(new_sample_info);
   if (IsResamplingNecessary(chromium_audio_config_)) {
     convert_audio_fn_ = base::BindRepeating(
         &ConvertPcmAudioBufferToS16, chromium_audio_config_.codec(),
@@ -298,10 +383,11 @@ void DemuxerStreamReader::UpdateAudioConfig() {
     convert_audio_fn_ = base::BindRepeating(&DoNotConvertBuffer);
   }
   client_->OnAudioConfigChange(chromium_audio_config_);
+  return true;
 }
 
-void DemuxerStreamReader::UpdateVideoConfig() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+bool DemuxerStreamReader::UpdateVideoConfig() {
+  CHECK(task_runner_->RunsTasksInCurrentSequence());
 
   DCHECK(video_stream_);
   const ::media::VideoDecoderConfig video_config =
@@ -311,16 +397,29 @@ void DemuxerStreamReader::UpdateVideoConfig() {
   std::optional<StarboardVideoSampleInfo> new_sample_info =
       ToStarboardVideoSampleInfo(video_config);
 
-  // TODO(antoniori): maybe fail gracefully here, rather than crashing.
-  DCHECK(new_sample_info);
+  if (!new_sample_info) {
+    LOG(ERROR) << "Video config could not be converted to a starboard config.";
+    return false;
+  }
+
+  if (video_sample_info_ &&
+      video_sample_info_->codec != new_sample_info->codec) {
+    LOG(ERROR)
+        << "Mid-playback video codec changes are not supported (changed from "
+        << video_sample_info_->codec << " to " << new_sample_info->codec << ")";
+    return false;
+  }
+
   if (!video_sample_info_ ||
       video_sample_info_->frame_width != new_sample_info->frame_width ||
       video_sample_info_->frame_height != new_sample_info->frame_height) {
-    client_->OnVideoNaturalSizeChange(gfx::Size(
-        video_sample_info_->frame_width, video_sample_info_->frame_height));
+    HandleNewResolution(new_sample_info->frame_width,
+                        new_sample_info->frame_height, client_,
+                        cast_metrics_helper_);
   }
   video_sample_info_ = std::move(new_sample_info);
   client_->OnVideoConfigChange(video_config);
+  return true;
 }
 
 }  // namespace media

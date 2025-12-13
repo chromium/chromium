@@ -210,9 +210,6 @@ s! {
         /// kthread flag.
         pub ki_tdflags: c_long,
     }
-}
-
-s_no_extra_traits! {
     pub struct dirent {
         pub d_fileno: crate::ino_t,
         pub d_reclen: u16,
@@ -261,122 +258,6 @@ s_no_extra_traits! {
     }
 }
 
-cfg_if! {
-    if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for statfs {
-            fn eq(&self, other: &statfs) -> bool {
-                self.f_version == other.f_version
-                    && self.f_type == other.f_type
-                    && self.f_flags == other.f_flags
-                    && self.f_bsize == other.f_bsize
-                    && self.f_iosize == other.f_iosize
-                    && self.f_blocks == other.f_blocks
-                    && self.f_bfree == other.f_bfree
-                    && self.f_bavail == other.f_bavail
-                    && self.f_files == other.f_files
-                    && self.f_ffree == other.f_ffree
-                    && self.f_syncwrites == other.f_syncwrites
-                    && self.f_asyncwrites == other.f_asyncwrites
-                    && self.f_syncreads == other.f_syncreads
-                    && self.f_asyncreads == other.f_asyncreads
-                    && self.f_namemax == other.f_namemax
-                    && self.f_owner == other.f_owner
-                    && self.f_fsid == other.f_fsid
-                    && self.f_fstypename == other.f_fstypename
-                    && self
-                        .f_mntfromname
-                        .iter()
-                        .zip(other.f_mntfromname.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .f_mntonname
-                        .iter()
-                        .zip(other.f_mntonname.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for statfs {}
-        impl hash::Hash for statfs {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.f_version.hash(state);
-                self.f_type.hash(state);
-                self.f_flags.hash(state);
-                self.f_bsize.hash(state);
-                self.f_iosize.hash(state);
-                self.f_blocks.hash(state);
-                self.f_bfree.hash(state);
-                self.f_bavail.hash(state);
-                self.f_files.hash(state);
-                self.f_ffree.hash(state);
-                self.f_syncwrites.hash(state);
-                self.f_asyncwrites.hash(state);
-                self.f_syncreads.hash(state);
-                self.f_asyncreads.hash(state);
-                self.f_namemax.hash(state);
-                self.f_owner.hash(state);
-                self.f_fsid.hash(state);
-                self.f_fstypename.hash(state);
-                self.f_mntfromname.hash(state);
-                self.f_mntonname.hash(state);
-            }
-        }
-
-        impl PartialEq for dirent {
-            fn eq(&self, other: &dirent) -> bool {
-                self.d_fileno == other.d_fileno
-                    && self.d_reclen == other.d_reclen
-                    && self.d_type == other.d_type
-                    && self.d_namlen == other.d_namlen
-                    && self.d_name[..self.d_namlen as _]
-                        .iter()
-                        .zip(other.d_name.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for dirent {}
-        impl hash::Hash for dirent {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.d_fileno.hash(state);
-                self.d_reclen.hash(state);
-                self.d_type.hash(state);
-                self.d_namlen.hash(state);
-                self.d_name[..self.d_namlen as _].hash(state);
-            }
-        }
-
-        impl PartialEq for vnstat {
-            fn eq(&self, other: &vnstat) -> bool {
-                let self_vn_devname: &[c_char] = &self.vn_devname;
-                let other_vn_devname: &[c_char] = &other.vn_devname;
-
-                self.vn_fileid == other.vn_fileid
-                    && self.vn_size == other.vn_size
-                    && self.vn_mntdir == other.vn_mntdir
-                    && self.vn_dev == other.vn_dev
-                    && self.vn_fsid == other.vn_fsid
-                    && self.vn_type == other.vn_type
-                    && self.vn_mode == other.vn_mode
-                    && self_vn_devname == other_vn_devname
-            }
-        }
-        impl Eq for vnstat {}
-        impl hash::Hash for vnstat {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                let self_vn_devname: &[c_char] = &self.vn_devname;
-
-                self.vn_fileid.hash(state);
-                self.vn_size.hash(state);
-                self.vn_mntdir.hash(state);
-                self.vn_dev.hash(state);
-                self.vn_fsid.hash(state);
-                self.vn_type.hash(state);
-                self.vn_mode.hash(state);
-                self_vn_devname.hash(state);
-            }
-        }
-    }
-}
-
 pub const ELAST: c_int = 96;
 pub const RAND_MAX: c_int = 0x7fff_fffd;
 pub const KI_NSPARE_PTR: usize = 6;
@@ -385,17 +266,17 @@ pub const MINCORE_SUPER: c_int = 0x20;
 pub const SPECNAMELEN: c_int = 63;
 
 safe_f! {
-    pub {const} fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
+    pub const fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
         let major = major as crate::dev_t;
         let minor = minor as crate::dev_t;
         (major << 8) | minor
     }
 
-    pub {const} fn major(dev: crate::dev_t) -> c_int {
+    pub const fn major(dev: crate::dev_t) -> c_int {
         ((dev >> 8) & 0xff) as c_int
     }
 
-    pub {const} fn minor(dev: crate::dev_t) -> c_int {
+    pub const fn minor(dev: crate::dev_t) -> c_int {
         (dev & 0xffff00ff) as c_int
     }
 }
@@ -424,6 +305,18 @@ extern "C" {
     // in FreeBSD 12
     pub fn dirname(path: *const c_char) -> *mut c_char;
     pub fn basename(path: *const c_char) -> *mut c_char;
+
+    // Argument order of the function pointer changed in FreeBSD 14. From 14 onwards the signature
+    // matches the POSIX specification by having the third argument be a mutable pointer, on
+    // earlier versions the first argument is the mutable pointer.
+    #[link_name = "qsort_r@FBSD_1.0"]
+    pub fn qsort_r(
+        base: *mut c_void,
+        num: size_t,
+        size: size_t,
+        arg: *mut c_void,
+        compar: Option<unsafe extern "C" fn(*mut c_void, *const c_void, *const c_void) -> c_int>,
+    );
 }
 
 cfg_if! {

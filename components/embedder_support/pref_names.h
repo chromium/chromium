@@ -14,10 +14,6 @@ namespace embedder_support {
 inline constexpr char kAlternateErrorPagesEnabled[] =
     "alternate_error_pages.enabled";
 
-// Enum indicating if the user agent reduction feature should be forced enabled
-// or disabled. Defaults to blink::features::kReduceUserAgentMinorVersion trial.
-inline constexpr char kReduceUserAgentMinorVersion[] = "user_agent_reduction";
-
 }  // namespace embedder_support
 
 #endif  // COMPONENTS_EMBEDDER_SUPPORT_PREF_NAMES_H_

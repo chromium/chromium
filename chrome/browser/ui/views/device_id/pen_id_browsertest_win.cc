@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/win/core_winrt_util.h"
@@ -125,8 +124,7 @@ void PenIdBrowserTest::SimulatePenPointerDragEvent(int pointer_id) {
   long offset_x = container_bounds.x();
   long offset_y = container_bounds.y();
 
-  POINTER_PEN_INFO pen_info;
-  UNSAFE_TODO(memset(&pen_info, 0, sizeof(POINTER_PEN_INFO)));
+  POINTER_PEN_INFO pen_info = {};
   pen_info.pointerInfo.pointerType = PT_PEN;
   pen_info.pointerInfo.ButtonChangeType = POINTER_CHANGE_FIRSTBUTTON_DOWN;
   // Since, SimulatePenEventForTesting considers the coordinates in relation

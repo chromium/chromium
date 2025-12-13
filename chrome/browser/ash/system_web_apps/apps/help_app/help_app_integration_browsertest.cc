@@ -62,6 +62,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/pref_test_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/package_id.h"
@@ -137,20 +138,6 @@ class HelpAppIntegrationTestWithAutoTriggerDisabled
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class HelpAppIntegrationTestWithAppMallEnabled : public HelpAppIntegrationTest {
- public:
-  HelpAppIntegrationTestWithAppMallEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        {
-            chromeos::features::kCrosMall,
-        },
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 class HelpAppIntegrationTestWithFirstRunEnabled
     : public HelpAppIntegrationTest {
  public:
@@ -203,7 +190,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2DefaultWindowBounds) {
   Browser* browser;
   LaunchApp(SystemWebAppType::HELP, &browser);
   gfx::Rect work_area =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+      display::Screen::Get()->GetDisplayForNewWindows().work_area();
   int x = (work_area.width() - 960) / 2;
   int y = (work_area.height() - 600) / 2;
   EXPECT_EQ(browser->window()->GetBounds(), gfx::Rect(x, y, 960, 600));
@@ -272,7 +259,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppV2ShowHelp) {
   content::TestNavigationObserver navigation_observer(expected_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  chrome::ShowHelp(browser(), chrome::HELP_SOURCE_KEYBOARD);
+  chrome::ShowHelp(browser(), chrome::HelpSource::kKeyboard);
 
 #if BUILDFLAG(ENABLE_CROS_HELP_APP)
   EXPECT_NO_FATAL_FAILURE(navigation_observer.Wait());
@@ -375,58 +362,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ReleaseNotesMetrics) {
   EXPECT_EQ(1,
             user_action_tester.GetActionCount("ReleaseNotes.ShowReleaseNotes"));
 #else
-  EXPECT_EQ(0,
-            user_action_tester.GetActionCount("ReleaseNotes.ShowReleaseNotes"));
-#endif
-}
-
-// Test that clicking the release notes notification opens Help App.
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
-                       HelpAppV2LaunchReleaseNotesFromNotification) {
-  // TODO(http://b/349164737): Re-enable this test with forest feature enabled.
-  if (ash::features::IsForestFeatureEnabled()) {
-    GTEST_SKIP() << "Skipping test body for Forest Feature.";
-  }
-
-  WaitForTestSystemAppInstall();
-  base::UserActionTester user_action_tester;
-  auto display_service =
-      std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
-  auto release_notes_notification =
-      std::make_unique<ReleaseNotesNotification>(profile());
-  auto release_notes_storage = std::make_unique<ReleaseNotesStorage>(profile());
-
-  // Force the release notes notification to show up.
-  profile()->GetPrefs()->SetInteger(
-      prefs::kHelpAppNotificationLastShownMilestone, 20);
-  release_notes_notification->MaybeShowReleaseNotes();
-  // Assert that the notification really is there.
-  auto notifications = display_service->GetDisplayedNotificationsForType(
-      NotificationHandler::Type::TRANSIENT);
-  ASSERT_EQ(1u, notifications.size());
-  ASSERT_EQ("show_release_notes_notification", notifications[0].id());
-
-  GURL expected_url = GURL("chrome://help-app/updates");
-  content::TestNavigationObserver navigation_observer(expected_url);
-  navigation_observer.StartWatchingNewWebContents();
-  // Then click.
-  display_service->SimulateClick(NotificationHandler::Type::TRANSIENT,
-                                 "show_release_notes_notification",
-                                 std::nullopt, std::nullopt);
-
-  EXPECT_EQ(
-      1, user_action_tester.GetActionCount("ReleaseNotes.NotificationShown"));
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "ReleaseNotes.LaunchedNotification"));
-#if BUILDFLAG(ENABLE_CROS_HELP_APP)
-  EXPECT_NO_FATAL_FAILURE(navigation_observer.Wait());
-  // Help app should have opened at the expected page.
-  EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
-  EXPECT_EQ(1,
-            user_action_tester.GetActionCount("ReleaseNotes.ShowReleaseNotes"));
-#else
-  // We just have the original browser. No new app opens.
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(0,
             user_action_tester.GetActionCount("ReleaseNotes.ShowReleaseNotes"));
 #endif
@@ -774,8 +709,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ShowParentalControls) {
 }
 
 // Test that the Help App's `openAppMallPath` opens the App Mall SWA.
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithAppMallEnabled,
-                       HelpAppV2ShowAppMallSWA) {
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ShowAppMallSWA) {
   WaitForTestSystemAppInstall();
   content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
 
@@ -816,7 +750,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithAutoTriggerDisabled,
 
   // There should be only be one regular browser with one tab.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
   WaitForTestSystemAppInstall();
   content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
@@ -848,7 +782,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithAutoTriggerDisabled,
   // There should still be two browser windows.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   // The regular browser should only have 2 tabs.
-  EXPECT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
   // After opening the URL, the regular browser should be the most recently
   // active browser.
   EXPECT_EQ(browser(), chrome::FindLastActive());
@@ -868,7 +802,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 
   // There should be only be one regular browser with one tab.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
   WaitForTestSystemAppInstall();
   content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
@@ -902,7 +836,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   // There should still be two browser windows.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   // The regular browser should only have 2 tabs.
-  EXPECT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
   // After opening the URL, the regular browser should be the most recently
   // active browser.
   EXPECT_EQ(browser(), chrome::FindLastActive());
@@ -921,7 +855,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   // There should be only be one regular browser with one tab.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   // The regular browser should only have 1 tab.
-  EXPECT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
   // The tab should be the default "about:blank" URL.
   EXPECT_TRUE(GetActiveWebContents()->GetVisibleURL().IsAboutBlank());
 
@@ -972,7 +906,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
     // There should only be 1 regular browser.
     EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
     // The regular browser should still only have 1 tab.
-    EXPECT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+    EXPECT_EQ(1, browser()->tab_strip_model()->count());
     // The tab should still be the default "about:blank" URL.
     EXPECT_TRUE(GetActiveWebContents()->GetVisibleURL().IsAboutBlank());
   }
@@ -1303,7 +1237,4 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     HelpAppIntegrationTestWithHelpAppOpensInsteadOfReleaseNotesNotification);
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    HelpAppIntegrationTestWithAppMallEnabled);
 }  // namespace ash

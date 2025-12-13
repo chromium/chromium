@@ -13,9 +13,23 @@ uniform float u_time;
 uniform int u_dark;
 uniform float u_emphasis;
 uniform float u_progress;
-uniform float u_corner_radius;
 uniform float u_insets;
-uniform float2 u_resolution;
+uniform float u_float1;
+uniform float u_float2;
+uniform float u_float3;
+uniform float u_float4;
+uniform float u_float5;
+uniform float u_float6;
+uniform float u_float7;
+uniform float u_float8;
+uniform vec2 u_resolution;
+uniform vec4 u_corner_radius;
+uniform vec4 u_color1;
+uniform vec4 u_color2;
+uniform vec4 u_color3;
+uniform vec4 u_color4;
+uniform vec4 u_color5;
+uniform vec4 u_color6;
 
 // Applies a uniform insets to coords.
 float2 InsetsCoord(float2 coord, float2 resolution, float insets) {
@@ -27,22 +41,22 @@ void BorderDistance(float2 coord, out float delta, out float aa) {
   float2 br = u_resolution - tl;
   float2 dtl = coord - tl;
   float2 dbr = br - coord;
+  float4 r = u_corner_radius;
 
-  float extent = max_extent * u_emphasis;
-  float rounded_extent = extent + u_corner_radius - border_width - half_pixel;
-  if (dtl.y < extent && dtl.x < extent) {
-    delta = extent - distance(coord, tl + vec2(extent));
-  } else if (dtl.y < extent && dbr.x < extent) {
-    delta = extent - distance(coord, vec2(br.x - extent, tl.y + extent));
-  } else if (dbr.y < rounded_extent && dtl.x < rounded_extent) {
-    delta = rounded_extent -
-            distance(coord, vec2(tl.x + rounded_extent, br.y - rounded_extent));
+  if (dtl.y < r.x && dtl.x < r.x) {
+    delta = r.x - distance(coord, tl + vec2(r.x));
     aa = half_pixel;
-  } else if (dbr.y < rounded_extent && dbr.x < rounded_extent) {
-    delta = rounded_extent - distance(coord, br - vec2(rounded_extent));
+  } else if (dtl.y < r.y && dbr.x < r.y) {
+    delta = r.y - distance(coord, vec2(br.x - r.y, tl.y + r.y));
+    aa = half_pixel;
+  } else if (dbr.y < r.w && dtl.x < r.w) {
+    delta = r.w - distance(coord, vec2(tl.x + r.w, br.y - r.w));
+    aa = half_pixel;
+  } else if (dbr.y < r.z && dbr.x < r.z) {
+    delta = r.z - distance(coord, br - vec2(r.z));
     aa = half_pixel;
   } else {
-    delta = min(min(min(dtl.x, dtl.y), dbr.x), dbr.y);
+    delta = min(min(dtl.x, dtl.y), min(dbr.x, dbr.y));
   }
 }
 

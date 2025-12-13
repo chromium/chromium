@@ -20,16 +20,19 @@ SELECT
   root_page AS origin,
   url AS request_url,
   type AS request_type,
+  rank as site_rank,
 FROM
   `httparchive.latest.requests`
 WHERE
   -- httparchive's database includes data from sub-pages. Our filter list has
   -- historically only dealt with requests that originate from root pages, so we
   -- need to filter the sub-page requests out.
-  is_root_page = true
+  is_root_page = true AND
+  rank < 5000000 AND
   -- Use a partition elimination filter to prevent querying the entire dataset.
   -- 61 days to account for July 1-August 31 range.
-  AND date BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 61 DAY) AND CURRENT_DATE()
+  date BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 61 DAY) AND
+  CURRENT_DATE()
 ```
 
 Since the output is too large (>32GB) to display on the page, the results will
@@ -57,8 +60,14 @@ An example using [EasyList](https://easylist.to/easylist/easylist.txt) follows:
 ```sh
 1. ninja -C out/Release/ subresource_filter_tools
 2. wget https://easylist.to/easylist/easylist.txt
-3. out/Release/ruleset_converter --input_format=filter-list --output_format=unindexed-ruleset --input_files=easylist.txt --output_file=easylist_unindexed
-4. out/Release/subresource_indexing_tool easylist_unindexed easylist_indexed
+# Convert `||domain.xyz^` rules into `||domain.xyz^$third-party` so
+# that we don't match all of the subresource requests when visiting
+# a top-level frame with that domain as a first party.
+# crbug.com/448915986
+3. awk '{ if (/^\s*!|^\s*@@|^\s*$/) { print; next } if (/^\s*\|\|[^/]*\^\s*$/) { print $0 "$third-party"; next } print }' easylist.txt > easylist_third.txt
+4. mv easylist_third.txt easylist.txt
+5. out/Release/ruleset_converter --input_format=filter-list --output_format=unindexed-ruleset --input_files=easylist.txt --output_file=easylist_unindexed
+6. out/Release/subresource_indexing_tool easylist_unindexed easylist_indexed
 ```
 
 ## 3. Generate the smaller filter list
@@ -97,7 +106,7 @@ It can be useful for development and testing to create a custom ruleset to activ
 2. Build tools needed to build the ruleset: `autoninja -C out/Release subresource_filter_tools`
 3. Run `./out/Release/ruleset_converter --input_format=filter-list --output_format=unindexed-ruleset --input_files=mock_easylist.txt --output_file=mock_easylist_unindexed`
 4. In `chrome://components` ensure "Subresource Filter Rules" has a non-0 version number or click "Check For Update". This ensures the path used in the following steps is created.
-5. In your Chrome user-data-dir, go to the `Subresource Filter/Unindexed` directory. Duplicate the latest version directory and increment the number: e.g. `cp -R 9.34.0/ 9.34.1/` (note: long-term, Chrome may replace this with a real list again when a new version is found).
+5. In your Chrome user-data-dir, go to the `Subresource Filter/Unindexed` directory. Locate the latest version directory and increment the number: e.g. `mv 9.34.0/ 9.34.1/` (note: long-term, Chrome may replace this with a real list again when a new version is found).
 6. Update the `version` property in `manifext.json` to match the incremented version number
 7. Overwrite `Filtering Rules` with the unindexed ruleset generated in step 3: `cp $CHROME_DIR/mock_easylist_indexed ./Filtering\ Rules`
 8. Remove `manifest.fingerprint` and `\_metadata`, leaving just `Filtering Rules`, `LICENSE.txt`, and `manifest.json`: `rm -rf manifest.fingerprint _metadata`

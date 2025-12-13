@@ -48,6 +48,14 @@ class TestBrowserDialog : public TestBrowserUi {
   // baseline. Or else the previous gold image are still valid (which they
   // should not be because they have wrong text).
   // Consider using the cl number as baseline.
+  //
+  // NOTE: This is optional for pixel testing.
+  // Actually it has some drawbacks. For various reasons, the pixel output from
+  // a View is not always deterministic. Even with fuzzy matching, one test may
+  // still need to match with multiple gold images. When you call
+  // set_baseline(), all previous gold images become invalid. And usually test
+  // author only approve 1 new gold image to pass CQ. Then the test would become
+  // flaky and cause trouble for gardeners.
   void set_baseline(const std::string& baseline) { baseline_ = baseline; }
 
   // Whether to close asynchronously using Widget::Close(). This covers

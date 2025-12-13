@@ -6,18 +6,17 @@
 
 #include <optional>
 
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 #include "chrome/browser/ash/arc/vmm/arc_vmm_manager.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -55,9 +54,7 @@ class TestPeaceDurationProvider : public PeaceDurationProvider {
 
 class ArcVmmSwapSchedulerTest : public testing::Test {
  public:
-  ArcVmmSwapSchedulerTest() : local_state_(TestingBrowserProcess::GetGlobal()) {
-    ash::ConciergeClient::InitializeFake();
-  }
+  ArcVmmSwapSchedulerTest() { ash::ConciergeClient::InitializeFake(); }
 
   ArcVmmSwapSchedulerTest(const ArcVmmSwapSchedulerTest&) = delete;
   ArcVmmSwapSchedulerTest& operator=(const ArcVmmSwapSchedulerTest&) = delete;
@@ -65,11 +62,13 @@ class ArcVmmSwapSchedulerTest : public testing::Test {
   ~ArcVmmSwapSchedulerTest() override { ash::ConciergeClient::Shutdown(); }
 
   void SetSwapOutTime(base::Time time) {
-    local_state_.Get()->SetTime(prefs::kArcVmmSwapOutTime, base::Time());
+    TestingBrowserProcess::GetGlobal()->local_state()->SetTime(
+        prefs::kArcVmmSwapOutTime, base::Time());
   }
 
   base::Time GetSwapOutTime() {
-    return local_state_.Get()->GetTime(prefs::kArcVmmSwapOutTime);
+    return TestingBrowserProcess::GetGlobal()->local_state()->GetTime(
+        prefs::kArcVmmSwapOutTime);
   }
 
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
@@ -77,9 +76,6 @@ class ArcVmmSwapSchedulerTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
- private:
-  ScopedTestingLocalState local_state_;
 };
 
 TEST_F(ArcVmmSwapSchedulerTest, SetSwapEnableDisable) {

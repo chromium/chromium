@@ -18,11 +18,6 @@ DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(IdentityGetAuthTokenFunction,
                                          EXPERIMENTAL_IDENTITY_GETAUTHTOKEN);
 
 DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(
-  IdentityLaunchWebAuthFlowFunction,
-  "identity.launchWebAuthFlow",
-  EXPERIMENTAL_IDENTITY_LAUNCHWEBAUTHFLOW);
-
-DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(
     IdentityRemoveCachedAuthTokenFunction,
     "identity.removeCachedAuthToken",
     EXPERIMENTAL_IDENTITY_REMOVECACHEDAUTHTOKEN);

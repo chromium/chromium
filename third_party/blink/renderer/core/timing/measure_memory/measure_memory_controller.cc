@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/timing/measure_memory/measure_memory_controller.h"
 
 #include <algorithm>
+
+#include "base/byte_count.h"
 #include "base/rand_util.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom-blink.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -37,7 +39,6 @@ using performance_manager::mojom::blink::WebMemoryAttributionPtr;
 using performance_manager::mojom::blink::WebMemoryBreakdownEntryPtr;
 using performance_manager::mojom::blink::WebMemoryMeasurement;
 using performance_manager::mojom::blink::WebMemoryMeasurementPtr;
-using performance_manager::mojom::blink::WebMemoryUsagePtr;
 
 namespace blink {
 
@@ -101,8 +102,8 @@ void StartMemoryMeasurement(LocalDOMWindow* window,
                             WebMemoryMeasurement::Mode mode) {
   if (auto* coordinator = window->document()->GetResourceCoordinator()) {
     coordinator->OnWebMemoryMeasurementRequested(
-        mode, WTF::BindOnce(&MeasureMemoryController::MeasurementComplete,
-                            WrapPersistent(controller)));
+        mode, BindOnce(&MeasureMemoryController::MeasurementComplete,
+                       WrapPersistent(controller)));
   }
 }
 
@@ -240,7 +241,7 @@ MemoryBreakdownEntry* ConvertJavaScriptBreakdown(
     const WebMemoryBreakdownEntryPtr& breakdown_entry) {
   auto* result = MemoryBreakdownEntry::Create();
   DCHECK(breakdown_entry->memory);
-  result->setBytes(breakdown_entry->memory->bytes);
+  result->setBytes(breakdown_entry->memory->InBytes());
   HeapVector<Member<MemoryAttribution>> attribution;
   for (const auto& entry : breakdown_entry->attribution) {
     attribution.push_back(ConvertAttribution(entry));
@@ -254,7 +255,7 @@ MemoryBreakdownEntry* ConvertCanvasBreakdown(
     const WebMemoryBreakdownEntryPtr& breakdown_entry) {
   auto* result = MemoryBreakdownEntry::Create();
   DCHECK(breakdown_entry->canvas_memory);
-  result->setBytes(breakdown_entry->canvas_memory->bytes);
+  result->setBytes(breakdown_entry->canvas_memory->InBytes());
   HeapVector<Member<MemoryAttribution>> attribution;
   for (const auto& entry : breakdown_entry->attribution) {
     attribution.push_back(ConvertAttribution(entry));
@@ -265,11 +266,10 @@ MemoryBreakdownEntry* ConvertCanvasBreakdown(
 }
 
 MemoryBreakdownEntry* CreateUnattributedBreakdown(
-    const WebMemoryUsagePtr& memory,
-    const WTF::String& memory_type) {
+    std::optional<base::ByteCount> memory,
+    const String& memory_type) {
   auto* result = MemoryBreakdownEntry::Create();
-  DCHECK(memory);
-  result->setBytes(memory->bytes);
+  result->setBytes(memory->InBytes());
   result->setAttribution({});
   Vector<String> types;
   types.push_back(memory_type);
@@ -309,7 +309,7 @@ MemoryMeasurement* ConvertResult(const WebMemoryMeasurementPtr& measurement) {
   // Randomize the order of the entries as required by the spec.
   std::shuffle(breakdown.begin(), breakdown.end(), RandomBitGenerator{});
   size_t bytes = 0;
-  for (auto entry : breakdown) {
+  for (const auto& entry : breakdown) {
     bytes += entry->bytes();
   }
   auto* result = MemoryMeasurement::Create();
@@ -331,7 +331,7 @@ uint64_t GetDedicatedWorkerJavaScriptUkm(
   size_t result = 0;
   for (const auto& entry : measurement->breakdown) {
     if (entry->memory && IsDedicatedWorkerEntry(entry)) {
-      result += entry->memory->bytes;
+      result += entry->memory->InBytes();
     }
   }
   return result;
@@ -341,18 +341,18 @@ uint64_t GetJavaScriptUkm(const WebMemoryMeasurementPtr& measurement) {
   size_t result = 0;
   for (const auto& entry : measurement->breakdown) {
     if (entry->memory) {
-      result += entry->memory->bytes;
+      result += entry->memory->InBytes();
     }
   }
   return result;
 }
 
 uint64_t GetDomUkm(const WebMemoryMeasurementPtr& measurement) {
-  return measurement->blink_memory->bytes;
+  return measurement->blink_memory->InBytes();
 }
 
 uint64_t GetSharedUkm(const WebMemoryMeasurementPtr& measurement) {
-  return measurement->shared_memory->bytes;
+  return measurement->shared_memory->InBytes();
 }
 
 void RecordWebMemoryUkm(ExecutionContext* execution_context,

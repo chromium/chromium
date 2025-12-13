@@ -28,15 +28,7 @@ using ImageReadCompletionBlock = base::OnceCallback<void(UIImage* image)>;
 // managed by this ImageFileManager are stored. `storagePath` is not guaranteed
 // to exist. The contents of `storagePath` are entirely managed by this
 // ImageFileManager.
-//
-// To support renaming the directory where the snapshots are stored, it is
-// possible to pass a non-empty path via `legacyPath`. If present, then it
-// will be moved to `storagePath`.
-//
-// TODO(crbug.com/40942167): Remove `legacyPath` when the storage for all users
-// has been migrated.
 - (instancetype)initWithStoragePath:(const base::FilePath&)storagePath
-                         legacyPath:(const base::FilePath&)legacyPath
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -58,11 +50,6 @@ using ImageReadCompletionBlock = base::OnceCallback<void(UIImage* image)>;
 // background thread.
 - (void)purgeImagesOlderThan:(base::Time)date
                      keeping:(const std::vector<SnapshotID>&)liveSnapshotIDs;
-
-// Renames snapshots with names in `oldIDs` to names in `newIDs`. It is a
-// programmatic error if the two array do not have the same length.
-- (void)renameSnapshotsWithIDs:(NSArray<NSString*>*)oldIDs
-                         toIDs:(const std::vector<SnapshotID>&)newIDs;
 
 // Moves the image in disk from `oldPath` to `newPath`
 - (void)copyImage:(const base::FilePath&)oldPath

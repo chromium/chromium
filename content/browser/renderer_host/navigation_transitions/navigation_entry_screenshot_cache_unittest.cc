@@ -11,6 +11,8 @@
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_data.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/restore_type.h"
@@ -43,10 +45,10 @@ void AssertEntryHasNoScreenshot(WebContents* tab, int nav_entry_id) {
 
 class NavigationEntryScreenshotCacheTest : public RenderViewHostTestHarness {
  public:
-  NavigationEntryScreenshotCacheTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {blink::features::kBackForwardTransitions}, {});
-  }
+  NavigationEntryScreenshotCacheTest()
+      : min_required_physical_rm_mb_auto_reset_(
+            NavigationTransitionConfig::SetMinRequiredPhysicalRamMbForTesting(
+                0)) {}
   ~NavigationEntryScreenshotCacheTest() override = default;
 
   void SetUp() override {
@@ -95,6 +97,22 @@ class NavigationEntryScreenshotCacheTest : public RenderViewHostTestHarness {
     return GetCacheForTab(tab)->RemoveScreenshot(entry);
   }
 
+  NavigationEntryScreenshot* GetScreenshotKeepInCache(WebContents* tab,
+                                                      int entry_id) {
+    auto* entry = GetEntryWithID(tab, entry_id);
+    auto* cache = GetCacheForTab(tab);
+    auto screenshot = cache->RemoveScreenshot(entry);
+    auto* screenshot_ptr = screenshot.get();
+    cache->SetScreenshot(nullptr, std::move(screenshot), false);
+    return screenshot_ptr;
+  }
+
+  void RemoveScreenshot(WebContents* tab,
+                        NavigationEntryScreenshot* screenshot) {
+    auto* cache = GetCacheForTab(tab);
+    cache->RemoveFailedScreenshot(screenshot);
+  }
+
   void AssertBitmapOfColor(
       std::unique_ptr<NavigationEntryScreenshot> screenshot,
       SkColor color) {
@@ -125,6 +143,18 @@ class NavigationEntryScreenshotCacheTest : public RenderViewHostTestHarness {
     ASSERT_NE(entry, nullptr);
     ASSERT_EQ(entry->GetUserData(NavigationEntryScreenshot::kUserDataKey),
               nullptr);
+  }
+
+  void AssertEntryCacheHitOrMissReason(
+      WebContents* tab,
+      int entry_id,
+      NavigationTransitionData::CacheHitOrMissReason cache_hit_or_miss_reason) {
+    auto* entry = GetEntryWithID(tab, entry_id);
+    ASSERT_NE(entry, nullptr);
+    auto entry_reason = static_cast<NavigationEntryImpl*>(entry)
+                            ->navigation_transition_data()
+                            .cache_hit_or_miss_reason();
+    ASSERT_EQ(entry_reason, cache_hit_or_miss_reason);
   }
 
   void RemoveTestNavEntry(WebContents* tab, int entry_id) {
@@ -180,7 +210,7 @@ class NavigationEntryScreenshotCacheTest : public RenderViewHostTestHarness {
   // Hold the test WebContents.
   std::array<std::unique_ptr<WebContents>, 3> tabs_;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::AutoReset<int> min_required_physical_rm_mb_auto_reset_;
 };
 
 // Test the basic functionalities of `SetScreenshot`, `RemoveScreenshot` of
@@ -277,6 +307,48 @@ TEST_F(NavigationEntryScreenshotCacheTest, DeletedNavEntry) {
   // Remove a navigation entry without a screenshot. We should not expect change
   // in size.
   RemoveTestNavEntry(tab1(), 1);
+  ASSERT_EQ(GetManager()->GetCurrentCacheSize(), 64U * 3);
+
+  // Get:
+  AssertBitmapOfColor(GetScreenshot(tab1(), 2), SK_ColorRED);
+  ASSERT_EQ(GetManager()->GetCurrentCacheSize(), 64U * 2);
+  AssertBitmapOfColor(GetScreenshot(tab1(), 5), SK_ColorBLUE);
+  ASSERT_EQ(GetManager()->GetCurrentCacheSize(), 64U * 1);
+  AssertBitmapOfColor(GetScreenshot(tab2(), 19), SK_ColorWHITE);
+  ASSERT_TRUE(GetCacheForTab(tab1())->IsEmpty());
+  ASSERT_TRUE(GetCacheForTab(tab2())->IsEmpty());
+  ASSERT_TRUE(GetManager()->IsEmpty());
+}
+
+// Test that failed screenshots still have a cache miss reason.
+TEST_F(NavigationEntryScreenshotCacheTest, RemoveFailedScreenshot) {
+  RestoreEntriesToTab(tab1(), /*id_start=*/1, /*id_end=*/10,
+                      /*last_committed_index=*/9);
+  RestoreEntriesToTab(tab2(), /*id_start=*/11, /*id_end=*/20,
+                      /*last_committed_index=*/9);
+
+  GetManager()->SetMemoryBudgetForTesting(10240U);
+
+  // Set:
+  // Tab1: entry2->Red, entry4->Green, entry5->Blue;
+  // Tab2: entry15->Black, entry20->White;
+  CacheScreenshot(tab1(), 2, SK_ColorRED);
+  CacheScreenshot(tab1(), 4, SK_ColorGREEN);
+  CacheScreenshot(tab1(), 5, SK_ColorBLUE);
+  CacheScreenshot(tab2(), 15, SK_ColorBLACK);
+  CacheScreenshot(tab2(), 19, SK_ColorWHITE);
+  ASSERT_EQ(GetManager()->GetCurrentCacheSize(), 64U * 5);
+
+  auto* screenshot_to_remove = GetScreenshotKeepInCache(tab1(), 4);
+  RemoveScreenshot(tab1(), screenshot_to_remove);
+  AssertEntryCacheHitOrMissReason(
+      tab1(), 4,
+      NavigationTransitionData::CacheHitOrMissReason::kCacheMissFailedReadBack);
+  screenshot_to_remove = GetScreenshotKeepInCache(tab2(), 15);
+  RemoveScreenshot(tab2(), screenshot_to_remove);
+  AssertEntryCacheHitOrMissReason(
+      tab2(), 15,
+      NavigationTransitionData::CacheHitOrMissReason::kCacheMissFailedReadBack);
   ASSERT_EQ(GetManager()->GetCurrentCacheSize(), 64U * 3);
 
   // Get:
@@ -498,9 +570,8 @@ TEST_F(NavigationEntryScreenshotCacheTest, OnWebContentsDestroyed) {
   ASSERT_TRUE(GetManager()->IsEmpty());
 }
 
-// `base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL` signals the
-// purge of all the cached screenshots within the global manager's Profile. This
-// test asserts that.
+// `base::MEMORY_PRESSURE_LEVEL_CRITICAL` signals the purge of all the cached
+// screenshots within the global manager's Profile. This test asserts that.
 TEST_F(NavigationEntryScreenshotCacheTest, OnMemoryPressureCritical) {
   GetManager()->SetMemoryBudgetForTesting(10240U);
 
@@ -513,8 +584,7 @@ TEST_F(NavigationEntryScreenshotCacheTest, OnMemoryPressureCritical) {
   CacheScreenshot(tab1(), 5, SK_ColorWHITE);
   CacheScreenshot(tab1(), 6, SK_ColorGRAY);
 
-  GetManager()->OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  GetManager()->OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
   AssertEntryHasNoScreenshot(tab1(), 1);
   AssertEntryHasNoScreenshot(tab1(), 2);

@@ -18,12 +18,16 @@ class WebAppFilter {
   static WebAppFilter OpensInDedicatedWindow();
   // Only consider web apps that capture links in scope.
   static WebAppFilter CapturesLinksInScope();
-  // Only consider isolated web apps.
+  // Only consider isolated web apps, that are not scheduled for uninstallation,
+  // like stub ones. To also consider stub apps, use
+  // `IsIsolatedWebAppIncludingUninstalling()` instead.
   static WebAppFilter IsIsolatedApp();
   // Only consider force-installed Isolated Web Apps.
   static WebAppFilter PolicyInstalledIsolatedWebApp();
   // Only consider crafted web apps (not DIY apps).
   static WebAppFilter IsCraftedApp();
+  // Only consider crafted web apps that are set to open in a dedicated window.
+  static WebAppFilter IsCraftedAppAndOpensInDedicatedWindow();
   // Only consider apps that are not installed on this device, but are suggested
   // from other devices.
   static WebAppFilter IsSuggestedApp();
@@ -51,14 +55,22 @@ class WebAppFilter {
   // installed by the user. Used by the Web Install API.
   static WebAppFilter LaunchableFromInstallApi();
 
-  WebAppFilter& operator=(const WebAppFilter&) = delete;
+  // Only consider web apps that have been installed in Chrome by trusted
+  // sources, like admin or preinstalled apps.
+  static WebAppFilter IsTrusted();
+
+  // Consider any isolated web apps, even ones that are stubs and have
+  // `is_uninstalling` set to true.
+  static WebAppFilter IsIsolatedWebAppIncludingUninstalling();
+
+  WebAppFilter(const WebAppFilter&);
+  WebAppFilter& operator=(const WebAppFilter&) = default;
   ~WebAppFilter() = default;
 
  private:
   friend class WebAppRegistrar;
 
   WebAppFilter();
-  WebAppFilter(const WebAppFilter&);
 
   bool opens_in_browser_tab_ = false;
   bool opens_in_dedicated_window_ = false;
@@ -78,6 +90,13 @@ class WebAppFilter {
   bool is_diy_with_os_shortcut_ = false;
   bool launchable_from_install_api_ = false;
   bool is_policy_installed_iwa = false;
+  // Having is_crafted_app_ and opens_in_dedicated_window_ set to true
+  // separately would result in matching any app for which either filter is
+  // true. So use a separate field for the combination of the two. In the
+  // future we might want to have a more generic "and" mechanism for filters.
+  bool is_crafted_app_and_opens_in_dedicated_window_ = false;
+  bool is_app_trusted_ = false;
+  bool is_isolated_apps_including_uninstalling_ = false;
 };
 
 }  // namespace web_app

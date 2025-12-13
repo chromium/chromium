@@ -30,6 +30,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class EXTFragDepth final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -37,7 +39,7 @@ class EXTFragDepth final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit EXTFragDepth(WebGLRenderingContextBase*);
+  EXTFragDepth(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 };

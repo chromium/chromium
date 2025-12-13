@@ -10,12 +10,14 @@
 
 #include "base/android/jni_android.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -38,7 +40,12 @@ const int kNotificationCount2 = 15;
 
 class NotificationPermissionReviewBridgeTest : public testing::Test {
  public:
-  NotificationPermissionReviewBridgeTest() : env_(AttachCurrentThread()) {}
+  NotificationPermissionReviewBridgeTest() : env_(AttachCurrentThread()) {
+    // The Notification Review Module in Safety Hub is disabled if Disruptive
+    // Notification Revocation is enabled.
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kSafetyHubDisruptiveNotificationRevocation);
+  }
 
   void SetUp() override {
     safety_hub_test_util::CreateNotificationPermissionsReviewService(profile());
@@ -87,6 +94,7 @@ class NotificationPermissionReviewBridgeTest : public testing::Test {
   raw_ptr<JNIEnv> env() { return env_; }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<JNIEnv> env_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile testing_profile_;

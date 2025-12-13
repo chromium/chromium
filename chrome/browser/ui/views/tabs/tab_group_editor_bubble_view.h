@@ -11,8 +11,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "components/tab_groups/tab_group_color.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -32,7 +32,6 @@ class Separator;
 }  // namespace views
 
 class ColorPickerView;
-class TabGroupHeader;
 class ManageSharingRow;
 
 // A dialog for changing a tab group's visual parameters.
@@ -41,6 +40,8 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   METADATA_HEADER(TabGroupEditorBubbleView, views::BubbleDialogDelegateView)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabGroupEditorBubbleViewId);
+
   static constexpr int TAB_GROUP_HEADER_CXMENU_SAVE_GROUP = 1;
   static constexpr int TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP = 2;
   static constexpr int TAB_GROUP_HEADER_CXMENU_UNGROUP = 3;
@@ -51,20 +52,19 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   static constexpr int TAB_GROUP_HEADER_CXMENU_LEAVE_GROUP = 8;
   static constexpr int TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW = 9;
   static constexpr int TAB_GROUP_HEADER_CXMENU_RECENT_ACTIVITY = 10;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_CONVERT_TO_BOOKMARK = 11;
+  static constexpr int TAB_GROUP_HEADER_CXMENU_FOCUS_GROUP = 12;
 
   using Colors =
       std::vector<std::pair<tab_groups::TabGroupColorId, std::u16string>>;
 
   // Shows the editor for `group`. Returns a *non-owning* pointer to the
   // bubble's widget.
-  static views::Widget* Show(
-      Browser* browser,
-      const tab_groups::TabGroupId& group,
-      TabGroupHeader* header_view,
-      std::optional<gfx::Rect> anchor_rect = std::nullopt,
-      // If not provided, will be set to `header_view`.
-      views::View* anchor_view = nullptr,
-      bool stop_context_menu_propagation = false);
+  static views::Widget* Show(Browser* browser,
+                             const tab_groups::TabGroupId& group,
+                             views::View* anchor_view,
+                             std::optional<gfx::Rect> anchor_rect,
+                             bool stop_context_menu_propagation);
 
   // views::BubbleDialogDelegateView:
   views::View* GetInitiallyFocusedView() override;
@@ -113,9 +113,12 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   std::unique_ptr<views::LabelButton> BuildNewTabInGroupButton();
   std::unique_ptr<views::LabelButton> BuildUngroupButton();
   std::unique_ptr<views::LabelButton> BuildCloseGroupButton();
+  std::unique_ptr<views::LabelButton> BuildConvertToBookmarkButton();
   std::unique_ptr<views::LabelButton> BuildDeleteGroupButton();
   std::unique_ptr<views::LabelButton> BuildLeaveGroupButton();
   std::unique_ptr<views::LabelButton> BuildMoveGroupToNewWindowButton();
+  std::unique_ptr<views::LabelButton> BuildFocusGroupButton();
+  std::unique_ptr<views::LabelButton> BuildUnfocusGroupButton();
   std::unique_ptr<ManageSharingRow> BuildManageSharingButton();
   std::unique_ptr<views::LabelButton> BuildShareGroupButton();
   std::unique_ptr<views::LabelButton> BuildRecentActivityButton();
@@ -124,9 +127,12 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   void UngroupPressed();
   void ShareOrManagePressed();
   void CloseGroupPressed();
+  void ConvertToBookmarkPressed();
   void DeleteGroupPressed();
   void LeaveGroupPressed();
   void MoveGroupToNewWindowPressed();
+  void FocusGroupPressed();
+  void UnfocusGroupPressed();
   void RecentActivityPressed();
 
   // The action for moving a group to a new window is only enabled when the

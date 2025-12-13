@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: assert_array_equals: lengths differ, expected array ["touchstart-VIDEO", "touchmove-VIDEO", "touchend-VIDEO"] length 3, got ["touchstart-VIDEO", "touchend-VIDEO"] length 2
+[TIMEOUT] Touch-generated events should propagate to the parent when a video element is the target
+  Test timed out
+Harness: the test ran to completion.
+

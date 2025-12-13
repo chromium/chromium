@@ -174,7 +174,7 @@ void ProgrammaticScriptInjector::OnInjectionComplete(
 void ProgrammaticScriptInjector::OnWillNotInject(InjectFailureReason reason) {
   std::string error;
   switch (reason) {
-    case NOT_ALLOWED:
+    case ScriptInjector::InjectFailureReason::kNotAllowed:
       if (!CanShowUrlInError()) {
         error = manifest_errors::kCannotAccessPage;
       } else if (!origin_for_about_error_.empty()) {
@@ -186,8 +186,9 @@ void ProgrammaticScriptInjector::OnWillNotInject(InjectFailureReason reason) {
             manifest_errors::kCannotAccessPageWithUrl, url_.spec());
       }
       break;
-    case EXTENSION_REMOVED:  // no special error here.
-    case WONT_INJECT:
+    case ScriptInjector::InjectFailureReason::kExtensionRemoved:  // no special
+                                                                  // error here.
+    case ScriptInjector::InjectFailureReason::kWontInject:
       break;
   }
   Finish(error);

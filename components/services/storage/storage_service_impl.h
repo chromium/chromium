@@ -9,12 +9,10 @@
 #include <set>
 
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/filesystem/directory.mojom.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
@@ -26,7 +24,6 @@ namespace storage {
 
 class LocalStorageImpl;
 class SessionStorageImpl;
-
 // Implementation of the main StorageService Mojo interface. This is the root
 // owner of all Storage service instance state, managing the set of active
 // persistent and in-memory local and session storage instances.
@@ -53,11 +50,9 @@ class StorageServiceImpl : public mojom::StorageService {
 #endif
   void BindLocalStorageControl(
       const std::optional<base::FilePath>& path,
-      mojom::StorageLifecycle lifecycle,
       mojo::PendingReceiver<mojom::LocalStorageControl> receiver) override;
   void BindSessionStorageControl(
       const std::optional<base::FilePath>& path,
-      mojom::StorageLifecycle lifecycle,
       mojo::PendingReceiver<mojom::SessionStorageControl> receiver) override;
   void BindTestApi(mojo::ScopedMessagePipeHandle test_api_receiver) override;
 
@@ -80,7 +75,6 @@ class StorageServiceImpl : public mojom::StorageService {
 
   const mojo::Receiver<mojom::StorageService> receiver_;
   const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
-  base::Time creation_time_;
 
 #if !BUILDFLAG(IS_ANDROID)
   // If bound, the service will assume it should not perform certain filesystem

@@ -19,28 +19,35 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/aura/window.h"
 
 namespace {
 
-bool BrowserMatchesURL(Browser* browser, const GURL& url) {
-  return browser->tab_strip_model()
+bool BrowserMatchesURL(BrowserWindowInterface* browser, const GURL& url) {
+  return browser->GetFeatures()
+      .tab_strip_model()
       ->GetActiveWebContents()
       ->GetVisibleURL()
       .EqualsIgnoringRef(url);
 }
 
-bool BrowserMatches(Browser* browser,
+bool BrowserMatches(BrowserWindowInterface* browser,
                     Profile* profile,
                     webapps::AppId app_id,
                     Browser::Type type,
                     const GURL& url) {
-  return browser->profile() == profile && browser->type() == type &&
-         web_app::GetAppIdFromApplicationName(browser->app_name()) == app_id &&
+  return browser->GetProfile() == profile && browser->GetType() == type &&
+         web_app::GetAppIdFromApplicationName(
+             browser->GetBrowserForMigrationOnly()->app_name()) == app_id &&
          (url.is_empty() || BrowserMatchesURL(browser, url));
 }
 
@@ -54,41 +61,90 @@ BrowserControllerImpl::BrowserControllerImpl() {
 
 BrowserControllerImpl::~BrowserControllerImpl() = default;
 
-BrowserDelegate* BrowserControllerImpl::GetDelegate(Browser* browser) {
-  if (browser == nullptr) {
+BrowserDelegate* BrowserControllerImpl::GetDelegate(
+    BrowserWindowInterface* bwi) {
+  if (!bwi) {
     return nullptr;
   }
 
-  auto it = browsers_.find(browser);
+  auto it = browsers_.find(bwi);
   if (it == browsers_.end()) {
     it = browsers_
-             .insert({browser, std::make_unique<BrowserDelegateImpl>(browser)})
+             .emplace(bwi, std::make_unique<BrowserDelegateImpl>(
+                               bwi->GetBrowserForMigrationOnly()))
              .first;
   }
   return it->second.get();
 }
 
 BrowserDelegate* BrowserControllerImpl::GetLastUsedBrowser() {
-  return GetDelegate(BrowserList::GetInstance()->GetLastActive());
+  return GetDelegate(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 }
 
 BrowserDelegate* BrowserControllerImpl::GetLastUsedVisibleBrowser() {
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (browser->window()->IsVisible()) {
-      return GetDelegate(browser);
-    }
-  }
-  return nullptr;
+  BrowserDelegate* browser_delegate = nullptr;
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&](BrowserWindowInterface* browser) {
+        if (browser->GetWindow()->IsVisible()) {
+          browser_delegate = GetDelegate(browser);
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      },
+      BrowserCollection::Order::kActivation);
+  return browser_delegate;
 }
 
 BrowserDelegate* BrowserControllerImpl::GetLastUsedVisibleOnTheRecordBrowser() {
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (!browser->profile()->IsOffTheRecord() &&
-        browser->window()->IsVisible()) {
-      return GetDelegate(browser);
-    }
+  BrowserDelegate* browser_delegate = nullptr;
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&](BrowserWindowInterface* browser) {
+        if (!browser->GetProfile()->IsOffTheRecord() &&
+            browser->GetWindow()->IsVisible()) {
+          browser_delegate = GetDelegate(browser);
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      },
+      BrowserCollection::Order::kActivation);
+  return browser_delegate;
+}
+
+void BrowserControllerImpl::ForEachBrowser(
+    BrowserOrder order,
+    base::FunctionRef<IterationDirective(BrowserDelegate&)> callback) {
+  BrowserCollection::Order collection_order;
+  switch (order) {
+    case BrowserOrder::kAscendingCreationTime:
+      collection_order = BrowserCollection::Order::kCreation;
+      break;
+    case BrowserOrder::kAscendingActivationTime:
+      collection_order = BrowserCollection::Order::kActivation;
+      break;
   }
-  return nullptr;
+
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&](BrowserWindowInterface* browser) {
+        return callback(*GetDelegate(browser)) != kBreakIteration;
+      },
+      collection_order);
+}
+
+BrowserDelegate* BrowserControllerImpl::GetBrowserForWindow(
+    aura::Window* window) {
+  // TODO(crbug.com/369688254): We'd like to use
+  // BrowserView::GetBrowserViewForNativeWindow followed by BrowserView::browser
+  // here but this can CHECK-fail during shutdown. Find a solution.
+  return GetDelegate(chrome::FindBrowserWithWindow(window));
+}
+
+BrowserDelegate* BrowserControllerImpl::GetBrowserForTab(
+    content::WebContents* contents) {
+  // TODO(crbug.com/369688254): We'd like to use
+  // tabs::TabInterface::MaybeGetFromContents followed by
+  // tabs::TabInterface::GetBrowserWindowInterface here but this can CHECK-fail
+  // during shutdown. Find a solution.
+  return GetDelegate(chrome::FindBrowserWithTab(contents));
 }
 
 BrowserDelegate* BrowserControllerImpl::FindWebApp(const AccountId& account_id,
@@ -103,14 +159,19 @@ BrowserDelegate* BrowserControllerImpl::FindWebApp(const AccountId& account_id,
         browser_type == BrowserType::kAppPopup);
   Browser::Type internal_type = ToInternalBrowserType(browser_type);
 
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (!browser->is_delete_scheduled() &&
-        BrowserMatches(browser, profile, app_id, internal_type, url)) {
-      return GetDelegate(browser);
-    }
-  }
+  BrowserDelegate* browser_delegate = nullptr;
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&](BrowserWindowInterface* browser) {
+        if (!browser->GetBrowserForMigrationOnly()->is_delete_scheduled() &&
+            BrowserMatches(browser, profile, app_id, internal_type, url)) {
+          browser_delegate = GetDelegate(browser);
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      },
+      BrowserCollection::Order::kActivation);
 
-  return nullptr;
+  return browser_delegate;
 }
 
 BrowserDelegate* BrowserControllerImpl::NewTabWithPostData(
@@ -129,7 +190,7 @@ BrowserDelegate* BrowserControllerImpl::NewTabWithPostData(
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_API |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
-  navigate_params.window_action = NavigateParams::SHOW_WINDOW;
+  navigate_params.window_action = NavigateParams::WindowAction::kShowWindow;
   navigate_params.post_data =
       network::ResourceRequestBody::CreateFromCopyOfBytes(post_data);
   navigate_params.extra_headers = std::string(extra_headers);
@@ -211,9 +272,26 @@ void BrowserControllerImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void BrowserControllerImpl::OnBrowserAdded(Browser* browser) {
+  ash::BrowserDelegate* browser_delegate = GetDelegate(browser);
+  for (auto& observer : observers_) {
+    observer.OnBrowserCreated(browser_delegate);
+  }
+}
+
+void BrowserControllerImpl::OnBrowserSetLastActive(Browser* browser) {
+  ash::BrowserDelegate* browser_delegate = GetDelegate(browser);
+  for (auto& observer : observers_) {
+    observer.OnBrowserActivated(browser_delegate);
+  }
+}
+
 void BrowserControllerImpl::OnBrowserRemoved(Browser* browser) {
-  if (BrowserList::GetInstance()->empty()) {
-    for (auto& observer : observers_) {
+  ash::BrowserDelegate* browser_delegate = GetDelegate(browser);
+  for (auto& observer : observers_) {
+    observer.OnBrowserClosed(browser_delegate);
+
+    if (GlobalBrowserCollection::GetInstance()->IsEmpty()) {
       observer.OnLastBrowserClosed();
     }
   }

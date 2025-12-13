@@ -103,7 +103,7 @@ suite('HeaderTest', () => {
     header.subtitle = 'foo';
     await microtasksFinished();
 
-    assertEquals('foo', subtitle.textContent!.trim());
+    assertEquals('foo', subtitle.textContent.trim());
     assertFalse(hasStyle(subtitle, 'display', 'none'));
     assertFalse(hasStyle(header.$.divider, 'display', 'none'));
     assertFalse(hasStyle(header.$.menuButton, 'display', 'none'));

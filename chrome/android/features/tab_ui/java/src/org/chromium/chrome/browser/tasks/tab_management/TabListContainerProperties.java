@@ -11,13 +11,14 @@ import androidx.core.util.Pair;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+
+import java.util.function.Supplier;
 
 @NullMarked
 class TabListContainerProperties {
@@ -77,6 +78,15 @@ class TabListContainerProperties {
     public static final PropertyModel.WritableBooleanPropertyKey SUPPRESS_ACCESSIBILITY =
             new PropertyModel.WritableBooleanPropertyKey();
 
+    public static final PropertyModel.WritableBooleanPropertyKey IS_TABLET_OR_LANDSCAPE =
+            new PropertyModel.WritableBooleanPropertyKey();
+
+    public static final PropertyModel.WritableBooleanPropertyKey IS_NON_ZERO_Y_OFFSET =
+            new PropertyModel.WritableBooleanPropertyKey();
+
+    public static final WritableObjectPropertyKey<ObservableSupplier<Boolean>>
+            IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER = new WritableObjectPropertyKey<>();
+
     /** Keys for {@link TabSwitcherPaneCoordinator}. */
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -93,5 +103,8 @@ class TabListContainerProperties {
                 IS_CONTENT_SENSITIVE,
                 PAGE_KEY_LISTENER,
                 SUPPRESS_ACCESSIBILITY,
+                IS_TABLET_OR_LANDSCAPE,
+                IS_NON_ZERO_Y_OFFSET,
+                IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER
             };
 }

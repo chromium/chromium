@@ -109,9 +109,14 @@
 // NSWindowDelegate implementation.
 
 - (void)windowDidFailToEnterFullScreen:(NSWindow*)window {
-  // Cocoa should already have sent an (unexpected) windowDidExitFullScreen:
-  // notification, and the attempt to get back into fullscreen should fail.
-  // Nothing to do except verify |parent_| is no longer trying to fullscreen.
+  // This method is called when the window fails to enter fullscreen. If Cocoa
+  // has already sent an (unexpected) windowDidExitFullScreen: notification,
+  // there is nothing to do. If not, notify `parent_` about this error and
+  // reset the state.
+  if (_parent->target_fullscreen_state()) {
+    _parent->fullscreen_controller().OnWindowDidFailToEnterFullscreen();
+  }
+
   DCHECK(!_parent->target_fullscreen_state());
 }
 
@@ -193,6 +198,14 @@
 
 - (void)windowDidChangeOcclusionState:(NSNotification*)notification {
   _parent->OnSpaceActivationMayHaveChanged();
+}
+
+- (void)windowWillBeginSheet:(NSNotification*)notification {
+  _parent->host()->OnSheetModalShown();
+}
+
+- (void)windowDidEndSheet:(NSNotification*)notification {
+  _parent->host()->OnSheetModalClosed();
 }
 
 - (BOOL)windowShouldClose:(id)sender {

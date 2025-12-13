@@ -42,21 +42,14 @@ bool LocalFontFaceSource::IsLocalNonBlocking() const {
 
 bool LocalFontFaceSource::IsLocalFontAvailable(
     const FontDescription& font_description) const {
-  // TODO(crbug.com/1027158): Remove metrics code after metrics collected.
   // TODO(crbug.com/1025945): Properly handle Windows prior to 10 and Android.
   bool font_available = FontCache::Get().IsPlatformFontUniqueNameMatchAvailable(
       font_description, font_name_);
-  if (font_available) {
-    font_selector_->ReportSuccessfulLocalFontMatch(font_name_);
-  } else {
-    font_selector_->ReportFailedLocalFontMatch(font_name_);
-  }
   return font_available;
 }
 
 const SimpleFontData* LocalFontFaceSource::CreateLoadingFallbackFontData(
     const FontDescription& font_description) {
-  FontCachePurgePreventer font_cache_purge_preventer;
   const SimpleFontData* temporary_font =
       FontCache::Get().GetLastResortFallbackFont(font_description);
   if (!temporary_font) {
@@ -167,8 +160,8 @@ void LocalFontFaceSource::BeginLoadIfNeeded() {
       FontGlobalContext::Get().GetFontUniqueNameLookup();
   DCHECK(unique_name_lookup);
   unique_name_lookup->PrepareFontUniqueNameLookup(
-      WTF::BindOnce(&LocalFontFaceSource::NotifyFontUniqueNameLookupReady,
-                    WrapWeakPersistent(this)));
+      BindOnce(&LocalFontFaceSource::NotifyFontUniqueNameLookupReady,
+               WrapWeakPersistent(this)));
   face_->DidBeginLoad();
 }
 

@@ -25,13 +25,13 @@ void VideoPainter::PaintReplaced(const PaintInfo& paint_info,
 
   WebMediaPlayer* media_player =
       layout_video_.MediaElement()->GetWebMediaPlayer();
-  // TODO(crbug.com/419834322): Canvas drawElement does not yet draw video, so
-  // force the poster until it does.
+  // TODO(crbug.com/419834322): Canvas drawElementImage does not yet draw video,
+  // so force the poster until it does.
   bool force_video_poster =
       layout_video_.GetDocument().GetPaintPreviewState() ==
           Document::kPaintingPreviewSkipAcceleratedContent ||
       (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
-       (paint_info.GetPaintFlags() & PaintFlag::kPlacedElement));
+       (paint_info.GetPaintFlags() & PaintFlag::kPrivacyPreserving));
   bool should_display_poster =
       layout_video_.GetDisplayMode() == LayoutVideo::kPoster ||
       force_video_poster;
@@ -112,7 +112,7 @@ void VideoPainter::PaintReplaced(const PaintInfo& paint_info,
     cc::PaintFlags video_flags = context.FillFlags();
     video_flags.setColor(SK_ColorBLACK);
     layout_video_.VideoElement()->PaintCurrentFrame(
-        context.Canvas(), snapped_replaced_rect, &video_flags);
+        context.Canvas(), snapped_replaced_rect, video_flags);
   }
 }
 

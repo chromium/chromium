@@ -27,7 +27,6 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/permission_request_observer.h"
@@ -241,9 +240,6 @@ class GeolocationBrowserTest : public InProcessBrowserTest {
   bool SetPositionAndWaitUntilUpdated(double latitude, double longitude);
 
  protected:
-  // BrowserTestBase:
-  void SetUpCommandLine(base::CommandLine* command_line) override;
-
   // The values used for the position override.
   double fake_latitude_ = 1.23;
   double fake_longitude_ = 4.56;
@@ -287,7 +283,7 @@ GeolocationBrowserTest::GeolocationBrowserTest()
 void GeolocationBrowserTest::SetUpOnMainThread() {
   current_browser_ = browser();
   host_resolver()->AddRule("*", "127.0.0.1");
-  https_test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_test_server_.SetCertHostnames({"a.test", "b.test", "localhost"});
   https_test_server_.AddDefaultHandlers(GetChromeTestDataDir());
   ASSERT_TRUE(test_server_handle_ = https_test_server_.StartAndReturnHandle());
 }
@@ -409,12 +405,6 @@ bool GeolocationBrowserTest::SetPositionAndWaitUntilUpdated(double latitude,
 
   return content::EvalJs(render_frame_host_, "geopositionUpdates.pop();")
              .ExtractString() == "geoposition-updated";
-}
-
-void GeolocationBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
-  // For using an HTTPS server.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kIgnoreCertificateErrors);
 }
 
 // Tests ----------------------------------------------------------------------

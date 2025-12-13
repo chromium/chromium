@@ -40,6 +40,8 @@ component("display") {
     "display_transform.h",
     "display_util.cc",
     "display_util.h",
+    "headless/headless_screen_manager.cc",
+    "headless/headless_screen_manager.h",
     "scoped_display_for_new_windows.cc",
     "scoped_display_for_new_windows.h",
     "screen.cc",
@@ -68,9 +70,15 @@ component("display") {
       "mac/cv_display_link_mac.mm",
       "mac/display_link_mac.h",
       "mac/display_link_mac.mm",
+      "mac/external_display_link_mac.h",
+      "mac/external_display_link_mac.mm",
       "mac/screen_mac.mm",
       "mac/screen_mac_headless.h",
       "mac/screen_mac_headless.mm",
+      "mac/screen_utils_mac.h",
+      "mac/screen_utils_mac.mm",
+      "mac/vsync_provider_mac.cc",
+      "mac/vsync_provider_mac.h",
     ]
   }
 
@@ -114,14 +122,15 @@ component("display") {
   public_deps = [
     ":display_features",
     "//ui/display/types",
+    "//ui/gfx",
     "//ui/gfx:color_space",
-    "//ui/gfx:gfx",
   ]
 
   deps = [
     "//base",
     "//base:i18n",
     "//components/device_event_log",
+    "//components/viz/common/resources:shared_image_format",
     "//mojo/public/cpp/bindings:struct_traits",
     "//ui/display/mojom:mojom_shared_cpp_sources",
     "//ui/display/util",
@@ -242,7 +251,7 @@ static_library("test_support") {
     deps += [
       "//remoting/host:display_layout",
       "//remoting/host/linux:x11_display_utils",
-      "//ui/gfx/x:x",
+      "//ui/gfx/x",
     ]
   }
 
@@ -286,6 +295,7 @@ test("display_unittests") {
     "display_layout_unittest.cc",
     "display_list_unittest.cc",
     "display_unittest.cc",
+    "headless/headless_screen_manager_unittests.cc",
     "mojom/display_mojom_traits_unittest.cc",
     "mojom/screen_infos_mojom_traits_unittest.cc",
     "screen_unittest.cc",
@@ -308,6 +318,7 @@ test("display_unittests") {
     "//base",
     "//base/test:test_support",
     "//cc/base",
+    "//components/viz/common/resources:shared_image_format",
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gmock",
     "//testing/gtest",

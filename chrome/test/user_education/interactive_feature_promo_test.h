@@ -145,6 +145,12 @@ class InteractiveFeaturePromoTestApi
       const base::Feature& iph_feature,
       bool requested = true);
 
+  // Same as `CheckPromoRequested()` but ignores queued promos. Usually prefer
+  // to use `CheckPromoRequested()`. Note that "active" includes both "bubble
+  // visible" and "bubble closed but promo continued".
+  [[nodiscard]] StepBuilder CheckPromoActive(const base::Feature& iph_feature,
+                                             bool requested = true);
+
   // Ends the specified promo via the API, with reason `kAborted`.
   [[nodiscard]] MultiStep AbortPromo(const base::Feature& iph_feature,
                                      bool expected_result = true);
@@ -158,16 +164,17 @@ class InteractiveFeaturePromoTestApi
   // End Views help bubble-only methods.
   // --------------------------------------------------------------------------
 
+  internal::InteractiveFeaturePromoTestPrivate& feature_promo_test_impl() {
+    return *test_impl_;
+  }
+
  private:
   // Shared by CheckPromoRequested and some internal actions.
   [[nodiscard]] StepBuilder CheckPromoImpl(const base::Feature& iph_feature,
                                            bool requested,
                                            bool include_queued);
 
-  internal::InteractiveFeaturePromoTestPrivate& test_impl() {
-    return static_cast<internal::InteractiveFeaturePromoTestPrivate&>(
-        private_test_impl());
-  }
+  const raw_ptr<internal::InteractiveFeaturePromoTestPrivate> test_impl_;
 };
 
 // Template for adding `InteractiveFeaturePromoTestApi` to any existing test
@@ -176,10 +183,10 @@ class InteractiveFeaturePromoTestApi
 // use `InteractiveFeaturePromoTest` directly.
 template <typename T>
   requires std::derived_from<T, InProcessBrowserTest>
-class InteractiveFeaturePromoTestT : public T,
-                                     public InteractiveFeaturePromoTestApi {
+class InteractiveFeaturePromoTestMixin : public T,
+                                         public InteractiveFeaturePromoTestApi {
  public:
-  explicit InteractiveFeaturePromoTestT(
+  explicit InteractiveFeaturePromoTestMixin(
       TrackerMode tracker_mode = UseMockTracker(),
       ClockMode clock_mode = ClockMode::kUseTestClock,
       InitialSessionState initial_session_state =
@@ -190,29 +197,25 @@ class InteractiveFeaturePromoTestT : public T,
                                        initial_session_state) {}
 
   template <typename... Args>
-  InteractiveFeaturePromoTestT(TrackerMode tracker_mode,
-                               ClockMode clock_mode,
-                               InitialSessionState initial_session_state,
-                               Args&&... args)
+  InteractiveFeaturePromoTestMixin(TrackerMode tracker_mode,
+                                   ClockMode clock_mode,
+                                   InitialSessionState initial_session_state,
+                                   Args&&... args)
       : T(std::forward<Args>(args)...),
         InteractiveFeaturePromoTestApi(std::move(tracker_mode),
                                        clock_mode,
                                        initial_session_state) {}
-  ~InteractiveFeaturePromoTestT() override = default;
+  ~InteractiveFeaturePromoTestMixin() override = default;
 
  protected:
   void SetUp() override {
-    static_cast<internal::InteractiveFeaturePromoTestPrivate&>(
-        private_test_impl())
-        .CommitControllerMode();
+    feature_promo_test_impl().CommitControllerMode();
     T::SetUp();
   }
 
   void TearDown() override {
     T::TearDown();
-    static_cast<internal::InteractiveFeaturePromoTestPrivate&>(
-        private_test_impl())
-        .ResetControllerMode();
+    feature_promo_test_impl().ResetControllerMode();
   }
 
   void SetUpOnMainThread() override {
@@ -223,9 +226,7 @@ class InteractiveFeaturePromoTestT : public T,
     if (Browser* browser = T::browser()) {
       SetContextWidget(
           BrowserView::GetBrowserViewForBrowser(browser)->GetWidget());
-      static_cast<internal::InteractiveFeaturePromoTestPrivate&>(
-          private_test_impl())
-          .MaybeWaitForTrackerInitialization(browser);
+      feature_promo_test_impl().MaybeWaitForTrackerInitialization(browser);
     }
   }
 
@@ -236,6 +237,6 @@ class InteractiveFeaturePromoTestT : public T,
 };
 
 using InteractiveFeaturePromoTest =
-    InteractiveFeaturePromoTestT<InProcessBrowserTest>;
+    InteractiveFeaturePromoTestMixin<InProcessBrowserTest>;
 
 #endif  // CHROME_TEST_USER_EDUCATION_INTERACTIVE_FEATURE_PROMO_TEST_H_

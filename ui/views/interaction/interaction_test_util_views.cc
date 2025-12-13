@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"

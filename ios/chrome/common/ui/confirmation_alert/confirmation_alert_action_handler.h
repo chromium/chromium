@@ -14,14 +14,8 @@
 
 @optional
 
-// The "Dismiss" button was touched.
-- (void)confirmationAlertDismissAction;
-
 // The "Secondary Action" was touched.
 - (void)confirmationAlertSecondaryAction;
-
-// The "Learn More" button was touched.
-- (void)confirmationAlertLearnMoreAction;
 
 // The "Tertiary Action" was touched.
 - (void)confirmationAlertTertiaryAction;

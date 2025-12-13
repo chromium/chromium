@@ -125,18 +125,19 @@ bool NavigateEvent::PerformSharedChecks(const String& function_name,
   if (!DomWindow()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        function_name + "() may not be called in a detached window.");
+        StrCat({function_name, "() may not be called in a detached window."}));
     return false;
   }
   if (!isTrusted()) {
     exception_state.ThrowSecurityError(
-        function_name + "() may only be called on a trusted event.");
+        StrCat({function_name, "() may only be called on a trusted event."}));
     return false;
   }
   if (defaultPrevented()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        function_name + "() may not be called if the event has been canceled.");
+        StrCat({function_name,
+                "() may not be called if the event has been canceled."}));
     return false;
   }
   return true;
@@ -150,10 +151,10 @@ void NavigateEvent::intercept(NavigationInterceptOptions* options,
 
   if (!can_intercept_) {
     exception_state.ThrowSecurityError(
-        "A navigation with URL '" + dispatch_params_->url.ElidedString() +
-        "' cannot be intercepted by in a window with origin '" +
-        DomWindow()->GetSecurityOrigin()->ToString() + "' and URL '" +
-        DomWindow()->Url().ElidedString() + "'.");
+        StrCat({"A navigation with URL '", dispatch_params_->url.ElidedString(),
+                "' cannot be intercepted by in a window with origin '",
+                DomWindow()->GetSecurityOrigin()->ToString(), "' and URL '",
+                DomWindow()->Url().ElidedString(), "'."}));
     return;
   }
 
@@ -189,10 +190,10 @@ void NavigateEvent::intercept(NavigationInterceptOptions* options,
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kJavaScript,
               mojom::blink::ConsoleMessageLevel::kWarning,
-              "The \"" + options->focusReset().AsString() + "\" value for " +
-                  "intercept()'s focusReset option "
-                  "will override the previously-passed value of \"" +
-                  focus_reset_behavior_->AsString() + "\"."));
+              StrCat({"The \"", options->focusReset().AsStringView(),
+                      "\" value for intercept()'s focusReset option will "
+                      "override the previously-passed value of \"",
+                      focus_reset_behavior_->AsStringView(), "\"."})));
     }
     focus_reset_behavior_ = options->focusReset();
   }
@@ -204,10 +205,10 @@ void NavigateEvent::intercept(NavigationInterceptOptions* options,
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kJavaScript,
               mojom::blink::ConsoleMessageLevel::kWarning,
-              "The \"" + options->scroll().AsString() + "\" value for " +
-                  "intercept()'s scroll option "
-                  "will override the previously-passed value of \"" +
-                  scroll_behavior_->AsString() + "\"."));
+              StrCat({"The \"", options->scroll().AsStringView(),
+                      "\" value for intercept()'s scroll option will override "
+                      "the previously-passed value of \"",
+                      scroll_behavior_->AsStringView(), "\"."})));
     }
     scroll_behavior_ = options->scroll();
   }
@@ -244,17 +245,18 @@ void NavigateEvent::Redirect(const String& url_string,
 
   KURL url = KURL(DomWindow()->BaseURL(), url_string);
   if (!url.IsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                      "Invalid URL '" + url.GetString() + "'.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        StrCat({"Invalid URL '", url.GetString(), "'."}));
     return;
   }
   if (!CanChangeToUrlForHistoryApi(url, DomWindow()->GetSecurityOrigin(),
                                    DomWindow()->Url())) {
     exception_state.ThrowSecurityError(
-        "Cannot redirect to '" + url.ElidedString() +
-        "' in a document with origin '" +
-        DomWindow()->GetSecurityOrigin()->ToString() + "' and URL '" +
-        DomWindow()->Url().ElidedString() + "'.");
+        StrCat({"Cannot redirect to '", url.ElidedString(),
+                "' in a document with origin '",
+                DomWindow()->GetSecurityOrigin()->ToString(), "' and URL '",
+                DomWindow()->Url().ElidedString(), "'."}));
     return;
   }
 
@@ -298,11 +300,27 @@ void NavigateEvent::Redirect(const String& url_string,
   }
 }
 
+void NavigateEvent::AddHandlerDuringPrecommit(
+    V8NavigationInterceptHandler* handler,
+    ExceptionState& exception_state) {
+  if (!PerformSharedChecks("addHandler", exception_state)) {
+    return;
+  }
+
+  if (intercept_state_ > InterceptState::kIntercepted) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "navigation has already committed.");
+    return;
+  }
+
+  navigation_action_handlers_list_.push_back(handler);
+}
+
 void NavigateEvent::MaybeCommitImmediately(ScriptState* script_state) {
   delayed_load_start_task_handle_ = PostDelayedCancellableTask(
       *DomWindow()->GetTaskRunner(TaskType::kInternalLoading), FROM_HERE,
-      WTF::BindOnce(&NavigateEvent::DelayedLoadStartTimerFired,
-                    WrapWeakPersistent(this)),
+      BindOnce(&NavigateEvent::DelayedLoadStartTimerFired,
+               WrapWeakPersistent(this)),
       kDelayLoadStart);
 
   if (navigation_action_precommit_handlers_list_.empty()) {
@@ -420,7 +438,6 @@ void NavigateEvent::ReactDone(ScriptState* script_state,
 
   if (intercept_state_ == InterceptState::kIntercepted) {
     CHECK(!did_fulfill);
-    controller_->abort(script_state, value);
     window->GetFrame()->Client()->DidFailAsyncSameDocumentCommit();
   }
 
@@ -435,7 +452,7 @@ void NavigateEvent::ReactDone(ScriptState* script_state,
   if (did_fulfill) {
     window->navigation()->DidFinishOngoingNavigation();
   } else {
-    window->navigation()->DidFailOngoingNavigation(value);
+    Abort(script_state, value);
   }
 
   if (HasNavigationActions()) {
@@ -450,19 +467,20 @@ void NavigateEvent::ReactDone(ScriptState* script_state,
   }
 }
 
-void NavigateEvent::Abort(ScriptState* script_state,
-                          ScriptValue error,
-                          CancelNavigationReason reason) {
+void NavigateEvent::Abort(ScriptState* script_state, ScriptValue error) {
   if (IsBeingDispatched()) {
     preventDefault();
   }
+
+  NavigationApi* navigation = DomWindow()->navigation();
   CHECK(controller_);
   controller_->abort(script_state, error);
+  navigation->ongoing_navigate_event_ = nullptr;
   delayed_load_start_task_handle_.Cancel();
-  if (!defaultPrevented() && intercept_state_ == InterceptState::kIntercepted &&
-      reason != CancelNavigationReason::kNavigateEvent) {
+  if (!defaultPrevented() && intercept_state_ == InterceptState::kIntercepted) {
     DomWindow()->GetFrame()->Client()->DidFailAsyncSameDocumentCommit();
   }
+  navigation->DidAbort(error);
 }
 
 void NavigateEvent::DelayedLoadStartTimerFired() {

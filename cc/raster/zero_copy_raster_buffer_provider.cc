@@ -24,7 +24,6 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "url/gurl.h"
 
 namespace cc {
@@ -47,7 +46,7 @@ ZeroCopyRasterBufferImpl::ZeroCopyRasterBufferImpl(
       in_use_resource.InstallSoftwareBacking(
           sii, "ZeroCopyRasterBufferProviderSoftware");
       in_use_resource.backing()->mailbox_sync_token =
-          sii->GenVerifiedSyncToken();
+          sii->GenUnverifiedSyncToken();
     } else {
       auto backing = std::make_unique<ResourcePool::Backing>(
           in_use_resource.size(), in_use_resource.format(),
@@ -178,10 +177,7 @@ std::unique_ptr<RasterBuffer>
 ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
     const ResourcePool::InUsePoolResource& resource,
     uint64_t resource_content_id,
-    uint64_t previous_content_id,
-    bool depends_on_at_raster_decodes,
-    bool depends_on_hardware_accelerated_jpeg_candidates,
-    bool depends_on_hardware_accelerated_webp_candidates) {
+    uint64_t previous_content_id) {
   bool resource_has_previous_content =
       resource_content_id && resource_content_id == previous_content_id;
 

@@ -28,7 +28,8 @@ base::flat_map</*asset_id*/ std::string, gfx::Size> ParseImageAssetDimensions(
     std::string_view animation_json) {
   base::flat_map<std::string, gfx::Size> image_asset_sizes;
 
-  auto animation_dict = base::JSONReader::ReadDict(animation_json);
+  auto animation_dict = base::JSONReader::ReadDict(
+      animation_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!animation_dict) {
     LOG(ERROR) << "Failed to parse Lottie animation json";
     return image_asset_sizes;
@@ -113,8 +114,10 @@ sk_sp<skresources::ImageAsset> SkottieMRUResourceProvider::loadImageAsset(
     const char resource_id[]) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::optional<gfx::Size> size;
-  if (image_asset_sizes_.contains(resource_id))
-    size.emplace(image_asset_sizes_.at(resource_id));
+  if (auto it = image_asset_sizes_.find(resource_id);
+      it != image_asset_sizes_.end()) {
+    size.emplace(it->second);
+  }
 
   if (!image_asset_metadata_.RegisterAsset(resource_path, resource_name,
                                            resource_id, std::move(size))) {

@@ -4,10 +4,8 @@
 
 #include "ui/gl/vsync_thread_win_dcomp.h"
 
-#include "base/logging.h"
-#include "base/trace_event/typed_macros.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/gl/direct_composition_support.h"
-#include "ui/gl/gl_features.h"
 
 namespace gl {
 
@@ -45,7 +43,7 @@ bool VSyncThreadWinDComp::WaitForVSyncImpl(base::TimeDelta* vsync_interval) {
       gl::DCompositionWaitForCompositorClock(0, nullptr, INFINITE);
 
   if (wait_result != WAIT_OBJECT_0) {
-    TRACE_EVENT1("gpu", "WaitForVSyncImpl", "wait result", wait_result);
+    TRACE_EVENT("gpu", "WaitForVSyncImpl", "wait result", wait_result);
     return false;
   }
 

@@ -115,17 +115,17 @@ FileSystemAccessDirectoryHandleImpl::~FileSystemAccessDirectoryHandleImpl() =
     default;
 
 void FileSystemAccessDirectoryHandleImpl::GetPermissionStatus(
-    bool writable,
+    blink::mojom::FileSystemAccessPermissionMode mode,
     GetPermissionStatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DoGetPermissionStatus(writable, std::move(callback));
+  DoGetPermissionStatus(mode, std::move(callback));
 }
 
 void FileSystemAccessDirectoryHandleImpl::RequestPermission(
-    bool writable,
+    blink::mojom::FileSystemAccessPermissionMode mode,
     RequestPermissionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DoRequestPermission(writable, std::move(callback));
+  DoRequestPermission(mode, std::move(callback));
 }
 
 void FileSystemAccessDirectoryHandleImpl::GetFile(const std::string& basename,
@@ -248,7 +248,8 @@ void FileSystemAccessDirectoryHandleImpl::DoGetFile(
     // If `create` is true, write permission is required unconditionally, i.e.
     // even if the file already exists. This is intentional, and matches the
     // behavior that is specified in the spec.
-    RunWithWritePermission(
+    RunWithPermission(
+        blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
         base::BindOnce(
             &FileSystemAccessDirectoryHandleImpl::GetFileWithWritePermission,
             weak_factory_.GetWeakPtr(), basename, url),
@@ -345,7 +346,8 @@ void FileSystemAccessDirectoryHandleImpl::GetDirectoryResolved(
     // If `create` is true, write permission is required unconditionally, i.e.
     // even if the file already exists. This is intentional, and matches the
     // behavior that is specified in the spec.
-    RunWithWritePermission(
+    RunWithPermission(
+        blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
         base::BindOnce(&FileSystemAccessDirectoryHandleImpl::
                            GetDirectoryWithWritePermission,
                        weak_factory_.GetWeakPtr(), child_url),
@@ -416,7 +418,8 @@ void FileSystemAccessDirectoryHandleImpl::Remove(bool recurse,
                                                  RemoveCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RunWithWritePermission(
+  RunWithPermission(
+      FileSystemAccessManagerImpl::GetEffectiveWritePermissionMode(),
       base::BindOnce(&FileSystemAccessHandleBase::DoRemove,
                      weak_factory_.GetWeakPtr(), url(), recurse),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
@@ -487,7 +490,8 @@ void FileSystemAccessDirectoryHandleImpl::RemoveEntryResolved(
     return;
   }
 
-  RunWithWritePermission(
+  RunWithPermission(
+      FileSystemAccessManagerImpl::GetEffectiveWritePermissionMode(),
       base::BindOnce(&FileSystemAccessHandleBase::DoRemove,
                      weak_factory_.GetWeakPtr(), child_url, recurse),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
@@ -595,8 +599,7 @@ void FileSystemAccessDirectoryHandleImpl::GetFileWithWritePermission(
     const storage::FileSystemURL& child_url,
     GetFileCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/40276567): Update if this only needs write-only permission
-  DCHECK_EQ(GetReadWritePermissionStatus(),
+  DCHECK_EQ(GetEffectiveWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
   manager()->DoFileSystemOperation(
@@ -664,8 +667,7 @@ void FileSystemAccessDirectoryHandleImpl::GetDirectoryWithWritePermission(
     const storage::FileSystemURL& child_url,
     GetDirectoryCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/40276567): Update if this only needs write-only permission
-  DCHECK_EQ(GetReadWritePermissionStatus(),
+  DCHECK_EQ(GetEffectiveWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
   manager()->DoFileSystemOperation(

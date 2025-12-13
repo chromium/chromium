@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.network.mojom.ReferrerPolicy;
@@ -35,10 +36,11 @@ public class HTTPSTabsOpenedFromExternalAppTest {
             ChromeTransitTestRules.autoResetCtaActivityRule();
 
     private EmbeddedTestServer mTestServer;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
     }
 
     /**
@@ -53,11 +55,8 @@ public class HTTPSTabsOpenedFromExternalAppTest {
                 EmbeddedTestServer.createAndStartHTTPSServer(
                         ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
         String url = mTestServer.getURL("/chrome/test/data/android/about.html");
-        TabsOpenedFromExternalAppTest.loadUrlAndVerifyReferrerWithPolicy(
-                url,
-                mActivityTestRule.getActivityTestRule(),
-                ReferrerPolicy.DEFAULT,
-                HTTP_REFERRER,
-                HTTP_REFERRER);
+        mPage =
+                TabsOpenedFromExternalAppTest.loadUrlAndVerifyReferrerWithPolicy(
+                        url, mPage, ReferrerPolicy.DEFAULT, HTTP_REFERRER, HTTP_REFERRER);
     }
 }

@@ -4,14 +4,17 @@
 
 #include <memory>
 
+#include "base/files/scoped_temp_dir.h"
 #include "base/json/values_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_mock_clock_override.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/signin/token_handle_store_impl.h"
+#include "chrome/browser/ui/webui/signin/ash/signin_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -21,6 +24,7 @@
 #include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_impl.h"
+#include "crypto/obsolete/sha1.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -62,6 +66,8 @@ constexpr char kTokenFetchResponse[] =
         "token_handle": "%s"
       }
    )";
+
+constexpr char kTokenHandleMap[] = "ash.token_handle_map_post_refactoring";
 
 constexpr base::TimeDelta kCacheStatusTime = base::Hours(1);
 
@@ -599,6 +605,15 @@ class TokenHandleStoreMaybeFetchTokenHandleTest
  public:
   TokenHandleStoreMaybeFetchTokenHandleTest() = default;
   ~TokenHandleStoreMaybeFetchTokenHandleTest() override = default;
+
+  void SetUp() override {
+    TokenHandleStoreIsReauthRequiredTest::SetUp();
+    token_handle_mapping_store_.registry()->RegisterDictionaryPref(
+        /*path=*/kTokenHandleMap);
+  }
+
+ protected:
+  TestingPrefServiceSimple token_handle_mapping_store_;
 };
 
 TEST_F(TokenHandleStoreMaybeFetchTokenHandleTest,
@@ -610,9 +625,9 @@ TEST_F(TokenHandleStoreMaybeFetchTokenHandleTest,
   AddFakeResponse(GetTokenInfoFetchResponse(kFakeEmail, kFakeOtherToken),
                   net::HTTP_OK);
 
-  token_handle_store->MaybeFetchTokenHandle(GetSharedURLLoaderFactory(),
-                                            account_id_, kFakeAccessToken,
-                                            kFakeRefreshTokenHash);
+  token_handle_store->MaybeFetchTokenHandle(
+      &token_handle_mapping_store_, GetSharedURLLoaderFactory(), account_id_,
+      kFakeAccessToken, kFakeRefreshTokenHash);
   local_state_.user_prefs_store()->WaitUntilValueChanges(kKnownUsersPref);
 
   auto known_user = std::make_unique<user_manager::KnownUser>(&local_state_);
@@ -634,9 +649,9 @@ TEST_F(TokenHandleStoreMaybeFetchTokenHandleTest,
   AddFakeResponse(GetTokenInfoFetchResponse(kFakeEmail, kFakeOtherToken),
                   net::HTTP_OK);
 
-  token_handle_store->MaybeFetchTokenHandle(GetSharedURLLoaderFactory(),
-                                            account_id_, kFakeAccessToken,
-                                            kFakeRefreshTokenHash);
+  token_handle_store->MaybeFetchTokenHandle(
+      &token_handle_mapping_store_, GetSharedURLLoaderFactory(), account_id_,
+      kFakeAccessToken, kFakeRefreshTokenHash);
   local_state_.user_prefs_store()->WaitUntilValueChanges(kKnownUsersPref);
 
   auto known_user = std::make_unique<user_manager::KnownUser>(&local_state_);
@@ -644,6 +659,84 @@ TEST_F(TokenHandleStoreMaybeFetchTokenHandleTest,
             *known_user->FindStringPath(account_id_, kTokenHandlePref));
   EXPECT_EQ(kTokenHandleStatusValid,
             *known_user->FindStringPath(account_id_, kTokenHandleStatusPref));
+}
+
+class TokenHandleStoreHistogramTest
+    : public TokenHandleStoreMaybeFetchTokenHandleTest {
+ public:
+  void SetUp() override {
+    TokenHandleStoreMaybeFetchTokenHandleTest::SetUp();
+    account_manager::AccountManager::RegisterPrefs(local_state_.registry());
+  }
+
+  void CreateAndInitializeAccountManager() {
+    account_manager_ = std::make_unique<account_manager::AccountManager>();
+    EXPECT_TRUE(tmp_dir_.CreateUniqueTempDir());
+    account_manager_->Initialize(
+        tmp_dir_.GetPath(), GetSharedURLLoaderFactory(),
+        base::BindRepeating([](base::OnceClosure closure) -> void {
+          std::move(closure).Run();
+        }));
+    account_manager_->SetPrefService(&local_state_);
+    task_environment_.RunUntilIdle();
+    EXPECT_TRUE(account_manager_->IsInitialized());
+  }
+
+  // Returns a Base16 encoded SHA1 digest of `data`.
+  std::string Sha1Digest(const std::string& data) {
+    return base::HexEncode(
+        crypto::obsolete::Sha1::HashForTesting(base::as_byte_span(data)));
+  }
+
+ protected:
+  const ::account_manager::AccountKey kGaiaAccountKey = {
+      "fake-gaia-id", ::account_manager::AccountType::kGaia};
+  std::unique_ptr<account_manager::AccountManager> account_manager_;
+  base::ScopedTempDir tmp_dir_;
+};
+
+TEST_F(TokenHandleStoreHistogramTest,
+       DiagnoseTokenHandleMappingRecordsTrueWhenHashesMatch) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<TokenHandleStore> token_handle_store = CreateTokenHandleStore(
+      std::make_unique<user_manager::KnownUser>(&local_state_));
+
+  CreateAndInitializeAccountManager();
+  account_manager_->UpsertAccount(kGaiaAccountKey, kFakeEmail, kFakeToken);
+
+  base::Value::Dict token_handle_map_dict;
+  token_handle_map_dict.Set(kFakeToken, Sha1Digest(kFakeToken));
+  token_handle_mapping_store_.SetDict(kTokenHandleMap,
+                                      std::move(token_handle_map_dict));
+
+  token_handle_store->DiagnoseTokenHandleMapping(&token_handle_mapping_store_,
+                                                 account_manager_.get(),
+                                                 account_id_, kFakeToken);
+
+  histogram_tester.ExpectUniqueSample(
+      "Login.IsTokenHandleInSyncWithRefreshTokenPostRefactoring", true, 1);
+}
+
+TEST_F(TokenHandleStoreHistogramTest,
+       DiagnoseTokenHandleMappingRecordsFlaseWhenHashesDontMatch) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<TokenHandleStore> token_handle_store = CreateTokenHandleStore(
+      std::make_unique<user_manager::KnownUser>(&local_state_));
+
+  CreateAndInitializeAccountManager();
+  account_manager_->UpsertAccount(kGaiaAccountKey, kFakeEmail, kFakeToken);
+
+  base::Value::Dict token_handle_map_dict;
+  token_handle_map_dict.Set(kFakeToken, Sha1Digest(kFakeOtherToken));
+  token_handle_mapping_store_.SetDict(kTokenHandleMap,
+                                      std::move(token_handle_map_dict));
+
+  token_handle_store->DiagnoseTokenHandleMapping(&token_handle_mapping_store_,
+                                                 account_manager_.get(),
+                                                 account_id_, kFakeToken);
+
+  histogram_tester.ExpectUniqueSample(
+      "Login.IsTokenHandleInSyncWithRefreshTokenPostRefactoring", false, 1);
 }
 
 }  // namespace ash

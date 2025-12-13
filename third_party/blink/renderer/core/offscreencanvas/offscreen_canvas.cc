@@ -10,12 +10,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
-#include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_helper.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/offscreen_font_selector.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -38,6 +34,7 @@
 #include "third_party/blink/renderer/core/workers/dedicated_worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -88,7 +85,6 @@ OffscreenCanvas::OffscreenCanvas(ExecutionContext* context, gfx::Size size)
   }
 
   CanvasResourceTracker::For(context->GetIsolate())->Add(this, context);
-  UpdateMemoryUsage();
 }
 
 OffscreenCanvas* OffscreenCanvas::Create(ScriptState* script_state,
@@ -98,10 +94,6 @@ OffscreenCanvas* OffscreenCanvas::Create(ScriptState* script_state,
   return MakeGarbageCollected<OffscreenCanvas>(
       ExecutionContext::From(script_state),
       gfx::Size(ClampTo<int>(width), ClampTo<int>(height)));
-}
-
-OffscreenCanvas::~OffscreenCanvas() {
-  external_memory_accounter_.Decrease(v8::Isolate::GetCurrent(), memory_usage_);
 }
 
 void OffscreenCanvas::Dispose() {
@@ -165,7 +157,7 @@ void OffscreenCanvas::SetSize(gfx::Size size) {
     return;
   }
 
-  CanvasRenderingContextHost::SetSize(size);
+  size_ = size;
   UpdateMemoryUsage();
   current_frame_damage_rect_ = SkIRect::MakeWH(Size().width(), Size().height());
 
@@ -232,27 +224,13 @@ ImageBitmap* OffscreenCanvas::transferToImageBitmap(
                                       "ImageBitmap construction failed");
   }
 
-  if (plain_text_painter_ != nullptr) {
-    plain_text_painter_->DidSwitchFrame();
-  }
-  if (unique_font_selector_) {
-    unique_font_selector_->DidSwitchFrame();
+  if (!RuntimeEnabledFeatures::CanvasTextSwitchFrameOnFinalizeEnabled()) {
+    NotifyCachesOfSwitchingFrame();
   }
   return image;
 }
 
-void OffscreenCanvas::RecordIdentifiabilityMetric(
-    const blink::IdentifiableSurface& surface,
-    const IdentifiableToken& token) const {
-  if (!IdentifiabilityStudySettings::Get()->ShouldSampleSurface(surface))
-    return;
-  blink::IdentifiabilityMetricBuilder(GetExecutionContext()->UkmSourceID())
-      .Add(surface, token)
-      .Record(GetExecutionContext()->UkmRecorder());
-}
-
 scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
-    FlushReason reason,
     SourceImageStatus* status,
     const gfx::SizeF& size) {
   if (!context_) {
@@ -271,11 +249,24 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
     *status = kZeroSizeCanvasSourceImageStatus;
     return nullptr;
   }
-  scoped_refptr<StaticBitmapImage> image = context_->GetImage(reason);
+  scoped_refptr<StaticBitmapImage> image;
+  if (IsWebGL() || IsWebGPU()) {
+    // Because WebGL/WebGPU sources always require copying the back buffer,
+    // we use PaintRenderingResultsToSnapshot instead of GetImage in order to
+    // keep a cached copy of the backing in the canvas's resource provider.
+    image = RenderingContext()->PaintRenderingResultsToSnapshot(kBackBuffer);
+  } else {
+    image = RenderingContext()->GetImage();
+  }
   if (!image) {
     image = CreateTransparentImage();
   }
   *status = image ? kNormalSourceImageStatus : kInvalidSourceImageStatus;
+
+  if (RuntimeEnabledFeatures::CanvasTextTexImage2DFixEnabled() &&
+      !RuntimeEnabledFeatures::CanvasTextSwitchFrameOnFinalizeEnabled()) {
+    NotifyCachesOfSwitchingFrame();
+  }
   return image;
 }
 
@@ -291,7 +282,7 @@ ScriptPromise<ImageBitmap> OffscreenCanvas::CreateImageBitmap(
     return EmptyPromise();
   }
   if (context_) {
-    context_->FinalizeFrame(FlushReason::kCreateImageBitmap);
+    context_->FinalizeFrame(FlushReason::kOther);
   }
   return ImageBitmapSource::FulfillImageBitmap(
       script_state,
@@ -306,7 +297,7 @@ ScriptPromise<Blob> OffscreenCanvas::convertToBlob(
     const ImageEncodeOptions* options,
     ExceptionState& exception_state) {
   DCHECK(IsOffscreenCanvas());
-  WTF::String object_name = "OffscreenCanvas";
+  String object_name = "OffscreenCanvas";
   std::stringstream error_msg;
 
   if (is_neutered_) {
@@ -332,7 +323,7 @@ ScriptPromise<Blob> OffscreenCanvas::convertToBlob(
   // Finalize frame will be called in GetImage, but if there's no
   // resourceProvider yet then the IsPaintable check will fail
   if (context_) {
-    context_->FinalizeFrame(FlushReason::kToBlob);
+    context_->FinalizeFrame(FlushReason::kOther);
   }
 
   if (!IsPaintable() || Size().IsEmpty()) {
@@ -350,17 +341,8 @@ ScriptPromise<Blob> OffscreenCanvas::convertToBlob(
   }
 
   base::TimeTicks start_time = base::TimeTicks::Now();
-  scoped_refptr<StaticBitmapImage> image_bitmap =
-      context_->GetImage(FlushReason::kToBlob);
+  scoped_refptr<StaticBitmapImage> image_bitmap = context_->GetImage();
   if (image_bitmap) {
-    auto intervention_type =
-        CanvasInterventionsHelper::CanvasInterventionType::kNone;
-    if (CanvasInterventionsHelper::MaybeNoiseSnapshot(
-            context_, GetExecutionContext(), image_bitmap)) {
-      intervention_type =
-          CanvasInterventionsHelper::CanvasInterventionType::kNoise;
-    };
-
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<Blob>>(
         script_state, exception_state.GetContext());
     CanvasAsyncBlobCreator::ToBlobFunctionType function_type =
@@ -368,11 +350,7 @@ ScriptPromise<Blob> OffscreenCanvas::convertToBlob(
     auto* execution_context = ExecutionContext::From(script_state);
     auto* async_creator = MakeGarbageCollected<CanvasAsyncBlobCreator>(
         image_bitmap, options, function_type, start_time, execution_context,
-        IdentifiabilityStudySettings::Get()->ShouldSampleType(
-            IdentifiableSurface::Type::kCanvasReadback)
-            ? IdentifiabilityInputDigest(context_)
-            : 0,
-        intervention_type, resolver);
+        resolver);
     async_creator->ScheduleAsyncBlobCreation(options->quality());
     return resolver->Promise();
   }
@@ -425,7 +403,7 @@ CanvasRenderingContext* OffscreenCanvas::GetCanvasRenderingContext(
           CanvasContextCreationAttributesCore::PowerPreference::kLowPower;
     }
 
-    context_ = factory->Create(this, recomputed_attributes);
+    context_ = factory->Create(execution_context, this, recomputed_attributes);
     if (context_) {
       context_->RecordUKMCanvasRenderingAPI();
       context_->RecordUMACanvasRenderingAPI();
@@ -541,11 +519,8 @@ bool OffscreenCanvas::PushFrame(scoped_refptr<CanvasResource>&& canvas_resource,
       std::move(canvas_resource), current_frame_damage_rect_, IsOpaque());
   current_frame_damage_rect_ = SkIRect::MakeEmpty();
 
-  if (plain_text_painter_ != nullptr) {
-    plain_text_painter_->DidSwitchFrame();
-  }
-  if (unique_font_selector_) {
-    unique_font_selector_->DidSwitchFrame();
+  if (!RuntimeEnabledFeatures::CanvasTextSwitchFrameOnFinalizeEnabled()) {
+    NotifyCachesOfSwitchingFrame();
   }
   return true;
 }
@@ -564,9 +539,8 @@ UkmParameters OffscreenCanvas::GetUkmParameters() {
 
 void OffscreenCanvas::NotifyGpuContextLost() {
   if (context_ && !context_->isContextLost()) {
-    // This code path is used only by 2D canvas, because NotifyGpuContextLost
-    // is called by Canvas2DLayerBridge and OffscreenCanvas itself, rather
-    // than the rendering context.
+    // This code path is used only by 2D canvas, where NotifyGpuContextLost is
+    // called by OffscreenCanvas itself rather than the rendering context.
     DCHECK(context_->IsRenderingContext2D());
     context_->LoseContext(CanvasRenderingContext::kRealLostContext);
   }
@@ -614,45 +588,10 @@ UniqueFontSelector* OffscreenCanvas::GetFontSelector() {
     base_selector =
         To<WorkerGlobalScope>(GetExecutionContext())->GetFontSelector();
   }
-  auto* unique_font_selector = MakeGarbageCollected<UniqueFontSelector>(
-      base_selector,
-      RuntimeEnabledFeatures::CanvasTextNgEnabled(GetExecutionContext()));
+  auto* unique_font_selector =
+      MakeGarbageCollected<UniqueFontSelector>(base_selector);
   unique_font_selector_ = unique_font_selector;
   return unique_font_selector;
-}
-
-void OffscreenCanvas::UpdateMemoryUsage() {
-  // NOTE: All formats used by canvas are either 8-bit or 16-bit.
-  int bytes_per_pixel = GetRenderingContextFormat().BitsPerPixel() / 8;
-
-  base::CheckedNumeric<int32_t> memory_usage_checked = bytes_per_pixel;
-  memory_usage_checked *= Size().width();
-  memory_usage_checked *= Size().height();
-  int32_t new_memory_usage =
-      memory_usage_checked.ValueOrDefault(std::numeric_limits<int32_t>::max());
-
-  // TODO(junov): We assume that it is impossible to be inside a FastAPICall
-  // from a host interface other than the rendering context.  This assumption
-  // may need to be revisited in the future depending on how the usage of
-  // [NoAllocDirectCall] evolves.
-  intptr_t delta_bytes = new_memory_usage - memory_usage_;
-  if (delta_bytes) {
-    // Here we check "IsAllocationAllowed", but it is actually garbage
-    // collection that is not allowed, and allocations can trigger GC.
-    // AdjustAmountOfExternalAllocatedMemory is not an allocation but it
-    // can trigger GC, So we use "IsAllocationAllowed" as a proxy for
-    // "is GC allowed". When garbage collection is already in progress,
-    // allocations are not allowed, but calling
-    // AdjustAmountOfExternalAllocatedMemory is safe, hence the
-    // 'diposing_' condition in the DCHECK below.
-    DCHECK(ThreadState::Current()->IsAllocationAllowed() || disposing_);
-    external_memory_accounter_.Update(v8::Isolate::GetCurrent(), delta_bytes);
-    memory_usage_ = new_memory_usage;
-  }
-}
-
-size_t OffscreenCanvas::GetMemoryUsage() const {
-  return base::saturated_cast<size_t>(memory_usage_);
 }
 
 void OffscreenCanvas::Trace(Visitor* visitor) const {

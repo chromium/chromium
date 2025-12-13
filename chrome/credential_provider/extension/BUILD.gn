@@ -38,7 +38,7 @@ source_set("common") {
   ]
   deps = [
     "../gaiacp:util",
-    "//base:base",
+    "//base",
   ]
   configs += [ "//build/config/win:windowed" ]
 }
@@ -58,8 +58,8 @@ source_set("extension_lib") {
   deps = [
     ":common",
     "../gaiacp:util",
-    "//base:base",
-    "//net:net",
+    "//base",
+    "//net",
   ]
   configs += [ "//build/config/win:windowed" ]
 }
@@ -78,6 +78,10 @@ source_set("app_inventory") {
     "//base",
     "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 executable("gcpw_extension") {

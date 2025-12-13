@@ -4,11 +4,8 @@
 
 #include "third_party/blink/renderer/core/paint/pre_paint_tree_walk.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "cc/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/layout/layout_tree_as_text.h"
@@ -535,35 +532,19 @@ TEST_P(PrePaintTreeWalkTest, ScrollTranslationNodeForNonZeroScrollPosition) {
   EXPECT_TRUE(object->FirstFragment().PaintProperties()->ScrollTranslation());
 }
 
-class SoftNavigationPrePaintTreeWalkTest
-    : public RenderingTest,
-      public ::testing::WithParamInterface<bool> {
+class SoftNavigationPrePaintTreeWalkTest : public RenderingTest {
  public:
-  SoftNavigationPrePaintTreeWalkTest() {
-    if (IsFeatureEnabled()) {
-      feature_list_.InitWithFeatures(
-          {features::kSoftNavigationDetectionPrePaintBasedAttribution}, {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {features::kSoftNavigationDetectionPrePaintBasedAttribution});
-    }
-    WebRuntimeFeatures::UpdateStatusFromBaseFeatures();
-  }
-
+  SoftNavigationPrePaintTreeWalkTest() = default;
   ~SoftNavigationPrePaintTreeWalkTest() override = default;
-
-  bool IsFeatureEnabled() { return GetParam(); }
 
  private:
   void SetUp() override {
     EnableCompositing();
     RenderingTest::SetUp();
   }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(SoftNavigationPrePaintTreeWalkTest,
+TEST_F(SoftNavigationPrePaintTreeWalkTest,
        ShouldInheritSoftNavigationContextUpdate) {
   SetBodyInnerHTML(R"HTML(
     <div id='ancestor' style='width: 100px; height: 100px;'>
@@ -598,15 +579,8 @@ TEST_P(SoftNavigationPrePaintTreeWalkTest,
   EXPECT_TRUE(descendant.ShouldInheritSoftNavigationContext());
   EXPECT_TRUE(content.ShouldInheritSoftNavigationContext());
 
-  // If the feature is disable, just make sure all the "changed" bits get
-  // cleared so we don't do unnecessary tree walks.
-  if (!IsFeatureEnabled()) {
-    return;
-  }
-
-  auto* context = MakeGarbageCollected<SoftNavigationContext>(
-      *GetDocument().domWindow(),
-      features::SoftNavigationHeuristicsMode::kPrePaintBasedAttribution);
+  auto* context =
+      MakeGarbageCollected<SoftNavigationContext>(*GetDocument().domWindow());
   SoftNavigationHeuristics* heuristics =
       GetDocument().domWindow()->GetSoftNavigationHeuristics();
   ASSERT_TRUE(heuristics);
@@ -643,9 +617,5 @@ TEST_P(SoftNavigationPrePaintTreeWalkTest,
 
   EXPECT_TRUE(tracker->IsAttributable(content.GetNode(), context));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SoftNavigationPrePaintTreeWalkTest,
-                         testing::Bool());
 
 }  // namespace blink

@@ -79,7 +79,7 @@ TEST(HIDDeviceTest, singleUsageItem) {
   EXPECT_EQ(8U, item->reportSize());
   EXPECT_EQ(1U, item->reportCount());
   EXPECT_EQ(0, item->unitExponent());
-  EXPECT_EQ("none", item->unitSystem());
+  EXPECT_EQ(V8HIDUnitSystem::Enum::kNone, item->unitSystem());
   EXPECT_EQ(0, item->unitFactorLengthExponent());
   EXPECT_EQ(0, item->unitFactorMassExponent());
   EXPECT_EQ(0, item->unitFactorTimeExponent());
@@ -150,7 +150,7 @@ TEST(HIDDeviceTest, unitDefinition) {
   mojo_item->unit = 0x0000E111;     // g*cm/s^2
   HIDReportItem* item = HIDDevice::ToHIDReportItem(*mojo_item);
 
-  EXPECT_EQ("si-linear", item->unitSystem());
+  EXPECT_EQ(V8HIDUnitSystem::Enum::kSiLinear, item->unitSystem());
   EXPECT_EQ(-4, item->unitExponent());
   EXPECT_EQ(1, item->unitFactorLengthExponent());
   EXPECT_EQ(1, item->unitFactorMassExponent());

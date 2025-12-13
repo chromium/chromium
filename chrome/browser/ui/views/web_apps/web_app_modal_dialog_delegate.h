@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_MODAL_DIALOG_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
 #include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"

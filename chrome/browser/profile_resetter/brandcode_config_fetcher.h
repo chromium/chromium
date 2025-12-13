@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PROFILE_RESETTER_BRANDCODE_CONFIG_FETCHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -50,7 +51,7 @@ class BrandcodeConfigFetcher {
   void SetCallback(FetchCallback callback);
 
  private:
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
   void OnXmlConfigParsed(
       data_decoder::DataDecoder::ValueOrError value_or_error);
 

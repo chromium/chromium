@@ -82,10 +82,6 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPrefTypeMismatch) {
             extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
   EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>("ask").get()),
             extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
-  EXPECT_EQ(
-      pref->SetPref(
-          std::make_unique<base::Value>("detect_important_content").get()),
-      extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
   EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>(100).get()),
             extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
 }
@@ -102,8 +98,7 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPrefEnforced) {
   provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_ALLOW),
-      /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      /*constraints=*/{});
   content_settings::TestUtils::OverrideProvider(
       map, std::move(provider), ProviderType::kCustomExtensionProvider);
   std::optional<extensions::api::settings_private::PrefObject> pref_object =
@@ -115,8 +110,7 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPrefEnforced) {
   provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_ALLOW),
-      /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      /*constraints=*/{});
   content_settings::TestUtils::OverrideProvider(
       map, std::move(provider), ProviderType::kSupervisedProvider);
   pref_object = pref->GetPrefObject();
@@ -127,8 +121,7 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPrefEnforced) {
   provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_ALLOW),
-      /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      /*constraints=*/{});
   content_settings::TestUtils::OverrideProvider(map, std::move(provider),
                                                 ProviderType::kPolicyProvider);
   pref_object = pref->GetPrefObject();

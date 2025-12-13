@@ -78,12 +78,6 @@ namespace drive {
 
 namespace {
 
-// OAuth2 scopes for Drive API.
-const char kDriveScope[] = "https://www.googleapis.com/auth/drive";
-const char kDriveAppsReadonlyScope[] =
-    "https://www.googleapis.com/auth/drive.apps.readonly";
-const char kDriveAppsScope[] = "https://www.googleapis.com/auth/drive.apps";
-
 // Mime type to create a directory.
 const char kFolderMimeType[] = "application/vnd.google-apps.folder";
 
@@ -252,14 +246,10 @@ DriveAPIService::~DriveAPIService() {
 void DriveAPIService::Initialize(const CoreAccountId& account_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  std::vector<std::string> scopes;
-  scopes.push_back(kDriveScope);
-  scopes.push_back(kDriveAppsReadonlyScope);
-  scopes.push_back(kDriveAppsScope);
-
   sender_ = std::make_unique<RequestSender>(
-      std::make_unique<google_apis::AuthService>(identity_manager_, account_id,
-                                                 url_loader_factory_, scopes),
+      std::make_unique<google_apis::AuthService>(
+          identity_manager_, account_id, url_loader_factory_,
+          signin::OAuthConsumerId::kAuthServiceDriveApi),
       url_loader_factory_, blocking_task_runner_.get(), custom_user_agent_,
       traffic_annotation_);
   sender_->auth_service()->AddObserver(this);

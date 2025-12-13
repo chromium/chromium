@@ -115,7 +115,8 @@ class TargetHandler : public DevToolsDomainHandler,
       const std::string& context_id,
       std::unique_ptr<DisposeBrowserContextCallback> callback) override;
   Response GetBrowserContexts(
-      std::unique_ptr<protocol::Array<String>>* browser_context_ids) override;
+      std::unique_ptr<protocol::Array<String>>* browser_context_ids,
+      std::optional<std::string>* default_browser_context_id) override;
   Response CreateTarget(const std::string& url,
                         std::optional<int> left,
                         std::optional<int> top,
@@ -133,6 +134,13 @@ class TargetHandler : public DevToolsDomainHandler,
       std::unique_ptr<protocol::Array<protocol::Target::FilterEntry>> filter,
       std::unique_ptr<protocol::Array<Target::TargetInfo>>* target_infos)
       override;
+
+  Response OpenDevTools(const std::string& target_id,
+                        std::optional<std::string> panel_id,
+                        std::string* out_target_id) override;
+  Response GetDevToolsTarget(
+      const std::string& target_id,
+      std::optional<std::string>* out_target_id) override;
 
   void ApplyNetworkContextParamsOverrides(
       BrowserContext* browser_context,

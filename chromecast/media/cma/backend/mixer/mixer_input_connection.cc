@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/cma/backend/mixer/mixer_input_connection.h"
 
 #include <stdint.h>
@@ -18,6 +13,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -126,10 +122,11 @@ void ConvertInterleavedData(int num_channels,
   typename Traits::ValueType* source =
       reinterpret_cast<typename Traits::ValueType*>(data);
   for (int c = 0; c < num_channels; ++c) {
-    float* channel_data = dest + c * num_frames;
+    float* channel_data = UNSAFE_TODO(dest + c * num_frames);
     for (int f = 0, read_pos = c; f < num_frames;
          ++f, read_pos += num_channels) {
-      channel_data[f] = Traits::ToFloat(source[read_pos]);
+      UNSAFE_TODO(channel_data[f]) =
+          Traits::ToFloat(UNSAFE_TODO(source[read_pos]));
     }
   }
 }
@@ -141,43 +138,45 @@ void ConvertPlanarData(char* data, int data_size, float* dest) {
   typename Traits::ValueType* source =
       reinterpret_cast<typename Traits::ValueType*>(data);
   for (int s = 0; s < samples; ++s) {
-    dest[s] = Traits::ToFloat(source[s]);
+    UNSAFE_TODO(dest[s]) = Traits::ToFloat(UNSAFE_TODO(source[s]));
   }
 }
 
 int GetFrameCount(net::IOBuffer* buffer) {
   int32_t num_frames;
-  memcpy(&num_frames, buffer->data(), sizeof(num_frames));
+  UNSAFE_TODO(memcpy(&num_frames, buffer->data(), sizeof(num_frames)));
   return num_frames;
 }
 
 int64_t GetTimestamp(net::IOBuffer* buffer) {
   int64_t timestamp;
-  memcpy(&timestamp, buffer->data() + sizeof(int32_t), sizeof(timestamp));
+  UNSAFE_TODO(
+      memcpy(&timestamp, buffer->data() + sizeof(int32_t), sizeof(timestamp)));
   return timestamp;
 }
 
 void AdjustTimestamp(net::IOBuffer* buffer, int64_t adjustment) {
-  void* ptr = buffer->data() + sizeof(int32_t);
+  void* ptr = UNSAFE_TODO(buffer->data() + sizeof(int32_t));
   int64_t timestamp;
-  memcpy(&timestamp, ptr, sizeof(timestamp));
+  UNSAFE_TODO(memcpy(&timestamp, ptr, sizeof(timestamp)));
   timestamp += adjustment;
-  memcpy(ptr, &timestamp, sizeof(timestamp));
+  UNSAFE_TODO(memcpy(ptr, &timestamp, sizeof(timestamp)));
 }
 
 void AdjustTimestampForRateChange(net::IOBuffer* buffer,
                                   double ratio,
                                   int64_t base_timestamp) {
-  void* ptr = buffer->data() + sizeof(int32_t);
+  void* ptr = UNSAFE_TODO(buffer->data() + sizeof(int32_t));
   int64_t timestamp;
-  memcpy(&timestamp, ptr, sizeof(timestamp));
+  UNSAFE_TODO(memcpy(&timestamp, ptr, sizeof(timestamp)));
   int64_t diff = timestamp - base_timestamp;
   timestamp = base_timestamp + diff * ratio;
-  memcpy(ptr, &timestamp, sizeof(timestamp));
+  UNSAFE_TODO(memcpy(ptr, &timestamp, sizeof(timestamp)));
 }
 
 float* GetAudioData(net::IOBuffer* buffer) {
-  return reinterpret_cast<float*>(buffer->data() + kAudioMessageHeaderSize);
+  return reinterpret_cast<float*>(
+      UNSAFE_TODO(buffer->data() + kAudioMessageHeaderSize));
 }
 
 ::media::ChannelLayout GetChannelLayout(audio_service::ChannelLayout layout,
@@ -271,7 +270,7 @@ class MixerInputConnection::TimestampedFader : public AudioProvider {
                                 sample_rate_);
       float* fill_channel_data[kMaxChannels];
       for (int c = 0; c < num_channels_; ++c) {
-        fill_channel_data[c] = channels[c] + filled;
+        UNSAFE_TODO(fill_channel_data[c]) = UNSAFE_TODO(channels[c] + filled);
       }
       int faded = fader_.FillFrames(remaining, playout_time, fill_channel_data);
       filled += faded;
@@ -287,7 +286,8 @@ class MixerInputConnection::TimestampedFader : public AudioProvider {
       if (!pending_silence_) {
         // No pending silence, and we are not able to fill any more.
         for (int c = 0; c < num_channels_; ++c) {
-          std::fill_n(channels[c] + filled, num_frames - filled, 0.0f);
+          std::fill_n(UNSAFE_TODO(channels[c] + filled), num_frames - filled,
+                      0.0f);
         }
         return num_frames;
       }
@@ -297,7 +297,7 @@ class MixerInputConnection::TimestampedFader : public AudioProvider {
         int silence_frames =
             std::min(pending_silence_.value(), num_frames - filled);
         for (int c = 0; c < num_channels_; ++c) {
-          std::fill_n(channels[c] + filled, silence_frames, 0.0f);
+          std::fill_n(UNSAFE_TODO(channels[c] + filled), silence_frames, 0.0f);
         }
         filled += silence_frames;
         // Reset since we'll want to re-evaluate for the next fill.
@@ -517,11 +517,12 @@ bool MixerInputConnection::HandleAudioData(char* data,
       num_frames * num_channels_ * sizeof(float) + kAudioMessageHeaderSize;
   DCHECK_LE(converted_size, buffer_pool_->buffer_size());
 
-  memcpy(buffer->data(), &num_frames, sizeof(int32_t));
-  memcpy(buffer->data() + sizeof(int32_t), &timestamp, sizeof(timestamp));
+  UNSAFE_TODO(memcpy(buffer->data(), &num_frames, sizeof(int32_t)));
+  UNSAFE_TODO(
+      memcpy(buffer->data() + sizeof(int32_t), &timestamp, sizeof(timestamp)));
 
-  float* dest =
-      reinterpret_cast<float*>(buffer->data() + kAudioMessageHeaderSize);
+  float* dest = reinterpret_cast<float*>(
+      UNSAFE_TODO(buffer->data() + kAudioMessageHeaderSize));
   switch (sample_format_) {
     case audio_service::SAMPLE_FORMAT_INT16_I:
       ConvertInterleavedData<::media::SignedInt16SampleTypeTraits>(
@@ -542,7 +543,7 @@ bool MixerInputConnection::HandleAudioData(char* data,
       ConvertPlanarData<::media::SignedInt32SampleTypeTraits>(data, size, dest);
       break;
     case audio_service::SAMPLE_FORMAT_FLOAT_P:
-      memcpy(dest, data, size);
+      UNSAFE_TODO(memcpy(dest, data, size));
       break;
     default:
       NOTREACHED() << "Unhandled sample format " << sample_format_;
@@ -565,7 +566,7 @@ bool MixerInputConnection::HandleAudioBuffer(
 
   int32_t num_frames = size / (sizeof(float) * num_channels_);
   DCHECK_EQ(sizeof(int32_t), 4u);
-  memcpy(buffer->data(), &num_frames, sizeof(int32_t));
+  UNSAFE_TODO(memcpy(buffer->data(), &num_frames, sizeof(int32_t)));
 
   WritePcm(std::move(buffer));
 
@@ -1064,19 +1065,20 @@ int MixerInputConnection::FillAudioPlaybackFrames(
       return 0;
     }
 
-    int write_offset = 0;
+    size_t write_offset = 0;
     if (remaining_silence_frames_ > 0) {
       buffer->ZeroFramesPartial(0, remaining_silence_frames_);
       filled += remaining_silence_frames_;
       num_frames -= remaining_silence_frames_;
-      write_offset = remaining_silence_frames_;
+      write_offset = static_cast<size_t>(remaining_silence_frames_);
       remaining_silence_frames_ = 0;
     }
 
     CHECK_LE(num_channels_, kMaxChannels);
     float* channels[kMaxChannels];
     for (int c = 0; c < num_channels_; ++c) {
-      channels[c] = buffer->channel(c) + write_offset;
+      UNSAFE_TODO(channels[c]) =
+          buffer->channel(c).subspan(write_offset).data();
     }
     filled += rate_shifter_.FillFrames(num_frames, playback_absolute_timestamp,
                                        channels);
@@ -1286,9 +1288,10 @@ int MixerInputConnection::FillFromQueue(int num_frames,
 
   const float* buffer_samples = GetAudioData(buffer);
   for (int c = 0; c < num_channels_; ++c) {
-    const float* buffer_channel = buffer_samples + (buffer_frames * c);
-    std::copy_n(buffer_channel + current_buffer_offset_, frames_to_copy,
-                channels[c] + write_offset);
+    const float* buffer_channel =
+        UNSAFE_TODO(buffer_samples + (buffer_frames * c));
+    std::copy_n(UNSAFE_TODO(buffer_channel + current_buffer_offset_),
+                frames_to_copy, UNSAFE_TODO(channels[c] + write_offset));
   }
   queued_frames_ -= frames_to_copy;
 

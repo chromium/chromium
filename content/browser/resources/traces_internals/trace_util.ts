@@ -13,7 +13,7 @@ export function getTokenAsUuidString(uuid: Token): string {
       lowHex.slice(12, 16)}-${highHex.slice(0, 4)}-${highHex.slice(4)}`;
 }
 
-function getArrayFromBigBuffer(bigBuffer: BigBuffer): Uint8Array {
+function getArrayFromBigBuffer(bigBuffer: BigBuffer): Uint8Array<ArrayBuffer> {
   if (Array.isArray(bigBuffer.bytes)) {
     return new Uint8Array(bigBuffer.bytes);
   }

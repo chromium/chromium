@@ -47,6 +47,9 @@
 // Supports APIs used to implement the trusted vault for chrome sync.
 #define IOS_WEB_VIEW_SUPPORTS_TRUSTED_VAULT_APIS 1
 
+// Supports -[CWVAutofillDataManager fetchIconForCreditCard:creditCard].
+#define IOS_WEB_VIEW_SUPPORTS_FETCHING_CREDIT_CARD_ICON 1
+
 // Supports -[CWVAutofillDataManager updatePassword:newUsername:newPassword:].
 #define IOS_WEB_VIEW_SUPPORTS_UPDATING_PASSWORDS 1
 
@@ -111,6 +114,9 @@
 // Supports AccountAddressSyncing
 #define IOS_WEB_VIEW_SUPPORTS_ACCOUNT_ADDRESS_SYNC 1
 
+// Supports using Image Fetcher.
+#define IOS_WEB_VIEW_SUPPORTS_USING_IMAGE_FETCHER 1
+
 // Supports CWVGlobalState.
 #define IOS_WEB_VIEW_SUPPORTS_GLOBAL_STATE 1
 
@@ -122,5 +128,17 @@
 
 // Supports -[CWVWebView allowsLinkPreview].
 #define IOS_WEB_VIEW_SUPPORTS_ALLOWS_LINK_PREVIEW 1
+
+// Support affiliation of passwords.
+#define IOS_WEB_VIEW_SUPPORTS_AFFILIATED_PASSWORDS 1
+
+// Supports -[CWVDownloadTask originatingHost]
+#define IOS_WEB_VIEW_SUPPORTS_DOWNLOAD_TASK_ORIGINATING_HOST 1
+
+// Supports -[CWVDownloadTask redirectedURL]
+#define IOS_WEB_VIEW_SUPPORTS_DOWNLOAD_TASK_REDIRECTED_URL 1
+
+// Supports VCN.
+#define IOS_WEB_VIEW_SUPPORTS_VCN 1
 
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

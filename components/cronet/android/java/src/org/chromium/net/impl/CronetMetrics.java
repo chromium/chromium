@@ -7,41 +7,58 @@ package org.chromium.net.impl;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.net.RequestFinishedInfo;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /** Implementation of {@link RequestFinishedInfo.Metrics}. */
 @VisibleForTesting
+@JNINamespace("cronet")
 public final class CronetMetrics extends RequestFinishedInfo.Metrics {
-    private final long mRequestStartMs;
-    private final long mDnsStartMs;
-    private final long mDnsEndMs;
-    private final long mConnectStartMs;
-    private final long mConnectEndMs;
-    private final long mSslStartMs;
-    private final long mSslEndMs;
-    private final long mSendingStartMs;
-    private final long mSendingEndMs;
-    private final long mPushStartMs;
-    private final long mPushEndMs;
-    private final long mResponseStartMs;
-    private final long mRequestEndMs;
+    private final long mRequestStartMicroseconds;
+    private final long mDnsStartMicroseconds;
+    private final long mDnsEndMicroseconds;
+    private final long mConnectStartMicroseconds;
+    private final long mConnectEndMicroseconds;
+    private final long mSslStartMicroseconds;
+    private final long mSslEndMicroseconds;
+    private final long mSendingStartMicroseconds;
+    private final long mSendingEndMicroseconds;
+    private final long mPushStartMicroseconds;
+    private final long mPushEndMicroseconds;
+    private final long mResponseStartMicroseconds;
+    private final long mRequestEndMicroseconds;
     private final boolean mSocketReused;
 
     // TODO(mgersh): Delete after the switch to the new API http://crbug.com/629194
-    @Nullable private final Long mTtfbMs;
+    @Nullable private final Long mTtfbMicroseconds;
     // TODO(mgersh): Delete after the switch to the new API http://crbug.com/629194
-    @Nullable private final Long mTotalTimeMs;
+    @Nullable private final Long mTotalTimeMicroseconds;
     @Nullable private final Long mSentByteCount;
     @Nullable private final Long mReceivedByteCount;
 
     @Nullable
     private static Date toDate(long timestamp) {
         if (timestamp != -1) {
-            return new Date(timestamp);
+            return new Date(TimeUnit.MICROSECONDS.toMillis(timestamp));
         }
         return null;
+    }
+
+    static long getDateDeltaMillisOrDefault(Date before, Date after, long defaultValue) {
+        if (before == null || after == null) return defaultValue;
+        return after.getTime() - before.getTime();
+    }
+
+    static long getDurationBetweenTimestampsInMicros(long before, long after) {
+        if (before == -1 || after == -1) {
+            return -1;
+        }
+        return after - before;
     }
 
     private static boolean checkOrder(long start, long end) {
@@ -51,174 +68,156 @@ public final class CronetMetrics extends RequestFinishedInfo.Metrics {
     }
 
     /**
-     * Old-style constructor
-     * TODO(mgersh): Delete after the switch to the new API http://crbug.com/629194
+     * Returns a metrics object populated with empty values.
+     *
+     * <p>Ideally we should just provide Cronet users with a null Metrics object instead, but sadly,
+     * for historical reasons not all users handle a null object properly.
      */
-    public CronetMetrics(
-            @Nullable Long ttfbMs,
-            @Nullable Long totalTimeMs,
-            @Nullable Long sentByteCount,
-            @Nullable Long receivedByteCount) {
-        mTtfbMs = ttfbMs;
-        mTotalTimeMs = totalTimeMs;
-        mSentByteCount = sentByteCount;
-        mReceivedByteCount = receivedByteCount;
-
-        // Everything else is -1 (translates to null) for now
-        mRequestStartMs = -1;
-        mDnsStartMs = -1;
-        mDnsEndMs = -1;
-        mConnectStartMs = -1;
-        mConnectEndMs = -1;
-        mSslStartMs = -1;
-        mSslEndMs = -1;
-        mSendingStartMs = -1;
-        mSendingEndMs = -1;
-        mPushStartMs = -1;
-        mPushEndMs = -1;
-        mResponseStartMs = -1;
-        mRequestEndMs = -1;
-        mSocketReused = false;
+    public static CronetMetrics empty() {
+        return new CronetMetrics(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, false, 0, 0);
     }
 
     /** New-style constructor */
+    @CalledByNative
     public CronetMetrics(
-            long requestStartMs,
-            long dnsStartMs,
-            long dnsEndMs,
-            long connectStartMs,
-            long connectEndMs,
-            long sslStartMs,
-            long sslEndMs,
-            long sendingStartMs,
-            long sendingEndMs,
-            long pushStartMs,
-            long pushEndMs,
-            long responseStartMs,
-            long requestEndMs,
+            long requestStartMicroseconds,
+            long dnsStartMicroseconds,
+            long dnsEndMicroseconds,
+            long connectStartMicroseconds,
+            long connectEndMicroseconds,
+            long sslStartMicroseconds,
+            long sslEndMicroseconds,
+            long sendingStartMicroseconds,
+            long sendingEndMicroseconds,
+            long pushStartMicroseconds,
+            long pushEndMicroseconds,
+            long responseStartMicroseconds,
+            long requestEndMicroseconds,
             boolean socketReused,
             long sentByteCount,
             long receivedByteCount) {
         // Check that no end times are before corresponding start times,
         // or exist when start time doesn't.
-        assert checkOrder(dnsStartMs, dnsEndMs);
-        assert checkOrder(connectStartMs, connectEndMs);
-        assert checkOrder(sslStartMs, sslEndMs);
-        assert checkOrder(sendingStartMs, sendingEndMs);
-        assert checkOrder(pushStartMs, pushEndMs);
+        assert checkOrder(dnsStartMicroseconds, dnsEndMicroseconds);
+        assert checkOrder(connectStartMicroseconds, connectEndMicroseconds);
+        assert checkOrder(sslStartMicroseconds, sslEndMicroseconds);
+        assert checkOrder(sendingStartMicroseconds, sendingEndMicroseconds);
+        assert checkOrder(pushStartMicroseconds, pushEndMicroseconds);
         // requestEnd always exists, so just check that it's after start
-        assert requestEndMs >= responseStartMs;
+        assert requestEndMicroseconds >= responseStartMicroseconds;
         // Spot-check some of the other orderings
-        assert dnsStartMs >= requestStartMs || dnsStartMs == -1;
-        assert sendingStartMs >= requestStartMs || sendingStartMs == -1;
-        assert sslStartMs >= connectStartMs || sslStartMs == -1;
-        assert responseStartMs >= sendingStartMs || responseStartMs == -1;
-        mRequestStartMs = requestStartMs;
-        mDnsStartMs = dnsStartMs;
-        mDnsEndMs = dnsEndMs;
-        mConnectStartMs = connectStartMs;
-        mConnectEndMs = connectEndMs;
-        mSslStartMs = sslStartMs;
-        mSslEndMs = sslEndMs;
-        mSendingStartMs = sendingStartMs;
-        mSendingEndMs = sendingEndMs;
-        mPushStartMs = pushStartMs;
-        mPushEndMs = pushEndMs;
-        mResponseStartMs = responseStartMs;
-        mRequestEndMs = requestEndMs;
+        assert dnsStartMicroseconds >= requestStartMicroseconds || dnsStartMicroseconds == -1;
+        assert sendingStartMicroseconds >= requestStartMicroseconds
+                || sendingStartMicroseconds == -1;
+        assert sslStartMicroseconds >= connectStartMicroseconds || sslStartMicroseconds == -1;
+        assert responseStartMicroseconds >= sendingStartMicroseconds
+                || responseStartMicroseconds == -1;
+        mRequestStartMicroseconds = requestStartMicroseconds;
+        mDnsStartMicroseconds = dnsStartMicroseconds;
+        mDnsEndMicroseconds = dnsEndMicroseconds;
+        mConnectStartMicroseconds = connectStartMicroseconds;
+        mConnectEndMicroseconds = connectEndMicroseconds;
+        mSslStartMicroseconds = sslStartMicroseconds;
+        mSslEndMicroseconds = sslEndMicroseconds;
+        mSendingStartMicroseconds = sendingStartMicroseconds;
+        mSendingEndMicroseconds = sendingEndMicroseconds;
+        mPushStartMicroseconds = pushStartMicroseconds;
+        mPushEndMicroseconds = pushEndMicroseconds;
+        mResponseStartMicroseconds = responseStartMicroseconds;
+        mRequestEndMicroseconds = requestEndMicroseconds;
         mSocketReused = socketReused;
         mSentByteCount = sentByteCount;
         mReceivedByteCount = receivedByteCount;
 
         // TODO(mgersh): delete these after embedders stop using them http://crbug.com/629194
-        if (requestStartMs != -1 && responseStartMs != -1) {
-            mTtfbMs = responseStartMs - requestStartMs;
+        if (requestStartMicroseconds != -1 && responseStartMicroseconds != -1) {
+            mTtfbMicroseconds = responseStartMicroseconds - requestStartMicroseconds;
         } else {
-            mTtfbMs = null;
+            mTtfbMicroseconds = null;
         }
-        if (requestStartMs != -1 && requestEndMs != -1) {
-            mTotalTimeMs = requestEndMs - requestStartMs;
+        if (requestStartMicroseconds != -1 && requestEndMicroseconds != -1) {
+            mTotalTimeMicroseconds = requestEndMicroseconds - requestStartMicroseconds;
         } else {
-            mTotalTimeMs = null;
+            mTotalTimeMicroseconds = null;
         }
     }
 
     @Nullable
     @Override
     public Date getRequestStart() {
-        return toDate(mRequestStartMs);
+        return toDate(mRequestStartMicroseconds);
     }
 
     @Nullable
     @Override
     public Date getDnsStart() {
-        return toDate(mDnsStartMs);
+        return toDate(mDnsStartMicroseconds);
     }
 
     @Nullable
     @Override
     public Date getDnsEnd() {
-        return toDate(mDnsEndMs);
+        return toDate(mDnsEndMicroseconds);
     }
 
     @Nullable
     @Override
     public Date getConnectStart() {
-        return toDate(mConnectStartMs);
+        return toDate(mConnectStartMicroseconds);
     }
 
     @Nullable
     @Override
     public Date getConnectEnd() {
-        return toDate(mConnectEndMs);
+        return toDate(mConnectEndMicroseconds);
     }
 
     @Nullable
     @Override
     public Date getSslStart() {
-        return toDate(mSslStartMs);
+        return toDate(mSslStartMicroseconds);
     }
 
     @Nullable
     @Override
     public Date getSslEnd() {
-        return toDate(mSslEndMs);
+        return toDate(mSslEndMicroseconds);
     }
 
     @Nullable
     @Override
     public Date getSendingStart() {
-        return toDate(mSendingStartMs);
+        return toDate(mSendingStartMicroseconds);
     }
 
     @Nullable
     @Override
     public Date getSendingEnd() {
-        return toDate(mSendingEndMs);
+        return toDate(mSendingEndMicroseconds);
     }
 
     @Nullable
     @Override
     public Date getPushStart() {
-        return toDate(mPushStartMs);
+        return toDate(mPushStartMicroseconds);
     }
 
     @Nullable
     @Override
     public Date getPushEnd() {
-        return toDate(mPushEndMs);
+        return toDate(mPushEndMicroseconds);
     }
 
     @Nullable
     @Override
     public Date getResponseStart() {
-        return toDate(mResponseStartMs);
+        return toDate(mResponseStartMicroseconds);
     }
 
     @Nullable
     @Override
     public Date getRequestEnd() {
-        return toDate(mRequestEndMs);
+        return toDate(mRequestEndMicroseconds);
     }
 
     @Override
@@ -229,13 +228,15 @@ public final class CronetMetrics extends RequestFinishedInfo.Metrics {
     @Nullable
     @Override
     public Long getTtfbMs() {
-        return mTtfbMs;
+        return mTtfbMicroseconds == null ? null : TimeUnit.MICROSECONDS.toMillis(mTtfbMicroseconds);
     }
 
     @Nullable
     @Override
     public Long getTotalTimeMs() {
-        return mTotalTimeMs;
+        return mTotalTimeMicroseconds == null
+                ? null
+                : TimeUnit.MICROSECONDS.toMillis(mTotalTimeMicroseconds);
     }
 
     @Nullable
@@ -248,5 +249,35 @@ public final class CronetMetrics extends RequestFinishedInfo.Metrics {
     @Override
     public Long getReceivedByteCount() {
         return mReceivedByteCount;
+    }
+
+    // Package-private as we don't want to expose these in the public Cronet API, for now. These
+    // return long, not Date, because we want to preserve the microsecond precision (Date is
+    // millisecond precision).
+    long getDnsDurationInMicroseconds() {
+        return getDurationBetweenTimestampsInMicros(mDnsStartMicroseconds, mDnsEndMicroseconds);
+    }
+
+    // Package-private as we don't want to expose these in the public Cronet API, for now. These
+    // return long, not Date, because we want to preserve the microsecond precision (Date is
+    // millisecond precision).
+    long getSSLDurationInMicroseconds() {
+        return getDurationBetweenTimestampsInMicros(mSslStartMicroseconds, mSslEndMicroseconds);
+    }
+
+    // Package-private as we don't want to expose these in the public Cronet API, for now. These
+    // return long, not Date, because we want to preserve the microsecond precision (Date is
+    // millisecond precision).
+    long getConnectDurationInMicroseconds() {
+        return getDurationBetweenTimestampsInMicros(
+                mConnectStartMicroseconds, mConnectEndMicroseconds);
+    }
+
+    // Package-private as we don't want to expose these in the public Cronet API, for now. These
+    // return long, not Date, because we want to preserve the microsecond precision (Date is
+    // millisecond precision).
+    long getTimeToWriteFirstByteInMicroseconds() {
+        return getDurationBetweenTimestampsInMicros(
+                mRequestStartMicroseconds, mSendingStartMicroseconds);
     }
 }

@@ -4,6 +4,7 @@
 
 #include "services/network/file_opener_for_upload.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/task/thread_pool.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/network_context_client.mojom.h"

@@ -195,6 +195,10 @@ struct VideoEncodeAcceleratorConfig {
   SVCInterLayerPredMode inter_layer_pred;
   bool require_low_delay;
   EncoderType required_encoder_type;
+  // When true, requires the frame reference structure to be specified per
+  // frame by application, and ignores config item specified by `spatial_layers`
+  // and `inter_layer_pred`.
+  bool manual_reference_buffer_control;
 };
 
 // Options for encoding a single frame by VideoEncodeAccelerator.
@@ -210,6 +214,12 @@ struct VideoEncodeOptions {
   // we don't use proper optional field because Java bindgen doesn't support
   // optional primitive types.
   int32 quantizer;
+
+  // The buffer ID to be updated after encoding.
+  uint8? update_buffer;
+
+  // The buffer ID to be referenced for encoding.
+  array<uint8> reference_buffers;
 };
 
 // The interface to access the hardware video encoding accelerator.

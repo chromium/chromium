@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_DEVTOOLS_DEVTOOLS_EMBEDDER_MESSAGE_DISPATCHER_H_
 #define CHROME_BROWSER_DEVTOOLS_DEVTOOLS_EMBEDDER_MESSAGE_DISPATCHER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/values.h"
+#include "chrome/browser/devtools/devtools_dispatch_http_request_params.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -120,6 +120,7 @@ class DevToolsEmbedderMessageDispatcher {
     virtual void RecordPerformanceHistogramMedium(const std::string& name,
                                                   double duration) = 0;
     virtual void RecordUserMetricsAction(const std::string& name) = 0;
+    virtual void RecordNewBadgeUsage(const std::string& feature_name) = 0;
     virtual void RecordImpression(const ImpressionEvent& event) = 0;
     virtual void RecordResize(const ResizeEvent& event) = 0;
     virtual void RecordClick(const ClickEvent& event) = 0;
@@ -146,6 +147,9 @@ class DevToolsEmbedderMessageDispatcher {
                                     const std::string& request) = 0;
     virtual void RegisterAidaClientEvent(DispatchCallback callback,
                                          const std::string& request) = 0;
+    virtual void DispatchHttpRequest(
+        DispatchCallback callback,
+        const DevToolsDispatchHttpRequestParams& body) = 0;
   };
 
   using DispatchCallback = Delegate::DispatchCallback;

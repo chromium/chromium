@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <limits.h>
 
 #include <optional>
@@ -14,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 #include "url/url_features.h"
@@ -102,34 +98,32 @@ enum DotDisposition {
 // |*consumed_len| will contain the number of characters in the input that
 // express what we found.
 //
-// If the input is "../foo", |after_dot| = 1, |end| = 6, and
-// at the end, |*consumed_len| = 2 for the "./" this function consumed. The
-// original dot length should be handled by the caller.
+// If the original input is "../foo", this function will be called with `spec`
+// equal to "./foo", and at the end, |*consumed_len| = 2 for the "./" this
+// function consumed. The original dot length should be handled by the caller.
 template <typename CHAR>
-DotDisposition ClassifyAfterDot(const CHAR* spec,
-                                size_t after_dot,
-                                size_t end,
+DotDisposition ClassifyAfterDot(std::basic_string_view<CHAR> spec,
                                 size_t* consumed_len) {
-  if (after_dot == end) {
+  if (spec.empty()) {
     // Single dot at the end.
     *consumed_len = 0;
     return DIRECTORY_CUR;
   }
-  if (IsSlashOrBackslash(spec[after_dot])) {
+  if (IsSlashOrBackslash(spec[0])) {
     // Single dot followed by a slash.
     *consumed_len = 1;  // Consume the slash
     return DIRECTORY_CUR;
   }
 
-  size_t second_dot_len = IsDot(spec, after_dot, end);
+  size_t second_dot_len = IsDot(spec);
   if (second_dot_len) {
-    size_t after_second_dot = after_dot + second_dot_len;
-    if (after_second_dot == end) {
+    std::basic_string_view<CHAR> after_second_dot = spec.substr(second_dot_len);
+    if (after_second_dot.empty()) {
       // Double dot at the end.
       *consumed_len = second_dot_len;
       return DIRECTORY_UP;
     }
-    if (IsSlashOrBackslash(spec[after_second_dot])) {
+    if (IsSlashOrBackslash(after_second_dot[0])) {
       // Double dot followed by a slash.
       *consumed_len = second_dot_len + 1;
       return DIRECTORY_UP;
@@ -203,16 +197,15 @@ bool DoPartialPathInternal(std::optional<std::basic_string_view<CHAR>> path,
       // do anything tricky with decoding/validating UTF-8. This function will
       // read one or two UTF-16 characters and append the output as UTF-8. This
       // call will be removed in 8-bit mode.
-      success &= AppendUTF8EscapedChar(path_value.data(), &i, path_value.size(),
-                                       output);
+      success &= AppendUtf8EscapedChar(path_value, &i, output);
     } else {
       // Normal ASCII character or 8-bit input, use the lookup table.
       unsigned char out_ch = static_cast<unsigned char>(uch);
-      unsigned char flags = kPathCharLookup[out_ch];
+      unsigned char flags = UNSAFE_TODO(kPathCharLookup[out_ch]);
       if (flags & SPECIAL) {
         // Needs special handling of some sort.
         size_t dotlen;
-        if ((dotlen = IsDot(path_value.data(), i, path_value.size())) > 0) {
+        if ((dotlen = IsDot(path_value.substr(i))) > 0) {
           // See if this dot was preceded by a slash in the output.
           //
           // Note that we check this in the case of dots so we don't have to
@@ -223,8 +216,8 @@ bool DoPartialPathInternal(std::optional<std::basic_string_view<CHAR>> path,
               output->at(output->length() - 1) == '/') {
             // Slash followed by a dot, check to see if this is means relative
             size_t consumed_len;
-            switch (ClassifyAfterDot<CHAR>(path_value.data(), i + dotlen,
-                                           path_value.size(), &consumed_len)) {
+            switch (ClassifyAfterDot(path_value.substr(i + dotlen),
+                                     &consumed_len)) {
               case NOT_A_DIRECTORY:
                 // Copy the dot to the output, it means nothing special.
                 output->push_back('.');
@@ -261,8 +254,7 @@ bool DoPartialPathInternal(std::optional<std::basic_string_view<CHAR>> path,
         } else if (out_ch == '%') {
           // Handle escape sequences.
           unsigned char unused_unescaped_value;
-          if (DecodeEscaped(path_value.data(), &i, path_value.size(),
-                            &unused_unescaped_value)) {
+          if (DecodeEscaped(path_value, &i, &unused_unescaped_value)) {
             // Valid escape sequence. We should just copy it exactly.
             output->push_back('%');
             output->push_back(static_cast<char>(path_value[i - 1]));
@@ -366,8 +358,9 @@ bool CanonicalizePath(const char* spec,
                       const Component& path,
                       CanonOutput* output,
                       Component* out_path) {
-  return DoPath<char, unsigned char>(path.maybe_as_string_view_on(spec),
-                                     CanonMode::kSpecialURL, output, out_path);
+  return DoPath<char, unsigned char>(
+      UNSAFE_TODO(path.maybe_as_string_view_on(spec)), CanonMode::kSpecialURL,
+      output, out_path);
 }
 
 bool CanonicalizePath(std::optional<std::string_view> path,

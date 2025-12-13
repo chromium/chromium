@@ -19,7 +19,6 @@
 #include "gpu/command_buffer/service/gpu_service_test.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/renderbuffer_manager.h"
-#include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/test_helper.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/config/gpu_preferences.h"
@@ -49,13 +48,11 @@ const bool kUseDefaultTextures = false;
 class FramebufferManagerTest : public GpuServiceTest {
  public:
   FramebufferManagerTest()
-      : manager_(1, 1, nullptr),
-        feature_info_(new FeatureInfo()),
-        discardable_manager_(GpuPreferences()) {
+      : manager_(1, 1, nullptr), feature_info_(new FeatureInfo()) {
     texture_manager_ = std::make_unique<TextureManager>(
         nullptr, feature_info_.get(), kMaxTextureSize, kMaxCubemapSize,
         kMaxRectangleTextureSize, kMax3DTextureSize, kMaxArrayTextureLayers,
-        kUseDefaultTextures, nullptr, &discardable_manager_);
+        kUseDefaultTextures, nullptr);
     renderbuffer_manager_ = std::make_unique<RenderbufferManager>(
         nullptr, kMaxRenderbufferSize, kMaxSamples, feature_info_.get());
   }
@@ -69,7 +66,6 @@ class FramebufferManagerTest : public GpuServiceTest {
  protected:
   FramebufferManager manager_;
   scoped_refptr<FeatureInfo> feature_info_;
-  ServiceDiscardableManager discardable_manager_;
   std::unique_ptr<TextureManager> texture_manager_;
   std::unique_ptr<RenderbufferManager> renderbuffer_manager_;
 };
@@ -128,12 +124,11 @@ class FramebufferInfoTestBase : public GpuServiceTest {
         manager_(kMaxDrawBuffers,
                  kMaxColorAttachments,
                  &framebuffer_completeness_cache_),
-        feature_info_(new FeatureInfo()),
-        discardable_manager_(GpuPreferences()) {
+        feature_info_(new FeatureInfo()) {
     texture_manager_ = std::make_unique<TextureManager>(
         nullptr, feature_info_.get(), kMaxTextureSize, kMaxCubemapSize,
         kMaxRectangleTextureSize, kMax3DTextureSize, kMaxArrayTextureLayers,
-        kUseDefaultTextures, nullptr, &discardable_manager_);
+        kUseDefaultTextures, nullptr);
     renderbuffer_manager_ = std::make_unique<RenderbufferManager>(
         nullptr, kMaxRenderbufferSize, kMaxSamples, feature_info_.get());
   }
@@ -175,7 +170,6 @@ class FramebufferInfoTestBase : public GpuServiceTest {
   FramebufferManager manager_;
   raw_ptr<Framebuffer> framebuffer_;
   scoped_refptr<FeatureInfo> feature_info_;
-  ServiceDiscardableManager discardable_manager_;
   std::unique_ptr<TextureManager> texture_manager_;
   std::unique_ptr<RenderbufferManager> renderbuffer_manager_;
   std::unique_ptr<MockErrorState> error_state_;
@@ -1127,7 +1121,7 @@ TEST_F(FramebufferInfoES3Test, DrawBuffers) {
   EXPECT_TRUE(framebuffer_->HasUnclearedColorAttachments());
 
   GLenum buffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-  framebuffer_->SetDrawBuffers(2, buffers);
+  framebuffer_->SetDrawBuffers(buffers);
   EXPECT_EQ(static_cast<GLenum>(GL_COLOR_ATTACHMENT0),
             framebuffer_->GetDrawBuffer(GL_DRAW_BUFFER0));
   EXPECT_EQ(static_cast<GLenum>(GL_COLOR_ATTACHMENT1),
@@ -1146,7 +1140,7 @@ TEST_F(FramebufferInfoES3Test, DrawBuffers) {
 
   // Now we disable draw buffer 1.
   buffers[1] = GL_NONE;
-  framebuffer_->SetDrawBuffers(2, buffers);
+  framebuffer_->SetDrawBuffers(buffers);
   // We will enable the disabled draw buffer for clear(), and disable it
   // after the clear.
   EXPECT_CALL(*gl_, DrawBuffersARB(kMaxDrawBuffers, _))
@@ -1158,7 +1152,7 @@ TEST_F(FramebufferInfoES3Test, DrawBuffers) {
   // Now we disable draw buffer 0, enable draw buffer 1.
   buffers[0] = GL_NONE;
   buffers[1] = GL_COLOR_ATTACHMENT1;
-  framebuffer_->SetDrawBuffers(2, buffers);
+  framebuffer_->SetDrawBuffers(buffers);
   // This is the perfect setting for clear. No need to call DrawBuffers().
   EXPECT_FALSE(
       framebuffer_->PrepareDrawBuffersForClearingUninitializedAttachments());
@@ -1204,7 +1198,7 @@ TEST_F(FramebufferInfoTest, DrawBufferMasks) {
   {  // Exact draw buffer settings.
     GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1,
                         GL_COLOR_ATTACHMENT2, GL_NONE, GL_COLOR_ATTACHMENT4};
-    framebuffer_->SetDrawBuffers(5, buffers);
+    framebuffer_->SetDrawBuffers(buffers);
     EXPECT_EQ(0x31Bu, framebuffer_->draw_buffer_type_mask());
     EXPECT_EQ(0x33Fu, framebuffer_->draw_buffer_bound_mask());
     EXPECT_TRUE(framebuffer_->ContainsActiveIntegerAttachments());
@@ -1212,7 +1206,7 @@ TEST_F(FramebufferInfoTest, DrawBufferMasks) {
 
   {  // All disabled draw buffer settings.
     GLenum buffers[] = {GL_NONE};
-    framebuffer_->SetDrawBuffers(1, buffers);
+    framebuffer_->SetDrawBuffers(buffers);
     EXPECT_EQ(0u, framebuffer_->draw_buffer_type_mask());
     EXPECT_EQ(0u, framebuffer_->draw_buffer_bound_mask());
     EXPECT_FALSE(framebuffer_->ContainsActiveIntegerAttachments());
@@ -1221,7 +1215,7 @@ TEST_F(FramebufferInfoTest, DrawBufferMasks) {
   {  // Filter out integer buffers.
     GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_NONE, GL_NONE, GL_NONE,
                         GL_COLOR_ATTACHMENT4};
-    framebuffer_->SetDrawBuffers(5, buffers);
+    framebuffer_->SetDrawBuffers(buffers);
     EXPECT_EQ(0x303u, framebuffer_->draw_buffer_type_mask());
     EXPECT_EQ(0x303u, framebuffer_->draw_buffer_bound_mask());
     EXPECT_FALSE(framebuffer_->ContainsActiveIntegerAttachments());
@@ -1232,7 +1226,7 @@ TEST_F(FramebufferInfoTest, DrawBufferMasks) {
                         GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3,
                         GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5,
                         GL_COLOR_ATTACHMENT6, GL_COLOR_ATTACHMENT7};
-    framebuffer_->SetDrawBuffers(8, buffers);
+    framebuffer_->SetDrawBuffers(buffers);
     EXPECT_EQ(0x31Bu, framebuffer_->draw_buffer_type_mask());
     EXPECT_EQ(0x33Fu, framebuffer_->draw_buffer_bound_mask());
     EXPECT_TRUE(framebuffer_->ContainsActiveIntegerAttachments());

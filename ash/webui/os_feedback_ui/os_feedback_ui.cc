@@ -24,7 +24,6 @@
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/grit/webui_resources.h"
 #include "ui/webui/webui_allowlist.h"
@@ -125,9 +124,6 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
        IDS_FEEDBACK_TOOL_LINK_CROSS_DEVICE_DOGFOOD_FEEDBACK_INFO},
       {"linkCrossDeviceDogfoodFeedbackMessage",
        IDS_FEEDBACK_TOOL_LINK_CROSS_DEVICE_DOGFOOD_FEEDBACK_MESSAGE},
-      {"includeAssistantLogsCheckboxLabel",
-       IDS_FEEDBACK_TOOL_ASSISTANT_LOGS_CHECKBOX},
-      {"assistantLogsMessage", IDS_FEEDBACK_TOOL_ASSISTANT_LOGS_MESSAGE},
       {"includeAutofillCheckboxLabel",
        IDS_FEEDBACK_TOOL_AUTOFILL_LOGS_CHECKBOX},
   };
@@ -194,12 +190,6 @@ void OSFeedbackUI::BindInterface(
     mojo::PendingReceiver<os_feedback_ui::mojom::HelpContentProvider>
         receiver) {
   help_content_provider_->BindInterface(std::move(receiver));
-}
-
-void OSFeedbackUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OSFeedbackUI)

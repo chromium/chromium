@@ -59,19 +59,26 @@ class CORE_EXPORT IntersectionObservation final
     kPostLayoutDeliveryOnly = 1 << 6,
     // Corresponding to LocalFrameView::kScrollAndVisibilityOnly.
     kScrollAndVisibilityOnly = 1 << 7,
+    // If set, any accumulated_scroll_delta passed to ComputeIntersection() will
+    // be applied to cached_rects_.min_scroll_delta_to_update.
+    kConsumeScrollDelta = 1 << 8,
+    // Remove outdated entries from IntersectionObserverController.
+    kUpdateTracking = 1 << 9,
   };
 
   IntersectionObservation(IntersectionObserver&, Element&);
 
   IntersectionObserver* Observer() const { return observer_.Get(); }
   Element* Target() const { return target_.Get(); }
+  // Returns true if root and target are valid, connected, and have the required
+  // DOM hierarchy to compute an intersection.
+  bool CanCompute() const;
   // Returns 1 if the geometry was recalculated, otherwise 0. This could be a
   // bool, but int64_t matches IntersectionObserver::ComputeIntersections().
   int64_t ComputeIntersection(
       unsigned flags,
       gfx::Vector2dF accumulated_scroll_delta_since_last_update,
       ComputeIntersectionsContext&);
-  void ComputeIntersectionImmediately(ComputeIntersectionsContext&);
   gfx::Vector2dF MinScrollDeltaToUpdate() const;
   void TakeRecords(HeapVector<Member<IntersectionObserverEntry>>&);
   void Disconnect();

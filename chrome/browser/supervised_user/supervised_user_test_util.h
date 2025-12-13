@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/android/supervised_user_service_platform_delegate.h"
+#include "chrome/browser/supervised_user/supervised_user_content_filters_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -46,10 +47,11 @@ void SetSkipParentApprovalToInstallExtensionsPref(Profile* profile,
 void SetSupervisedUserGeolocationEnabledContentSetting(Profile* profile,
                                                        bool enabled);
 
-// Populates account info with a `given_name` and other fake data needed for a
-// valid `AccountInfo` structure.
-void PopulateAccountInfoWithName(AccountInfo& info,
-                                 const std::string& given_name);
+// Returns `info` copy with populated `given_name` and other fake data needed
+// for a valid `AccountInfo` structure.
+[[nodiscard]] AccountInfo PopulateAccountInfoWithName(
+    const AccountInfo& info,
+    const std::string& given_name);
 
 // Updates manual block/allow list with a given host.
 // e.g. SetManualFilterForHost(profile, "www.example.com", false) adds the
@@ -91,12 +93,15 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
+
   return std::make_unique<supervised_user::SupervisedUserService>(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       *profile->GetPrefs(),
       *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
+          profile->GetProfileKey()),
+      SupervisedUserContentFiltersServiceFactory::GetInstance()->GetForKey(
           profile->GetProfileKey()),
       SyncServiceFactory::GetInstance()->GetForProfile(profile),
       std::make_unique<URLFilter>(
@@ -109,8 +114,12 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
       std::make_unique<SupervisedUserServicePlatformDelegate>(*profile)
 #if BUILDFLAG(IS_ANDROID)
           ,
-      base::BindRepeating(
-          &supervised_user::ContentFiltersObserverBridge::Create)
+      std::make_unique<supervised_user::ContentFiltersObserverBridge>(
+          supervised_user::kBrowserContentFiltersSettingName,
+          *profile->GetPrefs()),
+      std::make_unique<supervised_user::ContentFiltersObserverBridge>(
+          supervised_user::kSearchContentFiltersSettingName,
+          *profile->GetPrefs())
 #endif  // BUILDFLAG(IS_ANDROID)
   );
 }

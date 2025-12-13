@@ -16,6 +16,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/models/combobox_model.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -34,7 +35,6 @@ class Range;
 }  // namespace gfx
 
 namespace ui {
-class ComboboxModel;
 class Event;
 class MenuModel;
 }  // namespace ui

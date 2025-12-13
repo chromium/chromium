@@ -171,22 +171,30 @@ void OutputPresenterGL::ScheduleOverlayPlane(
           overlay_plane_candidate.clip_rect,
           overlay_plane_candidate.overlay_type));
 #elif BUILDFLAG(IS_APPLE)
-  presenter_->ScheduleCALayer(ui::CARendererLayerParams(
-      overlay_plane_candidate.clip_rect.has_value(),
-      overlay_plane_candidate.clip_rect.value_or(gfx::Rect()),
-      overlay_plane_candidate.rounded_corners,
-      overlay_plane_candidate.sorting_context_id,
-      std::get<gfx::Transform>(overlay_plane_candidate.transform),
-      access ? access->GetIOSurface() : gfx::ScopedIOSurface(),
-      access ? access->representation()->color_space() : gfx::ColorSpace(),
-      overlay_plane_candidate.uv_rect,
-      gfx::ToEnclosingRect(overlay_plane_candidate.display_rect),
-      overlay_plane_candidate.color.value_or(SkColors::kTransparent),
-      overlay_plane_candidate.edge_aa_mask, overlay_plane_candidate.opacity,
-      overlay_plane_candidate.nearest_neighbor_filter,
-      overlay_plane_candidate.hdr_metadata,
-      overlay_plane_candidate.protected_video_type,
-      overlay_plane_candidate.is_render_pass_draw_quad));
+  gfx::ScopedIOSurface io_surface;
+  gfx::ColorSpace io_surface_color_space;
+  std::vector<gfx::MTLSharedEventFence> backpressure_fences;
+  if (access) {
+    io_surface = access->GetIOSurface();
+    io_surface_color_space = access->representation()->color_space();
+    backpressure_fences = access->GetBackpressureFences();
+  }
+  presenter_->ScheduleCALayer(
+      ui::CARendererLayerParams(
+          overlay_plane_candidate.clip_rect.has_value(),
+          overlay_plane_candidate.clip_rect.value_or(gfx::Rect()),
+          overlay_plane_candidate.rounded_corners,
+          overlay_plane_candidate.sorting_context_id,
+          std::get<gfx::Transform>(overlay_plane_candidate.transform),
+          io_surface, io_surface_color_space, overlay_plane_candidate.uv_rect,
+          gfx::ToEnclosingRect(overlay_plane_candidate.display_rect),
+          overlay_plane_candidate.color.value_or(SkColors::kTransparent),
+          overlay_plane_candidate.edge_aa_mask, overlay_plane_candidate.opacity,
+          overlay_plane_candidate.nearest_neighbor_filter,
+          overlay_plane_candidate.hdr_metadata,
+          overlay_plane_candidate.protected_video_type,
+          overlay_plane_candidate.is_render_pass_draw_quad),
+      std::move(backpressure_fences));
 
 #endif
 }

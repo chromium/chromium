@@ -150,6 +150,14 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
     bool initialization_succeeded_ = true;
   };
 
+  // Sets the value for `key` in the appropriate store(s). `notify` controls
+  // whether observers of the underlying pref stores are notified of the
+  // change (i.e. whether SetValue() or SetValueSilently() is called).
+  void DoSetValue(std::string_view key,
+                  base::Value value,
+                  uint32_t flags,
+                  bool notify);
+
   bool IsInitializationSuccessful() const;
 
   // Returns whether the pref with the given `key` should be inserted into the

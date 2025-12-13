@@ -37,14 +37,16 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_deletion_observer.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -551,30 +553,30 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, SwitchToProfile) {
       profile_manager->GenerateNextProfileDirectoryPath();
   profiles::testing::CreateProfileSync(profile_manager, path_profile2);
 
-  BrowserList* browser_list = BrowserList::GetInstance();
   ASSERT_EQ(initial_profile_count + 1U, storage.GetNumberOfProfiles());
-  EXPECT_EQ(1U, browser_list->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   // Open a browser window for the first profile.
   profiles::SwitchToProfile(path_profile1, false);
   EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(1U, browser_list->size());
-  EXPECT_EQ(path_profile1, browser_list->get(0)->profile()->GetPath());
+  BrowserWindowInterface* const browser_profile1 =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  EXPECT_EQ(path_profile1, browser_profile1->GetProfile()->GetPath());
 
   // Open a browser window for the second profile.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   profiles::SwitchToProfile(path_profile2, false);
-  content::RunAllTasksUntilIdle();
+  BrowserWindowInterface* const browser_profile2 =
+      browser_created_observer.Wait();
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(2U, browser_list->size());
-  EXPECT_EQ(path_profile2, browser_list->get(1)->profile()->GetPath());
+  EXPECT_EQ(path_profile2, browser_profile2->GetProfile()->GetPath());
 
   // Switch to the first profile without opening a new window.
   profiles::SwitchToProfile(path_profile1, false);
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(2U, browser_list->size());
 
-  EXPECT_EQ(path_profile1, browser_list->get(0)->profile()->GetPath());
-  EXPECT_EQ(path_profile2, browser_list->get(1)->profile()->GetPath());
+  EXPECT_EQ(path_profile1, browser_profile1->GetProfile()->GetPath());
+  EXPECT_EQ(path_profile2, browser_profile2->GetProfile()->GetPath());
 }
 
 // Prepares the setup for AddMultipleProfiles test, creates multiple browser
@@ -594,9 +596,8 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, PRE_AddMultipleProfiles) {
   // Create an additional profile.
   profiles::testing::CreateProfileSync(profile_manager, path_profile2);
 
-  BrowserList* browser_list = BrowserList::GetInstance();
   ASSERT_EQ(initial_profile_count + 1U, storage.GetNumberOfProfiles());
-  EXPECT_EQ(1U, browser_list->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   // Open a browser window for the first profile.
   base::test::TestFuture<Browser*> browser1_future;
@@ -604,7 +605,6 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, PRE_AddMultipleProfiles) {
                             browser1_future.GetCallback());
   EXPECT_TRUE(browser1_future.Wait());
   EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
-  ASSERT_EQ(1U, browser_list->size());
   EXPECT_EQ(path_profile1, browser1_future.Get()->profile()->GetPath());
   // Open a browser window for the second profile.
   base::test::TestFuture<Browser*> browser2_future;
@@ -612,7 +612,6 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, PRE_AddMultipleProfiles) {
                             browser2_future.GetCallback());
   EXPECT_TRUE(browser2_future.Wait());
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
-  ASSERT_EQ(2U, browser_list->size());
   EXPECT_EQ(path_profile2, browser2_future.Get()->profile()->GetPath());
 }
 
@@ -670,37 +669,40 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, MAYBE_EphemeralProfile) {
     run_loop.Run();
   }
 
-  BrowserList* browser_list = BrowserList::GetInstance();
   ASSERT_EQ(initial_profile_count + 1U, storage.GetNumberOfProfiles());
-  EXPECT_EQ(1U, browser_list->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  BrowserWindowInterface* const browser_profile1 =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
 
   // Open a browser window for the second profile.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   profiles::SwitchToProfile(path_profile2, false);
-  content::RunAllTasksUntilIdle();
+  BrowserWindowInterface* const browser_profile2 =
+      browser_created_observer.Wait();
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(2U, browser_list->size());
-  EXPECT_EQ(path_profile2, browser_list->get(1)->profile()->GetPath());
+  EXPECT_EQ(path_profile2, browser_profile2->GetProfile()->GetPath());
 
   // Create a second window for the ephemeral profile.
   profiles::SwitchToProfile(path_profile2, true);
+  BrowserWindowInterface* const browser_profile2_ephemeral =
+      browser_created_observer.Wait();
   EXPECT_EQ(3U, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(3U, browser_list->size());
 
-  EXPECT_EQ(path_profile1, browser_list->get(0)->profile()->GetPath());
-  EXPECT_EQ(path_profile2, browser_list->get(1)->profile()->GetPath());
-  EXPECT_EQ(path_profile2, browser_list->get(2)->profile()->GetPath());
+  EXPECT_EQ(path_profile1, browser_profile1->GetProfile()->GetPath());
+  EXPECT_EQ(path_profile2, browser_profile2->GetProfile()->GetPath());
+  EXPECT_EQ(path_profile2, browser_profile2_ephemeral->GetProfile()->GetPath());
 
   // Closing the first window of the ephemeral profile should not delete it.
-  CloseBrowserSynchronously(browser_list->get(2));
-  EXPECT_EQ(2U, browser_list->size());
+  CloseBrowserSynchronously(browser_profile2_ephemeral);
+  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
   EXPECT_EQ(initial_profile_count + 1U, storage.GetNumberOfProfiles());
 
   // The second should though.
   ProfileDeletionObserver observer;
-  CloseBrowserSynchronously(browser_list->get(1));
+  CloseBrowserSynchronously(browser_profile2);
   observer.Wait();
 
-  EXPECT_EQ(1U, browser_list->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
   EXPECT_EQ(initial_profile_count, storage.GetNumberOfProfiles());
 
 // The following check is flaky on Windows.

@@ -25,10 +25,10 @@
 #include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/metrics.h"
 #include "device/fido/enclave/types.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/large_blob.h"
-#include "device/fido/public_key_credential_descriptor.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace device::enclave {
@@ -41,19 +41,6 @@ constexpr std::string_view kExtensionsKey = "extensions";
 constexpr std::string_view kLargeBlobKey = "largeBlob";
 constexpr std::string_view kLargeBlobWriteKey = "write";
 constexpr std::string_view kLargeBlobSizeKey = "largeBlobSize";
-
-// Error codes from the service on per-request failures. These can be returned
-// alongside success responses in some cases.
-// Needs to match `RequestError` in
-// //third_party/cloud_authenticator/processor/src/lib.rs.
-enum {
-  kNoSupportedAlgorithm = 1,
-  kDuplicate = 2,
-  kIncorrectPIN = 3,
-  kPINLocked = 4,
-  kPINOutdated = 5,
-  kRecoveryKeyStoreDowngrade = 6,
-};
 
 // This is used for metrics and must be kept in sync with the corresponding
 // entry in tools/metrics/histograms/metadata/webauthn/enums.xml.
@@ -68,18 +55,15 @@ enum class EnclaveRequestResult {
   kRecoveryKeyStoreDowngrade = 6,
   kFailedTransaction = 7,
   kOtherError = 8,
+  kCohortNotYetDeprecated = 9,
 
-  kMaxValue = kOtherError,
+  kMaxValue = kCohortNotYetDeprecated,
 };
 
 void RecordRequestResult(std::string_view request_type,
                          EnclaveRequestResult result) {
   base::UmaHistogramEnumeration(base::StrCat({kMetricPrefix, request_type}),
                                 result);
-}
-
-bool SupportsLargeBlobGPM() {
-  return base::FeatureList::IsEnabled(device::kWebAuthnLargeBlobForGPM);
 }
 
 AuthenticatorSupportedOptions EnclaveAuthenticatorOptions() {
@@ -89,9 +73,7 @@ AuthenticatorSupportedOptions EnclaveAuthenticatorOptions() {
   options.supports_resident_key = true;
   options.user_verification_availability = AuthenticatorSupportedOptions::
       UserVerificationAvailability::kSupportedAndConfigured;
-  if (SupportsLargeBlobGPM()) {
-    options.large_blob_type = LargeBlobSupportType::kBespoke;
-  }
+  options.large_blob_type = LargeBlobSupportType::kBespoke;
   options.supports_user_presence = false;
   return options;
 }
@@ -103,60 +85,80 @@ std::array<uint8_t, 8> RandomId() {
 }
 
 EnclaveRequestResult EnclaveErrorToEnclaveRequestResult(int enclave_code) {
-  switch (enclave_code) {
-    case kNoSupportedAlgorithm:
+  switch (GetRequestError(enclave_code)) {
+    case RequestError::kNoSupportedAlgorithm:
       return EnclaveRequestResult::kNoSupportedAlgorithm;
-    case kIncorrectPIN:
+    case RequestError::kIncorrectPIN:
       return EnclaveRequestResult::kIncorrectPIN;
-    case kPINLocked:
+    case RequestError::kPINLocked:
       return EnclaveRequestResult::kPINLocked;
-    case kPINOutdated:
+    case RequestError::kPINOutdated:
       return EnclaveRequestResult::kPINOutdated;
-    case kDuplicate:
+    case RequestError::kDuplicate:
       return EnclaveRequestResult::kDuplicate;
-    case kRecoveryKeyStoreDowngrade:
+    case RequestError::kRecoveryKeyStoreDowngrade:
       return EnclaveRequestResult::kRecoveryKeyStoreDowngrade;
-    default:
+    case RequestError::kCohortNotYetDeprecated:
+      return EnclaveRequestResult::kCohortNotYetDeprecated;
+    case RequestError::kUnknown:
       return EnclaveRequestResult::kOtherError;
   }
 }
 
 GetAssertionStatus EnclaveErrorToGetAssertionStatus(int enclave_code) {
-  switch (enclave_code) {
-    case kIncorrectPIN:
-    case kPINLocked:
+  switch (GetRequestError(enclave_code)) {
+    case RequestError::kIncorrectPIN:
+    case RequestError::kPINLocked:
       return GetAssertionStatus::kUserConsentDenied;
-    case kNoSupportedAlgorithm:
+    case RequestError::kNoSupportedAlgorithm:
       // Not valid for GetAssertion.
-    case kPINOutdated:
+    case RequestError::kPINOutdated:
       // This is a temporary error. Allow the request to fail.
-    case kDuplicate:
-    case kRecoveryKeyStoreDowngrade:
+    case RequestError::kDuplicate:
+    case RequestError::kRecoveryKeyStoreDowngrade:
+    case RequestError::kCohortNotYetDeprecated:
       // These are not valid errors for a passkey request.
-    default:
+    case RequestError::kUnknown:
       return GetAssertionStatus::kEnclaveError;
   }
 }
 
 MakeCredentialStatus EnclaveErrorToMakeCredentialStatus(int enclave_code) {
-  switch (enclave_code) {
-    case kNoSupportedAlgorithm:
+  switch (GetRequestError(enclave_code)) {
+    case RequestError::kNoSupportedAlgorithm:
       return MakeCredentialStatus::kNoCommonAlgorithms;
-    case kIncorrectPIN:
-    case kPINLocked:
+    case RequestError::kIncorrectPIN:
+    case RequestError::kPINLocked:
       return MakeCredentialStatus::kUserConsentDenied;
-    case kPINOutdated:
+    case RequestError::kPINOutdated:
       // This is a temporary error. Allow the request to fail.
-    case kDuplicate:
-    case kRecoveryKeyStoreDowngrade:
+    case RequestError::kDuplicate:
+    case RequestError::kRecoveryKeyStoreDowngrade:
+    case RequestError::kCohortNotYetDeprecated:
       // These are not valid errors for a passkey request, deliberate
       // fallthrough.
-    default:
+    case RequestError::kUnknown:
       return MakeCredentialStatus::kEnclaveError;
   }
 }
 
 }  // namespace
+
+BASE_FEATURE(kEnclaveTrustedVaultCohort,
+             "WebAuthenticationEnclaveTrustedVaultCohort",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kCertXmlUrlFeature{
+    &kEnclaveTrustedVaultCohort,
+    "cert_xml",
+    device::enclave::kRecoveryKeyStoreCertFileURL,
+};
+
+const base::FeatureParam<std::string> kSigXmlUrlFeature{
+    &kEnclaveTrustedVaultCohort,
+    "sig_xml",
+    device::enclave::kRecoveryKeyStoreSigFileURL,
+};
 
 EnclaveAuthenticator::PendingGetAssertionRequest::PendingGetAssertionRequest(
     CtapGetAssertionRequest in_request,
@@ -215,14 +217,6 @@ void EnclaveAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
   pending_make_credential_request_ =
       std::make_unique<PendingMakeCredentialRequest>(
           std::move(request), std::move(options), std::move(callback));
-
-  if (!SupportsLargeBlobGPM()) {
-    if (auto* root =
-            pending_make_credential_request_->options.json->value.get();
-        auto* exts = root->GetDict().FindDict(kExtensionsKey)) {
-      exts->Remove(kLargeBlobKey);
-    }
-  }
 
   if (ui_request_->uv_key_creation_callback) {
     includes_new_uv_key_ = true;
@@ -283,7 +277,7 @@ void EnclaveAuthenticator::GetAssertion(CtapGetAssertionRequest request,
   pending_get_assertion_request_ = std::make_unique<PendingGetAssertionRequest>(
       request, options, std::move(callback));
   // Large blob write preprocessing (compress then encode).
-  if (SupportsLargeBlobGPM() && options.large_blob_write.has_value()) {
+  if (options.large_blob_write.has_value()) {
     std::vector<uint8_t> raw_blob = *options.large_blob_write;
     const size_t original_size = raw_blob.size();
 
@@ -489,7 +483,7 @@ void EnclaveAuthenticator::ProcessGetAssertionResponse(
   }
 
   // Large blob 'read' path.
-  if (SupportsLargeBlobGPM() && assertion.large_blob_extension) {
+  if (assertion.large_blob_extension) {
     auto compressed_data = assertion.large_blob_extension->compressed_data;
     auto original_size = assertion.large_blob_extension->original_size;
     data_decoder()->Inflate(
@@ -625,10 +619,12 @@ void EnclaveAuthenticator::ProcessErrorResponse(const ErrorResponse& error) {
   CHECK(error.error_code.has_value());
   int code = *error.error_code;
   if (ui_request_->pin_result_callback &&
-      (code == kIncorrectPIN || code == kPINLocked)) {
+      (code == static_cast<int>(RequestError::kIncorrectPIN) ||
+       code == static_cast<int>(RequestError::kPINLocked))) {
     std::move(ui_request_->pin_result_callback)
-        .Run(code == kIncorrectPIN ? PINValidationResult::kIncorrect
-                                   : PINValidationResult::kLocked);
+        .Run(code == static_cast<int>(RequestError::kIncorrectPIN)
+                 ? PINValidationResult::kIncorrect
+                 : PINValidationResult::kLocked);
   }
   FIDO_LOG(DEBUG) << base::StrCat(
       {"Received an error response from the enclave: ",

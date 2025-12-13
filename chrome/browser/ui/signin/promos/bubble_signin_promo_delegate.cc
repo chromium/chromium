@@ -17,6 +17,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -33,6 +34,8 @@ syncer::DataType GetDataTypeFromAccessPoint(
       return syncer::CONTACT_INFO;
     case signin_metrics::AccessPoint::kBookmarkBubble:
       return syncer::BOOKMARKS;
+    case signin_metrics::AccessPoint::kExtensionInstallBubble:
+      return syncer::EXTENSIONS;
     default:
       NOTREACHED();
   }
@@ -72,7 +75,8 @@ void BubbleSignInPromoDelegate::OnSignIn(const AccountInfo& account) {
   base::UmaHistogramEnumeration("Signin.SignInPromo.Accepted", access_point_);
   signin_ui_util::SignInFromSingleAccountPromo(profile, account, access_point_);
 
-  if (access_point_ == signin_metrics::AccessPoint::kExtensionInstallBubble) {
+  if (!base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp) &&
+      access_point_ == signin_metrics::AccessPoint::kExtensionInstallBubble) {
     // Make sure the `data_id_` is of the correct type.
     CHECK(std::holds_alternative<extensions::ExtensionId>(data_id_));
     const extensions::ExtensionId extension_id =
@@ -124,12 +128,13 @@ void BubbleSignInPromoDelegate::OnSignIn(const AccountInfo& account) {
   // pending state and will automatically be uploaded after the user completes
   // the sign in, so there is no need to wait for a sign in event with the
   // correct access point.
-  if (!signin::IsAutofillSigninPromo(access_point_) &&
+  if (access_point_ != signin_metrics::AccessPoint::kPasswordBubble &&
+      access_point_ != signin_metrics::AccessPoint::kAddressBubble &&
       signed_in_state == signin_util::SignedInState::kSignInPending) {
     return;
   }
 
   SigninPromoTabHelper::GetForWebContents(*sign_in_tab_contents)
-      ->InitializeDataMoveAfterSignIn(std::move(maybe_move_data),
+      ->InitializeCallbackAfterSignIn(std::move(maybe_move_data),
                                       access_point_);
 }

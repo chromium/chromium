@@ -23,6 +23,7 @@
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/cert/internal/trust_store_chrome.h"
+#include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -43,7 +44,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/server_certificate_database/server_certificate_database.h"  // nogncheck
@@ -239,12 +239,6 @@ IN_PROC_BROWSER_TEST_F(CertVerifierTestCrsConstraintsSwitchTest,
 
 class CertVerifierUserSettingsTest : public PlatformBrowserTest {
  public:
-  CertVerifierUserSettingsTest() {
-    feature_list_.InitWithFeatures({features::kEnableCertManagementUIV2,
-                                    features::kEnableCertManagementUIV2Write},
-                                   {});
-  }
-
   testing::AssertionResult AddCertificateToDatabaseAndWaitForVerifierUpdate(
       net::ServerCertificateDatabase::CertInformation cert_info) {
     return AddCertificateToProfileDatabaseAndWaitForVerifierUpdate(
@@ -274,9 +268,6 @@ class CertVerifierUserSettingsTest : public PlatformBrowserTest {
     }
     return testing::AssertionSuccess();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(CertVerifierUserSettingsTest, TestUserSettingsUsed) {
@@ -790,8 +781,6 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest,
                                  NSSMigrationResultPref::kNotMigrated));
   histogram_tester_.ExpectTotalCount("Net.CertVerifier.NSSCertMigrationResult",
                                      0);
-  histogram_tester_.ExpectTotalCount(
-      "Net.CertVerifier.NSSCertMigrationQueuedRequestsWhenFinished", 0);
 }
 
 // Tests that NSS cert migration is done on initialization and that the
@@ -830,12 +819,6 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest, PRE_TestNSSCertMigration) {
                                       net::ServerCertificateDatabaseService::
                                           NSSMigrationResultHistogram::kSuccess,
                                       1);
-  // The Net.CertVerifier.NSSCertMigrationQueuedRequestsWhenFinished histogram
-  // should have been recorded too, but it may not be possible to predict what
-  // the buckets will be, so only verify that it was recorded at all.
-  EXPECT_GT(histogram_tester_.GetTotalSum(
-                "Net.CertVerifier.NSSCertMigrationQueuedRequestsWhenFinished"),
-            0);
 
   // Set root cert in NSS to distrusted. This ensures that when the next phase
   // of the test runs it's actually the trust from the server cert db causing
@@ -883,8 +866,6 @@ IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest, TestNSSCertMigration) {
 
   histogram_tester_.ExpectTotalCount("Net.CertVerifier.NSSCertMigrationResult",
                                      0);
-  histogram_tester_.ExpectTotalCount(
-      "Net.CertVerifier.NSSCertMigrationQueuedRequestsWhenFinished", 0);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

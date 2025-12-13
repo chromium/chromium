@@ -43,14 +43,14 @@ class LanguageDetector final : public ScriptWrappable {
 
   ScriptPromise<IDLSequence<LanguageDetectionResult>> detect(
       ScriptState* script_state,
-      const WTF::String& input,
+      const String& input,
       LanguageDetectorDetectOptions* options,
       ExceptionState& exception_state);
   void destroy(ScriptState* script_state);
 
   ScriptPromise<IDLDouble> measureInputUsage(
       ScriptState* script_state,
-      const WTF::String& input,
+      const String& input,
       LanguageDetectorDetectOptions* options,
       ExceptionState& exception_state);
 
@@ -62,10 +62,10 @@ class LanguageDetector final : public ScriptWrappable {
 
   // TODO(crbug.com/349927087): Make the functions below free functions.
   static HeapVector<Member<LanguageDetectionResult>> ConvertResult(
-      WTF::Vector<LanguageDetectionModel::LanguagePrediction> predictions);
+      Vector<LanguageDetectionModel::LanguagePrediction> predictions);
   static void OnDetectComplete(
       ResolverWithAbortSignal<IDLSequence<LanguageDetectionResult>>* resolver,
-      base::expected<WTF::Vector<LanguageDetectionModel::LanguagePrediction>,
+      base::expected<Vector<LanguageDetectionModel::LanguagePrediction>,
                      DetectLanguageError> result);
 
  private:

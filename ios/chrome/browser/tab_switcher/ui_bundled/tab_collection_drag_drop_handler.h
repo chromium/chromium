@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@class TabGroupInfo;
 @class TabGroupItem;
 @class TabSwitcherItem;
 
@@ -63,6 +64,9 @@
 // Returns the drag items list of selected element in selection mode. Selection
 // mode is only supported for incognito and regular grids.
 - (NSArray<UIDragItem*>*)allSelectedDragItems;
+
+// YES if `group` is shared.
+- (BOOL)isGroupShared:(TabGroupInfo*)group;
 
 @end
 

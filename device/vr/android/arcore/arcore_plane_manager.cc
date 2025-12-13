@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/heap_array.h"
 #include "device/vr/android/arcore/vr_service_type_converters.h"
+#include "device/vr/public/mojom/plane_id.h"
 
 namespace device {
 
@@ -28,19 +29,19 @@ device::Pose GetPoseFromArPose(const ArSession* session, const ArPose* pose) {
                       orientation_and_position.first);
 }
 
-device::internal::ScopedArCoreObject<ArPose*> GetArPoseFromMojomPose(
+device::internal::ScopedArCoreObject<ArPose*> GetArPoseFromDevicePose(
     const ArSession* session,
-    const device::mojom::Pose& pose) {
+    const device::Pose& pose) {
   float pose_raw[7] = {};  // 7 = orientation(4) + position(3).
 
-  pose_raw[0] = pose.orientation.x();
-  pose_raw[1] = pose.orientation.y();
-  pose_raw[2] = pose.orientation.z();
-  pose_raw[3] = pose.orientation.w();
+  pose_raw[0] = pose.orientation().x();
+  pose_raw[1] = pose.orientation().y();
+  pose_raw[2] = pose.orientation().z();
+  pose_raw[3] = pose.orientation().w();
 
-  pose_raw[4] = pose.position.x();
-  pose_raw[5] = pose.position.y();
-  pose_raw[6] = pose.position.z();
+  pose_raw[4] = pose.position().x();
+  pose_raw[5] = pose.position().y();
+  pose_raw[6] = pose.position().z();
 
   device::internal::ScopedArCoreObject<ArPose*> result;
 
@@ -147,13 +148,13 @@ void ArCorePlaneManager::Update(ArFrame* ar_frame) {
       [this, &updated_plane_ids](
           internal::ScopedArCoreObject<ArTrackable*> trackable,
           ArPlane* ar_plane, ArTrackingState tracking_state) {
-        auto result = plane_address_to_id_.CreateOrGetId(ar_plane);
-
-        DVLOG(3) << "Previously detected plane found, plane_id=" << result.id
-                 << ", created?=" << result.created
+        bool created;
+        PlaneId plane_id = GetOrCreatePlaneId(ar_plane, &created);
+        DVLOG(3) << "Previously detected plane found, plane_id=" << plane_id
+                 << ", created?=" << created
                  << ", tracking_state=" << tracking_state;
 
-        updated_plane_ids.insert(result.id);
+        updated_plane_ids.insert(plane_id);
       });
 
   DVLOG(3) << __func__
@@ -166,31 +167,30 @@ void ArCorePlaneManager::Update(ArFrame* ar_frame) {
 
   // Collect the objects of all currently tracked planes.
   // |plane_address_to_id_| should *not* grow.
-  std::map<PlaneId, PlaneInfo> new_plane_id_to_plane_info;
+  absl::flat_hash_map<PlaneId, PlaneInfo> new_plane_id_to_plane_info;
   ForEachArCorePlane(
       arcore_planes_.get(),
       [this, &new_plane_id_to_plane_info, &updated_plane_ids](
           internal::ScopedArCoreObject<ArTrackable*> trackable,
           ArPlane* ar_plane, ArTrackingState tracking_state) {
-        auto result = plane_address_to_id_.CreateOrGetId(ar_plane);
-
-        DCHECK(!result.created)
+        bool created;
+        PlaneId plane_id = GetOrCreatePlaneId(ar_plane, &created);
+        DCHECK(!created)
             << "Newly detected planes should already be handled - new plane_id="
-            << result.id;
+            << plane_id;
 
         // Inspect the tracking state of this plane in the previous frame. If it
         // changed, mark the plane as updated.
-        if (base::Contains(plane_id_to_plane_info_, result.id) &&
-            plane_id_to_plane_info_.at(result.id).tracking_state !=
+        if (base::Contains(plane_id_to_plane_info_, plane_id) &&
+            plane_id_to_plane_info_.at(plane_id).tracking_state !=
                 tracking_state) {
-          updated_plane_ids.insert(result.id);
+          updated_plane_ids.insert(plane_id);
         }
 
         PlaneInfo new_plane_info =
             PlaneInfo(std::move(trackable), tracking_state);
 
-        new_plane_id_to_plane_info.emplace(result.id,
-                                           std::move(new_plane_info));
+        new_plane_id_to_plane_info.emplace(plane_id, std::move(new_plane_info));
       });
 
   DVLOG(3) << __func__ << ": new_plane_id_to_plane_info.size()="
@@ -199,11 +199,11 @@ void ArCorePlaneManager::Update(ArFrame* ar_frame) {
   // Shrink |plane_address_to_id_|, removing all planes that are no longer
   // tracked or were subsumed - if they do not show up in
   // |new_plane_id_to_plane_info| map, they are no longer tracked.
-  plane_address_to_id_.EraseIf(
-      [&new_plane_id_to_plane_info](const auto& plane_address_and_id) {
-        return !base::Contains(new_plane_id_to_plane_info,
-                               plane_address_and_id.second);
-      });
+  absl::erase_if(plane_address_to_id_, [&new_plane_id_to_plane_info](
+                                           const auto& plane_address_and_id) {
+    return !base::Contains(new_plane_id_to_plane_info,
+                           plane_address_and_id.second);
+  });
 
   plane_id_to_plane_info_.swap(new_plane_id_to_plane_info);
   updated_plane_ids_.swap(updated_plane_ids);
@@ -215,10 +215,10 @@ mojom::XRPlaneDetectionDataPtr ArCorePlaneManager::GetDetectedPlanesData()
            << plane_id_to_plane_info_.size()
            << ", updated_plane_ids_.size()=" << updated_plane_ids_.size();
 
-  std::vector<uint64_t> all_plane_ids;
+  std::vector<PlaneId> all_plane_ids;
   all_plane_ids.reserve(plane_id_to_plane_info_.size());
   for (const auto& plane_id_and_object : plane_id_to_plane_info_) {
-    all_plane_ids.push_back(plane_id_and_object.first.GetUnsafeValue());
+    all_plane_ids.push_back(plane_id_and_object.first);
   }
 
   std::vector<mojom::XRPlaneDataPtr> updated_planes;
@@ -260,15 +260,15 @@ mojom::XRPlaneDetectionDataPtr ArCorePlaneManager::GetDetectedPlanesData()
                << ", orientation=" << pose.orientation().ToString();
 
       updated_planes.push_back(mojom::XRPlaneData::New(
-          plane_id.GetUnsafeValue(),
+          plane_id,
           mojo::ConvertTo<device::mojom::XRPlaneOrientation>(plane_type), pose,
-          std::move(vertices)));
+          std::nullopt, std::move(vertices)));
     } else {
       DVLOG(3) << __func__ << ": plane_id: " << plane_id.GetUnsafeValue()
                << ", position=untracked, orientation=untracked";
 
       updated_planes.push_back(mojom::XRPlaneData::New(
-          plane_id.GetUnsafeValue(), device::mojom::XRPlaneOrientation::UNKNOWN,
+          plane_id, device::mojom::XRPlaneOrientation::UNKNOWN, std::nullopt,
           std::nullopt, std::vector<mojom::XRPlanePointDataPtr>{}));
     }
   }
@@ -282,8 +282,28 @@ mojom::XRPlaneDetectionDataPtr ArCorePlaneManager::GetDetectedPlanesData()
 }
 
 std::optional<PlaneId> ArCorePlaneManager::GetPlaneId(
-    void* plane_address) const {
-  return plane_address_to_id_.GetId(plane_address);
+    ArPlane* plane_address) const {
+  auto it = plane_address_to_id_.find(plane_address);
+  if (it == plane_address_to_id_.end()) {
+    return std::nullopt;
+  }
+
+  return it->second;
+}
+
+PlaneId ArCorePlaneManager::GetOrCreatePlaneId(ArPlane* plane_address,
+                                               bool* created) {
+  CHECK(created);
+  *created = false;
+  auto plane_id = GetPlaneId(plane_address).value_or(kInvalidPlaneId);
+  if (plane_id != kInvalidPlaneId) {
+    return plane_id;
+  }
+
+  *created = true;
+  plane_id = plane_id_generator_.GenerateNextId();
+  plane_address_to_id_.emplace(plane_address, plane_id);
+  return plane_id;
 }
 
 bool ArCorePlaneManager::PlaneExists(PlaneId id) const {
@@ -310,13 +330,13 @@ std::optional<gfx::Transform> ArCorePlaneManager::GetMojoFromPlane(
 device::internal::ScopedArCoreObject<ArAnchor*>
 ArCorePlaneManager::CreateAnchor(base::PassKey<ArCoreAnchorManager> pass_key,
                                  PlaneId id,
-                                 const device::mojom::Pose& pose) const {
+                                 const device::Pose& pose) const {
   auto it = plane_id_to_plane_info_.find(id);
   if (it == plane_id_to_plane_info_.end()) {
     return {};
   }
 
-  auto ar_pose = GetArPoseFromMojomPose(arcore_session_, pose);
+  auto ar_pose = GetArPoseFromDevicePose(arcore_session_, pose);
 
   device::internal::ScopedArCoreObject<ArAnchor*> ar_anchor;
   ArStatus status = ArTrackable_acquireNewAnchor(

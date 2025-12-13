@@ -57,8 +57,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_tablet_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_color_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_wp_color_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_linux_dmabuf.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_constraints.h"
 #include "ui/ozone/platform/wayland/host/wayland_zwp_pointer_gestures.h"
@@ -83,7 +82,7 @@ namespace {
 constexpr uint32_t kMaxCompositorVersion = 4;
 constexpr uint32_t kMaxKeyboardExtensionVersion = 2;
 constexpr uint32_t kMaxXdgShellVersion = 6;
-constexpr uint32_t kMaxWpPresentationVersion = 1;
+constexpr uint32_t kMaxWpPresentationVersion = 2;
 constexpr uint32_t kMaxWpViewporterVersion = 1;
 constexpr uint32_t kMaxTextInputManagerV1Version = 1;
 constexpr uint32_t kMaxTextInputManagerV3Version = 1;
@@ -138,7 +137,11 @@ bool MinSupportedKernelForLinuxDrmSyncobj() {
 
 WaylandConnection::WaylandConnection() = default;
 
-WaylandConnection::~WaylandConnection() = default;
+WaylandConnection::~WaylandConnection() {
+  if (wayland_output_manager() && wayland_output_manager()->wayland_screen()) {
+    wayland_output_manager()->wayland_screen()->ResetConnection();
+  }
+}
 
 bool WaylandConnection::Initialize(bool use_threaded_polling) {
   // Register factories for classes that implement wl::GlobalObjectRegistrar<T>.
@@ -157,6 +160,8 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
                               &SinglePixelBuffer::Instantiate);
   RegisterGlobalObjectFactory(ToplevelIconManager::kInterfaceName,
                               &ToplevelIconManager::Instantiate);
+  RegisterGlobalObjectFactory(WaylandCursorShape::kInterfaceName,
+                              &WaylandCursorShape::Instantiate);
   RegisterGlobalObjectFactory(WaylandDataDeviceManager::kInterfaceName,
                               &WaylandDataDeviceManager::Instantiate);
   RegisterGlobalObjectFactory(WaylandDrm::kInterfaceName,
@@ -169,8 +174,8 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
                               &WaylandShm::Instantiate);
   RegisterGlobalObjectFactory(WaylandTabletManager::kInterfaceName,
                               &WaylandTabletManager::Instantiate);
-  RegisterGlobalObjectFactory(WaylandCursorShape::kInterfaceName,
-                              &WaylandCursorShape::Instantiate);
+  RegisterGlobalObjectFactory(WaylandWpColorManager::kInterfaceName,
+                              &WaylandWpColorManager::Instantiate);
   RegisterGlobalObjectFactory(WaylandZwpLinuxDmabuf::kInterfaceName,
                               &WaylandZwpLinuxDmabuf::Instantiate);
   RegisterGlobalObjectFactory(WaylandZwpPointerConstraints::kInterfaceName,
@@ -185,12 +190,12 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
                               &XdgForeignWrapper::Instantiate);
   RegisterGlobalObjectFactory(XdgForeignWrapper::kInterfaceNameV2,
                               &XdgForeignWrapper::Instantiate);
+  RegisterGlobalObjectFactory(XdgSessionManager::kInterfaceName,
+                              &XdgSessionManager::Instantiate);
   RegisterGlobalObjectFactory(ZwpIdleInhibitManager::kInterfaceName,
                               &ZwpIdleInhibitManager::Instantiate);
   RegisterGlobalObjectFactory(ZwpPrimarySelectionDeviceManager::kInterfaceName,
                               &ZwpPrimarySelectionDeviceManager::Instantiate);
-  RegisterGlobalObjectFactory(XdgSessionManager::kInterfaceName,
-                              &XdgSessionManager::Instantiate);
 
   display_.reset(wl_display_connect(nullptr));
   if (!display_) {
@@ -303,6 +308,11 @@ void WaylandConnection::SetCursorBitmap(const std::vector<SkBitmap>& bitmaps,
   if (!cursor_)
     return;
   cursor_->UpdateBitmap(bitmaps, hotspot_in_dips, buffer_scale);
+}
+
+void WaylandConnection::ResetCursor() {
+  cursor_.reset();
+  cursor_position_.reset();
 }
 
 bool WaylandConnection::IsDragInProgress() const {
@@ -426,8 +436,7 @@ void WaylandConnection::UpdateCursor() {
       zwp_pointer_gestures_->Init();
     }
   } else {
-    cursor_.reset();
-    cursor_position_.reset();
+    ResetCursor();
   }
 }
 
@@ -524,8 +533,7 @@ bool WaylandConnection::UsePerSurfaceScaling() const {
 }
 
 bool WaylandConnection::IsUiScaleEnabled() const {
-  return base::FeatureList::IsEnabled(features::kWaylandUiScale) &&
-         UsePerSurfaceScaling();
+  return UsePerSurfaceScaling();
 }
 
 bool WaylandConnection::SupportsSessionManagement() const {

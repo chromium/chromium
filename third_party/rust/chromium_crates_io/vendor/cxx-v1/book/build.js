@@ -116,7 +116,7 @@ while (dirs.length) {
       'build/binding/index.html',
     ];
     if (!foundScript && !pathsWithoutScript.includes(path)) {
-      throw new Error('theme script not found');
+      throw new Error(`theme script not found in ${path}`);
     }
 
     const out = $.html();

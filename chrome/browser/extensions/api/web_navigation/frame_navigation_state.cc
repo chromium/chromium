@@ -9,7 +9,10 @@
 #include "base/notreached.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/render_frame_host.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -37,7 +40,7 @@ bool FrameNavigationState::IsValidUrl(const GURL& url) {
       url::kFileSystemScheme,
   });
 
-  if (kValidSchemes.contains(url.scheme_piece())) {
+  if (kValidSchemes.contains(url.scheme())) {
     return true;
   }
 
@@ -46,7 +49,7 @@ bool FrameNavigationState::IsValidUrl(const GURL& url) {
     return true;
   }
 
-  return allow_extension_scheme_ && url.scheme() == kExtensionScheme;
+  return allow_extension_scheme_ && url.GetScheme() == kExtensionScheme;
 }
 
 bool FrameNavigationState::CanSendEvents() const {

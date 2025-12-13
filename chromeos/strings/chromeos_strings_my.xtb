@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">လိမ္မော်သီး</translation>
 <translation id="1275718070701477396">ရွေးထား</translation>
 <translation id="1290331692326790741">လိုင်းအား မကောင်းပါ</translation>
+<translation id="1292474106138697109">‘စာသင်ခန်းသုံးတူးလ်’ ပြသမှု</translation>
 <translation id="1300115153046603471">APN သည် အမျိုးအစားမူရင်းဖြစ်ပြီး <ph name="ATTACH" /> ဖြစ်သည်။</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">ပြောင်းလဲခြင်း</translation>
@@ -104,7 +105,7 @@
 <translation id="1397738625398125236">ကွန်ရက်ဂိတ်ဝကို ဆက်သွယ်နိုင်ပါသည်</translation>
 <translation id="1398634363027580500">HTTPS တုံ့ပြန်ချိန် အလွန်မြင့်သည်</translation>
 <translation id="1406389211945506521">အတွေ့အကြုံကို မျှဝေသည့်အတွက် ကျေးဇူးတင်ပါသည်။ သင့်အကြံပြုချက်သည် ပိုမို၍ တိကျမှန်ကန်ပြီး အကျိုးပြုသော အကြောင်းအရာ ပြုလုပ်နိုင်ရန် ကူညီပေးသည်။</translation>
-<translation id="1407069428457324124">အမှောင်နောက်ခံ</translation>
+<translation id="1407069428457324124">အမှောင်အပြင်အဆင်</translation>
 <translation id="1413240736185167732">မအောင်မြင်ပါ - ဆန်ခါ ရပ်သွားသည်</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">သစ်ခွပန်း</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ပုံ</translation>
 <translation id="4300272766492248925">အက်ပ်ကို ဖွင့်ရန်</translation>
 <translation id="430786093962686457">ချည်ဖွန်ထည်</translation>
+<translation id="4309762678330556039">စာသားမှတ်တမ်းများကို အလိုအလျောက် ပြုလုပ်ပြီး အသံ ရှာဖွေနိုင်သည်။ အင်တာနက်ချိတ်မထားချိန်၌ပင် အသံသွင်းချက်များကို ပြုလုပ်နိုင်သည်။</translation>
 <translation id="4310735698903592804">Google AI က ပံ့ပိုးထားသော မကြာသေးမီက နောက်ခံများ</translation>
 <translation id="4320904097188876154">နီယွန်ပန်းရောင်</translation>
 <translation id="432961742358282111">အဓိပ္ပာယ်ဖွင့်ဆိုချက်၊ ဘာသာပြန်ဆိုချက် (သို့) ယူနစ်ပြောင်းလဲချက်များ ရရှိရန် ညာဘက်ခလုတ်နှိပ်ပါ (သို့) နှိပ်ထားပါ။ ဤဝန်ဆောင်မှုကို စီမံရန် ဘယ် (သို့) ညာညွှန်မြားခလုတ်များ အသုံးပြုပါ။</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">ပိုမို ရွေးချယ်စရာများ</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> ခလုတ် စမ်းသပ်ထားသည်</translation>
 <translation id="5606865426897221650">တဘ်</translation>
+<translation id="5612205513582918357">‘စာသင်ခန်းသုံးတူးလ်’ သည် သင့်စခရင်ကို <ph name="RECEIVER_NAME" /> နှင့် မျှဝေနေသည်</translation>
 <translation id="5613201299517339763">အကောင့်ထွက်လိုက်သည်</translation>
 <translation id="5620281292257375798">ရုံးတွင်းသာ</translation>
 <translation id="5628106863521633649">ရနိုင်သော ဘာသာစကားများ</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">တိမ် လွင့်မျောမှု</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">စကင်ဖတ်စက်များ မရနိုင်ပါ</translation>
-<translation id="6231648282154119906">သင်သတ်မှတ်ထားသော အဆင့်မြင့်ကာကွယ်မှု၏ အစိတ်အပိုင်းအဖြစ် သံသယဖြစ်ဖွယ်ဖိုင်များကို ‘Google လုံခြုံစွာ ကြည့်ရှုခြင်း’ က အလိုအလျောက် စကင်ဖတ်ပါမည်</translation>
 <translation id="6232017090690406397">ဘက်ထရီ</translation>
 <translation id="6234024205316847054">အကြမ်းဖော်ပြချက် ပြပါ</translation>
 <translation id="6243280677745499710">လောလောဆယ် သတ်မှတ်ထားသည်</translation>

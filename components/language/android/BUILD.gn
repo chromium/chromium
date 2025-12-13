@@ -15,7 +15,7 @@ source_set("language_bridge") {
   deps = [
     ":jni_headers",
     "//base",
-    "//components/language/content/browser:browser",
+    "//components/language/content/browser",
   ]
 }
 
@@ -65,6 +65,7 @@ android_library("javatests") {
     "//base:base_java_test_support",
     "//chrome/browser/flags:java",
     "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_transit",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",

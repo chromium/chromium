@@ -163,6 +163,14 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_GlobalCursorState) {
   aura::client::CursorClient* cursor_client_b = aura::client::GetCursorClient(
       widget_b.GetNativeView()->GetHost()->window());
 
+#if BUILDFLAG(IS_WIN)
+  // The cursor might be considered invisible after initialization on some
+  // machines (e.g. mouse-less) as |CursorClient|s read the cursor visibility
+  // from OS info. So force the cursor to be visible here.
+  cursor_client_a->UpdateSystemCursorVisibilityForTest(true);
+  cursor_client_b->UpdateSystemCursorVisibilityForTest(true);
+#endif
+
   // Verify the cursor can be locked using one client and unlocked using
   // another.
   EXPECT_FALSE(cursor_client_a->IsCursorLocked());
@@ -690,8 +698,7 @@ TEST_F(DesktopNativeWidgetAuraTest, TopLevelOwnedPopupRepositionTest) {
 
   gfx::Rect new_pos(10, 10, 400, 400);
   popup_window.owned_window()->SetBoundsInScreen(
-      new_pos,
-      display::Screen::GetScreen()->GetDisplayNearestPoint(gfx::Point()));
+      new_pos, display::Screen::Get()->GetDisplayNearestPoint(gfx::Point()));
 
   EXPECT_EQ(new_pos,
             popup_window.top_level_widget()->GetWindowBoundsInScreen());

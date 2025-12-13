@@ -4,6 +4,8 @@
 
 #include "ash/webui/annotator/untrusted_annotator_page_handler_impl.h"
 
+#include <memory>
+
 #include "ash/public/cpp/annotator/annotator_tool.h"
 #include "ash/public/cpp/test/mock_annotator_controller.h"
 #include "ash/webui/annotator/mojom/untrusted_annotator.mojom.h"
@@ -32,6 +34,7 @@ class UntrustedAnnotatorPageHandlerImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    client_ = std::make_unique<MockAnnotatorClient>();
     annotator_ = std::make_unique<MockUntrustedAnnotatorPage>();
     handler_ = std::make_unique<UntrustedAnnotatorPageHandlerImpl>(
         annotator().remote().BindNewPipeAndPassReceiver(),
@@ -51,13 +54,13 @@ class UntrustedAnnotatorPageHandlerImplTest : public testing::Test {
     return task_environment_;
   }
 
- private:
+ protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   std::unique_ptr<MockUntrustedAnnotatorPage> annotator_;
   std::unique_ptr<UntrustedAnnotatorPageHandlerImpl> handler_;
   MockAnnotatorController controller_;
-  MockAnnotatorClient client_;
+  std::unique_ptr<MockAnnotatorClient> client_;
 };
 
 TEST_F(UntrustedAnnotatorPageHandlerImplTest, SetTool) {
@@ -66,11 +69,11 @@ TEST_F(UntrustedAnnotatorPageHandlerImplTest, SetTool) {
   expected_tool.size = 5;
   expected_tool.type = AnnotatorToolType::kPen;
   EXPECT_CALL(annotator(), SetTool)
-      .WillOnce(testing::Invoke([&](annotator::mojom::AnnotatorToolPtr tool) {
+      .WillOnce([&](annotator::mojom::AnnotatorToolPtr tool) {
         EXPECT_EQ(tool->size, expected_tool.size);
         EXPECT_EQ(tool->tool, expected_tool.GetToolString());
         EXPECT_EQ(tool->color, expected_tool.GetColorHexString());
-      }));
+      });
 
   handler().SetTool(expected_tool);
   annotator().FlushReceiverForTesting();
@@ -113,6 +116,13 @@ TEST_F(UntrustedAnnotatorPageHandlerImplTest, CanvasInitialized) {
   EXPECT_CALL(controller(), OnCanvasInitialized(false));
   annotator().SendCanvasInitialized(false);
   annotator().FlushRemoteForTesting();
+}
+
+TEST_F(UntrustedAnnotatorPageHandlerImplTest,
+       ResetAnnotatorClientBeforeUntrustedAnnotatorPageHandlerImpl) {
+  client_.reset();
+  annotator_.reset();
+  handler_.reset();
 }
 
 }  // namespace ash

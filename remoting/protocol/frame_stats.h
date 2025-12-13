@@ -12,7 +12,6 @@
 
 namespace remoting {
 
-class VideoPacket;
 class FrameStatsMessage;
 
 namespace protocol {
@@ -21,9 +20,6 @@ struct HostFrameStats {
   HostFrameStats();
   HostFrameStats(const HostFrameStats&);
   ~HostFrameStats();
-
-  // Extracts timing fields from the |packet|.
-  static HostFrameStats GetForVideoPacket(const VideoPacket& packet);
 
   // Converts FrameStatsMessage protobuf message to HostFrameStats.
   static HostFrameStats FromFrameStatsMessage(const FrameStatsMessage& message);

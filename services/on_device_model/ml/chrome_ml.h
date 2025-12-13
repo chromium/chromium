@@ -16,9 +16,10 @@
 
 namespace ml {
 
+class ChromeMLHolder;
+
 class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) ChromeML {
  public:
-  explicit ChromeML(const ChromeMLAPI* api);
   ~ChromeML();
   ChromeML(const ChromeML& other) = delete;
   ChromeML& operator=(const ChromeML& other) = delete;
@@ -27,16 +28,27 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) ChromeML {
 
   // Gets a lazily initialized global instance of ChromeML. May return null
   // if the underlying library could not be loaded.
-  static ChromeML* Get(
+  static ChromeML* Get();
+
+  // Creates a new instance of ChromeML. May return null if the underlying
+  // library could not be loaded.
+  static std::unique_ptr<ChromeML> CreateForTesting(
       const std::optional<std::string>& library_name = std::nullopt);
+
+  // Creates a new instance of ChromeML using the provided ChromeMLAPI.
+  static std::unique_ptr<ChromeML> CreateForTesting(const ChromeMLAPI* api);
 
   // Exposes the raw ChromeMLAPI functions defined by the library.
   const ChromeMLAPI& api() const { return *api_; }
 
  private:
+  explicit ChromeML(std::unique_ptr<ChromeMLHolder> holder);
+  explicit ChromeML(const ChromeMLAPI* api);
+
   static std::unique_ptr<ChromeML> Create(
       const std::optional<std::string>& library_name);
 
+  std::unique_ptr<ChromeMLHolder> holder_;
   raw_ptr<const ChromeMLAPI> api_;
 };
 

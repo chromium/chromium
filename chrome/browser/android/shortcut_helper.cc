@@ -26,7 +26,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ShortcutHelper_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {
@@ -156,3 +156,5 @@ void ShortcutHelper::SetForceWebApkUpdate(const std::string& id) {
   Java_ShortcutHelper_setForceWebApkUpdate(base::android::AttachCurrentThread(),
                                            id);
 }
+
+DEFINE_JNI(ShortcutHelper)

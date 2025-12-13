@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_UNTRUSTED_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_UNTRUSTED_PAGE_HANDLER_H_
 
+#include <deque>
 #include <memory>
 #include <string>
 
@@ -13,8 +14,11 @@
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/read_anything/read_anything_controller.h"
+#include "chrome/browser/ui/read_anything/read_anything_enums.h"
+#include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
+#include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_screenshotter.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "components/translate/core/browser/translate_client.h"
@@ -30,6 +34,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/session/session_observer.h"
+#include "chrome/browser/ui/webui/side_panel/read_anything/chrome_os_extension_wrapper.h"
+#include "chromeos/ash/components/language_packs/language_pack_manager.h"
+using ash::language_packs::PackResult;
 #else
 #include "extensions/browser/extension_registry_observer.h"
 #endif
@@ -39,6 +46,22 @@ class ScopedAccessibilityMode;
 }
 
 class ReadAnythingUntrustedPageHandler;
+
+// LINT.IfChange(EngineInstallationState)
+// Installation state of the TTS engine extension
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class EngineInstallationState {
+  kEnabled = 0,
+  kDisabled = 1,
+  kTerminated = 2,
+  kBlocked = 3,
+  kReady = 4,
+  kInstalling = 5,
+  kUnknown = 6,
+  kMaxValue = kUnknown,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingExtensionInstallationState)
 
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingWebContentsObserver
@@ -84,7 +107,7 @@ class ReadAnythingWebContentsObserver : public content::WebContentsObserver {
 // ReadAnythingUntrustedPageHandler
 //
 //  A handler of the Read Anything app
-//  (chrome/browser/resources/side_panel/read_anything/app.ts).
+//  (chrome/browser/resources/side_panel/read_anything/app/app.ts).
 //  This class is created and owned by ReadAnythingUntrustedUI and has the same
 //  lifetime as the Side Panel view.
 //
@@ -97,7 +120,7 @@ class ReadAnythingUntrustedPageHandler :
 #endif
     public ui::AXActionHandlerObserver,
     public read_anything::mojom::UntrustedPageHandler,
-    public ReadAnythingSidePanelController::Observer,
+    public ReadAnythingLifecycleObserver,
     public translate::TranslateDriver::LanguageDetectionObserver {
  public:
   ReadAnythingUntrustedPageHandler(
@@ -105,12 +128,21 @@ class ReadAnythingUntrustedPageHandler :
       mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandler>
           receiver,
       content::WebUI* web_ui,
-      bool use_screen_ai_service);
+      bool use_screen_ai_service
+#if BUILDFLAG(IS_CHROMEOS)
+      ,
+      std::unique_ptr<ChromeOsExtensionWrapper> extension_wrapper =
+          std::make_unique<ChromeOsExtensionWrapper>()
+#endif
+  );
   ReadAnythingUntrustedPageHandler(const ReadAnythingUntrustedPageHandler&) =
       delete;
   ReadAnythingUntrustedPageHandler& operator=(
       const ReadAnythingUntrustedPageHandler&) = delete;
   ~ReadAnythingUntrustedPageHandler() override;
+
+  static const int kMaxWordsDistilled = 25000;
+  static const int kWordsDistilledBuckets = 100;
 
   void AccessibilityEventReceived(const ui::AXUpdatesAndEvents& details);
   void AccessibilityLocationChangesReceived(
@@ -145,17 +177,26 @@ class ReadAnythingUntrustedPageHandler :
   void GetVoicePackInfo(const std::string& language) override;
   void InstallVoicePack(const std::string& language) override;
   void UninstallVoice(const std::string& language) override;
+  void OnDistillationStatus(read_anything::mojom::DistillationStatus status,
+                            int word_count) override;
 
   // TranslateDriver::LanguageDetectionObserver:
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
   void OnTranslateDriverDestroyed(translate::TranslateDriver* driver) override;
 
-  // ReadAnythingSidePanelController::Observer:
+  // ReadAnythingLifecycleObserver:
+  void OnDestroyed() override;
   void OnTabWillDetach() override;
+  void Activate(bool active,
+                std::optional<ReadAnythingOpenTrigger> open_trigger) override;
 
-  // ash::SessionObserver
+  // Logs the extension installation state. Intended to get more information
+  // on system voice usage.
+  void LogExtensionState() override;
+
 #if BUILDFLAG(IS_CHROMEOS)
+  // ash::SessionObserver
   void OnLockStateChanged(bool locked) override;
 #endif
 
@@ -181,6 +222,20 @@ class ReadAnythingUntrustedPageHandler :
   // which read anything needs to know about to access the new voices.
   void OnExtensionReady(content::BrowserContext* browser_context,
                         const extensions::Extension* extension) override;
+#else
+  enum LanguageRequestType {
+    kInstall,
+    kInfo,
+  };
+
+  struct LanguageRequest {
+    std::string language;
+    LanguageRequestType type;
+  };
+
+  void SendOrQueueLanguageRequest(LanguageRequest request);
+  void SendNextLanguageRequest();
+  void OnInstallPackResponse(const PackResult& pack_result);
 #endif
 
   // ui::AXActionHandlerObserver:
@@ -203,10 +258,6 @@ class ReadAnythingUntrustedPageHandler :
   void OnCollapseSelection() override;
   void OnScreenshotRequested() override;
 
-  // ReadAnythingSidePanelController::Observer:
-  void Activate(bool active) override;
-  void OnSidePanelControllerDestroyed() override;
-
   void SetDefaultLanguageCode(const std::string& code);
 
   // Sends the language code of the new page, or the default if a language can't
@@ -219,10 +270,6 @@ class ReadAnythingUntrustedPageHandler :
 
   // Logs the current visual settings values.
   void LogTextStyle();
-
-  // Adds this as an observer of the ReadAnythingSidePanelController tied to a
-  // tab.
-  void ObserveWebContentsSidePanelController(tabs::TabInterface* tab);
 
   void PerformActionInTargetTree(const ui::AXActionData& data);
 
@@ -241,9 +288,17 @@ class ReadAnythingUntrustedPageHandler :
       GetDependencyParserModelCallback callback,
       bool is_available);
 
+  // The Reading Mode controller for both immersive and side-panel reading mode,
+  // used when the immersive reading mode flag is enabled.
+  raw_ptr<ReadAnythingController> read_anything_controller_;
+  // Legacy side-panel reading mode controller, only to be used when the
+  // immersive reading mode flag is disabled.
+  // TODO: (crbug.com/449162079) Remove this when immersive reading mode flag is
+  // fully rolled out.
   raw_ptr<ReadAnythingSidePanelController> side_panel_controller_;
   const raw_ptr<Profile> profile_;
   const raw_ptr<content::WebUI> web_ui_;
+  raw_ptr<tabs::TabInterface> tab_;
 
   std::unique_ptr<ReadAnythingWebContentsObserver> main_observer_;
 
@@ -259,6 +314,8 @@ class ReadAnythingUntrustedPageHandler :
   const mojo::Receiver<read_anything::mojom::UntrustedPageHandler> receiver_;
   const mojo::Remote<read_anything::mojom::UntrustedPage> page_;
 
+  std::optional<ReadAnythingOpenTrigger> last_open_trigger_;
+
   // Whether the Read Anything feature is currently active. The feature is
   // active when it is currently shown in the Side Panel.
   bool active_ = true;
@@ -267,15 +324,22 @@ class ReadAnythingUntrustedPageHandler :
 
   // The current language being used in the app.
   std::string current_language_code_ = "en-US";
+  const bool use_screen_ai_service_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // The ChromeOS language pack manager can't handle more than one language
+  // request at a time. When we receive requests from the page, queue them up
+  // here and only request the next one when we receive the callback for the
+  // previous one.
+  std::deque<LanguageRequest> queued_language_requests_;
+  bool has_pending_language_request_ = false;
+  std::unique_ptr<ChromeOsExtensionWrapper> extension_wrapper_;
+#endif
 
   // Observes the AXActionHandlerRegistry for AXTree removals.
   base::ScopedObservation<ui::AXActionHandlerRegistry,
                           ui::AXActionHandlerObserver>
       ax_action_handler_observer_{this};
-
-  const bool use_screen_ai_service_;
-
-  bool extension_installed_ = false;
 
   // Whether the currently distilled page is recognized as a pdf. This allows
   // the page handler to trigger distillation if the page would now be

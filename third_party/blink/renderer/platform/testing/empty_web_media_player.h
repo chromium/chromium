@@ -72,7 +72,9 @@ class EmptyWebMediaPlayer : public WebMediaPlayer {
   void RecordAutoPictureInPictureInfo(
       const media::PictureInPictureEventsInfo::AutoPipInfo&
           auto_picture_in_picture_info) override {}
-  void Paint(cc::PaintCanvas*, const gfx::Rect&, cc::PaintFlags&) override {}
+  void Paint(cc::PaintCanvas*,
+             const gfx::Rect&,
+             const cc::PaintFlags&) override {}
   scoped_refptr<media::VideoFrame> GetCurrentFrameThenUpdate() override;
   std::optional<media::VideoFrame::ID> CurrentFrameId() const override;
   bool HasAvailableVideoFrame() const override { return false; }
@@ -82,7 +84,6 @@ class EmptyWebMediaPlayer : public WebMediaPlayer {
   }
   void RegisterFrameSinkHierarchy() override {}
   void UnregisterFrameSinkHierarchy() override {}
-  bool PassedTimingAllowOriginCheck() const override { return true; }
 
  private:
   base::WeakPtrFactory<EmptyWebMediaPlayer> weak_ptr_factory_{this};

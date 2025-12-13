@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_change_event.h"
+#include "third_party/blink/renderer/platform/bindings/bigint.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
@@ -75,23 +76,6 @@ SystemClipboard* ClipboardChangeEventController::GetSystemClipboard() const {
   return local_frame->GetSystemClipboard();
 }
 
-// Helper function to filter and only allow standard MIME types
-Vector<String> FilterForStandardMimeTypes(const Vector<String>& types) {
-  // Static list of allowed standard MIME types
-  // https://w3c.github.io/clipboard-apis/#mandatory-data-types-x
-  constexpr auto kAllowedMimeTypesSet =
-      base::MakeFixedFlatSet<std::string_view>(
-          {ui::kMimeTypePlainText, ui::kMimeTypeHtml, ui::kMimeTypePng});
-
-  Vector<String> filtered_types;
-  for (const auto& type : types) {
-    if (kAllowedMimeTypesSet.contains(type.Utf8())) {
-      filtered_types.push_back(type);
-    }
-  }
-  return filtered_types;
-}
-
 void ClipboardChangeEventController::Trace(Visitor* visitor) const {
   Supplement<Navigator>::Trace(visitor);
   PlatformEventController::Trace(visitor);
@@ -110,13 +94,12 @@ void ClipboardChangeEventController::OnClipboardChanged() {
   if (window.document()->hasFocus()) {
     fire_clipboardchange_on_focus_ = false;
     if (event_target_) {
-      Vector<String> available_types =
-          GetSystemClipboard()->ReadAvailableTypes();
-      Vector<String> standard_types =
-          FilterForStandardMimeTypes(available_types);
-
-      event_target_->DispatchEvent(
-          *ClipboardChangeEvent::Create(standard_types));
+      const auto& clipboardchange_data =
+          GetSystemClipboard()->GetClipboardChangeEventData();
+      // This notification should never be received if the data is not
+      // available.
+      event_target_->DispatchEvent(*ClipboardChangeEvent::Create(
+          clipboardchange_data.types, clipboardchange_data.change_id));
 
       UseCounter::Count(GetExecutionContext(),
                         WebFeature::kClipboardChangeEventFired);

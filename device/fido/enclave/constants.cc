@@ -9,7 +9,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "device/fido/enclave/types.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device::enclave {
 
@@ -77,6 +77,14 @@ ScopedEnclaveOverride::~ScopedEnclaveOverride() {
   g_enclave_override = prev_;
 }
 
+RequestError GetRequestError(int code) {
+  if (static_cast<int>(RequestError::kMinValue) <= code &&
+      code <= static_cast<int>(RequestError::kMaxValue)) {
+    return static_cast<RequestError>(code);
+  }
+  return RequestError::kUnknown;
+}
+
 const char kCommandEncodedRequestsKey[] = "encoded_requests";
 const char kCommandDeviceIdKey[] = "device_id";
 const char kCommandSigKey[] = "sig";
@@ -97,9 +105,10 @@ const char kForgetCommandName[] = "device/forget";
 const char kWrapKeyCommandName[] = "keys/wrap";
 const char kGenKeyPairCommandName[] = "keys/genpair";
 const char kRecoveryKeyStoreWrapCommandName[] = "recovery_key_store/wrap";
-const char kPasskeysWrapPinCommandName[] = "passkeys/wrap_pin";
 const char kRecoveryKeyStoreWrapAsMemberCommandName[] =
     "recovery_key_store/wrap_as_member";
+const char kRecoveryKeyStoreWrapPinAndSecretCommandName[] =
+    "recovery_key_store/wrap_pin_and_secret";
 const char kRecoveryKeyStoreRewrapCommandName[] = "recovery_key_store/rewrap";
 
 const char kRegisterPubKeysKey[] = "pub_keys";
@@ -117,6 +126,7 @@ const char kWrappingKeyToWrap[] = "key";
 const char kPinHash[] = "pin_hash";
 const char kGeneration[] = "pin_generation";
 const char kClaimKey[] = "pin_claim_key";
+const char kWrappedPinKey[] = "wrapped_pin";
 
 const char kWrappingResponsePublicKey[] = "pub_key";
 const char kWrappingResponseWrappedPrivateKey[] = "priv_key";
@@ -127,6 +137,7 @@ const char kKeyPurposeSecurityDomainSecret[] = "security domain secret";
 const char kRecoveryKeyStorePinHash[] = "pin_hash";
 const char kRecoveryKeyStoreCertXml[] = "cert_xml";
 const char kRecoveryKeyStoreSigXml[] = "sig_xml";
+const char kRecoveryKeyStoreCreateNewVault[] = "create_new_vault";
 
 const char kRecoveryKeyStoreURL[] =
     "https://cryptauthvault.googleapis.com/v1/vaults/0";

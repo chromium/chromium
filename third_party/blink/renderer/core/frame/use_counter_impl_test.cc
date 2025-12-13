@@ -690,11 +690,7 @@ TEST_F(UseCounterImplTest, BackgroundClip) {
   document.documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<style>html{-webkit-background-clip: border;}</style>");
   UpdateAllLifecyclePhases(document);
-  if (RuntimeEnabledFeatures::CSSBackgroundClipUnprefixEnabled()) {
-    EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
-  } else {
-    EXPECT_TRUE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
-  }
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
 
@@ -703,11 +699,7 @@ TEST_F(UseCounterImplTest, BackgroundClip) {
       "<style>html{-webkit-background-clip: content;}</style>");
   UpdateAllLifecyclePhases(document);
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
-  if (RuntimeEnabledFeatures::CSSBackgroundClipUnprefixEnabled()) {
-    EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
-  } else {
-    EXPECT_TRUE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
-  }
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
 
   document.ClearUseCounterForTesting(WebFeature::kCSSBackgroundClipContent);
@@ -716,40 +708,7 @@ TEST_F(UseCounterImplTest, BackgroundClip) {
   UpdateAllLifecyclePhases(document);
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipBorder));
   EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipContent));
-  if (RuntimeEnabledFeatures::CSSBackgroundClipUnprefixEnabled()) {
-    EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
-  } else {
-    EXPECT_TRUE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
-  }
-}
-
-TEST_F(UseCounterImplTest, H1UserAgentFontSizeInSectionApplied) {
-  auto dummy_page_holder =
-      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
-  Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
-  Document& document = dummy_page_holder->GetDocument();
-  WebFeature feature = WebFeature::kH1UserAgentFontSizeInSectionApplied;
-
-  EXPECT_FALSE(document.IsUseCounted(feature));
-
-  document.documentElement()->SetInnerHTMLWithoutTrustedTypes("<h1></h1>");
-  UpdateAllLifecyclePhases(document);
-  EXPECT_FALSE(document.IsUseCounted(feature))
-      << "Not inside sectioning element";
-
-  document.documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-      <article><h1 style="font-size: 10px"></h1></article>
-  )HTML");
-  UpdateAllLifecyclePhases(document);
-  EXPECT_FALSE(document.IsUseCounted(feature))
-      << "Inside sectioning element with author font-size";
-
-  document.documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-      <article><h1></h1></article>
-  )HTML");
-  UpdateAllLifecyclePhases(document);
-  EXPECT_TRUE(document.IsUseCounted(feature))
-      << "Inside sectioning element with UA font-size";
+  EXPECT_FALSE(document.IsUseCounted(WebFeature::kCSSBackgroundClipPadding));
 }
 
 }  // namespace blink

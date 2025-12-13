@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.safe_browsing;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -18,10 +20,12 @@ import android.content.Context;
 import androidx.fragment.app.Fragment;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -29,8 +33,6 @@ import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -38,7 +40,6 @@ import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.permissions.OsAdditionalSecurityPermissionProvider;
 import org.chromium.components.permissions.OsAdditionalSecurityPermissionUtil;
-import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -47,9 +48,9 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link AdvancedProtectionMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures(PermissionsAndroidFeatureList.OS_ADDITIONAL_SECURITY_PERMISSION_KILL_SWITCH)
 @Config(manifest = Config.NONE)
 public class AdvancedProtectionMediatorTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private Context mContext;
     private final WeakReference<Context> mWeakContext = new WeakReference<>(mContext);
@@ -69,7 +70,7 @@ public class AdvancedProtectionMediatorTest {
 
         @Override
         public void addObserver(Observer observer) {
-            assert mObserver == null;
+            assertThat(mObserver).isNull();
             mObserver = observer;
         }
 
@@ -94,7 +95,6 @@ public class AdvancedProtectionMediatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mWindowUserDataHost);
         when(mWindowAndroid.getContext()).thenReturn(mWeakContext);
         MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMessageDispatcher);
@@ -228,23 +228,6 @@ public class AdvancedProtectionMediatorTest {
         verifyDidNotEnqueueMessage();
         provider.setAdvancedProtectionRequestedByOs(/* isAdvancedProtectionRequestedByOs= */ true);
         verifyEnqueuedMessage();
-
-        coordinator.destroy();
-    }
-
-    /** Test that a message is not shown when the feature-kill-switch is set. */
-    @Test
-    @EnableFeatures({PermissionsAndroidFeatureList.OS_ADDITIONAL_SECURITY_PERMISSION_KILL_SWITCH})
-    public void testDontShowMessageKillSwitch() {
-        var sharedPreferences = ChromeSharedPreferences.getInstance();
-        sharedPreferences.writeBoolean(ChromePreferenceKeys.OS_ADVANCED_PROTECTION_SETTING, true);
-        var provider = setPermissionProvider(/* isAdvancedProtectionRequestedByOs= */ false);
-
-        var coordinator = new AdvancedProtectionCoordinator(mWindowAndroid, TestFragment.class);
-        assertFalse(coordinator.showMessageOnStartupIfNeeded());
-        verifyDidNotEnqueueMessage();
-        provider.setAdvancedProtectionRequestedByOs(/* isAdvancedProtectionRequestedByOs= */ true);
-        verifyDidNotEnqueueMessage();
 
         coordinator.destroy();
     }

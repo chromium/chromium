@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_address_mediator.h"
 
+#import "base/containers/to_vector.h"
+#import "base/functional/callback_helpers.h"
 #import "base/i18n/message_formatter.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
@@ -20,7 +22,6 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -40,15 +41,12 @@ std::vector<AutofillProfile> FetchAddresses(
     const autofill::PersonalDataManager& personal_data_manager) {
   std::vector<const AutofillProfile*> fetched_addresses =
       personal_data_manager.address_data_manager().GetProfilesToSuggest();
-  std::vector<AutofillProfile> addresses;
-  addresses.reserve(fetched_addresses.size());
-
   // Make copies of the received `fetched_addresses` to not make any assumption
   // over their lifetime and make sure that the AutofillProfile objects stay
   // valid throughout the lifetime of this class.
-  std::ranges::transform(
-      fetched_addresses, std::back_inserter(addresses),
-      [](const AutofillProfile* address) { return *address; });
+  std::vector<AutofillProfile> addresses =
+      base::ToVector(fetched_addresses,
+                     [](const AutofillProfile* address) { return *address; });
 
   return addresses;
 }
@@ -139,9 +137,7 @@ std::vector<AutofillProfile> FetchAddresses(
         [[ManualFillAddress alloc] initWithProfile:_addresses[i]];
 
     NSArray<UIAction*>* menuActions =
-        IsKeyboardAccessoryUpgradeEnabled()
-            ? @[ [self createMenuEditActionForAddress:_addresses[i]] ]
-            : @[];
+        @[ [self createMenuEditActionForAddress:_addresses[i]] ];
 
     NSString* cellIndexAccessibilityLabel = base::SysUTF16ToNSString(
         base::i18n::MessageFormatter::FormatWithNamedArgs(

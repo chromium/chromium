@@ -1,0 +1,47 @@
+=== Accessibility tree before go() pass 1 ===
+AXWebArea AXTitle='Material Web Switch Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXCheckBox AXSubrole=AXSwitch AXDescription='Test Switch' AXValue=0
+=== End accessibility tree ===
+AXValueChanged on AXCheckBox AXSubrole=AXSwitch AXDescription='Test Switch' AXValue=1
+=== Accessibility tree after go() pass 1 ===
+AXWebArea AXTitle='Material Web Switch Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXCheckBox AXSubrole=AXSwitch AXDescription='Test Switch' AXValue=1 <<<<<< CHANGED
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+AXWebArea AXTitle='Material Web Switch Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXCheckBox AXSubrole=AXSwitch AXDescription='Test Switch' AXValue=1
+=== End accessibility tree ===
+AXValueChanged on AXCheckBox AXSubrole=AXSwitch AXDescription='Test Switch' AXValue=0
+=== Accessibility tree after go() pass 2 ===
+AXWebArea AXTitle='Material Web Switch Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXCheckBox AXSubrole=AXSwitch AXDescription='Test Switch' AXValue=0 <<<<<< CHANGED
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+AXWebArea AXTitle='Material Web Switch Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXCheckBox AXSubrole=AXSwitch AXDescription='Test Switch' AXValue=0
+=== End accessibility tree ===
+AXValueChanged on AXCheckBox AXSubrole=AXSwitch AXDescription='Test Switch' AXValue=1
+=== Accessibility tree after go() pass 3 ===
+AXWebArea AXTitle='Material Web Switch Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXCheckBox AXSubrole=AXSwitch AXDescription='Test Switch' AXValue=1 <<<<<< CHANGED
+=== End accessibility tree ===

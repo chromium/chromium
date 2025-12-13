@@ -6,9 +6,6 @@
 // geographical information to the Default Search Engine in omnibox queries
 // when location permissions are granted.
 //
-// TODO(lbargu): Move over to standard Geo header once it is defined, and remove
-// this proto structure from chromium code base.
-//
 // NOTE: This is currently using a Google-defined structure. This explains the
 // jumps in values. New fields cannot be added to this proto directly. See
 // https://goto.google.com/partner_location_proto
@@ -31,16 +28,48 @@ enum LocationProducer {
   DEVICE_LOCATION = 12;
 }
 
+enum PermissionGranularity {
+  PERMISSION_GRANULARITY_UNKNOWN = 0;
+  PERMISSION_GRANULARITY_COARSE = 1;
+  PERMISSION_GRANULARITY_FINE = 2;
+}
+
 message LatLng {
   optional sfixed32 latitude_e7 = 1;
   optional sfixed32 longitude_e7 = 2;
 }
 
+// Used to indicate non-semantic details of how a descriptor was obtained.
+//
+// NOTE: All unused values are reserved for internal Google use.
+enum LocationProvenance {
+  UNREMARKABLE = 0;
+  // Descriptor came from X-Geo HTTP header. Used by browsers and apps that
+  // retrieve location on-device and attach it to the request as XGeo header.
+  XGEO_HEADER = 8;
+  // Descriptor came from X-Geo HTTP header. Used by proxy providers, the
+  // source of the location is up to the proxy to decide.
+  FORWARDED_FROM_PROXY = 13;
+}
+
 message LocationDescriptor {
   optional LocationRole role = 1 [default = UNKNOWN_ROLE];
   optional LocationProducer producer = 2 [default = UNKNOWN_PRODUCER];
+
+  // Extra information about how this descriptor was obtained.
+  optional LocationProvenance provenance = 9;
+
+  // A timestamp associated with this location expressed as the number of
+  // microseconds since 00:00:00 Jan-1-1970 UTC.  If not set, assumed to be
+  // "now" or not possible to define for the type of location attached.
   optional int64 timestamp = 3;
+
+  // A latitude and longitude used to describe this location as a point.
   optional LatLng latlng = 5;
+
+  // A radius associated with this location (e.g., GPS accuracy estimate).
+  // Units must be in mm.
   optional float radius = 7;
+  optional PermissionGranularity permission_granularity = 25;
   reserved 23;
 }

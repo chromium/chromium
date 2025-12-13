@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/signin_promo_view_wrapper"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  style="@style/MaterialCardStyle">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="12dp">
+
+    <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="20dp"
+      android:layout_marginTop="16dp"
+      android:layout_marginRight="20dp"
+      android:layout_marginBottom="2dp">
+
+      <TextView
+        android:id="@+id/signin_promo_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+        android:includeFontPadding="false"
+        tools:text="@string/signin_promo_title" />
+
+      <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/signin_promo_dismiss_button"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|end"
+        android:layout_toEndOf="@id/signin_promo_dismiss_button"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/close"
+        android:scaleType="center"
+        android:src="@drawable/btn_close"
+        app:tint="@macro/default_icon_color"
+        android:background="?attr/selectableItemBackground"
+        android:accessibilityTraversalBefore="@id/account_image" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+      android:id="@+id/image_description_container"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      android:gravity="center_vertical"
+      android:layout_marginRight="20dp"
+      android:layout_marginBottom="12dp"
+      android:layout_marginLeft="20dp">
+
+      <ImageView
+        android:id="@+id/signed_in_promo_image"
+        android:layout_width="@dimen/sync_promo_account_image_size"
+        android:layout_height="@dimen/sync_promo_account_image_size"
+        android:importantForAccessibility="no"
+        android:scaleType="fitCenter"
+        android:visibility="gone"
+        android:layout_marginEnd="16dp"/>
+
+      <TextView
+        android:id="@+id/signin_promo_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        android:lineHeight="16sp"
+        tools:text="@string/signin_promo_description_recent_tabs" />
+
+    </LinearLayout>
+
+    <LinearLayout
+      android:id="@+id/account_picker_selected_account"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="20dp"
+      android:layout_marginEnd="20dp"
+      android:layout_marginBottom="8dp"
+      android:foreground="?attr/selectableItemBackground"
+      android:background="@drawable/account_row_background_rounded_all"
+      android:gravity="center_vertical"
+      android:orientation="horizontal"
+      android:padding="16dp"
+      android:clipToOutline="true"
+      android:clickable="false">
+       <!-- android:clickable="false" is necessary here. See crbug.com/448982483 -->
+
+      <include layout="@layout/account_row_compact_layout" />
+
+      <ImageView
+        android:id="@+id/account_picker_selected_account_expand_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="16dp"
+        app:srcCompat="@drawable/ic_expand_more_black_24dp"
+        app:tint="?attr/colorOnSurfaceVariant"
+        tools:ignore="ContentDescription"/>
+
+    </LinearLayout>
+
+    <org.chromium.ui.widget.ButtonCompat
+      android:id="@+id/signin_promo_primary_button"
+      style="@style/FilledButton"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginHorizontal="@dimen/signin_promo_button_margin_compact"
+      android:ellipsize="end"
+      android:singleLine="true"
+      android:text="@string/sync_promo_continue_as" />
+
+  </LinearLayout>
+
+</org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>

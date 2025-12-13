@@ -28,7 +28,7 @@
 
   const oopifId =
       (await oopifProtocol.Page.getResourceTree()).result.frameTree.frame.id;
-  const oopifStorageKey = (await oopifProtocol.Storage.getStorageKeyForFrame({
+  const oopifStorageKey = (await oopifProtocol.Storage.getStorageKey({
                             frameId: oopifId
                           })).result.storageKey;
 

@@ -1,17 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
-<translation id="1036348656032585052">முடக்கு</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> வாரத்திற்கு முன் உருவாக்கப்பட்டது}other{<ph name="NUM_WEEKS_MANY" /> வாரங்களுக்கு முன் உருவாக்கப்பட்டது}}</translation>
 <translation id="1063300264396686489">பிற சாதனங்களில் உருவாக்கப்பட்டிருக்கும் பக்கக் குழுக்களைத் தானாகத் திற</translation>
 <translation id="1075622780330595106">உங்கள் <ph name="NUMBER_OF_TABS" /> தாவல்கள் சமீபத்தில் பயன்படுத்தவில்லை. அவற்றை மூடவா?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> ஆண்டிற்கு முன் உருவாக்கப்பட்டது}other{<ph name="NUM_YEARS_MANY" /> ஆண்டுகளுக்கு முன் உருவாக்கப்பட்டது}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{செயலில் இல்லாத பக்கங்களும் குழுக்களும் 1 மாதத்திற்குப் பிறகு நீக்கப்படும்}other{செயலில் இல்லாத பக்கங்களும் குழுக்களும் <ph name="MONTH_COUNT_MANY" /> மாதங்களுக்குப் பிறகு நீக்கப்படும்}}</translation>
 <translation id="1173894706177603556">பெயர் மாற்று</translation>
-<translation id="1197088940767939838">ஆரஞ்சு</translation>
+<translation id="1203747227183434426">மீடியாவை ரெக்கார்டு செய்கிறது</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT2" /> பக்கம் இருக்கும் <ph name="TITLE_OF_GROUP" /> என்ற குழுவைத் திறக்கும்}other{<ph name="TAB_COUNT2" /> பக்கங்கள் இருக்கும் <ph name="TITLE_OF_GROUP" /> என்ற குழுவைத் திறக்கும்}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> பக்கக் குழு விருப்பங்கள்</translation>
 <translation id="1300188005269437765">பக்கங்களும் பக்கக் குழுக்களும் 'செயலில் இல்லாதவை' பிரிவுக்கு எப்போது தானாகவே நகர்த்தப்பட வேண்டும் என்பதைத் தேர்வுசெய்யலாம்.</translation>
+<translation id="1321004960118052490">செயலில் இல்லாதவை சேர்ந்துகொண்டே போகாது</translation>
 <translation id="1329584516321524826">சற்றுமுன் புதுப்பிக்கப்பட்டது</translation>
 <translation id="1340839264183302272">குழுவிலிருந்து வெளியேறு</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="CARD_LABEL" /> என்னும் லேபிளுடன், <ph name="COLOR_NAME" /> வண்ணத்தில், <ph name="TABS_COUNT_ONE" />பக்கம் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக்குழுவை விரிவாக்கும்.}other{<ph name="CARD_LABEL" /> என்னும் லேபிளுடன், <ph name="COLOR_NAME" /> வண்ணத்தில், <ph name="TABS_COUNT_MANY" />பக்கங்கள் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக்குழுவை விரிவாக்கும்.}}</translation>
@@ -20,23 +20,25 @@
 <translation id="1499635324672558517">மறைநிலைப் பக்கங்கள் அனைத்தையும் மூடவா?</translation>
 <translation id="1501480321619201731">குழுவை நீக்கு</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> செயலில் இல்லை}other{<ph name="TABS_COUNT_MANY" /> செயலில் இல்லை}}</translation>
-<translation id="1555130319947370107">நீலம்</translation>
-<translation id="161042844686301425">சியான்</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> பக்கங்கள் குழுவாக்கப்பட்டுள்ளன</translation>
 <translation id="1657719826150349398">தாவலைக் கீழே நகர்த்து</translation>
+<translation id="1670942869417022142">ஆடியோ முடக்கப்பட்டுள்ளது</translation>
 <translation id="1697284962337958118">இதில் சேர்:</translation>
 <translation id="1713541401465507417">அனைத்து பக்கங்களையும் குழுக்களையும் மூடு</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> பக்கக் குழு இனி கிடைக்காது}other{<ph name="TAB_GROUPS_COUNT_MANY" /> பக்கக் குழுக்கள் இனி கிடைக்காது}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />மேலும் அறிக<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> பக்கம் குழுவாக்கப்பட்டது</translation>
+<translation id="1844381456014878100">7 நாட்கள் செயலில் இல்லாததற்குப் பிறகு</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவல்}other{<ph name="TABS_COUNT_MANY" /> தாவல்கள்}}</translation>
 <translation id="1909810060368225529">குறிப்பு: இந்தப் பகிர்ந்த பக்கக் குழுவில் செய்யப்படும் மாற்றங்கள் எல்லோருக்கும் காட்டப்படும். நீங்கள் பகிரும் பக்கக் குழுக்களில் எல்லோரும் மாற்றங்களைச் செய்யலாம்.</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{பக்கத்தைப் பின் செய்யும்}other{பக்கங்களைப் பின் செய்யும்}}</translation>
 <translation id="1982637982196732906">'செயலில் இல்லாதவை' பிரிவுக்கு நகர்த்துதல்</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்துள்ள <ph name="TABS_COUNT_ONE" /> பக்கத்தை புக்மார்க் செய்யும்}other{தேர்ந்தெடுத்துள்ள <ph name="TABS_COUNT_MANY" /> பக்கங்களை புக்மார்க் செய்யும்}}</translation>
 <translation id="2055057176188061528">பக்கக் குழுவைத் தேர்ந்தெடுக்கவும் அல்லது புதிய பக்கக் குழுவை உருவாக்கவும்</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{கடந்த <ph name="AUTO_DELETE_DELAY_ONE" /> மாதத்தில் 'செயலில் இல்லாதவை' பிரிவில் நீங்கள் பயன்படுத்தாதவற்றை Chrome தானாக நீக்கிவிடும். அமைப்புகளில் இதை இப்போது அல்லது எப்போது வேண்டுமானாலும் ஆஃப் செய்யலாம்.}other{கடந்த <ph name="AUTO_DELETE_DELAY_MANY" /> மாதங்களில் 'செயலில் இல்லாதவை' பிரிவில் நீங்கள் பயன்படுத்தாதவற்றை Chrome தானாக நீக்கிவிடும். அமைப்புகளில் இதை இப்போது அல்லது எப்போது வேண்டுமானாலும் ஆஃப் செய்யலாம்.}}</translation>
+<translation id="2074527029802029717">தாவலைப் பிரித்தெடு</translation>
 <translation id="2118649612461486615">ஸ்டோர் தகவல்</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{மூடிய பக்கங்களையும் குழுக்களையும் ‘சமீபத்திய பக்கங்கள்’, ‘பக்கக் குழுக்கள்’ ஆகிய பிரிவுகளுக்குச் சென்று மீண்டும் திறக்கலாம். உங்களின் மறைநிலைப் பக்கத்தைப் பார்க்க முடியாது.}other{மூடிய பக்கங்களையும் குழுக்களையும் ‘சமீபத்திய பக்கங்கள்’, ‘பக்கக் குழுக்கள்’ ஆகிய பிரிவுகளுக்குச் சென்று மீண்டும் திறக்கலாம். உங்களின் # மறைநிலைப் பக்கங்களைப் பார்க்க முடியாது.}}</translation>
+<translation id="2153899164605463849">{TAB_COUNT,plural, =1{தளத்தில் ஒலி எழுப்பும்}other{தளங்களில் ஒலி எழுப்பும்}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> தளத்தில் தற்போதைய விலை: <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{பக்கத்தைப் பிரி}other{பக்கங்களைப் பிரி}}</translation>
 <translation id="2271452184061378400">உங்கள் பக்கக் குழுக்கள் இங்கே சேமிக்கப்படும்</translation>
@@ -61,7 +63,10 @@
 <translation id="2801787514987684416">ஸ்டோர் தகவலைப் பார்க்க வேண்டுமா?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> பக்கம் மூடப்பட்டது}other{<ph name="MANY_CLOSED" /> பக்கங்கள் மூடப்பட்டன}}</translation>
 <translation id="2894757982205307093">குழுவில் புதிய தாவல்</translation>
+<translation id="2918484639460781603">அமைப்புகளுக்குச் செல்க</translation>
 <translation id="2928243913527329289">Google | இந்த ஸ்டோரைப் பற்றி</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> தேர்ந்தெடுக்கப்பட்டுள்ளது}other{<ph name="ITEMS_COUNT_MANY" /> தேர்ந்தெடுக்கப்பட்டுள்ளன}}</translation>
+<translation id="2991702137079525605">{TABS_COUNT,plural, =1{பக்கத்தைப் பின் செய்}other{பக்கங்களைப் பின் செய்}}</translation>
 <translation id="3008554597174452548">தயாரிப்பைக் கண்காணிப்பதை நிறுத்து</translation>
 <translation id="3026391124054406831">உங்கள் பக்கங்களை ஒழுங்கமைக்க குழுக்களை உருவாக்கலாம்.</translation>
 <translation id="3051031624272448591">எப்போது வேண்டுமானாலும் பதிவில் இருந்து அவற்றை மீண்டும் பெறலாம்</translation>
@@ -78,20 +83,24 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{பக்கத்தை மூடு}other{பக்கங்களை மூடு}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">ஷேர் ஷீட் மாதிரிக்காட்சியின் சிறுபடம்.</translation>
+<translation id="3776329373944672717">பக்கக் குழுவின் தலைப்பு <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">நிர்வகி</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{பக்கத்தைப் பிரித்தெடுக்கும்}other{பக்கங்களைப் பிரித்தெடுக்கும்}}</translation>
 <translation id="3940195383040445971">பக்கங்களில் விலையைக் கண்காணித்தல்</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> புதிய பக்கம், <ph name="ANY_CLOSED" /> மூடப்பட்டது}other{<ph name="MANY_ADDED" /> புதிய பக்கங்கள், <ph name="ANY_CLOSED" /> மூடப்பட்டது}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{பக்கத்தைக் குழுவாக்கு}other{பக்கங்களைக் குழுவாக்கு}}</translation>
+<translation id="3962134438902735041">{TABS_COUNT,plural, =1{தேர்ந்தெடுக்கப்பட்ட <ph name="TABS_COUNT_ONE" /> பக்கத்தைப் பிரித்தெடுக்கும்}other{தேர்ந்தெடுக்கப்பட்ட <ph name="TABS_COUNT_MANY" /> பக்கங்களைப் பிரித்தெடுக்கும்}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> நாளுக்கு முன் உருவாக்கப்பட்டது}other{<ph name="NUM_DAYS_MANY" /> நாட்களுக்கு முன் உருவாக்கப்பட்டது}}</translation>
 <translation id="4076226664360336092">பக்கக் குழுவின் பட்டியல், முழு உயரத்தில் திறக்கப்பட்டுள்ளது</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> தாவல்கள் தொடர்புடையவையாகத் தெரிகின்றன. அவற்றைக் குழுவாக்கவா?</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_ONE" /> பக்கத்துடன் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவை மூடும்.}other{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_MANY" /> பக்கங்களுடன் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவை மூடும்.}}</translation>
-<translation id="4159784952369912983">பர்பிள்</translation>
 <translation id="4203448675570432781">பக்கங்களைத் தானாக நீக்குதல் அம்சம் மாற்றப்பட்டது குறித்த அறிவிப்பு மூடப்பட்டது.</translation>
 <translation id="427987768447457592">புதிய பக்கக் குழு</translation>
 <translation id="4371591986692297148">செயலில் இல்லை</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{பக்கத்தை மீட்டெடு}other{பக்கங்களை மீட்டெடு}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> நாளுக்கு முன் புதுப்பிக்கப்பட்டது}other{<ph name="NUM_DAYS_MANY" /> நாட்களுக்கு முன் புதுப்பிக்கப்பட்டது}}</translation>
+<translation id="4496868141611329150">பக்கக் குழுவை இடதுபுறம் நகர்த்து</translation>
+<translation id="4653140634010630594">{TAB_COUNT,plural, =1{தளத்தில் ஒலியடக்கும்}other{தளங்களில் ஒலியடக்கும்}}</translation>
 <translation id="4686942373615810936">சற்றுமுன் உருவாக்கப்பட்டது</translation>
 <translation id="4783638485675352219">இந்தச் சாதனத்தில் திறக்கப்பட்டுள்ள பக்கங்களின் URLகளையும் தலைப்புகளையும் ஆப்ரேட்டிங் சிஸ்டத்துடன் பகிர்</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> மதிப்புரை)}other{(<ph name="REVIEWS_COUNT_MANY" /> மதிப்புரைகள்)}}</translation>
@@ -103,17 +112,19 @@
 <translation id="4871719318659334896">குழுவை மூடுக</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> வண்ணத்தில், <ph name="TABS_COUNT_ONE" /> பக்கம் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவை மீட்டெடுத்து திறக்கும்.}other{<ph name="COLOR_NAME" /> வண்ணத்தில், <ph name="TABS_COUNT_MANY" /> பக்கங்கள் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவை மீட்டெடுத்து திறக்கும்.}}</translation>
 <translation id="4881695831933465202">திற</translation>
+<translation id="4894777338623123366">பக்கத்தின் திரையைப் பகிர்கிறது</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{பக்கத்தை மூடுக}other{பக்கங்களை மூடுக}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> குழுக்கள் சேமிக்கப்பட்டுள்ளன (பக்கங்கள் மூடப்பட்டு குழுக்கள் நீக்கப்படும்)</translation>
 <translation id="492284538114688557">விலைச் சரிவு கண்டறியப்பட்டது</translation>
 <translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{<ph name="CARD_LABEL" /> என்னும் லேபிளுடன், <ph name="COLOR_NAME" /> வண்ணத்தில், <ph name="TABS_COUNT_ONE" />பக்கம் உள்ள பகிரப்பட்ட பக்கக் குழுவை விரிவாக்கும்.}other{<ph name="CARD_LABEL" /> என்னும் லேபிளுடன், <ph name="COLOR_NAME" /> வண்ணத்தில், <ph name="TABS_COUNT_MANY" />பக்கங்கள் உள்ள பகிரப்பட்ட பக்கக் குழுவை விரிவாக்கும்.}}</translation>
 <translation id="5007392906805964215">சரிபார்</translation>
+<translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{பக்கங்களைப் புதிய சாளரத்திற்கு நகர்த்தும்}other{பக்கங்களை மற்றொரு சாளரத்திற்கு நகர்த்தும்}}</translation>
 <translation id="5073204694187207510">முழுத்திரை கட்டத்தை மூடு</translation>
 <translation id="5076161749301278626">ஸ்டோருக்குக் கிடைத்த கருத்துகளைப் பார்க்க வேண்டுமா?</translation>
 <translation id="5161254044473106830">தலைப்பு அவசியம்</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{செயலில் இல்லாத பக்கங்களையும் பக்கக் குழுக்களையும் <ph name="AUTO_DELETE_DELAY_ONE" /> மாதத்திற்குப் பிறகு Chrome தானாகவே மூடும். இதை நீங்கள் அமைப்புகளில் மாற்றலாம்.}other{செயலில் இல்லாத பக்கங்களையும் பக்கக் குழுக்களையும் <ph name="AUTO_DELETE_DELAY_MANY" /> மாதங்களுக்குப் பிறகு Chrome தானாகவே மூடும். இதை நீங்கள் அமைப்புகளில் மாற்றலாம்.}}</translation>
 <translation id="5339733443032484186">உங்கள் கடைசிப் பக்கம்</translation>
 <translation id="5380159289133845234">நகல் பக்கங்களைக் காப்பிடு</translation>
-<translation id="5400836586163650660">கிரே</translation>
 <translation id="5446043142172831860">பக்கத்தை அகற்றிவிட்டு, குழுவை விட்டு வெளியேறு</translation>
 <translation id="5490235265819901748">பக்கக் குழு விரிவாக்கப்பட்டது</translation>
 <translation id="5494920125229734069">எல்லாவற்றையும் தேர்ந்தெடு</translation>
@@ -121,22 +132,24 @@
 <translation id="5556417849629758491">ஸ்டோர் தகவலைப் பார்ப்பதற்கான விருப்பம் திரையின் மேற்பகுதிக்கு அருகில் உள்ளது</translation>
 <translation id="5627941783489838464">பக்க மாற்றங்கள் இல்லை</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome இணைப்பு: <ph name="TABS_COUNT_ONE" />}other{Chrome இணைப்புகள்: <ph name="TABS_COUNT_MANY" />}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{பக்கத்தை இடதுபுறம் நகர்த்து}other{பக்கங்களை இடதுபுறம் நகர்த்து}}</translation>
 <translation id="5746204836956568669">விரைவாக வேலைசெய்ய <ph name="NUMBER_OF_TABS" /> பக்கங்களைக் குழுவாக்க வேண்டுமா?</translation>
 <translation id="5773295109010386583">செயலில் இல்லாதவற்றைத் தானாக மூடு</translation>
 <translation id="58326064309361797">தாவல்களை இழுப்பதன் மூலம் அவற்றைக் குழுவாக்கலாம்</translation>
-<translation id="5901630391730855834">மஞ்சள்</translation>
 <translation id="5972844218283131174">அனைத்தையும் தேர்வுநீக்கு</translation>
-<translation id="6017514345406065928">பச்சை</translation>
 <translation id="6040143037577758943">மூடு</translation>
 <translation id="6051432659151380973">உங்கள் பக்கக் குழுக்கள் தானாகச் சேமிக்கப்படும்</translation>
 <translation id="6054741997831917303">இந்தப் பொருளின் விலை சமீபத்தில் <ph name="PREVIOUS_PRICE" /> இல் இருந்து <ph name="NEW_PRICE" /> ஆகக் குறைந்துள்ளது</translation>
 <translation id="6109251075362363230">மிகச் சமீபத்தில் பயன்படுத்தப்பட்ட நகல் தவிர்த்து, பிற எல்லா நகல் பக்கங்களும் இப்போது காப்பிடப்படும்.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்த <ph name="TABS_COUNT_ONE" /> பக்கத்தை மூடும்}other{தேர்ந்தெடுத்த <ph name="TABS_COUNT_MANY" /> பக்கங்களை மூடும்}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{குழுவைப் புதிய சாளரத்திற்கு நகர்த்து}other{குழுவை வேறொரு சாளரத்திற்கு நகர்த்து}}</translation>
-<translation id="6220820548421939212">ஆம். சரி.</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{பக்கத்தை வலதுபுறம் நகர்த்து}other{பக்கங்களை வலதுபுறம் நகர்த்து}}</translation>
 <translation id="6228793724645064692">(ஸ்டோர் ரேட்டிங்)</translation>
+<translation id="6251046978189636310">ஆடியோவைப் பிளே செய்கிறது</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{குழுவில் இருந்து பக்கத்தை அகற்றும்}other{குழுவிலிருந்து பக்கங்களை அகற்றும்}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{பக்கத்தைப் புதிய குழுவில் சேர்}other{பக்கங்களைப் புதிய குழுவில் சேர்}}</translation>
 <translation id="6333260925957816943">இந்த ஸ்டோர் குறித்த தகவல்கள்</translation>
+<translation id="6344715021569694246">{TABS_COUNT,plural, =1{தேர்ந்தெடுக்கப்பட்ட <ph name="TABS_COUNT_ONE" /> பக்கத்தைப் பின் செய்யும்}other{தேர்ந்தெடுக்கப்பட்ட <ph name="TABS_COUNT_MANY" /> பக்கங்களைப் பின் செய்யும்}}</translation>
 <translation id="6381032505162537930">உங்கள் பக்கக் குழுக்கள் இங்கே காட்டப்படும்</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்த <ph name="TABS_COUNT_ONE" /> பக்கத்தைப் பிரிக்கும்}other{தேர்ந்தெடுத்த <ph name="TABS_COUNT_MANY" /> பக்கங்களைப் பிரிக்கும்}}</translation>
 <translation id="6499296376514955580">பகிர்ந்த பக்கக் குழு தொடர்பான மாற்றங்கள் குறித்த அறிவிப்பு மூடப்பட்டது</translation>
@@ -153,6 +166,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT1" /> பக்கம் இருக்கும் <ph name="TITLE_OF_GROUP" /> என்ற குழுவில் சேர்க்கும்}other{<ph name="TAB_COUNT1" /> பக்கங்கள் இருக்கும் <ph name="TITLE_OF_GROUP" /> என்ற குழுவில் சேர்க்கும்}}</translation>
 <translation id="6818926723028410516">பட்டியலிலிருந்து தேர்ந்தெடுக்கவும்</translation>
 <translation id="6856809498882026482">பல தேர்வுப் பயன்முறையை மறைக்கும்</translation>
+<translation id="6957436309971790274">21 நாட்கள் செயலில் இல்லாததற்குப் பிறகு</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_ONE" /> பக்கம் உள்ள <ph name="TITLE_OF_GROUP" /> என்ற பகிர்ந்த பக்கக் குழுவை விரிவாக்கும்.}other{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_MANY" /> பக்கங்கள் உள்ள <ph name="TITLE_OF_GROUP" /> என்ற பகிர்ந்த பக்கக் குழுவை விரிவாக்கும்.}}</translation>
 <translation id="709473454666962555">பக்கக் குழுவைத் தேர்ந்தெடுக்கலாம்</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{பக்கத்தைப் பகிர்}other{பக்கங்களைப் பகிர்}}</translation>
@@ -163,8 +177,10 @@
 <translation id="7326879924029668159">திருப்பியளித்தல் கொள்கை மற்றும் பலவற்றைப் பார்க்கலாம்</translation>
 <translation id="7352298686197644113">திறந்திருக்கும் தாவல்களில் எந்தப் பொருள் குறைவான விலையில் கிடைக்கிறது எனப் பார்க்கலாம்</translation>
 <translation id="7369451074646620503">"<ph name="TAB_GROUP_NAME" />" பக்கக் குழு இனி கிடைக்காது</translation>
+<translation id="7402375256128852434">சமீபத்திய பக்கங்களைச் சேர்</translation>
 <translation id="7452985128687107478">பக்கக் குழுக்கள் தானாகச் சேமிக்கப்பட்டு, உங்கள் சாதனங்கள் அனைத்திலும் சேர்க்கப்படும்</translation>
 <translation id="747459581954555080">எல்லாம் மீட்டெடு</translation>
+<translation id="7489558427602531799">பக்கக் குழுவை வலதுபுறம் நகர்த்து</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> உள்ளது}other{<ph name="TABS_COUNT_MANY" /> உள்ளன}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்த <ph name="TABS_COUNT_ONE" /> பக்கத்தை மீட்டெடுக்கும்}other{தேர்ந்தெடுத்த <ph name="TABS_COUNT_MANY" /> பக்கங்களை மீட்டெடுக்கும்}}</translation>
 <translation id="753732157349120914">தாவல் மாற்றி</translation>
@@ -183,9 +199,8 @@
 <translation id="7853202427316060426">செயல்பாடு</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ ரேட்டிங்: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> மதிப்புரை}other{ரேட்டிங்: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> மதிப்புரைகள்}}</translation>
 <translation id="7885132941432959125">தாவலை வலதுபுறம் நகர்த்து</translation>
-<translation id="788914896430720926">செயலில் இல்லாத பிரிவை ஒழுங்குபடுத்தலாமா?</translation>
+<translation id="7887334752153342268">பிரதி எடு</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> தேர்ந்தெடுக்கப்படவில்லை</translation>
-<translation id="7942349550061667556">சிவப்பு</translation>
 <translation id="7961015016161918242">எப்போதும் இல்லை</translation>
 <translation id="7966321538264951561">பரிந்துரைகளை நிராகரிக்கும்.</translation>
 <translation id="796696298310625748">{WINDOW_COUNT,plural, =1{பக்கத்தைப் புதிய சாளரத்திற்கு நகர்த்தும்}other{பக்கத்தை மற்றொரு சாளரத்திற்கு நகர்த்தும்}}</translation>
@@ -193,7 +208,9 @@
 <translation id="8029301326595421733">இந்த ஸ்டோர் குறித்த தகவல்கள் முழுத் திரையில் காட்டப்பட்டுள்ளன</translation>
 <translation id="8053770993984522566">பக்கக் குழுவின் பட்டியல், பாதி உயரத்தில் திறக்கப்பட்டுள்ளது</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{பக்கத்தைக் குழுவில் சேர்}other{பக்கங்களைக் குழுவில் சேர்}}</translation>
+<translation id="8138067144082174140">14 நாட்கள் செயலில் இல்லாததற்குப் பிறகு</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_ONE" /> பக்கத்துடன் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவை விரிவாக்கும்.}other{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_MANY" /> பக்கங்களுடன் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவை விரிவாக்கும்.}}</translation>
+<translation id="8195186926670288294">{TABS_COUNT,plural, =1{பக்கத்தைப் பிரித்தெடு}other{பக்கங்களைப் பிரித்தெடு}}</translation>
 <translation id="8205266828577616993">தாவலை மேலே நகர்த்து</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> நிமிடத்திற்கு முன் புதுப்பிக்கப்பட்டது}other{<ph name="NUM_MINS_MANY" /> நிமிடங்களுக்கு முன் புதுப்பிக்கப்பட்டது}}</translation>
 <translation id="8236097722223016103">புக்மார்க்குகளில் சேர்</translation>
@@ -206,6 +223,7 @@
 <translation id="8428213095426709021">அமைப்புகள்</translation>
 <translation id="855081842937141170">தாவலைப் பொருத்து</translation>
 <translation id="8633025649649592204">சமீபத்திய செயல்</translation>
+<translation id="8635822281281406185">அதிகபட்சம் 10 ஃபைல்கள், பக்கங்கள் அல்லது படங்களைச் சேர்க்கவும்</translation>
 <translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="8714939927607906138">குறைவான விலை</translation>
 <translation id="8730621377337864115">முடிந்தது</translation>
@@ -221,6 +239,5 @@
 <translation id="9187834032751045001">பக்கங்களைத் தானாக நீக்குதல் அம்சம் குறித்த அறிவிப்பு பாதி அளவிற்குத் திறந்துள்ளது.</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_ONE" /> பக்கத்துடன் உள்ள பக்கக் குழுவை விரிவாக்கும்.}other{<ph name="COLOR_NAME" /> வண்ணத்தில் <ph name="TABS_COUNT_MANY" /> பக்கங்களுடன் உள்ள பக்கக் குழுவை விரிவாக்கும்.}}</translation>
 <translation id="945522503751344254">கருத்தை அனுப்பு</translation>
-<translation id="992256792861109788">பிங்க்</translation>
 <translation id="994514002078791059">{TAB_COUNT,plural, =1{செயலில் இல்லாத 1 பக்கத்தை மூடவா?}other{செயலில் இல்லாத <ph name="TAB_COUNT_MANY" /> பக்கங்களை மூடவா?}}</translation>
 </translationbundle>

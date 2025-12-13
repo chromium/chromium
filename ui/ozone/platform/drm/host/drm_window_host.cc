@@ -147,6 +147,11 @@ void DrmWindowHost::MoveCursorTo(const gfx::Point& location) {
   event_factory_->WarpCursorTo(widget_, gfx::PointF(location));
 }
 
+void DrmWindowHost::SynthesizeMouseMove(const gfx::PointF& location) {
+  window_manager_->ForceCursorUpdateOnNextMouseMove();
+  event_factory_->SynthesizeMouseMove(location);
+}
+
 void DrmWindowHost::ConfineCursorToBounds(const gfx::Rect& bounds) {
   if (cursor_confined_bounds_ == bounds)
     return;
@@ -172,8 +177,8 @@ void DrmWindowHost::SizeConstraintsChanged() {
   NOTREACHED();
 }
 
-void DrmWindowHost::OnMouseEnter() {
-  delegate_->OnMouseEnter();
+void DrmWindowHost::OnCursorUpdate() {
+  delegate_->OnCursorUpdate();
 }
 
 bool DrmWindowHost::CanDispatchEvent(const PlatformEvent& event) {

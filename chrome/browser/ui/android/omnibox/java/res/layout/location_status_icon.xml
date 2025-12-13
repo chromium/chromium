@@ -16,24 +16,27 @@ found in the LICENSE file.
         android:visibility="visible"
         android:focusable="false">
 
-    <org.chromium.ui.widget.ChromeImageView
-        android:id="@+id/location_bar_status_icon"
-        style="@style/OmniboxIcon"
-        android:layout_width="@dimen/omnibox_search_engine_logo_composed_size"
-        android:layout_height="@dimen/omnibox_search_engine_logo_composed_size"
-        android:layout_marginHorizontal="@dimen/location_bar_status_icon_margin"
-        android:layout_gravity="center"
-        android:src="@android:color/transparent"
-        android:visibility="visible"
-        android:scaleType="center"
-        android:focusable="false"
-        tools:ignore="ContentDescription" />
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/location_bar_status_icon"
+            style="@style/OmniboxIcon"
+            android:layout_width="@dimen/omnibox_search_engine_logo_composed_size"
+            android:layout_height="@dimen/omnibox_search_engine_logo_composed_size"
+            android:layout_marginHorizontal="@dimen/location_bar_status_icon_margin"
+            android:layout_gravity="center"
+            android:src="@android:color/transparent"
+            android:visibility="visible"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="false"
+            android:focusable="false"
+            tools:ignore="ContentDescription"/>
 
-    <Space android:id="@+id/location_bar_status_icon_holding_space"
+        <Space
+            android:id="@+id/location_bar_status_icon_holding_space"
             android:layout_width="@dimen/location_bar_status_icon_holding_space_size"
             android:layout_height="match_parent"
             android:visibility="gone"
-            android:focusable="false" />
+            android:focusable="false"/>
 
     </org.chromium.chrome.browser.omnibox.status.StatusIconView>
+
 </merge>

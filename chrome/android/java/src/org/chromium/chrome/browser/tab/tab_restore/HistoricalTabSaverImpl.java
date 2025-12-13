@@ -13,7 +13,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.WebContentsState;
@@ -29,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Creates historical entries in TabRestoreService. */
 @NullMarked
@@ -168,7 +168,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                             savedTabGroupIds.get(0),
                             groupTitles.get(0),
                             groupColors.get(0),
-                            allTabs.toArray(new Tab[0]),
+                            allTabs,
                             byteBuffers.toArray(new ByteBuffer[0]),
                             CollectionUtil.integerCollectionToIntArray(savedStateVersions));
             return;
@@ -181,12 +181,12 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
         HistoricalTabSaverImplJni.get()
                 .createHistoricalBulkClosure(
                         mTabModel,
-                        tabGroupIds.toArray(new Token[0]),
-                        savedTabGroupIds.toArray(new String[0]),
-                        groupTitles.toArray(new String[0]),
+                        tabGroupIds,
+                        savedTabGroupIds,
+                        groupTitles,
                         CollectionUtil.integerCollectionToIntArray(groupColors),
-                        perTabTabGroupId.toArray(new Token[0]),
-                        allTabs.toArray(new Tab[0]),
+                        perTabTabGroupId,
+                        allTabs,
                         byteBuffers.toArray(new ByteBuffer[0]),
                         CollectionUtil.integerCollectionToIntArray(savedStateVersions));
     }
@@ -230,7 +230,8 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
 
     private boolean tabIdExistsInSecondaryModel(int tabId) {
         for (Supplier<TabModel> tabModelSupplier : mSecondaryTabModelSuppliers) {
-            if (tabModelSupplier.hasValue() && tabModelSupplier.get().getTabById(tabId) != null) {
+            var tabModel = tabModelSupplier.get();
+            if (tabModel != null && tabModel.getTabById(tabId) != null) {
                 return true;
             }
         }
@@ -297,22 +298,22 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
 
         void createHistoricalGroup(
                 TabModel model,
-                Token token,
+                @JniType("base::Token") Token token,
                 @JniType("std::u16string") String savedTabGroupId,
                 @JniType("std::u16string") String title,
                 int color,
-                Tab[] tabs,
+                @JniType("std::vector<TabAndroid*>") List<Tab> tabs,
                 ByteBuffer[] byteBuffers,
                 @JniType("std::vector<int32_t>") int[] savedStationsVersions);
 
         void createHistoricalBulkClosure(
                 TabModel model,
-                Token[] tabGroupIds,
-                @JniType("std::vector<std::u16string>") String[] savedTabGroupIds,
-                @JniType("std::vector<std::u16string>") String[] titles,
-                @JniType("std::vector<int32_t>") int[] colors,
-                Token[] perTabTabGroupId,
-                Tab[] tabs,
+                @JniType("std::vector<std::optional<base::Token>>") List<Token> tabGroupIds,
+                @JniType("std::vector<std::u16string>") List<String> savedTabGroupIds,
+                @JniType("std::vector<std::u16string>") List<String> titles,
+                @JniType("std::vector<int>") int[] colors,
+                @JniType("std::vector<std::optional<base::Token>>") List<Token> perTabTabGroupId,
+                @JniType("std::vector<TabAndroid*>") List<Tab> tabs,
                 ByteBuffer[] byteBuffers,
                 @JniType("std::vector<int32_t>") int[] savedStateVersions);
     }

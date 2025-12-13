@@ -560,8 +560,12 @@ void VideoRendererAlgorithm::UpdateFrameStatistics() {
   // We'll always allow at least 16.66ms of drift since literature suggests it's
   // well below the floor of detection and is high enough to ensure stability
   // for 60fps content.
+  //
+  // We also impose a maximum of 8fps (~125ms) since more than that may result
+  // in large visible differences with low frame rate video.
   max_acceptable_drift_ =
-      std::max(average_frame_duration_ / 2, base::Seconds(1.0 / 60));
+      std::clamp(average_frame_duration_ / 2, base::Seconds(1.0 / 60),
+                 base::Seconds(1.0 / 8));
 
   // If we were called via RemoveExpiredFrames() and Render() was never called,
   // we may not have a render interval yet.

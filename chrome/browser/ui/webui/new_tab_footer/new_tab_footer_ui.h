@@ -12,13 +12,10 @@
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
+#include "components/user_education/webui/help_bubble_handler.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
-
-namespace ui {
-class ColorChangeHandler;
-}  // namespace ui
+#include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 
 class CustomizeButtonsHandler;
 class NewTabFooterHandler;
@@ -40,7 +37,8 @@ class NewTabFooterUIConfig
 class NewTabFooterUI
     : public TopChromeWebUIController,
       public new_tab_footer::mojom::NewTabFooterHandlerFactory,
-      public customize_buttons::mojom::CustomizeButtonsHandlerFactory {
+      public customize_buttons::mojom::CustomizeButtonsHandlerFactory,
+      public help_bubble::mojom::HelpBubbleHandlerFactory {
  public:
   explicit NewTabFooterUI(content::WebUI* web_ui);
   ~NewTabFooterUI() override;
@@ -55,18 +53,19 @@ class NewTabFooterUI
       mojo::PendingReceiver<new_tab_footer::mojom::NewTabFooterHandlerFactory>
           pending_receiver);
 
-  // Instantiates the implementor of the mojom::PageHandler mojo interface
-  // passing the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          pending_receiver);
-
   // Instantiates the implementor of the
   // customize_buttons::mojom::CustomizeButtonsHandlerFactory mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(mojo::PendingReceiver<
                      customize_buttons::mojom::CustomizeButtonsHandlerFactory>
                          pending_receiver);
+
+  // Instantiates the implementor of the
+  // help_bubble::mojom::HelpBubbleHandlerFactory mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
+          pending_receiver);
 
   // Passthrough that calls the NewTabFooterDocument's AttachedTabStateUpdated.
   void AttachedTabStateUpdated(const GURL& url);
@@ -86,15 +85,23 @@ class NewTabFooterUI
       mojo::PendingReceiver<customize_buttons::mojom::CustomizeButtonsHandler>
           pending_page_handler) override;
 
+  // help_bubble::mojom::HelpBubbleHandlerFactory:
+  void CreateHelpBubbleHandler(
+      mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
+      mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler)
+      override;
+
   GURL source_tab_url_;
   std::unique_ptr<WebuiLoadTimer> webui_load_timer_;
   std::unique_ptr<NewTabFooterHandler> handler_;
   mojo::Receiver<new_tab_footer::mojom::NewTabFooterHandlerFactory>
       document_factory_receiver_{this};
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   std::unique_ptr<CustomizeButtonsHandler> customize_buttons_handler_;
   mojo::Receiver<customize_buttons::mojom::CustomizeButtonsHandlerFactory>
       customize_buttons_factory_receiver_;
+  std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
+  mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
+      help_bubble_handler_factory_receiver_{this};
   raw_ptr<Profile> profile_;
 
  private:

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/app_mode/kiosk_troubleshooting_controller.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"

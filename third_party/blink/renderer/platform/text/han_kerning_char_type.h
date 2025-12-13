@@ -35,7 +35,12 @@ enum class HanKerningCharType : uint8_t {
   kOpenQuote,
   kCloseQuote,
 
-  // When adding values, ensure `CharacterProperty` has enough storage.
+  // This value is used only during the computation, and therefore
+  // `CharacterProperty` doesn't have to count for it.
+  kInvalid,
+
+  // When adding values, ensure `CharacterProperty` has enough storage. Also see
+  // `kInvalid`.
 };
 
 }  // namespace blink

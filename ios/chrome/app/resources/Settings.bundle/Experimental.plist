@@ -36,16 +36,6 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
-			<string>Reset First Follow</string>
-			<key>Key</key>
-			<string>ResetFirstFollow</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
 			<string>Always show First Follow</string>
 			<key>Key</key>
 			<string>AlwaysShowFirstFollow</string>
@@ -84,16 +74,6 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Always show Follow IPH</string>
-			<key>Key</key>
-			<string>AlwaysShowFollowIPH</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
 			<string>PSChildPaneSpecifier</string>
 			<key>Title</key>
 			<string>Feed Refresh Settings</string>
@@ -105,6 +85,16 @@
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>UI Settings</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show Catalog Items</string>
+			<key>Key</key>
+			<string>ShowCatalogItems</string>
+			<key>DefaultValue</key>
+			<false/>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -160,16 +150,6 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Force Upgrade Promo</string>
-			<key>Key</key>
-			<string>UpgradePromoForceEnabled</string>
-			<key>DefaultValue</key>
-			<false/>
-		</dict>
-		<dict>
-			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
 			<string>Force Promo</string>
@@ -182,22 +162,32 @@
 				<string></string>
 				<string>promos_manager::Promo::AppStoreRating</string>
 				<string>promos_manager::Promo::DefaultBrowser</string>
+				<string>promos_manager::Promo::DefaultBrowserRemindMeLater</string>
+				<string>promos_manager::Promo::AllTabsDefaultBrowser</string>
+				<string>promos_manager::Promo::MadeForIOSDefaultBrowser</string>
+				<string>promos_manager::Promo::StaySafeDefaultBrowser</string>
+				<string>promos_manager::Promo::DefaultBrowserOffCycle</string>
 				<string>promos_manager::Promo::PostRestoreDefaultBrowserAlert</string>
-				<string>promos_manager::Promo::OmniboxPosition</string>
 				<string>promos_manager::Promo::DockingPromo</string>
-				<string>promos_manager::Promo::PostDefaultAbandonment</string>
 				<string>promos_manager::Promo::BWGPromo</string>
+				<string>promos_manager::Promo::FullscreenSignin</string>
+				<string>promos_manager::Promo::WelcomeBack</string>
 			</array>
 			<key>Titles</key>
 			<array>
 				<string>Disabled (No Promos Forced)</string>
 				<string>App Store Rating</string>
 				<string>Default Browser</string>
+				<string>Default Browser Reminder</string>
+				<string>Default Browser &quot;All Tabs&quot; version</string>
+				<string>Default Browser &quot;Made for iOS&quot; version</string>
+				<string>Default Browser &quot;Stay safe&quot; version</string>
+				<string>Default Browser off-cycle version</string>
 				<string>Post Restore Default Browser Alert</string>
-				<string>Omnibox Position</string>
 				<string>Docking Promo</string>
-				<string>Post-Default Browser Abandonment Alert</string>
 				<string>BWG Promo</string>
+				<string>Fullscreen sign-in</string>
+				<string>Welcome Back Promo</string>
 			</array>
 		</dict>
 		<dict>
@@ -608,6 +598,7 @@
 				<integer>9</integer>
 				<integer>10</integer>
 				<integer>11</integer>
+				<integer>13</integer>
 			</array>
 			<key>Titles</key>
 			<array>
@@ -622,6 +613,7 @@
 				<string>Enhanced Safe Browsing</string>
 				<string>Lens Overlay</string>
 				<string>CPE</string>
+				<string>Trusted Vault</string>
 			</array>
 		</dict>
 		<dict>
@@ -647,6 +639,36 @@
 				<string>10 Seconds</string>
 				<string>30 Seconds</string>
 			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Disable Composebox AIM eligibility</string>
+			<key>Key</key>
+			<string>ForceDisableAIMEligibility</string>
+			<key>DefaultValue</key>
+			<false/>
+            </dict>
+        <dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Disable Composebox Create Images eligibility</string>
+			<key>Key</key>
+			<string>ForceDisableCreateImagesEligibility</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Disable Composebox Pdf Upload eligibility</string>
+			<key>Key</key>
+			<string>ForceDisablePdfUploadEligibility</string>
+			<key>DefaultValue</key>
+			<false/>
 		</dict>
 		<dict>
 			<key>Type</key>

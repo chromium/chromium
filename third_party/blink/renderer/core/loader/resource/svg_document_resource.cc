@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_resource_document_content.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 
 namespace blink {
@@ -70,6 +71,18 @@ SVGDocumentResource::SVGDocumentResource(
                    decoder_options),
       content_(content) {}
 
+bool SVGDocumentResource::CanUseCacheValidator() const {
+  if (RuntimeEnabledFeatures::
+          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {
+    // Disallow revalidation while the content is still pending. This is
+    // sub-optimal because it will trigger a new load of the same resource.
+    if (!content_->IsLoaded()) {
+      return false;
+    }
+  }
+  return TextResource::CanUseCacheValidator();
+}
+
 void SVGDocumentResource::NotifyStartLoad() {
   TextResource::NotifyStartLoad();
   CHECK_EQ(GetStatus(), ResourceStatus::kPending);
@@ -78,6 +91,22 @@ void SVGDocumentResource::NotifyStartLoad() {
 
 void SVGDocumentResource::Finish(base::TimeTicks load_finish_time,
                                  base::SingleThreadTaskRunner* task_runner) {
+  bool notify_observers = true;
+  if (RuntimeEnabledFeatures::
+          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled() &&
+      HasSuccessfulRevalidation()) {
+    content_->UpdateStatus(GetStatus());
+    notify_observers = content_->IsLoaded();
+  } else {
+    notify_observers = UpdateContent();
+  }
+  TextResource::Finish(load_finish_time, task_runner);
+  if (notify_observers) {
+    content_->NotifyObservers();
+  }
+}
+
+bool SVGDocumentResource::UpdateContent() {
   const ResourceResponse& response = GetResponse();
   using UpdateResult = SVGResourceDocumentContent::UpdateResult;
   UpdateResult update_status = UpdateResult::kError;
@@ -85,25 +114,22 @@ void SVGDocumentResource::Finish(base::TimeTicks load_finish_time,
     update_status =
         content_->UpdateDocument(Data(), response.CurrentRequestUrl());
   }
+
   switch (update_status) {
     case UpdateResult::kCompleted:
       content_->UpdateStatus(GetStatus());
-      break;
+      return true;
     case UpdateResult::kAsync:
       // Document loading asynchronously. Status will be updated when
       // completed.
-      break;
+      return false;
     case UpdateResult::kError:
       if (!ErrorOccurred()) {
         SetStatus(ResourceStatus::kDecodeError);
         ClearData();
         content_->UpdateStatus(GetStatus());
       }
-      break;
-  }
-  TextResource::Finish(load_finish_time, task_runner);
-  if (update_status != UpdateResult::kAsync) {
-    content_->NotifyObservers();
+      return true;
   }
 }
 

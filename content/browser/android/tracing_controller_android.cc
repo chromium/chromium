@@ -9,6 +9,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -27,9 +29,9 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_main_dex_jni/TracingControllerAndroidImpl_jni.h"
 
-using base::android::JavaParamRef;
-using base::android::ScopedJavaLocalRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
+using base::android::ScopedJavaLocalRef;
 
 namespace content {
 namespace {
@@ -53,8 +55,8 @@ void ReadJsonTraceData(
     tracing::TracePacketTokenizer& tokenizer,
     perfetto::TracingSession::ReadTraceCallbackArgs args) {
   if (args.size) {
-    auto packets =
-        tokenizer.Parse(reinterpret_cast<const uint8_t*>(args.data), args.size);
+    auto packets = tokenizer.Parse(UNSAFE_TODO(
+        base::span(reinterpret_cast<const uint8_t*>(args.data), args.size)));
     for (const auto& packet : packets) {
       for (const auto& slice : packet.slices()) {
         auto data_string = std::make_unique<std::string>(
@@ -73,7 +75,7 @@ void ReadJsonTraceData(
 
 static jlong JNI_TracingControllerAndroidImpl_Init(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+    const base::android::JavaRef<jobject>& obj) {
   TracingControllerAndroid* profiler = new TracingControllerAndroid(env, obj);
   return reinterpret_cast<intptr_t>(profiler);
 }
@@ -91,8 +93,8 @@ void TracingControllerAndroid::Destroy(JNIEnv* env) {
 
 bool TracingControllerAndroid::StartTracing(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jcategories,
-    const JavaParamRef<jstring>& jtraceoptions,
+    const JavaRef<jstring>& jcategories,
+    const JavaRef<jstring>& jtraceoptions,
     bool use_protobuf) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::string categories =
@@ -118,10 +120,10 @@ bool TracingControllerAndroid::StartTracing(
 
 void TracingControllerAndroid::StopTracing(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jfilepath,
+    const JavaRef<jstring>& jfilepath,
     bool compress_file,
     bool use_protobuf,
-    const base::android::JavaParamRef<jobject>& callback) {
+    const base::android::JavaRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::FilePath file_path(
       base::android::ConvertJavaStringToUTF8(env, jfilepath));
@@ -190,7 +192,7 @@ void TracingControllerAndroid::OnTracingStopped(
 
 bool TracingControllerAndroid::GetKnownCategoriesAsync(
     JNIEnv* env,
-    const JavaParamRef<jobject>& callback) {
+    const JavaRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ScopedJavaGlobalRef<jobject> global_callback(env, callback);
   // TODO(skyostil): Get the categories from Perfetto instead.
@@ -206,9 +208,8 @@ void TracingControllerAndroid::OnKnownCategoriesReceived(
   base::Value::List category_list;
   for (const std::string& category : categories_received)
     category_list.Append(category);
-  std::string received_category_list;
-  base::JSONWriter::Write(base::Value(std::move(category_list)),
-                          &received_category_list);
+  std::string received_category_list =
+      base::WriteJson(base::Value(std::move(category_list))).value_or("");
 
   // This log is required by adb_profile_chrome.py.
   // TODO(crbug.com/40092856): Replace (users of) this with DevTools' Tracing
@@ -236,7 +237,7 @@ JNI_TracingControllerAndroidImpl_GetDefaultCategories(JNIEnv* env) {
 
 bool TracingControllerAndroid::GetTraceBufferUsageAsync(
     JNIEnv* env,
-    const JavaParamRef<jobject>& callback) {
+    const JavaRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ScopedJavaGlobalRef<jobject> global_callback(env, callback);
   auto weak_callback =
@@ -288,3 +289,5 @@ void TracingControllerAndroid::OnTraceBufferUsageReceived(
 }
 
 }  // namespace content
+
+DEFINE_JNI(TracingControllerAndroidImpl)

@@ -407,6 +407,7 @@ class Session:
         self.find = Find(self)
         self.alert = UserPrompt(self)
         self.actions = Actions(self)
+        self.web_extensions = WebExtensions(self)
 
     def __repr__(self):
         return "<%s %s>" % (self.__class__.__name__, self.session_id or "(disconnected)")
@@ -597,15 +598,12 @@ class Session:
         body = {"handle": handle}
         return self.send_session_command("POST", "window", body=body)
 
-    def switch_frame(self, frame):
-        if frame == "parent":
-            url = "frame/parent"
-            body = None
-        else:
-            url = "frame"
-            body = {"id": frame}
+    def switch_to_frame(self, frame):
+        body = {"id": frame}
+        return self.send_session_command("POST", "frame", body=body)
 
-        return self.send_session_command("POST", url, body)
+    def switch_to_parent_frame(self):
+        return self.send_session_command("POST", "frame/parent")
 
     @property
     def handles(self):
@@ -653,6 +651,20 @@ class Session:
         self.send_session_command("DELETE", url, {})
 
     #[...]
+
+
+    def set_global_privacy_control(self, gpc):
+        body = {
+            "gpc": gpc,
+        }
+        return self.send_session_command("POST", "privacy", body)
+
+
+    def get_global_privacy_control(self):
+        return self.send_session_command("GET", "privacy")
+
+    #[...]
+
 
     def execute_script(self, script, args=None):
         if args is None:
@@ -849,6 +861,21 @@ class WebElement:
 
         return self.send_element_command("GET", "property/%s" % name)
 
+
+class WebExtensions:
+    def __init__(self, session):
+        self.session = session
+
+    def install(self, type, path=None, value=None):
+        body = {"type": type}
+        if path is not None:
+            body["path"] = path
+        elif value is not None:
+            body["value"] = value
+        return self.session.send_session_command("POST", "webextension", body)
+
+    def uninstall(self, extension_id):
+        return self.session.send_session_command("DELETE", "webextension/%s" % extension_id)
 
 class WebFrame:
     identifier = "frame-075b-4da1-b6ba-e579c2d3230a"

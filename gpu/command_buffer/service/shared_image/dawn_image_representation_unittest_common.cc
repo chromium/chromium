@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "gpu/command_buffer/service/shared_image/dawn_image_representation_unittest_common.h"
 
+#include "base/compiler_specific.h"
 #include "base/threading/platform_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -247,8 +243,8 @@ struct VertexOut {
 
   uint8_t pixel_color[4];
 
-  memcpy(pixel_color, readback_buffer.GetConstMappedRange(),
-         sizeof(pixel_color));
+  UNSAFE_TODO(memcpy(pixel_color, readback_buffer.GetConstMappedRange(),
+                     sizeof(pixel_color)));
 
   EXPECT_EQ(expected_y_value, pixel_color[0]);
   EXPECT_EQ(expected_u_value, pixel_color[1]);

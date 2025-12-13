@@ -25,7 +25,7 @@ public interface ProcessScopeDependencyProvider {
      * Resolves a library name such as "foo" to an absolute path. The library name should be in the
      * same format given to System.loadLibrary().
      */
-    public interface LibraryResolver {
+    interface LibraryResolver {
         @Nullable String resolvePath(String libName);
     }
 
@@ -55,7 +55,7 @@ public interface ProcessScopeDependencyProvider {
      * chrome/browser/flags/android/chrome_feature_list.cc before querying for the feature with
      * these methods. Chrome will crash if it doesn't find the feature.
      */
-    public interface FeatureStateProvider {
+    interface FeatureStateProvider {
         boolean isFeatureActive(String featureName);
 
         boolean getBooleanParameterValue(
@@ -169,7 +169,7 @@ public interface ProcessScopeDependencyProvider {
     // Visibility log types that can be uploaded.
     @IntDef({VisibilityLogType.UNSPECIFIED, VisibilityLogType.VIEW, VisibilityLogType.CLICK})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface VisibilityLogType {
+    @interface VisibilityLogType {
         int UNSPECIFIED = 0;
         int VIEW = 1;
         int CLICK = 2;

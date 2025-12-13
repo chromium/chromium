@@ -7,124 +7,646 @@
     export: "CORE_EXPORT",
   },
   attributes: [
-    {name: "aria-actions", type: "IDREF_list"},
-    {name: "aria-activedescendant", type: "IDREF"},
-    {name: "aria-atomic", default: "false", type: "boolean"},
+    {
+      name: "aria-actions",
+      type: "IDREF_list",
+      isGlobal: true,
+    },
+    {
+      name: "aria-activedescendant",
+      type: "IDREF",
+      supportedOnRoles: [
+        "application",
+        "combobox",
+        "composite",
+        "grid",
+        "group",
+        "listbox",
+        "menu",
+        "menubar",
+        "radiogroup",
+        "row",
+        "searchbox",
+        "select",
+        "spinbutton",
+        "tablist",
+        "textbox",
+        "toolbar",
+        "tree",
+        "treegrid"
+      ]
+    },
+    {name: "aria-atomic", default: "false", type: "boolean", isGlobal: true},
     {
       name: "aria-autocomplete",
       default: "none",
       enum: ["inline", "list", "both", "none"],
-      type: "token"
+      type: "token",
+      supportedOnRoles: [
+        "combobox",
+        "searchbox",
+        "textbox"
+      ]
     },
-    {name: "aria-braillelabel", type: "string"},
-    {name: "aria-brailleroledescription", type: "string"},
-    {name: "aria-busy", default: "false", type: "boolean"},
+    {
+      name: "aria-braillelabel",
+      type: "string",
+      isGlobal: true,
+      preventedOnRoles: [
+        "caption",
+        "code",
+        "definition",
+        "deletion",
+        "emphasis",
+        "generic",
+        "insertion",
+        "mark",
+        "none",
+        "paragraph",
+        "strong",
+        "subscript",
+        "suggestion",
+        "superscript",
+        "term",
+        "time"
+      ]
+    },
+    {
+      name: "aria-brailleroledescription",
+      type: "string",
+      isGlobal: true,
+      preventedOnRoles: [
+        "generic"
+      ]
+    },
+    {name: "aria-busy", default: "false", type: "boolean", isGlobal: true},
     {
       name: "aria-checked",
       default: "undefined",
       enum: ["true", "false", "mixed", "undefined"],
-      type: "token"
+      type: "token",
+      supportedOnRoles: [
+        "checkbox",
+        "menuitemcheckbox",
+        "menuitemradio",
+        "option",
+        "radio",
+        "switch",
+        "treeitem"
+      ]
     },
-    {name: "aria-colcount", type: "integer"},
-    {name: "aria-colindex", type: "integer"},
-    {name: "aria-colindextext", type: "string"},
-    {name: "aria-colspan", type: "integer"},
-    {name: "aria-controls", type: "IDREF_list"},
+    {
+      name: "aria-colcount",
+      type: "integer",
+      supportedOnRoles: [
+        "grid",
+        "table",
+        "treegrid"
+      ]
+    },
+    {
+      name: "aria-colindex",
+      type: "integer",
+      supportedOnRoles: [
+        "cell",
+        "columnheader",
+        "gridcell",
+        "row",
+        "rowheader"
+      ]
+    },
+    {
+      name: "aria-colindextext",
+      type: "string",
+      supportedOnRoles: [
+        "cell",
+        "columnheader",
+        "gridcell",
+        "rowheader"
+      ]
+    },
+    {
+      name: "aria-colspan",
+      type: "integer",
+      supportedOnRoles: [
+        "cell",
+        "columnheader",
+        "rowheader"
+      ]
+    },
+    {name: "aria-controls", type: "IDREF_list", isGlobal: true},
     {
       name: "aria-current",
       default: "false",
       enum: ["page", "step", "location", "date", "time", "true", "false"],
-      type: "token"
+      type: "token",
+      isGlobal: true
     },
-    {name: "aria-describedby", type: "IDREF_list"},
-    {name: "aria-description", type: "string"},
-    {name: "aria-details", type: "IDREF"},
-    {name: "aria-disabled", default: "false", type: "boolean"},
-    {name: "aria-errormessage", type: "IDREF"},
+    {name: "aria-describedby", type: "IDREF_list", isGlobal: true},
+    {name: "aria-description", type: "string", isGlobal: true},
+    {name: "aria-details", type: "IDREF", isGlobal: true},
+    {
+      name: "aria-disabled",
+      default: "false",
+      type: "boolean",
+      supportedOnRoles: [
+        "application",
+        "button",
+        "checkbox",
+        "columnheader",
+        "combobox",
+        "composite",
+        "grid",
+        "gridcell",
+        "group",
+        "input",
+        "link",
+        "listbox",
+        "menu",
+        "menubar",
+        "menuitem",
+        "menuitemcheckbox",
+        "menuitemradio",
+        "option",
+        "radio",
+        "radiogroup",
+        "row",
+        "rowheader",
+        "scrollbar",
+        "searchbox",
+        "select",
+        "separator",
+        "slider",
+        "spinbutton",
+        "switch",
+        "tab",
+        "tablist",
+        "textbox",
+        "toolbar",
+        "tree",
+        "treegrid",
+        "treeitem"
+      ]
+    },
+    {
+      name: "aria-errormessage",
+      type: "IDREF",
+      supportedOnRoles: [
+        "application",
+        "checkbox",
+        "columnheader",
+        "combobox",
+        "gridcell",
+        "listbox",
+        "radiogroup",
+        "rowheader",
+        "searchbox",
+        "slider",
+        "spinbutton",
+        "switch",
+        "textbox",
+        "tree",
+        "treegrid"
+      ]
+    },
     {
       name: "aria-expanded",
       default: "undefined",
       enum: ["true", "false", "undefined"],
-      type: "token"
+      type: "token",
+      supportedOnRoles: [
+        "application",
+        "button",
+        "checkbox",
+        "columnheader",
+        "combobox",
+        "gridcell",
+        "link",
+        "menuitem",
+        "menuitemcheckbox",
+        "menuitemradio",
+        "row",
+        "rowheader",
+        "switch",
+        "tab",
+        "treeitem"
+      ]
     },
-    {name: "aria-flowto", type: "IDREF_list"},
+    {name: "aria-flowto", type: "IDREF_list", isGlobal: true},
     {
       name: "aria-haspopup",
       default: "false",
       enum: ["false", "true", "menu", "listbox", "tree", "grid", "dialog"],
-      type: "token"
+      type: "token",
+      supportedOnRoles: [
+        "application",
+        "button",
+        "columnheader",
+        "combobox",
+        "gridcell",
+        "link",
+        "menuitem",
+        "menuitemcheckbox",
+        "menuitemradio",
+        "rowheader",
+        "searchbox",
+        "slider",
+        "tab",
+        "textbox",
+        "treeitem"
+      ]
     },
     {
       name: "aria-hidden",
       default: "undefined",
       enum: ["true", "false", "undefined"],
-      type: "token"
+      type: "token",
+      isGlobal: true
     },
     {
       name: "aria-invalid",
       default: "false",
       enum: ["grammar", "false", "spelling", "true"],
-      type: "token"
+      type: "token",
+      supportedOnRoles: [
+        "application",
+        "checkbox",
+        "columnheader",
+        "combobox",
+        "gridcell",
+        "listbox",
+        "radiogroup",
+        "rowheader",
+        "searchbox",
+        "slider",
+        "spinbutton",
+        "switch",
+        "textbox",
+        "tree",
+        "treegrid"
+      ]
     },
-    {name: "aria-keyshortcuts", type: "string"},
-    {name: "aria-label", type: "string"},
-    {name: "aria-labelledby", type: "IDREF_list"},
-    {name: "aria-labeledby", type: "IDREF_list"},  // alias for labelledby
-    {name: "aria-level", type: "integer"},
+    {name: "aria-keyshortcuts", type: "string", isGlobal: true},
+    {
+      name: "aria-label",
+      type: "string",
+      isGlobal: true,
+      preventedOnRoles: [
+        "caption",
+        "code",
+        "definition",
+        "deletion",
+        "emphasis",
+        "generic",
+        "insertion",
+        "mark",
+        "none",
+        "paragraph",
+        "strong",
+        "subscript",
+        "suggestion",
+        "superscript",
+        "term",
+        "time"
+      ]
+    },
+    {
+      name: "aria-labelledby",
+      type: "IDREF_list",
+      isGlobal: true,
+      preventedOnRoles: [
+        "caption",
+        "code",
+        "definition",
+        "deletion",
+        "emphasis",
+        "generic",
+        "insertion",
+        "mark",
+        "none",
+        "paragraph",
+        "strong",
+        "subscript",
+        "suggestion",
+        "superscript",
+        "term",
+        "time"
+      ]
+    },
+    {
+      name: "aria-labeledby",
+      type: "IDREF_list",
+      isGlobal: true,
+      preventedOnRoles: [
+        "caption",
+        "code",
+        "definition",
+        "deletion",
+        "emphasis",
+        "generic",
+        "insertion",
+        "mark",
+        "none",
+        "paragraph",
+        "strong",
+        "subscript",
+        "suggestion",
+        "superscript",
+        "term",
+        "time"
+      ]
+    },  // alias for labelledby
+    {
+      name: "aria-level",
+      type: "integer",
+      supportedOnRoles: [
+        "comment",
+        "heading",
+        "row",
+        "treeitem"
+      ]
+    },
     {
       name: "aria-live",
-      default: "off",
-      enum: ["off", "polite", "assertive"],
-      type: "token"
+      // Chromium diverges from ARIA spec: we use "undefined" as the default instead of "off"
+      // to distinguish "not a live region" from "live region but inactive".
+      // See: https://github.com/w3c/aria/issues/2653
+      default: "undefined",
+      enum: ["off", "polite", "assertive", "undefined"],
+      type: "token",
+      isGlobal: true
     },
-    {name: "aria-modal", default: "false", type: "boolean"},
-    {name: "aria-multiline", default: "false", type: "boolean"},
-    {name: "aria-multiselectable", default: "false", type: "boolean"},
+    {
+      name: "aria-modal",
+      default: "false",
+      type: "boolean",
+      supportedOnRoles: [
+        "alertdialog",
+        "dialog"
+      ]
+    },
+    {
+      name: "aria-multiline",
+      default: "false",
+      type: "boolean",
+      supportedOnRoles: [
+        "searchbox",
+        "textbox"
+      ]
+    },
+    {
+      name: "aria-multiselectable",
+      default: "false",
+      type: "boolean",
+      supportedOnRoles: [
+        "grid",
+        "listbox",
+        "tablist",
+        "tree",
+        "treegrid"
+      ]
+    },
     {
       name: "aria-orientation",
       default: "undefined",
       enum: ["horizontal", "undefined", "vertical"],
-      type: "token"
+      type: "token",
+      supportedOnRoles: [
+        "listbox",
+        "menu",
+        "menubar",
+        "radiogroup",
+        "scrollbar",
+        "select",
+        "separator",
+        "slider",
+        "tablist",
+        "toolbar",
+        "tree",
+        "treegrid"
+      ]
     },
-    {name: "aria-owns", type: "IDREF_list"},
-    {name: "aria-placeholder", type: "string"},
-    {name: "aria-posinset", type: "integer"},
+    {name: "aria-owns", type: "IDREF_list", isGlobal: true},
+    {
+      name: "aria-placeholder",
+      type: "string",
+      supportedOnRoles: [
+        "searchbox",
+        "textbox"
+      ]
+    },
+    {
+      name: "aria-posinset",
+      type: "integer",
+      supportedOnRoles: [
+        "article",
+        "comment",
+        "listitem",
+        "menuitem",
+        "menuitemcheckbox",
+        "menuitemradio",
+        "option",
+        "radio",
+        "row",
+        "tab",
+        "treeitem"
+      ]
+    },
     {
       name: "aria-pressed",
       default: "undefined",
       enum: ["true", "false", "mixed", "undefined"],
-      type: "token"
+      type: "token",
+      supportedOnRoles: [
+        "button"
+      ]
     },
-    {name: "aria-readonly", default: "false", type: "boolean"},
+    {
+      name: "aria-readonly",
+      default: "false",
+      type: "boolean",
+      supportedOnRoles: [
+        "checkbox",
+        "columnheader",
+        "combobox",
+        "grid",
+        "gridcell",
+        "listbox",
+        "radiogroup",
+        "rowheader",
+        "searchbox",
+        "slider",
+        "spinbutton",
+        "switch",
+        "textbox",
+        "treegrid"
+      ]
+    },
     {
       name: "aria-relevant",
       default: "additions text",
       enum: ["additions", "removals", "text", "all"],
-      type: "token_list"
+      type: "token_list",
+      isGlobal: true
     },
-    {name: "aria-required", default: "false", type: "boolean"},
-    {name: "aria-roledescription", type: "string"},
-    {name: "aria-rowcount", type: "integer"},
-    {name: "aria-rowindex", type: "integer"},
-    {name: "aria-rowindextext", type: "string"},
-    {name: "aria-rowspan", type: "integer"},
+    {
+      name: "aria-required",
+      default: "false",
+      type: "boolean",
+      supportedOnRoles: [
+        "checkbox",
+        "columnheader",
+        "combobox",
+        "gridcell",
+        "listbox",
+        "radiogroup",
+        "rowheader",
+        "searchbox",
+        "spinbutton",
+        "switch",
+        "textbox",
+        "tree",
+        "treegrid"
+      ]
+    },
+    {
+      name: "aria-roledescription",
+      type: "string",
+      isGlobal: true,
+      preventedOnRoles: [
+        "generic"
+      ]
+    },
+    {
+      name: "aria-rowcount",
+      type: "integer",
+      supportedOnRoles: [
+        "grid",
+        "table",
+        "treegrid"
+      ]
+    },
+    {
+      name: "aria-rowindex",
+      type: "integer",
+      supportedOnRoles: [
+        "cell",
+        "columnheader",
+        "gridcell",
+        "row",
+        "rowheader"
+      ]
+    },
+    {
+      name: "aria-rowindextext",
+      type: "string",
+      supportedOnRoles: [
+        "cell",
+        "columnheader",
+        "gridcell",
+        "row",
+        "rowheader"
+      ]
+    },
+    {
+      name: "aria-rowspan",
+      type: "integer",
+      supportedOnRoles: [
+        "cell",
+        "columnheader",
+        "rowheader"
+      ]
+    },
     {
       name: "aria-selected",
       default: "undefined",
       enum: ["true", "false", "undefined"],
-      type: "token"
+      type: "token",
+      supportedOnRoles: [
+        "columnheader",
+        "gridcell",
+        "option",
+        "row",
+        "rowheader",
+        "tab",
+        "treeitem"
+      ]
     },
-    {name: "aria-setsize", type: "integer"},
+    {
+      name: "aria-setsize",
+      type: "integer",
+      supportedOnRoles: [
+        "article",
+        "comment",
+        "listitem",
+        "menuitem",
+        "menuitemcheckbox",
+        "menuitemradio",
+        "option",
+        "radio",
+        "row",
+        "tab",
+        "treeitem"
+      ]
+    },
     {
       name: "aria-sort",
       default: "none",
       enum: ["ascending", "descending", "none", "other"],
-      type: "token"
+      type: "token",
+      supportedOnRoles: [
+        "columnheader",
+        "rowheader"
+      ]
     },
-    {name: "aria-valuemax", type: "decimal"},
-    {name: "aria-valuemin", type: "decimal"},
-    {name: "aria-valuenow", type: "decimal"},
-    {name: "aria-valuetext", type: "string"},
+    {
+      name: "aria-valuemax",
+      type: "decimal",
+      supportedOnRoles: [
+        "meter",
+        "progressbar",
+        "scrollbar",
+        "separator",
+        "slider",
+        "spinbutton"
+      ]
+    },
+    {
+      name: "aria-valuemin",
+      type: "decimal",
+      supportedOnRoles: [
+        "meter",
+        "progressbar",
+        "scrollbar",
+        "separator",
+        "slider",
+        "spinbutton"
+      ]
+    },
+    {
+      name: "aria-valuenow",
+      type: "decimal",
+      supportedOnRoles: [
+        "meter",
+        "progressbar",
+        "scrollbar",
+        "separator",
+        "slider",
+        "spinbutton"
+      ]
+    },
+    {
+      name: "aria-valuetext",
+      type: "string",
+      supportedOnRoles: [
+        "meter",
+        "progressbar",
+        "scrollbar",
+        "separator",
+        "slider",
+        "spinbutton"
+      ]
+    },
     {name: "aria-virtualcontent", type: "string"},
   ],
   roles: [
@@ -139,6 +661,7 @@
     },
     {
       name: "alertdialog",
+      internalRoles: ["kAlertDialog"],
       nameFrom: ["author"],
       superclasses: ["alert", "dialog"],
       nameRequired: true
@@ -153,58 +676,78 @@
       name: "article",
       nameFrom: ["author"],
       superclasses: ["document"],
-      supportedAttributes: ["aria-posinset", "aria-setsize"]
     },
-    {name: "banner", nameFrom: ["author"], superclasses: ["landmark"]},
+    {
+      name: "banner",
+      internalRoles: ["kBanner", "kHeader"],
+      nameFrom: ["author"],
+      superclasses: ["landmark"]
+    },
+    {
+      name: "blockquote",
+      nameFrom: ["author"],
+      superclasses: ["section"]
+    },
     {
       name: "button",
+      internalRoles: ["kButton", "kToggleButton", "kPopUpButton"],
       nameFrom: ["contents", "author"],
       superclasses: ["command"],
-      supportedAttributes: ["aria-expanded", "aria-pressed"],
       nameRequired: true,
       childrenPresentational: true
     },
     {
+      name: "caption",
+      nameFrom: ["prohibited"],
+      superclasses: ["structure"]
+    },
+    {
       name: "cell",
-      namefrom: ["contents", "author"],
+      nameFrom: ["contents", "author"],
       scope: "row",
       superclasses: ["section"],
-      supportedAttributes: [
-        "aria-colindex", "aria-colspan", "aria-rowindex", "aria-rowspan"
-      ]
     },
     {
       name: "checkbox",
+      internalRoles: ["kCheckBox"],
       nameFrom: ["contents", "author"],
       requiredAttributes: ["aria-checked"],
       superclasses: ["input"],
-      supportedAttributes: ["aria-readonly"],
       nameRequired: true,
       implicitValues: {"aria-checked": false}
     },
     {
+      name: "code",
+      nameFrom: ["prohibited"],
+      superclasses: ["structure"]
+    },
+    {
       name: "columnheader",
+      internalRoles: ["kColumnHeader"],
       nameFrom: ["contents", "author"],
       scope: ["row"],
       superclasses: ["gridcell", "sectionhead", "widget"],
-      supportedAttributes: ["aria-sort"],
       nameRequired: true
     },
     {
       name: "combobox",
+      internalRoles: ["kComboBoxGrouping", "kComboBoxMenuButton", "kComboBoxSelect", "kTextFieldWithComboBox"],
       // TODO(aboxhall): Follow up with Nektarios and Aaron regarding role
       // on textbox
       mustContain: ["textbox"],
       nameFrom: ["author"],
       requiredAttributes: ["aria-controls", "aria-expanded"],
       superclasses: ["select"],
-      supportedAttributes:
-          ["aria-autocomplete", "aria-readonly", "aria-required"],
       nameRequired: true,
       implicitValues: {
         "aria-expanded": "false",
         "aria-haspopup": "listbox"
       }
+    },
+    {
+      name: "comment",
+      nameFrom: ["author"],
+      superclasses: ["structure"]
     },
     {
       name: "command",
@@ -218,23 +761,47 @@
       abstract: true,
       nameFrom: ["author"],
       superclasses: ["widget"],
-      supportedAttributes: ["aria-activedescendant"],
     },
-    {name: "contentinfo", nameFrom: ["author"], superclasses: ["landmark"]},
-    {name: "definition", nameFrom: ["author"], superclasses: ["section"]},
+    {
+      name: "contentinfo",
+      internalRoles: ["kContentInfo", "kFooter"],
+      nameFrom: ["author"],
+      superclasses: ["landmark"]
+    },
+    {
+      name: "definition",
+      nameFrom: ["prohibited"],
+      superclasses: ["section"]
+    },
+    {
+      name: "deletion",
+      internalRoles: ["kContentDeletion"],
+      nameFrom: ["prohibited"],
+      superclasses: ["structure"]
+    },
     {
       name: "dialog",
       nameFrom: ["author"],
       superclasses: ["window"],
       nameRequired: true
     },
-    {name: "directory", nameFrom: ["author"], superclasses: ["list"]},
+    {
+      name: "directory",
+      deprecated: true,
+      internalRoles: ["kList"],
+      nameFrom: ["author"],
+      superclasses: ["list"]
+    },
     {
       name: "document",
       nameFrom: ["author"],
       superclasses: ["structure"],
-      supportedAttributes: ["aria-expanded"],
       nameRequired: false
+    },
+    {
+      name: "emphasis",
+      nameFrom: ["prohibited"],
+      superclasses: ["structure"]
     },
     {
       name: "feed",
@@ -245,50 +812,66 @@
     },
     {
       name: "figure",
-      namefrom: ["author"],
+      nameFrom: ["author"],
       superclasses: ["section"],
       nameRequired: false
     },
-    {name: "form", nameFrom: ["author"], superclasses: ["landmark"]},
+    {name: "form", nameFrom: ["author"], superclasses: ["landmark"], nameRequired: true},
+    {
+      name: "generic",
+      internalRoles: ["kGenericContainer", "kSectionWithoutName"],
+      nameFrom: ["prohibited"],
+      superclasses: ["structure"]
+    },
     {
       name: "grid",
       nameFrom: ["author"],
       superclasses: ["composite", "table"],
       // TODO(aboxhall): Figure out how to express "rowgroup --> row" here.
       mustContain: ["row"],
-      supportedAttributes:
-          ["aria-level", "aria-multiselectable", "aria-readonly"],
       nameRequired: true
     },
     {
       name: "gridcell",
+      internalRoles: ["kGridCell"],
       nameFrom: ["contents", "author"],
       scope: ["row"],
       superclasses: ["cell", "widget"],
-      supportedAttributes:
-          ["aria-readonly", "aria-required", "aria-selected"],
       nameRequired: true
     },
     {
       name: "group",
+      internalRoles: ["kGroup", "kDetails"],
       nameFrom: ["author"],
       superclasses: ["section"],
-      supportedAttributes: ["aria-activedescendant"]
     },
     {
       name: "heading",
-      namefrom: ["contents", "author"],
+      nameFrom: ["contents", "author"],
       superclasses: ["sectionhead"],
-      supportedAttributes: ["aria-level"],
       nameRequired: true,
       implicitValues: {"aria-level": "2"}
     },
     {
+      name: "image",
+      internalRoles: ["kImage"],
+      nameFrom: ["author"],
+      superclasses: ["structure"]
+    },
+    {
       name: "img",
+      deprecated: true,
+      internalRoles: ["kImage"],
       nameFrom: ["author"],
       superclasses: ["section"],
       nameRequired: true,
       childrenPresentational: true
+    },
+    {
+      name: "insertion",
+      internalRoles: ["kContentInsertion"],
+      nameFrom: ["prohibited"],
+      superclasses: ["structure"]
     },
     {
       name: "input",
@@ -307,11 +890,11 @@
       name: "link",
       nameFrom: ["contents", "author"],
       superclasses: ["command"],
-      supportedAttributes: ["aria-expanded"],
       nameRequired: true
     },
     {
       name: "list",
+      internalRoles: ["kList"],
       // TODO(aboxhall): Figure out how to express "group --> listitem"
       mustContain: ["listitem"],
       nameFrom: ["author"],
@@ -320,20 +903,19 @@
     },
     {
       name: "listbox",
+      internalRoles: ["kListBox"],
       nameFrom: ["author"],
       superclasses: ["select"],
       mustContain: ["option"],
-      supportedAttributes:
-          ["aria-multiselectable", "aria-readonly", "aria-required"],
       nameRequired: true,
       implicitValues: {"aria-orientation": "vertical"}
     },
     {
       name: "listitem",
+      internalRoles: ["kListItem"],
       nameFrom: ["author"],
       superclasses: ["section"],
       scope: ["group", "list"],
-      supportedAttributes: ["aria-level", "aria-posinset", "aria-setsize"]
     },
     {
       name: "log",
@@ -342,12 +924,22 @@
       nameRequired: true,
       implicitValues: {"aria-live": "polite"}
     },
-    {name: "main", nameFrom: ["author"], superclasses: ["landmark"]},
+    {
+      name: "main",
+      nameFrom: ["author"],
+      superclasses: ["landmark"]
+    },
+    {
+      name: "mark",
+      nameFrom: ["prohibited"],
+      superclasses: ["structure"]
+    },
     {
       name: "marquee",
       nameFrom: ["author"],
       superclasses: ["section"],
-      nameRequired: true
+      nameRequired: true,
+      implicitValues: {"aria-live": "off"}
     },
     {
       name: "math",
@@ -370,6 +962,7 @@
     },
     {
       name: "menubar",
+      internalRoles: ["kMenuBar"],
       nameFrom: ["author"],
       superclasses: ["menu"],
       // TODO(aboxhall): figure out how to express "group --> {menuitem,
@@ -379,6 +972,7 @@
     },
     {
       name: "menuitem",
+      internalRoles: ["kMenuItem"],
       nameFrom: ["contents", "author"],
       scope: ["group", "menu", "menubar"],
       superclasses: ["command"],
@@ -386,6 +980,7 @@
     },
     {
       name: "menuitemcheckbox",
+      internalRoles: ["kMenuItemCheckBox"],
       nameFrom: ["contents", "author"],
       scope: ["menu", "menubar"],
       superclasses: ["checkbox", "menuitem"],
@@ -395,6 +990,7 @@
     },
     {
       name: "menuitemradio",
+      internalRoles: ["kMenuItemRadio"],
       nameFrom: ["contents", "author"],
       scope: ["menu", "menubar", "group"],
       superclasses: ["menuitemcheckbox", "radio"],
@@ -402,45 +998,76 @@
       childrenPresentational: true,
       implicitValues: {"aria-checked": false}
     },
-    {name: "navigation", nameFrom: ["author"], superclasses: ["landmark"]},
-    {name: "none", superclasses: ["structure"]},
-    {name: "note", nameFrom: ["author"], superclasses: ["section"]},
+    {
+      name: "meter",
+      nameFrom: ["author"],
+      superclasses: ["structure"],
+      nameRequired: true,
+      implicitValues: {"aria-valuemin": "0", "aria-valuemax": "100"}
+    },
+    {
+      name: "navigation",
+      nameFrom: ["author"],
+      superclasses: ["landmark"]
+    },
+    {
+      name: "none",
+      internalRoles: ["kNone"],
+      nameFrom: ["prohibited"],
+      superclasses: ["structure"]
+    },
+    {
+      name: "note",
+      nameFrom: ["author"],
+      superclasses: ["section"]
+    },
     {
       name: "option",
+      internalRoles: ["kListBoxOption", "kMenuListOption"],
       nameFrom: ["contents", "author"],
       scope: ["listbox"],
       superclasses: ["input"],
       requiredAttributes: ["aria-selected"],
-      supportedAttributes:
-          ["aria-checked", "aria-posinset", "aria-setsize"],
       nameRequired: true,
       childrenPresentational: true,
       implicitValues: {"aria-selected": "false"}
     },
-    {name: "presentation", superclasses: ["structure"]},
+    {
+      name: "paragraph",
+      nameFrom: ["prohibited"],
+      superclasses: ["structure"]
+    },
+    {
+      name: "presentation",
+      deprecated: true,
+      internalRoles: ["kNone"],
+      superclasses: ["structure"]
+    },
     {
       name: "progressbar",
+      internalRoles: ["kProgressIndicator"],
       nameFrom: ["author"],
       superclasses: ["range"],
       nameRequired: true,
-      childrenPresentational: true
+      childrenPresentational: true,
+      implicitValues: {"aria-valuemin": "0", "aria-valuemax": "100"}
     },
     {
       name: "radio",
+      internalRoles: ["kRadioButton"],
       nameFrom: ["contents", "author"],
       superclasses: ["input"],
       requiredAttributes: ["aria-checked"],
-      supportedAttributes: ["aria-posinset", "aria-setsize"],
       nameRequired: true,
       childrenPresentational: true,
       implicitValues: {"aria-checked": "false"}
     },
     {
       name: "radiogroup",
+      internalRoles: ["kRadioGroup"],
       nameFrom: ["author"],
       superclasses: ["select"],
       mustContain: ["radio"],
-      supportedAttributes: ["aria-readonly", "aria-required"],
       nameRequired: true
     },
     {
@@ -448,9 +1075,6 @@
       abstract: true,
       nameFrom: ["author"],
       superclasses: ["widget"],
-      supportedAttributes: [
-        "aria-valuemax", "aria-valuemin", "aria-valuenow", "aria-valuetext"
-      ]
     },
     {
       name: "region",
@@ -461,15 +1085,6 @@
     {
       name: "roletype",
       abstract: true,
-      supportedAttributes: [
-        "aria-atomic",   "aria-busy",        "aria-controls",
-        "aria-current",  "aria-describedby", "aria-details",
-        "aria-disabled", "aria-dropeffect",  "aria-errormessage",
-        "aria-flowto",   "aria-grabbed",     "aria-haspopup",
-        "aria-hidden",   "aria-invalid",     "aria-keyshortcuts",
-        "aria-label",    "aria-labelledby",  "aria-live",
-        "aria-owns",     "aria-relevant",    "aria-roledescription"
-      ]
     },
     {
       name: "row",
@@ -477,32 +1092,26 @@
       superclasses: ["group", "widget"],
       mustContain: ["cell", "columnheader", "gridcell", "rowheader"],
       scope: ["grid", "rowgroup", "table", "treegrid"],
-      // TODO(aboxhall/aleventhal): This is not in the spec yet, but
-      // setsize and posinset are included here for treegrid
-      // purposes. Issue already filed on spec. Remove this comment
-      // when spec updated.
-      supportedAttributes: [
-        "aria-colindex", "aria-level", "aria-rowindex", "aria-selected",
-        "aria-setsize", "aria-posinset"
-      ]
     },
     {
       name: "rowgroup",
-      nameFrom: ["contents", "author"],
+      internalRoles: ["kRowGroup"],
+      nameFrom: ["author"],
       superclasses: ["structure"],
       mustContain: ["row"],
       scope: ["grid", "table", "treegrid"],
     },
     {
       name: "rowheader",
+      internalRoles: ["kRowHeader"],
       nameFrom: ["contents", "author"],
       scope: ["row"],
       superclasses: ["cell", "gridcell", "sectionhead"],
-      supportedAttributes: ["aria-sort"],
       nameRequired: true
     },
     {
       name: "scrollbar",
+      internalRoles: ["kScrollBar"],
       nameFrom: ["author"],
       requiredAttributes: [
         "aria-controls", "aria-orientation", "aria-valuemax",
@@ -516,9 +1125,14 @@
         "aria-valuemin": "0", "aria-valuemax": "100"
       }
     },
-    {name: "search", nameFrom: ["author"], superclasses: ["landmark"]},
+    {
+      name: "search",
+      nameFrom: ["author"],
+      superclasses: ["landmark"]
+    },
     {
       name: "searchbox",
+      internalRoles: ["kSearchBox"],
       nameFrom: ["author"],
       superclasses: ["textbox"],
       nameRequired: true
@@ -527,14 +1141,12 @@
       name: "section",
       abstract: true,
       superclasses: ["structure"],
-      supportedAttributes: ["aria-expanded"]
     },
     {
       name: "sectionhead",
       abstract: true,
       nameFrom: ["contents", "author"],
       superclasses: ["structure"],
-      supportedAttributes: ["aria-expanded"]
     },
     {
       name: "select",
@@ -544,15 +1156,14 @@
     },
     {
       name: "separator",
+      internalRoles: ["kSplitter"],
       nameFrom: ["author"],
-      // TODO(aboxhall): superclass depends on focusability, but
-      // doesn"t affect required/supported attributes
       superclasses: ["structure"],
-      // TODO(aboxhall): required attributes depend on focusability
-      supportedAttributes: [
-        "aria-orientation", "aria-valuemin", "aria-valuemax",
-        "aria-valuenow", "aria-valuetext"
-      ]
+      implicitValues: {
+        "aria-orientation": "horizontal",
+        "aria-valuemin": "0",
+        "aria-valuemax": "100"
+      }
     },
     {
       name: "slider",
@@ -560,7 +1171,6 @@
       requiredAttributes:
           ["aria-valuemax", "aria-valuemin", "aria-valuenow"],
       superclasses: ["input", "range"],
-      supportedAttributes: ["aria-orientation"],
       nameRequired: true,
       childrenPresentational: true,
       // TODO(aboxhall): aria-valuenow default is halfway between
@@ -572,13 +1182,12 @@
     },
     {
       name: "spinbutton",
+      internalRoles: ["kSpinButton"],
       nameFrom: ["author"],
       requiredAttributes:
           ["aria-valuemax", "aria-valuemin", "aria-valuenow"],
       superclasses: ["composite", "input", "range"],
-      supportedAttributes: ["aria-required", "aria-readonly"],
-      nameRequired: true,
-      implicitValues: {"aria-valuenow": "0" }
+      nameRequired: true
     },
     {
       name: "status",
@@ -586,7 +1195,31 @@
       superclasses: ["section"],
       implicitValues: {"aria-live": "polite", "aria-atomic": "true" }
     },
-    {name: "structure", abstract: true, superclasses: ["roletype"]},
+    {
+      name: "strong",
+      nameFrom: ["prohibited"],
+      superclasses: ["structure"]
+    },
+    {
+      name: "structure",
+      abstract: true,
+      superclasses: ["roletype"]
+    },
+    {
+      name: "subscript",
+      nameFrom: ["prohibited"],
+      superclasses: ["structure"]
+    },
+    {
+      name: "suggestion",
+      nameFrom: ["prohibited"],
+      superclasses: ["structure"]
+    },
+    {
+      name: "superscript",
+      nameFrom: ["prohibited"],
+      superclasses: ["structure"]
+    },
     {
       name: "switch", nameFrom: ["contents", "author"],
       superclasses: ["checkbox"], requiredAttributes: ["aria-checked"],
@@ -598,7 +1231,6 @@
       nameFrom: ["contents", "author"],
       scope: ["tablist"],
       superclasses: ["sectionhead", "widget"],
-      supportedAttributes: ["aria-selected"],
       childrenPresentational: true,
       implicitValues: {"aria-selected": "false"}
     },
@@ -608,41 +1240,50 @@
       superclasses: ["section"],
       // TODO(aboxhall): Figure out how to express "rowgroup --> row"
       mustContain: ["row"],
-      supportedAttributes: ["aria-colcount", "aria-rowcount"],
       nameRequired: true
     },
     {
       name: "tablist",
+      internalRoles: ["kTabList"],
       nameFrom: ["author"],
       superclasses: ["composite"],
       mustContain: ["tab"],
-      supportedAttributes:
-          ["aria-level", "aria-multiselectable", "aria-orientation"],
       implicitValues: {"aria-orientation": "horizontal"}
     },
     {
       name: "tabpanel",
+      internalRoles: ["kTabPanel"],
       nameFrom: ["author"],
       superclasses: ["section"],
       nameRequired: true
     },
-    {name: "term", nameFrom: ["author"], superclasses: ["section"]},
+    {
+      name: "term",
+      nameFrom: ["prohibited"],
+      superclasses: ["section"]
+    },
+    {
+      name: "time",
+      nameFrom: ["prohibited"],
+      superclasses: ["structure"]
+    },
     {
       name: "textbox",
+      internalRoles: ["kTextField"],
       nameFrom: ["author"],
       superclasses: ["input"],
-      supportedAttributes: [
-        "aria-activedescendant", "aria-autocomplete", "aria-multiline",
-        "aria-placeholder", "aria-readonly", "aria-required"
-      ],
       nameRequired: true
     },
-    {name: "timer", nameFrom: ["author"], superclasses: ["status"]},
+    {
+      name: "timer",
+      nameFrom: ["author"],
+      superclasses: ["status"],
+      implicitValues: {"aria-live": "off"}
+    },
     {
       name: "toolbar",
       nameFrom: ["author"],
       superclasses: ["group"],
-      supportedAttributes: ["aria-orientation"],
       implicitValues: {"aria-orientation": "horizontal"
       }
     },
@@ -657,13 +1298,13 @@
       nameFrom: ["author"],
       mustContain: ["group", "treeitem"],
       superclasses: ["select"],
-      supportedAttributes: ["aria-multiselectable", "aria-required"],
       nameRequired: true,
       implicitValues: {"aria-orientation": "vertical"
       }
     },
     {
       name: "treegrid",
+      internalRoles: ["kTreeGrid"],
       // TODO(aboxhall): Figure out how to express "rowgroup --> row"
       mustContain: ["row"],
       nameFrom: ["author"],
@@ -672,18 +1313,303 @@
     },
     {
       name: "treeitem",
+      internalRoles: ["kTreeItem"],
       nameFrom: ["contents", "author"],
       scope: ["group", "tree"],
       superclasses: ["listitem", "option"],
       nameRequired: true
     },
-    {name: "widget", abstract: true, superclasses: ["roletype"]},
+    {
+      name: "widget",
+      abstract: true,
+      superclasses: ["roletype"]
+    },
     {
       name: "window",
       abstract: true,
       nameFrom: ["author"],
       superclasses: ["roletype"],
-      supportedAttributes: ["aria-expanded", "aria-modal"]
+    },
+    // In the Core-AAM for HTML
+    {
+      name: "sectionfooter",
+      internalRoles: ["kSectionFooter"],
+      nameFrom: ["author"],
+      superclasses: ["contentinfo"]
+    },
+    {
+      name: "sectionheader",
+      internalRoles: ["kSectionHeader"],
+      nameFrom: ["author"],
+      superclasses: ["banner"]
+    },
+
+    // DPub-ARIA Module roles
+    {
+      name: "doc-abstract",
+      internalRoles: ["kDocAbstract"],
+      nameFrom: ["author"],
+      superclasses: ["section"]
+    },
+    {
+      name: "doc-acknowledgments",
+      internalRoles: ["kDocAcknowledgments"],
+      nameFrom: ["author"],
+      superclasses: ["landmark"]
+    },
+    {
+      name: "doc-afterword",
+      internalRoles: ["kDocAfterword"],
+      nameFrom: ["author"],
+      superclasses: ["landmark"]
+    },
+    {
+      name: "doc-appendix",
+      internalRoles: ["kDocAppendix"],
+      nameFrom: ["author"],
+      superclasses: ["landmark"]
+    },
+    {
+      name: "doc-backlink",
+      internalRoles: ["kDocBackLink"],
+      nameFrom: ["contents", "author"],
+      superclasses: ["link"]
+    },
+    {
+      name: "doc-biblioentry",
+      internalRoles: ["kDocBiblioEntry"],
+      nameFrom: ["author"],
+      superclasses: ["listitem"]
+    },
+    {
+      name: "doc-bibliography",
+      internalRoles: ["kDocBibliography"],
+      nameFrom: ["author"],
+      superclasses: ["landmark"]
+    },
+    {
+      name: "doc-biblioref",
+      internalRoles: ["kDocBiblioRef"],
+      nameFrom: ["contents", "author"],
+      superclasses: ["link"]
+    },
+    {
+      name: "doc-chapter",
+      internalRoles: ["kDocChapter"],
+      nameFrom: ["author"],
+      superclasses: ["landmark"]
+    },
+    {
+      name: "doc-colophon",
+      internalRoles: ["kDocColophon"],
+      nameFrom: ["author"],
+      superclasses: ["section"]
+    },
+    {
+      name: "doc-conclusion",
+      internalRoles: ["kDocConclusion"],
+      nameFrom: ["author"],
+      superclasses: ["landmark"]
+    },
+    {
+      name: "doc-cover",
+      internalRoles: ["kDocCover"],
+      nameFrom: ["author"],
+      superclasses: ["img"]
+    },
+    {
+      name: "doc-credit",
+      internalRoles: ["kDocCredit"],
+      nameFrom: ["author"],
+      superclasses: ["section"]
+    },
+    {
+      name: "doc-credits",
+      internalRoles: ["kDocCredits"],
+      nameFrom: ["author"],
+      superclasses: ["landmark"]
+    },
+    {
+      name: "doc-dedication",
+      internalRoles: ["kDocDedication"],
+      nameFrom: ["author"],
+      superclasses: ["section"]
+    },
+    {
+      name: "doc-endnote",
+      internalRoles: ["kDocEndnote"],
+      nameFrom: ["author"],
+      superclasses: ["listitem"]
+    },
+    {
+      name: "doc-endnotes",
+      internalRoles: ["kDocEndnotes"],
+      nameFrom: ["author"],
+      superclasses: ["landmark"]
+    },
+    {
+      name: "doc-epigraph",
+      internalRoles: ["kDocEpigraph"],
+      nameFrom: ["author"],
+      superclasses: ["section"]
+    },
+    {
+      name: "doc-epilogue",
+      internalRoles: ["kDocEpilogue"],
+      nameFrom: ["author"],
+      superclasses: ["landmark"]
+    },
+    {
+      name: "doc-errata",
+      internalRoles: ["kDocErrata"],
+      nameFrom: ["author"],
+      superclasses: ["landmark"]
+    },
+    {
+      name: "doc-example",
+      internalRoles: ["kDocExample"],
+      nameFrom: ["author"],
+      superclasses: ["section"]
+    },
+    {
+      name: "doc-footnote",
+      internalRoles: ["kDocFootnote"],
+      nameFrom: ["author"],
+      superclasses: ["section"]
+    },
+    {
+      name: "doc-foreword",
+      internalRoles: ["kDocForeword"],
+      nameFrom: ["author"],
+      superclasses: ["landmark"]
+    },
+    {
+      name: "doc-glossary",
+      internalRoles: ["kDocGlossary"],
+      nameFrom: ["author"],
+      superclasses: ["landmark"]
+    },
+    {
+      name: "doc-glossref",
+      internalRoles: ["kDocGlossRef"],
+      nameFrom: ["contents", "author"],
+      superclasses: ["link"]
+    },
+    {
+      name: "doc-index",
+      internalRoles: ["kDocIndex"],
+      nameFrom: ["author"],
+      superclasses: ["navigation"]
+    },
+    {
+      name: "doc-introduction",
+      internalRoles: ["kDocIntroduction"],
+      nameFrom: ["author"],
+      superclasses: ["landmark"]
+    },
+    {
+      name: "doc-noteref",
+      internalRoles: ["kDocNoteRef"],
+      nameFrom: ["contents", "author"],
+      superclasses: ["link"]
+    },
+    {
+      name: "doc-notice",
+      internalRoles: ["kDocNotice"],
+      nameFrom: ["author"],
+      superclasses: ["note"]
+    },
+    {
+      name: "doc-pagebreak",
+      internalRoles: ["kDocPageBreak"],
+      nameFrom: ["author"],
+      superclasses: ["separator"]
+    },
+    {
+      name: "doc-pagefooter",
+      internalRoles: ["kDocPageFooter"],
+      nameFrom: ["author"],
+      superclasses: ["contentinfo"]
+    },
+    {
+      name: "doc-pageheader",
+      internalRoles: ["kDocPageHeader"],
+      nameFrom: ["author"],
+      superclasses: ["banner"]
+    },
+    {
+      name: "doc-pagelist",
+      internalRoles: ["kDocPageList"],
+      nameFrom: ["author"],
+      superclasses: ["navigation"]
+    },
+    {
+      name: "doc-part",
+      internalRoles: ["kDocPart"],
+      nameFrom: ["author"],
+      superclasses: ["landmark"]
+    },
+    {
+      name: "doc-preface",
+      internalRoles: ["kDocPreface"],
+      nameFrom: ["author"],
+      superclasses: ["landmark"]
+    },
+    {
+      name: "doc-prologue",
+      internalRoles: ["kDocPrologue"],
+      nameFrom: ["author"],
+      superclasses: ["landmark"]
+    },
+    {
+      name: "doc-pullquote",
+      internalRoles: ["kDocPullquote"],
+      nameFrom: ["author"],
+      superclasses: ["section"]
+    },
+    {
+      name: "doc-qna",
+      internalRoles: ["kDocQna"],
+      nameFrom: ["author"],
+      superclasses: ["section"]
+    },
+    {
+      name: "doc-subtitle",
+      internalRoles: ["kDocSubtitle"],
+      nameFrom: ["contents", "author"],
+      superclasses: ["sectionhead"]
+    },
+    {
+      name: "doc-tip",
+      internalRoles: ["kDocTip"],
+      nameFrom: ["author"],
+      superclasses: ["note"]
+    },
+    {
+      name: "doc-toc",
+      internalRoles: ["kDocToc"],
+      nameFrom: ["author"],
+      superclasses: ["navigation"]
+    },
+
+    // Graphics-ARIA Module roles
+    {
+      name: "graphics-document",
+      internalRoles: ["kGraphicsDocument"],
+      nameFrom: ["author"],
+      superclasses: ["document"]
+    },
+    {
+      name: "graphics-object",
+      internalRoles: ["kGraphicsObject"],
+      nameFrom: ["contents", "author"],
+      superclasses: ["group"]
+    },
+    {
+      name: "graphics-symbol",
+      internalRoles: ["kGraphicsSymbol"],
+      nameFrom: ["author"],
+      superclasses: ["img"]
     }
   ]
 }

@@ -7,6 +7,8 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_level_logs_saver.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_app_windows_logs_collector.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_browser_logs_collector.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_service_workers_logs_collector.h"
 #include "chrome/browser/profiles/profile.h"
 
@@ -26,10 +28,8 @@ class KioskAppLevelLogsManager {
 
   KioskAppLevelLogsSaver logs_saver_;
   KioskServiceWorkersLogsCollector service_workers_logs_collector_;
-
-  // TODO(b:417698708) Implement and initialise KioskAppWindowLogsCollector.
-  // TODO(b:425645020) Implement and initialise KioskExtensionsLogsCollector.
-  // TODO(b:425645764) Implement and initialise KioskBrowserLogsCollector.
+  KioskBrowserLogsCollector browser_logs_collector_;
+  KioskAppWindowsLogsCollector app_windows_logs_collector_;
 };
 
 }  // namespace chromeos

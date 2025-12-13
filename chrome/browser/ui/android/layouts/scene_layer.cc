@@ -9,7 +9,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/layouts/layouts_jni_headers/SceneLayer_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -67,11 +66,12 @@ SkColor SceneLayer::GetBackgroundColor() {
   return SK_ColorWHITE;
 }
 
-static jlong JNI_SceneLayer_Init(JNIEnv* env,
-                                 const JavaParamRef<jobject>& jobj) {
+static jlong JNI_SceneLayer_Init(JNIEnv* env, const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
   SceneLayer* tree_provider = new SceneLayer(env, jobj);
   return reinterpret_cast<intptr_t>(tree_provider);
 }
 
 }  // namespace android
+
+DEFINE_JNI(SceneLayer)

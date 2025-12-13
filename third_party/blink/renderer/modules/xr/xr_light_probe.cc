@@ -25,7 +25,7 @@ const double kReflectionChangeDelta = 1000.0;
 
 XRLightProbe::XRLightProbe(XRSession* session, XRLightProbeInit* options)
     : session_(session) {
-  if (options->reflectionFormat() == "rgba16f") {
+  if (options->reflectionFormat() == V8XRReflectionFormat::Enum::kRgba16F) {
     reflection_format_ = kReflectionFormatRGBA16F;
   } else {
     reflection_format_ = kReflectionFormatSRGBA8;

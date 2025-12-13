@@ -167,6 +167,12 @@ fn escape_non_identifier_chars(symbol: &str) -> Result<String, String> {
             _ => return Err(format!("Unsupported character in GN path component: `{c}`")),
         }
     }
+    // The string replacements below are introduced to decrease the number
+    // of characters in the crate name. This is particularly important while
+    // building Chromium with lld_emit_indexes_and_imports=True, since it
+    // will potentially need to generate huge filenames, and the build will
+    // fail in some filesystems.
+    result = result.replace("third_uparty_srust_s", "_tpr");
 
     Ok(result)
 }

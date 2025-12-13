@@ -33,8 +33,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
-#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -114,28 +112,9 @@ void ChromeHelpAppUIDelegate::ShowParentalControls() {
 
 void ChromeHelpAppUIDelegate::TriggerWelcomeTipCallToAction(
     help_app::mojom::ActionTypeId action_type_id) {
-  Profile* profile = Profile::FromWebUI(web_ui_);
-  scalable_iph::ScalableIph* scalable_iph =
-      ScalableIphFactory::GetForBrowserContext(profile);
-  // If ScalableIph is not available for some reason (e.g. managed account),
-  // do not perform any action.
-  if (!scalable_iph) {
-    return;
-  }
-
-  // If the given action type id does not have a corresponding call-to-action,
-  // do not perform any action.
-  if (static_cast<int>(action_type_id) <=
-          static_cast<int>(scalable_iph::ActionType::kInvalid) ||
-      static_cast<int>(action_type_id) >
-          static_cast<int>(scalable_iph::ActionType::kLastAction)) {
-    DLOG(WARNING) << "The given action type id (" << action_type_id
-                  << ") does not have a corresponding call-to-action.";
-    return;
-  }
-
-  scalable_iph->PerformActionForHelpApp(
-      static_cast<scalable_iph::ActionType>(action_type_id));
+  // TODO(crbug.com/385152937): ScalableIph is under cleanup. This method should
+  // be removed too.
+  return;
 }
 
 PrefService* ChromeHelpAppUIDelegate::GetLocalState() {

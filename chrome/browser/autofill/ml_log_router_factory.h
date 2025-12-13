@@ -10,22 +10,22 @@
 #include "components/autofill/core/browser/ml_model/logging/ml_log_router.h"
 
 namespace autofill {
-class MLLogRouter;
+class MlLogRouter;
 
-// A factory for creating one `MLLogRouter` per browser context.
-class MLLogRouterFactory : public ProfileKeyedServiceFactory {
+// A factory for creating one `MlLogRouter` per browser context.
+class MlLogRouterFactory : public ProfileKeyedServiceFactory {
  public:
-  static MLLogRouterFactory* GetInstance();
-  static autofill::MLLogRouter* GetForProfile(Profile* profile);
+  static MlLogRouterFactory* GetInstance();
+  static MlLogRouter* GetForProfile(Profile* profile);
 
-  MLLogRouterFactory(const MLLogRouterFactory&) = delete;
-  MLLogRouterFactory& operator=(const MLLogRouterFactory&) = delete;
+  MlLogRouterFactory(const MlLogRouterFactory&) = delete;
+  MlLogRouterFactory& operator=(const MlLogRouterFactory&) = delete;
 
  private:
-  friend base::NoDestructor<MLLogRouterFactory>;
+  friend base::NoDestructor<MlLogRouterFactory>;
 
-  MLLogRouterFactory();
-  ~MLLogRouterFactory() override;
+  MlLogRouterFactory();
+  ~MlLogRouterFactory() override;
 
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(

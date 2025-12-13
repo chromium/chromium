@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "cc/input/actively_scrolling_type.h"
@@ -60,6 +61,7 @@ class InputDelegateForCompositor {
   virtual void WillDraw() = 0;
   virtual void WillBeginImplFrame(const viz::BeginFrameArgs& args) = 0;
   virtual void DidCommit() = 0;
+  virtual void DidImplSideInvalidate() = 0;
   virtual void DidActivatePendingTree() = 0;
   virtual void DidFinishImplFrame() = 0;
   virtual void OnBeginImplFrameDeadline() = 0;
@@ -81,6 +83,10 @@ class InputDelegateForCompositor {
   // Called to let the input handler know that a scroll offset animation has
   // completed.
   virtual void ScrollOffsetAnimationFinished(ElementId element_id) = 0;
+
+  // Called to let the input handler know that an elastic overscroll animation
+  // has completed.
+  virtual void ElasticOverscrollAnimationFinished(ElementId element_id) = 0;
 
   // Called to inform the input handler when prefers-reduced-motion changes.
   virtual void SetPrefersReducedMotion(bool prefers_reduced_motion) = 0;
@@ -173,6 +179,7 @@ class CompositorDelegateForInput {
   virtual void DidEndPinchZoom() = 0;
   virtual void DidStartScroll() = 0;
   virtual void DidEndScroll() = 0;
+  virtual void DidMouseEnterNonViewportScroller(ElementId element_id) = 0;
   virtual void DidMouseLeave() = 0;
   virtual bool IsInHighLatencyMode() const = 0;
   virtual void WillScrollContent(ElementId element_id) = 0;

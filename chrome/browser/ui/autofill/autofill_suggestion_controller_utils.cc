@@ -69,8 +69,6 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kComposeGoToSettings:
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
     case SuggestionType::kComposeSavedStateNotification:
-    case SuggestionType::kCreateNewPlusAddress:
-    case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kCreditCardEntry:
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kDevtoolsTestAddressByCountry:
@@ -88,18 +86,25 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kBackupPasswordEntry:
     case SuggestionType::kTroubleSigningInEntry:
     case SuggestionType::kPasswordFieldByFieldFilling:
-    case SuggestionType::kPlusAddressError:
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kSeparator:
     case SuggestionType::kTitle:
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kIdentityCredential:
     case SuggestionType::kWebauthnCredential:
-    case SuggestionType::kWebauthnSignInWithAnotherDevice:
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kBnplEntry:
     case SuggestionType::kOneTimePasswordEntry:
       return false;
+    case SuggestionType::kWebauthnSignInWithAnotherDevice:
+      // The hybrid item is reintroduced as a footer.
+#if !BUILDFLAG(IS_ANDROID)
+      return base::FeatureList::IsEnabled(
+          password_manager::features::
+              kAutofillReintroduceHybridPasskeyDropdownItem);
+#else
+      return false;
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 }
 

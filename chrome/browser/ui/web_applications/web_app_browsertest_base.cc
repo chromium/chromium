@@ -10,11 +10,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -29,6 +27,7 @@
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -160,8 +159,7 @@ Browser* WebAppBrowserTestBase::OpenPopupAndWait(Browser* browser,
   content::WebContents* const web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
 
-  ui_test_utils::BrowserChangeObserver browser_change_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   std::string open_window_script = base::StringPrintf(
       "window.open('%s', '_blank', 'toolbar=none,width=%i,height=%i')",
       url.spec().c_str(), popup_size.width(), popup_size.height());
@@ -169,7 +167,7 @@ Browser* WebAppBrowserTestBase::OpenPopupAndWait(Browser* browser,
   EXPECT_TRUE(content::ExecJs(web_contents, open_window_script));
 
   // The navigation should happen in a new window.
-  Browser* popup_browser = browser_change_observer.Wait();
+  Browser* popup_browser = browser_created_observer.Wait();
   EXPECT_NE(browser, popup_browser);
 
   content::WebContents* popup_contents =
@@ -190,15 +188,19 @@ content::WebContents* WebAppBrowserTestBase::OpenApplication(
   ui_test_utils::UrlLoadObserver url_observer(
       provider().registrar_unsafe().GetAppStartUrl(app_id));
 
-  apps::AppLaunchParams params(
-      app_id, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
-  content::WebContents* contents =
-      apps::AppServiceProxyFactory::GetForProfile(profile())
-          ->BrowserAppLauncher()
-          ->LaunchAppWithParamsForTesting(std::move(params));
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForLocalAppsUnchecked(profile());
+  base::test::TestFuture<base::WeakPtr<Browser>,
+                         base::WeakPtr<content::WebContents>,
+                         apps::LaunchContainer>
+      future;
+  provider->scheduler().LaunchAppWithCustomParams(
+      apps::AppLaunchParams(
+          app_id, apps::LaunchContainer::kLaunchContainerWindow,
+          WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest),
+      future.GetCallback());
   url_observer.Wait();
-  return contents;
+  return future.template Get<1>().get();
 }
 
 GURL WebAppBrowserTestBase::GetInstallableAppURL() {

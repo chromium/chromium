@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
+import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -101,7 +102,10 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
         runOnUiThreadBlocking(
                 () -> {
                     mAccountSelection.showAccounts(
-                            EXAMPLE_ETLD_PLUS_ONE,
+                            new RelyingPartyData(
+                                    EXAMPLE_ETLD_PLUS_ONE,
+                                    /* iframeForDisplay= */ "",
+                                    /* rpIcon= */ null),
                             Arrays.asList(mReturningAna, mNewBob),
                             Arrays.asList(mIdpData),
                             /* newAccounts= */ Collections.EMPTY_LIST);
@@ -120,7 +124,10 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
         runOnUiThreadBlocking(
                 () -> {
                     mAccountSelection.showAccounts(
-                            EXAMPLE_ETLD_PLUS_ONE,
+                            new RelyingPartyData(
+                                    EXAMPLE_ETLD_PLUS_ONE,
+                                    /* iframeForDisplay= */ "",
+                                    /* rpIcon= */ null),
                             Arrays.asList(mReturningAna, mNewBob),
                             Arrays.asList(mIdpData),
                             /* newAccounts= */ Collections.EMPTY_LIST);
@@ -139,7 +146,10 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
         runOnUiThreadBlocking(
                 () -> {
                     mAccountSelection.showAccounts(
-                            EXAMPLE_ETLD_PLUS_ONE,
+                            new RelyingPartyData(
+                                    EXAMPLE_ETLD_PLUS_ONE,
+                                    /* iframeForDisplay= */ "",
+                                    /* rpIcon= */ null),
                             Arrays.asList(mNewBob),
                             Arrays.asList(mIdpData),
                             /* newAccounts= */ Collections.EMPTY_LIST);
@@ -211,7 +221,10 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
         runOnUiThreadBlocking(
                 () -> {
                     mAccountSelection.showAccounts(
-                            EXAMPLE_ETLD_PLUS_ONE,
+                            new RelyingPartyData(
+                                    EXAMPLE_ETLD_PLUS_ONE,
+                                    /* iframeForDisplay= */ "",
+                                    /* rpIcon= */ null),
                             Arrays.asList(mReturningAna, mNewBob),
                             Arrays.asList(mIdpData),
                             /* newAccounts= */ Collections.EMPTY_LIST);
@@ -233,7 +246,10 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
         runOnUiThreadBlocking(
                 () -> {
                     mAccountSelection.showFailureDialog(
-                            EXAMPLE_ETLD_PLUS_ONE,
+                            new RelyingPartyData(
+                                    EXAMPLE_ETLD_PLUS_ONE,
+                                    /* iframeForDisplay= */ "",
+                                    /* rpIcon= */ null),
                             TEST_ETLD_PLUS_ONE_2,
                             IDP_METADATA,
                             RpContext.SIGN_IN);
@@ -252,7 +268,10 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
         runOnUiThreadBlocking(
                 () -> {
                     mAccountSelection.showFailureDialog(
-                            EXAMPLE_ETLD_PLUS_ONE,
+                            new RelyingPartyData(
+                                    EXAMPLE_ETLD_PLUS_ONE,
+                                    /* iframeForDisplay= */ "",
+                                    /* rpIcon= */ null),
                             TEST_ETLD_PLUS_ONE_2,
                             IDP_METADATA,
                             RpContext.SIGN_IN);
@@ -356,7 +375,10 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
         runOnUiThreadBlocking(
                 () -> {
                     mAccountSelection.showAccounts(
-                            EXAMPLE_ETLD_PLUS_ONE,
+                            new RelyingPartyData(
+                                    EXAMPLE_ETLD_PLUS_ONE,
+                                    /* iframeForDisplay= */ "",
+                                    /* rpIcon= */ null),
                             Arrays.asList(mNewBobWithAddAccount, mReturningAnaWithAddAccount),
                             Arrays.asList(mIdpDataWithAddAccount),
                             /* newAccounts= */ Collections.EMPTY_LIST);

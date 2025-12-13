@@ -9,6 +9,9 @@ pub(crate) struct Derive {
 
 #[derive(Copy, Clone, PartialEq)]
 pub(crate) enum Trait {
+    BitAnd,
+    BitOr,
+    BitXor,
     Clone,
     Copy,
     Debug,
@@ -26,6 +29,9 @@ pub(crate) enum Trait {
 impl Derive {
     pub(crate) fn from(ident: &Ident) -> Option<Self> {
         let what = match ident.to_string().as_str() {
+            "BitAnd" => Trait::BitAnd,
+            "BitOr" => Trait::BitOr,
+            "BitXor" => Trait::BitXor,
             "Clone" => Trait::Clone,
             "Copy" => Trait::Copy,
             "Debug" => Trait::Debug,
@@ -54,6 +60,9 @@ impl PartialEq<Trait> for Derive {
 impl AsRef<str> for Trait {
     fn as_ref(&self) -> &str {
         match self {
+            Trait::BitAnd => "BitAnd",
+            Trait::BitOr => "BitOr",
+            Trait::BitXor => "BitXor",
             Trait::Clone => "Clone",
             Trait::Copy => "Copy",
             Trait::Debug => "Debug",

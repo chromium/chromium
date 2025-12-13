@@ -39,6 +39,7 @@ static_library("drive") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/chromeos/drivefs",
     "//chrome/browser/chromeos/drivefs:native_message_host_origins",
+    "//chrome/browser/notifications",
     "//chrome/browser/profiles",
     "//chrome/browser/signin",
     "//chrome/common:constants",

@@ -15,6 +15,7 @@ class Browser;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsMutator;
 @class LegacyGridTransitionLayout;
+@class TabGridTransitionLayout;
 @protocol TabContextMenuDelegate;
 @class TabGridModeHolder;
 @protocol TabGroupPositioner;
@@ -60,8 +61,11 @@ class Browser;
 - (BOOL)bringTabGroupIntoViewIfPresent:(const TabGroup*)tabGroup
                               animated:(BOOL)animated;
 
+// Returns the legacy transition layout for this grid.
+- (LegacyGridTransitionLayout*)legacyTransitionLayout;
+
 // Returns the transition layout for this grid.
-- (LegacyGridTransitionLayout*)transitionLayout;
+- (TabGridTransitionLayout*)transitionLayout;
 
 // Returns whether the selected cell is visible.
 - (BOOL)isSelectedCellVisible;
@@ -71,6 +75,10 @@ class Browser;
 
 // Returns the container for the grid, to be used during transitions.
 - (UIView*)gridContainerForAnimation;
+
+// Presents a confirmation dialog to the user for closing all tabs and groups.
+// Subclasses should call this method from their delegate implementations.
+- (void)showCloseAllConfirmationFromSourceView:(UIView*)sourceView;
 
 // Stops all child coordinators.
 - (void)stopChildCoordinators;

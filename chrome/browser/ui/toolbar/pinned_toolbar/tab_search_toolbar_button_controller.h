@@ -19,8 +19,7 @@ class TabSearchBubbleHost;
 
 class TabSearchToolbarButtonController : public TabSearchBubbleHostObserver {
  public:
-  TabSearchToolbarButtonController(BrowserView* browser_view,
-                                   TabSearchBubbleHost* tab_search_bubble_host);
+  explicit TabSearchToolbarButtonController(BrowserView* browser_view);
   ~TabSearchToolbarButtonController() override;
 
   TabSearchToolbarButtonController(const TabSearchToolbarButtonController&) =
@@ -32,7 +31,7 @@ class TabSearchToolbarButtonController : public TabSearchBubbleHostObserver {
   void OnBubbleInitializing() override;
   void OnBubbleDestroying() override;
 
-  void UpdateForWebUITabStrip();
+  void UpdateBubbleHost(TabSearchBubbleHost* new_tab_search_bubble_host);
 
  private:
   void MaybeHideActionEphemerallyInToolbar();

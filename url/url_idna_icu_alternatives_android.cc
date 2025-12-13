@@ -39,3 +39,5 @@ bool IDNToASCII(std::u16string_view src, CanonOutputW* output) {
 }
 
 }  // namespace url
+
+DEFINE_JNI(IDNStringUtil)

@@ -126,37 +126,29 @@ void EnterpriseTrustedCertSource::ViewCertificate(
     if (hash == crypto::SHA256Hash(cert_with_constraints->certificate)) {
       // Found the cert, open cert viewer dialog if able and then exit
       // function.
-      if (base::FeatureList::IsEnabled(
-              ::features::kEnableCertManagementUIV2EditCerts)) {
-        chrome_browser_server_certificate_database::CertificateMetadata
-            metadata;
-        metadata.mutable_constraints()->mutable_dns_names()->Add(
-            cert_with_constraints->permitted_dns_names.begin(),
-            cert_with_constraints->permitted_dns_names.end());
-        for (auto const& cidr : cert_with_constraints->permitted_cidrs) {
-          net::IPAddress ip(cidr->ip);
-          net::IPAddress mask(cidr->mask);
-          if (!ip.IsValid() || !mask.IsValid()) {
-            continue;
-          }
-          chrome_browser_server_certificate_database::CIDR proto_cidr;
-          proto_cidr.set_ip(std::string(base::as_string_view(ip.bytes())));
-          proto_cidr.set_prefix_length(net::MaskPrefixLength(mask));
-          metadata.mutable_constraints()->mutable_cidrs()->Add(
-              std::move(proto_cidr));
+      chrome_browser_server_certificate_database::CertificateMetadata metadata;
+      metadata.mutable_constraints()->mutable_dns_names()->Add(
+          cert_with_constraints->permitted_dns_names.begin(),
+          cert_with_constraints->permitted_dns_names.end());
+      for (auto const& cidr : cert_with_constraints->permitted_cidrs) {
+        net::IPAddress ip(cidr->ip);
+        net::IPAddress mask(cidr->mask);
+        if (!ip.IsValid() || !mask.IsValid()) {
+          continue;
         }
-        metadata.mutable_trust()->set_trust_type(
-            chrome_browser_server_certificate_database::CertificateTrust::
-                CERTIFICATE_TRUST_TYPE_TRUSTED);
-        ShowCertificateDialog(std::move(web_contents),
-                              net::x509_util::CreateCryptoBuffer(
-                                  cert_with_constraints->certificate),
-                              std::move(metadata), base::NullCallback());
-      } else {
-        ShowCertificateDialog(std::move(web_contents),
-                              net::x509_util::CreateCryptoBuffer(
-                                  cert_with_constraints->certificate));
+        chrome_browser_server_certificate_database::CIDR proto_cidr;
+        proto_cidr.set_ip(std::string(base::as_string_view(ip.bytes())));
+        proto_cidr.set_prefix_length(net::MaskPrefixLength(mask));
+        metadata.mutable_constraints()->mutable_cidrs()->Add(
+            std::move(proto_cidr));
       }
+      metadata.mutable_trust()->set_trust_type(
+          chrome_browser_server_certificate_database::CertificateTrust::
+              CERTIFICATE_TRUST_TYPE_TRUSTED);
+      ShowCertificateDialog(std::move(web_contents),
+                            net::x509_util::CreateCryptoBuffer(
+                                cert_with_constraints->certificate),
+                            std::move(metadata), base::NullCallback());
       return;
     }
   }

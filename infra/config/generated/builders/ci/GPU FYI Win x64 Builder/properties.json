@@ -206,7 +206,94 @@
           {
             "builder_id": {
               "bucket": "ci",
+              "builder": "Win11 FYI x64 Experimental Release (AMD 780M)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "win"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Win x64 Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Win11 FYI x64 Experimental Release (AMD 890M)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "win"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Win x64 Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
               "builder": "Win11 FYI x64 Experimental Release (Intel Arc 140V)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "win"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Win x64 Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Win11 FYI x64 Experimental Release (NVIDIA RTX 4070 Super)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -332,7 +419,22 @@
         },
         {
           "bucket": "ci",
+          "builder": "Win11 FYI x64 Experimental Release (AMD 780M)",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
+          "builder": "Win11 FYI x64 Experimental Release (AMD 890M)",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
           "builder": "Win11 FYI x64 Experimental Release (Intel Arc 140V)",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
+          "builder": "Win11 FYI x64 Experimental Release (NVIDIA RTX 4070 Super)",
           "project": "chromium"
         },
         {
@@ -376,7 +478,19 @@
           "group": "tryserver.chromium.win"
         },
         {
+          "builder": "gpu-fyi-try-win11-nvidia-4070-exp-64",
+          "group": "tryserver.chromium.win"
+        },
+        {
           "builder": "gpu-fyi-try-win11-nvidia-4070-rel-64",
+          "group": "tryserver.chromium.win"
+        },
+        {
+          "builder": "gpu-fyi-try-win11-x64-amd-780m-exp",
+          "group": "tryserver.chromium.win"
+        },
+        {
+          "builder": "gpu-fyi-try-win11-x64-amd-890m-exp",
           "group": "tryserver.chromium.win"
         },
         {
@@ -384,7 +498,8 @@
           "group": "tryserver.chromium.win"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU FYI Win x64 Builder/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/GPU FYI Win x64 Builder/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

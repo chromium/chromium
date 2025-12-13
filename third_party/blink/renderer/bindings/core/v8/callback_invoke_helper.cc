@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/platform/bindings/callback_interface_base.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 
 namespace blink {
 
@@ -98,16 +97,6 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
     } else {
       callback_this_ =
           callback_this.V8Value(callback_->CallbackRelevantScriptState());
-    }
-    if (auto* tracker = scheduler::TaskAttributionTracker::From(isolate)) {
-      scheduler::TaskAttributionInfo* task_state_to_propagate = nullptr;
-      if constexpr (std::is_same<
-                        CallbackBase,
-                        CallbackFunctionWithTaskAttributionBase>::value) {
-        task_state_to_propagate = callback_->GetTaskState();
-      }
-      task_attribution_scope_ =
-          tracker->MaybeCreateTaskScopeForCallback(task_state_to_propagate);
     }
   }
 

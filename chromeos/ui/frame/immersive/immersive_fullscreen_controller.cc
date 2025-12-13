@@ -16,13 +16,13 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/animation/animation_delegate_notifier.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view.h"
@@ -499,7 +499,7 @@ void ImmersiveFullscreenController::UpdateLocatedEventRevealedLock() {
     return;
   }
   UpdateLocatedEventRevealedLock(
-      nullptr, display::Screen::GetScreen()->GetCursorScreenPoint());
+      nullptr, display::Screen::Get()->GetCursorScreenPoint());
 }
 
 void ImmersiveFullscreenController::AcquireLocatedEventRevealedLock() {
@@ -561,7 +561,8 @@ base::TimeDelta ImmersiveFullscreenController::GetAnimationDuration(
       break;
   }
 
-  return ui::ScopedAnimationDurationScaleMode::duration_multiplier() * duration;
+  return gfx::ScopedAnimationDurationScaleMode::duration_multiplier() *
+         duration;
 }
 
 void ImmersiveFullscreenController::MaybeStartReveal(Animate animate) {
@@ -706,7 +707,7 @@ bool ImmersiveFullscreenController::ShouldHandleGestureEvent(
   // closest screen ensures that the event is from a valid bezel (as opposed to
   // another screen in an extended desktop).
   gfx::Rect screen_bounds =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(location).bounds();
+      display::Screen::Get()->GetDisplayNearestPoint(location).bounds();
   return (!screen_bounds.Contains(location) &&
           location.y() < hit_bounds_in_screen.y() &&
           location.x() >= hit_bounds_in_screen.x() &&

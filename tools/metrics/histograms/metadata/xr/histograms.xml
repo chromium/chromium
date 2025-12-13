@@ -22,7 +22,7 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="VRSessionTime.WebVR" units="ms" expires_after="2026-02-10">
+<histogram name="VRSessionTime.WebVR" units="ms" expires_after="2026-05-03">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>
@@ -33,7 +33,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="XR.OpenXR.LocalFloorExtAvailable" enum="Boolean"
-    expires_after="2026-02-10">
+    expires_after="2026-04-12">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>
@@ -43,7 +43,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="XR.RuntimeUsed" enum="XRDeviceId" expires_after="2026-01-07">
+<histogram name="XR.OpenXR.SceneUnderstandingManagerType"
+    enum="OpenXrSceneUnderstandingManagerType" expires_after="2026-09-12">
+  <owner>alcooper@chromium.org</owner>
+  <owner>xr-dev@chromium.org</owner>
+  <summary>
+    Indicates which OpenXR Scene Understanding Manager was used for a session.
+    Recorded when the session was successfully created.
+  </summary>
+</histogram>
+
+<histogram name="XR.OpenXR.SceneUnderstandingMSFTAvailability" enum="Boolean"
+    expires_after="2026-09-12">
+  <owner>alcooper@chromium.org</owner>
+  <owner>xr-dev@chromium.org</owner>
+  <summary>
+    Indicates whether the MSFT Scene Understanding extensions are available on
+    the system. Recorded when OpenXR begins querying for platform support,
+    before a session is actually requested.
+  </summary>
+</histogram>
+
+<histogram name="XR.RuntimeUsed" enum="XRDeviceId" expires_after="2027-01-07">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>

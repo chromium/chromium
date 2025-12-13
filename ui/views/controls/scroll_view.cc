@@ -33,6 +33,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/metadata/type_conversion.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -440,7 +441,7 @@ void ScrollView::SetBackgroundColor(
   }
   background_color_ = color;
   UpdateBackground();
-  OnPropertyChanged(&background_color_, kPropertyEffectsPaint);
+  OnPropertyChanged(&background_color_, PropertyEffects::kPaint);
 }
 
 gfx::Rect ScrollView::GetVisibleRect() const {
@@ -458,7 +459,7 @@ void ScrollView::SetHorizontalScrollBarMode(
     return;
   }
   horizontal_scroll_bar_mode_ = horizontal_scroll_bar_mode;
-  OnPropertyChanged(&horizontal_scroll_bar_mode_, kPropertyEffectsPaint);
+  OnPropertyChanged(&horizontal_scroll_bar_mode_, PropertyEffects::kPaint);
 
   // "Ignored" removes the scrollbar from the accessibility tree.
   // "IsLeaf" removes their children (e.g. the buttons and thumb).
@@ -479,7 +480,7 @@ void ScrollView::SetVerticalScrollBarMode(
          vertical_scroll_bar_mode == ScrollBarMode::kDisabled);
 
   vertical_scroll_bar_mode_ = vertical_scroll_bar_mode;
-  OnPropertyChanged(&vertical_scroll_bar_mode_, kPropertyEffectsPaint);
+  OnPropertyChanged(&vertical_scroll_bar_mode_, PropertyEffects::kPaint);
 
   // "Ignored" removes the scrollbar from the accessibility tree.
   // "IsLeaf" removes their children (e.g. the buttons and thumb).
@@ -497,7 +498,7 @@ void ScrollView::SetTreatAllScrollEventsAsHorizontal(
   treat_all_scroll_events_as_horizontal_ =
       treat_all_scroll_events_as_horizontal;
   OnPropertyChanged(&treat_all_scroll_events_as_horizontal_,
-                    kPropertyEffectsNone);
+                    PropertyEffects::kNone);
 
   // Since this effectively disables vertical scrolling, don't show a
   // vertical scrollbar.
@@ -509,7 +510,7 @@ void ScrollView::SetAllowKeyboardScrolling(bool allow_keyboard_scrolling) {
     return;
   }
   allow_keyboard_scrolling_ = allow_keyboard_scrolling;
-  OnPropertyChanged(&allow_keyboard_scrolling_, kPropertyEffectsNone);
+  OnPropertyChanged(&allow_keyboard_scrolling_, PropertyEffects::kNone);
 }
 
 void ScrollView::SetDrawOverflowIndicator(bool draw_overflow_indicator) {
@@ -517,7 +518,7 @@ void ScrollView::SetDrawOverflowIndicator(bool draw_overflow_indicator) {
     return;
   }
   draw_overflow_indicator_ = draw_overflow_indicator;
-  OnPropertyChanged(&draw_overflow_indicator_, kPropertyEffectsPaint);
+  OnPropertyChanged(&draw_overflow_indicator_, PropertyEffects::kPaint);
 }
 
 View* ScrollView::SetCustomOverflowIndicator(OverflowIndicatorAlignment side,
@@ -609,7 +610,7 @@ void ScrollView::SetHasFocusIndicator(bool has_focus_indicator) {
 
   views::FocusRing::Get(this)->SchedulePaint();
   SchedulePaint();
-  OnPropertyChanged(&draw_focus_indicator_, kPropertyEffectsPaint);
+  OnPropertyChanged(&draw_focus_indicator_, PropertyEffects::kPaint);
 }
 
 base::CallbackListSubscription ScrollView::AddContentsScrolledCallback(
@@ -657,6 +658,7 @@ void ScrollView::Layout(PassKey) {
   }
 
   gfx::Rect available_rect = GetContentsBounds();
+  views::SizeBounds available_size(available_rect.size());
   if (is_bounded() && contents_) {
     int content_width = available_rect.width();
     int content_height = contents_->GetHeightForWidth(content_width);
@@ -724,6 +726,10 @@ void ScrollView::Layout(PassKey) {
   bool vert_sb_required = false;
   if (contents_) {
     gfx::Size content_size = contents_->size();
+    if (use_contents_preferred_size_ &&
+        !contents_->GetPreferredSize(available_size).IsEmpty()) {
+      content_size = contents_->GetPreferredSize(available_size);
+    }
     ComputeScrollBarsVisibility(viewport_size, content_size, &horiz_sb_required,
                                 &vert_sb_required);
   }
@@ -790,6 +796,10 @@ void ScrollView::Layout(PassKey) {
   // events will correctly hit it, and overscroll looks correct.
   if (contents_ && ScrollsWithLayers()) {
     gfx::Size container_size = contents_ ? contents_->size() : gfx::Size();
+    if (contents_ && use_contents_preferred_size_ &&
+        !contents_->GetPreferredSize(available_size).IsEmpty()) {
+      container_size = contents_->GetPreferredSize(available_size);
+    }
     container_size.SetToMax(viewport_bounds.size());
     contents_->SetBoundsRect(gfx::Rect(container_size));
     contents_->layer()->SetScrollable(viewport_bounds.size());

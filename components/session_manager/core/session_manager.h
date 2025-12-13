@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/account_id/account_id.h"
+#include "components/session_manager/core/session_manager_delegate.h"
 #include "components/session_manager/session_manager_export.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/user_manager.h"
@@ -24,7 +25,8 @@ class SessionManagerObserver;
 class SESSION_EXPORT SessionManager
     : public user_manager::UserManager::Observer {
  public:
-  SessionManager();
+  explicit SessionManager(
+      std::unique_ptr<session_manager::SessionManagerDelegate> delegate);
 
   SessionManager(const SessionManager&) = delete;
   SessionManager& operator=(const SessionManager&) = delete;
@@ -61,6 +63,9 @@ class SESSION_EXPORT SessionManager
   // The User has to be logged in already (i.e. CreateSession* needs to be
   // called in advance).
   void SwitchActiveSession(const AccountId& account_id);
+
+  // Request to sign out user from session.
+  void RequestSignOut();
 
   // Returns true if we're logged in and browser has been started i.e.
   // browser_creator.LaunchBrowser(...) was called after sign in
@@ -190,6 +195,8 @@ class SESSION_EXPORT SessionManager
   std::vector<std::unique_ptr<Session>> sessions_;
 
   base::ObserverList<SessionManagerObserver> observers_;
+
+  const std::unique_ptr<SessionManagerDelegate> delegate_;
 };
 
 }  // namespace session_manager

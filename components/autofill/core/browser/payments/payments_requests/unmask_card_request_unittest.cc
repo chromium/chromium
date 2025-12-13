@@ -109,7 +109,8 @@ TEST_F(UnmaskCardRequestTest, GetRequestContent) {
 TEST_F(UnmaskCardRequestTest, FidoChallengeReturned_ParseResponse) {
   std::optional<base::Value> response = base::JSONReader::Read(
       "{\"fido_request_options\":{\"challenge\":\"fake_fido_challenge\"},"
-      "\"context_token\":\"fake_context_token\"}");
+      "\"context_token\":\"fake_context_token\"}",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(response.has_value());
   GetRequest()->ParseResponse(response->GetDict());
 
@@ -127,7 +128,8 @@ TEST_F(UnmaskCardRequestTest, FidoChallengeReturned_ParseResponse) {
 // PAN is not.
 TEST_F(UnmaskCardRequestTest, ContextTokenReturned) {
   std::optional<base::Value> response =
-      base::JSONReader::Read("{\"context_token\":\"fake_context_token\"}");
+      base::JSONReader::Read("{\"context_token\":\"fake_context_token\"}",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(response.has_value());
   GetRequest()->ParseResponse(response->GetDict());
 
@@ -138,7 +140,8 @@ TEST_F(UnmaskCardRequestTest, ContextTokenReturned) {
 // Test that the response is not complete when both context token and real PAN
 // are not returned.
 TEST_F(UnmaskCardRequestTest, ContextTokenAndPanNotReturned) {
-  std::optional<base::Value> response = base::JSONReader::Read("{}");
+  std::optional<base::Value> response =
+      base::JSONReader::Read("{}", base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(response.has_value());
   GetRequest()->ParseResponse(response->GetDict());
 
@@ -267,7 +270,8 @@ TEST_P(VirtualCardUnmaskCardRequestTest,
       "{\"challenge_id\": \"fake_challenge_id_7\", \"popup_url\": "
       "\"https://example.com/\", \"query_params_for_popup_close\": "
       "{\"success_query_param_name\": \"token\", "
-      "\"failure_query_param_name\": \"failure\"}}}]}");
+      "\"failure_query_param_name\": \"failure\"}}}]}",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(response.has_value());
   GetRequest()->ParseResponse(response->GetDict());
 
@@ -359,7 +363,8 @@ TEST_P(VirtualCardUnmaskCardRequestTest, IsRetryableFailure) {
     // Test that `IsRetryableFailure()` returns true if a flow status is
     // present.
     std::optional<base::Value> response = base::JSONReader::Read(
-        "{\"flow_status\": \"FLOW_STATUS_INCORRECT_ACCOUNT_SECURITY_CODE\"}");
+        "{\"flow_status\": \"FLOW_STATUS_INCORRECT_ACCOUNT_SECURITY_CODE\"}",
+        base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(response);
     GetRequest()->ParseResponse(response->GetDict());
     EXPECT_TRUE(GetRequest()->IsRetryableFailure(""));
@@ -371,7 +376,8 @@ TEST_P(VirtualCardUnmaskCardRequestTest, IsRetryableFailure) {
         "\"api_error_reason\": \"virtual_card_temporary_error\"}, "
         "\"decline_details\": {\"user_message_title\": "
         "\"\", \"user_message_description\": "
-        "\"\"}}");
+        "\"\"}}",
+        base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(response);
     GetRequest()->ParseResponse(response->GetDict());
     EXPECT_FALSE(GetRequest()->IsRetryableFailure(""));
@@ -381,12 +387,14 @@ TEST_P(VirtualCardUnmaskCardRequestTest, IsRetryableFailure) {
         "\"api_error_reason\": \"virtual_card_permanent_error\"}, "
         "\"decline_details\": {\"user_message_title\": "
         "\"\", \"user_message_description\": "
-        "\"\"}}");
+        "\"\"}}",
+        base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(response);
     GetRequest()->ParseResponse(response->GetDict());
     EXPECT_FALSE(GetRequest()->IsRetryableFailure(""));
 
-    response = base::JSONReader::Read("{ \"pan\": \"1234\" }");
+    response = base::JSONReader::Read("{ \"pan\": \"1234\" }",
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(response);
     GetRequest()->ParseResponse(response->GetDict());
     EXPECT_FALSE(GetRequest()->IsRetryableFailure(""));

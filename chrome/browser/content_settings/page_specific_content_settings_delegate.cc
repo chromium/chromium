@@ -24,6 +24,7 @@
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -255,7 +256,7 @@ content::WebContents* PageSpecificContentSettingsDelegate::
 
 void PageSpecificContentSettingsDelegate::OnContentAllowed(
     ContentSettingsType type) {
-  if (!(type == ContentSettingsType::GEOLOCATION ||
+  if (!(type == permissions::PermissionUtil::GetGeolocationType() ||
         type == ContentSettingsType::MEDIASTREAM_CAMERA ||
         type == ContentSettingsType::MEDIASTREAM_MIC)) {
     return;
@@ -270,7 +271,10 @@ void PageSpecificContentSettingsDelegate::OnContentAllowed(
   permissions::PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndUse(
       type, base::Time::Now() - grant_time, setting_info.source);
   permissions::PermissionUmaUtil::RecordPermissionUsage(
-      type, web_contents()->GetBrowserContext(), web_contents(),
+      type, web_contents()->GetBrowserContext(),
+      // TODO: This RenderFrameHost and origin might be wrong if there was a
+      // concurrent navigation.
+      web_contents()->GetPrimaryMainFrame(),
       web_contents()->GetLastCommittedURL());
 }
 

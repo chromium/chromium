@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/apple/mach_port_rendezvous.h"
 
 #include <mach/mach.h>
@@ -17,6 +12,7 @@
 #include "base/apple/mach_logging.h"
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/mac/process_requirement.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -220,7 +216,7 @@ TEST_P(MachPortRendezvousServerTest, DestroyRight) {
 
   for (size_t i = 0; i < std::size(kCases); ++i) {
     SCOPED_TRACE(base::StringPrintf("case %zu", i).c_str());
-    const auto& test = kCases[i];
+    const auto& test = UNSAFE_TODO(kCases[i]);
 
     // This test deliberately leaks Mach port rights.
     mach_port_t port;

@@ -8,6 +8,17 @@ pub type nlink_t = u64;
 pub type blksize_t = c_long;
 
 s! {
+    pub struct termios {
+        pub c_iflag: crate::tcflag_t,
+        pub c_oflag: crate::tcflag_t,
+        pub c_cflag: crate::tcflag_t,
+        pub c_lflag: crate::tcflag_t,
+        pub c_cc: [crate::cc_t; crate::NCCS],
+        pub c_line: crate::cc_t,
+        pub __c_ispeed: crate::speed_t,
+        pub __c_ospeed: crate::speed_t,
+    }
+
     pub struct stat {
         pub st_dev: crate::dev_t,
         pub st_ino: crate::ino_t,
@@ -15,7 +26,7 @@ s! {
         pub st_mode: crate::mode_t,
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
-        __pad0: c_int,
+        __pad0: Padding<c_int>,
         pub st_rdev: crate::dev_t,
         pub st_size: off_t,
         pub st_blksize: crate::blksize_t,
@@ -26,7 +37,7 @@ s! {
         pub st_mtime_nsec: c_long,
         pub st_ctime: crate::time_t,
         pub st_ctime_nsec: c_long,
-        __unused: [c_long; 3],
+        __unused: Padding<[c_long; 3]>,
     }
 
     pub struct stat64 {
@@ -36,7 +47,7 @@ s! {
         pub st_mode: crate::mode_t,
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
-        __pad0: c_int,
+        __pad0: Padding<c_int>,
         pub st_rdev: crate::dev_t,
         pub st_size: off_t,
         pub st_blksize: crate::blksize_t,
@@ -47,7 +58,19 @@ s! {
         pub st_mtime_nsec: c_long,
         pub st_ctime: crate::time_t,
         pub st_ctime_nsec: c_long,
-        __reserved: [c_long; 3],
+        __reserved: Padding<[c_long; 3]>,
+    }
+
+    pub struct shmid_ds {
+        pub shm_perm: crate::ipc_perm,
+        pub shm_atime: crate::time_t,
+        pub shm_dtime: crate::time_t,
+        pub shm_ctime: crate::time_t,
+        pub shm_segsz: size_t,
+        pub shm_cpid: crate::pid_t,
+        pub shm_lpid: crate::pid_t,
+        pub shm_nattch: c_ulong,
+        __unused: Padding<[c_ulong; 2]>,
     }
 
     pub struct ipc_perm {
@@ -66,12 +89,17 @@ s! {
         pub cgid: crate::gid_t,
         pub mode: crate::mode_t,
         pub __seq: c_int,
-        __unused1: c_long,
-        __unused2: c_long,
+        __unused1: Padding<c_long>,
+        __unused2: Padding<c_long>,
     }
 }
 
 pub const MADV_SOFT_OFFLINE: c_int = 101;
+#[deprecated(
+    since = "0.2.175",
+    note = "Linux does not define MAP_32BIT on any architectures \
+    other than x86 and x86_64, this constant will be removed in the future"
+)]
 pub const MAP_32BIT: c_int = 0x0040;
 pub const O_APPEND: c_int = 1024;
 pub const O_DIRECT: c_int = 0x20000;
@@ -175,8 +203,8 @@ pub const MAP_ANON: c_int = 0x0020;
 pub const MAP_GROWSDOWN: c_int = 0x0100;
 pub const MAP_DENYWRITE: c_int = 0x0800;
 pub const MAP_EXECUTABLE: c_int = 0x01000;
-pub const MAP_LOCKED: c_int = 0x02000;
-pub const MAP_NORESERVE: c_int = 0x04000;
+pub const MAP_LOCKED: c_int = 0x80;
+pub const MAP_NORESERVE: c_int = 0x40;
 pub const MAP_POPULATE: c_int = 0x08000;
 pub const MAP_NONBLOCK: c_int = 0x010000;
 pub const MAP_STACK: c_int = 0x020000;
@@ -185,9 +213,6 @@ pub const MAP_SYNC: c_int = 0x080000;
 
 pub const PTRACE_SYSEMU: c_int = 0x1d;
 pub const PTRACE_SYSEMU_SINGLESTEP: c_int = 0x1e;
-
-pub const SOCK_STREAM: c_int = 1;
-pub const SOCK_DGRAM: c_int = 2;
 
 pub const SA_ONSTACK: c_int = 0x08000000;
 pub const SA_SIGINFO: c_int = 0x00000004;
@@ -639,8 +664,8 @@ pub const SYS_process_mrelease: c_long = 448;
 pub const SYS_futex_waitv: c_long = 449;
 pub const SYS_set_mempolicy_home_node: c_long = 450;
 
-pub const EDEADLK: c_int = 58;
-pub const EDEADLOCK: c_int = EDEADLK;
+pub const EDEADLK: c_int = 35;
+pub const EDEADLOCK: c_int = 58;
 
 pub const EXTPROC: crate::tcflag_t = 0x10000000;
 pub const VEOL: usize = 6;

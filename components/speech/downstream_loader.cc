@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "components/speech/downstream_loader_client.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace speech {

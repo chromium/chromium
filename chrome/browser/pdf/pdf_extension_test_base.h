@@ -92,6 +92,9 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   // `WebContents`.
   content::WebContents* GetEmbedderWebContents();
 
+  // Resets the feature list, can be used when nested feature lists exist.
+  void ResetFeatureList();
+
  protected:
   guest_view::TestGuestViewManager* GetGuestViewManager();
   guest_view::TestGuestViewManager* GetGuestViewManagerForProfile(
@@ -127,6 +130,9 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   // GuestView PDF viewer.
   // TODO(crbug.com/40268279): Remove once only OOPIF PDF viewer is used.
   virtual bool UseOopif() const;
+
+  // Hook to register request handler for test server.
+  virtual void RegisterTestServerRequestHandler();
 
   // Hooks to set up feature flags.
   virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()

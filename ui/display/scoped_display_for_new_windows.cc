@@ -9,16 +9,15 @@
 namespace display {
 
 ScopedDisplayForNewWindows::ScopedDisplayForNewWindows(int64_t new_display) {
-  Screen::GetScreen()->SetScopedDisplayForNewWindows(new_display);
+  Screen::Get()->SetScopedDisplayForNewWindows(new_display);
 }
 
 ScopedDisplayForNewWindows::ScopedDisplayForNewWindows(gfx::NativeView view)
     : ScopedDisplayForNewWindows(
-          Screen::GetScreen()->GetDisplayNearestView(view).id()) {}
+          Screen::Get()->GetDisplayNearestView(view).id()) {}
 
 ScopedDisplayForNewWindows::~ScopedDisplayForNewWindows() {
-  Screen::GetScreen()->SetScopedDisplayForNewWindows(
-      display::kInvalidDisplayId);
+  Screen::Get()->SetScopedDisplayForNewWindows(display::kInvalidDisplayId);
 }
 
 }  // namespace display

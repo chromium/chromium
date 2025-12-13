@@ -15,14 +15,12 @@
 #include "ash/login/ui/login_test_base.h"
 #include "ash/login/ui/login_test_utils.h"
 #include "ash/login/ui/login_user_view.h"
-#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -72,7 +70,9 @@ const std::map<LoginAuthUserView::InputFieldMode, InputFieldVisibility>
 
 }  // namespace
 
-class LoginAuthUserViewTestBase : public LoginTestBase {
+class LoginAuthUserViewTestBase
+    : public LoginTestBase,
+      public testing::WithParamInterface</*enable_system_blur=*/bool> {
  public:
   LoginAuthUserViewTestBase(const LoginAuthUserViewTestBase&) = delete;
   LoginAuthUserViewTestBase& operator=(const LoginAuthUserViewTestBase&) =
@@ -100,7 +100,9 @@ class LoginAuthUserViewTestBase : public LoginTestBase {
 
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams();
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = GetParam();
+    return init_params;
   }
 
   // Enables password and pin with the given length.
@@ -152,7 +154,6 @@ class LoginAuthUserViewTestBase : public LoginTestBase {
     SetWidget(CreateWidgetWithContent(container_));
   }
 
-  base::test::ScopedFeatureList feature_list_;
   LoginUserInfo user_;
   raw_ptr<views::View, DanglingUntriaged> container_ =
       nullptr;  // Owned by test widget view hierarchy.
@@ -160,26 +161,30 @@ class LoginAuthUserViewTestBase : public LoginTestBase {
       nullptr;  // Owned by test widget view hierarchy.
 };
 
-class LoginAuthUserViewPixeltest : public LoginAuthUserViewTestBase {
+class LoginAuthUserViewPixelTest : public LoginAuthUserViewTestBase {
  public:
-  LoginAuthUserViewPixeltest(const LoginAuthUserViewPixeltest&) = delete;
-  LoginAuthUserViewPixeltest& operator=(const LoginAuthUserViewPixeltest&) =
+  LoginAuthUserViewPixelTest(const LoginAuthUserViewPixelTest&) = delete;
+  LoginAuthUserViewPixelTest& operator=(const LoginAuthUserViewPixelTest&) =
       delete;
 
  protected:
-  LoginAuthUserViewPixeltest() = default;
-  ~LoginAuthUserViewPixeltest() override = default;
+  LoginAuthUserViewPixelTest() = default;
+  ~LoginAuthUserViewPixelTest() override = default;
 
   // LoginTestBase:
   void SetUp() override {
     LoginAuthUserViewTestBase::SetUp();
     InitializeViewForUser(CreateUser("user@domain.com"));
-    // DarkLightModeControllerImpl::Get()->SetDarkModeEnabledForTest(false);
   }
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    LoginAuthUserViewPixelTest,
+    testing::Bool());
+
 // Verifies the PIN and password look a like option.
-TEST_F(LoginAuthUserViewPixeltest,
+TEST_P(LoginAuthUserViewPixelTest,
        PinWithToggleAutosubmitOffFieldModeCorrectness) {
   LoginAuthUserView::TestApi auth_test(view_);
   auto client = std::make_unique<MockLoginScreenClient>();
@@ -204,19 +209,13 @@ TEST_F(LoginAuthUserViewPixeltest,
   ExpectModeVisibility(LoginAuthUserView::InputFieldMode::kPasswordWithToggle);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "PasswordWithToggle", /*revision_number=*/1, view_));
+      GenerateScreenshotName("PasswordWithToggle"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
+      view_));
 }
 
-class LoginAuthUserViewPinOnlyPixeltest : public LoginAuthUserViewPixeltest {
- public:
-  LoginAuthUserViewPinOnlyPixeltest() {
-    feature_list_.Reset();
-    feature_list_.InitAndEnableFeature(features::kAllowPasswordlessSetup);
-  }
-};
-
 // Verifies the PIN only with auto submit case before entering the pin.
-TEST_F(LoginAuthUserViewPinOnlyPixeltest, PinOnlyModeWithAutosubmitEnabled) {
+TEST_P(LoginAuthUserViewPixelTest, PinOnlyModeWithAutosubmitEnabled) {
   LoginAuthUserView::TestApi auth_test(view_);
   auto client = std::make_unique<MockLoginScreenClient>();
   LoginPinInputView::TestApi pin_input_test{auth_test.pin_input_view()};
@@ -229,13 +228,15 @@ TEST_F(LoginAuthUserViewPinOnlyPixeltest, PinOnlyModeWithAutosubmitEnabled) {
 
   views::test::RunScheduledLayout(container_);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "PinOnlyEmpty", /*revision_number=*/2, view_));
+      GenerateScreenshotName("PinOnlyEmpty"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 2 : 0,
+      view_));
 }
 
 // Verifies the PIN only with auto submit case after all six pin character
 // filled.
 // TODO(crbug.com/364660411): Fix flakiness and re-enable.
-TEST_F(LoginAuthUserViewPinOnlyPixeltest,
+TEST_P(LoginAuthUserViewPixelTest,
        DISABLED_PinOnlyModeWithAutosubmitEnabledFilled) {
   LoginAuthUserView::TestApi auth_test(view_);
   auto client = std::make_unique<MockLoginScreenClient>();
@@ -255,11 +256,13 @@ TEST_F(LoginAuthUserViewPinOnlyPixeltest,
 
   views::test::RunScheduledLayout(container_);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "PinOnlyFilled", /*revision_number=*/0, view_));
+      GenerateScreenshotName("PinOnlyFilled"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 0 : 0,
+      view_));
 }
 
 // Verifies the PIN only with auto submit off case before entering the pin.
-TEST_F(LoginAuthUserViewPinOnlyPixeltest, PinOnlyModeWithAutosubmitDisabled) {
+TEST_P(LoginAuthUserViewPixelTest, PinOnlyModeWithAutosubmitDisabled) {
   LoginAuthUserView::TestApi auth_test(view_);
   auto client = std::make_unique<MockLoginScreenClient>();
   LoginPinInputView::TestApi pin_input_test{auth_test.pin_input_view()};
@@ -273,13 +276,15 @@ TEST_F(LoginAuthUserViewPinOnlyPixeltest, PinOnlyModeWithAutosubmitDisabled) {
 
   views::test::RunScheduledLayout(container_);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "PinOnlyEmpty", /*revision_number=*/2, view_));
+      GenerateScreenshotName("PinOnlyEmpty"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 2 : 0,
+      view_));
 }
 
 // Verifies the PIN only with auto submit off case after all six pin character
 // filled.
 // TODO(crbug.com/364660411): Fix flakiness and re-enable.
-TEST_F(LoginAuthUserViewPinOnlyPixeltest,
+TEST_P(LoginAuthUserViewPixelTest,
        DISABLED_PinOnlyModeWithAutosubmitDisabledFilled) {
   LoginAuthUserView::TestApi auth_test(view_);
   auto client = std::make_unique<MockLoginScreenClient>();
@@ -300,7 +305,9 @@ TEST_F(LoginAuthUserViewPinOnlyPixeltest,
 
   views::test::RunScheduledLayout(container_);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "PinOnlyFilled", /*revision_number=*/0, view_));
+      GenerateScreenshotName("PinOnlyFilled"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 0 : 0,
+      view_));
 }
 
 }  // namespace ash

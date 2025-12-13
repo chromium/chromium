@@ -54,7 +54,8 @@ std::optional<base::Value> ReadJsonTestFile(const char* test_file_name) {
   if (!base::ReadFileToString(file_path, &file_contents))
     return std::nullopt;
 
-  return base::JSONReader::Read(file_contents);
+  return base::JSONReader::Read(file_contents,
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 }
 
 }  // namespace
@@ -314,7 +315,8 @@ std::optional<base::Value::Dict> GetJwkDictionary(
     const std::vector<uint8_t>& json) {
   std::string_view json_string(reinterpret_cast<const char*>(json.data()),
                                json.size());
-  std::optional<base::Value> value = base::JSONReader::Read(json_string);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(value.has_value());
   EXPECT_TRUE(value.value().is_dict());
   return std::make_optional(std::move(*value).TakeDict());

@@ -73,3 +73,5 @@ static jlong JNI_OriginMatcher_Create(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(matcher);
 }
 }  // namespace origin_matcher
+
+DEFINE_JNI(OriginMatcher)

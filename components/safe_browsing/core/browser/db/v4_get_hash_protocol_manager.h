@@ -15,6 +15,7 @@
 // Design doc: go/design-doc-v4-full-hash-manager
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -28,6 +29,7 @@
 #include "base/timer/timer.h"
 #include "components/safe_browsing/core/browser/db/safebrowsing.pb.h"
 #include "components/safe_browsing/core/browser/db/util.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_config.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 
@@ -182,7 +184,7 @@ class V4GetHashProtocolManager {
 
   // Callback when the request completes
   void OnURLLoaderComplete(network::SimpleURLLoader* url_loader,
-                           std::unique_ptr<std::string> response_body);
+                           std::optional<std::string> response_body);
 
   // Populates the protobuf with the FullHashCache data.
   void CollectFullHashCacheInfo(FullHashCacheInfo* full_hash_cache_info);

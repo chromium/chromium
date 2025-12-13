@@ -18,6 +18,8 @@ class DEVICE_GAMEPAD_EXPORT GamepadConsumer {
   virtual void OnGamepadConnected(uint32_t index, const Gamepad& gamepad) = 0;
   virtual void OnGamepadDisconnected(uint32_t index,
                                      const Gamepad& gamepad) = 0;
+  virtual void OnGamepadRawInputChanged(uint32_t index,
+                                        const Gamepad& gamepad) = 0;
 };
 
 }  // namespace device

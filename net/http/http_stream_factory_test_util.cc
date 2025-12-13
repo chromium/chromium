@@ -4,17 +4,106 @@
 
 #include "net/http/http_stream_factory_test_util.h"
 
+#include <memory>
+#include <optional>
 #include <utility>
 
+#include "base/check.h"
+#include "base/notreached.h"
+#include "net/base/net_errors.h"
+#include "net/http/bidirectional_stream_impl.h"
+#include "net/http/http_stream.h"
 #include "net/proxy_resolution/proxy_info.h"
+#include "net/websockets/websocket_handshake_stream_base.h"
 #include "url/scheme_host_port.h"
 
 using ::testing::_;
 
 namespace net {
+
 MockHttpStreamRequestDelegate::MockHttpStreamRequestDelegate() = default;
 
 MockHttpStreamRequestDelegate::~MockHttpStreamRequestDelegate() = default;
+
+void MockHttpStreamRequestDelegate::OnStreamReady(
+    const ProxyInfo& used_proxy_info,
+    std::unique_ptr<HttpStream> stream) {
+  CHECK(!IsDone());
+
+  used_proxy_info_ = used_proxy_info;
+  http_stream_ = std::move(stream);
+  done_run_loop_.Quit();
+}
+
+void MockHttpStreamRequestDelegate::OnWebSocketHandshakeStreamReady(
+    const ProxyInfo& used_proxy_info,
+    std::unique_ptr<WebSocketHandshakeStreamBase> stream) {
+  NOTREACHED();
+}
+
+void MockHttpStreamRequestDelegate::OnBidirectionalStreamImplReady(
+    const ProxyInfo& used_proxy_info,
+    std::unique_ptr<BidirectionalStreamImpl> stream) {
+  NOTREACHED();
+}
+
+void MockHttpStreamRequestDelegate::OnStreamFailed(
+    int status,
+    const NetErrorDetails& net_error_details,
+    const ProxyInfo& used_proxy_info,
+    ResolveErrorInfo resolve_error_info) {
+  CHECK(!IsDone());
+
+  net_error_ = status;
+  used_proxy_info_ = used_proxy_info;
+  done_run_loop_.Quit();
+}
+
+void MockHttpStreamRequestDelegate::OnCertificateError(
+    int status,
+    const SSLInfo& ssl_info) {
+  NOTREACHED();
+}
+
+void MockHttpStreamRequestDelegate::OnNeedsProxyAuth(
+    const HttpResponseInfo& proxy_response,
+    const ProxyInfo& used_proxy_info,
+    HttpAuthController* auth_controller) {
+  NOTREACHED();
+}
+
+void MockHttpStreamRequestDelegate::OnNeedsClientAuth(
+    SSLCertRequestInfo* cert_info) {
+  NOTREACHED();
+}
+
+void MockHttpStreamRequestDelegate::OnQuicBroken() {
+  CHECK(!IsDone());
+}
+
+std::unique_ptr<HttpStream> MockHttpStreamRequestDelegate::WaitForHttpStream() {
+  done_run_loop_.Run();
+  EXPECT_TRUE(http_stream_);
+  return std::move(http_stream_);
+}
+
+int MockHttpStreamRequestDelegate::WaitForError() {
+  done_run_loop_.Run();
+  if (!net_error_) {
+    ADD_FAILURE() << "StreamRequest unexpectedly succeeded";
+    return ERR_UNEXPECTED;
+  }
+  return *net_error_;
+}
+
+const ProxyInfo& MockHttpStreamRequestDelegate::used_proxy_info() const {
+  CHECK(used_proxy_info_);
+  return *used_proxy_info_;
+}
+
+bool MockHttpStreamRequestDelegate::IsDone() {
+  return done_run_loop_.AnyQuitCalled();
+}
 
 MockHttpStreamFactoryJob::MockHttpStreamFactoryJob(
     HttpStreamFactory::Job::Delegate* delegate,
@@ -25,11 +114,10 @@ MockHttpStreamFactoryJob::MockHttpStreamFactoryJob(
     ProxyInfo proxy_info,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     url::SchemeHostPort destination,
-    GURL origin_url,
     NextProto alternative_protocol,
     quic::ParsedQuicVersion quic_version,
     bool is_websocket,
-    bool enable_ip_based_pooling,
+    bool enable_ip_based_pooling_for_h2,
     std::optional<ConnectionManagementConfig> management_config,
     NetLog* net_log)
     : HttpStreamFactory::Job(delegate,
@@ -40,11 +128,10 @@ MockHttpStreamFactoryJob::MockHttpStreamFactoryJob(
                              proxy_info,
                              allowed_bad_certs,
                              std::move(destination),
-                             origin_url,
                              alternative_protocol,
                              quic_version,
                              is_websocket,
-                             enable_ip_based_pooling,
+                             enable_ip_based_pooling_for_h2,
                              management_config,
                              net_log) {
   DCHECK(!is_waiting());
@@ -69,19 +156,26 @@ std::unique_ptr<HttpStreamFactory::Job> TestJobFactory::CreateJob(
     const ProxyInfo& proxy_info,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     url::SchemeHostPort destination,
-    GURL origin_url,
     bool is_websocket,
-    bool enable_ip_based_pooling,
+    bool enable_ip_based_pooling_for_h2,
     NetLog* net_log,
     NextProto alternative_protocol = NextProto::kProtoUnknown,
     quic::ParsedQuicVersion quic_version =
         quic::ParsedQuicVersion::Unsupported(),
     std::optional<ConnectionManagementConfig> management_config =
         std::nullopt) {
+  if (use_real_jobs_) {
+    return std::make_unique<HttpStreamFactory::Job>(
+        delegate, job_type, session, request_info, priority, proxy_info,
+        allowed_bad_certs, std::move(destination), alternative_protocol,
+        quic_version, is_websocket, enable_ip_based_pooling_for_h2,
+        std::move(management_config), net_log);
+  }
+
   auto job = std::make_unique<MockHttpStreamFactoryJob>(
       delegate, job_type, session, request_info, priority, proxy_info,
-      allowed_bad_certs, std::move(destination), origin_url,
-      alternative_protocol, quic_version, is_websocket, enable_ip_based_pooling,
+      allowed_bad_certs, std::move(destination), alternative_protocol,
+      quic_version, is_websocket, enable_ip_based_pooling_for_h2,
       management_config, net_log);
 
   // Keep raw pointer to Job but pass ownership.

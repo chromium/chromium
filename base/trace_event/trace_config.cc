@@ -363,10 +363,7 @@ bool TraceConfig::IsEquivalentTo(const TraceConfig& other) const {
 }
 
 std::string TraceConfig::ToString() const {
-  Value dict = ToValue();
-  std::string json;
-  JSONWriter::Write(dict, &json);
-  return json;
+  return WriteJson(ToValue()).value_or("");
 }
 
 std::unique_ptr<ConvertableToTraceFormat>
@@ -492,7 +489,8 @@ void TraceConfig::InitializeFromConfigDict(const Value::Dict& dict) {
 }
 
 void TraceConfig::InitializeFromConfigString(std::string_view config_string) {
-  std::optional<Value> dict = JSONReader::Read(config_string);
+  std::optional<Value> dict =
+      JSONReader::Read(config_string, JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (dict && dict->is_dict()) {
     InitializeFromConfigDict(dict->GetDict());
   } else {

@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# API schema files (the .json/.idl API files) and *features.json files have
-# far-reaching effects, including extension bindings, generated types,
+# API schema files (the .json/.idl/.webidl API files) and *features.json files
+# have far-reaching effects, including extension bindings, generated types,
 # exposure of the API to different extensions, public documentation,
 # externs, and more. These changes should be reviewed by a core member of
 # the apps or extensions team.
@@ -17,4 +17,3 @@ tjudkins@chromium.org        # Secondary for extensions APIs
 # For Chrome OS apps APIs.
 tbarzic@chromium.org
 jamescook@chromium.org
-xiyuan@chromium.org

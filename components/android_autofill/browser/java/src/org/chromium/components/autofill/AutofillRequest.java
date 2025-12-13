@@ -165,9 +165,9 @@ public class AutofillRequest {
                     new ViewType(
                             field.getAutofillId(),
                             field.getServerType(),
-                            field.getComputedType(),
+                            field.getOverallType(),
                             field.getServerPredictions()));
-            }
+        }
         mAutofillHintsService.onViewTypeAvailable(viewTypes);
     }
 }

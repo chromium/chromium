@@ -1,0 +1,6 @@
+Tests that reloading a page with its own logs retains the logs.
+Initial load:
+PAGE: page with console log
+Reloading page:
+PAGE: page with console log
+

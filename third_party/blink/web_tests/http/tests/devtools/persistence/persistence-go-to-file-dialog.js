@@ -50,7 +50,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
         keys.push(provider.itemKeyAt(i));
       keys.sort();
       TestRunner.addResult(keys.join('\n'));
-      UIModule.Dialog.Dialog.instance.hide();
+      UIModule.Dialog.Dialog.getInstance().hide();
       next();
     });
     QuickOpen.QuickOpen.QuickOpenImpl.show('');

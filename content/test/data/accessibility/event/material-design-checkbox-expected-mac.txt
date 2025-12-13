@@ -1,0 +1,59 @@
+=== Accessibility tree before go() pass 1 ===
+AXWebArea AXTitle='Material Web Checkbox Toggle Event'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXCheckBox AXDescription='Test Checkbox' AXValue=0
+++++++++AXGroup
+++++++++AXGroup
+=== End accessibility tree ===
+AXValueChanged on AXCheckBox AXDescription='Test Checkbox' AXValue=1
+=== Accessibility tree after go() pass 1 ===
+AXWebArea AXTitle='Material Web Checkbox Toggle Event'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXCheckBox AXDescription='Test Checkbox' AXValue=1 <<<<<< CHANGED
+++++++++AXGroup
+++++++++AXGroup
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+AXWebArea AXTitle='Material Web Checkbox Toggle Event'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXCheckBox AXDescription='Test Checkbox' AXValue=1
+++++++++AXGroup
+++++++++AXGroup
+=== End accessibility tree ===
+AXValueChanged on AXCheckBox AXDescription='Test Checkbox' AXValue=0
+=== Accessibility tree after go() pass 2 ===
+AXWebArea AXTitle='Material Web Checkbox Toggle Event'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXCheckBox AXDescription='Test Checkbox' AXValue=0 <<<<<< CHANGED
+++++++++AXGroup
+++++++++AXGroup
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+AXWebArea AXTitle='Material Web Checkbox Toggle Event'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXCheckBox AXDescription='Test Checkbox' AXValue=0
+++++++++AXGroup
+++++++++AXGroup
+=== End accessibility tree ===
+AXValueChanged on AXCheckBox AXDescription='Test Checkbox' AXValue=2
+=== Accessibility tree after go() pass 3 ===
+AXWebArea AXTitle='Material Web Checkbox Toggle Event'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXGroup
+++++++++AXCheckBox AXDescription='Test Checkbox' AXValue=2 <<<<<< CHANGED
+++++++++AXGroup
+++++++++AXGroup
+=== End accessibility tree ===

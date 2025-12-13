@@ -45,9 +45,9 @@ class FakeSecurePaymentConfirmationService
   }
 
   void StorePaymentCredential(
-      const WTF::Vector<uint8_t>& credential_id,
-      const WTF::String& rp_id,
-      const WTF::Vector<uint8_t>& user_id,
+      const Vector<uint8_t>& credential_id,
+      const String& rp_id,
+      const Vector<uint8_t>& user_id,
       StorePaymentCredentialCallback callback) override {}
 
   void MakePaymentCredential(
@@ -76,7 +76,7 @@ class ScopedFakeSecurePaymentConfirmationService {
         spc_availability);
     scope_->GetWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
         payments::mojom::blink::SecurePaymentConfirmationService::Name_,
-        WTF::BindRepeating(
+        BindRepeating(
             [](FakeSecurePaymentConfirmationService* mock_service_ptr,
                mojo::ScopedMessagePipeHandle handle) {
               mock_service_ptr->Bind(
@@ -84,7 +84,7 @@ class ScopedFakeSecurePaymentConfirmationService {
                       payments::mojom::blink::SecurePaymentConfirmationService>(
                       std::move(handle)));
             },
-            WTF::Unretained(mock_service_.get())));
+            Unretained(mock_service_.get())));
   }
 
   ~ScopedFakeSecurePaymentConfirmationService() {

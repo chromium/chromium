@@ -107,7 +107,6 @@ unsafe impl<'a, T: 'static + ?Sized> Yokeable<'a> for VarZeroCow<'static, T> {
 }
 
 /// This impl requires enabling the optional `yoke` Cargo feature of the `zerovec` crate
-#[allow(clippy::transmute_ptr_to_ptr)]
 #[cfg(feature = "alloc")]
 unsafe impl<'a, K, V> Yokeable<'a> for ZeroMap<'static, K, V>
 where
@@ -154,7 +153,6 @@ where
 }
 
 /// This impl requires enabling the optional `yoke` Cargo feature of the `zerovec` crate
-#[allow(clippy::transmute_ptr_to_ptr)]
 #[cfg(feature = "alloc")]
 unsafe impl<'a, K, V> Yokeable<'a> for ZeroMapBorrowed<'static, K, V>
 where
@@ -201,7 +199,6 @@ where
 }
 
 /// This impl requires enabling the optional `yoke` Cargo feature of the `zerovec` crate
-#[allow(clippy::transmute_ptr_to_ptr)]
 #[cfg(feature = "alloc")]
 unsafe impl<'a, K0, K1, V> Yokeable<'a> for ZeroMap2d<'static, K0, K1, V>
 where
@@ -250,7 +247,6 @@ where
 }
 
 /// This impl requires enabling the optional `yoke` Cargo feature of the `zerovec` crate
-#[allow(clippy::transmute_ptr_to_ptr)]
 #[cfg(feature = "alloc")]
 unsafe impl<'a, K0, K1, V> Yokeable<'a> for ZeroMap2dBorrowed<'static, K0, K1, V>
 where
@@ -314,7 +310,7 @@ mod test {
     #[cfg_attr(feature = "databake", databake(path = zerovec::yoke_impls::test))]
     struct DeriveTest_ZeroVec<'data> {
         #[cfg_attr(feature = "serde", serde(borrow))]
-        _data: ZeroVec<'data, u16>,
+        pub _data: ZeroVec<'data, u16>,
     }
 
     #[test]
@@ -334,7 +330,7 @@ mod test {
     #[cfg_attr(feature = "databake", databake(path = zerovec::yoke_impls::test))]
     struct DeriveTest_ZeroSlice<'data> {
         #[cfg_attr(feature = "serde", serde(borrow))]
-        _data: &'data ZeroSlice<u16>,
+        pub _data: &'data ZeroSlice<u16>,
     }
 
     #[test]
@@ -354,7 +350,7 @@ mod test {
     #[cfg_attr(feature = "databake", databake(path = zerovec::yoke_impls::test))]
     struct DeriveTest_VarZeroVec<'data> {
         #[cfg_attr(feature = "serde", serde(borrow))]
-        _data: VarZeroVec<'data, str>,
+        pub _data: VarZeroVec<'data, str>,
     }
 
     #[test]
@@ -374,7 +370,7 @@ mod test {
     #[cfg_attr(feature = "databake", databake(path = zerovec::yoke_impls::test))]
     struct DeriveTest_VarZeroSlice<'data> {
         #[cfg_attr(feature = "serde", serde(borrow))]
-        _data: &'data VarZeroSlice<str>,
+        pub _data: &'data VarZeroSlice<str>,
     }
 
     #[test]
@@ -395,7 +391,7 @@ mod test {
     #[yoke(prove_covariance_manually)]
     struct DeriveTest_ZeroMap<'data> {
         #[cfg_attr(feature = "serde", serde(borrow))]
-        _data: ZeroMap<'data, [u8], str>,
+        pub _data: ZeroMap<'data, [u8], str>,
     }
 
     #[test]
@@ -422,7 +418,7 @@ mod test {
     #[yoke(prove_covariance_manually)]
     struct DeriveTest_ZeroMapBorrowed<'data> {
         #[cfg_attr(feature = "serde", serde(borrow))]
-        _data: ZeroMapBorrowed<'data, [u8], str>,
+        pub _data: ZeroMapBorrowed<'data, [u8], str>,
     }
 
     #[test]
@@ -449,7 +445,7 @@ mod test {
     #[yoke(prove_covariance_manually)]
     struct DeriveTest_ZeroMapWithULE<'data> {
         #[cfg_attr(feature = "serde", serde(borrow))]
-        _data: ZeroMap<'data, ZeroSlice<u32>, str>,
+        pub _data: ZeroMap<'data, ZeroSlice<u32>, str>,
     }
 
     #[test]
@@ -476,7 +472,7 @@ mod test {
     #[yoke(prove_covariance_manually)]
     struct DeriveTest_ZeroMap2d<'data> {
         #[cfg_attr(feature = "serde", serde(borrow))]
-        _data: ZeroMap2d<'data, u16, u16, str>,
+        pub _data: ZeroMap2d<'data, u16, u16, str>,
     }
 
     #[test]
@@ -505,7 +501,7 @@ mod test {
     #[yoke(prove_covariance_manually)]
     struct DeriveTest_ZeroMap2dBorrowed<'data> {
         #[cfg_attr(feature = "serde", serde(borrow))]
-        _data: ZeroMap2dBorrowed<'data, u16, u16, str>,
+        pub _data: ZeroMap2dBorrowed<'data, u16, u16, str>,
     }
 
     #[test]

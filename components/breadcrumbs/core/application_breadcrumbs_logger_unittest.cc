@@ -6,6 +6,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/run_loop.h"
@@ -103,13 +104,12 @@ TEST_F(ApplicationBreadcrumbsLoggerTest, SkipInProductHelpUserActions) {
 TEST_F(ApplicationBreadcrumbsLoggerTest, MemoryPressure) {
   ASSERT_TRUE(OnlyStartupEventLogged());
 
-  base::MemoryPressureListener::SimulatePressureNotification(
-      base::MemoryPressureListener::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_MODERATE);
-  base::MemoryPressureListener::SimulatePressureNotification(
-      base::MemoryPressureListener::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_CRITICAL);
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  base::MemoryPressureListener::SimulatePressureNotificationAsync(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE, base::DoNothing());
+  base::MemoryPressureListener::SimulatePressureNotificationAsync(
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL, run_loop.QuitClosure());
+  run_loop.Run();
 
   EXPECT_FALSE(OnlyStartupEventLogged());
   auto events = GetEvents();

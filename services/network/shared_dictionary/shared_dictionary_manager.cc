@@ -111,9 +111,10 @@ std::unique_ptr<SharedDictionaryManager> SharedDictionaryManager::CreateOnDisk(
 
 SharedDictionaryManager::SharedDictionaryManager()
     : cached_storages_(kCachedStorageMaxSize) {
-  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE, base::BindRepeating(&SharedDictionaryManager::OnMemoryPressure,
-                                     weak_factory_.GetWeakPtr()));
+  memory_pressure_listener_registration_ =
+      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
+          FROM_HERE, base::MemoryPressureListenerTag::kSharedDictionaryManager,
+          this);
 }
 SharedDictionaryManager::~SharedDictionaryManager() = default;
 
@@ -130,11 +131,23 @@ scoped_refptr<SharedDictionaryStorage> SharedDictionaryManager::GetStorage(
     DCHECK(it->second);
     return it->second.get();
   }
-  scoped_refptr<SharedDictionaryStorage> storage = CreateStorage(isolation_key);
+  SharedDictionaryStorageEvictionReason previous_eviction_reason =
+      SharedDictionaryStorageEvictionReason::kNotEvicted;
+  if (auto evicted_it = previously_evicted_keys_.find(isolation_key);
+      evicted_it != previously_evicted_keys_.end()) {
+    previous_eviction_reason = evicted_it->second;
+    previously_evicted_keys_.erase(evicted_it);
+  }
+  scoped_refptr<SharedDictionaryStorage> storage =
+      CreateStorage(isolation_key, previous_eviction_reason);
   CHECK(storage);
   storages_.emplace(isolation_key, storage.get());
-  if (memory_pressure_level_ ==
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
+  if (memory_pressure_level_ == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    if (cached_storages_.size() >= cached_storages_.max_size()) {
+      // The cache is full. The last element will be evicted.
+      previously_evicted_keys_[cached_storages_.rbegin()->first] =
+          SharedDictionaryStorageEvictionReason::kCacheFull;
+    }
     cached_storages_.Put(isolation_key, storage);
   }
   return storage;
@@ -151,13 +164,21 @@ base::WeakPtr<SharedDictionaryManager> SharedDictionaryManager::GetWeakPtr() {
 }
 
 void SharedDictionaryManager::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
+    base::MemoryPressureLevel level) {
   memory_pressure_level_ = level;
-  if (memory_pressure_level_ !=
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
+  if (memory_pressure_level_ != base::MEMORY_PRESSURE_LEVEL_NONE) {
+    SharedDictionaryStorageEvictionReason eviction_reason =
+        (memory_pressure_level_ == base::MEMORY_PRESSURE_LEVEL_CRITICAL)
+            ? SharedDictionaryStorageEvictionReason::kMemoryPressureCritical
+            : SharedDictionaryStorageEvictionReason::kMemoryPressureModerate;
+    for (const auto& it : cached_storages_) {
+      previously_evicted_keys_[it.first] = eviction_reason;
+    }
     cached_storages_.Clear();
     preloaded_dictionaries_set_.clear();
   }
+
+  HandleMemoryPressure(level);
 }
 
 size_t SharedDictionaryManager::GetStorageCountForTesting() {
@@ -213,8 +234,7 @@ void SharedDictionaryManager::PreloadSharedDictionaryInfoForDocument(
     const std::vector<GURL>& urls,
     mojo::PendingReceiver<mojom::PreloadedSharedDictionaryInfoHandle>
         preload_handle) {
-  if (memory_pressure_level_ !=
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
+  if (memory_pressure_level_ != base::MEMORY_PRESSURE_LEVEL_NONE) {
     return;
   }
   auto preloaded_dictionaries =

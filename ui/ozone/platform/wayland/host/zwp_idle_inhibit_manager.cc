@@ -8,6 +8,8 @@
 
 #include "base/logging.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_surface.h"
+#include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 namespace ui {
 
@@ -45,14 +47,37 @@ void ZwpIdleInhibitManager::Instantiate(WaylandConnection* connection,
 ZwpIdleInhibitManager::ZwpIdleInhibitManager(
     zwp_idle_inhibit_manager_v1* manager,
     WaylandConnection* connection)
-    : manager_(manager) {}
+    : connection_(connection), manager_(manager) {}
 
 ZwpIdleInhibitManager::~ZwpIdleInhibitManager() = default;
 
-wl::Object<zwp_idle_inhibitor_v1> ZwpIdleInhibitManager::CreateInhibitor(
-    wl_surface* surface) {
-  return wl::Object<zwp_idle_inhibitor_v1>(
-      zwp_idle_inhibit_manager_v1_create_inhibitor(manager_.get(), surface));
+bool ZwpIdleInhibitManager::CreateInhibitor() {
+  // Wayland inhibits idle behaviour on certain output, and implies that a
+  // surface bound to that output should obtain the inhibitor and hold it
+  // until it no longer needs to prevent the output to go idle.
+  // We assume that the idle lock is initiated by the user, and therefore the
+  // surface that we should use is the one owned by the window that is focused
+  // currently.
+  const auto* window_manager = connection_->window_manager();
+  DCHECK(window_manager);
+  auto* current_window = window_manager->GetCurrentFocusedWindow();
+  if (!current_window) {
+    LOG(WARNING) << "Cannot inhibit going idle when no window is focused";
+    return false;
+  }
+
+  DCHECK(current_window->root_surface());
+  auto new_inhibitor = wl::Object<zwp_idle_inhibitor_v1>(
+      zwp_idle_inhibit_manager_v1_create_inhibitor(
+          manager_.get(), current_window->root_surface()->surface()));
+
+  idle_inhibitor_.swap(new_inhibitor);
+  return true;
+}
+
+void ZwpIdleInhibitManager::RemoveInhibitor() {
+  inhibiting_window_ = nullptr;
+  idle_inhibitor_.reset();
 }
 
 }  // namespace ui

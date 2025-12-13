@@ -142,9 +142,15 @@ enum FirstRunStage {
   kBestFeaturesExperienceCompletionThroughMainScreen = 26,
   // The Best Features screens are completed by exiting through a detail screen.
   kBestFeaturesExperienceCompletionThroughDetailScreen = 27,
+  // Interactive Lens screen shown.
+  kInteractiveLensStart = 28,
+  // Interactive Lens screen completed after interaction with Lens.
+  kInteractiveLensCompletionWithInteraction = 29,
+  // Interactive Lens screen completed without interaction with Lens.
+  kInteractiveLensCompletionWithoutInteraction = 30,
   // Max value of the first run experience stages.
   // kMaxValue should share the value of the highest enumerator.
-  kMaxValue = kBestFeaturesExperienceCompletionThroughDetailScreen,
+  kMaxValue = kInteractiveLensCompletionWithoutInteraction,
 };
 
 }  // namespace first_run

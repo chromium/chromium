@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -77,9 +76,9 @@ class PinInfoBarControllerTest : public testing::Test {
             std::make_unique<MockBrowserWindowInterface>()) {
     feature_list_.InitAndEnableFeature(features::kOfferPinToTaskbarInfoBar);
 
-    ON_CALL(*browser_window_interface_, GetTabStripModel)
+    ON_CALL(*browser_window_interface_, GetTabStripModel())
         .WillByDefault(::testing::Return(tab_strip_model()));
-    ON_CALL(*browser_window_interface_, GetProfile)
+    ON_CALL(*browser_window_interface_, GetProfile())
         .WillByDefault(::testing::Return(profile()));
     delegate_->SetBrowserWindowInterface(browser_window_interface());
   }
@@ -121,9 +120,6 @@ class PinInfoBarControllerTest : public testing::Test {
   // `ChromeLayoutProvider::Get()` is called when an infobar is created.
   ChromeLayoutProvider layout_provider_;
 
-  // Must be before `profile_`.
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
-
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   const std::unique_ptr<TestingProfile> profile_;
   const std::unique_ptr<TestTabStripModelDelegate> delegate_;
@@ -156,7 +152,7 @@ TEST_F(PinInfoBarControllerTest, DontShowIfBrowserNotNormal) {
 
 // Don't show the infobar if the browser is incognito.
 TEST_F(PinInfoBarControllerTest, DontShowIfIncognito) {
-  ON_CALL(*browser_window_interface(), GetProfile)
+  ON_CALL(*browser_window_interface(), GetProfile())
       .WillByDefault(::testing::Return(
           profile()->GetOffTheRecordProfile(Profile::OTRProfileID::PrimaryID(),
                                             /*create_if_needed=*/true)));
@@ -190,7 +186,10 @@ TEST_F(PinInfoBarControllerTest, DontShowIfShownRecently) {
 }
 
 // Don't show the infobar if it was shown the maximum number of times.
-TEST_F(PinInfoBarControllerTest, DontShowIfShownMaxTimes) {
+//
+// Disabled because it's broken on multiple bots and very flaky on every other
+// bot it runs on; see https://crbug.com/435215855 for links and more info.
+TEST_F(PinInfoBarControllerTest, DISABLED_DontShowIfShownMaxTimes) {
   auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
       tab_strip_model()->GetActiveWebContents());
   ASSERT_TRUE(infobar_manager);

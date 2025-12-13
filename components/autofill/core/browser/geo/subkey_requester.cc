@@ -171,15 +171,15 @@ base::android::ScopedJavaLocalRef<jobject> SubKeyRequester::GetJavaObject() {
 
 void SubKeyRequester::LoadRulesForSubKeys(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jregion_code) {
+    const base::android::JavaRef<jstring>& jregion_code) {
   LoadRulesForRegion(base::android::ConvertJavaStringToUTF8(env, jregion_code));
 }
 
 void SubKeyRequester::StartRegionSubKeysRequest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jregion_code,
+    const base::android::JavaRef<jstring>& jregion_code,
     jint jtimeout_seconds,
-    const base::android::JavaParamRef<jobject>& jdelegate) {
+    const base::android::JavaRef<jobject>& jdelegate) {
   const std::string region_code =
       base::android::ConvertJavaStringToUTF8(env, jregion_code);
 
@@ -199,3 +199,7 @@ void SubKeyRequester::CancelPendingGetSubKeys(JNIEnv* env) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(SubKeyRequester)
+#endif

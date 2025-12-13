@@ -10,6 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -48,10 +49,11 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest,
 
   WebContentsConsoleObserver console_observer(web_contents());
   console_observer.SetPattern(
-      "[Report Only] Refused to compile or instantiate WebAssembly module "
-      "because 'unsafe-eval' is not an allowed source of script in the "
-      "following Content Security Policy directive: \"script-src "
-      "'unsafe-inline'\".\n");
+      "Compiling or instantiating a WebAssembly module violates the following "
+      "Content Security policy directive because 'unsafe-eval' is not an "
+      "allowed source of script: \"script-src 'unsafe-inline'\". The policy is "
+      "report-only, so the violation has been logged but no further action has "
+      "been taken.");
   EXPECT_TRUE(NavigateToURL(shell(), url));
   ASSERT_TRUE(console_observer.Wait());
 }
@@ -113,11 +115,11 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest,
   GURL url(page);
   WebContentsConsoleObserver console_observer(web_contents());
   console_observer.SetPattern(
-      "Refused to frame '' because it violates the following Content Security "
-      "Policy directive: \"frame-src *\". Note that '*' matches only URLs with "
-      "network schemes ('http', 'https', 'ws', 'wss'), or URLs whose scheme "
-      "matches `self`'s scheme. The scheme 'mailto:' must be added "
-      "explicitly.\n");
+      "Framing '' violates the following Content Security Policy directive: "
+      "\"frame-src *\". The request has been blocked. Note that '*' matches "
+      "only URLs with network schemes ('http', 'https', 'ws', 'wss'), or URLs "
+      "whose scheme matches `self`'s scheme. The scheme 'mailto:' must be "
+      "added explicitly.\n");
   EXPECT_TRUE(NavigateToURL(shell(), url));
   ASSERT_TRUE(console_observer.Wait());
 }
@@ -133,13 +135,13 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest,
   GURL url(page);
   WebContentsConsoleObserver console_observer(web_contents());
   console_observer.SetPattern(
-      "Refused to load the script 'mailto:arthursonzogni@chromium.org' because "
-      "it violates the following Content Security Policy directive: "
+      "Loading the script 'mailto:arthursonzogni@chromium.org' violates the "
+      "following Content Security Policy directive: "
       "\"script-src *\". Note that 'script-src-elem' was not explicitly set, "
       "so 'script-src' is used as a fallback. Note that '*' matches only URLs "
       "with network schemes ('http', 'https', 'ws', 'wss'), or URLs whose "
       "scheme matches `self`'s scheme. The scheme 'mailto:' must be added "
-      "explicitly.\n");
+      "explicitly. The action has been blocked.");
   EXPECT_TRUE(NavigateToURL(shell(), url));
   ASSERT_TRUE(console_observer.Wait());
 }
@@ -310,10 +312,11 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest,
   GURL url(page);
   WebContentsConsoleObserver console_observer(web_contents());
   console_observer.SetPattern(
-      "Refused to load the image "
+      "Loading the image "
       "'data:image/gif;base64,R0lGODlhAQABAIAAAP///////"
-      "yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' because it violates the following "
-      "Content Security Policy directive: \"img-src 'none'\".\n");
+      "yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' violates the following Content "
+      "Security Policy directive: \"img-src 'none'\". The action has been "
+      "blocked.");
   EXPECT_TRUE(NavigateToURL(shell(), url));
   ASSERT_TRUE(console_observer.Wait());
 }
@@ -324,10 +327,12 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest,
 
   WebContentsConsoleObserver console_observer(web_contents());
   console_observer.SetPattern(
-      "[Report Only] Refused to load the image "
+      "Loading the image "
       "'data:image/gif;base64,R0lGODlhAQABAIAAAP///////"
-      "yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' because it violates the following "
-      "Content Security Policy directive: \"img-src 'none'\".\n");
+      "yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' violates the following "
+      "Content Security Policy directive: \"img-src 'none'\". The policy is "
+      "report-only, so the violation has been logged but no further action has "
+      "been taken.");
   EXPECT_TRUE(NavigateToURL(shell(), url));
   ASSERT_TRUE(console_observer.Wait());
 }

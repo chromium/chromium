@@ -56,7 +56,7 @@ suite('ExtensionCodeSectionTest', function() {
     assertEquals(
         '1\n2\n3\n4',
         codeSection.shadowRoot.querySelector<HTMLElement>(
-                                  '#line-numbers span')!.textContent!.trim());
+                                  '#line-numbers span')!.textContent.trim());
   });
 
   test('LongSource', async () => {
@@ -85,7 +85,7 @@ suite('ExtensionCodeSectionTest', function() {
 
     lineNums =
         codeSection.shadowRoot.querySelector<HTMLElement>(
-                                  '#line-numbers span')!.textContent!;
+                                  '#line-numbers span')!.textContent;
     // Length should be 1000 +- 1.
     assertTrue(lineNums.split('\n').length >= 999);
     assertTrue(lineNums.split('\n').length <= 1001);
@@ -104,7 +104,7 @@ suite('ExtensionCodeSectionTest', function() {
 
     lineNums =
         codeSection.shadowRoot.querySelector<HTMLElement>(
-                                  '#line-numbers span')!.textContent!;
+                                  '#line-numbers span')!.textContent;
     // Length should be 1000 +- 1.
     assertTrue(lineNums.split('\n').length >= 999);
     assertTrue(lineNums.split('\n').length <= 1001);
@@ -123,7 +123,7 @@ suite('ExtensionCodeSectionTest', function() {
 
     lineNums =
         codeSection.shadowRoot.querySelector<HTMLElement>(
-                                  '#line-numbers span')!.textContent!;
+                                  '#line-numbers span')!.textContent;
     // Length should be 1000 +- 1.
     assertTrue(lineNums.split('\n').length >= 999);
     assertTrue(lineNums.split('\n').length <= 1001);

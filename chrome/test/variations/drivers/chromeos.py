@@ -38,6 +38,10 @@ from telemetry.internal.backends.chrome import cros_browser_finder
 CACHE_DIR = os.path.join(SRC_DIR, "build", "cros_cache")
 INITIAL_WAIT_TIME_SECONDS = 10
 
+# Wait time after loading a page to allow the scrollbar to disappear before
+# taking a screenshot.
+SCREENSHOT_WAIT_TIME_SECONDS = 5
+
 
 class _PossibleCrOSBrowser(cros_browser_finder.PossibleCrOSBrowser):
   """The CrOS browser wrapper to filter out start-up args."""
@@ -180,6 +184,10 @@ class CrOSDriverFactory(DriverFactory):
       tunnel.terminate()
 
   #override
+  def wait_for_screenshot(self):
+    time.sleep(SCREENSHOT_WAIT_TIME_SECONDS)
+
+  #override
   @contextmanager
   def create_driver(
     self,
@@ -189,7 +197,11 @@ class CrOSDriverFactory(DriverFactory):
     # This has a side-effect to boot up the VM if not yet already.
     assert self.device, "VM fails to boot."
 
-    browser_args = []
+    browser_args = [
+      # We need debugging connection via WebSocket with the browser. By default
+      # such connection is blocked so we add this flag to allow it.
+      '--remote-allow-origins=*',
+    ]
     if seed_file:
       remote_seed_path = self._copy_seed_file(seed_file)
       browser_args.extend([

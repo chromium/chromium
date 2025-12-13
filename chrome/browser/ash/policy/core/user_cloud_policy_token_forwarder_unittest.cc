@@ -18,7 +18,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -34,7 +34,9 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_task_environment.h"
@@ -68,6 +70,7 @@ class MockUserCloudPolicyManagerAsh : public UserCloudPolicyManagerAsh {
       : UserCloudPolicyManagerAsh(
             profile,
             std::make_unique<MockCloudPolicyStore>(),
+            std::make_unique<MockCloudPolicyStore>(),
             std::make_unique<MockCloudExternalDataManager>(),
             base::FilePath() /* component_policy_cache_path */,
             UserCloudPolicyManagerAsh::PolicyEnforcement::kPolicyRequired,
@@ -98,15 +101,12 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
       const UserCloudPolicyTokenForwarderTest&) = delete;
 
  protected:
-  static ash::FakeChromeUserManager* GetFakeUserManager() {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
-
   UserCloudPolicyTokenForwarderTest()
       : mock_time_task_runner_(
             base::MakeRefCounted<base::TestMockTimeTaskRunner>()),
-        user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()),
+        user_manager_(std::make_unique<user_manager::UserManagerImpl>(
+            std::make_unique<user_manager::FakeUserManagerDelegate>(),
+            TestingBrowserProcess::GetGlobal()->GetTestingLocalState())),
         profile_manager_(std::make_unique<TestingProfileManager>(
             TestingBrowserProcess::GetGlobal())),
         store_(std::make_unique<MockCloudPolicyStore>()) {}
@@ -130,6 +130,29 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
   void CreateUserWithType(user_manager::UserType user_type) {
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId(kEmail, kGaiaId);
+    {
+      user_manager::TestHelper test_helper(user_manager::UserManager::Get());
+      switch (user_type) {
+        case user_manager::UserType::kRegular:
+          CHECK(test_helper.AddRegularUser(account_id));
+          break;
+        case user_manager::UserType::kChild:
+          CHECK(test_helper.AddChildUser(account_id));
+          break;
+        case user_manager::UserType::kGuest:
+        case user_manager::UserType::kPublicAccount:
+        case user_manager::UserType::kKioskChromeApp:
+        case user_manager::UserType::kKioskWebApp:
+        case user_manager::UserType::kKioskIWA:
+        case user_manager::UserType::kKioskArcvmApp:
+          LOG(FATAL) << "unsupported UserType: " << user_type;
+      }
+    }
+    user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
+
+    ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
+                                            account_id);
     TestingProfile* profile = profile_manager_->CreateTestingProfile(
         account_id.GetUserEmail(),
         std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
@@ -142,11 +165,7 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
     identity_test_env_profile_adaptor_->identity_test_env()
         ->MakePrimaryAccountAvailable(kEmail, signin::ConsentLevel::kSignin);
 
-    auto* user_manager = GetFakeUserManager();
-    user_manager->AddUserWithAffiliationAndTypeAndProfile(
-        account_id, false /* is_affiliated */, user_type, profile);
-    user_manager->SwitchActiveUser(account_id);
-    ASSERT_TRUE(user_manager->GetActiveUser());
+    ASSERT_TRUE(user_manager_->GetActiveUser());
 
     user_policy_manager_ = std::make_unique<MockUserCloudPolicyManagerAsh>(
         profile, account_id, mock_time_task_runner_);
@@ -206,7 +225,7 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
   scoped_refptr<base::TestMockTimeTaskRunner> mock_time_task_runner_;
 
  private:
-  user_manager::ScopedUserManager user_manager_enabler_;
+  user_manager::ScopedUserManager user_manager_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>

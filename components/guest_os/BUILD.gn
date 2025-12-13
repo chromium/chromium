@@ -14,7 +14,7 @@ static_library("guest_os") {
     "//components/exo",
     "//components/prefs",
     "//components/session_manager/core",
-    "//ui/wm/public:public",
+    "//ui/wm/public",
   ]
   sources = [
     "guest_os_engagement_metrics.cc",
@@ -36,13 +36,14 @@ source_set("unit_tests") {
   deps = [
     ":guest_os",
     ":prefs",
-    "//ash:ash",
+    "//ash",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/session_manager",
-    "//chromeos/dbus/power:power",
+    "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//components/prefs:test_support",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/aura:test_support",

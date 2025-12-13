@@ -4,11 +4,11 @@
 
 source_set("bottom_sheet") {
   sources = [
-    "password_suggestion_bottom_sheet_coordinator.h",
-    "password_suggestion_bottom_sheet_coordinator.mm",
+    "credential_suggestion_bottom_sheet_coordinator.h",
+    "credential_suggestion_bottom_sheet_coordinator.mm",
+    "credential_suggestion_bottom_sheet_mediator.h",
+    "credential_suggestion_bottom_sheet_mediator.mm",
     "password_suggestion_bottom_sheet_exit_reason.h",
-    "password_suggestion_bottom_sheet_mediator.h",
-    "password_suggestion_bottom_sheet_mediator.mm",
   ]
   deps = [
     ":bottom_sheet_ui",
@@ -32,10 +32,10 @@ source_set("bottom_sheet") {
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/public:best_features_item",
-    "//ios/chrome/browser/first_run/public:features",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:password_controller_delegate",
     "//ios/chrome/browser/passwords/model:store_factory",
+    "//ios/chrome/browser/passwords/ui_bundled:password_suggestion_utils",
     "//ios/chrome/browser/settings/ui_bundled/password/password_sharing:password_sharing_util",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
@@ -47,7 +47,7 @@ source_set("bottom_sheet") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/tips_manager/model:factory",
     "//ios/chrome/browser/tips_manager/model:tips_manager",
-    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/browser/welcome_back/model:features",
     "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/web/public",
@@ -60,12 +60,12 @@ source_set("bottom_sheet") {
 
 source_set("bottom_sheet_ui") {
   sources = [
-    "password_suggestion_bottom_sheet_consumer.h",
-    "password_suggestion_bottom_sheet_delegate.h",
-    "password_suggestion_bottom_sheet_handler.h",
-    "password_suggestion_bottom_sheet_presenter.h",
-    "password_suggestion_bottom_sheet_view_controller.h",
-    "password_suggestion_bottom_sheet_view_controller.mm",
+    "credential_suggestion_bottom_sheet_consumer.h",
+    "credential_suggestion_bottom_sheet_delegate.h",
+    "credential_suggestion_bottom_sheet_handler.h",
+    "credential_suggestion_bottom_sheet_presenter.h",
+    "credential_suggestion_bottom_sheet_view_controller.h",
+    "credential_suggestion_bottom_sheet_view_controller.mm",
   ]
   deps = [
     "//base",
@@ -80,7 +80,9 @@ source_set("bottom_sheet_ui") {
     "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
@@ -91,8 +93,8 @@ source_set("bottom_sheet_ui") {
 
 source_set("common") {
   sources = [
-    "scoped_password_suggestion_bottom_sheet_reauth_module_override.h",
-    "scoped_password_suggestion_bottom_sheet_reauth_module_override.mm",
+    "scoped_credential_suggestion_bottom_sheet_reauth_module_override.h",
+    "scoped_credential_suggestion_bottom_sheet_reauth_module_override.mm",
   ]
   deps = [
     "//base",
@@ -103,7 +105,7 @@ source_set("common") {
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [ "password_suggestion_bottom_sheet_egtest.mm" ]
+  sources = [ "credential_suggestion_bottom_sheet_egtest.mm" ]
   deps = [
     ":eg_test_support+eg2",
     "//components/password_manager/core/browser/features:password_features",
@@ -111,7 +113,8 @@ source_set("eg2_tests") {
     "//components/password_manager/ios:features",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/autofill/model:features",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/omnibox/eg_tests:eg_test_support+eg2",
     "//ios/chrome/browser/passwords/model:eg_test_support+eg2",
@@ -138,8 +141,8 @@ source_set("eg_app_support+eg2") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
-    "password_suggestion_bottom_sheet_app_interface.h",
-    "password_suggestion_bottom_sheet_app_interface.mm",
+    "credential_suggestion_bottom_sheet_app_interface.h",
+    "credential_suggestion_bottom_sheet_app_interface.mm",
   ]
   deps = [
     ":common",
@@ -149,6 +152,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
     "//ios/chrome/test/app:test_support",
   ]
 
@@ -162,8 +166,8 @@ source_set("eg_test_support+eg2") {
   testonly = true
 
   sources = [
-    "password_suggestion_bottom_sheet_app_interface.h",
-    "password_suggestion_bottom_sheet_app_interface_stub.mm",
+    "credential_suggestion_bottom_sheet_app_interface.h",
+    "credential_suggestion_bottom_sheet_app_interface_stub.mm",
   ]
   deps = [
     "//ios/chrome/common/ui/reauthentication",
@@ -173,7 +177,7 @@ source_set("eg_test_support+eg2") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "password_suggestion_bottom_sheet_mediator_unittest.mm" ]
+  sources = [ "credential_suggestion_bottom_sheet_mediator_unittest.mm" ]
   deps = [
     ":bottom_sheet",
     ":bottom_sheet_ui",

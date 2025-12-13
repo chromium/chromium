@@ -6,14 +6,13 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <tuple>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
@@ -24,6 +23,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
+#include "chrome/browser/first_run/first_run_features.h"
 #include "chrome/browser/first_run/first_run_internal.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/headless/headless_mode_util.h"
@@ -51,8 +51,15 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/browser_features.h"
+#include "components/crx_file/id_util.h"
+#include "extensions/browser/pref_names.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace content {
 class BrowserContext;
@@ -288,6 +295,25 @@ void SetupInitialPrefsFromInstallPrefs(
       installer::initial_preferences::kDistroSuppressDefaultBrowserPromptPref,
       &out_prefs->suppress_default_browser_prompt_for_version);
 
+  if (base::FeatureList::IsEnabled(features::kBookmarksImportOnFirstRun)) {
+    const base::Value::Dict* bookmarks_dict = install_prefs.GetBookmarksBlock();
+    if (bookmarks_dict) {
+      out_prefs->import_bookmarks_dict = bookmarks_dict->Clone();
+    }
+  }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (base::FeatureList::IsEnabled(features::kInitialExternalExtensions)) {
+    out_prefs->initial_extensions_provider_name =
+        install_prefs.GetInitialExtensionsProviderName();
+
+    if (const base::Value::List* initial_extensions =
+            install_prefs.GetInitialExtensionsList()) {
+      out_prefs->initial_extensions = initial_extensions->Clone();
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 #if BUILDFLAG(IS_MAC)
   if (install_prefs.GetBool(prefs::kConfirmToQuitEnabled, &value) && value)
     out_prefs->confirm_to_quit = true;
@@ -412,17 +438,21 @@ ProcessInitialPreferencesResult ProcessInitialPreferences(
     // before mapping it to prefs.
     initial_dictionary.Remove(installer::initial_preferences::kDistroDict);
 
+    initial_dictionary.Remove(installer::initial_preferences::kBookmarksBlock);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    // Extensions are not copied verbatim into prefs. Their installation
+    // is managed by the `InitialExternalExtensionsLoader` which will load
+    // extension ids from the local prefs.
+    initial_dictionary.RemoveByDottedPath(
+        installer::initial_preferences::kExtensionsBlock);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
     if (!chrome_prefs::InitializePrefsFromMasterPrefs(
             profiles::GetDefaultProfileDir(user_data_dir),
             std::move(initial_dictionary),
             g_browser_process->os_crypt_async())) {
       DLOG(ERROR) << "Failed to initialize from initial preferences.";
-    }
-
-    const base::Value::Dict* extensions = nullptr;
-    if (initial_prefs->GetExtensionsBlock(extensions)) {
-      DVLOG(1) << "Extensions block found in initial preferences";
-      extensions::ExtensionUpdater::UpdateImmediatelyForFirstRun();
     }
 
     internal::SetupInitialPrefsFromInstallPrefs(*initial_prefs, out_prefs);

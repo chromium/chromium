@@ -3,8 +3,7 @@
     "os": [
       "win",
       "linux",
-      "mac",
-      "fuchsia"
+      "mac"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "extensions.extension_install_type_blocklist",

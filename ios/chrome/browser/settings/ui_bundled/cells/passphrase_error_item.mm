@@ -20,7 +20,7 @@
   return self;
 }
 
-- (void)configureCell:(TableViewCell*)cell
+- (void)configureCell:(LegacyTableViewCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
   cell.textLabel.text = self.text;

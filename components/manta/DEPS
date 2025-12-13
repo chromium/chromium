@@ -1,4 +1,5 @@
 include_rules = [
+  "+chromeos/components/magic_boost/public/cpp/magic_boost_state.h",
   "+chromeos/constants/chromeos_features.h",
   "+components/endpoint_fetcher",
   "+components/account_id/account_id.h",

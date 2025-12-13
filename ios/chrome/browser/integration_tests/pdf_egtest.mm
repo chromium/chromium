@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
@@ -63,9 +58,11 @@ const char kGreenPDFPath[] = "/green.pdf";
   // Swipe back and forth a few times. If this crashes, there may be a new
   // problem with how WKWebView snapshots PDFs.
   for (int i = 0; i < 3; i++) {
-    [[EarlGrey selectElementWithMatcher:toolbar]
+    [[[EarlGrey selectElementWithMatcher:toolbar]
+        assertWithMatcher:grey_interactable()]
         performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
-    [[EarlGrey selectElementWithMatcher:toolbar]
+    [[[EarlGrey selectElementWithMatcher:toolbar]
+        assertWithMatcher:grey_interactable()]
         performAction:grey_swipeFastInDirection(kGREYDirectionRight)];
   }
 
@@ -76,7 +73,8 @@ const char kGreenPDFPath[] = "/green.pdf";
 // Enter and leave the tab grid. Swipe back and forth repeatedly between
 // the two tabs in the toolbar. The regressiom is a crash anywhere in this
 // process.
-- (void)testSwitchBetweenPDFs {
+// TODO(crbug.com/447146436): Re-enable when fixed.
+- (void)DISABLED_testSwitchBetweenPDFs {
   // Compact width only.
   if (![ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_DISABLED(@"Disabled on iPad -- depends on swiping in the "
@@ -101,9 +99,11 @@ const char kGreenPDFPath[] = "/green.pdf";
   // Swipe back and forth a few times. If this crashes, there may be a new
   // problem with how WKWebView snapshots PDFs.
   for (int i = 0; i < 3; i++) {
-    [[EarlGrey selectElementWithMatcher:toolbar]
+    [[[EarlGrey selectElementWithMatcher:toolbar]
+        assertWithMatcher:grey_interactable()]
         performAction:grey_swipeFastInDirection(kGREYDirectionLeft)];
-    [[EarlGrey selectElementWithMatcher:toolbar]
+    [[[EarlGrey selectElementWithMatcher:toolbar]
+        assertWithMatcher:grey_interactable()]
         performAction:grey_swipeFastInDirection(kGREYDirectionRight)];
   }
 }
@@ -191,31 +191,34 @@ const char kGreenPDFPath[] = "/green.pdf";
                  alpha:(CGFloat*)alpha {
   CGImageRef imageRef = [image CGImage];
 
-  NSUInteger width = CGImageGetWidth(imageRef);
-  NSUInteger height = CGImageGetHeight(imageRef);
-  NSUInteger x = width / 2;
-  NSUInteger y = height / 2;
+  constexpr NSUInteger bytesPerPixel = 4;
+  constexpr NSUInteger bitsPerComponent = 8;
+  const NSUInteger width = CGImageGetWidth(imageRef);
+  const NSUInteger height = CGImageGetHeight(imageRef);
+  const NSUInteger bytesPerRow = bytesPerPixel * width;
+  const NSUInteger x = width / 2;
+  const NSUInteger y = height / 2;
+
+  std::vector<uint8_t> data;
+  data.resize(bytesPerRow * height);
 
   CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-  unsigned char* data =
-      (unsigned char*)calloc(height * width * 4, sizeof(unsigned char));
-  NSUInteger bytesPerPixel = 4;
-  NSUInteger bytesPerRow = bytesPerPixel * width;
-  NSUInteger bitsPerComponent = 8;
-  CGContextRef context =
-      CGBitmapContextCreate(data, width, height, bitsPerComponent, bytesPerRow,
-                            colorSpace, kCGImageAlphaPremultipliedLast);
+  CGContextRef context = CGBitmapContextCreate(
+      data.data(), width, height, bitsPerComponent, bytesPerRow, colorSpace,
+      kCGImageAlphaPremultipliedLast);
   CGContextDrawImage(context, CGRectMake(0, 0, width, height), imageRef);
 
-  NSUInteger index = (bytesPerRow * y) + x * bytesPerPixel;
-  *red = ((CGFloat)data[index]) / 255.0f;
-  *green = ((CGFloat)data[index + 1]) / 255.0f;
-  *blue = ((CGFloat)data[index + 2]) / 255.0f;
-  *alpha = ((CGFloat)data[index + 3]) / 255.0f;
+  const NSUInteger index = (bytesPerRow * y) + x * bytesPerPixel;
+  const base::span<const uint8_t> view =
+      base::span(data).subspan(index, bytesPerPixel);
+
+  *red = view[0] / 255.0f;
+  *green = view[1] / 255.0f;
+  *blue = view[2] / 255.0f;
+  *alpha = view[3] / 255.0f;
 
   CGColorSpaceRelease(colorSpace);
   CGContextRelease(context);
-  free(data);
 }
 
 @end

@@ -86,6 +86,8 @@ where
     }
 
     /// Construct a `Box<ZeroSlice<T>>` from a boxed slice of ULEs
+    ///
+    /// ✨ *Enabled with the `alloc` Cargo feature.*
     #[inline]
     #[cfg(feature = "alloc")]
     pub fn from_boxed_slice(slice: alloc::boxed::Box<[T::ULE]>) -> alloc::boxed::Box<Self> {
@@ -393,7 +395,7 @@ where
             return Some((
                 first,
                 // `unwrap()` must succeed, because `first()` returned `Some`.
-                #[allow(clippy::unwrap_used)]
+                #[expect(clippy::unwrap_used)]
                 self.get_subslice(1..self.len()).unwrap(),
             ));
         }
@@ -409,6 +411,10 @@ impl<'a, T: AsULE> Iterator for ZeroSliceIter<'a, T> {
     type Item = T;
     fn next(&mut self) -> Option<T> {
         self.0.next().copied().map(T::from_unaligned)
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        self.0.size_hint()
     }
 }
 

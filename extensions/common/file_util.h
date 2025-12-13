@@ -65,14 +65,14 @@ void UninstallExtension(const base::FilePath& profile_dir,
 scoped_refptr<Extension> LoadExtension(const base::FilePath& extension_root,
                                        mojom::ManifestLocation location,
                                        int flags,
-                                       std::string* error);
+                                       std::u16string* error);
 
 // The same as LoadExtension except use the provided `extension_id`.
 scoped_refptr<Extension> LoadExtension(const base::FilePath& extension_root,
                                        const ExtensionId& extension_id,
                                        mojom::ManifestLocation location,
                                        int flags,
-                                       std::string* error);
+                                       std::u16string* error);
 
 // The same as LoadExtension except use the provided `manifest_file` and
 // `extension_id`.  If manifest_file is not specified, uses the default
@@ -83,7 +83,7 @@ scoped_refptr<Extension> LoadExtension(
     const ExtensionId& extension_id,
     mojom::ManifestLocation location,
     int flags,
-    std::string* error);
+    std::u16string* error);
 
 // Loads an extension manifest from the specified directory. Returns
 // `std::nullopt` on failure, with a description of the error in `error`.
@@ -116,14 +116,14 @@ std::vector<base::FilePath> FindPrivateKeyFiles(
 // If any files or directories are found using "_" prefix and are not on
 // reserved list we return false, and set error message.
 bool CheckForIllegalFilenames(const base::FilePath& extension_path,
-                              std::string* error);
+                              std::u16string* error);
 
 // We need to reserve the names of special Windows filenames, such as
 // "com2.zip."
 // If any files or directories are found to be using a reserved Windows
 // filename, we return false, and set error message.
 bool CheckForWindowsReservedFilenames(const base::FilePath& extension_dir,
-                                      std::string* error);
+                                      std::u16string* error);
 
 // Returns a path to a temporary directory for unpacking an extension that will
 // be installed into `extensions_dir`. Creates the directory if necessary.

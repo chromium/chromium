@@ -11,13 +11,19 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/account_id/account_id.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace web_app {
 struct WebAppInstallInfo;
@@ -40,12 +46,16 @@ class KioskWebAppData : public KioskAppDataBase {
                  // without them.
   };
 
-  KioskWebAppData(KioskAppDataDelegate& delegate,
-                  const std::string& app_id,
-                  const AccountId& account_id,
-                  const GURL url,
-                  const std::string& title,
-                  const GURL icon_url);
+  // `local_state` must be non-null, and must outlive `this`.
+  KioskWebAppData(
+      PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      KioskAppDataDelegate& delegate,
+      const std::string& app_id,
+      const AccountId& account_id,
+      const GURL url,
+      const std::string& title,
+      const GURL icon_url);
   KioskWebAppData(const KioskWebAppData&) = delete;
   KioskWebAppData& operator=(const KioskWebAppData&) = delete;
   ~KioskWebAppData() override;
@@ -67,7 +77,7 @@ class KioskWebAppData : public KioskAppDataBase {
 
   void UpdateAppInfo(const std::string& title,
                      const GURL& start_url,
-                     const web_app::IconBitmaps& icon_bitmaps);
+                     const web_app::SizeToBitmap& icon_bitmaps);
 
   void SetOnLoadedCallbackForTesting(base::OnceClosure callback);
 
@@ -85,6 +95,9 @@ class KioskWebAppData : public KioskAppDataBase {
   // Returns the icon url of the icon that was being provided during previous
   // session.
   GURL GetLastIconUrl(const base::Value::Dict& dict) const;
+
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
 
   const raw_ref<KioskAppDataDelegate> delegate_;
   Status status_;

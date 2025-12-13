@@ -10,7 +10,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPT
 import static org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment.ARG_UI_STATE_AUTO_BUTTON_CAPTION;
 import static org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment.ARG_UI_STATE_CAN_SHOW_UI;
 import static org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment.ARG_UI_STATE_PREFERENCE_SELECTION;
-import static org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment.ARG_UI_STATE_TOOLBAR_BUTTON_STATE;
+import static org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment.ARG_UI_STATE_RANKED_TOOLBAR_BUTTON_STATES;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -27,6 +27,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.build.annotations.NullMarked;
@@ -55,6 +56,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /** Meta {@link ButtonDataProvider} which chooses the optional button variant that will be shown. */
 @NullMarked
@@ -136,9 +138,13 @@ public class AdaptiveToolbarButtonController
         mCallbackController = new CallbackController();
         mUiStateCallback =
                 uiState -> {
+                    assert mAdaptiveToolbarStatePredictor != null;
+                    int topSegmentationResult =
+                            mAdaptiveToolbarStatePredictor.filterSegmentationResults(
+                                    uiState.rankedToolbarButtonStates);
                     mSessionButtonVariant =
                             uiState.canShowUi
-                                    ? uiState.toolbarButtonState
+                                    ? topSegmentationResult
                                     : AdaptiveToolbarButtonVariant.UNKNOWN;
                     setSingleProvider(mSessionButtonVariant);
                     notifyObservers(uiState.canShowUi);
@@ -148,10 +154,18 @@ public class AdaptiveToolbarButtonController
                 profileSupplier, mCallbackController.makeCancelable(this::setProfile));
     }
 
+    @Override
+    public void onFinishNativeInitialization() {
+        for (ButtonDataProvider provider : mButtonDataProviderMap.values()) {
+            provider.onFinishNativeInitialization();
+        }
+    }
+
     private void startSettings(UiState uiState) {
         Bundle args = new Bundle();
         args.putBoolean(ARG_UI_STATE_CAN_SHOW_UI, uiState.canShowUi);
-        args.putInt(ARG_UI_STATE_TOOLBAR_BUTTON_STATE, uiState.toolbarButtonState);
+        args.putIntegerArrayList(
+                ARG_UI_STATE_RANKED_TOOLBAR_BUTTON_STATES, uiState.rankedToolbarButtonStates);
         args.putInt(ARG_UI_STATE_PREFERENCE_SELECTION, uiState.preferenceSelection);
         args.putInt(ARG_UI_STATE_AUTO_BUTTON_CAPTION, uiState.autoButtonCaption);
         SettingsNavigationFactory.createSettingsNavigation()
@@ -309,6 +323,13 @@ public class AdaptiveToolbarButtonController
     @Override
     public void buttonDataChanged(boolean canShowHint) {
         notifyObservers(canShowHint);
+
+        // If the dynamic button is no longer available, switch to the session button variant.
+        if (!canShowHint
+                && (mButtonData.getButtonSpec() == null || mButtonData.getButtonSpec().getButtonVariant() != mSessionButtonVariant)) {
+            setSingleProvider(mSessionButtonVariant);
+            notifyObservers(true);
+        }
     }
 
     @VisibleForTesting
@@ -380,7 +401,7 @@ public class AdaptiveToolbarButtonController
      *
      * @param tabSupplier Supplier of current tab.
      */
-    public void initializePageLoadMetricsRecorder(ObservableSupplier<@Nullable Tab> tabSupplier) {
+    public void initializePageLoadMetricsRecorder(NullableObservableSupplier<Tab> tabSupplier) {
         if (mPageLoadMetricsRecorder != null) return;
         mPageLoadMetricsRecorder =
                 new CurrentTabObserver(
@@ -420,5 +441,9 @@ public class AdaptiveToolbarButtonController
         if (wasOldScreenWideEnoughForButton != isScreenWideEnoughForButton()) {
             notifyObservers(mButtonData.canShow());
         }
+    }
+
+    public Set<Integer> getAllSupportedTypesForTesting() {
+        return mButtonDataProviderMap.keySet();
     }
 }

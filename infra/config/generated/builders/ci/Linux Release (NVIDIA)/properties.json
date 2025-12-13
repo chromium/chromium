@@ -10,7 +10,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-gpu-archive",
               "builder_group": "chromium.gpu",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -38,7 +37,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-gpu-archive",
               "builder_group": "chromium.gpu",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
@@ -94,7 +92,8 @@
           "group": "tryserver.chromium.linux"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/Linux Release (NVIDIA)/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/Linux Release (NVIDIA)/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

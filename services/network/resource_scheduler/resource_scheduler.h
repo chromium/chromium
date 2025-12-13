@@ -17,14 +17,12 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/unguessable_token.h"
 #include "net/base/priority_queue.h"
 #include "net/base/request_priority.h"
 #include "net/nqe/effective_connection_type.h"
@@ -72,10 +70,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler final {
  public:
   class COMPONENT_EXPORT(NETWORK_SERVICE) ClientId final {
    public:
-    // Creates a new client id. Optional `token` is used to identify the client
-    // associated to the created id.
-    static ClientId Create(
-        const std::optional<base::UnguessableToken>& token = std::nullopt);
+    static ClientId Create();
 
     ClientId(const ClientId& that) = default;
     ClientId& operator=(const ClientId& that) = default;
@@ -83,21 +78,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler final {
     ~ClientId() = default;
 
     bool operator<(const ClientId& that) const { return id_ < that.id_; }
-    bool operator==(const ClientId& that) const {
-      return id_ == that.id_ && token_ == that.token_;
-    }
-
-    const base::UnguessableToken& token() const { return token_; }
+    bool operator==(const ClientId& that) const { return id_ == that.id_; }
 
     static ClientId CreateForTest(uint64_t id) { return ClientId(id); }
 
    private:
-    explicit ClientId(
-        uint64_t id,
-        const std::optional<base::UnguessableToken>& token = std::nullopt)
-        : id_(id), token_(token.value_or(base::UnguessableToken::Create())) {}
+    explicit ClientId(uint64_t id) : id_(id) {}
+
     uint64_t id_;
-    base::UnguessableToken token_;
   };
 
   class ScheduledResourceRequest {
@@ -140,10 +128,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler final {
 
   // Called when a renderer is destroyed.
   void OnClientDeleted(ClientId client_id);
-
-  // Called when a client has changed its visibility.
-  void OnClientVisibilityChanged(const base::UnguessableToken& client_token,
-                                 bool visible);
 
   // Client functions:
 

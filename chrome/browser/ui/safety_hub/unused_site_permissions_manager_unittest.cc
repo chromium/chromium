@@ -9,6 +9,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/common/chrome_features.h"
@@ -16,11 +18,15 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/constants.h"
+#include "components/safety_check/safety_check.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -82,7 +88,6 @@ class UnusedSitePermissionsManagerTest
     enabled_features.push_back(
         content_settings::features::
             kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions);
-    enabled_features.push_back(features::kSafetyHub);
     feature_list_.InitWithFeatures(
         /*enabled_features=*/enabled_features,
         /*disabled_features=*/{});
@@ -90,10 +95,20 @@ class UnusedSitePermissionsManagerTest
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+
+    base::Time time;
+    ASSERT_TRUE(base::Time::FromString("2022-09-07 13:00", &time));
+    clock_.SetNow(time);
+
     manager_ =
         std::make_unique<UnusedSitePermissionsManager>(profile(), prefs());
     prefs()->SetBoolean(
         safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled, true);
+
+    // The following lines also serve to first access and thus create the two
+    // services.
+    hcsm()->SetClockForTesting(&clock_);
+    manager()->SetClockForTesting(&clock_);
   }
 
   void TearDown() override {
@@ -101,6 +116,8 @@ class UnusedSitePermissionsManagerTest
     // ~BrowserTaskEnvironment() will properly call Shutdown on the services.
     ChromeRenderViewHostTestHarness::TearDown();
   }
+
+  base::SimpleTestClock* clock() { return &clock_; }
 
   UnusedSitePermissionsManager* manager() { return manager_.get(); }
 
@@ -117,7 +134,44 @@ class UnusedSitePermissionsManagerTest
     return hcsm->GetSettingsForOneType(revoked_unused_site_type);
   }
 
+  void SetupRevokedUnusedPermissionSite(
+      std::string url,
+      base::TimeDelta lifetime =
+          safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold()) {
+    content_settings::ContentSettingConstraints constraint(clock()->Now());
+    constraint.set_lifetime(lifetime);
+
+    // `REVOKED_UNUSED_SITE_PERMISSIONS` stores base::Value::Dict with two keys:
+    // (1) key for a string list of revoked permission types
+    // (2) key for a dictionary, which key is a string permission type, mapped
+    // to its revoked permission data in base::Value (i.e. {"foo": "bar"})
+    // {
+    //  "revoked": [geolocation, file-system-access-chooser-data, ... ],
+    //  "revoked-chooser-permissions": {"file-system-access-chooser-data":
+    //  {"foo": "bar"}}
+    // }
+    auto dict =
+        base::Value::Dict()
+            .Set(permissions::kRevokedKey,
+                 base::Value::List()
+                     .Append(
+                         UnusedSitePermissionsManager::
+                             ConvertContentSettingsTypeToKey(geolocation_type))
+                     .Append(UnusedSitePermissionsManager::
+                                 ConvertContentSettingsTypeToKey(chooser_type)))
+            .Set(permissions::kRevokedChooserPermissionsKey,
+                 base::Value::Dict().Set(
+                     UnusedSitePermissionsManager::
+                         ConvertContentSettingsTypeToKey(chooser_type),
+                     base::Value(base::Value::Dict().Set("foo", "bar"))));
+
+    hcsm()->SetWebsiteSettingDefaultScope(
+        GURL(url), GURL(url), revoked_unused_site_type,
+        base::Value(dict.Clone()), constraint);
+  }
+
  private:
+  base::SimpleTestClock clock_;
   std::unique_ptr<UnusedSitePermissionsManager> manager_;
   base::test::ScopedFeatureList feature_list_;
 };
@@ -251,6 +305,27 @@ TEST_F(UnusedSitePermissionsManagerTest,
                                          ->GetList());
 }
 
+TEST_F(UnusedSitePermissionsManagerTest, RecordRegrantMetricForAllowAgain) {
+  SetupRevokedUnusedPermissionSite(url1);
+  SetupRevokedUnusedPermissionSite(url2);
+  EXPECT_EQ(2U, GetRevokedUnusedPermissions(hcsm()).size());
+
+  // Advance 14 days; this will be the expected histogram sample.
+  clock()->Advance(base::Days(14));
+  base::HistogramTester histogram_tester;
+
+  // Allow the permission for `url` again
+  manager()->RegrantPermissionsForOrigin(url::Origin::Create(GURL(url1)));
+
+  // Only a single entry should be recorded in the histogram.
+  const std::vector<base::Bucket> buckets = histogram_tester.GetAllSamples(
+      "Settings.SafetyCheck.UnusedSitePermissionsAllowAgainDays");
+  EXPECT_EQ(1U, buckets.size());
+  // The recorded metric should be the elapsed days since the revocation.
+  histogram_tester.ExpectUniqueSample(
+      "Settings.SafetyCheck.UnusedSitePermissionsAllowAgainDays", 14, 1);
+}
+
 // TODO(crbug.com/415227458): Remove migration code for unused site permissions
 // using strings.
 // Tests the migration of using strings for the unused site permissions instead
@@ -261,10 +336,7 @@ class UnusedSitePermissionsManagerNameMigrationTest
   UnusedSitePermissionsManagerNameMigrationTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {content_settings::features::kSafetyCheckUnusedSitePermissions,
-         content_settings::features::
-             kSafetyCheckUnusedSitePermissionsForSupportedChooserPermissions,
-         features::kSafetyHub},
+        {content_settings::features::kSafetyCheckUnusedSitePermissions},
         /*disabled_features=*/{});
   }
 

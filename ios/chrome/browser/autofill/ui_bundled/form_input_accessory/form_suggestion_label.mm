@@ -28,18 +28,12 @@ using autofill::SuggestionType;
 
 namespace {
 
-// The string ' ••••••••' appended to the username of a password suggestion.
-constexpr NSString* kPasswordFormSuggestionSuffix = @" ••••••••";
-
 // Font size of button titles.
 constexpr CGFloat kIpadFontSize = 15;
 constexpr CGFloat kIphoneFontSize = 14;
 
 // The horizontal space between the edge of the background and the text.
-constexpr CGFloat kBorderWidth = 14;
-// The horizontal space between the edge of the background and the text for the
-// large keyboard accessory.
-constexpr CGFloat kSmallBorderWidth = 12;
+constexpr CGFloat kBorderWidth = 12;
 // The space between items in the label.
 constexpr CGFloat kSpacing = 4;
 // The corner radius of the label.
@@ -60,12 +54,15 @@ constexpr CGFloat kShadowOpacity = 1.0;
 // The preferred minimum width of the icon shown on the label.
 constexpr CGFloat kSuggestionIconWidth = 40;
 
+// The highlight color's alpha when using liquid glass.
+constexpr CGFloat kHighlightColorAlpha = 0.5;
+
 // Offset required to see half of the icon of the 2nd credit card suggestion
 // when the first credit card suggestion is at maximum width. This number
 // represents the width of the stack view minus the width of the first
 // suggestion.
 constexpr CGFloat kHalfCreditCardIconOffset =
-    2 * kSmallBorderWidth + 2 * kSpacing + 0.5 * kSuggestionIconWidth;
+    2 * kBorderWidth + 2 * kSpacing + 0.5 * kSuggestionIconWidth;
 
 // Returns the font for the title line of the suggestion.
 UIFont* TitleFont(CGFloat font_size) {
@@ -85,12 +82,7 @@ UIFont* TextFont(BOOL bold, BOOL is_title) {
       (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
           ? kIpadFontSize
           : kIphoneFontSize;
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    return is_title ? TitleFont(font_size) : SubtitleFont(font_size);
-  } else {
-    return bold ? [UIFont boldSystemFontOfSize:font_size]
-                : [UIFont systemFontOfSize:font_size];
-  }
+  return is_title ? TitleFont(font_size) : SubtitleFont(font_size);
 }
 
 // Creates a label with the given `text` and `alpha` suitable for use in a
@@ -282,10 +274,7 @@ bool IsPasswordSuggestion(FormSuggestion* suggestion) {
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kIbanEntry:
     case SuggestionType::kBnplEntry:
-    case SuggestionType::kCreateNewPlusAddress:
-    case SuggestionType::kCreateNewPlusAddressInline:
     case SuggestionType::kFillExistingPlusAddress:
-    case SuggestionType::kPlusAddressError:
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kWebauthnCredential:
@@ -310,11 +299,6 @@ bool IsPasswordSuggestion(FormSuggestion* suggestion) {
 
 // Returns the text to display for a password suggestion.
 NSString* PasswordSuggestionDisplayText(NSString* suggestion_value) {
-  if (!IsKeyboardAccessoryUpgradeEnabled()) {
-    return [suggestion_value
-        stringByAppendingString:kPasswordFormSuggestionSuffix];
-  }
-
   if ([suggestion_value length] == 0) {
     return l10n_util::GetNSString(IDS_IOS_AUTOFILL_PASSWORD_NO_USERNAME);
   }
@@ -347,19 +331,37 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
 @implementation FormSuggestionLabel {
   // Client of this view.
   __weak id<FormSuggestionLabelDelegate> _delegate;
+
+  // The suggestion presented by this view.
   FormSuggestion* _suggestion;
+
+  // The index of the suggestion presented by this view.
+  NSUInteger _suggestionIndex;
+
+  // The total number of suggestion labels in the FormSuggestionView parent.
+  NSUInteger _numberOfSuggestions;
+
+  // The maximum width constraint for this view.
+  // (applies to address and credit card suggestions only).
+  NSLayoutConstraint* _widthConstraint;
+
+  // The accessory trailing view of the FormSuggestionView parent view.
+  UIView* _accessoryTrailingView;
 }
 
 #pragma mark - Public
 
 - (id)initWithSuggestion:(FormSuggestion*)suggestion
                     index:(NSUInteger)index
-           numSuggestions:(NSUInteger)numSuggestions
+      numberOfSuggestions:(NSUInteger)numberOfSuggestions
     accessoryTrailingView:(UIView*)accessoryTrailingView
                  delegate:(id<FormSuggestionLabelDelegate>)delegate {
   self = [super initWithFrame:CGRectZero];
   if (self) {
     _suggestion = suggestion;
+    _suggestionIndex = index;
+    _numberOfSuggestions = numberOfSuggestions;
+    _accessoryTrailingView = accessoryTrailingView;
     _delegate = delegate;
 
     UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[]];
@@ -367,7 +369,7 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
     stackView.alignment = UIStackViewAlignmentCenter;
     stackView.layoutMarginsRelativeArrangement = YES;
     stackView.layoutMargins =
-        UIEdgeInsetsMake(0, [self borderWidth], 0, [self borderWidth]);
+        UIEdgeInsetsMake(0, kBorderWidth, 0, kBorderWidth);
     stackView.spacing = kSpacing;
     stackView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:stackView];
@@ -376,7 +378,7 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
           stackView, self,
           LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
       [stackView.heightAnchor constraintEqualToAnchor:self.heightAnchor]
-          .active = true;
+          .active = YES;
     } else {
       AddSameConstraints(stackView, self);
     }
@@ -399,26 +401,25 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
             : suggestion.value;
 
     BOOL isTablet = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
-    if (IsKeyboardAccessoryUpgradeEnabled()) {
-      // On phones, store the suggestion information in a stack view so that it
-      // can be selectively truncated if necessary.
-      if (!isTablet) {
-        UIStackView* verticalStackView =
-            [[UIStackView alloc] initWithArrangedSubviews:@[]];
-        verticalStackView.axis = UILayoutConstraintAxisVertical;
-        verticalStackView.alignment = UIStackViewAlignmentLeading;
-        verticalStackView.layoutMarginsRelativeArrangement = YES;
-        verticalStackView.layoutMargins =
-            UIEdgeInsetsMake(0, suggestion.icon ? kSpacing : 0, 0, 0);
-        verticalStackView.spacing = kVerticalSpacing;
-        [stackView addArrangedSubview:verticalStackView];
 
-        // Insert the next subviews vertically instead of horizontally.
-        stackView = verticalStackView;
-      }
+    // On phones, store the suggestion information in a stack view so that it
+    // can be selectively truncated if necessary.
+    if (!isTablet) {
+      UIStackView* verticalStackView =
+          [[UIStackView alloc] initWithArrangedSubviews:@[]];
+      verticalStackView.axis = UILayoutConstraintAxisVertical;
+      verticalStackView.alignment = UIStackViewAlignmentLeading;
+      verticalStackView.layoutMarginsRelativeArrangement = YES;
+      verticalStackView.layoutMargins =
+          UIEdgeInsetsMake(0, suggestion.icon ? kSpacing : 0, 0, 0);
+      verticalStackView.spacing = kVerticalSpacing;
+      [stackView addArrangedSubview:verticalStackView];
+
+      // Insert the next subviews vertically instead of horizontally.
+      stackView = verticalStackView;
     }
 
-    if (isTablet && IsKeyboardAccessoryUpgradeEnabled()) {
+    if (isTablet) {
       // On tablets, the stage manager causes an issue where an infinite loop
       // happens if we add stack views here, so we can't use more stack views
       // until the stage manager issue is fixed. As a workaround, on tablets,
@@ -454,19 +455,21 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
                                   suggestionText, suggestion.displayDescription,
                                   suggestion.type ==
                                       SuggestionType::kBackupPasswordEntry)];
-    [self setAccessibilityValue:l10n_util::GetNSStringF(
-                                    IDS_IOS_AUTOFILL_SUGGESTION_INDEX_VALUE,
-                                    base::NumberToString16(index + 1),
-                                    base::NumberToString16(numSuggestions))];
+    [self
+        setAccessibilityValue:l10n_util::GetNSStringF(
+                                  IDS_IOS_AUTOFILL_SUGGESTION_INDEX_VALUE,
+                                  base::NumberToString16(index + 1),
+                                  base::NumberToString16(numberOfSuggestions))];
     [self
         setAccessibilityIdentifier:kFormSuggestionLabelAccessibilityIdentifier];
 
     // On phones, set a maximum width to save space on the keyboard accessory.
-    if (!isTablet && IsKeyboardAccessoryUpgradeEnabled()) {
-      CGFloat maximumWidth = [self maximumWidth:accessoryTrailingView];
+    if (!isTablet) {
+      CGFloat maximumWidth = [self maximumWidth];
       if (maximumWidth < CGFLOAT_MAX) {
-        [self.widthAnchor constraintLessThanOrEqualToConstant:maximumWidth]
-            .active = YES;
+        _widthConstraint =
+            [self.widthAnchor constraintLessThanOrEqualToConstant:maximumWidth];
+        _widthConstraint.active = YES;
       }
     }
   }
@@ -474,12 +477,20 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
   return self;
 }
 
+- (FormSuggestion*)suggestion {
+  return _suggestion;
+}
+
+- (NSUInteger)suggestionIndex {
+  return _suggestionIndex;
+}
+
 #pragma mark - UIView
 
 - (void)layoutSubviews {
   [super layoutSubviews];
-  self.layer.cornerRadius = [self cornerRadius];
-  if (!IsLiquidGlassEffectEnabled() && IsKeyboardAccessoryUpgradeEnabled()) {
+  [self setCornerRadius:[self cornerRadius]];
+  if (!IsLiquidGlassEffectEnabled()) {
     self.layer.shadowRadius = kShadowRadius;
     self.layer.shadowOffset = CGSizeMake(0, kShadowVerticalOffset);
     self.layer.shadowOpacity = kShadowOpacity;
@@ -487,12 +498,20 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
         [UIColor colorNamed:kBackgroundShadowColor].CGColor;
     self.layer.masksToBounds = NO;
   }
+  if (_widthConstraint) {
+    _widthConstraint.constant = [self maximumWidth];
+  }
 }
 
 #pragma mark - UIResponder
 
 - (void)touchesBegan:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
-  [self setBackgroundColor:[UIColor colorNamed:kGrey300Color]];
+  UIColor* highlightColor = [UIColor colorNamed:kGrey300Color];
+  if (IsLiquidGlassEffectEnabled()) {
+    highlightColor =
+        [highlightColor colorWithAlphaComponent:kHighlightColorAlpha];
+  }
+  [self setBackgroundColor:highlightColor];
 }
 
 - (void)touchesMoved:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
@@ -515,25 +534,33 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
 
 #pragma mark - Private
 
+// Sets the corner radius. Can be dymamic if the liquid glass effect is enabled.
+- (void)setCornerRadius:(CGFloat)cornerRadius {
+  if (IsLiquidGlassEffectEnabled()) {
+    if (@available(iOS 26, *)) {
+      self.cornerConfiguration = [UICornerConfiguration
+          configurationWithRadius:
+              [UICornerRadius
+                  containerConcentricRadiusWithMinimum:[self cornerRadius]]];
+      return;
+    }
+  }
+  self.layer.cornerRadius = [self cornerRadius];
+}
+
 // Color of the suggestion chips.
 - (UIColor*)customBackgroundColor {
-  if (IsLiquidGlassEffectEnabled()) {
-    return UIColor.clearColor;
-  }
-
-  return
-      [UIColor colorNamed:IsKeyboardAccessoryUpgradeEnabled() ? kBackgroundColor
-                                                              : kGrey100Color];
+  return IsLiquidGlassEffectEnabled() ? UIColor.clearColor
+                                      : [UIColor colorNamed:kBackgroundColor];
 }
 
 // Corner radius of the suggestion chips.
 - (CGFloat)cornerRadius {
-  return IsKeyboardAccessoryUpgradeEnabled() ? kCornerRadius
-                                             : self.bounds.size.height / 2.0;
+  return kCornerRadius;
 }
 
 - (CGFloat)borderWidth {
-  return IsKeyboardAccessoryUpgradeEnabled() ? kSmallBorderWidth : kBorderWidth;
+  return kBorderWidth;
 }
 
 // Returns whether this label is for a credit card suggestion.
@@ -544,8 +571,8 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
 
 // Resize the icon if it's a credit card icon which requires an upscaling.
 - (UIImage*)resizeIconIfNecessary:(UIImage*)icon {
-  if (IsKeyboardAccessoryUpgradeEnabled() && [self isCreditCardSuggestion] &&
-      icon && icon.size.width > 0 && icon.size.width < kSuggestionIconWidth) {
+  if ([self isCreditCardSuggestion] && icon && icon.size.width > 0 &&
+      icon.size.width < kSuggestionIconWidth) {
     // For a simple image resize, we can keep the same underlying image
     // and only adjust the ratio.
     CGFloat ratio = icon.size.width / kSuggestionIconWidth;
@@ -558,10 +585,10 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
 
 // Computes the suggestion label's maximum width.
 // Returns CGFLOAT_MAX if there's no maximum width.
-- (CGFloat)maximumWidth:(UIView*)accessoryTrailingView {
+- (CGFloat)maximumWidth {
   CGFloat maxWidth = CGFLOAT_MAX;
-  // We're using the screen width because the 'window' member is nil at the
-  // moment of setting up the label's width anchor.
+  // Using the screen width because the `window` member is nil at the moment of
+  // setting up the label's width anchor.
   CGSize windowSize = [[UIScreen mainScreen] bounds].size;
   CGFloat portraitScreenWidth = MIN(windowSize.width, windowSize.height);
   switch (_suggestion.type) {
@@ -569,13 +596,15 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
     case SuggestionType::kVirtualCreditCardEntry: {
       // Max width is just enough to show half of the credit card icon on the
       // 2nd suggestion, in portrait mode.
-      CGFloat staticButtonsWidth = accessoryTrailingView.frame.size.width;
+      CGFloat staticButtonsWidth = _accessoryTrailingView.frame.size.width;
       maxWidth = (portraitScreenWidth - staticButtonsWidth) -
                  kHalfCreditCardIconOffset;
     } break;
     case SuggestionType::kAddressEntry:
-      // Max width is half width, in portrait mode.
-      maxWidth = portraitScreenWidth * 0.5;
+      if (_numberOfSuggestions > 1) {
+        // Max width is half width, in portrait mode.
+        maxWidth = portraitScreenWidth * 0.5;
+      }
       break;
     default:
       break;

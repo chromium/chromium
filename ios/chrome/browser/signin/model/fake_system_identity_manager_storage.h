@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+class GaiaId;
+
 @class FakeSystemIdentity;
 @class FakeSystemIdentityDetails;
 
@@ -19,17 +21,17 @@
 @interface FakeSystemIdentityManagerStorage : NSObject <NSFastEnumeration>
 
 // Returns whether an identity with `gaiaID` is contained in the store.
-- (BOOL)containsIdentityWithGaiaID:(NSString*)gaiaID;
+- (BOOL)containsIdentityWithGaiaID:(const GaiaId&)gaiaID;
 
 // Returns details for `identity` or nil if the identity is unknown.
-- (FakeSystemIdentityDetails*)detailsForGaiaID:(NSString*)gaiaID;
+- (FakeSystemIdentityDetails*)detailsForGaiaID:(const GaiaId&)gaiaID;
 
 // Adds `identity`. Does nothing if `identity` is already stored.
 - (void)addFakeIdentity:(FakeSystemIdentity*)identity;
 
 // Removes an identity with `gaiaID`. Does nothing if the identity is not
 // stored.
-- (void)removeIdentityWithGaiaID:(NSString*)gaiaID;
+- (void)removeIdentityWithGaiaID:(const GaiaId&)gaiaID;
 
 @end
 

@@ -9,18 +9,20 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
-import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** Utility methods for the browsing history manager. */
+@NullMarked
 public class HistoryManagerUtils {
     public static final int HISTORY_REQUEST_CODE = 723649;
 
@@ -35,16 +37,14 @@ public class HistoryManagerUtils {
     public static void showHistoryManager(Activity activity, Tab tab, Profile profile) {
         Context appContext = ContextUtils.getApplicationContext();
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)) {
+            UrlConstantResolver urlConstantResolver =
+                    UrlConstantResolverFactory.getForProfile(profile);
+
             // History shows up as a tab on tablets.
-            LoadUrlParams params = new LoadUrlParams(UrlConstants.NATIVE_HISTORY_URL);
-            if (ChromeFeatureList.sAndroidNativePagesInNewTab.isEnabled()
-                    && ChromeFeatureList.sAndroidNativePagesInNewTabHistoryEnabled.getValue()) {
-                ChromeAsyncTabLauncher delegate = new ChromeAsyncTabLauncher(
-                        /* incognito= */ profile.isOffTheRecord());
-                delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, /* parent= */ tab);
-            } else {
-                tab.loadUrl(params);
-            }
+            LoadUrlParams params = new LoadUrlParams(urlConstantResolver.getHistoryPageUrl());
+            ChromeAsyncTabLauncher delegate =
+                    new ChromeAsyncTabLauncher(/* incognito= */ profile.isOffTheRecord());
+            delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, /* parent= */ tab);
         } else {
             Intent intent = new Intent();
             intent.setClass(appContext, HistoryActivity.class);

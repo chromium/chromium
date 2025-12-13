@@ -10,18 +10,18 @@
 namespace base::test {
 
 ScopedAmountOfPhysicalMemoryOverride::ScopedAmountOfPhysicalMemoryOverride(
-    uint64_t amount_of_memory_mb) {
-  CHECK_GT(amount_of_memory_mb, 0u);
-  old_amount_of_physical_memory_mb_ =
-      base::SysInfo::SetAmountOfPhysicalMemoryMbForTesting(amount_of_memory_mb);
+    ByteCount amount_of_memory) {
+  CHECK_GT(amount_of_memory, ByteCount(0));
+  old_amount_of_physical_memory_ =
+      base::SysInfo::SetAmountOfPhysicalMemoryForTesting(amount_of_memory);
 }
 
 ScopedAmountOfPhysicalMemoryOverride::~ScopedAmountOfPhysicalMemoryOverride() {
-  if (old_amount_of_physical_memory_mb_) {
-    base::SysInfo::SetAmountOfPhysicalMemoryMbForTesting(
-        *old_amount_of_physical_memory_mb_);
+  if (old_amount_of_physical_memory_) {
+    base::SysInfo::SetAmountOfPhysicalMemoryForTesting(
+        *old_amount_of_physical_memory_);
   } else {
-    base::SysInfo::ClearAmountOfPhysicalMemoryMbForTesting();
+    base::SysInfo::ClearAmountOfPhysicalMemoryForTesting();
   }
 }
 

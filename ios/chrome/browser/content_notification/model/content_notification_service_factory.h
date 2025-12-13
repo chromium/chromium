@@ -25,9 +25,9 @@ class ContentNotificationServiceFactory final
   ContentNotificationServiceFactory();
   ~ContentNotificationServiceFactory() final;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const final;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_NOTIFICATION_MODEL_CONTENT_NOTIFICATION_SERVICE_FACTORY_H_

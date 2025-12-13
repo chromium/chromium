@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/z_orderable_tab_container_element.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/view.h"
@@ -80,12 +81,6 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   // Returns `view` to this TabContainer in the view hierarchy. N.B. this
   // may be called during `view`'s destruction.
   virtual void ReturnTabSlotView(TabSlotView* view) = 0;
-
-  // Scrolls so the tab at `model_index` is fully visible.
-  virtual void ScrollTabToVisible(int model_index) = 0;
-
-  // Animates and scrolls the tab container by an offset.
-  virtual void ScrollTabContainerByOffset(int offset) = 0;
 
   // Handle tab group model changes.
   virtual void OnGroupCreated(const tab_groups::TabGroupId& group) = 0;

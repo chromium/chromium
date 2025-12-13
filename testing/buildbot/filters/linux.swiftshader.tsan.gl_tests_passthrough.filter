@@ -1,0 +1,33 @@
+# crbug.com/462477487
+-ExternalVkImageBackingFactoryWithFormatTest.Basic/*
+-ExternalVkImageBackingFactoryWithFormatTest.ReadbackToMemory/*
+-ExternalVkImageBackingFactoryWithFormatTest.Upload/*
+
+# crbug.com/329482486
+-TranslatorVariants/EXTBlendFuncExtendedDrawTest.ESSL1FragColor/0
+-TranslatorVariants/EXTBlendFuncExtendedDrawTest.ESSL1FragColor/1
+-TranslatorVariants/EXTBlendFuncExtendedDrawTest.ESSL1FragData/0
+-TranslatorVariants/EXTBlendFuncExtendedDrawTest.ESSL1FragData/1
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ES3Getters/0
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ES3Getters/1
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3BindArrayAsArray/0
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3BindArrayAsArray/1
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3BindArrayWithSimpleName/0
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3BindArrayWithSimpleName/1
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3BindSimpleVarAsArrayNoBind/0
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3BindSimpleVarAsArrayNoBind/1
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3Var/0
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3Var/1
+
+# crbug.com/462477375
+-SharedImageGLBackingProduceDawnTest.Basic
+-WebGPUMailboxBufferTest.*
+-WebGPUMailboxTextureTest.*
+-WebGPUTest.*
+
+# crbug.com/462493879
+-GLClearFramebufferTestWithParam/GLClearFramebufferTest.ClearColorWithScissor/*
+
+# crbug.com/462477489
+-ExternalVkImageBackingFactoryDawnTest.DawnWrite_SkiaVulkanRead
+-ExternalVkImageBackingFactoryDawnTest.SkiaVulkanWrite_DawnRead

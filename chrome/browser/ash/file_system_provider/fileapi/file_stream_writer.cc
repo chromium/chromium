@@ -20,6 +20,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 using content::BrowserThread;
 
@@ -177,8 +178,7 @@ FileStreamWriter::~FileStreamWriter() {
   }
 
   // If a write is in progress, mark it as completed.
-  TRACE_EVENT_NESTABLE_ASYNC_END0("file_system_provider",
-                                  "FileStreamWriter::Write", this);
+  TRACE_EVENT_END("file_system_provider", perfetto::Track::FromPointer(this));
 }
 
 void FileStreamWriter::Initialize(base::OnceClosure pending_closure,
@@ -224,9 +224,9 @@ int FileStreamWriter::Write(net::IOBuffer* buffer,
                             int buffer_length,
                             net::CompletionOnceCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("file_system_provider",
-                                    "FileStreamWriter::Write", this,
-                                    "buffer_length", buffer_length);
+  TRACE_EVENT_BEGIN("file_system_provider", "FileStreamWriter::Write",
+                    perfetto::Track::FromPointer(this), "buffer_length",
+                    buffer_length);
 
   write_callback_ = std::move(callback);
   switch (state_) {
@@ -279,8 +279,7 @@ int FileStreamWriter::Cancel(net::CompletionOnceCallback callback) {
       FROM_HERE, base::BindOnce(std::move(callback), net::OK));
 
   // If a write is in progress, mark it as completed.
-  TRACE_EVENT_NESTABLE_ASYNC_END0("file_system_provider",
-                                  "FileStreamWriter::Write", this);
+  TRACE_EVENT_END("file_system_provider", perfetto::Track::FromPointer(this));
 
   return net::ERR_IO_PENDING;
 }
@@ -345,8 +344,7 @@ void FileStreamWriter::OnWriteCompleted(int result) {
   if (state_ != CANCELLING)
     std::move(write_callback_).Run(result);
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("file_system_provider",
-                                  "FileStreamWriter::Write", this);
+  TRACE_EVENT_END("file_system_provider", perfetto::Track::FromPointer(this));
 }
 
 void FileStreamWriter::OnFlushFileCompleted(

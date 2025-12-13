@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_set_to_user_context_and_then_to_context
+  AssertionError: assert {'angle': 90, 'type': 'portrait-primary'} == {'angle': 0, 'type': 'landscape-primary'}
+Harness: the test ran to completion.
+
+

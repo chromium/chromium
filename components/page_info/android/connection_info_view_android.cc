@@ -28,15 +28,15 @@ using base::android::CheckException;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::GetClass;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using content::WebContents;
 
 // static
 static jlong JNI_ConnectionInfoView_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& java_web_contents) {
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& java_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
   DCHECK(web_contents);
@@ -58,7 +58,7 @@ ConnectionInfoViewAndroid::ConnectionInfoViewAndroid(
   if (nav_entry->IsInitialEntry())
     return;
 
-  popup_jobject_.Reset(env, java_page_info_pop.obj());
+  popup_jobject_.Reset(env, java_page_info_pop);
 
   presenter_ = std::make_unique<PageInfo>(
       page_info_client_->CreatePageInfoDelegate(web_contents), web_contents,
@@ -74,7 +74,7 @@ void ConnectionInfoViewAndroid::Destroy(JNIEnv* env) {
 
 void ConnectionInfoViewAndroid::ResetCertDecisions(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_web_contents) {
+    const JavaRef<jobject>& java_web_contents) {
   presenter_->OnRevokeSSLErrorBypassButtonPressed();
 }
 
@@ -128,3 +128,5 @@ void ConnectionInfoViewAndroid::SetIdentityInfo(
           env, l10n_util::GetStringUTF8(IDS_PAGE_INFO_HELP_CENTER_LINK)));
   Java_ConnectionInfoView_onReady(env, popup_jobject_);
 }
+
+DEFINE_JNI(ConnectionInfoView)

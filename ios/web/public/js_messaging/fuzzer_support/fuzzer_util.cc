@@ -15,7 +15,8 @@ namespace fuzzer {
 
 std::unique_ptr<web::ScriptMessage> ProtoToScriptMessage(
     const web::ScriptMessageProto& proto) {
-  std::optional<base::Value> body = base::JSONReader::Read(proto.body());
+  std::optional<base::Value> body = base::JSONReader::Read(
+      proto.body(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   std::optional<GURL> url;
   if (proto.has_url()) {
     url = GURL(proto.url());

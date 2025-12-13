@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.customtabs;
 
 import android.os.Bundle;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.tab.Tab;
@@ -15,10 +17,11 @@ import org.chromium.content_public.browser.WebContents;
  * Notifies the provided {@link CustomTabsConnection} of page load metrics, such as time until first
  * contentful paint.
  */
+@NullMarked
 public class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
     private final SessionHolder<?> mSession;
     private final Tab mTab;
-    private Long mNavigationId;
+    private @Nullable Long mNavigationId;
 
     public PageLoadMetricsObserver(SessionHolder<?> session, Tab tab) {
         mSession = session;

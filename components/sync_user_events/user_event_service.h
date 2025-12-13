@@ -29,8 +29,6 @@ class UserEventService : public KeyedService {
   // requisite permissions are not present.
   virtual void RecordUserEvent(
       std::unique_ptr<sync_pb::UserEventSpecifics> specifics) = 0;
-  virtual void RecordUserEvent(
-      const sync_pb::UserEventSpecifics& specifics) = 0;
 
   // Returns the underlying Sync integration point.
   virtual base::WeakPtr<syncer::DataTypeControllerDelegate>

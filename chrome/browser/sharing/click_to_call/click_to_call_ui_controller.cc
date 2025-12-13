@@ -75,12 +75,7 @@ void ClickToCallUiController::OnDeviceSelected(
 
 void ClickToCallUiController::OnIntentPickerShown(bool has_devices,
                                                   bool has_apps) {
-  UpdateIcon();
   OnDialogShown(has_devices, has_apps);
-}
-
-void ClickToCallUiController::OnIntentPickerClosed() {
-  UpdateIcon();
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -105,10 +100,6 @@ std::u16string ClickToCallUiController::GetTitle(
       return l10n_util::GetStringUTF16(
           IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_TITLE_LABEL);
   }
-}
-
-PageActionIconType ClickToCallUiController::GetIconType() {
-  return PageActionIconType::kClickToCall;
 }
 
 sync_pb::SharingSpecificFields::EnabledFeatures

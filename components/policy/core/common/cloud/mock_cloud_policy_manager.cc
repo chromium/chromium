@@ -19,10 +19,19 @@ namespace policy {
 MockCloudPolicyManager::MockCloudPolicyManager(
     std::unique_ptr<CloudPolicyStore> store,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
+    : MockCloudPolicyManager(std::move(store),
+                             /*extension_install_store=*/nullptr,
+                             task_runner) {}
+
+MockCloudPolicyManager::MockCloudPolicyManager(
+    std::unique_ptr<CloudPolicyStore> store,
+    std::unique_ptr<CloudPolicyStore> extension_install_store,
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : CloudPolicyManager(
-          dm_protocol::kChromeUserPolicyType,
+          dm_protocol::GetChromeUserPolicyType(),
           std::string(),
           std::move(store),
+          std::move(extension_install_store),
           task_runner,
           network::TestNetworkConnectionTracker::CreateGetter()) {}
 

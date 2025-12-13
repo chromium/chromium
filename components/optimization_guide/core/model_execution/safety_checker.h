@@ -17,7 +17,6 @@
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/public/cpp/text_safety_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"

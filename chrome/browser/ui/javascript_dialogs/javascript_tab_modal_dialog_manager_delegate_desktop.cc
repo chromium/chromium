@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_desktop.h"
 
+#include <algorithm>
 #include <utility>
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"
@@ -39,7 +41,8 @@ JavaScriptTabModalDialogManagerDelegateDesktop::
 }
 
 void JavaScriptTabModalDialogManagerDelegateDesktop::WillRunDialog() {
-  BrowserList::AddObserver(this);
+  browser_collection_observer_.Observe(ProfileBrowserCollection::GetForProfile(
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext())));
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // SafeBrowsing Delayed Warnings experiment can delay some SafeBrowsing
@@ -56,7 +59,7 @@ void JavaScriptTabModalDialogManagerDelegateDesktop::WillRunDialog() {
 }
 
 void JavaScriptTabModalDialogManagerDelegateDesktop::DidCloseDialog() {
-  BrowserList::RemoveObserver(this);
+  browser_collection_observer_.Reset();
 }
 
 void JavaScriptTabModalDialogManagerDelegateDesktop::SetTabNeedsAttention(
@@ -76,7 +79,8 @@ void JavaScriptTabModalDialogManagerDelegateDesktop::SetTabNeedsAttention(
 }
 
 bool JavaScriptTabModalDialogManagerDelegateDesktop::IsWebContentsForemost() {
-  Browser* browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   if (!browser) {
     // It's rare, but there are crashes from where sites are trying to show
     // dialogs in the split second of time between when their Browser is gone
@@ -84,7 +88,14 @@ bool JavaScriptTabModalDialogManagerDelegateDesktop::IsWebContentsForemost() {
     return false;
   }
 
-  return browser->tab_strip_model()->GetActiveWebContents() == web_contents_;
+  // A dialog can be shown on the inactive tab of a split so check if one of the
+  // foreground tabs contains the web contents.
+  std::vector<tabs::TabInterface*> tabs =
+      browser->GetTabStripModel()->GetForegroundTabs();
+  return std::any_of(tabs.begin(), tabs.end(),
+                     [this](const tabs::TabInterface* tab) {
+                       return tab->GetContents() == web_contents_;
+                     });
 }
 
 bool JavaScriptTabModalDialogManagerDelegateDesktop::IsApp() {
@@ -100,8 +111,14 @@ bool JavaScriptTabModalDialogManagerDelegateDesktop::CanShowModalUI() {
   return tab && tab->CanShowModalUI();
 }
 
-void JavaScriptTabModalDialogManagerDelegateDesktop::OnBrowserSetLastActive(
-    Browser* browser) {
+void JavaScriptTabModalDialogManagerDelegateDesktop::OnBrowserActivated(
+    BrowserWindowInterface* browser) {
+  javascript_dialogs::TabModalDialogManager::FromWebContents(web_contents_)
+      ->BrowserActiveStateChanged();
+}
+
+void JavaScriptTabModalDialogManagerDelegateDesktop::OnBrowserDeactivated(
+    BrowserWindowInterface* browser) {
   javascript_dialogs::TabModalDialogManager::FromWebContents(web_contents_)
       ->BrowserActiveStateChanged();
 }

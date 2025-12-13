@@ -164,6 +164,7 @@ static_library("test_support") {
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
     "//components/update_client",
+    "//components/update_client:test_support",
     "//components/user_prefs",
     "//content/public/common",
     "//content/test:test_support",
@@ -230,6 +231,7 @@ repack("shell_and_test_pak") {
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
     "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
+    "$root_gen_dir/ui/resources/ui_lottie_resources.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
     "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
@@ -314,7 +316,6 @@ test("extensions_unittests") {
     deps += [
       "//content/public/android:content_full_java",
       "//gin:v8_snapshot_assets",
-      "//services/data_decoder/public/cpp/android:safe_json_java",
       "//ui/android:ui_full_java",
     ]
   }
@@ -345,79 +346,5 @@ if (enable_extensions) {
     ]
 
     data_deps = [ "//third_party/angle:includes" ]
-  }
-
-  # TODO(rockot) bug 505926: These should be moved to extensions_browsertests but have
-  # old dependencies on chrome files. The chrome dependencies should be removed
-  # and these moved to the extensions_browsertests target. Currently, we solve
-  # the problem by making this a source set and linking it into
-  # //chrome/test:browser_tests.
-  source_set("chrome_extensions_browsertests_sources") {
-    testonly = true
-    sources = [
-      "browser/api/app_window/app_window_apitest.cc",
-      "browser/api/bluetooth/bluetooth_apitest.cc",
-      "browser/api/bluetooth/bluetooth_private_apitest.cc",
-      "browser/api/serial/serial_apitest.cc",
-      "browser/api/usb/usb_manual_apitest.cc",
-      "browser/app_window/app_window_browsertest.cc",
-    ]
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-    # These are the deps from browser_tests minus some internal Chrome ones that
-    # aren't allowed to be included here and that aren't needed.
-    deps = [
-      "//base",
-      "//base:i18n",
-      "//base/test:test_support",
-      "//build:chromeos_buildflags",
-      "//chrome/browser",
-      "//chrome/common/extensions/api",
-      "//chrome/renderer",
-      "//chrome/test:test_support",
-      "//components/autofill/content/browser:risk_proto",
-      "//components/autofill/content/renderer:test_support",
-      "//components/captive_portal/core:test_support",
-      "//components/dom_distiller/content/browser",
-      "//components/dom_distiller/core:test_support",
-      "//components/guest_view/browser:test_support",
-      "//components/javascript_dialogs",
-      "//components/resources",
-      "//components/strings",
-      "//components/sync",
-      "//components/sync:test_support",
-      "//components/translate/core/common",
-      "//crypto:test_support",
-      "//device/bluetooth:mocks",
-      "//extensions/browser/api/bluetooth",
-      "//extensions/common/api",
-      "//extensions/renderer",
-      "//google_apis:test_support",
-      "//media:test_support",
-      "//net",
-      "//net:test_support",
-      "//skia",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//testing/perf",
-      "//third_party/blink/public:blink",
-      "//third_party/icu",
-      "//third_party/leveldatabase",
-      "//third_party/libaddressinput",
-      "//third_party/webrtc_overrides:webrtc_component",
-      "//third_party/widevine/cdm:headers",
-      "//ui/accessibility:test_support",
-      "//ui/base:test_support",
-      "//ui/base/idle:test_support",
-      "//ui/compositor:test_support",
-      "//ui/resources",
-      "//ui/web_dialogs:test_support",
-      "//v8",
-    ]
-
-    if (is_chromeos) {
-      deps += [ "//components/user_manager:test_support" ]
-    }
   }
 }

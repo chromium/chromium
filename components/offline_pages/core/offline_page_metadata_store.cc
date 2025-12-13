@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
@@ -24,6 +23,7 @@
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace offline_pages {
 
@@ -424,35 +424,38 @@ StoreState OfflinePageMetadataStore::GetStateForTesting() const {
 }
 
 void OfflinePageMetadataStore::OnOpenStart(base::TimeTicks last_closing_time) {
-  TRACE_EVENT_ASYNC_BEGIN1("offline_pages", "Metadata Store", this, "is reopen",
-                           !last_closing_time.is_null());
+  TRACE_EVENT_BEGIN("offline_pages", "Metadata Store",
+                    perfetto::Track::FromPointer(this), "is reopen",
+                    !last_closing_time.is_null());
+  TRACE_EVENT_BEGIN("offline_pages", "Metadata Store: Initializing",
+                    perfetto::Track::FromPointer(this));
 }
 
 void OfflinePageMetadataStore::OnOpenDone(bool success) {
-  TRACE_EVENT_ASYNC_STEP_PAST1("offline_pages", "Metadata Store", this,
-                               "Initializing", "succeeded", success);
-  if (!success) {
-    TRACE_EVENT_ASYNC_END0("offline_pages", "Metadata Store", this);
-  }
+  TRACE_EVENT_END(
+      "offline_pages",
+      /*Metadata Store: Initializing */ perfetto::Track::FromPointer(this),
+      "succeeded", success);
 }
 
 void OfflinePageMetadataStore::OnTaskBegin(bool is_initialized) {
-  TRACE_EVENT_ASYNC_BEGIN1("offline_pages", "Metadata Store: task execution",
-                           this, "is store loaded", is_initialized);
+  TRACE_EVENT_BEGIN("offline_pages", "Metadata Store: task execution",
+                    perfetto::Track::FromPointer(this), "is store loaded",
+                    is_initialized);
 }
 
 void OfflinePageMetadataStore::OnTaskRunComplete() {
   // Note: the time recorded for this trace step will include thread hop wait
   // times to the background thread and back.
-  TRACE_EVENT_ASYNC_STEP_PAST0("offline_pages",
-                               "Metadata Store: task execution", this, "Task");
+  TRACE_EVENT_END(
+      "offline_pages",
+      /* Metadata Store: task execution*/ perfetto::Track::FromPointer(this));
 }
 
 void OfflinePageMetadataStore::OnTaskReturnComplete() {
-  TRACE_EVENT_ASYNC_STEP_PAST0(
-      "offline_pages", "Metadata Store: task execution", this, "Callback");
-  TRACE_EVENT_ASYNC_END0("offline_pages", "Metadata Store: task execution",
-                         this);
+  TRACE_EVENT_END(
+      "offline_pages",
+      /* Metadata Store: task execution */ perfetto::Track::FromPointer(this));
 }
 
 void OfflinePageMetadataStore::OnCloseStart(
@@ -460,13 +463,16 @@ void OfflinePageMetadataStore::OnCloseStart(
   if (status_before_close != InitializationStatus::kSuccess) {
     return;
   }
-  TRACE_EVENT_ASYNC_STEP_PAST0("offline_pages", "Metadata Store", this, "Open");
+  TRACE_EVENT_BEGIN("offline_pages", "Metadata Store: Closing",
+                    perfetto::Track::FromPointer(this));
 }
 
 void OfflinePageMetadataStore::OnCloseComplete() {
-  TRACE_EVENT_ASYNC_STEP_PAST0("offline_pages", "Metadata Store", this,
-                               "Closing");
-  TRACE_EVENT_ASYNC_END0("offline_pages", "Metadata Store", this);
+  TRACE_EVENT_END(
+      "offline_pages",
+      /* Metadata Store: Closing */ perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("offline_pages",
+                  /* Metadata Store */ perfetto::Track::FromPointer(this));
 }
 
 }  // namespace offline_pages

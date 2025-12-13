@@ -49,19 +49,34 @@ enum class PermissionStatusSource {
   // The status is the result of being blocked due to having recently displayed
   // the prompt to the user.
   RECENT_DISPLAY,
+
+  // The status is the result of a permission being temporarily overridden by an
+  // actor operating on the tab.
+  ACTOR_OVERRIDE,
+
+  // The status is the result of a permission being granted based on a
+  // heuristic.
+  HEURISTIC_GRANT,
+
+  // The status is the result of app level settings (Chrome does not have
+  // permission at the app level and cannot acquire it).
+  APP_LEVEL_SETTINGS,
 };
 
 struct CONTENT_EXPORT PermissionResult {
   PermissionResult();
-  PermissionResult(PermissionStatus permission_status,
-                   PermissionStatusSource permission_status_source,
-                   std::optional<PermissionSetting> retrieved_permission_data =
-                       std::nullopt);
+  explicit PermissionResult(PermissionStatus permission_status,
+                            PermissionStatusSource permission_status_source =
+                                PermissionStatusSource::UNSPECIFIED,
+                            std::optional<PermissionSetting>
+                                retrieved_permission_data = std::nullopt);
   PermissionResult(const PermissionResult& other);
-  PermissionResult& operator=(PermissionResult& other);
+  PermissionResult& operator=(const PermissionResult& other);
   PermissionResult(PermissionResult&&);
   PermissionResult& operator=(PermissionResult&&);
   ~PermissionResult();
+
+  bool operator==(const PermissionResult& rhs) const;
 
   PermissionStatus status;
   PermissionStatusSource source;

@@ -10,16 +10,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "remoting/protocol/mouse_cursor_monitor.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
 namespace remoting {
 
 class DesktopSessionProxy;
 
-// Routes webrtc::MouseCursorMonitor calls through the IPC channel to the
+// Routes MouseCursorMonitor calls through the IPC channel to the
 // desktop session agent running in the desktop integration process.
-class IpcMouseCursorMonitor : public webrtc::MouseCursorMonitor {
+class IpcMouseCursorMonitor : public protocol::MouseCursorMonitor {
  public:
   explicit IpcMouseCursorMonitor(
       scoped_refptr<DesktopSessionProxy> desktop_session_proxy);
@@ -29,16 +29,20 @@ class IpcMouseCursorMonitor : public webrtc::MouseCursorMonitor {
 
   ~IpcMouseCursorMonitor() override;
 
-  // webrtc::MouseCursorMonitor interface.
-  void Init(Callback* callback, Mode mode) override;
-  void Capture() override;
+  // MouseCursorMonitor interface.
+  void Init(Callback* callback) override;
+  void SetPreferredCaptureInterval(base::TimeDelta interval) override;
 
   // Called when the cursor shape has changed.
   void OnMouseCursor(std::unique_ptr<webrtc::MouseCursor> cursor);
 
+  // Called when the fractional position of the mouse cursor has changed.
+  void OnMouseCursorFractionalPosition(
+      const protocol::FractionalCoordinate& position);
+
  private:
-  // The callback passed to |webrtc::MouseCursorMonitor::Init()|.
-  raw_ptr<webrtc::MouseCursorMonitor::Callback> callback_;
+  // The callback passed to |MouseCursorMonitor::Init()|.
+  raw_ptr<MouseCursorMonitor::Callback> callback_;
 
   // Wraps the IPC channel to the desktop session agent.
   scoped_refptr<DesktopSessionProxy> desktop_session_proxy_;

@@ -2,4 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-ntp_promo_test_files = [ "ntp_promo/ntp_single_promo_test.ts" ]
+ntp_promo_test_files = [
+  "ntp_promo/ntp_promo_test_common.ts",
+  "ntp_promo/individual_promos_test.ts",
+  "ntp_promo/setup_list_test.ts",
+]

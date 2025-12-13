@@ -15,7 +15,7 @@
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform_node_id.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 

@@ -1,0 +1,63 @@
+
+// Copyright 2023 The Project Oak Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package oak;
+
+option go_package = "proto/oak";
+option java_multiple_files = true;
+option java_package = "com.google.oak";
+
+// Contains various digest formats for the same underlying file. Mixing
+// digests from various files is "undefined behavior". There is no distinction
+// between empty and not set, it means the same.
+//
+// The wire numbers are the codec IDs in
+// https://github.com/multiformats/multicodec/blob/master/table.csv
+message RawDigest {
+  reserved 1 to 15;
+  bytes psha2 = 16;
+  bytes sha1 = 17;
+  bytes sha2_256 = 18;
+  bytes sha2_512 = 19;
+  bytes sha3_512 = 20;
+  bytes sha3_384 = 21;
+  bytes sha3_256 = 22;
+  bytes sha3_224 = 23;
+  reserved 24 to 31;
+  bytes sha2_384 = 32;
+}
+
+// Similar to RawDigest, but contains hex-encoded hashes for the sake of better
+// readability and copy-pastability. The set of all possible RawDigest and the
+// set of all possible HexDigests are in a bijective correspondence, by just
+// hex-encoding or hex-decoding each field separately.
+//
+// For example, the field sha2_256 could contain
+// "82aac1adbfe3ada1244c1f54b7c949519e1f048067d0c3b236b7ae048fc7e227".
+message HexDigest {
+  reserved 2 to 15;
+  string psha2 = 16;
+  string sha1 = 17;
+  string sha2_256 = 18;
+  string sha2_512 = 19;
+  string sha3_512 = 20;
+  string sha3_384 = 21;
+  string sha3_256 = 22;
+  string sha3_224 = 23;
+  reserved 24 to 31;
+  string sha2_384 = 32;
+}

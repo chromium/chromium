@@ -18,8 +18,8 @@
 #include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
 #include "components/component_updater/component_updater_paths.h"
-#include "components/services/on_device_translation/public/cpp/features.h"
-#include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
+#include "components/on_device_translation/features.h"
+#include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"

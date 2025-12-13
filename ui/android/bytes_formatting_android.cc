@@ -7,6 +7,7 @@
 #include <jni.h>
 
 #include "base/android/jni_string.h"
+#include "base/byte_count.h"
 #include "ui/android/ui_android_jni_headers/BytesFormatting_jni.h"
 
 namespace ui {
@@ -14,7 +15,10 @@ namespace ui {
 static jni_zero::ScopedJavaLocalRef<jstring> JNI_BytesFormatting_FormatSpeed(
     JNIEnv* env,
     jlong speed) {
-  return base::android::ConvertUTF16ToJavaString(env, FormatSpeed(speed));
+  return base::android::ConvertUTF16ToJavaString(
+      env, FormatSpeed(base::ByteCount(speed)));
 }
 
 }  // namespace ui
+
+DEFINE_JNI(BytesFormatting)

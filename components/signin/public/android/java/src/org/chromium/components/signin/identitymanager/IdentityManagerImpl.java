@@ -8,7 +8,6 @@ import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
-import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -18,8 +17,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.google_apis.gaia.CoreAccountId;
-
-import java.util.List;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 
 /** IdentityManager provides access to native IdentityManager's public API to java components. */
 @NullMarked
@@ -75,17 +73,20 @@ public class IdentityManagerImpl implements IdentityManager {
     }
 
     @Override
+    public @Nullable AccountInfo findExtendedAccountInfoByAccountId(CoreAccountId accountId) {
+        return IdentityManagerImplJni.get()
+                .findExtendedAccountInfoByAccountId(mNativeIdentityManager, accountId);
+    }
+
+    @Override
     public @Nullable AccountInfo findExtendedAccountInfoByEmailAddress(String email) {
         return IdentityManagerImplJni.get()
                 .findExtendedAccountInfoByEmailAddress(mNativeIdentityManager, email);
     }
 
     @Override
-    public void refreshAccountInfoIfStale(List<AccountInfo> accountInfos) {
-        for (AccountInfo accountInfo : accountInfos) {
-            IdentityManagerImplJni.get()
-                    .refreshAccountInfoIfStale(mNativeIdentityManager, accountInfo.getId());
-        }
+    public void refreshAccountInfoIfStale() {
+        IdentityManagerImplJni.get().refreshAccountInfoIfStale(mNativeIdentityManager);
     }
 
     @Override
@@ -102,26 +103,6 @@ public class IdentityManagerImpl implements IdentityManager {
         mProfileOAuth2TokenServiceDelegate.invalidateAccessToken(accessToken);
     }
 
-    /**
-     * Called for all types of changes to the primary account such as - primary account set/cleared
-     * or sync consent granted/revoked in C++.
-     */
-    @CalledByNative
-    @VisibleForTesting
-    public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
-        for (Observer observer : mObservers) {
-            observer.onPrimaryAccountChanged(eventDetails);
-        }
-    }
-
-    @CalledByNative
-    @VisibleForTesting
-    public void onAccountsCookieDeletedByUserAction() {
-        for (Observer observer : mObservers) {
-            observer.onAccountsCookieDeletedByUserAction();
-        }
-    }
-
     /** Called after an account is updated. */
     @CalledByNative
     @VisibleForTesting
@@ -131,11 +112,29 @@ public class IdentityManagerImpl implements IdentityManager {
         }
     }
 
+    /**
+     * Called for all types of changes to the primary account such as - primary account set/cleared
+     * or sync consent granted/revoked in C++.
+     */
+    @CalledByNative
+    private void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
+        for (Observer observer : mObservers) {
+            observer.onPrimaryAccountChanged(eventDetails);
+        }
+    }
+
     /** Called when the refresh token of the give account gets updated. */
     @CalledByNative
     private void onRefreshTokenUpdatedForAccount(CoreAccountInfo coreAccountInfo) {
         if (mRefreshTokenUpdateObserver != null) {
             mRefreshTokenUpdateObserver.onResult(coreAccountInfo);
+        }
+    }
+
+    @CalledByNative
+    private void onAccountsCookieDeletedByUserAction() {
+        for (Observer observer : mObservers) {
+            observer.onAccountsCookieDeletedByUserAction();
         }
     }
 
@@ -155,20 +154,29 @@ public class IdentityManagerImpl implements IdentityManager {
         return mNativeIdentityManager;
     }
 
+    @MainThread
+    public void updateAuthErrorForTesting(
+            CoreAccountId accountId, GoogleServiceAuthError authError) {
+        assert mProfileOAuth2TokenServiceDelegate != null;
+
+        mProfileOAuth2TokenServiceDelegate.updateAuthErrorForTesting(accountId, authError);
+    }
+
     @NativeMethods
     public interface Natives {
 
         @Nullable CoreAccountInfo getPrimaryAccountInfo(
                 long nativeIdentityManager, int consentLevel);
 
+        @Nullable AccountInfo findExtendedAccountInfoByAccountId(
+                long nativeIdentityManager, CoreAccountId accountId);
+
         @Nullable AccountInfo findExtendedAccountInfoByEmailAddress(
                 long nativeIdentityManager, String email);
 
         CoreAccountInfo[] getAccountsWithRefreshTokens(long nativeIdentityManager);
 
-        // TODO(crbug.com/40284908): Remove the accountId parameter.
-        void refreshAccountInfoIfStale(
-                long nativeIdentityManager, @JniType("CoreAccountId") CoreAccountId accountId);
+        void refreshAccountInfoIfStale(long nativeIdentityManager);
 
         boolean isClearPrimaryAccountAllowed(long nativeIdentityManager);
     }

@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UITraitCollection.h>
 
+@class HomeCustomizationFramingCoordinates;
 @class NewTabPageColorPalette;
 
 // Handles updates to the NTP ViewController.
@@ -58,8 +59,11 @@
 - (CGFloat)pinnedOffsetY;
 
 // Sets the background image of the NTP. Removes the current background image
-// if nil is passed.
-- (void)setBackgroundImage:(UIImage*)backgroundImage;
+// if nil is passed. If framing coordinates are non-nil, they will be used to
+// position the image.
+- (void)setBackgroundImage:(UIImage*)backgroundImage
+        framingCoordinates:
+            (HomeCustomizationFramingCoordinates*)framingCoordinates;
 
 // Whether AIM is allowed.
 - (void)setAIMAllowed:(BOOL)allowed;

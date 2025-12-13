@@ -5,6 +5,7 @@
 #include "components/permissions/embedded_permission_prompt_flow_model.h"
 
 #include "base/memory/raw_ptr.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_uma_util.h"
@@ -73,7 +74,7 @@ EmbeddedPermissionPromptFlowModel::~EmbeddedPermissionPromptFlowModel() =
 
 EmbeddedPermissionPromptFlowModel::Variant
 EmbeddedPermissionPromptFlowModel::DeterminePromptVariant(
-    ContentSetting setting,
+    PermissionSetting setting,
     const content_settings::SettingInfo& info,
     ContentSettingsType type) {
   // If the administrator blocked the permission, there is nothing the user can
@@ -83,13 +84,15 @@ EmbeddedPermissionPromptFlowModel::DeterminePromptVariant(
     return Variant::kAdministratorDenied;
   }
 
+  auto* permission_info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(type);
+
 #if BUILDFLAG(IS_ANDROID)
   if (!HasSystemPermission(type, web_contents_) &&
       !CanRequestSystemPermission(type, web_contents_)) {
     return Variant::kOsSystemSettings;
   }
-
-  if (setting == CONTENT_SETTING_ALLOW &&
+  if (permission_info->delegate().IsAnyPermissionAllowed(setting) &&
       !HasSystemPermission(type, web_contents_) &&
       CanRequestSystemPermission(type, web_contents_)) {
     return Variant::kOsPrompt;
@@ -104,7 +107,7 @@ EmbeddedPermissionPromptFlowModel::DeterminePromptVariant(
     return Variant::kOsSystemSettings;
   }
 
-  if (setting == CONTENT_SETTING_ALLOW &&
+  if (permission_info->delegate().IsAnyPermissionAllowed(setting) &&
       PermissionsClient::Get()->CanPromptSystemPermission(type)) {
     return Variant::kOsPrompt;
   }
@@ -115,18 +118,14 @@ EmbeddedPermissionPromptFlowModel::DeterminePromptVariant(
     return Variant::kAdministratorGranted;
   }
 
-  switch (setting) {
-    case CONTENT_SETTING_ASK:
-      return Variant::kAsk;
-    case CONTENT_SETTING_ALLOW:
-      return Variant::kPreviouslyGranted;
-    case CONTENT_SETTING_BLOCK:
-      return Variant::kPreviouslyDenied;
-    default:
-      break;
+  if (permission_info->delegate().IsUndecided(setting)) {
+    return Variant::kAsk;
+  } else if (permission_info->delegate().IsAnyPermissionAllowed(setting)) {
+    return Variant::kPreviouslyGranted;
+  } else {
+    DCHECK(permission_info->delegate().IsBlocked(setting));
+    return Variant::kPreviouslyDenied;
   }
-
-  return Variant::kUninitialized;
 }
 
 void EmbeddedPermissionPromptFlowModel::PrioritizeAndMergeNewVariant(
@@ -158,9 +157,9 @@ void EmbeddedPermissionPromptFlowModel::CalculateCurrentVariant() {
 
   for (const auto& request : delegate_->Requests()) {
     ContentSettingsType type = request->GetContentSettingsType();
-    ContentSetting setting =
-        map->GetContentSetting(delegate_->GetRequestingOrigin(),
-                               delegate_->GetEmbeddingOrigin(), type, &info);
+    PermissionSetting setting =
+        map->GetPermissionSetting(delegate_->GetRequestingOrigin(),
+                                  delegate_->GetEmbeddingOrigin(), type, &info);
     Variant current_request_variant =
         DeterminePromptVariant(setting, info, type);
     PrioritizeAndMergeNewVariant(current_request_variant, type);
@@ -248,7 +247,6 @@ void EmbeddedPermissionPromptFlowModel::RecordPermissionActionUKM(
       // could sometimes be a subset of all requests for the entire prompt.
       requests(), action, GetElementAnchoredBubbleVariant(prompt_variant()),
       prompt_screen_counter_for_metrics_, delegate_->GetRequestingOrigin(),
-      delegate_->GetAssociatedWebContents(),
       delegate_->GetAssociatedWebContents()->GetBrowserContext());
 
   ++prompt_screen_counter_for_metrics_;

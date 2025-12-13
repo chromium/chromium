@@ -50,6 +50,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/mouse_constants.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_targeter.h"
@@ -628,9 +629,6 @@ class RightPaneView : public NonAccessibleView {
   }
 
   void Login() {
-    // TODO(crbug.com/40636049) change to LaunchSamlPublicSession which would
-    // take |selected_language_item_value_| and |selected_keyboard_item_value_|
-    // too.
     if (current_user_.public_account_info->using_saml) {
       // TODO(b/333882432): Remove this log after the bug fixed.
       LOG(WARNING) << "b/333882432: RightPaneView::Login";

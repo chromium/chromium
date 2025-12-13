@@ -23,15 +23,15 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
-#include "chrome/browser/push_messaging/push_messaging_features.h"
 #include "chrome/browser/push_messaging/push_messaging_service_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
-#include "chrome/browser/push_messaging/push_messaging_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/gcm_driver/crypto/gcm_crypto_test_helpers.h"
 #include "components/gcm_driver/fake_gcm_client_factory.h"
@@ -41,6 +41,8 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
 #include "components/permissions/permission_manager.h"
+#include "components/push_messaging/push_messaging_features.h"
+#include "components/push_messaging/push_messaging_utils.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -129,24 +131,29 @@ std::unique_ptr<KeyedService> BuildTestHistoryService(
 
 class PushMessagingServiceTest : public ::testing::Test {
  public:
-  PushMessagingServiceTest() {
-    // Override the GCM Profile service so that we can send fake messages.
-    gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
-        &profile_, base::BindRepeating(&BuildFakeGCMProfileService));
-
-    HistoryServiceFactory::GetInstance()->SetTestingFactory(
-        &profile_, base::BindRepeating(&BuildTestHistoryService));
-  }
-
+  PushMessagingServiceTest() = default;
   ~PushMessagingServiceTest() override = default;
 
   void SetUp() override {
     TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    profile_ = std::make_unique<PushMessagingTestingProfile>();
+
+    // Override the GCM Profile service so that we can send fake messages.
+    gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
+        profile_.get(), base::BindRepeating(&BuildFakeGCMProfileService));
+
+    HistoryServiceFactory::GetInstance()->SetTestingFactory(
+        profile_.get(), base::BindRepeating(&BuildTestHistoryService));
+  }
+
+  void TearDown() override {
+    profile_.reset();
+    TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
   }
 
   void SetPermission(const GURL& origin, ContentSetting value) {
     HostContentSettingsMap* host_content_settings_map =
-        HostContentSettingsMapFactory::GetForProfile(&profile_);
+        HostContentSettingsMapFactory::GetForProfile(profile_.get());
     host_content_settings_map->SetContentSettingDefaultScope(
         origin, origin, ContentSettingsType::NOTIFICATIONS, value);
   }
@@ -255,7 +262,7 @@ class PushMessagingServiceTest : public ::testing::Test {
   }
 
  protected:
-  PushMessagingTestingProfile* profile() { return &profile_; }
+  PushMessagingTestingProfile* profile() { return profile_.get(); }
 
   content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
@@ -265,7 +272,7 @@ class PushMessagingServiceTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  PushMessagingTestingProfile profile_;
+  std::unique_ptr<PushMessagingTestingProfile> profile_;
 
 #if BUILDFLAG(IS_ANDROID)
   instance_id::InstanceIDAndroid::ScopedBlockOnAsyncTasksForTesting
@@ -368,7 +375,7 @@ TEST_F(PushMessagingServiceTest, MAYBE_PayloadEncryptionTest) {
   ASSERT_FALSE(message.decrypted);
 
   // (4) Find the app_id that has been associated with the subscription.
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       PushMessagingAppIdentifier::FindByServiceWorker(profile(), origin,
                                                       kTestServiceWorkerId);
 
@@ -403,6 +410,69 @@ TEST_F(PushMessagingServiceTest, MAYBE_PayloadEncryptionTest) {
 
   EXPECT_TRUE(payload);
   EXPECT_EQ(kTestPayload, *payload);
+}
+
+TEST_F(PushMessagingServiceTest, ProfileDestructionTest) {
+  PushMessagingServiceImpl* push_service = profile()->GetPushMessagingService();
+  ASSERT_TRUE(push_service);
+
+  const GURL origin(kTestOrigin);
+  SetPermission(origin, CONTENT_SETTING_ALLOW);
+
+  // (1) Make sure that |kExampleOrigin| has access to use Push Messaging.
+  ASSERT_EQ(blink::mojom::PermissionStatus::GRANTED,
+            push_service->GetPermissionStatus(origin, true /* user_visible */));
+
+  // (2) Subscribe for Push Messaging, and verify that we've got the required
+  // information in order to be able to create encrypted messages.
+  TestPushSubscription subscription;
+  Subscribe(push_service, origin, &subscription);
+
+  // (3) Create a message.
+  gcm::IncomingMessage message;
+  message.sender_id = kTestSenderId;
+
+  // (4) Find the app_id that has been associated with the subscription.
+  push_messaging::AppIdentifier app_identifier =
+      PushMessagingAppIdentifier::FindByServiceWorker(profile(), origin,
+                                                      kTestServiceWorkerId);
+
+  ASSERT_FALSE(app_identifier.is_null());
+
+  // (5) Observe message dispatchings from the Push Messaging service, and
+  // fail the test if any message is dispatched.
+  bool did_dispatch = false;
+  push_service->SetMessageDispatchedCallbackForTesting(
+      base::BindLambdaForTesting(
+          [&did_dispatch](
+              const std::string& app_id, const GURL& origin,
+              int64_t service_worker_registration_id,
+              std::optional<std::string> payload,
+              PushMessagingServiceImpl::PushEventCallback callback) {
+            did_dispatch = true;
+          }));
+
+  // Create an active ProfileManager, and do NOT make it the owner of profile().
+  // This causes ScopedProfileKeepAlive::TryAcquire() to fail.
+  auto testing_profile_manager = std::make_unique<TestingProfileManager>(
+      TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(testing_profile_manager->SetUp());
+
+  gcm::FakeGCMProfileService* fake_profile_service =
+      static_cast<gcm::FakeGCMProfileService*>(
+          gcm::GCMProfileServiceFactory::GetForProfile(profile()));
+
+  fake_profile_service->DispatchMessage(app_identifier.app_id(), message);
+
+  base::RunLoop().RunUntilIdle();
+
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
+  EXPECT_FALSE(did_dispatch);
+#else
+  // Keepalives do nothing on ChromeOS and Android, so the message will always
+  // be dispatched.
+  EXPECT_TRUE(did_dispatch);
+#endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 }
 
 TEST_F(PushMessagingServiceTest, NormalizeSenderInfo) {
@@ -452,14 +522,14 @@ TEST_F(PushMessagingServiceTest, MAYBE_RemoveExpiredSubscriptions) {
   // (3) Subscribe origin to push service and find corresponding
   // |app_identifier|
   Subscribe(push_service, origin);
-  PushMessagingAppIdentifier app_identifier =
+  push_messaging::AppIdentifier app_identifier =
       PushMessagingAppIdentifier::FindByServiceWorker(profile(), origin,
                                                       kTestServiceWorkerId);
   ASSERT_FALSE(app_identifier.is_null());
 
   // (4) Manually set the time as expired, save the time in preferences
   app_identifier.set_expiration_time(base::Time::UnixEpoch());
-  app_identifier.PersistToPrefs(profile());
+  PushMessagingAppIdentifier::PersistToPrefs(app_identifier, profile());
   ASSERT_EQ(1u, PushMessagingAppIdentifier::GetCount(profile()));
 
   // (3) Remove all expired subscriptions
@@ -471,7 +541,7 @@ TEST_F(PushMessagingServiceTest, MAYBE_RemoveExpiredSubscriptions) {
 
   // (5) We expect the subscription to be deleted
   ASSERT_EQ(0u, PushMessagingAppIdentifier::GetCount(profile()));
-  PushMessagingAppIdentifier deleted_identifier =
+  push_messaging::AppIdentifier deleted_identifier =
       PushMessagingAppIdentifier::FindByAppId(profile(),
                                               app_identifier.app_id());
   EXPECT_TRUE(deleted_identifier.is_null());

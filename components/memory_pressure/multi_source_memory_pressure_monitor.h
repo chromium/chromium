@@ -6,6 +6,7 @@
 #define COMPONENTS_MEMORY_PRESSURE_MULTI_SOURCE_MEMORY_PRESSURE_MONITOR_H_
 
 #include "base/memory/memory_pressure_monitor.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/memory_pressure/memory_pressure_level_reporter.h"
@@ -26,7 +27,6 @@ class MultiSourceMemoryPressureMonitor
     : public base::MemoryPressureMonitor,
       public MemoryPressureVoteAggregator::Delegate {
  public:
-  using MemoryPressureLevel = base::MemoryPressureMonitor::MemoryPressureLevel;
   using DispatchCallback = base::MemoryPressureMonitor::DispatchCallback;
 
   MultiSourceMemoryPressureMonitor();
@@ -43,7 +43,8 @@ class MultiSourceMemoryPressureMonitor
   void MaybeStartPlatformVoter();
 
   // MemoryPressureMonitor implementation.
-  MemoryPressureLevel GetCurrentPressureLevel() const override;
+  base::MemoryPressureLevel GetCurrentPressureLevel(
+      base::MemoryPressureMonitorTag tag) const override;
 
   // Creates a MemoryPressureVoter to be owned/used by a source that wishes to
   // have input on the overall memory pressure level.
@@ -69,10 +70,10 @@ class MultiSourceMemoryPressureMonitor
 
  private:
   // Delegate implementation.
-  void OnMemoryPressureLevelChanged(MemoryPressureLevel level) override;
+  void OnMemoryPressureLevelChanged(base::MemoryPressureLevel level) override;
   void OnNotifyListenersRequested() override;
 
-  MemoryPressureLevel current_pressure_level_;
+  base::MemoryPressureLevel current_pressure_level_;
 
   DispatchCallback dispatch_callback_;
 

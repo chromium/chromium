@@ -23,6 +23,8 @@
 #include "third_party/blink/renderer/core/style/content_data.h"
 
 #include <memory>
+
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
@@ -52,6 +54,15 @@ ContentData* ContentData::Clone() const {
 
 void ContentData::Trace(Visitor* visitor) const {
   visitor->Trace(next_);
+}
+
+bool ContentData::HasAltCounterContent() const {
+  for (const ContentData* current = this; current; current = current->Next()) {
+    if (current->IsAltCounter()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 String ContentData::ConcatenateAltText(const ContentData& first_alt_data) {

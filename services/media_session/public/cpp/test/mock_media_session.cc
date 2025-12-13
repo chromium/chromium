@@ -308,8 +308,7 @@ bool MockMediaSessionMojoObserver::WaitForMeetsVisibilityThreshold(
 }
 
 void MockMediaSessionMojoObserver::StartWaiting() {
-  DCHECK(!run_loop_);
-
+  CHECK(!run_loop_);
   run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
   run_loop_.reset();
@@ -421,11 +420,13 @@ void MockMediaSession::ScrubTo(base::TimeDelta seek_time) {
 }
 
 void MockMediaSession::EnterPictureInPicture() {
-  // TODO(crbug.com/40113959): Implement EnterPictureinpicture.
+  is_in_picture_in_picture_ = true;
+  NotifyObservers();
 }
 
 void MockMediaSession::ExitPictureInPicture() {
-  // TODO(crbug.com/40113959): Implement ExitPictureinpicture.
+  is_in_picture_in_picture_ = false;
+  NotifyObservers();
 }
 
 void MockMediaSession::GetVisibility(GetVisibilityCallback callback) {
@@ -578,8 +579,9 @@ void MockMediaSession::SetState(mojom::MediaSessionInfo::SessionState state) {
 void MockMediaSession::NotifyObservers() {
   mojom::MediaSessionInfoPtr session_info = GetMediaSessionInfoSync();
 
-  if (afr_client_.is_bound())
+  if (afr_client_.is_bound()) {
     afr_client_->MediaSessionInfoChanged(session_info.Clone());
+  }
 
   for (auto& observer : observers_) {
     observer->MediaSessionInfoChanged(session_info.Clone());
@@ -599,6 +601,10 @@ mojom::MediaSessionInfoPtr MockMediaSession::GetMediaSessionInfoSync() const {
 
   info->is_controllable = is_controllable_;
   info->prefer_stop_for_gain_focus_loss = prefer_stop_;
+  info->picture_in_picture_state =
+      (is_in_picture_in_picture_
+           ? mojom::MediaPictureInPictureState::kInPictureInPicture
+           : mojom::MediaPictureInPictureState::kNotInPictureInPicture);
 
   return info;
 }

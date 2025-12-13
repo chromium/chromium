@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/modules/webmidi/midi_port.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -97,8 +98,8 @@ ScriptPromise<MIDIPort> MIDIPort::open(ScriptState* script_state) {
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMiscPlatformAPI)
       ->PostTask(FROM_HERE,
-                 WTF::BindOnce(&MIDIPort::OpenAsynchronously,
-                               WrapPersistent(this), WrapPersistent(resolver)));
+                 BindOnce(&MIDIPort::OpenAsynchronously, WrapPersistent(this),
+                          WrapPersistent(resolver)));
   running_open_count_++;
   return resolver->Promise();
 }
@@ -108,8 +109,8 @@ void MIDIPort::open() {
     return;
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMiscPlatformAPI)
-      ->PostTask(FROM_HERE, WTF::BindOnce(&MIDIPort::OpenAsynchronously,
-                                          WrapPersistent(this), nullptr));
+      ->PostTask(FROM_HERE, BindOnce(&MIDIPort::OpenAsynchronously,
+                                     WrapPersistent(this), nullptr));
   running_open_count_++;
 }
 
@@ -122,8 +123,8 @@ ScriptPromise<MIDIPort> MIDIPort::close(ScriptState* script_state) {
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMiscPlatformAPI)
       ->PostTask(FROM_HERE,
-                 WTF::BindOnce(&MIDIPort::CloseAsynchronously,
-                               WrapPersistent(this), WrapPersistent(resolver)));
+                 BindOnce(&MIDIPort::CloseAsynchronously, WrapPersistent(this),
+                          WrapPersistent(resolver)));
   return resolver->Promise();
 }
 

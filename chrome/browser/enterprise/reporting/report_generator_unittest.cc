@@ -422,8 +422,9 @@ TEST_F(ReportGeneratorTest, GenerateWithoutProfiles) {
 
 TEST_F(ReportGeneratorTest, ReportArcAppInChromeOS) {
   ArcAppTest arc_app_test;
-  TestingProfile primary_profile;
-  arc_app_test.SetUp(&primary_profile);
+  arc_app_test.PreProfileSetUp();
+  auto primary_profile = std::make_unique<TestingProfile>();
+  arc_app_test.PostProfileSetUp(primary_profile.get());
 
   // Create two Arc applications in primary profile.
   AddArcPackageAndApp(&arc_app_test, kArcAppName1, kArcPackageName1,
@@ -459,13 +460,16 @@ TEST_F(ReportGeneratorTest, ReportArcAppInChromeOS) {
   app_info2 = request->GetDeviceReportRequest().android_app_infos(0);
   EXPECT_EQ(kArcAppName2, app_info2.app_name());
 
-  arc_app_test.TearDown();
+  arc_app_test.PreProfileTearDown();
+  primary_profile.reset();
+  arc_app_test.PostProfileTearDown();
 }
 
 TEST_F(ReportGeneratorTest, ArcPlayStoreDisabled) {
   ArcAppTest arc_app_test;
-  TestingProfile primary_profile;
-  arc_app_test.SetUp(&primary_profile);
+  arc_app_test.PreProfileSetUp();
+  auto primary_profile = std::make_unique<TestingProfile>();
+  arc_app_test.PostProfileSetUp(primary_profile.get());
 
   // Create two Arc applications in primary profile.
   AddArcPackageAndApp(&arc_app_test, kArcAppName1, kArcPackageName1,
@@ -477,14 +481,16 @@ TEST_F(ReportGeneratorTest, ArcPlayStoreDisabled) {
 
   // No Arc application information is reported after the Arc Play Store
   // support for given profile is disabled.
-  primary_profile.GetPrefs()->SetBoolean(arc::prefs::kArcEnabled, false);
+  primary_profile->GetPrefs()->SetBoolean(arc::prefs::kArcEnabled, false);
   auto requests = GenerateRequests(ReportType::kFull);
   EXPECT_EQ(1u, requests.size());
 
   ReportRequest* request = requests.front().get();
   EXPECT_EQ(0, request->GetDeviceReportRequest().android_app_infos_size());
 
-  arc_app_test.TearDown();
+  arc_app_test.PreProfileTearDown();
+  primary_profile.reset();
+  arc_app_test.PostProfileTearDown();
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

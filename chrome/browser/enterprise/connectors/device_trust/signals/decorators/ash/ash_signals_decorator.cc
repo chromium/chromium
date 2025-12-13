@@ -8,16 +8,16 @@
 #include "base/check.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_attributes_impl.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -26,6 +26,7 @@
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
 
 namespace enterprise_connectors {
 
@@ -39,20 +40,38 @@ device_signals::Trigger DetermineTrigger(Profile* profile) {
   if (!profile) {
     return device_signals::Trigger::kUnspecified;
   }
-  if (ash::ProfileHelper::IsUserProfile(profile)) {
+  if (ash::IsUserBrowserContext(profile)) {
     return device_signals::Trigger::kBrowserNavigation;
   }
-  if (ash::ProfileHelper::IsSigninProfile(profile)) {
+  if (ash::IsSigninBrowserContext(profile)) {
     return device_signals::Trigger::kLoginScreen;
   }
 
   return device_signals::Trigger::kUnspecified;
 }
 
+// Checks for the given profile if the user is affiliated or belongs to the
+// sign-in profile.
+bool IsSigninProfileOrBelongsToAffiliatedUser(Profile* profile) {
+  if (ash::IsSigninBrowserContext(profile)) {
+    return true;
+  }
+
+  if (profile->IsOffTheRecord()) {
+    return false;
+  }
+
+  const user_manager::User* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  if (!user) {
+    return false;
+  }
+  return user->IsAffiliated();
+}
+
 void GetNetworkDeviceStates(Profile* profile,
                             ash::NetworkStateHandler::DeviceStateList* list) {
-  if (!crosapi::browser_util::IsSigninProfileOrBelongsToAffiliatedUser(
-          profile)) {
+  if (!IsSigninProfileOrBelongsToAffiliatedUser(profile)) {
     return;
   }
 
@@ -63,8 +82,7 @@ void GetNetworkDeviceStates(Profile* profile,
 }
 
 std::optional<std::string> GetMacAddress(Profile* profile) {
-  if (!crosapi::browser_util::IsSigninProfileOrBelongsToAffiliatedUser(
-          profile)) {
+  if (!IsSigninProfileOrBelongsToAffiliatedUser(profile)) {
     return std::nullopt;
   }
 

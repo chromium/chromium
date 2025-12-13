@@ -2,6 +2,7 @@
 // META: script=/resources/testdriver-vendor.js
 // META: script=/bluetooth/resources/bluetooth-test.js
 // META: script=/bluetooth/resources/bluetooth-fake-devices.js
+// META: timeout=long
 'use strict';
 const test_desc =
     `Ensure Manufacturer UUIDs 0x0000 and 0xffff are valid and do not crash` +

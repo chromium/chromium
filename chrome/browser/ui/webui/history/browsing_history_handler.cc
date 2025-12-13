@@ -27,13 +27,18 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/chrome_signin_pref_names.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
+#include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
@@ -49,6 +54,8 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/query_parser/snippet.h"
+#include "components/signin/public/base/signin_prefs.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
@@ -71,6 +78,21 @@ using history::HistoryService;
 using history::WebHistoryService;
 
 namespace {
+
+#if !BUILDFLAG(IS_CHROMEOS)
+constexpr int kHistorySyncPromoShownThreshold = 5;
+
+history::mojom::AccountInfoPtr CreateAccountInfoDataMojo(
+    const AccountInfo& info) {
+  history::mojom::AccountInfoPtr account_info_mojo =
+      history::mojom::AccountInfo::New();
+  account_info_mojo->name = info.full_name;
+  account_info_mojo->email = info.email;
+  account_info_mojo->account_image_src =
+      GURL(signin::GetAccountPictureUrl(info));
+  return account_info_mojo;
+}
+#endif
 
 // Identifiers for the type of device from which a history entry originated.
 static const char kDeviceTypeLaptop[] = "laptop";
@@ -222,7 +244,7 @@ history::mojom::HistoryEntryPtr HistoryEntryToMojom(
   // When the domain is empty, use the scheme instead. This allows for a
   // sensible treatment of e.g. file: URLs when group by domain is on.
   if (domain.empty()) {
-    domain = base::UTF8ToUTF16(entry.url.scheme() + ":");
+    domain = base::UTF8ToUTF16(entry.url.GetScheme() + ":");
   }
 
   // The items which are to be written into result are also described in
@@ -304,6 +326,7 @@ history::mojom::HistoryEntryPtr HistoryEntryToMojom(
   result_mojom->blocked_visit = is_blocked_visit;
   result_mojom->is_url_in_remote_user_data = IsEntryInRemoteUserData(entry);
   result_mojom->remote_icon_url_for_uma = entry.remote_icon_url_for_uma.spec();
+  result_mojom->is_actor_visit = entry.is_actor_visit;
 
   // Additional debugging fields shown only if the debug feature is enabled.
   if (history_clusters::GetConfig().user_visible_debug) {
@@ -326,6 +349,8 @@ BrowsingHistoryHandler::BrowsingHistoryHandler(
     : profile_(profile),
       web_contents_(web_contents),
       page_handler_(this, std::move(pending_page_handler)),
+      identity_manager_(
+          CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile))),
       clock_(base::DefaultClock::GetInstance()),
       browsing_history_service_(nullptr) {}
 
@@ -394,7 +419,9 @@ void BrowsingHistoryHandler::SendHistoryQuery(
     std::optional<double> begin_timestamp) {
   history::QueryOptions options;
   options.max_count = max_count;
+  options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
   options.duplicate_policy = history::QueryOptions::REMOVE_DUPLICATES_PER_DAY;
+  options.include_actor_visits = true;
   std::string query_without_prefix = query;
 
   const std::string kHostPrefix = "host:";
@@ -461,6 +488,48 @@ void BrowsingHistoryHandler::OpenClearBrowsingDataDialog() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   chrome::ShowClearBrowsingDataDialog(browser);
 }
+
+void BrowsingHistoryHandler::TurnOnHistorySync() {
+#if !BUILDFLAG(IS_CHROMEOS)
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+  if (browser) {
+    signin_ui_util::SignInAndEnableHistorySync(
+        browser, profile_, signin_metrics::AccessPoint::kRecentTabs);
+  }
+#else
+  // This is not expected to be called on ChromeOS as the screen that uses this
+  // function is never shown for ChromeOS (using <if expr="not is_chromeos">).
+  NOTREACHED();
+#endif
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+void BrowsingHistoryHandler::ShouldShowHistoryPageHistorySyncPromo(
+    ShouldShowHistoryPageHistorySyncPromoCallback callback) {
+  AccountInfo account =
+      signin_ui_util::GetSingleAccountForPromos(&identity_manager_.get());
+  const int promo_shown_count =
+      account.gaia.empty() ? profile_->GetPrefs()->GetInteger(
+                                 prefs::kHistoryPageHistorySyncPromoShownCountPerProfile)
+                           : SigninPrefs(*profile_->GetPrefs())
+                                 .GetHistoryPageHistorySyncPromoShownCount(account.gaia);
+  std::move(callback).Run(promo_shown_count < kHistorySyncPromoShownThreshold);
+}
+
+void BrowsingHistoryHandler::IncrementHistoryPageHistorySyncPromoShownCount() {
+  AccountInfo account =
+      signin_ui_util::GetSingleAccountForPromos(&identity_manager_.get());
+  if (account.gaia.empty()) {
+    int show_count = profile_->GetPrefs()->GetInteger(
+        prefs::kHistoryPageHistorySyncPromoShownCountPerProfile);
+    profile_->GetPrefs()->SetInteger(
+        prefs::kHistoryPageHistorySyncPromoShownCountPerProfile, show_count + 1);
+  } else {
+    SigninPrefs(*profile_->GetPrefs())
+        .IncrementHistoryPageHistorySyncPromoShownCount(account.gaia);
+  }
+}
+#endif
 
 void BrowsingHistoryHandler::RemoveBookmark(const std::string& url) {
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile_);
@@ -541,4 +610,39 @@ void BrowsingHistoryHandler::HasOtherFormsOfBrowsingHistory(
 
 Profile* BrowsingHistoryHandler::GetProfile() {
   return profile_;
+}
+
+void BrowsingHistoryHandler::RequestAccountInfo(
+    RequestAccountInfoCallback callback) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  AccountInfo account_info =
+      signin_ui_util::GetSingleAccountForPromos(&identity_manager_.get());
+  std::move(callback).Run(CreateAccountInfoDataMojo(account_info));
+
+  if (!identity_manager_observation_.IsObserving()) {
+    identity_manager_observation_.Observe(&identity_manager_.get());
+  }
+#else
+  // This is not expected to be called on ChromeOS as the screen that uses this
+  // function is never shown for ChromeOS (using <if expr="not is_chromeos">).
+  NOTREACHED();
+#endif
+}
+
+void BrowsingHistoryHandler::OnExtendedAccountInfoUpdated(
+    const AccountInfo& info) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  AccountInfo account_to_display =
+      signin_ui_util::GetSingleAccountForPromos(&identity_manager_.get());
+
+  if (info.IsEmpty() || !info.IsValid() ||
+      info.account_id != account_to_display.account_id) {
+    return;
+  }
+  page_->SendAccountInfo(CreateAccountInfoDataMojo(info));
+#else
+  // This is not expected to be called on ChromeOS as the screen that uses this
+  // function is never shown for ChromeOS (using <if expr="not is_chromeos">).
+  NOTREACHED();
+#endif
 }

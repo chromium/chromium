@@ -64,6 +64,7 @@
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace webid {
 
@@ -139,6 +140,49 @@ std::unique_ptr<views::View> CreateButtonContainer() {
 }
 }  // namespace
 
+AccountSelectionModalDelegate::AccountSelectionModalDelegate(
+    std::unique_ptr<AccountSelectionModalView> account_selection_modal_view) {
+  auto* selection_modal =
+      SetContentsView(std::move(account_selection_modal_view));
+  SetModalType(ui::mojom::ModalType::kChild);
+  SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  set_fixed_width(kDialogWidth);
+  SetShowTitle(false);
+  SetShowCloseButton(false);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  SetTitle(selection_modal->dialog_title());
+}
+
+AccountSelectionModalDelegate::~AccountSelectionModalDelegate() = default;
+
+views::View* AccountSelectionModalDelegate::GetInitiallyFocusedView() {
+  if (auto* initially_focused_view =
+          GetAccountSelectionView()->GetInitiallyFocusedView()) {
+    return initially_focused_view;
+  }
+  return views::DialogDelegate::GetInitiallyFocusedView();
+}
+
+views::Widget* AccountSelectionModalDelegate::GetWidget() {
+  return GetAccountSelectionView()->GetWidget();
+}
+
+const views::Widget* AccountSelectionModalDelegate::GetWidget() const {
+  return const_cast<AccountSelectionModalDelegate*>(this)
+      ->GetAccountSelectionView()
+      ->GetWidget();
+}
+
+AccountSelectionModalView*
+AccountSelectionModalDelegate::GetAccountSelectionView() {
+  if (auto* account_selection_modal_view =
+          views::AsViewClass<AccountSelectionModalView>(GetContentsView())) {
+    return account_selection_modal_view;
+  }
+  NOTREACHED()
+      << "Dialog ContentsView isn't of type AccountSelectionModalView!";
+}
+
 AccountSelectionModalView::AccountSelectionModalView(
     const content::RelyingPartyData& rp_data,
     const std::optional<std::u16string>& idp_title,
@@ -151,24 +195,16 @@ AccountSelectionModalView::AccountSelectionModalView(
                                owner->web_contents()
                                    ->GetPrimaryMainFrame()
                                    ->GetRenderWidgetHost()
-                                   ->GetDeviceScaleFactor()) {
-  SetModalType(ui::mojom::ModalType::kChild);
-  SetOwnedByWidget(OwnedByWidgetPassKey());
-  SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  set_fixed_width(kDialogWidth);
-  SetShowTitle(false);
-  SetShowCloseButton(false);
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
-      kBetweenChildSpacing));
-  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-
-  title_ = GetTitle(rp_data_, idp_title, rp_context);
-  SetTitle(title_);
-
-  subtitle_ = GetSubtitle(rp_data_);
+                                   ->GetDeviceScaleFactor()),
+      idp_title_(idp_title),
+      rp_context_(rp_context) {
+  // Configure the BoxLayoutView
+  SetOrientation(views::BoxLayout::Orientation::kVertical);
+  SetBetweenChildSpacing(kBetweenChildSpacing);
 
   header_view_ = AddChildView(CreateHeader());
+  UpdateTitleAndSubtitle(rp_data);
+
   AddChildView(CreatePlaceholderAccountRow());
   AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
                                /*use_other_account_callback=*/std::nullopt,
@@ -321,20 +357,10 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateHeader() {
   header_icon_view_ = header->AddChildView(CreateIconHeaderView());
 
   // Add the title.
-  title_label_ = header->AddChildView(
-      std::make_unique<views::Label>(title_, views::style::CONTEXT_DIALOG_TITLE,
-                                     views::style::STYLE_HEADLINE_4));
+  title_label_ = header->AddChildView(std::make_unique<views::Label>(
+      u"", views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_HEADLINE_4));
 
   SetLabelProperties(title_label_);
-
-  if (!subtitle_.empty()) {
-    // Add the subtitle.
-    views::Label* subtitle =
-        header->AddChildView(std::make_unique<views::Label>(
-            subtitle_, views::style::CONTEXT_DIALOG_BODY_TEXT,
-            views::style::STYLE_BODY_4));
-    SetLabelProperties(subtitle);
-  }
 
   return header;
 }
@@ -567,7 +593,10 @@ void AccountSelectionModalView::ShowErrorDialog(
 
   title_ = summary_text;
   title_label_->SetText(title_);
-  SetTitle(title_);
+  title_label_->SetVisible(true);
+  if (auto* widget = GetWidget()) {
+    widget->widget_delegate()->SetTitle(title_);
+  }
 
   // body_label_ may be invisible if the preceding UI is the disclosure UI. When
   // error is triggered directly from the loading UI in case of auto re-authn,
@@ -644,9 +673,12 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
     idp_brand_icon_->SetVisible(/*visible=*/true);
   }
 
-  // Hide the "Choose an account to continue" label.
+  // Hide the "Choose an account to continue" label, but not if we are instead
+  // showing the iframe text.
   CHECK(body_label_);
-  body_label_->SetVisible(/*visible=*/false);
+  if (subtitle_.empty()) {
+    body_label_->SetVisible(/*visible=*/false);
+  }
 
   std::vector<IdentityRequestAccountPtr> accounts = {account};
   account_chooser_ =
@@ -852,12 +884,44 @@ std::string AccountSelectionModalView::GetDialogTitle() const {
   return base::UTF16ToUTF8(title_label_->GetText());
 }
 
+void AccountSelectionModalView::UpdateTitleAndSubtitle(
+    const content::RelyingPartyData& rp_data) {
+  AccountSelectionViewBase::UpdateTitleAndSubtitle(rp_data);
+
+  // Don't set a title until we know the strings won't change anymore.
+  if (rp_data.display_strings_may_change) {
+    title_label_->SetVisible(false);
+    return;
+  }
+
+  title_ = GetTitle(rp_data, idp_title_, rp_context_);
+  subtitle_ = GetSubtitle(rp_data);
+  title_label_->SetText(title_);
+  title_label_->SetVisible(true);
+  if (body_label_) {
+    body_label_->SetText(subtitle_);
+    body_label_->SetVisible(true);
+  }
+  // Otherwise, we will set the text when we create body_label_.
+  if (auto* widget = GetWidget()) {
+    widget->widget_delegate()->SetTitle(title_);
+  }
+}
+
 std::optional<std::string> AccountSelectionModalView::GetDialogSubtitle()
     const {
   if (subtitle_.empty()) {
     return std::nullopt;
   }
   return base::UTF16ToUTF8(subtitle_);
+}
+
+void AccountSelectionModalView::VisibilityChanged(View* starting_from,
+                                                  bool is_visible) {
+  if (is_visible && !queued_announcement_.empty()) {
+    GetViewAccessibility().AnnounceAlert(queued_announcement_);
+    queued_announcement_ = u"";
+  }
 }
 
 std::u16string AccountSelectionModalView::GetQueuedAnnouncementForTesting() {
@@ -876,16 +940,8 @@ views::View* AccountSelectionModalView::GetInitiallyFocusedView() {
     return continue_button_;
   }
 
-  // Default to superclass.
-  return views::DialogDelegateView::GetInitiallyFocusedView();
-}
-
-void AccountSelectionModalView::VisibilityChanged(View* starting_from,
-                                                  bool is_visible) {
-  if (is_visible && !queued_announcement_.empty()) {
-    GetViewAccessibility().AnnounceAlert(queued_announcement_);
-    queued_announcement_ = u"";
-  }
+  // Return null to indicate to the delegate to use the delegate's super-class.
+  return nullptr;
 }
 
 void AccountSelectionModalView::
@@ -893,9 +949,13 @@ void AccountSelectionModalView::
   // body_label_ does not apply to the loading modal so it's added to header
   // here.
   if (!body_label_) {
+    std::u16string body_text =
+        subtitle_.empty()
+            ? l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT)
+            : subtitle_;
     body_label_ = header_view_->AddChildView(std::make_unique<views::Label>(
-        l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT),
-        views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4));
+        body_text, views::style::CONTEXT_DIALOG_BODY_TEXT,
+        views::style::STYLE_BODY_4));
     SetLabelProperties(body_label_);
   }
 

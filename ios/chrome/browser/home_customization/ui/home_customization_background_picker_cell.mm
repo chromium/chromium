@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_cell.h"
 
+#import "base/metrics/user_metrics.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_accessibility_identifiers.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_presentation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -12,17 +14,23 @@
 namespace {
 
 // Size of the Add background icon.
-const CGFloat kSymbolAddBackgroundPointSize = 12;
+const CGFloat kSymbolAddBackgroundPointSize = 18;
 
 }  // namespace
 
 @implementation HomeCustomizationBackgroundPickerCell
 
+- (id)initWithFrame:(CGRect)frame {
+  self = [super initWithFrame:frame];
+  if (self) {
+    self.accessibilityIdentifier = kBackgroundPickerCellAccessibilityIdentifier;
+  }
+  return self;
+}
+
 #pragma mark - HomeCustomizationBackgroundCell
 
 - (void)setupContentView:(UIView*)contentView {
-  contentView.backgroundColor = [UIColor colorNamed:kGrey200Color];
-
   UIImage* plusIcon = SymbolWithPalette(
       CustomSymbolWithPointSize(kPlusCircleFillSymbol,
                                 kSymbolAddBackgroundPointSize),
@@ -35,6 +43,7 @@ const CGFloat kSymbolAddBackgroundPointSize = 12;
 
   UIImageView* plusIconView = [[UIImageView alloc] initWithImage:plusIcon];
   plusIconView.translatesAutoresizingMaskIntoConstraints = NO;
+  plusIconView.contentMode = UIViewContentModeScaleAspectFit;
   [contentView addSubview:plusIconView];
 
   [NSLayoutConstraint activateConstraints:@[
@@ -48,6 +57,13 @@ const CGFloat kSymbolAddBackgroundPointSize = 12;
       [[UITapGestureRecognizer alloc] initWithTarget:self
                                               action:@selector(handleTap)];
   [self.contentView addGestureRecognizer:tapGesture];
+
+  [self applyTheme];
+}
+
+- (void)applyTheme {
+  self.innerContentView.backgroundColor =
+      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
 }
 
 #pragma mark - Private
@@ -55,7 +71,9 @@ const CGFloat kSymbolAddBackgroundPointSize = 12;
 // Handles tap gesture by notifying the delegate to display background picker
 // options.
 - (void)handleTap {
-  [self.delegate showBackgroundPickerOptions];
+  [self.delegate showBackgroundPickerOptionsFromSourceView:self.contentView];
+  base::RecordAction(base::UserMetricsAction(
+      "IOS.HomeCustomization.Background.PickerActionSheet.Tapped"));
 }
 
 @end

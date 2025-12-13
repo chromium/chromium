@@ -901,11 +901,10 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowSystemWebAppBrowserTest,
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,
             GetAppInstanceState(app_id, instance->Window()));
 
-  ui_test_utils::BrowserChangeObserver browser_close_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kRemoved);
+  ui_test_utils::BrowserDestroyedObserver browser_destroyed_observer;
   controller_->Close(item.id);
   // Make sure that the window is closed.
-  browser_close_observer.Wait();
+  browser_destroyed_observer.Wait();
   instances = app_service_proxy_->InstanceRegistry().GetInstances(app_id);
   EXPECT_TRUE(instances.empty());
 }

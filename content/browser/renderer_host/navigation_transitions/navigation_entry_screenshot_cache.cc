@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 
+#include <optional>
+
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/ptr_util.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -20,10 +22,6 @@
 namespace content {
 
 namespace {
-
-const base::FeatureParam<bool> kDumpWithoutCrashNavigationEntryScreenshotCache{
-    &blink::features::kBackForwardTransitions,
-    "dump-without-crash-navigation-entry-screenshot-cache", false};
 
 NavigationEntryScreenshotCache::CompressedCallback& GetTestCallback() {
   static base::NoDestructor<NavigationEntryScreenshotCache::CompressedCallback>
@@ -56,7 +54,6 @@ NavigationEntryScreenshotCache::NavigationEntryScreenshotCache(
     NavigationControllerImpl* nav_controller)
     : manager_(manager), nav_controller_(nav_controller) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  CHECK(NavigationTransitionConfig::AreBackForwardTransitionsEnabled());
 }
 
 NavigationEntryScreenshotCache::~NavigationEntryScreenshotCache() {
@@ -150,9 +147,7 @@ void NavigationEntryScreenshotCache::SetScreenshotInternal(
   // first (thus not tracked). Impossible to overwrite for a cached entry.
   // TODO(crbug.com/373893401): Find out why this happens.
   if (entry->GetUserData(NavigationEntryScreenshot::kUserDataKey)) {
-    if (kDumpWithoutCrashNavigationEntryScreenshotCache.Get()) {
-      base::debug::DumpWithoutCrashing();
-    }
+    base::debug::DumpWithoutCrashing();
     RemoveScreenshot(entry);
   }
 
@@ -160,6 +155,14 @@ void NavigationEntryScreenshotCache::SetScreenshotInternal(
   CHECK(cached_screenshots_.find(transition_data.unique_id()) ==
         cached_screenshots_.end());
   CHECK(!screenshot->is_cached());
+
+  if (!screenshot->IsValid()) {
+    transition_data.set_cache_hit_or_miss_reason(
+        NavigationTransitionData::CacheHitOrMissReason::
+            kCacheMissFailedReadBack);
+    return;
+  }
+
   const size_t size = screenshot->SetCache(this);
 
   entry->SetUserData(NavigationEntryScreenshot::kUserDataKey,
@@ -177,7 +180,9 @@ void NavigationEntryScreenshotCache::SetScreenshotInternal(
 
 std::unique_ptr<NavigationEntryScreenshot>
 NavigationEntryScreenshotCache::RemoveScreenshot(
-    NavigationEntry* navigation_entry) {
+    NavigationEntry* navigation_entry,
+    std::optional<NavigationTransitionData::CacheHitOrMissReason>
+        cache_hit_or_miss_reason) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(navigation_entry);
   auto it = cached_screenshots_.find(
@@ -193,10 +198,27 @@ NavigationEntryScreenshotCache::RemoveScreenshot(
   auto screenshot = RemoveScreenshotFromEntry(navigation_entry);
   static_cast<NavigationEntryImpl*>(navigation_entry)
       ->navigation_transition_data()
-      .set_cache_hit_or_miss_reason(std::nullopt);
+      .set_cache_hit_or_miss_reason(cache_hit_or_miss_reason);
   manager_->OnScreenshotRemoved(this, size);
 
   return screenshot;
+}
+
+void NavigationEntryScreenshotCache::RemoveFailedScreenshot(
+    NavigationEntryScreenshot* screenshot) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  int index =
+      NavigationTransitionUtils::FindEntryIndexForNavigationTransitionID(
+          nav_controller_, screenshot->unique_id());
+  NavigationEntryImpl* entry = nav_controller_->GetEntryAtIndex(index);
+  if (!entry) {
+    // The entry was deleted by the time we did the readback.
+    return;
+  }
+
+  RemoveScreenshot(
+      entry,
+      NavigationTransitionData::CacheHitOrMissReason::kCacheMissFailedReadBack);
 }
 
 void NavigationEntryScreenshotCache::OnNavigationEntryGone(
@@ -213,6 +235,7 @@ void NavigationEntryScreenshotCache::OnNavigationEntryGone(
 void NavigationEntryScreenshotCache::OnScreenshotCompressed(
     NavigationTransitionData::UniqueId screenshot_id,
     size_t new_size) {
+  TRACE_EVENT("content", "OnScreenshotCompressed");
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto it = cached_screenshots_.find(screenshot_id);
   CHECK(it != cached_screenshots_.end());

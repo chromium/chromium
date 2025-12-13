@@ -9,7 +9,6 @@ import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.rec
 import androidx.annotation.Nullable;
 
 import org.chromium.android_webview.AwNavigation;
-import org.chromium.android_webview.AwSupportLibIsomorphic;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.TraceEvent;
 import org.chromium.support_lib_boundary.WebViewNavigationBoundaryInterface;
@@ -17,6 +16,7 @@ import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
 import java.lang.reflect.InvocationHandler;
+import java.util.concurrent.Callable;
 
 /**
  * Adapter between WebViewNavigationBoundaryInterface and AwNavigation.
@@ -24,17 +24,11 @@ import java.lang.reflect.InvocationHandler;
  * <p>Once created, instances are kept alive by the peer AwNavigation.
  */
 @Lifetime.Temporary
-class SupportLibWebViewNavigationAdapter extends IsomorphicAdapter
-        implements WebViewNavigationBoundaryInterface {
+class SupportLibWebViewNavigationAdapter implements WebViewNavigationBoundaryInterface {
     private final AwNavigation mNavigation;
 
     SupportLibWebViewNavigationAdapter(AwNavigation navigation) {
         mNavigation = navigation;
-    }
-
-    @Override
-    AwSupportLibIsomorphic getPeeredObject() {
-        return mNavigation;
     }
 
     @Override
@@ -138,8 +132,16 @@ class SupportLibWebViewNavigationAdapter extends IsomorphicAdapter
     public /* WebViewPage */ @Nullable InvocationHandler getPage() {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.AndroidX.NAVIGATION_GET_PAGE")) {
             recordApiCall(ApiCall.NAVIGATION_GET_PAGE);
+            if (mNavigation.getPage() == null) {
+                return null;
+            }
             return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                     new SupportLibWebViewPageAdapter(mNavigation.getPage()));
         }
+    }
+
+    @Override
+    public Object getOrCreatePeer(Callable<Object> creationCallable) {
+        return mNavigation.getOrCreateSupportLibObject(creationCallable);
     }
 }

@@ -39,9 +39,11 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/compound_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_copy_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/shared_memory_copy_strategy.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
@@ -51,10 +53,12 @@
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
@@ -85,14 +89,6 @@ static const char* kVertexShaderSrc =
     "void main() {\n"
     "  gl_Position = vec4(a_position.x, a_position.y, 0.0, 1.0);\n"
     "  v_texCoord = (a_position + vec2(1.0, 1.0)) * 0.5;\n"
-    "}\n";
-
-static const char* kFragmentShaderSrc =
-    "precision mediump float;\n"
-    "uniform mediump sampler2D u_texture;\n"
-    "varying vec2 v_texCoord;\n"
-    "void main() {\n"
-    "  gl_FragColor = texture2D(u_texture, v_texCoord);"
     "}\n";
 
 void FillNV12(uint8_t* data,
@@ -128,21 +124,6 @@ void CheckNV12(const uint8_t* data,
       }
     }
   }
-}
-
-GLuint MakeTextureAndSetParameters(gl::GLApi* api, GLenum target, bool fbo) {
-  GLuint texture_id = 0;
-  api->glGenTexturesFn(1, &texture_id);
-  api->glBindTextureFn(target, texture_id);
-  api->glTexParameteriFn(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  api->glTexParameteriFn(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  api->glTexParameteriFn(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  api->glTexParameteriFn(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  if (fbo) {
-    api->glTexParameteriFn(target, GL_TEXTURE_USAGE_ANGLE,
-                           GL_FRAMEBUFFER_ATTACHMENT_ANGLE);
-  }
-  return texture_id;
 }
 
 }  // anonymous namespace
@@ -181,299 +162,6 @@ class D3DImageBackingFactoryTestBase : public testing::Test {
   std::unique_ptr<D3DImageBackingFactory> shared_image_factory_;
 };
 
-class D3DImageBackingFactoryTestSwapChain
-    : public D3DImageBackingFactoryTestBase {
- public:
-  void SetUp() override {
-    if (!D3DImageBackingFactory::IsSwapChainSupported(GpuPreferences())) {
-      GTEST_SKIP();
-    }
-    D3DImageBackingFactoryTestBase::SetUp();
-  }
-};
-
-TEST_F(D3DImageBackingFactoryTestSwapChain, InvalidFormat) {
-  auto front_buffer_mailbox = Mailbox::Generate();
-  auto back_buffer_mailbox = Mailbox::Generate();
-  gfx::Size size(1, 1);
-  auto color_space = gfx::ColorSpace::CreateSRGB();
-  auto surface_origin = kTopLeft_GrSurfaceOrigin;
-  auto alpha_type = kPremul_SkAlphaType;
-  gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_SCANOUT;
-  {
-    auto valid_format = viz::SinglePlaneFormat::kRGBA_8888;
-    auto backings = shared_image_factory_->CreateSwapChain(
-        front_buffer_mailbox, back_buffer_mailbox, valid_format, size,
-        color_space, surface_origin, alpha_type, usage);
-    EXPECT_TRUE(backings.front_buffer);
-    EXPECT_TRUE(backings.back_buffer);
-  }
-  {
-    auto valid_format = viz::SinglePlaneFormat::kBGRA_8888;
-    auto backings = shared_image_factory_->CreateSwapChain(
-        front_buffer_mailbox, back_buffer_mailbox, valid_format, size,
-        color_space, surface_origin, alpha_type, usage);
-    EXPECT_TRUE(backings.front_buffer);
-    EXPECT_TRUE(backings.back_buffer);
-  }
-  {
-    auto valid_format = viz::SinglePlaneFormat::kRGBA_F16;
-    auto backings = shared_image_factory_->CreateSwapChain(
-        front_buffer_mailbox, back_buffer_mailbox, valid_format, size,
-        color_space, surface_origin, alpha_type, usage);
-    EXPECT_TRUE(backings.front_buffer);
-    EXPECT_TRUE(backings.back_buffer);
-  }
-  {
-    auto invalid_format = viz::SinglePlaneFormat::kRGBA_4444;
-    auto backings = shared_image_factory_->CreateSwapChain(
-        front_buffer_mailbox, back_buffer_mailbox, invalid_format, size,
-        color_space, surface_origin, alpha_type, usage);
-    EXPECT_FALSE(backings.front_buffer);
-    EXPECT_FALSE(backings.back_buffer);
-  }
-}
-
-TEST_F(D3DImageBackingFactoryTestSwapChain, CreateAndPresentSwapChain) {
-  auto front_buffer_mailbox = Mailbox::Generate();
-  auto back_buffer_mailbox = Mailbox::Generate();
-  auto format = viz::SinglePlaneFormat::kRGBA_8888;
-  gfx::Size size(1, 1);
-  auto color_space = gfx::ColorSpace::CreateSRGB();
-  auto surface_origin = kTopLeft_GrSurfaceOrigin;
-  auto alpha_type = kPremul_SkAlphaType;
-  gpu::SharedImageUsageSet usage =
-      // This test both reads from and writes to the created SharedImages via
-      // GL.
-      gpu::SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
-
-  auto backings = shared_image_factory_->CreateSwapChain(
-      front_buffer_mailbox, back_buffer_mailbox, format, size, color_space,
-      surface_origin, alpha_type, usage);
-  ASSERT_TRUE(backings.front_buffer);
-  EXPECT_TRUE(backings.front_buffer->IsCleared());
-
-  ASSERT_TRUE(backings.back_buffer);
-  EXPECT_TRUE(backings.back_buffer->IsCleared());
-
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
-  auto* back_buffer_d3d_backing =
-      static_cast<D3DImageBacking*>(backings.back_buffer.get());
-  auto* front_buffer_d3d_backing =
-      static_cast<D3DImageBacking*>(backings.front_buffer.get());
-  ASSERT_TRUE(back_buffer_d3d_backing);
-  ASSERT_TRUE(front_buffer_d3d_backing);
-
-  EXPECT_EQ(S_OK, back_buffer_d3d_backing->swap_chain_for_testing()->GetBuffer(
-                      /*buffer_index=*/0, IID_PPV_ARGS(&d3d11_texture)));
-  EXPECT_TRUE(d3d11_texture);
-  EXPECT_EQ(d3d11_texture,
-            back_buffer_d3d_backing->d3d11_texture_for_testing());
-  d3d11_texture.Reset();
-
-  EXPECT_EQ(back_buffer_d3d_backing->swap_chain_for_testing(),
-            front_buffer_d3d_backing->swap_chain_for_testing());
-  EXPECT_EQ(S_OK, front_buffer_d3d_backing->swap_chain_for_testing()->GetBuffer(
-                      /*buffer_index=*/1, IID_PPV_ARGS(&d3d11_texture)));
-  EXPECT_TRUE(d3d11_texture);
-  EXPECT_EQ(d3d11_texture,
-            front_buffer_d3d_backing->d3d11_texture_for_testing());
-  d3d11_texture.Reset();
-
-  std::unique_ptr<SharedImageRepresentationFactoryRef> back_factory_ref =
-      shared_image_manager_.Register(std::move(backings.back_buffer),
-                                     memory_type_tracker_.get());
-  std::unique_ptr<SharedImageRepresentationFactoryRef> front_factory_ref =
-      shared_image_manager_.Register(std::move(backings.front_buffer),
-                                     memory_type_tracker_.get());
-
-  auto back_gl_representation =
-      shared_image_representation_factory_->ProduceGLTexturePassthrough(
-          back_buffer_mailbox);
-  EXPECT_TRUE(back_gl_representation);
-
-  std::unique_ptr<GLTexturePassthroughImageRepresentation::ScopedAccess>
-      back_scoped_access = back_gl_representation->BeginScopedAccess(
-          GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
-          SharedImageRepresentation::AllowUnclearedAccess::kYes);
-  EXPECT_TRUE(back_scoped_access);
-
-  auto back_texture = back_gl_representation->GetTexturePassthrough();
-  ASSERT_TRUE(back_texture);
-  EXPECT_EQ(back_texture->target(), static_cast<unsigned>(GL_TEXTURE_2D));
-
-  GLuint back_texture_id = back_texture->service_id();
-  EXPECT_NE(back_texture_id, 0u);
-
-  auto front_gl_representation =
-      shared_image_representation_factory_->ProduceGLTexturePassthrough(
-          front_buffer_mailbox);
-  EXPECT_TRUE(front_gl_representation);
-
-  std::unique_ptr<GLTexturePassthroughImageRepresentation::ScopedAccess>
-      front_scoped_access = front_gl_representation->BeginScopedAccess(
-          GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM,
-          SharedImageRepresentation::AllowUnclearedAccess::kYes);
-  EXPECT_TRUE(front_scoped_access);
-
-  auto front_texture = front_gl_representation->GetTexturePassthrough();
-  ASSERT_TRUE(front_texture);
-  EXPECT_EQ(front_texture->target(), static_cast<unsigned>(GL_TEXTURE_2D));
-
-  GLuint front_texture_id = front_texture->service_id();
-  EXPECT_NE(front_texture_id, 0u);
-
-  gl::GLApi* api = gl::g_current_gl_context;
-  // Create a multisampled FBO.
-  GLuint multisample_fbo, renderbuffer = 0u;
-  api->glGenFramebuffersEXTFn(1, &multisample_fbo);
-  api->glBindFramebufferEXTFn(GL_FRAMEBUFFER, multisample_fbo);
-  api->glGenRenderbuffersEXTFn(1, &renderbuffer);
-  api->glBindRenderbufferEXTFn(GL_RENDERBUFFER, renderbuffer);
-  ASSERT_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
-
-  api->glRenderbufferStorageMultisampleFn(GL_RENDERBUFFER, /*sample_count=*/4,
-                                          GL_RGBA8_OES, 1, 1);
-  api->glFramebufferRenderbufferEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                      GL_RENDERBUFFER, renderbuffer);
-  EXPECT_EQ(api->glCheckFramebufferStatusEXTFn(GL_FRAMEBUFFER),
-            static_cast<unsigned>(GL_FRAMEBUFFER_COMPLETE));
-  ASSERT_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
-
-  // Set the clear color to green.
-  api->glViewportFn(0, 0, size.width(), size.height());
-  api->glClearColorFn(0.0f, 1.0f, 0.0f, 1.0f);
-  api->glClearFn(GL_COLOR_BUFFER_BIT);
-  ASSERT_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
-
-  api->glBindFramebufferEXTFn(GL_READ_FRAMEBUFFER, multisample_fbo);
-
-  // Attach the back buffer texture to an FBO.
-  GLuint fbo = 0u;
-  api->glGenFramebuffersEXTFn(1, &fbo);
-  api->glBindFramebufferEXTFn(GL_DRAW_FRAMEBUFFER, fbo);
-  api->glBindTextureFn(GL_TEXTURE_2D, back_texture_id);
-  api->glFramebufferTexture2DEXTFn(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                   GL_TEXTURE_2D, back_texture_id, 0);
-  EXPECT_EQ(api->glCheckFramebufferStatusEXTFn(GL_DRAW_FRAMEBUFFER),
-            static_cast<unsigned>(GL_FRAMEBUFFER_COMPLETE));
-  ASSERT_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
-
-  api->glBlitFramebufferFn(0, 0, 1, 1, 0, 0, 1, 1, GL_COLOR_BUFFER_BIT,
-                           GL_NEAREST);
-  ASSERT_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
-
-  api->glBindFramebufferEXTFn(GL_FRAMEBUFFER, fbo);
-
-  // Checks if rendering to back buffer was successful.
-  {
-    GLubyte pixel_color[4];
-    const uint8_t expected_color[4] = {0, 255, 0, 255};
-    api->glReadPixelsFn(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel_color);
-    EXPECT_EQ(expected_color[0], pixel_color[0]);
-    EXPECT_EQ(expected_color[1], pixel_color[1]);
-    EXPECT_EQ(expected_color[2], pixel_color[2]);
-    EXPECT_EQ(expected_color[3], pixel_color[3]);
-  }
-
-  EXPECT_TRUE(back_factory_ref->PresentSwapChain());
-
-  // After present, back buffer should now have a clear texture.
-  {
-    GLubyte pixel_color[4];
-    const uint8_t expected_color[4] = {0, 0, 0, 255};
-    api->glReadPixelsFn(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel_color);
-    EXPECT_EQ(expected_color[0], pixel_color[0]);
-    EXPECT_EQ(expected_color[1], pixel_color[1]);
-    EXPECT_EQ(expected_color[2], pixel_color[2]);
-    EXPECT_EQ(expected_color[3], pixel_color[3]);
-  }
-
-  // And front buffer should have the rendered contents.  Test that binding
-  // front buffer as a sampler works.
-  {
-    // Create a destination texture to render into since we can't bind front
-    // buffer to an FBO.
-    GLuint dest_texture_id =
-        MakeTextureAndSetParameters(api, GL_TEXTURE_2D, true);
-    api->glTexImage2DFn(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA,
-                        GL_UNSIGNED_BYTE, nullptr);
-    api->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                     GL_TEXTURE_2D, dest_texture_id, 0);
-    EXPECT_EQ(api->glCheckFramebufferStatusEXTFn(GL_FRAMEBUFFER),
-              static_cast<unsigned>(GL_FRAMEBUFFER_COMPLETE));
-    api->glClearColorFn(0.0f, 0.0f, 0.0f, 0.0f);
-    api->glClearFn(GL_COLOR_BUFFER_BIT);
-    ASSERT_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
-
-    GLint status = 0;
-    GLuint vertex_shader = api->glCreateShaderFn(GL_VERTEX_SHADER);
-    ASSERT_NE(vertex_shader, 0u);
-    api->glShaderSourceFn(vertex_shader, 1, &kVertexShaderSrc, nullptr);
-    api->glCompileShaderFn(vertex_shader);
-    api->glGetShaderivFn(vertex_shader, GL_COMPILE_STATUS, &status);
-    ASSERT_NE(status, 0);
-
-    GLuint fragment_shader = api->glCreateShaderFn(GL_FRAGMENT_SHADER);
-    ASSERT_NE(fragment_shader, 0u);
-    api->glShaderSourceFn(fragment_shader, 1, &kFragmentShaderSrc, nullptr);
-    api->glCompileShaderFn(fragment_shader);
-    api->glGetShaderivFn(fragment_shader, GL_COMPILE_STATUS, &status);
-    ASSERT_NE(status, 0);
-
-    GLuint program = api->glCreateProgramFn();
-    ASSERT_NE(program, 0u);
-    api->glAttachShaderFn(program, vertex_shader);
-    api->glAttachShaderFn(program, fragment_shader);
-    api->glLinkProgramFn(program);
-    api->glGetProgramivFn(program, GL_LINK_STATUS, &status);
-    ASSERT_NE(status, 0);
-
-    GLuint vbo = 0u;
-    api->glGenBuffersARBFn(1, &vbo);
-    ASSERT_NE(vbo, 0u);
-    api->glBindBufferFn(GL_ARRAY_BUFFER, vbo);
-    static const float vertices[] = {
-        1.0f, 1.0f, -1.0f, 1.0f,  -1.0f, -1.0f,
-        1.0f, 1.0f, -1.0f, -1.0f, 1.0f,  -1.0f,
-    };
-    api->glBufferDataFn(GL_ARRAY_BUFFER, sizeof(vertices), vertices,
-                        GL_STATIC_DRAW);
-    GLint vertex_location = api->glGetAttribLocationFn(program, "a_position");
-    ASSERT_NE(vertex_location, -1);
-    api->glEnableVertexAttribArrayFn(vertex_location);
-    api->glVertexAttribPointerFn(vertex_location, 2, GL_FLOAT, GL_FALSE, 0,
-                                 nullptr);
-
-    GLint sampler_location = api->glGetUniformLocationFn(program, "u_texture");
-    ASSERT_NE(sampler_location, -1);
-    api->glActiveTextureFn(GL_TEXTURE0);
-    api->glBindTextureFn(GL_TEXTURE_2D, front_texture_id);
-    api->glUniform1iFn(sampler_location, 0);
-
-    api->glUseProgramFn(program);
-    api->glDrawArraysFn(GL_TRIANGLES, 0, 6);
-
-    {
-      GLubyte pixel_color[4];
-      const uint8_t expected_color[4] = {0, 255, 0, 255};
-      api->glReadPixelsFn(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel_color);
-      EXPECT_EQ(expected_color[0], pixel_color[0]);
-      EXPECT_EQ(expected_color[1], pixel_color[1]);
-      EXPECT_EQ(expected_color[2], pixel_color[2]);
-      EXPECT_EQ(expected_color[3], pixel_color[3]);
-    }
-
-    api->glDeleteProgramFn(program);
-    api->glDeleteShaderFn(vertex_shader);
-    api->glDeleteShaderFn(fragment_shader);
-    api->glDeleteBuffersARBFn(1, &vbo);
-  }
-
-  api->glDeleteFramebuffersEXTFn(1, &fbo);
-}
-
 class D3DImageBackingFactoryTest
     : public D3DImageBackingFactoryTestBase,
       public testing::WithParamInterface<GrContextType> {
@@ -486,9 +174,8 @@ class D3DImageBackingFactoryTest
     auto gr_context_type = GetParam();
     if (gr_context_type == GrContextType::kGraphiteDawn)
     {
-      dawn_context_provider_ = DawnContextProvider::Create(
-          GpuPreferences(), GpuFeatureInfo(),
-          DawnContextProvider::DefaultValidateAdapterFn);
+      dawn_context_provider_ =
+          DawnContextProvider::Create(GpuPreferences(), GpuFeatureInfo());
     }
     context_state_ = base::MakeRefCounted<SharedContextState>(
         std::move(share_group), surface_, context_,
@@ -498,6 +185,8 @@ class D3DImageBackingFactoryTest
     auto feature_info =
         base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
     context_state_->InitializeGL(GpuPreferences(), std::move(feature_info));
+    copy_manager_ = base::MakeRefCounted<SharedImageCopyManager>();
+    copy_manager_->AddStrategy(std::make_unique<SharedMemoryCopyStrategy>());
   }
 
   void TearDown() override {
@@ -615,6 +304,7 @@ class D3DImageBackingFactoryTest
 
   std::unique_ptr<DawnContextProvider> dawn_context_provider_;
   scoped_refptr<SharedContextState> context_state_;
+  scoped_refptr<SharedImageCopyManager> copy_manager_;
 };
 
 // Test to check interaction between Gl and skia GL representations.
@@ -1345,6 +1035,97 @@ TEST_P(D3DImageBackingFactoryTest, CreateSharedImageFromHandleFormatTYPELESS) {
   RunCreateSharedImageFromHandleTest(DXGI_FORMAT_R8G8B8A8_TYPELESS);
 }
 
+// Tests that writing to a Skia representation of a D3DImageBacking created
+// from a shared handle is reflected in a second backing created from the
+// same handle.
+TEST_P(D3DImageBackingFactoryTest, SkiaWriteReadWithSharedHandle) {
+  auto mailbox1 = Mailbox::Generate();
+  auto mailbox2 = Mailbox::Generate();
+  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  const gfx::Size size(1, 1);
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  const gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE;
+  const GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  const SkAlphaType alpha_type = kPremul_SkAlphaType;
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      shared_image_factory_->GetDeviceForTesting();
+
+  D3D11_TEXTURE2D_DESC desc;
+  desc.Width = size.width();
+  desc.Height = size.height();
+  desc.MipLevels = 1;
+  desc.ArraySize = 1;
+  desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+  desc.SampleDesc.Count = 1;
+  desc.SampleDesc.Quality = 0;
+  desc.Usage = D3D11_USAGE_DEFAULT;
+  desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+  desc.CPUAccessFlags = 0;
+  desc.MiscFlags =
+      D3D11_RESOURCE_MISC_SHARED_NTHANDLE | D3D11_RESOURCE_MISC_SHARED;
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
+  HRESULT hr = d3d11_device->CreateTexture2D(&desc, nullptr, &d3d11_texture);
+  ASSERT_EQ(hr, S_OK);
+
+  Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
+  hr = d3d11_texture.As(&dxgi_resource);
+  ASSERT_EQ(hr, S_OK);
+
+  HANDLE shared_handle;
+  hr = dxgi_resource->CreateSharedHandle(
+      nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE, nullptr,
+      &shared_handle);
+  ASSERT_EQ(hr, S_OK);
+
+  gfx::GpuMemoryBufferHandle handle1{
+      gfx::DXGIHandle(base::win::ScopedHandle(shared_handle))};
+  auto handle2 = handle1.Clone();
+
+  auto backing1 = shared_image_factory_->CreateSharedImage(
+      mailbox1, format, size, color_space, surface_origin, alpha_type, usage,
+      "TestLabel", /*is_thread_safe=*/false, std::move(handle1));
+  ASSERT_TRUE(backing1);
+  auto backing2 = shared_image_factory_->CreateSharedImage(
+      mailbox2, format, size, color_space, surface_origin, alpha_type, usage,
+      "TestLabel", /*is_thread_safe=*/false, std::move(handle2));
+  ASSERT_TRUE(backing2);
+
+  D3DImageBacking* backing1_d3d = static_cast<D3DImageBacking*>(backing1.get());
+  D3DImageBacking* backing2_d3d = static_cast<D3DImageBacking*>(backing2.get());
+  ASSERT_EQ(backing1_d3d->dxgi_shared_handle_state_for_testing(),
+            backing2_d3d->dxgi_shared_handle_state_for_testing());
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref1 =
+      shared_image_manager_.Register(std::move(backing1),
+                                     memory_type_tracker_.get());
+  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref2 =
+      shared_image_manager_.Register(std::move(backing2),
+                                     memory_type_tracker_.get());
+
+  // Write blue to the first backing.
+  {
+    auto skia_representation1 =
+        shared_image_representation_factory_->ProduceSkia(mailbox1,
+                                                          context_state_);
+    ASSERT_TRUE(skia_representation1);
+    auto scoped_write_access = skia_representation1->BeginScopedWriteAccess(
+        /*begin_semaphores=*/nullptr, /*end_semaphores=*/nullptr,
+        SharedImageRepresentation::AllowUnclearedAccess::kYes);
+    ASSERT_TRUE(scoped_write_access);
+
+    SkCanvas* canvas = scoped_write_access->surface()->getCanvas();
+    canvas->clear(SkColors::kBlue);
+    context_state_->FlushWriteAccess(scoped_write_access.get());
+    context_state_->SubmitIfNecessary({}, true);
+    skia_representation1->SetCleared();
+  }
+
+  // Read from the second backing and check that it is blue.
+  CheckSkiaPixels(mailbox2, size, {0, 0, 255, 255});
+}
+
 // Test to check external image stored in the backing can be reused
 TEST_P(D3DImageBackingFactoryTest, Dawn_ReuseExternalImage) {
   // Create a backing using mailbox.
@@ -1893,10 +1674,11 @@ void D3DImageBackingFactoryTest::RunCreateFromSharedMemoryMultiplanarTest(
 
   // CompoundImageBacking wrapping D3DImageBacking is required for shared
   // memory support.
-  auto backing = CompoundImageBacking::CreateSharedMemory(
-      shared_image_factory_.get(), mailbox, std::move(shm_gmb_handle),
-      viz::MultiPlaneFormat::kNV12, size, gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "TestLabel");
+  auto backing = CompoundImageBacking::CreateSharedMemoryForTesting(
+      shared_image_factory_.get(), copy_manager_, mailbox,
+      std::move(shm_gmb_handle), viz::MultiPlaneFormat::kNV12, size,
+      gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+      "TestLabel");
   EXPECT_NE(backing, nullptr);
 
   EXPECT_EQ(backing->mailbox(), mailbox);
@@ -2304,7 +2086,9 @@ TEST_P(D3DImageBackingFactoryTest, CanProduceVideoForExternalDevice) {
       d3d11_device, mailbox, memory_type_tracker_.get());
   EXPECT_NE(representation, nullptr);
   auto read_access = representation->BeginScopedReadAccess();
-  EXPECT_NE(read_access->GetD3D11Texture(), nullptr);
+  D3D11TextureAndArrayIndex input_texture = read_access->GetD3D11Texture();
+  EXPECT_NE(input_texture.texture, nullptr);
+  EXPECT_EQ(input_texture.array_index, 0u);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2421,7 +2205,7 @@ TEST_F(D3DImageBackingFactoryBufferTest, CreateSharedImageImportToDawn) {
 
   auto dawn_representation =
       shared_image_representation_factory_->ProduceDawnBuffer(
-          mailbox, device, wgpu::BackendType::D3D12);
+          mailbox, device, wgpu::BackendType::D3D12, /*context_state=*/nullptr);
   ASSERT_NE(dawn_representation, nullptr);
 
   auto scoped_access = dawn_representation->BeginScopedAccess(
@@ -2454,6 +2238,27 @@ TEST_F(D3DImageBackingFactoryBufferTest, CreateSharedImageImportToDawn) {
   CheckDawnBuffer(buffer, instance.Get(), device, kBufferSize, kBufferData);
 
   factory_ref.reset();
+}
+
+// Disabled by default as it requires DX11.
+TEST_F(D3DImageBackingFactoryTest, DISABLED_CreateGpuMemoryBuffer) {
+  for (auto format : {
+           viz::SinglePlaneFormat::kRGBA_8888,
+           viz::SinglePlaneFormat::kRGBX_8888,
+           viz::SinglePlaneFormat::kBGRA_8888,
+           viz::SinglePlaneFormat::kBGRX_8888,
+       }) {
+    gfx::BufferUsage usages[] = {
+        gfx::BufferUsage::GPU_READ,
+        gfx::BufferUsage::SCANOUT,
+    };
+    for (auto usage : usages) {
+      gfx::GpuMemoryBufferHandle handle =
+          D3DImageBackingFactory::CreateGpuMemoryBufferHandle(
+              /*io_runner=*/nullptr, gfx::Size(2, 2), format, usage);
+      EXPECT_EQ(handle.type, gfx::DXGI_SHARED_HANDLE);
+    }
+  }
 }
 
 }  // namespace gpu

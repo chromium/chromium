@@ -10,11 +10,15 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
+#include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_controller.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -28,6 +32,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -86,10 +91,9 @@ class CookieControlsBubbleViewPixelTestBase : public DialogBrowserTest {
     content::SetupCrossSiteRedirector(https_test_server());
     ASSERT_TRUE(https_test_server()->Start());
 
-    cookie_controls_icon_ = static_cast<CookieControlsIconView*>(
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar_button_provider()
-            ->GetPageActionIconView(PageActionIconType::kCookieControls));
+    cookie_controls_icon_ = BrowserView::GetBrowserViewForBrowser(browser())
+                                ->toolbar_button_provider()
+                                ->GetPageActionView(kActionShowCookieControls);
     ASSERT_TRUE(cookie_controls_icon_);
 
     controller_ = std::make_unique<content_settings::CookieControlsController>(
@@ -109,7 +113,7 @@ class CookieControlsBubbleViewPixelTestBase : public DialogBrowserTest {
             /*is_incognito_profile=*/true);
 
     cookie_controls_coordinator_ =
-        &cookie_controls_icon_->GetCoordinatorForTesting();
+        CookieControlsBubbleCoordinator::From(browser());
     cookie_controls_coordinator_->SetDisplayNameForTesting(u"example.com");
   }
 
@@ -140,9 +144,7 @@ class CookieControlsBubbleViewPixelTestBase : public DialogBrowserTest {
                                        "/third_party_partitioned_cookies.html");
   }
 
-  CookieControlsIconView* cookie_controls_icon() {
-    return cookie_controls_icon_;
-  }
+  IconLabelBubbleView* cookie_controls_icon() { return cookie_controls_icon_; }
   net::EmbeddedTestServer* https_test_server() { return https_server_.get(); }
 
   CookieControlsBubbleViewController* view_controller() {
@@ -167,7 +169,7 @@ class CookieControlsBubbleViewPixelTestBase : public DialogBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   content::ContentMockCertVerifier mock_cert_verifier_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<CookieControlsIconView> cookie_controls_icon_;
+  raw_ptr<IconLabelBubbleView> cookie_controls_icon_;
   std::unique_ptr<content_settings::CookieControlsController> controller_;
   std::unique_ptr<content_settings::CookieControlsController>
       incognito_controller_;
@@ -184,17 +186,19 @@ class CookieControlsBubbleViewPixelTest
   CookieControlsBubbleViewPixelTest& operator=(
       const CookieControlsBubbleViewPixelTest&) = delete;
 
-  void BlockThirdPartyCookies() {
-    bool pre_3pcd = GetParam() == CookieBlocking3pcdStatus::kNotIn3pcd;
-    if (pre_3pcd) {
-      browser()->profile()->GetPrefs()->SetInteger(
-          prefs::kCookieControlsMode,
-          static_cast<int>(
-              content_settings::CookieControlsMode::kBlockThirdParty));
-    } else {
-      browser()->profile()->GetPrefs()->SetBoolean(
-          prefs::kTrackingProtection3pcdEnabled, true);
+  void SetUp() override {
+    if (GetParam() != CookieBlocking3pcdStatus::kNotIn3pcd) {
+      scoped_feature_list_.InitAndEnableFeature(
+          content_settings::features::kTrackingProtection3pcd);
     }
+    CookieControlsBubbleViewPixelTestBase::SetUp();
+  }
+
+  void BlockThirdPartyCookies() {
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            content_settings::CookieControlsMode::kBlockThirdParty));
   }
 
   void SetStatus(CookieControlsState controls_state,
@@ -216,7 +220,10 @@ class CookieControlsBubbleViewPixelTest
     // needed for this test.
     view_controller()->OnStatusChanged(controls_state, enforcement,
                                        blocking_status, expiration);
-    cookie_controls_icon()->DisableUpdatesForTesting();
+    if (!IsPageActionMigrated(PageActionIconType::kCookieControls)) {
+      static_cast<CookieControlsIconView*>(cookie_controls_icon())
+          ->ExecuteForTesting();
+    }
   }
 
   void ShowUi(const std::string& name_with_param_suffix) override {
@@ -225,7 +232,15 @@ class CookieControlsBubbleViewPixelTest
     ASSERT_TRUE(cookie_controls_icon()->GetVisible());
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "CookieControlsBubbleViewImpl");
-    cookie_controls_icon()->ExecuteForTesting();
+    if (IsPageActionMigrated(PageActionIconType::kCookieControls)) {
+      actions::ActionManager::Get()
+          .FindAction(kActionShowCookieControls)
+          ->InvokeAction();
+    } else {
+      static_cast<CookieControlsIconView*>(cookie_controls_icon())
+          ->ExecuteForTesting();
+    }
+
     SetStatus(controls_state_, enforcement_, GetParam(), days_to_expiration_);
     waiter.WaitIfNeededAndGet();
 
@@ -306,84 +321,3 @@ INSTANTIATE_TEST_SUITE_P(
                        CookieBlocking3pcdStatus::kLimited,
                        CookieBlocking3pcdStatus::kAll}),
     &ParamToTestSuffix);
-
-class CookieControlsBubbleViewTrackingProtectionUiPixelTest
-    : public CookieControlsBubbleViewPixelTestBase {
- public:
-  CookieControlsBubbleViewTrackingProtectionUiPixelTest() = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{privacy_sandbox::kActUserBypassUx,
-                              privacy_sandbox::kFingerprintingProtectionUx},
-        /*disabled_features=*/{});
-    CookieControlsBubbleViewPixelTestBase::SetUp();
-  }
-
-  void ShowUi(const std::string& name_with_param_suffix) override {
-    browser()->profile()->GetPrefs()->SetInteger(
-        prefs::kCookieControlsMode,
-        static_cast<int>(
-            content_settings::CookieControlsMode::kBlockThirdParty));
-    NavigateToUrlWithThirdPartyCookies();
-    ASSERT_TRUE(cookie_controls_icon()->GetVisible());
-    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                         "CookieControlsBubbleViewImpl");
-    cookie_controls_icon()->ExecuteForTesting();
-    SetStatus(controls_state_, enforcement_);
-    waiter.WaitIfNeededAndGet();
-  }
-
-  void SetStatus(CookieControlsState controls_state,
-                 CookieControlsEnforcement enforcement) {
-    // ShowBubble will initialize the view controller.
-    cookie_controls_coordinator_->ShowBubble(
-        browser()->GetBrowserView().toolbar_button_provider(),
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        incognito_controller_.get());
-    // TODO: 344042974 - This should be updated to set directly on
-    // CookieControlsController. Currently if the page action icon is updated
-    // after OnStatusChanged() is called it will pull state from
-    // CookieControlsController, which has not been updated to reflect what is
-    // needed for this test.
-    view_controller()->OnStatusChanged(controls_state, enforcement,
-                                       CookieBlocking3pcdStatus::kNotIn3pcd,
-                                       base::Time());
-    cookie_controls_icon()->DisableUpdatesForTesting();
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  CookieControlsState controls_state_ = CookieControlsState::kActiveTp;
-  CookieControlsEnforcement enforcement_ =
-      CookieControlsEnforcement::kNoEnforcement;
-};
-
-IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
-                       InvokeUi_ProtectionsActive) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
-                       InvokeUi_ProtectionsPaused) {
-  controls_state_ = CookieControlsState::kPausedTp;
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
-                       InvokeUi_ProtectionsActive_CookieSettingEnforcement) {
-  enforcement_ = CookieControlsEnforcement::kEnforcedByCookieSetting;
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
-                       InvokeUi_ProtectionsActive_ExtensionEnforcement) {
-  enforcement_ = CookieControlsEnforcement::kEnforcedByExtension;
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTrackingProtectionUiPixelTest,
-                       InvokeUi_ProtectionsActive_EnterpriseEnforcement) {
-  enforcement_ = CookieControlsEnforcement::kEnforcedByPolicy;
-  ShowAndVerifyUi();
-}

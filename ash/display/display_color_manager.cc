@@ -10,7 +10,6 @@
 #include "ash/shell.h"
 #include "base/base64.h"
 #include "base/containers/contains.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/path_service.h"

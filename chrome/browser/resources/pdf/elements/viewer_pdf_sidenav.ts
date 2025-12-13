@@ -8,7 +8,7 @@ import './viewer_document_outline.js';
 import './viewer_thumbnail_bar.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -129,7 +129,9 @@ export class ViewerPdfSidenavElement extends CrLitElement {
   protected onTabClick_(e: Event) {
     const tabId = (e.currentTarget as HTMLElement).dataset['tabId'];
     assert(tabId !== undefined);
-    switch (Number.parseInt(tabId, 10)) {
+
+    const tabIdNumber = Number.parseInt(tabId, 10) as TabId;
+    switch (tabIdNumber) {
       case TabId.THUMBNAIL:
         record(UserAction.SELECT_SIDENAV_THUMBNAILS);
         this.selectedTab_ = 0;
@@ -144,6 +146,9 @@ export class ViewerPdfSidenavElement extends CrLitElement {
         record(UserAction.SELECT_SIDENAV_ATTACHMENT);
         this.selectedTab_ = this.tabs_.length - 1;
         break;
+
+      default:
+        assertNotReachedCase(tabIdNumber);
     }
   }
 

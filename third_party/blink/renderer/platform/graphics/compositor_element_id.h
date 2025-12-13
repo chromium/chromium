@@ -38,10 +38,9 @@ enum class CompositorElementIdNamespace {
   kVerticalScrollbar,
   kHorizontalScrollbar,
   kScrollCorner,
-  kViewTransitionSubframeRoot,
+  kViewTransitionScopeRoot,
   kViewTransitionElement,
   kElementCapture,
-  kPlaceElement,
   kDOMNodeId,
   // The following values are for internal usage only.
   kMax = kDOMNodeId,
@@ -92,7 +91,7 @@ struct PLATFORM_EXPORT HashTraits<CompositorElementId>
   static unsigned GetHash(const CompositorElementId& key) {
     // We define a new hash here rather than using `cc::ElementIdHash` since the
     // latter produces a `size_t` rather than the `unsigned` needed for
-    // `WTF::GenericHashTraits<T>::GetHash(const T&)`.
+    // `GenericHashTraits<T>::GetHash(const T&)`.
     return HashInt(key.GetInternalValue());
   }
   static constexpr bool kEmptyValueIsZero = true;

@@ -56,8 +56,6 @@ class ASH_EXPORT AppStreamLauncherView
  private:
   friend class AppStreamLauncherViewTest;
   FRIEND_TEST_ALL_PREFIXES(AppStreamLauncherViewTest, OpenView);
-  FRIEND_TEST_ALL_PREFIXES(AppStreamLauncherViewTest, AddItems);
-  FRIEND_TEST_ALL_PREFIXES(AppStreamLauncherViewTest, ClickOnItem);
 
   std::unique_ptr<views::View> CreateAppListView();
   std::unique_ptr<views::View> CreateItemView(
@@ -78,8 +76,6 @@ class ASH_EXPORT AppStreamLauncherView
   void OnArrowBackActivated();
 
   void CreateListView(
-      const std::vector<phonehub::Notification::AppMetadata>* apps_list);
-  void CreateGridView(
       const std::vector<phonehub::Notification::AppMetadata>* apps_list);
 
   raw_ptr<views::Button, DanglingUntriaged> arrow_back_button_ = nullptr;

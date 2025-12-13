@@ -4,6 +4,8 @@
 
 package org.chromium.base.test.transit;
 
+import android.app.Activity;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -14,6 +16,7 @@ public class CarryOn extends ConditionalState {
     private final int mId;
     private final String mName;
     private static int sLastCarryOnId = 2000;
+    private @Nullable ActivityElement<?> mUntypedActivityElement;
 
     /**
      * Constructor for named subclasses.
@@ -46,5 +49,20 @@ public class CarryOn extends ConditionalState {
     @Override
     public String getName() {
         return mName;
+    }
+
+    @Override
+    @Nullable ActivityElement<?> determineActivityElement() {
+        return mUntypedActivityElement;
+    }
+
+    @Override
+    <T extends Activity> void onDeclaredActivityElement(ActivityElement<T> element) {
+        ActivityElement<?> existingActivityElement = determineActivityElement();
+        assert existingActivityElement == null
+                : String.format(
+                        "%s already declared an ActivityElement with id %s",
+                        getName(), existingActivityElement.getId());
+        mUntypedActivityElement = element;
     }
 }

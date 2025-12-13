@@ -18,8 +18,6 @@ static_library("browser") {
     "content_settings_observer.h",
     "content_settings_origin_value_map.cc",
     "content_settings_origin_value_map.h",
-    "content_settings_partitioned_origin_value_map.cc",
-    "content_settings_partitioned_origin_value_map.h",
     "content_settings_policy_provider.cc",
     "content_settings_policy_provider.h",
     "content_settings_pref.cc",
@@ -60,10 +58,9 @@ static_library("browser") {
     "//build:blink_buildflags",
     "//components/content_settings/core/common",
     "//components/keyed_service/core",
-    "//components/pref_registry:pref_registry",
+    "//components/pref_registry",
     "//components/prefs",
     "//components/privacy_sandbox:features",
-    "//components/privacy_sandbox:tracking_protection_prefs",
     "//components/tpcd/metadata/browser",
     "//components/url_formatter",
     "//extensions/buildflags",
@@ -83,6 +80,13 @@ static_library("browser") {
   }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  # TODO(crbug.com/40145057): remove deprecated RWS and this include.
+  # Allow access to /components/privacy_sandbox/privacy_sandbox_prefs.h
+  # from /chrome/browser/ui/page_info/page_info_unittest.cc
+  # for PageInfoRelatedWebsiteSetsTest tests.
+  # TODO(crbug.com/40145057): remove deprecated RWS and this include.
+  public_deps += [ "//components/privacy_sandbox:privacy_sandbox_prefs" ]
 }
 
 source_set("cookie_settings") {
@@ -105,10 +109,9 @@ source_set("cookie_settings") {
     "//components/content_settings/core/common",
     "//components/keyed_service/core",
     "//components/policy/core/browser",
-    "//components/pref_registry:pref_registry",
+    "//components/pref_registry",
     "//components/prefs",
     "//components/privacy_sandbox:features",
-    "//components/privacy_sandbox:tracking_protection_prefs",
     "//components/privacy_sandbox:tracking_protection_settings",
     "//components/tpcd/metadata/browser",
     "//extensions/buildflags",
@@ -120,7 +123,6 @@ source_set("cookie_settings") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "content_settings_partitioned_origin_value_map_unittest.cc",
     "content_settings_pref_unittest.cc",
     "content_settings_registry_unittest.cc",
     "content_settings_rule_unittest.cc",
@@ -140,7 +142,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/content_settings/core/common",
     "//components/content_settings/core/test:test_support",
-    "//components/pref_registry:pref_registry",
+    "//components/pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/privacy_sandbox:features",
@@ -151,7 +153,6 @@ source_set("unit_tests") {
     "//components/tpcd/metadata/browser",
     "//extensions/buildflags",
     "//net",
-    "//services/preferences/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

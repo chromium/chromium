@@ -28,9 +28,14 @@ int64_t IntersectionObservation::ComputeIntersection(
     unsigned compute_flags,
     gfx::Vector2dF accumulated_scroll_delta_since_last_update,
     ComputeIntersectionsContext& context) {
-  DCHECK(Observer());
-  cached_rects_.min_scroll_delta_to_update -=
-      accumulated_scroll_delta_since_last_update;
+  if (!CanCompute()) {
+    return 0;
+  }
+  if (compute_flags & kConsumeScrollDelta) {
+    cached_rects_.min_scroll_delta_to_update -=
+        accumulated_scroll_delta_since_last_update;
+    accumulated_scroll_delta_since_last_update = gfx::Vector2dF();
+  }
 
   // If we're processing post-layout deliveries only and we don't have a
   // post-layout delivery observer, then return early. Likewise, return if we
@@ -51,7 +56,7 @@ int64_t IntersectionObservation::ComputeIntersection(
     needs_update_ = true;
   }
 
-  if (!ShouldCompute(compute_flags)) {
+  if (!CanCompute() || !ShouldCompute(compute_flags)) {
     return 0;
   }
   if (MaybeDelayAndReschedule(compute_flags, context)) {
@@ -65,8 +70,10 @@ int64_t IntersectionObservation::ComputeIntersection(
   std::optional<IntersectionGeometry::CachedRects> cached_rects_backup;
 #endif
   if (!has_pending_update && (compute_flags & kScrollAndVisibilityOnly) &&
-      cached_rects_.min_scroll_delta_to_update.x() > 0 &&
-      cached_rects_.min_scroll_delta_to_update.y() > 0) {
+      cached_rects_.min_scroll_delta_to_update.x() >
+          accumulated_scroll_delta_since_last_update.x() &&
+      cached_rects_.min_scroll_delta_to_update.y() >
+          accumulated_scroll_delta_since_last_update.y()) {
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
     cached_rects_backup.emplace(cached_rects_);
 #else
@@ -103,13 +110,6 @@ int64_t IntersectionObservation::ComputeIntersection(
   return geometry.DidComputeGeometry() ? 1 : 0;
 }
 
-void IntersectionObservation::ComputeIntersectionImmediately(
-    ComputeIntersectionsContext& context) {
-  ComputeIntersection(kImplicitRootObserversNeedUpdate |
-                          kExplicitRootObserversNeedUpdate | kIgnoreDelay,
-                      IntersectionGeometry::kInfiniteScrollDelta, context);
-}
-
 gfx::Vector2dF IntersectionObservation::MinScrollDeltaToUpdate() const {
   if (cached_rects_.valid) {
     return cached_rects_.min_scroll_delta_to_update;
@@ -130,11 +130,10 @@ void IntersectionObservation::Disconnect() {
     ElementIntersectionObserverData* observer_data =
         target_->IntersectionObserverData();
     observer_data->RemoveObservation(*this);
-    if (target_->isConnected()) {
-      IntersectionObserverController* controller =
-          target_->GetDocument().GetIntersectionObserverController();
-      if (controller)
-        controller->RemoveTrackedObservation(*this);
+    IntersectionObserverController* controller =
+        target_->GetDocument().GetIntersectionObserverController();
+    if (controller) {
+      controller->RemoveTrackedObservation(*this);
     }
   }
   entries_.clear();
@@ -167,11 +166,12 @@ bool IntersectionObservation::CanUseCachedRectsForTesting(
   return geometry.CanUseCachedRectsForTesting();
 }
 
+bool IntersectionObservation::CanCompute() const {
+  return !!target_ && !!observer_ && observer_->RootIsValid() &&
+         observer_->GetExecutionContext();
+}
+
 bool IntersectionObservation::ShouldCompute(unsigned flags) const {
-  if (!target_ || !observer_->RootIsValid() ||
-      !observer_->GetExecutionContext()) {
-    return false;
-  }
   if (!needs_update_) {
     return false;
   }

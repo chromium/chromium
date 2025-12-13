@@ -78,7 +78,8 @@ static ColorParseResult ParseColor(Color& parsed_color,
       css_parsing_utils::ConsumeColorWithoutElementContext(
           stream, *StrictCSSParserContext(SecureContextMode::kInsecureContext));
   if (parsed_value && (parsed_value->IsColorMixValue() ||
-                       parsed_value->IsRelativeColorValue())) {
+                       parsed_value->IsRelativeColorValue() ||
+                       parsed_value->IsUnresolvedColorValue())) {
     static const TextLinkColors kDefaultTextLinkColors{};
     // TODO(40946458): Don't use default length resolver here!
     const ResolveColorValueContext context{

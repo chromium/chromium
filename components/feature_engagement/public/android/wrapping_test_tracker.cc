@@ -135,3 +135,5 @@ bool WrappingTestTracker::IsInFeatureTestMode() const {
 }
 
 }  // namespace feature_engagement
+
+DEFINE_JNI(CppWrappedTestTracker)

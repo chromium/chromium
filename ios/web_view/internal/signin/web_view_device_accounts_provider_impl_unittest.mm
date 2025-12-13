@@ -28,9 +28,9 @@ using WebViewDeviceAccountsProviderImplTest = PlatformTest;
 
 namespace {
 
-id MatchIdentityByGaiaID(NSString* gaia_id) {
+id MatchIdentityByGaiaID(NSString* gaia_id_string) {
   return [OCMArg checkWithBlock:^BOOL(CWVIdentity* identity) {
-    return [identity.gaiaID isEqualToString:gaia_id];
+    return [identity.gaiaID isEqualToString:gaia_id_string];
   }];
 }
 
@@ -43,14 +43,14 @@ TEST_F(WebViewDeviceAccountsProviderImplTest, GetAccessToken) {
   CWVSyncController.dataSource = data_source;
 
   OCMExpect([data_source
-                fetchAccessTokenForIdentity:MatchIdentityByGaiaID(@"gaia-id")
-                                     scopes:(@[ @"scope-1", @"scope-2" ])
-                                     completionHandler:[OCMArg any]])
-      .andDo(^(NSInvocation* invocation) {
-        __unsafe_unretained void (^block)(NSString*, NSDate*, NSError*) = nil;
-        [invocation getArgument:&block atIndex:4];  // completionHandler: index
-        block(@"access-token", base::Time::Max().ToNSDate(), nil);
-      });
+      fetchAccessTokenForIdentity:MatchIdentityByGaiaID(@"gaia-id")
+                           scopes:(@[ @"scope-1", @"scope-2" ])completionHandler
+                                 :[OCMArg checkWithBlock:^(BOOL (^block)(
+                                      NSString*, NSDate*, NSError*)) {
+                                   block(@"access-token",
+                                         base::Time::Max().ToNSDate(), nil);
+                                   return YES;
+                                 }]]);
 
   bool callback_called = false;
   WebViewDeviceAccountsProviderImpl accounts_provider;

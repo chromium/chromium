@@ -108,20 +108,20 @@ class ProxyConfigServiceImplTest : public testing::Test {
 
   void SetUseSharedProxies() {
     profile_prefs_.SetUserPref(::proxy_config::prefs::kUseSharedProxies,
-                               std::make_unique<base::Value>(true));
+                               base::Value(true));
     environment_.RunUntilIdle();
   }
 
   void SetCaptivePortalSignin() {
     profile_prefs_.SetUserPref(chromeos::prefs::kCaptivePortalSignin,
-                               std::make_unique<base::Value>(true));
+                               base::Value(true));
     environment_.RunUntilIdle();
   }
 
   void SetCaptivePortalAuthenticationIgnoresProxy() {
     profile_prefs_.SetUserPref(
         chromeos::prefs::kCaptivePortalAuthenticationIgnoresProxy,
-        std::make_unique<base::Value>(false));
+        base::Value(false));
     environment_.RunUntilIdle();
   }
 
@@ -572,7 +572,7 @@ class ProxyConfigServiceImplWithDescriptionTest : public testing::Test {
   void SetUserConfigInShill(const base::Value::Dict* pref_proxy_config_dict) {
     std::string proxy_config;
     if (pref_proxy_config_dict) {
-      base::JSONWriter::Write(*pref_proxy_config_dict, &proxy_config);
+      proxy_config = base::WriteJson(*pref_proxy_config_dict).value_or("");
     }
 
     NetworkStateHandler* network_state_handler =
@@ -677,12 +677,10 @@ TEST_F(ProxyConfigServiceImplWithDescriptionTest, DynamicPrefsOverride) {
     // Managed proxy pref should take effect over recommended proxy and
     // non-existent network proxy.
     SetUserConfigInShill(nullptr);
-    pref_service_.SetManagedPref(
-        ::proxy_config::prefs::kProxy,
-        base::Value::ToUniquePtrValue(managed_config.Clone()));
-    pref_service_.SetRecommendedPref(
-        ::proxy_config::prefs::kProxy,
-        base::Value::ToUniquePtrValue(recommended_config.Clone()));
+    pref_service_.SetManagedPref(::proxy_config::prefs::kProxy,
+                                 managed_config.Clone());
+    pref_service_.SetRecommendedPref(::proxy_config::prefs::kProxy,
+                                     recommended_config.Clone());
     net::ProxyConfigWithAnnotation actual_config;
     SyncGetLatestProxyConfig(&actual_config);
     EXPECT_EQ(managed_params.auto_detect, actual_config.value().auto_detect());
@@ -712,9 +710,8 @@ TEST_F(ProxyConfigServiceImplWithDescriptionTest, DynamicPrefsOverride) {
         actual_config.value().proxy_rules()));
 
     // Managed proxy pref should take effect over network proxy.
-    pref_service_.SetManagedPref(
-        ::proxy_config::prefs::kProxy,
-        base::Value::ToUniquePtrValue(managed_config.Clone()));
+    pref_service_.SetManagedPref(::proxy_config::prefs::kProxy,
+                                 managed_config.Clone());
     SyncGetLatestProxyConfig(&actual_config);
     EXPECT_EQ(managed_params.auto_detect, actual_config.value().auto_detect());
     EXPECT_EQ(GURL(managed_params.pac_url), actual_config.value().pac_url());
@@ -755,10 +752,9 @@ TEST_F(ProxyConfigServiceImplWithDescriptionTest, SharedEthernetAndUserPolicy) {
   network_configs.Append(std::move(*ethernet_policy));
 
   profile_prefs_.SetUserPref(::proxy_config::prefs::kUseSharedProxies,
-                             std::make_unique<base::Value>(false));
-  profile_prefs_.SetManagedPref(
-      ::onc::prefs::kOpenNetworkConfiguration,
-      std::make_unique<base::Value>(std::move(network_configs)));
+                             base::Value(false));
+  profile_prefs_.SetManagedPref(::onc::prefs::kOpenNetworkConfiguration,
+                                base::Value(std::move(network_configs)));
 
   net::ProxyConfigWithAnnotation actual_config;
   SyncGetLatestProxyConfig(&actual_config);

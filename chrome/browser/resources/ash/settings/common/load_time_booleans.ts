@@ -58,10 +58,6 @@ export function isExternalStorageEnabled(): boolean {
   return loadTimeData.getBoolean('isExternalStorageEnabled');
 }
 
-export function isInputDeviceSettingsSplitEnabled(): boolean {
-  return loadTimeData.getBoolean('enableInputDeviceSettingsSplit');
-}
-
 export function isDisplayBrightnessControlInSettingsEnabled(): boolean {
   return loadTimeData.getBoolean('enableDisplayBrightnessControlInSettings');
 }
@@ -91,10 +87,6 @@ export function isSanitizeAllowed(): boolean {
 }
 
 // Search page
-export function isAssistantAllowed(): boolean {
-  return loadTimeData.getBoolean('isAssistantAllowed');
-}
-
 export function isQuickAnswersSupported(): boolean {
   return loadTimeData.getBoolean('isQuickAnswersSupported');
 }

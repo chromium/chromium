@@ -18,7 +18,8 @@ group("test") {
 renderer_ipc_fuzzing_enabled =
     fuzzing_engine_supports_custom_main && is_linux && enable_mojom_fuzzer
 
-if (fuzzing_engine_supports_custom_main) {
+# TODO(crbug.com/446587184): Enable in_process_fuzzer_runner on Android.
+if (fuzzing_engine_supports_custom_main && !is_android) {
   source_set("renderer_in_process_fuzzer_runner") {
     testonly = true
     sources = [ "in_process_renderer_fuzzing.h" ]

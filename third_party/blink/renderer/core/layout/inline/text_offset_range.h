@@ -29,9 +29,6 @@ struct CORE_EXPORT TextOffsetRange {
   bool operator==(const TextOffsetRange& other) const {
     return start == other.start && end == other.end;
   }
-  bool operator!=(const TextOffsetRange& other) const {
-    return !operator==(other);
-  }
 
   wtf_size_t start = 0;
   wtf_size_t end = 0;

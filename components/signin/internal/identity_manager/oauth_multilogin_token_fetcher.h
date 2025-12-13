@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_OAUTH_MULTILOGIN_TOKEN_FETCHER_H_
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_OAUTH_MULTILOGIN_TOKEN_FETCHER_H_
 
-#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -48,7 +47,8 @@ class OAuthMultiloginTokenFetcher {
                               std::vector<AccountParams> account_params,
                               std::string ephemeral_public_key,
                               SuccessCallback success_callback,
-                              FailureCallback failure_callback);
+                              FailureCallback failure_callback,
+                              bool retry_waits_on_connectivity = true);
 
   OAuthMultiloginTokenFetcher(const OAuthMultiloginTokenFetcher&) = delete;
   OAuthMultiloginTokenFetcher& operator=(const OAuthMultiloginTokenFetcher&) =
@@ -78,6 +78,7 @@ class OAuthMultiloginTokenFetcher {
   std::vector<std::unique_ptr<OAuthMultiloginTokenRequest>> token_requests_;
   base::flat_map<CoreAccountId, OAuthMultiloginTokenResponse> token_responses_;
   std::set<CoreAccountId> retried_requests_;  // Requests are retried once.
+  const bool retry_waits_on_connectivity_ = true;
 
   base::WeakPtrFactory<OAuthMultiloginTokenFetcher> weak_ptr_factory_{this};
 };

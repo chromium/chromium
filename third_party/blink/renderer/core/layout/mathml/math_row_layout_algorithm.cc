@@ -122,7 +122,8 @@ void MathRowLayoutAlgorithm::LayoutRowItems(ChildrenVector* children,
       // absolutely positioned".
       // Issue: https://github.com/mathml-refresh/mathml/issues/16
       container_builder_.AddOutOfFlowChildCandidate(
-          To<BlockNode>(child), BorderScrollbarPadding().StartOffset());
+          To<BlockNode>(child),
+          LogicalStaticPosition(BorderScrollbarPadding().StartOffset()));
       continue;
     }
 

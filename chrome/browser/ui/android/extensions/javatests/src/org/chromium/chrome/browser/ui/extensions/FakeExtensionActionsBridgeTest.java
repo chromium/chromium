@@ -11,11 +11,13 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.view.KeyEvent;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,19 +27,21 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge.HandleKeyEventResult;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.ActionData;
-import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.ProfileModel;
+import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge.TaskModel;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.extensions.ShowAction;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class FakeExtensionActionsBridgeTest {
+    private static final long BROWSER_WINDOW_POINTER = 1000L;
+
     private static final Bitmap ICON_RED = createSimpleIcon(Color.RED);
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Profile mProfile;
+    @Mock private ChromeAndroidTask mTask;
     @Mock private WebContents mWebContents;
     @Mock private ExtensionActionsBridge.Observer mObserver;
 
@@ -47,39 +51,34 @@ public class FakeExtensionActionsBridgeTest {
 
     private final FakeExtensionActionsBridge mFakeBridge = mFakeBridgeRule.getFakeBridge();
 
-    private ProfileModel mProfileModel;
+    private TaskModel mTaskModel;
     private ExtensionActionsBridge mBridge;
 
     @Before
     public void setUp() {
-        mProfileModel = mFakeBridge.getOrCreateProfileModel(mProfile);
-        mBridge = ExtensionActionsBridge.get(mProfile);
-        assertEquals(mProfileModel.getBridge(), mBridge);
+        when(mTask.getOrCreateNativeBrowserWindowPtr()).thenReturn(BROWSER_WINDOW_POINTER);
+        mTaskModel = mFakeBridge.getOrCreateTaskModel(mTask);
+        mBridge = ExtensionActionsBridge.get(mTask);
+        assertEquals(mTaskModel.getBridge(), mBridge);
         mBridge.addObserver(mObserver);
+    }
+
+    @After
+    public void tearDown() {
+        mBridge.removeObserver(mObserver);
     }
 
     @Test
     public void testInitialized() {
-        assertFalse(mProfileModel.isInitialized());
+        assertFalse(mTaskModel.isInitialized());
         assertFalse(mBridge.areActionsInitialized());
         verify(mObserver, never()).onActionModelInitialized();
 
-        mProfileModel.setInitialized(true);
+        mTaskModel.setInitialized(true);
 
-        assertTrue(mProfileModel.isInitialized());
+        assertTrue(mTaskModel.isInitialized());
         assertTrue(mBridge.areActionsInitialized());
         verify(mObserver, times(1)).onActionModelInitialized();
-    }
-
-    @Test
-    public void testEnabled() {
-        assertTrue(mProfileModel.isEnabled());
-        assertTrue(mBridge.extensionsEnabled());
-
-        mProfileModel.setEnabled(false);
-
-        assertFalse(mProfileModel.isEnabled());
-        assertFalse(mBridge.extensionsEnabled());
     }
 
     @Test
@@ -90,7 +89,7 @@ public class FakeExtensionActionsBridgeTest {
         assertEquals(new HandleKeyEventResult(false, ""), mBridge.handleKeyDownEvent(eventA));
         assertEquals(new HandleKeyEventResult(false, ""), mBridge.handleKeyDownEvent(eventB));
 
-        mProfileModel.setKeyEventHandler(
+        mTaskModel.setKeyEventHandler(
                 (event) -> {
                     return new HandleKeyEventResult(event.equals(eventA), "");
                 });
@@ -103,28 +102,28 @@ public class FakeExtensionActionsBridgeTest {
     public void testActionIds() {
         assertArrayEquals(new String[] {}, mBridge.getActionIds());
 
-        mProfileModel.putAction("a", new ActionData.Builder().build());
-        mProfileModel.putAction("b", new ActionData.Builder().build());
-        mProfileModel.putAction("c", new ActionData.Builder().build());
+        mTaskModel.putAction("a", new ActionData.Builder().build());
+        mTaskModel.putAction("b", new ActionData.Builder().build());
+        mTaskModel.putAction("c", new ActionData.Builder().build());
 
         assertArrayEquals(new String[] {"a", "b", "c"}, mBridge.getActionIds());
     }
 
     @Test
     public void testActionMetadata() {
-        mProfileModel.putAction("a", new ActionData.Builder().setTitle("foo").build());
+        mTaskModel.putAction("a", new ActionData.Builder().setTitle("foo").build());
         assertEquals(new ExtensionAction("a", "foo"), mBridge.getAction("a", 1));
     }
 
     @Test
     public void testActionIcon() {
-        mProfileModel.putAction("a", new ActionData.Builder().setIcon(ICON_RED).build());
-        assertTrue(mBridge.getActionIcon("a", 1).sameAs(ICON_RED));
+        mTaskModel.putAction("a", new ActionData.Builder().setIcon(ICON_RED).build());
+        assertTrue(mBridge.getActionIcon("a", 1, mWebContents, 12, 12, 1.0f).sameAs(ICON_RED));
     }
 
     @Test
     public void testActionPerTab() {
-        mProfileModel.putAction(
+        mTaskModel.putAction(
                 "a", (tabId) -> new ActionData.Builder().setTitle(Integer.toString(tabId)).build());
         assertEquals("1", mBridge.getAction("a", 1).getTitle());
         assertEquals("42", mBridge.getAction("a", 42).getTitle());
@@ -134,24 +133,24 @@ public class FakeExtensionActionsBridgeTest {
     public void testActionCallbacks() {
         ActionData data = new ActionData.Builder().build();
 
-        mProfileModel.putAction("a", data);
+        mTaskModel.putAction("a", data);
         verify(mObserver, times(1)).onActionAdded("a");
 
-        mProfileModel.putAction("a", data);
+        mTaskModel.putAction("a", data);
         verify(mObserver, times(1)).onActionUpdated("a");
 
-        mProfileModel.updateActionIcon("a", data);
+        mTaskModel.updateActionIcon("a", data);
         verify(mObserver, times(1)).onActionIconUpdated("a");
 
-        mProfileModel.removeAction("a");
+        mTaskModel.removeAction("a");
         verify(mObserver, times(1)).onActionRemoved("a");
     }
 
     @Test
     public void testRunAction() {
-        mProfileModel.putAction(
+        mTaskModel.putAction(
                 "a", new ActionData.Builder().setActionRunner(() -> ShowAction.NONE).build());
-        mProfileModel.putAction(
+        mTaskModel.putAction(
                 "b", new ActionData.Builder().setActionRunner(() -> ShowAction.SHOW_POPUP).build());
 
         assertEquals(ShowAction.NONE, mBridge.runAction("a", 1, mWebContents));

@@ -8,13 +8,15 @@
 #include "content/common/content_export.h"
 #include "media/mojo/mojom/interface_factory.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/viz/public/mojom/gpu.mojom-forward.h"
 
 namespace content {
 
 // Binds a media::mojom::InterfaceFactory PendingReceiver by starting a new
 // utility process. This function can be called from any thread.
 CONTENT_EXPORT void LaunchOOPVideoDecoderFactory(
-    mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver);
+    mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver,
+    mojo::PendingRemote<viz::mojom::Gpu> gpu_remote);
 
 }  // namespace content
 

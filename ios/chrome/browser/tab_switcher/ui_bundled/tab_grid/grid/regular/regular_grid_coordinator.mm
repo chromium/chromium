@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/disabled_grid_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_container_view_controller.h"
@@ -30,6 +31,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_view_controller.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_layout.h"
 
 namespace {
 
@@ -82,23 +84,50 @@ constexpr CGFloat kFacePileAvatarSize = 16;
 
 #pragma mark - Superclass overrides
 
-- (LegacyGridTransitionLayout*)transitionLayout {
+- (LegacyGridTransitionLayout*)legacyTransitionLayout {
   if (self.tabGroupCoordinator) {
     return [self.tabGroupCoordinator.viewController
-                .gridViewController transitionLayout];
+                .gridViewController legacyTransitionLayout];
   }
 
   LegacyGridTransitionLayout* transitionLayout =
-      [_gridViewController transitionLayout];
+      [_gridViewController legacyTransitionLayout];
 
   if (IsPinnedTabsEnabled()) {
     LegacyGridTransitionLayout* pinnedTabsTransitionLayout =
-        [self.pinnedTabsViewController transitionLayout];
+        [self.pinnedTabsViewController legacyTransitionLayout];
 
     return [self combineTransitionLayout:transitionLayout
                     withTransitionLayout:pinnedTabsTransitionLayout];
   }
 
+  return transitionLayout;
+}
+
+- (TabGridTransitionLayout*)transitionLayout {
+  if (self.tabGroupCoordinator) {
+    return [self.tabGroupCoordinator.viewController
+                .gridViewController transitionLayout];
+  }
+
+  BOOL const usePinnedTabsLayout =
+      IsPinnedTabsEnabled() && [self.pinnedTabsViewController hasSelectedCell];
+
+  TabGridTransitionLayout* transitionLayout =
+      usePinnedTabsLayout ? [self.pinnedTabsViewController transitionLayout]
+                          : [self.gridViewController transitionLayout];
+
+  // If the selected cell is from a pinned tab, ensure the active grid is still
+  // the "normal" grid view controller so that it's animated correctly behind
+  // the selected view. This way, the pinned tabs "grid" is animated with the
+  // active grid (since it's a part of it), instead of animated alone with the
+  // normal grid not having any animations.
+  if (usePinnedTabsLayout) {
+    transitionLayout.activeGrid = self.gridViewController;
+    transitionLayout.isActiveCellPinned = YES;
+  }
+
+  transitionLayout.pinnedTabs = self.pinnedTabsViewController;
   return transitionLayout;
 }
 
@@ -160,6 +189,8 @@ constexpr CGFloat kFacePileAvatarSize = 16;
                                   profile)];
   _mediator.consumer = gridViewController;
   _mediator.regularDelegate = self;
+  _mediator.quickDeleteCommandHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), QuickDeleteCommands);
 
   gridViewController.dragDropHandler = _mediator;
   gridViewController.mutator = _mediator;

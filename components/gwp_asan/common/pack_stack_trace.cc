@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/gwp_asan/common/pack_stack_trace.h"
+
+#include "base/compiler_specific.h"
 
 namespace gwp_asan {
 namespace internal {
@@ -18,12 +15,12 @@ namespace {
 // space to finish writing it or the length of the encoded integer otherwise.
 size_t VarIntEncode(uintptr_t value, uint8_t* out, size_t out_len) {
   for (size_t i = 0; i < out_len; i++) {
-    out[i] = value & 0x7f;
+    UNSAFE_TODO(out[i]) = value & 0x7f;
     value >>= 7;
     if (!value)
       return i + 1;
 
-    out[i] |= 0x80;
+    UNSAFE_TODO(out[i]) |= 0x80;
   }
 
   return 0;
@@ -35,8 +32,8 @@ size_t VarIntDecode(const uint8_t* in, size_t in_len, uintptr_t* out) {
   uintptr_t result = 0;
   size_t shift = 0;
   for (size_t i = 0; i < in_len; i++) {
-    result |= static_cast<uintptr_t>(in[i] & 0x7f) << shift;
-    if (in[i] < 0x80) {
+    result |= static_cast<uintptr_t>(UNSAFE_TODO(in[i]) & 0x7f) << shift;
+    if (UNSAFE_TODO(in[i]) < 0x80) {
       *out = result;
       return i + 1;
     }
@@ -72,11 +69,11 @@ size_t Pack(const uintptr_t* unpacked,
             size_t packed_max_size) {
   size_t idx = 0;
   for (size_t cur_depth = 0; cur_depth < unpacked_size; cur_depth++) {
-    uintptr_t diff = unpacked[cur_depth];
+    uintptr_t diff = UNSAFE_TODO(unpacked[cur_depth]);
     if (cur_depth > 0)
-      diff -= unpacked[cur_depth - 1];
-    size_t encoded_len =
-        VarIntEncode(ZigzagEncode(diff), packed + idx, packed_max_size - idx);
+      diff -= UNSAFE_TODO(unpacked[cur_depth - 1]);
+    size_t encoded_len = VarIntEncode(
+        ZigzagEncode(diff), UNSAFE_TODO(packed + idx), packed_max_size - idx);
     if (!encoded_len)
       break;
 
@@ -94,15 +91,15 @@ size_t Unpack(const uint8_t* packed,
   size_t idx = 0;
   for (cur_depth = 0; cur_depth < unpacked_max_size; cur_depth++) {
     uintptr_t encoded_diff;
-    size_t decoded_len =
-        VarIntDecode(packed + idx, packed_size - idx, &encoded_diff);
+    size_t decoded_len = VarIntDecode(UNSAFE_TODO(packed + idx),
+                                      packed_size - idx, &encoded_diff);
     if (!decoded_len)
       break;
     idx += decoded_len;
 
-    unpacked[cur_depth] = ZigzagDecode(encoded_diff);
+    UNSAFE_TODO(unpacked[cur_depth]) = ZigzagDecode(encoded_diff);
     if (cur_depth > 0)
-      unpacked[cur_depth] += unpacked[cur_depth - 1];
+      UNSAFE_TODO(unpacked[cur_depth]) += UNSAFE_TODO(unpacked[cur_depth - 1]);
   }
 
   if (idx != packed_size && cur_depth != unpacked_max_size)

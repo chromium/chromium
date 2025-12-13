@@ -85,7 +85,7 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   void EnlargeDiscardIndicatorRadius(int radius);
   void SetShouldShowDiscardIndicator(bool enabled);
 
- private:
+ protected:
   class CrashAnimation;
   friend CrashAnimation;
   friend class TabTest;

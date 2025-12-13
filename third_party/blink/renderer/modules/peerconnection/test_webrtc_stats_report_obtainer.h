@@ -21,7 +21,7 @@ namespace blink {
 // same thread that the stats report callback occurs on without blocking the
 // callback.
 class TestWebRTCStatsReportObtainer
-    : public WTF::ThreadSafeRefCounted<TestWebRTCStatsReportObtainer> {
+    : public ThreadSafeRefCounted<TestWebRTCStatsReportObtainer> {
  public:
   TestWebRTCStatsReportObtainer();
 
@@ -31,7 +31,7 @@ class TestWebRTCStatsReportObtainer
   RTCStatsReportPlatform* WaitForReport();
 
  private:
-  friend class WTF::ThreadSafeRefCounted<TestWebRTCStatsReportObtainer>;
+  friend class ThreadSafeRefCounted<TestWebRTCStatsReportObtainer>;
   friend class CallbackWrapper;
   virtual ~TestWebRTCStatsReportObtainer();
 

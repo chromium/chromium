@@ -11,16 +11,42 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/v8_memory/web_memory.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "third_party/blink/public/common/tracing_support.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
 namespace performance_manager {
+namespace {
+
+perfetto::StaticString FrameNodeVisibilityToString(
+    const FrameNode::Visibility& visibility) {
+  switch (visibility) {
+    case FrameNode::Visibility::kUnknown:
+      return "Unknown";
+    case FrameNode::Visibility::kVisible:
+      return "Visible";
+    case FrameNode::Visibility::kNotVisible:
+      return "Not Visible";
+  }
+  NOTREACHED();
+}
+
+perfetto::StaticString PriorityAndReasonToString(
+    const execution_context_priority::PriorityAndReason& priority_and_reason) {
+  return perfetto::StaticString(
+      base::TaskPriorityToString(priority_and_reason.priority()));
+}
+
+}  // namespace
 
 // static
 constexpr char FrameNodeImpl::kDefaultPriorityReason[] =
@@ -37,7 +63,8 @@ FrameNodeImpl::FrameNodeImpl(
     const blink::LocalFrameToken& frame_token,
     content::BrowsingInstanceId browsing_instance_id,
     content::SiteInstanceGroupId site_instance_group_id,
-    bool is_current)
+    bool is_current,
+    bool is_active)
     : parent_frame_node_(parent_frame_node),
       outer_document_for_inner_frame_root_(outer_document_for_inner_frame_root),
       page_node_(page_node),
@@ -49,7 +76,23 @@ FrameNodeImpl::FrameNodeImpl(
       render_frame_host_proxy_(content::GlobalRenderFrameHostId(
           process_node->GetRenderProcessHostId().value(),
           render_frame_id)),
-      is_current_(is_current) {
+      tracing_track_(blink::GetLocalFrameTracingTrack(
+          frame_token,
+          /*is_main_frame=*/parent_frame_node_ == nullptr,
+          process_node_->tracing_track())),
+      is_current_(is_current),
+      is_active_(is_active),
+      priority_and_reason_(
+          PriorityAndReason(base::TaskPriority::LOWEST, kDefaultPriorityReason),
+          perfetto::NamedTrack("Priority", 0, *tracing_track_),
+          PriorityAndReasonToString),
+      is_audible_(false,
+                  perfetto::NamedTrack("IsAudible", 0, *tracing_track_),
+                  YesNoStateToString),
+      // Visibility is emitted to the frame track directly.
+      visibility_(Visibility::kUnknown,
+                  *tracing_track_,
+                  FrameNodeVisibilityToString) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(process_node);
   DCHECK(page_node);
@@ -83,6 +126,11 @@ void FrameNodeImpl::SetNetworkAlmostIdle() {
 void FrameNodeImpl::SetLifecycleState(mojom::LifecycleState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   lifecycle_state_.SetAndMaybeNotify(this, state);
+}
+
+void FrameNodeImpl::SetIsActive(bool is_active) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_active_ = is_active;
 }
 
 void FrameNodeImpl::SetHasNonEmptyBeforeUnload(bool has_nonempty_beforeunload) {
@@ -127,6 +175,13 @@ void FrameNodeImpl::OnFirstContentfulPaint(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : GetObservers()) {
     observer.OnFirstContentfulPaint(this, time_since_navigation_start);
+  }
+}
+
+void FrameNodeImpl::CrossProcessSubframeRenderProcessGone() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& observer : GetObservers()) {
+    observer.OnCrossProcessSubframeRenderProcessGone(this);
   }
 }
 
@@ -190,6 +245,11 @@ const std::optional<url::Origin>& FrameNodeImpl::GetOrigin() const {
 bool FrameNodeImpl::IsCurrent() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_current_;
+}
+
+bool FrameNodeImpl::IsActive() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_active_;
 }
 
 const PriorityAndReason& FrameNodeImpl::GetPriorityAndReason() const {
@@ -275,6 +335,11 @@ bool FrameNodeImpl::IsIntersectingLargeArea() const {
   return is_intersecting_large_area_;
 }
 
+bool FrameNodeImpl::IsRendered() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_rendered_;
+}
+
 bool FrameNodeImpl::IsImportant() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return is_important_.value();
@@ -285,14 +350,25 @@ const RenderFrameHostProxy& FrameNodeImpl::GetRenderFrameHostProxy() const {
   return render_frame_host_proxy_;
 }
 
-uint64_t FrameNodeImpl::GetResidentSetKbEstimate() const {
+base::ByteCount FrameNodeImpl::GetResidentSetEstimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resident_set_kb_estimate_;
+  return resident_set_estimate_;
 }
 
-uint64_t FrameNodeImpl::GetPrivateFootprintKbEstimate() const {
+base::ByteCount FrameNodeImpl::GetPrivateFootprintEstimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return private_footprint_kb_estimate_;
+  return private_footprint_estimate_;
+}
+
+void FrameNodeImpl::OnTraceSessionStart() {
+  TraceEdges();
+}
+
+void FrameNodeImpl::TraceEdges() {
+  TRACE_EVENT_INSTANT("performance_manager.graph", "AttachPage",
+                      perfetto::NamedTrack("Edges", 0, *tracing_track_),
+                      perfetto::Flow::FromPointer(this));
+  page_node_->TraceFrame(base::PassKey<FrameNodeImpl>(), this);
 }
 
 FrameNodeImpl* FrameNodeImpl::parent_frame_node() const {
@@ -330,6 +406,11 @@ ProcessNodeImpl* FrameNodeImpl::process_node() const {
 int FrameNodeImpl::render_frame_id() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return render_frame_id_;
+}
+
+perfetto::Track FrameNodeImpl::tracing_track() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return *tracing_track_;
 }
 
 FrameNode::NodeSetView<FrameNodeImpl*> FrameNodeImpl::child_frame_nodes()
@@ -474,6 +555,11 @@ void FrameNodeImpl::SetVisibility(Visibility visibility) {
   visibility_.SetAndMaybeNotify(this, visibility);
 }
 
+void FrameNodeImpl::SetIsRendered(bool is_rendered) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_rendered_ = is_rendered;
+}
+
 void FrameNodeImpl::SetIsIntersectingLargeArea(
     bool is_intersecting_large_area) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -487,15 +573,15 @@ void FrameNodeImpl::SetIsImportant(bool is_important) {
   is_important_.SetAndMaybeNotify(this, is_important);
 }
 
-void FrameNodeImpl::SetResidentSetKbEstimate(uint64_t rss_estimate) {
+void FrameNodeImpl::SetResidentSetEstimate(base::ByteCount rss_estimate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  resident_set_kb_estimate_ = rss_estimate;
+  resident_set_estimate_ = rss_estimate;
 }
 
-void FrameNodeImpl::SetPrivateFootprintKbEstimate(
-    uint64_t private_footprint_estimate) {
+void FrameNodeImpl::SetPrivateFootprintEstimate(
+    base::ByteCount private_footprint_estimate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  private_footprint_kb_estimate_ = private_footprint_estimate;
+  private_footprint_estimate_ = private_footprint_estimate;
 }
 
 void FrameNodeImpl::OnNavigationCommitted(
@@ -651,6 +737,10 @@ void FrameNodeImpl::RemoveEmbeddedPage(base::PassKey<PageNodeImpl>,
   DCHECK_EQ(1u, removed);
 }
 
+bool FrameNodeImpl::IsDocumentCoordinationUnitBoundForTesting() const {
+  return receiver_.is_bound();
+}
+
 const FrameNode* FrameNodeImpl::GetParentFrameNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return graph()->NodeEdgesArePublic(this) ? parent_frame_node() : nullptr;
@@ -743,6 +833,10 @@ void FrameNodeImpl::OnInitializingEdges() {
     parent_frame_node_->AddChildFrame(this);
   page_node_->AddFrame(base::PassKey<FrameNodeImpl>(), this);
   process_node_->AddFrame(this);
+  if (auto* observer_list = TracingObserverList::GetFromGraph()) {
+    tracing_observation_.Observe(observer_list);
+  }
+  TraceEdges();
 }
 
 void FrameNodeImpl::OnBeforeLeavingGraph() {

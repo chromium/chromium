@@ -38,8 +38,6 @@ static_library("file_manager") {
     "private_api_guest_os.h",
     "private_api_holding_space.cc",
     "private_api_holding_space.h",
-    "private_api_materialized_views.cc",
-    "private_api_materialized_views.h",
     "private_api_media_parser.cc",
     "private_api_media_parser.h",
     "private_api_media_parser_util.cc",
@@ -68,6 +66,7 @@ static_library("file_manager") {
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/notifications",
     "//chrome/browser/sharesheet",
     "//third_party/ced",
   ]
@@ -79,6 +78,7 @@ static_library("file_manager") {
     "//base",
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
+    "//chrome/browser/app_mode",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/local_image_search",
     "//chrome/browser/ash/arc",

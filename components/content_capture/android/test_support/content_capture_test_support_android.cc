@@ -41,8 +41,8 @@ static void JNI_ContentCaptureTestSupport_DisableGetFaviconFromWebContents(
 
 static void JNI_ContentCaptureTestSupport_SimulateDidUpdateFaviconURL(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jwebContents,
-    const base::android::JavaParamRef<jstring>& jfaviconJson) {
+    const base::android::JavaRef<jobject>& jwebContents,
+    const base::android::JavaRef<jstring>& jfaviconJson) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jwebContents);
   CHECK(web_contents);
@@ -51,7 +51,8 @@ static void JNI_ContentCaptureTestSupport_SimulateDidUpdateFaviconURL(
   CHECK(provider);
 
   std::string json = base::android::ConvertJavaStringToUTF8(env, jfaviconJson);
-  std::optional<base::Value> root = base::JSONReader::Read(json);
+  std::optional<base::Value> root =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   CHECK(root);
   CHECK(root->is_list());
   std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
@@ -84,3 +85,5 @@ static void JNI_ContentCaptureTestSupport_SimulateDidUpdateFaviconURL(
 }
 
 }  // namespace content_capture
+
+DEFINE_JNI(ContentCaptureTestSupport)

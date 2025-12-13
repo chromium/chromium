@@ -20,9 +20,13 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -31,9 +35,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Pair;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
-import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.BoundedMatcher;
@@ -48,13 +52,16 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -64,15 +71,20 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.download.home.list.ListUtils;
 import org.chromium.chrome.browser.download.home.list.holder.ListItemViewHolder;
 import org.chromium.chrome.browser.download.home.rename.RenameUtils;
 import org.chromium.chrome.browser.download.home.toolbar.DownloadHomeToolbar;
 import org.chromium.chrome.browser.download.internal.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
+import org.chromium.chrome.test.util.browser.edge_to_edge.TestEdgeToEdgeController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.browser_ui.util.date.StringUtils;
@@ -87,6 +99,7 @@ import org.chromium.components.offline_items_collection.RenameResult;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
@@ -100,6 +113,7 @@ import java.util.List;
 
 /** Tests the download home V2. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@EnableFeatures(ChromeFeatureList.SHOW_BLOCKED_SENSITIVE_DOWNLOAD)
 @Batch(Batch.UNIT_TESTS)
 public class DownloadActivityV2Test {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -114,10 +128,14 @@ public class DownloadActivityV2Test {
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
     @Mock private DownloadHelpPageLauncher mHelpPageLauncher;
+    @Spy private TestEdgeToEdgeController mEdgeToEdgeController;
+    private @Captor ArgumentCaptor<EdgeToEdgePadAdjuster> mPadAdjusterCaptor;
 
     @Rule
     public OverrideContextWrapperTestRule mOverrideContextWrapperTestRule =
             new OverrideContextWrapperTestRule();
+
+    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier;
 
     private ModalDialogManager.Presenter mAppModalPresenter;
 
@@ -196,16 +214,29 @@ public class DownloadActivityV2Test {
     }
 
     private void setUpUi() {
-        setUpUi(/* showDangerousItems= */ false, /* autoFocusSearchBox= */ false);
+        setUpUi(
+                /* showDangerousItems= */ false,
+                /* inlineSearchBar= */ false,
+                /* autoFocusSearchBox= */ false);
     }
 
-    private void setUpUi(boolean showDangerousItems, boolean autoFocusSearchBox) {
+    private void setUpUi(
+            boolean showDangerousItems, boolean inlineSearchBar, boolean autoFocusSearchBox) {
+        // Initialize this here to avoid "wrong thread" assertion.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mEdgeToEdgeSupplier = new ObservableSupplierImpl<>());
+
         DownloadManagerUiConfig config =
                 DownloadManagerUiConfigHelper.fromFlags(sActivity)
                         .setOtrProfileId(null)
                         .setIsSeparateActivity(true)
                         .setShowDangerousItems(showDangerousItems)
+                        .setInlineSearchBar(inlineSearchBar)
                         .setAutoFocusSearchBox(autoFocusSearchBox)
+                        .setEdgeToEdgePadAdjusterGenerator(
+                                view ->
+                                        EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                                                view, mEdgeToEdgeSupplier))
                         .build();
 
         mAppModalPresenter = new AppModalPresenter(sActivity);
@@ -422,7 +453,10 @@ public class DownloadActivityV2Test {
     public void testAddRemoveDangerousItem() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    setUpUi(/* showDangerousItems= */ true, /* autoFocusSearchBox= */ false);
+                    setUpUi(
+                            /* showDangerousItems= */ true,
+                            /* inlineSearchBar= */ false,
+                            /* autoFocusSearchBox= */ false);
                 });
 
         String storageHeaderText = "Using 1.10 KB of";
@@ -459,7 +493,10 @@ public class DownloadActivityV2Test {
     public void testDangerousItemNotShownDueToConfig() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    setUpUi(/* showDangerousItems= */ false, /* autoFocusSearchBox= */ false);
+                    setUpUi(
+                            /* showDangerousItems= */ false,
+                            /* inlineSearchBar= */ false,
+                            /* autoFocusSearchBox= */ false);
                 });
 
         String storageHeaderText = "Using 1.10 KB of";
@@ -486,7 +523,10 @@ public class DownloadActivityV2Test {
     public void testDeleteDangerousUsingMenu() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    setUpUi(/* showDangerousItems= */ true, /* autoFocusSearchBox= */ false);
+                    setUpUi(
+                            /* showDangerousItems= */ true,
+                            /* inlineSearchBar= */ false,
+                            /* autoFocusSearchBox= */ false);
                 });
 
         // Add a dangerous item.
@@ -512,7 +552,10 @@ public class DownloadActivityV2Test {
     public void testDeleteDangerousUsingSelection() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    setUpUi(/* showDangerousItems= */ true, /* autoFocusSearchBox= */ false);
+                    setUpUi(
+                            /* showDangerousItems= */ true,
+                            /* inlineSearchBar= */ false,
+                            /* autoFocusSearchBox= */ false);
                 });
 
         // Add a dangerous item.
@@ -542,7 +585,10 @@ public class DownloadActivityV2Test {
     public void testBypassDangerousWarning() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    setUpUi(/* showDangerousItems= */ true, /* autoFocusSearchBox= */ false);
+                    setUpUi(
+                            /* showDangerousItems= */ true,
+                            /* inlineSearchBar= */ false,
+                            /* autoFocusSearchBox= */ false);
                 });
 
         String storageHeaderText = "Using 1.10 KB of";
@@ -582,7 +628,10 @@ public class DownloadActivityV2Test {
     public void testWarningBypassDialogLearnMore() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    setUpUi(/* showDangerousItems= */ true, /* autoFocusSearchBox= */ false);
+                    setUpUi(
+                            /* showDangerousItems= */ true,
+                            /* inlineSearchBar= */ false,
+                            /* autoFocusSearchBox= */ false);
                 });
 
         // Add a dangerous item.
@@ -618,7 +667,7 @@ public class DownloadActivityV2Test {
 
         onView(withText("Rename")).check(matches(isDisplayed()));
         onView(withText("Delete")).check(matches(isDisplayed()));
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             onView(withText("Share")).check(doesNotExist());
         } else {
             onView(withText("Share")).check(matches(isDisplayed()));
@@ -645,7 +694,7 @@ public class DownloadActivityV2Test {
 
         onView(withText("Rename")).check(doesNotExist());
         onView(withText("Delete")).check(matches(isDisplayed()));
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             onView(withText("Share")).check(doesNotExist());
         } else {
             onView(withText("Share")).check(matches(isDisplayed()));
@@ -682,7 +731,7 @@ public class DownloadActivityV2Test {
         onView(withId(R.id.search_menu_id)).check(doesNotExist());
         onView(withId(R.id.close_menu_id)).check(doesNotExist());
         onView(withId(R.id.selection_mode_number)).check(matches(isDisplayed()));
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             onView(withId(R.id.selection_mode_share_menu_id)).check(matches(not(isDisplayed())));
         } else {
             onView(withId(R.id.selection_mode_share_menu_id)).check(matches(isDisplayed()));
@@ -792,7 +841,7 @@ public class DownloadActivityV2Test {
                 .perform(ViewActions.click());
 
         // Share an item. The share via android dialog should popup.
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             onView(withText("Share")).check(doesNotExist());
         } else {
             onView(withText("Share")).check(matches(isDisplayed()));
@@ -871,19 +920,47 @@ public class DownloadActivityV2Test {
     public void testDownloadsFocus() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    setUpUi(/* showDangerousItems= */ false, /* autoFocusSearchBox= */ true);
+                    setUpUi(
+                            /* showDangerousItems= */ false,
+                            /* inlineSearchBar= */ true,
+                            /* autoFocusSearchBox= */ true);
                 });
 
-        onView(withText("Download")).check(doesNotExist());
+        onView(withText("Downloads")).check(matches(isDisplayed()));
         // Check the search field is displayed
-        onView(withId(R.id.search_text)).check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.search_text), isDescendantOfA(withId(R.id.download_search_bar))))
+                .check(matches(isDisplayed()));
         // Check we can type in search query
-        onView(withId(R.id.search_text)).perform(ViewActions.typeText("Google"));
-        // Close keyboard first then press back to Download Page.
-        Espresso.closeSoftKeyboard();
-        Espresso.pressBack();
-        // After back to download pagem user should see the search field
-        onView(withId(R.id.search_text)).check(matches(not(isDisplayed())));
+        onView(allOf(withId(R.id.search_text), isDescendantOfA(withId(R.id.download_search_bar))))
+                .perform(ViewActions.typeText("Google"));
+        // Check no any downloaded item.
+        onView(withText(containsString("Using 0.00 KB of"))).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testEdgeToEdge() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setUpUi();
+                    // This should call SimpleEdgeToEdgePadAdjuster#mControllerChangedCallback.
+                    mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
+                });
+
+        verify(mEdgeToEdgeController).registerAdjuster(mPadAdjusterCaptor.capture());
+        EdgeToEdgePadAdjuster padAdjuster = mPadAdjusterCaptor.getValue();
+
+        padAdjuster.overrideBottomInset(100);
+        ViewGroup listView = mDownloadCoordinator.getListViewForTesting();
+        assertEquals("Bottom insets should have been applied.", 100, listView.getPaddingBottom());
+        assertFalse(listView.getClipToPadding());
+
+        padAdjuster.overrideBottomInset(0);
+        assertEquals("Bottom insets should have been reset.", 0, listView.getPaddingBottom());
+        assertTrue(listView.getClipToPadding());
+
+        ThreadUtils.runOnUiThreadBlocking(mDownloadCoordinator::destroy);
+        verify(mEdgeToEdgeController).unregisterAdjuster(padAdjuster);
     }
 
     /**

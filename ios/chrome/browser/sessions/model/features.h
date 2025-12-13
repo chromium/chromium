@@ -13,6 +13,10 @@ namespace session::features {
 // lower than the next SessionID.
 BASE_DECLARE_FEATURE(kSessionRestorationSessionIDCheck);
 
+// Feature flag to control whether all tabs (enabled) or only pinned and
+// active tabs (disabled) get their full navigation history converted.
+BASE_DECLARE_FEATURE(kSessionRestorationFullConversion);
+
 }  // namespace session::features
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_MODEL_FEATURES_H_

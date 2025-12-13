@@ -7,10 +7,12 @@
 #include <memory>
 #include <utility>
 
+#include "base/features.h"
 #include "base/functional/callback.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/common/scheduler_helper.h"
@@ -37,6 +39,17 @@ CompositorThreadSchedulerImpl::CompositorThreadSchedulerImpl(
                                  TaskType::kCompositorThreadTaskQueueDefault) {
   DCHECK(!g_compositor_thread_scheduler);
   g_compositor_thread_scheduler = this;
+
+  if (base::FeatureList::IsEnabled(
+          base::features::kBoostCompositorThreadsPriorityWhenIdle)) {
+    scenario_priority_boost_.emplace(
+        base::ThreadType::kInteractive, base::BindRepeating([]() {
+          return performance_scenarios::CurrentScenariosMatch(
+              performance_scenarios::ScenarioScope::kCurrentProcess,
+              performance_scenarios::kDefaultIdleScenarios);
+        }));
+    AddTaskObserver(&scenario_priority_boost_.value());
+  }
 }
 
 CompositorThreadSchedulerImpl::~CompositorThreadSchedulerImpl() {

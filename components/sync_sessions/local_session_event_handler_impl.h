@@ -97,6 +97,15 @@ class LocalSessionEventHandlerImpl : public LocalSessionEventHandler {
   sync_pb::SessionTab GetTabSpecificsFromDelegate(
       SyncedTabDelegate& tab_delegate) const;
 
+#if BUILDFLAG(IS_ANDROID)
+  // Handles the association of placeholder tabs on Android. This is a helper
+  // for AssociateWindows().
+  void HandlePlaceholderTabForAssociate(bool is_session_restore,
+                                        SyncedTabDelegate* synced_tab,
+                                        const sessions::SessionTab** tab,
+                                        WriteBatch* batch);
+#endif  // BUILDFLAG(IS_ANDROID)
+
   bool AssociatePlaceholderTab(std::unique_ptr<SyncedTabDelegate> snapshot,
                                WriteBatch* batch);
 

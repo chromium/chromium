@@ -25,5 +25,5 @@ public @interface Feature {
     /**
      * @return A list of feature names.
      */
-    public String[] value();
+    String[] value();
 }

@@ -20,7 +20,6 @@ namespace data_sharing {
 namespace {
 
 constexpr base::TimeDelta kTimeout = base::Milliseconds(10000);
-const char kOauthConsumerName[] = "datasharing";
 const char kRequestContentType[] = "application/x-protobuf";
 
 }  // namespace
@@ -35,14 +34,12 @@ DataSharingNetworkLoaderImpl::DataSharingNetworkLoaderImpl(
 
 DataSharingNetworkLoaderImpl::~DataSharingNetworkLoaderImpl() = default;
 
-void DataSharingNetworkLoaderImpl::LoadUrl(
-    const GURL& url,
-    const std::vector<std::string>& scopes,
-    const std::string& post_data,
-    const net::NetworkTrafficAnnotationTag& annotation_tag,
-    NetworkLoaderCallback callback) {
-  std::unique_ptr<EndpointFetcher> endpoint_fetcher =
-      CreateEndpointFetcher(url, scopes, post_data, annotation_tag);
+void DataSharingNetworkLoaderImpl::LoadUrl(const GURL& url,
+                                           const std::string& post_data,
+                                           DataSharingRequestType requestType,
+                                           NetworkLoaderCallback callback) {
+  std::unique_ptr<EndpointFetcher> endpoint_fetcher = CreateEndpointFetcher(
+      url, post_data, GetNetworkTrafficAnnotationTag(requestType));
   auto* const fetcher_ptr = endpoint_fetcher.get();
   fetcher_ptr->Fetch(
       base::BindOnce(&DataSharingNetworkLoaderImpl::OnDownloadComplete,
@@ -50,27 +47,23 @@ void DataSharingNetworkLoaderImpl::LoadUrl(
                      std::move(endpoint_fetcher)));
 }
 
-void DataSharingNetworkLoaderImpl::LoadUrl(
-    const GURL& url,
-    const std::vector<std::string>& scopes,
-    const std::string& post_data,
-    DataSharingRequestType requestType,
-    NetworkLoaderCallback callback) {
-  LoadUrl(url, scopes, post_data, GetNetworkTrafficAnnotationTag(requestType),
-          std::move(callback));
-}
-
 std::unique_ptr<EndpointFetcher>
 DataSharingNetworkLoaderImpl::CreateEndpointFetcher(
     const GURL& url,
-    const std::vector<std::string>& scopes,
     const std::string& post_data,
     const net::NetworkTrafficAnnotationTag& annotation_tag) {
   return std::make_unique<EndpointFetcher>(
-      url_loader_factory_, kOauthConsumerName, url,
-      net::HttpRequestHeaders::kPostMethod, kRequestContentType, scopes,
-      kTimeout, post_data, annotation_tag, identity_manager_,
-      signin::ConsentLevel::kSignin);
+      url_loader_factory_, identity_manager_,
+      EndpointFetcher::RequestParams::Builder(
+          endpoint_fetcher::HttpMethod::kPost, annotation_tag)
+          .SetAuthType(endpoint_fetcher::OAUTH)
+          .SetConsentLevel(signin::ConsentLevel::kSignin)
+          .SetContentType(kRequestContentType)
+          .SetTimeout(kTimeout)
+          .SetUrl(url)
+          .SetOAuthConsumerId(signin::OAuthConsumerId::kDataSharingAndroid)
+          .SetPostData(post_data)
+          .Build());
 }
 
 void DataSharingNetworkLoaderImpl::OnDownloadComplete(

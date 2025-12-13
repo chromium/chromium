@@ -53,6 +53,7 @@
 #include "components/policy/test_support/policy_storage.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -113,8 +114,11 @@ std::unique_ptr<KeyedService> BuildFakeProfileInvalidationProvider(
     content::BrowserContext* context) {
   Profile* profile = static_cast<Profile*>(context);
   return std::make_unique<invalidation::ProfileInvalidationProvider>(
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess(),
       std::make_unique<invalidation::ProfileIdentityProvider>(
           IdentityManagerFactory::GetForProfile(profile)),
+      profile->GetPrefs(),
       base::BindRepeating(&CreateInvalidationListenerForProjectNumber));
 }
 
@@ -239,7 +243,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
     // the username to the UserCloudPolicyValidator.
     identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
     identity_test_env_->MakePrimaryAccountAvailable(
-        GetTestUser(), signin::ConsentLevel::kSync);
+        GetTestUser(), signin::ConsentLevel::kSignin);
 
     UserCloudPolicyManager* policy_manager =
         profile->GetUserCloudPolicyManager();
@@ -343,7 +347,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
   void SetServerPolicy(const em::CloudPolicySettings& settings,
                        int key_version) {
     test_server_->policy_storage()->SetPolicyPayload(
-        dm_protocol::kChromeUserPolicyType, settings.SerializeAsString());
+        dm_protocol::GetChromeUserPolicyType(), settings.SerializeAsString());
 
     test_server_->policy_storage()->add_managed_user("*");
     test_server_->policy_storage()->set_policy_user(GetTestUser());

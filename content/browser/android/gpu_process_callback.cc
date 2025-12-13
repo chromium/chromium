@@ -18,10 +18,8 @@
 
 namespace content {
 
-base::android::ScopedJavaLocalRef<jobject>
-JNI_GpuProcessCallback_GetViewSurface(
-    JNIEnv* env,
-    jint surface_id) {
+static base::android::ScopedJavaLocalRef<jobject>
+JNI_GpuProcessCallback_GetViewSurface(JNIEnv* env, jint surface_id) {
   base::android::ScopedJavaLocalRef<jobject> j_surface_wrapper;
   auto surface_record =
       gpu::GpuSurfaceTracker::GetInstance()->AcquireJavaSurface(surface_id);
@@ -50,3 +48,5 @@ JNI_GpuProcessCallback_GetViewSurface(
 }
 
 }  // namespace content
+
+DEFINE_JNI(GpuProcessCallback)

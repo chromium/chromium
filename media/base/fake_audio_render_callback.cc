@@ -8,6 +8,7 @@
 #include <numbers>
 
 #include "base/time/time.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 
 namespace media {
@@ -55,7 +56,7 @@ int FakeAudioRenderCallback::RenderInternal(AudioBus* audio_bus,
   if (half_fill_)
     number_of_frames /= 2;
 
-  auto first_channel = audio_bus->channel_span(0);
+  auto first_channel = audio_bus->channel(0);
 
   // Fill first channel with a sine wave.
   for (size_t i = 0; i < number_of_frames; ++i) {
@@ -82,7 +83,7 @@ int FakeAudioRenderCallback::RenderInternal(AudioBus* audio_bus,
   // Copy first channel into the rest of the channels.
   auto first_channel_data = first_channel.first(number_of_frames);
   for (int i = 1; i < audio_bus->channels(); ++i) {
-    audio_bus->channel_span(i)
+    audio_bus->channel(i)
         .first(number_of_frames)
         .copy_from_nonoverlapping(first_channel_data);
   }

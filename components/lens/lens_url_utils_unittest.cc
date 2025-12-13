@@ -44,4 +44,14 @@ TEST(LensUrlUtilsTest, GetUnknownEntryPointTest) {
   EXPECT_THAT(query_param, MatchesRegex("re=df&s=4&st=\\d+"));
 }
 
+TEST(LensUrlUtilsTest, Base64EncodeRequestIdTest) {
+  lens::LensOverlayRequestId request_id;
+  request_id.set_uuid(1);
+  request_id.set_sequence_id(2);
+  request_id.set_analytics_id("ABC");
+  std::string encoded_id = lens::Base64EncodeRequestId(request_id);
+  EXPECT_FALSE(encoded_id.empty());
+  EXPECT_EQ(encoded_id, "CAEQAiIDQUJD");
+}
+
 }  // namespace lens

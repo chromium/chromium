@@ -89,7 +89,7 @@ bool ShouldFetchAssociationFile(const GURL& resource_url) {
 
   // Host cannot be a TLD or invalid.
   if (registry_length == 0 || registry_length == std::string::npos ||
-      registry_length >= resource_url.host().length()) {
+      registry_length >= resource_url.GetHost().length()) {
     return false;
   }
 

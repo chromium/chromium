@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chromeos/crosier/adb_helper.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -65,7 +66,7 @@ class ChromeOSIntegrationArcMixin : public InProcessBrowserTestMixin {
   void TearDown() override;
 
  private:
-  const ChromeOSIntegrationLoginMixin& login_mixin_;
+  const raw_ref<const ChromeOSIntegrationLoginMixin> login_mixin_;
 
   bool setup_called_ = false;
   Mode mode_ = Mode::kNone;

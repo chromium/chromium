@@ -172,16 +172,18 @@ void VideoFrameFileWriter::ProcessVideoFrameTask(
   // in the end of function.
   auto frame = video_frame;
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-  if (frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+  if (frame->storage_type() == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     // TODO(andrescj): This is a workaround. ClientNativePixmapFactoryDmabuf
-    // creates ClientNativePixmapOpaque for SCANOUT_VDA_WRITE buffers which
-    // does not allow us to map GpuMemoryBuffers easily for testing.
+    // creates ClientNativePixmapOpaque, which cannot be mapped via MappableSI,
+    // for SCANOUT_VDA_WRITE buffers. However, we need to map the contents of
+    // the frame for verification by the test (see the creation and use of
+    // VideoFrameMapper below).
     // Therefore, we extract the dma-buf FDs. Alternatively, we could consider
     // creating our own ClientNativePixmapFactory for testing.
     frame = CreateDmabufVideoFrame(frame.get());
     if (!frame) {
       LOG(ERROR) << "Failed to create Dmabuf-backed VideoFrame from "
-                 << "GpuMemoryBuffer-based VideoFrame";
+                 << "MappableSI-based VideoFrame";
       return;
     }
   }

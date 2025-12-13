@@ -124,17 +124,17 @@ public enum PersistedTabDataConfiguration {
 
     // TODO(crbug.com/40212560) merge test config options into an enum so there can be just one
     // setter).
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static void setUseTestConfig(boolean useTestConfig) {
         sUseTestConfig = useTestConfig;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static void setUseEmptyByteBufferTestConfig(boolean useEmptyByteBufferTestConfig) {
         sUseEmptyByteBufferTestConfig = useEmptyByteBufferTestConfig;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static PersistedTabDataConfiguration getTestConfig() {
         return TEST_CONFIG;
     }

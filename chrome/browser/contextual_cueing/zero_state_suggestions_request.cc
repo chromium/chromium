@@ -8,11 +8,14 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "content/public/browser/web_contents.h"
 
@@ -22,20 +25,23 @@ ZeroStateSuggestionsRequest::ZeroStateSuggestionsRequest(
     OptimizationGuideKeyedService* optimization_guide_keyed_service,
     const optimization_guide::proto::ZeroStateSuggestionsRequest&
         pending_base_request,
-    const std::vector<content::WebContents*>& requested_tabs)
+    const std::vector<content::WebContents*>& requested_tabs,
+    const content::WebContents* focused_tab)
     : begin_time_(base::TimeTicks::Now()),
       pending_base_request_(pending_base_request),
+      requested_tabs_(requested_tabs),
       optimization_guide_keyed_service_(optimization_guide_keyed_service) {
-  OPTIMIZATION_GUIDE_LOG(
-      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-      optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+  MODEL_EXECUTION_LOG(base::StringPrintf(
       "ZeroStateSuggestionsRequest: Creating new zero state suggestions "
-      "request");
+      "request for %llu tabs",
+      requested_tabs.size()));
   auto barrier_callback = base::BarrierCallback<
-      std::optional<optimization_guide::proto::ZeroStatePageContext>>(
+      base::expected<optimization_guide::proto::ZeroStatePageContext,
+                     PageContextIneligibilityType>>(
       requested_tabs.size(),
       base::BindOnce(&ZeroStateSuggestionsRequest::OnAllPageContextExtracted,
                      weak_ptr_factory_.GetWeakPtr()));
+
   for (auto* tab : requested_tabs) {
     auto* zss_data =
         ZeroStateSuggestionsPageData::GetOrCreateForPage(tab->GetPrimaryPage());
@@ -54,12 +60,28 @@ ZeroStateSuggestionsRequest::ZeroStateSuggestionsRequest(
       return;
     }
 
+    // If we're in multitab mode, store the information about focused tab.
+    if (focused_tab && tab == focused_tab) {
+      zss_data->set_is_focused_tab(true);
+    } else {
+      zss_data->set_is_focused_tab(false);
+    }
     // Otherwise, start grabbing the page context.
     zss_data->GetPageContext(barrier_callback);
   }
 }
 
-ZeroStateSuggestionsRequest::~ZeroStateSuggestionsRequest() = default;
+ZeroStateSuggestionsRequest::~ZeroStateSuggestionsRequest() {
+  MODEL_EXECUTION_LOG(
+      "ZeroStateSuggestionsRequest: Destructing zero state suggestions "
+      "request");
+}
+
+// static
+void ZeroStateSuggestionsRequest::Destroy(
+    std::unique_ptr<ZeroStateSuggestionsRequest> request) {
+  // The unique_ptr deletes automatically.
+}
 
 void ZeroStateSuggestionsRequest::AddCallback(
     base::OnceCallback<void(std::vector<std::string>)> callback) {
@@ -77,24 +99,42 @@ void ZeroStateSuggestionsRequest::AddCallback(
   pending_callbacks_.AddUnsafe(std::move(callback));
 }
 
+std::vector<content::WebContents*>
+ZeroStateSuggestionsRequest::GetRequestedTabs() const {
+  return requested_tabs_;
+}
+
 void ZeroStateSuggestionsRequest::OnAllPageContextExtracted(
     const std::vector<
-        std::optional<optimization_guide::proto::ZeroStatePageContext>>&
+        base::expected<optimization_guide::proto::ZeroStatePageContext,
+                       PageContextIneligibilityType>>&
         zero_state_page_contexts) {
   // Filter for page contexts that are available.
   std::vector<optimization_guide::proto::ZeroStatePageContext>
       filtered_page_contexts;
+  PageContextIneligibilityType latest_ineligibility_type =
+      PageContextIneligibilityType::kNone;
   for (const auto& zero_state_page_context : zero_state_page_contexts) {
-    if (zero_state_page_context) {
+    if (zero_state_page_context.has_value()) {
       filtered_page_contexts.push_back(*zero_state_page_context);
+    } else {
+      latest_ineligibility_type = zero_state_page_context.error();
     }
   }
 
+  std::string engagement_type =
+      pending_base_request_.is_fre() ? "FRE" : "Reengagement";
+  base::UmaHistogramEnumeration(
+      "ContextualCueing.GlicSuggestions.PageContextIneligibilityReason",
+      latest_ineligibility_type);
+  base::UmaHistogramEnumeration(
+      "ContextualCueing.GlicSuggestions.PageContextIneligibilityReason." +
+          engagement_type,
+      latest_ineligibility_type);
+
   // No content to generate suggestions. Return empty.
   if (filtered_page_contexts.empty()) {
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+    MODEL_EXECUTION_LOG(
         "ZeroStateSuggestionsRequest: No page context to fetch suggestions "
         "for.");
     CacheFocusedTabSuggestions({});
@@ -115,15 +155,18 @@ void ZeroStateSuggestionsRequest::OnAllPageContextExtracted(
   }
 
   // Initiate model execution fetch.
-  OPTIMIZATION_GUIDE_LOG(
-      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-      optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+  MODEL_EXECUTION_LOG(base::StringPrintf(
       "ZeroStateSuggestionsRequest: Starting fetch for "
-      "suggestions.");
+      "suggestions. Is-mulitab request: %s",
+      pending_base_request_.has_page_context_list() ? "true" : "false"));
+  optimization_guide::ModelExecutionServiceType service_type =
+      base::FeatureList::IsEnabled(kZeroStateSuggestionsUseLegion)
+          ? optimization_guide::ModelExecutionServiceType::kLegion
+          : optimization_guide::ModelExecutionServiceType::kDefault;
+
   optimization_guide_keyed_service_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kZeroStateSuggestions,
-      pending_base_request_,
-      /*execution_timeout=*/std::nullopt,
+      pending_base_request_, {.service_type = service_type},
       base::BindOnce(&ZeroStateSuggestionsRequest::OnModelExecutionResponse,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
@@ -137,9 +180,7 @@ void ZeroStateSuggestionsRequest::OnModelExecutionResponse(
 
   base::TimeDelta suggestions_duration = base::TimeTicks::Now() - begin_time_;
   if (!result.response.has_value()) {
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+    MODEL_EXECUTION_LOG(
         base::StringPrintf("ZeroStateSuggestionsRequest: Failed to get "
                            "suggestions after %ld ms. Error: %d",
                            suggestions_duration.InMilliseconds(),
@@ -150,9 +191,7 @@ void ZeroStateSuggestionsRequest::OnModelExecutionResponse(
     return;
   }
 
-  OPTIMIZATION_GUIDE_LOG(
-      optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-      optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+  MODEL_EXECUTION_LOG(
       base::StringPrintf("ZeroStateSuggestionsRequest: Received valid "
                          "suggestions after %ld ms.",
                          suggestions_duration.InMilliseconds()));
@@ -162,10 +201,7 @@ void ZeroStateSuggestionsRequest::OnModelExecutionResponse(
           optimization_guide::proto::ZeroStateSuggestionsResponse>(
           result.response.value());
   if (!response) {
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
-        "ZeroStateSuggestionsRequest: No response available.");
+    MODEL_EXECUTION_LOG("ZeroStateSuggestionsRequest: No response available.");
     pending_callbacks_.Notify(std::vector<std::string>({}));
     // Treat this as a transient error that server returned bad data
     // momentarily. Do not cache.
@@ -175,9 +211,7 @@ void ZeroStateSuggestionsRequest::OnModelExecutionResponse(
   std::vector<std::string> suggestions;
   for (int i = 0; i < response->suggestions_size(); ++i) {
     suggestions.push_back(response->suggestions(i).label());
-    OPTIMIZATION_GUIDE_LOG(
-        optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-        optimization_guide_keyed_service_->GetOptimizationGuideLogger(),
+    MODEL_EXECUTION_LOG(
         base::StringPrintf("ZeroStateSuggestionsRequest: Suggestion %d: %s",
                            i + 1, response->suggestions(i).label()));
   }
@@ -193,6 +227,11 @@ void ZeroStateSuggestionsRequest::CacheFocusedTabSuggestions(
 
   focused_tab_page_data_->set_cached_suggestions_for_focused_tab(
       suggestions_to_cache);
+}
+
+base::WeakPtr<ZeroStateSuggestionsRequest>
+ZeroStateSuggestionsRequest::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace contextual_cueing

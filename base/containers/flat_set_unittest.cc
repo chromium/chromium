@@ -10,6 +10,7 @@
 #include "base/test/move_only_int.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/hash/hash_testing.h"
 
 // A flat_set is basically a interface to flat_tree. So several basic
 // operations are tested to make sure things are set up properly, but the bulk
@@ -153,6 +154,21 @@ TEST(FlatSet, UsingInitializerList) {
   s.upper_bound({11});
   s1.upper_bound({12});
   s.erase({13});
+}
+
+TEST(FlatSet, AbslHashValue) {
+  using Set = flat_set<std::string>;
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+      // These two are identical.
+      Set({"a", "b", "c"}),
+      Set({"a", "b", "c"}),
+      // `flat_set` is ordered, so this is also identical.
+      Set({"c", "b", "a"}),
+      // Different content.
+      Set({"a", "b"}),
+      Set({}),
+      Set({"z"}),
+  }));
 }
 
 }  // namespace base

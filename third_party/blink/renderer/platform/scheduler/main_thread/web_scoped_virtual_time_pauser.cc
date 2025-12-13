@@ -7,6 +7,7 @@
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/scheduler/common/thread_scheduler_base.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace blink {
 
@@ -64,9 +65,9 @@ void WebScopedVirtualTimePauser::PauseVirtualTime() {
   if (virtual_time_enabled_when_paused_) {
     // This trace event shows when individual pausers are active (instead of the
     // global paused/unpaused state).
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-        "renderer.scheduler", "WebScopedVirtualTimePauser::PauseVirtualTime",
-        trace_id_, "name", debug_name_.Latin1());
+    TRACE_EVENT_BEGIN("renderer.scheduler",
+                      "WebScopedVirtualTimePauser::PauseVirtualTime",
+                      perfetto::Track(trace_id_), "name", debug_name_.Latin1());
   }
   virtual_time_when_paused_ = scheduler_->IncrementVirtualTimePauseCount();
 }
@@ -86,9 +87,7 @@ void WebScopedVirtualTimePauser::DecrementVirtualTimePauseCount() {
                                         base::Milliseconds(10));
   }
   if (virtual_time_enabled_when_paused_) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "renderer.scheduler", "WebScopedVirtualTimePauser::PauseVirtualTime",
-        trace_id_);
+    TRACE_EVENT_END("renderer.scheduler", perfetto::Track(trace_id_));
   }
 }
 

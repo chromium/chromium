@@ -57,21 +57,22 @@ impl<'a> BufReader<'a> {
         // return the remainder of the buffer or scan_length bytes, which ever is shorter, we return
         // that here.
         if remaining < pattern.len() || scan_len < pattern.len() {
+            self.pos = end;
             return Ok(&self.buf[start..end]);
         }
 
-        let mut j = start;
-        let mut i = start + pattern.len();
+        let mut i = start;
+        let mut j = start + pattern.len();
 
-        while i < end {
-            if &self.buf[j..i] == pattern {
+        while j < end {
+            if &self.buf[i..j] == pattern {
                 break;
             }
-            i += align;
             j += align;
+            i += align;
         }
 
-        self.pos = cmp::min(i, self.buf.len());
+        self.pos = cmp::min(j, self.buf.len());
         Ok(&self.buf[start..self.pos])
     }
 
@@ -92,7 +93,7 @@ impl<'a> BufReader<'a> {
     }
 }
 
-impl<'a> ReadBytes for BufReader<'a> {
+impl ReadBytes for BufReader<'_> {
     #[inline(always)]
     fn read_byte(&mut self) -> io::Result<u8> {
         if self.buf.len() - self.pos < 1 {
@@ -190,7 +191,7 @@ impl<'a> ReadBytes for BufReader<'a> {
     }
 }
 
-impl<'a> FiniteStream for BufReader<'a> {
+impl FiniteStream for BufReader<'_> {
     #[inline(always)]
     fn byte_len(&self) -> u64 {
         self.buf.len() as u64

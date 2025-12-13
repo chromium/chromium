@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "starboard_event_source.h"
+#include "chromecast/starboard/chromecast/events/starboard_event_source.h"
+
+#include <cmath>
+#include <memory>
+#include <optional>
 
 #include "base/test/task_environment.h"
 #include "chromecast/starboard/chromecast/starboard_adapter/src/cast_starboard_api_adapter_impl.h"
@@ -10,7 +14,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/owned_window_anchor.h"
 #include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/pointer_details.h"
+#include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/platform_window/platform_window_delegate.h"
 
 namespace chromecast {
@@ -71,7 +81,7 @@ class MockPlatformWindowDelegate : public ui::PlatformWindowDelegate {
               GetOwnedWindowAnchorAndRectInDIP,
               (),
               (override));
-  MOCK_METHOD(void, OnMouseEnter, (), (override));
+  MOCK_METHOD(void, OnCursorUpdate, (), (override));
   MOCK_METHOD(void,
               OnOcclusionStateChanged,
               (ui::PlatformWindowOcclusionState occlusion_state),
@@ -89,25 +99,36 @@ class MockPlatformWindowDelegate : public ui::PlatformWindowDelegate {
 };
 
 using ::testing::_;
+using ::testing::SaveArg;
 
-constexpr float kXPosClick = 1;
-constexpr float kYPosClick = 2;
-constexpr float kXPosMove = 3;
-constexpr float kYPosMove = 4;
+constexpr float kXPos = 1.0f;
+constexpr float kYPos = 2.0f;
+constexpr float kDeltaX = 3.0f;
+constexpr float kDeltaY = 4.0f;
+constexpr float kPressure = 0.5f;
+constexpr float kSizeX = 10.0f;
+constexpr float kSizeY = 12.0f;
+constexpr float kTiltX = 30.0f;
+constexpr float kTiltY = 40.0f;
 
 void DispatchSbEvent(const SbEvent* event) {
   // The |source_| should be subscribed to this and receive the event.
   CastStarboardApiAdapterImpl::SbEventHandle(event);
 }
 
-void EmulateKey(SbKey key, bool press) {
-  SbInputData input_data;
+void EmulateKey(SbKey key,
+                bool press,
+                SbInputDeviceType device_type = kSbInputDeviceTypeKeyboard,
+                unsigned int key_modifiers = kSbKeyModifiersNone) {
+  SbInputData input_data = {};
   input_data.type = press ? kSbInputEventTypePress : kSbInputEventTypeUnpress;
+  input_data.device_type = device_type;
   input_data.key = key;
+  input_data.key_modifiers = key_modifiers;
 
-  // Normally invalid for keys other than mouse presses, but okay for test.
-  input_data.position.x = kXPosClick;
-  input_data.position.y = kYPosClick;
+  // Position is mostly for mouse/touch, but harmless for keys.
+  input_data.position.x = kXPos;
+  input_data.position.y = kYPos;
 
   SbEvent event;
   event.type = kSbEventTypeInput;
@@ -116,11 +137,57 @@ void EmulateKey(SbKey key, bool press) {
   DispatchSbEvent(&event);
 }
 
-void EmulateMove() {
-  SbInputData input_data;
+void EmulateMouseMove(float x,
+                      float y,
+                      unsigned int key_modifiers = kSbKeyModifiersNone) {
+  SbInputData input_data = {};
   input_data.type = kSbInputEventTypeMove;
-  input_data.position.x = kXPosMove;
-  input_data.position.y = kYPosMove;
+  input_data.device_type = kSbInputDeviceTypeMouse;
+  input_data.position.x = x;
+  input_data.position.y = y;
+  input_data.key_modifiers = key_modifiers;
+
+  SbEvent event;
+  event.type = kSbEventTypeInput;
+  event.data = &input_data;
+
+  DispatchSbEvent(&event);
+}
+
+void EmulateMouseWheel(float delta_x,
+                       float delta_y,
+                       unsigned int key_modifiers = kSbKeyModifiersNone) {
+  SbInputData input_data = {};
+  input_data.type = kSbInputEventTypeWheel;
+  input_data.device_type = kSbInputDeviceTypeMouse;
+  input_data.position.x = kXPos;
+  input_data.position.y = kYPos;
+  input_data.delta.x = delta_x;
+  input_data.delta.y = delta_y;
+  input_data.key_modifiers = key_modifiers;
+
+  SbEvent event;
+  event.type = kSbEventTypeInput;
+  event.data = &input_data;
+
+  DispatchSbEvent(&event);
+}
+
+void EmulateTouch(SbInputEventType type,
+                  float x,
+                  float y,
+                  unsigned int key_modifiers = kSbKeyModifiersNone) {
+  SbInputData input_data = {};
+  input_data.type = type;
+  input_data.device_type = kSbInputDeviceTypeTouchScreen;
+  input_data.position.x = x;
+  input_data.position.y = y;
+  input_data.key_modifiers = key_modifiers;
+  input_data.pressure = kPressure;
+  input_data.size.x = kSizeX;
+  input_data.size.y = kSizeY;
+  input_data.tilt.x = kTiltX;
+  input_data.tilt.y = kTiltY;
 
   SbEvent event;
   event.type = kSbEventTypeInput;
@@ -133,10 +200,10 @@ void EmulateMove() {
 // lifetime of the SingleThreadTaskEnvironment.
 class StarboardEventSourceTest : public ::testing::Test {
  protected:
-  StarboardEventSourceTest() : last_ui_event_(nullptr), source_(&delegate_) {
-    ON_CALL(delegate_, DispatchEvent(_)).WillByDefault([&](ui::Event* event) {
-      last_ui_event_ = event->Clone();
-    });
+  StarboardEventSourceTest() : source_(&delegate_) {
+    ON_CALL(delegate_, DispatchEvent(_))
+        .WillByDefault(
+            [this](ui::Event* event) { last_ui_event_ = event->Clone(); });
   }
 
   ~StarboardEventSourceTest() override = default;
@@ -148,7 +215,7 @@ class StarboardEventSourceTest : public ::testing::Test {
   StarboardEventSource source_;
 };
 
-TEST_F(StarboardEventSourceTest, SupportedKeysArepropagated) {
+TEST_F(StarboardEventSourceTest, SupportedKeysArePropagated) {
   EmulateKey(kSbKeyMediaPlayPause, /*press=*/true);
   ASSERT_NE(last_ui_event_, nullptr);
   EXPECT_TRUE(last_ui_event_->IsKeyEvent());
@@ -157,9 +224,47 @@ TEST_F(StarboardEventSourceTest, SupportedKeysArepropagated) {
   EXPECT_EQ(last_ui_event_->type(), ui::EventType::kKeyPressed);
 
   EmulateKey(kSbKeyMediaPlayPause, /*press=*/false);
+  ASSERT_NE(last_ui_event_, nullptr);
   EXPECT_EQ(last_ui_event_->AsKeyEvent()->code(),
             ui::DomCode::MEDIA_PLAY_PAUSE);
   EXPECT_EQ(last_ui_event_->type(), ui::EventType::kKeyReleased);
+}
+
+TEST_F(StarboardEventSourceTest, LetterKey) {
+  EmulateKey(kSbKeyA, /*press=*/true);
+  ASSERT_NE(last_ui_event_, nullptr);
+  EXPECT_TRUE(last_ui_event_->IsKeyEvent());
+  EXPECT_EQ(last_ui_event_->AsKeyEvent()->code(), ui::DomCode::US_A);
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kKeyPressed);
+  EXPECT_FALSE(last_ui_event_->flags() & ui::EF_SHIFT_DOWN);
+}
+
+TEST_F(StarboardEventSourceTest, LetterKeyWithShift) {
+  EmulateKey(kSbKeyA, /*press=*/true, kSbInputDeviceTypeKeyboard,
+             kSbKeyModifiersShift);
+  ASSERT_NE(last_ui_event_, nullptr);
+  EXPECT_TRUE(last_ui_event_->IsKeyEvent());
+  EXPECT_EQ(last_ui_event_->AsKeyEvent()->code(), ui::DomCode::US_A);
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kKeyPressed);
+  EXPECT_TRUE(last_ui_event_->flags() & ui::EF_SHIFT_DOWN);
+}
+
+TEST_F(StarboardEventSourceTest, DigitKey) {
+  EmulateKey(kSbKey1, /*press=*/true);
+  ASSERT_NE(last_ui_event_, nullptr);
+  EXPECT_EQ(last_ui_event_->AsKeyEvent()->code(), ui::DomCode::DIGIT1);
+}
+
+TEST_F(StarboardEventSourceTest, NumpadKey) {
+  EmulateKey(kSbKeyNumpad5, /*press=*/true);
+  ASSERT_NE(last_ui_event_, nullptr);
+  EXPECT_EQ(last_ui_event_->AsKeyEvent()->code(), ui::DomCode::NUMPAD5);
+}
+
+TEST_F(StarboardEventSourceTest, OemSemicolonKey) {
+  EmulateKey(kSbKeyOem1, /*press=*/true);
+  ASSERT_NE(last_ui_event_, nullptr);
+  EXPECT_EQ(last_ui_event_->AsKeyEvent()->code(), ui::DomCode::SEMICOLON);
 }
 
 TEST_F(StarboardEventSourceTest, UnsupportedKeyIsNotPropagated) {
@@ -170,46 +275,132 @@ TEST_F(StarboardEventSourceTest, UnsupportedKeyIsNotPropagated) {
   EXPECT_EQ(last_ui_event_, nullptr);
 }
 
-TEST_F(StarboardEventSourceTest, UnsupportedClickIsNotPropagated) {
-  EmulateKey(kSbKeyMouse2, /*press=*/true);
-  EXPECT_EQ(last_ui_event_, nullptr);
-
-  EmulateKey(kSbKeyMouse2, /*press=*/false);
-  EXPECT_EQ(last_ui_event_, nullptr);
-}
-
-TEST_F(StarboardEventSourceTest, Move) {
-  EmulateMove();
+TEST_F(StarboardEventSourceTest, MouseMove) {
+  EmulateMouseMove(kDeltaX, kDeltaY);
   ASSERT_NE(last_ui_event_, nullptr);
   EXPECT_TRUE(last_ui_event_->IsMouseEvent());
   EXPECT_EQ(last_ui_event_->type(), ui::EventType::kMouseMoved);
-  EXPECT_EQ(last_ui_event_->AsLocatedEvent()->location().x(), kXPosMove);
-  EXPECT_EQ(last_ui_event_->AsLocatedEvent()->location().y(), kYPosMove);
+  EXPECT_EQ(last_ui_event_->AsLocatedEvent()->location_f().x(), kDeltaX);
+  EXPECT_EQ(last_ui_event_->AsLocatedEvent()->location_f().y(), kDeltaY);
+  EXPECT_EQ(last_ui_event_->flags(), 0);
 }
 
-TEST_F(StarboardEventSourceTest, SupportedClick) {
-  EmulateKey(kSbKeyMouse1, true);
+TEST_F(StarboardEventSourceTest, MouseLeftButtonClick) {
+  EmulateKey(kSbKeyMouse1, true, kSbInputDeviceTypeMouse);
   ASSERT_NE(last_ui_event_, nullptr);
   EXPECT_TRUE(last_ui_event_->IsMouseEvent());
   EXPECT_EQ(last_ui_event_->type(), ui::EventType::kMousePressed);
-  EXPECT_EQ(last_ui_event_->AsLocatedEvent()->location().x(), kXPosClick);
-  EXPECT_EQ(last_ui_event_->AsLocatedEvent()->location().y(), kYPosClick);
+  EXPECT_EQ(last_ui_event_->AsLocatedEvent()->location_f().x(), kXPos);
+  EXPECT_EQ(last_ui_event_->AsLocatedEvent()->location_f().y(), kYPos);
   EXPECT_TRUE(last_ui_event_->AsMouseEvent()->IsOnlyLeftMouseButton());
+  EXPECT_TRUE(last_ui_event_->flags() & ui::EF_LEFT_MOUSE_BUTTON);
 
-  EmulateKey(kSbKeyMouse1, false);
+  EmulateKey(kSbKeyMouse1, false, kSbInputDeviceTypeMouse);
+  ASSERT_NE(last_ui_event_, nullptr);
   EXPECT_TRUE(last_ui_event_->IsMouseEvent());
-  EXPECT_EQ(ui::EventType::kMouseReleased, last_ui_event_->type());
-  EXPECT_EQ(kXPosClick, last_ui_event_->AsLocatedEvent()->location().x());
-  EXPECT_EQ(kYPosClick, last_ui_event_->AsLocatedEvent()->location().y());
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kMouseReleased);
   EXPECT_TRUE(last_ui_event_->AsMouseEvent()->IsOnlyLeftMouseButton());
 }
 
-TEST_F(StarboardEventSourceTest, UnsupportedClick) {
-  EmulateKey(kSbKeyMouse2, true);
-  EXPECT_EQ(last_ui_event_, nullptr);
+TEST_F(StarboardEventSourceTest, MouseRightButtonClick) {
+  EmulateKey(kSbKeyMouse2, true, kSbInputDeviceTypeMouse);
+  ASSERT_NE(last_ui_event_, nullptr);
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kMousePressed);
+  EXPECT_TRUE(last_ui_event_->AsMouseEvent()->IsOnlyRightMouseButton());
 
-  EmulateKey(kSbKeyMouse2, false);
-  EXPECT_EQ(last_ui_event_, nullptr);
+  EmulateKey(kSbKeyMouse2, false, kSbInputDeviceTypeMouse);
+  ASSERT_NE(last_ui_event_, nullptr);
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kMouseReleased);
+  EXPECT_TRUE(last_ui_event_->AsMouseEvent()->IsOnlyRightMouseButton());
+}
+
+TEST_F(StarboardEventSourceTest, MouseMiddleButtonClick) {
+  EmulateKey(kSbKeyMouse3, true, kSbInputDeviceTypeMouse);
+  ASSERT_NE(last_ui_event_, nullptr);
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kMousePressed);
+  EXPECT_TRUE(last_ui_event_->AsMouseEvent()->IsOnlyMiddleMouseButton());
+}
+
+TEST_F(StarboardEventSourceTest, MouseDrag) {
+  // Left Mouse + Move creates Drag
+  EmulateKey(kSbKeyMouse1, true, kSbInputDeviceTypeMouse);
+  EmulateMouseMove(kDeltaX, kDeltaY);
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kMouseDragged);
+  EXPECT_TRUE(last_ui_event_->flags() & ui::EF_LEFT_MOUSE_BUTTON);
+
+  // Releasing Left Mouse removes Drag
+  EmulateKey(kSbKeyMouse1, false, kSbInputDeviceTypeMouse);
+  EmulateMouseMove(kDeltaX, kDeltaY);
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kMouseMoved);
+}
+
+TEST_F(StarboardEventSourceTest, MouseDragMulti) {
+  // Left Mouse + Move creates Drag
+  EmulateKey(kSbKeyMouse1, true, kSbInputDeviceTypeMouse);
+  EmulateMouseMove(kDeltaX, kDeltaY);
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kMouseDragged);
+  EXPECT_TRUE(last_ui_event_->flags() & ui::EF_LEFT_MOUSE_BUTTON);
+
+  // Adding Right Mouse creates Drag
+  EmulateKey(kSbKeyMouse2, true, kSbInputDeviceTypeMouse);
+  EmulateMouseMove(kDeltaX, kDeltaY);
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kMouseDragged);
+  EXPECT_TRUE(last_ui_event_->flags() & ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_TRUE(last_ui_event_->flags() & ui::EF_RIGHT_MOUSE_BUTTON);
+
+  // Only releasing Left Mouse preserves Drag
+  EmulateKey(kSbKeyMouse1, false, kSbInputDeviceTypeMouse);
+  EmulateMouseMove(kDeltaX, kDeltaY);
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kMouseDragged);
+
+  // Also releasing Right Mouse removes Drag
+  EmulateKey(kSbKeyMouse2, false, kSbInputDeviceTypeMouse);
+  EmulateMouseMove(kDeltaX, kDeltaY);
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kMouseMoved);
+}
+
+TEST_F(StarboardEventSourceTest, MouseWheelScroll) {
+  EmulateMouseWheel(kDeltaX, kDeltaY);
+  ASSERT_NE(last_ui_event_, nullptr);
+  EXPECT_TRUE(last_ui_event_->IsMouseWheelEvent());
+  EXPECT_EQ(last_ui_event_->AsMouseWheelEvent()->x_offset(),
+            static_cast<int>(-kDeltaX * ui::MouseWheelEvent::kWheelDelta));
+  EXPECT_EQ(last_ui_event_->AsMouseWheelEvent()->y_offset(),
+            static_cast<int>(-kDeltaY * ui::MouseWheelEvent::kWheelDelta));
+}
+
+TEST_F(StarboardEventSourceTest, TouchPress) {
+  EmulateTouch(kSbInputEventTypePress, kXPos, kYPos);
+  ASSERT_NE(last_ui_event_, nullptr);
+  EXPECT_TRUE(last_ui_event_->IsTouchEvent());
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kTouchPressed);
+  auto* touch_event = last_ui_event_->AsTouchEvent();
+  EXPECT_EQ(touch_event->location_f().x(), kXPos);
+  EXPECT_EQ(touch_event->location_f().y(), kYPos);
+  EXPECT_EQ(touch_event->pointer_details().id, 0);
+  EXPECT_FLOAT_EQ(touch_event->pointer_details().force, kPressure);
+  EXPECT_FLOAT_EQ(touch_event->pointer_details().radius_x, kSizeX / 2.0f);
+  EXPECT_FLOAT_EQ(touch_event->pointer_details().radius_y, kSizeY / 2.0f);
+  EXPECT_FLOAT_EQ(touch_event->pointer_details().tilt_x, kTiltX);
+  EXPECT_FLOAT_EQ(touch_event->pointer_details().tilt_y, kTiltY);
+}
+
+TEST_F(StarboardEventSourceTest, TouchRelease) {
+  EmulateTouch(kSbInputEventTypeUnpress, kXPos, kYPos);
+  ASSERT_NE(last_ui_event_, nullptr);
+  EXPECT_TRUE(last_ui_event_->IsTouchEvent());
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kTouchReleased);
+  EXPECT_EQ(last_ui_event_->AsTouchEvent()->pointer_details().id, 0);
+}
+
+TEST_F(StarboardEventSourceTest, TouchMove) {
+  EmulateTouch(kSbInputEventTypeMove, kDeltaX, kDeltaY);
+  ASSERT_NE(last_ui_event_, nullptr);
+  EXPECT_TRUE(last_ui_event_->IsTouchEvent());
+  EXPECT_EQ(last_ui_event_->type(), ui::EventType::kTouchMoved);
+  EXPECT_EQ(last_ui_event_->AsTouchEvent()->location_f().x(), kDeltaX);
+  EXPECT_EQ(last_ui_event_->AsTouchEvent()->location_f().y(), kDeltaY);
+  EXPECT_EQ(last_ui_event_->AsTouchEvent()->pointer_details().id, 0);
 }
 
 }  // namespace

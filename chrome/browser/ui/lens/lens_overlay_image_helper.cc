@@ -7,6 +7,7 @@
 #include <numbers>
 
 #include "base/compiler_specific.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_math.h"
@@ -428,17 +429,4 @@ SkColor FindBestMatchedColorOrTransparent(
   return *closest_color;
 }
 
-bool AreBitmapsEqual(const SkBitmap& bitmap1, const SkBitmap& bitmap2) {
-  // Verify the dimensions are the same.
-  if (bitmap1.width() != bitmap2.width() ||
-      bitmap1.height() != bitmap2.height()) {
-    return false;
-  }
-
-  // Compare pixel data
-  SkPixmap pixmap1 = bitmap1.pixmap();
-  SkPixmap pixmap2 = bitmap2.pixmap();
-  return UNSAFE_TODO(memcmp(pixmap1.addr(), pixmap2.addr(),
-                            pixmap1.computeByteSize())) == 0;
-}
 }  // namespace lens

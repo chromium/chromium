@@ -6,6 +6,7 @@
 #define CHROME_UPDATER_CHECK_FOR_UPDATES_TASK_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/updater/update_service.h"

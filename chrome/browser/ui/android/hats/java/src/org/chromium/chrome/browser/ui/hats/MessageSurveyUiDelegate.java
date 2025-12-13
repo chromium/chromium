@@ -12,7 +12,6 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -30,33 +29,25 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.Supplier;
 
 /**
- * <p>
  * Public implementation that presents survey with a Clank message. Once a survey is ready to show,
  * the delegate will wait until the current tab is fully loaded and display a survey message. The
- * client features using this implementation will need to supply a {@link PropertyModel} with
- * {@link MessageBannerProperties}.
- * </p>
+ * client features using this implementation will need to supply a {@link PropertyModel} with {@link
+ * MessageBannerProperties}.
  *
- * <p>
- * Several things to be aware of:
+ * <p>Several things to be aware of:
+ *
  * <ul>
- *   <li>
- *     Survey request will be dropped if user is in or switched into incognito mode.
- *   </li>
- *   <li>
- *     {@link MessageBannerProperties#ON_PRIMARY_ACTION} and {@link
- *      MessageBannerProperties#ON_DISMISSED} will be wrapped in a new callback within this class in
- *      order to trigger / clean up surveys accordingly.
- *   </li>
- *   <li>
- *     Due to the nature of message system, the survey invitation is not always guaranteed to be
- *     shown. If {@link MessageBannerProperties#ON_PRIMARY_ACTION} is provided in the input {@link
- *     PropertyModel}, it'll be called once survey invitation is accepted.
- *  </li>
+ *   <li>Survey request will be dropped if user is in or switched into incognito mode.
+ *   <li>{@link MessageBannerProperties#ON_PRIMARY_ACTION} and {@link
+ *       MessageBannerProperties#ON_DISMISSED} will be wrapped in a new callback within this class
+ *       in order to trigger / clean up surveys accordingly.
+ *   <li>Due to the nature of message system, the survey invitation is not always guaranteed to be
+ *       shown. If {@link MessageBannerProperties#ON_PRIMARY_ACTION} is provided in the input {@link
+ *       PropertyModel}, it'll be called once survey invitation is accepted.
  * </ul>
- *</p>
  */
 @NullMarked
 public class MessageSurveyUiDelegate implements SurveyUiDelegate {
@@ -108,7 +99,7 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
     private final PropertyModel mMessageModel;
     private final MessageDispatcher mMessageDispatcher;
     private final TabModelSelector mTabModelSelector;
-    private final Supplier<Boolean> mCrashUploadPermissionSupplier;
+    private final Supplier<@Nullable Boolean> mCrashUploadPermissionSupplier;
 
     private @State int mState;
 
@@ -131,18 +122,18 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
      * Create a survey UI delegate that presents the survey with a message on the current tab.
      *
      * @param customModel Custom model to provide survey message Id, title, icon, etc. Note that the
-     *         primary and dismissal action will be wrapped around survey callbacks in order for
-     *         accepting survey to work properly.
+     *     primary and dismissal action will be wrapped around survey callbacks in order for
+     *     accepting survey to work properly.
      * @param messageDispatcher Dispatcher used to enqueue survey messages. Usually from {@link
-     *         MessageDispatcherProvider#from(WindowAndroid)}
+     *     MessageDispatcherProvider#from(WindowAndroid)}
      * @param modelSelector TabModel selector used to retrieve tab information. Used to decide if
-     *         current tab is fully loaded and not in incognito.
+     *     current tab is fully loaded and not in incognito.
      */
     public MessageSurveyUiDelegate(
             PropertyModel customModel,
             MessageDispatcher messageDispatcher,
             TabModelSelector modelSelector,
-            Supplier<Boolean> crashUploadPermissionSupplier) {
+            Supplier<@Nullable Boolean> crashUploadPermissionSupplier) {
         mMessageModel = customModel;
         mTabModelSelector = modelSelector;
         mMessageDispatcher = messageDispatcher;
@@ -272,7 +263,7 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
                     mState = State.ACCEPTED;
                     runIfNotNull(mOnSurveyAccepted);
                     if (wrappedOnAcceptAction != null) {
-                        wrappedOnAcceptAction.get();
+                        var unused = wrappedOnAcceptAction.get();
                     }
                     destroy();
                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;

@@ -32,3 +32,5 @@ bool AndroidOverlayProviderImpl::AreOverlaysSupported() {
 }
 
 }  // namespace content
+
+DEFINE_JNI(AndroidOverlayProviderImpl)

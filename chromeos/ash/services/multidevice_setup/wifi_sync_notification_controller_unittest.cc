@@ -20,6 +20,7 @@
 #include "chromeos/ash/services/multidevice_setup/fake_host_status_provider.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,7 +62,8 @@ class MultiDeviceSetupWifiSyncNotificationControllerTest
     // Allow Wifi Sync by policy
     test_pref_service_->registry()->RegisterBooleanPref(
         kWifiSyncAllowedPrefName, true);
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
     fake_device_sync_client_ =
         std::make_unique<device_sync::FakeDeviceSyncClient>();
     fake_device_sync_client_->set_synced_devices(test_devices_);

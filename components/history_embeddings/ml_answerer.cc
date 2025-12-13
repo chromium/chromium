@@ -10,16 +10,16 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 
 namespace history_embeddings {
 
-using ModelExecutionError = optimization_guide::
-    OptimizationGuideModelExecutionError::ModelExecutionError;
-using optimization_guide::OptimizationGuideModelExecutionError;
+using optimization_guide::OnDeviceError;
+using optimization_guide::OnDeviceSession;
 using optimization_guide::OptimizationGuideModelStreamingExecutionResult;
 using optimization_guide::SessionConfigParams;
 using optimization_guide::proto::Answer;
@@ -87,9 +87,7 @@ class MlAnswerer::SessionManager {
 
   // Adds a session that contains query and passage context.
   // It exists until this manager resets or gets destroyed.
-  void AddSession(
-      std::unique_ptr<OptimizationGuideModelExecutor::Session> session,
-      std::string url) {
+  void AddSession(std::unique_ptr<OnDeviceSession> session, std::string url) {
     sessions_.push_back(std::move(session));
     urls_.push_back(url);
   }
@@ -186,17 +184,19 @@ class MlAnswerer::SessionManager {
   // Callback to be repeatedly called during streaming execution.
   void StreamingExecutionCallback(
       size_t session_index,
-      optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
-      std::unique_ptr<optimization_guide::proto::HistoryAnswerLoggingData>
-          logging_data) {
+      optimization_guide::OptimizationGuideModelStreamingExecutionResult
+          result) {
     auto log_entry = std::make_unique<optimization_guide::ModelQualityLogEntry>(
         logs_uploader_);
-    log_entry->log_ai_data_request()->set_allocated_history_answer(
-        logging_data.release());
+    if (result.execution_info) {
+      *log_entry->log_ai_data_request()
+           ->mutable_history_answer()
+           ->mutable_model_execution_info() = *result.execution_info;
+    }
     if (!result.response.has_value()) {
       ComputeAnswerStatus status = ComputeAnswerStatus::kExecutionFailure;
-      auto error = result.response.error().error();
-      if (error == ModelExecutionError::kFiltered) {
+      auto error = result.response.error();
+      if (error == OnDeviceError::kFiltered) {
         status = ComputeAnswerStatus::kFiltered;
       }
       FinishCallback(AnswererResult(status, query_, Answer(),
@@ -205,6 +205,9 @@ class MlAnswerer::SessionManager {
       auto response = optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::HistoryAnswerResponse>(
           std::move(result.response).value().response);
+      *log_entry->log_ai_data_request()
+           ->mutable_history_answer()
+           ->mutable_response() = *response;
       AnswererResult answerer_result(ComputeAnswerStatus::kSuccess, query_,
                                      response->answer(), std::move(log_entry),
                                      urls_[session_index], {});
@@ -251,8 +254,8 @@ class MlAnswerer::SessionManager {
       optimization_guide::proto::HistoryAnswerRequest request;
       const size_t session_index = std::get<0>(session_scores[max_index]);
       VLOG(3) << "Running ExecuteModel for session " << session_index;
-      optimization_guide::ExecuteModelSessionWithLogging(
-          sessions_[session_index].get(), request,
+      sessions_[session_index].get()->ExecuteModel(
+          request,
           base::BindRepeating(&SessionManager::StreamingExecutionCallback,
                               weak_ptr_factory_.GetWeakPtr(), session_index));
     } else {
@@ -262,8 +265,7 @@ class MlAnswerer::SessionManager {
     }
   }
 
-  std::vector<std::unique_ptr<OptimizationGuideModelExecutor::Session>>
-      sessions_;
+  std::vector<std::unique_ptr<OnDeviceSession>> sessions_;
   // URLs associated with sessions by index.
   std::vector<std::string> urls_;
   std::string query_;
@@ -274,7 +276,7 @@ class MlAnswerer::SessionManager {
   base::WeakPtrFactory<SessionManager> weak_ptr_factory_;
 };
 
-MlAnswerer::MlAnswerer(OptimizationGuideModelExecutor* model_executor,
+MlAnswerer::MlAnswerer(OnDeviceCapability* model_executor,
                        ModelQualityLogsUploaderService* logs_uploader)
     : model_executor_(model_executor) {
   if (logs_uploader) {
@@ -303,13 +305,12 @@ void MlAnswerer::ComputeAnswer(std::string query,
       base::BindOnce(&MlAnswerer::SessionManager::OnSessionsStarted,
                      session_manager_->GetWeakPtr()));
 
-  const SessionConfigParams session_config{
-      .execution_mode = SessionConfigParams::ExecutionMode::kOnDeviceOnly};
+  const SessionConfigParams session_config;
   // Start a session for each URL.
   for (const auto& url_and_passages : context.url_passages_map) {
     std::unique_ptr<Session> session = model_executor_->StartSession(
-        optimization_guide::ModelBasedCapabilityKey::kHistorySearch,
-        session_config);
+        optimization_guide::mojom::OnDeviceFeature::kHistorySearch,
+        session_config, nullptr);
     if (session == nullptr) {
       session_manager_->FinishAndResetSessions(AnswererResult(
           ComputeAnswerStatus::kModelUnavailable, query, Answer()));

@@ -18,15 +18,15 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
+#include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/certificate_provider/certificate_provider.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service.h"
-#include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/auth/challenge_response/cert_utils.h"
 #include "chromeos/ash/components/login/auth/challenge_response/known_user_pref_utils.h"
+#include "chromeos/components/certificate_provider/certificate_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
@@ -283,7 +283,14 @@ class ExtensionLoadObserver final
       return;
     }
 
+    // OnExtensionInstalled() can cause `this` to be destroyed.
+    // Use a `WeakPtr` to prevent a use-after-free here.
+    base::WeakPtr<ExtensionLoadObserver> weak_this =
+        weak_ptr_factory_.GetWeakPtr();
     for (const std::string& extension_id : extension_ids_to_wait_for) {
+      if (!weak_this) {
+        break;
+      }
       const extensions::Extension* extension =
           GetExtensionRegistry()->GetInstalledExtension(extension_id);
       if (extension) {
@@ -423,8 +430,9 @@ void ChallengeResponseAuthKeysLoader::ContinueLoadAvailableKeysExtensionsLoaded(
   }
   // Asynchronously poll all certificate providers to get the list of
   // currently available cryptographic keys.
-  std::unique_ptr<chromeos::CertificateProvider> cert_provider =
-      GetCertificateProviderService()->CreateCertificateProvider();
+  std::unique_ptr<chromeos::certificate_provider::CertificateProvider>
+      cert_provider =
+          GetCertificateProviderService()->CreateCertificateProvider();
   cert_provider->GetCertificates(base::BindOnce(
       &ChallengeResponseAuthKeysLoader::ContinueLoadAvailableKeysWithCerts,
       weak_ptr_factory_.GetWeakPtr(), account_id,

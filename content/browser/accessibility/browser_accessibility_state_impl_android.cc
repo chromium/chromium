@@ -254,12 +254,11 @@ enum {
 }  // namespace
 
 BrowserAccessibilityStateImplAndroid::BrowserAccessibilityStateImplAndroid() {
-  ui::AccessibilityState::RegisterAccessibilityStateDelegate(this);
+  accessibility_state_observation_.Observe(ui::AccessibilityState::Get());
 }
 
-BrowserAccessibilityStateImplAndroid::~BrowserAccessibilityStateImplAndroid() {
-  ui::AccessibilityState::UnregisterAccessibilityStateDelegate(this);
-}
+BrowserAccessibilityStateImplAndroid::~BrowserAccessibilityStateImplAndroid() =
+    default;
 
 void BrowserAccessibilityStateImplAndroid::
     RecordAccessibilityServiceInfoHistograms() {
@@ -406,29 +405,6 @@ void BrowserAccessibilityStateImplAndroid::OnAnimatorDurationScaleChanged() {
 
   gfx::Animation::UpdatePrefersReducedMotion();
   NotifyWebContentsPreferencesChanged();
-}
-
-void BrowserAccessibilityStateImplAndroid::OnDisplayInversionEnabledChanged(
-    bool enabled) {
-  // We need to call into GetInstanceForWeb on the UI thread,
-  // so ensure that we setup the notification on the correct thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForWeb();
-  native_theme->set_inverted_colors(enabled);
-  native_theme->NotifyOnNativeThemeUpdated();
-}
-
-void BrowserAccessibilityStateImplAndroid::OnContrastLevelChanged(
-    bool highContrastEnabled) {
-  // We need to call into GetInstanceForWeb on the UI thread,
-  // so ensure that we setup the notification on the correct thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForWeb();
-  native_theme->SetPreferredContrast(
-      highContrastEnabled ? ui::NativeTheme::PreferredContrast::kMore
-                          : ui::NativeTheme::PreferredContrast::kNoPreference);
-  native_theme->set_prefers_reduced_transparency(highContrastEnabled);
-  native_theme->NotifyOnNativeThemeUpdated();
 }
 
 void BrowserAccessibilityStateImplAndroid::RefreshAssistiveTech() {

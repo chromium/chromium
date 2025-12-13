@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -18,6 +19,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/gaia_id_literal.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
 #include "google_apis/gaia/token_binding_response_encryption_error.h"
@@ -41,7 +43,7 @@ constexpr char kTestClientId[] = "test_client_id";
 constexpr char kTestClientSecret[] = "test_client_secret";
 constexpr char kTestScope[] = "test_scope";
 constexpr char kTestRefreshToken[] = "test_refresh_token";
-constexpr GaiaId::Literal kTestUserGaiaId("test_gaia_id");
+constexpr GaiaIdLiteral kTestUserGaiaId("test_gaia_id");
 constexpr char kTestAccessToken[] = "test_access_token";
 constexpr char kTestDeviceId[] = "test_device_id";
 constexpr char kTestVersion[] = "test_version";

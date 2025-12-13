@@ -45,9 +45,12 @@ public interface EducationTipModuleActionDelegate {
     /** Opens the the history sync opt in page. */
     void showHistorySyncOptIn(Runnable removeModuleCallback);
 
+    /** Opens the settings page for the Tips Notifications channel. */
+    void showTipsNotificationsChannelSettings();
+
     /**
      * Returns the total number of tabs for relaunch across both regular and incognito browsing
-     * modes through shared preference key.
+     * modes from persisted state.
      */
-    int getTabCountForRelaunchFromSharedPrefs();
+    int getTabCountForRelaunchFromPersistentStore();
 }

@@ -32,10 +32,8 @@ const CGFloat kMultilineTextTopMargin = 12.0;
 /// too close to the trailing (button/end).
 const CGFloat kTextTrailingMargin = 0.0;
 const CGFloat kMultilineTextTrailingMargin = 4.0;
-const CGFloat kAimIconTextTrailingMargin = 12.0;
 const CGFloat kMultilineLineSpacing = 2.0;
-const CGFloat kTrailingButtonSize = 16;
-const CGFloat kTrailingButtonTrailingMargin = 18;
+const CGFloat kTrailingButtonTrailingMargin = 14;
 /// Trailing button trailing margin with popout omnibox.
 const CGFloat kTrailingButtonTrailingMarginPopout = 26.0;
 const CGFloat kTextSpacing = 2.0f;
@@ -46,18 +44,6 @@ const CGFloat kLeadingSpacePopout = 23.0;
 const CGFloat kTextIconSpace = 14.0f;
 /// Top color opacity of the `_selectedBackgroundView`.
 const CGFloat kTopGradientColorOpacity = 0.85;
-
-// Multiplier values for supported content sizes.
-const double kContentSizeMultiplierXS = 0.8;
-const double kContentSizeMultiplierS = 0.9;
-const double kContentSizeMultiplierM = 1.0;
-const double kContentSizeMultiplierL = 1.2;
-const double kContentSizeMultiplierXL = 1.4;
-const double kContentSizeMultiplier2XL = 1.6;
-const double kContentSizeMultiplier3XL = 1.8;
-// Single maximum zoom level for accessibility. This value is only slightly
-// higher than the 3XL zoom avoid visually breaking the UI.
-const double kContentSizeMultiplierAccesibility = 2.0;
 
 }  // namespace
 
@@ -82,7 +68,6 @@ const double kContentSizeMultiplierAccesibility = 2.0;
 
   /// Constraint change for the leading icon and trailing button.
   NSLayoutConstraint* _leadingIconViewWidthConstraint;
-  NSLayoutConstraint* _trailingButtonWidthConstraint;
 }
 
 - (instancetype)initWithConfiguration:
@@ -152,7 +137,12 @@ const double kContentSizeMultiplierAccesibility = 2.0;
         [[OmniboxPopupRowTrailingButton alloc] initWithFrame:CGRectZero];
     _trailingButton.translatesAutoresizingMaskIntoConstraints = NO;
     _trailingButton.isAccessibilityElement = NO;
-    _trailingButton.contentMode = UIViewContentModeScaleAspectFit;
+    _trailingButton.refineQueryArrowDirectionDown =
+        configuration.refineQueryArrowDirectionDown;
+    [_trailingButton
+        setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
 
     [_trailingButton addTarget:self
                         action:@selector(trailingButtonTapped)
@@ -198,8 +188,6 @@ const double kContentSizeMultiplierAccesibility = 2.0;
 
     _leadingIconViewWidthConstraint = [_leadingIconView.widthAnchor
         constraintEqualToConstant:kLeadingIconViewSize];
-    _trailingButtonWidthConstraint = [_trailingButton.widthAnchor
-        constraintEqualToConstant:kTrailingButtonSize];
 
     [NSLayoutConstraint activateConstraints:@[
       // Row has a minimum height.
@@ -223,7 +211,6 @@ const double kContentSizeMultiplierAccesibility = 2.0;
                          constant:kTextIconSpace],
 
       // Trailing button constraints.
-      _trailingButtonWidthConstraint,
       [_trailingButton.heightAnchor
           constraintEqualToAnchor:_trailingButton.widthAnchor],
 
@@ -242,61 +229,22 @@ const double kContentSizeMultiplierAccesibility = 2.0;
     self.configuration = configuration;
 
     [self adjustIconDimensionsForContentSize];
-    if (@available(iOS 17, *)) {
-      [self
-          registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.self ]
-                       withAction:@selector
-                       (adjustIconDimensionsForContentSize)];
-    }
+
+    [self
+        registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.self ]
+                     withAction:@selector(adjustIconDimensionsForContentSize)];
   }
   return self;
 }
 
 - (void)adjustIconDimensionsForContentSize {
-  UIContentSizeCategory currentCategory =
-      self.traitCollection.preferredContentSizeCategory;
-
-  NSDictionary<NSString*, NSNumber*>* sizeMapping = @{
-    UIContentSizeCategoryExtraSmall : @(kContentSizeMultiplierXS),
-    UIContentSizeCategorySmall : @(kContentSizeMultiplierS),
-    UIContentSizeCategoryMedium : @(kContentSizeMultiplierM),
-    UIContentSizeCategoryLarge : @(kContentSizeMultiplierL),
-    UIContentSizeCategoryExtraLarge : @(kContentSizeMultiplierXL),
-    UIContentSizeCategoryExtraExtraLarge : @(kContentSizeMultiplier2XL),
-    UIContentSizeCategoryExtraExtraExtraLarge : @(kContentSizeMultiplier3XL),
-    UIContentSizeCategoryAccessibilityMedium :
-        @(kContentSizeMultiplierAccesibility),
-    UIContentSizeCategoryAccessibilityLarge :
-        @(kContentSizeMultiplierAccesibility),
-    UIContentSizeCategoryAccessibilityExtraLarge :
-        @(kContentSizeMultiplierAccesibility),
-    UIContentSizeCategoryAccessibilityExtraExtraLarge :
-        @(kContentSizeMultiplierAccesibility),
-    UIContentSizeCategoryAccessibilityExtraExtraExtraLarge :
-        @(kContentSizeMultiplierAccesibility),
-  };
-
-  CGFloat multiplier = [sizeMapping[currentCategory] doubleValue];
+  CGFloat multiplier = OmniboxPopupRowContentSizeMultiplierForCategory(
+      self.traitCollection.preferredContentSizeCategory);
   if (multiplier) {
     _leadingIconViewWidthConstraint.constant =
         kLeadingIconViewSize * multiplier;
-    _trailingButtonWidthConstraint.constant = kTrailingButtonSize * multiplier;
   }
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if (self.traitCollection.preferredContentSizeCategory !=
-      previousTraitCollection.preferredContentSizeCategory) {
-    [self setNeedsLayout];
-  }
-}
-#endif
 
 - (void)didMoveToWindow {
   if (self.window) {
@@ -402,21 +350,20 @@ const double kContentSizeMultiplierAccesibility = 2.0;
   }
 
   // Trailing Button.
+  // Set the presentation context before the trailing icon type as it need the
+  // presentation context to correctly set up the trailing icon.
+  _trailingButton.presentationContext = configuration.presentationContext;
   _trailingButton.trailingIconType = configuration.trailingIconType;
   _trailingButton.isHighlighted = configuration.isBackgroundHighlighted;
+  _trailingButton.refineQueryArrowDirectionDown =
+      configuration.refineQueryArrowDirectionDown;
   _textTrailingToButtonConstraint.active = !_trailingButton.hidden;
 
   // Separator.
   _separator.hidden = !configuration.showSeparator;
 
   // Text margins.
-  if (configuration.trailingIconType == TrailingIconType::kSearchWithAim) {
-    _textTrailingToButtonConstraint.constant = kAimIconTextTrailingMargin;
-    _textTrailingConstraint.constant = kAimIconTextTrailingMargin;
-    _textTopConstraint.constant = configuration.primaryTextNumberOfLines > 1
-                                      ? kTextTopMargin
-                                      : kMultilineTextTopMargin;
-  } else if (configuration.primaryTextNumberOfLines > 1) {
+  if (configuration.primaryTextNumberOfLines > 1) {
     _textTrailingConstraint.constant = kMultilineTextTrailingMargin;
     _textTrailingToButtonConstraint.constant = kMultilineTextTrailingMargin;
     _textTopConstraint.constant = kMultilineTextTopMargin;
@@ -455,6 +402,10 @@ const double kContentSizeMultiplierAccesibility = 2.0;
 
 /// Handles tap on trailing button.
 - (void)trailingButtonTapped {
+  if (_configuration.trailingIconType == TrailingIconType::kOpenExistingTab) {
+    TriggerHapticFeedbackForSelectionChange();
+  }
+
   [self.configuration.delegate
       omniboxPopupRowWithConfiguration:self.configuration
        didTapTrailingButtonAtIndexPath:self.configuration.indexPath];

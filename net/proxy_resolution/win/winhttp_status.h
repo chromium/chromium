@@ -11,7 +11,7 @@ namespace net {
 // into the proxy_resolver_win service. Further detail is additionally provided
 // by the Windows error code, which will be supplied alongside this enum.
 //
-// Keep in sync with proxy_resolver_win.mojom.WinHttpStatus.
+// Keep in sync with proxy_resolver.mojom.WinHttpStatus.
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

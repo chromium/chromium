@@ -9,8 +9,6 @@ import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageInfo;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -18,7 +16,6 @@ import android.os.Build;
 import android.os.PersistableBundle;
 import android.text.Html;
 import android.text.Spanned;
-import android.text.TextUtils;
 import android.text.style.CharacterStyle;
 import android.text.style.ParagraphStyle;
 import android.text.style.UpdateAppearance;
@@ -112,13 +109,6 @@ public class ClipboardImpl extends Clipboard
     protected boolean hasCoercedText() {
         ClipDescription description = mClipboardManager.getPrimaryClipDescription();
         if (description == null) return false;
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            // On Pre-P, {@link clear()} uses an empty ClipData#newPlainText to clear the clipboard,
-            // which will create an empty MIMETYPE_TEXT_PLAIN in the clipboard, so we need to read
-            // the real clipboard data to check.
-            return !TextUtils.isEmpty(getCoercedText());
-        }
 
         return description.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
                 || description.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)
@@ -340,7 +330,7 @@ public class ClipboardImpl extends Clipboard
     }
 
     @Override
-    protected boolean hasImage() {
+    public boolean hasImage() {
         ClipDescription description = mClipboardManager.getPrimaryClipDescription();
         return hasImageMimeType(description);
     }
@@ -447,8 +437,6 @@ public class ClipboardImpl extends Clipboard
             return;
         }
 
-        grantUriPermission(uri);
-
         // ClipData.newUri may access the disk (for reading mime types), and cause
         // StrictModeDiskReadViolation if do it on UI thread.
         new AsyncTask<ClipData>() {
@@ -529,13 +517,6 @@ public class ClipboardImpl extends Clipboard
 
     @Override
     protected void clear() {
-        // clearPrimaryClip() has been observed to throw unexpected exceptions for Android P (see
-        // crbug/1203377)
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
-            setPrimaryClipNoException(ClipData.newPlainText(null, null));
-            return;
-        }
-
         try {
             mClipboardManager.clearPrimaryClip();
         } catch (Exception e) {
@@ -545,7 +526,7 @@ public class ClipboardImpl extends Clipboard
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     boolean setPrimaryClipNoException(@Nullable ClipData clip) {
         final String manufacturer = Build.MANUFACTURER.toLowerCase(Locale.US);
         // See crbug.com/1123727, there are OEM devices having strict mode violations in their
@@ -579,12 +560,11 @@ public class ClipboardImpl extends Clipboard
     /**
      * Tells the C++ Clipboard that the clipboard has changed.
      *
-     * Implements OnPrimaryClipChangedListener to listen for clipboard updates.
+     * <p>Implements OnPrimaryClipChangedListener to listen for clipboard updates.
      */
     @Override
     public void onPrimaryClipChanged() {
         RecordUserAction.record("MobileClipboardChanged");
-        revokeUriPermissionForLastSharedImage();
         notifyPrimaryClipChanged();
     }
 
@@ -602,7 +582,7 @@ public class ClipboardImpl extends Clipboard
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
-        if (!hasFocus || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+        if (!hasFocus) {
             return;
         }
         onPrimaryClipTimestampInvalidated();
@@ -619,65 +599,6 @@ public class ClipboardImpl extends Clipboard
     @Override
     public long getLastModifiedTimeMs() {
         return getLastModifiedTimeToJavaTime();
-    }
-
-    /**
-     * Grant permission to access a specific Uri to other packages. For sharing images through the
-     * system’s clipboard, Outside of Android O permissions are already managed properly by the
-     * system. But on Android O, sharing images/files needs to grant permission to each app/packages
-     * individually. Note: Don't forget to revoke the permission once the clipboard is updated.
-     */
-    @SuppressWarnings("QueryPermissionsNeeded")
-    private void grantUriPermission(Uri uri) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P || mImageFileProvider == null) {
-            return;
-        }
-
-        List<PackageInfo> installedPackages = mContext.getPackageManager().getInstalledPackages(0);
-        for (PackageInfo installedPackage : installedPackages) {
-            mContext.grantUriPermission(
-                    installedPackage.packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        }
-    }
-
-    /**
-     * Revoke the permission for previously shared image uri. This operation is only needed for
-     * Android O.
-     */
-    private void revokeUriPermissionForLastSharedImage() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            return;
-        }
-
-        if (mImageFileProvider == null) {
-            // It is ok to not revoke permission. Since |mImageFileProvider| is set very early on
-            // during process init, |mImageFileProvider| == null means we are starting.
-            // ShareImageFileUtils#clearSharedImages will clear cached image files during
-            // startup if they are not being shared. Therefore even if permission is not revoked,
-            // the other package will not get the image. The permission will be revoked later, once
-            // onPrimaryClipChanged triggered. Also, since shared images use timestamp as file
-            // name, the file name will not be reused.
-            return;
-        }
-
-        ImageFileProvider.ClipboardFileMetadata imageMetadata =
-                mImageFileProvider.getLastCopiedImageMetadata();
-        // Exit early if the URI is empty or event onPrimaryClipChanges was caused by sharing
-        // image.
-        if (imageMetadata == null
-                || imageMetadata.uri == null
-                || imageMetadata.uri.equals(Uri.EMPTY)
-                || imageMetadata.uri.equals(getImageUri())) {
-            return;
-        }
-
-        // https://developer.android.com/reference/android/content/Context#revokeUriPermission(android.net.Uri,%20int)
-        // According to the above link, it is not necessary to enumerate all of the packages like
-        // what was done in |grantUriPermission|. Context#revokeUriPermission(Uri, int) will revoke
-        // all permissions.
-        mContext.revokeUriPermission(imageMetadata.uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        // Clear uri to avoid revoke over and over.
-        mImageFileProvider.clearLastCopiedImageMetadata();
     }
 
     /**

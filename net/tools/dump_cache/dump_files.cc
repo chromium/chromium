@@ -21,7 +21,6 @@
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
-#include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/i18n/time_formatting.h"
 #include "base/message_loop/message_pump_type.h"
@@ -258,10 +257,20 @@ bool CacheDumper::GetEntry(disk_cache::EntryStore* entry,
     current_hash_++;
   }
 
+  auto hash_table_memory =
+      index_file_->as_span().subspan(offsetof(disk_cache::Index, table));
+  // SAFETY: offsetof above ensures that hash_table_memory beginning is aligned
+  // properly to store CacheAddr[]; the overall bounds come from MappedFile
+  // returning what it actually mapped.
+  base::span<const disk_cache::CacheAddr> index_table =
+      UNSAFE_BUFFERS(base::span(
+          reinterpret_cast<disk_cache::CacheAddr*>(hash_table_memory.data()),
+          hash_table_memory.size() / sizeof(disk_cache::CacheAddr)));
+
   for (int i = current_hash_; i < index_->header.table_len; i++) {
-    // Yes, we'll crash if the table is shorter than expected, but only after
-    // dumping every entry that we can find.
-    disk_cache::CacheAddr addr_i = UNSAFE_TODO(index_->table[i]);
+    // Yes, we'll CHECK-fail if the table is shorter than expected, but only
+    // after dumping every entry that we can find.
+    disk_cache::CacheAddr addr_i = index_table[i];
     if (addr_i) {
       current_hash_ = i;
       *addr = addr_i;

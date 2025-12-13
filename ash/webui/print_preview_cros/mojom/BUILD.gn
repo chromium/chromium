@@ -18,6 +18,6 @@ mojom("mojom") {
 
   public_deps = [
     "//mojo/public/mojom/base",
-    "//printing/mojom:mojom",
+    "//printing/mojom",
   ]
 }

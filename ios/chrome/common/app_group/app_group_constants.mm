@@ -102,13 +102,21 @@ NSString* const kOpenExtensionOutcomeFailureUnsupportedScheme =
 NSString* const kAccountsOnDevice = @"ios.registered_accounts_on_device";
 NSString* const kEmail = @"email";
 NSString* const kFullName = @"fullName";
-NSString* const kDefaultAccount = @"Default";
+NSString* const kNoAccount = @"No account";
+NSString* const kDefault = @"Default";
 
 NSString* const kYoutubeBundleID = @"com.google.ios.youtube";
 
 NSString* const kPrimaryAccount = @"ios.primary_account";
 
 NSString* const kChromeLikelyDefaultBrowser = @"ChromeLikelyDefaultBrowser";
+NSString* const kChromeLikelyDefaultBrowserUpdateTimestamp =
+    @"ChromeLikelyDefaultBrowserUpdateTimestamp";
+
+NSString* const kGMOSKOInstallAttribution = @"iGAStartedChromeInstall";
+
+NSString* const kAppPreviewInstallAttribution =
+    @"ChromeAppPreview_InstallAttribution";
 
 NSString* ApplicationGroup() {
   return [AppGroupHelper applicationGroup];

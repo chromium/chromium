@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/base/app_types.h"

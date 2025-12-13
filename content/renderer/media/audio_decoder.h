@@ -14,10 +14,11 @@ namespace blink { class WebAudioBus; }
 
 namespace content {
 
-// Decode in-memory audio file data.
+// Decodes encoded audio information passed in `data`. Returned a populated
+// audio bus if decoding was successful, otherwise nullptr.
 CONTENT_EXPORT
-bool DecodeAudioFileData(blink::WebAudioBus* destination_bus,
-                         base::span<const char> data);
+std::unique_ptr<blink::WebAudioBus> DecodeAudioFileData(
+    base::span<const char> data);
 
 }  // namespace content
 

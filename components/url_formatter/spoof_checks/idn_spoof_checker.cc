@@ -18,7 +18,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_local_storage.h"
 #include "build/build_config.h"
+#include "components/url_formatter/spoof_checks/skeleton_generator.h"
+#include "components/url_formatter/spoof_checks/top_domains/domains-trie.h"
 #include "net/base/lookup_string_in_fixed_set.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/extras/preload_data/decoder.h"
 #include "third_party/icu/source/common/unicode/schriter.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/regex.h"
@@ -147,14 +151,8 @@ bool IsSubdomainOf(std::u16string_view hostname,
                         base::CompareCase::INSENSITIVE_ASCII);
 }
 
-#include "components/url_formatter/spoof_checks/top_domains/domains-trie-inc.cc"
-
 // All the domains in the above file have 4 or fewer labels.
 const size_t kNumberOfLabelsToCheck = 4;
-
-IDNSpoofChecker::HuffmanTrieParams g_trie_params{
-    kTopDomainsHuffmanTree, sizeof(kTopDomainsHuffmanTree), kTopDomainsTrie,
-    kTopDomainsTrieBits, kTopDomainsRootPosition};
 
 // Allow these common words that are whole script confusables. They aren't
 // confusable with any words in Latin scripts.
@@ -162,7 +160,16 @@ const char16_t* kAllowedWholeScriptConfusableWords[] = {
     u"секс",  u"как",     u"коса",     u"курс",  u"парк",  u"такий",
     u"укроп", u"сахарок", u"покраска", u"театр", u"астро", u"пхукет"};
 
+IDNSpoofChecker::HuffmanTrieParams& GetTrieParams() {
+  static base::NoDestructor<IDNSpoofChecker::HuffmanTrieParams> params{
+      kTopDomainsHuffmanTree, kTopDomainsTrie, kTopDomainsTrieBits,
+      kTopDomainsRootPosition};
+  return *params;
+}
+
 }  // namespace
+
+IDNSpoofChecker::HuffmanTrieParams::~HuffmanTrieParams() = default;
 
 IDNSpoofChecker::WholeScriptConfusable::WholeScriptConfusable(
     std::unique_ptr<icu::UnicodeSet> arg_all_letters,
@@ -360,7 +367,7 @@ IDNSpoofChecker::~IDNSpoofChecker() {
   uspoof_close(checker_);
 }
 
-IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
+IDNSpoofCheckerResult IDNSpoofChecker::SafeToDisplayAsUnicode(
     std::u16string_view label,
     std::string_view top_level_domain,
     std::u16string_view top_level_domain_unicode) {
@@ -371,7 +378,7 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   // If uspoof_check fails (due to library failure), or if any of the checks
   // fail, treat the IDN as unsafe.
   if (U_FAILURE(status) || (result & USPOOF_ALL_CHECKS)) {
-    return Result::kICUSpoofChecks;
+    return IDNSpoofCheckerResult::kICUSpoofChecks;
   }
 
   icu::UnicodeString label_string(false /* isTerminated */, label.data(),
@@ -385,18 +392,18 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   if (label_string.length() > 1 && top_level_domain != "is" &&
       top_level_domain != "fo" &&
       icelandic_characters_.containsSome(label_string)) {
-    return Result::kTLDSpecificCharacters;
+    return IDNSpoofCheckerResult::kTLDSpecificCharacters;
   }
 
   // Disallow Latin Schwa (U+0259) for domains outside Azerbaijan's ccTLD (.az).
   if (label_string.length() > 1 && top_level_domain != "az" &&
       label_string.indexOf("ə") != -1) {
-    return Result::kTLDSpecificCharacters;
+    return IDNSpoofCheckerResult::kTLDSpecificCharacters;
   }
 
   // Disallow middle dot (U+00B7) when unsafe.
   if (HasUnsafeMiddleDot(label_string, top_level_domain)) {
-    return Result::kUnsafeMiddleDot;
+    return IDNSpoofCheckerResult::kUnsafeMiddleDot;
   }
 
   // If there's no script mixing, the input is regarded as safe without any
@@ -412,7 +419,7 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   //  - Korean: Hangul, Han, Common
   result &= USPOOF_RESTRICTION_LEVEL_MASK;
   if (result == USPOOF_ASCII) {
-    return Result::kSafe;
+    return IDNSpoofCheckerResult::kSafe;
   }
 
   if (result == USPOOF_SINGLE_SCRIPT_RESTRICTIVE &&
@@ -423,16 +430,16 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
           !IsWholeScriptConfusableAllowedForTLD(*script, top_level_domain,
                                                 top_level_domain_unicode) &&
           !base::Contains(kAllowedWholeScriptConfusableWords, label)) {
-        return Result::kWholeScriptConfusable;
+        return IDNSpoofCheckerResult::kWholeScriptConfusable;
       }
     }
     // Disallow domains that contain only numbers and number-spoofs.
     // This check is reached if domain characters come from single script.
     if (IsDigitLookalike(label_string)) {
-      return Result::kDigitLookalikes;
+      return IDNSpoofCheckerResult::kDigitLookalikes;
     }
 
-    return Result::kSafe;
+    return IDNSpoofCheckerResult::kSafe;
   }
 
   // Disallow domains that contain only numbers and number-spoofs.
@@ -441,7 +448,7 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   // the domain contains Latin + Japanese characters that are also digit
   // lookalikes.
   if (IsDigitLookalike(label_string)) {
-    return Result::kDigitLookalikes;
+    return IDNSpoofCheckerResult::kDigitLookalikes;
   }
 
   // Additional checks for |label| with multiple scripts, one of which is Latin.
@@ -452,7 +459,7 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   if (non_ascii_latin_letters_.containsSome(label_string) &&
       !(skeleton_generator_ &&
         skeleton_generator_->ShouldRemoveDiacriticsFromLabel(label_string))) {
-    return Result::kNonAsciiLatinCharMixedWithNonLatin;
+    return IDNSpoofCheckerResult::kNonAsciiLatinCharMixedWithNonLatin;
   }
 
   icu::RegexMatcher* dangerous_pattern =
@@ -553,9 +560,9 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   }
   dangerous_pattern->reset(label_string);
   if (dangerous_pattern->find()) {
-    return Result::kDangerousPattern;
+    return IDNSpoofCheckerResult::kDangerousPattern;
   }
-  return Result::kSafe;
+  return IDNSpoofCheckerResult::kSafe;
 }
 
 TopDomainEntry IDNSpoofChecker::GetSimilarTopDomain(
@@ -585,16 +592,64 @@ Skeletons IDNSpoofChecker::GetSkeletons(std::u16string_view hostname) const {
                              : Skeletons();
 }
 
+bool IDNSpoofChecker::IsTopDomain(const GURL& url) {
+  if (!url.is_valid() || !url.has_host()) {
+    return false;
+  }
+  std::string domain_and_registry =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          url.GetHost(),
+          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+  return IsDomainAndRegistryATopDomain(domain_and_registry);
+}
+
+bool IDNSpoofChecker::IsDomainAndRegistryATopDomain(
+    const std::string& domain_and_registry) {
+  if (domain_and_registry.empty()) {
+    return false;
+  }
+
+  // Convert the hostname to std::u16string_view as GetSkeletons expects it.
+  std::u16string domain16;
+  if (!base::UTF8ToUTF16(domain_and_registry.data(),
+                         domain_and_registry.length(), &domain16)) {
+    // Failed to convert, which is unlikely for a valid GURL host.
+    // Treat as not a top domain.
+    return false;
+  }
+
+  // Top domains are only accessible through their skeletons, so query the top
+  // domains trie for each skeleton of this domain.
+  for (const std::string& skeleton : GetSkeletons(domain16)) {
+    if (skeleton.empty()) {
+      continue;
+    }
+    const TopDomainEntry top_domain = LookupSkeletonInTopDomains(
+        skeleton, url_formatter::SkeletonType::kFull);
+    if (top_domain.domain.empty()) {
+      continue;
+    }
+
+    const std::u16string top_domain_utf16 =
+        base::UTF8ToUTF16(top_domain.domain);
+    if (domain16 == top_domain_utf16 ||
+        IsSubdomainOf(domain16, top_domain_utf16)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 TopDomainEntry IDNSpoofChecker::LookupSkeletonInTopDomains(
     const std::string& skeleton,
     SkeletonType skeleton_type) {
   DCHECK(!skeleton.empty());
   // There are no other guarantees about a skeleton string such as not including
   // a dot. Skeleton of certain characters are dots (e.g. "۰" (U+06F0)).
+  IDNSpoofChecker::HuffmanTrieParams& trie_params = GetTrieParams();
   TopDomainPreloadDecoder preload_decoder(
-      g_trie_params.huffman_tree, g_trie_params.huffman_tree_size,
-      g_trie_params.trie, g_trie_params.trie_bits,
-      g_trie_params.trie_root_position);
+      trie_params.huffman_tree, trie_params.trie, trie_params.trie_bits,
+      trie_params.trie_root_position);
   auto labels = base::SplitStringPiece(skeleton, ".", base::KEEP_WHITESPACE,
                                        base::SPLIT_WANT_ALL);
 
@@ -777,14 +832,14 @@ bool IDNSpoofChecker::IsLabelWholeScriptConfusableForScript(
 // static
 void IDNSpoofChecker::SetTrieParamsForTesting(
     const HuffmanTrieParams& trie_params) {
-  g_trie_params = trie_params;
+  GetTrieParams() = trie_params;
 }
 
 // static
 void IDNSpoofChecker::RestoreTrieParamsForTesting() {
-  g_trie_params = HuffmanTrieParams{
-      kTopDomainsHuffmanTree, sizeof(kTopDomainsHuffmanTree), kTopDomainsTrie,
-      kTopDomainsTrieBits, kTopDomainsRootPosition};
+  GetTrieParams() =
+      HuffmanTrieParams{kTopDomainsHuffmanTree, kTopDomainsTrie,
+                        kTopDomainsTrieBits, kTopDomainsRootPosition};
 }
 
 }  // namespace url_formatter

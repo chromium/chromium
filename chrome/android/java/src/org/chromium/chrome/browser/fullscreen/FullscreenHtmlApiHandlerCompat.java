@@ -14,7 +14,7 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -167,7 +167,7 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
     void setLayoutFullscreen(View contentView) {
         // Avoid setting this on automotive, as automotive devices are inconsistent in their
         // support for drawing edge-to-edge.
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             return;
         }
         // TODO(crbug.com/41492929): Account for floating windows.

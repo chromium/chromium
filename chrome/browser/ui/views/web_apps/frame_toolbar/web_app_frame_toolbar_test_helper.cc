@@ -14,7 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_origin_text.h"
@@ -36,7 +36,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/hit_test.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 #include "url/gurl.h"
 
 WebAppFrameToolbarTestHelper::WebAppFrameToolbarTestHelper() {
@@ -198,7 +198,7 @@ base::Value::List WebAppFrameToolbarTestHelper::GetXYWidthHeightListValue(
     const std::string& rect_value_list,
     const std::string& rect_var_name) {
   EXPECT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), rect_value_list));
-  return EvalJs(web_contents, rect_var_name).ExtractList();
+  return EvalJs(web_contents, rect_var_name).TakeValue().TakeList();
 }
 
 gfx::Rect WebAppFrameToolbarTestHelper::GetXYWidthHeightRect(
@@ -227,7 +227,7 @@ void WebAppFrameToolbarTestHelper::SetupGeometryChangeCallback(
 
 // TODO(crbug.com/40809857): Flaky.
 void WebAppFrameToolbarTestHelper::TestDraggableRegions() {
-  views::NonClientFrameView* frame_view =
+  views::FrameView* frame_view =
       browser_view()->GetWidget()->non_client_view()->frame_view();
 
   // Draggable regions take some time to initialize after opening and tests fail
@@ -333,9 +333,9 @@ void WebAppFrameToolbarTestHelper::SetOriginTextLabelForTesting(
 void WebAppFrameToolbarTestHelper::SetViews(Browser* app_browser) {
   app_browser_ = app_browser;
   browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);
-  views::NonClientFrameView* frame_view =
+  views::FrameView* frame_view =
       browser_view_->GetWidget()->non_client_view()->frame_view();
-  frame_view_ = static_cast<BrowserNonClientFrameView*>(frame_view);
+  frame_view_ = static_cast<BrowserFrameView*>(frame_view);
   root_view_ = browser_view_->GetWidget()->GetRootView();
 
   web_app_frame_toolbar_ = browser_view_->web_app_frame_toolbar_for_testing();

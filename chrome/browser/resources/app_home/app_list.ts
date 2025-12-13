@@ -77,6 +77,7 @@ export class AppListElement extends CrLitElement {
     this.listenerIds_ = [
       this.mojoEventTarget_.addApp.addListener(this.addApp_.bind(this)),
       this.mojoEventTarget_.removeApp.addListener(this.removeApp_.bind(this)),
+      this.mojoEventTarget_.updateApp.addListener(this.updateApp_.bind(this)),
     ];
     document.addEventListener('contextmenu', this.boundContextMenuListener_);
     document.addEventListener('keydown', this.boundKeydownListener_);
@@ -208,6 +209,18 @@ export class AppListElement extends CrLitElement {
       this.apps_.splice(index, 1);
       this.requestUpdate();
     }
+  }
+
+  private updateApp_(appInfo: AppInfo) {
+    const currIndex = this.apps_.findIndex(app => app.id === appInfo.id);
+    // If the app is found in the existing grid, remove it.
+    if (currIndex !== -1) {
+      this.apps_.splice(currIndex, 1);
+    }
+
+    // Add the current app in the correct place in the "grid" to
+    // show the app. This will call `requestUpdate()` under the hood.
+    this.addApp_(appInfo);
   }
 
   private closeCurrentAppMenu() {

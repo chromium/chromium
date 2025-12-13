@@ -5,14 +5,15 @@
 #ifndef COMPONENTS_VARIATIONS_SYNTHETIC_TRIAL_REGISTRY_H_
 #define COMPONENTS_VARIATIONS_SYNTHETIC_TRIAL_REGISTRY_H_
 
-#include <vector>
 #include <string_view>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/observer_list.h"
+#include "base/types/pass_key.h"
 #include "components/variations/synthetic_trials.h"
 
 namespace metrics {
@@ -22,6 +23,8 @@ class MetricsServiceAccessor;
 namespace content {
 class SyntheticTrialSyncer;
 }  // namespace content
+
+class UmaSessionStatsExternalExperimentRegistrar;
 
 namespace variations {
 
@@ -67,8 +70,18 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
   // external experiment ids, replacing them with the new list (which may be
   // empty). If |mode| is kDoNotOverrideExistingIds, any new ids that are not
   // already registered will be added, but existing ones will not be replaced.
-  void RegisterExternalExperiments(const std::vector<int>& experiment_ids,
-                                   OverrideMode mode);
+  //
+  // Restricted to only be called by UmaSessionStatsExternalExperimentRegistrar
+  // for privacy reasons.
+  void RegisterExternalExperiments(
+      base::PassKey<UmaSessionStatsExternalExperimentRegistrar> pass_key,
+      const std::vector<int>& experiment_ids,
+      OverrideMode mode);
+
+  // As above, but for testing purposes only.
+  void RegisterExternalExperimentsForTesting(
+      const std::vector<int>& experiment_ids,
+      OverrideMode mode);
 
   // Exposed publicly for testing purposes, it returns a full list of synthetic
   // field trials that are either in the past or specify |kCurrentLog| as
@@ -88,6 +101,11 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
                            GetSyntheticFieldTrialActiveGroups);
   FRIEND_TEST_ALL_PREFIXES(SyntheticTrialRegistryTest, NotifyObserver);
   FRIEND_TEST_ALL_PREFIXES(VariationsCrashKeysTest, BasicFunctionality);
+
+  // Internal implementation of RegisterExternalExperiments().
+  void RegisterExternalExperimentsInternal(
+      const std::vector<int>& experiment_ids,
+      SyntheticTrialRegistry::OverrideMode mode);
 
   // Registers a field trial name and group to be used to annotate UMA and UKM
   // reports with a particular Chrome configuration state.

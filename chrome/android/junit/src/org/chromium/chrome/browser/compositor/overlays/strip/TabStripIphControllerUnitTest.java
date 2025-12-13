@@ -97,7 +97,8 @@ public class TabStripIphControllerUnitTest {
                         mKeyboardFocusHandler,
                         mLoadTrackerCallback,
                         mUpdateHost,
-                        /* incognito= */ false);
+                        /* incognito= */ false,
+                        /* isPinned= */ false);
         mGroupTitle.setWidth(GROUP_TITLE_WIDTH);
         mGroupTitle.setHeight(TAB_STRIP_HEIGHT);
         mTab.setWidth(TAB_WIDTH);

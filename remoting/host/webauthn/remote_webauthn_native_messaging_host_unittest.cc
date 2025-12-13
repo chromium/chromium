@@ -168,7 +168,8 @@ void RemoteWebAuthnNativeMessagingHostTest::SetUp() {
 
 void RemoteWebAuthnNativeMessagingHostTest::PostMessageFromNativeHost(
     const std::string& message) {
-  auto message_json = base::JSONReader::Read(message);
+  auto message_json =
+      base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(message_json.has_value());
   std::string* message_type = message_json->GetDict().FindString(kMessageType);
   if (message_type &&
@@ -215,9 +216,9 @@ void RemoteWebAuthnNativeMessagingHostTest::
 
 void RemoteWebAuthnNativeMessagingHostTest::SendMessage(
     const base::Value::Dict& message) {
-  std::string serialized_message;
-  ASSERT_TRUE(base::JSONWriter::Write(message, &serialized_message));
-  host_->OnMessage(serialized_message);
+  std::optional<std::string> serialized_message = base::WriteJson(message);
+  ASSERT_TRUE(serialized_message.has_value());
+  host_->OnMessage(serialized_message.value());
 }
 
 const base::Value::Dict& RemoteWebAuthnNativeMessagingHostTest::ReadMessage() {

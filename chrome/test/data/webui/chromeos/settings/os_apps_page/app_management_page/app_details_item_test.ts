@@ -62,7 +62,7 @@ suite('<app-management-app-details-item>', () => {
     const typeAndSource =
         appDetailsItem.shadowRoot!.querySelector('#typeAndSource');
     assertTrue(!!typeAndSource);
-    assertEquals('Web App', typeAndSource.textContent!.trim());
+    assertEquals('Web App', typeAndSource.textContent.trim());
   });
 
   test('PWA type from browser', async () => {
@@ -78,7 +78,7 @@ suite('<app-management-app-details-item>', () => {
     assertTrue(!!typeAndSourceText);
     assertEquals(
         'Web App installed from Chrome browser',
-        typeAndSourceText.textContent!.trim());
+        typeAndSourceText.textContent.trim());
 
     const infoIconTooltip =
         appDetailsItem.shadowRoot!.querySelector('cr-tooltip-icon');
@@ -95,7 +95,7 @@ suite('<app-management-app-details-item>', () => {
     const typeAndSource =
         appDetailsItem.shadowRoot!.querySelector('#typeAndSource');
     assertTrue(!!typeAndSource);
-    assertEquals('Android App', typeAndSource.textContent!.trim());
+    assertEquals('Android App', typeAndSource.textContent.trim());
   });
 
   test('Chrome type', async () => {
@@ -107,7 +107,7 @@ suite('<app-management-app-details-item>', () => {
     const typeAndSource =
         appDetailsItem.shadowRoot!.querySelector('#typeAndSource');
     assertTrue(!!typeAndSource);
-    assertEquals('Chrome App', typeAndSource.textContent!.trim());
+    assertEquals('Chrome App', typeAndSource.textContent.trim());
   });
 
   test('Unknown type', async () => {
@@ -119,7 +119,7 @@ suite('<app-management-app-details-item>', () => {
     const typeAndSource =
         appDetailsItem.shadowRoot!.querySelector('#typeAndSource');
     assertTrue(!!typeAndSource);
-    assertEquals('', typeAndSource.textContent!.trim());
+    assertEquals('', typeAndSource.textContent.trim());
   });
 
   test('Chrome App from web store', async () => {
@@ -133,7 +133,7 @@ suite('<app-management-app-details-item>', () => {
     assertTrue(!!typeAndSource);
     assertEquals(
         'Chrome App installed from <a href="#">Chrome Web Store</a>',
-        typeAndSource.textContent!.trim());
+        typeAndSource.textContent.trim());
 
     const launchIcon = appDetailsItem.shadowRoot!.querySelector('#launchIcon');
     assertTrue(!!launchIcon);
@@ -152,7 +152,7 @@ suite('<app-management-app-details-item>', () => {
     assertTrue(!!appSize);
     assertNull(appDetailsItem.shadowRoot!.querySelector('#dataSize'));
 
-    assertEquals('App size: 17 MB', appSize.textContent!.trim());
+    assertEquals('App size: 17 MB', appSize.textContent.trim());
   });
 
   test('Android App from play store', async () => {
@@ -166,7 +166,7 @@ suite('<app-management-app-details-item>', () => {
     assertTrue(!!typeAndSource);
     assertEquals(
         'Android App installed from <a href="#">Google Play Store</a>',
-        typeAndSource.textContent!.trim());
+        typeAndSource.textContent.trim());
 
     const launchIcon = appDetailsItem.shadowRoot!.querySelector('#launchIcon');
     assertTrue(!!launchIcon);
@@ -183,7 +183,7 @@ suite('<app-management-app-details-item>', () => {
     assertTrue(!!typeAndSourceText);
     assertEquals(
         'ChromeOS System App preinstalled on your Chromebook',
-        typeAndSourceText.textContent!.trim());
+        typeAndSourceText.textContent.trim());
   });
 
   test('Android App Install reason policy', async function() {
@@ -197,7 +197,7 @@ suite('<app-management-app-details-item>', () => {
     assertTrue(!!typeAndSourceText);
     assertEquals(
         'Android app installed by your device administrator.',
-        typeAndSourceText.textContent!.trim());
+        typeAndSourceText.textContent.trim());
   });
 
   test('Chrome App Install reason policy', async function() {
@@ -211,7 +211,7 @@ suite('<app-management-app-details-item>', () => {
     assertTrue(!!typeAndSourceText);
     assertEquals(
         'Chrome app installed by your device administrator.',
-        typeAndSourceText.textContent!.trim());
+        typeAndSourceText.textContent.trim());
   });
 
   test('Web App Install reason policy', async function() {
@@ -225,7 +225,7 @@ suite('<app-management-app-details-item>', () => {
     assertTrue(!!typeAndSourceText);
     assertEquals(
         'Web app installed by your device administrator.',
-        typeAndSourceText.textContent!.trim());
+        typeAndSourceText.textContent.trim());
   });
 
   test('No app type Install reason policy', async function() {
@@ -237,7 +237,7 @@ suite('<app-management-app-details-item>', () => {
     const typeAndSourceText =
         appDetailsItem.shadowRoot!.querySelector('#typeAndSourceText');
     assertTrue(!!typeAndSourceText);
-    assertEquals('', typeAndSourceText.textContent!.trim());
+    assertEquals('', typeAndSourceText.textContent.trim());
   });
 
   test('Chrome app version', async () => {
@@ -248,7 +248,7 @@ suite('<app-management-app-details-item>', () => {
 
     const version = appDetailsItem.shadowRoot!.querySelector('#version');
     assertTrue(!!version);
-    assertEquals('Version: 17.2', version.textContent!.trim());
+    assertEquals('Version: 17.2', version.textContent.trim());
   });
 
   test('Android app version', async () => {
@@ -280,7 +280,7 @@ suite('<app-management-app-details-item>', () => {
     assertTrue(!!appSize);
     assertTrue(!!dataSize);
 
-    assertEquals('App size: 17 MB', appSize.textContent!.trim());
-    assertEquals('Data stored in app: 124.6 GB', dataSize.textContent!.trim());
+    assertEquals('App size: 17 MB', appSize.textContent.trim());
+    assertEquals('Data stored in app: 124.6 GB', dataSize.textContent.trim());
   });
 });

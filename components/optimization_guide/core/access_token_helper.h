@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 
 namespace signin {
 class IdentityManager;
@@ -29,7 +30,7 @@ using AccessTokenReceivedCallback =
 // Also records metrics of access token request status.
 void HandleTokenRequestFlow(bool require_token,
                             signin::IdentityManager* identity_manager,
-                            const std::set<std::string>& oauth_scopes,
+                            signin::OAuthConsumerId oauth_consumer_id,
                             AccessTokenReceivedCallback callback);
 
 }  // namespace optimization_guide

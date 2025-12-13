@@ -10,9 +10,9 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/plus_addresses/grit/plus_addresses_strings.h"
-#import "components/plus_addresses/plus_address_service.h"
-#import "components/plus_addresses/plus_address_ui_utils.h"
+#import "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
+#import "components/plus_addresses/core/browser/plus_address_service.h"
+#import "components/plus_addresses/core/browser/plus_address_ui_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -43,9 +42,6 @@
 
   // The origin to which all operations should be scoped.
   url::Origin _mainFrameOrigin;
-
-  // If `YES`, create plus address action is shown.
-  BOOL _isPlusAddressCreationFallbackEnabled;
 
   // If `YES`, the manual fallback UI was triggered for addresses, otherwise it
   // was triggered for passwords.
@@ -67,9 +63,6 @@
     _faviconLoader = faviconLoader;
     _plusAddressService = plusAddressService;
     _mainFrameOrigin = url::Origin::Create(URL);
-    _isPlusAddressCreationFallbackEnabled =
-        _plusAddressService->IsPlusAddressCreationEnabled(_mainFrameOrigin,
-                                                          isOffTheRecord);
     _isAddressManualFallbackUI = isAddressManualFallback;
   }
 
@@ -101,7 +94,8 @@
 #pragma mark - TableViewFaviconDataSource
 
 - (void)faviconForPageURL:(CrURL*)URL
-               completion:(void (^)(FaviconAttributes*))completion {
+               completion:(void (^)(FaviconAttributes* attributes,
+                                    bool cached))completion {
   CHECK(completion);
   _faviconLoader->FaviconForPageUrlOrHost(URL.gurl, gfx::kFaviconSize,
                                           completion);
@@ -211,9 +205,7 @@
   NSMutableArray* items =
       [[NSMutableArray alloc] initWithCapacity:plusAddressesCount];
 
-  NSArray<UIAction*>* menuActions = IsKeyboardAccessoryUpgradeEnabled()
-                                        ? @[ [self createManageMenuAction] ]
-                                        : @[];
+  NSArray<UIAction*>* menuActions = @[ [self createManageMenuAction] ];
 
   for (int i = 0; i < plusAddressesCount; i++) {
     NSString* cellIndexAccessibilityLabel = base::SysUTF16ToNSString(
@@ -255,7 +247,7 @@
     (const plus_addresses::PlusProfile&)plusProfile {
   GURL URL(plusProfile.facet.canonical_spec());
 
-  std::string host = URL.host();
+  std::string host = URL.GetHost();
   std::string siteName = net::registry_controlled_domains::GetDomainAndRegistry(
       host, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 
@@ -322,34 +314,6 @@
     managePlusAddressItem.accessibilityIdentifier =
         manual_fill::kManagePlusAddressAccessibilityIdentifier;
     [actions addObject:managePlusAddressItem];
-  }
-
-  // Offer plus address creation if it's supported for the current user session
-  // and if the user doesn't have any plus addresses created for the current
-  // domain.
-  if (_isPlusAddressCreationFallbackEnabled && !hasPlusAddresses) {
-    NSString* createPlusAddressesTitle = l10n_util::GetNSString(
-        IDS_PLUS_ADDRESS_MANUAL_FALLBACK_CREATE_ACTION_TEXT_IOS);
-    ManualFillActionItem* createPlusAddressItem = [[ManualFillActionItem alloc]
-        initWithTitle:createPlusAddressesTitle
-               action:^{
-                 ManualFillPlusAddressMediator* strongSelf = weakSelf;
-                 if (!strongSelf) {
-                   return;
-                 }
-                 if (strongSelf->_isAddressManualFallbackUI) {
-                   base::RecordAction(base::UserMetricsAction(
-                       "PlusAddresses."
-                       "CreateSuggestionOnAddressManualFallbackSelected"));
-                 } else {
-                   base::RecordAction(base::UserMetricsAction(
-                       "CreateSuggestionOnPasswordManualFallbackSelected"));
-                 }
-                 [weakSelf.navigator openCreatePlusAddressSheet];
-               }];
-    createPlusAddressItem.accessibilityIdentifier =
-        manual_fill::kCreatePlusAddressAccessibilityIdentifier;
-    [actions addObject:createPlusAddressItem];
   }
 
   // Offer the user to select the plus address manually if plus address filling

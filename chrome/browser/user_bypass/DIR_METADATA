@@ -1,8 +1,0 @@
-monorail: {
-  project: "chromium"
-  component: "Internals>Services>Content"
-}
-team_email: "dc-komics@google.com"
-buganizer_public: {
-  component_id: 1456865
-}

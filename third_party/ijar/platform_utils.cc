@@ -83,7 +83,7 @@ bool stat_file(const char* path, Stat* result) {
   result->file_mode = statst.st_mode;
   result->is_directory = (statst.st_mode & S_IFDIR) != 0;
   return true;
-#endif
+#endif  // defined(_WIN32) || defined(__CYGWIN__)
 }
 
 

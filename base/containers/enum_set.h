@@ -6,6 +6,7 @@
 #define BASE_CONTAINERS_ENUM_SET_H_
 
 #include <bitset>
+#include <compare>
 #include <cstddef>
 #include <initializer_list>
 #include <optional>
@@ -337,10 +338,21 @@ class EnumSet {
   // that follows the last element in the set.
   Iterator end() const { return Iterator(); }
 
-  // Returns true iff our set and the given set contain exactly the same values.
-  friend bool operator==(const EnumSet&, const EnumSet&) = default;
+  // Returns true iff `a` and `b` contain exactly the same values.
+  friend bool operator==(const EnumSet& a, const EnumSet& b) = default;
+
+  // Compares `a` and `b` by their integer representation (see ToEnumBitmask).
+  friend auto operator<=>(const EnumSet& a, const EnumSet& b) {
+    return a.ToEnumBitmask() <=> b.ToEnumBitmask();
+  }
 
   std::string ToString() const { return enums_.to_string(); }
+
+  // Allows an EnumSet to be used in absl hash containers.
+  template <typename H>
+  friend H AbslHashValue(H h, EnumSet e) {
+    return H::combine(std::move(h), e.enums_);
+  }
 
  private:
   friend EnumSet Union<E, MinEnumValue, MaxEnumValue>(EnumSet set1,

@@ -61,6 +61,7 @@ const char kDarkShareButtonOpacity[] = "dark_share_button_opacity";
 const char kDarkShareButtonIcon[] = "dark_share_button_icon";
 const char kDarkShareButtonBg[] = "dark_share_button_bg";
 
+const char kLogoType[] = "LOGO";
 const char kSimpleType[] = "SIMPLE";
 const char kAnimatedType[] = "ANIMATED";
 const char kInteractiveType[] = "INTERACTIVE";
@@ -85,6 +86,9 @@ void SetTimeValue(base::Value::Dict& dict,
 }
 
 LogoType LogoTypeFromString(std::string_view type) {
+  if (type == kLogoType) {
+    return LogoType::LOGO;
+  }
   if (type == kSimpleType) {
     return LogoType::SIMPLE;
   }
@@ -95,11 +99,13 @@ LogoType LogoTypeFromString(std::string_view type) {
     return LogoType::INTERACTIVE;
   }
   LOG(WARNING) << "invalid type " << type;
-  return LogoType::SIMPLE;
+  return LogoType::LOGO;
 }
 
 std::string LogoTypeToString(LogoType type) {
   switch (type) {
+    case LogoType::LOGO:
+      return kLogoType;
     case LogoType::SIMPLE:
       return kSimpleType;
     case LogoType::ANIMATED:
@@ -214,7 +220,8 @@ std::unique_ptr<LogoMetadata> LogoCache::LogoMetadataFromString(
     const std::string& str,
     int* logo_num_bytes,
     int* dark_logo_num_bytes) {
-  std::optional<base::Value> value = base::JSONReader::Read(str);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return nullptr;
   }
@@ -360,7 +367,7 @@ void LogoCache::LogoMetadataToString(const LogoMetadata& metadata,
   dict.Set(kIframeHeightPx, metadata.iframe_height_px);
   dict.Set(kDarkBackgroundColorKey, metadata.dark_background_color);
   SetTimeValue(dict, kExpirationTimeKey, metadata.expiration_time);
-  base::JSONWriter::Write(dict, str);
+  *str = base::WriteJson(dict).value_or("");
 }
 
 base::FilePath LogoCache::GetLogoPath() {

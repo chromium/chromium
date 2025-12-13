@@ -22,13 +22,34 @@ REPOSITORY_ROOT = os.path.abspath(
 _MB_PATH = os.path.join(REPOSITORY_ROOT, 'tools/mb/mb.py')
 GN_PATH = os.path.join(REPOSITORY_ROOT, 'buildtools/linux64/gn')
 NINJA_PATH = os.path.join(REPOSITORY_ROOT, 'third_party/ninja/ninja')
+# Cronet in Android is distributed via Mainline
+# (https://source.android.com/docs/core/ota/modular-system) to devices back to
+# Android R (API 30).
 MIN_SDK_VERSION_FOR_AOSP = 30
 ARCHS = ['x86', 'x64', 'arm', 'arm64', 'riscv64']
-AOSP_EXTRA_ARGS = ('is_cronet_for_aosp_build=true', 'use_nss_certs=false',
-                   'use_allocator_shim=false',
-                   f'default_min_sdk_version={MIN_SDK_VERSION_FOR_AOSP}')
 _GN_ARG_MATCHER = re.compile("^.*=.*$")
+# The current value of 500 is a heuristic that seems to work. If command
+# line length limitation is exceeded, reduce this number.
+_MAX_TARGETS_PER_NINJA_EXECUTION = 500
 
+
+def build_targets_list_chunking(out_path: str, targets: List[str]) -> None:
+  """Builds the provided targets by chunking them and passing each chunk into GN. This is
+  generally faster than building each target separately. However, the |chunk_size| must be
+  tweaked carefully to avoid exceeding the command-line length.
+
+  Args:
+    out_path: GN output path
+    targets: List of targets to build.
+  """
+  # Split the build script actions into chunk of _MAX_TARGETS_PER_NINJA_EXECUTION.
+  # This is needed in order not to exceed the command-line length.
+  build_script_actions_chunks = [
+      targets[i:i + _MAX_TARGETS_PER_NINJA_EXECUTION]
+      for i in range(0, len(targets), _MAX_TARGETS_PER_NINJA_EXECUTION)
+  ]
+  for chunk in build_script_actions_chunks:
+    build_all(out_path, chunk)
 
 def run(command, **kwargs):
   """See the official documentation for subprocess.check_call.
@@ -36,7 +57,11 @@ def run(command, **kwargs):
   Args:
     command (list[str]): command to be executed
   """
-  print('Executing: ' + ' '.join(shlex.quote(arg) for arg in command))
+  if kwargs.get("shell"):
+    quoted_cmd = command
+  else:
+    quoted_cmd = ' '.join(shlex.quote(arg) for arg in command)
+  print('Executing: ' + quoted_cmd)
   subprocess.check_call(command, **kwargs)
 
 
@@ -157,13 +182,34 @@ def get_transitive_deps_build_files(repo_path: str, out_dir: str,
   all_deps.remove('')
   return all_deps
 
-
 def get_gn_args_for_aosp(arch: str) -> List[str]:
-  default_args = filter_gn_args(get_android_gn_args(True, arch),
-                                ["use_remoteexec", "default_min_sdk_version"])
-  default_args.extend(AOSP_EXTRA_ARGS)
-  return default_args
-
+  # This is the source of truth for GN args for Cronet in Android.
+  # Note: for readability and discoverability, prefer to make the default value
+  # of the GN arg depend on `is_cronet_for_aosp_build` GN arg whenever possible,
+  # instead of setting the value here.
+  return (
+      # TODO: https://crbug.com/446652679 - It might be possible to drop this.
+      'dcheck_always_on = false',
+      # TODO: https://crbug.com/446652679 - It might be possible to drop this.
+      'debuggable_apks = false',
+      # Override here, instead of modifying `default_min_sdk_version`'s
+      # declaration to avoid hardcoding this value twice (there is no easy way
+      # to share a constant between GN and python files).
+      f'default_min_sdk_version={MIN_SDK_VERSION_FOR_AOSP}',
+      # TODO: https://crbug.com/446652679 - It might be possible to drop this.
+      'is_debug = false',
+      'is_cronet_for_aosp_build=true',
+      # TODO: https://crbug.com/446652679 - It might be possible to drop this.
+      'is_component_build = false',
+      # TODO: https://crbug.com/446652193 - It might be possible to drop this.
+      'is_official_build = true',
+      # TODO: https://crbug.com/446652679 - It might be possible to drop this.
+      'strip_debug_info = true',
+      # TODO: https://crbug.com/446652679 - It might be possible to drop this.
+      'symbol_level = 1',
+      f'target_cpu = "{arch}"',
+      'target_os = "android"',
+  )
 
 def android_gn_gen(is_release, target_cpu, out_dir):
   """Runs `gn gen` using Cronet's android gn_args.

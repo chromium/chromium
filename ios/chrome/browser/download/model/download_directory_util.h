@@ -20,7 +20,23 @@ bool GetTempDownloadsDirectory(base::FilePath* directory_path);
 // method does not create the directory, it just updates the path.
 void GetDownloadsDirectory(base::FilePath* directory_path);
 
+// Converts an absolute file path to a relative path based on the downloads
+// directory.
+base::FilePath ConvertToRelativeDownloadPath(
+    const base::FilePath& absolute_path);
+
+// Converts a relative file path to an absolute path by prepending the downloads
+// directory.
+base::FilePath ConvertToAbsoluteDownloadPath(
+    const base::FilePath& relative_path);
+
 // Asynchronously deletes downloads directory.
 void DeleteTempDownloadsDirectory();
+
+namespace test {
+// Sets an override for GetDownloadsDirectory for testing purposes.
+// Pass nullptr to reset to default behavior.
+void SetDownloadsDirectoryForTesting(const base::FilePath* directory);
+}  // namespace test
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_DOWNLOAD_DIRECTORY_UTIL_H_

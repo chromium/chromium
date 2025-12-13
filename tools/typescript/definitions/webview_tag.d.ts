@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -103,12 +103,14 @@ declare global {
       }
 
       export interface ContextMenus {
-        create(createProperties: ContextMenuCreateProperties): number|string;
+        create(
+            createProperties: ContextMenuCreateProperties,
+            callback?: () => void): number|string;
         update(
-            id: number|string,
-            updateProperties: ContextMenuUpdateProperties): Promise<void>;
-        remove(menuItemId: number|string): Promise<void>;
-        removeAll(): Promise<void>;
+            id: number|string, updateProperties: ContextMenuUpdateProperties,
+            callback?: () => void): void;
+        remove(menuItemId: number|string, callback?: () => void): void;
+        removeAll(callback?: () => void): void;
         onShow: ChromeEvent<(event: {
                               preventDefault: () => void,
                             }) => void>;
@@ -121,19 +123,6 @@ declare global {
       export interface DialogController {
         ok(response?: string): void;
         cancel(): void;
-      }
-
-      export enum DialogMessageType {
-        ALERT = 'alert',
-        CONFIRM = 'confirm',
-        PROMPT = 'prompt',
-      }
-
-      export enum ExitReason {
-        NORMAL = 'normal',
-        ABNORMAL = 'abnormal',
-        CRASH = 'crash',
-        KILL = 'kill',
       }
 
       export interface FindCallbackResults {
@@ -149,7 +138,9 @@ declare global {
       }
 
       export interface NewWindow {
-        attach(webview: {[key: string]: void}): void;
+        attach(webview: {
+          [key: string]: void,
+        }): void;
         discard(): void;
       }
 
@@ -160,6 +151,7 @@ declare global {
         initialWidth: number;
         initialHeight: number;
         name: string;
+        windowOpenDisposition: string;
       }
 
       export interface MediaPermissionRequest {
@@ -201,6 +193,55 @@ declare global {
         deny(): void;
       }
 
+      export interface LoadPluginPermissionRequest {
+        identifier: string;
+        name: string;
+        allow(): void;
+        deny(): void;
+      }
+
+      export interface HidPermissionRequest {
+        url: string;
+        allow(): void;
+        deny(): void;
+      }
+
+      export interface SelectionRect {
+        left: number;
+        top: number;
+        width: number;
+        height: number;
+      }
+
+      export enum ZoomMode {
+        PER_ORIGIN = 'per-origin',
+        PER_VIEW = 'per-view',
+        DISABLED = 'disabled',
+      }
+
+      export enum StopFindingAction {
+        CLEAR = 'clear',
+        KEEP = 'keep',
+        ACTIVATE = 'activate',
+      }
+
+      export enum DialogMessageType {
+        ALERT = 'alert',
+        CONFIRM = 'confirm',
+        PROMPT = 'prompt',
+      }
+
+      export enum ExitReason {
+        NORMAL = 'normal',
+        ABNORMAL = 'abnormal',
+        CRASHED = 'crashed',
+        KILLED = 'killed',
+        OOM_KILLED = 'oom killed',
+        OOM = 'oom',
+        FAILED_TO_LAUNCH = 'failed to launch',
+        INTEGRITY_FAILURE = 'integrity failure',
+      }
+
       export enum LoadAbortReason {
         ERR_ABORTED = 'ERR_ABORTED',
         ERR_INVALID_URL = 'ERR_INVALID_URL',
@@ -212,14 +253,7 @@ declare global {
         ERR_UNKNOWN_URL_SCHEME = 'ERR_UNKNOWN_URL_SCHEME',
       }
 
-      export interface LoadPluginPermissionRequest {
-        identifier: string;
-        name: string;
-        allow(): void;
-        deny(): void;
-      }
-
-      export enum NewWindowOpenDisposition {
+      export enum WindowOpenDisposition {
         IGNORE = 'ignore',
         SAVE_TO_DISK = 'save_to_disk',
         CURRENT_TAB = 'current_tab',
@@ -229,14 +263,7 @@ declare global {
         NEW_POPUP = 'new_popup',
       }
 
-      export interface SelectionRect {
-        left: number;
-        top: number;
-        width: number;
-        height: number;
-      }
-
-      export enum Permission {
+      export enum PermissionType {
         MEDIA = 'media',
         GEOLOCATION = 'geolocation',
         POINTER_LOCK = 'pointerLock',
@@ -244,13 +271,10 @@ declare global {
         LOADPLUGIN = 'loadplugin',
         FILESYSTEM = 'filesystem',
         FULLSCREEN = 'fullscreen',
+        HID = 'hid',
       }
 
-      export enum StopFindingAction {
-        CLEAR = 'clear',
-        KEEP = 'keep',
-        ACTIVATE = 'activate',
-      }
+      export function getAudioState(callback: (audible: boolean) => void): void;
 
       export interface WebRequestEventInterface {
         // Manually added to match the webview_tag.js Closure externs file.
@@ -279,51 +303,49 @@ declare global {
         setUserAgentOverride(userAgent: string): void;
       }
 
-      export enum ZoomMode {
-        PER_ORIGIN = 'per-origin',
-        PER_VIEW = 'per-view',
-        DISABLED = 'disabled',
-      }
-
-      export function getAudioState(): Promise<boolean>;
-
       export function setAudioMuted(mute: boolean): void;
 
-      export function isAudioMuted(): Promise<boolean>;
+      export function isAudioMuted(callback: (muted: boolean) => void): void;
 
       export function captureVisibleRegion(
-          options?: extensionTypes.ImageDetails): Promise<string>;
+          options: extensionTypes.ImageDetails|undefined,
+          callback: (dataUrl: string) => void): void;
 
-      export function addContentScripts(contentScriptList:
-                                            ContentScriptDetails[]): void;
+      export function addContentScripts(
+          contentScriptList: ContentScriptDetails[]): void;
 
-      export function back(): Promise<boolean>;
+      export function back(callback?: (success: boolean) => void): void;
 
       export function canGoBack(): boolean;
 
       export function canGoForward(): boolean;
 
       export function clearData(
-          options: ClearDataOptions, types: ClearDataTypeSet): Promise<void>;
+          options: ClearDataOptions, types: ClearDataTypeSet,
+          callback?: () => void): void;
 
-      export function executeScript(details: InjectDetails): Promise<any[]>;
+      export function executeScript(
+          details: InjectDetails, callback?: (result?: any[]) => void): void;
 
-      export function find(searchText: string, options?: FindOptions):
-          Promise<FindCallbackResults>;
+      export function find(
+          searchText: string, options?: FindOptions,
+          callback?: (results?: FindCallbackResults) => void): void;
 
-      export function forward(): Promise<boolean>;
+      export function forward(callback?: (success: boolean) => void): void;
 
       export function getProcessId(): number;
 
       export function getUserAgent(): string;
 
-      export function getZoom(): Promise<number>;
+      export function getZoom(callback: (zoomFactor: number) => void): void;
 
-      export function getZoomMode(): Promise<ZoomMode>;
+      export function getZoomMode(callback: (ZoomMode: ZoomMode) => void): void;
 
-      export function go(relativeIndex: number): Promise<boolean>;
+      export function go(
+          relativeIndex: number, callback?: (success: boolean) => void): void;
 
-      export function insertCSS(details: InjectDetails): Promise<void>;
+      export function insertCSS(details: InjectDetails, callback?: () => void):
+          void;
 
       export function isUserAgentOverridden(): void;
 
@@ -335,9 +357,10 @@ declare global {
 
       export function setUserAgentOverride(userAgent: string): void;
 
-      export function setZoom(zoomFactor: number): Promise<void>;
+      export function setZoom(zoomFactor: number, callback?: () => void): void;
 
-      export function setZoomMode(zoomMode: ZoomMode): Promise<void>;
+      export function setZoomMode(ZoomMode: ZoomMode, callback?: () => void):
+          void;
 
       export function stop(): void;
 
@@ -348,7 +371,8 @@ declare global {
 
       export function setSpatialNavigationEnabled(enabled: boolean): void;
 
-      export function isSpatialNavigationEnabled(): Promise<boolean>;
+      export function isSpatialNavigationEnabled(
+          callback: (enabled: boolean) => void): void;
 
       export function terminate(): void;
 
@@ -364,8 +388,10 @@ declare global {
           (messageType: DialogMessageType, messageText: string,
            dialog: DialogController) => void>;
 
-      export const exit:
-          ChromeEvent<(processID: number, reason: ExitReason) => void>;
+      export const exit: ChromeEvent<(details: {
+                                       processID: number,
+                                       reason: ExitReason,
+                                     }) => void>;
 
       export const findupdate: ChromeEvent<
           (searchText: string, numberOfMatches: number,
@@ -390,10 +416,12 @@ declare global {
       export const newwindow: ChromeEvent<
           (window: NewWindow, targetUrl: string, initialWidth: number,
            initialHeight: number, name: string,
-           windowOpenDisposition: NewWindowOpenDisposition) => void>;
+           windowOpenDisposition: WindowOpenDisposition) => void>;
 
-      export const permissionrequest: ChromeEvent<
-          (permission: Permission, request: {[key: string]: void}) => void>;
+      export const permissionrequest:
+          ChromeEvent<(permission: PermissionType, request: {
+                        [key: string]: void,
+                      }) => void>;
 
       export const responsive: ChromeEvent<(processID: number) => void>;
 
@@ -409,3 +437,4 @@ declare global {
     }
   }
 }
+

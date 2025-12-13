@@ -4,6 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import {ariaLabel} from '../tab_data.js';
+import type {TabData} from '../tab_data.js';
+
 import type {SplitNewTabPageAppElement} from './app.js';
 
 export function getHtml(this: SplitNewTabPageAppElement) {
@@ -11,6 +14,7 @@ export function getHtml(this: SplitNewTabPageAppElement) {
 <div id="header">
   <cr-icon-button id="closeButton"
       iron-icon="tab-search:close"
+      title="$i18n{splitViewCloseButtonAriaLabel}"
       @click="${this.onClose_}">
   </cr-icon-button>
   ${
@@ -22,30 +26,35 @@ export function getHtml(this: SplitNewTabPageAppElement) {
         </picture>
       ` :
                                            html``}
-  <div class="title">${this.title_}</div>
+  <h1 class="title">${this.title_}</h1>
   ${
       this.allEligibleTabs_.length === 0 ?
           html`<div class="body">$i18n{splitViewEmptyBody}</div>` :
           html``}
 </div>
 <div class="tab-list" ?hidden="${this.allEligibleTabs_.length === 0}">
-  <cr-lazy-list id="splitTabsList" class="scroller"
+  <selectable-lazy-list id="splitTabsList" class="scroller"
       .items="${this.allEligibleTabs_}"
       item-size="66"
-      .minViewportHeight="${this.minViewportHeight_}"
-      .scrollTarget="${this.scrollTarget_}"
-      @keydown="${this.onTabClick_}"
-      @viewport-filled="${this.updateFocusedItem_}"
-      .restoreFocusElement="${this.focusedItem_}"
+      max-height="${this.minViewportHeight_}"
+      role="listbox"
       .template="${
-      (item: Object, _: number) => html`<tab-search-item class="mwb-list-item"
+      (item: TabData, index: number) =>
+          html`<tab-search-item class="mwb-list-item selectable"
           hide-close-button
           hide-timestamp
           size="large"
           .data="${item}"
-          @click="${this.onTabClick_}">
+          data-index="${index}"
+          @click="${this.onTabClick_}"
+          @focus="${this.onTabFocus_}"
+          @focusout="${this.onTabFocusOut_}"
+          @keydown="${this.onTabKeyDown_}"
+          role="option"
+          aria-label="${ariaLabel(item)}"
+          tabindex="0">
         </tab-search-item>`}">
-  </cr-lazy-list>
+  </selectable-lazy-list>
 </div>
 <!--_html_template_end_-->`;
 }

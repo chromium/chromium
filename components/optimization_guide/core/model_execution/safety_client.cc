@@ -4,8 +4,10 @@
 
 #include "components/optimization_guide/core/model_execution/safety_client.h"
 
+#include "base/metrics/histogram_macros_local.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 
 namespace optimization_guide {
@@ -26,28 +28,26 @@ void SafetyClient::SetLanguageDetectionModel(
 }
 
 void SafetyClient::MaybeUpdateSafetyModel(
-    base::optional_ref<const ModelInfo> model_info) {
-  if (safety_model_info_ && model_info &&
-      safety_model_info_->GetVersion() == model_info->GetVersion()) {
+    std::unique_ptr<SafetyModelInfo> safety_model_info) {
+  if (safety_model_info_ && safety_model_info &&
+      safety_model_info_->GetVersion() == safety_model_info->GetVersion()) {
     // We could get duplicate update notifications because this object could
     // receive model updates from multiple profiles.
+    LOCAL_HISTOGRAM_BOOLEAN(
+        "OptimizationGuide.ModelExecution.OnDeviceTextSafetyUpdateSkipped",
+        true);
     return;
   }
   // New safety model means new configs, fail existing sessions.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  auto new_info = SafetyModelInfo::Load(model_info);
-  if (!new_info) {
-    safety_model_info_.reset();
-    return;
-  }
+  safety_model_info_.reset();
   remote_.reset();  // The remote's assets are outdated.
-  safety_model_info_ = std::move(new_info);
+  safety_model_info_ = std::move(safety_model_info);
 }
 
 base::expected<std::unique_ptr<SafetyChecker>, OnDeviceModelEligibilityReason>
-SafetyClient::MakeSafetyChecker(ModelBasedCapabilityKey feature,
-                                bool can_skip) {
+SafetyClient::MakeSafetyChecker(mojom::OnDeviceFeature feature, bool can_skip) {
   if (!features::ShouldUseTextSafetyClassifierModel() || can_skip) {
     // Construct a dummy checker that always passes all checks.
     return std::make_unique<SafetyChecker>(nullptr, SafetyConfig());

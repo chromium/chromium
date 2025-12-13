@@ -62,8 +62,8 @@
 //!      - Outside of an East Asian context, [text presentation sequences] have width 1 if their base character:
 //!        - Has the [`Emoji_Presentation`] property, and
 //!        - Is not in the [Enclosed Ideographic Supplement] block.
-//!    - [`'\u{2018}'`, `'\u{2019}'`, `'\u{201C}'`, and `'\u{201D}'`][General Punctuation] always have width 1 when followed by '\u{FE00}',
-//!      and width 2 when followed by '\u{FE01}'.
+//!    - [`'\u{2018}'`, `'\u{2019}'`, `'\u{201C}'`, and `'\u{201D}'`][General Punctuation] always have width 1
+//!      when followed by '\u{FE00}' or '\u{FE02}', and width 2 when followed by '\u{FE01}'.
 //!    - Script-specific ligatures:
 //!      - For all the following ligatures, the insertion of any number of [default-ignorable][`Default_Ignorable_Code_Point`]
 //!        [combining marks] anywhere in the sequence will not change the total width. In addition, for all non-Arabic

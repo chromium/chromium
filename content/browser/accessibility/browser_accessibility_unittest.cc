@@ -4,14 +4,17 @@
 
 #include "ui/accessibility/platform/browser_accessibility.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
@@ -33,6 +36,15 @@ ui::BrowserAccessibilityManager* CreateBrowserAccessibilityManager(
                                                  delegate);
 #endif
 }
+
+gfx::AcceleratedWidget MakeAcceleratedWidget(uintptr_t value) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+  return reinterpret_cast<gfx::AcceleratedWidget>(value);
+#else
+  return static_cast<gfx::AcceleratedWidget>(value);
+#endif
+}
+
 }  // namespace
 
 using RetargetEventType = ui::AXTreeManager::RetargetEventType;
@@ -110,6 +122,142 @@ TEST_F(BrowserAccessibilityTest, TestCanFireEvents) {
   EXPECT_TRUE(retarget->CanFireEvents());
 
   manager.reset();
+}
+
+TEST_F(BrowserAccessibilityTest,
+       ViewsTreeUsesManagerDelegateForNativeAccessibilityEvents) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAccessibilityTreeForViews);
+
+  // Use a minimal tree to exercise the event targeting logic.
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+
+  // Simulate a non-root manager without a root delegate so the Views tree must
+  // fall back to its own delegate for the widget lookup.
+  test_browser_accessibility_delegate_->is_root_frame_ = false;
+  test_browser_accessibility_delegate_->is_web_content_source_ = false;
+  const gfx::AcceleratedWidget expected_widget = MakeAcceleratedWidget(0x1234);
+  test_browser_accessibility_delegate_->accelerated_widget_ = expected_widget;
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      CreateBrowserAccessibilityManager(
+          MakeAXTreeUpdateForTesting(root), node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+
+  ui::BrowserAccessibility* root_obj = manager->GetBrowserAccessibilityRoot();
+  ASSERT_NE(nullptr, root_obj);
+  EXPECT_FALSE(root_obj->IsWebContent());
+
+  EXPECT_EQ(expected_widget, root_obj->GetTargetForNativeAccessibilityEvent());
+}
+
+TEST_F(BrowserAccessibilityTest,
+       ViewsAndWebTreesProduceDistinctAcceleratedWidgets) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAccessibilityTreeForViews);
+
+  const gfx::AcceleratedWidget views_widget = MakeAcceleratedWidget(0x1111);
+  const gfx::AcceleratedWidget web_widget = MakeAcceleratedWidget(0x2222);
+  const gfx::AcceleratedWidget inner_delegate_widget =
+      MakeAcceleratedWidget(0x3333);
+
+  ui::AXTreeID views_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeID web_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeID inner_web_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+  ui::AXNodeData views_root;
+  views_root.id = 1;
+  views_root.role = ax::mojom::Role::kWindow;
+  views_root.child_ids = {2};
+
+  ui::AXNodeData views_child;
+  views_child.id = 2;
+  views_child.role = ax::mojom::Role::kClient;
+  views_child.AddChildTreeId(web_tree_id);
+
+  ui::AXTreeUpdate views_update =
+      MakeAXTreeUpdateForTesting(views_root, views_child);
+  views_update.tree_data.tree_id = views_tree_id;
+  views_update.root_id = views_root.id;
+  views_update.has_tree_data = true;
+
+  ui::AXNodeData web_root;
+  web_root.id = 10;
+  web_root.role = ax::mojom::Role::kRootWebArea;
+  web_root.child_ids = {11};
+
+  ui::AXNodeData web_child_host;
+  web_child_host.id = 11;
+  web_child_host.role = ax::mojom::Role::kGenericContainer;
+  web_child_host.AddChildTreeId(inner_web_tree_id);
+
+  ui::AXTreeUpdate web_update =
+      MakeAXTreeUpdateForTesting(web_root, web_child_host);
+  web_update.tree_data.tree_id = web_tree_id;
+  web_update.root_id = web_root.id;
+  web_update.has_tree_data = true;
+
+  ui::AXNodeData inner_web_root;
+  inner_web_root.id = 20;
+  inner_web_root.role = ax::mojom::Role::kRootWebArea;
+
+  ui::AXTreeUpdate inner_web_update =
+      MakeAXTreeUpdateForTesting(inner_web_root);
+  inner_web_update.tree_data.tree_id = inner_web_tree_id;
+  inner_web_update.tree_data.parent_tree_id = web_tree_id;
+  inner_web_update.root_id = inner_web_root.id;
+  inner_web_update.has_tree_data = true;
+
+  auto views_delegate =
+      std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
+  views_delegate->is_root_frame_ = true;
+  views_delegate->is_web_content_source_ = false;
+  views_delegate->accelerated_widget_ = views_widget;
+
+  auto web_delegate = std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
+  web_delegate->is_root_frame_ = true;
+  web_delegate->is_web_content_source_ = true;
+  web_delegate->accelerated_widget_ = web_widget;
+
+  auto inner_web_delegate =
+      std::make_unique<ui::TestAXPlatformTreeManagerDelegate>();
+  inner_web_delegate->is_root_frame_ = false;
+  inner_web_delegate->is_web_content_source_ = true;
+  inner_web_delegate->accelerated_widget_ = inner_delegate_widget;
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> views_manager(
+      CreateBrowserAccessibilityManager(views_update, node_id_delegate_,
+                                        views_delegate.get()));
+  std::unique_ptr<ui::BrowserAccessibilityManager> web_manager(
+      CreateBrowserAccessibilityManager(web_update, node_id_delegate_,
+                                        web_delegate.get()));
+  std::unique_ptr<ui::BrowserAccessibilityManager> inner_web_manager(
+      CreateBrowserAccessibilityManager(inner_web_update, node_id_delegate_,
+                                        inner_web_delegate.get()));
+
+  ui::BrowserAccessibility* views_root_obj =
+      views_manager->GetBrowserAccessibilityRoot();
+  ASSERT_NE(nullptr, views_root_obj);
+  ui::BrowserAccessibility* web_root_obj =
+      web_manager->GetBrowserAccessibilityRoot();
+  ASSERT_NE(nullptr, web_root_obj);
+  ui::BrowserAccessibility* inner_web_root_obj =
+      inner_web_manager->GetBrowserAccessibilityRoot();
+  ASSERT_NE(nullptr, inner_web_root_obj);
+
+  EXPECT_FALSE(views_root_obj->IsWebContent());
+  EXPECT_TRUE(web_root_obj->IsWebContent());
+  EXPECT_TRUE(inner_web_root_obj->IsWebContent());
+
+  EXPECT_EQ(views_widget,
+            views_root_obj->GetTargetForNativeAccessibilityEvent());
+  EXPECT_EQ(web_widget, web_root_obj->GetTargetForNativeAccessibilityEvent());
+  EXPECT_EQ(web_widget,
+            inner_web_root_obj->GetTargetForNativeAccessibilityEvent());
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(USE_ATK)

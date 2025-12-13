@@ -16,6 +16,10 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/metadata/view_factory.h"
 
+namespace views {
+enum class PropertyEffects;
+}  // namespace views
+
 namespace ash {
 
 class BlurredBackgroundShield;
@@ -191,12 +195,10 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   // Sets the button's background color, text's color or icon's color. Note, do
   // this only when the button wants to have different colors from the default
   // ones.
-  void SetBackgroundColor(const SkColor background_color);
-  void SetBackgroundColorId(ui::ColorId background_color_id);
-  void SetButtonTextColor(const SkColor text_color);
-  void SetButtonTextColorId(ui::ColorId text_color_id);
-  void SetIconColor(const SkColor icon_color);
-  void SetIconColorId(ui::ColorId icon_color_id);
+  void SetBackgroundColor(ui::ColorVariant background_color);
+  void SetButtonTextColor(ui::ColorVariant text_color);
+  void SetIconColor(ui::ColorVariant icon_color);
+
   // TODO(b/290639214): This method is deprecating. Try not to change button
   // type afterward. If a new button type is needed, please create a new
   // instance.
@@ -258,12 +260,9 @@ class ASH_EXPORT PillButton : public views::LabelButton {
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, PillButton, views::LabelButton)
-VIEW_BUILDER_PROPERTY(const SkColor, BackgroundColor)
-VIEW_BUILDER_PROPERTY(ui::ColorId, BackgroundColorId)
-VIEW_BUILDER_PROPERTY(const SkColor, ButtonTextColor)
-VIEW_BUILDER_PROPERTY(ui::ColorId, ButtonTextColorId)
-VIEW_BUILDER_PROPERTY(const SkColor, IconColor)
-VIEW_BUILDER_PROPERTY(ui::ColorId, IconColorId)
+VIEW_BUILDER_PROPERTY(ui::ColorVariant, BackgroundColor)
+VIEW_BUILDER_PROPERTY(ui::ColorVariant, ButtonTextColor)
+VIEW_BUILDER_PROPERTY(ui::ColorVariant, IconColor)
 VIEW_BUILDER_PROPERTY(PillButton::Type, PillButtonType)
 VIEW_BUILDER_PROPERTY(bool, EnableBackgroundBlur)
 VIEW_BUILDER_PROPERTY(int, TextWithStringId)

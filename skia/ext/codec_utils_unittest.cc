@@ -7,7 +7,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/codec/SkCodec.h"
-#include "third_party/skia/include/codec/SkPngDecoder.h"
+#include "third_party/skia/include/codec/SkPngRustDecoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkData.h"
@@ -31,7 +31,7 @@ TEST(SkiaCodecUtils, EncodeSkPixmapAsPngAsSkDataSmokeTest) {
   SkBitmap roundtrip;
   {
     SkCodec::Result result;
-    std::unique_ptr<SkCodec> codec = SkPngDecoder::Decode(
+    std::unique_ptr<SkCodec> codec = SkPngRustDecoder::Decode(
         std::make_unique<SkMemoryStream>(std::move(png)), &result);
     ASSERT_TRUE(codec);
     ASSERT_EQ(result, SkCodec::kSuccess);
@@ -59,7 +59,7 @@ TEST(SkiaCodecUtils, EncodeSkImageAsPngAsSkDataSmokeTest) {
   SkBitmap roundtrip;
   {
     SkCodec::Result result;
-    std::unique_ptr<SkCodec> codec = SkPngDecoder::Decode(
+    std::unique_ptr<SkCodec> codec = SkPngRustDecoder::Decode(
         std::make_unique<SkMemoryStream>(std::move(png)), &result);
     ASSERT_TRUE(codec);
     ASSERT_EQ(result, SkCodec::kSuccess);

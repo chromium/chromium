@@ -113,7 +113,7 @@ void MultitaskMenu::OnDisplayMetricsChanged(const display::Display& display,
                                             uint32_t changed_metrics) {
   // Ignore changes to displays that aren't showing the menu.
   if (display.id() !=
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestView(GetWidget()->GetNativeWindow())
           .id()) {
     return;

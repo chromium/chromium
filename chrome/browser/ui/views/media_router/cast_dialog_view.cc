@@ -44,7 +44,6 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/label_button.h"

@@ -38,7 +38,7 @@ void CursorManager::Init() {
     const gfx::ImageSkia custom_icon =
         gfx::CreateVectorIcon(kTouchIndicatorIcon);
     const float dsf =
-        display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+        display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
     SkBitmap bitmap = custom_icon.GetRepresentation(dsf).GetBitmap();
     gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
     ui::Cursor cursor =

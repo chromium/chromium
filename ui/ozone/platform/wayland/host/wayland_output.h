@@ -12,15 +12,16 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/native_display_delegate.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 namespace ui {
 
-class XDGOutput;
-class WaylandZcrColorManager;
-class WaylandZcrColorManagementOutput;
 class WaylandConnection;
+class WaylandWpColorManagementOutput;
+class WaylandWpColorManager;
+class XDGOutput;
 
 // WaylandOutput objects keep track of wl_output information received through
 // the Wayland protocol, along with other related protocol extensions, such as,
@@ -104,7 +105,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
 
   void Initialize(Delegate* delegate);
   void InitializeXdgOutput(zxdg_output_manager_v1* manager);
-  void InitializeColorManagementOutput(WaylandZcrColorManager* manager);
+  void InitializeWpColorManagementOutput(WaylandWpColorManager* manager);
 
   const Metrics& GetMetrics() const;
   void SetMetrics(const Metrics& metrics);
@@ -113,8 +114,8 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   // with calls to GetMetrics().
   Id output_id() const { return output_id_; }
   float scale_factor() const;
-  WaylandZcrColorManagementOutput* color_management_output() const {
-    return color_management_output_.get();
+  WaylandWpColorManagementOutput* wp_color_management_output() const {
+    return wp_color_management_output_.get();
   }
 
   // Returns true if the output has all the state information available
@@ -182,7 +183,7 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   const Id output_id_ = 0;
   wl::Object<wl_output> output_;
   std::unique_ptr<XDGOutput> xdg_output_;
-  std::unique_ptr<WaylandZcrColorManagementOutput> color_management_output_;
+  std::unique_ptr<WaylandWpColorManagementOutput> wp_color_management_output_;
 
   float scale_factor_ = kDefaultScaleFactor;
   int32_t panel_transform_ = WL_OUTPUT_TRANSFORM_NORMAL;

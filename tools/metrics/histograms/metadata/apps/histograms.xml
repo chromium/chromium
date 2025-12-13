@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/ash/histograms.xml:AshDisplayModes) -->
 
 <histogram name="AppManagement.AppDetailViews{AppType}"
-    enum="AppManagementUserAction" expires_after="2025-12-14">
+    enum="AppManagementUserAction" expires_after="2026-04-26">
   <owner>sharminzaman@google.com</owner>
   <owner>ovn@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
@@ -229,7 +229,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppPreloadService.ServerResponseCodes"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-01-11">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-05-17">
   <owner>ovn@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <summary>
@@ -251,7 +251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppDiscovery.MallUsageTime" units="ms"
-    expires_after="2026-03-26">
+    expires_after="2026-05-31">
   <owner>joelhockey@chromium.org</owner>
   <owner>crosdev-commerce-eng@google.com</owner>
   <summary>
@@ -268,7 +268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppDiscovery.{InstallReason}.Install" enum="AppType"
-    expires_after="2026-03-26">
+    expires_after="2026-05-31">
   <owner>joelhockey@chromium.org</owner>
   <owner>crosdev-commerce-eng@google.com</owner>
   <summary>
@@ -291,7 +291,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppInstallService.AppInstallResult{AppInstallSurface}"
-    enum="AppInstallResult" expires_after="2026-01-04">
+    enum="AppInstallResult" expires_after="2026-04-12">
   <owner>alancutter@chromium.org</owner>
   <owner>crosdev-commerce-eng@google.com</owner>
   <summary>
@@ -328,7 +328,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppInstallService.WebAppInstaller.InstallResult{AppInstallSurface}"
-    enum="WebAppInstallResultCode" expires_after="2026-01-04">
+    enum="WebAppInstallResultCode" expires_after="2026-05-10">
   <owner>alancutter@chromium.org</owner>
   <owner>crosdev-commerce-eng@google.com</owner>
   <summary>
@@ -338,7 +338,7 @@ chromium-metrics-reviews@google.com.
   <token key="AppInstallSurface" variants="AppInstallSurface"/>
 </histogram>
 
-<histogram name="Apps.AppLaunch" enum="AppLaunch" expires_after="2025-11-16">
+<histogram name="Apps.AppLaunch" enum="AppLaunch" expires_after="2026-05-24">
   <owner>tapted@chromium.org</owner>
   <owner>benwells@chromium.org</owner>
   <summary>
@@ -358,7 +358,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppLaunchPerAppType" enum="AppType"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>ovn@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <summary>
@@ -368,7 +368,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppLaunchPerAppTypeV2" enum="AppTypeV2"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>ovn@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <summary>
@@ -378,7 +378,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppLaunchSource" enum="LaunchSource"
-    expires_after="2025-11-16">
+    expires_after="2026-01-18">
   <owner>ovn@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <summary>Records an app launch grouped by launch source.</summary>
@@ -412,7 +412,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.AnnotationStorage.DatabaseSize" units="MB"
-    expires_after="2026-01-11">
+    expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -423,7 +423,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.AnnotationStorage.IcaStatus"
-    enum="ImageAnnotationWorkerIcaStatus" expires_after="2026-01-31">
+    enum="ImageAnnotationWorkerIcaStatus" expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -436,7 +436,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.ImageContentAnnotator.NumberOfRetries"
-    units="count" expires_after="2025-11-30">
+    units="count" expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -448,7 +448,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.ImageContentAnnotator.Status"
-    enum="ImageContentAnnotatorStatus" expires_after="2025-11-30">
+    enum="ImageContentAnnotatorStatus" expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -460,7 +460,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.IndexingStatus"
-    enum="ImageAnnotationWorkerIndexingStatus" expires_after="2026-01-11">
+    enum="ImageAnnotationWorkerIndexingStatus" expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -474,7 +474,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.QueueNumberOfObjectsToProcess"
-    units="units" expires_after="2025-11-30">
+    units="units" expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -486,7 +486,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.QueueProcessingTime"
-    units="ms" expires_after="2025-11-30">
+    units="ms" expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -497,7 +497,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.Status"
-    enum="ImageAnnotationWorkerStatus" expires_after="2026-01-11">
+    enum="ImageAnnotationWorkerStatus" expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -508,7 +508,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.Timeout"
-    units="count" expires_after="2026-01-31">
+    units="count" expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
   <summary>
@@ -518,7 +518,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.AnnotationStorage.SqlDatabase.Status"
-    enum="SqlDatabaseStatus" expires_after="2025-11-30">
+    enum="SqlDatabaseStatus" expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -528,7 +528,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.AnnotationStorage.Status"
-    enum="AnnotationStorageStatus" expires_after="2025-11-30">
+    enum="AnnotationStorageStatus" expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -749,7 +749,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.FileSearchProvider.Latency" units="ms"
-    expires_after="2026-03-01">
+    expires_after="2026-09-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -760,7 +760,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.FileSearchProvider.Relevance" units="score"
-    expires_after="2026-02-02">
+    expires_after="2026-09-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -771,7 +771,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.FileSearchProvider.TimedOut"
-    enum="BooleanTimedOut" expires_after="2025-09-29">
+    enum="BooleanTimedOut" expires_after="2026-09-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -782,7 +782,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.GameProvider.SearchStatus"
-    enum="GameProviderSearchStatus" expires_after="2025-09-29">
+    enum="GameProviderSearchStatus" expires_after="2026-09-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -792,7 +792,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.GameProvider.UpdateStatus" enum="DiscoveryError"
-    expires_after="2026-01-11">
+    expires_after="2026-09-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -855,7 +855,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.ItemSuggestCache.ResponseSize" units="bytes"
-    expires_after="2026-03-01">
+    expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -869,7 +869,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.ItemSuggestCache.Status"
-    enum="ItemSuggestCacheStatus" expires_after="2026-03-09">
+    enum="ItemSuggestCacheStatus" expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -880,7 +880,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.ItemSuggestCache.UpdateCacheLatency" units="ms"
-    expires_after="2025-11-03">
+    expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -927,7 +927,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.NumberOfApps" units="count"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>tbarzic@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
   <owner>gzadina@google.com</owner>
@@ -1094,7 +1094,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Scoring.ScoreAboveBestMatchThreshold{Type}"
-    enum="BooleanHit" expires_after="2025-09-29">
+    enum="BooleanHit" expires_after="2026-09-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -1144,7 +1144,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.ContinueResultCount.{Type}" units="count"
-    expires_after="2026-05-01">
+    expires_after="2026-09-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -1189,7 +1189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.DriveContinueResultsShown"
-    enum="BooleanShown" expires_after="2025-09-01">
+    enum="BooleanShown" expires_after="2026-09-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -1201,7 +1201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Error" enum="AppListUserEventError"
-    expires_after="2025-09-01">
+    expires_after="2026-09-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -1246,7 +1246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Session2.Error"
-    enum="AppListUserEventError" expires_after="2026-03-01">
+    enum="AppListUserEventError" expires_after="2026-09-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>tbarzic@chromium.org</owner>
@@ -1260,7 +1260,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Session2.QueryLength{SessionConclusion}"
-    units="characters" expires_after="2026-03-01">
+    units="characters" expires_after="2026-09-01">
   <owner>amandadeacon@google.com</owner>
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
@@ -1293,7 +1293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Session2.{LauncherSearchEntryPoint}"
-    enum="LauncherSearchSessionConclusion" expires_after="2025-09-14">
+    enum="LauncherSearchSessionConclusion" expires_after="2026-09-01">
   <owner>tby@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <owner>chenjih@google.com</owner>
@@ -1322,7 +1322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.{SearchView}" enum="AppListSearchAction"
-    expires_after="2025-12-28">
+    expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -1349,7 +1349,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.{SearchView}.LaunchIndex" units="index"
-    expires_after="2026-03-01">
+    expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -1361,7 +1361,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.{SearchView}.{SearchAction}"
-    enum="AppListSearchResult" expires_after="2025-12-28">
+    enum="AppListSearchResult" expires_after="2026-12-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -1415,7 +1415,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.SearchQueryLength.Apps" units="characters"
-    expires_after="2025-09-29">
+    expires_after="2026-09-01">
   <owner>chenjih@google.com</owner>
   <owner>ypitsishin@google.com</owner>
   <owner>chromeos-launcher-search@google.com</owner>
@@ -1569,7 +1569,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.UserAction.{TabletOrClamshell}"
-    enum="LauncherUserAction" expires_after="2026-01-11">
+    enum="LauncherUserAction" expires_after="2026-03-15">
   <owner>tbarzic@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-launcher@google.com</owner>
@@ -1727,7 +1727,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListAppLaunchedV2{AppListState}"
-    enum="AppListLaunchedFrom" expires_after="2025-11-16">
+    enum="AppListLaunchedFrom" expires_after="2026-01-18">
   <owner>tbarzic@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
@@ -1796,7 +1796,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppListBubble.{AppListPage}.AppLaunchesByEntity{ExperimentalArm}"
-    enum="AppListEntity" expires_after="2025-11-30">
+    enum="AppListEntity" expires_after="2026-02-01">
   <owner>anasalazar@google.com</owner>
   <owner>anooshree@google.com</owner>
   <owner>tbarzic@chromium.org</owner>
@@ -1958,7 +1958,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListFolder.ShowHide.AnimationSmoothness" units="%"
-    expires_after="2025-12-28">
+    expires_after="2026-05-24">
   <owner>tbarzic@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
@@ -2167,7 +2167,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppsCount.{AppType}" units="Apps"
-    expires_after="2025-12-28">
+    expires_after="2026-05-03">
   <owner>ovn@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <component>1389907</component>
@@ -2181,7 +2181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppsCountPerInstallReason.{AppType}.{InstallReason}"
-    units="Apps" expires_after="2025-12-21">
+    units="Apps" expires_after="2026-04-26">
   <owner>ovn@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <component>1389907</component>
@@ -2196,8 +2196,29 @@ chromium-metrics-reviews@google.com.
   <token key="InstallReason" variants="InstallReason"/>
 </histogram>
 
+<histogram name="Apps.AppShimRegistry.HmacKeyStore.LoadResult"
+    enum="AppShimRegistryGetHmacKeyResult" expires_after="2026-08-26">
+  <owner>mek@chromium.org</owner>
+  <owner>src/chrome/browser/web_applications/OWNERS</owner>
+  <summary>
+    The result of loading the HMAC key from the app shim registry in the web
+    applications system. This is logged once per browser session, as the key
+    will be cached in memory afterwards.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppShimRegistry.HmacKeyStore.SaveResult"
+    enum="AppShimRegistrySaveHmacKeyResult" expires_after="2026-08-26">
+  <owner>mek@chromium.org</owner>
+  <owner>src/chrome/browser/web_applications/OWNERS</owner>
+  <summary>
+    The result of saving the HMAC key from the app shim registry in the web
+    applications system. This is logged on every attempt to save the key.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppShimSignatureValidationResult"
-    enum="WebAppShimSignatureValidationResult" expires_after="2025-11-16">
+    enum="WebAppShimSignatureValidationResult" expires_after="2026-05-24">
   <owner>markrowe@chromium.org</owner>
   <owner>chrome-platform-security-core@google.com</owner>
   <summary>
@@ -2243,7 +2264,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.ContextMenuExecuteCommand.{ContextMenuFromApp}{Mode}"
-    enum="ChromeOSUICommands" expires_after="2025-12-14">
+    enum="ChromeOSUICommands" expires_after="2026-04-26">
   <owner>tbarzic@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
@@ -2292,7 +2313,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.CreateShortcutIcon.Linux.Result"
-    enum="WebAppCreateShortcutIconLinuxResult" expires_after="2025-12-14">
+    enum="WebAppCreateShortcutIconLinuxResult" expires_after="2026-04-26">
   <owner>estade@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2314,8 +2335,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.CreateShortcuts.Mac.CopyShortcutResult"
+    enum="CopyShortcutResult" expires_after="2026-05-31">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the result of copying the app shortcut. This is recorded once for
+    every shim that is attempted to be created when ad-hoc signing is used for
+    web app shims.
+  </summary>
+</histogram>
+
 <histogram name="Apps.CreateShortcuts.Mac.Result2"
-    enum="WebAppCreateShortcutMacResult" expires_after="2025-11-16">
+    enum="WebAppCreateShortcutMacResult" expires_after="2026-05-24">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2323,8 +2355,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.CreateShortcuts.Mac.UpdateSignatureResult"
+    enum="UpdateSignatureResult" expires_after="2026-05-02">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the result of updating the app shortcut's signature. This is
+    recorded when ad-hoc signing is used for web app shims.
+  </summary>
+</histogram>
+
 <histogram name="Apps.DefaultAppLaunch{DefaultAppLaunchSource}"
-    enum="DefaultAppName" expires_after="2025-12-21">
+    enum="DefaultAppName" expires_after="2026-04-26">
   <owner>ovn@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -2425,7 +2467,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.FullRestoreWindowCount2" units="count"
-    expires_after="2025-12-14">
+    expires_after="2026-04-26">
   <owner>dandersson@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
@@ -2493,7 +2535,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.Launcher.DragReorderAnimationSmoothness.{TabletOrClamshell}"
-    units="%" expires_after="2025-12-31">
+    units="%" expires_after="2026-04-26">
   <owner>mmourgos@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -2528,7 +2570,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.MediaApp.Load.OtherOpenWindowCount" units="windows"
-    expires_after="2025-12-14">
+    expires_after="2026-06-07">
   <owner>tapted@chromium.org</owner>
   <owner>patricialor@chromium.org</owner>
   <summary>
@@ -2657,18 +2699,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.PreferredApps.EntryCount" units="entries"
-    expires_after="2023-07-09">
-  <owner>ovn@google.com</owner>
-  <owner>lt-web-apps-team@google.com</owner>
-  <summary>
-    Records the number of entries in the preferred apps list that was stored on
-    the disk. The preferred apps list is a vector that identifies the preferred
-    app for an intent filter. This value is recorded every time on user login
-    and we read the stored data from the disk.
-  </summary>
-</histogram>
-
 <histogram name="Apps.PromiseApp.LifecycleEvent"
     enum="PromiseAppLifecycleEvent" expires_after="2026-02-23">
   <owner>ovn@google.com</owner>
@@ -2742,7 +2772,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RestoredAppLaunch" enum="AppType"
-    expires_after="2025-12-14">
+    expires_after="2026-04-26">
   <owner>dandersson@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
@@ -2753,7 +2783,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RestoreInitSetting" enum="RestoreSetting"
-    expires_after="2025-12-14">
+    expires_after="2026-04-26">
   <owner>dandersson@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
@@ -2764,7 +2794,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RestoreSetting" enum="RestoreSetting"
-    expires_after="2025-12-14">
+    expires_after="2026-04-26">
   <owner>dandersson@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
@@ -2775,7 +2805,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.RunningDuration.{AppType}" units="ms"
-    expires_after="2025-12-28">
+    expires_after="2026-05-03">
   <owner>ovn@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <component>1389907</component>
@@ -2856,7 +2886,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.SessionRestoreExitResult" enum="SessionRestoreExitResult"
-    expires_after="2025-12-21">
+    expires_after="2026-04-26">
   <owner>dandersson@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
@@ -2867,7 +2897,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.SessionRestoreWindowCount"
-    enum="SessionRestoreWindowCount" expires_after="2026-01-11">
+    enum="SessionRestoreWindowCount" expires_after="2026-05-17">
   <owner>dandersson@chromium.org</owner>
   <owner>fanafan@chromium.org</owner>
   <owner>chromeos-wm-corexp@google.com</owner>
@@ -2946,7 +2976,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.UsageTime.{AppType}" units="ms"
-    expires_after="2025-12-28">
+    expires_after="2026-05-03">
   <owner>ovn@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <component>1389907</component>
@@ -2958,7 +2988,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.UsageTimeV2.{AppTypeV2}" units="ms"
-    expires_after="2025-12-28">
+    expires_after="2026-05-03">
   <owner>ovn@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <component>1389907</component>

@@ -4,19 +4,19 @@
 
 package org.chromium.chrome.browser.app.appmenu;
 
-import static org.junit.Assert.assertNotEquals;
-
 import androidx.test.filters.LargeTest;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -34,36 +34,138 @@ import org.chromium.ui.test.util.DeviceRestriction;
 // In phones, the New Window option in the app menu is only enabled when already in multi-window or
 // multi-display mode with Chrome not running in an adjacent window.
 @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+@EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
 public class MultiWindowAppMenuTest {
+    private static final String OPEN_WINDOW_ON_TOP =
+            ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL + ":open_adjacently/false";
+
     @Rule
     public FreshCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Test
     @LargeTest
+    @EnableFeatures(OPEN_WINDOW_ON_TOP)
+    public void testOpenNewWindow_fromWebPage_robustWindowManagementExperimentalEnabled() {
+        doTestOpenNewWindow();
+    }
+
+    @Test
+    @LargeTest
+    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
     public void testOpenNewWindow_fromWebPage() {
+        doTestOpenNewWindow();
+    }
+
+    private void doTestOpenNewWindow() {
         WebPageStation pageInFirstWindow = mCtaTestRule.startOnBlankPage();
         RegularNewTabPageStation pageInSecondWindow =
                 pageInFirstWindow.openRegularTabAppMenu().openNewWindow();
 
-        assertInDifferentWindows(pageInFirstWindow, pageInSecondWindow);
+        TransitAsserts.assertInDifferentTasks(pageInFirstWindow, pageInSecondWindow);
         TransitAsserts.assertFinalDestinations(pageInFirstWindow, pageInSecondWindow);
     }
 
     @Test
     @LargeTest
+    @EnableFeatures(OPEN_WINDOW_ON_TOP)
+    public void testOpenNewWindow_fromIncognitoNtp_robustWindowManagementExperimentalEnabled() {
+        doTestOpenNewWindow_fromIncognitoNtp();
+    }
+
+    @Test
+    @LargeTest
+    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
     public void testOpenNewWindow_fromIncognitoNtp() {
-        IncognitoNewTabPageStation pageInFirstWindow =
-                mCtaTestRule.startOnBlankPage().openNewIncognitoTabFast();
+        doTestOpenNewWindow_fromIncognitoNtp();
+    }
+
+    private void doTestOpenNewWindow_fromIncognitoNtp() {
+        WebPageStation blankPage = mCtaTestRule.startOnIncognitoBlankPage();
+        IncognitoNewTabPageStation pageInFirstWindow = blankPage.openNewIncognitoTabFast();
         RegularNewTabPageStation pageInSecondWindow =
                 pageInFirstWindow.openAppMenu().openNewWindow();
 
-        assertInDifferentWindows(pageInFirstWindow, pageInSecondWindow);
+        TransitAsserts.assertInDifferentTasks(pageInFirstWindow, pageInSecondWindow);
         TransitAsserts.assertFinalDestinations(pageInFirstWindow, pageInSecondWindow);
     }
 
-    static void assertInDifferentWindows(Station<?> station1, Station<?> station2) {
-        assertNotEquals(station1.getActivity(), station2.getActivity());
-        assertNotEquals(station1.getActivity().getWindow(), station2.getActivity().getWindow());
+    @Test
+    @LargeTest
+    @EnableFeatures(OPEN_WINDOW_ON_TOP)
+    public void testOpenAndCloseNewWindow_robustWindowManagementExperimentalEnabled() {
+        doTestOpenAndCloseNewWindow();
+    }
+
+    @Test
+    @LargeTest
+    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
+    public void testOpenAndCloseNewWindow() {
+        doTestOpenAndCloseNewWindow();
+    }
+
+    private void doTestOpenAndCloseNewWindow() {
+        WebPageStation pageInFirstWindow = mCtaTestRule.startOnBlankPage();
+        RegularNewTabPageStation pageInSecondWindow =
+                pageInFirstWindow.openRegularTabAppMenu().openNewWindow();
+
+        TransitAsserts.assertInDifferentTasks(pageInFirstWindow, pageInSecondWindow);
+
+        pageInSecondWindow.finishActivity();
+
+        TransitAsserts.assertFinalDestinations(pageInFirstWindow);
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(OPEN_WINDOW_ON_TOP)
+    public void testOpenNewWindowAndCloseOriginal_robustWindowManagementExperimentalEnabled() {
+        doTestOpenNewWindowAndCloseOriginal();
+    }
+
+    @Test
+    @LargeTest
+    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
+    public void testOpenNewWindowAndCloseOriginal() {
+        doTestOpenNewWindowAndCloseOriginal();
+    }
+
+    private void doTestOpenNewWindowAndCloseOriginal() {
+        WebPageStation pageInFirstWindow = mCtaTestRule.startOnBlankPage();
+        RegularNewTabPageStation pageInSecondWindow =
+                pageInFirstWindow.openRegularTabAppMenu().openNewWindow();
+
+        TransitAsserts.assertInDifferentTasks(pageInFirstWindow, pageInSecondWindow);
+
+        pageInFirstWindow.finishActivity();
+
+        TransitAsserts.assertFinalDestinations(pageInSecondWindow);
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(OPEN_WINDOW_ON_TOP)
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+    public void testInteractWithBothWindows_robustWindowManagementExperimentalEnabled() {
+        doTestInteractWithBothWindows();
+    }
+
+    @Test
+    @LargeTest
+    @DisableFeatures({
+        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
+        ChromeFeatureList.SETTINGS_MULTI_COLUMN
+    })
+    public void testInteractWithBothWindows() {
+        doTestInteractWithBothWindows();
+    }
+
+    private void doTestInteractWithBothWindows() {
+        WebPageStation pageInFirstWindow = mCtaTestRule.startOnBlankPage();
+        RegularNewTabPageStation pageInSecondWindow =
+                pageInFirstWindow.openRegularTabAppMenu().openNewWindow();
+
+        pageInFirstWindow.openRegularTabAppMenu().openSettings();
+        pageInSecondWindow.openRegularTabSwitcher();
     }
 }

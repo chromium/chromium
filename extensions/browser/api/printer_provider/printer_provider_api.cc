@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -310,7 +311,8 @@ class PrinterProviderAPIImpl : public PrinterProviderAPI,
       const Extension* extension,
       const base::Value::Dict* listener_filter,
       std::optional<base::Value::List>& event_args_out,
-      mojom::EventFilteringInfoPtr& event_filtering_info_out);
+      mojom::EventFilteringInfoPtr& event_filtering_info_out,
+      bool* dispatch_separate_event_out);
 
   raw_ptr<content::BrowserContext> browser_context_;
 
@@ -790,7 +792,8 @@ bool PrinterProviderAPIImpl::WillRequestPrinters(
     const Extension* extension,
     const base::Value::Dict* listener_filter,
     std::optional<base::Value::List>& event_args_out,
-    mojom::EventFilteringInfoPtr& event_filtering_info_out) {
+    mojom::EventFilteringInfoPtr& event_filtering_info_out,
+    bool* dispatch_separate_event_out) {
   if (!extension)
     return false;
   EventRouter* event_router = EventRouter::Get(browser_context_);

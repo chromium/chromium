@@ -13,7 +13,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
-#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
@@ -47,7 +46,6 @@
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/crash_keys.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/printing/printer_capabilities.h"
@@ -200,7 +198,8 @@ const char kPrintPdfAsImage[] = "printPdfAsImage";
 // Gets the print job settings dictionary from |json_str|. Assumes the Print
 // Preview WebUI does not send over invalid data.
 base::Value::Dict GetSettingsDictionary(const std::string& json_str) {
-  std::optional<base::Value> settings = base::JSONReader::Read(json_str);
+  std::optional<base::Value> settings =
+      base::JSONReader::Read(json_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   base::Value::Dict dict = std::move(*settings).TakeDict();
   CHECK(!dict.empty());
   return dict;
@@ -720,9 +719,9 @@ void PrintPreviewHandler::HandleDoPrint(const base::Value::List& args) {
     return;
   }
 
-  scoped_refptr<base::RefCountedMemory> data;
-  print_preview_ui()->GetPrintPreviewDataForIndex(
-      COMPLETE_PREVIEW_DOCUMENT_INDEX, &data);
+  scoped_refptr<base::RefCountedMemory> data =
+      print_preview_ui()->GetPrintPreviewDataForIndex(
+          COMPLETE_PREVIEW_DOCUMENT_INDEX);
   if (!data) {
     // Nothing to print, no preview available.
     RejectJavascriptCallback(base::Value(callback_id), base::Value("NO_DATA"));
@@ -981,9 +980,7 @@ void PrintPreviewHandler::SendInitialSettings(
       prefs->IsManagedPreference(prefs::kPrinterTypeDenyList);
   initial_settings.Set(kDestinationsManaged, destinations_managed);
 
-  base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  initial_settings.Set(kIsInKioskAutoPrintMode,
-                       cmdline->HasSwitch(switches::kKioskModePrinting));
+  initial_settings.Set(kIsInKioskAutoPrintMode, SilentPrintingEnabled());
   initial_settings.Set(kIsInAppKioskMode, IsRunningInForcedAppMode());
   const std::string rules_str =
       prefs->GetString(prefs::kPrintPreviewDefaultDestinationSelectionRules);

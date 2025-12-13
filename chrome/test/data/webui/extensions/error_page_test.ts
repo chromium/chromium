@@ -31,6 +31,8 @@ class MockErrorPageDelegate extends MockItemDelegate implements
     this.requestFileSourceResolver = new PromiseResolver();
     return this.requestFileSourceResolver.promise;
   }
+
+  openDevToolsForError(_error: chrome.developerPrivate.RuntimeError) {}
 }
 
 suite('ExtensionErrorPageTest', function() {
@@ -71,6 +73,7 @@ suite('ExtensionErrorPageTest', function() {
           id: 1,
           stackTrace: [],
           severity: chrome.developerPrivate.ErrorLevel.ERROR,
+          isServiceWorker: false,
         },
         runtimeErrorBase);
     extensionData = createExtensionInfo({
@@ -99,8 +102,7 @@ suite('ExtensionErrorPageTest', function() {
     let error = errorElements[0]!;
     assertEquals(
         'message',
-        error.querySelector<HTMLElement>(
-                 '.error-message')!.textContent!.trim());
+        error.querySelector<HTMLElement>('.error-message')!.textContent.trim());
     assertTrue(error.querySelector('cr-icon')!.icon === 'cr:error');
 
     const manifestError = Object.assign(
@@ -122,8 +124,7 @@ suite('ExtensionErrorPageTest', function() {
     error = errorElements[0]!;
     assertEquals(
         'invalid key',
-        error.querySelector<HTMLElement>(
-                 '.error-message')!.textContent!.trim());
+        error.querySelector<HTMLElement>('.error-message')!.textContent.trim());
     assertTrue(error.querySelector('cr-icon')!.icon === 'cr:warning');
 
     mockDelegate.testClickingCalls(
@@ -173,6 +174,7 @@ suite('ExtensionErrorPageTest', function() {
             columnNumber: 321,
             functionName: 'foo',
           }],
+          isServiceWorker: false,
         },
         runtimeErrorBase);
     // Add a new runtime error to the end.
@@ -215,11 +217,11 @@ suite('ExtensionErrorPageTest', function() {
     assertEquals(
         'Unknown',
         crCollapses[0]!.querySelector<HTMLElement>(
-                           '.context-url')!.textContent!.trim());
+                           '.context-url')!.textContent.trim());
     assertEquals(
         nextRuntimeError.contextUrl,
         crCollapses[1]!.querySelector<HTMLElement>(
-                           '.context-url')!.textContent!.trim());
+                           '.context-url')!.textContent.trim());
   });
 
   // Tests that the element can still be shown with an invalid URL. Regression
@@ -237,6 +239,7 @@ suite('ExtensionErrorPageTest', function() {
           stackTrace: [],
           severity: chrome.developerPrivate.ErrorLevel.ERROR,
           source: 'invalid_url',
+          isServiceWorker: false,
         },
         runtimeErrorBase);
     // Replace the runtime error URL with something malformed, and check that
@@ -255,14 +258,14 @@ suite('ExtensionErrorPageTest', function() {
     assertEquals(
         'message',
         errorElements[0]!.querySelector<HTMLElement>(
-                             '.error-message')!.textContent!.trim());
+                             '.error-message')!.textContent.trim());
     assertEquals('cr:error', errorElements[0]!.querySelector('cr-icon')!.icon);
     assertEquals(1, crCollapses.length);
     assertTrue(crCollapses[0]!.opened);
     assertEquals(
         'Unknown',
         crCollapses[0]!.querySelector<HTMLElement>(
-                           '.context-url')!.textContent!.trim());
+                           '.context-url')!.textContent.trim());
     const error = errorPage.getSelectedError();
     assertTrue(!!error);
     assertEquals(1, error.id);
@@ -296,5 +299,83 @@ suite('ExtensionErrorPageTest', function() {
 
     await microtasksFinished();
     assertFalse(isVisible('#dev-reload-button'));
+  });
+
+  // Tests that clicking the "View in DevTools" button for a content script
+  // runtime error with canInspect: true calls openDevToolsForError with the
+  // correct error.
+  test('DevToolsButtonContentScript', async () => {
+    // Add a content script runtime error with a valid contextUrl
+    // and renderProcessId.
+    const contentScriptError = Object.assign(
+        {
+          contextUrl: 'https://www.youtube.com/',
+          source: 'content.js',
+          message: 'Content script error',
+          renderProcessId: 12345,
+          renderViewId: 0,
+          canInspect: true,
+          id: 99,
+          stackTrace: [],
+          severity: chrome.developerPrivate.ErrorLevel.ERROR,
+          isServiceWorker: false,
+        },
+        runtimeErrorBase);
+    const dataWithContentScriptError = structuredClone(errorPage.data);
+    assertTrue(!!dataWithContentScriptError);
+    dataWithContentScriptError.runtimeErrors = [contentScriptError];
+    errorPage.data = dataWithContentScriptError;
+    await microtasksFinished();
+
+    // Find the "View in DevTools" button.
+    const devtoolsButton = errorPage.shadowRoot.querySelector<HTMLElement>(
+        '.view-devtools-button');
+    assertTrue(!!devtoolsButton);
+
+    // Test that clicking the button calls openDevToolsForError with the correct
+    // error.
+    await mockDelegate.testClickingCalls(
+        devtoolsButton, 'openDevToolsForError', [contentScriptError]);
+  });
+
+  // Tests that clicking the "View in DevTools" button for a service worker
+  // runtime error calls openDevToolsForError with the correct error.
+  test('DevToolsButtonServiceWorker', async () => {
+    // Add a service worker runtime error that can be inspected.
+    const serviceWorkerError = Object.assign(
+        {
+          contextUrl: 'chrome-extension://' + extensionId + '/background.js',
+          source: 'background.js',
+          message: 'Service worker error',
+          renderProcessId: 22222,
+          renderViewId: 0,
+          canInspect: true,
+          id: 100,
+          stackTrace: [{
+            url: 'chrome-extension://' + extensionId + '/background.js',
+            lineNumber: 42,
+            columnNumber: 10,
+            functionName: 'handleError',
+          }],
+          severity: chrome.developerPrivate.ErrorLevel.ERROR,
+          isServiceWorker: true,
+        },
+        runtimeErrorBase);
+
+    const dataWithServiceWorker = structuredClone(errorPage.data);
+    assertTrue(!!dataWithServiceWorker);
+    dataWithServiceWorker.runtimeErrors = [serviceWorkerError];
+    errorPage.data = dataWithServiceWorker;
+    await microtasksFinished();
+
+    // Find the "View in DevTools" button.
+    const devtoolsButton = errorPage.shadowRoot.querySelector<HTMLElement>(
+        '.view-devtools-button');
+    assertTrue(!!devtoolsButton);
+
+    // Test that clicking the button calls openDevToolsForError with the correct
+    // error.
+    await mockDelegate.testClickingCalls(
+        devtoolsButton, 'openDevToolsForError', [serviceWorkerError]);
   });
 });

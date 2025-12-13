@@ -42,7 +42,7 @@ class HTMLMetaCharsetParser;
 // See comments in text_resource_decoder_options.h.
 //
 // To construct a string from known-UTF-8 data without BOM, please use
-// WTF::String::FromUTF8 instead.
+// blink::String::FromUTF8 instead.
 // TODO(crbug.com/1373623): Move this to blink/renderer/platform and remove
 // BodyTextDecoder.
 class CORE_EXPORT TextResourceDecoder : public BodyTextDecoder {

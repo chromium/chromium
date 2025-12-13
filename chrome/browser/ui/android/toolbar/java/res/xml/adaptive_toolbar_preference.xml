@@ -13,9 +13,10 @@ found in the LICENSE file.
         android:selectable="false"
         android:key="adaptive_toolbar_header" />
 
-       <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="toolbar_shortcut_switch"
-        android:title="@string/toolbar_shortcut" />
+        android:title="@string/toolbar_shortcut"
+        app:backgroundStyle="card" />
 
     <org.chromium.chrome.browser.toolbar.adaptive.settings.RadioButtonGroupAdaptiveToolbarPreference
         android:key="adaptive_toolbar_radio_group"

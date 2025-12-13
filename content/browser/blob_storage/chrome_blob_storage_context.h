@@ -151,7 +151,8 @@ class CONTENT_EXPORT ChromeBlobStorageContext
 storage::BlobStorageContext* GetBlobStorageContext(
     ChromeBlobStorageContext* blob_storage_context);
 
-extern const char kBlobStorageContextKeyName[];
+inline constexpr char kBlobStorageContextKeyName[] =
+    "content_blob_storage_context";
 
 }  // namespace content
 

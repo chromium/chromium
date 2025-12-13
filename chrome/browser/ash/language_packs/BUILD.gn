@@ -26,6 +26,8 @@ static_library("language_packs") {
     "//content/public/browser",
     "//ui/gfx",
   ]
+
+  configs += [ "//build/config/linux/dbus" ]
 }
 
 source_set("unit_tests") {
@@ -51,4 +53,6 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  configs += [ "//build/config/linux/dbus" ]
 }

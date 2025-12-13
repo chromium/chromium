@@ -15,7 +15,7 @@ source_set("os_crypt") {
     "//chrome/common:channel_info",
     "//chrome/install_static:install_static_util",
     "//components/os_crypt/async/browser:key_provider_interface",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//content/public/browser",
   ]
 
@@ -36,7 +36,7 @@ source_set("app_bound_api") {
     "//chrome/common:constants",
     "//chrome/elevation_service:public_headers",
     "//chrome/install_static:install_static_util",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/sync/base",
   ]
 }
@@ -74,7 +74,9 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//chrome/common:constants",
     "//chrome/elevation_service:public_headers",
+    "//chrome/install_static/test:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
     "//testing/gmock",

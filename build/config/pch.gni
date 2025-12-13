@@ -2,9 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/clang/clang.gni")
 import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/rbe.gni")
-import("//build/toolchain/siso.gni")
 
 declare_args() {
   # Precompiled header file support is by default available, except on the
@@ -16,5 +16,6 @@ declare_args() {
   #   supported by sccache: https://github.com/mozilla/sccache/issues/978.
   # - On Linux it slows down the build.
   enable_precompiled_headers =
-      !is_official_build && !use_remoteexec && cc_wrapper == "" && !is_linux
+      !is_official_build && !use_remoteexec && cc_wrapper == "" && !is_linux &&
+      !use_clang_modules
 }

@@ -26,3 +26,9 @@ include_rules = [
   "+chrome/test",
   "+chromeos/ash/components/settings",
 ]
+
+specific_include_rules = {
+  "kiosk_arcvm_app_service_unittest\\.cc": [
+    "+chrome/browser/ash/settings/scoped_testing_cros_settings.h",
+  ],
+}

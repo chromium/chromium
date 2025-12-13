@@ -1,0 +1,13 @@
+exit code: 0
+stdout:
+stderr:
+output:
+"Library Name","Link to LICENSE file","License Name","Binary which uses library","License text for library included?","Source code for library includes the mirrored source?","Authorization date"
+"The Chromium Project","https://source.chromium.org/chromium/chromium/src/+/main:LICENSE","BSD-3-Clause","Chromium","Yes","Yes","N/A"
+"AlwaysIncluded","https://source.chromium.org/chromium/chromium/src/+/main:extra_dir/LICENSE","Apache 2.0","Chromium","Yes","Yes","N/A"
+"narluga","https://source.chromium.org/chromium/chromium/src/+/main:subdir/third_party/narluga_v1/LICENSE","Apache 2.0","Chromium","Yes","Yes","N/A"
+"narluga","https://source.chromium.org/chromium/chromium/src/+/main:subdir/third_party/narluga_v2/LICENSE","MIT","Chromium","Yes","Yes","N/A"
+"Sample 3","https://source.chromium.org/chromium/chromium/src/+/main:third_party/sample3/the_license","Apache 2.0","Chromium","Yes","Yes","N/A"
+"Sample Library","https://source.chromium.org/chromium/chromium/src/+/main:third_party/sample/LICENSE","Apache 2.0","Chromium","Yes","Yes","N/A"
+"Sample Library 2a","https://source.chromium.org/chromium/chromium/src/+/main:third_party/sample2/LICENSE.apache, https://source.chromium.org/chromium/chromium/src/+/main:third_party/sample2/LICENSE.mit","Apache 2.0, MIT","Chromium","Yes","Yes","N/A"
+"Sub Component","https://source.chromium.org/chromium/chromium/src/+/main:third_party/sample3/sub_component/LICENSE","MIT","Chromium","Yes","Yes","N/A"

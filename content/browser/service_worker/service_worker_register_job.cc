@@ -481,6 +481,9 @@ void ServiceWorkerRegisterJob::
 void ServiceWorkerRegisterJob::
     MaybeThrottleForDevToolsBeforeStartingScriptFetch(
         scoped_refptr<ServiceWorkerVersion> version) {
+  if (!version) {
+    return;
+  }
   int64_t version_id = version->version_id();
   const GURL& script_url = version->script_url();
   const GURL& scope = version->scope();
@@ -839,7 +842,8 @@ void ServiceWorkerRegisterJob::CompleteInternal(
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     if (registration()) {
       if (should_uninstall_on_failure_) {
-        registration()->DeleteAndClearWhenReady();
+        registration()->DeleteAndClearWhenReady(
+            ServiceWorkerRegistration::DeleteInitiator::kRegistrationFailure);
       }
       if (new_version()) {
         if (status == blink::ServiceWorkerStatusCode::kErrorExists) {

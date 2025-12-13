@@ -4,6 +4,8 @@
 
 source_set("model") {
   sources = [
+    "autocomplete_browser_agent.h",
+    "autocomplete_browser_agent.mm",
     "autocomplete_classifier_factory.cc",
     "autocomplete_classifier_factory.h",
     "autocomplete_provider_client_impl.h",
@@ -16,6 +18,8 @@ source_set("model") {
     "in_memory_url_index_factory.h",
     "omnibox_pedal_implementation.h",
     "omnibox_pedal_implementation.mm",
+    "omnibox_shortcuts_helper.h",
+    "omnibox_shortcuts_helper.mm",
     "on_device_tail_model_service_factory.h",
     "on_device_tail_model_service_factory.mm",
     "provider_state_service_factory.h",
@@ -28,6 +32,8 @@ source_set("model") {
     "tab_matcher_impl.mm",
     "zero_suggest_cache_service_factory.cc",
     "zero_suggest_cache_service_factory.h",
+    "zero_suggest_prefetcher.h",
+    "zero_suggest_prefetcher.mm",
   ]
 
   deps = [
@@ -35,18 +41,25 @@ source_set("model") {
     "//components/application_locale_storage",
     "//components/browser_sync",
     "//components/history/core/browser",
+    "//components/keyed_service/ios",
     "//components/language/core/browser",
     "//components/omnibox/browser",
     "//components/omnibox/resources:omnibox_pedal_synonyms",
+    "//components/optimization_guide/core:model_execution",
     "//components/prefs",
     "//components/saved_tab_groups/public",
     "//components/signin/public/identity_manager",
     "//components/strings",
     "//components/sync",
     "//components/unified_consent",
+    "//ios/chrome/browser/ai_prototyping/model",
+    "//ios/chrome/browser/aim/model:aim_availability",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/omnibox/public",
     "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/optimization_guide/mojom",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
@@ -67,12 +80,23 @@ source_set("model") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "remote_suggestions_service_factory_unittest.mm" ]
+  sources = [
+    "omnibox_shortcuts_helper_unittest.mm",
+    "remote_suggestions_service_factory_unittest.mm",
+    "zero_suggest_prefetcher_unittest.mm",
+  ]
   deps = [
     ":model",
     "//base/test:test_support",
+    "//components/omnibox/browser",
+    "//components/omnibox/browser:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/testing:nserror_support",
     "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }

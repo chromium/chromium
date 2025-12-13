@@ -20,7 +20,10 @@ namespace settingsPrivate {
 
     // Preferences are controlled neither by parent nor the child user.
     // Preference values are hard-coded values and can not be changed.
-    CHILD_RESTRICTION
+    CHILD_RESTRICTION,
+
+    // Preferences are controlled by "Safe Browsing" off setting.
+    SAFE_BROWSING_OFF
   };
 
   enum Enforcement {

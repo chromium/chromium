@@ -10,7 +10,6 @@
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -101,7 +100,7 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
     }
 
     std::string purge_additions = "";
-    if (base::Contains(request.url.path(), kPurgeURL)) {
+    if (base::Contains(request.url.GetPath(), kPurgeURL)) {
       purge_additions = kJavaScriptReload;
     }
 
@@ -142,7 +141,7 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
         selectElementWithMatcher:grey_allOf(grey_accessibilityID(
                                                 kSettingsContentSettingsCellId),
                                             grey_sufficientlyVisible(), nil)]
-           usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+           usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 300)
         onElementWithMatcher:chrome_test_util::SettingsCollectionView()]
         performAction:grey_tap()];
   }
@@ -257,7 +256,7 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  base::test::ios::kWaitForPageLoadTimeout,
                  ^bool {
-                   return [ChromeEarlGrey webStateVisibleURL].query() ==
+                   return [ChromeEarlGrey webStateVisibleURL].GetQuery() ==
                           "reloaded";
                  }),
              @"Page did not reload");

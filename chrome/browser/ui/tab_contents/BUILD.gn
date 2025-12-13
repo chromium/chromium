@@ -35,10 +35,6 @@ source_set("tab_contents") {
     "//ui/gfx/geometry",
     "//url",
   ]
-  if (!is_android) {
-    deps = [ "//chrome/browser/ui/tabs:tab_strip" ]
-    public_deps += [ "//chrome/browser/ui:browser_list" ]
-  }
 }
 
 source_set("impl") {
@@ -84,8 +80,9 @@ source_set("impl") {
   ]
   if (!is_android) {
     deps += [
-      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/views/side_panel",
+      "//components/tabs:public",
     ]
   }
   if (enable_extensions) {
@@ -128,13 +125,19 @@ if (!is_android) {
 
     if (enterprise_cloud_content_analysis) {
       sources += [ "chrome_web_contents_view_handle_drop_unittest.cc" ]
-      deps += [ "//chrome/browser/enterprise/connectors/test:test_support" ]
+      deps += [
+        "//chrome/browser/enterprise/connectors/test:test_support",
+        "//components/enterprise/connectors/core:cloud_content_scanning",
+      ]
     }
   }
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "chrome_web_contents_menu_helper_browsertest.cc" ]
+    sources = [
+      "chrome_web_contents_menu_helper_browsertest.cc",
+      "tab_contents_iterator_browsertest.cc",
+    ]
     deps = [
       "//base/test:test_support",
       "//chrome/browser:browser_process",

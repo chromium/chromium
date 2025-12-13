@@ -16,14 +16,18 @@
 #include "base/memory/ref_counted.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
+#include "crypto/apple/scoped_lacontext.h"
 #include "crypto/crypto_export.h"
-#include "crypto/scoped_lacontext.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 
 namespace crypto {
 
 typedef std::string UserVerifyingKeyLabel;
+
+using UserVerifyingKeysSupportedCallback = base::OnceCallback<void(bool)>;
+using UserVerifyingKeysSupportedOverride =
+    base::RepeatingCallback<void(UserVerifyingKeysSupportedCallback)>;
 
 // Error values supplied to the callbacks for creating and retrieving
 // user-verifying keys, upon failure.
@@ -118,7 +122,7 @@ class CRYPTO_EXPORT UserVerifyingKeyProvider {
     // Optional LAContext to be used when retrieving and storing keys. Passing
     // an authenticated LAContext lets you call UserVerifyingSigningKey::Sign()
     // without triggering a macOS local authentication prompt.
-    std::optional<ScopedLAContext> lacontext;
+    std::optional<apple::ScopedLAContext> lacontext;
 #endif  // BUILDFLAG(IS_MAC)
   };
 
@@ -170,12 +174,15 @@ GetUserVerifyingKeyProvider(UserVerifyingKeyProvider::Config config);
 // asynchronously.
 CRYPTO_EXPORT void AreUserVerifyingKeysSupported(
     UserVerifyingKeyProvider::Config config,
-    base::OnceCallback<void(bool)> callback);
+    UserVerifyingKeysSupportedCallback callback);
 
 namespace internal {
 
 CRYPTO_EXPORT void SetUserVerifyingKeyProviderForTesting(
     std::unique_ptr<UserVerifyingKeyProvider> (*func)());
+
+CRYPTO_EXPORT void SetUserVerifyingKeysSupportedOverrideForTesting(
+    UserVerifyingKeysSupportedOverride override);
 
 }  // namespace internal
 

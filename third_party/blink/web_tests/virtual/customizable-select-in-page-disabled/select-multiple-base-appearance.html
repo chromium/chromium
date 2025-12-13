@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html class=reftest-wait>
 <link rel=author href="mailto:jarhar@chromium.org">
-<link rel=match href="select-multiple-base-appearance-ref.html">
 
 <style>
 select, ::picker(select) {
@@ -23,6 +22,12 @@ select, ::picker(select) {
   <option>two</option>
   <option>three</option>
   <option>four</option>
+</select>
+
+<select size=2>
+  <option>option
+    <button>button</button>
+  </option>
 </select>
 
 <select id=needsmultiple>

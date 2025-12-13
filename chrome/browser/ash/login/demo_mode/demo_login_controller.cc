@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/demo_mode/demo_login_controller.h"
 
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -20,8 +21,10 @@
 #include "base/syslog_logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -73,6 +76,15 @@ const char kLoginScopeDeviceId[] = "login_scope_device_id";
 const char kObfuscatedGaiaId[] = "obfuscated_gaia_id";
 const char kDMToken[] = "dm_token";
 const char kClientID[] = "client_id";
+
+const char kDeviceInfo[] = "device_info";
+const char kBuildVersion[] = "build_version";
+const char kCountry[] = "country";
+const char kRetailer[] = "retailer";
+const char kStoreId[] = "store_id";
+const char kBoard[] = "board";
+const char kModel[] = "model";
+const char kLocale[] = "locale";
 
 // Maximum accepted size of an ItemSuggest response. 1MB.
 constexpr int kMaxResponseSize = 1024 * 1024;
@@ -243,7 +255,7 @@ std::unique_ptr<network::SimpleURLLoader> CreateDemoAccountURLLoader(
 void SendDemoAccountRequest(
     const base::Value::Dict& post_data,
     network::SimpleURLLoader* url_loader,
-    base::OnceCallback<void(std::unique_ptr<std::string> response_body)>
+    base::OnceCallback<void(std::optional<std::string> response_body)>
         callback) {
   url_loader->SetAllowHttpErrorResults(true);
   url_loader->SetRetryOptions(
@@ -262,8 +274,8 @@ void LogServerResponseError(const std::string& error_response, bool is_setup) {
     return;
   }
 
-  std::optional<base::Value::Dict> error(
-      base::JSONReader::ReadDict(error_response));
+  std::optional<base::Value::Dict> error(base::JSONReader::ReadDict(
+      error_response, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   const std::string response_name =
       base::StringPrintf("%s response error:", is_setup ? "Setup" : "Clean up");
   if (!error) {
@@ -281,7 +293,7 @@ void LogServerResponseError(const std::string& error_response, bool is_setup) {
 
 DemoLoginController::ResultCode GetDemoAccountRequestResult(
     network::SimpleURLLoader* url_loader,
-    const std::string& response_body) {
+    base::optional_ref<std::string> response_body) {
   if (url_loader->NetError() != net::OK) {
     // TODO(crbug.com/364214790):  Handle any errors (maybe earlier for net
     // connection error) and fallback to MGS.
@@ -294,7 +306,7 @@ DemoLoginController::ResultCode GetDemoAccountRequestResult(
     response_code = url_loader->ResponseInfo()->headers->response_code();
   }
 
-  if (response_body.empty()) {
+  if (!response_body || response_body->empty()) {
     return DemoLoginController::ResultCode::kEmptyResponse;
   }
 
@@ -344,6 +356,33 @@ policy::DeviceCloudPolicyManagerAsh* GetDeviceCloudPolicyManager() {
   }
 
   return policy_connector_ash->GetDeviceCloudPolicyManager();
+}
+
+base::Value::Dict GetDeviceInfo() {
+  // Full ChromeOS version, for example: R127-15919.0.0_stable-channel.
+  const std::string version = demo_mode::GetChromeOSVersionString();
+
+  // This field "country" is intended to be used to control region specific
+  // behaviors, including TOS agreement, focus backend services and etc.
+  const std::string country = demo_mode::Country();
+
+  const std::string retailer = demo_mode::RetailerName();
+  const std::string store_id = demo_mode::StoreNumber();
+
+  const std::string board = demo_mode::Board();
+  const std::string_view model = demo_mode::Model();
+
+  // This field "locale" is used to set the language of the demo account.
+  const std::string locale = demo_mode::Locale();
+
+  return base::Value::Dict()
+      .Set(kBuildVersion, version)
+      .Set(kCountry, country)
+      .Set(kRetailer, retailer)
+      .Set(kStoreId, store_id)
+      .Set(kBoard, board)
+      .Set(kModel, model)
+      .Set(kLocale, locale);
 }
 
 }  // namespace
@@ -445,6 +484,12 @@ void DemoLoginController::SendSetupDemoAccountRequest() {
 
   auto post_data = base::Value::Dict().Set(
       kDeviceIdentifier, std::move(device_identifier.value()));
+
+  if (features::IsSendDeviceInfoToDemoServerEnabled()) {
+    base::Value::Dict device_info = GetDeviceInfo();
+    post_data.Set(kDeviceInfo, std::move(device_info));
+  }
+
   url_loader_ =
       CreateDemoAccountURLLoader(GetDemoAccountUrl(kSetupDemoAccountEndpoint),
                                  kSetupAccountTrafficAnnotation);
@@ -457,13 +502,13 @@ void DemoLoginController::SendSetupDemoAccountRequest() {
 
 void DemoLoginController::OnSetupDemoAccountComplete(
     const std::string& sign_in_scoped_device_id,
-    std::unique_ptr<std::string> response_body) {
-  auto result = GetDemoAccountRequestResult(url_loader_.get(), *response_body);
+    std::optional<std::string> response_body) {
+  auto result = GetDemoAccountRequestResult(url_loader_.get(), response_body);
   url_loader_.reset();
 
   if (result == ResultCode::kSuccess) {
-    HandleSetupDemoAcountResponse(sign_in_scoped_device_id,
-                                  std::move(response_body));
+    CHECK(response_body);
+    HandleSetupDemoAcountResponse(sign_in_scoped_device_id, *response_body);
   } else {
     OnSetupDemoAccountError(result);
     // `response_body` could be nullptr when network is not connected.
@@ -475,9 +520,9 @@ void DemoLoginController::OnSetupDemoAccountComplete(
 
 void DemoLoginController::HandleSetupDemoAcountResponse(
     const std::string& sign_in_scoped_device_id,
-    const std::unique_ptr<std::string> response_body) {
-  std::optional<base::DictValue> response_json(
-      base::JSONReader::ReadDict(*response_body));
+    const std::string& response_body) {
+  std::optional<base::DictValue> response_json(base::JSONReader::ReadDict(
+      response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   if (!response_json) {
     OnSetupDemoAccountError(ResultCode::kResponseParsingError);
     return;
@@ -638,8 +683,8 @@ void DemoLoginController::MaybeCleanupPreviousDemoAccount() {
 }
 
 void DemoLoginController::OnCleanUpDemoAccountComplete(
-    std::unique_ptr<std::string> response_body) {
-  auto result = GetDemoAccountRequestResult(url_loader_.get(), *response_body);
+    std::optional<std::string> response_body) {
+  auto result = GetDemoAccountRequestResult(url_loader_.get(), response_body);
 
   if (result == ResultCode::kSuccess) {
     // Report success to the metrics.

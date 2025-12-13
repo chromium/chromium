@@ -38,6 +38,7 @@ blink_platform_sources("loader") {
     "fetch/cached_metadata.h",
     "fetch/client_hints_preferences.cc",
     "fetch/client_hints_preferences.h",
+    "fetch/code_cache_host.cc",
     "fetch/code_cache_host.h",
     "fetch/console_logger.h",
     "fetch/cross_origin_attribute_value.h",
@@ -180,8 +181,6 @@ blink_platform_sources("loader") {
     "subresource_integrity.cc",
     "subresource_integrity.h",
     "tracked_child_url_loader_factory_bundle.cc",
-    "unencoded_digest.cc",
-    "unencoded_digest.h",
     "web_url_request_extra_data.cc",
     "web_url_request_util.cc",
   ]
@@ -195,7 +194,8 @@ blink_platform_sources("loader") {
     ":make_platform_loader_generated_delivery_type_names",
     ":make_platform_loader_generated_fetch_initiator_type_names",
     "//components/link_header_util",
-    "//components/variations/net:net",
+    "//components/persistent_cache",
+    "//components/variations/net",
     "//net",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
@@ -204,14 +204,14 @@ blink_platform_sources("loader") {
     "//third_party/blink/public/common:headers",
     "//third_party/blink/public/mojom:mojom_platform_blink",
     "//third_party/blink/renderer/platform:allow_discouraged_type",
-    "//third_party/blink/renderer/platform/blob:blob",
-    "//third_party/blink/renderer/platform/instrumentation:instrumentation",
-    "//third_party/blink/renderer/platform/network:network",
-    "//third_party/blink/renderer/platform/scheduler:scheduler",
+    "//third_party/blink/renderer/platform/blob",
+    "//third_party/blink/renderer/platform/instrumentation",
+    "//third_party/blink/renderer/platform/network",
+    "//third_party/blink/renderer/platform/scheduler",
   ]
   public_deps = [
     "//third_party/blink/public/mojom:mojom_platform_headers",
-    "//third_party/blink/renderer/platform/heap:heap",
+    "//third_party/blink/renderer/platform/heap",
   ]
   allow_circular_includes_from =
       [ "//third_party/blink/renderer/platform/network:network" ]
@@ -258,7 +258,6 @@ source_set("unit_tests") {
     "link_header_test.cc",
     "static_data_navigation_body_loader_test.cc",
     "subresource_integrity_test.cc",
-    "unencoded_digest_unittest.cc",
   ]
 
   configs += [ "//third_party/blink/renderer/platform:blink_platform_config" ]
@@ -272,33 +271,8 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:test_headers",
-    "//third_party/blink/renderer/platform:platform",
+    "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform:test_support",
-  ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-}
-
-test("unencoded_digest_fuzzer") {
-  sources = [ "unencoded_digest_fuzzer.cc" ]
-
-  deps = [
-    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
-    "//third_party/blink/renderer/platform:platform",
-    "//third_party/blink/renderer/platform:test_support",
-    "//third_party/fuzztest:fuzztest_gtest_main",
-  ]
-
-  configs += [
-    "//third_party/blink/renderer:config",
-    "//third_party/blink/renderer:inside_blink",
-  ]
-
-  fuzztests = [
-    "UnencodedDigest.CreateFuzzer",
-    "UnencodedDigest.MatchFuzzer",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
@@ -345,7 +319,7 @@ source_set("test_support") {
     "//net",
     "//skia",
     "//third_party/blink/public:blink_headers",
-    "//third_party/blink/renderer/platform:platform",
+    "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform/blob:generator",
     "//third_party/blink/renderer/platform/heap:test_support",
     "//third_party/blink/renderer/platform/scheduler:test_support",

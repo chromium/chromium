@@ -121,8 +121,7 @@ class MockHistoryService : public history::HistoryService {
                history::HistoryService::QueryMostVisitedURLsCallback callback,
                base::CancelableTaskTracker* tracker,
                const std::optional<std::string>& recency_factor_name,
-               std::optional<size_t> recency_window_days,
-               bool check_visual_deduplication_flag),
+               std::optional<size_t> recency_window_days),
               (override));
   MOCK_METHOD(void, DeleteURLs, (const std::vector<GURL>& urls), (override));
 };
@@ -189,7 +188,7 @@ class MostVisitedSitesProviderTest : public testing::Test,
                         const AutocompleteProvider* provider) override;
 
   base::HistogramTester histogram_;
-  std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   FakeAutocompleteProviderClient client_;
   scoped_refptr<FakeTopSites> top_sites_;
   scoped_refptr<MostVisitedSitesProvider> provider_;
@@ -314,8 +313,6 @@ void MostVisitedSitesProviderTest::CheckDesktopMatchesEquivalentTo(
 }
 
 void MostVisitedSitesProviderTest::SetUp() {
-  task_environment_ =
-      std::make_unique<base::test::SingleThreadTaskEnvironment>();
   top_sites_ = new FakeTopSites();
 
   client_.set_top_sites(top_sites_);
@@ -612,13 +609,12 @@ TEST_F(MostVisitedSitesProviderTest, TestDesktopQueryingHistoryService) {
   AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
 
   history::HistoryService::QueryMostVisitedURLsCallback callback;
-  EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _, _))
+  EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _))
       .WillOnce([&](int result_count,
                     history::HistoryService::QueryMostVisitedURLsCallback cb,
                     base::CancelableTaskTracker* tracker,
                     std::optional<std::string> recency_factor_name,
-                    std::optional<size_t> recency_window_days,
-                    bool check_visual_deduplication_flag)
+                    std::optional<size_t> recency_window_days)
                     -> base::CancelableTaskTracker::TaskId {
         // Add 1 to simulate 1 site being open.
         EXPECT_EQ(static_cast<int>(provider_->GetRequestedResultSize(input)),
@@ -662,13 +658,12 @@ TEST_F(MostVisitedSitesProviderTest, TestDeleteMatch) {
   AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
 
   history::HistoryService::QueryMostVisitedURLsCallback callback;
-  EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _, _))
+  EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _))
       .WillOnce([&](int result_count,
                     history::HistoryService::QueryMostVisitedURLsCallback cb,
                     base::CancelableTaskTracker* tracker,
                     std::optional<std::string> recency_factor_name,
-                    std::optional<size_t> recency_window_days,
-                    bool check_visual_deduplication_flag)
+                    std::optional<size_t> recency_window_days)
                     -> base::CancelableTaskTracker::TaskId {
         // Add 1 to simulate 1 site being open.
         EXPECT_EQ(static_cast<int>(provider_->GetRequestedResultSize(input)),
@@ -728,15 +723,14 @@ TEST_F(MostVisitedSitesProviderTest, PrefetchingUpdatesCachedSites) {
   AutocompleteInput input(BuildAutocompletePrefetchInputForWeb());
 
   history::HistoryService::QueryMostVisitedURLsCallback callback;
-  EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _, _))
+  EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _))
       .Times(2)
       .WillRepeatedly(
           [&](int result_count,
               history::HistoryService::QueryMostVisitedURLsCallback cb,
               base::CancelableTaskTracker* tracker,
               std::optional<std::string> recency_factor_name,
-              std::optional<size_t> recency_window_days,
-              bool check_visual_deduplication_flag)
+              std::optional<size_t> recency_window_days)
               -> base::CancelableTaskTracker::TaskId {
             // Add 1 to simulate 1 site being open.
             EXPECT_EQ(
@@ -804,13 +798,12 @@ TEST_F(MostVisitedSitesProviderTest,
   AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
 
   history::HistoryService::QueryMostVisitedURLsCallback callback;
-  EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _, _))
+  EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _))
       .WillOnce([&](int result_count,
                     history::HistoryService::QueryMostVisitedURLsCallback cb,
                     base::CancelableTaskTracker* tracker,
                     std::optional<std::string> recency_factor_name,
-                    std::optional<size_t> recency_window_days,
-                    bool check_visual_deduplication_flag)
+                    std::optional<size_t> recency_window_days)
                     -> base::CancelableTaskTracker::TaskId {
         // Add 1 to simulate 1 site being open.
         EXPECT_EQ(static_cast<int>(provider_->GetRequestedResultSize(input)),
@@ -870,14 +863,13 @@ TEST_F(MostVisitedSitesProviderTest, TestDeleteWithPrefetching) {
   suggestion_limit_scoped_config.Get().max_suggestions = 8U;
 
   history::HistoryService::QueryMostVisitedURLsCallback callback;
-  EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _, _))
+  EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _))
       .WillRepeatedly(
           [&](int result_count,
               history::HistoryService::QueryMostVisitedURLsCallback cb,
               base::CancelableTaskTracker* tracker,
               std::optional<std::string> recency_factor_name,
-              std::optional<size_t> recency_window_days,
-              bool check_visual_deduplication_flag)
+              std::optional<size_t> recency_window_days)
               -> base::CancelableTaskTracker::TaskId {
             callback = std::move(cb);
             return {};
@@ -966,14 +958,13 @@ TEST_F(MostVisitedSitesProviderTest, TestProviderDoneWithEmptyCachedSites) {
   scoped_config.Get().prefetch_most_visited_sites = true;
 
   history::HistoryService::QueryMostVisitedURLsCallback callback;
-  EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _, _))
+  EXPECT_CALL(history_service_ref, QueryMostVisitedURLs(_, _, _, _, _))
       .WillRepeatedly(
           [&](int result_count,
               history::HistoryService::QueryMostVisitedURLsCallback cb,
               base::CancelableTaskTracker* tracker,
               std::optional<std::string> recency_factor_name,
-              std::optional<size_t> recency_window_days,
-              bool check_visual_deduplication_flag)
+              std::optional<size_t> recency_window_days)
               -> base::CancelableTaskTracker::TaskId {
             callback = std::move(cb);
             return {};

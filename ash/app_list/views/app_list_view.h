@@ -17,6 +17,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -228,9 +229,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   void set_onscreen_keyboard_shown(bool onscreen_keyboard_shown) {
     onscreen_keyboard_shown_ = onscreen_keyboard_shown;
   }
-
-  // Returns true if the Embedded Assistant UI is currently being shown.
-  bool IsShowingEmbeddedAssistantUI() const;
 
   // Returns true if a folder is being renamed.
   bool IsFolderBeingRenamed();

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include <limits>
 #include <string>
 #include <string_view>
@@ -16,10 +15,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
@@ -34,6 +31,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -91,12 +89,15 @@ content::WebContents* LaunchWebAppWithIntent(Profile* profile,
       display::kDefaultDisplayId, apps::LaunchContainer::kLaunchContainerWindow,
       std::move(intent), profile);
 
-  content::WebContents* const web_contents =
-      apps::AppServiceProxyFactory::GetForProfile(profile)
-          ->BrowserAppLauncher()
-          ->LaunchAppWithParamsForTesting(std::move(params));
-  DCHECK(web_contents);
-  return web_contents;
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
+  base::test::TestFuture<base::WeakPtr<Browser>,
+                         base::WeakPtr<content::WebContents>,
+                         apps::LaunchContainer>
+      future;
+  provider->scheduler().LaunchAppWithCustomParams(std::move(params),
+                                                  future.GetCallback());
+  return future.template Get<1>().get();
 }
 
 content::EvalJsResult ReadTextContent(content::WebContents* web_contents,

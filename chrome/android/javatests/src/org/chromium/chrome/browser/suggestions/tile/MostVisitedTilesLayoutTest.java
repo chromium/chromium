@@ -162,7 +162,7 @@ public class MostVisitedTilesLayoutTest {
                 makeAndSetUpFakeSuggestions(FAKE_MOST_VISITED_URLS.length);
 
         MvtsFacility mvts = mActivityTestRule.startOnNtp().focusOnMvts(siteSuggestions);
-        mRenderTestRule.render(mvts.tilesLayoutElement.get(), "ntp_tile_layout" + suffix);
+        mRenderTestRule.render(mvts.tilesLayoutElement.value(), "ntp_tile_layout" + suffix);
     }
 
     @Test
@@ -304,10 +304,7 @@ public class MostVisitedTilesLayoutTest {
                     ViewGroup containerLayout =
                             (ViewGroup)
                                     LayoutInflater.from(contentView.getContext())
-                                            .inflate(
-                                                    R.layout.mv_tiles_container,
-                                                    contentView,
-                                                    false);
+                                            .inflate(R.layout.mv_tiles_layout, contentView, false);
                     containerLayout.setVisibility(View.VISIBLE);
                     contentView.addView(containerLayout);
                     initializeCoordinator(containerLayout);

@@ -25,10 +25,6 @@ bool IsAutofillAcrossIframesEnabled() {
       autofill::features::kAutofillAcrossIframesIos);
 }
 
-autofill::AutofillClientIOS* ClientFromWebState(web::WebState* web_state) {
-  return AutofillTabHelper::FromWebState(web_state)->autofill_client();
-}
-
 }  // namespace
 
 AutofillTabHelper::~AutofillTabHelper() = default;
@@ -62,6 +58,10 @@ id<FormSuggestionProvider> AutofillTabHelper::GetSuggestionProvider() {
   return autofill_agent_;
 }
 
+autofill::AutofillClientIOS* AutofillTabHelper::autofill_client() {
+  return autofill_client_.get();
+}
+
 AutofillTabHelper::AutofillTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   web_state_observation_.Observe(web_state);
@@ -82,8 +82,7 @@ void AutofillTabHelper::WebStateRealized(web::WebState* web_state) {
       InfoBarManagerImpl::FromWebState(web_state);
   DCHECK(infobar_manager);
   autofill_client_ = std::make_unique<autofill::ChromeAutofillClientIOS>(
-      &ClientFromWebState, profile, web_state_, infobar_manager,
-      autofill_agent_);
+      profile, web_state_, infobar_manager, autofill_agent_);
 
   if (IsAutofillAcrossIframesEnabled()) {
     autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state_)

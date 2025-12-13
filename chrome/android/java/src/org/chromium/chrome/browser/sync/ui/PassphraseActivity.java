@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.sync.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.accounts.Account;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -13,6 +15,8 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -25,24 +29,26 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.SyncService.SyncStateChangedListener;
 
 /**
  * This activity is used for requesting a sync passphrase from the user. Typically, this will be the
  * target of an Android notification.
  */
+@NullMarked
 public class PassphraseActivity extends ChromeBaseAppCompatActivity
         implements PassphraseDialogFragment.Delegate, FragmentManager.OnBackStackChangedListener {
     public static final String FRAGMENT_PASSPHRASE = "passphrase_fragment";
     public static final String FRAGMENT_SPINNER = "spinner_fragment";
 
     private Profile mProfile;
-    private IdentityManager mIdentityManager;
+    private @Nullable IdentityManager mIdentityManager;
     private SyncService mSyncService;
 
-    private SyncService.SyncStateChangedListener mSyncStateChangedListener;
+    private @Nullable SyncStateChangedListener mSyncStateChangedListener;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // The Chrome browser process must be started here because this Activity
         // may be started explicitly from Android notifications.
@@ -51,14 +57,16 @@ public class PassphraseActivity extends ChromeBaseAppCompatActivity
         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
         mProfile = ProfileManager.getLastUsedRegularProfile();
         mIdentityManager = IdentityServicesProvider.get().getIdentityManager(mProfile);
-        mSyncService = SyncServiceFactory.getForProfile(mProfile);
-        assert mSyncService != null;
+        var syncService = SyncServiceFactory.getForProfile(mProfile);
+        assert syncService != null;
+        mSyncService = syncService;
         getSupportFragmentManager().addOnBackStackChangedListener(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        assumeNonNull(mIdentityManager);
         Account account =
                 CoreAccountInfo.getAndroidAccountFrom(
                         mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
@@ -141,7 +149,7 @@ public class PassphraseActivity extends ChromeBaseAppCompatActivity
     @Override
     public void onPassphraseCanceled() {
         // Re add the notification.
-        SyncErrorNotifier.getForProfile(mProfile).syncStateChanged();
+        assumeNonNull(SyncErrorNotifier.getForProfile(mProfile)).syncStateChanged();
         finish();
     }
 
@@ -160,7 +168,7 @@ public class PassphraseActivity extends ChromeBaseAppCompatActivity
     /** Dialog shown while sync is loading. */
     public static class SpinnerDialogFragment extends DialogFragment {
         @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
+        public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
             ProgressDialog dialog = new ProgressDialog(getActivity());
             dialog.setMessage(getResources().getString(R.string.sync_loading));
             return dialog;

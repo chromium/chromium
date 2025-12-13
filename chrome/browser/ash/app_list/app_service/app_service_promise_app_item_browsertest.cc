@@ -12,7 +12,6 @@
 
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_menu_constants.h"
@@ -88,8 +87,7 @@ class AppServicePromiseAppItemBrowserTest
       public PromiseAppRegistryCache::Observer {
  public:
   AppServicePromiseAppItemBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kPromiseIcons, arc::kSyncInstallPriority}, {});
+    scoped_feature_list_.InitWithFeatures({arc::kSyncInstallPriority}, {});
   }
   ~AppServicePromiseAppItemBrowserTest() override = default;
 

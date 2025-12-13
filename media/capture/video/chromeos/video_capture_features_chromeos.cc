@@ -27,7 +27,6 @@ namespace features {
 // private CameraAppDeviceImpl::SetCameraFrameRotationEnabledAtSource() call
 // to achieve zero-copy video encoding when the device is rotated.
 BASE_FEATURE(kDisableCameraFrameRotationAtSource,
-             "DisableCameraFrameRotationAtSource",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

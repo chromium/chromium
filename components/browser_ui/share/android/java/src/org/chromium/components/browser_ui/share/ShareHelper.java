@@ -33,7 +33,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.metrics.RecordHistogram;
@@ -163,10 +162,9 @@ public class ShareHelper {
     }
 
     /** BroadcastReceiver to record the chosen component when sharing an Intent. */
-    public static class TargetChosenReceiver extends BroadcastReceiver
-            implements IntentCallback, UnownedUserData {
+    public static class TargetChosenReceiver extends BroadcastReceiver implements IntentCallback {
         private static final UnownedUserDataKey<TargetChosenReceiver> TARGET_CHOSEN_RECEIVER_KEY =
-                new UnownedUserDataKey<>(TargetChosenReceiver.class);
+                new UnownedUserDataKey<>(TargetChosenReceiver::onDetachedFromHost);
         private @Nullable TargetChosenCallback mCallback;
         private WeakReference<Context> mAttachedContext;
         private WeakReference<WindowAndroid> mAttachedWindow;
@@ -277,7 +275,7 @@ public class ShareHelper {
         }
 
         @Override
-        public void onIntentCompleted(int resultCode, Intent data) {
+        public void onIntentCompleted(int resultCode, @Nullable Intent data) {
             // NOTE: The validity of the returned |resultCode| is somewhat unexpected. For
             // background, a sharing flow starts with a "Chooser" activity that enables the user
             // to select the app to share to, and then when the user selects that application,
@@ -296,11 +294,11 @@ public class ShareHelper {
             }
         }
 
-        @Override
-        public void onDetachedFromHost(UnownedUserDataHost host) {
+        private static void onDetachedFromHost(
+                TargetChosenReceiver self, UnownedUserDataHost host) {
             // Remove the weak reference to the context and window when it is removed from the
             // attaching window.
-            Context attachedContext = mAttachedContext.get();
+            Context attachedContext = self.mAttachedContext.get();
             if (attachedContext != null) {
                 Log.i(TAG, "Dispatch cleaning intent to close the share sheet.");
                 // Issue a cleaner intent so the share sheet is cleared. This is a workaround to
@@ -308,7 +306,7 @@ public class ShareHelper {
                 Intent cleanerIntent = createCleanupIntent(attachedContext);
                 attachedContext.startActivity(cleanerIntent);
             }
-            cancel();
+            self.cancel();
         }
 
         private static Intent createCleanupIntent(Context context) {
@@ -361,6 +359,7 @@ public class ShareHelper {
                         | Intent.FLAG_ACTIVITY_FORWARD_RESULT
                         | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP
                         | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(ShareParams.EXTRA_SHARE_ORIGIN, params.getOrigin());
         intent.putExtra(
                 EXTRA_TASK_ID, assumeNonNull(params.getWindow().getActivity().get()).getTaskId());
 
@@ -373,8 +372,8 @@ public class ShareHelper {
             ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
             intent.setType(resolver.getType(imageUri));
             intent.setClipData(ClipData.newUri(resolver, null, imageUri));
-            if (!TextUtils.isEmpty(params.getUrl())) {
-                intent.putExtra(Intent.EXTRA_TEXT, params.getUrl());
+            if (!TextUtils.isEmpty(params.getTextAndUrl())) {
+                intent.putExtra(Intent.EXTRA_TEXT, params.getTextAndUrl());
             }
             if (!TextUtils.isEmpty(params.getImageAltText())) {
                 intent.putExtra(EXTRA_STREAM_ALT_TEXT, params.getImageAltText());

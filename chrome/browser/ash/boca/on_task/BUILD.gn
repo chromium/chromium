@@ -8,6 +8,10 @@ assert(is_chromeos, "OnTask is only supported in Ash")
 
 static_library("on_task") {
   sources = [
+    "locked_quiz_session_manager.cc",
+    "locked_quiz_session_manager.h",
+    "locked_quiz_session_manager_factory.cc",
+    "locked_quiz_session_manager_factory.h",
     "locked_session_window_tracker_factory.cc",
     "locked_session_window_tracker_factory.h",
     "on_task_extensions_manager_impl.cc",
@@ -38,10 +42,8 @@ static_library("on_task") {
     "//base",
     "//chrome/app:command_ids",
     "//chrome/browser:primitives",
-    "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/browser_delegate",
-    "//chrome/browser/extensions",
-    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/exclusive_access",
@@ -100,6 +102,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
+    "locked_quiz_session_manager_browsertest.cc",
     "on_task_locked_session_navigation_throttle_interactive_ui_test.cc",
     "on_task_locked_session_window_tracker_browsertest.cc",
     "on_task_pod_controller_impl_browsertest.cc",
@@ -114,9 +117,9 @@ source_set("browser_tests") {
     "//ash/webui/boca_ui:constants",
     "//base/test:test_support",
     "//chrome/browser/ash/boca",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/ash/system_web_apps",
-    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/frame:immersive_mode_controller",
     "//chrome/test:test_support",
     "//chromeos/ash/components/boca",

@@ -1,0 +1,119 @@
+=== Accessibility tree before go() pass 1 ===
+AXWebArea AXTitle='Material Web Select Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXComboBox AXDescription='Test Select' AXValue='Test Select Option 1'
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+++++++++++++AXGroup
+++++++++++++++AXGroup
+++++++++++++++++AXGroup
+++++++++++++++++++AXStaticText AXValue='Test Select'
+++++++++++++++AXGroup
+++++++++++++++++AXStaticText AXValue='Option 1'
+++++++++++++AXGroup
+++++++++++++++AXImage
+=== End accessibility tree ===
+AXTitleChanged on AXStaticText AXValue='Option 2'
+=== Accessibility tree after go() pass 1 ===
+AXWebArea AXTitle='Material Web Select Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXComboBox AXDescription='Test Select' AXValue='Test Select Option 1'
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+++++++++++++AXGroup
+++++++++++++++AXGroup
+++++++++++++++++AXGroup
+++++++++++++++++++AXStaticText AXValue='Test Select'
+++++++++++++++AXGroup
+++++++++++++++++AXStaticText AXValue='Option 2' <<<<<< CHANGED
+++++++++++++AXGroup
+++++++++++++++AXImage
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+AXWebArea AXTitle='Material Web Select Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXComboBox AXDescription='Test Select' AXValue='Test Select Option 1'
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+++++++++++++AXGroup
+++++++++++++++AXGroup
+++++++++++++++++AXGroup
+++++++++++++++++++AXStaticText AXValue='Test Select'
+++++++++++++++AXGroup
+++++++++++++++++AXStaticText AXValue='Option 2'
+++++++++++++AXGroup
+++++++++++++++AXImage
+=== End accessibility tree ===
+AXTitleChanged on AXStaticText AXValue='Option 3'
+=== Accessibility tree after go() pass 2 ===
+AXWebArea AXTitle='Material Web Select Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXComboBox AXDescription='Test Select' AXValue='Test Select Option 1'
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+++++++++++++AXGroup
+++++++++++++++AXGroup
+++++++++++++++++AXGroup
+++++++++++++++++++AXStaticText AXValue='Test Select'
+++++++++++++++AXGroup
+++++++++++++++++AXStaticText AXValue='Option 3' <<<<<< CHANGED
+++++++++++++AXGroup
+++++++++++++++AXImage
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+AXWebArea AXTitle='Material Web Select Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXComboBox AXDescription='Test Select' AXValue='Test Select Option 1'
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+++++++++++++AXGroup
+++++++++++++++AXGroup
+++++++++++++++++AXGroup
+++++++++++++++++++AXStaticText AXValue='Test Select'
+++++++++++++++AXGroup
+++++++++++++++++AXStaticText AXValue='Option 3'
+++++++++++++AXGroup
+++++++++++++++AXImage
+=== End accessibility tree ===
+AXTitleChanged on AXStaticText AXValue='Option 1'
+=== Accessibility tree after go() pass 3 ===
+AXWebArea AXTitle='Material Web Select Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXComboBox AXDescription='Test Select' AXValue='Test Select Option 1'
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXGroup
+++++++++++++AXGroup
+++++++++++++++AXGroup
+++++++++++++++++AXGroup
+++++++++++++++++++AXStaticText AXValue='Test Select'
+++++++++++++++AXGroup
+++++++++++++++++AXStaticText AXValue='Option 1' <<<<<< CHANGED
+++++++++++++AXGroup
+++++++++++++++AXImage
+=== End accessibility tree ===

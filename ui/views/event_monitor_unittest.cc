@@ -116,13 +116,6 @@ TEST_P(EventMonitorTest, ShouldReceiveWindowEventsWhileInstalled) {
 }
 
 TEST_P(EventMonitorTest, ShouldNotReceiveEventsFromOtherWindow) {
-#if BUILDFLAG(IS_MAC)
-  // TODO(https://crbug.com/426181639): This test is currently failing for the
-  // remote cocoa implementation of EventMonitor. Skip until that is fixed.
-  if (GetParam() == Implementation::kRemoteCocoa) {
-    GTEST_SKIP();
-  }
-#endif
   Widget* widget2 = CreateTopLevelNativeWidget();
   std::unique_ptr<EventMonitor> monitor(EventMonitor::CreateWindowMonitor(
       &observer_, widget2->GetNativeWindow(),

@@ -30,7 +30,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -48,12 +47,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.segmentation_platform.ContextualPageActionController;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
@@ -61,29 +58,23 @@ import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link CustomTabAppMenuPropertiesDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({
-    ChromeFeatureList.READALOUD_IN_OVERFLOW_MENU_IN_CCT,
-    ContentFeatureList.ANDROID_OPEN_PDF_INLINE,
-    ChromeFeatureList.ANDROID_OPEN_PDF_INLINE_BACKPORT
-})
+@DisableFeatures(ChromeFeatureList.READALOUD_IN_OVERFLOW_MENU_IN_CCT)
 public class CustomTabAppMenuPropertiesDelegateUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private Tab mTab;
     @Mock private NavigationController mNavigationController;
     @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabModel mTabModel;
     @Mock private ToolbarManager mToolbarManager;
     @Mock private View mDecorView;
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
@@ -93,10 +84,10 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
     @Mock private TranslateBridge.Natives mTranslateBridgeJniMock;
     @Mock private ShoppingService mShoppingService;
     @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
-    @Mock private AppMenuHandler mAppMenuHandler;
 
     @Mock private Verifier mVerifier;
 
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private final ObservableSupplierImpl<BookmarkModel> mBookmarkModelSupplier =
             new ObservableSupplierImpl<>();
     private final Supplier<ReadAloudController> mReadAloudControllerSupplier =
@@ -104,7 +95,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
 
     @Before
     public void setUp() {
-        when(mActivityTabProvider.get()).thenReturn(mTab);
+        mActivityTabProvider.setForTesting(mTab);
         when(mTab.getUrl()).thenReturn(new GURL("https://google.com"));
         when(mTab.isNativePage()).thenReturn(false);
     }

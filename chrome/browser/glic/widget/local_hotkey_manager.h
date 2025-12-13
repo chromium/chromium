@@ -13,8 +13,15 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/accelerators/accelerator.h"
 
+namespace gfx {
+class Point;
+}
+
+namespace views {
+class View;
+}
+
 namespace glic {
-class GlicWindowController;
 
 // Manages hotkeys that are active within a specific local scope, such as the
 // Glic window itself or the broader Chrome application when Glic is relevant.
@@ -34,6 +41,18 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
     // Show the title bar context menu
     kTitleBarContextMenu,
 #endif
+  };
+
+  class Panel {
+   public:
+    virtual ~Panel() = default;
+    virtual void FocusIfOpen() = 0;
+    virtual bool HasFocus() = 0;
+    virtual bool IsShowing() const = 0;
+    virtual void Close() = 0;
+    virtual bool ActivateBrowser() = 0;
+    virtual void ShowTitleBarContextMenuAt(gfx::Point event_loc) = 0;
+    virtual base::WeakPtr<views::View> GetView() = 0;
   };
 
   constexpr static const char* HotkeyToString(Hotkey hotkey) {
@@ -79,9 +98,8 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
     virtual bool AcceleratorPressed(Hotkey) = 0;
   };
 
-  explicit LocalHotkeyManager(
-      base::WeakPtr<GlicWindowController> window_controller,
-      std::unique_ptr<Delegate> delegate);
+  explicit LocalHotkeyManager(base::WeakPtr<Panel> panel,
+                              std::unique_ptr<Delegate> delegate);
   ~LocalHotkeyManager() override;
 
   // Returns the default accelerator for a given hotkey.
@@ -117,7 +135,7 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
   std::vector<ui::Accelerator> GetAccelerators(Hotkey hotkey);
   void RegisterHotkey(Hotkey hotkey_enum);
 
-  base::WeakPtr<GlicWindowController> window_controller_;
+  base::WeakPtr<Panel> panel_;
   std::unique_ptr<Delegate> delegate_;
 
   PrefChangeRegistrar pref_registrar_;

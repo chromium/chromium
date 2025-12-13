@@ -34,7 +34,7 @@ public class KeyboardAccessoryData {
         private final int mTabLayout;
         private final @AccessoryTabType int mRecordingType;
         private final @Nullable Listener mListener;
-        private final PropertyProvider<Drawable> mIconProvider = new PropertyProvider<>();
+        private final Provider<Drawable> mIconProvider = new Provider<>();
 
         /** A Tab's Listener get's notified when e.g. the Tab was assigned a view. */
         public interface Listener {

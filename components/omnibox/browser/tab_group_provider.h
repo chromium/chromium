@@ -25,7 +25,8 @@ class TabGroupProvider : public AutocompleteProvider {
 
   AutocompleteMatch CreateTabGroupMatch(const AutocompleteInput& input,
                                         const tab_groups::SavedTabGroup& group,
-                                        int score);
+                                        int score,
+                                        const std::u16string& matching_url);
 
   raw_ptr<AutocompleteProviderClient> client_;
 };

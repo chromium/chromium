@@ -5,8 +5,6 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_registrar.h"
@@ -34,8 +32,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   // Without waiting for the tab to finish, unload the extension.
   extension_registrar()->RemoveExtension(extension->id(),
                                          UnloadedExtensionReason::TERMINATE);
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   // Wait for the web contents to stop loading.
   content::WaitForLoadStop(web_contents);
   EXPECT_EQ(url, web_contents->GetLastCommittedURL());
@@ -55,9 +52,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   ASSERT_TRUE(extension);
   ASSERT_TRUE(extension->is_theme());
   GURL url = extension->GetResourceURL("manifest.json");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
   // Wait for the web contents to stop loading.
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   EXPECT_EQ(url, web_contents->GetLastCommittedURL());

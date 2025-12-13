@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -63,26 +64,69 @@ namespace blink {
 
 namespace {
 
-// Verifies that a pseudo-element selector lexes and canonicalizes legacy forms
-bool ValidateAndCanonicalizePseudo(String& selector) {
-  if (selector.IsNull()) {
-    return true;
-  } else if (selector.StartsWith("::")) {
-    return true;
-  } else if (selector == ":before") {
-    selector = "::before";
-    return true;
-  } else if (selector == ":after") {
-    selector = "::after";
-    return true;
-  } else if (selector == ":first-letter") {
-    selector = "::first-letter";
-    return true;
-  } else if (selector == ":first-line") {
-    selector = "::first-line";
+bool ValidatePseudoElement(String& pseudo, ExceptionState& exception_state) {
+  // https://www.w3.org/TR/web-animations-1/#dom-keyframeeffect-pseudoelement
+  if (pseudo.IsNull()) {
     return true;
   }
-  return false;
+
+  AtomicString pseudo_argument = g_null_atom;
+  PseudoId pseudo_id = pseudo.StartsWith(":")
+                           ? CSSSelectorParser::ParsePseudoElement(
+                                 pseudo, /*parent=*/nullptr, pseudo_argument)
+                           : kPseudoIdInvalid;
+
+  switch (pseudo_id) {
+    case kPseudoIdInvalid:
+    case kPseudoIdNone: {
+      StringBuilder sb;
+      sb.Append(pseudo);
+      sb.Append(" is a syntactically invalid pseudo-element");
+      exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                        sb.ToString());
+      return false;
+    }
+
+      // From the spec:
+      // Syntactically invalid pseudo-elements as well as pseudo-elements for
+      // which the user agent has no usable level of support are both deemed
+      // invalid.
+      // TODO(kevers): Are there any pseudos that belong in this second bucket?
+      // Currently input::placeholder is not animated on any of the major web
+      // platforms, though handled inconsistently. Failure to animate
+      // ::placeholder seems like a bug rather than a technical limitation.
+
+    default:
+      // Convert to canonical form.
+      if (!pseudo.StartsWith("::")) {
+        StringBuilder sb;
+        sb.Append(":");
+        sb.Append(pseudo);
+        pseudo = sb.ToString();
+      }
+      pseudo = pseudo.LowerASCII();
+      return true;
+  }
+}
+
+Element* ResolveTargetFromEffectTarget(Element* effect_target) {
+  if (!effect_target) {
+    return nullptr;
+  }
+
+  if (PseudoElement* pseudo = DynamicTo<PseudoElement>(effect_target)) {
+    return &pseudo->UltimateOriginatingElement();
+  }
+
+  // A pseudo-element for a part-like piece (e.g. input placeholder) might have
+  // previously resolved to an element inside UA-shadow DOM. In this case, the
+  // host is effect target.
+  if (effect_target->IsInUserAgentShadowRoot()) {
+    ShadowRoot* shadow_root = effect_target->ContainingShadowRoot();
+    return &shadow_root->host();
+  }
+
+  return effect_target;
 }
 
 enum class KeyframeOrderStrategy { kSpecifiedOrdering, kCssKeyframeOrdering };
@@ -141,20 +185,23 @@ KeyframeEffect* KeyframeEffect::Create(
     return nullptr;
 
   EffectModel::CompositeOperation composite = EffectModel::kCompositeReplace;
+  EffectModel::IterationCompositeOperation iteration_composite =
+      EffectModel::kIterationCompositeReplace;
   String pseudo = String();
   if (options->IsKeyframeEffectOptions()) {
     auto* effect_options = options->GetAsKeyframeEffectOptions();
     composite = EffectModel::EnumToCompositeOperation(
         effect_options->composite().AsEnum());
-    if (!effect_options->pseudoElement().empty()) {
+    if (!effect_options->pseudoElement().IsNull()) {
       pseudo = effect_options->pseudoElement();
-      if (!ValidateAndCanonicalizePseudo(pseudo)) {
-        // TODO(gtsteel): update when
-        // https://github.com/w3c/csswg-drafts/issues/4586 resolves
-        exception_state.ThrowDOMException(
-            DOMExceptionCode::kSyntaxError,
-            "A valid pseudo-selector must be null or start with ::.");
+      if (!ValidatePseudoElement(pseudo, exception_state)) {
+        return nullptr;
       }
+    }
+    if (RuntimeEnabledFeatures::CSSAnimationIterationCompositeEnabled() &&
+        effect_options->hasIterationComposite()) {
+      iteration_composite = EffectModel::EnumToIterationCompositeOperation(
+          effect_options->iterationComposite().AsEnum());
     }
   }
 
@@ -162,6 +209,8 @@ KeyframeEffect* KeyframeEffect::Create(
       element, keyframes, composite, script_state, exception_state);
   if (exception_state.HadException())
     return nullptr;
+
+  model->SetIterationComposite(iteration_composite);
   KeyframeEffect* effect =
       MakeGarbageCollected<KeyframeEffect>(element, model, timing);
 
@@ -177,6 +226,14 @@ KeyframeEffect* KeyframeEffect::Create(
           pseudo, element, pseudo_argument);
       effect->effect_target_ =
           element->GetStyledPseudoElement(pseudo_id, pseudo_argument);
+      if (effect->effect_target_) {
+        DCHECK_EQ(ResolveTargetFromEffectTarget(effect->effect_target_),
+                  element);
+      }
+      // TODO(crbug.com/468323247): GetStyledPseudoElement can return null even
+      // though the pseudo name is valid. Resolve how to handle this case. An
+      // example is setting up a KeyframeEffect on element::after before setting
+      // the content property on the pseudo.
     }
   }
   return effect;
@@ -199,9 +256,18 @@ KeyframeEffect* KeyframeEffect::Create(ScriptState* script_state,
                                        ExceptionState& exception_state) {
   Timing new_timing = source->SpecifiedTiming();
   KeyframeEffectModelBase* model = source->Model()->Clone();
-  return MakeGarbageCollected<KeyframeEffect>(source->EffectTarget(), model,
-                                              new_timing, source->GetPriority(),
-                                              source->GetEventDelegate());
+  // As we already have both target and EffectTarget, we can short-circuit
+  // the conversion.
+  KeyframeEffect* clone = MakeGarbageCollected<KeyframeEffect>(
+      source->target(), model, new_timing, source->GetPriority(),
+      source->GetEventDelegate());
+  clone->effect_target_ = source->EffectTarget();
+  clone->setPseudoElement(source->pseudoElement(), exception_state);
+  if (source->EffectTarget()) {
+    DCHECK_EQ(ResolveTargetFromEffectTarget(source->EffectTarget()),
+              source->target());
+  }
+  return clone;
 }
 
 KeyframeEffect::KeyframeEffect(Element* target,
@@ -247,16 +313,10 @@ const String& KeyframeEffect::pseudoElement() const {
 
 void KeyframeEffect::setPseudoElement(String pseudo,
                                       ExceptionState& exception_state) {
-  if (ValidateAndCanonicalizePseudo(pseudo)) {
+  if (ValidatePseudoElement(pseudo, exception_state)) {
     target_pseudo_ = pseudo;
-  } else {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kSyntaxError,
-        "A valid pseudo-selector must be null or start with ::.");
-    return;
+    RefreshTarget();
   }
-
-  RefreshTarget();
 }
 
 void KeyframeEffect::RefreshTarget() {
@@ -290,6 +350,21 @@ V8CompositeOperation KeyframeEffect::composite() const {
 void KeyframeEffect::setComposite(const V8CompositeOperation& composite) {
   Model()->SetComposite(
       EffectModel::EnumToCompositeOperation(composite.AsEnum()));
+
+  ClearEffects();
+  InvalidateAndNotifyOwner();
+}
+
+V8IterationCompositeOperation KeyframeEffect::iterationComposite() const {
+  return V8IterationCompositeOperation(
+      EffectModel::IterationCompositeOperationToEnum(
+          Model()->IterationComposite()));
+}
+
+void KeyframeEffect::setIterationComposite(
+    const V8IterationCompositeOperation& iteration_composite) {
+  Model()->SetIterationComposite(EffectModel::EnumToIterationCompositeOperation(
+      iteration_composite.AsEnum()));
 
   ClearEffects();
   InvalidateAndNotifyOwner();

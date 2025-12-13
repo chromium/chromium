@@ -67,9 +67,7 @@ crbug.com/24182 [ Release Win ] jquery/core.html [ Slow ]
 crbug.com/24182 jquery/css.html [ Slow ]
 crbug.com/24182 jquery/data.html [ Slow ]
 crbug.com/24182 jquery/dimensions.html [ Slow ]
-crbug.com/24182 [ Linux ] jquery/event.html [ Slow ]
-crbug.com/24182 [ Mac12 ] jquery/event.html [ Slow ]
-crbug.com/24182 [ Release Win ] jquery/event.html [ Slow ]
+crbug.com/432218257 jquery/event.html [ Slow ]
 crbug.com/24182 jquery/manipulation.html [ Slow ]
 crbug.com/24182 [ Debug ] jquery/offset.html [ Slow ]
 crbug.com/24182 [ Linux Release ] jquery/offset.html [ Slow ]
@@ -985,9 +983,6 @@ crbug.com/1046784 [ Release Win ] http/tests/devtools/elements/styles-4/styles-u
 crbug.com/1046784 [ Linux ] http/tests/devtools/coverage/coverage-suspended.js [ Slow ]
 crbug.com/1046784 [ Mac12 ] http/tests/devtools/coverage/coverage-suspended.js [ Slow ]
 crbug.com/1046784 [ Release Win ] http/tests/devtools/coverage/coverage-suspended.js [ Slow ]
-crbug.com/1046784 [ Linux ] http/tests/devtools/network/network-search.js [ Slow ]
-crbug.com/1046784 [ Mac12 ] http/tests/devtools/network/network-search.js [ Slow ]
-crbug.com/1046784 [ Release Win ] http/tests/devtools/network/network-search.js [ Slow ]
 crbug.com/1046784 [ Linux ] http/tests/devtools/elements/styles-4/styles-update-links-1.js [ Slow ]
 crbug.com/1046784 [ Mac12 ] http/tests/devtools/elements/styles-4/styles-update-links-1.js [ Slow ]
 crbug.com/1046784 [ Release Win ] http/tests/devtools/elements/styles-4/styles-update-links-1.js [ Slow ]
@@ -1021,8 +1016,6 @@ crbug.com/1091948 [ Linux ] external/wpt/html/canvas/element/manual/fill-and-str
 crbug.com/1044825 http/tests/devtools/network/resource-priority.js [ Slow ]
 crbug.com/1108423 external/wpt/referrer-policy/gen/worker-classic.http-rp/unset/worker-classic.http.html [ Slow ]
 crbug.com/1135978 [ Linux Release ] fast/dom/css-delete-doc.html [ Slow ]
-crbug.com/1145424 [ Linux ] http/tests/devtools/sources/debugger-ui/reveal-execution-line.js [ Slow ]
-crbug.com/1145424 [ Win ] http/tests/devtools/sources/debugger-ui/reveal-execution-line.js [ Slow ]
 crbug.com/1145641 external/wpt/requestidlecallback/callback-invoked.html [ Slow ]
 crbug.com/1182691 external/wpt/webcodecs/audio-encoder.https.any.html [ Slow ]
 crbug.com/1182691 external/wpt/webcodecs/video-encoder.https.any.html [ Slow ]
@@ -1118,6 +1111,8 @@ crbug.com/1489239 [ Linux ] external/wpt/fedcm/fedcm-authz/fedcm-continue-on.htt
 crbug.com/1489239 [ Mac12 Release ] external/wpt/fedcm/fedcm-authz/fedcm-continue-on.https.html [ Slow ]
 crbug.com/1489239 [ Mac13 ] external/wpt/fedcm/fedcm-authz/fedcm-continue-on.https.html [ Slow ]
 crbug.com/1489239 [ Release Win ] external/wpt/fedcm/fedcm-authz/fedcm-continue-on.https.html [ Slow ]
+crbug.com/390581529 virtual/fedcm-third-party-iframe/external/wpt/fedcm/third-party-iframe/fedcm-third-party-iframe-active-mode.https.html [ Slow ]
+crbug.com/390581529 virtual/fedcm-third-party-iframe/external/wpt/fedcm/third-party-iframe/fedcm-third-party-iframe.https.html [ Slow ]
 
 # Slow because it contains thousands of subtests
 crbug.com/1423483 [ Linux ] external/wpt/css/css-color/parsing/color-computed-hsl.html [ Slow ]
@@ -1163,9 +1158,6 @@ crbug.com/1473373 wpt_internal/scheduler/task-signal-any-memory-abort-2.any.work
 
 crbug.com/1493194 external/wpt/css/cssom/insert-dir-rule-in-iframe-crash.html [ Slow ]
 
-# Slow Private Network Access tests
-crbug.com/626703 [ Mac12 ] external/wpt/fetch/private-network-access/mixed-content-fetch.tentative.https.window.html [ Slow ]
-
 # Gardener 2023-10-26
 crbug.com/1496281 [ Debug Linux ] external/wpt/html/semantics/embedded-content/bfcache/embedded-js.html [ Slow ]
 crbug.com/1496281 [ Debug Mac13 ] external/wpt/html/semantics/embedded-content/bfcache/embedded-js.html [ Slow ]
@@ -1187,7 +1179,7 @@ crbug.com/1462683 external/wpt/long-animation-frame/tentative/loaf-iframe-self.h
 crbug.com/1462683 virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-iframe-self.html [ Slow ]
 
 # Slow because of multiple rounds of polling using the RemoteContext/executor framework.
-crbug.com/1517319 virtual/speculation-rules-prerender-target-hint/external/wpt/speculation-rules/prerender/prerender-while-prerender.html [ Slow ]
+crbug.com/1517319 external/wpt/speculation-rules/prerender/prerender-while-prerender.html [ Slow ]
 
 crbug.com/326619067 [ Mac ] external/wpt/css/css-scroll-snap/snap-events/scrollsnapchanging/scrollsnapchanging-on-user-root-scroll.tentative.html [ Slow ]
 crbug.com/332903033 [ Mac ] external/wpt/css/css-scroll-snap/snap-events/scrollsnapchanging/scrollsnapchanging-on-user-scroll.tentative.html [ Slow ]
@@ -1219,9 +1211,6 @@ crbug.com/351944362 external/wpt/fetch/metadata/generated/element-iframe.https.s
 crbug.com/354579691 fast/events/touch/gesture/long-press-drag-drop-touch-editing-combined-in-iframe.html [ Slow ]
 
 crbug.com/40226500 http/tests/media/mixed-range-response.html [ Slow ]
-
-# Slow because it is transfering a lot of data to catch non-spec compliant behavior with large buffers
-crbug.com/356963272 external/wpt/webrtc/RTCDataChannel-send-close.html [ Slow ]
 
 # Slow because it contains a large number of subtests
 crbug.com/369600187 external/wpt/css/css-anchor-position/anchor-size-parse-valid.html [ Slow ]
@@ -1275,6 +1264,8 @@ crbug.com/387598611 fast/overflow/scrollbar-drag-origin.html [ Slow ]
 
 # WPT soft-navigation-heuristics test suite flakiness
 crbug.com/423705202 external/wpt/soft-navigation-heuristics/smoke/tentative/dom.html [ Slow ]
+
+crbug.com/452136055 [ Mac ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filters-sepia.html [ Slow ]
 
 # Gardener 2025-06-26
 crbug.com/40284969 external/wpt/performance-timeline/navigation-id-reset.tentative.html [ Slow ]

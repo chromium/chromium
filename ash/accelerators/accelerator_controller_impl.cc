@@ -46,7 +46,6 @@
 #include "base/system/sys_info.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/env.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -205,22 +204,8 @@ void RecordCycleForwardMru(const ui::Accelerator& accelerator) {
 }
 
 void RecordToggleAssistant(const ui::Accelerator& accelerator) {
-  if (assistant::features::IsNewEntryPointEnabled()) {
-    base::RecordAction(
-        base::UserMetricsAction("Assistant.NewEntryPoint.AssistantKey"));
-    return;
-  }
-
-  if (accelerator.IsCmdDown() && accelerator.key_code() == ui::VKEY_SPACE) {
-    base::RecordAction(
-        base::UserMetricsAction("VoiceInteraction.Started.Search_Space"));
-  } else if (accelerator.IsCmdDown() && accelerator.key_code() == ui::VKEY_A) {
-    base::RecordAction(
-        base::UserMetricsAction("VoiceInteraction.Started.Search_A"));
-  } else if (accelerator.key_code() == ui::VKEY_ASSISTANT) {
-    base::RecordAction(
-        base::UserMetricsAction("VoiceInteraction.Started.Assistant"));
-  }
+  base::RecordAction(
+      base::UserMetricsAction("Assistant.NewEntryPoint.AssistantKey"));
 }
 
 void RecordToggleAppList(const ui::Accelerator& accelerator) {
@@ -1128,7 +1113,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case AcceleratorAction::kRotateWindow:
     case AcceleratorAction::kShowEmojiPicker:
     case AcceleratorAction::kToggleImeMenuBubble:
-    case AcceleratorAction::kTogglePicker:
+    case AcceleratorAction::kToggleQuickInsert:
     case AcceleratorAction::kShowShortcutViewer:
     case AcceleratorAction::kShowTaskManager:
     case AcceleratorAction::kSuspend:
@@ -1161,7 +1146,7 @@ void AcceleratorControllerImpl::PerformAction(
 
   if ((action == AcceleratorAction::kVolumeDown ||
        action == AcceleratorAction::kVolumeUp) &&
-      display::Screen::GetScreen()->InTabletMode()) {
+      display::Screen::Get()->InTabletMode()) {
     if (tablet_volume_controller_.ShouldSwapSideVolumeButtons(
             accelerator.source_device_id()))
       action = action == AcceleratorAction::kVolumeDown
@@ -1203,11 +1188,9 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::CycleForwardMru(/*same_app_only=*/false);
       break;
     case AcceleratorAction::kCycleSameAppWindowsBackward:
-      // TODO(b/250699271): Add metrics
       accelerators::CycleBackwardMru(/*same_app_only=*/true);
       break;
     case AcceleratorAction::kCycleSameAppWindowsForward:
-      // TODO(b/250699271): Add metrics
       accelerators::CycleForwardMru(/*same_app_only=*/true);
       break;
     case AcceleratorAction::kDesksActivateDeskLeft:
@@ -1510,7 +1493,7 @@ void AcceleratorControllerImpl::PerformAction(
       base::RecordAction(UserMetricsAction("Accel_Show_Ime_Menu_Bubble"));
       accelerators::ToggleImeMenuBubble();
       break;
-    case AcceleratorAction::kTogglePicker:
+    case AcceleratorAction::kToggleQuickInsert:
       accelerators::ToggleQuickInsert(accelerator.time_stamp());
       break;
     case AcceleratorAction::kToggleProjectorMarker:

@@ -137,7 +137,7 @@ class DeviceCommandRebootJobAutoLaunchManagedGuestSessionBrowserTest
 
     // Set up MGS auto-launch mode.
     em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
-    ash::AppendAutoLaunchManagedGuestSessionAccount(&proto);
+    ash::test::AppendAutoLaunchManagedGuestSessionAccount(&proto);
 
     policy_helper()->RefreshDevicePolicy();
   }

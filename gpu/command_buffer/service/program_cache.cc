@@ -186,16 +186,14 @@ void ProgramCache::ComputeProgramHash(
 }
 
 void ProgramCache::HandleMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
-  if (memory_pressure_level ==
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
+    base::MemoryPressureLevel memory_pressure_level) {
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
     return;
   }
 
   // Set a low limit on cache size for MEMORY_PRESSURE_LEVEL_MODERATE.
   size_t limit = max_size_bytes_ / 4;
-  if (memory_pressure_level ==
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     limit = 0;
   }
 

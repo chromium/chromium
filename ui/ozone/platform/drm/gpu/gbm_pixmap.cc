@@ -60,8 +60,8 @@ uint64_t GbmPixmap::GetBufferFormatModifier() const {
   return buffer_->GetFormatModifier();
 }
 
-gfx::BufferFormat GbmPixmap::GetBufferFormat() const {
-  return buffer_->GetBufferFormat();
+viz::SharedImageFormat GbmPixmap::GetSharedImageFormat() const {
+  return buffer_->GetSharedImageFormat();
 }
 
 gfx::Size GbmPixmap::GetBufferSize() const {

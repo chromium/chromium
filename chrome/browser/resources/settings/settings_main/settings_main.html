@@ -49,23 +49,54 @@
   </template>
 </if>
 
+<template is="dom-if" if="[[showResetProfileBanner_]]" restamp>
+  <settings-reset-profile-banner on-close="onResetProfileBannerClose_">
+  </settings-reset-profile-banner>
+</template>
+
 <cr-view-manager id="switcher"
     show-all$="[[shouldShowAll_(inSearchMode_, lastRoute_)]]">
-  <div slot="view" id="old">
-    <template is="dom-if" if="[[renderBasicPage_(lastRoute_)]]">
-      <settings-basic-page class="cr-centered-card-container"
-          prefs="{{prefs}}" in-search-mode="[[inSearchMode_]]">
-      </settings-basic-page>
-    </template>
-  </div>
+  <template is="dom-if" if="[[showPage_(pageVisibility_.people)]]">
+    <div slot="view" id="people">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.PEOPLE, lastRoute_, inSearchMode_)]]">
+        <settings-people-page-index prefs="{{prefs}}"
+            in-search-mode="[[inSearchMode_]]">
+        </settings-people-page-index>
+      </template>
+    </div>
+  </template>
 
-  <template is="dom-if" if="[[showPage_(pageVisibility_.autofill)]]">
+  <template is="dom-if" if="[[showPage_(pageVisibility_.privacy)]]">
+    <div slot="view" id="privacy">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.PRIVACY, lastRoute_, inSearchMode_)]]">
+        <settings-privacy-page-index prefs="{{prefs}}"
+            in-search-mode="[[inSearchMode_]]">
+        </settings-privacy-page-index>
+      </template>
+    </div>
+  </template>
+
+  <template is="dom-if" if="[[showAutofillPage_(pageVisibility_.autofill)]]">
     <div slot="view" id="autofill">
       <template is="dom-if" if="[[renderPlugin_(
           routes_.AUTOFILL, lastRoute_, inSearchMode_)]]">
         <settings-autofill-page-index prefs="{{prefs}}"
             in-search-mode="[[inSearchMode_]]">
         </settings-autofill-page-index>
+      </template>
+    </div>
+  </template>
+
+  <template is="dom-if" if="[[showYourSavedInfoPage_(
+      pageVisibility_.yourSavedInfo)]]">
+    <div slot="view" id="yourSavedInfo">
+      <template is="dom-if" if="[[renderPlugin_(
+          routes_.YOUR_SAVED_INFO, lastRoute_, inSearchMode_)]]">
+        <settings-your-saved-info-page-index prefs="{{prefs}}"
+            in-search-mode="[[inSearchMode_]]">
+        </settings-your-saved-info-page-index>
       </template>
     </div>
   </template>
@@ -138,7 +169,8 @@
       <template is="dom-if" if="[[renderPlugin_(
           routes_.LANGUAGES, lastRoute_, inSearchMode_)]]">
 <if expr="is_chromeos">
-        <settings-languages-page-index></settings-languages-page-index>
+        <settings-languages-page-index-cros>
+        </settings-languages-page-index-cros>
 </if>
 <if expr="not is_chromeos">
         <settings-languages-page-index prefs="{{prefs}}"

@@ -69,13 +69,15 @@ import {TestRunner} from 'test_runner';
     // we need to tear down the setup as well. The event listener will stop
     // receiving readings.
     async function setDeviceOrientationOverrideViaEmulationDomain(next) {
-      await TestRunner.EmulationAgent.setSensorOverrideEnabled(
-          true, 'relative-orientation');
-      await TestRunner.EmulationAgent.setSensorOverrideReadings(
-          'relative-orientation', {
-            // This is equivalent to alpha=1.1, beta=2.2, gamma=3.3.
-            quaternion: {x: 0.0189123, y: 0.0289715, z: 0.0101462, w: 0.9993498}
-          });
+      await TestRunner.EmulationAgent.invoke_setSensorOverrideEnabled(
+          {enabled: true, type: 'relative-orientation'});
+      await TestRunner.EmulationAgent.invoke_setSensorOverrideReadings({
+        type: 'relative-orientation',
+        reading: {
+          // This is equivalent to alpha=1.1, beta=2.2, gamma=3.3.
+          quaternion: {x: 0.0189123, y: 0.0289715, z: 0.0101462, w: 0.9993498}
+        }
+      });
       await TestRunner.evaluateInPage('setUpDeviceOrientation()');
       ConsoleTestRunner.addConsoleSniffer(next);
     },
@@ -84,8 +86,8 @@ import {TestRunner} from 'test_runner';
       // Wait for an event with null attributes to be fired once the sensor
       // override is disabled.
       ConsoleTestRunner.addConsoleSniffer(next);
-      await TestRunner.EmulationAgent.setSensorOverrideEnabled(
-          false, 'relative-orientation');
+      await TestRunner.EmulationAgent.invoke_setSensorOverrideEnabled(
+          {enabled: false, type: 'relative-orientation'});
     },
 
     // Now override the device orientatio data via the DeviceOrientation
@@ -94,8 +96,8 @@ import {TestRunner} from 'test_runner';
     // handler().
     async function firstOrientationOverride(next) {
       ConsoleTestRunner.waitUntilNthMessageReceived(2, next);
-      await TestRunner.DeviceOrientationAgent.setDeviceOrientationOverride(
-          20, 30, 40);
+      await TestRunner.DeviceOrientationAgent.invoke_setDeviceOrientationOverride(
+          {alpha: 20, beta: 30, gamma: 40});
     },
 
     // Add a RelativeOrientationSensor to verify that it is also controlled by
@@ -115,13 +117,13 @@ import {TestRunner} from 'test_runner';
     // we need to wait for 2 messages).
     async function secondOrientationOverride(next) {
       ConsoleTestRunner.waitUntilNthMessageReceived(2, next);
-      await TestRunner.DeviceOrientationAgent.setDeviceOrientationOverride(
-          90, 0, 0);
+      await TestRunner.DeviceOrientationAgent.invoke_setDeviceOrientationOverride(
+          {alpha: 90, beta: 0, gamma: 0});
     },
 
     async function clearOverride(next) {
       await TestRunner.evaluateInPageAsync('cleanUpDeviceOrientation()');
-      await TestRunner.DeviceOrientationAgent.clearDeviceOrientationOverride();
+      await TestRunner.DeviceOrientationAgent.invoke_clearDeviceOrientationOverride();
       await ConsoleTestRunner.dumpConsoleMessages();
       next();
     },
@@ -131,8 +133,8 @@ import {TestRunner} from 'test_runner';
     // changes.
     async function reloadPageAndOverride(next) {
       // First, enable DeviceOrientationAgent again.
-      await TestRunner.DeviceOrientationAgent.setDeviceOrientationOverride(
-          1, 2, 3);
+      await TestRunner.DeviceOrientationAgent.invoke_setDeviceOrientationOverride(
+          {alpha: 1, beta: 2, gamma: 3});
 
       // Reload the page. DeviceOrientationInspectorAgent::Restore() will call
       // DeviceOrientationInspectorAgent::SetOrientationSensorOverride() again,
@@ -142,7 +144,7 @@ import {TestRunner} from 'test_runner';
       await TestRunner.reloadPagePromise();
       await ConsoleTestRunner.dumpConsoleMessages();
 
-      await TestRunner.DeviceOrientationAgent.clearDeviceOrientationOverride();
+      await TestRunner.DeviceOrientationAgent.invoke_clearDeviceOrientationOverride();
       next();
     },
   ]);

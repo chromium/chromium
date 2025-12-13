@@ -23,8 +23,8 @@ class GtkUiPlatformWayland : public GtkUiPlatform {
 
   // GtkUiPlatform:
   void OnInitialized() override;
-  GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) override;
-  bool SetGtkWidgetTransientFor(GtkWidget* widget,
+  GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) const override;
+  void SetGtkWidgetTransientFor(GtkWidget* widget,
                                 gfx::AcceleratedWidget parent) override;
   void ClearTransientFor(gfx::AcceleratedWidget parent) override;
   void ShowGtkWindow(GtkWindow* window) override;
@@ -36,7 +36,7 @@ class GtkUiPlatformWayland : public GtkUiPlatform {
  private:
   // Called when xdg-foreign exports a parent window passed in
   // SetGtkWidgetTransientFor.
-  void OnHandleSetTransient(GtkWidget* widget, const std::string& handle);
+  void OnHandleSetTransient(GtkWidget* widget, std::string handle);
 
   base::WeakPtrFactory<GtkUiPlatformWayland> weak_factory_{this};
 };

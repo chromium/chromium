@@ -33,12 +33,7 @@
 namespace blink {
 
 HTMLOListElement::HTMLOListElement(Document& document)
-    : HTMLElement(html_names::kOlTag, document),
-      start_(0xBADBEEF),
-      item_count_(0),
-      has_explicit_start_(false),
-      is_reversed_(false),
-      should_recalculate_item_count_(false) {}
+    : HTMLElement(html_names::kOlTag, document) {}
 
 bool HTMLOListElement::IsPresentationAttribute(
     const QualifiedName& name) const {
@@ -81,13 +76,14 @@ void HTMLOListElement::CollectStyleForPresentationAttribute(
 void HTMLOListElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kStartAttr) {
-    int old_start = StartConsideringItemCount();
+    int64_t old_initial_counter = InitialCounter();
     int parsed_start = 0;
     bool can_parse = ParseHTMLInteger(params.new_value, parsed_start);
     has_explicit_start_ = can_parse;
     start_ = can_parse ? parsed_start : 0xBADBEEF;
-    if (old_start == StartConsideringItemCount())
+    if (old_initial_counter == InitialCounter()) {
       return;
+    }
     UpdateItemValues();
   } else if (params.name == html_names::kReversedAttr) {
     bool reversed = !params.new_value.IsNull();
@@ -110,9 +106,12 @@ void HTMLOListElement::UpdateItemValues() {
   ListItemOrdinal::InvalidateAllItemsForOrderedList(this);
 }
 
-void HTMLOListElement::RecalculateItemCount() {
-  item_count_ = ListItemOrdinal::ItemCountForOrderedList(this);
-  should_recalculate_item_count_ = false;
+void HTMLOListElement::RecalculateInitialCounterForReversed() {
+  DCHECK(!RuntimeEnabledFeatures::CSSListCounterAccountingEnabled() ||
+         is_reversed_);
+  initial_counter_for_reversed_ =
+      ListItemOrdinal::InitialCounterForReversedOrderedList(this);
+  should_recalculate_initial_counter_ = false;
 }
 
 }  // namespace blink

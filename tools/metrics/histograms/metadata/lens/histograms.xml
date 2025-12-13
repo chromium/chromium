@@ -35,6 +35,8 @@ chromium-metrics-reviews@google.com.
   <variant name="AppMenu"/>
   <variant name="ContentAreaContextMenuImage"/>
   <variant name="ContentAreaContextMenuPage"/>
+  <variant name="ContentAreaContextMenuText"/>
+  <variant name="ContentAreaContextMenuVideo"/>
   <variant name="ContextMenu"/>
   <variant name="FindInPage"/>
   <variant name="FREPromo"/>
@@ -73,6 +75,47 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logged when the user swiped the sheet, resulting in a change of dimension.
     Only logged on iOS.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Composebox.HandshakeCompletedInSession" enum="Boolean"
+    expires_after="2026-08-21">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens side panel is dismissed. Records whether the AIM
+    handshake with the remote UI was compoleted at least once in the session.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Composebox.ShownInSession" enum="Boolean"
+    expires_after="2026-08-21">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens side panel is dismissed. Records whether the
+    composebox was shown in this Lens session. Only recorded if the Lens side
+    panel was shown.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Composebox.UserAction" enum="ComposeboxUserAction"
+    expires_after="2026-08-21">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded everytime a user makes an action in the composebox. Records which
+    action was taken.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Composebox.UserActionInSession"
+    enum="ComposeboxUserAction" expires_after="2026-08-21">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens side panel is dismissed. Records any user action
+    that was taken in the composebox during this Lens session.
   </summary>
 </histogram>
 
@@ -133,7 +176,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.ByDocumentType.{DocumentType}.Invoked"
-    enum="Boolean" expires_after="2026-01-11">
+    enum="Boolean" expires_after="2026-05-17">
   <owner>stanfield@google.com</owner>
   <owner>mercerd@google.com</owner>
   <owner>lens-chrome@google.com</owner>
@@ -146,7 +189,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.ByInvocationSource.{InvocationSource}.ContextMenuOption.Shown"
-    enum="LensOverlayContextMenuOption" expires_after="2026-01-11">
+    enum="LensOverlayContextMenuOption" expires_after="2026-05-17">
   <owner>hujasonx@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -160,7 +203,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.ByInvocationSource.{InvocationSource}.InvocationResultedInSearch"
-    enum="Boolean" expires_after="2026-01-11">
+    enum="Boolean" expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -172,8 +215,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Lens.Overlay.ByInvocationSource.{InvocationSource}.SelectionState.CloseButtonEvent"
+    enum="LensOverlaySelectionCloseButtonEvent" expires_after="2026-05-24">
+  <owner>juanmojica@google.com</owner>
+  <owner>lens-chrome-eng@google.com</owner>
+  <summary>
+    Records an event for the close button on the selection overlay. Recorded
+    every time the button is shown to the user, and once if it is used in the
+    session. This allows for measuring click-through rate.
+  </summary>
+  <token key="InvocationSource" variants="InvocationSources"/>
+</histogram>
+
+<histogram
     name="Lens.Overlay.ByInvocationSource.{InvocationSource}.SessionDuration"
-    units="ms" expires_after="2026-01-11">
+    units="ms" expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -200,7 +256,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.ByInvocationSource.{InvocationSource}.TimeToFirstInteraction"
-    units="ms" expires_after="2026-01-11">
+    units="ms" expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -213,7 +269,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.ByPageContentType.Pdf.PageCount" units="Pages"
-    expires_after="2026-01-04">
+    expires_after="2026-05-10">
   <owner>mercerd@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -224,7 +280,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.ByPageContentType.{PageContentType}.DocumentSize2"
-    units="KB" expires_after="2026-01-04">
+    units="KB" expires_after="2026-05-10">
   <owner>mercerd@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -236,7 +292,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.ContextMenuOption.Shown"
-    enum="LensOverlayContextMenuOption" expires_after="2025-12-14">
+    enum="LensOverlayContextMenuOption" expires_after="2026-04-26">
   <owner>hujasonx@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -248,7 +304,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.ContextualSearchBox.ByDocumentType.{DocumentType}.ShownInSession"
-    enum="BooleanShown" expires_after="2026-01-04">
+    enum="BooleanShown" expires_after="2026-05-10">
   <owner>stanfield@google.com</owner>
   <owner>mercerd@google.com</owner>
   <owner>lens-chrome@google.com</owner>
@@ -264,7 +320,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.ContextualSearchBox.ByPageContentType.{PageContentType}.FocusedInSession"
-    enum="Boolean" expires_after="2026-01-04">
+    enum="Boolean" expires_after="2026-05-10">
   <owner>niharm@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -277,7 +333,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.ContextualSearchBox.ByPageContentType.{PageContentType}.ShownInSession"
-    enum="BooleanShown" expires_after="2026-01-04">
+    enum="BooleanShown" expires_after="2026-05-10">
   <owner>stanfield@google.com</owner>
   <owner>mercerd@google.com</owner>
   <owner>lens-chrome@google.com</owner>
@@ -291,7 +347,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.ContextualSearchBox.ByPageContentType.{PageContentType}.TimeFromInvocationToFirstFocus"
-    units="ms" expires_after="2026-01-04">
+    units="ms" expires_after="2026-05-10">
   <owner>mercerd@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -306,7 +362,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.ContextualSearchBox.ByPageContentType.{PageContentType}.TimeFromNavigationToFirstFocus"
-    units="ms" expires_after="2026-01-04">
+    units="ms" expires_after="2026-05-10">
   <owner>mercerd@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -320,7 +376,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.ContextualSearchBox.ByPageContentType.{PageContentType}.TimeFromNavigationToFirstInteraction"
-    units="ms" expires_after="2026-01-04">
+    units="ms" expires_after="2026-05-10">
   <owner>mercerd@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -334,7 +390,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.ContextualSearchBox.FocusedInSession"
-    enum="Boolean" expires_after="2026-01-04">
+    enum="Boolean" expires_after="2026-05-10">
   <owner>niharm@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -345,7 +401,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.ContextualSearchBox.ShownInSession"
-    enum="BooleanShown" expires_after="2026-01-04">
+    enum="BooleanShown" expires_after="2026-05-10">
   <owner>stanfield@google.com</owner>
   <owner>mercerd@google.com</owner>
   <owner>lens-chrome@google.com</owner>
@@ -357,7 +413,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.ContextualSuggest.ByPageContentType.{PageContentType}.QueryIssuedInSession"
-    enum="Boolean" expires_after="2026-01-04">
+    enum="Boolean" expires_after="2026-05-10">
   <owner>niharm@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -373,7 +429,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.ContextualSuggest.FollowUpQuery.ByPageContentType.{PageContentType}.QueryIssuedInSessionBeforeSuggestShown"
-    enum="Boolean" expires_after="2026-01-04">
+    enum="Boolean" expires_after="2026-05-10">
   <owner>mercerd@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -390,7 +446,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.ContextualSuggest.FollowUpQuery.QueryIssuedInSessionBeforeSuggestShown"
-    enum="Boolean" expires_after="2026-01-04">
+    enum="Boolean" expires_after="2026-05-10">
   <owner>mercerd@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -406,7 +462,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.ContextualSuggest.InitialQuery.ByPageContentType.{PageContentType}.QueryIssuedInSessionBeforeSuggestShown"
-    enum="Boolean" expires_after="2026-01-04">
+    enum="Boolean" expires_after="2026-05-10">
   <owner>mercerd@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -433,7 +489,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.ContextualSuggest.QueryIssuedInSession"
-    enum="Boolean" expires_after="2026-01-04">
+    enum="Boolean" expires_after="2026-05-10">
   <owner>niharm@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -446,7 +502,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.{PageContentType}.ShownInSession"
-    enum="Boolean" expires_after="2026-01-04">
+    enum="Boolean" expires_after="2026-05-10">
   <owner>niharm@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -462,7 +518,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.{PageContentType}.SuggestionUsedInSession"
-    enum="Boolean" expires_after="2026-01-04">
+    enum="Boolean" expires_after="2026-05-10">
   <owner>niharm@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -476,7 +532,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.ContextualSuggest.ZPS.ShownInSession"
-    enum="Boolean" expires_after="2026-01-04">
+    enum="Boolean" expires_after="2026-05-10">
   <owner>niharm@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -487,7 +543,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.ContextualSuggest.ZPS.SuggestionUsedInSession"
-    enum="Boolean" expires_after="2026-01-04">
+    enum="Boolean" expires_after="2026-05-10">
   <owner>niharm@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -498,7 +554,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.Dismissed" enum="LensOverlayDismissalSource"
-    expires_after="2026-01-11">
+    expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mercerd@google.com</owner>
   <summary>
@@ -515,7 +571,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.GeneratedTab" enum="LensOverlayNewTabSource"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>christianxu@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -525,7 +581,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.GeneratedTab.SessionCount" units="count"
-    expires_after="2026-01-11">
+    expires_after="2026-05-17">
   <owner>christianxu@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -535,7 +591,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.InvocationResultedInSearch" enum="Boolean"
-    expires_after="2025-11-16">
+    expires_after="2026-03-22">
   <owner>jdonnelly@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -545,7 +601,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.Invoked" enum="LensOverlayInvocationSource"
-    expires_after="2026-01-11">
+    expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mercerd@google.com</owner>
   <summary>
@@ -563,7 +619,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.LensResponseTime" units="ms"
-    expires_after="2026-01-11">
+    expires_after="2026-05-17">
   <owner>christianxu@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -572,8 +628,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.NonBlockingPrivacyNotice.Accepted"
+    enum="LensOverlayNonBlockingPrivacyNoticeUserAction"
+    expires_after="2026-03-15">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded each time the user interacts with the Lens Permission Bubble,
+    enumerated by those actions.
+  </summary>
+</histogram>
+
+<histogram
+    name="Lens.Overlay.NonBlockingPrivacyNotice.ByInvocationSource.{InvocationSource}.Accepted"
+    enum="LensOverlayNonBlockingPrivacyNoticeUserAction"
+    expires_after="2026-03-15">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded each time the user interacts with the Lens Permission Bubble,
+    enumerated by those actions and sliced by invocation source.
+  </summary>
+  <token key="InvocationSource" variants="InvocationSources"/>
+</histogram>
+
+<histogram name="Lens.Overlay.NonBlockingPrivacyNotice.Shown"
+    enum="LensOverlayInvocationSource" expires_after="2026-03-15">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded each time the Lens Permission Bubble is requested to be shown,
+    enumerated by invocation source.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.OcrDomSimilarity" units="%"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>mercerd@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -589,7 +679,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.Overlay.ByInvocationSource.{InvocationSource}.UserAction"
-    enum="LensOverlayUserAction" expires_after="2026-01-11">
+    enum="LensOverlayUserAction" expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mercerd@google.com</owner>
   <summary>
@@ -606,7 +696,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.Overlay.UserAction" enum="LensOverlayUserAction"
-    expires_after="2026-01-11">
+    expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mercerd@google.com</owner>
   <summary>
@@ -622,7 +712,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.Performance.AverageFPS" units="fps"
-    expires_after="2025-12-28">
+    expires_after="2026-03-01">
   <owner>mercerd@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -636,7 +726,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.PermissionBubble.ByInvocationSource.{InvocationSource}.Shown"
-    enum="BooleanShown" expires_after="2026-01-11">
+    enum="BooleanShown" expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mercerd@google.com</owner>
   <summary>
@@ -650,7 +740,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.PermissionBubble.ByInvocationSource.{InvocationSource}.UserAction"
-    enum="LensPermissionBubbleUserAction" expires_after="2026-01-11">
+    enum="LensPermissionBubbleUserAction" expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mercerd@google.com</owner>
   <summary>
@@ -661,7 +751,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.PermissionBubble.Shown" enum="BooleanShown"
-    expires_after="2026-01-11">
+    expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mercerd@google.com</owner>
   <summary>
@@ -672,7 +762,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.PermissionBubble.UserAction"
-    enum="LensPermissionBubbleUserAction" expires_after="2026-01-11">
+    enum="LensPermissionBubbleUserAction" expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mercerd@google.com</owner>
   <summary>
@@ -681,8 +771,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.SelectionState.CloseButtonEvent"
+    enum="LensOverlaySelectionCloseButtonEvent" expires_after="2026-05-24">
+  <owner>juanmojica@google.com</owner>
+  <owner>lens-chrome-eng@google.com</owner>
+  <summary>
+    Records an event for the close button on the selection overlay. Recorded
+    every time the button is shown to the user, and once if it is used in the
+    session. This allows for measuring click-through rate.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.SessionDuration" units="ms"
-    expires_after="2026-01-11">
+    expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -692,7 +793,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.SessionForegroundDuration" units="ms"
-    expires_after="2026-01-11">
+    expires_after="2026-05-17">
   <owner>christianxu@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -703,7 +804,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.Shown" enum="BooleanEnabled"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>erikchen@chromium.org</owner>
   <owner>mercerd@google.com</owner>
   <summary>
@@ -723,7 +824,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.SidePanelResultStatus"
-    enum="SidePanelResultStatus" expires_after="2025-11-30">
+    enum="SidePanelResultStatus" expires_after="2026-06-07">
   <owner>juanmojica@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -734,7 +835,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.TextDirectiveResult"
-    enum="LensOverlayTextDirectiveResult" expires_after="2026-01-31">
+    enum="LensOverlayTextDirectiveResult" expires_after="2026-06-07">
   <owner>juanmojica@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -744,8 +845,58 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.TimeToCheckPageContextEligibility" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when checking if the page context is eligible for Lens.
+    Measures the elapsed time to check for eligibility.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToCloseOpenedSidePanel" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the side panel is closed after being opened from the
+    overlay. Measures the elapsed time to close the side panel.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToCreateScreenshotBitmap" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when a bitmap is created from a screenshot. Measures the
+    elapsed time to create the screenshot bitmap.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToFetchBoundingBoxes" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the bounding boxes for images on the page are fetched.
+    Measures the elapsed time to fetch the bounding boxes.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToFetchPdfPage" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when a PDF page is fetched for the Lens Overlay. Measures the
+    elapsed time to fetch the PDF page.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.TimeToFirstInteraction" units="ms"
-    expires_after="2026-01-11">
+    expires_after="2026-05-17">
   <owner>jdonnelly@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -757,7 +908,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.TimeToFirstInteraction.{FirstInteractionType}"
-    units="ms" expires_after="2026-01-11">
+    units="ms" expires_after="2026-05-17">
   <owner>christianxu@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -768,8 +919,38 @@ chromium-metrics-reviews@google.com.
   <token key="FirstInteractionType" variants="FirstInteractionType"/>
 </histogram>
 
+<histogram name="Lens.Overlay.TimeToGetPageContext" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the page context is retrieved. Measures the elapsed time
+    to get the page context.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToScreenshot" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when a screenshot is successfully captured for the Lens
+    Overlay. Measures the elapsed time to capture the screenshot.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.TimeToWebuiBound" units="ms"
+    expires_after="2026-03-01">
+  <owner>dianaou@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the page handler is bound to the C++ controller. Measures
+    the elapsedtime for the page to bind.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.TimeToWebUIReady" units="ms"
-    expires_after="2025-12-07">
+    expires_after="2026-04-12">
   <owner>jdonnelly@chromium.org</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -790,6 +971,17 @@ chromium-metrics-reviews@google.com.
     Quick Action Search Widget.
 
     Note: Gap between 04/22 - 08/23.
+  </summary>
+</histogram>
+
+<histogram name="Lens.SidePanel.IframeLoadStatus"
+    enum="LensSidePanelIframeLoadStatus" expires_after="2026-09-01">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded after a navigation in the side panel iframe or one of its
+    subframes. Records whether the iframe loaded successfully, or the reason for
+    the error if it failed.
   </summary>
 </histogram>
 

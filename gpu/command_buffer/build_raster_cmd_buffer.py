@@ -49,7 +49,6 @@ _NAMED_TYPE_INFO = {
     'is_complete': True,
     'valid': [
       'GL_COMMANDS_ISSUED_CHROMIUM',
-      'GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM',
       'GL_COMMANDS_COMPLETED_CHROMIUM',
     ],
   },
@@ -257,21 +256,9 @@ _FUNCTION_INFO = {
     'gl_test_func': 'glEndnQuery',
     'client_test': False,
   },
-  'QueryCounterEXT' : {
-    'type': 'Custom',
-    'impl_func': False,
-    'cmd_args': 'GLidQuery id, GLenumQueryTarget target, '
-                'void* sync_data, GLuint submit_count',
-    'data_transfer_methods': ['shm'],
-    'gl_test_func': 'glQueryCounter',
-  },
   'GetQueryObjectuivEXT': {
     'type': 'NoCommand',
     'gl_test_func': 'glGetQueryObjectuiv',
-  },
-  'GetQueryObjectui64vEXT': {
-    'type': 'NoCommand',
-    'gl_test_func': 'glGetQueryObjectui64v',
   },
   'OrderingBarrierCHROMIUM': {
     'type': 'NoCommand',

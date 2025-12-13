@@ -1,0 +1,117 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file contains a subset of the messages defined in go/zmdhe.
+// Add additional messages as needed.
+
+edition = "2023";
+
+option optimize_for = LITE_RUNTIME;
+
+package legion.proto;
+
+// Next ID: 13
+message LegionRequest {
+  FeatureName feature_name = 1;
+
+  oneof request {
+    GenerateContentRequest generate_content_request = 4;
+  }
+
+  // Unique id used to represent the request which can be used to correlate the
+  // request and response. Useful when multiple concurrent requests and
+  // potentially out-of-order responses (if they were sequential, and server
+  // guaranteed in-order delivery of responses, this wouldn't be necessary) in a
+  // single session.
+  int32 request_id = 5;
+}
+
+// Next ID: 10
+message LegionResponse {
+  oneof response {
+    GenerateContentResponse generate_content_response = 3;
+  }
+
+  // Unique id used to represent the response which can be used to correlate the
+  // request and response. - Useful when multiple concurrent requests and
+  // potentially out-of-order responses (if they were sequential, and server
+  // guaranteed in-order delivery of responses, this wouldn't be necessary) in a
+  // single session.
+  int32 request_id = 4;
+}
+
+// LINT.IfChange(FeatureName)
+enum FeatureName {
+  FEATURE_NAME_UNSPECIFIED = 0;
+  FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT = 3;
+  FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION = 700;
+}
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:LegionFeatureName)
+
+message GenerateContentRequest {
+  // This field is meant for fast prototyping and will only be respected when
+  // the feature name is FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT.
+  string model = 1;
+
+  repeated Content contents = 2;
+}
+
+message Content {
+  // The producer of the content. Must be either 'user' or 'model'.
+  //
+  // Useful to set for multi-turn conversations, otherwise can be left blank
+  // or unset.
+  string role = 1;
+
+  // Ordered `Parts` that constitute a single message. Parts may have different
+  // IANA MIME types.
+  repeated Part parts = 2;
+}
+
+message Part {
+  oneof data {
+    // Text part (can be code).
+    string text = 1;
+    // Inlined bytes data.
+    Blob inline_data = 2;
+  }
+}
+
+// Content blob.
+message Blob {
+  // The IANA standard MIME type of the source data.
+  string mime_type = 1;
+
+  // Raw bytes.
+  bytes data = 2;
+
+  // When set indicates that the next message in a streaming connection
+  // is to be interpreted as a continuation of this Blob.
+  // The next message must contain only the Content of the same role as the
+  // the one containing this Part, and must contain a single Part with
+  // inline_data and the same mime_type as this Blob.
+  bool will_continue = 3;
+}
+
+message GenerateContentResponse {
+  repeated Candidate candidates = 1;
+}
+
+message Candidate {
+  // Index of the candidate.
+  int32 index = 1;
+
+  // Content parts of the candidate.
+  Content content = 2;
+
+  enum FinishReason {
+    FINISH_REASON_UNSPECIFIED = 0;
+    STOP = 1;
+    SAFETY = 2;
+    BLOCKLIST = 3;
+    PROHIBITED_CONTENT = 4;
+  }
+
+  FinishReason finish_reason = 3;
+}

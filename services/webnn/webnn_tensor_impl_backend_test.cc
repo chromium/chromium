@@ -8,7 +8,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -26,6 +25,7 @@
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_tensor_impl.h"
+#include "services/webnn/webnn_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -33,8 +33,9 @@
 #include "services/webnn/dml/command_queue.h"
 #include "services/webnn/dml/command_recorder.h"
 #include "services/webnn/dml/tensor_impl_dml.h"
-#include "services/webnn/dml/test_base.h"
 #include "services/webnn/dml/utils.h"
+#include "services/webnn/webnn_test_utils.h"
+#include "ui/gfx/win/d3d_shared_fence.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
@@ -80,11 +81,15 @@ struct CreateTensorSuccess {
 };
 
 #if BUILDFLAG(IS_WIN)
-class WebNNTensorImplBackendTest : public dml::TestBase {
+class WebNNTensorImplBackendTest : public testing::Test {
  public:
-  WebNNTensorImplBackendTest()
-      : scoped_feature_list_(
-            webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
+  WebNNTensorImplBackendTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{webnn::mojom::features::
+                                  kWebMachineLearningNeuralNetwork,
+                              webnn::mojom::features::kWebNNDirectML},
+        /*disabled_features=*/{webnn::mojom::features::kWebNNOnnxRuntime});
+  }
 
   void SetUp() override;
   void TearDown() override;
@@ -95,12 +100,12 @@ class WebNNTensorImplBackendTest : public dml::TestBase {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<dml::Adapter> adapter_;
-  raw_ptr<WebNNContextProviderImpl, DanglingUntriaged> provider_impl_ = nullptr;
+  WebNNTestEnvironment webnn_test_environment_;
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote_;
 };
 
 void WebNNTensorImplBackendTest::SetUp() {
-  SKIP_TEST_IF(!dml::UseGPUInTests());
+  SKIP_TEST_IF(!UseGPUInTests());
 
   dml::Adapter::EnableDebugLayerForTesting();
   auto adapter_creation_result = dml::Adapter::GetGpuInstanceForTesting();
@@ -112,12 +117,8 @@ void WebNNTensorImplBackendTest::SetUp() {
   // DirectML version 1.2 or DML_FEATURE_LEVEL_2_1, so skip the tests if the
   // DirectML version doesn't support this feature.
   SKIP_TEST_IF(!adapter_->IsDMLDeviceCompileGraphSupportedForTesting());
-  // Testing WebGpuInterop usage relies on the WebNNContextProvider
-  // interface implementation in order to lookup WebNNTensorImpls from
-  // non-WebNNContextProviderImpls.
-  provider_impl_ = WebNNContextProviderImpl::CreateForTesting(
-                       webnn_provider_remote_.BindNewPipeAndPassReceiver())
-                       .as_ptr();
+  webnn_test_environment_.BindWebNNContextProvider(
+      webnn_provider_remote_.BindNewPipeAndPassReceiver());
 }
 #elif BUILDFLAG(IS_MAC)
 class WebNNTensorImplBackendTest : public testing::Test {
@@ -134,7 +135,7 @@ class WebNNTensorImplBackendTest : public testing::Test {
   CreateWebNNContext();
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_;
+  WebNNTestEnvironment webnn_test_environment_;
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote_;
 };
 
@@ -144,7 +145,7 @@ void WebNNTensorImplBackendTest::SetUp() {
                  << base::mac::MacOSVersion();
   }
 
-  WebNNContextProviderImpl::CreateForTesting(
+  webnn_test_environment_.BindWebNNContextProvider(
       webnn_provider_remote_.BindNewPipeAndPassReceiver());
 
   GTEST_SKIP() << "WebNNTensor not implemented on macOS";
@@ -155,7 +156,7 @@ class WebNNTensorImplBackendTest : public testing::Test {
   WebNNTensorImplBackendTest()
       : scoped_feature_list_(
             webnn::mojom::features::kWebMachineLearningNeuralNetwork) {
-    WebNNContextProviderImpl::CreateForTesting(
+    webnn_test_environment_.BindWebNNContextProvider(
         webnn_provider_remote_.BindNewPipeAndPassReceiver());
   }
 
@@ -166,14 +167,15 @@ class WebNNTensorImplBackendTest : public testing::Test {
   CreateWebNNContext();
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_;
+  WebNNTestEnvironment webnn_test_environment_;
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote_;
 };
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
 
 void WebNNTensorImplBackendTest::TearDown() {
-  webnn_provider_remote_.reset();
   base::RunLoop().RunUntilIdle();
+  // Give WebNNContext a chance to disconnect.
+  webnn_provider_remote_.reset();
 }
 
 base::expected<CreateContextSuccess, webnn::mojom::Error::Code>
@@ -438,6 +440,7 @@ TEST_F(WebNNTensorImplBackendTest, CreateContextImplManyTest) {
 TEST_F(WebNNTensorImplBackendTest, ContextImplSyncToken) {
   BadMessageTestHelper bad_message_helper;
 
+  blink::WebNNContextToken webnn_context_handle;
   mojo::Remote<mojom::WebNNContext> webnn_context_remote;
   base::expected<CreateContextSuccess, webnn::mojom::Error::Code>
       context_result = CreateWebNNContext();
@@ -447,34 +450,27 @@ TEST_F(WebNNTensorImplBackendTest, ContextImplSyncToken) {
   } else {
     webnn_context_remote =
         std::move(context_result.value().webnn_context_remote);
+    webnn_context_handle =
+        std::move(context_result.value().webnn_context_handle);
   }
 
-  gpu::SyncToken last_sync_token_fence;
-  {
-    base::test::TestFuture<const gpu::SyncToken&> gen_sync_token_future;
-    webnn_context_remote->GenVerifiedSyncToken(
-        gen_sync_token_future.GetCallback());
-    last_sync_token_fence = gen_sync_token_future.Take();
-  }
+  base::optional_ref<WebNNContextImpl> context_impl =
+      webnn_test_environment_.context_provider()->GetWebNNContextImplForTesting(
+          webnn_context_handle);
 
+  gpu::SyncToken last_sync_token_fence = context_impl->GenVerifiedSyncToken();
   EXPECT_EQ(last_sync_token_fence.release_count(), 1u);
 
   // Tell WebNN IPC to flush itself by waiting on its own SyncToken it had
   // previously generated.
-  webnn_context_remote->WaitSyncToken(last_sync_token_fence);
+  context_impl->WaitSyncToken(last_sync_token_fence);
 
-  {
-    base::test::TestFuture<const gpu::SyncToken&> gen_sync_token_future;
-    webnn_context_remote->GenVerifiedSyncToken(
-        gen_sync_token_future.GetCallback());
-    last_sync_token_fence = gen_sync_token_future.Take();
-  }
-
+  last_sync_token_fence = context_impl->GenVerifiedSyncToken();
   EXPECT_EQ(last_sync_token_fence.release_count(), 2u);
 
   // Waiting on the same SyncToken should nop.
-  webnn_context_remote->WaitSyncToken(last_sync_token_fence);
-  webnn_context_remote->WaitSyncToken(last_sync_token_fence);
+  context_impl->WaitSyncToken(last_sync_token_fence);
+  context_impl->WaitSyncToken(last_sync_token_fence);
 
   EXPECT_FALSE(bad_message_helper.GetLastBadMessage().has_value());
 }
@@ -507,12 +503,13 @@ class WebNNTensorImplDmlBackendTest : public WebNNTensorImplBackendTest {
     ASSERT_TRUE(webnn_context_remote_.is_bound());
   }
 
-  base::WeakPtr<native::d3d12::WebNNTensor> GetWebNNTensor(
+  base::WeakPtr<dml::TensorImplDml> GetWebNNTensor(
       const blink::WebNNTensorToken& webnn_tensor_handle) const {
     base::optional_ref<WebNNContextImpl> context_impl =
-        provider_impl_->GetWebNNContextImplForTesting(webnn_context_handle_);
+        webnn_test_environment_.context_provider()
+            ->GetWebNNContextImplForTesting(webnn_context_handle_);
     return static_cast<dml::TensorImplDml*>(
-               context_impl->GetWebNNTensorImpl(webnn_tensor_handle).as_ptr())
+               context_impl->GetWebNNTensorImpl(webnn_tensor_handle).get())
         ->AsWeakPtr();
   }
 
@@ -560,11 +557,11 @@ TEST_F(WebNNTensorImplDmlBackendTest, EndAccessWebNNTwiceTest) {
 
   webnn_context_remote_.FlushForTesting();
 
-  base::WeakPtr<native::d3d12::WebNNTensor> webnn_tensor =
+  base::WeakPtr<dml::TensorImplDml> webnn_tensor =
       GetWebNNTensor(webnn_tensor_handle);
   ASSERT_TRUE(webnn_tensor);
 
-  std::unique_ptr<native::d3d12::WebNNSharedFence> webnn_fence_to_wait_for_1 =
+  scoped_refptr<gfx::D3DSharedFence> webnn_fence_to_wait_for_1 =
       webnn_tensor->EndAccessWebNN();
   ASSERT_TRUE(webnn_fence_to_wait_for_1);
 
@@ -576,7 +573,7 @@ TEST_F(WebNNTensorImplDmlBackendTest, EndAccessWebNNTwiceTest) {
       webnn_fence_to_wait_for_1->GetD3D12Fence(),
       webnn_fence_to_wait_for_1->GetFenceValue()));
 
-  std::unique_ptr<native::d3d12::WebNNSharedFence> webnn_fence_to_wait_for_2 =
+  scoped_refptr<gfx::D3DSharedFence> webnn_fence_to_wait_for_2 =
       webnn_tensor->EndAccessWebNN();
   ASSERT_TRUE(webnn_fence_to_wait_for_2);
 
@@ -613,7 +610,7 @@ TEST_F(WebNNTensorImplDmlBackendTest, UsageAfterBeginAccessWebNNTest) {
 
   webnn_context_remote_.FlushForTesting();
 
-  base::WeakPtr<native::d3d12::WebNNTensor> webnn_tensor =
+  base::WeakPtr<dml::TensorImplDml> webnn_tensor =
       GetWebNNTensor(webnn_tensor_handle);
   ASSERT_TRUE(webnn_tensor);
 
@@ -624,7 +621,7 @@ TEST_F(WebNNTensorImplDmlBackendTest, UsageAfterBeginAccessWebNNTest) {
   webnn_tensor_remote->WriteTensor(mojo_base::BigBuffer(input_data));
   webnn_tensor_remote.FlushForTesting();
 
-  std::unique_ptr<native::d3d12::WebNNSharedFence> webnn_fence_to_wait_for =
+  scoped_refptr<gfx::D3DSharedFence> webnn_fence_to_wait_for =
       webnn_tensor->EndAccessWebNN();
   ASSERT_TRUE(webnn_fence_to_wait_for);
 
@@ -703,7 +700,7 @@ TEST_F(WebNNTensorImplDmlBackendTest, MAYBE_AccessOnDifferentQueueTest) {
   UNSAFE_BUFFERS(WriteTensorData(
       base::span(input_data.data(), input_data.size()), upload_buffer.Get()));
 
-  base::WeakPtr<native::d3d12::WebNNTensor> webnn_tensor =
+  base::WeakPtr<dml::TensorImplDml> webnn_tensor =
       GetWebNNTensor(webnn_tensor_handle);
   ASSERT_TRUE(webnn_tensor);
 
@@ -726,7 +723,7 @@ TEST_F(WebNNTensorImplDmlBackendTest, MAYBE_AccessOnDifferentQueueTest) {
   // 13.    Signal
   // 14.         |----------> Wait
 
-  std::unique_ptr<native::d3d12::WebNNSharedFence> webnn_fence_to_wait_for_1 =
+  scoped_refptr<gfx::D3DSharedFence> webnn_fence_to_wait_for_1 =
       webnn_tensor->EndAccessWebNN();
   ASSERT_TRUE(webnn_fence_to_wait_for_1);
 
@@ -736,9 +733,10 @@ TEST_F(WebNNTensorImplDmlBackendTest, MAYBE_AccessOnDifferentQueueTest) {
 
   {
     ASSERT_HRESULT_SUCCEEDED(command_recorder->Open());
-    UploadBufferWithBarrier(command_recorder.get(),
-                            webnn_tensor->GetD3D12Buffer(), upload_buffer,
-                            kTensorSize);
+    UploadBufferWithBarrier(
+        command_recorder.get(),
+        static_cast<dml::TensorImplDml*>(webnn_tensor.get())->buffer(),
+        upload_buffer, kTensorSize);
     ASSERT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
   }
 
@@ -758,7 +756,7 @@ TEST_F(WebNNTensorImplDmlBackendTest, MAYBE_AccessOnDifferentQueueTest) {
   }
 
   // Step 8. Simulate more external queue use with new data.
-  std::unique_ptr<native::d3d12::WebNNSharedFence> webnn_fence_to_wait_for_2 =
+  scoped_refptr<gfx::D3DSharedFence> webnn_fence_to_wait_for_2 =
       webnn_tensor->EndAccessWebNN();
   ASSERT_TRUE(webnn_fence_to_wait_for_2);
 
@@ -775,9 +773,10 @@ TEST_F(WebNNTensorImplDmlBackendTest, MAYBE_AccessOnDifferentQueueTest) {
         webnn_fence_to_wait_for_2->GetD3D12Fence(),
         webnn_fence_to_wait_for_2->GetFenceValue()));
     ASSERT_HRESULT_SUCCEEDED(command_recorder->Open());
-    UploadBufferWithBarrier(command_recorder.get(),
-                            webnn_tensor->GetD3D12Buffer(), upload_buffer,
-                            kTensorSize);
+    UploadBufferWithBarrier(
+        command_recorder.get(),
+        static_cast<dml::TensorImplDml*>(webnn_tensor.get())->buffer(),
+        upload_buffer, kTensorSize);
     ASSERT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
   }
 
@@ -829,13 +828,13 @@ TEST_F(WebNNTensorImplDmlBackendTest, NoWebNNQueueAccessInBetweenTest) {
       dml::CommandQueue::Create(adapter_->d3d12_device());
   ASSERT_NE(command_queue, nullptr);
 
-  base::WeakPtr<native::d3d12::WebNNTensor> webnn_tensor =
+  base::WeakPtr<dml::TensorImplDml> webnn_tensor =
       GetWebNNTensor(webnn_tensor_handle);
   ASSERT_TRUE(webnn_tensor);
 
   // End access without any WebNN work prior returns WebNN's submission
   // fence which should be completed.
-  std::unique_ptr<native::d3d12::WebNNSharedFence> webnn_fence_to_wait_for_1 =
+  scoped_refptr<gfx::D3DSharedFence> webnn_fence_to_wait_for_1 =
       webnn_tensor->EndAccessWebNN();
   ASSERT_TRUE(webnn_fence_to_wait_for_1);
 
@@ -852,7 +851,7 @@ TEST_F(WebNNTensorImplDmlBackendTest, NoWebNNQueueAccessInBetweenTest) {
 
   // Calling end access again, with no WebNN work, should
   // return the last fence without WebNN calling wait on it.
-  std::unique_ptr<native::d3d12::WebNNSharedFence> webnn_fence_to_wait_for_2 =
+  scoped_refptr<gfx::D3DSharedFence> webnn_fence_to_wait_for_2 =
       webnn_tensor->EndAccessWebNN();
   ASSERT_TRUE(webnn_fence_to_wait_for_2);
 

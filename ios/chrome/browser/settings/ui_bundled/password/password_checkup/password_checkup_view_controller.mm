@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
-#import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_cell.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_commands.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_constants.h"
@@ -59,7 +58,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 };
 
 // Helper method to get the right header image depending on the
-// `password_checkup_state`.
+// `password_checkup_state`. Changes to the assets returned by this function may
+// require corresponding changes to `createHeaderBackgroundView`.
 UIImage* GetHeaderImage(PasswordCheckupHomepageState password_checkup_state,
                         InsecurePasswordCounts counts) {
   bool has_compromised_passwords = counts.compromised_count > 0;
@@ -202,6 +202,12 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
   // Image view at the top of the screen, indicating the overall Password
   // Checkup status.
   UIImageView* _headerImageView;
+
+  // View that is placed above the `_headerImageView` and behind the navigation
+  // bar. Its background color is the same as that of the `_headerImageView` so
+  // that it appears as if the `_headerImageView` extends all the way to the top
+  // of the view controller.
+  UIView* _headerBackgroundView;
 }
 
 @end
@@ -218,34 +224,17 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
 
   self.title = l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP);
 
+  _headerBackgroundView = [self createHeaderBackgroundView];
   _headerImageView = [self createHeaderImageView];
   [self updateHeaderImage];
-  [self updateTableViewHeaderView];
+  [self updateTableViewHeader];
 
   [self loadModel];
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(updateUIOnTraitChange)];
-  }
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-  [super viewWillAppear:animated];
-  // Update the navigation bar background color as it is different for the
-  // PasswordCheckupViewController than for its parent.
-  [self updateNavigationBarBackgroundColorForDismissal:NO];
-}
-
-- (void)willMoveToParentViewController:(UIViewController*)parent {
-  [super willMoveToParentViewController:parent];
-  if (!parent) {
-    // Reset the navigation bar background color to what it was before getting
-    // to the PasswordCheckupViewController.
-    [self updateNavigationBarBackgroundColorForDismissal:YES];
-  }
+  NSArray<UITrait>* traits =
+      TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(updateUIOnTraitChange)];
 }
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {
@@ -254,20 +243,6 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
     [self.handler dismissPasswordCheckupViewController];
   }
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if (self.traitCollection.verticalSizeClass !=
-      previousTraitCollection.verticalSizeClass) {
-    [self updateUIOnTraitChange];
-  }
-}
-#endif
 
 #pragma mark - SettingsRootTableViewController
 
@@ -639,29 +614,40 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
   return headerImageView;
 }
 
-// Updates the background color of the navigation bar. When iPhones are in
-// landscape mode, we want to hide the header image, and so we want to update
-// the background color of the navigation bar accordingly. We also want to set
-// the background color back to `nil` when returning to the previous view
-// controller to cleanup the color change made in this view controller.
-- (void)updateNavigationBarBackgroundColorForDismissal:
-    (BOOL)viewControllerWillBeDismissed {
-  if (viewControllerWillBeDismissed || IsCompactHeight(self)) {
-    self.navigationController.navigationBar.backgroundColor = nil;
-    return;
-  }
-  self.navigationController.navigationBar.backgroundColor =
-      [UIColor colorNamed:kLightOnlyGrey200Color];
+// Creates the header background view.
+- (UIView*)createHeaderBackgroundView {
+  UIView* headerBackgroundView = [[UIView alloc] init];
+  headerBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  headerBackgroundView.backgroundColor =
+      [[UIColor colorNamed:kLightOnlyGrey200Color] colorWithAlphaComponent:1];
+  return headerBackgroundView;
 }
 
-// Updates the table view's header view depending on whether the header image
-// view should be shown or not. When we're in iPhone landscape mode, we want to
-// hide the image header view.
-- (void)updateTableViewHeaderView {
+// Updates the table view's header views depending on whether they should be
+// shown or not. These views should be hidden when in iPhone landscape mode.
+- (void)updateTableViewHeader {
   if (IsCompactHeight(self)) {
     self.tableView.tableHeaderView = nil;
+    [_headerBackgroundView removeFromSuperview];
   } else {
     self.tableView.tableHeaderView = _headerImageView;
+    if (!_headerBackgroundView.superview) {
+      [self.view addSubview:_headerBackgroundView];
+      [self.view sendSubviewToBack:_headerBackgroundView];
+
+      // Constrain the `_headerBackgroundView` to be placed above the
+      // `_headerImageView` and give it a big enough height so that it will
+      // cover the part that's behind the navigation bar.
+      [NSLayoutConstraint activateConstraints:@[
+        [_headerBackgroundView.bottomAnchor
+            constraintEqualToAnchor:self.tableView.tableHeaderView.topAnchor],
+        [_headerBackgroundView.heightAnchor constraintEqualToConstant:500],
+        [_headerBackgroundView.leadingAnchor
+            constraintEqualToAnchor:self.view.leadingAnchor],
+        [_headerBackgroundView.widthAnchor
+            constraintEqualToAnchor:self.view.widthAnchor],
+      ]];
+    }
   }
 }
 
@@ -855,7 +841,6 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
 // PasswordCheckupViewController.
 - (void)showPasswordIssuesWithWarningType:(WarningType)warningType {
   [self.handler showPasswordIssuesWithWarningType:warningType];
-  [self updateNavigationBarBackgroundColorForDismissal:YES];
 }
 
 // Notifies accessibility to focus on the cell for the given ItemType and
@@ -877,10 +862,8 @@ NSString* NotificationsOptInItemText(BOOL enabled) {
                                   cell);
 }
 
-// Updates the navigation bar's background color & the header views when the
-// UITraitVerticalSizeClass changes.
+// Updates the header views when the UITraitVerticalSizeClass changes.
 - (void)updateUIOnTraitChange {
-  [self updateNavigationBarBackgroundColorForDismissal:NO];
-  [self updateTableViewHeaderView];
+  [self updateTableViewHeader];
 }
 @end

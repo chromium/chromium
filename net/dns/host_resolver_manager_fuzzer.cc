@@ -35,8 +35,8 @@
 
 namespace {
 
-const char* kHostNames[] = {"foo", "foo.com",   "a.foo.com",
-                            "bar", "localhost", "localhost6"};
+constexpr const char* kHostNames[] = {"foo", "foo.com",   "a.foo.com",
+                                      "bar", "localhost", "localhost6"};
 
 class DnsRequest {
  public:

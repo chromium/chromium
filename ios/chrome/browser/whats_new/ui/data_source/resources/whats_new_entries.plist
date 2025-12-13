@@ -6,128 +6,38 @@
 	<array>
 		<dict>
 			<key>Type</key>
-			<integer>28</integer>
+			<integer>31</integer>
 			<key>Title</key>
-			<string>IDS_IOS_WHATS_NEW_PASSKEYS_TITLE</string>
+			<string>IDS_IOS_WHATS_NEW_BLINGENTERPRISEPROFILES_TITLE</string>
 			<key>Subtitle</key>
-			<string>IDS_IOS_WHATS_NEW_PASSKEYS_SUBTITLE</string>
+			<string>IDS_IOS_WHATS_NEW_BLINGENTERPRISEPROFILES_SUBTITLE</string>
 			<key>ImageName</key>
-			<string>Passkeys</string>
+			<string>BlingEnterpriseProfiles</string>
 			<key>ImageTexts</key>
 			<dict>
-				<key>Sign in</key>
-				<string>IDS_IOS_WHATS_NEW_PASSKEYS_SCREENSHOT_TEXT_1</string>
-				<key>Sign in with your passkey?</key>
-				<string>IDS_IOS_WHATS_NEW_PASSKEYS_SCREENSHOT_TEXT_2</string>
-				<key>Continue</key>
-				<string>IDS_IOS_WHATS_NEW_PASSKEYS_SCREENSHOT_TEXT_3</string>
-				<key>Other Sign In Options</key>
-				<string>IDS_IOS_WHATS_NEW_PASSKEYS_SCREENSHOT_TEXT_4</string>
+				<key>Add account...</key>
+				<string>IDS_IOS_WHATS_NEW_BLINGENTERPRISEPROFILES_SCREENSHOT_TEXT_1</string>
+				<key>Sign out</key>
+				<string>IDS_IOS_WHATS_NEW_BLINGENTERPRISEPROFILES_SCREENSHOT_TEXT_2</string>
 			</dict>
 			<key>IconImageName</key>
-			<string>password_manager</string>
+			<string>person.2</string>
 			<key>IconBackgroundColor</key>
-			<string></string>
-			<key>IsSymbol</key>
-			<true/>
-			<key>IsSystemSymbol</key>
-			<false/>
-			<key>IsMulticolorSymbol</key>
-			<true/>
-			<key>InstructionSteps</key>
-			<array>
-				<string>IDS_IOS_WHATS_NEW_PASSKEYS_INSTRUCTIONS_STEP_1</string>
-				<string>IDS_IOS_WHATS_NEW_PASSKEYS_INSTRUCTIONS_STEP_2</string>
-				<string>IDS_IOS_WHATS_NEW_PASSKEYS_INSTRUCTIONS_STEP_3</string>
-			</array>
-			<key>PrimaryAction</key>
-			<integer>4</integer>
-			<key>LearnMoreUrlString</key>
-			<string>https://support.google.com/chrome/?p=iOS_passkeys</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<integer>29</integer>
-			<key>Title</key>
-			<string>IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_TITLE</string>
-			<key>Subtitle</key>
-			<string>IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_SUBTITLE</string>
-			<key>ImageName</key>
-			<string>ChooseFromDrive</string>
-			<key>ImageTexts</key>
-			<dict>
-				<key>Cancel</key>
-				<string>IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_SCREENSHOT_TEXT_1</string>
-				<key>Confirm</key>
-				<string>IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_SCREENSHOT_TEXT_2</string>
-				<key>Search</key>
-				<string>IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_SCREENSHOT_TEXT_3</string>
-				<key>My Drive</key>
-				<string>IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_SCREENSHOT_TEXT_4</string>
-				<key>Shared Drives</key>
-				<string>IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_SCREENSHOT_TEXT_5</string>
-				<key>Computers</key>
-				<string>IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_SCREENSHOT_TEXT_6</string>
-				<key>Starred</key>
-				<string>IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_SCREENSHOT_TEXT_7</string>
-			</dict>
-			<key>IconImageName</key>
-			<string>arrow.down.to.line.compact</string>
-			<key>IconBackgroundColor</key>
-			<string>purple</string>
+			<string>blue</string>
 			<key>IsSymbol</key>
 			<true/>
 			<key>IsSystemSymbol</key>
 			<true/>
 			<key>InstructionSteps</key>
 			<array>
-				<string>IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_INSTRUCTIONS_STEP_1</string>
-				<string>IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_INSTRUCTIONS_STEP_2</string>
-				<string>IDS_IOS_WHATS_NEW_CHOOSEFROMDRIVE_INSTRUCTIONS_STEP_3</string>
+				<string>IDS_IOS_WHATS_NEW_BLINGENTERPRISEPROFILES_INSTRUCTIONS_STEP_1</string>
+				<string>IDS_IOS_WHATS_NEW_BLINGENTERPRISEPROFILES_INSTRUCTIONS_STEP_2</string>
+				<string>IDS_IOS_WHATS_NEW_BLINGENTERPRISEPROFILES_INSTRUCTIONS_STEP_3</string>
 			</array>
 			<key>PrimaryAction</key>
-			<integer>0</integer>
+			<integer>8</integer>
 			<key>LearnMoreUrlString</key>
-			<string></string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<integer>30</integer>
-			<key>Title</key>
-			<string>IDS_IOS_WHATS_NEW_SAVETODRIVE_TITLE</string>
-			<key>Subtitle</key>
-			<string>IDS_IOS_WHATS_NEW_SAVETODRIVE_SUBTITLE</string>
-			<key>ImageName</key>
-			<string>SaveToDrive</string>
-			<key>ImageTexts</key>
-			<dict>
-				<key>Save in...</key>
-				<string>IDS_IOS_WHATS_NEW_SAVETODRIVE_SCREENSHOT_TEXT_1</string>
-				<key>Cancel</key>
-				<string>IDS_IOS_WHATS_NEW_SAVETODRIVE_SCREENSHOT_TEXT_2</string>
-				<key>Files</key>
-				<string>IDS_IOS_WHATS_NEW_SAVETODRIVE_SCREENSHOT_TEXT_3</string>
-				<key>Save</key>
-				<string>IDS_IOS_WHATS_NEW_SAVETODRIVE_SCREENSHOT_TEXT_4</string>
-			</dict>
-			<key>IconImageName</key>
-			<string>checkmark</string>
-			<key>IconBackgroundColor</key>
-			<string>yellow</string>
-			<key>IsSymbol</key>
-			<true/>
-			<key>IsSystemSymbol</key>
-			<true/>
-			<key>InstructionSteps</key>
-			<array>
-				<string>IDS_IOS_WHATS_NEW_SAVETODRIVE_INSTRUCTIONS_STEP_1</string>
-				<string>IDS_IOS_WHATS_NEW_SAVETODRIVE_INSTRUCTIONS_STEP_2</string>
-				<string>IDS_IOS_WHATS_NEW_SAVETODRIVE_INSTRUCTIONS_STEP_3</string>
-			</array>
-			<key>PrimaryAction</key>
-			<integer>0</integer>
-			<key>LearnMoreUrlString</key>
-			<string></string>
+			<string>https://support.google.com/chrome?p=add_profile_ios</string>
 		</dict>
 	</array>
 	<key>ChromeTips</key>
@@ -163,6 +73,77 @@
 			<integer>0</integer>
 			<key>LearnMoreUrlString</key>
 			<string>https://support.google.com/chrome?p=google_lens_ios</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<integer>21</integer>
+			<key>Title</key>
+			<string>IDS_IOS_WHATS_NEW_DOCKINGBLING_TITLE</string>
+			<key>Subtitle</key>
+			<string>IDS_IOS_WHATS_NEW_DOCKINGBLING_SUBTITLE</string>
+			<key>ImageName</key>
+			<string>DockingBling</string>
+			<key>ImageTexts</key>
+			<dict>
+				<key>Edit Home Screen</key>
+				<string>IDS_IOS_WHATS_NEW_DOCKINGBLING_SCREENSHOT_TEXT_1</string>
+			</dict>
+			<key>IconImageName</key>
+			<string>platter.filled.bottom.iphone</string>
+			<key>IconBackgroundColor</key>
+			<string>green</string>
+			<key>IsSymbol</key>
+			<true/>
+			<key>IsSystemSymbol</key>
+			<true/>
+			<key>IsMulticolorSymbol</key>
+			<true/>
+			<key>InstructionSteps</key>
+			<array>
+				<string>IDS_IOS_WHATS_NEW_DOCKINGBLING_INSTRUCTIONS_STEP_1</string>
+				<string>IDS_IOS_WHATS_NEW_DOCKINGBLING_INSTRUCTIONS_STEP_2</string>
+			</array>
+			<key>PrimaryAction</key>
+			<integer>0</integer>
+			<key>LearnMoreUrlString</key>
+			<string></string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<integer>4</integer>
+			<key>Title</key>
+			<string>IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_TITLE_TEXT</string>
+			<key>Subtitle</key>
+			<string>IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_SUBTITLE_TEXT</string>
+			<key>ImageName</key>
+			<string>default_browser_animation</string>
+			<key>ImageTexts</key>
+			<dict>
+				<key>IDS_DEFAULT_BROWSER_APP</key>
+				<string>IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_DEFAULT_BROWSER_APP</string>
+				<key>IDS_DEFAULT_BROWSER_APP_2</key>
+				<string>IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_DEFAULT_BROWSER_APP</string>
+				<key>IDS_CHROME</key>
+				<string>IDS_IOS_SHORT_PRODUCT_NAME</string>
+				<key>IDS_CHROME_SETTINGS</key>
+				<string>IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_APP_SETTINGS</string>
+			</dict>
+			<key>IconImageName</key>
+			<string>multicolor_chromeball</string>
+			<key>IsSymbol</key>
+			<true/>
+			<key>IsMulticolorSymbol</key>
+			<true/>
+			<key>InstructionSteps</key>
+			<array>
+				<string>IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP</string>
+				<string>IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP</string>
+				<string>IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP</string>
+			</array>
+			<key>PrimaryAction</key>
+			<integer>1</integer>
+			<key>LearnMoreUrlString</key>
+			<string>https://support.google.com/chrome/?p=bling_default_browser</string>
 		</dict>
 	</array>
 </dict>

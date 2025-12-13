@@ -134,20 +134,19 @@ class FlossManagerClientTest : public testing::Test {
                         &FakeExportMethod));
 
     // Handle method calls on the object proxy
-    ON_CALL(*manager_object_proxy_.get(), DoCallMethodWithErrorResponse)
-        .WillByDefault([this](
-                           ::dbus::MethodCall* method_call, int timeout_ms,
-                           ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+    ON_CALL(*manager_object_proxy_.get(), CallMethodWithErrorResponse)
+        .WillByDefault([this](::dbus::MethodCall* method_call, int timeout_ms,
+                              ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
           if (method_call->GetMember() == manager::kGetAvailableAdapters) {
-            HandleGetAvailableAdapters(method_call, timeout_ms, cb);
+            HandleGetAvailableAdapters(method_call, timeout_ms, std::move(cb));
           } else if (method_call->GetMember() == manager::kGetAdapterEnabled) {
-            HandleGetAdapterEnabled(method_call, timeout_ms, cb);
+            HandleGetAdapterEnabled(method_call, timeout_ms, std::move(cb));
           } else if (method_call->GetMember() == manager::kSetFlossEnabled) {
-            HandleSetFlossEnabled(method_call, timeout_ms, cb);
+            HandleSetFlossEnabled(method_call, timeout_ms, std::move(cb));
           } else if (method_call->GetMember() == manager::kGetFlossEnabled) {
-            HandleGetFlossEnabled(method_call, timeout_ms, cb);
+            HandleGetFlossEnabled(method_call, timeout_ms, std::move(cb));
           } else if (method_call->GetMember() == manager::kGetFlossApiVersion) {
-            HandleGetFlossApiVersion(method_call, timeout_ms, cb);
+            HandleGetFlossApiVersion(method_call, timeout_ms, std::move(cb));
           }
 
           method_called_[method_call->GetMember()]++;
@@ -197,7 +196,7 @@ class FlossManagerClientTest : public testing::Test {
   void SetUp() override {
     ::dbus::Bus::Options options;
     options.bus_type = ::dbus::Bus::BusType::SYSTEM;
-    bus_ = base::MakeRefCounted<::dbus::MockBus>(options);
+    bus_ = base::MakeRefCounted<::dbus::MockBus>(std::move(options));
     client_ = FlossManagerClient::Create();
 
     SetUpMocks();
@@ -213,7 +212,7 @@ class FlossManagerClientTest : public testing::Test {
   void HandleGetAvailableAdapters(
       ::dbus::MethodCall* method_call,
       int timeout_ms,
-      ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+      ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
     // Return that there are 2 adapter objects
     auto response = ::dbus::Response::CreateEmpty();
 
@@ -239,22 +238,22 @@ class FlossManagerClientTest : public testing::Test {
     }
     msg.CloseContainer(&outer);
 
-    std::move(*cb).Run(response.get(), nullptr);
+    std::move(cb).Run(response.get(), nullptr);
   }
 
   void HandleGetAdapterEnabled(
       ::dbus::MethodCall* method_call,
       int timeout_ms,
-      ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+      ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
     auto response = ::dbus::Response::CreateEmpty();
     ::dbus::MessageWriter writer(response.get());
     writer.AppendBool(get_adapter_enabled_return_);
-    std::move(*cb).Run(response.get(), nullptr);
+    std::move(cb).Run(response.get(), nullptr);
   }
 
   void HandleSetFlossEnabled(::dbus::MethodCall* method_call,
                              int timeout_ms,
-                             ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+                             ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
     method_call->SetSerial(serial_++);
     if (fail_setfloss_count_ > 0) {
       fail_setfloss_count_--;
@@ -263,16 +262,16 @@ class FlossManagerClientTest : public testing::Test {
       std::string error_message("SetFlossEnabled failed");
       auto error = ::dbus::ErrorResponse::FromMethodCall(
           method_call, error_name, error_message);
-      std::move(*cb).Run(nullptr, error.get());
+      std::move(cb).Run(nullptr, error.get());
     } else {
       auto response = ::dbus::Response::CreateEmpty();
-      std::move(*cb).Run(response.get(), nullptr);
+      std::move(cb).Run(response.get(), nullptr);
     }
   }
 
   void HandleGetFlossEnabled(::dbus::MethodCall* method_call,
                              int timeout_ms,
-                             ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+                             ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
     method_call->SetSerial(serial_++);
     if (fail_getfloss_count_ > 0) {
       fail_getfloss_count_--;
@@ -281,23 +280,23 @@ class FlossManagerClientTest : public testing::Test {
       std::string error_message("GetFlossEnabled failed");
       auto error = ::dbus::ErrorResponse::FromMethodCall(
           method_call, error_name, error_message);
-      std::move(*cb).Run(nullptr, error.get());
+      std::move(cb).Run(nullptr, error.get());
     } else {
       auto response = ::dbus::Response::CreateEmpty();
       ::dbus::MessageWriter writer(response.get());
       writer.AppendBool(floss_enabled_target_);
-      std::move(*cb).Run(response.get(), nullptr);
+      std::move(cb).Run(response.get(), nullptr);
     }
   }
 
   void HandleGetFlossApiVersion(
       ::dbus::MethodCall* method_call,
       int timeout_ms,
-      ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+      ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
     auto response = ::dbus::Response::CreateEmpty();
     ::dbus::MessageWriter writer(response.get());
     writer.AppendUint32(floss_api_version_);
-    std::move(*cb).Run(response.get(), nullptr);
+    std::move(cb).Run(response.get(), nullptr);
   }
 
   void ExpectErrorResponse(std::unique_ptr<dbus::Response> response) {

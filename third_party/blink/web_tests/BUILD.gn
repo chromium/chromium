@@ -1,0 +1,206 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+import("//services/on_device_model/on_device_model.gni")
+
+# Files for legacy web tests. Note that this target purposefully excludes WPT
+# so that the legacy test runner target `//:blink_web_tests` can avoid
+# downloading unnecessary files onto the bots.
+group("web_tests") {
+  testonly = true
+  data = [
+    "VirtualTestSuites",
+
+    # === List Test Cases folders here ===
+    "accessibility/",
+    "animations/",
+    "app_banner/",
+    "bindings/",
+    "clipboard/",
+    "compositing/",
+    "content_extraction/",
+    "crypto/",
+    "css-parser/",
+    "css1/",
+    "css2.1/",
+    "css3/",
+    "cssom/",
+    "custom-elements/",
+    "custom-properties/",
+    "dark-mode/",
+    "dom/",
+    "editing/",
+    "fast/",
+    "fonts/",
+    "fragmentation/",
+    "fullscreen/",
+    "gamepad/",
+    "harness-tests/",
+    "hittesting/",
+    "html/",
+    "html5lib/",
+    "http/",
+    "idle-callback/",
+    "ietestcenter/",
+    "images/",
+    "inspector-protocol/",
+    "intersection-observer/",
+    "jquery/",
+    "js/",
+    "loader/",
+    "media/",
+    "media_capabilities/",
+    "mhtml/",
+    "navigator_language/",
+    "navigator_webdriver/",
+    "netinfo/",
+    "overflow/",
+    "paint/",
+    "payments/",
+    "performance_timeline/",
+    "permissionclient/",
+    "plugins/",
+    "pointer-lock/",
+    "ppapi/",
+    "printing/",
+    "register-protocol-handler/",
+    "regress/",
+    "resize-observer/",
+    "resources/",
+    "rootscroller/",
+    "screen_orientation/",
+    "scrollbars/",
+    "security/",
+    "handwriting/",
+    "shadow-dom/",
+    "storage/",
+    "svg/",
+    "synthetic_gestures/",
+    "tables/",
+    "test_runner/",
+    "third_party/",
+    "timezonechange/",
+    "touchadjustment/",
+    "transforms/",
+    "transitions/",
+    "traversal/",
+    "typedcssom/",
+    "vibration/",
+    "view-transition/",
+    "virtual/",
+    "virtualkeyboard/",
+    "wasm/",
+    "webaudio/",
+    "webexposed/",
+    "webgpu/",
+    "xmlviewer/",
+
+    # === Test Case Folders Ends ===
+  ]
+  data_deps = [ ":expectations" ]
+}
+
+group("wpt_tests") {
+  testonly = true
+  data = [
+    "VirtualTestSuites",
+
+    # === List Test Cases folders here ===
+    "external/",
+    "wpt_internal/",
+
+    # === Test Case Folders Ends ===
+  ]
+  data_deps = [ ":expectations" ]
+}
+
+group("webgpu_web_tests") {
+  testonly = true
+  data = [
+    "external/wpt/common/",
+    "external/wpt/html/canvas/resources/",
+    "external/wpt/resources/",
+    "FlagSpecificConfig",
+    "VirtualTestSuites",
+    "WebGPUExpectations",
+    "wpt_internal/",
+  ]
+}
+
+group("expectations") {
+  testonly = true
+
+  data = [
+    # Include virtual baselines.
+    "virtual/",
+
+    # List all test expectations here
+    "LeakExpectations",
+    "NeverFixTests",
+    "SlowTests",
+    "StaleTestExpectations",
+    "TestExpectations",
+  ]
+
+  if (is_asan) {
+    data += [ "ASANExpectations" ]
+  }
+  if (is_chrome_for_testing) {
+    data += [ "CfTTestExpectations" ]
+  }
+  if (is_msan) {
+    data += [ "MSANExpectations" ]
+  }
+  if (enable_ml_internal) {
+    data += [ "OptimizationGuideExpectations" ]
+  }
+
+  if (is_win || is_linux || is_fuchsia) {
+    data += [
+      "platform/win/",
+      "platform/win10/",
+      "platform/win11-arm64/",
+    ]
+    if (is_linux || is_fuchsia) {
+      data += [ "platform/linux/" ]
+    }
+    if (is_fuchsia) {
+      data += [
+        "platform/fuchsia/",
+        "$root_gen_dir/package_metadata/content_shell.meta",
+      ]
+    }
+  } else if (is_mac) {
+    data += [
+      "platform/mac/",
+      "platform/mac-mac12/",
+      "platform/mac-mac12-arm64/",
+      "platform/mac-mac13/",
+      "platform/mac-mac13-arm64/",
+      "platform/mac-mac14/",
+      "platform/mac-mac14-arm64/",
+      "platform/mac-mac15-arm64/",
+    ]
+  } else if (is_android) {
+    # The dependent target usually only needs one of `android/` (Clank) or
+    # `webview/`. However, both directories are small enough that it's ok to
+    # always include both.
+    data += [
+      "platform/linux/",
+      "platform/webview/",
+      "platform/android/",
+    ]
+  }
+
+  # flag-specific tests only runs on linux & mac as of now
+  if (is_linux || is_mac) {
+    data += [
+      "FlagSpecificConfig",
+      "FlagExpectations/",
+      "flag-specific/",
+    ]
+  }
+}

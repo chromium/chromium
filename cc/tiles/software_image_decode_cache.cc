@@ -211,12 +211,10 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
   // If the target size is empty, we can skip this image during draw (and thus
   // we don't need to decode it or ref it).
   if (key.target_size().IsEmpty())
-    return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/false,
-                      /*can_do_hardware_accelerated_decode=*/false);
+    return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/false);
 
   if (!UseCacheForDrawImage(image))
-    return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/false,
-                      /*can_do_hardware_accelerated_decode=*/false);
+    return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/false);
 
   base::AutoLock lock(lock_);
 
@@ -229,8 +227,7 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
   if (decoded_it == decoded_images_.end()) {
     // There is no reason to create a new entry if we know it won't fit anyway.
     if (!new_image_fits_in_memory)
-      return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/true,
-                        /*can_do_hardware_accelerated_decode=*/false);
+      return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/true);
     cache_entry = AddCacheEntry(key);
   } else {
     cache_entry = decoded_it->second.get();
@@ -241,8 +238,7 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
     if (!new_image_fits_in_memory) {
       // We don't need to ref anything here because this image will be at
       // raster.
-      return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/true,
-                        /*can_do_hardware_accelerated_decode=*/false);
+      return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/true);
     }
     AddBudgetForImage(key, cache_entry);
   }
@@ -255,8 +251,7 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
   // If we already have a locked entry, then we can just use that. Otherwise
   // we'll have to create a task.
   if (cache_entry->is_locked)
-    return TaskResult(/*need_unref=*/true, /*is_at_raster_decode=*/false,
-                      /*can_do_hardware_accelerated_decode=*/false);
+    return TaskResult(/*need_unref=*/true, /*is_at_raster_decode=*/false);
 
   scoped_refptr<TileTask>& task = task_type == TaskType::kInRaster
                                       ? cache_entry->in_raster_task
@@ -280,7 +275,7 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
       cache_entry->in_raster_task->SetExternalDependent(task);
     }
   }
-  return TaskResult(task, /*can_do_hardware_accelerated_decode=*/false);
+  return TaskResult(task);
 }
 
 void SoftwareImageDecodeCache::AddBudgetForImage(const CacheKey& key,
@@ -605,7 +600,8 @@ DecodedDrawImage SoftwareImageDecodeCache::GetDecodedImageForDrawInternal(
     return DecodedDrawImage();
 
   auto decoded_draw_image =
-      DecodedDrawImage(std::move(decoded_image), nullptr,
+      DecodedDrawImage(std::move(decoded_image), cache_entry->gainmap_image(),
+                       cache_entry->hdr_metadata(), nullptr,
                        cache_entry->src_rect_offset(), GetScaleAdjustment(key),
                        GetDecodedFilterQuality(key), cache_entry->is_budgeted);
   return decoded_draw_image;

@@ -21,6 +21,8 @@ aggregate_vector_icons("chrome_vector_icons") {
     "add.icon",
     "add_chrome_refresh.icon",
     "add_circle.icon",
+    "add_photo_alternate.icon",
+    "attach_file.icon",
     "auto_tab_groups.icon",
     "autofill/local_offer_flipped_refresh.icon",
     "autofill/webauthn_dialog_header.icon",
@@ -66,6 +68,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "developer_tools.icon",
     "devices.icon",
     "devices_chrome_refresh.icon",
+    "dock_to_right_spark.icon",
     "download_in_progress_chrome_refresh.icon",
     "download_in_progress_touch.icon",
     "download_menu.icon",
@@ -76,6 +79,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "drag_handle.icon",
     "drive_shortcut_chrome_refresh.icon",
     "edit_chrome_refresh.icon",
+    "enhanced_browsing_on_ios.icon",
     "exit_menu.icon",
     "extension_crashed.icon",
     "file_download_shelf.icon",
@@ -211,6 +215,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "translate.icon",
     "trash_can.icon",
     "trash_can_refresh.icon",
+    "travel_explore.icon",
     "tv.icon",
     "ungroup_refresh.icon",
     "user_account_avatar.icon",
@@ -239,9 +244,11 @@ aggregate_vector_icons("chrome_vector_icons") {
     "webid/webid_arrow.icon",
     "webid/webid_globe.icon",
     "zoom_in.icon",
+    "zoom_in_map.icon",
     "zoom_minus.icon",
     "zoom_minus_chrome_refresh.icon",
     "zoom_minus_menu_refresh.icon",
+    "zoom_out_map.icon",
     "zoom_plus_chrome_refresh.icon",
     "zoom_plus_menu_refresh.icon",
 
@@ -254,15 +261,9 @@ aggregate_vector_icons("chrome_vector_icons") {
 
   if (is_win) {
     sources += [
-      "back_arrow_windows.icon",
-      "back_arrow_windows_touch.icon",
-      "navigate_stop_windows.icon",
-      "navigate_stop_windows_touch.icon",
       "open_in_phone.icon",
       "payments/secure_payment_confirmation_face.icon",
       "payments/secure_payment_confirmation_face_dark.icon",
-      "reload_windows.icon",
-      "reload_windows_touch.icon",
     ]
   } else {
     sources += [

@@ -31,7 +31,7 @@ namespace {
 
 std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     const net::test_server::HttpRequest& request) {
-  if (request.GetURL().path() == "/parentaccess") {
+  if (request.GetURL().GetPath() == "/parentaccess") {
     auto result = std::make_unique<net::test_server::BasicHttpResponse>();
     result->set_content_type("text/html");
     result->set_content("<html><head></head><body>Content</body></html>");

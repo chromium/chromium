@@ -17,29 +17,28 @@
   OP(GetError)                                 /* 258 */ \
   OP(GenQueriesEXTImmediate)                   /* 259 */ \
   OP(DeleteQueriesEXTImmediate)                /* 260 */ \
-  OP(QueryCounterEXT)                          /* 261 */ \
-  OP(BeginQueryEXT)                            /* 262 */ \
-  OP(EndQueryEXT)                              /* 263 */ \
-  OP(LoseContextCHROMIUM)                      /* 264 */ \
-  OP(BeginRasterCHROMIUMImmediate)             /* 265 */ \
-  OP(RasterCHROMIUM)                           /* 266 */ \
-  OP(EndRasterCHROMIUM)                        /* 267 */ \
-  OP(CreateTransferCacheEntryINTERNAL)         /* 268 */ \
-  OP(DeleteTransferCacheEntryINTERNAL)         /* 269 */ \
-  OP(UnlockTransferCacheEntryINTERNAL)         /* 270 */ \
-  OP(DeletePaintCachePathsINTERNALImmediate)   /* 271 */ \
-  OP(DeletePaintCachePathsINTERNAL)            /* 272 */ \
-  OP(DeletePaintCacheEffectsINTERNALImmediate) /* 273 */ \
-  OP(DeletePaintCacheEffectsINTERNAL)          /* 274 */ \
-  OP(ClearPaintCacheINTERNAL)                  /* 275 */ \
-  OP(CopySharedImageINTERNALImmediate)         /* 276 */ \
-  OP(WritePixelsINTERNALImmediate)             /* 277 */ \
-  OP(WritePixelsYUVINTERNALImmediate)          /* 278 */ \
-  OP(ReadbackARGBImagePixelsINTERNALImmediate) /* 279 */ \
-  OP(ReadbackYUVImagePixelsINTERNALImmediate)  /* 280 */ \
-  OP(TraceBeginCHROMIUM)                       /* 281 */ \
-  OP(TraceEndCHROMIUM)                         /* 282 */ \
-  OP(SetActiveURLCHROMIUM)                     /* 283 */
+  OP(BeginQueryEXT)                            /* 261 */ \
+  OP(EndQueryEXT)                              /* 262 */ \
+  OP(LoseContextCHROMIUM)                      /* 263 */ \
+  OP(BeginRasterCHROMIUMImmediate)             /* 264 */ \
+  OP(RasterCHROMIUM)                           /* 265 */ \
+  OP(EndRasterCHROMIUM)                        /* 266 */ \
+  OP(CreateTransferCacheEntryINTERNAL)         /* 267 */ \
+  OP(DeleteTransferCacheEntryINTERNAL)         /* 268 */ \
+  OP(UnlockTransferCacheEntryINTERNAL)         /* 269 */ \
+  OP(DeletePaintCachePathsINTERNALImmediate)   /* 270 */ \
+  OP(DeletePaintCachePathsINTERNAL)            /* 271 */ \
+  OP(DeletePaintCacheEffectsINTERNALImmediate) /* 272 */ \
+  OP(DeletePaintCacheEffectsINTERNAL)          /* 273 */ \
+  OP(ClearPaintCacheINTERNAL)                  /* 274 */ \
+  OP(CopySharedImageINTERNALImmediate)         /* 275 */ \
+  OP(WritePixelsINTERNALImmediate)             /* 276 */ \
+  OP(WritePixelsYUVINTERNALImmediate)          /* 277 */ \
+  OP(ReadbackARGBImagePixelsINTERNALImmediate) /* 278 */ \
+  OP(ReadbackYUVImagePixelsINTERNALImmediate)  /* 279 */ \
+  OP(TraceBeginCHROMIUM)                       /* 280 */ \
+  OP(TraceEndCHROMIUM)                         /* 281 */ \
+  OP(SetActiveURLCHROMIUM)                     /* 282 */
 
 enum CommandId {
   kOneBeforeStartPoint =

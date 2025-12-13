@@ -45,11 +45,12 @@ these are advisory and not policy.
     are 3 review iterations. If there is a time zone divide, aim for 2 review
     iterations.
 
-*   Use the status field in Gerrit settings to indicate if you're away and when
-    you'll be back.
+*   Use the "Display name" and "About me" fields in Gerrit settings to indicate
+    if you're away and when you'll be back.
 
 *   Don't generally discourage people from sending you code reviews. This
-    includes using a blanket "slow" in your status field.
+    includes using a blanket "slow" in your "Display name" or "About me"
+    fields.
 
 #### Expectations for all authors
 

@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 import './searched_label.js';
+import './shared_icons.html.js';
 import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 
 import {HistoryResultType} from 'chrome://resources/cr_components/history/constants.js';
 import type {HistoryEntry} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
@@ -220,6 +223,11 @@ export class HistoryItemElement extends HistoryItemElementBase {
     return this.isCardStart || this.isCardEnd ?
         'title-and-domain date-accessed' :
         'title-and-domain';
+  }
+
+  protected shouldShowActorTooltip_() {
+    return loadTimeData.getBoolean('enableBrowsingHistoryActorIntegrationM1') &&
+        this.item?.isActorVisit;
   }
 
   /**

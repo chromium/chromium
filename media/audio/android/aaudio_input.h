@@ -23,9 +23,8 @@ namespace media {
 class AudioManagerAndroid;
 
 // Class which uses the AAudio library to record input.
-class REQUIRES_ANDROID_API(AAUDIO_MIN_API) AAudioInputStream
-    : public AudioInputStream,
-      public AAudioStreamWrapper::DataCallback {
+class AAudioInputStream : public AudioInputStream,
+                          public AAudioStreamWrapper::DataCallback {
  public:
   AAudioInputStream(AudioManagerAndroid* manager,
                     const AudioParameters& params,
@@ -54,7 +53,8 @@ class REQUIRES_ANDROID_API(AAUDIO_MIN_API) AAudioInputStream
   void OnError() override;
   void OnDeviceChange() override;
 
-  android::AudioDevice GetDevice();
+  // Returns the ID of the "actual" device the stream was opened with.
+  std::optional<android::AudioDeviceId> GetActualDeviceId();
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);

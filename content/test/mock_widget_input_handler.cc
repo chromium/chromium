@@ -102,6 +102,8 @@ void MockWidgetInputHandler::RequestCompositionUpdates(bool immediate_request,
 
 void MockWidgetInputHandler::DispatchEvent(
     std::unique_ptr<blink::WebCoalescedInputEvent> event,
+    std::optional<std::unique_ptr<blink::WebCoalescedInputEvent>>
+        original_event_for_gesture,
     DispatchEventCallback callback) {
   dispatched_messages_.emplace_back(std::make_unique<DispatchedEventMessage>(
       std::move(event), std::move(callback)));

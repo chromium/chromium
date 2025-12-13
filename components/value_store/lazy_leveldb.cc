@@ -94,7 +94,8 @@ ValueStore::Status LazyLevelDb::Read(const std::string& key,
   if (!s.ok())
     return ToValueStoreError(s);
 
-  std::optional<base::Value> read_value = base::JSONReader::Read(value_as_json);
+  std::optional<base::Value> read_value = base::JSONReader::Read(
+      value_as_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!read_value) {
     return ValueStore::Status(ValueStore::CORRUPTION, FixCorruption(&key),
                               kInvalidJson);

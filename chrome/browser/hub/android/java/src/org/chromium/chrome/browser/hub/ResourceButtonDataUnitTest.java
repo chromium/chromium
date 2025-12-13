@@ -30,7 +30,7 @@ public class ResourceButtonDataUnitTest {
                 new ResourceButtonData(
                         R.string.button_new_tab,
                         R.string.button_new_incognito_tab,
-                        R.drawable.ic_add);
+                        R.drawable.ic_add_24dp);
         assertNotEquals(0, buttonData.resolveText(context).length());
         assertNotNull(buttonData.resolveIcon(context));
     }
@@ -42,12 +42,12 @@ public class ResourceButtonDataUnitTest {
                 new ResourceButtonData(
                         R.string.button_new_tab,
                         R.string.button_new_incognito_tab,
-                        R.drawable.ic_add);
+                        R.drawable.ic_add_24dp);
         DisplayButtonData buttonData2 =
                 new ResourceButtonData(
                         R.string.button_new_tab,
                         R.string.button_new_incognito_tab,
-                        R.drawable.ic_add);
+                        R.drawable.ic_add_24dp);
         // Only test positive case, since we're not guaranteed to get different hash codes for
         // different values.
         assertEquals(buttonData1.hashCode(), buttonData2.hashCode());
@@ -60,19 +60,19 @@ public class ResourceButtonDataUnitTest {
                 new ResourceButtonData(
                         R.string.button_new_tab,
                         R.string.button_new_incognito_tab,
-                        R.drawable.ic_add);
+                        R.drawable.ic_add_24dp);
         assertEquals(
                 buttonData,
                 new ResourceButtonData(
                         R.string.button_new_tab,
                         R.string.button_new_incognito_tab,
-                        R.drawable.ic_add));
+                        R.drawable.ic_add_24dp));
         assertNotEquals(
                 buttonData,
                 new ResourceButtonData(
                         R.string.button_new_incognito_tab,
                         R.string.button_new_incognito_tab,
-                        R.drawable.ic_add));
+                        R.drawable.ic_add_24dp));
         assertNotEquals(
                 buttonData,
                 new ResourceButtonData(
@@ -82,7 +82,7 @@ public class ResourceButtonDataUnitTest {
         assertNotEquals(
                 buttonData,
                 new ResourceButtonData(
-                        R.string.button_new_tab, R.string.button_new_tab, R.drawable.ic_add));
+                        R.string.button_new_tab, R.string.button_new_tab, R.drawable.ic_add_24dp));
 
         // assert*Equals will not invoke #equals on a null object, manually call it instead.
         assertFalse(buttonData.equals(null));

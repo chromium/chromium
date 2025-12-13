@@ -69,29 +69,33 @@ void ChromeSupervisedUserServicePlatformDelegateBase::
     return;
   }
 
+  bool incognito_is_managed =
+      profile_->GetPrefs()
+          ->FindPreference(policy::policy_prefs::kIncognitoModeAvailability)
+          ->IsManaged();
+
   switch (user_log_segment.value()) {
+    case supervised_user::SupervisedUserLogRecord::Segment::
+        kSupervisionEnabledLocally:
+      if (incognito_is_managed) {
+        // Incognito managed by policy trumps local supervision (it has higher
+        // priority that supervision features).
+        base::RecordAction(base::UserMetricsAction(
+            "IncognitoMode_Started_Supervised_Managed"));
+      } else {
+        base::RecordAction(base::UserMetricsAction(
+            "IncognitoMode_Started_Supervised_Unexpected"));
+      }
+      break;
     case supervised_user::SupervisedUserLogRecord::Segment::
         kSupervisionEnabledByFamilyLinkPolicy:
     case supervised_user::SupervisedUserLogRecord::Segment::
         kSupervisionEnabledByFamilyLinkUser:
-    case supervised_user::SupervisedUserLogRecord::Segment::
-        kSupervisionEnabledLocally:
-      if (!supervised_user_service->IsLocalBrowserFilteringEnabled()) {
-        CHECK(supervised_user_service->IsSupervisedLocally());
-        // This sub-state is exceptionally allowed: user is attributed to local
-        // supervision, but that supervision is enabled due to other reasons
-        // than browser content filtering (which would disable the incognito
-        // mode). In other words, that's a type of supervised user who can use
-        // incognito mode.
-        return;
-      }
 
       // This is a supervised profile. It is not expected for incognito to be
       // available except in some edge cases. Output the edge cases separately
       // from the "unexpected" bucket.
-      if (profile_->GetPrefs()
-              ->FindPreference(policy::policy_prefs::kIncognitoModeAvailability)
-              ->IsManaged()) {
+      if (incognito_is_managed) {
         // An Enterprise policy has taken higher precedence than the parental
         // control settings.
         base::RecordAction(base::UserMetricsAction(

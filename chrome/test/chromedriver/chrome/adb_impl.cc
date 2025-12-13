@@ -38,8 +38,8 @@ namespace {
 Status OverridePreferenceJson(const std::string &template_string,
                              const base::Value::Dict *custom_prefs,
                              std::string *prefs_str) {
-  auto parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(template_string);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      template_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json.has_value()) {
     return Status(kUnknownError, "cannot parse internal JSON template: " +
                                      parsed_json.error().message);
@@ -252,6 +252,12 @@ Status AdbImpl::CheckAppInstalled(
     const std::string& device_serial, const std::string& package) {
   std::string response;
   std::string command = "pm path --user cur " + package;
+  ExecuteHostShellCommand(device_serial, "getprop ro.build.version.release",
+                          &response);
+  int android_version = stoi(response);
+  if (android_version <= 10) {
+    command = "pm path " + package;
+  }
   Status status = ExecuteHostShellCommand(device_serial, command, &response);
   if (!status.IsOk())
     return status;

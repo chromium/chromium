@@ -232,4 +232,100 @@ suite('WhatsNewAppTest', function() {
     assertEquals('ChromeVideoFeature', restartClicked[0]);
     assertEquals(ModulePosition.kSpotlight3, restartClicked[1]);
   });
+
+  test('with qr_code_toggled metrics from embedded page', async () => {
+    const proxy = new TestWhatsNewBrowserProxy(
+        getUrlForFixture('test_with_metrics_qr_code_toggled'));
+    WhatsNewProxyImpl.setInstance(proxy);
+    window.history.replaceState({}, '', '/');
+    const whatsNewApp = document.createElement('whats-new-app');
+    document.body.appendChild(whatsNewApp);
+
+    let expanded = await proxy.handler.whenCalled('recordQrCodeToggled');
+    assertEquals(true, expanded);
+    await proxy.handler.resetResolver('recordQrCodeToggled');
+    expanded = await proxy.handler.whenCalled('recordQrCodeToggled');
+    assertEquals(false, expanded);
+  });
+
+  test('with expand_media_toggled metrics from embedded page', async () => {
+    const proxy = new TestWhatsNewBrowserProxy(
+        getUrlForFixture('test_with_metrics_expand_media_toggled'));
+    WhatsNewProxyImpl.setInstance(proxy);
+    window.history.replaceState({}, '', '/');
+    const whatsNewApp = document.createElement('whats-new-app');
+    document.body.appendChild(whatsNewApp);
+
+    let expandedMedia =
+        await proxy.handler.whenCalled('recordExpandMediaToggled');
+    assertEquals('ChromeFeature', expandedMedia[0]);
+    assertEquals(true, expandedMedia[1]);
+    await proxy.handler.resetResolver('recordExpandMediaToggled');
+    expandedMedia = await proxy.handler.whenCalled('recordExpandMediaToggled');
+    assertEquals('ChromeFeature', expandedMedia[0]);
+    assertEquals(false, expandedMedia[1]);
+  });
+
+  test('with next button click metric from embedded page', async () => {
+    const proxy = new TestWhatsNewBrowserProxy(
+        getUrlForFixture('test_with_metrics_next_button_click'));
+    WhatsNewProxyImpl.setInstance(proxy);
+    window.history.replaceState({}, '', '/');
+    const whatsNewApp = document.createElement('whats-new-app');
+    document.body.appendChild(whatsNewApp);
+
+    await proxy.handler.whenCalled('recordNextButtonClick');
+    assertEquals(1, proxy.handler.getCallCount('recordNextButtonClick'));
+  });
+
+  test('with nav_click metric from embedded page', async () => {
+    const proxy = new TestWhatsNewBrowserProxy(
+        getUrlForFixture('test_with_metrics_nav_click'));
+    WhatsNewProxyImpl.setInstance(proxy);
+    window.history.replaceState({}, '', '/');
+    const whatsNewApp = document.createElement('whats-new-app');
+    document.body.appendChild(whatsNewApp);
+
+    await proxy.handler.whenCalled('recordNavClick');
+    assertEquals(1, proxy.handler.getCallCount('recordNavClick'));
+  });
+
+  test('with feature_tile_navigation metric from embedded page', async () => {
+    const proxy = new TestWhatsNewBrowserProxy(
+        getUrlForFixture('test_with_metrics_feature_tile_navigation'));
+    WhatsNewProxyImpl.setInstance(proxy);
+    window.history.replaceState({}, '', '/');
+    const whatsNewApp = document.createElement('whats-new-app');
+    document.body.appendChild(whatsNewApp);
+
+    await proxy.handler.whenCalled('recordFeatureTileNavigation');
+    assertEquals(1, proxy.handler.getCallCount('recordFeatureTileNavigation'));
+  });
+
+  test(
+      'with carousel_scroll_button_click metric from embedded page',
+      async () => {
+        const proxy = new TestWhatsNewBrowserProxy(
+            getUrlForFixture('test_with_metrics_carousel_scroll_button_click'));
+        WhatsNewProxyImpl.setInstance(proxy);
+        window.history.replaceState({}, '', '/');
+        const whatsNewApp = document.createElement('whats-new-app');
+        document.body.appendChild(whatsNewApp);
+
+        await proxy.handler.whenCalled('recordCarouselScrollButtonClick');
+        assertEquals(
+            1, proxy.handler.getCallCount('recordCarouselScrollButtonClick'));
+      });
+
+  test('with cta_click metric from embedded page', async () => {
+    const proxy = new TestWhatsNewBrowserProxy(
+        getUrlForFixture('test_with_metrics_cta_click'));
+    WhatsNewProxyImpl.setInstance(proxy);
+    window.history.replaceState({}, '', '/');
+    const whatsNewApp = document.createElement('whats-new-app');
+    document.body.appendChild(whatsNewApp);
+
+    await proxy.handler.whenCalled('recordCtaClick');
+    assertEquals(1, proxy.handler.getCallCount('recordCtaClick'));
+  });
 });

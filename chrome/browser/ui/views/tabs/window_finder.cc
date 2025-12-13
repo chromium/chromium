@@ -9,6 +9,6 @@
 gfx::NativeWindow WindowFinder::GetLocalProcessWindowAtPoint(
     const gfx::Point& screen_point,
     const std::set<gfx::NativeWindow>& ignore) {
-  return display::Screen::GetScreen()->GetLocalProcessWindowAtPoint(
-      screen_point, ignore);
+  return display::Screen::Get()->GetLocalProcessWindowAtPoint(screen_point,
+                                                              ignore);
 }

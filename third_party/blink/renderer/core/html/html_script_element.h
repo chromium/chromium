@@ -67,6 +67,16 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
   V8UnionStringOrTrustedScript* text();
   void setTextWithoutTrustedTypes(const String&);
 
+  void setScriptTextContentForBinding(const V8UnionStringOrTrustedScript*,
+                                      ExceptionState&);
+  V8UnionStringOrTrustedScript* scriptTextContentForBinding();
+  void setScriptInnerTextForBinding(
+      const V8UnionStringLegacyNullToEmptyStringOrTrustedScript*
+          string_or_trusted_script,
+      ExceptionState& exception_state);
+  V8UnionStringLegacyNullToEmptyStringOrTrustedScript*
+  scriptInnerTextForBinding();
+
   void setAsync(bool);
   bool async() const;
 
@@ -124,14 +134,15 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
     return HasDuplicateAttribute();
   }
   bool AllowInlineScriptForCSP(const AtomicString& nonce,
-                               const WTF::OrdinalNumber&,
+                               const OrdinalNumber&,
                                const String& script_content) override;
   void DispatchLoadEvent() override;
   void DispatchErrorEvent() override;
 
   Type GetScriptElementType() override;
 
-  Element& CloneWithoutAttributesAndChildren(Document&) const override;
+  Element& CloneWithoutAttributesAndChildren(Document&, CustomElementRegistry*)
+      const override;
 
   // https://w3c.github.io/trusted-types/dist/spec/#script-scripttext
   ParkableString script_text_internal_slot_;

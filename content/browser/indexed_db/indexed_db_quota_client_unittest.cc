@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -19,7 +20,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread.h"
@@ -56,9 +56,6 @@ class IndexedDBQuotaClientTest : public testing::Test,
             StorageKey::CreateFromStringForTesting("http://host:8000")),
         special_storage_policy_(
             base::MakeRefCounted<storage::MockSpecialStoragePolicy>()) {
-    scoped_feature_list_.InitWithFeatureState(
-        net::features::kThirdPartyStoragePartitioning,
-        IsThirdPartyStoragePartitioningEnabled());
     // This cannot be created above as the kThirdPartyStoragePartitioning must
     // be set.
     kStorageKeyThirdPartyA =
@@ -99,6 +96,8 @@ class IndexedDBQuotaClientTest : public testing::Test,
     idb_context_ = nullptr;
     base::RunLoop().RunUntilIdle();
   }
+
+  bool IsSqliteBackingStoreEnabled() { return GetParam(); }
 
   int64_t GetBucketUsage(const storage::BucketLocator& bucket,
                          IndexedDBContextImpl* context = nullptr) {
@@ -150,13 +149,8 @@ class IndexedDBQuotaClientTest : public testing::Test,
 
   void AddFakeIndexedDBForBucket(const storage::BucketLocator& bucket,
                                  int size) {
-    base::FilePath file_path_storage_key;
-    {
-      base::test::TestFuture<base::FilePath> future;
-      idb_context()->GetFilePathForTesting(
-          bucket, future.GetCallback<const base::FilePath&>());
-      file_path_storage_key = future.Take();
-    }
+    base::FilePath file_path_storage_key = idb_context()->GetFilePathForTesting(
+        bucket, IsSqliteBackingStoreEnabled());
     if (!base::CreateDirectory(file_path_storage_key)) {
       LOG(ERROR) << "failed to base::CreateDirectory "
                  << file_path_storage_key.value();
@@ -197,11 +191,15 @@ class IndexedDBQuotaClientTest : public testing::Test,
     return future.Take().transform(&storage::BucketInfo::ToBucketLocator);
   }
 
-  bool IsThirdPartyStoragePartitioningEnabled() { return GetParam(); }
+  bool IsThirdPartyStoragePartitioningEnabled() {
+    // Enabled by default since 2023 for most platforms, but still off by
+    // default for Android WebView.
+    return base::FeatureList::IsEnabled(
+        net::features::kThirdPartyStoragePartitioning);
+  }
 
  protected:
   scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
@@ -214,7 +212,9 @@ class IndexedDBQuotaClientTest : public testing::Test,
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     IndexedDBQuotaClientTest,
-    testing::Bool());
+    testing::Bool(),
+    [](const testing::TestParamInfo<IndexedDBQuotaClientTest::ParamType>&
+           info) { return info.param ? "SQLite" : "LevelDB"; });
 
 TEST_P(IndexedDBQuotaClientTest, GetBucketUsageFirstParty) {
   AddFakeIndexedDB(kStorageKeyFirstPartyA, 6);

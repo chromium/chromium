@@ -341,15 +341,11 @@ class WebAuthRequestSecurityCheckerWellKnownJSONTest : public testing::Test {
  protected:
   blink::mojom::AuthenticatorStatus Test(std::string_view caller_origin_str,
                                          std::string_view json) {
-    std::optional<base::Value> parsed =
-        base::JSONReader::Read(json, base::JSON_PARSE_RFC);
-    CHECK(parsed) << json;
-
     GURL caller_origin_url(caller_origin_str);
     CHECK(caller_origin_url.is_valid()) << caller_origin_str;
 
     return WebAuthRequestSecurityChecker::RemoteValidation::
-        ValidateWellKnownJSON(url::Origin::Create(caller_origin_url), *parsed);
+        ValidateWellKnownJSON(url::Origin::Create(caller_origin_url), json);
   }
 };
 

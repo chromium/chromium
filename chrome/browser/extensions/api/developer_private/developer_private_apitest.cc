@@ -7,6 +7,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
 #include "build/build_config.h"
@@ -14,10 +15,13 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_functions.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -28,6 +32,7 @@
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/offscreen_document_host.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -42,13 +47,14 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439447971): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -121,8 +127,6 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectAppWindowView) {
 }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
-// TODO(crbug.com/392777363): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
   base::FilePath dir;
   base::PathService::Get(chrome::DIR_TEST_DATA, &dir);
@@ -133,9 +137,19 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
   ASSERT_TRUE(extension);
 
   // Open the embedded options page.
-  ASSERT_TRUE(ExtensionTabUtil::OpenOptionsPage(extension, browser()));
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(ExtensionTabUtil::OpenOptionsPageFromWebContents(extension,
+                                                               web_contents));
   WaitForExtensionNotIdle(extension->id());
 
+  // On Android, the option page will be opened in a new tab as the guest view
+  // is not enabled on Android yet.
+#if BUILDFLAG(IS_ANDROID)
+  web_contents = chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_EQ("chrome-extension://" + extension->id() + "/popup.html",
+            web_contents->GetURL());
+#else
   // Get the info about the extension, including the inspectable views.
   auto info = GetExtensionInfo(*extension);
 
@@ -162,8 +176,8 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
       content::WebContents::FromRenderFrameHost(render_frame_host);
   ASSERT_TRUE(wc);
   EXPECT_TRUE(DevToolsWindow::GetInstanceForInspectedWebContents(wc));
+#endif
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // TODO(crbug.com/40273479): Test is flaky on MSan builders.
 // TODO(crbug.com/40282331): Disabled on ASAN due to leak caused by renderer gin
@@ -290,8 +304,6 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   EXPECT_TRUE(DevToolsWindow::FindDevToolsWindow(service_worker_host.get()));
 }
 
-// TODO(crbug.com/392777363): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // TODO(crbug.com/40882269): The test is flaky on MSAN and Linux. Re-enable it.
 #if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_LINUX)
 #define MAYBE_InspectSplitModeServiceWorkerBackgrounds \
@@ -342,8 +354,9 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   // Now open up an incognito browser window page and check the inspectable
   // views again. Waiting for the result catcher will wait for the incognito
   // service worker to have become active.
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
-  ASSERT_TRUE(incognito_browser);
+  content::WebContents* const incognito_window =
+      PlatformOpenURLOffTheRecord(profile(), GURL("about:blank"));
+  ASSERT_TRUE(incognito_window);
   ASSERT_TRUE(result_catcher.GetNextResult());
   info = GetExtensionInfo(*extension);
   // The views should now have 2 entries, one for the main worker which will be
@@ -405,7 +418,6 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   ASSERT_TRUE(incognito_devtools_window);
   ASSERT_NE(main_devtools_window, incognito_devtools_window);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that offscreen documents show up in the list of inspectable views and
 // can be inspected.
@@ -480,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectOffscreenDocument) {
   DevToolsWindowTesting::CloseDevToolsWindowSync(dev_tools_window);
 }
 
-// TODO(crbug.com/392777363): Enable on desktop android.
+// TODO(crbug.com/439447971): Enable on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, UninstallMultipleExtensions) {
   // Load first extension.
@@ -548,11 +560,7 @@ class DeveloperPrivateApiWithMV2DeprecationApiTest
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     switch (experiment_stage_) {
-      case MV2ExperimentStage::kNone:
-        NOTREACHED();
       case MV2ExperimentStage::kWarning:
-        enabled_features.push_back(
-            extensions_features::kExtensionManifestV2DeprecationWarning);
         disabled_features.push_back(
             extensions_features::kExtensionManifestV2Disabled);
         disabled_features.push_back(
@@ -562,8 +570,6 @@ class DeveloperPrivateApiWithMV2DeprecationApiTest
         enabled_features.push_back(
             extensions_features::kExtensionManifestV2Disabled);
         disabled_features.push_back(
-            extensions_features::kExtensionManifestV2DeprecationWarning);
-        disabled_features.push_back(
             extensions_features::kExtensionManifestV2Unsupported);
         break;
       case MV2ExperimentStage::kUnsupported:
@@ -571,8 +577,6 @@ class DeveloperPrivateApiWithMV2DeprecationApiTest
             extensions_features::kExtensionManifestV2Unsupported);
         disabled_features.push_back(
             extensions_features::kExtensionManifestV2Disabled);
-        disabled_features.push_back(
-            extensions_features::kExtensionManifestV2DeprecationWarning);
     }
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -585,8 +589,8 @@ class DeveloperPrivateApiWithMV2DeprecationApiTest
   MV2ExperimentStage experiment_stage_;
 };
 
-// TODO(crbug.com/392777363): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+// Manefiest Version 2 is not allowed in Android.
+#if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(
     ,
     DeveloperPrivateApiWithMV2DeprecationApiTest,
@@ -595,8 +599,6 @@ INSTANTIATE_TEST_SUITE_P(
                     MV2ExperimentStage::kUnsupported),
     [](const testing::TestParamInfo<MV2ExperimentStage>& info) {
       switch (info.param) {
-        case MV2ExperimentStage::kNone:
-          NOTREACHED();
         case MV2ExperimentStage::kWarning:
           return "WarningExperiment";
         case MV2ExperimentStage::kDisableWithReEnable:
@@ -637,8 +639,6 @@ IN_PROC_BROWSER_TEST_P(DeveloperPrivateApiWithMV2DeprecationApiTest,
   std::string args = base::StringPrintf(R"(["%s"])", extension->id().c_str());
 
   switch (experiment_stage()) {
-    case MV2ExperimentStage::kNone:
-      NOTREACHED();
     case MV2ExperimentStage::kWarning:
       api_test_utils::RunFunction(dismiss_notice_function.get(), args,
                                   profile());
@@ -693,6 +693,6 @@ IN_PROC_BROWSER_TEST_P(DeveloperPrivateApiWithMV2DeprecationApiTest,
     }
   }
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

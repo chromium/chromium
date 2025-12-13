@@ -35,7 +35,6 @@
 #include "third_party/dom_distiller_js/dom_distiller_json_converter.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 
 using dom_distiller::proto::DomDistillerOptions;
@@ -341,6 +340,8 @@ std::unique_ptr<DistillerPage> CreateMockDistillerPage(
       .WillOnce(DistillerPageOnDistillationDone(distiller_page, url, result));
   EXPECT_CALL(*distiller_page, ShouldFetchOfflineData())
       .WillRepeatedly(Return(use_offline_data));
+  EXPECT_CALL(*distiller_page, GetDistillerType())
+      .WillRepeatedly(Return(dom_distiller::DistillerType::kDOMDistiller));
   return std::unique_ptr<DistillerPage>(distiller_page);
 }
 
@@ -359,6 +360,8 @@ std::unique_ptr<DistillerPage> CreateMockDistillerPageWithPendingJSCallback(
   EXPECT_CALL(*distiller_page, DistillPageImpl(url, _));
   EXPECT_CALL(*distiller_page, ShouldFetchOfflineData())
       .WillRepeatedly(Return(false));
+  EXPECT_CALL(*distiller_page, GetDistillerType())
+      .WillRepeatedly(Return(dom_distiller::DistillerType::kDOMDistiller));
   return std::unique_ptr<DistillerPage>(distiller_page);
 }
 
@@ -369,6 +372,8 @@ std::unique_ptr<DistillerPage> CreateMockDistillerPagesWithSequence(
   MockDistillerPage* distiller_page = new MockDistillerPage();
   EXPECT_CALL(*distiller_page, ShouldFetchOfflineData())
       .WillRepeatedly(Return(use_offline_data));
+  EXPECT_CALL(*distiller_page, GetDistillerType())
+      .WillRepeatedly(Return(dom_distiller::DistillerType::kDOMDistiller));
   {
     testing::InSequence s;
     for (int page : page_num_sequence) {

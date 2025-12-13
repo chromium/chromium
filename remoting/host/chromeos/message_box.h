@@ -13,7 +13,7 @@
 #include "base/threading/thread_checker.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace gfx {
 class ImageSkia;

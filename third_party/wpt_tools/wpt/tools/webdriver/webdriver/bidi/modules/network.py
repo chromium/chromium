@@ -2,6 +2,7 @@ from enum import Enum
 from typing import Any, Dict, List, Mapping, MutableMapping, Optional, Union
 
 from ._module import BidiModule, command
+from ..undefined import UNDEFINED, Maybe
 
 
 class AuthCredentials(Dict[str, Any]):
@@ -249,6 +250,53 @@ class Network(BidiModule):
         return params
 
     @command
+    def add_data_collector(
+            self,
+            data_types: List[str],
+            max_encoded_data_size: int,
+            collector_type: Optional[str] = None,
+            contexts: Optional[List[str]] = None,
+            user_contexts: Optional[List[str]] = None) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {
+            "dataTypes": data_types,
+            "maxEncodedDataSize": max_encoded_data_size,
+        }
+
+        if collector_type is not None:
+            params["collectorType"] = collector_type
+
+        if contexts is not None:
+            params["contexts"] = contexts
+
+        if user_contexts is not None:
+            params["userContexts"] = user_contexts
+
+        return params
+
+    @add_data_collector.result
+    def _add_data_collector(self, result: Mapping[str, Any]) -> Any:
+        assert result["collector"] is not None
+        return result["collector"]
+
+    @command
+    def remove_data_collector(self, collector: str) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {"collector": collector}
+        return params
+
+    @command
+    def disown_data(
+            self,
+            request: str,
+            data_type: str,
+            collector: str) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {
+            "request": request,
+            "dataType": data_type,
+            "collector": collector,
+        }
+        return params
+
+    @command
     def set_cache_behavior(
             self,
             cache_behavior: CacheBehavior,
@@ -259,3 +307,41 @@ class Network(BidiModule):
             params["contexts"] = contexts
 
         return params
+
+    @command
+    def get_data(
+            self,
+            request: str,
+            data_type: str,
+            collector: Optional[str] = None,
+            disown: Optional[bool] = None) -> Mapping[str, Any]:
+        params: MutableMapping[str, Any] = {
+            "request": request,
+            "dataType": data_type,
+        }
+
+        if collector is not None:
+            params["collector"] = collector
+
+        if disown is not None:
+            params["disown"] = disown
+
+        return params
+
+    @get_data.result
+    def _get_data(self, result: Mapping[str, Any]) -> Any:
+        assert result["bytes"] is not None
+        return result["bytes"]
+
+    @command
+    def set_extra_headers(
+            self,
+            headers: List[Dict[str, Any]],
+            contexts: Maybe[List[str]] = UNDEFINED,
+            user_contexts: Maybe[List[str]] = UNDEFINED,
+    ) -> Mapping[str, Any]:
+        return {
+            "headers": headers,
+            "contexts": contexts,
+            "userContexts": user_contexts,
+        }

@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_scope.h"
 #include "components/update_client/persisted_data.h"
 
@@ -36,8 +37,6 @@ struct CategorizedError;
 }  // namespace update_client
 
 namespace updater {
-
-struct RegistrationRequest;
 
 // PersistedData uses the PrefService to persist updater data that outlives
 // the updater processes.
@@ -94,6 +93,9 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
   // This function sets any non-empty field in the registration request object
   // into the persistent data store.
   void RegisterApp(const RegistrationRequest& rq);
+
+  // This function returns true if and only if the specified app is registered.
+  bool HasApp(const std::string& id);
 
   // This function removes a registered application from the persistent store.
   bool RemoveApp(const std::string& id);

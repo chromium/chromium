@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/check.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"

@@ -11,11 +11,12 @@ import org.chromium.build.annotations.NullMarked;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** Indicates which view should be shown first when the bottom sheet is displayed. */
+/** Indicates the behavior of the account picker bottom sheet upon launch. */
 @NullMarked
 @IntDef({
     AccountPickerLaunchMode.DEFAULT,
     AccountPickerLaunchMode.CHOOSE_ACCOUNT,
+    AccountPickerLaunchMode.SEAMLESS_SIGNIN
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface AccountPickerLaunchMode {
@@ -24,4 +25,6 @@ public @interface AccountPickerLaunchMode {
     int DEFAULT = 0;
     // The bottom sheet first shows the expanded view with the accounts list.
     int CHOOSE_ACCOUNT = 1;
+    // The bottom sheet is hidden, and only displayed on sign-in error or account management notice.
+    int SEAMLESS_SIGNIN = 2;
 }

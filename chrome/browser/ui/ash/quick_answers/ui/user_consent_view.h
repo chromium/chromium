@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_USER_CONSENT_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -38,6 +39,7 @@ class UserConsentView : public chromeos::ReadWriteCardsView {
   METADATA_HEADER(UserConsentView, chromeos::ReadWriteCardsView)
 
  public:
+  static constexpr int kMinWidth = 280;
   static constexpr char kWidgetName[] = "UserConsentViewWidget";
 
   // TODO(b/340628664): remove `read_write_cards_ui_controller` arg once we stop
@@ -53,6 +55,7 @@ class UserConsentView : public chromeos::ReadWriteCardsView {
   ~UserConsentView() override;
 
   // chromeos::ReadWriteCardsView:
+  std::optional<int> GetMinWidth() const override;
   void OnFocus() override;
   views::FocusTraversable* GetPaneFocusTraversable() override;
   void UpdateBoundsForQuickAnswers() override;

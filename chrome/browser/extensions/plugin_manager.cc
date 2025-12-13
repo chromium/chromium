@@ -13,7 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/browser/plugin_service.h"
-#include "content/public/common/content_plugin_info.h"
+#include "content/public/common/webplugininfo.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "net/base/mime_util.h"
@@ -62,9 +62,9 @@ void PluginManager::OnExtensionLoaded(content::BrowserContext* browser_context,
       info.mime_types.push_back(mime_type_info);
     }
 
-    PluginService::GetInstance()->RefreshPlugins();
-    PluginService::GetInstance()->RegisterInternalPlugin(info, true);
-    PluginService::GetInstance()->PurgePluginListCache(profile_, false);
+    PluginService::GetInstance()->RegisterInternalPlugin(info);
+    PluginService::GetInstance()->GetPlugins();
+    PluginService::GetInstance()->PurgePluginListCache(profile_);
   }
 }
 
@@ -76,8 +76,8 @@ void PluginManager::OnExtensionUnloaded(
   if (handler && handler->HasPlugin()) {
     base::FilePath path = handler->GetPluginPath();
     PluginService::GetInstance()->UnregisterInternalPlugin(path);
-    PluginService::GetInstance()->RefreshPlugins();
-    PluginService::GetInstance()->PurgePluginListCache(profile_, false);
+    PluginService::GetInstance()->GetPlugins();
+    PluginService::GetInstance()->PurgePluginListCache(profile_);
   }
 }
 

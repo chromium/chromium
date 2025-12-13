@@ -8,7 +8,6 @@
 #include <optional>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -707,7 +706,7 @@ void ApkWebAppService::AddInstallingWebApkPackageName(
 void ApkWebAppService::RemoveInstallingWebApkPackageName(
     const std::string& app_id) {
   std::string package_name = currently_installing_apks_[app_id];
-  if (ash::features::ArePromiseIconsEnabled() && !package_name.empty()) {
+  if (!package_name.empty()) {
     apps::AppServiceProxyFactory::GetForProfile(profile_)
         ->PromiseAppService()
         ->OnApkWebAppInstallationFinished(package_name);

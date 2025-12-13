@@ -40,7 +40,7 @@ struct DawnCacheOptions {
 class GPU_GLES2_EXPORT WebGPUDecoder : public DecoderContext,
                                        public CommonDecoder {
  public:
-  static WebGPUDecoder* Create(
+  static std::unique_ptr<WebGPUDecoder> Create(
       DecoderClient* client,
       CommandBufferServiceBase* command_buffer_service,
       SharedImageManager* shared_image_manager,
@@ -56,15 +56,7 @@ class GPU_GLES2_EXPORT WebGPUDecoder : public DecoderContext,
 
   ~WebGPUDecoder() override;
 
-  // WebGPU-specific initialization that's different than DecoderContext's
-  // Initialize that is tied to GLES2 concepts and a noop for WebGPU decoders.
   virtual ContextResult Initialize(const GpuFeatureInfo& gpu_feature_info) = 0;
-
-  ContextResult Initialize(const scoped_refptr<gl::GLSurface>& surface,
-                           const scoped_refptr<gl::GLContext>& context,
-                           bool offscreen,
-                           const gles2::DisallowedFeatures& disallowed_features,
-                           const ContextCreationAttribs& attrib_helper) final;
 
  protected:
   WebGPUDecoder(DecoderClient* client,

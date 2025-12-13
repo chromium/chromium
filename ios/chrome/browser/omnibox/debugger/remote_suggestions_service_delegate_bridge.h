@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_OMNIBOX_DEBUGGER_REMOTE_SUGGESTIONS_SERVICE_DELEGATE_BRIDGE_H_
 
 #import <memory>
+#import <optional>
 #import <string>
 
 #import "base/functional/callback_forward.h"
@@ -18,14 +19,14 @@
 
 - (void)onRequestCompleted:(const network::SimpleURLLoader*)source
               responseCode:(int)responseCode
-              responseBody:(std::unique_ptr<std::string>)responseBody
+              responseBody:(std::optional<std::string>)responseBody
                 completion:
                     (RemoteSuggestionsService::CompletionCallback)completion;
 
 - (void)onIndexedRequestCompleted:(int)requestIndex
                         urlLoader:(const network::SimpleURLLoader*)source
                      responseCode:(int)responseCode
-                     responseBody:(std::unique_ptr<std::string>)responseBody
+                     responseBody:(std::optional<std::string>)responseBody
                        completion:
                            (RemoteSuggestionsService::IndexedCompletionCallback)
                                completion;
@@ -50,7 +51,7 @@ class RemoteSuggestionsServiceDelegateBridge
 
   void OnRequestCompleted(const network::SimpleURLLoader* source,
                           const int response_code,
-                          std::unique_ptr<std::string> response_body,
+                          std::optional<std::string> response_body,
                           RemoteSuggestionsService::CompletionCallback
                               completion_callback) override;
 
@@ -58,7 +59,7 @@ class RemoteSuggestionsServiceDelegateBridge
       const int request_index,
       const network::SimpleURLLoader* source,
       const int response_code,
-      std::unique_ptr<std::string> response_body,
+      std::optional<std::string> response_body,
       RemoteSuggestionsService::IndexedCompletionCallback completion_callback)
       override;
 

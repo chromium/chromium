@@ -15,7 +15,8 @@ namespace {
 
 // Converts a JSON string array to a vector.
 std::vector<std::string> JSONArrayToVector(const std::string& json_array) {
-  std::optional<base::Value> json_value = base::JSONReader::Read(json_array);
+  std::optional<base::Value> json_value =
+      base::JSONReader::Read(json_array, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   if (!json_value) {
     return {};
@@ -154,14 +155,14 @@ bool LensUrlMatcher::IsMatch(const GURL& url) {
 
   // Check if the domain matches any of the hashed block filters. If it does,
   // return false to block this URL.
-  if (SubdomainsMatchHash(url.host())) {
+  if (SubdomainsMatchHash(url.GetHost())) {
     return false;
   }
 
   // Check if the path matches the path block matcher. If it does, return false
   // to block this URL.
   if (path_block_matcher_ && !path_block_matcher_->IsEmpty() &&
-      path_block_matcher_->Match(url.path(), &matches)) {
+      path_block_matcher_->Match(url.GetPath(), &matches)) {
     return false;
   }
 
@@ -176,7 +177,7 @@ bool LensUrlMatcher::IsMatch(const GURL& url) {
   // Finally, check if the path matches the path allow matcher. If it doesn't,
   // return false to block this URL.
   if (path_allow_matcher_ && !path_allow_matcher_->IsEmpty() &&
-      !path_allow_matcher_->Match(url.path(), &matches)) {
+      !path_allow_matcher_->Match(url.GetPath(), &matches)) {
     return false;
   }
 
@@ -190,28 +191,26 @@ bool LensUrlMatcher::IsMatch(const GURL& url) {
   return true;
 }
 
-bool LensUrlMatcher::SubdomainsMatchHash(std::string str) {
+bool LensUrlMatcher::SubdomainsMatchHash(std::string_view str) {
   // Remove any periods from the start and end of the hostname.
   size_t start = str.find_first_not_of('.');
   if (start == std::string::npos) {
     return false;
   }
   size_t end = str.find_last_not_of('.');
-  return SubdomainsMatchHash(
-      std::string_view(str).substr(start, 1 + end - start));
-}
-
-bool LensUrlMatcher::SubdomainsMatchHash(std::string_view str) {
-  if (MatchesHash(str)) {
-    return true;
+  std::string_view domain =
+      std::string_view(str).substr(start, 1 + end - start);
+  while (true) {
+    if (MatchesHash(domain)) {
+      return true;
+    }
+    size_t found = domain.find('.');
+    if (found == std::string::npos) {
+      // Top-level domain.
+      return false;
+    }
+    domain = domain.substr(found + 1);
   }
-
-  size_t found = str.find('.');
-  if (found == std::string::npos) {
-    // Top-level domain.
-    return false;
-  }
-  return SubdomainsMatchHash(str.substr(found + 1));
 }
 
 bool LensUrlMatcher::MatchesHash(std::string_view str) {

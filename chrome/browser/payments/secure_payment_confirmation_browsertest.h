@@ -10,12 +10,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
-#include "components/payments/core/features.h"
 #include "components/payments/core/journey_logger.h"
-#include "components/webdata/common/web_data_service_consumer.h"
-#include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
-#include "third_party/blink/public/common/features.h"
+#include "components/webdata/common/web_data_service_base.h"
+
+class WDTypedResult;
 
 namespace base {
 class CommandLine;
@@ -24,29 +22,19 @@ class CommandLine;
 namespace payments {
 
 class SecurePaymentConfirmationTest
-    : public PaymentRequestPlatformBrowserTestBase,
-      public WebDataServiceConsumer {
+    : public PaymentRequestPlatformBrowserTestBase {
  public:
-  SecurePaymentConfirmationTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{::features::kSecurePaymentConfirmation,
-                              ::features::kSecurePaymentConfirmationDebug},
-        // TODO(crbug.com/40868539): Refactor code to allow mocking out the
-        // credential store APIs.
-        /*disabled_features=*/{
-            features::kSecurePaymentConfirmationUseCredentialStoreAPIs,
-            blink::features::kSecurePaymentConfirmationUxRefresh});
-  }
+  SecurePaymentConfirmationTest();
+  ~SecurePaymentConfirmationTest() override;
 
   // PaymentRequestPlatformBrowserTestBase
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void OnAppListReady() override;
   void OnErrorDisplayed() override;
 
-  // WebDataServiceConsumer
-  void OnWebDataServiceRequestDone(
-      WebDataServiceBase::Handle h,
-      std::unique_ptr<WDTypedResult> result) override;
+  // Should be called to mock out that an ongoing database call has completed.
+  void OnWebDataServiceRequestDone(WebDataServiceBase::Handle h,
+                                   std::unique_ptr<WDTypedResult> result);
 
   // Verify that the given set of JourneyLogger::Event2 `events` were logged by
   // JourneyLogger `count` times.
@@ -63,12 +51,12 @@ class SecurePaymentConfirmationTest
   bool database_write_responded_ = false;
   bool confirm_payment_ = false;
   bool close_dialog_on_error_ = false;
+  bool accept_dialog_on_error_ = false;
 
  protected:
   base::HistogramTester histogram_tester_;
-
- private:
   base::test::ScopedFeatureList feature_list_;
+  base::WeakPtrFactory<SecurePaymentConfirmationTest> weak_ptr_factory_{this};
 };
 
 }  // namespace payments

@@ -74,7 +74,8 @@ float LayoutSVGResourceRadialGradient::FocalRadius(
   return ResolveRadius(attributes.GradientUnits(), *attributes.Fr());
 }
 
-scoped_refptr<Gradient> LayoutSVGResourceRadialGradient::BuildGradient() const {
+std::unique_ptr<Gradient> LayoutSVGResourceRadialGradient::BuildGradient()
+    const {
   NOT_DESTROYED();
   DCHECK(!should_collect_gradient_attributes_);
   return Gradient::CreateRadial(

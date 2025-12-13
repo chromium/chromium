@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -18,7 +18,6 @@
 namespace auto_deletion {
 class AutoDeletionService;
 }  // namespace auto_deletion
-
 namespace base {
 class CommandLine;
 class SequencedTaskRunner;
@@ -91,6 +90,7 @@ class ApplicationContextImpl : public ApplicationContext {
   network::NetworkConnectionTracker* GetNetworkConnectionTracker() override;
   BrowserPolicyConnectorIOS* GetBrowserPolicyConnector() override;
   id<SingleSignOnService> GetSingleSignOnService() override;
+  signin::AvatarProvider* GetIdentityAvatarProvider() override;
   SystemIdentityManager* GetSystemIdentityManager() override;
   AccountProfileMapper* GetAccountProfileMapper() override;
   IncognitoSessionTracker* GetIncognitoSessionTracker() override;
@@ -98,12 +98,8 @@ class ApplicationContextImpl : public ApplicationContext {
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
   AdditionalFeaturesController* GetAdditionalFeaturesController() override;
   auto_deletion::AutoDeletionService* GetAutoDeletionService() override;
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-  optimization_guide::OnDeviceModelServiceController*
-  GetOnDeviceModelServiceController(
-      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-          on_device_component_manager) override;
-#endif  // BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE
+  optimization_guide::OptimizationGuideGlobalState*
+  GetOptimizationGuideGlobalState() override;
 
  private:
   // Represents the possible application states the app can be in.
@@ -179,6 +175,7 @@ class ApplicationContextImpl : public ApplicationContext {
   scoped_refptr<SafeBrowsingService> safe_browsing_service_;
 
   __strong id<SingleSignOnService> single_sign_on_service_ = nil;
+  std::unique_ptr<signin::AvatarProvider> resized_avatar_caches_;
   std::unique_ptr<SystemIdentityManager> system_identity_manager_;
   std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
 
@@ -191,10 +188,8 @@ class ApplicationContextImpl : public ApplicationContext {
 
   std::unique_ptr<auto_deletion::AutoDeletionService> auto_deletion_service_;
 
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-  scoped_refptr<optimization_guide::OnDeviceModelServiceController>
-      on_device_model_service_controller_;
-#endif  // BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE
+  std::unique_ptr<optimization_guide::OptimizationGuideGlobalState>
+      optimization_guide_global_state_;
 
   // Must be the last member variable.
   base::WeakPtrFactory<ApplicationContextImpl> weak_ptr_factory_{this};

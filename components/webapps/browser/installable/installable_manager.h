@@ -6,7 +6,6 @@
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_MANAGER_H_
 
 #include <limits>
-#include <map>
 #include <memory>
 #include <vector>
 

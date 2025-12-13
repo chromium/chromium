@@ -168,7 +168,11 @@ GetClipboardHistoryShowSources() {
            static_cast<int>(ClipboardHistoryControllerShowSource::kMinValue);
        i <= static_cast<int>(ClipboardHistoryControllerShowSource::kMaxValue);
        ++i) {
-    sources.push_back(static_cast<ClipboardHistoryControllerShowSource>(i));
+    // kControlVLongpress is deprecated.
+    if (static_cast<ClipboardHistoryControllerShowSource>(i) !=
+        ClipboardHistoryControllerShowSource::kControlVLongpress) {
+      sources.push_back(static_cast<ClipboardHistoryControllerShowSource>(i));
+    }
   }
   return sources;
 }
@@ -787,12 +791,7 @@ class ClipboardHistoryControllerShowSourceTest
     : public ClipboardHistoryControllerTest,
       public testing::WithParamInterface<ClipboardHistoryControllerShowSource> {
  public:
-  ClipboardHistoryControllerShowSourceTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kClipboardHistoryLongpress,
-        GetSource() ==
-            ClipboardHistoryControllerShowSource::kControlVLongpress);
-  }
+  ClipboardHistoryControllerShowSourceTest() = default;
 
   ClipboardHistoryControllerShowSource GetSource() const { return GetParam(); }
 

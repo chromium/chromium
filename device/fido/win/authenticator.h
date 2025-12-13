@@ -18,7 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "device/fido/fido_authenticator.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 

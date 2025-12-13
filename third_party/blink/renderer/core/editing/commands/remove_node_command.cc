@@ -50,17 +50,9 @@ void RemoveNodeCommand::DoApply(EditingState* editing_state) {
   if (!parent) {
     return;
   }
-  if (RuntimeEnabledFeatures::EditingFastDeleteEnabled()) {
-    if (!should_assume_content_is_always_editable_) {
-      GetDocument().UpdateStyleAndLayoutTree();
-      if (!IsEditable(*parent) && parent->InActiveDocument()) {
-        return;
-      }
-    }
-  } else {
+  if (!should_assume_content_is_always_editable_) {
     GetDocument().UpdateStyleAndLayoutTree();
-    if (!should_assume_content_is_always_editable_ && !IsEditable(*parent) &&
-        parent->InActiveDocument()) {
+    if (!IsEditable(*parent) && parent->InActiveDocument()) {
       return;
     }
   }

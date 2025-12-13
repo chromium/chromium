@@ -20,7 +20,7 @@
 
 namespace ui {
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 class TestViewAndroid : public ViewAndroid {
  public:

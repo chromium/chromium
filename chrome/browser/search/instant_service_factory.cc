@@ -13,9 +13,7 @@
 
 namespace {
 
-BASE_FEATURE(kProfileBasedInstantService,
-             "ProfileBasedInstantService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kProfileBasedInstantService, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 

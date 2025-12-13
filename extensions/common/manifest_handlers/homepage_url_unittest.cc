@@ -24,7 +24,7 @@ TEST_F(HomepageURLManifestTest, ParseHomepageURLs) {
       Testcase("homepage_url_empty.json", errors::kInvalidHomepageURL),
       Testcase("homepage_url_invalid.json", errors::kInvalidHomepageURL),
       Testcase("homepage_url_bad_schema.json", errors::kInvalidHomepageURL)};
-  RunTestcases(testcases, EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, ExpectType::kError);
 }
 
 TEST_F(HomepageURLManifestTest, GetHomepageURL) {

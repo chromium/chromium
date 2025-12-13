@@ -49,9 +49,9 @@
     { style: "conic-gradient(black 0, white)"         , computed: "conic-gradient(rgb(0, 0, 0) 0deg, rgb(255, 255, 255))" },
     { style: "conic-gradient(black 0%, white)"        , computed: "conic-gradient(rgb(0, 0, 0) 0%, rgb(255, 255, 255))" },
     { style: "conic-gradient(black 0deg, white)"      , computed: "conic-gradient(rgb(0, 0, 0) 0deg, rgb(255, 255, 255))" },
-    { style: "conic-gradient(black 0grad, white)"     , computed: "conic-gradient(rgb(0, 0, 0) 0grad, rgb(255, 255, 255))" },
-    { style: "conic-gradient(black 0rad, white)"      , computed: "conic-gradient(rgb(0, 0, 0) 0rad, rgb(255, 255, 255))" },
-    { style: "conic-gradient(black 0turn, white)"     , computed: "conic-gradient(rgb(0, 0, 0) 0turn, rgb(255, 255, 255))" },
+    { style: "conic-gradient(black 0grad, white)"     , computed: "conic-gradient(rgb(0, 0, 0) 0deg, rgb(255, 255, 255))" },
+    { style: "conic-gradient(black 0rad, white)"      , computed: "conic-gradient(rgb(0, 0, 0) 0deg, rgb(255, 255, 255))" },
+    { style: "conic-gradient(black 0turn, white)"     , computed: "conic-gradient(rgb(0, 0, 0) 0deg, rgb(255, 255, 255))" },
     { style: "conic-gradient(black, white 50%)"       , computed: "conic-gradient(rgb(0, 0, 0), rgb(255, 255, 255) 50%)" },
     { style: "conic-gradient(black 10%, white 50%)"   , computed: "conic-gradient(rgb(0, 0, 0) 10%, rgb(255, 255, 255) 50%)" },
     { style: "conic-gradient(black 10%, white 180deg)", computed: "conic-gradient(rgb(0, 0, 0) 10%, rgb(255, 255, 255) 180deg)" },
@@ -66,8 +66,8 @@
     { style: "conic-gradient(blue 10%, blue 20% 30%, white)"                 , computed: "conic-gradient(rgb(0, 0, 255) 10%, rgb(0, 0, 255) 20%, rgb(0, 0, 255) 30%, rgb(255, 255, 255))" },
     { style: "conic-gradient(blue, blue, blue, white)"                       , computed: "conic-gradient(rgb(0, 0, 255), rgb(0, 0, 255), rgb(0, 0, 255), rgb(255, 255, 255))" },
 
-    { style: "conic-gradient(at top left, black, white)"     , computed: "conic-gradient(at left top, rgb(0, 0, 0), rgb(255, 255, 255))" },
-    { style: "conic-gradient(at bottom right, black, white)" , computed: "conic-gradient(at right bottom, rgb(0, 0, 0), rgb(255, 255, 255))" },
+    { style: "conic-gradient(at top left, black, white)"     , computed: "conic-gradient(at 0% 0%, rgb(0, 0, 0), rgb(255, 255, 255))" },
+    { style: "conic-gradient(at bottom right, black, white)" , computed: "conic-gradient(at 100% 100%, rgb(0, 0, 0), rgb(255, 255, 255))" },
     { style: "conic-gradient(at center, black, white)"       , computed: "conic-gradient(rgb(0, 0, 0), rgb(255, 255, 255))" },
     { style: "conic-gradient(at center center, black, white)", computed: "conic-gradient(rgb(0, 0, 0), rgb(255, 255, 255))" },
 
@@ -75,8 +75,8 @@
     { style: "conic-gradient(from 10deg, black, white)"          , computed: "conic-gradient(from 10deg, rgb(0, 0, 0), rgb(255, 255, 255))" },
     { style: "conic-gradient(from 10deg at center, black, white)", computed: "conic-gradient(from 10deg, rgb(0, 0, 0), rgb(255, 255, 255))" },
 
-    { style: "conic-gradient(black 0%, 10%, green .5turn, 50%, white)", computed: "conic-gradient(rgb(0, 0, 0) 0%, 10%, rgb(0, 128, 0) 0.5turn, 50%, rgb(255, 255, 255))" },
-    { style: "conic-gradient(black 0deg, 0%, green .5turn, 50%, white 1turn)", computed: "conic-gradient(rgb(0, 0, 0) 0deg, 0%, rgb(0, 128, 0) 0.5turn, 50%, rgb(255, 255, 255) 1turn)" },
+    { style: "conic-gradient(black 0%, 10%, green .5turn, 50%, white)", computed: "conic-gradient(rgb(0, 0, 0) 0%, 10%, rgb(0, 128, 0) 180deg, 50%, rgb(255, 255, 255))" },
+    { style: "conic-gradient(black 0deg, 0%, green .5turn, 50%, white 1turn)", computed: "conic-gradient(rgb(0, 0, 0) 0deg, 0%, rgb(0, 128, 0) 180deg, 50%, rgb(255, 255, 255) 360deg)" },
 
     // Examples from https://drafts.csswg.org/css-images-4/#conic-gradient-examples
     { style: "conic-gradient(#f06, gold)"                     , computed: "conic-gradient(rgb(255, 0, 102), rgb(255, 215, 0))" },
@@ -84,7 +84,7 @@
     { style: "conic-gradient(from 0deg, #f06, gold)"          , computed: "conic-gradient(rgb(255, 0, 102), rgb(255, 215, 0))" },
     { style: "conic-gradient(from 0deg at center, #f06, gold)", computed: "conic-gradient(rgb(255, 0, 102), rgb(255, 215, 0))" },
     { style: "conic-gradient(#f06 0%, gold 100%)"             , computed: "conic-gradient(rgb(255, 0, 102) 0%, rgb(255, 215, 0) 100%)" },
-    { style: "conic-gradient(#f06 0deg, gold 1turn)"          , computed: "conic-gradient(rgb(255, 0, 102) 0deg, rgb(255, 215, 0) 1turn)" },
+    { style: "conic-gradient(#f06 0deg, gold 1turn)"          , computed: "conic-gradient(rgb(255, 0, 102) 0deg, rgb(255, 215, 0) 360deg)" },
 
     { style: "conic-gradient(white -50%, black 150%)"      , computed: "conic-gradient(rgb(255, 255, 255) -50%, rgb(0, 0, 0) 150%)" },
     { style: "conic-gradient(white -180deg, black 540deg)" , computed: "conic-gradient(rgb(255, 255, 255) -180deg, rgb(0, 0, 0) 540deg)" },
@@ -96,7 +96,7 @@
     { style: "conic-gradient(white 45deg, black 225deg, white 405deg)"   , computed: "conic-gradient(rgb(255, 255, 255) 45deg, rgb(0, 0, 0) 225deg, rgb(255, 255, 255) 405deg)" },
     { style: "conic-gradient(red, yellow, lime, aqua, blue, magenta, red", computed: "conic-gradient(rgb(255, 0, 0), rgb(255, 255, 0), rgb(0, 255, 0), rgb(0, 255, 255), rgb(0, 0, 255), rgb(255, 0, 255), rgb(255, 0, 0))" },
     { style: "conic-gradient(gold, #f06 20deg)"                          , computed: "conic-gradient(rgb(255, 215, 0), rgb(255, 0, 102) 20deg)" },
-    { style: "conic-gradient(gold calc(100% / 2), #f06 calc(360deg * 4 / 5))"                    , computed: "conic-gradient(rgb(255, 215, 0) calc(50%), rgb(255, 0, 102) calc(288deg))" },
+    { style: "conic-gradient(gold calc(100% / 2), #f06 calc(360deg * 4 / 5))"                    , computed: "conic-gradient(rgb(255, 215, 0) 50%, rgb(255, 0, 102) 288deg)" },
   ];
 
   test(function() {

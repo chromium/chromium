@@ -57,11 +57,10 @@ public class JavaScriptEvalChromeTest {
     @LargeTest
     @Feature({"Browser"})
     public void testJavaScriptEvalIsCorrectlyOrderedWithinOneTab() throws TimeoutException {
-        Tab tab1 = mActivityTestRule.getActivity().getActivityTab();
-        Tab tab2;
+        Tab tab1 = mActivityTestRule.getActivityTab();
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
-        tab2 = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab2 = mActivityTestRule.getActivityTab();
         mActivityTestRule.getActivityTestRule().loadUrl(JSTEST_URL);
         ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), tab1.getId());
 

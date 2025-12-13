@@ -7,9 +7,7 @@ import {DuplexMode, NativeLayerImpl, PluginProxyImpl} from 'chrome://print/print
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-// <if expr="is_chromeos">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
 
 import {NativeLayerStub} from './native_layer_stub.js';
 import {TestPluginProxy} from './test_plugin_proxy.js';
@@ -61,9 +59,7 @@ suite('PrintPreviewAppTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="is_chromeos">
     setNativeLayerCrosInstance();
-    // </if>
     pluginProxy = new TestPluginProxy();
     PluginProxyImpl.setInstance(pluginProxy);
   });
@@ -104,12 +100,10 @@ suite('PrintPreviewAppTest', function() {
     assertTrue(sidebar.controlsManaged);
   });
 
-  // <if expr="is_chromeos">
   test('SheetsManaged', async () => {
     initialSettings.policies = {sheets: {value: 2}};
     await initialize();
     const sidebar = page.shadowRoot!.querySelector('print-preview-sidebar')!;
     assertTrue(sidebar.controlsManaged);
   });
-  // </if>
 });

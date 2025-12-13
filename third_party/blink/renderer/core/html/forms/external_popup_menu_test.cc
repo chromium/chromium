@@ -220,8 +220,8 @@ class TestLocalFrameExternalPopupClient : public FakeLocalFrameHost {
     selected_item_ = selected_item;
     menu_items_ = std::move(menu_items);
     popup_client_.Bind(std::move(popup_client));
-    popup_client_.set_disconnect_handler(WTF::BindOnce(
-        &TestLocalFrameExternalPopupClient::Reset, WTF::Unretained(this)));
+    popup_client_.set_disconnect_handler(
+        BindOnce(&TestLocalFrameExternalPopupClient::Reset, Unretained(this)));
     std::move(showed_callback_).Run();
   }
 
@@ -265,7 +265,7 @@ class ExternalPopupMenuTest : public PageTestBase {
     frame_host_.Init(
         web_frame_client_.GetRemoteNavigationAssociatedInterfaces());
     helper_.Initialize(&web_frame_client_);
-    WebView()->GetChromeClient().SetUseExternalPopupMenusForTesting(true);
+    WebView()->GetChromeClient().SetUseExternalPopupMenus(true);
   }
   void TearDown() override {
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();

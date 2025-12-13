@@ -29,6 +29,12 @@ namespace gfx {
 class Canvas;
 }
 
+struct TabPathFlags {
+  bool force_active = false;
+  TabStyle::RenderUnits render_units = TabStyle::RenderUnits::kPixels;
+  bool should_paint_extension = true;
+};
+
 // Holds Views-specific logic for rendering and sizing tabs.
 class TabStyleViews {
  public:
@@ -45,9 +51,7 @@ class TabStyleViews {
   //  tab.
   virtual SkPath GetPath(TabStyle::PathType path_type,
                          float scale,
-                         bool force_active = false,
-                         TabStyle::RenderUnits render_units =
-                             TabStyle::RenderUnits::kPixels) const = 0;
+                         const TabPathFlags& flags) const = 0;
 
   // Paints the tab.
   virtual void PaintTab(gfx::Canvas* canvas) const = 0;
@@ -60,9 +64,9 @@ class TabStyleViews {
   // TabStyle::GetMaximumZValue()).
   virtual float GetZValue() const = 0;
 
-  // Returns whichever of (active, inactive) the tab appears more like given the
-  // active opacity.
-  virtual TabActive GetApparentActiveState() const = 0;
+  // Returns whether the tab appears more like the active opacity than the
+  // inactive opacity.
+  virtual bool IsApparentlyActive() const = 0;
 
   // Returns the current opacity of the "active" portion of the tab's state.
   virtual float GetCurrentActiveOpacity() const = 0;
@@ -78,6 +82,8 @@ class TabStyleViews {
 
   // Returns the progress (0 to 1) of the hover animation.
   virtual double GetHoverAnimationValue() const = 0;
+
+  virtual GlowHoverController* GetHoverControllerForTesting() = 0;
 
   const TabStyle* tab_style() const { return tab_style_; }
 

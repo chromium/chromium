@@ -12,10 +12,7 @@ namespace autofill {
 TestAutofillDriver::TestAutofillDriver(TestAutofillClient* client)
     : autofill_client_(CHECK_DEREF(client)) {}
 
-TestAutofillDriver::~TestAutofillDriver() {
-  test_api(*this).SetLifecycleState(
-      AutofillDriver::LifecycleState::kPendingDeletion);
-}
+TestAutofillDriver::~TestAutofillDriver() = default;
 
 TestAutofillClient& TestAutofillDriver::GetAutofillClient() {
   return *autofill_client_;

@@ -62,32 +62,36 @@ void PenguinClient::PerformAPICall(const std::string& text_input,
 
 void PenguinClient::PerformAPICall_var1(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& j_image_data,
-    const base::android::JavaParamRef<jstring>& j_text_input,
-    const base::android::JavaParamRef<jobject>& j_callback,
+    const base::android::JavaRef<jstring>& j_image_data,
+    const base::android::JavaRef<jstring>& j_text_input,
+    const base::android::JavaRef<jobject>& j_callback,
     jboolean j_include_full_response) {}
 
 void PenguinClient::PerformAPICall_var2(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_web_contents,
-    const base::android::JavaParamRef<jstring>& j_text_input,
-    const base::android::JavaParamRef<jobject>& j_callback,
+    const base::android::JavaRef<jobject>& j_web_contents,
+    const base::android::JavaRef<jstring>& j_text_input,
+    const base::android::JavaRef<jobject>& j_callback,
     jboolean j_include_full_response) {}
 
 void PenguinClient::PerformAPICall_var3(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_web_contents,
-    const base::android::JavaParamRef<jstring>& j_text_input,
-    const base::android::JavaParamRef<jobject>& j_callback,
-    const base::android::JavaParamRef<jobject>& j_source_rect,
+    const base::android::JavaRef<jobject>& j_web_contents,
+    const base::android::JavaRef<jstring>& j_text_input,
+    const base::android::JavaRef<jobject>& j_callback,
+    const base::android::JavaRef<jobject>& j_source_rect,
     jboolean j_include_full_response) {}
 
 void PenguinClient::PerformAPICall_var4(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& j_text_input,
-    const base::android::JavaParamRef<jobject>& j_callback,
+    const base::android::JavaRef<jstring>& j_text_input,
+    const base::android::JavaRef<jobject>& j_callback,
     jboolean j_include_full_response) {}
 
 #endif
 
 }  // namespace penguin
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(PenguinClient)
+#endif

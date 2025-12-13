@@ -23,6 +23,7 @@ source_set("browser") {
   sources = [
     "action_context.cc",
     "action_context.h",
+    "clipboard_context.h",
     "conditions/and_condition.cc",
     "conditions/and_condition.h",
     "conditions/attributes_condition.cc",
@@ -34,8 +35,6 @@ source_set("browser") {
     "conditions/or_condition.h",
     "data_controls_dialog.cc",
     "data_controls_dialog.h",
-    "data_controls_dialog_factory.cc",
-    "data_controls_dialog_factory.h",
     "data_controls_policy_handler.cc",
     "data_controls_policy_handler.h",
     "dlp_histogram_helper.cc",
@@ -45,6 +44,8 @@ source_set("browser") {
     "prefs.h",
     "rule.cc",
     "rule.h",
+    "rules_service_base.cc",
+    "rules_service_base.h",
     "verdict.cc",
     "verdict.h",
   ]
@@ -58,12 +59,15 @@ source_set("browser") {
     ":features",
     "//base",
     "//components/enterprise/buildflags",
+    "//components/enterprise/common/proto:connectors_proto",
     "//components/keyed_service/core",
     "//components/policy/core/browser",
     "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/strings",
     "//components/url_matcher",
+    "//ui/base/clipboard",
+    "//ui/base/clipboard:clipboard_types",
     "//url",
   ]
 
@@ -104,6 +108,7 @@ source_set("unit_tests") {
     "conditions/not_condition_unittest.cc",
     "conditions/or_condition_unittest.cc",
     "rule_unittest.cc",
+    "rules_service_base_unittest.cc",
     "verdict_unittest.cc",
   ]
 
@@ -112,6 +117,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/prefs:test_support",
     "//testing/gtest",
   ]
 }

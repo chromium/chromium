@@ -24,6 +24,7 @@ import '../controls/controlled_radio_button.js';
 import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
+import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
@@ -221,7 +222,10 @@ export class SettingsSpellCheckPageElement extends
     // `browser.enable_spellchecking` as the toggle for the 1 language as
     // well.
     if (this.spellCheckLanguages_.length === 1) {
-      this.languageHelper_.toggleSpellCheck(
+      // Need to call getLanguageHelperInstance() instead of
+      // this.languageHelper_ here, because Polymer observers fire before
+      // connectedCallback sometimes.
+      getLanguageHelperInstance().toggleSpellCheck(
           this.spellCheckLanguages_[0].language.code,
           !!this.getPref('browser.enable_spellchecking').value);
     }

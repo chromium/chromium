@@ -1,0 +1,15 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.widget.Button clickable collapsed focusable interesting expanded_state=1
+++++android.view.View role_description='menu bar' collection item_count=3 row_count=3 column_count=1 selection_mode=1
+++++++android.view.MenuItem role_description='menu item' clickable collapsed collection_item focusable interesting name='First item' expanded_state=1
+++++++android.view.MenuItem role_description='menu item' clickable collection_item focusable interesting name='No command item' item_index=1 row_index=1
+++++++android.view.MenuItem role_description='menu item' clickable collection_item focusable interesting name='Custom command item' item_index=2 row_index=2
+++++android.widget.Button clickable collapsed focusable interesting expanded_state=1
+++++android.view.View role_description='menu bar' collection item_count=1 row_count=1 column_count=1 selection_mode=1
+++++++android.view.MenuItem role_description='menu item' clickable collapsed collection_item focusable interesting name='First item' expanded_state=1
+++++android.view.View role_description='menu bar' collection item_count=1 row_count=1 column_count=1 selection_mode=1
+++++++android.view.MenuItem role_description='menu item' clickable collection_item expanded focusable interesting name='First item' expanded_state=3
+++++android.view.View selection_mode=1
+++++++android.view.MenuItem role_description='menu item' clickable collection_item focusable interesting name='Submenu1 first item'
+++++++android.view.MenuItem role_description='menu item' clickable collapsed collection_item focusable interesting name='Submenu1 second item' item_index=1 row_index=1 expanded_state=1

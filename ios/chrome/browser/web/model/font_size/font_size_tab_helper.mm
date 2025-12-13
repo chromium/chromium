@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/containers/adapters.h"
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/stringprintf.h"
@@ -39,7 +40,7 @@ FontSizeTabHelper::FontSizeTabHelper(web::WebState* web_state)
 FontSizeTabHelper::~FontSizeTabHelper() {}
 
 // static
-void FontSizeTabHelper::RegisterBrowserStatePrefs(
+void FontSizeTabHelper::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kIosUserZoomMultipliers);
 }
@@ -251,10 +252,10 @@ std::string FontSizeTabHelper::GetCurrentUserZoomMultiplierKey() const {
 
 std::string FontSizeTabHelper::GetUserZoomMultiplierKeyUrlPart() const {
   if (IsGoogleCachedAMPPage()) {
-    return web_state_->GetLastCommittedURL().host().append("/amp");
+    return web_state_->GetLastCommittedURL().GetHost().append("/amp");
   }
 
-  return web_state_->GetLastCommittedURL().host();
+  return web_state_->GetLastCommittedURL().GetHost();
 }
 
 double FontSizeTabHelper::GetCurrentUserZoomMultiplier() const {
@@ -286,7 +287,7 @@ bool FontSizeTabHelper::IsGoogleCachedAMPPage() const {
   if (!google_util::IsGoogleDomainUrl(
           url, google_util::DISALLOW_SUBDOMAIN,
           google_util::DISALLOW_NON_STANDARD_PORTS) ||
-      url.path().compare(0, 5, "/amp/") != 0) {
+      url.GetPath().compare(0, 5, "/amp/") != 0) {
     return false;
   }
 

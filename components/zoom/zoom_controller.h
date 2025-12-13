@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"

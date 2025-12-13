@@ -46,7 +46,7 @@ source_set("metrics") {
     "background_refresh_metrics.h",
     "background_refresh_metrics.mm",
   ]
-  deps = []
+  public_deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
@@ -58,7 +58,9 @@ source_set("unit_tests") {
   deps = [
     ":background_refresh",
     ":headers",
+    ":metrics",
     "//base/test:test_support",
+    "//components/test/ios",
     "//ios/chrome/app:constants",
     "//ios/chrome/app/application_delegate:app_init_stage",
     "//ios/chrome/app/application_delegate:app_state",

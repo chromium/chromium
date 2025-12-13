@@ -4,6 +4,7 @@
 
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import 'chrome://resources/cr_components/help_bubble/new_badge.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_chip/cr_chip.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
@@ -13,13 +14,14 @@ import './cards.js';
 import './categories.js';
 import './customize_toolbar/toolbar.js';
 import './footer.js';
+import './tools.js';
 import './shortcuts.js';
 import './themes.js';
 import './wallpaper_search/wallpaper_search.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -28,13 +30,13 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {AppearanceElement} from './appearance.js';
 import type {CategoriesElement} from './categories.js';
-import {CustomizeChromeImpression, recordCustomizeChromeImpression} from './common.js';
 import type {BackgroundCollection, CustomizeChromePageHandlerInterface, ManagementNoticeState} from './customize_chrome.mojom-webui.js';
 import {ChromeWebStoreCategory, ChromeWebStoreCollection, CustomizeChromeSection, NewTabPageType} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import type {ThemesElement} from './themes.js';
 
 const SECTION_TO_SELECTOR = {
+  [CustomizeChromeSection.kUnspecified]: '',
   [CustomizeChromeSection.kAppearance]: '#appearance',
   [CustomizeChromeSection.kShortcuts]: '#shortcuts',
   [CustomizeChromeSection.kModules]: '#modules',
@@ -83,9 +85,11 @@ export class AppElement extends AppElementBase {
       selectedCollection_: {type: Object},
       extensionPolicyEnabled_: {type: Boolean},
       extensionsCardEnabled_: {type: Boolean},
+      ntpNextFeaturesEnabled_: {type: Boolean},
+      aimPolicyEnabled_: {type: Boolean},
       footerEnabled_: {type: Boolean},
       wallpaperSearchEnabled_: {type: Boolean},
-      newTabPageType_: {type: NewTabPageType},
+      newTabPageType_: {type: Number},
       showEditTheme_: {type: Boolean},
       showFooter_: {type: Boolean},
       showFooterForManagedBrowser_: {type: Boolean},
@@ -105,7 +109,11 @@ export class AppElement extends AppElementBase {
   protected accessor selectedCollection_: BackgroundCollection|null = null;
   protected accessor extensionsCardEnabled_: boolean =
       loadTimeData.getBoolean('extensionsCardEnabled');
+  protected accessor ntpNextFeaturesEnabled_: boolean =
+      loadTimeData.getBoolean('ntpNextFeaturesEnabled');
   protected accessor extensionPolicyEnabled_: boolean = false;
+  protected accessor aimPolicyEnabled_: boolean =
+      loadTimeData.getBoolean('aimPolicyEnabled');
   protected accessor footerEnabled_: boolean =
       loadTimeData.getBoolean('footerEnabled');
   protected accessor wallpaperSearchEnabled_: boolean =
@@ -199,8 +207,6 @@ export class AppElement extends AppElementBase {
               extensionsCardSectionObserver.disconnect();
               this.dispatchEvent(
                   new Event('detect-extensions-card-section-impression'));
-              recordCustomizeChromeImpression(
-                  CustomizeChromeImpression.EXTENSIONS_CARD_SECTION_DISPLAYED);
             }
           }, {
             threshold: 1.0,
@@ -271,6 +277,10 @@ export class AppElement extends AppElementBase {
         await this.updateComplete;
         this.$.categoriesPage.focusOnBackButton();
         break;
+      case CustomizeChromePage.OVERVIEW:
+        assertNotReached();
+      default:
+        assertNotReachedCase(this.page_);
     }
   }
 

@@ -333,6 +333,13 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
   if (object.GetDocument().Printing())
     return CompositingReason::kNone;
 
+  // Elements under canvas can only be rendered with `drawElementImage` and do
+  // not support compositing.
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+      IsA<Element>(object.GetNode()) &&
+      To<Element>(object.GetNode())->IsInCanvasSubtree()) {
+    return CompositingReason::kNone;
+  }
   auto reasons = CompositingReasonsFor3DSceneLeaf(object);
 
   if (object.CanHaveAdditionalCompositingReasons())

@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -35,6 +34,7 @@
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/visibility.h"
@@ -117,8 +117,8 @@ void ChipController::OnNavigation(
   ResetPermissionPromptChip();
 }
 
-void ChipController::OnTabVisibilityChanged(content::Visibility visibility) {
-  if (visibility == content::Visibility::HIDDEN) {
+void ChipController::OnTabActiveChanged(bool is_active) {
+  if (!is_active) {
     ResetPermissionPromptChip();
   }
 }
@@ -439,7 +439,7 @@ void ChipController::ResetPermissionPromptChip() {
            (active_chip_permission_request_manager_.value()
                 ->web_contents()
                 ->GetVisibleURL() != GURL(chrome::kChromeUINewTabURL)))) {
-        active_chip_permission_request_manager_.value()->RecreateView();
+        active_chip_permission_request_manager_.value()->Ignore();
       }
       active_chip_permission_request_manager_.reset();
     }

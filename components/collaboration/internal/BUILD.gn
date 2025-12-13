@@ -75,7 +75,7 @@ source_set("collaboration_finder") {
   ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//components/data_sharing/public",
     "//components/saved_tab_groups/public",
   ]
@@ -101,7 +101,10 @@ static_library("comments_internal") {
       "android/comments/comments_service_bridge.h",
     ]
 
-    deps += [ ":comments_jni_headers" ]
+    deps += [
+      ":comments_jni_headers",
+      "//components/saved_tab_groups/public:conversion_utils",
+    ]
   }
 }
 
@@ -196,11 +199,15 @@ source_set("core_unit_tests") {
     "//components/collaboration:test_support",
     "//components/data_sharing:test_support",
     "//components/data_sharing/public",
-    "//components/saved_tab_groups/test_support:test_support",
+    "//components/saved_tab_groups/test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("comments_unit_tests") {
@@ -252,7 +259,7 @@ source_set("messaging_unit_tests") {
     "//components/data_sharing:test_support",
     "//components/data_sharing/public",
     "//components/saved_tab_groups/public",
-    "//components/saved_tab_groups/test_support:test_support",
+    "//components/saved_tab_groups/test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/tab_groups",
     "//testing/gmock",
@@ -326,6 +333,7 @@ if (is_android) {
       "//components/collaboration/public:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//url:url_java",
     ]
   }
 
@@ -359,6 +367,8 @@ if (is_android) {
       "//components/collaboration/public:comments_java",
       "//third_party/jni_zero:jni_zero_java",
       "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+      "//url:url_java",
     ]
 
     srcjar_deps = [ ":comments_native_j_unittests_jni_headers" ]

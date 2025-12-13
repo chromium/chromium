@@ -94,9 +94,7 @@ MakeAbsoluteFilePathNoResolveSymbolicLinks(const FilePath& input);
 BASE_EXPORT int64_t ComputeDirectorySize(const FilePath& root_path);
 
 // Deletes the given path, whether it's a file or a directory.
-// If it's a directory, it's perfectly happy to delete all of the directory's
-// contents, but it will not recursively delete subdirectories and their
-// contents.
+// Directories will only be successfully deleted if empty.
 // Returns true if successful, false otherwise. It is considered successful to
 // attempt to delete a file that does not exist.
 //
@@ -426,9 +424,9 @@ BASE_EXPORT bool CreateTemporaryFileInDir(const FilePath& dir,
                                           FilePath* temp_file);
 
 // Returns the file name for a temporary file by using a platform-specific
-// naming scheme that incorporates |identifier|.
+// naming scheme that incorporates |identifier|. |hidden| is ignored on Windows.
 BASE_EXPORT FilePath
-FormatTemporaryFileName(FilePath::StringViewType identifier);
+FormatTemporaryFileName(FilePath::StringViewType identifier, bool hidden);
 
 // Create and open a temporary file stream for exclusive read, write, and delete
 // access. The full path is placed in `path`. Returns the opened file stream, or
@@ -448,7 +446,6 @@ BASE_EXPORT ScopedFILE CreateAndOpenTemporaryStreamInDir(const FilePath& dir,
 //
 // Create a new directory. If prefix is provided, the new directory name is in
 // the format of prefixyyyy.
-// NOTE: prefix is ignored in the POSIX implementation.
 // If success, return true and output the full path of the directory created.
 //
 // For Windows, this directory is usually created in a secure location if the
@@ -456,7 +453,7 @@ BASE_EXPORT ScopedFILE CreateAndOpenTemporaryStreamInDir(const FilePath& dir,
 // insecure, since low privilege users can get the path of folders under %TEMP%
 // after creation and are able to create subfolders and files within these
 // folders which can lead to privilege escalation.
-BASE_EXPORT bool CreateNewTempDirectory(const FilePath::StringType& prefix,
+BASE_EXPORT bool CreateNewTempDirectory(FilePath::StringViewType prefix,
                                         FilePath* new_temp_path);
 
 // Create a directory within another directory.
@@ -497,6 +494,13 @@ BASE_EXPORT OnceCallback<std::optional<int64_t>()> GetFileSizeCallback(
 BASE_EXPORT bool NormalizeFilePath(const FilePath& path, FilePath* real_path);
 
 #if BUILDFLAG(IS_WIN)
+
+// Returns `SystemTemp` (or `DIR_PROGRAM_FILES` if SystemTemp does not exist)
+// for security reasons if the caller is the default admin (i.e., no split
+// token, such as the SYSTEM user or the built-in administrator) to avoid
+// attacks from lower privilege processes. For non-default-admin cases, returns
+// `%TEMP%`. An override of `DIR_SYSTEM_TEMP` by tests is respected.
+BASE_EXPORT bool GetSecureTempDirectory(FilePath* temp_dir);
 
 // Removes the Windows extended-length path prefix from a prefixed path.
 // Exported for testing. Refer to the function implementation for details.
@@ -760,6 +764,11 @@ BASE_EXPORT bool MoveUnsafe(const FilePath& from_path, const FilePath& to_path);
 // This function is not transactional.
 BASE_EXPORT bool CopyAndDeleteDirectory(const FilePath& from_path,
                                         const FilePath& to_path);
+
+// Returns true if the user is an administrator with default elevation type,
+// i.e., no split token, such as the SYSTEM user or the built-in
+// administrator.
+BASE_EXPORT bool IsUserDefaultAdmin();
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)

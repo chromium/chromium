@@ -63,7 +63,8 @@ RequestHandlerForRegisterBrowserOrPolicyAgent::HandleRequest(
   client_info.device_id =
       KeyValueFromUrl(request.GetURL(), dm_protocol::kParamDeviceID);
   client_info.device_token = device_token;
-  client_info.machine_name = register_browser_request.machine_name();
+  client_info.machine_name =
+      register_browser_request.browser_device_identifier().computer_name();
   std::ranges::copy(allowed_policy_types(),
                     std::inserter(client_info.allowed_policy_types,
                                   client_info.allowed_policy_types.end()));
@@ -92,7 +93,9 @@ RequestHandlerForRegisterBrowser::ValidateRegisterBrowserRequest(
   // Machine name is empty on mobile.
   if (register_browser_request.os_platform() != "Android" &&
       register_browser_request.os_platform() != "iOS" &&
-      register_browser_request.machine_name().empty()) {
+      register_browser_request.browser_device_identifier()
+          .computer_name()
+          .empty()) {
     VLOG(1) << "OS platform: " << register_browser_request.os_platform();
     return CreateHttpResponse(net::HTTP_BAD_REQUEST,
                               "Machine name must be non-empty on Desktop.");
@@ -100,12 +103,12 @@ RequestHandlerForRegisterBrowser::ValidateRegisterBrowserRequest(
   return nullptr;
 }
 
-constexpr base::flat_set<std::string>
+base::flat_set<std::string>
 RequestHandlerForRegisterBrowser::allowed_policy_types() {
   return base::MakeFlatSet<std::string>(
       std::vector({dm_protocol::kChromeMachineLevelUserCloudPolicyType,
                    dm_protocol::kChromeMachineLevelExtensionCloudPolicyType,
-                   dm_protocol::kChromeUserPolicyType}));
+                   dm_protocol::GetChromeUserPolicyType()}));
 }
 
 RequestHandlerForRegisterPolicyAgent::RequestHandlerForRegisterPolicyAgent(
@@ -131,15 +134,15 @@ RequestHandlerForRegisterPolicyAgent::ValidateRegisterBrowserRequest(
     return CreateHttpResponse(net::HTTP_BAD_REQUEST, "Invalid platform.");
   }
 
-  if (register_browser_request.machine_name().empty()) {
+  if (!register_browser_request.has_browser_device_identifier()) {
     return CreateHttpResponse(net::HTTP_BAD_REQUEST,
-                              "Machine name must be non-empty.");
+                              "Browser device identifier must be non-empty.");
   }
 
   return nullptr;
 }
 
-constexpr base::flat_set<std::string>
+base::flat_set<std::string>
 RequestHandlerForRegisterPolicyAgent::allowed_policy_types() {
   return base::MakeFlatSet<std::string>(
       std::vector({dm_protocol::kGoogleUpdateMachineLevelAppsPolicyType,

@@ -1,0 +1,4 @@
+team_email: "clank-tab-dev@google.com"
+buganizer_public: {
+  component_id: 1777873 # Chrome > Chrome Android (Clank) > Clank Growth
+}

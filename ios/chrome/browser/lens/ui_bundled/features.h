@@ -37,23 +37,11 @@ BASE_DECLARE_FEATURE(kLensUnaryHttpTransportEnabled);
 // Whether to enable the unary salient text API.
 BASE_DECLARE_FEATURE(kLensUnaryApiSalientTextEnabled);
 
-// Whether to enable background uploading for clearcut logs.
-BASE_DECLARE_FEATURE(kLensClearcutBackgroundUploadEnabled);
-
 // Whether to disable single tap text selection.
 BASE_DECLARE_FEATURE(kLensSingleTapTextSelectionDisabled);
 
-// Whether to disable the Ink library's multi-sample mode.
-BASE_DECLARE_FEATURE(kLensInkMultiSampleModeDisabled);
-
 // Whether to disable gesture text selection.
 BASE_DECLARE_FEATURE(kLensGestureTextSelectionDisabled);
-
-// Whether to enable the vsint param.
-BASE_DECLARE_FEATURE(kLensVsintParamEnabled);
-
-// Whether to enable the unary client data header.
-BASE_DECLARE_FEATURE(kLensUnaryClientDataHeaderEnabled);
 
 // Whether to block fetch objects interaction RPCs on separate handshake.
 BASE_DECLARE_FEATURE(kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshake);
@@ -66,9 +54,6 @@ BASE_DECLARE_FEATURE(kLensPrewarmHardStickinessInQueryFormulation);
 
 // Whether to enable the fetch srp API.
 BASE_DECLARE_FEATURE(kLensFetchSrpApiEnabled);
-
-// Whether to enable the QR parsing code fix.
-BASE_DECLARE_FEATURE(kLensQRCodeParsingFix);
 
 // Whether to enable exact matches.
 BASE_DECLARE_FEATURE(kLensExactMatchesEnabled);
@@ -87,5 +72,14 @@ BASE_DECLARE_FEATURE(kLensInitialLvfZoomLevel90Percent);
 
 // Whether to enable Lens triple camera.
 BASE_DECLARE_FEATURE(kLensTripleCameraEnabled);
+
+// Whether to enable the Strokes API for Lens.
+BASE_DECLARE_FEATURE(kLensStrokesAPIEnabled);
+
+// Whether to enable the Shader V2 for Lens Omnient.
+BASE_DECLARE_FEATURE(kLensOmnientShaderV2Enabled);
+
+// Whether to enable the stream service web channel transport.
+BASE_DECLARE_FEATURE(kLensStreamServiceWebChannelTransportEnabled);
 
 #endif  // IOS_CHROME_BROWSER_LENS_UI_BUNDLED_FEATURES_H_

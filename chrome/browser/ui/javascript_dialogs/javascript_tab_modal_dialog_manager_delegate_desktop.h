@@ -9,13 +9,17 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager_delegate.h"
 
+class BrowserWindowInterface;
+
 class JavaScriptTabModalDialogManagerDelegateDesktop
     : public javascript_dialogs::TabModalDialogManagerDelegate,
-      public BrowserListObserver,
+      public BrowserCollectionObserver,
       public TabStripModelObserver {
  public:
   explicit JavaScriptTabModalDialogManagerDelegateDesktop(
@@ -44,8 +48,9 @@ class JavaScriptTabModalDialogManagerDelegateDesktop
   bool IsApp() override;
   bool CanShowModalUI() override;
 
-  // BrowserListObserver:
-  void OnBrowserSetLastActive(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
+  void OnBrowserDeactivated(BrowserWindowInterface* browser) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -77,6 +82,9 @@ class JavaScriptTabModalDialogManagerDelegateDesktop
   // be different from the WebContents that requested the dialog, such as with
   // Chrome app <webview>s.
   raw_ptr<content::WebContents> web_contents_;
+
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observer_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_JAVASCRIPT_DIALOGS_JAVASCRIPT_TAB_MODAL_DIALOG_MANAGER_DELEGATE_DESKTOP_H_

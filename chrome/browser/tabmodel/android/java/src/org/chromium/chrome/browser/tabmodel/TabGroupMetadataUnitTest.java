@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 
 import android.annotation.SuppressLint;
@@ -20,9 +22,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -32,7 +32,6 @@ import java.util.Map.Entry;
 /** Tests for {@link TabGroupMetadata}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID})
 public class TabGroupMetadataUnitTest {
 
     private static final ArrayList<Entry<Integer, String>> TAB_IDS_TO_URLS =
@@ -98,13 +97,13 @@ public class TabGroupMetadataUnitTest {
             // Read back the metadata.
             parcel.setDataPosition(0);
             Bundle bundle = parcel.readBundle(getClass().getClassLoader());
-            assert bundle != null;
+            assertThat(bundle).isNotNull();
             @SuppressLint("VisibleForTests")
             ArrayList<?> deserializedList =
                     (ArrayList<?>) bundle.getSerializable(TabGroupMetadata.KEY_TAB_IDS_TO_URLS);
 
             // Verify the ordering is retained.
-            assert deserializedList != null;
+            assertThat(deserializedList).isNotNull();
             for (int i = 0; i < TAB_IDS_TO_URLS.size(); i++) {
                 assertEquals(
                         "Unexpected ordering after deserialization.",

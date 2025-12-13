@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_coordinator.h"
 
+#import "base/debug/dump_without_crashing.h"
 #import "base/metrics/user_metrics.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
@@ -21,7 +23,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_mediator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_issues/password_issues_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -32,6 +34,8 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -44,7 +48,7 @@ using password_manager::PasswordCheckReferrer;
     PasswordCheckupMediatorDelegate,
     PasswordIssuesCoordinatorDelegate,
     NotificationsSettingsObserverDelegate,
-    ReauthenticationCoordinatorDelegate>
+    LocalReauthenticationCoordinatorDelegate>
 
 @end
 
@@ -65,7 +69,7 @@ using password_manager::PasswordCheckReferrer;
   // passed. Used for requiring authentication when opening Password Checkup
   // from outside the Password Manager and when the app is
   // backgrounded/foregrounded with Password Checkup opened.
-  ReauthenticationCoordinator* _reauthCoordinator;
+  LocalReauthenticationCoordinator* _reauthCoordinator;
 
   // Location in the app from which Password Checkup was opened.
   PasswordCheckReferrer _referrer;
@@ -92,6 +96,17 @@ using password_manager::PasswordCheckReferrer;
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
+    // The Password Checkup homepage is not intended to be visited by signed out
+    // users. However, if it does happen, it's preferable to show the signed-out
+    // state UI rather than crash the app.
+    AuthenticationService* authenticationService =
+        AuthenticationServiceFactory::GetForProfile(self.profile);
+    CHECK(authenticationService);
+    if (!authenticationService->HasPrimaryIdentity(
+            signin::ConsentLevel::kSignin)) {
+      base::debug::DumpWithoutCrashing();
+    }
+
     _baseNavigationController = navigationController;
     _reauthModule = reauthModule;
     _dispatcher = HandlerForProtocol(self.browser->GetCommandDispatcher(),
@@ -268,15 +283,15 @@ using password_manager::PasswordCheckReferrer;
   }
 }
 
-#pragma mark - ReauthenticationCoordinatorDelegate
+#pragma mark - LocalReauthenticationCoordinatorDelegate
 
 - (void)successfulReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   [_visitsRecorder maybeRecordVisitMetric];
 }
 
 - (void)dismissUIAfterFailedReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   CHECK_EQ(_reauthCoordinator, coordinator);
 
   [_delegate dismissPasswordManagerAfterFailedReauthentication];
@@ -307,7 +322,7 @@ using password_manager::PasswordCheckReferrer;
   CHECK(IsSafetyCheckNotificationsEnabled());
 
   GetApplicationContext()->GetPushNotificationService()->SetPreference(
-      nil, PushNotificationClientId::kSafetyCheck, false);
+      GaiaId(), PushNotificationClientId::kSafetyCheck, false);
 
   // Show confirmation snackbar.
   NSString* buttonText =
@@ -358,7 +373,7 @@ using password_manager::PasswordCheckReferrer;
 
   DCHECK(!_reauthCoordinator);
 
-  _reauthCoordinator = [[ReauthenticationCoordinator alloc]
+  _reauthCoordinator = [[LocalReauthenticationCoordinator alloc]
       initWithBaseNavigationController:_baseNavigationController
                                browser:self.browser
                 reauthenticationModule:_reauthModule
@@ -379,7 +394,7 @@ using password_manager::PasswordCheckReferrer;
   // Popping the view controller in case Local Authentication was triggered
   // outside reauthCoordinator before starting the child coordinator. Local
   // Authentication changes the scene state which triggers the presentation of
-  // the ReauthenticationViewController by reauthCoordinator. Ideally
+  // the LocalReauthenticationViewController by reauthCoordinator. Ideally
   // reauthCoordinator would be stopped when Local Authentication is triggered
   // outside of it but still defending against that scenario to avoid leaving an
   // unintended view controller in the navigation stack.
@@ -405,6 +420,7 @@ using password_manager::PasswordCheckReferrer;
     case PasswordCheckReferrer::kPasswordBreachDialog:
     case PasswordCheckReferrer::kMoreToFixBubble:
     case PasswordCheckReferrer::kSafetyCheckMagicStack:
+    case PasswordCheckReferrer::kSafetyCheckNotification:
       return YES;
     case PasswordCheckReferrer::kPasswordSettings:
       return NO;

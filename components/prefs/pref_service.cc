@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/prefs/pref_service.h"
 
 #include <algorithm>
@@ -82,19 +77,9 @@ PrefService::~PrefService() {
   // before the prefs are fully loaded.
   user_pref_store_->RemoveObserver(pref_store_observer_.get());
 
-  // TODO(crbug.com/942491, 946668, 945772) The following code collects
-  // augments stack dumps created by ~PrefNotifierImpl() with information
-  // whether the profile owning the PrefService is an incognito profile.
-  // Delete this, once the bugs are closed.
-  const bool is_incognito_profile = user_pref_store_->IsInMemoryPrefStore();
-  base::debug::Alias(&is_incognito_profile);
-  // Export value of is_incognito_profile to a string so that `grep`
-  // is a sufficient tool to analyze crashdumps.
-  char is_incognito_profile_string[32];
-  strncpy(is_incognito_profile_string,
-          is_incognito_profile ? "is_incognito: yes" : "is_incognito: no",
-          sizeof(is_incognito_profile_string));
-  base::debug::Alias(&is_incognito_profile_string);
+  // Gives an opportunity for the PrefObserver to unregister themselves from
+  // the PrefNotifierImpl.
+  pref_notifier_->OnServiceDestroyed();
 }
 
 void PrefService::InitFromStorage(bool async) {
@@ -411,10 +396,18 @@ void PrefService::SetFilePath(std::string_view path,
 }
 
 void PrefService::SetInt64(std::string_view path, int64_t value) {
+  CHECK_EQ(pref_registry_->GetRegisteredPrefType(path).value_or(
+               PrefRegistry::RegisteredPrefType::kInt64),
+           PrefRegistry::RegisteredPrefType::kInt64, base::NotFatalUntil::M143)
+      << path;
   SetUserPrefValue(path, base::Int64ToValue(value));
 }
 
 int64_t PrefService::GetInt64(std::string_view path) const {
+  CHECK_EQ(pref_registry_->GetRegisteredPrefType(path).value_or(
+               PrefRegistry::RegisteredPrefType::kInt64),
+           PrefRegistry::RegisteredPrefType::kInt64, base::NotFatalUntil::M143)
+      << path;
   const base::Value& value = GetValue(path);
   std::optional<int64_t> integer = base::ValueToInt64(value);
   DCHECK(integer);
@@ -436,10 +429,18 @@ uint64_t PrefService::GetUint64(std::string_view path) const {
 }
 
 void PrefService::SetTime(std::string_view path, base::Time value) {
+  CHECK_EQ(pref_registry_->GetRegisteredPrefType(path).value_or(
+               PrefRegistry::RegisteredPrefType::kTime),
+           PrefRegistry::RegisteredPrefType::kTime, base::NotFatalUntil::M143)
+      << path;
   SetUserPrefValue(path, base::TimeToValue(value));
 }
 
 base::Time PrefService::GetTime(std::string_view path) const {
+  CHECK_EQ(pref_registry_->GetRegisteredPrefType(path).value_or(
+               PrefRegistry::RegisteredPrefType::kTime),
+           PrefRegistry::RegisteredPrefType::kTime, base::NotFatalUntil::M143)
+      << path;
   const base::Value& value = GetValue(path);
   std::optional<base::Time> time = base::ValueToTime(value);
   DCHECK(time);

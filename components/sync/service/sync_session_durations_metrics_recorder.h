@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_SERVICE_SYNC_SESSION_DURATIONS_METRICS_RECORDER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -53,6 +54,7 @@ class SyncSessionDurationsMetricsRecorder
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // IdentityManager::Observer:
   void OnPrimaryAccountChanged(
@@ -113,13 +115,13 @@ class SyncSessionDurationsMetricsRecorder
 
   // Tracks the elapsed active session time while the browser is open. The timer
   // is absent if there's no active session.
-  std::unique_ptr<base::ElapsedTimer> total_session_timer_;
+  std::optional<base::ElapsedTimer> total_session_timer_;
 
   // Whether there is a signed in account in Gaia cookies.
   FeatureState cookie_signin_status_ = FeatureState::UNKNOWN;
   // Tracks the elapsed active session time in the current signin status. The
   // timer is absent if there's no active session.
-  std::unique_ptr<base::ElapsedTimer> signin_session_timer_;
+  std::optional<base::ElapsedTimer> signin_session_timer_;
 
   // Whether Chrome currently has a primary account and whether its token is
   // valid.
@@ -129,7 +131,7 @@ class SyncSessionDurationsMetricsRecorder
   FeatureState sync_status_ = FeatureState::UNKNOWN;
   // Tracks the elapsed active session time in the current sync and account
   // status. The timer is absent if there's no active session.
-  std::unique_ptr<base::ElapsedTimer> sync_account_session_timer_;
+  std::optional<base::ElapsedTimer> sync_account_session_timer_;
 };
 
 }  // namespace syncer

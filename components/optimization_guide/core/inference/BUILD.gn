@@ -23,7 +23,11 @@ static_library("op_resolver") {
     "//third_party/tflite:tflite_public_headers",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
-  visibility += [ "//services/passage_embeddings/*" ]
+  visibility += [
+    "//media/webrtc/*",
+    "//services/on_device_model/safety/*",
+    "//services/passage_embeddings/*",
+  ]
 }
 
 static_library("inference") {

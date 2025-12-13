@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/time/time.h"
 #include "base/values.h"

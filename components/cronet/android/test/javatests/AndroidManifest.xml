@@ -10,6 +10,9 @@ found in the LICENSE file.
             android:versionCode="1"
             android:versionName="1.0"
             tools:ignore="ScopedStorage">
+
+    <uses-sdk android:minSdkVersion="23"/>
+
     <!-- tools:ignore="ScopedStorage" stops the linter from yelling at us for
          bypassing Scoped Storage. -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />

@@ -37,6 +37,7 @@
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider_client.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace content {
 
@@ -143,6 +144,15 @@ ServiceWorkerProviderContext::GetSubresourceLoaderFactoryInternal() {
           blink::mojom::WebFeature::kServiceWorkerSkippedForSubresourceLoad);
       return nullptr;
     }
+  }
+
+  if (fetch_handler_bypass_option_ ==
+          blink::mojom::ServiceWorkerFetchHandlerBypassOption::
+              kSyntheticResponse ||
+      fetch_handler_bypass_option_ ==
+          blink::mojom::ServiceWorkerFetchHandlerBypassOption::
+              kSyntheticResponseDryRunMode) {
+    return nullptr;
   }
 
   if (!subresource_loader_factory_) {
@@ -564,10 +574,10 @@ void ServiceWorkerProviderContext::Register(
   }
 
   if (container_host_) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
-        "ServiceWorker", "WebServiceWorkerProviderImpl::RegisterServiceWorker",
-        TRACE_ID_LOCAL(this), "Scope", options->scope.spec(), "Script URL",
-        script_url.spec());
+    TRACE_EVENT_BEGIN("ServiceWorker",
+                      "WebServiceWorkerProviderImpl::RegisterServiceWorker",
+                      perfetto::Track::FromPointer(this), "Scope",
+                      options->scope.spec(), "Script URL", script_url.spec());
 
     container_host_->Register(std::move(script_url), std::move(options),
                               std::move(fetch_client_settings),
@@ -603,9 +613,10 @@ void ServiceWorkerProviderContext::GetRegistration(
   }
 
   if (container_host_) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-        "ServiceWorker", "WebServiceWorkerProviderImpl::GetRegistration",
-        TRACE_ID_LOCAL(this), "Document URL", document_url.spec());
+    TRACE_EVENT_BEGIN("ServiceWorker",
+                      "WebServiceWorkerProviderImpl::GetRegistration",
+                      perfetto::Track::FromPointer(this), "Document URL",
+                      document_url.spec());
 
     container_host_->GetRegistration(document_url, std::move(callback));
   } else {
@@ -638,9 +649,9 @@ void ServiceWorkerProviderContext::GetRegistrations(
   }
 
   if (container_host_) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        "ServiceWorker", "WebServiceWorkerProviderImpl::GetRegistrations",
-        TRACE_ID_LOCAL(this));
+    TRACE_EVENT_BEGIN("ServiceWorker",
+                      "WebServiceWorkerProviderImpl::GetRegistrations",
+                      perfetto::Track::FromPointer(this));
 
     container_host_->GetRegistrations(std::move(callback));
   } else {
@@ -673,10 +684,9 @@ void ServiceWorkerProviderContext::GetRegistrationForReady(
   }
 
   if (container_host_) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        "ServiceWorker",
-        "WebServiceWorkerProviderImpl::GetRegistrationForReady",
-        TRACE_ID_LOCAL(this));
+    TRACE_EVENT_BEGIN("ServiceWorker",
+                      "WebServiceWorkerProviderImpl::GetRegistrationForReady",
+                      perfetto::Track::FromPointer(this));
 
     container_host_->GetRegistrationForReady(std::move(callback));
   }

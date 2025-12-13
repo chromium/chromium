@@ -64,9 +64,7 @@ wl::EventDispatchPolicy GetEventDispatchPolicy() {
 
 }  // namespace
 
-WaylandTabletTool::FrameData::FrameData() {
-  pointer_details.pointer_type = EventPointerType::kPen;
-}
+WaylandTabletTool::FrameData::FrameData() = default;
 
 WaylandTabletTool::FrameData::~FrameData() = default;
 
@@ -144,6 +142,7 @@ void WaylandTabletTool::DispatchBufferedEvents() {
 
 void WaylandTabletTool::ResetFrameData() {
   frame_data_ = FrameData();
+  frame_data_.pointer_details.pointer_type = pointer_type_;
 }
 
 // static
@@ -151,7 +150,8 @@ void WaylandTabletTool::Type(void* data,
                              zwp_tablet_tool_v2* tool,
                              uint32_t tool_type) {
   auto* self = static_cast<WaylandTabletTool*>(data);
-  self->frame_data_.pointer_details.pointer_type = ToolToPointerType(tool_type);
+  self->pointer_type_ = ToolToPointerType(tool_type);
+  self->frame_data_.pointer_details.pointer_type = self->pointer_type_;
 }
 
 // static
@@ -338,6 +338,7 @@ void WaylandTabletTool::Frame(void* data,
                               zwp_tablet_tool_v2* tool,
                               uint32_t time) {
   auto* self = static_cast<WaylandTabletTool*>(data);
+  self->frame_data_.pointer_details.pointer_type = self->pointer_type_;
   self->frame_data_.timestamp = wl::EventMillisecondsToTimeTicks(time);
   self->DispatchBufferedEvents();
   self->ResetFrameData();

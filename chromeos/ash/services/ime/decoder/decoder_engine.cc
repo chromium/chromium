@@ -2,15 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/services/ime/decoder/decoder_engine.h"
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
 #include "chromeos/ash/services/ime/constants.h"
@@ -39,7 +34,7 @@ class ClientDelegate : public ImeClientDelegate {
 
   void Process(const uint8_t* data, size_t size) override {
     if (client_remote_ && client_remote_.is_bound()) {
-      std::vector<uint8_t> msg(data, data + size);
+      std::vector<uint8_t> msg(data, UNSAFE_TODO(data + size));
       client_remote_->ProcessMessage(msg, base::DoNothing());
     }
   }

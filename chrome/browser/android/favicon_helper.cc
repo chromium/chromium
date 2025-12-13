@@ -42,7 +42,6 @@ using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -64,7 +63,7 @@ jboolean FaviconHelper::GetLocalFaviconImageForURL(
     Profile* profile,
     GURL& page_url,
     jint j_desired_size_in_pixel,
-    const JavaParamRef<jobject>& j_favicon_image_callback) {
+    const JavaRef<jobject>& j_favicon_image_callback) {
   DCHECK(profile);
   if (!profile) {
     return false;
@@ -122,7 +121,7 @@ jboolean FaviconHelper::GetForeignFaviconImageForURL(
     Profile* profile,
     GURL& page_url,
     jint j_desired_size_in_pixel,
-    const base::android::JavaParamRef<jobject>& j_favicon_image_callback) {
+    const base::android::JavaRef<jobject>& j_favicon_image_callback) {
   if (!profile) {
     return false;
   }
@@ -162,3 +161,5 @@ void FaviconHelper::OnFaviconBitmapResultAvailable(
   Java_FaviconImageCallback_onFaviconAvailable(
       env, j_favicon_image_callback, j_favicon_bitmap, result.icon_url);
 }
+
+DEFINE_JNI(FaviconHelper)

@@ -85,7 +85,7 @@ def _ProcessBuildConfigFile(output_dir, build_config_path, source_dirs, libs,
       libs.add(lib_path)
 
   input_srcjars = os.path.join(output_dir,
-    _WithoutSuffix(build_config_path, '.build_config.json'),
+    _WithoutSuffix(params_json, '.params.json'),
     'generated_java', 'input_srcjars')
   if os.path.exists(input_srcjars):
     source_dirs.add(input_srcjars)

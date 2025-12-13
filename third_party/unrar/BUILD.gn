@@ -107,6 +107,10 @@ static_library("unrar") {
     "UNRAR_NO_EXCEPTIONS",
   ]
 
+  if (use_fuzzing_engine) {
+    defines += [ "CHROMIUM_UNRAR_FUZZER" ]
+  }
+
   deps = [ "//base" ]
 }
 
@@ -117,4 +121,8 @@ fuzzer_test("unrar_fuzzer") {
     "//base",
   ]
   seed_corpus = "//chrome/test/data/safe_browsing/rar"
+
+  # Increase the memory limit because unpacking files can result in large
+  # allocations.
+  libfuzzer_options = [ "rss_limit_mb=4096" ]
 }

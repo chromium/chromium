@@ -11,30 +11,26 @@ import org.chromium.build.annotations.NullMarked;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * The type of item in a context menu. This is used for context menus for image/link/video etc and
- * empty space (see ContextMenuCoordinator.java and ChromeContextMenuPopulator.java), as well as
- * selected text (see SelectionDropdownMenuDelegate.java).
- */
+// LINT.IfChange
+
+/** The type of item in a list menu. */
 @NullMarked
 @Retention(RetentionPolicy.SOURCE)
 @IntDef({
     ListItemType.DIVIDER,
-    ListItemType.HEADER,
-    ListItemType.CONTEXT_MENU_ITEM,
-    ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
-    ListItemType.CONTEXT_MENU_ITEM_WITH_CHECKBOX,
-    ListItemType.CONTEXT_MENU_ITEM_WITH_RADIO_BUTTON,
-    ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU,
-    ListItemType.CONTEXT_MENU_SUBMENU_HEADER,
+    ListItemType.MENU_ITEM,
+    ListItemType.MENU_ITEM_WITH_CHECKBOX,
+    ListItemType.MENU_ITEM_WITH_RADIO_BUTTON,
+    ListItemType.MENU_ITEM_WITH_SUBMENU,
+    ListItemType.SUBMENU_HEADER,
 })
 public @interface ListItemType {
     int DIVIDER = 0;
-    int HEADER = 1;
-    int CONTEXT_MENU_ITEM = 2;
-    int CONTEXT_MENU_ITEM_WITH_ICON_BUTTON = 3;
-    int CONTEXT_MENU_ITEM_WITH_CHECKBOX = 4;
-    int CONTEXT_MENU_ITEM_WITH_RADIO_BUTTON = 5;
-    int CONTEXT_MENU_ITEM_WITH_SUBMENU = 6;
-    int CONTEXT_MENU_SUBMENU_HEADER = 7;
+    int MENU_ITEM = 1;
+    int MENU_ITEM_WITH_CHECKBOX = 2;
+    int MENU_ITEM_WITH_RADIO_BUTTON = 3;
+    int MENU_ITEM_WITH_SUBMENU = 4;
+    int SUBMENU_HEADER = 5;
 }
+
+// LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ContextMenuCoordinator.java)

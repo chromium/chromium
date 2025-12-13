@@ -617,8 +617,13 @@ exsltFuncResultComp (xsltStylesheetPtr style, xmlNodePtr inst,
      * instanciation of a func:result element.
      */
     for (test = inst->parent; test != NULL; test = test->parent) {
-	if (IS_XSLT_ELEM(test) &&
-	    IS_XSLT_NAME(test, "stylesheet")) {
+	if (/* Traversal has reached the top-level document without
+         * finding a func:function ancestor. */
+        (test != NULL && test->type == XML_DOCUMENT_NODE) ||
+        /* Traversal reached a stylesheet-namespace node,
+         * and has left the function namespace. */
+        (IS_XSLT_ELEM(test) &&
+         IS_XSLT_NAME(test, "stylesheet"))) {
 	    xsltGenericError(xsltGenericErrorContext,
 			     "func:result element not a descendant "
 			     "of a func:function\n");

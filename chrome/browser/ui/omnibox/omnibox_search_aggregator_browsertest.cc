@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -15,6 +16,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
@@ -24,9 +28,6 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/enterprise_search_aggregator_suggestions_service.h"
-#include "components/omnibox/browser/omnibox_controller.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -148,7 +149,7 @@ class OmniboxSearchAggregatorTest : public InProcessBrowserTest {
 
     // Prevent the stop timer from killing the hints fetch early, which might
     // cause test flakiness due to timeout.
-    controller()->SetStartStopTimerDurationForTesting(base::Seconds(30));
+    controller()->config_.stop_timer_duration = base::Seconds(30);
 
     // Setup an identity profile.
     identity_test_env_adaptor_ =
@@ -216,8 +217,7 @@ class OmniboxSearchAggregatorTest : public InProcessBrowserTest {
     return browser()
         ->window()
         ->GetLocationBar()
-        ->GetOmniboxView()
-        ->controller()
+        ->GetOmniboxController()
         ->autocomplete_controller();
   }
 

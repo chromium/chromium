@@ -44,7 +44,6 @@ DeleteEditShortcut::DeleteEditShortcut(DisplayOverlayController* controller,
                                        ActionViewListItem* anchor_view)
     : views::BubbleDialogDelegateView(anchor_view,
                                       views::BubbleBorder::LEFT_CENTER,
-                                      // TODO(b/329895423): Add shadow.
                                       views::BubbleBorder::NO_SHADOW),
       controller_(controller) {
   SetBackgroundColor(cros_tokens::kCrosSysSystemBaseElevatedOpaque);
@@ -141,8 +140,8 @@ void DeleteEditShortcut::OnDeleteButtonPressed() {
   }
 }
 
-std::unique_ptr<views::NonClientFrameView>
-DeleteEditShortcut::CreateNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> DeleteEditShortcut::CreateFrameView(
+    views::Widget* widget) {
   // Create the customized bubble border.
   auto bubble_border =
       std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
@@ -154,8 +153,7 @@ DeleteEditShortcut::CreateNonClientFrameView(views::Widget* widget) {
   bubble_border->set_insets(
       gfx::Insets::VH(0, kSpaceToEditingList + kEditingListInsideBorderInsets));
 
-  auto frame =
-      views::BubbleDialogDelegateView::CreateNonClientFrameView(widget);
+  auto frame = views::BubbleDialogDelegateView::CreateFrameView(widget);
   if (auto* frame_view =
           views::AsViewClass<views::BubbleFrameView>(frame.get())) {
     frame_view->SetBubbleBorder(std::move(bubble_border));

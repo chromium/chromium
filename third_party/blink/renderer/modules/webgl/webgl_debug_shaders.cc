@@ -32,7 +32,8 @@
 
 namespace blink {
 
-WebGLDebugShaders::WebGLDebugShaders(WebGLRenderingContextBase* context)
+WebGLDebugShaders::WebGLDebugShaders(WebGLRenderingContextBase* context,
+                                     ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_ANGLE_translated_shader_source");

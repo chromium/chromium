@@ -16,4 +16,6 @@ public interface WebViewStartUpResultBoundaryInterface {
     Long getMaxTimePerTaskInUiThreadMillis();
 
     List<Throwable> getBlockingStartUpLocations();
+
+    List<Throwable> getAsyncStartUpLocations();
 }

@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/location_report_body.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -23,8 +22,8 @@ class CORE_EXPORT PermissionsPolicyViolationReportBody
       const String& feature_id,
       const String& message,
       const String& disposition,
-      const String& allow_attribute = WTF::g_empty_string,
-      const String& src_attribute = WTF::g_empty_string)
+      const String& allow_attribute = g_empty_string,
+      const String& src_attribute = g_empty_string)
       : feature_id_(feature_id),
         message_(StrCat(
             {(allow_attribute.empty()

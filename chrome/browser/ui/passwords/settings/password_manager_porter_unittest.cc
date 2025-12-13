@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -14,22 +15,26 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
+#include "components/password_manager/core/browser/export/export_progress_status.h"
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_provider_interface.h"
-#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -44,7 +49,9 @@
 #include "url/gurl.h"
 
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::IsEmpty;
+using ::testing::Return;
 using ::testing::SizeIs;
 using ::testing::StrictMock;
 using ::testing::UnorderedPointwise;
@@ -175,15 +182,45 @@ class MockPasswordManagerExporter
   MOCK_METHOD(void, PreparePasswordsForExport, (), (override));
   MOCK_METHOD(void, Cancel, (), (override));
   MOCK_METHOD(void, SetDestination, (const base::FilePath&), (override));
+  MOCK_METHOD(password_manager::ExportProgressStatus,
+              GetProgressStatus,
+              (),
+              (override));
+};
+
+// A RAII helper that waits for the SavedPasswordsPresenter to notify that
+// passwords have changed.
+class SavedPasswordsChangedWaiter
+    : public password_manager::SavedPasswordsPresenter::Observer {
+ public:
+  explicit SavedPasswordsChangedWaiter(
+      password_manager::SavedPasswordsPresenter* presenter)
+      : presenter_(presenter) {
+    presenter_->AddObserver(this);
+  }
+  ~SavedPasswordsChangedWaiter() override { presenter_->RemoveObserver(this); }
+
+  // Blocks until OnSavedPasswordsChanged is called.
+  void Wait() { ASSERT_TRUE(future_.Wait()); }
+
+ private:
+  // SavedPasswordsPresenter::Observer:
+  void OnSavedPasswordsChanged(
+      const password_manager::PasswordStoreChangeList& changes) override {
+    future_.SetValue();
+  }
+
+  const raw_ptr<password_manager::SavedPasswordsPresenter> presenter_;
+  base::test::TestFuture<void> future_;
 };
 
 class FakePasswordParserService
     : public password_manager::mojom::CSVPasswordParser {
  public:
-  void ParseCSV(const std::string& raw_json,
+  void ParseCSV(const std::string& raw_csv,
                 ParseCSVCallback callback) override {
     password_manager::mojom::CSVPasswordSequencePtr result = nullptr;
-    password_manager::CSVPasswordSequence seq(raw_json);
+    password_manager::CSVPasswordSequence seq(raw_csv);
     if (seq.result() == password_manager::CSVPassword::Status::kOK) {
       result = password_manager::mojom::CSVPasswordSequence::New();
       for (const auto& pwd : seq) {
@@ -229,16 +266,17 @@ class PasswordManagerPorterTest : public ChromeRenderViewHostTestHarness {
     importer->SetDeleteFileForTesting(import_file_deletion_callback_.Get());
     porter_->SetImporterForTesting(std::move(importer));
 
-    store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
-    presenter_.Init();
-    task_environment()->RunUntilIdle();
+    store_->Init(/*affiliated_match_helper=*/nullptr);
+
+    base::test::TestFuture<void> init_future;
+    presenter_.Init(init_future.GetCallback());
+    ASSERT_TRUE(init_future.Wait());
   }
 
   void TearDown() override {
     porter_.reset();
     profile_.reset();
     store_->ShutdownOnUIThread();
-    task_environment()->RunUntilIdle();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -247,18 +285,40 @@ class PasswordManagerPorterTest : public ChromeRenderViewHostTestHarness {
   password_manager::SavedPasswordsPresenter& presenter() { return presenter_; }
   // The file that our fake file selector returns.
   const base::FilePath temp_file_path() {
-    return directory_.GetPath().Append(FILE_PATH_LITERAL("test"));
+    return directory_.GetPath().Append(FILE_PATH_LITERAL("test.csv"));
   }
+
   MockImportFileDeletion& import_file_deletion_callback() {
     return import_file_deletion_callback_;
   }
 
   bool AddPasswordForm(const password_manager::PasswordForm& form) {
+    SavedPasswordsChangedWaiter waiter(&presenter_);
     bool result =
         presenter_.AddCredential(password_manager::CredentialUIEntry(form));
-
-    task_environment()->RunUntilIdle();
+    waiter.Wait();
     return result;
+  }
+
+  password_manager::PasswordForm CreateTestPasswordForm(
+      GURL url,
+      std::u16string username,
+      std::u16string password) {
+    password_manager::PasswordForm form;
+    form.url = url;
+    form.signon_realm = url.spec();
+    form.username_value = username;
+    form.password_value = password;
+    form.in_store = password_manager::PasswordForm::Store::kProfileStore;
+    return form;
+  }
+
+  PasswordManagerPorterInterface::ImportResultsCallback ToImportCallback(
+      base::test::TestFuture<password_manager::ImportResults>* future) {
+    return base::BindLambdaForTesting(
+        [future](const password_manager::ImportResults& results) {
+          future->SetValue(results);
+        });
   }
 
  private:
@@ -284,12 +344,31 @@ TEST_F(PasswordManagerPorterTest, PasswordExport) {
   std::unique_ptr<MockPasswordManagerExporter> mock_password_manager_exporter_ =
       std::make_unique<StrictMock<MockPasswordManagerExporter>>();
 
+  EXPECT_CALL(*mock_password_manager_exporter_, GetProgressStatus())
+      .WillRepeatedly(
+          Return(password_manager::ExportProgressStatus::kNotStarted));
   EXPECT_CALL(*mock_password_manager_exporter_, PreparePasswordsForExport());
   EXPECT_CALL(*mock_password_manager_exporter_,
               SetDestination(temp_file_path()));
 
   porter().SetExporterForTesting(std::move(mock_password_manager_exporter_));
-  porter().Export(web_contents()->GetWeakPtr());
+  EXPECT_TRUE(porter().Export(web_contents()->GetWeakPtr()));
+}
+
+TEST_F(PasswordManagerPorterTest, ExportInProgressPreventsSubsequentExport) {
+  auto mock_exporter_ptr =
+      std::make_unique<StrictMock<MockPasswordManagerExporter>>();
+  auto* mock_exporter = mock_exporter_ptr.get();
+
+  // Set up the mock to claim it's already working.
+  EXPECT_CALL(*mock_exporter, GetProgressStatus())
+      .WillRepeatedly(
+          Return(password_manager::ExportProgressStatus::kInProgress));
+
+  porter().SetExporterForTesting(std::move(mock_exporter_ptr));
+
+  // Try to start another export. It should return false immediately.
+  EXPECT_FALSE(porter().Export(web_contents()->GetWeakPtr()));
 }
 
 TEST_F(PasswordManagerPorterTest, CancelExportFileSelection) {
@@ -299,6 +378,9 @@ TEST_F(PasswordManagerPorterTest, CancelExportFileSelection) {
   std::unique_ptr<MockPasswordManagerExporter> mock_password_manager_exporter_ =
       std::make_unique<StrictMock<MockPasswordManagerExporter>>();
 
+  EXPECT_CALL(*mock_password_manager_exporter_, GetProgressStatus())
+      .WillRepeatedly(
+          Return(password_manager::ExportProgressStatus::kNotStarted));
   EXPECT_CALL(*mock_password_manager_exporter_, PreparePasswordsForExport());
   EXPECT_CALL(*mock_password_manager_exporter_, Cancel());
 
@@ -310,6 +392,9 @@ TEST_F(PasswordManagerPorterTest, CancelExport) {
   std::unique_ptr<MockPasswordManagerExporter> mock_password_manager_exporter_ =
       std::make_unique<StrictMock<MockPasswordManagerExporter>>();
 
+  EXPECT_CALL(*mock_password_manager_exporter_, GetProgressStatus())
+      .WillRepeatedly(
+          Return(password_manager::ExportProgressStatus::kNotStarted));
   EXPECT_CALL(*mock_password_manager_exporter_, PreparePasswordsForExport());
   EXPECT_CALL(*mock_password_manager_exporter_, SetDestination(_));
   EXPECT_CALL(*mock_password_manager_exporter_, Cancel());
@@ -323,29 +408,30 @@ TEST_F(PasswordManagerPorterTest, ImportDismissedOnCanceledFileSelection) {
   ui::SelectFileDialog::SetFactory(
       std::make_unique<FakeCancellingSelectFileDialogFactory>());
 
-  base::MockCallback<PasswordManagerPorter::ImportResultsCallback> callback;
-  EXPECT_CALL(
-      callback,
-      Run(::testing::Field(&password_manager::ImportResults::status,
-                           password_manager::ImportResults::Status::DISMISSED)))
-      .Times(1);
+  base::test::TestFuture<password_manager::ImportResults> future;
   porter().Import(web_contents(),
                   password_manager::PasswordForm::Store::kProfileStore,
-                  callback.Get());
-  task_environment()->RunUntilIdle();
+                  ToImportCallback(&future));
 
+  EXPECT_EQ(future.Get().status,
+            password_manager::ImportResults::Status::DISMISSED);
   EXPECT_THAT(store().stored_passwords(), IsEmpty());
 }
 
-TEST_F(PasswordManagerPorterTest, ContinueImportWithConflicts) {
-  password_manager::PasswordForm test_form;
-  test_form.url = GURL("https://test.com");
-  test_form.signon_realm = test_form.url.spec();
-  test_form.username_value = u"username";
-  test_form.password_value = u"old_password";
-  test_form.in_store = password_manager::PasswordForm::Store::kProfileStore;
+TEST_F(PasswordManagerPorterTest, ContinueImportFailsWhenNoImportActive) {
+  // Ensure no importer is active.
+  porter().ResetImporter(/*delete_file=*/false);
 
-  AddPasswordForm(test_form);
+  base::test::TestFuture<password_manager::ImportResults> future;
+  porter().ContinueImport(/*selected_ids=*/{0}, ToImportCallback(&future));
+
+  EXPECT_EQ(future.Get().status,
+            password_manager::ImportResults::Status::UNKNOWN_ERROR);
+}
+
+TEST_F(PasswordManagerPorterTest, ContinueImportWithConflicts) {
+  AddPasswordForm(CreateTestPasswordForm(GURL("https://test.com"), u"username",
+                                         u"old_password"));
   ASSERT_EQ(1u, store().stored_passwords().size());
 
   ASSERT_TRUE(base::WriteFile(temp_file_path(),
@@ -353,28 +439,24 @@ TEST_F(PasswordManagerPorterTest, ContinueImportWithConflicts) {
                               "https://test.com,username,new_password\n"));
 
   const size_t expected_displayed_entires_size = 1;
-  base::MockCallback<PasswordManagerPorter::ImportResultsCallback> callback;
-  EXPECT_CALL(
-      callback,
-      Run(AllOf(
-          ::testing::Field(&password_manager::ImportResults::status,
-                           password_manager::ImportResults::Status::CONFLICTS),
-          ::testing::Field(&password_manager::ImportResults::displayed_entries,
-                           SizeIs(expected_displayed_entires_size)))))
-      .Times(1);
+  base::test::TestFuture<password_manager::ImportResults> import_future;
   porter().Import(web_contents(),
                   password_manager::PasswordForm::Store::kProfileStore,
-                  callback.Get());
-  task_environment()->RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(&callback);
+                  ToImportCallback(&import_future));
 
-  EXPECT_CALL(callback, Run(::testing::Field(
-                            &password_manager::ImportResults::status,
-                            password_manager::ImportResults::Status::SUCCESS)))
-      .Times(1);
+  const password_manager::ImportResults& import_results = import_future.Get();
+  EXPECT_EQ(import_results.status,
+            password_manager::ImportResults::Status::CONFLICTS);
+  EXPECT_THAT(import_results.displayed_entries,
+              SizeIs(expected_displayed_entires_size));
+
+  base::test::TestFuture<password_manager::ImportResults> continue_future;
   // Should overwrite conflicting passwords
-  porter().ContinueImport(/*selected_ids=*/{0}, callback.Get());
-  task_environment()->RunUntilIdle();
+  porter().ContinueImport(/*selected_ids=*/{0},
+                          ToImportCallback(&continue_future));
+
+  EXPECT_EQ(continue_future.Get().status,
+            password_manager::ImportResults::Status::SUCCESS);
 
   ASSERT_EQ(1u, store().stored_passwords().size());
   password_manager::PasswordForm stored_form =
@@ -383,46 +465,31 @@ TEST_F(PasswordManagerPorterTest, ContinueImportWithConflicts) {
 }
 
 TEST_F(PasswordManagerPorterTest, RejectNewImportsWhenConflictsNotResolved) {
-  password_manager::PasswordForm test_form;
-  test_form.url = GURL("https://test.com");
-  test_form.signon_realm = test_form.url.spec();
-  test_form.username_value = u"username";
-  test_form.password_value = u"old_password";
-  test_form.in_store = password_manager::PasswordForm::Store::kProfileStore;
-
-  AddPasswordForm(test_form);
+  AddPasswordForm(CreateTestPasswordForm(GURL("https://test.com"), u"username",
+                                         u"old_password"));
   ASSERT_EQ(1u, store().stored_passwords().size());
 
   ASSERT_TRUE(base::WriteFile(temp_file_path(),
                               "origin,username,password\n"
                               "https://test.com,username,new_password\n"));
 
-  const size_t expected_displayed_entires_size = 1;
-  base::MockCallback<PasswordManagerPorter::ImportResultsCallback> callback;
-  EXPECT_CALL(
-      callback,
-      Run(AllOf(
-          ::testing::Field(&password_manager::ImportResults::status,
-                           password_manager::ImportResults::Status::CONFLICTS),
-          ::testing::Field(&password_manager::ImportResults::displayed_entries,
-                           SizeIs(expected_displayed_entires_size)))))
-      .Times(1);
+  // 1. Start an import that results in conflicts.
+  base::test::TestFuture<password_manager::ImportResults> conflicts_future;
   porter().Import(web_contents(),
                   password_manager::PasswordForm::Store::kProfileStore,
-                  callback.Get());
-  task_environment()->RunUntilIdle();
-  testing::Mock::VerifyAndClearExpectations(&callback);
+                  ToImportCallback(&conflicts_future));
 
-  EXPECT_CALL(
-      callback,
-      Run(::testing::Field(
-          &password_manager::ImportResults::status,
-          password_manager::ImportResults::Status::IMPORT_ALREADY_ACTIVE)))
-      .Times(1);
+  EXPECT_EQ(conflicts_future.Get().status,
+            password_manager::ImportResults::Status::CONFLICTS);
+
+  // 2. Try to start a new import while the previous one is pending resolution.
+  base::test::TestFuture<password_manager::ImportResults> blocked_future;
   porter().Import(web_contents(),
                   password_manager::PasswordForm::Store::kProfileStore,
-                  callback.Get());
-  task_environment()->RunUntilIdle();
+                  ToImportCallback(&blocked_future));
+
+  EXPECT_EQ(blocked_future.Get().status,
+            password_manager::ImportResults::Status::IMPORT_ALREADY_ACTIVE);
 }
 
 TEST_F(PasswordManagerPorterTest, ResetImporterTriggersFileDeletion) {
@@ -430,21 +497,51 @@ TEST_F(PasswordManagerPorterTest, ResetImporterTriggersFileDeletion) {
                               "origin,username,password\n"
                               "https://test.com,username,secret\n"));
 
-  base::MockCallback<PasswordManagerPorter::ImportResultsCallback> callback;
-  EXPECT_CALL(callback, Run(::testing::Field(
-                            &password_manager::ImportResults::status,
-                            password_manager::ImportResults::Status::SUCCESS)))
-      .Times(1);
+  base::test::TestFuture<password_manager::ImportResults> import_future;
   porter().Import(web_contents(),
                   password_manager::PasswordForm::Store::kProfileStore,
-                  callback.Get());
-  task_environment()->RunUntilIdle();
-
-  EXPECT_CALL(import_file_deletion_callback(), Run(temp_file_path())).Times(1);
-  porter().ResetImporter(/*delete_file=*/true);
-  task_environment()->RunUntilIdle();
-
+                  ToImportCallback(&import_future));
+  EXPECT_EQ(import_future.Get().status,
+            password_manager::ImportResults::Status::SUCCESS);
   ASSERT_EQ(1u, store().stored_passwords().size());
+
+  base::test::TestFuture<void> deletion_future;
+  // The file deletion is performed on a background thread. The mock callback
+  // will therefore also be called on a background thread. TestFuture is not
+  // thread-safe, so we post a task back to the main thread to signal it.
+  auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
+  EXPECT_CALL(import_file_deletion_callback(), Run(temp_file_path()))
+      .WillOnce([&](const base::FilePath&) {
+        task_runner->PostTask(
+            FROM_HERE, base::BindOnce(&base::test::TestFuture<void>::SetValue,
+                                      base::Unretained(&deletion_future)));
+        return true;
+      });
+
+  porter().ResetImporter(/*delete_file=*/true);
+
+  ASSERT_TRUE(deletion_future.Wait());
+}
+
+TEST_F(PasswordManagerPorterTest,
+       ResetImporterWhileShowingConflictsDoesNotDeleteFile) {
+  AddPasswordForm(
+      CreateTestPasswordForm(GURL("https://test.com"), u"u", u"old"));
+  ASSERT_TRUE(base::WriteFile(temp_file_path(),
+                              "origin,username,password\n"
+                              "https://test.com,u,new\n"));
+
+  base::test::TestFuture<password_manager::ImportResults> import_future;
+  porter().Import(web_contents(),
+                  password_manager::PasswordForm::Store::kProfileStore,
+                  ToImportCallback(&import_future));
+
+  EXPECT_EQ(import_future.Get().status,
+            password_manager::ImportResults::Status::CONFLICTS);
+
+  EXPECT_CALL(import_file_deletion_callback(), Run).Times(0);
+
+  porter().ResetImporter(/*delete_file=*/true);
 }
 
 struct FormDescription {
@@ -475,12 +572,14 @@ TEST_P(PasswordManagerPorterImportTest, Import) {
 
   ASSERT_TRUE(base::WriteFile(temp_file_path(), tc.csv));
 
-  base::MockCallback<PasswordManagerPorter::ImportResultsCallback> callback;
-  EXPECT_CALL(callback, Run).Times(1);
+  base::test::TestFuture<password_manager::ImportResults> future;
   porter().Import(web_contents(),
                   password_manager::PasswordForm::Store::kProfileStore,
-                  callback.Get());
-  task_environment()->RunUntilIdle();
+                  ToImportCallback(&future));
+
+  // Wait for the import to complete.
+  std::ignore = future.Get();
+
   if (tc.descriptions.empty()) {
     EXPECT_THAT(store().stored_passwords(), IsEmpty());
     return;

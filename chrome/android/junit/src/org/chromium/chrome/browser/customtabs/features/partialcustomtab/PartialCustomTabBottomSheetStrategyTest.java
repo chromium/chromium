@@ -8,6 +8,8 @@ import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STA
 import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET_MAXIMIZED;
 import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -61,6 +63,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.ContentGestureListener.GestureState;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.HandleStrategy;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -71,9 +74,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link PartialCustomTabHandleStrategy}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {PartialCustomTabTestRule.ShadowSemanticColorUtils.class})
+@Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
 @LooperMode(Mode.PAUSED)
 public class PartialCustomTabBottomSheetStrategyTest {
@@ -111,16 +112,30 @@ public class PartialCustomTabBottomSheetStrategyTest {
         return pcct;
     }
 
+    private PartialCustomTabBottomSheetStrategy createEphemeralPcctAtHeight(int heightPx) {
+        return createPcct(heightPx, false, true);
+    }
+
     private PartialCustomTabBottomSheetStrategy createPcctAtHeight(int heightPx) {
-        return createPcctAtHeight(heightPx, false);
+        return createPcct(heightPx, false, false);
     }
 
     private PartialCustomTabBottomSheetStrategy createPcctAtHeight(
             int heightPx, boolean isFixedHeight) {
+        return createPcct(heightPx, isFixedHeight, false);
+    }
+
+    private PartialCustomTabBottomSheetStrategy createPcct(
+            int heightPx, boolean isFixedHeight, boolean isEphemeral) {
         BrowserServicesIntentDataProvider intentData = mPCCTTestRule.mIntentData;
         when(intentData.getInitialActivityHeight()).thenReturn(heightPx);
         when(intentData.isPartialCustomTabFixedHeight()).thenReturn(isFixedHeight);
         when(intentData.canInteractWithBackground()).thenReturn(true);
+
+        if (isEphemeral) {
+            when(intentData.getCustomTabMode()).thenReturn(CustomTabProfileType.EPHEMERAL);
+        }
+
         PartialCustomTabBottomSheetStrategy pcct =
                 new PartialCustomTabBottomSheetStrategy(
                         mPCCTTestRule.mActivity,
@@ -252,13 +267,14 @@ public class PartialCustomTabBottomSheetStrategyTest {
 
     /**
      * Simulate dragging the tab and lifting the finger at the end.
+     *
      * @param handleStrategy {@link PartialCustomTabHandleStrategy} object.
      * @param ypos Series of y positions simulating the events.
      * @return Window attributes after the dragging finishes.
      */
     private WindowManager.LayoutParams dragTab(HandleStrategy handleStrategy, int... ypos) {
         int npos = ypos.length;
-        assert npos >= 2;
+        assertThat(npos).isAtLeast(2);
         long timestamp = SystemClock.uptimeMillis();
 
         // ACTION_DOWN -> ACTION_MOVE * (npos-1) -> ACTION_UP
@@ -1160,5 +1176,95 @@ public class PartialCustomTabBottomSheetStrategyTest {
         verify(detector).onTouchEvent(e);
         verify(contentView).onTouchEvent(e);
         verify(listener).doNonFlingRelease();
+    }
+
+    @Test
+    @EnableFeatures("PCCTMinimumHeight:pcct_minimum_height_ratio/0.7")
+    public void create_heightIsClampedToMinimumRatioOfDeviceHeightFromFeature() {
+        // Scenario: Requested height is lower than the minimum defined by the feature's ratio.
+        // Expected: The height is clamped UP to the ratio-defined minimum.
+        final double minHeightRatio = 0.7;
+        final int requestedHeight = 100; // A value lower than any minimum.
+
+        final int ratioCalculatedHeightPx = (int) (DEVICE_HEIGHT * minHeightRatio);
+
+        final int expectedMinContentHeightPx = ratioCalculatedHeightPx;
+        final int expectedY = DEVICE_HEIGHT - expectedMinContentHeightPx;
+
+        createEphemeralPcctAtHeight(requestedHeight);
+        mPCCTTestRule.verifyWindowFlagsSet();
+
+        assertEquals(
+                "Window y-position should be clamped up by the minimum height ratio of the device"
+                        + " height.",
+                expectedY,
+                mPCCTTestRule.getWindowAttributes().y);
+    }
+
+    @Test
+    @EnableFeatures("PCCTMinimumHeight:pcct_minimum_height_ratio/0.05")
+    public void create_heightIsClampedToAbsoluteMinimumWhenRatioIsTooSmall() {
+        // Scenario: The feature's ratio calculates a height smaller than the hardcoded minimum.
+        // Expected: The height is clamped UP to the absolute minimum (220).
+        final int requestedHeight = 100; // A value lower than any minimum.
+        final int absoluteMinHeightDp = 220;
+
+        final int expectedMinContentHeightPx =
+                (int) (absoluteMinHeightDp * PartialCustomTabTestRule.DENSITY);
+        final int expectedY = DEVICE_HEIGHT - expectedMinContentHeightPx;
+
+        createEphemeralPcctAtHeight(requestedHeight);
+        mPCCTTestRule.verifyWindowFlagsSet();
+
+        assertEquals(
+                "Window y-position should be clamped up by the absolute minimum height.",
+                expectedY,
+                mPCCTTestRule.getWindowAttributes().y);
+    }
+
+    @Test
+    @EnableFeatures("PCCTMinimumHeight:pcct_minimum_height_ratio/0.6")
+    public void create_requestedHeightIsUsedWhenAboveFeatureMinimum() {
+        final double minHeightRatio = 0.6;
+        final int absoluteMinHeightDp = 220;
+
+        final int absoluteMinHeightPx =
+                (int) (absoluteMinHeightDp * PartialCustomTabTestRule.DENSITY);
+        final int ratioCalculatedHeightPx = (int) (DEVICE_HEIGHT * minHeightRatio);
+
+        final int featureMinContentHeightPx =
+                Math.max(absoluteMinHeightPx, ratioCalculatedHeightPx);
+
+        // Scenario: The requested height is valid and above the feature's minimum.
+        // Expected: The requested height should be used without modification.
+        final int requestedHeight = featureMinContentHeightPx + 200;
+        final int expectedY = DEVICE_HEIGHT - requestedHeight;
+
+        createEphemeralPcctAtHeight(requestedHeight);
+        mPCCTTestRule.verifyWindowFlagsSet();
+
+        assertEquals(
+                "Window y-position should correspond to the requested height when it's valid.",
+                expectedY,
+                mPCCTTestRule.getWindowAttributes().y);
+    }
+
+    @Test
+    public void create_heightIsClampedToDefaultMinimumWhenFeatureIsDisabled() {
+        // Scenario: The new feature is disabled.
+        // Expected: The logic falls back to the default minimum (50% of screen height).
+        final int requestedHeight = 100;
+
+        // The default minimum height is 50% of device height.
+        final int expectedDefaultMinHeight = (int) (DEVICE_HEIGHT * 0.5f);
+        final int expectedY = DEVICE_HEIGHT - expectedDefaultMinHeight;
+
+        createPcctAtHeight(requestedHeight);
+        mPCCTTestRule.verifyWindowFlagsSet();
+
+        assertEquals(
+                "Window y-position should be clamped by the default 50% minimum when feature is"
+                        + " disabled.",
+                expectedY, mPCCTTestRule.getWindowAttributes().y);
     }
 }

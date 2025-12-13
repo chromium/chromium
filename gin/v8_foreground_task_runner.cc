@@ -57,7 +57,7 @@ void V8ForegroundTaskRunner::PostIdleTaskImpl(
     std::unique_ptr<v8::IdleTask> task,
     const v8::SourceLocation& location) {
   DCHECK(IdleTasksEnabled());
-  idle_task_runner()->PostIdleTask(std::move(task));
+  idle_task_runner()->PostIdleTask(V8ToBaseLocation(location), std::move(task));
 }
 
 bool V8ForegroundTaskRunner::NonNestableTasksEnabled() const {

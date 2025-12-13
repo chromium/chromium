@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
+#include "base/process/process.h"
 #include "base/win/windows_types.h"
 #include "chrome/windows_services/service_program/test_support/scoped_install_service.h"
 #include "chrome/windows_services/service_program/test_support/scoped_log_grabber.h"
@@ -32,6 +33,10 @@ class ServiceEnvironment {
   ~ServiceEnvironment();
 
   bool is_valid() const { return service_.has_value(); }
+
+  // Returns a handle to the service process if it is running, or an invalid
+  // process otherwise.
+  base::Process GetRunningService();
 
   // Sets a callback to be run for each message received from a service process.
   // The callback is run with the process ID of the service and the log message.

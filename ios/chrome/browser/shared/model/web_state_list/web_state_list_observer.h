@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_OBSERVER_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_OBSERVER_H_
 
+#import "base/check.h"
 #import "base/observer_list_types.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
@@ -78,21 +79,18 @@ class WebStateListChangeStatusOnly final : public WebStateListChange {
  public:
   static constexpr Type kType = Type::kStatusOnly;
 
-  explicit WebStateListChangeStatusOnly(raw_ptr<web::WebState> web_state,
+  explicit WebStateListChangeStatusOnly(web::WebState* web_state,
                                         int index,
                                         bool pinned_state_changed,
-                                        raw_ptr<const TabGroup> old_group,
-                                        raw_ptr<const TabGroup> new_group);
+                                        const TabGroup* old_group,
+                                        const TabGroup* new_group);
   ~WebStateListChangeStatusOnly() final = default;
 
   Type type() const final;
 
   // The WebState that is updated. Its active state, pinned state, or group
   // state could have been updated, but not its position in WebStateList.
-  raw_ptr<web::WebState> web_state() const {
-    CHECK(web_state_);
-    return web_state_;
-  }
+  web::WebState* web_state() const { return web_state_; }
 
   // Returns the current index of the WebState.
   int index() const { return index_; }
@@ -101,17 +99,17 @@ class WebStateListChangeStatusOnly final : public WebStateListChange {
   bool pinned_state_changed() const { return pinned_state_changed_; }
 
   // The group the WebState was in prior to the change.
-  raw_ptr<const TabGroup> old_group() const { return old_group_; }
+  const TabGroup* old_group() const { return old_group_; }
 
   // The group the WebState is now in.
-  raw_ptr<const TabGroup> new_group() const { return new_group_; }
+  const TabGroup* new_group() const { return new_group_; }
 
  private:
   raw_ptr<web::WebState> web_state_;
-  const int index_;
-  const bool pinned_state_changed_;
   raw_ptr<const TabGroup> old_group_;
   raw_ptr<const TabGroup> new_group_;
+  const int index_;
+  const bool pinned_state_changed_;
 };
 
 // Represents a change that corresponds to detaching one WebState from
@@ -128,10 +126,10 @@ class WebStateListChangeDetach final : public WebStateListChange {
     kClosedByTabsCleanup,
   };
 
-  WebStateListChangeDetach(raw_ptr<web::WebState> detached_web_state,
+  WebStateListChangeDetach(web::WebState* detached_web_state,
                            int detached_from_index,
                            DetachReason detach_reason,
-                           raw_ptr<const TabGroup> group);
+                           const TabGroup* group);
   ~WebStateListChangeDetach() final = default;
 
   Type type() const final;
@@ -139,10 +137,7 @@ class WebStateListChangeDetach final : public WebStateListChange {
   // The WebState that is detached from WebStateList. The detached WebState is
   // still valid when observer is called but it is no longer in WebStateList at
   // the index position.
-  raw_ptr<web::WebState> detached_web_state() const {
-    CHECK(detached_web_state_);
-    return detached_web_state_;
-  }
+  web::WebState* detached_web_state() const { return detached_web_state_; }
 
   // Returns the index of the WebState was in before being detached.
   int detached_from_index() const { return detached_from_index_; }
@@ -187,13 +182,13 @@ class WebStateListChangeDetach final : public WebStateListChange {
   }
 
   // The group the WebState was in prior to the change.
-  raw_ptr<const TabGroup> group() const { return group_; }
+  const TabGroup* group() const { return group_; }
 
  private:
   raw_ptr<web::WebState> detached_web_state_;
+  raw_ptr<const TabGroup> group_;
   const int detached_from_index_;
   const DetachReason detach_reason_;
-  raw_ptr<const TabGroup> group_;
 };
 
 // Represents a change that corresponds to moving one WebState to a new index in
@@ -202,21 +197,18 @@ class WebStateListChangeMove final : public WebStateListChange {
  public:
   static constexpr Type kType = Type::kMove;
 
-  WebStateListChangeMove(raw_ptr<web::WebState> moved_web_state,
+  WebStateListChangeMove(web::WebState* moved_web_state,
                          int moved_from_index,
                          int moved_to_index,
                          bool pinned_state_changed,
-                         raw_ptr<const TabGroup> old_group,
-                         raw_ptr<const TabGroup> new_group);
+                         const TabGroup* old_group,
+                         const TabGroup* new_group);
   ~WebStateListChangeMove() final = default;
 
   Type type() const final;
 
   // The WebState that is moved from `moved_from_index` to `moved_to_index`.
-  raw_ptr<web::WebState> moved_web_state() const {
-    CHECK(moved_web_state_);
-    return moved_web_state_;
-  }
+  web::WebState* moved_web_state() const { return moved_web_state_; }
 
   // The index of the previous position of the WebState.
   int moved_from_index() const { return moved_from_index_; }
@@ -228,18 +220,18 @@ class WebStateListChangeMove final : public WebStateListChange {
   bool pinned_state_changed() const { return pinned_state_changed_; }
 
   // The group the WebState was in prior to the change.
-  raw_ptr<const TabGroup> old_group() const { return old_group_; }
+  const TabGroup* old_group() const { return old_group_; }
 
   // The group the WebState is now in.
-  raw_ptr<const TabGroup> new_group() const { return new_group_; }
+  const TabGroup* new_group() const { return new_group_; }
 
  private:
   raw_ptr<web::WebState> moved_web_state_;
+  raw_ptr<const TabGroup> old_group_;
+  raw_ptr<const TabGroup> new_group_;
   const int moved_from_index_;
   const int moved_to_index_;
   const bool pinned_state_changed_;
-  raw_ptr<const TabGroup> old_group_;
-  raw_ptr<const TabGroup> new_group_;
 };
 
 // Represents a change that corresponds to replacing one WebState by another
@@ -248,8 +240,8 @@ class WebStateListChangeReplace final : public WebStateListChange {
  public:
   static constexpr Type kType = Type::kReplace;
 
-  WebStateListChangeReplace(raw_ptr<web::WebState> replaced_web_state,
-                            raw_ptr<web::WebState> inserted_web_state,
+  WebStateListChangeReplace(web::WebState* replaced_web_state,
+                            web::WebState* inserted_web_state,
                             int index);
   ~WebStateListChangeReplace() final = default;
 
@@ -257,17 +249,11 @@ class WebStateListChangeReplace final : public WebStateListChange {
 
   // The WebState that is removed from the WebStateList. It
   // is replaced in-place by `inserted_web_state_`.
-  raw_ptr<web::WebState> replaced_web_state() const {
-    CHECK(replaced_web_state_);
-    return replaced_web_state_;
-  }
+  web::WebState* replaced_web_state() const { return replaced_web_state_; }
 
   // The WebState that is inserted into the WebStateList. It
   // takes the position of `replaced_web_state_`.
-  raw_ptr<web::WebState> inserted_web_state() const {
-    CHECK(inserted_web_state_);
-    return inserted_web_state_;
-  }
+  web::WebState* inserted_web_state() const { return inserted_web_state_; }
 
   // Returns the current index of the WebState.
   int index() const { return index_; }
@@ -284,30 +270,27 @@ class WebStateListChangeInsert final : public WebStateListChange {
  public:
   static constexpr Type kType = Type::kInsert;
 
-  explicit WebStateListChangeInsert(raw_ptr<web::WebState> inserted_web_state,
+  explicit WebStateListChangeInsert(web::WebState* inserted_web_state,
                                     int index,
-                                    raw_ptr<const TabGroup> group);
+                                    const TabGroup* group);
   ~WebStateListChangeInsert() final = default;
 
   Type type() const final;
 
   // The WebState that is inserted into the WebStateList. It is inserted to the
   // position of `index` in WebStateListStatus.
-  raw_ptr<web::WebState> inserted_web_state() const {
-    CHECK(inserted_web_state_);
-    return inserted_web_state_;
-  }
+  web::WebState* inserted_web_state() const { return inserted_web_state_; }
 
   // Returns the current index of the WebState.
   int index() const { return index_; }
 
   // The group the WebState is now in.
-  raw_ptr<const TabGroup> group() const { return group_; }
+  const TabGroup* group() const { return group_; }
 
  private:
   raw_ptr<web::WebState> inserted_web_state_;
-  const int index_;
   raw_ptr<const TabGroup> group_;
+  const int index_;
 };
 
 // Represents a change that corresponds to the creation of a tab group. The
@@ -317,16 +300,13 @@ class WebStateListChangeGroupCreate final : public WebStateListChange {
  public:
   static constexpr Type kType = Type::kGroupCreate;
 
-  WebStateListChangeGroupCreate(raw_ptr<const TabGroup> created_group);
+  WebStateListChangeGroupCreate(const TabGroup* created_group);
   ~WebStateListChangeGroupCreate() final = default;
 
   Type type() const final;
 
   // The group that was created.
-  raw_ptr<const TabGroup> created_group() const {
-    CHECK(created_group_);
-    return created_group_;
-  }
+  const TabGroup* created_group() const { return created_group_; }
 
  private:
   raw_ptr<const TabGroup> created_group_;
@@ -339,14 +319,14 @@ class WebStateListChangeGroupVisualDataUpdate final
   static constexpr Type kType = Type::kGroupVisualDataUpdate;
 
   explicit WebStateListChangeGroupVisualDataUpdate(
-      raw_ptr<const TabGroup> updated_group,
+      const TabGroup* updated_group,
       const tab_groups::TabGroupVisualData& old_visual_data);
   ~WebStateListChangeGroupVisualDataUpdate() final = default;
 
   Type type() const final;
 
   // The group whose visual data got update.
-  raw_ptr<const TabGroup> updated_group() const { return updated_group_; }
+  const TabGroup* updated_group() const { return updated_group_; }
 
   // Returns the previous visual data.
   const tab_groups::TabGroupVisualData old_visual_data() const {
@@ -365,7 +345,7 @@ class WebStateListChangeGroupMove final : public WebStateListChange {
  public:
   static constexpr Type kType = Type::kGroupMove;
 
-  WebStateListChangeGroupMove(raw_ptr<const TabGroup> moved_group,
+  WebStateListChangeGroupMove(const TabGroup* moved_group,
                               TabGroupRange moved_from_range,
                               TabGroupRange moved_to_range);
   ~WebStateListChangeGroupMove() final = default;
@@ -373,10 +353,7 @@ class WebStateListChangeGroupMove final : public WebStateListChange {
   Type type() const final;
 
   // The group that is moved from `moved_from_index` to `moved_to_index`.
-  raw_ptr<const TabGroup> moved_group() const {
-    CHECK(moved_group_);
-    return moved_group_;
-  }
+  const TabGroup* moved_group() const { return moved_group_; }
 
   // The previous range of the group.
   TabGroupRange moved_from_range() const { return moved_from_range_; }
@@ -398,16 +375,13 @@ class WebStateListChangeGroupDelete final : public WebStateListChange {
  public:
   static constexpr Type kType = Type::kGroupDelete;
 
-  WebStateListChangeGroupDelete(raw_ptr<const TabGroup> deleted_group);
+  WebStateListChangeGroupDelete(const TabGroup* deleted_group);
   ~WebStateListChangeGroupDelete() final = default;
 
   Type type() const final;
 
   // The group that was deleted.
-  raw_ptr<const TabGroup> deleted_group() const {
-    CHECK(deleted_group_);
-    return deleted_group_;
-  }
+  const TabGroup* deleted_group() const { return deleted_group_; }
 
  private:
   raw_ptr<const TabGroup> deleted_group_;

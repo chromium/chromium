@@ -7,7 +7,7 @@ import type {SeaPenActions} from 'chrome://resources/ash/common/sea_pen/sea_pen_
 import {SeaPenActionName} from 'chrome://resources/ash/common/sea_pen/sea_pen_actions.js';
 import {seaPenReducer} from 'chrome://resources/ash/common/sea_pen/sea_pen_reducer.js';
 import type {SeaPenState} from 'chrome://resources/ash/common/sea_pen/sea_pen_state.js';
-import {isImageDataUrl, isNonEmptyArray, isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
+import {isImageDataUrl, isNonEmptyArray, isNonEmptyFilePath, isUrl} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
@@ -278,7 +278,7 @@ function localReducer(
     _: PersonalizationState): WallpaperState['local'] {
   switch (action.name) {
     case WallpaperActionName.SET_DEFAULT_IMAGE_THUMBNAIL:
-      if (isImageDataUrl(action.thumbnail)) {
+      if (isUrl(action.thumbnail) && isImageDataUrl(action.thumbnail)) {
         return {
           images: [
             kDefaultImageSymbol,

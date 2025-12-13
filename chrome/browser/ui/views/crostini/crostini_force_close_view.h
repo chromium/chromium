@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {

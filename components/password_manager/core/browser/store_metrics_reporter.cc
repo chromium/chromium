@@ -26,6 +26,7 @@
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -753,7 +754,7 @@ StoreMetricsReporter::StoreMetricsReporter(
       password_manager::sync_util::GetPasswordSyncState(sync_service));
 
   is_account_storage_enabled_ =
-      features_util::IsAccountStorageEnabled(prefs_, sync_service);
+      features_util::IsAccountStorageEnabled(sync_service);
 
   is_safe_browsing_enabled_ = safe_browsing::IsSafeBrowsingEnabled(*prefs_);
 

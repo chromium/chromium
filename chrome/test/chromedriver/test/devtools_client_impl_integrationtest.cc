@@ -22,9 +22,7 @@
 namespace {
 
 std::string ToString(const base::Value::Dict& node) {
-  std::string json;
-  base::JSONWriter::Write(node, &json);
-  return json;
+  return base::WriteJson(node).value_or("");
 }
 
 class DevToolsClientImplTest : public IntegrationTest {

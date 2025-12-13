@@ -107,6 +107,11 @@ class PasswordSuggestionGenerator {
       base::span<const CredentialUIEntry> all_credentials,
       IsTriggeredOnPasswordForm on_password_form) const;
 
+  // Returns a `kWebauthnSignInWithAnotherDevice` suggestion if it should be
+  // shown for the current context.
+  std::optional<autofill::Suggestion>
+  GetWebauthnSignInWithAnotherDeviceSuggestion() const;
+
  private:
   const raw_ptr<PasswordManagerDriver> password_manager_driver_;
   const raw_ptr<PasswordManagerClient> password_client_;

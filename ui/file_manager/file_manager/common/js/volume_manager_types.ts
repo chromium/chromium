@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 
 import {VolumeType} from './shared_types.js';
 
@@ -179,6 +179,7 @@ export enum VolumeError {
   NEED_PASSWORD = 'need_password',
   CANCELLED = 'cancelled',
   BUSY = 'busy',
+  CORRUPTED = 'corrupted',
 }
 
 /** Source of each volume's data. */
@@ -240,9 +241,12 @@ export function getVolumeTypeFromRootType(rootType: RootType): VolumeType {
       return VolumeType.SMB;
     case RootType.TRASH:
       return VolumeType.TRASH;
+    case RootType.RECENT:
+      assertNotReached('Unexpected root type: ' + rootType);
+    default:
+      assertNotReachedCase(rootType, 'Unknown root type: ' + rootType);
   }
 
-  assertNotReached('Unknown root type: ' + rootType);
 }
 
 /** Gets root type from volume type. */
@@ -267,6 +271,8 @@ export function getRootTypeFromVolumeType(volumeType: VolumeType): RootType {
     case VolumeType.MTP:
       return RootType.MTP;
     case VolumeType.MY_FILES:
+    case VolumeType.SYSTEM_INTERNAL:
+    case VolumeType.TESTING:
       return RootType.MY_FILES;
     case VolumeType.PROVIDED:
       return RootType.PROVIDED;
@@ -276,9 +282,9 @@ export function getRootTypeFromVolumeType(volumeType: VolumeType): RootType {
       return RootType.SMB;
     case VolumeType.TRASH:
       return RootType.TRASH;
+    default:
+      assertNotReachedCase(volumeType, 'Unknown volume type: ' + volumeType);
   }
-
-  assertNotReached('Unknown volume type: ' + volumeType);
 }
 
 /**
@@ -291,9 +297,9 @@ export function shouldProvideIcons(volumeType: VolumeType): boolean {
     case VolumeType.DOCUMENTS_PROVIDER:
     case VolumeType.PROVIDED:
       return true;
+    default:
+      return false;
   }
-
-  return false;
 }
 
 /**

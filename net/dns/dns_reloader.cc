@@ -40,7 +40,7 @@
 
 #if defined(USE_RES_NINIT)
 
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
@@ -114,25 +114,26 @@ class DnsReloader : public NetworkChangeNotifier::DNSObserver {
 
   base::Lock lock_;  // Protects resolver_generation_.
   int resolver_generation_ = 0;
-  friend struct base::LazyInstanceTraitsBase<DnsReloader>;
+  friend class base::NoDestructor<DnsReloader>;
 
   // We use thread local storage to identify which ReloadState to interact with.
   base::ThreadLocalOwnedPointer<ReloadState> tls_reload_state_;
 };
 
-base::LazyInstance<DnsReloader>::Leaky
-    g_dns_reloader = LAZY_INSTANCE_INITIALIZER;
+DnsReloader* GetDnsReloader() {
+  static base::NoDestructor<DnsReloader> dns_reloader;
+  return dns_reloader.get();
+}
 
 }  // namespace
 
 void EnsureDnsReloaderInit() {
-  g_dns_reloader.Pointer();
+  GetDnsReloader();
 }
 
 void DnsReloaderMaybeReload() {
   // This routine can be called by any of the DNS worker threads.
-  DnsReloader* dns_reloader = g_dns_reloader.Pointer();
-  dns_reloader->MaybeReload();
+  GetDnsReloader()->MaybeReload();
 }
 
 }  // namespace net

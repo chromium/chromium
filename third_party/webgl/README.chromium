@@ -1,10 +1,10 @@
 Name: Public Khronos WebGL Conformance Tests repository
 Short Name: webgl
 Version: 1.0
-URL: http://www.khronos.org/registry/webgl/sdk
-SOURCE CODE: git clone https://github.com/KhronosGroup/WebGL.git
+URL: https://github.com/KhronosGroup/WebGL.git
 Date: 2013-12-03
 Revision: 159f31dd34842c871032d97d360a9dce5153f585
+Update Mechanism: Manual
 Security Critical: no
 Shipped: no
 License: MIT

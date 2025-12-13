@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -50,15 +51,17 @@ enum TrustedTypeViolationKind {
   kTrustedScriptURLAssignmentAndNoDefaultPolicyExisted,
   kNavigateToJavascriptURL,
   kNavigateToJavascriptURLAndDefaultPolicyFailed,
+  kNavigateToJavascriptURLAndDefaultPolicyCreatedInvalidURL,
   kScriptExecution,
   kScriptExecutionAndDefaultPolicyFailed,
 };
 
-// String to determine whether an incoming eval-ish call is comig from
-// an actual eval or a Function constructor. The value is derived from
-// from how JS builds up a string in the Function constructor, which in
-// turn is defined in the TC39 spec.
-const char* kAnonymousPrefix = "(function anonymous";
+// Strings to support building a sample, used in:
+// https://www.w3.org/TR/trusted-types/#should-block-sink-type-mismatch
+const char* kFunctionAnonymousPrefix = "(function anonymous";
+const char* kAsyncFunctionAnonymousPrefix = "(async function anonymous";
+const char* kGeneratorAnonymousPrefix = "(function* anonymous";
+const char* kAsyncGeneratorAnonymousPrefix = "(async function* anonymous";
 
 const char kFunctionConstructorFailureConsoleMessage[] =
     "The JavaScript Function constructor does not accept TrustedString "
@@ -104,6 +107,11 @@ const char* GetMessage(TrustedTypeViolationKind kind) {
              "Navigating to a javascript:-URL is equivalent to a "
              "'TrustedScript' assignment and the 'default' policy failed to"
              "execute.";
+    case kNavigateToJavascriptURLAndDefaultPolicyCreatedInvalidURL:
+      return "This document requires 'TrustedScript' assignment. "
+             "Navigating to a javascript:-URL is equivalent to a "
+             "'TrustedScript' assignment and the 'default' policy created an "
+             "invalid URL.";
     case kScriptExecution:
       return "This document requires 'TrustedScript' assignment. "
              "This script element was modified without use of TrustedScript "
@@ -116,26 +124,31 @@ const char* GetMessage(TrustedTypeViolationKind kind) {
   NOTREACHED();
 }
 
-String GetSamplePrefix(const char* interface_name,
-                       const char* property_name,
+String GetSamplePrefix(const AtomicString& interface_name,
+                       const AtomicString& property_name,
                        const String& value) {
   // We have two sample formats, one for eval and one for assignment.
   // If we don't have the required values being passed in, just leave the
   // sample empty.
   StringBuilder sample_prefix;
-  if (!interface_name) {
+  if (interface_name.empty()) {
     // No interface name? Then we have no prefix to use.
-  } else if (UNSAFE_TODO(strcmp("eval", interface_name)) == 0) {
-    // eval? Try to distinguish between eval and Function constructor.
-    sample_prefix.Append(value.StartsWith(kAnonymousPrefix) ? "Function"
-                                                            : "eval");
-  } else if ((UNSAFE_TODO(strcmp("Worker", interface_name)) == 0 ||
-              UNSAFE_TODO(strcmp("SharedWorker", interface_name)) == 0) &&
-             property_name) {
+  } else if (interface_name == trusted_types_names::kEval) {
+    bool is_function = RuntimeEnabledFeatures::TrustedTypesHTMLEnabled()
+                           ? (value.StartsWith(kFunctionAnonymousPrefix) ||
+                              value.StartsWith(kAsyncFunctionAnonymousPrefix) ||
+                              value.StartsWith(kGeneratorAnonymousPrefix) ||
+                              value.StartsWith(kAsyncGeneratorAnonymousPrefix))
+                           : value.StartsWith(kFunctionAnonymousPrefix);
+    sample_prefix.Append(is_function ? trusted_types_names::kFunction
+                                     : trusted_types_names::kEval);
+  } else if ((interface_name == trusted_types_names::kWorker ||
+              interface_name == trusted_types_names::kSharedWorker) &&
+             !property_name.empty()) {
     // Worker/SharedWorker constructor has nullptr as property_name.
     sample_prefix.Append(interface_name);
     sample_prefix.Append(" constructor");
-  } else if (interface_name && property_name) {
+  } else if (!interface_name.empty() && !property_name.empty()) {
     sample_prefix.Append(interface_name);
     sample_prefix.Append(" ");
     sample_prefix.Append(property_name);
@@ -156,8 +169,8 @@ const char* GetElementName(const ScriptElementBase::Type type) {
 HeapVector<ScriptValue> GetDefaultCallbackArgs(
     v8::Isolate* isolate,
     const char* type,
-    const char* interface_name,
-    const char* property_name,
+    const AtomicString& interface_name,
+    const AtomicString& property_name,
     const String& value = g_empty_string) {
   HeapVector<ScriptValue> args;
   args.push_back(ScriptValue(isolate, V8String(isolate, type)));
@@ -177,8 +190,8 @@ HeapVector<ScriptValue> GetDefaultCallbackArgs(
 // Returns whether the failure should be enforced.
 bool TrustedTypeFail(TrustedTypeViolationKind kind,
                      const ExecutionContext* execution_context,
-                     const char* interface_name,
-                     const char* property_name,
+                     const AtomicString& interface_name,
+                     const AtomicString& property_name,
                      ExceptionState& exception_state,
                      const String& value) {
   if (!execution_context)
@@ -190,19 +203,30 @@ bool TrustedTypeFail(TrustedTypeViolationKind kind,
     execution_context->GetTrustedTypes()->CountTrustedTypeAssignmentError();
 
   String prefix = GetSamplePrefix(interface_name, property_name, value);
+
+  // https://www.w3.org/TR/trusted-types/#should-block-sink-type-mismatch step 3
+  size_t strip = 0;
+  if (prefix == "Function") {
+    if (value.StartsWith(kFunctionAnonymousPrefix)) {
+      strip = strlen(kFunctionAnonymousPrefix);
+    } else if (value.StartsWith(kAsyncFunctionAnonymousPrefix)) {
+      strip = strlen(kAsyncFunctionAnonymousPrefix);
+    } else if (value.StartsWith(kGeneratorAnonymousPrefix)) {
+      strip = strlen(kGeneratorAnonymousPrefix);
+    } else if (value.StartsWith(kAsyncGeneratorAnonymousPrefix)) {
+      strip = strlen(kAsyncGeneratorAnonymousPrefix);
+    };
+  }
+
   // This issue_id is used to generate a link in the DevTools front-end from
   // the JavaScript TypeError to the inspector issue which is reported by
   // ContentSecurityPolicy::ReportViolation via the call to
   // AllowTrustedTypeAssignmentFailure below.
   base::UnguessableToken issue_id = base::UnguessableToken::Create();
-  bool allow =
-      execution_context->GetContentSecurityPolicy()
-          ->AllowTrustedTypeAssignmentFailure(
-              GetMessage(kind),
-              prefix == "Function" ? value.Substring(static_cast<wtf_size_t>(
-                                         strlen(kAnonymousPrefix)))
-                                   : value,
-              prefix, issue_id);
+  bool allow = execution_context->GetContentSecurityPolicy()
+                   ->AllowTrustedTypeAssignmentFailure(
+                       GetMessage(kind), strip ? value.Substring(strip) : value,
+                       prefix, issue_id);
 
   // TODO(1087743): Add a console message for Trusted Type-related Function
   // constructor failures, to warn the developer of the outstanding issues
@@ -251,10 +275,11 @@ String GetStringFromScriptHelper(
     const String& script,
     ExecutionContext* context,
     // Parameters to customize error messages:
-    const char* interface_name,
-    const char* property_name,
+    const AtomicString& interface_name,
+    const AtomicString& property_name,
     TrustedTypeViolationKind violation_kind,
-    TrustedTypeViolationKind violation_kind_when_default_policy_failed) {
+    TrustedTypeViolationKind violation_kind_when_default_policy_failed,
+    bool do_javascript_url_check) {
   if (!context)
     return script;
   if (!RequireTrustedTypesCheck(context))
@@ -304,6 +329,25 @@ String GetStringFromScriptHelper(
     }
     return script;
   }
+
+  if (RuntimeEnabledFeatures::TrustedTypesHTMLEnabled()) {
+    // https://w3c.github.io/trusted-types/dist/spec/#require-trusted-types-for-pre-navigation-check
+    // steps 5 + 6. The spec assumes that the return value will include the
+    // "javascript:" URL designator, but our implementation assumes it's
+    // stripped. Thus we'll add the prefix here, but will return the string
+    // without.
+    if (do_javascript_url_check &&
+        !KURL(StrCat({"javascript:", result->toString()})).IsValid()) {
+      if (TrustedTypeFail(
+              kNavigateToJavascriptURLAndDefaultPolicyCreatedInvalidURL,
+              context, interface_name, property_name, exception_state,
+              script)) {
+        return String();
+      }
+      return script;
+    }
+  }
+
   return result->toString();
 }
 
@@ -317,8 +361,8 @@ bool RequireTrustedTypesCheck(const ExecutionContext* execution_context) {
 
 String TrustedTypesCheckForHTML(const String& html,
                                 const ExecutionContext* execution_context,
-                                const char* interface_name,
-                                const char* property_name,
+                                const AtomicString& interface_name,
+                                const AtomicString& property_name,
                                 ExceptionState& exception_state) {
   // https://w3c.github.io/trusted-types/dist/spec/#abstract-opdef-process-value-with-a-default-policy
   bool require_trusted_type = RequireTrustedTypesCheck(execution_context);
@@ -372,8 +416,8 @@ String TrustedTypesCheckForHTML(const String& html,
 
 String TrustedTypesCheckForScript(const String& script,
                                   const ExecutionContext* execution_context,
-                                  const char* interface_name,
-                                  const char* property_name,
+                                  const AtomicString& interface_name,
+                                  const AtomicString& property_name,
                                   ExceptionState& exception_state) {
   // https://w3c.github.io/trusted-types/dist/spec/#abstract-opdef-process-value-with-a-default-policy
   bool require_trusted_type = RequireTrustedTypesCheck(execution_context);
@@ -429,8 +473,8 @@ String TrustedTypesCheckForScript(const String& script,
 
 String TrustedTypesCheckForScriptURL(const String& script_url,
                                      const ExecutionContext* execution_context,
-                                     const char* interface_name,
-                                     const char* property_name,
+                                     const AtomicString& interface_name,
+                                     const AtomicString& property_name,
                                      ExceptionState& exception_state) {
   // https://w3c.github.io/trusted-types/dist/spec/#abstract-opdef-process-value-with-a-default-policy
   bool require_trusted_type = RequireTrustedTypesCheck(execution_context);
@@ -487,8 +531,8 @@ String TrustedTypesCheckForScriptURL(const String& script_url,
 String TrustedTypesCheckFor(SpecificTrustedType type,
                             const V8TrustedType* trusted,
                             const ExecutionContext* execution_context,
-                            const char* interface_name,
-                            const char* property_name,
+                            const AtomicString& interface_name,
+                            const AtomicString& property_name,
                             ExceptionState& exception_state) {
   DCHECK(trusted);
 
@@ -521,8 +565,8 @@ String TrustedTypesCheckFor(SpecificTrustedType type,
 String TrustedTypesCheckForHTML(
     const V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* value,
     const ExecutionContext* execution_context,
-    const char* interface_name,
-    const char* property_name,
+    const AtomicString& interface_name,
+    const AtomicString& property_name,
     ExceptionState& exception_state) {
   if (!value) {
     return TrustedTypesCheckForHTML(g_empty_string, execution_context,
@@ -544,8 +588,8 @@ String TrustedTypesCheckForHTML(
 
 String TrustedTypesCheckForHTML(const V8UnionStringOrTrustedHTML* value,
                                 const ExecutionContext* execution_context,
-                                const char* interface_name,
-                                const char* property_name,
+                                const AtomicString& interface_name,
+                                const AtomicString& property_name,
                                 ExceptionState& exception_state) {
   if (!value) {
     return TrustedTypesCheckForHTML(g_empty_string, execution_context,
@@ -565,8 +609,8 @@ String TrustedTypesCheckForHTML(const V8UnionStringOrTrustedHTML* value,
 
 String TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,
                                   const ExecutionContext* execution_context,
-                                  const char* interface_name,
-                                  const char* property_name,
+                                  const AtomicString& interface_name,
+                                  const AtomicString& property_name,
                                   ExceptionState& exception_state) {
   // To remain compatible with legacy behaviour, HTMLElement uses extended IDL
   // attributes to allow for nullable union of (DOMString or TrustedScript).
@@ -593,8 +637,8 @@ String TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,
 String TrustedTypesCheckForScript(
     const V8UnionStringLegacyNullToEmptyStringOrTrustedScript* value,
     const ExecutionContext* execution_context,
-    const char* interface_name,
-    const char* property_name,
+    const AtomicString& interface_name,
+    const AtomicString& property_name,
     ExceptionState& exception_state) {
   // To remain compatible with legacy behaviour, HTMLElement uses extended IDL
   // attributes to allow for nullable union of (DOMString or TrustedScript).
@@ -623,8 +667,8 @@ String TrustedTypesCheckForScript(
 String TrustedTypesCheckForScriptURL(
     const V8UnionTrustedScriptURLOrUSVString* value,
     const ExecutionContext* execution_context,
-    const char* interface_name,
-    const char* property_name,
+    const AtomicString& interface_name,
+    const AtomicString& property_name,
     ExceptionState& exception_state) {
   if (!value) {
     return g_empty_string;
@@ -643,9 +687,13 @@ String TrustedTypesCheckForScriptURL(
 String TrustedTypesCheckFor(SpecificTrustedType type,
                             String trusted,
                             const ExecutionContext* execution_context,
-                            const char* interface_name,
-                            const char* property_name,
+                            const AtomicString& interface_name,
+                            const AtomicString& property_name,
                             ExceptionState& exception_state) {
+  if (type == SpecificTrustedType::kNone) {
+    return trusted;
+  }
+
   switch (type) {
     case SpecificTrustedType::kHTML:
       return TrustedTypesCheckForHTML(std::move(trusted), execution_context,
@@ -660,7 +708,7 @@ String TrustedTypesCheckFor(SpecificTrustedType type,
                                            execution_context, interface_name,
                                            property_name, exception_state);
     case SpecificTrustedType::kNone:
-      return trusted;
+      NOTREACHED();  // This case is handled above.
   }
   NOTREACHED();
 }
@@ -670,8 +718,9 @@ GetStringForScriptExecution(const String& script,
                             const ScriptElementBase::Type type,
                             ExecutionContext* context) {
   String value = GetStringFromScriptHelper(
-      script, context, GetElementName(type), "text", kScriptExecution,
-      kScriptExecutionAndDefaultPolicyFailed);
+      script, context, AtomicString(GetElementName(type)),
+      trusted_types_names::kText, kScriptExecution,
+      kScriptExecutionAndDefaultPolicyFailed, false);
   if (!script.IsNull() && value.IsNull()) {
     context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kSecurity,
@@ -685,16 +734,18 @@ String TrustedTypesCheckForJavascriptURLinNavigation(
     const String& javascript_url,
     ExecutionContext* context) {
   return GetStringFromScriptHelper(
-      std::move(javascript_url), context, "Location", "href",
-      kNavigateToJavascriptURL, kNavigateToJavascriptURLAndDefaultPolicyFailed);
+      std::move(javascript_url), context, trusted_types_names::kLocation,
+      trusted_types_names::kHref, kNavigateToJavascriptURL,
+      kNavigateToJavascriptURLAndDefaultPolicyFailed, true);
 }
 
 String TrustedTypesCheckForExecCommand(
     const String& html,
     const ExecutionContext* execution_context,
     ExceptionState& exception_state) {
-  return TrustedTypesCheckForHTML(html, execution_context, "Document",
-                                  "execCommand", exception_state);
+  return TrustedTypesCheckForHTML(
+      html, execution_context, trusted_types_names::kDocument,
+      trusted_types_names::kExecCommand, exception_state);
 }
 
 bool IsTrustedTypesEventHandlerAttribute(const QualifiedName& q_name) {

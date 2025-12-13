@@ -20,13 +20,13 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "media/gpu/test/bitstream_helpers.h"
 
 namespace media {
 class VideoBitrateAllocation;
 
 namespace test {
 
-class BitstreamProcessor;
 class RawVideo;
 class VideoEncoderClient;
 struct VideoEncoderClientConfig;

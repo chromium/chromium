@@ -43,6 +43,7 @@
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/test/test_renderer_host.h"
@@ -812,5 +813,151 @@ TEST_F(ContentSettingImageModelTest, SmartCard) {
   EXPECT_FALSE(content_setting_image_model->is_visible());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(ContentSettingImageModelTest, ProtectedMediaIdentifier_Allowed) {
+  // Arrange
+  PageSpecificContentSettings::CreateForWebContents(
+      web_contents(),
+      std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
+  NavigateAndCommit(web_contents(), GURL("https://www.example.com"));
+  PageSpecificContentSettings* content_settings =
+      PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+  auto content_setting_image_model =
+      ContentSettingImageModel::CreateForContentType(
+          ContentSettingImageModel::ImageType::PROTECTED_MEDIA_IDENTIFIER);
+
+  // Guard
+  EXPECT_FALSE(content_setting_image_model->is_visible());
+  EXPECT_TRUE(content_setting_image_model->get_tooltip().empty());
+
+  // Act
+  content_settings->OnContentAllowed(
+      ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER);
+  content_setting_image_model->Update(web_contents());
+
+  // Assert
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_EQ(content_setting_image_model->get_tooltip(),
+            l10n_util::GetStringUTF16(
+                IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_MESSAGE));
+  EXPECT_EQ(content_setting_image_model->icon(),
+            &vector_icons::kSyncSavedLocallyIcon);
+}
+
+TEST_F(ContentSettingImageModelTest, ProtectedMediaIdentifier_Blocked) {
+  // Arrange
+  PageSpecificContentSettings::CreateForWebContents(
+      web_contents(),
+      std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
+  NavigateAndCommit(web_contents(), GURL("https://www.example.com"));
+  PageSpecificContentSettings* content_settings =
+      PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+  auto content_setting_image_model =
+      ContentSettingImageModel::CreateForContentType(
+          ContentSettingImageModel::ImageType::PROTECTED_MEDIA_IDENTIFIER);
+
+  // Guard
+  EXPECT_FALSE(content_setting_image_model->is_visible());
+  EXPECT_TRUE(content_setting_image_model->get_tooltip().empty());
+
+  // Act
+  content_settings->OnContentBlocked(
+      ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER);
+  content_setting_image_model->Update(web_contents());
+
+  // Assert
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_EQ(content_setting_image_model->get_tooltip(),
+            l10n_util::GetStringUTF16(
+                IDS_BLOCKED_PROTECTED_CONTENT_IDENTIFIERS_MESSAGE));
+  EXPECT_EQ(content_setting_image_model->icon(),
+            &vector_icons::kSyncSavedLocallyOffIcon);
+}
+
+TEST_F(ContentSettingImageModelTest, ProtectedMediaIdentifier_Reconciled) {
+  // This test simulates the conflict state (allowed=1 and blocked=1 at the same
+  // time) by the following steps:
+  // a) Change PageSpecificContentSettings to Allowed or Blocked.
+  // b) Update HostContentSettingMap with the same state.
+  // c) Call HostContentSettingMap::OnContentSettingChanged() to trigger
+  // PageSpecificContentSettings::OnContentSettingChanged() so that it can
+  // reconcile the conflict state.
+  // d) Update ContentSettingImageModel to verify if the state is reconciled.
+
+  // Arrange
+  GURL host("https://example.com/");
+  const auto type = ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER;
+  PageSpecificContentSettings::CreateForWebContents(
+      web_contents(),
+      std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
+  auto* map = HostContentSettingsMapFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+  NavigateAndCommit(web_contents(), host);
+  PageSpecificContentSettings* content_settings =
+      PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+  auto content_setting_image_model =
+      ContentSettingImageModel::CreateForContentType(
+          ContentSettingImageModel::ImageType::PROTECTED_MEDIA_IDENTIFIER);
+
+  // Guard
+  map->SetContentSettingDefaultScope(host, host, type, CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, map->GetContentSetting(host, host, type));
+  EXPECT_FALSE(content_setting_image_model->is_visible());
+  EXPECT_TRUE(content_setting_image_model->get_tooltip().empty());
+
+  // 1-1. Act: Allowed
+  content_settings->OnProtectedMediaIdentifierPermissionSet(host,
+                                                            /*allowed=*/true);
+  map->SetContentSettingDefaultScope(host, host, type, CONTENT_SETTING_ALLOW);
+  map->OnContentSettingChanged(ContentSettingsPattern::Wildcard(),
+                               ContentSettingsPattern::Wildcard(),
+                               ContentSettingsTypeSet(type));
+
+  // 1-2. Assert: Allowed
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, map->GetContentSetting(host, host, type));
+  UpdateModelAndVerifyStates(
+      content_setting_image_model.get(), /* is_visible = */ true,
+      /* tooltip_empty = */ false,
+      IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_MESSAGE, 0);
+
+  // 2-1. Act: Blocked
+  content_settings->OnProtectedMediaIdentifierPermissionSet(host,
+                                                            /*allowed=*/false);
+  map->SetContentSettingDefaultScope(host, host, type, CONTENT_SETTING_BLOCK);
+  map->OnContentSettingChanged(ContentSettingsPattern::Wildcard(),
+                               ContentSettingsPattern::Wildcard(),
+                               ContentSettingsTypeSet(type));
+
+  // 2-2. Assert: Blocked
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, map->GetContentSetting(host, host, type));
+  UpdateModelAndVerifyStates(
+      content_setting_image_model.get(), /* is_visible = */ true,
+      /* tooltip_empty = */ false,
+      IDS_BLOCKED_PROTECTED_CONTENT_IDENTIFIERS_MESSAGE, 0);
+
+  // 3-1. Act: Allowed (Conflict reconciled)
+  content_settings->OnProtectedMediaIdentifierPermissionSet(host,
+                                                            /*allowed=*/true);
+  map->SetContentSettingDefaultScope(host, host, type, CONTENT_SETTING_ALLOW);
+  // At this point, there is a conflict with status.allowed=1 and
+  // status.blocked=1 in PageSpecificContentSettings::OnContentSettingChanged().
+  // The conflict should be reconciled.
+  map->OnContentSettingChanged(ContentSettingsPattern::Wildcard(),
+                               ContentSettingsPattern::Wildcard(),
+                               ContentSettingsTypeSet(type));
+
+  // 3-1. Act: Allowed (Conflict reconciled)
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, map->GetContentSetting(host, host, type));
+  UpdateModelAndVerifyStates(
+      content_setting_image_model.get(), /* is_visible = */ true,
+      /* tooltip_empty = */ false,
+      IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_MESSAGE, 0);
+}
+
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace

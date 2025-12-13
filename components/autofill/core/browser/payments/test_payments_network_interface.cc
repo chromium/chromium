@@ -209,7 +209,8 @@ std::unique_ptr<base::Value::Dict> TestPaymentsNetworkInterface::LegalMessage() 
         "        \"display_text\": \"bear\""
         "     } ]"
         "  } ]"
-        "}");
+        "}",
+        base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     DCHECK(parsed_json);
   } else if (use_legal_message_with_multiple_lines_) {
     parsed_json = base::JSONReader::Read(
@@ -242,7 +243,8 @@ std::unique_ptr<base::Value::Dict> TestPaymentsNetworkInterface::LegalMessage() 
         "      ]"
         "    }"
         "  ]"
-        "}");
+        "}",
+        base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     DCHECK(parsed_json);
   } else {
     parsed_json = base::JSONReader::Read(
@@ -257,7 +259,8 @@ std::unique_ptr<base::Value::Dict> TestPaymentsNetworkInterface::LegalMessage() 
         "        \"url\": \"http://www.example.com/pp\""
         "     } ]"
         "  } ]"
-        "}");
+        "}",
+        base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     DCHECK(parsed_json);
   }
   // TODO(crbug.com/40826246): Refactor when `base::JSONReader::Read` is updated

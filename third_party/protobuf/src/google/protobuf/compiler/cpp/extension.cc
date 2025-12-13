@@ -15,12 +15,17 @@
 #include <vector>
 
 #include "absl/log/absl_check.h"
+#include "absl/status/statusor.h"
+#include "absl/strings/escaping.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_replace.h"
+#include "absl/strings/string_view.h"
+#include "google/protobuf/compiler/code_generator.h"
 #include "google/protobuf/compiler/cpp/helpers.h"
 #include "google/protobuf/compiler/cpp/options.h"
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/descriptor.pb.h"
+#include "google/protobuf/feature_resolver.h"
 #include "google/protobuf/io/printer.h"
 
 namespace google {
@@ -96,30 +101,68 @@ bool ExtensionGenerator::IsScoped() const {
   return descriptor_->extension_scope() != nullptr;
 }
 
+namespace {
+bool ShouldGenerateFeatureSetDefaultData(absl::string_view extension) {
+  return extension == "pb.java" || extension == "pb.java_mutable" ||
+         extension == "pb.test" || extension == "pb.proto1";
+}
+}  // namespace
+
 void ExtensionGenerator::GenerateDeclaration(io::Printer* p) const {
   auto var = p->WithVars(variables_);
   auto annotate = p->WithAnnotations({{"name", descriptor_}});
-  p->Emit({{"constant_qualifier",
-            // If this is a class member, it needs to be declared
-            //   `static constexpr`.
-            // Otherwise, it will be
-            //   `inline constexpr`.
-            IsScoped() ? "static" : ""},
-           {"id_qualifier",
-            // If this is a class member, it needs to be declared "static".
-            // Otherwise, it needs to be "extern".  In the latter case, it
-            // also needs the DLL export/import specifier.
-            IsScoped() ? "static"
-            : options_.dllexport_decl.empty()
-                ? "extern"
-                : absl::StrCat(options_.dllexport_decl, " extern")}},
-          R"cc(
-            inline $constant_qualifier $constexpr int $constant_name$ =
-                $number$;
-            $id_qualifier$ $pbi$::ExtensionIdentifier<
-                $extendee$, $pbi$::$type_traits$, $field_type$, $packed$>
-                $name$;
-          )cc");
+  p->Emit(
+      {{"constant_qualifier",
+        // If this is a class member, it needs to be declared
+        //   `static constexpr`.
+        // Otherwise, it will be
+        //   `inline constexpr`.
+        IsScoped() ? "static" : ""},
+       {"id_qualifier",
+        // If this is a class member, it needs to be declared "static".
+        // Otherwise, it needs to be "extern".  In the latter case, it
+        // also needs the DLL export/import specifier.
+        IsScoped() ? "static"
+        : options_.dllexport_decl.empty()
+            ? "extern"
+            : absl::StrCat(options_.dllexport_decl, " extern")},
+       {"feature_set_defaults",
+        [&] {
+          if (!ShouldGenerateFeatureSetDefaultData(descriptor_->full_name())) {
+            return;
+          }
+          if (descriptor_->message_type() == nullptr) return;
+          absl::string_view extendee =
+              descriptor_->containing_type()->full_name();
+          if (extendee != "google.protobuf.FeatureSet") return;
+
+          std::vector<const FieldDescriptor*> extensions = {descriptor_};
+          absl::StatusOr<FeatureSetDefaults> defaults =
+              FeatureResolver::CompileDefaults(
+                  descriptor_->containing_type(), extensions,
+                  ProtocMinimumEdition(), MaximumKnownEdition());
+          ABSL_CHECK_OK(defaults);
+          p->Emit(
+              {{"defaults", absl::Base64Escape(defaults->SerializeAsString())},
+               {"extension_type", ClassName(descriptor_->message_type(), true)},
+               {"function_name", "GetFeatureSetDefaultsData"}},
+              R"cc(
+                namespace internal {
+                template <>
+                inline ::absl::string_view $function_name$<$extension_type$>() {
+                  static constexpr char kDefaults[] = "$defaults$";
+                  return kDefaults;
+                }
+                }  // namespace internal
+              )cc");
+        }}},
+      R"cc(
+        inline $constant_qualifier $constexpr int $constant_name$ = $number$;
+        $id_qualifier$ $pbi$::ExtensionIdentifier<
+            $extendee$, $pbi$::$type_traits$, $field_type$, $packed$>
+            $name$;
+        $feature_set_defaults$;
+      )cc");
 }
 
 void ExtensionGenerator::GenerateDefinition(io::Printer* p) {
@@ -180,6 +223,12 @@ bool ExtensionGenerator::WillGenerateRegistration(InitPriority priority) {
   return true;
 }
 
+namespace {
+void EmitVerifyFuncArgs(io::Printer* p, const Options& options) {
+  p->Emit(R"cc(nullptr,)cc");
+}
+}  // namespace
+
 void ExtensionGenerator::GenerateRegistration(io::Printer* p,
                                               InitPriority priority) {
   ABSL_CHECK(WillGenerateRegistration(priority));
@@ -228,42 +277,48 @@ void ExtensionGenerator::GenerateRegistration(io::Printer* p,
           // Options say to verify.
           ShouldVerify(descriptor_->message_type(), options_, scc_analyzer_) &&
           ShouldVerify(descriptor_->containing_type(), options_, scc_analyzer_);
+      const bool should_verify_v2 =
+          should_verify &&
+          ShouldVerifyV2(descriptor_->message_type(), options_, scc_analyzer_);
       const auto message_type = FieldMessageTypeName(descriptor_, options_);
       auto v = p->WithVars(
           {{"verify", should_verify
                           ? absl::StrCat("&", message_type, "::InternalVerify")
                           : "nullptr"},
+           {"verify_v2", should_verify_v2 ? absl::StrCat("&", message_type,
+                                                         "::InternalVerifyV2")
+                                          : "nullptr"},
            {"message_type", message_type},
            {"lazy", "kUndefined"}});
       if (using_implicit_weak_descriptors) {
-        p->Emit(
-            {
-                {"extension_table",
-                 DescriptorTableName(descriptor_->message_type()->file(),
-                                     options_)},
-                {"extension_index", find_index(descriptor_->message_type())},
-            },
-            R"cc(
-              (::_pbi::ExtensionSet::ShouldRegisterAtThisTime(
-                   {{&$extendee_table$, $extendee_index$},
-                    {&$extension_table$, $extension_index$}},
-                   $preregister$)
-                   ? ::_pbi::ExtensionSet::RegisterMessageExtension(
-                         ::_pbi::GetPrototypeForWeakDescriptor(
-                             &$extendee_table$, $extendee_index$, true),
-                         $number$, $field_type$, $repeated$, $packed$,
-                         ::_pbi::GetPrototypeForWeakDescriptor(
-                             &$extension_table$, $extension_index$, true),
-                         $verify$, ::_pbi::LazyAnnotation::$lazy$)
-                   : (void)0),
-            )cc");
+        p->Emit({{"extension_table",
+                  DescriptorTableName(descriptor_->message_type()->file(),
+                                      options_)},
+                 {"extension_index", find_index(descriptor_->message_type())},
+                 {"verify_funcs", [&] { EmitVerifyFuncArgs(p, options_); }}},
+                R"cc(
+                  (::_pbi::ExtensionSet::ShouldRegisterAtThisTime(
+                       {{&$extendee_table$, $extendee_index$},
+                        {&$extension_table$, $extension_index$}},
+                       $preregister$)
+                       ? ::_pbi::ExtensionSet::RegisterMessageExtension(
+                             ::_pbi::GetPrototypeForWeakDescriptor(
+                                 &$extendee_table$, $extendee_index$, true),
+                             $number$, $field_type$, $repeated$, $packed$,
+                             ::_pbi::GetPrototypeForWeakDescriptor(
+                                 &$extension_table$, $extension_index$, true),
+                             $verify_funcs$, ::_pbi::LazyAnnotation::$lazy$)
+                       : (void)0),
+                )cc");
       } else if (priority == kInitPriority102) {
-        p->Emit(R"cc(
-          ::_pbi::ExtensionSet::RegisterMessageExtension(
-              &$extendee$::default_instance(), $number$, $field_type$,
-              $repeated$, $packed$, &$message_type$::default_instance(),
-              $verify$, ::_pbi::LazyAnnotation::$lazy$),
-        )cc");
+        ABSL_DCHECK(!should_verify_v2);
+        p->Emit({{"verify_funcs", [&] { EmitVerifyFuncArgs(p, options_); }}},
+                R"cc(
+                  ::_pbi::ExtensionSet::RegisterMessageExtension(
+                      &$extendee$::default_instance(), $number$, $field_type$,
+                      $repeated$, $packed$, &$message_type$::default_instance(),
+                      $verify_funcs$, ::_pbi::LazyAnnotation::$lazy$),
+                )cc");
       }
       break;
     }
@@ -274,9 +329,8 @@ void ExtensionGenerator::GenerateRegistration(io::Printer* p,
           (::_pbi::ExtensionSet::ShouldRegisterAtThisTime(
                {{&$extendee_table$, $extendee_index$}}, $preregister$)
                ? ::_pbi::ExtensionSet::RegisterExtension(
-                     ::_pbi::GetPrototypeForWeakDescriptor(&$extendee_table$,
-                                                           $extendee_index$,
-                                                           true),
+                     ::_pbi::GetPrototypeForWeakDescriptor(
+                         &$extendee_table$, $extendee_index$, true),
                      $number$, $field_type$, $repeated$, $packed$)
                : (void)0),
         )cc");

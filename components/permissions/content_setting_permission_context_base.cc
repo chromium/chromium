@@ -49,17 +49,10 @@ void ContentSettingPermissionContextBase::UpdateContentSetting(
 
   // The Permissions module in Safety check will revoke permissions after
   // a finite amount of time if the permission can be revoked.
-  // TODO(crbug.com/425642101): Migrate to using the
-  // PermissionSettingsInfo::Delegate once content settings are migrated to the
-  // PermissionSettingsRegistry.
-  if (content_settings::CanBeAutoRevoked(
+  if (content_settings::CanBeAutoRevokedAsUnusedPermission(
           content_settings_type(),
           content_settings::ContentSettingToValue(content_setting),
           is_one_time)) {
-    // For #2, by definition, that should be all of them. If that changes in
-    // the future, consider whether revocation for such permission makes
-    // sense, and/or change this to an early return so that we don't
-    // unnecessarily record timestamps where we don't need them.
     constraints.set_track_last_visit_for_autoexpiration(true);
   }
 

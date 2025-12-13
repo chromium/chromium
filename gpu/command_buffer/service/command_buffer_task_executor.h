@@ -14,11 +14,8 @@
 #include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/framebuffer_completeness_cache.h"
-#include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 #include "gpu/command_buffer/service/sequence_id.h"
-#include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/shader_translator_cache.h"
-#include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
@@ -32,6 +29,7 @@ namespace gpu {
 class SharedImageManager;
 class SyncPointManager;
 class SingleTaskSequence;
+class SharedContextState;
 
 namespace gles2 {
 class Outputter;
@@ -91,13 +89,6 @@ class GPU_GLES2_EXPORT CommandBufferTaskExecutor {
   }
   SyncPointManager* sync_point_manager() const { return sync_point_manager_; }
 
-  // Not const because these return inner pointers.
-  ServiceDiscardableManager* discardable_manager() {
-    return &discardable_manager_;
-  }
-  PassthroughDiscardableManager* passthrough_discardable_manager() {
-    return &passthrough_discardable_manager_;
-  }
   gles2::ShaderTranslatorCache* shader_translator_cache() {
     return &shader_translator_cache_;
   }
@@ -118,8 +109,6 @@ class GPU_GLES2_EXPORT CommandBufferTaskExecutor {
   gl::GLSurfaceFormat share_group_surface_format_;
   std::unique_ptr<gles2::ProgramCache> owned_program_cache_;
   raw_ptr<gles2::ProgramCache> program_cache_;
-  ServiceDiscardableManager discardable_manager_;
-  PassthroughDiscardableManager passthrough_discardable_manager_;
   gles2::ShaderTranslatorCache shader_translator_cache_;
   gles2::FramebufferCompletenessCache framebuffer_completeness_cache_;
   raw_ptr<SharedImageManager> shared_image_manager_;

@@ -15,6 +15,9 @@
 namespace media {
 
 struct DecoderStatusTraits {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused. Please keep the consistency with
+  // DecoderStatus in tools/metrics/histograms/metadata/media/enums.xml.
   enum class Codes : StatusCodeType {
     // Shared & General errors
     kOk = 0,
@@ -48,7 +51,9 @@ struct DecoderStatusTraits {
     kMediaFoundationNotAvailable = 207,
 
     // Success, but requires action by downstream recipient.
-    kElidedEndOfStreamForConfigChange = 300
+    kElidedEndOfStreamForConfigChange = 300,
+
+    kMaxValue = kElidedEndOfStreamForConfigChange
   };
   static constexpr StatusGroupType Group() { return "DecoderStatus"; }
 };

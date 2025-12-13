@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -19,24 +20,11 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/interactive_test.h"
 
-class SavedTabGroupV2PromoTest : public InteractiveFeaturePromoTest,
-                                 public testing::WithParamInterface<bool> {
+class SavedTabGroupV2PromoTest : public InteractiveFeaturePromoTest {
  public:
   SavedTabGroupV2PromoTest()
       : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
-            {feature_engagement::kIPHTabGroupsSaveV2CloseGroupFeature})) {
-    if (GetParam()) {
-      feature_list_.InitWithFeatures(
-          {tab_groups::kTabGroupSyncServiceDesktopMigration,
-           data_sharing::features::kDataSharingFeature},
-          {data_sharing::features::kDataSharingJoinOnly});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {tab_groups::kTabGroupSyncServiceDesktopMigration,
-               data_sharing::features::kDataSharingFeature,
-               data_sharing::features::kDataSharingJoinOnly});
-    }
-  }
+            {feature_engagement::kIPHTabGroupsSaveV2CloseGroupFeature})) {}
 
   ~SavedTabGroupV2PromoTest() override = default;
 
@@ -44,7 +32,7 @@ class SavedTabGroupV2PromoTest : public InteractiveFeaturePromoTest,
     auto steps = Steps(
         Do([this]() {
           tab_groups::TabGroupSyncService* service =
-              tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+              tab_groups::TabGroupSyncServiceFactory::GetForProfile(
                   browser()->profile());
           ASSERT_TRUE(service);
 
@@ -65,7 +53,7 @@ class SavedTabGroupV2PromoTest : public InteractiveFeaturePromoTest,
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(SavedTabGroupV2PromoTest,
+IN_PROC_BROWSER_TEST_F(SavedTabGroupV2PromoTest,
                        TestShowingIPHOnSavedTabGroupBar) {
   // Show the SavedTabGroupBar and the BookmarkBar.
   PrefService* prefs = browser()->profile()->GetPrefs();
@@ -83,7 +71,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupV2PromoTest,
                     original_stgb_pref);
 }
 
-IN_PROC_BROWSER_TEST_P(SavedTabGroupV2PromoTest,
+IN_PROC_BROWSER_TEST_F(SavedTabGroupV2PromoTest,
                        TestShowingIPHWithoutSavedTabGroupBar) {
   // Show the SavedTabGroupBar and the BookmarkBar.
   PrefService* prefs = browser()->profile()->GetPrefs();
@@ -100,7 +88,3 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupV2PromoTest,
   prefs->SetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar,
                     original_stgb_pref);
 }
-
-INSTANTIATE_TEST_SUITE_P(SavedTabGroupV2Promo,
-                         SavedTabGroupV2PromoTest,
-                         testing::Bool());

@@ -41,6 +41,8 @@ class DiceWebSigninInterceptorDelegate : public WebSigninInterceptor::Delegate {
       Browser* browser,
       const CoreAccountId& account_id,
       WebSigninInterceptor::SigninInterceptionType interception_type) override;
+  void ShowSigninError(content::WebContents* web_contents,
+                       const SigninUIError& error) override;
 
   // Returns the histogram suffix related to the given interception type.
   static std::string GetHistogramSuffix(

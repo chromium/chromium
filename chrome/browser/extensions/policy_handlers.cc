@@ -31,6 +31,7 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/url_pattern.h"
 #include "url/gurl.h"
@@ -38,6 +39,8 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace {
@@ -221,9 +224,6 @@ void ExtensionInstallBlockListPolicyHandler::ApplyPolicySettings(
   list_handler_.ApplyPolicySettings(policies, prefs);
 }
 
-// TODO(crbug.com/394876083): Support more extension policy handlers on desktop
-// Android.
-#if !BUILDFLAG(IS_ANDROID)
 // ExtensionURLPatternListPolicyHandler implementation -------------------------
 
 ExtensionURLPatternListPolicyHandler::ExtensionURLPatternListPolicyHandler(
@@ -287,7 +287,6 @@ void ExtensionURLPatternListPolicyHandler::ApplyPolicySettings(
     prefs->SetValue(pref_path_, value->Clone());
   }
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // ExtensionSettingsPolicyHandler implementation  ------------------------------
 

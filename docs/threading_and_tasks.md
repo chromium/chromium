@@ -136,7 +136,8 @@ necessary.
 Every Chrome process has
 
 * a main thread
-   * in the browser process (BrowserThread::UI): updates the UI
+   * in the browser process (BrowserThread::UI, or web::WebThread::UI on iOS):
+     updates the UI
    * in renderer processes (Blink main thread): runs most of Blink
 * an IO thread
    * in all processes: all IPC messages arrive on this thread. The application
@@ -146,7 +147,8 @@ Every Chrome process has
      different thread).
    * more generally most async I/O happens on this thread (e.g., through
      base::FileDescriptorWatcher).
-   * in the browser process: this is called BrowserThread::IO.
+   * in the browser process: this is called BrowserThread::IO, or
+     web::WebThread::IO on iOS.
 * a few more special-purpose threads
 * and a pool of general-purpose threads
 

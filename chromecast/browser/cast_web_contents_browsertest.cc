@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
-#include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -59,7 +58,6 @@ using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Expectation;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
 using ::testing::NiceMock;
@@ -462,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, ErrorLoadFailSubFrames) {
       "iframe.src = 'about:blank';";
   ASSERT_TRUE(ExecJs(web_contents_.get(), script));
 
-  ASSERT_EQ(2, (int)render_frames_.size());
+  ASSERT_EQ(2u, render_frames_.size());
   auto it =
       std::ranges::find(render_frames_, web_contents_->GetPrimaryMainFrame(),
                         &content::RenderFrameHost::GetParent);
@@ -975,7 +973,7 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest,
   EXPECT_CALL(mock_api_bindings, GetAll(_))
       .Times(1)
       .WillOnce(
-          WithArgs<0>(Invoke([](MockApiBindings::GetAllCallback callback) {
+          WithArgs<0>([](MockApiBindings::GetAllCallback callback) {
             std::vector<chromecast::mojom::ApiBindingPtr> bindings_vector;
             bindings_vector.emplace_back(
                 chromecast::mojom::ApiBinding::New("let res = 0;"));
@@ -986,7 +984,7 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest,
             bindings_vector.emplace_back(
                 chromecast::mojom::ApiBinding::New("res += 3;"));
             std::move(callback).Run(std::move(bindings_vector));
-          })));
+          }));
 
   // Binds mocked |mojom::ApiBindings|.
   cast_web_contents_->ConnectToBindingsService(
@@ -1020,11 +1018,10 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest,
   MockApiBindings mock_api_bindings;
   EXPECT_CALL(mock_api_bindings, GetAll(_))
       .Times(1)
-      .WillOnce(
-          WithArgs<0>(Invoke([](MockApiBindings::GetAllCallback callback) {
-            std::vector<chromecast::mojom::ApiBindingPtr> bindings_vector;
-            std::move(callback).Run(std::move(bindings_vector));
-          })));
+      .WillOnce(WithArgs<0>([](MockApiBindings::GetAllCallback callback) {
+        std::vector<chromecast::mojom::ApiBindingPtr> bindings_vector;
+        std::move(callback).Run(std::move(bindings_vector));
+      }));
 
   // Binds mocked |mojom::ApiBindings|.
   cast_web_contents_->ConnectToBindingsService(

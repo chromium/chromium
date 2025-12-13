@@ -10,9 +10,11 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "chrome/common/chrome_features.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/split_tab_id.h"
+#include "components/tabs/public/tab_interface.h"
 
 class Browser;
 class BrowserWindowInterface;
@@ -63,7 +65,8 @@ class TabStripModelDelegate {
       const GURL& url,
       int index,
       bool foreground,
-      std::optional<tab_groups::TabGroupId> group = std::nullopt) = 0;
+      std::optional<tab_groups::TabGroupId> group = std::nullopt,
+      bool pinned = false) = 0;
 
   // Asks for a new TabStripModel to be created and the given web contentses to
   // be added to it. Its size and position are reflected in |window_bounds|.
@@ -104,7 +107,8 @@ class TabStripModelDelegate {
   virtual bool IsTabStripEditable() = 0;
 
   // Duplicates the contents at the provided index and places it into a new tab.
-  virtual void DuplicateContentsAt(int index) = 0;
+  // Returns the duplicated tab, if duplication succeeds.
+  virtual content::WebContents* DuplicateContentsAt(int index) = 0;
 
   // Duplicates a split tab.
   virtual void DuplicateSplit(split_tabs::SplitTabId split) = 0;
@@ -160,10 +164,6 @@ class TabStripModelDelegate {
   virtual bool ShouldRunUnloadListenerBeforeClosing(
       content::WebContents* contents) = 0;
 
-  // Returns whether favicon should be shown.
-  virtual bool ShouldDisplayFavicon(
-      content::WebContents* web_contents) const = 0;
-
   // Returns whether the delegate allows reloading of WebContents.
   virtual bool CanReload() const = 0;
 
@@ -213,6 +213,23 @@ class TabStripModelDelegate {
   virtual void OnRemovingAllTabsFromGroups(
       const std::vector<tab_groups::TabGroupId>& group_ids,
       base::OnceCallback<void()> callback) = 0;
+
+#if BUILDFLAG(ENABLE_GLIC)
+  // Glic related delegation (see GlicKeyedService and GlicSharingManager).
+  // Note: 'Pinning' in Glic is a distinct notion.
+
+  // Returns true if the tab is Glic-pinned.
+  virtual bool IsTabGlicPinned(tabs::TabHandle tab_handle) = 0;
+
+  // Glic-pins the tab and returns true if successful.
+  virtual bool GlicPinTabs(base::span<const tabs::TabHandle> tab_handles) = 0;
+
+  // Glic-unpins the tab and returns true if successful.
+  virtual bool GlicUnpinTabs(base::span<const tabs::TabHandle> tab_handles) = 0;
+
+  // Opens the Glic window if not already open.
+  virtual void OpenGlicWindowFromSharedTab() = 0;
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_DELEGATE_H_

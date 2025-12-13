@@ -191,6 +191,8 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::PrerenderFailedDuringPrefetch;
     case PrerenderFinalStatus::kBrowsingDataRemoved:
       return Preload::PrerenderFinalStatusEnum::BrowsingDataRemoved;
+    case PrerenderFinalStatus::kPrerenderHostReused:
+      return Preload::PrerenderFinalStatusEnum::PrerenderHostReused;
   }
 }
 
@@ -352,6 +354,21 @@ GetProtocolSpeculationTargetHint(
   }
 }
 
+Preload::SpeculationAction SpeculationActionToProtocol(
+    blink::mojom::SpeculationAction action) {
+  switch (action) {
+    case blink::mojom::SpeculationAction::kPrerender:
+      return Preload::SpeculationActionEnum::Prerender;
+    case blink::mojom::SpeculationAction::kPrerenderUntilScript:
+      return Preload::SpeculationActionEnum::PrerenderUntilScript;
+    case blink::mojom::SpeculationAction::kPrefetch:
+      return Preload::SpeculationActionEnum::Prefetch;
+    case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
+      // `kPrefetchWithSubresources` will be deprecated soon.
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 PreloadHandler::PreloadHandler()
@@ -394,6 +411,7 @@ void PreloadHandler::DidUpdatePrefetchStatus(
 
 void PreloadHandler::DidUpdatePrerenderStatus(
     const base::UnguessableToken& initiator_devtools_navigation_token,
+    blink::mojom::SpeculationAction action,
     const GURL& prerender_url,
     std::optional<blink::mojom::SpeculationTargetHint> target_hint,
     const base::UnguessableToken& preload_pipeline_id,
@@ -408,7 +426,7 @@ void PreloadHandler::DidUpdatePrerenderStatus(
   auto preloading_attempt_key =
       protocol::Preload::PreloadingAttemptKey::Create()
           .SetLoaderId(initiator_devtools_navigation_token.ToString())
-          .SetAction(Preload::SpeculationActionEnum::Prerender)
+          .SetAction(SpeculationActionToProtocol(action))
           .SetUrl(prerender_url.spec())
           .Build();
   std::optional<protocol::Preload::SpeculationTargetHint> protocol_target_hint =
@@ -514,6 +532,8 @@ void PreloadHandler::SendInitialPreloadEnabledState() {
       config.ShouldHoldback(
           PreloadingType::kPrerender,
           content::content_preloading_predictor::kSpeculationRules));
+  // TODO(https://crbug.com/428500219): Set holdback status for
+  // prerender-until-script.
 }
 
 void PreloadHandler::SendCurrentPreloadStatus() {
@@ -558,7 +578,19 @@ void PreloadHandler::SendCurrentPreloadStatus() {
     }
     for (const auto& [key, data] : preload_storage->prerender_data_map()) {
       DidUpdatePrerenderStatus(
-          initiator_devtools_navigation_token, /*prerender_url=*/key.first,
+          initiator_devtools_navigation_token,
+          blink::mojom::SpeculationAction::kPrerender,
+          /*prerender_url=*/key.first,
+          /*target_hint=*/key.second, data.preload_pipeline_id, data.outcome,
+          data.status, data.disallowed_mojo_interface,
+          data.mismatched_headers.empty() ? nullptr : &data.mismatched_headers);
+    }
+    for (const auto& [key, data] :
+         preload_storage->prerender_until_script_data_map()) {
+      DidUpdatePrerenderStatus(
+          initiator_devtools_navigation_token,
+          blink::mojom::SpeculationAction::kPrerenderUntilScript,
+          /*prerender_url=*/key.first,
           /*target_hint=*/key.second, data.preload_pipeline_id, data.outcome,
           data.status, data.disallowed_mojo_interface,
           data.mismatched_headers.empty() ? nullptr : &data.mismatched_headers);

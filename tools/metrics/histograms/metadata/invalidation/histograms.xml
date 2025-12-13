@@ -25,73 +25,13 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FCMInvalidations.DirectInvalidation.RegistrationTokenRetrievalStatus"
-    enum="InstanceIDResult" expires_after="2025-12-07">
+    enum="InstanceIDResult" expires_after="2026-04-12">
   <owner>asumaneev@google.com</owner>
   <owner>rbock@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
     Status of an attempt to register with FM and retrieve a registration token.
     Recorded on every registration attempt or cached token retrieval.
-  </summary>
-</histogram>
-
-<histogram name="FCMInvalidations.FailedSubscriptionsErrorCode"
-    enum="NetErrorCodes" expires_after="2025-06-08">
-  <owner>asumaneev@google.com</owner>
-  <owner>rbock@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>Net error codes for failed subscription requests.</summary>
-</histogram>
-
-<histogram name="FCMInvalidations.FCMMessageStatus{FCMInvalidationSenders}"
-    enum="FCMInvalidationMessageStatus" expires_after="2025-12-07">
-  <owner>asumaneev@google.com</owner>
-  <owner>rbock@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Status of the message from the FCM channel. Recorded upon receiving response
-    from the FCM channel. {FCMInvalidationSenders}
-  </summary>
-  <token key="FCMInvalidationSenders">
-    <variant name=""/>
-    <variant name=".Drive"
-        summary="The message was sent with the Drive sender ID"/>
-    <variant name=".Policy"
-        summary="The message was sent with the Policy sender ID"/>
-    <variant name=".Sync"
-        summary="The message was sent with the Sync sender ID"/>
-  </token>
-</histogram>
-
-<histogram name="FCMInvalidations.InitialTokenRetrievalStatus"
-    enum="InstanceIDResult" expires_after="2025-06-08">
-  <owner>asumaneev@google.com</owner>
-  <owner>rbock@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Status of the initial attempt to retrieve the instance id token.
-  </summary>
-</histogram>
-
-<histogram name="FCMInvalidations.SubscriptionRequestStatus"
-    enum="FCMInvalidationSubscriptionStatus" expires_after="2025-06-08">
-  <owner>asumaneev@google.com</owner>
-  <owner>rbock@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Status of subscription request to the Per User Topic server. Recorded upon
-    receiving response from server.
-  </summary>
-</histogram>
-
-<histogram name="FCMInvalidations.SubscriptionResponseCode"
-    enum="HttpResponseCode" expires_after="2025-06-08">
-  <owner>asumaneev@google.com</owner>
-  <owner>rbock@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    For each subcription request to the FCM Per-User-Topic server, log the
-    response received from the server.
   </summary>
 </histogram>
 
@@ -104,17 +44,6 @@ chromium-metrics-reviews@google.com.
     Records the outcome of instance ID token requests (i.e. whether the token
     changed). Such requests are made when invalidations are first enabled (e.g.
     on sign-in), and then periodically every 24 hours.
-  </summary>
-</histogram>
-
-<histogram name="FCMInvalidations.UnsubscriptionRequestStatus"
-    enum="FCMInvalidationSubscriptionStatus" expires_after="2025-06-08">
-  <owner>asumaneev@google.com</owner>
-  <owner>rbock@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Status of unsubscription request to the Per User Topic server. Recorded upon
-    receiving response from server.
   </summary>
 </histogram>
 

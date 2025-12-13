@@ -4,11 +4,13 @@
 
 #include "components/commerce/core/compare/cluster_server_proxy.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -148,11 +150,9 @@ std::unique_ptr<EndpointFetcher> ClusterServerProxy::CreateEndpointFetcher(
   request_params.SetUrl(url)
       .SetContentType(kContentType)
       .SetAuthType(endpoint_fetcher::OAUTH)
-      .SetOauthScopes(
-          std::vector<std::string>{GaiaConstants::kChromeMemexOAuth2Scope})
+      .SetOAuthConsumerId(signin::OAuthConsumerId::kChromeMemex)
       .SetConsentLevel(signin::ConsentLevel::kSignin)
       .SetTimeout(base::Milliseconds(kTimeoutMs))
-      .SetOauthConsumerName(kOAuthName)
       .SetPostData(post_data);
   commerce::MaybeUseAlternateShoppingServer(request_params);
   return std::make_unique<EndpointFetcher>(
@@ -170,18 +170,12 @@ void ClusterServerProxy::HandleCompareResponse(
     return;
   }
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      response->response,
-      base::BindOnce(&ClusterServerProxy::OnResponseJsonParsed,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
+  std::optional<base::Value::Dict> result =
+      base::JSONReader::ReadDict(response->response, base::JSON_PARSE_RFC);
 
-void ClusterServerProxy::OnResponseJsonParsed(
-    GetComparableProductsCallback callback,
-    data_decoder::DataDecoder::ValueOrError result) {
   std::vector<uint64_t> product_cluster_ids;
-  if (result.has_value() && result->is_dict()) {
-    if (auto* response_json = result->GetDict().FindList(kProductIdsKey)) {
+  if (result.has_value()) {
+    if (auto* response_json = result->FindList(kProductIdsKey)) {
       for (const auto& product_id_json : *response_json) {
         if (auto product_id = Deserialize(product_id_json)) {
           product_cluster_ids.push_back(*product_id);

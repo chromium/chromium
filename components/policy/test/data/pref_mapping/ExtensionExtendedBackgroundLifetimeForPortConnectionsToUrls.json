@@ -4,8 +4,7 @@
       "win",
       "linux",
       "mac",
-      "chromeos",
-      "fuchsia"
+      "chromeos"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "extensions.extended_background_lifetime_urls",

@@ -6,6 +6,6 @@
 // by `tools/crates/run_gnrt.py vendor`. Do not edit!
 //
 // This is an empty placeholder that has replaced the
-// `derive_arbitrary-1.4.1` crate.
+// `derive_arbitrary-1.4.2` crate.
 //
 // See `//tools/crates/gnrt/removed_crate.md` to learn more.

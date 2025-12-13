@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/os_crypt/async",
   "+components/os_crypt/sync",
   "+components/sync/base",
   "+components/sync/engine",

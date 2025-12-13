@@ -122,12 +122,6 @@ class MockPrivacySandboxSettingsDelegate
         });
   }
 
-  void SetUpIsCookieDeprecationLabelAllowedResponse(bool allowed) {
-    ON_CALL(*this, IsCookieDeprecationLabelAllowed).WillByDefault([=]() {
-      return allowed;
-    });
-  }
-
   void SetUpAreThirdPartyCookiesBlockedByCookieDeprecationExperimentResponse(
       bool result) {
     ON_CALL(*this, AreThirdPartyCookiesBlockedByCookieDeprecationExperiment)
@@ -152,7 +146,6 @@ class MockPrivacySandboxSettingsDelegate
               GetCookieDeprecationExperimentCurrentEligibility,
               (),
               (const, override));
-  MOCK_METHOD(bool, IsCookieDeprecationLabelAllowed, (), (const, override));
   MOCK_METHOD(bool,
               AreThirdPartyCookiesBlockedByCookieDeprecationExperiment,
               (),
@@ -190,8 +183,6 @@ enum class StateKey {
   kM1RestrictedNoticePreviouslyAcknowledged = 25,
   kAttestationsMap = 26,
   kBlockFledgeJoiningForEtldplus1 = 27,
-  kBlockAll3pcToggleEnabledUserPrefValue = 28,
-  kTrackingProtection3pcdEnabledUserPrefValue = 29,
 };
 
 // Defines the input to the functions under test.
@@ -260,7 +251,6 @@ enum class OutputKey {
   kIsFledgeUpdateAllowedMetric = 43,
   kIsFledgeSellAllowedMetric = 44,
   kIsFledgeBuyAllowedMetric = 45,
-  kIsCookieDeprecationLabelAllowedForContext = 46,
   kIsPrivateAggregationDebugModeAllowed = 47,
   kIsSharedStorageAllowedDebugMessage = 48,
   kIsSharedStorageSelectURLAllowedDebugMessage = 49,

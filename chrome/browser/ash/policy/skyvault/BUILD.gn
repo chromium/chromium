@@ -39,6 +39,8 @@ static_library("skyvault") {
     "skyvault_capture_upload_notification.h",
     "skyvault_rename_handler.cc",
     "skyvault_rename_handler.h",
+    "waitable_scoped_temp_dir.cc",
+    "waitable_scoped_temp_dir.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -56,6 +58,7 @@ static_library("skyvault") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
     "//chrome/browser/chromeos/upload_office_to_cloud",
+    "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",

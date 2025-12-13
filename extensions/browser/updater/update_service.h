@@ -67,8 +67,11 @@ class UpdateService : public KeyedService {
                                 UpdateFoundCallback update_found_callback,
                                 base::OnceClosure callback);
 
-  UpdateService(content::BrowserContext* context,
-                scoped_refptr<update_client::UpdateClient> update_client);
+  UpdateService(
+      content::BrowserContext* context,
+      scoped_refptr<update_client::UpdateClient> update_client,
+      base::RepeatingCallback<void(const std::vector<std::string>&,
+                                   base::OnceClosure)> cache_retainer);
   ~UpdateService() override;
 
  private:
@@ -114,6 +117,9 @@ class UpdateService : public KeyedService {
   raw_ptr<content::BrowserContext> browser_context_;
 
   scoped_refptr<update_client::UpdateClient> update_client_;
+  base::RepeatingCallback<void(const std::vector<std::string>&,
+                               base::OnceClosure)>
+      cache_retainer_;
   scoped_refptr<UpdateDataProvider> update_data_provider_;
 
   THREAD_CHECKER(thread_checker_);

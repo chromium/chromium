@@ -20,7 +20,6 @@
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/payments/secure_payment_confirmation_service.mojom.h"
 
 namespace webauthn {
@@ -31,20 +30,20 @@ class InternalAuthenticator;
 
 namespace payments {
 
-class PaymentManifestWebDataService;
+class WebPaymentsWebDataService;
 
 // Implementation of the mojom::SecurePaymentConfirmationService interface,
 // which provides SPC-related functionality that is not tied to a specific
 // PaymentRequest invocation.
 class SecurePaymentConfirmationService
-    : public content::DocumentService<mojom::SecurePaymentConfirmationService>,
-      public WebDataServiceConsumer {
+    : public content::DocumentService<mojom::SecurePaymentConfirmationService> {
  public:
   SecurePaymentConfirmationService(
       content::RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<mojom::SecurePaymentConfirmationService> receiver,
-      scoped_refptr<PaymentManifestWebDataService> web_data_service,
-      std::unique_ptr<webauthn::InternalAuthenticator> authenticator);
+      scoped_refptr<WebPaymentsWebDataService> web_data_service,
+      std::unique_ptr<webauthn::InternalAuthenticator> authenticator,
+      std::string browser_bound_key_store_keychain_access_group);
   ~SecurePaymentConfirmationService() override;
 
   SecurePaymentConfirmationService(const SecurePaymentConfirmationService&) =
@@ -67,10 +66,8 @@ class SecurePaymentConfirmationService
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
       MakePaymentCredentialCallback callback) override;
 
-#if BUILDFLAG(IS_ANDROID)
   void SetPasskeyBrowserBinderForTesting(
       std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder);
-#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   // States of the enrollment flow, necessary to ensure correctness with
@@ -92,10 +89,10 @@ class SecurePaymentConfirmationService
   // valid Idle state.
   enum class State { kIdle, kStoringCredential };
 
-  // WebDataServiceConsumer:
-  void OnWebDataServiceRequestDone(
-      WebDataServiceBase::Handle h,
-      std::unique_ptr<WDTypedResult> result) override;
+  // Called when a payment credential has been stored (or failed to be stored)
+  // in the underlying database.
+  void OnStorePaymentCredential(WebDataServiceBase::Handle h,
+                                std::unique_ptr<WDTypedResult> result);
 
   // MakeCredentialCallback:
   void OnAuthenticatorMakeCredential(
@@ -106,23 +103,28 @@ class SecurePaymentConfirmationService
       ::blink::mojom::MakeCredentialAuthenticatorResponsePtr response,
       ::blink::mojom::WebAuthnDOMExceptionDetailsPtr maybe_exception_details);
 
+  // Called after creating an unbound browser bound key from the store in
+  // MakePaymentCredential.
+  void OnCreateUnboundKey(
+      std::string relying_party_id,
+      blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
+      MakePaymentCredentialCallback callback,
+      std::optional<PasskeyBrowserBinder::UnboundKey> unbound_key);
   bool IsCurrentStateValid() const;
   void RecordFirstSystemPromptResult(
       SecurePaymentConfirmationEnrollSystemPromptResult result);
   void Reset();
 
   State state_ = State::kIdle;
-  scoped_refptr<PaymentManifestWebDataService> web_data_service_;
+  scoped_refptr<WebPaymentsWebDataService> web_data_service_;
   std::unique_ptr<webauthn::InternalAuthenticator> authenticator_;
   std::optional<WebDataServiceBase::Handle> data_service_request_handle_;
   StorePaymentCredentialCallback storage_callback_;
   std::optional<WebDataServiceBase::Handle>
       set_browser_bound_key_request_handle_;
   bool is_system_prompt_result_recorded_ = false;
-
-#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<PasskeyBrowserBinder> passkey_browser_binder_;
-#endif  // BUILDFLAG(IS_ANDROID)
+  std::string browser_bound_key_store_keychain_access_group_;
 
   base::WeakPtrFactory<SecurePaymentConfirmationService> weak_ptr_factory_{
       this};

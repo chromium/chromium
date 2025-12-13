@@ -52,7 +52,9 @@ class LoggerImplTest : public testing::Test {
  private:
   std::string GetAttributeOfFirstEntry(const std::string& logs_json,
                                        const std::string& attribute) {
-    base::Value logs = base::JSONReader::Read(logs_json).value();
+    base::Value logs =
+        base::JSONReader::Read(logs_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+            .value();
     return *logs.GetList()[0].GetDict().FindString(attribute);
   }
 };
@@ -94,8 +96,9 @@ TEST_F(LoggerImplTest, RecordAndGetLogs) {
               "Component 2", "Message 2", "cast:abcdefgh", "cast:IJKLMNOP",
               "stuvwxyz0123");
   const std::string logs = logger_.GetLogsAsJson();
-  EXPECT_EQ(base::JSONReader::Read(logs),
-            base::JSONReader::Read(expected_logs));
+  EXPECT_EQ(base::JSONReader::Read(logs, base::JSON_PARSE_CHROMIUM_EXTENSIONS),
+            base::JSONReader::Read(expected_logs,
+                                   base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 }
 
 TEST_F(LoggerImplTest, TruncateSinkId) {

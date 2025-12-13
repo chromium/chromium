@@ -37,7 +37,8 @@ using ::variations::SeedApplicationStage;
 using ::variations::VariationsSeedStore;
 
 // The NSUserDefault key to store the time the last seed is fetched.
-NSString* kLastVariationsSeedFetchTimeKey = @"kLastVariationsSeedFetchTime";
+NSString* const kLastVariationsSeedFetchTimeKey =
+    @"kLastVariationsSeedFetchTime";
 
 // Local state key of experiment group assigned, persisted for subsequent runs.
 const char kFirstRunSeedFetchExperimentGroupPref[] = "ios.variations.first_run";

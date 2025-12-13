@@ -23,6 +23,14 @@ class Browser;
 class PrefService;
 class Profile;
 
+namespace gfx {
+class Image;
+}  // namespace gfx
+
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace content {
 class StoragePartition;
 class WebContents;
@@ -46,8 +54,13 @@ std::unique_ptr<WebApp> CreateWebApp(
 // Do not use this for installation! Instead, use the utilities in
 // web_app_install_test_util.h.
 struct CreateRandomWebAppParams {
+  CreateRandomWebAppParams();
+  CreateRandomWebAppParams(const CreateRandomWebAppParams& other);
+  CreateRandomWebAppParams& operator=(const CreateRandomWebAppParams& other);
+  ~CreateRandomWebAppParams();
+
   GURL base_url{"https://example.com/path"};
-  uint32_t seed = 0;
+  int seed = 0;
   bool non_zero = false;
   bool allow_system_source = true;
   // External management types are often managed by systems that synchronize
@@ -56,8 +69,13 @@ struct CreateRandomWebAppParams {
   // them. Setting this to 'true' will prevent a generated app from having one
   // of these management sources.
   bool only_non_external_management_types = false;
+  // When randomly generating an app, if it is randomly a sub-app, then this
+  // manifest id is used for the parent id. Set this to an empty url to not
+  // generate sub-apps.
+  webapps::ManifestId parent_manifest_id{"https://www.appparent.com/"};
 };
-std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params);
+std::unique_ptr<WebApp> CreateRandomWebApp(
+    const CreateRandomWebAppParams& params);
 
 void TestAcceptDialogCallback(
     base::WeakPtr<WebAppScreenshotFetcher>,
@@ -99,6 +117,13 @@ void SynchronizeOsIntegration(
 
 // Creates a few well-formed integrity block signatures.
 std::vector<web_package::SignedWebBundleSignatureInfo> CreateSignatures();
+
+// Loads a gfx::Image from a png file on the disk. Will CHECK-fail if the png
+// data reading fails. If `read_from_test_dir` is true (which is the case for
+// most use-cases), the file_path should be an absolute path, otherwise
+// `base::FilePath::Append()` with DCHECK-fail.
+gfx::Image LoadTestImageFromDisk(const base::FilePath& file_path,
+                                 bool read_from_test_dir = true);
 
 }  // namespace test
 }  // namespace web_app

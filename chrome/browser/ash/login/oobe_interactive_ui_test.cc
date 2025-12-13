@@ -56,7 +56,6 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/ai_intro_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/assistant_optin_flow_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/choobe_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/display_size_screen_handler.h"
@@ -75,7 +74,6 @@
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
-#include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/attestation/stub_attestation_features.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
@@ -313,35 +311,7 @@ void HandleGeminiIntroScreen() {
   LOG(INFO) << "OobeInteractiveUITest: 'gemini-intro' screen done.";
 }
 
-// Waits for AssistantOptInFlowScreen to be shown, skips the opt-in, and waits
-// for the flow to move away from the screen.
-// Note that due to test setup, the screen will fail to load assistant value
-// proposal error (as the URL is not faked in this test), and display an
-// error, This is good enough for this tests, whose goal is to verify the
-// screen is shown, and how the setup progresses after the screen. The actual
-// assistant opt-in flow is tested separately.
-void HandleAssistantOptInScreen() {
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-  OobeScreenWaiter(AssistantOptInFlowScreenView::kScreenId).Wait();
-  LOG(INFO) << "OobeInteractiveUITest: Switched to 'assistant-optin' screen.";
 
-  EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
-  EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
-
-  test::OobeJS()
-      .CreateVisibilityWaiter(true, {"assistant-optin-flow", "card", "loading"})
-      ->Wait();
-
-  std::initializer_list<std::string_view> skip_button_path = {
-      "assistant-optin-flow", "card", "loading", "skip-button"};
-  test::OobeJS().CreateEnabledWaiter(true, skip_button_path)->Wait();
-  test::OobeJS().TapOnPath(skip_button_path);
-
-  OobeScreenExitWaiter(AssistantOptInFlowScreenView::kScreenId).Wait();
-  LOG(INFO) << "OobeInteractiveUITest: 'assistant-optin' screen done.";
-#endif
-}
 
 // Waits for gesture navigation to get shown, runs through all pages in the
 // screen, and waits for the screen to exit.
@@ -838,10 +808,6 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
   }
 
   HandleGeminiIntroScreen();
-
-  if (!features::IsOobeSkipAssistantEnabled()) {
-    HandleAssistantOptInScreen();
-  }
 
   if (test_setup()->is_tablet() &&
       test_setup()->hide_shelf_controls_in_tablet_mode()) {

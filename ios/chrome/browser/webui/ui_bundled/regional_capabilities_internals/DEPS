@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "^regional_capabilities_internals_ui.mm": [
+    "+components/regional_capabilities/access/country_access_reason.h",
+  ],
+}

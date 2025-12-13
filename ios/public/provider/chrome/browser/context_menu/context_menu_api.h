@@ -10,6 +10,7 @@
 #import <optional>
 
 #import "base/files/file_path.h"
+#import "base/ios/block_types.h"
 #import "base/values.h"
 #import "ios/web/common/annotations_utils.h"
 #import "ios/web/public/ui/context_menu_params.h"
@@ -78,6 +79,9 @@ std::optional<std::vector<web::TextAnnotation>> ExtractTextAnnotationFromText(
 
 // Returns the context menu title with styling.
 NSString* StyledContextMenuStringForString(NSString* string);
+
+// Attaches block to the menu string.
+void AttachBlockToContextMenu(NSString* string, ProceduralBlock block);
 
 }  // namespace ios::provider
 

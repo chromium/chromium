@@ -80,8 +80,7 @@ DownloadDatabase::DownloadDatabase(
       download_interrupt_reason_none_(download_interrupt_reason_none),
       download_interrupt_reason_crash_(download_interrupt_reason_crash) {}
 
-DownloadDatabase::~DownloadDatabase() {
-}
+DownloadDatabase::~DownloadDatabase() {}
 
 bool DownloadDatabase::EnsureColumnExists(const std::string& name,
                                           const std::string& type) {
@@ -97,9 +96,11 @@ bool DownloadDatabase::EnsureColumnExistsInTable(const std::string& table,
 }
 
 bool DownloadDatabase::MigrateMimeType() {
-  return EnsureColumnExists("mime_type", "VARCHAR(255) NOT NULL"
+  return EnsureColumnExists("mime_type",
+                            "VARCHAR(255) NOT NULL"
                             " DEFAULT \"\"") &&
-         EnsureColumnExists("original_mime_type", "VARCHAR(255) NOT NULL"
+         EnsureColumnExists("original_mime_type",
+                            "VARCHAR(255) NOT NULL"
                             " DEFAULT \"\"");
 }
 
@@ -171,21 +172,25 @@ bool DownloadDatabase::MigrateDownloadsReasonPathsAndDangerType() {
       0, DownloadInterruptReasonToInt(download_interrupt_reason_none_));
   statement_populate.BindInt(
       1, DownloadDangerTypeToInt(DownloadDangerType::NOT_DANGEROUS));
-  if (!statement_populate.Run())
+  if (!statement_populate.Run()) {
     return false;
+  }
 
   // Create new chain table and populate it.
-  if (!GetDB().Execute(kReasonPathDangerUrlChainSchema))
+  if (!GetDB().Execute(kReasonPathDangerUrlChainSchema)) {
     return false;
+  }
 
   if (!GetDB().Execute("INSERT INTO downloads_url_chains "
                        "  ( id, chain_index, url) "
-                       "  SELECT id, 0, url from downloads_tmp"))
+                       "  SELECT id, 0, url from downloads_tmp")) {
     return false;
+  }
 
   // Get rid of temporary table.
-  if (!GetDB().Execute("DROP TABLE downloads_tmp"))
+  if (!GetDB().Execute("DROP TABLE downloads_tmp")) {
     return false;
+  }
 
   return true;
 }
@@ -207,8 +212,9 @@ bool DownloadDatabase::MigrateDownloadValidators() {
 bool DownloadDatabase::MigrateHashHttpMethodAndGenerateGuids() {
   if (!EnsureColumnExists("guid", "VARCHAR NOT NULL DEFAULT ''") ||
       !EnsureColumnExists("hash", "BLOB NOT NULL DEFAULT X''") ||
-      !EnsureColumnExists("http_method", "VARCHAR NOT NULL DEFAULT ''"))
+      !EnsureColumnExists("http_method", "VARCHAR NOT NULL DEFAULT ''")) {
     return false;
+  }
 
   // Generate GUIDs for each download. GUIDs based on random data should conform
   // with RFC 4122 section 4.4. Given the following field layout (based on RFC
@@ -268,14 +274,14 @@ bool DownloadDatabase::MigrateHashHttpMethodAndGenerateGuids() {
     uint64_t r2 = base::RandUint64();
     std::string guid = base::StringPrintf(
         "%08" PRIX32 "-%04" PRIX64 "-4%03" PRIX64 "-%04" PRIX64 "-%012" PRIX64,
-        id, r1 >> 48,
-        (r1 >> 36) & 0xfff,
+        id, r1 >> 48, (r1 >> 36) & 0xfff,
         ((8 | ((r1 >> 34) & 3)) << 12) | ((r1 >> 22) & 0xfff),
         r2 & 0xffffffffffff);
     update.BindString(0, guid);
     update.BindInt(1, id);
-    if (!update.Run())
+    if (!update.Run()) {
       return false;
+    }
     update.Reset(true);
   }
   return true;
@@ -379,7 +385,7 @@ bool DownloadDatabase::InitDownloadTable() {
     // as it is introduced in version 24. A migration function will be run to
     // create it later.
     ret = EnsureColumnExists("end_time", "INTEGER NOT NULL DEFAULT 0") &&
-        EnsureColumnExists("opened", "INTEGER NOT NULL DEFAULT 0");
+          EnsureColumnExists("opened", "INTEGER NOT NULL DEFAULT 0");
   } else {
     // If the "downloads" table doesn't exist, neither should the
     // "downloads_url_chain" table.
@@ -469,7 +475,7 @@ void DownloadDatabase::QueryDownloads(std::vector<DownloadRow>* results) {
         IntToDownloadDangerType(statement_main.ColumnInt(column++));
     info->interrupt_reason =
         IntToDownloadInterruptReason(statement_main.ColumnInt(column++));
-    statement_main.ColumnBlobAsString(column++, &info->hash);
+    info->hash = statement_main.ColumnBlobAsString(column++);
     info->end_time =
         base::Time::FromInternalValue(statement_main.ColumnInt64(column++));
     info->opened = statement_main.ColumnInt(column++) != 0;
@@ -521,13 +527,15 @@ void DownloadDatabase::QueryDownloads(std::vector<DownloadRow>* results) {
     int chain_index = statement_chain.ColumnInt(column++);
 
     DownloadId id = kInvalidDownloadId;
-    if (!ConvertIntToDownloadId(signed_id, &id))
+    if (!ConvertIntToDownloadId(signed_id, &id)) {
       continue;
+    }
 
     // Confirm the id has already been seen--if it hasn't, discard the
     // record.
-    if (!base::Contains(info_map, id))
+    if (!base::Contains(info_map, id)) {
       continue;
+    }
 
     // Confirm all previous URLs in the chain have already been seen;
     // if not, fill in with null or discard record.
@@ -542,8 +550,9 @@ void DownloadDatabase::QueryDownloads(std::vector<DownloadRow>* results) {
       url_chain->push_back(GURL());
       current_chain_size++;
     }
-    if (current_chain_size > chain_index)
+    if (current_chain_size > chain_index) {
       continue;
+    }
 
     // Save the record.
     url_chain->push_back(GURL(statement_chain.ColumnStringView(2)));
@@ -611,15 +620,17 @@ bool DownloadDatabase::UpdateDownload(const DownloadRow& data) {
   statement.BindString(column++, data.last_modified);
   statement.BindInt64(column++, DownloadIdToInt(data.id));
 
-  if (!statement.Run())
+  if (!statement.Run()) {
     return false;
+  }
 
   if (data.download_slice_info.size() == 0) {
     RemoveDownloadSlices(data.id);
   } else {
     for (size_t i = 0; i < data.download_slice_info.size(); ++i) {
-      if (!CreateOrUpdateDownloadSlice(data.download_slice_info[i]))
+      if (!CreateOrUpdateDownloadSlice(data.download_slice_info[i])) {
         return false;
+      }
     }
   }
 
@@ -627,8 +638,9 @@ bool DownloadDatabase::UpdateDownload(const DownloadRow& data) {
 }
 
 void DownloadDatabase::EnsureInProgressEntriesCleanedUp() {
-  if (in_progress_entry_cleanup_completed_)
+  if (in_progress_entry_cleanup_completed_) {
     return;
+  }
 
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE, "UPDATE " DOWNLOADS_TABLE
@@ -647,14 +659,17 @@ bool DownloadDatabase::CreateDownload(const DownloadRow& info) {
   DCHECK(!info.guid.empty());
   EnsureInProgressEntriesCleanedUp();
 
-  if (info.url_chain.empty())
+  if (info.url_chain.empty()) {
     return false;
+  }
 
-  if (info.state == DownloadState::INVALID)
+  if (info.state == DownloadState::INVALID) {
     return false;
+  }
 
-  if (info.danger_type == DownloadDangerType::INVALID)
+  if (info.danger_type == DownloadDangerType::INVALID) {
     return false;
+  }
 
   {
     sql::Statement statement_insert(GetDB().GetCachedStatement(
@@ -712,8 +727,8 @@ bool DownloadDatabase::CreateDownload(const DownloadRow& info) {
   }
 
   {
-    sql::Statement count_urls(GetDB().GetCachedStatement(SQL_FROM_HERE,
-        "SELECT count(*) FROM downloads_url_chains WHERE id=?"));
+    sql::Statement count_urls(GetDB().GetCachedStatement(
+        SQL_FROM_HERE, "SELECT count(*) FROM downloads_url_chains WHERE id=?"));
     count_urls.BindInt64(0, info.id);
     if (count_urls.Step()) {
       bool corrupt_urls = count_urls.ColumnInt(0) > 0;
@@ -770,8 +785,8 @@ void DownloadDatabase::RemoveDownload(DownloadId id) {
 }
 
 void DownloadDatabase::RemoveDownloadURLs(DownloadId id) {
-  sql::Statement urlchain_statement(GetDB().GetCachedStatement(SQL_FROM_HERE,
-      "DELETE FROM downloads_url_chains WHERE id=?"));
+  sql::Statement urlchain_statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE, "DELETE FROM downloads_url_chains WHERE id=?"));
   urlchain_statement.BindInt64(0, id);
   if (!urlchain_statement.Run()) {
     UMA_HISTOGRAM_ENUMERATION("Download.DatabaseURLChainDeleteError",
@@ -793,8 +808,9 @@ bool DownloadDatabase::CreateOrUpdateDownloadSlice(
   // If the slice has no data, there is no need to insert it into the db. Note
   // that for each slice, `received_bytes` can only go up. So if a slice is
   // already in the db, its `received_bytes` should always be larger than 0.
-  if (info.received_bytes == 0)
+  if (info.received_bytes == 0) {
     return true;
+  }
   sql::Statement statement_replace(GetDB().GetCachedStatement(
       SQL_FROM_HERE, "REPLACE INTO " DOWNLOADS_SLICES_TABLE
                      "(download_id, offset, received_bytes, finished) "

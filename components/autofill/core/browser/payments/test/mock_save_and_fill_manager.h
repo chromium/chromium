@@ -20,23 +20,15 @@ class MockSaveAndFillManager : public payments::SaveAndFillManager {
               OnDidAcceptCreditCardSaveAndFillSuggestion,
               (FillCardCallback fill_card_callback),
               (override));
-  MOCK_METHOD(void, OfferLocalSaveAndFill, (), (override));
-  MOCK_METHOD(
-      void,
-      OnUserDidDecideOnLocalSave,
-      (payments::PaymentsAutofillClient::CardSaveAndFillDialogUserDecision
-           user_decision,
-       const payments::PaymentsAutofillClient::
-           UserProvidedCardSaveAndFillDetails&
-               user_provided_card_save_and_fill_details),
-      (override));
+  MOCK_METHOD(void, OnSuggestionOffered, (), (override));
+  MOCK_METHOD(void, MaybeAddStrikeForSaveAndFill, (), (override));
+  MOCK_METHOD(bool, ShouldBlockFeature, (), (override));
   MOCK_METHOD(void,
-              PopulateCreditCardInfo,
-              (autofill::CreditCard & card,
-               const payments::PaymentsAutofillClient::
-                   UserProvidedCardSaveAndFillDetails&
-                       user_provided_card_save_and_fill_details),
+              MaybeLogSaveAndFillSuggestionNotShownReason,
+              (autofill_metrics::SaveAndFillSuggestionNotShownReason reason),
               (override));
+  MOCK_METHOD(void, LogCreditCardFormFilled, (), (override));
+  MOCK_METHOD(void, LogCreditCardFormSubmitted, (), (override));
 };
 
 }  // namespace autofill

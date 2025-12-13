@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/test/ash_test_suite.h"
 
+#include "ash/constants/ash_paths.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -38,6 +39,11 @@ void AshTestSuite::Initialize() {
 
   gl::GLSurfaceTestSupport::InitializeOneOff();
 
+  ash::RegisterPathProvider();
+  CHECK(user_data_dir_.CreateUniqueTempDir());
+  CHECK(base::PathService::OverrideAndCreateIfNeeded(
+      ash::DIR_USER_DATA, user_data_dir_.GetPath(),
+      /*is_absolute=*/true, /*create=*/false));
   ui::RegisterPathProvider();
 
   // Force unittests to run using en-US so if we test against string output,

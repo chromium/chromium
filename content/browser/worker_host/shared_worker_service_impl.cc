@@ -15,7 +15,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/timer/elapsed_timer.h"
 #include "content/browser/devtools/shared_worker_devtools_agent_host.h"
 #include "content/browser/loader/file_url_loader_factory.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
@@ -123,7 +125,6 @@ void SharedWorkerServiceImpl::ConnectToWorker(
     blink::mojom::SharedWorkerCreationContextType creation_context_type,
     const blink::MessagePortChannel& message_port,
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-    ukm::SourceId client_ukm_source_id,
     const std::optional<blink::StorageKey>& storage_key_override) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -168,12 +169,13 @@ void SharedWorkerServiceImpl::ConnectToWorker(
   }
 
   RenderFrameHost* main_frame = render_frame_host->frame_tree()->GetMainFrame();
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   if (!GetContentClient()->browser()->AllowSharedWorker(
           info->url, render_frame_host->ComputeSiteForCookies(),
           main_frame->GetLastCommittedOrigin(), info->options->name,
           storage_key, info->same_site_cookies,
           render_frame_host->GetBrowserContext(),
-          client_render_frame_host_id.child_id,
+          client_render_frame_host_id.child_id.GetUnsafeValue(),
           client_render_frame_host_id.frame_routing_id)) {
     ScriptLoadFailed(std::move(client), /*error_message=*/"");
     return;
@@ -215,7 +217,7 @@ void SharedWorkerServiceImpl::ConnectToWorker(
     }
 
     host->AddClient(std::move(client), client_render_frame_host_id,
-                    message_port, client_ukm_source_id);
+                    message_port);
     return;
   }
 
@@ -240,8 +242,7 @@ void SharedWorkerServiceImpl::ConnectToWorker(
     ScriptLoadFailed(std::move(client), /*error_message=*/"");
     return;
   }
-  host->AddClient(std::move(client), client_render_frame_host_id, message_port,
-                  client_ukm_source_id);
+  host->AddClient(std::move(client), client_render_frame_host_id, message_port);
 }
 
 SharedWorkerHost* SharedWorkerServiceImpl::GetSharedWorkerHostFromToken(
@@ -525,6 +526,26 @@ void SharedWorkerServiceImpl::ScriptLoadFailed(
   mojo::Remote<blink::mojom::SharedWorkerClient> remote_client(
       std::move(client));
   remote_client->OnScriptLoadFailed(error_message);
+}
+
+bool SharedWorkerServiceImpl::EvictBFCachedClientsIfLastActive(
+    RenderFrameHostImpl* render_frame_host) {
+  TRACE_EVENT0("navigation",
+               "SharedWorkerServiceImpl::EvictBFCachedClientsIfLastActive");
+  base::ElapsedTimer timer;
+  bool was_last_active_for_any_worker = false;
+  RenderFrameHostImpl* const client_main_frame =
+      render_frame_host->GetOutermostMainFrame();
+
+  for (const auto& host : worker_hosts_) {
+    if (host && host->ContainsClient(render_frame_host) &&
+        host->EvictBFCachedClientsIfLastActive(client_main_frame)) {
+      was_last_active_for_any_worker = true;
+    }
+  }
+  base::UmaHistogramTimes("Content.SharedWorker.Service.LastClientCheckTime",
+                          timer.Elapsed());
+  return was_last_active_for_any_worker;
 }
 
 }  // namespace content

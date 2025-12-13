@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
@@ -148,7 +149,7 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   void IterateOverIdentities(IdentityIteratorCallback callback) final;
   void ForgetIdentity(id<SystemIdentity> identity,
                       ForgetIdentityCallback callback) final;
-  bool IdentityRemovedByUser(NSString* gaia_id) final;
+  bool IdentityRemovedByUser(const GaiaId& gaia_id) final;
   void GetAccessToken(id<SystemIdentity> identity,
                       const std::set<std::string>& scopes,
                       AccessTokenCallback callback) final;
@@ -168,6 +169,7 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
                              NSArray<id<SystemIdentity>>* active_identities,
                              id<RefreshAccessTokenError> error,
                              HandleMDMCallback callback) final;
+  bool IsScopeLimitedError(id<RefreshAccessTokenError> error) final;
   bool IsMDMError(id<SystemIdentity> identity, NSError* error) final;
   void FetchTokenAuthURL(id<SystemIdentity> identity,
                          NSURL* target_url,
@@ -222,7 +224,7 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   __strong FakeSystemIdentityManagerStorage* storage_ = nil;
   // List of gaia ids for identities that has been removed by calling
   // `ForgetIdentity()` (instead of `ForgetIdentityFromOtherApplication()`).
-  __strong NSMutableSet<NSString*>* gaia_ids_removed_by_user_ = nil;
+  base::flat_set<GaiaId> gaia_ids_removed_by_user_;
 
   base::RepeatingCallback<id<SystemIdentityInteractionManager>()>
       interaction_manager_factory_;

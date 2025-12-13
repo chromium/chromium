@@ -11,6 +11,10 @@
 #include "base/time/clock.h"
 #include "build/build_config.h"
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace permissions {
 
 // The URL for the Bluetooth Overview help center article in the Web Bluetooth
@@ -86,44 +90,16 @@ extern const char kPermissionPromptSurveyPepcPromptPositionKey[];
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const char kPermissionPromptSurveyInitialPermissionStatusKey[];
 
-// The key in `Product Specific Bits Data` under which the information about
-// whether a permissions prompt preview for camera / microphone permissions
-// was visible at all (i.e. whether camera preview received video frames, and
-// whether microphone preview received audio samples). For prompts not related
-// to camera/microphone permissions, this will always be false.
+// The key in `Product Specific Strings Data` under which the prompt options
+// (options selected by the user on the prompt) are recorded.
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
-extern const char kPermissionPromptSurveyPreviewVisibleKey[];
+extern const char kPermissionPromptSurveyPromptOptionsKey[];
 
-// The key in `Product Specific Bits Data` under which the information about
-// whether a permissions prompt preview for camera / microphone permissions
-// had a device selection dropdown that was interacted with by the user.
-// For prompts not related to camera/microphone permissions, this will always
-// be false.
+// The key in `Product Specific Strings Data` under which the prompt display
+// duration (time to decision) in milliseconds is recorded, iff the
+// SurveyDisplayTime is OnPromptResolved.
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
-extern const char kPermissionPromptSurveyPreviewDropdownInteractedKey[];
-
-// The key in `Product Specific Bits Data` under which the information about
-// whether a permissions prompt preview for camera / microphone permissions
-// was a combined prompt.
-// For prompts not related to camera/microphone permissions, this will always
-// be false.
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
-extern const char kPermissionPromptSurveyPreviewWasCombinedKey[];
-
-// The key in `Product Specific String Data` under which the information about
-// how long it took (in milliseconds) for the user to make a decision. For
-// prompts not related to camera/microphone permissions, this will always be
-// empty string.
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
-extern const char kPermissionPromptSurveyPreviewTimeToDecisionKey[];
-
-// The key in `Product Specific String Data` under which the information about
-// how long it took (in milliseconds) for the video or audio preview to become
-// visible (i.e. to start displaying video frames / audio levels to users). For
-// prompts not related to camera/microphone permissions, this will always be
-// empty string.
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
-extern const char kPermissionPromptSurveyPreviewTimeToVisibleKey[];
+extern const char kPermissionPromptSurveyPromptDisplayDurationKey[];
 
 // TODO(crbug.com/40254381): Remove the code related to unused site permissions
 // from Android builds.

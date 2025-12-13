@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -166,7 +165,7 @@ void BackgroundFetchTestBase::UnregisterServiceWorker(
   const GURL scope = GetScopeForId(kTestOrigin, service_worker_registration_id);
   embedded_worker_test_helper_.context()->UnregisterServiceWorker(
       scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
-      /*is_immediate=*/false,
+      /*is_immediate=*/false, ServiceWorkerRegistration::DeleteInitiator::kTest,
       base::BindOnce(&DidUnregisterServiceWorker, run_loop.QuitClosure()));
   run_loop.Run();
 }

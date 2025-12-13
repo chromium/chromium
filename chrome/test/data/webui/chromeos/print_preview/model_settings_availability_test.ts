@@ -595,12 +595,9 @@ suite('ModelSettingsAvailabilityTest', function() {
     // Windows and macOS depend on policy - see policy_test.js for their
     // testing coverage.
     model.set('documentSettings.isModifiable', false);
-    // <if expr="is_linux or is_chromeos">
     // Always available for PDFs on Linux and ChromeOS
     assertTrue(model.settings.rasterize.available);
     assertFalse(model.settings.rasterize.setFromUi);
-    // </if>
-
     // Unavailable for ARC.
     model.set('documentSettings.isFromArc', true);
     assertFalse(model.settings.rasterize.available);
@@ -639,7 +636,6 @@ suite('ModelSettingsAvailabilityTest', function() {
     assertFalse(model.settings.pagesPerSheet.available);
   });
 
-  // <if expr="is_chromeos">
   test('pin', function() {
     // Make device unmanaged.
     loadTimeData.overrideValues({isEnterpriseManaged: false});
@@ -684,5 +680,4 @@ suite('ModelSettingsAvailabilityTest', function() {
     assertFalse(model.settings.pinValue.available);
     assertFalse(model.settings.pinValue.setFromUi);
   });
-  // </if>
 });

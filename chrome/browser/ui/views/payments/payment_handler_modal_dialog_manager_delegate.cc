@@ -32,7 +32,8 @@ void PaymentHandlerModalDialogManagerDelegate::SetWebContentsBlocked(
 }
 
 web_modal::WebContentsModalDialogHost*
-PaymentHandlerModalDialogManagerDelegate::GetWebContentsModalDialogHost() {
+PaymentHandlerModalDialogManagerDelegate::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
   if (!host_web_contents_) {
     return nullptr;
   }
@@ -47,7 +48,8 @@ PaymentHandlerModalDialogManagerDelegate::GetWebContentsModalDialogHost() {
   // Borrow the browser's WebContentModalDialogHost to display modal dialogs
   // triggered by the payment handler's web view (e.g. WebAuthn and Secure
   // Payment Confirmation dialogs).
-  return dialog_manager->GetWebContentsModalDialogHost();
+  return dialog_manager->GetWebContentsModalDialogHost(
+      host_web_contents_.get());
 }
 
 bool PaymentHandlerModalDialogManagerDelegate::IsWebContentsVisible(

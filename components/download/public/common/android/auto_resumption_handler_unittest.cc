@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/mock_callback.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
@@ -65,7 +66,6 @@ class AutoResumptionHandlerTest : public testing::Test {
     task_manager_ = task_manager.get();
     auto config = std::make_unique<AutoResumptionHandler::Config>();
     config->auto_resumption_size_limit = 100;
-    config->is_auto_resumption_enabled_in_native = true;
     clock_.SetNow(GetNow());
 
     auto_resumption_handler_ = std::make_unique<AutoResumptionHandler>(
@@ -285,8 +285,11 @@ TEST_F(AutoResumptionHandlerTest,
   // Start the task. It should resume all downloads.
   EXPECT_CALL(*item.get(), Resume(_)).Times(1);
   TaskFinishedCallback callback;
+  base::MockCallback<AutoResumptionHandler::TaskNotifyCallback> notify_callback;
+  EXPECT_CALL(notify_callback, Run(_)).Times(1);
   auto_resumption_handler_->OnStartScheduledTask(
-      DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK, std::move(callback));
+      DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK, std::move(callback),
+      notify_callback.Get());
   task_runner_->FastForwardUntilNoTasksRemain();
 }
 
@@ -307,8 +310,11 @@ TEST_F(AutoResumptionHandlerTest, ExpiredDownloadNotAutoResumed) {
   EXPECT_CALL(*item0.get(), Resume(_)).Times(0);
 
   TaskFinishedCallback callback;
+  base::MockCallback<AutoResumptionHandler::TaskNotifyCallback> notify_callback;
+  EXPECT_CALL(notify_callback, Run(_)).Times(0);
   auto_resumption_handler_->OnStartScheduledTask(
-      DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK, std::move(callback));
+      DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK, std::move(callback),
+      notify_callback.Get());
   task_runner_->FastForwardUntilNoTasksRemain();
 }
 
@@ -320,8 +326,11 @@ TEST_F(AutoResumptionHandlerTest, DownloadWithoutTargetPathNotAutoResumed) {
   task_runner_->FastForwardUntilNoTasksRemain();
 
   EXPECT_CALL(*item.get(), Resume(_)).Times(0);
+  base::MockCallback<AutoResumptionHandler::TaskNotifyCallback> notify_callback;
+  EXPECT_CALL(notify_callback, Run(_)).Times(0);
   auto_resumption_handler_->OnStartScheduledTask(
-      DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK, base::DoNothing());
+      DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK, base::DoNothing(),
+      notify_callback.Get());
   task_runner_->FastForwardUntilNoTasksRemain();
 }
 

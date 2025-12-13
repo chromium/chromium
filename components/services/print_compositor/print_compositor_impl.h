@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SERVICES_PRINT_COMPOSITOR_PRINT_COMPOSITOR_IMPL_H_
 #define COMPONENTS_SERVICES_PRINT_COMPOSITOR_PRINT_COMPOSITOR_IMPL_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -318,13 +317,6 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
 // Draw the watermark specified by `watermark_block` using the provided canvas
 // and its size. Exposed for testing.
 void DrawEnterpriseWatermark(
-    SkCanvas* canvas,
-    SkSize size,
-    const watermark::mojom::WatermarkBlockPtr& watermark_block);
-
-// Helper function to draw the watermark block without checking for feature
-// flags. Exposed for testing.
-void DrawWatermarkBlockForTesting(
     SkCanvas* canvas,
     SkSize size,
     const watermark::mojom::WatermarkBlockPtr& watermark_block);

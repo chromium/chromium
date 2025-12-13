@@ -1033,75 +1033,84 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'Selection', async function() {
   await mockFeedback.replay();
 });
 
-AX_TEST_F('ChromeVoxBackgroundTest', 'BasicTableCommands', async function() {
-  const mockFeedback = this.createMockFeedback();
-  const site = `
+// TODO(crbug.com/388867840): Investigate and re-enable once manifest v3
+// launches.
+AX_TEST_F(
+    'ChromeVoxBackgroundTest', 'MAYBE_BasicTableCommands', async function() {
+      const mockFeedback = this.createMockFeedback();
+      const site = `
   <table border=1>
     <tr><td>name</td><td>title</td><td>address</td><td>phone</td></tr>
     <tr><td>Dan</td><td>Mr</td><td>666 Elm Street</td><td>212 222 5555</td></tr>
   </table>
   `;
-  const root = await this.runWithLoadedTree(site);
-  mockFeedback.call(doCmd('nextRow'))
-      .expectSpeech('Dan', 'row 2 column 1')
-      .call(doCmd('previousRow'))
-      .expectSpeech('name', 'row 1 column 1')
-      .call(doCmd('previousRow'))
-      .expectSpeech('No cell above')
-      .call(doCmd('nextCol'))
-      .expectSpeech('title', 'row 1 column 2')
-      .call(doCmd('nextRow'))
-      .expectSpeech('Mr', 'row 2 column 2')
-      .call(doCmd('previousRow'))
-      .expectSpeech('title', 'row 1 column 2')
-      .call(doCmd('nextCol'))
-      .expectSpeech('address', 'row 1 column 3')
-      .call(doCmd('nextCol'))
-      .expectSpeech('phone', 'row 1 column 4')
-      .call(doCmd('nextCol'))
-      .expectSpeech('No cell right')
-      .call(doCmd('previousRow'))
-      .expectSpeech('No cell above')
-      .call(doCmd('nextRow'))
-      .expectSpeech('212 222 5555', 'row 2 column 4')
-      .call(doCmd('nextRow'))
-      .expectSpeech('No cell below')
-      .call(doCmd('nextCol'))
-      .expectSpeech('No cell right')
-      .call(doCmd('previousCol'))
-      .expectSpeech('666 Elm Street', 'row 2 column 3')
-      .call(doCmd('previousCol'))
-      .expectSpeech('Mr', 'row 2 column 2')
+      const root = await this.runWithLoadedTree(site);
+      mockFeedback.call(doCmd('nextRow'))
+          .expectSpeech('Dan', 'row 2 column 1')
+          .call(doCmd('previousRow'))
+          .expectSpeech('name', 'row 1 column 1')
+          .call(doCmd('previousRow'))
+          .expectSpeech('No cell above')
+          .call(doCmd('nextCol'))
+          .expectSpeech('title', 'row 1 column 2')
+          .call(doCmd('nextRow'))
+          .expectSpeech('Mr', 'row 2 column 2')
+          .call(doCmd('previousRow'))
+          .expectSpeech('title', 'row 1 column 2')
+          .call(doCmd('nextCol'))
+          .expectSpeech('address', 'row 1 column 3')
+          .call(doCmd('nextCol'))
+          .expectSpeech('phone', 'row 1 column 4')
+          .call(doCmd('nextCol'))
+          .expectSpeech('No cell right')
+          .call(doCmd('previousRow'))
+          .expectSpeech('No cell above')
+          .call(doCmd('nextRow'))
+          .expectSpeech('212 222 5555', 'row 2 column 4')
+          .call(doCmd('nextRow'))
+          .expectSpeech('No cell below')
+          .call(doCmd('nextCol'))
+          .expectSpeech('No cell right')
+          .call(doCmd('previousCol'))
+          .expectSpeech('666 Elm Street', 'row 2 column 3')
+          .call(doCmd('previousCol'))
+          .expectSpeech('Mr', 'row 2 column 2')
 
-      .call(doCmd('goToRowLastCell'))
-      .expectSpeech('212 222 5555', 'row 2 column 4')
-      .call(doCmd('goToRowLastCell'))
-      .expectSpeech('212 222 5555')
-      .call(doCmd('goToRowFirstCell'))
-      .expectSpeech('Dan', 'row 2 column 1')
-      .call(doCmd('goToRowFirstCell'))
-      .expectSpeech('Dan')
+          .call(doCmd('goToRowLastCell'))
+          .expectSpeech('212 222 5555', 'row 2 column 4')
+          .call(doCmd('goToRowLastCell'))
+          .expectSpeech('212 222 5555')
+          .call(doCmd('goToRowFirstCell'))
+          .expectSpeech('Dan', 'row 2 column 1')
+          .call(doCmd('goToRowFirstCell'))
+          .expectSpeech('Dan')
 
-      .call(doCmd('goToColFirstCell'))
-      .expectSpeech('name', 'row 1 column 1')
-      .call(doCmd('goToColFirstCell'))
-      .expectSpeech('name')
-      .call(doCmd('goToColLastCell'))
-      .expectSpeech('Dan', 'row 2 column 1')
-      .call(doCmd('goToColLastCell'))
-      .expectSpeech('Dan')
+          .call(doCmd('goToColFirstCell'))
+          .expectSpeech('name', 'row 1 column 1')
+          .call(doCmd('goToColFirstCell'))
+          .expectSpeech('name')
+          .call(doCmd('goToColLastCell'))
+          .expectSpeech('Dan', 'row 2 column 1')
+          .call(doCmd('goToColLastCell'))
+          .expectSpeech('Dan')
 
-      .call(doCmd('goToLastCell'))
-      .expectSpeech('212 222 5555', 'row 2 column 4')
-      .call(doCmd('goToLastCell'))
-      .expectSpeech('212 222 5555')
-      .call(doCmd('goToFirstCell'))
-      .expectSpeech('name', 'row 1 column 1')
-      .call(doCmd('goToFirstCell'))
-      .expectSpeech('name');
+          .call(doCmd('goToLastCell'))
+          .expectSpeech('212 222 5555', 'row 2 column 4')
+          .call(doCmd('goToLastCell'))
+          .expectSpeech('212 222 5555')
+          .call(doCmd('goToFirstCell'))
+          .expectSpeech('name', 'row 1 column 1')
+          .call(doCmd('goToFirstCell'))
+          .expectSpeech('name');
 
-  await mockFeedback.replay();
-});
+      await mockFeedback.replay();
+    }, `
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_BasicTableCommands DISABLED_BasicTableCommands
+#else
+#define MAYBE_BasicTableCommands BasicTableCommands
+#endif
+`);
 
 AX_TEST_F('ChromeVoxBackgroundTest', 'MissingTableCells', async function() {
   const mockFeedback = this.createMockFeedback();
@@ -3501,6 +3510,13 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'EarconPlayback', async function() {
 AX_TEST_F(
     'ChromeVoxBackgroundTest', 'MixedNavWithRangeInvalidation',
     async function() {
+      // Swap in a mock for this function. In normal circumstances, the browser
+      // will have a queue of pending events when this function is called.
+      // However, this invariant is invalidated in this test suite since we are
+      // calling directly into the BackgroundKeyboardHandler key handlers.
+      chrome.accessibilityPrivate.processPendingSpokenFeedbackEvent =
+          (id, propagate) => {};
+
       const mockFeedback = this.createMockFeedback();
       const site = `
     <p>Start</p>

@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_utils.h"
+#include "components/language/core/common/locale_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/summarize.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
@@ -60,8 +61,7 @@ optimization_guide::proto::SummarizerOutputLength ToProtoLength(
 
 AISummarizer::AISummarizer(
     AIContextBoundObjectSet& context_bound_object_set,
-    std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-        session,
+    std::unique_ptr<optimization_guide::OnDeviceSession> session,
     blink::mojom::AISummarizerCreateOptionsPtr options,
     mojo::PendingReceiver<blink::mojom::AISummarizer> receiver)
     : AIContextBoundObject(context_bound_object_set),
@@ -89,6 +89,10 @@ AISummarizer::ToProtoOptions(
   proto_options->set_output_type(ToProtoType(options->type));
   proto_options->set_output_format(ToProtoFormat(options->format));
   proto_options->set_output_length(ToProtoLength(options->length));
+  if (options->output_language && !options->output_language->code.empty()) {
+    proto_options->set_output_language(
+        language::ExtractBaseLanguage(options->output_language->code));
+  }
   return proto_options;
 }
 
@@ -103,14 +107,12 @@ std::string AISummarizer::CombineContexts(std::string_view shared,
 
 // static
 base::flat_set<std::string_view> AISummarizer::GetSupportedLanguageBaseCodes() {
-  // Comma-separated list of languages that are enabled for the Summarizer API.
+  // Comma-separated language codes to enable; or "*" enables all supported.
   const base::FeatureParam<std::string> kAISummarizationAPILanguagesEnabled{
-      &blink::features::kAISummarizationAPI, "langs", /*default_value=*/"en"};
+      &blink::features::kAISummarizationAPI, "langs", /*default=*/"en,es,ja"};
+  // TODO(crbug.com/394841624): Get supported languages from the model config.
   auto kSupportedBaseLanguages =
       base::MakeFixedFlatSet<std::string_view>({"en", "ja", "es"});
-
-  // TODO(crbug.com/394841624): Using the model execution config instead
-  // of using the hardcoded list.
   return AIUtils::RestrictSupportedLanguagesForFeature(
       base::MakeFlatSet<std::string_view>(kSupportedBaseLanguages),
       kAISummarizationAPILanguagesEnabled);
@@ -192,8 +194,7 @@ void AISummarizer::ModelExecutionCallback(
 
   if (!result.response.has_value()) {
     AIUtils::SendStreamingStatus(
-        responder,
-        AIUtils::ConvertModelExecutionError(result.response.error().error()));
+        responder, AIUtils::ConvertOnDeviceError(result.response.error()));
     return;
   }
 

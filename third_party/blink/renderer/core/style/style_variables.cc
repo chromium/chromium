@@ -50,7 +50,8 @@ void StyleVariables::SetValue(const AtomicString& name, const CSSValue* value) {
 }
 
 bool StyleVariables::IsEmpty() const {
-  return data_root_->empty() && values_root_->empty();
+  return data_hash_ == 0 && values_hash_ == 0 && data_root_->empty() &&
+         values_root_->empty();
 }
 
 void StyleVariables::CollectNames(HashSet<AtomicString>& names) const {
@@ -61,10 +62,14 @@ std::ostream& operator<<(std::ostream& stream,
                          const StyleVariables& variables) {
   stream << "[";
   variables.data_root_->Serialize(
-      [](const CSSVariableData* data) { return data->Serialize(); }, stream);
+      [](const CSSVariableData* data) {
+        return data ? data->Serialize() : "(null)";
+      },
+      stream);
   stream << "][";
   variables.values_root_->Serialize(
-      [](const CSSValue* value) { return value->CssText(); }, stream);
+      [](const CSSValue* value) { return value ? value->CssText() : "(null)"; },
+      stream);
   return stream << "]";
 }
 

@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// The name of this file was chosen based on
-// https://llvm.org/svn/llvm-project/llvm/trunk/lib/Support/PrettyStackTrace.cpp.
+// The name of this file was chosen based on an #include in
+// https://github.com/llvm/llvm-project/blob/main/llvm/lib/Support/PrettyStackTrace.cpp.
 // The name of the structure it describes was chosen based on that file as well
-// as 10.9.2 cups-372.2/cups/backend/usb-darwin.c. That file also provided the
-// names and types of the fields in the structure.
+// as 10.9
+// https://github.com/apple-oss-distributions/cups/blame/cups-372/cups/backend/usb-darwin.c.
 //
 // This file is intended to be included multiple times in the same translation
 // unit, so #include guards are intentionally absent.
@@ -26,8 +26,8 @@
 // accessors. This file is also used by the iOS in process handler to read both
 // messages in client/ios_handler/in_process_intermediate_dump_handler.cc.
 
-// Client Mach-O images will contain a __DATA,__crash_info section formatted
-// according to this structure.
+// Client Mach-O images will contain a __DATA,__crash_info or
+// __DATA_DIRTY,__crash_info section formatted according to this structure.
 //
 // crashreporter_annotations_t is variable-length. Its length dictated by its
 // |version| field which is always present. A custom implementation of the
@@ -45,6 +45,9 @@ PROCESS_TYPE_STRUCT_BEGIN(crashreporter_annotations_t)
   PROCESS_TYPE_STRUCT_VERSIONED(crashreporter_annotations_t, version)
 
   // Version 4 (OS X 10.7)
+  //
+  // From 10.9
+  // https://github.com/apple-oss-distributions/cups/blame/cups-372/cups/backend/usb-darwin.c.
   PROCESS_TYPE_STRUCT_MEMBER(uint64_t, message)  // char*
   PROCESS_TYPE_STRUCT_MEMBER(uint64_t, signature_string)  // char*
   PROCESS_TYPE_STRUCT_MEMBER(uint64_t, backtrace)  // char*
@@ -53,7 +56,27 @@ PROCESS_TYPE_STRUCT_BEGIN(crashreporter_annotations_t)
   PROCESS_TYPE_STRUCT_MEMBER(uint64_t, dialog_mode)  // unsigned int
 
   // Version 5 (OS X 10.11)
-  PROCESS_TYPE_STRUCT_MEMBER(uint64_t, unknown_0)
+  //
+  // Empirically, this is 8 bytes longer than a version 4 structure. It being a
+  // single field named abort_cause is gleaned from
+  // https://github.com/llvm/llvm-project/commit/8c345dcb9b1d3a5b0f8b6a81c7c8531b435ff3e2.
+  PROCESS_TYPE_STRUCT_MEMBER(uint64_t, abort_cause)
+
+  // Version 7 (macOS 26)
+  //
+  // Empirically, the version 7 structure is 328 bytes long. The exact meaning
+  // of the extended structure is unknown.
+  //
+  // TODO: Look to a future version of llvm’s
+  // llvm/lib/Support/PrettyStackTrace.cpp or
+  // https://github.com/WebKit/WebKit/blob/main/Source/WTF/wtf/spi/cocoa/CrashReporterClientSPI.h
+  // to aid in understanding. However, this may not be fruitful:
+  // https://github.com/llvm/llvm-project/commit/0b7cbd23a043ea4c14bd13ccd737049d38f64b5d
+  // (https://github.com/llvm/llvm-project/pull/123978) indicates that
+  // `CRASHREPORTER_ANNOTATIONS_INITIALIZER` may be used as the initializer,
+  // which would provide no additional information about the arrangement of
+  // structure members without <CrashReporterClient.h>.
+  PROCESS_TYPE_STRUCT_MEMBER(uint64_t, unknown_0, [33])
 PROCESS_TYPE_STRUCT_END(crashreporter_annotations_t)
 
 #endif  // ! PROCESS_TYPE_STRUCT_IMPLEMENT_INTERNAL_READ_INTO &&

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/test/fuzzing/renderer_fuzzing/in_process_renderer_fuzzing.h"
 #include "chrome/test/fuzzing/renderer_fuzzing/testcase.h"
 #include "testing/libfuzzer/renderer_fuzzing/renderer_fuzzing.h"

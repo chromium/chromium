@@ -58,6 +58,35 @@
               },
               "run_tests_serially": true
             }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "Win11 FYI arm64 Release (Qualcomm Snapdragon X Elite)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "win"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Win arm64 Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true
+            }
           }
         ]
       },
@@ -73,15 +102,25 @@
           "bucket": "ci",
           "builder": "Win11 FYI arm64 Release (Qualcomm Adreno 690)",
           "project": "chromium"
+        },
+        {
+          "bucket": "ci",
+          "builder": "Win11 FYI arm64 Release (Qualcomm Snapdragon X Elite)",
+          "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
           "builder": "gpu-fyi-try-win11-qualcomm-rel-64",
           "group": "tryserver.chromium.win"
+        },
+        {
+          "builder": "gpu-fyi-try-win11-qualcomm-snapdragon-x-elite-rel-64",
+          "group": "tryserver.chromium.win"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU FYI Win arm64 Builder/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/GPU FYI Win arm64 Builder/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

@@ -25,7 +25,7 @@ DeviceAuthenticatorBridgeImpl::DeviceAuthenticatorBridgeImpl(
 }
 
 DeviceAuthenticatorBridgeImpl::DeviceAuthenticatorBridgeImpl(
-    const base::android::JavaParamRef<jobject>& activity) {
+    const base::android::JavaRef<jobject>& activity) {
   java_object_ = Java_DeviceAuthenticatorBridge_createForActivity(
       AttachCurrentThread(), reinterpret_cast<intptr_t>(this), activity);
 }
@@ -65,3 +65,5 @@ void DeviceAuthenticatorBridgeImpl::OnAuthenticationCompleted(JNIEnv* env,
   }
   std::move(response_callback_).Run(static_cast<DeviceAuthUIResult>(result));
 }
+
+DEFINE_JNI(DeviceAuthenticatorBridge)

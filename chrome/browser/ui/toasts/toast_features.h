@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_TOASTS_TOAST_FEATURES_H_
 
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 
 namespace toast_features {
@@ -19,7 +18,6 @@ BASE_DECLARE_FEATURE(kLinkToHighlightCopiedToast);
 BASE_DECLARE_FEATURE(kReadingListToast);
 BASE_DECLARE_FEATURE(kLensOverlayToast);
 BASE_DECLARE_FEATURE(kClearBrowsingDataToast);
-BASE_DECLARE_FEATURE(kPinnedTabToastOnClose);
 
 // Wrapper function used to check if a specific toast feature is enabled. Must
 // be used for toasts that are part of demo mode.

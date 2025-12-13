@@ -6,10 +6,13 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<org.chromium.chrome.browser.composeplate.ComposeplateView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/composeplate_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     android:orientation="horizontal">
 
     <org.chromium.ui.widget.ChromeImageView
@@ -33,4 +36,4 @@ found in the LICENSE file.
         android:src="@drawable/lens_camera_icon"
         style="@style/ComposeplateViewButton"/>
 
-</LinearLayout>
+</org.chromium.chrome.browser.composeplate.ComposeplateView>

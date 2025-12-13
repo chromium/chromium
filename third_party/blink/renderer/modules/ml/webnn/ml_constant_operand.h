@@ -27,6 +27,10 @@ class MODULES_EXPORT MLConstantOperand final : public MLOperand {
   MLConstantOperand(MLGraphBuilder* builder,
                     webnn::OperandDescriptor descriptor);
 
+  MLConstantOperand(MLGraphBuilder* builder,
+                    webnn::OperandDescriptor descriptor,
+                    WebNNPendingConstantToken handle);
+
   // Similar to above but uses a tensor for weight data.
   MLConstantOperand(MLGraphBuilder* builder, MLTensor* tensor);
 
@@ -40,6 +44,8 @@ class MODULES_EXPORT MLConstantOperand final : public MLOperand {
   const WebNNPendingConstantToken& handle() const { return handle_; }
 
   const MLTensor* tensor() const { return tensor_; }
+
+  void SetPendingPermutation(base::span<const uint32_t> permutation);
 
  private:
   // Identifies this constant operand in the WebNN service.

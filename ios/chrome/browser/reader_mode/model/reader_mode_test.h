@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -27,12 +28,14 @@ class ReaderModeTest : public PlatformTest {
 
  protected:
   void SetUp() override;
+  void TearDown() override;
 
   // Creates a fake web state for use in Reader Mode functions.
   std::unique_ptr<web::FakeWebState> CreateWebState();
 
   // Controls for displaying Reading Mode UI on the fake web state.
-  void EnableReaderMode(web::WebState* web_state);
+  void EnableReaderMode(web::WebState* web_state,
+                        ReaderModeAccessPoint access_point);
   void DisableReaderMode(web::WebState* web_state);
 
   // Loads the web page with fake HTML content and commits the URL.
@@ -45,8 +48,11 @@ class ReaderModeTest : public PlatformTest {
                           ReaderModeHeuristicResult eligibility,
                           std::string distilled_content);
 
-  // Waits for Reader Mode content to be loaded and ready to query.
-  void WaitForReaderModeContentReady();
+  // Waits after a page load for the page content to be distillable.
+  void WaitForPageLoadDelayAndRunUntilIdle();
+
+  // Waits for Reader mode content availability.
+  bool WaitForAvailableReaderModeContentInWebState(web::WebState* web_state);
 
   web::WebTaskEnvironment* task_environment() { return &task_environment_; }
 
@@ -61,6 +67,7 @@ class ReaderModeTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 
   std::unique_ptr<TestProfileIOS> profile_;
 

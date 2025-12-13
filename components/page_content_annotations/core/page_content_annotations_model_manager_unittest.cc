@@ -5,6 +5,7 @@
 #include "components/page_content_annotations/core/page_content_annotations_model_manager.h"
 
 #include "base/containers/flat_map.h"
+#include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -32,6 +33,7 @@ class ModelObserverTracker
   void AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OptimizationTarget target,
       const std::optional<optimization_guide::proto::Any>& model_metadata,
+      scoped_refptr<base::SequencedTaskRunner> model_task_runner,
       optimization_guide::OptimizationTargetModelObserver* observer) override {
     registered_model_metadata_.insert_or_assign(target, model_metadata);
   }

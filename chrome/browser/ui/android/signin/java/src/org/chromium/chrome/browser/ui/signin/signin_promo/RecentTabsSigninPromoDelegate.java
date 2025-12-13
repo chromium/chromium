@@ -23,6 +23,8 @@ import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -36,7 +38,7 @@ import java.lang.annotation.RetentionPolicy;
 public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
 
     /** Indicates the type of content the should be shown in the visible promo. */
-    @IntDef({PromoState.NONE, PromoState.SIGNIN})
+    @IntDef({PromoState.NONE, PromoState.SIGNIN, PromoState.HISTORY_SYNC})
     @Retention(RetentionPolicy.SOURCE)
     private @interface PromoState {
         /** No promo should be shown. */
@@ -44,6 +46,12 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
 
         /** The promo content should promote sign-in. Shown to signed-out user. */
         int SIGNIN = 1;
+
+        /**
+         * The promo content should promote enabling history and tabs sync in the settings. Shown to
+         * signed-in user with history and tabs sync disabled in settings.
+         */
+        int HISTORY_SYNC = 2;
     }
 
     private final String mPromoShowCountPreferenceName;
@@ -63,12 +71,71 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
 
     @Override
     String getTitle() {
-        return mContext.getString(R.string.signin_promo_title_recent_tabs);
+        @SigninFeatureMap.SeamlessSigninStringType
+        int seamlessSigninStringType = SigninFeatureMap.getInstance().getSeamlessSigninStringType();
+        switch (mPromoState) {
+            case PromoState.SIGNIN:
+                if (seamlessSigninStringType
+                        == SigninFeatureMap.SeamlessSigninStringType.SIGNIN_BUTTON) {
+                    return mContext.getString(R.string.signin_history_sync_promo_title_recent_tabs);
+                }
+                if (seamlessSigninStringType
+                        == SigninFeatureMap.SeamlessSigninStringType.CONTINUE_BUTTON) {
+                    return mContext.getString(R.string.signin_account_picker_bottom_sheet_title);
+                }
+                return mContext.getString(R.string.signin_promo_title_recent_tabs);
+            case PromoState.HISTORY_SYNC:
+                return mContext.getString(R.string.signin_history_sync_promo_title_recent_tabs);
+            case PromoState.NONE:
+            default:
+                throw new IllegalStateException("Forbidden promo type: " + mPromoState);
+        }
     }
 
     @Override
-    String getDescription() {
-        return mContext.getString(R.string.signin_promo_description_recent_tabs);
+    String getDescription(@Nullable String accountEmail) {
+        @SigninFeatureMap.SeamlessSigninPromoType
+        int seamlessSigninPromoType = SigninFeatureMap.getInstance().getSeamlessSigninPromoType();
+        @SigninFeatureMap.SeamlessSigninStringType
+        int seamlessSigninStringType = SigninFeatureMap.getInstance().getSeamlessSigninStringType();
+        switch (mPromoState) {
+            case PromoState.SIGNIN:
+                if (accountEmail == null
+                        && seamlessSigninStringType
+                                != SigninFeatureMap.SeamlessSigninStringType.NON_SEAMLESS) {
+                    return mContext.getString(
+                            R.string.signin_promo_description_recent_tabs_no_accounts);
+                }
+                if (seamlessSigninStringType
+                        == SigninFeatureMap.SeamlessSigninStringType.CONTINUE_BUTTON) {
+                    if (seamlessSigninPromoType
+                            == SigninFeatureMap.SeamlessSigninPromoType.TWO_BUTTONS) {
+                        return mContext.getString(
+                                R.string.signin_promo_description_recent_tabs_group1, accountEmail);
+                    } else if (seamlessSigninPromoType
+                            == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
+                        return mContext.getString(
+                                R.string.signin_promo_description_recent_tabs_group2);
+                    }
+                } else if (seamlessSigninStringType
+                        == SigninFeatureMap.SeamlessSigninStringType.SIGNIN_BUTTON) {
+                    if (seamlessSigninPromoType
+                            == SigninFeatureMap.SeamlessSigninPromoType.TWO_BUTTONS) {
+                        return mContext.getString(
+                                R.string.signin_promo_description_recent_tabs_group3, accountEmail);
+                    } else if (seamlessSigninPromoType
+                            == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
+                        return mContext.getString(
+                                R.string.signin_promo_description_recent_tabs_group4);
+                    }
+                }
+                return mContext.getString(R.string.signin_promo_description_recent_tabs);
+            case PromoState.HISTORY_SYNC:
+                return mContext.getString(R.string.signin_promo_description_recent_tabs);
+            case PromoState.NONE:
+            default:
+                throw new IllegalStateException("Forbidden promo type: " + mPromoState);
+        }
     }
 
     @Override
@@ -102,7 +169,15 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
     }
 
     @Override
+    boolean isSeamlessSigninAllowed() {
+        return SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
+    }
+
+    @Override
     boolean shouldHideSecondaryButton() {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
+            return mPromoState != PromoState.SIGNIN;
+        }
         return true;
     }
 
@@ -113,7 +188,18 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
 
     @Override
     String getTextForPrimaryButton(@Nullable DisplayableProfileData profileData) {
-        return mContext.getString(R.string.signin_promo_turn_on);
+        switch (mPromoState) {
+            case PromoState.SIGNIN:
+                if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)) {
+                    return super.getTextForPrimaryButton(profileData);
+                }
+                return mContext.getString(R.string.signin_promo_turn_on);
+            case PromoState.HISTORY_SYNC:
+                return mContext.getString(R.string.signin_promo_turn_on);
+            case PromoState.NONE:
+            default:
+                throw new IllegalStateException("Forbidden promo type: " + mPromoState);
+        }
     }
 
     @Override
@@ -132,6 +218,11 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
         return ChromeSharedPreferences.getInstance().readInt(mPromoShowCountPreferenceName);
     }
 
+    @Override
+    boolean shouldDisplaySignedInLayout() {
+        return mPromoState == PromoState.HISTORY_SYNC;
+    }
+
     private @PromoState int computePromoState() {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(mProfile);
@@ -144,6 +235,12 @@ public class RecentTabsSigninPromoDelegate extends SigninPromoDelegate {
             return PromoState.NONE;
         }
         final HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(mProfile);
-        return historySyncHelper.shouldSuppressHistorySync() ? PromoState.NONE : PromoState.SIGNIN;
+        if (!historySyncHelper.shouldDisplayHistorySync()) {
+            return PromoState.NONE;
+        }
+        if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+                return PromoState.HISTORY_SYNC;
+        }
+        return PromoState.SIGNIN;
     }
 }

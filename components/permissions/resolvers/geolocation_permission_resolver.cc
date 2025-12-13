@@ -9,28 +9,33 @@
 
 #include "base/debug/stack_trace.h"
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
-
-namespace {
-content::PermissionStatus GeolocationOptionToPermissionStatus(
-    PermissionOption option) {
-  switch (option) {
-    case PermissionOption::kAsk:
-      return content::PermissionStatus::ASK;
-    case PermissionOption::kAllowed:
-      return content::PermissionStatus::GRANTED;
-    case PermissionOption::kDenied:
-      return content::PermissionStatus::DENIED;
-  }
-}
-}  // namespace
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-forward.h"
 
 namespace permissions {
+
+namespace {
+
+blink::mojom::PermissionStatus PermissionOptionToPermissionStatus(
+    PermissionOption permission_option) {
+  switch (permission_option) {
+    case PermissionOption::kAllowed:
+      return blink::mojom::PermissionStatus::GRANTED;
+    case PermissionOption::kDenied:
+      return blink::mojom::PermissionStatus::DENIED;
+    case PermissionOption::kAsk:
+      return blink::mojom::PermissionStatus::ASK;
+  }
+  NOTREACHED();
+}
+
+}  // namespace
 
 GeolocationPermissionResolver::GeolocationPermissionResolver(
     bool requested_precise)
@@ -41,10 +46,13 @@ blink::mojom::PermissionStatus
 GeolocationPermissionResolver::DeterminePermissionStatus(
     const PermissionSetting& setting) const {
   GeolocationSetting geo_setting = std::get<GeolocationSetting>(setting);
-
-  return requested_precise_
-             ? GeolocationOptionToPermissionStatus(geo_setting.precise)
-             : GeolocationOptionToPermissionStatus(geo_setting.approximate);
+  blink::mojom::PermissionStatus precise_status =
+      PermissionOptionToPermissionStatus(geo_setting.precise);
+  if (requested_precise_ &&
+      precise_status != blink::mojom::PermissionStatus::DENIED) {
+    return precise_status;
+  }
+  return PermissionOptionToPermissionStatus(geo_setting.approximate);
 }
 
 PermissionSetting
@@ -64,12 +72,20 @@ GeolocationPermissionResolver::ComputePermissionDecisionResult(
         if (auto* geo_options =
                 std::get_if<GeolocationPromptOptions>(&prompt_options)) {
           // If the user downgraded the request, we consider precise as blocked.
-          setting.precise = geo_options->selected_precise
-                                ? PermissionOption::kAllowed
-                                : PermissionOption::kDenied;
-        } else {
-          setting.precise = PermissionOption::kAllowed;
+          switch (geo_options->selected_accuracy) {
+            case GeolocationAccuracy::kPrecise:
+              setting.precise = PermissionOption::kAllowed;
+              break;
+            case GeolocationAccuracy::kApproximate:
+              setting.precise = PermissionOption::kDenied;
+              break;
+          }
         }
+        // If the prompt_options are not set it means that this did not go
+        // through a prompt, so let's just keep the value in previous setting.
+        //
+        // TODO(https://crbug.com/450752868): This implicit logic is fragile.
+        // Find out how to improve this.
       }
       break;
     case PermissionDecision::kNone:

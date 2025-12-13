@@ -1,4 +1,4 @@
-// Copyright 2024 TF.Text Authors.
+// Copyright 2025 TF.Text Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -194,6 +194,8 @@ class FastBertNormalizer {
     auto copy_unchanged_input_to_output =
         [input_text, output_normalized_text, output_normalized_offset_mapping,
          &last_pos_to_copy_over](int exclusive_copy_end) {
+          output_normalized_offset_mapping->resize(
+              output_normalized_offset_mapping->size());
           // Copy from `last_pos_to_copy_over` to `exclusive_copy_end` and
           // update `last_pos_to_copy_over` accordingly.
           if (last_pos_to_copy_over < exclusive_copy_end) {

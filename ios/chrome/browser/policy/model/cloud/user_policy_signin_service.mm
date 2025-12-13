@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
 
+#import "base/feature_list.h"
 #import "base/logging.h"
 #import "base/time/time.h"
+#import "components/enterprise/browser/identifiers/profile_id_service.h"
+#import "components/enterprise/browser/reporting/common_pref_names.h"
 #import "components/policy/core/browser/cloud/user_policy_signin_service_util.h"
 #import "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 #import "components/policy/core/common/policy_logger.h"
@@ -16,6 +19,7 @@
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "google_apis/gaia/core_account_id.h"
 #import "google_apis/gaia/gaia_auth_util.h"
+#import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -44,6 +48,7 @@ namespace policy {
 UserPolicySigninService::UserPolicySigninService(
     PrefService* pref_service,
     PrefService* local_state,
+    enterprise::ProfileIdService* profile_id_service,
     DeviceManagementService* device_management_service,
     UserCloudPolicyManager* policy_manager,
     signin::IdentityManager* identity_manager,
@@ -53,9 +58,14 @@ UserPolicySigninService::UserPolicySigninService(
                                   policy_manager,
                                   identity_manager,
                                   system_url_loader_factory),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      profile_id_service_(profile_id_service) {
   if (identity_manager) {
     scoped_identity_manager_observation_.Observe(identity_manager);
+  }
+  if (base::FeatureList::IsEnabled(
+          enterprise_reporting::kCloudProfileReporting)) {
+    CHECK(profile_id_service_);
   }
 
   TryInitialize();
@@ -75,6 +85,14 @@ void UserPolicySigninService::OnPrimaryAccountChanged(
     ShutdownCloudPolicyManager();
   } else if (AreSeparateProfilesForManagedAccountsEnabled()) {
     TryInitialize();
+  }
+}
+
+void UserPolicySigninService::OnPolicyFetched(CloudPolicyClient* client) {
+  std::optional<std::string> profile_id = client->profile_id();
+  if (profile_id.has_value() && !profile_id.value().empty()) {
+    pref_service_->SetBoolean(
+        enterprise_reporting::kPoliciesEverFetchedWithProfileId, true);
   }
 }
 
@@ -107,6 +125,10 @@ bool UserPolicySigninService::CanApplyPolicies(bool check_for_refresh_token) {
 }
 
 std::string UserPolicySigninService::GetProfileId() {
+  if (base::FeatureList::IsEnabled(
+          enterprise_reporting::kCloudProfileReporting)) {
+    return profile_id_service_->GetProfileId().value_or(std::string());
+  }
   // Profile ID hasn't been implemented on iOS yet.
   return std::string();
 }

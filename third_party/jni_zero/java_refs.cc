@@ -103,7 +103,7 @@ void ScopedJavaGlobalWeakRef::reset() {
 
 ScopedJavaLocalRef<jobject> ScopedJavaGlobalWeakRef::get(JNIEnv* env) const {
   jobject real = obj_ ? real = env->NewLocalRef(obj_) : nullptr;
-  return ScopedJavaLocalRef<jobject>(env, real);
+  return ScopedJavaLocalRef<jobject>::Adopt(env, real);
 }
 
 void ScopedJavaGlobalWeakRef::Assign(const ScopedJavaGlobalWeakRef& other) {

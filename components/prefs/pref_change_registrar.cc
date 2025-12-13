@@ -8,8 +8,18 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "components/prefs/pref_service.h"
+
+namespace {
+
+// Returns a copy of `view`.
+std::string CopyStringView(std::string_view view) {
+  return std::string(view);
+}
+
+}  // namespace
 
 PrefChangeRegistrar::PrefChangeRegistrar() : service_(nullptr) {}
 
@@ -36,21 +46,32 @@ void PrefChangeRegistrar::Reset() {
 }
 
 void PrefChangeRegistrar::Add(std::string_view path,
-                              const base::RepeatingClosure& obs) {
-  Add(path,
-      base::BindRepeating(&PrefChangeRegistrar::InvokeUnnamedCallback, obs));
+                              base::RepeatingClosure obs) {
+  Add(path, base::IgnoreArgs<std::string_view>(std::move(obs)));
+}
+
+void PrefChangeRegistrar::Add(std::string_view path, NamedChangeCallback obs) {
+  Add(path, base::BindRepeating(&CopyStringView).Then(std::move(obs)));
 }
 
 void PrefChangeRegistrar::Add(std::string_view path,
-                              const NamedChangeCallback& obs) {
+                              NamedChangeAsViewCallback obs) {
   if (!service_) {
     NOTREACHED();
   }
-  DCHECK(!IsObserved(path)) << "Already had pref, \"" << path
-                            << "\", registered.";
+  DCHECK(!IsObserved(path))
+      << "Already had pref, \"" << path << "\", registered.";
 
   service_->AddPrefObserver(path, this);
-  observers_.insert_or_assign(std::string(path), obs);
+  observers_.insert_or_assign(std::string(path), std::move(obs));
+}
+
+void PrefChangeRegistrar::AddMultiple(
+    const std::initializer_list<std::string_view>& paths,
+    base::RepeatingClosure obs) {
+  for (std::string_view path : paths) {
+    Add(path, obs);
+  }
 }
 
 void PrefChangeRegistrar::Remove(std::string_view path) {
@@ -63,9 +84,8 @@ void PrefChangeRegistrar::Remove(std::string_view path) {
 }
 
 void PrefChangeRegistrar::RemoveAll() {
-  for (ObserverMap::const_iterator it = observers_.begin();
-       it != observers_.end(); ++it) {
-    service_->RemovePrefObserver(it->first, this);
+  for (const auto& [key, _] : observers_) {
+    service_->RemovePrefObserver(key, this);
   }
 
   observers_.clear();
@@ -79,19 +99,15 @@ bool PrefChangeRegistrar::IsObserved(std::string_view pref) {
   return observers_.find(pref) != observers_.end();
 }
 
-void PrefChangeRegistrar::OnPreferenceChanged(PrefService* service,
-                                              std::string_view pref) {
-  if (auto it = observers_.find(pref); it != observers_.end()) {
-    // TODO: crbug.com/349741884 - Consider changing the callback to accept a
-    // string_view.
-    it->second.Run(std::string(pref));
-  }
+void PrefChangeRegistrar::OnServiceDestroyed(PrefService* service) {
+  Reset();
 }
 
-void PrefChangeRegistrar::InvokeUnnamedCallback(
-    const base::RepeatingClosure& callback,
-    const std::string& pref_name) {
-  callback.Run();
+void PrefChangeRegistrar::OnPreferenceChanged(PrefService* service,
+                                              std::string_view pref) {
+  if (auto iter = observers_.find(pref); iter != observers_.end()) {
+    iter->second.Run(pref);
+  }
 }
 
 PrefService* PrefChangeRegistrar::prefs() {

@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 #include "media/base/media_switches.h"
@@ -298,9 +297,7 @@ class CdmWrapperImpl : public CdmWrapper {
     void operator()(CdmInterface* cdm) const { cdm->Destroy(); }
   };
 
-  explicit CdmWrapperImpl(CdmInterface* cdm) : cdm_(cdm) {
-    CHECK(cdm_, base::NotFatalUntil::M140);
-  }
+  explicit CdmWrapperImpl(CdmInterface* cdm) : cdm_(cdm) { CHECK(cdm_); }
 
   std::unique_ptr<CdmInterface, CdmDeleter> cdm_;
 };

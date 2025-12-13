@@ -433,7 +433,7 @@ def _ComputeTagForPath(path):
   if stat_result.st_size > 1 * 1024 * 1024:
     # Fallback to mtime for large files so that md5_check does not take too long
     # to run.
-    return stat_result.st_mtime
+    return int(stat_result.st_mtime)
   md5 = hashlib.md5()
   with open(path, 'rb') as f:
     md5.update(f.read())

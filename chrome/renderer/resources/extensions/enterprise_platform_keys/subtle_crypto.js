@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var utils = require('utils');
-var internalAPI = getInternalApi('enterprise.platformKeysInternal');
-var intersect = require('platformKeys.utils').intersect;
-var subtleCryptoModule = require('platformKeys.SubtleCrypto');
-var SubtleCryptoImpl = subtleCryptoModule.SubtleCryptoImpl;
-var catchInvalidTokenError = subtleCryptoModule.catchInvalidTokenError;
-var KeyPair = require('enterprise.platformKeys.CryptoKey').KeyPair;
-var SymKey = require('enterprise.platformKeys.CryptoKey').SymKey;
-var KeyUsage = require('platformKeys.Key').KeyUsage;
+const utils = require('utils');
+const internalAPI = getInternalApi('enterprise.platformKeysInternal');
+const intersect = require('platformKeys.utils').intersect;
+const subtleCryptoModule = require('platformKeys.SubtleCrypto');
+const SubtleCryptoImpl = subtleCryptoModule.SubtleCryptoImpl;
+const catchInvalidTokenError = subtleCryptoModule.catchInvalidTokenError;
+const KeyPair = require('enterprise.platformKeys.CryptoKey').KeyPair;
+const SymKey = require('enterprise.platformKeys.CryptoKey').SymKey;
+const KeyUsage = require('platformKeys.Key').KeyUsage;
 
-var normalizeAlgorithm =
+const normalizeAlgorithm =
     requireNative('platform_keys_natives').NormalizeAlgorithm;
 
 // The following errors are specified in WebCrypto.
@@ -74,12 +74,12 @@ function isSupportedGenerateKeyAlgorithm(algorithmParams) {
 // exponent 65537. In particular, it ignores leading zeros as required by the
 // BigInteger definition in WebCrypto.
 function equalsStandardPublicExponent(array) {
-  var expected = [0x01, 0x00, 0x01];
+  const expected = [0x01, 0x00, 0x01];
   if (array.length < expected.length) {
     return false;
   }
-  for (var i = 0; i < array.length; i++) {
-    var expectedDigit = 0;
+  for (let i = 0; i < array.length; i++) {
+    let expectedDigit = 0;
     if (i < expected.length) {
       // `expected` is symmetric, endianness doesn't matter.
       expectedDigit = expected[i];
@@ -133,9 +133,9 @@ function EnterpriseSubtleCryptoImpl(tokenId, softwareBacked) {
 EnterpriseSubtleCryptoImpl.prototype =
     $Object.create(SubtleCryptoImpl.prototype);
 
-EnterpriseSubtleCryptoImpl.prototype.generateKey =
-    function(algorithm, extractable, keyUsages) {
-  var subtleCrypto = this;
+EnterpriseSubtleCryptoImpl.prototype.generateKey = function(
+    algorithm, extractable, keyUsages) {
+  const subtleCrypto = this;
   return new Promise(function(resolve, reject) {
     // TODO(pneubeck): Apply the algorithm normalization of the WebCrypto
     // implementation.
@@ -149,7 +149,7 @@ EnterpriseSubtleCryptoImpl.prototype.generateKey =
     if (intersect(keyUsages, allowedKeyUsages).length !== keyUsages.length) {
       throw CreateDataError();
     }
-    var normalizedAlgorithmParams =
+    const normalizedAlgorithmParams =
         normalizeAlgorithm(algorithm, 'GenerateKey');
     if (!normalizedAlgorithmParams) {
       // TODO(pneubeck): It's not clear from the WebCrypto spec which error to

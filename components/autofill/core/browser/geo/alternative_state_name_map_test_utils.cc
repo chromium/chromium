@@ -5,10 +5,9 @@
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/proto/states.pb.h"
 
-namespace autofill {
-
-namespace test {
+namespace autofill::test {
 
 void PopulateStateEntry(const TestStateEntry& test_state_entry,
                         StateEntry* state_entry) {
@@ -72,5 +71,4 @@ std::string CreateStatesProtoAsString(const std::string& country_code,
   return serialized_output;
 }
 
-}  // namespace test
-}  // namespace autofill
+}  // namespace autofill::test

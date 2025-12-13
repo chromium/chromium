@@ -34,7 +34,7 @@ sk_sp<SkColorSpace> DefaultSkColorSpace() {
   return DefaultTargetColorParams().color_space.ToSkColorSpace();
 }
 
-size_t kLockedMemoryLimitBytes = 128 * 1024 * 1024;
+constexpr size_t kLockedMemoryLimitBytes = 128 * 1024 * 1024;
 class TestSoftwareImageDecodeCache : public SoftwareImageDecodeCache {
  public:
   TestSoftwareImageDecodeCache()
@@ -55,6 +55,39 @@ SkM44 CreateMatrix(const SkSize& scale, bool is_decomposable) {
 PaintImage CreatePaintImage(int width, int height) {
   return CreateDiscardablePaintImage(gfx::Size(width, height),
                                      DefaultSkColorSpace());
+}
+
+PaintImage CreatePaintImageWithGainmap(gfx::Size base_size,
+                                       gfx::Size gain_size) {
+  PaintImage::Id id = PaintImage::GetNextId();
+
+  SkImageInfo base_info =
+      SkImageInfo::Make(base_size.width(), base_size.height(), kN32_SkColorType,
+                        kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
+
+  SkImageInfo gain_info =
+      SkImageInfo::Make(gain_size.width(), gain_size.height(), kN32_SkColorType,
+                        kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
+
+  sk_sp<FakePaintImageGenerator> base_generator =
+      sk_make_sp<FakePaintImageGenerator>(
+          base_info, std::vector<FrameMetadata>{FrameMetadata()}, true);
+
+  sk_sp<FakePaintImageGenerator> gain_generator =
+      sk_make_sp<FakePaintImageGenerator>(
+          gain_info, std::vector<FrameMetadata>{FrameMetadata()}, true);
+
+  SkGainmapInfo gainmap_info;
+
+  auto paint_image =
+      PaintImageBuilder::WithDefault()
+          .set_id(id)
+          .set_paint_image_generator(base_generator)
+          .set_gainmap_paint_image_generator(gain_generator, gainmap_info)
+          // Match behavior of CreateDiscardablePaintImage
+          .set_decoding_mode(PaintImage::DecodingMode::kUnspecified)
+          .TakePaintImage();
+  return paint_image;
 }
 
 PaintImage CreatePaintImage(int width,
@@ -1331,6 +1364,50 @@ TEST_F(SoftwareImageDecodeCacheTest, GetDecodedImageForDraw) {
   cache_.UnrefImage(draw_image);
 }
 
+TEST_F(SoftwareImageDecodeCacheTest, GetDecodedImageForDrawScaleWithGainmap) {
+  std::vector<float> scales({1.0, 0.5, 0.25});
+  for (const auto& scale : scales) {
+    int kBaseSize = 100;
+    int kGainSize = 50;
+    PaintImage paint_image = CreatePaintImageWithGainmap(
+        gfx::Size(kBaseSize, kBaseSize), gfx::Size(kGainSize, kGainSize));
+    DrawImage draw_image(
+        paint_image,
+        /*use_dark_mode=*/false, SkIRect::MakeWH(kBaseSize, kBaseSize),
+        PaintFlags::FilterQuality::kHigh,
+        CreateMatrix(SkSize::Make(scale, scale), /*is_decomposable=*/true),
+        PaintImage::kDefaultFrameIndex, DefaultTargetColorParams());
+
+    ImageDecodeCache::TaskResult result = cache_.GetTaskForImageAndRef(
+        cache_client_id_, draw_image, ImageDecodeCache::TracingInfo());
+    EXPECT_TRUE(result.need_unref);
+    EXPECT_TRUE(result.task);
+
+    TestTileTaskRunner::ProcessTask(result.task.get());
+
+    DecodedDrawImage decoded_draw_image =
+        cache_.GetDecodedImageForDraw(draw_image);
+    EXPECT_TRUE(decoded_draw_image.image());
+    EXPECT_TRUE(decoded_draw_image.gainmap_image());
+    EXPECT_EQ(scale * kBaseSize, decoded_draw_image.image()->width());
+    EXPECT_EQ(scale * kBaseSize, decoded_draw_image.image()->height());
+    // The gainmap shouldn't start being rescaled until the base image is
+    // smaller than it.
+    if (scale * kBaseSize >= kGainSize) {
+      EXPECT_EQ(kGainSize, decoded_draw_image.gainmap_image()->width());
+      EXPECT_EQ(kGainSize, decoded_draw_image.gainmap_image()->height());
+    } else {
+      EXPECT_EQ(scale * kBaseSize, decoded_draw_image.image()->width());
+      EXPECT_EQ(scale * kBaseSize, decoded_draw_image.image()->height());
+    }
+    EXPECT_EQ(PaintFlags::FilterQuality::kLow,
+              decoded_draw_image.filter_quality());
+
+    cache_.DrawWithImageFinished(draw_image, decoded_draw_image);
+    cache_.UnrefImage(draw_image);
+  }
+}
+
 TEST_F(SoftwareImageDecodeCacheTest,
        GetDecodedImageForDrawWithNonContainedSrcRect) {
   bool is_decomposable = true;
@@ -2258,7 +2335,9 @@ TEST_F(SoftwareImageDecodeCacheTest, HdrDecodeToSdr) {
       PaintImage::kDefaultFrameIndex, TargetColorParams(raster_color_space));
 
   DecodedDrawImage decoded_image = cache_.GetDecodedImageForDraw(draw_image);
-  EXPECT_NE(decoded_image.image()->colorType(), kRGBA_F16_SkColorType);
+  EXPECT_EQ(decoded_image.image()->colorType(), kRGBA_F16_SkColorType);
+  EXPECT_TRUE(SkColorSpace::Equals(decoded_image.image()->colorSpace(),
+                                   image_color_space.ToSkColorSpace().get()));
   cache_.DrawWithImageFinished(draw_image, decoded_image);
 }
 

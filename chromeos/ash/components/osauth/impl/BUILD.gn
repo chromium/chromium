@@ -19,7 +19,7 @@ component("impl") {
     "//chromeos/ash/components/early_prefs:reader",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/auth/public:authpublic",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/user_manager",
     "//ui/base",
   ]

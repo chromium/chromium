@@ -10,6 +10,6 @@ class NtpPromoRegistry;
 }
 
 // Initialize NTP promos for the browser.
-extern void MaybeRegisterNtpPromos(user_education::NtpPromoRegistry& registry);
+void MaybeRegisterNtpPromos(user_education::NtpPromoRegistry& registry);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_BROWSER_NTP_PROMOS_H_

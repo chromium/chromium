@@ -23,10 +23,10 @@
 #include "content/browser/web_package/signed_exchange_signature_header_field.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/public/browser/content_browser_client.h"
+#include "crypto/evp.h"
 #include "crypto/signature_verifier.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
-#include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
@@ -67,10 +67,9 @@ GetSignatureAlgorithm(scoped_refptr<net::X509Certificate> cert,
     return std::nullopt;
   }
 
-  CBS cbs;
-  CBS_init(&cbs, reinterpret_cast<const uint8_t*>(spki.data()), spki.size());
-  bssl::UniquePtr<EVP_PKEY> pkey(EVP_parse_public_key(&cbs));
-  if (!pkey || CBS_len(&cbs) != 0) {
+  bssl::UniquePtr<EVP_PKEY> pkey =
+      crypto::evp::PublicKeyFromBytes(base::as_byte_span(spki));
+  if (!pkey) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy, "Failed to parse public key.");
     return std::nullopt;

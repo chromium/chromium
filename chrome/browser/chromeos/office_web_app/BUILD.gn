@@ -17,7 +17,7 @@ source_set("office_web_app") {
     "//chrome/browser/ui/webui/ash/cloud_upload",
     "//chrome/browser/web_applications",
     "//components/webapps/browser",
-    "//ui/base:base",
+    "//ui/base",
     "//url",
   ]
 
@@ -33,6 +33,7 @@ source_set("unit_tests") {
   deps = [
     ":office_web_app",
     "//base/test:test_support",
+    "//chrome/browser/resources:office_web_app_resources_grit",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_app_test",
     "//chrome/browser/web_applications:web_applications_test_support",

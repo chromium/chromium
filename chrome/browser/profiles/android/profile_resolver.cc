@@ -27,7 +27,6 @@
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -181,8 +180,8 @@ std::string TokenizeProfileKey(ProfileKey* profile_key) {
 
 static void JNI_ProfileResolver_ResolveProfile(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_token,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jstring>& j_token,
+    const JavaRef<jobject>& j_callback) {
   if (!j_token.obj()) {
     base::android::RunObjectCallbackAndroid(j_callback,
                                             ScopedJavaLocalRef<jobject>());
@@ -198,8 +197,8 @@ static void JNI_ProfileResolver_ResolveProfile(
 
 static void JNI_ProfileResolver_ResolveProfileKey(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_token,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jstring>& j_token,
+    const JavaRef<jobject>& j_callback) {
   if (!j_token.obj()) {
     base::android::RunObjectCallbackAndroid(j_callback,
                                             ScopedJavaLocalRef<jobject>());
@@ -221,10 +220,12 @@ static ScopedJavaLocalRef<jstring> JNI_ProfileResolver_TokenizeProfile(
 
 static ScopedJavaLocalRef<jstring> JNI_ProfileResolver_TokenizeProfileKey(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_profile_key) {
+    const JavaRef<jobject>& j_profile_key) {
   ProfileKey* profile_key =
       ProfileKeyAndroid::FromProfileKeyAndroid(j_profile_key);
   return ConvertUTF8ToJavaString(env, TokenizeProfileKey(profile_key));
 }
 
 }  // namespace profile_resolver
+
+DEFINE_JNI(ProfileResolver)

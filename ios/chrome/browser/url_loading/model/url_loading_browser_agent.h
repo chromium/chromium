@@ -73,9 +73,11 @@ class UrlLoadingBrowserAgent : public BrowserUserData<UrlLoadingBrowserAgent> {
                            web::WebStateID active_tab_id);
 
   __weak id<URLLoadingDelegate> delegate_;
-  raw_ptr<UrlLoadingNotifierBrowserAgent> notifier_ = nullptr;
-  raw_ptr<UrlLoadingBrowserAgent> incognito_loader_ = nullptr;
-  raw_ptr<SceneUrlLoadingService> scene_service_ = nullptr;
+  raw_ptr<UrlLoadingNotifierBrowserAgent, DanglingUntriaged> notifier_ =
+      nullptr;
+  raw_ptr<UrlLoadingBrowserAgent, DanglingUntriaged> incognito_loader_ =
+      nullptr;
+  raw_ptr<SceneUrlLoadingService, DanglingUntriaged> scene_service_ = nullptr;
 
   base::WeakPtrFactory<UrlLoadingBrowserAgent> weak_ptr_factory_{this};
 };

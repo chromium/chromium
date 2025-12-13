@@ -14,7 +14,6 @@
 
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -52,7 +51,6 @@ using ::testing::Unused;
 class MockInstaller : public update_client::CrxInstaller {
  public:
   MockInstaller() = default;
-  MOCK_METHOD1(OnUpdateError, void(int error));
   MOCK_METHOD5(Install,
                void(const base::FilePath& unpack_path,
                     const std::string& public_key,

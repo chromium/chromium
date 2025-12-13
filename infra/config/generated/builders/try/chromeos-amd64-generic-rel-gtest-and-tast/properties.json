@@ -17,7 +17,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-chromiumos-archive",
               "builder_group": "chromium.chromiumos",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -53,7 +52,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-chromiumos-archive",
               "builder_group": "chromium.chromiumos",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
@@ -92,7 +90,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-chromiumos-archive",
               "builder_group": "chromium.chromiumos",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
@@ -145,7 +142,8 @@
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/try/chromeos-amd64-generic-rel-gtest-and-tast/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/chromeos-amd64-generic-rel-gtest-and-tast/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/flakiness": {

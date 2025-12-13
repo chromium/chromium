@@ -8,6 +8,7 @@
 #include <va/va.h>
 
 #include "base/containers/lru_cache.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/context_delegate.h"
 #include "third_party/openh264/src/codec/api/wels/codec_api.h"
@@ -31,7 +32,7 @@ class H264DecoderDelegate : public ContextDelegate {
   void Run() override;
 
  private:
-  void OnFrameReady(unsigned char* pData[3], SBufferInfo* pDstInfo);
+  void OnFrameReady(base::span<uint8_t*, 3> pData, SBufferInfo* pDstInfo);
 
   raw_ptr<ISVCDecoder> svc_decoder_ = nullptr;
   const VAProfile profile_;

@@ -20,7 +20,6 @@
 #include "ash/system/mahi/test/mock_mahi_manager.h"
 #include "ash/system/mahi/test/mock_mahi_ui_controller_delegate.h"
 #include "ash/test/ash_test_base.h"
-#include "base/functional/callback_forward.h"
 #include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"

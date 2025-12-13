@@ -230,7 +230,7 @@ impl<W: fmt::Write> Visitor for Writer<W> {
             HirKind::Capture(hir::Capture { ref name, .. }) => {
                 self.wtr.write_str("(")?;
                 if let Some(ref name) = *name {
-                    write!(self.wtr, "?P<{}>", name)?;
+                    write!(self.wtr, "?P<{name}>")?;
                 }
             }
             // Why do this? Wrapping concats and alts in non-capturing groups
@@ -276,15 +276,15 @@ impl<W: fmt::Write> Visitor for Writer<W> {
                         return Ok(());
                     }
                     (m, None) => {
-                        write!(self.wtr, "{{{},}}", m)?;
+                        write!(self.wtr, "{{{m},}}")?;
                     }
                     (m, Some(n)) if m == n => {
-                        write!(self.wtr, "{{{}}}", m)?;
+                        write!(self.wtr, "{{{m}}}")?;
                         // a{m} and a{m}? are always exactly equivalent.
                         return Ok(());
                     }
                     (m, Some(n)) => {
-                        write!(self.wtr, "{{{},{}}}", m, n)?;
+                        write!(self.wtr, "{{{m},{n}}}")?;
                     }
                 }
                 if !x.greedy {
@@ -317,7 +317,7 @@ impl<W: fmt::Write> Writer<W> {
         if b <= 0x7F && !b.is_ascii_control() && !b.is_ascii_whitespace() {
             self.write_literal_char(char::try_from(b).unwrap())
         } else {
-            write!(self.wtr, "(?-u:\\x{:02X})", b)
+            write!(self.wtr, "(?-u:\\x{b:02X})")
         }
     }
 
@@ -325,7 +325,7 @@ impl<W: fmt::Write> Writer<W> {
         if b <= 0x7F && !b.is_ascii_control() && !b.is_ascii_whitespace() {
             self.write_literal_char(char::try_from(b).unwrap())
         } else {
-            write!(self.wtr, "\\x{:02X}", b)
+            write!(self.wtr, "\\x{b:02X}")
         }
     }
 }

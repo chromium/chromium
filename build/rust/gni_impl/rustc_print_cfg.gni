@@ -1,0 +1,14 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/rust.gni")
+
+# `third_party/rust/cxx/chromium_integration/rust_cxx.gni` can't discover
+# the path to the output of `//build/rust/gni_impl:rustc_print_cfg` using
+# `get_target_outputs`, because `get_target_outputs` can only be used for
+# targets defined in the same file.  So, to work around that, we specify
+# a reusable path definition below:
+rustc_print_cfg_path =
+    get_label_info("//build/rust/gni_impl:rustc_print_cfg", "target_gen_dir")
+rustc_print_cfg_path += "/rustc-print-cfg-${rust_abi_target}.txt"

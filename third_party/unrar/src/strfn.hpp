@@ -44,6 +44,10 @@ int wcsicompc(const std::wstring &s1,const std::wstring &s2);
 int wcsnicompc(const wchar *s1,const wchar *s2,size_t n);
 int wcsnicompc(const std::wstring &s1,const std::wstring &s2,size_t n);
 
+// std::[w]string::starts_with() replacement for C++17 and earlier.
+inline bool starts_with(const std::string &s,const std::string &p) {return s.rfind(p,0)==0;}
+inline bool starts_with(const std::wstring &s,const std::wstring &p) {return s.rfind(p,0)==0;}
+
 void itoa(int64 n,char *Str,size_t MaxSize);
 void itoa(int64 n,wchar *Str,size_t MaxSize);
 void fmtitoa(int64 n,wchar *Str,size_t MaxSize);

@@ -41,14 +41,14 @@ export const getDefaultScheme = async():
       const {scheme} = await chrome.storage.local.get(['scheme']);
       const validated = parseInt(scheme, 10);
       if (validated >= MIN_SCHEME && validated <= MAX_SCHEME) {
-        return validated > MIN_SCHEME ? validated : DEFAULT_SCHEME;
+        return validated >= MIN_SCHEME ? validated : DEFAULT_SCHEME;
       }
       await chrome.storage.local.set({scheme: DEFAULT_SCHEME});
       return DEFAULT_SCHEME;
     }
 
 export const setDefaultScheme = async(scheme: number): Promise<void> => {
-  if (!(scheme >= 0 && scheme <= MAX_SCHEME)) {
+  if (!(scheme >= MIN_SCHEME && scheme <= MAX_SCHEME)) {
     scheme = DEFAULT_SCHEME;
   }
   await chrome.storage.local.set({scheme: scheme});
@@ -66,7 +66,7 @@ export const getSiteScheme = async(site: string):
         const parsed: Record<string, string> =
             JSON.parse(storage.siteschemes || '{}');
         const candidate = parseInt(parsed[site], 10);
-        if (candidate >= 0 && candidate <= MAX_SCHEME) {
+        if (candidate >= MIN_SCHEME && candidate <= MAX_SCHEME) {
           return candidate;
         }
       } catch {
@@ -77,7 +77,7 @@ export const getSiteScheme = async(site: string):
 
 export const setSiteScheme = async(site: string, scheme: number):
     Promise<void> => {
-      if (!(scheme >= 0 && scheme <= MAX_SCHEME)) {
+      if (!(scheme >= MIN_SCHEME && scheme <= MAX_SCHEME)) {
         const validated = await getDefaultScheme();
         await applySiteScheme(site, validated);
         return;

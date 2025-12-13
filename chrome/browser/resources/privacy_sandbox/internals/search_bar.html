@@ -1,0 +1,55 @@
+<style>
+  :host {
+    display: flex;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--cr-separator-color, #e0e0e0);
+    --cr-search-focus-shadow: 0 1px 1px 0 rgba(65, 69, 73, .3), 0 1px 3px 1px rgba(65, 69, 73, .15);
+    --cr-search-background-transition: background-color 200ms cubic-bezier(.4, 0, .2, 1);
+  }
+
+  #search-container {
+    position: relative;
+    width: 100%;
+  }
+
+  #search-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    fill: var(--cr-secondary-text-color, #5f6368);
+    height: 20px;
+    width: 20px;
+    pointer-events: none;
+  }
+
+  #search-input {
+    background-color: var(--cr-form-field-background-color, #f1f3f4);
+    border: none;
+    border-radius: 20px;
+    box-sizing: border-box;
+    color: var(--cr-primary-text-color, #202124);
+    font-size: 14px;
+    height: 40px;
+    padding: 0 16px 0 48px;
+    width: 100%;
+    transition: var(--cr-search-background-transition);
+  }
+
+  #search-input:hover {
+    background-color: var(--cr-form-field-background-color-hover, #e8eaed);
+  }
+
+  #search-input:focus {
+    background-color: var(--cr-card-background-color, #fff);
+    box-shadow: var(--cr-search-focus-shadow);
+    outline: none;
+  }
+</style>
+<div id="search-container">
+  <svg id="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path fill-rule="evenodd" clip-rule="evenodd"
+      d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z">
+  </svg>
+  <input type="search" id="search-input" placeholder="Search" aria-label="Search">
+</div>

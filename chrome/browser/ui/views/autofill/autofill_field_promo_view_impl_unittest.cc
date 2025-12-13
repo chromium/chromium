@@ -129,7 +129,7 @@ TEST_F(AutofillFieldPromoViewImplTest, BoundsAreCorrect) {
 #else
   web_contents()->GetNativeView()->SetBoundsInScreen(
       gfx::Rect(300, 300, 1000, 1000),
-      display::Screen::GetScreen()->GetDisplayForNewWindows());
+      display::Screen::Get()->GetDisplayForNewWindows());
 #endif  // BUILDFLAG(IS_MAC)
 
   // Element is within the boundaries of `web_contents()`.

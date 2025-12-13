@@ -12,12 +12,13 @@
 
 #include "base/component_export.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/vulkan/semaphore_handle.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_hardware_buffer_handle.h"
@@ -135,7 +136,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanImplementation {
       VkDevice device,
       zx::eventpair service_handle,
       zx::channel sysmem_token,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage,
       gfx::Size size,
       size_t min_buffer_count,

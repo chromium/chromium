@@ -18,7 +18,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/image/image_skia.h"
 
 namespace base {
 class FilePath;
@@ -26,6 +25,7 @@ class FilePath;
 
 namespace gfx {
 class Image;
+class ImageSkia;
 }
 
 class Profile;
@@ -123,9 +123,6 @@ gfx::Image GetAvatarIconForNSMenu(const base::FilePath& profile_path);
 
 // Gets the number of default avatar icons that exist.
 size_t GetDefaultAvatarIconCount();
-
-// Gets the number of generic avatar icons that exist.
-size_t GetGenericAvatarIconCount();
 
 // Gets the index for the (grey silhouette) avatar used as a placeholder.
 size_t GetPlaceholderAvatarIndex();

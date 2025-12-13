@@ -76,7 +76,7 @@ class EVENTS_EXPORT EventModifiers {
 
  private:
   // Count of keys pressed for each modifier.
-  std::array<int, MODIFIER_NUM_MODIFIERS> modifiers_down_;
+  std::array<int, MODIFIER_NUM_MODIFIERS> modifiers_down_ = {};
 
   // Mask of modifier flags currently "locked".
   int modifier_flags_locked_ = 0;

@@ -6,14 +6,21 @@
 
 #include <algorithm>
 #include <array>
+#include <concepts>
 #include <limits>
+#include <memory>
 #include <string_view>
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
+#include "base/types/zip.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
+#include "components/autofill/core/common/form_field_data.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace autofill {
 
@@ -55,12 +62,15 @@ void MaybeRemoveAffix(base::span<std::u16string_view> strings,
   if (std::ranges::all_of(strings, [&](std::u16string_view s) {
         return IsValidParseableName(RemoveAffix(s));
       })) {
-    std::ranges::transform(strings, strings.begin(), RemoveAffix);
+    for (std::u16string_view& s : strings) {
+      s = RemoveAffix(s);
+    }
   }
 }
 
-}  // namespace
-
+// Returns the length of the longest common affix of the `strings`. If `prefix`
+// is true, the prefixes are considered, otherwise the suffixes.
+// The runtime is O(strings.size() * length-of-longest-common-affix).
 size_t FindLongestCommonAffixLength(base::span<std::u16string_view> strings,
                                     bool prefix) {
   if (strings.empty())
@@ -79,12 +89,65 @@ size_t FindLongestCommonAffixLength(base::span<std::u16string_view> strings,
   return affix_len;
 }
 
+// While this function works on a general set of strings, it is solely used for
+// the purpose of "rationalizing" the names of `FormFieldData::name`. The result
+// is then referred to as the "parseable name" of the field. Hence the
+// terminology here.
 void ComputeParseableNames(base::span<std::u16string_view> field_names) {
   if (field_names.size() < kCommonNamePrefixRemovalFieldThreshold)
     return;
   size_t lcp = FindLongestCommonAffixLength(field_names, /*prefix=*/true);
   if (lcp >= kMinCommonNamePrefixLength)
     MaybeRemoveAffix(field_names, lcp, /*prefix=*/true);
+}
+
+template <typename T>
+  requires(std::same_as<T, FormFieldData> ||
+           std::same_as<T, std::unique_ptr<AutofillField>>)
+base::flat_map<FieldGlobalId, std::u16string> GetParseableNames(
+    base::span<const T> fields) {
+  auto get = absl::Overload{
+      [](const FormFieldData& field) -> const FormFieldData& { return field; },
+      [](const std::unique_ptr<AutofillField>& field) -> const FormFieldData& {
+        return *field;
+      }};
+
+  std::vector<std::u16string_view> names =
+      base::ToVector(fields, [&](const auto& field) -> std::u16string_view {
+        return get(field).name();
+      });
+  ComputeParseableNames(names);
+
+  std::vector<std::pair<FieldGlobalId, std::u16string>> name_map;
+  for (const auto [field, name] : base::zip(fields, names)) {
+    if (name != get(field).name()) {
+      name_map.emplace_back(get(field).global_id(), name);
+    }
+  }
+  return name_map;
+}
+
+}  // namespace
+
+base::flat_map<FieldGlobalId, std::u16string> GetParseableNames(
+    base::span<const FormFieldData> fields) {
+  return GetParseableNames<FormFieldData>(fields);
+}
+
+base::flat_map<FieldGlobalId, std::u16string> GetParseableNames(
+    base::span<const std::unique_ptr<AutofillField>> fields) {
+  return GetParseableNames<std::unique_ptr<AutofillField>>(fields);
+}
+
+size_t FindLongestCommonAffixLengthForTest(  // IN-TEST
+    base::span<std::u16string_view> strings,
+    bool prefix) {
+  return FindLongestCommonAffixLength(strings, prefix);
+}
+
+void ComputeParseableNamesForTest(  // IN-TEST
+    base::span<std::u16string_view> field_names) {
+  ComputeParseableNames(field_names);
 }
 
 }  // namespace autofill

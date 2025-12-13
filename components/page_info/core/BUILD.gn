@@ -43,7 +43,6 @@ static_library("core") {
     "page_info_history_data_source.h",
     "page_info_types.cc",
     "page_info_types.h",
-    "pref_names.h",
     "privacy_policy_insights_service.cc",
     "privacy_policy_insights_service.h",
   ]
@@ -56,13 +55,13 @@ static_library("core") {
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
     "//components/pref_registry",
-    "//components/search:search",
-    "//components/search_engines:search_engines",
+    "//components/search",
+    "//components/search_engines",
     "//components/strings:components_strings_grit",
-    "//net:net",
+    "//net",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
-    "//ui/base:base",
+    "//ui/base",
   ]
 }
 
@@ -93,13 +92,13 @@ source_set("unit_tests") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
-    "//components/search_engines:search_engines",
+    "//components/search_engines",
     "//components/search_engines:test_support",
     "//components/strings:components_strings_grit",
     "//components/sync_preferences:test_support",
     "//services/metrics/public/cpp:metrics_cpp",
     "//testing/gtest",
     "//ui/base",
-    "//url:url",
+    "//url",
   ]
 }

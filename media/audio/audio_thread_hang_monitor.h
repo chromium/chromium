@@ -10,7 +10,6 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.segmentation_platform;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -12,7 +12,10 @@ import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
+import java.util.function.Supplier;
+
 /** Provides price tracking signal for showing contextual page action for a given tab. */
+@NullMarked
 public class PriceTrackingActionProvider implements ContextualPageActionController.ActionProvider {
     private final Supplier<ShoppingService> mShoppingServiceSupplier;
     private final Supplier<BookmarkModel> mBookmarkModelSupplier;
@@ -50,7 +53,7 @@ public class PriceTrackingActionProvider implements ContextualPageActionControll
                             tab.getUrl(),
                             (url, info) -> {
                                 boolean canTrackPrice =
-                                        info != null && info.productClusterId.isPresent();
+                                        info != null && info.productClusterId != null;
 
                                 signalAccumulator.setSignal(
                                         AdaptiveToolbarButtonVariant.PRICE_TRACKING, canTrackPrice);

@@ -37,6 +37,7 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
@@ -538,7 +539,7 @@ class PDFExtensionAccessibilityTextExtractionTest
 
   void RunTextExtractionTest(const base::FilePath::CharType* pdf_file,
                              std::string_view expected_subtext) {
-    base::FilePath test_path = ui_test_utils::GetTestFilePath(
+    base::FilePath test_path = chrome_test_utils::GetTestFilePath(
         base::FilePath(FILE_PATH_LITERAL("pdf")),
         base::FilePath(FILE_PATH_LITERAL("accessibility")));
     {
@@ -801,7 +802,7 @@ class PDFExtensionAccessibilityTreeDumpTest
  protected:
   void RunPDFTest(const base::FilePath::CharType* pdf_file,
                   std::string_view expected_subtext) {
-    base::FilePath test_path = ui_test_utils::GetTestFilePath(
+    base::FilePath test_path = chrome_test_utils::GetTestFilePath(
         base::FilePath(FILE_PATH_LITERAL("pdf")),
         base::FilePath(FILE_PATH_LITERAL("accessibility")));
     {
@@ -1356,7 +1357,7 @@ class PdfSearchifyIntegrationTest
 
   void RunPDFAXTreeDumpTest(const char* pdf_file,
                             std::string_view expected_text) {
-    base::FilePath test_path = ui_test_utils::GetTestFilePath(
+    base::FilePath test_path = chrome_test_utils::GetTestFilePath(
         base::FilePath(FILE_PATH_LITERAL("pdf")),
         base::FilePath(FILE_PATH_LITERAL("accessibility")));
     base::FilePath test_pdf_path = test_path.AppendASCII(pdf_file);

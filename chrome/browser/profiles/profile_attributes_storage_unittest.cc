@@ -49,12 +49,15 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
-#include "ui/native_theme/native_theme.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
+#include "ui/native_theme/native_theme.h"
 #endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #endif
@@ -1689,7 +1692,7 @@ TEST_F(ProfileAttributesStorageTest, ProfilesState_SingleProfile) {
 // Themes aren't used on Android
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(false);
+  ui::MockOsSettingsProvider os_settings_provider;
   AddTestingProfile();
   base::FilePath profile_path = GetProfilePath("testing_profile_path0");
 
@@ -1703,8 +1706,8 @@ TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
   ProfileThemeColors light_colors = GetDefaultProfileThemeColors();
   EXPECT_EQ(entry->GetProfileThemeColors(), light_colors);
 
-  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  native_theme->set_use_dark_colors(true);
+  os_settings_provider.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   EXPECT_EQ(entry->GetProfileThemeColors(), GetDefaultProfileThemeColors());
   EXPECT_NE(entry->GetProfileThemeColors(), light_colors);
 
@@ -1717,7 +1720,8 @@ TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
   VerifyAndResetCallExpectations();
 
   // Colors shouldn't change after switching back to the light mode.
-  native_theme->set_use_dark_colors(false);
+  os_settings_provider.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
   EXPECT_EQ(entry->GetProfileThemeColors(), colors);
 
   // std::nullopt resets the colors to default.
@@ -2275,7 +2279,7 @@ class ProfileAttributesStorageTestWithProfileReorderingParam
       public ProfileAttributesStorageTest {
  public:
   ProfileAttributesStorageTestWithProfileReorderingParam()
-      : base::test::WithFeatureOverride(kProfilesReordering) {}
+      : base::test::WithFeatureOverride(switches::kProfilesReordering) {}
 };
 
 // In this test we are checking the order of which the method

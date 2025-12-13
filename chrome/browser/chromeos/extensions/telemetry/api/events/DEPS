@@ -17,6 +17,7 @@ include_rules = [
   "+chrome/browser/ui/browser_list.h",
   "+chrome/browser/ui/browser_navigator.h",
   "+chrome/browser/ui/browser_navigator_params.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
   "+chrome/browser/ui/tabs/tab_enums.h",
   "+chrome/browser/ui/tabs/tab_strip_model.h",
   "+chrome/browser/ui/web_applications/test",

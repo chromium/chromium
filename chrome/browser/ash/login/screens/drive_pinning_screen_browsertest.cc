@@ -5,6 +5,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "base/byte_count.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -60,7 +61,7 @@ class DrivePinningBaseScreenTest : public OobeBaseTest {
  public:
   DrivePinningBaseScreenTest() {
     feature_list_.InitWithFeatures(
-        {ash::features::kOobeChoobe, ash::features::kOobeDrivePinning,
+        {ash::features::kOobeChoobe,
          ash::features::kFeatureManagementDriveFsBulkPinning},
         {});
   }
@@ -128,8 +129,8 @@ IN_PROC_BROWSER_TEST_F(DrivePinningScreenTest, Accept) {
   test::OobeJS().ExpectElementText(
       l10n_util::GetStringFUTF8(
           IDS_OOBE_DRIVE_PINNING_TOGGLE_SUBTITLE,
-          ui::FormatBytes(current_progress.required_space),
-          ui::FormatBytes(current_progress.free_space)),
+          ui::FormatBytes(base::ByteCount(current_progress.required_space)),
+          ui::FormatBytes(base::ByteCount(current_progress.free_space))),
       kSpaceInformationPath);
   test::OobeJS().TapOnPath(kNextButtonPath);
 

@@ -145,6 +145,17 @@ class StructTraits<media::mojom::VideoEncodeOptionsDataView,
     return options.quantizer.value_or(-1);
   }
 
+  // Return the optional update_buffer.
+  static std::optional<uint8_t> update_buffer(
+      const media::VideoEncoder::EncodeOptions& options) {
+    return options.update_buffer;
+  }
+
+  static std::vector<uint8_t> reference_buffers(
+      const media::VideoEncoder::EncodeOptions& options) {
+    return {options.reference_buffers.begin(), options.reference_buffers.end()};
+  }
+
   static bool Read(media::mojom::VideoEncodeOptionsDataView data,
                    media::VideoEncoder::EncodeOptions* out_options);
 };
@@ -546,6 +557,11 @@ struct StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
   static media::VideoEncodeAccelerator::Config::EncoderType
   required_encoder_type(const media::VideoEncodeAccelerator::Config& input) {
     return input.required_encoder_type;
+  }
+
+  static bool manual_reference_buffer_control(
+      const media::VideoEncodeAccelerator::Config& input) {
+    return input.manual_reference_buffer_control;
   }
 
   static bool Read(media::mojom::VideoEncodeAcceleratorConfigDataView input,

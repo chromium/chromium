@@ -14,15 +14,23 @@
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
+#include "components/account_id/account_id.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,7 +57,19 @@ class AppServiceGuestOSIconTest : public testing::Test {
     ash::ChunneldClient::InitializeFake();
     fake_cicerone_client_ = ash::FakeCiceroneClient::Get();
 
+    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<user_manager::FakeUserManagerDelegate>(),
+        TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
+
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345"));
+    ASSERT_TRUE(user_manager::TestHelper(user_manager_.Get())
+                    .AddRegularUser(account_id));
+    user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
+
     profile_ = std::make_unique<TestingProfile>();
+    ash::AnnotatedAccountId::Set(profile_.get(), account_id);
 
     proxy_ = AppServiceProxyFactory::GetForProfile(profile());
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
@@ -61,6 +81,7 @@ class AppServiceGuestOSIconTest : public testing::Test {
   void TearDown() override {
     crostini_test_helper_.reset();
     profile_.reset();
+    user_manager_.Reset();
     ash::CiceroneClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::SeneschalClient::Shutdown();
@@ -123,6 +144,7 @@ class AppServiceGuestOSIconTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   raw_ptr<ash::FakeCiceroneClient, DanglingUntriaged> fake_cicerone_client_;
+  user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<TestingProfile> profile_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   raw_ptr<AppServiceProxy, DanglingUntriaged> proxy_;

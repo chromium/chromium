@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">ປະເພດ</translation>
 <translation id="1254593899333212300">ການເຊື່ອມຕໍ່ອິນເຕີເນັດໂດຍກົງ</translation>
 <translation id="1272293450992660632">ຄ່າ PIN ບໍ່ກົງກັນ.</translation>
+<translation id="1279040297980392566">ກຳລັງລໍຖ້າໃຫ້ການສະແກນສຳເລັດ, ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ</translation>
 <translation id="1280820357415527819">ກຳລັງຊອກຫາເຄືອຂ່າຍມືຖື</translation>
 <translation id="1293556467332435079">ໄຟລ໌</translation>
 <translation id="1297922636971898492">ບໍ່ມີ Google Drive ຢູ່ໃນເວລານີ້. ການອັບໂຫຼດຈະເລີ່ມຕົ້ນໃໝ່ອັດຕະໂນມັດ ເມື່ອ Google Drive ກັບຄືນມາ.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">ເລືອກ 1 ໄຟລ໌ແລ້ວ</translation>
 <translation id="3817579325494460411">ບໍ່ໄດ້ສະໜອງໃຫ້</translation>
 <translation id="3819448694985509187">PIN ບໍ່ຖືກຕ້ອງ. ທ່ານລອງໄດ້ອີກ 1 ເທື່ອ.</translation>
-<translation id="3822559385185038546">ພຣັອກຊີນີ້ຖືກບັງຄັບໃຊ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="3830674330436234648">ບໍ່ມີການຫຼິ້ນຄືນ</translation>
 <translation id="383652340667548381">ພາສາເຊີ​ເບຍ</translation>
 <translation id="3839045880592694915">ຜູ້ໃຫ້ບໍລິການຂອງທ່ານບໍ່ອະນຸຍາດໃຫ້ເຊື່ອມຕໍ່ໂມເດັມຂອງທ່ານ. ກະລຸນາຕິດຕໍ່ຜູ້ໃຫ້ບໍລິການຂອງທ່ານສຳລັບລາຍລະອຽດເພີ່ມເຕີມ.</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">ໂຕ​ເລືອກ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="5602622065581044566">ພາສາບຸນກາຣີທີ່ໃຊ້ແປ້ນພິມຕາມການອອກສຽງ</translation>
 <translation id="5605830556594064952">ດີ​ໂວຣັກ ສະຫະລັດ</translation>
+<translation id="560739212255190568">ຜູ້ເບິ່ງແຍງຂອງທ່ານໄດ້ຕັ້ງຄ່າກົດລະບຽບການຍົກເລີກພຣັອກຊີນອກເໜືອຈາກການບັງຄັບໃຊ້ພຣັອກຊີຕໍ່ໄປນີ້</translation>
 <translation id="5618330573454123917">ໄຟລ໌ນີ້ຖືກອອກແບບມາສໍາລັບຄອມພິວເຕີທີ່ໃຊ້ຊອບແວ Macintosh. ສິ່ງນີ້ບໍ່ເຂົ້າກັນໄດ້ກັບອຸປະກອນຂອງທ່ານເຊິ່ງໃຊ້ ChromeOS. <ph name="BEGIN_LINK_HELP" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK_HELP" /> ກ່ຽວກັບການເປີດໄຟລ໌ຢູ່ ChromeOS.</translation>
 <translation id="5625294776298156701">ພາສາທາມິລທີ່ໃຊ້ແປ້ນພິມ Tamil99</translation>
 <translation id="5633226425545095130">ການຍ້າຍລາຍການນີ້ຈະແບ່ງປັນມັນໃຫ້ກັບທຸກຄົນທີ່ສາມາດເບິ່ງເຫັນໂຟນເດີທີ່ແບ່ງປັນ '<ph name="DESTINATION_NAME" />' ໄດ້.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ລາຍລະອຽດ</translation>
 <translation id="8545476925160229291">ອັງກິດ (ສະຫະລັດ)</translation>
 <translation id="854655314928502177">URL ການຄົ້ນຫາອັດຕະໂນມັດຂອງພຣັອກຊີເວັບ</translation>
+<translation id="8547747809824590510">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງຄ່າກົດລະບຽບການຍົກເລີກພຣັອກຊີ</translation>
 <translation id="8549186985808798022">ພາສາອີຕາລຽນ</translation>
 <translation id="8551494947769799688">ພາສາລັດເວຍ</translation>
 <translation id="8560515948038859357">ຈີນກວາງຕຸ້ງ</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">ມີໄຟລ໌ຊື່ "<ph name="FILE_NAME" />" ຢູ່ແລ້ວ. ກະລຸນາເລືອກຊື່ໄຟລ໌ອື່ນ.</translation>
 <translation id="9046895021617826162">ເຊື່ອມຕໍ່ບໍ່ສໍາເລັດ</translation>
 <translation id="9065512565307033593">ຖ້າທ່ານຢັ້ງຢືນບໍ່ສຳເລັດ, ລະບົບຈະປິດການນຳໃຊ້ສິດເຂົ້າເຖິງເຄືອຂ່າຍຂອງທ່ານ.</translation>
+<translation id="9079844694307518094">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານກຳລັງບັງຄັບໃຊ້ພຣັອກຊີຕໍ່ໄປນີ້</translation>
 <translation id="908378762078012445">ພາສາຣັດເຊຍທີ່ໃຊ້ແປ້ນພິມ AATSEEL ຕາມການອອກສຽງ</translation>
 <translation id="9086302186042011942">ກໍາລັງຊິງຄ໌</translation>
 <translation id="9099674669267916096">ຈຳນວນໜ້າ</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">ເລີ່ມການຕິດຕັ້ງສຳເລັດແລ້ວ.</translation>
 <translation id="9219103736887031265">ຮູບ</translation>
 <translation id="9219908252191632183">ພາບພື້ນຜິວດວງເດືອນ</translation>
+<translation id="931652069802536959">ເຄືອຂ່າຍຖືກບລັອກໂດຍນະໂຍບາຍ</translation>
 <translation id="938470336146445890">ກະລຸນາຕິດຕັ້ງໃບຢັ້ງຢືນຜູ້ໃຊ້.</translation>
 <translation id="939736085109172342">ໂຟລເດີ​ໃຫມ່</translation>
 <translation id="943972244133411984">ແກ້ໄຂໂດຍ</translation>

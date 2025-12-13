@@ -11,8 +11,10 @@ import "ui/gfx/mojom/transform.mojom";
 
 enum ViewTransitionPropertyId {
   kBackdropFilter,
+  kBorderRadius,
   kBorderWidth,
   kColorScheme,
+  kCornerShape,
   kMixBlendMode,
   kTextOrientation,
   kWritingMode,
@@ -117,4 +119,9 @@ struct ViewTransitionState {
   // A map from element id to a unique string for view-transition-name: auto
   // matching.
   map<string, string> id_to_auto_name_map;
+
+  // Whether we should delay deleting the old LayerTreeView on the compositor
+  // thread until the new one is activated. This is needed to ensure a smooth
+  // transition.
+  bool delay_layer_tree_view_deletion;
 };

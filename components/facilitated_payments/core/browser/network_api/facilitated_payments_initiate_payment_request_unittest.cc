@@ -103,7 +103,7 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
   request_details_full->instrument_id_ = 13;
 
   EXPECT_DEATH_IF_SUPPORTED(
-      std::make_unique<FacilitatedPaymentsInitiatePaymentRequest>(
+      std::ignore = std::make_unique<FacilitatedPaymentsInitiatePaymentRequest>(
           std::move(request_details_full),
           /*response_callback=*/base::DoNothing(),
           /*app_locale=*/"US", /*full_sync_enabled=*/true),
@@ -126,7 +126,8 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
   std::optional<base::Value> response = base::JSONReader::Read(
       "{\"trigger_purchase_manager\":{\"secure_payload\":{\"opaque_token\":"
       "\"dG9rZW4=\",\"secure_data\":[{\"key\":1,\"value\":\"secure_data_"
-      "value\"}]}}}");
+      "value\"}]}}}",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   request->ParseResponse(response->GetDict());
 
   std::vector<uint8_t> expected_action_token = {'t', 'o', 'k', 'e', 'n'};
@@ -157,7 +158,8 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
   std::optional<base::Value> response = base::JSONReader::Read(
       "{\"trigger_purchase_manager\":{\"secure_payload\":{\"opaque_token\":"
       "\"dG9r00ZW4=\",\"secure_data\":[{\"key\":1,\"value\":\"secure_data_"
-      "value\"}]}}}");
+      "value\"}]}}}",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   request->ParseResponse(response->GetDict());
 
   EXPECT_TRUE(request->response_details_->secure_payload_.action_token.empty());
@@ -182,7 +184,8 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
   std::optional<base::Value> response = base::JSONReader::Read(
       "{\"trigger_purchase_manager\":{\"secure_payload\":{\"opaque_token\":"
       "\"dG9rZW4=\",\"secure_data\":[{\"value\":\"secure_data_"
-      "value\"}]}}}");
+      "value\"}]}}}",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   request->ParseResponse(response->GetDict());
 
   EXPECT_EQ(0u, request->response_details_->secure_payload_.secure_data.size());
@@ -205,7 +208,8 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
   // empty vector.
   std::optional<base::Value> response = base::JSONReader::Read(
       "{\"trigger_purchase_manager\":{\"secure_payload\":{\"opaque_token\":"
-      "\"dG9rZW4=\",\"secure_data\":[{\"key\":1}]}}}");
+      "\"dG9rZW4=\",\"secure_data\":[{\"key\":1}]}}}",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   request->ParseResponse(response->GetDict());
 
   EXPECT_EQ(0u, request->response_details_->secure_payload_.secure_data.size());
@@ -229,7 +233,8 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
   std::optional<base::Value> response = base::JSONReader::Read(
       "{\"trigger_purchase_manager\":{\"o2_action_token\":\"dG9rZW4=\","
       "\"secure_payload\":{\"opaque_token\":\"dG9rZW4=\",\"secure_data\":[{"
-      "\"key\":1,\"value\":\"secure_data_value\"}]}}}");
+      "\"key\":1,\"value\":\"secure_data_value\"}]}}}",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   request->ParseResponse(response->GetDict());
 
   EXPECT_EQ(1u, request->response_details_->secure_payload_.secure_data.size());
@@ -249,7 +254,8 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
       /*response_callback=*/base::DoNothing(),
       /*app_locale=*/"US", /*full_sync_enabled=*/true);
   std::optional<base::Value> response = base::JSONReader::Read(
-      "{\"error\":{\"user_error_message\":\"Something went wrong!\"}}");
+      "{\"error\":{\"user_error_message\":\"Something went wrong!\"}}",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   request->ParseResponse(response->GetDict());
 
   EXPECT_EQ("Something went wrong!",

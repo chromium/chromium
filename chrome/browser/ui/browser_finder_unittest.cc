@@ -20,9 +20,10 @@ TEST_F(BrowserFinderTest, ScheduledForDeletion) {
   std::unique_ptr<Browser> browser = release_browser();
   browser->tab_strip_model()->CloseAllTabs();
   // This is normally invoked when the tab strip is empty (specifically from
-  // BrowserView::OnWindowCloseRequested).
+  // BrowserView::OnWindowCloseRequested). Pending delete browsers are not
+  // included in browser counts.
   browser->OnWindowClosing();
   EXPECT_TRUE(browser->is_delete_scheduled());
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(nullptr, chrome::FindBrowserWithProfile(profile()));
 }

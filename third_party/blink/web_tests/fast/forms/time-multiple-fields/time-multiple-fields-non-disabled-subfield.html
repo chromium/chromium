@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<title>Sub-fields in input[type=time] should not be disabled</title>
+<link rel='help' href='https://issues.chromium.org/issues/442293382'>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../resources/common.js'></script>
+<script>
+const step1ms = '0.001';
+const step1sec = '1';
+const step1min = '60';
+const step1hour = '3600';
+const step1day = '86400';
+
+function createTimeInput(min, max, step, value) {
+  return createInput('time', min, max, step, value);
+}
+
+test(() => {
+  assert_false(isMillisecondFieldDisabled(createTimeInput('00:00:00.500', '', step1sec, '')));
+  assert_false(isMillisecondFieldDisabled(createTimeInput('00:00:00.500', '', step1sec, '00:00:00.500')));
+  assert_false(isMillisecondFieldDisabled(createTimeInput('00:00:00.500', '', step1sec, '00:00:00.600')));
+  assert_false(isMillisecondFieldDisabled(createTimeInput('00:00:00.000', '', step1sec, '00:00:00.600')));
+  assert_false(isMillisecondFieldDisabled(createTimeInput('00:00:00.500', '00:00:00.500', step1ms, '')));
+  assert_false(isMillisecondFieldDisabled(createTimeInput('00:00:00.500', '00:00:00.501', step1ms, '')));
+  assert_false(isMillisecondFieldDisabled(createTimeInput('00:00:00.500', '00:00:00.500', step1ms, '00:00:00.100')));
+}, 'The millisecond field should be non-disabled');
+
+test(() => {
+  assert_false(isSecondFieldDisabled(createTimeInput('00:00:30', '', step1min, '')));
+  assert_false(isSecondFieldDisabled(createTimeInput('00:00:30', '', step1min, '00:00:30')));
+  assert_false(isSecondFieldDisabled(createTimeInput('00:00:30.500', '', step1min, '00:00:30.600')));
+  assert_false(isSecondFieldDisabled(createTimeInput('00:00:30', '', step1min, '00:00:35')));
+  assert_false(isSecondFieldDisabled(createTimeInput('00:00:00', '', step1min, '00:00:35')));
+  assert_false(isSecondFieldDisabled(createTimeInput('00:00:30', '00:00:30', step1ms, '')));
+  assert_false(isSecondFieldDisabled(createTimeInput('00:00:30', '00:00:31', step1ms, '')));
+  assert_false(isSecondFieldDisabled(createTimeInput('00:00:30', '00:00:30', step1ms, '00:00:29')));
+}, 'The second field should be non-disabled');
+
+test(() => {
+  assert_false(isMinuteFieldDisabled(createTimeInput('11:00', '', step1day, '')));
+  assert_false(isMinuteFieldDisabled(createTimeInput('11:30', '', step1day, '11:30')));
+  assert_false(isMinuteFieldDisabled(createTimeInput('11:30', '', step1day, '12:30')));
+  assert_false(isMinuteFieldDisabled(createTimeInput('00:00', '', step1day, '12:30')));
+  assert_false(isMinuteFieldDisabled(createTimeInput('00:00', '00:30', step1min, '12:30')));
+  assert_false(isMinuteFieldDisabled(createTimeInput('00:00', '00:00', step1hour, '12:30')));
+  assert_false(isMinuteFieldDisabled(createTimeInput('00:30', '', step1hour, '')));
+  assert_false(isMinuteFieldDisabled(createTimeInput('00:30', '', step1hour, '00:30')));
+  assert_false(isMinuteFieldDisabled(createTimeInput('00:30', '', step1hour, '00:35')));
+  assert_false(isMinuteFieldDisabled(createTimeInput('00:00', '', step1hour, '00:35')));
+  assert_false(isMinuteFieldDisabled(createTimeInput('00:00:00', '00:00:30', step1sec, '')));
+  assert_false(isMinuteFieldDisabled(createTimeInput('00:00:00', '00:01:30', step1sec, '')));
+  assert_false(isMinuteFieldDisabled(createTimeInput('00:00:00', '00:00:30', step1sec, '00:01:00')));
+}, 'The minute field should be non-disabled');
+
+test(() => {
+  assert_false(isHourFieldDisabled(createTimeInput('11:00', '', step1day, '')));
+  assert_false(isHourFieldDisabled(createTimeInput('11:30', '', step1day, '11:30')));
+  assert_false(isHourFieldDisabled(createTimeInput('11:30', '', step1day, '12:30')));
+  assert_false(isHourFieldDisabled(createTimeInput('00:00', '', step1day, '12:30')));
+  assert_false(isHourFieldDisabled(createTimeInput('00:00', '00:30', step1min, '12:30')));
+  assert_false(isHourFieldDisabled(createTimeInput('00:00', '00:00', step1hour, '12:30')));
+}, 'The hour field should be non-disabled');
+
+test(() => {
+  assert_false(isAMPMFieldDisabled(createTimeInput('11:00', '', step1day, '')));
+  assert_false(isAMPMFieldDisabled(createTimeInput('11:30', '', step1day, '11:30')));
+  assert_false(isAMPMFieldDisabled(createTimeInput('11:30', '', step1day, '12:30')));
+  assert_false(isAMPMFieldDisabled(createTimeInput('00:00', '', step1day, '12:30')));
+  assert_false(isAMPMFieldDisabled(createTimeInput('00:00', '00:30', step1min, '12:30')));
+  assert_false(isAMPMFieldDisabled(createTimeInput('00:00', '00:00', step1hour, '12:30')));
+  assert_false(isAMPMFieldDisabled(createTimeInput('00:00', '', step1min, '')));
+  assert_false(isAMPMFieldDisabled(createTimeInput('23:00', '', step1min, '')));
+  assert_false(isAMPMFieldDisabled(createTimeInput('', '01:00', step1min, '')));
+  assert_false(isAMPMFieldDisabled(createTimeInput('', '23:00', step1min, '')));
+  assert_false(isAMPMFieldDisabled(createTimeInput('00:00', '11:59', step1min, '')));
+  assert_false(isAMPMFieldDisabled(createTimeInput('00:00', '12:00', step1min, '')));
+  assert_false(isAMPMFieldDisabled(createTimeInput('12:00', '12:00', step1min, '')));
+  assert_false(isAMPMFieldDisabled(createTimeInput('12:00', '23:59', step1min, '')));
+}, 'The am/pm field should be non-disabled');
+</script>

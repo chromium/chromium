@@ -8,14 +8,15 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/location_bar/lens_overlay_page_action_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
@@ -26,10 +27,10 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/events/test/test_event.h"
-#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
 #include "url/url_constants.h"
 
@@ -64,20 +65,14 @@ class LensOverlayPageActionIconViewTestBase : public InProcessBrowserTest {
   }
 
   LensOverlayPageActionIconView* lens_overlay_icon_view() {
-    views::View* const icon_view =
-        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-            kLensOverlayPageActionIconElementId,
-            browser()->window()->GetElementContext());
-    return icon_view
-               ? views::AsViewClass<LensOverlayPageActionIconView>(icon_view)
-               : nullptr;
+    return BrowserElementsViews::From(browser())
+        ->GetViewAs<LensOverlayPageActionIconView>(
+            kLensOverlayPageActionIconElementId);
   }
 
   LocationBarView* location_bar() {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    return views::AsViewClass<LocationBarView>(
-        browser_view->toolbar()->location_bar());
+    return BrowserElementsViews::From(browser())->GetViewAs<LocationBarView>(
+        kLocationBarElementId);
   }
 
   page_actions::PageActionView* lens_overlay_page_action_view() {
@@ -121,13 +116,15 @@ class LensOverlayPageActionIconViewTest
                   },
               },
           },
-          {lens::features::kLensOverlayKeyboardSelection});
+          {lens::features::kLensOverlayKeyboardSelection,
+           omnibox::kAiModeOmniboxEntryPoint});
     } else {
       scoped_feature_list_.InitWithFeatures(
           {lens::features::kLensOverlay,
            lens::features::kLensOverlayOmniboxEntryPoint},
           {lens::features::kLensOverlayKeyboardSelection,
-           ::features::kPageActionsMigration});
+           ::features::kPageActionsMigration,
+           omnibox::kAiModeOmniboxEntryPoint});
     }
   }
 
@@ -250,7 +247,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayPageActionIconViewTest,
 
   EXPECT_TRUE(new_tab_contents);
   content::WaitForLoadStop(new_tab_contents);
-  EXPECT_THAT(new_tab_contents->GetLastCommittedURL().query(),
+  EXPECT_THAT(new_tab_contents->GetLastCommittedURL().GetQuery(),
               MatchesRegex("ep=crmntob&re=df&s=4&st=\\d+&lm=.+"));
 }
 

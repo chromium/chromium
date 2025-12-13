@@ -11,8 +11,10 @@
 
 #include "ash/ash_export.h"
 #include "base/callback_list.h"
+#include "base/gtest_prod_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -25,8 +27,6 @@ namespace ash {
 
 class InformedRestoreContextMenuModel;
 
-// TODO(http://b/337339184): Change the layout when the display orientation
-// changes.
 class ASH_EXPORT InformedRestoreContentsView : public views::BoxLayoutView {
   METADATA_HEADER(InformedRestoreContentsView, views::BoxLayoutView)
 

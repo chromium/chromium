@@ -28,7 +28,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Make a random `Rule`.
   std::optional<base::Value> value =
-      base::JSONReader::Read(provider.ConsumeRandomLengthString());
+      base::JSONReader::Read(provider.ConsumeRandomLengthString(),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value || !value->is_dict()) {
     return 0;
   }

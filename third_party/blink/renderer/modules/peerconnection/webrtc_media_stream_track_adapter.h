@@ -33,8 +33,8 @@ struct WebRtcMediaStreamTrackAdapterTraits;
 // The adapter may be created and used from either the main thread or the
 // webrtc signaling thread.
 class MODULES_EXPORT WebRtcMediaStreamTrackAdapter
-    : public WTF::ThreadSafeRefCounted<WebRtcMediaStreamTrackAdapter,
-                                       WebRtcMediaStreamTrackAdapterTraits> {
+    : public ThreadSafeRefCounted<WebRtcMediaStreamTrackAdapter,
+                                  WebRtcMediaStreamTrackAdapterTraits> {
  public:
   // Invoke on the main thread. The returned adapter is fully initialized, see
   // |is_initialized|. The adapter will keep a reference to the |main_thread|.
@@ -86,8 +86,8 @@ class MODULES_EXPORT WebRtcMediaStreamTrackAdapter
   }
 
  protected:
-  friend class WTF::ThreadSafeRefCounted<WebRtcMediaStreamTrackAdapter,
-                                         WebRtcMediaStreamTrackAdapterTraits>;
+  friend class ThreadSafeRefCounted<WebRtcMediaStreamTrackAdapter,
+                                    WebRtcMediaStreamTrackAdapterTraits>;
   friend struct WebRtcMediaStreamTrackAdapterTraits;
 
   WebRtcMediaStreamTrackAdapter(

@@ -31,10 +31,6 @@ class CC_PAINT_EXPORT TextureBacking : public SkRefCnt {
   // Returns the shared image mailbox backing for this texture.
   virtual gpu::Mailbox GetMailbox() const = 0;
 
-  // Returns a texture backed SkImage. Only supported if the context used to
-  // create this image has a valid GrContext.
-  virtual sk_sp<SkImage> GetAcceleratedSkImage() = 0;
-
   // Gets SkImage via a readback from GPU memory. Use this when actual SkImage
   // pixel data is required in software.
   virtual sk_sp<SkImage> GetSkImageViaReadback() = 0;
@@ -45,10 +41,6 @@ class CC_PAINT_EXPORT TextureBacking : public SkRefCnt {
                           size_t dst_row_bytes,
                           int src_x,
                           int src_y) = 0;
-
-  // Force a flush of any pending skia work. Only supported if this
-  // TextureBacking wraps an SkImage.
-  virtual void FlushPendingSkiaOps() = 0;
 };
 
 }  // namespace cc

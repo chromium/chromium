@@ -729,7 +729,7 @@ impl TokTrie {
         r
     }
 
-    pub fn node_children(&self, n: &TrieNode) -> NodeChildren {
+    pub fn node_children(&self, n: &TrieNode) -> NodeChildren<'_> {
         let off = self.node_offset(n);
         NodeChildren {
             trie: self,

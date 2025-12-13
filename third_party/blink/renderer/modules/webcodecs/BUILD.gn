@@ -103,7 +103,7 @@ blink_modules_sources("webcodecs") {
     "//media/mojo:buildflags",
     "//media/mojo/clients",
     "//media/mojo/mojom",
-    "//third_party/libyuv:libyuv",
+    "//third_party/libyuv",
     "//third_party/opus",
   ]
   if (enable_libaom) {
@@ -120,7 +120,7 @@ blink_modules_sources("webcodecs") {
   if (is_fuchsia) {
     deps += [ "//media/fuchsia/video" ]
   }
-  public_deps = [ "//third_party/blink/renderer/modules/webaudio:webaudio" ]
+  public_deps = [ "//third_party/blink/renderer/modules/webaudio" ]
 }
 
 source_set("unit_tests") {
@@ -128,6 +128,7 @@ source_set("unit_tests") {
   sources = [
     "audio_data_test.cc",
     "audio_decoder_broker_test.cc",
+    "audio_decoder_test.cc",
     "codec_pressure_gauge_test.cc",
     "codec_pressure_manager_test.cc",
     "decoder_selector_test.cc",
@@ -157,7 +158,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//gpu/command_buffer/common",
     "//media:test_support",
-    "//media/mojo/services:services",
+    "//media/mojo/services",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:test_headers",

@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -53,6 +54,10 @@ class BrowserContainerCoordinatorTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mocked_application_handler_
                      forProtocol:@protocol(ApplicationCommands)];
+
+    // FullscreenController depends on ToolbarsSizeBrowserAgent, so the agent
+    // must be created first. Please maintain this order.
+    ToolbarsSizeBrowserAgent::CreateForBrowser(browser_.get());
     FullscreenController::CreateForBrowser(browser_.get());
   }
 

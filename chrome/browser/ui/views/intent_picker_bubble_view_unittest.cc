@@ -45,6 +45,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/resources/grit/views_resources.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/views_test_base.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget_utils.h"
 #include "url/gurl.h"
@@ -67,20 +68,12 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
   IntentPickerBubbleViewTest& operator=(const IntentPickerBubbleViewTest&) =
       delete;
 
-  void TearDown() override {
-    // Make sure the bubble is destroyed before the profile to avoid a crash.
-    if (bubble_) {
-      bubble_->GetWidget()->CloseNow();
-    }
-
-    TestWithBrowserView::TearDown();
-  }
-
  protected:
-  void CreateBubbleView(bool use_icons,
-                        bool show_stay_in_chrome,
-                        BubbleType bubble_type,
-                        const std::optional<url::Origin>& initiating_origin) {
+  ChromeViewsTestBase::WidgetAutoclosePtr CreateBubbleView(
+      bool use_icons,
+      bool show_stay_in_chrome,
+      BubbleType bubble_type,
+      const std::optional<url::Origin>& initiating_origin) {
     DCHECK(!app_info_.empty());
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
@@ -106,10 +99,10 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
         /*show_remember_selection=*/true, initiating_origin,
         base::BindOnce(&IntentPickerBubbleViewTest::OnBubbleClosed,
                        base::Unretained(this)));
-    bubble_ = IntentPickerBubbleView::intent_picker_bubble();
     event_generator_.reset();  // Mac only allows one EventGenerator at a time.
     event_generator_ = std::make_unique<ui::test::EventGenerator>(
         views::GetRootWindow(widget));
+    return ChromeViewsTestBase::WidgetAutoclosePtr(widget);
   }
 
   // Add an app to the bubble opened by CreateBubbleView. Manually added apps
@@ -136,7 +129,8 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
 
   views::Button* GetButtonAtIndex(size_t index) {
     auto children =
-        bubble_->GetViewByID(IntentPickerBubbleView::ViewId::kItemContainer)
+        bubble()
+            ->GetViewByID(IntentPickerBubbleView::ViewId::kItemContainer)
             ->children();
     CHECK_LT(index, children.size());
     return views::AsViewClass<views::Button>(children[index]);
@@ -160,7 +154,8 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
   }
 
   size_t GetScrollViewSize() {
-    return bubble_->GetViewByID(IntentPickerBubbleView::ViewId::kItemContainer)
+    return bubble()
+        ->GetViewByID(IntentPickerBubbleView::ViewId::kItemContainer)
         ->children()
         .size();
   }
@@ -174,7 +169,9 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
     last_selection_should_persist_ = should_persist;
   }
 
-  IntentPickerBubbleView* bubble() { return bubble_; }
+  IntentPickerBubbleView* bubble() {
+    return IntentPickerBubbleView::intent_picker_bubble();
+  }
 
   const std::vector<AppInfo>& app_info() { return app_info_; }
 
@@ -195,7 +192,6 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
   }
 
  private:
-  raw_ptr<IntentPickerBubbleView, DanglingUntriaged> bubble_ = nullptr;
   raw_ptr<views::View, DanglingUntriaged> anchor_view_;
   std::vector<AppInfo> app_info_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
@@ -221,9 +217,10 @@ class IntentPickerBubbleViewListTest : public IntentPickerBubbleViewTest {
 // Verifies that we didn't set up an image for any LabelButton.
 TEST_F(IntentPickerBubbleViewListTest, NullIcons) {
   AddDefaultApps();
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/true,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/true,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
   size_t size = GetScrollViewSize();
   for (size_t i = 0; i < size; ++i) {
     gfx::ImageSkia image =
@@ -235,9 +232,10 @@ TEST_F(IntentPickerBubbleViewListTest, NullIcons) {
 // Verifies that all the icons contain a non-null icon.
 TEST_F(IntentPickerBubbleViewListTest, NonNullIcons) {
   AddDefaultApps();
-  CreateBubbleView(/*use_icons=*/true, /*show_stay_in_chrome=*/true,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/true, /*show_stay_in_chrome=*/true,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
   size_t size = GetScrollViewSize();
   for (size_t i = 0; i < size; ++i) {
     gfx::ImageSkia image =
@@ -252,9 +250,10 @@ TEST_F(IntentPickerBubbleViewListTest, NonNullIcons) {
 // represented by |chrome_package_repetitions|.
 TEST_F(IntentPickerBubbleViewListTest, LabelsPtrVectorSize) {
   AddDefaultApps();
-  CreateBubbleView(/*use_icons=*/true, /*show_stay_in_chrome=*/true,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/true, /*show_stay_in_chrome=*/true,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
   size_t size = app_info().size();
 
   EXPECT_EQ(size, GetScrollViewSize());
@@ -264,9 +263,10 @@ TEST_F(IntentPickerBubbleViewListTest, LabelsPtrVectorSize) {
 // bubble.
 TEST_F(IntentPickerBubbleViewListTest, VerifyStartingInkDrop) {
   AddDefaultApps();
-  CreateBubbleView(/*use_icons=*/true, /*show_stay_in_chrome=*/true,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/true, /*show_stay_in_chrome=*/true,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
   size_t size = GetScrollViewSize();
   EXPECT_EQ(GetInkDropState(0), views::InkDropState::ACTIVATED);
   for (size_t i = 1; i < size; ++i) {
@@ -278,9 +278,10 @@ TEST_F(IntentPickerBubbleViewListTest, VerifyStartingInkDrop) {
 // followed by HIDDEN state after selecting other button.
 TEST_F(IntentPickerBubbleViewListTest, InkDropStateTransition) {
   AddDefaultApps();
-  CreateBubbleView(/*use_icons=*/true, /*show_stay_in_chrome=*/true,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/true, /*show_stay_in_chrome=*/true,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
   size_t size = GetScrollViewSize();
   for (size_t i = 0; i < size; ++i) {
     ClickApp((i + 1) % size);
@@ -292,9 +293,10 @@ TEST_F(IntentPickerBubbleViewListTest, InkDropStateTransition) {
 // Arbitrary press a button twice, check that the InkDropState remains the same.
 TEST_F(IntentPickerBubbleViewListTest, PressButtonTwice) {
   AddDefaultApps();
-  CreateBubbleView(/*use_icons=*/true, /*show_stay_in_chrome=*/true,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/true, /*show_stay_in_chrome=*/true,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
   EXPECT_EQ(GetInkDropState(1), views::InkDropState::HIDDEN);
   ClickApp(1);
   EXPECT_EQ(GetInkDropState(1), views::InkDropState::ACTIVATED);
@@ -307,29 +309,33 @@ TEST_F(IntentPickerBubbleViewListTest, PressButtonTwice) {
 // Check that a non nullptr WebContents() has been created and observed.
 TEST_F(IntentPickerBubbleViewListTest, WebContentsTiedToBubble) {
   AddDefaultApps();
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
   EXPECT_TRUE(bubble()->web_contents());
 
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/true,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/true,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
   EXPECT_TRUE(bubble()->web_contents());
 }
 
 // Check that that the correct window title is shown.
 TEST_F(IntentPickerBubbleViewListTest, WindowTitle) {
   AddDefaultApps();
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_INTENT_PICKER_BUBBLE_VIEW_OPEN_WITH),
             bubble()->GetWindowTitle());
 
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
-                   BubbleType::kClickToCall,
-                   /*initiating_origin=*/std::nullopt);
+  bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                       BubbleType::kClickToCall,
+                       /*initiating_origin=*/std::nullopt);
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_TITLE_LABEL),
             bubble()->GetWindowTitle());
@@ -338,18 +344,20 @@ TEST_F(IntentPickerBubbleViewListTest, WindowTitle) {
 // Check that that the correct button labels are used.
 TEST_F(IntentPickerBubbleViewListTest, ButtonLabels) {
   AddDefaultApps();
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_INTENT_PICKER_BUBBLE_VIEW_OPEN),
             bubble()->GetDialogButtonLabel(ui::mojom::DialogButton::kOk));
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_INTENT_PICKER_BUBBLE_VIEW_STAY_IN_CHROME),
       bubble()->GetDialogButtonLabel(ui::mojom::DialogButton::kCancel));
 
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
-                   BubbleType::kClickToCall,
-                   /*initiating_origin=*/std::nullopt);
+  bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                       BubbleType::kClickToCall,
+                       /*initiating_origin=*/std::nullopt);
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_CALL_BUTTON_LABEL),
             bubble()->GetDialogButtonLabel(ui::mojom::DialogButton::kOk));
@@ -360,20 +368,23 @@ TEST_F(IntentPickerBubbleViewListTest, ButtonLabels) {
 
 TEST_F(IntentPickerBubbleViewListTest, InitiatingOriginView) {
   AddDefaultApps();
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
   const int children_without_origin = bubble()->children().size();
 
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
-                   BubbleType::kLinkCapturing,
-                   url::Origin::Create(GURL("https://example.com")));
+  bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                       BubbleType::kLinkCapturing,
+                       url::Origin::Create(GURL("https://example.com")));
   const int children_with_origin = bubble()->children().size();
   EXPECT_EQ(children_without_origin + 1, children_with_origin);
 
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
-                   BubbleType::kLinkCapturing,
-                   url::Origin::Create(GURL("http://www.google.com")));
+  bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                       BubbleType::kLinkCapturing,
+                       url::Origin::Create(GURL("http://www.google.com")));
   const int children_with_same_origin = bubble()->children().size();
   EXPECT_EQ(children_without_origin, children_with_same_origin);
 }
@@ -399,9 +410,10 @@ TEST_P(IntentPickerBubbleViewLayoutTest, RememberCheckbox) {
   AddApp(apps::PickerEntryType::kWeb, "web_app_id", "Web App");
   AddApp(apps::PickerEntryType::kArc, "arc_app_id", "Arc App");
 
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
 
   auto* checkbox = views::AsViewClass<views::Checkbox>(
       bubble()->GetViewByID(IntentPickerBubbleView::ViewId::kRememberCheckbox));
@@ -423,9 +435,10 @@ TEST_P(IntentPickerBubbleViewLayoutTest, RememberCheckbox) {
 TEST_P(IntentPickerBubbleViewLayoutTest, AcceptDialog) {
   AddApp(apps::PickerEntryType::kWeb, "web_app_id_1", "Web App");
   AddApp(apps::PickerEntryType::kWeb, "web_app_id_2", "Web App");
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
 
   ClickApp(1);
   bubble()->AcceptDialog();
@@ -437,9 +450,10 @@ TEST_P(IntentPickerBubbleViewLayoutTest, AcceptDialog) {
 
 TEST_P(IntentPickerBubbleViewLayoutTest, AcceptDialogWithRememberSelection) {
   AddApp(apps::PickerEntryType::kArc, "arc_app_id", "ARC App");
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/true,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/true,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
 
   ClickApp(0);
 
@@ -457,9 +471,10 @@ TEST_P(IntentPickerBubbleViewLayoutTest, AcceptDialogWithRememberSelection) {
 TEST_P(IntentPickerBubbleViewLayoutTest, CancelDialog) {
   AddApp(apps::PickerEntryType::kWeb, "web_app_id_1", "Web App");
   AddApp(apps::PickerEntryType::kWeb, "web_app_id_2", "Web App");
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/true,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/true,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
 
   ClickApp(1);
   bubble()->CancelDialog();
@@ -471,9 +486,10 @@ TEST_P(IntentPickerBubbleViewLayoutTest, CancelDialog) {
 
 TEST_P(IntentPickerBubbleViewLayoutTest, CloseDialog) {
   AddApp(apps::PickerEntryType::kWeb, "web_app_id_1", "Web App");
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
 
   bubble()->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kLostFocus);
@@ -490,9 +506,10 @@ TEST_P(IntentPickerBubbleViewLayoutTest, CloseDialog) {
 #endif
 TEST_P(IntentPickerBubbleViewLayoutTest, MAYBE_KeyboardNavigation) {
   AddDefaultApps();
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
 
   ClickApp(0);
   GetButtonAtIndex(0)->RequestFocus();
@@ -513,9 +530,10 @@ TEST_P(IntentPickerBubbleViewLayoutTest, MAYBE_KeyboardNavigation) {
 
 TEST_P(IntentPickerBubbleViewLayoutTest, DoubleClickToAccept) {
   AddApp(apps::PickerEntryType::kWeb, "web_app_id", "Web App");
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
 
   views::test::ButtonTestApi button(GetButtonAtIndex(0));
 
@@ -559,9 +577,10 @@ class IntentPickerBubbleViewGridLayoutTest
 
 TEST_P(IntentPickerBubbleViewGridLayoutTest, DefaultSelectionOneApp) {
   AddApp(apps::PickerEntryType::kWeb, "web_app_id", "Web App");
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
 
   ASSERT_EQ(bubble()->GetSelectedIndex(), 0u);
 }
@@ -569,9 +588,10 @@ TEST_P(IntentPickerBubbleViewGridLayoutTest, DefaultSelectionOneApp) {
 TEST_P(IntentPickerBubbleViewGridLayoutTest, AccessibilityCheckedStateChange) {
   ui::AXNodeData data;
   AddApp(apps::PickerEntryType::kWeb, "web_app_id", "Web App");
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
   // In case of 1 app, 1st view will be selected
   bubble()->SelectDefaultItem();
   auto* view = GetButtonAtIndex(0);
@@ -579,9 +599,10 @@ TEST_P(IntentPickerBubbleViewGridLayoutTest, AccessibilityCheckedStateChange) {
   EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
 
   AddApp(apps::PickerEntryType::kWeb, "web_app_id", "Web App");
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
 
   data = ui::AXNodeData();
   view = GetButtonAtIndex(1);
@@ -593,9 +614,10 @@ TEST_P(IntentPickerBubbleViewGridLayoutTest, DefaultSelectionTwoApps) {
   AddApp(apps::PickerEntryType::kWeb, "web_app_id_1", "Web App");
   AddApp(apps::PickerEntryType::kWeb, "web_app_id_2", "Web App");
 
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
 
   ASSERT_FALSE(bubble()->GetSelectedIndex().has_value());
 }
@@ -608,9 +630,10 @@ TEST_P(IntentPickerBubbleViewGridLayoutTest, DefaultSelectionTwoApps) {
 #endif
 TEST_P(IntentPickerBubbleViewGridLayoutTest, MAYBE_OpenWithReturnKey) {
   AddDefaultApps();
-  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
-                   BubbleType::kLinkCapturing,
-                   /*initiating_origin=*/std::nullopt);
+  auto bubble_widget =
+      CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                       BubbleType::kLinkCapturing,
+                       /*initiating_origin=*/std::nullopt);
 
   GetButtonAtIndex(0)->RequestFocus();
   EXPECT_TRUE(GetButtonAtIndex(0)->HasFocus());

@@ -38,8 +38,11 @@
 #include "media/mojo/services/gpu_mojo_media_client_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+#include "media/filters/symphonia_audio_decoder.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/filters/android/media_codec_audio_decoder.h"
 #endif
@@ -139,6 +142,14 @@ class AudioDecoderTest
         decoder_ = std::make_unique<FFmpegAudioDecoder>(
             task_environment_.GetMainThreadTaskRunner(), &media_log_);
         break;
+
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+      case AudioDecoderType::kSymphonia:
+        decoder_ = std::make_unique<SymphoniaAudioDecoder>(
+            task_environment_.GetMainThreadTaskRunner(), &media_log_);
+        break;
+
+#endif
 #if BUILDFLAG(IS_ANDROID)
       case AudioDecoderType::kMediaCodec:
         decoder_ = std::make_unique<MediaCodecAudioDecoder>(
@@ -204,12 +215,18 @@ class AudioDecoderTest
 
   void SetReinitializeParams();
 
-  void Initialize() {
+  // Initializes the AudioFileReader from the `filename_` property.
+  void InitializeReader() {
     // Load the test data file.
     data_ = ReadTestDataFile(params_.filename);
     protocol_ = std::make_unique<InMemoryUrlProtocol>(*data_, false);
     reader_ = std::make_unique<AudioFileReader>(protocol_.get());
     ASSERT_TRUE(reader_->OpenDemuxerForTesting());
+  }
+
+  void Initialize() {
+    filename_ = params_.filename;
+    InitializeReader();
 
     // Load the first packet and check its timestamp.
     auto packet = ScopedAVPacket::Allocate();
@@ -218,8 +235,8 @@ class AudioDecoderTest
     start_timestamp_ = ConvertFromTimeBase(
         reader_->GetAVStreamForTesting()->time_base, packet->pts);
 
-    // Seek back to the beginning.
-    ASSERT_TRUE(reader_->SeekForTesting(start_timestamp_));
+    // Reset the reader back to the beginning.
+    InitializeReader();
 
     AudioDecoderConfig config;
     ASSERT_TRUE(AVCodecContextToAudioDecoderConfig(
@@ -233,11 +250,11 @@ class AudioDecoderTest
     if ((decoder_type_ == AudioDecoderType::kMediaCodec ||
          decoder_type_ == AudioDecoderType::kMediaFoundation) &&
         params_.codec == AudioCodec::kAAC && config.extra_data().empty()) {
-      int sample_rate;
+      size_t sample_rate;
       ChannelLayout channel_layout;
       std::vector<uint8_t> extra_data;
       ASSERT_GT(ADTSStreamParser().ParseFrameHeader(
-                    packet->data, packet->size, nullptr, &sample_rate,
+                    AVPacketData(*packet), nullptr, &sample_rate,
                     &channel_layout, nullptr, nullptr, &extra_data),
                 0);
       config.Initialize(AudioCodec::kAAC, kSampleFormatS16, channel_layout,
@@ -299,19 +316,22 @@ class AudioDecoderTest
     DecodeBuffer(std::move(buffer));
   }
 
-  void Reset() {
+  void ResetDecoder() {
     ASSERT_FALSE(pending_reset_);
     pending_reset_ = true;
-    decoder_->Reset(base::BindOnce(&AudioDecoderTest::ResetFinished,
-                                   base::Unretained(this)));
-    base::RunLoop().RunUntilIdle();
+
+    base::RunLoop run_loop;
+    decoder_->Reset(
+        base::BindOnce(&AudioDecoderTest::ResetFinished, base::Unretained(this))
+            .Then(run_loop.QuitClosure()));
+    run_loop.Run();
     ASSERT_FALSE(pending_reset_);
   }
 
-  void Seek(base::TimeDelta seek_time) {
-    Reset();
+  void ResetReader() {
+    ResetDecoder();
     decoded_audio_.clear();
-    ASSERT_TRUE(reader_->SeekForTesting(seek_time));
+    InitializeReader();
   }
 
   void OnDecoderOutput(scoped_refptr<AudioBuffer> buffer) {
@@ -351,12 +371,12 @@ class AudioDecoderTest
       // over-conservative, since it will require that the output be a sequence
       // of bit-for-bit identical floats rather than a sequence of equivalent
       // floats, but that's okay.
-      hasher.Update(base::as_byte_span(base::allow_nonunique_obj,
-                                       output->channel_span(ch)));
+      hasher.Update(
+          base::as_byte_span(base::allow_nonunique_obj, output->channel(ch)));
     }
     std::array<uint8_t, crypto::hash::kSha256Size> digest;
     hasher.Finish(digest);
-    return base::ToLowerASCII(base::HexEncode(digest));
+    return base::HexEncodeLower(digest);
   }
 
   void ExpectDecodedAudio(size_t i, const std::string& exact_hash) {
@@ -414,6 +434,7 @@ class AudioDecoderTest
 
   NullMediaLog media_log_;
   scoped_refptr<DecoderBuffer> data_;
+  const char* filename_ = nullptr;
   std::unique_ptr<InMemoryUrlProtocol> protocol_;
   std::unique_ptr<AudioFileReader> reader_;
 
@@ -601,6 +622,22 @@ constexpr TestParams kFFmpegTestParams[] = {
      CHANNEL_LAYOUT_STEREO},
 };
 
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+constexpr DataExpectations kBearFlac192kHzExpectations = {
+    {{0, 85333, "-0.30,-0.76,0.01,0.52,2.09,0.90,"},
+     {85333, 85333, "-3.54,-1.84,-3.22,-0.56,-1.13,-0.17,"},
+     {170666, 85333, "0.79,-0.39,1.11,0.89,3.22,1.28,"}}};
+
+// Currently, Symphonia is only enabled for FLAC audio.
+constexpr TestParams kSymphoniaTestParams[] = {
+    {AudioCodec::kFLAC, "sfx-flac.mp4", kSfxFlacExpectations, 0, 44100,
+     CHANNEL_LAYOUT_MONO},
+    {AudioCodec::kFLAC, "sfx.flac", kSfxFlacExpectations, 0, 44100,
+     CHANNEL_LAYOUT_MONO},
+    {AudioCodec::kFLAC, "bear-flac-192kHz.mp4", kBearFlac192kHzExpectations, 0,
+     192000, CHANNEL_LAYOUT_STEREO}};
+#endif
+
 void AudioDecoderTest::SetReinitializeParams() {
 #if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)) && \
     BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -611,6 +648,17 @@ void AudioDecoderTest::SetReinitializeParams() {
     set_params(params_.channel_layout == kXheAacTestParams[0].channel_layout
                    ? kXheAacTestParams[1]
                    : kXheAacTestParams[0]);
+    return;
+  }
+#endif
+
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+  // Currently, Symphonia only supports FLAC audio, so we can't use the Opus
+  // params for reinitialization. Modify the channel layout instead.
+  if (decoder_type_ == AudioDecoderType::kSymphonia) {
+    set_params(params_.channel_layout == kSymphoniaTestParams[0].channel_layout
+                   ? kSymphoniaTestParams[2]
+                   : kSymphoniaTestParams[0]);
     return;
   }
 #endif
@@ -640,17 +688,17 @@ TEST_P(AudioDecoderTest, Reinitialize_AfterDecode) {
 TEST_P(AudioDecoderTest, Reinitialize_AfterReset) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
-  Reset();
+  ResetDecoder();
   SetReinitializeParams();
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();
 }
 
-// Verifies decode audio as well as the Decode() -> Reset() sequence.
+// Verifies decode audio as well as the Decode() -> ResetDecoder() sequence.
 TEST_P(AudioDecoderTest, ProduceAudioSamples) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
 
-  // Run the test multiple times with a seek back to the beginning in between.
+  // Run the test multiple times with a reset back to the beginning in between.
   std::vector<std::string> decoded_audio_sha256_hashes;
   for (int i = 0; i < 2; ++i) {
     // Run decoder until we get at least |kDecodeRuns| output buffers.
@@ -681,9 +729,7 @@ TEST_P(AudioDecoderTest, ProduceAudioSamples) {
     }
 
     SendEndOfStream();
-
-    // Seek back to the beginning.  Calls Reset() on the decoder.
-    Seek(start_timestamp());
+    ResetReader();
   }
 }
 
@@ -707,9 +753,15 @@ TEST_P(AudioDecoderTest, EncryptedBuffer) {
   EXPECT_TRUE(!last_decode_status().is_ok());
 }
 
+TEST_P(AudioDecoderTest, DecodeEOSFirst) {
+  ASSERT_NO_FATAL_FAILURE(Initialize());
+  SendEndOfStream();
+  EXPECT_TRUE(last_decode_status().is_ok());
+}
+
 TEST_P(AudioDecoderTest, Reset) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
-  Reset();
+  ResetDecoder();
 }
 
 TEST_P(AudioDecoderTest, NoTimestamp) {
@@ -730,6 +782,13 @@ INSTANTIATE_TEST_SUITE_P(FFmpeg,
                          AudioDecoderTest,
                          Combine(Values(AudioDecoderType::kFFmpeg),
                                  ValuesIn(kFFmpegTestParams)));
+
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+INSTANTIATE_TEST_SUITE_P(Symphonia,
+                         AudioDecoderTest,
+                         Combine(Values(AudioDecoderType::kSymphonia),
+                                 ValuesIn(kSymphoniaTestParams)));
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 std::vector<TestParams> GetAndroidParams() {

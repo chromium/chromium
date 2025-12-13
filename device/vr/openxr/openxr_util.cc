@@ -15,6 +15,18 @@
 #include "ui/gfx/geometry/transform_util.h"
 namespace device {
 
+namespace {
+// This represents a 90 degree (or pi/2) rotation about the X axis. Suitable
+// for turning "+Z" from being up to "+Y" being up.
+// clang-format off
+static constexpr gfx::Transform kZNormalToYNormalTransform =
+  gfx::Transform::RowMajor(1,  0,  0, 0,
+                            0,  0, -1, 0,
+                            0,  1,  0, 0,
+                            0,  0,  0, 1);
+// clang-format on
+}  // namespace
+
 XrPosef PoseIdentity() {
   XrPosef pose{};
   pose.orientation.w = 1;
@@ -39,19 +51,36 @@ device::Pose XrPoseToDevicePose(const XrPosef& pose) {
   return device::Pose{position, orientation};
 }
 
+device::Pose ZNormalXrPoseToYNormalDevicePose(const XrPosef& pose) {
+  auto z_normal = XrPoseToGfxTransform(pose);
+  auto y_normal = z_normal * kZNormalToYNormalTransform;
+  auto maybe_pose = device::Pose::Create(y_normal);
+
+  // Our XrPose is guaranteed parseable, and applying a simple rotation should
+  // not change that.
+  CHECK(maybe_pose);
+  return *maybe_pose;
+}
+
 XrPosef GfxTransformToXrPose(const gfx::Transform& transform) {
   std::optional<gfx::DecomposedTransform> decomposed_transform =
       transform.Decompose();
   // This pose should always be a simple translation and rotation so this should
   // always be true
   DCHECK(decomposed_transform);
-  return {{static_cast<float>(decomposed_transform->quaternion.x()),
-           static_cast<float>(decomposed_transform->quaternion.y()),
-           static_cast<float>(decomposed_transform->quaternion.z()),
-           static_cast<float>(decomposed_transform->quaternion.w())},
+  return {GfxQuaternionToXrQuaternion(decomposed_transform->quaternion),
           {static_cast<float>(decomposed_transform->translate[0]),
            static_cast<float>(decomposed_transform->translate[1]),
            static_cast<float>(decomposed_transform->translate[2])}};
+}
+
+XrQuaternionf GfxQuaternionToXrQuaternion(const gfx::Quaternion& quaternion) {
+  return {
+      .x = static_cast<float>(quaternion.x()),
+      .y = static_cast<float>(quaternion.y()),
+      .z = static_cast<float>(quaternion.z()),
+      .w = static_cast<float>(quaternion.w()),
+  };
 }
 
 mojom::VRFieldOfViewPtr XrFovToMojomFov(const XrFovf& xr_fov) {

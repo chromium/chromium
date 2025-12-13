@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace webnn {
 
@@ -22,11 +23,9 @@ ScopedTrace::ScopedTrace(ScopedTrace&& other)
 ScopedTrace::~ScopedTrace() {
   if (id_.has_value()) {
     if (step_name_.has_value()) {
-      TRACE_EVENT_NESTABLE_ASYNC_END0(kWebNNTraceCategory, *step_name_,
-                                      TRACE_ID_LOCAL(id_.value()));
+      TRACE_EVENT_END(kWebNNTraceCategory, track());
     }
-    TRACE_EVENT_NESTABLE_ASYNC_END0(kWebNNTraceCategory, name_,
-                                    TRACE_ID_LOCAL(id_.value()));
+    TRACE_EVENT_END(kWebNNTraceCategory, track());
   }
 }
 
@@ -39,24 +38,22 @@ ScopedTrace& ScopedTrace::operator=(ScopedTrace&& other) {
   return *this;
 }
 
-void ScopedTrace::AddStep(const char* step_name) {
+void ScopedTrace::AddStep(perfetto::StaticString step_name) {
   // Calling AddStep() after move is not allowed.
   CHECK(id_.has_value());
   if (step_name_.has_value()) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(kWebNNTraceCategory, *step_name_,
-                                    TRACE_ID_LOCAL(id_.value()));
+    TRACE_EVENT_END(kWebNNTraceCategory, track());
   }
   step_name_ = step_name;
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(kWebNNTraceCategory, *step_name_,
-                                    TRACE_ID_LOCAL(id_.value()));
+  TRACE_EVENT_BEGIN(kWebNNTraceCategory, *step_name_, track());
 }
 
-ScopedTrace::ScopedTrace(const char* name)
+ScopedTrace::ScopedTrace(perfetto::StaticString name)
     : ScopedTrace(name, base::trace_event::GetNextGlobalTraceId()) {}
 
-ScopedTrace::ScopedTrace(const char* name, uint64_t id) : name_(name), id_(id) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(kWebNNTraceCategory, name_,
-                                    TRACE_ID_LOCAL(id_.value()));
+ScopedTrace::ScopedTrace(perfetto::StaticString name, uint64_t id)
+    : name_(name), id_(id) {
+  TRACE_EVENT_BEGIN(kWebNNTraceCategory, name_, track());
 }
 
 }  // namespace webnn

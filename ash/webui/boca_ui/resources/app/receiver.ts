@@ -56,6 +56,12 @@ function initializeApp(app: ClientApi) {
   callbackRouter.onSpotlightCrdSessionStatusUpdated.addListener(
       (state: CrdConnectionState) => app.onSpotlightCrdSessionStatusUpdated(
           getCrdConnectionStateMojomToUI(state)));
+
+  callbackRouter.onPresentStudentScreenEnded.addListener(
+      () => app.onPresentStudentScreenEnded());
+
+  callbackRouter.onPresentOwnScreenEnded.addListener(
+      () => app.onPresentOwnScreenEnded());
 }
 
 /**

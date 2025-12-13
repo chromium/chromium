@@ -18,7 +18,7 @@ android_apk("customtabs_benchmark_apk") {
     "java/src/org/chromium/customtabs/test/WebViewActivity.java",
   ]
   android_manifest = "java/AndroidManifest.xml"
-  min_sdk_version = 21
+  min_sdk_version = min_supported_sdk_version
   target_sdk_version = 33
   apk_name = "CustomTabsBenchmark"
   deps = [

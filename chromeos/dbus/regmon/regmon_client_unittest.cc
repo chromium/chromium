@@ -20,7 +20,6 @@ using ::logging::LOGGING_ERROR;
 using ::testing::_;
 using ::testing::EndsWith;
 using ::testing::HasSubstr;
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace chromeos {
@@ -72,9 +71,9 @@ class RegmonClientTest : public testing::Test {
 TEST_F(RegmonClientTest, RecordPolicyViolation_SuccessTest) {
   const int32_t kTestHashCode = 123;
 
-  EXPECT_CALL(*proxy_, DoCallMethod)
-      .WillOnce(Invoke([&](dbus::MethodCall* method_call, int timeout_ms,
-                           dbus::ObjectProxy::ResponseCallback* callback) {
+  EXPECT_CALL(*proxy_, CallMethod)
+      .WillOnce([&](dbus::MethodCall* method_call, int timeout_ms,
+                    dbus::ObjectProxy::ResponseCallback callback) {
         // First verify that the request proto was included in the dbus call.
         dbus::MessageReader reader(method_call);
         regmon::RecordPolicyViolationRequest request;
@@ -88,8 +87,8 @@ TEST_F(RegmonClientTest, RecordPolicyViolation_SuccessTest) {
         dbus::MessageWriter writer(response.get());
         writer.AppendProtoAsArrayOfBytes(
             regmon::RecordPolicyViolationResponse());
-        std::move(*callback).Run(response.get());
-      }));
+        std::move(callback).Run(response.get());
+      });
 
   EXPECT_CALL(mock_log_, Log(LOGGING_ERROR, _, _, _, _)).Times(0);
 
@@ -101,9 +100,9 @@ TEST_F(RegmonClientTest, RecordPolicyViolation_SuccessTest) {
 TEST_F(RegmonClientTest, RecordPolicyViolation_ErrorTest) {
   const std::string kRegmonErrorMessage = "Mock error from regmon";
 
-  EXPECT_CALL(*proxy_, DoCallMethod)
-      .WillOnce(Invoke([&](dbus::MethodCall* method_call, int timeout_ms,
-                           dbus::ObjectProxy::ResponseCallback* callback) {
+  EXPECT_CALL(*proxy_, CallMethod)
+      .WillOnce([&](dbus::MethodCall* method_call, int timeout_ms,
+                    dbus::ObjectProxy::ResponseCallback callback) {
         // Run callback with a dbus response containing an error from regmond.
         auto response = dbus::Response::CreateEmpty();
         dbus::MessageWriter writer(response.get());
@@ -113,8 +112,8 @@ TEST_F(RegmonClientTest, RecordPolicyViolation_ErrorTest) {
         status->set_error_message(kRegmonErrorMessage);
 
         writer.AppendProtoAsArrayOfBytes(regmon_response);
-        std::move(*callback).Run(response.get());
-      }));
+        std::move(callback).Run(response.get());
+      });
 
   EXPECT_CALL(mock_log_, Log(LOGGING_ERROR, _, _, _, _))
       .Times(testing::AnyNumber());  // ignore uninteresting log calls
@@ -127,13 +126,13 @@ TEST_F(RegmonClientTest, RecordPolicyViolation_ErrorTest) {
 }
 
 TEST_F(RegmonClientTest, RecordPolicyViolation_NoResponseTest) {
-  EXPECT_CALL(*proxy_, DoCallMethod)
-      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+  EXPECT_CALL(*proxy_, CallMethod)
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback callback) {
         // Run callback with null dbus response. This should cause a no-response
         // error in the callback.
-        std::move(*callback).Run(nullptr);
-      }));
+        std::move(callback).Run(nullptr);
+      });
 
   EXPECT_CALL(mock_log_, Log(LOGGING_ERROR, _, _, _, _))
       .Times(testing::AnyNumber());  // ignore uninteresting log calls
@@ -147,13 +146,13 @@ TEST_F(RegmonClientTest, RecordPolicyViolation_NoResponseTest) {
 }
 
 TEST_F(RegmonClientTest, RecordPolicyViolation_ResponseParseFailureTest) {
-  EXPECT_CALL(*proxy_, DoCallMethod)
-      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+  EXPECT_CALL(*proxy_, CallMethod)
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback callback) {
         // Run callback with empty dbus response. This should cause a response
         // parsing error in the callback.
-        std::move(*callback).Run(dbus::Response::CreateEmpty().get());
-      }));
+        std::move(callback).Run(dbus::Response::CreateEmpty().get());
+      });
 
   EXPECT_CALL(mock_log_, Log(LOGGING_ERROR, _, _, _, _))
       .Times(testing::AnyNumber());  // ignore uninteresting log calls

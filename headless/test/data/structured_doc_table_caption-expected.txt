@@ -1,0 +1,29 @@
+{
+   "lang": "en",
+   "type": "Document",
+   "~children": [ {
+      "type": "Table",
+      "~children": [ {
+         "type": "Caption",
+         "~children": [ {
+            "type": "NonStruct"
+         } ]
+      }, {
+         "type": "TR",
+         "~children": [ {
+            "type": "TD",
+            "~children": [ {
+               "type": "NonStruct"
+            } ]
+         } ]
+      }, {
+         "type": "TR",
+         "~children": [ {
+            "type": "TD",
+            "~children": [ {
+               "type": "NonStruct"
+            } ]
+         } ]
+      } ]
+   } ]
+}

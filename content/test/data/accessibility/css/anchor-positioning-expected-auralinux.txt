@@ -1,5 +1,5 @@
 [document web]
 ++[section]
-++++[section] details-for=[push button]
+++++[section]
 ++++++[static] name='target'
-++++[push button] name='anchor' details=[section] details-from:css-anchor details-roles:*
+++++[push button] name='anchor'

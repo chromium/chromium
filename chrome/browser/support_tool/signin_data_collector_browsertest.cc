@@ -43,7 +43,8 @@ void ReadExportedFile(base::Value::Dict* signin, base::FilePath file_path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::string file_contents;
   ASSERT_TRUE(base::ReadFileToString(file_path, &file_contents));
-  std::optional<base::Value> dict_value = base::JSONReader::Read(file_contents);
+  std::optional<base::Value> dict_value = base::JSONReader::Read(
+      file_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict_value);
   *signin = std::move(dict_value->GetDict());
 }

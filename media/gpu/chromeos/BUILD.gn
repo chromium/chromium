@@ -10,7 +10,7 @@ import("//third_party/protobuf/proto_library.gni")
 # V4L2 and VAAPI for video acceleration should not be enabled simultaneously.
 assert(!(use_v4l2_codec && use_vaapi))
 
-assert(use_v4l2_codec || use_vaapi)
+assert(use_linux_video_acceleration)
 
 # V4L2 or Vaapi imply the OS is Linux or ChromeOS
 assert(is_linux || is_chromeos)
@@ -35,7 +35,7 @@ source_set("chromeos") {
     "//media/gpu:buildflags",
     "//media/gpu:command_buffer_helper",
     "//media/gpu:common",
-    "//media/mojo/common:common",
+    "//media/mojo/common",
   ]
 
   if (use_vaapi) {
@@ -91,6 +91,8 @@ source_set("common") {
     "registered_frame_converter.cc",
     "registered_frame_converter.h",
     "shaders/shaders.h",
+    "simple_video_frame_converter.cc",
+    "simple_video_frame_converter.h",
     "vd_video_decode_accelerator.cc",
     "vd_video_decode_accelerator.h",
     "vda_video_frame_pool.cc",
@@ -104,7 +106,7 @@ source_set("common") {
     ":video_frame_resource",
     ":video_frame_utils",
     "//gpu/ipc/service",
-    "//media/mojo/mojom:mojom",
+    "//media/mojo/mojom",
     "//ui/ozone",
   ]
 
@@ -112,7 +114,7 @@ source_set("common") {
     ":fourcc",
     "//base",
     "//build/config/linux/libdrm",
-    "//gpu/ipc/common:common",
+    "//gpu/ipc/common",
     "//media",
     "//media/gpu:buffer_validation",
     "//media/gpu:buildflags",
@@ -135,7 +137,7 @@ source_set("common") {
     ]
     deps += [
       "//gpu/command_buffer/service:gles2",
-      "//gpu/vulkan/init:init",
+      "//gpu/vulkan/init",
     ]
   }
 
@@ -152,7 +154,7 @@ source_set("common") {
 }
 
 # Although fourcc is platform-agnostic; however, it is restricted by the above
-# assert(use_v4l2_codec || use_vaapi).
+# assert(use_linux_video_acceleration).
 source_set("fourcc") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
@@ -195,8 +197,8 @@ source_set("video_frame_utils") {
   deps = [
     "//base",
     "//build/config/linux/libdrm",
-    "//components/viz/common:shared_image_format",
-    "//gpu/ipc/common:common",
+    "//components/viz/common/resources:shared_image_format",
+    "//gpu/ipc/common",
     "//media",
     "//media/gpu:buffer_validation",
     "//media/gpu:common",
@@ -244,7 +246,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//build/config/linux/libdrm",
     "//gpu:test_support",
-    "//gpu/ipc/service:service",
+    "//gpu/ipc/service",
     "//media",
     "//media:test_support",
     "//media/gpu:buildflags",
@@ -317,7 +319,7 @@ test("image_processor_test") {
     "//ui/gl:test_support",
   ]
   if (use_vaapi) {
-    deps += [ "//media/gpu/vaapi:vaapi" ]
+    deps += [ "//media/gpu/vaapi" ]
   }
   if (use_v4l2_codec) {
     deps += [ "//media/gpu/v4l2" ]

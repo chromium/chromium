@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
-#include "chrome/browser/ui/sync/profile_signin_confirmation_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
@@ -40,6 +39,7 @@
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/policy/core/browser/signin/user_cloud_signin_restriction_policy_fetcher.h"
 #include "components/policy/core/common/policy_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -216,7 +216,7 @@ void TurnSyncOnHelperDelegateImpl::OnBrowserRemoved(Browser* browser) {
 void TurnSyncOnHelperDelegateImpl::OnProfileSigninRestrictionsFetched(
     const AccountInfo& account_info,
     signin::SigninChoiceCallback callback,
-    const policy::ProfileSeparationPolicies& profile_separation_policies) {
+    policy::ProfileSeparationPolicies profile_separation_policies) {
   if (!browser_) {
     std::move(callback).Run(signin::SIGNIN_CHOICE_CANCEL);
     return;

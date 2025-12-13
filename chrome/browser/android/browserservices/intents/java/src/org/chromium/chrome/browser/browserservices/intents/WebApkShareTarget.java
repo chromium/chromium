@@ -23,12 +23,12 @@ public class WebApkShareTarget {
 
     public WebApkShareTarget(
             String action,
-            String paramTitle,
-            String paramText,
+            @Nullable String paramTitle,
+            @Nullable String paramText,
             boolean isMethodPost,
             boolean isEncTypeMultipart,
-            String[] fileNames,
-            String[][] fileAccepts) {
+            String @Nullable [] fileNames,
+            String @Nullable [][] fileAccepts) {
         mData = new String[3];
         mData[ACTION_INDEX] = replaceNullWithEmpty(action);
         mData[PARAM_TITLE_INDEX] = replaceNullWithEmpty(paramTitle);
@@ -84,7 +84,7 @@ public class WebApkShareTarget {
     }
 
     /** Returns the value if it is non-null. Returns an empty string otherwise. */
-    private static String replaceNullWithEmpty(String value) {
+    private static String replaceNullWithEmpty(@Nullable String value) {
         return (value == null) ? "" : value;
     }
 }

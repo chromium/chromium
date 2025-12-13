@@ -99,13 +99,14 @@ class ProfileImpl : public Profile {
   content::KAnonymityServiceDelegate* GetKAnonymityServiceDelegate() override;
   content::OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate()
       override;
+  std::unique_ptr<leveldb_proto::ProtoDatabaseProvider>
+  TakeDefaultProtoDatabaseProvider() override;
 
   // Profile implementation:
   scoped_refptr<base::SequencedTaskRunner> GetIOTaskRunner() override;
   // Note that this implementation returns the Google-services username, if any,
   // not the Chrome user's display name.
   std::string GetProfileUserName() const override;
-  base::FilePath GetPath() override;
   base::Time GetCreationTime() const override;
   base::FilePath GetPath() const override;
   Profile* GetOffTheRecordProfile(const OTRProfileID& otr_profile_id,
@@ -117,7 +118,6 @@ class ProfileImpl : public Profile {
   Profile* GetOriginalProfile() override;
   const Profile* GetOriginalProfile() const override;
   bool IsChild() const override;
-  bool AllowsBrowserWindows() const override;
   ExtensionSpecialStoragePolicy* GetExtensionSpecialStoragePolicy() override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;

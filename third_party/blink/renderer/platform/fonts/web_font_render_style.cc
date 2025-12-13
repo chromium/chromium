@@ -23,11 +23,6 @@ bool g_use_skia_subpixel_rendering = false;
 }  // namespace
 
 // static
-void WebFontRenderStyle::SetSkiaFontManager(sk_sp<SkFontMgr> font_mgr) {
-  FontCache::SetFontManager(std::move(font_mgr));
-}
-
-// static
 void WebFontRenderStyle::SetHinting(SkFontHinting hinting) {
   g_skia_hinting = hinting;
 }

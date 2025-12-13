@@ -7,19 +7,20 @@
 
 #include "base/command_line.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gl/gl_context.h"
 
 namespace gpu {
-struct ContextCreationAttribs;
 class GpuDriverBugWorkarounds;
 
 namespace gles2 {
 class ContextGroup;
 
 GPU_GLES2_EXPORT gl::GLContextAttribs GenerateGLContextAttribsForDecoder(
-    const ContextCreationAttribs& attribs_helper,
+    ContextType context_type,
+    gl::GpuPreference gpu_preference,
     const ContextGroup* context_group);
 
 GPU_GLES2_EXPORT gl::GLContextAttribs GenerateGLContextAttribsForCompositor(
@@ -53,7 +54,7 @@ GPU_GLES2_EXPORT uint32_t GetTextureTargetForIOSurfaces();
 
 GPU_GLES2_EXPORT size_t UpdateShaderCacheSizeOnMemoryPressure(
     size_t max_cache_size,
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+    base::MemoryPressureLevel memory_pressure_level);
 
 }  // namespace gpu
 

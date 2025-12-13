@@ -3,7 +3,6 @@ include_rules = [
   "+ios/chrome/browser/complex_tasks/model",
   "+ios/chrome/browser/lens_overlay/model",
   "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
-  "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/tabs/model/ios_chrome_synced_tab_delegate.h",

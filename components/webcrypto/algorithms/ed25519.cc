@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/webcrypto/algorithms/ed25519.h"
 
 #include <string.h>
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "components/webcrypto/algorithms/asymmetric_key_util.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
@@ -37,35 +33,33 @@ blink::WebCryptoAlgorithm SynthesizeImportAlgorithmForClone(
                                                          nullptr);
 }
 
+// This function accepts only the RFC 8032 format.
 Status CreateWebCryptoEd25519PrivateKey(
-    base::span<const uint8_t> raw_key,
+    base::span<const uint8_t, 32u> raw_key,
     const blink::WebCryptoKeyAlgorithm& algorithm,
     bool extractable,
     blink::WebCryptoKeyUsageMask usages,
     blink::WebCryptoKey* key) {
-  // This function accepts only the RFC 8032 format.
-  DCHECK_EQ(raw_key.size(), 32u);
   bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new_raw_private_key(
       EVP_PKEY_ED25519, /*engine*/ nullptr, raw_key.data(), raw_key.size()));
-  if (!pkey)
+  if (!pkey) {
     return Status::OperationError();
-
+  }
   return webcrypto::CreateWebCryptoPrivateKey(std::move(pkey), algorithm,
                                               extractable, usages, key);
 }
 
 Status CreateWebCryptoEd25519PublicKey(
-    base::span<const uint8_t> raw_key,
+    base::span<const uint8_t, 32u> raw_key,
     const blink::WebCryptoKeyAlgorithm& algorithm,
     bool extractable,
     blink::WebCryptoKeyUsageMask usages,
     blink::WebCryptoKey* key) {
-  DCHECK_EQ(raw_key.size(), 32u);
   bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new_raw_public_key(
       EVP_PKEY_ED25519, /*engine*/ nullptr, raw_key.data(), raw_key.size()));
-  if (!pkey)
+  if (!pkey) {
     return Status::OperationError();
-
+  }
   return webcrypto::CreateWebCryptoPublicKey(std::move(pkey), algorithm,
                                              extractable, usages, key);
 }
@@ -239,11 +233,12 @@ Status Ed25519Implementation::ImportKeyRaw(
   if (status.IsError())
     return status;
 
-  if (key_data.size() != 32)
+  auto fixed_data = key_data.to_fixed_extent<32u>();
+  if (!fixed_data) {
     return Status::ErrorImportEd25519KeyLength();
-
+  }
   return CreateWebCryptoEd25519PublicKey(
-      key_data, blink::WebCryptoKeyAlgorithm::CreateEd25519(algorithm.Id()),
+      *fixed_data, blink::WebCryptoKeyAlgorithm::CreateEd25519(algorithm.Id()),
       extractable, usages, key);
 }
 
@@ -351,8 +346,10 @@ Status Ed25519Implementation::ImportKeyJwk(
   //  + The parameter "d" MUST be present for private keys.
   std::vector<uint8_t> raw_public_key;
   status = ReadBytes(jwk, "x", 32, &raw_public_key);
-  if (status.IsError())
+  if (status.IsError()) {
     return status;
+  }
+  auto fixed_public_key = base::span(raw_public_key).to_fixed_extent<32u>();
 
   // 9.2 Let key be a new CryptoKey object that represents the Ed25519
   // private/public key. 9.3. Set the [[type]] internal slot of Key to "private"
@@ -360,16 +357,19 @@ Status Ed25519Implementation::ImportKeyJwk(
   blink::WebCryptoKeyAlgorithm key_algorithm =
       blink::WebCryptoKeyAlgorithm::CreateEd25519(algorithm.Id());
   if (!is_private_key) {
-    return CreateWebCryptoEd25519PublicKey(raw_public_key, key_algorithm,
+    return CreateWebCryptoEd25519PublicKey(*fixed_public_key, key_algorithm,
                                            extractable, usages, key);
   }
 
   std::vector<uint8_t> raw_private_key;
   status = ReadBytes(jwk, "d", 32, &raw_private_key);
-  if (status.IsError())
+  if (status.IsError()) {
     return status;
+  }
+  auto fixed_private_key = base::span(raw_private_key).to_fixed_extent<32u>();
+
   blink::WebCryptoKey private_key;
-  status = CreateWebCryptoEd25519PrivateKey(raw_private_key, key_algorithm,
+  status = CreateWebCryptoEd25519PrivateKey(*fixed_private_key, key_algorithm,
                                             extractable, usages, &private_key);
   if (status.IsError())
     return status;
@@ -380,8 +380,9 @@ Status Ed25519Implementation::ImportKeyJwk(
   if (!EVP_PKEY_get_raw_public_key(GetEVP_PKEY(private_key), raw_key, &len))
     return Status::OperationError();
   DCHECK_EQ(len, 32u);
-  if (memcmp(raw_public_key.data(), raw_key, 32) != 0)
+  if (UNSAFE_TODO(memcmp(raw_public_key.data(), raw_key, 32)) != 0) {
     return Status::DataError();
+  }
 
   *key = private_key;
   return Status::Success();

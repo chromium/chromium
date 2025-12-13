@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <typeinfo>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -22,6 +23,7 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
+#include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"

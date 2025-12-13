@@ -26,6 +26,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -47,9 +48,8 @@ class RoundedPreviewImageView : public views::ImageView {
     SetImageSize(image_size);
     SetBackground(views::CreateRoundedRectBackground(
         cros_tokens::kCrosSysSeparator, radius));
-    SkPath mask;
-    mask.addRoundRect(gfx::RectToSkRect(gfx::Rect(image_size)), radius, radius);
-    SetClipPath(mask);
+    SetClipPath(SkPath::RRect(SkRRect::MakeRectXY(
+        gfx::RectToSkRect(gfx::Rect(image_size)), radius, radius)));
   }
   RoundedPreviewImageView(const RoundedPreviewImageView&) = delete;
   RoundedPreviewImageView& operator=(const RoundedPreviewImageView&) = delete;

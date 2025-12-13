@@ -20,7 +20,7 @@ bool ShouldUseCodeCacheForWebUIUrl(const GURL& request_url) {
         unrestricted_resources(base::SplitString(
             features::kRestrictedWebUICodeCacheResources.Get(), ",",
             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
-    return unrestricted_resources->contains(request_url.path());
+    return unrestricted_resources->contains(request_url.GetPath());
   }
   return true;
 }

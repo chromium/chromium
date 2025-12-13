@@ -20,10 +20,6 @@ import action_helpers  # build_utils adds //build to sys.path.
 import zip_helpers
 
 _IGNORE_WARNINGS = (
-    # E.g. Triggers for weblayer_instrumentation_test_apk since both it and its
-    # apk_under_test have no shared_libraries.
-    # https://crbug.com/1364192 << To fix this in a better way.
-    r'Missing class org.chromium.build.NativeLibraries',
     # Caused by protobuf runtime using -identifiernamestring in a way that
     # doesn't work with R8. Looks like:
     # Rule matches the static final field `...`, which may have been inlined...
@@ -52,6 +48,10 @@ _IGNORE_WARNINGS = (
         r'EditorDialogToolbar',
         # https://crbug.com/1441226
         r'PaymentRequest[BH]',
+        # This service is defined in Native not Java.
+        r'NativeServiceSandboxedProcessService',
+        # TODO(450243304): Temporary.
+        r'DnsNameResolverProvider',
     ]) + ')',
     # We enforce that this class is removed via -checkdiscard.
     r'FastServiceLoader\.class:.*Could not inline ServiceLoader\.load',
@@ -63,6 +63,9 @@ _IGNORE_WARNINGS = (
     # TODO(b/404818708): androidx.appsearch code is referencing classes in the
     # Android B sdk thus we must ignore these warnings until after the sdk roll.
     r'Missing class .* androidx.appsearch.platformstorage.converter.*\$ApiHelperForB',
+    # This class is only in SDK 36.1. Until we are updated to or past that
+    # version, R8 will complain of AndroidX's usage of this.
+    r'Missing class android.graphics.pdf.component.*',
     # Ignore MethodParameter attribute count isn't matching in espresso.
     # This is a banner warning and each individual file affected will have
     # its own warning.
@@ -82,6 +85,8 @@ _IGNORE_WARNINGS = (
     # so safe to ignore. b/431248021
     r'.*AndroidComposeUiTestEnvironment.*',
     r'.*ComposeUiTest.*',
+    # We don't use this, so safe to ignore. crbug.com/453685303
+    r'.*AndroidComposeTestRule.*',
 )
 
 _BLOCKLISTED_EXPECTATION_PATHS = [
@@ -395,6 +400,7 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
 
     if options.disable_checks:
       cmd += ['--map-diagnostics:CheckDiscardDiagnostic', 'error', 'none']
+      cmd += ['--map-diagnostics:CheckEnumUnboxedDiagnostic', 'error', 'none']
     # Triggered by rules from deps we cannot control.
     cmd += [('--map-diagnostics:EmptyMemberRulesToDefaultInitRuleConversion'
              'Diagnostic'), 'warning', 'none']

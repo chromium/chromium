@@ -37,7 +37,8 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabIdManager;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
+import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager;
+import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -45,7 +46,6 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.Callable;
 
 /** Test that migrating the old tab state folder structure to the new one works. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -60,19 +60,15 @@ public class RestoreMigrateTest {
     private Context mAppContext;
     private CipherFactory mCipherFactory;
 
-    private void writeStateFile(final TabModelSelector selector, int index) throws IOException {
+    private void writeStateFile(final TabModelSelector selector, int index) {
         TabModelSelectorMetadata data =
                 ThreadUtils.runOnUiThreadBlocking(
-                        new Callable<>() {
-                            @Override
-                            public TabModelSelectorMetadata call() throws Exception {
-                                return TabPersistentStore.saveTabModelSelectorMetadata(
-                                        selector, null);
-                            }
-                        });
+                        () ->
+                                TabPersistentStoreImpl.extractTabMetadataFromSelector(
+                                        selector, /* tabsBeingRestored= */ null));
 
         File f = TabStateDirectory.getOrCreateTabbedModeStateDirectory();
-        TabPersistentStore.saveListToFile(
+        TabMetadataFileManager.saveListToFile(
                 new File(f, TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(index)),
                 data);
     }
@@ -129,21 +125,19 @@ public class RestoreMigrateTest {
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
     }
 
-    private TabPersistentStore buildTabPersistentStore(
+    private TabPersistentStoreImpl buildTabPersistentStore(
             final TabModelSelector selector, final int selectorIndex) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabPersistencePolicy persistencePolicy =
                             new TabbedModeTabPersistencePolicy(selectorIndex, false, true);
-                    TabPersistentStore store =
-                            new TabPersistentStore(
-                                    TabPersistentStore.CLIENT_TAG_REGULAR,
-                                    persistencePolicy,
-                                    selector,
-                                    null,
-                                    TabWindowManagerSingleton.getInstance(),
-                                    mCipherFactory);
-                    return store;
+                    return new TabPersistentStoreImpl(
+                            TabPersistentStoreImpl.CLIENT_TAG_REGULAR,
+                            persistencePolicy,
+                            selector,
+                            null,
+                            TabWindowManagerSingleton.getInstance(),
+                            mCipherFactory);
                 });
     }
 
@@ -304,7 +298,7 @@ public class RestoreMigrateTest {
     @SmallTest
     @Feature({"TabPersistentStore"})
     @UiThreadTest
-    public void testFindsMaxIdProperly() throws IOException {
+    public void testFindsMaxIdProperly() {
         TabModelSelector selector0 =
                 new MockTabModelSelector(mProfile, mIncognitoProfile, 1, 1, null);
         TabModelSelector selector1 =
@@ -334,7 +328,7 @@ public class RestoreMigrateTest {
     @SmallTest
     @Feature({"TabPersistentStore"})
     @UiThreadTest
-    public void testOnlyLoadsSingleModel() throws IOException {
+    public void testOnlyLoadsSingleModel() {
         TabModelSelector selector0 =
                 new MockTabModelSelector(mProfile, mIncognitoProfile, 3, 3, null);
         TabModelSelector selector1 =

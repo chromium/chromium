@@ -25,7 +25,8 @@ features:
   dynamic_refresh: true
   per_profile: false
 owners:
-- yilkal@chromium.org
+- zhangwenyu@google.com
+- longbowei@google.com
 - cros-families-eng@google.com
 schema:
   properties:

@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/viz/public/cpp/compositing/bitmap_in_shared_memory_mojom_traits.h"
 
 #include <cstdint>
 #include <memory>
+
+#include "base/compiler_specific.h"
 
 namespace {
 
@@ -75,12 +72,12 @@ StructTraits<viz::mojom::BitmapInSharedMemoryDataView,
     // If source and destination stride are the same use a single copy
     // operation, otherwise do a row-by-row copy.
     if (src_stride == min_row_bytes) {
-      memcpy(dst_pixels, src_pixels, byte_size);
+      UNSAFE_TODO(memcpy(dst_pixels, src_pixels, byte_size));
     } else {
       for (int y = 0; y < sk_bitmap.height(); ++y) {
-        memcpy(dst_pixels, src_pixels, min_row_bytes);
-        src_pixels += src_stride;
-        dst_pixels += min_row_bytes;
+        UNSAFE_TODO(memcpy(dst_pixels, src_pixels, min_row_bytes));
+        UNSAFE_TODO(src_pixels += src_stride);
+        UNSAFE_TODO(dst_pixels += min_row_bytes);
       }
     }
   }

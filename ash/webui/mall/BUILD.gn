@@ -36,17 +36,7 @@ mojom("mojo_bindings") {
 }
 
 source_set("url_constants") {
-  sources = [
-    "url_constants.cc",
-    "url_constants.h",
-  ]
-
-  deps = [
-    "//ash/constants",
-    "//base",
-    "//chromeos/constants",
-    "//url",
-  ]
+  sources = [ "url_constants.h" ]
 }
 
 source_set("app_id") {

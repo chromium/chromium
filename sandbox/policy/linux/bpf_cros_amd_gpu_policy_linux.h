@@ -15,7 +15,7 @@ namespace policy {
 // This policy is for AMD GPUs running on Chrome OS.
 class SANDBOX_POLICY_EXPORT CrosAmdGpuProcessPolicy : public GpuProcessPolicy {
  public:
-  CrosAmdGpuProcessPolicy();
+  explicit CrosAmdGpuProcessPolicy(MremapPolicy mremap_policy);
 
   CrosAmdGpuProcessPolicy(const CrosAmdGpuProcessPolicy&) = delete;
   CrosAmdGpuProcessPolicy& operator=(const CrosAmdGpuProcessPolicy&) = delete;

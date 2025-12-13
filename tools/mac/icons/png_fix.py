@@ -61,10 +61,18 @@ def _process_file(file):
      ihdr_compression_method, ihdr_filter_method,
      ihdr_interlace_method) = struct.unpack('>2I5b', ihdr)
 
-    # The only two color types that have transparency and can be used for icons
-    # are types 3 (indexed) and 6 (direct RGBA).
-    if ihdr_color_type not in (3, 6):
+    # There are five different color types: 0, 2, 3, 4, and 6.
+    if ihdr_color_type not in (0, 2, 3, 4, 6):
+        raise FormatError(file, 'unknown color type', ihdr_color_type)
+
+    # Types 0 (greyscale) and 2 (truecolor) do not have transparency.
+    if ihdr_color_type in (0, 2):
         raise FormatError(file, 'disallowed color type', ihdr_color_type)
+
+    # Type 3 (indexed-color) optionally has transparency, so if that type is
+    # specified, ensure that there is a palette and that there is a chunk to
+    # define transparency. Types 4 (greyscale with alpha) and 6 (truecolor with
+    # alpha) always have transparency.
     if ihdr_color_type == 3 and b'PLTE' not in chunks:
         raise FormatError(file, 'indexed color requires \'PLTE\' chunk')
     if ihdr_color_type == 3 and b'tRNS' not in chunks:

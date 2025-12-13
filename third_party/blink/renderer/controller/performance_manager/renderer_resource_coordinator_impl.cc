@@ -40,21 +40,6 @@ using performance_manager::mojom::blink::V8ContextWorldType;
 
 namespace blink {
 
-// Copies the data by move.
-template <>
-struct CrossThreadCopier<V8ContextDescriptionPtr>
-    : public CrossThreadCopierByValuePassThrough<V8ContextDescriptionPtr> {};
-
-// Copies the data by move.
-template <>
-struct CrossThreadCopier<IframeAttributionDataPtr>
-    : public CrossThreadCopierByValuePassThrough<IframeAttributionDataPtr> {};
-
-// Copies the data using the copy constructor.
-template <>
-struct CrossThreadCopier<V8ContextToken>
-    : public CrossThreadCopierPassThrough<V8ContextToken> {};
-
 namespace {
 
 // Determines if the given stable world ID is an extension world ID.
@@ -267,7 +252,7 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextCreated(
         *service_task_runner_, FROM_HERE,
         CrossThreadBindOnce(
             &RendererResourceCoordinatorImpl::DispatchOnV8ContextCreated,
-            WTF::CrossThreadUnretained(this), std::move(v8_desc),
+            CrossThreadUnretained(this), std::move(v8_desc),
             std::move(iframe_attribution_data)));
   } else {
     service_->OnV8ContextCreated(std::move(v8_desc),
@@ -284,7 +269,7 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextDetached(
         *service_task_runner_, FROM_HERE,
         CrossThreadBindOnce(
             &RendererResourceCoordinatorImpl::DispatchOnV8ContextDetached,
-            WTF::CrossThreadUnretained(this), token));
+            CrossThreadUnretained(this), token));
   } else {
     service_->OnV8ContextDetached(token);
   }
@@ -298,7 +283,7 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextDestroyed(
         *service_task_runner_, FROM_HERE,
         CrossThreadBindOnce(
             &RendererResourceCoordinatorImpl::DispatchOnV8ContextDestroyed,
-            WTF::CrossThreadUnretained(this), token));
+            CrossThreadUnretained(this), token));
   } else {
     service_->OnV8ContextDestroyed(token);
   }

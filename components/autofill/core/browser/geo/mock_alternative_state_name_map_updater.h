@@ -15,7 +15,6 @@ class MockAlternativeStateNameMapUpdater
  public:
   ~MockAlternativeStateNameMapUpdater() override;
   MockAlternativeStateNameMapUpdater(base::OnceClosure callback,
-                                     PrefService* local_state,
                                      AddressDataManager* address_data_manager);
 
   // AddressDataManager::Observer:

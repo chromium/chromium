@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">naranče</translation>
 <translation id="1275718070701477396">Odabrano</translation>
 <translation id="1290331692326790741">Slab signal</translation>
+<translation id="1292474106138697109">Prikaz alata za predmet</translation>
 <translation id="1300115153046603471">APN je zadana vrsta i <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Konvertiranje</translation>
@@ -335,7 +336,7 @@
 <translation id="2276999893457278469">Glavni sadržaj pomoći</translation>
 <translation id="2277631741861284101">Jednostavno snimanje i dijeljenje zvuka</translation>
 <translation id="2279051792571591988">Vrati zadano</translation>
-<translation id="2286454467119466181">Jednostavno sučelje</translation>
+<translation id="2286454467119466181">Jednostavno</translation>
 <translation id="2287186687001756809">Slika nije dostupna. Da biste dodali fotografije, posjetite <ph name="LINK" /></translation>
 <translation id="2294577623958216786">Trenutačni raspored postavljen je na <ph name="SUNRISE" /> – <ph name="SUNSET" />. Da biste automatski ažurirali raspored zalaska i izlaska sunca, uključite pristup lokaciji sustava.</translation>
 <translation id="2305172810646967500">crna</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> slika/slike</translation>
 <translation id="4300272766492248925">Otvori aplikaciju</translation>
 <translation id="430786093962686457">šifona</translation>
+<translation id="4309762678330556039">Automatski izrađujte prijepise i pretražujte audiozapise. Možete izrađivati snimke čak i kad niste povezani s internetom.</translation>
 <translation id="4310735698903592804">Nedavne pozadine izrađene pomoću Googleovog AI-ja</translation>
 <translation id="4320904097188876154">fluorescentno ružičaste boje</translation>
 <translation id="432961742358282111">Kliknite desnom tipkom ili pritisnite i zadržite da biste dobili definicije, prijevode ili pretvorbe jedinica. Upravljajte ovom značajkom tipkom sa strelicom lijevo ili desno.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Više opcija</translation>
 <translation id="5600027863942488546">Testirana je tipka <ph name="KEY_NAME" /></translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">Alati za predmet dijele vaš zaslon s aplikacijom <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Odjavljeni ste</translation>
 <translation id="5620281292257375798">Samo interno</translation>
 <translation id="5628106863521633649">Dostupni jezici</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Protok oblaka</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nema dostupnih skenera</translation>
-<translation id="6231648282154119906">Sumnjive datoteke automatski će skenirati Google sigurno pregledavanje u sklopu poboljšane zaštite koju ste odabrali</translation>
 <translation id="6232017090690406397">Baterija</translation>
 <translation id="6234024205316847054">Prikaži obrise</translation>
 <translation id="6243280677745499710">Trenutačno postavljeno</translation>
@@ -1742,7 +1744,7 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="871560550817059752">Nije uspjelo – nema tinte</translation>
 <translation id="8721554916373590179">Predlošci upita</translation>
 <translation id="8723108084122415655">Mreža koja nije zadana je iznad praga latencije</translation>
-<translation id="8725066075913043281">Pokušajte ponovo</translation>
+<translation id="8725066075913043281">Pokušajte ponovno</translation>
 <translation id="8726019395068607495">Zaustavljeno – vratašca su otvorena</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8739555075907731077">Pauzirano (<ph name="PERCENTAGE_VALUE" />% dovršeno)</translation>

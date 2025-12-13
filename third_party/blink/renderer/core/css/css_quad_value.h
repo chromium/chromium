@@ -21,7 +21,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_QUAD_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_QUAD_VALUE_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -59,7 +58,7 @@ class CORE_EXPORT CSSQuadValue : public CSSValue {
 
   TypeForSerialization SerializationType() { return serialization_type_; }
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
 
   bool Equals(const CSSQuadValue& other) const {
     return base::ValuesEquivalent(top_, other.top_) &&

@@ -54,6 +54,7 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLabelViewId1);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLabelViewId2);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTitleViewId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOkButtonId);
 
   EmbeddedPermissionPromptBaseView(
       Browser* browser,

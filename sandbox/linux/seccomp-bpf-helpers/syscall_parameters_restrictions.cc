@@ -23,7 +23,6 @@
 #include <unistd.h>
 
 #include "base/allocator/partition_alloc_features.h"
-#include "base/android/background_thread_pool_field_trial.h"
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/notreached.h"
@@ -34,10 +33,15 @@
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
 #include "sandbox/linux/system_headers/linux_futex.h"
+#include "sandbox/linux/system_headers/linux_memfd.h"
 #include "sandbox/linux/system_headers/linux_prctl.h"
 #include "sandbox/linux/system_headers/linux_ptrace.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/linux/system_headers/linux_time.h"
+
+#if !defined(MAP_DROPPABLE)
+#define MAP_DROPPABLE 0x08  // Zero memory under memory pressure.
+#endif
 
 #if BUILDFLAG(IS_LINUX) && !defined(__arm__) && !defined(__aarch64__) && \
     !defined(PTRACE_GET_THREAD_AREA)
@@ -49,6 +53,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/background_thread_pool_field_trial.h"
 
 #if !defined(F_DUPFD_CLOEXEC)
 #define F_DUPFD_CLOEXEC (F_LINUX_SPECIFIC_BASE + 6)
@@ -238,11 +243,22 @@ ResultExpr RestrictMmapFlags() {
   const uint64_t kArchSpecificAllowedMask = 0;
 #endif
   // The flags MAP_HUGETLB and MAP_POPULATE are specifically not permitted.
+  // MAP_DROPPABLE originally added for getrandom() vDSO implementation:
+  // https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/lib/vdso/getrandom.c#n86
+  // ...for which glibc support landed in 2.41:
+  // https://sourceware.org/git/?p=glibc.git;a=commit;h=461cab1de747f3842f27a5d24977d78d561d45f9
   // TODO(davidung), remove MAP_DENYWRITE with updated Tegra libraries.
   const uint64_t kAllowedMask = MAP_SHARED | MAP_PRIVATE | MAP_ANONYMOUS |
                                 MAP_STACK | MAP_NORESERVE | MAP_FIXED |
-                                MAP_DENYWRITE | MAP_LOCKED |
+                                MAP_DENYWRITE | MAP_LOCKED | MAP_DROPPABLE |
                                 kArchSpecificAllowedMask;
+  const Arg<int> flags(3);
+  return If((flags & ~kAllowedMask) == 0, Allow()).Else(CrashSIGSYS());
+}
+
+SANDBOX_EXPORT ResultExpr RestrictMremapFlagsForODML() {
+  // No flags are allowed.
+  const uint64_t kAllowedMask = 0;
   const Arg<int> flags(3);
   return If((flags & ~kAllowedMask) == 0, Allow()).Else(CrashSIGSYS());
 }
@@ -281,7 +297,7 @@ ResultExpr RestrictFcntlCommands() {
   const uint64_t kAllowedMask = O_ACCMODE | O_APPEND | O_NONBLOCK | O_SYNC |
                                 kOLargeFileFlag | O_CLOEXEC | O_NOATIME;
 #if BUILDFLAG(IS_ANDROID)
-  const uint64_t kOsSpecificSeals = F_SEAL_FUTURE_WRITE;
+  const uint64_t kOsSpecificSeals = F_SEAL_WRITE | F_SEAL_FUTURE_WRITE;
 #else
   const uint64_t kOsSpecificSeals = 0;
 #endif
@@ -541,9 +557,29 @@ SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictSockSendFlags(int sysno) {
       .Else(CrashSIGSYS());
 }
 
+constexpr unsigned int kDefaultAllowedMemfdFlags =
+    MFD_CLOEXEC | MFD_ALLOW_SEALING | MFD_NOEXEC_SEAL;
+
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictMemfdCreate() {
+  return RestrictMemfdCreateWithFallback(CrashSIGSYS());
+}
+
+SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictMemfdCreateWithExecMappings() {
   const Arg<int> flags(1);
-  return If((flags & ~(MFD_CLOEXEC | MFD_ALLOW_SEALING)) == 0, Allow())
+  return RestrictMemfdCreateWithFallback(
+      If((flags & ~(kDefaultAllowedMemfdFlags | MFD_EXEC)) == 0, Allow())
+          .Else(CrashSIGSYS()));
+}
+
+SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictMemfdCreateWithFallback(
+    bpf_dsl::ResultExpr fallback) {
+  const Arg<int> flags(1);
+  // Allow MFD_NOEXEC_SEAL since it's a security feature and in fact it's the
+  // default depending on the value of the vm.memfd_noexec sysctl. Do not allow
+  // MFD_EXEC (which allows executable mappings) or MFD_HUGETLB (which allows
+  // access to huge pages, which are a complex kernel feature with some previous
+  // security bugs).
+  return If((flags & ~(kDefaultAllowedMemfdFlags)) == 0, Allow())
       // ChromeOS uses ~0 as the flags to check if memfd_create exists (will
       // return -EINVAL).
       // https://source.chromium.org/chromium/chromium/src/+/main:mojo/core/channel_linux.cc;drc=c4987dbe36be309f8db36cba174310cb8a23e989;l=918
@@ -552,7 +588,7 @@ SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictMemfdCreate() {
       // future, `flags` still encodes the huge page size which must be a power
       // of 2, which it will not be if every bit is set.
       .ElseIf(flags == ~0, Allow())
-      .Else(CrashSIGSYS());
+      .Else(std::move(fallback));
 }
 
 }  // namespace sandbox.

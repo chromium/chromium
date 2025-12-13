@@ -19,7 +19,7 @@
   BOOL _mergeBrowsingDataByDefault;
   BOOL _canShowBrowsingDataMigration;
   BOOL _browsingDataMigrationDisabledByPolicy;
-  NSString* _gaiaID;
+  GaiaId _gaiaID;
   // Account manager service to retrieve Chrome identities.
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
 
@@ -39,7 +39,7 @@
                mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault
     browsingDataMigrationDisabledByPolicy:
         (BOOL)browsingDataMigrationDisabledByPolicy
-                                   gaiaID:(NSString*)gaiaID {
+                                   gaiaID:(const GaiaId&)gaiaID {
   self = [super init];
   if (self) {
     _accountManagerService = accountManagerService;

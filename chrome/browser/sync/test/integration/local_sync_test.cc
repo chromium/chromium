@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/test_future.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,7 +20,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -116,16 +116,8 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
       syncer::WEB_APPS,
       syncer::NIGORI};
 
-  if (base::FeatureList::IsEnabled(power_bookmarks::kPowerBookmarkBackend)) {
-    expected_active_data_types.Put(syncer::POWER_BOOKMARK);
-  }
-
   if (base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletCredentialData)) {
     expected_active_data_types.Put(syncer::AUTOFILL_WALLET_CREDENTIAL);
-  }
-
-  if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
-    expected_active_data_types.Put(syncer::PRODUCT_COMPARISON);
   }
 
   // The dictionary is currently only synced on Windows and Linux.
@@ -182,6 +174,30 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldSupportCustomPassphrase) {
   service->GetUserSettings()->SetEncryptionPassphrase(kTestPassphrase);
 
   EXPECT_TRUE(PassphraseAcceptedChecker(service).Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldReportNoLocalOnlyData) {
+  SyncServiceImpl* service =
+      SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
+          browser()->profile());
+
+  // Wait until the first sync cycle is completed.
+  ASSERT_TRUE(SyncTransportActiveChecker(service).Wait());
+  ASSERT_TRUE(service->IsLocalSyncEnabled());
+  ASSERT_FALSE(service->HasSyncConsent());
+
+  base::test::TestFuture<absl::flat_hash_map<syncer::DataType, size_t>>
+      types_with_unsynced_data;
+  service->GetTypesWithUnsyncedData({syncer::BOOKMARKS},
+                                    types_with_unsynced_data.GetCallback());
+  EXPECT_TRUE(types_with_unsynced_data.Get().empty());
+
+  base::test::TestFuture<
+      std::map<syncer::DataType, syncer::LocalDataDescription>>
+      descriptions;
+  service->GetLocalDataDescriptions({syncer::BOOKMARKS},
+                                    descriptions.GetCallback());
+  EXPECT_TRUE(descriptions.Get().empty());
 }
 
 }  // namespace

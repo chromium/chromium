@@ -3,11 +3,9 @@
 // found in the LICENSE file.
 
 #include <string_view>
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 
@@ -49,14 +47,16 @@ namespace {
 // match the given |type| in SharedCharTypes. This version will accept 8 or 16
 // bit characters, but assumes that they have only 7-bit values. It also assumes
 // that all UTF-8 values are correct, so doesn't bother checking
-template<typename CHAR>
-void AppendRaw8BitQueryString(const CHAR* source, int length,
+template <typename CHAR>
+void AppendRaw8BitQueryString(std::basic_string_view<CHAR> source,
                               CanonOutput* output) {
-  for (int i = 0; i < length; i++) {
-    if (!IsQueryChar(static_cast<unsigned char>(source[i])))
-      AppendEscapedChar(static_cast<unsigned char>(source[i]), output);
-    else  // Doesn't need escaping.
-      output->push_back(static_cast<char>(source[i]));
+  for (const CHAR& c : source) {
+    unsigned char uc = static_cast<unsigned char>(c);
+    if (!IsQueryChar(uc)) {
+      AppendEscapedChar(uc, output);
+    } else {  // Doesn't need escaping.
+      output->push_back(static_cast<char>(uc));
+    }
   }
 }
 
@@ -90,7 +90,7 @@ void DoConvertToQueryEncoding(std::basic_string_view<CHAR> input,
     // necessary values.
     RawCanonOutput<1024> eight_bit;
     RunConverter(input, converter, &eight_bit);
-    AppendRaw8BitQueryString(eight_bit.data(), eight_bit.length(), output);
+    AppendRaw8BitQueryString(eight_bit.view(), output);
 
   } else {
     // No converter, do our own UTF-8 conversion.

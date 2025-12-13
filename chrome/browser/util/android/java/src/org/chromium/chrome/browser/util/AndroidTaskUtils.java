@@ -13,17 +13,19 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /** Deals with Document-related API calls. */
@@ -38,6 +40,7 @@ public class AndroidTaskUtils {
     private static final int MAX_NUM_TASKS = 100;
 
     @Nullable private static AppTask sAppTaskForTesting;
+    @Nullable private static Map<AppTask, RecentTaskInfo> sTaskInfosForTesting;
 
     /**
      * Finishes tasks other than the one with the given ID that were started with the given data in
@@ -86,10 +89,15 @@ public class AndroidTaskUtils {
 
     /**
      * Returns the RecentTaskInfo for the task, if the ActivityManager succeeds in finding the task.
+     *
      * @param task AppTask containing information about a task.
      * @return The RecentTaskInfo associated with the task, or null if it couldn't be found.
      */
     public static @Nullable RecentTaskInfo getTaskInfoFromTask(AppTask task) {
+        if (sTaskInfosForTesting != null) {
+            return sTaskInfosForTesting.get(task);
+        }
+
         RecentTaskInfo info = null;
         try {
             info = task.getTaskInfo();
@@ -99,8 +107,14 @@ public class AndroidTaskUtils {
         return info;
     }
 
+    public static void setTaskInfosForTesting(Map<AppTask, RecentTaskInfo> map) {
+        sTaskInfosForTesting = map;
+        ResettersForTesting.register(() -> sTaskInfosForTesting = null);
+    }
+
     /**
      * Returns the baseIntent of the RecentTaskInfo associated with the given task.
+     *
      * @param task Task to get the baseIntent for.
      * @return The baseIntent, or null if it couldn't be retrieved.
      */
@@ -218,5 +232,6 @@ public class AndroidTaskUtils {
 
     public static void setAppTaskForTesting(@Nullable AppTask task) {
         sAppTaskForTesting = task;
+        ResettersForTesting.register(() -> sAppTaskForTesting = null);
     }
 }

@@ -51,5 +51,5 @@ std::vector<history::URLAndTitle> ChromeHistoryBackendClient::GetPinnedURLs() {
 
 bool ChromeHistoryBackendClient::IsWebSafe(const GURL& url) {
   return content::ChildProcessSecurityPolicy::GetInstance()->IsWebSafeScheme(
-      url.scheme());
+      url.GetScheme());
 }

@@ -9,71 +9,49 @@ export {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button
 export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 export {PluralStringProxyImpl as PrintPreviewPluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 export {getTrustedHTML} from 'chrome://resources/js/static_types.js';
-export {Cdd, ColorOption, DpiOption, DuplexOption, DuplexType, MediaSizeCapability, MediaSizeOption, MediaTypeCapability, MediaTypeOption, PageOrientationOption, SelectOption, VendorCapabilityValueType} from './data/cdd.js';
-// <if expr="not is_chromeos">
-export {ColorMode, createDestinationKey, Destination, DestinationOptionalParams, DestinationOrigin, GooglePromotedDestinationId, makeRecentDestination, PDF_DESTINATION_KEY, PrinterType, RecentDestination} from './data/destination.js';
-// </if>
-// <if expr="is_chromeos">
-export {ColorMode, createDestinationKey, Destination, DestinationOptionalParams, DestinationOrigin, GooglePromotedDestinationId, makeRecentDestination, PDF_DESTINATION_KEY, PrinterType, RecentDestination, SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from './data/destination_cros.js';
-// </if>
+export type {Cdd, ColorOption, DpiOption, DuplexOption, MediaSizeCapability, MediaSizeOption, MediaTypeCapability, MediaTypeOption, PageOrientationOption, SelectOption} from './data/cdd.js';
+export {DuplexType, VendorCapabilityValueType} from './data/cdd.js';
+export type {DestinationOptionalParams, RecentDestination} from './data/destination_cros.js';
+export {ColorMode, createDestinationKey, Destination, DestinationOrigin, GooglePromotedDestinationId, makeRecentDestination, PDF_DESTINATION_KEY, PrinterType, SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from './data/destination_cros.js';
 export {DestinationErrorType, DestinationStore, DestinationStoreEventType} from './data/destination_store.js';
-export {PageLayoutInfo} from './data/document_info.js';
-export {ExtensionDestinationInfo, LocalDestinationInfo} from './data/local_parsers.js';
-// <if expr="is_chromeos">
-export {IPP_PRINT_QUALITY, ManagedPrintOptions, ManagedPrintOptionsDuplexType, ManagedPrintOptionsQualityType} from './data/managed_print_options_cros.js';
-// </if>
-export {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from './data/margins.js';
+export type {PageLayoutInfo} from './data/document_info.js';
+export type {ExtensionDestinationInfo, LocalDestinationInfo} from './data/local_parsers.js';
+export type {ManagedPrintOptions} from './data/managed_print_options_cros.js';
+export {IPP_PRINT_QUALITY, ManagedPrintOptionsDuplexType, ManagedPrintOptionsQualityType} from './data/managed_print_options_cros.js';
+export type {MarginsSetting} from './data/margins.js';
+export {CustomMarginsOrientation, Margins, MarginsType} from './data/margins.js';
 export {MeasurementSystem, MeasurementSystemUnitType} from './data/measurement_system.js';
-export {DuplexMode, getInstance, PolicyObjectEntry, PrintPreviewModelElement, PrintTicket, SerializedSettings, Setting, Settings, whenReady} from './data/model.js';
-// <if expr="is_chromeos">
+export type {PolicyObjectEntry, PrintTicket, SerializedSettings, Setting, Settings} from './data/model.js';
+export {DuplexMode, getInstance, PrintPreviewModelElement, whenReady} from './data/model.js';
 export {PrintServerStore, PrintServerStoreEventType} from './data/print_server_store.js';
-// </if>
-// <if expr="is_chromeos">
-export {PrinterState, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity} from './data/printer_status_cros.js';
-// </if>
+export type {PrinterStatus} from './data/printer_status_cros.js';
+export {PrinterState, PrinterStatusReason, PrinterStatusSeverity} from './data/printer_status_cros.js';
 export {ScalingType} from './data/scaling.js';
 export {Size} from './data/size.js';
 export {Error, State} from './data/state.js';
-export {BackgroundGraphicsModeRestriction, CapabilitiesResponse, ColorModeRestriction, DuplexModeRestriction, NativeInitialSettings, NativeLayer, NativeLayerImpl} from './native_layer.js';
-// <if expr="is_chromeos">
-export {PinModeRestriction} from './native_layer.js';
-export {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse, PrintServersConfig} from './native_layer_cros.js';
-// </if>
-export {getSelectDropdownBackground, Range} from './print_preview_utils.js';
+export type {CapabilitiesResponse, NativeInitialSettings, NativeLayer} from './native_layer.js';
+export {BackgroundGraphicsModeRestriction, ColorModeRestriction, DuplexModeRestriction, NativeLayerImpl, PinModeRestriction} from './native_layer.js';
+export type {NativeLayerCros, PrinterSetupResponse, PrintServersConfig} from './native_layer_cros.js';
+export {NativeLayerCrosImpl} from './native_layer_cros.js';
+export type {Range} from './print_preview_utils.js';
+export {getSelectDropdownBackground} from './print_preview_utils.js';
 export {PrintPreviewAdvancedSettingsDialogElement} from './ui/advanced_settings_dialog.js';
 export {PrintPreviewAdvancedSettingsItemElement} from './ui/advanced_settings_item.js';
 export {PrintPreviewAppElement} from './ui/app.js';
 export {PrintPreviewButtonStripElement} from './ui/button_strip.js';
 export {PrintPreviewColorSettingsElement} from './ui/color_settings.js';
 export {DEFAULT_MAX_COPIES, PrintPreviewCopiesSettingsElement} from './ui/copies_settings.js';
-// <if expr="not is_chromeos">
-export {PrintPreviewDestinationDialogElement} from './ui/destination_dialog.js';
-// </if>
-// <if expr="is_chromeos">
 export {DESTINATION_DIALOG_CROS_LOADING_TIMER_IN_MS, PrintPreviewDestinationDialogCrosElement} from './ui/destination_dialog_cros.js';
 export {PrintPreviewDestinationDropdownCrosElement} from './ui/destination_dropdown_cros.js';
-// </if>
 export {PrintPreviewDestinationListElement} from './ui/destination_list.js';
-// <if expr="not is_chromeos">
-export {PrintPreviewDestinationListItemElement} from './ui/destination_list_item.js';
-// </if>
-// <if expr="is_chromeos">
 export {PrintPreviewDestinationListItemElement} from './ui/destination_list_item_cros.js';
-// </if>
-// <if expr="not is_chromeos">
-export {PrintPreviewDestinationSelectElement} from './ui/destination_select.js';
-// </if>
-// <if expr="is_chromeos">
 export {PrintPreviewDestinationSelectCrosElement} from './ui/destination_select_cros.js';
-// </if>
 export {DestinationState, NUM_PERSISTED_DESTINATIONS, PrintPreviewDestinationSettingsElement} from './ui/destination_settings.js';
-export {LabelledDpiCapability, PrintPreviewDpiSettingsElement} from './ui/dpi_settings.js';
+export type {LabelledDpiCapability} from './ui/dpi_settings.js';
+export {PrintPreviewDpiSettingsElement} from './ui/dpi_settings.js';
 export {PrintPreviewDuplexSettingsElement} from './ui/duplex_settings.js';
 export {PrintPreviewHeaderElement} from './ui/header.js';
 export {PrintPreviewLayoutSettingsElement} from './ui/layout_settings.js';
-// <if expr="not is_chromeos">
-export {PrintPreviewLinkContainerElement} from './ui/link_container.js';
-// </if>
 export {PrintPreviewMarginControlElement} from './ui/margin_control.js';
 export {PrintPreviewMarginControlContainerElement} from './ui/margin_control_container.js';
 export {PrintPreviewMarginsSettingsElement} from './ui/margins_settings.js';
@@ -83,20 +61,17 @@ export {PrintPreviewNumberSettingsSectionElement} from './ui/number_settings_sec
 export {PrintPreviewOtherOptionsSettingsElement} from './ui/other_options_settings.js';
 export {PrintPreviewPagesPerSheetSettingsElement} from './ui/pages_per_sheet_settings.js';
 export {PagesValue, PrintPreviewPagesSettingsElement} from './ui/pages_settings.js';
-// <if expr="is_chromeos">
 export {PrintPreviewPinSettingsElement} from './ui/pin_settings.js';
-// </if>
-export {PluginProxy, PluginProxyImpl, ViewportChangedCallback} from './ui/plugin_proxy.js';
-export {PreviewAreaState, PreviewTicket, PrintPreviewPreviewAreaElement} from './ui/preview_area.js';
+export type {PluginProxy, ViewportChangedCallback} from './ui/plugin_proxy.js';
+export {PluginProxyImpl} from './ui/plugin_proxy.js';
+export type {PreviewTicket} from './ui/preview_area.js';
+export {PreviewAreaState, PrintPreviewPreviewAreaElement} from './ui/preview_area.js';
 export {PrintPreviewSearchBoxElement} from './ui/print_preview_search_box.js';
-// <if expr="is_chromeos">
 export {PrinterSetupInfoInitiator, PrinterSetupInfoMessageType, PrintPreviewPrinterSetupInfoCrosElement} from './ui/printer_setup_info_cros.js';
-// </if>
 export {PrintPreviewScalingSettingsElement} from './ui/scaling_settings.js';
-// <if expr="is_chromeos">
 export {SearchableDropDownCrosElement} from './ui/searchable_drop_down_cros.js';
-// </if>
-export {SelectMixin, SelectMixinInterface} from './ui/select_mixin.js';
-export {SettingsMixinInterface} from './ui/settings_mixin.js';
+export type {SelectMixinInterface} from './ui/select_mixin.js';
+export {SelectMixin} from './ui/select_mixin.js';
+export type {SettingsMixinInterface} from './ui/settings_mixin.js';
 export {PrintPreviewSettingsSelectElement} from './ui/settings_select.js';
 export {PrintPreviewSidebarElement} from './ui/sidebar.js';

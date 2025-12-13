@@ -27,8 +27,8 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
-#include "ui/gfx/native_widget_types.h"
-#include "ui/views/interaction/interactive_views_test_internal.h"
+#include "ui/base/interaction/interactive_test_internal.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -38,9 +38,13 @@
 
 namespace internal {
 
+DEFINE_FRAMEWORK_SPECIFIC_METADATA(InteractiveBrowserTestPrivate)
+
 InteractiveBrowserTestPrivate::InteractiveBrowserTestPrivate(
-    std::unique_ptr<InteractionTestUtilBrowser> test_util)
-    : InteractiveViewsTestPrivate(std::move(test_util)) {}
+    ui::test::internal::InteractiveTestPrivate& test_impl)
+    : ui::test::internal::InteractiveTestPrivateFrameworkBase(test_impl) {
+  InteractionTestUtilBrowser::PopulateSimulators(test_impl.test_util());
+}
 
 InteractiveBrowserTestPrivate::~InteractiveBrowserTestPrivate() = default;
 
@@ -67,8 +71,6 @@ void InteractiveBrowserTestPrivate::DoTestTearDown() {
 
     coverage_observer_->CollectCoverage(test_name);
   }
-
-  InteractiveViewsTestPrivate::DoTestTearDown();
 }
 
 void InteractiveBrowserTestPrivate::MaybeStartWebUICodeCoverage() {
@@ -97,8 +99,7 @@ void InteractiveBrowserTestPrivate::AddInstrumentedWebContents(
     CHECK_NE(instrumented_web_contents->page_identifier(),
              existing->page_identifier());
   }
-  instrumented_web_contents_.emplace_back(std::move(instrumented_web_contents))
-      .get();
+  instrumented_web_contents_.emplace_back(std::move(instrumented_web_contents));
 }
 
 bool InteractiveBrowserTestPrivate::IsInstrumentedWebContents(
@@ -138,7 +139,7 @@ std::string InteractiveBrowserTestPrivate::DeepQueryToString(
 }
 
 gfx::NativeWindow InteractiveBrowserTestPrivate::GetNativeWindowFromElement(
-    ui::TrackedElement* el) const {
+    const ui::TrackedElement* el) const {
   gfx::NativeWindow window = gfx::NativeWindow();
 
   // For instrumented WebContents, we can get the native window directly from
@@ -148,31 +149,20 @@ gfx::NativeWindow InteractiveBrowserTestPrivate::GetNativeWindowFromElement(
     window = util->web_contents()->GetTopLevelNativeWindow();
   }
 
-  // If that did not work, fall back to the base implementation.
-  if (!window)
-    window = InteractiveViewsTestPrivate::GetNativeWindowFromElement(el);
   return window;
 }
 
 gfx::NativeWindow InteractiveBrowserTestPrivate::GetNativeWindowFromContext(
     ui::ElementContext context) const {
-  // Defer to the base implementation first, since there may be a cached value
-  // that is more accurate than what can be inferred from the context.
-  gfx::NativeWindow window =
-      InteractiveViewsTestPrivate::GetNativeWindowFromContext(context);
-
-  // If that didn't work, fall back to the top-level browser window for the
-  // context (assuming there is one).
-  if (!window) {
-    if (Browser* const browser =
-            InteractionTestUtilBrowser::GetBrowserFromContext(context)) {
-      if (BrowserView* const browser_view =
-              BrowserView::GetBrowserViewForBrowser(browser)) {
-        window = browser_view->GetNativeWindow();
-      }
+  // Use the top-level browser window for the context (assuming there is one).
+  if (auto* const browser =
+          InteractionTestUtilBrowser::GetBrowserFromContext(context)) {
+    if (BrowserView* const browser_view =
+            BrowserView::GetBrowserViewForBrowser(browser)) {
+      return browser_view->GetNativeWindow();
     }
   }
-  return window;
+  return gfx::NativeWindow();
 }
 
 std::string InteractiveBrowserTestPrivate::DebugDescribeContext(
@@ -180,7 +170,7 @@ std::string InteractiveBrowserTestPrivate::DebugDescribeContext(
   if (const auto* browser =
           InteractionTestUtilBrowser::GetBrowserFromContext(context)) {
     std::string type;
-    switch (browser->type()) {
+    switch (browser->GetType()) {
       case Browser::TYPE_APP:
         type = "App window";
         break;
@@ -200,42 +190,48 @@ std::string InteractiveBrowserTestPrivate::DebugDescribeContext(
         type = "Other browser window";
         break;
     }
-    if (browser->SupportsWindowFeature(Browser::FEATURE_TABSTRIP)) {
-      type += base::StringPrintf(", %d tab(s) (active: %d)",
-                                 browser->tab_strip_model()->count(),
-                                 browser->tab_strip_model()->active_index());
-    }
+    type += base::StringPrintf(", %d tab(s) (active: %d)",
+                               browser->GetTabStripModel()->count(),
+                               browser->GetTabStripModel()->active_index());
     return base::StringPrintf(
         "%s%s profile %s%s at %s",
-        (browser->window()->IsActive() ? "[ACTIVE] " : ""), type,
-        browser->profile()->GetDebugName(),
-        (browser->profile()->IsOffTheRecord() ? " (off-the-record)" : ""),
-        DebugDumpBounds(browser->window()->GetBounds()));
-  } else {
-    return InteractiveViewsTestPrivate::DebugDescribeContext(context);
+        (browser->GetWindow()->IsActive() ? "[ACTIVE] " : ""), type,
+        browser->GetProfile()->GetDebugName(),
+        (browser->GetProfile()->IsOffTheRecord() ? " (off-the-record)" : ""),
+        DebugDumpBounds(browser->GetWindow()->GetBounds()));
   }
+
+  return std::string();
 }
 
-InteractiveBrowserTestPrivate::DebugTreeNode
-InteractiveBrowserTestPrivate::DebugDumpElement(
-    const ui::TrackedElement* el) const {
-  if (const auto* contents = el->AsA<TrackedElementWebContents>()) {
-    auto* const web_contents = contents->owner()->web_contents();
-    int index = TabStripModel::kNoTab;
-    if (const auto* browser =
-            InteractionTestUtilBrowser::GetBrowserFromContext(el->context())) {
-      index = browser->tab_strip_model()->GetIndexOfWebContents(web_contents);
+std::vector<InteractiveBrowserTestPrivate::DebugTreeNode>
+InteractiveBrowserTestPrivate::DebugDumpElements(
+    std::set<const ui::TrackedElement*>& elements) const {
+  std::vector<InteractiveBrowserTestPrivate::DebugTreeNode> nodes;
+  for (auto it = elements.begin(); it != elements.end();) {
+    auto* const el = *it;
+    if (const auto* contents = el->AsA<TrackedElementWebContents>()) {
+      auto* const web_contents = contents->owner()->web_contents();
+      int index = TabStripModel::kNoTab;
+      if (const auto* browser =
+              InteractionTestUtilBrowser::GetBrowserFromContext(
+                  el->context())) {
+        index =
+            browser->GetTabStripModel()->GetIndexOfWebContents(web_contents);
+      }
+      nodes.emplace_back(base::StringPrintf(
+          "WebContents %s - %s at %s with URL \"%s\"",
+          (index == TabStripModel::kNoTab
+               ? "in secondary UI"
+               : base::StringPrintf("in tab %d", index).c_str()),
+          el->identifier().GetName(), DebugDumpBounds(el->GetScreenBounds()),
+          web_contents->GetURL().spec().c_str()));
+      it = elements.erase(it);
+    } else {
+      ++it;
     }
-    return DebugTreeNode(base::StringPrintf(
-        "WebContents %s - %s at %s with URL \"%s\"",
-        (index == TabStripModel::kNoTab
-             ? "in secondary UI"
-             : base::StringPrintf("in tab %d", index).c_str()),
-        el->identifier().GetName(), DebugDumpBounds(el->GetScreenBounds()),
-        web_contents->GetURL().spec().c_str()));
-  } else {
-    return InteractiveViewsTestPrivate::DebugDumpElement(el);
   }
+  return nodes;
 }
 
 MatchableValue::MatchableValue() noexcept = default;

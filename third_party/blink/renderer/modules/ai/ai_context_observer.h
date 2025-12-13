@@ -33,8 +33,8 @@ class AIContextObserver : public ContextLifecycleObserver {
     SetContextLifecycleNotifier(context_client_->GetExecutionContext());
     if (abort_signal_) {
       CHECK(!abort_signal_->aborted());
-      abort_handle_ = abort_signal_->AddAlgorithm(WTF::BindOnce(
-          &AIContextObserver::OnAborted, WrapWeakPersistent(this)));
+      abort_handle_ = abort_signal_->AddAlgorithm(
+          BindOnce(&AIContextObserver::OnAborted, WrapWeakPersistent(this)));
     }
   }
 

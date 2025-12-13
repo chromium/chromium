@@ -50,8 +50,9 @@ class MEDIA_EXPORT MediaDrmBridgeFactory final : public CdmFactory {
   void CreateMediaDrmBridge(const std::string& origin_id);
 
   // Callback for SetMediaCryptoReadyCB() on |media_drm_bridge_|.
-  void OnMediaCryptoReady(JavaObjectPtr media_crypto,
-                          bool requires_secure_video_codec);
+  void OnMediaCryptoReady(
+      base::android::ScopedJavaGlobalRef<jobject> media_crypto,
+      bool requires_secure_video_codec);
 
   CreateFetcherCB create_fetcher_cb_;
   CreateStorageCB create_storage_cb_;

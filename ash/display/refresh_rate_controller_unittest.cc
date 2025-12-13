@@ -300,8 +300,8 @@ TEST_F(RefreshRateControllerTest, ShouldThrottleWithBatterySaverMode) {
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       display_id, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
   SetUpDisplays(std::move(snapshots));
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(GetPrimaryDisplay().work_area()));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.bounds = GetPrimaryDisplay().work_area(), .window_id = 0}));
 
   // Expect the initial state to be 120 Hz.
   {
@@ -378,8 +378,8 @@ TEST_F(RefreshRateControllerTest,
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       display_id, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
   SetUpDisplays(std::move(snapshots));
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(GetPrimaryDisplay().work_area()));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.bounds = GetPrimaryDisplay().work_area(), .window_id = 0}));
 
   // Expect the initial state to be 120 Hz.
   {
@@ -428,11 +428,10 @@ TEST_F(RefreshRateControllerTest,
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       external_id, display::DISPLAY_CONNECTION_TYPE_HDMI));
   SetUpDisplays(std::move(snapshots));
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(GetSecondaryDisplay().work_area()));
-  ASSERT_EQ(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id(),
-      external_id);
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.bounds = GetSecondaryDisplay().work_area(), .window_id = 0}));
+  ASSERT_EQ(display::Screen::Get()->GetDisplayNearestWindow(window.get()).id(),
+            external_id);
 
   // Expect the initial state to be 120 Hz.
   {
@@ -480,11 +479,10 @@ TEST_F(RefreshRateControllerTest, ThrottlingUpdatesWhenBorealisWindowMoves) {
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       secondary_id, display::DISPLAY_CONNECTION_TYPE_HDMI));
   SetUpDisplays(std::move(snapshots));
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(GetSecondaryDisplay().work_area()));
-  ASSERT_EQ(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id(),
-      secondary_id);
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.bounds = GetSecondaryDisplay().work_area(), .window_id = 0}));
+  ASSERT_EQ(display::Screen::Get()->GetDisplayNearestWindow(window.get()).id(),
+            secondary_id);
 
   // Set power state to indicate the device is on battery.
   PowerStatus::Get()->SetProtoForTesting(BuildFakePowerSupplyProperties(
@@ -505,9 +503,8 @@ TEST_F(RefreshRateControllerTest, ThrottlingUpdatesWhenBorealisWindowMoves) {
 
   // Move the borealis window to the internal display.
   window->SetBoundsInScreen(primary.work_area(), primary);
-  ASSERT_EQ(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id(),
-      primary.id());
+  ASSERT_EQ(display::Screen::Get()->GetDisplayNearestWindow(window.get()).id(),
+            primary.id());
 
   // Expect the new state to be 120 Hz.
   {
@@ -530,11 +527,10 @@ TEST_F(RefreshRateControllerTest, ThrottlingUpdatesWhenDisplaysChange) {
   snapshots.push_back(BuildDualRefreshPanelSnapshot(
       external_id, display::DISPLAY_CONNECTION_TYPE_HDMI));
   SetUpDisplays(std::move(snapshots));
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(GetSecondaryDisplay().work_area()));
-  ASSERT_EQ(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id(),
-      external_id);
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.bounds = GetSecondaryDisplay().work_area(), .window_id = 0}));
+  ASSERT_EQ(display::Screen::Get()->GetDisplayNearestWindow(window.get()).id(),
+            external_id);
 
   // Set power state to indicate the device is on battery.
   PowerStatus::Get()->SetProtoForTesting(BuildFakePowerSupplyProperties(
@@ -555,9 +551,8 @@ TEST_F(RefreshRateControllerTest, ThrottlingUpdatesWhenDisplaysChange) {
 
   // Swap displays causing borealis window to move to the internal display.
   SwapPrimaryDisplay();
-  ASSERT_EQ(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id(),
-      internal.id());
+  ASSERT_EQ(display::Screen::Get()->GetDisplayNearestWindow(window.get()).id(),
+            internal.id());
 
   // Expect the new state to be 120 Hz.
   {
@@ -638,11 +633,10 @@ TEST_F(RefreshRateControllerTest, ShouldEnableVrrForBorealis) {
   snapshots.push_back(BuildVrrPanelSnapshot(
       external_id, display::DISPLAY_CONNECTION_TYPE_HDMI));
   SetUpDisplays(std::move(snapshots));
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(GetPrimaryDisplay().work_area()));
-  ASSERT_EQ(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id(),
-      internal_id);
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.bounds = GetPrimaryDisplay().work_area(), .window_id = 0}));
+  ASSERT_EQ(display::Screen::Get()->GetDisplayNearestWindow(window.get()).id(),
+            internal_id);
 
   // Expect VRR to be initially disabled.
   {
@@ -727,8 +721,8 @@ TEST_F(RefreshRateControllerTest, ShouldDisableVrrWithBatterySaverMode) {
   snapshots.push_back(BuildVrrPanelSnapshot(
       display_id, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
   SetUpDisplays(std::move(snapshots));
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(GetPrimaryDisplay().work_area()));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.bounds = GetPrimaryDisplay().work_area(), .window_id = 0}));
 
   // Set the game mode to indicate the user is gaming.
   game_mode_controller_->NotifySetGameMode(GameMode::BOREALIS,
@@ -785,11 +779,10 @@ TEST_F(RefreshRateControllerTest, VrrUpdatesWhenBorealisWindowMoves) {
                             kVsyncRateMinExternal));
   SetUpDisplays(std::move(snapshots));
   const display::Display external = GetSecondaryDisplay();
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(internal.work_area()));
-  ASSERT_EQ(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id(),
-      internal.id());
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.bounds = internal.work_area(), .window_id = 0}));
+  ASSERT_EQ(display::Screen::Get()->GetDisplayNearestWindow(window.get()).id(),
+            internal.id());
 
   // Expect VRR to be initially disabled.
   {
@@ -849,9 +842,8 @@ TEST_F(RefreshRateControllerTest, VrrUpdatesWhenBorealisWindowMoves) {
 
   // Move borealis window to the external display.
   window->SetBoundsInScreen(external.work_area(), external);
-  ASSERT_EQ(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window.get()).id(),
-      external.id());
+  ASSERT_EQ(display::Screen::Get()->GetDisplayNearestWindow(window.get()).id(),
+            external.id());
 
   // Expect the new state to have VRR enabled on the external display only.
   {
@@ -984,8 +976,8 @@ TEST_F(RefreshRateControllerTest, TestBorealisWithHighPerformance) {
   snapshots.push_back(BuildVrrPanelSnapshot(
       internal_id, display::DISPLAY_CONNECTION_TYPE_INTERNAL));
   SetUpDisplays(std::move(snapshots));
-  std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(GetPrimaryDisplay().work_area()));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.bounds = GetPrimaryDisplay().work_area(), .window_id = 0}));
 
   game_mode_controller_->NotifySetGameMode(GameMode::OFF,
                                            WindowState::Get(window.get()));

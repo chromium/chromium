@@ -78,6 +78,10 @@ PageVisibility FakePageLoadMetricsObserverDelegate::GetVisibilityAtActivation()
   return visibility_at_activation_;
 }
 
+bool FakePageLoadMetricsObserverDelegate::IsReloadAfterDiscard() const {
+  return is_discarded_page_reload_;
+}
+
 bool FakePageLoadMetricsObserverDelegate::
     WasPrerenderedThenActivatedInForeground() const {
   return GetVisibilityAtActivation() == PageVisibility::kForeground;
@@ -201,13 +205,8 @@ FakePageLoadMetricsObserverDelegate::GetSoftNavigationMetrics() const {
 }
 
 ukm::SourceId
-FakePageLoadMetricsObserverDelegate::GetUkmSourceIdForSoftNavigation() const {
-  return ukm::kInvalidSourceId;
-}
-
-ukm::SourceId
-FakePageLoadMetricsObserverDelegate::GetPreviousUkmSourceIdForSoftNavigation()
-    const {
+FakePageLoadMetricsObserverDelegate::GetUkmSourceIdForSameDocumentNavigation(
+    base::UnguessableToken same_document_metrics_token) const {
   return ukm::kInvalidSourceId;
 }
 

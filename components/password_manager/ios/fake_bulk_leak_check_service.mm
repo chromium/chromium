@@ -5,6 +5,7 @@
 #import "components/password_manager/ios/fake_bulk_leak_check_service.h"
 
 #import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
 
 namespace password_manager {
 

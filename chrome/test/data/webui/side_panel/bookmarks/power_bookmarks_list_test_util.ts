@@ -108,8 +108,8 @@ export function getBookmarkWithId(
 }
 
 export function getPowerBookmarksRowElement(
-    element: PowerBookmarksListElement, id: string): PowerBookmarkRowElement|
-    undefined {
+    element: PowerBookmarksListElement|PowerBookmarkRowElement,
+    id: string): PowerBookmarkRowElement|undefined {
   return element.shadowRoot!.querySelector<PowerBookmarkRowElement>(
              `#bookmark-${id}`) ||
       undefined;

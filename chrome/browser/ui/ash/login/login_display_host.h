@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/ash/login/signin_ui.h"
 #include "components/user_manager/user_type.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 
 class AccountId;

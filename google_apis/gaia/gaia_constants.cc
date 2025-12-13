@@ -94,6 +94,10 @@ const char kFCMOAuthScope[] =
 // OAuth2 scope for access to Tachyon api.
 const char kTachyonOAuthScope[] = "https://www.googleapis.com/auth/tachyon";
 
+// OAuth2 scope for School Tools API.
+const char kSchoolToolsAuthScope[] =
+    "https://www.googleapis.com/auth/chromeosschooltools";
+
 // OAuth2 scope for access to the Photos API.
 const char kPhotosOAuth2Scope[] = "https://www.googleapis.com/auth/photos";
 
@@ -129,6 +133,10 @@ const char kCryptAuthOAuth2Scope[] =
 // OAuth2 scope for access to Drive.
 const char kDriveOAuth2Scope[] = "https://www.googleapis.com/auth/drive";
 
+// OAuth2 scope for access to Drive Apps.
+const char kDriveAppsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/drive.apps";
+
 // OAuth2 scope for access for DriveFS to access flags.
 const char kExperimentsAndConfigsOAuth2Scope[] =
     "https://www.googleapis.com/auth/experimentsandconfigs";
@@ -148,6 +156,10 @@ const char kAssistantOAuth2Scope[] =
 // OAuth2 scope for access to nearby devices (fast pair) APIs.
 const char kNearbyDevicesOAuth2Scope[] =
     "https://www.googleapis.com/auth/nearbydevices-pa";
+
+// OAuth2 scope for access to readonly Drive Apps.
+const char kDriveAppsReadonlyOAuth2Scope[] =
+    "https://www.googleapis.com/auth/drive.apps.readonly";
 
 // OAuth2 scope for access to nearby sharing.
 const char kNearbyShareOAuth2Scope[] =
@@ -205,6 +217,10 @@ const char kCloudSearchQueryOAuth2Scope[] =
 const char kDiscoveryEngineCompleteQueryOAuth2Scope[] =
     "https://www.googleapis.com/auth/discoveryengine.complete_query";
 
+// OAuth2 scope for Access Code Cast.
+const char kDiscoveryOAuth2Scope[] =
+    "https://www.googleapis.com/auth/cast-edu-messaging";
+
 // OAuth2 scope for Gemini app.
 const char kGeminiOAuth2Scope[] = "https://www.googleapis.com/auth/gemini";
 
@@ -212,6 +228,10 @@ const char kGeminiOAuth2Scope[] = "https://www.googleapis.com/auth/gemini";
 // Side Panel.
 const char kChromeMemexOAuth2Scope[] =
     "https://www.googleapis.com/auth/chromememex";
+
+// OAuth2 scope to access the ChromebookEmailService API.
+const char kChromebookOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chromebook.email";
 
 // OAuth 2 scopes for Google Tasks API.
 const char kTasksReadOnlyOAuth2Scope[] =
@@ -236,6 +256,8 @@ const char kClassroomProfileEmailOauth2Scope[] =
     "https://www.googleapis.com/auth/classroom.profile.emails";
 const char kClassroomProfilePhotoUrlScope[] =
     "https://www.googleapis.com/auth/classroom.profile.photos";
+const char kClassroomCourseWorkMaterialsOAuthScope[] =
+    "https://www.googleapis.com/auth/classroom.courseworkmaterials";
 
 // OAuth2 scopes for Optimization Guide.
 const char kOptimizationGuideServiceGetHintsOAuth2Scope[] =
@@ -248,6 +270,26 @@ const char kLensOAuth2Scope[] = "https://www.googleapis.com/auth/lens";
 
 // OAuth2 scope for DevTools GenAI features.
 const char kAidaOAuth2Scope[] = "https://www.googleapis.com/auth/aida";
+
+// OAuth2 scope for Google Developer Program <-> DevTools integration features.
+const char kGdpOAuth2Scope[] =
+    "https://www.googleapis.com/auth/devprofiles.full_control";
+
+// OAuth2 scope for Chrome Web Store.
+const char kWebstoreOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chromewebstore.readonly";
+// OAuth2 scope for push notifications.
+const char kPushNotificationOAuth2Scope[] =
+    "https://www.googleapis.com/auth/notifications";
+// OAuth2 scope for app license check.
+const char kLicenseCheckOAuth2Scope[] =
+    "https://www.googleapis.com/auth/applicense.bytebot";
+// OAuth2 scope for manta.
+const char kMantaOAuth2Scope[] = "https://www.googleapis.com/auth/mdi.aratea";
+
+// OAuth2 scope for web history.
+const char kWebHistoryOAuth2Scope[] =
+    "https://www.googleapis.com/auth/webhistory";
 
 // Used to build ClientOAuth requests.  These are the names of keys used when
 // building base::DictionaryValue that represent the json data that makes up

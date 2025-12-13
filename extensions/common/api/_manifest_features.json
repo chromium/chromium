@@ -115,6 +115,20 @@
       "75C7F4B720314B6CB1B5817CD86089DB95CD2461"  // http://crbug.com/899052
     ]
   }],
+  "chrome_url_overrides": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app"]
+  },
+  "chrome_url_overrides.activationmessage": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app"],
+    "platforms": ["chromeos"]
+  },
+  "chrome_url_overrides.keyboard": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app"],
+    "platforms": ["chromeos"]
+  },
   "commands": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"]
@@ -167,6 +181,10 @@
     "channel": "stable",
     "extension_types": "all"
   },
+  "devtools_page": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app"]
+  },
   "differential_fingerprint": {
     "channel": "stable",
     "extension_types": "all"
@@ -204,7 +222,9 @@
     "location": "policy",
     "platforms": ["chromeos"],
     "allowlist": [
-      "93B7178E8C275515C38D4F43D9DF4648F0EA9B03" // Identity Card Connector
+      "93B7178E8C275515C38D4F43D9DF4648F0EA9B03", // Identity Card Connector
+      // https://crbug.com/383855830
+      "1FC31C9D42DF1B51EA7648F73DF26400322999A8"  // IDmelon Accesskey
     ]
   }],
   "file_handlers": [
@@ -476,6 +496,10 @@
     "extension_types": ["extension"],
     "min_manifest_version": 3
   },
+  "tts_engine": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app"]
+  },
   "update_url": {
     "channel": "stable",
     "extension_types": "all"
@@ -508,6 +532,15 @@
       "channel": "stable",
       "dependencies": ["behavior:imprivata_login_screen_extension"],
       "extension_types": ["login_screen_extension"]
+    }, {
+      "channel": "stable",
+      "extension_types": ["login_screen_extension"],
+      "location": "policy",
+      "platforms": ["chromeos"],
+      "allowlist": [
+        // https://crbug.com/383855830
+        "1FC31C9D42DF1B51EA7648F73DF26400322999A8"  // IDmelon Accesskey
+      ]
     }
   ],
   "webview": {

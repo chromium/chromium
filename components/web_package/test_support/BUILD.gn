@@ -14,10 +14,11 @@ static_library("test_support") {
     "signed_web_bundles/ecdsa_p256_key_pair.h",
     "signed_web_bundles/ed25519_key_pair.cc",
     "signed_web_bundles/ed25519_key_pair.h",
-    "signed_web_bundles/key_pair.cc",
     "signed_web_bundles/key_pair.h",
     "signed_web_bundles/signature_verifier_test_utils.cc",
     "signed_web_bundles/signature_verifier_test_utils.h",
+    "signed_web_bundles/signing_keys.cc",
+    "signed_web_bundles/signing_keys.h",
     "signed_web_bundles/web_bundle_signer.cc",
     "signed_web_bundles/web_bundle_signer.h",
   ]

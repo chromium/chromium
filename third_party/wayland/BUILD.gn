@@ -294,7 +294,7 @@ executable("wayland_scanner") {
 
   deps = [
     ":wayland_util",
-    "//third_party/expat:expat",
+    "//third_party/expat",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]

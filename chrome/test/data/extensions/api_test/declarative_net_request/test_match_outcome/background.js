@@ -47,6 +47,16 @@ chrome.test.runTests([
         chrome.test.callbackFail('Invalid test request tab ID.'));
   },
 
+  function testInvalidTopURL() {
+    chrome.declarativeNetRequest.testMatchOutcome(
+        {
+          url: 'http://example.example',
+          type: 'sub_frame',
+          topUrl: 'http:://example.example'
+        },
+        chrome.test.callbackFail('Invalid test request top URL.'));
+  },
+
   async function testNoMatch() {
     let result = await testMatchOutcome({
       url: 'https://no-match.example/path',
@@ -251,6 +261,57 @@ chrome.test.runTests([
     });
     chrome.test.assertEq(
         {matchedRules: [{ruleId: 1337, rulesetId: '_session'}]}, result);
+
+    chrome.test.succeed();
+  },
+
+  async function testTopDomainMatch() {
+    let result = await testMatchOutcome(
+        {url: 'https://foo.example/path', type: 'image', method: 'get'});
+    chrome.test.assertEq({matchedRules: []}, result);
+
+    result = await testMatchOutcome({
+      url: 'https://foo.example/path',
+      topUrl: 'https://block5.example/path_ignored',
+      type: 'image',
+      method: 'get'
+    });
+    chrome.test.assertEq(
+        {matchedRules: [{ruleId: 7, rulesetId: 'rules1'}]}, result);
+
+    result = await testMatchOutcome({
+      url: 'https://foo.example/path',
+      topUrl: 'https://not-block5.example/path_ignored',
+      type: 'image',
+      method: 'get'
+    });
+    chrome.test.assertEq({matchedRules: []}, result);
+
+    result = await testMatchOutcome({
+      url: 'https://foo.example/path',
+      topUrl: 'https://allow.block5.example/path_ignored',
+      type: 'image',
+      method: 'get'
+    });
+    chrome.test.assertEq({matchedRules: []}, result);
+
+    result = await testMatchOutcome({
+      url: 'https://foo.example/path',
+      topUrl: 'https://another.example/path',
+      initiator: 'https://block5.example/path_ignored',
+      type: 'image',
+      method: 'get'
+    });
+    chrome.test.assertEq({matchedRules: []}, result);
+
+    result = await testMatchOutcome({
+      url: 'https://foo.example/path',
+      initiator: 'https://block5.example/path_ignored',
+      type: 'image',
+      method: 'get'
+    });
+    chrome.test.assertEq(
+        {matchedRules: [{ruleId: 7, rulesetId: 'rules1'}]}, result);
 
     chrome.test.succeed();
   },

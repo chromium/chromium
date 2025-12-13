@@ -50,6 +50,8 @@ HISTOGRAMS_PREFIX_LIST = [
 
 ENUMS_XMLS = [path_util.GetInputFile(f) for f in _ENUMS_XML_RELATIVE]
 UKM_XML = path_util.GetInputFile('tools/metrics/ukm/ukm.xml')
+DWA_XML = path_util.GetInputFile('tools/metrics/private_metrics/dwa.xml')
+DKM_XML = path_util.GetInputFile('tools/metrics/private_metrics/dkm.xml')
 HISTOGRAMS_XMLS = [path_util.GetInputFile(f) for f in _HISTOGRAMS_XMLS_RELATIVE]
 ALL_XMLS = [path_util.GetInputFile(f) for f in ALL_XMLS_RELATIVE]
 

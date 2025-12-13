@@ -62,6 +62,10 @@ public class AddExceptionPreferenceUnitTest {
                 "Pattern is invalid when it starts with dot.",
                 AddExceptionPreference.isPatternValid(
                         ".google.com", SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE));
+        assertTrue(
+                "Pattern is valid when it starts with extension scheme.",
+                AddExceptionPreference.isPatternValid(
+                        "chrome-extension://abc", SiteSettingsCategory.Type.SOUND));
         mIsPatternValid = false;
         assertFalse(
                 "Pattern is invalid when its ContentSettingsPattern is invalid.",

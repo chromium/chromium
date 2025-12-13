@@ -5,12 +5,11 @@
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from './i18n_setup.js';
 import {recordEnumeration} from './metrics_utils.js';
-import type {PageHandlerRemote} from './new_tab_page.mojom-webui.js';
-import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {getCss} from './voice_search_overlay.css.js';
 import {getHtml} from './voice_search_overlay.html.js';
 import {WindowProxy} from './window_proxy.js';
@@ -86,13 +85,14 @@ enum State {
  * persisted to logs. Entries should not be renumbered, removed or reused.
  */
 export enum Action {
-  ACTIVATE_SEARCH_BOX = 0,
+  ACTIVATE = 0,
   ACTIVATE_KEYBOARD = 1,
   CLOSE_OVERLAY = 2,
   QUERY_SUBMITTED = 3,
   SUPPORT_LINK_CLICKED = 4,
   TRY_AGAIN_LINK = 5,
   TRY_AGAIN_MIC_BUTTON = 6,  // Deprecated.
+  MAX_VALUE = TRY_AGAIN_MIC_BUTTON,
 }
 
 /**
@@ -111,11 +111,11 @@ export enum Error {
   NOT_ALLOWED = 7,
   OTHER = 8,
   SERVICE_NOT_ALLOWED = 9,
+  MAX_VALUE = SERVICE_NOT_ALLOWED,
 }
 
 export function recordVoiceAction(action: Action) {
-  recordEnumeration(
-      'NewTabPage.VoiceActions', action, Object.keys(Action).length);
+  recordEnumeration('NewTabPage.VoiceActions', action, Action.MAX_VALUE + 1);
 }
 
 /**
@@ -200,7 +200,6 @@ export class VoiceSearchOverlayElement extends CrLitElement {
       interimResult_: {type: String},
       finalResult_: {type: String},
       state_: {type: Number},
-      error_: {type: Number},
       helpUrl_: {type: String},
       micVolumeLevel_: {type: Number},
       micVolumeDuration_: {type: Number},
@@ -210,7 +209,6 @@ export class VoiceSearchOverlayElement extends CrLitElement {
   protected accessor interimResult_: string = '';
   protected accessor finalResult_: string = '';
   private accessor state_: State = State.UNINITIALIZED;
-  private accessor error_: Error;
   protected accessor helpUrl_: string =
       `https://support.google.com/chrome/?p=ui_voice_search&hl=${
           window.navigator.language}`;
@@ -218,13 +216,12 @@ export class VoiceSearchOverlayElement extends CrLitElement {
   protected accessor micVolumeDuration_: number =
       VOLUME_ANIMATION_DURATION_MIN_MS;
 
-  private pageHandler_: PageHandlerRemote;
   private voiceRecognition_: SpeechRecognition;
+  private error_: Error|null = null;
   private timerId_: number|null = null;
 
   constructor() {
     super();
-    this.pageHandler_ = NewTabPageProxy.getInstance().handler;
     this.voiceRecognition_ = new window.webkitSpeechRecognition();
     this.voiceRecognition_.continuous = false;
     this.voiceRecognition_.interimResults = true;
@@ -367,17 +364,21 @@ export class VoiceSearchOverlayElement extends CrLitElement {
     this.interimResult_ = '';
     this.finalResult_ = '';
 
-    const finalResult = results[e.resultIndex];
+    const speechResult = results[e.resultIndex];
+    assert(speechResult);
     // Process final results.
-    if (finalResult.isFinal) {
-      this.finalResult_ = finalResult[0].transcript;
+    if (!!speechResult && speechResult.isFinal) {
+      this.finalResult_ = speechResult[0]!.transcript;
       this.onFinalResult_();
       return;
     }
 
     // Process interim results.
     for (let j = 0; j < results.length; j++) {
-      const result = results[j][0];
+      const resultList = results[j]!;
+      const result = resultList[0];
+      assert(result);
+
       if (result.confidence > RECOGNITION_CONFIDENCE_THRESHOLD) {
         this.finalResult_ += result.transcript;
       } else {
@@ -431,8 +432,7 @@ export class VoiceSearchOverlayElement extends CrLitElement {
   }
 
   private onError_(error: Error) {
-    chrome.metricsPrivate.recordEnumerationValue(
-        'NewTabPage.VoiceErrors', error, Object.keys(Error).length);
+    recordEnumeration('NewTabPage.VoiceErrors', error, Error.MAX_VALUE + 1);
     if (error === Error.ABORTED) {
       // We are in the process of closing voice search.
       return;

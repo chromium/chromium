@@ -60,7 +60,7 @@ DependencyParserModelLoader::DependencyParserModelLoader(
     : opt_guide_(opt_guide), background_task_runner_(background_task_runner) {
   opt_guide_->AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_PHRASE_SEGMENTATION,
-      /*model_metadata=*/std::nullopt, this);
+      /*model_metadata=*/std::nullopt, background_task_runner, this);
 }
 
 DependencyParserModelLoader::~DependencyParserModelLoader() {

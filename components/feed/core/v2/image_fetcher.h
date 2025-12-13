@@ -6,6 +6,7 @@
 #define COMPONENTS_FEED_CORE_V2_IMAGE_FETCHER_H_
 
 #include <optional>
+#include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
@@ -51,7 +52,7 @@ class ImageFetcher {
   // Called when fetch request completes.
   void OnFetchComplete(ImageFetchId id,
                        const GURL& url,
-                       std::unique_ptr<std::string> response_data);
+                       std::optional<std::string> response_data);
 
   std::optional<PendingRequest> RemovePending(ImageFetchId id);
 

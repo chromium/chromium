@@ -6,7 +6,6 @@
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_FEATURES_H_
 
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_export.h"
 
@@ -28,6 +27,9 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kRefreshExpirationDate);
 // Whether to enable smart suggestion for large downloads
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
     kSmartSuggestionForLargeDownloads);
+
+// Whether to show blocked sensitive downloads on download home.
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kShowBlockedSensitiveDownload);
 #endif
 
 // On downloads-related UI surfaces, attribute the download to the initiator
@@ -66,9 +68,6 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kAllowFileBufferSizeControl);
 
 // Whether mixed-content PDF links can be downloaded if opening inline.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kAllowedMixedContentInlinePdf);
-
-// Whether to write filename to the clipboard when copying image downloads.
-COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kCopyImageFilenameToClipboard);
 
 // Whether to enable async notification manager for downloads.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(

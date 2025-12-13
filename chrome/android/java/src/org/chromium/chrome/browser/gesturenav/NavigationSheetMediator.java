@@ -89,9 +89,7 @@ class NavigationSheetMediator {
         mFaviconSize = context.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
         mHistoryIcon =
                 UiUtils.getTintedDrawable(
-                        context,
-                        R.drawable.ic_history_googblue_24dp,
-                        R.color.default_icon_color_tint_list);
+                        context, R.drawable.ic_history_24dp, R.color.default_icon_color_tint_list);
         mDefaultIcon =
                 UiUtils.getTintedDrawable(
                         context, R.drawable.ic_chrome, R.color.default_icon_color_tint_list);
@@ -130,7 +128,7 @@ class NavigationSheetMediator {
             if (!requestedUrls.contains(pageUrl)) {
                 FaviconHelper.FaviconImageCallback imageCallback =
                         (bitmap, iconUrl) -> onFaviconAvailable(pageUrl, bitmap);
-                if (!pageUrl.getSpec().equals(UrlConstants.HISTORY_URL)) {
+                if (!pageUrl.getSpec().equals(UrlConstants.NATIVE_HISTORY_URL)) {
                     mFaviconHelper.getLocalFaviconImageForURL(
                             mProfile, pageUrl, mFaviconSize, imageCallback);
                     requestedUrls.add(pageUrl);

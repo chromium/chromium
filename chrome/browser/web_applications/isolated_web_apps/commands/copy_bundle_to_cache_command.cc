@@ -8,13 +8,13 @@
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
-#include "base/version.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 
 namespace web_app {
 namespace {
@@ -26,7 +26,7 @@ using SessionType = IwaCacheClient::SessionType;
 CopyBundleToCacheResult CopyBundleToCacheCommandImpl(
     const base::FilePath& copy_from_bundle_path,
     const web_package::SignedWebBundleId& web_bundle_id,
-    base::Version version,
+    IwaVersion version,
     SessionType session_type) {
   const base::FilePath cache_dir =
       IwaCacheClient::GetCacheBaseDirectoryForSessionType(session_type);

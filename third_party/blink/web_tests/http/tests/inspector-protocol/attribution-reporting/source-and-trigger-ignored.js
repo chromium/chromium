@@ -16,8 +16,15 @@
         }})
   `);
 
-  const issue1 = await dp.Audits.onceIssueAdded();
-  const issue2 = await dp.Audits.onceIssueAdded();
+  let issue1;
+  do {
+    issue1 = await dp.Audits.onceIssueAdded();
+  } while (issue1.params.issue.code !== 'AttributionReportingIssue');
+
+  let issue2;
+  do {
+    issue2 = await dp.Audits.onceIssueAdded();
+  } while (issue2.params.issue.code !== 'AttributionReportingIssue');
 
   testRunner.log(issue1.params.issue, 'Issue 1 reported: ', ['request']);
   testRunner.log(issue2.params.issue, 'Issue 2 reported: ', ['request']);

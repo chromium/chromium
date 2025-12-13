@@ -64,6 +64,9 @@ class MODULES_EXPORT DynamicsCompressorHandler final : public AudioHandler {
   scoped_refptr<AudioParamHandler> attack_;
   scoped_refptr<AudioParamHandler> release_;
 
+  // A buffer for sample-accurate parameter values.
+  AudioFloatArray param_values_;
+
   FRIEND_TEST_ALL_PREFIXES(DynamicsCompressorNodeTest, ProcessorLifetime);
 };
 

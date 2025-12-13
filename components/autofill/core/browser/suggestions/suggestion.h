@@ -17,8 +17,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/strong_alias.h"
-#include "base/uuid.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
@@ -94,7 +94,7 @@ struct Suggestion {
 
   struct AutofillAiPayload final {
     AutofillAiPayload();
-    explicit AutofillAiPayload(base::Uuid guid);
+    explicit AutofillAiPayload(EntityInstance::EntityId guid);
     AutofillAiPayload(const AutofillAiPayload&);
     AutofillAiPayload(AutofillAiPayload&&);
     AutofillAiPayload& operator=(const AutofillAiPayload&);
@@ -104,7 +104,7 @@ struct Suggestion {
     friend bool operator==(const AutofillAiPayload&,
                            const AutofillAiPayload&) = default;
 
-    base::Uuid guid;
+    EntityInstance::EntityId guid;
   };
 
   using Guid = base::StrongAlias<class GuidTag, std::string>;
@@ -173,7 +173,10 @@ struct Suggestion {
 
   struct IdentityCredentialPayload final {
     IdentityCredentialPayload();
-    IdentityCredentialPayload(GURL configURL, std::string account_id);
+    IdentityCredentialPayload(
+        GURL configURL,
+        std::string account_id,
+        const std::map<FieldType, std::u16string>& fields);
     IdentityCredentialPayload(const IdentityCredentialPayload&);
     IdentityCredentialPayload(IdentityCredentialPayload&&);
     IdentityCredentialPayload& operator=(const IdentityCredentialPayload&);
@@ -299,13 +302,13 @@ struct Suggestion {
     kAccount,
     // TODO(crbug.com/40266549): Rename to Undo.
     kClear,
-    kCreate,
     kCode,
     kDelete,
     kDevice,
     kEdit,
     kEmail,
     kError,
+    kFlight,
     kGlobe,
     kGoogle,
     kGoogleMonochrome,
@@ -314,8 +317,6 @@ struct Suggestion {
     kGoogleWallet,
     kGoogleWalletMonochrome,
     kHome,
-    kHttpWarning,
-    kHttpsInvalid,
     kIdCard,
     kKey,
     kLocation,
@@ -323,12 +324,12 @@ struct Suggestion {
     kMagic,
     kOfferTag,
     kPenSpark,
+    kPersonCheck,
     kPlusAddress,
     kQuestionMark,
     kRecoveryPassword,
     kScanCreditCard,
     kSettings,
-    kSettingsAndroid,
     kUndo,
     kVehicle,
     kWork,
@@ -421,9 +422,6 @@ struct Suggestion {
 #if DCHECK_IS_ON()
   bool Invariant() const {
     switch (type) {
-      case SuggestionType::kCreateNewPlusAddressInline:
-      case SuggestionType::kPlusAddressError:
-        return std::holds_alternative<PlusAddressPayload>(payload);
       case SuggestionType::kIdentityCredential:
         return std::holds_alternative<IdentityCredentialPayload>(payload);
       case SuggestionType::kPasswordEntry:
@@ -543,12 +541,17 @@ struct Suggestion {
   std::optional<std::u16string> voice_over;
 
   // If specified, this text will be played back if the user accepts this
-  // suggestion.
+  // suggestion. Announcing messages in response to user actions is discouraged
+  // on Android, this message has no effect on that platform.
+  // TODO: crbug.com/467577615 - Redesign accessibility labels on Android so
+  // that they better reflect the information that's going to be filled in the
+  // form.
   std::optional<std::u16string> acceptance_a11y_announcement;
 
   // When `type` is
-  // `SuggestionType::k(Address|CreditCard)FieldByFieldFilling`, specifies the
-  // `FieldType` used to build the suggestion's `main_text`.
+  // `SuggestionType::k(Address|CreditCard)FieldByFieldFilling` or
+  // `SuggestionType::kAddressEntryOnTyping`, specifies the `FieldType` used to
+  // build the suggestion's `main_text`.
   std::optional<FieldType> field_by_field_filling_type_used;
 
   // How the suggestion should be handled by the filtration logic, see the enum

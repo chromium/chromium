@@ -153,10 +153,10 @@ class DownloadBubbleContentsViewTest
         .WillRepeatedly(Return(delegate_.get()));
     EXPECT_CALL(*manager_, GetBrowserContext())
         .WillRepeatedly(Return(profile_.get()));
-    window_ = std::make_unique<TestBrowserWindow>();
+    auto window = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params(profile_, true);
     params.type = Browser::TYPE_NORMAL;
-    params.window = window_.get();
+    params.window = window.release();
     browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
 
     anchor_widget_ =
@@ -220,7 +220,6 @@ class DownloadBubbleContentsViewTest
   raw_ptr<MockDownloadCoreService> mock_download_core_service_;
   std::unique_ptr<ChromeDownloadManagerDelegate> delegate_;
   std::unique_ptr<testing::NiceMock<content::MockDownloadManager>> manager_;
-  std::unique_ptr<TestBrowserWindow> window_;
   std::unique_ptr<Browser> browser_;
   std::vector<std::unique_ptr<NiceMock<download::MockDownloadItem>>>
       download_items_;

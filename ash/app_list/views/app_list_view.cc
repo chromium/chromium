@@ -251,10 +251,9 @@ void AppListView::InitContents() {
                                       /*is_app_list_bubble=*/false);
   search_box_view->InitializeForFullscreenLauncher();
 
-  // Skip the assistant and Sunfish buttons on arrow up/down in app list.
+  // Skip the Gemini and Sunfish buttons on arrow up/down in app list.
   button_focus_skipper_ = std::make_unique<ButtonFocusSkipper>(this);
   button_focus_skipper_->AddButton(search_box_view->sunfish_button());
-  button_focus_skipper_->AddButton(search_box_view->assistant_button());
   button_focus_skipper_->AddButton(search_box_view->gemini_button());
 
   // Assign |app_list_main_view_| and |search_box_view_| here since they are
@@ -385,10 +384,6 @@ void AppListView::Layout(PassKey) {
   LayoutSuperclass<views::WidgetDelegateView>(this);
 }
 
-bool AppListView::IsShowingEmbeddedAssistantUI() const {
-  return app_list_main_view()->contents_view()->IsShowingEmbeddedAssistantUI();
-}
-
 bool AppListView::IsFolderBeingRenamed() {
   return GetAppsContainerView()
       ->app_list_folder_view()
@@ -428,15 +423,9 @@ void AppListView::HandleClickOrTap(ui::LocatedEvent* event) {
   // so they don't get closed.
   if (CloseKeyboardIfVisible()) {
     search_box_view_->NotifyGestureEvent();
-    if (search_box_view_->HasSearch() || IsShowingEmbeddedAssistantUI())
+    if (search_box_view_->HasSearch()) {
       return;
-  }
-
-  // Close embedded Assistant UI if it is shown.
-  if (IsShowingEmbeddedAssistantUI()) {
-    Back();
-    search_box_view_->ClearSearchAndDeactivateSearchBox();
-    return;
+    }
   }
 
   // Clear focus if the located event is not handled by any child view.
@@ -510,7 +499,7 @@ void AppListView::EnsureWidgetBoundsMatchCurrentState() {
 }
 
 display::Display AppListView::GetDisplayNearestView() const {
-  return display::Screen::GetScreen()->GetDisplayNearestView(
+  return display::Screen::Get()->GetDisplayNearestView(
       GetWidget()->GetNativeWindow()->parent());
 }
 
@@ -523,15 +512,7 @@ PagedAppsGridView* AppListView::GetRootAppsGridView() {
 }
 
 views::View* AppListView::GetInitiallyFocusedView() {
-  views::View* initial_view;
-  if (IsShowingEmbeddedAssistantUI()) {
-    // Assistant page will redirect focus to its subviews.
-    auto* content = app_list_main_view_->contents_view();
-    initial_view = content->GetPageView(content->GetActivePageIndex());
-  } else {
-    initial_view = app_list_main_view_->search_box_view()->search_box();
-  }
-  return initial_view;
+  return app_list_main_view_->search_box_view()->search_box();
 }
 
 void AppListView::OnScrollEvent(ui::ScrollEvent* event) {
@@ -764,10 +745,6 @@ void AppListView::OnWindowDestroying(aura::Window* window) {
 
 void AppListView::RedirectKeyEventToSearchBox(ui::KeyEvent* event) {
   if (event->handled())
-    return;
-
-  // Allow text input inside the Assistant page.
-  if (IsShowingEmbeddedAssistantUI())
     return;
 
   views::Textfield* search_box = search_box_view_->search_box();

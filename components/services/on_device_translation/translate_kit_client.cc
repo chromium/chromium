@@ -22,8 +22,8 @@
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
+#include "components/on_device_translation/features.h"
 #include "components/services/on_device_translation/proto/translate_kit_api.pb.h"
-#include "components/services/on_device_translation/public/cpp/features.h"
 #include "components/services/on_device_translation/translate_kit_structs.h"
 
 namespace on_device_translation {
@@ -147,7 +147,10 @@ TranslateKitClient::TranslateKitClient(const base::FilePath& library_path,
       delete_translator_fnc_(reinterpret_cast<DeleteTranslatorFn>(
           lib_.GetFunctionPointer("DeleteTranslator"))),
       translator_translate_func_(reinterpret_cast<TranslatorTranslateFn>(
-          lib_.GetFunctionPointer("TranslatorTranslate"))) {
+          lib_.GetFunctionPointer("TranslatorTranslate"))),
+      translate_kit_sentence_split_func_(
+          reinterpret_cast<TranslateKitSplitSentencesFn>(
+              lib_.GetFunctionPointer("TranslateKitSplitSentences"))) {
   LogLoadTranslateKitResult(CheckLoadTranslateKitResult(), lib_.GetError());
 }
 
@@ -313,14 +316,17 @@ TranslateKitClient::TranslatorImpl::MaybeCreate(
     return nullptr;
   }
   return std::make_unique<TranslatorImpl>(base::PassKey<TranslatorImpl>(),
-                                          client, translator_ptr);
+                                          client, source_lang, translator_ptr);
 }
 
 TranslateKitClient::TranslatorImpl::TranslatorImpl(
     base::PassKey<TranslatorImpl>,
     TranslateKitClient* client,
+    const std::string& source_lang,
     std::uintptr_t translator_ptr)
-    : client_(client), translator_ptr_(translator_ptr) {}
+    : client_(client),
+      source_lang_(source_lang),
+      translator_ptr_(translator_ptr) {}
 
 DISABLE_CFI_DLSYM
 TranslateKitClient::TranslatorImpl::~TranslatorImpl() {
@@ -339,6 +345,35 @@ std::optional<std::string> TranslateKitClient::TranslatorImpl::Translate(
     return text;
   }
   return std::nullopt;
+}
+
+DISABLE_CFI_DLSYM
+std::vector<std::string> TranslateKitClient::TranslatorImpl::SplitSentences(
+    const std::string& text) {
+  std::vector<std::string> sentences;
+  if (!client_->translate_kit_sentence_split_func_) {
+    sentences.push_back(text);
+    return sentences;
+  }
+
+  auto sentence_callback = [](TranslateKitOutputText result,
+                              std::uintptr_t user_data) {
+    std::vector<std::string>* sentences =
+        reinterpret_cast<std::vector<std::string>*>(user_data);
+    CHECK(sentences);
+    CHECK(result.buffer);
+    std::string sentence(result.buffer, result.buffer_size);
+    sentences->push_back(std::move(sentence));
+  };
+
+  if (!client_->translate_kit_sentence_split_func_(
+          TranslateKitInputText(text.c_str(), text.length()),
+          TranslateKitLanguage(source_lang_.c_str(), source_lang_.length()),
+          sentence_callback, reinterpret_cast<std::uintptr_t>(&sentences))) {
+    return std::vector<std::string>{text};
+  }
+
+  return sentences;
 }
 
 // static

@@ -369,9 +369,8 @@ bool OutputInJSONFormat() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kJSONFormatSwitch);
 }
 
-std::string ValueToJSONString(const base::Value& value) {
-  std::string value_string;
-  return base::JSONWriter::Write(value, &value_string) ? value_string : "";
+std::string DictToJSONString(const base::Value::Dict& dict) {
+  return base::WriteJson(dict).value_or("");
 }
 
 void OnAppStateChanged(const UpdateService::UpdateState& update_state) {
@@ -392,6 +391,16 @@ void OnAppStateChanged(const UpdateService::UpdateState& update_state) {
                 << ": downloading update, downloaded bytes: "
                 << update_state.downloaded_bytes
                 << ", total: " << update_state.total_bytes << std::endl;
+      break;
+
+    case UpdateService::UpdateState::State::kDecompressing:
+      std::cout << Quoted(update_state.app_id) << ": decompressing files"
+                << std::endl;
+      break;
+
+    case UpdateService::UpdateState::State::kPatching:
+      std::cout << Quoted(update_state.app_id) << ": applying patches"
+                << std::endl;
       break;
 
     case UpdateService::UpdateState::State::kInstalling:
@@ -516,16 +525,15 @@ void UpdaterUtilApp::ListApps() {
         if (OutputInJSONFormat()) {
           base::Value::Dict apps;
           for (updater::UpdateService::AppState app : states) {
-            apps.Set(app.app_id, base::Value::Dict().Set(
-                                     "version", app.version.GetString()));
+            apps.Set(app.app_id,
+                     base::Value::Dict().Set("version", app.version));
           }
-          std::cout << ValueToJSONString(base::Value(std::move(apps)))
-                    << std::endl;
+          std::cout << DictToJSONString(std::move(apps)) << std::endl;
         } else {
           std::cout << "Registered apps : {" << std::endl;
           for (updater::UpdateService::AppState app : states) {
             std::cout << "\t" << Quoted(app.app_id) << " = "
-                      << Quoted(app.version.GetString()) << ';' << std::endl;
+                      << Quoted(app.version) << ';' << std::endl;
           }
           std::cout << '}' << std::endl;
         }
@@ -547,10 +555,10 @@ void UpdaterUtilApp::FindApp(
             });
         LOG_IF(ERROR, it == std::end(states))
             << Quoted(app_id) << " is not a registered app.";
-        std::move(callback).Run(it == std::end(states)
-                                    ? nullptr
-                                    : base::MakeRefCounted<AppState>(
-                                          app_id, it->version.GetString()));
+        std::move(callback).Run(
+            it == std::end(states)
+                ? nullptr
+                : base::MakeRefCounted<AppState>(app_id, it->version));
       },
       app_id, std::move(callback)));
 }
@@ -582,8 +590,7 @@ void UpdaterUtilApp::DoListUpdate(scoped_refptr<AppState> app_state) {
              const UpdateService::UpdateState& update_state) {
             if (update_state.state ==
                 UpdateService::UpdateState::State::kUpdateAvailable) {
-              app_state->set_next_version(
-                  update_state.next_version.GetString());
+              app_state->set_next_version(update_state.next_version);
             }
           },
           app_state),
@@ -597,8 +604,7 @@ void UpdaterUtilApp::DoListUpdate(scoped_refptr<AppState> app_state) {
                         base::Value::Dict()
                             .Set("CurrentVersion", app_state->current_version())
                             .Set("NextVersion", app_state->next_version()));
-                std::cout << ValueToJSONString(base::Value(std::move(app)))
-                          << std::endl;
+                std::cout << DictToJSONString(std::move(app)) << std::endl;
               } else {
                 std::cout << Quoted(app_state->app_id()) << " : {" << std::endl
                           << "\tCurrent Version = "
@@ -657,7 +663,7 @@ void UpdaterUtilApp::ListPolicies() {
             CreateGlobalPrefs(Scope()), CreateDefaultExternalConstants(),
             Scope());
         if (OutputInJSONFormat()) {
-          std::cout << ValueToJSONString(
+          std::cout << DictToJSONString(
                            configurator->GetPolicyService()->GetAllPolicies())
                     << std::endl;
         } else {
@@ -683,7 +689,8 @@ void UpdaterUtilApp::UnpackCRX() {
           FROM_HERE,
           base::BindOnce(
               &update_client::Unpacker::Unpack,
-              /*app_id=*/"", std::vector<uint8_t>(),
+              /*app_id=*/"",
+              /*prod_id=*/"UpdaterUtil", std::vector<uint8_t>(),
               base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
                   kUnpackSwitch),
               base::MakeRefCounted<update_client::InProcessUnzipperFactory>(
@@ -731,7 +738,8 @@ int UpdaterUtilMain(int argc, char** argv) {
   InitializeThreadPool("updater-util");
   const base::ScopedClosureRunner shutdown_thread_pool(
       base::BindOnce([] { base::ThreadPoolInstance::Get()->Shutdown(); }));
-  base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
+  base::SingleThreadTaskExecutor main_task_executor(
+      base::MessagePumpType::DEFAULT, true);
   return base::MakeRefCounted<UpdaterUtilApp>()->Run();
 }
 

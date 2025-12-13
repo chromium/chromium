@@ -22,7 +22,7 @@ source_set("model") {
     "//base",
     "//components/google/core/common",
     "//ios/chrome/browser/fullscreen/ui_bundled",
-    "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
@@ -35,6 +35,7 @@ source_set("model") {
     "//ui/base",
   ]
   public_deps = [
+    ":bottom_sheet",
     ":configuration_factory",
     ":detent_state_header",
     ":detents_manager",
@@ -126,11 +127,27 @@ source_set("detents_manager") {
     "//base",
     "//ui/base",
   ]
-  public_deps = [ ":detent_state_header" ]
+  public_deps = [
+    ":bottom_sheet",
+    ":detent_state_header",
+  ]
 }
 
 source_set("detent_state_header") {
   sources = [ "lens_overlay_sheet_detent_state.h" ]
+}
+
+source_set("bottom_sheet") {
+  sources = [
+    "lens_overlay_bottom_sheet.h",
+    "lens_overlay_bottom_sheet_detent.h",
+    "lens_overlay_bottom_sheet_detent.mm",
+    "lens_overlay_bottom_sheet_detent_proxy.h",
+    "lens_overlay_bottom_sheet_detent_proxy.mm",
+    "lens_overlay_bottom_sheet_detents_interactor.h",
+    "lens_overlay_bottom_sheet_detents_interactor.mm",
+  ]
+  public_deps = [ "//base" ]
 }
 
 source_set("metrics_recorder") {
@@ -178,6 +195,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/lens:enterprise_policy",
     "//components/prefs",
+    "//components/test/ios",
     "//components/variations",
     "//components/variations:test_support",
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",

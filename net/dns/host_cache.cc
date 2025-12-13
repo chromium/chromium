@@ -26,6 +26,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
@@ -496,8 +497,10 @@ HostCache::Entry HostCache::Entry::CopyWithDefaultPort(uint16_t port) const {
   }
 
   for (HostPortPair& hostname : copy.hostnames_) {
+    // Hostnames are mutable, unlike IPEndPoints, so can overwrite only the
+    // ports.
     if (hostname.port() == 0) {
-      hostname = HostPortPair(hostname.host(), port);
+      hostname.set_port(port);
     }
   }
 

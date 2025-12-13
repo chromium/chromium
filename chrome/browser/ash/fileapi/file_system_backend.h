@@ -13,7 +13,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/account_id/account_id.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "storage/browser/file_system/file_system_backend.h"

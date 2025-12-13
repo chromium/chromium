@@ -1,0 +1,453 @@
+rootWebArea htmlTag='#document' name='Material Web Tabs'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++tabList horizontal htmlTag='md-tabs'
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='slot'
+++++++++++++++tab htmlTag='md-primary-tab' name='Tab 1' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Tab 1'
+++++++++++++++++++++++inlineTextBox name='Tab 1'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-primary-tab' name='Tab 2' selected=true
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Tab 2'
+++++++++++++++++++++++inlineTextBox name='Tab 2'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-primary-tab' name='Tab 3' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Tab 3'
+++++++++++++++++++++++inlineTextBox name='Tab 3'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-primary-tab' name='Disabled Tab' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Disabled Tab'
+++++++++++++++++++++++inlineTextBox name='Disabled Tab'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++none ignored
+++++++++tabList horizontal htmlTag='md-tabs'
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='slot'
+++++++++++++++tab htmlTag='md-primary-tab' name='Home' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Home'
+++++++++++++++++++++++inlineTextBox name='Home'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-primary-tab' name='Search' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Search'
+++++++++++++++++++++++inlineTextBox name='Search'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-primary-tab' name='Favorites' selected=true
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Favorites'
+++++++++++++++++++++++inlineTextBox name='Favorites'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++none ignored
+++++++++tabList horizontal htmlTag='md-tabs'
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='slot'
+++++++++++++++tab htmlTag='md-secondary-tab' name='Secondary 1' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Secondary 1'
+++++++++++++++++++++++inlineTextBox name='Secondary 1'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-secondary-tab' name='Secondary 2' selected=true
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Secondary 2'
+++++++++++++++++++++++inlineTextBox name='Secondary 2'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-secondary-tab' name='Secondary 3' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Secondary 3'
+++++++++++++++++++++++inlineTextBox name='Secondary 3'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++none ignored
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web Tabs'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++tabList horizontal htmlTag='md-tabs'
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='slot'
+++++++++++++++tab htmlTag='md-primary-tab' name='Tab 1' selected=true
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Tab 1'
+++++++++++++++++++++++inlineTextBox name='Tab 1'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-primary-tab' name='Tab 2' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Tab 2'
+++++++++++++++++++++++inlineTextBox name='Tab 2'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-primary-tab' name='Tab 3' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Tab 3'
+++++++++++++++++++++++inlineTextBox name='Tab 3'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-primary-tab' name='Disabled Tab' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Disabled Tab'
+++++++++++++++++++++++inlineTextBox name='Disabled Tab'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++none ignored
+++++++++tabList horizontal htmlTag='md-tabs'
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='slot'
+++++++++++++++tab htmlTag='md-primary-tab' name='Home' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Home'
+++++++++++++++++++++++inlineTextBox name='Home'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-primary-tab' name='Search' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Search'
+++++++++++++++++++++++inlineTextBox name='Search'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-primary-tab' name='Favorites' selected=true
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Favorites'
+++++++++++++++++++++++inlineTextBox name='Favorites'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++none ignored
+++++++++tabList horizontal htmlTag='md-tabs'
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='slot'
+++++++++++++++tab htmlTag='md-secondary-tab' name='Secondary 1' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Secondary 1'
+++++++++++++++++++++++inlineTextBox name='Secondary 1'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-secondary-tab' name='Secondary 2' selected=true
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Secondary 2'
+++++++++++++++++++++++inlineTextBox name='Secondary 2'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-secondary-tab' name='Secondary 3' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Secondary 3'
+++++++++++++++++++++++inlineTextBox name='Secondary 3'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++none ignored
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Tab 1 Clicked'
+++++++++++++inlineTextBox name='Tab 1 Clicked'
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web Tabs'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++tabList horizontal htmlTag='md-tabs'
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='slot'
+++++++++++++++tab htmlTag='md-primary-tab' name='Tab 1' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Tab 1'
+++++++++++++++++++++++inlineTextBox name='Tab 1'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-primary-tab' name='Tab 2' selected=true
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Tab 2'
+++++++++++++++++++++++inlineTextBox name='Tab 2'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-primary-tab' name='Tab 3' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Tab 3'
+++++++++++++++++++++++inlineTextBox name='Tab 3'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-primary-tab' name='Disabled Tab' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Disabled Tab'
+++++++++++++++++++++++inlineTextBox name='Disabled Tab'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++none ignored
+++++++++tabList horizontal htmlTag='md-tabs'
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='slot'
+++++++++++++++tab htmlTag='md-primary-tab' name='Home' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Home'
+++++++++++++++++++++++inlineTextBox name='Home'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-primary-tab' name='Search' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Search'
+++++++++++++++++++++++inlineTextBox name='Search'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-primary-tab' name='Favorites' selected=true
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Favorites'
+++++++++++++++++++++++inlineTextBox name='Favorites'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++none ignored
+++++++++tabList horizontal htmlTag='md-tabs'
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='slot'
+++++++++++++++tab htmlTag='md-secondary-tab' name='Secondary 1' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Secondary 1'
+++++++++++++++++++++++inlineTextBox name='Secondary 1'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-secondary-tab' name='Secondary 2' selected=true
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Secondary 2'
+++++++++++++++++++++++inlineTextBox name='Secondary 2'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-secondary-tab' name='Secondary 3' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Secondary 3'
+++++++++++++++++++++++inlineTextBox name='Secondary 3'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++none ignored
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Tab 1 Clicked'
+++++++++++++inlineTextBox name='Tab 1 Clicked'
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Tab 2 Clicked'
+++++++++++++inlineTextBox name='Tab 2 Clicked'
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web Tabs'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++tabList horizontal htmlTag='md-tabs'
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='slot'
+++++++++++++++tab htmlTag='md-primary-tab' name='Tab 1' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Tab 1'
+++++++++++++++++++++++inlineTextBox name='Tab 1'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-primary-tab' name='Tab 2' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Tab 2'
+++++++++++++++++++++++inlineTextBox name='Tab 2'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-primary-tab' name='Tab 3' selected=true
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Tab 3'
+++++++++++++++++++++++inlineTextBox name='Tab 3'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-primary-tab' name='Disabled Tab' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Disabled Tab'
+++++++++++++++++++++++inlineTextBox name='Disabled Tab'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++none ignored
+++++++++tabList horizontal htmlTag='md-tabs'
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='slot'
+++++++++++++++tab htmlTag='md-primary-tab' name='Home' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Home'
+++++++++++++++++++++++inlineTextBox name='Home'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-primary-tab' name='Search' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Search'
+++++++++++++++++++++++inlineTextBox name='Search'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-primary-tab' name='Favorites' selected=true
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++none ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Favorites'
+++++++++++++++++++++++inlineTextBox name='Favorites'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++none ignored
+++++++++tabList horizontal htmlTag='md-tabs'
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='slot'
+++++++++++++++tab htmlTag='md-secondary-tab' name='Secondary 1' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Secondary 1'
+++++++++++++++++++++++inlineTextBox name='Secondary 1'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-secondary-tab' name='Secondary 2' selected=true
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Secondary 2'
+++++++++++++++++++++++inlineTextBox name='Secondary 2'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++++++tab htmlTag='md-secondary-tab' name='Secondary 3' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='Secondary 3'
+++++++++++++++++++++++inlineTextBox name='Secondary 3'
+++++++++++++++++++genericContainer className='indicator' htmlTag='div'
+++++++++++none ignored
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Tab 1 Clicked'
+++++++++++++inlineTextBox name='Tab 1 Clicked'
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Tab 2 Clicked'
+++++++++++++inlineTextBox name='Tab 2 Clicked'
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Tab 3 Clicked'
+++++++++++++inlineTextBox name='Tab 3 Clicked'

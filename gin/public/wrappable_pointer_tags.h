@@ -20,7 +20,7 @@ namespace gin {
 enum WrappablePointerTag : uint16_t {
   // The type tags for gin::Wrappable start at the end of the value range to
   // avoid overlaps with the type tags of blink::ScriptWrappable.
-  kFirstPointerTag = 1501,
+  kFirstPointerTag = 1601,
   kAccessibilityControllerBindings,  // content::AccessibilityControllerBindings
   kAPIBindingBridge,                 // extensions::APIBindingBridge
   kAPIBindingJSUtil,                 // extensions::APIBindingJSUtil
@@ -34,20 +34,29 @@ enum WrappablePointerTag : uint16_t {
   kEventSenderBindings,              // content::EventSenderBindings
   kGamepadControllerBindings,        // content::GameControllerBindings
   kGCController,                     // content::GCController
+  kGinJavaBridgeObject,              // content::GinJavaBridgeObject
   kGinPort,                          // extensions::GinPort
   kGpuBenchmarking,                  // content::GpuBenchmarking
   kJsBinding,                        // js_injection::JsBinding
+  kJsMessageEvent,                   // android_webview::JsMessageEvent
+  kJsSandboxMessagePort,             // android_webview::JsSandboxMessagePort
   kJSHookInterface,                  // extensions::JSHookInterface
   kLastErrorObject,                  // extensions::LastErrorObject
   kLocalStorageArea,                 // extensions::LocalStorageArea
   kManagedStorageArea,               // extensions::ManagedStorageArea
   kMojo,                             // ax::Mojo
   kMojoHandle,                       // ax::MojoHandle
+  kMojoWatcher,                      // ax::MojoWatcher
+  kMyInterceptor,                    // gin::MyInterceptor
   kNetErrorPageController,           // NetErrorPageController
+  kNewTabPageBindings,               // NewTabPageBindings
   kPDFPluginPlaceholder,             // PDFPluginPlaceholder
   kPluginPlaceholder,                // plugins::PluginPlaceholder
-  kReadAnythingAppController,        // ReadAnythingAppController
-  kSearchBoxBindings,                // SearchBoxBindings
+  kPostMessageReceiver,              // chrome_pdf::PostMessageReceiver
+  kPostMessageScriptableObject,  // extensions::(anonymous)::ScriptableObject
+  kReadAnythingAppController,    // ReadAnythingAppController
+  kRemoteObject,                 // blink::RemoteObject
+  kSearchBoxBindings,            // SearchBoxBindings
   kSecurityInterstitialPageController,  // SecurityInterstitialPageController
   kSessionStorageArea,                  // extensions::SessionStorageArea
   kSharedStorageMethod,                 // auction_worklet::SharedStorageMethod
@@ -58,12 +67,13 @@ enum WrappablePointerTag : uint16_t {
   kTestGinWrappable,                    // GinWrappable
   kTestObject,                          // gin::TestGinObject
   kTestObject2,                         // gin::MyObject2
-  kTestRunnerBindings,                  // content::TestRunnerBindings
-  kTextDecoder,                         // ax::TextDecoder
-  kTextEncoder,                         // ax::TextEncoder
-  kTextInputControllerBindings,         // content::TextInputControllerBindings
-  kWebAXObjectProxy,                    // content::WebAXObjectProxy
-  kWrappedExceptionHandler,             // extensions::WrappedExceptionHandler
+  kTestPluginScriptableObject,   // content::(anonymous)::ScriptableObject
+  kTestRunnerBindings,           // content::TestRunnerBindings
+  kTextDecoder,                  // ax::TextDecoder
+  kTextEncoder,                  // ax::TextEncoder
+  kTextInputControllerBindings,  // content::TextInputControllerBindings
+  kWebAXObjectProxy,             // content::WebAXObjectProxy
+  kWrappedExceptionHandler,      // extensions::WrappedExceptionHandler
   kLastPointerTag = kWrappedExceptionHandler,
 };
 

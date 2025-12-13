@@ -1,0 +1,10 @@
+{
+	"metadata": {
+		"browser_name": "Safari",
+		"browser_version": "18.4",
+		"data_type": "payment_cards",
+		"export_time_usec": 1747418368726516,
+		"schema_version": 1
+	},
+	"Valid JSON but": "doesn't match the spec at all"
+}

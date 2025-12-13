@@ -29,7 +29,8 @@ content::WebContents* AddAndReturnTabAt(
     const GURL& url,
     int idx,
     bool foreground,
-    std::optional<tab_groups::TabGroupId> group) {
+    std::optional<tab_groups::TabGroupId> group,
+    bool pinned) {
   // Time new tab page creation time.  We keep track of the timing data in
   // WebContents, but we want to include the time it takes to create the
   // WebContents object too.
@@ -40,6 +41,9 @@ content::WebContents* AddAndReturnTabAt(
                                   : WindowOpenDisposition::NEW_BACKGROUND_TAB;
   params.tabstrip_index = idx;
   params.group = group;
+  if (pinned) {
+    params.tabstrip_add_types |= AddTabTypes::ADD_PINNED;
+  }
   params.pwa_navigation_capturing_force_off = true;
   Navigate(&params);
 
@@ -58,8 +62,10 @@ void AddTabAt(Browser* browser,
               const GURL& url,
               int idx,
               bool foreground,
-              std::optional<tab_groups::TabGroupId> group) {
-  /*void*/ AddAndReturnTabAt(browser, url, idx, foreground, std::move(group));
+              std::optional<tab_groups::TabGroupId> group,
+              bool pinned) {
+  /*void*/ AddAndReturnTabAt(browser, url, idx, foreground, std::move(group),
+                             pinned);
 }
 
 content::WebContents* AddSelectedTabWithURL(Browser* browser,
@@ -124,12 +130,14 @@ void ConfigureTabGroupForNavigation(NavigateParams* nav_params) {
     return;
   }
 
-  if (!nav_params->browser || !nav_params->browser->SupportsWindowFeature(
-                                  Browser::WindowFeature::FEATURE_TABSTRIP)) {
+  if (!nav_params->browser ||
+      !nav_params->browser->GetBrowserForMigrationOnly()->SupportsWindowFeature(
+          Browser::WindowFeature::kFeatureTabStrip)) {
     return;
   }
 
-  TabStripModel* model = nav_params->browser->tab_strip_model();
+  TabStripModel* model =
+      nav_params->browser->GetBrowserForMigrationOnly()->tab_strip_model();
   DCHECK(model);
 
   const int source_index =

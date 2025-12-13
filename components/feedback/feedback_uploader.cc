@@ -4,6 +4,9 @@
 
 #include "components/feedback/feedback_uploader.h"
 
+#include <optional>
+#include <string>
+
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -16,6 +19,7 @@
 #include "components/feedback/feedback_switches.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -272,7 +276,7 @@ void FeedbackUploader::DispatchReport() {
 
 void FeedbackUploader::OnDispatchComplete(
     UrlLoaderList::iterator it,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   std::stringstream error_stream;
   network::SimpleURLLoader* simple_url_loader = it->get();
   int response_code = kHttpPostFailNoConnection;

@@ -1,5 +1,5 @@
 diff --git a/third_party/libtess2/src/Source/geom.c b/third_party/libtess2/src/Source/geom.c
-index ce232cfcbe891..4b45b8a6cbb00 100644
+index b421157c38719..18884ff23699a 100644
 --- a/third_party/libtess2/src/Source/geom.c
 +++ b/third_party/libtess2/src/Source/geom.c
 @@ -30,7 +30,7 @@
@@ -29,7 +29,7 @@ index ce232cfcbe891..4b45b8a6cbb00 100644
  
  	gapL = v->s - u->s;
  	gapR = w->s - v->s;
-@@ -111,7 +111,7 @@ TESSreal testransEval( TESSvertex *u, TESSvertex *v, TESSvertex *w )
+@@ -112,7 +112,7 @@ TESSreal testransEval( TESSvertex *u, TESSvertex *v, TESSvertex *w )
  	*/
  	TESSreal gapL, gapR;
  
@@ -38,7 +38,7 @@ index ce232cfcbe891..4b45b8a6cbb00 100644
  
  	gapL = v->t - u->t;
  	gapR = w->t - v->t;
-@@ -135,7 +135,7 @@ TESSreal testransSign( TESSvertex *u, TESSvertex *v, TESSvertex *w )
+@@ -136,7 +136,7 @@ TESSreal testransSign( TESSvertex *u, TESSvertex *v, TESSvertex *w )
  	*/
  	TESSreal gapL, gapR;
  
@@ -48,7 +48,7 @@ index ce232cfcbe891..4b45b8a6cbb00 100644
  	gapL = v->t - u->t;
  	gapR = w->t - v->t;
 diff --git a/third_party/libtess2/src/Source/mesh.c b/third_party/libtess2/src/Source/mesh.c
-index 763fecabd3923..5cd623fbadd59 100644
+index 2ce746b9726c9..9a419cafaad40 100644
 --- a/third_party/libtess2/src/Source/mesh.c
 +++ b/third_party/libtess2/src/Source/mesh.c
 @@ -31,7 +31,7 @@
@@ -78,7 +78,7 @@ index 763fecabd3923..5cd623fbadd59 100644
  
  	/* insert in circular doubly-linked list before fNext */
  	fPrev = fNext->prev;
-@@ -765,9 +765,9 @@ void tessMeshFlipEdge( TESSmesh *mesh, TESShalfEdge *edge )
+@@ -767,9 +767,9 @@ void tessMeshFlipEdge( TESSmesh *mesh, TESShalfEdge *edge )
  	TESSface *fa = a0->Lface;
  	TESSface *fb = b0->Lface;
  
@@ -91,7 +91,7 @@ index 763fecabd3923..5cd623fbadd59 100644
  
  	a0->Org = bOpp;
  	a0->Onext = b1->Sym;
-@@ -795,35 +795,35 @@ void tessMeshFlipEdge( TESSmesh *mesh, TESShalfEdge *edge )
+@@ -797,35 +797,35 @@ void tessMeshFlipEdge( TESSmesh *mesh, TESShalfEdge *edge )
  	if (aOrg->anEdge == a0) aOrg->anEdge = b1;
  	if (bOrg->anEdge == b0) bOrg->anEdge = a1;
  
@@ -148,7 +148,7 @@ index 763fecabd3923..5cd623fbadd59 100644
  }
  
  #ifdef DELETE_BY_ZAPPING
-@@ -837,7 +837,7 @@ void tessMeshDeleteMesh( TESSalloc* alloc, TESSmesh *mesh )
+@@ -839,7 +839,7 @@ void tessMeshDeleteMesh( TESSalloc* alloc, TESSmesh *mesh )
  	while( fHead->next != fHead ) {
  		tessMeshZapFace( fHead->next );
  	}
@@ -157,7 +157,7 @@ index 763fecabd3923..5cd623fbadd59 100644
  
  	alloc->memfree( alloc->userData, mesh );
  }
-@@ -871,43 +871,43 @@ void tessMeshCheckMesh( TESSmesh *mesh )
+@@ -873,43 +873,43 @@ void tessMeshCheckMesh( TESSmesh *mesh )
  	TESShalfEdge *e, *ePrev;
  
  	for( fPrev = fHead ; (f = fPrev->next) != fHead; fPrev = f) {
@@ -224,7 +224,7 @@ index 763fecabd3923..5cd623fbadd59 100644
  		&& e->Sym->Sym == e
  		&& e->Org == NULL && e->Dst == NULL
 diff --git a/third_party/libtess2/src/Source/priorityq.c b/third_party/libtess2/src/Source/priorityq.c
-index 62a6654535eab..1261fc83d9e05 100644
+index 02a6988b0e893..50e2de3d98eff 100644
 --- a/third_party/libtess2/src/Source/priorityq.c
 +++ b/third_party/libtess2/src/Source/priorityq.c
 @@ -31,7 +31,7 @@
@@ -300,7 +300,7 @@ index 62a6654535eab..1261fc83d9e05 100644
  	pq->keys[curr] = NULL;
  	while( pq->size > 0 && *(pq->order[pq->size-1]) == NULL ) {
 diff --git a/third_party/libtess2/src/Source/sweep.c b/third_party/libtess2/src/Source/sweep.c
-index 8bcd839f73cc4..933c6b641f73f 100644
+index 332fdb311962e..6116b5b69da1c 100644
 --- a/third_party/libtess2/src/Source/sweep.c
 +++ b/third_party/libtess2/src/Source/sweep.c
 @@ -29,7 +29,7 @@
@@ -309,10 +309,10 @@ index 8bcd839f73cc4..933c6b641f73f 100644
  
 -#include <assert.h>
 +#include "libtess2/tess_assert.h"
+ #include <float.h>
  #include <stddef.h>
  #include <setjmp.h>		/* longjmp */
- 
-@@ -143,7 +143,7 @@ static void DeleteRegion( TESStesselator *tess, ActiveRegion *reg )
+@@ -144,7 +144,7 @@ static void DeleteRegion( TESStesselator *tess, ActiveRegion *reg )
  		* deleted with zero winding number (ie. it better not get merged
  		* with a real edge).
  		*/
@@ -321,7 +321,7 @@ index 8bcd839f73cc4..933c6b641f73f 100644
  	}
  	reg->eUp->activeRegion = NULL;
  	dictDelete( tess->dict, reg->nodeUp );
-@@ -156,7 +156,7 @@ static int FixUpperEdge( TESStesselator *tess, ActiveRegion *reg, TESShalfEdge *
+@@ -157,7 +157,7 @@ static int FixUpperEdge( TESStesselator *tess, ActiveRegion *reg, TESShalfEdge *
  * Replace an upper edge which needs fixing (see ConnectRightVertex).
  */
  {
@@ -330,7 +330,7 @@ index 8bcd839f73cc4..933c6b641f73f 100644
  	if ( !tessMeshDelete( tess->mesh, reg->eUp ) ) return 0;
  	reg->fixUpperEdge = FALSE;
  	reg->eUp = newEdge;
-@@ -237,7 +237,7 @@ static int IsWindingInside( TESStesselator *tess, int n )
+@@ -238,7 +238,7 @@ static int IsWindingInside( TESStesselator *tess, int n )
  			return (n >= 2) || (n <= -2);
  	}
  	/*LINTED*/
@@ -339,7 +339,7 @@ index 8bcd839f73cc4..933c6b641f73f 100644
  	/*NOTREACHED*/
  
  	return( FALSE );
-@@ -346,7 +346,7 @@ static void AddRightEdges( TESStesselator *tess, ActiveRegion *regUp,
+@@ -347,7 +347,7 @@ static void AddRightEdges( TESStesselator *tess, ActiveRegion *regUp,
  	/* Insert the new right-going edges in the dictionary */
  	e = eFirst;
  	do {
@@ -348,7 +348,7 @@ index 8bcd839f73cc4..933c6b641f73f 100644
  		AddRegionBelow( tess, regUp, e->Sym );
  		e = e->Onext;
  	} while ( e != eLast );
-@@ -388,7 +388,7 @@ static void AddRightEdges( TESStesselator *tess, ActiveRegion *regUp,
+@@ -389,7 +389,7 @@ static void AddRightEdges( TESStesselator *tess, ActiveRegion *regUp,
  		ePrev = e;
  	}
  	regPrev->dirty = TRUE;
@@ -357,7 +357,7 @@ index 8bcd839f73cc4..933c6b641f73f 100644
  
  	if( cleanUp ) {
  		/* Check for intersections between newly adjacent edges. */
-@@ -528,7 +528,7 @@ static int CheckForLeftSplice( TESStesselator *tess, ActiveRegion *regUp )
+@@ -533,7 +533,7 @@ static int CheckForLeftSplice( TESStesselator *tess, ActiveRegion *regUp )
  	TESShalfEdge *eLo = regLo->eUp;
  	TESShalfEdge *e;
  
@@ -366,7 +366,7 @@ index 8bcd839f73cc4..933c6b641f73f 100644
  
  	if( VertLeq( eUp->Dst, eLo->Dst )) {
  		if( EdgeSign( eUp->Dst, eLo->Dst, eUp->Org ) < 0 ) return FALSE;
-@@ -575,11 +575,11 @@ static int CheckForIntersect( TESStesselator *tess, ActiveRegion *regUp )
+@@ -584,11 +584,11 @@ static int CheckForIntersect( TESStesselator *tess, ActiveRegion *regUp )
  	TESSvertex isect, *orgMin;
  	TESShalfEdge *e;
  
@@ -383,22 +383,22 @@ index 8bcd839f73cc4..933c6b641f73f 100644
  
  	if( orgUp == orgLo ) return FALSE;	/* right endpoints are the same */
  
-@@ -598,10 +598,10 @@ static int CheckForIntersect( TESStesselator *tess, ActiveRegion *regUp )
- 
- 	tesedgeIntersect( dstUp, orgUp, dstLo, orgLo, &isect );
- 	/* The following properties are guaranteed: */
--	assert( MIN( orgUp->t, dstUp->t ) <= isect.t );
--	assert( isect.t <= MAX( orgLo->t, dstLo->t ));
--	assert( MIN( dstLo->s, dstUp->s ) <= isect.s );
--	assert( isect.s <= MAX( orgLo->s, orgUp->s ));
-+	tess_assert( MIN( orgUp->t, dstUp->t ) <= isect.t );
-+	tess_assert( isect.t <= MAX( orgLo->t, dstLo->t ));
-+	tess_assert( MIN( dstLo->s, dstUp->s ) <= isect.s );
-+	tess_assert( isect.s <= MAX( orgLo->s, orgUp->s ));
+@@ -610,10 +610,10 @@ static int CheckForIntersect( TESStesselator *tess, ActiveRegion *regUp )
+ 	 * The following properties are guaranteed (with a little wiggle-room to
+ 	 * account for loss of precision if the values are subnormal.)
+ 	 */
+-	assert( MIN( orgUp->t, dstUp->t ) <= isect.t + FLT_MIN);
+-	assert( isect.t <= MAX( orgLo->t, dstLo->t ) + FLT_MIN);
+-	assert( MIN( dstLo->s, dstUp->s ) <= isect.s + FLT_MIN);
+-	assert( isect.s <= MAX( orgLo->s, orgUp->s ) + FLT_MIN);
++	tess_assert( MIN( orgUp->t, dstUp->t ) <= isect.t + FLT_MIN);
++	tess_assert( isect.t <= MAX( orgLo->t, dstLo->t ) + FLT_MIN);
++	tess_assert( MIN( dstLo->s, dstUp->s ) <= isect.s + FLT_MIN);
++	tess_assert( isect.s <= MAX( orgLo->s, orgUp->s ) + FLT_MIN);
  
  	if( VertLeq( &isect, tess->event )) {
  		/* The intersection point lies slightly to the left of the sweep line,
-@@ -904,7 +904,7 @@ static void ConnectLeftDegenerate( TESStesselator *tess,
+@@ -916,7 +916,7 @@ static void ConnectLeftDegenerate( TESStesselator *tess,
  		/* e->Org is an unprocessed vertex - just combine them, and wait
  		* for e->Org to be pulled from the queue
  		*/
@@ -407,7 +407,7 @@ index 8bcd839f73cc4..933c6b641f73f 100644
  		SpliceMergeVertices( tess, e, vEvent->anEdge );
  		return;
  	}
-@@ -925,7 +925,7 @@ static void ConnectLeftDegenerate( TESStesselator *tess,
+@@ -937,7 +937,7 @@ static void ConnectLeftDegenerate( TESStesselator *tess,
  	/* vEvent coincides with e->Dst, which has already been processed.
  	* Splice in the additional right-going edges.
  	*/
@@ -416,7 +416,7 @@ index 8bcd839f73cc4..933c6b641f73f 100644
  	regUp = TopRightRegion( regUp );
  	reg = RegionBelow( regUp );
  	eTopRight = reg->eUp->Sym;
-@@ -934,7 +934,7 @@ static void ConnectLeftDegenerate( TESStesselator *tess,
+@@ -946,7 +946,7 @@ static void ConnectLeftDegenerate( TESStesselator *tess,
  		/* Here e->Dst has only a single fixable edge going right.
  		* We can delete it since now we have some real right-going edges.
  		*/
@@ -425,17 +425,7 @@ index 8bcd839f73cc4..933c6b641f73f 100644
  		DeleteRegion( tess, reg );
  		if ( !tessMeshDelete( tess->mesh, eTopRight ) ) longjmp(tess->env,1);
  		eTopRight = eTopLeft->Oprev;
-@@ -1143,9 +1143,7 @@ static void InitEdgeDict( TESStesselator *tess )
- static void DoneEdgeDict( TESStesselator *tess )
- {
- 	ActiveRegion *reg;
--#ifndef NDEBUG
- 	int fixedEdges = 0;
--#endif
- 
- 	while( (reg = (ActiveRegion *)dictKey( dictMin( tess->dict ))) != NULL ) {
- 		/*
-@@ -1144,10 +1144,10 @@ static void DoneEdgeDict( TESStesselator *tess )
+@@ -1158,10 +1158,10 @@ static void DoneEdgeDict( TESStesselator *tess )
  		* created by ConnectRightVertex().
  		*/
  		if( ! reg->sentinel ) {
@@ -449,7 +439,7 @@ index 8bcd839f73cc4..933c6b641f73f 100644
  		DeleteRegion( tess, reg );
  		/*    tessMeshDelete( reg->eUp );*/
  	}
-@@ -1254,7 +1254,7 @@ static int RemoveDegenerateFaces( TESStesselator *tess, TESSmesh *mesh )
+@@ -1268,7 +1268,7 @@ static int RemoveDegenerateFaces( TESStesselator *tess, TESSmesh *mesh )
  	for( f = mesh->fHead.next; f != &mesh->fHead; f = fNext ) {
  		fNext = f->next;
  		e = f->anEdge;
@@ -459,7 +449,7 @@ index 8bcd839f73cc4..933c6b641f73f 100644
  		if( e->Lnext->Lnext == e ) {
  			/* A face with only two edges */
 diff --git a/third_party/libtess2/src/Source/tess.c b/third_party/libtess2/src/Source/tess.c
-index 5f47f8de0660b..fd6d9c2a1cdf2 100644
+index 0b479210f4d86..5f043d67da2e2 100644
 --- a/third_party/libtess2/src/Source/tess.c
 +++ b/third_party/libtess2/src/Source/tess.c
 @@ -30,7 +30,7 @@
@@ -471,7 +461,7 @@ index 5f47f8de0660b..fd6d9c2a1cdf2 100644
  #include <setjmp.h>
  #include "bucketalloc.h"
  #include "tess.h"
-@@ -51,7 +51,7 @@ static void Normalize( TESSreal v[3] )
+@@ -52,7 +52,7 @@ static void Normalize( TESSreal v[3] )
  {
  	TESSreal len = v[0]*v[0] + v[1]*v[1] + v[2]*v[2];
  
@@ -480,7 +470,7 @@ index 5f47f8de0660b..fd6d9c2a1cdf2 100644
  	len = sqrtf( len );
  	v[0] /= len;
  	v[1] /= len;
-@@ -328,7 +328,7 @@ int tessMeshTessellateMonoRegion( TESSmesh *mesh, TESSface *face )
+@@ -334,7 +334,7 @@ int tessMeshTessellateMonoRegion( TESSmesh *mesh, TESSface *face )
  	* be close to the edge we want.
  	*/
  	up = face->anEdge;
@@ -489,7 +479,7 @@ index 5f47f8de0660b..fd6d9c2a1cdf2 100644
  
  	for( ; VertLeq( up->Dst, up->Org ); up = up->Lprev )
  		;
-@@ -364,7 +364,7 @@ int tessMeshTessellateMonoRegion( TESSmesh *mesh, TESSface *face )
+@@ -370,7 +370,7 @@ int tessMeshTessellateMonoRegion( TESSmesh *mesh, TESSface *face )
  	/* Now lo->Org == up->Dst == the leftmost vertex.  The remaining region
  	* can be tessellated in a fan from this leftmost vertex.
  	*/
@@ -498,7 +488,7 @@ index 5f47f8de0660b..fd6d9c2a1cdf2 100644
  	while( lo->Lnext->Lnext != up ) {
  		TESShalfEdge *tempHalfEdge= tessMeshConnect( mesh, lo->Lnext, lo );
  		if (tempHalfEdge == NULL) return 0;
-@@ -740,7 +740,7 @@ void OutputPolymesh( TESStesselator *tess, TESSmesh *mesh, int elementType, int
+@@ -746,7 +746,7 @@ void OutputPolymesh( TESStesselator *tess, TESSmesh *mesh, int elementType, int
  		}
  		while (edge != f->anEdge);
  

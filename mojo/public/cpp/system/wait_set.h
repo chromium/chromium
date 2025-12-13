@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/c/system/trap.h"
 #include "mojo/public/c/system/types.h"
@@ -109,9 +110,9 @@ class MOJO_CPP_SYSTEM_EXPORT WaitSet {
   //       removed from the WaitSet.
   void Wait(base::WaitableEvent** ready_event,
             size_t* num_ready_handles,
-            Handle* ready_handles,
-            MojoResult* ready_results,
-            MojoHandleSignalsState* signals_states = nullptr);
+            base::span<Handle> ready_handles,
+            base::span<MojoResult> ready_results,
+            base::span<HandleSignalsState> signals_states = {});
 
  private:
   class State;

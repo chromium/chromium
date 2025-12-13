@@ -18,7 +18,6 @@
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
-#import "components/autofill/ios/form_util/autofill_renderer_id_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -50,8 +49,7 @@ AutofillJavaScriptFeature::AutofillJavaScriptFeature()
               FeatureScript::TargetFrames::kAllFrames,
               FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)},
           {FormUtilJavaScriptFeature::GetInstance(),
-           AutofillFormFeaturesJavaScriptFeature::GetInstance(),
-           AutofillRendererIDJavaScriptFeature::GetInstance()}) {}
+           AutofillFormFeaturesJavaScriptFeature::GetInstance()}) {}
 
 AutofillJavaScriptFeature::~AutofillJavaScriptFeature() = default;
 
@@ -161,20 +159,8 @@ void AutofillJavaScriptFeature::ScriptMessageReceived(
           *form_dict, /*filtered=*/false, /*form_name=*/u"",
           web_state->GetLastCommittedURL(), frame->GetSecurityOrigin(),
           *field_data_manager, frame->GetFrameId())) {
-    driver->DidFillAutofillFormData(*std::move(form_data),
-                                    base::TimeTicks::Now());
+    driver->DidAutofillForm(*std::move(form_data));
   }
 }
-
-AutofillJavaScriptFeature::AutofillJavaScriptFeature(
-    AutofillRendererIDJavaScriptFeature* renderer_id_feature)
-    : web::JavaScriptFeature(
-          ContentWorldForAutofillJavascriptFeatures(),
-          {FeatureScript::CreateWithFilename(
-              kScriptName,
-              FeatureScript::InjectionTime::kDocumentStart,
-              FeatureScript::TargetFrames::kAllFrames,
-              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)},
-          {FormUtilJavaScriptFeature::GetInstance(), renderer_id_feature}) {}
 
 }  // namespace autofill

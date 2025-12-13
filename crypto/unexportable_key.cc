@@ -6,6 +6,11 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#if BUILDFLAG(IS_WIN)
+#include "crypto/unexportable_key_win.h"
+#elif BUILDFLAG(IS_MAC)
+#include "crypto/apple/unexportable_key_mac.h"
+#endif
 
 namespace crypto {
 
@@ -22,21 +27,6 @@ bool UnexportableSigningKey::IsHardwareBacked() const {
   return false;
 }
 
-#if BUILDFLAG(IS_WIN)
-std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderWin();
-std::unique_ptr<UnexportableKeyProvider>
-GetMicrosoftSoftwareUnexportableKeyProviderWin();
-std::unique_ptr<VirtualUnexportableKeyProvider>
-GetVirtualUnexportableKeyProviderWin();
-#elif BUILDFLAG(IS_MAC)
-std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderMac(
-    UnexportableKeyProvider::Config config);
-#endif
-
-// Implemented in unexportable_key_software_unsecure.cc.
-std::unique_ptr<UnexportableKeyProvider>
-GetUnexportableKeyProviderSoftwareUnsecure();
-
 std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProvider(
     UnexportableKeyProvider::Config config) {
   if (g_mock_provider) {
@@ -46,7 +36,7 @@ std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProvider(
 #if BUILDFLAG(IS_WIN)
   return GetUnexportableKeyProviderWin();
 #elif BUILDFLAG(IS_MAC)
-  return GetUnexportableKeyProviderMac(std::move(config));
+  return apple::GetUnexportableKeyProviderMac(std::move(config));
 #else
   return nullptr;
 #endif

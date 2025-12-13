@@ -21,10 +21,14 @@
 #include "chrome/browser/on_device_translation/pref_names.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
-#include "components/services/on_device_translation/public/cpp/features.h"
+#include "components/on_device_translation/features.h"
 #include "components/update_client/update_client_errors.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/dbus/image_loader/image_loader_client.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace component_updater {
 
@@ -66,6 +70,24 @@ base::FilePath GetInstalledPath(const base::FilePath& base) {
   return base.Append(kTranslateKitBinaryRelativePath);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr base::FilePath::CharType kCrosSquashfsFilename[] =
+    FILE_PATH_LITERAL("image.squash");
+
+constexpr base::FilePath::CharType kTranslateKitImageLoaderName[] =
+    FILE_PATH_LITERAL("ChromeTranslateKit");
+
+base::FilePath GetSquashFsImagePath(const base::FilePath& base) {
+  return base.Append(kCrosSquashfsFilename);
+}
+#endif
+
+void SetBinaryPathInPrefs(PrefService* pref_service,
+                          const base::FilePath& install_dir) {
+  auto installed_path = GetInstalledPath(install_dir);
+  pref_service->SetFilePath(prefs::kTranslateKitBinaryPath, installed_path);
+}
+
 }  // namespace
 
 TranslateKitComponentInstallerPolicy::TranslateKitComponentInstallerPolicy(
@@ -78,7 +100,12 @@ TranslateKitComponentInstallerPolicy::~TranslateKitComponentInstallerPolicy() =
 bool TranslateKitComponentInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
+#if BUILDFLAG(IS_CHROMEOS)
+  bool squash_fs_found = base::PathExists(GetSquashFsImagePath(install_dir));
+  return squash_fs_found;
+#else
   return base::PathExists(GetInstalledPath(install_dir));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool TranslateKitComponentInstallerPolicy::
@@ -108,9 +135,33 @@ void TranslateKitComponentInstallerPolicy::ComponentReady(
           << install_dir.value();
 
   CHECK(pref_service_);
-  pref_service_->SetFilePath(prefs::kTranslateKitBinaryPath,
-                             GetInstalledPath(install_dir));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (ash::ImageLoaderClient::Get()) {
+    ash::ImageLoaderClient::Get()->LoadComponentAtPath(
+        kTranslateKitImageLoaderName, install_dir,
+        base::BindOnce(
+            &TranslateKitComponentInstallerPolicy::OnImageLoaderComponentLoaded,
+            weak_factory_.GetWeakPtr()));
+  } else {
+    LOG(ERROR) << "ash::ImageLoaderClient not available.";
+  }
+#else
+  SetBinaryPathInPrefs(pref_service_, install_dir);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void TranslateKitComponentInstallerPolicy::OnImageLoaderComponentLoaded(
+    std::optional<base::FilePath> mount_path) {
+  if (!mount_path.has_value() || mount_path->empty()) {
+    LOG(ERROR) << "Failed to load TranslateKit component via "
+                  "ImageLoaderClient. Mount path invalid.";
+    return;
+  }
+  SetBinaryPathInPrefs(pref_service_, *mount_path);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 base::FilePath TranslateKitComponentInstallerPolicy::GetRelativeInstallDir()
     const {
@@ -175,6 +226,9 @@ void RegisterTranslateKitComponent(ComponentUpdateService* cus,
   }
 
   pref_service->SetBoolean(prefs::kTranslateKitPreviouslyRegistered, true);
+  // Clear any previously set path in the preferences
+  SetBinaryPathInPrefs(pref_service, base::FilePath());
+
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<TranslateKitComponentInstallerPolicy>(pref_service));
   installer->Register(cus, std::move(registered_callback));

@@ -16,7 +16,6 @@
 
 using testing::_;
 using testing::Eq;
-using testing::Invoke;
 using testing::Return;
 
 namespace collaboration {

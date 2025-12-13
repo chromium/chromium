@@ -61,6 +61,52 @@ void WebStateDelegateBridge::ShowRepostFormWarningDialog(
   }
 }
 
+void WebStateDelegateBridge::ShouldAllowCopy(
+    WebState* source,
+    base::OnceCallback<void(bool)> callback) {
+  SEL selector = @selector(webState:shouldAllowCopyWithDecisionHandler:);
+  if ([delegate_ respondsToSelector:selector]) {
+    [delegate_ webState:source
+        shouldAllowCopyWithDecisionHandler:base::CallbackToBlock(
+                                               std::move(callback))];
+  } else {
+    std::move(callback).Run(true);
+  }
+}
+
+void WebStateDelegateBridge::ShouldAllowPaste(
+    WebState* source,
+    base::OnceCallback<void(bool)> callback) {
+  SEL selector = @selector(webState:shouldAllowPasteWithDecisionHandler:);
+  if ([delegate_ respondsToSelector:selector]) {
+    [delegate_ webState:source
+        shouldAllowPasteWithDecisionHandler:base::CallbackToBlock(
+                                                std::move(callback))];
+  } else {
+    std::move(callback).Run(true);
+  }
+}
+
+void WebStateDelegateBridge::ShouldAllowCut(
+    WebState* source,
+    base::OnceCallback<void(bool)> callback) {
+  SEL selector = @selector(webState:shouldAllowCutWithDecisionHandler:);
+  if ([delegate_ respondsToSelector:selector]) {
+    [delegate_ webState:source
+        shouldAllowCutWithDecisionHandler:base::CallbackToBlock(
+                                              std::move(callback))];
+  } else {
+    std::move(callback).Run(true);
+  }
+}
+
+void WebStateDelegateBridge::DidFinishClipboardRead(WebState* source) {
+  if ([delegate_
+          respondsToSelector:@selector(webStateDidFinishClipboardRead:)]) {
+    [delegate_ webStateDidFinishClipboardRead:source];
+  }
+}
+
 JavaScriptDialogPresenter* WebStateDelegateBridge::GetJavaScriptDialogPresenter(
     WebState* source) {
   SEL selector = @selector(javaScriptDialogPresenterForWebState:);

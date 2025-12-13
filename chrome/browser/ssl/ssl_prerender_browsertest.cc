@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest, TestNoInterstitialInPrerender) {
         Profile::FromBrowserContext(web_contents()->GetBrowserContext());
     SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
     ASSERT_FALSE(state->HasAllowException(
-        kPrerenderUrl.host(),
+        kPrerenderUrl.GetHost(),
         web_contents()->GetPrimaryMainFrame()->GetStoragePartition()));
   }
 
@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
         Profile::FromBrowserContext(web_contents()->GetBrowserContext());
     SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
     ASSERT_FALSE(state->HasAllowException(
-        kPrerenderUrl.host(),
+        kPrerenderUrl.GetHost(),
         web_contents()->GetPrimaryMainFrame()->GetStoragePartition()));
   }
 
@@ -247,13 +247,6 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
 // cancels the prerender instead.
 IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
                        InsecureFormSubmissionCancelsPrerender) {
-  base::HistogramTester histograms;
-  const std::string kHistogramName =
-      "Security.MixedForm.InterstitialTriggerState";
-
-  // Histogram should start off empty.
-  histograms.ExpectTotalCount(kHistogramName, 0);
-
   auto https_server = CreateHTTPSServer(GetChromeTestDataDir());
   ASSERT_TRUE(https_server->Start());
 
@@ -297,7 +290,6 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
         security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
             tab);
     EXPECT_FALSE(helper);
-    histograms.ExpectTotalCount(kHistogramName, 0);
   }
 }
 
@@ -306,13 +298,6 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
 // form.
 IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
                        InsecureFormSubmissionCancelsPrerenderEvenIfProceeding) {
-  base::HistogramTester histograms;
-  const std::string kHistogramName =
-      "Security.MixedForm.InterstitialTriggerState";
-
-  // Histogram should start off empty.
-  histograms.ExpectTotalCount(kHistogramName, 0);
-
   auto https_server = CreateHTTPSServer(GetChromeTestDataDir());
   ASSERT_TRUE(https_server->Start());
 
@@ -342,7 +327,6 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
             web_contents());
     ASSERT_TRUE(helper);
     EXPECT_TRUE(helper->IsDisplayingInterstitial());
-    histograms.ExpectTotalCount(kHistogramName, 1);
 
     // Prerender the same insecure form.
     std::unique_ptr<content::PrerenderHandle> prerender_handle =
@@ -385,7 +369,6 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
             web_contents());
     ASSERT_TRUE(helper);
     EXPECT_FALSE(helper->IsDisplayingInterstitial());
-    histograms.ExpectTotalCount(kHistogramName, 1);
   }
 }
 

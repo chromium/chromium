@@ -13,28 +13,25 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_animations.h"
+#include "base/check_deref.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -46,39 +43,119 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/image/image.h"
 
+// Maintains an ordered list of browsers for shelf operations.
+class BrowserShortcutShelfItemController::ShelfItemBrowsers
+    : public ash::BrowserController::Observer {
+ public:
+  explicit ShelfItemBrowsers(const ash::ShelfModel* shelf_model)
+      : shelf_model_(shelf_model) {
+    browser_observation_.Observe(ash::BrowserController::GetInstance());
+
+    // Capture initial browser list ordered by activation time. Browser
+    // iterator APIs do not support creation order.
+    ash::BrowserController::GetInstance()->ForEachBrowser(
+        ash::BrowserController::BrowserOrder::kAscendingActivationTime,
+        [&](ash::BrowserDelegate& delegate) {
+          ordered_browsers_.push_back(&delegate);
+          return ash::BrowserController::kContinueIteration;
+        });
+  }
+
+  ShelfItemBrowsers(const ShelfItemBrowsers&) = delete;
+  ShelfItemBrowsers& operator=(const ShelfItemBrowsers&) = delete;
+  ~ShelfItemBrowsers() override = default;
+
+  // Returns all available browsers, filtered for shelf representation. The
+  // order is maintained consistently between calls.
+  std::vector<ash::BrowserDelegate*> GetFilteredBrowsers() const {
+    std::vector<ash::BrowserDelegate*> result;
+    for (ash::BrowserDelegate* browser : ordered_browsers_) {
+      if (IsBrowserRepresentedInBrowserList(browser, shelf_model_)) {
+        result.push_back(browser);
+      }
+    }
+    return result;
+  }
+
+  // ash::BrowserController::Observer:
+  void OnBrowserCreated(ash::BrowserDelegate* browser) override {
+    // New browsers are most recently activated, add to end.
+    ordered_browsers_.push_back(browser);
+  }
+
+  void OnBrowserClosed(ash::BrowserDelegate* browser) override {
+    std::erase(ordered_browsers_, browser);
+  }
+
+ private:
+  const raw_ptr<const ash::ShelfModel> shelf_model_;
+  std::vector<raw_ptr<ash::BrowserDelegate>> ordered_browsers_;
+  base::ScopedObservation<ash::BrowserController,
+                          ash::BrowserController::Observer>
+      browser_observation_{this};
+};
+
 namespace {
 
 // The tab-index flag for browser window menu items that do not specify a tab.
 constexpr int kNoTab = std::numeric_limits<int>::max();
 
 // Gets a list of active browsers.
-BrowserList::BrowserVector GetListOfActiveBrowsers(
+std::vector<ash::BrowserDelegate*> GetListOfActiveBrowsers(
     const ash::ShelfModel* model) {
-  BrowserList::BrowserVector active_browsers;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    // Only include browsers for the active user.
-    if (!multi_user_util::IsProfileFromActiveUser(browser->profile())) {
-      continue;
-    }
+  std::vector<ash::BrowserDelegate*> active_browsers;
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& browser) {
+        if (browser.GetAccountId() != GetActiveAccountId()) {
+          return ash::BrowserController::kContinueIteration;
+        }
 
-    // Exclude invisible non-minimized browser windows on the active desk.
-    aura::Window* native_window = browser->window()->GetNativeWindow();
-    if (!browser->window()->IsVisible() && !browser->window()->IsMinimized() &&
-        ash::desks_util::BelongsToActiveDesk(native_window)) {
-      continue;
-    }
-    if (!IsBrowserRepresentedInBrowserList(browser, model) &&
-        !browser->is_type_normal()) {
-      continue;
-    }
-    active_browsers.push_back(browser);
-  }
+        // Exclude invisible non-minimized browser windows on the active desk.
+        if (!browser.IsVisible() && !browser.IsMinimized() &&
+            ash::desks_util::BelongsToActiveDesk(browser.GetNativeWindow())) {
+          return ash::BrowserController::kContinueIteration;
+        }
+
+        if (!IsBrowserRepresentedInBrowserList(&browser, model) &&
+            browser.GetType() != ash::BrowserType::kNormal) {
+          return ash::BrowserController::kContinueIteration;
+        }
+
+        active_browsers.push_back(&browser);
+        return ash::BrowserController::kContinueIteration;
+      });
   return active_browsers;
 }
 
-bool ShouldRecordLaunchTime(Browser* browser, const ash::ShelfModel* model) {
-  return !browser->profile()->IsOffTheRecord() &&
-         IsBrowserRepresentedInBrowserList(browser, model);
+bool ShouldRecordLaunchTime(const ash::BrowserDelegate& browser,
+                            const ash::ShelfModel* model) {
+  return !browser.IsOffTheRecord() &&
+         IsBrowserRepresentedInBrowserList(&browser, model);
+}
+
+ash::BrowserDelegate* FindNormalBrowserOnActiveDesk(
+    const AccountId& account_id) {
+  ash::BrowserDelegate* result = nullptr;
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingActivationTime,
+      [&](ash::BrowserDelegate& browser) {
+        if (browser.GetType() != ash::BrowserType::kNormal ||
+            browser.GetAccountId() != account_id || browser.IsClosing()) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        aura::Window* window = browser.GetNativeWindow();
+        if (window && ash::desks_util::BelongsToActiveDesk(window)) {
+          result = &browser;
+          return ash::BrowserController::kBreakIteration;
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
+  return result;
+}
+
+AccountId GetAccountId(Profile* profile) {
+  return CHECK_DEREF(ash::AnnotatedAccountId::Get(profile));
 }
 
 }  // namespace
@@ -86,13 +163,14 @@ bool ShouldRecordLaunchTime(Browser* browser, const ash::ShelfModel* model) {
 BrowserShortcutShelfItemController::BrowserShortcutShelfItemController(
     ash::ShelfModel* shelf_model)
     : ash::ShelfItemDelegate(ash::ShelfID(app_constants::kChromeAppId)),
-      shelf_model_(shelf_model) {
-  BrowserList::AddObserver(this);
+      shelf_model_(shelf_model),
+      shelf_browsers_(std::make_unique<ShelfItemBrowsers>(shelf_model)) {
+  browser_controller_observation_.Observe(
+      ash::BrowserController::GetInstance());
 }
 
-BrowserShortcutShelfItemController::~BrowserShortcutShelfItemController() {
-  BrowserList::RemoveObserver(this);
-}
+BrowserShortcutShelfItemController::~BrowserShortcutShelfItemController() =
+    default;
 
 // This function is responsible for handling mouse and key events that are
 // triggered when Ash is the Chrome browser and when the browser icon on the
@@ -169,13 +247,12 @@ void BrowserShortcutShelfItemController::ItemSelected(
     return;
   }
 
-  Browser* last_browser = chrome::FindTabbedBrowser(profile, true);
-
+  ash::BrowserDelegate* last_browser =
+      FindNormalBrowserOnActiveDesk(GetAccountId(profile));
   if (last_browser && !filter_predicate.is_null() &&
-      !filter_predicate.Run(last_browser->window()->GetNativeWindow())) {
+      !filter_predicate.Run(last_browser->GetNativeWindow())) {
     last_browser = nullptr;
   }
-
   if (!last_browser) {
     ash::NewWindowDelegate::GetInstance()->NewWindow(
         /*incognito=*/false,
@@ -189,7 +266,7 @@ void BrowserShortcutShelfItemController::ItemSelected(
     // Single browser, activate or minimize if active.
     action =
         ChromeShelfController::instance()->ActivateWindowOrMinimizeIfActive(
-            last_browser->window(), true /* minimize allowed */);
+            last_browser->GetWindow(), true /* minimize allowed */);
   } else if (source == ash::LAUNCH_FROM_SHELF) {
     // Multiple targets, activating from shelf, a menu will be shown.
     // No need to activate or minimize the recently active browser.
@@ -199,7 +276,7 @@ void BrowserShortcutShelfItemController::ItemSelected(
     // Activate the recently active browser, never minimize.
     action =
         ChromeShelfController::instance()->ActivateWindowOrMinimizeIfActive(
-            last_browser->window(), false /* minimize not allowed */);
+            last_browser->GetWindow(), false /* minimize not allowed */);
   }
   std::move(callback).Run(action, std::move(items));
 }
@@ -212,31 +289,33 @@ BrowserShortcutShelfItemController::GetAppMenuItems(
   AppMenuItems items;
   bool found_tabbed_browser = false;
   ChromeShelfController* controller = ChromeShelfController::instance();
-  for (Browser* browser : GetListOfActiveBrowsers(shelf_model_)) {
+
+  for (ash::BrowserDelegate* browser : GetListOfActiveBrowsers(shelf_model_)) {
     if (!filter_predicate.is_null() &&
-        !filter_predicate.Run(browser->window()->GetNativeWindow())) {
+        !filter_predicate.Run(browser->GetNativeWindow())) {
       continue;
     }
 
-    TabStripModel* tab_strip = browser->tab_strip_model();
-    if (browser->is_type_normal()) {
+    if (browser->GetType() == ash::BrowserType::kNormal) {
       found_tabbed_browser = true;
     }
+
     if (!(event_flags & ui::EF_SHIFT_DOWN)) {
       base::RecordAction(base::UserMetricsAction(
           "Shelf_BrowserShortcutShelfItem_ShowWindows"));
-      app_menu_items.emplace_back(browser, kNoTab);
-      auto* tab = tab_strip->GetActiveWebContents();
+      app_menu_items.emplace_back(&browser->GetBrowser(), kNoTab);
+      auto* tab = browser->GetActiveWebContents();
       const gfx::Image& icon =
           ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-              (browser->profile() && browser->profile()->IsIncognitoProfile())
+              (browser->GetBrowser().profile() &&
+               browser->GetBrowser().profile()->IsIncognitoProfile())
                   ? IDR_ASH_SHELF_LIST_INCOGNITO_BROWSER
                   : IDR_ASH_SHELF_LIST_BROWSER);
 
       // Set the title of the app menu item to the browser window title if the
       // user set one on the window. Otherwise, use the title defined in
       // ChromeShelfController.
-      std::string browser_title = browser->user_title();
+      std::string browser_title = browser->GetBrowser().user_title();
       std::u16string item_title = browser_title.empty()
                                       ? controller->GetAppMenuTitle(tab)
                                       : base::UTF8ToUTF16(browser_title);
@@ -246,9 +325,9 @@ BrowserShortcutShelfItemController::GetAppMenuItems(
     } else {
       base::RecordAction(
           base::UserMetricsAction("Shelf_BrowserShortcutShelfItem_ShowTabs"));
-      for (int i = 0; i < tab_strip->count(); ++i) {
-        auto* tab = tab_strip->GetWebContentsAt(i);
-        app_menu_items.emplace_back(browser, i);
+      for (size_t i = 0; i < browser->GetWebContentsCount(); ++i) {
+        auto* tab = browser->GetWebContentsAt(i);
+        app_menu_items.emplace_back(&browser->GetBrowser(), i);
         items.push_back({static_cast<int>(app_menu_items.size() - 1),
                          controller->GetAppMenuTitle(tab),
                          controller->GetAppMenuIcon(tab).AsImageSkia()});
@@ -284,24 +363,23 @@ void BrowserShortcutShelfItemController::ExecuteCommand(bool from_context_menu,
   if (command_id < static_cast<int64_t>(app_menu_items_.size()) &&
       app_menu_items_[command_id].first &&
       app_menu_items_[command_id].first->window()) {
-    Browser* browser = app_menu_items_[command_id].first;
-    TabStripModel* tab_strip = browser->tab_strip_model();
+    ash::BrowserDelegate* browser =
+        ash::BrowserController::GetInstance()->GetDelegate(
+            app_menu_items_[command_id].first);
+    TabStripModel* tab_strip = browser->GetBrowser().tab_strip_model();
     const int tab_index = app_menu_items_[command_id].second;
     if (event_flags & (ui::EF_SHIFT_DOWN | ui::EF_MIDDLE_MOUSE_BUTTON)) {
       if (tab_index == kNoTab) {
         tab_strip->CloseAllTabs();
       } else if (tab_strip->ContainsIndex(tab_index)) {
-        tab_strip->CloseWebContentsAt(tab_index,
-                                      TabCloseTypes::CLOSE_USER_GESTURE);
+        browser->CloseWebContentsAt(tab_index,
+                                    ash::BrowserDelegate::UserGesture::kYes);
       }
     } else {
-      multi_user_util::MoveWindowToCurrentDesktop(
-          browser->window()->GetNativeWindow());
       if (tab_index != kNoTab && tab_strip->ContainsIndex(tab_index)) {
         tab_strip->ActivateTabAt(tab_index);
       }
-      browser->window()->Show();
-      browser->window()->Activate();
+      ShowAndActivateBrowser(/*move_to_current_desktop=*/true, browser);
     }
   }
 
@@ -309,8 +387,8 @@ void BrowserShortcutShelfItemController::ExecuteCommand(bool from_context_menu,
 }
 
 void BrowserShortcutShelfItemController::Close() {
-  for (Browser* browser : GetListOfActiveBrowsers(shelf_model_)) {
-    browser->window()->Close();
+  for (ash::BrowserDelegate* browser : GetListOfActiveBrowsers(shelf_model_)) {
+    browser->Close();
   }
 }
 
@@ -322,82 +400,77 @@ bool BrowserShortcutShelfItemController::IsListOfActiveBrowserEmpty(
 
 ash::ShelfAction
 BrowserShortcutShelfItemController::ActivateOrAdvanceToNextBrowser() {
-  // Create a list of all suitable running browsers.
-  std::vector<Browser*> items;
-  // We use the list in the order of how the browsers got created - not the LRU
-  // order.
-  const BrowserList* browser_list = BrowserList::GetInstance();
-  for (BrowserList::const_iterator it = browser_list->begin();
-       it != browser_list->end(); ++it) {
-    if (IsBrowserRepresentedInBrowserList(*it, shelf_model_)) {
-      items.push_back(*it);
-    }
-  }
+  std::vector<ash::BrowserDelegate*> browsers =
+      shelf_browsers_->GetFilteredBrowsers();
+
   // If there are no suitable browsers we create a new one.
-  if (items.empty()) {
+  if (browsers.empty()) {
     ash::NewWindowDelegate::GetInstance()->NewWindow(
         /*incognito=*/false,
         /*should_trigger_session_restore=*/true);
     return ash::SHELF_ACTION_NEW_WINDOW_CREATED;
   }
-  Browser* browser = BrowserList::GetInstance()->GetLastActive();
-  if (items.size() == 1) {
+
+  ash::BrowserDelegate* browser;
+  if (browsers.size() == 1) {
     // If there is only one suitable browser, we can either activate it, or
     // bounce it (if it is already active).
-    if (items[0]->window()->IsActive()) {
-      ash::BounceWindow(items[0]->window()->GetNativeWindow());
+    if (browsers[0]->IsActive()) {
+      ash::BounceWindow(browsers[0]->GetNativeWindow());
       return ash::SHELF_ACTION_NONE;
     }
-    browser = items[0];
+    browser = browsers[0];
   } else {
     // If there is more than one suitable browser, we advance to the next if
-    // |browser| is already active - or - check the last used browser if it can
-    // be used.
-    std::vector<Browser*>::iterator i = std::ranges::find(items, browser);
-    if (i != items.end()) {
-      if (browser->window()->IsActive()) {
-        browser = (++i == items.end()) ? items[0] : *i;
+    // |browser| is already active - or - check the last used browser if it
+    // can be used.
+    browser = ash::BrowserController::GetInstance()->GetLastUsedBrowser();
+    if (auto it = std::ranges::find(browsers, browser); it != browsers.end()) {
+      if (browser->IsActive()) {
+        browser = (++it == browsers.end()) ? browsers[0] : *it;
       }
     } else {
-      browser = chrome::FindTabbedBrowser(
-          ChromeShelfController::instance()->profile(), true);
+      browser = FindNormalBrowserOnActiveDesk(
+          GetAccountId(ChromeShelfController::instance()->profile()));
       if (!browser ||
           !IsBrowserRepresentedInBrowserList(browser, shelf_model_)) {
-        browser = items[0];
+        browser = browsers[0];
       }
     }
   }
   DCHECK(browser);
-  browser->window()->Show();
-  browser->window()->Activate();
+  ShowAndActivateBrowser(/*move_to_current_desktop=*/false, browser);
   return ash::SHELF_ACTION_WINDOW_ACTIVATED;
 }
 
-void BrowserShortcutShelfItemController::OnBrowserAdded(Browser* browser) {
-  if (!ShouldRecordLaunchTime(browser, shelf_model_)) {
+void BrowserShortcutShelfItemController::OnBrowserCreated(
+    ash::BrowserDelegate* browser) {
+  if (!ShouldRecordLaunchTime(*browser, shelf_model_)) {
     return;
   }
 
-  const BrowserList* browser_list = BrowserList::GetInstance();
-  for (BrowserList::const_iterator it = browser_list->begin();
-       it != browser_list->end(); ++it) {
-    if (*it == browser) {
-      continue;
-    }
-    if (ShouldRecordLaunchTime(*it, shelf_model_)) {
-      return;
-    }
-  }
+  bool browser_found = false;
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& b) {
+        if (&b != browser && ShouldRecordLaunchTime(b, shelf_model_)) {
+          browser_found = true;
+          return ash::BrowserController::kBreakIteration;
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
 
-  extensions::ExtensionPrefs::Get(browser->profile())
-      ->SetLastLaunchTime(shelf_id().app_id, base::Time::Now());
+  if (!browser_found) {
+    extensions::ExtensionPrefs::Get(browser->GetBrowser().profile())
+        ->SetLastLaunchTime(shelf_id().app_id, base::Time::Now());
+  }
 }
 
-void BrowserShortcutShelfItemController::OnBrowserClosing(Browser* browser) {
-  DCHECK(browser);
+void BrowserShortcutShelfItemController::OnBrowserClosed(
+    ash::BrowserDelegate* browser) {
   // Reset pointers to the closed browser, but leave menu indices intact.
   for (auto& it : app_menu_items_) {
-    if (it.first == browser) {
+    if (it.first == &browser->GetBrowser()) {
       it.first = nullptr;
     }
   }

@@ -7,7 +7,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/auth_panel/impl/factor_auth_view.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 

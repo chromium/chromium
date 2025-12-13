@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
@@ -26,7 +25,7 @@ class RasterContextProvider;
 }
 
 namespace gpu {
-class ClientSharedImageInterface;
+class SharedImageInterface;
 }
 
 namespace blink {
@@ -47,7 +46,7 @@ class PLATFORM_EXPORT VideoFrameResourceProvider {
 
   virtual void Initialize(
       viz::RasterContextProvider* media_context_provider,
-      scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface);
+      scoped_refptr<gpu::SharedImageInterface> shared_image_interface);
   virtual void AppendQuads(viz::CompositorRenderPass*,
                            scoped_refptr<media::VideoFrame>,
                            media::VideoTransformation,

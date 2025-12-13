@@ -32,10 +32,10 @@ IceConnection::IceConnection(const webrtc::Connection* connection)
       connected_(connection->connected()),
       selected_(connection->selected()),
       write_state_(ConvertFromWebrtcWriteState(connection->write_state())),
-      last_ping_sent_(connection->last_ping_sent()),
-      last_ping_received_(connection->last_ping_received()),
-      last_data_received_(connection->last_data_received()),
-      last_ping_response_received_(connection->last_ping_response_received()),
+      last_ping_sent_(connection->LastPingSent()),
+      last_ping_received_(connection->LastPingReceived()),
+      last_data_received_(connection->LastDataReceived()),
+      last_ping_response_received_(connection->LastPingResponseReceived()),
       num_pings_sent_(connection->num_pings_sent()) {}
 // TODO(crbug.com/1369096): rtt_samples_: extract RTT samples from connection.
 

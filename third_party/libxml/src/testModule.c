@@ -3,7 +3,7 @@
  *
  * See Copyright for the status of this software.
  *
- * joelwreed@comcast.net
+ * Author: Joel W. Reed
  */
 
 #define XML_DEPRECATED

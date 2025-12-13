@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/color/color_provider.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace views {

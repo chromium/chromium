@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "media/base/decoder_status.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_decoder.h"

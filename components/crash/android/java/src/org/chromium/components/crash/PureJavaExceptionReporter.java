@@ -8,10 +8,12 @@ import android.annotation.SuppressLint;
 import android.os.Build;
 import android.util.Log;
 
+import org.chromium.base.AndroidInfo;
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.PiiElider;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.version_info.VersionInfo;
@@ -116,7 +118,6 @@ public abstract class PureJavaExceptionReporter
             processName = "browser";
         }
 
-        BuildInfo buildInfo = BuildInfo.getInstance();
         mReportContent = new HashMap<>();
         mReportContent.put(PRODUCT, getProductName());
         mReportContent.put(PROCESS_TYPE, processName);
@@ -127,15 +128,15 @@ public abstract class PureJavaExceptionReporter
         mReportContent.put(MODEL, Build.MODEL);
         mReportContent.put(BRAND, Build.BRAND);
         mReportContent.put(BOARD, Build.BOARD);
-        mReportContent.put(ANDROID_BUILD_FP, buildInfo.androidBuildFingerprint);
+        mReportContent.put(ANDROID_BUILD_FP, AndroidInfo.getAndroidBuildFingerprint());
         // ANDROID_SDK_INT and SDK are expected to have the same value.
         // ANDROID_SDK_INT is needed for compatibility with the C++ crashpad implementation.
         // SDK should be maintained for potential custom monitoring.
         mReportContent.put(SDK, String.valueOf(Build.VERSION.SDK_INT));
         mReportContent.put(ANDROID_SDK_INT, String.valueOf(Build.VERSION.SDK_INT));
-        mReportContent.put(GMS_CORE_VERSION, buildInfo.getGmsVersionCode());
-        mReportContent.put(INSTALLER_PACKAGE_NAME, buildInfo.installerPackageName);
-        mReportContent.put(ABI_NAME, buildInfo.abiString);
+        mReportContent.put(GMS_CORE_VERSION, DeviceInfo.getGmsVersionCode());
+        mReportContent.put(INSTALLER_PACKAGE_NAME, ApkInfo.getInstallerPackageName());
+        mReportContent.put(ABI_NAME, AndroidInfo.getAndroidSupportedAbis());
         mReportContent.put(
                 EXCEPTION_INFO,
                 PiiElider.sanitizeStacktrace(Log.getStackTraceString(javaException)));
@@ -144,8 +145,10 @@ public abstract class PureJavaExceptionReporter
                 PACKAGE,
                 String.format(
                         "%s v%s (%s)",
-                        buildInfo.packageName, BuildConfig.VERSION_CODE, buildInfo.versionName));
-        mReportContent.put(RESOURCES_VERSION, buildInfo.resourcesVersion);
+                        ApkInfo.getPackageName(),
+                        BuildConfig.VERSION_CODE,
+                        ApkInfo.getPackageVersionName()));
+        mReportContent.put(RESOURCES_VERSION, ApkInfo.getResourcesVersion());
 
         AtomicReferenceArray<String> values = CrashKeys.getInstance().getValues();
         for (int i = 0; i < values.length(); i++) {

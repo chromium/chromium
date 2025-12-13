@@ -108,6 +108,8 @@ void AppLaunchSplashScreen::UpdateAppLaunchState(
 void AppLaunchSplashScreen::ShowNetworkConfigureUI(
     NetworkStateInformer::State network_state,
     const std::string& network_name) {
+  error_screen_->SetHideCallback(base::BindOnce(
+      &AppLaunchSplashScreen::OnErrorScreenHidden, weak_factory_.GetWeakPtr()));
   error_screen_->SetUIState(NetworkError::UI_STATE_KIOSK_MODE);
   error_screen_->SetIsPersistentError(true);
   error_screen_->AllowGuestSignin(false);
@@ -170,18 +172,21 @@ void AppLaunchSplashScreen::ShowErrorMessage(KioskAppLaunchError::Error error) {
       KioskAppLaunchError::GetErrorMessage(error));
 }
 
+void AppLaunchSplashScreen::OnErrorScreenHidden() {
+  // Reset `ErrorScreen` state to default. We don't update other parameters such
+  // as `UIState` and`ErrorState` as those should be updated by the next caller
+  // of the `ErrorScreen`.
+  error_screen_->SetParentScreen(OOBE_SCREEN_UNKNOWN);
+  error_screen_->SetIsPersistentError(false);
+  Show(context());
+}
+
 void AppLaunchSplashScreen::ContinueAppLaunch() {
   if (!delegate_) {
     return;
   }
 
   delegate_->OnNetworkConfigFinished();
-
-  // Reset ErrorScreen state to default. We don't update other parameters such
-  // as SetUIState/SetErrorState as those should be updated by the next caller
-  // of the ErrorScreen.
-  error_screen_->SetParentScreen(OOBE_SCREEN_UNKNOWN);
-  error_screen_->SetIsPersistentError(false);
   error_screen_->Hide();
 }
 

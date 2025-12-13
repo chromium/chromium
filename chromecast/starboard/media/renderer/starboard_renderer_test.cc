@@ -27,6 +27,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "chromecast/base/metrics/mock_cast_metrics_helper.h"
 #include "chromecast/media/service/mojom/video_geometry_setter.mojom.h"
 #include "chromecast/media/service/video_geometry_setter_service.h"
 #include "chromecast/starboard/media/cdm/starboard_drm_key_tracker.h"
@@ -56,6 +57,7 @@ namespace {
 using ::base::test::RunOnceCallback;
 using ::media::DemuxerStream;
 using ::testing::_;
+using ::testing::AnyNumber;
 using ::testing::AtLeast;
 using ::testing::DoAll;
 using ::testing::DoubleEq;
@@ -150,10 +152,6 @@ StarboardVideoSampleInfo GetStarboardVideoConfig() {
 }
 
 // Some default configs.
-const ::media::AudioDecoderConfig kChromiumAudioConfig =
-    GetChromiumAudioConfig();
-const ::media::VideoDecoderConfig kChromiumVideoConfig =
-    GetChromiumVideoConfig();
 const StarboardAudioSampleInfo kSbAudioConfig = GetStarboardAudioConfig();
 const StarboardVideoSampleInfo kSbVideoConfig = GetStarboardVideoConfig();
 
@@ -168,8 +166,8 @@ class StarboardRendererTest : public ::testing::Test {
   StarboardRendererTest() {
     mojo::core::Init();
 
-    audio_stream_.set_audio_decoder_config(kChromiumAudioConfig);
-    video_stream_.set_video_decoder_config(kChromiumVideoConfig);
+    audio_stream_.set_audio_decoder_config(GetChromiumAudioConfig());
+    video_stream_.set_video_decoder_config(GetChromiumVideoConfig());
 
     ON_CALL(starboard_for_drm_, CreateDrmSystem)
         .WillByDefault(Return(&drm_system_));
@@ -246,7 +244,7 @@ class StarboardRendererTest : public ::testing::Test {
       const auto& audio_buffer = audio_buffers_[i];
       sb_audio_buffers_[i] = StarboardSampleInfo{
           .type = 0,
-          .buffer = audio_buffer->data(),
+          .buffer = base::span(*audio_buffer).data(),
           .buffer_size = static_cast<int>(audio_buffer->size()),
           .timestamp = audio_buffer->timestamp().InMicroseconds(),
           .side_data = base::span<const StarboardSampleSideData>(),
@@ -260,7 +258,7 @@ class StarboardRendererTest : public ::testing::Test {
       const auto& video_buffer = video_buffers_[i];
       sb_video_buffers_[i] = StarboardSampleInfo{
           .type = 1,
-          .buffer = video_buffer->data(),
+          .buffer = base::span(*video_buffer).data(),
           .buffer_size = static_cast<int>(video_buffer->size()),
           .timestamp = video_buffer->timestamp().InMicroseconds(),
           .side_data = base::span<const StarboardSampleSideData>(),
@@ -282,6 +280,7 @@ class StarboardRendererTest : public ::testing::Test {
   NiceMock<::media::MockDemuxerStream> video_stream_ =
       NiceMock<::media::MockDemuxerStream>(DemuxerStream::Type::VIDEO);
   NiceMock<::media::MockRendererClient> client_;
+  NiceMock<chromecast::metrics::MockCastMetricsHelper> cast_metrics_helper_;
   MockFunction<void(::media::PipelineStatus)> pipeline_status_fn_;
   std::unique_ptr<NiceMock<MockStarboardApiWrapper>> starboard_ =
       std::make_unique<NiceMock<MockStarboardApiWrapper>>();
@@ -446,7 +445,7 @@ TEST_F(StarboardRendererTest,
 
   StarboardRenderer renderer(std::move(starboard_), task_runner_, plane_id_,
                              /*enable_buffering=*/true,
-                             &geometry_setter_service_);
+                             &geometry_setter_service_, &cast_metrics_helper_);
 
   EXPECT_CALL(pipeline_status_fn_,
               Call(HasStatusCode(::media::PipelineStatusCodes::PIPELINE_OK)))
@@ -521,9 +520,21 @@ TEST_F(StarboardRendererTest,
                 kMediaTime.InMicroseconds();
           }));
 
+  // Ignore unrelated metrics calls.
+  EXPECT_CALL(cast_metrics_helper_, RecordApplicationEvent(_))
+      .Times(AnyNumber());
+  // Should be called at flush, but not at destruction.
+  EXPECT_CALL(cast_metrics_helper_,
+              RecordApplicationEvent("Cast.Platform.Ended"))
+      .Times(1);
+  // Should be called when setting the playback rate to a nonzero value.
+  EXPECT_CALL(cast_metrics_helper_,
+              RecordApplicationEvent("Cast.Platform.Playing"))
+      .Times(AtLeast(1));
+
   StarboardRenderer renderer(std::move(starboard_), task_runner_, plane_id_,
                              /*enable_buffering=*/true,
-                             &geometry_setter_service_);
+                             &geometry_setter_service_, &cast_metrics_helper_);
 
   EXPECT_CALL(pipeline_status_fn_,
               Call(HasStatusCode(::media::PipelineStatusCodes::PIPELINE_OK)))
@@ -550,7 +561,7 @@ TEST_F(StarboardRendererTest, SetVolumeForwardsVolumeChangeToStarboard) {
 
   StarboardRenderer renderer(std::move(starboard_), task_runner_, plane_id_,
                              /*enable_buffering=*/true,
-                             &geometry_setter_service_);
+                             &geometry_setter_service_, &cast_metrics_helper_);
 
   EXPECT_CALL(pipeline_status_fn_,
               Call(HasStatusCode(::media::PipelineStatusCodes::PIPELINE_OK)))
@@ -591,7 +602,7 @@ TEST_F(StarboardRendererTest, ForwardsGeometryChangesToStarboard) {
 
   StarboardRenderer renderer(std::move(starboard_), task_runner_, plane_id_,
                              /*enable_buffering=*/true,
-                             &geometry_setter_service_);
+                             &geometry_setter_service_, &cast_metrics_helper_);
   RunPendingTasks();
 
   static_cast<mojom::VideoGeometrySetter*>(&geometry_setter_service_)
@@ -625,7 +636,7 @@ TEST_F(StarboardRendererTest, GetMediaTimeReadsCurrentMediaTimeFromStarboard) {
 
   StarboardRenderer renderer(std::move(starboard_), task_runner_, plane_id_,
                              /*enable_buffering=*/true,
-                             &geometry_setter_service_);
+                             &geometry_setter_service_, &cast_metrics_helper_);
 
   EXPECT_CALL(pipeline_status_fn_,
               Call(HasStatusCode(::media::PipelineStatusCodes::PIPELINE_OK)))
@@ -636,6 +647,36 @@ TEST_F(StarboardRendererTest, GetMediaTimeReadsCurrentMediaTimeFromStarboard) {
   RunPendingTasks();
 
   EXPECT_EQ(renderer.GetMediaTime(), kMediaTime);
+}
+
+TEST_F(StarboardRendererTest, SetPlaybackRateReportsMetric) {
+  // Ignore unrelated metrics calls.
+  EXPECT_CALL(cast_metrics_helper_, RecordApplicationEvent(_))
+      .Times(AnyNumber());
+  // Should be called at destruction.
+  EXPECT_CALL(cast_metrics_helper_,
+              RecordApplicationEvent("Cast.Platform.Ended"))
+      .Times(1);
+  // Should be called when setting the playback rate to a nonzero value.
+  EXPECT_CALL(cast_metrics_helper_,
+              RecordApplicationEvent("Cast.Platform.Playing"))
+      .Times(1);
+  // Should be called when setting the playback rate to 0.
+  EXPECT_CALL(cast_metrics_helper_,
+              RecordApplicationEvent("Cast.Platform.Pause"))
+      .Times(1);
+
+  StarboardRenderer renderer(std::move(starboard_), task_runner_, plane_id_,
+                             /*enable_buffering=*/true,
+                             &geometry_setter_service_, &cast_metrics_helper_);
+
+  renderer.Initialize(
+      &media_resource_, &client_,
+      base::BindLambdaForTesting(pipeline_status_fn_.AsStdFunction()));
+  RunPendingTasks();
+
+  renderer.SetPlaybackRate(1.0);
+  renderer.SetPlaybackRate(0.0);
 }
 
 }  // namespace

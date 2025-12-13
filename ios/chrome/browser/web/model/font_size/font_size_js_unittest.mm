@@ -68,14 +68,13 @@ class FontSizeJsTest : public PlatformTest {
                                  web_state());
   }
 
-  // Executes JavaScript "__gCrWeb.font_size.adjustFontSize(`scale`)" to
-  // adjust font size to `scale`% and return if it is executed without
-  // exception.
+  // Executes `adjustFontSize` to adjust font size to `scale`% and
+  // return if it is executed without exception.
   [[nodiscard]] bool AdjustFontSize(int scale) {
     id script_result = web::test::ExecuteJavaScript(
-        [NSString
-            stringWithFormat:@"__gCrWeb.font_size.adjustFontSize(%d); true;",
-                             scale],
+        [NSString stringWithFormat:@"__gCrWeb.getRegisteredApi('font_size')."
+                                   @"getFunction('adjustFontSize')(%d); true;",
+                                   scale],
         web_state());
     return [script_result isEqual:@YES];
   }
@@ -89,7 +88,7 @@ class FontSizeJsTest : public PlatformTest {
   std::unique_ptr<web::WebState> web_state_;
 };
 
-// Tests that __gCrWeb.font_size.adjustFontSize works for any scale.
+// Tests that `adjustFontSize` works for any scale.
 TEST_F(FontSizeJsTest, TestAdjustFontSizeForScale) {
   float original_size = 0;
   float current_size = 0;
@@ -203,7 +202,7 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForScale) {
   EXPECT_FLOAT_EQ(current_size, original_size * 200 / 100);
 }
 
-// Tests that __gCrWeb.font_size.adjustFontSize works for any CSS unit.
+// Tests that `adjustFontSize` works for any CSS unit.
 TEST_F(FontSizeJsTest, TestAdjustFontSizeForUnit) {
   float original_size = 0;
   float current_size = 0;
@@ -269,7 +268,7 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForUnit) {
   EXPECT_FLOAT_EQ(current_size, original_size * 110 / 100);
 }
 
-// Tests that __gCrWeb.font_size.adjustFontSize works for nested elements.
+// Tests `adjustFontSize works for nested elements.
 TEST_F(FontSizeJsTest, TestAdjustFontSizeForNestedElements) {
   float original_size_1 = 0;
   float original_size_2 = 0;

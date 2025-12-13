@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -30,13 +30,14 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
 namespace ash {
 
@@ -63,9 +64,8 @@ int CalculateAvailableSpaceOnBottom(const gfx::Rect& screen_work_area,
 }
 
 gfx::Rect CalculateAnimationStartBounds(const gfx::Rect& mahi_menu_bounds) {
-  const gfx::Rect screen_work_area = display::Screen::GetScreen()
-                                         ->GetDisplayMatching(mahi_menu_bounds)
-                                         .work_area();
+  const gfx::Rect screen_work_area =
+      display::Screen::Get()->GetDisplayMatching(mahi_menu_bounds).work_area();
 
   return gfx::Rect(
       IsSpaceAvailableOnRight(screen_work_area, mahi_menu_bounds)
@@ -78,9 +78,8 @@ gfx::Rect CalculateAnimationStartBounds(const gfx::Rect& mahi_menu_bounds) {
 }
 
 gfx::Rect CalculateInitialWidgetBounds(const gfx::Rect& mahi_menu_bounds) {
-  const gfx::Rect screen_work_area = display::Screen::GetScreen()
-                                         ->GetDisplayMatching(mahi_menu_bounds)
-                                         .work_area();
+  const gfx::Rect screen_work_area =
+      display::Screen::Get()->GetDisplayMatching(mahi_menu_bounds).work_area();
 
   int available_space_on_bottom =
       CalculateAvailableSpaceOnBottom(screen_work_area, mahi_menu_bounds);
@@ -109,30 +108,6 @@ std::unique_ptr<views::BoxLayoutView> CreateMahiPanelContentsView() {
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
       .Build();
 }
-
-// TODO(zoraiznaem): Investigate if MahiFrameView needs NonClientFrameViewAsh.
-class MahiFrameView : public NonClientFrameViewAsh {
- public:
-  explicit MahiFrameView(views::Widget* frame) : NonClientFrameViewAsh(frame) {
-    SetFrameEnabled(false);
-    SetShouldPaintHeader(false);
-  }
-
-  MahiFrameView(const MahiFrameView&) = delete;
-  MahiFrameView& operator=(const MahiFrameView&) = delete;
-
-  ~MahiFrameView() override = default;
-
-  // views::NonClientFrameView:
-  gfx::Size GetMinimumSize() const override {
-    return gfx::Size(mahi_constants::kPanelDefaultWidth,
-                     mahi_constants::kPanelDefaultHeight);
-  }
-  gfx::Size GetMaximumSize() const override {
-    return gfx::Size(mahi_constants::kPanelMaximumWidth,
-                     mahi_constants::kPanelMaximumHeight);
-  }
-};
 
 }  // namespace
 
@@ -182,13 +157,13 @@ views::UniqueWidgetPtr MahiPanelWidget::CreateAndShowPanelWidget(
     delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
     delegate->SetCanResize(true);
     delegate->SetContentsView(std::move(contents_view));
-    delegate->SetNonClientFrameViewFactory(
-        base::BindRepeating([](views::Widget* widget)
-                                -> std::unique_ptr<views::NonClientFrameView> {
-          return std::make_unique<MahiFrameView>(widget);
+    delegate->SetFrameViewFactory(base::BindRepeating(
+        [](views::Widget* widget) -> std::unique_ptr<views::FrameView> {
+          return std::make_unique<FrameViewAsh>(widget);
         }));
 
     params.delegate = delegate.release();
+    params.remove_standard_frame = true;
 
     // If resizable, disable the resize shadow on the window border.
     params.init_properties_container.SetProperty(kDisableResizeShadow, true);
@@ -233,6 +208,16 @@ views::UniqueWidgetPtr MahiPanelWidget::CreateAndShowPanelWidget(
 // static
 const char* MahiPanelWidget::GetName() {
   return kWidgetName;
+}
+
+gfx::Size MahiPanelWidget::GetMinimumSize() const {
+  return gfx::Size(mahi_constants::kPanelDefaultWidth,
+                   mahi_constants::kPanelDefaultHeight);
+}
+
+gfx::Size MahiPanelWidget::GetMaximumSize() const {
+  return gfx::Size(mahi_constants::kPanelMaximumWidth,
+                   mahi_constants::kPanelMaximumHeight);
 }
 
 void MahiPanelWidget::OnShelfWorkAreaInsetsChanged() {

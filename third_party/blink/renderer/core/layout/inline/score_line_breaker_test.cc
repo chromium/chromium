@@ -428,6 +428,26 @@ TEST_F(ScoreLineBreakerTest, FloatRetry) {
   // Test pass if it doesn't crash.
 }
 
+TEST_F(ScoreLineBreakerTest, Ruby) {
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #container {
+      font-size: 16px;
+      text-wrap: balance;
+      width: 110px;
+    }
+    </style>
+    <div id="container">
+      <ruby>ruby<ruby>
+    </div>
+  )HTML");
+  const LayoutBlockFlow* container = GetLayoutBlockFlowByElementId("container");
+  const InlineNodeData* inline_node_data = container->GetInlineNodeData();
+  ASSERT_TRUE(inline_node_data);
+  EXPECT_TRUE(inline_node_data->IsScoreLineBreakDisabled());
+}
+
 TEST_F(ScoreLineBreakerTest, Zoom) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(

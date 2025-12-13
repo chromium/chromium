@@ -21,10 +21,6 @@ mojom("mojo_bindings") {
           cpp = "::NTPLoggingEventType"
         },
         {
-          mojom = "search.mojom.NTPTileImpression"
-          cpp = "::ntp_tiles::NTPTileImpression"
-        },
-        {
           mojom = "search.mojom.OmniboxFocusState"
           cpp = "::OmniboxFocusState"
         },
@@ -44,7 +40,6 @@ mojom("mojo_bindings") {
       traits_headers = [
         "//chrome/common/search/instant_types.h",
         "//chrome/common/search/ntp_logging_events.h",
-        "//components/ntp_tiles/ntp_tile_impression.h",
         "//components/omnibox/common/omnibox_focus_state.h",
       ]
       traits_private_headers =

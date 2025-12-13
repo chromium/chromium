@@ -12,10 +12,11 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_menu_constants.h"
-#include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/shell.h"
 #include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/feature_list.h"
@@ -56,7 +57,6 @@
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -200,7 +200,7 @@ std::vector<base::SafeBaseName> GetBaseNamesForIntent(
   std::vector<base::SafeBaseName> base_names;
   for (const auto& file : intent.files) {
     std::optional<base::SafeBaseName> optional_base_name =
-        base::SafeBaseName::Create(file->url.path());
+        base::SafeBaseName::Create(file->url.GetPath());
 
     // Launch requires that every file have a base name.
     if (!optional_base_name.has_value() ||
@@ -434,8 +434,7 @@ void ExtensionAppsChromeOs::GetMenuModel(
   if (!is_platform_app) {
     CreateOpenNewSubmenu(
         extensions::GetLaunchType(extensions::ExtensionPrefs::Get(profile()),
-                                  extension) ==
-                extensions::LaunchType::LAUNCH_TYPE_WINDOW
+                                  extension) == extensions::LaunchType::kWindow
             ? IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW
             : IDS_APP_LIST_CONTEXT_MENU_NEW_TAB,
         menu_items);
@@ -567,7 +566,7 @@ void ExtensionAppsChromeOs::OnAppWindowAdded(
   // of the window correctly.
   if (SessionControllerClientImpl::IsMultiProfileAvailable()) {
     auto* multi_user_window_manager =
-        MultiUserWindowManagerHelper::GetWindowManager();
+        ash::Shell::Get()->multi_user_window_manager();
     if (multi_user_window_manager) {
       multi_user_window_manager->SetWindowOwner(
           window, multi_user_util::GetAccountIdFromProfile(profile()));

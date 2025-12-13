@@ -161,10 +161,10 @@ void CircleCroppedImageSkiaSource::Draw(gfx::Canvas* canvas) {
   const int x = (canvas_edge_size - avatar_.width()) / 2;
   const int y = (canvas_edge_size - avatar_.height()) / 2;
 
-  SkPath circular_mask;
-  circular_mask.addCircle(SkIntToScalar(canvas_edge_size / 2),
-                          SkIntToScalar(canvas_edge_size / 2),
-                          SkIntToScalar(canvas_edge_size / 2));
+  const SkPath circular_mask =
+      SkPath::Circle(canvas_edge_size / 2,
+                     canvas_edge_size / 2,
+                     canvas_edge_size / 2);
   canvas->ClipPath(circular_mask, true);
   canvas->DrawImageInt(avatar_, x, y);
 }

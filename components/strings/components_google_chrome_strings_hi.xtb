@@ -30,16 +30,15 @@
           <ph name="ADVANCED_TITLE" />
           और "<ph name="NO_PREFETCH_DESCRIPTION" />" चुना हुआ हटाएं.
           अगर इससे समस्‍या हल नहीं होती, तो बेहतर प्रदर्शन के लिए हम इस विकल्‍प को फिर से चुनने का सुझाव देते हैं.</translation>
-<translation id="6855094794438142393">यहां
-          Chrome मेन्यू &gt;
-         <ph name="SETTINGS_TITLE" />
+<translation id="6581867098636731226">Chrome मेन्यू &gt;
+          <ph name="SETTINGS_TITLE" />
           &gt;
-          <ph name="ADVANCED_TITLE" />
+          <ph name="SYSTEM_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
           &gt;
-          LAN सेटिंग पर जाएं
-          और "अपने LAN के लिए किसी प्रॉक्सी सर्वर का इस्तेमाल करें" चेकबॉक्स को चुने हुए से हटाएं.</translation>
+          नेटवर्क और इंटरनेट &gt; प्रॉक्सी पर जाएं
+          और "ऑटोमैटिक तरीके से पता लगाने की सेटिंग" से चुने हुए का निशान हटाएं.</translation>
 <translation id="7230956101631259640">आप Chrome के एक सुरक्षित पेज पर हैं</translation>
 <translation id="8232971017369963250">Chrome को <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ओपन सोर्स प्रोजेक्ट की मदद से बनाया गया है.</translation>
 <translation id="8279509328145658601">Chrome को अन्य <ph name="BEGIN_LINK_OSS" />ओपन सोर्स सॉफ़्टवेयर<ph name="END_LINK_OSS" /> की मदद से भी बनाया गया है.</translation>

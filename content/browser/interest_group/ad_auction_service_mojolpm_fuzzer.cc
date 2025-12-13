@@ -87,11 +87,6 @@ class AllowInterestGroupContentBrowserClient
       content::PrivacySandboxInvokingAPI invoking_api) override {
     return true;
   }
-
-  bool IsCookieDeprecationLabelAllowed(
-      content::BrowserContext* browser_context) override {
-    return true;
-  }
 };
 
 constexpr char kFledgeUpdateHeaders[] =

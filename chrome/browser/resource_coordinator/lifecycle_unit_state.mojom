@@ -31,21 +31,6 @@ enum LifecycleUnitLoadingState {
   LOADED = 2,
 };
 
-// An enumeration of reasons why a lifecycle state change was applied. These are
-// also emitted via UKM so need to remain stable.
-enum LifecycleUnitStateChangeReason {
-  // Policy in the browser decided to initiate the state change.
-  BROWSER_INITIATED = 0,
-  // Policy in the renderer decided to initiate the state change.
-  RENDERER_INITIATED = 1,
-  // A system wide memory pressure condition initiated the state change.
-  SYSTEM_MEMORY_PRESSURE = 2,
-  // Initiated by an extension.
-  EXTENSION_INITIATED = 3,
-  // Initiated by a user action (e.g. changing focus, clicking reload).
-  USER_INITIATED = 4,
-};
-
 // An enumeration of reasons for a discard.
 enum LifecycleUnitDiscardReason {
   // The discard is requested from outside of TabManager (e.g. by an extension).

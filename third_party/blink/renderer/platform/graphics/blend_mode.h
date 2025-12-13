@@ -57,7 +57,7 @@ PLATFORM_EXPORT SkBlendMode ToSkBlendMode(CompositeOperator,
                                           BlendMode = BlendMode::kNormal);
 PLATFORM_EXPORT SkBlendMode ToSkBlendMode(BlendMode);
 
-PLATFORM_EXPORT WTF::String BlendModeToString(BlendMode);
+PLATFORM_EXPORT String BlendModeToString(BlendMode);
 
 }  // namespace blink
 

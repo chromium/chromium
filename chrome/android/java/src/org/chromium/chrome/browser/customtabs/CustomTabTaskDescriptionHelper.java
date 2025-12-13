@@ -150,13 +150,6 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
             mIconTabObserver =
                     new CustomTabTabObserver() {
                         @Override
-                        public void onWebContentsSwapped(
-                                Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-                            if (!didStartLoad) return;
-                            resetIcon();
-                        }
-
-                        @Override
                         public void onFaviconUpdated(
                                 Tab tab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
                             if (icon == null) return;

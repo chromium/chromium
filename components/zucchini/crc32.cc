@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/zucchini/crc32.h"
 
 #include <array>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 
 namespace zucchini {
 
@@ -40,8 +36,9 @@ uint32_t CalculateCrc32(const uint8_t* first, const uint8_t* last) {
   static const std::array<uint32_t, 256> kCrc32Table = MakeCrc32Table();
 
   uint32_t ret = 0xFFFFFFFF;
-  for (; first != last; ++first)
+  for (; first != last; UNSAFE_TODO(++first)) {
     ret = kCrc32Table[(ret ^ *first) & 0xFF] ^ (ret >> 8);
+  }
   return ret ^ 0xFFFFFFFF;
 }
 

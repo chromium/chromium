@@ -7,8 +7,8 @@
 #include <memory>
 #include <optional>
 
-#include "ash/examples/client_controlled_state_util.h"
 #include "ash/shell.h"
+#include "ash/utility/client_controlled_state_util.h"
 #include "ash/wm/window_pin_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -145,6 +145,25 @@ class TestView : public views::View {
                                            ? ui::ZOrderLevel::kFloatingWindow
                                            : ui::ZOrderLevel::kNormal);
                  }));
+    add_checkbox(this, u"Pinned After 5 seconds", u"pinned",
+                 /*initial_state=*/false,
+                 base::BindRepeating(
+                     [](TestView* this_, const ui::Event& event) {
+                       views::Checkbox* cb =
+                           static_cast<views::Checkbox*>(event.target());
+                       auto* window = cb->GetWidget()->GetNativeWindow();
+                       bool pinned = cb->GetChecked();
+                       this_->RunAfterFiveSeconds(base::BindRepeating(
+                           [](aura::Window* window, bool pinned) {
+                             if (pinned) {
+                               PinWindow(window, /*trusted=*/false);
+                             } else {
+                               UnpinWindow(window);
+                             }
+                           },
+                           base::Unretained(window), pinned));
+                     },
+                     base::Unretained(this)));
     add_checkbox(this, u"Trusted Pinned After 5 seconds", u"trusted pinned",
                  /*initial_state=*/false,
                  base::BindRepeating(
@@ -188,6 +207,14 @@ class TestView : public views::View {
                 [](views::View* view) { view->GetWidget()->Restore(); },
                 base::Unretained(this))),
         u"Restore After 5 seconds"));
+
+    AddChildView(std::make_unique<views::LabelButton>(
+        base::BindRepeating(
+            &TestView::RunAfterFiveSeconds, base::Unretained(this),
+            base::BindRepeating(
+                [](views::View* view) { view->GetWidget()->Minimize(); },
+                base::Unretained(this))),
+        u"Minimize After 5 seconds"));
 
     if (add_open_client_controlled) {
       AddChildView(

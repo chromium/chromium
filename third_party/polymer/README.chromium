@@ -1,8 +1,9 @@
 Name: Polymer
 Short Name: polymer
-URL: https://polymer-library.polymer-project.org
+URL: https://github.com/Polymer/polymer.git
 Version: 3.5.0
 Revision: 78f75e3108f43744fc135e06c2e50ab0384c6f39
+Update Mechanism: Manual
 License: BSD-3-Clause
 License File: LICENSE.polymer
 Security Critical: no
@@ -72,6 +73,8 @@ Local Modifications:
      new optimizations introduced to v3.5.0. Specifically
      removeNestedTemplates, fastDomIf, suppressTemplateNotifications,
      useAdoptedStyleSheetsWithBuiltCSS.
+  7) DomIf#updateWhenFalse was added to get around this Polymer bug
+     https://github.com/Polymer/polymer/issues/4818
 
 To restore the content of the 'components-chromium' directory from scratch, run
 ./v3_0/reproduce.sh on a Linux machine.
@@ -92,6 +95,9 @@ a few steps.
    command to patch that element. For example, for iron-list, comment out:
 
    patch -p1 --forward < iron_list.patch
+
+   If you need to update components-chromium/polymer comment out the
+   minify_polymer.py call in minify_polymer.sh.
 
    If you are patching an element that has never been patched before, you can
    skip this step.

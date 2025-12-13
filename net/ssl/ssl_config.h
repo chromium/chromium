@@ -39,10 +39,12 @@ NET_EXPORT extern const uint16_t kDefaultSSLVersionMax;
 struct NET_EXPORT SSLConfig {
   using ApplicationSettings = base::flat_map<NextProto, std::vector<uint8_t>>;
 
-  // Default to revocation checking.
   SSLConfig();
   SSLConfig(const SSLConfig& other);
+  SSLConfig(SSLConfig&& other);
   ~SSLConfig();
+  SSLConfig& operator=(const SSLConfig&);
+  SSLConfig& operator=(SSLConfig&&);
 
   // Returns true if |cert| is one of the certs in |allowed_bad_certs|.
   // The expected cert status is written to |cert_status|. |*cert_status| can
@@ -53,20 +55,6 @@ struct NET_EXPORT SSLConfig {
   // bitwise OR of CertVerifier::VerifyFlags that represent this SSLConfig's
   // configuration.
   int GetCertVerifyFlags() const;
-
-  // Helper function to select TLS Trust Anchor IDs to advertise in the TLS
-  // handshake, so that the server can serve a certificate that the client
-  // trusts. |server_advertised_trust_anchor_ids| is a list of Trust Anchor IDs,
-  // in binary representation, that the server has provided out-of-band (e.g. in
-  // a DNS record). |trusted_trust_anchor_ids| is the set of Trust Anchor IDs,
-  // in binary representation, that the client trusts. The intersection is
-  // returned in wire format (a series of 8-bit length prefixed non-empty
-  // strings) such that it can be passed into BoringSSL.
-  static std::vector<uint8_t> SelectTrustAnchorIDs(
-      const std::vector<std::vector<uint8_t>>&
-          server_advertised_trust_anchor_ids,
-      const absl::flat_hash_set<std::vector<uint8_t>>&
-          trusted_trust_anchor_ids);
 
   // If specified, the minimum and maximum protocol versions that are enabled.
   // (Use the SSL_PROTOCOL_VERSION_xxx enumerators defined above.) If
@@ -175,12 +163,17 @@ struct NET_EXPORT SSLConfig {
   // proxy as an endpoint from connections to that same proxy as a proxy.
   SessionUsage session_usage = SessionUsage::kDestination;
 
-  // If non-empty, a list of TLS Trust Anchor IDs in wire format
+  // If not nullopt, a list of TLS Trust Anchor IDs in wire format
   // (https://tlswg.org/tls-trust-anchor-ids/draft-ietf-tls-trust-anchor-ids.html#name-tls-extension),
-  // i.e. a series of non-empty, 8-bit length-prefixed strings. If non-empty,
-  // these trust anchor IDs will be sent on the TLS ClientHello message to help
-  // the server select a certificate that the client will accept.
-  std::vector<uint8_t> trust_anchor_ids;
+  // i.e. a series of non-empty, 8-bit length-prefixed strings. These trust
+  // anchor IDs will be sent on the TLS ClientHello message to help the server
+  // select a certificate that the client will accept.
+  //
+  // If an empty vector, the Trust Anchor IDs extension will be sent, but with
+  // no trust anchors. This will signal to the server that the client is new
+  // enough to implement the extension and can process the server's list of
+  // available trust anchors.
+  std::optional<std::vector<uint8_t>> trust_anchor_ids;
 };
 
 }  // namespace net

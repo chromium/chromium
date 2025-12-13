@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/task/sequenced_task_runner.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
 
 namespace ios {
@@ -38,11 +39,13 @@ class TestPushNotificationService final : public PushNotificationService {
   void UnregisterDevice(void (^completion_handler)(NSError* error)) final;
   bool DeviceTokenIsSet() const final;
 
+  std::string GetRepresentativeTargetIdForGaiaId(const GaiaId& gaia_id) final;
+
  protected:
   // PushNotificationService implementation.
   void SetAccountsToDevice(NSArray<NSString*>* account_ids,
                            CompletionHandler completion_handler) final;
-  void SetPreferences(NSString* account_id,
+  void SetPreferences(const GaiaId& account_id,
                       PreferenceMap preference_map,
                       CompletionHandler completion_handler) final;
 };
@@ -66,6 +69,11 @@ bool TestPushNotificationService::DeviceTokenIsSet() const {
   return false;
 }
 
+std::string TestPushNotificationService::GetRepresentativeTargetIdForGaiaId(
+    const GaiaId& gaia_id) {
+  return "";
+}
+
 void TestPushNotificationService::SetAccountsToDevice(
     NSArray<NSString*>* account_ids,
     void (^completion_handler)(NSError* error)) {
@@ -75,7 +83,7 @@ void TestPushNotificationService::SetAccountsToDevice(
 }
 
 void TestPushNotificationService::SetPreferences(
-    NSString* account_id,
+    const GaiaId& account_id,
     PreferenceMap preference_map,
     CompletionHandler completion_handler) {
   // Test implementation does nothing. As a result, the `completion_handler` is

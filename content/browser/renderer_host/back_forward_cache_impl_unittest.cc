@@ -82,7 +82,7 @@ TEST_F(BackForwardCacheImplTest, CrossOriginAllMasked) {
   // index.
   auto result = tree_root->GetWebExposedNotRestoredReasonsInternal(index);
   // Main frame has "masked" as a reason.
-  EXPECT_EQ(static_cast<int>(result->reasons.size()), 1);
+  EXPECT_EQ(result->reasons.size(), 1u);
   EXPECT_EQ(result->reasons[0]->name, "masked");
   EXPECT_FALSE(result->reasons[0]->source);
 
@@ -116,7 +116,7 @@ TEST_F(BackForwardCacheImplTestExposeCrossOrigin, FirstCrossOriginReachable) {
   // First cross-origin reachable frame (b-1) should be unmasked.
   auto result = tree_root->GetWebExposedNotRestoredReasonsInternal(index);
   // Main frame has "masked" as a reason.
-  EXPECT_EQ(static_cast<int>(result->reasons.size()), 1);
+  EXPECT_EQ(result->reasons.size(), 1u);
   EXPECT_EQ(result->reasons[0]->name, "masked");
   EXPECT_FALSE(result->reasons[0]->source);
   // b-1 is unmasked, but reasons are empty because it does not have any
@@ -136,7 +136,7 @@ TEST_F(BackForwardCacheImplTestExposeCrossOrigin, SecondCrossOriginReachable) {
   // Second cross-origin reachable frame (b-3) should be unmasked.
   auto result = tree_root->GetWebExposedNotRestoredReasonsInternal(index);
   // Main frame has "masked" as a reason.
-  EXPECT_EQ(static_cast<int>(result->reasons.size()), 1);
+  EXPECT_EQ(result->reasons.size(), 1u);
   EXPECT_EQ(result->reasons[0]->name, "masked");
   EXPECT_FALSE(result->reasons[0]->source);
 

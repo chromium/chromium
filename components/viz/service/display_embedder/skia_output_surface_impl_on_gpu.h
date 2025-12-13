@@ -197,7 +197,8 @@ class SkiaOutputSurfaceImplOnGpu
   void CopyOutput(const copy_output::RenderPassGeometry& geometry,
                   const gfx::ColorSpace& color_space,
                   std::unique_ptr<CopyOutputRequest> request,
-                  const gpu::Mailbox& mailbox);
+                  const gpu::Mailbox& mailbox,
+                  ReleaseCallback blit_release_callback);
 
   void BeginAccessImages(
       const std::vector<raw_ptr<ImageContextImpl, VectorExperimental>>&
@@ -286,6 +287,10 @@ class SkiaOutputSurfaceImplOnGpu
     return context_state_.get();
   }
 
+  gpu::SharedImageFactory* shared_image_factory() const {
+    return shared_image_factory_.get();
+  }
+
 #if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
     BUILDFLAG(USE_V4L2_CODEC)
   void DetileOverlay(gpu::Mailbox input,
@@ -370,7 +375,8 @@ class SkiaOutputSurfaceImplOnGpu
                       const SkIRect& src_rect,
                       SkSurface::RescaleMode rescale_mode,
                       bool is_downscale_or_identity_in_both_dimensions,
-                      std::unique_ptr<CopyOutputRequest> request);
+                      std::unique_ptr<CopyOutputRequest> request,
+                      ReleaseCallback blit_release_callback);
 
   void CopyOutputRGBAInMemory(SkSurface* surface,
                               copy_output::RenderPassGeometry geometry,
@@ -386,7 +392,8 @@ class SkiaOutputSurfaceImplOnGpu
                                const SkIRect& src_rect,
                                SkSurface::RescaleMode rescale_mode,
                                bool is_downscale_or_identity_in_both_dimensions,
-                               std::unique_ptr<CopyOutputRequest> request);
+                               std::unique_ptr<CopyOutputRequest> request,
+                               ReleaseCallback blit_release_callback);
 
   void CopyOutputNV12(SkSurface* surface,
                       copy_output::RenderPassGeometry geometry,
@@ -394,7 +401,8 @@ class SkiaOutputSurfaceImplOnGpu
                       const SkIRect& src_rect,
                       SkSurface::RescaleMode rescale_mode,
                       bool is_downscale_or_identity_in_both_dimensions,
-                      std::unique_ptr<CopyOutputRequest> request);
+                      std::unique_ptr<CopyOutputRequest> request,
+                      ReleaseCallback blit_release_callback);
 
   // Helper for `CopyOutputNV12()` & `CopyOutputRGBA()` methods:
   std::unique_ptr<gpu::SkiaImageRepresentation>

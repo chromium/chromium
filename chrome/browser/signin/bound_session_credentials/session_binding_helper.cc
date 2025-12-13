@@ -48,18 +48,9 @@ base::expected<std::string, SessionBindingHelper::Error> CreateAssertionToken(
     return base::unexpected(kSignAssertionFailure);
   }
 
-  crypto::SignatureVerifier verifier;
-  if (!verifier.VerifyInit(algorithm, *signature, public_key)) {
-    return base::unexpected(kVerifySignatureFailure);
-  }
-  verifier.VerifyUpdate(base::as_byte_span(header_and_payload));
-  if (!verifier.VerifyFinal()) {
-    return base::unexpected(kVerifySignatureFailure);
-  }
-
   std::optional<std::string> assertion_token =
       signin::AppendSignatureToHeaderAndPayload(header_and_payload, algorithm,
-                                                *signature);
+                                                public_key, *signature);
   if (!assertion_token) {
     return base::unexpected(kAppendSignatureFailure);
   }
@@ -128,7 +119,7 @@ void SessionBindingHelper::SignAssertionToken(
 
   unexportable_key_service_->SignSlowlyAsync(
       *binding_key, base::as_byte_span(*header_and_payload),
-      kSessionBindingPriority, /*max_retries=*/0,
+      kSessionBindingPriority,
       base::BindOnce(&CreateAssertionToken, *header_and_payload, algorithm,
                      std::move(public_key))
           .Then(std::move(callback)));

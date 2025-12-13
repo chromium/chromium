@@ -17,7 +17,7 @@
 #include "components/webauthn/android/jni_headers/Fido2Api_jni.h"
 
 using base::android::JavaByteArrayToByteVector;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaByteArray;
 
@@ -31,8 +31,8 @@ namespace webauthn {
 // [2] https://w3c.github.io/webauthn/#sctn-public-key-easy
 static jboolean JNI_Fido2Api_ParseAttestationObject(
     JNIEnv* env,
-    const base::android::JavaParamRef<jbyteArray>& jattestation_object_bytes,
-    const base::android::JavaParamRef<jobject>& out_result) {
+    const base::android::JavaRef<jbyteArray>& jattestation_object_bytes,
+    const base::android::JavaRef<jobject>& out_result) {
   std::vector<uint8_t> attestation_object_bytes;
   JavaByteArrayToByteVector(env, jattestation_object_bytes,
                             &attestation_object_bytes);
@@ -57,3 +57,5 @@ static jboolean JNI_Fido2Api_ParseAttestationObject(
 }
 
 }  // namespace webauthn
+
+DEFINE_JNI(Fido2Api)

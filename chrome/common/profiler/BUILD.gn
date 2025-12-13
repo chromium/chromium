@@ -35,7 +35,7 @@ source_set("profiler") {
     "//components/metrics:call_stack_profile_builder",
     "//components/metrics/public/mojom:call_stack_mojo_bindings",
     "//components/sampling_profiler",
-    "//components/version_info:version_info",
+    "//components/version_info",
     "//content/public/common",
     "//extensions/buildflags",
     "//third_party/abseil-cpp:absl",
@@ -57,7 +57,7 @@ source_set("profiler") {
   }
 
   if (enable_extensions) {
-    deps += [ "//extensions/common:common" ]
+    deps += [ "//extensions/common" ]
   }
 
   friend = [ ":unit_tests" ]
@@ -81,7 +81,7 @@ source_set("unit_tests") {
     "//components/metrics",
     "//components/metrics:call_stack_profile_builder",
     "//components/sampling_profiler",
-    "//components/version_info:version_info",
+    "//components/version_info",
     "//content/public/common",
     "//extensions/buildflags",
   ]
@@ -91,6 +91,6 @@ source_set("unit_tests") {
   }
 
   if (enable_extensions) {
-    deps += [ "//extensions/common:common" ]
+    deps += [ "//extensions/common" ]
   }
 }

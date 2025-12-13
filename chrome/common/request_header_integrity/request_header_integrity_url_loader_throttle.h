@@ -7,6 +7,10 @@
 
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
+namespace net {
+class HttpRequestHeaders;
+}
+
 namespace network::mojom {
 class NetworkContextParams;
 }
@@ -28,6 +32,13 @@ class RequestHeaderIntegrityURLLoaderThrottle
   void DetachFromCurrentSequence() override;
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override;
+  void WillRedirectRequest(
+      net::RedirectInfo* redirect_info,
+      const network::mojom::URLResponseHead& response_head,
+      bool* defer,
+      std::vector<std::string>* to_be_removed_request_headers,
+      net::HttpRequestHeaders* modified_request_headers,
+      net::HttpRequestHeaders* modified_cors_exempt_request_headers) override;
 
   static bool IsFeatureEnabled();
   static void UpdateCorsExemptHeaders(

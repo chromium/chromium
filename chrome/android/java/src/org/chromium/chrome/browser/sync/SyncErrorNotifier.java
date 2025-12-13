@@ -8,7 +8,6 @@ import android.app.PendingIntent;
 import android.content.Intent;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -16,6 +15,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -31,7 +32,7 @@ import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
+import org.chromium.components.trusted_vault.TrustedVaultUserActionTriggerForUMA;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -40,6 +41,7 @@ import java.lang.annotation.RetentionPolicy;
  * {@link SyncErrorNotifier} displays Android notifications regarding sync errors.
  * Errors can be fixed by clicking the notification.
  */
+@NullMarked
 public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
     @IntDef({
         NotificationState.REQUIRE_PASSPHRASE,
@@ -80,9 +82,11 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
     }
 
     private static SyncErrorNotifier buildForProfile(Profile profile) {
+        var syncService = SyncServiceFactory.getForProfile(profile);
+        assert syncService != null : "SyncService should be non-null.";
         return new SyncErrorNotifier(
                 BaseNotificationManagerProxyFactory.create(),
-                SyncServiceFactory.getForProfile(profile),
+                syncService,
                 TrustedVaultClient.get());
     }
 
@@ -126,8 +130,7 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
             case NotificationState.REQUIRE_PASSPHRASE:
                 {
                     mSyncService.markPassphrasePromptMutedForCurrentProductVersion();
-                    showNotification(
-                            createPassphraseIntent());
+                    showNotification(createPassphraseIntent());
                     break;
                 }
             case NotificationState.REQUIRE_TRUSTED_VAULT_KEY_FOR_PASSWORDS:
@@ -151,10 +154,9 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
                                         // We still want to show the trusted vault notification but
                                         // couldn't produce the intent. Just reset the state.
                                         mNotificationState = previousState;
-                                        Log.w(
-                                                TAG,
-                                                "Error creating key retrieval intent: ",
-                                                exception);
+                                        var error =
+                                                exception == null ? "unknown error." : exception;
+                                        Log.w(TAG, "Error creating key retrieval intent: ", error);
                                     });
                     break;
                 }

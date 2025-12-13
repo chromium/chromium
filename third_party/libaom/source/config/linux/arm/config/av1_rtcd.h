@@ -221,7 +221,7 @@ void av1_fwd_txfm2d_8x8_c(const int16_t *input, int32_t *output, int stride, TX_
 void av1_fwht4x4_c(const int16_t *input, tran_low_t *output, int stride);
 #define av1_fwht4x4 av1_fwht4x4_c
 
-uint32_t av1_get_crc32c_value_c(void *crc_calculator, uint8_t *p, size_t length);
+uint32_t av1_get_crc32c_value_c(void *crc_calculator, const uint8_t *p, size_t length);
 #define av1_get_crc32c_value av1_get_crc32c_value_c
 
 void av1_get_horver_correlation_full_c(const int16_t *diff, int stride, int w, int h, float *hcorr, float *vcorr);

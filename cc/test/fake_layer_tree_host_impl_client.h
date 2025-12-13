@@ -9,7 +9,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace viz {
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }
 
 namespace cc {
@@ -28,6 +28,7 @@ class FakeLayerTreeHostImplClient : public LayerTreeHostImplClient {
   void SetNeedsCommitOnImplThread(bool urgent) override {}
   void SetNeedsPrepareTilesOnImplThread() override {}
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override {}
+  void DidChangeBeginFrameSourcePaused(bool paused) override {}
   void SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) override {}
   bool IsInsideDraw() override;
   void RenewTreePriority() override {}

@@ -29,7 +29,8 @@ TEST(PublicKeyParsingUtilsTest, WellFormedSingleKey_ParsedCorrectly) {
          })",
       {generated_key.GetPublicKeyBase64()}, /*offsets=*/nullptr);
 
-  std::optional<base::Value> json_object = base::JSONReader::Read(json_string);
+  std::optional<base::Value> json_object =
+      base::JSONReader::Read(json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
 
   std::vector<PublicKey> keys =
@@ -59,7 +60,8 @@ TEST(PublicKeyParsingUtilsTest, WellFormedMultipleKeys_ParsedCorrectly) {
        generated_key_2.GetPublicKeyBase64()},
       /*offsets=*/nullptr);
 
-  std::optional<base::Value> json_object = base::JSONReader::Read(json_string);
+  std::optional<base::Value> json_object =
+      base::JSONReader::Read(json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
 
   std::vector<PublicKey> keys =
@@ -80,7 +82,8 @@ TEST(PublicKeyParsingUtilsTest, MalformedMissingId_EmptyResult) {
       {aggregation_service::TestHpkeKey().GetPublicKeyBase64()},
       /*offsets=*/nullptr);
 
-  std::optional<base::Value> json_object = base::JSONReader::Read(json_string);
+  std::optional<base::Value> json_object =
+      base::JSONReader::Read(json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
 
   std::vector<PublicKey> keys =
@@ -99,7 +102,8 @@ TEST(PublicKeyParsingUtilsTest, MalformedMissingKey_EmptyResult) {
         }
     )";
 
-  std::optional<base::Value> json_object = base::JSONReader::Read(json_string);
+  std::optional<base::Value> json_object =
+      base::JSONReader::Read(json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
 
   std::vector<PublicKey> keys =
@@ -124,7 +128,8 @@ TEST(PublicKeyParsingUtilsTest, MalformedKeyNotValidBase64_EmptyResult) {
          })",
       {invalid_base64}, /*offsets=*/nullptr);
 
-  std::optional<base::Value> json_object = base::JSONReader::Read(json_string);
+  std::optional<base::Value> json_object =
+      base::JSONReader::Read(json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
 
   std::vector<PublicKey> keys =
@@ -148,7 +153,8 @@ TEST(PublicKeyParsingUtilsTest, MalformedKeyWrongLength_EmptyResult) {
          })",
       {wrong_length_key}, /*offsets=*/nullptr);
 
-  std::optional<base::Value> json_object = base::JSONReader::Read(json_string);
+  std::optional<base::Value> json_object =
+      base::JSONReader::Read(json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
 
   std::vector<PublicKey> keys =
@@ -173,7 +179,8 @@ TEST(PublicKeyParsingUtilsTest, WellFormedAndMalformedKeys_EmptyResult) {
       {aggregation_service::TestHpkeKey().GetPublicKeyBase64()},
       /*offsets=*/nullptr);
 
-  std::optional<base::Value> json_object = base::JSONReader::Read(json_string);
+  std::optional<base::Value> json_object =
+      base::JSONReader::Read(json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
 
   std::vector<PublicKey> keys =
@@ -200,7 +207,8 @@ TEST(PublicKeyParsingUtilsTest, MalformedKeyDuplicateKeyId_EmptyResult) {
            .GetPublicKeyBase64()},
       /*offsets=*/nullptr);
 
-  std::optional<base::Value> json_object = base::JSONReader::Read(json_string);
+  std::optional<base::Value> json_object =
+      base::JSONReader::Read(json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
 
   std::vector<PublicKey> keys =
@@ -223,7 +231,8 @@ TEST(PublicKeyParsingUtilsTest, VersionFieldSpecified_FieldIgnored) {
          })",
       {generated_key.GetPublicKeyBase64()}, /*offsets=*/nullptr);
 
-  std::optional<base::Value> json_object = base::JSONReader::Read(json_string);
+  std::optional<base::Value> json_object =
+      base::JSONReader::Read(json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
 
   std::vector<PublicKey> keys =
@@ -247,7 +256,8 @@ TEST(PublicKeyParsingUtilsTest, ExtraUnexpectedField_FieldIgnored) {
          })",
       {generated_key.GetPublicKeyBase64()}, /*offsets=*/nullptr);
 
-  std::optional<base::Value> json_object = base::JSONReader::Read(json_string);
+  std::optional<base::Value> json_object =
+      base::JSONReader::Read(json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
 
   std::vector<PublicKey> keys =

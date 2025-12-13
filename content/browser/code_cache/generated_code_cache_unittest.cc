@@ -2,21 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/code_cache/generated_code_cache.h"
 
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -134,10 +131,9 @@ class GeneratedCodeCacheTest : public testing::TestWithParam<bool> {
       received_response_time_ = response_time;
       return;
     }
-    std::string str(data.data(), data.data() + data.size());
     received_ = true;
     received_null_ = false;
-    received_data_ = str;
+    received_data_ = base::as_string_view(base::span(data));
     received_response_time_ = response_time;
   }
 
@@ -704,10 +700,10 @@ class TestBrowserClient : public ContentBrowserClient {
   // ContentBrowserClient:
   std::string GetWebUIHostnameForCodeCacheMetrics(
       const GURL& webui_url) const override {
-    if (webui_url.host() == "foo") {
+    if (webui_url.GetHost() == "foo") {
       return "Foo";
     }
-    if (webui_url.host() == "bar") {
+    if (webui_url.GetHost() == "bar") {
       return "Bar";
     }
     return std::string();

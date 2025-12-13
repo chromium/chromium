@@ -40,6 +40,9 @@ struct ContextualPanelItemConfiguration;
 // to its default color.
 - (void)setEntrypointColored:(BOOL)colored;
 
+// Asks the consumer to update its accessibility status.
+- (void)updateAccessibilityStatus;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_ENTRYPOINT_UI_CONTEXTUAL_PANEL_ENTRYPOINT_CONSUMER_H_

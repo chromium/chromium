@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.fullscreen;
 
+import static android.view.Display.INVALID_DISPLAY;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -59,7 +61,11 @@ import java.util.HashMap;
  * Unit tests for {@link FullscreenHtmlApiHandlerCompat}. TODO(crbug.com/40525786): Can be
  * parametrized with a parametrized Robolectric test runner.
  */
-@Features.EnableFeatures({ChromeFeatureList.DISPLAY_EDGE_TO_EDGE_FULLSCREEN})
+@Features.EnableFeatures({
+    ChromeFeatureList.DISPLAY_EDGE_TO_EDGE_FULLSCREEN,
+    ChromeFeatureList.ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID
+})
+@Features.DisableFeatures({ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER})
 @RunWith(BaseRobolectricTestRunner.class)
 public class FullscreenHtmlApiHandlerCompatUnitTest {
     private static final int DEVICE_WIDTH = 900;
@@ -72,8 +78,8 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private ContentView mContentView;
-    @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private TabModelSelector mTabModelSelector;
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private MultiWindowModeStateDispatcherImpl mMultiWindowModeStateDispatcher;
     private FullscreenHtmlApiHandlerCompat mFullscreenHtmlApiHandlerCompat;
     private ObservableSupplierImpl<Boolean> mAreControlsHidden;
@@ -132,6 +138,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+
         mHost = new UserDataHost();
         doReturn(mHost).when(mTab).getUserDataHost();
 
@@ -165,7 +172,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         mAreControlsHidden.set(false);
         mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
         mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(
-                mTab, new FullscreenOptions(false, false));
+                mTab, new FullscreenOptions(false, false, INVALID_DISPLAY));
 
         TabBrowserControlsConstraintsHelper.setForTesting(
                 mTab, mTabBrowserControlsConstraintsHelper);
@@ -200,7 +207,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         mAreControlsHidden.set(false);
         mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
         mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(
-                mTab, new FullscreenOptions(false, false));
+                mTab, new FullscreenOptions(false, false, INVALID_DISPLAY));
 
         mAreControlsHidden.set(true);
         TabBrowserControlsConstraintsHelper.setForTesting(
@@ -231,7 +238,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
         FullscreenManager.Observer observer = Mockito.mock(FullscreenManager.Observer.class);
         mFullscreenHtmlApiHandlerCompat.addObserver(observer);
-        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false);
+        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false, INVALID_DISPLAY);
         mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
         verify(observer).onEnterFullscreen(mTab, fullscreenOptions);
         Assert.assertEquals(
@@ -264,7 +271,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
         FullscreenManager.Observer observer = Mockito.mock(FullscreenManager.Observer.class);
         mFullscreenHtmlApiHandlerCompat.addObserver(observer);
-        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false);
+        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false, INVALID_DISPLAY);
 
         mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
         mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
@@ -307,7 +314,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
         FullscreenManager.Observer observer = Mockito.mock(FullscreenManager.Observer.class);
         mFullscreenHtmlApiHandlerCompat.addObserver(observer);
-        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false);
+        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false, INVALID_DISPLAY);
 
         mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
         mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
@@ -344,7 +351,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
         FullscreenManager.Observer observer = Mockito.mock(FullscreenManager.Observer.class);
         mFullscreenHtmlApiHandlerCompat.addObserver(observer);
-        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false);
+        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false, INVALID_DISPLAY);
 
         // Before the tab becomes interactable, fullscreen exit gets requested.
         mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
@@ -369,7 +376,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         mFullscreenHtmlApiHandlerCompat.initialize(mActivityTabProvider, mTabModelSelector);
         FullscreenManager.Observer observer = Mockito.mock(FullscreenManager.Observer.class);
         mFullscreenHtmlApiHandlerCompat.addObserver(observer);
-        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false);
+        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false, INVALID_DISPLAY);
         mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
         verify(observer, never()).onEnterFullscreen(mTab, fullscreenOptions);
 
@@ -403,7 +410,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
 
         mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
 
-        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false);
+        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false, INVALID_DISPLAY);
         mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
 
         // Catch the layout listener, which is an implementation detail but what can one do?  Note
@@ -449,6 +456,72 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     }
 
     @Test
+    @Features.EnableFeatures({ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER})
+    public void
+            testToastIsNotShownInFullscreenButNotPictureInPictureExclusiveAccessManagerEnabled() {
+        doReturn(mWebContents).when(mTab).getWebContents();
+        doReturn(mContentView).when(mTab).getContentView();
+        doReturn(true).when(mTab).isUserInteractable();
+        doReturn(true).when(mTab).isHidden();
+        doReturn(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets())
+                .when(mContentView)
+                .getRootWindowInsets();
+        // The window must have focus and already have the controls hidden, else fullscreen will be
+        // deferred.  The toast would be deferred with it.
+        doReturn(true).when(mContentView).hasWindowFocus();
+        mAreControlsHidden.set(true);
+
+        mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
+
+        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false, INVALID_DISPLAY);
+        mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
+
+        // Catch the layout listener, which is an implementation detail but what can one do?  Note
+        // that we make the layout appear to have gotten bigger, which is important since the
+        // fullscreen handler checks for it.
+        ArgumentCaptor<OnLayoutChangeListener> arg =
+                ArgumentCaptor.forClass(OnLayoutChangeListener.class);
+        verify(mContentView).addOnLayoutChangeListener(arg.capture());
+        arg.getValue().onLayoutChange(mContentView, 0, 0, 100, 100, 0, 0, 10, 10);
+
+        // We should now be in fullscreen, with the toast not shown because exclusive access manager
+        // is enabled and the toast is stubbed out.
+        assertTrue(
+                "Fullscreen toast should not be visible in fullscreen, exclusive access manager "
+                        + "is enabled",
+                !mFullscreenHtmlApiHandlerCompat.isToastVisibleForTesting());
+
+        // Losing / gaining the focus should have no effect on the toast because exclusive access
+        // manager is enabled and the toast is stubbed out.
+        mFullscreenHtmlApiHandlerCompat.onWindowFocusChanged(mActivity, false);
+        assertTrue(
+                "Fullscreen toast should not be visible when unfocused",
+                !mFullscreenHtmlApiHandlerCompat.isToastVisibleForTesting());
+        mFullscreenHtmlApiHandlerCompat.onWindowFocusChanged(mActivity, true);
+        assertTrue(
+                "Fullscreen toast should not be visible when focused, exclusive access manager "
+                        + "is enabled",
+                !mFullscreenHtmlApiHandlerCompat.isToastVisibleForTesting());
+
+        // Toast should not be visible when we exit fullscreen.
+        mFullscreenHtmlApiHandlerCompat.exitPersistentFullscreenMode();
+        assertTrue(
+                "Fullscreen toast should not be visible outside of fullscreen",
+                !mFullscreenHtmlApiHandlerCompat.isToastVisibleForTesting());
+
+        // If we gain / lose the focus outside of fullscreen, then nothing interesting should happen
+        // with the toast.
+        mFullscreenHtmlApiHandlerCompat.onActivityStateChange(mActivity, ActivityState.PAUSED);
+        assertTrue(
+                "Fullscreen toast should not be visible after pause",
+                !mFullscreenHtmlApiHandlerCompat.isToastVisibleForTesting());
+        mFullscreenHtmlApiHandlerCompat.onActivityStateChange(mActivity, ActivityState.RESUMED);
+        assertTrue(
+                "Fullscreen toast should not be visible after resume when not in fullscreen",
+                !mFullscreenHtmlApiHandlerCompat.isToastVisibleForTesting());
+    }
+
+    @Test
     public void testToastIsShownAtLayoutChangeWithRotation() {
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mContentView).when(mTab).getContentView();
@@ -462,7 +535,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
 
         mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
 
-        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false);
+        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false, INVALID_DISPLAY);
         mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
 
         ArgumentCaptor<OnLayoutChangeListener> arg =
@@ -514,7 +587,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
 
         FullscreenManager.Observer observer = Mockito.mock(FullscreenManager.Observer.class);
         mFullscreenHtmlApiHandlerCompat.addObserver(observer);
-        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false);
+        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false, INVALID_DISPLAY);
 
         mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
         verify(observer, times(1)).onEnterFullscreen(mTab, fullscreenOptions);
@@ -545,7 +618,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
 
         FullscreenManager.Observer observer = Mockito.mock(FullscreenManager.Observer.class);
         mFullscreenHtmlApiHandlerCompat.addObserver(observer);
-        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false);
+        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false, INVALID_DISPLAY);
 
         // Enter full screen.
         mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
@@ -598,7 +671,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
         mAreControlsHidden.set(true);
 
         mFullscreenHtmlApiHandlerCompat.setTabForTesting(mTab);
-        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false);
+        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false, INVALID_DISPLAY);
 
         mFullscreenHtmlApiHandlerCompat.onEnterFullscreen(mTab, fullscreenOptions);
         mMultiWindowModeStateDispatcher.dispatchMultiWindowModeChanged(false);

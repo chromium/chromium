@@ -189,13 +189,20 @@ void AnimationExample::CreateExampleView(View* container) {
 
   {
     gfx::RoundedCornersF rounded_corners(12.0f, 12.0f, 12.0f, 12.0f);
-    AnimationBuilder b;
-    abort_handle_ = b.GetAbortHandle();
+    AnimationBuilder corners_animation_builder;
+    corners_animation_abort_handle_ =
+        corners_animation_builder.GetAbortHandle();
     for (views::View* view : squares_container->children()) {
-      b.Once()
+      corners_animation_builder.Once()
           .SetDuration(base::Seconds(10))
           .SetRoundedCorners(view, rounded_corners);
-      b.Repeatedly()
+    }
+
+    AnimationBuilder opacity_animation_builder;
+    opacity_animation_abort_handle_ =
+        opacity_animation_builder.GetAbortHandle();
+    for (views::View* view : squares_container->children()) {
+      opacity_animation_builder.Repeatedly()
           .SetDuration(base::Seconds(2))
           .SetOpacity(view, 0.4f, gfx::Tween::LINEAR_OUT_SLOW_IN)
           .Then()
@@ -205,12 +212,14 @@ void AnimationExample::CreateExampleView(View* container) {
   }
 
   container->AddChildView(std::make_unique<MdTextButton>(
-      base::BindRepeating(
-          [](std::unique_ptr<AnimationAbortHandle>* abort_handle) {
-            abort_handle->reset();
-          },
-          &abort_handle_),
+      base::BindRepeating(&AnimationExample::AbortAnimations,
+                          base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_ABORT_ANIMATION_BUTTON)));
+}
+
+void AnimationExample::AbortAnimations() {
+  corners_animation_abort_handle_.reset();
+  opacity_animation_abort_handle_.reset();
 }
 
 }  // namespace views::examples

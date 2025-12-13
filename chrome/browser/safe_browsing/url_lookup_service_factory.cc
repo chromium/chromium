@@ -19,7 +19,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
-#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
@@ -79,9 +79,7 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<RealTimeUrlLookupService>(
       GetURLLoaderFactory(context),
       VerdictCacheManagerFactory::GetForProfile(profile),
-      base::BindRepeating(
-          &safe_browsing::GetUserPopulationForProfileWithCookieTheftExperiments,
-          profile),
+      base::BindRepeating(&safe_browsing::GetUserPopulationForProfile, profile),
       profile->GetPrefs(),
       std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
           IdentityManagerFactory::GetForProfile(profile)),
@@ -97,7 +95,7 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceForBrowserContext(
                           profile),
       SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
           profile),
-      WebUIInfoSingleton::GetInstance());
+      WebUIContentInfoSingleton::GetInstance());
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

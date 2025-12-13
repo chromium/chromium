@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/drive/model/drive_metrics.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
-#import "ios/chrome/browser/drive/model/manage_storage_url_util.h"
 #import "ios/chrome/browser/google_one/shared/google_one_entry_point.h"
 #import "ios/chrome/browser/save_to_drive/ui_bundled/file_destination_picker_view_controller.h"
 #import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_mediator.h"
@@ -47,7 +46,7 @@
 @end
 
 @implementation SaveToDriveCoordinator {
-  raw_ptr<web::DownloadTask> _downloadTask;
+  raw_ptr<web::DownloadTask, DanglingUntriaged> _downloadTask;
   SaveToDriveMediator* _mediator;
   AccountPickerCoordinator* _accountPickerCoordinator;
   FileDestinationPickerViewController* _destinationPicker;
@@ -135,7 +134,6 @@
             (AccountPickerCoordinator*)accountPickerCoordinator
                didSelectIdentity:(id<SystemIdentity>)identity
                     askEveryTime:(BOOL)askEveryTime {
-  CHECK(identity);
   [_mediator saveWithSelectedIdentity:identity];
 }
 
@@ -231,24 +229,12 @@
   }
   [_mediator willShowManageStorage];
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  if (base::FeatureList::IsEnabled(kIOSManageAccountStorage)) {
-    id<GoogleOneCommands> googleOneHandler =
-        HandlerForProtocol(dispatcher, GoogleOneCommands);
-    [googleOneHandler
-        showGoogleOneForIdentity:identity
-                      entryPoint:GoogleOneEntryPoint::kSaveToDriveAlert
-              baseViewController:_accountPickerCoordinator.viewController];
-    return;
-  }
-  // The uploading identity's user email is used to switch to the uploading
-  // account before loading the "Manage Storage" web page.
-  GURL manageStorageURL = GenerateManageDriveStorageUrl(
-      base::SysNSStringToUTF8(identity.userEmail));
-  OpenNewTabCommand* newTabCommand =
-      [OpenNewTabCommand commandWithURLFromChrome:manageStorageURL];
-  id<ApplicationCommands> applicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
-  [applicationHandler openURLInNewTab:newTabCommand];
+  id<GoogleOneCommands> googleOneHandler =
+      HandlerForProtocol(dispatcher, GoogleOneCommands);
+  [googleOneHandler
+      showGoogleOneForIdentity:identity
+                    entryPoint:GoogleOneEntryPoint::kSaveToDriveAlert
+            baseViewController:_accountPickerCoordinator.viewController];
 }
 
 #pragma mark - AccountPickerCommands

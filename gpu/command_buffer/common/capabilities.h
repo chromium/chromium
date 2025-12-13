@@ -11,7 +11,6 @@
 
 #include "base/containers/flat_map.h"
 #include "gpu/command_buffer/common/gpu_command_buffer_common_export.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/surface_origin.h"
 
@@ -38,7 +37,6 @@ struct GPU_COMMAND_BUFFER_COMMON_EXPORT Capabilities {
 
   // Note this may be smaller than GL_MAX_TEXTURE_SIZE for a GLES context.
   int max_texture_size = 0;
-  int max_copy_texture_chromium_size = 0;
   bool egl_image_external = false;
   bool egl_image_external_essl3 = false;
   bool texture_format_bgra8888 = false;
@@ -54,9 +52,7 @@ struct GPU_COMMAND_BUFFER_COMMON_EXPORT Capabilities {
   bool render_buffer_format_bgra8888 = false;
   bool msaa_is_slow = false;
   bool disable_one_component_textures = false;
-  bool gpu_rasterization = false;
   bool avoid_stencil_buffers = false;
-  bool angle_rgbx_internal_format = false;
 
   bool disable_2d_canvas_copy_on_write = false;
 
@@ -72,7 +68,7 @@ struct GPU_COMMAND_BUFFER_COMMON_EXPORT Capabilities {
 
   bool using_vulkan_context = false;
 
-  GpuMemoryBufferFormatSet gpu_memory_buffer_formats = {
+  gfx::GpuMemoryBufferFormatSet gpu_memory_buffer_formats = {
       gfx::BufferFormat::BGR_565,   gfx::BufferFormat::RGBA_4444,
       gfx::BufferFormat::RGBA_8888, gfx::BufferFormat::RGBX_8888,
       gfx::BufferFormat::YVU_420,
@@ -143,7 +139,6 @@ struct GPU_COMMAND_BUFFER_COMMON_EXPORT GLCapabilities {
   int max_viewport_height = 0;
   int num_compressed_texture_formats = 0;
   int num_shader_binary_formats = 0;
-  int bind_generates_resource_chromium = 0;
 
   int max_3d_texture_size = 0;
   int max_array_texture_layers = 0;

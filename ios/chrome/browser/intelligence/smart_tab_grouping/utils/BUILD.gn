@@ -1,0 +1,20 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("utils") {
+  sources = [
+    "smart_tab_grouping_utils.h",
+    "smart_tab_grouping_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/optimization_guide/proto:optimization_guide_proto_gen",
+    "//components/tab_groups",
+    "//ios/chrome/browser/intelligence/actuation",
+    "//ios/chrome/browser/saved_tab_groups/ui:utils",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
+  ]
+}

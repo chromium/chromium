@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.site_settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
@@ -24,6 +26,8 @@ import androidx.appcompat.app.AlertDialog;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
@@ -54,6 +58,7 @@ import java.util.Collection;
  * browser process must be started here because this Activity may be started explicitly from Android
  * settings, when Android is restoring ManageSpaceActivity after Chrome was killed, or for tests.
  */
+@NullMarked
 public class ManageSpaceActivity extends ChromeBaseAppCompatActivity
         implements View.OnClickListener {
     private static final String TAG = "ManageSpaceActivity";
@@ -64,7 +69,7 @@ public class ManageSpaceActivity extends ChromeBaseAppCompatActivity
     private Button mManageSiteDataButton;
     private Button mClearAllDataButton;
     // Stored for testing.
-    private AlertDialog mUnimportantDialog;
+    private @Nullable AlertDialog mUnimportantDialog;
 
     private static boolean sActivityNotExportedChecked;
 
@@ -72,7 +77,7 @@ public class ManageSpaceActivity extends ChromeBaseAppCompatActivity
 
     @SuppressLint({"ApplySharedPref", "CommitPrefEdits"})
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         ensureActivityNotExported();
 
         setContentView(R.layout.manage_space_activity);
@@ -81,7 +86,7 @@ public class ManageSpaceActivity extends ChromeBaseAppCompatActivity
                 String.format(
                         r.getString(R.string.storage_management_activity_label),
                         r.getString(R.string.app_name)));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        assumeNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         mSiteDataSizeText = findViewById(R.id.site_data_storage_size_text);
         mSiteDataSizeText.setText(R.string.storage_management_computing_size);
@@ -111,7 +116,7 @@ public class ManageSpaceActivity extends ChromeBaseAppCompatActivity
                     }
 
                     @Override
-                    public void onStartupFailure(Exception failureCause) {
+                    public void onStartupFailure(@Nullable Exception failureCause) {
                         mSiteDataSizeText.setText(R.string.storage_management_startup_failure);
                         mUnimportantSiteDataSizeText.setText(
                                 R.string.storage_management_startup_failure);
@@ -183,7 +188,7 @@ public class ManageSpaceActivity extends ChromeBaseAppCompatActivity
     }
 
     @VisibleForTesting
-    public AlertDialog getUnimportantConfirmDialog() {
+    public @Nullable AlertDialog getUnimportantConfirmDialog() {
         return mUnimportantDialog;
     }
 

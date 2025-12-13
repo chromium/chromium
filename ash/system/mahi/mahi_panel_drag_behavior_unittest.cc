@@ -121,7 +121,7 @@ TEST_F(MahiPanelDragBehaviorTest, MouseDragInMultiScreens) {
   // on the bottom of the second one.
   display::DisplayIdList list = display_manager()->GetConnectedDisplayIdList();
   ASSERT_EQ(3u, list.size());
-  ASSERT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().id(), list[0]);
+  ASSERT_EQ(display::Screen::Get()->GetPrimaryDisplay().id(), list[0]);
   display::DisplayLayoutBuilder builder(list[0]);
   builder.AddDisplayPlacement(list[1], list[0],
                               display::DisplayPlacement::RIGHT, 0);

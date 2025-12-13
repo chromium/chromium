@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_TEST_SUPPORT_NON_INTERACTIVE_GLIC_TEST_H_
 #define CHROME_BROWSER_GLIC_TEST_SUPPORT_NON_INTERACTIVE_GLIC_TEST_H_
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 
@@ -16,17 +17,19 @@ namespace glic {
 // changes. This fixture artificially sets a single browser as focused, so that
 // Glic will consider a tab in the browser as focused.
 class NonInteractiveGlicTest
-    : public test::InteractiveGlicTestT<InteractiveBrowserTest> {
+    : public test::InteractiveGlicTestMixin<InteractiveBrowserTest> {
  public:
   NonInteractiveGlicTest();
   NonInteractiveGlicTest(const base::FieldTrialParams& glic_params,
                          const GlicTestEnvironmentConfig& glic_config);
+  ~NonInteractiveGlicTest() override;
 
   // Returns this fixture's `BrowserActivator` instance so that tests can
   // customize how browser windows should be activated, if needed.
   BrowserActivator& browser_activator() { return browser_activator_; }
 
  private:
+  base::test::ScopedFeatureList features_;
   BrowserActivator browser_activator_;
 };
 

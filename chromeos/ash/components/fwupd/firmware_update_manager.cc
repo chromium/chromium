@@ -23,8 +23,10 @@
 #include "base/files/scoped_file.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
@@ -161,21 +163,16 @@ base::File VerifyChecksum(base::File file, const std::string& checksum) {
   }
 
   // Safe to truncate down to <int>.
-  int file_length = raw_file_length;
+  const int file_length = raw_file_length;
 
   // Check checksum of the file.
-  std::vector<char> buf(file_length);
-  if (UNSAFE_TODO(file.Read(0, buf.data(), file_length)) != file_length) {
+  std::vector<uint8_t> buf(file_length);
+  if (file.Read(0, buf) != file_length) {
     return base::File();
   }
 
-  const std::string_view contents(buf.data(), file_length);
-
-  const std::string sha_contents = crypto::SHA256HashString(contents);
-
   const std::string encoded_sha =
-      base::ToLowerASCII(base::HexEncode(sha_contents));
-
+      base::HexEncodeLower(crypto::SHA256HashString(base::as_string_view(buf)));
   if (encoded_sha != checksum) {
     FIRMWARE_LOG(ERROR) << "Wrong checksum, expected: " << checksum
                         << ", got: " << encoded_sha;
@@ -324,7 +321,8 @@ std::string GetFirmwareFileNameFromJsonString(const std::string& json_content) {
   }
 
   base::JSONReader::Result value =
-      base::JSONReader::ReadAndReturnValueWithError(json_content);
+      base::JSONReader::ReadAndReturnValueWithError(
+          json_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value.has_value()) {
     FIRMWARE_LOG(ERROR) << "Failed to deserialize json string with error: "
                         << value.error().ToString();
@@ -814,6 +812,12 @@ void FirmwareUpdateManager::OnGetFile(const std::string& device_id,
       inflight_update_ = mojo::Clone(update);
       break;
     }
+  }
+
+  if (inflight_update_.is_null()) {
+    FIRMWARE_LOG(ERROR) << "Unknown device ID: " << device_id;
+    std::move(callback).Run(MethodResult::kUnknownDeviceId);
+    return;
   }
 
   task_runner_->PostTaskAndReplyWithResult(

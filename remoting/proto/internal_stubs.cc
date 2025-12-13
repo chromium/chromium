@@ -21,25 +21,6 @@ const std::string& GetEmptyStringRef() {
 }
 }  // namespace
 
-// DoNothingProto
-
-const google::protobuf::internal::ClassData* DoNothingProto::GetClassData()
-    const {
-  NOTREACHED();
-}
-
-void DoNothingProto::Clear() {}
-
-size_t DoNothingProto::ByteSizeLong() const {
-  return 0;
-}
-
-uint8_t* DoNothingProto::_InternalSerialize(
-    uint8_t* ptr,
-    google::protobuf::io::EpsCopyOutputStream* stream) const {
-  return ptr;
-}
-
 // ===========================
 // RemoteAccessService helpers
 // ===========================
@@ -211,6 +192,61 @@ std::unique_ptr<RemoteSupportHost> GetRemoteSupportHost(
 
 std::string_view GetSupportId(const RemoteSupportHost&) {
   return {};
+}
+
+// ============================
+// MessagingService helpers
+// ============================
+
+std::string_view GetHostSendMessagePath() {
+  return "/fake/for_testing/send_host_message";
+}
+std::string_view GetHostOpenChannelPath() {
+  return "/fake/for_testing/receive_client_messages";
+}
+
+std::unique_ptr<HostOpenChannelRequest> GetHostOpenChannelRequest(
+    const HostOpenChannelRequestStruct&) {
+  return std::make_unique<HostOpenChannelRequest>();
+}
+
+std::unique_ptr<HostOpenChannelResponseStruct> GetHostOpenChannelResponseStruct(
+    const HostOpenChannelResponse&) {
+  return std::make_unique<HostOpenChannelResponseStruct>();
+}
+
+std::unique_ptr<HostSendMessageRequest> GetHostSendMessageRequest(
+    const HostSendMessageRequestStruct&) {
+  return std::make_unique<HostSendMessageRequest>();
+}
+
+std::unique_ptr<HostSendMessageResponseStruct> GetHostSendMessageResponseStruct(
+    const HostSendMessageResponse&) {
+  return std::make_unique<HostSendMessageResponseStruct>();
+}
+
+std::unique_ptr<PeerMessage> GetPeerMessage(const PeerMessageStruct&) {
+  return std::make_unique<PeerMessage>();
+}
+
+std::unique_ptr<PeerMessageStruct> GetPeerMessageStruct(const PeerMessage&) {
+  return std::make_unique<PeerMessageStruct>();
+}
+
+std::unique_ptr<IqStanza> GetIqStanza(const IqStanzaStruct&) {
+  return std::make_unique<IqStanza>();
+}
+
+std::unique_ptr<IqStanzaStruct> GetIqStanzaStruct(const IqStanza&) {
+  return std::make_unique<IqStanzaStruct>();
+}
+
+std::unique_ptr<SystemTest> GetSystemTest(const SystemTestStruct&) {
+  return std::make_unique<SystemTest>();
+}
+
+std::unique_ptr<SystemTestStruct> GetSystemTestStruct(const SystemTest&) {
+  return std::make_unique<SystemTestStruct>();
 }
 
 }  // namespace remoting::internal

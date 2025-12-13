@@ -90,6 +90,9 @@ enum WebPrinterStateReason {
 // Basic description of a single printer.
 struct WebPrinterInfo {
   string printer_name;
+  // Opaque representation of the printer id.
+  // Unique per printer even if the name is not.
+  string printer_id;
   pending_remote<WebPrinter> printer_remote;
 };
 
@@ -169,6 +172,10 @@ struct WebPrinterAttributes {
 
   WebPrintingSides? sides_default;
   array<WebPrintingSides> sides_supported;
+
+  // Opaque representation of the printer id.
+  // Unique per printer even if the name is not.
+  string printer_id;
 };
 
 // Represents the requested media-col entry for a print job. Note that this

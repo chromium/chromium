@@ -11,7 +11,6 @@
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
-#import "components/autofill/ios/form_util/autofill_renderer_id_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/autofill/ios/form_util/remote_frame_registration_java_script_feature.h"
@@ -78,7 +77,6 @@ FormHandlersJavaScriptFeature::FormHandlersJavaScriptFeature()
               web::java_script_features::GetCommonJavaScriptFeature(),
               autofill::AutofillFormFeaturesJavaScriptFeature::GetInstance(),
               autofill::FormUtilJavaScriptFeature::GetInstance(),
-              AutofillRendererIDJavaScriptFeature::GetInstance(),
               RemoteFrameRegistrationJavaScriptFeature::GetInstance(),
           }) {}
 
@@ -106,7 +104,6 @@ void FormHandlersJavaScriptFeature::ScriptMessageReceived(
 }
 
 FormHandlersJavaScriptFeature::FormHandlersJavaScriptFeature(
-    AutofillRendererIDJavaScriptFeature* renderer_id_feature,
     RemoteFrameRegistrationJavaScriptFeature*
         remote_frame_registration_java_script_feature)
     : web::JavaScriptFeature(
@@ -115,7 +112,6 @@ FormHandlersJavaScriptFeature::FormHandlersJavaScriptFeature(
           {
               web::java_script_features::GetCommonJavaScriptFeature(),
               FormUtilJavaScriptFeature::GetInstance(),
-              renderer_id_feature,
               remote_frame_registration_java_script_feature,
           }) {}
 

@@ -5,6 +5,7 @@
 #include "components/exo/wayland/clients/globals.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
@@ -34,7 +35,7 @@ void RegistryHandler(void* data,
   }
 
 #define BIND(interface_type, global_member)                        \
-  if (UNSAFE_TODO(strcmp(interface, #interface_type)) == 0) {      \
+  if (std::string_view(interface) == #interface_type) {            \
     globals->global_member.reset(                                  \
         static_cast<interface_type*>(wl_registry_bind(             \
             registry, id, &interface_type##_interface,             \
@@ -45,7 +46,7 @@ void RegistryHandler(void* data,
   }
 
 #define BIND_VECTOR(interface_type, global_member)                 \
-  if (UNSAFE_TODO(strcmp(interface, #interface_type)) == 0) {      \
+  if (std::string_view(interface) == #interface_type) {            \
     globals->global_member.emplace_back(                           \
         static_cast<interface_type*>(wl_registry_bind(             \
             registry, id, &interface_type##_interface,             \
@@ -65,7 +66,6 @@ void RegistryHandler(void* data,
   BIND(zaura_output_manager_v2, aura_output_manager_v2)
   BIND(zwp_linux_dmabuf_v1, linux_dmabuf)
   BIND(wl_subcompositor, subcompositor)
-  BIND(zcr_color_manager_v1, color_manager)
   BIND(zwp_input_timestamps_manager_v1, input_timestamps_manager)
   BIND(zwp_fullscreen_shell_v1, fullscreen_shell)
   BIND_VECTOR(wl_output, outputs)

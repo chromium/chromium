@@ -17,8 +17,10 @@
 #include "third_party/blink/renderer/core/xml/xsl_style_sheet.h"
 #include "third_party/blink/renderer/core/xml/xslt_processor.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -71,8 +73,9 @@ DocumentXSLT::DocumentXSLT(Document& document)
 void DocumentXSLT::ApplyXSLTransform(Document& document,
                                      ProcessingInstruction* pi) {
   DCHECK(!pi->IsLoading());
-  UseCounter::Count(document, WebFeature::kXSLProcessingInstruction);
-  XSLTProcessor* processor = XSLTProcessor::Create(document);
+  CHECK(XSLTProcessor::XSLTEnabled());
+  XSLTProcessor* processor = XSLTProcessor::Create(
+      document, ASSERT_NO_EXCEPTION, WebFeature::kXSLProcessingInstruction);
   processor->SetXSLStyleSheet(To<XSLStyleSheet>(pi->sheet()));
   String result_mime_type;
   String new_source;

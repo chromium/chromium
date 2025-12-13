@@ -117,7 +117,7 @@ bool UpdateViewScreenStateRequest::GetContentData(
 
   root.Set(kViewScreenState, update_view_screen_state_param_.view_screen_state);
 
-  base::JSONWriter::Write(root, upload_content);
+  *upload_content = base::WriteJson(root).value_or("");
   return true;
 }
 

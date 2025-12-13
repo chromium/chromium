@@ -41,11 +41,10 @@ LanguageDetectionModelLoaderServiceIOSFactory::
 
 std::unique_ptr<KeyedService>
 LanguageDetectionModelLoaderServiceIOSFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   if (!translate::IsTFLiteLanguageDetectionEnabled()) {
     return nullptr;
   }
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<
       language_detection::LanguageDetectionModelLoaderServiceIOS>(
       LanguageDetectionModelServiceFactory::GetForProfile(profile));

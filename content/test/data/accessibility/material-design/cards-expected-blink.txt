@@ -1,0 +1,31 @@
+rootWebArea htmlTag='#document' name='Material Web Cards'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++none ignored
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='div'
+++++++++++++++staticText name='Card content goes here.'
+++++++++++++++++inlineTextBox name='Card content goes here.'
+++++++++++genericContainer className='outline' htmlTag='div'
+++++++++none ignored
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='div'
+++++++++++++++staticText name='This is a filled card with content.'
+++++++++++++++++inlineTextBox name='This is a filled card with content.'
+++++++++++genericContainer className='outline' htmlTag='div'
+++++++++none ignored
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='div'
+++++++++++++++staticText name='Content for the outlined card variant.'
+++++++++++++++++inlineTextBox name='Content for the outlined card variant.'
+++++++++++genericContainer className='outline' htmlTag='div'

@@ -13,6 +13,7 @@ source_set("policy") {
   deps = [
     "//base",
     "//components/enterprise",
+    "//components/enterprise/browser/identifiers",
     "//components/policy:generated",
     "//components/policy/core/browser",
     "//components/policy/core/common",
@@ -23,6 +24,7 @@ source_set("policy") {
     "//components/version_info",
     "//components/webui/version",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/enterprise/identifiers:profile_id_service_factory",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",

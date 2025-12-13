@@ -56,10 +56,10 @@ class TestBrowserListObserver : public BrowserListObserver {
 
  private:
   // Backing vars for the corresponding getter methods.
-  raw_ptr<Browser> last_added_browser_ = nullptr;
-  raw_ptr<Browser> last_removed_browser_ = nullptr;
-  raw_ptr<Browser> last_added_incognito_browser_ = nullptr;
-  raw_ptr<Browser> last_removed_incognito_browser_ = nullptr;
+  raw_ptr<Browser, DanglingUntriaged> last_added_browser_ = nullptr;
+  raw_ptr<Browser, DanglingUntriaged> last_removed_browser_ = nullptr;
+  raw_ptr<Browser, DanglingUntriaged> last_added_incognito_browser_ = nullptr;
+  raw_ptr<Browser, DanglingUntriaged> last_removed_incognito_browser_ = nullptr;
   std::set<Browser*> last_browsers_;
   std::set<Browser*> last_incognito_browsers_;
 };

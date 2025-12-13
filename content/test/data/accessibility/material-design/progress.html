@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!--
+@WAIT-FOR:Ready
+@EXECUTE-AND-WAIT-FOR:setProgressThirty()
+@EXECUTE-AND-WAIT-FOR:setProgressSeventy()
+@EXECUTE-AND-WAIT-FOR:setProgressFull()
+@AURALINUX-ALLOW:indeterminate*
+@BLINK-ALLOW:htmlTag*
+@BLINK-ALLOW:className*
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Web Progress</title>
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady } from "./resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-linear-progress",
+            "md-circular-progress"
+        ];
+
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+            const linearProgresses = [
+                { id: "test-progress" },
+                { value: 0.5 },
+                { value: 0.6, buffer: 0.8 },
+                { indeterminate: true }
+            ];
+            linearProgresses.forEach(progressInfo => {
+                const progress = document.createElement("md-linear-progress");
+                if (progressInfo.id) {
+                    progress.id = progressInfo.id;
+                }
+                if (progressInfo.value) {
+                    progress.value = progressInfo.value;
+                }
+                if (progressInfo.buffer) {
+                    progress.buffer = progressInfo.buffer;
+                }
+                if (progressInfo.indeterminate) {
+                    progress.indeterminate = true;
+                }
+                statusDiv.appendChild(progress);
+            });
+
+            const circularProgresses = [
+                {},
+                { value: 0.3 },
+                { indeterminate: true },
+                { fourColor: true }
+            ];
+            circularProgresses.forEach(progressInfo => {
+                const progress = document.createElement("md-circular-progress");
+                if (progressInfo.value) {
+                    progress.value = progressInfo.value;
+                }
+                if (progressInfo.indeterminate) {
+                    progress.indeterminate = true;
+                }
+                if (progressInfo.fourColor) {
+                    progress.fourColor = true;
+                }
+                statusDiv.appendChild(progress);
+            });
+
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+<script>
+    async function setProgressThirty() {
+        const progress = document.getElementById("test-progress");
+        if (progress) {
+            progress.value = 0.3;
+            await progress.updateComplete;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "Progress Set to 30";
+            statusDiv.appendChild(statusText);
+            return "Progress Set to 30";
+        }
+        return "Failed to set Progress to 30";
+    }
+
+    async function setProgressSeventy() {
+        const progress = document.getElementById("test-progress");
+        if (progress) {
+            progress.value = 0.7;
+            await progress.updateComplete;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "Progress Set to 70";
+            statusDiv.appendChild(statusText);
+            return "Progress Set to 70";
+        }
+        return "Failed to set Progress to 70";
+    }
+
+    async function setProgressFull() {
+        const progress = document.getElementById("test-progress");
+        if (progress) {
+            progress.value = 1.0;
+            await progress.updateComplete;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "Progress Set to 100";
+            statusDiv.appendChild(statusText);
+            return "Progress Set to 100";
+        }
+        return "Failed to set Progress to 100";
+    }
+</script>
+</html>

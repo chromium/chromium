@@ -1022,6 +1022,266 @@ IN_PROC_BROWSER_TEST_F(SmartCardConnectPolicyTest,
                            content_settings::SettingSource::kUser),
             GetSmartCardConnectContentSetting(GetTestingUrl()));
 }
+
+class DeviceAttributesPolicyTest : public PolicyTest {
+ public:
+  void SetUpOnMainThread() override {
+    PolicyTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestingUrl()));
+  }
+
+ protected:
+  GURL GetTestingUrl() const {
+    return embedded_test_server()->GetURL("/empty.html");
+  }
+
+  std::pair<ContentSetting, content_settings::SettingSource>
+  GetDeviceAttributesContentSetting(const GURL& url) {
+    content_settings::SettingInfo settings_info;
+    auto content_setting =
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+            ->GetContentSetting(/*primary_url=*/url, /*secondary_url=*/url,
+                                ContentSettingsType::DEVICE_ATTRIBUTES,
+                                &settings_info);
+    return std::make_pair(content_setting, settings_info.source);
+  }
+
+  void SetDefaultDeviceAttributesSettingToAllowed() {
+    SetPolicy(&policies_, key::kDefaultDeviceAttributesSetting,
+              base::Value(kAllowSetting));
+    UpdateProviderPolicy(policies_);
+  }
+
+  void SetDefaultDeviceAttributesSettingToBlocked() {
+    SetPolicy(&policies_, key::kDefaultDeviceAttributesSetting,
+              base::Value(kBlockSetting));
+    UpdateProviderPolicy(policies_);
+  }
+
+  void SetDeviceAttributesAllowedFor(std::string_view url) {
+    SetPolicy(&policies_, key::kDeviceAttributesAllowedForOrigins,
+              base::Value(base::Value::List().Append(url)));
+    UpdateProviderPolicy(policies_);
+  }
+
+  void SetDeviceAttributesBlockedFor(std::string_view url) {
+    SetPolicy(&policies_, key::kDeviceAttributesBlockedForOrigins,
+              base::Value(base::Value::List().Append(url)));
+    UpdateProviderPolicy(policies_);
+  }
+
+  void CheckDeviceAttributesContentSetting(
+      std::pair<ContentSetting, content_settings::SettingSource> expected_value,
+      GURL expected_source) {
+    EXPECT_EQ(expected_value,
+              GetDeviceAttributesContentSetting(expected_source));
+  }
+
+ private:
+  static constexpr int32_t kAllowSetting = 1;
+  static constexpr int32_t kBlockSetting = 2;
+  PolicyMap policies_;
+};
+
+IN_PROC_BROWSER_TEST_F(DeviceAttributesPolicyTest,
+                       DeviceAttributesAllowedForOrigins) {
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kUser},
+      GetTestingUrl());
+
+  SetDeviceAttributesAllowedFor(GetTestingUrl().spec());
+
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kPolicy},
+      GetTestingUrl());
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceAttributesPolicyTest,
+                       DeviceAttributesBlockedForOrigins) {
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kUser},
+      GetTestingUrl());
+
+  SetDeviceAttributesBlockedFor(GetTestingUrl().spec());
+
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_BLOCK, content_settings::SettingSource::kPolicy},
+      GetTestingUrl());
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceAttributesPolicyTest,
+                       DeviceAttributesBlockedByDefault) {
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kUser},
+      GetTestingUrl());
+
+  SetDefaultDeviceAttributesSettingToBlocked();
+
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_BLOCK, content_settings::SettingSource::kPolicy},
+      GetTestingUrl());
+
+  // Allow should override block
+  SetDeviceAttributesAllowedFor(GetTestingUrl().spec());
+
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kPolicy},
+      GetTestingUrl());
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceAttributesPolicyTest,
+                       DeviceAttributesAllowedByDefault) {
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kUser},
+      GetTestingUrl());
+
+  SetDefaultDeviceAttributesSettingToAllowed();
+
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kPolicy},
+      GetTestingUrl());
+
+  // Block should override allow
+  SetDeviceAttributesBlockedFor(GetTestingUrl().spec());
+
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_BLOCK, content_settings::SettingSource::kPolicy},
+      GetTestingUrl());
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceAttributesPolicyTest,
+                       DeviceAttributesCannotBeAllowedForWildcard) {
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kUser},
+      GetTestingUrl());
+
+  SetDeviceAttributesAllowedFor("*");
+
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kUser},
+      GetTestingUrl());
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceAttributesPolicyTest,
+                       DeviceAttributesCannotBeBlockedForWildcard) {
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kUser},
+      GetTestingUrl());
+
+  SetDeviceAttributesBlockedFor("*");
+
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kUser},
+      GetTestingUrl());
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+class IdleDetectionPolicyTest : public PolicyTest {
+ public:
+  void VerifyPermission(const char* url, ContentSetting status) {
+    content_settings::SettingInfo settings_info;
+    auto content_setting =
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+            ->GetContentSetting(
+                /*primary_url=*/GURL(url), /*secondary_url=*/GURL(url),
+                ContentSettingsType::IDLE_DETECTION, &settings_info);
+    EXPECT_EQ(content_setting, status);
+  }
+
+  void AllowUrl(const char* url) {
+    base::Value::List policy_value;
+    policy_value.Append(url);
+    SetPolicy(&policies_, key::kIdleDetectionAllowedForUrls,
+              base::Value(std::move(policy_value)));
+    UpdateProviderPolicy(policies_);
+  }
+
+  void BlockUrl(const char* url) {
+    base::Value::List policy_value;
+    policy_value.Append(url);
+    SetPolicy(&policies_, key::kIdleDetectionBlockedForUrls,
+              base::Value(std::move(policy_value)));
+    UpdateProviderPolicy(policies_);
+  }
+
+  void ClearLists() {
+    base::Value::List policy_value_allow;
+    base::Value::List policy_value_block;
+    SetPolicy(&policies_, key::kIdleDetectionAllowedForUrls,
+              base::Value(std::move(policy_value_allow)));
+    SetPolicy(&policies_, key::kIdleDetectionBlockedForUrls,
+              base::Value(std::move(policy_value_block)));
+    UpdateProviderPolicy(policies_);
+  }
+
+  void SetDefault(int default_value) {
+    SetPolicy(&policies_, key::kDefaultIdleDetectionSetting,
+              base::Value(default_value));
+    UpdateProviderPolicy(policies_);
+  }
+
+ private:
+  PolicyMap policies_;
+};
+
+IN_PROC_BROWSER_TEST_F(IdleDetectionPolicyTest, BlockIdleDetectionApi) {
+  // Navigate to a secure context.
+  embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("localhost", "/simple_page.html")));
+  content::WebContents* const web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_THAT(
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().Serialize(),
+      testing::StartsWith("http://localhost:"));
+
+  // Set the policy to block IdleDetection.
+  SetDefault(kBlockAll);
+
+  std::string rejection =
+      content::EvalJs(web_contents,
+                      "new Promise(async resolve => {"
+                      "  const state = await navigator.permissions.query("
+                      "      {name: 'idle-detection'});"
+                      "  resolve(state.state);"
+                      "});")
+          .ExtractString();
+  EXPECT_EQ(rejection, "denied");
+}
+
+IN_PROC_BROWSER_TEST_F(IdleDetectionPolicyTest, DynamicRefresh) {
+  constexpr char kFooUrl[] = "https://foo.idle";
+  constexpr char kBarUrl[] = "https://bar.idle";
+  constexpr int kAllowAll = 1;
+
+  BlockUrl(kFooUrl);
+  VerifyPermission(kFooUrl, CONTENT_SETTING_BLOCK);
+  VerifyPermission(kBarUrl, CONTENT_SETTING_ASK);
+
+  BlockUrl(kBarUrl);
+  VerifyPermission(kFooUrl, CONTENT_SETTING_ASK);
+  VerifyPermission(kBarUrl, CONTENT_SETTING_BLOCK);
+
+  SetDefault(kBlockAll);
+  ClearLists();
+  AllowUrl(kFooUrl);
+  VerifyPermission(kFooUrl, CONTENT_SETTING_ALLOW);
+  VerifyPermission(kBarUrl, CONTENT_SETTING_BLOCK);
+
+  AllowUrl(kBarUrl);
+  VerifyPermission(kFooUrl, CONTENT_SETTING_BLOCK);
+  VerifyPermission(kBarUrl, CONTENT_SETTING_ALLOW);
+
+  SetDefault(kAllowAll);
+  ClearLists();
+  VerifyPermission(kFooUrl, CONTENT_SETTING_ALLOW);
+  VerifyPermission(kBarUrl, CONTENT_SETTING_ALLOW);
+}
+#endif
 
 }  // namespace policy

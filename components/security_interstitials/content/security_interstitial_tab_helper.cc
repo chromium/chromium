@@ -328,6 +328,38 @@ void SecurityInterstitialTabHelper::OpenAndroidAdvancedProtectionSettings() {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+void SecurityInterstitialTabHelper::OpenHelpCenterInNewTab() {
+  HandleCommand(security_interstitials::SecurityInterstitialCommand::
+                    CMD_OPEN_HELP_CENTER_IN_NEW_TAB);
+}
+
+void SecurityInterstitialTabHelper::OpenDiagnosticInNewTab() {
+  HandleCommand(security_interstitials::SecurityInterstitialCommand::
+                    CMD_OPEN_DIAGNOSTIC_IN_NEW_TAB);
+}
+
+void SecurityInterstitialTabHelper::OpenReportingPrivacyInNewTab() {
+  HandleCommand(security_interstitials::SecurityInterstitialCommand::
+                    CMD_OPEN_REPORTING_PRIVACY_IN_NEW_TAB);
+}
+
+void SecurityInterstitialTabHelper::OpenWhitepaperInNewTab() {
+  HandleCommand(security_interstitials::SecurityInterstitialCommand::
+                    CMD_OPEN_WHITEPAPER_IN_NEW_TAB);
+}
+
+void SecurityInterstitialTabHelper::ReportPhishingErrorInNewTab() {
+  HandleCommand(security_interstitials::SecurityInterstitialCommand::
+                    CMD_REPORT_PHISHING_ERROR_IN_NEW_TAB);
+}
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+void SecurityInterstitialTabHelper::ShowCertificateViewer() {
+  HandleCommand(security_interstitials::SecurityInterstitialCommand::
+                    CMD_SHOW_CERTIFICATE_VIEWER);
+}
+#endif
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SecurityInterstitialTabHelper);
 
 }  //  namespace security_interstitials

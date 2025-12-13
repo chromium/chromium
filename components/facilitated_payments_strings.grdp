@@ -13,6 +13,12 @@
   <message name="IDS_SETTINGS_MANAGE_NON_CARD_PAYMENT_METHODS_DESCRIPTION" desc="Description for the preference that allows the user to manage non-card payment methods." formatter_data="android_java">
     When you make purchases in Chrome, see non-card payment methods as an option
   </message>
+    <message name="IDS_SETTINGS_MANAGE_NON_CARD_PAYMENT_METHODS_A2A_TITLE" desc="Title for the toggle preference when the user has payment apps that can be used to make payments via the account to account flow." formatter_data="android_java">
+    Payments apps
+  </message>
+  <message name="IDS_SETTINGS_MANAGE_NON_CARD_PAYMENT_METHODS_A2A_DESCRIPTION" desc="Description for the toggle preference when the user has payment apps that can be used to make payments via the account to account flow." formatter_data="android_java">
+    Enable redirection to supported payment apps
+  </message>
   <!--Ewallet and Pix payment method settings pages-->
   <message name="IDS_SETTINGS_MANAGE_EWALLET_TITLE" desc="Title for the preference that allows the user to manage eWallet accounts when user has only eWallet accounts available to be used. 'eWallet' is a payment system that should not be translated." formatter_data="android_java">
     Pay with eWallet
@@ -72,6 +78,9 @@
   <message name="IDS_FACILITATED_PAYMENTS_PAYMENT_METHODS_BOTTOM_SHEET_GENERIC_TITLE" desc="Title for the bottom sheet displaying user's accounts linked to their GPay wallet. It is shown to prompt the user to pay directly on Chrome when it receives signal of intention to pay, and the user has eligible payment accounts." formatter_data="android_java">
     Pay without switching apps
   </message>
+  <message name="IDS_FACILITATED_PAYMENTS_NON_CARD_PAYMENT_METHODS_BOTTOM_SHEET_TITLE" desc="Title for the bottom sheet displaying user's available non-card payment methods. It is displayed when user has at least 1 supported payment app installed." formatter_data="android_java">
+    Pay instantly without QR upload
+  </message>
   <message name="IDS_PIX_PAYMENT_METHODS_BOTTOM_SHEET_DESCRIPTION" desc="Explanation text for the bottom sheet displaying user's PIX bank accounts linked to their GPay wallet. It is shown to prompt the user to pay directly on Chrome when a PIX payment page is detected." formatter_data="android_java">
     Account info is encrypted and kept private
   </message>
@@ -83,6 +92,12 @@
   </message>
   <message name="IDS_EWALLET_PAYMENT_ADDITIONAL_INFO" desc="Additional info for the bottom sheet displaying user's eWallet accounts linked to their GPay wallet. The bottom sheet is shown to prompt the user to pay directly on Chrome when an eWallet payment page is detected. This string provides supplemental information about the user's accounts and the transaction." formatter_data="android_java">
     Your saved auto-pay method may be used for this payment. To turn off eWallets in Chrome, go to your <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>payment settings<ph name="END_LINK1">&lt;/link1&gt;</ph>
+  </message>
+  <message name="IDS_PAYMENT_APP_PAYMENT_ADDITIONAL_INFO" desc="Additional info for the bottom sheet displaying user's supported payment apps. The bottom sheet is shown to prompt the user to pay by app redirection when an A2A payment link is detected. This string provides supplemental information about the user's accounts and the transaction." formatter_data="android_java">
+    To turn off payment app in Chrome, go to your <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>payment settings<ph name="END_LINK1">&lt;/link1&gt;</ph>
+  </message>
+  <message name="IDS_EWALLET_AND_PAYMENT_APP_PAYMENT_ADDITIONAL_INFO" desc="Additional info for the bottom sheet displaying user's eWallet accounts linked to their GPay wallet and user's supported payment apps. The bottom sheet is shown to prompt the user to pay directly on Chrome or by app redirection when a payment link is detected. This string provides supplemental information about the user's accounts and the transaction." formatter_data="android_java">
+    Your saved auto-pay method may be used for this payment. To turn off eWallets or payment app in Chrome, go to your <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>payment settings<ph name="END_LINK1">&lt;/link1&gt;</ph>
   </message>
   <message name="IDS_PIX_PAYMENT_PRODUCT_ICON_CONTENT_DESCRIPTION" desc="Accessibility string for the Google Pay + Pix product icon." formatter_data="android_java">
     Google Pay, Pix

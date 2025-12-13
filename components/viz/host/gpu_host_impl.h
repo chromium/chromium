@@ -23,6 +23,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom.h"
+#include "components/persistent_cache/pending_backend.h"
 #include "components/viz/common/buildflags.h"
 #include "components/viz/host/viz_host_export.h"
 #include "components/viz/service/debugger/mojom/viz_debugger.mojom.h"
@@ -170,6 +171,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
 
   void SetProcessId(base::ProcessId pid);
   void OnProcessCrashed();
+  void NotifyWorkloadIncrease();
 
   // Adds a connection error handler for the GpuService.
   void AddConnectionErrorHandler(base::OnceClosure handler);
@@ -190,6 +192,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
   void EstablishGpuChannel(int client_id,
                            uint64_t client_tracing_id,
                            bool is_gpu_host,
+                           bool enable_extra_handles_validation,
                            bool sync,
                            EstablishChannelCallback callback);
   void SetChannelClientPid(int client_id, base::ProcessId client_pid);
@@ -225,6 +228,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
 #endif
 
   void MaybeSendFontRenderParams();
+  gpu::GpuProcessHostShmCount* GetShaderCacheShmCountForTesting();
 
  private:
   friend class GpuHostImplTestApi;
@@ -233,6 +237,12 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
   void InitOzone();
   void TerminateGpuProcess(const std::string& message);
 #endif  // BUILDFLAG(IS_OZONE)
+
+  void InitPersistentCache();
+  void SetChannelPersistentCachePendingBackend(
+      int client_id,
+      const gpu::GpuDiskCacheHandle& handle,
+      persistent_cache::PendingBackend pending_backend);
 
   std::string GetShaderPrefixKey();
 
@@ -279,6 +289,10 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
                        const std::string& key,
                        const std::string& blob) override;
   void ClearGrShaderDiskCache() override;
+#if BUILDFLAG(IS_WIN)
+  void EnsureWebNNExecutionProvidersReady(
+      EnsureWebNNExecutionProvidersReadyCallback cb) override;
+#endif
 
   // mojom::GpuLogging:
   void RecordLogMessage(int32_t severity,
@@ -289,6 +303,11 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
   void LogFrame(base::Value frame_data) override;
 #endif
+
+  void ClearPersistentCaches(bool delete_cache_files);
+  void OnPersistentCacheFilesCreated(
+      gpu::GpuDiskCacheHandle handle,
+      persistent_cache::PendingBackend pending_backend);
 
   // Can be modified in tests by GpuHostImplTestApi.
   raw_ptr<Delegate> delegate_;
@@ -330,6 +349,15 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
   base::flat_map<int, EstablishChannelCallback> channel_requests_;
 
   base::OneShotTimer shutdown_timeout_;
+
+  // Opened persistent cache files which have not been forwarded to the GPU
+  // process yet.
+  std::map<gpu::GpuDiskCacheHandle, persistent_cache::PendingBackend>
+      persistent_cache_files_;
+
+  // Signal that the GPU process is ready to accept persistent cache files. They
+  // should be forwarded as soon as they are loaded.
+  bool send_persistent_cache_files_to_service_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

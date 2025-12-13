@@ -31,7 +31,7 @@
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/preferred_app.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 // Avoid including this header file directly or referring directly to
 // AppServiceProxyAsh as a type. Instead:
@@ -50,9 +50,6 @@ namespace apps {
 class AppInstallService;
 class AppPlatformMetrics;
 class AppPlatformMetricsService;
-class InstanceRegistryUpdater;
-class BrowserAppInstanceRegistry;
-class BrowserAppInstanceTracker;
 class PackageId;
 class PromiseAppRegistryCache;
 class PromiseAppService;
@@ -78,7 +75,8 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   using OnPauseDialogClosedCallback = base::OnceCallback<void()>;
   using OnUninstallForTestingCallback = base::OnceCallback<void(bool)>;
 
-  explicit AppServiceProxyAsh(Profile* profile);
+  explicit AppServiceProxyAsh(Profile* profile,
+                              PublisherHostFactory* publisher_host_factory);
   AppServiceProxyAsh(const AppServiceProxyAsh&) = delete;
   AppServiceProxyAsh& operator=(const AppServiceProxyAsh&) = delete;
   ~AppServiceProxyAsh() override;
@@ -86,11 +84,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   apps::InstanceRegistry& InstanceRegistry();
   apps::AppPlatformMetrics* AppPlatformMetrics();
   apps::AppPlatformMetricsService* AppPlatformMetricsService();
-
-  // TODO(373972275): Remove BrowserAppInstanceTracker,
-  // BrowserAppInstanceRegistry and InstanceRegistryUpdater.
-  apps::BrowserAppInstanceTracker* BrowserAppInstanceTracker();
-  apps::BrowserAppInstanceRegistry* BrowserAppInstanceRegistry();
 
   // Sets the publisher for `app_type` is unavailable, to allow
   // AppService to remove apps for `app_type`, and clean up launch requests,
@@ -194,6 +187,13 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // Sets app locale for an app with the given `app_id`. Empty |locale_tag|
   // indicates system language being chosen.
   void SetAppLocale(const std::string& app_id, const std::string& locale_tag);
+
+  // Set |app_id| as preferred app for this `protocol_scheme` (which is
+  // guaranteed to not be equal to http/https and hence not overlap with
+  // supported links; attempt to pass http/https will CHECK()). This is only
+  // supported for web apps.
+  void SetProtocolLinkPreference(std::string_view app_id,
+                                 std::string_view protocol_scheme);
 
  private:
   // OnAppsRequest is used to save the parameters of the OnApps calling.

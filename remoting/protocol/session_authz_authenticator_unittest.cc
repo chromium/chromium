@@ -11,7 +11,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -72,10 +71,19 @@ auto RespondVerifySessionToken(
   return base::test::RunOnceCallback<1>(HttpStatus::OK(), std::move(response));
 }
 
+auto RespondVerifySessionTokenWithoutReauthFields() {
+  auto response =
+      std::make_unique<internal::VerifySessionTokenResponseStruct>();
+  response->session_id = kFakeSessionId;
+  response->shared_secret = kFakeSharedSecret;
+  return base::test::RunOnceCallback<1>(HttpStatus::OK(), std::move(response));
+}
+
 class FakeClientAuthenticator : public Authenticator {
  public:
-  explicit FakeClientAuthenticator(const CreateBaseAuthenticatorCallback&
-                                       create_base_authenticator_callback);
+  FakeClientAuthenticator(
+      const CreateBaseAuthenticatorCallback& create_base_authenticator_callback,
+      CredentialsType credentials_type);
   ~FakeClientAuthenticator() override;
 
   // Authenticator implementation.
@@ -112,6 +120,7 @@ class FakeClientAuthenticator : public Authenticator {
       SessionAuthzState::WAITING_FOR_HOST_TOKEN;
   RejectionReason session_authz_rejection_reason_;
   CreateBaseAuthenticatorCallback create_base_authenticator_callback_;
+  CredentialsType credentials_type_ = CredentialsType::CORP_SESSION_AUTHZ;
   std::unique_ptr<Authenticator> underlying_;
   std::string host_token_;
   std::unique_ptr<jingle_xmpp::XmlElement> message_;
@@ -120,7 +129,7 @@ class FakeClientAuthenticator : public Authenticator {
 };
 
 CredentialsType FakeClientAuthenticator::credentials_type() const {
-  return CredentialsType::CORP_SESSION_AUTHZ;
+  return credentials_type_;
 }
 
 const Authenticator& FakeClientAuthenticator::implementing_authenticator()
@@ -146,8 +155,10 @@ bool FakeClientAuthenticator::started() const {
 }
 
 FakeClientAuthenticator::FakeClientAuthenticator(
-    const CreateBaseAuthenticatorCallback& create_base_authenticator_callback)
-    : create_base_authenticator_callback_(create_base_authenticator_callback) {}
+    const CreateBaseAuthenticatorCallback& create_base_authenticator_callback,
+    CredentialsType credentials_type)
+    : create_base_authenticator_callback_(create_base_authenticator_callback),
+      credentials_type_(credentials_type) {}
 
 FakeClientAuthenticator::~FakeClientAuthenticator() = default;
 
@@ -238,6 +249,10 @@ class SessionAuthzAuthenticatorTest : public AuthenticatorTestBase {
  protected:
   void SetUp() override;
 
+  // Used to create a paired set of authenticators using the provided
+  // |credentials_type|.
+  void ConfigureAuthenticators(CredentialsType credentials_type);
+
   // Caller must add an expectation for
   // mock_service_client_->GenerateHostToken() and run the callback, otherwise
   // this method will not return.
@@ -253,17 +268,23 @@ SessionAuthzAuthenticatorTest::~SessionAuthzAuthenticatorTest() = default;
 
 void SessionAuthzAuthenticatorTest::SetUp() {
   AuthenticatorTestBase::SetUp();
+  ConfigureAuthenticators(CredentialsType::CORP_SESSION_AUTHZ);
+}
+
+void SessionAuthzAuthenticatorTest::ConfigureAuthenticators(
+    CredentialsType credentials_type) {
   auto mock_service_client = std::make_unique<MockSessionAuthzServiceClient>();
   mock_service_client_ = mock_service_client.get();
   auto host_authenticator = std::make_unique<SessionAuthzAuthenticator>(
-      CredentialsType::CORP_SESSION_AUTHZ, std::move(mock_service_client),
+      credentials_type, std::move(mock_service_client),
       base::BindRepeating(&Spake2Authenticator::CreateForHost, kHostId,
                           kClientId, host_cert_, key_pair_));
   host_authenticator_ = host_authenticator.get();
   host_ = std::move(host_authenticator);
-  auto client_authenticator =
-      std::make_unique<FakeClientAuthenticator>(base::BindRepeating(
-          &Spake2Authenticator::CreateForClient, kClientId, kHostId));
+  auto client_authenticator = std::make_unique<FakeClientAuthenticator>(
+      base::BindRepeating(&Spake2Authenticator::CreateForClient, kClientId,
+                          kHostId),
+      credentials_type);
   client_authenticator_ = client_authenticator.get();
   client_ = std::move(client_authenticator);
 }
@@ -407,6 +428,38 @@ TEST_F(SessionAuthzAuthenticatorTest,
   // With the mismatched shared secret, the underlying authenticator will just
   // believe the client has not sent enough data to complete the key exchange.
   ASSERT_NE(host_->state(), Authenticator::ACCEPTED);
+}
+
+TEST_F(SessionAuthzAuthenticatorTest,
+       SessionReauthToken_NotPresent_AllowedForCloudHost) {
+  ConfigureAuthenticators(CredentialsType::CLOUD_SESSION_AUTHZ);
+  EXPECT_CALL(*mock_service_client_, GenerateHostToken(_))
+      .WillOnce(RespondGenerateHostToken());
+  EXPECT_CALL(*mock_service_client_, VerifySessionToken(_, _))
+      .WillOnce(RespondVerifySessionTokenWithoutReauthFields());
+
+  StartAuthExchange();
+
+  ASSERT_EQ(host_->state(), Authenticator::ACCEPTED);
+}
+
+TEST_F(SessionAuthzAuthenticatorTest,
+       SessionReauthToken_NotPresent_NotAllowedForCorpHost) {
+  ConfigureAuthenticators(CredentialsType::CORP_SESSION_AUTHZ);
+  auto response =
+      std::make_unique<internal::VerifySessionTokenResponseStruct>();
+  response->session_id = kFakeSessionId;
+  response->shared_secret = kFakeSharedSecret;
+  EXPECT_CALL(*mock_service_client_, GenerateHostToken(_))
+      .WillOnce(RespondGenerateHostToken());
+  EXPECT_CALL(*mock_service_client_, VerifySessionToken(_, _))
+      .WillOnce(RespondVerifySessionTokenWithoutReauthFields());
+
+  StartAuthExchange();
+
+  ASSERT_EQ(host_->state(), Authenticator::REJECTED);
+  ASSERT_EQ(host_->rejection_reason(),
+            Authenticator::RejectionReason::UNEXPECTED_ERROR);
 }
 
 TEST_F(SessionAuthzAuthenticatorTest, ReauthorizationFailed_Rejected) {

@@ -8,22 +8,21 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_hats_util.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_signin_button_view.h"
@@ -36,6 +35,7 @@
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -95,7 +95,9 @@ int GetSubtitleID(bool is_signin_promo,
         switch (signed_in_state) {
           case SignedInState::kSignedOut:
           case SignedInState::kWebOnlySignedIn:
-            return IDS_BOOKMARK_INSTALLED_PROMO_EXPLICIT_SIGNIN_MESSAGE;
+            return base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)
+                       ? IDS_BOOKMARK_INSTALLED_BUBBLE_PROMO_EXPLICIT_SIGNIN_MESSAGE
+                       : IDS_BOOKMARK_INSTALLED_PROMO_EXPLICIT_SIGNIN_MESSAGE;
           case SignedInState::kSignInPending:
             return IDS_BOOKMARK_VERIFY_PROMO_SUBTITLE;
           case SignedInState::kSignedIn:
@@ -105,9 +107,21 @@ int GetSubtitleID(bool is_signin_promo,
         }
       } break;
       case signin::SignInPromoType::kExtension: {
-        return is_signin_promo
-                   ? IDS_EXTENSION_INSTALLED_PROMO_EXPLICIT_SIGNIN_MESSAGE
-                   : IDS_EXTENSION_INSTALLED_DICE_PROMO_SYNC_MESSAGE;
+        if (!is_signin_promo) {
+          return IDS_EXTENSION_INSTALLED_DICE_PROMO_SYNC_MESSAGE;
+        }
+
+        switch (signed_in_state) {
+          case SignedInState::kSignedOut:
+          case SignedInState::kWebOnlySignedIn:
+            return IDS_EXTENSION_INSTALLED_PROMO_EXPLICIT_SIGNIN_MESSAGE;
+          case SignedInState::kSignInPending:
+            return IDS_EXTENSION_VERIFY_PROMO_SUBTITLE;
+          case SignedInState::kSignedIn:
+          case SignedInState::kSyncing:
+          case SignedInState::kSyncPaused:
+            break;
+        }
       }
     }
   }
@@ -121,11 +135,15 @@ std::u16string GetButtonText(bool is_signin_promo,
   if (is_signin_promo) {
     switch (signed_in_state) {
       case SignedInState::kSignedOut:
-        return l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON);
       case SignedInState::kWebOnlySignedIn:
-        return l10n_util::GetStringFUTF16(
-            IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCEPT_TEXT,
-            {base::UTF8ToUTF16(name)});
+        // Note: the name may be empty in `kWebOnlySignedIn`, for example if the
+        // current account is not allowed by policy signin pattern.
+        return name.empty()
+                   ? l10n_util::GetStringUTF16(
+                         IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON)
+                   : l10n_util::GetStringFUTF16(
+                         IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCEPT_TEXT,
+                         {base::UTF8ToUTF16(name)});
       case SignedInState::kSignInPending:
         return l10n_util::GetStringUTF16(IDS_PROFILES_VERIFY_ACCOUNT_BUTTON);
       case SignedInState::kSignedIn:
@@ -141,7 +159,8 @@ std::u16string GetButtonText(bool is_signin_promo,
 std::u16string GetAccessibilityText(bool is_signin_promo,
                                     SignedInState signed_in_state,
                                     const AccountInfo& account) {
-  if (is_signin_promo && signed_in_state == SignedInState::kWebOnlySignedIn) {
+  if (is_signin_promo && signed_in_state == SignedInState::kWebOnlySignedIn &&
+      !account.IsEmpty()) {
     return l10n_util::GetStringFUTF16(
         IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCEPT_TEXT,
         {base::UTF8ToUTF16(
@@ -152,14 +171,16 @@ std::u16string GetAccessibilityText(bool is_signin_promo,
 }
 
 signin_metrics::PromoAction GetPromoAction(bool is_signin_promo,
-                                           SignedInState signed_in_state) {
+                                           SignedInState signed_in_state,
+                                           const AccountInfo& account) {
   if (is_signin_promo) {
     switch (signed_in_state) {
       case SignedInState::kSignedOut:
-        return signin_metrics::PromoAction::
-            PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT;
       case SignedInState::kWebOnlySignedIn:
-        return signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT;
+        return account.IsEmpty()
+                   ? signin_metrics::PromoAction::
+                         PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
+                   : signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT;
       case SignedInState::kSignedIn:
       case SignedInState::kSyncing:
       case SignedInState::kSyncPaused:
@@ -169,6 +190,78 @@ signin_metrics::PromoAction GetPromoAction(bool is_signin_promo,
   }
 
   return signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+}
+
+void IncrementContextualPromoDismissCountPerSignedOutProfile(
+    Profile* profile,
+    signin_metrics::AccessPoint access_point) {
+  if (!base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)) {
+    int dismiss_count = profile->GetPrefs()->GetInteger(
+        prefs::kAutofillSignInPromoDismissCountPerProfile);
+    profile->GetPrefs()->SetInteger(
+        prefs::kAutofillSignInPromoDismissCountPerProfile, dismiss_count + 1);
+    return;
+  }
+
+  signin::SignInPromoType promo_type =
+      signin::GetSignInPromoTypeFromAccessPoint(access_point);
+  switch (promo_type) {
+    case signin::SignInPromoType::kPassword:
+      return profile->GetPrefs()->SetInteger(
+          prefs::kPasswordSignInPromoDismissCountPerProfileForLimitsExperiment,
+          profile->GetPrefs()->GetInteger(
+              prefs::
+                  kPasswordSignInPromoDismissCountPerProfileForLimitsExperiment) +
+              1);
+    case signin::SignInPromoType::kAddress:
+      return profile->GetPrefs()->SetInteger(
+          prefs::kAddressSignInPromoDismissCountPerProfileForLimitsExperiment,
+          profile->GetPrefs()->GetInteger(
+              prefs::
+                  kAddressSignInPromoDismissCountPerProfileForLimitsExperiment) +
+              1);
+    case signin::SignInPromoType::kBookmark:
+      CHECK(base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp));
+      return profile->GetPrefs()->SetInteger(
+          prefs::kBookmarkSignInPromoDismissCountPerProfileForLimitsExperiment,
+          profile->GetPrefs()->GetInteger(
+              prefs::
+                  kBookmarkSignInPromoDismissCountPerProfileForLimitsExperiment) +
+              1);
+    case signin::SignInPromoType::kExtension:
+      NOTREACHED();
+  }
+}
+
+void IncrementContextualPromoDismissCountPerAccount(
+    Profile* profile,
+    signin_metrics::AccessPoint access_point,
+    const AccountInfo& account) {
+  if (!base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)) {
+    SigninPrefs(*profile->GetPrefs())
+        .IncrementAutofillSigninPromoDismissCount(account.gaia);
+    return;
+  }
+
+  signin::SignInPromoType promo_type =
+      signin::GetSignInPromoTypeFromAccessPoint(access_point);
+  switch (promo_type) {
+    case signin::SignInPromoType::kPassword:
+      SigninPrefs(*profile->GetPrefs())
+          .IncrementPasswordSigninPromoDismissCount(account.gaia);
+      break;
+    case signin::SignInPromoType::kAddress:
+      SigninPrefs(*profile->GetPrefs())
+          .IncrementAddressSigninPromoDismissCount(account.gaia);
+      break;
+    case signin::SignInPromoType::kBookmark:
+      CHECK(base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp));
+      SigninPrefs(*profile->GetPrefs())
+          .IncrementBookmarkSigninPromoDismissCount(account.gaia);
+      break;
+    case signin::SignInPromoType::kExtension:
+      NOTREACHED();
+  }
 }
 
 }  // namespace
@@ -226,7 +319,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
   std::u16string accessibility_text =
       GetAccessibilityText(is_signin_promo, signed_in_state, account);
   signin_metrics::PromoAction promo_action =
-      GetPromoAction(is_signin_promo, signed_in_state);
+      GetPromoAction(is_signin_promo, signed_in_state, account);
 
   // Set subtitle.
   std::u16string title_text = l10n_util::GetStringUTF16(title_resource_id);
@@ -299,6 +392,9 @@ BubbleSignInPromoView::BubbleSignInPromoView(
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO) {
     signin_metrics::LogSignInOffered(access_point, promo_action);
   }
+  if (signed_in_state == signin_util::SignedInState::kSignInPending) {
+    signin_metrics::LogSigninPendingOffered(access_point);
+  }
 
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(access_point);
   signin::RecordSignInPromoShown(access_point, profile);
@@ -318,7 +414,7 @@ void BubbleSignInPromoView::SignIn() {
 }
 
 void BubbleSignInPromoView::AddedToWidget() {
-  if (signin::IsAutofillSigninPromo(access_point_)) {
+  if (signin::IsBubbleSigninPromo(access_point_)) {
     scoped_widget_observation_.Observe(GetWidget());
   }
 }
@@ -326,7 +422,7 @@ void BubbleSignInPromoView::AddedToWidget() {
 void BubbleSignInPromoView::OnWidgetDestroying(views::Widget* widget) {
   // This should only be recorded for autofill bubble promos. Not for those
   // displayed in another bubble's footer.
-  if (!signin::IsAutofillSigninPromo(access_point_)) {
+  if (!signin::IsBubbleSigninPromo(access_point_)) {
     return;
   }
 
@@ -359,27 +455,17 @@ void BubbleSignInPromoView::OnWidgetDestroying(views::Widget* widget) {
   // Count the number of times the promo was dismissed in order to not show it
   // anymore after 2 dismissals.
   if (account.gaia.empty()) {
-    int dismiss_count = profile->GetPrefs()->GetInteger(
-        prefs::kAutofillSignInPromoDismissCountPerProfile);
-    profile->GetPrefs()->SetInteger(
-        prefs::kAutofillSignInPromoDismissCountPerProfile, dismiss_count + 1);
+    IncrementContextualPromoDismissCountPerSignedOutProfile(profile,
+                                                            access_point_);
   } else {
-    SigninPrefs(*profile->GetPrefs())
-        .IncrementAutofillSigninPromoDismissCount(account.gaia);
+    IncrementContextualPromoDismissCountPerAccount(profile, access_point_,
+                                                   account);
   }
 
   // Launch a HaTS survey if the user actively dismissed the promo.
-  if (base::FeatureList::IsEnabled(
-          switches::kChromeIdentitySurveySigninPromoBubbleDismissed)) {
-    HatsService* hats_service =
-        HatsServiceFactory::GetForProfile(profile,
-                                          /*create_if_necessary=*/true);
-    if (hats_service) {
-      // TODO(crbug.com/427971911): add product-specific data.
-      hats_service->LaunchSurvey(
-          kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed);
-    }
-  }
+  signin::LaunchSigninHatsSurveyForProfile(
+      kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed, profile,
+      /*defer_if_no_browser=*/false, access_point_);
 
   base::UmaHistogramEnumeration(
       base::StrCat({"Signin.SignInPromo.Dismissed", dismiss_action}),

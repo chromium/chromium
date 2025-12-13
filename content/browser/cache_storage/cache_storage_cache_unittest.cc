@@ -2,22 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/cache_storage/cache_storage_cache.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <set>
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -32,6 +29,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -222,18 +220,18 @@ class FailableCacheEntry : public disk_cache::Entry {
   void Close() override { entry_->Close(); }
   std::string GetKey() const override { return entry_->GetKey(); }
   base::Time GetLastUsed() const override { return entry_->GetLastUsed(); }
-  int32_t GetDataSize(int index) const override {
+  int64_t GetDataSize(int index) const override {
     return entry_->GetDataSize(index);
   }
   int ReadData(int index,
-               int offset,
+               int64_t offset,
                IOBuffer* buf,
                int buf_len,
                CompletionOnceCallback callback) override {
     return entry_->ReadData(index, offset, buf, buf_len, std::move(callback));
   }
   int WriteData(int index,
-                int offset,
+                int64_t offset,
                 IOBuffer* buf,
                 int buf_len,
                 CompletionOnceCallback callback,
@@ -367,7 +365,7 @@ std::string CopySideData(blink::mojom::Blob* actual_blob) {
   actual_blob->ReadSideData(base::BindLambdaForTesting(
       [&](const std::optional<mojo_base::BigBuffer> data) {
         if (data)
-          output.append(data->data(), data->data() + data->size());
+          output.append(base::as_string_view(data->byte_span()));
         loop.Quit();
       }));
   loop.Run();
@@ -1981,7 +1979,7 @@ TEST_P(CacheStorageCacheTestP, WriteSideData_QuotaExceeded) {
 
   const size_t kSize = 1024 * 1024;
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
-  memset(buffer->data(), 0, kSize);
+  std::ranges::fill(buffer->span(), 0);
   EXPECT_FALSE(
       WriteSideData(no_body_request_->url, response_time, buffer, kSize));
   EXPECT_EQ(CacheStorageError::kErrorQuotaExceeded, callback_error_);
@@ -2001,7 +1999,7 @@ TEST_P(CacheStorageCacheTestP, WriteSideData_QuotaManagerModified) {
 
   const size_t kSize = 10;
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
-  memset(buffer->data(), 0, kSize);
+  std::ranges::fill(buffer->span(), 0);
   EXPECT_TRUE(
       WriteSideData(no_body_request_->url, response_time, buffer, kSize));
   base::RunLoop().RunUntilIdle();
@@ -2017,7 +2015,7 @@ TEST_P(CacheStorageCacheTestP, WriteSideData_DifferentTimeStamp) {
 
   const size_t kSize = 10;
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
-  memset(buffer->data(), 0, kSize);
+  std::ranges::fill(buffer->span(), 0);
   EXPECT_FALSE(WriteSideData(no_body_request_->url,
                              response_time + base::Seconds(1), buffer, kSize));
   EXPECT_EQ(CacheStorageError::kErrorNotFound, callback_error_);
@@ -2027,7 +2025,7 @@ TEST_P(CacheStorageCacheTestP, WriteSideData_DifferentTimeStamp) {
 TEST_P(CacheStorageCacheTestP, WriteSideData_NotFound) {
   const size_t kSize = 10;
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
-  memset(buffer->data(), 0, kSize);
+  std::ranges::fill(buffer->span(), 0);
   EXPECT_FALSE(WriteSideData(GURL("http://www.example.com/not_exist"),
                              base::Time::Now(), buffer, kSize));
   EXPECT_EQ(CacheStorageError::kErrorNotFound, callback_error_);

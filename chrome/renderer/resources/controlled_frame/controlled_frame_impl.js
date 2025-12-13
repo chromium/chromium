@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var ChromeWebViewImpl = require('chromeWebView').ChromeWebViewImpl;
-var ControlledFrameInternal = getInternalApi('controlledFrameInternal');
-var ControlledFrameEvents =
+const ChromeWebViewImpl = require('chromeWebView').ChromeWebViewImpl;
+const ControlledFrameInternal = getInternalApi('controlledFrameInternal');
+const ControlledFrameEvents =
     require('controlledFrameEvents').ControlledFrameEvents;
-var ControlledFrameContextMenus =
-  require('controlledFrameContextMenus').ControlledFrameContextMenus;
+const ControlledFrameContextMenus =
+    require('controlledFrameContextMenus').ControlledFrameContextMenus;
 
 class ControlledFrameImpl extends ChromeWebViewImpl {
   constructor(webviewElement) {

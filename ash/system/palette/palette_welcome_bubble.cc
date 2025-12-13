@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/assistant/util/assistant_util.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -24,6 +23,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 

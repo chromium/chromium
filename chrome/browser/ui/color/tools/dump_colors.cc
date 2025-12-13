@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This command-line program dumps the computed values of all color IDs to
 // stdout.
 
@@ -15,6 +10,7 @@
 #include <iostream>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -97,7 +93,7 @@ int main(int argc, const char* argv[]) {
 
   for (ui::ColorId id = ui::kUiColorsStart; id < kChromeColorsEnd; ++id) {
     std::cout << std::setfill(' ') << std::left;
-    std::cout << std::setw(longest_name) << enum_names[id];
+    std::cout << std::setw(longest_name) << UNSAFE_TODO(enum_names[id]);
     std::cout << SkColorToString(light_provider.GetColor(id));
     std::cout << SkColorToString(dark_provider.GetColor(id));
     std::cout << SkColorToString(light_high_contrast_provider.GetColor(id));

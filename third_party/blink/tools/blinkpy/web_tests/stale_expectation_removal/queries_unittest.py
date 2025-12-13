@@ -34,6 +34,7 @@ class ConvertBigQueryRowToResultObjectUnittest(unittest.TestCase):
         row = wt_uu.FakeQueryResult(builder_name='builder_name',
                                     id_='build-1234',
                                     test_id='ninja://:blink_web_tests/test',
+                                    test_name='test',
                                     status='PASS',
                                     typ_tags=['debug'],
                                     step_name='step_name',
@@ -44,7 +45,9 @@ class ConvertBigQueryRowToResultObjectUnittest(unittest.TestCase):
         self.assertTrue(result.is_slow_result)
         self.assertEqual(result._duration, datetime.timedelta(seconds=10))
 
+
 class GetRelevantExpectationFilesForQueryResultUnittest(unittest.TestCase):
+
     def testNoFiles(self) -> None:
         """Tests that no reported expectation files are handled properly."""
         row = common_queries.QueryResult(data={})
@@ -121,6 +124,7 @@ WITH
     SELECT
       exported.id,
       test_id,
+      test_metadata.name AS test_name,
       status,
       (
         SELECT value
@@ -156,7 +160,7 @@ WITH
       AND exported.id = build_inv_id
       AND status != "SKIP"
   )
-SELECT id, test_id, builder_name, status, duration, step_name, timeout, typ_tags, expectation_files
+SELECT id, test_id, test_name, builder_name, status, duration, step_name, timeout, typ_tags, expectation_files
 FROM results
 WHERE
   "Failure" IN UNNEST(typ_expectations)
@@ -205,6 +209,7 @@ WITH
     SELECT
       exported.id,
       test_id,
+      test_metadata.name AS test_name,
       status,
       (
         SELECT value
@@ -240,7 +245,7 @@ WITH
       AND exported.id = build_inv_id
       AND status != "SKIP"
   )
-SELECT id, test_id, builder_name, status, duration, step_name, timeout, typ_tags, expectation_files
+SELECT id, test_id, test_name, builder_name, status, duration, step_name, timeout, typ_tags, expectation_files
 FROM results
 WHERE
   "Failure" IN UNNEST(typ_expectations)
@@ -304,6 +309,7 @@ WITH
     SELECT
       exported.id,
       test_id,
+      test_metadata.name AS test_name,
       status,
       (
         SELECT value
@@ -339,7 +345,7 @@ WITH
       AND exported.id = build_inv_id
       AND status != "SKIP"
   )
-SELECT id, test_id, builder_name, status, duration, step_name, timeout, typ_tags, expectation_files
+SELECT id, test_id, test_name, builder_name, status, duration, step_name, timeout, typ_tags, expectation_files
 FROM results
 WHERE
   "Failure" IN UNNEST(typ_expectations)
@@ -403,6 +409,7 @@ WITH
     SELECT
       exported.id,
       test_id,
+      test_metadata.name AS test_name,
       status,
       (
         SELECT value
@@ -438,7 +445,7 @@ WITH
       AND exported.id = build_inv_id
       AND status != "SKIP"
   )
-SELECT id, test_id, builder_name, status, duration, step_name, timeout, typ_tags, expectation_files
+SELECT id, test_id, test_name, builder_name, status, duration, step_name, timeout, typ_tags, expectation_files
 FROM results
 WHERE
   "Failure" IN UNNEST(typ_expectations)
@@ -448,22 +455,6 @@ WHERE
 ORDER BY builder_name DESC
 """
         self.assertEqual(self._querier._GetInternalTryQuery(), expected_query)
-
-
-class StripPrefixFromTestIdUnittest(unittest.TestCase):
-    def testUnknownPrefix(self) -> None:
-        """Tests that an error is raised if an unknown prefix is found."""
-        querier = wt_uu.CreateGenericWebTestQuerier()
-        with self.assertRaises(RuntimeError):
-            querier._StripPrefixFromTestId('foobar')
-
-    def testKnownPrefixes(self) -> None:
-        """Tests that all known prefixes are properly stripped."""
-        querier = wt_uu.CreateGenericWebTestQuerier()
-        test_ids = [prefix + 'a' for prefix in queries.KNOWN_TEST_ID_PREFIXES]
-        for t in test_ids:
-            stripped = querier._StripPrefixFromTestId(t)
-            self.assertEqual(stripped, 'a')
 
 
 if __name__ == '__main__':

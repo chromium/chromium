@@ -192,61 +192,61 @@ void ChromeUsbDelegate::AdjustProtectedInterfaceClasses(
   }
   // Don't enforce protected interface classes for Chrome Apps since the
   // chrome.usb API has no such restriction.
-    auto* extension_registry =
-        extensions::ExtensionRegistry::Get(browser_context);
-    if (extension_registry) {
-      const extensions::Extension* extension =
-          extension_registry->enabled_extensions().GetByID(origin.host());
-      if (extension && extension->is_platform_app()) {
-        classes.clear();
-        return;
-      }
+  auto* extension_registry =
+      extensions::ExtensionRegistry::Get(browser_context);
+  if (extension_registry) {
+    const extensions::Extension* extension =
+        extension_registry->enabled_extensions().GetByID(origin.host());
+    if (extension && extension->is_platform_app()) {
+      classes.clear();
+      return;
     }
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   // These extensions can claim the protected HID interface class (example: used
   // as badge readers)
-    static constexpr auto kHidPrivilegedExtensionIds =
-        base::MakeFixedFlatSet<std::string_view>({
-            // Imprivata Extensions, see crbug.com/1065112 and crbug.com/995294.
-            "baobpecgllpajfeojepgedjdlnlfffde",
-            "bnfoibgpjolimhppjmligmcgklpboloj",
-            "cdgickkdpbekbnalbmpgochbninibkko",
-            "cjakdianfealdjlapagfagpdpemoppba",
-            "cokoeepjbmmnhgdhlkpahohdaiedfjgn",
-            "dahgfgiifpnaoajmloofonkndaaafacp",
-            "dbknmmkopacopifbkgookcdbhfnggjjh",
-            "ddcjglpbfbibgepfffpklmpihphbcdco",
-            "dhodapiemamlmhlhblgcibabhdkohlen",
-            "dlahpllbhpbkfnoiedkgombmegnnjopi",
-            "egfpnfjeaopimgpiioeedbpmojdapaip",
-            "fnbibocngjnefolmcodjkkghijpdlnfm",
-            "jcnflhjcfjkplgkcinikhbgbhfldkadl",
-            "jkfjfbelolphkjckiolfcakgalloegek",
-            "kmhpgpnbglclbaccjjgoioogjlnfgbne",
-            "lpimkpkllnkdlcigdbgmabfplniahkgm",
-            "odehonhhkcjnbeaomlodfkjaecbmhklm",
-            "olnmflhcfkifkgbiegcoabineoknmbjc",
-            "omificdfgpipkkpdhbjmefgfgbppehke",
-            "phjobickjiififdadeoepbdaciefacfj",
-            "pkeacbojooejnjolgjdecbpnloibpafm",
-            "pllbepacblmgialkkpcceohmjakafnbb",
-            "plpogimmgnkkiflhpidbibfmgpkaofec",
-            "pmhiabnkkchjeaehcodceadhdpfejmmd",
+  static constexpr auto kHidPrivilegedExtensionIds =
+      base::MakeFixedFlatSet<std::string_view>({
+          // Imprivata Extensions, see crbug.com/1065112 and crbug.com/995294.
+          "baobpecgllpajfeojepgedjdlnlfffde",
+          "bnfoibgpjolimhppjmligmcgklpboloj",
+          "cdgickkdpbekbnalbmpgochbninibkko",
+          "cjakdianfealdjlapagfagpdpemoppba",
+          "cokoeepjbmmnhgdhlkpahohdaiedfjgn",
+          "dahgfgiifpnaoajmloofonkndaaafacp",
+          "dbknmmkopacopifbkgookcdbhfnggjjh",
+          "ddcjglpbfbibgepfffpklmpihphbcdco",
+          "dhodapiemamlmhlhblgcibabhdkohlen",
+          "dlahpllbhpbkfnoiedkgombmegnnjopi",
+          "egfpnfjeaopimgpiioeedbpmojdapaip",
+          "fnbibocngjnefolmcodjkkghijpdlnfm",
+          "jcnflhjcfjkplgkcinikhbgbhfldkadl",
+          "jkfjfbelolphkjckiolfcakgalloegek",
+          "kmhpgpnbglclbaccjjgoioogjlnfgbne",
+          "lpimkpkllnkdlcigdbgmabfplniahkgm",
+          "odehonhhkcjnbeaomlodfkjaecbmhklm",
+          "olnmflhcfkifkgbiegcoabineoknmbjc",
+          "omificdfgpipkkpdhbjmefgfgbppehke",
+          "phjobickjiififdadeoepbdaciefacfj",
+          "pkeacbojooejnjolgjdecbpnloibpafm",
+          "pllbepacblmgialkkpcceohmjakafnbb",
+          "plpogimmgnkkiflhpidbibfmgpkaofec",
+          "pmhiabnkkchjeaehcodceadhdpfejmmd",
 
-            // Hotrod Extensions, see crbug.com/1220165
-            "acdafoiapclbpdkhnighhilgampkglpc",
-            "denipklgekfpcdmbahmbpnmokgajnhma",
-            "hkamnlhnogggfddmjomgbdokdkgfelgg",
-            "ikfcpmgefdpheiiomgmhlmmkihchmdlj",
-            "jlgegmdnodfhciolbdjciihnlaljdbjo",
-            "ldmpofkllgeicjiihkimgeccbhghhmfj",
-            "lkbhffjfgpmpeppncnimiiikojibkhnm",
-            "moklfjoegmpoolceggbebbmgbddlhdgp",
-        });
+          // Hotrod Extensions, see crbug.com/1220165
+          "acdafoiapclbpdkhnighhilgampkglpc",
+          "denipklgekfpcdmbahmbpnmokgajnhma",
+          "hkamnlhnogggfddmjomgbdokdkgfelgg",
+          "ikfcpmgefdpheiiomgmhlmmkihchmdlj",
+          "jlgegmdnodfhciolbdjciihnlaljdbjo",
+          "ldmpofkllgeicjiihkimgeccbhghhmfj",
+          "lkbhffjfgpmpeppncnimiiikojibkhnm",
+          "moklfjoegmpoolceggbebbmgbddlhdgp",
+      });
 
-    if (base::Contains(kHidPrivilegedExtensionIds, origin.host())) {
-      std::erase(classes, device::mojom::kUsbHidClass);
+  if (base::Contains(kHidPrivilegedExtensionIds, origin.host())) {
+    std::erase(classes, device::mojom::kUsbHidClass);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

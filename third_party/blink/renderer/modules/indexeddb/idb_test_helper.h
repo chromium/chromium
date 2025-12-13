@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "v8/include/v8.h"
 

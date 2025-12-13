@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/display/types/display_types_export.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
@@ -46,7 +47,7 @@ class DISPLAY_TYPES_EXPORT GammaCurve {
 
   // Evaluate at the specified RGB values. Input values will be clamped to the
   // [0, 1] interval.
-  void Evaluate(float rgb[3]) const;
+  void Evaluate(base::span<float, 3> rgb) const;
 
   // Display as a string for debugging.
   std::string ToString() const;

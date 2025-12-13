@@ -30,9 +30,7 @@ class MODULES_EXPORT BroadcastChannel final
   USING_PRE_FINALIZER(BroadcastChannel, Dispose);
 
  public:
-  static BroadcastChannel* Create(ExecutionContext*,
-                                  const String& name,
-                                  ExceptionState&);
+  static BroadcastChannel* Create(ExecutionContext*, const String& name);
 
   BroadcastChannel(ExecutionContext*, const String& name);
   BroadcastChannel(base::PassKey<StorageAccessHandle>,

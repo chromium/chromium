@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -28,6 +29,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
@@ -205,7 +207,7 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
     const auto horizontal_offset = SkPoint::Make(radius, 0.f);
     const auto vertical_offset = SkPoint::Make(0.f, radius);
 
-    return SkPath()
+    return SkPathBuilder()
         // Start just before the curve of the top-left corner.
         .moveTo(radius, 0.f)
         // Draw the top-left rounded corner.
@@ -226,7 +228,8 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
         .rCubicTo(0.f, -3.3f, -2.f, -10.f, -10.f, -10.f)
         // Draw a horizontal line back to the starting point.
         .lineTo(radius, 0.f)
-        .close();
+        .close()
+        .detach();
   }
 
   gfx::Size CalculatePreferredSize(

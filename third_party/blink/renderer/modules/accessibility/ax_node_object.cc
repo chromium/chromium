@@ -46,14 +46,18 @@
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
+#include "third_party/blink/renderer/core/accessibility/ax_utilities_generated.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
+#include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
@@ -106,7 +110,10 @@
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_li_element.h"
 #include "third_party/blink/renderer/core/html/html_map_element.h"
+#include "third_party/blink/renderer/core/html/html_menu_bar_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_element.h"
+#include "third_party/blink/renderer/core/html/html_menu_item_element.h"
+#include "third_party/blink/renderer/core/html/html_menu_list_element.h"
 #include "third_party/blink/renderer/core/html/html_meter_element.h"
 #include "third_party/blink/renderer/core/html/html_olist_element.h"
 #include "third_party/blink/renderer/core/html/html_paragraph_element.h"
@@ -154,6 +161,7 @@
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/svg/svg_a_element.h"
 #include "third_party/blink/renderer/core/svg/svg_desc_element.h"
@@ -181,6 +189,7 @@
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -208,6 +217,22 @@ const ScrollMarkerPseudoElement* GetScrollMarker(const Node* node) {
       element->GetPseudoElement(kPseudoIdScrollMarker));
 }
 
+// Returns the ::column::scroll-marker pseudo-element for the first column of
+// `node`, or nullptr if not found.
+const ScrollMarkerPseudoElement* GetColumnScrollMarker(const Node* node) {
+  auto* element = DynamicTo<Element>(node);
+  if (!element) {
+    return nullptr;
+  }
+  const ColumnPseudoElementsVector* column_pseudo_elements =
+      element->GetColumnPseudoElements();
+  if (!column_pseudo_elements || column_pseudo_elements->empty()) {
+    return nullptr;
+  }
+  return DynamicTo<ScrollMarkerPseudoElement>(
+      column_pseudo_elements->front()->GetPseudoElement(kPseudoIdScrollMarker));
+}
+
 bool IsTabsModeScrollMarker(const ScrollMarkerPseudoElement& scroll_marker) {
   ScrollMarkerGroupPseudoElement* scroll_marker_group =
       scroll_marker.ScrollMarkerGroup();
@@ -220,11 +245,17 @@ bool IsTabsModeScrollMarker(const ScrollMarkerPseudoElement& scroll_marker) {
          ScrollMarkerGroup::ScrollMarkerMode::kTabs;
 }
 
-// Returns `true` if `node` has ::scroll-marker and the originating
-// element of its ::scroll-marker-group has scroll-marker-group property
-// set to `tabs` mode.
-bool IsOriginatingElementForScrollMarkerInTabsMode(const Node* node) {
+// Returns `true` if `node` has ::scroll-marker or ::column::scroll-marker, and
+// the originating element of its ::scroll-marker-group has scroll-marker-group
+// property set to `tabs` mode.
+bool IsUltimateOriginatingElementForScrollMarkerInTabsMode(const Node* node) {
   const ScrollMarkerPseudoElement* scroll_marker = GetScrollMarker(node);
+  // Check ::column::scroll-marker if no regular ::scroll-marker found, as
+  // if the originating element is ::column the tabpanel role is given to the
+  // originating element of the ::column.
+  if (!scroll_marker) {
+    scroll_marker = GetColumnScrollMarker(node);
+  }
   return scroll_marker && IsTabsModeScrollMarker(*scroll_marker);
 }
 
@@ -541,20 +572,25 @@ const LayoutObject* GetListMarker(const LayoutObject& layout_object,
 }
 
 bool ElementHasAnyAriaRelation(Element& element) {
-  return element.HasAnyExplicitlySetAttrAssociatedElements() ||
-         AXObject::HasAriaAttribute(element, html_names::kAriaActionsAttr) ||
-         AXObject::HasAriaAttribute(element,
-                                    html_names::kAriaActivedescendantAttr) ||
-         AXObject::HasAriaAttribute(element, html_names::kAriaControlsAttr) ||
-         AXObject::HasAriaAttribute(element,
-                                    html_names::kAriaDescribedbyAttr) ||
-         AXObject::HasAriaAttribute(element, html_names::kAriaDetailsAttr) ||
-         AXObject::HasAriaAttribute(element,
-                                    html_names::kAriaErrormessageAttr) ||
-         AXObject::HasAriaAttribute(element, html_names::kAriaFlowtoAttr) ||
-         AXObject::HasAriaAttribute(element, html_names::kAriaLabelledbyAttr) ||
-         AXObject::HasAriaAttribute(element, html_names::kAriaLabeledbyAttr) ||
-         AXObject::HasAriaAttribute(element, html_names::kAriaOwnsAttr);
+  if (element.HasAnyExplicitlySetAttrAssociatedElements()) {
+    return true;
+  }
+
+  const auto& idref_attrs = GetAriaIdrefAttributes();
+  for (const QualifiedName* attr : idref_attrs) {
+    if (AXObject::HasAriaAttribute(element, *attr)) {
+      return true;
+    }
+  }
+
+  const auto& idref_list_attrs = GetAriaIdrefListAttributes();
+  for (const QualifiedName* attr : idref_list_attrs) {
+    if (AXObject::HasAriaAttribute(element, *attr)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 bool IsAddedOnlyViaSpecialTraversal(const Node* node) {
@@ -580,17 +616,6 @@ bool IsAddedOnlyViaSpecialTraversal(const Node* node) {
       node->IsScrollButtonPseudoElement()) {
     return true;
   }
-
-  if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled()) {
-    // The first descendant <input> in a <select> gets taken out of the listbox
-    // because it is not an <option>. It controls the listbox.
-    if (auto* input = DynamicTo<HTMLInputElement>(node)) {
-      if (input->IsFirstTextInputInAncestorSelect()) {
-        return true;
-      }
-    }
-  }
-
   return false;
 }
 
@@ -635,9 +660,6 @@ using html_names::kTitleAttr;
 using html_names::kTypeAttr;
 using html_names::kValueAttr;
 using mojom::blink::FormControlType;
-
-// In ARIA 1.1, default value of aria-level was changed to 2.
-const int kDefaultHeadingLevel = 2;
 
 // When an AXNodeObject is created with a Node instead of a LayoutObject it
 // means that the LayoutObject is purposely being set to null, as it is not
@@ -740,7 +762,7 @@ void AXNodeObject::AlterSliderOrSpinButtonValue(bool increase) {
       ->GetTaskRunner(TaskType::kUserInteraction)
       ->PostDelayedTask(
           FROM_HERE,
-          WTF::BindOnce(
+          BindOnce(
               [](Node* node, KeyboardEvent* evt) {
                 if (node) {
                   node->DispatchEvent(*evt);
@@ -761,7 +783,8 @@ AXObject* AXNodeObject::ActiveDescendant() const {
       // TODO(accessibility): as a simplification, just expose the active
       // descendant of a <select size=1> at all times, like we do for other
       // active descendant situations,
-      return select->PopupIsVisible() || select->IsFocusedElementInDocument()
+      return !select->IsMultiple() && (select->PopupIsVisible() ||
+                                       select->IsFocusedElementInDocument())
                  ? AXObjectCache().Get(select->OptionToBeShown())
                  : nullptr;
     }
@@ -922,8 +945,13 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     // title child of a symbol) may participate in the text alternative
     // computation where it is instantiated by the use element.
     // https://svgwg.org/svg2-draft/struct.html#SymbolElement
-    if (Traversal<SVGSymbolElement>::FirstAncestorOrSelf(*node))
-      return kIgnoreObject;
+    if (SVGSymbolElement* symbol =
+            Traversal<SVGSymbolElement>::FirstAncestorOrSelf(*node)) {
+      // Should not be ignored if the <symbol> is the root of a <use> instance.
+      if (!symbol->InUseShadowTree() || !IsAtShadowBoundary(symbol)) {
+        return kIgnoreObject;
+      }
+    }
 
     // Include non-empty SVG root as clients may want to treat it as an image.
     if (IsA<SVGSVGElement>(node) && GetLayoutObject() &&
@@ -1022,14 +1050,12 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
 
   // Don't ignored legends, because JAWS uses them to determine redundant text.
   if (IsA<HTMLLegendElement>(node)) {
-    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-      // When a <legend> is used inside an <optgroup>, it is used to set the
-      // name of the <optgroup> and shouldn't be redundantly repeated.
-      for (auto* ancestor = node->parentNode(); ancestor;
-           ancestor = ancestor->parentNode()) {
-        if (IsA<HTMLOptGroupElement>(ancestor)) {
-          return kIgnoreObject;
-        }
+    // When a <legend> is used inside an <optgroup>, it is used to set the
+    // name of the <optgroup> and shouldn't be redundantly repeated.
+    for (auto* ancestor = node->parentNode(); ancestor;
+         ancestor = ancestor->parentNode()) {
+      if (IsA<HTMLOptGroupElement>(ancestor)) {
+        return kIgnoreObject;
       }
     }
     return kIncludeObject;
@@ -1106,6 +1132,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
           ax::mojom::blink::Role::kMathMLUnder,
           ax::mojom::blink::Role::kMathMLUnderOver,
           ax::mojom::blink::Role::kMeter,
+          ax::mojom::blink::Role::kMenuBar,
           ax::mojom::blink::Role::kMenuListOption,
           ax::mojom::blink::Role::kMenuListPopup,
           ax::mojom::blink::Role::kNavigation,
@@ -1231,13 +1258,36 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   return kDefaultBehavior;
 }
 
+bool AXNodeObject::ComputeIsIgnoredAsInsideInactiveScrollMarkerTab() {
+  Node* node = GetNode();
+  if (!node || !RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled()) {
+    return false;
+  }
+  if (node->IsCarouselPseudoElement()) {
+    // The carousel pseudo-elements should never be ignored.
+    return false;
+  }
+  if (IsOriginatingElementForInactiveScrollMarkerInTabsMode(node)) {
+    return true;
+  }
+  if (!ParentObject()) {
+    return false;
+  }
+  // As soon as one of the ancestors is the originating element for
+  // ::scroll-marker in tabs mode, we know this node is inside the originating
+  // element for ::scroll-marker in tabs mode, so we just propagate this info
+  // down to the children.
+  return ParentObject()
+      ->InsideOriginatingElementForInactiveScrollMarkerInTabsMode();
+}
+
 bool AXNodeObject::ComputeIsIgnored(IgnoredReasons* ignored_reasons) const {
   Node* node = GetNode();
 
-  // Originating element should be ignored in AX tree, if the ::scroll-marker
-  // is in tabs mode and not active.
-  if (RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled() &&
-      IsOriginatingElementForInactiveScrollMarkerInTabsMode(node)) {
+  // Everything (besides carousel pseudo-elements) inside and including the
+  // originating element of the
+  // ::scroll-marker is in tabs mode should be ignored in AX tree.
+  if (InsideOriginatingElementForInactiveScrollMarkerInTabsMode()) {
     if (ignored_reasons) {
       ignored_reasons->push_back(IgnoredReason(kAXInactiveCarouselTabContent));
     }
@@ -1255,7 +1305,6 @@ bool AXNodeObject::ComputeIsIgnored(IgnoredReasons* ignored_reasons) const {
       // them aren't ignored, then they will make it into the mappings. The
       // button can't be pruned from the tree because it is used to compute the
       // value of the MenuList.
-      if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
         for (const AXObject* ancestor = this;
              ancestor && ancestor != ax_menu_list;
              ancestor = ancestor->ParentObject()) {
@@ -1263,14 +1312,13 @@ bool AXNodeObject::ComputeIsIgnored(IgnoredReasons* ignored_reasons) const {
             return true;
           }
         }
-      }
 
       return ax_menu_list->IsIgnored();
     }
 
     // Fallback elements inside of a <canvas> are invisible, but are not ignored
-    if (IsHiddenViaStyle() || !node || !node->parentElement() ||
-        !node->parentElement()->IsInCanvasSubtree()) {
+    if (IsHiddenViaStyle() || !node || !node->ParentOrShadowHostElement() ||
+        !node->ParentOrShadowHostElement()->IsCanvasOrInCanvasSubtree()) {
       return true;
     }
   }
@@ -1289,6 +1337,15 @@ bool AXNodeObject::ComputeIsIgnored(IgnoredReasons* ignored_reasons) const {
     // explicitly hidden, e.g. is in a <canvas> fallback or is display locked.
     if (IsA<Text>(node)) {
       return false;
+    }
+    // Similarly, elements in <canvas> fallback should not be ignored.
+    if (node->ParentOrShadowHostElement() &&
+        node->ParentOrShadowHostElement()->IsCanvasOrInCanvasSubtree()) {
+      // TODO: We should not exclude display: contents (crbug.com/41384724) in
+      // canvas.
+      if (!GetElement() || !GetElement()->HasDisplayContentsStyle()) {
+        return false;
+      }
     }
     if (ignored_reasons) {
       ignored_reasons->push_back(IgnoredReason(kAXUninteresting));
@@ -1341,11 +1398,14 @@ bool AXNodeObject::ComputeIsIgnored(IgnoredReasons* ignored_reasons) const {
 
     // A 1x1 canvas is too small for the user to see and thus ignored.
     const auto* canvas = DynamicTo<LayoutHTMLCanvas>(GetLayoutObject());
-    if (canvas && (canvas->Size().height <= 1 || canvas->Size().width <= 1)) {
-      if (ignored_reasons) {
-        ignored_reasons->push_back(IgnoredReason(kAXProbablyPresentational));
+    if (canvas) {
+      PhysicalSize size = canvas->StitchedSize();
+      if (size.height <= 1 || size.width <= 1) {
+        if (ignored_reasons) {
+          ignored_reasons->push_back(IgnoredReason(kAXProbablyPresentational));
+        }
+        return true;
       }
-      return true;
     }
 
     // Otherwise fall through; use presence of help text, title, or description
@@ -1455,8 +1515,8 @@ std::optional<String> AXNodeObject::GetCSSAltText(const Element* element) {
     return std::nullopt;
   }
 
-  if (element->IsPseudoElement()) {
-    for (const ContentData* content_data = style->GetContentData();
+  if (auto* pseudo_element = DynamicTo<PseudoElement>(element)) {
+    for (const ContentData* content_data = pseudo_element->GetContentData();
          content_data; content_data = content_data->Next()) {
       if (content_data->IsAlt()) {
         return ContentData::ConcatenateAltText(*content_data);
@@ -1991,8 +2051,8 @@ bool AXNodeObject::IsDataTable() const {
 
       const LayoutBlock* cell_layout_block =
           To<LayoutBlock>(cell_layout_object);
-      if (cell_layout_block->Size().width < 1 ||
-          cell_layout_block->Size().height < 1) {
+      PhysicalSize size = cell_layout_block->StitchedSize();
+      if (size.width < 1 || size.height < 1) {
         continue;
       }
 
@@ -2185,6 +2245,11 @@ ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
       return GetLayoutObject()->IsSVGRoot() ? ax::mojom::blink::Role::kSvgRoot
                                             : ax::mojom::blink::Role::kGroup;
     }
+    if (IsA<SVGSymbolElement>(node)) {
+      if (GetLayoutObject()->IsSVGViewportContainer()) {
+        return ax::mojom::blink::Role::kGroup;
+      }
+    }
     if (GetLayoutObject()->IsSVGShape()) {
       return ax::mojom::blink::Role::kGraphicsSymbol;
     }
@@ -2205,7 +2270,7 @@ ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
   // the originating element of ::scroll-marker is given an implicit
   // role of tabpanel.
   if (RuntimeEnabledFeatures::CSSScrollMarkerGroupModesEnabled() &&
-      IsOriginatingElementForScrollMarkerInTabsMode(node)) {
+      IsUltimateOriginatingElementForScrollMarkerInTabsMode(node)) {
     return ax::mojom::blink::Role::kTabPanel;
   }
 
@@ -2235,6 +2300,18 @@ ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
 
   if (IsA<HTMLPermissionElement>(node)) {
     return ax::mojom::blink::Role::kButton;
+  }
+
+  if (IsA<HTMLMenuBarElement>(node)) {
+    return ax::mojom::blink::Role::kMenuBar;
+  }
+
+  if (IsA<HTMLMenuItemElement>(node)) {
+    return ax::mojom::blink::Role::kMenuItem;
+  }
+
+  if (IsA<HTMLMenuListElement>(node)) {
+    return ax::mojom::blink::Role::kMenu;
   }
 
   // Anything that needs to be exposed but doesn't have a more specific role
@@ -2295,8 +2372,12 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     }
 
     if (GetCSSAltText(GetElement())) {
-      const ComputedStyle* style = GetElement()->GetComputedStyle();
-      ContentData* content_data = style->GetContentData();
+      const ContentData* content_data = nullptr;
+      if (auto* pseudo = DynamicTo<PseudoElement>(GetElement())) {
+        content_data = pseudo->GetContentData();
+      } else {
+        content_data = GetElement()->GetComputedStyle()->GetContentData();
+      }
       // We just check the first item of the content list to determine the
       // appropriate role, should only ever be image or text.
       // TODO(accessibility) Is it possible to use CSS alt text on an HTML tag
@@ -2420,7 +2501,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   }
 
   if (auto* select_element = DynamicTo<HTMLSelectElement>(*GetNode())) {
-    if (select_element->UsesMenuList() && !select_element->IsMultiple()) {
+    if (select_element->UsesMenuList()) {
       return ax::mojom::blink::Role::kComboBoxSelect;
     } else {
       return ax::mojom::blink::Role::kListBox;
@@ -2429,16 +2510,14 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
 
   if (ParentObjectIfPresent() && ParentObjectIfPresent()->RoleValue() ==
                                      ax::mojom::blink::Role::kComboBoxSelect) {
-    if (!RuntimeEnabledFeatures::CustomizableSelectEnabled() ||
-        HTMLSelectElement::IsPopoverPickerElement(GetNode())) {
+    if (HTMLSelectElement::IsPopoverPickerElement(GetNode())) {
       return ax::mojom::blink::Role::kMenuListPopup;
     }
   }
 
   if (auto* option = DynamicTo<HTMLOptionElement>(*GetNode())) {
     HTMLSelectElement* select_element = option->OwnerSelectElement();
-    if (select_element && select_element->UsesMenuList() &&
-        !select_element->IsMultiple()) {
+    if (select_element && select_element->UsesMenuList()) {
       return ax::mojom::blink::Role::kMenuListOption;
     } else {
       return ax::mojom::blink::Role::kListBoxOption;
@@ -2708,6 +2787,26 @@ ax::mojom::blink::Role AXNodeObject::DetermineRoleValue() {
 
   aria_role_ = DetermineAriaRole();
 
+  // Focusgroup implied role inference:
+  // If there is no explicit ARIA role (aria_role_ is kUnknown) and the native
+  // role is a generic container (e.g. a <div> / <span> without richer native
+  // semantics), infer the minimum ARIA role from the element's focusgroup
+  // behavior. This only applies to actual focusgroup owners (excludes the
+  // empty sentinel and explicit opt-outs) and never overrides author supplied
+  // roles or native semantics richer than GenericContainer.
+
+  const Element* element = GetElement();
+  if (element &&
+      RuntimeEnabledFeatures::FocusgroupEnabled(
+          element->GetExecutionContext()) &&
+      aria_role_ == ax::mojom::blink::Role::kUnknown &&
+      native_role_ == ax::mojom::blink::Role::kGenericContainer && element) {
+    const FocusgroupData data = element->GetFocusgroupData();
+    if (focusgroup::IsActualFocusgroup(data)) {
+      aria_role_ = focusgroup::FocusgroupMinimumAriaRole(data);
+    }
+  }
+
   return aria_role_ == ax::mojom::blink::Role::kUnknown ? native_role_
                                                         : aria_role_;
 }
@@ -2878,7 +2977,7 @@ bool AXNodeObject::IsLineBreakingObject() const {
   if (const LayoutText* layout_text = DynamicTo<LayoutText>(layout_object)) {
     const ComputedStyle& style = layout_object->StyleRef();
     if (layout_text->HasNonCollapsedText() && style.ShouldPreserveBreaks() &&
-        layout_text->PlainText().find('\n') != WTF::kNotFound) {
+        layout_text->PlainText().find('\n') != kNotFound) {
       return true;
     }
   }
@@ -2904,20 +3003,13 @@ bool AXNodeObject::IsLoaded() const {
 }
 
 bool AXNodeObject::IsMultiSelectable() const {
-  switch (RoleValue()) {
-    case ax::mojom::blink::Role::kGrid:
-    case ax::mojom::blink::Role::kTreeGrid:
-    case ax::mojom::blink::Role::kTree:
-    case ax::mojom::blink::Role::kListBox:
-    case ax::mojom::blink::Role::kTabList:
-      bool multiselectable;
-      if (AriaBooleanAttribute(html_names::kAriaMultiselectableAttr,
-                               &multiselectable)) {
-        return multiselectable;
-      }
-      break;
-    default:
-      break;
+  if (RoleSupportsAriaAttribute(RoleValue(),
+                                html_names::kAriaMultiselectableAttr)) {
+    bool multiselectable;
+    if (AriaBooleanAttribute(html_names::kAriaMultiselectableAttr,
+                             &multiselectable)) {
+      return multiselectable;
+    }
   }
 
   auto* html_select_element = DynamicTo<HTMLSelectElement>(GetNode());
@@ -3287,24 +3379,21 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
     return is_expanded ? kExpandedExpanded : kExpandedCollapsed;
   }
 
-  // For button elements that act as commandFor triggers, aria-expanded may be
-  // set depending on the command type. This results in the same mapping as
-  // popovertarget, but takes precedence in the case of conflicting markup as
-  // the HTML spec invokers commandfor functionality first, and only
-  // popovertarget after, if commandfor was not executed.
-  if (auto* button = DynamicTo<HTMLButtonElement>(element)) {
-    const AtomicString& action =
-        button->FastGetAttribute(html_names::kCommandAttr);
-    CommandEventType type = button->GetCommandEventType(action);
-    if (HTMLElement* command_for =
-            DynamicTo<HTMLElement>(button->commandForElement())) {
-      bool is_valid_popover_command =
-          command_for->IsValidBuiltinPopoverCommand(*button, type);
-      bool is_child = button->IsDescendantOrShadowDescendantOf(command_for);
-      // Buttons for popovers should indicate the expanded/collapsed state.
-      if (is_valid_popover_command && !is_child) {
-        return command_for->popoverOpen() ? kExpandedExpanded
-                                          : kExpandedCollapsed;
+  // For commandFor triggers, aria-expanded may be set depending on the command
+  // type. This results in the same mapping as popovertarget, but takes
+  // precedence over popovertarget.
+  if (auto* html_element = DynamicTo<HTMLElement>(element)) {
+    if (HTMLElement* command_for_element =
+            DynamicTo<HTMLElement>(html_element->commandForElement())) {
+      CommandEventType command = command_for_element->GetCommandEventType(
+          html_element->command(), html_element->GetExecutionContext());
+      bool is_popover_command =
+          command_for_element->IsValidBuiltinPopoverCommand(*html_element,
+                                                            command);
+      if (command_for_element && is_popover_command &&
+          !element->IsDescendantOrShadowDescendantOf(command_for_element)) {
+        return command_for_element->popoverOpen() ? kExpandedExpanded
+                                                  : kExpandedCollapsed;
       }
     }
   }
@@ -3345,8 +3434,21 @@ bool AXNodeObject::IsRequired() const {
   if (form_control && form_control->IsRequired())
     return true;
 
-  if (IsAriaAttributeTrue(html_names::kAriaRequiredAttr)) {
-    return true;
+  if (RoleSupportsAriaAttribute(RoleValue(), html_names::kAriaRequiredAttr)) {
+    if (IsAriaAttributeTrue(html_names::kAriaRequiredAttr)) {
+      return true;
+    }
+  }
+
+  // TODO(accessibility): The ARIA spec says aria-required is supported on
+  // radiogroup, not individual radio buttons. However, the
+  // `aria-required-changed.html` test uses aria-required directly on a radio
+  // button and expects it to be supported.
+  // See https://github.com/w3c/aria/issues/2669.
+  if (RoleValue() == ax::mojom::blink::Role::kRadioButton) {
+    if (IsAriaAttributeTrue(html_names::kAriaRequiredAttr)) {
+      return true;
+    }
   }
 
   return false;
@@ -3396,14 +3498,17 @@ int AXNodeObject::HeadingLevel() const {
   if (element->HasTagName(html_names::kH6Tag))
     return 6 + element->GetComputedHeadingOffset(/*max_offset=*/3);
 
-  if (RoleValue() == ax::mojom::blink::Role::kHeading)
-    return kDefaultHeadingLevel;
+  if (RoleValue() == ax::mojom::blink::Role::kHeading) {
+    const String& implicit_value = GetImplicitAriaLevel(RoleValue());
+    return implicit_value.empty() ? 0 : implicit_value.ToInt();
+  }
 
   // TODO(accessibility) For kDisclosureTriangle, kDisclosureTriangleGrouping,
   // if IsAccessibilityExposeSummaryAsHeadingEnabled(), we should expose
   // a default heading level that makes sense in the context of the document.
   // Will likely be easier to do on the browser side.
-  if (ui::IsHeading(RoleValue())) {
+  if (::features::IsAccessibilityExposeSummaryAsHeadingEnabled() &&
+      ui::IsHeading(RoleValue())) {
     return 5;
   }
 
@@ -3514,6 +3619,8 @@ void AXNodeObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
   if (aria_marker_type) {
     AXRange range = AXRange::RangeOfContents(*this);
     marker_types.push_back(ToAXMarkerType(aria_marker_type.value()));
+    highlight_types.push_back(
+        static_cast<int32_t>(ax::mojom::blink::HighlightType::kNone));
     marker_starts.push_back(range.Start().TextOffset());
     marker_ends.push_back(range.End().TextOffset());
   }
@@ -3546,7 +3653,7 @@ void AXNodeObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
     }
 
     marker_types.push_back(ToAXMarkerType(marker->GetType()));
-    highlight_types.push_back(static_cast<int32_t>(highlight_type));
+    highlight_types.push_back(highlight_type);
     auto start_pos = AXPosition::FromPosition(
         start_position, AXObjectCache(), TextAffinity::kDownstream,
         AXPositionAdjustmentBehavior::kMoveLeft);
@@ -3556,6 +3663,10 @@ void AXNodeObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
     marker_starts.push_back(start_pos.TextOffset());
     marker_ends.push_back(end_pos.TextOffset());
   }
+
+  DCHECK_EQ(marker_types.size(), highlight_types.size());
+  DCHECK_EQ(marker_types.size(), marker_starts.size());
+  DCHECK_EQ(marker_types.size(), marker_ends.size());
 
   if (marker_types.empty())
     return;
@@ -3726,40 +3837,47 @@ const AtomicString& AXNodeObject::EffectiveTarget() const {
 }
 
 AccessibilityOrientation AXNodeObject::Orientation() const {
+  // TODO(accessibility): aria-orientation stopped being supported on combobox
+  // in ARIA 1.2, but removing that exposure causes several tests to fail.
+  if (RoleValue() == ax::mojom::blink::Role::kComboBoxGrouping ||
+      RoleValue() == ax::mojom::blink::Role::kComboBoxMenuButton ||
+      RoleValue() == ax::mojom::blink::Role::kComboBoxSelect ||
+      RoleValue() == ax::mojom::blink::Role::kTextFieldWithComboBox) {
+    const AtomicString& aria_orientation =
+        AriaTokenAttribute(html_names::kAriaOrientationAttr);
+    if (EqualIgnoringASCIICase(aria_orientation, "horizontal")) {
+      return kAccessibilityOrientationHorizontal;
+    }
+    if (EqualIgnoringASCIICase(aria_orientation, "vertical")) {
+      return kAccessibilityOrientationVertical;
+    }
+  }
+
+  if (!RoleSupportsAriaAttribute(RoleValue(),
+                                 html_names::kAriaOrientationAttr)) {
+    return AXObject::Orientation();
+  }
+
+  // If there's a valid value, use it.
   const AtomicString& aria_orientation =
       AriaTokenAttribute(html_names::kAriaOrientationAttr);
-  AccessibilityOrientation orientation = kAccessibilityOrientationUndefined;
-  if (EqualIgnoringASCIICase(aria_orientation, "horizontal"))
-    orientation = kAccessibilityOrientationHorizontal;
-  else if (EqualIgnoringASCIICase(aria_orientation, "vertical"))
-    orientation = kAccessibilityOrientationVertical;
-
-  switch (RoleValue()) {
-    case ax::mojom::blink::Role::kListBox:
-    case ax::mojom::blink::Role::kMenu:
-    case ax::mojom::blink::Role::kScrollBar:
-    case ax::mojom::blink::Role::kTree:
-      if (orientation == kAccessibilityOrientationUndefined)
-        orientation = kAccessibilityOrientationVertical;
-
-      return orientation;
-    case ax::mojom::blink::Role::kMenuBar:
-    case ax::mojom::blink::Role::kSlider:
-    case ax::mojom::blink::Role::kSplitter:
-    case ax::mojom::blink::Role::kTabList:
-    case ax::mojom::blink::Role::kToolbar:
-      if (orientation == kAccessibilityOrientationUndefined)
-        orientation = kAccessibilityOrientationHorizontal;
-
-      return orientation;
-    case ax::mojom::blink::Role::kComboBoxGrouping:
-    case ax::mojom::blink::Role::kComboBoxMenuButton:
-    case ax::mojom::blink::Role::kRadioGroup:
-    case ax::mojom::blink::Role::kTreeGrid:
-      return orientation;
-    default:
-      return AXObject::Orientation();
+  if (EqualIgnoringASCIICase(aria_orientation, "horizontal")) {
+    return kAccessibilityOrientationHorizontal;
   }
+  if (EqualIgnoringASCIICase(aria_orientation, "vertical")) {
+    return kAccessibilityOrientationVertical;
+  }
+
+  // Fall back on the implicit value, should one exist.
+  const String& implicit_orientation = GetImplicitAriaOrientation(RoleValue());
+  if (EqualIgnoringASCIICase(implicit_orientation, "horizontal")) {
+    return kAccessibilityOrientationHorizontal;
+  }
+  if (EqualIgnoringASCIICase(implicit_orientation, "vertical")) {
+    return kAccessibilityOrientationVertical;
+  }
+
+  return AXObject::Orientation();
 }
 
 // According to the standard, the figcaption should only be the first or
@@ -3989,6 +4107,10 @@ ax::mojom::blink::TextAlign AXNodeObject::GetTextAlign() const {
       return ax::mojom::blink::TextAlign::kCenter;
     case ETextAlign::kJustify:
       return ax::mojom::blink::TextAlign::kJustify;
+    case ETextAlign::kMatchParent:
+      return style->IsLeftToRightDirection()
+                 ? ax::mojom::blink::TextAlign::kLeft
+                 : ax::mojom::blink::TextAlign::kRight;
   }
 }
 
@@ -4203,6 +4325,19 @@ ax::mojom::blink::AriaCurrentState AXNodeObject::GetAriaCurrentState() const {
   const AtomicString& attribute_value =
       AriaTokenAttribute(html_names::kAriaCurrentAttr);
   if (attribute_value.IsNull()) {
+    if (RuntimeEnabledFeatures::CSSScrollTargetGroupAriaCurrentEnabled()) {
+      // If aria-current is not set, check if the anchor element is selected
+      // in a scroll marker group (it's now a :target-current). If so, set
+      // aria-current="true" on the element.
+      if (auto* anchor_element = DynamicTo<HTMLAnchorElement>(GetNode())) {
+        if (ScrollMarkerGroupData* data =
+                anchor_element->GetScrollTargetGroupContainerData()) {
+          if (data->Selected() == anchor_element) {
+            return ax::mojom::blink::AriaCurrentState::kTrue;
+          }
+        }
+      }
+    }
     return ax::mojom::blink::AriaCurrentState::kNone;
   }
   if (EqualIgnoringASCIICase(attribute_value, "false")) {
@@ -4395,6 +4530,10 @@ bool AXNodeObject::ValueForRange(float* out_value) const {
 }
 
 bool AXNodeObject::MaxValueForRange(float* out_value) const {
+  if (!IsRangeValueSupported()) {
+    return false;
+  }
+
   if (AriaFloatAttribute(html_names::kAriaValuemaxAttr, out_value)) {
     return true;
   }
@@ -4409,26 +4548,21 @@ bool AXNodeObject::MaxValueForRange(float* out_value) const {
     return true;
   }
 
-  // In ARIA 1.1, default value of scrollbar, separator and slider
-  // for aria-valuemax were changed to 100. This change was made for
-  // progressbar in ARIA 1.2.
-  switch (RawAriaRole()) {
-    case ax::mojom::blink::Role::kMeter:
-    case ax::mojom::blink::Role::kProgressIndicator:
-    case ax::mojom::blink::Role::kScrollBar:
-    case ax::mojom::blink::Role::kSplitter:
-    case ax::mojom::blink::Role::kSlider: {
-      *out_value = 100.0f;
-      return true;
-    }
-    default:
-      break;
+  // Fall back to implicit value from ARIA spec.
+  const String& implicit_value = GetImplicitAriaValuemax(RoleValue());
+  if (!implicit_value.empty()) {
+    *out_value = implicit_value.ToFloat();
+    return true;
   }
 
   return false;
 }
 
 bool AXNodeObject::MinValueForRange(float* out_value) const {
+  if (!IsRangeValueSupported()) {
+    return false;
+  }
+
   if (AriaFloatAttribute(html_names::kAriaValueminAttr, out_value)) {
     return true;
   }
@@ -4443,20 +4577,11 @@ bool AXNodeObject::MinValueForRange(float* out_value) const {
     return true;
   }
 
-  // In ARIA 1.1, default value of scrollbar, separator and slider
-  // for aria-valuemin were changed to 0. This change was made for
-  // progressbar in ARIA 1.2.
-  switch (RawAriaRole()) {
-    case ax::mojom::blink::Role::kMeter:
-    case ax::mojom::blink::Role::kProgressIndicator:
-    case ax::mojom::blink::Role::kScrollBar:
-    case ax::mojom::blink::Role::kSplitter:
-    case ax::mojom::blink::Role::kSlider: {
-      *out_value = 0.0f;
-      return true;
-    }
-    default:
-      break;
+  // Fall back to implicit value from ARIA spec.
+  const String& implicit_value = GetImplicitAriaValuemin(RoleValue());
+  if (!implicit_value.empty()) {
+    *out_value = implicit_value.ToFloat();
+    return true;
   }
 
   return false;
@@ -4531,23 +4656,6 @@ KURL AXNodeObject::Url() const {
 }
 
 AXObject* AXNodeObject::ChooserPopup() const {
-  if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() ||
-      RuntimeEnabledFeatures::SelectAccessibilityNestedInputEnabled()) {
-    // The first input inside of a select filters the listbox, and therefore
-    // controls it.
-    if (auto* input = DynamicTo<HTMLInputElement>(GetNode())) {
-      if (input->IsTextField()) {
-        if (auto* select = input->FirstAncestorSelectElement()) {
-          if (auto* popover = select->PopoverPickerElement()) {
-            if (auto* axobject = AXObjectCache().Get(popover)) {
-              return axobject;
-            }
-          }
-        }
-      }
-    }
-  }
-
   // When color & date chooser popups are visible, they can be found in the tree
   // as a group child of the <input> control itself.
   switch (native_role_) {
@@ -4610,8 +4718,7 @@ String AXNodeObject::GetValueForControl(AXObjectSet& visited) const {
     // If the author replaced the button by providing their own <button> on a
     // customizable select, then use the text inside that button:
     // https://github.com/openui/open-ui/issues/1117
-    if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
-        select_element->IsAppearanceBase()) {
+    if (select_element->IsAppearanceBase()) {
       if (auto* button = select_element->SlottedButton()) {
         if (AXObject* button_object = AXObjectCache().Get(button)) {
           return button_object->TextFromDescendants(visited, nullptr, false);
@@ -4731,9 +4838,14 @@ ax::mojom::blink::HasPopup AXNodeObject::HasPopup() const {
     return *has_popup_from_attribute;
   }
 
-  // ARIA 1.1 default value of haspopup for combobox is "listbox".
-  if (RoleValue() == ax::mojom::blink::Role::kComboBoxMenuButton ||
-      RoleValue() == ax::mojom::blink::Role::kTextFieldWithComboBox) {
+  // Native HTML <select> elements use kMenu, not the ARIA combobox implicit
+  // value of kListbox.
+  if (RoleValue() == ax::mojom::blink::Role::kComboBoxSelect) {
+    return ax::mojom::blink::HasPopup::kMenu;
+  }
+
+  const String& implicit_value = GetImplicitAriaHaspopup(RoleValue());
+  if (implicit_value == "listbox") {
     return ax::mojom::blink::HasPopup::kListbox;
   }
 
@@ -4935,7 +5047,14 @@ String AXNodeObject::GetName(ax::mojom::blink::NameFrom& name_from,
     // Prioritize alt text if available.
     std::optional<String> alt_text = GetCSSAltText(element);
     if (alt_text && !alt_text->empty()) {
+      name_from = ax::mojom::blink::NameFrom::kCssAltText;
       return *alt_text;
+    }
+
+    if (!name.empty()) {
+      // Scroll button has a non-empty name, so there is no need to use a
+      // fallback.
+      return name;
     }
 
     // If the alt text is not available, return a "Scroll [direction]" name,
@@ -4955,6 +5074,8 @@ String AXNodeObject::GetName(ax::mojom::blink::NameFrom& name_from,
         NOTREACHED()
             << "ScrollButtonPseudoElement must be one of known directions";
       }
+
+      name_from = ax::mojom::blink::NameFrom::kCssAltText;
 
       switch (physical) {
         case PhysicalDirection::kRight:
@@ -4977,11 +5098,13 @@ String AXNodeObject::GetName(ax::mojom::blink::NameFrom& name_from,
   if (element && element->IsScrollMarkerPseudoElement()) {
     std::optional<String> alt_text = GetCSSAltText(element);
     if (alt_text && !alt_text->empty()) {
+      name_from = ax::mojom::blink::NameFrom::kCssAltText;
       return *alt_text;
     }
 
     std::optional<String> content = GetCSSContentText(element);
     if (content && !content->empty()) {
+      name_from = ax::mojom::blink::NameFrom::kContents;
       return *content;
     }
 
@@ -5526,8 +5649,8 @@ void AXNodeObject::GetRelativeBounds(AXObject** out_container,
   Element* element = GetElement();
   // If it's in a canvas but doesn't have an explicit rect, or has display:
   // contents set, get the bounding rect of its children.
-  if ((GetNode()->parentElement() &&
-       GetNode()->parentElement()->IsInCanvasSubtree()) ||
+  if ((GetNode()->ParentOrShadowHostElement() &&
+       GetNode()->ParentOrShadowHostElement()->IsCanvasOrInCanvasSubtree()) ||
       (element && element->HasDisplayContentsStyle())) {
     Vector<gfx::RectF> rects;
     for (Node& child : NodeTraversal::ChildrenOf(*GetNode())) {
@@ -5751,7 +5874,7 @@ void AXNodeObject::LoadInlineTextBoxes() {
       continue;
     }
 
-    if (CanHaveInlineTextBoxChildren(work_obj)) {
+    if (CanHaveInlineTextBoxChildren(work_obj) && HasLayoutText(work_obj)) {
       if (work_obj->CachedChildrenIncludingIgnored().empty()) {
         // We only need to add inline textbox children if they aren't present.
         // Although some platforms (e.g. Android), load inline text boxes
@@ -5995,19 +6118,6 @@ void AXNodeObject::AddNodeChildren() {
   }
 }
 
-void AXNodeObject::AddSelectChildren() {
-  auto* select = DynamicTo<HTMLSelectElement>(GetNode());
-  if (RuntimeEnabledFeatures::SelectAccessibilityReparentInputEnabled() &&
-      select) {
-    if (auto* input = select->FirstDescendantTextInput()) {
-      // Reparent the first descendant <input> element of this <select> to be
-      // adjacent to the listbox in the a11y tree.
-      AddNodeChild(input);
-    }
-  }
-  AddNodeChildren();
-}
-
 void AXNodeObject::AddOwnedChildren() {
   AXObjectVector owned_children;
   AXObjectCache().ValidatedAriaOwnedChildren(this, owned_children);
@@ -6057,9 +6167,7 @@ void AXNodeObject::AddChildrenImpl() {
     AddValidationMessageChild();
   CHECK_ATTACHED();
 
-  if (IsA<HTMLSelectElement>(GetNode())) {
-    AddSelectChildren();
-  } else if (HasValidHTMLTableStructureAndLayout()) {
+  if (HasValidHTMLTableStructureAndLayout()) {
     AddTableChildren();
   } else if (GetNode() && GetNode()->IsScrollMarkerGroupPseudoElement()) {
     AddScrollMarkerGroupChildren();
@@ -6298,7 +6406,9 @@ void AXNodeObject::InsertChild(AXObject* child,
     int new_index = index;
     for (wtf_size_t i = 0; i < length; ++i) {
       if (children[i]->IsDetached()) {
-        NOTREACHED(base::NotFatalUntil::M140)
+        // TODO(crbug.com/452392024): Investigate why this is reached, fix it,
+        // and move to a NOTREACHED.
+        DUMP_WILL_BE_NOTREACHED()
             << "Cannot add a detached child: " << "\n* Child: " << children[i]
             << "\n* Parent: " << child << "\n* Grandparent: " << this;
         continue;
@@ -6314,7 +6424,16 @@ void AXNodeObject::InsertChild(AXObject* child,
 }
 
 bool AXNodeObject::CanHaveChildren() const {
-  DCHECK(!IsDetached());
+  // When Detached, calling methods such as AXObjectCache can cause a crash,
+  // instead, fail gracefully here.
+  if (IsDetached()) {
+    // TODO(442619489) Identify and fix any instances where
+    // CanHaveChildren() is called on a detached object, then replace this
+    // DUMP_WILL_BE_NOTREACHED with a CHECK.
+    DUMP_WILL_BE_NOTREACHED()
+        << "Calling CanHaveChildren on a detached node is not allowed." << this;
+    return false;
+  }
 
   // A child tree has been stitched onto this node, hiding its usual subtree.
   if (AXObjectCache().GetAXObjectChildAXTreeID(AXObjectID())) {
@@ -6332,14 +6451,10 @@ bool AXNodeObject::CanHaveChildren() const {
   bool result = !GetElement() || AXObject::CanHaveChildren(*GetElement());
   switch (native_role_) {
     case ax::mojom::blink::Role::kListBoxOption:
-      if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-        // When CustomizableSelect is enabled, then options are allowed to have
-        // children as per the new content model.
-        break;
-      }
-      [[fallthrough]];
+      // Option elements are allowed to have children according to the content
+      // model in the HTML spec.
+      break;
     case ax::mojom::blink::Role::kCheckBox:
-    case ax::mojom::blink::Role::kMenuItem:
     case ax::mojom::blink::Role::kMenuItemCheckBox:
     case ax::mojom::blink::Role::kMenuItemRadio:
     case ax::mojom::blink::Role::kProgressIndicator:
@@ -6355,6 +6470,7 @@ bool AXNodeObject::CanHaveChildren() const {
                       << "\n* Aria role: " << RawAriaRole();
       break;
     case ax::mojom::blink::Role::kComboBoxSelect:
+    case ax::mojom::blink::Role::kMenuItem:
     case ax::mojom::blink::Role::kPopUpButton:
     case ax::mojom::blink::Role::kStaticText:
       // Note: these can have AXInlineTextBox children, but when adding them, we
@@ -6755,13 +6871,11 @@ String AXNodeObject::TextAlternativeFromTooltip(
   // First try for interest for, then for hint popover.
   // TODO(accessibility) Consider only using interest for.
   AXObject* popover_ax_object = nullptr;
-  if (RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-          GetElement()->GetDocument().GetExecutionContext())) {
+  if (RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled()) {
     popover_ax_object = AXObjectCache().Get(GetElement()->InterestForElement());
   }
   if (popover_ax_object) {
-    DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-        GetElement()->GetDocument().GetExecutionContext()));
+    DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
     name_from = ax::mojom::blink::NameFrom::kInterestFor;
   } else {
     auto* form_control = DynamicTo<HTMLFormControlElement>(GetElement());
@@ -7736,12 +7850,10 @@ String AXNodeObject::Description(
 
   // For form controls that act as interest for triggering elements, use
   // the target for a description if it only contains plain contents.
-  if (RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-          element->GetDocument().GetExecutionContext()) &&
+  if (RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled() &&
       name_from != ax::mojom::blink::NameFrom::kInterestFor) {
     if (Element* target = element->InterestForElement()) {
-      DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-          element->GetDocument().GetExecutionContext()));
+      DCHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
       description_from = ax::mojom::blink::DescriptionFrom::kInterestFor;
       if (description_sources) {
         description_sources->push_back(
@@ -8302,13 +8414,14 @@ AXObject* AXNodeObject::NextOnLine() const {
   if (const auto* list_marker =
           GetListMarker(*layout_object, ParentObjectIfPresent())) {
     // A list marker should be followed by a list item on the same line.
-    // Note that pseudo content is always included in the tree, so
-    // NextSiblingIncludingIgnored() will succeed.
     auto* ax_list_marker = AXObjectCache().Get(list_marker);
-    if (ax_list_marker && ax_list_marker->IsIncludedInTree()) {
-      return SetNextOnLine(
-          GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(
-              ax_list_marker->NextSiblingIncludingIgnored(), true));
+    if (ax_list_marker) {
+      AXObject* next_sibling = ax_list_marker->UnignoredNextSiblingSlow();
+      if (next_sibling) {
+        return SetNextOnLine(
+            GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(next_sibling,
+                                                                  true));
+      }
     }
     return SetNextOnLine(nullptr);
   }
@@ -8398,13 +8511,20 @@ AXObject* AXNodeObject::PreviousOnLine() const {
   }
 
   AXObject* previous_sibling =
-      IsIncludedInTree() ? PreviousSiblingIncludingIgnored() : nullptr;
-  if (previous_sibling && previous_sibling->GetLayoutObject() &&
-      previous_sibling->GetLayoutObject()->IsLayoutOutsideListMarker()) {
-    // A list item should be preceded by a list marker on the same line.
-    return SetPreviousOnLine(
-        GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(previous_sibling,
-                                                              false));
+      IsIncludedInTree() ? UnignoredPreviousSiblingSlow() : nullptr;
+  if (previous_sibling && previous_sibling->GetLayoutObject()) {
+    const auto* list_marker =
+        GetListMarker(*previous_sibling->GetLayoutObject(),
+                      previous_sibling->ParentObjectIfPresent());
+    auto* ax_list_marker =
+        list_marker ? AXObjectCache().Get(list_marker) : nullptr;
+    if (ax_list_marker && ax_list_marker->GetLayoutObject() &&
+        ax_list_marker->GetLayoutObject()->IsLayoutOutsideListMarker()) {
+      // A list item should be preceded by a list marker on the same line.
+      return SetPreviousOnLine(
+          GetFirstInlineBlockOrDeepestInlineAXChildInLayoutTree(ax_list_marker,
+                                                                false));
+    }
   }
 
   if (layout_object->IsLayoutOutsideListMarker() ||

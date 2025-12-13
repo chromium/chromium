@@ -4,6 +4,10 @@
 
 #include "ui/gfx/platform_font.h"
 
+#include <tuple>
+
+#include "base/check.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/font_list.h"
 
 namespace gfx {
@@ -30,6 +34,15 @@ int PlatformFont::GetFontSizeDeltaIgnoringUserOrLocaleSettings(
   // due to user or locale settings, include it here.
   return base_font.GetFontSize() - gfx::PlatformFont::kDefaultBaseFontSize +
          user_or_locale_delta;
+}
+
+std::strong_ordering PlatformFont::Compare(const PlatformFont& other) const {
+  DCHECK(GetNativeSkTypeface());
+  DCHECK(other.GetNativeSkTypeface());
+  return std::make_tuple(GetNativeSkTypeface()->uniqueID(), GetFontSize(),
+                         GetStyle()) <=>
+         std::make_tuple(other.GetNativeSkTypeface()->uniqueID(),
+                         other.GetFontSize(), other.GetStyle());
 }
 
 }  // namespace gfx

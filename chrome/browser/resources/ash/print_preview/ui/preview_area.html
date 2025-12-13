@@ -113,13 +113,11 @@
           <span>.</span><span>.</span><span>.</span>
       </span>
     </div>
-    <if expr="is_chromeos">
-      <print-preview-printer-setup-info-cros
-          hidden$="[[!showCrosPrinterSetupInfo_]]"
-          message-type="[[printerSetupInfoMessageTypeEnum_.PRINTER_OFFLINE]]"
-          initiator="[[printerSetupInfoInitiatorEnum_.PREVIEW_AREA]]">
-      </print-preview-printer-setup-info-cros>
-    </if>
+    <print-preview-printer-setup-info-cros
+        hidden$="[[!showCrosPrinterSetupInfo_]]"
+        message-type="[[printerSetupInfoMessageTypeEnum_.PRINTER_OFFLINE]]"
+        initiator="[[printerSetupInfoInitiatorEnum_.PREVIEW_AREA]]">
+    </print-preview-printer-setup-info-cros>
   </div>
 </div>
 <div class="preview-area-plugin-wrapper"></div>

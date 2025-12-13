@@ -122,7 +122,7 @@ Node* DOMPatchSupport::PatchNode(Node* node,
 
   // FIXME: This code should use one of createFragment* in Serialization.h
   if (IsA<HTMLDocument>(GetDocument()))
-    fragment->ParseHTML(markup, target_element);
+    fragment->ParseHTML(markup, target_element, /*registry*/ nullptr);
   else
     fragment->ParseXML(markup, target_element, IGNORE_EXCEPTION);
 
@@ -169,8 +169,9 @@ Node* DOMPatchSupport::PatchNode(Node* node,
 bool DOMPatchSupport::InnerPatchNode(Digest* old_digest,
                                      Digest* new_digest,
                                      ExceptionState& exception_state) {
-  if (old_digest->sha1_ == new_digest->sha1_)
+  if (old_digest->sha256_ == new_digest->sha256_) {
     return true;
+  }
 
   Node* old_node = old_digest->node_;
   Node* new_node = new_digest->node_;
@@ -192,7 +193,7 @@ bool DOMPatchSupport::InnerPatchNode(Digest* old_digest,
 
   // Patch attributes
   auto* new_element = To<Element>(new_node);
-  if (old_digest->attrs_sha1_ != new_digest->attrs_sha1_) {
+  if (old_digest->attrs_sha256_ != new_digest->attrs_sha256_) {
     // FIXME: Create a function in Element for removing all properties. Take in
     // account whether did/willModifyAttribute are important.
     while (old_element->AttributesWithoutUpdate().size()) {
@@ -214,7 +215,7 @@ bool DOMPatchSupport::InnerPatchNode(Digest* old_digest,
 
   bool result = InnerPatchChildren(old_element, old_digest->children_,
                                    new_digest->children_, exception_state);
-  unused_nodes_map_.erase(new_digest->sha1_);
+  unused_nodes_map_.erase(new_digest->sha256_);
   return result;
 }
 
@@ -236,7 +237,7 @@ DOMPatchSupport::Diff(const HeapVector<Member<Digest>>& old_list,
 
   // Trim head and tail.
   for (wtf_size_t i = 0; i < old_list.size() && i < new_list.size() &&
-                         old_list[i]->sha1_ == new_list[i]->sha1_;
+                         old_list[i]->sha256_ == new_list[i]->sha256_;
        ++i) {
     old_map[i].first = old_list[i].Get();
     old_map[i].second = i;
@@ -244,8 +245,8 @@ DOMPatchSupport::Diff(const HeapVector<Member<Digest>>& old_list,
     new_map[i].second = i;
   }
   for (wtf_size_t i = 0; i < old_list.size() && i < new_list.size() &&
-                         old_list[old_list.size() - i - 1]->sha1_ ==
-                             new_list[new_list.size() - i - 1]->sha1_;
+                         old_list[old_list.size() - i - 1]->sha256_ ==
+                             new_list[new_list.size() - i - 1]->sha256_;
        ++i) {
     wtf_size_t old_index = old_list.size() - i - 1;
     wtf_size_t new_index = new_list.size() - i - 1;
@@ -260,12 +261,12 @@ DOMPatchSupport::Diff(const HeapVector<Member<Digest>>& old_list,
   DiffTable old_table;
 
   for (wtf_size_t i = 0; i < new_list.size(); ++i) {
-    new_table.insert(new_list[i]->sha1_, Vector<wtf_size_t>())
+    new_table.insert(new_list[i]->sha256_, Vector<wtf_size_t>())
         .stored_value->value.push_back(i);
   }
 
   for (wtf_size_t i = 0; i < old_list.size(); ++i) {
-    old_table.insert(old_list[i]->sha1_, Vector<wtf_size_t>())
+    old_table.insert(old_list[i]->sha256_, Vector<wtf_size_t>())
         .stored_value->value.push_back(i);
   }
 
@@ -289,7 +290,7 @@ DOMPatchSupport::Diff(const HeapVector<Member<Digest>>& old_list,
 
     wtf_size_t j = new_map[i].second + 1;
     if (j < old_map.size() && !old_map[j].first &&
-        new_list[i + 1]->sha1_ == old_list[j]->sha1_) {
+        new_list[i + 1]->sha256_ == old_list[j]->sha256_) {
       new_map[i + 1] = std::make_pair(new_list[i + 1].Get(), j);
       old_map[j] = std::make_pair(old_list[j].Get(), i + 1);
     }
@@ -300,7 +301,7 @@ DOMPatchSupport::Diff(const HeapVector<Member<Digest>>& old_list,
       continue;
 
     wtf_size_t j = new_map[i].second - 1;
-    if (!old_map[j].first && new_list[i - 1]->sha1_ == old_list[j]->sha1_) {
+    if (!old_map[j].first && new_list[i - 1]->sha256_ == old_list[j]->sha256_) {
       new_map[i - 1] = std::make_pair(new_list[i - 1].Get(), j);
       old_map[j] = std::make_pair(old_list[j].Get(), i - 1);
     }
@@ -346,7 +347,7 @@ bool DOMPatchSupport::InnerPatchChildren(
 
     // Check if this change is between stable nodes. If it is, consider it as
     // "modified".
-    if (!unused_nodes_map_.Contains(old_list[i]->sha1_) &&
+    if (!unused_nodes_map_.Contains(old_list[i]->sha256_) &&
         (!i || old_map[i - 1].first) &&
         (i == old_map.size() - 1 || old_map[i + 1].first)) {
       wtf_size_t anchor_candidate = i ? old_map[i - 1].second + 1 : 0;
@@ -432,7 +433,7 @@ DOMPatchSupport::Digest* DOMPatchSupport::CreateDigest(
     Node* node,
     UnusedNodesMap* unused_nodes_map) {
   Digest* digest = MakeGarbageCollected<Digest>(node);
-  Digestor digestor(kHashAlgorithmSha1);
+  Digestor digestor(kHashAlgorithmSha256);
   DigestValue digest_result;
 
   Node::NodeType node_type = node->getNodeType();
@@ -444,14 +445,14 @@ DOMPatchSupport::Digest* DOMPatchSupport::CreateDigest(
     Node* child = element->firstChild();
     while (child) {
       Digest* child_info = CreateDigest(child, unused_nodes_map);
-      digestor.UpdateUtf8(child_info->sha1_);
+      digestor.UpdateUtf8(child_info->sha256_);
       child = child->nextSibling();
       digest->children_.push_back(child_info);
     }
 
     AttributeCollection attributes = element->AttributesWithoutUpdate();
     if (!attributes.IsEmpty()) {
-      Digestor attrs_digestor(kHashAlgorithmSha1);
+      Digestor attrs_digestor(kHashAlgorithmSha256);
       for (auto& attribute : attributes) {
         attrs_digestor.UpdateUtf8(attribute.GetName().ToString());
         attrs_digestor.UpdateUtf8(attribute.Value().GetString());
@@ -459,17 +460,18 @@ DOMPatchSupport::Digest* DOMPatchSupport::CreateDigest(
 
       attrs_digestor.Finish(digest_result);
       DCHECK(!attrs_digestor.has_failed());
-      digest->attrs_sha1_ = Base64Encode(base::span(digest_result).first<10>());
-      digestor.UpdateUtf8(digest->attrs_sha1_);
+      digest->attrs_sha256_ =
+          Base64Encode(base::span(digest_result).first<10>());
+      digestor.UpdateUtf8(digest->attrs_sha256_);
     }
   }
 
   digestor.Finish(digest_result);
   DCHECK(!digestor.has_failed());
-  digest->sha1_ = Base64Encode(base::span(digest_result).first<10>());
+  digest->sha256_ = Base64Encode(base::span(digest_result).first<10>());
 
   if (unused_nodes_map)
-    unused_nodes_map->insert(digest->sha1_, digest);
+    unused_nodes_map->insert(digest->sha256_, digest);
   return digest;
 }
 
@@ -494,10 +496,10 @@ bool DOMPatchSupport::RemoveChildAndMoveToNew(Digest* old_digest,
   // Diff works within levels. In order not to lose the node identity when user
   // prepends their HTML with "<div>" (i.e. all nodes are shifted to the next
   // nested level), prior to dropping the original node on the floor, check
-  // whether new DOM has a digest with matching sha1. If it does, replace it
+  // whether new DOM has a digest with matching sha256. If it does, replace it
   // with the original DOM chunk.  Chances are high that it will get merged back
   // into the original DOM during the further patching.
-  UnusedNodesMap::iterator it = unused_nodes_map_.find(old_digest->sha1_);
+  UnusedNodesMap::iterator it = unused_nodes_map_.find(old_digest->sha256_);
   if (it != unused_nodes_map_.end()) {
     Digest* new_digest = it->value;
     Node* new_node = new_digest->node_;
@@ -522,7 +524,7 @@ void DOMPatchSupport::MarkNodeAsUsed(Digest* digest) {
   queue.push_back(digest);
   while (!queue.empty()) {
     Digest* first = queue.TakeFirst();
-    unused_nodes_map_.erase(first->sha1_);
+    unused_nodes_map_.erase(first->sha256_);
     for (wtf_size_t i = 0; i < first->children_.size(); ++i)
       queue.push_back(first->children_[i].Get());
   }

@@ -16,7 +16,8 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   SourcesTestRunner.startDebuggerTest(step1);
 
   async function step1() {
-    TestRunner.DebuggerAgent.setPauseOnExceptions(SDK.DebuggerModel.PauseOnExceptionsState.PauseOnUncaughtExceptions);
+    TestRunner.DebuggerAgent.invoke_setPauseOnExceptions(
+        {state: SDK.DebuggerModel.PauseOnExceptionsState.PauseOnUncaughtExceptions});
     await TestRunner.addIframe('resources/syntax-error.html');
     await ConsoleTestRunner.dumpConsoleMessages();
     SourcesTestRunner.completeDebuggerTest();

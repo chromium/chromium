@@ -73,7 +73,7 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
 // will be handled in this way.
 BASE_FEATURE(kBackForwardCachePrioritizedEntry,
              "BackForwardCachePrioritizedEntry",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the interaction between back/forward cache and
 // unload. When enabled, pages with unload handlers may enter the
@@ -395,7 +395,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // BackForwardCache overrides:
   void Flush() override;
   void Flush(NotRestoredReason reason) override;
-  void Prune(size_t limit, NotRestoredReason reason) override;
+  size_t Prune(size_t limit, NotRestoredReason reason) override;
   void SetEmbedderSuppliedCacheSize(
       size_t embedder_supplied_cache_size) override;
   void SetEmbedderSuppliedTimeToLive(
@@ -523,6 +523,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // `kCacheLimitPrunedOnModerateMemoryPressure` or
   // `kCacheLimitPrunedOnCriticalMemoryPressure`, it means the enforcement is
   // triggered by the `Prune()` method.
+  // This method returns the number of entries in the BFCache.
   size_t EnforceCacheSizeLimitInternal(
       size_t limit,
       BackForwardCacheMetrics::NotRestoredReason reason);

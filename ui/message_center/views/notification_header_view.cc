@@ -32,6 +32,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
 

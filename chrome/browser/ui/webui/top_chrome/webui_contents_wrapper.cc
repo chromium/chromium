@@ -17,6 +17,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/input/web_gesture_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -45,17 +47,6 @@ void EnableAutoResizeForWebContents(content::WebContents* web_contents) {
           web_contents->GetRenderWidgetHostView()) {
     render_widget_host_view->EnableAutoResize(gfx::Size(1, 1),
                                               gfx::Size(INT_MAX, INT_MAX));
-  }
-}
-
-// Enables the web contents to support web platform defined draggable regions
-// for the current primary render frame host. This should be called each time
-// the primary rfh changes (after navigation for e.g.).
-void EnableDraggableRegions(content::WebContents* web_contents) {
-  if (content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame()) {
-    mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> client;
-    rfh->GetRemoteAssociatedInterfaces()->GetInterface(&client);
-    client->SetSupportsDraggableRegions(true);
   }
 }
 
@@ -93,6 +84,23 @@ content::WebContents* WebUIContentsWrapper::Host::AddNewContents(
   return nullptr;
 }
 
+bool WebUIContentsWrapper::Host::PreHandleGestureEvent(
+    content::WebContents* source,
+    const blink::WebGestureEvent& event) {
+  // Block gestures that will zoom on Mac devices (i.e. pinch to zoom
+  // and double tap to zoom)
+#if BUILDFLAG(IS_MAC)
+  if (blink::WebInputEvent::IsPinchGestureEventType(event.GetType())) {
+    return true;
+  }
+
+  if (event.GetType() == blink::WebInputEvent::Type::kGestureDoubleTap) {
+    return true;
+  }
+#endif
+  return false;
+}
+
 WebUIContentsWrapper::WebUIContentsWrapper(const GURL& webui_url,
                                            Profile* profile,
                                            int task_manager_string_id,
@@ -103,6 +111,7 @@ WebUIContentsWrapper::WebUIContentsWrapper(const GURL& webui_url,
     : webui_resizes_host_(webui_resizes_host),
       esc_closes_ui_(esc_closes_ui),
       supports_draggable_regions_(supports_draggable_regions) {
+  DCHECK_GE(task_manager_string_id, 0);
   RequestResult make_contents_result = Request(webui_url, profile);
   web_contents_ = std::move(make_contents_result.web_contents);
   is_ready_to_show_ = make_contents_result.is_ready_to_show;
@@ -123,7 +132,7 @@ WebUIContentsWrapper::WebUIContentsWrapper(const GURL& webui_url,
     EnableAutoResizeForWebContents(web_contents_.get());
   }
   if (supports_draggable_regions_) {
-    EnableDraggableRegions(web_contents_.get());
+    web_contents_->SetSupportsDraggableRegions(true);
   }
 
   profile_observation_.Observe(profile);
@@ -239,13 +248,18 @@ content::WebContents* WebUIContentsWrapper::AddNewContents(
                : nullptr;
 }
 
+bool WebUIContentsWrapper::PreHandleGestureEvent(
+    content::WebContents* source,
+    const blink::WebGestureEvent& event) {
+  return host_ ? host_->PreHandleGestureEvent(source, event) : false;
+}
+
 void WebUIContentsWrapper::PrimaryPageChanged(content::Page& page) {
   if (webui_resizes_host_) {
     EnableAutoResizeForWebContents(web_contents_.get());
   }
   if (supports_draggable_regions_) {
     draggable_regions_.reset();
-    EnableDraggableRegions(web_contents_.get());
   }
 }
 

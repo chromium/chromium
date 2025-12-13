@@ -156,12 +156,13 @@ import {ConsoleTestRunner} from 'console_test_runner';
     },
 
     async function testRuntimeAgentCallFunctionOn(next) {
-      var result = await TestRunner.RuntimeAgent.evaluate('({ a : 1, b : 2 })');
+      var {result} = await TestRunner.RuntimeAgent.invoke_evaluate({expression: '({ a : 1, b : 2 })'});
 
       function sum() {
         return this.a + this.b;
       }
-      result = await TestRunner.RuntimeAgent.callFunctionOn(sum.toString(), result.objectId);
+      ({result} = await TestRunner.RuntimeAgent.invoke_callFunctionOn(
+           {functionDeclaration: sum.toString(), objectId: result.objectId}));
 
       TestRunner.assertEquals(3, result.value);
       next();

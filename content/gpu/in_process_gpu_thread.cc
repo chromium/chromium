@@ -32,9 +32,7 @@
 namespace content {
 namespace {
 
-BASE_FEATURE(kInProcessGpuUseIOThread,
-             "InProcessGpuUseIOThread",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kInProcessGpuUseIOThread, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 

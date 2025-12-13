@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_ATTESTATION_ATTESTATION_CA_CLIENT_H_
 
 #include <list>
-#include <map>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -46,7 +46,7 @@ class AttestationCAClient : public ServerProxy {
   void OnURLLoadComplete(
       std::list<std::unique_ptr<network::SimpleURLLoader>>::iterator it,
       DataCallback on_response,
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
 
   PrivacyCAType GetType() override;
 

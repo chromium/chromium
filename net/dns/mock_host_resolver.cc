@@ -23,7 +23,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/pattern.h"
@@ -187,11 +186,11 @@ class MockHostResolverBase::RequestBase {
       std::set<std::string> aliases,
       std::optional<HostCache::EntryStaleness> staleness) {
     DCHECK(!complete_);
-    DCHECK(!endpoint_results_);
+    DCHECK(endpoint_results_.empty());
     DCHECK(!parameters_.is_speculative);
 
     endpoint_results_ = std::move(endpoint_results);
-    for (auto& result : *endpoint_results_) {
+    for (auto& result : endpoint_results_) {
       result.ip_endpoints = FixupEndPoints(result.ip_endpoints);
     }
 
@@ -199,8 +198,8 @@ class MockHostResolverBase::RequestBase {
 
     // `HostResolver` implementations are expected to provide an `AddressList`
     // result whenever `HostResolverEndpointResult` is also available.
-    address_results_ = EndpointResultToAddressList(
-        *endpoint_results_, *fixed_up_dns_alias_results_);
+    address_results_ = EndpointResultToAddressList(endpoint_results_,
+                                                   fixed_up_dns_alias_results_);
 
     staleness_ = std::move(staleness);
 
@@ -251,9 +250,7 @@ class MockHostResolverBase::RequestBase {
   // Similar get GetAddressResults() and GetResolveErrorInfo(), but only exposed
   // through the HostResolver::ResolveHostRequest interface, and don't have the
   // DCHECKs that `complete_` is true.
-  const std::optional<AddressList>& address_results() const {
-    return address_results_;
-  }
+  const AddressList& address_results() const { return address_results_; }
   ResolveErrorInfo resolve_error_info() const { return resolve_error_info_; }
 
  protected:
@@ -293,9 +290,9 @@ class MockHostResolverBase::RequestBase {
   RequestPriority priority_;
   int host_resolver_flags_;
 
-  std::optional<AddressList> address_results_;
-  std::optional<std::vector<HostResolverEndpointResult>> endpoint_results_;
-  std::optional<std::set<std::string>> fixed_up_dns_alias_results_;
+  AddressList address_results_;
+  std::vector<HostResolverEndpointResult> endpoint_results_;
+  std::set<std::string> fixed_up_dns_alias_results_;
   std::optional<HostCache::EntryStaleness> staleness_;
   ResolveErrorInfo resolve_error_info_;
 
@@ -349,32 +346,30 @@ class MockHostResolverBase::RequestImpl
     return rv;
   }
 
-  const AddressList* GetAddressResults() const override {
+  const AddressList& GetAddressResults() const override {
     DCHECK(complete_);
-    return base::OptionalToPtr(address_results_);
+    return address_results_;
   }
 
-  const std::vector<HostResolverEndpointResult>* GetEndpointResults()
+  base::span<const HostResolverEndpointResult> GetEndpointResults()
       const override {
     DCHECK(complete_);
-    return base::OptionalToPtr(endpoint_results_);
+    return endpoint_results_;
   }
 
-  const std::vector<std::string>* GetTextResults() const override {
+  base::span<const std::string> GetTextResults() const override {
     DCHECK(complete_);
-    static const base::NoDestructor<std::vector<std::string>> empty_result;
-    return empty_result.get();
+    return {};
   }
 
-  const std::vector<HostPortPair>* GetHostnameResults() const override {
+  base::span<const HostPortPair> GetHostnameResults() const override {
     DCHECK(complete_);
-    static const base::NoDestructor<std::vector<HostPortPair>> empty_result;
-    return empty_result.get();
+    return {};
   }
 
-  const std::set<std::string>* GetDnsAliasResults() const override {
+  const std::set<std::string>& GetDnsAliasResults() const override {
     DCHECK(complete_);
-    return base::OptionalToPtr(fixed_up_dns_alias_results_);
+    return fixed_up_dns_alias_results_;
   }
 
   net::ResolveErrorInfo GetResolveErrorInfo() const override {
@@ -437,16 +432,12 @@ class MockHostResolverBase::ServiceEndpointRequestImpl
     return rv;
   }
 
-  const std::vector<ServiceEndpoint>& GetEndpointResults() override {
+  base::span<const ServiceEndpoint> GetEndpointResults() override {
     return service_endpoint_results_;
   }
 
   const std::set<std::string>& GetDnsAliasResults() override {
-    if (fixed_up_dns_alias_results_.has_value()) {
-      return *fixed_up_dns_alias_results_;
-    }
-    static const base::NoDestructor<std::set<std::string>> kEmptyDnsAliases;
-    return *kEmptyDnsAliases.get();
+    return fixed_up_dns_alias_results_;
   }
 
   bool EndpointsCryptoReady() override { return true; }
@@ -467,12 +458,8 @@ class MockHostResolverBase::ServiceEndpointRequestImpl
 
  private:
   void SetEndpointResultsInternal() override {
-    if (!endpoint_results_.has_value()) {
-      return;
-    }
-
     std::vector<ServiceEndpoint> service_endpoints;
-    for (const auto& endpoint : *endpoint_results_) {
+    for (const auto& endpoint : endpoint_results_) {
       std::vector<IPEndPoint> ipv4_endpoints;
       std::vector<IPEndPoint> ipv6_endpoints;
       for (const auto& ip_endpoint : endpoint.ip_endpoints) {
@@ -1586,34 +1573,30 @@ class HangingHostResolver::RequestImpl
     return ERR_IO_PENDING;
   }
 
-  const AddressList* GetAddressResults() const override {
-    base::ImmediateCrash();
-  }
+  const AddressList& GetAddressResults() const override { NOTREACHED(); }
 
-  const std::vector<HostResolverEndpointResult>* GetEndpointResults()
+  base::span<const HostResolverEndpointResult> GetEndpointResults()
       const override {
-    base::ImmediateCrash();
+    NOTREACHED();
   }
 
-  const std::vector<std::string>* GetTextResults() const override {
-    base::ImmediateCrash();
+  base::span<const std::string> GetTextResults() const override {
+    NOTREACHED();
   }
 
-  const std::vector<HostPortPair>* GetHostnameResults() const override {
-    base::ImmediateCrash();
+  base::span<const HostPortPair> GetHostnameResults() const override {
+    NOTREACHED();
   }
 
-  const std::set<std::string>* GetDnsAliasResults() const override {
-    base::ImmediateCrash();
+  const std::set<std::string>& GetDnsAliasResults() const override {
+    NOTREACHED();
   }
 
-  net::ResolveErrorInfo GetResolveErrorInfo() const override {
-    base::ImmediateCrash();
-  }
+  net::ResolveErrorInfo GetResolveErrorInfo() const override { NOTREACHED(); }
 
   const std::optional<HostCache::EntryStaleness>& GetStaleInfo()
       const override {
-    base::ImmediateCrash();
+    NOTREACHED();
   }
 
   void ChangeRequestPriority(RequestPriority priority) override {}

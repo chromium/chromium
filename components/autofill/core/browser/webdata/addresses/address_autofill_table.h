@@ -32,9 +32,8 @@ namespace autofill {
 //                      by the enum's underlying integer.
 //   use_count          The number of times this profile has been used to fill a
 //                      form.
-//   use_date           The last (use_date), second last (use_date2) and third
-//   use_date2          last date (use_date3) at which this profile was used to
-//   use_date3          fill a form, in time_t.
+//   use_date           The last date at which this profile was used to fill a
+//                      form, in time_t.
 //   date_modified      The date on which this profile was last modified, in
 //                      time_t.
 //   language_code      The BCP 47 language code used to format the address for
@@ -69,10 +68,6 @@ namespace autofill {
 // -----------------------------------------------------------------------------
 class AddressAutofillTable : public WebDatabaseTable {
  public:
-  // Drops the tables created by AddressAutofillTable.
-  // TODO(crbug.com/390473673): Remove after M143.
-  class Dropper;
-
   AddressAutofillTable();
 
   AddressAutofillTable(const AddressAutofillTable&) = delete;
@@ -132,6 +127,7 @@ class AddressAutofillTable : public WebDatabaseTable {
   bool MigrateToVersion121DropServerAddressTables();
   bool MigrateToVersion132AddAdditionalLastUseDateColumns();
   bool MigrateToVersion134UnifyLocalAndAccountAddressStorage();
+  bool MigrateToVersion145DropMultipleUseDates();
 
  private:
   // Reads profiles from the deprecated autofill_profiles table.
@@ -143,18 +139,6 @@ class AddressAutofillTable : public WebDatabaseTable {
   bool InitLegacyProfileAddressesTable();
   bool InitAddressesTable();
   bool InitAddressTypeTokensTable();
-};
-
-class AddressAutofillTable::Dropper : public WebDatabaseTable {
- public:
-  Dropper();
-  Dropper(const Dropper&) = delete;
-  Dropper& operator=(const Dropper&) = delete;
-  ~Dropper() override;
-
-  TypeKey GetTypeKey() const override;
-  bool CreateTablesIfNecessary() override;
-  bool MigrateToVersion(int version, bool* update_compatible_version) override;
 };
 
 }  // namespace autofill

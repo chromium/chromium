@@ -7,10 +7,10 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
-#include "components/policy/core/browser/url_blocklist_manager.h"
-#include "components/policy/core/browser/url_blocklist_policy_handler.h"
+#include "components/policy/core/browser/url_list/policy_blocklist_service.h"
+#include "components/policy/core/browser/url_list/url_blocklist_manager.h"
+#include "components/policy/core/browser/url_list/url_blocklist_policy_handler.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -28,13 +28,16 @@ using SafeSitesFilterBehavior = policy::SafeSitesFilterBehavior;
 // which runs the callback from within the object.
 PolicyBlocklistNavigationThrottle::PolicyBlocklistNavigationThrottle(
     content::NavigationThrottleRegistry& registry,
-    content::BrowserContext* context)
+    PrefService* prefs,
+    PolicyBlocklistService* blocklist_service,
+    SafeSearchService* safe_search_service)
     : content::NavigationThrottle(registry),
-      blocklist_service_(PolicyBlocklistFactory::GetForBrowserContext(context)),
-      prefs_(user_prefs::UserPrefs::Get(context)) {
+      blocklist_service_(blocklist_service),
+      prefs_(prefs) {
   DCHECK(prefs_);
   auto safe_sites_navigation_throttle =
-      std::make_unique<SafeSitesNavigationThrottle>(registry, context);
+      std::make_unique<SafeSitesNavigationThrottle>(registry,
+                                                    safe_search_service);
   if (base::FeatureList::IsEnabled(
           policy::features::kPolicyBlocklistProceedUntilResponse)) {
     safe_sites_navigation_throttle_ =

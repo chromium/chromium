@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/device_reauth/device_authenticator.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace content {
 class BrowserContext;
@@ -42,7 +42,7 @@ class ChromeDeviceAuthenticatorFactory : public ProfileKeyedServiceFactory {
   // link error.
   static std::unique_ptr<device_reauth::DeviceAuthenticator> GetForProfile(
       Profile* profile,
-      const base::android::JavaParamRef<jobject>& activity,
+      const base::android::JavaRef<jobject>& activity,
       const device_reauth::DeviceAuthParams& params);
 #endif
 

@@ -39,8 +39,9 @@ class CastDetailedViewTest : public AshTestBase {
   }
 
   void TearDown() override {
-    widget_.reset();
     detailed_view_ = nullptr;
+    // widget_ depends on delegate, so is reset before delegate.
+    widget_.reset();
     delegate_.reset();
     AshTestBase::TearDown();
   }
@@ -91,7 +92,7 @@ class CastDetailedViewTest : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
   TestCastConfigController cast_config_;
   std::unique_ptr<FakeDetailedViewDelegate> delegate_;
-  raw_ptr<CastDetailedView, DanglingUntriaged> detailed_view_ = nullptr;
+  raw_ptr<CastDetailedView> detailed_view_ = nullptr;
 };
 
 TEST_F(CastDetailedViewTest, ViewsCreatedForCastDevices) {
@@ -131,9 +132,12 @@ TEST_F(CastDetailedViewTest, CastToSinkClosingBubbleDoesNotCrash) {
   // In multi-monitor situations, casting will create a picker window to choose
   // the desktop to cast. This causes a window activation that closes the
   // system tray bubble and deletes the widget owning the CastDetailedView.
-  cast_config_.set_cast_to_sink_closure(
-      base::BindOnce([](CastDetailedViewTest* test) { test->widget_.reset(); },
-                     base::Unretained(this)));
+  cast_config_.set_cast_to_sink_closure(base::BindOnce(
+      [](CastDetailedViewTest* test) {
+        test->detailed_view_ = nullptr;
+        test->widget_.reset();
+      },
+      base::Unretained(this)));
   LeftClickOn(first_view);
   EXPECT_EQ(cast_config_.cast_to_sink_count(), 1u);
   // No crash.

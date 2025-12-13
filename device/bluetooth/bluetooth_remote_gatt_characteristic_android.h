@@ -79,13 +79,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicAndroid
       ErrorCallback error_callback) override;
 
   // Called when value changed event occurs.
-  void OnChanged(JNIEnv* env,
-                 const base::android::JavaParamRef<jbyteArray>& value);
+  void OnChanged(JNIEnv* env, const base::android::JavaRef<jbyteArray>& value);
 
   // Called when Read operation completes.
   void OnRead(JNIEnv* env,
               int32_t status,
-              const base::android::JavaParamRef<jbyteArray>& value);
+              const base::android::JavaRef<jbyteArray>& value);
 
   // Called when Write operation completes.
   void OnWrite(JNIEnv* env,
@@ -95,12 +94,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicAndroid
   // DCHECKing that it has not already been created.
   void CreateGattRemoteDescriptor(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& instanceId,
-      const base::android::JavaParamRef<
+      const base::android::JavaRef<jstring>& instanceId,
+      const base::android::JavaRef<
           jobject>& /* BluetoothGattDescriptorWrapper */
           bluetooth_gatt_descriptor_wrapper,
-      const base::android::JavaParamRef<
-          jobject>& /* ChromeBluetoothCharacteristic */
+      const base::android::JavaRef<jobject>& /* ChromeBluetoothCharacteristic */
           chrome_bluetooth_characteristic);
 
  protected:

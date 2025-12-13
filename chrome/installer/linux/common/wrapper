@@ -25,7 +25,7 @@ else
   [ -f "$xdg_app_dir/mimeapps.list" ] || touch "$xdg_app_dir/mimeapps.list"
 fi
 
-export CHROME_VERSION_EXTRA="@@CHANNEL@@"
+export CHROME_VERSION_EXTRA="@@channel"
 
 # We don't want bug-buddy intercepting our crashes. http://crbug.com/24120
 export GNOME_DISABLE_CRASH_DIALOG=SET_BY_GOOGLE_CHROME
@@ -37,4 +37,4 @@ exec > >(exec cat)
 exec 2> >(exec cat >&2)
 
 # Note: exec -a below is a bashism.
-exec -a "$0" "$HERE/@@PROGNAME@@" "$@"
+exec -a "$0" "$HERE/@@PROGNAME" "$@"

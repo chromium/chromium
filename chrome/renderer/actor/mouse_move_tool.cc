@@ -20,26 +20,17 @@
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
+#include "third_party/blink/public/web/web_widget.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/latency/latency_info.h"
 
-namespace {
-blink::WebMouseEvent CreateMouseEvent(blink::WebInputEvent::Type event_type,
-                                      const gfx::PointF& position) {
-  blink::WebMouseEvent mouse_event(
-      event_type, blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
-  // No button for move
-  mouse_event.button = blink::WebMouseEvent::Button::kNoButton;
-  mouse_event.SetPositionInWidget(position);
-  return mouse_event;
-}
-}  // namespace
-
 namespace actor {
 
+using ::blink::WebWidget;
+
 MouseMoveTool::MouseMoveTool(content::RenderFrame& frame,
-                             Journal::TaskId task_id,
+                             TaskId task_id,
                              Journal& journal,
                              mojom::MouseMoveActionPtr action,
                              mojom::ToolTargetPtr target,
@@ -60,15 +51,20 @@ void MouseMoveTool::Execute(ToolFinishedCallback callback) {
     return;
   }
 
-  gfx::PointF move_point = validated_result.value();
+  ResolvedTarget& target = validated_result.value();
 
   // Dispatch MouseMove event
-  blink::WebMouseEvent mouse_move =
-      CreateMouseEvent(blink::WebInputEvent::Type::kMouseMove, move_point);
+  blink::WebMouseEvent mouse_event(blink::WebInputEvent::Type::kMouseMove,
+                                   blink::WebInputEvent::kNoModifiers,
+                                   ui::EventTimeForNow());
+  // No button for move
+  mouse_event.button = blink::WebMouseEvent::Button::kNoButton;
+  mouse_event.SetPositionInWidget(target.widget_point);
 
-  blink::WebInputEventResult move_result =
-      frame_->GetWebFrame()->FrameWidget()->HandleInputEvent(
-          blink::WebCoalescedInputEvent(mouse_move, ui::LatencyInfo()));
+  WebWidget* widget = target.GetWidget(*this);
+  CHECK(widget);
+  blink::WebInputEventResult move_result = widget->HandleInputEvent(
+      blink::WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()));
 
   // Note: KNotHandled probably shouldn't result in an error.
   if (move_result == blink::WebInputEventResult::kNotHandled ||
@@ -93,7 +89,7 @@ MouseMoveTool::ValidatedResult MouseMoveTool::Validate() const {
     return base::unexpected(std::move(resolved_target.error()));
   }
 
-  return resolved_target->point;
+  return resolved_target;
 }
 
 }  // namespace actor

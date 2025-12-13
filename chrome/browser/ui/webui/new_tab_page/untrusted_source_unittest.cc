@@ -110,10 +110,9 @@ TEST_F(UntrustedSourceTest, OneGoogleBarRequest_DefaultAsyncParam) {
   base::MockCallback<content::URLDataSource::GotDataCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&run_loop](scoped_refptr<base::RefCountedMemory> memory) {
-            run_loop.QuitClosure().Run();
-          }));
+      .WillOnce([&run_loop](scoped_refptr<base::RefCountedMemory> memory) {
+        run_loop.QuitClosure().Run();
+      });
   untrusted_source_->StartDataRequest(
       GURL("chrome-untrusted://new-tab-page/one-google-bar"),
       test_web_contents_getter_, callback.Get());
@@ -131,10 +130,9 @@ TEST_F(UntrustedSourceTest, OneGoogleBarRequest_DefaultABPAsyncParam) {
   base::MockCallback<content::URLDataSource::GotDataCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&run_loop](scoped_refptr<base::RefCountedMemory> memory) {
-            run_loop.QuitClosure().Run();
-          }));
+      .WillOnce([&run_loop](scoped_refptr<base::RefCountedMemory> memory) {
+        run_loop.QuitClosure().Run();
+      });
 
   untrusted_source_->StartDataRequest(
       GURL("chrome-untrusted://new-tab-page/one-google-bar"),
@@ -143,7 +141,7 @@ TEST_F(UntrustedSourceTest, OneGoogleBarRequest_DefaultABPAsyncParam) {
   ASSERT_EQ(one_google_bar_service()->additional_query_params().count("async"),
             1u);
   ASSERT_EQ(one_google_bar_service()->additional_query_params().at("async"),
-            "fixed:0,abp:1");
+            "abp:1,fixed:0");
 }
 
 TEST_F(UntrustedSourceTest, OneGoogleBarRequest_ParamsEncoded) {
@@ -151,10 +149,9 @@ TEST_F(UntrustedSourceTest, OneGoogleBarRequest_ParamsEncoded) {
   base::MockCallback<content::URLDataSource::GotDataCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [&run_loop](scoped_refptr<base::RefCountedMemory> memory) {
-            run_loop.QuitClosure().Run();
-          }));
+      .WillOnce([&run_loop](scoped_refptr<base::RefCountedMemory> memory) {
+        run_loop.QuitClosure().Run();
+      });
   untrusted_source_->StartDataRequest(
       GURL(base::StrCat({"chrome-untrusted://new-tab-page/"
                          "one-google-bar?paramsencoded=",

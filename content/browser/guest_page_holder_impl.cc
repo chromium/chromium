@@ -181,11 +181,11 @@ void GuestPageHolderImpl::SetFocusedFrame(FrameTreeNode* node,
   owner_web_contents_->SetFocusedFrame(node, source);
 }
 
-FrameTree* GuestPageHolderImpl::GetOwnedPictureInPictureFrameTree() {
+FrameTree* GuestPageHolderImpl::GetOwnedDocumentPictureInPictureFrameTree() {
   return nullptr;
 }
 
-FrameTree* GuestPageHolderImpl::GetPictureInPictureOpenerFrameTree() {
+FrameTree* GuestPageHolderImpl::GetDocumentPictureInPictureOpenerFrameTree() {
   return nullptr;
 }
 
@@ -216,6 +216,21 @@ bool GuestPageHolderImpl::ShouldPreserveAbortedURLs() {
 void GuestPageHolderImpl::UpdateOverridingUserAgent() {
   owner_web_contents_->UpdateOverridingUserAgent();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+
+scoped_refptr<viz::RasterContextProvider>
+GuestPageHolderImpl::GetRasterContextProvider() {
+  NOTREACHED();
+}
+
+gfx::ColorSpace GuestPageHolderImpl::GetOutputColorSpace(
+    gfx::ContentColorUsage color_usage,
+    bool needs_alpha) {
+  NOTREACHED();
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 ForwardingAudioStreamFactory* GuestPageHolderImpl::GetAudioStreamFactory() {
   if (!audio_stream_factory_) {

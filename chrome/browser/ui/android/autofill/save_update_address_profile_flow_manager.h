@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_message_controller.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_controller.h"
+#include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "content/public/browser/web_contents.h"
@@ -34,12 +35,12 @@ class SaveUpdateAddressProfileFlowManager {
   // be auto-declined. The `original_profile` is nullptr for a new address or
   // points to the existing profile which will be updated if the user accepts.
   // User will be offered to migrate their address profile to their Google
-  // Account when `is_migration_to_account` is true. The `callback` is triggered
-  // once the user makes a decision.
+  // Account depending on the `prompt_mode`. The `callback` is triggered once
+  // the user makes a decision.
   void OfferSave(content::WebContents* web_contents,
                  const AutofillProfile& profile,
                  const AutofillProfile* original_profile,
-                 bool is_migration_to_account,
+                 SaveUpdateAddressProfilePromptMode prompt_mode,
                  AutofillClient::AddressProfileSavePromptCallback callback);
 
   SaveUpdateAddressProfileMessageController* GetMessageControllerForTest();
@@ -50,18 +51,19 @@ class SaveUpdateAddressProfileFlowManager {
       content::WebContents* web_contents,
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      bool is_migration_to_account,
+      SaveUpdateAddressProfilePromptMode prompt_mode,
       AutofillClient::AddressProfileSavePromptCallback callback);
 
   void ShowPromptWithDetails(
       content::WebContents* web_contents,
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      bool is_migration_to_account,
+      SaveUpdateAddressProfilePromptMode prompt_mode,
       AutofillClient::AddressProfileSavePromptCallback callback);
 
   void OnPromptWithDetailsDismissed();
 
+  // TODO: crbug.com/460410690 - Use `AutofillMessageController` instead.
   SaveUpdateAddressProfileMessageController
       save_update_address_profile_message_controller_;
   std::unique_ptr<SaveUpdateAddressProfilePromptController>

@@ -8,10 +8,15 @@
 #include <string>
 #include <type_traits>
 
-#include "base/component_export.h"
 #include "base/base64.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
+#include "base/values.h"
+
+namespace absl {
+class Cord;
+}  // namespace absl
 
 namespace google::protobuf {
 class MessageLite;
@@ -48,6 +53,19 @@ template <typename T>
   requires std::is_arithmetic_v<T> && (!CanFitInInt<T>)
 std::string ToNumericTypeForValue(T value) {
   return base::NumberToString(value);
+}
+
+// Convert an absl::Cord of bytes into a string.
+std::string Base64EncodeCord(const absl::Cord& cord);
+
+// Serialization for fields marked `debug_redact`
+template <typename T>
+std::string ToValueForDebugRedact(const T& value) {
+  if constexpr (std::is_same_v<T, std::string>) {
+    return base::StringPrintf("<%zu-byte secret>", value.size());
+  } else {
+    return "<secret>";
+  }
 }
 
 }  // namespace proto_extras

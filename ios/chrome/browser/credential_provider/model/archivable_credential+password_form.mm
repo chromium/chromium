@@ -10,6 +10,7 @@
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"
+#import "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #import "url/gurl.h"
 
 namespace {
@@ -53,6 +54,10 @@ password_manager::PasswordForm PasswordFormFromCredential(
   NSString* serviceName = SysUTF8ToNSString(siteName);
   NSString* note =
       SysUTF16ToNSString(passwordForm.GetNoteWithEmptyUniqueDisplayName());
+  NSString* registryControlledDomain =
+      SysUTF8ToNSString(net::registry_controlled_domains::GetDomainAndRegistry(
+          passwordForm.url,
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES));
 
   NSString* serviceIdentifier = @"";
   if (affiliations::IsValidAndroidFacetURI(passwordForm.signon_realm)) {
@@ -95,6 +100,7 @@ password_manager::PasswordForm PasswordFormFromCredential(
               recordIdentifier:RecordIdentifierForPasswordForm(passwordForm)
              serviceIdentifier:serviceIdentifier
                    serviceName:serviceName
+      registryControlledDomain:registryControlledDomain
                       username:SysUTF16ToNSString(passwordForm.username_value)
                           note:note];
 }

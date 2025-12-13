@@ -51,8 +51,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // Array of `WhatsNewItem` features.
 @property(nonatomic, strong) NSArray<WhatsNewItem*>* featureItems;
 
-// `WhatsNewItem` representing the chrome tip.
-@property(nonatomic, strong) WhatsNewItem* chromeTipItem;
+// Array of `WhatsNewItem` chrome tips.
+@property(nonatomic, strong) NSArray<WhatsNewItem*>* chromeTipItems;
 
 // Indicates whether a scroll happened.
 @property(nonatomic, assign) BOOL viewDidScroll;
@@ -103,6 +103,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   self.title = l10n_util::GetNSString(IDS_IOS_WHATS_NEW_TITLE);
   self.tableView.accessibilityIdentifier =
       [[self class] accessibilityIdentifier];
+  self.tableView.separatorInset = UIEdgeInsetsMake(
+      0, kTableViewHorizontalSpacing + kTableViewImagePadding + kCellIconWidth,
+      0, 0);
   self.tableView.estimatedRowHeight = kEstimatedTableViewRowHeight;
   self.tableView.rowHeight = UITableViewAutomaticDimension;
   self.tableView.estimatedSectionHeaderHeight = kEstimatedSectionHeaderHeight;
@@ -110,24 +113,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   self.tableView.sectionFooterHeight = kEstimatedsectionFooterHeight;
 }
 
-#pragma mark - UITableViewactionHandler
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-
-  if (item.type == ItemTypeHeader) {
-    cell.separatorInset = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, CGFLOAT_MAX);
-  } else {
-    cell.separatorInset = UIEdgeInsetsMake(
-        0,
-        kTableViewHorizontalSpacing + kTableViewImagePadding + kCellIconWidth,
-        0, 0);
-  }
-  return cell;
-}
+#pragma mark - UITableViewDelegate
 
 - (NSIndexPath*)tableView:(UITableView*)tableView
     willSelectRowAtIndexPath:(NSIndexPath*)indexPath {
@@ -151,9 +137,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       break;
     }
     case SectionChromeTipIdenfitier: {
-      [self.actionHandler recordWhatsNewInteraction:self.chromeTipItem];
+      NSInteger index = indexPath.row;
+      [self.actionHandler recordWhatsNewInteraction:self.chromeTipItems[index]];
       [self.delegate detailViewController:self
-          openDetailViewControllerForItem:self.chromeTipItem];
+          openDetailViewControllerForItem:self.chromeTipItems[index]];
       break;
     }
   }
@@ -179,10 +166,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 #pragma mark - WhatsNewMediatorConsumer
 
-- (void)setWhatsNewProperties:(WhatsNewItem*)chromeTip
+- (void)setWhatsNewProperties:(NSArray<WhatsNewItem*>*)chromeTipItems
                  featureItems:(NSArray<WhatsNewItem*>*)featureItems {
   self.featureItems = featureItems;
-  self.chromeTipItem = chromeTip;
+  self.chromeTipItems = chromeTipItems;
 }
 
 #pragma mark Private
@@ -219,8 +206,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   [model addSectionWithIdentifier:SectionChromeTipIdenfitier];
   [model setHeader:[self headerForSectionIndex:SectionChromeTipIdenfitier]
       forSectionWithIdentifier:SectionChromeTipIdenfitier];
-  [model addItem:[self whatsNewCell:self.chromeTipItem]
-      toSectionWithIdentifier:SectionChromeTipIdenfitier];
+
+  for (WhatsNewItem* item in self.chromeTipItems) {
+    [model addItem:[self whatsNewCell:item]
+        toSectionWithIdentifier:SectionChromeTipIdenfitier];
+  }
 }
 
 - (TableViewHeaderFooterItem*)headerForSectionIndex:

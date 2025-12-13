@@ -512,3 +512,5 @@ void AwContentsClientBridge::CancelJsResult(JNIEnv*, int id) {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwContentsClientBridge)

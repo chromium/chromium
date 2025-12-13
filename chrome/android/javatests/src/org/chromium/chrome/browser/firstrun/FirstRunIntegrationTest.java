@@ -9,6 +9,8 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -43,7 +45,8 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.BuildInfo;
+import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
@@ -51,7 +54,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
@@ -59,6 +61,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -85,7 +88,6 @@ import org.chromium.chrome.browser.ui.signin.DialogWhenLargeContentLayout;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.test.annotations.Policies;
@@ -95,6 +97,7 @@ import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.HashMap;
@@ -106,7 +109,10 @@ import java.util.concurrent.TimeoutException;
 
 /** Integration test suite for the first run experience. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Features.EnableFeatures(SigninFeatures.SMART_EMAIL_LINE_BREAKING)
+@Features.EnableFeatures({
+    SigninFeatures.SMART_EMAIL_LINE_BREAKING,
+    ChromeFeatureList.XPLAT_SYNCED_SETUP
+})
 @DoNotBatch(reason = "This test interacts with startup, native initialization, and first run.")
 @CommandLineFlags.Add({ChromeSwitches.NO_FIRST_RUN})
 public class FirstRunIntegrationTest {
@@ -355,6 +361,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/431982831")
     public void testAbortFirstRun() throws Exception {
         launchViewIntent(TEST_URL);
         Activity chromeLauncherActivity = waitForActivity(ChromeLauncherActivity.class);
@@ -473,12 +480,14 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/431982831")
     public void testSigninFirstRunPages_WithCctPolicy_AbsenceOfPromos() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled());
     }
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/431982831")
     public void testSigninFirstRunPages_WithCctPolicy_SearchPromo() throws Exception {
         runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled().withSearchPromo());
     }
@@ -501,6 +510,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/431982831")
     public void testSigninFirstRunPages_WithCctPolicy_SigninPromo() throws Exception {
         runFirstRunPagesTest(
                 new FirstRunPagesTestCase().withCctTosDisabled().withHistorySyncPromo());
@@ -583,7 +593,7 @@ public class FirstRunIntegrationTest {
                                 MobileFreProgress.STARTED,
                                 MobileFreProgress.WELCOME_SHOWN);
         // There is no dismiss button on automotive devices.
-        if (!BuildInfo.getInstance().isAutomotive) {
+        if (!DeviceInfo.isAutomotive()) {
             histogramBuilder.expectIntRecord(
                     "MobileFre.Progress.ViewIntent", MobileFreProgress.WELCOME_DISMISS);
         }
@@ -659,6 +669,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky, see crbug.com/457658024")
     public void testSkipTosPage() throws TimeoutException {
         // Test case that verifies when the ToS Page was previously accepted, launching the FRE
         // should transition to the next page.
@@ -680,6 +691,7 @@ public class FirstRunIntegrationTest {
     @Policies.Add(@Policies.Item(key = "NoncePolicy", string = "true"))
     // TODO(crbug.com/40142602): Change this test case when policy can handle cases when ToS
     // is accepted in Browser App.
+    @DisabledTest(message = "Flaky, see crbug.com/441219391")
     public void testSkipTosPage_WithCctPolicy() throws Exception {
         skipTosDialogViaPolicy();
         FirstRunStatus.setSkipWelcomePage(true);
@@ -714,6 +726,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "https://crbug.com/431982831")
     public void testMultipleFresCustomIntoView() throws Exception {
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
@@ -732,6 +745,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/431982831")
     public void testMultipleFresViewIntoCustom() throws Exception {
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
@@ -794,6 +808,7 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/422882351")
     public void testNativeInitBeforeFragment() throws Exception {
         FirstRunPagesTestCase testCase = new FirstRunPagesTestCase().withoutSignIn();
         initializePreferences(testCase);
@@ -837,6 +852,7 @@ public class FirstRunIntegrationTest {
     @Policies.Add(@Policies.Item(key = "ForceSafeSearch", string = "true"))
     // Child accounts are not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "https://crbug.com/431982831")
     public void testSigninFirstRunPageShownBeforeChildStatusFetch() throws Exception {
         // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
         // so pretend there are AppRestrictions set by FamilyLink.
@@ -862,7 +878,7 @@ public class FirstRunIntegrationTest {
                                         SemanticColorUtils.getDefaultBgColor(firstRunActivity)));
                     });
 
-            onView(withId(R.id.fre_logo)).check(matches(isDisplayed()));
+            onView(withId(R.id.fre_icon)).check(matches(isDisplayed()));
             onView(withId(R.id.fre_native_and_policy_load_progress_spinner))
                     .check(matches(isDisplayed()));
         }
@@ -914,11 +930,10 @@ public class FirstRunIntegrationTest {
     @Test
     @MediumTest
     @Policies.Add(
-            @Policies.Item(
-                    key = "CloudManagementEnrollmentToken",
-                    string = TEST_ENROLLMENT_TOKEN))
+            @Policies.Item(key = "CloudManagementEnrollmentToken", string = TEST_ENROLLMENT_TOKEN))
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/431982831")
     public void testCloudManagementDoesNotBlockFirstRun() throws Exception {
         // Ensures FRE is not blocked if cloud management is enabled.
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
@@ -931,7 +946,6 @@ public class FirstRunIntegrationTest {
     }
 
     private void setUpLocaleManagerDelegate(@SearchEnginePromoType final int searchPromoType) {
-        // Force the LocaleManager into a specific state.
         LocaleManagerDelegate mockDelegate =
                 new LocaleManagerDelegate() {
                     @Override
@@ -944,6 +958,13 @@ public class FirstRunIntegrationTest {
                         return TemplateUrlServiceFactory.getForProfile(
                                         ProfileManager.getLastUsedRegularProfile())
                                 .getTemplateUrls();
+                    }
+
+                    @Override
+                    public void showSearchEnginePromoIfNeeded(
+                            final Activity activity,
+                            final @Nullable Callback<Boolean> onSearchEngineFinalized) {
+                        // Do nothing to avoid showing {@link DefaultSearchEngineDialogCoordinator}.
                     }
                 };
         ThreadUtils.runOnUiThreadBlocking(
@@ -1017,6 +1038,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "Flaky, see crbug.com/441219391")
     public void testPrefsUpdated_searchEnginePromoDisableAfterPromoShown() throws Exception {
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
@@ -1087,6 +1109,7 @@ public class FirstRunIntegrationTest {
     @MediumTest
     // Sign-in is not supported on automotive devices.
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "Flaky, see crbug.com/431982831")
     public void testPrefsUpdated_historySyncPromoPromoDisabledWhilePromoShown() throws Exception {
         FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
         initializePreferences(testCase);
@@ -1168,10 +1191,8 @@ public class FirstRunIntegrationTest {
     @Test
     @SmallTest
     @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
-    // TODO(crbug.com/428056054): Top content is blocked by system UI on B+.
-    @DisableIf.Build(
-            sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,
-            message = "crbug.com/428056054")
+    // TODO(crbug.com/437958472): Top content is blocked by system UI on B+.
+    @DisabledTest(message = "crbug.com/437958472")
     public void testLargeContentLayout() {
         DialogWhenLargeContentLayout.enableShouldShowAsDialogForTesting(
                 /* shouldShowAsDialog= */ true);
@@ -1249,7 +1270,7 @@ public class FirstRunIntegrationTest {
         FirstRunPagesTestCase setShouldSignIn(boolean shouldSignIn) {
             mShouldSignIn = shouldSignIn;
             // The history sync screen can only appear if the user is signed in.
-            assert mShouldSignIn || !mShowHistorySyncPromo;
+            assertThat(mShouldSignIn || !mShowHistorySyncPromo).isTrue();
             return this;
         }
 
@@ -1371,7 +1392,7 @@ public class FirstRunIntegrationTest {
         protected FirstRunNavigationHelper dismissSigninPromo() throws Exception {
             ensureWelcomePageIsCurrentPage();
             int dismissButtonId =
-                    BuildInfo.getInstance().isAutomotive
+                    DeviceInfo.isAutomotive()
                             ? R.id.signin_fre_continue_button
                             : R.id.signin_fre_dismiss_button;
             clickButton(mFirstRunActivity, dismissButtonId, "Failed to skip signing-in");

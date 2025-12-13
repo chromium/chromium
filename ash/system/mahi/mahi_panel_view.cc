@@ -75,7 +75,6 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/metadata/view_factory.h"
-#include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -512,8 +511,7 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
       chromeos::features::IsSystemBlurEnabled()
           ? cros_tokens::kCrosSysSystemBaseElevated
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-  SetBackground(views::CreateRoundedRectBackground(
-      background_color_id, mahi_constants::kPanelCornerRadius));
+  SetBackground(views::CreateSolidBackground(background_color_id));
 
   // Create a layer for the view for background blur and rounded corners.
   SetPaintToLayer();
@@ -949,7 +947,7 @@ void MahiPanelView::OnCloseButtonPressed(const ui::Event& event) {
 }
 
 void MahiPanelView::OnLearnMoreLinkClicked() {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(chrome::kHelpMeReadWriteLearnMoreURL),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);

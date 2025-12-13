@@ -6,6 +6,8 @@
 #define COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_PLATFORM_UTILS_H_
 
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
@@ -37,12 +39,7 @@ std::optional<base::FilePath> GetProcessExePath(base::ProcessId pid);
 // CrowdStrikeClient class.
 std::optional<CrowdStrikeSignals> GetCrowdStrikeSignals();
 
-// Returns the Crowdstrike Falcon agent install path.
-base::FilePath GetCrowdStrikeAgentInstallPath();
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 base::FilePath GetCrowdStrikeZtaFilePath();
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 std::string GetOsName();
 std::string GetOsVersion();
@@ -57,6 +54,23 @@ SettingValue GetSecureBootEnabled();
 std::optional<std::string> GetWindowsMachineDomain();
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Return the distribution VERSION_ID contained in
+// /etc/os-release, if it exists.
+std::optional<std::string> GetDistributionVersion();
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+namespace internal {
+
+// Sets a `mac_addresses` vector to be used for testing purposes. The vector
+// will be copied into static storage.
+void SetMacAddressesForTesting(const std::vector<std::string>& mac_addresses);
+
+void ClearMacAddressesForTesting();
+
+std::vector<std::string> GetMacAddressesImpl();
+
+}  // namespace internal
 }  // namespace device_signals
 
 #endif  // COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_PLATFORM_UTILS_H_

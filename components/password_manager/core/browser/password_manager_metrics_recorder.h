@@ -66,13 +66,14 @@ class PasswordManagerMetricsRecorder {
   };
 
   // This enum represents user actions on a page with a password form that
-  // cannot (reliably) be attributed to a specific form manager.
+  // cannot (reliably) be attributed to a specific form manager. It is recorded
+  // in UKM.
   enum class PageLevelUserAction {
     kUnknown = 0,
 
     // User chose to open the password viewer as part of a manual fallback.
     kShowAllPasswordsWhileSomeAreSuggested = 1,
-    kObsoleteShowAllPasswordsWhileNoneAreSuggested = 2,
+    // Deprecated: kShowAllPasswordsWhileNoneAreSuggested = 2,
   };
 
   // Records UKM metrics and reports them on destruction.

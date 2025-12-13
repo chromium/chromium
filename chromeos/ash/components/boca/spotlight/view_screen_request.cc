@@ -114,7 +114,7 @@ bool ViewScreenRequest::GetContentData(std::string* upload_content_type,
   host_device_info.Set(kDeviceInfo, std::move(host_device));
   root.Set(kHostDevice, std::move(host_device_info));
 
-  base::JSONWriter::Write(root, upload_content);
+  *upload_content = base::WriteJson(root).value_or("");
   return true;
 }
 

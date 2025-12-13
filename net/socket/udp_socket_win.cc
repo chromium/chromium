@@ -9,12 +9,12 @@
 #include <mstcpip.h>
 
 #include <memory>
+#include <type_traits>
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -196,9 +196,9 @@ QwaveApi::QwaveApi() {
 }
 
 QwaveApi* QwaveApi::GetDefault() {
-  static base::LazyInstance<QwaveApi>::Leaky lazy_qwave =
-      LAZY_INSTANCE_INITIALIZER;
-  return lazy_qwave.Pointer();
+  static_assert(std::is_trivially_destructible<QwaveApi>::value);
+  static QwaveApi qwave;
+  return &qwave;
 }
 
 bool QwaveApi::qwave_supported() const {

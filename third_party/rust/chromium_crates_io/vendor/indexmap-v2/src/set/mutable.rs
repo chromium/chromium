@@ -8,7 +8,7 @@ use crate::map::MutableKeys;
 /// These methods expose `&mut T`, mutable references to the value as it is stored
 /// in the set.
 /// You are allowed to modify the values in the set **if the modification
-/// does not change the value’s hash and equality**.
+/// does not change the value's hash and equality**.
 ///
 /// If values are modified erroneously, you can no longer look them up.
 /// This is sound (memory safe) but a logical error hazard (just like
@@ -17,7 +17,8 @@ use crate::map::MutableKeys;
 /// `use` this trait to enable its methods for `IndexSet`.
 ///
 /// This trait is sealed and cannot be implemented for types outside this crate.
-pub trait MutableValues: private::Sealed {
+#[expect(private_bounds)]
+pub trait MutableValues: Sealed {
     type Value;
 
     /// Return item index and mutable reference to the value
@@ -79,8 +80,6 @@ where
     }
 }
 
-mod private {
-    pub trait Sealed {}
+trait Sealed {}
 
-    impl<T, S> Sealed for super::IndexSet<T, S> {}
-}
+impl<T, S> Sealed for IndexSet<T, S> {}

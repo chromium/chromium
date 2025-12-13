@@ -148,7 +148,7 @@ void ChromeSpeechRecognitionService::LaunchIfNotRunning() {
 base::flat_map<std::string, base::FilePath>
 ChromeSpeechRecognitionService::GetSodaConfigPaths() {
   base::flat_map<std::string, base::FilePath> config_file_paths;
-  std::unordered_set<std::string> registered_language_packs;
+  std::unordered_set<std::string_view> registered_language_packs;
   for (const auto& language : g_browser_process->local_state()->GetList(
            prefs::kSodaRegisteredLanguagePacks)) {
     registered_language_packs.insert(language.GetString());

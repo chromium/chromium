@@ -10,6 +10,8 @@ import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "third_party/blink/public/mojom/input/input_event_result.mojom";
 import "third_party/blink/public/mojom/input/input_handler.mojom";
 import "third_party/blink/public/mojom/widget/platform_widget.mojom";
+[EnableIf=is_android]
+import "ui/events/mojom/motion_event_android.mojom";
 
 // This struct is useful for sending information relevant to handling input on
 // Viz from browser. This is only set when `InputOnViz` flag is enabled and a
@@ -53,10 +55,17 @@ struct TouchTransferState {
   // What it means for Chrome is the pointer downs hit Browser process instead
   // of coming directly to Viz. They need to be transferred individually to Viz.
   bool browser_would_have_handled = false;
+
+  // Down event that resulted in transfer of touch sequence, the event is only
+  // present when InputOnViz feature's `kForwardEventsSeenOnBrowserToViz` param
+  // is enabled.
+  [EnableIf=is_android]
+  ui.mojom.CachedMotionEventAndroid? down_event;
 };
 
 // Implemented by Viz, an interface between Browser and Viz. It defines methods
 // used to communicate input event handling related state from Browser to Viz.
+[DirectReceiver]
 interface RenderInputRouterDelegate {
   // Send |TouchTransferState| from Browser upon a successful touch transfer.
   // Viz needs this to do input handling on it's side.

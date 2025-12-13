@@ -55,6 +55,7 @@
 #include "media/gpu/vaapi/vp9_vaapi_video_encoder_delegate.h"
 #include "media/gpu/vp8_reference_frame_vector.h"
 #include "media/gpu/vp9_reference_frame_vector.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -578,7 +579,7 @@ void VaapiVideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
     // |frame| can be nullptr to indicate a flush.
     const bool is_expected_storage_type =
         native_input_mode_
-            ? frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER
+            ? frame->storage_type() == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE
             : frame->IsMappable();
     if (!is_expected_storage_type) {
       NotifyError({EncoderStatus::Codes::kInvalidInputFrame,
@@ -601,7 +602,7 @@ bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK(native_input_mode_);
-  DCHECK_EQ(frame.storage_type(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+  DCHECK_EQ(frame.storage_type(), VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
   TRACE_EVENT0("media,gpu", "VAVEA::CreateSurfacesForGpuMemoryBuffer");
 
   if (frame.format() != PIXEL_FORMAT_NV12) {
@@ -994,8 +995,8 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
       jobs.emplace_back(std::move(job));
     }
     for (auto& job : jobs) {
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media,gpu", "PlatformEncoding.Encode",
-                                        TRACE_ID_LOCAL(&job));
+      TRACE_EVENT_BEGIN("media,gpu", "PlatformEncoding.Encode",
+                        perfetto::Track::FromPointer(&job));
 
       if (!encoder_->Encode(*job)) {
         NotifyError({EncoderStatus::Codes::kEncoderFailedEncode,
@@ -1012,10 +1013,10 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
         return;
       }
 
-      TRACE_EVENT_NESTABLE_ASYNC_END2(
-          "media,gpu", "PlatformEncoding.Encode", TRACE_ID_LOCAL(&jobs[i]),
-          "timestamp", result->metadata().timestamp.InMicroseconds(), "size",
-          spatial_layer_resolutions[i].ToString());
+      TRACE_EVENT_END("media,gpu", /*"PlatformEncoding.Encode"*/
+                      perfetto::Track::FromPointer(&jobs[i]), "timestamp",
+                      result->metadata().timestamp.InMicroseconds(), "size",
+                      spatial_layer_resolutions[i].ToString());
 
       pending_encode_results_.push(std::move(result));
     }

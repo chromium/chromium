@@ -17,10 +17,6 @@
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 
-namespace base {
-class Value;
-}
-
 namespace content {
 class WebContents;
 }

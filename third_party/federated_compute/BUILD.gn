@@ -1,0 +1,88 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+config("confidential_compute_include") {
+  include_dirs = [
+    "chromium",
+    "src",
+  ]
+}
+
+proto_library("confidential_compute_proto") {
+  sources = [
+    "src/fcp/protos/confidentialcompute/data_upload_config.proto",
+    "src/fcp/protos/confidentialcompute/signed_endorsements.proto",
+    "src/fcp/protos/federatedcompute/confidential_encryption_config.proto",
+  ]
+
+  deps = [ "//third_party/oak:oak_proto" ]
+
+  import_dirs = [ "//third_party/oak/chromium" ]
+
+  proto_in_dir = "src"
+
+  cc_generator_options = "lite"
+}
+
+source_set("confidential_compute") {
+  public = [
+    "src/fcp/base/base_name.h",
+    "src/fcp/base/digest.h",
+    "src/fcp/base/monitoring.h",
+    "src/fcp/confidentialcompute/cose.h",
+    "src/fcp/confidentialcompute/crypto.h",
+  ]
+
+  sources = [
+    "chromium/fcp/confidentialcompute/cose.cc",
+    "src/fcp/base/base_name.cc",
+    "src/fcp/base/digest.cc",
+    "src/fcp/base/monitoring.cc",
+    "src/fcp/confidentialcompute/crypto.cc",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":confidential_compute_include" ]
+
+  public_deps = [
+    ":confidential_compute_proto",
+    "//third_party/oak:oak_proto",
+  ]
+
+  deps = [
+    "//base",
+    "//components/cbor",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/boringssl",
+  ]
+}
+
+if (!is_win && !is_android && !is_ios && !is_fuchsia) {
+  test("federated_compute_tests") {
+    testonly = true
+    public = [ "chromium/fcp/testing/testing.h" ]
+
+    sources = [
+      "chromium/fcp/confidentialcompute/cose_test.cc",
+      "chromium/fcp/testing/testing.cc",
+    ]
+
+    deps = [
+      ":confidential_compute",
+      "//base",
+      "//components/cbor",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//testing/gtest:gtest_main",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/protobuf:protobuf_full",
+      "//third_party/protobuf:struct_proto",
+    ]
+  }
+}

@@ -6,7 +6,7 @@
 //
 // Protobuf messages are registered with IPC_PROTOBUF_MESSAGE_TRAITS_BEGIN() and
 // friends in much the same way as other externally-defined structs (see
-// ipc/ipc_message_macros.h). These macros also cause only registration of the
+// ipc/param_traits_macros.h). These macros also cause only registration of the
 // protobuf message type IPC with message generation. Within matching calls to
 // _BEGIN() and _END(), one may use:
 // - IPC_PROTOBUF_MESSAGE_TRAITS_OPTIONAL_FUNDAMENTAL_MEMBER() to register an
@@ -29,8 +29,6 @@
 #ifndef CHROME_COMMON_SAFE_BROWSING_IPC_PROTOBUF_MESSAGE_MACROS_H_
 #define CHROME_COMMON_SAFE_BROWSING_IPC_PROTOBUF_MESSAGE_MACROS_H_
 
-#include <string>
-
 #define IPC_PROTOBUF_MESSAGE_TRAITS_BEGIN(message_name)             \
   namespace IPC {                                                   \
   template <>                                                       \
@@ -40,8 +38,6 @@
     static bool Read(const base::Pickle* m,                         \
                      base::PickleIterator* iter,                    \
                      param_type* p);                                \
-    static void Log(const param_type& p, std::string* l);           \
-                                                                    \
    private:                                                         \
     template <class P>                                              \
     static bool ReadParamF(const base::Pickle* m,                   \

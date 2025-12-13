@@ -27,9 +27,7 @@ bool ShouldReportFullNames() {
 
 }  // namespace
 
-BASE_FEATURE(kReportFullAVProductDetails,
-             "ReportFullAVProductDetails",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kReportFullAVProductDetails, base::FEATURE_DISABLED_BY_DEFAULT);
 
 AntiVirusMetricsProvider::AntiVirusMetricsProvider() = default;
 

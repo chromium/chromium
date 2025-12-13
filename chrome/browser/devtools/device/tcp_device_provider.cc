@@ -66,26 +66,24 @@ class ResolveHostAndOpenSocket final : public network::ResolveHostClientBase {
     receiver_.set_disconnect_handler(base::BindOnce(
         &ResolveHostAndOpenSocket::OnComplete, base::Unretained(this),
         net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-        /*resolved_addresses=*/std::nullopt,
-        /*endpoint_results_with_metadata=*/std::nullopt));
+        net::AddressList(), net::HostResolverEndpointResults()));
   }
 
  private:
   // network::mojom::ResolveHostClient implementation:
-  void OnComplete(int result,
-                  const net::ResolveErrorInfo& resolve_error_info,
-                  const std::optional<net::AddressList>& resolved_addresses,
-                  const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override {
+  void OnComplete(
+      int result,
+      const net::ResolveErrorInfo& resolve_error_info,
+      const net::AddressList& resolved_addresses,
+      const net::HostResolverEndpointResults& alternative_endpoints) override {
     if (result != net::OK) {
       RunSocketCallback(std::move(callback_), nullptr,
                         resolve_error_info.error);
       delete this;
       return;
     }
-    std::unique_ptr<net::StreamSocket> socket(
-        new net::TCPClientSocket(resolved_addresses.value(), nullptr, nullptr,
-                                 nullptr, net::NetLogSource()));
+    std::unique_ptr<net::StreamSocket> socket(new net::TCPClientSocket(
+        resolved_addresses, nullptr, nullptr, nullptr, net::NetLogSource()));
     net::StreamSocket* socket_ptr = socket.get();
     auto split_callback = base::SplitOnceCallback(base::BindOnce(
         &RunSocketCallback, std::move(callback_), std::move(socket)));
@@ -114,11 +112,16 @@ TCPDeviceProvider::TCPDeviceProvider(const HostPortSet& targets)
 }
 
 void TCPDeviceProvider::QueryDevices(SerialsCallback callback) {
-  std::vector<std::string> result;
+  std::vector<
+      std::pair<std::string, AndroidDeviceManager::DeviceInfo::ConnectedState>>
+      result;
   for (const net::HostPortPair& target : targets_) {
-    const std::string& host = target.host();
-    if (base::Contains(result, host))
+    const std::pair<std::string,
+                    AndroidDeviceManager::DeviceInfo::ConnectedState>
+        host = {target.host(), AndroidDeviceManager::DeviceInfo::kUnknown};
+    if (base::Contains(result, host)) {
       continue;
+    }
     result.push_back(host);
   }
   std::move(callback).Run(std::move(result));
@@ -128,7 +131,7 @@ void TCPDeviceProvider::QueryDeviceInfo(const std::string& serial,
                                         DeviceInfoCallback callback) {
   AndroidDeviceManager::DeviceInfo device_info;
   device_info.model = kDeviceModel;
-  device_info.connected = true;
+  device_info.connected_state = AndroidDeviceManager::DeviceInfo::kConnected;
 
   for (const net::HostPortPair& target : targets_) {
     if (serial != target.host())

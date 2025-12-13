@@ -9,12 +9,13 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
+#include "chrome/browser/password_manager/password_change/annotated_page_content_capturer.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
@@ -32,18 +33,16 @@ using PasswordChangeOutcome = optimization_guide::proto ::
     PasswordChangeSubmissionData_PasswordChangeOutcome;
 using PasswordChangeErrorCase = optimization_guide::proto ::
     PasswordChangeSubmissionData_PasswordChangeErrorCase;
-using ProtoTreeUpdate = optimization_guide::proto::AXTreeUpdate;
 using SubmissionOutcome = PasswordChangeSubmissionVerifier::SubmissionOutcome;
-using FinalModelStatus = optimization_guide::proto::FinalModelStatus;
-using QualityLogEntry =
-    std::unique_ptr<optimization_guide::ModelQualityLogEntry>;
-using page_content_annotations::PageContentExtractionService;
 
-constexpr char kSubmissionOutcomeHistogramName[] =
-    "PasswordManager.PasswordChangeSubmissionOutcome";
+constexpr optimization_guide::proto::PasswordChangeRequest::FlowStep
+    kSubmitVerification = optimization_guide::proto::PasswordChangeRequest::
+        FlowStep::PasswordChangeRequest_FlowStep_VERIFY_SUBMISSION_STEP;
 
 void LogSubmissionOutcome(SubmissionOutcome outcome, ukm::SourceId ukm_id) {
-  base::UmaHistogramEnumeration(kSubmissionOutcomeHistogramName, outcome);
+  base::UmaHistogramEnumeration(
+      PasswordChangeSubmissionVerifier::kSubmissionOutcomeHistogramName,
+      outcome);
   ukm::builders::PasswordManager_PasswordChangeSubmissionOutcome(ukm_id)
       .SetPasswordChangeSubmissionOutcome(static_cast<int>(outcome))
       .Record(ukm::UkmRecorder::Get());
@@ -102,11 +101,11 @@ void RecordOutcomeMetrics(
 }
 
 blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
-  auto options = optimization_guide::ActionableAIPageContentOptions();
   // WebContents where password change is happening is hidden, and renderer
   // won't capture a snapshot unless it becomes visible again or
   // on_critical_path is set to true.
-  options->on_critical_path = true;
+  auto options = optimization_guide::ActionableAIPageContentOptions(
+      /*on_critical_path =*/true);
   return options;
 }
 
@@ -118,35 +117,41 @@ OptimizationGuideKeyedService* GetOptimizationService(
 
 }  // namespace
 
+char PasswordChangeSubmissionVerifier::kPasswordChangeVerificationTimeHistogram
+    [] = "PasswordManager.PasswordChangeVerificationTime";
+char PasswordChangeSubmissionVerifier::kSubmissionOutcomeHistogramName[] =
+    "PasswordManager.PasswordChangeSubmissionOutcome";
+
 PasswordChangeSubmissionVerifier::PasswordChangeSubmissionVerifier(
     content::WebContents* web_contents,
     ModelQualityLogsUploader* logs_uploader)
-    : web_contents_(web_contents),
-      capture_annotated_page_content_(
-          base::BindOnce(&optimization_guide::GetAIPageContent,
-                         web_contents,
-                         GetAIPageContentOptions())),
+    : creation_time_(base::Time::Now()),
+      web_contents_(web_contents),
       logs_uploader_(logs_uploader) {}
 
-PasswordChangeSubmissionVerifier::~PasswordChangeSubmissionVerifier() = default;
+PasswordChangeSubmissionVerifier::~PasswordChangeSubmissionVerifier() {
+  logs_uploader_->SetStepDuration(kSubmitVerification,
+                                  base::Time::Now() - creation_time_);
+}
 
 void PasswordChangeSubmissionVerifier::CheckSubmissionOutcome(
     FormSubmissionResultCallback callback) {
   CHECK(web_contents_);
   callback_ = std::move(callback);
 
-  std::move(capture_annotated_page_content_)
-      .Run(base::BindOnce(
+  capturer_ = std::make_unique<AnnotatedPageContentCapturer>(
+      web_contents_, GetAIPageContentOptions(),
+      base::BindOnce(
           &PasswordChangeSubmissionVerifier::CheckSubmissionSuccessful,
           weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PasswordChangeSubmissionVerifier::CheckSubmissionSuccessful(
-    std::optional<optimization_guide::AIPageContentResult> page_content) {
+    optimization_guide::AIPageContentResultOrError page_content) {
   CHECK(callback_);
   CHECK(web_contents_);
 
-  if (!page_content) {
+  if (!page_content.has_value()) {
     LogPageContentCaptureFailure(
         password_manager::metrics_util::PasswordChangeFlowStep::
             kVerifySubmissionStep);
@@ -155,6 +160,7 @@ void PasswordChangeSubmissionVerifier::CheckSubmissionSuccessful(
   }
 
   optimization_guide::proto::PasswordChangeRequest request;
+  request.set_step(kSubmitVerification);
   *request.mutable_page_context()->mutable_annotated_page_content() =
       std::move(page_content->proto);
   optimization_guide::ModelExecutionCallbackWithLogging<
@@ -162,7 +168,7 @@ void PasswordChangeSubmissionVerifier::CheckSubmissionSuccessful(
       wrapper_callback = password_manager::metrics_util::TimeCallback(
           base::BindOnce(
               &PasswordChangeSubmissionVerifier::OnExecutionResponseCallback,
-              weak_ptr_factory_.GetWeakPtr(), base::Time::Now()),
+              weak_ptr_factory_.GetWeakPtr()),
           kPasswordChangeVerificationTimeHistogram);
 
   optimization_guide::ExecuteModelWithLogging(
@@ -172,7 +178,6 @@ void PasswordChangeSubmissionVerifier::CheckSubmissionSuccessful(
 }
 
 void PasswordChangeSubmissionVerifier::OnExecutionResponseCallback(
-    base::Time request_time,
     optimization_guide::OptimizationGuideModelExecutionResult execution_result,
     std::unique_ptr<
         optimization_guide::proto::PasswordChangeSubmissionLoggingData>
@@ -198,8 +203,7 @@ void PasswordChangeSubmissionVerifier::OnExecutionResponseCallback(
     }
   }
 
-  logs_uploader_->SetVerifySubmissionQuality(response, std::move(logging_data),
-                                             request_time);
+  logs_uploader_->SetVerifySubmissionQuality(response, std::move(logging_data));
   if (!response) {
     // Password change failed as the response was empty or
     // unable to be parsed.

@@ -94,7 +94,7 @@ gfx::ImageSkia MaybeRotateImage(const gfx::ImageSkia& image,
     bool should_rotate = false;
     SkBitmapOperations::RotationAmount rotation_amount;
     const int64_t display_id =
-        display::Screen::GetScreen()
+        display::Screen::Get()
             ->GetDisplayNearestWindow(widget->GetNativeWindow())
             .id();
     const auto active_rotation = Shell::Get()

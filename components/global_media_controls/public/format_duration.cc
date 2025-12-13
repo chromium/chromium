@@ -42,7 +42,7 @@ std::u16string GetFormattedDuration(const base::TimeDelta& duration) {
   std::vector<icu::Measure> measures;
 
   const int64_t total_seconds =
-      base::ClampRound<int64_t>(duration.InSecondsF());
+      base::ClampFloor<int64_t>(duration.InSecondsF());
   const int64_t hours = total_seconds / base::Time::kSecondsPerHour;
   if (hours != 0) {
     measures.emplace_back(hours, icu::MeasureUnit::createHour(status), status);

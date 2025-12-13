@@ -90,7 +90,7 @@ String InlineItemResult::ToString(const String& ifc_text_content,
       builder.Append("(anonymous)");
     }
     builder.Append(", base_line: [\n");
-    String child_indent = indent + "\t";
+    String child_indent = StrCat({indent, "\t"});
     for (const auto& r : ruby_column->base_line.Results()) {
       builder.Append(r.ToString(ifc_text_content, child_indent));
       builder.Append("\n");

@@ -236,7 +236,8 @@ void SyncInternalsMessageHandler::HandleWriteUserEvent(
     event_specifics.set_navigation_id(StringAtIndexToInt64(args, 1u));
   }
 
-  user_event_service_->RecordUserEvent(event_specifics);
+  user_event_service_->RecordUserEvent(
+      std::make_unique<sync_pb::UserEventSpecifics>(event_specifics));
 }
 
 void SyncInternalsMessageHandler::HandleRequestStart(
@@ -269,7 +270,9 @@ void SyncInternalsMessageHandler::HandleTriggerRefresh(
     return;
   }
 
-  sync_service_->TriggerRefresh(syncer::DataTypeSet::All());
+  sync_service_->TriggerRefresh(
+      syncer::SyncService::TriggerRefreshSource::kSyncInternals,
+      syncer::DataTypeSet::All());
 }
 
 void SyncInternalsMessageHandler::OnReceivedAllNodes(
@@ -280,6 +283,12 @@ void SyncInternalsMessageHandler::OnReceivedAllNodes(
 
 void SyncInternalsMessageHandler::OnStateChanged(syncer::SyncService* sync) {
   SendAboutInfoAndEntityCounts();
+}
+
+void SyncInternalsMessageHandler::OnSyncShutdown(syncer::SyncService* sync) {
+  // Unreachable, since this class is tied to UI which gets destroyed before the
+  // Profile and its KeyedServices.
+  NOTREACHED();
 }
 
 void SyncInternalsMessageHandler::OnProtocolEvent(

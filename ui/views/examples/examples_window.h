@@ -8,7 +8,7 @@
 #include <string_view>
 
 #include "base/functional/callback_forward.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/examples/create_examples.h"
 #include "ui/views/examples/example_base.h"
 #include "ui/views/examples/views_examples_export.h"

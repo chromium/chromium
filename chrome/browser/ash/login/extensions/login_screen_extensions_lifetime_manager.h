@@ -28,8 +28,9 @@ class ProcessManager;
 
 namespace ash {
 
-// Manages the lifetime of the login-screen policy-installed extensions and
-// apps, making sure that they are stopped during an active user session.
+// Manages the lifetime of the login- and lock-screen policy-installed
+// extensions and apps, making sure that they are stopped during an active user
+// session.
 class LoginScreenExtensionsLifetimeManager final
     : public KeyedService,
       public ProfileManagerObserver,

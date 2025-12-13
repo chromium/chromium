@@ -64,16 +64,18 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
     return CreateNewCertVerifyProc(
         cert_net_fetcher, impl_params.crl_set, std::move(ct_verifier),
         std::move(ct_policy_enforcer),
-        base::OptionalToPtr(impl_params.root_store_data), instance_params,
-        impl_params.time_tracker);
+        base::OptionalToPtr(impl_params.root_store_data),
+        base::OptionalToPtr(impl_params.root_store_mtc_metadata),
+        instance_params, impl_params.time_tracker);
 #else
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
     if (impl_params.use_chrome_root_store) {
       return CreateNewCertVerifyProc(
           cert_net_fetcher, impl_params.crl_set, std::move(ct_verifier),
           std::move(ct_policy_enforcer),
-          base::OptionalToPtr(impl_params.root_store_data), instance_params,
-          impl_params.time_tracker);
+          base::OptionalToPtr(impl_params.root_store_data),
+          base::OptionalToPtr(impl_params.root_store_mtc_metadata),
+          instance_params, impl_params.time_tracker);
     }
 #endif
     return CreateOldCertVerifyProc(cert_net_fetcher, impl_params.crl_set,
@@ -119,12 +121,12 @@ class CertVerifyProcFactoryImpl : public net::CertVerifyProcFactory {
       std::unique_ptr<net::CTVerifier> ct_verifier,
       scoped_refptr<net::CTPolicyEnforcer> ct_policy_enforcer,
       const net::ChromeRootStoreData* root_store_data,
+      const net::ChromeRootStoreMtcMetadata* root_store_mtc_metadata,
       const net::CertVerifyProc::InstanceParams& instance_params,
       std::optional<network_time::TimeTracker> time_tracker) {
     std::unique_ptr<net::TrustStoreChrome> chrome_root =
-        root_store_data
-            ? std::make_unique<net::TrustStoreChrome>(*root_store_data)
-            : std::make_unique<net::TrustStoreChrome>();
+        std::make_unique<net::TrustStoreChrome>(root_store_data,
+                                                root_store_mtc_metadata);
 
     std::unique_ptr<net::SystemTrustStore> trust_store;
 #if BUILDFLAG(IS_CHROMEOS)

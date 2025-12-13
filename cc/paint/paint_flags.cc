@@ -9,6 +9,7 @@
 
 #include "base/memory/values_equivalent.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
@@ -252,6 +253,10 @@ float PaintFlags::DynamicRangeLimitMixture::ComputeEffectiveHdrHeadroom(
   constexpr float kConstrainedMax = 1.f;  // Constrained allows at most 1 stop
   return constrained_high_mix * std::min(kConstrainedMax, target_hdr_headroom) +
          high_mix * target_hdr_headroom;
+}
+
+std::string PaintFlags::DynamicRangeLimitMixture::ToString() const {
+  return base::StringPrintf("%f, %f", standard_mix, constrained_high_mix);
 }
 
 }  // namespace cc

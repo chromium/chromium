@@ -9,7 +9,13 @@
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/browser_context.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+namespace content {
+class BrowserContext;
+}
 
 class ExtensionFunction;
 

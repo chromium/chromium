@@ -14,6 +14,13 @@ ChromeVoxBackgroundKeyboardHandlerTest = class extends ChromeVoxE2ETest {
     await super.setUpDeferred();
 
     globalThis.keyboardHandler = BackgroundKeyboardHandler.instance;
+
+    // Swap in a mock for this function. In normal circumstances, the browser
+    // will have a queue of pending events when this function is called.
+    // However, this invariant is invalidated in this test suite since we are
+    // calling directly into the BackgroundKeyboardHandler key handlers.
+    chrome.accessibilityPrivate.processPendingSpokenFeedbackEvent =
+        (id, propagate) => {};
   }
 
   callOnKeyDown(internalKeyEvent) {

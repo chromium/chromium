@@ -89,7 +89,8 @@ base::Value IPEndPoint::ScopeIdToValue(std::optional<uint32_t> scope_id) {
   char* name = nullptr;
   char buf[IF_NAMESIZE + 1] = {0};
   if (index_to_name_func_for_testing_) {
-    name = index_to_name_func_for_testing_(scope_id.value(), buf);
+    name = index_to_name_func_for_testing_(scope_id.value(),
+                                           base::span<char>(buf));
   } else {
     name = if_indextoname(scope_id.value(), buf);
   }

@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import androidx.appcompat.widget.Toolbar;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.feed.StreamKind;
@@ -25,7 +26,7 @@ public class FeedManagementActivity extends SnackbarActivity {
             "feed_management_initiating_stream_type_extra";
 
     @Override
-    protected void onCreateInternal(Bundle savedInstanceState) {
+    protected void onCreateInternal(@Nullable Bundle savedInstanceState) {
         super.onCreateInternal(savedInstanceState);
 
         @StreamKind

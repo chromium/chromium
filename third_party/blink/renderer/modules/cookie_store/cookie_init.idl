@@ -18,4 +18,5 @@ dictionary CookieInit {
   DOMHighResTimeStamp? expires = null;
   CookieSameSite sameSite = "strict";
   boolean partitioned = false;
+  [RuntimeEnabled=CookieStoreAPIMaxAge] long long? maxAge;
 };

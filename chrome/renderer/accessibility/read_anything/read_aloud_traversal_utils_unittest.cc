@@ -4,9 +4,12 @@
 
 #include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 
+#include <memory>
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_position.h"
+#include "ui/accessibility/ax_serializable_tree.h"
 
 class ReadAnythingReadAloudTraversalUtilsTest : public testing::Test {
  protected:
@@ -15,6 +18,129 @@ class ReadAnythingReadAloudTraversalUtilsTest : public testing::Test {
 
 using testing::ElementsAre;
 using testing::IsEmpty;
+
+TEST_F(ReadAnythingReadAloudTraversalUtilsTest, GetAnchorNode_OnEditableText) {
+  ui::AXTreeUpdate update;
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {2};
+
+  ui::AXNodeData text_field;
+  text_field.id = 2;
+  text_field.role = ax::mojom::Role::kTextField;
+  text_field.AddState(ax::mojom::State::kEditable);
+  text_field.child_ids = {3, 4};
+
+  ui::AXNodeData editable_static_text;
+  editable_static_text.id = 3;
+  editable_static_text.role = ax::mojom::Role::kStaticText;
+  editable_static_text.AddState(ax::mojom::State::kEditable);
+  editable_static_text.SetName("some text");
+
+  ui::AXNodeData non_editable_static_text;
+  non_editable_static_text.id = 4;
+  non_editable_static_text.role = ax::mojom::Role::kStaticText;
+  non_editable_static_text.SetName("some other text");
+
+  update.root_id = root.id;
+  update.nodes = {root, text_field, editable_static_text,
+                  non_editable_static_text};
+  ui::AXTreeData tree_data;
+  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  update.has_tree_data = true;
+  update.tree_data = tree_data;
+
+  std::unique_ptr<ui::AXSerializableTree> tree =
+      std::make_unique<ui::AXSerializableTree>();
+  tree->Unserialize(update);
+  std::unique_ptr<ui::AXTreeManager> manager =
+      std::make_unique<ui::AXTreeManager>(std::move(tree));
+
+  ui::AXNode* text_field_node = manager->GetNode(2);
+  ui::AXNode* editable_static_text_node = manager->GetNode(3);
+  ui::AXNode* non_editable_static_text_node = manager->GetNode(4);
+
+  ASSERT_NE(text_field_node, nullptr);
+  ASSERT_NE(editable_static_text_node, nullptr);
+  ASSERT_NE(non_editable_static_text_node, nullptr);
+
+  // Case 1: Editable text child of a leaf.
+  ui::AXNodePosition::AXPositionInstance position_editable =
+      ui::AXNodePosition::CreateTextPosition(
+          *editable_static_text_node, 0, ax::mojom::TextAffinity::kDownstream);
+
+  // The anchor node should be the static text node, not its parent text field.
+  EXPECT_EQ(GetAnchorNode(position_editable), editable_static_text_node);
+
+  // Case 2: Non-editable text child of a leaf.
+  ui::AXNodePosition::AXPositionInstance position_non_editable =
+      ui::AXNodePosition::CreateTextPosition(
+          *non_editable_static_text_node, 0,
+          ax::mojom::TextAffinity::kDownstream);
+
+  // The anchor node should be the parent text field, because the static text
+  // is a child of a leaf and not editable itself.
+  EXPECT_EQ(GetAnchorNode(position_non_editable), text_field_node);
+}
+
+TEST_F(ReadAnythingReadAloudTraversalUtilsTest,
+       GetAnchorNode_OnLinkWithEditableText) {
+  ui::AXTreeUpdate update;
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {2};
+
+  ui::AXNodeData text_field;
+  text_field.id = 2;
+  text_field.role = ax::mojom::Role::kStaticText;
+  text_field.AddState(ax::mojom::State::kEditable);
+  text_field.child_ids = {3};
+
+  ui::AXNodeData link;
+  link.id = 3;
+  link.role = ax::mojom::Role::kLink;
+  link.SetName("some text");
+  link.child_ids = {4};
+
+  ui::AXNodeData editable_static_text;
+  editable_static_text.id = 4;
+  editable_static_text.role = ax::mojom::Role::kStaticText;
+  editable_static_text.AddState(ax::mojom::State::kEditable);
+  editable_static_text.SetName("some text");
+
+  update.root_id = root.id;
+  update.nodes = {root, text_field, link, editable_static_text};
+  ui::AXTreeData tree_data;
+  tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  update.has_tree_data = true;
+  update.tree_data = tree_data;
+
+  std::unique_ptr<ui::AXSerializableTree> tree =
+      std::make_unique<ui::AXSerializableTree>();
+  tree->Unserialize(update);
+  std::unique_ptr<ui::AXTreeManager> manager =
+      std::make_unique<ui::AXTreeManager>(std::move(tree));
+
+  ui::AXNode* lowest_platform_ancestor = manager->GetNode(2);
+  ui::AXNode* link_node = manager->GetNode(3);
+  ui::AXNode* editable_static_text_node = manager->GetNode(4);
+
+  ASSERT_NE(lowest_platform_ancestor, nullptr);
+  ASSERT_NE(link_node, nullptr);
+  ASSERT_NE(editable_static_text_node, nullptr);
+
+  ASSERT_TRUE(editable_static_text_node->IsChildOfLeaf());
+
+  ui::AXNodePosition::AXPositionInstance position =
+      ui::AXNodePosition::CreateTextPosition(
+          *editable_static_text_node, 0, ax::mojom::TextAffinity::kDownstream);
+
+  // The anchor node should be the link node, not the editable static text,
+  // because the lowest platform ancestor (the link) is text.
+  EXPECT_EQ(GetAnchorNode(position), lowest_platform_ancestor);
+}
 
 TEST_F(ReadAnythingReadAloudTraversalUtilsTest,
        GetNextSentence_ReturnsCorrectIndex) {

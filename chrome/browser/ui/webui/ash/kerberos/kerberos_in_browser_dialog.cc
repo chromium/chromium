@@ -60,7 +60,7 @@ ui::mojom::ModalType KerberosInBrowserDialog::GetDialogModalType() const {
 
 void KerberosInBrowserDialog::GetDialogSize(gfx::Size* size) const {
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(dialog_window());
+      display::Screen::Get()->GetDisplayNearestWindow(dialog_window());
 
   size->SetSize(
       std::min(kKerberosInBrowserDialogWidth, display.work_area().width()),

@@ -359,8 +359,8 @@ TEST(TraceConfigTest, TraceConfigFromDict) {
   EXPECT_FALSE(tc.IsEventPackageNameFilterEnabled());
   EXPECT_STREQ("", tc.ToCategoryFilterString().c_str());
 
-  std::optional<Value> default_value =
-      JSONReader::Read(kDefaultTraceConfigString);
+  std::optional<Value> default_value = JSONReader::Read(
+      kDefaultTraceConfigString, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(default_value);
   ASSERT_TRUE(default_value->is_dict());
   TraceConfig default_tc(default_value->GetDict());
@@ -371,8 +371,8 @@ TEST(TraceConfigTest, TraceConfigFromDict) {
   EXPECT_FALSE(default_tc.IsArgumentFilterEnabled());
   EXPECT_STREQ("", default_tc.ToCategoryFilterString().c_str());
 
-  std::optional<Value> custom_value =
-      JSONReader::Read(kCustomTraceConfigString);
+  std::optional<Value> custom_value = JSONReader::Read(
+      kCustomTraceConfigString, JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(custom_value);
   ASSERT_TRUE(custom_value->is_dict());
   TraceConfig custom_tc(custom_value->GetDict());
@@ -459,8 +459,8 @@ TEST(TraceConfigTest, TraceConfigFromValidString) {
                event_filter.category_filter().excluded_categories()[0].c_str());
   EXPECT_FALSE(event_filter.filter_args().empty());
 
-  std::string json_out;
-  base::JSONWriter::Write(event_filter.filter_args(), &json_out);
+  std::string json_out =
+      base::WriteJson(event_filter.filter_args()).value_or("");
   EXPECT_STREQ(json_out.c_str(),
                "{\"event_name_allowlist\":[\"a snake\",\"a dog\"]}");
   std::unordered_set<std::string> filter_values;

@@ -13,16 +13,15 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/browser/ui/ash/arc/arc_vm_data_migration_confirmation_dialog.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/session/arc_vm_data_migration_status.h"
+#include "chromeos/ash/experiences/arc/vm_data_migration/arc_vm_data_migration_confirmation_dialog.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -118,7 +117,10 @@ void ArcVmDataMigrationNotifier::OnArcSessionBlockedByArcVmDataMigration(
   }
   LOG(WARNING) << "Showing a non-dismissible notification for ARCVM /data "
                   "migration, because auto-resume is disabled";
-  // TODO(b/258278176): Implement appropriate UI.
+  // Just reuse the same notification as the regular non-resume case, although
+  // we should ideally inform the user here that the migration has been halted
+  // because of too many retry attempts, and ARC is unusable until the user
+  // re-initiates the migration. See crrev.com/c/4339340 for the context.
   base::UmaHistogramBoolean("Arc.VmDataMigration.ResumeNotificationShown",
                             true);
   ShowNotification();
@@ -129,7 +131,7 @@ void ArcVmDataMigrationNotifier::ShowNotification() {
       GetDaysUntilArcVmDataMigrationDeadline(profile_->GetPrefs());
   ReportNotificationShown(days_until_deadline);
 
-  message_center::Notification notification = ash::CreateSystemNotification(
+  auto notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
       l10n_util::GetStringUTF16(IDS_ARC_VM_DATA_MIGRATION_NOTIFICATION_TITLE),
       l10n_util::GetPluralStringFUTF16(
@@ -147,27 +149,22 @@ void ArcVmDataMigrationNotifier::ShowNotification() {
               weak_ptr_factory_.GetWeakPtr())),
       ash::kSystemMenuUpdateIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
-  notification.set_buttons(
+  notification->set_buttons(
       {message_center::ButtonInfo(l10n_util::GetStringUTF16(
           IDS_ARC_VM_DATA_MIGRATION_NOTIFICATION_ACCEPT_BUTTON_LABEL))});
 
   // Set the highest (system) priority.
-  notification.SetSystemPriority();
+  notification->SetSystemPriority();
   // Set no timeout so that the notification never disappears spontaneously.
-  notification.set_never_timeout(true);
+  notification->set_never_timeout(true);
 
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
-      NotificationHandler::Type::TRANSIENT, notification,
-      nullptr /* metadata */);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 }
 
 void ArcVmDataMigrationNotifier::CloseNotification() {
-  auto* notification_display_service =
-      NotificationDisplayServiceFactory::GetForProfile(profile_);
-  if (notification_display_service) {
-    notification_display_service->Close(NotificationHandler::Type::TRANSIENT,
-                                        kNotificationId);
-  }
+  message_center::MessageCenter::Get()->RemoveNotification(kNotificationId,
+                                                           /*by_user=*/false);
 }
 
 void ArcVmDataMigrationNotifier::OnNotificationClicked(

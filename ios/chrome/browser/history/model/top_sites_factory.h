@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_HISTORY_MODEL_TOP_SITES_FACTORY_H_
 #define IOS_CHROME_BROWSER_HISTORY_MODEL_TOP_SITES_FACTORY_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "ios/chrome/browser/shared/model/profile/refcounted_profile_keyed_service_factory_ios.h"
 
@@ -29,10 +29,10 @@ class TopSitesFactory : public RefcountedProfileKeyedServiceFactoryIOS {
   TopSitesFactory();
   ~TopSitesFactory() override;
 
-  // RefcountedBrowserStateKeyedServiceFactory implementation.
+  // RefcountedProfileKeyedServiceFactoryIOS implementation.
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  void RegisterBrowserStatePrefs(
+      ProfileIOS* profile) const override;
+  void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
 };
 

@@ -12,6 +12,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/types/pass_key.h"
 #include "crypto/process_bound_string.h"
 #include "net/base/net_export.h"
@@ -43,6 +44,23 @@ using CookieList = std::vector<CanonicalCookie>;
 using CookieAndLineAccessResultList =
     std::vector<CookieAndLineWithAccessResult>;
 using CookieAccessResultList = std::vector<CookieWithAccessResult>;
+
+// Represents the call sites of CanonicalCookie::FromStorage, used for metrics
+// so we can better identify any callers that are not enforcing cookie name and
+// value size limits as expected.
+// LINT.IfChange(CanonicalCookieFromStorageCallSite)
+enum class CanonicalCookieFromStorageCallSite {
+  kAndroidCookiesFetcherRestoreUtil,
+  kChromeOsCookieSyncConversions,
+  kOauthMultiloginResult,
+  kIosSystemCookieUtil,
+  kSqlitePersistentCookieStore,
+  kCookieManager,
+  kCookieManagerMojomTraits,
+  kRestrictedCookieManager,
+  kTests,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/cookie/histograms.xml:CanonicalCookieFromStorageCallSite)
 
 // Represents a real/concrete cookie, which may be sent on requests or set by a
 // response if the request context and attributes allow it.
@@ -213,7 +231,8 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
       std::optional<CookiePartitionKey> partition_key,
       CookieSourceScheme source_scheme,
       int source_port,
-      CookieSourceType source_type);
+      CookieSourceType source_type,
+      CanonicalCookieFromStorageCallSite call_site);
 
   // Create a CanonicalCookie that is not guaranteed to actually be Canonical
   // for tests. Use this only if you want to bypass parameter validation to

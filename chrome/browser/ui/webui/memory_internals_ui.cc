@@ -90,12 +90,23 @@ std::string GetMessageString() {
           "Each utility process has a fixed probability of being profiled at "
           "startup.");
 
+    case Mode::kUtilityAndBrowser:
+      return std::string(
+          "Memory logging is enabled for just the browser and utility "
+          "processes.");
+
+    case Mode::kAllUtilities:
+      return std::string(
+          "Memory logging is enabled for all utility processes.");
+
     case Mode::kNone:
     case Mode::kManual:
-    default:
       return std::string(
           "Memory logging must be manually enabled for each process via "
           "chrome://memory-internals.");
+    case Mode::kCount:
+    default:
+      NOTREACHED();
   }
 #elif defined(ADDRESS_SANITIZER)
   return "Memory logging is not available in this build because a memory "

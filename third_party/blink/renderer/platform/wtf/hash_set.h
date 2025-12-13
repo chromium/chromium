@@ -30,13 +30,6 @@
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-// Templates in this file are instantiated many times with different types.
-// Adding the regular GC_PLUGIN_IGNORE annotations to fields in the templates
-// results in the annotation being duplicated many times, growing the debug
-// symbols, and regressing binary size. To avoid the binary size regression,
-// mark the file to ignore instead.
-GC_PLUGIN_IGNORE_FILE("crbug.com/428987863")
-
 namespace blink {
 
 struct IdentityExtractor;
@@ -48,7 +41,7 @@ struct IdentityExtractor;
 // See hash_traits.h for how to define hash traits.
 template <typename ValueArg,
           typename TraitsArg = HashTraits<ValueArg>,
-          typename Allocator = WTF::PartitionAllocator>
+          typename Allocator = PartitionAllocator>
 class HashSet {
   USE_ALLOCATOR(HashSet, Allocator);
 
@@ -269,11 +262,6 @@ bool operator==(const HashSet<T, U, V>& a, const HashSet<T, U, V>& b) {
 }
 
 template <typename T, typename U, typename V>
-inline bool operator!=(const HashSet<T, U, V>& a, const HashSet<T, U, V>& b) {
-  return !(a == b);
-}
-
-template <typename T, typename U, typename V>
 inline wtf_size_t HashSet<T, U, V>::size() const {
   return impl_.size();
 }
@@ -386,10 +374,5 @@ inline auto HashSet<T, U, V>::TakeAny() -> ValueType {
 }
 
 }  // namespace blink
-
-// TODO(crbug.com/422768753): Remove this `using` directive.
-namespace WTF {
-using blink::HashSet;
-}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_SET_H_

@@ -8,12 +8,14 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "components/data_sharing/public/features.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/data_sharing/public/jni_headers/DataSharingConversionUtils_jni.h"
 #include "components/data_sharing/public/jni_headers/DataSharingNetworkResult_jni.h"
 #include "components/data_sharing/public/jni_headers/GroupData_jni.h"
 #include "components/data_sharing/public/jni_headers/GroupMember_jni.h"
@@ -115,3 +117,20 @@ ScopedJavaLocalRef<jobject> CreateDataSharingNetworkResult(
 }
 
 }  // namespace data_sharing::conversion
+
+namespace data_sharing {
+
+// static
+static jint JNI_DataSharingConversionUtils_GetServerEnvironment(JNIEnv* env) {
+  return static_cast<jint>(data_sharing::features::GetServerEnvironment());
+}
+
+}  // namespace data_sharing
+
+DEFINE_JNI(DataSharingConversionUtils)
+DEFINE_JNI(DataSharingNetworkResult)
+DEFINE_JNI(GroupData)
+DEFINE_JNI(GroupMember)
+DEFINE_JNI(GroupToken)
+DEFINE_JNI(SharedTabGroupPreview)
+DEFINE_JNI(TabPreview)

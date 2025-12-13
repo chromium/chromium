@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/context_state.h"
 
 #include <stddef.h>
 
+#include <array>
+
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
@@ -30,59 +28,53 @@ TEST(ContextStateVec4Test, DefaultValues) {
 TEST(ContextStateVec4Test, SetGetFloatValues) {
   Vec4 v;
 
-  const GLfloat kFloatValues[4] = { 2.f, 3.f, 4.f, 5.f };
-  v.SetValues(kFloatValues);
+  const std::array<GLfloat, 4> kFloatValues = {{2.f, 3.f, 4.f, 5.f}};
+  v.SetValues(kFloatValues.data());
   EXPECT_EQ(SHADER_VARIABLE_FLOAT, v.type());
-  GLfloat fv[4];
-  v.GetValues(fv);
-  for (size_t ii = 0; ii < 4; ++ii) {
-    EXPECT_EQ(kFloatValues[ii], fv[ii]);
-  }
+  std::array<GLfloat, 4> fv;
+  v.GetValues(fv.data());
+  EXPECT_EQ(kFloatValues, fv);
 }
 
 TEST(ContextStateVec4Test, SetGetIntValues) {
   Vec4 v;
 
-  const GLint kIntValues[4] = { 2, 3, -4, 5 };
-  v.SetValues(kIntValues);
+  const std::array<GLint, 4> kIntValues = {{2, 3, -4, 5}};
+  v.SetValues(kIntValues.data());
   EXPECT_EQ(SHADER_VARIABLE_INT, v.type());
-  GLint iv[4];
-  v.GetValues(iv);
-  for (size_t ii = 0; ii < 4; ++ii) {
-    EXPECT_EQ(kIntValues[ii], iv[ii]);
-  }
+  std::array<GLint, 4> iv;
+  v.GetValues(iv.data());
+  EXPECT_EQ(kIntValues, iv);
 }
 
 TEST(ContextStateVec4Test, SetGetUIntValues) {
   Vec4 v;
 
-  const GLuint kUIntValues[4] = { 2, 3, 4, 5 };
-  v.SetValues(kUIntValues);
+  const std::array<GLuint, 4> kUIntValues = {{2, 3, 4, 5}};
+  v.SetValues(kUIntValues.data());
   EXPECT_EQ(SHADER_VARIABLE_UINT, v.type());
-  GLuint uiv[4];
-  v.GetValues(uiv);
-  for (size_t ii = 0; ii < 4; ++ii) {
-    EXPECT_EQ(kUIntValues[ii], uiv[ii]);
-  }
+  std::array<GLuint, 4> uiv;
+  v.GetValues(uiv.data());
+  EXPECT_EQ(kUIntValues, uiv);
 }
 
 TEST(ContextStateVec4Test, Equal) {
   Vec4 v1, v2;
 
-  const GLint kIntValues[4] = { 2, 3, 4, 5 };
-  const GLuint kUIntValues[4] = { 2, 3, 4, 5 };
+  const std::array<GLint, 4> kIntValues = {{2, 3, 4, 5}};
+  const std::array<GLuint, 4> kUIntValues = {{2, 3, 4, 5}};
 
-  v1.SetValues(kIntValues);
-  v2.SetValues(kUIntValues);
+  v1.SetValues(kIntValues.data());
+  v2.SetValues(kUIntValues.data());
   EXPECT_FALSE(v1.Equal(v2));
   EXPECT_FALSE(v2.Equal(v1));
 
-  v2.SetValues(kIntValues);
+  v2.SetValues(kIntValues.data());
   EXPECT_TRUE(v1.Equal(v2));
   EXPECT_TRUE(v2.Equal(v1));
 
-  const GLint kIntValues2[4] = { 2, 3, 4, 6 };
-  v2.SetValues(kIntValues2);
+  const std::array<GLint, 4> kIntValues2 = {{2, 3, 4, 6}};
+  v2.SetValues(kIntValues2.data());
   EXPECT_FALSE(v1.Equal(v2));
   EXPECT_FALSE(v2.Equal(v1));
 }

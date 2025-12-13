@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.download;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.Manifest.permission;
 import android.app.DownloadManager;
 import android.content.pm.PackageManager;
@@ -19,6 +21,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.WindowAndroid;
@@ -30,17 +34,18 @@ import java.io.File;
 /**
  * Chrome implementation of the ContentViewDownloadDelegate interface.
  *
- * Listens to POST and GET download events. GET download requests are passed along to the
- * Android Download Manager. POST downloads are expected to be handled natively and listener
- * is responsible for adding the completed download to the download manager.
+ * <p>Listens to POST and GET download events. GET download requests are passed along to the Android
+ * Download Manager. POST downloads are expected to be handled natively and listener is responsible
+ * for adding the completed download to the download manager.
  *
- * Prompts the user when a dangerous file is downloaded. Auto-opens PDFs after downloading.
+ * <p>Prompts the user when a dangerous file is downloaded. Auto-opens PDFs after downloading.
  */
+@NullMarked
 public class ChromeDownloadDelegate implements UserData {
     private static final String TAG = "Download";
 
     private static final Class<ChromeDownloadDelegate> USER_DATA_KEY = ChromeDownloadDelegate.class;
-    private Tab mTab;
+    private @Nullable Tab mTab;
 
     public static ChromeDownloadDelegate from(Tab tab) {
         UserDataHost host = tab.getUserDataHost();
@@ -65,8 +70,8 @@ public class ChromeDownloadDelegate implements UserData {
     }
 
     /**
-     * Notify the host application a download should be done, even if there is a
-     * streaming viewer available for this type.
+     * Notify the host application a download should be done, even if there is a streaming viewer
+     * available for this type.
      *
      * @param downloadInfo Information about the download.
      */
@@ -123,7 +128,7 @@ public class ChromeDownloadDelegate implements UserData {
      *
      * @return File object containing the path to the download directory.
      */
-    private static File getDownloadDirectoryFullPath() {
+    private static @Nullable File getDownloadDirectoryFullPath() {
         assert !ThreadUtils.runningOnUiThread();
         File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         if (!dir.mkdir() && !dir.isDirectory()) return null;
@@ -171,8 +176,8 @@ public class ChromeDownloadDelegate implements UserData {
     }
 
     /**
-     * For certain download types(OMA for example), android DownloadManager should
-     * handle them. Call this function to intercept those downloads.
+     * For certain download types(OMA for example), android DownloadManager should handle them. Call
+     * this function to intercept those downloads.
      *
      * @param url URL to be downloaded.
      * @return whether the DownloadManager should intercept the download.
@@ -187,6 +192,7 @@ public class ChromeDownloadDelegate implements UserData {
         final DownloadInfo downloadInfo =
                 new DownloadInfo.Builder().setUrl(url).setFileName(fileName).build();
         WindowAndroid window = mTab.getWindowAndroid();
+        assertNonNull(window);
         if (window.hasPermission(permission.WRITE_EXTERNAL_STORAGE)) {
             onDownloadStartNoStream(downloadInfo);
         } else if (window.canRequestPermission(permission.WRITE_EXTERNAL_STORAGE)) {

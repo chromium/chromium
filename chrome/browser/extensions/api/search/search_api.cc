@@ -9,24 +9,44 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/common/extensions/api/search.h"
 #include "components/search_engines/util.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#else
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+using tabs::TabModel;
+#endif
 
 namespace extensions {
 
 namespace {
 
-void NavigateToURL(WindowOpenDisposition disposition,
-                   Browser* browser,
-                   const GURL& url) {
-  NavigateParams navigate_params(browser, url, ui::PAGE_TRANSITION_FROM_API);
-  navigate_params.window_action = NavigateParams::SHOW_WINDOW;
-  navigate_params.disposition = disposition;
-  Navigate(&navigate_params);
+#if !BUILDFLAG(ENABLE_EXTENSIONS)
+content::WebContents* GetActiveWebContents() {
+  for (TabModel* tab_model : TabModelList::models()) {
+    if (tab_model->IsActiveModel()) {
+      content::WebContents* web_contents = tab_model->GetActiveWebContents();
+      if (web_contents) {
+        return web_contents;
+      }
+    }
+  }
+  return nullptr;
 }
+#endif
 
 }  // namespace
 
@@ -70,10 +90,12 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
 
   // If the extension didn't specify a tab, we need to find a browser to use.
   Browser* browser = nullptr;
+  TabModel* tab_model = nullptr;
   if (!web_contents) {
     // If the extension called the API from a tab, we can use that tab -
-    // find the associated browser.
+    // find the associated browser or tab model.
     web_contents = GetSenderWebContents();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     if (web_contents) {
       browser = chrome::FindBrowserWithTab(web_contents);
     }
@@ -88,9 +110,21 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
       }
       web_contents = browser->tab_strip_model()->GetActiveWebContents();
     }
+#else
+    if (web_contents) {
+      tab_model = TabModelList::GetTabModelForWebContents(web_contents);
+    }
+    // Failed to find the tab model making the API call. fall back to the last
+    // active tab.
+    if (!tab_model) {
+      return RespondNow(Error("No active browser."));
+    }
+    web_contents = GetActiveWebContents();
+#endif
   }
 
-  DCHECK(browser || (web_contents && disposition == Disposition::kNone));
+  DCHECK(browser || tab_model ||
+         (web_contents && disposition == Disposition::kNone));
 
   // GURL for default search provider.
   TemplateURLService* url_service =
@@ -112,10 +146,12 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
           /*extra_headers=*/std::string());
       break;
     case Disposition::kNewTab:
-      NavigateToURL(WindowOpenDisposition::NEW_FOREGROUND_TAB, browser, url);
+      ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                      web_contents, url);
       break;
     case Disposition::kNewWindow:
-      NavigateToURL(WindowOpenDisposition::NEW_WINDOW, browser, url);
+      ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_WINDOW,
+                                      web_contents, url);
       break;
   }
 

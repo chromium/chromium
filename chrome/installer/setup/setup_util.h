@@ -31,31 +31,25 @@ class Version;
 
 namespace installer {
 
-class InstallationState;
 class InstallerState;
 class InitialPreferences;
 
 extern const char kUnPackStatusMetricsName[];
 
 // The name of consumers of UnPackArchive which is used to publish metrics.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum UnPackConsumer {
-  CHROME_ARCHIVE_PATCH,
-  COMPRESSED_CHROME_ARCHIVE,
-  SETUP_EXE_PATCH,
-  UNCOMPRESSED_CHROME_ARCHIVE,
+  // CHROME_ARCHIVE_PATCH = 0,
+  COMPRESSED_CHROME_ARCHIVE = 1,
+  // SETUP_EXE_PATCH = 2,
+  UNCOMPRESSED_CHROME_ARCHIVE = 3,
 };
 
 // Find the version of Chrome from an install source directory.
 // Chrome_path should contain at least one version folder.
 // Returns the maximum version found or nullptr if no version is found.
 base::Version* GetMaxVersionFromArchiveDir(const base::FilePath& chrome_path);
-
-// Returns the uncompressed archive of the installed version that serves as the
-// source for patching.  If |desired_version| is valid, only the path to that
-// version will be returned, or empty if it doesn't exist.
-base::FilePath FindArchiveToPatch(const InstallationState& original_state,
-                                  const InstallerState& installer_state,
-                                  const base::Version& desired_version);
 
 // Spawns a new process that waits for a specified amount of time before
 // attempting to delete |path|.  This is useful for setup to delete the
@@ -109,10 +103,6 @@ void DeRegisterEventLogProvider();
 // Removes leftover bits from features that have been removed from the product.
 void DoLegacyCleanups(const InstallerState& installer_state,
                       InstallStatus install_status);
-
-// Returns the time of the start of the console user's Windows logon session, or
-// a null time in case of error.
-base::Time GetConsoleSessionStartTime();
 
 // Returns a DM token decoded from the base-64 `encoded_token`, or null in case
 // of a decoding error.  The returned DM token is an opaque binary blob and

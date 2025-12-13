@@ -11,4 +11,10 @@ namespace actor::switches {
 // Note that some checks, like requiring https, are not affected by this.
 const char kDisableActorSafetyChecks[] = "disable-actor-safety-checks";
 
+// Bypasses the selection of the data to be filled by the
+// `AttemptFormFillingTool` and just picks the first suggestion for each form
+// section. This is only intended for testing.
+const char kAttemptFormFillingToolSkipsUI[] =
+    "attempt-form-filling-tool-skips-ui";
+
 }  // namespace actor::switches

@@ -14,8 +14,6 @@
 #include "content/browser/compositor/image_transport_factory.h"
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
-#include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
-#include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "ui/compositor/compositor.h"
 
 namespace base {
@@ -34,11 +32,14 @@ namespace viz {
 class CompositingModeReporterImpl;
 class HostDisplayClient;
 class RasterContextProvider;
-}
-
-namespace viz {
 class ContextProviderCommandBuffer;
 }
+
+#if BUILDFLAG(IS_MAC)
+namespace ui {
+class DisplayLinkMacMojo;
+}
+#endif
 
 namespace content {
 
@@ -116,6 +117,10 @@ class VizProcessTransportFactory : public ui::ContextFactory,
   // fallback to software compositing.
   gpu::ContextResult TryCreateContextsForGpuCompositing(
       scoped_refptr<gpu::GpuChannelHost> gpu_channel_host);
+
+#if BUILDFLAG(IS_MAC)
+  std::unique_ptr<ui::DisplayLinkMacMojo> display_link_mac_mojo_{nullptr};
+#endif
 
   const raw_ptr<gpu::GpuChannelEstablishFactory> gpu_channel_establish_factory_;
 

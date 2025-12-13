@@ -103,7 +103,7 @@ class SuggestMgr {
 
   AffixMgr* pAMgr;
   unsigned int maxSug;
-  struct cs_info* csconv;
+  const struct cs_info* csconv;
   int utf8;
   int langnum;
   int nosplitsugs;

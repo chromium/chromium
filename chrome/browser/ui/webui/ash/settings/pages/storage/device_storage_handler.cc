@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "ash/public/cpp/new_window_delegate.h"
+#include "base/byte_count.h"
 #include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
@@ -208,7 +209,7 @@ void StorageHandler::HandleOpenMyFiles(const base::Value::List& unused_args) {
 
 void StorageHandler::HandleOpenBrowsingDataSettings(
     const base::Value::List& unused_args) {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(chrome::kChromeUISettingsURL)
           .Resolve(chrome::kClearBrowserDataSubPage),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
@@ -330,7 +331,7 @@ void StorageHandler::UpdateStorageItem(
   if (total_bytes < 0) {
     message = l10n_util::GetStringUTF16(IDS_SETTINGS_STORAGE_SIZE_UNKNOWN);
   } else {
-    message = ui::FormatBytes(total_bytes);
+    message = ui::FormatBytes(base::ByteCount(total_bytes));
   }
 
   if (calculation_type == SizeCalculator::CalculationType::kOtherUsers) {
@@ -379,8 +380,9 @@ void StorageHandler::UpdateOverallStatistics() {
   }
 
   base::Value::Dict size_stat;
-  size_stat.Set("availableSize", ui::FormatBytes(available_bytes));
-  size_stat.Set("usedSize", ui::FormatBytes(in_use_bytes));
+  size_stat.Set("availableSize",
+                ui::FormatBytes(base::ByteCount(available_bytes)));
+  size_stat.Set("usedSize", ui::FormatBytes(base::ByteCount(in_use_bytes)));
   size_stat.Set("usedRatio", static_cast<double>(in_use_bytes) / total_bytes);
   int storage_space_state =
       static_cast<int>(StorageSpaceState::kStorageSpaceNormal);
@@ -433,7 +435,7 @@ void StorageHandler::UpdateSystemSizeItem() {
   if (system_bytes < 0) {
     message = l10n_util::GetStringUTF16(IDS_SETTINGS_STORAGE_SIZE_UNKNOWN);
   } else {
-    message = ui::FormatBytes(system_bytes);
+    message = ui::FormatBytes(base::ByteCount(system_bytes));
   }
   FireWebUIListener(
       CalculationTypeToEventName(SizeCalculator::CalculationType::kSystem),

@@ -29,7 +29,7 @@
 
 namespace {
 
-void JNI_AccountChooserDialog_AddElementsToJavaCredentialArray(
+static void JNI_AccountChooserDialog_AddElementsToJavaCredentialArray(
     JNIEnv* env,
     base::android::ScopedJavaLocalRef<jobjectArray> java_credentials_array,
     const std::vector<std::unique_ptr<password_manager::PasswordForm>>& forms) {
@@ -253,3 +253,5 @@ void AccountChooserDialogAndroid::OnReauthCompleted(size_t index,
   }
   delete this;
 }
+
+DEFINE_JNI(AccountChooserDialog)

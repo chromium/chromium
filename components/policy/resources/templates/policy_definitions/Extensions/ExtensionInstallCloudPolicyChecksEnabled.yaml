@@ -1,0 +1,41 @@
+caption: Enables additional cloud policy checks to allow/block installation of extensions.
+default: false
+desc: |-
+  This policy incidates to browsers that they need to perform additional checks for extensions such as checking if an extension is in a category blocked by administrator.
+
+  This policy will automatically be set to Enabled if any rules are configured in the <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">$1<ex>Google Admin console</ex></ph>,
+  and will be Disabled otherwise.
+
+  When this policy is set to Enabled, it signals to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> that it needs to consult the Cloud service to determine if an extension should be blocked.
+  This policy check is performed for new installations and on all currently installed extensions, both at startup and periodically.
+
+  When this policy is set to Disabled, this signals to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> that it does not need to perform any additional checks
+  to determine if an extension should be blocked based on enterprise rules defined in the <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">$1<ex>Google Admin console</ex></ph>.
+
+  If the extension is not allowed, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will block the installation. For already installed extensions, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will disable them.
+
+  Chrome policies will take precedence over this policy such as if the extension is in <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME">ExtensionInstallAllowlist</ph>, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME">ExtensionInstallBlocklist</ph>,
+  or <ph name="EXTENSION_INSTALL_FORCED_POLICY_NAME">ExtensionInstallForced</ph>.
+
+example_value: true
+features:
+  cloud_only: true
+  dynamic_refresh: true
+  per_profile: true
+  internal_only: true
+items:
+- caption: Validate whether an extension can be installed or not with a cloud service.
+  value: true
+- caption: Do not validate whether an extension can be installed or not with a cloud service.
+  value: false
+owners:
+- macourteau@chromium.org
+- pmoench@google.com
+- file://extensions/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome.*:142-
+- chrome_os:142-
+type: main
+tags: []

@@ -161,7 +161,7 @@ void TabDragDropDelegate::DropAndDeleteSelf(
 
   auto closure = base::BindOnce(&TabDragDropDelegate::OnNewBrowserWindowCreated,
                                 base::Owned(this), location_in_screen);
-  NewWindowDelegate::GetPrimary()->NewWindowForDetachingTab(
+  NewWindowDelegate::GetInstance()->NewWindowForDetachingTab(
       source_window_, drop_data, std::move(closure));
 }
 
@@ -310,7 +310,7 @@ void TabDragDropDelegate::UpdateSourceWindowBoundsIfNecessary(
                 opposite_position, source_window_,
                 window_util::GetSnapRatioForWindow(source_window_),
                 /*account_for_divider_width=*/
-                display::Screen::GetScreen()->InTabletMode());
+                display::Screen::Get()->InTabletMode());
   }
   wm::ConvertRectFromScreen(source_window_->parent(),
                             &new_source_window_bounds);

@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 // TableViewImageItem contains the model data for a TableViewImageCell.
@@ -31,19 +31,6 @@
 // Whether the item is enabled. When it is not enabled, the associated cell
 // cannot be interacted with.
 @property(nonatomic, assign, getter=isEnabled) BOOL enabled;
-
-@end
-
-// TableViewImageCell contains a favicon, a text, an optional detail text and an
-// optional chevron.
-@interface TableViewImageCell : TableViewCell
-
-// The cell favicon imageView.
-@property(nonatomic, readonly, strong) UIImageView* imageView;
-// The cell text.
-@property(nonatomic, readonly, strong) UILabel* textLabel;
-// The cell detail text.
-@property(nonatomic, readonly, strong) UILabel* detailTextLabel;
 
 @end
 

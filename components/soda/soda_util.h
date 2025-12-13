@@ -16,13 +16,13 @@ namespace speech {
 // CPU instructions.
 bool IsOnDeviceSpeechRecognitionSupported();
 
-// Returns the on-device speech recognition availability status for a given
-// language code (i.e. "en-US"). Speech recognition considered available if the
-// Speech On-Device API is supported and the language pack for the corresponding
-// language is installed. This utility function must be run in the browser
-// process.
-media::mojom::AvailabilityStatus IsOnDeviceSpeechRecognitionAvailable(
-    const std::string& language);
+// Returns the on-device speech recognition availability status via SODA for a
+// given language code (i.e. "en-US"). Speech recognition considered available
+// if the Speech On-Device API is supported and the language pack for the
+// corresponding language is installed. This utility function must be run in the
+// browser process.
+media::mojom::AvailabilityStatus GetSodaAvailabilityStatus(
+    std::string_view language);
 
 }  // namespace speech
 

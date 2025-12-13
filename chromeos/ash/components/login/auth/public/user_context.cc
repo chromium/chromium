@@ -308,6 +308,10 @@ bool UserContext::CanLockManagedGuestSession() const {
   return can_lock_managed_guest_session_;
 }
 
+bool UserContext::GenerateFreshRecoveryId() const {
+  return generate_fresh_recovery_id_;
+}
+
 bool UserContext::HasCredentials() const {
   return (account_id_.is_valid() && !key_.GetSecret().empty()) ||
          !auth_code_.empty();
@@ -463,6 +467,10 @@ void UserContext::SetIsUnderAdvancedProtection(
 void UserContext::SetCanLockManagedGuestSession(
     bool can_lock_managed_guest_session) {
   can_lock_managed_guest_session_ = can_lock_managed_guest_session;
+}
+
+void UserContext::SetGenerateFreshRecoveryId(bool generate_fresh_recovery_id) {
+  generate_fresh_recovery_id_ = generate_fresh_recovery_id;
 }
 
 void UserContext::SetLoginInputMethodIdUsed(

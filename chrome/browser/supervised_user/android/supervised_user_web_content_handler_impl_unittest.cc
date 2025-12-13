@@ -151,7 +151,7 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
   // Receive a request accepted by the parent with a total duration of 5
   // minutes. Check that duration metric is recorded.
   EXPECT_CALL(supervisedUserSettingsServiceMock,
-              RecordLocalWebsiteApproval(url.host()));
+              RecordLocalWebsiteApproval(url.GetHost()));
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time,
       AndroidLocalWebApprovalFlowOutcome::kApproved);

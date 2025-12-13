@@ -7,6 +7,7 @@
 #include "base/bits.h"
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
+#include "media/parsers/h264_parser.h"
 
 namespace media {
 
@@ -155,7 +156,7 @@ void H26xAnnexBBitstreamBuilder::BeginNALU(H264NALU::Type nalu_type,
   DCHECK(!in_nalu_);
   DCHECK_FINISHED();
 
-  DCHECK_LE(nalu_type, H264NALU::kEOStream);
+  DCHECK(nalu_type <= H264NALU::kEOStream || nalu_type == H264NALU::kPrefix);
   DCHECK_GE(nal_ref_idc, 0);
   DCHECK_LE(nal_ref_idc, 3);
 

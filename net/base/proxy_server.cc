@@ -98,7 +98,7 @@ ProxyServer ProxyServer::FromSchemeHostAndPort(Scheme scheme,
   url::StdStringCanonOutput canonicalized_output(&canonicalized_host);
   url::Component component_output;
 
-  if (!url::CanonicalizeHost(host.data(), url::Component(0, host.size()),
+  if (!url::CanonicalizeHost(host, url::Component(0, host.size()),
                              &canonicalized_output, &component_output)) {
     return ProxyServer();
   }

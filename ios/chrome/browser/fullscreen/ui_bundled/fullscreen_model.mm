@@ -349,7 +349,12 @@ FullscreenModel::ScrollAction FullscreenModel::ActionForScrollFromOffset(
   bool scrolling_past_top = y_content_offset_ <= -top_inset_;
   bool content_fits = content_height_ <= scroll_view_height_ - top_inset_;
   bool scrolling_past_bottom =
-      y_content_offset_ + scroll_view_height_ + top_inset_ >= content_height_;
+      y_content_offset_ + scroll_view_height_ + top_inset_ +
+          toolbars_size_.expandedTopToolbarHeight +
+          toolbars_size_.expandedBottomToolbarHeight -
+          (toolbars_size_.collapsedTopToolbarHeight -
+           toolbars_size_.collapsedBottomToolbarHeight) >=
+      content_height_;
   if (ignoring_current_scroll_ ||
       (scrolling_past_top && !scrolling_content_down) ||
       (content_fits && !scrolling_content_down) ||
@@ -384,7 +389,8 @@ void FullscreenModel::UpdateBaseOffset() {
 }
 
 void FullscreenModel::UpdateSpeed() {
-  if (!base::FeatureList::IsEnabled(kFullscreenTransition)) {
+  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault) ||
+      !base::FeatureList::IsEnabled(kFullscreenTransitionSpeed)) {
     return;
   }
   if (FullscreenTransitionSpeedParam() == FullscreenTransitionSpeed::kSlower) {
@@ -395,88 +401,18 @@ void FullscreenModel::UpdateSpeed() {
   }
 }
 
-CGFloat FullscreenModel::UpdateProgressHelper(CGFloat progress_shift,
-                                              CGFloat delta,
-                                              CGFloat delta_shift,
-                                              CGFloat toolbar_height_delta) {
-  CGFloat new_progress =
-      (progress_shift +
-       (delta + distance_offset_ - delta_shift) / toolbar_height_delta);
-  SetProgress(new_progress);
-  return new_progress;
-}
-
-CGFloat FullscreenModel::GetNewDeltaShift(CGFloat delta) const {
-  return delta + distance_offset_;
-}
-
 void FullscreenModel::UpdateProgress() {
   const CGFloat delta = base_offset_ - y_content_offset_;
   const CGFloat toolbar_height_delta = get_toolbar_height_delta();
-  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault) ||
-      !IsFullscreenTransitionSet()) {
+  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
     SetProgress(1.0 + delta / toolbar_height_delta);
     return;
-  }
-  if (!IsFullscreenTransitionOffsetSet()) {
-    SetProgress(1.0 + (delta * speed_) / toolbar_height_delta);
-    return;
-  }
-  // A distance_offset_ corresponds to a number of pixels before
-  // triggering of fullscreen transition when the user scrolls downward
-  // only. This implies that the same function that maps `delta` to
-  // `progress_` for scrolling downward and upward cannot be used. If the
-  // user changes the direction of scrolling (for any delta) during the
-  // fullscreen transition, a smooth animation must be ensured.
-  // Thus, a function is created to map (`delta`, delta_shift and
-  // progress_shift) to `progress_`. For that the system will keep track of
-  // `scrolling_delay_progress_shift_down_to_up_` and
-  // `scrolling_delay_delta_shift_down_to_up_` (resp.
-  // `scrolling_delay_progress_shift_up_to_down_` and
-  // `scrolling_delay_delta_shift_up_to_down_`) to continue the animation
-  // when the user scrolls upward after scrolling downward (resp.
-  // scrolling downward after scrolling upward) during the fullscreen
-  // transition.
-
-  // Sets a `distance_offset_` equal to the height of the toolbar. It is not
-  // set at the constructor level because the toolbar is not initialized and
-  // thus `get_toolbar_height_delta()` does not return the expected value.
-  distance_offset_ = toolbar_height_delta;
-  if (GetLastScrollDirection() == FullscreenModelScrollDirection::kDown) {
-    if (delta < -distance_offset_) {
-      if (progress_ == 1.0) {
-        scrolling_delay_progress_shift_up_to_down_ = 1.0;
-        scrolling_delay_delta_shift_up_to_down_ = 0.0;
-        SetProgress(1.0 + (delta + distance_offset_) / toolbar_height_delta);
-      } else if (progress_ != 0.0) {
-        scrolling_delay_progress_shift_down_to_up_ = UpdateProgressHelper(
-            scrolling_delay_progress_shift_up_to_down_, delta,
-            scrolling_delay_delta_shift_up_to_down_, toolbar_height_delta);
-        scrolling_delay_delta_shift_down_to_up_ = GetNewDeltaShift(delta);
-      }
+  } else {
+    if (IsFullscreenTransitionSpeedSet()) {
+      SetProgress(1.0 + (delta * speed_) / toolbar_height_delta);
+      return;
     }
-    if (progress_ != 1.0 && scrolling_delay_delta_shift_up_to_down_ != 0.0) {
-      scrolling_delay_progress_shift_down_to_up_ = UpdateProgressHelper(
-          scrolling_delay_progress_shift_up_to_down_, delta,
-          scrolling_delay_delta_shift_up_to_down_, toolbar_height_delta);
-      scrolling_delay_delta_shift_up_to_down_ = GetNewDeltaShift(delta);
-    }
-    return;
-  }
-
-  // `distance_offset_` is only relevant to delay the fullscreen transition on
-  // initial downward scroll.
-  if (progress_ != 1.0 &&
-      GetLastScrollDirection() == FullscreenModelScrollDirection::kUp) {
-    if (progress_ == 0.0) {
-      scrolling_delay_progress_shift_down_to_up_ = 0.0;
-      scrolling_delay_delta_shift_down_to_up_ =
-          -toolbar_height_delta + distance_offset_;
-    }
-    scrolling_delay_progress_shift_up_to_down_ = UpdateProgressHelper(
-        scrolling_delay_progress_shift_down_to_up_, delta,
-        scrolling_delay_delta_shift_up_to_down_, toolbar_height_delta);
-    scrolling_delay_delta_shift_up_to_down_ = GetNewDeltaShift(delta);
+    SetProgress(1.0 + delta / toolbar_height_delta);
   }
 }
 

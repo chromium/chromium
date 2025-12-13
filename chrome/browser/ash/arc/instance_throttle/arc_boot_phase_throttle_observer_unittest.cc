@@ -13,9 +13,14 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
@@ -38,20 +43,36 @@ namespace {
 class ArcBootPhaseThrottleObserverTest : public testing::Test {
  public:
   ArcBootPhaseThrottleObserverTest()
-      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
-    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-    arc_session_manager_ =
-        CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
-            base::BindRepeating(FakeArcSession::Create)));
-    testing_profile_ = std::make_unique<TestingProfile>();
+      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
 
-    // Setup and login profile
+  ArcBootPhaseThrottleObserverTest(const ArcBootPhaseThrottleObserverTest&) =
+      delete;
+  ArcBootPhaseThrottleObserverTest& operator=(
+      const ArcBootPhaseThrottleObserverTest&) = delete;
+
+  void SetUp() override {
     SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
+
+    ASSERT_TRUE(testing_profile_manager_.SetUp());
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::DlcserviceClient::InitializeFake();
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
+    arc_session_manager_ = CreateTestArcSessionManager(
+        std::make_unique<ArcSessionRunner>(
+            base::BindRepeating(FakeArcSession::Create)),
+        arc_dlc_installer_.get());
+
+    // Setup and login profile
     const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        testing_profile_->GetProfileUserName(), GaiaId()));
+        TestingProfile::kDefaultProfileUserName, GaiaId()));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
+
+    ash::ScopedAccountIdAnnotator annotator(
+        testing_profile_manager_.profile_manager(), account_id);
+    testing_profile_ = testing_profile_manager_.CreateTestingProfile(
+        TestingProfile::kDefaultProfileUserName);
 
     // By default, ARC is not started for opt-in.
     arc_session_manager()->set_skipped_terms_of_service_negotiation_for_testing(
@@ -69,15 +90,15 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
     intent_helper_instance_ = std::make_unique<FakeIntentHelperInstance>();
   }
 
-  ArcBootPhaseThrottleObserverTest(const ArcBootPhaseThrottleObserverTest&) =
-      delete;
-  ArcBootPhaseThrottleObserverTest& operator=(
-      const ArcBootPhaseThrottleObserverTest&) = delete;
-
   void TearDown() override {
     observer()->StopObserving();
-    testing_profile_.reset();
+
+    testing_profile_ = nullptr;
+    testing_profile_manager_.DeleteAllTestingProfiles();
+
     arc_session_manager_.reset();
+    arc_dlc_installer_.reset();
+    ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
   }
 
@@ -122,12 +143,15 @@ class ArcBootPhaseThrottleObserverTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  TestingProfileManager testing_profile_manager_{
+      TestingBrowserProcess::GetGlobal()};
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   ArcServiceManager arc_service_manager_;
+  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   ArcBootPhaseThrottleObserver observer_;
-  std::unique_ptr<TestingProfile> testing_profile_;
+  raw_ptr<TestingProfile> testing_profile_ = nullptr;
 
   std::unique_ptr<FakeAppHost> app_host_;
   std::unique_ptr<FakeAppInstance> app_instance_;

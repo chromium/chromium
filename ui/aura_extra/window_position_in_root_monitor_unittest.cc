@@ -18,8 +18,8 @@ using WindowPositionInRootMonitorTest = aura::test::AuraTestBase;
 
 TEST_F(WindowPositionInRootMonitorTest, Basic) {
   // Changing the position while not in a root should not notify the callback.
-  std::unique_ptr<aura::Window> w1(
-      aura::test::CreateTestWindowWithId(1, nullptr));
+  std::unique_ptr<aura::Window> w1 =
+      aura::test::CreateTestWindow({.bounds = {100, 100}, .window_id = 1});
   w1->set_owned_by_parent(false);
   bool monitor_notified = false;
   WindowPositionInRootMonitor monitor(
@@ -31,8 +31,8 @@ TEST_F(WindowPositionInRootMonitorTest, Basic) {
 
   // Adding an ancestor that is not part of the root should not notify the
   // callback.
-  std::unique_ptr<aura::Window> w2(
-      aura::test::CreateTestWindowWithId(2, nullptr));
+  std::unique_ptr<aura::Window> w2 =
+      aura::test::CreateTestWindow({.bounds = {100, 100}, .window_id = 2});
   w2->set_owned_by_parent(false);
   w2->AddChild(w1.get());
   EXPECT_FALSE(monitor_notified);

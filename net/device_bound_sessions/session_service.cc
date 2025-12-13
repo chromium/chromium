@@ -34,8 +34,12 @@ SessionService::DeferralParams& SessionService::DeferralParams::operator=(
 std::unique_ptr<SessionService> SessionService::Create(
     const URLRequestContext* request_context) {
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-  unexportable_keys::UnexportableKeyService* service =
-      UnexportableKeyServiceFactory::GetInstance()->GetShared();
+  unexportable_keys::UnexportableKeyService* service;
+  if (request_context->unexportable_key_service()) {
+    service = request_context->unexportable_key_service();
+  } else {
+    service = UnexportableKeyServiceFactory::GetInstance()->GetShared();
+  }
   if (!service) {
     return nullptr;
   }
@@ -49,6 +53,41 @@ std::unique_ptr<SessionService> SessionService::Create(
 #else
   return nullptr;
 #endif
+}
+
+void SessionService::HandleResponseHeaders(
+    DbscRequest& request,
+    HttpResponseHeaders* headers,
+    const FirstPartySetMetadata& first_party_set_metadata) {
+  const auto& request_url = request.url();
+
+  // If response header Sec-Session-Registration is present and configured
+  // appropriately, trigger a registration request per header value to attempt
+  // to create a new session.
+  if (request.allows_device_bound_session_registration() ||
+      !features::kDeviceBoundSessionsRequireOriginTrialTokens.Get()) {
+    std::vector<device_bound_sessions::RegistrationFetcherParam> params =
+        device_bound_sessions::RegistrationFetcherParam::CreateIfValid(
+            request_url, headers);
+    for (auto& param : params) {
+      RegisterBoundSession(request.device_bound_session_access_callback(),
+                           std::move(param), request.isolation_info(),
+                           request.net_log(), request.initiator());
+    }
+  }
+
+  // If response header Sec-Session-Challenge is present and configured
+  // appropriately, for each header value, store the challenge in advance for
+  // the next relevant refresh request that gets triggered. This is to help
+  // avoid a round-trip for when the next refresh request is required.
+  std::vector<device_bound_sessions::SessionChallengeParam> challenge_params =
+      device_bound_sessions::SessionChallengeParam::CreateIfValid(request_url,
+                                                                  headers);
+  for (auto& param : challenge_params) {
+    SetChallengeForBoundSession(request.device_bound_session_access_callback(),
+                                request, first_party_set_metadata,
+                                std::move(param));
+  }
 }
 
 }  // namespace net::device_bound_sessions

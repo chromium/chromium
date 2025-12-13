@@ -8,6 +8,8 @@
 #include <wayland-server-core.h>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/test_alpha_blending.h"
 
@@ -28,11 +30,13 @@ void GetBlending(struct wl_client* client,
                            "Alpha Compositing exists");
     return;
   }
-
   wl_resource* blending_resource =
       CreateResourceWithImpl<::testing::NiceMock<TestAlphaBlending>>(
           client, &zcr_blending_v1_interface, wl_resource_get_version(resource),
-          &kTestAlphaBlendingImpl, id, surface);
+          &kTestAlphaBlendingImpl, id,
+          base::BindOnce(&MockSurface::set_blending, mock_surface->GetWeakPtr(),
+                         nullptr),
+          surface);
   DCHECK(blending_resource);
   mock_surface->set_blending(
       GetUserDataAs<TestAlphaBlending>(blending_resource));

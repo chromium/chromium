@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/media_router/common/providers/cast/channel/cast_transport.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -42,7 +38,6 @@
 using testing::_;
 using testing::DoAll;
 using testing::InSequence;
-using testing::Invoke;
 using testing::NotNull;
 using testing::Return;
 using testing::WithArg;
@@ -121,7 +116,8 @@ ACTION_TEMPLATE(ReadBufferToString,
 ACTION_TEMPLATE(FillBufferFromString,
                 HAS_1_TEMPLATE_PARAMS(int, buf_idx),
                 AND_1_VALUE_PARAMS(str)) {
-  memcpy(testing::get<buf_idx>(args)->data(), str.data(), str.size());
+  UNSAFE_TODO(
+      memcpy(testing::get<buf_idx>(args)->data(), str.data(), str.size()));
 }
 
 // GMock action that enqueues a write completion callback in a queue.

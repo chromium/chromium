@@ -9,9 +9,14 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
+class GURL;
+@class FaviconAttributes;
 @class TableViewTextHeaderFooterItem;
 
 @protocol TableViewFaviconDataSource;
+
+// Callback for applying the favicon configuration to the data items.
+using ConfigureFaviconCompletionBlock = void (^)(FaviconAttributes*);
 
 // This class presents a list of fallback item in a table view.
 @interface FallbackViewController : LegacyChromeTableViewController
@@ -41,6 +46,14 @@
 // Presents given plus address action items in the `plus address actions`
 // section.
 - (void)presentPlusAddressActionItems:(NSArray<TableViewItem*>*)actions;
+
+// Retrieves the favicon from the FaviconLoader and sets it as the data item's
+// image. Used for password and plus address data items.
+- (void)loadFaviconForCellIdentifier:(NSString*)cellIdentifier
+                      itemIdentifier:(NSString*)itemIdentifier
+                          faviconURL:(const GURL&)faviconURL
+                          completion:
+                              (ConfigureFaviconCompletionBlock)completion;
 
 @end
 

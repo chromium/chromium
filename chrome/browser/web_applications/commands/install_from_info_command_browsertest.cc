@@ -44,11 +44,11 @@ class InstallFromInfoCommandTest : public WebAppBrowserTestBase {
                                              const SortedSizesPx& sizes_px) {
     std::map<SquareSizePx, SkBitmap> result;
     base::RunLoop run_loop;
-    provider().icon_manager().ReadIcons(
-        app_id, purpose, sizes_px,
+    provider().icon_manager().ReadTrustedIconsWithFallbackToManifestIcons(
+        app_id, sizes_px, purpose,
         base::BindLambdaForTesting(
-            [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
-              result = std::move(icon_bitmaps);
+            [&](IconMetadataFromDisk icon_metadata_from_disk) {
+              result = std::move(icon_metadata_from_disk.icons_map);
               run_loop.Quit();
             }));
     run_loop.Run();

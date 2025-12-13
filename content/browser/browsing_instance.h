@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <map>
 #include <optional>
 
 #include "base/check_op.h"
@@ -18,7 +19,6 @@
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
 #include "content/common/content_navigation_policy.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "url/origin.h"
@@ -26,6 +26,7 @@
 class GURL;
 
 namespace content {
+class BrowserContext;
 class SiteInfo;
 class SiteInstanceGroup;
 class SiteInstanceImpl;
@@ -117,7 +118,9 @@ class CONTENT_EXPORT BrowsingInstance final
   ~BrowsingInstance();
 
   // Get the browser context to which this BrowsingInstance belongs.
-  BrowserContext* GetBrowserContext() const;
+  BrowserContext* browser_context() const {
+    return isolation_context_.browser_context();
+  }
 
   // Get the IsolationContext associated with this BrowsingInstance.  This can
   // be used to track this BrowsingInstance in other areas of the code, along

@@ -5,7 +5,6 @@
 #include "components/sync_device_info/fake_device_info_tracker.h"
 
 #include <algorithm>
-#include <map>
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
@@ -54,13 +53,13 @@ void FakeDeviceInfoTracker::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-std::map<DeviceInfo::FormFactor, int>
+absl::flat_hash_map<DeviceInfo::FormFactor, int>
 FakeDeviceInfoTracker::CountActiveDevicesByType() const {
   if (device_count_per_type_override_) {
     return *device_count_per_type_override_;
   }
 
-  std::map<DeviceInfo::FormFactor, int> count_by_type;
+  absl::flat_hash_map<DeviceInfo::FormFactor, int> count_by_type;
   for (const syncer::DeviceInfo* device : devices_) {
     count_by_type[device->form_factor()]++;
   }
@@ -114,7 +113,7 @@ void FakeDeviceInfoTracker::Replace(const DeviceInfo* old_device,
 }
 
 void FakeDeviceInfoTracker::OverrideActiveDeviceCount(
-    const std::map<DeviceInfo::FormFactor, int>& counts) {
+    const absl::flat_hash_map<DeviceInfo::FormFactor, int>& counts) {
   device_count_per_type_override_ = counts;
   for (auto& observer : observers_) {
     observer.OnDeviceInfoChange();

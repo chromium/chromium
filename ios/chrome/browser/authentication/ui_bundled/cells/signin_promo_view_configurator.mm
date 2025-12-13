@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/image/image_names.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
@@ -181,11 +181,11 @@ using l10n_util::GetNSStringF;
 // Sets non-profile image to a given `signinPromoView`.
 - (void)assignNonProfileImageToSigninPromoView:
     (SigninPromoView*)signinPromoView {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* logo = [UIImage imageNamed:kChromeSigninPromoLogoImage];
 #else
   UIImage* logo = [UIImage imageNamed:kChromiumSigninPromoLogoImage];
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   DCHECK(logo);
   [signinPromoView setNonProfileImage:logo];
 }

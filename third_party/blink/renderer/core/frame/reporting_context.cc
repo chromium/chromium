@@ -195,11 +195,28 @@ void ReportingContext::SendToReportingAPI(Report* report,
     return;
   }
 
+  KURL url = KURL(report->url());
+  // CSP Hash and IntegrityPolicy reports are not a LocationReportBody.
+  if (type == ReportType::kCSPHash) {
+    const CSPHashReportBody* body =
+        static_cast<CSPHashReportBody*>(report->body());
+    GetReportingService()->QueueCSPHashReport(
+        url, endpoint, body->subresourceURL(), body->hash(), body->type(),
+        body->destination());
+    return;
+  } else if (type == ReportType::kIntegrityViolation) {
+    const IntegrityViolationReportBody* body =
+        static_cast<IntegrityViolationReportBody*>(report->body());
+    GetReportingService()->QueueIntegrityViolationReport(
+        url, endpoint, body->documentURL(), body->blockedURL(),
+        body->destination(), body->reportOnly());
+    return;
+  }
+
   const LocationReportBody* location_body =
       static_cast<LocationReportBody*>(report->body());
   int line_number = location_body->lineNumber().value_or(0);
   int column_number = location_body->columnNumber().value_or(0);
-  KURL url = KURL(report->url());
 
   if (type == ReportType::kCSPViolation) {
     // Send the CSP violation report.
@@ -212,12 +229,6 @@ void ReportingContext::SendToReportingAPI(Report* report,
         body->originalPolicy() ? body->originalPolicy() : "",
         body->sourceFile(), body->sample(), body->disposition().AsString(),
         body->statusCode(), line_number, column_number);
-  } else if (type == ReportType::kCSPHash) {
-    const CSPHashReportBody* body =
-        static_cast<CSPHashReportBody*>(report->body());
-    GetReportingService()->QueueCSPHashReport(
-        url, endpoint, body->subresourceURL(), body->hash(), body->type(),
-        body->destination());
   } else if (type == ReportType::kDeprecation) {
     // Send the deprecation report.
     const DeprecationReportBody* body =
@@ -226,12 +237,6 @@ void ReportingContext::SendToReportingAPI(Report* report,
         url, body->id(), body->AnticipatedRemoval(),
         body->message().IsNull() ? g_empty_string : body->message(),
         body->sourceFile(), line_number, column_number);
-  } else if (type == ReportType::kIntegrityViolation) {
-    const IntegrityViolationReportBody* body =
-        static_cast<IntegrityViolationReportBody*>(report->body());
-    GetReportingService()->QueueIntegrityViolationReport(
-        url, endpoint, body->documentURL(), body->blockedURL(),
-        body->destination(), body->reportOnly());
   } else if (type == ReportType::kPermissionsPolicyViolation) {
     // Send the permissions policy violation report.
     const PermissionsPolicyViolationReportBody* body =

@@ -21,10 +21,10 @@
 #import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#import "components/autofill/core/browser/strike_databases/strike_database.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/browsing_data/core/cookie_or_cache_deletion_choice.h"
+#import "components/desktop_to_mobile_promos/features.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/language/core/browser/url_language_histogram.h"
@@ -36,13 +36,14 @@
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/strike_database/strike_database.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_remover_helper.h"
-#import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
 #import "ios/chrome/browser/browsing_data/model/system_snapshots_cleaner.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
+#import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_data_remover.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover.h"
 #import "ios/chrome/browser/external_files/model/external_file_remover_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
@@ -75,6 +76,7 @@
 #import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
 #import "ios/net/http_cache_helper.h"
+#import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/common/web_view_creation_util.h"
 #import "ios/web/public/browsing_data/browsing_data_removing_util.h"
 #import "ios/web/public/thread/web_task_traits.h"
@@ -460,6 +462,11 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     HttpsUpgradeService* https_upgrade_service =
         HttpsUpgradeServiceFactory::GetForProfile(profile_);
     https_upgrade_service->ClearAllowlist(delete_begin, delete_end);
+
+    // Clear cross-platform promos data.
+    if (MobilePromoOnDesktopEnabled()) {
+      CrossPlatformPromosDataRemover(profile_).Remove();
+    }
   }
 
   auto io_thread_task_runner = web::GetIOThreadTaskRunner({});
@@ -608,7 +615,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
                                                              delete_end);
 
       // Clear out the Autofill StrikeDatabase in its entirety.
-      autofill::StrikeDatabase* strike_database =
+      strike_database::StrikeDatabase* strike_database =
           autofill::StrikeDatabaseFactory::GetForProfile(profile_);
       if (strike_database) {
         strike_database->ClearAllStrikes();
@@ -758,8 +765,11 @@ void BrowsingDataRemoverImpl::RemoveDataFromWKWebsiteDataStore(
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_VISITED_LINKS)) {
     types |= web::ClearBrowsingDataMask::kRemoveVisitedLinks;
   }
+  if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_SERVICE_WORKERS)) {
+    types |= web::ClearBrowsingDataMask::kRemoveServiceWorkers;
+  }
 
-  web::ClearBrowsingData(profile_, types, delete_begin,
+  web::ClearBrowsingData(GetAnyKeyWindow(), profile_, types, delete_begin,
                          CreatePendingTaskCompletionClosure());
 }
 

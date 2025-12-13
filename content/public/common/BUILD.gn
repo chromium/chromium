@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//content/browser/devtools/features.gni")
 import("//content/public/common/features.gni")
@@ -21,6 +20,7 @@ if (is_android) {
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
+    "USE_EXTERNAL_POPUP_MENU=$use_external_popup_menu",
     "ENABLE_DEVTOOLS_FRONTEND=$enable_devtools_frontend",
     "ENABLE_PLUGINS=$enable_plugins",
     "ENABLE_SCREEN_CAPTURE=$enable_screen_capture",
@@ -45,7 +45,7 @@ component("result_codes") {
     "result_codes.cc",
   ]
 
-  deps = [ "//base:base" ]
+  deps = [ "//base" ]
 
   configs += [ "//content:content_implementation" ]
 }
@@ -75,7 +75,7 @@ if (is_linux || is_chromeos) {
     ]
 
     deps = [
-      "//base:base",
+      "//base",
       "//content/public/common/zygote:buildflags",
     ]
   }
@@ -273,7 +273,6 @@ source_set("common_sources") {
     "//ui/accessibility",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/gfx/geometry",
-    "//ui/surface",
     "//url/ipc:url_ipc",
   ]
   deps = [
@@ -344,29 +343,10 @@ source_set("common_sources") {
     "//content/common:mojo_bindings",
   ]
 
-  if (enable_plugins) {
-    sources += [
-      "content_plugin_info.cc",
-      "content_plugin_info.h",
-    ]
-    public_deps += [ "//content/public/common:buildflags" ]
-  }
-
   if (use_clang_profiling_inside_sandbox) {
     sources += [ "profiling_utils.h" ]
   }
 }
-
-_common_param_traits_headers = [ "common_param_traits_macros.h" ]
-_common_param_traits_deps = [
-  "//ipc",
-  "//services/network/public/cpp:cpp_base",
-  "//services/network/public/mojom",
-  "//third_party/blink/public:blink_headers",
-  "//ui/accessibility:ax_enums_mojo",
-  "//ui/base",
-  "//ui/gfx/ipc",
-]
 
 mojom("interfaces") {
   # We don't want Blink variants of these bindings to be generated.
@@ -398,7 +378,7 @@ mojom("interfaces") {
   }
 
   deps = [
-    "//mojo/public/mojom/base:base",
+    "//mojo/public/mojom/base",
     "//services/network/public/mojom",
     "//skia/public/mojom",
     "//url/mojom:url_mojom_gurl",
@@ -420,17 +400,6 @@ mojom("interfaces") {
     {
       types = [
         {
-          mojom = "content.mojom.DropData"
-          cpp = "::content::DropData"
-        },
-      ]
-      traits_headers = [ "drop_data.h" ]
-      traits_private_headers = _common_param_traits_headers
-      traits_deps = _common_param_traits_deps
-    },
-    {
-      types = [
-        {
           mojom = "content.mojom.WebPluginInfo"
           cpp = "::content::WebPluginInfo"
         },
@@ -444,6 +413,33 @@ mojom("interfaces") {
       traits_deps = [ "//ipc" ]
     },
   ]
+
+  if (is_mac) {
+    _common_param_traits_headers = [ "common_param_traits_macros.h" ]
+    _common_param_traits_deps = [
+      "//ipc",
+      "//services/network/public/cpp:cpp_base",
+      "//services/network/public/mojom",
+      "//third_party/blink/public:blink_headers",
+      "//ui/accessibility:ax_enums_mojo",
+      "//ui/base",
+      "//ui/gfx/ipc",
+    ]
+
+    cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "content.mojom.DropData"
+            cpp = "::content::DropData"
+          },
+        ]
+        traits_headers = [ "drop_data.h" ]
+        traits_private_headers = _common_param_traits_headers
+        traits_deps = _common_param_traits_deps
+      },
+    ]
+  }
 }
 
 mojom("renderer_type") {

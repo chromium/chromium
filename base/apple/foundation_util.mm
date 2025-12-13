@@ -463,11 +463,11 @@ span<uint8_t> CFMutableDataToSpan(CFMutableDataRef data) {
 
 }  // namespace base::apple
 
-std::ostream& operator<<(std::ostream& o, const CFStringRef string) {
-  return o << base::SysCFStringRefToUTF8(string);
-}
-
 std::ostream& operator<<(std::ostream& o, const CFErrorRef err) {
+  if (!err) {
+    return o << "(null CFErrorRef)";
+  }
+
   base::apple::ScopedCFTypeRef<CFStringRef> desc(CFErrorCopyDescription(err));
   base::apple::ScopedCFTypeRef<CFDictionaryRef> user_info(
       CFErrorCopyUserInfo(err));
@@ -484,6 +484,13 @@ std::ostream& operator<<(std::ostream& o, const CFErrorRef err) {
   return o;
 }
 
+std::ostream& operator<<(std::ostream& o, const CFStringRef string) {
+  if (!string) {
+    return o << "(null CFStringRef)";
+  }
+  return o << base::SysCFStringRefToUTF8(string);
+}
+
 std::ostream& operator<<(std::ostream& o, CFRange range) {
   return o << NSStringFromRange(
              NSMakeRange(static_cast<NSUInteger>(range.location),
@@ -491,15 +498,14 @@ std::ostream& operator<<(std::ostream& o, CFRange range) {
 }
 
 std::ostream& operator<<(std::ostream& o, id obj) {
-  return obj ? o << [obj description].UTF8String : o << "(nil)";
+  if (!obj) {
+    return o << "(nil)";
+  }
+  return o << base::SysNSStringToUTF8([obj description]);
 }
 
 std::ostream& operator<<(std::ostream& o, NSRange range) {
   return o << NSStringFromRange(range);
-}
-
-std::ostream& operator<<(std::ostream& o, SEL selector) {
-  return o << NSStringFromSelector(selector);
 }
 
 #if !BUILDFLAG(IS_IOS)

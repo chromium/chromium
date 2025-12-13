@@ -19,7 +19,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/profiles/android/jni_headers/ProfileManagerUtils_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {
@@ -64,3 +64,5 @@ static void JNI_ProfileManagerUtils_RemoveSessionCookiesForAllProfiles(
       g_browser_process->profile_manager()->GetLoadedProfiles(),
       RemoveSessionCookiesForProfile);
 }
+
+DEFINE_JNI(ProfileManagerUtils)

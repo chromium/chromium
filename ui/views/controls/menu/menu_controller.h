@@ -566,6 +566,10 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   // If possible, closes the submenu.
   void CloseSubmenu();
 
+  // Show a context menu for the currently hot-tracked view if available.
+  // Triggered by keyboard events, e.g., APPS key, Shift+F10.
+  void ShowContextMenu();
+
   // Returns details about which menu items match the mnemonic |key|.
   // |match_function| is used to determine which menus match.
   SelectByCharDetails FindChildForMnemonic(

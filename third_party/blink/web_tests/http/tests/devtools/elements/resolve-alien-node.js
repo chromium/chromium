@@ -9,8 +9,10 @@ import {TestRunner} from 'test_runner';
       `Tests that resolveNode from alien document does not crash. https://bugs.webkit.org/show_bug.cgi?id=71806.\n`);
   await TestRunner.showPanel('elements');
 
-  var result = await TestRunner.RuntimeAgent.evaluate(
-      'var doc = document.implementation.createHTMLDocument(\'\'); doc.lastChild.innerHTML = \'<span></span>\'; doc.lastChild');
+  var {result} = await TestRunner.RuntimeAgent.invoke_evaluate({
+    expression:
+        'var doc = document.implementation.createHTMLDocument(\'\'); doc.lastChild.innerHTML = \'<span></span>\'; doc.lastChild'
+  });
 
   var spanWrapper = TestRunner.runtimeModel.createRemoteObject(result);
   var node = await TestRunner.domModel.pushObjectAsNodeToFrontend(spanWrapper);

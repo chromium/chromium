@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
 
 #include <string>
 #include <string_view>
 
+#include "base/compiler_specific.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/persistent_cache/backend_storage.h"
+#include "components/persistent_cache/backend_type.h"
+#include "components/persistent_cache/pending_backend.h"
+#include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
+#include "gpu/command_buffer/service/gpu_persistent_cache.h"
 #include "gpu/command_buffer/service/mocks.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -55,7 +57,7 @@ TEST_F(DawnCachingInterfaceTest, StoreThenLoadSameInterface) {
                                                         nullptr, 0));
   EXPECT_EQ(kDataSize, dawn_caching_interface->LoadData(kKey.data(), kKeySize,
                                                         buffer, kDataSize));
-  EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize)));
 }
 
 TEST_F(DawnCachingInterfaceTest, StoreThenLoadSameHandle) {
@@ -68,7 +70,7 @@ TEST_F(DawnCachingInterfaceTest, StoreThenLoadSameHandle) {
             load_interface->LoadData(kKey.data(), kKeySize, nullptr, 0));
   EXPECT_EQ(kDataSize,
             load_interface->LoadData(kKey.data(), kKeySize, buffer, kDataSize));
-  EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize)));
 }
 
 TEST_F(DawnCachingInterfaceTest, StoreDestroyThenLoadSameHandle) {
@@ -82,7 +84,7 @@ TEST_F(DawnCachingInterfaceTest, StoreDestroyThenLoadSameHandle) {
             load_interface->LoadData(kKey.data(), kKeySize, nullptr, 0));
   EXPECT_EQ(kDataSize,
             load_interface->LoadData(kKey.data(), kKeySize, buffer, kDataSize));
-  EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(buffer, kData.data(), kDataSize)));
 }
 
 // If the handle is released before a new cache is created, the new cache should
@@ -108,7 +110,7 @@ TEST_F(DawnCachingInterfaceTest, IncognitoCachesDoNotShare) {
 TEST_F(DawnCachingInterfaceTest, UnableToCreateBackend) {
   // This factory mimics what happens when we are unable to create a backend.
   DawnCachingInterfaceFactory factory(base::BindRepeating(
-      []() -> scoped_refptr<detail::DawnCachingBackend> { return nullptr; }));
+      []() -> scoped_refptr<MemoryCache> { return nullptr; }));
 
   // Without an actual backend, all loads and stores should do nothing.
   {
@@ -152,9 +154,8 @@ TEST_F(DawnCachingInterfaceTest, TestMaxSizeEviction) {
   static constexpr size_t kDataSize = kData1.size();
   static constexpr size_t kCacheSize = 2u * kKeySize + 2u * kDataSize - 1u;
 
-  DawnCachingInterfaceFactory factory(base::BindRepeating([]() {
-    return base::MakeRefCounted<detail::DawnCachingBackend>(kCacheSize);
-  }));
+  DawnCachingInterfaceFactory factory(base::BindRepeating(
+      []() { return base::MakeRefCounted<MemoryCache>(kCacheSize); }));
 
   auto interface = factory.CreateInstance();
   interface->StoreData(kKey1.data(), kKeySize, kData1.data(), kDataSize);
@@ -181,9 +182,8 @@ TEST_F(DawnCachingInterfaceTest, TestLruEviction) {
   static constexpr size_t kDataSize = kData1.size();
   static constexpr size_t kCacheSize = 3u * kKeySize + 3u * kDataSize - 1u;
 
-  DawnCachingInterfaceFactory factory(base::BindRepeating([]() {
-    return base::MakeRefCounted<detail::DawnCachingBackend>(kCacheSize);
-  }));
+  DawnCachingInterfaceFactory factory(base::BindRepeating(
+      []() { return base::MakeRefCounted<MemoryCache>(kCacheSize); }));
 
   // Even though Key1 was stored first, because we loaded it once, Key2 should
   // be the one to be evicted when Key3 is added.
@@ -207,9 +207,8 @@ TEST_F(DawnCachingInterfaceTest, TestVeryLargeEntrySize) {
   static constexpr size_t kLargeSize = kLarge.size();
   static constexpr size_t kCacheSize = kLargeSize - 1u;
 
-  DawnCachingInterfaceFactory factory(base::BindRepeating([]() {
-    return base::MakeRefCounted<detail::DawnCachingBackend>(kCacheSize);
-  }));
+  DawnCachingInterfaceFactory factory(base::BindRepeating(
+      []() { return base::MakeRefCounted<MemoryCache>(kCacheSize); }));
   auto interface = factory.CreateInstance();
 
   {
@@ -241,9 +240,8 @@ TEST_F(DawnCachingInterfaceTest, TestMemoryPressureCritical) {
   static constexpr size_t kDataSize = kData1.size();
   static constexpr size_t kCacheSize = 2u * kKeySize + 2u * kDataSize - 1u;
 
-  DawnCachingInterfaceFactory factory(base::BindRepeating([]() {
-    return base::MakeRefCounted<detail::DawnCachingBackend>(kCacheSize);
-  }));
+  DawnCachingInterfaceFactory factory(base::BindRepeating(
+      []() { return base::MakeRefCounted<MemoryCache>(kCacheSize); }));
 
   // Pass handles here so that the backends_ are populated.
   auto interfaces = {factory.CreateInstance(kDawnGraphiteHandle),
@@ -252,8 +250,7 @@ TEST_F(DawnCachingInterfaceTest, TestMemoryPressureCritical) {
     interface->StoreData(kKey1.data(), kKeySize, kData1.data(), kDataSize);
     EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
 
-    factory.PurgeMemory(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    factory.PurgeMemory(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
     EXPECT_EQ(0u, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
   }
 }
@@ -268,9 +265,8 @@ TEST_F(DawnCachingInterfaceTest, TestAggressiveCacheAndMemoryPressure) {
   static constexpr size_t kDataSize = kData1.size();
   static constexpr size_t kCacheSize = 2u * kKeySize + 2u * kDataSize - 1u;
 
-  DawnCachingInterfaceFactory factory(base::BindRepeating([]() {
-    return base::MakeRefCounted<detail::DawnCachingBackend>(kCacheSize);
-  }));
+  DawnCachingInterfaceFactory factory(base::BindRepeating(
+      []() { return base::MakeRefCounted<MemoryCache>(kCacheSize); }));
 
   // Pass handles here so that the backends_ are populated.
   auto interfaces = {factory.CreateInstance(kDawnGraphiteHandle),
@@ -280,13 +276,11 @@ TEST_F(DawnCachingInterfaceTest, TestAggressiveCacheAndMemoryPressure) {
     EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
 
     // Moderate memory pressure is ignored
-    factory.PurgeMemory(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+    factory.PurgeMemory(base::MEMORY_PRESSURE_LEVEL_MODERATE);
     EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
 
     // But not critical, except on Android
-    factory.PurgeMemory(
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    factory.PurgeMemory(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 #if BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
 #else

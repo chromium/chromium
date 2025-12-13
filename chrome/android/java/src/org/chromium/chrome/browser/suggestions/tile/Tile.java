@@ -94,10 +94,10 @@ public class Tile implements OfflinableSuggestion {
     }
 
     /**
-     * @return The source of this tile. Used for metrics tracking. Valid values are listed in
-     * {@code TileSource}.
+     * @return The source of this tile. Used for metrics tracking. Valid values are listed in {@code
+     *     TileSource}.
      */
-    public @TileSource int getSource() {
+    public @TileSource.EnumType int getSource() {
         return mSiteData.source;
     }
 

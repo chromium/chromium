@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 #include "services/tracing/public/cpp/perfetto/traced_value_proto_writer.h"
 
 #include <memory>
 #include <stack>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/hash/hash.h"
 #include "base/json/string_escape.h"
 #include "base/trace_event/trace_event.h"
@@ -198,8 +195,9 @@ class ProtoWriter final : public TracedValue::Writer {
     uint32_t full_size = Finalize();
 
     for (auto& slice : buffer_.slices()) {
-      appender->AddBuffer(slice.start(),
-                          slice.start() + slice.size() - slice.unused_bytes());
+      appender->AddBuffer(
+          slice.start(),
+          UNSAFE_TODO(slice.start() + slice.size() - slice.unused_bytes()));
     }
 
     size_t appended_size =

@@ -16,11 +16,11 @@ static_library("backend") {
 
   deps = [
     "//ash/webui/print_preview_cros/mojom",
-    "//components/cloud_devices/common:common",
-    "//printing:printing",
+    "//components/cloud_devices/common",
+    "//printing",
     "//printing:printing_base",
     "//printing/backend",
-    "//printing/mojom:mojom",
-    "//ui/gfx/geometry:geometry",
+    "//printing/mojom",
+    "//ui/gfx/geometry",
   ]
 }

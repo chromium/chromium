@@ -96,10 +96,10 @@ class FakePromoCard : public PasswordPromoCardBase {
 
 std::unique_ptr<web_app::WebApp> CreateWebApp() {
   GURL url(chrome::kChromeUIPasswordManagerURL);
-  webapps::AppId app_id = web_app::GenerateAppId(/*manifest_id=*/"", url);
-  auto web_app = std::make_unique<web_app::WebApp>(app_id);
-  web_app->SetStartUrl(url);
-  web_app->SetScope(url.DeprecatedGetOriginAsURL());
+  auto web_app = std::make_unique<web_app::WebApp>(
+      /*manifest_id=*/web_app::GenerateManifestIdFromStartUrlOnly(url),
+      /*start_url=*/url,
+      /*scope=*/url.GetWithoutFilename());
   web_app->SetUserDisplayMode(web_app::mojom::UserDisplayMode::kStandalone);
   return web_app;
 }

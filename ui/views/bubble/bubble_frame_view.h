@@ -22,7 +22,7 @@
 #include "ui/views/input_event_activation_protector.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/style/typography.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
 namespace gfx {
 class RoundedCornersF;
@@ -58,8 +58,8 @@ class ImageView;
 // and the minimize buttons will be positioned at the end of the
 // title row. Otherwise, they will be positioned closer to the frame
 // edge.
-class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
-  METADATA_HEADER(BubbleFrameView, NonClientFrameView)
+class VIEWS_EXPORT BubbleFrameView : public FrameView {
+  METADATA_HEADER(BubbleFrameView, FrameView)
 
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMinimizeButtonElementId);
@@ -85,7 +85,7 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   static std::unique_ptr<Button> CreateMinimizeButton(
       Button::PressedCallback callback);
 
-  // NonClientFrameView:
+  // FrameView:
   gfx::Rect GetBoundsForClientView() const override;
   gfx::Rect GetWindowBoundsForClientBounds(
       const gfx::Rect& client_bounds) const override;
@@ -405,7 +405,7 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   // Set by bubble clients to compose additional non-client hit test rules for
   // their host bubble. HTNOWHERE should be returned to tell the caller to do
   // further processing to determine where in the non-client area the tested
-  // point is (if present at all). See NonClientFrameView::NonClientHitTest()
+  // point is (if present at all). See FrameView::NonClientHitTest()
   // for details.
   HitTestCallback non_client_hit_test_cb_;
 

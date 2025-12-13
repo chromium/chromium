@@ -86,3 +86,5 @@ base::WeakPtr<AutofillErrorDialogView> CreateAndShowAutofillErrorDialog(
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillErrorDialogBridge)

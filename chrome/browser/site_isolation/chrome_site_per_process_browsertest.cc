@@ -415,9 +415,11 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
       GetTestPdfViewerStreamManager()->GetStreamContainer(primary_main_frame));
 
   // Now detach the frame and observe that the stream manager is destroyed.
+  content::RenderFrameDeletedObserver deleted_observer(subframe_main_host);
   EXPECT_TRUE(
       ExecJs(primary_main_frame,
              "document.body.removeChild(document.querySelector('iframe'));"));
+  deleted_observer.WaitUntilDeleted();
 
   EXPECT_FALSE(GetPdfViewerStreamManager());
 }
@@ -1506,7 +1508,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   display::test::DisplayManagerTestApi display_manager_test_api(
       shell_test_api.display_manager());
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   int64_t display2 = display_manager_test_api.GetSecondaryDisplay().id();
   screen->SetDisplayForNewWindows(display2);
   Browser* browser_on_secondary_display = CreateBrowser(browser()->profile());

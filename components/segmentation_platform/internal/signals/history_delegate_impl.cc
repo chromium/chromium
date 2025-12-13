@@ -45,7 +45,7 @@ void HistoryDelegateImpl::FindUrlInHistory(
     UrlSignalHandler::FindCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   history_service_->QueryURL(
-      url, /* want_visits=*/false,
+      url,
       base::BindOnce(&HistoryDelegateImpl::OnHistoryQueryResult,
                      weak_factory_.GetWeakPtr(),
                      UkmUrlTable::GenerateUrlId(url), std::move(callback)),

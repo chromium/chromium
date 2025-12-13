@@ -48,3 +48,5 @@ void MediaServerCrashListener::OnMediaServerCrashDetected(
 }
 
 }  // namespace media
+
+DEFINE_JNI(MediaServerCrashListener)

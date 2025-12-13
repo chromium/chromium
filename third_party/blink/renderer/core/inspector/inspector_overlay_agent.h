@@ -30,9 +30,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_OVERLAY_AGENT_H_
 
 #include <v8-inspector.h>
+
 #include <memory>
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -119,6 +119,7 @@ class CORE_EXPORT InspectTool : public GarbageCollected<InspectTool> {
   virtual void Trace(Visitor* visitor) const;
   virtual bool HideOnHideHighlight();
   virtual bool HideOnMouseMove();
+  virtual void OnAgentDisable() {}
 
  protected:
   Member<InspectorOverlayAgent> overlay_;

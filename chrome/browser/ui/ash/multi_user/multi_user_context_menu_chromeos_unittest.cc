@@ -6,12 +6,12 @@
 
 #include <memory>
 
-#include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/multi_user/multi_user_window_manager.h"
+#include "ash/shell.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ui/ash/multi_user/multi_profile_support.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_browser_adaptor.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -70,15 +70,18 @@ class MultiUserContextMenuChromeOSTest : public ChromeAshTestBase {
     ash::ProfileHelper::Get();  // Instantiate
     LogIn(kAccountId1);
 
-    window_.reset(CreateTestWindowInShellWithId(0));
+    window_.reset(CreateTestWindowInShell({.window_id = 0}));
     window_->Show();
 
-    MultiUserWindowManagerHelper::CreateInstanceForTest(kAccountId1);
+    multi_user_window_manager_browser_adaptor_ =
+        std::make_unique<MultiUserWindowManagerBrowserAdaptor>(
+            ash::Shell::Get()->multi_user_window_manager());
+    multi_user_window_manager_browser_adaptor_->AddUser(kAccountId1);
   }
 
   void TearDown() override {
     window_.reset();
-    MultiUserWindowManagerHelper::DeleteInstance();
+    multi_user_window_manager_browser_adaptor_.reset();
     ChromeAshTestBase::TearDown();
     for (Profile* profile :
          testing_profile_manager_->profile_manager()->GetLoadedProfiles()) {
@@ -107,6 +110,8 @@ class MultiUserContextMenuChromeOSTest : public ChromeAshTestBase {
  private:
   user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
+  std::unique_ptr<ash::MultiUserWindowManagerBrowserAdaptor>
+      multi_user_window_manager_browser_adaptor_;
 
   // A window which can be used for testing.
   std::unique_ptr<aura::Window> window_;
@@ -125,8 +130,8 @@ TEST_F(MultiUserContextMenuChromeOSTest, UnownedWindow) {
 TEST_F(MultiUserContextMenuChromeOSTest, OwnedWindow) {
   // Make the window owned and check that there is no menu (since only a single
   // user exists).
-  MultiUserWindowManagerHelper::GetWindowManager()->SetWindowOwner(window(),
-                                                                   kAccountId1);
+  ash::Shell::Get()->multi_user_window_manager()->SetWindowOwner(window(),
+                                                                 kAccountId1);
   EXPECT_EQ(nullptr, CreateMultiUserContextMenu(window()).get());
 
   // After adding another user a menu should get created.

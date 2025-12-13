@@ -13,8 +13,8 @@ namespace external_intents {
 
 static void JNI_InterceptNavigationDelegateImpl_AssociateWithWebContents(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jdelegate,
-    const base::android::JavaParamRef<jobject>& jweb_contents) {
+    const base::android::JavaRef<jobject>& jdelegate,
+    const base::android::JavaRef<jobject>& jweb_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
@@ -26,7 +26,7 @@ static void JNI_InterceptNavigationDelegateImpl_AssociateWithWebContents(
 
 static void JNI_InterceptNavigationDelegateImpl_ClearWebContentsAssociation(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents) {
+    const base::android::JavaRef<jobject>& jweb_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
@@ -39,8 +39,8 @@ static void JNI_InterceptNavigationDelegateImpl_ClearWebContentsAssociation(
 
 static void JNI_InterceptNavigationDelegateImpl_OnSubframeAsyncActionTaken(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents,
-    const base::android::JavaParamRef<jobject>& j_gurl) {
+    const base::android::JavaRef<jobject>& jweb_contents,
+    const base::android::JavaRef<jobject>& j_gurl) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   navigation_interception::InterceptNavigationDelegate* delegate =
@@ -50,3 +50,5 @@ static void JNI_InterceptNavigationDelegateImpl_OnSubframeAsyncActionTaken(
 }
 
 }  // namespace external_intents
+
+DEFINE_JNI(InterceptNavigationDelegateImpl)

@@ -15,7 +15,7 @@ namespace policy {
 // This policy is for Chrome OS ARM.
 class SANDBOX_POLICY_EXPORT CrosArmGpuProcessPolicy : public GpuProcessPolicy {
  public:
-  explicit CrosArmGpuProcessPolicy(bool allow_shmat);
+  CrosArmGpuProcessPolicy(MremapPolicy mremap_policy, bool allow_shmat);
 
   CrosArmGpuProcessPolicy(const CrosArmGpuProcessPolicy&) = delete;
   CrosArmGpuProcessPolicy& operator=(const CrosArmGpuProcessPolicy&) = delete;

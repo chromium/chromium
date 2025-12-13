@@ -12,16 +12,15 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/omnibox/browser/scheme_classifier_jni/OmniboxUrlEmphasizer_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 // static
-ScopedJavaLocalRef<jintArray>
+static ScopedJavaLocalRef<jintArray>
 JNI_OmniboxUrlEmphasizer_ParseForEmphasizeComponents(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jtext,
-    const base::android::JavaParamRef<jobject>&
-        jautocomplete_scheme_classifier) {
+    const JavaRef<jstring>& jtext,
+    const base::android::JavaRef<jobject>& jautocomplete_scheme_classifier) {
   AutocompleteSchemeClassifier* autocomplete_scheme_classifier =
       AutocompleteSchemeClassifierAndroid::FromJavaObj(
           jautocomplete_scheme_classifier);
@@ -36,3 +35,5 @@ JNI_OmniboxUrlEmphasizer_ParseForEmphasizeComponents(
   int emphasize_values[] = {scheme.begin, scheme.len, host.begin, host.len};
   return base::android::ToJavaIntArray(env, emphasize_values);
 }
+
+DEFINE_JNI(OmniboxUrlEmphasizer)

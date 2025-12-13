@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -17,7 +16,9 @@
 #include "base/trace_event/traced_value.h"
 #include "cc/metrics/frame_info.h"
 #include "cc/metrics/frame_sequence_tracker.h"
+#include "cc/metrics/histogram_macros.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace cc {
 
@@ -172,7 +173,7 @@ FrameSequenceMetrics::~FrameSequenceMetrics() {
   //
   // However we may not be merged before teardown, if so terminate the trace
   // now.
-  if (trace_data_.trace_id) {
+  if (trace_data_.trace_track) {
     trace_data_.Terminate(v3_, v4_, GetEffectiveThread());
   }
 }
@@ -268,13 +269,15 @@ bool FrameSequenceMetrics::HasDataLeftForReporting() const {
 }
 
 void FrameSequenceMetrics::AdoptTrace(FrameSequenceMetrics* adopt_from) {
-  DCHECK(!trace_data_.trace_id);
-  trace_data_.trace_id = adopt_from->trace_data_.trace_id;
+  DCHECK(!trace_data_.trace_track);
+  if (adopt_from->trace_data_.trace_track) {
+    trace_data_.trace_track.emplace(*adopt_from->trace_data_.trace_track);
+    adopt_from->trace_data_.trace_track = std::nullopt;
+  }
   trace_data_.last_presented_sequence_number =
       adopt_from->trace_data_.last_presented_sequence_number;
   trace_data_.last_timestamp = adopt_from->trace_data_.last_timestamp;
   trace_data_.frame_count = adopt_from->trace_data_.frame_count;
-  adopt_from->trace_data_.trace_id = 0u;
 }
 
 int FrameSequenceMetrics::ReportMetrics() {
@@ -388,29 +391,20 @@ int FrameSequenceMetrics::ReportMetrics() {
     const char* thread_name = GetThreadTypeName(thread_type);
 
     if (type() == FrameSequenceTrackerType::kCompositorRasterAnimation) {
-      STATIC_HISTOGRAM_POINTER_GROUP(
+      STATIC_HISTOGRAM_PERCENTAGE_POINTER_GROUP(
           GetThroughputV4HistogramName(type(), thread_name),
           GetIndexForMetric(thread_type, type_), kMaximumHistogramIndex,
-          Add(percent_dropped_v4),
-          base::LinearHistogram::FactoryGet(
-              GetThroughputV4HistogramName(type(), thread_name), 1, 100, 101,
-              base::HistogramBase::kUmaTargetedHistogramFlag));
+          percent_dropped_v4);
     } else if (type() == FrameSequenceTrackerType::kCompositorNativeAnimation) {
-      STATIC_HISTOGRAM_POINTER_GROUP(
+      STATIC_HISTOGRAM_PERCENTAGE_POINTER_GROUP(
           GetThroughputV4HistogramName(type(), thread_name),
           GetIndexForMetric(thread_type, type_), kMaximumHistogramIndex,
-          Add(percent_dropped),
-          base::LinearHistogram::FactoryGet(
-              GetThroughputV4HistogramName(type(), thread_name), 1, 100, 101,
-              base::HistogramBase::kUmaTargetedHistogramFlag));
+          percent_dropped);
     } else if (thread_type == FrameInfo::SmoothEffectDrivingThread::kRaster) {
-      STATIC_HISTOGRAM_POINTER_GROUP(
+      STATIC_HISTOGRAM_PERCENTAGE_POINTER_GROUP(
           GetThroughputV4HistogramName(type(), thread_name),
           GetIndexForMetric(thread_type, type_), kMaximumHistogramIndex,
-          Add(percent_dropped_v4),
-          base::LinearHistogram::FactoryGet(
-              GetThroughputV4HistogramName(type(), thread_name), 1, 100, 101,
-              base::HistogramBase::kUmaTargetedHistogramFlag));
+          percent_dropped_v4);
     } else {
       STATIC_HISTOGRAM_POINTER_GROUP(
           GetThroughputV3HistogramName(type(), thread_name),
@@ -428,13 +422,10 @@ int FrameSequenceMetrics::ReportMetrics() {
         base::LinearHistogram::FactoryGet(
             GetCheckerboardingV3HistogramName(type_), 1, 100, 101,
             base::HistogramBase::kUmaTargetedHistogramFlag));
-    STATIC_HISTOGRAM_POINTER_GROUP(
+    STATIC_HISTOGRAM_PERCENTAGE_POINTER_GROUP(
         GetCheckerboardingV4HistogramName(type_, thread_name),
         GetIndexForMetric(thread_type, type_), kMaximumHistogramIndex,
-        Add(percent_checkerboarded),
-        base::LinearHistogram::FactoryGet(
-            GetCheckerboardingV4HistogramName(type_, thread_name), 1, 100, 101,
-            base::HistogramBase::kUmaTargetedHistogramFlag));
+        percent_checkerboarded);
 
     if (scrolling_thread_ != SmoothEffectDrivingThread::kUnknown) {
       STATIC_HISTOGRAM_POINTER_GROUP(
@@ -480,7 +471,7 @@ void FrameSequenceMetrics::TraceData::Terminate(
     const V3& v3,
     const V4& v4,
     FrameInfo::SmoothEffectDrivingThread effective_thread) {
-  if (!enabled || !trace_id) {
+  if (!enabled || !trace_track) {
     return;
   }
   auto dict = std::make_unique<base::trace_event::TracedValue>();
@@ -520,10 +511,9 @@ void FrameSequenceMetrics::TraceData::Terminate(
       termination_time = base::TimeTicks::Now();
     }
   }
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
-      "cc,benchmark", "FrameSequenceTrackerV3", TRACE_ID_LOCAL(trace_id),
-      termination_time, "args", std::move(dict));
-  trace_id = 0u;
+  TRACE_EVENT_END("cc,benchmark", *trace_track, termination_time, "args",
+                  std::move(dict));
+  trace_track = std::nullopt;
 }
 
 void FrameSequenceMetrics::TraceData::Advance(base::TimeTicks start_timestamp,
@@ -535,7 +525,7 @@ void FrameSequenceMetrics::TraceData::Advance(base::TimeTicks start_timestamp,
                                               const char* histogram_name) {
   if (!enabled)
     return;
-  if (!trace_id) {
+  if (!trace_track) {
     // The underlying usage of TRACE_ID_LOCAL is mapping the raw uint64_t from
     // the point into either `trace_event_internal::TraceID::LocalId` or
     // `perfetto::internal::LegacyTraceId`. However the trace macros don't
@@ -544,9 +534,9 @@ void FrameSequenceMetrics::TraceData::Advance(base::TimeTicks start_timestamp,
     // nest other traces, as well as close the async trace at a later time. The
     // value can also be merged into future sequences. This avoids holding
     // dangling ptrs.
-    trace_id = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(this));
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-        "cc,benchmark", histogram_name, TRACE_ID_LOCAL(trace_id),
+    trace_track.emplace(perfetto::Track::FromPointer(this));
+    TRACE_EVENT_BEGIN(
+        "cc,benchmark", perfetto::StaticString(histogram_name), *trace_track,
         start_timestamp, "name",
         FrameSequenceTracker::GetFrameSequenceTrackerTypeName(metrics->type()));
   }
@@ -564,13 +554,11 @@ void FrameSequenceMetrics::TraceData::Advance(base::TimeTicks start_timestamp,
   // the same color, and that makes it difficult to tell the traces apart from
   // each other.
   static constexpr auto trace_names =
-      std::to_array<const char*>({"Frame", "Frame ", "Frame   "});
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      "cc,benchmark", trace_names[++this->frame_count % 3],
-      TRACE_ID_LOCAL(trace_id), start_timestamp);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
-      "cc,benchmark", trace_names[this->frame_count % 3],
-      TRACE_ID_LOCAL(trace_id), new_timestamp, "data", std::move(dict));
+      std::to_array<perfetto::StaticString>({"Frame", "Frame ", "Frame   "});
+  TRACE_EVENT_BEGIN("cc,benchmark", trace_names[++this->frame_count % 3],
+                    *trace_track, start_timestamp);
+  TRACE_EVENT_END("cc,benchmark", *trace_track, new_timestamp, "data",
+                  std::move(dict));
   this->last_presented_sequence_number = sequence_number;
   this->last_timestamp = new_timestamp;
 }
@@ -774,11 +762,12 @@ void FrameSequenceMetrics::TraceJankV3(uint64_t sequence_number,
   dict->SetString("tracker-type",
                   FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type_));
   dict->EndDictionary();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-      "cc,benchmark", "JankV3", TRACE_ID_LOCAL(this), last_termination_time,
-      "data", std::move(dict));
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      "cc,benchmark", "JankV3", TRACE_ID_LOCAL(this), termination_time);
+  TRACE_EVENT_BEGIN("cc,benchmark", "JankV3",
+                    perfetto::Track::FromPointer(this), last_termination_time,
+                    "data", std::move(dict));
+  TRACE_EVENT_END("cc,benchmark",
+                  /*"JankV3"*/ perfetto::Track::FromPointer(this),
+                  termination_time);
 }
 
 }  // namespace cc

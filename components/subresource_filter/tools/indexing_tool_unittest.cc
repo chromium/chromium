@@ -128,7 +128,8 @@ TEST_F(IndexingToolTest, VersionMetadata) {
   WriteVersionMetadata(version_path, "1.2.3", checksum);
   std::string version_json;
   EXPECT_TRUE(base::ReadFileToString(version_path, &version_json));
-  std::optional<base::Value> json = base::JSONReader::Read(version_json);
+  std::optional<base::Value> json = base::JSONReader::Read(
+      version_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   std::string* actual_content = json->GetDict().FindStringByDottedPath(
       "subresource_filter.ruleset_version.content");

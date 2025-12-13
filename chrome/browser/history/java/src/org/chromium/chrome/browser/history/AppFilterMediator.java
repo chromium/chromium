@@ -7,17 +7,15 @@ package org.chromium.chrome.browser.history;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.content.Context;
-
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.history.AppFilterCoordinator.AppInfo;
 import org.chromium.chrome.browser.history.AppFilterCoordinator.CloseCallback;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.List;
 
@@ -29,16 +27,12 @@ class AppFilterMediator {
 
     private @Nullable PropertyModel mSelectedModel;
 
-    AppFilterMediator(
-            Context context,
-            ModelList modelList,
-            List<AppInfo> appInfoList,
-            CloseCallback closeCallback) {
+    AppFilterMediator(ModelList modelList, List<AppInfo> appInfoList, CloseCallback closeCallback) {
         mModelList = modelList;
         mCloseCallback = closeCallback;
         for (AppInfo info : appInfoList) {
             PropertyModel item = generateListItem(info);
-            mModelList.add(new SimpleRecyclerViewAdapter.ListItem(0, item));
+            mModelList.add(new MVCListAdapter.ListItem(0, item));
         }
     }
 
@@ -60,13 +54,14 @@ class AppFilterMediator {
             mSelectedModel = null;
         }
         if (currentApp != null) {
+            assert currentApp.id != null : "App id should be non-null.";
             mSelectedModel = getModelForAppId(currentApp.id);
             assumeNonNull(mSelectedModel);
             mSelectedModel.set(AppFilterProperties.SELECTED, true);
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void handleClick(PropertyModel model) {
         PropertyModel prevModel = mSelectedModel;
 
@@ -86,7 +81,7 @@ class AppFilterMediator {
     }
 
     private @Nullable PropertyModel getModelForAppId(String appId) {
-        for (SimpleRecyclerViewAdapter.ListItem item : mModelList) {
+        for (MVCListAdapter.ListItem item : mModelList) {
             if (appId.equals(item.model.get(AppFilterProperties.ID))) {
                 return item.model;
             }
@@ -96,10 +91,6 @@ class AppFilterMediator {
 
     void clickItemForTesting(String appId) {
         handleClick(assertNonNull(getModelForAppId(appId)));
-    }
-
-    void setCurrentAppForTesting(String appId) {
-        mSelectedModel = getModelForAppId(appId);
     }
 
     @Nullable String getCurrentAppIdForTesting() {

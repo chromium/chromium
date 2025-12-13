@@ -13,7 +13,10 @@ Please see [the VRP FAQ page](vrp-faq.md).
 ### Why are security bugs hidden in the Chromium issue tracker?
 
 We must balance a commitment to openness with a commitment to avoiding
-unnecessary risk for users of widely-used open source libraries.
+unnecessary risk for users of widely-used open source libraries. All critical,
+high, and medium severity bugs are visible only to the security team and to the
+engineers directly involved in fixing them. Low-severity security bugs may be
+visible to all project contributors after an initial triage phase.
 
 <a name="TOC-Can-you-please-un-hide-old-security-bugs-"></a>
 ### Can you please un-hide old security bugs?
@@ -385,6 +388,19 @@ precautions to stay safe online. That doesn't mean bugs that require user error
 are always out of scope, but it does mean that spoofs which would not deceive
 a user being reasonable and prudent are out of scope.
 
+<a name="TOC-As-a-user_I-can-bypass-an-enterprise-policy-is-this-a-security-bug_"></a>
+### As a user, I can bypass an enterprise policy - is this a security bug?
+In general, no. Enterprise policies applying to running, enterprise-enrolled
+Chrome instances are not by default a security boundary. It may be a functional
+bug in the implementation of the enterprise policy, or it may be intended
+behavior, but either way actions by the local user are generally considered to
+be "local attacks" and outside our threat model.
+
+ChromeOS is an exception to this. On ChromeOS, Chrome integrates more deeply
+with the host operating system and is able to provide stronger guarantees about
+policies.  Therefore, an enterprise policy bypass by a local user of a ChromeOS
+device may still be a security bug.
+
 ## Areas outside Chrome's Threat Model
 
 <a name="TOC-Are-privacy-issues-considered-security-bugs-"></a>
@@ -734,6 +750,103 @@ external lists like the [HSTS preload list](https://hstspreload.org) or the
 If you believe Chrome's copies of these lists are notably out-of-date, we are
 happy to field bug reports but we do not consider this to be a vulnerability.
 
+## AI Features
+
+Chrome deeply integrates AI both in user-facing features like [Gemini Live
+in Chrome](https://gemini.google/overview/gemini-in-chrome) , “Help me write”
+and Devtools assistants and in internal models that help block unwanted
+notifications or improve page loading.
+
+Chrome does not treat misleading, misaligned or unsafe model output as a
+vulnerability. Please report such safety violations using in-product feedback
+mechanisms.
+
+<a name="TOC-AI-prompt-innappropriate-output"></a>
+### Entering a prompt into an AI feature’s input surface causes inappropriate output?
+
+Chrome AI features include guardrails to ensure that their output is safe and
+reasonable but these guidelines do not form a security boundary. Any prompt that
+causes these guidelines to be violated is not a security issue in Chrome. Use
+in-product mechanisms to thumbs up / thumbs down results, or click on
+‘send feedback’ to report other inappropriate content.
+
+<a name="TOC-AI-prompt-leaks-system-prompt"></a>
+### Entering a prompt into an AI feature’s input surface leaks the system prompt, or provides access to backend services?
+
+For AI features implemented using a Google backend it is possible that some
+prompted output could be a valid abuse report, but will not be considered to be
+bugs in Chrome. These should be reported via the [Google Abuse
+VRP](https://bughunters.google.com/about/rules/google-friends/5238081279623168/abuse-vulnerability-reward-program-rules)
+or [Google VRP](https://bughunters.google.com/) depending on the severity of the
+issue.
+
+<a name="TOC-AI-prompt-can-be-copy-pasted"></a>
+### Entering a prompt into an AI feature’s input surface causes information to leak, or actions to happen?
+
+Chrome AI features trust what people using Chrome supply in input fields, audio
+inputs, or other Chrome input surfaces. Tricking a user into entering a
+malicious prompt (e.g. by copy/pasting from a site) is not considered to be a
+security boundary as many people copy & paste text and urls as they use features
+in Chrome.
+
+<a name="TOC-AI-public-urls-are-not-leaks"></a>
+### Url paths, parameters or fragments can influence the output of Chrome AI features?
+
+AI features may use urls when generating their output so it is expected that
+page content will influence the output. Chrome AI features include mitigations
+and filters to prevent harmful actions that result from operating on page
+content. Controlling the AI output is, by itself, not a security issue, unless
+some further harm to a user can be demonstrated.
+
+<a name="TOC-AI-page-content-influences-model-output"></a>
+### Page content can influence the output of Chrome AI features?
+
+AI features may use page content (including images and subframes) when
+generating their output so it is expected that page content will influence the
+output. Chrome AI features include mitigations and filters to prevent harmful
+actions that result from operating on page content. Controlling the AI output
+is, by itself, not a security issue, unless some further harm to a user can be
+demonstrated.
+
+<a name="TOC-AI-invisible-page-content"></a>
+### Invisible page content can influence the output of Chrome AI features?
+
+AI features may use page content including invisible content when generating
+their output so it is expected that page content will influence the output.
+Chrome AI features may detect, scrub, or deprioritize invisible content, but
+failing to do so is not considered a security vulnerability as it is impossible
+to do so in all cases.
+
+<a name="TOC-AI-leaky-urls-can-be-reported"></a>
+### I have an example of page content that results in Chrome AI features creating links that leak information if followed?
+
+Chrome AI features take actions to limit what navigations are possible, and
+require user action before following links that could leak information to
+prevent scalable or targeted attacks. Web pages can already supply links or
+cause redirections and navigation and causing a user to follow these, via an AI
+feature, does not add a new attack surface.
+
+<a name="TOC-AI-page-content-harmful-actions"></a>
+### I have an example of page content that results in Chrome AI features performing harmful actions?
+
+Indirect prompt injections that result in unintended actions or leak information
+may be considered security issues and should be reported through the Chrome
+security tracker. Please create a recording from a fresh session that
+demonstrates the issue, and upload all files used as part of the demonstration.
+If a Gemini session is associated with your report, it will help us if you are
+able to share the session from your activity page, and the version of the model
+you are using.
+
+<a name="TOC-AI-xss-in-glic-window"></a>
+### I have an example of page content that results in XSS in the context of a Chrome AI feature?
+
+Output surfaces should sanitize inputs and transformed outputs. Please create a
+recording from a fresh session that demonstrates the issue, and upload all files
+used as part of the demonstration. If a Gemini session is associated with your
+report, it will help us if you are able to share the session from your activity
+page, and the version of the model you are using. Note that directly injecting
+code into a trusted surface via devtools does not demonstrate a vulnerability.
+
 ## AI Generated Vulnerability reports
 
 <a name="TOC-should-i-ask-an-ai-to-generate-a-vulnerability-report-for-chrome"></a>
@@ -1082,10 +1195,9 @@ Chrome generally tries to use the operating system's user storage mechanism
 wherever possible and stores them encrypted on disk, but it is platform
 specific:
 
-*    On Windows, Chrome uses the [Data Protection API
-     (DPAPI)](https://msdn.microsoft.com/en-us/library/ms995355.aspx) to bind
-     your passwords to your user account and store them on disk encrypted with
-     a key only accessible to processes running as the same logged on user.
+*    On Windows, Chrome uses [App-Bound encryption](https://source.chromium.org/chromium/chromium/src/+/main:components/os_crypt/async/)
+     to store them on disk encrypted with a key only accessible to the Chrome
+     process as well as admin processes.
 *    On macOS and iOS, Chrome previously stored credentials directly in the user's
      Keychain, but for technical reasons, it has switched to storing the
      credentials in "Login Data" in the Chrome users profile directory, but

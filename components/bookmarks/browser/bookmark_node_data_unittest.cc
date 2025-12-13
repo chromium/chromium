@@ -157,11 +157,11 @@ TEST_F(BookmarkNodeDataTest, MAYBE_URL) {
               nullptr);
 
   // Writing should also put the URL and title on the clipboard.
-  std::optional<ui::OSExchangeData::UrlInfo> url_info =
-      data2.GetURLAndTitle(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
-  ASSERT_TRUE(url_info.has_value());
-  EXPECT_EQ(url, url_info->url);
-  EXPECT_EQ(title, url_info->title);
+  std::vector<ui::ClipboardUrlInfo> url_infos =
+      data2.GetURLsAndTitles(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
+  ASSERT_FALSE(url_infos.empty());
+  EXPECT_EQ(url, url_infos[0].url);
+  EXPECT_EQ(title, url_infos[0].title);
 }
 
 // Tests writing a folder to the clipboard.

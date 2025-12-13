@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_FILE_MANAGER_FILE_MANAGER_BROWSERTEST_UTILS_H_
 
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
+#include "pdf/buildflags.h"
 
 // INSTANTIATE_TEST_SUITE_P expands to code that stringizes the arguments. Thus
 // macro parameters such as |prefix| and |test_class| won't be expanded by the
@@ -18,6 +19,14 @@
                            &file_manager::test::PostTestCaseName)
 
 #endif  // WRAPPED_INSTANTIATE_TEST_SUITE_P
+
+#ifndef WRAPPED_INSTANTIATE_TEST_SUITE_P_WITH_BOOL
+#define WRAPPED_INSTANTIATE_TEST_SUITE_P_WITH_BOOL(prefix, test_class, \
+                                                   generator)          \
+  INSTANTIATE_TEST_SUITE_P(prefix, test_class, generator,              \
+                           &file_manager::test::PostTestCaseNameWithBool)
+
+#endif  // WRAPPED_INSTANTIATE_TEST_SUITE_P_WITH_BOOL
 
 namespace file_manager {
 namespace test {
@@ -59,8 +68,6 @@ struct TestCase {
   TestCase& DontObserveFileTasks();
 
   TestCase& EnableSinglePartitionFormat();
-
-  TestCase& EnableMaterializedViews();
 
   // Show the startup browser. Some tests invoke the file picker dialog during
   // the test. Requesting a file picker from a background page is forbidden by
@@ -114,6 +121,10 @@ struct TestCase {
 
   TestCase& EnableSkyVault();
 
+#if BUILDFLAG(ENABLE_PDF)
+  TestCase& SetEnableOopifPdf(bool enable);
+#endif  // BUILDFLAG(ENABLE_PDF)
+
   std::string GetFullName() const;
 
   const char* const name;
@@ -124,6 +135,9 @@ std::ostream& operator<<(std::ostream& out, const TestCase& test_case);
 
 // Returns testcase full name.
 std::string PostTestCaseName(const ::testing::TestParamInfo<TestCase>& test);
+
+std::string PostTestCaseNameWithBool(
+    const ::testing::TestParamInfo<std::tuple<TestCase, bool>>& test);
 
 }  // namespace test
 }  // namespace file_manager

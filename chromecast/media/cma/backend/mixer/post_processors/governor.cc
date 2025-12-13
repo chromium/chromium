@@ -35,7 +35,8 @@ Governor::Governor(const std::string& config, int input_channels)
   status_.output_channels = input_channels;
   status_.rendering_delay_frames = 0;
   status_.ringing_time_frames = 0;
-  auto config_dict = base::JSONReader::ReadDict(config);
+  auto config_dict =
+      base::JSONReader::ReadDict(config, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   CHECK(config_dict) << "Governor config is not valid json: " << config;
   auto onset_volume = config_dict->FindDouble(kOnsetVolumeKey);
   CHECK(onset_volume);

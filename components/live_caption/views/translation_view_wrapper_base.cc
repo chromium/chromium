@@ -18,6 +18,7 @@
 #include "components/translate/core/browser/translate_ui_languages_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "media/base/media_switches.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -227,13 +228,6 @@ void TranslationViewWrapperBase::SetTextColor(
 }
 
 void TranslationViewWrapperBase::UpdateLanguageLabel() {
-  // We update the language text and set it whenever live translate OR
-  // multilingual live captions are enabled. We early out when both are
-  // disabled.
-  if (!caption_bubble_settings()->IsLiveTranslateFeatureEnabled() &&
-      !base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
-    return;
-  }
   UpdateLanguageLabelInternal();
 }
 

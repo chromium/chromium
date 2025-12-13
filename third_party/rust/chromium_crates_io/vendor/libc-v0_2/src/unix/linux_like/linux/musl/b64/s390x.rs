@@ -7,6 +7,7 @@ pub type wchar_t = i32;
 pub type greg_t = u64;
 pub type __u64 = u64;
 pub type __s64 = i64;
+pub type statfs64 = statfs;
 
 s! {
     pub struct ipc_perm {
@@ -25,8 +26,8 @@ s! {
         pub cgid: crate::gid_t,
         pub mode: crate::mode_t,
         pub __seq: c_int,
-        __pad1: c_long,
-        __pad2: c_long,
+        __pad1: Padding<c_long>,
+        __pad2: Padding<c_long>,
     }
 
     pub struct stat {
@@ -46,7 +47,7 @@ s! {
         pub st_ctime_nsec: c_long,
         pub st_blksize: crate::blksize_t,
         pub st_blocks: crate::blkcnt_t,
-        __unused: [c_long; 3],
+        __unused: Padding<[c_long; 3]>,
     }
 
     pub struct stat64 {
@@ -66,39 +67,76 @@ s! {
         pub st_ctime_nsec: c_long,
         pub st_blksize: crate::blksize_t,
         pub st_blocks: crate::blkcnt64_t,
-        __unused: [c_long; 3],
+        __unused: Padding<[c_long; 3]>,
+    }
+
+    pub struct statfs {
+        pub f_type: c_uint,
+        pub f_bsize: c_uint,
+        pub f_blocks: crate::fsblkcnt_t,
+        pub f_bfree: crate::fsblkcnt_t,
+        pub f_bavail: crate::fsblkcnt_t,
+        pub f_files: crate::fsfilcnt_t,
+        pub f_ffree: crate::fsfilcnt_t,
+        pub f_fsid: crate::fsid_t,
+        pub f_namelen: c_uint,
+        pub f_frsize: c_uint,
+        pub f_flags: c_uint,
+        pub f_spare: [c_uint; 4],
+    }
+
+    pub struct __psw_t {
+        pub mask: c_ulong,
+        pub addr: c_ulong,
+    }
+
+    pub struct fpregset_t {
+        pub fpc: c_uint,
+        pub fprs: [fpreg_t; 16],
+    }
+
+    pub struct mcontext_t {
+        pub psw: __psw_t,
+        pub gregs: [c_ulong; 16],
+        pub aregs: [c_uint; 16],
+        pub fpregs: fpregset_t,
+    }
+
+    pub struct ucontext_t {
+        pub uc_flags: c_ulong,
+        pub uc_link: *mut ucontext_t,
+        pub uc_stack: crate::stack_t,
+        pub uc_mcontext: mcontext_t,
+        pub uc_sigmask: crate::sigset_t,
     }
 }
 
 s_no_extra_traits! {
-    // FIXME(union): This is actually a union.
-    pub struct fpreg_t {
+    pub union fpreg_t {
         pub d: c_double,
-        // f: c_float,
+        pub f: c_float,
     }
 }
 
 cfg_if! {
     if #[cfg(feature = "extra_traits")] {
         impl PartialEq for fpreg_t {
-            fn eq(&self, other: &fpreg_t) -> bool {
-                self.d == other.d
+            fn eq(&self, _other: &fpreg_t) -> bool {
+                unimplemented!("traits")
             }
         }
 
         impl Eq for fpreg_t {}
 
         impl hash::Hash for fpreg_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                let d: u64 = self.d.to_bits();
-                d.hash(state);
+            fn hash<H: hash::Hasher>(&self, _state: &mut H) {
+                unimplemented!("traits")
             }
         }
     }
 }
 
 pub const VEOF: usize = 4;
-pub const RTLD_DEEPBIND: c_int = 0x8;
 
 pub const EUCLEAN: c_int = 117;
 pub const ENOTNAM: c_int = 118;
@@ -127,14 +165,10 @@ pub const SIGSTKSZ: size_t = 0x2000;
 pub const MINSIGSTKSZ: size_t = 2048;
 pub const SIG_SETMASK: c_int = 2;
 
-pub const SOCK_STREAM: c_int = 1;
-pub const SOCK_DGRAM: c_int = 2;
-
 pub const O_NOCTTY: c_int = 256;
 pub const O_SYNC: c_int = 1052672;
 pub const O_RSYNC: c_int = 1052672;
 pub const O_DSYNC: c_int = 4096;
-pub const O_FSYNC: c_int = 0x101000;
 pub const O_DIRECT: c_int = 0x4000;
 pub const O_DIRECTORY: c_int = 0x10000;
 pub const O_NOFOLLOW: c_int = 0x20000;
@@ -717,3 +751,4 @@ pub const SYS_futex_waitv: c_long = 449;
 pub const SYS_set_mempolicy_home_node: c_long = 450;
 pub const SYS_cachestat: c_long = 451;
 pub const SYS_fchmodat2: c_long = 452;
+pub const SYS_mseal: c_long = 462;

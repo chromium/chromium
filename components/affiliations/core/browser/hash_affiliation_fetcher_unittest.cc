@@ -108,7 +108,7 @@ class HashAffiliationFetcherTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_ =
@@ -146,9 +146,10 @@ TEST_F(HashAffiliationFetcherTest, BuildQueryURL) {
 
   GURL query_url = fetcher.BuildQueryURL();
 
-  EXPECT_EQ("https", query_url.scheme());
-  EXPECT_EQ("www.googleapis.com", query_url.host());
-  EXPECT_EQ("/affiliation/v1/affiliation:lookupByHashPrefix", query_url.path());
+  EXPECT_EQ("https", query_url.GetScheme());
+  EXPECT_EQ("www.googleapis.com", query_url.GetHost());
+  EXPECT_EQ("/affiliation/v1/affiliation:lookupByHashPrefix",
+            query_url.GetPath());
 }
 
 TEST_F(HashAffiliationFetcherTest, GetRequestedFacetURIs) {
@@ -334,10 +335,12 @@ TEST_F(HashAffiliationFetcherTest, MissingEquivalenceClassesAreCreated) {
   ASSERT_NO_FATAL_FAILURE(
       VerifyRequestPayload(ComputeHashes(requested_uris), request_info));
 
+  Facet expected_result(FacetURI::FromCanonicalSpec(kExampleWebFacet1URI));
+  expected_result.is_facet_synthesized = true;
+
   ASSERT_EQ(1u, result.affiliations.size());
   EXPECT_THAT(result.affiliations[0],
-              testing::UnorderedElementsAre(
-                  Facet{FacetURI::FromCanonicalSpec(kExampleWebFacet1URI)}));
+              testing::UnorderedElementsAre(expected_result));
 }
 
 TEST_F(HashAffiliationFetcherTest, DuplicateEquivalenceClassesAreIgnored) {

@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
@@ -57,8 +59,6 @@ class IndicatorDividerBackground : public views::Background {
      *   *          /
      *   * * * * * /
      */
-    SkPath path;
-
     const SkScalar height = view->height();
 
     // The arc is drawn between two chips and its width is equal to a distance
@@ -68,11 +68,15 @@ class IndicatorDividerBackground : public views::Background {
         GetLayoutConstant(LOCATION_BAR_CHIP_PADDING) + kExtraArcPadding;
     const SkScalar arc_x = view->width() - arc_width;
 
-    path.lineTo(arc_x, 0);
-    path.rArcTo(arc_radius_, arc_radius_, 0, SkPath::kSmall_ArcSize,
-                SkPathDirection::kCW, 0, height);
-    path.lineTo(0, height);
-    path.close();
+    const SkPath path =
+        SkPathBuilder()
+            .lineTo(arc_x, 0)
+            .rArcTo(SkVector(arc_radius_, arc_radius_), 0,
+                    SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCW,
+                    SkPoint(0, height))
+            .lineTo(0, height)
+            .close()
+            .detach();
 
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
@@ -190,9 +194,7 @@ gfx::Size PermissionDashboardView::CalculatePreferredSize(
 
 views::View::Views PermissionDashboardView::GetChildrenInZOrder() {
   View::Views paint_order = View::GetChildrenInZOrder();
-
-  std::reverse(paint_order.begin(), paint_order.end());
-
+  std::ranges::reverse(paint_order);
   return paint_order;
 }
 

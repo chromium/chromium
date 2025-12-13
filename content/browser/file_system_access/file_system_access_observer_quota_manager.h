@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_OBSERVER_QUOTA_MANAGER_H_
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/file_system_access/file_system_access_change_source.h"

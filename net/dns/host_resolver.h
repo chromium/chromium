@@ -124,35 +124,34 @@ class NET_EXPORT HostResolver {
 
     // Address record (A or AAAA) results of the request. Should only be called
     // after Start() signals completion, either by invoking the callback or by
-    // returning a result other than |ERR_IO_PENDING|. May return nullptr or
-    // empty for non-address requests.
+    // returning a result other than |ERR_IO_PENDING|. May empty for non-address
+    // requests.
     //
     // TODO(crbug.com/40203587): Remove and replace all usage with
     // GetEndpointResults().
-    virtual const AddressList* GetAddressResults() const = 0;
+    virtual const AddressList& GetAddressResults() const = 0;
 
     // Endpoint results for `A`, `AAAA`, `UNSPECIFIED`, or `HTTPS` requests.
     // Should only be called after Start() signals completion, either by
     // invoking the callback or by returning a result other than
-    // `ERR_IO_PENDING`. May return nullptr or empty for non-address/HTTPS
-    // requests.
-    virtual const std::vector<HostResolverEndpointResult>* GetEndpointResults()
+    // `ERR_IO_PENDING`. May return empty for non-address/HTTPS requests.
+    virtual base::span<const HostResolverEndpointResult> GetEndpointResults()
         const = 0;
 
     // Text record (TXT) results of the request. Should only be called after
     // Start() signals completion, either by invoking the callback or by
-    // returning a result other than |ERR_IO_PENDING|. May return nullptr or
-    // empty for non-TXT requests.
-    virtual const std::vector<std::string>* GetTextResults() const = 0;
+    // returning a result other than |ERR_IO_PENDING|. May return empty for
+    // non-TXT requests.
+    virtual base::span<const std::string> GetTextResults() const = 0;
 
     // Hostname record (SRV or PTR) results of the request. For SRV results,
     // hostnames are ordered according to their priorities and weights. See RFC
-    // 2782. May return nullptr or empty for non-SRV/PTR requests.
+    // 2782. May return empty for non-SRV/PTR requests.
     //
     // Should only be called after Start() signals completion, either by
     // invoking the callback or by returning a result other than
     // |ERR_IO_PENDING|.
-    virtual const std::vector<HostPortPair>* GetHostnameResults() const = 0;
+    virtual base::span<const HostPortPair> GetHostnameResults() const = 0;
 
     // Any DNS record aliases, such as CNAME aliases, found as a result of an
     // address query. Includes all known aliases, e.g. from A, AAAA, or HTTPS,
@@ -161,7 +160,7 @@ class NET_EXPORT HostResolver {
     // invoking the callback or by returning a result other than
     // `ERR_IO_PENDING`. Returns a list of aliases that has been fixed up and
     // canonicalized (as URL hostnames), and thus may differ from the results
-    // stored directly in the AddressList. May return nullptr or empty for
+    // stored directly in the AddressList. May return empty for
     // non-address/HTTPS requests.
     //
     // If `ResolveHostParameters::include_canonical_name` was true, alias
@@ -169,7 +168,7 @@ class NET_EXPORT HostResolver {
     // system resolver without URL hostname canonicalization (or an empty set or
     // `nullptr` in the unusual case that the system resolver did not give a
     // canonical name).
-    virtual const std::set<std::string>* GetDnsAliasResults() const = 0;
+    virtual const std::set<std::string>& GetDnsAliasResults() const = 0;
 
     // Error info for the request.
     //
@@ -227,7 +226,7 @@ class NET_EXPORT HostResolver {
     // delegate's OnServiceEndpointsUpdated(). Results are finalized when
     // Start() finished synchronously (returning other than ERR_IO_PENDING), or
     // delegate's OnServiceEndpointRequestFinished() is called.
-    virtual const std::vector<ServiceEndpoint>& GetEndpointResults() = 0;
+    virtual base::span<const ServiceEndpoint> GetEndpointResults() = 0;
 
     // Any DNS record aliases, such as CNAME aliases, found as a result of
     // addresses and HTTPS queries. These can be changed over time while
@@ -299,7 +298,6 @@ class NET_EXPORT HostResolver {
     static HttpsSvcbOptions FromDict(const base::Value::Dict& dict);
     static HttpsSvcbOptions FromFeatures();
 
-    bool enable = false;
     base::TimeDelta insecure_extra_time_max;
     int insecure_extra_time_percent = 0;
     base::TimeDelta insecure_extra_time_min;

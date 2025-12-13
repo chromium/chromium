@@ -14,6 +14,7 @@
 
 #include <memory>
 
+#include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/capture/video/linux/v4l2_capture_device_impl.h"
 #include "media/capture/video/video_capture_device.h"

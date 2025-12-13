@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -34,7 +33,6 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_view_host.h"
 #include "ipc/constants.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_states.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -243,7 +241,10 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   // Called when the RenderFrameHostImpls/RenderFrameProxyHosts that own this
   // RenderViewHost enter the BackForwardCache.
-  void EnterBackForwardCache();
+  // `new_navigation_request_url` is a URL for the next new page's
+  // navigation_request_url, not the bfcached page's URL.
+  void EnterBackForwardCache(
+      const base::optional_ref<const GURL> new_navigation_request_url);
 
   // Indicates whether or not |this| has received an acknowledgement from
   // renderer that it has enered BackForwardCache.

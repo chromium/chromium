@@ -4,9 +4,11 @@
 
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_parser.h"
 
+#include <optional>
 #include <string>
 
 #include "base/json/json_reader.h"
+#include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_uma_util.h"
@@ -14,13 +16,72 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace webapps {
+
 namespace {
 
 constexpr char kExtendedScope[] = "scope";
 
-}  // anonymous namespace
+// Determines whether |url| is within scope of |extended_origin|'s path.
+bool UrlIsWithinScope(const GURL& url, const url::Origin& extended_origin) {
+  return extended_origin.IsSameOriginWith(url) &&
+         url.GetPath().starts_with(extended_origin.GetURL().GetPath());
+}
 
-namespace webapps {
+std::optional<GURL> ParseExtendedScope(
+    const base::Value::Dict& extended_scope_info,
+    const url::Origin& associate_origin) {
+  const std::string* extended_scope_ptr =
+      extended_scope_info.FindString(kExtendedScope);
+  if (!extended_scope_ptr || extended_scope_ptr->empty()) {
+    // No explicit `scope` defaults to root ie the scope of associate's origin.
+    return associate_origin.GetURL();
+  }
+  GURL associate_extended_url =
+      associate_origin.GetURL().Resolve(*extended_scope_ptr);
+  if (!associate_extended_url.is_valid()) {
+    return std::nullopt;
+  }
+  if (!UrlIsWithinScope(associate_extended_url, associate_origin)) {
+    return std::nullopt;
+  }
+  return associate_extended_url;
+}
+
+ParsedAssociations ParseAssociatedWebApps(const base::Value::Dict& root_dict,
+                                          const url::Origin& origin) {
+  ParsedAssociations result;
+  if (root_dict.empty()) {
+    result.warnings.push_back(kWebAppOriginAssociationParserFormatError);
+    return result;
+  }
+  for (const auto iter : root_dict) {
+    GURL web_app_manifest_id(iter.first);
+    if (!web_app_manifest_id.is_valid()) {
+      result.warnings.push_back(kInvalidManifestId);
+      continue;
+    }
+
+    if (!iter.second.is_dict()) {
+      result.warnings.push_back(kInvalidValueType);
+      continue;
+    }
+
+    std::optional<GURL> extended_scope =
+        ParseExtendedScope(iter.second.GetDict(), origin);
+    if (!extended_scope) {
+      result.warnings.push_back(kInvalidScopeUrl);
+      continue;
+    }
+
+    result.apps.push_back({.web_app_identity = std::move(web_app_manifest_id),
+                           .scope = std::move(extended_scope).value()});
+  }
+
+  return result;
+}
+
+}  // namespace
 
 const char kWebAppOriginAssociationParserFormatError[] =
     R"("Invalid association format. Associations must start with a valid
@@ -39,121 +100,39 @@ const char kInvalidValueType[] =
 const char kInvalidScopeUrl[] =
     "Associated app ignored. Required property 'scope' is not a valid URL.";
 
-WebAppOriginAssociationParser::WebAppOriginAssociationParser() = default;
+ParsedAssociations::ParsedAssociations() = default;
+ParsedAssociations::~ParsedAssociations() = default;
 
-WebAppOriginAssociationParser::~WebAppOriginAssociationParser() = default;
+ParsedAssociations::ParsedAssociations(const ParsedAssociations&) = default;
+ParsedAssociations& ParsedAssociations::operator=(const ParsedAssociations&) =
+    default;
 
-mojom::WebAppOriginAssociationPtr WebAppOriginAssociationParser::Parse(
+ParsedAssociations::ParsedAssociations(ParsedAssociations&&) = default;
+ParsedAssociations& ParsedAssociations::operator=(ParsedAssociations&&) =
+    default;
+
+base::expected<ParsedAssociations, std::string> ParseWebAppOriginAssociations(
     const std::string& data,
     const url::Origin& origin) {
-  using Result = webapps::WebAppOriginAssociationMetrics::ParseResult;
-  auto result =
-      [&]() -> base::expected<mojom::WebAppOriginAssociationPtr, Result> {
-    ASSIGN_OR_RETURN(auto parsed_data,
-                     base::JSONReader::ReadAndReturnValueWithError(data),
-                     [&](base::JSONReader::Error error) {
-                       AddErrorInfo(error.message, error.line, error.column);
-                       return Result::kParseFailedInvalidJson;
-                     });
-    if (!parsed_data.is_dict()) {
-      AddErrorInfo("No valid JSON object found.");
-      return base::unexpected(Result::kParseFailedNotADictionary);
-    }
+  using ParseResult = webapps::WebAppOriginAssociationMetrics::ParseResult;
 
-    auto association = mojom::WebAppOriginAssociation::New();
-    association->apps = ParseAssociatedWebApps(parsed_data.GetDict(), origin);
-    return association;
-  }();
+  auto json_result = base::JSONReader::ReadAndReturnValueWithError(
+      data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!json_result.has_value()) {
+    webapps::WebAppOriginAssociationMetrics::RecordParseResult(
+        ParseResult::kParseFailedInvalidJson);
+    return base::unexpected(json_result.error().ToString());
+  }
+  const auto* dict = json_result->GetIfDict();
+  if (!dict) {
+    webapps::WebAppOriginAssociationMetrics::RecordParseResult(
+        ParseResult::kParseFailedNotADictionary);
+    return base::unexpected("No valid JSON object found.");
+  }
   webapps::WebAppOriginAssociationMetrics::RecordParseResult(
-      result.error_or(Result::kParseSucceeded));
-  failed_ |= !result.has_value();
-  return std::move(result).value_or(nullptr);
-}
+      ParseResult::kParseSucceeded);
 
-bool WebAppOriginAssociationParser::failed() const {
-  return failed_;
-}
-
-std::vector<mojom::WebAppOriginAssociationErrorPtr>
-WebAppOriginAssociationParser::GetErrors() {
-  auto result = std::move(errors_);
-  errors_.clear();
-  return result;
-}
-
-std::vector<mojom::AssociatedWebAppPtr>
-WebAppOriginAssociationParser::ParseAssociatedWebApps(
-    const base::Value::Dict& root_dict,
-    const url::Origin& origin) {
-  std::vector<mojom::AssociatedWebAppPtr> result;
-  if (root_dict.empty()) {
-    AddErrorInfo(kWebAppOriginAssociationParserFormatError);
-    return result;
-  }
-  for (const auto iter : root_dict) {
-    GURL web_app_manifest_id(iter.first);
-    if (!web_app_manifest_id.is_valid()) {
-      AddErrorInfo(kInvalidManifestId);
-      continue;
-    }
-
-    if (!iter.second.is_dict()) {
-      AddErrorInfo(kInvalidValueType);
-      continue;
-    }
-
-    std::optional<GURL> extended_scope =
-        ParseExtendedScope(iter.second.GetDict(), origin);
-    if (!extended_scope) {
-      continue;
-    }
-
-    mojom::AssociatedWebAppPtr app = mojom::AssociatedWebApp::New();
-    app->web_app_identity = std::move(web_app_manifest_id);
-    app->scope = std::move(extended_scope.value());
-    result.push_back(std::move(app));
-  }
-
-  return result;
-}
-
-std::optional<GURL> WebAppOriginAssociationParser::ParseExtendedScope(
-    const base::Value::Dict& extended_scope_info,
-    const url::Origin& associate_origin) {
-  const std::string* extended_scope_ptr =
-      extended_scope_info.FindString(kExtendedScope);
-  if (!extended_scope_ptr || extended_scope_ptr->empty()) {
-    // No explicit `scope` defaults to root ie the scope of associate's origin.
-    return associate_origin.GetURL();
-  }
-  GURL associate_extended_url =
-      associate_origin.GetURL().Resolve(*extended_scope_ptr);
-  if (!associate_extended_url.is_valid()) {
-    AddErrorInfo(kInvalidScopeUrl);
-    return std::nullopt;
-  }
-  if (!UrlIsWithinScope(associate_extended_url, associate_origin)) {
-    AddErrorInfo(kInvalidScopeUrl);
-    return std::nullopt;
-  }
-  return associate_extended_url;
-}
-
-void WebAppOriginAssociationParser::AddErrorInfo(const std::string& error_msg,
-                                                 int error_line,
-                                                 int error_column) {
-  mojom::WebAppOriginAssociationErrorPtr error =
-      mojom::WebAppOriginAssociationError::New(error_msg, error_line,
-                                               error_column);
-  errors_.push_back(std::move(error));
-}
-
-// Determines whether |url| is within scope of |extended_origin|'s path.
-bool WebAppOriginAssociationParser::UrlIsWithinScope(
-    const GURL& url,
-    const url::Origin& extended_origin) {
-  return extended_origin.IsSameOriginWith(url) &&
-         url.path().starts_with(extended_origin.GetURL().path());
+  return ParseAssociatedWebApps(*dict, origin);
 }
 
 }  // namespace webapps

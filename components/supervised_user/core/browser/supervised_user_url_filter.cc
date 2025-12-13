@@ -162,30 +162,6 @@ SupervisedUserURLFilter::ResultCallback WrapCallbackWithMetrics(
                         context, transition_type);
 }
 
-// Tells if url filtering settings are configured by family link. See
-// supervised_user::SupervisedUserPrefStore to understand how the prefs are
-// organized.
-bool IsConfiguredByFamilyLink(const PrefService& pref_service) {
-  return IsSubjectToParentalControls(pref_service) &&
-         pref_service.FindPreference(prefs::kSupervisedUserSafeSites)
-             ->IsManagedByCustodian() &&
-         pref_service
-             .FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
-             ->IsManagedByCustodian();
-}
-
-// Tells if url filtering settings are configured locally. See
-// supervised_user::SupervisedUserService::SetUserSettingsActive to understand
-// how the prefs are organized.
-bool IsConfiguredLocally(const PrefService& pref_service) {
-  return IsSubjectToUserControls(pref_service) &&
-         pref_service.FindPreference(prefs::kSupervisedUserSafeSites)
-             ->HasUserSetting() &&
-         pref_service
-             .FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
-             ->HasUserSetting();
-}
-
 bool AreUrlFilterPrefsDefault(const PrefService& pref_service) {
   return pref_service.FindPreference(prefs::kSupervisedUserManualHosts)
              ->IsDefaultValue() &&
@@ -199,13 +175,9 @@ bool AreUrlFilterPrefsDefault(const PrefService& pref_service) {
 }
 
 // Returns true when the pref configuration suggests that filtering settings are
-// unset. Validates whether the preferences configuration is consistent state:
-// filter is either disabled, configured by family link or locally.
+// unset.
 bool FilterIsDisabled(const PrefService& pref_service) {
-  bool is_disabled = AreUrlFilterPrefsDefault(pref_service);
-  CHECK_NE(is_disabled, IsConfiguredByFamilyLink(pref_service) ||
-                            IsConfiguredLocally(pref_service));
-  return is_disabled;
+  return AreUrlFilterPrefsDefault(pref_service);
 }
 
 FilteringBehavior GetDefaultFilteringBehavior(const PrefService& pref_service) {
@@ -245,9 +217,9 @@ bool IsAlwaysAllowedHost(const GURL& effective_url) {
   constexpr auto kAllowedHosts = base::MakeFixedFlatSet<std::string_view>(
       {"accounts.google.com", "families.google.com", "familylink.google.com",
        "myaccount.google.com", "ogs.google.com", "policies.google.com",
-       "support.google.com"});
+       "support.google.com", "myactivity.google.com"});
 
-  return base::Contains(kAllowedHosts, effective_url.host_piece());
+  return base::Contains(kAllowedHosts, effective_url.host());
 }
 
 bool IsAlwaysAllowedUrlPrefix(const GURL& effective_url) {
@@ -257,9 +229,12 @@ bool IsAlwaysAllowedUrlPrefix(const GURL& effective_url) {
   // startup) for performance if the set of allowed URL prefixes grows large.
   static const char* const kAllowedUrlPrefixes[] = {
       // The Chrome sync dashboard is linked to from within Chrome settings.
-      // Allow both the initial URL that is loaded, and the URL to which it
-      // redirects.
-      kSyncGoogleDashboardURL, "https://chrome.google.com/sync"};
+      // Allow both the initial URL that is loaded, and the URL to which it may
+      // redirect. The legacy counterparts are also allowed in case there were
+      // tabs open.
+      "https://www.google.com/settings/chrome/sync",
+      "https://www.google.com/settings/chrome/data",
+      "https://chrome.google.com/sync", "https://chrome.google.com/data"};
 
   for (const char* allowedUrlPrefix : kAllowedUrlPrefixes) {
     if (base::StartsWith(effective_url.spec(), allowedUrlPrefix)) {
@@ -279,8 +254,8 @@ bool IsPlayStoreTermsOfServiceUrl(const GURL& effective_url) {
   // like https://play.google.com/intl/pt-BR_pt/about/play-terms/ or
   // https://play.google/intl/pt-BR_pt/play-terms/.
   return effective_url.SchemeIs(url::kHttpsScheme) &&
-         (effective_url.host_piece() == kPlayStoreHost &&
-          (effective_url.path_piece().find(kPlayTermsPath) !=
+         (effective_url.host() == kPlayStoreHost &&
+          (effective_url.path().find(kPlayTermsPath) !=
            std::string_view::npos));
 }
 
@@ -555,7 +530,7 @@ FilteringBehavior SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(
         url_it->second ? FilteringBehavior::kAllow : FilteringBehavior::kBlock;
   }
 
-  const std::string host = url.host();
+  const std::string host = url.GetHost();
   if (result != FilteringBehavior::kBlock) {
     // If there is a match with Block behaviour, set the result to Block.
     auto it = std::ranges::find_if(

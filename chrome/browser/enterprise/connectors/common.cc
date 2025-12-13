@@ -6,12 +6,13 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "extensions/common/constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -38,11 +39,19 @@ using safe_browsing::BinaryUploadService;
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
+#include "components/enterprise/common/proto/synced/browser_events.pb.h"
+#include "components/enterprise/connectors/core/reporting_utils.h"
+#include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace enterprise_connectors {
 
 namespace {
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+using TriggeredRuleInfo = ::chrome::cros::reporting::proto::TriggeredRuleInfo;
+using MatchedDetector = ::chrome::cros::reporting::proto::MatchedDetector;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 // URL chain limit for nested iFrames.
@@ -55,6 +64,7 @@ bool ContentAnalysisActionAllowsDataUse(TriggeredRule::Action action) {
       return true;
     case TriggeredRule::WARN:
     case TriggeredRule::BLOCK:
+    case TriggeredRule::FORCE_SAVE_TO_CLOUD:
       return false;
   }
 }
@@ -81,6 +91,72 @@ std::string DetectorTypeToString(
   }
   return ToString(detector_type);
 }
+
+MatchedDetector::DetectorType ConvertToDetectorTypeProto(
+    extensions::api::enterprise_reporting_private::DetectorType detector_type) {
+  if (detector_type ==
+      extensions::api::enterprise_reporting_private::DetectorType::kNone) {
+    return MatchedDetector::DETECTOR_TYPE_UNSPECIFIED;
+  }
+  if (detector_type == extensions::api::enterprise_reporting_private::
+                           DetectorType::kPredefinedDlp) {
+    return MatchedDetector::PREDEFINED_DLP;
+  }
+  if (detector_type == extensions::api::enterprise_reporting_private::
+                           DetectorType::kUserDefined) {
+    return MatchedDetector::USER_DEFINED;
+  }
+  NOTREACHED();
+}
+
+chrome::cros::reporting::proto::EventResult ConvertToEventResultProto(
+    extensions::api::enterprise_reporting_private::EventResult event_result) {
+  if (event_result ==
+      extensions::api::enterprise_reporting_private::EventResult::kNone) {
+    return chrome::cros::reporting::proto::EVENT_RESULT_UNSPECIFIED;
+  }
+  if (event_result == extensions::api::enterprise_reporting_private::
+                          EventResult::kEventResultDataMasked) {
+    return chrome::cros::reporting::proto::EVENT_RESULT_DATA_MASKED;
+  }
+  if (event_result == extensions::api::enterprise_reporting_private::
+                          EventResult::kEventResultDataUnmasked) {
+    return chrome::cros::reporting::proto::EVENT_RESULT_DATA_UNMASKED;
+  }
+  NOTREACHED();
+}
+
+google::protobuf::RepeatedPtrField<TriggeredRuleInfo> GetTriggeredRuleInfo(
+    const std::vector<
+        extensions::api::enterprise_reporting_private::TriggeredRuleInfo>&
+        rules) {
+  google::protobuf::RepeatedPtrField<TriggeredRuleInfo> triggered_rules;
+  for (auto& rule : rules) {
+    TriggeredRuleInfo triggered_rule;
+    triggered_rule.set_rule_name(rule.rule_name);
+
+    int rule_id_int = 0;
+    if (base::StringToInt(rule.rule_id, &rule_id_int)) {
+      triggered_rule.set_rule_id(rule_id_int);
+    }
+
+    google::protobuf::RepeatedPtrField<MatchedDetector> matched_detectors;
+    for (auto& detector : rule.matched_detectors) {
+      MatchedDetector matched_detector;
+      matched_detector.set_display_name(detector.display_name);
+      matched_detector.set_detector_type(
+          ConvertToDetectorTypeProto(detector.detector_type));
+      matched_detector.set_detector_id(detector.detector_id);
+
+      *matched_detectors.Add() = matched_detector;
+    }
+    *triggered_rule.mutable_matched_detectors() = matched_detectors;
+    *triggered_rules.Add() = triggered_rule;
+  }
+
+  return triggered_rules;
+}
+
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 google::protobuf::RepeatedPtrField<std::string> CollectFrameUrlsImpl(
@@ -93,8 +169,16 @@ google::protobuf::RepeatedPtrField<std::string> CollectFrameUrlsImpl(
 
   content::RenderFrameHost* current_frame = web_contents->GetFocusedFrame();
 
-  // Traverse upwards and add URLs to the chain.
-  while (current_frame && frame_urls.size() < kMaxFrameUrls - 1) {
+  // Traverse upwards and add URLs to the chain, stopping before the outermost
+  // frame.
+  while (current_frame && frame_urls.size() < kMaxFrameUrls) {
+    content::RenderFrameHost* parent =
+        current_frame->GetParentOrOuterDocumentOrEmbedder();
+    if (!parent) {
+      // Already at outermost frame.
+      break;
+    }
+
     // Skip internal extension resources, blob URLs, and about:blank pages from
     // being scanned.
     const GURL& url = current_frame->GetLastCommittedURL();
@@ -103,19 +187,7 @@ google::protobuf::RepeatedPtrField<std::string> CollectFrameUrlsImpl(
       *frame_urls.Add() = url.spec();
     }
 
-    content::RenderFrameHost* parent =
-        current_frame->GetParentOrOuterDocumentOrEmbedder();
-    if (!parent) {
-      // Already at outermost frame.
-      return frame_urls;
-    }
     current_frame = parent;
-  }
-
-  // If we hit the limit, collect the top frame instead.
-  if (frame_urls.size() == kMaxFrameUrls - 1 && current_frame) {
-    current_frame = current_frame->GetOutermostMainFrame();
-    *frame_urls.Add() = current_frame->GetLastCommittedURL().spec();
   }
 
   return frame_urls;
@@ -124,22 +196,27 @@ google::protobuf::RepeatedPtrField<std::string> CollectFrameUrlsImpl(
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 bool ShouldAllowDeepScanOnLargeOrEncryptedFiles(
-    BinaryUploadService::Result result,
+    ScanRequestUploadResult result,
     bool block_large_files,
     bool block_password_protected_files) {
-  return (result == BinaryUploadService::Result::FILE_TOO_LARGE &&
+  return (result == ScanRequestUploadResult::kFileTooLarge &&
           !block_large_files) ||
-         (result == BinaryUploadService::Result::FILE_ENCRYPTED &&
+         (result == ScanRequestUploadResult::kFileEncrypted &&
           !block_password_protected_files);
 }
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 }  // namespace
 
+policy::BrowserPolicyConnector* GetBrowserPolicyConnector() {
+  return g_browser_process ? g_browser_process->browser_policy_connector()
+                           : nullptr;
+}
+
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 RequestHandlerResult CalculateRequestHandlerResult(
     const AnalysisSettings& settings,
-    BinaryUploadService::Result upload_result,
+    ScanRequestUploadResult upload_result,
     const ContentAnalysisResponse& response) {
   std::string tag;
   auto action = GetHighestPrecedenceAction(response, &tag);
@@ -158,15 +235,21 @@ RequestHandlerResult CalculateRequestHandlerResult(
   }
 
   // If file is non-compliant, map it to the specific case.
+  //
+  // We should check if the action is `WARN` or `BLOCK` before `FILE_TOO_LARGE`
+  // or `FILE_ENCRYPTED`, because the server could issue a `WARN` or `BLOCK`
+  // verdict based on the metadata of large or encrypted files.
   if (ResultIsFailClosed(upload_result)) {
     DVLOG(1) << __func__ << ": result mapped to fail-closed.";
     result.final_result = FinalContentAnalysisResult::FAIL_CLOSED;
-  } else if (upload_result == BinaryUploadService::Result::FILE_TOO_LARGE) {
-    result.final_result = FinalContentAnalysisResult::LARGE_FILES;
-  } else if (upload_result == BinaryUploadService::Result::FILE_ENCRYPTED) {
-    result.final_result = FinalContentAnalysisResult::ENCRYPTED_FILES;
   } else if (action == TriggeredRule::WARN) {
     result.final_result = FinalContentAnalysisResult::WARNING;
+  } else if (action == TriggeredRule::BLOCK) {
+    result.final_result = FinalContentAnalysisResult::FAILURE;
+  } else if (upload_result == ScanRequestUploadResult::kFileTooLarge) {
+    result.final_result = FinalContentAnalysisResult::LARGE_FILES;
+  } else if (upload_result == ScanRequestUploadResult::kFileEncrypted) {
+    result.final_result = FinalContentAnalysisResult::ENCRYPTED_FILES;
   } else {
     result.final_result = FinalContentAnalysisResult::FAILURE;
   }
@@ -249,15 +332,22 @@ google::protobuf::RepeatedPtrField<std::string> CollectFrameUrls(
     content::WebContents* web_contents,
     DeepScanAccessPoint access_point) {
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  if (!base::FeatureList::IsEnabled(kEnterpriseIframeDlpRulesSupport)) {
+    return google::protobuf::RepeatedPtrField<std::string>();
+  }
+
   google::protobuf::RepeatedPtrField<std::string> frame_urls =
       CollectFrameUrlsImpl(web_contents);
 
+  // For the histogram, we count the tab URL to differentiate between cases
+  // where there is no tab and tabs with no iframes.
+  size_t full_chain_size = web_contents ? frame_urls.size() + 1 : 0;
   base::UmaHistogramCustomCounts(
       base::JoinString(
           {"Enterprise.IframeDlpRulesSupport",
            DeepScanAccessPointToString(access_point), "UrlChainSize"},
           "."),
-      frame_urls.size(), 1, kMaxFrameUrls, 10);
+      full_chain_size, 1, kMaxFrameUrls, 10);
 
   return frame_urls;
 #else
@@ -267,76 +357,78 @@ google::protobuf::RepeatedPtrField<std::string> CollectFrameUrls(
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-bool IsResumableUpload(
-    const safe_browsing::BinaryUploadService::Request& request) {
-  // Currently resumable upload doesn't support paste or LBUS. If one day we do,
-  // we should update the logic here as well.
-  return !safe_browsing::IsConsumerScanRequest(request) &&
-         request.cloud_or_local_settings().is_cloud_analysis() &&
-         request.content_analysis_request().analysis_connector() !=
-             enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY;
+bool IsResumableUpload(const BinaryUploadRequest& request) {
+  if (safe_browsing::IsConsumerScanRequest(request) ||
+      !request.cloud_or_local_settings().is_cloud_analysis()) {
+    return false;
+  }
+  // Use the Resumable request protocol only for image pastes and
+  // non-paste requests.
+  return request.content_analysis_request().analysis_connector() !=
+             enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY ||
+         request.image_paste();
 }
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
-bool CloudMultipartResultIsFailure(BinaryUploadService::Result result) {
-  return result != BinaryUploadService::Result::SUCCESS;
+bool CloudMultipartResultIsFailure(ScanRequestUploadResult result) {
+  return result != ScanRequestUploadResult::kSuccess;
 }
 
-bool CloudResumableResultIsFailure(BinaryUploadService::Result result,
+bool CloudResumableResultIsFailure(ScanRequestUploadResult result,
                                    bool block_large_files,
                                    bool block_password_protected_files) {
-  return result != BinaryUploadService::Result::SUCCESS &&
+  return result != ScanRequestUploadResult::kSuccess &&
          !ShouldAllowDeepScanOnLargeOrEncryptedFiles(
              result, block_large_files, block_password_protected_files);
 }
 
-bool LocalResultIsFailure(BinaryUploadService::Result result) {
-  return result != BinaryUploadService::Result::SUCCESS &&
-         result != BinaryUploadService::Result::FILE_TOO_LARGE &&
-         result != BinaryUploadService::Result::FILE_ENCRYPTED;
+bool LocalResultIsFailure(ScanRequestUploadResult result) {
+  return result != ScanRequestUploadResult::kSuccess &&
+         result != ScanRequestUploadResult::kFileTooLarge &&
+         result != ScanRequestUploadResult::kFileEncrypted;
 }
 
-bool ResultIsFailClosed(BinaryUploadService::Result result) {
-  return result == BinaryUploadService::Result::UPLOAD_FAILURE ||
-         result == BinaryUploadService::Result::TIMEOUT ||
-         result == BinaryUploadService::Result::FAILED_TO_GET_TOKEN ||
-         result == BinaryUploadService::Result::TOO_MANY_REQUESTS ||
-         result == BinaryUploadService::Result::UNKNOWN ||
-         result == BinaryUploadService::Result::INCOMPLETE_RESPONSE;
+bool ResultIsFailClosed(ScanRequestUploadResult result) {
+  return result == ScanRequestUploadResult::kUploadFailure ||
+         result == ScanRequestUploadResult::kTimeout ||
+         result == ScanRequestUploadResult::kFailedToGetToken ||
+         result == ScanRequestUploadResult::kTooManyRequests ||
+         result == ScanRequestUploadResult::kUnknown ||
+         result == ScanRequestUploadResult::kIncompleteResponse;
 }
 
 bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
-                              BinaryUploadService::Result upload_result) {
+                              ScanRequestUploadResult upload_result) {
   bool default_action_allow_data_use =
       settings.default_action == DefaultAction::kAllow;
 
   // Keep this implemented as a switch instead of a simpler if statement so that
-  // new values added to BinaryUploadService::Result cause a compiler error.
+  // new values added to ScanRequestUploadResult cause a compiler error.
   switch (upload_result) {
-    case BinaryUploadService::Result::SUCCESS:
+    case ScanRequestUploadResult::kSuccess:
     // UNAUTHORIZED allows data usage since it's a result only obtained if the
     // browser is not authorized to perform deep scanning. It does not make
     // sense to block data in this situation since no actual scanning of the
     // data was performed, so it's allowed.
-    case BinaryUploadService::Result::UNAUTHORIZED:
+    case ScanRequestUploadResult::kUnauthorized:
       return true;
 
-    case BinaryUploadService::Result::UPLOAD_FAILURE:
-    case BinaryUploadService::Result::TIMEOUT:
-    case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
-    case BinaryUploadService::Result::TOO_MANY_REQUESTS:
-    case BinaryUploadService::Result::UNKNOWN:
-    case BinaryUploadService::Result::INCOMPLETE_RESPONSE:
+    case ScanRequestUploadResult::kUploadFailure:
+    case ScanRequestUploadResult::kTimeout:
+    case ScanRequestUploadResult::kFailedToGetToken:
+    case ScanRequestUploadResult::kTooManyRequests:
+    case ScanRequestUploadResult::kUnknown:
+    case ScanRequestUploadResult::kIncompleteResponse:
       DVLOG(1) << __func__
                << ": handled by fail-closed settings, "
                   "default_action_allow_data_use="
                << default_action_allow_data_use;
       return default_action_allow_data_use;
 
-    case BinaryUploadService::Result::FILE_TOO_LARGE:
+    case ScanRequestUploadResult::kFileTooLarge:
       return !settings.block_large_files;
 
-    case BinaryUploadService::Result::FILE_ENCRYPTED:
+    case ScanRequestUploadResult::kFileEncrypted:
       return !settings.block_password_protected_files;
   }
 }
@@ -447,44 +539,58 @@ void ReportDataMaskingEvent(
     return;
   }
 
-  base::Value::Dict event;
-  event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyUrl,
-            data_masking_event.url);
-  event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyTabUrl,
-            std::move(data_masking_event.url));
-  event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyEventResult,
-            EventResultToString(data_masking_event.event_result));
+  if (base::FeatureList::IsEnabled(
+          policy::kUploadRealtimeReportingEventsUsingProto)) {
+    chrome::cros::reporting::proto::DlpSensitiveDataEvent sensitive_data_event;
+    sensitive_data_event.set_url(data_masking_event.url);
+    sensitive_data_event.set_tab_url(data_masking_event.url);
+    sensitive_data_event.set_event_result(
+        ConvertToEventResultProto(data_masking_event.event_result));
+    *sensitive_data_event.mutable_triggered_rule_info() =
+        GetTriggeredRuleInfo(data_masking_event.triggered_rule_info);
+    sensitive_data_event.set_profile_identifier(
+        reporting_client->GetProfileIdentifier());
+    sensitive_data_event.set_profile_user_name(
+        reporting_client->GetProfileUserName());
 
-  base::Value::List triggered_rule_info;
-  triggered_rule_info.reserve(data_masking_event.triggered_rule_info.size());
-  for (auto& rule : data_masking_event.triggered_rule_info) {
-    base::Value::Dict triggered_rule;
-    triggered_rule.Set(
-        extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
-        std::move(rule.rule_id));
-    triggered_rule.Set(
-        extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
-        std::move(rule.rule_name));
+    chrome::cros::reporting::proto::Event event;
+    *event.mutable_sensitive_data_event() = sensitive_data_event;
+    *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
-    base::Value::List matched_detectors;
-    for (auto& detector : rule.matched_detectors) {
-      base::Value::Dict detector_value;
-      detector_value.Set(kKeyDetectorId, std::move(detector.detector_id));
-      detector_value.Set(kKeyDisplayName, std::move(detector.display_name));
-      detector_value.Set(kKeyDetectorType,
-                         DetectorTypeToString(detector.detector_type));
-      matched_detectors.Append(std::move(detector_value));
+    reporting_client->ReportEvent(std::move(event), settings.value());
+  } else {
+    base::Value::Dict event;
+    event.Set(kKeyUrl, data_masking_event.url);
+    event.Set(kKeyTabUrl, std::move(data_masking_event.url));
+    event.Set(kKeyEventResult,
+              EventResultToString(data_masking_event.event_result));
+
+    base::Value::List triggered_rule_info;
+    triggered_rule_info.reserve(data_masking_event.triggered_rule_info.size());
+    for (auto& rule : data_masking_event.triggered_rule_info) {
+      base::Value::Dict triggered_rule;
+      triggered_rule.Set(kKeyTriggeredRuleId, std::move(rule.rule_id));
+      triggered_rule.Set(kKeyTriggeredRuleName, std::move(rule.rule_name));
+
+      base::Value::List matched_detectors;
+      for (auto& detector : rule.matched_detectors) {
+        base::Value::Dict detector_value;
+        detector_value.Set(kKeyDetectorId, std::move(detector.detector_id));
+        detector_value.Set(kKeyDisplayName, std::move(detector.display_name));
+        detector_value.Set(kKeyDetectorType,
+                           DetectorTypeToString(detector.detector_type));
+        matched_detectors.Append(std::move(detector_value));
+      }
+      triggered_rule.Set(kKeyMatchedDetectors, std::move(matched_detectors));
+
+      triggered_rule_info.Append(std::move(triggered_rule));
     }
-    triggered_rule.Set(kKeyMatchedDetectors, std::move(matched_detectors));
+    event.Set(kKeyTriggeredRuleInfo, std::move(triggered_rule_info));
 
-    triggered_rule_info.Append(std::move(triggered_rule));
+    reporting_client->ReportRealtimeEvent(
+        enterprise_connectors::kKeySensitiveDataEvent,
+        std::move(settings.value()), std::move(event));
   }
-  event.Set(extensions::SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo,
-            std::move(triggered_rule_info));
-
-  reporting_client->ReportRealtimeEvent(
-      enterprise_connectors::kKeySensitiveDataEvent,
-      std::move(settings.value()), std::move(event));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)

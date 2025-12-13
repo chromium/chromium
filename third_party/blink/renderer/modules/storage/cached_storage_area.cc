@@ -62,8 +62,8 @@ base::OnceCallback<void(bool)> MakeSuccessCallback(
           "CachedStorageArea",
           WebScopedVirtualTimePauser::VirtualTaskDuration::kNonInstant);
   virtual_time_pauser.PauseVirtualTime();
-  return WTF::BindOnce([](WebScopedVirtualTimePauser, bool) {},
-                       std::move(virtual_time_pauser));
+  return BindOnce([](WebScopedVirtualTimePauser, bool) {},
+                  std::move(virtual_time_pauser));
 }
 
 }  // namespace
@@ -506,15 +506,14 @@ bool CachedStorageArea::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   using base::trace_event::MemoryAllocatorDump;
 
-  WTF::String dump_name = WTF::String::Format(
-      "site_storage/%s/0x%" PRIXPTR "/cache_size",
-      IsSessionStorage() ? "session_storage" : "local_storage",
-      reinterpret_cast<uintptr_t>(this));
+  String dump_name =
+      String::Format("site_storage/%s/0x%" PRIXPTR "/cache_size",
+                     IsSessionStorage() ? "session_storage" : "local_storage",
+                     reinterpret_cast<uintptr_t>(this));
   MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name.Utf8());
   dump->AddScalar(MemoryAllocatorDump::kNameSize,
                   MemoryAllocatorDump::kUnitsBytes, memory_used());
-  pmd->AddSuballocation(dump->guid(),
-                        WTF::Partitions::kAllocatedObjectPoolName);
+  pmd->AddSuballocation(dump->guid(), Partitions::kAllocatedObjectPoolName);
   return true;
 }
 
@@ -605,9 +604,7 @@ void CachedStorageArea::MaybeApplyNonLocalMutationForKey(
 // There are 2 parameters that influence how long the delay is, `factor` and
 // `offset`. If the actual time taken is `time_to_prime` then the delay will be
 // `time_to_prime * factor + offset`.
-BASE_FEATURE(kDomStorageAblation,
-             "DomStorageAblation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDomStorageAblation, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(double,
                    kDomStorageAblationDelayFactor,
                    &kDomStorageAblation,
@@ -734,7 +731,7 @@ String CachedStorageArea::Uint8VectorToString(const Vector<uint8_t>& input,
         break;
       }
       StringBuffer<UChar> buffer(input_size / sizeof(UChar));
-      UNSAFE_TODO(std::memcpy(buffer.Characters(), input.data(), input_size));
+      UNSAFE_TODO(std::memcpy(buffer.Span().data(), input.data(), input_size));
       result = String::Adopt(buffer);
       break;
     }
@@ -759,8 +756,8 @@ String CachedStorageArea::Uint8VectorToString(const Vector<uint8_t>& input,
             break;
           }
           StringBuffer<UChar> buffer(payload_size / sizeof(UChar));
-          UNSAFE_TODO(
-              std::memcpy(buffer.Characters(), input.data() + 1, payload_size));
+          UNSAFE_TODO(std::memcpy(buffer.Span().data(), input.data() + 1,
+                                  payload_size));
           result = String::Adopt(buffer);
           break;
         }
@@ -805,10 +802,10 @@ Vector<uint8_t> CachedStorageArea::StringToUint8Vector(
       }
       // Handle 8 bit case where it's not only ascii.
       if (input.Is8Bit()) {
-        // This code is copied from WTF::String::Utf8(), except the vector
+        // This code is copied from String::Utf8(), except the vector
         // doesn't have a stack-allocated capacity.
         // We do this because there isn't a way to transform the std::string we
-        // get from WTF::String::Utf8() to a Vector without an extra copy.
+        // get from String::Utf8() to a Vector without an extra copy.
         if (length > std::numeric_limits<unsigned>::max() / 3)
           return Vector<uint8_t>();
         Vector<uint8_t> buffer_vector(length * 3);

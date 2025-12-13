@@ -12,8 +12,10 @@
 namespace optimization_guide {
 
 ChromeProfileDownloadServiceTracker::ChromeProfileDownloadServiceTracker() {
-  profile_manager_observation_.Observe(
-      GetApplicationContext()->GetProfileManager());
+  if (auto* profile_manager = GetApplicationContext()->GetProfileManager()) {
+    // Could be null in tests.
+    profile_manager_observation_.Observe(profile_manager);
+  }
 }
 
 ChromeProfileDownloadServiceTracker::~ChromeProfileDownloadServiceTracker() =
@@ -22,6 +24,7 @@ ChromeProfileDownloadServiceTracker::~ChromeProfileDownloadServiceTracker() =
 void ChromeProfileDownloadServiceTracker::OnProfileManagerWillBeDestroyed(
     ProfileManagerIOS* manager) {
   active_profiles_.clear();
+  profile_manager_observation_.Reset();
 }
 
 void ChromeProfileDownloadServiceTracker::OnProfileManagerDestroyed(

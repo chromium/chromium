@@ -288,8 +288,10 @@ AXObject* AXInlineTextBox::PreviousOnLine() const {
   if (IsDetached())
     return nullptr;
 
-  if (IsPartOfAListItem()) {
-    return ParentObject()->PreviousOnLine();
+  if (IsPartOfAListItem() &&
+      ParentObject()->FirstChildIncludingIgnored() == this) {
+    AXObject* candidate = ParentObject()->PreviousOnLine();
+    return candidate;
   }
 
   if (GetInlineTextBox()) {
@@ -351,6 +353,8 @@ void AXInlineTextBox::SerializeMarkerAttributes(
       GetAriaSpellingOrGrammarMarker();
   if (aria_marker_type) {
     marker_types.push_back(ToAXMarkerType(aria_marker_type.value()));
+    highlight_types.push_back(
+        static_cast<int32_t>(ax::mojom::blink::HighlightType::kNone));
     marker_starts.push_back(ax_range.Start().TextOffset());
     marker_ends.push_back(ax_range.End().TextOffset());
   }
@@ -425,11 +429,12 @@ void AXInlineTextBox::SerializeMarkerAttributes(
     }
 
     marker_types.push_back(int32_t{ToAXMarkerType(marker->GetType())});
-    highlight_types.push_back(static_cast<int32_t>(highlight_type));
+    highlight_types.push_back(highlight_type);
     marker_starts.push_back(local_start_offset);
     marker_ends.push_back(local_end_offset);
   }
 
+  DCHECK_EQ(marker_types.size(), highlight_types.size());
   DCHECK_EQ(marker_types.size(), marker_starts.size());
   DCHECK_EQ(marker_types.size(), marker_ends.size());
 

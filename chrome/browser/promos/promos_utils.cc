@@ -16,8 +16,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/promos/promos_pref_names.h"
-#include "chrome/browser/promos/promos_types.h"
 #include "chrome/common/pref_names.h"
+#include "components/desktop_to_mobile_promos/pref_names.h"
+#include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -27,6 +28,8 @@
 #include "components/sync/service/sync_service.h"
 
 namespace promos_utils {
+
+using desktop_to_mobile_promos::PromoType;
 
 // Max impression count per user, per promo for the iOS desktop promos on
 // desktop.
@@ -46,14 +49,18 @@ constexpr base::TimeDelta kiOSDesktopPromoCooldownTime = base::Days(90);
 
 // IOSDesktopPromoHistogramType returns the promo histogram type for the given
 // promo type. New promos should add themselves to this check.
-std::string IOSDesktopPromoHistogramType(IOSPromoType promo_type) {
+std::string IOSDesktopPromoHistogramType(PromoType promo_type) {
   switch (promo_type) {
-    case IOSPromoType::kPassword:
+    case PromoType::kPassword:
       return "PasswordPromo";
-    case IOSPromoType::kAddress:
+    case PromoType::kAddress:
       return "AddressPromo";
-    case IOSPromoType::kPayment:
+    case PromoType::kPayment:
       return "PaymentPromo";
+    case PromoType::kEnhancedBrowsing:
+      return "EnhancedBrowsingPromo";
+    case PromoType::kLens:
+      return "LensPromo";
   }
 }
 
@@ -81,7 +88,11 @@ bool VerifyIOSDesktopPromoTotalImpressions(Profile* profile,
       profile->GetPrefs()->GetInteger(
           promos_prefs::kDesktopToiOSAddressPromoImpressionsCounter) +
       profile->GetPrefs()->GetInteger(
-          promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter);
+          promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter) +
+      profile->GetPrefs()->GetInteger(
+          promos_prefs::kDesktopToiOSEnhancedBrowsingPromoImpressionsCounter) +
+      profile->GetPrefs()->GetInteger(
+          promos_prefs::kDesktopToiOSLensPromoImpressionsCounter);
 
   if (!skip_ntp_promo) {
     // The Desktop NTP promo shows 10 times in quick succession, but that only
@@ -105,7 +116,11 @@ bool VerifyIOSDesktopPromoTotalOptOuts(Profile* profile) {
       profile->GetPrefs()->GetBoolean(
           promos_prefs::kDesktopToiOSAddressPromoOptOut),
       profile->GetPrefs()->GetBoolean(
-          promos_prefs::kDesktopToiOSPaymentPromoOptOut)};
+          promos_prefs::kDesktopToiOSPaymentPromoOptOut),
+      profile->GetPrefs()->GetBoolean(
+          promos_prefs::kDesktopToiOSEnhancedBrowsingPromoOptOut),
+      profile->GetPrefs()->GetBoolean(
+          promos_prefs::kDesktopToiOSLensPromoOptOut)};
 
   int total_desktop_promo_opt_outs_counter =
       std::count(promo_opt_outs.begin(), promo_opt_outs.end(), true);
@@ -127,6 +142,11 @@ bool VerifyMostRecentPromoTimestamp(Profile* profile,
           promos_prefs::kDesktopToiOSAddressPromoLastImpressionTimestamp),
       profile->GetPrefs()->GetTime(
           promos_prefs::kDesktopToiOSPaymentPromoLastImpressionTimestamp),
+      profile->GetPrefs()->GetTime(
+          promos_prefs::
+              kDesktopToiOSEnhancedBrowsingPromoLastImpressionTimestamp),
+      profile->GetPrefs()->GetTime(
+          promos_prefs::kDesktopToiOSLensPromoLastImpressionTimestamp),
   };
 
   if (!skip_ntp_promo) {
@@ -145,19 +165,23 @@ bool VerifyMostRecentPromoTimestamp(Profile* profile,
 // tracking), and that they are syncing the specific datatype needed for a given
 // promo type.
 bool VerifySyncingDatatypes(const syncer::SyncService& sync_service,
-                            IOSPromoType promo_type) {
+                            PromoType promo_type) {
   if (!sync_service.GetActiveDataTypes().Has(syncer::PREFERENCES)) {
     return false;
   }
 
   switch (promo_type) {
-    case IOSPromoType::kPassword:
+    case PromoType::kPassword:
       return sync_service.GetActiveDataTypes().Has(syncer::PASSWORDS);
-    case IOSPromoType::kAddress:
+    case PromoType::kAddress:
       return sync_service.GetActiveDataTypes().Has(syncer::CONTACT_INFO);
-    case IOSPromoType::kPayment:
+    case PromoType::kPayment:
       return sync_service.GetActiveDataTypes().Has(
           syncer::AUTOFILL_WALLET_DATA);
+    case PromoType::kEnhancedBrowsing:
+    case PromoType::kLens:
+      // TODO(crbug.com/438769954): Verify relevant data types.
+      return true;
   }
 }
 
@@ -177,7 +201,7 @@ bool CanShowPromos() {
 
 // RecordIOSDesktopPromoShownHistogram records which impression (count) was
 // shown to the user depending on the given promo type.
-void RecordIOSDesktopPromoShownHistogram(IOSPromoType promo_type,
+void RecordIOSDesktopPromoShownHistogram(PromoType promo_type,
                                          int impression_count) {
   std::string promo_histogram_type = IOSDesktopPromoHistogramType(promo_type);
   DesktopIOSPromoImpression promo_impression;
@@ -205,9 +229,9 @@ IOSPromoPrefsConfig::IOSPromoPrefsConfig() = default;
 IOSPromoPrefsConfig::IOSPromoPrefsConfig(const IOSPromoPrefsConfig&) = default;
 IOSPromoPrefsConfig::~IOSPromoPrefsConfig() = default;
 
-IOSPromoPrefsConfig::IOSPromoPrefsConfig(IOSPromoType promo_type) {
+IOSPromoPrefsConfig::IOSPromoPrefsConfig(PromoType promo_type) {
   switch (promo_type) {
-    case IOSPromoType::kPassword:
+    case PromoType::kPassword:
 #if !BUILDFLAG(IS_ANDROID)
       promo_feature = &feature_engagement::kIPHiOSPasswordPromoDesktopFeature;
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -217,7 +241,7 @@ IOSPromoPrefsConfig::IOSPromoPrefsConfig(IOSPromoType promo_type) {
       promo_last_impression_timestamp_pref_name =
           promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp;
       break;
-    case IOSPromoType::kAddress:
+    case PromoType::kAddress:
 #if !BUILDFLAG(IS_ANDROID)
       promo_feature = &feature_engagement::kIPHiOSAddressPromoDesktopFeature;
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -227,7 +251,7 @@ IOSPromoPrefsConfig::IOSPromoPrefsConfig(IOSPromoType promo_type) {
       promo_last_impression_timestamp_pref_name =
           promos_prefs::kDesktopToiOSAddressPromoLastImpressionTimestamp;
       break;
-    case IOSPromoType::kPayment:
+    case PromoType::kPayment:
 #if !BUILDFLAG(IS_ANDROID)
       promo_feature = &feature_engagement::kIPHiOSPaymentPromoDesktopFeature;
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -236,6 +260,28 @@ IOSPromoPrefsConfig::IOSPromoPrefsConfig(IOSPromoType promo_type) {
       promo_opt_out_pref_name = promos_prefs::kDesktopToiOSPaymentPromoOptOut;
       promo_last_impression_timestamp_pref_name =
           promos_prefs::kDesktopToiOSPaymentPromoLastImpressionTimestamp;
+      break;
+    case PromoType::kEnhancedBrowsing:
+#if !BUILDFLAG(IS_ANDROID)
+      promo_feature =
+          &feature_engagement::kIPHiOSEnhancedBrowsingDesktopFeature;
+#endif  // !BUILDFLAG(IS_ANDROID)
+      promo_impressions_counter_pref_name =
+          promos_prefs::kDesktopToiOSEnhancedBrowsingPromoImpressionsCounter;
+      promo_opt_out_pref_name =
+          promos_prefs::kDesktopToiOSEnhancedBrowsingPromoOptOut;
+      promo_last_impression_timestamp_pref_name = promos_prefs::
+          kDesktopToiOSEnhancedBrowsingPromoLastImpressionTimestamp;
+      break;
+    case PromoType::kLens:
+#if !BUILDFLAG(IS_ANDROID)
+      promo_feature = &feature_engagement::kIPHiOSLensPromoDesktopFeature;
+#endif  // !BUILDFLAG(IS_ANDROID)
+      promo_impressions_counter_pref_name =
+          promos_prefs::kDesktopToiOSLensPromoImpressionsCounter;
+      promo_opt_out_pref_name = promos_prefs::kDesktopToiOSLensPromoOptOut;
+      promo_last_impression_timestamp_pref_name =
+          promos_prefs::kDesktopToiOSLensPromoLastImpressionTimestamp;
       break;
   }
 }
@@ -272,16 +318,38 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       promos_prefs::kDesktopToiOSPaymentPromoOptOut, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
+  registry->RegisterTimePref(
+      promos_prefs::kDesktopToiOSEnhancedBrowsingPromoLastImpressionTimestamp,
+      base::Time(), user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(
+      promos_prefs::kDesktopToiOSEnhancedBrowsingPromoImpressionsCounter, 0,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      promos_prefs::kDesktopToiOSEnhancedBrowsingPromoOptOut, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
+  registry->RegisterTimePref(
+      promos_prefs::kDesktopToiOSLensPromoLastImpressionTimestamp, base::Time(),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(
+      promos_prefs::kDesktopToiOSLensPromoImpressionsCounter, 0,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      promos_prefs::kDesktopToiOSLensPromoOptOut, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
   registry->RegisterListPref(
       promos_prefs::kDesktopToiOSNtpPromoAppearanceTimestamps, {},
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       promos_prefs::kDesktopToiOSNtpPromoDismissed, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterDictionaryPref(
+      prefs::kIOSPromoReminder,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
-const base::Feature& GetIOSDesktopPromoFeatureEngagement(
-    IOSPromoType promo_type) {
+const base::Feature& GetIOSDesktopPromoFeatureEngagement(PromoType promo_type) {
   IOSPromoPrefsConfig promo_prefs(promo_type);
   return *promo_prefs.promo_feature;
 }
@@ -289,7 +357,7 @@ const base::Feature& GetIOSDesktopPromoFeatureEngagement(
 // RecordIOSDesktopPromoUserInteractionHistogram records which impression
 // (count) depending on the promo type.
 void RecordIOSDesktopPromoUserInteractionHistogram(
-    IOSPromoType promo_type,
+    PromoType promo_type,
     int impression_count,
     DesktopIOSPromoAction action) {
   std::string promo_histogram_type = IOSDesktopPromoHistogramType(promo_type);
@@ -312,7 +380,7 @@ void RecordIOSDesktopPromoUserInteractionHistogram(
 
 bool ShouldShowIOSDesktopPromo(Profile* profile,
                                const syncer::SyncService* sync_service,
-                               IOSPromoType promo_type) {
+                               PromoType promo_type) {
   if (!CanShowPromos()) {
     return false;
   }
@@ -380,7 +448,7 @@ bool UserNotClassifiedAsMobileDeviceSwitcher(
              segmentation_platform::DeviceSwitcherModel::kIosTabletLabel);
 }
 
-void IOSDesktopPromoShown(Profile* profile, IOSPromoType promo_type) {
+void IOSDesktopPromoShown(Profile* profile, PromoType promo_type) {
   IOSPromoPrefsConfig promo_prefs(promo_type);
   int new_impression_count =
       profile->GetPrefs()->GetInteger(

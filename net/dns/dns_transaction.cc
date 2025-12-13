@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/base64url.h"
+#include "base/byte_count.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -30,6 +31,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -61,6 +63,7 @@
 #include "net/dns/dns_util.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver_internal_result.h"
+#include "net/dns/opt_record_rdata.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_protocol.h"
@@ -87,6 +90,24 @@
 namespace net {
 
 namespace {
+
+Error FailureRcodeToNetError(int rcode) {
+  DCHECK_NE(dns_protocol::kRcodeNOERROR, rcode);
+  switch (rcode) {
+    case dns_protocol::kRcodeFORMERR:
+      return ERR_DNS_FORMAT_ERROR;
+    case dns_protocol::kRcodeSERVFAIL:
+      return ERR_DNS_SERVER_FAILURE;
+    case dns_protocol::kRcodeNXDOMAIN:
+      return ERR_NAME_NOT_RESOLVED;
+    case dns_protocol::kRcodeNOTIMP:
+      return ERR_DNS_NOT_IMPLEMENTED;
+    case dns_protocol::kRcodeREFUSED:
+      return ERR_DNS_REFUSED;
+    default:
+      return ERR_DNS_OTHER_FAILURE;
+  }
+}
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("dns_transaction", R"(
@@ -119,7 +140,8 @@ const char kDnsOverHttpResponseContentType[] = "application/dns-message";
 
 // The maximum size of the DNS message for DoH, per
 // https://datatracker.ietf.org/doc/html/rfc8484#section-6
-const int64_t kDnsOverHttpResponseMaximumSize = 65535;
+constexpr base::ByteCount kDnsOverHttpResponseMaximumSize =
+    base::ByteCount(65535);
 
 // Count labels in the fully-qualified name in DNS format.
 int CountLabels(base::span<const uint8_t> name) {
@@ -347,22 +369,25 @@ class DnsUDPAttempt : public DnsAttempt {
 
   int DoReadResponseComplete(int rv) {
     DCHECK_NE(ERR_IO_PENDING, rv);
-    if (rv < 0)
+    if (rv < 0) {
       return rv;
+    }
     read_size_ = rv;
 
     bool parse_result = response_->InitParse(rv, *query_);
-    if (response_->id())
+    if (response_->id()) {
       udp_tracker_->RecordResponseId(query_->id(), response_->id().value());
+    }
 
-    if (!parse_result)
+    if (!parse_result) {
       return ERR_DNS_MALFORMED_RESPONSE;
-    if (response_->flags() & dns_protocol::kFlagTC)
+    }
+    if (response_->flags() & dns_protocol::kFlagTC) {
       return ERR_DNS_SERVER_REQUIRES_TCP;
-    if (response_->rcode() == dns_protocol::kRcodeNXDOMAIN)
-      return ERR_NAME_NOT_RESOLVED;
-    if (response_->rcode() != dns_protocol::kRcodeNOERROR)
-      return ERR_DNS_SERVER_FAILED;
+    }
+    if (response_->rcode() != dns_protocol::kRcodeNOERROR) {
+      return FailureRcodeToNetError(response_->rcode());
+    }
 
     return OK;
   }
@@ -486,7 +511,7 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
     request_->SetSecureDnsPolicy(SecureDnsPolicy::kBootstrap);
     request_->SetLoadFlags(request_->load_flags() | LOAD_DISABLE_CACHE |
                            LOAD_BYPASS_PROXY);
-    request_->set_allow_credentials(false);
+    request_->set_disallow_credentials();
     request_->set_isolation_info(isolation_info);
   }
 
@@ -542,18 +567,18 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
 
     buffer_ = base::MakeRefCounted<GrowableIOBuffer>();
 
-    if (request->response_headers()->HasHeader(
-            HttpRequestHeaders::kContentLength)) {
-      if (request_->response_headers()->GetContentLength() >
-          kDnsOverHttpResponseMaximumSize) {
+    std::optional<base::ByteCount> content_length =
+        request_->response_headers()->GetContentLength();
+    if (content_length.has_value()) {
+      if (content_length.value() > kDnsOverHttpResponseMaximumSize) {
         ResponseCompleted(ERR_DNS_MALFORMED_RESPONSE);
         return;
       }
-
-      buffer_->SetCapacity(request_->response_headers()->GetContentLength() +
-                           1);
+      buffer_->SetCapacity(
+          base::checked_cast<int>(content_length->InBytes() + 1));
     } else {
-      buffer_->SetCapacity(kDnsOverHttpResponseMaximumSize + 1);
+      buffer_->SetCapacity(base::checked_cast<int>(
+          kDnsOverHttpResponseMaximumSize.InBytes() + 1));
     }
 
     DCHECK(buffer_->data());
@@ -588,7 +613,8 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
     DCHECK_GE(bytes_read, 0);
 
     if (bytes_read > 0) {
-      if (buffer_->offset() + bytes_read > kDnsOverHttpResponseMaximumSize) {
+      if (buffer_->offset() + bytes_read >
+          kDnsOverHttpResponseMaximumSize.InBytes()) {
         ResponseCompleted(ERR_DNS_MALFORMED_RESPONSE);
         return;
       }
@@ -646,20 +672,22 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
     if (net_error != OK) {
       return net_error;
     }
-    if (!buffer_.get() || 0 == buffer_->capacity())
+    if (!buffer_.get() || 0 == buffer_->capacity()) {
       return ERR_DNS_MALFORMED_RESPONSE;
+    }
 
     size_t size = buffer_->offset();
     buffer_->set_offset(0);
-    if (size == 0u)
+    if (size == 0u) {
       return ERR_DNS_MALFORMED_RESPONSE;
+    }
     response_ = std::make_unique<DnsResponse>(buffer_, size);
-    if (!response_->InitParse(size, *query_))
+    if (!response_->InitParse(size, *query_)) {
       return ERR_DNS_MALFORMED_RESPONSE;
-    if (response_->rcode() == dns_protocol::kRcodeNXDOMAIN)
-      return ERR_NAME_NOT_RESOLVED;
-    if (response_->rcode() != dns_protocol::kRcodeNOERROR)
-      return ERR_DNS_SERVER_FAILED;
+    }
+    if (response_->rcode() != dns_protocol::kRcodeNOERROR) {
+      return FailureRcodeToNetError(response_->rcode());
+    }
     return OK;
   }
 
@@ -899,10 +927,12 @@ class DnsTCPAttempt : public DnsAttempt {
 
   int DoReadResponseComplete(int rv) {
     DCHECK_NE(ERR_IO_PENDING, rv);
-    if (rv < 0)
+    if (rv < 0) {
       return rv;
-    if (rv == 0)
+    }
+    if (rv == 0) {
       return ERR_CONNECTION_CLOSED;
+    }
 
     buffer_->DidConsume(rv);
     if (buffer_->BytesRemaining() > 0) {
@@ -910,15 +940,16 @@ class DnsTCPAttempt : public DnsAttempt {
       return OK;
     }
     DCHECK_GT(buffer_->BytesConsumed(), 0);
-    if (!response_->InitParse(buffer_->BytesConsumed(), *query_))
+    if (!response_->InitParse(buffer_->BytesConsumed(), *query_)) {
       return ERR_DNS_MALFORMED_RESPONSE;
-    if (response_->flags() & dns_protocol::kFlagTC)
+    }
+    if (response_->flags() & dns_protocol::kFlagTC) {
       return ERR_UNEXPECTED;
-    // TODO(szym): Frankly, none of these are expected.
-    if (response_->rcode() == dns_protocol::kRcodeNXDOMAIN)
-      return ERR_NAME_NOT_RESOLVED;
-    if (response_->rcode() != dns_protocol::kRcodeNOERROR)
-      return ERR_DNS_SERVER_FAILED;
+    }
+    if (response_->rcode() != dns_protocol::kRcodeNOERROR) {
+      // TODO(szym): Frankly, none of these are expected.
+      return FailureRcodeToNetError(response_->rcode());
+    }
 
     return OK;
   }
@@ -1830,6 +1861,8 @@ class DnsTransactionFactoryImpl : public DnsTransactionFactory {
   SecureDnsMode GetSecureDnsModeForTest() override {
     return session_->config().secure_dns_mode;
   }
+
+  OptRecordRdata* GetOptRdataForTest() override { return opt_rdata_.get(); }
 
  private:
   scoped_refptr<DnsSession> session_;

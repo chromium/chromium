@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/webui/eche_app_ui/accessibility_provider.h"
 #include "ash/webui/eche_app_ui/apps_access_manager_impl.h"
@@ -140,11 +139,9 @@ EcheAppManager::EcheAppManager(
   // assign system_info_provider_ to eche signaler
   signaler_->SetSystemInfoProvider(system_info_provider_.get());
 
-  if (features::IsEcheNetworkConnectionStateEnabled()) {
-    phone_hub_manager_->SetEcheConnectionStatusHandler(
-        eche_connection_status_handler_.get());
-    phone_hub_manager_->SetSystemInfoProvider(system_info_provider_.get());
-  }
+  phone_hub_manager_->SetEcheConnectionStatusHandler(
+      eche_connection_status_handler_.get());
+  phone_hub_manager_->SetSystemInfoProvider(system_info_provider_.get());
 }
 
 EcheAppManager::~EcheAppManager() = default;
@@ -218,7 +215,7 @@ void EcheAppManager::BubbleShown(AshWebView* view) {
 // NOTE: These should be destroyed in the opposite order of how these objects
 // are initialized in the constructor.
 void EcheAppManager::Shutdown() {
-  if (features::IsEcheNetworkConnectionStateEnabled() && phone_hub_manager_) {
+  if (phone_hub_manager_) {
     phone_hub_manager_->SetEcheConnectionStatusHandler(nullptr);
     phone_hub_manager_->SetSystemInfoProvider(nullptr);
   }

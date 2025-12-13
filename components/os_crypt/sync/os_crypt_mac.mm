@@ -6,6 +6,10 @@
 
 #include <stddef.h>
 
+#include <memory>
+#include <utility>
+#include <variant>
+
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
 #include "base/lazy_instance.h"
@@ -16,13 +20,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
-#include "components/os_crypt/sync/keychain_password_mac.h"
+#include "components/os_crypt/common/keychain_password_mac.h"
+#include "components/os_crypt/common/os_crypt_switches.h"
 #include "components/os_crypt/sync/os_crypt_metrics.h"
-#include "components/os_crypt/sync/os_crypt_switches.h"
 #include "crypto/aes_cbc.h"
-#include "crypto/apple_keychain.h"
+#include "crypto/apple/keychain.h"
+#include "crypto/apple/mock_keychain.h"
 #include "crypto/kdf.h"
-#include "crypto/mock_apple_keychain.h"
 #include "crypto/subtle_passkey.h"
 
 namespace os_crypt {
@@ -56,11 +60,10 @@ bool EncryptString(const std::string& plaintext, std::string* ciphertext) {
 bool DecryptString(const std::string& ciphertext, std::string* plaintext) {
   return OSCryptImpl::GetInstance()->DecryptString(ciphertext, plaintext);
 }
-void UseMockKeychainForTesting(bool use_mock) {
-  OSCryptImpl::GetInstance()->UseMockKeychainForTesting(use_mock);
-}
-void UseLockedMockKeychainForTesting(bool use_locked) {
-  OSCryptImpl::GetInstance()->UseLockedMockKeychainForTesting(use_locked);
+void SetKeychainForTesting(
+    std::variant<std::unique_ptr<crypto::apple::Keychain>, MockLockedKeychain>
+        keychain) {
+  OSCryptImpl::GetInstance()->SetKeychainForTesting(std::move(keychain));
 }
 std::string GetRawEncryptionKey() {
   return OSCryptImpl::GetInstance()->GetRawEncryptionKey();
@@ -82,13 +85,33 @@ OSCryptImpl* OSCryptImpl::GetInstance() {
 OSCryptImpl::OSCryptImpl() = default;
 OSCryptImpl::~OSCryptImpl() = default;
 
-std::unique_ptr<crypto::AppleKeychain> OSCryptImpl::GetKeychain() const {
-  if (use_mock_keychain_ || base::CommandLine::ForCurrentProcess()->HasSwitch(
-                                os_crypt::switches::kUseMockKeychain)) {
-    return std::make_unique<crypto::MockAppleKeychain>();
+std::unique_ptr<crypto::apple::Keychain> OSCryptImpl::GetKeychain() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          os_crypt::switches::kUseMockKeychain)) {
+    return std::make_unique<crypto::apple::MockKeychain>();
   }
 
-  return crypto::AppleKeychain::DefaultKeychain();
+  if (test_keychain_) {
+    return std::move(test_keychain_);
+  }
+  return crypto::apple::Keychain::DefaultKeychain();
+}
+
+void OSCryptImpl::SetKeychainForTesting(
+    std::variant<std::unique_ptr<crypto::apple::Keychain>,
+                 OSCrypt::MockLockedKeychain> keychain) {
+  key_.reset();
+
+  if (std::holds_alternative<std::unique_ptr<crypto::apple::Keychain>>(
+          keychain)) {
+    test_keychain_ = std::move(std::get<0>(keychain));
+    try_keychain_ = true;
+
+  } else {
+    CHECK(std::holds_alternative<OSCrypt::MockLockedKeychain>(keychain));
+    test_keychain_.reset();
+    try_keychain_ = false;
+  }
 }
 
 bool OSCryptImpl::DeriveKey() {
@@ -97,13 +120,6 @@ bool OSCryptImpl::DeriveKey() {
   // Fast fail when there's no key and derivation already failed in an earlier
   // call to DeriveKey().
   if (!try_keychain_ && !key_) {
-    return false;
-  }
-
-  // Fast fail if this object is pretending to have a locked keychain.
-  // TODO(https://crbug.com/389737048): Replace this with a setter on the mock
-  // keychain once it's possible to inject a mock keychain.
-  if (use_mock_keychain_ && use_locked_mock_keychain_) {
     return false;
   }
 
@@ -241,20 +257,6 @@ bool OSCryptImpl::DecryptString(const std::string& ciphertext,
 
 bool OSCryptImpl::IsEncryptionAvailable() {
   return DeriveKey();
-}
-
-void OSCryptImpl::UseMockKeychainForTesting(bool use_mock) {
-  use_mock_keychain_ = use_mock;
-  if (!use_mock_keychain_) {
-    use_locked_mock_keychain_ = false;
-  }
-}
-
-void OSCryptImpl::UseLockedMockKeychainForTesting(bool use_locked) {
-  use_locked_mock_keychain_ = use_locked;
-  if (use_locked_mock_keychain_) {
-    use_mock_keychain_ = true;
-  }
 }
 
 // static

@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_coordinator.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import <optional>
 
 #import "base/functional/bind.h"
@@ -18,7 +16,8 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/parent_access_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_mediator.h"
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_mediator_delegate.h"
 #import "ios/chrome/browser/supervised_user/model/parent_access_tab_helper.h"
@@ -85,9 +84,6 @@
                                              parentAccessURL:parentAccessURL];
   _mediator.delegate = self;
   _viewController = [[ParentAccessBottomSheetViewController alloc] init];
-
-  // Do not use the bottom sheet default dismiss button.
-  _viewController.showDismissBarButton = NO;
 
   _viewController.presentationController.delegate = self;
   _viewController.presentationDelegate = self;
@@ -167,18 +163,18 @@
 
 #pragma mark - Private
 
-- (MDCSnackbarMessage*)snackbarMessage {
+- (SnackbarMessage*)snackbarMessage {
   // Create a "Close" action for the snackbar. Tapping anywhere on the snackbar
   // dismisses it, so an action handler is not required.
-  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
   action.title = l10n_util::GetNSString(
       IDS_PARENTAL_LOCAL_APPROVAL_SNACKBAR_GENERIC_ERROR_BACK_BUTTON);
-  action.accessibilityIdentifier = kParentAccessSnackbarClose;
 
-  MDCSnackbarMessage* message = CreateSnackbarMessage(l10n_util::GetNSString(
-      IDS_PARENTAL_LOCAL_APPROVAL_SNACKBAR_GENERIC_ERROR_TITLE));
+  SnackbarMessage* message = [[SnackbarMessage alloc]
+      initWithTitle:
+          l10n_util::GetNSString(
+              IDS_PARENTAL_LOCAL_APPROVAL_SNACKBAR_GENERIC_ERROR_TITLE)];
   message.action = action;
-  message.category = kParentAccessSnackbarCategory;
   return message;
 }
 

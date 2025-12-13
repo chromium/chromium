@@ -52,10 +52,11 @@ class CustomTabCaptureStateToken {
     }
 
     /**
-     * Compares two tokens and looks for any difference. If multiple are present only one will
-     * be returned. ToolbarSnapshotDifference.NONE indicates the two tokens are the same.
+     * Compares two tokens and looks for any difference. If multiple are present only one will be
+     * returned. ToolbarSnapshotDifference.NONE indicates the two tokens are the same.
      */
-    public @ToolbarSnapshotDifference int getAnyDifference(CustomTabCaptureStateToken that) {
+    public @ToolbarSnapshotDifference int getAnyDifference(
+            @Nullable CustomTabCaptureStateToken that) {
         if (that == null) {
             return ToolbarSnapshotDifference.NULL;
         } else if (!Objects.equals(mUrl, that.mUrl)) {

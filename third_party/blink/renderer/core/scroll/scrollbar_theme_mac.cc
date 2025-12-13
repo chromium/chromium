@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -219,7 +220,8 @@ void ScrollbarThemeMac::PaintTrackBackground(GraphicsContext& context,
   mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       context.Canvas(), track_part, WebThemeEngine::State::kStateNormal, bounds,
-      &params, color_scheme, scrollbar.InForcedColorsMode(),
+      &params, scrollbar.InForcedColorsMode(), color_scheme,
+      scrollbar.GetPreferredContrast(),
       scrollbar.GetColorProvider(color_scheme));
   if (opacity != 1)
     context.EndLayer();
@@ -249,8 +251,9 @@ void ScrollbarThemeMac::PaintScrollCorner(GraphicsContext& context,
       vertical_scrollbar->UsedColorScheme();
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       context.Canvas(), WebThemeEngine::Part::kPartScrollbarCorner,
-      WebThemeEngine::State::kStateNormal, bounds, &params, color_scheme,
-      vertical_scrollbar->InForcedColorsMode(),
+      WebThemeEngine::State::kStateNormal, bounds, &params,
+      vertical_scrollbar->InForcedColorsMode(), color_scheme,
+      vertical_scrollbar->GetPreferredContrast(),
       vertical_scrollbar->GetColorProvider(color_scheme));
 }
 
@@ -307,7 +310,8 @@ void ScrollbarThemeMac::PaintThumb(GraphicsContext& context,
   mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       context.Canvas(), thumb_part, WebThemeEngine::State::kStateNormal, bounds,
-      &params, color_scheme, scrollbar.InForcedColorsMode(),
+      &params, scrollbar.InForcedColorsMode(), color_scheme,
+      scrollbar.GetPreferredContrast(),
       scrollbar.GetColorProvider(color_scheme));
 }
 
@@ -352,6 +356,9 @@ gfx::Rect ScrollbarThemeMac::TrackRect(const Scrollbar& scrollbar) const {
 
 int ScrollbarThemeMac::MinimumThumbLength(const Scrollbar& scrollbar) const {
   const auto& painter_values = GetScrollbarPainterValues(scrollbar);
+  if (RuntimeEnabledFeatures::CustomScrollbarApplyMinimumThumbLengthEnabled()) {
+    return painter_values.knob_min_length * scrollbar.ScaleFromDIP();
+  }
   return painter_values.knob_min_length;
 }
 

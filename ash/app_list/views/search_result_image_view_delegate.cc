@@ -9,6 +9,7 @@
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/app_list/views/search_result_image_view.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/view_utils.h"

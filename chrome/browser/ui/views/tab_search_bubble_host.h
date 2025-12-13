@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_TAB_SEARCH_BUBBLE_HOST_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
@@ -28,7 +27,6 @@ class BrowserWindowInterface;
 class Profile;
 class TabOrganizationService;
 class TabSearchBubbleHostObserver;
-class TabStrip;
 
 // TabSearchBubbleHost assumes responsibility for configuring its button,
 // showing / hiding the tab search bubble and handling metrics collection.
@@ -37,8 +35,7 @@ class TabSearchBubbleHost : public views::WidgetObserver,
                             public WebUIBubbleManagerObserver {
  public:
   TabSearchBubbleHost(views::Button* button,
-                      BrowserWindowInterface* browser_window_interface,
-                      base::WeakPtr<TabStrip> tab_strip);
+                      BrowserWindowInterface* browser_window_interface);
   TabSearchBubbleHost(const TabSearchBubbleHost&) = delete;
   TabSearchBubbleHost& operator=(const TabSearchBubbleHost&) = delete;
   ~TabSearchBubbleHost() override;
@@ -99,8 +96,6 @@ class TabSearchBubbleHost : public views::WidgetObserver,
 
   base::ObserverList<TabSearchBubbleHostObserver> observers_;
 
-  raw_ptr<views::MenuButtonController> menu_button_controller_ = nullptr;
-
   // A lock to keep its `button_` pressed while |bubble_| is showing or in the
   // process of being shown.
   std::unique_ptr<views::MenuButtonController::PressedLock> pressed_lock_;
@@ -113,8 +108,6 @@ class TabSearchBubbleHost : public views::WidgetObserver,
 
   base::ScopedObservation<WebUIBubbleManager, WebUIBubbleManagerObserver>
       webui_bubble_manager_observer_{this};
-
-  base::WeakPtr<TabStrip> tab_strip_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TAB_SEARCH_BUBBLE_HOST_H_

@@ -10,7 +10,6 @@
 #include <variant>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
@@ -18,23 +17,19 @@
 #include "base/notreached.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
-#include "base/version.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "url/gurl.h"
 
 namespace {
-
-bool IsIwaKioskSession() {
-  return user_manager::UserManager::IsInitialized() &&
-         user_manager::UserManager::Get()->IsLoggedInAsKioskIWA();
-}
 
 policy::DeviceLocalAccount GetCurrentDeviceLocalAccount() {
   const user_manager::User& current_user =
@@ -86,14 +81,14 @@ base::expected<IwaPinnedVersion, std::monostate> GetPinnedVersion(
     return std::nullopt;
   }
 
-  base::Version parsed_pinned_version = base::Version(raw_policy_value);
+  auto parsed_pinned_version = web_app::IwaVersion::Create(raw_policy_value);
   // An invalid policy value results in an error. It doesn't fall back to no
   // pinning.
-  if (!parsed_pinned_version.IsValid()) {
+  if (!parsed_pinned_version.has_value()) {
     return base::unexpected(std::monostate());
   }
 
-  return parsed_pinned_version;
+  return *std::move(parsed_pinned_version);
 }
 
 KioskIwaUpdateData::KioskIwaUpdateData(
@@ -111,7 +106,7 @@ KioskIwaUpdateData::KioskIwaUpdateData(
 KioskIwaUpdateData::~KioskIwaUpdateData() = default;
 
 std::optional<web_package::SignedWebBundleId> GetCurrentKioskIwaBundleId() {
-  if (!ash::features::IsIsolatedWebAppKioskEnabled() || !IsIwaKioskSession()) {
+  if (!chromeos::IsIwaKioskSession()) {
     return std::nullopt;
   }
 
@@ -126,7 +121,7 @@ std::optional<web_package::SignedWebBundleId> GetCurrentKioskIwaBundleId() {
 }
 
 std::optional<KioskIwaUpdateData> GetCurrentKioskIwaUpdateData() {
-  if (!ash::features::IsIsolatedWebAppKioskEnabled() || !IsIwaKioskSession()) {
+  if (!chromeos::IsIwaKioskSession()) {
     return std::nullopt;
   }
 

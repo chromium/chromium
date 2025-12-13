@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/services/paint_preview_compositor/paint_preview_compositor_impl.h"
 
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
@@ -105,10 +101,11 @@ void BitmapCallbackImpl(
   // Assert that all the bytes of the backing memory are equal. This check is
   // only safe if all of the width, height and bytesPerPixel are equal between
   // the two bitmaps.
-  EXPECT_EQ(memcmp(bitmap.getPixels(), expected_bitmap.getPixels(),
-                   expected_bitmap.bytesPerPixel() * expected_bitmap.width() *
-                       expected_bitmap.height()),
-            0);
+  UNSAFE_TODO(
+      EXPECT_EQ(memcmp(bitmap.getPixels(), expected_bitmap.getPixels(),
+                       expected_bitmap.bytesPerPixel() *
+                           expected_bitmap.width() * expected_bitmap.height()),
+                0));
 }
 
 SkRect ToSkRect(const gfx::Size& size) {

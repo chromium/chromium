@@ -68,8 +68,8 @@ void LazyLoadImageObserver::StartMonitoringNearViewport(Document* root_document,
     };
     lazy_load_intersection_observer_ = IntersectionObserver::Create(
         *root_document,
-        WTF::BindRepeating(&LazyLoadImageObserver::LoadIfNearViewport,
-                           WrapWeakPersistent(this)),
+        BindRepeating(&LazyLoadImageObserver::LoadIfNearViewport,
+                      WrapWeakPersistent(this)),
         LocalFrameUkmAggregator::kLazyLoadIntersectionObserver,
         std::move(params));
   }

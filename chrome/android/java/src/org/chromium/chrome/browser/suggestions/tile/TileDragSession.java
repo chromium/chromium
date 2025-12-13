@@ -14,6 +14,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
+import org.chromium.chrome.browser.suggestions.tile.TileDragDelegate.ReorderFlow;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 
 import java.util.List;
@@ -32,7 +33,7 @@ import java.util.List;
 @NullMarked
 class TileDragSession implements TileDragAutoScroll.Delegate {
 
-    // Delegate to retrieve data from {@link TileDragDelegateImpl}.
+    /** Delegate to retrieve data from {@link TileDragDelegateImpl}. */
     interface Delegate {
         /** Returns whether scroll should take place when a tile is dragged to edge of Outer. */
         boolean isAutoScrollEnabled();
@@ -41,14 +42,40 @@ class TileDragSession implements TileDragAutoScroll.Delegate {
         @Px
         float getTileWidth();
 
-        /** Returns the current list of {@link TileView} instances in Outer. */
-        List<TileView> getDraggableTileViews();
-
         /** Returns the {@link SiteSuggestion} corresponding to a {@link TileView}. */
         SiteSuggestion getTileViewData(TileView view);
 
         /** Returns the Outer View. */
         HorizontalScrollView getOuterView();
+    }
+
+    /** Listener for drag-and-drop UI stages, and to receive the final result. */
+    interface EventListener {
+        /** Called when the tile drag session starts. */
+        void onDragStart();
+
+        /**
+         * Called when the tile drag session becomes the dominant UI mode. The implementation should
+         * suppress competing UI, e.g., context menu.
+         */
+        void onDragDominate();
+
+        /**
+         * Called when tile drag UI successfully produces result. The implementation should execute
+         * the operation, then refresh UI if successful.
+         *
+         * @param reorderFlow Enum to identify the flow used to perform reordering.
+         * @param fromSuggestion Data to identify the tile being dragged.
+         * @param toSuggestion Data to identify the tile being dropped on.
+         * @return Whether the operation successfully ran.
+         */
+        boolean onReorderAccept(
+                @ReorderFlow int reorderFlow,
+                SiteSuggestion fromSuggestion,
+                SiteSuggestion toSuggestion);
+
+        /** Called when the drag UI is cancelled (and no UI refresh takes place). */
+        void onReorderCancel();
     }
 
     // Scaling factor to shrink the "from" tile in {START, DOMINATE}.
@@ -58,7 +85,7 @@ class TileDragSession implements TileDragAutoScroll.Delegate {
     private static final float DRAG_X_MARGIN_RATIO = 0.2f;
 
     private final Delegate mDelegate;
-    private final TileGroup.TileDragHandlerDelegate mDragResultDelegate;
+    private final EventListener mEventListener;
     private final TileView mFromView;
     private final float mSavedFromZ;
     private final @Px float mTileWidth;
@@ -76,19 +103,19 @@ class TileDragSession implements TileDragAutoScroll.Delegate {
 
     /**
      * @param delegate Data provider.
-     * @param dragHandlerDelegate Delegate to respond to events and results.
+     * @param eventListener Listener for events and to pass the final result.
      * @param fromView The view of the "from" tile that's being dragged.
      * @param eventX The X coordinate of the initial ACTION_DOWN event on the "from" tile.
      * @param eventY The Y coordinate of the same.
      */
     public TileDragSession(
             Delegate delegate,
-            TileGroup.TileDragHandlerDelegate dragHandlerDelegate,
+            EventListener eventListener,
             TileView fromView,
             float eventX,
             float eventY) {
         mDelegate = delegate;
-        mDragResultDelegate = dragHandlerDelegate;
+        mEventListener = eventListener;
         mFromView = fromView;
         mSavedFromZ = mFromView.getZ();
         mTileWidth = mDelegate.getTileWidth();
@@ -98,8 +125,8 @@ class TileDragSession implements TileDragAutoScroll.Delegate {
     }
 
     @Initializer
-    public void start() {
-        mTileMovement = new TileMovement(mDelegate.getDraggableTileViews());
+    public void start(TileMovement tileMovement) {
+        mTileMovement = tileMovement;
         mFromIndex = mTileMovement.getIndexOfView(mFromView);
         mToIndex = mFromIndex;
 
@@ -124,6 +151,13 @@ class TileDragSession implements TileDragAutoScroll.Delegate {
         mFromView.animate().scaleX(DRAG_ACTIVE_SCALE).scaleY(DRAG_ACTIVE_SCALE).start();
         // Temporarily increment Z so the "from" tile is drawn on top of other tiles.
         mFromView.setZ(mSavedFromZ + 1.0f);
+
+        mEventListener.onDragStart();
+    }
+
+    // Notifies the class that tile drag session has become the dominant UI mode.
+    public void dominate() {
+        mEventListener.onDragDominate();
     }
 
     // TileDragAutoScroll.Delegate implementation.
@@ -148,10 +182,6 @@ class TileDragSession implements TileDragAutoScroll.Delegate {
         mFromView.setX(MathUtils.clamp(mFromView.getX() + dx, mXLo, mXHi));
 
         updateToIndexAndAnimate();
-    }
-
-    public TileGroup.TileDragHandlerDelegate getTileDragHandlerDelegate() {
-        return mDragResultDelegate;
     }
 
     /**
@@ -206,7 +236,7 @@ class TileDragSession implements TileDragAutoScroll.Delegate {
      * @param accept Whether to accept the drag-and-drop if the "from" tile is dragged to a
      *     different "to" tile.
      * @return A {@link Runnable} that can be called to cancel the accept / reject animation and
-     *     action while it's in -flight. Once complete then the calling would have no effect.
+     *     action while it's in-flight. Once complete then the calling would have no effect.
      */
     public @Nullable Runnable finish(boolean accept) {
         mFromView.setZ(mSavedFromZ);
@@ -227,7 +257,8 @@ class TileDragSession implements TileDragAutoScroll.Delegate {
                     /* onAccept= */ () -> {
                         if (mTileMovement != null) {
                             TileView toView = mTileMovement.getTileViewAt(mToIndex);
-                            mDragResultDelegate.onDragAccept(
+                            mEventListener.onReorderAccept(
+                                    ReorderFlow.DRAG_FLOW,
                                     mDelegate.getTileViewData(mFromView),
                                     mDelegate.getTileViewData(toView));
                         }
@@ -235,9 +266,11 @@ class TileDragSession implements TileDragAutoScroll.Delegate {
 
         } else {
             mTileMovement.animatedReject();
+            mEventListener.onReorderCancel();
         }
 
         return () -> {
+            // Reset visuals if animation is in-flight.
             if (mTileMovement != null) {
                 mTileMovement.cancelIfActive();
             }

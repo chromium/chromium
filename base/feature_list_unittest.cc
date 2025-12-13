@@ -42,6 +42,10 @@ BASE_FEATURE(kFeatureOffByDefault,
              kFeatureOffByDefaultName,
              FEATURE_DISABLED_BY_DEFAULT);
 
+// For testing the 2-argument BASE_FEATURE macro.
+BASE_FEATURE(kFeature2ArgsOn, FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kFeature2ArgsOff, FEATURE_DISABLED_BY_DEFAULT);
+
 std::string SortFeatureListString(const std::string& feature_list) {
   std::vector<std::string_view> features =
       FeatureList::SplitFeatureListString(feature_list);
@@ -50,6 +54,9 @@ std::string SortFeatureListString(const std::string& feature_list) {
 }
 
 }  // namespace
+
+// A feature outside the anonymous namespace.
+BASE_FEATURE(kFeatureOutsideAnonymousNamespace, FEATURE_DISABLED_BY_DEFAULT);
 
 class FeatureListTest : public testing::Test {
  public:
@@ -68,6 +75,20 @@ class FeatureListTest : public testing::Test {
 TEST_F(FeatureListTest, DefaultStates) {
   EXPECT_TRUE(FeatureList::IsEnabled(kFeatureOnByDefault));
   EXPECT_FALSE(FeatureList::IsEnabled(kFeatureOffByDefault));
+}
+
+// Testing the 2-argument BASE_FEATURE macro.
+TEST_F(FeatureListTest, TwoArgMacro) {
+  EXPECT_TRUE(FeatureList::IsEnabled(kFeature2ArgsOn));
+  EXPECT_FALSE(FeatureList::IsEnabled(kFeature2ArgsOff));
+  EXPECT_STREQ("Feature2ArgsOn", kFeature2ArgsOn.name);
+  EXPECT_STREQ("Feature2ArgsOff", kFeature2ArgsOff.name);
+}
+
+TEST_F(FeatureListTest, OutsideAnonymousNamespace) {
+  EXPECT_FALSE(FeatureList::IsEnabled(kFeatureOutsideAnonymousNamespace));
+  EXPECT_STREQ("FeatureOutsideAnonymousNamespace",
+               kFeatureOutsideAnonymousNamespace.name);
 }
 
 TEST_F(FeatureListTest, InitFromCommandLine) {
@@ -634,7 +655,7 @@ TEST_F(FeatureListTest, InitFromCommandLine_UseDefault) {
 }
 
 TEST_F(FeatureListTest, InitInstance) {
-  std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+  auto feature_list = std::make_unique<base::FeatureList>();
   test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
@@ -670,7 +691,7 @@ TEST_F(FeatureListTest, UninitializedInstance_IsEnabledReturnsFalse) {
 }
 
 TEST_F(FeatureListTest, StoreAndRetrieveFeaturesFromSharedMemory) {
-  std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+  auto feature_list = std::make_unique<base::FeatureList>();
 
   // Create some overrides.
   feature_list->RegisterOverride(kFeatureOffByDefaultName,
@@ -686,7 +707,7 @@ TEST_F(FeatureListTest, StoreAndRetrieveFeaturesFromSharedMemory) {
                                                     "");
   feature_list->AddFeaturesToAllocator(&allocator);
 
-  std::unique_ptr<base::FeatureList> feature_list2(new base::FeatureList);
+  auto feature_list2 = std::make_unique<base::FeatureList>();
 
   // Check that the new feature list is empty.
   EXPECT_FALSE(feature_list2->IsFeatureOverriddenFromCommandLine(
@@ -703,7 +724,7 @@ TEST_F(FeatureListTest, StoreAndRetrieveFeaturesFromSharedMemory) {
 }
 
 TEST_F(FeatureListTest, StoreAndRetrieveAssociatedFeaturesFromSharedMemory) {
-  std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+  auto feature_list = std::make_unique<base::FeatureList>();
 
   // Create some overrides.
   FieldTrial* trial1 = FieldTrialList::CreateFieldTrial("TrialExample1", "A");
@@ -721,7 +742,7 @@ TEST_F(FeatureListTest, StoreAndRetrieveAssociatedFeaturesFromSharedMemory) {
                                                     "");
   feature_list->AddFeaturesToAllocator(&allocator);
 
-  std::unique_ptr<base::FeatureList> feature_list2(new base::FeatureList);
+  auto feature_list2 = std::make_unique<base::FeatureList>();
   feature_list2->InitFromSharedMemory(&allocator);
   feature_list2->FinalizeInitialization();
 

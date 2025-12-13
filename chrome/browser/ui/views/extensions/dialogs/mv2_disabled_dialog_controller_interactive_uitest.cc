@@ -6,7 +6,6 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
-#include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
@@ -19,8 +18,10 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/install_verifier.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/test/test_extension_dir.h"
@@ -183,8 +184,6 @@ class Mv2DisabledDialogControllerInteractiveUITest
 
     switch (experiment_stage) {
       case MV2ExperimentStage::kWarning:
-      case MV2ExperimentStage::kNone:
-        NOTREACHED() << "Unhandled stage.";
       case MV2ExperimentStage::kDisableWithReEnable:
         enabled_features.push_back(
             extensions_features::kExtensionManifestV2Disabled);
@@ -229,7 +228,6 @@ INSTANTIATE_TEST_SUITE_P(
                       MV2ExperimentStage::kUnsupported),
     [](const testing::TestParamInfo<MV2ExperimentStage>& info) {
       switch (info.param) {
-        case MV2ExperimentStage::kNone:
         case MV2ExperimentStage::kWarning:
           NOTREACHED();
         case MV2ExperimentStage::kDisableWithReEnable:

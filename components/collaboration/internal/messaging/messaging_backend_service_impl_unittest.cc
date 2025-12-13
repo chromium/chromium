@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback_forward.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
@@ -108,7 +107,7 @@ tab_groups::SavedTabGroup CreateSharedTabGroup(
                                       tab_groups::TabGroupColorId::kOrange,
                                       tabs, std::nullopt, tab_group_sync_id);
   tab_group.SetCollaborationId(
-      tab_groups::CollaborationId(collaboration_group_id.value()));
+      syncer::CollaborationId(collaboration_group_id.value()));
   return tab_group;
 }
 
@@ -130,7 +129,7 @@ tab_groups::SavedTabGroup CreateSharedTabGroup(
                                       tab_groups::TabGroupColorId::kOrange,
                                       tabs, std::nullopt, tab_group_sync_id);
   tab_group.SetCollaborationId(
-      tab_groups::CollaborationId(collaboration_group_id.value()));
+      syncer::CollaborationId(collaboration_group_id.value()));
   return tab_group;
 }
 
@@ -1146,7 +1145,7 @@ TEST_F(MessagingBackendServiceImplTest,
   // It should add a message for this tab to the DB, but not result in
   // persistent message notification.
   EXPECT_CALL(mock_persistent_message_observer_, DisplayPersistentMessage)
-      .Times(0);
+      .Times(2u);
   EXPECT_EQ(1u, GetMessageCountFromDB());
   tg_notifier_observer_->OnTabUpdated(tab1, tab1,
                                       tab_groups::TriggerSource::REMOTE, false);
@@ -1155,7 +1154,7 @@ TEST_F(MessagingBackendServiceImplTest,
   // Verify that a message is created for remote tab addition.
   auto message = GetLastMessageFromDB();
   VerifyGenericMessageData(message, "my group id",
-                           collaboration_pb::TAB_UPDATED, DirtyType::kNone,
+                           collaboration_pb::TAB_UPDATED, DirtyType::kChip,
                            now.ToTimeT());
 
   EXPECT_EQ(gaia2, GaiaId(message.triggering_user_gaia_id()));
@@ -1594,7 +1593,8 @@ TEST_F(MessagingBackendServiceImplTest, TestActivityLogTabEvents) {
 
 TEST_F(MessagingBackendServiceImplTest, TestGetMessagesNoMessages) {
   CreateAndInitializeService();
-  std::vector<PersistentMessage> messages = service_->GetMessages(std::nullopt);
+  std::vector<PersistentMessage> messages =
+      service_->GetMessages(PersistentNotificationType::UNDEFINED);
   EXPECT_EQ(0u, messages.size());
 }
 
@@ -1605,7 +1605,8 @@ TEST_F(MessagingBackendServiceImplTest, TestGetMessagesOneMessage) {
       data_sharing::GroupId("my group id");
   base::Time now = base::Time::Now();
 
-  std::vector<PersistentMessage> messages = service_->GetMessages(std::nullopt);
+  std::vector<PersistentMessage> messages =
+      service_->GetMessages(PersistentNotificationType::UNDEFINED);
   EXPECT_EQ(0u, messages.size());
 
   collaboration_pb::Message message = CreateStoredMessage(
@@ -1614,7 +1615,7 @@ TEST_F(MessagingBackendServiceImplTest, TestGetMessagesOneMessage) {
   AddMessage(message);
 
   // Our service will need to also query for dirty dot messages for a group.
-  messages = service_->GetMessages(std::nullopt);
+  messages = service_->GetMessages(PersistentNotificationType::UNDEFINED);
   // Should become two PersistentMessages for the tab, and one for the tab
   // group.
   ASSERT_EQ(3u, messages.size());
@@ -1633,7 +1634,8 @@ TEST_F(MessagingBackendServiceImplTest, TestGetMessagesTwoMessages) {
       data_sharing::GroupId("my group id");
   base::Time now = base::Time::Now();
 
-  std::vector<PersistentMessage> messages = service_->GetMessages(std::nullopt);
+  std::vector<PersistentMessage> messages =
+      service_->GetMessages(PersistentNotificationType::UNDEFINED);
   EXPECT_EQ(0u, messages.size());
 
   collaboration_pb::Message message1 = CreateStoredMessage(
@@ -1645,7 +1647,7 @@ TEST_F(MessagingBackendServiceImplTest, TestGetMessagesTwoMessages) {
   AddMessage(message1);
   AddMessage(message2);
 
-  messages = service_->GetMessages(std::nullopt);
+  messages = service_->GetMessages(PersistentNotificationType::UNDEFINED);
   // Should become two PersistentMessages for each tab, and one for the tab
   // group.
   ASSERT_EQ(5u, messages.size());
@@ -1695,7 +1697,8 @@ TEST_F(MessagingBackendServiceImplTest,
   base::Time now = base::Time::Now();
 
   // Start with no messages in the DB.
-  std::vector<PersistentMessage> messages = service_->GetMessages(std::nullopt);
+  std::vector<PersistentMessage> messages =
+      service_->GetMessages(PersistentNotificationType::UNDEFINED);
   EXPECT_EQ(0u, messages.size());
 
   // Add a tab message to the DB.
@@ -1720,7 +1723,8 @@ TEST_F(MessagingBackendServiceImplTest,
   // messages for the tab (chip and dirty dot), and one for the tab group (dirty
   // dot).
   messages = service_->GetMessagesForGroup(
-      tab_groups::EitherGroupID(tab_group.saved_guid()), std::nullopt);
+      tab_groups::EitherGroupID(tab_group.saved_guid()),
+      PersistentNotificationType::UNDEFINED);
   ASSERT_EQ(3u, messages.size());
   EXPECT_EQ(CollaborationEvent::TAB_ADDED, messages.at(0).collaboration_event);
   EXPECT_EQ(PersistentNotificationType::CHIP, messages.at(0).type);
@@ -1783,7 +1787,8 @@ TEST_F(MessagingBackendServiceImplTest,
   base::Time now = base::Time::Now();
 
   // Start with no messages in the DB.
-  std::vector<PersistentMessage> messages = service_->GetMessages(std::nullopt);
+  std::vector<PersistentMessage> messages =
+      service_->GetMessages(PersistentNotificationType::UNDEFINED);
   EXPECT_EQ(0u, messages.size());
 
   // Add a tab message to the DB.
@@ -1813,7 +1818,8 @@ TEST_F(MessagingBackendServiceImplTest,
   // messages for the tab (chip and dirty dot), and one for the tab group (dirty
   // dot).
   messages = service_->GetMessagesForGroup(
-      tab_groups::EitherGroupID(tab_group.saved_guid()), std::nullopt);
+      tab_groups::EitherGroupID(tab_group.saved_guid()),
+      PersistentNotificationType::UNDEFINED);
   ASSERT_EQ(3u, messages.size());
   EXPECT_EQ(CollaborationEvent::TAB_ADDED, messages.at(0).collaboration_event);
   EXPECT_EQ(PersistentNotificationType::CHIP, messages.at(0).type);
@@ -1909,7 +1915,8 @@ TEST_F(MessagingBackendServiceImplTest, TestClearPersistentMessage_AllTypes) {
   AddMessage(message);
 
   EXPECT_TRUE(HasDirtyMessages());
-  service_->ClearPersistentMessage(uuid1, std::nullopt);
+  service_->ClearPersistentMessage(uuid1,
+                                   PersistentNotificationType::UNDEFINED);
   EXPECT_FALSE(HasDirtyMessages());
 }
 
@@ -1961,7 +1968,8 @@ TEST_F(MessagingBackendServiceImplTest, TestGetMessagesForTab) {
       data_sharing::GroupId("my group id");
   base::Time now = base::Time::Now();
 
-  std::vector<PersistentMessage> messages = service_->GetMessages(std::nullopt);
+  std::vector<PersistentMessage> messages =
+      service_->GetMessages(PersistentNotificationType::UNDEFINED);
   EXPECT_EQ(0u, messages.size());
 
   // The query should come for the given tab's tab group.
@@ -1983,7 +1991,7 @@ TEST_F(MessagingBackendServiceImplTest, TestGetMessagesForTab) {
   AddMessage(message);
 
   messages = service_->GetMessagesForTab(tab_groups::EitherTabID(tab1_sync_id),
-                                         std::nullopt);
+                                         PersistentNotificationType::UNDEFINED);
   // Should become two PersistentMessages for the tab, but nothing from the
   // group.
   ASSERT_EQ(2u, messages.size());

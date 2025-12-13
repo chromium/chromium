@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/device_trust/test/test_constants.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/device_signals/core/browser/pref_names.h"
 #include "components/policy/policy_constants.h"

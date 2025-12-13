@@ -71,6 +71,15 @@ class ContentBrowserTest : public BrowserTestBase {
   // Returns the window for the test.
   Shell* shell() const { return shell_; }
 
+  // This is used in tests that rely on a ContentBrowserTestContentBrowserClient
+  // to register different binders in RegisterBrowserInterfaceBindersForFrame.
+  // The earliest point at which the ContentBrowserTestContentBrowserClient can
+  // be replaced is still later than the call to
+  // RegisterBrowserInterfaceBindersForFrame. Therefore, a new window has to be
+  // recreated so that RegisterBrowserInterfaceBindersForFrame is called on the
+  // right ContentBrowserTestContentBrowserClient.
+  void RecreateWindow();
+
   // Creates a test browser context with a file path that's appropriate for
   // browser tests.
   std::unique_ptr<TestBrowserContext> CreateTestBrowserContext();

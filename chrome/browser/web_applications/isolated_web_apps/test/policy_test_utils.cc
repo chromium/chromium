@@ -8,7 +8,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 
 namespace web_app::test {
 
@@ -54,7 +54,7 @@ base::Value::Dict CreateForceInstallIwaPolicyEntry(
     const web_package::SignedWebBundleId& web_bundle_id,
     const GURL& update_manifest_url,
     const std::optional<UpdateChannel>& update_channel,
-    const std::optional<base::Version>& pinned_version,
+    const std::optional<IwaVersion>& pinned_version,
     bool allow_downgrades) {
   return CreateForceInstallIwaPolicyEntry(
       web_bundle_id.id(), update_manifest_url.spec(),

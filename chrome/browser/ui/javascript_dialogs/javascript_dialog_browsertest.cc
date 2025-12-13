@@ -10,11 +10,16 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
@@ -45,6 +50,8 @@ class JavaScriptDialogTest : public InProcessBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
+
+  TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
 
  private:
   friend class JavaScriptDialogDismissalCauseTester;
@@ -477,6 +484,52 @@ IN_PROC_BROWSER_TEST_P(JavaScriptDialogOriginTest, TitleForNonHTTPOrigin) {
   EXPECT_EQ(base::UTF8ToUTF16(base::StringPrintf(
                 "a.com:%d says", embedded_test_server()->port())),
             dialog_manager->GetTitle(tab, subframe->GetLastCommittedOrigin()));
+}
+
+IN_PROC_BROWSER_TEST_F(JavaScriptDialogTest,
+                       HandlesSwappingTabWithDialogIntoSplitView) {
+  // Create three tabs with the first two in a split view.
+  chrome::NewTab(browser());
+  tab_strip_model()->ActivateTabAt(0);
+  chrome::NewSplitTab(browser(),
+                      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Open a alert dialog from the third tab.
+  tab_strip_model()->ActivateTabAt(2);
+  content::WebContents* web_contents =
+      tab_strip_model()->GetActiveWebContents();
+  javascript_dialogs::TabModalDialogManager* js_helper =
+      javascript_dialogs::TabModalDialogManager::FromWebContents(web_contents);
+  JavaScriptCallbackHelper callback_helper;
+  bool did_suppress = false;
+  js_helper->RunJavaScriptDialog(
+      web_contents, web_contents->GetPrimaryMainFrame(),
+      content::JAVASCRIPT_DIALOG_TYPE_ALERT, std::u16string(), std::u16string(),
+      callback_helper.GetCallback(), &did_suppress);
+  ASSERT_TRUE(js_helper->IsShowingDialogForTesting());
+
+  // Switch to the split view which should hide the dialog and show tab
+  // attention indicator.
+  tab_strip_model()->ActivateTabAt(0);
+  ASSERT_TRUE(browser()
+                  ->GetBrowserView()
+                  .tabstrip()
+                  ->tab_at(2)
+                  ->GetTabIconForTesting()
+                  ->GetShowingAttentionIndicator());
+
+  // Swapping the third tab with the inactive tab in the split should cause that
+  // tab to join the split view as an inactive tab. The dialog will still be
+  // showing.
+  tab_strip_model()->UpdateTabInSplit(tab_strip_model()->GetTabAtIndex(1), 2,
+                                      TabStripModel::SplitUpdateType::kSwap);
+  ASSERT_TRUE(js_helper->IsShowingDialogForTesting());
+  ASSERT_EQ(0, tab_strip_model()->active_index());
+
+  // Triggering the tab with the dialog will activate that tab.
+  tab_strip_model()->ActivateTabAt(1);
+  ASSERT_TRUE(js_helper->IsShowingDialogForTesting());
+  ASSERT_EQ(1, tab_strip_model()->active_index());
 }
 
 class JavaScriptDialogForPrerenderTest : public JavaScriptDialogTest {

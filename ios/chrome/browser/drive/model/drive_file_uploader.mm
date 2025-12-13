@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/drive/model/drive_file_uploader.h"
 
+#import "base/notimplemented.h"
+
 DriveFileUploader::DriveFileUploader() = default;
 
 DriveFileUploader::~DriveFileUploader() = default;

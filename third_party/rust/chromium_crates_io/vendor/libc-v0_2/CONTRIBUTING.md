@@ -89,11 +89,11 @@ standard, it's just a list shared among all OSs that declare `#[cfg(unix)]`.
 We have two automated tests running on
 [GitHub Actions](https://github.com/rust-lang/libc/actions):
 
-1. [`libc-test`](https://github.com/gnzlbg/ctest)
+1. `libc-test`
   - `cd libc-test && cargo test`
   - Use the `skip_*()` functions in `build.rs` if you really need a workaround.
 2. Style checker
-  - [`./ci/style.sh`](https://github.com/rust-lang/libc/blob/main/ci/style.sh)
+  - [`./ci/style.py`](https://github.com/rust-lang/libc/blob/main/ci/style.py)
 
 ## Breaking change policy
 

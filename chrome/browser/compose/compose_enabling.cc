@@ -22,7 +22,7 @@
 #include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/compose/buildflags.h"
@@ -37,6 +37,7 @@
 #include "components/webui/flags/flags_storage.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)

@@ -42,7 +42,8 @@ TrustedHTML* TrustedHTML::fromLiteral(ScriptState* script_state,
       MakeGarbageCollected<HTMLTemplateElement>(*window->document());
   DCHECK(template_element->content());
   template_element->content()->ParseHTML(
-      literal, template_element, ParserContentPolicy::kAllowScriptingContent);
+      literal, template_element, /*registry*/ nullptr,
+      ParserContentPolicy::kAllowScriptingContent);
 
   return MakeGarbageCollected<TrustedHTML>(template_element->GetInnerHTMLString());
 }

@@ -12,7 +12,7 @@
 #include "device/fido/attestation_statement.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/fido_transport_protocol.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

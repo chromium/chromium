@@ -12,10 +12,10 @@ namespace autofill::autofill_metrics {
 
 // Metric for tracking which authentication method was used for a user with
 // FIDO authentication enabled.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class CardUnmaskTypeDecisionMetric {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // Only WebAuthn prompt was shown.
   kFidoOnly = 0,
   // CVC authentication was required in addition to WebAuthn.
@@ -25,10 +25,10 @@ enum class CardUnmaskTypeDecisionMetric {
 
 // Events related to user-perceived latency due to GetDetailsForGetRealPan
 // call.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class PreflightCallEvent {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // Returned before card chosen.
   kPreflightCallReturnedBeforeCardChosen = 0,
   // Did not return before card was chosen. When opted-in, this means
@@ -41,10 +41,10 @@ enum class PreflightCallEvent {
 };
 
 // Possible scenarios where a WebAuthn prompt may show.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class WebauthnFlowEvent {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // WebAuthn is immediately prompted for unmasking.
   kImmediateAuthentication = 0,
   // WebAuthn is prompted after a CVC check.
@@ -58,10 +58,10 @@ enum class WebauthnFlowEvent {
 };
 
 // The parameters with which opt change was called.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class WebauthnOptInParameters {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // Call made to fetch a challenge.
   kFetchingChallenge = 0,
   // Call made with signature of creation challenge.
@@ -74,10 +74,10 @@ enum class WebauthnOptInParameters {
 // On Desktop, this enum represents the reason that the FIDO opt-in dialog was
 // not offered to the user. On Android, it represents whether the checkbox
 // was shown to the user.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class WebauthnOptInPromoNotOfferedReason {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // Default value, should never be used.
   kUnknown = 0,
   // Not offered because we authenticated a virtual card, and we do not offer
@@ -99,10 +99,10 @@ enum class WebauthnOptInPromoNotOfferedReason {
 };
 
 // The user decision for the WebAuthn opt-in promo.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class WebauthnOptInPromoUserDecisionMetric {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // User accepted promo.
   kAccepted = 0,
   // User immediately declined promo.
@@ -115,10 +115,10 @@ enum class WebauthnOptInPromoUserDecisionMetric {
 };
 
 // The result of a WebAuthn user-verification prompt.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class WebauthnResultMetric {
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-
   // User-verification succeeded.
   kSuccess = 0,
   // Other checks failed (e.g. invalid domain, algorithm unsupported, etc.)

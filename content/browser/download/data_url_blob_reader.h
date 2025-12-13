@@ -10,7 +10,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"

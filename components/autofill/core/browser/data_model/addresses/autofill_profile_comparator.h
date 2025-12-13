@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/address.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/addresses/contact_info.h"
@@ -42,8 +43,6 @@ class AutofillProfileComparator {
 
   ~AutofillProfileComparator();
 
-  enum class WhitespaceSpec { kRetain, kDiscard };
-
   // Returns true if `text1` matches `text2`. The following normalization
   // techniques are applied to the given texts before comparing.
   //
@@ -61,13 +60,14 @@ class AutofillProfileComparator {
   // If `whitespace_spec` is kRetain, then the postal codes "B15 3TR"
   // and "B153TR" are not considered equal, but "16 Bridge St." and "16 Bridge
   // St" are because trailing whitespace and punctuation are ignored.
-  bool Compare(
+  static bool Compare(
       std::u16string_view text1,
       std::u16string_view text2,
-      WhitespaceSpec whitespace_spec = WhitespaceSpec::kDiscard,
+      normalization::WhitespaceSpec whitespace_spec =
+          normalization::WhitespaceSpec::kDiscard,
       std::optional<FieldType> type = std::nullopt,
       AddressCountryCode country_code_1 = AddressCountryCode(""),
-      AddressCountryCode country_code_2 = AddressCountryCode("")) const;
+      AddressCountryCode country_code_2 = AddressCountryCode(""));
 
   // Returns true if two AutofillProfiles `p1` and `p2` have at least one
   // settings-visible value that is different.
@@ -75,10 +75,6 @@ class AutofillProfileComparator {
       const AutofillProfile& p1,
       const AutofillProfile& p2,
       const std::string& app_locale);
-
-  // Returns true if `text` is empty or contains only skippable characters. A
-  // character is skippable if it is punctuation or white space.
-  bool HasOnlySkippableCharacters(std::u16string_view text) const;
 
   // Get the difference in 'types' of two profiles. The difference is determined
   // with respect to the provided `app_locale`.
@@ -95,48 +91,14 @@ class AutofillProfileComparator {
                                       const AutofillProfile& second_profile,
                                       const std::string& app_locale);
 
-  // Returns a copy of `text` with uppercase converted to lowercase and
-  // diacritics are rewritten using rules for given `country_code`.
-  //
-  // If `whitespace_spec` is kRetain, punctuation is converted to
-  // spaces, and extraneous whitespace is trimmed and collapsed. For example,
-  // "Jean- François" becomes "jean francois".
-  //
-  // If `whitespace_spec` is kDiscard, punctuation and whitespace are discarded.
-  // For example, +1 (234) 567-8900 becomes 12345678900.
-  static std::u16string NormalizeForComparison(
-      std::u16string_view text,
-      WhitespaceSpec whitespace_spec = WhitespaceSpec::kRetain,
-      const AddressCountryCode& country_code = AddressCountryCode(""));
-
   // Returns true if `p1` and `p2` are viable merge candidates. This means that
   // their names, addresses, email addresses, company names, and phone numbers
   // are all pairwise equivalent or mergeable.
   //
   // Note that mergeability is non-directional; merging two profiles will likely
   // incorporate data from both profiles.
+  // TODO(crbug.com/359768803): Move this function to AutofillProfile.
   bool AreMergeable(const AutofillProfile& p1, const AutofillProfile& p2) const;
-
-  // Populates `name_info` with the result of merging the names in `new_profile`
-  // and `old_profile`. Returns true if successful. Expects that `new_profile`
-  // and `old_profile` have already been found to be mergeable. Regular names
-  // are merged first, after they are done, merging of alternative names starts.
-  bool MergeNames(const AutofillProfile& new_profile,
-                  const AutofillProfile& old_profile,
-                  NameInfo& name_info) const;
-
-  // Returns true if `full_name_2` is a variant of `full_name_1`.
-  //
-  // This function generates all variations of `full_name_1` and returns true if
-  // one of these variants is equal to `full_name_2`. For example, this function
-  // will return true if `full_name_2` is "john q public" and `full_name_1` is
-  // "john quincy public" because `full_name_2` can be derived from
-  // `full_name_1` by using the middle initial. Note that the reverse is not
-  // true, "john quincy public" is not a name variant of "john q public".
-  //
-  // Note: Expects that `full_name` is already normalized for comparison.
-  bool IsNameVariantOf(const std::u16string& full_name_1,
-                       const std::u16string& full_name_2) const;
 
   // Populates `email_info` with the result of merging the email addresses in
   // `new_profile` and `old_profile`. Returns true if successful. Expects that
@@ -175,6 +137,11 @@ class AutofillProfileComparator {
   // Heuristic: Populate the missing parts of each address from the other.
   // Prefer the abbreviated state, the shorter zip code and routing code, the
   // more verbost city, dependent locality, and address.
+  //
+  // If one of the profiles is `kAccountNameEmail`, returns true and
+  // sets `address` to the address tree of the other profile. Merging two
+  // `kAccountNameEmail` profiles will never happen, since there can be at most
+  // one of them at any given time.
   bool MergeAddresses(const AutofillProfile& new_profile,
                       const AutofillProfile& old_profile,
                       Address& address) const;
@@ -219,40 +186,6 @@ class AutofillProfileComparator {
                                const AutofillProfile& p2,
                                AutofillType t) const;
 
-  // Generate the set of full/initial variants for `name_part`, where
-  // `name_part` is the user's first or middle name. For example, given "jean
-  // francois" (the normalized for comparison form of "Jean-François") this
-  // function returns the set:
-  //
-  //   { "", "f", "francois,
-  //     "j", "j f", "j francois",
-  //     "jean", "jean f", "jean francois", "jf" }
-  //
-  // Note: Expects that `name` is already normalized for comparison.
-  static std::set<std::u16string> GetNamePartVariants(
-      const std::u16string& name_part);
-
-  // Returns true if `p1` and `p2` have names which are equivalent for the
-  // purposes of merging the two profiles. This means one of the names is empty,
-  // the names are the same, or one name is a variation of the other. The name
-  // comparison is insensitive to case, punctuation and diacritics.
-  //
-  // Note that this method does not provide any guidance on actually merging
-  // the names.
-  bool HaveMergeableNames(const AutofillProfile& p1,
-                          const AutofillProfile& p2) const;
-
-  // Returns true if `p1` and `p2` have alternative names which are equivalent
-  // for the purposes of merging the two profiles. This means one of the
-  // alternative names is empty, the names are the same, or one name is a
-  // variation of the other. The alternative name comparison is insensitive to
-  // case, punctuation and diacritics.
-  //
-  // Note that this method does not provide any guidance on actually merging
-  // the alternative names.
-  bool HaveMergeableAlternativeNames(const AutofillProfile& p1,
-                                     const AutofillProfile& p2) const;
-
   // Returns true if `p1` and `p2` have email addresses which are equivalent
   // for the purposes of merging the two profiles. This means one of the email
   // addresses is empty, or the email addresses are the same (modulo case).
@@ -287,39 +220,18 @@ class AutofillProfileComparator {
   // empty, or the addresses are a match. A number of normalization and
   // comparison heuristics are employed to determine if the addresses match.
   //
+  // If one of the profiles has `kAccountNameEmail` record type, this function
+  // will return true early. While merging `kAccountNameEmail` profile with any
+  // other profile, only the non-`kAccountNameEmail` profile's address data is
+  // used. Merging two `kAccountNameEmail` profiles will never happen, since
+  // there can be at most one of them at any given time.
+  //
   // Note that this method does not provide any guidance on actually merging
   // the addresses.
   bool HaveMergeableAddresses(const AutofillProfile& p1,
                               const AutofillProfile& p2) const;
 
  private:
-  // Returns true if `full_name_1` and `full_name_2` are equivalent for the
-  // purposes of merging two profiles. This means one of the names is
-  // empty, the names are the same, or one name is a variation of the other.
-  // The name comparison is insensitive to case, punctuation and diacritics.
-  // Can be used for both regular and alternative (e.g. phonetic) names.
-  // This method contains the shared logic between `HaveMergeableNames` and
-  // `HaveMergeableAlternativeNames`.
-  //
-  // Note that this method does not provide any guidance on actually merging
-  // the names.
-  bool AreNamesMergeable(const AutofillProfile& p1,
-                         const AutofillProfile& p2,
-                         FieldType name_type) const;
-
-  // Populates `name_info` with the result of merging the `name_type` names in
-  // `new_profile` and `old_profile`. Returns true if successful. Expects that
-  // `new_profile` and `old_profile` have already been found to be mergeable.
-  //
-  // Heuristic: If one regular name is empty, select the other; otherwise,
-  // attempt to parse the names in each profile and determine if one
-  // name can be derived from the other. For example, J Smith can be derived
-  // from John Smith, so prefer the latter.
-  void MergeNamesImpl(const AutofillProfile& new_profile,
-                      const AutofillProfile& old_profile,
-                      FieldType name_type,
-                      AddressComponent& name_component) const;
-
   const std::string app_locale_;
 };
 

@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "gin/converter.h"
+#include "gin/public/gin_embedders.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "v8/include/v8-context.h"
@@ -136,8 +137,8 @@ class WebIDLCompatTest : public testing::Test {
 
   // Creates a JS entry point "binding" that dispatches to `binding_callback_`.
   void SetBinding(v8::Local<v8::Context> context) {
-    v8::Local<v8::External> v8_this =
-        v8::External::New(v8_helper_->isolate(), this);
+    v8::Local<v8::External> v8_this = v8::External::New(
+        v8_helper_->isolate(), this, gin::kWebIDLCompatTestTag);
     v8::Local<v8::Function> v8_function =
         v8::Function::New(context, &WebIDLCompatTest::DispatchBinding, v8_this)
             .ToLocalChecked();
@@ -175,7 +176,7 @@ class WebIDLCompatTest : public testing::Test {
  protected:
   static void DispatchBinding(const v8::FunctionCallbackInfo<v8::Value>& args) {
     WebIDLCompatTest* self = static_cast<WebIDLCompatTest*>(
-        v8::External::Cast(*args.Data())->Value());
+        v8::External::Cast(*args.Data())->Value(gin::kWebIDLCompatTestTag));
     if (!self->binding_callback_.is_null()) {
       self->binding_callback_.Run(args);
     }

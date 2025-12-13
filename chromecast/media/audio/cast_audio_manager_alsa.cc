@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/audio/cast_audio_manager_alsa.h"
 
 #include <string_view>
@@ -63,9 +58,10 @@ bool IsAlsaDeviceAvailable(CastAudioManagerAlsa::StreamType type,
   // it or not.
   if (type == CastAudioManagerAlsa::kStreamCapture) {
     // Check if the device is in the list of invalid devices.
-    for (size_t i = 0; i < std::size(kInvalidAudioInputDevices); ++i) {
-      if (kInvalidAudioInputDevices[i] == device_name)
+    for (const auto& invalid_audio_input_device : kInvalidAudioInputDevices) {
+      if (invalid_audio_input_device == device_name) {
         return false;
+      }
     }
     return true;
   } else {
@@ -210,7 +206,7 @@ void CastAudioManagerAlsa::GetAlsaDevicesInfo(
   const std::string unwanted_device_type =
       UnwantedDeviceTypeWhenEnumerating(type);
 
-  for (void** hint_iter = hints; *hint_iter != NULL; hint_iter++) {
+  for (void** hint_iter = hints; *hint_iter != NULL; UNSAFE_TODO(hint_iter++)) {
     // Only examine devices of the right type.  Valid values are
     // "Input", "Output", and NULL which means both input and output.
     auto io = wrapper_->DeviceNameGetHint(*hint_iter, kIoHintName);

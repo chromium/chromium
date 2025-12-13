@@ -15,6 +15,8 @@
 #include "third_party/blink/renderer/core/scheduler/dom_task_signal.h"
 #include "third_party/blink/renderer/core/scheduler/scheduler_task_context.h"
 #include "third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
+#include "third_party/blink/renderer/core/scheduler/web_scheduling_task_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -39,17 +41,14 @@ class V8IdleTask : public IdleTask {
              ExecutionContext* scheduling_context)
       : callback_(callback) {
     ScriptState* script_state = callback_->CallbackRelevantScriptState();
-    auto* tracker =
-        scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
-    if (tracker && script_state->World().IsMainWorld()) {
-      task_state_ = tracker->CurrentTaskState();
-    }
     auto* signal =
         DOMScheduler::scheduler(*scheduling_context)
             ->GetFixedPriorityTaskSignal(
                 script_state, WebSchedulingPriority::kBackgroundPriority);
-    task_context_ = MakeGarbageCollected<SchedulerTaskContext>(
-        scheduling_context, /*abort_source=*/nullptr, signal);
+    web_scheduling_task_state_ = MakeGarbageCollected<WebSchedulingTaskState>(
+        CaptureCurrentTaskStateIfMainWorld(script_state),
+        MakeGarbageCollected<SchedulerTaskContext>(
+            scheduling_context, /*abort_source=*/nullptr, signal));
   }
 
   ~V8IdleTask() override = default;
@@ -59,26 +58,21 @@ class V8IdleTask : public IdleTask {
         task_attribution_scope;
     if (auto* tracker =
             scheduler::TaskAttributionTracker::From(callback_->GetIsolate())) {
-      task_attribution_scope =
-          tracker->CreateTaskScope(task_state_,
-                                   scheduler::TaskAttributionTracker::
-                                       TaskScopeType::kRequestIdleCallback,
-                                   task_context_);
+      task_attribution_scope = tracker->SetCurrentTaskState(
+          web_scheduling_task_state_, TaskScopeType::kRequestIdleCallback);
     }
     callback_->InvokeAndReportException(nullptr, deadline);
   }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(callback_);
-    visitor->Trace(task_state_);
-    visitor->Trace(task_context_);
+    visitor->Trace(web_scheduling_task_state_);
     IdleTask::Trace(visitor);
   }
 
  private:
   Member<V8IdleRequestCallback> callback_;
-  Member<scheduler::TaskAttributionInfo> task_state_;
-  Member<SchedulerTaskContext> task_context_;
+  Member<WebSchedulingTaskState> web_scheduling_task_state_;
 };
 
 }  // namespace

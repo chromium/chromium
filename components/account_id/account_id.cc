@@ -216,15 +216,13 @@ std::string AccountId::Serialize() const {
   value.Set(kAccountTypeKey, AccountTypeToString(GetAccountType()));
   value.Set(kEmailKey, user_email_);
 
-  std::string serialized;
-  base::JSONWriter::Write(value, &serialized);
-  return serialized;
+  return base::WriteJson(value).value_or("");
 }
 
 // static
 std::optional<AccountId> AccountId::Deserialize(std::string_view serialized) {
-  std::optional<base::Value::Dict> value =
-      base::JSONReader::ReadDict(serialized);
+  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+      serialized, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return std::nullopt;
   }

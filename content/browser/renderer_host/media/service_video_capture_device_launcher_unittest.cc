@@ -21,12 +21,10 @@
 #include "services/video_capture/public/cpp/mock_video_source.h"
 #include "services/video_capture/public/cpp/mock_video_source_provider.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
-#include "services/video_effects/public/cpp/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::InvokeWithoutArgs;
 
 namespace content {
@@ -78,11 +76,11 @@ class ServiceVideoCaptureDeviceLauncherTest : public testing::Test {
     launcher_has_released_source_provider_ = false;
 
     ON_CALL(connect_to_device_factory_cb_, Run(_))
-        .WillByDefault(Invoke(
+        .WillByDefault(
             [this](scoped_refptr<RefCountedVideoSourceProvider>* out_provider) {
               launcher_has_connected_to_source_provider_ = true;
               *out_provider = service_connection_;
-            }));
+            });
 
     ON_CALL(release_connection_cb_, Run())
         .WillByDefault(InvokeWithoutArgs([this]() {
@@ -91,17 +89,17 @@ class ServiceVideoCaptureDeviceLauncherTest : public testing::Test {
         }));
 
     ON_CALL(mock_source_provider_, DoGetVideoSource(kStubDeviceId, _))
-        .WillByDefault(Invoke(
+        .WillByDefault(
             [this](const std::string& device_id,
                    mojo::PendingReceiver<video_capture::mojom::VideoSource>*
                        source_receiver) {
               source_receiver_ = std::make_unique<
                   mojo::Receiver<video_capture::mojom::VideoSource>>(
                   &mock_source_, std::move(*source_receiver));
-            }));
+            });
 
     ON_CALL(mock_source_, CreatePushSubscription(_, _, _, _, _))
-        .WillByDefault(Invoke(
+        .WillByDefault(
             [this](mojo::PendingRemote<video_capture::mojom::VideoFrameHandler>
                        subscriber,
                    const media::VideoCaptureParams& requested_settings,
@@ -119,7 +117,7 @@ class ServiceVideoCaptureDeviceLauncherTest : public testing::Test {
                                          CreatePushSubscriptionSuccessCode::
                                              kCreatedWithRequestedSettings),
                   requested_settings);
-            }));
+            });
   }
 
   void TearDown() override {}
@@ -172,11 +170,7 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest, LaunchingDeviceSucceeds) {
   launcher_->LaunchDeviceAsync(
       kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       kArbitraryParams, kNullReceiver, connection_lost_cb_.Get(),
-      &mock_callbacks_, done_cb_.Get(),
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-      /*video_effects_processor=*/{},
-#endif
-      /*readonly_video_effects_manager=*/{});
+      &mock_callbacks_, done_cb_.Get());
   wait_for_done_cb.Run();
 
   launcher_.reset();
@@ -217,7 +211,7 @@ void ServiceVideoCaptureDeviceLauncherTest::RunLaunchingDeviceIsAbortedTest(
 
   base::OnceClosure create_push_subscription_success_answer_cb;
   EXPECT_CALL(mock_source_, CreatePushSubscription(_, _, _, _, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&create_push_subscription_success_answer_cb, &step_1_run_loop,
            &service_result_code](
               mojo::PendingRemote<video_capture::mojom::VideoFrameHandler>
@@ -245,7 +239,7 @@ void ServiceVideoCaptureDeviceLauncherTest::RunLaunchingDeviceIsAbortedTest(
                 requested_settings, std::move(subscription),
                 std::move(callback), std::move(service_result_code));
             step_1_run_loop.Quit();
-          }));
+          });
   EXPECT_CALL(mock_callbacks_, DoOnDeviceLaunched(_)).Times(0);
   EXPECT_CALL(mock_callbacks_, OnDeviceLaunchAborted()).Times(1);
   EXPECT_CALL(mock_callbacks_, OnDeviceLaunchFailed(_)).Times(0);
@@ -258,11 +252,7 @@ void ServiceVideoCaptureDeviceLauncherTest::RunLaunchingDeviceIsAbortedTest(
   launcher_->LaunchDeviceAsync(
       kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       kArbitraryParams, kNullReceiver, connection_lost_cb_.Get(),
-      &mock_callbacks_, done_cb_.Get(),
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-      /*video_effects_processor=*/{},
-#endif
-      /*readonly_video_effects_manager=*/{});
+      &mock_callbacks_, done_cb_.Get());
   step_1_run_loop.Run();
   launcher_->AbortLaunch();
 
@@ -280,7 +270,7 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_source_, CreatePushSubscription(_, _, _, _, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [](mojo::PendingRemote<video_capture::mojom::VideoFrameHandler>
                  subscriber,
              const media::VideoCaptureParams& requested_settings,
@@ -312,7 +302,7 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
                     },
                     std::move(subscriber), requested_settings,
                     std::move(subscription), std::move(callback)));
-          }));
+          });
   EXPECT_CALL(mock_callbacks_, DoOnDeviceLaunched(_)).Times(0);
   EXPECT_CALL(mock_callbacks_, OnDeviceLaunchAborted()).Times(0);
   EXPECT_CALL(mock_callbacks_,
@@ -328,11 +318,7 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
   launcher_->LaunchDeviceAsync(
       kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       kArbitraryParams, kNullReceiver, connection_lost_cb_.Get(),
-      &mock_callbacks_, done_cb_.Get(),
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-      /*video_effects_processor=*/{},
-#endif
-      /*readonly_video_effects_manager=*/{});
+      &mock_callbacks_, done_cb_.Get());
   run_loop.Run();
 }
 
@@ -354,11 +340,7 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
   launcher_->LaunchDeviceAsync(
       kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       kArbitraryParams, kNullReceiver, connection_lost_cb_.Get(),
-      &mock_callbacks_, done_cb_.Get(),
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-      /*video_effects_processor=*/{},
-#endif
-      /*readonly_video_effects_manager=*/{});
+      &mock_callbacks_, done_cb_.Get());
 
   run_loop.Run();
 }
@@ -370,7 +352,7 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
   video_capture::mojom::VideoSource::CreatePushSubscriptionCallback
       create_subscription_cb;
   EXPECT_CALL(mock_source_, CreatePushSubscription(_, _, _, _, _))
-      .WillOnce(Invoke(
+      .WillOnce(
           [&create_subscription_cb](
               mojo::PendingRemote<video_capture::mojom::VideoFrameHandler>
                   subscriber,
@@ -385,7 +367,7 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
             // |subscription|. We have to save |callback| and invoke it later
             // to avoid hitting a DCHECK.
             create_subscription_cb = std::move(callback);
-          }));
+          });
   EXPECT_CALL(mock_callbacks_, DoOnDeviceLaunched(_)).Times(0);
   EXPECT_CALL(mock_callbacks_, OnDeviceLaunchAborted()).Times(0);
   EXPECT_CALL(mock_callbacks_, OnDeviceLaunchFailed(_)).Times(1);
@@ -400,11 +382,7 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
   launcher_->LaunchDeviceAsync(
       kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       kArbitraryParams, kNullReceiver, connection_lost_cb_.Get(),
-      &mock_callbacks_, done_cb_.Get(),
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-      /*video_effects_processor=*/{},
-#endif
-      /*readonly_video_effects_manager=*/{});
+      &mock_callbacks_, done_cb_.Get());
 
   run_loop.Run();
 
@@ -440,13 +418,12 @@ void ServiceVideoCaptureDeviceLauncherTest::
         base::OnceClosure close_connection_cb) {
   std::unique_ptr<LaunchedVideoCaptureDevice> launched_device;
   EXPECT_CALL(mock_callbacks_, DoOnDeviceLaunched(_))
-      .WillOnce(
-          Invoke([&launched_device](
-                     std::unique_ptr<LaunchedVideoCaptureDevice>* device) {
-            // We must keep the launched device alive, because otherwise it will
-            // no longer listen for connection errors.
-            launched_device = std::move(*device);
-          }));
+      .WillOnce([&launched_device](
+                    std::unique_ptr<LaunchedVideoCaptureDevice>* device) {
+        // We must keep the launched device alive, because otherwise it will
+        // no longer listen for connection errors.
+        launched_device = std::move(*device);
+      });
   base::RunLoop step_1_run_loop;
   EXPECT_CALL(done_cb_, Run()).WillOnce(InvokeWithoutArgs([&step_1_run_loop]() {
     step_1_run_loop.Quit();
@@ -455,17 +432,13 @@ void ServiceVideoCaptureDeviceLauncherTest::
   launcher_->LaunchDeviceAsync(
       kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       kArbitraryParams, kNullReceiver, connection_lost_cb_.Get(),
-      &mock_callbacks_, done_cb_.Get(),
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-      /*video_effects_processor=*/{},
-#endif
-      /*readonly_video_effects_manager=*/{});
+      &mock_callbacks_, done_cb_.Get());
   step_1_run_loop.Run();
 
   base::RunLoop step_2_run_loop;
-  EXPECT_CALL(connection_lost_cb_, Run()).WillOnce(Invoke([&step_2_run_loop]() {
+  EXPECT_CALL(connection_lost_cb_, Run()).WillOnce([&step_2_run_loop]() {
     step_2_run_loop.Quit();
-  }));
+  });
   // Exercise step 2: The service cuts/loses the connection
   std::move(close_connection_cb).Run();
   step_2_run_loop.Run();

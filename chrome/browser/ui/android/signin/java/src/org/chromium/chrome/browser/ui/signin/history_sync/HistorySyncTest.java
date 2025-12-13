@@ -13,7 +13,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -53,11 +55,9 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.signin.metrics.SyncButtonClicked;
 import org.chromium.components.signin.metrics.SyncButtonsType;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -79,7 +79,7 @@ public class HistorySyncTest {
 
     private static final @SigninAccessPoint int SIGNIN_ACCESS_POINT = SigninAccessPoint.UNKNOWN;
     private static final int MINOR_MODE_RESTRICTIONS_FETCH_DEADLINE_MS = 1000;
-    private static final HistorySyncConfig CONFIG = new HistorySyncConfig();
+    private static final HistorySyncConfig CONFIG = new HistorySyncConfig("Title", "Subtitle");
 
     @Mock private SyncService mSyncServiceMock;
     @Mock private HistorySyncCoordinator.HistorySyncDelegate mHistorySyncDelegateMock;
@@ -156,13 +156,11 @@ public class HistorySyncTest {
         onView(withText(R.string.history_sync_primary_action)).perform(click());
 
         histogramWatcher.assertExpected();
-        verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
-        verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
+        verify(mHistorySyncHelperMock).setHistoryAndTabsSync(true);
         verify(mHistorySyncDelegateMock)
-                .recordHistorySyncOptIn(
-                        SIGNIN_ACCESS_POINT,
-                        SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED);
-        verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ true);
+                .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ true);
+        verify(mHistorySyncDelegateMock)
+                .dismissHistorySync(/* didSignOut= */ false, /* isHistorySyncAccepted= */ true);
         verify(mHistorySyncHelperMock).clearHistorySyncDeclinedPrefs();
     }
 
@@ -181,11 +179,11 @@ public class HistorySyncTest {
 
         histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
+        verify(mHistorySyncHelperMock, never()).setHistoryAndTabsSync(anyBoolean());
         verify(mHistorySyncDelegateMock)
-                .recordHistorySyncOptIn(
-                        SIGNIN_ACCESS_POINT,
-                        SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED);
-        verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ false);
+                .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ false);
+        verify(mHistorySyncDelegateMock)
+                .dismissHistorySync(/* didSignOut= */ false, /* isHistorySyncAccepted= */ false);
         assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
     }
 
@@ -203,12 +201,11 @@ public class HistorySyncTest {
         onView(withText(R.string.history_sync_primary_action)).perform(click());
 
         histogramWatcher.assertExpected();
-        verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
-        verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
+        verify(mHistorySyncHelperMock).setHistoryAndTabsSync(true);
         verify(mHistorySyncDelegateMock)
-                .recordHistorySyncOptIn(
-                        SIGNIN_ACCESS_POINT, SyncButtonClicked.HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED);
-        verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ true);
+                .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ true);
+        verify(mHistorySyncDelegateMock)
+                .dismissHistorySync(/* didSignOut= */ false, /* isHistorySyncAccepted= */ true);
     }
 
     @Test
@@ -226,10 +223,11 @@ public class HistorySyncTest {
 
         histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
+        verify(mHistorySyncHelperMock, never()).setHistoryAndTabsSync(anyBoolean());
         verify(mHistorySyncDelegateMock)
-                .recordHistorySyncOptIn(
-                        SIGNIN_ACCESS_POINT, SyncButtonClicked.HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED);
-        verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ false);
+                .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ false);
+        verify(mHistorySyncDelegateMock)
+                .dismissHistorySync(/* didSignOut= */ false, /* isHistorySyncAccepted= */ false);
         assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         verify(mHistorySyncHelperMock).recordHistorySyncDeclinedPrefs();
     }
@@ -244,12 +242,11 @@ public class HistorySyncTest {
         onView(withText(R.string.history_sync_secondary_action)).perform(click());
 
         verifyNoInteractions(mSyncServiceMock);
+        verify(mHistorySyncHelperMock, never()).setHistoryAndTabsSync(anyBoolean());
         verify(mHistorySyncDelegateMock)
-                .recordHistorySyncOptIn(
-                        SIGNIN_ACCESS_POINT,
-                        SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED);
+                .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ false);
         verify(mHistorySyncDelegateMock, atLeastOnce())
-                .dismissHistorySync(/* isHistorySyncAccepted= */ false);
+                .dismissHistorySync(/* didSignOut= */ true, /* isHistorySyncAccepted= */ false);
         CriteriaHelper.pollUiThread(
                 () -> mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN) == null);
         verify(mHistorySyncHelperMock).recordHistorySyncDeclinedPrefs();
@@ -269,7 +266,8 @@ public class HistorySyncTest {
                 () -> mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN) == null);
 
         histogramWatcher.assertExpected();
-        verify(mHistorySyncDelegateMock).dismissHistorySync(/* isHistorySyncAccepted= */ false);
+        verify(mHistorySyncDelegateMock)
+                .dismissHistorySync(/* didSignOut= */ true, /* isHistorySyncAccepted= */ false);
     }
 
     @Test
@@ -411,7 +409,7 @@ public class HistorySyncTest {
                             TestAccounts.AADC_UNRESOLVED_ACCOUNT.getId());
                 });
 
-        onViewWaiting(withId(org.chromium.chrome.R.id.button_secondary));
+        onViewWaiting(withId(R.id.button_secondary));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

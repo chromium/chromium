@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
@@ -30,6 +31,8 @@
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_metrics.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/common/pref_names.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "components/prefs/pref_service.h"
@@ -136,8 +139,8 @@ void ToastController::OnWidgetActivationChanged(views::Widget* widget,
     // On Mac, traversing out of the toast widget and into the browser causes
     // the browser to advance focus twice so we clear the focus to achieve the
     // expected focus behavior.
-    browser_window_interface_->TopContainer()
-        ->GetWidget()
+    BrowserElementsViews::From(browser_window_interface_)
+        ->GetPrimaryWindowWidget()
         ->GetFocusManager()
         ->ClearFocus();
   }
@@ -281,15 +284,20 @@ void ToastController::CreateToast(ToastParams params,
                                   const ToastSpecification* spec) {
   // TODO(crbug.com/364730656): Replace this logic when improving
   // ToastController testability.
-  if (browser_window_interface_ == nullptr ||
-      !browser_window_interface_->TopContainer()) {
+  views::View* anchor_view = nullptr;
+  if (browser_window_interface_) {
+    anchor_view = BrowserElementsViews::From(browser_window_interface_)
+                      ->GetView(kTopContainerElementId);
+  }
+  if (!anchor_view) {
     // Don't actually create the toast in unit tests
-    CHECK_IS_TEST();
+    // TODO(webium): show toast in webui browser.
+    if (!webui_browser::IsWebUIBrowserEnabled()) {
+      CHECK_IS_TEST();
+    }
     return;
   }
 
-  views::View* const anchor_view = browser_window_interface_->TopContainer();
-  CHECK(anchor_view);
   const ui::ImageModel* image_override = params.image_override.has_value()
                                              ? &params.image_override.value()
                                              : nullptr;

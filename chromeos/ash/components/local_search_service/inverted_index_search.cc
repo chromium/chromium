@@ -186,7 +186,7 @@ InvertedIndexSearch::FindTermForTesting(const std::u16string& term) const {
   for (const auto& kv : posting_list) {
     doc_with_freq.push_back({kv.first, kv.second.size()});
   }
-
+  std::sort(doc_with_freq.begin(), doc_with_freq.end());
   return doc_with_freq;
 }
 

@@ -69,4 +69,7 @@ void TestPageBroadcast::SetPageAttributionSupport(
 void TestPageBroadcast::UpdateColorProviders(
     const blink::ColorProviderColorMaps& color_provider_colors) {}
 
+void TestPageBroadcast::SetSupportsDraggableRegions(
+    bool supports_draggable_regions) {}
+
 }  // namespace content

@@ -1,0 +1,30 @@
+caption: "Enable support for XFA forms in PDF documents"
+default: null
+desc: |-
+  Controls whether the PDF viewer in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> supports XFA forms in PDF documents.
+
+  If this policy is set to True, support for XFA forms is enabled.
+  If this policy is set to False, support for XFA forms is disabled.
+  If this policy is not set, the default Chrome behavior is used, which may also be influenced by the `#pdf-xfa-forms` flag. When this policy is set, it takes precedence over the `#pdf-xfa-forms` flag.
+
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+  - caption: PDF XFA Forms support disabled
+    value: false
+  - caption: PDF XFA Forms support enabled
+    value: true
+  - caption: Use the default Chrome browser behavior
+    value: null
+owners:
+  - aidazolic@chromium.org
+  - thestig@chromium.org
+  - file://pdf/OWNERS
+schema:
+  type: boolean
+supported_on:
+  - chrome_os:144-
+tags: []
+type: main

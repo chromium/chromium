@@ -27,8 +27,10 @@
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/utils.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/image_model.h"
@@ -260,7 +262,10 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
     TabGroupSyncTabState::Reset(contents());
   }
 
-  if (!TabGroupSyncUtils::IsSaveableNavigation(navigation_handle)) {
+  // Shard tab groups aren't allowed to navigate via extension
+  bool is_extension_navigation_allowed = !group->collaboration_id().has_value();
+  if (!TabGroupSyncUtils::IsSaveableNavigation(is_extension_navigation_allowed,
+                                               navigation_handle)) {
     return;
   }
 

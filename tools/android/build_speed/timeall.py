@@ -19,17 +19,20 @@ import subprocess
 import sys
 from typing import Optional
 
-start_time = time.time()
+_START_TIME = time.time()
+_QUIET = False
 
-DEBUG = False
+# Adjust this if benchmarking takes too long.
+_MAX_BUILD_COMBINATIONS = 4
 
 
 def _log(message: str):
-    print(f"timeall.py-{time.time() - start_time:.0f}s: {message}",
-          file=sys.stderr)
+    if not _QUIET:
+        print(f"timeall.py-{time.time() - _START_TIME:.0f}s: {message}",
+              file=sys.stderr)
 
 
-def run_command(command: list[str]) -> str:
+def _run_command(command: list[str]) -> str:
     _log(f'Running: {" ".join(command)}')
     process = subprocess.run(command,
                              capture_output=True,
@@ -39,12 +42,12 @@ def run_command(command: list[str]) -> str:
     return process.stdout
 
 
-def run_command_with_repeat(command: list[str], repeat: int,
+def _run_command_with_repeat(command: list[str], repeat: int,
                             outdir_name: str) -> Optional[str]:
     _log(f"Running with {repeat=}")
     for idx in range(repeat):
         try:
-            return run_command(command)
+            return _run_command(command)
         except subprocess.CalledProcessError as e:
             _log("Stdout:")
             _log(e.stdout)
@@ -52,21 +55,28 @@ def run_command_with_repeat(command: list[str], repeat: int,
             _log(e.stderr)
             if idx != repeat - 1:
                 _log(f"Repeating... {idx + 1}/{repeat}")
-                run_command(["gn", "clean", outdir_name])
+                _run_command(["gn", "clean", outdir_name])
     return None
 
 
 @dataclasses.dataclass(frozen=True)
-class Options:
-    benchmark: str = "module_java_internal_nosig"
+class _Options:
+    benchmark: str
+    r: int # times to repeat the benchmark.
     i: bool = False  # incremental_install
     n: bool = False  # no_component_build
     s: bool = False  # server
     e: str = ""  # emulator
 
 
-def run_benchmark(options: Options):
+def _run_benchmark(options: _Options):
     outdir_name = f"out/Debug"
+    if '_test_' in options.benchmark:
+        target = "chrome_test_apk"
+    elif 'chrome_junit_' in options.benchmark:
+        target = "chrome_junit_tests"
+    else:
+        target = "chrome_apk"
     cmd = [
         "tools/android/build_speed/benchmark.py",
         "-vv",
@@ -74,7 +84,7 @@ def run_benchmark(options: Options):
         "-C",
         outdir_name,
         "--target",
-        "chrome_apk",
+        target,
     ]
     if options.e:
         cmd.extend(["--emulator", options.e])
@@ -88,66 +98,97 @@ def run_benchmark(options: Options):
     if not options.s:
         cmd.append("--no-server")
     _log(f"Start {options=}")
-    output = run_command_with_repeat(cmd,
-                                     repeat=3 if not DEBUG else 1,
+    output = _run_command_with_repeat(cmd,
+                                     repeat=options.r,
                                      outdir_name=outdir_name)
     assert output is not None
-    print(output, end="", flush=True)
+    if not _QUIET:
+        print(output, end="", flush=True)
     _log(f"Done {options=}")
 
 
-def run_benchmarks(bos: list[Options], **kwargs):
-    for o in bos:
-        run_benchmark(dataclasses.replace(o, **kwargs))
+def _run_benchmarks(benchmark_options: list[_Options], **kwargs):
+    for o in benchmark_options:
+        _run_benchmark(dataclasses.replace(o, **kwargs))
 
 
-def main():
-    global DEBUG
-    argparser = argparse.ArgumentParser()
-    argparser.add_argument("--debug", action="store_true")
-    args = argparser.parse_args()
-
-    DEBUG = args.debug
-
+def run(debug: bool):
     benchmarks = [
+        "chrome_junit_sig",
+        "module_internal_nosig",
         "chrome_nosig",
         "base_sig",
-        "module_internal_nosig",
+        "cta_test_sig",
     ]
 
-    if args.debug:
+    if debug:
         benchmarks = [benchmarks[0]]
     else:
         random.shuffle(benchmarks)
-        # Only compare two benchmarks each time.
-        benchmarks = benchmarks[:2]
 
-    emulators = [  # base options
-        "android_31_google_apis_x64_local.textpb",
-        "android_33_google_apis_x64_local.textpb",
+    emulators = [  # base options, always do api34.
         "android_34_google_apis_x64_local.textpb",
     ]
 
-    if args.debug:
-        emulators = [emulators[0]]
-    else:
-        random.shuffle(emulators)
+    if not debug:
+        additional_emulators = [
+            "android_31_google_apis_x64_local.textpb",
+            "android_33_google_apis_x64_local.textpb",
+            "android_35_google_apis_x64_local.textpb",
+            "android_36_google_apis_x64_local.textpb",
+        ]
         # Only compare two emulator each time.
-        emulators = emulators[:2]
+        emulators += [random.choice(additional_emulators)]
+        random.shuffle(emulators)
 
-    bos = [
-        Options(benchmark=benchmark, e=emulator, i=i, n=n, s=s)
-        for benchmark, emulator, i, n, s in itertools.product(
-            benchmarks, emulators, [True, False], [True, False], [True, False])
-    ]
+    if debug:
+        repeat = 1
+    else:
+        repeat = 3
 
-    # shuffle bos
-    if not args.debug:
-        random.shuffle(bos)
+    incremental_opts = [True, False]
+    nocomponent_opts = [True, False]
+    # Use False first for --debug to ensure static analysis pass.
+    server_opts = [False, True]
 
-    _log(pformat(bos))
+    benchmark_options = []
+    for benchmark, emulator in itertools.product(benchmarks, emulators):
+        # No emulator required for junit benchmarks.
+        if 'junit' in benchmark:
+            e = ''
+        else:
+            e = emulator
+        # i: incremental_install, n: no_component_build, s: server
+        build_options = [(i, n, s) for i, n, s in itertools.product(
+            incremental_opts, nocomponent_opts, server_opts)]
+        if debug:
+            build_options = [build_options[0]]
+        else:
+            random.shuffle(build_options)
+            build_options = build_options[:_MAX_BUILD_COMBINATIONS]
+        for i, n, s in build_options:
+            benchmark_options.append(
+                _Options(benchmark=benchmark, r=repeat, e=e, i=i, n=n, s=s))
 
-    run_benchmarks(bos=bos)
+    # shuffle benchmark_options
+    if debug:
+        benchmark_options = [benchmark_options[0]]
+    else:
+        random.shuffle(benchmark_options)
+
+    _log(pformat(benchmark_options))
+
+    _run_benchmarks(benchmark_options=benchmark_options)
+
+
+def main():
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument("--debug", action="store_true")
+    argparser.add_argument("-q", "--quiet", action="store_true")
+    args = argparser.parse_args()
+    global _QUIET
+    _QUIET = args.quiet
+    run(args.debug)
 
 
 if __name__ == "__main__":

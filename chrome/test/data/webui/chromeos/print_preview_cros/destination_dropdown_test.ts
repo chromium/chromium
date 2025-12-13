@@ -89,7 +89,7 @@ suite('DestinationDropdown', () => {
     const selected = getSelectedDestinationRow();
     const rowLabel =
         strictQuery<HTMLElement>('#label', selected.shadowRoot, HTMLElement);
-    return rowLabel.textContent!.trim();
+    return rowLabel.textContent.trim();
   }
 
   async function clickDropdownRowFor(destinationId: string): Promise<void> {

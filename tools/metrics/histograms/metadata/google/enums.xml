@@ -47,14 +47,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="None"/>
 </enum>
 
-<enum name="GoogleUpdateHashedCohortName">
-  <summary>
-    A hash of the update cohort name; a value of zero/none likely indicates no
-    cohort name, which suggests that the updater is broken or not present.
-  </summary>
-  <int value="0" label="None"/>
-</enum>
-
 <enum name="GoogleUpdateUpgradeStatus">
   <int value="0" label="UPGRADE_STARTED (deprecated)"/>
   <int value="1" label="UPGRADE_CHECK_STARTED (deprecated)"/>

@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_controller.h"
@@ -67,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunch) {
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeMainTest, ReuseBrowserInstanceWhenOpeningFile) {
-  base::FilePath test_file_path = ui_test_utils::GetTestFilePath(
+  base::FilePath test_file_path = chrome_test_utils::GetTestFilePath(
       base::FilePath(), base::FilePath().AppendASCII("empty.html"));
   base::CommandLine new_command_line(GetCommandLineForRelaunch());
   new_command_line.AppendArgPath(test_file_path);
@@ -85,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchWithIncognitoUrl) {
   ASSERT_EQ(1u, chrome::GetTabbedBrowserCount(browser()->profile()));
 
   // Run with --incognito switch and an URL specified.
-  base::FilePath test_file_path = ui_test_utils::GetTestFilePath(
+  base::FilePath test_file_path = chrome_test_utils::GetTestFilePath(
       base::FilePath(), base::FilePath().AppendASCII("empty.html"));
   base::CommandLine new_command_line(GetCommandLineForRelaunch());
   new_command_line.AppendSwitch(switches::kIncognito);
@@ -120,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchFromIncognitoWithNormalUrl) {
   ASSERT_EQ(0u, chrome::GetTabbedBrowserCount(profile));
 
   // Run with just an URL specified, no --incognito switch.
-  base::FilePath test_file_path = ui_test_utils::GetTestFilePath(
+  base::FilePath test_file_path = chrome_test_utils::GetTestFilePath(
       base::FilePath(), base::FilePath().AppendASCII("empty.html"));
   base::CommandLine new_command_line(GetCommandLineForRelaunch());
   new_command_line.AppendArgPath(test_file_path);

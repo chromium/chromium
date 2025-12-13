@@ -45,7 +45,8 @@
           "group": "tryserver.chromium.mac"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/ios-vm/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/ios-vm/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {
@@ -69,5 +70,5 @@
   },
   "builder_group": "chromium.fyi",
   "recipe": "chromium",
-  "xcode_build_version": "16c5032a"
+  "xcode_build_version": "17a400"
 }

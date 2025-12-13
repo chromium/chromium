@@ -24,6 +24,7 @@ import "services/viz/public/mojom/compositing/resource_id.mojom";
 import "services/viz/public/mojom/compositing/subtree_capture_id.mojom";
 import "services/viz/public/mojom/compositing/transferable_resource.mojom";
 import "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom";
+import "ui/gfx/mojom/display_color_spaces.mojom";
 import "ui/gfx/mojom/transform.mojom";
 
 // Some properties on the Layer are rarely set, and so are bundled
@@ -91,6 +92,7 @@ struct TextureLayerExtra {
   bool force_texture_to_opaque;
   gfx.mojom.PointF uv_top_left;
   gfx.mojom.PointF uv_bottom_right;
+  bool update_transferable_resource;
   TransferableResource? transferable_resource;
 };
 
@@ -118,6 +120,17 @@ struct TileDisplayLayerExtra {
 
   // Will be set to true for PictureLayers that use nearest neighbor filtering.
   bool nearest_neighbor;
+
+  // The color usage of the layer's content.
+  gfx.mojom.ContentColorUsage content_color_usage;
+
+  // Valid rectangle in which anything is recorded and can be rastered from.
+  // This is also used during AppendQuads to decide if a quad needs to be
+  // drawn.
+  gfx.mojom.Rect recorded_bounds;
+
+  // Scales of tilings that the renderer proposes can be deleted.
+  array<float> proposed_tiling_scales_for_deletion;
 };
 
 // Extra fields in a cc::ScrollbarLayerImplBase that has been added
@@ -142,7 +155,7 @@ struct NinePatchThumbScrollbarLayerExtra {
   ScrollbarLayerBaseExtra scrollbar_base_extra;
 
   int32 thumb_thickness;
-  int32 thumb_length;
+  int32 minimum_thumb_length;
   int32 track_start;
   int32 track_length;
   gfx.mojom.Size image_bounds;
@@ -161,7 +174,7 @@ struct PaintedScrollbarLayerExtra {
   bool jump_on_track_click;
   bool supports_drag_snap_back;
   int32 thumb_thickness;
-  int32 thumb_length;
+  int32 minimum_thumb_length;
   gfx.mojom.Rect back_button_rect;
   gfx.mojom.Rect forward_button_rect;
   gfx.mojom.Rect track_rect;
@@ -342,13 +355,14 @@ struct StickyPositionNodeData {
 // Updates to a transform tree, not including the nodes themselves. These
 // correspond to data members of cc::TransformTree.
 struct TransformTreeUpdate {
-  float page_scale_factor;
-  float device_scale_factor;
-  float device_transform_scale_factor;
+  float page_scale_factor = 1.0;
+  float device_scale_factor = 1.0;
+  float device_transform_scale_factor = 1.0;
   array<int32> nodes_affected_by_outer_viewport_bounds_delta;
   array<int32> nodes_affected_by_safe_area_bottom;
   array<StickyPositionNodeData> sticky_position_data;
   array<AnchorPositionScrollData> anchor_position_scroll_data;
+  map<cc.mojom.ElementId, gfx.mojom.Vector2dF> drawn_elastic_overscroll;
 };
 
 // Details about a new or updated node within a transform property tree.
@@ -403,6 +417,12 @@ struct TransformNode {
   bool transform_changed;
   bool delegates_to_parent_for_backface;
   bool will_change_transform;
+  float maximum_animation_scale;
+  bool node_and_ancestors_are_animated_or_invertible;
+  bool is_invertible;
+  bool ancestors_are_invertible;
+  bool node_and_ancestors_are_flat;
+  bool node_or_ancestors_will_change_transform;
 
   // The stable ElementId of the client-side object (e.g. document, in Blink)
   // corresponding to this node, if this node corresponds to the root of a
@@ -508,7 +528,7 @@ struct EffectNode {
   FilterOperations filters;
   FilterOperations backdrop_filters;
   skia.mojom.SkPath? backdrop_filter_bounds;
-  float backdrop_filter_quality;
+  float backdrop_filter_quality = 1.0;
 
   // The element id corresponding to the mask to apply to the filtered backdrop
   // image.
@@ -538,6 +558,10 @@ struct EffectNode {
   // of exact timeline) opacity animation.
   bool has_potential_opacity_animation;
 
+  // Whether this node's effect has been changed since the last
+  // frame. Needed in order to compute damage rect.
+  bool effect_changed;
+
   // If set, the node's subtree has a copy request and the layer should
   // not be skipped for draw property computation.
   // TODO(crbug.com/406652614): Compute subtree_has_copy_request in
@@ -563,6 +587,7 @@ struct EffectNode {
 struct ScrollTreeUpdate {
   map<cc.mojom.ElementId, cc.mojom.SyncedScrollOffset> synced_scroll_offsets;
   map<cc.mojom.ElementId, gfx.mojom.Rect> scrolling_contents_cull_rects;
+  map<cc.mojom.ElementId, gfx.mojom.Vector2dF> elastic_overscroll;
 };
 
 // Details about a new or updated node within a scroll property tree.

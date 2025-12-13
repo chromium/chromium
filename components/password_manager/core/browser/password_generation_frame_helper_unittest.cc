@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_server_prediction.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -47,6 +48,7 @@
 #include "url/gurl.h"
 
 using autofill::AutofillField;
+using autofill::AutofillServerPrediction;
 using autofill::AutofillType;
 using autofill::FieldGlobalId;
 using autofill::FieldSignature;
@@ -125,10 +127,10 @@ class FakePasswordRequirementsSpecFetcher
   ~FakePasswordRequirementsSpecFetcher() override = default;
 
   void Fetch(GURL origin, FetchCallback callback) override {
-    if (origin.DeprecatedGetOriginAsURL().host_piece().find(
-            kNoServerResponse) != std::string::npos) {
+    if (origin.DeprecatedGetOriginAsURL().host().find(kNoServerResponse) !=
+        std::string::npos) {
       std::move(callback).Run(PasswordRequirementsSpec());
-    } else if (origin.DeprecatedGetOriginAsURL().host_piece().find(
+    } else if (origin.DeprecatedGetOriginAsURL().host().find(
                    kHasServerResponse) != std::string::npos) {
       std::move(callback).Run(GetDomainWideRequirements());
     } else {
@@ -189,10 +191,6 @@ class PasswordGenerationFrameHelperTest : public testing::Test {
         new TestingPrefServiceSimple());
     prefs->registry()->RegisterBooleanPref(prefs::kCredentialsEnableService,
                                            true);
-#if BUILDFLAG(IS_ANDROID)
-    prefs->registry()->RegisterIntegerPref(
-        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores, 0);
-#endif
     client_ = std::make_unique<MockPasswordManagerClient>(std::move(prefs));
   }
 
@@ -245,19 +243,6 @@ TEST_F(PasswordGenerationFrameHelperTest, IsGenerationEnabled) {
       .WillRepeatedly(testing::Return(true));
   EXPECT_FALSE(IsGenerationEnabled());
 }
-
-#if BUILDFLAG(IS_ANDROID)
-TEST_F(PasswordGenerationFrameHelperTest,
-       GenerationDisabledDueToOutdatedGMSCore) {
-  EXPECT_CALL(*client_->mock_store(), IsAbleToSavePasswords())
-      .WillOnce(testing::Return(true));
-  EXPECT_CALL(*client_, IsSavingAndFillingEnabled(_))
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*client_->GetPasswordFeatureManager(), ShouldUpdateGmsCore())
-      .WillRepeatedly(testing::Return(false));
-  EXPECT_FALSE(IsGenerationEnabled());
-}
-#endif
 
 // Verify that password requirements received from the autofill server are
 // stored and that domain-wide password requirements are fetched as well.
@@ -342,13 +327,13 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
     // Processs the password requirements with expected side effects of
     // either storing the requirements from the AutofillQueryResponseContents)
     // in the PasswordRequirementsService.
-    base::flat_map<FieldGlobalId, AutofillType::ServerPrediction> predictions;
+    base::flat_map<FieldGlobalId, AutofillServerPrediction> predictions;
 
-    AutofillType::ServerPrediction username_prediction;
+    AutofillServerPrediction username_prediction;
     username_prediction.server_predictions = {
         autofill::test::CreateFieldPrediction(FieldType::EMAIL_ADDRESS,
                                               /*is_override=*/false)};
-    AutofillType::ServerPrediction password_prediction;
+    AutofillServerPrediction password_prediction;
     password_prediction.server_predictions = {
         autofill::test::CreateFieldPrediction(
             FieldType::ACCOUNT_CREATION_PASSWORD,

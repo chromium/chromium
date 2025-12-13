@@ -7,11 +7,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "components/collaboration/public/messaging/activity_log.h"
 #include "components/favicon_base/favicon_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -197,8 +199,11 @@ class RecentActivityRowImageView : public views::View {
 // The bubble coordinator for Shared Tab Group Recent Activity.
 class RecentActivityBubbleCoordinator : public views::WidgetObserver {
  public:
-  RecentActivityBubbleCoordinator();
+  explicit RecentActivityBubbleCoordinator(BrowserWindowInterface* browser);
   ~RecentActivityBubbleCoordinator() override;
+
+  DECLARE_USER_DATA(RecentActivityBubbleCoordinator);
+  static RecentActivityBubbleCoordinator* From(BrowserWindowInterface* browser);
 
   // WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -232,6 +237,8 @@ class RecentActivityBubbleCoordinator : public views::WidgetObserver {
   views::ViewTracker tracker_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       bubble_widget_observation_{this};
+  ui::ScopedUnownedUserData<RecentActivityBubbleCoordinator>
+      scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_RECENT_ACTIVITY_BUBBLE_DIALOG_VIEW_H_

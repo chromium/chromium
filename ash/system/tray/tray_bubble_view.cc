@@ -61,7 +61,7 @@
 
 using views::BubbleBorder;
 using views::BubbleFrameView;
-using views::NonClientFrameView;
+using views::FrameView;
 using views::View;
 using views::ViewsDelegate;
 using views::Widget;
@@ -346,8 +346,6 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   // Always create a layer so that the layer for FocusRing stays in this view's
   // layer. Without it, the layer for FocusRing goes above the NativeViewHost
   // and may steal events.
-  // TODO(crbug.com/40832096): In the dark light mode feature, remove layer
-  // creation in children views of this view to improve performance.
   SetPaintToLayer(init_params.transparent ? ui::LAYER_NOT_DRAWN
                                           : ui::LAYER_TEXTURED);
 
@@ -363,7 +361,7 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
         init_params.translucent && chromeos::features::IsSystemBlurEnabled();
 
     // A translucent TrayBubbleView initializes the widget with NOT_DRAWN_LAYER.
-    // Therefore the BubbleFrameView(NonClientFrameView) that provides the
+    // Therefore the BubbleFrameView(FrameView) that provides the
     // background will not be painted. Therefore TrayBubbleView should paint its
     // own background.
     SetBackground(views::CreateSolidBackground(
@@ -549,8 +547,7 @@ void TrayBubbleView::OnWidgetBoundsChanged(views::Widget* widget,
   Shell::Get()->system_tray_notifier()->NotifyTrayBubbleBoundsChanged(this);
 }
 
-std::unique_ptr<NonClientFrameView> TrayBubbleView::CreateNonClientFrameView(
-    Widget* widget) {
+std::unique_ptr<FrameView> TrayBubbleView::CreateFrameView(Widget* widget) {
   // Create the customized bubble border.
   std::unique_ptr<BubbleBorder> bubble_border =
       std::make_unique<BubbleBorder>(arrow(), BubbleBorder::NO_SHADOW);
@@ -564,7 +561,7 @@ std::unique_ptr<NonClientFrameView> TrayBubbleView::CreateNonClientFrameView(
     bubble_border->set_insets(params_.insets.value());
   }
 
-  auto frame = BubbleDialogDelegateView::CreateNonClientFrameView(widget);
+  auto frame = BubbleDialogDelegateView::CreateFrameView(widget);
   auto* frame_ptr = static_cast<views::BubbleFrameView*>(frame.get());
   frame_ptr->SetBubbleBorder(std::move(bubble_border));
   if (params_.anchor_mode == AnchorMode::kView) {
@@ -580,7 +577,8 @@ bool TrayBubbleView::WidgetHasHitTestMask() const {
 
 void TrayBubbleView::GetWidgetHitTestMask(SkPath* mask) const {
   DCHECK(mask);
-  mask->addRect(gfx::RectToSkRect(GetBubbleFrameView()->GetContentsBounds()));
+  *mask = SkPath::Rect(
+      gfx::RectToSkRect(GetBubbleFrameView()->GetContentsBounds()));
 }
 
 std::u16string TrayBubbleView::GetAccessibleWindowTitle() const {

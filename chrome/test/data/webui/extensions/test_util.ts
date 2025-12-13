@@ -142,6 +142,8 @@ export class MockItemDelegate extends ClickMock implements ItemDelegate {
   getItemStateChangedTarget() {
     return this.itemStateChangedTarget;
   }
+
+  showSiteSettings(_id: string) {}
 }
 
 /**
@@ -180,7 +182,7 @@ export function testVisible(
   assertEquals(expectedVisible, visible, selector);
   if (expectedVisible && visible && expectedText) {
     const element = parentEl.shadowRoot!.querySelector(selector)!;
-    assertEquals(expectedText, element.textContent!.trim(), selector);
+    assertEquals(expectedText, element.textContent.trim(), selector);
   }
 }
 

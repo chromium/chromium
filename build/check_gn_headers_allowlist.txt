@@ -55,8 +55,6 @@ chrome/installer/util/google_update_settings.h
 components/device_event_log/device_event_log_export.h
 components/login/login_export.h
 components/media_router/common/providers/cast/certificate/cast_crl_root_ca_cert_der-inc.h
-components/nacl/browser/nacl_browser_delegate.h
-components/nacl/renderer/ppb_nacl_private.h
 components/policy/core/browser/configuration_policy_handler_parameters.h
 components/policy/proto/policy_proto_export.h
 components/rlz/rlz_tracker_delegate.h
@@ -106,7 +104,6 @@ gpu/config/gpu_lists_version.h
 gpu/gles2_conform_support/gtf/gtf_stubs.h
 gpu/gpu_export.h
 ipc/ipc_channel_proxy_unittest_messages.h
-ipc/ipc_message_null_macros.h
 media/audio/audio_logging.h
 media/cast/common/mod_util.h
 media/cast/net/rtcp/rtcp_session.h
@@ -205,7 +202,6 @@ ui/events/keycodes/keyboard_codes_posix.h
 ui/gfx/overlay_transform.h
 ui/gfx/scoped_ns_graphics_context_save_gstate_mac.h
 ui/gfx/swap_result.h
-ui/gfx/sys_color_change_listener.h
 ui/gl/gl_bindings_api_autogen_egl.h
 ui/gl/gl_bindings_api_autogen_gl.h
 ui/gl/gl_bindings_api_autogen_glx.h

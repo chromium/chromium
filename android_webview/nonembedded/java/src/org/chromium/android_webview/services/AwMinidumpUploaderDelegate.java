@@ -40,10 +40,10 @@ public class AwMinidumpUploaderDelegate implements MinidumpUploaderDelegate {
      * This is to allow injecting delegates for testing.
      */
     @VisibleForTesting
-    public static interface SamplingDelegate {
-        public int getChannel();
+    public interface SamplingDelegate {
+        int getChannel();
 
-        public int getRandomSample();
+        int getRandomSample();
     }
 
     @VisibleForTesting

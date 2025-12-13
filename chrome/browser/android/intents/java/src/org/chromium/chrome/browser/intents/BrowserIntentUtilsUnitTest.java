@@ -23,30 +23,30 @@ public class BrowserIntentUtilsUnitTest {
     @SmallTest
     public void testAddTimestampToIntent() {
         Intent intent = new Intent();
-        Assert.assertEquals(-1, BrowserIntentUtils.getStartupRealtimeMillis(intent));
-        Assert.assertEquals(-1, BrowserIntentUtils.getStartupUptimeMillis(intent));
+        Assert.assertEquals(-1, BrowserIntentUtils.getLaunchedRealtimeMillis(intent));
+        Assert.assertEquals(-1, BrowserIntentUtils.getLaunchedUptimeMillis(intent));
         // Check both before and after to make sure that the returned value is
         // really from {@link SystemClock#elapsedRealtime()}.
         long before = SystemClock.elapsedRealtime();
-        BrowserIntentUtils.addStartupTimestampsToIntent(intent);
+        BrowserIntentUtils.addLauncherTimestampsToIntent(intent);
         long after = SystemClock.elapsedRealtime();
         Assert.assertTrue(
                 "Time should be increasing",
-                before <= BrowserIntentUtils.getStartupRealtimeMillis(intent));
+                before <= BrowserIntentUtils.getLaunchedRealtimeMillis(intent));
         Assert.assertTrue(
                 "Time should be increasing",
-                BrowserIntentUtils.getStartupRealtimeMillis(intent) <= after);
+                BrowserIntentUtils.getLaunchedRealtimeMillis(intent) <= after);
 
         // Check both before and after to make sure that the returned value is
         // really from {@link SystemClock#uptimeMillis()}.
         before = SystemClock.uptimeMillis();
-        BrowserIntentUtils.addStartupTimestampsToIntent(intent);
+        BrowserIntentUtils.addLauncherTimestampsToIntent(intent);
         after = SystemClock.uptimeMillis();
         Assert.assertTrue(
                 "Time should be increasing",
-                before <= BrowserIntentUtils.getStartupUptimeMillis(intent));
+                before <= BrowserIntentUtils.getLaunchedUptimeMillis(intent));
         Assert.assertTrue(
                 "Time should be increasing",
-                BrowserIntentUtils.getStartupUptimeMillis(intent) <= after);
+                BrowserIntentUtils.getLaunchedUptimeMillis(intent) <= after);
     }
 }

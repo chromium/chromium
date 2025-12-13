@@ -91,6 +91,11 @@ class InputEvent final : public UIEvent {
                                  EventIsComposing,
                                  const GCedStaticRangeVector*);
 
+  static InputEvent* CreateInput(InputType,
+                                 DataTransfer*,
+                                 EventIsComposing,
+                                 const GCedStaticRangeVector*);
+
   InputEvent(const AtomicString&, const InputEventInit*, ExceptionState&);
   // This variant of the constructor is more efficient than the InputEventInit
   // variant.

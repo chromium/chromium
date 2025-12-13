@@ -24,6 +24,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
@@ -55,7 +56,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
-import org.chromium.chrome.browser.customtabs.shadows.ShadowExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -100,7 +100,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public CustomTabActivityTabFactory tabFactory;
     @Mock public CustomTabsTabModelOrchestrator tabModelOrchestrator;
     @Mock public CustomTabObserver customTabObserver;
-    @Mock public ActivityTabProvider activityTabProvider;
     @Mock public ActivityLifecycleDispatcher lifecycleDispatcher;
     @Mock public SessionHolder<CustomTabsSessionToken> session;
     @Mock public TabModelSelectorImpl tabModelSelector;
@@ -113,7 +112,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public TabModelInitializer tabModelInitializer;
     @Mock public MockWebContents webContents;
     @Mock public CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
-    @Mock public ProfileProvider profileProvider;
+    @Spy public ProfileProvider profileProvider;
     @Mock public CipherFactory cipherFactory;
     @Mock public PowerManager powerManager;
     @Mock private Profile mProfile;
@@ -124,6 +123,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public CurrentPageVerifier currentPageVerifier;
     @Mock PreloadingDataBridge.Natives mPreloadingDataBridgeMock;
     @Mock WebAppLaunchHandler.Natives mWebAppLaunchHandlerJniMock;
+
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
 
     public final CustomTabActivityTabProvider tabProvider =
             new CustomTabActivityTabProvider(SPECULATED_URL);
@@ -166,7 +167,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         // Default setup is toolbarManager doesn't consume back press event.
         when(toolbarManager.back()).thenReturn(false);
 
-        when(activityTabProvider.addObserver(activityTabObserverCaptor.capture())).thenReturn(null);
         when(intentDataProvider.getColorProvider()).thenReturn(colorProvider);
 
         when(activity.getSystemService(Context.POWER_SERVICE)).thenReturn(powerManager);
@@ -185,9 +185,9 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Override
     protected void finished(Description description) {
         AsyncTabParamsManagerSingleton.getInstance().getAsyncTabParams().clear();
-        ShadowExternalNavigationDelegateImpl.setWillChromeHandleIntent(false);
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     public CustomTabActivityTabController createTabController() {
         OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
         profileProviderSupplier.set(profileProvider);
@@ -203,7 +203,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                 tabFactory,
                 customTabObserver,
                 navigationEventObserver,
-                activityTabProvider,
+                mActivityTabProvider,
                 tabProvider,
                 () -> activity.getSavedInstanceState(),
                 activity.getWindowAndroid(),
@@ -247,16 +247,14 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     }
 
     public void changeTab(Tab newTab) {
-        when(activityTabProvider.get()).thenReturn(newTab);
+        mActivityTabProvider.setForTesting(newTab);
         when(tabModel.getCount()).thenReturn(1);
-        for (Callback<Tab> observer : activityTabObserverCaptor.getAllValues()) {
-            observer.onResult(newTab);
-        }
     }
 
     public void saveTab(Tab tab) {
         when(activity.getSavedInstanceState()).thenReturn(new Bundle());
         when(tabModelSelector.getCurrentTab()).thenReturn(tab);
+        when(tabModelOrchestrator.getCurrentTab()).thenReturn(tab);
     }
 
     public WebContents prepareTransferredWebcontents() {
@@ -266,16 +264,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                 .add(tabId, new AsyncTabCreationParams(mock(LoadUrlParams.class), webContents));
         IntentHandler.setTabId(mIntent, tabId);
         IntentUtils.setForceIsTrustedIntentForTesting(true);
-        return webContents;
-    }
-
-    public WebContents prepareSpareWebcontents() {
-        WebContents webContents = mock(WebContents.class);
-        when(warmupManager.takeSpareWebContents(
-                        /* incognito= */ anyBoolean(),
-                        /* initiallyHidden= */ anyBoolean(),
-                        /* targetsNetwork= */ anyBoolean()))
-                .thenReturn(webContents);
         return webContents;
     }
 
@@ -296,6 +284,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         return tab;
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     public Tab prepareTab() {
         Tab tab = mock(Tab.class);
         when(tab.getView()).thenReturn(mock(View.class));

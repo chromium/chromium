@@ -42,7 +42,6 @@
 #include "url/gurl.h"
 
 using testing::_;
-using testing::Invoke;
 
 namespace {
 
@@ -188,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
                        MANUAL_CreatesWindowOnGivenDisplay) {
   // Pick specific display.
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   const auto& displays = screen->GetAllDisplays();
   for (const auto& display : displays) {
     DVLOG(0) << display.ToString();

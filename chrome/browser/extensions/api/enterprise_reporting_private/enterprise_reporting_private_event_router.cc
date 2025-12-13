@@ -50,6 +50,7 @@ void EnterpriseReportingPrivateEventRouter::OnUrlFilteringVerdict(
       detector.display_name = data_masking_action.display_name();
       detector.mask_type = data_masking_action.mask_type();
       detector.pattern = data_masking_action.pattern();
+      detector.mask_text = data_masking_action.mask_text();
 
       rule_info.matched_detectors.push_back(std::move(detector));
     }

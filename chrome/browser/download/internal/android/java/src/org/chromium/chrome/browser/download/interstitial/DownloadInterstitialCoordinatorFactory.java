@@ -8,11 +8,12 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.function.Supplier;
 
 /** Factory class to build a {@link DownloadInterstitialCoordinator} instance. */
 @NullMarked

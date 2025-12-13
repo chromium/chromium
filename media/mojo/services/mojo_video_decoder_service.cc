@@ -34,6 +34,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/handle.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -169,7 +170,11 @@ void MojoVideoDecoderService::GetSupportedConfigs(
   DVLOG(3) << __func__;
   TRACE_EVENT0("media", "MojoVideoDecoderService::GetSupportedConfigs");
 
-  std::move(callback).Run(mojo_media_client_->GetSupportedVideoDecoderConfigs(),
+  auto configs = mojo_media_client_->GetSupportedVideoDecoderConfigs();
+  DCHECK(std::all_of(configs.begin(), configs.end(),
+                     [](const auto& config) { return config.IsValid(); }));
+
+  std::move(callback).Run(std::move(configs),
                           mojo_media_client_->GetDecoderImplementationType());
 }
 
@@ -246,10 +251,10 @@ void MojoVideoDecoderService::Initialize(const VideoDecoderConfig& config,
   DCHECK(!init_cb_);
   DCHECK(callback);
 
-  TRACE_EVENT_ASYNC_BEGIN2(
-      "media", kInitializeTraceName, this, "config",
-      config.AsHumanReadableString(), "cdm_id",
-      CdmContext::CdmIdToString(base::OptionalToPtr(cdm_id)));
+  TRACE_EVENT_BEGIN("media", kInitializeTraceName,
+                    perfetto::Track::FromPointer(this), "config",
+                    config.AsHumanReadableString(), "cdm_id",
+                    CdmContext::CdmIdToString(base::OptionalToPtr(cdm_id)));
 
   init_cb_ = std::move(callback);
 
@@ -303,7 +308,7 @@ void MojoVideoDecoderService::Initialize(const VideoDecoderConfig& config,
       static_cast<int>(gfx_cs.GetPrimaryID()),
       static_cast<int>(gfx_cs.GetTransferID()),
       static_cast<int>(gfx_cs.GetMatrixID()),
-      static_cast<int>(gfx_cs.GetRangeID()), config.hdr_metadata().has_value());
+      static_cast<int>(gfx_cs.GetRangeID()), !config.hdr_metadata().IsEmpty());
 
   using Self = MojoVideoDecoderService;
   decoder_->Initialize(
@@ -369,7 +374,8 @@ void MojoVideoDecoderService::Decode(mojom::DecoderBufferPtr buffer,
 
 void MojoVideoDecoderService::Reset(ResetCallback callback) {
   DVLOG(2) << __func__;
-  TRACE_EVENT_ASYNC_BEGIN0("media", kResetTraceName, this);
+  TRACE_EVENT_BEGIN("media", kResetTraceName,
+                    perfetto::Track::FromPointer(this));
   DCHECK(callback);
   DCHECK(!reset_cb_);
 
@@ -389,8 +395,8 @@ void MojoVideoDecoderService::OnDecoderInitialized(DecoderStatus status) {
   DVLOG(1) << __func__;
   DCHECK(!status.is_ok() || decoder_);
   DCHECK(init_cb_);
-  TRACE_EVENT_ASYNC_END1("media", kInitializeTraceName, this, "success",
-                         status.code());
+  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this), "success",
+                  status.code());
 
   if (!status.is_ok()) {
     std::move(init_cb_).Run(
@@ -458,7 +464,7 @@ void MojoVideoDecoderService::OnDecoderDecoded(
 void MojoVideoDecoderService::OnDecoderReset() {
   DVLOG(2) << __func__;
   DCHECK(reset_cb_);
-  TRACE_EVENT_ASYNC_END0("media", kResetTraceName, this);
+  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this));
   std::move(reset_cb_).Run();
 }
 
@@ -510,7 +516,6 @@ void MojoVideoDecoderService::OnOverlayInfoChanged(
 }
 
 void MojoVideoDecoderService::OnDecoderRequestedOverlayInfo(
-    bool restart_for_transitions,
     ProvideOverlayInfoCB provide_overlay_info_cb) {
   DVLOG(2) << __func__;
   DCHECK(client_);
@@ -520,7 +525,7 @@ void MojoVideoDecoderService::OnDecoderRequestedOverlayInfo(
                "MojoVideoDecoderService::OnDecoderRequestedOverlayInfo");
 
   provide_overlay_info_cb_ = std::move(provide_overlay_info_cb);
-  client_->RequestOverlayInfo(restart_for_transitions);
+  client_->RequestOverlayInfo();
 }
 
 }  // namespace media

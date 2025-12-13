@@ -40,11 +40,11 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/radio_button.h"
@@ -128,13 +128,13 @@ class ContinueSectionViewTestBase : public AshTestBase {
       animations_timer->FireNow();
 
     animation_duration_.emplace(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
     return GetCurrentLayerBoundsForAllTaskViews();
   }
 
   ContinueSectionView* GetContinueSectionView() {
-    if (display::Screen::GetScreen()->InTabletMode()) {
+    if (display::Screen::Get()->InTabletMode()) {
       return GetAppListTestHelper()->GetFullscreenContinueSectionView();
     }
     return GetAppListTestHelper()->GetBubbleContinueSectionView();
@@ -145,14 +145,14 @@ class ContinueSectionViewTestBase : public AshTestBase {
   }
 
   views::View* GetRecentAppsView() {
-    if (display::Screen::GetScreen()->InTabletMode()) {
+    if (display::Screen::Get()->InTabletMode()) {
       return GetAppListTestHelper()->GetFullscreenRecentAppsView();
     }
     return GetAppListTestHelper()->GetBubbleRecentAppsView();
   }
 
   views::View* GetAppsGridView() {
-    if (display::Screen::GetScreen()->InTabletMode()) {
+    if (display::Screen::Get()->InTabletMode()) {
       return GetAppListTestHelper()->GetRootPagedAppsGridView();
     }
     return GetAppListTestHelper()->GetScrollableAppsGridView();
@@ -197,7 +197,7 @@ class ContinueSectionViewTestBase : public AshTestBase {
   }
 
   SearchBoxView* GetSearchBoxView() {
-    if (display::Screen::GetScreen()->InTabletMode()) {
+    if (display::Screen::Get()->InTabletMode()) {
       return GetAppListTestHelper()->GetSearchBoxView();
     }
     return GetAppListTestHelper()->GetBubbleSearchBoxView();
@@ -307,7 +307,7 @@ class ContinueSectionViewTestBase : public AshTestBase {
  private:
   bool tablet_mode_ = false;
 
-  std::optional<ui::ScopedAnimationDurationScaleMode> animation_duration_;
+  std::optional<gfx::ScopedAnimationDurationScaleMode> animation_duration_;
   std::unique_ptr<test::AppsGridViewTestApi> test_api_;
 };
 
@@ -349,7 +349,7 @@ class ContinueSectionViewWithReorderNudgeTest
   }
 
   AppListToastContainerView* GetToastContainerView() {
-    if (!display::Screen::GetScreen()->InTabletMode()) {
+    if (!display::Screen::Get()->InTabletMode()) {
       return GetAppListTestHelper()
           ->GetBubbleAppsPage()
           ->toast_container_for_test();

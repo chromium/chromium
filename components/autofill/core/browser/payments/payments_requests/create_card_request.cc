@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/payments/payments_requests/payments_request_constants.h"
 
 namespace autofill::payments {
 
@@ -95,10 +96,10 @@ std::string CreateCardRequest::GetRequestContent() {
   }
 
   switch (request_details_.upload_card_source) {
-    case UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE:
+    case UploadCardSource::kUnknown:
       card_info.Set("upload_card_source", "UNKNOWN_UPLOAD_CARD_SOURCE");
       break;
-    case UploadCardSource::UPSTREAM_SAVE_AND_FILL:
+    case UploadCardSource::kUpstreamSaveAndFill:
       card_info.Set("upload_card_source", "UPSTREAM_SAVE_AND_FILL");
       break;
     default:
@@ -109,8 +110,7 @@ std::string CreateCardRequest::GetRequestContent() {
 
   const std::u16string pan =
       request_details_.card.GetInfo(CREDIT_CARD_NUMBER, app_locale);
-  std::string json_request;
-  base::JSONWriter::Write(request_dict, &json_request);
+  std::string json_request = base::WriteJson(request_dict).value_or("");
   std::string request_content;
   if (request_details_.cvc.empty()) {
     request_content = base::StringPrintf(
@@ -155,12 +155,7 @@ std::string CreateCardRequest::GetHistogramName() const {
 }
 
 std::optional<base::TimeDelta> CreateCardRequest::GetTimeout() const {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillUploadCardRequestTimeout)) {
-    return std::nullopt;
-  }
-  return base::Milliseconds(
-      features::kAutofillUploadCardRequestTimeoutMilliseconds.Get());
+  return kUploadCardRequestTimeout;
 }
 
 std::string CreateCardRequest::GetInstrumentIdForTesting() const {

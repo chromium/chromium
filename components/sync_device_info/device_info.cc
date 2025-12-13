@@ -82,7 +82,7 @@ DeviceInfo::DeviceInfo(
     const std::optional<PhoneAsASecurityKeyInfo>& paask_info,
     const std::string& fcm_registration_token,
     const DataTypeSet& interested_data_types,
-    std::optional<base::Time> floating_workspace_last_signin_timestamp)
+    std::optional<base::Time> auto_sign_out_last_signin_timestamp)
     : guid_(guid),
       client_name_(client_name),
       chrome_version_(chrome_version),
@@ -102,8 +102,8 @@ DeviceInfo::DeviceInfo(
       paask_info_(paask_info),
       fcm_registration_token_(fcm_registration_token),
       interested_data_types_(interested_data_types),
-      floating_workspace_last_signin_timestamp_(
-          floating_workspace_last_signin_timestamp) {}
+      auto_sign_out_last_signin_timestamp_(
+          auto_sign_out_last_signin_timestamp) {}
 
 DeviceInfo::~DeviceInfo() = default;
 
@@ -189,9 +189,9 @@ const DataTypeSet& DeviceInfo::interested_data_types() const {
   return interested_data_types_;
 }
 
-std::optional<base::Time> DeviceInfo::floating_workspace_last_signin_timestamp()
+std::optional<base::Time> DeviceInfo::auto_sign_out_last_signin_timestamp()
     const {
-  return floating_workspace_last_signin_timestamp_;
+  return auto_sign_out_last_signin_timestamp_;
 }
 
 void DeviceInfo::set_public_id(const std::string& id) {
@@ -234,9 +234,9 @@ void DeviceInfo::set_interested_data_types(const DataTypeSet& data_types) {
   interested_data_types_ = data_types;
 }
 
-void DeviceInfo::set_floating_workspace_last_signin_timestamp(
+void DeviceInfo::set_auto_sign_out_last_signin_timestamp(
     std::optional<base::Time> time) {
-  floating_workspace_last_signin_timestamp_ = time;
+  auto_sign_out_last_signin_timestamp_ = time;
 }
 
 }  // namespace syncer

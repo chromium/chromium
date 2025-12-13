@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/ash/account_manager/child_account_type_changed_user_data.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"

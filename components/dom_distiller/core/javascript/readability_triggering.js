@@ -3,17 +3,16 @@
 // found in the LICENSE file.
 
 // Runs readability heuristic on the page and return the result.
-(function() {
+(function(minScore, minContentLength) {
 function initialize() {
   // This include will be processed at build time by grit.
   // clang-format off
-      // <include src="../../../../third_party/readability/src/Readability-readerable.js">
+        // <include src="../../../../third_party/readability/modded_src/Readability-readerable.js">
   // clang-format on
   window.isProbablyReaderable = isProbablyReaderable;
 }
-window.setTimeout = function() {};
-window.clearTimeout = function() {};
 initialize();
 
-return isProbablyReaderable(document);
-})();
+return isProbablyReaderable(
+    document, {minScore: minScore, minContentLength: minContentLength});
+})($$MIN_SCORE_PLACEHOLDER, $$MIN_CONTENT_LENGTH_PLACEHOLDER);

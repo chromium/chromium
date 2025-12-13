@@ -46,7 +46,7 @@
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -148,7 +148,7 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
     GURL absolute_url = https_server_.GetURL(request.relative_url);
-    auto path = absolute_url.path();
+    auto path = absolute_url.GetPath();
     if (!path.ends_with(kTestLargeImage) &&
         !path.ends_with(kTestInvalidImage)) {
       return nullptr;
@@ -468,8 +468,8 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen, BasicTest) {
   Init();
   SetImages({kRedImageFileName, kBlueImageFileName, kGreenImageFileName},
             /*wait_for_images=*/true);
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   test_future_ = std::make_unique<base::test::TestFuture<void>>();
   AutotestAmbientApi test_api;
   test_api.WaitForPhotoTransitionAnimationCompleted(
@@ -500,8 +500,8 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
                        OneImageDoesNotStartAmbientMode) {
   Init();
   SetImages({kRedImageFileName}, /*wait_for_images=*/true);
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   AutotestAmbientApi test_api;
   test_future_ = std::make_unique<base::test::TestFuture<void>>();
   test_api.WaitForPhotoTransitionAnimationCompleted(
@@ -517,8 +517,8 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
                        ImageMoreThanMaxSizeNotDownloadedOrShown) {
   Init();
   SetImages({kTestLargeImage, kBlueImageFileName});
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   AutotestAmbientApi test_api;
   test_future_ = std::make_unique<base::test::TestFuture<void>>();
@@ -535,8 +535,8 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
                        InvalidImageDownloadedButNotShown) {
   Init();
   SetImages({kTestInvalidImage, kBlueImageFileName});
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   AutotestAmbientApi test_api;
   test_future_ = std::make_unique<base::test::TestFuture<void>>();
@@ -553,8 +553,8 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
 IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
                        ClearingTheImagesStopsScreensaver) {
   Init();
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   SetImages({kRedImageFileName, kBlueImageFileName, kGreenImageFileName},
             /*wait_for_images=*/true);
   AutotestAmbientApi test_api;

@@ -11,7 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/views_test_base.h"
 
 namespace ash {
@@ -41,8 +41,8 @@ TEST_F(QuickInsertSkeletonLoaderViewTest,
 }
 
 TEST_F(QuickInsertSkeletonLoaderViewTest, AnimationStartsAfterDelay) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   QuickInsertSkeletonLoaderView view;
   view.StartAnimationAfter(base::Seconds(1));
   task_environment()->FastForwardBy(base::Seconds(1));
@@ -66,8 +66,8 @@ TEST_F(QuickInsertSkeletonLoaderViewTest,
 
 TEST_F(QuickInsertSkeletonLoaderViewTest,
        StopAnimationStopsRunningAnimationAndResetsOpacity) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   QuickInsertSkeletonLoaderView view;
   view.StartAnimationAfter(base::Seconds(1));
   task_environment()->FastForwardBy(base::Seconds(1));

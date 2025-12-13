@@ -11,9 +11,6 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/bindings/modules/v8/webgl_any.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -159,9 +156,9 @@ class PointableStringArray {
     DCHECK(strings.size() < std::numeric_limits<GLsizei>::max());
     for (wtf_size_t i = 0; i < strings.size(); ++i) {
       // Strings must never move once they are stored in data_...
-      data_[i] = strings[i].Ascii();
+      UNSAFE_TODO(data_[i]) = strings[i].Ascii();
       // ... so that the c_str() remains valid.
-      pointers_[i] = data_[i].c_str();
+      pointers_[i] = UNSAFE_TODO(data_[i]).c_str();
     }
   }
 
@@ -236,12 +233,12 @@ static constexpr auto kSupportedInternalFormatsStorage = std::to_array<GLenum>({
 WebGL2RenderingContextBase::WebGL2RenderingContextBase(
     CanvasRenderingContextHost* host,
     std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
-    const Platform::GraphicsInfo& graphics_info,
+    const Platform::WebGLContextInfo& context_info,
     const CanvasContextCreationAttributesCore& requested_attributes,
-    Platform::ContextType context_type)
+    Platform::WebGLContextType context_type)
     : WebGLRenderingContextBase(host,
                                 std::move(context_provider),
-                                graphics_info,
+                                context_info,
                                 requested_attributes,
                                 context_type) {
   for (size_t i = 0; i < std::size(kSupportedInternalFormatsStorage); ++i) {
@@ -656,7 +653,6 @@ ScriptValue WebGL2RenderingContextBase::getInternalformatParameter(
       auto values = base::HeapArray<GLint>::WithSize(length);
       ContextGL()->GetInternalformativ(target, internalformat, GL_SAMPLES,
                                        length, values.data());
-      RecordInternalFormatParameter(internalformat, values.data(), length);
       return WebGLAny(script_state, DOMInt32Array::Create(values));
     }
     default:
@@ -664,30 +660,6 @@ ScriptValue WebGL2RenderingContextBase::getInternalformatParameter(
                         "invalid parameter name");
       return ScriptValue::CreateNull(script_state->GetIsolate());
   }
-}
-
-// TODO(crbug.com/351564777): should be UNSAFE_BUFFER_USAGE.
-void WebGL2RenderingContextBase::RecordInternalFormatParameter(
-    GLenum internalformat,
-    GLint* values,
-    GLint length) {
-  if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
-          IdentifiableSurface::Type::kWebGLInternalFormatParameter))
-    return;
-  // SAFETY: required from caller.
-  const base::span<GLint> values_span =
-      UNSAFE_BUFFERS(base::span(values, base::checked_cast<size_t>(length)));
-  const auto& ukm_params = GetUkmParameters();
-  IdentifiableTokenBuilder builder;
-  for (const auto& value : values_span) {
-    builder.AddValue(value);
-  }
-  IdentifiabilityMetricBuilder(ukm_params.source_id)
-      .Add(IdentifiableSurface::FromTypeAndToken(
-               IdentifiableSurface::Type::kWebGLInternalFormatParameter,
-               internalformat),
-           builder.GetToken())
-      .Record(ukm_params.ukm_recorder);
 }
 
 bool WebGL2RenderingContextBase::CheckAndTranslateAttachments(
@@ -3426,9 +3398,13 @@ void WebGL2RenderingContextBase::GetCurrentUnpackState(TexImageParams& params) {
 WebGLTexture* WebGL2RenderingContextBase::ValidateTexImageBinding(
     const TexImageParams& params) {
   const char* func_name = GetTexImageFunctionName(params.function_id);
-  if (params.function_id == kTexImage3D || params.function_id == kTexSubImage3D)
-    return ValidateTexture3DBinding(func_name, params.target, true);
-  return ValidateTexture2DBinding(func_name, params.target, true);
+  if (params.function_id == kTexImage3D ||
+      params.function_id == kTexSubImage3D) {
+    return ValidateTexture3DBinding(func_name, params.target,
+                                    params.function_id != kTexSubImage3D);
+  }
+  return ValidateTexture2DBinding(func_name, params.target,
+                                  params.function_id != kTexSubImage2D);
 }
 
 void WebGL2RenderingContextBase::clearBufferiv(GLenum buffer,
@@ -4802,14 +4778,15 @@ ScriptValue WebGL2RenderingContextBase::getParameter(ScriptState* script_state,
     case GL_SHADING_LANGUAGE_VERSION: {
       return WebGLAny(
           script_state,
-          "WebGL GLSL ES 3.00 (" +
-              String(ContextGL()->GetString(GL_SHADING_LANGUAGE_VERSION)) +
-              ")");
+          StrCat({"WebGL GLSL ES 3.00 (",
+                  String(ContextGL()->GetString(GL_SHADING_LANGUAGE_VERSION)),
+                  ")"}));
     }
     case GL_VERSION:
       return WebGLAny(
           script_state,
-          "WebGL 2.0 (" + String(ContextGL()->GetString(GL_VERSION)) + ")");
+          StrCat({"WebGL 2.0 (", String(ContextGL()->GetString(GL_VERSION)),
+                  ")"}));
 
     case GL_COPY_READ_BUFFER_BINDING:
       return WebGLAny(script_state, bound_copy_read_buffer_.Get());

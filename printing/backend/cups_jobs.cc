@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "printing/backend/cups_jobs.h"
 
 #include <cups/ipp.h>
@@ -88,6 +83,10 @@ constexpr char kIppEverywhere[] = "ipp-everywhere";
 // job state reason values
 constexpr char kJobCompletedWithErrors[] = "job-completed-with-errors";
 constexpr char kCupsHeldForAuthentication[] = "cups-held-for-authentication";
+constexpr char kJobCanceledByUser[] = "job-canceled-by-user";
+constexpr char kJobCanceledByOperator[] = "job-canceled-by-operator";
+constexpr char kJobCanceledAtDevice[] = "job-canceled-at-device";
+constexpr char kJobCompletedSuccessfully[] = "job-completed-successfully";
 
 // printer state severities
 constexpr char kSeverityReport[] = "report";
@@ -225,14 +224,17 @@ PrinterStatus::PrinterReason::Reason ToReason(std::string_view reason) {
 // Returns the Severity corresponding to `severity`.  Returns UNKNOWN_SEVERITY
 // if the strin gis not recognized.
 PSeverity ToSeverity(std::string_view severity) {
-  if (severity == kSeverityError)
+  if (severity == kSeverityError) {
     return PSeverity::kError;
+  }
 
-  if (severity == kSeverityWarn)
+  if (severity == kSeverityWarn) {
     return PSeverity::kWarning;
+  }
 
-  if (severity == kSeverityReport)
+  if (severity == kSeverityReport) {
     return PSeverity::kReport;
+  }
 
   return PSeverity::kUnknownSeverity;
 }
@@ -486,6 +488,14 @@ const std::string_view ToJobStateReasonString(
       return kJobCompletedWithErrors;
     case CupsJob::JobStateReason::kCupsHeldForAuthentication:
       return kCupsHeldForAuthentication;
+    case CupsJob::JobStateReason::kJobCanceledByUser:
+      return kJobCanceledByUser;
+    case CupsJob::JobStateReason::kJobCanceledByOperator:
+      return kJobCanceledByOperator;
+    case CupsJob::JobStateReason::kJobCanceledAtDevice:
+      return kJobCanceledAtDevice;
+    case CupsJob::JobStateReason::kJobCompletedSuccessfully:
+      return kJobCompletedSuccessfully;
   }
   return "";
 }

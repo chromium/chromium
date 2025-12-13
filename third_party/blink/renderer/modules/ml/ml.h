@@ -19,7 +19,6 @@
 
 namespace blink {
 
-class GPUDevice;
 class MLContextOptions;
 class ScriptState;
 
@@ -41,10 +40,6 @@ class MODULES_EXPORT ML final : public ScriptWrappable,
   ScriptPromise<MLContext> createContext(ScriptState* state,
                                          MLContextOptions* option,
                                          ExceptionState& exception_state);
-  ScriptPromise<MLContext> createContext(ScriptState* state,
-                                         GPUDevice* gpu_device,
-                                         ExceptionState& exception_state);
-
  private:
   // Reset the remote of `WebNNContextProvider` if the remote is cut off from
   // its receiver.

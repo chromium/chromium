@@ -10,12 +10,13 @@
 #import <memory>
 
 #import "base/check_op.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
-#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/utils/notification_observer_bridge.h"
 #import "ios/chrome/browser/web/model/features.h"
@@ -78,8 +79,7 @@ void SadTabTabHelper::RenderProcessGone(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
 
   // Don't present a sad tab on top of an NTP.
-  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(web_state);
-  if (NTPHelper && NTPHelper->IsActive()) {
+  if (IsVisibleURLNewTabPage(web_state)) {
     return;
   }
 
@@ -120,8 +120,8 @@ void SadTabTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   DCHECK_EQ(web_state_, web_state);
-  if (navigation_context->GetUrl().host() == kChromeUICrashHost &&
-      navigation_context->GetUrl().scheme() == kChromeUIScheme) {
+  if (navigation_context->GetUrl().GetHost() == kChromeUICrashHost &&
+      navigation_context->GetUrl().GetScheme() == kChromeUIScheme) {
     OnVisibleCrash(navigation_context->GetUrl());
     PresentSadTab();
   }
@@ -176,8 +176,8 @@ void SadTabTabHelper::PresentSadTab() {
 
   bool is_pdf = web_state_->GetContentsMimeType() == "application/pdf";
   bool is_chrome_external_file_url =
-      last_failed_url_.host() == kChromeUIExternalFileHost &&
-      last_failed_url_.scheme() == kChromeUIScheme;
+      last_failed_url_.GetHost() == kChromeUIExternalFileHost &&
+      last_failed_url_.GetScheme() == kChromeUIScheme;
   UMA_HISTOGRAM_BOOLEAN("IOS.SadTab.FileIsPDF", is_pdf);
   UMA_HISTOGRAM_BOOLEAN("IOS.SadTab.URLIsChromeExternalFile",
                         is_chrome_external_file_url);

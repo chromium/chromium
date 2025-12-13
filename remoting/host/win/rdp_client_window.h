@@ -25,13 +25,23 @@
 #include "remoting/host/win/com_imported_mstscax.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
+#ifdef COMPONENT_BUILD
+#ifdef RDP_WINDOW_IMPL
+#define RDP_WINDOW_EXPORT __declspec(dllexport)
+#else
+#define RDP_WINDOW_EXPORT __declspec(dllimport)
+#endif  // RDP_WINDOW_IMPL
+#else
+#define RDP_WINDOW_EXPORT
+#endif  // COMPONENT_BUILD
+
 namespace remoting {
 
 // RdpClientWindow is used to establish a connection to the given RDP endpoint.
 // It is a GUI window class that hosts Microsoft RDP ActiveX control, which
 // takes care of handling RDP properly. RdpClientWindow must be used only on
 // a UI thread.
-class RdpClientWindow
+class RDP_WINDOW_EXPORT RdpClientWindow
     : public CWindowImpl<RdpClientWindow, CWindow, CFrameWinTraits>,
       public IDispEventImpl<1,
                             RdpClientWindow,
@@ -69,8 +79,8 @@ class RdpClientWindow
 
   DECLARE_WND_CLASS(L"RdpClientWindow")
 
-  // Specifies the endpoint to connect to and passes the event handler pointer
-  // to be notified about connection events.
+  // Specifies the endpoint to connect to and passes the event handler
+  // pointer to be notified about connection events.
   RdpClientWindow(const net::IPEndPoint& server_endpoint,
                   const std::string& terminal_id,
                   EventHandler* event_handler);

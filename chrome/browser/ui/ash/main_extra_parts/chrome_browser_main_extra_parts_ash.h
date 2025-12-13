@@ -17,12 +17,15 @@
 namespace ash {
 class ArcWindowWatcher;
 class ActiveSessionFingerprintClient;
+class BrowserRestoreObserver;
 class InSessionAuthTokenProviderImpl;
 class MagicBoostStateAsh;
+class MultiUserWindowManagerBrowserAdaptor;
 class NetworkPortalNotificationController;
 class NetworkPortalSigninController;
 class OobeDialogUtil;
 class PeripheralsAppDelegateImpl;
+class VideoConferenceManagerAsh;
 class VideoConferenceTrayController;
 
 namespace boca {
@@ -34,6 +37,10 @@ class GraduationManager;
 }
 
 }  // namespace ash
+
+namespace chrome {
+class SettingsWindowManager;
+}  // namespace chrome
 
 namespace chromeos {
 class MahiManager;
@@ -108,7 +115,6 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   ~ChromeBrowserMainExtraPartsAsh() override;
 
   // Overridden from ChromeBrowserMainExtraParts:
-  void PreCreateMainMessageLoop() override;
   void PreProfileInit() override;
   void PostProfileInit(Profile* profile, bool is_initial_profile) override;
   void PostBrowserStart() override;
@@ -133,14 +139,16 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<CastConfigControllerMediaRouter>
       cast_config_controller_media_router_;
 
-  // Initialized in PreProfileInit if ash config != MASH:
-  std::unique_ptr<AshShellInit> ash_shell_init_;
 
   // Initialized in PreProfileInit in all configs after Shell init:
+  std::unique_ptr<AshShellInit> ash_shell_init_;
   std::unique_ptr<AccessibilityControllerClient>
       accessibility_controller_client_;
   std::unique_ptr<AppListClientImpl> app_list_client_;
   std::unique_ptr<ChromeNewWindowClient> chrome_new_window_client_;
+  std::unique_ptr<ash::MultiUserWindowManagerBrowserAdaptor>
+      multi_user_window_manager_browser_adaptor_;
+  std::unique_ptr<ash::BrowserRestoreObserver> browser_restore_observer_;
   std::unique_ptr<ash::ArcWindowWatcher> arc_window_watcher_;
   std::unique_ptr<ArcOpenUrlDelegateImpl> arc_open_url_delegate_impl_;
   std::unique_ptr<ash::boca::BocaAppClientImpl> boca_client_;
@@ -152,6 +160,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
       in_session_auth_token_provider_;
   std::unique_ptr<ScreenOrientationDelegateChromeos>
       screen_orientation_delegate_;
+  std::unique_ptr<chrome::SettingsWindowManager> settings_window_manager_;
   std::unique_ptr<SessionControllerClientImpl> session_controller_client_;
   std::unique_ptr<SystemTrayClientImpl> system_tray_client_;
   std::unique_ptr<TabClusterUIClient> tab_cluster_ui_client_;
@@ -207,6 +216,8 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
 
   // Callback invoked at the end of PostBrowserStart().
   base::OnceClosure post_browser_start_callback_;
+
+  std::unique_ptr<ash::VideoConferenceManagerAsh> video_conference_manager_ash_;
 
   // Once Sanitize is completed, ash is restarted. After ash has restarted, we
   // should check if the restart has happened right after a sanitize. If that is

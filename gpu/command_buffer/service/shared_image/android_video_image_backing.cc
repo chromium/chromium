@@ -8,7 +8,6 @@
 
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
-#include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/abstract_texture_android.h"

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -60,7 +61,7 @@ class MouseEventsTest : public InProcessBrowserTest {
     ui_controls::SendMouseMove(bounds.CenterPoint().x(), bounds.y() - 2);
 
     // Navigate to the test page and wait for onload to be called.
-    const GURL url = ui_test_utils::GetTestUrl(
+    const GURL url = chrome_test_utils::GetTestUrl(
         base::FilePath(),
         base::FilePath(FILE_PATH_LITERAL("mouse_events_test.html")));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

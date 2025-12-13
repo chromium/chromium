@@ -14,7 +14,6 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/game_dashboard/game_dashboard_delegate.h"
 #include "ash/public/cpp/app_types_util.h"
-#include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/tab_strip_delegate.h"
 #include "ash/shell_delegate.h"
@@ -35,7 +34,8 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/locked_fullscreen/arc_locked_fullscreen_manager.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
-#include "chrome/browser/ash/assistant/assistant_util.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -54,7 +54,6 @@
 #include "chrome/browser/ui/ash/back_gesture/back_gesture_contextual_nudge_delegate.h"
 #include "chrome/browser/ui/ash/boca/chrome_tab_strip_delegate.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
-#include "chrome/browser/ui/ash/clipboard/clipboard_history_controller_delegate_impl.h"
 #include "chrome/browser/ui/ash/desks/chrome_saved_desk_delegate.h"
 #include "chrome/browser/ui/ash/focus_mode/chrome_focus_mode_delegate.h"
 #include "chrome/browser/ui/ash/game_dashboard/chrome_game_dashboard_delegate.h"
@@ -72,17 +71,18 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/audio/system_sounds_delegate_impl.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/specialized_features/feedback.h"
+#include "chromeos/ash/experiences/clipboard/clipboard_history_controller_delegate_impl.h"
+#include "chromeos/ash/experiences/clipboard/clipboard_image_model_factory_impl.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "components/ui_devtools/devtools_server.h"
 #include "components/ui_devtools/views/server_holder.h"
@@ -112,22 +112,11 @@ const char kKeyboardShortcutHelpPageUrl[] =
 // independent option here.
 std::optional<bool> disable_logging_redirect_for_testing;
 
-// Returns the TabStripModel that associates with |window| if the given |window|
-// contains a browser frame, otherwise returns nullptr.
-TabStripModel* GetTabstripModelForWindowIfAny(aura::Window* window) {
-  BrowserView* browser_view =
-      BrowserView::GetBrowserViewForNativeWindow(window);
-  return browser_view ? browser_view->browser()->tab_strip_model() : nullptr;
-}
-
 content::WebContents* GetActiveWebContentsForNativeBrowserWindow(
     gfx::NativeWindow window) {
-  if (!window) {
-    return nullptr;
-  }
-
-  TabStripModel* tab_strip_model = GetTabstripModelForWindowIfAny(window);
-  return tab_strip_model ? tab_strip_model->GetActiveWebContents() : nullptr;
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetBrowserForWindow(window);
+  return browser ? browser->GetActiveWebContents() : nullptr;
 }
 
 feedback::FeedbackSource ToChromeFeedbackSource(
@@ -171,6 +160,11 @@ ChromeShellDelegate::CreateCaptureModeDelegate(PrefService* local_state) const {
 std::unique_ptr<ash::ClipboardHistoryControllerDelegate>
 ChromeShellDelegate::CreateClipboardHistoryControllerDelegate() const {
   return std::make_unique<ClipboardHistoryControllerDelegateImpl>();
+}
+
+std::unique_ptr<ash::ClipboardImageModelFactory>
+ChromeShellDelegate::CreateClipboardImageModelFactory() const {
+  return std::make_unique<ClipboardImageModelFactoryImpl>();
 }
 
 std::unique_ptr<ash::CoralDelegate> ChromeShellDelegate::CreateCoralDelegate()
@@ -257,7 +251,7 @@ ChromeShellDelegate::GetBrowserProcessUrlLoaderFactory() const {
 }
 
 void ChromeShellDelegate::OpenKeyboardShortcutHelpPage() const {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(kKeyboardShortcutHelpPageUrl),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
@@ -383,11 +377,6 @@ void ChromeShellDelegate::SetUpEnvironmentForLockedFullscreen(
       arc::IsArcAllowedForProfile(profile)) {
     arc_service_launcher->arc_locked_fullscreen_manager()
         ->UpdateForLockedFullscreenMode(locked);
-  }
-
-  if (assistant::IsAssistantAllowedForProfile(profile) ==
-      ash::assistant::AssistantAllowedState::ALLOWED) {
-    ash::AssistantState::Get()->NotifyLockedFullScreenStateChanged(locked);
   }
 
   // If a window is entering locked fullscreen, then we should close any
@@ -529,16 +518,16 @@ version_info::Channel ChromeShellDelegate::GetChannel() {
     // Simulate a non-stable channel so the release track UI is visible.
     return version_info::Channel::BETA;
   }
-  return chrome::GetChannel();
+  return ash::GetChannel();
 }
 
 void ChromeShellDelegate::ForceSkipWarningUserOnClose(
     const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows) {
   for (aura::Window* window : windows) {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForNativeWindow(window);
-    if (browser_view) {
-      browser_view->browser()->set_force_skip_warning_user_on_close(true);
+    ash::BrowserDelegate* browser =
+        ash::BrowserController::GetInstance()->GetBrowserForWindow(window);
+    if (browser) {
+      browser->GetBrowser().set_force_skip_warning_user_on_close(true);
     }
   }
 }

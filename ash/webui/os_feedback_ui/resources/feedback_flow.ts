@@ -12,7 +12,6 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ConfirmationPageElement} from './confirmation_page.js';
@@ -59,7 +58,6 @@ export const AdditionalContextQueryParam = {
   EXTRA_DIAGNOSTICS: 'extra_diagnostics',
   CATEGORY_TAG: 'category_tag',
   PAGE_URL: 'page_url',
-  FROM_ASSISTANT: 'from_assistant',
   SETTINGS_SEARCH_DO_NOT_RECORD_METRICS:
       'settings_search_do_not_record_metrics',
   FROM_AUTOFILL: 'from_autofill',
@@ -181,9 +179,6 @@ export class FeedbackFlowElement extends PolymerElement {
 
   /**  Whether to show the autofill checkbox in share data page. */
   protected shouldShowAutofillCheckbox = false;
-
-  /**  Whether to show the assistant checkbox in share data page. */
-  shouldShowAssistantCheckbox = false;
 
   private feedbackServiceProvider: FeedbackServiceProviderInterface;
 
@@ -338,14 +333,12 @@ export class FeedbackFlowElement extends PolymerElement {
     const feedbackInfo = JSON.parse(this.dialogArgs);
     assert(!!feedbackInfo);
     this.feedbackContext = {
-      assistantDebugInfoAllowed: false,
       settingsSearchDoNotRecordMetrics:
           feedbackInfo.settingsSearchDoNotRecordMetrics ?? false,
       isInternalAccount: feedbackInfo.isInternalAccount ?? false,
       wifiDebugLogsAllowed: false,
       traceId: feedbackInfo.traceId ?? 0,
       pageUrl: {url: feedbackInfo.pageUrl ?? ''},
-      fromAssistant: feedbackInfo.fromAssistant ?? false,
       fromAutofill: feedbackInfo.fromAutofill ?? false,
       autofillMetadata: feedbackInfo.autofillMetadata ?
           JSON.stringify(feedbackInfo.autofillMetadata) :
@@ -410,8 +403,6 @@ export class FeedbackFlowElement extends PolymerElement {
     if (!this.feedbackContext) {
       return;
     }
-    this.shouldShowAssistantCheckbox = this.feedbackContext.isInternalAccount &&
-        this.feedbackContext.fromAssistant;
     this.shouldShowAutofillCheckbox = this.feedbackContext.fromAutofill;
   }
   /**
@@ -447,9 +438,6 @@ export class FeedbackFlowElement extends PolymerElement {
     if (pageUrl) {
       this.set('feedbackContext.pageUrl', {url: pageUrl});
     }
-    const fromAssistant =
-        params.get(AdditionalContextQueryParam.FROM_ASSISTANT);
-    this.feedbackContext.fromAssistant = !!fromAssistant;
     const settingsSearchDoNotRecordMetrics = params.get(
         AdditionalContextQueryParam.SETTINGS_SEARCH_DO_NOT_RECORD_METRICS);
     this.set(
@@ -499,7 +487,7 @@ export class FeedbackFlowElement extends PolymerElement {
         break;
       case FeedbackFlowState.SHARE_DATA:
         const report = customEvent.detail.report as Report;
-        report.description = stringToMojoString16(this.description);
+        report.description = this.description;
 
         // TODO(xiangdongkong): Show a spinner or the like for sendReport could
         // take a while.

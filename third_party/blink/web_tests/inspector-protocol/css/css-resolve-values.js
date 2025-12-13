@@ -9,6 +9,7 @@
   const validColorValues = ["aqua", "peachpuff", "blanchedalmond", "rgb(255, 0, 0)", "#0f5ffe", "color-mix(in srgb, plum, #f00)"];
   const validPercentageExpressions = ["10%", "50%", "calc(10% + 10%)", "calc(10% - 10%)", "calc(10px + 10% - 10%)", "calc(10px + 10px)", "calc(10px + 0%)", "calc(10px + 10%)", "calc(1em + 10%)"];
   const invalidPercentageExpressions = ["calc(", "%", "calc(10 + 20)%", "calc(10 + 30%"];
+  const arbSubs = ["var(--x)", "attr(data-foo type(<length>))", "attr(invalid, 3px)", "var(--invalid, 3px)", "var(--cycle1)"];
 
   var {page, session, dp} = await testRunner.startURL('resources/css-resolve-values.html', 'Test css.resolveValue method');
 
@@ -136,6 +137,10 @@
       testRunner.log('Test resolveValues on custom property');
       await testResolveValues('div', testValues, "--prop");
     },
+    async function testCustomProperty() {
+      testRunner.log('Test resolveValues on custom property with cycle should ignore custom property');
+      await testResolveValues('div', ["var(--prop)"], "--prop");
+    },
     async function testRegisterCustomProperty() {
       testRunner.log('Test resolveValues on register custom property');
       await testResolveValues('div', testValues, "--reg-prop");
@@ -243,6 +248,10 @@
     async function testResolveInvalidPercentageValues() {
       testRunner.log('Test resolveValues with invalid percentage expressions');
       await testResolveValues('.inner', invalidPercentageExpressions, "height");
+    },
+    async function testResolveValuesWithVar() {
+      testRunner.log('Test resolveValues with var() for width property');
+      await testResolveValues('.inner', arbSubs, "width");
     }
   ]);
 });

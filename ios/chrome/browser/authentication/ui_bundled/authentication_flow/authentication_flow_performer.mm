@@ -28,13 +28,13 @@
 #import "google_apis/gaia/gaia_urls.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/change_profile_continuation.h"
+#import "ios/chrome/browser/authentication/history_sync/model/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_base+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
@@ -170,6 +170,8 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
                                                          (UIView*)anchorView
                                                      anchorRect:
                                                          (CGRect)anchorRect {
+  // Sign-in related work should be done on regular browser.
+  CHECK_EQ(browser->type(), Browser::Type::kRegular, base::NotFatalUntil::M145);
   __weak __typeof(self) weakSelf = self;
   _leavingPrimaryAccountConfirmationDialogCoordinator =
       GetLeavingPrimaryAccountConfirmationDialog(
@@ -182,6 +184,7 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
 
 - (void)fetchManagedStatus:(ProfileIOS*)profile
                forIdentity:(id<SystemIdentity>)identity {
+  CHECK(identity, base::NotFatalUntil::M147);
   SystemIdentityManager* systemIdentityManager =
       GetApplicationContext()->GetSystemIdentityManager();
   if (NSString* hostedDomain =
@@ -207,11 +210,11 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
           GetApplicationContext()->GetSharedURLLoaderFactory());
 
   __weak __typeof(self) weakSelf = self;
-  base::OnceCallback<void(const policy::ProfileSeparationPolicies&)> callback =
+  base::OnceCallback<void(policy::ProfileSeparationPolicies)> callback =
       base::BindOnce(
           [](__typeof(self) strongSelf,
-             const policy::ProfileSeparationPolicies& policies) {
-            [strongSelf didFetchProfileSeparationPolicies:policies];
+             policy::ProfileSeparationPolicies policies) {
+            [strongSelf didFetchProfileSeparationPolicies:std::move(policies)];
           },
           weakSelf);
 
@@ -227,8 +230,7 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
       ->GetManagedAccountsSigninRestriction(
           identity_manager,
           identity_manager->PickAccountIdForAccount(
-              GaiaId(identity.gaiaID),
-              base::SysNSStringToUTF8(identity.userEmail)),
+              identity.gaiaId, base::SysNSStringToUTF8(identity.userEmail)),
           std::move(callback));
 }
 
@@ -242,17 +244,8 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
   std::optional<std::string> profileName =
       GetApplicationContext()
           ->GetAccountProfileMapper()
-          ->FindProfileNameForGaiaID(GaiaId(identity.gaiaID));
-  if (!profileName.has_value()) {
-    __weak __typeof(_delegate) weakDelegate = _delegate;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](__typeof(_delegate) delegate) {
-                         [delegate didFailToSwitchToProfile];
-                       },
-                       weakDelegate));
-    return;
-  }
+          ->FindProfileNameForGaiaID(identity.gaiaId);
+  CHECK(profileName.has_value(), base::NotFatalUntil::M150);
 
   __weak __typeof(self) weakSelf = self;
   auto profileSwitchReadyCompletion = base::BindOnce(
@@ -278,7 +271,7 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
 - (void)makePersonalProfileManagedWithIdentity:(id<SystemIdentity>)identity {
   GetApplicationContext()
       ->GetAccountProfileMapper()
-      ->MakePersonalProfileManagedWithGaiaID(GaiaId(identity.gaiaID));
+      ->MakePersonalProfileManagedWithGaiaID(identity.gaiaId);
   [_delegate didMakePersonalProfileManaged];
 }
 
@@ -290,6 +283,8 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
                     mergeBrowsingDataByDefault:(BOOL)mergeBrowsingDataByDefault
          browsingDataMigrationDisabledByPolicy:
              (BOOL)browsingDataMigrationDisabledByPolicy {
+  // Sign-in related work should be done on regular browser.
+  CHECK_EQ(browser->type(), Browser::Type::kRegular, base::NotFatalUntil::M145);
   [self checkNoDialog];
 
   base::RecordAction(
@@ -334,21 +329,14 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
 
 #pragma mark - Private
 
-- (void)updateUserPolicyNotificationStatusIfNeeded:(PrefService*)prefService {
-  prefService->SetBoolean(policy::policy_prefs::kUserPolicyNotificationWasShown,
-                          true);
-}
-
 // Called when `_managedConfirmationAlertCoordinator` is finished.
 // `accepted` is YES when the user confirmed or NO if the user canceled.
 - (void)managedConfirmationAlertAccepted:(BOOL)accepted {
   CHECK(_managedConfirmationAlertCoordinator);
   CHECK(!_managedConfirmationScreenCoordinator);
-  Browser* browser = _managedConfirmationAlertCoordinator.browser;
   [_managedConfirmationAlertCoordinator stop];
   _managedConfirmationAlertCoordinator = nil;
   [self managedConfirmationDidAccept:accepted
-                             browser:browser
                 browsingDataSeparate:
                     AreSeparateProfilesForManagedAccountsEnabled()];
 }
@@ -369,7 +357,6 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
 // current profile. If AreSeparateProfilesForManagedAccountsEnabled() is true,
 // this involves converting the current profile into a work profile.
 - (void)managedConfirmationDidAccept:(BOOL)accepted
-                             browser:(Browser*)browser
                 browsingDataSeparate:(BOOL)browsingDataSeparate {
   if (!accepted) {
     base::RecordAction(
@@ -383,24 +370,14 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
   base::RecordAction(
       base::UserMetricsAction("Signin_AuthenticationFlowPerformer_"
                               "ManagedConfirmationDialog_Confirmed"));
-  // TODO(crbug.com/40225944): Nullify the browser object in the
-  // AlertCoordinator when the coordinator is stopped to avoid using the
-  // browser object at that moment, in which case the browser object may have
-  // been deleted before the callback block is called. This is to avoid
-  // potential bad memory accesses.
-  if (browser) {
-    PrefService* prefService = browser->GetProfile()->GetPrefs();
-    // TODO(crbug.com/40225352): Remove this line once we determined that the
-    // notification isn't needed anymore.
-    [self updateUserPolicyNotificationStatusIfNeeded:prefService];
-  }
+
   [_delegate didAcceptManagedConfirmationWithBrowsingDataSeparate:
                  browsingDataSeparate];
 }
 
 // Called when separation policies have been fetched, and calls the delegate.
 - (void)didFetchProfileSeparationPolicies:
-    (const policy::ProfileSeparationPolicies&)policies {
+    (policy::ProfileSeparationPolicies)policies {
   CHECK(_accountLevelSigninRestrictionPolicyFetcher);
   _accountLevelSigninRestrictionPolicyFetcher.reset();
   auto profile_separation_data_migration_settings =
@@ -456,11 +433,9 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
                      browsingDataSeparate:(BOOL)browsingDataSeparate {
   CHECK(!_managedConfirmationAlertCoordinator);
   CHECK_EQ(_managedConfirmationScreenCoordinator, coordinator);
-  Browser* browser = _managedConfirmationScreenCoordinator.browser;
   [_managedConfirmationScreenCoordinator stop];
   _managedConfirmationScreenCoordinator = nil;
   [self managedConfirmationDidAccept:accepted
-                             browser:browser
                 browsingDataSeparate:browsingDataSeparate];
 }
 

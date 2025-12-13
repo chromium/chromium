@@ -11,6 +11,8 @@ import android.app.PendingIntent.CanceledException;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.view.WindowMetrics;
 
@@ -18,12 +20,14 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.signin.FullscreenSigninAndHistorySyncActivityBase;
+import org.chromium.chrome.browser.ui.desktop_windowing.BasicAppHeaderStateProvider;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 /** Base class for First Run Experience. */
@@ -55,6 +59,7 @@ public abstract class FirstRunActivityBase extends FullscreenSigninAndHistorySyn
     public static final boolean DEFAULT_METRICS_AND_CRASH_REPORTING = true;
 
     private boolean mNativeInitialized;
+    private @Nullable BasicAppHeaderStateProvider mAppHeaderStateProvider;
 
     @Override
     protected boolean requiresFirstRunToBeCompleted(Intent intent) {
@@ -63,6 +68,14 @@ public abstract class FirstRunActivityBase extends FullscreenSigninAndHistorySyn
     }
 
     // Activity:
+    @Override
+    public void onPostCreate() {
+        super.onPostCreate();
+        if (VERSION.SDK_INT >= VERSION_CODES.R) {
+            mAppHeaderStateProvider = new BasicAppHeaderStateProvider(this, getInsetObserver());
+        }
+    }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -141,16 +154,8 @@ public abstract class FirstRunActivityBase extends FullscreenSigninAndHistorySyn
 
             // Use the PendingIntent to send the intent that originally launched Chrome. The intent
             // will go back to the ChromeLauncherActivity, which will route it accordingly.
-            boolean isFeatureListInitialized = FeatureList.isNativeInitialized();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                    && isFeatureListInitialized
-                    && ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.ANDROID_FIRST_RUN_LAUNCH_BOUNDS)) {
-
-                ActivityOptions options = ActivityOptions.makeBasic();
-                WindowMetrics windowMetrics =
-                        getWindow().getWindowManager().getCurrentWindowMetrics();
-                options.setLaunchBounds(windowMetrics.getBounds());
+            ActivityOptions options = makeOptionsForPendingIntent();
+            if (options != null) {
                 pendingIntent.send(
                         this,
                         Activity.RESULT_OK,
@@ -160,9 +165,6 @@ public abstract class FirstRunActivityBase extends FullscreenSigninAndHistorySyn
                         /* requiredPermission= */ null,
                         options.toBundle());
             } else {
-                if (!isFeatureListInitialized) {
-                    Log.w(TAG, "Pending intent sent before feature list initialized.");
-                }
                 pendingIntent.send(Activity.RESULT_OK, onFinished, /* handler= */ null);
             }
 
@@ -173,6 +175,33 @@ public abstract class FirstRunActivityBase extends FullscreenSigninAndHistorySyn
             Log.e(TAG, "Unable to send PendingIntent.", e);
         }
         return false;
+    }
+
+    private @Nullable ActivityOptions makeOptionsForPendingIntent() {
+        boolean isFeatureListInitialized = FeatureList.isNativeInitialized();
+        if (!isFeatureListInitialized) {
+            Log.w(TAG, "Pending intent sent before feature list initialized.");
+            return null;
+        }
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R
+                || !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.ANDROID_FIRST_RUN_LAUNCH_BOUNDS)) {
+            return null;
+        }
+
+        boolean isInDesktopWindow =
+                mAppHeaderStateProvider != null
+                        && mAppHeaderStateProvider.getAppHeaderState() != null
+                        && mAppHeaderStateProvider.getAppHeaderState().isInDesktopWindow();
+        if (!isInDesktopWindow) {
+            return null;
+        }
+
+        ActivityOptions options = ActivityOptions.makeBasic();
+        WindowMetrics windowMetrics = getWindow().getWindowManager().getCurrentWindowMetrics();
+        options.setLaunchBounds(windowMetrics.getBounds());
+        return options;
     }
 
     /**

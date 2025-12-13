@@ -8,24 +8,19 @@ import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 
 import android.app.Activity;
-import android.app.DownloadManager;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.ContentResolver;
 import android.content.ContentUris;
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Build.VERSION_CODES;
 import android.os.Environment;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -49,9 +44,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.chrome.browser.FileProviderHelper;
-import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.ClipboardImpl;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -231,15 +224,12 @@ public class ShareImageFileUtilsTest {
     private void deleteAllTestImages() throws TimeoutException {
         AsyncTask.SERIAL_EXECUTOR.execute(
                 () -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        deleteMediaStoreFiles();
-                    }
+                    deleteMediaStoreFiles();
                     deleteExternalStorageFiles();
                 });
         waitForAsync();
     }
 
-    @RequiresApi(29)
     private void deleteMediaStoreFiles() {
         ContentResolver contentResolver = ContextUtils.getApplicationContext().getContentResolver();
         Cursor cursor =
@@ -311,33 +301,5 @@ public class ShareImageFileUtilsTest {
                         externalStorageDir.getPath(), fileName, TEST_JPG_IMAGE_FILE_EXTENSION);
         Assert.assertTrue(imageFile2.exists());
         Assert.assertNotEquals(imageFile.getPath(), imageFile2.getPath());
-    }
-
-    @Test
-    @SmallTest
-    @MaxAndroidSdkLevel(value = VERSION_CODES.P, reason = "Added to MediaStore.Downloads on Q+")
-    public void testAddCompletedDownload() throws IOException {
-        NotificationProxyUtils.setNotificationEnabledForTest(true);
-        String filename =
-                TEST_IMAGE_FILE_NAME + "_add_completed_download" + TEST_JPG_IMAGE_FILE_EXTENSION;
-        File externalStorageDir = sActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
-        File qrcodeFile = new File(externalStorageDir, filename);
-        Assert.assertTrue(qrcodeFile.createNewFile());
-
-        long downloadId = ShareImageFileUtils.addCompletedDownload(qrcodeFile);
-        Assert.assertNotEquals(0L, downloadId);
-
-        DownloadManager downloadManager =
-                (DownloadManager)
-                        ContextUtils.getApplicationContext()
-                                .getSystemService(Context.DOWNLOAD_SERVICE);
-        DownloadManager.Query query = new DownloadManager.Query().setFilterById(downloadId);
-        Cursor c = downloadManager.query(query);
-
-        Assert.assertNotNull(c);
-        Assert.assertTrue(c.moveToFirst());
-        Assert.assertEquals(
-                filename, c.getString(c.getColumnIndexOrThrow(DownloadManager.COLUMN_TITLE)));
-        c.close();
     }
 }

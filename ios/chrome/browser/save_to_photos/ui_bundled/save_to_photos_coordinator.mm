@@ -33,7 +33,6 @@
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"

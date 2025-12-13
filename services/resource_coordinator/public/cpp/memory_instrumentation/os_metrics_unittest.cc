@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/os_metrics.h"
 
 #include <set>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/memory/page_size.h"
 #include "base/process/process_handle.h"
@@ -141,7 +138,8 @@ bool IsSmapsRollupSupported() {
   }
 
   int major, minor, patch;
-  if (sscanf(info.release, "%d.%d.%d", &major, &minor, &patch) < 3) {
+  if (UNSAFE_TODO(sscanf(info.release, "%d.%d.%d", &major, &minor, &patch)) <
+      3) {
     NOTREACHED();
   }
 
@@ -256,8 +254,8 @@ TEST(OSMetricsTest, GetMappedAndResidentPages) {
   for (unsigned int i = 0; i < kPages / 2; ++i) {
     int page = rand() % kPages;
     int offset = rand() % kPageSize;
-    *static_cast<volatile uint8_t*>(array + page * kPageSize + offset) =
-        rand() % 256;
+    *static_cast<volatile uint8_t*>(
+        UNSAFE_TODO(array + page * kPageSize + offset)) = rand() % 256;
     pages.insert(page);
   }
 
@@ -331,14 +329,18 @@ TEST(OSMetricsTest, Pss) {
     GTEST_SKIP() << "smaps_rollup not supported";
   }
 
+  // Make sure that this process has at least several MiB of PSS.
+  std::vector<uint8_t> array(16 * 1 << 20, 1);
+  size_t array_size_in_kb = array.size() / 1024;
+
   mojom::RawOSMemDump dump;
   dump.platform_private_footprint = mojom::PlatformPrivateFootprint::New();
   ASSERT_TRUE(OSMetrics::FillOSMemoryDump(
       base::kNullProcessHandle, {mojom::MemDumpFlags::MEM_DUMP_PSS}, &dump));
   uint32_t pss = dump.pss_kb;
 
-  // We don't know the exact value here, but it should be greater than 0.
-  EXPECT_GT(pss, 0u);
+  // Should be at least larger than the array.
+  EXPECT_GT(pss, array_size_in_kb);
 }
 
 TEST(OSMetricsTest, PssDisabled) {

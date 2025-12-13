@@ -5,14 +5,12 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_EXPERIMENTAL_ACTOR_EXPERIMENTAL_ACTOR_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_EXPERIMENTAL_ACTOR_EXPERIMENTAL_ACTOR_API_H_
 
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/actor/task_id.h"
+#include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/common/actor.mojom-forward.h"
+#include "chrome/common/actor/task_id.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "extensions/browser/extension_function.h"
-
-class Browser;
 
 namespace extensions {
 
@@ -28,29 +26,6 @@ class ExperimentalActorApiFunction : public ExtensionFunction {
  protected:
   ~ExperimentalActorApiFunction() override;
   bool PreRunValidation(std::string* error) override;
-};
-
-// Starts an actor task.
-class ExperimentalActorStartTaskFunction : public ExperimentalActorApiFunction {
- public:
-  ExperimentalActorStartTaskFunction();
-
-  ExperimentalActorStartTaskFunction(
-      const ExperimentalActorStartTaskFunction&) = delete;
-  ExperimentalActorStartTaskFunction& operator=(
-      const ExperimentalActorStartTaskFunction&) = delete;
-
- protected:
-  ~ExperimentalActorStartTaskFunction() override;
-  ResponseAction Run() override;
-  void OnTaskStarted(actor::TaskId task_id, int32_t tab_id);
-  void OnTabCreated(base::WeakPtr<Browser> browser,
-                    actor::TaskId task_id,
-                    actor::mojom::ActionResultCode result_code,
-                    std::optional<size_t> index_of_failed_action);
-
-  DECLARE_EXTENSION_FUNCTION("experimentalActor.startTask",
-                             EXPERIMENTALACTOR_STARTTASK)
 };
 
 // Stops an actor task.
@@ -69,27 +44,6 @@ class ExperimentalActorStopTaskFunction : public ExperimentalActorApiFunction {
 
   DECLARE_EXTENSION_FUNCTION("experimentalActor.stopTask",
                              EXPERIMENTALACTOR_STOPTASK)
-};
-
-// Executes an actor action.
-class ExperimentalActorExecuteActionFunction
-    : public ExperimentalActorApiFunction {
- public:
-  ExperimentalActorExecuteActionFunction();
-
-  ExperimentalActorExecuteActionFunction(
-      const ExperimentalActorExecuteActionFunction&) = delete;
-  ExperimentalActorExecuteActionFunction& operator=(
-      const ExperimentalActorExecuteActionFunction&) = delete;
-
- protected:
-  ~ExperimentalActorExecuteActionFunction() override;
-  ResponseAction Run() override;
-  void OnResponseReceived(
-      optimization_guide::proto::BrowserActionResult response);
-
-  DECLARE_EXTENSION_FUNCTION("experimentalActor.executeAction",
-                             EXPERIMENTALACTOR_EXECUTEACTION)
 };
 
 class ExperimentalActorCreateTaskFunction
@@ -120,8 +74,17 @@ class ExperimentalActorPerformActionsFunction
  protected:
   ~ExperimentalActorPerformActionsFunction() override;
   ResponseAction Run() override;
-  void OnActionsFinished(actor::mojom::ActionResultCode result_code,
-                         std::optional<size_t> index_of_failed_action);
+  void OnActionsFinished(
+      actor::TaskId task_id,
+      base::TimeTicks start_time,
+      bool skip_async_observation_information,
+      actor::mojom::ActionResultCode result_code,
+      std::optional<size_t> index_of_failed_action,
+      std::vector<actor::ActionResultWithLatencyInfo> action_results);
+  void OnObservationResult(
+      std::unique_ptr<optimization_guide::proto::ActionsResult> response,
+      std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>
+          journal_entry);
   DECLARE_EXTENSION_FUNCTION("experimentalActor.performActions",
                              EXPERIMENTALACTOR_PERFORMACTIONS)
 };

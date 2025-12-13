@@ -59,6 +59,7 @@ class URLResponseHead;
 class LoadTimingInfo;
 class ServiceWorkerRouterInfo;
 }  // namespace mojom
+struct IntegrityMetadata;
 }  // namespace network
 
 namespace net {
@@ -307,6 +308,8 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   // Whether the request was actually deferred by any device bound sessions.
   void SetWasDeferredByDeviceBoundSession(bool);
   bool WasDeferredByDeviceBoundSession() const;
+
+  void SetUnencodedDigests(std::vector<network::IntegrityMetadata>);
 
 #if INSIDE_BLINK
  protected:

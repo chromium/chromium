@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/embedder/input_delegate/tab_session_source.h"
+
 #include <math.h>
+
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"

@@ -14,6 +14,10 @@ class GURL;
 // The result URL that is meant to be loaded in the LRP.
 @property(nonatomic, assign, readonly) GURL searchResultURL;
 
+// The results HTTP headers that are meant to be loaded in the LRP.
+@property(nonatomic, readonly, copy)
+    NSDictionary<NSString*, NSString*>* resultsHttpHeaders;
+
 // The selected portion of the original snapshot.
 @property(nonatomic, readonly) UIImage* selectionPreviewImage;
 
@@ -32,6 +36,22 @@ class GURL;
 
 // The selection rect of the lens region.
 @property(nonatomic, readonly) CGRect selectionRect;
+
+/// Called when the result is successfully loaded in the webview.
+- (void)resultSuccessfullyLoadedInWebView;
+
+/// Called when the result loading is cancelled in the webview.
+- (void)resultLoadingCancelledInWebView;
+
+/// Called when the result fails to load in the webview.
+- (void)resultFailedToLoadInWebViewWithError:(NSError*)error;
+
+/// Called when the result webview is shown.
+- (void)resultWebviewShown;
+
+/// Called when the result webview is swiped with the given direction.
+- (void)resultWebviewSwipedWithDirection:
+    (UISwipeGestureRecognizerDirection)direction;
 
 @end
 

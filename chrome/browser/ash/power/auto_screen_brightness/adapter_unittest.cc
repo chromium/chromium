@@ -175,9 +175,6 @@ class AdapterTest : public testing::Test {
     scoped_refptr<user_prefs::PrefRegistrySyncable> registry(
         new user_prefs::PrefRegistrySyncable);
 
-    auto_screen_brightness::MetricsReporter::RegisterLocalStatePrefs(
-        registry.get());
-
     sync_preferences::PrefServiceSyncable* regular_prefs =
         factory.CreateSyncable(registry.get()).release();
 
@@ -206,7 +203,7 @@ class AdapterTest : public testing::Test {
     adapter_ = Adapter::CreateForTesting(
         profile_.get(), als_reader_.get(), &fake_brightness_monitor_,
         &fake_modeller_, &fake_model_config_loader_,
-        nullptr /* metrics_reporter */, task_environment_.GetMockTickClock());
+        task_environment_.GetMockTickClock());
     adapter_->Init();
     task_environment_.RunUntilIdle();
   }
@@ -604,8 +601,6 @@ TEST_F(AdapterTest, UserBrightnessChangeAlsReadingExists) {
   // Adapter will not be applied after a user manual adjustment.
   ReportUserBrightnessChangeRequest(20.0, 30.0);
 
-  histogram_tester_.ExpectUniqueSample(
-      "AutoScreenBrightness.MissingAlsWhenBrightnessChanged", false, 1);
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kSuccess);
   EXPECT_FALSE(adapter_->IsAppliedForTesting());
   CheckAvgLog({1, 2, 3, 4}, adapter_->GetCurrentAvgLogAlsForTesting().value());
@@ -621,8 +616,6 @@ TEST_F(AdapterTest, UserBrightnessChangeAlsReadingExists) {
 
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kSuccess);
   EXPECT_FALSE(adapter_->IsAppliedForTesting());
-  histogram_tester_.ExpectUniqueSample(
-      "AutoScreenBrightness.MissingAlsWhenBrightnessChanged", false, 2);
   CheckAvgLog({2, 3, 4, 100},
               adapter_->GetCurrentAvgLogAlsForTesting().value());
 }
@@ -643,8 +636,6 @@ TEST_F(AdapterTest, UserBrightnessChangeAlsReadingExistsContinue) {
 
   // User brightness change comes in.
   ReportUserBrightnessChangeRequest(20.0, 30.0);
-  histogram_tester_.ExpectUniqueSample(
-      "AutoScreenBrightness.MissingAlsWhenBrightnessChanged", false, 1);
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kSuccess);
   EXPECT_TRUE(adapter_->IsAppliedForTesting());
   EXPECT_EQ(test_observer_.num_changes(), 0);
@@ -679,8 +670,6 @@ TEST_F(AdapterTest, UserBrightnessChangeAlsReadingExistsContinue) {
 
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kSuccess);
   EXPECT_TRUE(adapter_->IsAppliedForTesting());
-  histogram_tester_.ExpectUniqueSample(
-      "AutoScreenBrightness.MissingAlsWhenBrightnessChanged", false, 3);
   CheckAvgLog({8, 2, 5, 15}, adapter_->GetCurrentAvgLogAlsForTesting().value());
 }
 
@@ -696,8 +685,6 @@ TEST_F(AdapterTest, UserBrightnessChangeAlsReadingAbsent) {
   // Adapter will not be applied after a user manual adjustment.
   ReportUserBrightnessChangeRequest(20.0, 30.0);
 
-  histogram_tester_.ExpectUniqueSample(
-      "AutoScreenBrightness.MissingAlsWhenBrightnessChanged", true, 1);
   EXPECT_EQ(adapter_->GetCurrentAvgLogAlsForTesting(), std::nullopt);
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kSuccess);
   EXPECT_FALSE(adapter_->IsAppliedForTesting());
@@ -711,10 +698,6 @@ TEST_F(AdapterTest, UserBrightnessChangeAlsReadingAbsent) {
   // Another user manual adjustment comes in.
   task_environment_.FastForwardBy(base::Seconds(1));
   ReportUserBrightnessChangeRequest(30.0, 40.0);
-  histogram_tester_.ExpectBucketCount(
-      "AutoScreenBrightness.MissingAlsWhenBrightnessChanged", true, 1);
-  histogram_tester_.ExpectBucketCount(
-      "AutoScreenBrightness.MissingAlsWhenBrightnessChanged", false, 1);
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kSuccess);
   EXPECT_FALSE(adapter_->IsAppliedForTesting());
   CheckAvgLog({101, 102, 103, 104},
@@ -734,8 +717,6 @@ TEST_F(AdapterTest, UserBrightnessChangeAlsReadingAbsentContinue) {
 
   ReportUserBrightnessChangeRequest(20.0, 30.0);
 
-  histogram_tester_.ExpectUniqueSample(
-      "AutoScreenBrightness.MissingAlsWhenBrightnessChanged", true, 1);
   EXPECT_EQ(adapter_->GetCurrentAvgLogAlsForTesting(), std::nullopt);
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kSuccess);
   EXPECT_TRUE(adapter_->IsAppliedForTesting());
@@ -751,10 +732,6 @@ TEST_F(AdapterTest, UserBrightnessChangeAlsReadingAbsentContinue) {
   // Another user manual adjustment comes in.
   task_environment_.FastForwardBy(base::Seconds(1));
   ReportUserBrightnessChangeRequest(30.0, 40.0);
-  histogram_tester_.ExpectBucketCount(
-      "AutoScreenBrightness.MissingAlsWhenBrightnessChanged", true, 1);
-  histogram_tester_.ExpectBucketCount(
-      "AutoScreenBrightness.MissingAlsWhenBrightnessChanged", false, 1);
   EXPECT_EQ(adapter_->GetStatusForTesting(), Adapter::Status::kSuccess);
   EXPECT_TRUE(adapter_->IsAppliedForTesting());
 }
@@ -991,18 +968,6 @@ TEST_F(AdapterTest, ValidParameters) {
        default_params_);
 
   histogram_tester_.ExpectTotalCount("AutoScreenBrightness.ParameterError", 0);
-}
-
-TEST_F(AdapterTest, InvalidParameters) {
-  std::map<std::string, std::string> params = default_params_;
-  params["user_adjustment_effect"] = "10";
-
-  Init(AlsReader::AlsInitStatus::kSuccess, BrightnessMonitor::Status::kSuccess,
-       Model(global_curve_, personal_curve_, 0), GetTestModelConfig(), params);
-
-  histogram_tester_.ExpectUniqueSample(
-      "AutoScreenBrightness.ParameterError",
-      static_cast<int>(ParameterError::kAdapterError), 1);
 }
 
 TEST_F(AdapterTest, UserAdjustmentEffectDisable) {

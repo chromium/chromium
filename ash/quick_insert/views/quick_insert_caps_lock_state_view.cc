@@ -18,7 +18,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/image_view.h"

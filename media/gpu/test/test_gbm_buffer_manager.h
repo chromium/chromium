@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "media/gpu/media_gpu_export.h"
 #include "ui/gfx/buffer_types.h"
@@ -35,7 +36,7 @@ class MEDIA_GPU_EXPORT TestGbmBufferManager {
 
   std::unique_ptr<TestGbmBuffer> CreateGbmBuffer(
       const gfx::Size& size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage,
       gpu::SurfaceHandle surface_handle,
       base::WaitableEvent* shutdown_event);
@@ -47,11 +48,11 @@ class MEDIA_GPU_EXPORT TestGbmBufferManager {
   std::unique_ptr<TestGbmBuffer> ImportDmaBuf(
       const gfx::NativePixmapHandle& handle,
       const gfx::Size& size,
-      gfx::BufferFormat format);
+      viz::SharedImageFormat format);
 
   // Returns true if the combination of |format| and |usage| is supported by
   // CreateTestGbmBuffer().
-  bool IsFormatAndUsageSupported(gfx::BufferFormat format,
+  bool IsFormatAndUsageSupported(viz::SharedImageFormat format,
                                  gfx::BufferUsage usage);
 
  private:
@@ -62,7 +63,7 @@ class TestGbmBuffer {
  public:
   TestGbmBuffer() = delete;
 
-  TestGbmBuffer(gfx::BufferFormat format, gbm_bo* buffer_object);
+  TestGbmBuffer(gbm_bo* buffer_object);
 
   TestGbmBuffer(const TestGbmBuffer&) = delete;
   TestGbmBuffer& operator=(const TestGbmBuffer&) = delete;

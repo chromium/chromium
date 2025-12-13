@@ -19,14 +19,4 @@ gfx::ColorSpace ColorSpaceUtils::OutputColorSpace(
       .GetWithSdrWhiteLevel(display_color_spaces.GetSDRMaxLuminanceNits());
 }
 
-// static
-gfx::ColorSpace ColorSpaceUtils::CompositingColorSpace(
-    const gfx::DisplayColorSpaces& display_color_spaces,
-    gfx::ContentColorUsage content_color_usage,
-    bool has_transparent_background) {
-  return display_color_spaces
-      .GetCompositingColorSpace(has_transparent_background, content_color_usage)
-      .GetWithSdrWhiteLevel(display_color_spaces.GetSDRMaxLuminanceNits());
-}
-
 }  // namespace viz

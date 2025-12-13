@@ -6,7 +6,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_expected_support.h"

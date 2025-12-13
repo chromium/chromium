@@ -434,8 +434,8 @@ URLRows URLDatabase::GetTextMatchesWithAlgorithm(
     GURL gurl(url);
     if (gurl.is_valid()) {
       // Decode punycode to match IDN.
-      std::u16string ascii = base::ASCIIToUTF16(gurl.host());
-      std::u16string utf = url_formatter::IDNToUnicode(gurl.host());
+      std::u16string ascii = base::ASCIIToUTF16(gurl.GetHost());
+      std::u16string utf = url_formatter::IDNToUnicode(gurl.GetHost());
       if (ascii != utf)
         query_parser::QueryParser::ExtractQueryWords(utf, &query_words);
     }

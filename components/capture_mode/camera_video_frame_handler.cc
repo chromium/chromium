@@ -19,12 +19,14 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/system/buffer.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -94,7 +96,11 @@ bool IsFatalError(media::VideoCaptureError error) {
 bool IsGpuRasterizationSupported(ui::ContextFactory* context_factory) {
   DCHECK(context_factory);
   auto provider = context_factory->SharedMainThreadRasterContextProvider();
-  return provider && provider->ContextCapabilities().gpu_rasterization;
+  const auto& gpu_feature_info = provider->GetGpuFeatureInfo();
+  return features::IsUiGpuRasterizationEnabled() &&
+         gpu_feature_info
+                 .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] ==
+             gpu::kGpuFeatureStatusEnabled;
 }
 #endif
 
@@ -699,8 +705,8 @@ void CameraVideoFrameHandler::OnFrameDropped(
               << static_cast<int>(reason);
 }
 
-void CameraVideoFrameHandler::OnNewSubCaptureTargetVersion(
-    uint32_t sub_capture_target_version) {}
+void CameraVideoFrameHandler::OnNewCaptureVersion(
+    const media::CaptureVersion& capture_version) {}
 
 void CameraVideoFrameHandler::OnFrameWithEmptyRegionCapture() {}
 

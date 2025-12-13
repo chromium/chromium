@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace blink {
 
@@ -305,8 +306,8 @@ void DedicatedWorkerGlobalScope::FetchAndRunClassicScript(
   TRACE_EVENT("blink.worker",
               "DedicatedWorkerGlobalScope::FetchAndRunClassicScript",
               "script_url", script_url);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "blink.worker", "DedicatedWorkerGlobalScope Fetch", TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("blink.worker", "DedicatedWorkerGlobalScope Fetch",
+                    perfetto::Track::FromPointer(this));
   fetch_classic_script_start_time_ = base::TimeTicks::Now();
 
   // TODO(crbug.com/1177199): SetPolicyContainer once we passed down policy
@@ -333,12 +334,11 @@ void DedicatedWorkerGlobalScope::FetchAndRunClassicScript(
       script_url, std::move(worker_main_script_load_params), context_type,
       destination, network::mojom::RequestMode::kSameOrigin,
       network::mojom::CredentialsMode::kSameOrigin,
-      WTF::BindOnce(
-          &DedicatedWorkerGlobalScope::DidReceiveResponseForClassicScript,
-          WrapWeakPersistent(this), WrapPersistent(classic_script_loader)),
-      WTF::BindOnce(&DedicatedWorkerGlobalScope::DidFetchClassicScript,
-                    WrapWeakPersistent(this),
-                    WrapPersistent(classic_script_loader), stack_id));
+      BindOnce(&DedicatedWorkerGlobalScope::DidReceiveResponseForClassicScript,
+               WrapWeakPersistent(this), WrapPersistent(classic_script_loader)),
+      BindOnce(&DedicatedWorkerGlobalScope::DidFetchClassicScript,
+               WrapWeakPersistent(this), WrapPersistent(classic_script_loader),
+               stack_id));
 }
 
 // https://html.spec.whatwg.org/C/#worker-processing-model
@@ -453,8 +453,7 @@ void DedicatedWorkerGlobalScope::DidFetchClassicScript(
   DCHECK(IsContextThread());
   TRACE_EVENT("blink.worker",
               "DedicatedWorkerGlobalScope::DidFetchClassicScript");
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "blink.worker", "DedicatedWorkerGlobalScope Fetch", TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END("blink.worker", perfetto::Track::FromPointer(this));
   base::UmaHistogramTimes(
       "Worker.TopLevelScript.FetchClassicScriptTime",
       base::TimeTicks::Now() - fetch_classic_script_start_time_);

@@ -42,31 +42,6 @@ PrefService* GetPrefService() {
   return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
 }
 
-// Records the ranking of each item in `items` in a histogram selected based on
-// the time of day. The histogram time cutoffs are chosen based on BirchRanker
-// behavior.
-void RecordTimeOfDayRankingHistogram(
-    const std::vector<std::unique_ptr<BirchItem>>& items) {
-  base::Time::Exploded exploded;
-  base::Time::Now().LocalExplode(&exploded);
-  const char* now_histogram = nullptr;
-  if (exploded.hour < 5) {
-    now_histogram = "Ash.Birch.Ranking.0000to0500";
-  } else if (exploded.hour < 12) {
-    now_histogram = "Ash.Birch.Ranking.0500to1200";
-  } else if (exploded.hour < 17) {
-    now_histogram = "Ash.Birch.Ranking.1200to1700";
-  } else {
-    now_histogram = "Ash.Birch.Ranking.1700to0000";
-  }
-  for (const auto& item : items) {
-    int ranking_int = static_cast<int>(item->ranking());
-    base::UmaHistogramCounts100(now_histogram, ranking_int);
-    // Also record an aggregate for the day.
-    base::UmaHistogramCounts100("Ash.Birch.Ranking.Total", ranking_int);
-  }
-}
-
 std::string GetPrefNameFromSuggestionType(BirchSuggestionType type) {
   switch (type) {
     case BirchSuggestionType::kWeather:
@@ -170,7 +145,7 @@ void BirchBarController::ShowChipContextMenu(
       chip->GetWidget(), source_type,
       base::BindOnce(&BirchBarController::OnChipContextMenuClosed,
                      weak_ptr_factory_.GetWeakPtr()),
-      Shell::Get()->IsInTabletMode(), /*for_chip_menu=*/true);
+      display::Screen::Get()->InTabletMode(), /*for_chip_menu=*/true);
   BirchPrivacyNudgeController::DidShowContextMenu();
   chip_menu_model_adapter_->Run(gfx::Rect(point, gfx::Size()),
                                 views::MenuAnchorPosition::kBubbleTopRight,
@@ -439,8 +414,6 @@ void BirchBarController::OnItemsFetchedFromModel() {
                     });
   base::UmaHistogramExactLinear("Ash.Birch.Coral.ClusterCount", num_coral_items,
                                 /*exclusive_max=*/3);
-
-  RecordTimeOfDayRankingHistogram(items);
 
   for (auto& bar_view : bar_views_) {
     InitBarWithItems(bar_view, items);

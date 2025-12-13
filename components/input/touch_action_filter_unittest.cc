@@ -21,11 +21,20 @@ namespace {
 const blink::WebGestureDevice kSourceDevice =
     blink::WebGestureDevice::kTouchscreen;
 
+class MockTouchActionFilterClient : public TouchActionFilterClient {
+ public:
+  MockTouchActionFilterClient() = default;
+  ~MockTouchActionFilterClient() = default;
+  void OnUnconfirmedTapConvertedToTap() override {}
+};
+
 }  // namespace
 
 class TouchActionFilterTest : public testing::Test {
  public:
-  TouchActionFilterTest() { filter_.OnHasTouchEventHandlers(true); }
+  TouchActionFilterTest() : filter_(&client_) {
+    filter_.OnHasTouchEventHandlers(true);
+  }
   ~TouchActionFilterTest() override = default;
 
  protected:
@@ -228,6 +237,7 @@ class TouchActionFilterTest : public testing::Test {
       filter_.DecreaseActiveTouches();
     }
   }
+  MockTouchActionFilterClient client_;
   TouchActionFilter filter_;
 };
 
@@ -603,7 +613,7 @@ TEST_F(TouchActionFilterTest, MultiTouch) {
 
 class TouchActionFilterPinchTest : public testing::Test {
  public:
-  TouchActionFilterPinchTest() = default;
+  TouchActionFilterPinchTest() : filter_(&client_) {}
 
   void RunTest(bool force_enable_zoom) {
     filter_.OnHasTouchEventHandlers(true);
@@ -786,6 +796,7 @@ class TouchActionFilterPinchTest : public testing::Test {
   }
 
  private:
+  MockTouchActionFilterClient client_;
   TouchActionFilter filter_;
 };
 

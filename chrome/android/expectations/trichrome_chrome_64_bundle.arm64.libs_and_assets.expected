@@ -1,330 +1,331 @@
-apk_path=lib/arm64-v8a/libchromium_android_linker.so, compress=False, alignment=16384
-apk_path=assets/chrome_100_percent.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/locales/af.pak, compress=False, alignment=4
-apk_path=assets/locales/af_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/af_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/af_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/am.pak, compress=False, alignment=4
-apk_path=assets/locales/am_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/am_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/am_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/ar.pak, compress=False, alignment=4
-apk_path=assets/locales/ar_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/ar_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/ar_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/as.pak, compress=False, alignment=4
-apk_path=assets/locales/as_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/as_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/as_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/az.pak, compress=False, alignment=4
-apk_path=assets/locales/az_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/az_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/az_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/be.pak, compress=False, alignment=4
-apk_path=assets/locales/be_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/be_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/be_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/bg.pak, compress=False, alignment=4
-apk_path=assets/locales/bg_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/bg_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/bg_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/bn.pak, compress=False, alignment=4
-apk_path=assets/locales/bn_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/bn_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/bn_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/bs.pak, compress=False, alignment=4
-apk_path=assets/locales/bs_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/bs_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/bs_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/ca.pak, compress=False, alignment=4
-apk_path=assets/locales/ca_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/ca_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/ca_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/cs.pak, compress=False, alignment=4
-apk_path=assets/locales/cs_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/cs_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/cs_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/da.pak, compress=False, alignment=4
-apk_path=assets/locales/da_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/da_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/da_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/de.pak, compress=False, alignment=4
-apk_path=assets/locales/de_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/de_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/de_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/el.pak, compress=False, alignment=4
-apk_path=assets/locales/el_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/el_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/el_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/en-GB.pak, compress=False, alignment=4
-apk_path=assets/locales/en-GB_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/en-GB_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/en-GB_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/en-US.pak, compress=False, alignment=4
-apk_path=assets/locales/en-US_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/en-US_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/en-US_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/es-419.pak, compress=False, alignment=4
-apk_path=assets/locales/es-419_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/es-419_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/es-419_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/es.pak, compress=False, alignment=4
-apk_path=assets/locales/es_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/es_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/es_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/et.pak, compress=False, alignment=4
-apk_path=assets/locales/et_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/et_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/et_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/eu.pak, compress=False, alignment=4
-apk_path=assets/locales/eu_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/eu_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/eu_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/fa.pak, compress=False, alignment=4
-apk_path=assets/locales/fa_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/fa_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/fa_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/fi.pak, compress=False, alignment=4
-apk_path=assets/locales/fi_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/fi_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/fi_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/fil.pak, compress=False, alignment=4
-apk_path=assets/locales/fil_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/fil_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/fil_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/fr-CA.pak, compress=False, alignment=4
-apk_path=assets/locales/fr-CA_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/fr-CA_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/fr-CA_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/fr.pak, compress=False, alignment=4
-apk_path=assets/locales/fr_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/fr_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/fr_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/gl.pak, compress=False, alignment=4
-apk_path=assets/locales/gl_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/gl_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/gl_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/gu.pak, compress=False, alignment=4
-apk_path=assets/locales/gu_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/gu_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/gu_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/he.pak, compress=False, alignment=4
-apk_path=assets/locales/he_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/he_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/he_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/hi.pak, compress=False, alignment=4
-apk_path=assets/locales/hi_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/hi_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/hi_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/hr.pak, compress=False, alignment=4
-apk_path=assets/locales/hr_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/hr_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/hr_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/hu.pak, compress=False, alignment=4
-apk_path=assets/locales/hu_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/hu_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/hu_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/hy.pak, compress=False, alignment=4
-apk_path=assets/locales/hy_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/hy_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/hy_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/id.pak, compress=False, alignment=4
-apk_path=assets/locales/id_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/id_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/id_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/is.pak, compress=False, alignment=4
-apk_path=assets/locales/is_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/is_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/is_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/it.pak, compress=False, alignment=4
-apk_path=assets/locales/it_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/it_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/it_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/ja.pak, compress=False, alignment=4
-apk_path=assets/locales/ja_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/ja_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/ja_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/ka.pak, compress=False, alignment=4
-apk_path=assets/locales/ka_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/ka_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/ka_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/kk.pak, compress=False, alignment=4
-apk_path=assets/locales/kk_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/kk_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/kk_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/km.pak, compress=False, alignment=4
-apk_path=assets/locales/km_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/km_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/km_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/kn.pak, compress=False, alignment=4
-apk_path=assets/locales/kn_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/kn_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/kn_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/ko.pak, compress=False, alignment=4
-apk_path=assets/locales/ko_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/ko_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/ko_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/ky.pak, compress=False, alignment=4
-apk_path=assets/locales/ky_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/ky_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/ky_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/lo.pak, compress=False, alignment=4
-apk_path=assets/locales/lo_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/lo_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/lo_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/lt.pak, compress=False, alignment=4
-apk_path=assets/locales/lt_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/lt_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/lt_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/lv.pak, compress=False, alignment=4
-apk_path=assets/locales/lv_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/lv_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/lv_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/mk.pak, compress=False, alignment=4
-apk_path=assets/locales/mk_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/mk_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/mk_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/ml.pak, compress=False, alignment=4
-apk_path=assets/locales/ml_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/ml_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/ml_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/mn.pak, compress=False, alignment=4
-apk_path=assets/locales/mn_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/mn_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/mn_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/mr.pak, compress=False, alignment=4
-apk_path=assets/locales/mr_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/mr_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/mr_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/ms.pak, compress=False, alignment=4
-apk_path=assets/locales/ms_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/ms_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/ms_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/my.pak, compress=False, alignment=4
-apk_path=assets/locales/my_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/my_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/my_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/nb.pak, compress=False, alignment=4
-apk_path=assets/locales/nb_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/nb_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/nb_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/ne.pak, compress=False, alignment=4
-apk_path=assets/locales/ne_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/ne_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/ne_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/nl.pak, compress=False, alignment=4
-apk_path=assets/locales/nl_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/nl_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/nl_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/or.pak, compress=False, alignment=4
-apk_path=assets/locales/or_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/or_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/or_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/pa.pak, compress=False, alignment=4
-apk_path=assets/locales/pa_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/pa_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/pa_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/pl.pak, compress=False, alignment=4
-apk_path=assets/locales/pl_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/pl_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/pl_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/pt-BR.pak, compress=False, alignment=4
-apk_path=assets/locales/pt-BR_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/pt-BR_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/pt-BR_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/pt-PT.pak, compress=False, alignment=4
-apk_path=assets/locales/pt-PT_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/pt-PT_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/pt-PT_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/ro.pak, compress=False, alignment=4
-apk_path=assets/locales/ro_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/ro_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/ro_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/ru.pak, compress=False, alignment=4
-apk_path=assets/locales/ru_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/ru_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/ru_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/si.pak, compress=False, alignment=4
-apk_path=assets/locales/si_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/si_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/si_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/sk.pak, compress=False, alignment=4
-apk_path=assets/locales/sk_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/sk_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/sk_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/sl.pak, compress=False, alignment=4
-apk_path=assets/locales/sl_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/sl_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/sl_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/sq.pak, compress=False, alignment=4
-apk_path=assets/locales/sq_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/sq_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/sq_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/sr-Latn.pak, compress=False, alignment=4
-apk_path=assets/locales/sr-Latn_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/sr-Latn_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/sr-Latn_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/sr.pak, compress=False, alignment=4
-apk_path=assets/locales/sr_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/sr_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/sr_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/sv.pak, compress=False, alignment=4
-apk_path=assets/locales/sv_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/sv_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/sv_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/sw.pak, compress=False, alignment=4
-apk_path=assets/locales/sw_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/sw_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/sw_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/ta.pak, compress=False, alignment=4
-apk_path=assets/locales/ta_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/ta_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/ta_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/te.pak, compress=False, alignment=4
-apk_path=assets/locales/te_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/te_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/te_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/th.pak, compress=False, alignment=4
-apk_path=assets/locales/th_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/th_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/th_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/tr.pak, compress=False, alignment=4
-apk_path=assets/locales/tr_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/tr_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/tr_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/uk.pak, compress=False, alignment=4
-apk_path=assets/locales/uk_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/uk_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/uk_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/ur.pak, compress=False, alignment=4
-apk_path=assets/locales/ur_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/ur_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/ur_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/uz.pak, compress=False, alignment=4
-apk_path=assets/locales/uz_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/uz_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/uz_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/vi.pak, compress=False, alignment=4
-apk_path=assets/locales/vi_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/vi_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/vi_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/zh-CN.pak, compress=False, alignment=4
-apk_path=assets/locales/zh-CN_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/zh-CN_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/zh-CN_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/zh-HK.pak, compress=False, alignment=4
-apk_path=assets/locales/zh-HK_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/zh-HK_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/zh-HK_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/zh-TW.pak, compress=False, alignment=4
-apk_path=assets/locales/zh-TW_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/zh-TW_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/zh-TW_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/locales/zu.pak, compress=False, alignment=4
-apk_path=assets/locales/zu_FEMININE.pak, compress=False, alignment=4
-apk_path=assets/locales/zu_MASCULINE.pak, compress=False, alignment=4
-apk_path=assets/locales/zu_NEUTER.pak, compress=False, alignment=4
-apk_path=assets/privacy_sandbox_attestations/privacy-sandbox-attestations.dat, compress=False, alignment=4
-apk_path=assets/resources.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/webapk8.dex, compress=True, alignment=0
-apk_path=assets/webapk_dex_version.txt, compress=True, alignment=0
+apk_path=lib/arm64-v8a/libchromium_android_linker.so, compress=False
+apk_path=assets/chrome_100_percent.pak+com.android.webview+, compress=False
+apk_path=assets/chrome_200_percent.pak+com.android.webview+, compress=False
+apk_path=assets/locales/af.pak, compress=False
+apk_path=assets/locales/af_FEMININE.pak, compress=False
+apk_path=assets/locales/af_MASCULINE.pak, compress=False
+apk_path=assets/locales/af_NEUTER.pak, compress=False
+apk_path=assets/locales/am.pak, compress=False
+apk_path=assets/locales/am_FEMININE.pak, compress=False
+apk_path=assets/locales/am_MASCULINE.pak, compress=False
+apk_path=assets/locales/am_NEUTER.pak, compress=False
+apk_path=assets/locales/ar.pak, compress=False
+apk_path=assets/locales/ar_FEMININE.pak, compress=False
+apk_path=assets/locales/ar_MASCULINE.pak, compress=False
+apk_path=assets/locales/ar_NEUTER.pak, compress=False
+apk_path=assets/locales/as.pak, compress=False
+apk_path=assets/locales/as_FEMININE.pak, compress=False
+apk_path=assets/locales/as_MASCULINE.pak, compress=False
+apk_path=assets/locales/as_NEUTER.pak, compress=False
+apk_path=assets/locales/az.pak, compress=False
+apk_path=assets/locales/az_FEMININE.pak, compress=False
+apk_path=assets/locales/az_MASCULINE.pak, compress=False
+apk_path=assets/locales/az_NEUTER.pak, compress=False
+apk_path=assets/locales/be.pak, compress=False
+apk_path=assets/locales/be_FEMININE.pak, compress=False
+apk_path=assets/locales/be_MASCULINE.pak, compress=False
+apk_path=assets/locales/be_NEUTER.pak, compress=False
+apk_path=assets/locales/bg.pak, compress=False
+apk_path=assets/locales/bg_FEMININE.pak, compress=False
+apk_path=assets/locales/bg_MASCULINE.pak, compress=False
+apk_path=assets/locales/bg_NEUTER.pak, compress=False
+apk_path=assets/locales/bn.pak, compress=False
+apk_path=assets/locales/bn_FEMININE.pak, compress=False
+apk_path=assets/locales/bn_MASCULINE.pak, compress=False
+apk_path=assets/locales/bn_NEUTER.pak, compress=False
+apk_path=assets/locales/bs.pak, compress=False
+apk_path=assets/locales/bs_FEMININE.pak, compress=False
+apk_path=assets/locales/bs_MASCULINE.pak, compress=False
+apk_path=assets/locales/bs_NEUTER.pak, compress=False
+apk_path=assets/locales/ca.pak, compress=False
+apk_path=assets/locales/ca_FEMININE.pak, compress=False
+apk_path=assets/locales/ca_MASCULINE.pak, compress=False
+apk_path=assets/locales/ca_NEUTER.pak, compress=False
+apk_path=assets/locales/cs.pak, compress=False
+apk_path=assets/locales/cs_FEMININE.pak, compress=False
+apk_path=assets/locales/cs_MASCULINE.pak, compress=False
+apk_path=assets/locales/cs_NEUTER.pak, compress=False
+apk_path=assets/locales/da.pak, compress=False
+apk_path=assets/locales/da_FEMININE.pak, compress=False
+apk_path=assets/locales/da_MASCULINE.pak, compress=False
+apk_path=assets/locales/da_NEUTER.pak, compress=False
+apk_path=assets/locales/de.pak, compress=False
+apk_path=assets/locales/de_FEMININE.pak, compress=False
+apk_path=assets/locales/de_MASCULINE.pak, compress=False
+apk_path=assets/locales/de_NEUTER.pak, compress=False
+apk_path=assets/locales/el.pak, compress=False
+apk_path=assets/locales/el_FEMININE.pak, compress=False
+apk_path=assets/locales/el_MASCULINE.pak, compress=False
+apk_path=assets/locales/el_NEUTER.pak, compress=False
+apk_path=assets/locales/en-GB.pak, compress=False
+apk_path=assets/locales/en-GB_FEMININE.pak, compress=False
+apk_path=assets/locales/en-GB_MASCULINE.pak, compress=False
+apk_path=assets/locales/en-GB_NEUTER.pak, compress=False
+apk_path=assets/locales/en-US.pak, compress=False
+apk_path=assets/locales/en-US_FEMININE.pak, compress=False
+apk_path=assets/locales/en-US_MASCULINE.pak, compress=False
+apk_path=assets/locales/en-US_NEUTER.pak, compress=False
+apk_path=assets/locales/es-419.pak, compress=False
+apk_path=assets/locales/es-419_FEMININE.pak, compress=False
+apk_path=assets/locales/es-419_MASCULINE.pak, compress=False
+apk_path=assets/locales/es-419_NEUTER.pak, compress=False
+apk_path=assets/locales/es.pak, compress=False
+apk_path=assets/locales/es_FEMININE.pak, compress=False
+apk_path=assets/locales/es_MASCULINE.pak, compress=False
+apk_path=assets/locales/es_NEUTER.pak, compress=False
+apk_path=assets/locales/et.pak, compress=False
+apk_path=assets/locales/et_FEMININE.pak, compress=False
+apk_path=assets/locales/et_MASCULINE.pak, compress=False
+apk_path=assets/locales/et_NEUTER.pak, compress=False
+apk_path=assets/locales/eu.pak, compress=False
+apk_path=assets/locales/eu_FEMININE.pak, compress=False
+apk_path=assets/locales/eu_MASCULINE.pak, compress=False
+apk_path=assets/locales/eu_NEUTER.pak, compress=False
+apk_path=assets/locales/fa.pak, compress=False
+apk_path=assets/locales/fa_FEMININE.pak, compress=False
+apk_path=assets/locales/fa_MASCULINE.pak, compress=False
+apk_path=assets/locales/fa_NEUTER.pak, compress=False
+apk_path=assets/locales/fi.pak, compress=False
+apk_path=assets/locales/fi_FEMININE.pak, compress=False
+apk_path=assets/locales/fi_MASCULINE.pak, compress=False
+apk_path=assets/locales/fi_NEUTER.pak, compress=False
+apk_path=assets/locales/fil.pak, compress=False
+apk_path=assets/locales/fil_FEMININE.pak, compress=False
+apk_path=assets/locales/fil_MASCULINE.pak, compress=False
+apk_path=assets/locales/fil_NEUTER.pak, compress=False
+apk_path=assets/locales/fr-CA.pak, compress=False
+apk_path=assets/locales/fr-CA_FEMININE.pak, compress=False
+apk_path=assets/locales/fr-CA_MASCULINE.pak, compress=False
+apk_path=assets/locales/fr-CA_NEUTER.pak, compress=False
+apk_path=assets/locales/fr.pak, compress=False
+apk_path=assets/locales/fr_FEMININE.pak, compress=False
+apk_path=assets/locales/fr_MASCULINE.pak, compress=False
+apk_path=assets/locales/fr_NEUTER.pak, compress=False
+apk_path=assets/locales/gl.pak, compress=False
+apk_path=assets/locales/gl_FEMININE.pak, compress=False
+apk_path=assets/locales/gl_MASCULINE.pak, compress=False
+apk_path=assets/locales/gl_NEUTER.pak, compress=False
+apk_path=assets/locales/gu.pak, compress=False
+apk_path=assets/locales/gu_FEMININE.pak, compress=False
+apk_path=assets/locales/gu_MASCULINE.pak, compress=False
+apk_path=assets/locales/gu_NEUTER.pak, compress=False
+apk_path=assets/locales/he.pak, compress=False
+apk_path=assets/locales/he_FEMININE.pak, compress=False
+apk_path=assets/locales/he_MASCULINE.pak, compress=False
+apk_path=assets/locales/he_NEUTER.pak, compress=False
+apk_path=assets/locales/hi.pak, compress=False
+apk_path=assets/locales/hi_FEMININE.pak, compress=False
+apk_path=assets/locales/hi_MASCULINE.pak, compress=False
+apk_path=assets/locales/hi_NEUTER.pak, compress=False
+apk_path=assets/locales/hr.pak, compress=False
+apk_path=assets/locales/hr_FEMININE.pak, compress=False
+apk_path=assets/locales/hr_MASCULINE.pak, compress=False
+apk_path=assets/locales/hr_NEUTER.pak, compress=False
+apk_path=assets/locales/hu.pak, compress=False
+apk_path=assets/locales/hu_FEMININE.pak, compress=False
+apk_path=assets/locales/hu_MASCULINE.pak, compress=False
+apk_path=assets/locales/hu_NEUTER.pak, compress=False
+apk_path=assets/locales/hy.pak, compress=False
+apk_path=assets/locales/hy_FEMININE.pak, compress=False
+apk_path=assets/locales/hy_MASCULINE.pak, compress=False
+apk_path=assets/locales/hy_NEUTER.pak, compress=False
+apk_path=assets/locales/id.pak, compress=False
+apk_path=assets/locales/id_FEMININE.pak, compress=False
+apk_path=assets/locales/id_MASCULINE.pak, compress=False
+apk_path=assets/locales/id_NEUTER.pak, compress=False
+apk_path=assets/locales/is.pak, compress=False
+apk_path=assets/locales/is_FEMININE.pak, compress=False
+apk_path=assets/locales/is_MASCULINE.pak, compress=False
+apk_path=assets/locales/is_NEUTER.pak, compress=False
+apk_path=assets/locales/it.pak, compress=False
+apk_path=assets/locales/it_FEMININE.pak, compress=False
+apk_path=assets/locales/it_MASCULINE.pak, compress=False
+apk_path=assets/locales/it_NEUTER.pak, compress=False
+apk_path=assets/locales/ja.pak, compress=False
+apk_path=assets/locales/ja_FEMININE.pak, compress=False
+apk_path=assets/locales/ja_MASCULINE.pak, compress=False
+apk_path=assets/locales/ja_NEUTER.pak, compress=False
+apk_path=assets/locales/ka.pak, compress=False
+apk_path=assets/locales/ka_FEMININE.pak, compress=False
+apk_path=assets/locales/ka_MASCULINE.pak, compress=False
+apk_path=assets/locales/ka_NEUTER.pak, compress=False
+apk_path=assets/locales/kk.pak, compress=False
+apk_path=assets/locales/kk_FEMININE.pak, compress=False
+apk_path=assets/locales/kk_MASCULINE.pak, compress=False
+apk_path=assets/locales/kk_NEUTER.pak, compress=False
+apk_path=assets/locales/km.pak, compress=False
+apk_path=assets/locales/km_FEMININE.pak, compress=False
+apk_path=assets/locales/km_MASCULINE.pak, compress=False
+apk_path=assets/locales/km_NEUTER.pak, compress=False
+apk_path=assets/locales/kn.pak, compress=False
+apk_path=assets/locales/kn_FEMININE.pak, compress=False
+apk_path=assets/locales/kn_MASCULINE.pak, compress=False
+apk_path=assets/locales/kn_NEUTER.pak, compress=False
+apk_path=assets/locales/ko.pak, compress=False
+apk_path=assets/locales/ko_FEMININE.pak, compress=False
+apk_path=assets/locales/ko_MASCULINE.pak, compress=False
+apk_path=assets/locales/ko_NEUTER.pak, compress=False
+apk_path=assets/locales/ky.pak, compress=False
+apk_path=assets/locales/ky_FEMININE.pak, compress=False
+apk_path=assets/locales/ky_MASCULINE.pak, compress=False
+apk_path=assets/locales/ky_NEUTER.pak, compress=False
+apk_path=assets/locales/lo.pak, compress=False
+apk_path=assets/locales/lo_FEMININE.pak, compress=False
+apk_path=assets/locales/lo_MASCULINE.pak, compress=False
+apk_path=assets/locales/lo_NEUTER.pak, compress=False
+apk_path=assets/locales/lt.pak, compress=False
+apk_path=assets/locales/lt_FEMININE.pak, compress=False
+apk_path=assets/locales/lt_MASCULINE.pak, compress=False
+apk_path=assets/locales/lt_NEUTER.pak, compress=False
+apk_path=assets/locales/lv.pak, compress=False
+apk_path=assets/locales/lv_FEMININE.pak, compress=False
+apk_path=assets/locales/lv_MASCULINE.pak, compress=False
+apk_path=assets/locales/lv_NEUTER.pak, compress=False
+apk_path=assets/locales/mk.pak, compress=False
+apk_path=assets/locales/mk_FEMININE.pak, compress=False
+apk_path=assets/locales/mk_MASCULINE.pak, compress=False
+apk_path=assets/locales/mk_NEUTER.pak, compress=False
+apk_path=assets/locales/ml.pak, compress=False
+apk_path=assets/locales/ml_FEMININE.pak, compress=False
+apk_path=assets/locales/ml_MASCULINE.pak, compress=False
+apk_path=assets/locales/ml_NEUTER.pak, compress=False
+apk_path=assets/locales/mn.pak, compress=False
+apk_path=assets/locales/mn_FEMININE.pak, compress=False
+apk_path=assets/locales/mn_MASCULINE.pak, compress=False
+apk_path=assets/locales/mn_NEUTER.pak, compress=False
+apk_path=assets/locales/mr.pak, compress=False
+apk_path=assets/locales/mr_FEMININE.pak, compress=False
+apk_path=assets/locales/mr_MASCULINE.pak, compress=False
+apk_path=assets/locales/mr_NEUTER.pak, compress=False
+apk_path=assets/locales/ms.pak, compress=False
+apk_path=assets/locales/ms_FEMININE.pak, compress=False
+apk_path=assets/locales/ms_MASCULINE.pak, compress=False
+apk_path=assets/locales/ms_NEUTER.pak, compress=False
+apk_path=assets/locales/my.pak, compress=False
+apk_path=assets/locales/my_FEMININE.pak, compress=False
+apk_path=assets/locales/my_MASCULINE.pak, compress=False
+apk_path=assets/locales/my_NEUTER.pak, compress=False
+apk_path=assets/locales/nb.pak, compress=False
+apk_path=assets/locales/nb_FEMININE.pak, compress=False
+apk_path=assets/locales/nb_MASCULINE.pak, compress=False
+apk_path=assets/locales/nb_NEUTER.pak, compress=False
+apk_path=assets/locales/ne.pak, compress=False
+apk_path=assets/locales/ne_FEMININE.pak, compress=False
+apk_path=assets/locales/ne_MASCULINE.pak, compress=False
+apk_path=assets/locales/ne_NEUTER.pak, compress=False
+apk_path=assets/locales/nl.pak, compress=False
+apk_path=assets/locales/nl_FEMININE.pak, compress=False
+apk_path=assets/locales/nl_MASCULINE.pak, compress=False
+apk_path=assets/locales/nl_NEUTER.pak, compress=False
+apk_path=assets/locales/or.pak, compress=False
+apk_path=assets/locales/or_FEMININE.pak, compress=False
+apk_path=assets/locales/or_MASCULINE.pak, compress=False
+apk_path=assets/locales/or_NEUTER.pak, compress=False
+apk_path=assets/locales/pa.pak, compress=False
+apk_path=assets/locales/pa_FEMININE.pak, compress=False
+apk_path=assets/locales/pa_MASCULINE.pak, compress=False
+apk_path=assets/locales/pa_NEUTER.pak, compress=False
+apk_path=assets/locales/pl.pak, compress=False
+apk_path=assets/locales/pl_FEMININE.pak, compress=False
+apk_path=assets/locales/pl_MASCULINE.pak, compress=False
+apk_path=assets/locales/pl_NEUTER.pak, compress=False
+apk_path=assets/locales/pt-BR.pak, compress=False
+apk_path=assets/locales/pt-BR_FEMININE.pak, compress=False
+apk_path=assets/locales/pt-BR_MASCULINE.pak, compress=False
+apk_path=assets/locales/pt-BR_NEUTER.pak, compress=False
+apk_path=assets/locales/pt-PT.pak, compress=False
+apk_path=assets/locales/pt-PT_FEMININE.pak, compress=False
+apk_path=assets/locales/pt-PT_MASCULINE.pak, compress=False
+apk_path=assets/locales/pt-PT_NEUTER.pak, compress=False
+apk_path=assets/locales/ro.pak, compress=False
+apk_path=assets/locales/ro_FEMININE.pak, compress=False
+apk_path=assets/locales/ro_MASCULINE.pak, compress=False
+apk_path=assets/locales/ro_NEUTER.pak, compress=False
+apk_path=assets/locales/ru.pak, compress=False
+apk_path=assets/locales/ru_FEMININE.pak, compress=False
+apk_path=assets/locales/ru_MASCULINE.pak, compress=False
+apk_path=assets/locales/ru_NEUTER.pak, compress=False
+apk_path=assets/locales/si.pak, compress=False
+apk_path=assets/locales/si_FEMININE.pak, compress=False
+apk_path=assets/locales/si_MASCULINE.pak, compress=False
+apk_path=assets/locales/si_NEUTER.pak, compress=False
+apk_path=assets/locales/sk.pak, compress=False
+apk_path=assets/locales/sk_FEMININE.pak, compress=False
+apk_path=assets/locales/sk_MASCULINE.pak, compress=False
+apk_path=assets/locales/sk_NEUTER.pak, compress=False
+apk_path=assets/locales/sl.pak, compress=False
+apk_path=assets/locales/sl_FEMININE.pak, compress=False
+apk_path=assets/locales/sl_MASCULINE.pak, compress=False
+apk_path=assets/locales/sl_NEUTER.pak, compress=False
+apk_path=assets/locales/sq.pak, compress=False
+apk_path=assets/locales/sq_FEMININE.pak, compress=False
+apk_path=assets/locales/sq_MASCULINE.pak, compress=False
+apk_path=assets/locales/sq_NEUTER.pak, compress=False
+apk_path=assets/locales/sr-Latn.pak, compress=False
+apk_path=assets/locales/sr-Latn_FEMININE.pak, compress=False
+apk_path=assets/locales/sr-Latn_MASCULINE.pak, compress=False
+apk_path=assets/locales/sr-Latn_NEUTER.pak, compress=False
+apk_path=assets/locales/sr.pak, compress=False
+apk_path=assets/locales/sr_FEMININE.pak, compress=False
+apk_path=assets/locales/sr_MASCULINE.pak, compress=False
+apk_path=assets/locales/sr_NEUTER.pak, compress=False
+apk_path=assets/locales/sv.pak, compress=False
+apk_path=assets/locales/sv_FEMININE.pak, compress=False
+apk_path=assets/locales/sv_MASCULINE.pak, compress=False
+apk_path=assets/locales/sv_NEUTER.pak, compress=False
+apk_path=assets/locales/sw.pak, compress=False
+apk_path=assets/locales/sw_FEMININE.pak, compress=False
+apk_path=assets/locales/sw_MASCULINE.pak, compress=False
+apk_path=assets/locales/sw_NEUTER.pak, compress=False
+apk_path=assets/locales/ta.pak, compress=False
+apk_path=assets/locales/ta_FEMININE.pak, compress=False
+apk_path=assets/locales/ta_MASCULINE.pak, compress=False
+apk_path=assets/locales/ta_NEUTER.pak, compress=False
+apk_path=assets/locales/te.pak, compress=False
+apk_path=assets/locales/te_FEMININE.pak, compress=False
+apk_path=assets/locales/te_MASCULINE.pak, compress=False
+apk_path=assets/locales/te_NEUTER.pak, compress=False
+apk_path=assets/locales/th.pak, compress=False
+apk_path=assets/locales/th_FEMININE.pak, compress=False
+apk_path=assets/locales/th_MASCULINE.pak, compress=False
+apk_path=assets/locales/th_NEUTER.pak, compress=False
+apk_path=assets/locales/tr.pak, compress=False
+apk_path=assets/locales/tr_FEMININE.pak, compress=False
+apk_path=assets/locales/tr_MASCULINE.pak, compress=False
+apk_path=assets/locales/tr_NEUTER.pak, compress=False
+apk_path=assets/locales/uk.pak, compress=False
+apk_path=assets/locales/uk_FEMININE.pak, compress=False
+apk_path=assets/locales/uk_MASCULINE.pak, compress=False
+apk_path=assets/locales/uk_NEUTER.pak, compress=False
+apk_path=assets/locales/ur.pak, compress=False
+apk_path=assets/locales/ur_FEMININE.pak, compress=False
+apk_path=assets/locales/ur_MASCULINE.pak, compress=False
+apk_path=assets/locales/ur_NEUTER.pak, compress=False
+apk_path=assets/locales/uz.pak, compress=False
+apk_path=assets/locales/uz_FEMININE.pak, compress=False
+apk_path=assets/locales/uz_MASCULINE.pak, compress=False
+apk_path=assets/locales/uz_NEUTER.pak, compress=False
+apk_path=assets/locales/vi.pak, compress=False
+apk_path=assets/locales/vi_FEMININE.pak, compress=False
+apk_path=assets/locales/vi_MASCULINE.pak, compress=False
+apk_path=assets/locales/vi_NEUTER.pak, compress=False
+apk_path=assets/locales/zh-CN.pak, compress=False
+apk_path=assets/locales/zh-CN_FEMININE.pak, compress=False
+apk_path=assets/locales/zh-CN_MASCULINE.pak, compress=False
+apk_path=assets/locales/zh-CN_NEUTER.pak, compress=False
+apk_path=assets/locales/zh-HK.pak, compress=False
+apk_path=assets/locales/zh-HK_FEMININE.pak, compress=False
+apk_path=assets/locales/zh-HK_MASCULINE.pak, compress=False
+apk_path=assets/locales/zh-HK_NEUTER.pak, compress=False
+apk_path=assets/locales/zh-TW.pak, compress=False
+apk_path=assets/locales/zh-TW_FEMININE.pak, compress=False
+apk_path=assets/locales/zh-TW_MASCULINE.pak, compress=False
+apk_path=assets/locales/zh-TW_NEUTER.pak, compress=False
+apk_path=assets/locales/zu.pak, compress=False
+apk_path=assets/locales/zu_FEMININE.pak, compress=False
+apk_path=assets/locales/zu_MASCULINE.pak, compress=False
+apk_path=assets/locales/zu_NEUTER.pak, compress=False
+apk_path=assets/privacy_sandbox_attestations/privacy-sandbox-attestations.dat, compress=False
+apk_path=assets/resources.pak+com.android.webview+, compress=False
+apk_path=assets/webapk8.dex, compress=True
+apk_path=assets/webapk_dex_version.txt, compress=True

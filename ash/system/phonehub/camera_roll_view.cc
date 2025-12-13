@@ -56,8 +56,7 @@ class HeaderView : public views::Label {
     SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_MIDDLE);
     SetAutoColorReadabilityEnabled(false);
     SetSubpixelRenderingEnabled(false);
-    SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    SetEnabledColor(cros_tokens::kTextColorPrimary);
 
     TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
                                           *this);

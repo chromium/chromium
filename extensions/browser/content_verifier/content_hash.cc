@@ -4,7 +4,9 @@
 
 #include "extensions/browser/content_verifier/content_hash.h"
 
+#include <optional>
 #include <set>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -14,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/typed_macros.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
 #include "extensions/browser/content_hash_fetcher.h"
@@ -90,6 +93,9 @@ void ContentHash::Create(
     ContentVerifierDelegate::VerifierSourceType source_type,
     const IsCancelledCallback& is_cancelled,
     CreatedCallback created_callback) {
+  TRACE_EVENT("extensions.content_verifier.debug", "ContentHash::Create",
+              "key_extension_id", key.extension_root, "key_extension_version",
+              key.extension_version.GetString());
   if (source_type ==
       ContentVerifierDelegate::VerifierSourceType::SIGNED_HASHES) {
     // In case of signed hashes, we should read or fetch verified_contents.json
@@ -111,6 +117,9 @@ void ContentHash::Create(
 void ContentHash::ForceBuildComputedHashes(
     const IsCancelledCallback& is_cancelled,
     CreatedCallback created_callback) {
+  TRACE_EVENT("extensions.content_verifier.debug",
+              "ContentHash::ForceBuildComputedHashes", "extension_id",
+              extension_id(), "extension_root", extension_root());
   BuildComputedHashes(false /* did_fetch_verified_contents */,
                       true /* force_build */, is_cancelled);
   std::move(created_callback).Run(this, is_cancelled && is_cancelled.Run());
@@ -155,10 +164,12 @@ std::string ContentHash::ComputeTreeHashForContent(const std::string& contents,
 ContentHash::ContentHash(
     const ExtensionId& id,
     const base::FilePath& root,
+    const base::Version& extension_version,
     ContentVerifierDelegate::VerifierSourceType source_type,
     std::unique_ptr<const VerifiedContents> verified_contents)
     : extension_id_(id),
       extension_root_(root),
+      extension_version_(extension_version),
       source_type_(source_type),
       verified_contents_(std::move(verified_contents)) {}
 
@@ -203,7 +214,7 @@ void ContentHash::FetchVerifiedContents(ContentHash::FetchKey key,
 
 // static
 std::unique_ptr<VerifiedContents> ContentHash::StoreAndRetrieveVerifiedContents(
-    std::unique_ptr<std::string> fetched_contents,
+    std::optional<std::string> fetched_contents,
     const FetchKey& key) {
   if (!fetched_contents)
     return nullptr;
@@ -214,7 +225,8 @@ std::unique_ptr<VerifiedContents> ContentHash::StoreAndRetrieveVerifiedContents(
   // can be a login redirect html, xml file, etc. if you aren't logged in with
   // the right cookies).  TODO(asargent) - It would be a nice enhancement to
   // move to parsing this in a sandboxed helper (https://crbug.com/372878).
-  std::optional<base::Value> parsed = base::JSONReader::Read(*fetched_contents);
+  std::optional<base::Value> parsed = base::JSONReader::Read(
+      *fetched_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed) {
     LOG(ERROR)
         << "Failed to parse fetched verified_contents.json for extension id: "
@@ -245,7 +257,7 @@ std::unique_ptr<VerifiedContents> ContentHash::StoreAndRetrieveVerifiedContents(
 void ContentHash::DidFetchVerifiedContents(
     GetVerifiedContentsCallback verified_contents_callback,
     FetchKey key,
-    std::unique_ptr<std::string> fetched_contents,
+    std::optional<std::string> fetched_contents,
     FetchErrorCode fetch_error) {
   size_t json_size = fetched_contents ? fetched_contents->size() : 0;
   std::unique_ptr<VerifiedContents> verified_contents =
@@ -283,14 +295,14 @@ void ContentHash::GetComputedHashes(
           ContentVerifierDelegate::VerifierSourceType::SIGNED_HASHES &&
       !verified_contents) {
     DCHECK(did_attempt_fetch);
-    ContentHash::DispatchFetchFailure(key.extension_id, key.extension_root,
-                                      source_type, std::move(created_callback),
-                                      is_cancelled, fetch_error);
+    ContentHash::DispatchFetchFailure(
+        key.extension_id, key.extension_root, key.extension_version,
+        source_type, std::move(created_callback), is_cancelled, fetch_error);
     return;
   }
-  scoped_refptr<ContentHash> hash =
-      new ContentHash(key.extension_id, key.extension_root, source_type,
-                      std::move(verified_contents));
+  scoped_refptr<ContentHash> hash = new ContentHash(
+      key.extension_id, key.extension_root, key.extension_version, source_type,
+      std::move(verified_contents));
   hash->BuildComputedHashes(did_attempt_fetch, /*force_build=*/false,
                             is_cancelled);
   std::move(created_callback).Run(hash, is_cancelled && is_cancelled.Run());
@@ -300,6 +312,7 @@ void ContentHash::GetComputedHashes(
 void ContentHash::DispatchFetchFailure(
     const ExtensionId& extension_id,
     const base::FilePath& extension_root,
+    const base::Version& extension_version,
     ContentVerifierDelegate::VerifierSourceType source_type,
     CreatedCallback created_callback,
     const IsCancelledCallback& is_cancelled,
@@ -310,7 +323,8 @@ void ContentHash::DispatchFetchFailure(
   RecordFetchResult(false, fetch_error);
   // NOTE: bare new because ContentHash constructor is private.
   scoped_refptr<ContentHash> content_hash =
-      new ContentHash(extension_id, extension_root, source_type, nullptr);
+      new ContentHash(extension_id, extension_root, extension_version,
+                      source_type, /*verified_contents=*/nullptr);
   std::move(created_callback)
       .Run(content_hash, is_cancelled && is_cancelled.Run());
 }

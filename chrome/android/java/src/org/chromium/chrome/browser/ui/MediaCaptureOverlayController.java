@@ -8,7 +8,6 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
-import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -24,9 +23,9 @@ import org.chromium.ui.base.WindowAndroid;
  * events to resize the UI as the size of the currently visible captured tab is changed.
  */
 @NullMarked
-public class MediaCaptureOverlayController implements UnownedUserData {
+public class MediaCaptureOverlayController {
     private static final UnownedUserDataKey<MediaCaptureOverlayController> KEY =
-            new UnownedUserDataKey<>(MediaCaptureOverlayController.class);
+            new UnownedUserDataKey<>();
 
     private final CaptureOverlayTabObserver mTabObserver = new CaptureOverlayTabObserver();
 

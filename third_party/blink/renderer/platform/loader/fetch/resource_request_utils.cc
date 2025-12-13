@@ -205,7 +205,8 @@ void UpgradeResourceRequestForLoader(
 
   if (context.CalculateIfAdSubresource(
           resource_request, /*alias_url=*/std::nullopt, resource_type,
-          options.initiator_info, /*out_rule=*/nullptr)) {
+          options.initiator_info, /*scan_stack_for_ads=*/false,
+          /*out_rule=*/nullptr)) {
     resource_request.SetIsAdResource();
   }
 
@@ -312,7 +313,8 @@ PrepareResourceRequestForCacheAccess(
 
   if (context.CalculateIfAdSubresource(
           resource_request, /*alias_url=*/std::nullopt, resource_type,
-          options.initiator_info, /*out_rule=*/nullptr)) {
+          options.initiator_info, /*scan_stack_for_ads=*/true,
+          /*out_rule=*/nullptr)) {
     resource_request.SetIsAdResource();
   }
   if (blocked_reason) {

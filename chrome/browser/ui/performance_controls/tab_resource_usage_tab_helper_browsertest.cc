@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 
-#include "base/functional/callback_forward.h"
+#include "base/byte_count.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_metrics_refresh_waiter.h"
@@ -20,8 +20,7 @@
 
 namespace {
 constexpr char kTestDomain[] = "https://foo.bar";
-constexpr uint64_t kTestMemoryUsageBytes = 100000;
-constexpr uint64_t kMaxByteUsed = std::numeric_limits<int64_t>::max();
+constexpr base::ByteCount kTestMemoryUsage = base::ByteCount(100000);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kUpdatedEvent);
 }  // namespace
@@ -59,8 +58,7 @@ class TabResourceUsageTabHelperBrowsertest : public InteractiveBrowserTest {
           auto* const tab = tabs::TabInterface::GetFromContents(
               AsInstrumentedWebContents(el)->web_contents());
           CHECK(tab);
-          std::move(callback).Run(
-              *tab->GetTabFeatures()->resource_usage_helper());
+          std::move(callback).Run(*TabResourceUsageTabHelper::From(tab));
         });
   }
 
@@ -77,8 +75,7 @@ class TabResourceUsageTabHelperBrowsertest : public InteractiveBrowserTest {
           auto* const tab = tabs::TabInterface::GetFromContents(
               AsInstrumentedWebContents(el)->web_contents());
           CHECK(tab);
-          return std::move(callback).Run(
-              *tab->GetTabFeatures()->resource_usage_helper());
+          return std::move(callback).Run(*TabResourceUsageTabHelper::From(tab));
         },
         std::forward<M>(matcher));
   }
@@ -91,9 +88,9 @@ IN_PROC_BROWSER_TEST_F(TabResourceUsageTabHelperBrowsertest,
       ForceRefreshMemoryMetrics(),
       CheckTabHelper(kTabId,
                      base::BindOnce([](TabResourceUsageTabHelper& helper) {
-                       return helper.GetMemoryUsageInBytes();
+                       return helper.GetMemoryUsage();
                      }),
-                     testing::Ne(0)));
+                     testing::Ne(base::ByteCount(0))));
 }
 
 IN_PROC_BROWSER_TEST_F(TabResourceUsageTabHelperBrowsertest,
@@ -103,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(TabResourceUsageTabHelperBrowsertest,
       InstrumentTab(kTabId),
       WithTabHelper(kTabId,
                     base::BindOnce([](TabResourceUsageTabHelper& helper) {
-                      helper.SetMemoryUsageInBytes(kMaxByteUsed);
+                      helper.SetMemoryUsage(base::ByteCount::Max());
                     })),
       WithElement(
           kBrowserViewElementId,
@@ -118,9 +115,9 @@ IN_PROC_BROWSER_TEST_F(TabResourceUsageTabHelperBrowsertest,
       WaitForEvent(kBrowserViewElementId, kUpdatedEvent),
       CheckTabHelper(kTabId,
                      base::BindOnce([](TabResourceUsageTabHelper& helper) {
-                       return helper.GetMemoryUsageInBytes();
+                       return helper.GetMemoryUsage();
                      }),
-                     testing::Ne(kMaxByteUsed)));
+                     testing::Ne(base::ByteCount::Max())));
 }
 
 // Clears memory usage on navigate.
@@ -130,12 +127,12 @@ IN_PROC_BROWSER_TEST_F(TabResourceUsageTabHelperBrowsertest,
       InstrumentTab(kTabId),
       WithTabHelper(kTabId,
                     base::BindOnce([](TabResourceUsageTabHelper& tab_helper) {
-                      tab_helper.SetMemoryUsageInBytes(kTestMemoryUsageBytes);
+                      tab_helper.SetMemoryUsage(kTestMemoryUsage);
                     })),
       NavigateWebContents(kTabId, GURL(kTestDomain)),
       CheckTabHelper(kTabId,
                      base::BindOnce([](TabResourceUsageTabHelper& tab_helper) {
-                       return tab_helper.GetMemoryUsageInBytes();
+                       return tab_helper.GetMemoryUsage();
                      }),
-                     0u));
+                     base::ByteCount(0)));
 }

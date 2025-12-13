@@ -6,12 +6,10 @@
 
 #import "components/password_manager/core/browser/password_form_manager.h"
 #import "components/password_manager/core/browser/password_manager.h"
-#import "components/sync/base/features.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/authentication/ui_bundled/re_signin_infobar_delegate.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
@@ -19,6 +17,8 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent_profile_state_observer.h"
@@ -76,6 +76,9 @@ bool UserActionRequiredToFixPasswordSyncError(ProfileIOS* profile) {
         kTrustedVaultRecoverabilityDegradedForPasswords:
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
+    case syncer::SyncService::UserActionableError::kBookmarksLimitExceeded:
+    // This error has no UI on iOS.
+    case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
       return false;
   }
 
@@ -86,23 +89,23 @@ bool UserActionRequiredToFixPasswordSyncError(ProfileIOS* profile) {
 
 SyncErrorBrowserAgent::SyncErrorBrowserAgent(Browser* browser)
     : BrowserUserData(browser) {
-  browser->AddObserver(this);
-  browser->GetWebStateList()->AddObserver(this);
+  StartObserving(browser_, TabsDependencyInstaller::Policy::kOnlyRealized);
   profile_state_observer_ = [[SyncErrorBrowserAgentProfileStateObserver alloc]
        initWithProfileState:browser_->GetSceneState().profileState
       syncErrorBrowserAgent:this];
   [profile_state_observer_ start];
 }
 
-SyncErrorBrowserAgent::~SyncErrorBrowserAgent() = default;
+SyncErrorBrowserAgent::~SyncErrorBrowserAgent() {
+  [profile_state_observer_ disconnect];
+  profile_state_observer_ = nil;
+  StopObserving();
+}
 
 void SyncErrorBrowserAgent::SetUIProviders(
-    id<ReSigninPresenter> resignin_presenter_provider,
-    id<SyncPresenter> sync_presenter_provider) {
+    id<ReSigninPresenter> resignin_presenter_provider) {
   DCHECK(resignin_presenter_provider);
-  DCHECK(sync_presenter_provider);
   resignin_presenter_provider_ = resignin_presenter_provider;
-  sync_presenter_provider_ = sync_presenter_provider;
 
   // Re-evaluate all web states.
   TriggerInfobarOnAllWebStatesIfNeeded();
@@ -110,7 +113,6 @@ void SyncErrorBrowserAgent::SetUIProviders(
 
 void SyncErrorBrowserAgent::ClearUIProviders() {
   resignin_presenter_provider_ = nil;
-  sync_presenter_provider_ = nil;
 }
 
 void SyncErrorBrowserAgent::ProfileStateDidUpdateToFinalStage() {
@@ -119,82 +121,34 @@ void SyncErrorBrowserAgent::ProfileStateDidUpdateToFinalStage() {
   profile_state_observer_ = nil;
 }
 
-#pragma mark - BrowserObserver
+#pragma mark - TabsDependencyInstaller
 
-void SyncErrorBrowserAgent::BrowserDestroyed(Browser* browser) {
-  DCHECK_EQ(browser, browser_);
-  [profile_state_observer_ disconnect];
-  profile_state_observer_ = nil;
-  browser->GetWebStateList()->RemoveObserver(this);
-  browser->RemoveObserver(this);
-}
+void SyncErrorBrowserAgent::OnWebStateInserted(web::WebState* web_state) {
+  CreateReSignInInfoBarDelegate(web_state);
 
-#pragma mark - WebStateListObserver
-
-void SyncErrorBrowserAgent::WebStateListDidChange(
-    WebStateList* web_state_list,
-    const WebStateListChange& change,
-    const WebStateListStatus& status) {
-  switch (change.type()) {
-    case WebStateListChange::Type::kStatusOnly:
-      // Do nothing when a WebState is selected and its status is updated.
-      break;
-    case WebStateListChange::Type::kDetach: {
-      const WebStateListChangeDetach& detach_change =
-          change.As<WebStateListChangeDetach>();
-      web::WebState* detached_web_state = detach_change.detached_web_state();
-      if (!detached_web_state->IsRealized()) {
-        web_state_observations_.RemoveObservation(detached_web_state);
-        RemovePasswordFormManagerObserver(detached_web_state);
-      }
-      break;
-    }
-    case WebStateListChange::Type::kMove:
-      // Do nothing when a WebState is moved.
-      break;
-    case WebStateListChange::Type::kReplace: {
-      const WebStateListChangeReplace& replace_change =
-          change.As<WebStateListChangeReplace>();
-      web::WebState* replaced_web_state = replace_change.replaced_web_state();
-      if (!replaced_web_state->IsRealized()) {
-        web_state_observations_.RemoveObservation(replaced_web_state);
-        RemovePasswordFormManagerObserver(replaced_web_state);
-      }
-      CreateReSignInInfoBarDelegate(replace_change.inserted_web_state());
-      break;
-    }
-    case WebStateListChange::Type::kInsert: {
-      web::WebState* inserted_web_state =
-          change.As<WebStateListChangeInsert>().inserted_web_state();
-      CreateReSignInInfoBarDelegate(inserted_web_state);
-      AddPasswordFormManagerObserver(inserted_web_state);
-      break;
-    }
-    case WebStateListChange::Type::kGroupCreate:
-      // Do nothing when a group is created.
-      break;
-    case WebStateListChange::Type::kGroupVisualDataUpdate:
-      // Do nothing when a tab group's visual data are updated.
-      break;
-    case WebStateListChange::Type::kGroupMove:
-      // Do nothing when a tab group is moved.
-      break;
-    case WebStateListChange::Type::kGroupDelete:
-      // Do nothing when a group is deleted.
-      break;
+  if (password_manager::PasswordFormCache* password_form_cache =
+          GetPasswordFormCacheFromWebState(web_state)) {
+    password_form_cache->AddObserver(this);
   }
 }
 
-void SyncErrorBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
-  web_state_observations_.RemoveObservation(web_state);
-  RemovePasswordFormManagerObserver(web_state);
+void SyncErrorBrowserAgent::OnWebStateRemoved(web::WebState* web_state) {
+  if (password_manager::PasswordFormCache* password_form_cache =
+          GetPasswordFormCacheFromWebState(web_state)) {
+    password_form_cache->RemoveObserver(this);
+  }
 }
 
-void SyncErrorBrowserAgent::WebStateRealized(web::WebState* web_state) {
-  web_state_observations_.RemoveObservation(web_state);
-  RemovePasswordFormManagerObserver(web_state);
-  CreateReSignInInfoBarDelegate(web_state);
+void SyncErrorBrowserAgent::OnWebStateDeleted(web::WebState* web_state) {
+  // Nothing to do.
 }
+
+void SyncErrorBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
+                                                    web::WebState* new_active) {
+  // Nothing to do.
+}
+
+#pragma mark - password_manager::PasswordFormManagerObserver
 
 void SyncErrorBrowserAgent::OnPasswordFormParsed(
     password_manager::PasswordFormManager* form_manager) {
@@ -202,31 +156,30 @@ void SyncErrorBrowserAgent::OnPasswordFormParsed(
       browser_->GetWebStateList()->GetActiveWebState();
   ProfileIOS* profile = browser_->GetProfile();
   if (active_web_state && active_web_state->IsRealized() &&
-      UserActionRequiredToFixPasswordSyncError(profile) &&
-      base::FeatureList::IsEnabled(
-          syncer::kSyncTrustedVaultInfobarImprovements)) {
-    DisplaySyncErrors(profile, active_web_state, sync_presenter_provider_,
+      UserActionRequiredToFixPasswordSyncError(profile)) {
+    DisplaySyncErrors(profile, active_web_state,
+                      HandlerForProtocol(browser_->GetCommandDispatcher(),
+                                         SyncPresenterCommands),
                       SyncErrorInfoBarTrigger::kPasswordFormParsed);
   }
 }
 
 void SyncErrorBrowserAgent::TriggerInfobarOnAllWebStatesIfNeeded() {
-  web_state_observations_.RemoveAllObservations();
   WebStateList* web_state_list = browser_->GetWebStateList();
   for (int i = 0; i < web_state_list->count(); i++) {
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    CreateReSignInInfoBarDelegate(web_state);
+    if (web_state->IsRealized()) {
+      CreateReSignInInfoBarDelegate(web_state);
+    }
   }
 }
 
 void SyncErrorBrowserAgent::CreateReSignInInfoBarDelegate(
     web::WebState* web_state) {
-  if (!web_state->IsRealized()) {
-    web_state_observations_.AddObservation(web_state);
-    return;
-  }
-
-  if (!resignin_presenter_provider_ || !sync_presenter_provider_) {
+  CHECK(web_state->IsRealized());
+  if (!resignin_presenter_provider_ ||
+      ![browser_->GetCommandDispatcher()
+          dispatchingForProtocol:@protocol(SyncPresenterCommands)]) {
     return;
   }
 
@@ -246,28 +199,9 @@ void SyncErrorBrowserAgent::CreateReSignInInfoBarDelegate(
         CreateConfirmInfoBar(std::move(delegate)));
     return;
   }
-  DisplaySyncErrors(profile, web_state, sync_presenter_provider_,
+
+  DisplaySyncErrors(profile, web_state,
+                    HandlerForProtocol(browser_->GetCommandDispatcher(),
+                                       SyncPresenterCommands),
                     SyncErrorInfoBarTrigger::kNewTabOpened);
-}
-
-void SyncErrorBrowserAgent::AddPasswordFormManagerObserver(
-    web::WebState* web_state) {
-  CHECK(web_state);
-
-  password_manager::PasswordFormCache* password_form_cache =
-      GetPasswordFormCacheFromWebState(web_state);
-  if (password_form_cache) {
-    password_form_cache->AddObserver(this);
-  }
-}
-
-void SyncErrorBrowserAgent::RemovePasswordFormManagerObserver(
-    web::WebState* web_state) {
-  CHECK(web_state);
-
-  password_manager::PasswordFormCache* password_form_cache =
-      GetPasswordFormCacheFromWebState(web_state);
-  if (password_form_cache) {
-    password_form_cache->RemoveObserver(this);
-  }
 }

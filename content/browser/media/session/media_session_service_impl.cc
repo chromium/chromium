@@ -13,6 +13,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
@@ -127,6 +128,10 @@ void MediaSessionServiceImpl::SetCameraState(
 
 void MediaSessionServiceImpl::EnableAction(
     media_session::mojom::MediaSessionAction action) {
+  if (!media_session::mojom::IsKnownEnumValue(action)) {
+    mojo::ReportBadMessage("Attempted to enable invalid media session action");
+    return;
+  }
   actions_.insert(action);
   if (media_session_) {
     media_session_->OnMediaSessionActionsChanged(this);
@@ -135,6 +140,10 @@ void MediaSessionServiceImpl::EnableAction(
 
 void MediaSessionServiceImpl::DisableAction(
     media_session::mojom::MediaSessionAction action) {
+  if (!media_session::mojom::IsKnownEnumValue(action)) {
+    mojo::ReportBadMessage("Attempted to disable invalid media session action");
+    return;
+  }
   actions_.erase(action);
   if (media_session_) {
     media_session_->OnMediaSessionActionsChanged(this);

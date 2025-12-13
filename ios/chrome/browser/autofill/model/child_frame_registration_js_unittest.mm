@@ -16,7 +16,6 @@
 #import "base/unguessable_token.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_util.h"
-#import "components/autofill/ios/form_util/remote_frame_registration_java_script_feature.h"
 #import "ios/testing/embedded_test_server_handlers.h"
 #import "ios/web/public/test/javascript_test.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -46,7 +45,6 @@
 
 namespace {
 
-using autofill::kRemoteFrameRegistrationMessageHandlerName;
 using net::test_server::EmbeddedTestServer;
 using net::test_server::HandlePrefixedRequest;
 using ::testing::IsSubsetOf;
@@ -56,6 +54,9 @@ using ::testing::SizeIs;
 constexpr base::TimeDelta kRegistrationDelay = base::Milliseconds(200);
 
 constexpr char kMainPageBaseUrl[] = "https://chromium.test";
+
+constexpr char kRemoteFrameRegistrationMessageHandlerName[] =
+    "FrameRegistrationMessage";
 
 // Gets delay for performing all attempts with the exponential backoff for
 // retries and with some extra buffer to deal with other latencies such as the
@@ -116,22 +117,20 @@ class ChildFrameRegistrationJavascriptTest : public web::JavascriptTest {
 
     AddGCrWebScript();
     AddCommonScript();
-    AddMessageScript();
-    AddUserScript(
-        base::SysUTF8ToNSString(autofill::kRemoteFrameRegistrationScriptName));
-    AddUserScript(@"child_frame_registration_test");
     AddUserScript(@"autofill_form_features");
+    AddUserScript(@"fill_util_test");
   }
 
   // Script that enables xframes on all frames and set registration attempts
   // counter.
   void SetFramesForTesting() {
     NSString* const script =
-        @"__gCrWeb.autofill_form_features.setAutofillAcrossIframes(true);"
+        @"__gCrWeb.getRegisteredApi('autofill_form_features')."
+        @"getFunction('setAutofillAcrossIframes')(true);"
          "let registrationAttemptsCount = 0;"
          "for (const frame of document.querySelectorAll('iframe')) { "
-         "frame.contentWindow.eval('__gCrWeb.autofill_form_features."
-         "setAutofillAcrossIframes(true)');"
+         "frame.contentWindow.eval(\"__gCrWeb.getRegisteredApi('autofill_form_features')."
+         "getFunction('setAutofillAcrossIframes')(true)\");"
          "}"
          "window.addEventListener('message', () => "
          "++registrationAttemptsCount);";
@@ -155,9 +154,9 @@ TEST_F(ChildFrameRegistrationJavascriptTest, RegisterFrames) {
 
   ASSERT_TRUE(LoadHtml(html, GURL(kMainPageBaseUrl)));
 
-  id result = web::test::ExecuteJavaScript(web_view(),
-                                           @"__gCrWeb.remoteFrameRegistration."
-                                           @"registerAllChildFrames();");
+  id result = web::test::ExecuteJavaScript(
+      web_view(), @"__gCrWeb.getRegisteredApi('fill_test_api')."
+                  @"getFunction('registerAllChildFrames')();");
 
   ASSERT_TRUE(result);
   NSArray<NSString*>* result_array =
@@ -184,18 +183,18 @@ TEST_F(ChildFrameRegistrationJavascriptTest, RegisterFrames_Cache) {
   ASSERT_TRUE(LoadHtml(html, GURL(kMainPageBaseUrl)));
 
   // Do first registration and extract the tokens.
-  id result1 = web::test::ExecuteJavaScript(web_view(),
-                                            @"__gCrWeb.remoteFrameRegistration."
-                                            @"registerAllChildFrames();");
+  id result1 = web::test::ExecuteJavaScript(
+      web_view(), @"__gCrWeb.getRegisteredApi('fill_test_api')."
+                  @"getFunction('registerAllChildFrames')();");
   ASSERT_TRUE(result1);
   std::vector<autofill::RemoteFrameToken> remote_tokens_round1 =
       ExtractTokensFromResult(result1);
   EXPECT_THAT(remote_tokens_round1, SizeIs(2));
 
   // Do second registration and extract the tokens.
-  id result2 = web::test::ExecuteJavaScript(web_view(),
-                                            @"__gCrWeb.remoteFrameRegistration."
-                                            @"registerAllChildFrames();");
+  id result2 = web::test::ExecuteJavaScript(
+      web_view(), @"__gCrWeb.getRegisteredApi('fill_test_api')."
+                  @"getFunction('registerAllChildFrames')();");
   ASSERT_TRUE(result2);
   std::vector<autofill::RemoteFrameToken> remote_tokens_round2 =
       ExtractTokensFromResult(result2);
@@ -224,9 +223,9 @@ TEST_F(ChildFrameRegistrationJavascriptTest, RegisterFrames_Deduping) {
 
   SetFramesForTesting();
 
-  ASSERT_TRUE(web::test::ExecuteJavaScript(web_view(),
-                                           @"__gCrWeb.remoteFrameRegistration."
-                                           @"registerAllChildFrames();"));
+  ASSERT_TRUE(web::test::ExecuteJavaScript(
+      web_view(), @"__gCrWeb.getRegisteredApi('fill_test_api')."
+                  @"getFunction('registerAllChildFrames')();"));
 
   // Wait for both frames to register.
   ASSERT_TRUE(
@@ -236,9 +235,9 @@ TEST_F(ChildFrameRegistrationJavascriptTest, RegisterFrames_Deduping) {
   EXPECT_EQ(2, GetRegistrationAttemptsCount());
 
   // Try re-registering the same frames.
-  ASSERT_TRUE(web::test::ExecuteJavaScript(web_view(),
-                                           @"__gCrWeb.remoteFrameRegistration."
-                                           @"registerAllChildFrames();"));
+  ASSERT_TRUE(web::test::ExecuteJavaScript(
+      web_view(), @"__gCrWeb.getRegisteredApi('fill_test_api')."
+                  @"getFunction('registerAllChildFrames')();"));
 
   // Give enough time for the full registration round trip, if it did happen
   // (which would be an error at this point).
@@ -267,9 +266,8 @@ TEST_F(ChildFrameRegistrationJavascriptTest,
     // Set up the frame in a retry loop until the utils functions are injected.
     const timeoutFn = () => {
         if (typeof __gCrWeb != 'undefined' &&
-            typeof __gCrWeb?.autofill_form_features?.setAutofillAcrossIframes
-            == 'function') {
-          __gCrWeb.autofill_form_features.setAutofillAcrossIframes(true);
+            typeof __gCrWeb.getRegisteredApi('autofill_form_features').getFunction('setAutofillAcrossIframes') == 'function') {
+          __gCrWeb.getRegisteredApi('autofill_form_features').getFunction('setAutofillAcrossIframes')(true);
           window.parent?.postMessage({type: 'frame-ready'}, '*');
           // Done.
           return;
@@ -340,9 +338,9 @@ TEST_F(ChildFrameRegistrationJavascriptTest,
   // Register the child frames of the main frame by calling the registration
   // script from the main frame. The child frames do not have child frames
   // themselves so no need to call the registration script for them.
-  ASSERT_TRUE(web::test::ExecuteJavaScript(web_view(),
-                                           @"__gCrWeb.remoteFrameRegistration."
-                                           @"registerAllChildFrames();"));
+  ASSERT_TRUE(web::test::ExecuteJavaScript(
+      web_view(), @"__gCrWeb.getRegisteredApi('fill_test_api')."
+                  @"getFunction('registerAllChildFrames')();"));
 
   // Wait for both child frames to register.
   ASSERT_TRUE(
@@ -432,9 +430,9 @@ TEST_F(ChildFrameRegistrationJavascriptTest,
   const int base_delay_us = 2500;
   const int num_attempts_expected = 9;
 
-  ASSERT_TRUE(web::test::ExecuteJavaScript(web_view(),
-                                           @"__gCrWeb.remoteFrameRegistration."
-                                           @"registerAllChildFrames();"));
+  ASSERT_TRUE(web::test::ExecuteJavaScript(
+      web_view(), @"__gCrWeb.getRegisteredApi('fill_test_api')."
+                  @"getFunction('registerAllChildFrames')();"));
 
   // Wait on the expected registration attempts to be done.
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -485,9 +483,9 @@ TEST_F(ChildFrameRegistrationJavascriptTest,
 
   SetFramesForTesting();
 
-  ASSERT_TRUE(web::test::ExecuteJavaScript(web_view(),
-                                           @"__gCrWeb.remoteFrameRegistration."
-                                           @"registerAllChildFrames();"));
+  ASSERT_TRUE(web::test::ExecuteJavaScript(
+      web_view(), @"__gCrWeb.getRegisteredApi('fill_test_api')."
+                  @"getFunction('registerAllChildFrames')();"));
 
   // Wait on the first 100 frames to be registered.
   ASSERT_TRUE(

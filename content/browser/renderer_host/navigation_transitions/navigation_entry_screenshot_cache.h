@@ -10,6 +10,7 @@
 #include "base/memory/safe_ref.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_data.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -78,7 +79,11 @@ class CONTENT_EXPORT NavigationEntryScreenshotCache
   // animation. The caller is responsible for making sure `navigation_entry`
   // has a screenshot.
   std::unique_ptr<NavigationEntryScreenshot> RemoveScreenshot(
-      NavigationEntry* navigation_entry);
+      NavigationEntry* navigation_entry,
+      std::optional<NavigationTransitionData::CacheHitOrMissReason>
+          cache_hit_or_miss_reason = std::nullopt);
+
+  void RemoveFailedScreenshot(NavigationEntryScreenshot* screenshot);
 
   // Called by the `NavigationScreenshot` when the hosting navigation entry is
   // deleted.

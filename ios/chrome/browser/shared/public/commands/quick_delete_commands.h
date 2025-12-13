@@ -5,16 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_QUICK_DELETE_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_QUICK_DELETE_COMMANDS_H_
 
+#import "base/ios/block_types.h"
+
 @class UIViewController;
 
 // Commands related to Quick Delete.
 @protocol QuickDeleteCommands
 
-// Shows Quick Delete and indicates if the tabs closure animation can be
+// Shows Quick Delete and indicates if the radial wipe animation can be
 // performed. The animation should only be performed if Quick Delete is opened
 // on top of a tab or the tab grid.
-- (void)showQuickDeleteAndCanPerformTabsClosureAnimation:
-    (BOOL)canPerformTabsClosureAnimation;
+- (void)showQuickDeleteAndCanPerformRadialWipeAnimation:
+    (BOOL)canPerformRadialWipeAnimation;
 
 // Stops Quick Delete.
 - (void)stopQuickDelete;

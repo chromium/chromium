@@ -4,10 +4,38 @@
 
 module pdf.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
+
+// Must match `SaveRequestType` in
+// `chrome/common/extensions/api/pdf_viewer_private.idl` and
+// `tools/typescript/definitions/pdf_viewer_private.d.ts`.
+enum SaveRequestType {
+  kAnnotation = 0,
+  kOriginal = 1,
+  kEdited = 2,
+  kSearchified = 3,
+};
+
+// Returns by `GetSaveDataBufferHandlerForDrive()`. `handler` is the handler
+// to read the data to save to Google Drive. `total_file_size` is the total file
+// size to save.
+[EnableIf=enable_pdf_save_to_drive]
+struct SaveDataBufferHandlerGetResult {
+  pending_remote<SaveDataBufferHandler> handler;
+  uint32 total_file_size;
+};
+
+// Interface for reading the PDF data to save to Google Drive.
+[EnableIf=enable_pdf_save_to_drive]
+interface SaveDataBufferHandler {
+  // Returns `block_size` bytes to save the PDF to Google Drive starting from
+  // location `offset`.
+  Read(uint32 offset, uint32 block_size) => (mojo_base.mojom.BigBuffer block);
+};
 
 interface PdfListener {
   // Sets the current caret position.
@@ -42,6 +70,14 @@ interface PdfListener {
   // Returns the index of the most visible page. If no page is visible,
   // returns nullopt.
   GetMostVisiblePageIndex() => (uint32? page_index);
+
+  // Returns a `SaveDataBufferHandler` and the total file size to read the data
+  // to save to Google Drive. Once the handler is acquired, caller can read the
+  // data by calling `Read`. If the file is larger than INT_MAX size, returns
+  // nullptr.
+  [EnableIf=enable_pdf_save_to_drive]
+  GetSaveDataBufferHandlerForDrive(SaveRequestType request_type)
+      => (SaveDataBufferHandlerGetResult? result);
 };
 
 // Browser-side interface used by PDF renderers.

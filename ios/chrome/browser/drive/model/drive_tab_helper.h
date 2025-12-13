@@ -59,7 +59,6 @@ class DriveTabHelper : public web::LazyWebStateUserData<DriveTabHelper>,
 
   // Removes the local copy of the downloaded file if it exists.
   void RemoveIfFileExists(base::FilePath task_path,
-                          UploadTask* task,
                           bool file_exists);
 
   // Checks if the remove has been completed.

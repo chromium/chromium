@@ -8,6 +8,9 @@
 
 namespace segmentation_platform {
 
+using Feature = PowerUserSegment::Feature;
+using Label = PowerUserSegment::Label;
+
 class PowerUserModelTest : public DefaultModelTestBase {
  public:
   PowerUserModelTest()
@@ -25,26 +28,30 @@ TEST_F(PowerUserModelTest, ExecuteModelWithInput) {
 
   std::string subsegment_key = GetSubsegmentKey(kPowerUserKey);
   ModelProvider::Request input(27, 0);
-  ExpectExecutionWithInput(input, /*expected_error=*/false, {1});
+  ExpectExecutionWithInput(input, /*expected_error=*/false,
+                           {Label::kLabelNone});
   ExpectClassifierResults(input, {"None"});
 
-  input[1] = 3;    // download
-  input[8] = 4;    // share
-  input[10] = 4;   // bookmarks
-  input[11] = 20;  // voice
-  ExpectExecutionWithInput(input, /*expected_error=*/false, {2});
+  input[Feature::kFeatureMobileMenuDownloadManager] = 3;
+  input[Feature::kFeatureMobileMenuShare] = 4;
+  input[Feature::kFeatureMobileMenuAllBookmarks] = 4;
+  input[Feature::kFeatureMobileOmniboxVoiceSearch] = 20;
+  ExpectExecutionWithInput(input, /*expected_error=*/false, {Label::kLabelLow});
   ExpectClassifierResults(input, {"Low"});
 
-  input[12] = 2;  // cast
-  input[15] = 5;  // autofill
-  input[22] = 6;  // media picker
-  ExpectExecutionWithInput(input, /*expected_error=*/false, {3});
+  input[Feature::kFeatureMediaControlsCast] = 2;
+  input[Feature::kFeatureAutofillKeyMetricsFillingAcceptanceAddress] = 5;
+  input[Feature::kFeatureAndroidPhotoPickerDiaglogAction] = 6;
+  ExpectExecutionWithInput(input, /*expected_error=*/false,
+                           {Label::kLabelMedium});
   ExpectClassifierResults(input, {"Medium"});
 
-  input[26] = 20 * 60 * 1000;  // 20 min session
-  input[17] = 60000;           // 60 sec audio output
-  input[23] = 50000;           // 50KB upload
-  ExpectExecutionWithInput(input, /*expected_error=*/false, {4});
+  input[Feature::kFeatureSessionTotalDuration] = 20 * 60 * 1000;
+  input[Feature::kFeatureMediaOutputStreamDuration] = 60000;
+  input[Feature::kFeatureDataUseTrafficSizeUserUpstreamForegroundNotCellular] =
+      50000;
+  ExpectExecutionWithInput(input, /*expected_error=*/false,
+                           {Label::kLabelHigh});
   ExpectClassifierResults(input, {"High"});
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));

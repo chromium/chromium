@@ -16,10 +16,10 @@
 #include "components/spellcheck/renderer/spellcheck.h"
 #include "components/spellcheck/renderer/spellcheck_language.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
+#include "third_party/blink/public/web/web_text_check_client.h"
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 
 namespace {
@@ -125,8 +125,11 @@ TestingSpellCheckProvider::~TestingSpellCheckProvider() {
 
 void TestingSpellCheckProvider::RequestTextChecking(
     const std::u16string& text,
+    blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
+        should_force_refresh,
     std::unique_ptr<blink::WebTextCheckingCompletion> completion) {
-  SpellCheckProvider::RequestTextChecking(text, std::move(completion));
+  SpellCheckProvider::RequestTextChecking(text, should_force_refresh,
+                                          std::move(completion));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -188,14 +191,8 @@ void TestingSpellCheckProvider::FillSuggestionList(const std::u16string&,
 #if BUILDFLAG(IS_WIN)
 void TestingSpellCheckProvider::InitializeDictionaries(
     InitializeDictionariesCallback callback) {
-  if (base::FeatureList::IsEnabled(
-          spellcheck::kWinDelaySpellcheckServiceInit)) {
-    std::move(callback).Run(/*dictionaries=*/{}, /*custom_words=*/{},
-                            /*enable=*/false);
-    return;
-  }
-
-  NOTREACHED();
+  std::move(callback).Run(/*dictionaries=*/{}, /*custom_words=*/{},
+                          /*enable=*/false);
 }
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)

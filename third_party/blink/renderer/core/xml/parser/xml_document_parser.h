@@ -176,6 +176,10 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
                       const String& system_id);
   void EndDocument();
 
+  // Allow parser to track usage of external entities in entity resolution
+  // callbacks.
+  void DidSeeExternalEntity() { saw_external_entity_ = true; }
+
  private:
   void InitializeParserContext(const std::string& chunk = std::string());
 
@@ -204,6 +208,10 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
   Vector<xmlChar> buffered_text_;
 
   Member<ContainerNode> current_node_;
+  // In fragment parsing, track a parent element that has reset the default
+  // namespace, in order not to apply the surrounding element's default
+  // namespace when fixing-up fragment element's namespace information.
+  Member<ContainerNode> ancestor_resetting_namespace_ = nullptr;
   HeapVector<Member<ContainerNode>> current_node_stack_;
 
   Member<Text> leaf_text_node_;
@@ -212,6 +220,7 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
   bool saw_error_;
   bool saw_css_;
   bool saw_xsl_transform_;
+  bool saw_external_entity_ = false;
   bool saw_first_element_;
   bool is_xhtml_document_;
   bool parser_paused_;

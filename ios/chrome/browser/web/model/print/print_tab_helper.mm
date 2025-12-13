@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/web/model/print/web_state_printer.h"
-#import "ios/web/public/browser_state.h"
 
 PrintTabHelper::PrintTabHelper(web::WebState* web_state)
     : web_state_(web_state) {}

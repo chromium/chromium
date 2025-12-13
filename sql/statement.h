@@ -195,7 +195,10 @@ class COMPONENT_EXPORT(SQL) Statement {
   // on a column before getting the value out in any way.
   ColumnType GetColumnType(int col);
 
-  // These all take a 0-based argument index.
+  // Returns the value at `column_index` (zero-based) in the current result set
+  // produced by a successful call to `Step()`. `column_index` must be less than
+  // the number of columns in the result set. Must only be called following a
+  // successful call to `Step()`.
   bool ColumnBool(int column_index);
   int ColumnInt(int column_index);
   int64_t ColumnInt64(int column_index);
@@ -228,8 +231,7 @@ class COMPONENT_EXPORT(SQL) Statement {
   //       base::Microseconds(ColumnInt64(col)))
   //
   // TODO(crbug.com/40176243): Migrate all time serialization to this method,
-  // and
-  //                          then remove the migration details above.
+  // and then remove the migration details above.
   base::Time ColumnTime(int column_index);
 
   // Conforms with base::TimeDelta deserialization recommendations.
@@ -238,8 +240,7 @@ class COMPONENT_EXPORT(SQL) Statement {
   // * base::TimeDelta::FromInternalValue(ColumnInt64(column_index))
   //
   // TODO(crbug.com/40251269): Migrate all TimeDelta serialization to this
-  // method
-  //                          and remove the migration details above.
+  // method and remove the migration details above.
   base::TimeDelta ColumnTimeDelta(int column_index);
 
   // Returns a span pointing to a buffer containing the blob data.
@@ -250,11 +251,20 @@ class COMPONENT_EXPORT(SQL) Statement {
   // The span will be empty (and may have a null data) if the underlying blob is
   // empty. Code that needs to distinguish between empty blobs and NULL should
   // call GetColumnType() before calling ColumnBlob().
+  //
+  // If you need to store and retrieve potentially invalid UTF-16 strings
+  // losslessly, store them as BLOBs. They may be retrieved with
+  // `ColumnBlobAsString16()`.
   base::span<const uint8_t> ColumnBlob(int column_index);
 
-  bool ColumnBlobAsString(int column_index, std::string* result);
-  bool ColumnBlobAsString16(int column_index, std::u16string* result);
-  bool ColumnBlobAsVector(int column_index, std::vector<uint8_t>* result);
+  // These convenience methods convert BLOB column data to various C++ types.
+  std::string ColumnBlobAsString(int column_index);
+  std::vector<uint8_t> ColumnBlobAsVector(int column_index);
+
+  // This will return false if the underlying blob does not have an even
+  // number of bytes. Otherwise, it will return true and copy the contents of
+  // the blob to `result`. It does no validation on the contents of the blob.
+  std::optional<std::u16string> ColumnBlobAsString16(int column_index);
 
   // Diagnostics --------------------------------------------------------------
 
@@ -290,6 +300,11 @@ class COMPONENT_EXPORT(SQL) Statement {
   // ensuring that contracts are honored in error edge cases.
   bool CheckValid() const;
 
+  // Crashes the process if `this` is not in a state that allows reading from
+  // columns (i.e. `Step()` was called and succeeded), and specifically the
+  // given column.
+  void CheckCanReadColumn(int column_index) const;
+
   // Helper for Run() and Step(), calls sqlite3_step() and returns the checked
   // value from it.
   SqliteResultCode StepInternal();
@@ -309,8 +324,9 @@ class COMPONENT_EXPORT(SQL) Statement {
   scoped_refptr<Database::StatementRef> ref_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // See Succeeded() for what this holds.
-  bool succeeded_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  // The result code for the last `Run()` or `Step()`.
+  std::optional<SqliteResultCode> last_sqlite_result_code_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
 #if DCHECK_IS_ON()
   // Used to DCHECK() that Bind*() is called before Step() or Run() are called.

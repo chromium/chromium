@@ -30,7 +30,7 @@ global_media_controls::MediaItemManager* GetItemManagerFromBrowser(
 
 MediaToolbarButtonContextualMenu::MediaToolbarButtonContextualMenu(
     Browser* browser)
-    : browser_(browser), item_manager_(GetItemManagerFromBrowser(browser_)) {}
+    : browser_(browser) {}
 
 MediaToolbarButtonContextualMenu::~MediaToolbarButtonContextualMenu() = default;
 
@@ -97,8 +97,12 @@ void MediaToolbarButtonContextualMenu::ExecuteCommand(int command_id,
 }
 
 void MediaToolbarButtonContextualMenu::MenuClosed(ui::SimpleMenuModel* source) {
-  if (item_manager_) {
-    item_manager_->OnItemsChanged();
+  if (!browser_) {
+    return;
+  }
+  auto* item_manager = GetItemManagerFromBrowser(browser_);
+  if (item_manager) {
+    item_manager->OnItemsChanged();
   }
 }
 

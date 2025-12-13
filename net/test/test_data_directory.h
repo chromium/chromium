@@ -27,11 +27,6 @@ base::FilePath GetTestCertsDirectory();
 // instead.
 base::FilePath GetTestClientCertsDirectory();
 
-// Returns the base::FilePath object representing the relative path containing
-// resource files for testing WebSocket. Typically the FilePath will be used as
-// document root argument for net::SpawnedTestServer with TYPE_WS or TYPE_WSS.
-base::FilePath GetWebSocketTestDataDirectory();
-
 }  // namespace net
 
 #endif  // NET_TEST_TEST_DATA_DIRECTORY_H_

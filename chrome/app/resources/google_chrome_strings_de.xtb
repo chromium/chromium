@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="1001534784610492198">Das Installationsarchiv ist beschädigt oder ungültig. Lade Google Chrome erneut herunter.</translation>
+<translation id="1006034097353797313">Mach dort weiter, wo du aufgehört hast: Chrome stellt deine Tabs bei jedem Neustart wieder her. Wenn du diese Funktion deaktivieren möchtest, gehe zu</translation>
 <translation id="1018937009655463387">Wenn du dein Fenster teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chrome zulassen.</translation>
 <translation id="1026101648481255140">Installation fortsetzen</translation>
 <translation id="102763973188675173">Google Chrome anpassen und Einstellungen festlegen. Ein Update ist verfügbar.</translation>
@@ -10,14 +11,19 @@
 <translation id="1051793555070215510">Hilf uns, den Inkognitomodus zu verbessern, indem du dir 1 Minute Zeit für diese Umfrage nimmst.</translation>
 <translation id="1059838145689930908">Wenn du diese Erweiterung als <ph name="USER_EMAIL_ADDRESS" /> verwenden möchtest, musst du dich in Chrome anmelden.</translation>
 <translation id="1065672644894730302">Deine Einstellungen können nicht gelesen werden. Einige Funktionen sind möglicherweise nicht verfügbar und Änderungen an Einstellungen werden nicht gespeichert.</translation>
+<translation id="1070377999570795893">Ein anderes Programm auf deinem Computer hat eine Erweiterung hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">Mit Google Lens suchen</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" /> hat zuvor Chrome verwendet</translation>
 <translation id="110877069173485804">Dies ist dein persönlicher Chrome-Browser</translation>
 <translation id="1125124144982679672">Wer verwendet gerade Chrome?</translation>
 <translation id="1142745911746664600">Chrome kann nicht aktualisiert werden</translation>
+<translation id="1148360048981192980">Wenn du Chrome das nächste Mal auf deinem Gerät (<ph name="DEVICE_TYPE" />) öffnest, wirst du aufgefordert, den Google Passwortmanager zu verwenden.</translation>
 <translation id="1152920704813762236">Über ChromeOS</translation>
 <translation id="1154147086299354128">In Chr&amp;ome öffnen</translation>
 <translation id="1157985233335035034">Zuletzt verwendete Sprachen</translation>
+<translation id="1158134713295836892">Gemini in Chrome</translation>
 <translation id="1184145431117212167">Die Installation ist fehlgeschlagen, weil deine Windows-Version nicht unterstützt wird.</translation>
 <translation id="1194807384646768652">Chrome hat diesen Download blockiert, weil der Dateityp normalerweise nicht heruntergeladen wird und gefährlich sein könnte</translation>
 <translation id="1203500561924088507">Vielen Dank für die Installation. Du musst deinen Browser neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
@@ -27,6 +33,7 @@
 <translation id="1330562121671411446">Sprache erkennen</translation>
 <translation id="1335640173511558774">Für <ph name="MANAGER" /> ist es erforderlich, dass du vor der Verwendung dieses Geräts die folgenden Nutzungsbedingungen liest und akzeptierst. Durch diese Nutzungsbedingungen werden die Google Chrome OS Flex-Nutzungsbedingungen nicht erweitert, geändert oder eingeschränkt.</translation>
 <translation id="1341711321000856656">Wenn du das Profil wechselst, kannst du dir Passwörter anderer Chrome-Profile anzeigen lassen</translation>
+<translation id="1343830902827845050">In Chrome anmelden</translation>
 <translation id="1356661055722410047">Neu! Du kannst sowohl Text als auch Bilder auf deinem Bildschirm übersetzen lassen</translation>
 <translation id="1363996462118479832">Chrome OS konnte deine Daten aufgrund eines Fehlers bei der Anmeldung nicht synchronisieren.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
@@ -37,13 +44,18 @@
 <translation id="1434626383986940139">Chrome Canary-Apps</translation>
 <translation id="1439793550875056299">Chrome anpinnen</translation>
 <translation id="146866447420868597">In Chrome anmelden?</translation>
+<translation id="1476347941828409626">Chrome-Profile &amp;verwalten</translation>
 <translation id="1492280395845991349">Neu starten, um das Chrome-Update abzuschließen</translation>
+<translation id="1496875977627931224">Hallo <ph name="USER_NAME" />,<ph name="LINE_BREAK" />was kann ich heute für dich tun?</translation>
 <translation id="1497802159252041924">Installationsfehler: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Personalisiere dein neues Chrome-Profil</translation>
 <translation id="1518627427551567882">Diese Seite ist geschützt</translation>
 <translation id="1547295885616600893">Chrome OS wird durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="1547469039832541117">Beendet den ausgewählten Task.</translation>
 <translation id="1553358976309200471">Chrome aktualisieren</translation>
+<translation id="1585717515139318619">Ein anderes Programm auf deinem Computer hat ein Design hinzugefügt, das sich möglicherweise auf die Funktionsweise von Chrome auswirkt.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">Google Chrome verwendet deine Kamera.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> ist schädlich und wurde daher von Chrome blockiert.</translation>
 <translation id="1597911401261118146">Wenn du prüfen möchtest, ob deine Passwörter von Datenpannen und anderen Sicherheitsproblemen betroffen sind, <ph name="BEGIN_LINK" />melde dich in Chrome an<ph name="END_LINK" />.</translation>
@@ -65,23 +77,29 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome empfiehlt, den Tab zu pausieren, der deinen Browser verlangsamt}other{Chrome empfiehlt, die Tabs zu pausieren, die deinen Browser verlangsamen}}</translation>
 <translation id="1832046143430087831">Websites werden mit der V8-Engine von Chrome beschleunigt, Chrome wird dadurch aber etwas anfälliger für Angriffe. Diese Einstellung ist deaktiviert.</translation>
 <translation id="1838374766361614909">Suche löschen</translation>
+<translation id="1843347690926158494">Mit Google Lens in diesem Tab suchen</translation>
+<translation id="1849248141818021764">Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, musst du die <ph name="BEGIN_LINK" />Chrome-Daten in deinem Konto löschen<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">Chrome benötigt für diese Website die Berechtigung, auf deine Kamera zuzugreifen</translation>
+<translation id="1867503717113754604">Melde dich mit deinem Google-Konto in Chrome an, um <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> zu verwenden</translation>
 <translation id="1873233029667955273">Google Chrome ist nicht als dein Standardbrowser festgelegt</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome ist veraltet.</translation>
 <translation id="1880677175115548835">Text auswählen</translation>
 <translation id="1919130412786645364">Anmeldung in Chrome zulassen</translation>
 <translation id="1953553007165777902">Wird heruntergeladen… Noch <ph name="MINUTE" /> Minute(n)</translation>
+<translation id="1979600810166324878">Mit dem erweiterten Safe Browsing in Chrome für iOS bist du unterwegs besser geschützt</translation>
 <translation id="2001586581944147178">Du kannst es Personen mit Zugriff auf deinen Internetverkehr erschweren, zu sehen, welche Websites du besuchst. Chrome nutzt eine verschlüsselte Verbindung, um die IP-Adresse einer Website im DNS (Domain Name System) zu ermitteln.</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Diese Erweiterung wird nicht mehr unterstützt. Chrome empfiehlt, sie zu entfernen.}other{Diese Erweiterungen werden nicht mehr unterstützt. Chrome empfiehlt, sie zu entfernen.}}</translation>
 <translation id="2018528049276128029">In jedem Profil sind eigene Chrome-Daten wie zum Beispiel Lesezeichen, Verlauf und Passwörter enthalten</translation>
 <translation id="2018879682492276940">Fehler bei der Installation. Bitte versuch es noch einmal.</translation>
 <translation id="2024959665595762054">Bestätige deine Identität, um Chrome-Daten in deinem Google-Konto zu verwenden und zu speichern</translation>
+<translation id="2026377840141807639">Mit Chrome-Profilen kannst du private und berufliche Browseraktivitäten getrennt halten. Füge jetzt ein neues Profil hinzu.</translation>
 <translation id="2034233344106846793">Chrome stellt unsichere Verbindungen nach Möglichkeit automatisch auf HTTPS um</translation>
-<translation id="207902854391093810">Wenn Tests aktiviert sind, können mithilfe der Anzeigenanalyse von dir besuchte Websites Informationen von Chrome anfordern, mit denen sie die Leistung ihrer Werbung analysieren können. Durch die Anzeigenanalyse wird das websiteübergreifende Tracking eingeschränkt, indem so wenig Informationen wie möglich zwischen Websites ausgetauscht werden.</translation>
+<translation id="2039417478970545937">den Einstellungen.</translation>
 <translation id="2091012649849228750">Du benötigst Windows 10 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Auf diesem Computer wird Windows 8 ausgeführt.</translation>
 <translation id="2094648590148273905">Nutzungsbedingungen für Chrome OS Flex</translation>
 <translation id="2094919256425865063">Chrome trotzdem beenden?</translation>
+<translation id="2096213354152647998">Du hast diese Website in letzter Zeit nicht besucht. Chrome hat „<ph name="PERMISSION" />“ entfernt.</translation>
 <translation id="2106831557840787829">Chrome OS Flex und die <ph name="BEGIN_LINK_LINUX_OSS" />Linux-Entwicklungsumgebung<ph name="END_LINK_LINUX_OSS" /> werden durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="2108778574543343055">Chrome-Ausführung im Hintergrund für Apps deaktivieren</translation>
 <translation id="2120620239521071941">Dadurch werden <ph name="ITEMS_COUNT" /> Elemente von diesem Gerät gelöscht. Wenn du deine Daten später abrufen möchtest, melde dich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
@@ -89,7 +107,6 @@
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />Aktuelle Einstellungen<ph name="END_LINK" /> übermitteln und so helfen, Chrome zu verbessern</translation>
 <translation id="2126108037660393668">Die heruntergeladene Datei konnte nicht verifiziert werden.</translation>
 <translation id="2128411189117340671">Chrome-Profile verwalten</translation>
-<translation id="2131230230468101642">Zum Schutz deiner Daten löschen wir automatisch deine Interessen, die älter als vier Wochen sind. Je nach deinen Browsingaktivitäten können die Interessen wieder in der Liste erscheinen. Du kannst jedoch Interessen entfernen, die Chrome nicht berücksichtigen soll.</translation>
 <translation id="2137162749895930932">Bildschirm „Übersetzen“ schließen</translation>
 <translation id="2139300032719313227">Chrome OS neu starten</translation>
 <translation id="2151406531797534936">Starte Chrome jetzt neu</translation>
@@ -100,8 +117,11 @@
 <translation id="2199691482078155239">Mit Chrome hast du mehr Kontrolle darüber, welche Werbung du siehst – außerdem kannst du einschränken, was Websites über dich erfahren können, wenn sie dir personalisierte Werbung zeigen</translation>
 <translation id="2216543877350048334">Wenn du dein Google-Konto von Chrome entfernen möchtest, melde dich ab</translation>
 <translation id="2236949375853147973">Meine Aktivitäten</translation>
+<translation id="22791603784558743">Gemini in Chrome Dev schließen</translation>
 <translation id="2290014774651636340">Google API-Schlüssel fehlen. Einige Funktionen von Google Chrome sind deaktiviert.</translation>
 <translation id="2290095356545025170">Möchtest du Google Chrome wirklich deinstallieren?</translation>
+<translation id="2301513536169703857">Wenn du auf allen deinen Geräten auf deine Passwörter, Lesezeichen und andere Daten zugreifen möchtest, melde dich in Chrome an</translation>
+<translation id="2307973900865360088">Im Dock behalten</translation>
 <translation id="2309047409763057870">Dies ist eine Zweitinstallation, daher kann Google Chrome nicht als Standardbrowser festgelegt werden.</translation>
 <translation id="2345992953227471816">Chrome hat festgestellt, dass diese Erweiterungen Malware enthalten:</translation>
 <translation id="2348335408836342058">Chrome benötigt für diese Website die Berechtigung, auf deine Kamera und dein Mikrofon zuzugreifen</translation>
@@ -116,12 +136,10 @@
 <translation id="2513154137948333830">Neustart erforderlich: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2534365042754120737">Erlaube Chrome zum Schutz deiner Daten, Berechtigungen von Websites zu entfernen, die du in letzter Zeit nicht besucht hast. Benachrichtigungen werden dadurch nicht deaktiviert.</translation>
 <translation id="2556847002339236023">In deiner Organisation wird Chrome nach <ph name="TIMEOUT_DURATION" /> Inaktivität geschlossen. Browserdaten wurden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.</translation>
-<translation id="2559253115192232574">Wenn du eine Website besuchst, kann diese von Chrome dann deine Interessen anfordern, um die dir gezeigte Werbung zu personalisieren. Chrome kann bis zu drei Interessen teilen.</translation>
 <translation id="2563121210305478421">Chrome neu starten?</translation>
 <translation id="2569974318947988067">Chrome versucht, Websites über HTTPS aufzurufen</translation>
 <translation id="2571392474191184472">Chrome wird von deiner Organisation verwaltet</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> ist bereits in diesem Chrome-Profil angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, kannst du in Chrome ein eigenes Profil für dich einrichten.</translation>
-<translation id="2579190314336775785">Passwörter können nur außerhalb von Chrome gelöscht werden</translation>
 <translation id="2580411288591421699">Die Google Chrome-Version kann nicht installiert werden, da sie aktuell ausgeführt wird. Schließe Google Chrome und versuche es noch einmal.</translation>
 <translation id="2586406160782125153">Dadurch werden deine Browserdaten von diesem Gerät gelöscht. Wenn du deine Daten später abrufen möchtest, melde dich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
 <translation id="259935314519650377">Die heruntergeladene Installationsdatei konnte nicht im Cache gespeichert werden. Fehler: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -132,12 +150,14 @@
 <translation id="2665296953892887393">Absturzberichte und <ph name="UMA_LINK" /> zur Verbesserung von Google Chrome an Google senden</translation>
 <translation id="2668094785979141847">Klicke, um Google Lens zu beenden</translation>
 <translation id="2681444469812712297">Öffne <ph name="URL" /> in einem neuen Tab in Google Chrome.</translation>
+<translation id="2699790011615497488">Gemini in Chrome Beta öffnen</translation>
 <translation id="2712141162840347885">Wähle einen beliebigen Gegenstand für die Suche mit Google Lens aus oder drücke die Esc-Taste, um Google Lens zu beenden</translation>
 <translation id="2738871930057338499">Internetverbindung kann nicht hergestellt werden. HTTP 403 Forbidden. Bitte prüfe deine Proxykonfiguration.</translation>
 <translation id="2742320827292110288">Achtung: Google Chrome kann nicht verhindern, dass dein Browser-Verlauf von Erweiterungen aufgezeichnet wird. Schalte diese Option aus, um die Erweiterung im Inkognitomodus zu deaktivieren.</translation>
+<translation id="2747021967398957654">{count,plural, =1{Einige deiner Chrome-Daten wurden noch nicht in deinem Google-Konto gespeichert. Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten (1 Element) gelöscht.}other{Einige deiner Chrome-Daten wurden noch nicht in deinem Google-Konto gespeichert. Warte einige Minuten, bevor du dich abmeldest. Wenn du dich jetzt abmeldest, werden diese Daten ({count} Elemente) gelöscht.}}</translation>
 <translation id="2753623023919742414">Zum Suchen klicken</translation>
+<translation id="2757826245013442432">{COUNT,plural, =0{Das erweiterte Sicherheitsprogramm erfordert, dass du Chrome neu startest, um ein Update durchzuführen}=1{Das erweiterte Sicherheitsprogramm erfordert, dass du Chrome neu startest, um ein Update durchzuführen. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Das erweiterte Sicherheitsprogramm erfordert, dass du Chrome neu startest, um ein Update durchzuführen. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="2765403129283291972">Chrome benötigt für diese Website die Berechtigung, auf dein Mikrofon zuzugreifen</translation>
-<translation id="2770231113462710648">Standardbrowser ändern in:</translation>
 <translation id="2775140325783767197">Chrome kann deine Passwörter nicht prüfen. Überprüfe deine Internetverbindung.</translation>
 <translation id="2797864378188255696">Wenn du dich mit <ph name="USER_EMAIL" /> in Google-Diensten wie Gmail oder YouTube anmeldest, kannst du dich mit demselben Konto automatisch in Chrome anmelden</translation>
 <translation id="2799162042226656283">Mein Chrome</translation>
@@ -151,6 +171,7 @@
 <translation id="286025080868315611">Warum blockiert Chrome einige Downloads?</translation>
 <translation id="2861074815332034794">Chrome wird aktualisiert (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Du bist in Chrome angemeldet.</translation>
+<translation id="2875053229394024379">Wenn du dich mit deinem Google-Konto in Chrome anmeldest, kannst du dein Chrome-Profil mit Gemini verwenden. <ph name="BEGIN_LINK" />Informationen zur Anmeldung in Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Weitere Informationen zum Datenschutz bei Chrome<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Task-Manager</translation>
 <translation id="2888126860611144412">Über Google Chrome</translation>
@@ -166,17 +187,23 @@
 <translation id="3003694935412297923">Alle Tasks</translation>
 <translation id="3018957014024118866">Auch Daten aus Chrome löschen (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Neu starten, um &amp;Chrome OS Flex zu aktualisieren</translation>
+<translation id="3037517125981011456">Aufforderungen für die Anmeldung in Chrome werden angezeigt</translation>
 <translation id="3037838751736561277">Google Chrome wird im Hintergrundmodus ausgeführt.</translation>
 <translation id="3038232873781883849">Warten auf Installation…</translation>
 <translation id="3045032126857188731">Übersetzte Sprache: <ph name="LANGUAGE" /></translation>
+<translation id="3047590466164881923">Feedback-Dialogfeld schließen</translation>
 <translation id="306179102415443347">Mit dieser Verknüpfung gelangst du schnell zum Google Passwortmanager. Du kannst die Verknüpfung auf den Startbildschirm oder in den App Launcher deines Computers verschieben.</translation>
 <translation id="3065168410429928842">Chrome-Tab</translation>
+<translation id="3073571714401714450">Gemini in Chrome Dev aktivieren / deaktivieren</translation>
 <translation id="3080151273017101988">Apps im Hintergrund ausführen, wenn Google Chrome geschlossen ist</translation>
+<translation id="308397506772922478">Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chrome-Daten in deinem Konto<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">Chrome-Profil benennen</translation>
 <translation id="310459126943037700">Die Aufgabe(n) konnte(n) nicht beendet werden.</translation>
 <translation id="3112458742631356345">Chrome hat diesen Download blockiert, weil die Datei normalerweise nicht heruntergeladen wird und gefährlich sein könnte</translation>
 <translation id="3114643501466072395">Wenn du prüfen möchtest, ob deine anderen Passwörter von Datenpannen und anderen Sicherheitsproblemen betroffen sind, <ph name="BEGIN_LINK" />melde dich in Chrome an<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">Chrome hat diesen Download blockiert, weil die Archivdatei weitere Dateien enthält, die möglicherweise Malware verbergen</translation>
+<translation id="3124332159330678621">Personalisiere Chrome nach deinen Vorlieben</translation>
+<translation id="3130333203120345554">Neue Suche</translation>
 <translation id="3135560418014806498">Chrome-Profil hinzufügen</translation>
 <translation id="3137969841538672700">Zum Suchen ziehen</translation>
 <translation id="3140883423282498090">Deine Änderungen werden beim nächsten Neustart von Google Chrome wirksam.</translation>
@@ -188,13 +215,14 @@
 <translation id="3226612997184048185">Wenn du auch deine Lesezeichen in deinem Google-Konto speicherst, kannst du in Chrome Produktpreise im Auge behalten und dich benachrichtigen lassen, wenn der Preis sinkt</translation>
 <translation id="3242123554343253302">Chrome-Profil hinzufügen</translation>
 <translation id="3245429137663807393">Wenn du Chrome-Nutzungsberichte teilst, enthalten diese Berichte die von dir aufgerufenen URLs</translation>
-<translation id="3282568296779691940">In Chrome anmelden</translation>
 <translation id="3286538390144397061">Jetzt neu starten</translation>
 <translation id="3292333338048274092">Du musst Chrome dann neu starten.</translation>
+<translation id="3324218984287646518">Google Lens nach Infos zu diesem Video fragen</translation>
 <translation id="3327226547491422998">Später kann Chrome dich fragen, ob du die gespeicherten Informationen verwenden möchtest, um Formulare automatisch auszufüllen</translation>
 <translation id="3352986031709923790">Rechte obere Ecke des Suchbereichs: rechts <ph name="RIGHT" /> %, oben <ph name="TOP" /> %</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome wird jetzt neu gestartet}=1{Chrome wird in einer Sekunde neu gestartet}other{Chrome wird in # Sekunden neu gestartet}}</translation>
+<translation id="3380249972812870825">Du kannst zum Öffnen von Gemini in Chrome einfach <ph name="GLOBAL_HOTKEY" /> drücken</translation>
 <translation id="3396977131400919238">Während der Installation ist ein Fehler im Betriebssystem aufgetreten. Lade Google Chrome erneut herunter.</translation>
 <translation id="3428747202529429621">Schützt dich in Chrome und erhöht möglicherweise die Sicherheit in anderen Google-Apps, wenn du angemeldet bist</translation>
 <translation id="3434246496373299699">Chrome kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest</translation>
@@ -208,11 +236,12 @@
 <translation id="3541482654983822893">Chrome kann deine Passwörter nicht prüfen. Bitte versuche es in 24 Stunden noch einmal.</translation>
 <translation id="3576528680708590453">Dein Systemadministrator hat Google Chrome so konfiguriert, dass <ph name="TARGET_URL_HOSTNAME" /> in einem alternativen Browser geöffnet wird.</translation>
 <translation id="3582972582564653026">Chrome auf allen deinen Geräten synchronisieren und personalisieren</translation>
-<translation id="3583751698304738917">Du bist in einem anderen Chrome-Profil bereits als <ph name="USER_EMAIL_ADDRESS" /> angemeldet</translation>
+<translation id="3583751698304738917">Du bist in einem anderen Chrome-Profil bereits als <ph name="USER_EMAIL_ADDRESS" /> angemeldet.</translation>
+<translation id="358381413217813387">Diese Seite mit Google Lens durchsuchen</translation>
+<translation id="3589519427766620380">Google Lens eine Frage zu dieser Seite stellen</translation>
 <translation id="3595784445906693824">In einem neuen Profil in Chrome anmelden?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen}=1{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Laut deinem Administrator musst du Chrome neu starten, um ein Update durchzuführen. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="3597003331831379823">Die Einrichtung konnte nicht mit erhöhten Berechtigungen ausgeführt werden. <ph name="METAINSTALLER_ERROR" /></translation>
-<translation id="3609788354808247807">Du hast diese Website in letzter Zeit nicht besucht. Chrome hat „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ und „<ph name="PERMISSION_3" />“ entfernt.</translation>
 <translation id="3622716124581627104">Du kannst Dinge oder Orte erkennen und Text kopieren oder übersetzen. Wenn du Google Lens verwendest, wird ein Screenshot der Seite an Google gesendet. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Du kannst Chrome jetzt noch einfacher mit deinem Google-Konto und auf gemeinsam genutzten Computern verwenden.</translation>
 <translation id="3635073343384702370">Chrome kann deine Passwörter prüfen, wenn du sie speicherst</translation>
@@ -223,6 +252,7 @@
 <translation id="3716540481907974026">Chrome OS Flex-Version</translation>
 <translation id="3718181793972440140">Dadurch wird 1 Element von diesem Gerät gelöscht. Wenn du deine Daten später abrufen möchtest, melde dich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome empfiehlt, sie zu entfernen. <ph name="BEGIN_LINK" />Weitere Informationen zu unterstützten Erweiterungen<ph name="END_LINK" />}other{Chrome empfiehlt, sie zu entfernen. <ph name="BEGIN_LINK" />Weitere Informationen zu unterstützten Erweiterungen<ph name="END_LINK" />}}</translation>
+<translation id="3729187154190517324">Du kannst die Suche verfeinern, indem du über den Button „Einen Tab und mehr hinzufügen“ mehrere Tabs, Dateien und Tools hinzufügst.</translation>
 <translation id="3756724684201900923">Weitere Informationen zur Installation von Chrome</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex konnte deine Daten aufgrund eines Fehlers bei der Anmeldung nicht synchronisieren.</translation>
@@ -230,26 +260,31 @@
 <translation id="3809772425479558446">Für Google Chrome ist Windows 10 oder höher erforderlich.</translation>
 <translation id="3810973564298564668">Verwalten</translation>
 <translation id="383928141529488001">Google Chrome benötigt Bluetooth-Zugriff, um Bluetooth-Geräte zu suchen. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**Zusammenfassen:** Beschreibe in einem einzigen Satz mit weniger als 30 Wörtern das Hauptthema und den Zweck des Inhalts im Screenshot.
+
+          **Fragen vorschlagen:** Erstelle eine Aufzählungsliste mit 3–5 Fragen, die ein Nutzer stellen könnte, um den Screenshot besser zu verstehen. Mindestens eine der Fragen sollte sich konkret auf ein visuelles Objekt, sein Design oder seine Platzierung beziehen.</translation>
 <translation id="386202838227397562">Schließe alle Google Chrome-Fenster und versuche es erneut.</translation>
 <translation id="3873044882194371212">Link in Chrome-Inkognitofenster öffnen</translation>
 <translation id="3885770153807205175">Sprachauswahl</translation>
 <translation id="3889417619312448367">Google Chrome deinstallieren</translation>
 <translation id="3892148308691398805">Text kopieren</translation>
+<translation id="3906096710440765802">Melde dich in Chrome an, um Daten wie Passwörter und Lesezeichen auf allen deinen Geräten zu nutzen</translation>
 <translation id="3941890832296813527">Installationsfehler: Der Dateiname des Installationsprogramms ist ungültig oder wird nicht unterstützt.</translation>
 <translation id="395904275706073188">Geschützte Seiten können nicht gelesen werden. Versuche es mit einer anderen Seite.</translation>
 <translation id="3968962723676998462">Gib deine Passphrase ein, um Chrome-Daten in deinem Konto <ph name="ACCOUNT_EMAIL" /> zu verwenden und zu speichern</translation>
 <translation id="3973161977468201858">Google Chrome möchte deine Google Passwortmanager-Daten löschen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="400161754580828648">Wenn du deinen Bildschirm teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chrome zulassen.</translation>
+<translation id="4012899077942246412">Solange du angemeldet bist, kannst du deine Passwörter und weitere Daten aus deinem Google‑Konto in Chrome verwenden. Wenn du das ändern möchtest, rufe „Mein Konto in Chrome“ auf.</translation>
 <translation id="4022972681110646219">Bildschirm übersetzen</translation>
 <translation id="4023601594785368013">Originalsprache: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Chrome OS muss neu gestartet werden, um das Update zu installieren.</translation>
+<translation id="4039097928859803404">Verknüpfungen zum KI‑Modus immer anzeigen</translation>
 <translation id="4050175100176540509">Wichtige Sicherheitsverbesserungen und neue Funktionen sind in der aktuellen Version verfügbar.</translation>
 <translation id="4053720452172726777">Google Chrome anpassen und verwalten</translation>
 <translation id="408393047846373801">Wenn du auf allen deinen Geräten auf deine Passwörter und andere Daten zugreifen möchtest, melde dich in Chrome an. Dieses Passwort wird in deinem Google-Konto gespeichert, nachdem du dich angemeldet hast.</translation>
-<translation id="409936259433005390">Möchtest du bald auf Windows 11 upgraden? Dann lade das Installationsprogramm für Chrome auf OneDrive herunter, damit du schon am ersten Tag startklar bist.</translation>
+<translation id="409936259433005390">Möchtest du bald auf Windows 11 upgraden? Lade das Installationsprogramm für Chrome auf OneDrive herunter.</translation>
 <translation id="4110895483821904099">Neues Chrome-Profil einrichten</translation>
 <translation id="4111566860456076004">Chrome kann nicht überprüfen, woher diese Erweiterung stammt. Sie könnte unsicher sein. Entferne sie aus Chrome, damit sie deine Daten auf von dir besuchten Websites nicht mehr abrufen oder ändern kann, auch nicht personenbezogene Daten.</translation>
-<translation id="4128488089242627000">Chrome wird schneller ausgeführt und JavaScript-Funktionen sollten wie vorgesehen funktionieren (empfohlen)</translation>
 <translation id="4147555960264124640">Du meldest dich mit einem verwalteten Konto an und ermöglichst dessen Administrator Zugriff auf dein Google Chrome-Profil. Deine Chrome-Daten, wie Apps, Lesezeichen, Verlauf, Passwörter und andere Einstellungen, werden dauerhaft mit <ph name="USER_NAME" /> verknüpft. Du kannst diese Daten über das Google Konten-Dashboard löschen, aber nicht mit einem anderen Konto verknüpfen. <ph name="LEARN_MORE" /></translation>
 <translation id="4148957013307229264">Installation wird ausgeführt...</translation>
 <translation id="4149882025268051530">Das Installationsprogramm konnte das Archiv nicht dekomprimieren. Lade Google Chrome erneut herunter.</translation>
@@ -261,6 +296,7 @@
 <translation id="4205939740494406371">Chrome kann deine Passwörter nicht prüfen. Versuche es in 24 Stunden noch einmal oder <ph name="BEGIN_LINK" />prüfe die Passwörter in deinem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Wird abgebrochen…</translation>
 <translation id="4224210481850767180">Die Installation wurde abgebrochen.</translation>
+<translation id="4230631012078055975">Mehr Funktionen nutzen, wenn du in Chrome angemeldet bist</translation>
 <translation id="4242034826641750751">Chrome benötigt die Kamera- und Mikrofonberechtigungen für diese Website</translation>
 <translation id="424864128008805179">Von Chrome abmelden?</translation>
 <translation id="4251615635259297716">Deine Chrome-Daten mit diesem Konto verknüpfen?</translation>
@@ -276,7 +312,7 @@
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> wurde zu Chrome hinzugefügt</translation>
 <translation id="4348548358339558429">Für die Personalisierung musst du Chrome in die Web- &amp; App-Aktivitäten aufnehmen</translation>
 <translation id="436060642166082913">Chrome hat diesen Download blockiert, weil die Datei deine privaten Konten sowie Konten in sozialen Netzwerken schädigen kann</translation>
-<translation id="4367027658822022112">Du kannst Google Lens anpinnen, um leichter darauf zuzugreifen. Klicke dazu oben in der Seitenleiste auf die Schaltfläche „Anpinnen“.</translation>
+<translation id="4367027658822022112">Du kannst Google Lens anpinnen, um leichter darauf zuzugreifen. Klicke dazu oben in der Seitenleiste auf den Button „Anpinnen“.</translation>
 <translation id="4389991535395284064">Wenn du im Inkognitomodus surfst, warnt Chrome dich, bevor eine Website über eine unsichere Verbindung geladen wird</translation>
 <translation id="4427306783828095590">Besserer Schutz vor Phishing und Malware durch erweitertes Safe Browsing</translation>
 <translation id="4434353761996769206">Installationsfehler: <ph name="INSTALLER_ERROR" /></translation>
@@ -287,9 +323,12 @@
 <translation id="4501471624619070934">Fehler bei der Installation. Der Zugriff ist in diesem Land eingeschränkt.</translation>
 <translation id="4567424176335768812">Du bist als <ph name="USER_EMAIL_ADDRESS" /> angemeldet. Auf allen Geräten, auf denen du angemeldet bist, sind nun deine Lesezeichen, dein Verlauf und andere Einstellungen verfügbar.</translation>
 <translation id="4571503333518166079">Chrome-Benachrichtigungseinstellungen aufrufen</translation>
+<translation id="4592634244097223647">Google nach Infos zu diesem Bild fragen</translation>
 <translation id="459622048091363950">Sobald Chrome Zugriff hat, können Websites dich um Zugriff bitten.</translation>
 <translation id="4598116752460667024">Nach Prozessen in der Liste suchen.</translation>
 <translation id="4600710005438004015">Chrome konnte nicht auf die neueste Version aktualisiert werden. In deiner Version fehlen daher einige neue Funktionen und Sicherheitspatches.</translation>
+<translation id="4606805686144157064">Du wirst gewarnt, wenn Chrome eines deiner Passwörter bei einer öffentlichen Datenpanne findet</translation>
+<translation id="4608435347866444037">Dieses Bild mit Google Lens durchsuchen</translation>
 <translation id="4624065194742029982">Der Inkognitomodus von Chrome</translation>
 <translation id="4627412468266359539">Optional: Lasse Diagnose- und Nutzungsdaten automatisch an Google senden, um die Funktionen und die Leistung von Chrome OS Flex zu verbessern.</translation>
 <translation id="4633000520311261472">Um Chrome sicherer zu machen, haben wir einige Erweiterungen deaktiviert, die nicht im <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> aufgeführt sind und möglicherweise ohne dein Wissen hinzugefügt wurden.</translation>
@@ -297,22 +336,23 @@
 <translation id="4720851490453439956">Google Updater Internal Service</translation>
 <translation id="4724676981607797757">Die Installation ist aufgrund eines Fehlers mit einem nicht unterstützten Protokoll fehlgeschlagen.</translation>
 <translation id="4728575227883772061">Installation aufgrund von unbekanntem Fehler fehlgeschlagen. Falls Google Chrome bereits ausgeführt wird, schließe es und versuche es noch einmal.</translation>
-<translation id="4737281654364167024">Melde dich mit <ph name="EMAIL" /> in Chrome an, um fortzufahren. So wird sichergestellt, dass die Richtlinien deiner Organisation eingehalten werden.</translation>
+<translation id="4737281654364167024">Melde dich mit <ph name="EMAIL" /> in Chrome an, um fortzufahren. So werden die Richtlinien deiner Organisation eingehalten.</translation>
 <translation id="4741235124132242877">Angepinnt! Du kannst Google Lens wieder über die Symbolleiste verwenden.</translation>
-<translation id="4747730611090640388">Chrome kann deine Interessen schätzen.  Wenn du eine Website besuchst, kann diese von Chrome dann deine Interessen anfordern, um die dir gezeigte Werbung zu personalisieren.</translation>
 <translation id="475321580758063259">Aktualisiere Chrome, um weiterhin Chrome-Daten in deinem Google-Konto <ph name="ACCOUNT_EMAIL" /> zu verwenden</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
+<translation id="4756182432527369254">Websites werden mit der V8-Engine von Chrome beschleunigt, Chrome wird dadurch aber etwas anfälliger für Angriffe</translation>
 <translation id="479167709087336770">Es wird dieselbe Rechtschreibprüfung wie in der Google Suche verwendet. Der in den Browser eingegebene Text wird an Google gesendet. Du kannst dies jederzeit in den Einstellungen ändern.</translation>
 <translation id="4793679854893018356">So trägt Chrome zu deinem Schutz bei</translation>
 <translation id="4828579605166583682">Google Chrome versucht, vorhandene Passwörter zu ersetzen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="4842397268809523050">Chrome OS Flex konnte deine Daten nicht synchronisieren, da die Synchronisierung für deine Domain nicht zur Verfügung steht.</translation>
-<translation id="4851866215237571846"><ph name="EXISTING_USER" /> ist bereits angemeldet.  Wenn du deine Browsingaktivitäten getrennt halten möchtest, melde dich in Chrome in deinem eigenen Profil als <ph name="USER_EMAIL_ADDRESS" /> an.</translation>
+<translation id="4851866215237571846"><ph name="EXISTING_USER" /> ist bereits angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, melde dich in Chrome in deinem eigenen Profil als <ph name="USER_EMAIL_ADDRESS" /> an.</translation>
 <translation id="4855026984605187434">Wenn du deinen Bildschirm teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chrome zulassen</translation>
 <translation id="4873783916118289636">Lerne die wichtigsten Datenschutz- und Sicherheitseinstellungen in Chrome kennen</translation>
 <translation id="4885446229353981848">Google Lens-Verknüpfung immer anzeigen</translation>
 <translation id="4891791193823137474">Google Chrome im Hintergrund ausführen</translation>
 <translation id="4895437082222824641">Link in neuem Chrome-Tab öffnen</translation>
 <translation id="4918844574251943176">Bild kopiert</translation>
+<translation id="4926882258455737990">Wenn du ein anderes Google-Konto mit Gemini in Chrome verwenden möchtest, <ph name="BEGIN_LINK" />erstelle ein neues Profil<ph name="END_LINK" /> und melde dich mit dem gewünschten Konto an</translation>
 <translation id="492720062778050435">Chrome empfiehlt, diese Erweiterung zu überprüfen</translation>
 <translation id="4946912144186040233">Chrome erkennt den Inhalt von Formularen besser und kann sie schneller automatisch ausfüllen. Diese Einstellung ist deaktiviert.</translation>
 <translation id="4953650215774548573">Google Chrome als Standardbrowser festlegen</translation>
@@ -322,17 +362,22 @@
 <translation id="4970880042055371251">Chrome OS-Version</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Klicke auf „Google Passwortmanager“</translation>
+<translation id="5043786843026425788">Weitere Informationen zum Suchen mit Google Lens in Chrome</translation>
 <translation id="504867494566807945">Du kannst über jede App Links in Chrome öffnen. Außerdem wird Chrome für einen einfachen Zugriff an die Taskleiste angepinnt.</translation>
-<translation id="5049567194145991071">Wenn du auf „Ok“ klickst, kannst du Passwörter und andere Daten in deinem Google-Konto speichern und immer dann verwenden, wenn du in Chrome angemeldet bist. <ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644">Gib deine Passphrase ein, um Chrome-Daten in deinem Konto <ph name="USER_EMAIL" /> zu verwenden und zu speichern</translation>
 <translation id="5120334927898581447">In Chrome anmelden, wenn du dich in anderen Google-Diensten anmeldest</translation>
 <translation id="5126049312684316860">Chrome lädt noch mehr Seiten vorab, die du wahrscheinlich besuchen wirst, sodass sie dann schneller zur Verfügung stehen</translation>
+<translation id="5127558335897923940">Du kannst Chrome im Dock behalten, um jederzeit schnell darauf zugreifen zu können</translation>
 <translation id="5132929315877954718">Entdecke tolle Apps, Spiele, Erweiterungen und Designs für Google Chrome.</translation>
 <translation id="5139423532931106058">Chrome-Profil personalisieren</translation>
 <translation id="5163087008893166964">Willkommen bei Chrome; neues Browserfenster geöffnet</translation>
 <translation id="5166439563123238795">Chrome benötigt eine Berechtigung für das Handtracking</translation>
+<translation id="5167819546851111585">Was kann ich heute für dich tun?</translation>
 <translation id="5170938038195470297">Dein Profil kann nicht verwendet werden, da es von einer neueren Version von Google Chrome stammt. Einige Funktionen stehen möglicherweise nicht zur Verfügung. Gib bitte ein anderes Profilverzeichnis an oder verwende eine neuere Version von Google Chrome.</translation>
 <translation id="5174969993834422967">Normalerweise blockierst du Benachrichtigungen. Wenn du von dieser Website Benachrichtigungen erhalten möchtest, klicke auf das Benachrichtigungssymbol in der rechten Ecke der Adressleiste.</translation>
+<translation id="5174983315706567306">Nicht genügend Speicherplatz.</translation>
+<translation id="5179933070463113976">Wenn du Gemini in Chrome verwenden möchtest, musst du mit deinem Google-Konto in Chrome angemeldet sein</translation>
+<translation id="5190467473654176081">Chrome personalisieren und ihm einen neuen Look geben</translation>
 <translation id="5201744974236816379">Chrome-Update</translation>
 <translation id="521447420733633466">Auf gemeinsam genutzten Geräten können die verschiedenen Nutzer separat surfen und Chrome jeweils nach ihren Wünschen einrichten</translation>
 <translation id="5234764350956374838">Schließen</translation>
@@ -344,22 +389,28 @@
 <translation id="5334309298019785904">Chrome OS konnte deine Daten nicht synchronisieren, da die Synchronisierung für deine Domain nicht verfügbar ist.</translation>
 <translation id="5334487786912937552">Chrome benötigt Speicherzugriff, um Dateien herunterladen zu können</translation>
 <translation id="5337648990166757586">Optional: Lass Diagnose- und Nutzungsdaten automatisch an Google senden, um die Funktionen und die Leistung von Chrome OS zu verbessern.</translation>
+<translation id="5346389065299425353">Die Suche verfeinern, indem du mehrere Tabs, Dateien und Tools hinzufügst</translation>
+<translation id="5353252989841766347">Passwörter aus Chrome exportieren</translation>
 <translation id="5368118228313795342">Zusätzlicher Code: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Die Erweiterung legt auch fest, welche Seite beim Start von Chrome oder bei der Suche über die Omnibox angezeigt wird.</translation>
 <translation id="5394833366792865639">Chrome-Tab freigeben</translation>
-<translation id="5412485296464121825">Websites können Daten zu deinen Interessen bei Chrome speichern. Wenn du beispielsweise im Internet Schuhe für einen Marathon kaufst, definiert die Website möglicherweise Marathons als eines deiner Interessen. Wenn du dann später eine andere Website besuchst, um dich für ein Wettrennen anzumelden, kann dir auf Grundlage deiner Interessen Werbung zu Laufschuhen angezeigt werden.</translation>
+<translation id="5402307365844630024">Gemini in Chrome Beta aktivieren / deaktivieren</translation>
 <translation id="5430073640787465221">Deine Einstellungsdatei ist beschädigt oder ungültig. Google Chrome kann deine Einstellungen nicht wiederherstellen.</translation>
+<translation id="5465210843490471889">Wähle ein Chrome-Profil aus, das du mit <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> verwenden möchtest</translation>
 <translation id="5468572406162360320">Damit wir diese Funktionen verbessern können, sendet Chrome deine Interaktionen mit ihnen an Google. Diese Daten können von Prüfern gelesen, verarbeitet und mit Anmerkungen versehen werden.</translation>
-<translation id="5524761631371622910">Wenn Tests aktiviert sind und Chrome dich zufällig für einen aktiven Test angemeldet hat, hat dein Browserverlauf Einfluss auf die unten stehenden, geschätzten Interessen und darauf, welche Werbung dir gezeigt wird. Zum Schutz deiner Daten löscht Chrome jeden Monat fortlaufend deine Interessen.</translation>
+<translation id="5510398294750420479">Lade Chrome auf dein Smartphone herunter, damit du unterwegs besser geschützt bist</translation>
 <translation id="5524890928877629608">Linke obere Ecke des Suchbereichs: links <ph name="LEFT" /> %, oben <ph name="TOP" /> %</translation>
 <translation id="5530733413481476019">Chrome noch schneller machen</translation>
+<translation id="5550137307985173298">Wenn du Chrome einen neuen Look geben möchtest, klicke auf der Seite „Neuer Tab“ auf den Button „Chrome anpassen“</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
-<translation id="5579324208890605088">Fehler beim Starten: Bitte führe das Installationsprogramm als normaler Nutzer statt als Administrator aus.</translation>
+<translation id="5579324208890605088">Fehler beim Starten: Achte darauf, dass du das Installationsprogramm nicht als Admin ausführst.</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>
 <translation id="5600352656975192682">Du kannst Chrome an die Taskleiste anpinnen, um jederzeit schnell darauf zugreifen zu können</translation>
 <translation id="5602351063754773347">Chrome empfiehlt, sie zu entfernen. <ph name="BEGIN_LINK" />Weitere Informationen zu unterstützten Erweiterungen<ph name="END_LINK" /></translation>
+<translation id="5610759359710387751">Chrome personalisieren</translation>
 <translation id="5649156266046089790">Mit Chrome-Profilen kannst du Chrome-Inhalte voneinander trennen. Du kannst Profile für Freunde und Familie erstellen oder Inhalte in Arbeit und Freizeit einteilen.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> ist möglicherweise schädlich und wurde daher von Chrome blockiert.</translation>
+<translation id="566040795510471729">Chrome a&amp;npassen</translation>
 <translation id="566568153320186256">In Chrome wird der Akkuverbrauch reduziert, indem Hintergrundaktivitäten und visuelle Effekte wie optimiertes Scrollen und Video-Framerates eingeschränkt werden. <ph name="BEGIN_LINK" />Weitere Informationen zum Energiesparmodus<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">Chrome-Daten in deinem Konto löschen</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Dein Administrator empfiehlt dir, Chrome neu zu starten, um dieses Update durchzuführen}=1{Dein Administrator empfiehlt dir, Chrome neu zu starten, um dieses Update durchzuführen. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Dein Administrator empfiehlt dir, Chrome neu zu starten, um dieses Update durchzuführen. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
@@ -367,18 +418,27 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Internetverbindung kann nicht hergestellt werden. Für den Proxyserver ist eine Authentifizierung erforderlich.</translation>
 <translation id="5709557627224531708">Chrome als Standardbrowser festlegen</translation>
-<translation id="5727531838415286053">Wenn Chrome dich zufällig für einen aktiven Test angemeldet hat, hat dein Browserverlauf Einfluss auf die unten stehenden, geschätzten Interessen und darauf, welche Werbung dir gezeigt wird. Zum Schutz deiner Daten löscht Chrome jeden Monat fortlaufend deine Interessen. Solange du deine Interessen nicht entfernst, werden sie aktualisiert.</translation>
+<translation id="5719324992913248873">Durch diese Aktion geschieht Folgendes:
+          <ph name="LINE_BREAKS" />
+           • Einige Chrome-Einstellungen und -Verknüpfungen werden zurückgesetzt.
+           <ph name="LINE_BREAK" />
+           • Erweiterungen werden deaktiviert.
+           <ph name="LINE_BREAK" />
+           • Cookies und andere vorübergehende Websitedaten werden gelöscht.
+            <ph name="LINE_BREAKS" />
+Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den Verlauf aus.</translation>
 <translation id="5736850870166430177">Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chrome auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden</translation>
 <translation id="5756509061973259733">Ein Chrome-Profil mit diesem Konto ist auf diesem Gerät bereits vorhanden</translation>
 <translation id="5759947850379142561">Wähle einen beliebigen Text oder ein beliebiges Bild für die Suche mit Google Lens aus oder drücke die Esc-Taste, um Google Lens zu beenden</translation>
+<translation id="5762867845020858790">Wenn du die Lesezeichen, Passwörter und Einstellungen für verschiedene Themen getrennt halten möchtest, füge ein neues Chrome-Profil für jedes Thema hinzu.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome konnte nicht gestartet werden. Versuche es noch einmal.</translation>
 <translation id="5809516625706423866">Internetverbindung kann nicht hergestellt werden. HTTP 401 Unauthorized. Bitte prüfe deine Proxykonfiguration.</translation>
 <translation id="5824893331272123205">Dieser Bereich konnte nicht geladen werden – versuche es noch einmal</translation>
 <translation id="5825922397106002626"><ph name="EXTENSION_NAME" /> aus Chrome entfernen</translation>
-<translation id="58431560289969279">Solange du angemeldet bist, kannst du deine Passwörter und weitere Daten aus deinem Google‑Konto in Chrome verwenden. Du kannst dies jederzeit in den Einstellungen ändern.</translation>
 <translation id="5858486459377137936">Wenn du alle Chrome-Fenster schließt, wirst du auf den meisten Websites abgemeldet – mit Ausnahme deines Google-Kontos, falls du in Chrome angemeldet bist. Wenn du möchtest, dass Websites dich wiedererkennen, <ph name="SETTINGS_LINK" />.</translation>
 <translation id="586971344380992563"><ph name="BEGIN_LINK" />Chrome warnt dich<ph name="END_LINK" /> vor unsicheren Websites und Downloads</translation>
+<translation id="5894164573378901688">Wenn du Gemini in Chrome verwenden möchtest, melde dich mit einem anderen Google-Konto an</translation>
 <translation id="5895138241574237353">Neu starten</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Netzwerkanmeldung</translation>
 <translation id="5924017743176219022">Internetverbindung wird hergestellt…</translation>
@@ -387,15 +447,18 @@
 <translation id="5941711191222866238">Minimieren</translation>
 <translation id="5941830788786076944">Google Chrome als Standardbrowser festlegen</translation>
 <translation id="5947104538377036631">Chrome-Verknüpfung</translation>
-<translation id="5953954252731207958">Du hast diese Website in letzter Zeit nicht besucht. Chrome hat „<ph name="PERMISSION" />“ entfernt.</translation>
+<translation id="5960071705175224773">Deine Einstellungen wurden von einer unbekannten App geändert</translation>
+<translation id="5968400720580217226">KI‑Modus</translation>
 <translation id="5980111191913430208">Erweiterungen, Apps und Designs aus unbekannten Quellen können Schäden auf deinem Gerät verursachen. Chrome empfiehlt, sie nur über den <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> zu installieren.</translation>
 <translation id="6003112304606738118">Wird heruntergeladen… Noch <ph name="HOURS" /> Stunde(n)</translation>
 <translation id="6008161919456049856">Deine Passwörter, Zahlungsmethoden und Adressen, die du in deinem Google-Konto gespeichert hast, werden von diesem Gerät entfernt. Wenn du sie in Zukunft in Chrome verwenden möchtest, melde dich einfach wieder an.</translation>
+<translation id="6009821354356307391">Stell eine weiterführende Frage</translation>
 <translation id="6014316319780893079">Die <ph name="BEGIN_LINK" />Tools von Chrome<ph name="END_LINK" /> helfen dir, sicher zu surfen und deine Daten zu schützen</translation>
 <translation id="6022659036123304283">Chrome personalisieren</translation>
 <translation id="6025087594896450715">Google Chrome wird in <ph name="REMAINING_TIME" /> neu gestartet</translation>
 <translation id="6040143037577758943">Schließen</translation>
-<translation id="604424701295382420">Angepinnt! Über die neue Schaltfläche in der Symbolleiste kannst du wieder auf Google Lens zugreifen.</translation>
+<translation id="604424701295382420">Angepinnt! Über den neuen Button in der Symbolleiste kannst du wieder auf Google Lens zugreifen.</translation>
+<translation id="6046028983725193307">Wenn du Systemaudio teilen möchtest, öffne die Systemeinstellungen und aktiviere die Option „Nur Systemaudio aufzeichnen“ für Chrome. Du musst Chrome dann neu starten.</translation>
 <translation id="6069027071882229820">Als Bild kopieren</translation>
 <translation id="6070348360322141662">Zur Erhöhung der Sicherheit verschlüsselt Google Chrome deine Daten</translation>
 <translation id="6075300983329039771">Deine Organisation (<ph name="MANAGER" />) verlangt, dass du dich in Chrome anmeldest</translation>
@@ -408,11 +471,15 @@
 <translation id="6150706324143004339">Aktualisiere Chrome, um Chrome-Daten in deinem Google-Konto zu verwenden und zu speichern</translation>
 <translation id="6157638032135951407">In deiner Organisation werden Chrome-Daten nach <ph name="TIMEOUT_DURATION" /> Inaktivität gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
+<translation id="6166185671393271715">Passwörter in Chrome importieren</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">Dieser Tab verbraucht zusätzliche Ressourcen. Du kannst die Leistung verbessern, wenn du zulässt, dass Chrome ihn deaktiviert.</translation>
 <translation id="6182736845697986886">Die Installation ist aufgrund eines internen Fehlers des Update-Servers fehlgeschlagen.</translation>
-<translation id="6200139057479872438">Du hast diese Website in letzter Zeit nicht besucht. Chrome hat „<ph name="PERMISSION_1" />“ und „<ph name="PERMISSION_2" />“ entfernt.</translation>
+<translation id="6192058120268468905">Mein Konto in Chrome</translation>
+<translation id="6220551899604141979"><ph name="PARTNER_NAME" /> hat eine Erweiterung hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome</translation>
 <translation id="624230925347970731">Chrome wird bald geschlossen</translation>
 <translation id="6247557882553405851">Google Passwortmanager</translation>
@@ -422,14 +489,19 @@
 <translation id="6288580400488258237">Google Chrome als Standardbrowser festlegen und an die Taskleiste anheften</translation>
 <translation id="6291089322031436445">Chrome Dev-Apps</translation>
 <translation id="6291549208091401781">Google Chrome ist bereits für alle Nutzer auf deinem Computer installiert.</translation>
+<translation id="6311220991371174222">Chrome kann nicht gestartet werden, da beim Öffnen deines Profils ein Fehler aufgetreten ist. Versuche, Chrome neu zu starten.</translation>
 <translation id="6319856120645568262">Chrome benötigt eine Berechtigung für das Erstellen einer Karte deiner Umgebung und das Hand-Tracking</translation>
 <translation id="6321592572353357376">Die Erweiterung „<ph name="EXTENSION_NAME" />“ fordert dich auf, dich in Chrome anzumelden</translation>
 <translation id="6326175484149238433">Aus Chrome entfernen</translation>
 <translation id="6327105987658262776">Es ist kein Update verfügbar.</translation>
+<translation id="6334815226785304306">Google Chrome als Standardbrowser festlegen und an Taskleiste anpinnen</translation>
 <translation id="6360449101159168105">Während dieser Tab inaktiv war, wurde Arbeitsspeicher freigegeben, damit Chrome schnell bleibt. Du kannst festlegen, dass diese Website nie inaktiv sein soll.</translation>
+<translation id="6388799252195623474">Hilf mir dabei</translation>
 <translation id="6412673304250309937">Prüft URLs anhand einer Liste unsicherer Websites, die in Chrome gespeichert wird. Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chrome auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{Deine Organisation hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser eine Minute lang nicht verwendet wird. Browserdaten werden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.}other{Deine Organisation hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser # Minuten lang nicht verwendet wird. Browserdaten werden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.}}</translation>
 <translation id="6418662306461808273">Zu bestehendem Chrome-Profil wechseln?</translation>
+<translation id="6426623519983252346">Wenn du Chrome unter iOS das nächste Mal öffnest, wirst du aufgefordert, die Funktion „<ph name="FEATURE_NAME" />“ auszuprobieren.</translation>
+<translation id="6434035853014503219">Danke, dass du Chrome als Standardbrowser festgelegt hast.</translation>
 <translation id="6473905796280459355">Zur Seite „Über Chrome“</translation>
 <translation id="6481963882741794338">Chrome und andere Google-Dienste zur Personalisierung und für andere Zwecke verknüpfen</translation>
 <translation id="648319183876919572">Erweitertes Safe Browsing schützt dich besser vor gefährlichen Websites und Downloads</translation>
@@ -439,7 +511,11 @@
 <translation id="6506909944137591434">Chrome benötigt die Kameraberechtigung, um eine 3D-Karte deiner Umgebung zu erstellen</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6520670145826811516">Wenn du deinen Standort verwenden möchtest, erlaube Chrome über die <ph name="BEGIN_LINK" />Systemeinstellungen<ph name="END_LINK" /> den Zugriff darauf</translation>
+<translation id="652948702951888897">Chrome-Verlauf</translation>
+<translation id="6532945796722480006">Gemini in Chrome Canary öffnen</translation>
+<translation id="6585124893636629274">Gemini in Chrome schließen</translation>
 <translation id="659498884637196217">Im Google Passwortmanager auf diesem Gerät</translation>
+<translation id="6631524303639368205">Mach dort weiter, wo du aufgehört hast: Chrome hat deine Tabs aus der letzten Sitzung wiederhergestellt. Du kannst diese Funktion deaktivieren in</translation>
 <translation id="6632473616050862500">Chrome OS Flex wird durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="6634299872736643004">Änderungen an dieser Einstellung werden nach dem Neustart von Chrome übernommen.</translation>
 <translation id="6660596345553328257">In Chrome anmelden?</translation>
@@ -447,16 +523,21 @@
 <translation id="6676384891291319759">Internetzugriff</translation>
 <translation id="6679975945624592337">Google Chrome im Hintergrund ausführen</translation>
 <translation id="6696915334902295848">Chrome benötigt die Mikrofonberechtigung für diese Website</translation>
+<translation id="6706525880530967390">{count,plural, =1{Chrome muss deine Identität bestätigen, damit einige Daten in deinem Google-Konto gespeichert und auf allen deinen Geräten verwendet werden können. Wenn du dich jetzt abmeldest, werden diese Daten (1 Element) gelöscht.}other{Chrome muss deine Identität bestätigen, damit einige Daten in deinem Google-Konto gespeichert und auf allen deinen Geräten verwendet werden können. Wenn du dich jetzt abmeldest, werden diese Daten ({count} Elemente) gelöscht.}}</translation>
 <translation id="6712881677154121168">Fehler beim Herunterladen: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chrome noch schneller machen</translation>
+<translation id="6734827584173583205">Du hast diese Website in letzter Zeit nicht besucht. Chrome hat „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ und <ph name="COUNT" /> weitere Berechtigungen entfernt.</translation>
 <translation id="6735387454586646204">Chrome OS Flex-System</translation>
 <translation id="6750954913813541382">Zur Behebung von Tippfehlern sendet Chrome im Browser eingegebenen Text an Google</translation>
 <translation id="6760235774835597023">Websites werden mit der V8-Engine von Chrome beschleunigt, Chrome wird dadurch aber etwas anfälliger für Angriffe. Diese Einstellung ist aktiviert.</translation>
 <translation id="677276454032249905">Chrome trotzdem beenden?</translation>
 <translation id="6794858689789885890">Beim Schließen von Chrome immer die Websitedaten von deinem Gerät löschen</translation>
+<translation id="6800285125190089494">Mit gespeicherten Passwörtern in Chrome für iOS kannst du dich auf Websites schneller anmelden</translation>
 <translation id="6831043979455480757">Übersetzen</translation>
 <translation id="683440813066116847">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome Canary</translation>
+<translation id="6841242485723266823">Mit Chrome-Profilen kannst du Inhalte aus verschiedenen Bereichen deines Lebens voneinander trennen. Füge jetzt ein neues Profil hinzu.</translation>
 <translation id="684888714667046800">Internetverbindung kann nicht hergestellt werden. Wenn du eine Firewall verwendest, achte darauf, dass <ph name="PRODUCT_EXE_NAME" /> auf der Zulassungsliste steht.</translation>
+<translation id="6859580922007887573">Drücke die Tabulatortaste zum Fortfahren</translation>
 <translation id="6877155553248388166">Rechte untere Ecke des Suchbereichs: rechts <ph name="RIGHT" /> %, unten <ph name="BOTTOM" /> %</translation>
 <translation id="6881299373831449287">Chrome wird aktualisiert</translation>
 <translation id="6885412569789873916">Chrome Beta-Apps</translation>
@@ -470,11 +551,15 @@
 <translation id="6967962315388095737">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome Beta.</translation>
 <translation id="6979589607440534284">Gründe, warum Chrome einige Dateien blockiert, wird in neuem Tab geöffnet</translation>
 <translation id="6991926986715044139">Google Lens-Verknüpfung immer anzeigen</translation>
+<translation id="6999131147875565462">Chrome wird schneller ausgeführt und Funktionen, die JavaScript verwenden, sollten wie vorgesehen laufen</translation>
 <translation id="7011190694940573312">Die Installation ist fehlgeschlagen, da diese Version des Betriebssystems nicht unterstützt wird.</translation>
 <translation id="7024536598735240744">Fehler beim Entpacken: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Installation angehalten.</translation>
 <translation id="7025800014283535195">Hier kannst du zwischen Chrome-Profilen wechseln</translation>
+<translation id="7047386856539490735">Sind diese Ergebnisse hilfreich?</translation>
+<translation id="7051685429025310665">Du hast diese Website in letzter Zeit nicht besucht. Chrome hat „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ und „<ph name="PERMISSION_3" />“ entfernt.</translation>
 <translation id="7059914902409643750">Chrome personalisieren</translation>
+<translation id="7060643578009939353">Dieses Video mit Google Lens durchsuchen</translation>
 <translation id="7071827361006050863">Browserdaten in Chrome werden bald gelöscht</translation>
 <translation id="7085332316435785646">Lege fest, ob der Chrome-Verlauf dafür verwendet werden soll, die Google-Dienste stärker für dich zu personalisieren</translation>
 <translation id="7088681679121566888">Chrome ist auf dem neuesten Stand</translation>
@@ -482,6 +567,7 @@
 <translation id="7098166902387133879">Google Chrome verwendet dein Mikrofon.</translation>
 <translation id="7099479769133613710">Neu starten, um &amp;Chrome OS zu aktualisieren</translation>
 <translation id="7106741999175697885">Task-Manager - Google Chrome</translation>
+<translation id="7121179479711575744">In Chrome anmelden</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Ein neues Update für Chrome ist verfügbar und wird installiert, sobald du den Browser neu startest.}=1{Ein neues Update für Chrome ist verfügbar und wird installiert, sobald du den Browser neu startest. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Ein neues Update für Chrome ist verfügbar und wird installiert, sobald du den Browser neu startest. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="7155997830309522122">Falls ja, ändere dein gespeichertes Passwort in Chrome, damit es mit dem neuen Passwort übereinstimmt.</translation>
 <translation id="7161904924553537242">Willkommen bei Chrome</translation>
@@ -494,7 +580,7 @@
 <translation id="7308322188646931570">Chrome benötigt Speicherzugriff, um Dateien herunterladen zu können</translation>
 <translation id="7339898014177206373">Neues Fenster</translation>
 <translation id="7352651011704765696">Ein Problem ist aufgetreten</translation>
-<translation id="7386878009611068389">Wenn du die von deinen Eltern festgelegten Einstellungen nutzen möchtest, um im Internet besser geschützt zu sein, wechsel zu deinem Chrome-Profil, in dem du bereits als <ph name="USER_EMAIL_ADDRESS" /> angemeldet bist</translation>
+<translation id="7386878009611068389">Wenn du die von deinen Eltern festgelegten Einstellungen nutzen möchtest, um im Internet besser geschützt zu sein, wechsle zu deinem Chrome-Profil, in dem du bereits als <ph name="USER_EMAIL_ADDRESS" /> angemeldet bist.</translation>
 <translation id="7398801000654795464">Du warst in Chrome als <ph name="USER_EMAIL_ADDRESS" /> angemeldet. Melde dich bitte wieder mit demselben Konto an.</translation>
 <translation id="7412494426921990001">Klicke auf das Chrome-Menü</translation>
 <translation id="7419819959108735624">Wähle ein beliebiges Element für die Suche mit Google Lens aus</translation>
@@ -516,6 +602,11 @@
 <translation id="756809126120519699">Gelöschte Chrome-Daten</translation>
 <translation id="7572537927358445944">Deaktiviert • Chrome kann nicht bestätigen, woher diese Erweiterung stammt</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" />-Installationsprogramm</translation>
+<translation id="7596160425942761210">Du kannst Chrome jederzeit nutzen, wenn du in Nachrichten, Dokumenten und Apps auf Links klickst</translation>
+<translation id="7602868996817972616">Google Fragen zu dieser Seite stellen</translation>
+<translation id="760353356052806707">Ein anderes Programm auf Ihrem Computer hat eine App hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
 <translation id="7626072681686626474">Für <ph name="MANAGER" /> ist es erforderlich, dass du vor der Verwendung dieses Geräts die folgenden Nutzungsbedingungen akzeptierst. Durch diese Nutzungsbedingungen werden die Google Chrome OS-Nutzungsbedingungen nicht erweitert, geändert oder eingeschränkt.</translation>
 <translation id="7627609214560473136">Erlaube Chrome zum Schutz deiner Daten, Berechtigungen von Websites zu entfernen, die du in letzter Zeit nicht besucht hast.</translation>
@@ -524,30 +615,36 @@
 <translation id="7649070708921625228">Hilfe</translation>
 <translation id="7651907282515937834">Logo von Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome hat diesen Download blockiert, weil du Safe Browsing deaktiviert hast und die Datei nicht überprüft werden kann</translation>
-<translation id="7655455401911432608">Dein Browserverlauf, das heißt eine Liste der von dir auf diesem Gerät in Chrome besuchten Websites.</translation>
 <translation id="7655472416356262023">Konto aus Chrome entfernen</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
-<translation id="7661924425853052955">Du hast diese Website in letzter Zeit nicht besucht. Chrome hat „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ und <ph name="COUNT" /> weitere entfernt.</translation>
 <translation id="7670287553302121848">Chrome-Konto muss noch einmal authentifiziert werden</translation>
+<translation id="7675756456029023637">Chrome fragen</translation>
 <translation id="769538538642757151">Solltest du etwas überprüfen müssen, wirst du von Chrome informiert</translation>
+<translation id="769906121737764913">Gemini in Chrome Beta schließen</translation>
 <translation id="7716950018788545737">Aufgabe(n) beendet.</translation>
+<translation id="7723388585204724670">Auf Chrome-Standard zurücksetzen</translation>
 <translation id="77283119132245232">Bietet Ablaufverfolgungsdienste für <ph name="BROWSER_NAME" />. Wenn dieser Dienst deaktiviert ist, enthalten die vom Browser erstellten Leistungstraces keine systemweiten Ereignisse wie Kontextwechsel und Thread-Ereignisse.</translation>
 <translation id="7736869414036750079">Deine Organisation verlangt, dass du dich in Chrome anmeldest</translation>
 <translation id="7747138024166251722">Das Installationsprogramm konnte kein temporäres Verzeichnis erstellen. Überprüfe, ob freier Speicherplatz und die Rechte zum Installieren von Software vorhanden sind.</translation>
+<translation id="7748969056734910029">Du hast diese Website in letzter Zeit nicht besucht. Chrome hat „<ph name="PERMISSION_1" />“ und „<ph name="PERMISSION_2" />“ entfernt.</translation>
 <translation id="7761834446675418963">Klicke auf deinen Namen, um Chrome zu öffnen und im Web zu surfen.</translation>
 <translation id="7777080907402804672">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chrome, eine für dich zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet. Du kannst dies jederzeit in den Einstellungen deaktivieren.</translation>
 <translation id="778331955594035129">Chrome benötigt die Berechtigung zur Standortermittlung für diese Website</translation>
 <translation id="7787950393032327779">Das Profil wird offenbar gerade von einem Google Chrome-Prozess (<ph name="PROCESS_ID" />) auf einem anderen Computer (<ph name="HOST_NAME" />) verwendet. Das Profil wurde von Chrome gesperrt, damit es nicht beschädigt wird. Wenn du sicher bist, dass das Profil nicht von anderen Prozessen verwendet wird, kannst du das Profil entsperren und Chrome neu starten.</translation>
+<translation id="7792336732117553384">Chrome-Profile &amp;verwalten</translation>
 <translation id="7801699035218095297">Google Chrome versucht, Passwörter zu kopieren. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
+<translation id="7804364787702057554">Mein Konto in Chrome</translation>
 <translation id="7808348361785373670">Aus Chrome entfernen...</translation>
-<translation id="7825851276765848807">Die Installation ist aufgrund eines unbekannten Fehlers fehlgeschlagen. Lade Google Chrome erneut herunter.</translation>
-<translation id="7826342993930002256">Dein persönlicher Chrome-Browser – auf allen Geräten</translation>
 <translation id="7827099906024714326">Chrome muss deine Identität bestätigen, damit einige Daten in deinem Google-Konto gespeichert und auf allen deinen Geräten verwendet werden können. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
+<translation id="7832314606810669113">Wenn du auf allen deinen Geräten auf deine Lesezeichen und andere Daten zugreifen möchtest, melde dich in Chrome an. Dieses Lesezeichen wird in deinem Google-Konto gespeichert, nachdem du dich angemeldet hast.</translation>
 <translation id="7845233973568007926">Vielen Dank für die Installation. Du musst deinen Computer neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
+<translation id="7849037457735762883">Mach dort weiter, wo du aufgehört hast: Chrome kann deine Tabs bei jedem Neustart wiederherstellen. Wenn du diese Funktion aktivieren möchtest, gehe zu</translation>
 <translation id="7872446069773932638">Wird heruntergeladen… Noch <ph name="SECONDS" /> Sekunde(n)</translation>
 <translation id="7886087451482920026">Text mit Google Lens auswählen</translation>
+<translation id="7887929410013642057">Verknüpfungen zum KI‑Modus immer anzeigen</translation>
 <translation id="7890208801193284374">Bei gemeinsam genutzten Computern können die verschiedenen Personen separat surfen und Chrome jeweils nach ihren Wünschen einrichten.</translation>
 <translation id="7896673875602241923">Auf diesem Computer war zuvor ein Nutzer mit dem Konto <ph name="ACCOUNT_EMAIL_LAST" /> in Chrome angemeldet. Erstelle einen neuen Chrome-Nutzer, um deine Daten getrennt zu verwenden.</translation>
+<translation id="7904985524660297937">Gemini in Google Chrome ausprobieren</translation>
 <translation id="7917876797003313048">Du kannst deine angemeldeten Google-Konten verwalten. Deine Google-Konten werden für den Chrome-Browser, den Play Store, Gmail und mehr verwendet. Wenn du ein Konto für jemand anderen hinzufügen möchtest, z. B. ein Familienmitglied, ordne bitte stattdessen deinem Gerät (<ph name="DEVICE_TYPE" />) eine neue Person zu. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome hat diesen Download blockiert, weil dich die Datei täuschen soll und unerwartete Änderungen an deinem Gerät vornehmen könnte</translation>
 <translation id="7951272445806340501">Chrome OS Flex muss neu gestartet werden, um das Update zu übernehmen.</translation>
@@ -561,11 +658,13 @@
 <translation id="8013993649590906847">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chrome, eine für dich zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet.</translation>
 <translation id="8019103195866286235">Diese Erweiterung ist möglicherweise nicht sicher – ihre Veröffentlichung wurde vom Entwickler aufgehoben. Entferne sie aus Chrome, damit sie deine Daten auf von dir besuchten Websites nicht mehr abrufen oder ändern kann, auch nicht deine personenbezogenen Daten.</translation>
 <translation id="8040768861829554732">Eine deiner Erweiterungen fordert dich auf, dich in Chrome anzumelden</translation>
+<translation id="8041795619940733262">Stelle Google Fragen<ph name="LINE_BREAK" />zu diesem Tab</translation>
 <translation id="80471789339884597">Vielen Dank für die Installation. Du musst alle Browser neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8077579734294125741">Andere Chrome-Profile</translation>
 <translation id="8086881907087796310">Die Installation ist fehlgeschlagen, da dein Computer die Mindestanforderungen an die Hardware nicht erfüllt.</translation>
 <translation id="8113883687556086139">Bestätige deine Identität, um Chrome-Daten in deinem Konto <ph name="ACCOUNT_EMAIL" /> zu verwenden und zu speichern</translation>
+<translation id="8115695070094288807">Chrome personalisieren…</translation>
 <translation id="8118331347066725040">Feedback zur Suche mit Lens geben</translation>
 <translation id="8129812357326543296">Über &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialisierung…</translation>
@@ -580,8 +679,13 @@
 <translation id="8321888067342493336">Als Bild speichern</translation>
 <translation id="8336463659890584292">Wenn eine Website anfordert, Links auf einer ihrer Seiten privat vorab zu laden, verwendet Chrome dazu die Server von Google. Dadurch wird deine Identität vor der vorab geladenen Website verborgen. Google lernt dabei, welche Websites vorab geladen werden.</translation>
 <translation id="8342675569599923794">Diese Datei ist schädlich und wurde von Chrome blockiert.</translation>
+<translation id="8349094670477064572">Deine Passwörter und andere Daten werden in deinem Google-Konto gespeichert und verwendet, wenn du in Chrome angemeldet bist.<ph name="LEARN_MORE" /></translation>
+<translation id="835927394551949760">Google fragen</translation>
 <translation id="8362914115861174987">Zielsprache</translation>
+<translation id="8366770919198174997">Reduziert die Leistung, macht Chrome aber widerstandsfähiger gegen Angriffe</translation>
+<translation id="8367705492654390392">Frage hier eingeben</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle Rechte vorbehalten.</translation>
+<translation id="8377158135256176353">Gemini in Chrome Canary aktivieren / deaktivieren</translation>
 <translation id="8387459386171870978">Chrome weiterhin verwenden</translation>
 <translation id="8394720698884623075">Prüft URLs anhand einer Liste unsicherer Websites, die in Chrome gespeichert ist</translation>
 <translation id="8403038600646341038">Chrome-Logo auf einem Computerbildschirm.</translation>
@@ -597,51 +701,58 @@
 <translation id="8533056045953418157">Chrome als standardmäßigen PDF-Viewer festlegen</translation>
 <translation id="8555465886620020932">Dienstfehler: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">In Liste mit Sprachen suchen</translation>
-<translation id="8601359445272098721">Neu! Du kannst sowohl Text als auch Bilder auf deinem Bildschirm übersetzen, indem du die Schaltfläche „Bildschirm übersetzen“ auswählst</translation>
+<translation id="8575047640889685742">Verwende deine <ph name="BEGIN_LINK" />eigene Passphrase<ph name="END_LINK" /> für die Verschlüsselung aller Chrome-Daten in deinem Google-Konto. Zahlungsmethoden und Adressen bei Google Pay werden nicht verschlüsselt. Der Chrome-Browserverlauf wird nicht synchronisiert.</translation>
+<translation id="8601359445272098721">Neu! Du kannst sowohl Text als auch Bilder auf deinem Bildschirm übersetzen, indem du den Button „Bildschirm übersetzen“ auswählst</translation>
 <translation id="8614913330719544658">Google Chrome reagiert nicht. Jetzt neu starten?</translation>
 <translation id="861702415419836452">Chrome benötigt Zugriff auf die Kamera, um eine 3D-Karte deiner Umgebung zu erstellen</translation>
+<translation id="8624541899164515475">Einstellungen, werden in neuem Tab geöffnet.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome wird in einer Minute neu gestartet}other{Chrome wird in # Minuten neu gestartet}}</translation>
 <translation id="8637932705841171563">Wenn du dein Fenster teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chrome zulassen</translation>
 <translation id="8641606876632989680">Wenn du dich mit einem Passwort anmeldest, das gehackt wurde, benachrichtigt dich Chrome entsprechend.</translation>
-<translation id="8649026945479135076">Von dir besuchte Websites können deine Interessen speichern und zur Personalisierung verwenden. Websites können außerdem Daten zu deinen Interessen bei Chrome speichern.</translation>
+<translation id="8647930742055103497">Alles in Chrome speichern</translation>
+<translation id="8656634243791296665">Gemini in Chrome Dev öffnen</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Die Erweiterung legt auch die Seite fest, die beim Start von Chrome angezeigt wird.</translation>
 <translation id="8712637175834984815">Ok</translation>
 <translation id="8712767363896337380">Fast geschafft! Starte Chrome zum Abschluss der Aktualisierung neu.</translation>
 <translation id="8718062187489036808">Von Chrome abmelden</translation>
+<translation id="8725440680697264016">Google nach Infos zu diesem Video fragen</translation>
 <translation id="873133009373065397">Google Chrome kann den Standardbrowser nicht bestimmen oder festlegen</translation>
 <translation id="8747073452963259673">Linke untere Ecke des Suchbereichs: links <ph name="LEFT" /> %, unten <ph name="BOTTOM" /> %</translation>
 <translation id="8748735421235723888">In Chrome wird von inaktiven Tabs belegter Arbeitsspeicher freigegeben. Dadurch können aktive Tabs und andere Apps auf mehr Ressourcen zugreifen und Chrome bleibt schnell. Deine inaktiven Tabs werden automatisch wieder aktiviert, sobald du sie aufrufst. <ph name="BEGIN_LINK" />Weitere Informationen zum Arbeitsspeicher-Sparmodus<ph name="END_LINK" /></translation>
-<translation id="8753189155654018347">Daten dieser App aus Chrome entfernen</translation>
 <translation id="8765470054473112089">Wenn du etwas in die Adressleiste oder das Suchfeld eingibst, sendet Chrome deine Eingabe an deine Standardsuchmaschine, damit du bessere Vorschläge erhältst. Im Inkognitomodus ist diese Funktion deaktiviert.</translation>
 <translation id="8781673607513845160">Wenn du deine Kamera verwenden möchtest, erlaube Chrome über die <ph name="BEGIN_LINK" />Systemeinstellungen<ph name="END_LINK" /> den Zugriff darauf</translation>
 <translation id="878572486461146056">Installationsfehler: Dein Netzwerkadministrator hat eine Gruppenrichtlinie angewendet, die die Installation verhindert: <ph name="INSTALL_ERROR" />.</translation>
+<translation id="8796919761992612392">Chrome a&amp;npassen</translation>
 <translation id="8798550110818026746">Deine Organisation kann Browserdaten sehen und verwalten, wie z. B. deine Lesezeichen, deinen Verlauf und deine Passwörter. Browserdaten in anderen Chrome-Profilen sind nicht sichtbar.</translation>
-<translation id="8801657293260363985">V8 ist die JavaScript- und WebAssembly-Engine von Chrome, mit der die Websiteleistung verbessert wird</translation>
 <translation id="8821043148920470810">Du benötigst Windows 10 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Dieser Computer verwendet Windows 7.</translation>
 <translation id="8823341990149967727">Chrome ist veraltet.</translation>
-<translation id="8825634023950448068">Zum Schutz deiner Daten löschen wir automatisch deine Interessen, die älter als vier Wochen sind. Je nach deinen Browsingaktivitäten können die Interessen wieder in der Liste erscheinen. Falls Chrome falsch liegt oder du bestimmte Werbung nicht sehen möchtest, kannst du einzelne Interessen entfernen.</translation>
 <translation id="8834965163890861871">Google Chrome versucht, Passwörter zu bearbeiten. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="8843516219908676469">Chrome erkennt den Inhalt von Formularen besser und kann sie schneller automatisch ausfüllen</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome empfiehlt, sie zu entfernen}other{Chrome empfiehlt, sie zu entfernen}}</translation>
-<translation id="8862326446509486874">Du verfügst nicht über die erforderlichen Rechte für eine systemweite Installation. Starte das Installationsprogramm als Administrator.</translation>
+<translation id="8862326446509486874">Du verfügst nicht über die erforderlichen Rechte für eine systemweite Installation. Starte das Installationsprogramm noch einmal als Admin.</translation>
+<translation id="8865415417596392024">Chrome-Daten in meinem Konto</translation>
+<translation id="8883862939660515976">Google Lens nach Infos zu diesem Bild fragen</translation>
 <translation id="8914504000324227558">Chrome neu starten</translation>
 <translation id="8922193594870374009">Wenn du eine Nummer von <ph name="ORIGIN" /> an dein Android-Smartphone senden möchtest, musst du dich auf beiden Geräten in Chrome anmelden.</translation>
+<translation id="8922998289262614701">Daten dieser App aus Chrome entfernen</translation>
+<translation id="8936233353620149764">Gemini in Chrome aktivieren / deaktivieren</translation>
 <translation id="8948460679427074738">Für diese Erweiterung wurden keine Informationen zum Umgang mit dem Datenschutz veröffentlicht, wie z. B. Informationen darüber, wie Daten erhoben und verwendet werden. Chrome empfiehlt daher, sie zu entfernen.</translation>
 <translation id="8958307504142971576">Du hast jetzt Zugriff auf weitere Funktionen in Chrome</translation>
-<translation id="8989968390305463310">Dein Browserverlauf hat Einfluss auf die unten stehenden, geschätzten Interessen und darauf, welche Werbung dir gezeigt wird. Zum Schutz deiner Daten löscht Chrome automatisch jeden Monat deine Interessen. Solange du deine Interessen nicht entfernst, können sie aktualisiert werden.</translation>
+<translation id="8991530961471831170">Gemini in Chrome öffnen</translation>
 <translation id="8992769679401294069">Deine Daten werden mit deiner Passphrase verschlüsselt. Gib sie ein, um Chrome-Daten in deinem Google-Konto zu verwenden und zu speichern.</translation>
 <translation id="8999117580775242387">Wenn HTTPS nicht verfügbar ist, verwendet Chrome eine unsichere Verbindung ohne Warnung</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ein Chrome-Update ist verfügbar}=1{Ein Chrome-Update ist verfügbar}other{Ein Chrome-Update ist seit # Tagen verfügbar}}</translation>
+<translation id="9010418943148193727">Deine Standardsuchmaschine wurde außerhalb von Chrome geändert. Zu deinem Schutz hat Chrome die Änderung rückgängig gemacht.</translation>
 <translation id="9014771989710951291">Chrome wird von mehreren Organisationen verwaltet</translation>
 <translation id="9024318700713112071">Chrome als Standardbrowser festlegen</translation>
+<translation id="9066987883552592250">Gemini in Chrome Canary schließen</translation>
 <translation id="9090566250983691233">Gründe, warum Chrome einige Dateien blockiert</translation>
 <translation id="9106236359747881194">Einen Text für die Suche auswählen</translation>
 <translation id="911206726377975832">Auch die Browserdaten löschen?</translation>
 <translation id="9134482777260927479">Hilfe bei den Hausaufgaben</translation>
 <translation id="9138603949443464873">Starte Chrome neu, um die Änderungen zu übernehmen</translation>
 <translation id="9148058034647219655">Beenden</translation>
-<translation id="9195993889682885387">Chrome kann auf Grundlage deines Browserverlaufs der letzten Wochen deine Interessen schätzen. Diese Daten bleiben auf deinem Gerät.</translation>
 <translation id="919706545465235479">Aktualisiere Chrome, um die Synchronisierung zu starten</translation>
 <translation id="922152298093051471">Chrome anpassen</translation>
 <translation id="93760716455950538">Chrome OS Flex neu starten</translation>

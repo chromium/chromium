@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame_header_chromeos.h"
 
 #include "base/check.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
@@ -16,6 +16,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/display/screen.h"
@@ -82,18 +83,12 @@ void PaintThemedFrame(gfx::Canvas* canvas,
 // for the rounded corner of the frame header.
 SkPath GetFrameHeaderPath(const gfx::Rect& bounds, int corner_radius) {
   const SkScalar sk_corner_radius = SkIntToScalar(corner_radius);
-  const SkScalar radii[8] = {sk_corner_radius,
-                             sk_corner_radius,  // top-left
-                             sk_corner_radius,
-                             sk_corner_radius,  // top-right
-                             0,
-                             0,  // bottom-right
-                             0,
-                             0};  // bottom-left
-  SkPath frame_path;
-  frame_path.addRoundRect(gfx::RectToSkRect(bounds), radii,
-                          SkPathDirection::kCW);
-  return frame_path;
+  const SkVector radii[4] = {{sk_corner_radius, sk_corner_radius},  // top-left
+                             {sk_corner_radius, sk_corner_radius},  // top-right
+                             {0, 0},   // bottom-right
+                             {0, 0}};  // bottom-left
+  return SkPath::RRect(
+      SkRRect::MakeRectRadii(gfx::RectToSkRect(bounds), radii));
 }
 
 // Tiles |frame_image| and |frame_overlay_image| into an area, rounding the top
@@ -145,7 +140,7 @@ void BrowserFrameHeaderChromeOS::DoPaintHeader(gfx::Canvas* canvas) {
 
 views::CaptionButtonLayoutSize BrowserFrameHeaderChromeOS::GetButtonLayoutSize()
     const {
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return views::CaptionButtonLayoutSize::kBrowserCaptionMaximized;
   }
 
@@ -166,13 +161,10 @@ void BrowserFrameHeaderChromeOS::UpdateFrameColors() {
   SetPaintAsActive(target_widget()->ShouldPaintAsActive());
   std::optional<ui::ColorId> button_colors;
 
-  auto* browser_non_client_frame_view =
-      static_cast<BrowserNonClientFrameViewChromeOS*>(view());
+  auto* browser_frame_view = static_cast<BrowserFrameViewChromeOS*>(view());
 
   web_app::AppBrowserController* app_browser_controller =
-      browser_non_client_frame_view->browser_view()
-          ->browser()
-          ->app_controller();
+      browser_frame_view->GetBrowserView()->browser()->app_controller();
 
   // Please note, `app_browser_controller` may be null for non-PWA windows.
   if (!app_browser_controller ||

@@ -221,8 +221,8 @@ source_set("client_test") {
     "../compat",
     "../snapshot",
     "../test",
+    "../third_party/googletest",
     "../third_party/googletest:googlemock",
-    "../third_party/googletest:googletest",
     "../util",
   ]
 

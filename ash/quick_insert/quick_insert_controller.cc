@@ -120,7 +120,7 @@ gfx::Rect GetCaretBounds() {
 
 // Gets the current cursor point in universal screen coordinates in DIP.
 gfx::Point GetCursorPoint() {
-  return display::Screen::GetScreen()->GetCursorScreenPoint();
+  return display::Screen::Get()->GetCursorScreenPoint();
 }
 
 // Gets the bounds of the current focused window in universal screen coordinates
@@ -223,13 +223,13 @@ std::u16string TransformText(std::u16string_view text,
 }
 
 void OpenLink(const GURL& url) {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void OpenFile(const base::FilePath& path) {
-  NewWindowDelegate::GetPrimary()->OpenFile(path);
+  NewWindowDelegate::GetInstance()->OpenFile(path);
 }
 
 GURL GetUrlForNewWindow(QuickInsertNewWindowResult::Type type) {

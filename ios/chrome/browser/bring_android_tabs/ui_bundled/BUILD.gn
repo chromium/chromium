@@ -32,6 +32,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/synced_sessions/model",
     "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/favicon:favicon_constants",
   ]
 }
@@ -40,8 +41,6 @@ source_set("ui") {
   sources = [
     "bring_android_tabs_prompt_view_controller_delegate.h",
     "tab_list_from_android_consumer.h",
-    "tab_list_from_android_table_view_item.h",
-    "tab_list_from_android_table_view_item.mm",
     "tab_list_from_android_view_controller.h",
     "tab_list_from_android_view_controller.mm",
     "tab_list_from_android_view_controller_delegate.h",
@@ -74,6 +73,7 @@ swift_source_set("ui_swift") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bring_android_tabs/ui_bundled/resources",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ui/base",
   ]
@@ -167,10 +167,11 @@ source_set("eg2_tests") {
     "//base",
     "//components/sync/base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/first_run/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/safari_data_import/test:eg_test_support+eg2",
     "//ios/chrome/browser/signin/model:fake_system_identity",
-    "//ios/chrome/common/ui/confirmation_alert:constants",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

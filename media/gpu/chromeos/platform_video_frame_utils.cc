@@ -36,7 +36,6 @@
 #include "media/base/video_util.h"
 #include "media/gpu/buffer_validation.h"
 #include "media/gpu/macros.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 #include "ui/gfx/linux/drm_util_linux.h"
@@ -53,10 +52,10 @@
 namespace media {
 
 namespace {
+
 struct DrmVersionDeleter {
   void operator()(drmVersion* version) const { drmFreeVersion(version); }
 };
-
 using ScopedDrmVersionPtr = std::unique_ptr<drmVersion, DrmVersionDeleter>;
 
 // Returns the gbm device using the |drm_node_file_prefix|.
@@ -144,7 +143,7 @@ class GbmDeviceWrapper {
   // Creates a native BO and returns it as a NativePixmapHandle. Returns
   // std::nullopt on failure.
   std::optional<gfx::NativePixmapHandle> CreateNativePixmapHandle(
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       const gfx::Size& size,
       gfx::BufferUsage buffer_usage) {
     base::AutoLock lock(lock_);
@@ -153,7 +152,7 @@ class GbmDeviceWrapper {
       return std::nullopt;
     }
 
-    const int fourcc_format = ui::GetFourCCFormatFromBufferFormat(format);
+    const int fourcc_format = ui::GetFourCCFormatFromSharedImageFormat(format);
     if (fourcc_format == DRM_FORMAT_INVALID)
       return std::nullopt;
 
@@ -167,22 +166,6 @@ class GbmDeviceWrapper {
       return std::nullopt;
 
     return native_pixmap_handle;
-  }
-
-  std::unique_ptr<ui::GbmBuffer> ImportGpuMemoryBuffer(
-      gfx::BufferFormat format,
-      const gfx::Size& size,
-      gfx::NativePixmapHandle handle) {
-    CHECK_LE(handle.planes.size(), base::checked_cast<size_t>(GBM_MAX_PLANES));
-    base::AutoLock lock(lock_);
-    if (!IsInitialized()) {
-      return nullptr;
-    }
-    const int fourcc_format = ui::GetFourCCFormatFromBufferFormat(format);
-    if (fourcc_format == DRM_FORMAT_INVALID)
-      return nullptr;
-    return gbm_device_->CreateBufferFromHandle(fourcc_format, size,
-                                               std::move(handle));
   }
 
  private:
@@ -295,11 +278,12 @@ std::optional<gfx::NativePixmapHandle> AllocateNativePixmapHandle(
     VideoPixelFormat pixel_format,
     const gfx::Size& coded_size,
     gfx::BufferUsage buffer_usage) {
-  auto buffer_format = VideoPixelFormatToGfxBufferFormat(pixel_format);
-  if (!buffer_format)
+  auto si_format = VideoPixelFormatToSharedImageFormat(pixel_format);
+  if (!si_format) {
     return std::nullopt;
+  }
   return GbmDeviceWrapper::Get()->CreateNativePixmapHandle(
-      *buffer_format, coded_size, buffer_usage);
+      *si_format, coded_size, buffer_usage);
 }
 
 }  // namespace
@@ -380,14 +364,6 @@ void UniqueTrackingTokenHelper::SetUniqueTrackingToken(
   metadata.tracking_token = GenerateToken();
 }
 
-gfx::GpuMemoryBufferId GetNextGpuMemoryBufferId() {
-  static base::NoDestructor<base::Lock> id_lock;
-  static int next_gpu_memory_buffer_id = 0;
-  base::AutoLock lock(*id_lock);
-  CHECK_LT(next_gpu_memory_buffer_id, std::numeric_limits<int>::max());
-  return gfx::GpuMemoryBufferId(next_gpu_memory_buffer_id++);
-}
-
 scoped_refptr<VideoFrame> CreateMappableVideoFrame(
     VideoPixelFormat pixel_format,
     const gfx::Size& coded_size,
@@ -421,24 +397,23 @@ scoped_refptr<VideoFrame> CreateVideoFrameFromGpuMemoryBufferHandle(
   const bool supports_zero_copy_webgpu_import =
       gmb_handle.native_pixmap_handle().supports_zero_copy_webgpu_import;
 
-  auto buffer_format = VideoPixelFormatToGfxBufferFormat(pixel_format);
-  DCHECK(buffer_format);
+  auto si_format = VideoPixelFormatToSharedImageFormat(pixel_format);
+  DCHECK(si_format);
 
-    const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
-                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-    auto shared_image = sii->CreateSharedImage(
-        {viz::GetSharedImageFormat(*buffer_format), coded_size,
-         gfx::ColorSpace(), gpu::SharedImageUsageSet(si_usage),
-         "PlatformVideoFrameUtils"},
-        gpu::kNullSurfaceHandle, buffer_usage, std::move(gmb_handle));
+  const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  auto shared_image = sii->CreateSharedImage(
+      {*si_format, coded_size, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(si_usage), "PlatformVideoFrameUtils"},
+      gpu::kNullSurfaceHandle, buffer_usage, std::move(gmb_handle));
 
-    auto video_frame = media::VideoFrame::WrapMappableSharedImage(
-        std::move(shared_image), sii->GenVerifiedSyncToken(),
-        base::NullCallback(), visible_rect, natural_size, timestamp);
+  auto video_frame = media::VideoFrame::WrapMappableSharedImage(
+      std::move(shared_image), sii->GenVerifiedSyncToken(),
+      base::NullCallback(), visible_rect, natural_size, timestamp);
 
-    if (!video_frame) {
-      return nullptr;
-    }
+  if (!video_frame) {
+    return nullptr;
+  }
 
   // We only support importing non-DISJOINT multi-planar GbmBuffer right now.
   // TODO(crbug.com/40201271): Add DISJOINT support.
@@ -510,7 +485,7 @@ gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
 
   gfx::GpuMemoryBufferHandle handle;
   switch (video_frame->storage_type()) {
-    case VideoFrame::STORAGE_GPU_MEMORY_BUFFER:
+    case VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE:
       handle = video_frame->GetGpuMemoryBufferHandle();
       // TODO(crbug.com/1097956): handle a failure gracefully.
       CHECK_EQ(handle.type, gfx::NATIVE_PIXMAP)
@@ -577,47 +552,19 @@ scoped_refptr<gfx::NativePixmapDmaBuf> CreateNativePixmapDmaBuf(
     return nullptr;
   }
 
-  auto buffer_format =
-      VideoPixelFormatToGfxBufferFormat(video_frame->layout().format());
-  if (!buffer_format) {
+  auto si_format =
+      VideoPixelFormatToSharedImageFormat(video_frame->layout().format());
+  if (!si_format) {
     VLOGF(1) << "Unexpected video frame format";
     return nullptr;
   }
 
   auto native_pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
-      video_frame->coded_size(), *buffer_format,
+      video_frame->coded_size(), *si_format,
       std::move(gpu_memory_buffer_handle).native_pixmap_handle());
 
   DCHECK(native_pixmap->AreDmaBufFdsValid());
   return native_pixmap;
-}
-
-bool CanImportGpuMemoryBufferHandle(
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    const gfx::GpuMemoryBufferHandle& gmb_handle) {
-  if (gmb_handle.type != gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
-    VLOGF(1) << "The handle type (" << gmb_handle.type << ") is unsupported";
-    return false;
-  }
-  const auto pixel_format = GfxBufferFormatToVideoPixelFormat(format);
-  if (!pixel_format) {
-    VLOGF(1) << "Unsupported buffer format: "
-             << gfx::BufferFormatToString(format);
-    return false;
-  }
-  if (!VerifyGpuMemoryBufferHandle(*pixel_format, size, gmb_handle)) {
-    VLOGF(1) << "Invalid GpuMemoryBufferHandle provided";
-    return false;
-  }
-  gfx::NativePixmapHandle native_pixmap_handle =
-      gfx::CloneHandleForIPC(gmb_handle.native_pixmap_handle());
-  if (native_pixmap_handle.planes.empty()) {
-    VLOGF(1) << "Could not duplicate the NativePixmapHandle";
-    return false;
-  }
-  return !!GbmDeviceWrapper::Get()->ImportGpuMemoryBuffer(
-      format, size, std::move(native_pixmap_handle));
 }
 
 }  // namespace media

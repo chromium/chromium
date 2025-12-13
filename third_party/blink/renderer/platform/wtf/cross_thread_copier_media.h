@@ -31,72 +31,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_MEDIA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_MEDIA_H_
 
+#include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 
-namespace media {
-class AudioBus;
-class AudioParameters;
-struct AudioGlitchInfo;
-class VideoFrame;
-struct VideoCaptureFeedback;
-struct VideoTransformation;
-}  // namespace media
-
-namespace blink {
-
-class VideoTrackAdapterSettings;
-struct MediaStreamVideoSourceCallbacks;
-
-template <>
-struct CrossThreadCopier<VideoTrackAdapterSettings>
-    : public CrossThreadCopierPassThrough<VideoTrackAdapterSettings> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<MediaStreamVideoSourceCallbacks>
-    : public CrossThreadCopierPassThrough<MediaStreamVideoSourceCallbacks> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<media::AudioBus>
-    : public CrossThreadCopierByValuePassThrough<media::AudioBus> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<media::AudioParameters>
-    : public CrossThreadCopierByValuePassThrough<media::AudioParameters> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<media::AudioGlitchInfo>
-    : public CrossThreadCopierPassThrough<media::AudioGlitchInfo> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<media::VideoCaptureFeedback>
-    : public CrossThreadCopierPassThrough<media::VideoCaptureFeedback> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<std::vector<scoped_refptr<media::VideoFrame>>>
-    : public CrossThreadCopierPassThrough<
-          std::vector<scoped_refptr<media::VideoFrame>>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<media::VideoTransformation>
-    : public CrossThreadCopierPassThrough<media::VideoTransformation> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-}  // namespace blink
+// TODO(crbug.com/460743390): Delete this file after CrossThreadCopier removal.
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_MEDIA_H_

@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util_win.h"
@@ -25,14 +26,15 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/features.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/public_key_credential_descriptor.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
 #include "device/fido/win/type_conversions.h"
+#include "device/fido/win/util.h"
 #include "device/fido/win/webauthn_api.h"
-#include "third_party/microsoft_webauthn/webauthn.h"
+#include "third_party/microsoft_webauthn/src/webauthn.h"
 
 namespace device {
 
@@ -361,8 +363,8 @@ void WinWebAuthnApiAuthenticator::GetPlatformCredentialInfoForRequest(
     const CtapGetAssertionOptions& request_options,
     GetPlatformCredentialInfoForRequestCallback callback) {
   // Handle the special case where a request has an allow list, all the
-  // credential descriptors have a transport, and none of have the "internal"
-  // transport. These credentials cannot possibly be Windows Hello.
+  // credential descriptors have a transport, and none of them have the
+  // "internal" transport. These credentials cannot possibly be Windows Hello.
   if (!MayHaveWindowsHelloCredentials(request.allow_list)) {
     std::move(callback).Run(
         /*credentials=*/{},
@@ -374,6 +376,17 @@ void WinWebAuthnApiAuthenticator::GetPlatformCredentialInfoForRequest(
       win_api_, base::UTF8ToUTF16(request.rp_id),
       request_options.is_off_the_record_context);
   if (!success) {
+    std::move(callback).Run(
+        /*credentials=*/{},
+        FidoRequestHandlerBase::RecognizedCredential::kUnknown);
+    return;
+  }
+  if (credentials.empty() && fido::win::IsRemoteDesktopSession()) {
+    // Windows credential enumeration does not work under RDP yet, returning an
+    // empty credential list. Since we cannot tell if there are credentials or
+    // not, treat this the same as enumeration not being supported.
+    FIDO_LOG(DEBUG) << "RDP detected and no credentials returned. Assuming "
+                       "Windows WebAuthn enumeration doesn't work.";
     std::move(callback).Run(
         /*credentials=*/{},
         FidoRequestHandlerBase::RecognizedCredential::kUnknown);

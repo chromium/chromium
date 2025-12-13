@@ -5,11 +5,14 @@
 #ifndef EXTENSIONS_BROWSER_CONTENT_VERIFIER_CONTENT_HASH_H_
 #define EXTENSIONS_BROWSER_CONTENT_VERIFIER_CONTENT_HASH_H_
 
+#include <optional>
 #include <set>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/ref_counted.h"
 #include "base/version.h"
 #include "extensions/browser/computed_hashes.h"
 #include "extensions/browser/content_verifier/content_verifier_delegate.h"
@@ -150,6 +153,7 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
   }
   const ExtensionId& extension_id() const { return extension_id_; }
   const base::FilePath& extension_root() const { return extension_root_; }
+  const base::Version& extension_version() const { return extension_version_; }
 
   // Returns whether or not computed_hashes.json re-creation might be required
   // for `this` to succeed.
@@ -173,6 +177,7 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
 
   ContentHash(const ExtensionId& id,
               const base::FilePath& root,
+              const base::Version& extension_version,
               ContentVerifierDelegate::VerifierSourceType source_type,
               std::unique_ptr<const VerifiedContents> verified_contents);
   ~ContentHash();
@@ -187,12 +192,12 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
                                     const IsCancelledCallback& is_cancelled,
                                     GetVerifiedContentsCallback callback);
   static std::unique_ptr<VerifiedContents> StoreAndRetrieveVerifiedContents(
-      std::unique_ptr<std::string> fetched_contents,
+      std::optional<std::string> fetched_contents,
       const FetchKey& key);
   static void DidFetchVerifiedContents(
       GetVerifiedContentsCallback callback,
       FetchKey key,
-      std::unique_ptr<std::string> fetched_contents,
+      std::optional<std::string> fetched_contents,
       FetchErrorCode fetch_error);
 
   // Step 2/2: computed_hashes.json.
@@ -208,6 +213,7 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
   static void DispatchFetchFailure(
       const ExtensionId& extension_id,
       const base::FilePath& extension_root,
+      const base::Version& extension_version,
       ContentVerifierDelegate::VerifierSourceType source_type,
       CreatedCallback created_callback,
       const IsCancelledCallback& is_cancelled,
@@ -247,6 +253,10 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
 
   const ExtensionId extension_id_;
   const base::FilePath extension_root_;
+  // The version of the extension associated with the hash.
+  // Used for comparing against the version from `ContentVerifyJob` when
+  // starting the job.
+  const base::Version extension_version_;
   ContentVerifierDelegate::VerifierSourceType source_type_;
 
   ComputedHashes::Status computed_hashes_status_ =

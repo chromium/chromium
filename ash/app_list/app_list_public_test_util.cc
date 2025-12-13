@@ -16,7 +16,7 @@
 namespace ash {
 
 bool ShouldUseBubbleAppList() {
-  return !Shell::Get()->IsInTabletMode();
+  return !display::Screen::Get()->InTabletMode();
 }
 
 AppListBubbleView* GetAppListBubbleView() {

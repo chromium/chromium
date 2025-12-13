@@ -17,6 +17,7 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/optional_ref.h"
 #include "base/unguessable_token.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -118,7 +119,7 @@ class RemoteSuggestionsService : public KeyedService {
     virtual void OnRequestCompleted(
         const base::UnguessableToken& request_id,
         const int response_code,
-        const std::unique_ptr<std::string>& response_body) {}
+        base::optional_ref<std::string> response_body) {}
   };
 
   // Called when the transfer has started asynchronously, e.g., after obtaining
@@ -131,7 +132,7 @@ class RemoteSuggestionsService : public KeyedService {
   using CompletionCallback =
       base::OnceCallback<void(const network::SimpleURLLoader* source,
                               const int response_code,
-                              std::unique_ptr<std::string> response_body)>;
+                              std::optional<std::string> response_body)>;
   // Same as `StartCallback` but for requests that are associated with a
   // `request_index`.
   using IndexedStartCallback = base::RepeatingCallback<void(
@@ -143,7 +144,7 @@ class RemoteSuggestionsService : public KeyedService {
       base::RepeatingCallback<void(const int request_index,
                                    const network::SimpleURLLoader* source,
                                    const int response_code,
-                                   std::unique_ptr<std::string> response_body)>;
+                                   std::optional<std::string> response_body)>;
 
   class Delegate {
    public:
@@ -156,14 +157,14 @@ class RemoteSuggestionsService : public KeyedService {
     // `completion_callback`
     virtual void OnRequestCompleted(const network::SimpleURLLoader* source,
                                     const int response_code,
-                                    std::unique_ptr<std::string> response_body,
+                                    std::optional<std::string> response_body,
                                     CompletionCallback completion_callback) = 0;
 
     virtual void OnIndexedRequestCompleted(
         const int request_index,
         const network::SimpleURLLoader* source,
         const int response_code,
-        std::unique_ptr<std::string> response_body,
+        std::optional<std::string> response_body,
         IndexedCompletionCallback completion_callback) = 0;
 
    protected:
@@ -215,13 +216,18 @@ class RemoteSuggestionsService : public KeyedService {
   // `search_terms_args` is used to build the endpoint URL.
   // `search_terms_data` is used to build the endpoint URL.
   // `completion_callback` will be invoked when the transfer is done.
+  //
+  // When `timeout` is not empty, its value is set in `SimpleURLLoadaer` used
+  // internally. When the timeout occurs, a nullptr is passed to the callback:
+  // https://source.chromium.org/chromium/chromium/src/+/main:services/network/public/cpp/simple_url_loader.cc;l=758-764;drc=128f35b3fb019f2fa67e1e798e113ed95f766096
   std::unique_ptr<network::SimpleURLLoader> StartZeroPrefixSuggestionsRequest(
       RemoteRequestType request_type,
       bool is_off_the_record,
       const TemplateURL* template_url,
       TemplateURLRef::SearchTermsArgs search_terms_args,
       const SearchTermsData& search_terms_data,
-      CompletionCallback completion_callback);
+      CompletionCallback completion_callback,
+      base::optional_ref<const base::TimeDelta> timeout = std::nullopt);
 
   // Creates and starts a document suggestion request for `query` asynchronously
   // after obtaining an OAuth2 token for the signed-in users.
@@ -307,7 +313,7 @@ class RemoteSuggestionsService : public KeyedService {
       metrics::OmniboxEventProto::PageClassification page_classification,
       CompletionCallback completion_callback,
       const network::SimpleURLLoader* source,
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
 
   void OnIndexedRequestCompleted(
       const base::UnguessableToken& request_id,
@@ -317,7 +323,7 @@ class RemoteSuggestionsService : public KeyedService {
       IndexedCompletionCallback completion_callback,
       const network::SimpleURLLoader* source,
       int request_index,
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
 
   // May be nullptr in OTR profiles. Otherwise guaranteed to outlive this due to
   // the factories' dependency.

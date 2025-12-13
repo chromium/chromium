@@ -11,7 +11,6 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
-#include "chromeos/ash/components/kiosk/vision/internals_page_processor.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/web_contents.h"
@@ -24,13 +23,6 @@ class AppLaunchSplashScreen;
 class KioskProfileLoadFailedObserver;
 class KioskSystemSession;
 class LoginDisplayHost;
-
-namespace kiosk_vision {
-
-class TelemetryProcessor;
-class InternalsPageProcessor;
-
-}  // namespace kiosk_vision
 
 // Public interface for Kiosk.
 class KioskController {
@@ -78,24 +70,8 @@ class KioskController {
   // Kiosk session, or before `InitializeSystemSession`.
   virtual KioskSystemSession* GetKioskSystemSession() = 0;
 
-  // Returns the `kiosk_vision::TelemetryProcessor`.
-  // Can be `nullptr` in the following cases:
-  // * Outside a Kiosk session.
-  // * Before `InitializeSystemSession`.
-  // * When the Kiosk Vision framework is disabled by policy.
-  // * When the Kiosk Vision framework is not yet initialized.
-  virtual kiosk_vision::TelemetryProcessor*
-  GetKioskVisionTelemetryProcessor() = 0;
-
-  // Returns the `InternalsPageProcessor`.
-  // Can be `nullptr` in the following cases:
-  // * Outside a Kiosk session.
-  // * Before `InitializeSystemSession`.
-  // * When the Kiosk Vision framework is disabled by policy.
-  // * When the Kiosk Vision framework is not yet initialized.
-  // * When the internals page feature flag is disabled.
-  virtual kiosk_vision::InternalsPageProcessor*
-  GetKioskVisionInternalsPageProcessor() = 0;
+  // Removes the cryptohomes of kiosks that were removed from policy.
+  virtual void RemoveObsoleteCryptohomes() = 0;
 
   // Registers local state prefs relevant for Kiosk.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);

@@ -6,6 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/library_loader/library_loader_hooks.h"
+#include "base/no_destructor.h"
 #include "chrome/app/android/chrome_jni_onload.h"
 #include "chrome/test/base/chrome_test_launcher.h"
 #include "content/public/app/content_jni_onload.h"
@@ -18,8 +19,8 @@ bool NativeInit(base::android::LibraryProcessType) {
   // Setup a working test environment for the network service in case it's used.
   // Only create this object in the utility process, so that its members don't
   // interfere with other test objects in the browser process.
-  static std::unique_ptr<content::NetworkServiceTestHelper>
-      network_service_test_helper = content::NetworkServiceTestHelper::Create();
+  static base::NoDestructor<std::unique_ptr<content::NetworkServiceTestHelper>>
+      network_service_test_helper(content::NetworkServiceTestHelper::Create());
   return true;
 }
 }  // namespace

@@ -66,56 +66,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
       bool has_occluding_surface_damage,
       bool zero_damage_rect);
 
-  // Data needed to represent |OutputSurface| as an overlay plane. Due to the
-  // default values for the primary plane, this is a partial list of
-  // OverlayCandidate.
-  struct VIZ_SERVICE_EXPORT OutputSurfaceOverlayPlane {
-    OutputSurfaceOverlayPlane();
-    OutputSurfaceOverlayPlane(const OutputSurfaceOverlayPlane&);
-    OutputSurfaceOverlayPlane& operator=(const OutputSurfaceOverlayPlane&);
-    ~OutputSurfaceOverlayPlane();
-    // Display's rotation information.
-    gfx::OverlayTransform transform = gfx::OVERLAY_TRANSFORM_NONE;
-    // Rect on the display to position to. This takes in account of Display's
-    // rotation.
-    gfx::RectF display_rect;
-    // Specifies the region within the buffer to be cropped and (maybe)scaled to
-    // place inside |display_rect|.
-    gfx::RectF uv_rect;
-    // Size of output surface in pixels.
-    gfx::Size resource_size;
-    // Format of the buffer to scanout.
-    SharedImageFormat format = SinglePlaneFormat::kBGRA_8888;
-    // ColorSpace of the buffer for scanout.
-    gfx::ColorSpace color_space;
-    // Enable blending when we have underlay.
-    bool enable_blending = false;
-    // Opacity of the overlay independent of buffer alpha. When rendered:
-    // src-alpha = |opacity| * buffer-component-alpha.
-    float opacity = 1.0f;
-    // Mailbox corresponding to the buffer backing the primary plane.
-    gpu::Mailbox mailbox;
-    // Hints for overlay prioritization.
-    gfx::OverlayPriorityHint priority_hint = gfx::OverlayPriorityHint::kNone;
-    // Specifies the rounded corners.
-    gfx::RRectF rounded_corners;
-    // Optional damage rect. If none is provided the damage is assumed to be
-    // |resource_size| (full damage).
-    std::optional<gfx::Rect> damage_rect;
-  };
-
-  // TODO(weiliangc): Eventually the asymmetry between primary plane and
-  // non-primary places should be internalized and should not have a special
-  // API.
-  static OutputSurfaceOverlayPlane ProcessOutputSurfaceAsOverlay(
-      const gfx::Size& viewport_size,
-      const gfx::Size& resource_size,
-      const SharedImageFormat si_format,
-      const gfx::ColorSpace& color_space,
-      bool has_alpha,
-      float opacity,
-      const gpu::Mailbox& mailbox);
-
   static std::unique_ptr<OverlayProcessorInterface> CreateOverlayProcessor(
       OutputSurface* output_surface,
       gpu::SurfaceHandle surface_handle,
@@ -140,8 +90,27 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   // processor.
   virtual bool NeedsSurfaceDamageRectList() const = 0;
 
+  struct PrimaryPlaneParams {
+    const gfx::Size viewport_size;
+    const gfx::Size resource_size_in_pixels;
+    bool supports_hdr = false;
+    bool is_opaque = false;
+
+#if BUILDFLAG(IS_OZONE)
+    // Ozone requires checking for overlay support with an actual buffer. To
+    // create the primary plane, `OverlayProcessorOzone` will use an existing
+    // `overlay_testing_mailbox` (usually, the last swapped primary plane
+    // buffer) or will make a dummy buffer using `si_format` and `color_space`.
+    const SharedImageFormat si_format;
+    const gfx::ColorSpace color_space;
+    const gpu::Mailbox overlay_testing_mailbox;
+#endif
+  };
+
   // Attempts to replace quads from the specified root render pass with overlays
   // or CALayers. This must be called every frame.
+  // TODO(crbug.com/444264038): Delete this overload when the RPDQ refactor is
+  // finished.
   virtual void ProcessForOverlays(
       DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_passes,
@@ -149,19 +118,19 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,
-      OutputSurfaceOverlayPlane* output_surface_plane,
+      const PrimaryPlaneParams& primary_plane_params,
       CandidateList* overlay_candidates,
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds) = 0;
 
-  // If we successfully generated a candidates list for delegated compositing
-  // during |ProcessForOverlays|, we no longer need the |output_surface_plane|.
-  // This function takes a pointer to the std::optional instance so the instance
-  // can be reset.
-  // TODO(weiliangc): Internalize the |output_surface_plane| inside the overlay
-  // processor.
-  virtual void AdjustOutputSurfaceOverlay(
-      std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) = 0;
+  void ProcessForOverlays(DisplayResourceProvider* resource_provider,
+                          AggregatedRenderPassList* render_passes,
+                          const SkM44& output_color_matrix,
+                          SurfaceDamageRectList surface_damage_rect_list,
+                          const PrimaryPlaneParams& primary_plane_params,
+                          CandidateList* overlay_candidates,
+                          gfx::Rect* damage_rect,
+                          std::vector<gfx::Rect>* content_bounds);
 
   // Before the overlay refactor to use OverlayProcessorOnGpu, overlay
   // candidates are stored inside DirectRenderer. Those overlay candidates are
@@ -212,6 +181,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
 
  protected:
   OverlayProcessorInterface() = default;
+
+  static OverlayCandidate CreatePrimaryPlane(const PrimaryPlaneParams& params);
 };
 
 }  // namespace viz

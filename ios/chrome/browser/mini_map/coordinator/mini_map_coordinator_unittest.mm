@@ -10,6 +10,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/mini_map/coordinator/mini_map_mediator.h"
 #import "ios/chrome/browser/mini_map/coordinator/mini_map_mediator_delegate.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -108,18 +109,12 @@ class MiniMapCoordinatorTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  void SetupCoordinator(BOOL iph,
-                        MiniMapMode type,
-                        MiniMapQueryType query_type) {
-    NSString* text = query_type == MiniMapQueryType::kText ? @"Address" : nil;
-    NSURL* url = query_type == MiniMapQueryType::kURL
-                     ? [NSURL URLWithString:@"https://www.test.test"]
-                     : nil;
+  void SetupCoordinator(BOOL iph, MiniMapMode type) {
+    NSString* text = @"Address";
     coordinator_ = [[MiniMapCoordinator alloc]
         initWithBaseViewController:root_view_controller_
                            browser:browser_.get()
                               text:text
-                               url:url
                            withIPH:iph
                               mode:type];
     [coordinator_ start];
@@ -150,9 +145,6 @@ class MiniMapCoordinatorTest : public PlatformTest {
 
 // Tests that consent screen is not triggered, but IPH is configured.
 TEST_F(MiniMapCoordinatorTest, TestIPH) {
-  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
-    GTEST_SKIP() << "Feature only available on iOS16.4+";
-  }
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
@@ -175,7 +167,7 @@ TEST_F(MiniMapCoordinatorTest, TestIPH) {
   OCMExpect([mini_map_controller
       presentMapsWithPresentingViewController:[OCMArg any]]);
 
-  SetupCoordinator(YES, MiniMapMode::kMap, MiniMapQueryType::kText);
+  SetupCoordinator(YES, MiniMapMode::kMap);
   environment_.RunUntilIdle();
   EXPECT_TRUE(
       profile_->GetPrefs()->GetBoolean(prefs::kDetectAddressesAccepted));
@@ -184,9 +176,6 @@ TEST_F(MiniMapCoordinatorTest, TestIPH) {
 
 // Tests IPH is not displayed on second trigger
 TEST_F(MiniMapCoordinatorTest, TestIPHSecondLaunch) {
-  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
-    GTEST_SKIP() << "Feature only available on iOS16.4+";
-  }
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, true);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
@@ -203,15 +192,12 @@ TEST_F(MiniMapCoordinatorTest, TestIPHSecondLaunch) {
 
   OCMExpect([mini_map_controller
       presentMapsWithPresentingViewController:[OCMArg any]]);
-  SetupCoordinator(YES, MiniMapMode::kMap, MiniMapQueryType::kText);
+  SetupCoordinator(YES, MiniMapMode::kMap);
   EXPECT_OCMOCK_VERIFY(mini_map_controller);
 }
 
 // Tests that correct metrics are logged on dismiss.
 TEST_F(MiniMapCoordinatorTest, TestDismissMap) {
-  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
-    GTEST_SKIP() << "Feature only available on iOS16.4+";
-  }
   base::HistogramTester histogram_tester;
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
@@ -222,12 +208,7 @@ TEST_F(MiniMapCoordinatorTest, TestDismissMap) {
 
   OCMExpect([mini_map_controller configureAddress:[OCMArg any]]);
   OCMExpect([mini_map_controller
-      configureCompletion:[OCMArg
-                              checkWithBlock:^BOOL(
-                                  MiniMapControllerCompletionWithURL block) {
-                                completion_block = block;
-                                return YES;
-                              }]]);
+      configureCompletion:AssignValueToVariable(completion_block)]);
   OCMExpect(
       [mini_map_controller configureCompletionWithSearchQuery:[OCMArg any]]);
   OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
@@ -238,7 +219,7 @@ TEST_F(MiniMapCoordinatorTest, TestDismissMap) {
 
   OCMExpect([mini_map_controller
       presentMapsWithPresentingViewController:[OCMArg any]]);
-  SetupCoordinator(NO, MiniMapMode::kMap, MiniMapQueryType::kText);
+  SetupCoordinator(NO, MiniMapMode::kMap);
 
   OCMExpect([mock_mini_map_command_handler_ hideMiniMap]);
   ASSERT_NE(nil, completion_block);
@@ -251,51 +232,6 @@ TEST_F(MiniMapCoordinatorTest, TestDismissMap) {
 
 // Tests that correct metrics are logged on dismiss.
 TEST_F(MiniMapCoordinatorTest, TestLinkDismissMap) {
-  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
-    GTEST_SKIP() << "Feature only available on iOS16.4+";
-  }
-  base::HistogramTester histogram_tester;
-  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
-  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
-  id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
-  factory_.controller = mini_map_controller;
-
-  __block MiniMapControllerCompletionWithURL completion_block;
-
-  OCMExpect([mini_map_controller configureURL:[OCMArg any]]);
-  OCMExpect([mini_map_controller
-      configureCompletion:[OCMArg
-                              checkWithBlock:^BOOL(
-                                  MiniMapControllerCompletionWithURL block) {
-                                completion_block = block;
-                                return YES;
-                              }]]);
-  OCMExpect(
-      [mini_map_controller configureCompletionWithSearchQuery:[OCMArg any]]);
-  OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
-                                       leadingButtonTitle:[OCMArg any]
-                                      trailingButtonTitle:[OCMArg any]
-                                      leadingButtonAction:[OCMArg any]
-                                     trailingButtonAction:[OCMArg any]]);
-
-  OCMExpect([mini_map_controller
-      presentMapsWithPresentingViewController:[OCMArg any]]);
-  SetupCoordinator(NO, MiniMapMode::kMap, MiniMapQueryType::kURL);
-
-  OCMExpect([mock_mini_map_command_handler_ hideMiniMap]);
-  ASSERT_NE(nil, completion_block);
-  completion_block(nil);
-  // Expect normal outcome.
-  histogram_tester.ExpectTotalCount("IOS.MiniMap.Outcome", 0);
-  histogram_tester.ExpectBucketCount("IOS.MiniMap.Link.Outcome", 0, 1);
-  EXPECT_OCMOCK_VERIFY(mini_map_controller);
-}
-
-// Tests that URL is opened if requested on dismiss.
-TEST_F(MiniMapCoordinatorTest, TestOpenURL) {
-  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
-    GTEST_SKIP() << "Feature only available on iOS16.4+";
-  }
   base::HistogramTester histogram_tester;
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
@@ -306,12 +242,7 @@ TEST_F(MiniMapCoordinatorTest, TestOpenURL) {
 
   OCMExpect([mini_map_controller configureAddress:[OCMArg any]]);
   OCMExpect([mini_map_controller
-      configureCompletion:[OCMArg
-                              checkWithBlock:^BOOL(
-                                  MiniMapControllerCompletionWithURL block) {
-                                completion_block = block;
-                                return YES;
-                              }]]);
+      configureCompletion:AssignValueToVariable(completion_block)]);
   OCMExpect(
       [mini_map_controller configureCompletionWithSearchQuery:[OCMArg any]]);
   OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
@@ -322,7 +253,40 @@ TEST_F(MiniMapCoordinatorTest, TestOpenURL) {
 
   OCMExpect([mini_map_controller
       presentMapsWithPresentingViewController:[OCMArg any]]);
-  SetupCoordinator(NO, MiniMapMode::kMap, MiniMapQueryType::kText);
+  SetupCoordinator(NO, MiniMapMode::kMap);
+
+  OCMExpect([mock_mini_map_command_handler_ hideMiniMap]);
+  ASSERT_NE(nil, completion_block);
+  completion_block(nil);
+  // Expect normal outcome.
+  histogram_tester.ExpectBucketCount("IOS.MiniMap.Outcome", 0, 1);
+  EXPECT_OCMOCK_VERIFY(mini_map_controller);
+}
+
+// Tests that URL is opened if requested on dismiss.
+TEST_F(MiniMapCoordinatorTest, TestOpenURL) {
+  base::HistogramTester histogram_tester;
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
+  id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
+  factory_.controller = mini_map_controller;
+
+  __block MiniMapControllerCompletionWithURL completion_block;
+
+  OCMExpect([mini_map_controller configureAddress:[OCMArg any]]);
+  OCMExpect([mini_map_controller
+      configureCompletion:AssignValueToVariable(completion_block)]);
+  OCMExpect(
+      [mini_map_controller configureCompletionWithSearchQuery:[OCMArg any]]);
+  OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
+                                       leadingButtonTitle:[OCMArg any]
+                                      trailingButtonTitle:[OCMArg any]
+                                      leadingButtonAction:[OCMArg any]
+                                     trailingButtonAction:[OCMArg any]]);
+
+  OCMExpect([mini_map_controller
+      presentMapsWithPresentingViewController:[OCMArg any]]);
+  SetupCoordinator(NO, MiniMapMode::kMap);
   OCMExpect([mock_mini_map_command_handler_ hideMiniMap]);
   OCMExpect([mock_application_command_handler_ openURLInNewTab:[OCMArg any]]);
 
@@ -335,9 +299,6 @@ TEST_F(MiniMapCoordinatorTest, TestOpenURL) {
 
 // Tests that the query is opened if requested on dismiss.
 TEST_F(MiniMapCoordinatorTest, TestOpenQuery) {
-  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
-    GTEST_SKIP() << "Feature only available on iOS16.4+";
-  }
   base::HistogramTester histogram_tester;
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
@@ -349,12 +310,8 @@ TEST_F(MiniMapCoordinatorTest, TestOpenQuery) {
   OCMExpect([mini_map_controller configureAddress:[OCMArg any]]);
   OCMExpect([mini_map_controller configureCompletion:[OCMArg any]]);
   OCMExpect([mini_map_controller
-      configureCompletionWithSearchQuery:
-          [OCMArg checkWithBlock:^BOOL(
-                      MiniMapControllerCompletionWithString block) {
-            completion_block = block;
-            return YES;
-          }]]);
+      configureCompletionWithSearchQuery:AssignValueToVariable(
+                                             completion_block)]);
   OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
                                        leadingButtonTitle:[OCMArg any]
                                       trailingButtonTitle:[OCMArg any]
@@ -363,7 +320,7 @@ TEST_F(MiniMapCoordinatorTest, TestOpenQuery) {
 
   OCMExpect([mini_map_controller
       presentMapsWithPresentingViewController:[OCMArg any]]);
-  SetupCoordinator(NO, MiniMapMode::kMap, MiniMapQueryType::kText);
+  SetupCoordinator(NO, MiniMapMode::kMap);
   OCMExpect([mock_mini_map_command_handler_ hideMiniMap]);
   OCMExpect([mock_application_command_handler_ openURLInNewTab:[OCMArg any]]);
 
@@ -377,9 +334,6 @@ TEST_F(MiniMapCoordinatorTest, TestOpenQuery) {
 
 // Tests the footer buttons.
 TEST_F(MiniMapCoordinatorTest, TestFooterButtons) {
-  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
-    GTEST_SKIP() << "Feature only available on iOS16.4+";
-  }
   base::HistogramTester histogram_tester;
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
   profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
@@ -392,32 +346,19 @@ TEST_F(MiniMapCoordinatorTest, TestFooterButtons) {
 
   OCMExpect([mini_map_controller configureAddress:[OCMArg any]]);
   OCMExpect([mini_map_controller
-      configureCompletion:[OCMArg
-                              checkWithBlock:^BOOL(
-                                  MiniMapControllerCompletionWithURL block) {
-                                completion_block = block;
-                                return YES;
-                              }]]);
+      configureCompletion:AssignValueToVariable(completion_block)]);
   OCMExpect(
       [mini_map_controller configureCompletionWithSearchQuery:[OCMArg any]]);
   OCMExpect([mini_map_controller
       configureFooterWithTitle:[OCMArg any]
             leadingButtonTitle:[OCMArg any]
            trailingButtonTitle:[OCMArg any]
-           leadingButtonAction:[OCMArg checkWithBlock:^BOOL(
-                                           BlockWithViewController block) {
-             left_button_block = block;
-             return YES;
-           }]
-          trailingButtonAction:[OCMArg checkWithBlock:^BOOL(
-                                           BlockWithViewController block) {
-            right_button_block = block;
-            return YES;
-          }]]);
+           leadingButtonAction:AssignValueToVariable(left_button_block)
+          trailingButtonAction:AssignValueToVariable(right_button_block)]);
 
   OCMExpect([mini_map_controller
       presentMapsWithPresentingViewController:[OCMArg any]]);
-  SetupCoordinator(NO, MiniMapMode::kMap, MiniMapQueryType::kText);
+  SetupCoordinator(NO, MiniMapMode::kMap);
 
   OCMExpect([mock_snackbar_command_handler_
       showSnackbarWithMessage:[OCMArg any]

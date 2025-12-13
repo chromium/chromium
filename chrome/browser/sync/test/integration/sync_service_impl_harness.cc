@@ -24,6 +24,7 @@
 #include "chrome/browser/sync/test/integration/invalidations/invalidations_status_checker.h"
 #include "chrome/browser/sync/test/integration/quiesce_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
+#include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_signin_delegate.h"
 #include "chrome/common/channel_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -94,37 +95,6 @@ class EngineInitializeChecker : public SingleClientStatusChangeChecker {
   }
 };
 
-class SyncSetupChecker : public SingleClientStatusChangeChecker {
- public:
-  enum class State { kTransportActive, kFeatureActive };
-
-  SyncSetupChecker(SyncServiceImpl* service, State wait_for_state)
-      : SingleClientStatusChangeChecker(service),
-        wait_for_state_(wait_for_state) {}
-
-  bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting for sync setup to complete";
-
-    syncer::SyncService::TransportState transport_state =
-        service()->GetTransportState();
-    if (transport_state == syncer::SyncService::TransportState::ACTIVE &&
-        (wait_for_state_ != State::kFeatureActive ||
-         service()->IsSyncFeatureActive())) {
-      return true;
-    }
-    // Sync is blocked by an auth error.
-    if (HasAuthError(service())) {
-      return true;
-    }
-
-    // Still waiting on sync setup.
-    return false;
-  }
-
- private:
-  const State wait_for_state_;
-};
-
 class SyncTransportStateChecker : public SingleClientStatusChangeChecker {
  public:
   SyncTransportStateChecker(SyncServiceImpl* service,
@@ -140,7 +110,7 @@ class SyncTransportStateChecker : public SingleClientStatusChangeChecker {
   const syncer::SyncService::TransportState state_;
 };
 
-// Same as reset on chrome.google.com/sync.
+// Same as reset on chrome.google.com/data.
 // This function will wait until the reset is done. If error occurs,
 // it will log error messages.
 bool ResetAccount(network::SharedURLLoaderFactory* url_loader_factory,
@@ -177,7 +147,7 @@ bool ResetAccount(network::SharedURLLoaderFactory* url_loader_factory,
   simple_loader->SetTimeoutDuration(base::Seconds(10));
   content::SimpleURLLoaderTestHelper url_loader_helper;
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory, url_loader_helper.GetCallbackDeprecated());
+      url_loader_factory, url_loader_helper.GetCallback());
   url_loader_helper.WaitForCallback();
   if (simple_loader->NetError() != 0) {
     LOG(ERROR) << "Reset account failed with error "
@@ -296,22 +266,24 @@ void SyncServiceImplHarness::SignOutPrimaryAccount() {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
-void SyncServiceImplHarness::EnterSyncPausedStateForPrimaryAccount() {
-  DCHECK(service_->IsSyncFeatureActive());
-  signin::SetInvalidRefreshTokenForPrimaryAccount(
-      IdentityManagerFactory::GetForProfile(profile_.get()));
+bool SyncServiceImplHarness::EnterSyncPausedStateForPrimaryAccount() {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_.get());
+  CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  CHECK(service_->IsSyncFeatureEnabled());
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
+  return AwaitSyncTransportPaused();
 }
 
 bool SyncServiceImplHarness::ExitSyncPausedStateForPrimaryAccount() {
   signin::SetRefreshTokenForPrimaryAccount(
       IdentityManagerFactory::GetForProfile(profile_.get()));
   // The engine was off in the sync-paused state, so wait for it to start.
-  return AwaitSyncSetupCompletion();
+  return AwaitSyncTransportActive();
 }
 
 bool SyncServiceImplHarness::EnterSignInPendingStateForPrimaryAccount() {
-  CHECK_EQ(service_->GetTransportState(),
-           syncer::SyncServiceImpl::TransportState::ACTIVE);
+  CHECK(!service_->IsSyncFeatureEnabled());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_.get());
   CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
@@ -330,7 +302,7 @@ bool SyncServiceImplHarness::ExitSignInPendingStateForPrimaryAccount() {
 
 bool SyncServiceImplHarness::SetupSync(SyncTestAccount account) {
   bool result =
-      SetupSyncNoWaitForCompletion(account) && AwaitSyncSetupCompletion();
+      SetupSyncNoWaitForCompletion(account) && AwaitSyncTransportActive();
   if (!result) {
     LOG(ERROR) << profile_debug_name_ << ": SetupSync failed. Syncer status:\n"
                << GetServiceStatus();
@@ -345,7 +317,7 @@ bool SyncServiceImplHarness::SetupSyncWithCustomSettings(
     SyncTestAccount account) {
   bool result = SetupSyncWithCustomSettingsNoWaitForCompletion(
                     std::move(user_settings_callback), account) &&
-                AwaitSyncSetupCompletion();
+                AwaitSyncTransportActive();
   if (!result) {
     LOG(ERROR) << profile_debug_name_ << ": SetupSync failed. Syncer status:\n"
                << GetServiceStatus();
@@ -443,6 +415,9 @@ bool SyncServiceImplHarness::AwaitQuiescence(
     return true;
   }
 
+  CHECK(!sync_integration_test_util::IsCurrentTestAllowlistedForE2EMode())
+      << "AwaitQuiescence is not supported for E2E tests.";
+
   std::vector<raw_ptr<SyncServiceImpl, VectorExperimental>> services;
   for (SyncServiceImplHarness* harness : clients) {
     services.push_back(harness->service());
@@ -474,28 +449,11 @@ bool SyncServiceImplHarness::AwaitEngineInitialization() {
   return true;
 }
 
-bool SyncServiceImplHarness::AwaitSyncSetupCompletion() {
-  CHECK(service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete())
-      << "Waiting for setup completion can only succeed after the first setup "
-      << "got marked complete. Did you call SetupSync on this client?";
-  if (!SyncSetupChecker(service(), SyncSetupChecker::State::kFeatureActive)
-           .Wait()) {
-    LOG(ERROR) << "SyncSetupChecker timed out.";
-    return false;
-  }
-  // Signal an error if the initial sync wasn't successful.
-  if (HasAuthError(service())) {
-    LOG(ERROR) << "Credentials were rejected. Sync cannot proceed.";
-    return false;
-  }
-
-  return true;
-}
-
 bool SyncServiceImplHarness::AwaitSyncTransportActive() {
-  if (!SyncSetupChecker(service(), SyncSetupChecker::State::kTransportActive)
+  if (!SyncTransportStateChecker(service(),
+                                 syncer::SyncService::TransportState::ACTIVE)
            .Wait()) {
-    LOG(ERROR) << "SyncSetupChecker timed out.";
+    LOG(ERROR) << "SyncTransportStateChecker timed out.";
     return false;
   }
   // Signal an error if the initial sync wasn't successful.
@@ -521,35 +479,37 @@ bool SyncServiceImplHarness::AwaitInvalidationsStatus(bool expected_status) {
   return InvalidationsStatusChecker(service(), expected_status).Wait();
 }
 
-bool SyncServiceImplHarness::EnableSyncForType(
-    syncer::UserSelectableType type) {
-  DVLOG(1) << GetClientInfoString(
-      "EnableSyncForType(" +
-      std::string(syncer::GetUserSelectableTypeName(type)) + ")");
-
-  if (!IsSyncEnabledByUser()) {
-    bool result = SetupSyncWithCustomSettings(base::BindLambdaForTesting(
-        [type](syncer::SyncUserSettings* user_settings) {
-          user_settings->SetSelectedTypes(false, {type});
-#if !BUILDFLAG(IS_CHROMEOS)
-          user_settings->SetInitialSyncFeatureSetupComplete(
-              syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-        }));
-    // If SetupSync() succeeded, then Sync must now be enabled.
-    DCHECK(!result || IsSyncEnabledByUser());
-    return result;
-  }
-
+bool SyncServiceImplHarness::EnableHistorySyncNoWaitForCompletion() {
+  DVLOG(1) << GetClientInfoString("EnableHistorySync");
   if (service() == nullptr) {
-    LOG(ERROR) << "EnableSyncForType(): service() is null.";
+    LOG(ERROR) << "EnableHistorySync(): service() is null.";
+    return false;
+  }
+  service()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kHistory, true);
+  // Tabs and history are bundled together in the same toggle.
+  service()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kTabs, true);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // On desktop platforms, kSavedTabGroups are not merged to kTabs yet, but
+  // they're enabled together.
+  service()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kSavedTabGroups, true);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  return true;
+}
+
+bool SyncServiceImplHarness::EnableSelectableType(
+    syncer::UserSelectableType type) {
+  if (service() == nullptr) {
+    LOG(ERROR) << "EnableSelectableType(): service() is null.";
     return false;
   }
 
   syncer::UserSelectableTypeSet selected_types =
       service()->GetUserSettings()->GetSelectedTypes();
   if (selected_types.Has(type)) {
-    DVLOG(1) << "EnableSyncForType(): Sync already enabled for type "
+    DVLOG(1) << "EnableSelectableType(): Sync already enabled for type "
              << syncer::GetUserSelectableTypeName(type) << " on "
              << profile_debug_name_ << ".";
     return true;
@@ -557,47 +517,47 @@ bool SyncServiceImplHarness::EnableSyncForType(
 
   selected_types.Put(type);
   service()->GetUserSettings()->SetSelectedTypes(false, selected_types);
-  if (AwaitSyncSetupCompletion()) {
-    DVLOG(1) << "EnableSyncForType(): Enabled sync for type "
+  if (AwaitSyncTransportActive()) {
+    DVLOG(1) << "EnableSelectableType(): Enabled sync for type "
              << syncer::GetUserSelectableTypeName(type) << " on "
              << profile_debug_name_ << ".";
     return true;
   }
 
-  DVLOG(0) << GetClientInfoString("EnableSyncForType failed");
+  DVLOG(0) << GetClientInfoString("EnableSelectableType failed");
   return false;
 }
 
-bool SyncServiceImplHarness::DisableSyncForType(
+bool SyncServiceImplHarness::DisableSelectableType(
     syncer::UserSelectableType type) {
   DVLOG(1) << GetClientInfoString(
-      "DisableSyncForType(" +
+      "DisableSelectableType(" +
       std::string(syncer::GetUserSelectableTypeName(type)) + ")");
 
   if (service() == nullptr) {
-    LOG(ERROR) << "DisableSyncForType(): service() is null.";
+    LOG(ERROR) << "DisableSelectableType(): service() is null.";
     return false;
   }
 
   syncer::UserSelectableTypeSet selected_types =
       service()->GetUserSettings()->GetSelectedTypes();
   if (!selected_types.Has(type)) {
-    DVLOG(1) << "DisableSyncForType(): Sync already disabled for type "
-             << syncer::GetUserSelectableTypeName(type) << " on "
-             << profile_debug_name_ << ".";
+    DVLOG(1) << "DisableSelectableType(): "
+             << syncer::GetUserSelectableTypeName(type)
+             << " already disabled on " << profile_debug_name_ << ".";
     return true;
   }
 
   selected_types.Remove(type);
   service()->GetUserSettings()->SetSelectedTypes(false, selected_types);
-  if (AwaitSyncSetupCompletion()) {
-    DVLOG(1) << "DisableSyncForType(): Disabled sync for type "
+  if (AwaitSyncTransportActive()) {
+    DVLOG(1) << "DisableSelectableType(): Disabled "
              << syncer::GetUserSelectableTypeName(type) << " on "
              << profile_debug_name_ << ".";
     return true;
   }
 
-  DVLOG(0) << GetClientInfoString("DisableSyncForDatatype failed");
+  DVLOG(0) << GetClientInfoString("DisableSelectableType failed");
   return false;
 }
 
@@ -611,48 +571,50 @@ bool SyncServiceImplHarness::EnableSyncForRegisteredDatatypes() {
     return result;
   }
 
+  return EnableAllSelectableTypes();
+}
+
+bool SyncServiceImplHarness::EnableAllSelectableTypes() {
   if (service() == nullptr) {
-    LOG(ERROR) << "EnableSyncForRegisteredDatatypes(): service() is null.";
+    LOG(ERROR) << "EnableAllSelectableTypes(): service() is null.";
     return false;
   }
 
-  service()->GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/true,
-      service()->GetUserSettings()->GetRegisteredSelectableTypes());
+  service()->GetUserSettings()->SetSelectedTypes(/*sync_everything=*/true, {});
 
-  if (AwaitSyncSetupCompletion()) {
-    DVLOG(1)
-        << "EnableSyncForRegisteredDatatypes(): Enabled sync for all datatypes "
-        << "on " << profile_debug_name_ << ".";
+  if (AwaitSyncTransportActive()) {
+    DVLOG(1) << "EnableAllSelectableTypes(): Enabled all types on "
+             << profile_debug_name_ << ".";
     return true;
   }
 
-  DVLOG(0) << GetClientInfoString("EnableSyncForRegisteredDatatypes failed");
+  DVLOG(0) << GetClientInfoString("EnableAllSelectableTypes() failed.");
   return false;
 }
 
 bool SyncServiceImplHarness::DisableSyncForAllDatatypes() {
-  DVLOG(1) << GetClientInfoString("DisableSyncForAllDatatypes");
+  return DisableAllSelectableTypes();
+}
+
+bool SyncServiceImplHarness::DisableAllSelectableTypes() {
+  DVLOG(1) << GetClientInfoString("DisableAllSelectableTypes");
 
   if (service() == nullptr) {
-    LOG(ERROR) << "DisableSyncForAllDatatypes(): service() is null.";
+    LOG(ERROR) << "DisableAllSelectableTypes(): service() is null.";
     return false;
   }
 
   service()->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false, syncer::UserSelectableTypeSet());
 
-  DVLOG(1) << "DisableSyncForAllDatatypes(): Disabled sync for all "
-           << "datatypes on " << profile_debug_name_;
+  DVLOG(1) << "DisableAllSelectableTypes(): Disabled all types on "
+           << profile_debug_name_ << ".";
   return true;
 }
 
 SyncCycleSnapshot SyncServiceImplHarness::GetLastCycleSnapshot() const {
   DCHECK(service() != nullptr) << "Sync service has not yet been set up.";
-  if (service()->IsSyncFeatureActive()) {
-    return service()->GetLastCycleSnapshotForDebugging();
-  }
-  return SyncCycleSnapshot();
+  return service()->GetLastCycleSnapshotForDebugging();
 }
 
 absl::flat_hash_map<syncer::DataType, size_t>

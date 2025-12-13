@@ -46,11 +46,12 @@ class BrowserWebStateListDelegate : public WebStateListDelegate,
   void WebStateRealized(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
-  // Returns the profile used for this instance.
+  // Returns the profile used for this instance. The value is not nullptr.
   ProfileIOS* profile() { return profile_.get(); }
 
  private:
   // Profile that should be used for all WebState in that WebStateList.
+  // This is not a nullptr.
   raw_ptr<ProfileIOS> const profile_;
 
   // Controls what to do when a WebState is inserted.

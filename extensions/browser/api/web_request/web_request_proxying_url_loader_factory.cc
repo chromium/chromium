@@ -41,6 +41,7 @@
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
@@ -69,6 +70,8 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace {
@@ -167,6 +170,9 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
           network_service_request_id_ != 0 &&
           WebRequestEventRouter::Get(factory_->browser_context_)
               ->HasAnyExtraHeadersListener(factory_->browser_context_)),
+      has_any_security_info_listeners_(
+          WebRequestEventRouter::Get(factory_->browser_context_)
+              ->HasAnySecurityInfoListener(factory_->browser_context_)),
       navigation_response_task_runner_(navigation_response_task_runner) {
   TRACE_EVENT_WITH_FLOW1(
       "extensions",
@@ -202,7 +208,10 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::InProgressRequest(
       for_cors_preflight_(true),
       has_any_extra_headers_listeners_(
           WebRequestEventRouter::Get(factory_->browser_context_)
-              ->HasAnyExtraHeadersListener(factory_->browser_context_)) {
+              ->HasAnyExtraHeadersListener(factory_->browser_context_)),
+      has_any_security_info_listeners_(
+          WebRequestEventRouter::Get(factory_->browser_context_)
+              ->HasAnySecurityInfoListener(factory_->browser_context_)) {
   TRACE_EVENT_WITH_FLOW1(
       "extensions",
       "WebRequestProxyingURLLoaderFactory::InProgressRequest::"
@@ -224,14 +233,11 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::~InProgressRequest() {
       TRACE_EVENT_FLAG_FLOW_IN, "state", state_);
 
   if (request_.keepalive && !for_cors_preflight_) {
-    if (base::FeatureList::IsEnabled(
-            extensions_features::kReportKeepaliveUkm)) {
-      ukm::builders::Extensions_WebRequest_KeepaliveRequestFinished(
-          ukm_source_id_)
-          .SetState(state_)
-          .SetNumRedirects(num_redirects_)
-          .Record(ukm::UkmRecorder::Get());
-    }
+    ukm::builders::Extensions_WebRequest_KeepaliveRequestFinished(
+        ukm_source_id_)
+        .SetState(state_)
+        .SetNumRedirects(num_redirects_)
+        .Record(ukm::UkmRecorder::Get());
   }
   // This is important to ensure that no outstanding blocking requests continue
   // to reference state owned by this object.
@@ -278,6 +284,10 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   // `current_request_uses_header_client_` is true but the request is not made
   // with the kURLLoadOptionUseHeaderClient option, also check
   // `has_any_extra_headers_listeners_` here. See http://crbug.com/1074282.
+  // Note that the header client is also used with has_any_security_info_client
+  // to obtain ssl_info of the connection. However, value of
+  // current_request_uses_header_client might be false, to not expose sensitive
+  // headers.
   current_request_uses_header_client_ =
       has_any_extra_headers_listeners_ &&
       factory_->url_loader_header_client_receiver_.is_bound() &&
@@ -572,6 +582,11 @@ bool WebRequestProxyingURLLoaderFactory::IsForDownload() const {
          content::ContentBrowserClient::URLLoaderFactoryType::kDownload;
 }
 
+bool WebRequestProxyingURLLoaderFactory::IsForPrefetch() const {
+  return loader_factory_type_ ==
+         content::ContentBrowserClient::URLLoaderFactoryType::kPrefetch;
+}
+
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnLoaderCreated(
     mojo::PendingReceiver<network::mojom::TrustedHeaderClient> receiver) {
   TRACE_EVENT_WITH_FLOW1(
@@ -630,6 +645,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnBeforeSendHeaders(
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnHeadersReceived(
     const std::string& headers,
     const net::IPEndPoint& remote_endpoint,
+    const std::optional<net::SSLInfo>& ssl_info,
     OnHeadersReceivedCallback callback) {
   TRACE_EVENT_WITH_FLOW1(
       "extensions",
@@ -641,6 +657,13 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnHeadersReceived(
       "for_cors_preflight", for_cors_preflight_);
 
   auto parsed_headers = base::MakeRefCounted<net::HttpResponseHeaders>(headers);
+
+  if (WebRequestEventRouter::Get(factory_->browser_context_)
+          ->HasSecurityInfoListenerForRequest(factory_->browser_context_,
+                                              &info_.value())) {
+    info_->AddSslInfo(ssl_info);
+  }
+
   if (!current_request_uses_header_client_) {
     std::move(callback).Run(net::OK, std::nullopt, std::nullopt);
 
@@ -852,7 +875,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     uint32_t options = options_;
     // Even if this request does not use the header client, future redirects
     // might, so we need to set the option on the loader.
-    if (has_any_extra_headers_listeners_) {
+    if (has_any_extra_headers_listeners_ || has_any_security_info_listeners_) {
       options |= network::mojom::kURLLoadOptionUseHeaderClient;
     }
     factory_->target_factory_->CreateLoaderAndStart(
@@ -1245,6 +1268,11 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
 
   WebRequestEventRouter::Get(factory_->browser_context_)
       ->OnResponseStarted(factory_->browser_context_, &info_.value(), net::OK);
+
+  // OnReceiveResponse() can be called at most once. This check is added to
+  // debug crbug.com/463388771.
+  CHECK(!has_forwarded_response_);
+  has_forwarded_response_ = true;
   target_client_->OnReceiveResponse(current_response_.Clone(),
                                     std::move(current_body_),
                                     std::move(current_cached_metadata_));
@@ -1445,7 +1473,7 @@ bool WebRequestProxyingURLLoaderFactory::InProgressRequest::IsRedirectSafe(
     const Extension* extension =
         ExtensionRegistry::Get(factory_->browser_context_)
             ->enabled_extensions()
-            .GetByID(target_url.host());
+            .GetByID(target_url.GetHost());
     if (!extension) {
       return false;
     }
@@ -1572,9 +1600,10 @@ void WebRequestProxyingURLLoaderFactory::CreateLoaderAndStart(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Make sure we are not proxying a browser initiated non-navigation
-  // request except for loading service worker scripts.
+  // request except for loading service worker scripts and browser-initiated
+  // prefetch.
   DCHECK(render_process_id_ != -1 || navigation_ui_data_ ||
-         IsForServiceWorkerScript());
+         IsForServiceWorkerScript() || IsForPrefetch());
 
   // The |web_request_id| doesn't really matter. It just needs to be
   // unique per-BrowserContext so extensions can make sense of it.

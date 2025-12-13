@@ -83,7 +83,6 @@ class CORE_EXPORT CSSFontSelector : public CSSFontSelectorBase {
 
   // `CSSFontSelectorBase` overrides
   bool IsAlive() const override;
-  FontMatchingMetrics* GetFontMatchingMetrics() const override;
   UseCounter* GetUseCounter() const override;
 
  private:

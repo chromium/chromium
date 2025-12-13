@@ -105,7 +105,7 @@ TEST(CustomElementReactionQueueTest, clear_duringInvoke) {
   }
   {
     HeapVector<Member<Command>> commands;
-    commands.push_back(MakeGarbageCollected<Call>(WTF::BindOnce(
+    commands.push_back(MakeGarbageCollected<Call>(BindOnce(
         [](CustomElementReactionQueue* queue, Element&) { queue->Clear(); },
         WrapPersistent(queue))));
     queue->Add(*MakeGarbageCollected<TestReaction>(std::move(commands)));

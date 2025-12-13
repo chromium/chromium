@@ -129,7 +129,7 @@ class BLINK_PLATFORM_EXPORT WebAudioSourceProviderImpl
   const std::unique_ptr<TeeFilter> tee_filter_;
 
   // This dangling raw_ptr occurred in:
-  // webkit_unit_tests: WebMediaPlayerImplTest.MediaPositionState_Playing
+  // blink_unittests: WebMediaPlayerImplTest.MediaPositionState_Playing
   // https://ci.chromium.org/ui/p/chromium/builders/try/win-rel/237451/test-results?q=ExactID%3Aninja%3A%2F%2Fthird_party%2Fblink%2Frenderer%2Fcontroller%3Ablink_unittests%2FWebMediaPlayerImplTest.MediaPositionState_Playing+VHash%3Abfecf1e29c759a1c
   const raw_ptr<media::MediaLog, FlakyDanglingUntriaged> media_log_;
 

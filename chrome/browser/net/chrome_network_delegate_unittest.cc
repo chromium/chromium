@@ -11,7 +11,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "base/files/file_util.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_running_on_chromeos.h"
 #include "base/time/time.h"

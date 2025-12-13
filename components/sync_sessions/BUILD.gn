@@ -61,7 +61,7 @@ static_library("sync_sessions") {
     "//components/sync_user_events",
     "//components/version_info",
     "//google_apis",
-    "//ui/base:base",
+    "//ui/base",
     "//ui/gfx",
     "//url",
   ]
@@ -117,7 +117,7 @@ source_set("unit_tests") {
     "//components/sync:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/base:base",
+    "//ui/base",
     "//url",
   ]
 }

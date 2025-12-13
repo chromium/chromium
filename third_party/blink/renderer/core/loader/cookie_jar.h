@@ -52,13 +52,29 @@ class CORE_EXPORT CookieJar : public GarbageCollected<CookieJar> {
   void InvalidateCache();
 
  private:
+  // The state of the CookieManager Mojo pipe when
+  // RequestRestrictedCookieManagerIfNeeded() was called.
+  //
+  // TODO(crbug.com/414748254): These were added specifically to help
+  // investigate a specific renderer hang. Remove once the investigation is
+  // done.
+  enum class RequestCookieManagerPipeState {
+    // There was no preexisting Mojo pipe, so a new one was created.
+    kNoOldPipe = 0,
+    // There was a connected preexisting Mojo pipe, but it was no longer
+    // connected, so a new one was created.
+    kDisconnectedOldPipe = 1,
+    // There was a connected preexisting Mojo pipe that was still connected, so
+    // it was reused.
+    kConnectedOldPipe = 2,
+  };
   using CookiesResponsePtr = network::mojom::blink::CookiesResponsePtr;
 
   void OnSetCookieResponse(const KURL& cookie_url,
                            const bool apply_devtools_overrides,
                            CookiesResponsePtr response);
 
-  void RequestRestrictedCookieManagerIfNeeded();
+  RequestCookieManagerPipeState RequestRestrictedCookieManagerIfNeeded();
   void OnBackendDisconnect();
 
   // Returns true if last_cookies_ is not guaranteed to be up to date and an IPC

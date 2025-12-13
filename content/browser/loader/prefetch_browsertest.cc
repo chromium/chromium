@@ -47,10 +47,6 @@ enum class SplitCacheTestCase {
   kDisabled,
   kEnabledTripleKeyed,
   kEnabledTriplePlusCredsBool,
-  kEnabledTriplePlusCrossSiteMainFrameNavBool,
-  // TODO(crbug.com/40186884): If we decide to launch SplitCacheByCredentials,
-  // we should add a test case for the SplitCacheByCredentials feature and the
-  // SplitCacheByCrossSiteMainFrameNavigationBoolean feature both enabled.
 };
 
 const struct {
@@ -58,9 +54,7 @@ const struct {
   base::test::FeatureRef feature;
 } kTestCaseToFeatureMapping[] = {
     {SplitCacheTestCase::kEnabledTriplePlusCredsBool,
-     net::features::kSplitCacheByIncludeCredentials},
-    {SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-     net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean}};
+     net::features::kSplitCacheByIncludeCredentials}};
 
 }  // namespace
 
@@ -110,85 +104,6 @@ class PrefetchBrowserTest
       split_cache_experiment_feature_list_;
   base::test::ScopedFeatureList split_cache_enabled_feature_list_;
 };
-
-class PrefetchBrowserTestPrivacyChanges
-    : public PrefetchBrowserTestBase,
-      public testing::WithParamInterface<bool> {
- public:
-  PrefetchBrowserTestPrivacyChanges()
-      : privacy_changes_enabled_(GetParam()),
-        cross_origin_server_(std::make_unique<net::EmbeddedTestServer>()) {}
-
-  PrefetchBrowserTestPrivacyChanges(const PrefetchBrowserTestPrivacyChanges&) =
-      delete;
-  PrefetchBrowserTestPrivacyChanges& operator=(
-      const PrefetchBrowserTestPrivacyChanges&) = delete;
-
-  ~PrefetchBrowserTestPrivacyChanges() override = default;
-
-  void SetUp() override {
-    std::vector<base::test::FeatureRef> enable_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (privacy_changes_enabled_) {
-      enable_features.push_back(blink::features::kPrefetchPrivacyChanges);
-    } else {
-      disabled_features.push_back(blink::features::kPrefetchPrivacyChanges);
-    }
-    feature_list_.InitWithFeatures(enable_features, disabled_features);
-    PrefetchBrowserTestBase::SetUp();
-  }
-
- protected:
-  const bool privacy_changes_enabled_;
-  std::unique_ptr<net::EmbeddedTestServer> cross_origin_server_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Test flakes.
-// TODO(crbug.com/40248957): Resolve flake and reenable.
-IN_PROC_BROWSER_TEST_P(PrefetchBrowserTestPrivacyChanges,
-                       DISABLED_RedirectNotFollowed) {
-  const char* prefetch_path = "/prefetch.html";
-  const char* redirect_path = "/redirect.html";
-  const char* destination_path = "/destination.html";
-  RegisterResponse(
-      prefetch_path,
-      ResponseEntry(base::StringPrintf(
-          "<body><link rel='prefetch' href='%s'></body>", redirect_path)));
-  RegisterResponse(
-      redirect_path,
-      ResponseEntry("", "", {{"location", std::string(destination_path)}},
-                    net::HTTP_MOVED_PERMANENTLY));
-  RegisterResponse(destination_path,
-                   ResponseEntry("<head><title>Prefetch Target</title></head>",
-                                 "text/html", {{"cache-control", "no-store"}}));
-
-  base::RunLoop prefetch_waiter;
-  auto main_page_counter = RequestCounter::CreateAndMonitor(
-      embedded_test_server(), prefetch_path, &prefetch_waiter);
-  auto destination_counter = RequestCounter::CreateAndMonitor(
-      embedded_test_server(), destination_path);
-  RegisterRequestHandler(embedded_test_server());
-  ASSERT_TRUE(embedded_test_server()->Start());
-  EXPECT_EQ(0, main_page_counter->GetRequestCount());
-  EXPECT_EQ(0, destination_counter->GetRequestCount());
-  EXPECT_EQ(0, GetPrefetchURLLoaderCallCount());
-
-  const GURL destination_url = embedded_test_server()->GetURL(destination_path);
-  // Loading a page that prefetches the redirect resource only follows the
-  // redirect when the mode is follow.
-  EXPECT_TRUE(
-      NavigateToURL(shell(), embedded_test_server()->GetURL(prefetch_path)));
-  prefetch_waiter.Run();
-  EXPECT_EQ(1, main_page_counter->GetRequestCount());
-
-  NavigateToURLAndWaitTitle(destination_url, "Prefetch Target");
-  const int expected_request_count = privacy_changes_enabled_ ? 1 : 2;
-  EXPECT_EQ(expected_request_count, destination_counter->GetRequestCount());
-  EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-}
 
 // TODO(crbug.com/40256279): De-flake and re-enable.
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
@@ -1641,10 +1556,10 @@ IN_PROC_BROWSER_TEST_F(FencedFramePrefetchTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     PrefetchBrowserTest,
-    testing::ValuesIn(
-        {SplitCacheTestCase::kDisabled, SplitCacheTestCase::kEnabledTripleKeyed,
-         SplitCacheTestCase::kEnabledTriplePlusCredsBool,
-         SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool}),
+    testing::ValuesIn({SplitCacheTestCase::kDisabled,
+                       SplitCacheTestCase::kEnabledTripleKeyed,
+                       SplitCacheTestCase::kEnabledTriplePlusCredsBool}),
+
     [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
       switch (info.param) {
         case SplitCacheTestCase::kDisabled:
@@ -1653,13 +1568,7 @@ INSTANTIATE_TEST_SUITE_P(
           return "SplitCacheEnabledTripleKeyed";
         case SplitCacheTestCase::kEnabledTriplePlusCredsBool:
           return "SplitCacheEnabledTriplePlusCredsBool";
-        case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
-          return "SplitCacheEnabledTriplePlusCrossSiteMainFrameNavigationBool";
       }
     });
-
-INSTANTIATE_TEST_SUITE_P(PrefetchBrowserTestPrivacyChanges,
-                         PrefetchBrowserTestPrivacyChanges,
-                         testing::Bool());
 
 }  // namespace content

@@ -58,7 +58,7 @@ suite('confirmationPageTest', () => {
 
   function getElementContent(host: Element|null, selector: string): string {
     const element = host!.shadowRoot!.querySelector(selector);
-    return element!.textContent!.trim();
+    return element!.textContent.trim();
   }
 
   function verifyRecordPostSubmitActionCalled(

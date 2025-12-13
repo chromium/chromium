@@ -27,11 +27,8 @@ constexpr SharedImageUsageSet kWebGPUUsages =
 
 constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-    SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
     SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
-    SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY |
-    SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
     SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD |
     kWebGPUUsages;
@@ -128,18 +125,12 @@ bool GLTextureImageBackingFactory::IsSupported(
     if ((gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
          gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) ||
         emulate_using_angle_metal_for_testing_) {
+      // GLES2 usage is not allowed, as WebGL might be on a different
+      // GPU than raster/composite.
       SharedImageUsageSet metal_invalid_usages =
-          SHARED_IMAGE_USAGE_DISPLAY_READ;
+          SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_GLES2_READ |
+          SHARED_IMAGE_USAGE_GLES2_WRITE;
 
-      // GLES2 usage is in general not allowed, as WebGL might be on a different
-      // GPU than raster/composite. However, if the GLES2 usage is for
-      // raster-over-GLES2 only, it is by definition on the same GPU as
-      // raster/composite and thus allowable.
-      if (!usage.Has(SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY)) {
-        metal_invalid_usages = metal_invalid_usages |
-                               SHARED_IMAGE_USAGE_GLES2_READ |
-                               SHARED_IMAGE_USAGE_GLES2_WRITE;
-      }
       if (usage.HasAny(metal_invalid_usages)) {
         return false;
       }
@@ -152,15 +143,9 @@ bool GLTextureImageBackingFactory::IsSupported(
   if (gr_context_type != GrContextType::kGL &&
       gr_context_type != GrContextType::kNone) {
     SharedImageUsageSet unsupported_usages =
-        SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE;
+        SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+        SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE;
 
-    // Raster usage is in general not allowed, as described above. However, if
-    // this SI is being used in the context of raster-over-GLES2 only, then
-    // raster is by definition using GL for the SI and thus allowable.
-    if (!usage.Has(SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY)) {
-      unsupported_usages = unsupported_usages | SHARED_IMAGE_USAGE_RASTER_READ |
-                           SHARED_IMAGE_USAGE_RASTER_WRITE;
-    }
     if (usage.HasAny(unsupported_usages)) {
       return false;
     }
@@ -169,6 +154,13 @@ bool GLTextureImageBackingFactory::IsSupported(
   // Only supports WebGPU usages on ANGLE/GL on a Skia/GL context
   if (usage.HasAny(kWebGPUUsages)) {
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+#if BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
+    if (enable_webgpu_on_vk_via_gl_interop_) {
+      // WebGPU usages will be handled by ExternalVkImageBackingFactory when
+      // running in webgpu vk on chromium gl.
+      return false;
+    }
+#endif
     if (gr_context_type != GrContextType::kGL ||
         gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE ||
         gl::GetANGLEImplementation() != gl::ANGLEImplementation::kOpenGL) {

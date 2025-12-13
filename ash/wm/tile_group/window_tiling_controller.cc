@@ -79,7 +79,7 @@ bool WindowTilingController::CanTilingResize(aura::Window* window) const {
 void WindowTilingController::OnTilingResizeLeft(aura::Window* window) {
   const gfx::Rect window_bounds = window->GetBoundsInScreen();
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      display::Screen::Get()->GetDisplayNearestWindow(window);
   const gfx::Rect work_area = display.work_area();
 
   // "Snap" left if neither left nor right edges are against work area bounds.
@@ -116,7 +116,7 @@ void WindowTilingController::OnTilingResizeLeft(aura::Window* window) {
 void WindowTilingController::OnTilingResizeRight(aura::Window* window) {
   const gfx::Rect window_bounds = window->GetBoundsInScreen();
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      display::Screen::Get()->GetDisplayNearestWindow(window);
   const gfx::Rect work_area = display.work_area();
 
   // "Snap" right if neither left nor right edges are against work area bounds.
@@ -152,7 +152,7 @@ void WindowTilingController::OnTilingResizeRight(aura::Window* window) {
 void WindowTilingController::OnTilingResizeUp(aura::Window* window) {
   const gfx::Rect window_bounds = window->GetBoundsInScreen();
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      display::Screen::Get()->GetDisplayNearestWindow(window);
   const gfx::Rect work_area = display.work_area();
 
   // "Snap" up if neither top nor bottom edges are against work area bounds.
@@ -187,7 +187,7 @@ void WindowTilingController::OnTilingResizeUp(aura::Window* window) {
 void WindowTilingController::OnTilingResizeDown(aura::Window* window) {
   const gfx::Rect window_bounds = window->GetBoundsInScreen();
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      display::Screen::Get()->GetDisplayNearestWindow(window);
   const gfx::Rect work_area = display.work_area();
 
   // "Snap" down if neither top nor bottom edges are against work area bounds.

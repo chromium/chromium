@@ -15,6 +15,7 @@ import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
 import android.provider.Browser;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -52,15 +53,21 @@ import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoWindowNightModeStateProvider;
+import org.chromium.chrome.browser.multiwindow.InstanceInfo;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
+import org.chromium.chrome.browser.tabmodel.MultiTabMetadata;
+import org.chromium.chrome.browser.tabmodel.RedirectTabCreator;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -77,12 +84,15 @@ import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Instrumentation tests for ChromeTabbedActivity. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -222,41 +232,6 @@ public class ChromeTabbedActivityTest {
     }
 
     @Test
-    @SmallTest
-    @MinAndroidSdkLevel(VERSION_CODES.S)
-    public void testTabModelSelectorObserverOnTabStateInitialized() {
-        // Get the original value of |mCreatedTabOnStartup|.
-        boolean createdTabOnStartup = mActivity.getCreatedTabOnStartupForTesting();
-
-        // Reset the values of |mCreatedTabOnStartup| and |MultiInstanceManager.mTabModelObserver|.
-        // This tab model selector observer should be registered in MultiInstanceManager on tab
-        // state initialization irrespective of the value of |mCreatedTabOnStartup|.
-        mActivity.setCreatedTabOnStartupForTesting(false);
-        mActivity.getMultiInstanceMangerForTesting().setTabModelObserverForTesting(null);
-
-        var tabModelSelectorObserver = mActivity.getTabModelSelectorObserverForTesting();
-        ThreadUtils.runOnUiThreadBlocking(tabModelSelectorObserver::onTabStateInitialized);
-        Assert.assertTrue(
-                "Regular tab count should be written to SharedPreferences after tab state"
-                        + " initialization.",
-                ChromeSharedPreferences.getInstance()
-                                .readIntsWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT)
-                                .size()
-                        > 0);
-        Assert.assertTrue(
-                "Incognito tab count should be written to SharedPreferences after tab state"
-                        + " initialization.",
-                ChromeSharedPreferences.getInstance()
-                                .readIntsWithPrefix(
-                                        ChromePreferenceKeys.MULTI_INSTANCE_INCOGNITO_TAB_COUNT)
-                                .size()
-                        > 0);
-
-        // Restore the original value of |mCreatedTabOnStartup|.
-        mActivity.setCreatedTabOnStartupForTesting(createdTabOnStartup);
-    }
-
-    @Test
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1347506")
     public void testMultiUrlIntent() {
@@ -307,7 +282,6 @@ public class ChromeTabbedActivityTest {
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID})
     public void testTabGroupIntent_collapseGroup() {
         testTabGroupIntent(/* shouldApplyCollapse= */ true);
     }
@@ -316,7 +290,6 @@ public class ChromeTabbedActivityTest {
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID})
     public void testTabGroupIntent_skipCollapseWhenStripHidden() {
         // Hide tab strip.
         ThreadUtils.runOnUiThreadBlocking(
@@ -336,7 +309,8 @@ public class ChromeTabbedActivityTest {
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
     public void testExplicitViewIntent_OpensInExistingLiveActivity() {
-        int initialWindowCount = MultiWindowUtils.getInstanceCount();
+        int initialWindowCount =
+                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY);
         Intent intent =
                 new Intent(Intent.ACTION_VIEW, Uri.parse(JUnitTestGURLs.EXAMPLE_URL.getSpec()));
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
@@ -354,7 +328,7 @@ public class ChromeTabbedActivityTest {
         Assert.assertEquals(
                 "No new window should be opened.",
                 initialWindowCount,
-                MultiWindowUtils.getInstanceCount());
+                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY));
         // A new tab should be opened in the existing ChromeTabbedActivity.
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -487,6 +461,161 @@ public class ChromeTabbedActivityTest {
 
     @Test
     @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testNewRegularTab_SameWindow() {
+        mActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
+        ChromeTabCreator tabCreatorRegular = mActivity.getTabCreator(false);
+        Assert.assertFalse(tabCreatorRegular instanceof RedirectTabCreator);
+
+        LoadUrlParams param =
+                new LoadUrlParams(mActivityTestRule.getTestServer().getURL(FILE_PATH));
+        Tab tab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return tabCreatorRegular.createNewTab(
+                                    param, TabLaunchType.FROM_CHROME_UI, null);
+                        });
+        Assert.assertNotNull(tab);
+        AtomicInteger regularTabCount = new AtomicInteger();
+        AtomicInteger incognitoTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    regularTabCount.set(
+                            mActivity
+                                    .getTabModelSelector()
+                                    .getModel(false)
+                                    .getTabCountSupplier()
+                                    .get());
+                    incognitoTabCount.set(
+                            mActivity
+                                    .getTabModelSelector()
+                                    .getModel(true)
+                                    .getTabCountSupplier()
+                                    .get());
+                });
+        Assert.assertEquals(2, regularTabCount.get());
+        Assert.assertEquals(0, incognitoTabCount.get());
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testNewIncognitoTab_NewWindow() {
+        mActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
+        ChromeTabCreator tabCreatorIncognito = mActivity.getTabCreator(true);
+        Assert.assertTrue(tabCreatorIncognito instanceof RedirectTabCreator);
+
+        LoadUrlParams param =
+                new LoadUrlParams(mActivityTestRule.getTestServer().getURL(FILE_PATH));
+        Tab tab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return tabCreatorIncognito.createNewTab(
+                                    param, TabLaunchType.FROM_CHROME_UI, null);
+                        });
+        Assert.assertNull(tab);
+        AtomicInteger regularTabCount = new AtomicInteger();
+        AtomicInteger incognitoTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    regularTabCount.set(
+                            mActivity
+                                    .getTabModelSelector()
+                                    .getModel(false)
+                                    .getTabCountSupplier()
+                                    .get());
+                    incognitoTabCount.set(
+                            mActivity
+                                    .getTabModelSelector()
+                                    .getModel(true)
+                                    .getTabCountSupplier()
+                                    .get());
+                });
+        Assert.assertEquals(1, regularTabCount.get());
+        Assert.assertEquals(0, incognitoTabCount.get());
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testNewIncognitoTab_SameWindow() {
+        mActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
+        ChromeTabCreator tabCreatorIncognito = mActivity.getTabCreator(true);
+        Assert.assertFalse(tabCreatorIncognito instanceof RedirectTabCreator);
+
+        LoadUrlParams param =
+                new LoadUrlParams(mActivityTestRule.getTestServer().getURL(FILE_PATH));
+        Tab tab =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return tabCreatorIncognito.createNewTab(
+                                    param, TabLaunchType.FROM_CHROME_UI, null);
+                        });
+        Assert.assertNotNull(tab);
+        AtomicInteger regularTabCount = new AtomicInteger();
+        AtomicInteger incognitoTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    regularTabCount.set(
+                            mActivity
+                                    .getTabModelSelector()
+                                    .getModel(false)
+                                    .getTabCountSupplier()
+                                    .get());
+                    incognitoTabCount.set(
+                            mActivity
+                                    .getTabModelSelector()
+                                    .getModel(true)
+                                    .getTabCountSupplier()
+                                    .get());
+                });
+        Assert.assertEquals(1, regularTabCount.get());
+        Assert.assertEquals(1, incognitoTabCount.get());
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    public void testSingleTabReparentingIntent_PinnedTab() {
+        AtomicInteger initialTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> initialTabCount.set(mActivity.getCurrentTabModel().getCount()));
+
+        Intent reparentingIntent = new Intent(Intent.ACTION_VIEW);
+        reparentingIntent.setClass(mActivity, ChromeTabbedActivity.class);
+        reparentingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        reparentingIntent.setData(Uri.parse(JUnitTestGURLs.URL_1.getSpec()));
+        IntentHandler.setTabId(reparentingIntent, 101);
+        IntentHandler.setPinnedState(reparentingIntent, true);
+        IntentUtils.addTrustedIntentExtras(reparentingIntent);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(reparentingIntent));
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(
+                            "A new tab should be created.",
+                            tabModel.getCount(),
+                            Matchers.is(initialTabCount.get() + 1));
+                    // Pinned tabs are added to the start of the tab model.
+                    Tab tab = tabModel.getTabAt(initialTabCount.get() - 1);
+                    Criteria.checkThat(
+                            "The URL of the new tab should be correct.",
+                            tab.getUrl().getSpec(),
+                            Matchers.is(JUnitTestGURLs.URL_1.getSpec()));
+                    Criteria.checkThat(
+                            "The new tab should be pinned.", tab.getIsPinned(), Matchers.is(true));
+                });
+    }
+
+    @Test
+    @MediumTest
     // Intentionally not batched due to recreating activity.
     @RequiresRestart
     @DisabledTest(message = "crbug.com/1187320 This doesn't work with FeedV2 and crbug.com/1096295")
@@ -582,7 +711,8 @@ public class ChromeTabbedActivityTest {
                         .expectAnyRecord("Android.Reparent.TabGroup.Duration")
                         .build();
         long startTime = SystemClock.elapsedRealtime();
-        int initialWindowCount = MultiWindowUtils.getInstanceCount();
+        int initialWindowCount =
+                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY);
         Intent intent =
                 new Intent(Intent.ACTION_VIEW, Uri.parse(JUnitTestGURLs.EXAMPLE_URL.getSpec()));
         intent.putExtra(IntentHandler.EXTRA_REPARENT_START_TIME, startTime);
@@ -602,7 +732,7 @@ public class ChromeTabbedActivityTest {
         Assert.assertEquals(
                 "No new window should be opened.",
                 initialWindowCount,
-                MultiWindowUtils.getInstanceCount());
+                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY));
 
         // An individual tab and 3 grouped tabs should be opened in the existing
         // ChromeTabbedActivity.
@@ -629,8 +759,6 @@ public class ChromeTabbedActivityTest {
                         Tab curTab = tabModel.getTabAt(i);
                         Assert.assertEquals(
                                 "tabGroupId is incorrect", TAB_GROUP_ID, curTab.getTabGroupId());
-                        Assert.assertEquals(
-                                "rootId is incorrect", expectedRootId, curTab.getRootId());
                     }
 
                     // Verify other tab group properties.
@@ -639,17 +767,161 @@ public class ChromeTabbedActivityTest {
                                     .getTabModelSelector()
                                     .getTabGroupModelFilterProvider()
                                     .getTabGroupModelFilter(false);
-                    Assert.assertEquals(TAB_GROUP_TITLE, filter.getTabGroupTitle(expectedRootId));
-                    Assert.assertEquals(0, filter.getTabGroupColor(expectedRootId));
+                    Assert.assertEquals(TAB_GROUP_TITLE, filter.getTabGroupTitle(TAB_GROUP_ID));
+                    Assert.assertEquals(0, filter.getTabGroupColor(TAB_GROUP_ID));
                     if (shouldApplyCollapse) {
-                        Assert.assertTrue(filter.getTabGroupCollapsed(expectedRootId));
+                        Assert.assertTrue(filter.getTabGroupCollapsed(TAB_GROUP_ID));
                     } else {
-                        Assert.assertFalse(filter.getTabGroupCollapsed(expectedRootId));
+                        Assert.assertFalse(filter.getTabGroupCollapsed(TAB_GROUP_ID));
                     }
 
                     // Verify histograms.
                     histogramExpectation.assertExpected();
                 });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testMultiUrlReparentingIntent() {
+        AtomicInteger initialTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> initialTabCount.set(mActivity.getCurrentTabModel().getCount()));
+
+        Intent reparentingIntent = new Intent(Intent.ACTION_VIEW);
+        reparentingIntent.setClass(mActivity, ChromeTabbedActivity.class);
+        reparentingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        IntentHandler.setMultiTabMetadata(
+                reparentingIntent,
+                MultiTabMetadata.createForTesting(
+                        /* tabIds= */ new ArrayList<>(List.of(101, 102)),
+                        /* urls= */ new ArrayList<>(
+                                List.of(
+                                        JUnitTestGURLs.URL_1.getSpec(),
+                                        JUnitTestGURLs.URL_2.getSpec())),
+                        /* isPinned= */ new boolean[] {false, false},
+                        /* isIncognito= */ false));
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(reparentingIntent));
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount.get() + 2));
+                    // Tabs are added at the end of the tab model.
+                    Criteria.checkThat(
+                            tabModel.getTabAt(initialTabCount.get()).getUrl(),
+                            Matchers.is(JUnitTestGURLs.URL_1));
+                    Criteria.checkThat(
+                            tabModel.getTabAt(initialTabCount.get() + 1).getUrl(),
+                            Matchers.is(JUnitTestGURLs.URL_2));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testMultiUrlReparentingIntent_EmptyList() {
+        AtomicInteger initialTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> initialTabCount.set(mActivity.getCurrentTabModel().getCount()));
+
+        Intent reparentingIntent = new Intent(Intent.ACTION_VIEW);
+        reparentingIntent.setClass(mActivity, ChromeTabbedActivity.class);
+        reparentingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        IntentHandler.setMultiTabMetadata(
+                reparentingIntent,
+                MultiTabMetadata.createForTesting(
+                        /* tabIds= */ new ArrayList<>(),
+                        /* urls= */ new ArrayList<>(),
+                        /* isPinned= */ new boolean[0],
+                        /* isIncognito= */ false));
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(reparentingIntent));
+
+        // Wait to ensure no new tabs are created.
+        SystemClock.sleep(1000);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount.get()));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testMultiUrlReparentingIntent_mismatchedLists() {
+        AtomicInteger initialTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> initialTabCount.set(mActivity.getCurrentTabModel().getCount()));
+
+        Intent reparentingIntent = new Intent(Intent.ACTION_VIEW);
+        reparentingIntent.setClass(mActivity, ChromeTabbedActivity.class);
+        reparentingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        // Mismatch: 2 IDs, 1 URL. This should be handled gracefully without crashing.
+        IntentHandler.setMultiTabMetadata(
+                reparentingIntent,
+                MultiTabMetadata.createForTesting(
+                        /* tabIds= */ new ArrayList<>(List.of(101, 102)),
+                        /* urls= */ new ArrayList<>(List.of(JUnitTestGURLs.URL_1.getSpec())),
+                        /* isPinned= */ new boolean[] {false, false},
+                        /* isIncognito= */ false));
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(reparentingIntent));
+
+        // Wait to ensure no new tabs are created.
+        SystemClock.sleep(500);
+
+        // Verify that no new tabs were created due to the malformed intent.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(
+                            "Tab count should not change for mismatched lists",
+                            tabModel.getCount(),
+                            Matchers.is(initialTabCount.get()));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.VANILLA_ICE_CREAM)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testLaunchIncognitoWindowWithExtras_NightModeDefaultEnabled() {
+        // This is Android V+ because overriding night mode requires the intent to be stored
+        // by attachBaseContext(), which is not the case for versions below Android V.
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setClass(mActivity, ChromeTabbedActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
+        IntentUtils.addTrustedIntentExtras(intent);
+
+        final ChromeTabbedActivity incognitoWindowActivity =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.CREATED,
+                        () -> mActivity.getApplicationContext().startActivity(intent));
+
+        // Incognito activity should be in night mode by default.
+        NightModeStateProvider incognitoWindowNightModeStateProvider =
+                ThreadUtils.runOnUiThreadBlocking(
+                        incognitoWindowActivity::createNightModeStateProvider);
+        Assert.assertTrue(
+                incognitoWindowNightModeStateProvider
+                        instanceof IncognitoWindowNightModeStateProvider);
+        Assert.assertTrue(incognitoWindowNightModeStateProvider.isInNightMode());
+        Assert.assertEquals(
+                "AppCompatDelegate should be set to local night mode",
+                AppCompatDelegate.MODE_NIGHT_YES,
+                incognitoWindowActivity.getDelegate().getLocalNightMode());
     }
 
     private TabGroupMetadata createTabGroupMetadata() {
@@ -664,5 +936,297 @@ public class ChromeTabbedActivityTest {
                 /* tabGroupCollapsed= */ true,
                 /* isGroupShared= */ false,
                 /* isIncognito= */ false);
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    public void testMultiUrlReparentingIntent_PinnedTabs() {
+        AtomicInteger initialTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> initialTabCount.set(mActivity.getCurrentTabModel().getCount()));
+
+        Intent reparentingIntent = new Intent(Intent.ACTION_VIEW);
+        reparentingIntent.setClass(mActivity, ChromeTabbedActivity.class);
+        reparentingIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        IntentHandler.setMultiTabMetadata(
+                reparentingIntent,
+                MultiTabMetadata.createForTesting(
+                        /* tabIds= */ new ArrayList<>(List.of(101, 102)),
+                        /* urls= */ new ArrayList<>(
+                                List.of(
+                                        JUnitTestGURLs.URL_1.getSpec(),
+                                        JUnitTestGURLs.URL_2.getSpec())),
+                        /* isPinned= */ new boolean[] {true, false},
+                        /* isIncognito= */ false));
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(reparentingIntent));
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount.get() + 2));
+                    // Tabs are added at the end of the tab model.
+                    // Pinned tab is added to the start.
+                    Tab firstTab = tabModel.getTabAt(initialTabCount.get() - 1);
+                    Tab secondTab = tabModel.getTabAt(initialTabCount.get() + 1);
+                    Criteria.checkThat(firstTab.getUrl(), Matchers.is(JUnitTestGURLs.URL_1));
+                    Criteria.checkThat(secondTab.getUrl(), Matchers.is(JUnitTestGURLs.URL_2));
+                    Criteria.checkThat(firstTab.getIsPinned(), Matchers.is(true));
+                    Criteria.checkThat(secondTab.getIsPinned(), Matchers.is(false));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testMaybeLaunchDraggedMultiTabInWindow() {
+        AtomicInteger initialTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> initialTabCount.set(mActivity.getCurrentTabModel().getCount()));
+
+        Intent dragIntent = new Intent(Intent.ACTION_VIEW);
+        dragIntent.setClass(mActivity, ChromeTabbedActivity.class);
+        dragIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        IntentHandler.setMultiTabMetadata(
+                dragIntent,
+                MultiTabMetadata.createForTesting(
+                        /* tabIds= */ new ArrayList<>(List.of(201, 202)),
+                        /* urls= */ new ArrayList<>(
+                                List.of(
+                                        JUnitTestGURLs.URL_1.getSpec(),
+                                        JUnitTestGURLs.URL_2.getSpec())),
+                        /* isPinned= */ new boolean[] {false, false},
+                        /* isIncognito= */ false));
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(dragIntent));
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount.get() + 2));
+                    // Tabs are added at the end of the tab model.
+                    Criteria.checkThat(
+                            tabModel.getTabAt(initialTabCount.get()).getUrl(),
+                            Matchers.is(JUnitTestGURLs.URL_1));
+                    Criteria.checkThat(
+                            tabModel.getTabAt(initialTabCount.get() + 1).getUrl(),
+                            Matchers.is(JUnitTestGURLs.URL_2));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    public void testMaybeLaunchDraggedMultiTabInWindow_PinnedTabs() {
+        AtomicInteger initialTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> initialTabCount.set(mActivity.getCurrentTabModel().getCount()));
+
+        Intent dragIntent = new Intent(Intent.ACTION_VIEW);
+        dragIntent.setClass(mActivity, ChromeTabbedActivity.class);
+        dragIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        IntentHandler.setMultiTabMetadata(
+                dragIntent,
+                MultiTabMetadata.createForTesting(
+                        /* tabIds= */ new ArrayList<>(List.of(201, 202)),
+                        /* urls= */ new ArrayList<>(
+                                List.of(
+                                        JUnitTestGURLs.URL_1.getSpec(),
+                                        JUnitTestGURLs.URL_2.getSpec())),
+                        /* isPinned= */ new boolean[] {true, false},
+                        /* isIncognito= */ false));
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(dragIntent));
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount.get() + 2));
+                    // Tabs are added at the end of the tab model.
+                    // Pinned tab is added to the start.
+                    Tab firstTab = tabModel.getTabAt(initialTabCount.get() - 1);
+                    Tab secondTab = tabModel.getTabAt(initialTabCount.get() + 1);
+                    Criteria.checkThat(firstTab.getUrl(), Matchers.is(JUnitTestGURLs.URL_1));
+                    Criteria.checkThat(secondTab.getUrl(), Matchers.is(JUnitTestGURLs.URL_2));
+                    Criteria.checkThat(firstTab.getIsPinned(), Matchers.is(true));
+                    Criteria.checkThat(secondTab.getIsPinned(), Matchers.is(false));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testMaybeLaunchDraggedMultiTabInWindow_EmptyList() {
+        AtomicInteger initialTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> initialTabCount.set(mActivity.getCurrentTabModel().getCount()));
+
+        Intent dragIntent = new Intent(Intent.ACTION_VIEW);
+        dragIntent.setClass(mActivity, ChromeTabbedActivity.class);
+        dragIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        IntentHandler.setMultiTabMetadata(
+                dragIntent,
+                MultiTabMetadata.createForTesting(
+                        /* tabIds= */ new ArrayList<>(),
+                        /* urls= */ new ArrayList<>(),
+                        /* isPinned= */ new boolean[0],
+                        /* isIncognito= */ false));
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(dragIntent));
+
+        // Wait to ensure no new tabs are created.
+        SystemClock.sleep(500);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount.get()));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testMaybeLaunchDraggedMultiTabInWindow_mismatchedLists() {
+        AtomicInteger initialTabCount = new AtomicInteger();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> initialTabCount.set(mActivity.getCurrentTabModel().getCount()));
+
+        Intent dragIntent = new Intent(Intent.ACTION_VIEW);
+        dragIntent.setClass(mActivity, ChromeTabbedActivity.class);
+        dragIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        IntentHandler.setMultiTabMetadata(
+                dragIntent,
+                MultiTabMetadata.createForTesting(
+                        /* tabIds= */ new ArrayList<>(List.of(201, 202)),
+                        /* urls= */ new ArrayList<>(List.of(JUnitTestGURLs.URL_1.getSpec())),
+                        /* isPinned= */ new boolean[] {false, false},
+                        /* isIncognito= */ false));
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActivity.onNewIntent(dragIntent));
+
+        // Wait to ensure no new tabs are created.
+        SystemClock.sleep(500);
+
+        // Verify that no new tabs were created due to the malformed intent.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(
+                            "Tab count should not change for mismatched lists",
+                            tabModel.getCount(),
+                            Matchers.is(initialTabCount.get()));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    public void testMoveTabsToOtherWindowAndMerge() {
+        // 1. Launch a second ChromeTabbedActivity.
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        intent.setClass(mActivity, ChromeTabbedActivity.class);
+
+        final ChromeTabbedActivity activity2 =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.RESUMED,
+                        () -> mActivity.getApplicationContext().startActivity(intent));
+
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
+
+        // 2. Create two tabs in the first activity.
+        Tab tab1 =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return mActivity
+                                    .getTabCreator(false)
+                                    .createNewTab(
+                                            new LoadUrlParams(JUnitTestGURLs.URL_1),
+                                            TabLaunchType.FROM_CHROME_UI,
+                                            null);
+                        });
+        Tab tab2 =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return mActivity
+                                    .getTabCreator(false)
+                                    .createNewTab(
+                                            new LoadUrlParams(JUnitTestGURLs.URL_2),
+                                            TabLaunchType.FROM_CHROME_UI,
+                                            null);
+                        });
+
+        // 3. Get MultiInstanceManager for activity1 and InstanceInfo for activity2.
+        MultiInstanceManager mim1 = mActivity.getMultiInstanceMangerForTesting();
+
+        final AtomicReference<InstanceInfo> instanceInfo2Ref = new AtomicReference<>();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    List<InstanceInfo> instanceInfos =
+                            mim1.getInstanceInfo(PersistedInstanceType.ANY);
+                    for (InstanceInfo info : instanceInfos) {
+                        if (info.taskId == activity2.getTaskId()) {
+                            instanceInfo2Ref.set(info);
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+                "Could not find InstanceInfo for activity2");
+        InstanceInfo instanceInfo2 = instanceInfo2Ref.get();
+
+        // 4. Move tab1 to activity2.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mim1.moveTabsToWindow(
+                            instanceInfo2, List.of(tab1), -1, NewWindowAppSource.OTHER);
+                });
+
+        // 5. Verify tab1 is in activity2.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel2 = activity2.getCurrentTabModel();
+                    Criteria.checkThat(tabModel2.getCount(), Matchers.is(2)); // 1 blank + tab1
+                    Criteria.checkThat(tabModel2.getTabById(tab1.getId()), Matchers.notNullValue());
+                });
+
+        // 6. Move tab2 to activity2 and merge with tab1.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mim1.moveTabsToWindowAndMergeToDest(instanceInfo2, List.of(tab2), tab1.getId());
+                });
+
+        // 7. Verify tab2 is in activity2 and merged with tab1.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel2 = activity2.getCurrentTabModel();
+                    Criteria.checkThat(
+                            tabModel2.getCount(), Matchers.is(3)); // 1 blank + tab1 + tab2
+                    Tab movedTab2 = tabModel2.getTabById(tab2.getId());
+                    Criteria.checkThat(movedTab2, Matchers.notNullValue());
+
+                    TabGroupModelFilter filter2 =
+                            (TabGroupModelFilter)
+                                    activity2
+                                            .getTabModelSelector()
+                                            .getTabGroupModelFilterProvider()
+                                            .getTabGroupModelFilter(false);
+                    List<Tab> relatedTabs = filter2.getRelatedTabList(tab1.getId());
+                    Criteria.checkThat(relatedTabs.size(), Matchers.is(2));
+                    Criteria.checkThat(
+                            relatedTabs,
+                            Matchers.hasItems(tabModel2.getTabById(tab1.getId()), movedTab2));
+                });
     }
 }

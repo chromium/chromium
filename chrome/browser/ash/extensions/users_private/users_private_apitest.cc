@@ -34,7 +34,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
-#include "crypto/rsa_private_key.h"
 #include "extensions/browser/api/test/test_api.h"
 #include "extensions/common/switches.h"
 

@@ -7,8 +7,11 @@
 #include <optional>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/check_deref.h"
+#include "base/debug/crash_logging.h"
 #include "base/functional/callback.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -157,8 +160,8 @@ AbortSignal* AbortSignal::timeout(ScriptState* script_state,
   // for composite signals
   signal->timout_task_handle_ = PostDelayedCancellableTask(
       *task_runner.get(), FROM_HERE,
-      WTF::BindOnce(&AbortSignal::AbortTimeoutFired, WrapPersistent(signal),
-                    WrapPersistent(script_state)),
+      BindOnce(&AbortSignal::AbortTimeoutFired, WrapPersistent(signal),
+               WrapPersistent(script_state)),
       base::Milliseconds(milliseconds));
   return signal;
 }
@@ -201,6 +204,7 @@ AbortSignal::AlgorithmHandle* AbortSignal::AddAlgorithm(Algorithm* algorithm) {
   if (aborted() || composition_manager_->IsSettled()) {
     return nullptr;
   }
+  CHECK(!is_running_abort_steps_);
   auto* handle = MakeGarbageCollected<AlgorithmHandle>(algorithm, this);
   CHECK(!abort_algorithms_.Contains(handle));
   // This always appends since `handle` is not already in the collection.
@@ -213,6 +217,7 @@ AbortSignal::AlgorithmHandle* AbortSignal::AddAlgorithm(
   if (aborted() || composition_manager_->IsSettled()) {
     return nullptr;
   }
+  CHECK(!is_running_abort_steps_);
   auto* callback_algorithm =
       MakeGarbageCollected<OnceCallbackAlgorithm>(std::move(algorithm));
   auto* handle =
@@ -227,6 +232,7 @@ void AbortSignal::RemoveAlgorithm(AlgorithmHandle* handle) {
   if (aborted() || composition_manager_->IsSettled()) {
     return;
   }
+  CHECK(!is_running_abort_steps_);
   abort_algorithms_.erase(handle);
 }
 
@@ -285,7 +291,21 @@ void AbortSignal::SetAbortReason(ScriptState* script_state,
 }
 
 void AbortSignal::RunAbortSteps() {
+  CHECK(!is_running_abort_steps_);
+  base::AutoReset<bool> scope(&is_running_abort_steps_, true);
+  SCOPED_CRASH_KEY_NUMBER("AbortSignal", "size_before",
+                          static_cast<int>(abort_algorithms_.size()));
+
+  // TODO(crbug.com/40068730): Remove after root-causing the bug. This is meant
+  // to help determine if running the algorithms is changing the set or
+  // invalidating the iterator unexpectedly.
   for (AbortSignal::AlgorithmHandle* handle : abort_algorithms_) {
+    CHECK(handle);
+  }
+
+  for (AbortSignal::AlgorithmHandle* handle : abort_algorithms_) {
+    SCOPED_CRASH_KEY_NUMBER("AbortSignal", "current_size",
+                            static_cast<int>(abort_algorithms_.size()));
     CHECK(handle);
     CHECK(handle->GetAlgorithm());
     handle->GetAlgorithm()->Run();
@@ -314,11 +334,13 @@ void AbortSignal::DetachFromController() {
   if (aborted()) {
     return;
   }
+  CHECK(!is_running_abort_steps_);
   composition_manager_->Settle();
 }
 
 void AbortSignal::OnSignalSettled(AbortSignalCompositionType type) {
   if (type == AbortSignalCompositionType::kAbort) {
+    CHECK(!is_running_abort_steps_);
     abort_algorithms_.clear();
   }
   if (signal_type_ == SignalType::kComposite && GetExecutionContext()) {

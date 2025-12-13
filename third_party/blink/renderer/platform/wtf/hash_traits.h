@@ -409,7 +409,7 @@ struct SimpleClassHashTraits : GenericHashTraits<T> {
     static constexpr bool value = false;
   };
   static void ConstructDeletedValue(T& slot) {
-    new (base::NotNullTag::kNotNull, &slot) T(WTF::kHashTableDeletedValue);
+    new (base::NotNullTag::kNotNull, &slot) T(kHashTableDeletedValue);
   }
   static bool IsDeletedValue(const T& value) {
     return value.IsHashTableDeletedValue();
@@ -600,18 +600,5 @@ unsigned GetHash(const T& key) {
 }
 
 }  // namespace blink
-
-// TODO(crbug.com/422768753): Remove these `using` directives.
-namespace WTF {
-using blink::ConstructHashTraitsDeletedValue;
-using blink::GenericHashTraits;
-using blink::GetHash;
-using blink::HashTraits;
-using blink::IntWithZeroKeyHashTraits;
-using blink::IsHashTraitsDeletedValue;
-using blink::IsHashTraitsEmptyOrDeletedValue;
-using blink::IsHashTraitsEmptyValue;
-using blink::SimpleClassHashTraits;
-}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_TRAITS_H_

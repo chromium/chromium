@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -166,7 +167,7 @@ void TrustedKVv2Signals::StartKVv2Download(
 }
 
 void TrustedKVv2Signals::OnKVv2DownloadComplete(
-    std::unique_ptr<std::string> body,
+    std::optional<std::string> body,
     scoped_refptr<net::HttpResponseHeaders> headers,
     std::optional<std::string> error_msg) {
   // The downloader's job is done, so clean it up.
@@ -195,7 +196,7 @@ void TrustedKVv2Signals::HandleKVv2DownloadResultOnV8Thread(
     std::optional<std::set<std::string>> bidding_signals_keys,
     std::optional<std::set<std::string>> render_urls,
     std::optional<std::set<std::string>> ad_component_render_urls,
-    std::unique_ptr<std::string> body,
+    std::optional<std::string> body,
     scoped_refptr<net::HttpResponseHeaders> headers,
     quiche::ObliviousHttpRequest::Context context,
     std::optional<std::string> error_msg,

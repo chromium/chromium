@@ -173,7 +173,6 @@ IGNORED_FILENAMES = (
 #
 # Case-insensitive, lower-case only.
 IGNORED_PATHS = (
-    'native_client_sdk/src/build_tools/sdk_tools/third_party/fancy_urllib/'
     '__init__.py',
     'out/',
     'third_party/rust/chromium_crates_io/vendor/',

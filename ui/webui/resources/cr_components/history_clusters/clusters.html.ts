@@ -18,12 +18,12 @@ export function getHtml(this: HistoryClustersElement) {
     @remove-visits="${this.onRemoveVisits_}"
     ?hidden="${!this.clusters_.length}" .scrollTarget="${this.scrollTarget}"
     .scrollOffset="${this.scrollOffset}"
-    .template=${(item: any, index: number, tabindex: number) => html`
+    .template="${(item: any, index: number, tabindex: number) => html`
       <history-cluster .cluster="${item}" .index="${index}"
           .query="${this.resultQuery_}" tabindex="${tabindex}"
           @remove-cluster="${this.onRemoveCluster_}" ?is-first="${!index}"
           ?is-last="${this.isLastCluster_(index)}">
-      </history-cluster>`}>
+      </history-cluster>`}">
 </cr-infinite-list>
 <div id="footer" ?hidden="${this.getLoadMoreButtonHidden_()}">
   <cr-button id="loadMoreButton" @click="${this.onLoadMoreButtonClick_}"

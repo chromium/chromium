@@ -27,7 +27,7 @@ import java.util.function.Function;
 @NullMarked
 /*package*/ abstract class AutofillVcnEnrollBottomSheetProperties {
     /** Opens links. */
-    static interface LinkOpener {
+    interface LinkOpener {
         /**
          * Opens a link and records the metric for opening it.
          *

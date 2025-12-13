@@ -56,9 +56,6 @@ abstract class CommunicationDeviceSelector {
     /** Gets whether the speakerphone is currently active. */
     public abstract boolean isSpeakerphoneOn();
 
-    /** Gets whether Bluetooth SCO is currently enabled. */
-    public abstract boolean isBluetoothScoOn();
-
     /** Requests for Bluetooth SCO to be enabled or disabled. This request may fail. */
     public abstract void maybeSetBluetoothScoState(boolean state);
 
@@ -289,12 +286,13 @@ abstract class CommunicationDeviceSelector {
             int i = 0;
             for (int id = 0; id < devices.length; ++id) {
                 if (devices[id]) {
-                    // Device type information is not used for communication devices
+                    // The device type and sample rate are not used for communication devices
                     array[i] =
                             new AudioManagerAndroid.AudioDevice(
                                     id,
                                     DeviceHelpers.DEVICE_NAMES[id],
-                                    AudioDeviceInfo.TYPE_UNKNOWN);
+                                    AudioDeviceInfo.TYPE_UNKNOWN,
+                                    /* sampleRates= */ new int[0]);
                     list.add(DeviceHelpers.DEVICE_NAMES[id]);
                     i++;
                 }

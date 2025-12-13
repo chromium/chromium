@@ -4,10 +4,6 @@
 
 #include "components/autofill/core/browser/data_model/autofill_ai/country_info.h"
 
-#include <stddef.h>
-
-#include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/field_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {

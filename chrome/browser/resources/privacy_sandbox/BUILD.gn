@@ -20,7 +20,6 @@ build_webui("build") {
     "privacy_sandbox_notice_dialog.html",
     "privacy_sandbox_notice_restricted_dialog.html",
     "privacy_sandbox_privacy_policy.html",
-    "base_dialog.html",
   ]
 
   web_component_files = [
@@ -38,26 +37,9 @@ build_webui("build") {
     "privacy_sandbox_dialog_resize_mixin.ts",
     "privacy_sandbox_privacy_policy_dialog.html.ts",
     "privacy_sandbox_privacy_policy_dialog.ts",
-    "base_dialog_app.html.ts",
-    "base_dialog_app.ts",
-    "base_dialog_browser_proxy.ts",
-    "topics_consent_notice.html.ts",
-    "topics_consent_notice.ts",
-    "base_dialog_mixin.ts",
-    "protected_audience_measurement_notice.html.ts",
-    "protected_audience_measurement_notice.ts",
-    "three_ads_apis_notice.html.ts",
-    "three_ads_apis_notice.ts",
-    "measurement_notice.html.ts",
-    "measurement_notice.ts",
-    "base_dialog_learn_more.html.ts",
-    "base_dialog_learn_more.ts",
   ]
 
   css_files = [
-    "base_dialog_app.css",
-    "base_dialog_learn_more.css",
-    "base_dialog_styles.css",
     "privacy_sandbox_privacy_policy_dialog.css",
     "shared_style.css",
     "shared_vars.css",
@@ -79,7 +61,6 @@ build_webui("build") {
     "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings_ts__generator",
   ]
   mojo_files = [
-    "$root_gen_dir/chrome/browser/ui/webui/privacy_sandbox/base_dialog.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/privacy_sandbox/notice/notice.mojom-webui.ts",
   ]
 }

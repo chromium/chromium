@@ -281,19 +281,6 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
       count < 0) {
     return make_result(StoreSourceResult::InternalError());
   } else if (int64_t max = delegate_->GetMaxSourcesPerOrigin(); count >= max) {
-    if (int64_t file_size = storage_.StorageFileSizeKB(); file_size > -1) {
-      base::UmaHistogramCounts10M(
-          "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2",
-          file_size);
-      std::optional<int64_t> number_of_sources = storage_.NumberOfSources();
-      if (number_of_sources.has_value()) {
-        CHECK_GT(*number_of_sources, 0);
-        base::UmaHistogramCounts1M(
-            "Conversions.Storage.Sql.FileSizeSourcesPerOriginLimitReached2."
-            "PerSource",
-            file_size * 1024 / *number_of_sources);
-      }
-    }
     return make_result(StoreSourceResult::InsufficientSourceCapacity(max));
   }
 
@@ -507,12 +494,6 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
     return make_result(StoreSourceResult::InternalError());
   }
 
-  static_assert(AttributionStorageSql::kCurrentVersionNumber < 86);
-  base::UmaHistogramCustomCounts("Conversions.DbVersionOnSourceStored",
-                                 AttributionStorageSql::kCurrentVersionNumber,
-                                 /*min=*/56,
-                                 /*exclusive_max=*/86, /*buckets=*/30);
-
   return make_result(StoreSourceResult::Success(min_fake_report_time,
                                                 stored_source->source_id()));
 }
@@ -520,8 +501,6 @@ StoreSourceResult AttributionResolverImpl::StoreSource(StorableSource source) {
 CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
     AttributionTrigger trigger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  SCOPED_UMA_HISTOGRAM_TIMER("Conversions.MaybeCreateAndStoreReportTime");
 
   const attribution_reporting::TriggerRegistration& trigger_registration =
       trigger.registration();
@@ -571,18 +550,6 @@ CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
         if (const CreateReportResult::AggregatableSuccess* v =
                 GetSuccessResult(*aggregatable_result)) {
           RecordDebugKeyUsage(v->new_report);
-        }
-
-        if (GetSuccessResult(*event_level_result) ||
-            GetSuccessResult(*aggregatable_result)) {
-          if (int64_t count =
-                  storage_.CountUniqueReportingOriginsPerSiteForAttribution(
-                      trigger, trigger_time);
-              count >= 0) {
-            base::UmaHistogramCounts100(
-                "Conversions.UniqueReportingOriginsPerSiteForAttribution",
-                count);
-          }
         }
 
         return CreateReportResult(
@@ -668,10 +635,6 @@ CreateReportResult AttributionResolverImpl::MaybeCreateAndStoreReport(
     return assemble_report_result(CreateReportResult::InternalError(),
                                   CreateReportResult::InternalError());
   }
-
-  base::UmaHistogramBoolean(
-      "Conversions.TriggerTimeLessThanSourceTime",
-      trigger_time < source_to_attribute->source.source_time());
 
   const bool top_level_filters_match =
       source_to_attribute->source.filter_data().Matches(
@@ -1149,32 +1112,6 @@ std::optional<base::Time> AttributionResolverImpl::AdjustOfflineReportTimes() {
   }
 
   return storage_.GetNextReportTime(base::Time::Min());
-}
-
-std::optional<base::Time>
-AttributionResolverImpl::AdjustNavigationRetryReportTimes() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (auto delay = delegate_->GetOfflineReportDelayConfig()) {
-    if (base::flat_map<AttributionReport::Type, int> report_types =
-            storage_.AdjustNavigationRetryReportTimes(delay->min, delay->max);
-        !report_types.empty()) {
-      if (auto it = report_types.find(AttributionReport::Type::kEventLevel);
-          it != report_types.end()) {
-        base::UmaHistogramCounts100(
-            "Conversions.ReportsAdjustedOnNavigationRetryAttempt.Event",
-            it->second);
-      }
-      if (auto it = report_types.find(
-              AttributionReport::Type::kAggregatableAttribution);
-          it != report_types.end()) {
-        base::UmaHistogramCounts100(
-            "Conversions.ReportsAdjustedOnNavigationRetryAttempt.Aggregatable",
-            it->second);
-      }
-      return storage_.GetNextReportTime(base::Time::Min());
-    }
-  }
-  return std::nullopt;
 }
 
 void AttributionResolverImpl::ClearDataIncludingRateLimit(

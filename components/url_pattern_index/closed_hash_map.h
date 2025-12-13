@@ -43,9 +43,7 @@ using HashMap =
 // a 32-bit table independent of the process being 32-bit or 64-bit to ensure
 // that tables can be read in processes of different bitness from those in which
 // they were generated. This is a requirement of consumers of this data
-// structure. In particular, the subresource_filter component in Weblayer
-// generates tables in the 64-bit browser process but also accesses them the
-// 32-bit renderer process.
+// structure.
 //
 // On normal operation load factor varies within range (1/4, 1/2]. The real load
 // factor can be less or equal to 1/4 if rehashing is requested explicitly to

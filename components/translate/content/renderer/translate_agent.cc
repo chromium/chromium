@@ -119,8 +119,8 @@ void TranslateAgent::SeedLanguageDetectionModelForTesting(
       std::move(model_file));
 }
 
-void TranslateAgent::PrepareForUrl(const GURL& url) {
-  // Navigated to a new url, reset current page translation.
+void TranslateAgent::PrepareForNewDocument() {
+  // Navigated to a new document, reset current page translation.
   ResetPage();
 }
 

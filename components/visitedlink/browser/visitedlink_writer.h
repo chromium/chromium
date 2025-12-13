@@ -13,6 +13,7 @@
 #include <set>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
@@ -21,7 +22,7 @@
 #include "base/memory/free_deleter.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -521,8 +522,9 @@ class VisitedLinkWriter : public VisitedLinkCommon {
 inline void VisitedLinkWriter::DebugValidate() {
   int32_t used_count = 0;
   for (int32_t i = 0; i < table_length_; i++) {
-    if (hash_table_[i])
+    if (UNSAFE_TODO(hash_table_[i])) {
       used_count++;
+    }
   }
   DCHECK_EQ(used_count, used_items_);
 }

@@ -282,8 +282,7 @@ void BackForwardCacheBrowserTest::EnableCacheSize(
 
 void BackForwardCacheBrowserTest::SetUpOnMainThread() {
   // Set up WebSocket handlers, as a number of tests use them.
-  net::test_server::InstallDefaultWebSocketHandlers(
-      embedded_test_server(), /*serve_websocket_test_data=*/false);
+  net::test_server::InstallDefaultWebSocketHandlers(embedded_test_server());
 
   mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
   host_resolver()->AddRule("*", "127.0.0.1");
@@ -1298,8 +1297,8 @@ class BackForwardCacheBrowserTestForLowMemoryDevices
 
     // Set the value of memory threshold more than the physical memory and check
     // if back-forward cache is disabled or not.
-    std::string memory_threshold =
-        base::NumberToString(base::SysInfo::AmountOfPhysicalMemoryMB() + 1);
+    std::string memory_threshold = base::NumberToString(
+        base::SysInfo::AmountOfPhysicalMemory().InMiB() + 1);
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kBackForwardCacheMemoryControls,
           {{"memory_threshold_for_back_forward_cache_in_mb",
@@ -1443,8 +1442,8 @@ class BackForwardCacheBrowserTestForHighMemoryDevices
 
     // Set the value of memory threshold less than the physical memory and check
     // if back-forward cache is enabled or not.
-    std::string memory_threshold =
-        base::NumberToString(base::SysInfo::AmountOfPhysicalMemoryMB() - 1);
+    std::string memory_threshold = base::NumberToString(
+        base::SysInfo::AmountOfPhysicalMemory().InMiB() - 1);
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kBackForwardCacheMemoryControls,
           {{"memory_threshold_for_back_forward_cache_in_mb",
@@ -1567,8 +1566,8 @@ class BackForwardCacheBrowserTestForHighMemoryDevicesWithBFCacheDisabled
 
     // Set the value of memory threshold less than the physical memory and check
     // if back-forward cache is enabled or not.
-    std::string memory_threshold =
-        base::NumberToString(base::SysInfo::AmountOfPhysicalMemoryMB() - 1);
+    std::string memory_threshold = base::NumberToString(
+        base::SysInfo::AmountOfPhysicalMemory().InMiB() - 1);
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{features::kBackForwardCacheMemoryControls,

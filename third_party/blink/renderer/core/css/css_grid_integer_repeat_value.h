@@ -32,7 +32,7 @@ class CORE_EXPORT CSSGridIntegerRepeatValue : public CSSValueList {
         repetitions_(repetitions),
         extra_clamp_(extra_clamp) {}
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
   bool Equals(const CSSGridIntegerRepeatValue&) const;
 
   std::optional<wtf_size_t> GetRepetitionsIfKnown() const;

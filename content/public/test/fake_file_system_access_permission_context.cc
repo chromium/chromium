@@ -111,6 +111,14 @@ void FakeFileSystemAccessPermissionContext::NotifyEntryMoved(
     const PathInfo& old_path,
     const PathInfo& new_path) {}
 
+void FakeFileSystemAccessPermissionContext::NotifyEntryModified(
+    const url::Origin& origin,
+    const PathInfo& path) {}
+
+void FakeFileSystemAccessPermissionContext::NotifyEntryRemoved(
+    const url::Origin& origin,
+    const PathInfo& path) {}
+
 void FakeFileSystemAccessPermissionContext::OnFileCreatedFromShowSaveFilePicker(
     const GURL& file_picker_binding_context,
     const storage::FileSystemURL& url) {}

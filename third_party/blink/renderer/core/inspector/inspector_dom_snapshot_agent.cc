@@ -168,7 +168,7 @@ class DOMTreeIterator {
 
  private:
   Node* current_;
-  WTF::Vector<int> path_to_current_node_;
+  Vector<int> path_to_current_node_;
 };
 
 }  // namespace
@@ -285,7 +285,6 @@ protocol::Response InspectorDOMSnapshotAgent::captureSnapshot(
     std::unique_ptr<protocol::Array<String>>* strings) {
   // This function may kick the layout, but external clients may call this
   // function outside of the layout phase.
-  FontCachePurgePreventer fontCachePurgePreventer;
 
   auto* main_window = inspected_frames_->Root()->DomWindow();
   if (!main_window)
@@ -573,7 +572,7 @@ void InspectorDOMSnapshotAgent::VisitNode(Node* node,
       SetRare(nodes->getPseudoType(nullptr), index,
               InspectorDOMAgent::ProtocolPseudoElementType(
                   element->GetPseudoIdForStyling()));
-      if (auto tag = To<PseudoElement>(element)->view_transition_name()) {
+      if (auto tag = To<PseudoElement>(element)->GetPseudoArgument()) {
         SetRare(nodes->getPseudoIdentifier(nullptr), index, tag);
       }
     }
@@ -593,7 +592,8 @@ void InspectorDOMSnapshotAgent::VisitPseudoElements(
     InspectorContrast& contrast) {
   for (PseudoId pseudo_id :
        {kPseudoIdFirstLetter, kPseudoIdCheckMark, kPseudoIdBefore,
-        kPseudoIdAfter, kPseudoIdPickerIcon, kPseudoIdMarker}) {
+        kPseudoIdAfter, kPseudoIdPickerIcon, kPseudoIdInterestHint,
+        kPseudoIdMarker}) {
     if (Node* pseudo_node = parent->GetPseudoElement(pseudo_id))
       VisitNode(pseudo_node, parent_index, contrast);
   }

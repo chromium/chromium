@@ -19,11 +19,9 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/canonical_topic.h"
-#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/profile_metrics/browser_profile_type.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_education/common/product_messaging_controller.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "net/base/schemeful_site.h"
@@ -68,6 +66,9 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
       PrivacySandboxCountries* privacy_sandbox_countries);
 
   ~PrivacySandboxServiceImpl() override;
+
+  // KeyedService:
+  void Shutdown() override;
 
   // PrivacySandboxService:
   PromptType GetRequiredPromptType(SurfaceType surface_type) override;
@@ -326,8 +327,14 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   // or newly set reason), false otherwise.
   bool UpdateAndGetSuppressionReason();
 
+  // Returns whether the prompt should be disabled.
+  bool ShouldDisablePrompt();
+
   // Helper function to set the prompt suppression reason.
   void SetPromptSuppressedReason(PromptSuppressedReason reason);
+
+  // Internal implementation for `GetRequiredPromptType`.
+  PromptType GetRequiredPromptTypeInternal(SurfaceType surface_type);
 
   raw_ptr<Profile> profile_;
   raw_ptr<privacy_sandbox::PrivacySandboxSettings> privacy_sandbox_settings_;
@@ -388,41 +395,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   // Returns true if _any_ of the k-API prefs are disabled via policy or
   // the prompt was suppressed via policy.
   static bool IsM1PrivacySandboxEffectivelyManaged(PrefService* pref_service);
-
-  // Returns true if the user is in the server trial that allows the prompt to
-  // be shown even if 3PC are blocked. This will also set the Pref that the
-  // trial is registered. This is so we know to re-register for the trial on
-  // subsequent restarts when the Notice is shown, and the profile is therefore
-  // no longer eligible for a prompt.
-
-  // Approach:
-  // The persistent pref tracks whether the server-side trial has been
-  // *activated* for a user.  The pref is set whenever the server-side trial is
-  // activated (via base::FeatureList::IsEnabled()), regardless of the resulting
-  // group (Enabled or Control). On subsequent restarts when the Conditions for
-  // a normal server activation are no longer met (Happens to the Enabled
-  // Group), the pref can be reused to reactivate the trial if needed. This is
-  // to achieve true session consistency even if the conditions for triggering
-  // the server trial are no longer true.
-
-  // Handling Group Changes (Control -> Enabled):
-  // If a user moves from Control to Enabled due to server-side config changes,
-  // we'll continue to activate based on the pref, which will remain set.
-
-  // Timing:
-  // Trial activation happens *before* the promo is shown,
-  // but *after* we confirm the user is a candidate (3P cookies blocked at some
-  // point in the past).
-
-  // Why No Synthetic Trial:
-  // Checking the pref and re-activating the *server-side* trial directly
-  // achieves persistent activation and maintains balance, making a synthetic
-  // trial redundant.
-
-  // Rollout Beyond 50%:
-  // This allows for 100% rollout. The pref-based activation works even when
-  // A/B comparison is no longer the goal.
-  bool CheckAndRegisterAllowPromptForBlocked3PCookiesTrial();
 
   bool force_chrome_build_for_tests_ = false;
 

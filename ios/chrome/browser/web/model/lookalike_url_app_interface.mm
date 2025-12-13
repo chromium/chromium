@@ -39,11 +39,11 @@ class LookalikeUrlDecider : public web::WebStatePolicyDecider,
         LookalikeUrlTabAllowList::FromWebState(web_state_);
 
     GURL response_url = net::GURLWithNSURL(response.URL);
-    if (allow_list->IsDomainAllowed(response_url.host())) {
+    if (allow_list->IsDomainAllowed(response_url.GetHost())) {
       return std::move(callback).Run(
           web::WebStatePolicyDecider::PolicyDecision::Allow());
     }
-    if (response_url.path() == kLookalikePagePathForTesting) {
+    if (response_url.GetPath() == kLookalikePagePathForTesting) {
       GURL::Replacements safeReplacements;
       safeReplacements.SetPathStr("echo");
       lookalike_container->SetLookalikeUrlInfo(
@@ -52,7 +52,7 @@ class LookalikeUrlDecider : public web::WebStatePolicyDecider,
       std::move(callback).Run(CreateLookalikeErrorDecision());
       return;
     }
-    if (response_url.path() == kLookalikePageEmptyUrlPathForTesting) {
+    if (response_url.GetPath() == kLookalikePageEmptyUrlPathForTesting) {
       lookalike_container->SetLookalikeUrlInfo(
           GURL(), response_url,
           lookalikes::LookalikeUrlMatchType::kSkeletonMatchTop5k);

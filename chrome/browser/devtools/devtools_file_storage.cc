@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -48,8 +49,7 @@ DevToolsFileHelper::FileSystem DevToolsFileStorage::RegisterFileSystem(
   auto file_system = isolated_context()->RegisterFileSystemForPath(
       storage::kFileSystemTypeLocal, std::string(), path, &root_name);
 
-  content::ChildProcessSecurityPolicy* policy =
-      content::ChildProcessSecurityPolicy::GetInstance();
+  auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
   RenderViewHost* render_view_host =
       web_contents_->GetPrimaryMainFrame()->GetRenderViewHost();
   int renderer_id = render_view_host->GetProcess()->GetDeprecatedID();

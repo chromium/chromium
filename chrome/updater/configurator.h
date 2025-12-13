@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_CONFIGURATOR_H_
 #define CHROME_UPDATER_CONFIGURATOR_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -90,6 +91,7 @@ class Configurator : public update_client::Configurator {
   base::TimeDelta ServerKeepAliveTime() const;
   scoped_refptr<PolicyService> GetPolicyService() const;
   crx_file::VerifierFormat GetCrxVerifierFormat() const;
+  std::optional<std::vector<uint8_t>> GetCrxPublicKeyHash() const;
   base::TimeDelta MinimumEventLoggingCooldown() const;
 
  private:

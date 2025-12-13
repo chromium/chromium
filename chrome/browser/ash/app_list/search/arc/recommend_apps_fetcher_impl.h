@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_ARC_RECOMMEND_APPS_FETCHER_IMPL_H_
 
 #include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
@@ -55,7 +56,7 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
   void OnDownloadTimeout();
 
   // Called when SimpleURLLoader completes.
-  void OnDownloaded(std::unique_ptr<std::string> response_body);
+  void OnDownloaded(std::optional<std::string> response_body);
 
   // If the response is not a valid JSON, return std::nullopt.
   // If the response contains no app, return std::nullopt;

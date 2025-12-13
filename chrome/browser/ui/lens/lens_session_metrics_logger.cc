@@ -6,13 +6,15 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
+#include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "chrome/browser/ui/lens/page_content_type_conversions.h"
+#include "components/lens/lens_composebox_user_action.h"
+#include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_metrics.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "content/public/browser/render_frame_host.h"
-#include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -34,6 +36,7 @@ void LensSessionMetricsLogger::OnSessionStart(
   initial_document_type_ = lens::StringMimeTypeToDocumentType(
       tab_web_contents->GetContentsMimeType());
   csb_session_end_metrics_ = {};
+  aim_session_end_metrics_ = {};
 }
 
 void LensSessionMetricsLogger::OnPageNavigation() {
@@ -109,6 +112,31 @@ void LensSessionMetricsLogger::OnZeroSuggestShown(bool is_initial_query) {
   }
 }
 
+void LensSessionMetricsLogger::OnAimComposeboxShown() {
+  aim_session_end_metrics_.composebox_shown_ = true;
+}
+
+void LensSessionMetricsLogger::OnAimHandshakeCompleted() {
+  aim_session_end_metrics_.handshake_completed_ = true;
+}
+
+void LensSessionMetricsLogger::OnAimComposeboxFocused() {
+  aim_session_end_metrics_.composebox_focused_ = true;
+  lens::RecordAimComposeboxUserAction(lens::LensComposeboxUserAction::kFocused);
+}
+
+void LensSessionMetricsLogger::OnAimQueryIssued() {
+  aim_session_end_metrics_.query_issued_ = true;
+  lens::RecordAimComposeboxUserAction(
+      lens::LensComposeboxUserAction::kQueryIssued);
+}
+
+void LensSessionMetricsLogger::OnAimQuerySubmitted() {
+  aim_session_end_metrics_.query_submitted_ = true;
+  lens::RecordAimComposeboxUserAction(
+      lens::LensComposeboxUserAction::kQuerySubmitted);
+}
+
 void LensSessionMetricsLogger::RecordInvocation() {
   lens::RecordInvocation(invocation_source_, initial_document_type_);
 }
@@ -140,6 +168,10 @@ void LensSessionMetricsLogger::RecordEndOfSessionMetrics(
   lens::RecordContextualSearchboxSessionEndMetrics(
       ukm_source_id_, csb_session_end_metrics_, initial_page_content_type_,
       initial_document_type_);
+  }
+
+  if (lens::features::GetAimSearchboxEnabled()) {
+    lens::RecordAimSessionEndMetrics(aim_session_end_metrics_);
   }
 }
 
@@ -181,6 +213,11 @@ void LensSessionMetricsLogger::
   lens::RecordContextualSearchboxTimeToInteractionAfterNavigation(
       time_to_interaction, current_page_content_type_);
   last_navigation_time_.reset();
+}
+
+lens::LensOverlayInvocationSource
+LensSessionMetricsLogger::GetInvocationSource() {
+  return invocation_source_;
 }
 
 }  // namespace lens

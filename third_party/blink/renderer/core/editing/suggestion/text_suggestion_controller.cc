@@ -413,7 +413,9 @@ void TextSuggestionController::ShowSpellCheckMenu(
     const std::pair<const Text*, DocumentMarker*>& node_spelling_marker_pair) {
   const Text* const marker_text_node = node_spelling_marker_pair.first;
   auto* const marker = To<SpellCheckMarker>(node_spelling_marker_pair.second);
-
+  if (marker->ShouldHideSuggestionMenu()) {
+    return;
+  }
   const EphemeralRange active_suggestion_range =
       EphemeralRange(Position(marker_text_node, marker->StartOffset()),
                      Position(marker_text_node, marker->EndOffset()));

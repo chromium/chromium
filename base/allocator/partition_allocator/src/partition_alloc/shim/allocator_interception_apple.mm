@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // This file contains all the logic necessary to intercept allocations on
 // macOS. "malloc zones" are an abstraction that allows the process to intercept
 // all malloc-related functions.  There is no good mechanism [short of

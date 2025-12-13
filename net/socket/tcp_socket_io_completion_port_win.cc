@@ -620,7 +620,7 @@ void TcpSocketIoCompletionPortWin::CoreImpl::Detach() {
 }
 
 HANDLE TcpSocketIoCompletionPortWin::CoreImpl::GetConnectEvent() {
-  if (!connect_event_.IsValid()) {
+  if (!connect_event_.is_valid()) {
     // Lazy-initialize the event.
     connect_event_.Set(::WSACreateEvent());
     ::WSAEventSelect(socket_->socket_, connect_event_.get(), FD_CONNECT);
@@ -629,7 +629,7 @@ HANDLE TcpSocketIoCompletionPortWin::CoreImpl::GetConnectEvent() {
 }
 
 void TcpSocketIoCompletionPortWin::CoreImpl::WatchForConnect() {
-  CHECK(connect_event_.IsValid());
+  CHECK(connect_event_.is_valid());
   connect_watcher_.StartWatchingOnce(connect_event_.get(), this);
 }
 
@@ -671,7 +671,7 @@ void TcpSocketIoCompletionPortWin::CoreImpl::OnIOCompleted(
 
 void TcpSocketIoCompletionPortWin::CoreImpl::
     StopWatchingAndCloseConnectEvent() {
-  if (connect_event_.IsValid()) {
+  if (connect_event_.is_valid()) {
     connect_watcher_.StopWatching();
     connect_event_.Close();
   }

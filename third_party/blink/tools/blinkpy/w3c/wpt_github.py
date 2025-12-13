@@ -3,10 +3,12 @@
 # found in the LICENSE file.
 
 import base64
+import dataclasses
 import datetime
 import json
 import logging
 import re
+from typing import Any, Dict, List
 from urllib.parse import quote
 
 from collections import namedtuple
@@ -240,7 +242,8 @@ class GitHubRepo(object):
                            body=item['body'],
                            state=item['state'],
                            node_id=item['node_id'],
-                           labels=labels)
+                           labels=labels,
+                           requested_teams=item.get('requested_teams', []))
 
     def recent_failing_chromium_exports(self):
         """Fetches open PRs with an export label, failing status, and updated
@@ -582,5 +585,14 @@ class MergeError(GitHubError):
         super(MergeError, self).__init__(200, 405, 'merge PR %d' % pr_number)
 
 
-PullRequest = namedtuple(
-    'PullRequest', ['title', 'number', 'body', 'state', 'node_id', 'labels'])
+@dataclasses.dataclass(frozen=True)
+class PullRequest:
+    """Represents a GitHub pull request."""
+    title: str
+    number: int
+    body: str
+    state: str
+    node_id: str
+    labels: List[str]
+    requested_teams: List[Dict[str, Any]] = dataclasses.field(
+        default_factory=list)

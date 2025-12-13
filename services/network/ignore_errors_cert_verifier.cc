@@ -60,17 +60,10 @@ int IgnoreErrorsCertVerifier::Verify(const RequestParams& params,
                                      std::unique_ptr<Request>* out_req,
                                      const net::NetLogWithSource& net_log) {
   std::vector<SHA256HashValue> public_key_hashes;
-  std::string_view cert_spki;
-  if (net::asn1::ExtractSPKIFromDERCert(
-          net::x509_util::CryptoBufferAsStringPiece(
-              params.certificate()->cert_buffer()),
-          &cert_spki)) {
-    public_key_hashes.push_back(crypto::hash::Sha256(cert_spki));
-  }
-  for (const auto& intermediate :
-       params.certificate()->intermediate_buffers()) {
+  for (const auto& buffer : params.certificate()->cert_buffers()) {
+    std::string_view cert_spki;
     if (net::asn1::ExtractSPKIFromDERCert(
-            net::x509_util::CryptoBufferAsStringPiece(intermediate.get()),
+            net::x509_util::CryptoBufferAsStringPiece(buffer.get()),
             &cert_spki)) {
       public_key_hashes.push_back(crypto::hash::Sha256(cert_spki));
     }

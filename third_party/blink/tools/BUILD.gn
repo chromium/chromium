@@ -34,7 +34,7 @@ group("wpt_tests_isolate") {
   ]
   data_deps = [
     "//testing:test_scripts_shared",
-    "//third_party/catapult/third_party/typ:typ",
+    "//third_party/catapult/third_party/typ",
     "//tools/imagediff",
   ]
   if (!is_ios) {
@@ -63,7 +63,7 @@ if (is_android) {
       ":wpt_tests_isolate",
       "//build/android:devil_chromium_py",
       "//build/android:test_runner_py",
-      "//third_party/catapult/devil:devil",
+      "//third_party/catapult/devil",
     ]
   }
 }

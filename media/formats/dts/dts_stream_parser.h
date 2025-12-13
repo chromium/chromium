@@ -24,12 +24,11 @@ class MEDIA_EXPORT DTSStreamParser : public MPEGAudioStreamParserBase {
   };
 
   // MPEGAudioStreamParserBase overrides.
-  int ParseFrameHeader(const uint8_t* data,
-                       int size,
-                       int* frame_size,
-                       int* sample_rate,
+  int ParseFrameHeader(base::span<const uint8_t> data,
+                       size_t* frame_size,
+                       size_t* sample_rate,
                        ChannelLayout* channel_layout,
-                       int* sample_count,
+                       size_t* sample_count,
                        bool* metadata_frame,
                        std::vector<uint8_t>* extra_data) override;
 };

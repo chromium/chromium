@@ -7,7 +7,7 @@
 #include <memory>
 #include <set>
 
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
@@ -24,8 +24,6 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
@@ -71,10 +69,10 @@ std::unique_ptr<KeyedService> BuildOfflinePageModel(SimpleFactoryKey* key) {
 class SigninManagerAndroidTest : public ::testing::Test {
  public:
   SigninManagerAndroidTest() {
-    // Override the GMS version to be big enough for local UPM support, so
-    // DoNotWipePasswordsIfLocalUpmOn still passes on bots with outdated GMS.
-    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
-        base::NumberToString(password_manager::GetLocalUpmMinGmsVersion()));
+    // Override the GMS version to be big enough for split stores UPM support,
+    // so DoNotWipePasswordsIfLocalUpmOn still passes on bots with outdated GMS.
+    base::android::device_info::set_gms_version_code_for_test(
+        base::NumberToString(password_manager::GetSplitStoresUpmMinVersion()));
   }
 
   SigninManagerAndroidTest(const SigninManagerAndroidTest&) = delete;
@@ -159,7 +157,6 @@ class SigninManagerAndroidTest : public ::testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   std::unique_ptr<TestingProfile> profile_;
   content::TracingDelegate tracing_delegate_;
   std::unique_ptr<content::BackgroundTracingManager>
@@ -203,31 +200,4 @@ TEST_F(SigninManagerAndroidTest, DoNotWipePasswordsIfLocalUpmOn) {
   EXPECT_THAT(
       account_password_store()->stored_passwords(),
       UnorderedElementsAre(Pair(account_store_form.signon_realm, SizeIs(1))));
-}
-
-class SigninManagerAndroidWithoutLocalUpmTest
-    : public SigninManagerAndroidTest {
- public:
-  SigninManagerAndroidWithoutLocalUpmTest() {
-    // Fake a user with outdated GmsCore.
-    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test("0");
-  }
-};
-
-TEST_F(SigninManagerAndroidWithoutLocalUpmTest, WipePasswordsIfLocalUpmOff) {
-  // After login db deprecation, all users have split stores which either
-  // store credentials outside of the browser or cannot store credentials at
-  // all. In any case, wiping data doesn't apply to them.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kLoginDbDeprecationAndroid);
-  password_manager::PasswordForm form;
-  form.username_value = u"username";
-  form.password_value = u"password";
-  form.signon_realm = "https://g.com";
-  profile_password_store()->AddLogin(form);
-
-  WipeData(/*all_data=*/true);
-
-  EXPECT_THAT(profile_password_store()->stored_passwords(), IsEmpty());
 }

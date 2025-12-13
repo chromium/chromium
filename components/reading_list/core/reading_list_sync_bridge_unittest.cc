@@ -9,6 +9,7 @@
 #include <set>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -267,7 +268,8 @@ TEST_F(ReadingListSyncBridgeTest, ApplyIncrementalSyncChangesOneMerge) {
   AdvanceAndGetTime(&clock_);
   model_->AddOrReplaceEntry(GURL("http://unread.example.com/"), "unread title",
                             reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
+                            /*estimated_read_time=*/std::nullopt,
+                            /*creation_time=*/std::nullopt);
 
   auto new_entry = base::MakeRefCounted<ReadingListEntry>(
       GURL("http://unread.example.com/"), "unread title",
@@ -306,7 +308,8 @@ TEST_F(ReadingListSyncBridgeTest, ApplyIncrementalSyncChangesOneIgnored) {
   model_->AddOrReplaceEntry(GURL("http://unread.example.com/"),
                             "new unread title",
                             reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
+                            /*estimated_read_time=*/std::nullopt,
+                            /*creation_time=*/std::nullopt);
 
   std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
       old_entry->AsReadingListSpecifics();
@@ -333,7 +336,8 @@ TEST_F(ReadingListSyncBridgeTest, ApplyIncrementalSyncChangesOneIgnored) {
 TEST_F(ReadingListSyncBridgeTest, ApplyIncrementalSyncChangesOneRemove) {
   model_->AddOrReplaceEntry(GURL("http://read.example.com/"), "read title",
                             reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
+                            /*estimated_read_time=*/std::nullopt,
+                            /*creation_time=*/std::nullopt);
 
   syncer::EntityChangeList delete_changes;
   delete_changes.push_back(syncer::EntityChange::CreateDelete(
@@ -352,7 +356,8 @@ TEST_F(ReadingListSyncBridgeTest, DisableSyncWithUnspecifiedStorage) {
                       /*initial_sync_done=*/true);
   model_->AddOrReplaceEntry(GURL("http://read.example.com/"), "read title",
                             reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
+                            /*estimated_read_time=*/std::nullopt,
+                            /*creation_time=*/std::nullopt);
 
   ASSERT_EQ(1ul, model_->size());
   bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
@@ -365,7 +370,8 @@ TEST_F(ReadingListSyncBridgeTest, DisableSyncWithAccountStorage) {
                       /*initial_sync_done=*/true);
   model_->AddOrReplaceEntry(GURL("http://read.example.com/"), "read title",
                             reading_list::ADDED_VIA_CURRENT_APP,
-                            /*estimated_read_time=*/base::TimeDelta());
+                            /*estimated_read_time=*/std::nullopt,
+                            /*creation_time=*/std::nullopt);
 
   ASSERT_EQ(1ul, model_->size());
   bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());

@@ -38,9 +38,9 @@
 class BrowserContextKeyedServiceFactory;
 class PrefService;
 
-namespace metrics {
+namespace arc {
 class PSIMemoryParser;
-}  // namespace metrics
+}  // namespace arc
 
 namespace aura {
 class Window;
@@ -368,7 +368,7 @@ class ArcMetricsService : public KeyedService,
   ArcBridgeServiceObserver arc_bridge_service_observer_;
   IntentHelperObserver intent_helper_observer_;
   AppLauncherObserver app_launcher_observer_;
-  std::unique_ptr<metrics::PSIMemoryParser> psi_parser_;
+  std::unique_ptr<arc::PSIMemoryParser> psi_parser_;
 
   bool was_arc_window_active_ = false;
   std::vector<int32_t> task_ids_;

@@ -13,7 +13,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using ExtensionsInternalsTest = extensions::ExtensionBrowserTest;
 
@@ -29,11 +32,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionsInternalsTest,
   ASSERT_TRUE(extension);
 
   // First, check that navigation succeeds.
-  GURL navigation_url(
-      content::GetWebUIURL(chrome::kChromeUIExtensionsInternalsHost));
-  ASSERT_TRUE(NavigateToURL(navigation_url));
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
+  GURL navigation_url(
+      content::GetWebUIURL(chrome::kChromeUIExtensionsInternalsHost));
+  ASSERT_TRUE(NavigateToURL(web_contents, navigation_url));
   EXPECT_EQ(navigation_url, web_contents->GetLastCommittedURL());
   EXPECT_FALSE(web_contents->IsCrashed());
 

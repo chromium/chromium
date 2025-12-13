@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <string_view>
-#include <tuple>
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,6 +13,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -34,7 +34,6 @@
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "url/gurl.h"
 
@@ -122,7 +121,7 @@ struct ExpectedReportWaiter {
       : expected_url(std::move(report_url)),
         response(std::make_unique<net::test_server::ControllableHttpResponse>(
             server,
-            expected_url.path())) {}
+            expected_url.GetPath())) {}
 
   GURL expected_url;
   std::unique_ptr<net::test_server::ControllableHttpResponse> response;
@@ -150,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
   // the web contents would not belong to the tab strip.
   EXPECT_EQ(1,
             browser()->tab_strip_model()->GetIndexOfWebContents(new_contents));
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
 }
 
@@ -241,37 +240,53 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
                    blink::mojom::WebFeature::kPrivacySandboxAdsAPIs);
 }
 
+IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest, XhrUseCounterRecorded) {
+  base::HistogramTester histogram_tester;
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  page_load_metrics::PageLoadMetricsTestWaiter waiter(web_contents);
+  waiter.AddWebFeatureExpectation(
+      blink::mojom::WebFeature::kAttributionReportingXhr);
+
+  ASSERT_TRUE(server_.Start());
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      server_.GetURL("a.test", "/page_with_conversion_redirect.html")));
+
+  GURL register_source_url =
+      server_.GetURL("c.test", "/register_source_headers.html");
+  EXPECT_TRUE(
+      ExecJs(web_contents, content::JsReplace("doAttributionEligibleXHR($1);",
+                                              register_source_url)));
+
+  waiter.Wait();
+
+  ExpectUseCounter(histogram_tester,
+                   blink::mojom::WebFeature::kAttributionReportingXhr);
+}
+
 class ChromeAttributionTriggerUseCounterBrowserTest
     : public ChromeAttributionBrowserTest,
-      public ::testing::WithParamInterface<std::tuple<bool, std::string_view>> {
+      public ::testing::WithParamInterface<std::string_view> {
  public:
-  ChromeAttributionTriggerUseCounterBrowserTest() {
-    if (std::get<0>(GetParam())) {
-      scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kAttributionReportingInBrowserMigration);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          blink::features::kAttributionReportingInBrowserMigration);
-    }
-  }
+  ChromeAttributionTriggerUseCounterBrowserTest() = default;
 
  protected:
   void RegisterTrigger(content::WebContents* web_contents) {
-    ChromeAttributionBrowserTest::RegisterTrigger(web_contents,
-                                                  std::get<1>(GetParam()));
+    ChromeAttributionBrowserTest::RegisterTrigger(web_contents, GetParam());
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ChromeAttributionTriggerUseCounterBrowserTest,
-    ::testing::Combine(::testing::Bool(),
-                       ::testing::Values("createAttributionSrcImg($1);",
-                                         "createTrackingPixel($1);",
-                                         R"(fetch($1, {keepalive: true}))")));
+INSTANTIATE_TEST_SUITE_P(,
+                         ChromeAttributionTriggerUseCounterBrowserTest,
+                         ::testing::Values("createAttributionSrcImg($1);",
+                                           "createTrackingPixel($1);",
+                                           R"(fetch($1, {keepalive: true}))"));
 
 IN_PROC_BROWSER_TEST_P(ChromeAttributionTriggerUseCounterBrowserTest,
                        UseCounterRecorded) {

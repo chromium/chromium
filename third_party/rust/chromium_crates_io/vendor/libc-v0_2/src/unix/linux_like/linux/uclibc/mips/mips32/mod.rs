@@ -20,7 +20,7 @@ pub type fsfilcnt64_t = u64;
 s! {
     pub struct stat {
         pub st_dev: crate::dev_t,
-        st_pad1: [c_long; 2],
+        st_pad1: Padding<[c_long; 2]>,
         pub st_ino: crate::ino_t,
         pub st_mode: crate::mode_t,
         pub st_nlink: crate::nlink_t,
@@ -29,7 +29,7 @@ s! {
         pub st_rdev: crate::dev_t,
         pub st_pad2: [c_long; 1],
         pub st_size: off_t,
-        st_pad3: c_long,
+        st_pad3: Padding<c_long>,
         pub st_atime: crate::time_t,
         pub st_atime_nsec: c_long,
         pub st_mtime: crate::time_t,
@@ -38,19 +38,19 @@ s! {
         pub st_ctime_nsec: c_long,
         pub st_blksize: crate::blksize_t,
         pub st_blocks: crate::blkcnt_t,
-        st_pad5: [c_long; 14],
+        st_pad5: Padding<[c_long; 14]>,
     }
 
     pub struct stat64 {
         pub st_dev: crate::dev_t,
-        st_pad1: [c_long; 2],
+        st_pad1: Padding<[c_long; 2]>,
         pub st_ino: crate::ino64_t,
         pub st_mode: crate::mode_t,
         pub st_nlink: crate::nlink_t,
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
-        st_pad2: [c_long; 2],
+        st_pad2: Padding<[c_long; 2]>,
         pub st_size: off64_t,
         pub st_atime: crate::time_t,
         pub st_atime_nsec: c_long,
@@ -59,9 +59,9 @@ s! {
         pub st_ctime: crate::time_t,
         pub st_ctime_nsec: c_long,
         pub st_blksize: crate::blksize_t,
-        st_pad3: c_long,
+        st_pad3: Padding<c_long>,
         pub st_blocks: crate::blkcnt64_t,
-        st_pad5: [c_long; 14],
+        st_pad5: Padding<[c_long; 14]>,
     }
 
     pub struct statvfs64 {
@@ -114,11 +114,11 @@ s! {
         pub gl_offs: size_t,
         pub gl_flags: c_int,
 
-        __unused1: *mut c_void,
-        __unused2: *mut c_void,
-        __unused3: *mut c_void,
-        __unused4: *mut c_void,
-        __unused5: *mut c_void,
+        __unused1: Padding<*mut c_void>,
+        __unused2: Padding<*mut c_void>,
+        __unused3: Padding<*mut c_void>,
+        __unused4: Padding<*mut c_void>,
+        __unused5: Padding<*mut c_void>,
     }
 
     pub struct ipc_perm {
@@ -129,9 +129,9 @@ s! {
         pub cgid: crate::gid_t,
         pub mode: c_uint,
         pub __seq: c_ushort,
-        __pad1: c_ushort,
-        __unused1: c_ulong,
-        __unused2: c_ulong,
+        __pad1: Padding<c_ushort>,
+        __unused1: Padding<c_ulong>,
+        __unused2: Padding<c_ulong>,
     }
 
     pub struct shmid_ds {
@@ -143,8 +143,8 @@ s! {
         pub shm_cpid: crate::pid_t,
         pub shm_lpid: crate::pid_t,
         pub shm_nattch: crate::shmatt_t,
-        __unused4: c_ulong,
-        __unused5: c_ulong,
+        __unused4: Padding<c_ulong>,
+        __unused5: Padding<c_ulong>,
     }
 
     pub struct msqid_ds {

@@ -293,7 +293,7 @@ std::set<std::u16string> GetWords(std::vector<std::u16string> strings) {
   std::set<std::u16string> words = {};
   for (const auto& string : strings) {
     auto string_words = String16VectorFromString16(
-        string_cleaning::CleanUpTitleForMatching(string), nullptr);
+        omnibox::CleanUpTitleForMatching(string), nullptr);
     std::move(string_words.begin(), string_words.end(),
               std::inserter(words, words.begin()));
   }
@@ -333,23 +333,23 @@ const std::vector<std::u16string> GetEmailUsernames(
 
 // Whether `word` matches any of `potential_match_words`.
 enum class WordMatchType {
-  NONE = 0,
-  PREFIX,  // E.g. 'goo' prefixes 'goo' and 'google'.
-  EXACT,   // E.g. 'goo' exactly matches 'goo' but not 'google'.
+  kNone = 0,
+  kPrefix,  // E.g. 'goo' prefixes 'goo' and 'google'.
+  kExact,   // E.g. 'goo' exactly matches 'goo' but not 'google'.
 };
 WordMatchType GetWordMatchType(std::u16string word,
                                std::set<std::u16string> potential_match_words) {
   auto it = potential_match_words.lower_bound(word);
   if (it == potential_match_words.end()) {
-    return WordMatchType::NONE;
+    return WordMatchType::kNone;
   }
   if (word == *it) {
-    return WordMatchType::EXACT;
+    return WordMatchType::kExact;
   }
   if (base::StartsWith(*it, word, base::CompareCase::SENSITIVE)) {
-    return WordMatchType::PREFIX;
+    return WordMatchType::kPrefix;
   }
-  return WordMatchType::NONE;
+  return WordMatchType::kNone;
 }
 
 // Returns 0 if the match should be filtered out.
@@ -380,18 +380,18 @@ EnterpriseSearchAggregatorProvider::RelevanceData CalculateRelevanceData(
   for (const auto& input_word : input_words) {
     WordMatchType strong_match_type =
         GetWordMatchType(input_word, strong_scoring_words);
-    if (strong_match_type == WordMatchType::EXACT &&
+    if (strong_match_type == WordMatchType::kExact &&
         suggestion_type ==
             AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE) {
       strong_word_matches++;
-    } else if (strong_match_type != WordMatchType::NONE) {
+    } else if (strong_match_type != WordMatchType::kNone) {
       if (input_word.size() >= kMinCharForStrongTextMatch()) {
         strong_word_matches++;
       } else {
         weak_word_matches++;
       }
     } else if (GetWordMatchType(input_word, weak_scoring_words) !=
-               WordMatchType::NONE) {
+               WordMatchType::kNone) {
       weak_word_matches++;
     }
     // Check if the input has exact match with the email username fields for
@@ -400,7 +400,7 @@ EnterpriseSearchAggregatorProvider::RelevanceData CalculateRelevanceData(
         suggestion_type ==
             AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE &&
         GetWordMatchType(input_word, email_usernames_words) ==
-            WordMatchType::EXACT) {
+            WordMatchType::kExact) {
       has_email_match = true;
     }
   }
@@ -834,13 +834,13 @@ void EnterpriseSearchAggregatorProvider::RequestCompleted(
     int request_index,
     const network::SimpleURLLoader* source,
     int response_code,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK(!done_);
   DCHECK_GE(requests_.size(), static_cast<size_t>(request_index));
 
   if (response_code == 200) {
     // Parse `response_body` in utility process if feature param is true.
-    const std::string& json_data = SearchSuggestionParser::ExtractJsonData(
+    std::string json_data = SearchSuggestionParser::ExtractJsonData(
         source, std::move(response_body));
     if (omnibox_feature_configs::SearchAggregatorProvider::Get()
             .parse_response_in_utility_process) {

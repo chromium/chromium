@@ -1,0 +1,17 @@
+Document
+++Text Name='no attributes:'
+++++Text Name='no attributes:' IsControlElement=false
+++ComboBox ExpandCollapse.ExpandCollapseState='Collapsed' Value.Value='one'
+++Text Name='multiple:'
+++++Text Name='multiple:' IsControlElement=false
+++List Selection.CanSelectMultiple=true Selection.IsSelectionRequired=false
+++++ListItem Name='one' SelectionItem.IsSelected=false
+++++ListItem Name='two' SelectionItem.IsSelected=false
+++Text Name='size=4:'
+++++Text Name='size=4:' IsControlElement=false
+++List Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++ListItem Name='one' SelectionItem.IsSelected=false
+++++ListItem Name='two' SelectionItem.IsSelected=false
+++Text Name='multiple size=1:'
+++++Text Name='multiple size=1:' IsControlElement=false
+++ComboBox ExpandCollapse.ExpandCollapseState='Collapsed' Value.Value='0 selected'

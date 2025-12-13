@@ -27,7 +27,6 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 namespace ash {
@@ -60,12 +59,6 @@ void ParentAccessUI::BindInterface(
   // browser address bar.  The handler should handle that scenario.
   mojo_api_handler_ = std::make_unique<ParentAccessUiHandlerImpl>(
       std::move(receiver), identity_manager, ParentAccessDialog::GetInstance());
-}
-
-void ParentAccessUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 parent_access_ui::mojom::ParentAccessUiHandler*

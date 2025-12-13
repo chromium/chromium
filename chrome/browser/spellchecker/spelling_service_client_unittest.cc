@@ -201,7 +201,7 @@ TEST_P(SpellingServiceClientTest, RequestTextCheck) {
   task_environment_.RunUntilIdle();
 
   // Verify that the expected endpoint was hit (REST vs RPC).
-  ASSERT_EQ(requested_url.path(), expected_request_url.path());
+  ASSERT_EQ(requested_url.GetPath(), expected_request_url.GetPath());
 
   // Verify the request content type was JSON. (The Spelling service returns
   // an internal server error when this content type is not JSON.)

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 
 #include <stddef.h>
@@ -20,6 +15,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -101,11 +97,11 @@ scoped_refptr<extensions::Extension> MakeKioskApp(
                           required_platform_version);
   }
 
-  std::string err;
+  std::u16string err;
   scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
       base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
       extensions::Extension::WAS_INSTALLED_BY_DEFAULT, id, &err);
-  EXPECT_EQ(err, "");
+  EXPECT_EQ(err, u"");
   return app;
 }
 
@@ -901,12 +897,13 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest,
   };
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    scoped_refptr<extensions::Extension> app = MakeKioskApp(
-        "App Name", "1.0", kAppId, kTestCases[i].required_platform_version);
-    EXPECT_EQ(kTestCases[i].expected_compliant,
-              manager()->IsPlatformCompliantWithApp(app.get()))
+    scoped_refptr<extensions::Extension> app =
+        MakeKioskApp("App Name", "1.0", kAppId,
+                     UNSAFE_TODO(kTestCases[i]).required_platform_version);
+    UNSAFE_TODO(EXPECT_EQ(kTestCases[i].expected_compliant,
+                          manager()->IsPlatformCompliantWithApp(app.get())))
         << "Test case: " << i << ", required_platform_version="
-        << kTestCases[i].required_platform_version;
+        << UNSAFE_TODO(kTestCases[i]).required_platform_version;
   }
 
   // If an app is not auto launched with zero delay, it is always compliant.
@@ -914,11 +911,11 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest,
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     scoped_refptr<extensions::Extension> app =
         MakeKioskApp("App Name", "1.0", kNoneAutoLaucnhedAppId,
-                     kTestCases[i].required_platform_version);
+                     UNSAFE_TODO(kTestCases[i]).required_platform_version);
     EXPECT_TRUE(manager()->IsPlatformCompliantWithApp(app.get()))
         << "Test case for non auto launch app: " << i
         << ", required_platform_version="
-        << kTestCases[i].required_platform_version;
+        << UNSAFE_TODO(kTestCases[i]).required_platform_version;
   }
 }
 

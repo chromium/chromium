@@ -231,7 +231,7 @@ public class PickerVideoPlayer extends FrameLayout
         mVideoControlsGradient = findViewById(R.id.video_controls_gradient);
         mLargePlayButton = findViewById(R.id.video_player_play_button);
         mMuteButton = findViewById(R.id.mute);
-        mMuteButton.setImageResource(R.drawable.ic_volume_on_white_24dp);
+        mMuteButton.setImageResource(R.drawable.ic_volume_up_fill_24dp);
         mFullscreenButton = findViewById(R.id.fullscreen);
         mRemainingTime = findViewById(R.id.remaining_time);
         mSeekBar = findViewById(R.id.seek_bar);
@@ -347,7 +347,7 @@ public class PickerVideoPlayer extends FrameLayout
         setVisibility(View.GONE);
         stopVideoPlayback();
         mVideoView.setMediaController(null);
-        mMuteButton.setImageResource(R.drawable.ic_volume_on_white_24dp);
+        mMuteButton.setImageResource(R.drawable.ic_volume_up_fill_24dp);
         syncNavBarColorToPlaybackStatus(/* playerOpening= */ false);
         return true;
     }
@@ -816,12 +816,12 @@ public class PickerVideoPlayer extends FrameLayout
         assumeNonNull(mMediaPlayer);
         if (mAudioOn) {
             mMediaPlayer.setVolume(1f, 1f);
-            mMuteButton.setImageResource(R.drawable.ic_volume_on_white_24dp);
+            mMuteButton.setImageResource(R.drawable.ic_volume_up_fill_24dp);
             mMuteButton.setContentDescription(
                     mContext.getString(R.string.accessibility_mute_video));
         } else {
             mMediaPlayer.setVolume(0f, 0f);
-            mMuteButton.setImageResource(R.drawable.ic_volume_off_white_24dp);
+            mMuteButton.setImageResource(R.drawable.ic_volume_off_fill_24dp);
             mMuteButton.setContentDescription(
                     mContext.getString(R.string.accessibility_unmute_video));
         }

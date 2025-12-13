@@ -29,7 +29,6 @@ namespace {
 // When enabled, sharing messages sent using sync may be postponed until sync
 // is active.
 BASE_FEATURE(kSharingPostponeFcmMessageSending,
-             "SharingPostponeFcmMessageSending",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
@@ -90,9 +89,6 @@ void SharingFCMSender::DoSendMessageToDevice(
     return;
   }
 
-  base::UmaHistogramBoolean(
-      "Sharing.SendMessageWithSyncAckFcmConfiguration",
-      !message.fcm_channel_configuration().sender_id_fcm_token().empty());
   SendMessageToFcmTarget(*fcm_configuration, time_to_live, std::move(message),
                          std::move(callback));
 }

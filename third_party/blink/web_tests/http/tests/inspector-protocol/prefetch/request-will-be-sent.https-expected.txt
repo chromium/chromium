@@ -1,6 +1,6 @@
 Tests that Network.requestWillBeSent is dispatched for speculation-rule base prefetch requests.
 Message 0
-Network.onRequestWillBeSent{
+Network.onRequestWillBeSent {
     documentURL : <string>
     frameId : <string>
     hasUserGesture : false
@@ -30,7 +30,7 @@ Network.onRequestWillBeSent{
     type : Document
     wallTime : <number>
 }
-Network.onRequestWillBeSentExtraInfo{
+Network.onRequestWillBeSentExtraInfo {
     associatedCookies : [
     ]
     connectTiming : {
@@ -55,15 +55,15 @@ Network.onRequestWillBeSentExtraInfo{
     requestId : <string>
     siteHasCookieInOtherPartition : false
 }
-Network.onResponseReceived{
+Network.onResponseReceived {
     frameId : <string>
     hasExtraInfo : true
     loaderId : <string>
     requestId : <string>
     response : {
         alternateProtocolUsage : unspecifiedReason
-        charset : 
-        connectionId : 18
+        charset :
+        connectionId : 17
         connectionReused : true
         encodedDataLength : 261
         fromDiskCache : false
@@ -90,8 +90,8 @@ Network.onResponseReceived{
             certificateTransparencyCompliance : unknown
             cipher : AES_128_GCM
             encryptedClientHello : false
-            issuer : 
-            keyExchange : 
+            issuer :
+            keyExchange :
             keyExchangeGroup : X25519
             protocol : TLS 1.3
             sanList : [
@@ -99,7 +99,7 @@ Network.onResponseReceived{
             serverSignatureAlgorithm : 2052
             signedCertificateTimestampList : [
             ]
-            subjectName : 
+            subjectName :
             validFrom : 1542841725
             validTo : 1858201725
         }
@@ -132,7 +132,7 @@ Network.onResponseReceived{
     timestamp : <number>
     type : Document
 }
-Network.onResponseReceivedExtraInfo{
+Network.onResponseReceivedExtraInfo {
     blockedCookies : [
     ]
     cookiePartitionKey : {
@@ -155,16 +155,16 @@ Network.onResponseReceivedExtraInfo{
     }
     headersText : <string>
     requestId : <string>
-    resourceIPAddressSpace : Local
+    resourceIPAddressSpace : Loopback
     statusCode : 200
 }
-Network.onLoadingFinished{
+Network.onLoadingFinished {
     encodedDataLength : 735
     requestId : <string>
     timestamp : <number>
 }
 Message 1
-Network.onRequestWillBeSent{
+Network.onRequestWillBeSent {
     documentURL : <string>
     frameId : <string>
     hasUserGesture : false
@@ -177,9 +177,9 @@ Network.onRequestWillBeSent{
     request : {
         headers : {
             Accept : text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
-            Purpose : prefetch
             Referer : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html
             Sec-Purpose : prefetch
+            Sec-Speculation-Tags : null
             Upgrade-Insecure-Requests : 1
             sec-ch-ua : "content_shell";v="999"
             sec-ch-ua-mobile : ?0
@@ -195,7 +195,7 @@ Network.onRequestWillBeSent{
     type : Prefetch
     wallTime : <number>
 }
-Network.onRequestWillBeSentExtraInfo{
+Network.onRequestWillBeSentExtraInfo {
     associatedCookies : [
     ]
     connectTiming : {
@@ -207,12 +207,12 @@ Network.onRequestWillBeSentExtraInfo{
         Accept-Language : en-us,en
         Connection : keep-alive
         Host : 127.0.0.1:8443
-        Purpose : prefetch
         Referer : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html
         Sec-Fetch-Dest : document
         Sec-Fetch-Mode : navigate
         Sec-Fetch-Site : none
         Sec-Purpose : prefetch
+        Sec-Speculation-Tags : null
         Upgrade-Insecure-Requests : 1
         User-Agent : <string>
         sec-ch-ua : "content_shell";v="999"
@@ -222,15 +222,15 @@ Network.onRequestWillBeSentExtraInfo{
     requestId : <string>
     siteHasCookieInOtherPartition : false
 }
-Network.onResponseReceived{
+Network.onResponseReceived {
     frameId : <string>
     hasExtraInfo : true
     loaderId : <string>
     requestId : <string>
     response : {
         alternateProtocolUsage : unspecifiedReason
-        charset : 
-        connectionId : 18
+        charset :
+        connectionId : 17
         connectionReused : true
         encodedDataLength : 261
         fromDiskCache : false
@@ -257,8 +257,8 @@ Network.onResponseReceived{
             certificateTransparencyCompliance : unknown
             cipher : AES_128_GCM
             encryptedClientHello : false
-            issuer : 
-            keyExchange : 
+            issuer :
+            keyExchange :
             keyExchangeGroup : X25519
             protocol : TLS 1.3
             sanList : [
@@ -266,7 +266,7 @@ Network.onResponseReceived{
             serverSignatureAlgorithm : 2052
             signedCertificateTimestampList : [
             ]
-            subjectName : 
+            subjectName :
             validFrom : 1542841725
             validTo : 1858201725
         }
@@ -299,7 +299,7 @@ Network.onResponseReceived{
     timestamp : <number>
     type : Prefetch
 }
-Network.onResponseReceivedExtraInfo{
+Network.onResponseReceivedExtraInfo {
     blockedCookies : [
     ]
     cookiePartitionKey : {
@@ -322,15 +322,15 @@ Network.onResponseReceivedExtraInfo{
     }
     headersText : <string>
     requestId : <string>
-    resourceIPAddressSpace : Local
+    resourceIPAddressSpace : Loopback
     statusCode : 200
 }
-Network.onLoadingFinished{
+Network.onLoadingFinished {
     encodedDataLength : 735
     requestId : <string>
     timestamp : <number>
 }
-Prefetch response body{
+Prefetch response body {
     code : -32000
     message : No resource with given identifier found
 }

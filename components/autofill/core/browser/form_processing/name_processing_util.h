@@ -5,25 +5,46 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PROCESSING_NAME_PROCESSING_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PROCESSING_NAME_PROCESSING_UTIL_H_
 
+#include <memory>
+#include <string>
 #include <string_view>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 
-// Returns the length of the longest common affix of the `strings`. If `prefix`
-// is true, the prefixes are considered, otherwise the suffixes.
-// The runtime is O(strings.size() * length-of-longest-common-affix).
-size_t FindLongestCommonAffixLength(base::span<std::u16string_view> strings,
-                                    bool prefix);
+class AutofillField;
+class FormFieldData;
 
-// Removes long common prefixes from `field_names`. If the common prefix is too
-// short or empty, `field_names` are left unmodified.
-// While this function works on a general set of strings, it is solely used for
-// the purpose of "rationalizing" the names of `FormFieldData::name`. The result
-// is then referred to as the "parseable name" of the field. Hence the
-// terminology here.
-void ComputeParseableNames(base::span<std::u16string_view> field_names);
+// Returns a map containing each field's parseable name **if** that name
+// differs from FormFieldData::name().
+//
+// Parseable names are obtained by removing prefixes of FormFieldData::name().
+//
+// For example, in
+//   <input name=id-12345-street-name>
+//   <input name=id-12345-house-number>
+//   <input name=id-12345-zip-code>
+// the renderer assigns the full name to each <input>.
+//
+// GetParseableNames() strips the common prefixes in these names ("id-12345-").
+// Prefixes are only removed if they are shared by all and a sufficient number
+// of fields and they are sufficiently long.
+base::flat_map<FieldGlobalId, std::u16string> GetParseableNames(
+    base::span<const FormFieldData> fields);
+
+base::flat_map<FieldGlobalId, std::u16string> GetParseableNames(
+    base::span<const std::unique_ptr<AutofillField>> fields);
+
+size_t FindLongestCommonAffixLengthForTest(  // IN-TEST
+    base::span<std::u16string_view> strings,
+    bool prefix);
+
+void ComputeParseableNamesForTest(  // IN-TEST
+    base::span<std::u16string_view> field_names);
 
 }  // namespace autofill
 

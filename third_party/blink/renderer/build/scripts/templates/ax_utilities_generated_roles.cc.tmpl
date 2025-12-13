@@ -1,0 +1,91 @@
+{% from "templates/macros.tmpl" import license, source_files_for_generated_file %}
+{{ license(2025) }}
+
+{{ source_files_for_generated_file(template_file, input_files) }}
+
+#include "third_party/blink/renderer/core/accessibility/ax_utilities_generated.h"
+
+#include <algorithm>
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "ui/accessibility/ax_enums.mojom-blink.h"
+
+namespace blink {
+
+// Internal structures for role mapping.
+struct RoleEntry {
+  const char* aria_role;
+  ax::mojom::blink::Role internal_role;
+};
+
+// Canonical ARIA role mappings.
+static const RoleEntry kAriaRoles[] = {
+  {% for role in current_roles %}
+  {"{{ role.ariaRole }}", ax::mojom::blink::Role::{{ role.internalRole }}},
+  {% endfor %}
+};
+
+// Deprecated ARIA role mappings (e.g. "directory" -> `kList`).
+static const RoleEntry kDeprecatedAriaRoles[] = {
+  {% for role in deprecated_roles %}
+  {"{{ role.ariaRole }}", ax::mojom::blink::Role::{{ role.internalRole }}},
+  {% endfor %}
+};
+
+// ARIA role utilities.
+
+Vector<AtomicString> GetAriaRoleNames() {
+  Vector<AtomicString> names;
+  for (const auto& entry : kAriaRoles) {
+    names.push_back(AtomicString(entry.aria_role));
+  }
+  return names;
+}
+
+ax::mojom::blink::Role AriaRoleToInternalRole(const AtomicString& aria_role_name) {
+  // Linear search through canonical roles.
+  for (const auto& entry : kAriaRoles) {
+    if (AtomicString(entry.aria_role) == aria_role_name) {
+      return entry.internal_role;
+    }
+  }
+
+  // Check deprecated roles (e.g. "directory", "presentation", etc.).
+  for (const auto& entry : kDeprecatedAriaRoles) {
+    if (AtomicString(entry.aria_role) == aria_role_name) {
+      return entry.internal_role;
+    }
+  }
+
+  return ax::mojom::blink::Role::kUnknown;
+}
+
+const AtomicString& InternalRoleToAriaRole(ax::mojom::blink::Role internal_role) {
+  using RoleToStringMap = HashMap<ax::mojom::blink::Role, AtomicString>;
+  DEFINE_STATIC_LOCAL(RoleToStringMap, role_map, ());
+
+  auto it = role_map.find(internal_role);
+  if (it != role_map.end()) {
+    return it->value;
+  }
+
+  const char* role_string = nullptr;
+  switch (internal_role) {
+{% for role in current_roles %}
+    case ax::mojom::blink::Role::{{ role.internalRole }}:
+      role_string = "{{ role.ariaRole }}";
+      break;
+{% endfor %}
+{% for role in additional_internal_role_mappings %}
+    case ax::mojom::blink::Role::{{ role.internalRole }}:
+      role_string = "{{ role.ariaRole }}";
+      break;
+{% endfor %}
+    default:
+      return g_empty_atom;
+  }
+
+  return role_map.Set(internal_role, AtomicString(role_string)).stored_value->value;
+}
+
+}  // namespace blink

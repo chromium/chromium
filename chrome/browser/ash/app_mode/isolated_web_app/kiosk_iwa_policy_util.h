@@ -10,14 +10,14 @@
 #include <variant>
 
 #include "base/types/expected.h"
-#include "base/version.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "url/gurl.h"
 
 namespace ash {
 
-using IwaPinnedVersion = std::optional<base::Version>;
+using IwaPinnedVersion = std::optional<web_app::IwaVersion>;
 
 // Returns an `UpdateChannel` object for a valid `raw_policy_value` input.
 // Otherwise returns unexpected.

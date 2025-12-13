@@ -131,6 +131,9 @@ subjectAltName = @spdy_pooling
 [req_wildcard]
 subjectAltName = @wildcard
 
+[req_google_wildcard]
+subjectAltName = @google_wildcard
+
 [req_test_names]
 subjectAltName = @test_names
 
@@ -150,6 +153,9 @@ DNS.3 = blahblahblahblah.com
 
 [wildcard]
 DNS.1 = *.example.org
+
+[google_wildcard]
+DNS.1 = *.google.com
 
 [test_names]
 DNS.1 = a.test

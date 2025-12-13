@@ -103,7 +103,7 @@ class SyncServiceFactoryTest : public testing::Test {
 
   // Returns the collection of default datatypes.
   syncer::DataTypeSet DefaultDatatypes() {
-    static_assert(55 == syncer::GetNumDataTypes(),
+    static_assert(59 == syncer::GetNumDataTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled). Check similar "
                   "function in "
@@ -175,9 +175,6 @@ class SyncServiceFactoryTest : public testing::Test {
     datatypes.Put(syncer::AUTOFILL_WALLET_OFFER);
     datatypes.Put(syncer::AUTOFILL_WALLET_USAGE);
     datatypes.Put(syncer::BOOKMARKS);
-    if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
-      datatypes.Put(syncer::PRODUCT_COMPARISON);
-    }
     datatypes.Put(syncer::CONTACT_INFO);
     datatypes.Put(syncer::DEVICE_INFO);
     datatypes.Put(syncer::HISTORY);
@@ -200,6 +197,9 @@ class SyncServiceFactoryTest : public testing::Test {
               syncer::kSyncSharedTabGroupAccountData)) {
         datatypes.Put(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA);
       }
+      if (base::FeatureList::IsEnabled(syncer::kSyncSharedComment)) {
+        datatypes.Put(syncer::SHARED_COMMENT);
+      }
     }
 #if BUILDFLAG(IS_ANDROID)
     if (base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
@@ -213,6 +213,22 @@ class SyncServiceFactoryTest : public testing::Test {
 
     if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
       datatypes.Put(syncer::AUTOFILL_VALUABLE);
+    }
+
+    if (base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata)) {
+      datatypes.Put(syncer::AUTOFILL_VALUABLE_METADATA);
+    }
+
+    if (base::FeatureList::IsEnabled(syncer::kSyncAccountSettings)) {
+      datatypes.Put(syncer::ACCOUNT_SETTING);
+    }
+
+    if (base::FeatureList::IsEnabled(syncer::kSyncAIThread)) {
+      datatypes.Put(syncer::AI_THREAD);
+    }
+
+    if (base::FeatureList::IsEnabled(syncer::kSyncContextualTask)) {
+      datatypes.Put(syncer::CONTEXTUAL_TASK);
     }
 
     return datatypes;

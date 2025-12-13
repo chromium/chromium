@@ -31,6 +31,7 @@ class SyncErrorNotifier : public syncer::SyncServiceObserver,
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* service) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   const std::string& GetNotificationIdForTesting() const {
     return notification_id_;

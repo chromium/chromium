@@ -286,9 +286,9 @@ void av1_fwht4x4_c(const int16_t *input, tran_low_t *output, int stride);
 void av1_fwht4x4_sse4_1(const int16_t *input, tran_low_t *output, int stride);
 RTCD_EXTERN void (*av1_fwht4x4)(const int16_t *input, tran_low_t *output, int stride);
 
-uint32_t av1_get_crc32c_value_c(void *crc_calculator, uint8_t *p, size_t length);
-uint32_t av1_get_crc32c_value_sse4_2(void *crc_calculator, uint8_t *p, size_t length);
-RTCD_EXTERN uint32_t (*av1_get_crc32c_value)(void *crc_calculator, uint8_t *p, size_t length);
+uint32_t av1_get_crc32c_value_c(void *crc_calculator, const uint8_t *p, size_t length);
+uint32_t av1_get_crc32c_value_sse4_2(void *crc_calculator, const uint8_t *p, size_t length);
+RTCD_EXTERN uint32_t (*av1_get_crc32c_value)(void *crc_calculator, const uint8_t *p, size_t length);
 
 void av1_get_horver_correlation_full_c(const int16_t *diff, int stride, int w, int h, float *hcorr, float *vcorr);
 void av1_get_horver_correlation_full_sse4_1(const int16_t *diff, int stride, int w, int h, float *hcorr, float *vcorr);

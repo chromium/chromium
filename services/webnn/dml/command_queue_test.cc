@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/webnn/dml/command_queue.h"
+
 #include <wrl.h>
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "services/webnn/dml/adapter.h"
-#include "services/webnn/dml/command_queue.h"
 #include "services/webnn/dml/test_base.h"
+#include "services/webnn/webnn_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webnn::dml {

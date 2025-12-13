@@ -42,7 +42,8 @@ static void AssertEmptyPermission(const SocketsManifestPermission* permission) {
 }
 
 static base::Value ParsePermissionJSON(const std::string& json) {
-  std::optional<base::Value> result = base::JSONReader::Read(json);
+  std::optional<base::Value> result =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(result) << "Invalid JSON string: " << json;
   return std::move(result.value());
 }
@@ -67,17 +68,7 @@ struct CheckFormatEntry {
                    std::string host_pattern)
       : operation_type(operation_type), host_pattern(host_pattern) {}
 
-  // operators <, == are needed by container std::set and algorithms
-  // std::set_includes and std::set_differences.
-  bool operator<(const CheckFormatEntry& rhs) const {
-    return std::tie(operation_type, host_pattern) <
-           std::tie(rhs.operation_type, rhs.host_pattern);
-  }
-
-  bool operator==(const CheckFormatEntry& rhs) const {
-    return operation_type == rhs.operation_type &&
-           host_pattern == rhs.host_pattern;
-  }
+  auto operator<=>(const CheckFormatEntry& rhs) const = default;
 
   SocketPermissionRequest::OperationType operation_type;
   std::string host_pattern;

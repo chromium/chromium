@@ -19,9 +19,13 @@ BackingStoreDatabaseImpl::~BackingStoreDatabaseImpl() {
   DatabaseConnection::Release(std::move(db_));
 }
 
-const blink::IndexedDBDatabaseMetadata&
-BackingStoreDatabaseImpl::GetMetadata() {
+const blink::IndexedDBDatabaseMetadata& BackingStoreDatabaseImpl::GetMetadata()
+    const {
   return db_->metadata();
+}
+
+const IndexedDBDataLossInfo& BackingStoreDatabaseImpl::GetDataLossInfo() const {
+  return db_->data_loss_info();
 }
 
 std::string BackingStoreDatabaseImpl::GetObjectStoreLockIdKey(
@@ -33,7 +37,7 @@ std::unique_ptr<BackingStore::Transaction>
 BackingStoreDatabaseImpl::CreateTransaction(
     blink::mojom::IDBTransactionDurability durability,
     blink::mojom::IDBTransactionMode mode) {
-  return db_->CreateTransaction(PassKey(), durability, mode);
+  return db_->CreateTransactionWrapper(PassKey(), durability, mode);
 }
 
 Status BackingStoreDatabaseImpl::DeleteDatabase(

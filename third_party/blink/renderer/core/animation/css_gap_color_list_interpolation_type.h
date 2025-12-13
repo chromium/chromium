@@ -11,6 +11,23 @@
 
 namespace blink {
 
+// This class handles interpolation for column-rule-color and row-rule-color.
+// Internally, these are represented as `GapDataList<StyleColor>` which are
+// basically a list of colors, or a list of repeaters of colors, or both. As
+// such, for interpolation purposes, we deal with this by interpolating an
+// InterpolableList which contains `InterpolableColor` or
+// `InterpolableGapColorAutoRepeater` objects.
+//
+// Since we allow interolating between different types (i.e. repeaters and
+// non-repeaters), we expand any integer repeaters at conversion time and do
+// `kLowestCommonMultiple` list length matching if the lengths don't match (as
+// per the spec). If an auto repeater is present, we segment the list into three
+// segments and only interpolate if the lengths match (across `from` and `to`):
+// - `leading_values`, the list of values before the auto repeater (after
+// expanding any integer repeaters)
+// - `auto_repeater`, the auto repeater itself
+// - `trailing_values`, the list of values after the auto repeater (after
+// expanding any integer repeaters).
 class CORE_EXPORT CSSGapColorListInterpolationType
     : public CSSInterpolationType {
  public:

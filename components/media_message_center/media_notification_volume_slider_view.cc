@@ -4,6 +4,8 @@
 
 #include "components/media_message_center/media_notification_volume_slider_view.h"
 
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -99,11 +101,10 @@ void MediaNotificationVolumeSliderView::OnPaint(gfx::Canvas* canvas) {
   int offset_y = (content_bound.height() - kSliderHeight) / 2;
 
   // Draw background bar taking entire content width and |kSliderHeight|.
-  SkPath background_path;
-  background_path.addRoundRect(
+  const SkPath background_path = SkPath::RRect(SkRRect::MakeRectXY(
       gfx::RectToSkRect(
           gfx::Rect(0, offset_y, content_bound.width(), kSliderHeight)),
-      kSliderHeight / 2, kSliderHeight / 2);
+      kSliderHeight / 2, kSliderHeight / 2));
 
   cc::PaintFlags background_flags;
   background_flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -111,18 +112,16 @@ void MediaNotificationVolumeSliderView::OnPaint(gfx::Canvas* canvas) {
   background_flags.setColor(background_color_);
   canvas->DrawPath(background_path, background_flags);
 
-  SkPath foreground_path;
-
   // The effective length of the volume slider bar is the content width minus
   // the thumb size because we want the thumb completely stays inside the
   // slider.
   int foreground_width =
       static_cast<int>((content_bound.width() - 2 * kThumbRadius) * volume) +
       kThumbRadius;
-  foreground_path.addRoundRect(
+  const SkPath foreground_path = SkPath::RRect(SkRRect::MakeRectXY(
       gfx::RectToSkRect(
           gfx::Rect(0, offset_y, foreground_width, kSliderHeight)),
-      kSliderHeight / 2, kSliderHeight / 2);
+      kSliderHeight / 2, kSliderHeight / 2));
 
   cc::PaintFlags foreground_flags;
   foreground_flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -133,11 +132,10 @@ void MediaNotificationVolumeSliderView::OnPaint(gfx::Canvas* canvas) {
   // Draw thumb.
   int thumb_offset_x = foreground_width - kThumbRadius;
   int thumb_offset_y = (content_bound.height() - 2 * kThumbRadius) / 2;
-  SkPath thumb_path;
-  thumb_path.addRoundRect(
+  const SkPath thumb_path = SkPath::RRect(SkRRect::MakeRectXY(
       gfx::RectToSkRect(gfx::Rect(thumb_offset_x, thumb_offset_y,
                                   2 * kThumbRadius, 2 * kThumbRadius)),
-      kThumbRadius, kThumbRadius);
+      kThumbRadius, kThumbRadius));
 
   canvas->DrawPath(thumb_path, foreground_flags);
 }

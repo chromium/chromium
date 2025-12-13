@@ -48,6 +48,10 @@ source_set("common") {
     "help_bubble/help_bubble_factory_registry.h",
     "help_bubble/help_bubble_params.cc",
     "help_bubble/help_bubble_params.h",
+    "menu/highlighting_menu_button_helper.cc",
+    "menu/highlighting_menu_button_helper.h",
+    "menu/highlighting_simple_menu_model_delegate.cc",
+    "menu/highlighting_simple_menu_model_delegate.h",
     "new_badge/new_badge_controller.cc",
     "new_badge/new_badge_controller.h",
     "new_badge/new_badge_policy.cc",
@@ -57,6 +61,8 @@ source_set("common") {
     "ntp_promo/ntp_promo_controller.cc",
     "ntp_promo/ntp_promo_controller.h",
     "ntp_promo/ntp_promo_identifier.h",
+    "ntp_promo/ntp_promo_order.cc",
+    "ntp_promo/ntp_promo_order.h",
     "ntp_promo/ntp_promo_registry.cc",
     "ntp_promo/ntp_promo_registry.h",
     "ntp_promo/ntp_promo_specification.cc",
@@ -80,6 +86,7 @@ source_set("common") {
     "tutorial/tutorial_service.h",
     "user_education_class_properties.cc",
     "user_education_class_properties.h",
+    "user_education_context.h",
     "user_education_data.cc",
     "user_education_data.h",
     "user_education_features.cc",
@@ -100,7 +107,7 @@ source_set("common") {
     "//skia",
     "//third_party/abseil-cpp:absl",
     "//ui/accessibility",
-    "//ui/base",
+    "//ui/base/interaction",
     "//ui/menus",
   ]
 }
@@ -115,7 +122,10 @@ component("events") {
     "user_education_events.h",
   ]
 
-  deps = [ "//ui/base" ]
+  deps = [
+    "//base",
+    "//ui/base/interaction",
+  ]
 }
 
 source_set("unit_tests") {
@@ -136,6 +146,7 @@ source_set("unit_tests") {
     "help_bubble/help_bubble_factory_registry_unittest.cc",
     "new_badge/new_badge_controller_unittest.cc",
     "ntp_promo/ntp_promo_controller_unittest.cc",
+    "ntp_promo/ntp_promo_order_unittest.cc",
     "ntp_promo/ntp_promo_registry_unittest.cc",
     "product_messaging_controller_unittest.cc",
     "session/user_education_session_manager_unittest.cc",
@@ -158,8 +169,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
     "//ui/accessibility",
-    "//ui/base",
-    "//ui/base:test_support",
+    "//ui/base/interaction:test_support",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

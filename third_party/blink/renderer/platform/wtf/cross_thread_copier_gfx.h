@@ -33,32 +33,6 @@
 
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 
-namespace gfx {
-class ColorSpace;
-class Rect;
-class Size;
-}  // namespace gfx
-
-namespace blink {
-
-template <>
-struct CrossThreadCopier<gfx::Size>
-    : public CrossThreadCopierPassThrough<gfx::Size> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<gfx::Rect>
-    : public CrossThreadCopierPassThrough<gfx::Rect> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<gfx::ColorSpace>
-    : public CrossThreadCopierPassThrough<gfx::ColorSpace> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-}  // namespace blink
+// TODO(crbug.com/460743390): Delete this file after CrossThreadCopier removal.
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_GFX_H_

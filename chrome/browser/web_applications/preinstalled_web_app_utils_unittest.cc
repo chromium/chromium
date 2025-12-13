@@ -60,8 +60,8 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
 
   std::optional<ExternalInstallOptions> ParseConfig(
       const char* app_config_string) {
-    std::optional<base::Value> app_config =
-        base::JSONReader::Read(app_config_string);
+    std::optional<base::Value> app_config = base::JSONReader::Read(
+        app_config_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     DCHECK(app_config);
     auto file_utils = base::MakeRefCounted<FileUtilsWrapper>();
     OptionsOrError result =
@@ -76,8 +76,8 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
 
   std::optional<WebAppInstallInfoFactory> ParseOfflineManifest(
       const char* offline_manifest_string) {
-    std::optional<base::Value> offline_manifest =
-        base::JSONReader::Read(offline_manifest_string);
+    std::optional<base::Value> offline_manifest = base::JSONReader::Read(
+        offline_manifest_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     DCHECK(offline_manifest);
     WebAppInstallInfoFactoryOrError result = ::web_app::ParseOfflineManifest(
         *file_utils_, base::FilePath(FILE_PATH_LITERAL("test_dir")),

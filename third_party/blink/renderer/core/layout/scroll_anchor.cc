@@ -26,15 +26,15 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/bloom_filter.h"
 
 namespace blink {
 
 namespace {
 
-bool IsNGBlockFragmentationRoot(const LayoutBlockFlow* block_flow) {
-  return block_flow && block_flow->IsFragmentationContextRoot() &&
-         block_flow->IsLayoutNGObject();
+bool IsBlockFragmentationRoot(const LayoutBlockFlow* block_flow) {
+  return block_flow && block_flow->IsFragmentationContextRoot();
 }
 
 gfx::Vector2d ToRoundedVector2d(const LogicalOffset& o) {
@@ -148,8 +148,12 @@ static PhysicalRect RelativeBounds(const LayoutObject* layout_object,
     // returns (0, 0) when changes are made that |DeleteLineBoxes()| or clear
     // |SetPaintFragment()|, e.g., |SplitFlow()|. crbug.com/965352
     local_bounds.Unite(text->PhysicalLinesBoundingBox());
+
+  } else if (const auto* inline_layout =
+                 DynamicTo<LayoutInline>(layout_object)) {
+    local_bounds.Unite(inline_layout->PhysicalLinesBoundingBox());
   } else {
-    // Only LayoutBox and LayoutText are supported.
+    // Only LayoutBox, LayoutText and LayoutInline are supported.
     NOTREACHED();
   }
 
@@ -169,6 +173,22 @@ static LogicalOffset ComputeRelativeOffset(const LayoutObject* layout_object,
       CornerPointOfRect(RelativeBounds(layout_object, scroller), corner);
   const LayoutBox* scroller_box = ScrollerLayoutBox(scroller);
   return scroller_box->CreateWritingModeConverter().ToLogical(offset, {});
+}
+
+// Use parent element for text nodes to ensure consistency with
+// ComputeUniqueSelector(), which uses ElementTraversal::FirstAncestorOrSelf.
+static LogicalOffset ComputeRelativeOffsetForSerialization(
+    const LayoutObject* layout_object,
+    const ScrollableArea* scroller,
+    Corner corner) {
+  if (RuntimeEnabledFeatures::
+          ScrollAnchorSerializationUseParentForTextNodeEnabled() &&
+      layout_object->IsText()) {
+    layout_object = layout_object->NearestAncestorForElement();
+    DCHECK(layout_object);
+  }
+
+  return ComputeRelativeOffset(layout_object, scroller, corner);
 }
 
 static bool CandidateMayMoveWithScroller(const LayoutObject* candidate,
@@ -250,25 +270,26 @@ static const String UniqueSimpleSelectorAmongSiblings(Element* element) {
   if (element->HasClass()) {
     AtomicString unique_classname = UniqueClassnameAmongSiblings(element);
     if (!unique_classname.empty()) {
-      return AtomicString(".") + unique_classname;
+      return StrCat({".", unique_classname});
     }
   }
 
-  return ":nth-child(" +
-         String::Number(NthIndexCache::NthChildIndex(
-             *element, /*filter=*/nullptr, /*selector_checker=*/nullptr,
-             /*context=*/nullptr)) +
-         ")";
+  return StrCat({":nth-child(",
+                 String::Number(NthIndexCache::NthChildIndex(
+                     *element, /*filter=*/nullptr, /*selector_checker=*/nullptr,
+                     /*context=*/nullptr)),
+                 ")"});
 }
 
-// Computes a selector that uniquely identifies |anchor_node|. This is done
+// Computes a selector that uniquely identifies |anchor_object|. This is done
 // by computing a selector that uniquely identifies each ancestor among its
 // sibling elements, terminating at a definitively unique ancestor. The
 // definitively unique ancestor is either the first ancestor with an id or
 // the root of the document. The computed selectors are chained together with
 // the child combinator(>) to produce a compound selector that is
-// effectively a path through the DOM tree to |anchor_node|.
-static const String ComputeUniqueSelector(Node* anchor_node) {
+// effectively a path through the DOM tree to the node of |anchor_object|.
+static const String ComputeUniqueSelector(LayoutObject* anchor_object) {
+  Node* anchor_node = anchor_object->GetNode();
   DCHECK(anchor_node);
   // The scroll anchor can be a pseudo-element, but pseudo-elements aren't part
   // of the DOM and can't be used as part of a selector. We fail in this case;
@@ -484,7 +505,7 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorRecursive(
     return status;
 
   bool is_block_fragmentation_context_root =
-      IsNGBlockFragmentationRoot(DynamicTo<LayoutBlockFlow>(candidate));
+      IsBlockFragmentationRoot(DynamicTo<LayoutBlockFlow>(candidate));
 
   for (LayoutObject* child = candidate->SlowFirstChild(); child;
        child = child->NextSibling()) {
@@ -531,7 +552,7 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorInOOFs(
   // the LayoutObject associated with the fragment will be set to nullptr, so we
   // need to check for that.
   bool is_block_fragmentation_context_root =
-      IsNGBlockFragmentationRoot(DynamicTo<LayoutBlockFlow>(layout_block));
+      IsBlockFragmentationRoot(DynamicTo<LayoutBlockFlow>(layout_block));
   for (const PhysicalBoxFragment& fragment :
        layout_block->PhysicalFragments()) {
     if (!fragment.HasOutOfFlowFragmentChild() &&
@@ -553,7 +574,8 @@ ScrollAnchor::WalkStatus ScrollAnchor::FindAnchorInOOFs(
         continue;
 
       // Look for OOFs inside a fragmentainer.
-      for (const PhysicalFragmentLink& grandchild : child->Children()) {
+      for (const PhysicalFragmentLink& grandchild :
+           To<PhysicalBoxFragment>(child.get())->Children()) {
         if (!grandchild->IsOutOfFlowPositioned())
           continue;
         LayoutObject* layout_object = grandchild->GetMutableLayoutObject();
@@ -718,7 +740,8 @@ void ScrollAnchor::Adjust() {
   TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("blink.debug"), "Adjust",
                       "new_offset", new_offset.ToString());
 
-  scroller_->SetScrollOffset(new_offset, mojom::blink::ScrollType::kAnchoring);
+  scroller_->SetScrollOffset(new_offset, mojom::blink::ScrollType::kAnchoring,
+                             cc::ScrollSourceType::kStationaryScroll);
 
   UseCounter::Count(ScrollerLayoutBox(scroller_)->GetDocument(),
                     WebFeature::kScrollAnchored);
@@ -795,14 +818,16 @@ bool ScrollAnchor::RestoreAnchor(const SerializedAnchor& serialized_anchor) {
                         "RestoreAnchor", "anchor_object",
                         anchor_object->DebugName());
     scroller_->SetScrollOffset(desired_offset,
-                               mojom::blink::ScrollType::kAnchoring);
+                               mojom::blink::ScrollType::kAnchoring,
+                               cc::ScrollSourceType::kStationaryScroll);
     FindAnchor();
 
     // If the above FindAnchor call failed, reset the scroll position and try
     // again with the next found element.
     if (!anchor_object_) {
       scroller_->SetScrollOffset(current_offset,
-                                 mojom::blink::ScrollType::kAnchoring);
+                                 mojom::blink::ScrollType::kAnchoring,
+                                 cc::ScrollSourceType::kStationaryScroll);
       continue;
     }
 
@@ -823,16 +848,11 @@ const SerializedAnchor ScrollAnchor::GetSerializedAnchor() {
     scroller_box->GetDocument().GetStyleEngine().UpdateActiveStyle();
   }
 
-  // It's safe to return saved_selector_ before checking anchor_object_, since
-  // clearing anchor_object_ also clears saved_selector_.
-  if (!saved_selector_.empty()) {
-    DCHECK(anchor_object_);
-    return SerializedAnchor(
-        saved_selector_,
-        ComputeRelativeOffset(anchor_object_, scroller_, corner_));
-  }
-
   if (!anchor_object_) {
+    // If there's no anchor_object_, there should also be no saved_selector_,
+    // because those are cleared together.
+    DCHECK(saved_selector_.empty());
+
     FindAnchor();
     if (!anchor_object_)
       return SerializedAnchor();
@@ -840,10 +860,11 @@ const SerializedAnchor ScrollAnchor::GetSerializedAnchor() {
 
   DCHECK(anchor_object_->GetNode());
   SerializedAnchor new_anchor(
-      ComputeUniqueSelector(anchor_object_->GetNode()),
-      ComputeRelativeOffset(anchor_object_, scroller_, corner_));
+      saved_selector_ ? saved_selector_ : ComputeUniqueSelector(anchor_object_),
+      ComputeRelativeOffsetForSerialization(anchor_object_, scroller_,
+                                            corner_));
 
-  if (new_anchor.IsValid()) {
+  if (saved_selector_.empty() && new_anchor.IsValid()) {
     saved_selector_ = new_anchor.selector;
   }
 

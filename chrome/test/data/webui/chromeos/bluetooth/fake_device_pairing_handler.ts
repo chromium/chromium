@@ -4,6 +4,7 @@
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {PairingAuthType} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {KeyEnteredHandlerRemote, PairingResult} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import type {BluetoothDeviceProperties, DevicePairingDelegateInterface, DevicePairingHandlerInterface, KeyEnteredHandlerPendingReceiver} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
@@ -102,6 +103,10 @@ export class FakeDevicePairingHandler implements DevicePairingHandlerInterface {
       case PairingAuthType.AUTHORIZE_PAIRING:
         // TODO(crbug.com/1010321): Implement this.
         break;
+      case PairingAuthType.NONE:
+        break;
+      default:
+        assertNotReachedCase(authType);
     }
   }
 

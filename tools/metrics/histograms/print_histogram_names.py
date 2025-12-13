@@ -9,13 +9,16 @@ from __future__ import print_function
 
 import argparse
 import os
+import re
 import subprocess
 import sys
 import tempfile
 import io
+from typing import Iterable, Set
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import path_util
+import xml_utils
 
 import extract_histograms
 import histogram_paths
@@ -38,11 +41,39 @@ def get_names(xml_files):
   return set(extract_histograms.ExtractNames(histograms))
 
 
+def get_names_from_contents(contents: Iterable[str]) -> Set[str]:
+  """Returns all histogram names from the given contents.
+
+  This function is different from get_names() in that it does not make
+  additional checks against the given contents. Note: it currently doesn't
+  handle go/patterned-histogram names.
+
+  Args:
+    contents: An iterable of strings from the raw histograms xml file.
+
+  Returns:
+    The set of histogram names.
+  """
+  # contents is an iterator, so convert to list to be able to reuse it.
+  contents_list = list(contents)
+  if not contents_list:
+    return set()
+
+  doc = merge_xml.MergeFiles(files=[io.StringIO('\n'.join(contents_list))])
+  xml_utils.NormalizeAllAttributeValues(doc)
+  histograms_tree = xml_utils.GetTagSubTree(doc, 'histograms', 2)
+  histogram_names = set()
+
+  for histogram in xml_utils.IterElementsWithTag(histograms_tree, 'histogram'):
+    histogram_names.add(histogram.getAttribute('name'))
+  return histogram_names
+
+
 def histogram_xml_files():
   return [open(f, encoding="utf-8") for f in histogram_paths.ALL_XMLS]
 
 
-def _get_diff(revision):
+def get_histogram_diff(revision):
   """Returns the added / removed histogram names relative to git revision
 
   Args:
@@ -80,7 +111,7 @@ def _get_diff(revision):
 
 
 def _print_diff_names(revision):
-  added_names, removed_names = _get_diff(revision)
+  added_names, removed_names = get_histogram_diff(revision)
   print("%d histograms added:" % len(added_names))
   for name in added_names:
     print(name)
@@ -99,7 +130,7 @@ def main(argv):
   if args.diff is not None:
     _print_diff_names(args.diff)
   else:
-    name_set = get_names(_histogram_xml_files())
+    name_set = get_names(histogram_xml_files())
     for name in sorted(list(name_set)):
       print(name)
 

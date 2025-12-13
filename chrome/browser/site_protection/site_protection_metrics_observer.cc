@@ -9,16 +9,23 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/content_settings/generated_javascript_optimizer_pref.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/site_protection/site_familiarity_heuristic_name.h"
+#include "chrome/browser/site_protection/site_familiarity_utils.h"
+#include "chrome/browser/site_protection/site_protection_metrics.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/common/content_features.h"
+#include "net/base/schemeful_site.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
@@ -126,10 +133,22 @@ void SiteProtectionMetricsObserver::PrimaryPageChanged(content::Page& page) {
   url::Origin last_committed_origin = metrics_data->last_committed_origin;
   history_service_->GetLastVisitToOrigin(
       last_committed_origin, base::Time(), base::Time::Now() - base::Hours(4),
+      history::VisitQuery404sPolicy::kInclude404s,
       base::BindOnce(
           &SiteProtectionMetricsObserver::OnGotVisitToOriginOlderThan4HoursAgo,
           weak_factory_.GetWeakPtr(), std::move(metrics_data)),
       &task_tracker_);
+}
+
+void SiteProtectionMetricsObserver::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (ComputeDefaultJavascriptOptimizerSetting(profile_) !=
+      content_settings::JavascriptOptimizerSetting::
+          kBlockedForUnfamiliarSites) {
+    return;
+  }
+
+  LogV8OptimizerUma(navigation_handle);
 }
 
 bool SiteProtectionMetricsObserver::HasPendingTasksForTesting() {
@@ -156,6 +175,7 @@ void SiteProtectionMetricsObserver::OnGotVisitToOriginOlderThan4HoursAgo(
   url::Origin last_committed_origin = metrics_data->last_committed_origin;
   history_service_->GetLastVisitToOrigin(
       last_committed_origin, base::Time(), base::Time::Now() - base::Days(1),
+      history::VisitQuery404sPolicy::kInclude404s,
       base::BindOnce(
           &SiteProtectionMetricsObserver::OnGotVisitToOriginOlderThanADayAgo,
           weak_factory_.GetWeakPtr(), std::move(metrics_data)),
@@ -266,6 +286,7 @@ void SiteProtectionMetricsObserver::OnGotHighConfidenceAllowlistResult(
     url::Origin last_committed_origin = metrics_data->last_committed_origin;
     history_service_->GetLastVisitToOrigin(
         last_committed_origin, base::Time(), *last_visit_time - base::Days(1),
+        history::VisitQuery404sPolicy::kInclude404s,
         base::BindOnce(&SiteProtectionMetricsObserver::
                            OnGotVisitToOriginOlderThanADayPriorToPreviousVisit,
                        weak_factory_.GetWeakPtr(), std::move(metrics_data)),
@@ -373,6 +394,49 @@ void SiteProtectionMetricsObserver::LogMetrics(
       .SetSiteFamiliarityHistoryHeuristic(
           static_cast<int>(metrics_data->most_strict_matched_history_heuristic))
       .Record(ukm::UkmRecorder::Get());
+}
+
+void SiteProtectionMetricsObserver::LogV8OptimizerUma(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->HasCommitted() ||
+      navigation_handle->IsSameDocument() || navigation_handle->IsErrorPage()) {
+    return;
+  }
+  content::RenderFrameHost* frame = navigation_handle->GetRenderFrameHost();
+  CHECK(frame);
+  content::RenderFrameHost* topmost_frame = frame->GetOutermostMainFrame();
+  if (frame == topmost_frame) {
+    return;
+  }
+
+  content::RenderProcessHost* child_process = frame->GetProcess();
+  content::RenderProcessHost* topmost_process = topmost_frame->GetProcess();
+
+  IframeV8OptimizerState iframe_state =
+      IframeV8OptimizerState::kDisabledForChildAndTopmost;
+  if (child_process->AreV8OptimizationsDisabled()) {
+    iframe_state =
+        topmost_process->AreV8OptimizationsDisabled()
+            ? IframeV8OptimizerState::kDisabledForChildAndTopmost
+            : IframeV8OptimizerState::kDisabledForChildEnabledForTopmost;
+  } else {
+    iframe_state =
+        topmost_process->AreV8OptimizationsDisabled()
+            ? IframeV8OptimizerState::kEnabledForChildDisabledForTopmost
+            : IframeV8OptimizerState::kEnabledForChildAndTopmost;
+  }
+  base::UmaHistogramEnumeration("SafeBrowsing.V8Optimizer.IframeState",
+                                iframe_state);
+
+  url::Origin frame_origin = frame->GetLastCommittedOrigin();
+  url::Origin topmost_origin = topmost_frame->GetLastCommittedOrigin();
+  if (child_process != topmost_process &&
+      net::SchemefulSite::IsSameSite(frame_origin, topmost_origin)) {
+    base::UmaHistogramEnumeration(
+        "SafeBrowsing.V8Optimizer.DifferentRendererProcess.SameSite."
+        "IframeState",
+        iframe_state);
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SiteProtectionMetricsObserver);

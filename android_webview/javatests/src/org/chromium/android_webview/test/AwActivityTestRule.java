@@ -30,6 +30,7 @@ import org.chromium.android_webview.AwContents.InternalAccessDelegate;
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwWebResourceRequest;
+import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
 import org.chromium.android_webview.test.util.JSUtils;
@@ -39,6 +40,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
@@ -92,7 +94,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     /** An interface to call onCreateWindow(AwContents). */
     public interface OnCreateWindowHandler {
         /** This will be called when a new window pops up from the current webview. */
-        public boolean onCreateWindow(AwContents awContents);
+        boolean onCreateWindow(AwContents awContents);
     }
 
     private Description mCurrentTestDescription;
@@ -236,6 +238,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                     () -> {
                         AwTestContainerView.installDrawFnFunctionTable(useVulkan);
                         AwBrowserProcess.configureChildProcessLauncherForTesting();
+                        WebViewCachedFlags.init(new InMemorySharedPreferences());
                         AwBrowserProcess.startForTesting();
                         sBrowserContext = AwBrowserContext.getDefault();
                     });

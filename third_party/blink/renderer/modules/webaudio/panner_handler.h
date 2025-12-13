@@ -157,6 +157,17 @@ class PannerHandler final : public AudioHandler {
 
   scoped_refptr<AudioListenerHandler> listener_handler_;
 
+  // Sample-accurate value arrays for PannerHandler.
+  AudioFloatArray panner_x_values_;
+  AudioFloatArray panner_y_values_;
+  AudioFloatArray panner_z_values_;
+  AudioFloatArray orientation_x_values_;
+  AudioFloatArray orientation_y_values_;
+  AudioFloatArray orientation_z_values_;
+  AudioDoubleArray azimuth_values_;
+  AudioDoubleArray elevation_values_;
+  AudioFloatArray total_gain_values_;
+
   // To synchronize `Process()` with the setting of this panner's state. (e.g.
   // position, orientation, distance, sound cone, and the listener)
   mutable base::Lock process_lock_;

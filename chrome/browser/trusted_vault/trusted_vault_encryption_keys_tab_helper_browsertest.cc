@@ -13,12 +13,12 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/trusted_vault/features.h"
 #include "components/trusted_vault/trusted_vault_client.h"
@@ -28,6 +28,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
+#include "device/fido/public/features.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -253,6 +254,20 @@ int FetchLastTrustedVaultKeyVersionForProfile(
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+class MockTrustedVaultClientObserver
+    : public trusted_vault::TrustedVaultClient::Observer {
+ public:
+  MockTrustedVaultClientObserver() = default;
+  ~MockTrustedVaultClientObserver() override = default;
+
+  MOCK_METHOD(void,
+              OnTrustedVaultKeysChanged,
+              (std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+                   trigger),
+              (override));
+  MOCK_METHOD(void, OnTrustedVaultRecoverabilityChanged, (), (override));
+};
+
 class TrustedVaultEncryptionKeysTabHelperBrowserTest
     : public PlatformBrowserTest {
  public:
@@ -274,6 +289,19 @@ class TrustedVaultEncryptionKeysTabHelperBrowserTest
          {site_isolation::features::
               kPartialSiteIsolationMemoryThresholdParamName,
           "0"}});
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {trusted_vault::kSetClientEncryptionKeysJsApi,
+         // This flag is used for simulating the presence of the passkey system
+         // user verification (UV) mechanism (which is either provided by the
+         // operating system, or not provided). The presence of the system UV is
+         // required for being able to store the opportunistically retrieved
+         // passkey secret. For the testing purposes we enable this flag to
+         // simulate the presence of the system UV for ensuring that the passkey
+         // secret can be stored in the test `SetPasskeysKeyInEnclaveManager`.
+         device::kWebAuthnUseInsecureSoftwareUnexportableKeys},
+        /*disabled_features=*/{});
 #else
     feature_list_.InitAndEnableFeature(
         trusted_vault::kSetClientEncryptionKeysJsApi);
@@ -308,6 +336,7 @@ class TrustedVaultEncryptionKeysTabHelperBrowserTest
   }
 
   void SetUp() override {
+    https_server()->SetCertHostnames({"accounts.google.com"});
     ASSERT_TRUE(https_server_.InitializeAndListen());
     PlatformBrowserTest::SetUp();
   }
@@ -318,11 +347,6 @@ class TrustedVaultEncryptionKeysTabHelperBrowserTest
     command_line->AppendSwitchASCII(
         ::switches::kGaiaUrl,
         https_server()->GetURL("accounts.google.com", "/").spec());
-
-    // Ignore cert errors so that the sign-in URL can be loaded from a site
-    // other than localhost (the EmbeddedTestServer serves a certificate that
-    // is valid for localhost).
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
     PlatformBrowserTest::SetUpCommandLine(command_line);
   }
 
@@ -334,6 +358,11 @@ class TrustedVaultEncryptionKeysTabHelperBrowserTest
   }
 
  private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
+
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_;
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
@@ -562,6 +591,10 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
   const unsigned initial_count = enclave_manager->store_keys_count();
 
   const std::vector<uint8_t> kEncryptionKey = {7};
+  // This call simulates the passkey secret retrieval out of WebAuthn context
+  // (opportunistic key retrieval). In this case the key will be stored only if
+  // either a User Verification mechanism is available or if the development
+  // flag `kWebAuthnUseInsecureSoftwareUnexportableKeys` is enabled:
   ExecJsSetClientEncryptionKeysForSecurityDomain(
       web_contents()->GetPrimaryMainFrame(),
       trusted_vault::kPasskeysSecurityDomainName, kEncryptionKey);
@@ -948,6 +981,52 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
                   browser()->profile(),
                   trusted_vault::SecurityDomainId::kChromeSync, FakeAccount()),
               IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
+                       ShouldPropagateUserActionTriggerForMetrics) {
+  const GURL initial_url =
+      https_server()->GetURL("accounts.google.com", "/title1.html");
+  content::NavigationController::LoadURLParams params(initial_url);
+
+  content::TestNavigationObserver same_tab_observer(
+      web_contents(), /*expected_number_of_navigations=*/1,
+      content::MessageLoopRunner::QuitMode::IMMEDIATE,
+      /*ignore_uncommitted_navigations=*/false);
+  same_tab_observer.set_expected_initial_url(initial_url);
+
+  // Mimic behaviour in chrome/browser/sync/sync_ui_util.cc: First start the
+  // navigation, and then set the user action trigger.
+  web_contents()->GetController().LoadURLWithParams(params);
+  auto* tab_helper =
+      TrustedVaultEncryptionKeysTabHelper::FromWebContents(web_contents());
+  ASSERT_TRUE(tab_helper);
+  tab_helper->SetUserActionTrigger(
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+  // Wait until the expected number of navigations finish.
+  same_tab_observer.Wait();
+
+  ASSERT_TRUE(HasEncryptionKeysApi(web_contents()->GetPrimaryMainFrame()));
+
+  testing::NiceMock<MockTrustedVaultClientObserver> mock_observer;
+  TrustedVaultServiceFactory::GetForProfile(browser()->profile())
+      ->GetTrustedVaultClient(trusted_vault::SecurityDomainId::kChromeSync)
+      ->AddObserver(&mock_observer);
+  EXPECT_CALL(
+      mock_observer,
+      OnTrustedVaultKeysChanged(std::make_optional(
+          trusted_vault::TrustedVaultUserActionTriggerForUMA::kProfileMenu)));
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(kConsoleSuccessMessage);
+
+  // Call setClientEncryptionKeys() in the main frame and verify that the mock
+  // observer was called with the right user action trigger.
+  const std::vector<uint8_t> kEncryptionKey = {7};
+  ExecJsSetClientEncryptionKeys(web_contents()->GetPrimaryMainFrame(),
+                                kEncryptionKey);
+  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(1u, console_observer.messages().size());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

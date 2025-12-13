@@ -5,11 +5,12 @@
 #include "chrome/browser/autocomplete/tab_matcher_desktop.h"
 
 #include "base/feature_list.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace {
@@ -71,14 +72,11 @@ bool TabMatcherDesktop::IsTabOpenWithURL(const GURL& url,
   // triggering of the Switch to Tab action on plain-text suggestions for
   // open entity SRPs, or vice versa, on entity suggestions for open plain-text
   // SRPs.
-  const bool keep_search_intent_params = base::FeatureList::IsEnabled(
-      omnibox::kDisambiguateTabMatchingForEntitySuggestions);
   const GURL stripped_url = AutocompleteMatch::GURLToStrippedGURL(
-      url, *input, template_url_service_, std::u16string(),
-      keep_search_intent_params);
+      url, *input, template_url_service_, /*keyword=*/std::u16string(),
+      /*keep_search_intent_params=*/true);
   for (auto* web_contents : GetOpenWebContents()) {
-    if (IsStrippedURLEqualToWebContentsURL(stripped_url, web_contents,
-                                           keep_search_intent_params)) {
+    if (IsStrippedURLEqualToWebContentsURL(stripped_url, web_contents)) {
       return true;
     }
   }
@@ -100,19 +98,22 @@ std::vector<TabMatcher::TabWrapper> TabMatcherDesktop::GetOpenTabs(
 
 std::vector<content::WebContents*> TabMatcherDesktop::GetOpenWebContents(
     bool exclude_active_tab) const {
-  Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
   content::WebContents* active_tab = nullptr;
-  if (active_browser)
-    active_tab = active_browser->tab_strip_model()->GetActiveWebContents();
+  if (BrowserWindowInterface* const active_bwi =
+          GetLastActiveBrowserWindowInterfaceWithAnyProfile()) {
+    active_tab = active_bwi->GetTabStripModel()->GetActiveWebContents();
+  }
 
   std::vector<content::WebContents*> all_tabs;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (profile_ != browser->profile()) {
+  for (BrowserWindowInterface* bwi : GetAllBrowserWindowInterfaces()) {
+    if (profile_ != bwi->GetProfile()) {
       // Only look at the same profile (and anonymity level).
       continue;
     }
-    for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-      auto* web_contents = browser->tab_strip_model()->GetWebContentsAt(i);
+
+    TabStripModel* const tab_strip_model = bwi->GetTabStripModel();
+    for (int i = 0; i < tab_strip_model->count(); ++i) {
+      auto* web_contents = tab_strip_model->GetWebContentsAt(i);
       if (web_contents != active_tab || !exclude_active_tab) {
         all_tabs.push_back(web_contents);
       }
@@ -123,8 +124,7 @@ std::vector<content::WebContents*> TabMatcherDesktop::GetOpenWebContents(
 
 bool TabMatcherDesktop::IsStrippedURLEqualToWebContentsURL(
     const GURL& stripped_url,
-    content::WebContents* web_contents,
-    const bool keep_search_intent_params) const {
+    content::WebContents* web_contents) const {
   AutocompleteClientWebContentsUserData::CreateForWebContents(web_contents);
   AutocompleteClientWebContentsUserData* user_data =
       AutocompleteClientWebContentsUserData::FromWebContents(web_contents);
@@ -134,7 +134,7 @@ bool TabMatcherDesktop::IsStrippedURLEqualToWebContentsURL(
     user_data->UpdateLastCommittedStrippedURL(
         web_contents->GetController().GetLastCommittedEntryIndex(),
         web_contents->GetLastCommittedURL(), template_url_service_,
-        keep_search_intent_params);
+        /*keep_search_intent_params=*/true);
   }
   return stripped_url == user_data->GetLastCommittedStrippedURL();
 }

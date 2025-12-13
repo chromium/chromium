@@ -5,9 +5,11 @@
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_coordinator.h"
 
 #import "components/prefs/pref_service.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/download/coordinator/auto_deletion/auto_deletion_settings_mediator.h"
 #import "ios/chrome/browser/photos/model/photos_service.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
@@ -19,8 +21,11 @@
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_account_selection_view_controller_action_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_account_selection_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_mediator.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -164,9 +169,9 @@
 #pragma mark - SaveToPhotosSettingsAccountSelectionViewControllerActionDelegate
 
 - (void)saveToPhotosSettingsAccountSelectionViewControllerAddAccount {
-  // In case of double-tap, we must stop the first coordinator. This may occur
-  // because, up to iOS 18, the view may have disappeared without calling the
-  // signin completion. See crbug.com/395959814
+  if (_signinCoordinator.viewWillPersist) {
+    return;
+  }
   [_signinCoordinator stop];
   SigninContextStyle contextStyle = SigninContextStyle::kDefault;
   signin_metrics::AccessPoint accessPoint =
@@ -175,15 +180,20 @@
   __weak __typeof(self) weakSelf = self;
   _signinCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:self.baseViewController
-                                          browser:self.browser
+                                          browser:signin::GetRegularBrowser(
+                                                      self.browser)
                                      contextStyle:contextStyle
                                       accessPoint:accessPoint
+                                   prefilledEmail:nil
                              continuationProvider:
                                  DoNothingContinuationProvider()];
-  _signinCoordinator.signinCompletion = ^(SigninCoordinatorResult result,
-                                          id<SystemIdentity> signinIdentity) {
-    [weakSelf signinCoordinatorCompletion:result signinIdentity:signinIdentity];
-  };
+  _signinCoordinator.signinCompletion =
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> signinIdentity) {
+        [weakSelf signinCoordinatorCompletionWithCoordinator:coordinator
+                                                      result:result
+                                              signinIdentity:signinIdentity];
+      };
   [_signinCoordinator start];
 }
 
@@ -194,12 +204,16 @@
   _signinCoordinator = nil;
 }
 
-- (void)signinCoordinatorCompletion:(SigninCoordinatorResult)result
-                     signinIdentity:(id<SystemIdentity>)signinIdentity {
+- (void)
+    signinCoordinatorCompletionWithCoordinator:(SigninCoordinator*)coordinator
+                                        result:(SigninCoordinatorResult)result
+                                signinIdentity:
+                                    (id<SystemIdentity>)signinIdentity {
+  CHECK_EQ(_signinCoordinator, coordinator, base::NotFatalUntil::M151);
   [self stopSigninCoordinator];
   if (result == SigninCoordinatorResultSuccess && signinIdentity) {
-    [_saveToPhotosSettingsMediator
-        setSelectedIdentityGaiaID:signinIdentity.gaiaID];
+    GaiaId gaiaID = signinIdentity.gaiaId;
+    [_saveToPhotosSettingsMediator setSelectedIdentityGaiaID:&gaiaID];
   }
 }
 

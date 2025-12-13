@@ -263,7 +263,7 @@
       "contexts": ["webui"],
       "matches": [
         "chrome://add-supervision/*",
-        "chrome://assistant-optin/*",
+        "chrome://contextual-tasks/*",
         "chrome://extensions/*",
         "chrome://glic/*",
         "chrome://glic-fre/*",
@@ -286,7 +286,8 @@
         "webui_untrusted"
       ],
       "matches": [
-        "chrome-untrusted://boca-app/*"
+        "chrome-untrusted://boca-app/*",
+        "chrome-untrusted://lens/*"
       ],
       // "desktop_android" is not supported.
       "platforms": ["chromeos", "linux", "mac", "win"]
@@ -362,8 +363,9 @@
   },
   "management.installReplacementWebApp": {
     "dependencies": ["manifest:replacement_web_app"],
-    "channel": "stable",
-    "extension_types": ["extension", "platform_app"]
+    "extension_types": ["extension", "platform_app"],
+    // "desktop_android" is not supported. http://crbug.com/371332103
+    "platforms": ["chromeos", "linux", "mac", "win"]
   },
   "management.uninstallSelf": {
     "dependencies": [],
@@ -388,6 +390,7 @@
       "chrome://bookmarks-side-panel.top-chrome/*",
       "chrome://certificate-manager/*",
       "chrome://compare/*",
+      "chrome://contextual-tasks/*",
       "chrome://customize-chrome-side-panel.top-chrome/*",
       "chrome://shopping-insights-side-panel.top-chrome/*",
       "chrome://eche-app/*",
@@ -400,6 +403,7 @@
       "chrome://history/*",
       "chrome://new-tab-page/*",
       "chrome://newtab-footer/*",
+      "chrome://omnibox-popup.top-chrome/*",
       "chrome://oobe/*",
       "chrome://os-settings/*",
       "chrome://password-manager/*",
@@ -426,7 +430,8 @@
       "chrome-untrusted://mako/*",
       "chrome-untrusted://projector/*",
       "chrome-untrusted://read-anything-side-panel.top-chrome/*",
-      "chrome-untrusted://data-sharing/*"
+      "chrome-untrusted://data-sharing/*",
+      "chrome-untrusted://class-tools-remote-display/*"
     ]
   }],
   "metricsPrivateIndividualApis": {
@@ -580,6 +585,13 @@
       "content_script"
     ]
   },
+  "runtime.getVersion": {
+    "contexts": [
+      "privileged_extension",
+      "unprivileged_extension",
+      "content_script"
+    ]
+  },
   "runtime.connect": [{
     // Everything except WebUI.
     "contexts": [
@@ -690,7 +702,6 @@
   },{
     "contexts": ["webui"],
     "matches": [
-      "chrome://password-change/*",
       "chrome://file-manager/*"
     ]
   },{
@@ -894,8 +905,8 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://add-supervision/*",
-      "chrome://assistant-optin/*",
       "chrome://chrome-signin/*",
+      "chrome://contextual-tasks/*",
       "chrome://glic/*",
       "chrome://glic-fre/*",
       "chrome://graduation/*",
@@ -914,7 +925,8 @@
       "webui_untrusted"
     ],
     "matches": [
-      "chrome-untrusted://boca-app/*"
+      "chrome-untrusted://boca-app/*",
+      "chrome-untrusted://lens/*"
     ]
   }, {
     // This feature is used by the Controlled Frame API and is specifically
@@ -939,8 +951,8 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://add-supervision/*",
-      "chrome://assistant-optin/*",
       "chrome://chrome-signin/*",
+      "chrome://contextual-tasks/*",
       "chrome://glic/*",
       "chrome://glic-fre/*",
       "chrome://graduation/*",
@@ -959,7 +971,8 @@
       "webui_untrusted"
     ],
     "matches": [
-      "chrome-untrusted://boca-app/*"
+      "chrome-untrusted://boca-app/*",
+      "chrome-untrusted://lens/*"
     ]
   }, {
     // This feature is used by the Controlled Frame API and is specifically
@@ -982,8 +995,8 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://add-supervision/*",
-      "chrome://assistant-optin/*",
       "chrome://chrome-signin/*",
+      "chrome://contextual-tasks/*",
       "chrome://glic/*",
       "chrome://graduation/*",
       "chrome://home/*",
@@ -998,7 +1011,8 @@
       "webui_untrusted"
     ],
     "matches": [
-      "chrome-untrusted://boca-app/*"
+      "chrome-untrusted://boca-app/*",
+      "chrome-untrusted://lens/*"
     ]
   }]
 }

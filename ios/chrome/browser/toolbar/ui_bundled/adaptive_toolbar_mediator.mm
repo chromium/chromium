@@ -26,13 +26,14 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_tab_group_state.h"
-#import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/tab_group_indicator_features_utils.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/toolbar_consumer.h"
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -304,12 +305,18 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
 - (UIMenu*)menuForButtonOfType:(AdaptiveToolbarButtonType)buttonType {
   switch (buttonType) {
     case AdaptiveToolbarButtonTypeBack:
-      return [self menuForNavigationItems:self.webState->GetNavigationManager()
-                                              ->GetBackwardItems()];
+      return self.webState
+                 ? [self menuForNavigationItems:self.webState
+                                                    ->GetNavigationManager()
+                                                    ->GetBackwardItems()]
+                 : nil;
 
     case AdaptiveToolbarButtonTypeForward:
-      return [self menuForNavigationItems:self.webState->GetNavigationManager()
-                                              ->GetForwardItems()];
+      return self.webState
+                 ? [self menuForNavigationItems:self.webState
+                                                    ->GetNavigationManager()
+                                                    ->GetForwardItems()]
+                 : nil;
 
     case AdaptiveToolbarButtonTypeNewTab:
       return [self menuForNewTabButton];
@@ -429,12 +436,6 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
         setLoadingProgressFraction:self.webState->GetLoadingProgress()];
   }
   [self updateShareMenuForWebState:self.webState];
-  if (base::FeatureList::IsEnabled(kThemeColorInTopToolbar)) {
-    [self.consumer setPageThemeColor:self.webState->GetThemeColor()];
-    [self.consumer
-        setUnderPageBackgroundColor:self.webState
-                                        ->GetUnderPageBackgroundColor()];
-  }
 }
 
 /// Updates the consumer with the new forward and back states.
@@ -541,11 +542,14 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
   UIAction* newIncognitoSearch =
       [self.actionFactory actionToStartNewIncognitoSearch];
   UIAction* cameraSearch;
+  UIMenuElement* tabGroupMenu;
+
+  NSMutableArray* staticActions = [[NSMutableArray alloc] init];
 
   const bool useLens =
       lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
           LensEntrypoint::PlusButton, [self isGoogleDefaultSearchEngine]);
-  NSArray* staticActions;
+
   if (useLens) {
     cameraSearch = [self.actionFactory
         actionToSearchWithLensWithEntryPoint:LensEntrypoint::PlusButton];
@@ -553,18 +557,46 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
     cameraSearch = [self.actionFactory actionToShowQRScanner];
   }
 
+  [staticActions addObjectsFromArray:@[
+    cameraSearch, voiceSearch, newIncognitoSearch, newSearch
+  ]];
+
   if (experimental_flags::EnableAIPrototypingMenu()) {
     UIAction* openAIMenu = [self.actionFactory actionToOpenAIMenu];
-    staticActions = @[
-      newSearch, newIncognitoSearch, voiceSearch, cameraSearch, openAIMenu
-    ];
-  } else {
-    staticActions =
-        @[ newSearch, newIncognitoSearch, voiceSearch, cameraSearch ];
+    [staticActions addObject:openAIMenu];
+  }
+
+  if (base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu)) {
+    std::set<const TabGroup*> groups = self.webStateList->GetGroups();
+    const TabGroup* currentGroup = self.webStateList->GetGroupOfWebStateAt(
+        self.webStateList->GetIndexOfWebState(self.webState));
+
+    __weak __typeof(self) weakSelf = self;
+    /// If the current tab is in a group, display the "Move Tab to Group" menu.
+    /// Otherwise, display the "Add Tab to Group" menu. If a user doesn't have
+    /// any Tab Groups, the "Add Tab to Group" menu will just be a "Add Tab to
+    /// New Group" button.
+    if (currentGroup) {
+      tabGroupMenu = [self.actionFactory menuToMoveTabToGroupWithGroups:groups
+          currentGroup:currentGroup
+          moveBlock:^(const TabGroup* group) {
+            [weakSelf moveTabToGroupBlock:group];
+          }
+          removeBlock:^{
+            [weakSelf removeTabFromGroupBlock];
+          }];
+    } else {
+      tabGroupMenu = [self.actionFactory
+          menuToAddTabToGroupWithGroups:groups
+                           numberOfTabs:1
+                                  block:^(const TabGroup* group) {
+                                    [weakSelf addTabToGroupBlock:group];
+                                  }];
+    }
+    [staticActions addObject:tabGroupMenu];
   }
 
   UIMenuElement* clipboardAction = [self menuElementForPasteboard];
-
   if (clipboardAction) {
     UIMenu* staticMenu = [UIMenu menuWithTitle:@""
                                          image:nil
@@ -572,7 +604,7 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
                                        options:UIMenuOptionsDisplayInline
                                       children:staticActions];
 
-    return [UIMenu menuWithTitle:@"" children:@[ staticMenu, clipboardAction ]];
+    return [UIMenu menuWithTitle:@"" children:@[ clipboardAction, staticMenu ]];
   }
   return [UIMenu menuWithTitle:@"" children:staticActions];
 }
@@ -599,10 +631,19 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
     std::set<ClipboardContentType> clipboardContentTypeValues =
         clipboardContentType.value();
 
-    if (search_engines::SupportsSearchByImage(self.templateURLService) &&
-        base::Contains(clipboardContentTypeValues,
+    if (base::Contains(clipboardContentTypeValues,
                        ClipboardContentType::Image)) {
-      return [self.actionFactory actionToSearchCopiedImage];
+      if (base::FeatureList::IsEnabled(kEnableLensInOmniboxCopiedImage)) {
+        if (search_engines::SupportsSearchImageWithLens(
+                self.templateURLService) &&
+            ios::provider::IsLensSupported()) {
+          return [self.actionFactory actionToLensCopiedImage];
+        }
+      } else {
+        if (search_engines::SupportsSearchByImage(self.templateURLService)) {
+          return [self.actionFactory actionToSearchCopiedImage];
+        }
+      }
     } else if (base::Contains(clipboardContentTypeValues,
                               ClipboardContentType::URL)) {
       return [self.actionFactory actionToSearchCopiedURL];
@@ -652,9 +693,7 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
     return _webStateList->count();
   }
 
-  return IsTabGroupIndicatorEnabled() && HasTabGroupIndicatorButtonsUpdated()
-             ? activeTabGroup->range().count()
-             : _webStateList->count();
+  return activeTabGroup->range().count();
 }
 
 // Returns the tab group state to display in the Tab Grid button.
@@ -664,9 +703,7 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
     return ToolbarTabGroupState::kNormal;
   }
 
-  return IsTabGroupIndicatorEnabled() && HasTabGroupIndicatorButtonsUpdated()
-             ? ToolbarTabGroupState::kTabGroup
-             : ToolbarTabGroupState::kNormal;
+  return ToolbarTabGroupState::kTabGroup;
 }
 
 // Updates the blue dot in the Tab Grid button depending on the messages and the
@@ -683,6 +720,56 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
   const TabGroup* activeGroup = [self activeWebStateTabGroup];
   [self.consumer setTabGridButtonBlueDot:_dirtyGroups.contains(
                                              activeGroup->tab_group_id())];
+}
+
+/// Triggers the creation of a New Tab Group.
+- (void)createNewTabGroup {
+  if (!self.webState) {
+    return;
+  }
+
+  std::set<web::WebStateID> identifiers;
+  identifiers.insert(self.webState->GetUniqueIdentifier());
+  id<TabGroupsCommands> handler =
+      HandlerForProtocol(self.commandDispatcher, TabGroupsCommands);
+
+  [handler showTabGroupCreationForTabs:identifiers];
+}
+
+/// Creates a Move Tab to Group block for the Move Tab to Group menu.
+- (void)moveTabToGroupBlock:(const TabGroup*)group {
+  int tabIndex = self.webStateList->GetIndexOfWebState(self.webState);
+  if (tabIndex == WebStateList::kInvalidIndex) {
+    return;
+  }
+  std::set<int> tabIndices = {tabIndex};
+  self.webStateList->MoveToGroup(tabIndices, group);
+}
+
+/// Creates a Remove Tab from Group block for the Move Tab to Group menu.
+- (void)removeTabFromGroupBlock {
+  int tabIndex = self.webStateList->GetIndexOfWebState(self.webState);
+  if (tabIndex == WebStateList::kInvalidIndex) {
+    return;
+  }
+  std::set<int> tabIndices = {tabIndex};
+  self.webStateList->RemoveFromGroups(tabIndices);
+}
+
+/// Creates an Add Tab to Group block for the Add Tab to Group menu.
+- (void)addTabToGroupBlock:(const TabGroup*)group {
+  int tabIndex = self.webStateList->GetIndexOfWebState(self.webState);
+  if (tabIndex == WebStateList::kInvalidIndex) {
+    return;
+  }
+
+  std::set<int> tabIndices = {tabIndex};
+
+  if (group) {
+    self.webStateList->MoveToGroup(tabIndices, group);
+  } else {
+    [self createNewTabGroup];
+  }
 }
 
 // Gets messages to indicate that a shared tab group has been changed.

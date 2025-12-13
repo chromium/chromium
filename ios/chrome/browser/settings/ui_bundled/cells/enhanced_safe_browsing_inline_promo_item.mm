@@ -59,7 +59,7 @@ UIButton* CreateCloseButton() {
 
 // Creates a UIImageView containing either branded or unbranded shield image.
 UIImageView* CreateShieldImage() {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   NSString* shieldSymbol = kGoogleShieldSymbol;
 #else
   NSString* shieldSymbol = kShieldSymbol;

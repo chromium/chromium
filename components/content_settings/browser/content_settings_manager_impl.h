@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_CONTENT_SETTINGS_BROWSER_CONTENT_SETTINGS_MANAGER_IMPL_H_
 #define COMPONENTS_CONTENT_SETTINGS_BROWSER_CONTENT_SETTINGS_MANAGER_IMPL_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/global_routing_id.h"

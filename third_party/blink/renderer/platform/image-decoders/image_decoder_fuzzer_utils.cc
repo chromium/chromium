@@ -67,10 +67,11 @@ std::unique_ptr<ImageDecoder> CreateImageDecoder(DecoderType decoder_type,
           /*offset=*/fdp.ConsumeIntegral<uint32_t>());
     }
     case DecoderType::kPngDecoder: {
-      return std::make_unique<PNGImageDecoder>(
-          GetAlphaOption(fdp), GetHbdOption(fdp), GetColorBehavior(fdp),
+      return std::make_unique<PngImageDecoder>(
+          GetAlphaOption(fdp), GetColorBehavior(fdp),
           /*max_decoded_bytes=*/fdp.ConsumeIntegral<uint32_t>(),
-          /*offset=*/fdp.ConsumeIntegral<uint32_t>());
+          /*offset=*/fdp.ConsumeIntegral<uint32_t>(),
+          /*bit_depth_option=*/GetHbdOption(fdp));
     }
     case DecoderType::kCrabbyAvifDecoder: {
       return std::make_unique<CrabbyAVIFImageDecoder>(

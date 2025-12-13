@@ -20,6 +20,8 @@ import static org.mockito.hamcrest.MockitoHamcrest.intThat;
 import android.app.Activity;
 import android.os.Build;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -35,6 +37,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Spy;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -57,6 +60,8 @@ public class TabListContainerViewBinderTest {
     private PropertyModel mContainerModel;
     private PropertyModelChangeProcessor mMCP;
     private TabListRecyclerView mRecyclerView;
+    private FrameLayout mContentView;
+    private ImageView mHairline;
     @Spy private GridLayoutManager mGridLayoutManager;
     @Spy private LinearLayoutManager mLinearLayoutManager;
 
@@ -69,18 +74,23 @@ public class TabListContainerViewBinderTest {
     public void setUp() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    sActivity.setContentView(R.layout.tab_list_recycler_view_layout);
-                    mRecyclerView = sActivity.findViewById(R.id.tab_list_recycler_view);
-                });
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
+                    sActivity.setContentView(R.layout.tab_switcher_pane_layout);
+                    mContentView = sActivity.findViewById(android.R.id.content);
+                    mRecyclerView =
+                            (TabListRecyclerView)
+                                    sActivity
+                                            .getLayoutInflater()
+                                            .inflate(R.layout.tab_list_recycler_view_layout, null);
+                    ((FrameLayout) mContentView.findViewById(R.id.tab_list_container))
+                            .addView(mRecyclerView);
+                    mHairline = mContentView.findViewById(R.id.pane_hairline);
                     mContainerModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
 
                     mMCP =
                             PropertyModelChangeProcessor.create(
                                     mContainerModel,
-                                    mRecyclerView,
+                                    new TabListContainerViewBinder.ViewHolder(
+                                            mRecyclerView, mHairline),
                                     TabListContainerViewBinder::bind);
                 });
     }
@@ -162,5 +172,75 @@ public class TabListContainerViewBinderTest {
         assertEquals(View.CONTENT_SENSITIVITY_SENSITIVE, mRecyclerView.getContentSensitivity());
         mContainerModel.set(TabListContainerProperties.IS_CONTENT_SENSITIVE, false);
         assertEquals(View.CONTENT_SENSITIVITY_NOT_SENSITIVE, mRecyclerView.getContentSensitivity());
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testHairlineVisibility() {
+        ObservableSupplierImpl<Boolean> isAnimatingSupplier = new ObservableSupplierImpl<>(false);
+        // The hairline is hidden when the pinned tab strip is animating.
+        mContainerModel.set(
+                TabListContainerProperties.IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER,
+                isAnimatingSupplier);
+        mContainerModel.set(TabListContainerProperties.IS_NON_ZERO_Y_OFFSET, true);
+        assertEquals(View.VISIBLE, mHairline.getVisibility());
+
+        // The hairline is not visible when IS_HAIRLINE_VISIBLE is false.
+        mContainerModel.set(TabListContainerProperties.IS_NON_ZERO_Y_OFFSET, false);
+        assertEquals(View.GONE, mHairline.getVisibility());
+
+        // When the animation starts, the hairline becomes invisible.
+        isAnimatingSupplier.set(true);
+
+        mContainerModel.set(TabListContainerProperties.IS_NON_ZERO_Y_OFFSET, true);
+        assertEquals(View.GONE, mHairline.getVisibility());
+
+        isAnimatingSupplier.set(false);
+        assertEquals(View.VISIBLE, mHairline.getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testHairlineVisibility_InitialState() {
+        ObservableSupplierImpl<Boolean> isAnimatingSupplier = new ObservableSupplierImpl<>(false);
+
+        // Initial state: not visible, not animating
+        mContainerModel.set(TabListContainerProperties.IS_NON_ZERO_Y_OFFSET, false);
+        mContainerModel.set(
+                TabListContainerProperties.IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER,
+                isAnimatingSupplier);
+        assertEquals(View.GONE, mHairline.getVisibility());
+
+        // Initial state: visible, not animating
+        mContainerModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
+        mMCP =
+                PropertyModelChangeProcessor.create(
+                        mContainerModel,
+                        new TabListContainerViewBinder.ViewHolder(mRecyclerView, mHairline),
+                        TabListContainerViewBinder::bind);
+        mContainerModel.set(TabListContainerProperties.IS_NON_ZERO_Y_OFFSET, true);
+        mContainerModel.set(
+                TabListContainerProperties.IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER,
+                isAnimatingSupplier);
+        assertEquals(View.VISIBLE, mHairline.getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testHairlineVisibility_NullAnimationSupplier() {
+        // Set supplier to null
+        mContainerModel.set(
+                TabListContainerProperties.IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER, null);
+
+        // Hairline should be visible if IS_HAIRLINE_VISIBLE is true, even with null supplier
+        mContainerModel.set(TabListContainerProperties.IS_NON_ZERO_Y_OFFSET, true);
+        assertEquals(View.VISIBLE, mHairline.getVisibility());
+
+        // Hairline should be gone if IS_HAIRLINE_VISIBLE is false, even with null supplier
+        mContainerModel.set(TabListContainerProperties.IS_NON_ZERO_Y_OFFSET, false);
+        assertEquals(View.GONE, mHairline.getVisibility());
     }
 }

@@ -64,21 +64,16 @@ class PreflightCacheTest : public testing::Test {
 
   void AppendEntry(const url::Origin& origin,
                    const GURL& url,
-                   const net::NetworkIsolationKey& network_isolation_key,
-                   mojom::IPAddressSpace target_ip_address_space =
-                       mojom::IPAddressSpace::kUnknown) {
-    cache_.AppendEntry(origin, url, network_isolation_key,
-                       target_ip_address_space, CreateEntry());
+                   const net::NetworkIsolationKey& network_isolation_key) {
+    cache_.AppendEntry(origin, url, network_isolation_key, CreateEntry());
   }
 
   bool CheckEntryAndRefreshCache(
       const url::Origin& origin,
       const GURL& url,
-      const net::NetworkIsolationKey& network_isolation_key,
-      mojom::IPAddressSpace target_ip_address_space =
-          mojom::IPAddressSpace::kUnknown) {
+      const net::NetworkIsolationKey& network_isolation_key) {
     return cache_.CheckIfRequestCanSkipPreflight(
-        origin, url, network_isolation_key, target_ip_address_space,
+        origin, url, network_isolation_key,
         network::mojom::CredentialsMode::kInclude, /*method=*/"POST",
         net::HttpRequestHeaders(), /*is_revalidating=*/false, net_log_, true);
   }
@@ -88,7 +83,7 @@ class PreflightCacheTest : public testing::Test {
       const GURL& url,
       const net::NetworkIsolationKey& network_isolation_key) {
     return cache_.CheckIfRequestCanSkipPreflight(
-        origin, url, network_isolation_key, mojom::IPAddressSpace::kUnknown,
+        origin, url, network_isolation_key,
         network::mojom::CredentialsMode::kInclude, /*method=*/"OPTION",
         net::HttpRequestHeaders(), /*is_revalidating=*/false, net_log_, true);
   }
@@ -99,8 +94,7 @@ class PreflightCacheTest : public testing::Test {
 
   bool DoesEntryExists(const url::Origin& origin, const std::string& url) {
     return cache_.DoesEntryExistForTesting(origin, url,
-                                           net::NetworkIsolationKey(),
-                                           mojom::IPAddressSpace::kUnknown);
+                                           net::NetworkIsolationKey());
   }
 
   void Advance(int seconds) { clock_.Advance(base::Seconds(seconds)); }
@@ -256,33 +250,6 @@ TEST_F(PreflightCacheTest, HandlesOpaqueOrigins) {
   EXPECT_FALSE(CheckEntryAndRefreshCache(
       kOrigin1, kUrl,
       net::NetworkIsolationKey(net::SchemefulSite(), net::SchemefulSite())));
-}
-
-TEST_F(PreflightCacheTest, PrivateNetworkAccess) {
-  const url::Origin origin;
-  const GURL url("http://www.test.com/A");
-  const net::SchemefulSite Site = net::SchemefulSite(origin);
-  const net::NetworkIsolationKey nik(Site, Site);
-
-  // The cache starts empty.
-  EXPECT_EQ(0u, CountEntries());
-
-  AppendEntry(origin, url, nik, mojom::IPAddressSpace::kUnknown);
-  EXPECT_EQ(1u, CountEntries());
-  EXPECT_TRUE(CheckEntryAndRefreshCache(origin, url, nik,
-                                        mojom::IPAddressSpace::kUnknown));
-
-  AppendEntry(origin, url, nik, mojom::IPAddressSpace::kLocal);
-  AppendEntry(origin, url, nik, mojom::IPAddressSpace::kLoopback);
-  EXPECT_EQ(3u, CountEntries());
-  EXPECT_TRUE(CheckEntryAndRefreshCache(origin, url, nik,
-                                        mojom::IPAddressSpace::kLocal));
-  EXPECT_TRUE(CheckEntryAndRefreshCache(origin, url, nik,
-                                        mojom::IPAddressSpace::kLoopback));
-
-  // Check that an entry we never inserted is not found in the cache.
-  EXPECT_FALSE(CheckEntryAndRefreshCache(origin, url, nik,
-                                         mojom::IPAddressSpace::kPublic));
 }
 
 TEST_F(PreflightCacheTest, NetLogCheckCacheExist) {

@@ -48,6 +48,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_request_utils.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -61,9 +62,8 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::ConvertUTF16ToJavaString;
-using base::android::JavaParamRef;
+using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -241,34 +241,6 @@ void DuplicateCheckDone(const GURL& url,
       base::BindOnce(&OnDuplicateDialogConfirmed, std::move(callback)));
 }
 
-
-content::WebContents* GetWebContentsByFrameID(int render_process_id,
-                                              int render_frame_id) {
-  content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  if (!render_frame_host)
-    return NULL;
-  return content::WebContents::FromRenderFrameHost(render_frame_host);
-}
-
-content::WebContents::Getter GetWebContentsGetter(
-    content::WebContents* web_contents) {
-  // The FrameTreeNode ID should be used to access the WebContents.
-  content::FrameTreeNodeId frame_tree_node_id =
-      web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId();
-  if (frame_tree_node_id) {
-    return base::BindRepeating(content::WebContents::FromFrameTreeNodeId,
-                               frame_tree_node_id);
-  }
-
-  // In other cases, use the RenderProcessHost ID + RenderFrameHost ID to get
-  // the WebContents.
-  return base::BindRepeating(
-      &GetWebContentsByFrameID,
-      web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
-      web_contents->GetPrimaryMainFrame()->GetRoutingID());
-}
-
 void DownloadAsFile(content::WebContents* web_contents, const GURL& url) {
   content::DownloadManager* dlm =
       web_contents->GetBrowserContext()->GetDownloadManager();
@@ -290,46 +262,6 @@ void DownloadAsFile(content::WebContents* web_contents, const GURL& url) {
   dl_params->set_prompt(false);
   dl_params->set_download_source(download::DownloadSource::OFFLINE_PAGE);
   dlm->DownloadUrl(std::move(dl_params));
-}
-
-void OnOfflinePageAcquireFileAccessPermissionDone(
-    const content::WebContents::Getter& web_contents_getter,
-    const ScopedJavaGlobalRef<jobject>& j_tab_ref,
-    const std::string& origin,
-    bool granted) {
-  if (!granted)
-    return;
-
-  content::WebContents* web_contents = web_contents_getter.Run();
-  if (!web_contents)
-    return;
-
-  GURL url = web_contents->GetLastCommittedURL();
-  if (url.is_empty())
-    return;
-
-  // If the page is not a HTML page, route to DownloadManager.
-  if (!offline_pages::OfflinePageUtils::CanDownloadAsOfflinePage(
-          url, web_contents->GetContentsMimeType())) {
-    DownloadAsFile(web_contents, url);
-    return;
-  }
-
-  // Off the record save page are handled separately.
-  if (web_contents->GetBrowserContext()->IsOffTheRecord()) {
-    web_contents->OnSavePage();
-    return;
-  }
-
-  // Otherwise, save the HTML page as archive.
-  GURL original_url =
-      offline_pages::OfflinePageUtils::GetOriginalURLFromWebContents(
-          web_contents);
-  OfflinePageUtils::CheckDuplicateDownloads(
-      GetBrowserContextRedirectedInIncognito(web_contents->GetBrowserContext()),
-      url,
-      base::BindOnce(&DuplicateCheckDone, url, original_url, j_tab_ref,
-                     origin));
 }
 
 void InitializeBackendOnProfileCreated(Profile* profile) {
@@ -364,7 +296,7 @@ void InitializeBackendOnProfileCreated(Profile* profile) {
 
 OfflinePageDownloadBridge::OfflinePageDownloadBridge(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj)
+    const base::android::JavaRef<jobject>& obj)
     : weak_java_ref_(env, obj) {}
 
 OfflinePageDownloadBridge::~OfflinePageDownloadBridge() = default;
@@ -373,9 +305,9 @@ void OfflinePageDownloadBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void JNI_OfflinePageDownloadBridge_StartDownload(
+static void JNI_OfflinePageDownloadBridge_StartDownload(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_tab,
+    const JavaRef<jobject>& j_tab,
     std::string& origin) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, j_tab);
   if (!tab)
@@ -387,19 +319,38 @@ void JNI_OfflinePageDownloadBridge_StartDownload(
 
   ScopedJavaGlobalRef<jobject> j_tab_ref(env, j_tab);
 
-  // Ensure that the storage permission is granted since the target file
-  // is going to be placed in the public directory.
-  content::WebContents::Getter web_contents_getter =
-      GetWebContentsGetter(web_contents);
-  DownloadControllerBase::Get()->AcquireFileAccessPermission(
-      web_contents_getter,
-      base::BindOnce(&OnOfflinePageAcquireFileAccessPermissionDone,
-                     web_contents_getter, j_tab_ref, origin));
+  GURL url = web_contents->GetLastCommittedURL();
+  if (url.is_empty()) {
+    return;
+  }
+
+  // If the page is not a HTML page, route to DownloadManager.
+  if (!offline_pages::OfflinePageUtils::CanDownloadAsOfflinePage(
+          url, web_contents->GetContentsMimeType())) {
+    DownloadAsFile(web_contents, url);
+    return;
+  }
+
+  // Off the record save page are handled separately.
+  if (web_contents->GetBrowserContext()->IsOffTheRecord()) {
+    web_contents->OnSavePage();
+    return;
+  }
+
+  // Otherwise, save the HTML page as archive.
+  GURL original_url =
+      offline_pages::OfflinePageUtils::GetOriginalURLFromWebContents(
+          web_contents);
+  OfflinePageUtils::CheckDuplicateDownloads(
+      GetBrowserContextRedirectedInIncognito(web_contents->GetBrowserContext()),
+      url,
+      base::BindOnce(&DuplicateCheckDone, url, original_url, j_tab_ref,
+                     origin));
 }
 
 static jlong JNI_OfflinePageDownloadBridge_Init(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
+    const base::android::JavaRef<jobject>& obj) {
   ProfileKey* key = ::android::GetLastUsedRegularProfileKey();
   FullBrowserTransitionManager::Get()->RegisterCallbackOnProfileCreation(
       key, base::BindOnce(&InitializeBackendOnProfileCreated));
@@ -415,3 +366,5 @@ void OfflinePageDownloadBridge::ShowDownloadingToast() {
 
 }  // namespace android
 }  // namespace offline_pages
+
+DEFINE_JNI(OfflinePageDownloadBridge)

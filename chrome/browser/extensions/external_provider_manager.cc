@@ -38,6 +38,7 @@
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/updater/extension_cache.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
@@ -47,6 +48,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/extensions/install_limiter.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace {
 bool g_external_updates_disabled_for_test_ = false;

@@ -246,17 +246,15 @@ std::string GetHMACForRawMediaDeviceID(
     return raw_device_id;
   }
 
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  const size_t digest_length = hmac.DigestLength();
-  std::vector<uint8_t> digest(digest_length);
-  bool result =
-      hmac.Init(salt_and_origin.origin().Serialize()) &&
-      hmac.Sign(
-          raw_device_id + (use_group_salt ? salt_and_origin.group_id_salt()
-                                          : salt_and_origin.device_id_salt()),
-          &digest[0], digest.size());
-  DCHECK(result);
-  return base::ToLowerASCII(base::HexEncode(digest));
+  const auto key = salt_and_origin.origin().Serialize();
+  crypto::hmac::HmacSigner hmac(crypto::hash::kSha256, base::as_byte_span(key));
+  hmac.Update(base::as_byte_span(raw_device_id));
+  hmac.Update(base::as_byte_span(use_group_salt
+                                     ? salt_and_origin.group_id_salt()
+                                     : salt_and_origin.device_id_salt()));
+  std::array<uint8_t, crypto::hash::kSha256Size> result;
+  hmac.Finish(result);
+  return base::HexEncodeLower(result);
 }
 
 bool DoesRawMediaDeviceIDMatchHMAC(

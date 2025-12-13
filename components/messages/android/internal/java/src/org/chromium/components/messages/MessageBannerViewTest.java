@@ -4,11 +4,16 @@
 
 package org.chromium.components.messages;
 
+import static android.view.View.LAYOUT_DIRECTION_RTL;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.withChild;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static com.google.common.truth.Truth.assertThat;
 
 import android.app.Activity;
 import android.content.res.Resources;
@@ -51,6 +56,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Instrumentation tests for MessageBannerView. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -68,7 +74,6 @@ public class MessageBannerViewTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock Runnable mPrimaryActionCallback;
     @Mock Runnable mSecondaryActionCallback;
 
     MessageBannerView mMessageBannerView;
@@ -105,6 +110,26 @@ public class MessageBannerViewTest {
                             mMessageBannerView.findViewById(
                                     R.id.message_primary_progress_indicator);
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testRtl() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMessageBannerView.setLayoutDirection(LAYOUT_DIRECTION_RTL);
+                    PropertyModel propertyModel =
+                            new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                                    .with(
+                                            MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                            MessageIdentifier.TEST_MESSAGE)
+                                    .with(MessageBannerProperties.TITLE, "test")
+                                    .with(MessageBannerProperties.DESCRIPTION, "Description")
+                                    .build();
+                    PropertyModelChangeProcessor.create(
+                            propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
+                });
+        onView(withId(R.id.message_banner)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -239,6 +264,7 @@ public class MessageBannerViewTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/428750594")
     public void testSecondaryActionMenuInvokesPopupMenuEventHandlers() {
         PopupMenuShownListener listener = Mockito.mock(PopupMenuShownListener.class);
         ThreadUtils.runOnUiThreadBlocking(
@@ -272,7 +298,7 @@ public class MessageBannerViewTest {
 
         // Click on the message banner view holding the popup menu to dismiss the menu, verify that
         // #onPopupMenuDismissed is invoked.
-        onView(withChild(withText(SECONDARY_BUTTON_MENU_TEXT))).perform(click());
+        onView(withText(SECONDARY_BUTTON_MENU_TEXT)).perform(click());
         Mockito.verify(listener).onPopupMenuDismissed();
     }
 
@@ -283,6 +309,7 @@ public class MessageBannerViewTest {
     @Test
     @MediumTest
     public void testSecondaryActionMenuWithCustomDelegate() {
+        final AtomicBoolean called = new AtomicBoolean();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     MVCListAdapter.ModelList menuItems = new MVCListAdapter.ModelList();
@@ -293,9 +320,10 @@ public class MessageBannerViewTest {
                             BrowserUiListMenuUtils.getBasicListMenu(
                                     sActivity,
                                     menuItems,
-                                    (PropertyModel menuItem) -> {
-                                        assert menuItem == menuItems.get(0).model;
-                                        mSecondaryActionCallback.run();
+                                    (PropertyModel menuItem, View view) -> {
+                                        assertThat(menuItem)
+                                                .isSameInstanceAs(menuItems.get(0).model);
+                                        called.set(true);
                                     });
 
                     PropertyModel propertyModel =
@@ -320,7 +348,7 @@ public class MessageBannerViewTest {
                 });
         onView(withId(R.id.message_secondary_button)).perform(click());
         onView(withText(SECONDARY_BUTTON_MENU_TEXT)).perform(click());
-        Mockito.verify(mSecondaryActionCallback).run();
+        Assert.assertTrue(called.get());
     }
 
     /**
@@ -413,6 +441,7 @@ public class MessageBannerViewTest {
     @Test
     @MediumTest
     public void testPrimaryWidgetAppearanceButtonWithNonEmptyText() {
+        final AtomicBoolean called = new AtomicBoolean();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel propertyModel =
@@ -431,7 +460,7 @@ public class MessageBannerViewTest {
                                             new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View v) {
-                                                    mPrimaryActionCallback.run();
+                                                    called.set(true);
                                                 }
                                             })
                                     .build();
@@ -442,7 +471,7 @@ public class MessageBannerViewTest {
         assertIsLoading(false);
 
         onView(withId(R.id.message_primary_button)).perform(click());
-        Mockito.verify(mPrimaryActionCallback).run();
+        Assert.assertTrue(called.get());
     }
 
     /**
@@ -452,6 +481,7 @@ public class MessageBannerViewTest {
     @Test
     @MediumTest
     public void testPrimaryWidgetAppearanceButtonChangeTextFromEmptyToNonEmpty() {
+        final AtomicBoolean called = new AtomicBoolean();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel propertyModel =
@@ -468,7 +498,7 @@ public class MessageBannerViewTest {
                                             new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View v) {
-                                                    mPrimaryActionCallback.run();
+                                                    called.set(true);
                                                 }
                                             })
                                     .build();
@@ -483,7 +513,7 @@ public class MessageBannerViewTest {
         assertIsLoading(false);
 
         onView(withId(R.id.message_primary_button)).perform(click());
-        Mockito.verify(mPrimaryActionCallback).run();
+        Assert.assertTrue(called.get());
     }
 
     /** Setting PRIMARY_WIDGET_APPEARANCE to PROGRESS_SPINNER should show the progress spinner. */
@@ -505,7 +535,7 @@ public class MessageBannerViewTest {
                                             new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View v) {
-                                                    mPrimaryActionCallback.run();
+                                                    Assert.fail();
                                                 }
                                             })
                                     .build();
@@ -520,6 +550,7 @@ public class MessageBannerViewTest {
     @MediumTest
     public void testPrimaryWidgetAppearanceChangeFromButtonToProgressSpinner()
             throws ExecutionException {
+        final AtomicBoolean called = new AtomicBoolean();
         var model =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -541,7 +572,7 @@ public class MessageBannerViewTest {
                                                     new View.OnClickListener() {
                                                         @Override
                                                         public void onClick(View v) {
-                                                            mPrimaryActionCallback.run();
+                                                            called.set(true);
                                                         }
                                                     })
                                             .build();
@@ -555,7 +586,7 @@ public class MessageBannerViewTest {
         assertIsLoading(false);
 
         onView(withId(R.id.message_primary_button)).perform(click());
-        Mockito.verify(mPrimaryActionCallback).run();
+        Assert.assertTrue(called.get());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -574,6 +605,7 @@ public class MessageBannerViewTest {
     @MediumTest
     public void testPrimaryWidgetAppearanceChangeFromProgressSpinnerToButton()
             throws ExecutionException {
+        final AtomicBoolean called = new AtomicBoolean();
         var model =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -595,7 +627,7 @@ public class MessageBannerViewTest {
                                                     new View.OnClickListener() {
                                                         @Override
                                                         public void onClick(View v) {
-                                                            mPrimaryActionCallback.run();
+                                                            called.set(true);
                                                         }
                                                     })
                                             .build();
@@ -618,7 +650,7 @@ public class MessageBannerViewTest {
         assertIsLoading(false);
 
         onView(withId(R.id.message_primary_button)).perform(click());
-        Mockito.verify(mPrimaryActionCallback).run();
+        Assert.assertTrue(called.get());
     }
 
     /**
@@ -646,7 +678,7 @@ public class MessageBannerViewTest {
                                             new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View v) {
-                                                    mPrimaryActionCallback.run();
+                                                    Assert.fail();
                                                 }
                                             })
                                     .build();
@@ -687,6 +719,7 @@ public class MessageBannerViewTest {
     @Test
     @MediumTest
     public void testPrimaryWidgetAppearanceUnsetWithNonEmptyText() {
+        final AtomicBoolean called = new AtomicBoolean();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PropertyModel propertyModel =
@@ -702,7 +735,7 @@ public class MessageBannerViewTest {
                                             new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View v) {
-                                                    mPrimaryActionCallback.run();
+                                                    called.set(true);
                                                 }
                                             })
                                     .build();
@@ -713,7 +746,7 @@ public class MessageBannerViewTest {
         assertIsLoading(false);
 
         onView(withId(R.id.message_primary_button)).perform(click());
-        Mockito.verify(mPrimaryActionCallback).run();
+        Assert.assertTrue(called.get());
     }
 
     /**

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/devtools/device/devtools_device_discovery.h"
 
 #include <map>
@@ -133,10 +132,10 @@ class WebSocketProxy : public AndroidDeviceManager::AndroidWebSocket::Delegate {
   }
 
   void OnSocketClosed() override {
-    constexpr char kMsg[] =
+    constexpr std::string_view kMsg =
         "{\"method\":\"Inspector.detached\",\"params\":"
         "{\"reason\":\"Connection lost.\"}}";
-    proxy_->DispatchOnClientHost(base::byte_span_with_nul_from_cstring(kMsg));
+    proxy_->DispatchOnClientHost(base::as_byte_span(kMsg));
     web_socket_.reset();
     socket_opened_ = false;
     proxy_->ConnectionClosed();  // Deletes |this|.
@@ -441,8 +440,22 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedDevices(
     const AndroidDeviceManager::Devices& devices) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (const auto& device : devices) {
-    device->QueryDeviceInfo(
-        base::BindOnce(&DiscoveryRequest::ReceivedDeviceInfo, this, device));
+    switch (device->connected_state()) {
+      case AndroidDeviceManager::DeviceInfo::kLocked:
+        // We don't expect this state to be reported by AdbDeviceProvider.
+        DCHECK(false);
+        ABSL_FALLTHROUGH_INTENDED;
+      case AndroidDeviceManager::DeviceInfo::kUnauthorized:
+      case AndroidDeviceManager::DeviceInfo::kOffline:
+        DiscoveryRequest::ReceivedDeviceInfo(
+            device, AndroidDeviceManager::DeviceInfo());
+        break;
+      case AndroidDeviceManager::DeviceInfo::kConnected:
+      case AndroidDeviceManager::DeviceInfo::kUnknown:
+        device->QueryDeviceInfo(base::BindOnce(
+            &DiscoveryRequest::ReceivedDeviceInfo, this, device));
+        break;
+    }
   }
 }
 
@@ -450,14 +463,25 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedDeviceInfo(
     scoped_refptr<AndroidDeviceManager::Device> device,
     const AndroidDeviceManager::DeviceInfo& device_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  AndroidDeviceManager::DeviceInfo device_info_copy = device_info;
+  if (device_info.connected_state ==
+      AndroidDeviceManager::DeviceInfo::kUnknown) {
+    // If the initial query said it was connected but querying the device for
+    // more information failed, it is offline. Otherwise, replace the connection
+    // state with info from the devices query.
+    device_info_copy.connected_state =
+        device->connected_state() ==
+                AndroidDeviceManager::DeviceInfo::kConnected
+            ? AndroidDeviceManager::DeviceInfo::kOffline
+            : device->connected_state();
+  }
   scoped_refptr<RemoteDevice> remote_device =
-      new RemoteDevice(device->serial(), device_info);
-  complete_devices_.push_back(std::make_pair(device, remote_device));
-  for (auto it = remote_device->browsers().begin();
-       it != remote_device->browsers().end(); ++it) {
+      new RemoteDevice(device->serial(), device_info_copy);
+  complete_devices_.emplace_back(device, remote_device);
+  for (auto & it : remote_device->browsers()) {
     device->SendJsonRequest(
-        (*it)->socket(), kVersionRequest,
-        base::BindOnce(&DiscoveryRequest::ReceivedVersion, this, device, *it));
+        it->socket(), kVersionRequest,
+        base::BindOnce(&DiscoveryRequest::ReceivedVersion, this, device, it));
   }
 }
 
@@ -466,8 +490,8 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ParseBrowserInfo(
     const std::string& version_response,
     bool& is_chrome) {
   // Parse version, append to package name if available,
-  std::optional<base::Value::Dict> value_dict =
-      base::JSONReader::ReadDict(version_response);
+  std::optional<base::Value::Dict> value_dict = base::JSONReader::ReadDict(
+      version_response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value_dict) {
     return;
   }
@@ -522,7 +546,8 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedPages(
   if (result < 0) {
     return;
   }
-  std::optional<base::Value> value = base::JSONReader::Read(response);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return;
   }
@@ -562,7 +587,7 @@ DevToolsDeviceDiscovery::RemotePage::CreateTarget() {
 
   std::string port_num = browser_id_;
   if (type == "node") {
-    port_num = GURL(GetStringProperty(dict_, "webSocketDebuggerUrl")).port();
+    port_num = GURL(GetStringProperty(dict_, "webSocketDebuggerUrl")).GetPort();
   }
 
   agent_host_ = AgentHostDelegate::GetOrCreateAgentHost(
@@ -610,7 +635,14 @@ DevToolsDeviceDiscovery::RemoteDevice::RemoteDevice(
     const AndroidDeviceManager::DeviceInfo& device_info)
     : serial_(serial),
       model_(device_info.model),
-      connected_(device_info.connected),
+      connected_(device_info.connected_state ==
+                 AndroidDeviceManager::DeviceInfo::kConnected),
+      unauthorized_(device_info.connected_state ==
+                        AndroidDeviceManager::DeviceInfo::kUnauthorized ||
+                    device_info.connected_state ==
+                        AndroidDeviceManager::DeviceInfo::kUnknown),
+      locked_(device_info.connected_state ==
+            AndroidDeviceManager::DeviceInfo::kLocked),
       screen_size_(device_info.screen_size) {
   for (auto it = device_info.browser_info.begin();
        it != device_info.browser_info.end(); ++it) {

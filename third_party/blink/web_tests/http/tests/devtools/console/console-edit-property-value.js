@@ -64,9 +64,10 @@ import * as Console from 'devtools/panels/console/console.js';
     var event = document.createEvent('MouseEvent');
     event.initMouseEvent('dblclick', true, true, null, 2);
     node.dispatchEvent(event);
-    TestRunner.addResult('Node was hidden after dblclick: ' + node.classList.contains('hidden'));
     var messageElement = Console.ConsoleView.ConsoleView.instance().visibleViewMessages[1].element();
-    var editPrompt = messageElement.querySelector('.console-message-text *').shadowRoot.querySelector('.text-prompt');
+    var editPrompt = messageElement.querySelector('.console-message-text *').shadowRoot.
+      querySelector('devtools-prompt[editing]').shadowRoot.
+      querySelector('.text-prompt');
     editPrompt.textContent = text;
     editPrompt.dispatchEvent(TestRunner.createKeyEvent('Enter'));
   }

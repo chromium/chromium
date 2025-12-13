@@ -17,6 +17,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/test_support.h"
@@ -166,7 +167,7 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetURLVisits_TabURLTypesOnly) {
 
   EXPECT_CALL(*mock_visited_url_ranking_service, FetchURLVisitAggregates(_, _))
       .Times(1)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](const FetchOptions& options,
              VisitedURLRankingService::GetURLVisitAggregatesCallback callback) {
             ExpectURLTypesInFetchOptions(
@@ -185,30 +186,28 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetURLVisits_TabURLTypesOnly) {
 
             std::move(callback).Run(ResultStatus::kSuccess, url_visits_metadata,
                                     std::move(url_visit_aggregates));
-          }));
+          });
 
   EXPECT_CALL(*mock_visited_url_ranking_service,
               RankURLVisitAggregates(_, _, _))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [](const visited_url_ranking::Config& config,
-             std::vector<URLVisitAggregate> visits,
-             VisitedURLRankingService::RankURLVisitAggregatesCallback
-                 callback) {
-            std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
-          }));
+      .WillOnce([](const visited_url_ranking::Config& config,
+                   std::vector<URLVisitAggregate> visits,
+                   VisitedURLRankingService::RankURLVisitAggregatesCallback
+                       callback) {
+        std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
+      });
 
   EXPECT_CALL(*mock_visited_url_ranking_service,
               DecorateURLVisitAggregates(_, _, _, _))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [](const visited_url_ranking::Config& config,
-             visited_url_ranking::URLVisitsMetadata url_visit_metadata,
-             std::vector<URLVisitAggregate> visits,
-             VisitedURLRankingService::DecorateURLVisitAggregatesCallback
-                 callback) {
-            std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
-          }));
+      .WillOnce([](const visited_url_ranking::Config& config,
+                   visited_url_ranking::URLVisitsMetadata url_visit_metadata,
+                   std::vector<URLVisitAggregate> visits,
+                   VisitedURLRankingService::DecorateURLVisitAggregatesCallback
+                       callback) {
+        std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
+      });
 
   auto url_visits_mojom = RunGetURLVisits();
   ASSERT_EQ(2u, url_visits_mojom.size());
@@ -223,7 +222,7 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetURLVisits) {
 
   EXPECT_CALL(*mock_visited_url_ranking_service, FetchURLVisitAggregates(_, _))
       .Times(1)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](const FetchOptions& options,
              VisitedURLRankingService::GetURLVisitAggregatesCallback callback) {
             ExpectURLTypesInFetchOptions(
@@ -243,30 +242,28 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, GetURLVisits) {
 
             std::move(callback).Run(ResultStatus::kSuccess, url_visits_metadata,
                                     std::move(url_visit_aggregates));
-          }));
+          });
 
   EXPECT_CALL(*mock_visited_url_ranking_service,
               RankURLVisitAggregates(_, _, _))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [](const visited_url_ranking::Config& config,
-             std::vector<URLVisitAggregate> visits,
-             VisitedURLRankingService::RankURLVisitAggregatesCallback
-                 callback) {
-            std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
-          }));
+      .WillOnce([](const visited_url_ranking::Config& config,
+                   std::vector<URLVisitAggregate> visits,
+                   VisitedURLRankingService::RankURLVisitAggregatesCallback
+                       callback) {
+        std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
+      });
 
   EXPECT_CALL(*mock_visited_url_ranking_service,
               DecorateURLVisitAggregates(_, _, _, _))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [](const visited_url_ranking::Config& config,
-             visited_url_ranking::URLVisitsMetadata url_visit_metadata,
-             std::vector<URLVisitAggregate> visits,
-             VisitedURLRankingService::DecorateURLVisitAggregatesCallback
-                 callback) {
-            std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
-          }));
+      .WillOnce([](const visited_url_ranking::Config& config,
+                   visited_url_ranking::URLVisitsMetadata url_visit_metadata,
+                   std::vector<URLVisitAggregate> visits,
+                   VisitedURLRankingService::DecorateURLVisitAggregatesCallback
+                       callback) {
+        std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
+      });
 
   auto url_visits_mojom = RunGetURLVisits();
   ASSERT_EQ(2u, url_visits_mojom.size());
@@ -292,7 +289,7 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, DismissAndRestoreURLVisit) {
 
   EXPECT_CALL(*mock_visited_url_ranking_service, FetchURLVisitAggregates(_, _))
       .Times(3)
-      .WillRepeatedly(testing::Invoke(
+      .WillRepeatedly(
           [](const FetchOptions& options,
              VisitedURLRankingService::GetURLVisitAggregatesCallback callback) {
             std::vector<URLVisitAggregate> url_visit_aggregates = {};
@@ -304,41 +301,41 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, DismissAndRestoreURLVisit) {
 
             std::move(callback).Run(ResultStatus::kSuccess, url_visits_metadata,
                                     std::move(url_visit_aggregates));
-          }));
+          });
 
   EXPECT_CALL(*mock_visited_url_ranking_service,
               RankURLVisitAggregates(_, _, _))
       .Times(3)
-      .WillRepeatedly(testing::Invoke(
+      .WillRepeatedly(
           [](const visited_url_ranking::Config& config,
              std::vector<URLVisitAggregate> visits,
              VisitedURLRankingService::RankURLVisitAggregatesCallback
                  callback) {
             std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
-          }));
+          });
 
   EXPECT_CALL(*mock_visited_url_ranking_service,
               DecorateURLVisitAggregates(_, _, _, _))
       .Times(3)
-      .WillRepeatedly(testing::Invoke(
+      .WillRepeatedly(
           [](const visited_url_ranking::Config& config,
              visited_url_ranking::URLVisitsMetadata url_visit_metadata,
              std::vector<URLVisitAggregate> visits,
              VisitedURLRankingService::DecorateURLVisitAggregatesCallback
                  callback) {
             std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
-          }));
+          });
 
   visited_url_ranking::ScoredURLUserAction expected_action;
   EXPECT_CALL(*mock_visited_url_ranking_service, RecordAction(_, _, _))
       .Times(2)
-      .WillRepeatedly(testing::Invoke(
+      .WillRepeatedly(
           [&expected_action](
               visited_url_ranking::ScoredURLUserAction action,
               const std::string& visit_id,
               segmentation_platform::TrainingRequestId visit_request_id) {
             expected_action = action;
-          }));
+          });
 
   auto url_visits_mojom = RunGetURLVisits();
   ASSERT_EQ(1u, url_visits_mojom.size());
@@ -362,7 +359,7 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, DismissAndRestoreAll) {
 
   EXPECT_CALL(*mock_visited_url_ranking_service, FetchURLVisitAggregates(_, _))
       .Times(3)
-      .WillRepeatedly(testing::Invoke(
+      .WillRepeatedly(
           [](const FetchOptions& options,
              VisitedURLRankingService::GetURLVisitAggregatesCallback callback) {
             std::vector<URLVisitAggregate> url_visit_aggregates = {};
@@ -381,41 +378,41 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest, DismissAndRestoreAll) {
 
             std::move(callback).Run(ResultStatus::kSuccess, url_visits_metadata,
                                     std::move(url_visit_aggregates));
-          }));
+          });
 
   EXPECT_CALL(*mock_visited_url_ranking_service,
               RankURLVisitAggregates(_, _, _))
       .Times(3)
-      .WillRepeatedly(testing::Invoke(
+      .WillRepeatedly(
           [](const visited_url_ranking::Config& config,
              std::vector<URLVisitAggregate> visits,
              VisitedURLRankingService::RankURLVisitAggregatesCallback
                  callback) {
             std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
-          }));
+          });
 
   EXPECT_CALL(*mock_visited_url_ranking_service,
               DecorateURLVisitAggregates(_, _, _, _))
       .Times(3)
-      .WillRepeatedly(testing::Invoke(
+      .WillRepeatedly(
           [](const visited_url_ranking::Config& config,
              visited_url_ranking::URLVisitsMetadata url_visit_metadata,
              std::vector<URLVisitAggregate> visits,
              VisitedURLRankingService::DecorateURLVisitAggregatesCallback
                  callback) {
             std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
-          }));
+          });
 
   std::vector<visited_url_ranking::ScoredURLUserAction> expected_actions;
   EXPECT_CALL(*mock_visited_url_ranking_service, RecordAction(_, _, _))
       .Times(4)
-      .WillRepeatedly(testing::Invoke(
+      .WillRepeatedly(
           [&expected_actions](
               visited_url_ranking::ScoredURLUserAction action,
               const std::string& visit_id,
               segmentation_platform::TrainingRequestId visit_request_id) {
             expected_actions.push_back(action);
-          }));
+          });
 
   auto url_visits_mojom = RunGetURLVisits();
   ASSERT_EQ(2u, url_visits_mojom.size());
@@ -447,7 +444,7 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest,
 
   EXPECT_CALL(*mock_visited_url_ranking_service, FetchURLVisitAggregates(_, _))
       .Times(1)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](const FetchOptions& options,
              VisitedURLRankingService::GetURLVisitAggregatesCallback callback) {
             std::vector<URLVisitAggregate> url_visit_aggregates = {};
@@ -464,30 +461,28 @@ TEST_F(MostRelevantTabResumptionPageHandlerTest,
             std::move(callback).Run(ResultStatus::kSuccess,
                                     std::move(url_visits_metadata),
                                     std::move(url_visit_aggregates));
-          }));
+          });
 
   EXPECT_CALL(*mock_visited_url_ranking_service,
               RankURLVisitAggregates(_, _, _))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [](const visited_url_ranking::Config& config,
-             std::vector<URLVisitAggregate> visits,
-             VisitedURLRankingService::RankURLVisitAggregatesCallback
-                 callback) {
-            std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
-          }));
+      .WillOnce([](const visited_url_ranking::Config& config,
+                   std::vector<URLVisitAggregate> visits,
+                   VisitedURLRankingService::RankURLVisitAggregatesCallback
+                       callback) {
+        std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
+      });
 
   EXPECT_CALL(*mock_visited_url_ranking_service,
               DecorateURLVisitAggregates(_, _, _, _))
       .Times(1)
-      .WillOnce(testing::Invoke(
-          [](const visited_url_ranking::Config& config,
-             visited_url_ranking::URLVisitsMetadata url_visit_metadata,
-             std::vector<URLVisitAggregate> visits,
-             VisitedURLRankingService::DecorateURLVisitAggregatesCallback
-                 callback) {
-            std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
-          }));
+      .WillOnce([](const visited_url_ranking::Config& config,
+                   visited_url_ranking::URLVisitsMetadata url_visit_metadata,
+                   std::vector<URLVisitAggregate> visits,
+                   VisitedURLRankingService::DecorateURLVisitAggregatesCallback
+                       callback) {
+        std::move(callback).Run(ResultStatus::kSuccess, std::move(visits));
+      });
 
   auto url_visits_mojom = RunGetURLVisits();
   ASSERT_EQ(2u, url_visits_mojom.size());

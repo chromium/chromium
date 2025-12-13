@@ -9,6 +9,6 @@
 namespace blink {
 
 HTMLMenuBarElement::HTMLMenuBarElement(Document& document)
-    : HTMLElement(html_names::kMenubarTag, document) {}
+    : HTMLMenuOwnerElement(html_names::kMenubarTag, document) {}
 
 }  // namespace blink

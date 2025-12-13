@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_SERVICE_H_
 #define COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_SERVICE_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -16,7 +15,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
-#include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_service.h"
@@ -168,8 +166,7 @@ class HistoryClustersService : public base::SupportsUserData,
 
   // history::HistoryServiceObserver:
   void OnURLVisited(history::HistoryService* history_service,
-                    const history::URLRow& url_row,
-                    const history::VisitRow& visit_row) override;
+                    const history::VisitedURLInfo& visited_url_info) override;
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
 

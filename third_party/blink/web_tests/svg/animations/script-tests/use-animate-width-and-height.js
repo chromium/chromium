@@ -56,8 +56,8 @@ function sample1() {
     shouldBe("use.height.baseVal.value", "100");
     shouldBe("use.getAttribute('width')", "'100'");
     shouldBe("use.getAttribute('height')", "'100'");
-    shouldBe("shadowRoot.firstChild.width.animVal.value", "100");
-    shouldBe("shadowRoot.firstChild.height.animVal.value", "100");
+    shouldBe("shadowRoot.firstChild.firstChild.width.animVal.value", "100");
+    shouldBe("shadowRoot.firstChild.firstChild.height.animVal.value", "100");
 }
 
 function sample2() {
@@ -67,8 +67,8 @@ function sample2() {
     shouldBe("use.height.baseVal.value", "100");
     shouldBe("use.getAttribute('width')", "'100'");
     shouldBe("use.getAttribute('height')", "'100'");
-    shouldBe("shadowRoot.firstChild.width.animVal.value", "105");
-    shouldBe("shadowRoot.firstChild.height.animVal.value", "105");
+    shouldBe("shadowRoot.firstChild.firstChild.width.animVal.value", "105");
+    shouldBe("shadowRoot.firstChild.firstChild.height.animVal.value", "105");
 }
 
 function sample3() {
@@ -78,8 +78,8 @@ function sample3() {
     shouldBe("use.height.baseVal.value", "100");
     shouldBe("use.getAttribute('width')", "'100'");
     shouldBe("use.getAttribute('height')", "'100'");
-    shouldBe("shadowRoot.firstChild.width.animVal.value", "115");
-    shouldBe("shadowRoot.firstChild.height.animVal.value", "115");
+    shouldBe("shadowRoot.firstChild.firstChild.width.animVal.value", "115");
+    shouldBe("shadowRoot.firstChild.firstChild.height.animVal.value", "115");
 }
 
 function sample4() {
@@ -89,8 +89,8 @@ function sample4() {
     shouldBe("use.height.baseVal.value", "100");
     shouldBe("use.getAttribute('width')", "'100'");
     shouldBe("use.getAttribute('height')", "'100'");
-    shouldBe("shadowRoot.firstChild.width.animVal.value", "125");
-    shouldBe("shadowRoot.firstChild.height.animVal.value", "125");
+    shouldBe("shadowRoot.firstChild.firstChild.width.animVal.value", "125");
+    shouldBe("shadowRoot.firstChild.firstChild.height.animVal.value", "125");
 }
 
 function sample5() {
@@ -100,8 +100,8 @@ function sample5() {
     shouldBe("use.height.baseVal.value", "100");
     shouldBe("use.getAttribute('width')", "'100'");
     shouldBe("use.getAttribute('height')", "'100'");
-    shouldBe("shadowRoot.firstChild.width.animVal.value", "135");
-    shouldBe("shadowRoot.firstChild.height.animVal.value", "135");
+    shouldBe("shadowRoot.firstChild.firstChild.width.animVal.value", "135");
+    shouldBe("shadowRoot.firstChild.firstChild.height.animVal.value", "135");
 }
 
 function executeTest() {

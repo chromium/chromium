@@ -11,7 +11,7 @@
 @implementation TabGridToolbarScrollingBackground {
   TabGridToolbarBackground* _incognitoTabsBackground;
   TabGridToolbarBackground* _regularTabsBackground;
-  TabGridToolbarBackground* _remoteTabsBackground;
+  TabGridToolbarBackground* _tabGroupsBackground;
 }
 
 - (instancetype)init {
@@ -32,12 +32,12 @@
         [[TabGridToolbarBackground alloc] initWithFrame:self.frame];
     _regularTabsBackground.translatesAutoresizingMaskIntoConstraints = NO;
 
-    _remoteTabsBackground =
+    _tabGroupsBackground =
         [[TabGridToolbarBackground alloc] initWithFrame:self.frame];
-    _remoteTabsBackground.translatesAutoresizingMaskIntoConstraints = NO;
+    _tabGroupsBackground.translatesAutoresizingMaskIntoConstraints = NO;
 
     UIStackView* gridsStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-      _incognitoTabsBackground, _regularTabsBackground, _remoteTabsBackground
+      _incognitoTabsBackground, _regularTabsBackground, _tabGroupsBackground
     ]];
     gridsStack.translatesAutoresizingMaskIntoConstraints = NO;
     gridsStack.distribution = UIStackViewDistributionEqualSpacing;
@@ -56,7 +56,7 @@
       [_regularTabsBackground.widthAnchor
           constraintEqualToAnchor:self.widthAnchor],
 
-      [_remoteTabsBackground.widthAnchor
+      [_tabGroupsBackground.widthAnchor
           constraintEqualToAnchor:self.widthAnchor]
     ]];
   }
@@ -79,11 +79,10 @@
       [_regularTabsBackground
           setScrolledToEdgeBackgroundViewHidden:scrolledToEdge];
       break;
-    case TabGridPageRemoteTabs:
     case TabGridPageTabGroups:
-      [_remoteTabsBackground setScrolledOverContentBackgroundViewHidden:
-                                 scrolledBackgroundViewHidden];
-      [_remoteTabsBackground
+      [_tabGroupsBackground setScrolledOverContentBackgroundViewHidden:
+                                scrolledBackgroundViewHidden];
+      [_tabGroupsBackground
           setScrolledToEdgeBackgroundViewHidden:scrolledToEdge];
       break;
   }

@@ -6,7 +6,6 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "net/base/address_list.h"

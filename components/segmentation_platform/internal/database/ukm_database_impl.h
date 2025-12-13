@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/ukm_database.h"
@@ -41,7 +42,8 @@ class UkmDatabaseImpl : public UkmDatabase {
   void AddUmaMetric(const std::string& profile_id,
                     const UmaMetricEntry& row) override;
   void RunReadOnlyQueries(QueryList&& queries, QueryCallback callback) override;
-  void DeleteEntriesOlderThan(base::Time time) override;
+  void CleanupOldEntries(base::Time ukm_time_limit,
+                         base::Time uma_time_limit) override;
   void CleanupItems(const std::string& profile_id,
                     std::vector<CleanupItem> cleanup_items) override;
   void CommitTransactionForTesting() override;

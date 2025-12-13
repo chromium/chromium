@@ -10,7 +10,6 @@
 #include <map>
 #include <optional>
 
-#include "base/feature_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"

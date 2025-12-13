@@ -12,7 +12,7 @@
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "ui/display/display_observer.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 
@@ -73,7 +73,7 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   bool OnKeyPressed(const ui::KeyEvent& event) override;
 
   // views::WidgetDelegate:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
 
   // views::BubbleDialogDelegateView:

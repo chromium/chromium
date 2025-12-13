@@ -54,7 +54,8 @@ class QuicSessionPoolPeer {
       const NetworkAnonymizationKey& network_anonymization_key,
       const ProxyChain& proxy_chain = ProxyChain::Direct(),
       SessionUsage session_usage = SessionUsage::kDestination,
-      bool require_dns_https_alpn = false);
+      bool require_dns_https_alpn = false,
+      bool disable_cert_verification_network_fetches = false);
 
   static bool HasActiveJob(QuicSessionPool* factory,
                            const quic::QuicServerId& server_id,
@@ -75,7 +76,8 @@ class QuicSessionPoolPeer {
           NetworkAnonymizationKey(),
       const ProxyChain& proxy_chain = ProxyChain::Direct(),
       SessionUsage session_usage = SessionUsage::kDestination,
-      bool require_dns_https_alpn = false);
+      bool require_dns_https_alpn = false,
+      bool disable_cert_verification_network_fetches = false);
 
   static bool IsLiveSession(QuicSessionPool* pool,
                             QuicChromiumClientSession* session);

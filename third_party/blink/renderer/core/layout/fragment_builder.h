@@ -5,8 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FRAGMENT_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FRAGMENT_BUILDER_H_
 
-#include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/trigger_scoped_name.h"
+#include "third_party/blink/renderer/core/layout/anchor_map.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/break_appeal.h"
 #include "third_party/blink/renderer/core/layout/break_token.h"
@@ -19,6 +21,7 @@
 #include "third_party/blink/renderer/core/layout/style_variant.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -67,6 +70,8 @@ class CORE_EXPORT FragmentBuilder {
     return writing_direction_.GetWritingMode();
   }
   TextDirection Direction() const { return writing_direction_.Direction(); }
+
+  AnchorMap::SetOptions AnchorOptionsForChild(const PhysicalFragment&) const;
 
   // Return true if this is a builder for the root fragment.
   bool IsRoot() const;
@@ -155,6 +160,10 @@ class CORE_EXPORT FragmentBuilder {
     would_be_last_line_if_not_for_ellipsis_ = true;
   }
 
+  void SetLineClampAfterLayoutObject(const LayoutObject* layout_object) {
+    line_clamp_after_layout_object_ = layout_object;
+  }
+
   bool IsBlockEndTrimmableLine() const { return is_block_end_trimmable_line_; }
   void SetIsBlockEndTrimmableLine() { is_block_end_trimmable_line_ = true; }
 
@@ -194,8 +203,15 @@ class CORE_EXPORT FragmentBuilder {
   // propagated to the |child| from its descendants.
   void PropagateChildAnchors(const PhysicalFragment& child,
                              const LogicalOffset& child_offset);
+  static void PropagateChildAnchors(const PhysicalFragment& child,
+                                    const LogicalOffset& child_offset,
+                                    const LayoutObject& container_object,
+                                    WritingDirectionMode,
+                                    LogicalSize container_logical_size,
+                                    AnchorMap::SetOptions options,
+                                    AnchorMap** out_anchor_map);
 
-  const PhysicalAnchorQuery* AnchorQuery() const { return anchor_query_; }
+  const AnchorMap* GetAnchorMap() const { return anchor_map_; }
 
   // Builder has non-trivial OOF-positioned methods.
   // They are intended to be used by a layout algorithm like this:
@@ -219,14 +235,11 @@ class CORE_EXPORT FragmentBuilder {
   // OutOfFlowLayoutPart(container_style, builder).Run();
   //
   // See layout part for builder interaction.
-  void AddOutOfFlowChildCandidate(
-      BlockNode,
-      const LogicalOffset& child_offset,
-      LogicalStaticPosition::InlineEdge = LogicalStaticPosition::kInlineStart,
-      LogicalStaticPosition::BlockEdge = LogicalStaticPosition::kBlockStart,
-      LogicalStaticPosition::LogicalAlignmentDirection align_self_direction =
-          LogicalStaticPosition::LogicalAlignmentDirection::kBlock,
-      bool allow_top_layer_nodes = false);
+  void AddOutOfFlowChildCandidate(const BlockNode&,
+                                  const LogicalStaticPosition&,
+                                  bool allow_top_layer_nodes = false);
+  void AddOutOfFlowChildCandidate(const BlockNode& child,
+                                  const BlockBreakToken& child_break_token);
 
   // This should only be used for inline-level OOF-positioned nodes.
   // |inline_container_writing_direction| is the current writing mode direction
@@ -330,6 +343,7 @@ class CORE_EXPORT FragmentBuilder {
 
   void SetHasOutOfFlowInFragmentainerSubtree(
       bool has_out_of_flow_in_fragmentainer_subtree) {
+    DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
     has_out_of_flow_in_fragmentainer_subtree_ =
         has_out_of_flow_in_fragmentainer_subtree;
   }
@@ -504,6 +518,10 @@ class CORE_EXPORT FragmentBuilder {
     return tallest_unbreakable_block_size_ >= LayoutUnit();
   }
 
+  void SetHasRunningAnchorTransformAnimation() {
+    has_running_anchor_transform_animation_ = true;
+  }
+
   // To be called once, after the final size has been set (i.e. in-flow layout
   // is done), and before generating the fragment.
   void Finalize();
@@ -533,7 +551,6 @@ class CORE_EXPORT FragmentBuilder {
 
   GCedHeapVector<Member<LayoutBoxModelObject>>& EnsureStickyDescendants();
   GCedHeapVector<Member<Element>>& EnsureSnapAreas();
-  PhysicalAnchorQuery& EnsureAnchorQuery();
 
   void PropagateFromLayoutResultAndFragment(
       const LayoutResult&,
@@ -567,6 +584,12 @@ class CORE_EXPORT FragmentBuilder {
   // Propagate data that was held back until the final size was known.
   void PropagateSizeDependentData();
 
+  void PropagateNamedTriggers(const PhysicalFragment& child);
+  void CreateNamedTriggersForSelf();
+  TriggerScopedNameMap& EnsureNamedTriggers();
+  void SetNamedTrigger(const TriggerScopedName& trigger_scoped_name,
+                       AnimationTrigger* trigger);
+
   LayoutInputNode node_;
   const ConstraintSpace& space_;
   const ComputedStyle* style_;
@@ -584,14 +607,18 @@ class CORE_EXPORT FragmentBuilder {
 
   GCedHeapVector<Member<LayoutBoxModelObject>>* sticky_descendants_ = nullptr;
   GCedHeapVector<Member<Element>>* snap_areas_ = nullptr;
+  // Animation triggers belonging to the element to which this fragment belongs,
+  // or an element in its subtree.
+  TriggerScopedNameMap* named_triggers_ = nullptr;
   // [1] https://drafts.csswg.org/css-scroll-snap-2/#scroll-initial-target
   const LayoutObject* scroll_start_target_ = nullptr;
-  PhysicalAnchorQuery* anchor_query_ = nullptr;
+  AnchorMap* anchor_map_ = nullptr;
   LayoutUnit bfc_line_offset_;
   std::optional<LayoutUnit> bfc_block_offset_;
   MarginStrut end_margin_strut_;
   ExclusionSpace exclusion_space_;
   std::optional<int> lines_until_clamp_;
+  const LayoutObject* line_clamp_after_layout_object_ = nullptr;
 
   ChildrenVector children_;
 
@@ -660,8 +687,10 @@ class CORE_EXPORT FragmentBuilder {
   bool would_be_last_line_if_not_for_ellipsis_ = false;
   bool has_final_size_ = false;
 
-  bool oof_candidates_may_have_anchor_queries_ = false;
-  bool oof_fragmentainer_descendants_may_have_anchor_queries_ = false;
+  bool oof_candidates_may_have_anchors_ = false;
+  bool oof_fragmentainer_descendants_may_have_anchors_ = false;
+  bool has_running_anchor_transform_animation_ = false;
+
 #if DCHECK_IS_ON()
   bool is_may_have_descendant_above_block_start_explicitly_set_ = false;
   bool is_finalized_ = false;

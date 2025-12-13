@@ -24,7 +24,6 @@
 #include <algorithm>
 #include <array>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/transforms/interpolated_transform_operation.h"
@@ -175,7 +174,7 @@ TransformOperations TransformOperations::Blend(
 
   bool success = true;
   TransformOperations result = ApplyFunctionToMatchingPrefix(
-      WTF::BindRepeating(
+      BindRepeating(
           [](double progress, TransformOperation* from,
              TransformOperation* to) {
             // Where the lists matched but one was longer, the shorter list is
@@ -211,7 +210,7 @@ TransformOperations TransformOperations::Accumulate(
 
   // Accumulate matching pairs of transform functions.
   TransformOperations result = ApplyFunctionToMatchingPrefix(
-      WTF::BindRepeating([](TransformOperation* from, TransformOperation* to) {
+      BindRepeating([](TransformOperation* from, TransformOperation* to) {
         if (to && from)
           return from->Accumulate(*to);
         // Where the lists matched but one was longer, the shorter list is
@@ -257,10 +256,10 @@ static void FindCandidatesInPlane(double px,
   candidates[0] = phi;  // The element at 0deg (maximum x)
 
   for (int i = 1; i < *num_candidates; ++i)
-    UNSAFE_TODO(candidates[i] = candidates[i - 1] + M_PI_2);  // every 90 deg
+    candidates[i] = candidates[i - 1] + M_PI_2;  // every 90 deg
   if (nz < 0.f) {
     for (int i = 0; i < *num_candidates; ++i)
-      UNSAFE_TODO(candidates[i] *= -1);
+      candidates[i] *= -1;
   }
 }
 
@@ -274,9 +273,6 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
                               double min_progress,
                               double max_progress,
                               gfx::BoxF& box) {
-  std::array<double, 6> candidates;
-  int num_candidates = 0;
-
   gfx::Vector3dF axis = from_transform.Axis();
   double from_degrees = from_transform.Angle();
   double to_degrees = to_transform.Angle();
@@ -303,6 +299,8 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
 
   box.ExpandTo(to_matrix.MapPoint(point));
 
+  std::array<double, 6> candidates;
+  int num_candidates = 0;
   switch (from_transform.GetType()) {
     case TransformOperation::kRotateX:
       FindCandidatesInPlane(point.y(), point.z(), from_transform.X(),
@@ -362,7 +360,7 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
   // Once we have the candidates, we now filter them down to ones that
   // actually live on the arc, rather than the entire circle.
   for (int i = 0; i < num_candidates; ++i) {
-    double radians = UNSAFE_BUFFERS(candidates[i]);
+    double radians = candidates[i];
 
     while (radians < min_radians)
       radians += 2.0 * M_PI;

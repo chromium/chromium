@@ -96,7 +96,8 @@ TEST(HlsPlaylistTest, IdentifyPlaylist) {
   }
 
   // Invalid or unsupported versions should result in an error
-  error_test(ParseStatusCode::kMalformedTag, "#EXT-X-VERSION:-1\n");
+  error_test(ParseStatusCode::kFailedToParseDecimalInteger,
+             "#EXT-X-VERSION:-1\n");
   error_test(ParseStatusCode::kInvalidPlaylistVersion, "#EXT-X-VERSION:0\n");
   error_test(ParseStatusCode::kPlaylistHasUnsupportedVersion,
              "#EXT-X-VERSION:11\n");

@@ -36,7 +36,6 @@ using testing::_;
 using testing::AnyNumber;
 using testing::AtLeast;
 using testing::Exactly;
-using testing::Invoke;
 using testing::Return;
 
 namespace blink {
@@ -480,15 +479,15 @@ TEST_F(IdleHelperTest, TestLongIdlePeriodWhenNotCanEnterLongIdlePeriod) {
   int run_count = 0;
 
   ON_CALL(*idle_helper_, CanEnterLongIdlePeriod(_, _))
-      .WillByDefault(
-          Invoke([delay, delay_over](
-                     base::TimeTicks now,
-                     base::TimeDelta* next_long_idle_period_delay_out) {
-            if (now >= delay_over)
-              return true;
-            *next_long_idle_period_delay_out = delay;
-            return false;
-          }));
+      .WillByDefault([delay, delay_over](
+                         base::TimeTicks now,
+                         base::TimeDelta* next_long_idle_period_delay_out) {
+        if (now >= delay_over) {
+          return true;
+        }
+        *next_long_idle_period_delay_out = delay;
+        return false;
+      });
 
   EXPECT_CALL(*idle_helper_, CanEnterLongIdlePeriod(_, _)).Times(2);
 
@@ -944,11 +943,10 @@ class MultiThreadedIdleHelperTest : public IdleHelperTest {
     std::unique_ptr<NonMainThread> thread = NonMainThread::CreateThread(
         ThreadCreationParams(ThreadType::kTestThread)
             .SetThreadNameForTest("TestBackgroundThread"));
-    PostCrossThreadTask(
-        *thread->GetTaskRunner(), FROM_HERE,
-        CrossThreadBindOnce(&PostIdleTaskFromBackgroundThread,
-                            idle_task_runner_, delay,
-                            WTF::CrossThreadUnretained(run_count)));
+    PostCrossThreadTask(*thread->GetTaskRunner(), FROM_HERE,
+                        CrossThreadBindOnce(&PostIdleTaskFromBackgroundThread,
+                                            idle_task_runner_, delay,
+                                            CrossThreadUnretained(run_count)));
     thread.reset();
   }
 
@@ -958,7 +956,7 @@ class MultiThreadedIdleHelperTest : public IdleHelperTest {
       base::TimeDelta delay,
       int* run_count) {
     auto callback = ConvertToBaseOnceCallback(CrossThreadBindOnce(
-        &IdleTestTask, WTF::CrossThreadUnretained(run_count), nullptr));
+        &IdleTestTask, CrossThreadUnretained(run_count), nullptr));
     if (delay.is_zero()) {
       idle_task_runner->PostIdleTask(FROM_HERE, std::move(callback));
     } else {

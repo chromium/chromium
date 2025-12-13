@@ -14,26 +14,13 @@ def lint_wpt_root(input_api, output_api, repo_root: Optional[str] = None):
                                       'third_party', 'wpt_tools', 'wpt')
     wpt_executable = input_api.os_path.join(wpt_root, 'wpt')
 
-    # TODO(crbug.com/1406669): Changing a test file should also lint its
-    # corresponding reference/*-expected.txt file, if any, because the
-    # test-side change may invalidate the other files' contents. For example,
-    # removing a test variant will orphan its expectations.
     paths = []
     for abs_path in input_api.AbsoluteLocalPaths():
         if abs_path.endswith(input_api.os_path.relpath(abs_path, repo_root)):
             paths.append(abs_path)
-
-    # Without an explicit file list, `wpt lint` will lint all files in the
-    # root, which is slow.
     if not paths:
         return []
 
-    # We have to set delete=False and then let the object go out of scope so
-    # that the file can be opened by name on Windows.
-    with tempfile.NamedTemporaryFile('w+', newline='', delete=False) as f:
-        for path in paths:
-            f.write(f'{path}\n')
-        paths_name = f.name
     args = [
         input_api.python3_executable,
         wpt_executable,
@@ -49,15 +36,31 @@ def lint_wpt_root(input_api, output_api, repo_root: Optional[str] = None):
         '--ignore-glob=*.ini',
         '--ignore-glob=*DIR_METADATA',
         '--ignore-glob=*OWNERS',
-        '--ignore-glob=.config.json',
-        f'--paths-file={paths_name}',
+        '--ignore-glob=config.tmpl.json',
     ]
+    # When uploading, only check changed files to keep linting fast. However,
+    # when it's time to commit the CL, check all WPT files to catch dangling
+    # references to deleted/renamed files.
+    paths_name = None
+    if input_api.is_committing:
+        args.append('--all')
+    else:
+        # We have to set delete=False and then let the object go out of scope
+        # so that the file can be opened by name on Windows.
+        with tempfile.NamedTemporaryFile('w+', newline='', delete=False) as f:
+            paths_name = f.name
+            args.append(f'--paths-file={paths_name}')
+            for path in paths:
+                f.write(f'{path}\n')
 
-    proc = input_api.subprocess.Popen(args,
-                                      stdout=input_api.subprocess.PIPE,
-                                      stderr=input_api.subprocess.PIPE)
-    stdout, stderr = proc.communicate()
-    os.remove(paths_name)
+    try:
+        proc = input_api.subprocess.Popen(args,
+                                          stdout=input_api.subprocess.PIPE,
+                                          stderr=input_api.subprocess.PIPE)
+        stdout, stderr = proc.communicate()
+    finally:
+        if paths_name:
+            os.remove(paths_name)
 
     if proc.returncode != 0:
         return [

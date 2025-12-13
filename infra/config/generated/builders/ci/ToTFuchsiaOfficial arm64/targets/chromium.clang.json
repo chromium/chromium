@@ -5,12 +5,14 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//base:base_unittests",
+        "module_scheme": "gtest",
         "name": "base_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -21,12 +23,14 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//third_party/highway:highway_tests",
+        "module_scheme": "gtest",
         "name": "highway_tests",
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -39,12 +43,14 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//third_party/angle/src/tests:angle_unittests",
+        "module_scheme": "gtest",
         "name": "angle_unittests",
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -62,12 +68,14 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//tools/fuchsia/size_tests:fuchsia_sizes",
+        "module_scheme": "flat",
         "name": "fuchsia_sizes",
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },

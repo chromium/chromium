@@ -35,61 +35,79 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   static Sanitizer* Create(const SanitizerConfig*, bool safe, ExceptionState&);
   static Sanitizer* Create(const V8SanitizerPresets::Enum, ExceptionState&);
 
+  static Sanitizer* CreateEmpty();
+
   Sanitizer() = default;
   ~Sanitizer() override = default;
   Sanitizer(const Sanitizer&) = delete;  // Use MakeGarbageCollected + setFrom.
 
   // This constructor is meant to be used by generated code to build up the
   // Sanitizer builtins. You probably don't want to use it in regular code.
-  Sanitizer(HashSet<QualifiedName>,
-            HashSet<QualifiedName>,
-            HashSet<QualifiedName>,
-            HashSet<QualifiedName>,
-            HashSet<QualifiedName>,
+  Sanitizer(std::unique_ptr<SanitizerNameSet>,
+            std::unique_ptr<SanitizerNameSet>,
+            std::unique_ptr<SanitizerNameSet>,
+            std::unique_ptr<SanitizerNameSet>,
+            std::unique_ptr<SanitizerNameSet>,
+            SanitizerNameMap,
+            SanitizerNameMap,
             bool,
             bool);
 
   // API methods:
-  void allowElement(
+  bool allowElement(
       const V8UnionSanitizerElementNamespaceWithAttributesOrString*);
-  void removeElement(const V8UnionSanitizerElementNamespaceOrString*);
-  void replaceElementWithChildren(
+  bool removeElement(const V8UnionSanitizerElementNamespaceOrString*);
+  bool replaceElementWithChildren(
       const V8UnionSanitizerElementNamespaceOrString*);
-  void allowAttribute(const V8UnionSanitizerAttributeNamespaceOrString*);
-  void removeAttribute(const V8UnionSanitizerAttributeNamespaceOrString*);
+  bool allowAttribute(const V8UnionSanitizerAttributeNamespaceOrString*);
+  bool removeAttribute(const V8UnionSanitizerAttributeNamespaceOrString*);
   void setComments(bool);
   void setDataAttributes(bool);
   void removeUnsafe();
   SanitizerConfig* get() const;
 
   // Internal versions of API methods that use Blink types (rather than IDL):
-  void AllowElement(const QualifiedName&);
-  void RemoveElement(const QualifiedName&);
-  void ReplaceElement(const QualifiedName&);
-  void AllowAttribute(const QualifiedName&);
-  void RemoveAttribute(const QualifiedName&);
-
-  // Accessors, mainly for testing:
-  const SanitizerNameSet& allow_elements() const { return allow_elements_; }
-  const SanitizerNameSet& remove_elements() const { return remove_elements_; }
-  const SanitizerNameSet& replace_elements() const { return replace_elements_; }
-  const SanitizerNameSet& allow_attrs() const { return allow_attrs_; }
-  const SanitizerNameSet& remove_attrs() const { return remove_attrs_; }
-  const SanitizerNameMap& allow_attrs_per_element() const {
-    return allow_attrs_per_element_;
-  }
-  const SanitizerNameMap& remove_attrs_per_element() const {
-    return remove_attrs_per_element_;
-  }
-  bool allow_data_attrs() const { return allow_data_attrs_; }
-  bool allow_comments() const { return allow_comments_; }
+  bool AllowElement(const QualifiedName&,
+                    SanitizerNameSet* allow_attrs = nullptr,
+                    SanitizerNameSet* remove_attrs = nullptr);
+  bool RemoveElement(const QualifiedName&);
+  bool ReplaceElement(const QualifiedName&);
+  bool AllowAttribute(const QualifiedName&);
+  bool RemoveAttribute(const QualifiedName&);
 
   // The core methods (not directly exposed to the API): Recursively sanitize
   // the node according to the current config.
   void SanitizeSafe(Node* node) const;
   void SanitizeUnsafe(Node* node) const;
 
+  // Unit test support:
+  const SanitizerNameSet* AllowElements() const {
+    return allow_elements_.get();
+  }
+  const SanitizerNameSet* RemoveElements() const {
+    return remove_elements_.get();
+  }
+  const SanitizerNameSet* ReplaceElements() const {
+    return replace_elements_.get();
+  }
+  const SanitizerNameSet* AllowAttrs() const { return allow_attrs_.get(); }
+  const SanitizerNameSet* RemoveAttrs() const { return remove_attrs_.get(); }
+  const SanitizerNameMap& AllowAttrsPerElement() const {
+    return allow_attrs_per_element_;
+  }
+  const SanitizerNameMap& RemoveAttrsPerElement() const {
+    return remove_attrs_per_element_;
+  }
+  bool AllowDataAttrs() const {
+    return data_attrs_ == SanitizerBoolWithAbsence::kTrue;
+  }
+  bool AllowComments() const {
+    return comments_ == SanitizerBoolWithAbsence::kTrue;
+  }
+
  private:
+  enum class SanitizerBoolWithAbsence { kAbsent, kTrue, kFalse };
+
   // Helper methods for SanitizeSafe/Unsafe:
   void Sanitize(Node* node, bool safe) const;
   void SanitizeElement(Element* element) const;
@@ -97,9 +115,9 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
                                               bool safe) const;
   void SanitizeTemplate(Node* node, bool safe) const;
 
-  // Helper for copy constructor and Create: Convert from IDL representation
-  // to internal.
+  // Helper for Create: Convert from IDL representation to internal.
   bool setFrom(const SanitizerConfig*, bool safe);
+  // Helper for constructors: Copy from other Sanitizer.
   void setFrom(const Sanitizer&);
 
   // Helpers for get(): Convert from internal to IDL representation.
@@ -111,26 +129,28 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   QualifiedName getFrom(
       const V8UnionSanitizerAttributeNamespaceOrString*) const;
 
-  // Helpers for setFrom(SanitizerConfig*, ...): Count items in config.
-  // These are used for error checking.
-  int countItemsInSanitizerConfig(const SanitizerConfig*) const;
-  int countItemsInSanitizerElement(
-      const V8UnionSanitizerElementNamespaceWithAttributesOrString*) const;
-  int countItemsInConfig() const;
+  // Check configuration validity.
+  bool isValid() const;
 
-  // These members are Blink-representation of SanitizerConfig, and the core
-  // data structure(s) for Sanitizer. We'll try to keep them simple (sets and
-  // maps), and to use QualifiedName, since that's an efficient-to-compare
-  // implementation.
-  SanitizerNameSet allow_elements_;
-  SanitizerNameSet remove_elements_;
-  SanitizerNameSet replace_elements_;
-  SanitizerNameSet allow_attrs_;
-  SanitizerNameSet remove_attrs_;
+  // These members are the Blink-representation of SanitizerConfig, and the core
+  // data structure(s) for Sanitizer. We'll use the Blink-specific types,
+  // specifically HashSet and QualifiedName, at the expense of additional work
+  // when converting from or to IDL types.
+  //
+  // The spec makes copious use of presence or absence of data members. We'll
+  // represent these as follows:
+  // - Name sets: Wrap them in unique_ptr. null pointer => absent member.
+  // - Per element attributes: Use a map. No entry in map => absent member.
+  // - Boolean items: Tri-state enum.
+  std::unique_ptr<SanitizerNameSet> allow_elements_;
+  std::unique_ptr<SanitizerNameSet> remove_elements_;
+  std::unique_ptr<SanitizerNameSet> replace_elements_;
+  std::unique_ptr<SanitizerNameSet> allow_attrs_;
+  std::unique_ptr<SanitizerNameSet> remove_attrs_;
   SanitizerNameMap allow_attrs_per_element_;
   SanitizerNameMap remove_attrs_per_element_;
-  bool allow_data_attrs_;
-  bool allow_comments_;
+  SanitizerBoolWithAbsence data_attrs_;
+  SanitizerBoolWithAbsence comments_;
 };
 
 }  // namespace blink

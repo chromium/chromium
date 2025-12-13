@@ -65,6 +65,7 @@ _CHROME_PATH_LINUX = {
   "stable": r"/usr/bin/google-chrome",
   "beta": r"/usr/bin/google-chrome-beta",
   "dev": r"/usr/bin/google-chrome-unstable",
+  "canary": r"/usr/bin/google-chrome-canary",
   "chromium": r"/usr/bin/chromium",
 }
 

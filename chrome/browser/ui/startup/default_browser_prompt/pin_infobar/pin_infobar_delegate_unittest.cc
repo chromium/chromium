@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_delegate.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -32,11 +33,14 @@ class PinInfoBarDelegateTest : public testing::Test {
     return infobar_manager_.get();
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   // Must be the first member.
   content::BrowserTaskEnvironment task_environment_;
 
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
 
   std::unique_ptr<infobars::ContentInfoBarManager> infobar_manager_;
   ChromeLayoutProvider layout_provider_;
@@ -52,6 +56,45 @@ TEST_F(PinInfoBarDelegateTest, Create) {
   ASSERT_TRUE(infobar_manager()->infobars().empty());
   EXPECT_TRUE(PinInfoBarDelegate::Create(infobar_manager()));
   EXPECT_EQ(1u, infobar_manager()->infobars().size());
+}
+
+// When the infobar is accepted, the "accepted" histogram should be recorded.
+TEST_F(PinInfoBarDelegateTest, AcceptHistogram) {
+  infobars::InfoBar* infobar = PinInfoBarDelegate::Create(infobar_manager());
+  ASSERT_TRUE(static_cast<PinInfoBarDelegate*>(infobar->delegate())->Accept());
+  histogram_tester().ExpectUniqueSample(
+      "DefaultBrowser.PinInfoBar.UserInteraction",
+      PinInfoBarUserInteraction::kAccepted, 1);
+}
+
+// When the infobar is dismissed, the "dismissed" histogram should be recorded.
+TEST_F(PinInfoBarDelegateTest, DismissedHistogram) {
+  infobars::InfoBar* infobar = PinInfoBarDelegate::Create(infobar_manager());
+  static_cast<PinInfoBarDelegate*>(infobar->delegate())->InfoBarDismissed();
+  histogram_tester().ExpectUniqueSample(
+      "DefaultBrowser.PinInfoBar.UserInteraction",
+      PinInfoBarUserInteraction::kDismissed, 1);
+}
+
+// When the infobar is destroyed without being accepted or dismissed, the
+// "ignored" histogram should be recorded.
+TEST_F(PinInfoBarDelegateTest, IgnoredHistogram) {
+  infobars::InfoBar* infobar = PinInfoBarDelegate::Create(infobar_manager());
+  infobar_manager()->RemoveInfoBar(infobar);
+  histogram_tester().ExpectUniqueSample(
+      "DefaultBrowser.PinInfoBar.UserInteraction",
+      PinInfoBarUserInteraction::kIgnored, 1);
+}
+
+// When the infobar is destroyed after being dismissed, the "dismissed"
+// histogram (not the "ignored" histogram) should be recorded.
+TEST_F(PinInfoBarDelegateTest, DismissedHistogramInfoBarDestroyed) {
+  infobars::InfoBar* infobar = PinInfoBarDelegate::Create(infobar_manager());
+  static_cast<PinInfoBarDelegate*>(infobar->delegate())->InfoBarDismissed();
+  infobar_manager()->RemoveInfoBar(infobar);
+  histogram_tester().ExpectUniqueSample(
+      "DefaultBrowser.PinInfoBar.UserInteraction",
+      PinInfoBarUserInteraction::kDismissed, 1);
 }
 
 }  // namespace default_browser

@@ -7,5 +7,6 @@ found in the LICENSE file.
 
 <resources>
     <!-- Bookmark bar -->
+    <dimen name="bookmark_bar_item_min_width">84dp</dimen>
     <dimen name="bookmark_bar_item_max_width">187dp</dimen>
 </resources>

@@ -36,6 +36,9 @@ CachedPermissionStatus::CachedPermissionStatus(LocalDOMWindow* local_dom_window)
       permission_service_(local_dom_window),
       permission_observer_receivers_(this, local_dom_window) {
   CHECK(local_dom_window);
+  CHECK(RuntimeEnabledFeatures::PermissionElementEnabled(local_dom_window) ||
+        RuntimeEnabledFeatures::GeolocationElementEnabled(local_dom_window) ||
+        RuntimeEnabledFeatures::UserMediaElementEnabled(local_dom_window));
 }
 
 void CachedPermissionStatus::Trace(Visitor* visitor) const {
@@ -108,7 +111,7 @@ void CachedPermissionStatus::RegisterPermissionObserver(
   mojo::ReceiverId id = permission_observer_receivers_.Add(
       observer.InitWithNewPipeAndPassReceiver(), descriptor->name,
       GetTaskRunner());
-  GetPermissionService()->AddCombinedPermissionObserver(
+  GetPermissionService()->AddPageEmbeddedPermissionObserver(
       descriptor.Clone(), current_status, std::move(observer));
   auto inserted = permission_to_receivers_map_.insert(descriptor->name, id);
   CHECK(inserted.is_new_entry);

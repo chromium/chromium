@@ -26,12 +26,14 @@ NtpPromoSpecification CreateTestPromoSpec(const NtpPromoIdentifier& id) {
   return NtpPromoSpecification(
       id,
       NtpPromoContent(kIconName, kBodyTextStringId, kActionButtonTextStringId),
-      base::BindRepeating([](Profile* profile) {
-        return NtpPromoSpecification::Eligibility::kEligible;
-      }),
-      base::BindRepeating([](Browser* browser) {}),
-      base::flat_set<NtpPromoIdentifier>{kShowFirstPromoId},
-      user_education::Metadata());
+      base::BindRepeating(
+          [](const user_education::UserEducationContextPtr& context) {
+            return NtpPromoSpecification::Eligibility::kEligible;
+          }),
+      base::DoNothing(),
+      base::BindRepeating(
+          [](const user_education::UserEducationContextPtr& context) {}),
+      base::flat_set<NtpPromoIdentifier>{kShowFirstPromoId}, Metadata());
 }
 
 }  // namespace
@@ -49,11 +51,14 @@ TEST_F(NtpPromoRegistryTest, RegisterPromo) {
   registry_.AddPromo(NtpPromoSpecification(
       kPromoId,
       NtpPromoContent(kIconName, kBodyTextStringId, kActionButtonTextStringId),
-      base::BindRepeating([](Profile* profile) {
-        return NtpPromoSpecification::Eligibility::kEligible;
-      }),
-      base::BindRepeating([](Browser* browser) {}), {kShowFirstPromoId},
-      user_education::Metadata()));
+      base::BindRepeating(
+          [](const user_education::UserEducationContextPtr& context) {
+            return NtpPromoSpecification::Eligibility::kEligible;
+          }),
+      base::DoNothing(),
+      base::BindRepeating(
+          [](const user_education::UserEducationContextPtr& context) {}),
+      {kShowFirstPromoId}, Metadata()));
 
   const auto* spec = registry_.GetNtpPromoSpecification(kPromoId);
   ASSERT_NE(spec, nullptr);
@@ -64,11 +69,13 @@ TEST_F(NtpPromoRegistryTest, RegisterPromo) {
   EXPECT_THAT(spec->show_after(), testing::ElementsAre(kShowFirstPromoId));
 }
 
+// The registry must maintain registration order, independent of ID.
 TEST_F(NtpPromoRegistryTest, GetIdentifiers) {
+  registry_.AddPromo(CreateTestPromoSpec("Promo3"));
   registry_.AddPromo(CreateTestPromoSpec("Promo1"));
   registry_.AddPromo(CreateTestPromoSpec("Promo2"));
   EXPECT_THAT(registry_.GetNtpPromoIdentifiers(),
-              testing::ElementsAre("Promo1", "Promo2"));
+              testing::ElementsAre("Promo3", "Promo1", "Promo2"));
 }
 
 TEST_F(NtpPromoRegistryTest, DuplicateEntry) {
@@ -80,6 +87,24 @@ TEST_F(NtpPromoRegistryTest, AreAnyPromosRegistered) {
   EXPECT_FALSE(registry_.AreAnyPromosRegistered());
   registry_.AddPromo(CreateTestPromoSpec("Promo1"));
   EXPECT_TRUE(registry_.AreAnyPromosRegistered());
+}
+
+TEST_F(NtpPromoRegistryTest, ClearAllPromosForTesting) {
+  registry_.AddPromo(CreateTestPromoSpec("Promo1"));
+  registry_.AddPromo(CreateTestPromoSpec("Promo2"));
+  EXPECT_TRUE(registry_.AreAnyPromosRegistered());
+  registry_.ClearPromosForTesting();
+  EXPECT_FALSE(registry_.AreAnyPromosRegistered());
+}
+
+TEST_F(NtpPromoRegistryTest, ClearOnePromoForTesting) {
+  registry_.AddPromo(CreateTestPromoSpec("Promo1"));
+  registry_.AddPromo(CreateTestPromoSpec("Promo2"));
+  EXPECT_TRUE(registry_.AreAnyPromosRegistered());
+  registry_.ClearPromoForTesting("Promo1");
+  EXPECT_TRUE(registry_.AreAnyPromosRegistered());
+  EXPECT_THAT(registry_.GetNtpPromoIdentifiers(),
+              testing::ElementsAre("Promo2"));
 }
 
 }  // namespace user_education

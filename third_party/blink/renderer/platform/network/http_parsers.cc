@@ -40,8 +40,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_view_util.h"
-#include "base/time/time.h"
 #include "net/http/http_content_disposition.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
@@ -50,6 +50,7 @@
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/sri_message_signatures.h"
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
+#include "services/network/public/mojom/connection_allowlist.mojom-blink.h"
 #include "services/network/public/mojom/integrity_policy.mojom-blink.h"
 #include "services/network/public/mojom/no_vary_search.mojom-blink-forward.h"
 #include "services/network/public/mojom/no_vary_search.mojom-blink.h"
@@ -59,15 +60,12 @@
 #include "services/network/public/mojom/timing_allow_origin.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
-#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/header_field_tokenizer.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -139,7 +137,7 @@ template <
     typename OutElement = decltype(ConvertToBlink(std::declval<InElement>()))>
 ::blink::Vector<OutElement> ConvertToBlink(const std::vector<InElement>& in) {
   ::blink::Vector<OutElement> out;
-  out.reserve(base::checked_cast<wtf_size_t>(in.size()));
+  out.reserve(base::checked_cast<::blink::wtf_size_t>(in.size()));
   for (const auto& element : in) {
     out.push_back(ConvertToBlink(element));
   }
@@ -177,25 +175,15 @@ blink::IntegrityPolicy::Source ConvertToBlink(
   return blink::IntegrityPolicy::Source(in);
 }
 
-blink::IntegrityMetadataPtr ConvertToBlink(const IntegrityMetadataPtr& in) {
-  CHECK(in);
-  ::blink::Vector<uint8_t> hash_value = ConvertToBlink(in->value);
-
-  return blink::IntegrityMetadata::New(in->algorithm, std::move(hash_value));
-}
-
 blink::CSPSourceListPtr ConvertToBlink(const CSPSourceListPtr& source_list) {
   CHECK(source_list);
 
   using ::blink::Vector;
   Vector<blink::CSPSourcePtr> sources = ConvertToBlink(source_list->sources);
   Vector<::blink::String> nonces = ConvertToBlink(source_list->nonces);
-  Vector<blink::IntegrityMetadataPtr> hashes =
-      ConvertToBlink(source_list->hashes);
-  Vector<blink::IntegrityMetadataPtr> url_hashes =
-      ConvertToBlink(source_list->url_hashes);
-  Vector<blink::IntegrityMetadataPtr> eval_hashes =
-      ConvertToBlink(source_list->eval_hashes);
+  Vector<network::IntegrityMetadata> hashes(source_list->hashes);
+  Vector<network::IntegrityMetadata> url_hashes(source_list->url_hashes);
+  Vector<network::IntegrityMetadata> eval_hashes(source_list->eval_hashes);
 
   return blink::CSPSourceList::New(
       std::move(sources), std::move(nonces), std::move(hashes),
@@ -378,10 +366,10 @@ blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
   CHECK(in);
   return blink::ParsedHeaders::New(
       ConvertToBlink(in->content_security_policy),
-      ConvertToBlink(in->allow_csp_from), in->cross_origin_embedder_policy,
-      in->cross_origin_opener_policy, in->document_isolation_policy,
-      in->integrity_policy, in->integrity_policy_report_only,
-      in->origin_agent_cluster,
+      ConvertToBlink(in->allow_csp_from), in->connection_allowlists,
+      in->cross_origin_embedder_policy, in->cross_origin_opener_policy,
+      in->document_isolation_policy, in->integrity_policy,
+      in->integrity_policy_report_only, in->origin_agent_cluster,
       in->accept_ch.has_value()
           ? std::make_optional(ConvertToBlink(in->accept_ch.value()))
           : std::nullopt,
@@ -475,9 +463,7 @@ bool ParseRefreshTime(const String& source, base::TimeDelta& delay) {
   }
   bool ok;
   double time = source.Left(number_end).ToDouble(&ok);
-  if (RuntimeEnabledFeatures::MetaRefreshNoFractionalEnabled()) {
-    time = floor(time);
-  }
+  time = floor(time);
   if (!ok)
     return false;
   delay = base::Seconds(time);
@@ -576,43 +562,12 @@ bool ParseHTTPRefresh(const String& refresh,
   }
 }
 
-std::optional<base::Time> ParseDate(const String& value,
-                                    UseCounter& use_counter) {
-  const std::string utf8_value = value.Utf8();
-  if (RuntimeEnabledFeatures::ParseDateUsesBaseTimeFromUtcStringEnabled()) {
-    base::Time parsed_time;
-    if (!base::Time::FromUTCString(utf8_value.c_str(), &parsed_time)) {
-      return std::nullopt;
-    }
-    return parsed_time;
+std::optional<base::Time> ParseDate(const String& value) {
+  base::Time parsed_time;
+  if (!base::Time::FromUTCString(value.Utf8().c_str(), &parsed_time)) {
+    return std::nullopt;
   }
-  std::optional<base::Time> maybe_parsed_time =
-      ParseDateFromNullTerminatedCharacters(utf8_value.c_str());
-  {
-    // Assumes UTC if timezone isn't specified.
-    std::optional<base::Time> maybe_parsed_time_fromutcstring;
-    base::Time parsed_time;
-    if (base::Time::FromUTCString(utf8_value.c_str(), &parsed_time)) {
-      maybe_parsed_time_fromutcstring = parsed_time;
-    }
-    if (maybe_parsed_time != maybe_parsed_time_fromutcstring) {
-      use_counter.CountUse(
-          WebFeature::kHttpParsersParseDateFromUTCStringDifferent);
-    }
-  }
-  {
-    // Assumes local time if timezone isn't specified.
-    std::optional<base::Time> maybe_parsed_time_fromstring;
-    base::Time parsed_time;
-    if (base::Time::FromString(utf8_value.c_str(), &parsed_time)) {
-      maybe_parsed_time_fromstring = parsed_time;
-    }
-    if (maybe_parsed_time != maybe_parsed_time_fromstring) {
-      use_counter.CountUse(
-          WebFeature::kHttpParsersParseDateFromStringDifferent);
-    }
-  }
-  return maybe_parsed_time;
+  return parsed_time;
 }
 
 AtomicString ExtractMIMETypeFromMediaType(const AtomicString& media_type) {
@@ -727,8 +682,11 @@ ContentTypeOptionsDisposition ParseContentTypeOptionsHeader(
   return kContentTypeOptionsNone;
 }
 
-static bool IsCacheHeaderSeparator(UChar c) {
-  // See RFC 2616, Section 2.2
+// Legacy version of IsCacheHeaderSeparator that includes all RFC 2616
+// separators. Used for metrics comparison and when feature is disabled.
+static bool LegacyIsCacheHeaderSeparator(UChar c) {
+  // RFC 2616, Section 2.2: Basic Rules - Separators
+  // https://datatracker.ietf.org/doc/html/rfc2616#section-2.2
   switch (c) {
     case '(':
     case ')':
@@ -759,12 +717,38 @@ static bool IsControlCharacter(UChar c) {
   return c < ' ' || c == 127;
 }
 
-static inline String TrimToNextSeparator(const String& str) {
-  return str.Substring(0, str.Find(IsCacheHeaderSeparator));
+// RFC 7234-compliant version of IsCacheHeaderSeparator that always uses
+// RFC 7234 separators regardless of feature flags. Used for metrics comparison.
+static bool RFC7234IsCacheHeaderSeparator(UChar c) {
+  // RFC 7234, Section 5.2: Cache-Control (uses token from RFC 7230)
+  // https://datatracker.ietf.org/doc/html/rfc7234#section-5.2
+  // RFC 7230, Section 3.2.6: Field Value Components - Tokens
+  // https://datatracker.ietf.org/doc/html/rfc7230#section-3.2.6
+  // Only comma, equals, quote, and whitespace are used as separators
+  // for Cache-Control parsing (not all RFC 7230 delimiters).
+  switch (c) {
+    case ',':
+    case '=':
+    case '"':
+    case ' ':
+    case '\t':
+      return true;
+    default:
+      return false;
+  }
 }
 
-static void ParseCacheHeader(const String& header,
-                             Vector<std::pair<String, String>>& result) {
+// Generic Cache-Control header parser that can use different separator
+// functions. This eliminates code duplication between RFC 7234, RFC 2616,
+// and feature-flag-controlled parsing.
+template <typename SeparatorFunc>
+static void ParseCacheHeaderImpl(const String& header,
+                                 Vector<std::pair<String, String>>& result,
+                                 SeparatorFunc is_separator) {
+  auto trim_to_separator = [&](const String& str) {
+    return str.Substring(0, str.Find(is_separator));
+  };
+
   const String safe_header = header.RemoveCharacters(IsControlCharacter);
   wtf_size_t max = safe_header.length();
   for (wtf_size_t pos = 0; pos < max; /* pos incremented in loop */) {
@@ -775,7 +759,7 @@ static void ParseCacheHeader(const String& header,
          next_comma_position == kNotFound)) {
       // Get directive name, parse right hand side of equal sign, then add to
       // map
-      String directive = TrimToNextSeparator(
+      String directive = trim_to_separator(
           safe_header.Substring(pos, next_equal_sign_position - pos)
               .StripWhiteSpace());
       pos += next_equal_sign_position - pos + 1;
@@ -793,15 +777,16 @@ static void ParseCacheHeader(const String& header,
                  next_double_quote_position + 1;
           // Move past next comma, if there is one
           wtf_size_t next_comma_position2 = safe_header.find(',', pos);
-          if (next_comma_position2 != kNotFound)
+          if (next_comma_position2 != kNotFound) {
             pos += next_comma_position2 - pos + 1;
-          else
+          } else {
             return;  // Parse error if there is anything left with no comma
+          }
         } else {
           // Parse error; just use the rest as the value
           result.push_back(std::pair<String, String>(
               directive,
-              TrimToNextSeparator(
+              trim_to_separator(
                   value.Substring(1, value.length() - 1).StripWhiteSpace())));
           return;
         }
@@ -812,13 +797,13 @@ static void ParseCacheHeader(const String& header,
           // The value is delimited by the next comma
           result.push_back(std::pair<String, String>(
               directive,
-              TrimToNextSeparator(
+              trim_to_separator(
                   value.Substring(0, next_comma_position2).StripWhiteSpace())));
           pos += (safe_header.find(',', pos) - pos) + 1;
         } else {
           // The rest is the value; no change to value needed
           result.push_back(
-              std::pair<String, String>(directive, TrimToNextSeparator(value)));
+              std::pair<String, String>(directive, trim_to_separator(value)));
           return;
         }
       }
@@ -827,7 +812,7 @@ static void ParseCacheHeader(const String& header,
                 next_equal_sign_position == kNotFound)) {
       // Add directive to map with empty string as value
       result.push_back(std::pair<String, String>(
-          TrimToNextSeparator(
+          trim_to_separator(
               safe_header.Substring(pos, next_comma_position - pos)
                   .StripWhiteSpace()),
           ""));
@@ -835,11 +820,20 @@ static void ParseCacheHeader(const String& header,
     } else {
       // Add last directive to map with empty string as value
       result.push_back(std::pair<String, String>(
-          TrimToNextSeparator(
+          trim_to_separator(
               safe_header.Substring(pos, max - pos).StripWhiteSpace()),
           ""));
       return;
     }
+  }
+}
+
+static void ParseCacheHeader(const String& header,
+                             Vector<std::pair<String, String>>& result) {
+  if (RuntimeEnabledFeatures::CacheControlRFC7234ParsingEnabled()) {
+    ParseCacheHeaderImpl(header, result, RFC7234IsCacheHeaderSeparator);
+  } else {
+    ParseCacheHeaderImpl(header, result, LegacyIsCacheHeaderSeparator);
   }
 }
 
@@ -860,6 +854,24 @@ CacheControlHeader ParseCacheControlDirectives(
   if (!cache_control_value.empty()) {
     Vector<std::pair<String, String>> directives;
     ParseCacheHeader(cache_control_value, directives);
+
+    // Compare RFC 7234 vs legacy RFC 2616 parsing for metrics.
+    // TODO(hjanuschka): Remove after gathering sufficient metrics and
+    // completing deprecation process.
+    if (RuntimeEnabledFeatures::CacheControlRFC7234ParsingMetricsEnabled()) {
+      Vector<std::pair<String, String>> rfc7234_directives;
+      Vector<std::pair<String, String>> legacy_directives;
+      ParseCacheHeaderImpl(cache_control_value, rfc7234_directives,
+                           RFC7234IsCacheHeaderSeparator);
+      ParseCacheHeaderImpl(cache_control_value, legacy_directives,
+                           LegacyIsCacheHeaderSeparator);
+
+      bool parsing_differs = rfc7234_directives != legacy_directives;
+
+      // Report metrics: true if behavior would change, false otherwise.
+      UMA_HISTOGRAM_BOOLEAN("Blink.CacheControl.ParsingDifference",
+                            parsing_differs);
+    }
 
     wtf_size_t directives_size = directives.size();
     for (wtf_size_t i = 0; i < directives_size; ++i) {
@@ -942,8 +954,8 @@ bool ParseMultipartHeadersFromBody(base::span<const uint8_t> bytes,
 
   std::string mime_type, charset;
   response_headers->GetMimeTypeAndCharset(&mime_type, &charset);
-  response->SetMimeType(WebString::FromUTF8(mime_type));
-  response->SetTextEncodingName(WebString::FromUTF8(charset));
+  response->SetMimeType(AtomicString(String::FromUTF8(mime_type)));
+  response->SetTextEncodingName(AtomicString(String::FromUTF8(charset)));
 
   // Copy headers listed in replaceHeaders to the response.
   for (const AtomicString& header : ReplaceHeaders()) {
@@ -956,8 +968,7 @@ bool ParseMultipartHeadersFromBody(base::span<const uint8_t> bytes,
     Vector<AtomicString> values;
     while (response_headers->EnumerateHeader(&iterator, header_string_piece,
                                              &value)) {
-      const AtomicString atomic_value = WebString::FromLatin1(value);
-      values.push_back(atomic_value);
+      values.push_back(AtomicString(base::as_byte_span(value)));
     }
     response->AddHttpHeaderFieldWithMultipleValues(header, values);
   }
@@ -982,20 +993,20 @@ bool ParseMultipartFormHeadersFromBody(base::span<const uint8_t> bytes,
   std::string headers("HTTP/1.1 200 OK\r\n");
   headers.append(base::as_string_view(bytes.first(headers_end_pos)));
 
-  auto responseHeaders = base::MakeRefCounted<net::HttpResponseHeaders>(
+  auto response_headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(headers));
 
   // Copy selected header fields.
-  const AtomicString* const headerNamePointers[] = {
-      &http_names::kContentDisposition, &http_names::kContentType};
-  for (const AtomicString* headerNamePointer : headerNamePointers) {
-    StringUtf8Adaptor adaptor(*headerNamePointer);
+  const AtomicString* const kHeaderNames[] = {&http_names::kContentDisposition,
+                                              &http_names::kContentType};
+  for (const AtomicString* header_name : kHeaderNames) {
+    StringUtf8Adaptor adaptor(*header_name);
     size_t iterator = 0;
-    std::string_view headerNameStringPiece = adaptor.AsStringView();
+    std::string_view header_name_string_piece(adaptor.AsStringView());
     std::string value;
-    while (responseHeaders->EnumerateHeader(&iterator, headerNameStringPiece,
-                                            &value)) {
-      header_fields->Add(*headerNamePointer, WebString::FromUTF8(value));
+    while (response_headers->EnumerateHeader(
+        &iterator, header_name_string_piece, &value)) {
+      header_fields->Add(*header_name, AtomicString(String::FromUTF8(value)));
     }
   }
 

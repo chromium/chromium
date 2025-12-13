@@ -39,8 +39,8 @@ bool DataSharingUtils::ShouldInterceptNavigationForShareURL(const GURL& url) {
 // static
 ParseUrlResult DataSharingUtils::ParseDataSharingUrl(const GURL& url) {
   GURL data_sharing_url = GURL(data_sharing::features::kDataSharingURL.Get());
-  if (url.host() != data_sharing_url.host() ||
-      url.path() != data_sharing_url.path()) {
+  if (url.GetHost() != data_sharing_url.GetHost() ||
+      url.GetPath() != data_sharing_url.GetPath()) {
     return base::unexpected(ParseUrlStatus::kHostOrPathMismatchFailure);
   }
 

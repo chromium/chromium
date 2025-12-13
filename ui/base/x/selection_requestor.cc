@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/x/selection_requestor.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ref_counted_memory.h"
 #include "ui/base/x/selection_owner.h"
 #include "ui/base/x/selection_utils.h"
@@ -38,7 +34,7 @@ std::vector<uint8_t> CombineData(
   std::vector<uint8_t> combined;
   combined.reserve(bytes);
   for (const auto& datum : data) {
-    std::copy(datum->data(), datum->data() + datum->size(),
+    std::copy(datum->data(), UNSAFE_TODO(datum->data() + datum->size()),
               std::back_inserter(combined));
   }
   return combined;

@@ -232,18 +232,20 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
     }
   }
 
-  auto* frame_view = GetBubbleFrameView();
-  if (model_->step() == Step::kGPMCreatePin ||
-      model_->step() == Step::kGPMCreateArbitraryPin ||
-      model_->step() == Step::kGPMChangePin ||
-      model_->step() == Step::kGPMChangeArbitraryPin ||
-      model_->step() == Step::kGPMEnterPin ||
-      model_->step() == Step::kGPMEnterArbitraryPin) {
-    frame_view->SetFootnoteView(
-        std::make_unique<AuthenticatorGpmAccountInfoView>(
-            static_cast<AuthenticatorGpmPinSheetModelBase*>(sheet_->model())));
-  } else {
-    frame_view->SetFootnoteView(nullptr);
+  if (auto* frame_view = GetBubbleFrameView(); frame_view) {
+    if (model_->step() == Step::kGPMCreatePin ||
+        model_->step() == Step::kGPMCreateArbitraryPin ||
+        model_->step() == Step::kGPMChangePin ||
+        model_->step() == Step::kGPMChangeArbitraryPin ||
+        model_->step() == Step::kGPMEnterPin ||
+        model_->step() == Step::kGPMEnterArbitraryPin) {
+      frame_view->SetFootnoteView(
+          std::make_unique<AuthenticatorGpmAccountInfoView>(
+              static_cast<AuthenticatorGpmPinSheetModelBase*>(
+                  sheet_->model())));
+    } else {
+      frame_view->SetFootnoteView(nullptr);
+    }
   }
 
   // Force re-layout of the entire dialog client view, which includes the sheet
@@ -273,7 +275,9 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
   // Update the dialog size and position, as the preferred size of the sheet
   // might have changed.
   constrained_window::UpdateWebContentsModalDialogPosition(
-      GetWidget(), dialog_manager->delegate()->GetWebContentsModalDialogHost());
+      GetWidget(),
+      dialog_manager->delegate()->GetWebContentsModalDialogHost(
+          constrained_window::GetTopLevelWebContents(web_contents())));
 
   // Reset focus to the highest priority control on the new/updated sheet.
   if (GetInitiallyFocusedView()) {

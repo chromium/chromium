@@ -11,6 +11,7 @@
 #import "base/apple/bundle_locations.h"
 #import "base/check.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/ios/ns_error_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"

@@ -7,7 +7,7 @@
    "app_service_icon_url": "chrome://app-icon/empty_app/32",
    "app_size_in_bytes": null,
    "background_color": "none",
-   "capture_links": "kUndefined",
+   "borderless_url_patterns": [  ],
    "current_os_integration_states": {
    },
    "dark_mode_background_color": "none",
@@ -27,6 +27,7 @@
    "file_handlers": [  ],
    "first_install_time": "1601-01-01 00:00:00.000000 UTC",
    "install_state": "2",
+   "installed_by": [  ],
    "is_diy_app": false,
    "is_from_sync_and_pending_installation": false,
    "is_generated_icon": false,
@@ -57,6 +58,10 @@
    "shortcuts_menu_item_infos": [  ],
    "sources": [  ],
    "start_url": "",
+   "stored_trusted_icon_sizes": {
+      "ANY": [  ],
+      "MASKABLE": [  ]
+   },
    "supported_links_offer_dismiss_count": 0,
    "supported_links_offer_ignore_count": 0,
    "sync_proto": {

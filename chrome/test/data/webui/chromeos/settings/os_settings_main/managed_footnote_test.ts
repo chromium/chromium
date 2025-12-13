@@ -61,7 +61,7 @@ suite('ManagedFootnoteTest', function() {
     assertEquals(
         footnote.shadowRoot!.querySelector('iron-icon')!.icon,
         'cr:jumping_fox');
-    assertTrue(footnote.shadowRoot!.textContent!.includes(browserMessage));
+    assertTrue(footnote.shadowRoot!.textContent.includes(browserMessage));
   });
 
   test('Responds to is-managed-changed events', function() {
@@ -79,9 +79,9 @@ suite('ManagedFootnoteTest', function() {
         setupTestElement(true, browserMessage, deviceMessage, '', '');
 
     assertNotEquals('none', getComputedStyle(footnote).display);
-    assertTrue(footnote.shadowRoot!.textContent!.includes(browserMessage));
+    assertTrue(footnote.shadowRoot!.textContent.includes(browserMessage));
 
     footnote.showDeviceInfo = true;
-    assertTrue(footnote.shadowRoot!.textContent!.includes(deviceMessage));
+    assertTrue(footnote.shadowRoot!.textContent.includes(deviceMessage));
   });
 });

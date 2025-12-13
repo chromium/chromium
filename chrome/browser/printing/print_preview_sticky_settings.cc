@@ -71,7 +71,8 @@ std::vector<std::string> PrintPreviewStickySettings::GetRecentlyUsedPrinters() {
     return {};
 
   std::optional<base::Value::Dict> sticky_settings_state_value =
-      base::JSONReader::ReadDict(*sticky_settings_state);
+      base::JSONReader::ReadDict(*sticky_settings_state,
+                                 base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!sticky_settings_state_value) {
     return {};
   }

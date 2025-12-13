@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "content/services/auction_worklet/auction_v8_helper.h"
 
 #include <limits>
@@ -392,6 +387,9 @@ v8::Local<v8::Context> AuctionV8Helper::CreateContext(
   auto result =
       context->Global()->Delete(context, CreateStringFromLiteral("Date"));
   DCHECK(!result.IsNothing());
+  auto result2 =
+      context->Global()->Delete(context, CreateStringFromLiteral("Temporal"));
+  DCHECK(!result2.IsNothing());
   return context;
 }
 

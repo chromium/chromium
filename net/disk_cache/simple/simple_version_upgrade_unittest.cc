@@ -42,6 +42,32 @@ bool WriteFakeIndexFileV8(const base::FilePath& cache_path) {
   return base::WriteFile(file_name, base::byte_span_from_ref(data));
 }
 
+bool WriteFakeIndexFile(const base::FilePath& cache_path,
+                        uint32_t version,
+                        int encryption_status) {
+  disk_cache::FakeIndexData data;
+  data.version = version;
+  data.initial_magic_number = kSimpleInitialMagicNumber;
+  data.zero = 0;
+  data.zero2 = 0;
+  data.encryption_status = encryption_status;
+  const base::FilePath file_name = cache_path.AppendASCII(kFakeIndexFileName);
+  return base::WriteFile(file_name, base::byte_span_from_ref(data));
+}
+
+// Mock `BackendFileOperations` to expose and change the encryption field for
+// testing.
+class TestFileOperations : public disk_cache::TrivialFileOperations {
+ public:
+  explicit TestFileOperations(bool is_encrypted)
+      : is_encrypted_(is_encrypted) {}
+
+  bool IsEncrypted() const override { return is_encrypted_; }
+
+ private:
+  const bool is_encrypted_;
+};
+
 TEST(SimpleVersionUpgradeTest, FailsToMigrateBackwards) {
   base::ScopedTempDir cache_dir;
   ASSERT_TRUE(cache_dir.CreateUniqueTempDir());
@@ -79,6 +105,47 @@ TEST(SimpleVersionUpgradeTest, ExperimentBacktoDefault) {
   EXPECT_EQ(disk_cache::SimpleCacheConsistencyResult::kBadZeroCheck,
             disk_cache::UpgradeSimpleCacheOnDisk(&file_operations,
                                                  cache_dir.GetPath()));
+}
+
+TEST(SimpleVersionUpgradeTest, WritesEncryptionStatusToFakeIndexFile) {
+  base::ScopedTempDir cache_dir;
+  ASSERT_TRUE(cache_dir.CreateUniqueTempDir());
+  const base::FilePath cache_path = cache_dir.GetPath();
+  const base::FilePath fake_index_path =
+      cache_path.AppendASCII(kFakeIndexFileName);
+
+  TestFileOperations file_operations(true);
+  ASSERT_EQ(disk_cache::SimpleCacheConsistencyResult::kOK,
+            disk_cache::UpgradeSimpleCacheOnDisk(&file_operations, cache_path));
+
+  disk_cache::FakeIndexData data;
+  ASSERT_TRUE(base::ReadFile(fake_index_path, base::byte_span_from_ref(data)));
+  EXPECT_EQ(1, data.encryption_status);
+  EXPECT_EQ(disk_cache::kSimpleVersion, data.version);
+}
+
+TEST(SimpleVersionUpgradeTest, EncryptionStatusMismatch) {
+  auto run_and_check = [](int cache_encrypted_status,
+                          bool backend_is_encrypted) {
+    base::ScopedTempDir cache_dir;
+    ASSERT_TRUE(cache_dir.CreateUniqueTempDir());
+    const base::FilePath cache_path = cache_dir.GetPath();
+
+    // Create a fake index file with the specified encryption status.
+    ASSERT_TRUE(WriteFakeIndexFile(cache_path, disk_cache::kSimpleVersion,
+                                   cache_encrypted_status));
+
+    // Simulate opening the cache with a backend of a different encryption
+    // status.
+    TestFileOperations file_operations(backend_is_encrypted);
+    EXPECT_EQ(
+        disk_cache::SimpleCacheConsistencyResult::kEncryptionStatusMismatch,
+        disk_cache::UpgradeSimpleCacheOnDisk(&file_operations,
+                                             cache_dir.GetPath()));
+  };
+
+  run_and_check(0, true);
+  run_and_check(1, false);
 }
 
 TEST(SimpleVersionUpgradeTest, FakeIndexVersionGetsUpdated) {

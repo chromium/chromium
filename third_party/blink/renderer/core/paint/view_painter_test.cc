@@ -49,7 +49,8 @@ void ViewPainterFixedBackgroundTest::RunFixedBackgroundTest(
 
   ScrollOffset scroll_offset(200, 150);
   layout_viewport->SetScrollOffset(scroll_offset,
-                                   mojom::blink::ScrollType::kUser);
+                                   mojom::blink::ScrollType::kUser,
+                                   cc::ScrollSourceType::kNone);
   frame_view->UpdateAllLifecyclePhasesForTest();
 
   const auto& display_items = GetPersistentData().GetDisplayItemList();

@@ -47,13 +47,13 @@ std::string OptChangeRequest::GetRequestContent() {
 
   std::string reason;
   switch (request_details_.reason) {
-    case OptChangeRequestDetails::ENABLE_FIDO_AUTH:
+    case OptChangeRequestDetails::Reason::kEnableFidoAuth:
       reason = "ENABLE_FIDO_AUTH";
       break;
-    case OptChangeRequestDetails::DISABLE_FIDO_AUTH:
+    case OptChangeRequestDetails::Reason::kDisableFidoAuth:
       reason = "DISABLE_FIDO_AUTH";
       break;
-    case OptChangeRequestDetails::ADD_CARD_FOR_FIDO_AUTH:
+    case OptChangeRequestDetails::Reason::kAddCardForFidoAuth:
       reason = "ADD_CARD_FOR_FIDO_AUTH";
       break;
     default:
@@ -77,8 +77,7 @@ std::string OptChangeRequest::GetRequestContent() {
                      std::move(fido_authentication_info));
   }
 
-  std::string request_content;
-  base::JSONWriter::Write(request_dict, &request_content);
+  std::string request_content = base::WriteJson(request_dict).value_or("");
   DVLOG(3) << "updateautofilluserpreference request body: " << request_content;
   return request_content;
 }

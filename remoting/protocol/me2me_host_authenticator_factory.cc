@@ -75,4 +75,11 @@ Me2MeHostAuthenticatorFactory::CreateAuthenticator(
       INVALID_CREDENTIALS, "Invalid HostAuthenticationConfig.");
 }
 
+std::unique_ptr<AuthenticatorFactory> Me2MeHostAuthenticatorFactory::Clone()
+    const {
+  return std::make_unique<Me2MeHostAuthenticatorFactory>(
+      check_access_permission_callback_,
+      std::make_unique<HostAuthenticationConfig>(*config_));
+}
+
 }  // namespace remoting::protocol

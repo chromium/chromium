@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Required so that learn mode tests can use LearnModeBridge.
 import '../common/learn_mode_bridge.js';
 
+import {BridgeHelper} from '/common/bridge_helper.js';
 import {Features} from '/common/features.js';
 import {Flags} from '/common/flags.js';
 import {KeepAlive} from '/common/keep_alive.js';
@@ -12,6 +14,7 @@ import {InstanceChecker} from '/common/mv3/instance_checker.js';
 
 import type {BrailleKeyEvent} from '../common/braille/braille_key_types.js';
 import {NavBraille} from '../common/braille/nav_braille.js';
+import {BridgeConstants} from '../common/bridge_constants.js';
 import {EarconId} from '../common/earcon_id.js';
 import {LocaleOutputHelper} from '../common/locale_output_helper.js';
 import {Msgs} from '../common/msgs.js';
@@ -90,6 +93,12 @@ export class Background extends ChromeVoxState {
     chrome.accessibilityPrivate.onShowChromeVoxTutorial.addListener(() => {
       (new PanelCommand(PanelCommandType.TUTORIAL)).send();
     });
+
+    BridgeHelper.registerHandler(
+        BridgeConstants.ChromeVoxState.TARGET,
+        BridgeConstants.ChromeVoxState.Action.IS_LEARN_MODE_READY, () => {
+          return this.isLearnModeReady_();
+        });
   }
 
   static async init(): Promise<void> {
@@ -145,6 +154,9 @@ export class Background extends ChromeVoxState {
     ChromeVoxState.resolveReadyPromise_();
     ChromeVoxState.instance.onIntroduceChromeVox();
     OffscreenBridge.chromeVoxReady();
+
+    // Tell the browser that ChromeVox is ready to begin handling key events.
+    chrome.accessibilityPrivate.enableSpokenFeedbackMv3KeyHandling();
   }
 
   static async maybeCreateOffscreenDocument_() {
@@ -208,6 +220,18 @@ export class Background extends ChromeVoxState {
           },
         }));
     ChromeVox.braille.write(NavBraille.fromText(Msgs.getMsg('intro_brl')));
+  }
+
+  // Returns true if the learn mode page is open and ready to receive messages
+  // and returns false otherwise.
+  private async isLearnModeReady_(): Promise<boolean> {
+    const learnModeUrl =
+        chrome.runtime.getURL('chromevox/mv3/learn_mode/learn_mode.html');
+    const existingContexts = await chrome.runtime.getContexts({
+      documentUrls: [learnModeUrl],
+    });
+
+    return existingContexts.length > 0;
   }
 }
 

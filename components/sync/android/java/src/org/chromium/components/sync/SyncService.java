@@ -25,9 +25,9 @@ import java.util.Set;
 @NullMarked
 public interface SyncService {
     /** Listener for the underlying sync status. */
-    public interface SyncStateChangedListener {
+    interface SyncStateChangedListener {
         // Invoked when the status has changed.
-        public void syncStateChanged();
+        void syncStateChanged();
     }
 
     /**
@@ -37,7 +37,7 @@ public interface SyncService {
      *
      * @return true if the sync engine is initialized.
      */
-    public boolean isEngineInitialized();
+    boolean isEngineInitialized();
 
     /**
      * Returns whether all conditions are satisfied for Sync-the-feature to start. This means that
@@ -51,7 +51,7 @@ public interface SyncService {
      */
     // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is deleted from the
     // codebase. See ConsentLevel::kSync documentation for details.
-    public boolean isSyncFeatureEnabled();
+    boolean isSyncFeatureEnabled();
 
     /**
      * Checks whether Sync-the-feature is currently active. Note that Sync-the-transport may be
@@ -61,9 +61,9 @@ public interface SyncService {
      */
     // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is deleted from the
     // codebase. See ConsentLevel::kSync documentation for details.
-    public boolean isSyncFeatureActive();
+    boolean isSyncFeatureActive();
 
-    public GoogleServiceAuthError getAuthError();
+    GoogleServiceAuthError getAuthError();
 
     /**
      * Checks whether Sync is disabled by enterprise policy (through prefs) or account policy
@@ -71,13 +71,9 @@ public interface SyncService {
      *
      * @return true if Sync is disabled, false otherwise.
      */
-    public boolean isSyncDisabledByEnterprisePolicy();
+    boolean isSyncDisabledByEnterprisePolicy();
 
-    public boolean hasUnrecoverableError();
-
-    public boolean requiresClientUpgrade();
-
-    public @Nullable CoreAccountInfo getAccountInfo();
+    @Nullable CoreAccountInfo getAccountInfo();
 
     /**
      * Checks whether the primary account is consented to run Sync (the feature). Note that even if
@@ -87,7 +83,7 @@ public interface SyncService {
      */
     // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is deleted from the
     // codebase. See ConsentLevel::kSync documentation for details.
-    public boolean hasSyncConsent();
+    boolean hasSyncConsent();
 
     /**
      * Gets the set of data types that are currently syncing.
@@ -96,20 +92,20 @@ public interface SyncService {
      *
      * @return DataType set of active data types.
      */
-    public Set<Integer> getActiveDataTypes();
+    Set<Integer> getActiveDataTypes();
 
     /**
      * Gets the set of types that the user has selected.
      *
      * @return UserSelectableType set of selected types.
      */
-    public Set<Integer> getSelectedTypes();
+    Set<Integer> getSelectedTypes();
 
     /**
      * Returns the datatypes which have local changes that have not yet been synced with the server.
      * Note: This includes deletions as well.
      */
-    public void getTypesWithUnsyncedData(Callback<Set<Integer>> callback);
+    void getTypesWithUnsyncedData(Callback<Set<Integer>> callback);
 
     /**
      * Queries the count and description/preview of existing local data for `types` data types. This
@@ -118,16 +114,16 @@ public interface SyncService {
      * enabled and support this functionality are part of the response. Note: Only data types that
      * are ready for migration are returned.
      */
-    public void getLocalDataDescriptions(
+    void getLocalDataDescriptions(
             Set<Integer> types, Callback<HashMap<Integer, LocalDataDescription>> callback);
 
-    public void triggerLocalDataMigration(Set<Integer> types);
+    void triggerLocalDataMigration(Set<Integer> types);
 
-    public boolean hasKeepEverythingSynced();
+    boolean hasKeepEverythingSynced();
 
-    public boolean isTypeManagedByPolicy(@UserSelectableType int type);
+    boolean isTypeManagedByPolicy(@UserSelectableType int type);
 
-    public boolean isTypeManagedByCustodian(@UserSelectableType int type);
+    boolean isTypeManagedByCustodian(@UserSelectableType int type);
 
     /**
      * Enables syncing for the passed types.
@@ -136,7 +132,7 @@ public interface SyncService {
      *     data types we add in the future).
      * @param enabledTypes The set of types to enable.
      */
-    public void setSelectedTypes(boolean syncEverything, Set<Integer> enabledTypes);
+    void setSelectedTypes(boolean syncEverything, Set<Integer> enabledTypes);
 
     /**
      * Sets an individual type selection. For Sync-the-feature mode, invoking this function is only
@@ -145,35 +141,35 @@ public interface SyncService {
      * @param type The type that should be enabled or disabled.
      * @param isTypeOn Set to true if the type should be enabled, false otherwise.
      */
-    public void setSelectedType(@UserSelectableType int type, boolean isTypeOn);
+    void setSelectedType(@UserSelectableType int type, boolean isTypeOn);
 
-    public void setInitialSyncFeatureSetupComplete(int syncFirstSetupCompleteSource);
+    void setInitialSyncFeatureSetupComplete(int syncFirstSetupCompleteSource);
 
-    public boolean isInitialSyncFeatureSetupComplete();
+    boolean isInitialSyncFeatureSetupComplete();
 
     /**
      * Instances of this class keep sync paused until {@link #close} is called. Use {@link
      * SyncService#getSetupInProgressHandle} to create. Please note that {@link #close} should be
      * called on every instance of this class.
      */
-    public interface SyncSetupInProgressHandle {
-        public void close();
+    interface SyncSetupInProgressHandle {
+        void close();
     }
 
     /**
      * Called by the UI to prevent changes in sync settings from taking effect while these settings
-     * are being modified by the user. When sync settings UI is no longer visible,
-     * {@link SyncSetupInProgressHandle#close} has to be invoked for sync settings to be applied.
-     * Sync settings will remain paused as long as there are unclosed objects returned by this
-     * method. Please note that the behavior of SyncSetupInProgressHandle is slightly different from
-     * the equivalent C++ object, as Java instances don't commit sync settings as soon as any
-     * instance of SyncSetupInProgressHandle is closed.
+     * are being modified by the user. When sync settings UI is no longer visible, {@link
+     * SyncSetupInProgressHandle#close} has to be invoked for sync settings to be applied. Sync
+     * settings will remain paused as long as there are unclosed objects returned by this method.
+     * Please note that the behavior of SyncSetupInProgressHandle is slightly different from the
+     * equivalent C++ object, as Java instances don't commit sync settings as soon as any instance
+     * of SyncSetupInProgressHandle is closed.
      */
-    public SyncSetupInProgressHandle getSetupInProgressHandle();
+    SyncSetupInProgressHandle getSetupInProgressHandle();
 
-    public void addSyncStateChangedListener(SyncStateChangedListener listener);
+    void addSyncStateChangedListener(SyncStateChangedListener listener);
 
-    public void removeSyncStateChangedListener(SyncStateChangedListener listener);
+    void removeSyncStateChangedListener(SyncStateChangedListener listener);
 
     /**
      * Returns the actual passphrase type being used for encryption. The sync engine must be running
@@ -182,13 +178,22 @@ public interface SyncService {
      * <p>This method should only be used if you want to know the raw value. For checking whether we
      * should ask the user for a passphrase, use isPassphraseRequiredForPreferredDataTypes().
      */
-    public @PassphraseType int getPassphraseType();
+    @PassphraseType
+    int getPassphraseType();
 
     /**
      * The overall state of Sync-the-transport, in ascending order of "activeness". Note that this
      * refers to the transport layer, which may be active even if Sync-the-feature is turned off.
      */
-    public @TransportState int getTransportState();
+    @TransportState
+    int getTransportState();
+
+    /**
+     * Returns errors that prevent SyncService from working at all or partially. Usually these
+     * errors are displayed to the user in the UI.
+     */
+    @UserActionableError
+    int getUserActionableError();
 
     /**
      * Checks if sync is currently set to use a custom passphrase (or the similar -and legacy-
@@ -197,7 +202,7 @@ public interface SyncService {
      *
      * @return true if sync is using a custom passphrase.
      */
-    public boolean isUsingExplicitPassphrase();
+    boolean isUsingExplicitPassphrase();
 
     /**
      * Checks if we need a passphrase to decrypt a currently-enabled data type. This returns false
@@ -205,7 +210,7 @@ public interface SyncService {
      *
      * @return true if we need a passphrase.
      */
-    public boolean isPassphraseRequiredForPreferredDataTypes();
+    boolean isPassphraseRequiredForPreferredDataTypes();
 
     /**
      * Checks if trusted vault encryption keys are needed, independently of the currently-enabled
@@ -213,14 +218,14 @@ public interface SyncService {
      *
      * @return true if we need an encryption key.
      */
-    public boolean isTrustedVaultKeyRequired();
+    boolean isTrustedVaultKeyRequired();
 
     /**
      * Checks if trusted vault encryption keys are needed to decrypt a currently-enabled data type.
      *
      * @return true if we need an encryption key for a type that is currently enabled.
      */
-    public boolean isTrustedVaultKeyRequiredForPreferredDataTypes();
+    boolean isTrustedVaultKeyRequiredForPreferredDataTypes();
 
     /**
      * Checks if recoverability of the trusted vault keys is degraded and user action is required,
@@ -228,10 +233,12 @@ public interface SyncService {
      *
      * @return true if recoverability is degraded.
      */
-    public boolean isTrustedVaultRecoverabilityDegraded();
+    boolean isTrustedVaultRecoverabilityDegraded();
 
-    /** @return Whether setting a custom passphrase is allowed. */
-    public boolean isCustomPassphraseAllowed();
+    /**
+     * @return Whether setting a custom passphrase is allowed.
+     */
+    boolean isCustomPassphraseAllowed();
 
     /**
      * Checks if the user has chosen to encrypt all data types. Note that some data types (e.g.
@@ -239,62 +246,72 @@ public interface SyncService {
      *
      * @return true if all data types are encrypted, false if only passwords are encrypted.
      */
-    public boolean isEncryptEverythingEnabled();
+    boolean isEncryptEverythingEnabled();
 
-    public void setEncryptionPassphrase(String passphrase);
+    void setEncryptionPassphrase(String passphrase);
 
-    public boolean setDecryptionPassphrase(String passphrase);
-
-    /**
-     * Returns whether this client has previously prompted the user for a
-     * passphrase error via the android system notifications for the current
-     * product major version (i.e. gets reset upon browser upgrade). More
-     * specifically, it returns whether the method
-     * markPassphrasePromptMutedForCurrentProductVersion() has been invoked
-     * before, since the last time the browser was upgraded to a new major
-     * version.
-     *
-     * Can be called whether or not sync is initialized.
-     *
-     * @return Whether client has prompted for a passphrase error previously for
-     * the current product major version.
-     */
-    public boolean isPassphrasePromptMutedForCurrentProductVersion();
+    boolean setDecryptionPassphrase(String passphrase);
 
     /**
-     * Mutes passphrase error via the android system notifications until the
-     * browser is upgraded to a new major version.
+     * Returns whether this client has previously prompted the user for a passphrase error via the
+     * android system notifications for the current product major version (i.e. gets reset upon
+     * browser upgrade). More specifically, it returns whether the method
+     * markPassphrasePromptMutedForCurrentProductVersion() has been invoked before, since the last
+     * time the browser was upgraded to a new major version.
      *
-     * Can be called whether or not sync is initialized.
+     * <p>Can be called whether or not sync is initialized.
+     *
+     * @return Whether client has prompted for a passphrase error previously for the current product
+     *     major version.
      */
-    public void markPassphrasePromptMutedForCurrentProductVersion();
+    boolean isPassphrasePromptMutedForCurrentProductVersion();
 
-    /** @return Whether the user should be offered to opt in to trusted vault encryption. */
-    public boolean shouldOfferTrustedVaultOptIn();
+    /**
+     * Mutes passphrase error via the android system notifications until the browser is upgraded to
+     * a new major version.
+     *
+     * <p>Can be called whether or not sync is initialized.
+     */
+    void markPassphrasePromptMutedForCurrentProductVersion();
 
-    /** @return Whether sync is enabled to sync urls with a non custom passphrase. */
-    public boolean isSyncingUnencryptedUrls();
+    /**
+     * Acknowledges the bookmarks limit exceeded error. The error will not be shown to the user
+     * again.
+     */
+    void acknowledgeBookmarksLimitExceededError();
 
-    /** @return Returns the pointer the corresponding native object. */
+    /**
+     * @return Whether the user should be offered to opt in to trusted vault encryption.
+     */
+    boolean shouldOfferTrustedVaultOptIn();
+
+    /**
+     * @return Whether sync is enabled to sync urls with a non custom passphrase.
+     */
+    boolean isSyncingUnencryptedUrls();
+
+    /**
+     * @return Returns the pointer the corresponding native object.
+     */
     @CalledByNative
-    public long getNativeSyncServiceAndroidBridge();
+    long getNativeSyncServiceAndroidBridge();
 
     /**
      * Returns the time when the last sync cycle was completed.
      *
-     * @return The difference measured in microseconds, between last sync cycle completion time
-     * and 1 January 1970 00:00:00 UTC.
+     * @return The difference measured in microseconds, between last sync cycle completion time and
+     *     1 January 1970 00:00:00 UTC.
      */
     @VisibleForTesting
-    public long getLastSyncedTimeForDebugging();
+    long getLastSyncedTimeForDebugging();
 
     @VisibleForTesting
-    public void triggerRefresh();
+    void triggerRefresh();
 
     /**
-     * Retrieves a JSON version of local Sync data via the native GetAllNodes method.
-     * This method is asynchronous; the result will be sent to the callback.
+     * Retrieves a JSON version of local Sync data via the native GetAllNodes method. This method is
+     * asynchronous; the result will be sent to the callback.
      */
     @VisibleForTesting
-    public void getAllNodes(Callback<JSONArray> callback);
+    void getAllNodes(Callback<JSONArray> callback);
 }

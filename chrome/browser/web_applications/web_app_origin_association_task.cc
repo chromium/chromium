@@ -11,8 +11,8 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
-#include "components/webapps/services/web_app_origin_association/public/mojom/web_app_origin_association_parser.mojom.h"
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_fetcher.h"
+#include "components/webapps/services/web_app_origin_association/web_app_origin_association_parser.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -29,7 +29,6 @@ WebAppOriginAssociationManager::Task::Task(
   for (auto& scope_extension : scope_extensions) {
     pending_scope_extensions_.push_back(std::move(scope_extension));
   }
-  scope_extensions.clear();
 }
 
 WebAppOriginAssociationManager::Task::~Task() = default;
@@ -70,38 +69,31 @@ void WebAppOriginAssociationManager::Task::OnAssociationFileFetched(
     return;
   }
 
-  owner_->GetParser()->ParseWebAppOriginAssociation(
-      *file_content, GetCurrentScopeExtension().origin,
-      base::BindOnce(&WebAppOriginAssociationManager::Task::OnAssociationParsed,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
+  base::expected<webapps::ParsedAssociations, std::string> parse_result =
+      webapps::ParseWebAppOriginAssociations(*file_content,
+                                             GetCurrentScopeExtension().origin);
 
-void WebAppOriginAssociationManager::Task::OnAssociationParsed(
-    webapps::mojom::WebAppOriginAssociationPtr association,
-    std::vector<webapps::mojom::WebAppOriginAssociationErrorPtr> errors) {
-  if (association.is_null() || association->apps.empty()) {
+  if (!parse_result.has_value() || parse_result->apps.empty()) {
     MaybeStartNextScopeExtension();
     return;
   }
 
   auto& scope_extension = GetCurrentScopeExtension();
-  for (webapps::mojom::AssociatedWebAppPtr& associated_app :
-       association->apps) {
-    if (associated_app->web_app_identity == web_app_identity_) {
+  for (const webapps::AssociatedWebApp& associated_app : parse_result->apps) {
+    if (associated_app.web_app_identity == web_app_identity_) {
       // Must drop the fragments and queries per `scope` rules
       // https://w3c.github.io/manifest/#scope-member
       GURL::Replacements replacements;
       replacements.ClearRef();
       replacements.ClearQuery();
       scope_extension.scope =
-          associated_app->scope.ReplaceComponents(replacements);
+          associated_app.scope.ReplaceComponents(replacements);
       result_.insert(scope_extension);
       scope_extension.Reset();
       // Only information in the first valid app is saved.
       break;
     }
   }
-  association->apps.clear();
 
   MaybeStartNextScopeExtension();
 }

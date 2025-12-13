@@ -19,14 +19,6 @@ class LenientMockSystemNodeObserver : public SystemNodeObserver {
               OnProcessMemoryMetricsAvailable,
               (const SystemNode*),
               (override));
-  MOCK_METHOD(void,
-              OnMemoryPressure,
-              (base::MemoryPressureListener::MemoryPressureLevel),
-              (override));
-  MOCK_METHOD(void,
-              OnBeforeMemoryPressure,
-              (base::MemoryPressureListener::MemoryPressureLevel),
-              (override));
 };
 
 using MockSystemNodeObserver =

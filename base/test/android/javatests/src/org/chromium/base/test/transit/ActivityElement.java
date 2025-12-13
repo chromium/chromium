@@ -5,6 +5,8 @@
 package org.chromium.base.test.transit;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -55,6 +57,17 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
         replaceEnterCondition(new ActivityExistsInAnyTaskCondition());
     }
 
+    TripBuilder bringWindowToFrontTo() {
+        return Triggers.runOnUiThreadTo(
+                () -> {
+                    var activity = get();
+                    assert activity != null;
+                    ActivityManager activityManager =
+                            (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+                    activityManager.moveTaskToFront(activity.getTaskId(), 0);
+                });
+    }
+
     /**
      * Expect the Activity to be destroyed unless transitioning to a ConditionalState which also has
      * this Activity.
@@ -63,6 +76,11 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
         assert mExitCondition == null
                 : "Already set an exit condition: " + mExitCondition.getDescription();
         replaceExitCondition(new ActivityDestroyedCondition());
+    }
+
+    /** Returns the Activity class expected. */
+    public Class<ActivityT> getActivityClass() {
+        return mActivityClass;
     }
 
     private abstract class ActivityExistsCondition extends ConditionWithResult<ActivityT> {
@@ -177,7 +195,7 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
             for (Station<?> activeStation : TrafficControl.getActiveStations()) {
                 ActivityElement<?> knownActivityElement = activeStation.getActivityElement();
                 if (knownActivityElement != null) {
-                    mExistingTaskIds.put(knownActivityElement.get().getTaskId(), activeStation);
+                    mExistingTaskIds.put(knownActivityElement.value().getTaskId(), activeStation);
                 }
             }
         }

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPLAY_SERVICE_IMPL_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPLAY_SERVICE_IMPL_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -64,6 +65,7 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
       const std::optional<int>& action_index,
       const std::optional<std::u16string>& reply,
       const std::optional<bool>& by_user,
+      const std::optional<bool>& is_suspicious,
       base::OnceClosure on_completed_cb);
 
   // Registers an implementation object to handle notification operations
@@ -96,6 +98,7 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
                                     const std::optional<int>& action_index,
                                     const std::optional<std::u16string>& reply,
                                     const std::optional<bool>& by_user,
+                                    const std::optional<bool>& is_suspicious,
                                     base::OnceClosure on_completed_cb,
                                     Profile* profile);
 

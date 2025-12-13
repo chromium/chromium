@@ -18,7 +18,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -27,6 +26,7 @@
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
@@ -54,13 +54,13 @@
 #include "chrome/browser/metrics/network_quality_estimator_provider_impl.h"
 #include "chrome/browser/metrics/usertype_by_devicetype_metrics_provider.h"
 #include "chrome/browser/performance_manager/metrics/metrics_provider_common.h"
-#include "chrome/browser/privacy_budget/identifiability_study_state.h"
-#include "chrome/browser/privacy_budget/privacy_budget_metrics_provider.h"
-#include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
-#include "chrome/browser/privacy_budget/privacy_budget_ukm_entry_filter.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/regional_capabilities/regional_capabilities_metrics_provider.h"
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
+#include "chrome/browser/safe_browsing/metrics/bundled_settings_metrics_provider.h"
 #include "chrome/browser/safe_browsing/metrics/safe_browsing_metrics_provider.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_metrics_provider.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/tracing/chrome_background_tracing_metrics_provider.h"
@@ -73,6 +73,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/country_codes/country_codes.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
@@ -84,6 +85,7 @@
 #include "components/metrics/cpu_metrics_provider.h"
 #include "components/metrics/demographics/demographic_metrics_provider.h"
 #include "components/metrics/drive_metrics_provider.h"
+#include "components/metrics/dwa/dwa_recorder.h"
 #include "components/metrics/dwa/dwa_service.h"
 #include "components/metrics/entropy_state_provider.h"
 #include "components/metrics/install_date_provider.h"
@@ -99,6 +101,7 @@
 #include "components/metrics/net/network_metrics_provider.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/metrics/persistent_synthetic_trial_observer.h"
+#include "components/metrics/private_metrics/puma_service.h"
 #include "components/metrics/sampling_metrics_provider.h"
 #include "components/metrics/stability_metrics_helper.h"
 #include "components/metrics/structured/structured_metrics_features.h"  // nogncheck
@@ -111,7 +114,11 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/regional_capabilities/regional_capabilities_country_id.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/sync/service/passphrase_type_metrics_provider.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_count_metrics_provider.h"
@@ -163,7 +170,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_theme_metrics_provider.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/wallpaper_metrics_provider.h"
 #include "chrome/browser/metrics/ambient_mode_metrics_provider.h"
-#include "chrome/browser/metrics/assistant_service_metrics_provider.h"
 #include "chrome/browser/metrics/chromeos_family_link_user_metrics_provider.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
 #include "chrome/browser/metrics/chromeos_system_profile_provider.h"
@@ -222,6 +228,12 @@
 #include "chrome/browser/metrics/bluetooth_metrics_provider.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/tabs/tab_metrics_provider.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
 namespace {
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
@@ -238,8 +250,10 @@ const int kMaxHistogramGatheringWaitDuration = 60000;  // 60 seconds.
 // third_party/crashpad/crashpad/handler/handler_main.cc.
 const char kCrashpadHistogramAllocatorName[] = "CrashpadMetrics";
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-base::LazyInstance<ChromeMetricsServiceCrashReporter>::Leaky g_crash_reporter =
-    LAZY_INSTANCE_INITIALIZER;
+ChromeMetricsServiceCrashReporter& GetCrashReporter() {
+  static base::NoDestructor<ChromeMetricsServiceCrashReporter> crash_reporter;
+  return *crash_reporter;
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)
@@ -529,8 +543,8 @@ void ChromeMetricsServiceClient::RegisterPrefs(PrefRegistrySimple* registry) {
   metrics::MetricsService::RegisterPrefs(registry);
   ukm::UkmService::RegisterPrefs(registry);
   metrics::dwa::DwaService::RegisterPrefs(registry);
+  metrics::private_metrics::PumaService::RegisterPrefs(registry);
   metrics::StabilityMetricsHelper::RegisterPrefs(registry);
-  prefs::RegisterPrivacyBudgetPrefs(registry);
 
   RegisterFileMetricsPreferences(registry);
 
@@ -576,11 +590,6 @@ ukm::UkmService* ChromeMetricsServiceClient::GetUkmService() {
   return ukm_service_.get();
 }
 
-IdentifiabilityStudyState*
-ChromeMetricsServiceClient::GetIdentifiabilityStudyState() {
-  return identifiability_study_state_.get();
-}
-
 metrics::structured::StructuredMetricsService*
 ChromeMetricsServiceClient::GetStructuredMetricsService() {
   return structured_metrics_service_.get();
@@ -588,6 +597,22 @@ ChromeMetricsServiceClient::GetStructuredMetricsService() {
 
 metrics::dwa::DwaService* ChromeMetricsServiceClient::GetDwaService() {
   return dwa_service_.get();
+}
+
+metrics::private_metrics::PumaService*
+ChromeMetricsServiceClient::GetPumaService() {
+  return puma_service_.get();
+}
+
+std::optional<regional_capabilities::CountryIdHolder>
+ChromeMetricsServiceClient::GetProfileCountryIdForPrivateMetricsReporting() {
+  auto* service =
+      regional_capabilities::RegionalCapabilitiesServiceFactory::GetForProfile(
+          cached_profile_.GetMetricsProfile());
+  if (service) {
+    return service->GetCountryId();
+  }
+  return std::nullopt;
 }
 
 void ChromeMetricsServiceClient::SetMetricsClientId(
@@ -631,7 +656,7 @@ void ChromeMetricsServiceClient::OnEnvironmentUpdate(std::string* environment) {
   // Register the environment with the crash reporter. Note that there is a
   // window from startup to this point during which crash reports will not have
   // an environment set.
-  g_crash_reporter.Get().OnEnvironmentUpdate(*environment);
+  GetCrashReporter().OnEnvironmentUpdate(*environment);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 }
 
@@ -708,25 +733,23 @@ void ChromeMetricsServiceClient::Initialize() {
 
   if (IsMetricsReportingForceEnabled() ||
       base::FeatureList::IsEnabled(ukm::kUkmFeature)) {
-    identifiability_study_state_ =
-        std::make_unique<IdentifiabilityStudyState>(local_state);
-
     ukm_service_ = std::make_unique<ukm::UkmService>(
         local_state, this,
         MakeDemographicMetricsProvider(
             metrics::MetricsLogUploader::MetricServiceType::UKM));
     ukm_service_->SetIsWebstoreExtensionCallback(
         base::BindRepeating(&IsWebstoreExtension));
-    ukm_service_->RegisterEventFilter(
-        std::make_unique<PrivacyBudgetUkmEntryFilter>(
-            identifiability_study_state_.get()));
 
     RegisterUKMProviders();
   }
 
-  if (base::FeatureList::IsEnabled(metrics::dwa::kDwaFeature)) {
-    dwa_service_ =
-        std::make_unique<metrics::dwa::DwaService>(this, local_state);
+  if (metrics::dwa::DwaRecorder::IsDwaOrPrivateMetricsFeatureEnabled()) {
+    dwa_service_ = std::make_unique<metrics::dwa::DwaService>(
+        this, local_state, g_browser_process->shared_url_loader_factory());
+  }
+  if (metrics::private_metrics::PumaService::IsPumaEnabled()) {
+    puma_service_ = std::make_unique<metrics::private_metrics::PumaService>(
+        this, local_state);
   }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_CHROMEOS)
@@ -837,10 +860,13 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(MakeDemographicMetricsProvider(
       metrics::MetricsLogUploader::MetricServiceType::UMA));
 
-  // TODO(crbug.com/40765618): Add metrics registration for WebView, iOS and
-  // WebLayer.
+  // TODO(crbug.com/40765618): Add metrics registration for WebView and iOS.
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<safe_browsing::SafeBrowsingMetricsProvider>());
+  if (base::FeatureList::IsEnabled(safe_browsing::kBundledSecuritySettings)) {
+    metrics_service_->RegisterMetricsProvider(
+        std::make_unique<safe_browsing::BundledSettingsMetricsProvider>());
+  }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   metrics_service_->RegisterMetricsProvider(
@@ -910,9 +936,6 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<ash::PrinterMetricsProvider>());
 
   metrics_service_->RegisterMetricsProvider(
-      std::make_unique<AssistantServiceMetricsProvider>());
-
-  metrics_service_->RegisterMetricsProvider(
       std::make_unique<AmbientModeMetricsProvider>());
 
   metrics_service_->RegisterMetricsProvider(
@@ -979,6 +1002,14 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<HttpsEngagementMetricsProvider>());
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<TabMetricsProvider>(
+          g_browser_process->profile_manager()));
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_MAC)
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<PowerMetricsProvider>());
@@ -993,6 +1024,19 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<glic::GlicMetricsProvider>());
 #endif
+
+  // Only register the RegionalCapabilitiesMetricsProvider if the dynamic
+  // profile country feature is enabled. This is because that feature
+  // significantly changes the cases under which the "Mixed" bucket is emitted.
+  if (base::FeatureList::IsEnabled(switches::kDynamicProfileCountry)) {
+    metrics_service_->RegisterMetricsProvider(
+        std::make_unique<
+            regional_capabilities::RegionalCapabilitiesMetricsProvider>());
+  }
+
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<
+          subscription_eligibility::SubscriptionEligibilityMetricsProvider>());
 }
 
 void ChromeMetricsServiceClient::RegisterUKMProviders() {
@@ -1033,16 +1077,18 @@ void ChromeMetricsServiceClient::RegisterUKMProviders() {
       ukm::CreateFieldTrialsProviderForUkm(synthetic_trial_registry_.get()));
 
   ukm_service_->RegisterMetricsProvider(
-      std::make_unique<PrivacyBudgetMetricsProvider>(
-          identifiability_study_state_.get()));
-
-  ukm_service_->RegisterMetricsProvider(
       std::make_unique<metrics::ComponentMetricsProvider>(
           std::make_unique<ChromeComponentMetricsProviderDelegate>(
               g_browser_process->component_updater())));
 
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<metrics::EntropyStateProvider>(local_state));
+
+#if BUILDFLAG(IS_ANDROID)
+  ukm_service_->RegisterMetricsProvider(
+      std::make_unique<ChromeAndroidMetricsProvider>(local_state));
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // LINT.ThenChange(/ios/chrome/browser/metrics/model/ios_chrome_metrics_service_client.mm:UkmProviders)
 }
 
@@ -1247,7 +1293,8 @@ void ChromeMetricsServiceClient::OnUkmAllowedStateChanged(
     // Manages purging of events and sources.
     if (total_purge) {
       ukm_service_->Purge();
-      ukm_service_->ResetClientState(ukm::ResetReason::kOnUkmAllowedStateChanged);
+      ukm_service_->ResetClientState(
+          ukm::ResetReason::kOnUkmAllowedStateChanged);
     } else {
       // Purge recording if required consent has been revoked.
       if (!consent_state.Has(ukm::MSBB)) {
@@ -1267,11 +1314,12 @@ void ChromeMetricsServiceClient::OnUkmAllowedStateChanged(
       // On non-ChromeOS platforms, client reset is handled above because
       // |total_purge| will be true. MSBB is used to determine if UKM is enabled
       // or disabled. When the consent is revoked UkmService will be disabled,
-      // triggering |total_purge| to be true. At which point the client state will
-      // be reset.
+      // triggering |total_purge| to be true. At which point the client state
+      // will be reset.
       //
       // On ChromeOS, disabling MSBB or App-Sync will not trigger a total purge.
-      // Resetting the client state has to be handled specifically for this case.
+      // Resetting the client state has to be handled specifically for this
+      // case.
       ResetClientStateWhenMsbbOrAppConsentIsRevoked(previous_consent_state);
     }
 
@@ -1289,7 +1337,7 @@ void ChromeMetricsServiceClient::OnUkmAllowedStateChanged(
   if (dwa_service_ &&
       (total_purge ||
        !consent_state.HasAll({ukm::MSBB, ukm::APPS, ukm::EXTENSIONS}))) {
-      dwa_service_->Purge();
+    dwa_service_->Purge();
   }
 
   // Signal service manager to enable/disable UKM/DWA based on new states.
@@ -1543,5 +1591,8 @@ void ChromeMetricsServiceClient::CreateStructuredMetricsService() {
     structured_metrics_service_ =
         std::make_unique<metrics::structured::StructuredMetricsService>(
             this, local_state, std::move(recorder));
+    structured_metrics_service_->RegisterMetricsProvider(
+        std::make_unique<variations::FieldTrialsProvider>(
+            synthetic_trial_registry_, "StructuredMetrics"));
   }
 }

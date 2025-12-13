@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/foundations/form_forest_util_inl.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -253,28 +254,30 @@ std::vector<std::vector<T>> FlattenedPermutations(
 // - A driver identifies
 //    - a same-origin child by its LocalFrameToken and
 //    - a cross-origin child by a RemoteFrameToken.
-// - A parent driver can inherit, enable, or disable the `shared-autofill`
-//   permission in each descendant frames.
+// - A parent driver can inherit, enable, or disable the policy-controlled
+//   feature "autofill" in each descendant frames.
 class FakeAutofillDriver : public TestAutofillDriver {
  public:
-  // `shared-autofill` may be enabled or disabled per driver. This enum mimics
-  // the behaviour of HTML policy-controlled features. See
-  // SetSharedAutofillByPolicy() for the semantics.
-  enum class SharedAutofillPolicy { kDefault, kEnabled, kDisabled };
+  // The policy-controlled feature "autofill" may be enabled or disabled per
+  // driver. This enum mimics the behaviour of HTML policy-controlled features.
+  // See SetAutofillPermissionPolicy() for the semantics.
+  enum class AutofillPermissionPolicy { kDefault, kEnabled, kDisabled };
 
   static std::unique_ptr<FakeAutofillDriver> CreateChildFrame(
       TestAutofillClient* client,
       const url::Origin& origin,
       FakeAutofillDriver* parent,
-      SharedAutofillPolicy shared_autofill) {
+      AutofillPermissionPolicy autofill_policy) {
     auto driver = base::WrapUnique(new FakeAutofillDriver(client, origin));
+    driver->set_autofill_manager(
+        std::make_unique<TestBrowserAutofillManager>(driver.get()));
     driver->SetParent(parent);
     driver->SetLocalFrameToken(test::MakeLocalFrameToken());
     if (parent && driver->origin() != parent->origin()) {
       parent->SetRemoteFrameToken(test::MakeRemoteFrameToken(),
                                   driver->GetFrameToken());
     }
-    driver->SetSharedAutofillByPolicy(shared_autofill);
+    driver->SetAutofillPermissionPolicy(autofill_policy);
     return driver;
   }
 
@@ -302,24 +305,26 @@ class FakeAutofillDriver : public TestAutofillDriver {
     return nullptr;
   }
 
-  // Mimics how the policy-controlled feature `shared-autofill` is enabled and
-  // disabled in frames.
-  void SetSharedAutofillByPolicy(SharedAutofillPolicy shared_autofill) {
+  // Mimics how the policy-controlled feature "autofill" is enabled and disabled
+  // in frames.
+  void SetAutofillPermissionPolicy(AutofillPermissionPolicy autofill_policy) {
     FakeAutofillDriver* ancestor = GetClosestSameOriginAncestor();
-    switch (shared_autofill) {
-      case SharedAutofillPolicy::kDefault:
-        SetSharedAutofill(
+    switch (autofill_policy) {
+      case AutofillPermissionPolicy::kDefault:
+        SetPolicyControlledFeatureAutofillEnabled(
             !GetParent() ||
-            (ancestor && ancestor->HasSharedAutofillPermission()));
+            (ancestor && ancestor->IsPolicyControlledFeatureAutofillEnabled()));
         break;
-      case SharedAutofillPolicy::kEnabled:
-        CHECK(!GetParent() || GetParent()->HasSharedAutofillPermission())
-            << "A parent frame can enable shared-autofill in a subframe only "
-               "if shared-autofill is enabled in that parent frame";
-        SetSharedAutofill(true);
+      case AutofillPermissionPolicy::kEnabled:
+        CHECK(!GetParent() ||
+              GetParent()->IsPolicyControlledFeatureAutofillEnabled())
+            << "A parent frame can enable the policy-controlled feature "
+               "\"autofill\" in a subframe only if \"autofill\" is enabled in "
+               "that parent frame";
+        SetPolicyControlledFeatureAutofillEnabled(true);
         break;
-      case SharedAutofillPolicy::kDisabled:
-        SetSharedAutofill(false);
+      case AutofillPermissionPolicy::kDisabled:
+        SetPolicyControlledFeatureAutofillEnabled(false);
         break;
     }
   }
@@ -385,8 +390,8 @@ class FormForestTestWithMockedTree : public FormForestTest {
     // MockFormForest().
     std::string url = "";
     std::vector<FormInfo> forms = {};
-    FakeAutofillDriver::SharedAutofillPolicy policy =
-        FakeAutofillDriver::SharedAutofillPolicy::kDefault;
+    FakeAutofillDriver::AutofillPermissionPolicy policy =
+        FakeAutofillDriver::AutofillPermissionPolicy::kDefault;
     // The index of the last field from the parent form that precedes this
     // frame. This is analogous to FormData::child_frames[i].predecessor.
     int field_predecessor = std::numeric_limits<int>::max();
@@ -407,14 +412,14 @@ class FormForestTestWithMockedTree : public FormForestTest {
   void TearDown() override {
     test_api(mocked_forms_).Reset();
     test_api(flattened_forms_).Reset();
-    drivers_.clear();
     forms_.clear();
+    client_.GetAutofillDriverFactory().DeleteAll();
     FormForestTest::TearDown();
   }
 
   // Initializes the |mocked_forms_| according to the frame/form tree
   // |frame_info|.
-  FakeAutofillDriver* MockFormForest(
+  FakeAutofillDriver& MockFormForest(
       const FrameInfo& frame_info,
       FakeAutofillDriver* parent_driver = nullptr,
       FormData* parent_form = nullptr) {
@@ -422,10 +427,11 @@ class FormForestTestWithMockedTree : public FormForestTest {
     GURL url(!frame_info.url.empty() ? frame_info.url
              : !parent_driver        ? kMainUrl
                                      : kIframeUrl);
-    drivers_.push_back(FakeAutofillDriver::CreateChildFrame(
-        &client_, Origin(url), /*parent=*/parent_driver,
-        /*shared_autofill=*/frame_info.policy));
-    FakeAutofillDriver* driver = drivers_.back().get();
+    FakeAutofillDriver& driver = static_cast<FakeAutofillDriver&>(
+        client_.GetAutofillDriverFactory().TakeOwnership(
+            FakeAutofillDriver::CreateChildFrame(
+                &client_, Origin(url), /*parent=*/parent_driver,
+                /*shared_autofill=*/frame_info.policy)));
 
     std::vector<FormData> forms;
     for (const FormInfo& form_info : frame_info.forms) {
@@ -435,17 +441,17 @@ class FormForestTestWithMockedTree : public FormForestTest {
       for (FormFieldData& field : test_api(data).fields()) {
         field.set_name(base::StrCat({data.name(), u".", field.name()}));
       }
-      data = driver->Lift(data);
+      data = driver.Lift(data);
 
       // Creates the frames and set their predecessor field according to
       // FrameInfo::field_predecessor. By default, the frames come after all
       // fields.
       std::vector<FrameTokenWithPredecessor> child_frames;
       for (const FrameInfo& subframe_info : form_info.frames) {
-        FakeAutofillDriver* child =
-            MockFormForest(subframe_info, driver, &data);
+        FakeAutofillDriver& child =
+            MockFormForest(subframe_info, &driver, &data);
         child_frames.emplace_back();
-        child_frames.back().token = child->GetFrameToken();
+        child_frames.back().token = child.GetFrameToken();
         child_frames.back().predecessor =
             std::min(static_cast<int>(data.fields().size()),
                      subframe_info.field_predecessor);
@@ -459,12 +465,12 @@ class FormForestTestWithMockedTree : public FormForestTest {
       forms.push_back(data);
     }
 
-    auto frame_data = std::make_unique<FrameData>(driver->GetFrameToken());
+    auto frame_data = std::make_unique<FrameData>(driver.GetFrameToken());
     frame_data->child_forms = std::move(forms);
     if (parent_form) {
       frame_data->parent_form = parent_form->global_id();
     }
-    frame_data->driver = driver;
+    frame_data->driver = &driver;
     auto p = frame_datas(mocked_forms_).insert(std::move(frame_data));
     CHECK(p.second);
     return driver;
@@ -577,7 +583,6 @@ class FormForestTestWithMockedTree : public FormForestTest {
 
  private:
   TestAutofillClient client_;
-  std::vector<std::unique_ptr<FakeAutofillDriver>> drivers_;
   std::map<std::string, FormGlobalId, std::less<>> forms_;
 };
 
@@ -1561,8 +1566,8 @@ TEST_F(FormForestTestUnflatten, InterruptedSameOriginPolicy) {
 }
 
 // Tests that (only) non-sensitive fields are filled across origin into the main
-// frame's origin (since the main frame has the shared-autofill policy by
-// default).
+// frame's origin (since the the policy-controlled feature "autofill" is enabled
+// in the main frame by default).
 TEST_F(FormForestTestUnflatten, MainOriginPolicy) {
   MockFormForest(
       {.url = kMainUrl,
@@ -1587,15 +1592,17 @@ TEST_F(FormForestTestUnflatten, MainOriginPolicy) {
 }
 
 // Tests that no fields are filled across origin into frames where
-// shared-autofill is disabled (not even into non-sensitive fields).
-TEST_F(FormForestTestUnflatten, MainOriginPolicyWithoutSharedAutofill) {
+// the policy-controlled feature "autofill" is disabled (not even into
+// non-sensitive fields).
+TEST_F(FormForestTestUnflatten,
+       MainOriginPolicyWithoutPolicyControlledFeatureAutofill) {
   MockFormForest(
       {.url = kMainUrl,
        .forms = {{.name = "main",
                   .frames = {{.url = kMainUrl, .forms = {{.name = "child1"}}},
                              {.url = kIframeUrl,
                               .forms = {{.name = "child2"}}}}}},
-       .policy = FakeAutofillDriver::SharedAutofillPolicy::kDisabled});
+       .policy = FakeAutofillDriver::AutofillPermissionPolicy::kDisabled});
   MockFlattening({{"main"}, {"child1"}, {"child2"}});
   std::vector<FormData> expectation = {
       WithoutValues(GetMockedForm("main")),
@@ -1606,8 +1613,8 @@ TEST_F(FormForestTestUnflatten, MainOriginPolicyWithoutSharedAutofill) {
               UnorderedArrayEquals(expectation));
 }
 
-// Fixture for the shared-autofill policy tests.
-class FormForestTestUnflattenSharedAutofillPolicy
+// Fixture for the tests of the policy-controlled feature "autofill".
+class FormForestTestUnflattenPolicyControlledFeatureAutofill
     : public FormForestTestUnflatten {
  public:
   void SetUp() override {
@@ -1616,19 +1623,19 @@ class FormForestTestUnflattenSharedAutofillPolicy
         {.url = kMainUrl,
          .forms = {
              {.name = "main",
-              .frames = {
-                  {.url = kOtherUrl, .forms = {{.name = "disallowed"}}},
-                  {.url = kIframeUrl,
-                   .forms = {{.name = "allowed"}},
-                   .policy =
-                       FakeAutofillDriver::SharedAutofillPolicy::kEnabled}}}}});
+              .frames = {{.url = kOtherUrl, .forms = {{.name = "disallowed"}}},
+                         {.url = kIframeUrl,
+                          .forms = {{.name = "allowed"}},
+                          .policy = FakeAutofillDriver::
+                              AutofillPermissionPolicy::kEnabled}}}}});
     ASSERT_NE(Origin("main"), Origin("allowed"));
     ASSERT_NE(Origin("disallowed"), Origin("allowed"));
   }
 };
 
-// Tests filling into frames with shared-autofill policy from the main origin.
-TEST_F(FormForestTestUnflattenSharedAutofillPolicy, FromMainOrigin) {
+// Tests filling from the main origin into frames where the policy-controlled
+// feature "autofill" is enabled.
+TEST_F(FormForestTestUnflattenPolicyControlledFeatureAutofill, FromMainOrigin) {
   MockFlattening({{"main"}, {"disallowed"}, {"allowed"}});
   std::vector<FormData> expectation = {
       WithValues(GetMockedForm("main"), Profile(0)),
@@ -1638,8 +1645,10 @@ TEST_F(FormForestTestUnflattenSharedAutofillPolicy, FromMainOrigin) {
               UnorderedArrayEquals(expectation));
 }
 
-// Tests filling into frames with shared-autofill policy from the main origin.
-TEST_F(FormForestTestUnflattenSharedAutofillPolicy, FromOtherOrigin) {
+// Tests filling from a 3P origin into frames where the policy-controlled
+// feature "autofill" is enabled.
+TEST_F(FormForestTestUnflattenPolicyControlledFeatureAutofill,
+       FromOtherOrigin) {
   MockFlattening({{"main"}, {"disallowed"}, {"allowed"}});
   std::vector<FormData> expectation = {
       WithoutValues(GetMockedForm("main")),

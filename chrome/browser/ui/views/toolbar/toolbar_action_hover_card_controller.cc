@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
@@ -90,8 +90,9 @@ bool ToolbarActionHoverCardController::IsHoverCardVisible() const {
 bool ToolbarActionHoverCardController::IsHoverCardShowingForAction(
     ToolbarActionView* action_view) const {
   DCHECK(action_view);
-  return action_view->GetCurrentWebContents() && IsHoverCardVisible() &&
-         !fade_animator_->IsFadingOut() && GetTargetAnchorView() == action_view;
+  return extensions_container_->GetCurrentWebContents() &&
+         IsHoverCardVisible() && !fade_animator_->IsFadingOut() &&
+         GetTargetAnchorView() == action_view;
 }
 
 void ToolbarActionHoverCardController::UpdateHoverCard(
@@ -118,8 +119,9 @@ void ToolbarActionHoverCardController::UpdateHoverCard(
   }
 
   // If there's nothing to attach to then there's no point in creating a card.
-  if (!hover_card_ && (!action_view || !action_view->GetCurrentWebContents() ||
-                       !extensions_container_->GetWidget())) {
+  if (!hover_card_ &&
+      (!action_view || !extensions_container_->GetCurrentWebContents() ||
+       !extensions_container_->GetWidget())) {
     return;
   }
 
@@ -142,7 +144,7 @@ void ToolbarActionHoverCardController::UpdateHoverCard(
       break;
   }
 
-  if (action_view && action_view->GetCurrentWebContents()) {
+  if (action_view && extensions_container_->GetCurrentWebContents()) {
     UpdateOrShowHoverCard(action_view, update_type);
   } else {
     HideHoverCard();
@@ -166,8 +168,6 @@ void ToolbarActionHoverCardController::UpdateOrShowHoverCard(
   }
 
   if (hover_card_) {
-    // Card should never exist without an anchor or web contents
-    DCHECK(hover_card_->GetAnchorView());
     UpdateHoverCardContent(action_view);
 
     // If widget is already visible and anchored to the correct action view we
@@ -203,7 +203,8 @@ void ToolbarActionHoverCardController::UpdateOrShowHoverCard(
 void ToolbarActionHoverCardController::UpdateHoverCardContent(
     ToolbarActionView* action_view) {
   DCHECK(action_view);
-  content::WebContents* web_contents = action_view->GetCurrentWebContents();
+  content::WebContents* web_contents =
+      extensions_container_->GetCurrentWebContents();
   DCHECK(web_contents);
 
   // If the hover card is transitioning between extensions, we need to do a
@@ -212,16 +213,15 @@ void ToolbarActionHoverCardController::UpdateHoverCardContent(
     hover_card_->SetTextFade(0.0);
   }
 
-  std::u16string extension_name =
-      action_view->view_controller()->GetActionName();
+  std::u16string extension_name = action_view->view_model()->GetActionName();
   std::u16string action_title =
-      action_view->view_controller()->GetActionTitle(web_contents);
+      action_view->view_model()->GetActionTitle(web_contents);
   // Hover card only uses the action title when it's different than the
   // extension name.
   action_title =
       extension_name == action_title ? std::u16string() : action_title;
-  ToolbarActionViewController::HoverCardState state =
-      action_view->view_controller()->GetHoverCardState(web_contents);
+  ToolbarActionViewModel::HoverCardState state =
+      action_view->view_model()->GetHoverCardState(web_contents);
 
   hover_card_->UpdateCardContent(extension_name, action_title, state,
                                  web_contents);

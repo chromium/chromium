@@ -4,15 +4,13 @@
 
 #include <stddef.h>
 
-#include "chrome/browser/ui/views/accelerator_table.h"
+#include "chrome/browser/ui/accelerator_table.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/base/accelerators/accelerator.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/accelerators.h"
 #endif
-
-namespace chrome {
 
 bool IsChromeAccelerator(const ui::Accelerator& accelerator) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -38,5 +36,3 @@ bool IsChromeAccelerator(const ui::Accelerator& accelerator) {
 ui::AcceleratorProvider* AcceleratorProviderForBrowser(Browser* browser) {
   return BrowserView::GetBrowserViewForBrowser(browser);
 }
-
-}  // namespace chrome

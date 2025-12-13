@@ -70,13 +70,6 @@ using ResultOrError =
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<ResultOrError> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = ResultOrError;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
 namespace {
 // Durations of font-display periods.
 // https://tabatkins.github.io/specs/css-font-display/#font-display-desc
@@ -305,13 +298,13 @@ void FontResource::StartLoadLimitTimersIfNecessary(
 
   font_load_short_limit_ = PostDelayedCancellableTask(
       *task_runner, FROM_HERE,
-      WTF::BindOnce(&FontResource::FontLoadShortLimitCallback,
-                    WrapWeakPersistent(this)),
+      blink::BindOnce(&FontResource::FontLoadShortLimitCallback,
+                      WrapWeakPersistent(this)),
       kFontLoadWaitShort);
   font_load_long_limit_ = PostDelayedCancellableTask(
       *task_runner, FROM_HERE,
-      WTF::BindOnce(&FontResource::FontLoadLongLimitCallback,
-                    WrapWeakPersistent(this)),
+      blink::BindOnce(&FontResource::FontLoadLongLimitCallback,
+                      WrapWeakPersistent(this)),
       kFontLoadWaitLong);
 }
 

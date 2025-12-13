@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("../build_webui_tests.gni")
+import("./action_chips/action_chips.gni")
 import("./composebox/composebox.gni")
 import("./modules/modules.gni")
 import("./ntp_promo/ntp_promo.gni")
@@ -10,6 +11,7 @@ import("./ntp_promo/ntp_promo.gni")
 build_webui_tests("build") {
   files = [
             "app_test.ts",
+            "app_focus_test.ts",
             "background_manager_test.ts",
             "doodle_share_dialog_focus_test.ts",
             "doodle_share_dialog_test.ts",
@@ -24,7 +26,8 @@ build_webui_tests("build") {
             "transparency_test.ts",
             "transparency_test_support.ts",
             "voice_search_overlay_test.ts",
-          ] + modules_test_files + composebox_test_files + ntp_promo_test_files
+          ] + modules_test_files + composebox_test_files +
+          ntp_promo_test_files + action_chips_test_files
 
   ts_tsconfig_base = "tsconfig_base.json"
 
@@ -40,7 +43,7 @@ build_webui_tests("build") {
 
   ts_deps = [
     "//chrome/browser/resources/new_tab_page:build_ts",
-    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/composebox:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_components/history_clusters:build_ts",
     "//ui/webui/resources/cr_components/most_visited:build_ts",

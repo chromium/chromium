@@ -1,8 +1,8 @@
 # WebView Providers
 
-Since Android Lollipop, WebView has been an updateable system component, with
-the updateable part of the implementation distributed as an APK or App Bundle.
-We refer to this updateable package as the "WebView provider" on the device.
+Since Android Lollipop, WebView has been an updatable system component, with
+the updatable part of the implementation distributed as an APK or App Bundle.
+We refer to this updatable package as the "WebView provider" on the device.
 
 [TOC]
 
@@ -16,11 +16,6 @@ configurations:
 <!-- Keep this table in sync with build-instructions.md and the table below -->
 | API level            | Has GMS vs. AOSP? | Allowed apps |
 | -------------------- | ----------------- | ------------ |
-| L-M                  | AOSP    | Standalone AOSP WebView **(default, preinstalled)** |
-| L-M                  | Has GMS | Standalone Google WebView **(default, preinstalled)** |
-| N-P                  | AOSP    | Standalone AOSP WebView **(default, preinstalled)** |
-| N-P (TV/car devices) | Has GMS | Standalone Google WebView  **(default, preinstalled)** |
-| N-P (other devices)  | Has GMS | Monochrome Stable **(default, preinstalled)**<br>Monochrome Beta<br>Monochrome Dev<br>Monochrome Canary<br>Monochrome (no channel) **(only userdebug/eng)**<br>Google WebView Stub **(preinstalled)** or Standalone Google WebView (see [Important notes for N-P](build-instructions.md#Important-notes-for-N-P)) |
 | >= Q                 | AOSP    | Standalone AOSP WebView **(default, preinstalled)** |
 | >= Q                 | Has GMS | Trichrome WebView Google Stable **(default, preinstalled)**<br>Trichrome WebView Google Beta<br>Trichrome WebView Google Dev<br>Trichrome WebView Google Canary<br>Trichrome WebView Google (no channel) **(only userdebug/eng)**<br>Standalone AOSP WebView or Trichrome WebView AOSP **(only userdebug/eng)** |
 
@@ -43,7 +38,7 @@ by:
 
 * Looking in [developer settings](prerelease.md#switch-channel)
 * With the [commandline](quick-start.md#Troubleshooting) (look for "Current
-  WebView package," only works on O+)
+  WebView package")
 
 ### Switching WebView provider
 
@@ -69,10 +64,9 @@ which runs as part of the Android framework on the device.
 
 ### Installed and enabled
 
-On Android O+, an eligible WebView provider must be installed and enabled for
-**all user profiles** (some Android features are implemented behind the scenes
-with [multiple user profiles](prerelease.md#multiple-profiles)). On Android L-N,
-the package only needs to be installed and enabled for the default user profile.
+An eligible WebView provider must be installed and enabled for **all user
+profiles** (some Android features are implemented behind the scenes with
+[multiple user profiles](prerelease.md#multiple-profiles)).
 
 If you uninstall (or disable) the selected WebView provider, the WebView Update
 Service will fallback to a different package based on an ordered preference (the
@@ -80,11 +74,6 @@ order is [predetermined in the OS image][aosp]). If there are no more eligible
 packages (if this was the only package or the user disabled/removed all other
 packages), WebView will simply not work and WebView-based apps will crash until
 the user re-enables one of the packages.
-
-On Android N-P, `com.google.android.webview` and `com.android.chrome` are
-mutually exclusive, due to "fallback logic." Disabling (or enabling) Chrome will
-enable (or disable) the WebView stub. See [Important notes for
-N-P](build-instructions.md#Important-notes-for-N-P) for more information.
 
 ### Package name
 
@@ -95,11 +84,6 @@ preset lists, depending how the Android image will be configured.
 <!-- Keep this table in sync with build-instructions.md and the table above -->
 | API level            | Has GMS vs. AOSP? | Allowed package names |
 | -------------------- | ----------------- | --------------------- |
-| L-M                  | AOSP    | `com.android.webview` **(default, preinstalled)** |
-| L-M                  | Has GMS | `com.google.android.webview` **(default, preinstalled)** |
-| N-P                  | AOSP    | `com.android.webview` **(default, preinstalled)** |
-| N-P (TV/car devices) | Has GMS | `com.google.android.webview` **(default, preinstalled)** |
-| N-P (other devices)  | Has GMS | `com.android.chrome` **(default, preinstalled)**<br>`com.chrome.beta`<br>`com.chrome.dev`<br>`com.chrome.canary`<br>`com.google.android.apps.chrome` **(only userdebug/eng)**<br>`com.google.android.webview` **(preinstalled)** (see [Important notes for N-P](build-instructions.md#Important-notes-for-N-P)) |
 | >= Q                 | AOSP    | `com.android.webview` **(default, preinstalled)** |
 | >= Q                 | Has GMS | `com.google.android.webview` **(default, preinstalled)**<br>`com.google.android.webview.beta`<br>`com.google.android.webview.dev`<br>`com.google.android.webview.canary`<br>`com.google.android.webview.debug` **(only userdebug/eng)**<br>`com.android.webview` **(only userdebug/eng)** |
 
@@ -164,15 +148,14 @@ you're trying to install a really old WebView official build.
 ### Declare a native library
 
 Because WebView is implemented partially in C++, the Android framework must load
-its native library. On L, the native library must be called
-`libwebviewchromium.so`. Starting with M and above, the native library must be
-declared by the `com.android.webview.WebViewLibrary` metadata tag in
-`AndroidManifest.xml`. See [Loading native code with RELRO
+its native library. WebView providers must declare the library using the
+`com.android.webview.WebViewLibrary` metadata tag in `AndroidManifest.xml`. See
+[Loading native code with RELRO
 sharing](how-does-loading-work.md#Loading-native-code-with-RELRO-sharing) for
 more details if you're curious how this process works.
 
 You generally should not hit this issue unless you're trying to install a target
 which is not WebView-capable (ex. `chrome_public_apk` instead of
-`monochrome_public_apk`).
+`system_webview_apk`).
 
 [aosp]: aosp-system-integration.md#Configuring-the-Android-framework

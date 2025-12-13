@@ -24,8 +24,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
-#include "chrome/browser/updater/browser_updater_client.h"
-#include "chrome/browser/updater/browser_updater_client_util.h"
+#include "chrome/browser/updater/updater.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -61,6 +60,10 @@ void UpdateStatus(VersionUpdater::StatusCallback status_callback,
     case updater::UpdateService::UpdateState::State::kDownloading:
       progress = GetDownloadProgress(update_state.downloaded_bytes,
                                      update_state.total_bytes);
+      [[fallthrough]];
+    case updater::UpdateService::UpdateState::State::kDecompressing:
+      [[fallthrough]];
+    case updater::UpdateService::UpdateState::State::kPatching:
       [[fallthrough]];
     case updater::UpdateService::UpdateState::State::kInstalling:
       status = VersionUpdater::Status::UPDATING;
@@ -118,32 +121,13 @@ class VersionUpdaterMac : public VersionUpdater {
   // VersionUpdater implementation.
   void CheckForUpdate(StatusCallback status_callback,
                       PromoteCallback promote_callback) override {
-    EnsureUpdater(
-        base::BindOnce(
-            [](PromoteCallback prompt) {
-              prompt.Run(PromotionState::PROMOTE_ENABLED);
-            },
-            promote_callback),
-        base::BindOnce(
-            [](base::RepeatingCallback<void(
-                   const updater::UpdateService::UpdateState&)>
-                   status_callback) {
-              base::ThreadPool::PostTaskAndReplyWithResult(
-                  FROM_HERE, {base::MayBlock()},
-                  base::BindOnce(&GetBrowserUpdaterScope),
-                  base::BindOnce(
-                      [](base::RepeatingCallback<void(
-                             const updater::UpdateService::UpdateState&)>
-                             status_callback,
-                         updater::UpdaterScope scope) {
-                        BrowserUpdaterClient::Create(scope)->CheckForUpdate(
-                            status_callback);
-                      },
-                      status_callback));
-            },
-            base::BindRepeating(&UpdateStatus, status_callback)));
+    updater::EnsureUpdater(
+        base::TaskPriority::USER_VISIBLE,
+        base::BindOnce(promote_callback, PromotionState::PROMOTE_ENABLED),
+        base::BindOnce(&updater::CheckForUpdate,
+                       base::BindRepeating(&UpdateStatus, status_callback)));
   }
-  void PromoteUpdater() override { SetupSystemUpdater(); }
+  void PromoteUpdater() override { updater::SetUpSystemUpdater(); }
 };
 
 }  // namespace

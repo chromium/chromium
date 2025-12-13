@@ -10,6 +10,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/thread_annotations.h"
+#include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 // Used by SearchPreloadDeferrableResponse and related testing code, to indicate
@@ -70,6 +72,12 @@ class SearchPreloadResponseController {
   void AddDelayedResponseTask(
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
       base::OnceClosure response_closure);
+
+  // Configures the autocomplete controller to prevent the stop timer from
+  // killing the hints fetch early and starts the autocomplete input.
+  void InitializeAutocompleteControllerWithExtendedTimer(
+      AutocompleteController* autocomplete_controller,
+      const AutocompleteInput& input);
 
  protected:
   // Called on the main thread. This will resume one delayed response.

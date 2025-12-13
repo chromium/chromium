@@ -126,6 +126,10 @@ extern const ui::ClassProperty<bool>* const kShouldHaveHighlightBorderOverlay;
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const ui::ClassProperty<bool>* const kSupportsFloatedStateKey;
 
+// Whether trusted-pinned window should use immersive frame.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const ui::ClassProperty<bool>* const kUseImmersiveInTrustedPinned;
+
 // A property key to tell if the window's opacity should be managed by WM.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const ui::ClassProperty<bool>* const kWindowManagerManagesOpacityKey;

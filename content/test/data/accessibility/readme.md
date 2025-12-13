@@ -309,7 +309,7 @@ finish loading. For example the test would not wait for a url containing
 
 #### @WAIT-FOR
 
-Delays a test unitl a string defined by the directive is present in the dump.
+Delays a test until a string defined by the directive is present in the dump.
 
 Occasionally you may need to write a dump tree test that makes some changes to
 the document before it runs the test. In that case you can use a special
@@ -337,6 +337,13 @@ Example: `@EXECUTE-AND-WAIT-FOR: foo()`
 #### @DEFAULT-ACTION-ON
 
 Invokes default action on an accessible object defined by the directive.
+
+#### @EVENTS-TREE-DUMP
+
+Enables accessibility tree dumping in `DumpAccessibilityEventsTest` tests. When
+this directive is present in an events test, the test will dump the accessibility
+tree before and after each `go()` pass, with markers(`<<<<<< CHANGED`) highlighting
+lines that changed between dumps.
 
 #### @NO_DUMP and @NO_CHILDREN_DUMP
 
@@ -423,6 +430,11 @@ accessibility event - one you're unlikely to generate in your test. It uses
 that event to know when to "stop" dumping events. There isn't currently a
 way to test events that occur after some delay, just ones that happen as
 a direct result of calling `go()`.
+
+### Tree Dumping in Events Tests
+
+Events tests can optionally include accessibility tree dumps by adding the
+`@EVENTS-TREE-DUMP` directive to the HTML file.
 
 ### Duplicate Events on UIA
 Windows will "translate" some IA2 events to UIA, and it is not

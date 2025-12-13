@@ -431,6 +431,26 @@ export declare interface ClientApiDelegate {
    * @param crdConnectionCode
    */
   startSpotlight(crdConnectionCode: string): Promise<void>;
+
+  /**
+   * Present the teacher's screen to the given receiver.
+   */
+  presentOwnScreen(receiverId: string): Promise<boolean>;
+
+  /**
+   * Present the screen of the student with the given id to the given receiver.
+   */
+  presentStudentScreen(student: Identity, receiverId: string): Promise<boolean>;
+
+  /**
+   * Stop the current screen share presentation for the teacher.
+   */
+  stopPresentingOwnScreen(): Promise<boolean>;
+
+  /**
+   * Stop the current screen share presentation for the student.
+   */
+  stopPresentingStudentScreen(): Promise<boolean>;
 }
 
 /**
@@ -488,4 +508,16 @@ export declare interface ClientApi {
    * Notify the app that the CRD session for Spotlight has ended.
    */
   onSpotlightCrdSessionStatusUpdated(state: CrdConnectionState): void;
+
+  /**
+   * Notify the app that the screen share presentation for the teacher has
+   * ended.
+   */
+  onPresentOwnScreenEnded(): void;
+
+  /**
+   * Notify the app that the screen share presentation for the student has
+   * ended.
+   */
+  onPresentStudentScreenEnded(): void;
 }

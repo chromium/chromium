@@ -21,13 +21,13 @@ namespace permissions {
 // defined on the platforms where they are used and should be kept alphabetized.
 enum class RequestType {
   kArSession,
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   kCameraPanTiltZoom,
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   kCameraStream,
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   kCapturedSurfaceControl,
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   kClipboard,
   kTopLevelStorageAccess,
   kDiskQuota,
@@ -36,35 +36,35 @@ enum class RequestType {
   kHandTracking,
   kIdentityProvider,
   kIdleDetection,
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   kLocalFonts,
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   kLocalNetworkAccess,
   kMicStream,
   kMidiSysex,
   kMultipleDownloads,
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   kNfcDevice,
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   kNotifications,
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   kKeyboardLock,
   kPointerLock,
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   kProtectedMediaIdentifier,
 #endif
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   kRegisterProtocolHandler,
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_CHROMEOS)
   kSmartCard,
 #endif
   kStorageAccess,
   kVrSession,
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   kWebAppInstallation,
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
   kWebPrinting,
 #endif
@@ -94,13 +94,15 @@ std::optional<ContentSettingsType> RequestTypeToContentSettingsType(
 // Returns whether confirmation chips can be displayed
 bool IsConfirmationChipSupported(RequestType for_request_type);
 
+#if !BUILDFLAG(IS_IOS)
 // Returns the icon to display.
 IconId GetIconId(RequestType type);
+#endif  // !BUILDFLAG(IS_IOS)
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Returns the blocked icon to display.
 IconId GetBlockedIconId(RequestType type);
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Returns a unique human-readable string that can be used in dictionaries that
 // are keyed by the RequestType.

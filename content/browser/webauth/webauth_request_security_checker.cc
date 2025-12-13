@@ -4,8 +4,11 @@
 
 #include "content/browser/webauth/webauth_request_security_checker.h"
 
+#include <optional>
+#include <string>
 #include <string_view>
 
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -17,11 +20,10 @@
 #include "content/public/browser/web_authentication_delegate.h"
 #include "content/public/browser/webauthn_security_utils.h"
 #include "content/public/common/content_client.h"
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/fido_transport_protocol.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -99,7 +101,7 @@ WebAuthRequestSecurityChecker::RemoteValidation::Create(
   std::string canonicalized_domain_storage;
   url::StdStringCanonOutput canon_output(&canonicalized_domain_storage);
   url::CanonHostInfo host_info;
-  url::CanonicalizeHostVerbose(relying_party_id.data(),
+  url::CanonicalizeHostVerbose(relying_party_id,
                                url::Component(0, relying_party_id.size()),
                                &canon_output, &host_info);
   const std::string_view canonicalized_domain(canon_output.data(),
@@ -148,16 +150,18 @@ WebAuthRequestSecurityChecker::RemoteValidation::Create(
 blink::mojom::AuthenticatorStatus
 WebAuthRequestSecurityChecker::RemoteValidation::ValidateWellKnownJSON(
     const url::Origin& caller_origin,
-    const base::Value& value) {
+    const std::string_view json) {
   // This code processes a .well-known/webauthn JSON. See
   // https://github.com/w3c/webauthn/wiki/Explainer:-Related-origin-requests
 
-  if (!value.is_dict()) {
+  auto result = base::JSONReader::ReadDict(json, base::JSON_PARSE_RFC);
+
+  if (!result.has_value()) {
     return blink::mojom::AuthenticatorStatus::
         BAD_RELYING_PARTY_ID_JSON_PARSE_ERROR;
   }
 
-  const base::Value::List* origins = value.GetDict().FindList("origins");
+  const base::Value::List* origins = result->FindList("origins");
   if (!origins) {
     return blink::mojom::AuthenticatorStatus::
         BAD_RELYING_PARTY_ID_JSON_PARSE_ERROR;
@@ -219,7 +223,7 @@ WebAuthRequestSecurityChecker::RemoteValidation::RemoteValidation(
 // OnFetchComplete is called when the `.well-known/webauthn` for an
 // RP ID has finished downloading.
 void WebAuthRequestSecurityChecker::RemoteValidation::OnFetchComplete(
-    std::unique_ptr<std::string> body) {
+    std::optional<std::string> body) {
   if (!body) {
     std::move(callback_).Run(blink::mojom::AuthenticatorStatus::
                                  BAD_RELYING_PARTY_ID_ATTEMPTED_FETCH);
@@ -232,20 +236,7 @@ void WebAuthRequestSecurityChecker::RemoteValidation::OnFetchComplete(
     return;
   }
 
-  json_ = std::move(body);
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *json_, base::BindOnce(&RemoteValidation::OnDecodeComplete,
-                             weak_factory_.GetWeakPtr()));
-}
-
-void WebAuthRequestSecurityChecker::RemoteValidation::OnDecodeComplete(
-    base::expected<base::Value, std::string> maybe_value) {
-  blink::mojom::AuthenticatorStatus status =
-      blink::mojom::AuthenticatorStatus::BAD_RELYING_PARTY_ID_JSON_PARSE_ERROR;
-  if (maybe_value.has_value()) {
-    status = ValidateWellKnownJSON(caller_origin_, maybe_value.value());
-  }
-  std::move(callback_).Run(status);
+  std::move(callback_).Run(ValidateWellKnownJSON(caller_origin_, *body));
 }
 
 WebAuthRequestSecurityChecker::WebAuthRequestSecurityChecker(
@@ -442,14 +433,14 @@ WebAuthRequestSecurityChecker::ValidateAppIdExtension(
   // https://fido.example.com/myAppId), no additional processing is necessary
   // and the operation may proceed."
   GURL appid_url = GURL(appid);
-  if (!appid_url.is_valid() || appid_url.scheme() != url::kHttpsScheme ||
-      appid_url.scheme_piece() != caller_origin.scheme()) {
+  if (!appid_url.is_valid() || appid_url.GetScheme() != url::kHttpsScheme ||
+      appid_url.scheme() != caller_origin.scheme()) {
     return blink::mojom::AuthenticatorStatus::INVALID_DOMAIN;
   }
 
   // This check is repeated inside |SameDomainOrHost|, just after this. However
   // it's cheap and mirrors the structure of the spec.
-  if (appid_url.host_piece() == caller_origin.host()) {
+  if (appid_url.host() == caller_origin.host()) {
     *out_appid = appid;
     return blink::mojom::AuthenticatorStatus::SUCCESS;
   }

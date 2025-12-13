@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_or_edit_tab_group_coordinator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_or_edit_tab_group_view_controller_delegate.h"
@@ -42,6 +41,8 @@
   raw_ptr<const TabGroup> _tabGroup;
   // Transition delegate for the animation to show/hide.
   CreateTabGroupTransitionDelegate* _transitionDelegate;
+  // Whether a new tab should be inserted into the new group.
+  BOOL _createNewTabForGroup;
 }
 
 #pragma mark - Public
@@ -57,6 +58,18 @@
   if (self) {
     _identifiers = identifiers;
     _animatedDismissal = YES;
+  }
+  return self;
+}
+
+- (instancetype)initEmptyTabGroupCreationWithBaseViewController:
+                    (UIViewController*)viewController
+                                                        browser:
+                                                            (Browser*)browser {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _animatedDismissal = YES;
+    _createNewTabForGroup = YES;
   }
   return self;
 }
@@ -99,9 +112,10 @@
   BOOL tabSynced =
       syncService && syncService->GetUserSettings()->GetSelectedTypes().Has(
                          syncer::UserSelectableType::kTabs);
-  _viewController =
-      [[CreateTabGroupViewController alloc] initWithEditMode:editMode
-                                                   tabSynced:tabSynced];
+  _viewController = [[CreateTabGroupViewController alloc]
+          initWithEditMode:editMode
+                 tabSynced:tabSynced
+      createNewTabForGroup:_createNewTabForGroup];
 
   FaviconLoader* faviconLoader = nil;
   collaboration::CollaborationService* collaborationService =
@@ -109,8 +123,7 @@
 
   // Fetch favicons if in regular mode and sync or shared tab groups is enabled.
   if (!profile->IsOffTheRecord() &&
-      (IsTabGroupSyncEnabled() ||
-       IsSharedTabGroupsJoinEnabled(collaborationService))) {
+      IsSharedTabGroupsJoinEnabled(collaborationService)) {
     faviconLoader = IOSChromeFaviconLoaderFactory::GetForProfile(profile);
   }
 
@@ -121,6 +134,11 @@
                                 browser:browser
                           faviconLoader:faviconLoader];
     _mediator.delegate = self;
+  } else if (_createNewTabForGroup) {
+    _mediator = [[CreateTabGroupMediator alloc]
+        initEmptyTabGroupCreationWithConsumer:_viewController
+                                      browser:browser
+                                faviconLoader:faviconLoader];
   } else {
     _mediator = [[CreateTabGroupMediator alloc]
         initTabGroupCreationWithConsumer:_viewController
@@ -128,6 +146,7 @@
                                  browser:browser
                            faviconLoader:faviconLoader];
   }
+
   _viewController.mutator = _mediator;
   _viewController.delegate = self;
 

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.notifications;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.job.JobParameters;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,12 +13,15 @@ import android.os.PersistableBundle;
 import android.os.SystemClock;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.base.SplitCompatJobService;
 
 /**
- * Processes jobs scheduled when user actions are issued on web notifications.
- * We use this instead of starting the NotificationService on N+.
+ * Processes jobs scheduled when user actions are issued on web notifications. We use this instead
+ * of starting the NotificationService on N+.
  */
-public class NotificationJobServiceImpl extends NotificationJobService.Impl {
+@NullMarked
+public class NotificationJobServiceImpl extends SplitCompatJobService.Impl {
     static PersistableBundle getJobExtrasFromIntent(Intent intent) {
         PersistableBundle bundle = new PersistableBundle();
         bundle.putString(
@@ -59,21 +64,22 @@ public class NotificationJobServiceImpl extends NotificationJobService.Impl {
     }
 
     /**
-     * Called when a Notification has been interacted with by the user. If we can verify that
-     * the Intent has a notification Id, start Chrome (if needed) on the UI thread.
+     * Called when a Notification has been interacted with by the user. If we can verify that the
+     * Intent has a notification Id, start Chrome (if needed) on the UI thread.
      *
-     * We get a wakelock for our process for the duration of this method.
+     * <p>We get a wakelock for our process for the duration of this method.
      *
      * @return True if there is more work to be done to handle the job, to signal we would like our
-     * wakelock extended until we call {@link #jobFinished}. False if we have finished handling the
-     * job.
+     *     wakelock extended until we call {@link #jobFinished}. False if we have finished handling
+     *     the job.
      */
     @Override
     public boolean onStartJob(final JobParameters params) {
         PersistableBundle extras = params.getExtras();
         putJobStartedTimeInExtras(extras);
 
-        String action = extras.getString(NotificationConstants.EXTRA_NOTIFICATION_ACTION);
+        String action =
+                assumeNonNull(extras.getString(NotificationConstants.EXTRA_NOTIFICATION_ACTION));
         NotificationUmaTracker.getInstance()
                 .recordIntentHandlerJobStage(
                         NotificationUmaTracker.IntentHandlerJobStage.ON_START_JOB, action);
@@ -83,7 +89,9 @@ public class NotificationJobServiceImpl extends NotificationJobService.Impl {
             if (extras.containsKey(NotificationConstants.EXTRA_NOTIFICATION_ID)) {
                 TrampolineActivityTracker.getInstance()
                         .onIntentCompleted(
-                                extras.getString(NotificationConstants.EXTRA_NOTIFICATION_ID));
+                                assumeNonNull(
+                                        extras.getString(
+                                                NotificationConstants.EXTRA_NOTIFICATION_ID)));
             }
             return false;
         }
@@ -107,7 +115,9 @@ public class NotificationJobServiceImpl extends NotificationJobService.Impl {
     @Override
     public boolean onStopJob(JobParameters params) {
         String action =
-                params.getExtras().getString(NotificationConstants.EXTRA_NOTIFICATION_ACTION);
+                assumeNonNull(
+                        params.getExtras()
+                                .getString(NotificationConstants.EXTRA_NOTIFICATION_ACTION));
         NotificationUmaTracker.getInstance()
                 .recordIntentHandlerJobStage(
                         NotificationUmaTracker.IntentHandlerJobStage.ON_STOP_JOB, action);

@@ -5,11 +5,11 @@
 package org.chromium.chrome.browser.toolbar;
 
 import android.view.View;
-import android.widget.FrameLayout;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
@@ -21,13 +21,14 @@ import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
  * <p>Concrete implementations of this class must extend ViewGroup.
  */
 @NullMarked
-public interface ControlContainer {
+public interface ControlContainer extends TabStripTransitionDelegate {
     /**
      * Initialize the control container with the specified toolbar.
      *
      * @param toolbarLayoutId The ID of the toolbar layout to use.
+     * @param toolbarLayoutHeightResId The ID for the toolbar height resource.
      */
-    void initWithToolbar(int toolbarLayoutId);
+    void initWithToolbar(int toolbarLayoutId, int toolbarLayoutHeightResId);
 
     /**
      * @return The {@link ViewResourceAdapter} that exposes this {@link View} as a CC resource.
@@ -80,14 +81,14 @@ public interface ControlContainer {
      * take effect with the next layout pass. A layout pass is requested with each call to this
      * method.
      */
-    FrameLayout.LayoutParams mutateHairlineLayoutParams();
+    CoordinatorLayout.LayoutParams mutateHairlineLayoutParams();
 
     /**
      * Returns an instance of the toolbar view's layout params that can be mutated; changes will
      * take effect with the next layout pass. A layout pass is requested with each call to this
      * method.
      */
-    FrameLayout.LayoutParams mutateToolbarLayoutParams();
+    CoordinatorLayout.LayoutParams mutateToolbarLayoutParams();
 
     /**
      * Toggle display of only the location bar, hiding all other toolbar affordances. This is only
@@ -106,6 +107,12 @@ public interface ControlContainer {
      * Remove a touch event observer added via {@link #addTouchEventObserver(TouchEventObserver)}
      */
     void removeTouchEventObserver(TouchEventObserver observer);
+
+    /**
+     * Sets the max height for the control container view. The view may be smaller than this and
+     * will still wrap to accommodate the height of its children, but only to the specified height.
+     */
+    void setMaxHeight(int maxHeight);
 
     /**
      * Destroys the control container, causing it to release any owned native resources and cancel

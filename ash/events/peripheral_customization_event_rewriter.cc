@@ -148,27 +148,6 @@ int ConvertKeyCodeToFlags(ui::KeyboardCode key_code) {
   }
 }
 
-int ConvertModifierKeyToFlags(ui::mojom::ModifierKey modifier_key) {
-  switch (modifier_key) {
-    case ui::mojom::ModifierKey::kMeta:
-      return ui::EF_COMMAND_DOWN;
-    case ui::mojom::ModifierKey::kControl:
-      return ui::EF_CONTROL_DOWN;
-    case ui::mojom::ModifierKey::kAlt:
-      return ui::EF_ALT_DOWN;
-    case ui::mojom::ModifierKey::kFunction:
-      return ui::EF_FUNCTION_DOWN;
-    case ui::mojom::ModifierKey::kEscape:
-    case ui::mojom::ModifierKey::kBackspace:
-    case ui::mojom::ModifierKey::kAssistant:
-    case ui::mojom::ModifierKey::kCapsLock:
-    case ui::mojom::ModifierKey::kVoid:
-    case ui::mojom::ModifierKey::kIsoLevel5ShiftMod3:
-    case ui::mojom::ModifierKey::kQuickInsert:
-      return ui::EF_NONE;
-  }
-}
-
 bool AreScrollWheelEventRewritesAllowed(
     mojom::CustomizationRestriction customization_restriction) {
   switch (customization_restriction) {
@@ -365,7 +344,7 @@ std::vector<std::unique_ptr<ui::Event>> RewriteEventToKeyEvents(
 // TODO(b/339754921): Add integration test for when the display is rotated and
 // adjusted via overscan boundaries.
 gfx::PointF GetCurrentCursorLocation() {
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   CHECK(screen);
   const display::Display display =
       screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint());
@@ -557,31 +536,6 @@ int ConvertButtonToFlags(const mojom::Button& button) {
   }
 
   return ui::EF_NONE;
-}
-
-std::optional<ui::mojom::ModifierKey> ConvertDomCodeToModifierKey(
-    ui::DomCode code) {
-  switch (code) {
-    case ui::DomCode::META_LEFT:
-    case ui::DomCode::META_RIGHT:
-      return ui::mojom::ModifierKey::kMeta;
-    case ui::DomCode::CONTROL_LEFT:
-    case ui::DomCode::CONTROL_RIGHT:
-      return ui::mojom::ModifierKey::kControl;
-    case ui::DomCode::ALT_LEFT:
-    case ui::DomCode::ALT_RIGHT:
-      return ui::mojom::ModifierKey::kAlt;
-    case ui::DomCode::CAPS_LOCK:
-      return ui::mojom::ModifierKey::kCapsLock;
-    case ui::DomCode::BACKSPACE:
-      return ui::mojom::ModifierKey::kBackspace;
-    case ui::DomCode::LAUNCH_ASSISTANT:
-      return ui::mojom::ModifierKey::kAssistant;
-    case ui::DomCode::ESCAPE:
-      return ui::mojom::ModifierKey::kEscape;
-    default:
-      return std::nullopt;
-  }
 }
 
 std::optional<PeripheralCustomizationEventRewriter::RemappingActionResult>
@@ -1187,19 +1141,9 @@ void PeripheralCustomizationEventRewriter::UpdatePressedButtonMapFlags(
     return;
   }
 
-  // Remap the released key based on modifier remappings.
-  auto* settings = input_device_settings_controller_->GetKeyboardSettings(
-      key_event.source_device_id());
-  auto modifier_key = ConvertDomCodeToModifierKey(key_event.code());
+  // Remap the released key.
   int key_event_characteristic_flag =
       ConvertKeyCodeToFlags(key_event.key_code());
-  // Modifiers only need to be remapped now if the rewriter fix is disabled.
-  if (!features::IsKeyboardRewriterFixEnabled() && settings && modifier_key) {
-    auto iter = settings->modifier_remappings.find(*modifier_key);
-    if (iter != settings->modifier_remappings.end()) {
-      key_event_characteristic_flag = ConvertModifierKeyToFlags(iter->second);
-    }
-  }
 
   // Remove the key event characteristic flag as the key has already been
   // released and should no longer apply the flag to other pressed events.

@@ -170,8 +170,9 @@ void PerformEntropyUniformityTest(
           static_cast<double>(i) / kBucketCount;
       const double chi_square =
           ComputeChiSquare(distribution, expected_value_per_bucket);
-      if (chi_square < kChiSquareThreshold)
+      if (chi_square < kChiSquareThreshold) {
         break;
+      }
 
       // If |i == kMaxIterationCount|, the Chi-Square statistic did not
       // converge after |kMaxIterationCount|.

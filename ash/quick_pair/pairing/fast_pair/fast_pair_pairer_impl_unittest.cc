@@ -239,8 +239,7 @@ class FakeFastPairGattServiceClientImplFactory
 
 }  // namespace
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 // For convenience.
 using ::testing::Return;
@@ -2840,5 +2839,4 @@ TEST_F(FastPairPairerImplTest, DoNotDisplayPasskey) {
   NotifyDisplayPasskey();
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair

@@ -127,7 +127,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   void SetNeedsMainFrame(bool urgent) override;
   bool RequestedMainFramePending() override;
 
-  void DidFirstVisuallyNonEmptyPaint(const base::TimeTicks& first_paint_time);
+  void OnFirstContentfulPaint(const base::TimeTicks& first_paint_time);
   void SetHidden(bool hidden);
   void OnDevToolsSessionConnectionChanged(bool attached);
 

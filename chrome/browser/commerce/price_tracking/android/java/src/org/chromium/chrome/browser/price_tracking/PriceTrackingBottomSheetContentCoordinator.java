@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProperties;
@@ -21,6 +20,8 @@ import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordi
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.function.Supplier;
 
 /** Coordinator of the price tracking bottom sheet content. */
 @NullMarked
@@ -32,7 +33,7 @@ public class PriceTrackingBottomSheetContentCoordinator
 
     public PriceTrackingBottomSheetContentCoordinator(
             Context context,
-            Supplier<Tab> tabSupplier,
+            Supplier<@Nullable Tab> tabSupplier,
             PriceInsightsDelegate priceInsightsDelegate) {
         mContext = context;
         mPriceTrackingContentContainer =

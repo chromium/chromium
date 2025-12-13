@@ -28,8 +28,6 @@ class SelectMutationObserver : public MutationObserver::Delegate {
   void CheckAddedNodes(MutationRecord* record);
   void CheckRemovedNodes(MutationRecord* record);
   void TraverseNodeDescendants(const Node* node);
-  void MaybeAddDescendantTextInput(Node* node);
-  void MaybeRemoveDescendantTextInput(Node* node);
   void AddDescendantDisallowedErrorToNode(Node& node);
   bool IsAllowedInteractiveElement(Node& node);
   bool IsInteractiveElement(const Node& node);

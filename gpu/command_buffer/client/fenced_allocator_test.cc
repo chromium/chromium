@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This file contains the tests for the FencedAllocator class.
 
 #include "gpu/command_buffer/client/fenced_allocator.h"
@@ -16,6 +11,7 @@
 #include <array>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/aligned_memory.h"
@@ -422,15 +418,15 @@ TEST_F(FencedAllocatorWrapperTest, TestBasic) {
   char* pointer_char = allocator_->AllocTyped<char>(kSize);
   ASSERT_TRUE(pointer_char);
   EXPECT_LE(buffer_.get(), pointer_char);
-  EXPECT_GE(buffer_.get() + kBufferSize, pointer_char + kSize);
+  UNSAFE_TODO(EXPECT_GE(buffer_.get() + kBufferSize, pointer_char + kSize));
   allocator_->Free(pointer_char);
   EXPECT_TRUE(allocator_->CheckConsistency());
 
   unsigned int* pointer_uint = allocator_->AllocTyped<unsigned int>(kSize);
   ASSERT_TRUE(pointer_uint);
   EXPECT_LE(buffer_.get(), reinterpret_cast<char *>(pointer_uint));
-  EXPECT_GE(buffer_.get() + kBufferSize,
-            reinterpret_cast<char *>(pointer_uint + kSize));
+  UNSAFE_TODO(EXPECT_GE(buffer_.get() + kBufferSize,
+                        reinterpret_cast<char*>(pointer_uint + kSize)));
 
   // Check that it did allocate kSize * sizeof(unsigned int). We can't tell
   // directly, except from the remaining size.

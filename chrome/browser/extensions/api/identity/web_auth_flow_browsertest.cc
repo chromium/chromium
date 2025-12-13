@@ -83,7 +83,7 @@ class WebAuthFlowBrowserTest : public InProcessBrowserTest {
       std::optional<base::TimeDelta> timeout_for_non_interactive = std::nullopt,
       std::optional<gfx::Rect> popup_bounds = std::nullopt) {
     if (!profile)
-      profile = browser()->profile();
+      profile = GetProfile();
 
     web_auth_flow_ = std::make_unique<WebAuthFlow>(
         &mock_web_auth_flow_delegate_, profile, url, mode,
@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     WebAuthFlowBrowserTest,
     InteractiveNoBrowser_WebAuthCreatesBrowserWithPopupWindow) {
-  Profile* profile = browser()->profile();
+  Profile* profile = GetProfile();
   // Simulates an extension being opened, in order for the profile not to be
   // added for destruction.
   ScopedProfileKeepAlive profile_keep_alive(
@@ -576,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(
 // window does not trigger Session restore.
 IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
                        InteractiveNoBrowser_NotActivatingSessionRestore) {
-  Profile* profile = browser()->profile();
+  Profile* profile = GetProfile();
 
   // Enable SessionRestore to last used pages.
   SessionStartupPref startup_pref(SessionStartupPref::LAST);
@@ -690,7 +690,7 @@ IN_PROC_BROWSER_TEST_F(
     WebAuthFlowBrowserTest,
     Interactive_MarkedForDeletionProfileNotAllowedToCreatePopupWindow) {
   // Marking active profile for deletion.
-  MarkProfileDirectoryForDeletion(browser()->profile()->GetPath());
+  MarkProfileDirectoryForDeletion(GetProfile()->GetPath());
 
   const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
 
@@ -760,7 +760,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
   // Simulate profile destruction notification and wait for the auth popup to
   // close.
   static_cast<ProfileObserver*>(web_auth_flow())
-      ->OnProfileWillBeDestroyed(browser()->profile());
+      ->OnProfileWillBeDestroyed(GetProfile());
   ui_test_utils::WaitForBrowserToClose(popup);
 
   // Verify that WebAuthFlow closed the WebContents.

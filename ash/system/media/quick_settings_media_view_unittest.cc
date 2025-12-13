@@ -56,16 +56,16 @@ TEST_F(QuickSettingsMediaViewTest, ShowOrHideItem) {
       std::make_unique<global_media_controls::MediaItemUIView>(
           item_id, item(), nullptr, nullptr);
 
-  EXPECT_EQ(0, static_cast<int>(view()->items_for_testing().size()));
+  EXPECT_EQ(0u, view()->items_for_testing().size());
   EXPECT_EQ(-1, view()->pagination_model_for_testing()->total_pages());
 
   view()->ShowItem(item_id, std::move(item_ui));
-  EXPECT_EQ(1, static_cast<int>(view()->items_for_testing().size()));
+  EXPECT_EQ(1u, view()->items_for_testing().size());
   EXPECT_TRUE(view()->items_for_testing().contains(item_id));
   EXPECT_EQ(1, view()->pagination_model_for_testing()->total_pages());
 
   view()->HideItem(item_id);
-  EXPECT_EQ(0, static_cast<int>(view()->items_for_testing().size()));
+  EXPECT_EQ(0u, view()->items_for_testing().size());
   EXPECT_EQ(0, view()->pagination_model_for_testing()->total_pages());
 }
 

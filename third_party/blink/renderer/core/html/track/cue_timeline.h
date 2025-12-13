@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/pod_interval_tree.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -97,6 +98,7 @@ class CueTimeline final : public GarbageCollected<CueTimeline> {
   CueIntervalTree cue_tree_;
 
   CueList currently_active_cues_;
+  HeapHashSet<Member<TextTrackCue>> newly_introduced_cues_;
   double last_update_time_;
 
   // Timer data for cue events (start, end)

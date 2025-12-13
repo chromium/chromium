@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -100,7 +101,7 @@ public class DownloadForegroundServiceTest {
         mNotification =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
                                 ChromeChannelDefinitions.ChannelId.DOWNLOADS)
-                        .setSmallIcon(org.chromium.chrome.R.drawable.ic_file_download_white_24dp)
+                        .setSmallIcon(R.drawable.ic_file_download_white_24dp)
                         .setContentTitle("fakeContentTitle")
                         .setContentText("fakeContentText")
                         .build();

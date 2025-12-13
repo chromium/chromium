@@ -28,7 +28,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_test_api.h"
 #include "ui/views/widget/widget.h"

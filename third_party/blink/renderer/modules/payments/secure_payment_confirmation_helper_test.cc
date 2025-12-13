@@ -37,8 +37,8 @@ constexpr char kPngImageDataUrl[] =
     "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFElEQVQYlWNk+M/"
     "wn4GBgYGJAQoAHhgCAh6X4CYAAAAASUVORK5CYII=";
 
-WTF::Vector<uint8_t> CreateVector(base::span<const uint8_t> buffer) {
-  WTF::Vector<uint8_t> vector;
+Vector<uint8_t> CreateVector(base::span<const uint8_t> buffer) {
+  Vector<uint8_t> vector;
   vector.AppendSpan(buffer);
   return vector;
 }
@@ -314,8 +314,7 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_TooLargeInstrumentDetails) {
   SecurePaymentConfirmationRequest* request =
       CreateSecurePaymentConfirmationRequest(scope);
 
-  request->instrument()->setDetails(
-      WTF::String::FromUTF8(std::string(4097, '.')));
+  request->instrument()->setDetails(String::FromUTF8(std::string(4097, '.')));
 
   ScriptValue script_value(scope.GetIsolate(),
                            ToV8Traits<SecurePaymentConfirmationRequest>::ToV8(
@@ -484,7 +483,7 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_Extensions) {
           scope.GetExceptionState());
 
   ASSERT_FALSE(parsed_request->extensions.is_null());
-  WTF::Vector<uint8_t> prf_expected = CreateVector(kPrfInputData);
+  Vector<uint8_t> prf_expected = CreateVector(kPrfInputData);
   ASSERT_EQ(parsed_request->extensions->prf_inputs[0]->first, prf_expected);
 }
 

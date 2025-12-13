@@ -8,7 +8,6 @@
 #include "base/run_loop.h"
 
 using testing::_;
-using testing::Invoke;
 
 namespace video_capture {
 

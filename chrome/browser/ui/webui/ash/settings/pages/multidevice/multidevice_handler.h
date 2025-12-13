@@ -20,7 +20,6 @@
 #include "chromeos/ash/components/phonehub/notification_access_setup_operation.h"
 #include "chromeos/ash/components/phonehub/util/histogram_util.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
-#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-forward.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;

@@ -1,0 +1,13 @@
+{
+  "version": "1.0",
+  "manifest_version": 3,
+  "name": "Test for onMessage with return true and promise, where promise is faster",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["content_script.js"],
+    "run_at": "document_start"
+  }]
+}

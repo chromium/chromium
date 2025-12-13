@@ -4,6 +4,8 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 
+#include <array>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -37,6 +39,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -45,6 +48,7 @@
 #include "base/time/time.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/live_caption/pref_names.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -53,11 +57,13 @@
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/touchpad_device.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/native_theme/features/native_theme_features.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/os_settings_provider.h"
 
 using message_center::MessageCenter;
 
@@ -139,11 +145,12 @@ class AccessibilityControllerTest : public AccessibilityControllerTestBase {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{ash::features::kOnDeviceSpeechRecognition,
                               ::features::kAccessibilityAccelerator,
-                              ::features::kAccessibilityFaceGaze,
                               ::features::kAccessibilityMouseKeys,
                               ::features::kAccessibilityFlashScreenFeature},
         /*disabled_features=*/{});
     AccessibilityControllerTestBase::SetUp();
+    normal_duration_.emplace(
+        gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   }
 
   void ExpectSessionDurationMetricCount(const std::string& feature_name,
@@ -192,6 +199,7 @@ class AccessibilityControllerTest : public AccessibilityControllerTestBase {
 
  private:
   base::HistogramTester histogram_tester_;
+  std::optional<gfx::ScopedAnimationDurationScaleMode> normal_duration_;
 };
 
 TEST_F(AccessibilityControllerTest, ChangingCursorSizePrefChangesCursorSize) {
@@ -1720,24 +1728,25 @@ TEST_F(AccessibilityControllerTest, VerifyFeatureData) {
 }
 
 TEST_F(AccessibilityControllerTest, ChangingPrefChangesCaretBlinkInterval) {
-  // Starts with default value.
-  EXPECT_EQ(prefs()->GetInteger(prefs::kAccessibilityCaretBlinkInterval), 500);
+  // The pref should contain the default value.
+  EXPECT_EQ(
+      prefs()->GetInteger(prefs::kAccessibilityCaretBlinkInterval),
+      ui::OsSettingsProvider::kDefaultCaretBlinkInterval.InMilliseconds());
 
-  auto* native_theme_dark = ui::NativeTheme::GetInstanceForDarkUI();
-  auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
-  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  // All NativeThemes should start with the default value.
+  const auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  const auto* const native_theme_web = ui::NativeTheme::GetInstanceForWeb();
+  EXPECT_EQ(ui::OsSettingsProvider::kDefaultCaretBlinkInterval,
+            native_theme->caret_blink_interval());
+  EXPECT_EQ(ui::OsSettingsProvider::kDefaultCaretBlinkInterval,
+            native_theme_web->caret_blink_interval());
 
-  base::TimeDelta expected_interval = base::Milliseconds(500);
-  EXPECT_EQ(expected_interval, native_theme_dark->GetCaretBlinkInterval());
-  EXPECT_EQ(expected_interval, native_theme_web->GetCaretBlinkInterval());
-  EXPECT_EQ(expected_interval, native_theme->GetCaretBlinkInterval());
-
-  // Native Themes should be updated.
-  prefs()->SetInteger(prefs::kAccessibilityCaretBlinkInterval, 42);
-  expected_interval = base::Milliseconds(42);
-  EXPECT_EQ(expected_interval, native_theme_dark->GetCaretBlinkInterval());
-  EXPECT_EQ(expected_interval, native_theme_web->GetCaretBlinkInterval());
-  EXPECT_EQ(expected_interval, native_theme->GetCaretBlinkInterval());
+  // NativeThemes should be updated when the pref updates.
+  static constexpr auto kNewInterval = base::Milliseconds(42);
+  prefs()->SetInteger(prefs::kAccessibilityCaretBlinkInterval,
+                      kNewInterval.InMilliseconds());
+  EXPECT_EQ(kNewInterval, native_theme->caret_blink_interval());
+  EXPECT_EQ(kNewInterval, native_theme_web->caret_blink_interval());
 }
 
 TEST_F(AccessibilityControllerTest, FlashNotificationsWhenEnabled) {
@@ -2699,5 +2708,84 @@ TEST_F(AccessibilityControllerBounceKeysTest, UpdateBounceKeysDelayPref) {
                       expected_delta.InMilliseconds());
   EXPECT_EQ(filter_keys_event_rewriter()->GetBounceKeysDelay(), expected_delta);
 }
+
+class AccessibilityControllerRegisterProfilePrefsTest
+    : public AccessibilityControllerTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  AccessibilityControllerRegisterProfilePrefsTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kOsSyncAccessibilitySettingsBatch1,
+           features::kOsSyncAccessibilitySettingsBatch2,
+           features::kOsSyncAccessibilitySettingsBatch3},
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {}, {features::kOsSyncAccessibilitySettingsBatch1,
+               features::kOsSyncAccessibilitySettingsBatch2,
+               features::kOsSyncAccessibilitySettingsBatch3});
+    }
+  }
+
+  ~AccessibilityControllerRegisterProfilePrefsTest() override = default;
+
+ protected:
+  template <size_t N>
+  void CheckPrefsSyncableFlags(const std::array<const char*, N>& pref_names) {
+    const bool expect_sync = GetParam();
+    for (const char* pref_name : pref_names) {
+      const auto* pref = prefs()->FindPreference(pref_name);
+      ASSERT_TRUE(pref) << pref_name;
+      const uint32_t flags = pref->registration_flags();
+      if (expect_sync) {
+        EXPECT_NE(0u,
+                  flags & user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF)
+            << pref_name;
+      } else {
+        EXPECT_EQ(0u,
+                  flags & user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF)
+            << pref_name;
+      }
+    }
+  }
+};
+
+TEST_P(AccessibilityControllerRegisterProfilePrefsTest,
+       RegistersVisualPrefsWithExpectedSyncFlags) {
+  constexpr auto kBatch1AccessibilitySyncPrefs = std::to_array<const char*>({
+      prefs::kAccessibilityColorCorrectionEnabled,
+      prefs::kAccessibilityColorCorrectionHasBeenSetup,
+      prefs::kAccessibilityCursorHighlightEnabled,
+      prefs::kAccessibilityCursorColorEnabled,
+      prefs::kAccessibilityCursorColor,
+      prefs::kAccessibilityLargeCursorEnabled,
+      prefs::kAccessibilityLargeCursorDipSize,
+      prefs::kAccessibilityHighContrastEnabled,
+      prefs::kHighContrastAcceleratorDialogHasBeenAccepted,
+      prefs::kAccessibilityCaretHighlightEnabled,
+      prefs::kAccessibilityCaretBlinkInterval,
+      prefs::kAccessibilityFocusHighlightEnabled,
+  });
+  CheckPrefsSyncableFlags(kBatch1AccessibilitySyncPrefs);
+
+  constexpr auto kBatch2AccessibilitySyncPrefs = std::to_array<const char*>({
+      prefs::kAccessibilityReducedAnimationsEnabled,
+  });
+  CheckPrefsSyncableFlags(kBatch2AccessibilitySyncPrefs);
+
+  constexpr auto kBatch3AccessibilitySyncPrefs = std::to_array<const char*>(
+      {prefs::kAccessibilityScreenMagnifierEnabled,
+       prefs::kAccessibilitySelectToSpeakEnabled,
+       prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted,
+       prefs::kDockedMagnifierAcceleratorDialogHasBeenAccepted,
+       prefs::kSelectToSpeakAcceleratorDialogHasBeenAccepted,
+       prefs::kAccessibilityScreenMagnifierScale});
+  CheckPrefsSyncableFlags(kBatch3AccessibilitySyncPrefs);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AccessibilityControllerRegisterProfilePrefsTest,
+                         ::testing::Values(true, false));
 
 }  // namespace ash

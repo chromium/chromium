@@ -10,17 +10,13 @@
 #include "device/vr/buildflags/buildflags.h"
 
 namespace device::features {
-COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kWebXrHandInput);
-COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kWebXrWebGpuBinding);
-COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kWebXrIncubations);
+COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kWebXRWebGPUBinding);
+COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kWebXRIncubations);
 COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kWebXrInternals);
-COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kWebXrLayers);
+COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kWebXRLayers);
 COMPONENT_EXPORT(VR_FEATURES)
-BASE_DECLARE_FEATURE(kWebXrOrientationSensorDevice);
-
-#if BUILDFLAG(IS_ANDROID)
-COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kWebXrSharedBuffers);
-#endif
+BASE_DECLARE_FEATURE(kWebXROrientationSensorDevice);
+COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kWebXrVisibleBlurred);
 
 #if BUILDFLAG(ENABLE_OPENXR)
 // Note that this feature can be overridden by logic contained within
@@ -30,29 +26,25 @@ COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kOpenXR);
 // `IsOpenXrArEnabled` and therefore should generally not be queried directly.
 COMPONENT_EXPORT(VR_FEATURES)
 BASE_DECLARE_FEATURE(kOpenXrExtendedFeatureSupport);
-COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kOpenXRSharedImages);
-COMPONENT_EXPORT(VR_FEATURES)
-BASE_DECLARE_FEATURE(kAllowOpenXrOnXrDevices);
+COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kOpenXrSpatialEntities);
+COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kSpatialEntitesDepthHitTest);
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kOpenXrAndroidSmoothDepth);
 #endif
 
-// Helper method to check if OpenXR should be enabled. It takes into account
-// both the kOpenXR feature, as well as the state of the system features on
-// Android and the `kAllowOpenXrOnXrDevices` flag, and should be
-// checked instead of a direct query on the kOpenXR feature being enabled.
+// Helper method to check if OpenXR should be enabled, this is because we want
+// the feature enabled on XrDevices, but don't have a buildflag to cleanly set
+// the feature by itself. This should be checked instead of a direct query on
+// the kOpenXR feature being enabled.
 COMPONENT_EXPORT(VR_FEATURES) bool IsOpenXrEnabled();
 
-// Helper method to check if OpenXR AR should be enabled. It takes into account
-// both the `kOpenXrExtendedFeatureSupport` feature, as well as the state of the
-// system features on Android and the `kAllowOpenXrOnXrDevices` flag,
-// and should be checked instead of a direct query on the kOpenXR feature being
-// enabled.
+// Helper method to check if OpenXR AR should be enabled, this is because we
+// want the feature enabled on XrDevices, but don't have a buildflag to cleanly
+// set the feature by itself. This should be checked instead of a direct query
+// on the kOpenXrExtendedFeatureSupport feature being enabled.
 COMPONENT_EXPORT(VR_FEATURES) bool IsOpenXrArEnabled();
 
 #endif  // ENABLE_OPENXR
-
-COMPONENT_EXPORT(VR_FEATURES) BASE_DECLARE_FEATURE(kForceIsXrDeviceForTesting);
 
 COMPONENT_EXPORT(VR_FEATURES) bool IsXrDevice();
 

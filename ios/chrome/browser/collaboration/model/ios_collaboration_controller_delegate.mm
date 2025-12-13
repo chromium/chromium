@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -41,6 +42,8 @@
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -267,6 +270,7 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
   const FlowConfig flow_config = GetFlowConfig(flow_type);
 
   ServiceStatus service_status = collaboration_service_->GetServiceStatus();
+  Browser* regular_browser = signin::GetRegularBrowser(browser_);
   switch (service_status.signin_status) {
     case SigninStatus::kNotSignedIn:  // Fallthrough
     case SigninStatus::kSignedIn: {
@@ -286,9 +290,13 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
       command.optionalHistorySync = NO;
       command.fullScreenPromo = flow_config.full_screen_promo;
       command.contextStyle = flow_config.context_style;
+      // In case of double-tap, we must stop the already started coordinator.
+      // This may occur because, up to iOS 18, the view may have disappeared
+      // without calling the signin completion. See crbug.com/395959814
+      [signin_coordinator_ stop];
       signin_coordinator_ = [SigninCoordinator
           signinCoordinatorWithCommand:command
-                               browser:browser_
+                               browser:regular_browser
                     baseViewController:base_view_controller_];
       [signin_coordinator_ start];
       return;
@@ -301,14 +309,14 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
           &IOSCollaborationControllerDelegate::OnAuthenticationComplete,
           weak_ptr_factory_.GetWeakPtr(), std::move(result)));
       // For a paused sign-in, re-authentication is required.
-      // In case of double-tap, we must stop the first coordinator. This may
-      // occur because, up to iOS 18, the view may have disappeared without
-      // calling the signin completion. See crbug.com/395959814
+      // In case of double-tap, we must stop the already started coordinator.
+      // This may occur because, up to iOS 18, the view may have disappeared
+      // without calling the signin completion. See crbug.com/395959814
       [signin_coordinator_ stop];
       signin_coordinator_ = [SigninCoordinator
           primaryAccountReauthCoordinatorWithBaseViewController:
               base_view_controller_
-                                                        browser:browser_
+                                                        browser:regular_browser
                                                    contextStyle:
                                                        flow_config.context_style
                                                     accessPoint:
@@ -570,6 +578,7 @@ void IOSCollaborationControllerDelegate::ShowLeaveOrDeleteDialog(
 
 void IOSCollaborationControllerDelegate::OnAuthenticationComplete(
     ResultCallback result,
+    SigninCoordinator* coordinator,
     SigninCoordinatorResult sign_in_result,
     id<SystemIdentity> completion_info) {
   StopSigninCoordinator();
@@ -686,7 +695,7 @@ void IOSCollaborationControllerDelegate::FetchPreviewItems(
   // Init `preview_items` with default ShareKitPreviewItems.
   for (int i = 0; i < tabs_count; ++i) {
     ShareKitPreviewItem* preview_item = [[ShareKitPreviewItem alloc] init];
-    preview_item.title = base::SysUTF8ToNSString(tabs[i].url.host());
+    preview_item.title = base::SysUTF8ToNSString(tabs[i].url.GetHost());
     preview_item.image = SymbolWithPalette(
         DefaultSymbolWithPointSize(kGlobeAmericasSymbol, kFaviconSize),
         @[ [UIColor colorNamed:kGrey400Color] ]);
@@ -710,9 +719,11 @@ void IOSCollaborationControllerDelegate::FetchPreviewItems(
     // Asynchronously load the favicon for the tab's URL.
     favicon_loader_->FaviconForPageUrl(
         tab.url, kFaviconSize, kFaviconMinimumSize,
-        /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {
+        /*fallback_to_google_server=*/true,
+        ^(FaviconAttributes* attributes, bool cached) {
           // Skip synchronously returned default favicon.
-          if (completion_block_executed || attributes.usesDefaultImage) {
+          if (completion_block_executed ||
+              (cached && !attributes.faviconImage)) {
             return;
           }
           if (attributes.faviconImage) {
@@ -813,7 +824,7 @@ void IOSCollaborationControllerDelegate::ConfigureAndManageTabGroup(
     return;
   }
 
-  tab_groups::CollaborationId collaboration_id =
+  syncer::CollaborationId collaboration_id =
       tab_groups::utils::GetTabGroupCollabID(either_id,
                                              tab_group_sync_service_);
   std::optional<tab_groups::SavedTabGroup> group =
@@ -831,6 +842,9 @@ void IOSCollaborationControllerDelegate::ConfigureAndManageTabGroup(
   config.tabGroup = tab_group;
   config.groupImage = faviconsGridImage;
   config.collabID = base::SysUTF8ToNSString(collaboration_id.value());
+  config.enterpriseSharingDisabled =
+      collaboration_service_->GetServiceStatus().collaboration_status ==
+      CollaborationStatus::kDisabledForPolicy;
   config.applicationHandler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
   auto completion_block = base::CallbackToBlock(std::move(result));
@@ -857,6 +871,8 @@ UIImage* IOSCollaborationControllerDelegate::JoinGroupImage(
   CGRect frame = CGRectMake(0, 0, kJoinGroupImageSize, kJoinGroupImageSize);
   TabGroupFaviconsGrid* favicons_grid =
       [[TabGroupFaviconsGrid alloc] initWithFrame:frame];
+  favicons_grid.overrideUserInterfaceStyle =
+      base_view_controller_.traitCollection.userInterfaceStyle;
   favicons_grid.translatesAutoresizingMaskIntoConstraints = NO;
   favicons_grid.numberOfTabs = [preview_items count];
   favicons_grid_configurator_->ConfigureFaviconsGrid(favicons_grid,

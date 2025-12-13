@@ -9,18 +9,18 @@
 
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
-#include "base/version.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 
 namespace web_app {
 
 class GetBundleCachePathSuccess {
  public:
   GetBundleCachePathSuccess(const base::FilePath& cached_bundle_path,
-                            const base::Version& cached_version)
+                            const IwaVersion& cached_version)
       : cached_bundle_path_(cached_bundle_path),
         cached_version_(cached_version) {}
 
@@ -33,13 +33,17 @@ class GetBundleCachePathSuccess {
     return cached_bundle_path_;
   }
 
-  const base::Version& cached_version() const { return cached_version_; }
+  const IwaVersion& cached_version() const { return cached_version_; }
 
  private:
   base::FilePath cached_bundle_path_;
-  base::Version cached_version_;
+  IwaVersion cached_version_;
 };
 
+// These are used in histograms, do not remove/renumber entries. If you're
+// adding to this enum with the intention that it will be logged, update the
+// `IsolatedWebAppGetBundleCachePathError` enum listing in
+// tools/metrics/histograms/metadata/webapps/enums.xml.
 enum class GetBundleCachePathError {
   // The system was shut down before the command could complete.
   kSystemShutdown = 0,
@@ -47,6 +51,7 @@ enum class GetBundleCachePathError {
   kProvidedVersionNotFound = 1,
   // The IWA is not present in the cache.
   kIwaNotCached = 2,
+  kMaxValue = kIwaNotCached,
 };
 
 std::string GetBundleCachePathErrorToString(GetBundleCachePathError error);
@@ -65,7 +70,7 @@ class GetBundleCachePathCommand
   using Callback = base::OnceCallback<void(GetBundleCachePathResult)>;
 
   GetBundleCachePathCommand(const IsolatedWebAppUrlInfo& url_info,
-                            const std::optional<base::Version>& version,
+                            const std::optional<IwaVersion>& version,
                             IwaCacheClient::SessionType session_type,
                             Callback callback);
   GetBundleCachePathCommand(const GetBundleCachePathCommand&) = delete;
@@ -82,7 +87,7 @@ class GetBundleCachePathCommand
 
   std::unique_ptr<AppLock> lock_;
   const IsolatedWebAppUrlInfo url_info_;
-  const std::optional<base::Version> version_;
+  const std::optional<IwaVersion> version_;
   const IwaCacheClient::SessionType session_type_;
 
   base::WeakPtrFactory<GetBundleCachePathCommand> weak_ptr_factory_{this};

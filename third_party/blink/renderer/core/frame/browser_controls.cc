@@ -33,7 +33,7 @@ void BrowserControls::ResetBaseline() {
 }
 
 float BrowserControls::UnreportedSizeAdjustment() {
-  return (ShrinkViewport() ? TopHeight() : 0) - ContentOffset();
+  return (ShrinkViewport() ? TopHeight() : TopMinHeight()) - ContentOffset();
 }
 
 float BrowserControls::ContentOffset() {
@@ -109,16 +109,7 @@ void BrowserControls::DidUpdateBrowserControls(bool update_safe_area_inset) {
     return;
   }
 
-  if (!page_->GetSettings().GetDynamicSafeAreaInsetsEnabled()) {
-    return;
-  }
-  if (RuntimeEnabledFeatures::DynamicSafeAreaInsetsOnScrollEnabled()) {
-    // With DynamicSafeAreaInsetsOnScroll, we always update the safe area inset.
-    // Otherwise, update the safe area inset only if the caller explicitly
-    // requested it (change to BrowserControlsState or BrowserControlsParams).
-    update_safe_area_inset = true;
-  }
-  if (update_safe_area_inset) {
+  if (page_->GetSettings().GetDynamicSafeAreaInsetsEnabled()) {
     page_->UpdateSafeAreaInsetWithBrowserControls(*this);
   }
 }

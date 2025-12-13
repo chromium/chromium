@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gin/array_buffer.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "gin/per_isolate_data.h"
@@ -190,7 +186,7 @@ class ArrayBufferSharedMemoryMapper : public base::SharedMemoryMapper {
     if (!mapping)
       return std::nullopt;
 
-    return base::span(reinterpret_cast<uint8_t*>(mapping), size);
+    return UNSAFE_TODO(base::span(reinterpret_cast<uint8_t*>(mapping), size));
   }
 
   void Unmap(base::span<uint8_t> mapping) override {

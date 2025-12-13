@@ -169,6 +169,7 @@ bool IsNodeIdIntAttribute(ax::mojom::IntAttribute attr) {
     case ax::mojom::IntAttribute::kDOMNodeIdDeprecated:
     case ax::mojom::IntAttribute::kAriaNotificationInterruptDeprecated:
     case ax::mojom::IntAttribute::kAriaNotificationPriorityDeprecated:
+    case ax::mojom::IntAttribute::kPaintOrder:
       return false;
   }
 
@@ -219,183 +220,7 @@ bool IsNodeIdIntListAttribute(ax::mojom::IntListAttribute attr) {
   }
 }
 
-AXVectorBoolStore::AXVectorBoolStore() = default;
-AXVectorBoolStore::~AXVectorBoolStore() = default;
-
-AXVectorBoolStore::AXVectorBoolStore(const AXVectorBoolStore& other)
-    : list_(other.list_) {}
-
-bool AXVectorBoolStore::Has(ax::mojom::BoolAttribute attribute) const {
-  return list_.Has(attribute);
-}
-
-bool AXVectorBoolStore::Get(ax::mojom::BoolAttribute attribute) const {
-  return list_.Get(attribute);
-}
-
-void AXVectorBoolStore::Set(ax::mojom::BoolAttribute attribute, bool value) {
-  list_.Set(attribute, value);
-}
-
-void AXVectorBoolStore::Remove(ax::mojom::BoolAttribute attribute) {
-  list_.Remove(attribute);
-}
-
-bool AXVectorBoolStore::IsBitset() const {
-  return false;
-}
-
-std::unique_ptr<AXBoolStore> AXVectorBoolStore::Clone() const {
-  return std::make_unique<AXVectorBoolStore>(*this);
-}
-
-size_t AXVectorBoolStore::Size() const {
-  return list_.size();
-}
-
-size_t AXVectorBoolStore::ObjectSize() const {
-  return sizeof(*this) + (list_.container().capacity() *
-                          sizeof(std::pair<ax::mojom::BoolAttribute, bool>));
-}
-
-void AXVectorBoolStore::ForEach(
-    base::FunctionRef<void(ax::mojom::BoolAttribute, bool)> callback) const {
-  for (const auto& pair : list_) {
-    callback(pair.first, pair.second);
-  }
-}
-
-void AXVectorBoolStore::Merge(const AXBoolStore& other) {
-  other.ForEach([this](ax::mojom::BoolAttribute attr, bool value) {
-    this->Set(attr, value);
-  });
-}
-
-void AXVectorBoolStore::Clear() {
-  list_.clear();
-}
-
-const AXBitset<ax::mojom::BoolAttribute>& AXVectorBoolStore::GetBitsetStore()
-    const {
-  static const AXBitset<ax::mojom::BoolAttribute> bitset;
-  return bitset;
-}
-
-const AXBoolAttributes& AXVectorBoolStore::GetVectorStore() const {
-  return list_;
-}
-
-bool AXVectorBoolStore::IsEqual(const AXBoolStore& other) const {
-  if (other.IsBitset()) {
-    return false;
-  }
-  return IsEqual(static_cast<const AXVectorBoolStore&>(other));
-}
-
-bool AXVectorBoolStore::IsEqual(const AXVectorBoolStore& other) const {
-  return list_ == other.list_;
-}
-
-void AXVectorBoolStore::PopulateFromMap(
-    const base::flat_map<ax::mojom::BoolAttribute, bool>& source_map) {
-  list_.container() = source_map;
-}
-
-AXBitsetBoolStore::AXBitsetBoolStore() = default;
-AXBitsetBoolStore::~AXBitsetBoolStore() = default;
-
-AXBitsetBoolStore::AXBitsetBoolStore(const AXBitsetBoolStore& other)
-    : bitset_(other.bitset_) {}
-
-bool AXBitsetBoolStore::Has(ax::mojom::BoolAttribute attribute) const {
-  return bitset_.Has(attribute).has_value();
-}
-
-bool AXBitsetBoolStore::Get(ax::mojom::BoolAttribute attribute) const {
-  std::optional<bool> attr = bitset_.Has(attribute);
-  return attr.has_value() ? attr.value() : false;
-}
-
-void AXBitsetBoolStore::Set(ax::mojom::BoolAttribute attribute, bool value) {
-  bitset_.Set(attribute, value);
-}
-
-void AXBitsetBoolStore::Remove(ax::mojom::BoolAttribute attribute) {
-  bitset_.Unset(attribute);
-}
-
-bool AXBitsetBoolStore::IsBitset() const {
-  return true;
-}
-
-std::unique_ptr<AXBoolStore> AXBitsetBoolStore::Clone() const {
-  return std::make_unique<AXBitsetBoolStore>(*this);
-}
-
-size_t AXBitsetBoolStore::Size() const {
-  return bitset_.Size();
-}
-
-size_t AXBitsetBoolStore::ObjectSize() const {
-  return sizeof(*this);
-}
-
-void AXBitsetBoolStore::Clear() {
-  bitset_ = AXBitset<ax::mojom::BoolAttribute>();
-}
-
-void AXBitsetBoolStore::ForEach(
-    base::FunctionRef<void(ax::mojom::BoolAttribute, bool)> callback) const {
-  bitset_.ForEach(callback);
-}
-
-void AXBitsetBoolStore::Merge(const AXBoolStore& other) {
-  if (other.IsBitset()) {
-    bitset_.Append(other.GetBitsetStore());
-  } else {
-    other.ForEach([this](ax::mojom::BoolAttribute attr, bool value) {
-      this->Set(attr, value);
-    });
-  }
-}
-
-bool AXBitsetBoolStore::IsEqual(const AXBoolStore& other) const {
-  if (!other.IsBitset()) {
-    return false;
-  }
-  return IsEqual(static_cast<const AXBitsetBoolStore&>(other));
-}
-
-bool AXBitsetBoolStore::IsEqual(const AXBitsetBoolStore& other) const {
-  return bitset_ == other.bitset_;
-}
-
-const AXBitset<ax::mojom::BoolAttribute>& AXBitsetBoolStore::GetBitsetStore()
-    const {
-  return bitset_;
-}
-
-const AXBoolAttributes& AXBitsetBoolStore::GetVectorStore() const {
-  static const AXBoolAttributes vector;
-  return vector;
-}
-
-void AXBitsetBoolStore::PopulateFromMap(
-    const base::flat_map<ax::mojom::BoolAttribute, bool>& source_map) {
-  AXBitset<ax::mojom::BoolAttribute> temp_bitset;
-  for (const auto& pair : source_map) {
-    temp_bitset.Set(pair.first, pair.second);
-  }
-  bitset_ = temp_bitset;
-}
-
-AXNodeData::AXNodeData() : role(ax::mojom::Role::kUnknown) {
-  if (features::IsAccessibilityUseAXBitsetEnabled()) {
-    bool_attributes = std::make_unique<AXBitsetBoolStore>();
-  } else {
-    bool_attributes = std::make_unique<AXVectorBoolStore>();
-  }
-}
+AXNodeData::AXNodeData() : role(ax::mojom::Role::kUnknown) {}
 
 AXNodeData::~AXNodeData() = default;
 
@@ -407,9 +232,7 @@ AXNodeData::AXNodeData(const AXNodeData& other) {
   string_attributes = other.string_attributes;
   int_attributes = other.int_attributes;
   float_attributes = other.float_attributes;
-  if (other.bool_attributes) {
-    bool_attributes = other.bool_attributes->Clone();
-  }
+  bool_attributes = other.bool_attributes;
   intlist_attributes = other.intlist_attributes;
   stringlist_attributes = other.stringlist_attributes;
   html_attributes = other.html_attributes;
@@ -446,11 +269,7 @@ AXNodeData& AXNodeData::operator=(const AXNodeData& other) {
   string_attributes = other.string_attributes;
   int_attributes = other.int_attributes;
   float_attributes = other.float_attributes;
-  if (other.bool_attributes) {
-    bool_attributes = other.bool_attributes->Clone();
-  } else {
-    bool_attributes.reset();
-  }
+  bool_attributes = other.bool_attributes;
   intlist_attributes = other.intlist_attributes;
   stringlist_attributes = other.stringlist_attributes;
   html_attributes = other.html_attributes;
@@ -674,6 +493,7 @@ void AXNodeData::AddAction(ax::mojom::Action action_enum) {
     case ax::mojom::Action::kStopDuckingMedia:
     case ax::mojom::Action::kSuspendMedia:
     case ax::mojom::Action::kLongClick:
+    case ax::mojom::Action::kRequestLayoutBasedAction:
       break;
   }
 
@@ -731,6 +551,10 @@ void AXNodeData::SetDefaultActionVerb(
     AddIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb,
                     static_cast<int32_t>(default_action_verb));
   }
+}
+
+int AXNodeData::GetPaintOrder() const {
+  return GetIntAttribute(ax::mojom::IntAttribute::kPaintOrder);
 }
 
 ax::mojom::HasPopup AXNodeData::GetHasPopup() const {
@@ -1527,6 +1351,9 @@ std::string AXNodeData::ToString(bool verbose) const {
       case ax::mojom::IntAttribute::kMaxLength:
         result += " maxlength=" + value;
         break;
+      case ax::mojom::IntAttribute::kPaintOrder:
+        result += " paintorder=" + value;
+        break;
       case ax::mojom::IntAttribute::kNone:
         break;
     }
@@ -1763,7 +1590,7 @@ std::string AXNodeData::ToString(bool verbose) const {
     }
   };
 
-  bool_attributes->ForEach(process_bool_attribute);
+  bool_attributes.ForEach(process_bool_attribute);
 
   for (const std::pair<ax::mojom::IntListAttribute, std::vector<int32_t>>&
            intlist_attribute : intlist_attributes) {
@@ -1971,8 +1798,7 @@ void AXNodeData::AccumulateSize(
   node_data_size.float_attribute_size +=
       float_attributes.size() *
       (sizeof(ax::mojom::FloatAttribute) + sizeof(float));
-  node_data_size.bool_attribute_size +=
-      sizeof(bool_attributes) + bool_attributes->ObjectSize();
+  node_data_size.bool_attribute_size += sizeof(bool_attributes);
   node_data_size.child_ids_size = child_ids.size() * sizeof(int32_t);
 
   for (const auto& pair : string_attributes) {

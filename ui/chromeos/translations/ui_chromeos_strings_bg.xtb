@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Директна връзка с интернет</translation>
 <translation id="1272293450992660632">ПИН кодовете не са идентични.</translation>
+<translation id="1279040297980392566">Изчаква се сканирането да приключи. Опитайте отново по-късно</translation>
 <translation id="1280820357415527819">Търсят се мобилни мрежи</translation>
 <translation id="1293556467332435079">Файлове</translation>
 <translation id="1297922636971898492">В момента няма достъп до Google Диск. Качването ще се рестартира автоматично, щом услугата отново е налице.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">Избрахте 1 файл</translation>
 <translation id="3817579325494460411">Не е посочено</translation>
 <translation id="3819448694985509187">Неправилен ПИН код. Остава ви 1 опит.</translation>
-<translation id="3822559385185038546">Този прокси сървър е наложен от администратора ви</translation>
 <translation id="3830674330436234648">Възпроизвеждането не е възможно</translation>
 <translation id="383652340667548381">сръбски</translation>
 <translation id="3839045880592694915">Операторът ви е забранил на модема ви да осъществява връзка. За повече подробности се обърнете към оператора си.</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Още опции</translation>
 <translation id="5602622065581044566">Български с фонетична клавиатура</translation>
 <translation id="5605830556594064952">Американска (Дворак) клавиатура</translation>
+<translation id="560739212255190568">Администраторът ви е задал правила за замяна на прокси сървъра в допълнение към налагането на следния прокси сървър</translation>
 <translation id="5618330573454123917">Този файл е предназначен за компютри със софтуер за Macintosh. Той не е съвместим с устройството ви с Chrome OS. <ph name="BEGIN_LINK_HELP" />Научете повече<ph name="END_LINK_HELP" /> за отварянето на файлове в Chrome OS.</translation>
 <translation id="5625294776298156701">Тамилски с клавиатура Tamil99</translation>
 <translation id="5633226425545095130">Ако преместите този елемент, той ще бъде споделен с всеки, който може да вижда споделената папка „<ph name="DESTINATION_NAME" />“.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, подробности</translation>
 <translation id="8545476925160229291">Английски (САЩ)</translation>
 <translation id="854655314928502177">URL адрес за автоматично откриване на уеб прокси сървъра:</translation>
+<translation id="8547747809824590510">Администраторът ви е задал правила за замяна на прокси сървъра</translation>
 <translation id="8549186985808798022">Италиански</translation>
 <translation id="8551494947769799688">латвийски</translation>
 <translation id="8560515948038859357">Кантонски</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Файлът „<ph name="FILE_NAME" />“ вече съществува. Моля, изберете друго име.</translation>
 <translation id="9046895021617826162">Свързването не бе успешно</translation>
 <translation id="9065512565307033593">Ако не успеете да потвърдите самоличността си, достъпът ви до мрежата ще бъде прекратен.</translation>
+<translation id="9079844694307518094">Администраторът ви налага следния прокси сървър</translation>
 <translation id="908378762078012445">Руски с фонетична клавиатура AATSEEL</translation>
 <translation id="9086302186042011942">Синхронизира се</translation>
 <translation id="9099674669267916096">Брой страници</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">Инсталирането стартира успешно.</translation>
 <translation id="9219103736887031265">Изображения</translation>
 <translation id="9219908252191632183">Лунен пейзаж</translation>
+<translation id="931652069802536959">Мрежата е блокирана от правило</translation>
 <translation id="938470336146445890">Моля, инсталирайте потребителски сертификат.</translation>
 <translation id="939736085109172342">Нова папка</translation>
 <translation id="943972244133411984">Променено от</translation>

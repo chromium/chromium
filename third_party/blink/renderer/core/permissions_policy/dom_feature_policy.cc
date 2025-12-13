@@ -64,7 +64,8 @@ bool DOMFeaturePolicy::allowsFeature(ScriptState* script_state,
     context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        "Invalid origin url for feature '" + feature + "': " + url + "."));
+        StrCat(
+            {"Invalid origin url for feature '", feature, "': ", url, "."})));
     return false;
   }
 
@@ -139,11 +140,11 @@ Vector<String> DOMFeaturePolicy::getAllowlistForFeature(
         static_cast<wtf_size_t>(allowlist.SelfIfMatches().has_value()));
     if (allowlist.SelfIfMatches()) {
       result.push_back(
-          WTF::String::FromUTF8(allowlist.SelfIfMatches()->Serialize()));
+          String::FromUTF8(allowlist.SelfIfMatches()->Serialize()));
     }
     for (const auto& origin_with_possible_wildcards : allowed_origins) {
       result.push_back(
-          WTF::String::FromUTF8(origin_with_possible_wildcards.Serialize()));
+          String::FromUTF8(origin_with_possible_wildcards.Serialize()));
     }
     return result;
   }
@@ -157,7 +158,7 @@ void DOMFeaturePolicy::AddWarningForUnrecognizedFeature(
   context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kOther,
       mojom::blink::ConsoleMessageLevel::kWarning,
-      "Unrecognized feature: '" + feature + "'."));
+      StrCat({"Unrecognized feature: '", feature, "'."})));
 }
 
 void DOMFeaturePolicy::Trace(Visitor* visitor) const {

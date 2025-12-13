@@ -339,7 +339,6 @@ bool SearchPreloadPipelineManager::OnNavigationLikely(
           }
         }(navigation_predictor);
 
-    // TODO(crbug.com/403198750): Limit the number of active pipelines.
     if (!pipelines_.contains(canonical_url)) {
       pipelines_.insert_or_assign(
           canonical_url,

@@ -5,11 +5,10 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SettingsPrivacyGuidePageElement} from 'chrome://settings/lazy_load.js';
 import {PrivacyGuideStep} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideStepsEligibleAndReached, Router, routes, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, PrivacyGuideStepsEligibleAndReached, Router, routes, SignedInState, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertTrue, assertNotReached} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -92,11 +91,53 @@ async function getPromiseArguments(
       'recordPrivacyGuideStepsEligibleAndReachedHistogram'));
 }
 
+// Programmatically generate all possible permutations of Privacy Guide steps.
+// Each permutation is represented by a binary vector, where the i-th bit
+// corresponds to the eligibility of the i-th step in the `optionalSteps` array.
+function generateTestCases(optionalSteps: PrivacyGuideStep[]):
+    Map<string, Map<PrivacyGuideStep, boolean>> {
+  const permutationsCount = 2 ** optionalSteps.length;
+
+  const masks: number[] = [];
+  for (let i = 0; i < optionalSteps.length; i++) {
+    masks.push(2 ** i);
+  }
+
+  const testCases: Map<string, Map<PrivacyGuideStep, boolean>> = new Map();
+  for (let testCase = 0; testCase < permutationsCount; testCase++) {
+    let stepNames = '';
+    const stepEligibilities = new Map();
+
+    optionalSteps.forEach((step, index) => {
+      const isStepEligible = !!(testCase & masks[index]!);
+      if (isStepEligible) {
+        stepNames += '_' + step.toString();
+      }
+      stepEligibilities.set(step, isStepEligible);
+    });
+
+    if (stepNames === '') {
+      stepNames = '_allDisabled';
+    }
+
+    testCases.set(stepNames, stepEligibilities);
+  }
+
+  return testCases;
+}
+
 suite('PrivacyGuideEligibleReachedMetrics', function() {
   let page: SettingsPrivacyGuidePageElement;
   let settingsPrefs: SettingsPrefsElement;
   let syncBrowserProxy: TestSyncBrowserProxy;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  const optionalSteps: PrivacyGuideStep[] = [];
+  optionalSteps.push(PrivacyGuideStep.HISTORY_SYNC);
+  optionalSteps.push(PrivacyGuideStep.SAFE_BROWSING);
+  // The COOKIES step only exists if the 3PCD redesign is not enabled.
+  if (!loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
+    optionalSteps.push(PrivacyGuideStep.COOKIES);
+  }
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -122,7 +163,7 @@ suite('PrivacyGuideEligibleReachedMetrics', function() {
     syncBrowserProxy = new TestSyncBrowserProxy();
     setupSync({
       syncBrowserProxy: syncBrowserProxy,
-      syncOn: true,
+      signedInState: SignedInState.SYNCING,
       syncAllDataTypes: true,
       typedUrlsSynced: true,
     });
@@ -134,57 +175,49 @@ suite('PrivacyGuideEligibleReachedMetrics', function() {
     return flushTasks();
   }
 
-  test('recordStepsAreEligibleReached', async function() {
-    const optionalSteps: PrivacyGuideStep[] = [];
-    optionalSteps.push(PrivacyGuideStep.HISTORY_SYNC);
-    optionalSteps.push(PrivacyGuideStep.SAFE_BROWSING);
-    if (!loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
-      optionalSteps.push(PrivacyGuideStep.COOKIES);
-    }
+  for (const [stepNames, stepsEligibility] of generateTestCases(
+           optionalSteps)) {
+    test('recordStepsAreEligibleReached' + stepNames, async function() {
+      // Setup the test based on the eligibility of optional cards.
+      for (const [step, isEligible] of stepsEligibility) {
+        setParametersForStep(page, syncBrowserProxy, step, isEligible);
+      }
 
-    const masks: number[] = [];
-    for (let i = 0; i < optionalSteps.length; i++) {
-      masks.push(2 ** i);
-    }
-
-    // Each optional step can be either eligible or not eligible to be shown.
-    // To test all possible permutations of steps a binary vector and bit
-    // masking is used. i-th element of the vector represents eligibility of the
-    // i-th step in optionalSteps array.
-    for (let testCase = 0; testCase < 2 ** optionalSteps.length; testCase++) {
-      Router.getInstance().navigateTo(routes.PRIVACY_GUIDE);
-      await flushTasks();
-      await testSetup();
-
+      // `expectedArguments` represents what is expected to be recorded into
+      // metrics. It is first filled with the cards that are eligible to be
+      // shown then with cards that were actually shown (aka reached).
       const expectedArguments = new Set<number>();
-      expectedArguments.add(PrivacyGuideStepsEligibleAndReached.MSBB_ELIGIBLE);
 
-      optionalSteps.forEach((step, index) => {
-        const isStepEligible = !!(testCase & masks[index]!);
-        setParametersForStep(page, syncBrowserProxy, step, isStepEligible);
-        if (isStepEligible) {
+      // Add mandatory and eligible optional steps into expected metrics record.
+      expectedArguments.add(PrivacyGuideStepsEligibleAndReached.MSBB_ELIGIBLE);
+      for (const [step, isEligible] of stepsEligibility) {
+        if (isEligible) {
           expectedArguments.add(
               privacyGuideStepToEligibleReachedValueMap.get(step)!.eligible);
         }
-      });
-
+      }
       expectedArguments.add(
           PrivacyGuideStepsEligibleAndReached.COMPLETION_ELIGIBLE);
 
+      // Navigate to Privacy Guide page.
+      Router.getInstance().navigateTo(routes.PRIVACY_GUIDE);
+      await flushTasks();
+
+      // Click through the flow and assert that each step is recorded as
+      // reached.
+      // The first step is a mandatory MSBB card.
       await clickNextOnWelcomeStep(page);
       expectedArguments.add(PrivacyGuideStepsEligibleAndReached.MSBB_REACHED);
-
       assertTrue(
           isSetEqual(
               expectedArguments,
               await getPromiseArguments(testMetricsBrowserProxy)),
           'Sets differ for the step: MSBB_REACHED');
-
       const nextButtonElementOnMSBBStep =
           page.shadowRoot!.querySelector<HTMLElement>('#nextButton');
       assertTrue(!!nextButtonElementOnMSBBStep);
       nextButtonElementOnMSBBStep.click();
-
+      // The next is optional steps.
       for (const step of optionalSteps) {
         if (!shouldStepBeShown(page, syncBrowserProxy, step)) {
           continue;
@@ -204,15 +237,14 @@ suite('PrivacyGuideEligibleReachedMetrics', function() {
         assertTrue(!!nextButtonElementOnStep);
         nextButtonElementOnStep.click();
       }
-
+      // The last is mandatory COMPLETION step.
       expectedArguments.add(
           PrivacyGuideStepsEligibleAndReached.COMPLETION_REACHED);
-
       assertTrue(
           isSetEqual(
               expectedArguments,
               await getPromiseArguments(testMetricsBrowserProxy)),
           'Sets differ for the step: COMPLETION_REACHED');
-    }
-  });
+    });
+  }
 });

@@ -210,7 +210,7 @@ test("device_unittests") {
     ]
 
     deps += [
-      "//components/sync/protocol:protocol",
+      "//components/sync/protocol",
       "//device/fido:mocks",
       "//services/data_decoder/public/cpp:test_support",
     ]
@@ -279,6 +279,7 @@ test("device_unittests") {
   if (is_chromeos) {
     sources += [
       "bluetooth/bluetooth_low_energy_scan_filter_unittest.cc",
+      "bluetooth/bluez/ble_scan_parser/ble_scan_parser_unittest.cc",
       "bluetooth/chromeos/bluetooth_connection_logger_unittest.cc",
       "bluetooth/chromeos/bluetooth_utils_unittest.cc",
     ]
@@ -287,6 +288,8 @@ test("device_unittests") {
       "//chromeos/ash/services/nearby/public/cpp/",
       "//chromeos/ash/services/secure_channel/public/cpp/shared",
       "//chromeos/constants",
+      "//device/bluetooth/bluez/ble_scan_parser",
+      "//device/bluetooth/bluez/ble_scan_parser:lib",
     ]
   }
 
@@ -481,6 +484,10 @@ test("device_unittests") {
   if (is_chromeos) {
     deps += [ "//chromeos/dbus/u2f" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_android) {

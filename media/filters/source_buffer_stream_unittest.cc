@@ -379,8 +379,10 @@ class SourceBufferStreamTest : public testing::Test {
         ASSERT_EQ(buffer->timestamp(), preroll_buffer->timestamp());
         ASSERT_EQ(buffer->GetDecodeTimestamp(),
                   preroll_buffer->GetDecodeTimestamp());
-        ASSERT_EQ(kInfiniteDuration, preroll_buffer->discard_padding().first);
-        ASSERT_EQ(base::TimeDelta(), preroll_buffer->discard_padding().second);
+        auto preroll_discard = preroll_buffer->discard_padding();
+        ASSERT_TRUE(preroll_discard.has_value());
+        ASSERT_EQ(kInfiniteDuration, preroll_discard->first);
+        ASSERT_EQ(base::TimeDelta(), preroll_discard->second);
         ASSERT_TRUE(buffer->is_key_frame());
 
         ss << "P";
@@ -4330,14 +4332,13 @@ TEST_F(SourceBufferStreamTest, Audio_SpliceFrame_NoSplice) {
   // Manually inspect the buffers at the no-splice boundary to verify duration
   // and lack of discard padding (set when splicing).
   scoped_refptr<StreamParserBuffer> buffer;
-  const DecoderBuffer::DiscardPadding kEmptyDiscardPadding;
   for (int i = 0; i < 10; i++) {
     // Verify buffer timestamps and durations are preserved and no buffers have
     // discard padding (indicating no splice trimming).
     EXPECT_STATUS_FOR_STREAM_OP(kSuccess, GetNextBuffer(&buffer));
     EXPECT_EQ(base::Milliseconds(i * 2), buffer->timestamp());
     EXPECT_EQ(base::Milliseconds(2), buffer->duration());
-    EXPECT_EQ(kEmptyDiscardPadding, buffer->discard_padding());
+    EXPECT_FALSE(buffer->discard_padding().has_value());
   }
 
   CheckNoNextBuffer();
@@ -4477,8 +4478,7 @@ TEST_F(SourceBufferStreamTest, Audio_SpliceTrimming_ExistingTrimming) {
   EXPECT_STATUS_FOR_STREAM_OP(kSuccess, GetNextBuffer(&read_buffer));
   EXPECT_EQ(base::Milliseconds(5), read_buffer->timestamp());
   EXPECT_EQ(kDuration, read_buffer->duration());
-  EXPECT_EQ(std::make_pair(kNoDiscard, kNoDiscard),
-            read_buffer->discard_padding());
+  EXPECT_FALSE(read_buffer->discard_padding().has_value());
 
   CheckNoNextBuffer();
 }
@@ -5116,80 +5116,6 @@ TEST_F(SourceBufferStreamTest, GetHighestPresentationTimestamp) {
 
   RemoveInMs(10, 20, 20);
   EXPECT_EQ(base::TimeDelta(), stream_->GetHighestPresentationTimestamp());
-}
-
-TEST_F(SourceBufferStreamTest, GarbageCollectionUnderMemoryPressure) {
-  SetMemoryLimit(16);
-  NewCodedFrameGroupAppend("0K 1 2 3K 4 5 6K 7 8 9K 10 11 12K 13 14 15K");
-  CheckExpectedRangesByTimestamp("{ [0,16) }");
-
-  // This feature is disabled by default, so by default memory pressure
-  // notification takes no effect and the memory limits and won't remove
-  // anything from buffered ranges, since we are under the limit of 20 bytes.
-  stream_->OnMemoryPressure(
-      base::Milliseconds(0),
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE, false);
-  EXPECT_TRUE(GarbageCollect(base::Milliseconds(8), 0));
-  CheckExpectedRangesByTimestamp("{ [0,16) }");
-
-  // Now enable the feature (on top of any overrides already in
-  // |scoped_feature_list_|.)
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kMemoryPressureBasedSourceBufferGC);
-
-  // Verify that effective MSE memory limit is reduced under memory pressure.
-  stream_->OnMemoryPressure(
-      base::Milliseconds(0),
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE, false);
-
-  // Effective memory limit is now 8 buffers, but we still will not collect any
-  // data between the current playback position 3 and last append position 15.
-  EXPECT_TRUE(GarbageCollect(base::Milliseconds(4), 0));
-  CheckExpectedRangesByTimestamp("{ [3,16) }");
-
-  // As playback proceeds further to time 9 we should be able to collect
-  // enough data to bring us back under memory limit of 8 buffers.
-  EXPECT_TRUE(GarbageCollect(base::Milliseconds(9), 0));
-  CheckExpectedRangesByTimestamp("{ [9,16) }");
-
-  // If memory pressure becomes critical, the garbage collection algorithm
-  // becomes even more aggressive and collects everything up to the current
-  // playback position.
-  stream_->OnMemoryPressure(
-      base::Milliseconds(0),
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL, false);
-  EXPECT_TRUE(GarbageCollect(base::Milliseconds(13), 0));
-  CheckExpectedRangesByTimestamp("{ [12,16) }");
-
-  // But even under critical memory pressure the MSE memory limit imposed by the
-  // memory pressure is soft, i.e. we should be able to append more data
-  // successfully up to the hard limit of 16 bytes.
-  NewCodedFrameGroupAppend("16K 17 18 19 20 21 22 23 24 25 26 27");
-  CheckExpectedRangesByTimestamp("{ [12,28) }");
-  EXPECT_TRUE(GarbageCollect(base::Milliseconds(13), 0));
-  CheckExpectedRangesByTimestamp("{ [12,28) }");
-}
-
-TEST_F(SourceBufferStreamTest, InstantGarbageCollectionUnderMemoryPressure) {
-  SetMemoryLimit(16);
-  NewCodedFrameGroupAppend("0K 1 2 3K 4 5 6K 7 8 9K 10 11 12K 13 14 15K");
-  CheckExpectedRangesByTimestamp("{ [0,16) }");
-
-  // Verify that garbage collection happens immediately on critical memory
-  // pressure notification, even without explicit GarbageCollect invocation,
-  // when the immediate GC is allowed.
-  // First, enable the feature (on top of any overrides already in
-  // |scoped_feature_list_|.)
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kMemoryPressureBasedSourceBufferGC);
-  stream_->OnMemoryPressure(
-      base::Milliseconds(7),
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL, true);
-  CheckExpectedRangesByTimestamp("{ [6,16) }");
-  stream_->OnMemoryPressure(
-      base::Milliseconds(9),
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL, true);
-  CheckExpectedRangesByTimestamp("{ [9,16) }");
 }
 
 TEST_F(SourceBufferStreamTest, GCFromFrontThenExplicitRemoveFromMiddleToEnd) {

@@ -23,6 +23,7 @@ source_set("notifications") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
     "//chrome/common/extensions/api",
     "//components/keyed_service/core",

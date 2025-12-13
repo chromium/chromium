@@ -130,7 +130,7 @@ void MediaControlsRotateToFullscreenDelegate::OnStateChange() {
   if (needs_intersection_observer && !intersection_observer_) {
     intersection_observer_ = IntersectionObserver::Create(
         video_element_->GetDocument(),
-        WTF::BindRepeating(
+        BindRepeating(
             &MediaControlsRotateToFullscreenDelegate::OnIntersectionChange,
             WrapWeakPersistent(this)),
         LocalFrameUkmAggregator::kMediaIntersectionObserver,

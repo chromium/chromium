@@ -108,7 +108,7 @@ class WaylandSurfaceExplicitSyncTest : public WaylandTestSimple {
                                uint32_t planes_count = 1) {
     buffer_manager_gpu_->CreateDmabufBasedBuffer(
         GetFdFactory()->CreateFd(), kDefaultSize, strides, offsets, modifiers,
-        format, planes_count, buffer_id);
+        format, planes_count, gfx::ColorSpace(), gfx::HDRMetadata(), buffer_id);
 
     base::RunLoop().RunUntilIdle();
 

@@ -5,10 +5,10 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_NETWORK_CONNECTION_TRACKER_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_NETWORK_CONNECTION_TRACKER_H_
 
+#include <atomic>
 #include <list>
 #include <memory>
 
-#include "base/atomicops.h"
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -145,7 +145,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkConnectionTracker
 
   // |connection_type_| is set on one thread but read on many threads.
   // The default value is -1 before OnInitialConnectionType().
-  base::subtle::Atomic32 connection_type_;
+  std::atomic<int32_t> connection_type_;
 
   const scoped_refptr<base::ObserverListThreadSafe<NetworkConnectionObserver>>
       network_change_observer_list_;

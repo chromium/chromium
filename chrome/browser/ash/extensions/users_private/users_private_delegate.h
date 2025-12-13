@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_EXTENSIONS_USERS_PRIVATE_USERS_PRIVATE_DELEGATE_H_
 #define CHROME_BROWSER_ASH_EXTENSIONS_USERS_PRIVATE_USERS_PRIVATE_DELEGATE_H_
 
-#include <map>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"

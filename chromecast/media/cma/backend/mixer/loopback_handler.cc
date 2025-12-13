@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/cma/backend/mixer/loopback_handler.h"
 
 #include <limits>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -235,8 +231,9 @@ void LoopbackHandler::SendDataInternal(int64_t timestamp,
   DCHECK_LE(data_size_bytes, data_size_);
   DCHECK(buffer_pool_);
   auto buffer = buffer_pool_->GetBuffer();
-  memcpy(buffer->data() + mixer_service::MixerSocket::kAudioMessageHeaderSize,
-         data, data_size_bytes);
+  UNSAFE_TODO(memcpy(
+      buffer->data() + mixer_service::MixerSocket::kAudioMessageHeaderSize,
+      data, data_size_bytes));
   io_.AsyncCall(&LoopbackIO::SendData)
       .WithArgs(std::move(buffer), data_size_bytes, timestamp);
 }

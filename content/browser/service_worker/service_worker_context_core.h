@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_CONTEXT_CORE_H_
 
 #include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <optional>
@@ -23,6 +24,7 @@
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/browser/service_worker/service_worker_info.h"
 #include "content/browser/service_worker/service_worker_process_manager.h"
+#include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_registration_status.h"
 #include "content/browser/service_worker/service_worker_registry.h"
 #include "content/common/content_export.h"
@@ -343,6 +345,12 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   // Called when a Service Worker navigates an existing tab.
   void OnClientNavigated(const GURL& script_url, const GURL& url);
 
+  // Called when a Service Worker (of an ESB user) makes network requests during
+  // a push event.
+  void OnPushEventFinished(
+      const GURL& script_url,
+      const std::optional<std::vector<GURL>>& requested_urls);
+
   // OnControlleeAdded/Removed are called asynchronously. It is possible the
   // service worker client identified by |client_uuid| was already destroyed
   // when they are called. Note regarding BackForwardCache integration:
@@ -406,10 +414,12 @@ class CONTENT_EXPORT ServiceWorkerContextCore
 
   // If `is_immediate` is true, unregister clears the active worker from the
   // registration without waiting for the controlled clients to unload.
-  void UnregisterServiceWorker(const GURL& scope,
-                               const blink::StorageKey& key,
-                               bool is_immediate,
-                               UnregistrationCallback callback);
+  void UnregisterServiceWorker(
+      const GURL& scope,
+      const blink::StorageKey& key,
+      bool is_immediate,
+      ServiceWorkerRegistration::DeleteInitiator initiator,
+      UnregistrationCallback callback);
 
   // Callback is called after all deletions occurred. The status code is
   // blink::ServiceWorkerStatusCode::kOk if all succeed, or

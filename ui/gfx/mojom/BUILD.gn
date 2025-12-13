@@ -43,6 +43,7 @@ mojom("mojom") {
     ":hdr_metadata",
     ":native_handle_types",
     "//mojo/public/mojom/base",
+    "//services/viz/public/mojom/compositing:shared_image_format",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
   ]
@@ -65,19 +66,6 @@ mojom("mojom") {
         {
           mojom = "gfx.mojom.BufferUsage"
           cpp = "::gfx::BufferUsage"
-        },
-        {
-          mojom = "gfx.mojom.BufferUsageAndFormat"
-          cpp = "::gfx::BufferUsageAndFormat"
-        },
-        {
-          mojom = "gfx.mojom.BufferPlane"
-          cpp = "::gfx::BufferPlane"
-        },
-        {
-          mojom = "gfx.mojom.GpuMemoryBufferId"
-          cpp = "::gfx::GpuMemoryBufferId"
-          copyable_pass_by_value = true
         },
       ]
 
@@ -159,6 +147,10 @@ mojom("mojom") {
         {
           mojom = "gfx.mojom.SelectionBound"
           cpp = "::gfx::SelectionBound"
+        },
+        {
+          mojom = "gfx.mojom.SelectionBoundType"
+          cpp = "::gfx::SelectionBound::Type"
         },
       ]
       traits_headers = [ "selection_bound_mojom_traits.h" ]
@@ -559,10 +551,6 @@ mojom("hdr_metadata") {
           cpp = "::gfx::HdrMetadataExtendedRange"
         },
         {
-          mojom = "gfx.mojom.HdrMetadataAgtm"
-          cpp = "::gfx::HdrMetadataAgtm"
-        },
-        {
           mojom = "gfx.mojom.HDRMetadata"
           cpp = "::gfx::HDRMetadata"
         },
@@ -597,6 +585,8 @@ component("shared_mojom_traits") {
     "//ui/gfx",
   ]
   deps = [
+    "//components/viz/common/resources:shared_image_format",
+    "//services/viz/public/mojom/compositing:shared_image_format",
     "//skia/public/mojom",
     "//ui/base:ozone_buildflags",
   ]

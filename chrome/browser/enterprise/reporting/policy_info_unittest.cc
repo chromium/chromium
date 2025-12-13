@@ -4,7 +4,6 @@
 
 #include "components/enterprise/browser/reporting/policy_info.h"
 
-#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -44,8 +43,6 @@ constexpr char kExtensionId2[] = "abcdefghijklmnoabcdefghijklmnoac";
 using ::testing::_;
 using ::testing::Eq;
 
-// TODO(crbug.com/40700771): Get rid of chrome/browser dependencies and then
-// move this file to components/enterprise/browser.
 class PolicyInfoTest : public ::testing::Test {
  public:
   void SetUp() override {

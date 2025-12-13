@@ -18,7 +18,7 @@
 #include "ash/system/tray/system_tray_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class PrefRegistrySimple;
 

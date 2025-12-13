@@ -26,12 +26,14 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
   explicit FrameView(const gfx::Rect& frame_rect);
   ~FrameView() override = default;
 
+  virtual void UpdateIntersectionObserverStatus() = 0;
+  virtual bool HasActiveIntersectionObservations() const = 0;
+  virtual bool NeedsOcclusionTracking() const = 0;
+
   // parent_flags is the result of calling GetIntersectionObservationFlags on
   // the LocalFrameView parent of this FrameView (if any). It contains dirty
   // bits based on whether geometry may have changed in the parent frame.
-  // Returns true if the frame needs occlusion tracking (i.e. trackVisibility()
-  // is true for any tracked observer in the frame subtree).
-  virtual bool UpdateViewportIntersectionsForSubtree(
+  virtual void UpdateViewportIntersectionsForSubtree(
       unsigned parent_flags,
       ComputeIntersectionsContext&) = 0;
 

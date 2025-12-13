@@ -29,6 +29,8 @@ class GetDetailsForCreateBnplPaymentInstrumentRequestTest
   void SetUp() override {
     GetDetailsForCreateBnplPaymentInstrumentRequestDetails request_details;
     request_details.app_locale = kAppLocale;
+    request_details.client_behavior_signals = {
+        ClientBehaviorConstants::kShowAccountEmailInLegalMessage};
     request_details.issuer_id = kIssuerId;
     request_details.billing_customer_number = kBillingCustomerNumber;
     request_ =
@@ -74,6 +76,12 @@ TEST_F(GetDetailsForCreateBnplPaymentInstrumentRequestTest,
             std::string::npos);
   EXPECT_NE(GetRequest()->GetRequestContent().find("chrome_user_context"),
             std::string::npos);
+  // Verify client_behavior_signal was set.
+  // ClientBehaviorConstants::kShowAccountEmailInLegalMessage has the numeric
+  // value set to 4.
+  EXPECT_NE(
+      GetRequest()->GetRequestContent().find("\"client_behavior_signals\":[4]"),
+      std::string::npos);
   EXPECT_NE(GetRequest()->GetRequestContent().find("issuer_id"),
             std::string::npos);
 }

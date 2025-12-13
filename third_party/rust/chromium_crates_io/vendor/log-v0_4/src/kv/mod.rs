@@ -191,7 +191,7 @@
 //!
 //! ```
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
-//! # #[cfg(feature = "serde")]
+//! # #[cfg(feature = "kv_serde")]
 //! # {
 //! # use log::kv::Key;
 //! #[derive(serde::Serialize)]
@@ -225,7 +225,7 @@
 //!
 //! ```
 //! # use log::kv::Key;
-//! # #[derive(Debug)]
+//! #[derive(Debug)]
 //! struct Data {
 //!     a: i32,
 //!     b: bool,

@@ -144,6 +144,34 @@ enum class SearchResultsPanelEntryType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:SearchResultsPanelEntryType)
 
+// Enumeration of the result after making an image search.
+// LINT.IfChange(CaptureModeImageSearchResult)
+enum class CaptureModeImageSearchResult {
+  kSuccess,
+  kFailureIdentityManager,
+  kFailureAccessTokenAuth,
+  kFailureEmptyAccessToken,
+  kFailureUnsuccessfulStatusCode,
+  kMaxValue = kFailureUnsuccessfulStatusCode,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:CaptureModeImageSearchResult)
+
+// Enumeration of the result after performing text detection.
+// LINT.IfChange(CaptureModeTextDetectionResult)
+enum class CaptureModeTextDetectionResult {
+  kUnreached,
+  kSuccessTextPresent,
+  kSuccessNoTextPresent,
+  kFailureIdentityManager,
+  kFailureAccessTokenAuth,
+  kFailureEmptyAccessToken,
+  kFailureMissingVsrId,
+  kFailureMissingResponseBody,
+  kFailureParseQFMetadata,
+  kMaxValue = kFailureParseQFMetadata,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:CaptureModeTextDetectionResult)
+
 // Records the `reason` for which screen recording was ended.
 void RecordEndRecordingReason(EndRecordingReason reason);
 
@@ -258,6 +286,13 @@ void RecordSearchResultsPanelShown();
 
 // Records that a search result URL was clicked in the search results panel.
 void RecordSearchResultClicked();
+
+// Records the result of an image search.
+void RecordCaptureModeImageSearchResult(CaptureModeImageSearchResult result);
+
+// Records the result of text detection.
+void RecordCaptureModeTextDetectionResult(
+    CaptureModeTextDetectionResult result);
 
 // Prepends the common prefix to the `root_word` and optionally inserts the
 // client's metric component (as specified by the given `behavior`) or appends

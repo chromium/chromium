@@ -105,7 +105,7 @@ WorkingSetTrimmerPolicyChromeOS::~WorkingSetTrimmerPolicyChromeOS() = default;
 // have been backgrounded for some period of time and have not been trimmed for
 // at least the backoff period.
 void WorkingSetTrimmerPolicyChromeOS::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
+    base::MemoryPressureLevel level) {
   bool skip_trimming_due_to_suspend = false;
   if (disable_trim_while_suspended_) {
     base::TimeTicks now = base::TimeTicks::Now();
@@ -126,7 +126,7 @@ void WorkingSetTrimmerPolicyChromeOS::OnMemoryPressure(
   if (skip_trimming_due_to_suspend) {
     return;
   }
-  if (level == base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
+  if (level == base::MEMORY_PRESSURE_LEVEL_NONE) {
     return;
   }
 
@@ -301,18 +301,17 @@ void WorkingSetTrimmerPolicyChromeOS::TrimArcProcesses() {
 }
 
 void WorkingSetTrimmerPolicyChromeOS::TrimArcVmProcesses(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
+    base::MemoryPressureLevel level) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_NE(level, base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE);
+  DCHECK_NE(level, base::MEMORY_PRESSURE_LEVEL_NONE);
   // TODO(crbug.com/40755583): Let the policy own WorkingSetTrimmerPolicyArcVm
   // instance once performance_manager code is migrated to UI thread.
   auto* arcvm_delegate = g_arcvm_delegate_for_testing
                              ? g_arcvm_delegate_for_testing
                              : WorkingSetTrimmerPolicyArcVm::Get();
 
-  const bool force_reclaim =
-      params_.trim_arcvm_on_critical_pressure &&
-      (level == base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  const bool force_reclaim = params_.trim_arcvm_on_critical_pressure &&
+                             (level == base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   const mechanism::ArcVmReclaimType trim_once_type_after_arcvm_boot =
       params_.trim_arcvm_on_first_memory_pressure_after_arcvm_boot
           ? mechanism::ArcVmReclaimType::kReclaimGuestPageCaches
@@ -414,7 +413,7 @@ void WorkingSetTrimmerPolicyChromeOS::OnArcVmTrimEnded(
 }
 
 void WorkingSetTrimmerPolicyChromeOS::OnTakenFromGraph(Graph* graph) {
-  memory_pressure_listener_.reset();
+  memory_pressure_listener_registration_.reset();
   WorkingSetTrimmerPolicy::OnTakenFromGraph(graph);
 }
 
@@ -442,10 +441,9 @@ void WorkingSetTrimmerPolicyChromeOS::OnPassedToGraph(Graph* graph) {
   // We wait to register the memory pressure listener so we're on the
   // right sequence.
   params_ = features::TrimOnMemoryPressureParams::GetParams();
-  memory_pressure_listener_.emplace(
+  memory_pressure_listener_registration_.emplace(
       FROM_HERE,
-      base::BindRepeating(&WorkingSetTrimmerPolicyChromeOS::OnMemoryPressure,
-                          base::Unretained(this)));
+      base::MemoryPressureListenerTag::kWorkingSetTrimmerPolicyChromeOS, this);
 
   WorkingSetTrimmerPolicy::OnPassedToGraph(graph);
 }

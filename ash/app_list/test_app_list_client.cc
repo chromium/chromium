@@ -14,7 +14,6 @@
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/themed_vector_icon.h"
 #include "ui/gfx/color_palette.h"

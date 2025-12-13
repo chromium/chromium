@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 
 #include <map>
@@ -28,13 +23,13 @@
 #include "build/build_config.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/subresource_filter/content/browser/child_frame_navigation_test_utils.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 #include "components/subresource_filter/content/browser/profile_interaction_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/content/browser/throttle_manager_test_support.h"
 #include "components/subresource_filter/content/mojom/subresource_filter.mojom.h"
-#include "components/subresource_filter/content/shared/browser/child_frame_navigation_test_utils.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/common_features.h"

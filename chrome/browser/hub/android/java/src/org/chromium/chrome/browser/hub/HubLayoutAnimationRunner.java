@@ -46,7 +46,7 @@ public interface HubLayoutAnimationRunner {
         AnimationState.FINISHED
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface AnimationState {
+    @interface AnimationState {
         /** The animation runner hasn't received {@link #runWithTimeout(long)}. */
         int INITIALIZING = 0;
 

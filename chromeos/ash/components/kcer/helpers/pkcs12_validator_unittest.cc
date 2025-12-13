@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/kcer/helpers/pkcs12_validator.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "chromeos/ash/components/kcer/kcer_nss/test_utils.h"
@@ -51,8 +47,8 @@ scoped_refptr<const Cert> MakeKcerCertFromBsslCert(const std::string& nickname,
   }
 
   scoped_refptr<net::X509Certificate> x509_cert =
-      net::X509Certificate::CreateFromBytes(base::span(
-          cert_der.get(), base::checked_cast<size_t>(cert_der_size)));
+      net::X509Certificate::CreateFromBytes(UNSAFE_TODO(base::span(
+          cert_der.get(), base::checked_cast<size_t>(cert_der_size))));
   return MakeKcerCert("name", x509_cert);
 }
 

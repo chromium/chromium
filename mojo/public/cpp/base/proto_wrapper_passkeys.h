@@ -9,13 +9,11 @@
 #include "base/types/pass_key.h"
 
 namespace component_updater {
-class ReadMaskedDomainListProto;
 class PKIMetadataComponentInstallerService;
-class MaskedDomainListComponentInstallerTest;
 }  // namespace component_updater
 
 namespace glic {
-class GlicActorController;
+class GlicPageContextFetcher;
 }  // namespace glic
 
 namespace paint_preview {
@@ -40,10 +38,8 @@ class ProtoWrapperBytes {
 
   // Add friend classes that need direct access to the underlying span_bytes()
   // or to directly set the contained class name and bytes with from_span().
-  friend class component_updater::ReadMaskedDomainListProto;
   friend class component_updater::PKIMetadataComponentInstallerService;
-  friend class component_updater::MaskedDomainListComponentInstallerTest;
-  friend class glic::GlicActorController;
+  friend class glic::GlicPageContextFetcher;
 
   // Tests.
   FRIEND_TEST_ALL_PREFIXES(ProtoWrapperTest, ToFromBytes);

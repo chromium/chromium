@@ -21,7 +21,10 @@
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/image_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -30,9 +33,6 @@
 #import "url/gurl.h"
 
 namespace {
-
-// Credit Card icon corner radius.
-CGFloat const kCreditCardIconCornerRadius = 5;
 
 // Default spacing used for the views in the bottom sheet.
 CGFloat const kSpacing = 10;
@@ -99,7 +99,7 @@ CGFloat const kTitleLogoHeight = 32;
                                : IDS_IOS_PRODUCT_NAME),
                        l10n_util::GetNSString(
                            IDS_IOS_PAYMENT_BOTTOM_SHEET_SELECT_PAYMENT_METHOD)];
-  self.customSpacingBeforeImageIfNoNavigationBar = kSpacingBeforeImage;
+  self.customSpacingBeforeImage = kSpacingBeforeImage;
   self.customSpacingAfterImage = kSpacingAfterImage;
   self.subtitleTextStyle = UIFontTextStyleFootnote;
   std::u16string formattedURL =
@@ -113,22 +113,20 @@ CGFloat const kTitleLogoHeight = 32;
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
   self.actionHandler = self;
 
-  self.primaryActionString =
+  self.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_CONTINUE);
-  self.secondaryActionString =
+  self.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_PAYMENT_BOTTOM_SHEET_USE_KEYBOARD);
-  self.secondaryActionImage =
+  self.configuration.secondaryActionImage =
       DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
 
   [super viewDidLoad];
 
   [self adjustTransactionsPrimaryActionButtonHorizontalConstraints];
 
-  if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:TraitCollectionSetForTraits(
-                                      @[ UITraitUserInterfaceStyle.class ])
-                       withAction:@selector(resizeLogoOnTraitChange)];
-  }
+  [self registerForTraitChanges:TraitCollectionSetForTraits(
+                                    @[ UITraitUserInterfaceStyle.class ])
+                     withAction:@selector(resizeLogoOnTraitChange)];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -137,20 +135,6 @@ CGFloat const kTitleLogoHeight = 32;
                                   self.imageViewAccessibilityLabel);
   [self.delegate paymentsBottomSheetViewDidAppear];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if (self.traitCollection.userInterfaceStyle !=
-      previousTraitCollection.userInterfaceStyle) {
-    [self resizeLogoOnTraitChange];
-  }
-}
-#endif
 
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
@@ -234,8 +218,8 @@ CGFloat const kTitleLogoHeight = 32;
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  TableViewDetailIconCell* cell =
-      [tableView dequeueReusableCellWithIdentifier:@"cell"];
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
   return [self layoutCell:cell
         forTableViewWidth:tableView.frame.size.width
               atIndexPath:indexPath];
@@ -276,8 +260,7 @@ CGFloat const kTitleLogoHeight = 32;
   UITableView* tableView = [super createTableView];
 
   tableView.dataSource = self;
-  [tableView registerClass:TableViewDetailIconCell.class
-      forCellReuseIdentifier:@"cell"];
+  [TableViewCellContentConfiguration registerCellForTableView:tableView];
 
   return tableView;
 }
@@ -287,7 +270,7 @@ CGFloat const kTitleLogoHeight = 32;
 }
 
 - (CGFloat)computeTableViewCellHeightAtIndex:(NSUInteger)index {
-  TableViewDetailIconCell* cell = [[TableViewDetailIconCell alloc] init];
+  UITableViewCell* cell = [[UITableViewCell alloc] init];
   // Setup UI same as real cell.
   CGFloat tableWidth = [self tableViewWidth];
   cell = [self layoutCell:cell
@@ -314,14 +297,14 @@ CGFloat const kTitleLogoHeight = 32;
 // `showGooglePayLogo` value is YES otherwise the Chrome logo is shown.
 - (UIImage*)titleImage {
   UIImage* image;
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   image = MakeSymbolMulticolor(CustomSymbolWithPointSize(
       self.showGooglePayLogo ? kGooglePaySymbol : kMulticolorChromeballSymbol,
       kTitleLogoHeight));
 #else
   image = DefaultSymbolTemplateWithPointSize(kDefaultBrowserSymbol,
                                              kTitleLogoHeight);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
   return image;
 }
@@ -401,35 +384,38 @@ CGFloat const kTitleLogoHeight = 32;
 
 // Layouts the cell for the table view with the payment info at the specific
 // index path.
-- (TableViewDetailIconCell*)layoutCell:(TableViewDetailIconCell*)cell
-                     forTableViewWidth:(CGFloat)tableViewWidth
-                           atIndexPath:(NSIndexPath*)indexPath {
+- (UITableViewCell*)layoutCell:(UITableViewCell*)cell
+             forTableViewWidth:(CGFloat)tableViewWidth
+                   atIndexPath:(NSIndexPath*)indexPath {
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title = [self suggestionAtRow:indexPath.row];
+  configuration.titleNumberOfLines = 1;
+  configuration.titleLineBreakMode = NSLineBreakByTruncatingMiddle;
+  configuration.subtitle = [self descriptionAtRow:indexPath.row];
+  configuration.customAccessibilityLabel =
+      [self accessibleCardNameAtRow:indexPath.row];
+
+  ImageContentConfiguration* imageConfiguration =
+      [[ImageContentConfiguration alloc] init];
+  imageConfiguration.image = [self iconAtRow:indexPath.row];
+
+  configuration.leadingConfiguration = imageConfiguration;
+
+  cell.contentConfiguration = configuration;
+
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   cell.userInteractionEnabled = YES;
-  cell.customAccessibilityLabel = [self accessibleCardNameAtRow:indexPath.row];
   cell.accessibilityValue = [self accessibilityValueForCardAtRow:indexPath.row];
 
-  [cell setDetailText:[self descriptionAtRow:indexPath.row]];
-  [cell setIconImage:[self iconAtRow:indexPath.row]
-            tintColor:nil
-      backgroundColor:cell.backgroundColor
-         cornerRadius:kCreditCardIconCornerRadius];
-  [cell updateIconBackgroundWidthToFitContent:YES];
-  [cell setTextLayoutConstraintAxis:UILayoutConstraintAxisVertical];
-
-  cell.textLabel.text = [self suggestionAtRow:indexPath.row];
-  cell.textLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-  cell.textLabel.numberOfLines = 1;
 
   // If we have the potential presence of a virtual card, the textLabel on its
   // own is no longer a unique identifier, so we include the description.
   cell.accessibilityIdentifier =
-      [NSString stringWithFormat:@"%@ %@", cell.textLabel.text,
+      [NSString stringWithFormat:@"%@ %@", configuration.title,
                                  [self descriptionAtRow:indexPath.row]];
 
-  cell.separatorInset = [self separatorInsetForTableViewWidth:tableViewWidth
-                                                  atIndexPath:indexPath];
   cell.accessoryType = [self accessoryType:indexPath];
   return cell;
 }

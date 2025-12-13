@@ -1,0 +1,95 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("receiver") {
+  sources = [
+    "boca_device_auth_token_service.cc",
+    "boca_device_auth_token_service.h",
+    "get_kiosk_receiver_request.cc",
+    "get_kiosk_receiver_request.h",
+    "get_receiver_connection_info_request.cc",
+    "get_receiver_connection_info_request.h",
+    "receiver_connection_info_poller.cc",
+    "receiver_connection_info_poller.h",
+    "receiver_handler_delegate.h",
+    "register_receiver_request.cc",
+    "register_receiver_request.h",
+    "screen_presenter_factory_impl.cc",
+    "screen_presenter_factory_impl.h",
+    "start_kiosk_receiver_request.cc",
+    "start_kiosk_receiver_request.h",
+    "student_screen_presenter_impl.cc",
+    "student_screen_presenter_impl.h",
+    "teacher_screen_presenter_impl.cc",
+    "teacher_screen_presenter_impl.h",
+    "update_kiosk_receiver_state_request.cc",
+    "update_kiosk_receiver_state_request.h",
+  ]
+
+  deps = [
+    ":util",
+    "//ash/constants",
+    "//base",
+    "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca/proto",
+    "//chromeos/ash/components/boca/session_api",
+    "//components/signin/public/identity_manager",
+    "//google_apis",
+    "//google_apis/common",
+  ]
+}
+
+static_library("util") {
+  sources = [
+    "kiosk_receiver_parser.cc",
+    "kiosk_receiver_parser.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca/proto",
+    "//chromeos/ash/components/boca/session_api",
+    "//google_apis",
+    "//google_apis/common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "boca_device_auth_token_service_unittest.cc",
+    "get_kiosk_receiver_request_unittest.cc",
+    "get_receiver_connection_info_request_unittest.cc",
+    "kiosk_receiver_parser_unittest.cc",
+    "receiver_connection_info_poller_unittest.cc",
+    "register_receiver_request_unittest.cc",
+    "start_kiosk_receiver_request_unittest.cc",
+    "student_screen_presenter_impl_unittest.cc",
+    "teacher_screen_presenter_impl_unittest.cc",
+    "update_kiosk_receiver_state_request_unittest.cc",
+  ]
+
+  deps = [
+    ":receiver",
+    ":util",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca/proto",
+    "//chromeos/ash/components/boca/session_api",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//google_apis",
+    "//google_apis/common",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

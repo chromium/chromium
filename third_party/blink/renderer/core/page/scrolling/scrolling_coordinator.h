@@ -71,6 +71,7 @@ class CORE_EXPORT ScrollingCoordinator final
   // ScrollCallbacks implementation
   void DidCompositorScroll(CompositorElementId,
                            const gfx::PointF&,
+                           cc::ScrollSourceType type,
                            const std::optional<cc::TargetSnapAreaElementIds>&);
   void DidChangeScrollbarsHidden(CompositorElementId, bool hidden);
 
@@ -100,10 +101,11 @@ class CORE_EXPORT ScrollingCoordinator final
     }
     void DidCompositorScroll(CompositorElementId element_id,
                              const gfx::PointF& offset,
+                             cc::ScrollSourceType type,
                              const std::optional<cc::TargetSnapAreaElementIds>&
                                  snap_target_ids) override {
       if (ScrollingCoordinator* sc = scrolling_coordinator_.Get()) {
-        sc->DidCompositorScroll(element_id, offset, snap_target_ids);
+        sc->DidCompositorScroll(element_id, offset, type, snap_target_ids);
       }
     }
     void DidChangeScrollbarsHidden(CompositorElementId element_id,

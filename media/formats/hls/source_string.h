@@ -64,6 +64,9 @@ class MEDIA_EXPORT SourceStringBase {
   // never appear in `SourceString`.
   void TrimStart();
 
+  // Trims whitespace (' ', '\t', '\n', '\r') from the end of this SourceString.
+  void TrimEnd();
+
   // Returns whether this string contains variable substitutions, i.e. is
   // different from the original source.
   bool ContainsSubstitutions() const;
@@ -134,6 +137,11 @@ class MEDIA_EXPORT ResolvedSourceString final
   bool ContainsSubstitutions() const {
     return substitution_state_ == SubstitutionState::kContainsSubstitutions;
   }
+
+  ResolvedSourceString(const ResolvedSourceString& other);
+  ResolvedSourceString(ResolvedSourceString&& other);
+  ResolvedSourceString& operator=(const ResolvedSourceString& other);
+  ResolvedSourceString& operator=(ResolvedSourceString&& other);
 
  private:
   friend SourceStringBase;

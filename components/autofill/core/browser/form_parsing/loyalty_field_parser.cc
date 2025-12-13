@@ -14,7 +14,7 @@ namespace autofill {
 // static
 std::unique_ptr<FormFieldParser> LoyaltyFieldParser::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner) {
+    AutofillScanner& scanner) {
   std::optional<FieldAndMatchInfo> match;
   if (ParseField(context, scanner, "LOYALTY_MEMBERSHIP_ID", &match)) {
     return std::make_unique<LoyaltyFieldParser>(std::move(*match));

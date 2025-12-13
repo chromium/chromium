@@ -374,6 +374,7 @@ TEST(AutofillDataModelUtils, IsValidAffixFormat) {
   EXPECT_TRUE(IsValidAffixFormat(u"-4"));
   EXPECT_TRUE(IsValidAffixFormat(u"-3"));
   EXPECT_TRUE(IsValidAffixFormat(u"0"));
+  EXPECT_TRUE(IsValidAffixFormat(u"0", /*exclude_full_value=*/false));
   EXPECT_TRUE(IsValidAffixFormat(u"3"));
   EXPECT_TRUE(IsValidAffixFormat(u"4"));
   EXPECT_TRUE(IsValidAffixFormat(u"5"));
@@ -387,10 +388,32 @@ TEST(AutofillDataModelUtils, IsValidAffixFormat) {
   EXPECT_FALSE(IsValidAffixFormat(u"-9"));
   EXPECT_FALSE(IsValidAffixFormat(u"-2"));
   EXPECT_FALSE(IsValidAffixFormat(u"-1"));
+  EXPECT_FALSE(IsValidAffixFormat(u"0", /*exclude_full_value=*/true));
   EXPECT_FALSE(IsValidAffixFormat(u"1"));
   EXPECT_FALSE(IsValidAffixFormat(u"2"));
   EXPECT_FALSE(IsValidAffixFormat(u"9"));
   EXPECT_FALSE(IsValidAffixFormat(u"100"));
+}
+
+TEST(AutofillDataModelUtilsTest, IsValidFlightNumberFormat) {
+  EXPECT_TRUE(IsValidFlightNumberFormat(u"A"));
+  EXPECT_TRUE(IsValidFlightNumberFormat(u"N"));
+  EXPECT_TRUE(IsValidFlightNumberFormat(u"F"));
+
+  EXPECT_FALSE(IsValidFlightNumberFormat(u"B"));
+  EXPECT_FALSE(IsValidFlightNumberFormat(u"a"));
+  EXPECT_FALSE(IsValidFlightNumberFormat(u"Aa"));
+  EXPECT_FALSE(IsValidFlightNumberFormat(u"F", /*exclude_full_value=*/true));
+}
+
+TEST(AutofillDataModelUtilsTest, LocalizePattern_ShortMonthDay) {
+  EXPECT_EQ(LocalizePattern(u"MMM d", "en_US"), u"MMM d");
+  EXPECT_EQ(LocalizePattern(u"MMM d", "pl_PL"), u"d MMM");
+  EXPECT_EQ(LocalizePattern(u"MMM d", "de_DE"), u"d. MMM");
+}
+
+TEST(AutofillDataModelUtilsTest, LocalizePattern_InvalidLocale) {
+  EXPECT_EQ(LocalizePattern(u"MMM d", "thisisaninvalidlocale"), std::nullopt);
 }
 
 }  // namespace

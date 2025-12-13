@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/mojo/mojom/audio_decoder_config_mojom_traits.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media_util.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
@@ -19,13 +17,12 @@
 namespace media {
 
 TEST(AudioDecoderConfigStructTraitsTest, Normal) {
-  const uint8_t kExtraData[] = "input extra data";
-  const std::vector<uint8_t> kExtraDataVector(
-      &kExtraData[0], &kExtraData[0] + std::size(kExtraData));
+  const std::vector<uint8_t> kExtraData =
+      base::ToVector(base::as_byte_span("input extra data"));
 
   AudioDecoderConfig input;
   input.Initialize(AudioCodec::kAAC, kSampleFormatU8, CHANNEL_LAYOUT_SURROUND,
-                   48000, kExtraDataVector, EncryptionScheme::kUnencrypted,
+                   48000, kExtraData, EncryptionScheme::kUnencrypted,
                    base::TimeDelta(), 0);
   std::vector<uint8_t> data = mojom::AudioDecoderConfig::Serialize(&input);
   AudioDecoderConfig output;

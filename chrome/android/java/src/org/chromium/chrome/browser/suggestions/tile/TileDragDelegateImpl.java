@@ -16,44 +16,55 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
+import org.chromium.chrome.browser.suggestions.tile.TileDragDelegate.ReorderFlow;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.ui.util.RunnableTimer;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * UI logic for dragging a "from" tile to a "to" tile's location: Handles touch events, updates the
- * the state machine. Reusable across drag sessions for a {@link MostVisitedTilesLayout} instance.
- * Uses {@link TileDragSession} to store per-session states.
+ * TileDragDelegate implementation. The two main flows are handled by the following:
+ *
+ * <ol>
+ *   <li>Drag Flow: Uses {@link TileDragSession} to wrap a {@link TileMovement}, and manages
+ *       per-session states with state machine defined by {@link DragPhase}.
+ *   <li>Swap Flow: Uses {@link TileMovement} directly.
+ * </ol>
+ *
+ * <p>The instance is reusable across multiple sessions for a {@link MostVisitedTilesLayout}
+ * instance. UI race condition (i.e., user moves too fast and performs action while the previous
+ * action is undergoing animation) is handled by having a new session cancel the previous one.
  */
 @NullMarked
-class TileDragDelegateImpl implements TileGroup.TileDragDelegate, TileDragSession.Delegate {
+class TileDragDelegateImpl implements TileDragDelegate, TileDragSession.Delegate {
 
-    // Tile drag dynamics are represented by a state machine. Here are its states.
+    // Drag Flow tile drag session dynamics uses a state machine. Here are its states.
     @IntDef({
         DragPhase.NONE,
         DragPhase.PREPARE,
         DragPhase.START,
         DragPhase.DOMINATE,
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface DragPhase {
         // NONE: No drag. ACTION_DOWN => :=PREPARE (i.e., enter the PREPARE phase).
         int NONE = 0;
 
         // PREPARE: No drag. Default touch handling triggers ACTION_UP => tile click; ACTION_MOVE
         // (after small drag) => scroll. These default interactions trigger ACTION_CANCEL => :=NONE.
-        // If PREPARE persists longer than "start duration" then :=START. TileDragHandlerDelegate
-        // is passed here.
+        // If PREPARE persists longer than "start duration" then :=START. TileDragSession is
+        // instantiated here.
         int PREPARE = 1;
 
         // START: Tile drag is live: ACTION_MOVE => move "from" tile; ACTION_UP => cancel drag
-        // :=NONE. If drag displacement exceeds "dominate threshold" then :=DOMINATE, and call
-        // TileDragHandlerDelegate.onDragDominate().
+        // :=NONE. If drag displacement exceeds "dominate threshold" then :=DOMINATE.
         int START = 2;
 
         // DOMINATE: Tile drag is live: ACTION_MOVE => move "from" and background tiles; ACTION_UP
-        // => finalize, which *may* call TileDragHandlerDelegate.onDragAccept(), and then :=NONE.
+        // => finalize (potentially triggering operation and refresh), and then :=NONE.
         int DOMINATE = 3;
 
         int NUM_ENTRIES = 4;
@@ -84,8 +95,13 @@ class TileDragDelegateImpl implements TileGroup.TileDragDelegate, TileDragSessio
     // Ephemeral drag states: Null in EMPTY; assigned in PREPARE; active in {START, DOMINATE}.
     private @Nullable TileDragSession mTileDragSession;
 
-    // Runnable to cancel tile movement that might not have completed yet, due to animation.
-    private @Nullable Runnable mPendingChangeCanceller;
+    // Main state for Swap Flow.
+    private @Nullable TileMovement mTileMovementForSwap;
+
+    // Runnable to finalize the action of the previous flow. If called before the final animation
+    // completes, then the call may cancel (e.g., for Drag Flow, to reduce confusion) or complete
+    // (e.g., for Swap Flow, to allow fast repeated keyboard-triggered swaps) the action.
+    private @Nullable Runnable mPendingChangeFinalizer;
 
     public TileDragDelegateImpl(MostVisitedTilesLayout mvTilesLayout) {
         mMvTilesLayout = mvTilesLayout;
@@ -99,30 +115,30 @@ class TileDragDelegateImpl implements TileGroup.TileDragDelegate, TileDragSessio
     // TileGroup.TileDragDelegate implementation.
     @Override
     public void onTileTouchDown(
-            View view, MotionEvent event, TileGroup.TileDragHandlerDelegate dragHandlerDelegate) {
+            View view, MotionEvent event, TileDragSession.EventListener eventListener) {
         assert event.getAction() == MotionEvent.ACTION_DOWN;
         if (!((TileView) view).isDraggable()) {
             return;
         }
 
-        resetInternal(false);
+        reset();
         mPhase = DragPhase.PREPARE;
         mTileDragSession =
                 new TileDragSession(
-                        this, dragHandlerDelegate, (TileView) view, event.getX(), event.getY());
+                        this, eventListener, (TileView) view, event.getX(), event.getY());
 
         mTimer.startTimer(
                 START_DURATION_MS,
                 () -> {
                     if (mTileDragSession == null) {
                         assert mPhase == DragPhase.NONE;
-                        resetInternal(false);
+                        reset();
                     } else {
-                        cancelPendingChange();
+                        finalizePendingChange();
                         mPhase = DragPhase.START;
                         // Needed to do this caller to consistently receive ACTION_MOVE.
                         mMvTilesLayout.requestDisallowInterceptTouchEvent(true);
-                        mTileDragSession.start();
+                        mTileDragSession.start(new TileMovement(getDraggableTileViews()));
                     }
                 });
     }
@@ -136,8 +152,8 @@ class TileDragDelegateImpl implements TileGroup.TileDragDelegate, TileDragSessio
                 float dragDisplacementSquared =
                         mTileDragSession.getDragDisplacementSquared(event.getX(), event.getY());
                 if (dragDisplacementSquared >= mDominateThresholdPxSquared) {
-                    mTileDragSession.getTileDragHandlerDelegate().onDragDominate();
                     mPhase = DragPhase.DOMINATE;
+                    mTileDragSession.dominate();
                 } else {
                     mTileDragSession.updateFromView(event.getX());
                 }
@@ -147,24 +163,111 @@ class TileDragDelegateImpl implements TileGroup.TileDragDelegate, TileDragSessio
             }
 
         } else if (event.getAction() == MotionEvent.ACTION_UP) {
-            resetInternal(mPhase == DragPhase.DOMINATE);
-            mPhase = DragPhase.NONE;
+            // {@link reset()} consumes {@link #mPendingChangeFinalizer} and clears
+            // {@link #mTileDragSession}! Therefore we saving {@link #mTileDragSession} beforehand,
+            // and use it to assign {@link #mPendingChangeFinalizer} afterwards.
+            boolean accept = (mPhase == DragPhase.DOMINATE);
+            TileDragSession savedTileDragSession = mTileDragSession;
+            reset();
+            mPendingChangeFinalizer = savedTileDragSession.finish(accept);
 
         } else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
-            resetInternal(false);
-            mPhase = DragPhase.NONE;
+            reset();
         }
     }
 
     @Override
-    public boolean hasSession() {
+    public void swapTiles(
+            View fromView, int toDeltaIndex, TileDragSession.EventListener eventListener) {
+        List<TileView> tileViews = getDraggableTileViews();
+        int fromIndex = tileViews.indexOf(fromView);
+        if (fromIndex < 0) {
+            return;
+        }
+        int toIndex = fromIndex + toDeltaIndex;
+        if (toIndex < 0 || toIndex >= tileViews.size()) {
+            return;
+        }
+
+        reset();
+        assert mTileMovementForSwap == null && mPendingChangeFinalizer == null;
+
+        // Temporarily increment Z so the "from" tile is drawn on top of other tiles.
+        float savedFromZ = fromView.getZ();
+        fromView.setZ(savedFromZ + 1.0f);
+
+        mTileMovementForSwap = new TileMovement(tileViews);
+        View toView = tileViews.get(toIndex);
+
+        // Save {@link #mTileMovementForSwap} since it maybe cleared on the next reset(). Having it
+        // bound in a local variable
+        TileMovement savedTileMovementForSwap = mTileMovementForSwap;
+        mPendingChangeFinalizer =
+                () -> {
+                    // Not really cancelling; just reset visuals.
+                    savedTileMovementForSwap.cancelIfActive();
+                    // Always apply change, (and unlike Drag Flow) even if interrupted during
+                    // animation. This is because keyboard repeat can occur faster than animation.
+                    eventListener.onReorderAccept(
+                            ReorderFlow.SWAP_FLOW,
+                            getTileViewData((TileView) fromView),
+                            getTileViewData((TileView) toView));
+                    fromView.setZ(savedFromZ);
+                };
+
+        mTileMovementForSwap.moveTile(
+                toIndex, fromIndex, /* isAnimated= */ true, /* onEnd= */ null);
+        mTileMovementForSwap.animatedAccept(
+                fromIndex, toIndex, /* onAccept= */ this::finalizePendingChange);
+    }
+
+    @Override
+    public boolean hasTileDragSession() {
         return mPhase != DragPhase.NONE;
     }
 
     @Override
+    public void showDivider(boolean isAnimated) {
+        SuggestionsTileVerticalDivider divider = mMvTilesLayout.getDividerMaybeNull();
+        if (divider != null) {
+            divider.show(isAnimated);
+        }
+    }
+
+    @Override
+    public void hideDivider(boolean isAnimated) {
+        SuggestionsTileVerticalDivider divider = mMvTilesLayout.getDividerMaybeNull();
+        if (divider != null) {
+            divider.hide(isAnimated);
+        }
+    }
+
+    @Override
     public void reset() {
-        resetInternal(false);
+        // Clean up in-flight states.
+        if (mTileDragSession != null) {
+            mMvTilesLayout.requestDisallowInterceptTouchEvent(false);
+        }
+        finalizePendingChange();
+        mTimer.cancelTimer();
         mPhase = DragPhase.NONE;
+
+        // Clear main flow variables.
+        mTileDragSession = null;
+        mTileMovementForSwap = null;
+    }
+
+    @Override
+    public boolean isFirstDraggableTile(View tileView) {
+        List<TileView> draggableTiles = getDraggableTileViews();
+        return !draggableTiles.isEmpty() && draggableTiles.get(0) == tileView;
+    }
+
+    @Override
+    public boolean isLastDraggableTile(View tileView) {
+        List<TileView> draggableTiles = getDraggableTileViews();
+        return !draggableTiles.isEmpty()
+                && draggableTiles.get(draggableTiles.size() - 1) == tileView;
     }
 
     // TileDragSession.Delegate implementation.
@@ -181,7 +284,16 @@ class TileDragDelegateImpl implements TileGroup.TileDragDelegate, TileDragSessio
     }
 
     @Override
-    public List<TileView> getDraggableTileViews() {
+    public SiteSuggestion getTileViewData(TileView view) {
+        return mMvTilesLayout.getTileViewData(view);
+    }
+
+    @Override
+    public HorizontalScrollView getOuterView() {
+        return mMvTilesLayout.getScrollView();
+    }
+
+    List<TileView> getDraggableTileViews() {
         List<TileView> draggableTileViews = new ArrayList<>();
         int tileCount = mMvTilesLayout.getTileCount();
         for (int i = 0; i < tileCount; ++i) {
@@ -193,30 +305,10 @@ class TileDragDelegateImpl implements TileGroup.TileDragDelegate, TileDragSessio
         return draggableTileViews;
     }
 
-    @Override
-    public SiteSuggestion getTileViewData(TileView view) {
-        return mMvTilesLayout.getTileViewData(view);
-    }
-
-    @Override
-    public HorizontalScrollView getOuterView() {
-        return mMvTilesLayout.getScrollView();
-    }
-
-    private void cancelPendingChange() {
-        if (mPendingChangeCanceller != null) {
-            mPendingChangeCanceller.run();
-            mPendingChangeCanceller = null;
-        }
-    }
-
-    private void resetInternal(boolean accept) {
-        mMvTilesLayout.requestDisallowInterceptTouchEvent(false);
-        cancelPendingChange();
-        mTimer.cancelTimer();
-        if (mTileDragSession != null) {
-            mPendingChangeCanceller = mTileDragSession.finish(accept);
-            mTileDragSession = null;
+    private void finalizePendingChange() {
+        if (mPendingChangeFinalizer != null) {
+            mPendingChangeFinalizer.run();
+            mPendingChangeFinalizer = null;
         }
     }
 }

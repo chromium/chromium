@@ -152,11 +152,10 @@ interface NetworkServiceTest {
       int32 rv) => ();
 
   // Set the global transport security state preloaded static data source to
-  // the unittest_default source, with the reporting URIs rewritten to use
-  // |reporting_port|.  If |reporting_port| is 0, the source will be reset to
+  // the unittest_default source, if `enable_unittest_source` is true.
+  // If `enable_unittest_source` is false, the source will be reset to
   // the default.
-  [Sync]
-  SetTransportSecurityStateSource(uint16 reporting_port) => ();
+  SetTransportSecurityStateTestSource(bool enable_unittest_source) => ();
 
   // Allow host resolutions to reach the network. Since going to the network
   // can be a source of flakiness, this should only be called in tests that

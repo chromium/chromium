@@ -126,7 +126,7 @@ TEST_F(IncomingFramesReaderTest, ReadAnyFrameSuccessful) {
 
   EXPECT_CALL(decoder(),
               DecodeFrame(testing::Eq(introduction_frame), testing::_))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](const std::vector<uint8_t>& data,
               ash::nearby::MockNearbySharingDecoder::DecodeFrameCallback
                   callback) {
@@ -137,7 +137,7 @@ TEST_F(IncomingFramesReaderTest, ReadAnyFrameSuccessful) {
             sharing::mojom::FramePtr mojo_frame =
                 sharing::mojom::Frame::NewV1(std::move(mojo_v1frame));
             std::move(callback).Run(std::move(mojo_frame));
-          }));
+          });
 
   base::RunLoop run_loop;
   frames_reader().ReadFrame(base::BindLambdaForTesting(
@@ -154,7 +154,7 @@ TEST_F(IncomingFramesReaderTest, ReadSuccessful) {
 
   EXPECT_CALL(decoder(),
               DecodeFrame(testing::Eq(introduction_frame), testing::_))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](const std::vector<uint8_t>& data,
               ash::nearby::MockNearbySharingDecoder::DecodeFrameCallback
                   callback) {
@@ -165,7 +165,7 @@ TEST_F(IncomingFramesReaderTest, ReadSuccessful) {
             sharing::mojom::FramePtr mojo_frame =
                 sharing::mojom::Frame::NewV1(std::move(mojo_v1frame));
             std::move(callback).Run(std::move(mojo_frame));
-          }));
+          });
 
   base::RunLoop run_loop;
   frames_reader().ReadFrame(
@@ -187,7 +187,7 @@ TEST_F(IncomingFramesReaderTest, ReadSuccessful_JumbledFramesOrdering) {
   connection().AppendReadableData(introduction_frame);
 
   EXPECT_CALL(decoder(), DecodeFrame(testing::_, testing::_))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](const std::vector<uint8_t>& data,
               ash::nearby::MockNearbySharingDecoder::DecodeFrameCallback
                   callback) {
@@ -199,8 +199,8 @@ TEST_F(IncomingFramesReaderTest, ReadSuccessful_JumbledFramesOrdering) {
             sharing::mojom::FramePtr mojo_frame =
                 sharing::mojom::Frame::NewV1(std::move(mojo_v1frame));
             std::move(callback).Run(std::move(mojo_frame));
-          }))
-      .WillOnce(testing::Invoke(
+          })
+      .WillOnce(
           [&](const std::vector<uint8_t>& data,
               ash::nearby::MockNearbySharingDecoder::DecodeFrameCallback
                   callback) {
@@ -212,7 +212,7 @@ TEST_F(IncomingFramesReaderTest, ReadSuccessful_JumbledFramesOrdering) {
             sharing::mojom::FramePtr mojo_frame =
                 sharing::mojom::Frame::NewV1(std::move(mojo_v1frame));
             std::move(callback).Run(std::move(mojo_frame));
-          }));
+          });
 
   base::RunLoop run_loop_introduction;
   frames_reader().ReadFrame(
@@ -234,7 +234,7 @@ TEST_F(IncomingFramesReaderTest, JumbledFramesOrdering_ReadFromCache) {
   connection().AppendReadableData(introduction_frame);
 
   EXPECT_CALL(decoder(), DecodeFrame(testing::_, testing::_))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](const std::vector<uint8_t>& data,
               ash::nearby::MockNearbySharingDecoder::DecodeFrameCallback
                   callback) {
@@ -246,8 +246,8 @@ TEST_F(IncomingFramesReaderTest, JumbledFramesOrdering_ReadFromCache) {
             sharing::mojom::FramePtr mojo_frame =
                 sharing::mojom::Frame::NewV1(std::move(mojo_v1frame));
             std::move(callback).Run(std::move(mojo_frame));
-          }))
-      .WillOnce(testing::Invoke(
+          })
+      .WillOnce(
           [&](const std::vector<uint8_t>& data,
               ash::nearby::MockNearbySharingDecoder::DecodeFrameCallback
                   callback) {
@@ -259,7 +259,7 @@ TEST_F(IncomingFramesReaderTest, JumbledFramesOrdering_ReadFromCache) {
             sharing::mojom::FramePtr mojo_frame =
                 sharing::mojom::Frame::NewV1(std::move(mojo_v1frame));
             std::move(callback).Run(std::move(mojo_frame));
-          }));
+          });
 
   base::RunLoop run_loop_introduction;
   frames_reader().ReadFrame(

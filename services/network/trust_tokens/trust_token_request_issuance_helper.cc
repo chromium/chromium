@@ -185,6 +185,8 @@ void TrustTokenRequestIssuanceHelper::OnGotKeyCommitment(
   }
 
   protocol_version_ = commitment_result->protocol_version;
+  base::UmaHistogramEnumeration("Net.TrustTokens.ProtocolVersion",
+                                protocol_version_);
   if (!commitment_result->batch_size ||
       !cryptographer_->Initialize(protocol_version_,
                                   commitment_result->batch_size)) {

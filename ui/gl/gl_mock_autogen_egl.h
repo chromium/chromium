@@ -212,6 +212,10 @@ MOCK_METHOD6(PostSubBufferNV,
                         EGLint y,
                         EGLint width,
                         EGLint height));
+MOCK_METHOD3(PresentationTimeANDROID,
+             EGLBoolean(EGLDisplay dpy,
+                        EGLSurface surface,
+                        EGLnsecsANDROID time));
 MOCK_METHOD0(QueryAPI, EGLenum());
 MOCK_METHOD4(QueryContext,
              EGLBoolean(EGLDisplay dpy,

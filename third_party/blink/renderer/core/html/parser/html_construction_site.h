@@ -28,6 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_CONSTRUCTION_SITE_H_
 
 #include "base/check_op.h"
+#include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/parser_content_policy.h"
 #include "third_party/blink/renderer/core/html/parser/html_element_stack.h"
@@ -48,6 +49,8 @@ struct HTMLConstructionSiteTask {
     kInsertAlreadyParsedChild,  // Insert w/o calling begin/end parsing.
     kReparent,
     kTakeAllChildren,
+    kRemoveChildren,
+    kReplaceChild,
   };
 
   explicit HTMLConstructionSiteTask(Operation op)
@@ -108,11 +111,13 @@ class HTMLConstructionSite final {
   HTMLConstructionSite(HTMLParserReentryPermit*,
                        Document&,
                        ParserContentPolicy,
-                       DocumentFragment*,
-                       Element*);
+                       ContainerNode*,
+                       Element*,
+                       CustomElementRegistry*);
   HTMLConstructionSite(const HTMLConstructionSite&) = delete;
   HTMLConstructionSite& operator=(const HTMLConstructionSite&) = delete;
   ~HTMLConstructionSite();
+
   void Trace(Visitor*) const;
 
   void Detach();
@@ -220,11 +225,13 @@ class HTMLConstructionSite final {
   }
 
   void FinishedTemplateElement(DocumentFragment* content_fragment);
+  void PreprocessInsertionTask(HTMLConstructionSiteTask&);
 
   static CustomElementDefinition* LookUpCustomElementDefinition(
       Document&,
       const QualifiedName&,
-      const AtomicString& is);
+      const AtomicString& is,
+      CustomElementRegistry* registry);
 
   class RedirectToFosterParentGuard {
     STACK_ALLOCATED();
@@ -382,6 +389,10 @@ class HTMLConstructionSite final {
 
   // Whether duplicate attribute was reported.
   bool reported_duplicate_attribute_ = false;
+
+  // The custom element registry used to parse html and grab definition from
+  // when custom elements are encountered.
+  Member<CustomElementRegistry> custom_element_registry_;
 };
 
 }  // namespace blink

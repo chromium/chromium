@@ -93,10 +93,12 @@ gpu::SyncToken GenSyncToken() {
                         next_release++);
 }
 
-viz::TransferableResource MakeFakeResource() {
+viz::TransferableResource MakeFakeResource(
+    const viz::TransferableResource::MetadataOverride& override = {}) {
   return viz::TransferableResource::Make(
       gpu::ClientSharedImage::CreateForTesting(),
-      viz::TransferableResource::ResourceSource::kTest, GenSyncToken());
+      viz::TransferableResource::ResourceSource::kTest, GenSyncToken(),
+      override);
 }
 
 viz::TransferableResource MakeFakeSoftwareResource() {
@@ -398,7 +400,9 @@ TEST_F(TextureLayerWithResourceTest, AffectedByHdr) {
   EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(AtLeast(1));
 
   // sRGB is unaffected by HDR parameters.
-  test_resource1_.resource.color_space = gfx::ColorSpace::CreateSRGB();
+  test_resource1_.resource =
+      MakeFakeResource({.color_space = gfx::ColorSpace::CreateSRGB()});
+  test_resource1_.creation_sync_token = test_resource1_.resource.sync_token();
   test_layer->SetTransferableResource(test_resource1_.resource,
                                       test_resource1_.release_callback);
   Mock::VerifyAndClearExpectations(layer_tree_host_.get());
@@ -407,7 +411,9 @@ TEST_F(TextureLayerWithResourceTest, AffectedByHdr) {
   test_resource1_.ExpectRelease();
 
   // HDR10 is affected by HDR parameters.
-  test_resource2_.resource.color_space = gfx::ColorSpace::CreateHDR10();
+  test_resource2_.resource =
+      MakeFakeResource({.color_space = gfx::ColorSpace::CreateHDR10()});
+  test_resource2_.creation_sync_token = test_resource2_.resource.sync_token();
   test_layer->SetTransferableResource(test_resource2_.resource,
                                       test_resource2_.release_callback);
   Mock::VerifyAndClearExpectations(layer_tree_host_.get());
@@ -1586,7 +1592,7 @@ class SoftwareTextureLayerPurgeMemoryTest : public SoftwareTextureLayerTest {
     // registered again on the next draw.
     if (step_ == 1)
       base::MemoryPressureListener::SimulatePressureNotification(
-          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+          base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   }
 
   void DisplayReceivedCompositorFrameOnThread(
@@ -1604,8 +1610,8 @@ class SoftwareTextureLayerPurgeMemoryTest : public SoftwareTextureLayerTest {
 };
 
 // Run the single thread test only.
-// MemoryPressureListener::DoNotifyMemoryPressure() is called in this
-// PurgeMemoryTest. Although the observation is targeted on certain
+// MemoryPressureListenerRegistry::DoNotifyMemoryPressure() is called in
+// this PurgeMemoryTest. Although the observation is targeted on certain
 // configurations and will be dismissed later, it triggers a "CHECK failed:
 // checker.CalledOnValidSequence(&bound_at)" first on the multithreading
 // setting.

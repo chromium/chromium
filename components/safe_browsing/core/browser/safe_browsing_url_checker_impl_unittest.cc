@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -207,11 +208,11 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
         threat_types_(SBThreatTypeSet(
             {safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING})) {
     ON_CALL(*this, StartDisplayingBlockingPageHelper)
-        .WillByDefault(::testing::Invoke(
-            [this](const security_interstitials::UnsafeResource&,
-                   const std::string&, const net::HttpRequestHeaders&, bool) {
-              start_displaying_blocking_helper_waiter_.OnCall();
-            }));
+        .WillByDefault([this](const security_interstitials::UnsafeResource&,
+                              const std::string&,
+                              const net::HttpRequestHeaders&, bool) {
+          start_displaying_blocking_helper_waiter_.OnCall();
+        });
   }
 
   MOCK_METHOD1(MaybeDestroyNoStatePrefetchContents,

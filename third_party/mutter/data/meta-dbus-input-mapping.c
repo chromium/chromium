@@ -10,7 +10,7 @@
 #  include "config.h"
 #endif
 
-#include <meta-dbus-input-mapping.h>
+#include "meta-dbus-input-mapping.h"
 
 #include <string.h>
 #ifdef G_OS_UNIX
@@ -1067,7 +1067,11 @@ meta_dbus_input_mapping_skeleton_dbus_interface_get_properties (GDBusInterfaceSk
 
   GVariantBuilder builder;
   guint n;
-  g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sv}"));
+#if GLIB_VERSION_MAX_ALLOWED >= GLIB_VERSION_2_84
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE ("a{sv}"));
+#else
+  g_variant_builder_init(&builder, G_VARIANT_TYPE ("a{sv}"));
+#endif
   if (_meta_dbus_input_mapping_interface_info.parent_struct.properties == NULL)
     goto out;
   for (n = 0; _meta_dbus_input_mapping_interface_info.parent_struct.properties[n] != NULL; n++)

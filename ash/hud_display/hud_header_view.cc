@@ -14,8 +14,11 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "components/vector_icons/vector_icons.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
@@ -48,12 +51,14 @@ class BottomLeftOuterBackground : public views::Background {
     const SkScalar circle_size = inner_radius_ * 2;
     const SkScalar bottom_edge = view->height();
 
-    SkPath path;
-    path.moveTo(0, bottom_edge);
-    /* |false| will draw straight line to the start of the arc */
-    path.arcTo({0, bottom_edge - circle_size, circle_size, bottom_edge}, 90, 90,
-               false);
-    path.lineTo(0, bottom_edge);
+    const SkPath path =
+        SkPathBuilder()
+            .moveTo(0, bottom_edge)
+            /* |false| will draw straight line to the start of the arc */
+            .arcTo({0, bottom_edge - circle_size, circle_size, bottom_edge}, 90,
+                   90, false)
+            .lineTo(0, bottom_edge)
+            .detach();
 
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
@@ -94,17 +99,15 @@ class SettingsButton : public views::ImageButton {
   void PaintButtonContents(gfx::Canvas* canvas) override {
     views::ImageButton::PaintButtonContents(canvas);
 
-    SkPath path;
-    path.moveTo(0, height());
-    path.lineTo(height(), width());
-
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setBlendMode(SkBlendMode::kSrc);
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setStrokeWidth(1);
     flags.setColor(kHUDDefaultColor);
-    canvas->DrawPath(path, flags);
+
+    canvas->DrawLine(gfx::Point{0, height()}, gfx::Point{height(), width()},
+                     flags);
   }
 };
 

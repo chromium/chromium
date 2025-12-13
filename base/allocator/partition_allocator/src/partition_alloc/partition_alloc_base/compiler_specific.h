@@ -480,4 +480,32 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 #define PA_NOPROFILE
 #endif
 
+// Annotates a function or class data member indicating it can lead to
+// out-of-bounds accesses (OOB) if given incorrect inputs.
+#if PA_HAS_CPP_ATTRIBUTE(clang::unsafe_buffer_usage)
+#define PA_UNSAFE_BUFFER_USAGE [[clang::unsafe_buffer_usage]]
+#else
+#define PA_UNSAFE_BUFFER_USAGE
+#endif
+
+// Annotates code indicating that it should be permanently exempted from
+// `-Wunsafe-buffer-usage`. For temporary cases such as migrating callers to
+// safer patterns, use `PA_UNSAFE_TODO()` instead;
+#if defined(__clang__)
+// Disabling `clang-format` allows each `_Pragma` to be on its own line, as
+// recommended by https://gcc.gnu.org/onlinedocs/cpp/Pragmas.html.
+// clang-format off
+#define PA_UNSAFE_BUFFERS(...)                  \
+  _Pragma("clang unsafe_buffer_usage begin") \
+  __VA_ARGS__                                \
+  _Pragma("clang unsafe_buffer_usage end")
+// clang-format on
+#else
+#define PA_UNSAFE_BUFFERS(...) __VA_ARGS__
+#endif
+
+// Annotates code indicating that it should be temporarily exempted from
+// `-Wunsafe-buffer-usage`.
+#define PA_UNSAFE_TODO(...) PA_UNSAFE_BUFFERS(__VA_ARGS__)
+
 #endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_COMPILER_SPECIFIC_H_

@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "ui/views/widget/widget.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 // Idle timeout dialog. This is shown to users to inform them that Chrome will
 // be closed by the IdleService, as dictated by the IdleProfileCloseTimeout
@@ -29,7 +29,7 @@ class IdleDialog {
   };
 
   // Implemented in //chrome/browser/ui/views/idle_dialog_view.cc
-  static base::WeakPtr<views::Widget> Show(Browser* browser,
+  static base::WeakPtr<views::Widget> Show(BrowserWindowInterface* bwi,
                                            base::TimeDelta dialog_duration,
                                            base::TimeDelta idle_threshold,
                                            ActionSet actions,

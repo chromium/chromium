@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/message_view.h"
@@ -31,7 +32,6 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
-#include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -103,15 +103,6 @@ bool ConversationNotificationView::IsExpanded() const {
   return expanded_;
 }
 
-void ConversationNotificationView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  if (control_buttons_view_) {
-    control_buttons_view_->SetButtonIconColors(
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary));
-  }
-}
-
 void ConversationNotificationView::UpdateWithNotification(
     const Notification& notification) {
   UpdateControlButtonsVisibilityWithNotification(notification);
@@ -119,7 +110,6 @@ void ConversationNotificationView::UpdateWithNotification(
   actions_view_->UpdateWithNotification(notification);
   actions_view_->SetExpanded(expanded_);
 
-  // TODO(b/333740702): Clean up string truncation.
   title_->SetText(gfx::TruncateString(notification.title(),
                                       kTitleCharacterLimit, gfx::WORD_BREAK));
 
@@ -231,8 +221,7 @@ ConversationNotificationView::CreateRightControlsContainer() {
   view->SetBetweenButtonSpacing(kNotificationControlButtonsHorizontalSpacing);
   view->SetCloseButtonIcon(vector_icons::kCloseChromeRefreshIcon);
   view->SetSettingsButtonIcon(vector_icons::kSettingsOutlineIcon);
-  view->SetButtonIconColors(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary));
+  view->SetButtonIconColors(cros_tokens::kIconColorPrimary);
   view->SetNotificationControlButtonFactory(
       std::make_unique<AshNotificationControlButtonFactory>());
 
@@ -296,7 +285,6 @@ ConversationNotificationView::CreateTitleRow(const Notification& notification) {
   auto title = std::make_unique<views::Label>();
   title->SetID(ViewId::kTitleLabel);
   title_ = title_row->AddChildView(std::move(title));
-  // TODO(b/333740702): Clean up string truncation.
   title_->SetText(gfx::TruncateString(notification.title(),
                                       kTitleCharacterLimit, gfx::WORD_BREAK));
   ash::TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,

@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/sync_app_helper.h"
@@ -206,7 +207,12 @@ bool AwaitWebAppQuiescence(
     SyncTest* test = sync_datatype_helper::test();
     bool is_sync_on = true;
     for (SyncServiceImplHarness* client : test->GetSyncClients()) {
-      is_sync_on = is_sync_on && client->service()->IsSyncFeatureActive();
+      syncer::SyncService::TransportState transport_state =
+          client->service()->GetTransportState();
+      is_sync_on =
+          is_sync_on &&
+          (transport_state == syncer::SyncService::TransportState::ACTIVE ||
+           transport_state == syncer::SyncService::TransportState::CONFIGURING);
     }
     if (is_sync_on) {
       if (!test->AwaitQuiescence())
@@ -285,7 +291,7 @@ AppsStatusChangeChecker::AppsStatusChangeChecker()
     prefs->AddObserver(this);
 
     install_tracker_observation_.AddObservation(
-        extensions::InstallTracker::Get(profile));
+        extensions::InstallTrackerFactory::GetForBrowserContext(profile));
   }
 }
 

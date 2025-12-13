@@ -35,13 +35,6 @@ class PredictorFactory {
   static std::unique_ptr<ui::InputPredictor> GetPredictor(
       input_prediction::PredictorType predictor_type);
 
-  // Returns the feature enabled kalman predictor options
-  static unsigned int GetKalmanPredictorOptions();
-
-  // Predictor options cache
-  static unsigned int predictor_options_;
-
- private:
   PredictorFactory() = delete;
   ~PredictorFactory() = delete;
 };

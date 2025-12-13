@@ -25,10 +25,11 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
@@ -60,12 +61,13 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator.BottomControlsVisibilityController;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupMember;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
@@ -74,6 +76,7 @@ import org.chromium.url.GURL;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /** A mediator for the TabGroupUi. Responsible for managing the internal state of the component. */
 @NullMarked
@@ -145,7 +148,7 @@ public class TabGroupUiMediator implements BackPressHandler {
     private final @Nullable LazyOneshotSupplier<DialogController> mTabGridDialogControllerSupplier;
     private final Callback<TabModel> mCurrentTabModelObserver;
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
-    private final ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier;
+    private final SettableNonNullObservableSupplier<Boolean> mHandleBackPressChangedSupplier;
     private final ThemeColorProvider mThemeColorProvider;
     private final Callback<Object> mOnSnapshotTokenChange;
     private final ObservableSupplier<Object> mChildTokenSupplier;
@@ -167,15 +170,14 @@ public class TabGroupUiMediator implements BackPressHandler {
 
     TabGroupUiMediator(
             BottomControlsVisibilityController visibilityController,
-            ObservableSupplierImpl<Boolean> handleBackPressChangedSupplier,
+            SettableNonNullObservableSupplier<Boolean> handleBackPressChangedSupplier,
             ResetHandler resetHandler,
             PropertyModel model,
             TabModelSelector tabModelSelector,
             TabContentManager tabContentManager,
             TabCreatorManager tabCreatorManager,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            @Nullable LazyOneshotSupplier<TabGridDialogMediator.DialogController>
-                    dialogControllerSupplier,
+            @Nullable LazyOneshotSupplier<DialogController> dialogControllerSupplier,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             @Nullable SharedImageTilesCoordinator sharedImageTilesCoordinator,
             SharedImageTilesConfig.@Nullable Builder sharedImageTilesConfigBuilder,
@@ -246,7 +248,7 @@ public class TabGroupUiMediator implements BackPressHandler {
                     @Override
                     public void didAddTab(
                             Tab tab,
-                            int type,
+                            @TabLaunchType int type,
                             @TabCreationState int creationState,
                             boolean markedForSelection) {
                         resetTabStrip();
@@ -329,7 +331,7 @@ public class TabGroupUiMediator implements BackPressHandler {
                     }
 
                     @Override
-                    public void didMergeTabToGroup(Tab movedTab) {
+                    public void didMergeTabToGroup(Tab movedTab, boolean isDestinationTab) {
                         resetTabStrip();
                     }
                 };
@@ -419,11 +421,15 @@ public class TabGroupUiMediator implements BackPressHandler {
 
                     assert relatedTabs.size() > 0;
 
+                    Profile currentTabProfile = currentTab.getProfile();
+                    UrlConstantResolver urlConstantResolver =
+                            UrlConstantResolverFactory.getForProfile(currentTabProfile);
+
                     Tab parentTabToAttach = relatedTabs.get(relatedTabs.size() - 1);
                     mTabCreatorManager
                             .getTabCreator(currentTab.isIncognito())
                             .createNewTab(
-                                    new LoadUrlParams(UrlConstants.NTP_URL),
+                                    new LoadUrlParams(urlConstantResolver.getNtpUrl()),
                                     TabLaunchType.FROM_TAB_GROUP_UI,
                                     parentTabToAttach);
                     RecordUserAction.record(
@@ -554,8 +560,6 @@ public class TabGroupUiMediator implements BackPressHandler {
     }
 
     public boolean onBackPressed() {
-        // TODO(crbug.com/40099884): add a regression test to make sure that the back button closes
-        // the dialog when the dialog is showing.
         @Nullable DialogController controller = getTabGridDialogControllerIfExists();
         return controller != null ? controller.handleBackPressed() : false;
     }
@@ -570,7 +574,7 @@ public class TabGroupUiMediator implements BackPressHandler {
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mHandleBackPressChangedSupplier;
     }
 

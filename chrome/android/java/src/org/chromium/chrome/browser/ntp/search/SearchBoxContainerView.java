@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.ntp.search;
 
-
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -66,5 +68,42 @@ public class SearchBoxContainerView extends LinearLayout {
                 getPaddingTop(),
                 getResources().getDimensionPixelSize(endPaddingInDp),
                 getPaddingBottom());
+    }
+
+    /**
+     * Applies or cleans up the white background for the search box.
+     *
+     * @param apply Whether to apply a white background color to the fake search box.
+     */
+    void applyWhiteBackgroundWithShadow(boolean apply) {
+        Context context = getContext();
+        Drawable defaultBackground =
+                context.getDrawable(R.drawable.home_surface_search_box_background);
+        View searchBoxContainerView = findViewById(R.id.search_box_container);
+        if (!apply) {
+            setBackground(null);
+            // Sets elevation to 0 to remove the shadow.
+            setElevation(0f);
+            setClipToOutline(false);
+            // Resets to the default background drawable.
+            searchBoxContainerView.setBackground(defaultBackground);
+            return;
+        }
+
+        if (defaultBackground == null) return;
+
+        // Adds a black shadow around the search box.
+        setElevation(
+                context.getResources().getDimensionPixelSize(R.dimen.ntp_search_box_elevation));
+        setClipToOutline(true);
+        GradientDrawable shadowBackground = (GradientDrawable) defaultBackground.mutate();
+        shadowBackground.setColor(Color.BLACK);
+        setBackground(shadowBackground);
+
+        // Changes the background of the search_box_container to be white.
+        GradientDrawable searchBoxBackground = (GradientDrawable) defaultBackground.mutate();
+        searchBoxBackground.setColor(Color.WHITE);
+
+        searchBoxContainerView.setBackground(searchBoxBackground);
     }
 }

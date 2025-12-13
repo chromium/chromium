@@ -46,12 +46,12 @@
 #include "content/browser/loader/reconnectable_url_loader_factory.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/cookie_deprecation_label_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
@@ -90,7 +90,7 @@ namespace {
 
 bool IsAdRequestValid(const blink::mojom::AdRequestConfig& config) {
   // The ad_request_url origin has to be HTTPS.
-  if (config.ad_request_url.scheme() != url::kHttpsScheme) {
+  if (config.ad_request_url.GetScheme() != url::kHttpsScheme) {
     return false;
   }
 
@@ -101,7 +101,7 @@ bool IsAdRequestValid(const blink::mojom::AdRequestConfig& config) {
 
   // If a fallback source is specified it must be HTTPS.
   if (config.fallback_source &&
-      (config.fallback_source->scheme() != url::kHttpsScheme)) {
+      (config.fallback_source->GetScheme() != url::kHttpsScheme)) {
     return false;
   }
 
@@ -765,23 +765,6 @@ AdAuctionServiceImpl::GetClientSecurityState() {
   frame_state->private_network_request_policy =
       network::mojom::PrivateNetworkRequestPolicy::kBlock;
   return frame_state;
-}
-
-std::optional<std::string> AdAuctionServiceImpl::GetCookieDeprecationLabel() {
-  if (!base::FeatureList::IsEnabled(
-          features::kFledgeFacilitatedTestingSignalsHeaders)) {
-    return std::nullopt;
-  }
-
-  CookieDeprecationLabelManager* cdlm =
-      render_frame_host()
-          .GetStoragePartition()
-          ->GetCookieDeprecationLabelManager();
-  if (cdlm) {
-    return cdlm->GetValue();
-  } else {
-    return std::nullopt;
-  }
 }
 
 void AdAuctionServiceImpl::GetTrustedKeyValueServerKey(

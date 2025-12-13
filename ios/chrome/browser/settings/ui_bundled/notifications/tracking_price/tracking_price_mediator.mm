@@ -112,6 +112,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [_emailNotificationsEnabled stop];
   [_emailNotificationsEnabled setObserver:nil];
   _emailNotificationsEnabled = nil;
+
+  self.shoppingService = nullptr;
+  self.authService = nullptr;
+  self.prefService = nullptr;
+  _identity = nil;
 }
 
 #pragma mark - Properties
@@ -126,7 +131,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
         kSettingsTrackingPriceMobileNotificationsCellId;
     _mobileNotificationItem.on = push_notification_settings::
         GetMobileNotificationPermissionStatusForClient(
-            PushNotificationClientId::kCommerce, GaiaId(_identity.gaiaID));
+            PushNotificationClientId::kCommerce, _identity.gaiaId);
+    _mobileNotificationItem.target = self;
+    _mobileNotificationItem.selector =
+        @selector(mobileNotificationSwitchToggled:);
   }
 
   return _mobileNotificationItem;
@@ -145,6 +153,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
         kSettingsTrackingPriceEmailNotificationsCellId;
     _emailNotificationItem.on =
         _prefService->GetBoolean(commerce::kPriceEmailNotificationsEnabled);
+    _emailNotificationItem.target = self;
+    _emailNotificationItem.selector =
+        @selector(emailNotificationsSwitchToggled:);
   }
 
   return _emailNotificationItem;
@@ -171,46 +182,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [_consumer setTrackPriceHeaderItem:self.trackPriceHeaderItem];
 }
 
-#pragma mark - TrackingPriceViewControllerDelegate
-
-- (void)toggleSwitchItem:(TableViewItem*)item withValue:(BOOL)value {
-  ItemType type = static_cast<ItemType>(item.type);
-  switch (type) {
-    case ItemTypeMobileNotifications: {
-      [self setPreferenceFor:PushNotificationClientId::kCommerce to:value];
-      self.mobileNotificationItem.on = push_notification_settings::
-          GetMobileNotificationPermissionStatusForClient(
-              PushNotificationClientId::kCommerce, GaiaId(_identity.gaiaID));
-      if (!value) {
-        break;
-      }
-
-      __weak TrackingPriceMediator* weakSelf = self;
-      [PushNotificationUtil
-          requestPushNotificationPermission:^(BOOL granted, BOOL promptShown,
-                                              NSError* error) {
-            if (!error && !promptShown && !granted) {
-              // This callback can be executed on a background thread, make sure
-              // the UI is displayed on the main thread.
-              dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf.presenter presentPushNotificationPermissionAlert];
-              });
-            }
-          }];
-      break;
-    }
-    case ItemTypeEmailNotifications: {
-      _prefService->SetBoolean(commerce::kPriceEmailNotificationsEnabled,
-                               value);
-      [self booleanDidChange:_emailNotificationsEnabled];
-      break;
-    }
-    default:
-      // Not a switch.
-      NOTREACHED();
-  }
-}
-
 #pragma mark - BooleanObserver
 
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
@@ -225,7 +196,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   self.mobileNotificationItem.on = push_notification_settings::
       GetMobileNotificationPermissionStatusForClient(
-          PushNotificationClientId::kCommerce, GaiaId(_identity.gaiaID));
+          PushNotificationClientId::kCommerce, _identity.gaiaId);
   [self.consumer setMobileNotificationItem:self.mobileNotificationItem];
 }
 
@@ -235,7 +206,35 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)setPreferenceFor:(PushNotificationClientId)clientID to:(BOOL)enabled {
   PushNotificationService* service =
       GetApplicationContext()->GetPushNotificationService();
-  service->SetPreference(_identity.gaiaID, clientID, enabled);
+  service->SetPreference(_identity.gaiaId, clientID, enabled);
+}
+
+- (void)mobileNotificationSwitchToggled:(UISwitch*)sender {
+  [self setPreferenceFor:PushNotificationClientId::kCommerce to:sender.on];
+  self.mobileNotificationItem.on = push_notification_settings::
+      GetMobileNotificationPermissionStatusForClient(
+          PushNotificationClientId::kCommerce, GaiaId(_identity.gaiaId));
+  if (!sender.on) {
+    return;
+  }
+
+  __weak TrackingPriceMediator* weakSelf = self;
+  [PushNotificationUtil requestPushNotificationPermission:^(
+                            BOOL granted, BOOL promptShown, NSError* error) {
+    if (!error && !promptShown && !granted) {
+      // This callback can be executed on a background thread, make sure
+      // the UI is displayed on the main thread.
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [weakSelf.presenter presentPushNotificationPermissionAlert];
+      });
+    }
+  }];
+}
+
+- (void)emailNotificationsSwitchToggled:(UISwitch*)sender {
+  _prefService->SetBoolean(commerce::kPriceEmailNotificationsEnabled,
+                           sender.on);
+  [self booleanDidChange:_emailNotificationsEnabled];
 }
 
 @end

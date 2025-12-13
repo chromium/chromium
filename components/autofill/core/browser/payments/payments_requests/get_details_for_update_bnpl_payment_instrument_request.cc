@@ -54,8 +54,8 @@ GetDetailsForUpdateBnplPaymentInstrumentRequest::GetRequestContent() {
   }
   request_dict.Set("context", std::move(context));
 
-  base::Value::Dict chrome_user_context;
-  chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
+  base::Value::Dict chrome_user_context = BuildChromeUserContext(
+      request_details_.client_behavior_signals, full_sync_enabled_);
   request_dict.Set("chrome_user_context", std::move(chrome_user_context));
 
   request_dict.Set("instrument_id",
@@ -63,6 +63,8 @@ GetDetailsForUpdateBnplPaymentInstrumentRequest::GetRequestContent() {
 
   base::Value::Dict buy_now_pay_later_info;
   buy_now_pay_later_info.Set("type", static_cast<int>(request_details_.type));
+  buy_now_pay_later_info.Set("issuer_id",
+                             std::move(request_details_.issuer_id));
   request_dict.Set("buy_now_pay_later_info", std::move(buy_now_pay_later_info));
 
   return base::WriteJson(request_dict).value();

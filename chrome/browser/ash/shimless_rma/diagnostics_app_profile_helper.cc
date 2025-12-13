@@ -27,7 +27,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -441,8 +441,7 @@ void PrepareDiagnosticsAppProfileImpl(
   CHECK(g_browser_process);
   CHECK(g_browser_process->profile_manager());
   CHECK(BrowserContextHelper::Get());
-  // TODO(b/292227137): Use ScopedProfileKeepAlive before migrate this to
-  // LaCrOS.
+
   g_browser_process->profile_manager()->CreateProfileAsync(
       BrowserContextHelper::Get()->GetShimlessRmaAppBrowserContextPath(),
       base::BindOnce(&OnProfileLoaded, std::move(state)));

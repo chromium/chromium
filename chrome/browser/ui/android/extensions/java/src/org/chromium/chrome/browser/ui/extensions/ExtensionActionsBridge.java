@@ -18,6 +18,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.extensions.ShowAction;
 
@@ -36,9 +37,9 @@ public class ExtensionActionsBridge {
         mNativeExtensionActionsBridge = nativeExtensionActionsBridge;
     }
 
-    /** Returns an instance for the given profile. */
-    public static ExtensionActionsBridge get(Profile profile) {
-        return ExtensionActionsBridgeJni.get().get(profile);
+    /** Returns an instance for the given window. */
+    public static ExtensionActionsBridge get(ChromeAndroidTask task) {
+        return ExtensionActionsBridgeJni.get().get(task.getOrCreateNativeBrowserWindowPtr());
     }
 
     /** Represents the result of handling a key event. */
@@ -111,9 +112,22 @@ public class ExtensionActionsBridge {
      * <p>While loading the icon, this method returns a transparent icon.
      */
     @Nullable
-    public Bitmap getActionIcon(String actionId, int tabId) {
+    public Bitmap getActionIcon(
+            String actionId,
+            int tabId,
+            @Nullable WebContents webContents,
+            int canvasWidthDp,
+            int canvasHeightDp,
+            float scaleFactor) {
         return ExtensionActionsBridgeJni.get()
-                .getActionIcon(mNativeExtensionActionsBridge, actionId, tabId);
+                .getActionIcon(
+                        mNativeExtensionActionsBridge,
+                        actionId,
+                        tabId,
+                        webContents,
+                        canvasWidthDp,
+                        canvasHeightDp,
+                        scaleFactor);
     }
 
     /**
@@ -138,8 +152,8 @@ public class ExtensionActionsBridge {
      * temporary for until extensions are ready for dogfooding. TODO(crbug.com/422307625): Remove
      * this check once extensions are ready for dogfooding.
      */
-    public boolean extensionsEnabled() {
-        return ExtensionActionsBridgeJni.get().extensionsEnabled(mNativeExtensionActionsBridge);
+    public static boolean extensionsEnabled(Profile profile) {
+        return ExtensionActionsBridgeJni.get().extensionsEnabled(profile);
     }
 
     /** Handles the key down event and returns the result. */
@@ -229,7 +243,9 @@ public class ExtensionActionsBridge {
 
     @NativeMethods
     public interface Natives {
-        ExtensionActionsBridge get(@JniType("Profile*") Profile profile);
+        boolean extensionsEnabled(@JniType("Profile*") Profile profile);
+
+        ExtensionActionsBridge get(long browserWindowInterfacePtr);
 
         boolean areActionsInitialized(long nativeExtensionActionsBridge);
 
@@ -244,7 +260,11 @@ public class ExtensionActionsBridge {
         @Nullable Bitmap getActionIcon(
                 long nativeExtensionActionsBridge,
                 @JniType("std::string") String actionId,
-                int tabId);
+                int tabId,
+                @Nullable @JniType("content::WebContents*") WebContents webContents,
+                int canvasWidthDp,
+                int canvasHeightDp,
+                float scaleFactor);
 
         @JniType("ExtensionAction::ShowAction")
         int runAction(
@@ -252,8 +272,6 @@ public class ExtensionActionsBridge {
                 @JniType("std::string") String actionId,
                 int tabId,
                 @JniType("content::WebContents*") WebContents webContents);
-
-        boolean extensionsEnabled(long nativeExtensionActionsBridge);
 
         HandleKeyEventResult handleKeyDownEvent(
                 long nativeExtensionActionsBridge,

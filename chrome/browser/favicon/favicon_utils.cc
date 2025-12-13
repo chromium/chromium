@@ -132,14 +132,9 @@ gfx::Image TabFaviconFromWebContents(content::WebContents* contents) {
 }
 
 gfx::Image GetDefaultFavicon() {
-  bool is_dark = false;
-#if !BUILDFLAG(IS_ANDROID)
-  // Android doesn't currently implement NativeTheme::GetInstanceForNativeUi.
-  const ui::NativeTheme* native_theme =
-      ui::NativeTheme::GetInstanceForNativeUi();
-  is_dark = native_theme && native_theme->ShouldUseDarkColors();
-#endif
-  return GetDefaultFaviconForColorScheme(is_dark);
+  return GetDefaultFaviconForColorScheme(
+      ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+      ui::NativeTheme::PreferredColorScheme::kDark);
 }
 
 ui::ImageModel GetDefaultFaviconModel(ui::ColorId bg_color) {
@@ -189,12 +184,12 @@ bool ShouldThemifyFavicon(GURL url) {
   if (!url.SchemeIs(content::kChromeUIScheme)) {
     return false;
   }
-  return url.host_piece() != chrome::kChromeUIAppLauncherPageHost &&
-         url.host_piece() != chrome::kChromeUIHelpHost &&
-         url.host_piece() != chrome::kChromeUIVersionHost &&
-         url.host_piece() != chrome::kChromeUINetExportHost &&
-         url.host_piece() != chrome::kChromeUINewTabHost &&
-         url.host_piece() != password_manager::kChromeUIPasswordManagerHost;
+  return url.host() != chrome::kChromeUIAppLauncherPageHost &&
+         url.host() != chrome::kChromeUIHelpHost &&
+         url.host() != chrome::kChromeUIVersionHost &&
+         url.host() != chrome::kChromeUINetExportHost &&
+         url.host() != chrome::kChromeUINewTabHost &&
+         url.host() != password_manager::kChromeUIPasswordManagerHost;
 }
 
 bool ShouldThemifyFaviconForEntry(content::NavigationEntry* entry) {
@@ -207,8 +202,8 @@ bool ShouldThemifyFaviconForEntry(content::NavigationEntry* entry) {
 
   // Themify favicon for the default NTP and incognito NTP.
   if (actual_url.SchemeIs(content::kChromeUIScheme)) {
-    return actual_url.host_piece() == chrome::kChromeUINewTabPageHost ||
-           actual_url.host_piece() == chrome::kChromeUINewTabHost;
+    return actual_url.host() == chrome::kChromeUINewTabPageHost ||
+           actual_url.host() == chrome::kChromeUINewTabHost;
   }
 
   return false;

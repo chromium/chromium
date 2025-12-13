@@ -50,6 +50,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -319,47 +320,15 @@ bool CanAllBeEditedByUser(
 
 #if defined(TOOLKIT_VIEWS)
 
-gfx::ImageSkia GetBookmarkFolderImageFromVectorIcon(
-    BookmarkFolderIconType icon_type,
-    ui::ColorVariant color,
-    const ui::ColorProvider* color_provider) {
-  const gfx::VectorIcon* id;
-  gfx::ImageSkia folder;
-  if (icon_type == BookmarkFolderIconType::kNormal) {
-    id = &vector_icons::kFolderChromeRefreshIcon;
-  } else {
-    id = &vector_icons::kFolderManagedRefreshIcon;
-  }
-
-  const ui::ThemedVectorIcon icon(id, color);
-  folder = icon.GetImageSkia(color_provider);
-  return folder;
-}
-
 ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
                                      ui::ColorVariant color) {
-  int default_id = IDR_FOLDER_CLOSED;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  // This block must be #ifdefed because only these platforms actually have this
-  // resource ID.
-  if (icon_type == BookmarkFolderIconType::kManaged) {
-    default_id = IDR_BOOKMARK_BAR_FOLDER_MANAGED;
+  const gfx::VectorIcon* icon_id;
+  if (icon_type == BookmarkFolderIconType::kNormal) {
+    icon_id = &vector_icons::kFolderChromeRefreshIcon;
+  } else {
+    icon_id = &vector_icons::kFolderManagedRefreshIcon;
   }
-#endif
-  const auto generator = [](int default_id, BookmarkFolderIconType icon_type,
-                            ui::ColorVariant color,
-                            const ui::ColorProvider* color_provider) {
-    gfx::ImageSkia folder;
-    folder =
-        GetBookmarkFolderImageFromVectorIcon(icon_type, color, color_provider);
-    return gfx::ImageSkia(std::make_unique<RTLFlipSource>(folder),
-                          folder.size());
-  };
-  const gfx::Size size =
-      ui::ResourceBundle::GetSharedInstance().GetImageNamed(default_id).Size();
-  return ui::ImageModel::FromImageGenerator(
-      base::BindRepeating(generator, default_id, icon_type, std::move(color)),
-      size);
+  return ui::ImageModel::FromVectorIcon(*icon_id, color);
 }
 #endif
 

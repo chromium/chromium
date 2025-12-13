@@ -92,7 +92,7 @@
 #![deny(missing_debug_implementations)]
 #![allow(trivial_numeric_casts)]
 #![cfg_attr(test, deny(warnings))]
-#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 #[cfg(not(feature = "any_impl",))]
 compile_error!("You need to choose a zlib backend");
@@ -190,18 +190,6 @@ impl Compression {
     ///
     /// The integer here is typically on a scale of 0-9 where 0 means "no
     /// compression" and 9 means "take as long as you'd like".
-    ///
-    /// ### Backend differences
-    ///
-    /// The [`miniz_oxide`](https://crates.io/crates/miniz_oxide) backend for flate2
-    /// does not support level 0 or `Compression::none()`. Instead it interprets them
-    /// as the default compression level, which is quite slow.
-    /// `Compression::fast()` should be used instead.
-    ///
-    /// `miniz_oxide` also supports a non-compliant compression level 10.
-    /// It is even slower and may result in higher compression, but
-    /// **only miniz_oxide will be able to read the data** compressed with level 10.
-    /// Do **not** use level 10 if you need other software to be able to read it!
     pub const fn new(level: u32) -> Compression {
         Compression(level)
     }

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/audio/interleaved_channel_mixer.h"
 
 #include <cmath>
 #include <string>
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/channel_layout.h"
@@ -44,9 +40,10 @@ TEST_P(InterleavedChannelMixerTest, Transform) {
 
   auto original = ::media::AudioBus::Create(num_input_channels, kNumFrames);
   for (int c = 0; c < num_input_channels; ++c) {
+    auto channel = original->channel(c);
     for (int f = 0; f < kNumFrames; ++f) {
-      original->channel(c)[f] = std::pow(-1, f + c) * 0.01 +
-                                c / static_cast<float>(num_input_channels * 10);
+      channel[f] = std::pow(-1, f + c) * 0.01 +
+                   c / static_cast<float>(num_input_channels * 10);
     }
   }
 
@@ -75,8 +72,9 @@ TEST_P(InterleavedChannelMixerTest, Transform) {
 
   for (int f = 0; f < kNumFrames; ++f) {
     for (int c = 0; c < num_output_channels; ++c) {
-      EXPECT_FLOAT_EQ(interleaved_mixed[f * num_output_channels + c],
-                      transformed_interleaved[f * num_output_channels + c])
+      UNSAFE_TODO(
+          EXPECT_FLOAT_EQ(interleaved_mixed[f * num_output_channels + c],
+                          transformed_interleaved[f * num_output_channels + c]))
           << "at frame " << f << ", channel " << c;
     }
   }

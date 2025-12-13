@@ -275,7 +275,9 @@ public class ReengagementNotificationControllerIntegrationTest {
     @MediumTest
     public void testReengagementActivity() throws Exception {
         WebPageStation blankPage = mTabbedActivityTestRule.startOnBlankPage();
-        int initialTabCount = blankPage.getTabModelSelector().getTotalTabCount();
+        int initialTabCount =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> blankPage.getTabModelSelector().getTotalTabCount());
 
         final CallbackHelper tabAddedCallback = new CallbackHelper();
         TabModelSelectorObserver selectorObserver =
@@ -300,14 +302,17 @@ public class ReengagementNotificationControllerIntegrationTest {
         InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
 
         tabAddedCallback.waitForCallback(0);
-        Tab tab =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> mTabbedActivityTestRule.getActivity().getActivityTab());
+        Tab tab = mTabbedActivityTestRule.getActivityTab();
         Assert.assertTrue(UrlUtilities.isNtpUrl(ChromeTabUtils.getUrlOnUiThread(tab)));
         Assert.assertFalse(tab.isIncognito());
-        Assert.assertEquals(
-                initialTabCount + 1,
-                mTabbedActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
+        int finalTotalTabCount =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                mTabbedActivityTestRule
+                                        .getActivity()
+                                        .getTabModelSelector()
+                                        .getTotalTabCount());
+        Assert.assertEquals(initialTabCount + 1, finalTotalTabCount);
     }
 
     private void verifyNotification(@StringRes int title, @StringRes int description) {

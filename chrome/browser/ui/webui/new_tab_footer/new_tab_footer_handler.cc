@@ -12,8 +12,10 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
+#include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
+#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/managed_ui.h"
@@ -21,6 +23,7 @@
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_helper.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/common/pref_names.h"
@@ -56,6 +59,7 @@ NewTabFooterHandler::NewTabFooterHandler(
       web_contents_(web_contents),
       ntp_custom_background_service_(ntp_custom_background_service),
       theme_provider_(&ThemeService::GetThemeProviderForProfile(profile_)),
+      feature_promo_helper_{std::make_unique<NewTabPageFeaturePromoHelper>()},
       document_(std::move(pending_document)),
       handler_{this, std::move(pending_handler)} {
   extension_registry_observation_.Observe(
@@ -136,6 +140,11 @@ void NewTabFooterHandler::ShowContextMenu(const gfx::Point& point) {
     embedder_->ShowContextMenu(point,
                                std::make_unique<FooterContextMenu>(browser));
   }
+}
+
+void NewTabFooterHandler::NotifyCustomizationButtonVisible() {
+  feature_promo_helper_->MaybeTriggerAutomaticCustomizeChromePromo(
+      web_contents_);
 }
 
 void NewTabFooterHandler::UpdateManagementNotice() {
@@ -227,7 +236,11 @@ void NewTabFooterHandler::AttachedTabStateUpdated(const GURL& url) {
   } else if (ntp_footer::IsExtensionNtp(url, profile_)) {
     ntp_type = new_tab_footer::mojom::NewTabPageType::kExtension;
   }
-  document_->AttachedTabStateUpdated(ntp_type);
+
+  bool can_customize_chrome = CustomizeChromePageHandler::IsSupported(
+      NtpCustomBackgroundServiceFactory::GetForProfile(profile_), profile_);
+
+  document_->AttachedTabStateUpdated(ntp_type, can_customize_chrome);
 }
 
 void NewTabFooterHandler::OnCustomBackgroundImageUpdated() {

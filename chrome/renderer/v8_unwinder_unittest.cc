@@ -46,13 +46,15 @@ v8::Local<v8::Object> CreatePointerHolder(const void* ptr) {
       object_template
           ->NewInstance(v8::Isolate::GetCurrent()->GetCurrentContext())
           .ToLocalChecked();
-  holder->SetAlignedPointerInInternalField(0, const_cast<void*>(ptr));
+  holder->SetAlignedPointerInInternalField(0, const_cast<void*>(ptr),
+                                           v8::kEmbedderDataTypeTagDefault);
   return holder;
 }
 
 template <typename T>
 T* GetPointerFromHolder(v8::Local<v8::Object> holder) {
-  return reinterpret_cast<T*>(holder->GetAlignedPointerFromInternalField(0));
+  return reinterpret_cast<T*>(holder->GetAlignedPointerFromInternalField(
+      0, v8::kEmbedderDataTypeTagDefault));
 }
 
 // Sets up the environment necessary to execute V8 code.
@@ -561,9 +563,9 @@ TEST(V8UnwinderTest, CanUnwindFrom_NullModule) {
 
 // TODO(crbug.com/429395665): the test consistently fails on Mac, fix and
 // re-enable.
+// TODO(crbug.com/439522036): test fails on Win x64 dbg, fix and re-enable.
 // Checks that unwinding from C++ through JavaScript and back into C++ succeeds.
-#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)) || \
-    (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL))
+#if (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL))
 #define MAYBE_UnwindThroughV8Frames UnwindThroughV8Frames
 #else
 #define MAYBE_UnwindThroughV8Frames DISABLED_UnwindThroughV8Frames

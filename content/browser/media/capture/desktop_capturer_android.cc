@@ -8,11 +8,33 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_bytebuffer.h"
 #include "base/numerics/checked_math.h"
+#include "third_party/webrtc/media/base/video_common.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/ScreenCapture_jni.h"
 
 namespace content {
+
+namespace {
+
+class DesktopCapturerAndroidJni : public DesktopCapturerAndroidJniInterface {
+ public:
+  ~DesktopCapturerAndroidJni() override = default;
+  base::android::ScopedJavaLocalRef<jobject> Create(JNIEnv* env,
+                                                    jlong native_ptr) override {
+    return Java_ScreenCapture_create(env, native_ptr);
+  }
+  jboolean StartCapture(JNIEnv* env,
+                        const base::android::JavaRef<jobject>& obj) override {
+    return Java_ScreenCapture_startCapture(env, obj);
+  }
+  void Destroy(JNIEnv* env,
+               const base::android::JavaRef<jobject>& obj) override {
+    Java_ScreenCapture_destroy(env, obj);
+  }
+};
+
+}  // namespace
 
 DesktopCapturerAndroid::PlaneInfo::PlaneInfo() = default;
 
@@ -24,11 +46,18 @@ DesktopCapturerAndroid::PlaneInfo& DesktopCapturerAndroid::PlaneInfo::operator=(
     PlaneInfo&& other) = default;
 
 DesktopCapturerAndroid::DesktopCapturerAndroid(
-    const webrtc::DesktopCaptureOptions& options) {}
+    const webrtc::DesktopCaptureOptions& options)
+    : DesktopCapturerAndroid(options,
+                             std::make_unique<DesktopCapturerAndroidJni>()) {}
+
+DesktopCapturerAndroid::DesktopCapturerAndroid(
+    const webrtc::DesktopCaptureOptions& options,
+    std::unique_ptr<DesktopCapturerAndroidJniInterface> jni_interface)
+    : jni_interface_(std::move(jni_interface)) {}
 
 DesktopCapturerAndroid::~DesktopCapturerAndroid() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ScreenCapture_destroy(env, screen_capture_);
+  jni_interface_->Destroy(env, screen_capture_);
 }
 
 void DesktopCapturerAndroid::Start(Callback* callback) {
@@ -36,9 +65,9 @@ void DesktopCapturerAndroid::Start(Callback* callback) {
 
   JNIEnv* env = base::android::AttachCurrentThread();
   screen_capture_.Reset(
-      Java_ScreenCapture_create(env, reinterpret_cast<intptr_t>(this)));
+      jni_interface_->Create(env, reinterpret_cast<intptr_t>(this)));
 
-  if (!Java_ScreenCapture_startCapture(env, screen_capture_)) {
+  if (!jni_interface_->StartCapture(env, screen_capture_)) {
     // Error immediately if we can't start capture.
     finishing_ = true;
   }
@@ -97,6 +126,27 @@ void DesktopCapturerAndroid::OnRgbaFrameAvailable(
   ProcessRgbaFrame(timestamp_ns, std::move(plane));
 }
 
+void DesktopCapturerAndroid::OnI420FrameAvailable(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& release_cb,
+    jlong timestamp_ns,
+    const base::android::JavaRef<jobject>& y_buf,
+    jint y_unchecked_pixel_stride,
+    jint y_unchecked_row_stride,
+    const base::android::JavaRef<jobject>& u_buf,
+    jint u_unchecked_pixel_stride,
+    jint u_unchecked_row_stride,
+    const base::android::JavaRef<jobject>& v_buf,
+    jint v_unchecked_pixel_stride,
+    jint v_unchecked_row_stride,
+    jint unchecked_crop_left,
+    jint unchecked_crop_top,
+    jint unchecked_crop_right,
+    jint unchecked_crop_bottom) {
+  // TODO(crbug.com/352187279): Implement processing of I420 frames.
+  NOTREACHED();
+}
+
 void DesktopCapturerAndroid::OnStop(JNIEnv* env) {
   Shutdown();
 }
@@ -106,33 +156,11 @@ void DesktopCapturerAndroid::Shutdown() {
   finishing_ = true;
 }
 
-namespace {
-
-// TODO(crbug.com/352187279): `DesktopCaptureDevice` expects results in ARGB
-// but Android generally produces results in ABGR. We should add
-// `webrtc::FourCC` info to the `DesktopCapturer` interface to handle this.
-void RgbaToBgra(webrtc::DesktopFrame& frame) {
-  static_assert(webrtc::DesktopFrame::kBytesPerPixel == 4,
-                "kBytesPerPixel must be 4");
-  uint8_t* data = frame.data();
-  for (int r = 0; r < frame.size().height(); ++r) {
-    for (int c = 2; c < frame.stride();
-         c += webrtc::DesktopFrame::kBytesPerPixel) {
-      // SAFETY: `c - 2` is non-negative and c is less than the stride.
-      UNSAFE_BUFFERS(std::swap(data[c - 2], data[c]));
-    }
-    // SAFETY: It's guaranteed that the size of the memory pointed to by
-    // `frame.data()` is at least height * stride.
-    UNSAFE_BUFFERS(data += frame.stride());
-  }
-}
-
-}  // namespace
-
 void DesktopCapturerAndroid::ProcessRgbaFrame(int64_t timestamp_ns,
                                               PlaneInfo plane) {
   // Don't process frames if we are no longer doing anything.
   if (finishing_) {
+    base::android::RunRunnableAndroid(plane.release_cb);
     return;
   }
 
@@ -140,7 +168,8 @@ void DesktopCapturerAndroid::ProcessRgbaFrame(int64_t timestamp_ns,
   const auto height = plane.crop_bottom - plane.crop_top;
   const webrtc::DesktopSize size(width.ValueOrDie<int32_t>(),
                                  height.ValueOrDie<int32_t>());
-  next_frame_.reset(new webrtc::BasicDesktopFrame(size));
+  next_frame_ =
+      std::make_unique<webrtc::BasicDesktopFrame>(size, webrtc::FOURCC_ABGR);
 
   // We don't have access to this information to Android, but this is only
   // used for mouse cursor stuff, which we don't support currently.
@@ -189,9 +218,16 @@ void DesktopCapturerAndroid::ProcessRgbaFrame(int64_t timestamp_ns,
   CHECK_LE(static_cast<uint32_t>((width * plane.pixel_stride).ValueOrDie()),
            static_cast<uint32_t>(plane.row_stride.ValueOrDie()));
   CHECK_LE(static_cast<uint32_t>(offset.ValueOrDie()), span.size_bytes());
-  CHECK_LE(
-      static_cast<uint32_t>((offset + height * plane.row_stride).ValueOrDie()),
-      span.size());
+  // In the case that we have a crop rectangle, width will definitely be less
+  // than row_stride, so only look at the number of actual pixels for the last
+  // row. Also, even if there is no crop, it's conceptually possible for
+  // row_stride to be larger than width*pixel_stride but for the buffer not to
+  // be large enough to include the difference between row_stride and
+  // width*pixel_stride at the end.
+  CHECK_LE(static_cast<uint32_t>((offset + (height - 1) * plane.row_stride +
+                                  width * plane.pixel_stride)
+                                     .ValueOrDie()),
+           span.size_bytes());
 
   // TODO(crbug.com/352187279): Extract to `SharedMemory` instead of copying if
   // possible, or, use `ScreenCaptureFrameQueue` and `ResolutionTracker` to
@@ -201,9 +237,9 @@ void DesktopCapturerAndroid::ProcessRgbaFrame(int64_t timestamp_ns,
       static_cast<uint32_t>(plane.row_stride.ValueOrDie()),
       webrtc::DesktopRect::MakeSize(size));
 
-  RgbaToBgra(*next_frame_);
-
   base::android::RunRunnableAndroid(plane.release_cb);
 }
 
 }  // namespace content
+
+DEFINE_JNI(ScreenCapture)

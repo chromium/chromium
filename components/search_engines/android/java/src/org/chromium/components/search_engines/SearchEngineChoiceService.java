@@ -15,6 +15,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.search_engines.SearchEngineCountryDelegate.DefaultBrowserPromoSuppressionDelayType;
 import org.chromium.components.search_engines.SearchEngineCountryDelegate.DeviceChoiceEventType;
 
 import java.lang.annotation.Retention;
@@ -291,18 +292,33 @@ public class SearchEngineChoiceService {
     }
 
     private boolean isDefaultBrowserPromoSuppressedInternal() {
-        long suppressionPeriodMillis =
-                SearchEnginesFeatureUtils.CHOICE_DIALOG_DEFAULT_BROWSER_PROMO_SUPPRESSED_MILLIS;
-
         if (mDelegate == null) return false;
+
         Instant deviceBrowserSelectedTimestamp = mDelegate.getDeviceBrowserSelectedTimestamp();
         if (deviceBrowserSelectedTimestamp == null) return false;
 
-        try {
-            return Instant.now()
-                    .isBefore(deviceBrowserSelectedTimestamp.plusMillis(suppressionPeriodMillis));
-        } catch (DateTimeException e) {
-            return false;
+        // TODO(crbug.com/394235956): Go through the regional_capabilities component instead to
+        // get the delay type based on the program. This would require some refactoring to
+        // access the current profile or some other rearchitecturing to expose both
+        // application-scoped and profile-scoped APIs.
+        switch (mDelegate.getDefaultBrowserPromoSuppressionDelayType()) {
+            case DefaultBrowserPromoSuppressionDelayType.STANDARD:
+                try {
+                    long delayMillis =
+                            SearchEnginesFeatureUtils
+                                    .CHOICE_DIALOG_DEFAULT_BROWSER_PROMO_SUPPRESSED_MILLIS;
+                    return Instant.now()
+                            .isBefore(deviceBrowserSelectedTimestamp.plusMillis(delayMillis));
+                } catch (DateTimeException | ArithmeticException e) {
+                    return true;
+                }
+            case DefaultBrowserPromoSuppressionDelayType.MAX:
+                // There is no "infinite" long, so bypass comparison to the actual timestamp and
+                // just always suppress the promo.
+                return true;
+            default:
+                assert false;
+                return true;
         }
     }
 }

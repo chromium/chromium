@@ -11,31 +11,34 @@
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_mediator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_mediator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_view_controller.h"
-#import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_view_controller_presentation_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/strings/grit/ui_strings.h"
 
 @interface AutofillAddCreditCardCoordinator () <
     AddCreditCardMediatorDelegate,
+    AddCreditCardViewControllerPresentationDelegate,
     UIAdaptivePresentationControllerDelegate>
 
 @end
 
 @implementation AutofillAddCreditCardCoordinator {
-  // Displays message for invalid credit card data.
-  AlertCoordinator* _alertCoordinator;
+  // Display alerts.
+  UIAlertController* _alertController;
+
+  // The Credit Card Scanner Coordinator.
+  CreditCardScannerCoordinator* _creditCardScannerCoordinator;
 
   // The view controller attached to this coordinator.
   AutofillAddCreditCardViewController* _addCreditCardViewController;
 
   // The mediator for the view controller attatched to this coordinator.
   AutofillAddCreditCardMediator* _mediator;
-
-  // The action sheet coordinator, if one is currently being shown.
-  ActionSheetCoordinator* _actionSheetCoordinator;
 }
 
 - (void)start {
@@ -51,6 +54,7 @@
 
   _addCreditCardViewController =
       [[AutofillAddCreditCardViewController alloc] initWithDelegate:_mediator];
+  _addCreditCardViewController.presentationDelegate = self;
 
   UINavigationController* navigationController = [[UINavigationController alloc]
       initWithRootViewController:_addCreditCardViewController];
@@ -67,7 +71,8 @@
       dismissViewControllerAnimated:YES
                          completion:nil];
   _addCreditCardViewController = nil;
-  [self dismissActionSheetCoordinator];
+  [_alertController.presentingViewController dismissViewControllerAnimated:YES
+                                                                completion:nil];
   _mediator = nil;
 }
 
@@ -98,6 +103,18 @@
                                IDS_IOS_ADD_CREDIT_CARD_INVALID_NICKNAME_ALERT)];
 }
 
+#pragma mark - AddCreditCardViewControllerPresentationDelegate
+
+- (void)addCreditCardViewControllerRequestedCameraScan:
+    (AutofillAddCreditCardViewController*)viewController {
+  _creditCardScannerCoordinator = [[CreditCardScannerCoordinator alloc]
+      initWithBaseViewController:_addCreditCardViewController
+                         browser:self.browser
+                        consumer:_addCreditCardViewController];
+
+  [_creditCardScannerCoordinator start];
+}
+
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (BOOL)presentationControllerShouldDismiss:
@@ -112,59 +129,58 @@
 
 #pragma mark - Helper Methods
 
-// Shows action sheet alert with a discard changes and a cancel action.
 - (void)showActionSheetAlert {
-  _actionSheetCoordinator = [[ActionSheetCoordinator alloc]
-      initWithBaseViewController:_addCreditCardViewController
-                         browser:self.browser
-                           title:
-                               l10n_util::GetNSString(
-                                   IDS_IOS_ADD_CREDIT_CARD_VIEW_CONTROLLER_DISMISS_ALERT_TITLE)
-                         message:nil
-                   barButtonItem:_addCreditCardViewController.navigationItem
-                                     .leftBarButtonItem];
+  _alertController = [UIAlertController
+      alertControllerWithTitle:
+          l10n_util::GetNSString(
+              IDS_IOS_ADD_CREDIT_CARD_VIEW_CONTROLLER_DISMISS_ALERT_TITLE)
+                       message:nil
+                preferredStyle:UIAlertControllerStyleActionSheet];
 
-  _actionSheetCoordinator.popoverArrowDirection = UIPopoverArrowDirectionUp;
+  _alertController.popoverPresentationController.barButtonItem =
+      _addCreditCardViewController.navigationItem.leftBarButtonItem;
+  _alertController.popoverPresentationController.permittedArrowDirections =
+      UIPopoverArrowDirectionUp;
+
   __weak __typeof(self) weakSelf = self;
+  UIAlertAction* dismissalAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_VIEW_CONTROLLER_DISMISS_DISCARD_CHANGES)
+                style:UIAlertActionStyleDestructive
+              handler:^(UIAlertAction* action) {
+                [weakSelf.delegate
+                    autofillAddCreditCardCoordinatorWantsToBeStopped:weakSelf];
+              }];
+  [_alertController addAction:dismissalAction];
 
-  [_actionSheetCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_VIEW_CONTROLLER_DISMISS_DISCARD_CHANGES)
-                action:^{
-                  [weakSelf.delegate
-                      autofillAddCreditCardCoordinatorWantsToBeStopped:
-                          weakSelf];
-                  [weakSelf dismissActionSheetCoordinator];
-                }
-                 style:UIAlertActionStyleDestructive];
+  [_alertController
+      addAction:[UIAlertAction
+                    actionWithTitle:
+                        l10n_util::GetNSString(
+                            IDS_IOS_VIEW_CONTROLLER_DISMISS_CANCEL_CHANGES)
+                              style:UIAlertActionStyleCancel
+                            handler:nil]];
 
-  [_actionSheetCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_IOS_VIEW_CONTROLLER_DISMISS_CANCEL_CHANGES)
-                action:^{
-                  [weakSelf dismissActionSheetCoordinator];
-                }
-                 style:UIAlertActionStyleCancel];
-
-  [_actionSheetCoordinator start];
+  [_addCreditCardViewController presentViewController:_alertController
+                                             animated:YES
+                                           completion:nil];
 }
 
 // Shows alert with received message by `AlertCoordinator`.
 - (void)showAlertWithMessage:(NSString*)message {
-  _alertCoordinator = [[AlertCoordinator alloc]
-      initWithBaseViewController:_addCreditCardViewController
-                         browser:self.browser
-                           title:message
-                         message:nil];
+  _alertController =
+      [UIAlertController alertControllerWithTitle:message
+                                          message:nil
+                                   preferredStyle:UIAlertControllerStyleAlert];
+  [_alertController
+      addAction:[UIAlertAction
+                    actionWithTitle:l10n_util::GetNSString(IDS_APP_OK)
+                              style:UIAlertActionStyleDefault
+                            handler:nil]];
 
-  [_alertCoordinator start];
-}
-
-#pragma mark - Private
-
-- (void)dismissActionSheetCoordinator {
-  [_actionSheetCoordinator stop];
-  _actionSheetCoordinator = nil;
+  [_addCreditCardViewController presentViewController:_alertController
+                                             animated:YES
+                                           completion:nil];
 }
 
 @end

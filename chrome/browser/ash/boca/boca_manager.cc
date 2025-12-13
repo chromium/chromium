@@ -33,6 +33,7 @@
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
 #include "chromeos/ash/components/boca/on_task/on_task_session_manager.h"
+#include "chromeos/ash/components/boca/receiver/screen_presenter_factory_impl.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_crd_manager.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_remoting_client_manager.h"
@@ -132,9 +133,9 @@ BocaManager::BocaManager(
     std::unique_ptr<boca::BabelOrcaManager> babel_orca_manager,
     std::unique_ptr<boca::BocaMetricsManager> boca_metrics_manager,
     std::unique_ptr<boca::SpotlightSessionManager> spotlight_session_manager)
-    : on_task_session_manager_(std::move(on_task_session_manager)),
-      session_client_impl_(std::move(session_client_impl)),
+    : session_client_impl_(std::move(session_client_impl)),
       boca_session_manager_(std::move(boca_session_manager)),
+      on_task_session_manager_(std::move(on_task_session_manager)),
       invalidation_service_impl_(std::move(invalidation_service_impl)),
       babel_orca_manager_(std::move(babel_orca_manager)),
       boca_metrics_manager_(std::move(boca_metrics_manager)),
@@ -154,7 +155,7 @@ BocaManager::BocaManager(Profile* profile,
   std::unique_ptr<boca::SpotlightRemotingClientManager> remoting_client_manager;
   if (ash::features::IsBocaSpotlightRobotRequesterEnabled() && !is_consumer) {
     remoting_client_manager =
-        std::make_unique<boca::SpotlightRemotingClientManager>(
+        std::make_unique<boca::SpotlightRemotingClientManagerImpl>(
             std::make_unique<boca::SpotlightOAuthTokenFetcherImpl>(
                 GetOAuthServiceForSpotlight()),
             profile->GetURLLoaderFactory());
@@ -162,23 +163,31 @@ BocaManager::BocaManager(Profile* profile,
   boca_session_manager_ = std::make_unique<boca::BocaSessionManager>(
       session_client_impl_.get(), user->GetProfilePrefs(), user->GetAccountId(),
       /*is_producer=*/!is_consumer, std::move(remoting_client_manager));
+  if (!is_consumer && (ash::features::IsBocaScreenSharingStudentEnabled() ||
+                       ash::features::IsBocaScreenSharingTeacherEnabled())) {
+    boca_session_manager_->SetScreenPresenterFactory(
+        std::make_unique<boca::ScreenPresenterFactoryImpl>(
+            profile->GetURLLoaderFactory(),
+            IdentityManagerFactory::GetForProfile(profile)));
+  }
   if (ash::features::IsBabelOrcaAvailable()) {
-    const std::string caption_language = speech::GetDefaultLiveCaptionLanguage(
+    std::string_view caption_language = speech::GetDefaultLiveCaptionLanguage(
         application_locale, profile->GetPrefs());
     if (!is_consumer && base::FeatureList::IsEnabled(
                             ash::features::kOnDeviceSpeechRecognition)) {
       soda_installer_ = std::make_unique<babelorca::SodaInstaller>(
-          global_prefs, profile->GetPrefs(), caption_language);
+          global_prefs, profile->GetPrefs(), std::string(caption_language));
     }
     babel_orca_manager_ = CreateBabelOrcaManager(
         boca_session_manager_.get(), profile, global_prefs,
-        soda_installer_.get(), application_locale, caption_language,
-        is_consumer);
+        soda_installer_.get(), application_locale,
+        std::string(caption_language), is_consumer);
   }
   if (is_consumer) {
     on_task_session_manager_ = std::make_unique<boca::OnTaskSessionManager>(
         std::make_unique<boca::OnTaskSystemWebAppManagerImpl>(profile),
-        std::make_unique<boca::OnTaskExtensionsManagerImpl>(profile));
+        std::make_unique<boca::OnTaskExtensionsManagerImpl>(profile),
+        boca_session_manager_.get());
   }
 
   boca_metrics_manager_ =
@@ -193,9 +202,7 @@ BocaManager::BocaManager(Profile* profile,
       instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
           ->driver();
   invalidation_service_impl_ = std::make_unique<boca::InvalidationServiceImpl>(
-      gcm_driver, instance_id_driver, user->GetAccountId(),
-      boca_session_manager_.get(), session_client_impl_.get(),
-      boca::BocaAppClient::Get()->GetSchoolToolsServerBaseUrl());
+      gcm_driver, instance_id_driver, boca_session_manager_.get());
   AddObservers(user);
 }
 

@@ -8,6 +8,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
+#include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_convolver_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
@@ -78,9 +79,6 @@ void ConvolverHandler::Process(uint32_t frames_to_process) {
       // Process using the convolution engine.
       // Note that we can handle the case where nothing is connected to the
       // input, in which case we'll just feed silence into the convolver.
-      // FIXME:  If we wanted to get fancy we could try to factor in the 'tail
-      // time' and stop processing once the tail dies down if
-      // we keep getting fed silence.
       scoped_refptr<AudioBus> input_bus = Input(0).Bus();
       reverb_->Process(input_bus.get(), output_bus, frames_to_process);
     }

@@ -7,25 +7,24 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/intent_classifier.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/history_query_intent.pb.h"
 #include "components/optimization_guide/proto/history_query_intent_model_metadata.pb.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 
 namespace history_embeddings {
 
 namespace {
 
-using ::optimization_guide::ModelBasedCapabilityKey;
 using ::optimization_guide::SessionConfigParams;
-using Session = ::optimization_guide::OptimizationGuideModelExecutor::Session;
+using ::optimization_guide::mojom::OnDeviceFeature;
+using Session = ::optimization_guide::OnDeviceSession;
 
 using ::optimization_guide::ParsedAnyMetadata;
 using ::optimization_guide::proto::HistoryQueryIntentModelMetadata;
@@ -39,14 +38,11 @@ class MlIntentClassifier::Execution final {
  public:
   Execution() = default;
 
-  void Execute(OptimizationGuideModelExecutor* model_executor,
+  void Execute(OnDeviceCapability* model_executor,
                std::string query,
                ComputeQueryIntentCallback callback) {
     session_ = model_executor->StartSession(
-        ModelBasedCapabilityKey::kHistoryQueryIntent,
-        SessionConfigParams{
-            .execution_mode = SessionConfigParams::ExecutionMode::kOnDeviceOnly,
-        });
+        OnDeviceFeature::kHistoryQueryIntent, SessionConfigParams{}, nullptr);
     if (!session_) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
@@ -130,8 +126,7 @@ class MlIntentClassifier::Execution final {
   base::WeakPtrFactory<Execution> weak_ptr_factory_{this};
 };
 
-MlIntentClassifier::MlIntentClassifier(
-    OptimizationGuideModelExecutor* model_executor)
+MlIntentClassifier::MlIntentClassifier(OnDeviceCapability* model_executor)
     : model_executor_(model_executor) {}
 
 MlIntentClassifier::~MlIntentClassifier() = default;

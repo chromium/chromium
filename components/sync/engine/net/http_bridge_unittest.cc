@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -40,7 +42,7 @@ const base::FilePath::CharType kDocRoot[] =
 
 }  // namespace
 
-const char kUserAgent[] = "user-agent";
+constexpr char kUserAgent[] = "user-agent";
 
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SyncHttpBridgeTest DISABLED_SyncHttpBridgeTest
@@ -103,7 +105,7 @@ class MAYBE_SyncHttpBridgeTest : public testing::Test {
   raw_ptr<HttpBridge> bridge_for_race_test_ = nullptr;
 
   base::test::TaskEnvironment task_environment_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   // Separate thread for IO used by the HttpBridge.
   base::Thread io_thread_;
@@ -146,7 +148,7 @@ class ShuntedHttpBridge : public HttpBridge {
 
     // Set up a fake content response.
     OnURLLoadCompleteInternal(200, net::OK, GURL("http://www.google.com"),
-                              std::make_unique<std::string>("success!"));
+                              "success!");
   }
   const raw_ptr<MAYBE_SyncHttpBridgeTest> test_;
   bool never_finishes_;
@@ -255,7 +257,9 @@ TEST_F(MAYBE_SyncHttpBridgeTest, TestExtraRequestHeaders) {
   scoped_refptr<HttpBridge> http_bridge(BuildBridge());
 
   http_bridge->SetURL(test_server_.GetURL("/echoall"));
-  http_bridge->SetExtraRequestHeaders("test:fnord");
+  net::HttpRequestHeaders headers;
+  headers.SetHeader("test", "fnord");
+  http_bridge->SetExtraRequestHeaders(headers);
 
   std::string test_payload = "###TEST PAYLOAD###";
   http_bridge->SetPostPayload("text/html", test_payload.length() + 1,
@@ -419,8 +423,7 @@ TEST_F(MAYBE_SyncHttpBridgeTest, AbortAndReleaseBeforeFetchComplete) {
   // simulate what HttpBridge::MakeAsynchronousPost() does.
   ASSERT_TRUE(io_thread()->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&syncer::HttpBridge::OnURLLoadComplete,
-                                bridge_for_race_test(),
-                                std::make_unique<std::string>("success!"))));
+                                bridge_for_race_test(), "success!")));
 
   // Abort the fetch. This should be smart enough to handle the case where
   // the bridge is released on the sync therad before the callback scheduled

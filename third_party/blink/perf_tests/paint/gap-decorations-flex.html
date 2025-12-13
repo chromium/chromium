@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<script src="../resources/runner.js"></script>
+<script src="resources/paint.js"></script>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+
+  #flex-container {
+    display: flex;
+    flex-wrap: wrap;
+    width: 9000px;
+
+    gap: 6px;
+
+    column-rule: 2px solid blue;
+    row-rule: 2px solid red;
+
+    column-rule-break: intersection;
+    row-rule-break: intersection;
+
+    column-rule-inset: 0;
+    row-rule-inset: 2px;
+
+  }
+
+  .item {
+    height: 10px;
+    margin: 0;
+
+    background-color: green;
+  }
+</style>
+
+<div id="flex-container"></div>
+
+<script>
+  (function() {
+    const container = document.getElementById('flex-container');
+
+    function populateContainer() {
+      const itemCount = 60000;
+      const fragment = document.createDocumentFragment();
+
+      for (let i = 0; i < itemCount; ++i) {
+        const div = document.createElement('div');
+        div.className = 'item';
+
+        // Vary width between ~10px and ~50px.
+        const base = 10;
+        const span = 50;
+        const width = base + (i * 3) % span;
+        div.style.width = width + 'px';
+
+        fragment.appendChild(div);
+      }
+
+      container.appendChild(fragment);
+    }
+
+    populateContainer();
+
+    var wide = false;
+
+    measurePaint({
+      run: function() {
+            container.style.width = wide ? "9000px" : "10000px";
+            wide = !wide;
+      }
+    });
+  })();
+</script>

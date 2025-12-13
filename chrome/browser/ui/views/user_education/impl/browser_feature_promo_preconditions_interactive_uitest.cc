@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -27,7 +29,6 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
-#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_education/common/anchor_element_provider.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
@@ -101,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(WindowActivePreconditionUiTest,
       WaitForShow(kToolbarAppMenuButtonElementId),
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               "Linux window activation issues."),
-      InContext(incog->window()->GetElementContext(),
+      InContext(BrowserElements::From(incog)->GetContext(),
                 Steps(WaitForShow(kToolbarAppMenuButtonElementId),
                       ActivateSurface(kToolbarAppMenuButtonElementId))),
       WithElement(kToolbarAppMenuButtonElementId,
@@ -271,8 +272,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxNotOpenPreconditionUiTest,
                 u"chrome", metrics::OmniboxEventProto::NTP,
                 ChromeAutocompleteSchemeClassifier(browser_view->GetProfile()));
             browser_view->GetLocationBarView()
-                ->GetOmniboxView()
-                ->controller()
+                ->GetOmniboxController()
                 ->autocomplete_controller()
                 ->Start(input);
           }),

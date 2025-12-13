@@ -13,7 +13,6 @@ import android.view.View;
 
 import androidx.annotation.ColorInt;
 
-import org.chromium.base.UnownedUserData;
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -27,8 +26,7 @@ import org.chromium.url.GURL;
 
 /** Represents the page shown when a CCT is created to download a file. */
 @NullMarked
-public class NewDownloadTab extends EmptyTabObserver
-        implements UserData, UnownedUserData, TabViewProvider {
+public class NewDownloadTab extends EmptyTabObserver implements UserData, TabViewProvider {
     private static final Class<NewDownloadTab> USER_DATA_KEY = NewDownloadTab.class;
 
     private final Tab mTab;
@@ -55,12 +53,12 @@ public class NewDownloadTab extends EmptyTabObserver
     }
 
     /**
-     * Identify the {@link NewDownloadTab} instance attached to the window android using
-     * {@link UnownedUserData} through the {@link NewDownloadTabProvider} and finish its parent
-     * activity.
+     * Identify the {@link NewDownloadTab} instance attached to the window android using {@link
+     * UnownedUserData} through the {@link NewDownloadTabProvider} and finish its parent activity.
+     *
      * @param windowAndroid The window android containing the new download tab.
      */
-    public static void closeExistingNewDownloadTab(WindowAndroid windowAndroid) {
+    public static void closeExistingNewDownloadTab(@Nullable WindowAndroid windowAndroid) {
         NewDownloadTab instance = NewDownloadTabProvider.from(windowAndroid);
         if (instance != null) {
             instance.onDownloadDialogCancelled();

@@ -24,6 +24,10 @@
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace content {
 namespace {
 
@@ -58,13 +62,11 @@ class FakeNetworkContext : public network::TestNetworkContext {
   void MakeDNSResolveSuccess(const GURL& url) {
     const net::IPEndPoint kFakeIPAddress{
         net::IPEndPoint(net::IPAddress::IPv4Localhost(), /*port=*/1234)};
-    std::optional<net::AddressList> resolved_addresses =
-        net::AddressList(kFakeIPAddress);
     auto it = pending_requests_.find(net::HostPortPair::FromURL(url));
     // Make sure a request has actually been made.
     EXPECT_TRUE(it != pending_requests_.end());
-    it->second->OnComplete(net::OK, resolved_addresses,
-                           /*endpoint_results_with_metadata=*/std::nullopt);
+    it->second->OnComplete(net::OK, net::AddressList(kFakeIPAddress),
+                           /*alternative_endpoints=*/{});
     pending_requests_.erase(it);
   }
 
@@ -77,8 +79,8 @@ class FakeNetworkContext : public network::TestNetworkContext {
     // Make sure a request has actually been made.
     EXPECT_TRUE(it != pending_requests_.end());
 
-    it->second->OnComplete(err, /*resolved_addresses=*/std::nullopt,
-                           /*endpoint_results_with_metadata=*/std::nullopt);
+    it->second->OnComplete(err, /*resolved_addresses=*/{},
+                           /*alternative_endpoints=*/{});
     pending_requests_.erase(it);
   }
 
@@ -106,12 +108,10 @@ class FakeNetworkContext : public network::TestNetworkContext {
     }
 
     void OnComplete(net::Error err,
-                    std::optional<net::AddressList> resolved_addresses,
-                    std::optional<net::HostResolverEndpointResults>
-                        endpoint_results_with_metadata) {
+                    net::AddressList resolved_addresses,
+                    net::HostResolverEndpointResults alternative_endpoints) {
       response_client_->OnComplete(err, net::ResolveErrorInfo(),
-                                   resolved_addresses,
-                                   endpoint_results_with_metadata);
+                                   resolved_addresses, alternative_endpoints);
     }
 
    private:
@@ -468,6 +468,14 @@ TEST_F(PrefetchCanaryCheckerTest, Timeout) {
 }
 
 TEST_F(PrefetchCanaryCheckerTest, CacheEntryAge) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
+
   base::HistogramTester histogram_tester;
   GURL probe_url("https://probe-url.com");
 

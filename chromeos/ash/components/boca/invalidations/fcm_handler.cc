@@ -5,8 +5,10 @@
 #include "chromeos/ash/components/boca/invalidations/fcm_handler.h"
 
 #include <map>
+#include <string_view>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -15,6 +17,13 @@
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 
 namespace ash::boca {
+namespace {
+
+inline static constexpr std::string_view kSenderId = "947897361853";
+inline static constexpr std::string_view kApplicationId =
+    "com.google.chrome.boca.fcm.invalidations";
+
+}  // namespace
 
 // Lower bound time between two token validations when listening.
 const int kTokenValidationPeriodMinutesDefault = 60 * 24;
@@ -22,41 +31,63 @@ const int kTokenValidationPeriodMinutesDefault = 60 * 24;
 // TODO(366316368): Revisit this TTL or should just remove it.
 const int kInstanceIDTokenTTLSeconds = 28 * 24 * 60 * 60;  // 4 weeks.
 
-FCMHandler::FCMHandler(gcm::GCMDriver* gcm_driver,
-                       instance_id::InstanceIDDriver* instance_id_driver,
-                       const std::string& sender_id,
-                       const std::string& app_id)
-    : gcm_driver_(gcm_driver),
-      instance_id_driver_(instance_id_driver),
-      sender_id_(sender_id),
-      app_id_(app_id) {}
+FCMHandlerImpl::FCMHandlerImpl() = default;
 
-FCMHandler::~FCMHandler() {}
+FCMHandlerImpl::FCMHandlerImpl(
+    gcm::GCMDriver* gcm_driver,
+    instance_id::InstanceIDDriver* instance_id_driver) {
+  Init(gcm_driver, instance_id_driver);
+}
 
-void FCMHandler::StartListening() {
+FCMHandlerImpl::~FCMHandlerImpl() {}
+
+void FCMHandlerImpl::Init(gcm::GCMDriver* gcm_driver,
+                          instance_id::InstanceIDDriver* instance_id_driver) {
+  if (initialized_) {
+    LOG(ERROR) << "[Boca] FCM handler is already initialized.";
+    return;
+  }
+  gcm_driver_ = gcm_driver;
+  instance_id_driver_ = instance_id_driver;
+  initialized_ = true;
+}
+
+bool FCMHandlerImpl::IsInitialized() const {
+  return initialized_;
+}
+
+void FCMHandlerImpl::StartListening() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!gcm_driver_) {
+    return;
+  }
   CHECK(!IsListening());
   CHECK(!fcm_registration_token_.has_value());
-  gcm_driver_->AddAppHandler(app_id_, this);
+  gcm_driver_->AddAppHandler(std::string(kApplicationId), this);
   StartTokenFetch(/*is_validation=*/false);
 }
 
-void FCMHandler::StopListening() {
+void FCMHandlerImpl::StopListening() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // StopListening() may be called after StartListening() right away and
   // DidRetrieveToken() won't be called.
-  if (IsListening()) {
-    gcm_driver_->RemoveAppHandler(app_id_);
+  if (gcm_driver_ && IsListening()) {
+    gcm_driver_->RemoveAppHandler(std::string(kApplicationId));
     fcm_registration_token_ = std::nullopt;
     token_validation_timer_.Stop();
   }
 }
 
-void FCMHandler::StopListeningPermanently() {
+void FCMHandlerImpl::StopListeningPermanently() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (instance_id_driver_->ExistsInstanceID(app_id_)) {
-    instance_id_driver_->GetInstanceID(app_id_)->DeleteID(
-        /*callback=*/base::DoNothing());
+  if (!instance_id_driver_) {
+    return;
+  }
+  if (instance_id_driver_->ExistsInstanceID(std::string(kApplicationId))) {
+    instance_id_driver_->GetInstanceID(std::string(kApplicationId))
+        ->DeleteID(
+            /*callback=*/base::DoNothing());
+    fcm_registration_token_ = std::nullopt;
     for (FCMRegistrationTokenObserver& token_observer : token_observers_) {
       token_observer.OnFCMRegistrationTokenChanged();
     }
@@ -64,19 +95,19 @@ void FCMHandler::StopListeningPermanently() {
   StopListening();
 }
 
-const std::optional<std::string>& FCMHandler::GetFCMRegistrationToken() const {
+const std::optional<std::string>& FCMHandlerImpl::GetFCMRegistrationToken()
+    const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return fcm_registration_token_;
 }
 
-void FCMHandler::ShutdownHandler() {
-  // In profile service two-phase shutdown, FCM shutdown should have been called
-  // before Dtor, which would remove us from listener list. This will never be
-  // reached.
-  NOTREACHED();
+void FCMHandlerImpl::ShutdownHandler() {
+  gcm_driver_ = nullptr;
+  instance_id_driver_ = nullptr;
+  fcm_registration_token_.reset();
 }
 
-void FCMHandler::AddListener(InvalidationsListener* listener) {
+void FCMHandlerImpl::AddListener(InvalidationsListener* listener) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (listeners_.HasObserver(listener)) {
     return;
@@ -84,69 +115,80 @@ void FCMHandler::AddListener(InvalidationsListener* listener) {
   listeners_.AddObserver(listener);
 }
 
-bool FCMHandler::HasListener(InvalidationsListener* listener) {
+bool FCMHandlerImpl::HasListener(InvalidationsListener* listener) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return listeners_.HasObserver(listener);
 }
 
-void FCMHandler::RemoveListener(InvalidationsListener* listener) {
+void FCMHandlerImpl::RemoveListener(InvalidationsListener* listener) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   listeners_.RemoveObserver(listener);
 }
 
-void FCMHandler::OnStoreReset() {
+void FCMHandlerImpl::OnStoreReset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // The FCM registration token is not stored by FCMHandler.
+  // The FCM registration token is not stored by FCMHandlerImpl.
 }
 
-void FCMHandler::AddTokenObserver(FCMRegistrationTokenObserver* observer) {
+void FCMHandlerImpl::AddTokenObserver(FCMRegistrationTokenObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   token_observers_.AddObserver(observer);
 }
 
-void FCMHandler::RemoveTokenObserver(FCMRegistrationTokenObserver* observer) {
+void FCMHandlerImpl::RemoveTokenObserver(
+    FCMRegistrationTokenObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   token_observers_.RemoveObserver(observer);
 }
 
-void FCMHandler::OnMessage(const std::string& app_id,
-                           const gcm::IncomingMessage& message) {
+void FCMHandlerImpl::OnMessage(const std::string& app_id,
+                               const gcm::IncomingMessage& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(app_id, app_id_);
-
+  DCHECK_EQ(app_id, kApplicationId);
+  const std::string kMethodKey = "method";
+  const bool method_exists = base::Contains(message.data, kMethodKey);
+  LOG_IF(ERROR, !method_exists)
+      << "[Boca] Method does not exist in FCM message.";
   for (InvalidationsListener& listener : listeners_) {
-    listener.OnInvalidationReceived(message.raw_data);
+    listener.OnInvalidationReceived(method_exists ? message.data.at(kMethodKey)
+                                                  : std::string());
   }
 }
 
-void FCMHandler::OnMessagesDeleted(const std::string& app_id) {
+void FCMHandlerImpl::OnMessagesDeleted(const std::string& app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(app_id, app_id_);
+  DCHECK_EQ(app_id, kApplicationId);
 }
 
-void FCMHandler::OnSendError(const std::string& app_id,
-                             const gcm::GCMClient::SendErrorDetails& details) {
+void FCMHandlerImpl::OnSendError(
+    const std::string& app_id,
+    const gcm::GCMClient::SendErrorDetails& details) {
   // Should never be called because the invalidation service doesn't send GCM
   // messages to the server.
-  NOTREACHED() << "FCMHandler doesn't send GCM messages.";
+  NOTREACHED() << "FCMHandlerImpl doesn't send GCM messages.";
 }
 
-void FCMHandler::OnSendAcknowledged(const std::string& app_id,
-                                    const std::string& message_id) {
+void FCMHandlerImpl::OnSendAcknowledged(const std::string& app_id,
+                                        const std::string& message_id) {
   // Should never be called because the invalidation service doesn't send GCM
   // messages to the server.
-  NOTREACHED() << "FCMHandler doesn't send GCM messages.";
+  NOTREACHED() << "FCMHandlerImpl doesn't send GCM messages.";
 }
 
-bool FCMHandler::IsListening() const {
+std::string FCMHandlerImpl::GetAppIdForTesting() {
+  return std::string(kApplicationId);
+}
+
+bool FCMHandlerImpl::IsListening() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return gcm_driver_->GetAppHandler(app_id_) != nullptr;
+  return gcm_driver_ &&
+         gcm_driver_->GetAppHandler(std::string(kApplicationId)) != nullptr;
 }
 
-void FCMHandler::DidRetrieveToken(base::TimeTicks fetch_time_for_metrics,
-                                  bool is_validation,
-                                  const std::string& subscription_token,
-                                  instance_id::InstanceID::Result result) {
+void FCMHandlerImpl::DidRetrieveToken(base::TimeTicks fetch_time_for_metrics,
+                                      bool is_validation,
+                                      const std::string& subscription_token,
+                                      instance_id::InstanceID::Result result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   boca::RecordTokenRetrievalIsValidation(is_validation);
@@ -165,35 +207,45 @@ void FCMHandler::DidRetrieveToken(base::TimeTicks fetch_time_for_metrics,
       token_observer.OnFCMRegistrationTokenChanged();
     }
   } else if (result != instance_id::InstanceID::SUCCESS) {
-    DLOG(WARNING) << "Messaging subscription failed: " << result;
+    LOG(ERROR) << "[Boca] Messaging subscription failed: "
+               << static_cast<int>(result);
+    if (!is_validation) {
+      token_observers_.Notify(
+          &FCMRegistrationTokenObserver::OnFCMTokenFetchFailed);
+    }
   }
 
   ScheduleNextTokenValidation();
 }
 
-void FCMHandler::ScheduleNextTokenValidation() {
+void FCMHandlerImpl::ScheduleNextTokenValidation() {
   DCHECK(IsListening());
 
   token_validation_timer_.Start(
       FROM_HERE, base::Minutes(kTokenValidationPeriodMinutesDefault),
-      base::BindOnce(&FCMHandler::StartTokenValidation,
+      base::BindOnce(&FCMHandlerImpl::StartTokenValidation,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FCMHandler::StartTokenValidation() {
+void FCMHandlerImpl::StartTokenValidation() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsListening());
   StartTokenFetch(/*is_validation=*/true);
 }
 
-void FCMHandler::StartTokenFetch(bool is_validation) {
-  instance_id_driver_->GetInstanceID(app_id_)->GetToken(
-      sender_id_, instance_id::kGCMScope,
-      /*time_to_live=*/base::Seconds(kInstanceIDTokenTTLSeconds),
-      /*flags=*/{instance_id::InstanceID::Flags::kIsLazy},
-      base::BindOnce(
-          &FCMHandler::DidRetrieveToken, weak_ptr_factory_.GetWeakPtr(),
-          /*fetch_time_for_metrics=*/base::TimeTicks::Now(), is_validation));
+void FCMHandlerImpl::StartTokenFetch(bool is_validation) {
+  if (!instance_id_driver_) {
+    return;
+  }
+  instance_id_driver_->GetInstanceID(std::string(kApplicationId))
+      ->GetToken(
+          std::string(kSenderId), instance_id::kGCMScope,
+          /*time_to_live=*/base::Seconds(kInstanceIDTokenTTLSeconds),
+          /*flags=*/{instance_id::InstanceID::Flags::kIsLazy},
+          base::BindOnce(&FCMHandlerImpl::DidRetrieveToken,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         /*fetch_time_for_metrics=*/base::TimeTicks::Now(),
+                         is_validation));
 }
 
 }  // namespace ash::boca

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
 #include "base/memory_coordinator/memory_consumer.h"
 #include "base/task/sequenced_task_runner.h"
@@ -20,13 +21,20 @@ namespace base {
 
 class AsyncMemoryConsumerRegistration::MainThread : public MemoryConsumer {
  public:
-  MainThread(std::string observer_id,
-             MemoryConsumerTraits traits,
-             WeakPtr<AsyncMemoryConsumerRegistration> parent,
-             scoped_refptr<SequencedTaskRunner> consumer_task_runner)
-      : consumer_task_runner_(std::move(consumer_task_runner)),
-        parent_(std::move(parent)),
-        registration_(std::move(observer_id), traits, this) {}
+  MainThread() { DETACH_FROM_THREAD(thread_checker_); }
+
+  void Init(std::string consumer_id,
+            MemoryConsumerTraits traits,
+            CheckUnregister check_unregister,
+            CheckRegistryExists check_registry_exists,
+            WeakPtr<AsyncMemoryConsumerRegistration> parent,
+            scoped_refptr<SequencedTaskRunner> consumer_task_runner) {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    consumer_task_runner_ = std::move(consumer_task_runner);
+    parent_ = std::move(parent);
+    registration_.emplace(consumer_id, traits, this, check_unregister,
+                          check_registry_exists);
+  }
 
  private:
   // MemoryConsumer:
@@ -54,7 +62,7 @@ class AsyncMemoryConsumerRegistration::MainThread : public MemoryConsumer {
       GUARDED_BY_CONTEXT(thread_checker_);
 
   // The registration with the MemoryConsumerRegistry.
-  ScopedMemoryConsumerRegistration registration_
+  std::optional<MemoryConsumerRegistration> registration_
       GUARDED_BY_CONTEXT(thread_checker_);
 
   THREAD_CHECKER(thread_checker_);
@@ -63,19 +71,30 @@ class AsyncMemoryConsumerRegistration::MainThread : public MemoryConsumer {
 // AsyncMemoryConsumerRegistration ---------------------------------------------
 
 AsyncMemoryConsumerRegistration::AsyncMemoryConsumerRegistration(
-    scoped_refptr<SingleThreadTaskRunner> main_task_runner,
     std::string_view consumer_id,
     MemoryConsumerTraits traits,
-    MemoryConsumer* consumer)
+    MemoryConsumer* consumer,
+    CheckUnregister check_unregister,
+    CheckRegistryExists check_registry_exists)
     : consumer_(consumer) {
-  DCHECK(!main_task_runner->BelongsToCurrentThread());
-  main_thread_.emplace(std::move(main_task_runner), std::string(consumer_id),
-                       traits, weak_ptr_factory_.GetWeakPtr(),
-                       SequencedTaskRunner::GetCurrentDefault());
+  main_thread_task_runner_ = SingleThreadTaskRunner::GetMainThreadDefault();
+  main_thread_ = std::make_unique<MainThread>();
+  main_thread_task_runner_->PostTask(
+      FROM_HERE, BindOnce(&MainThread::Init, Unretained(main_thread_.get()),
+                          std::string(consumer_id), traits, check_unregister,
+                          check_registry_exists, weak_ptr_factory_.GetWeakPtr(),
+                          SequencedTaskRunner::GetCurrentDefault()));
 }
 
 AsyncMemoryConsumerRegistration::~AsyncMemoryConsumerRegistration() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (main_thread_) {
+    // In tests, tasks on the main thread are not executed upon destruction of
+    // the TaskEnvironment. The main thread object thus gets tagged as leaking,
+    // which is fine in this case.
+    ANNOTATE_LEAKING_OBJECT_PTR(main_thread_.get());
+    main_thread_task_runner_->DeleteSoon(FROM_HERE, main_thread_.release());
+  }
 }
 
 void AsyncMemoryConsumerRegistration::NotifyUpdateMemoryLimit(int percentage) {

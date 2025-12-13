@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_set_html_unsafe_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sanitizer_sanitizerconfig_sanitizerpresets.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
@@ -20,19 +21,23 @@ namespace blink {
 //   But because SetHTMLOptions and SetHTMLUnsafeOptions are unrelated types (as
 //   far as C++ is concerned) they cannot easily be merged.
 
-void SanitizerAPI::SanitizeSafeInternal(ContainerNode* element,
+void SanitizerAPI::SanitizeSafeInternal(const ContainerNode* context_element,
+                                        ContainerNode* root_element,
                                         SetHTMLOptions* options,
                                         ExceptionState& exception_state) {
+  // Per spec, we need to parse & sanitize into an inert (non-active) document.
+  CHECK(!root_element->GetDocument().IsActive());
+
   if (exception_state.HadException()) {
-    element->setTextContent("");
+    root_element->setTextContent("");
     return;
   }
 
-  if (element->IsElementNode()) {
-    const Element* real_element = To<Element>(element);
+  if (context_element->IsElementNode()) {
+    const Element* real_element = To<Element>(context_element);
     if (real_element->TagQName() == html_names::kScriptTag ||
         real_element->TagQName() == svg_names::kScriptTag) {
-      element->setTextContent("");
+      root_element->setTextContent("");
       return;
     }
   }
@@ -66,14 +71,18 @@ void SanitizerAPI::SanitizeSafeInternal(ContainerNode* element,
   }
 
   CHECK(sanitizer);
-  sanitizer->SanitizeSafe(element);
+  sanitizer->SanitizeSafe(root_element);
 }
 
-void SanitizerAPI::SanitizeUnsafeInternal(ContainerNode* element,
+void SanitizerAPI::SanitizeUnsafeInternal(const ContainerNode* context_element,
+                                          ContainerNode* root_element,
                                           SetHTMLUnsafeOptions* options,
                                           ExceptionState& exception_state) {
+  // Per spec, we need to parse & sanitize into an inert (non-active) document.
+  CHECK(!root_element->GetDocument().IsActive());
+
   if (exception_state.HadException()) {
-    element->setTextContent("");
+    root_element->setTextContent("");
     return;
   }
 
@@ -106,7 +115,7 @@ void SanitizerAPI::SanitizeUnsafeInternal(ContainerNode* element,
   }
 
   CHECK(sanitizer);
-  sanitizer->SanitizeUnsafe(element);
+  sanitizer->SanitizeUnsafe(root_element);
 }
 
 }  // namespace blink

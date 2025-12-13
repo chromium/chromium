@@ -11,6 +11,8 @@
 
 namespace password_manager {
 
+class HashPasswordManager;
+
 // Mocked PasswordReuseManager used by unit tests.
 class MockPasswordReuseManager : public PasswordReuseManager {
  public:
@@ -57,11 +59,6 @@ class MockPasswordReuseManager : public PasswordReuseManager {
   MOCK_METHOD(void, ClearAllEnterprisePasswordHash, (), (override));
 
   MOCK_METHOD(void, ClearAllNonGmailPasswordHash, (), (override));
-  MOCK_METHOD(base::CallbackListSubscription,
-              RegisterStateCallbackOnHashPasswordManager,
-              (const base::RepeatingCallback<void(const std::string& username)>&
-                   callback),
-              (override));
   MOCK_METHOD(void,
               SetPasswordReuseManagerSigninNotifier,
               (std::unique_ptr<PasswordReuseManagerSigninNotifier> notifier),
@@ -72,6 +69,9 @@ class MockPasswordReuseManager : public PasswordReuseManager {
               (const PasswordForm* submitted_form,
                PasswordManagerClient* client),
               (override));
+  MOCK_METHOD(HashPasswordManager*, GetHashPasswordManager, (), (override));
+  MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
+  MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
 };
 
 }  // namespace password_manager

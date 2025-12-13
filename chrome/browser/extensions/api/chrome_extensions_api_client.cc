@@ -29,6 +29,10 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/webui/devtools/devtools_ui.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/url_constants.h"
@@ -39,6 +43,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/referrer.h"
 #include "extensions/browser/api/messaging/messaging_delegate.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/browser/api/messaging/native_message_port.h"
@@ -48,6 +53,7 @@
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
@@ -88,6 +94,8 @@
 #include "chrome/browser/printing/printing_init.h"
 #endif
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 ChromeExtensionsAPIClient::ChromeExtensionsAPIClient() = default;
@@ -122,7 +130,7 @@ bool ChromeExtensionsAPIClient::ShouldHideResponseHeader(
     const std::string& header_name) const {
   // Gaia may send a OAUth2 authorization code in the Dice response header,
   // which could allow an extension to generate a refresh token for the account.
-  return url.host_piece() == GaiaUrls::GetInstance()->gaia_url().host_piece() &&
+  return url.host() == GaiaUrls::GetInstance()->gaia_url().host() &&
          base::CompareCaseInsensitiveASCII(header_name,
                                            signin::kDiceResponseHeader) == 0;
 }
@@ -280,6 +288,37 @@ void ChromeExtensionsAPIClient::ClearActionCount(
   }
 }
 
+void ChromeExtensionsAPIClient::OpenFileUrlForTesting(
+    const GURL& file_url,
+    content::BrowserContext* browser_context) {
+  CHECK(file_url.is_valid());
+  CHECK(file_url.SchemeIsFile());
+
+  // Find the first browser window that matches this profile.
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  BrowserWindowInterface* browser = nullptr;
+  for (BrowserWindowInterface* bwi : GetAllBrowserWindowInterfaces()) {
+    if (bwi->GetProfile() == profile) {
+      browser = bwi;
+      break;
+    }
+  }
+  CHECK(browser) << "Unable to find browser with matching profile.";
+
+  // Find the active tab.
+  tabs::TabInterface* active_tab =
+      TabListInterface::From(browser)->GetActiveTab();
+  content::WebContents* web_contents =
+      active_tab ? active_tab->GetContents() : nullptr;
+  CHECK(web_contents) << "Unable to find active tab web contents.";
+
+  // Open the file URL in the current tab.
+  content::OpenURLParams params(
+      file_url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      ui::PAGE_TRANSITION_FROM_API, /*is_renderer_initiated=*/false);
+  web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
+}
+
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 std::unique_ptr<AppViewGuestDelegate>
 ChromeExtensionsAPIClient::CreateAppViewGuestDelegate() const {
@@ -372,6 +411,13 @@ ChromeExtensionsAPIClient::CreateVirtualKeyboardDelegate(
 ManagementAPIDelegate* ChromeExtensionsAPIClient::CreateManagementAPIDelegate()
     const {
   return new ChromeManagementAPIDelegate;
+}
+
+std::unique_ptr<SupervisedUserExtensionsDelegate>
+ChromeExtensionsAPIClient::CreateSupervisedUserExtensionsDelegate(
+    content::BrowserContext* browser_context) const {
+  return std::make_unique<SupervisedUserExtensionsDelegateImpl>(
+      browser_context);
 }
 
 MetricsPrivateDelegate* ChromeExtensionsAPIClient::GetMetricsPrivateDelegate() {

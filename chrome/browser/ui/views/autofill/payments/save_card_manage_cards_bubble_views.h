@@ -23,7 +23,7 @@ class SaveCardManageCardsBubbleViews : public SaveCardBubbleViews {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSaveCardBubbleManageCardsViewId);
 
   // Bubble will be anchored to |anchor_view|.
-  SaveCardManageCardsBubbleViews(views::View* anchor_view,
+  SaveCardManageCardsBubbleViews(views::BubbleAnchor anchor_view,
                                  content::WebContents* web_contents,
                                  SaveCardBubbleController* controller);
 

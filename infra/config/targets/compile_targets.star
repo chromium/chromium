@@ -2,7 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/targets.star", "targets")
+"""Compile target declarations
+
+Compile targets can be referenced in additional_compile_targets for a builder in
+waterfalls.pyl or as additional_compile_targets in a bundle declaration.
+"""
+
+load("@chromium-luci//targets.star", "targets")
 
 targets.compile_target(
     name = "all",
@@ -263,13 +269,6 @@ targets.compile_target(
 )
 
 targets.compile_target(
-    name = "cronet_perf_test_apk",
-    label = "//components/cronet/android:cronet_perf_test_apk",
-    # All references have been moved to starlark
-    skip_usage_check = True,
-)
-
-targets.compile_target(
     name = "empty_main",
     label = "//testing:empty_main",
     # All references have been moved to starlark
@@ -319,15 +318,6 @@ targets.compile_target(
 targets.compile_target(
     name = "mini_installer",
     label = "//chrome/installer/mini_installer:mini_installer",
-)
-
-targets.compile_target(
-    name = "mojo_rust",
-    # Since we can't build rust tests on Android now, add this for build
-    # coverage.
-    label = "//mojo/public/rust:mojo_rust",
-    # All references have been moved to starlark
-    skip_usage_check = True,
 )
 
 targets.compile_target(

@@ -37,6 +37,8 @@ class CORE_EXPORT ContainerTiming final
   }
 
   bool CanReportToContainerTiming() const;
+  void MaybeUpdateContainerRootIdentifier(Element* element,
+                                          const AtomicString& new_value);
 
   void EmitPerformanceEntries();
 
@@ -56,14 +58,16 @@ class CORE_EXPORT ContainerTiming final
     Record(const Record&) = delete;
     Record& operator=(const Record&) = delete;
 
+    const AtomicString& identifier() const { return identifier_; }
+
     void MaybeUpdateLastNewPaintedArea(
         ContainerTiming* container_timing,
         const DOMPaintTimingInfo& paint_timing_info,
         Element* container_root,
         Element* element,
-        const gfx::RectF& intersection_rect);
+        const gfx::Rect& enclosing_rect);
 
-    void MaybeEmitPerformanceEntry(WindowPerformance*);
+    void MaybeEmitPerformanceEntry(WindowPerformance*, Element* container_root);
 
     void Trace(Visitor*) const;
 

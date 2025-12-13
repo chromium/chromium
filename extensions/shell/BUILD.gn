@@ -4,7 +4,6 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
@@ -38,6 +37,7 @@ source_set("app_shell_lib") {
     "//apps",
     "//base",
     "//build:chromeos_buildflags",
+    "//components/custom_handlers:test_support",
     "//components/embedder_support:user_agent",
     "//components/feedback",
     "//components/feedback/content:factory",
@@ -45,7 +45,7 @@ source_set("app_shell_lib") {
     "//components/guest_view/common:mojom",
     "//components/guest_view/renderer",
     "//components/keep_alive_registry",
-    "//components/keyed_service/content:content",
+    "//components/keyed_service/content",
     "//components/network_session_configurator/common",
     "//components/origin_trials:browser",
     "//components/origin_trials:common",

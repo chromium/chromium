@@ -2107,11 +2107,6 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldRegenerateKeyPairIfCorrupted) {
   // Verify that local state wasn't dropped.
   ASSERT_THAT(bridge()->GetDataForDebugging(), HasKeystoreNigori());
 
-  // Verify that the key pair is corrupted.
-  histogram_tester.ExpectUniqueSample("Sync.CrossUserSharingKeyPairState",
-                                      /*kCorruptedKeyPair*/ 3,
-                                      /*expected_bucket_count=*/1);
-
   // Mimic commit completion.
   EXPECT_THAT(bridge()->ApplyIncrementalSyncChanges(std::nullopt),
               Eq(std::nullopt));

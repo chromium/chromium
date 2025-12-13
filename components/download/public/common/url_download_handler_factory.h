@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_URL_DOWNLOAD_HANDLER_FACTORY_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_URL_DOWNLOAD_HANDLER_FACTORY_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/download/public/common/download_utils.h"
 #include "components/download/public/common/url_download_handler.h"

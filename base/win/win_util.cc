@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/win/win_util.h"
 
 #include <objbase.h>
@@ -753,9 +748,9 @@ bool SetBooleanValueForPropertyStore(IPropertyStore* property_store,
 
 bool SetStringValueForPropertyStore(IPropertyStore* property_store,
                                     const PROPERTYKEY& property_key,
-                                    const wchar_t* property_string_value) {
+                                    base::wcstring_view property_string_value) {
   ScopedPropVariant property_value;
-  if (FAILED(InitPropVariantFromString(property_string_value,
+  if (FAILED(InitPropVariantFromString(property_string_value.c_str(),
                                        property_value.Receive()))) {
     return false;
   }
@@ -778,13 +773,13 @@ bool SetClsidForPropertyStore(IPropertyStore* property_store,
 }
 
 bool SetAppIdForPropertyStore(IPropertyStore* property_store,
-                              const wchar_t* app_id) {
+                              base::wcstring_view app_id) {
   // App id should be less than 128 chars and contain no space. And recommended
   // format is CompanyName.ProductName[.SubProduct.ProductNumber].
   // See
   // https://docs.microsoft.com/en-us/windows/win32/shell/appids#how-to-form-an-application-defined-appusermodelid
-  DCHECK_LT(lstrlen(app_id), 128);
-  DCHECK_EQ(wcschr(app_id, L' '), nullptr);
+  DCHECK_LT(app_id.length(), 128u);
+  DCHECK_EQ(app_id.find(L' '), base::wcstring_view::npos);
 
   return SetStringValueForPropertyStore(property_store, PKEY_AppUserModel_ID,
                                         app_id);
@@ -1242,6 +1237,30 @@ std::optional<std::wstring> GetSerialNumber() {
     }
   }
   return std::nullopt;
+}
+
+std::wstring_view UnicodeStringToView(const UNICODE_STRING& ustr) {
+  return std::wstring_view(ustr.Buffer, ustr.Length / sizeof(wchar_t));
+}
+
+bool ViewToUnicodeString(std::wstring_view str, UNICODE_STRING& ustr) {
+  constexpr size_t kMaxLength = USHORT_MAX / sizeof(WCHAR);
+  if (std::size(str) > kMaxLength) {
+    return false;
+  }
+  ustr.Buffer = const_cast<WCHAR*>(str.data());
+  ustr.Length = static_cast<USHORT>(std::size(str) * sizeof(WCHAR));
+  ustr.MaximumLength = ustr.Length;
+  return true;
+}
+
+bool EnableStrictHandleCheckingForCurrentProcess() {
+  PROCESS_MITIGATION_STRICT_HANDLE_CHECK_POLICY policy = {};
+  policy.HandleExceptionsPermanentlyEnabled =
+      policy.RaiseExceptionOnInvalidHandleReference = true;
+
+  return ::SetProcessMitigationPolicy(ProcessStrictHandleCheckPolicy, &policy,
+                                      sizeof(policy));
 }
 
 ScopedDomainStateForTesting::ScopedDomainStateForTesting(bool state)

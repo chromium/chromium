@@ -13,6 +13,7 @@
 
 @protocol FacePileProviding;
 @class GroupGridCell;
+typedef NS_ENUM(NSInteger, EmptyThumbnailLayoutType);
 @class TabSnapshotAndFavicon;
 
 // Informs the receiver of actions on the cell.
@@ -35,6 +36,8 @@
 @property(nonatomic, assign) CGFloat opacity;
 // The current state which the cell should display.
 @property(nonatomic, assign) GridCellState state;
+// The current layout configuration that should be used by the empty thumbnail.
+@property(nonatomic, assign) EmptyThumbnailLayoutType layoutType;
 // The FacePileProvider, to be set externally. Held as a strong reference to
 // ensure the provider's lifecycle is maintained for managing and updating the
 // FacePileView's content.
@@ -48,6 +51,9 @@
 // Returns all tab views that compose this tab group view in the order they're
 // presented.
 - (NSArray<UIView*>*)allGroupTabViews;
+
+// Highlights or resets the highlighting of the cell.
+- (void)setHighlightForGrouping:(BOOL)highlight;
 
 @end
 

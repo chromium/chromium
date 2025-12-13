@@ -178,6 +178,8 @@ TEST_F(TextFinderTest, FindTextSimple) {
 }
 
 TEST_F(TextFinderTest, FindTextAutosizing) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(blink::features::kForceOffTextAutosizing);
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "XXXXFindMeYYYYfindmeZZZZ");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);

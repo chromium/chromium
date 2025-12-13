@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PROPERTY_SOURCE_DATA_H_
 
 #include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -49,7 +50,6 @@ class SourceRange {
   bool operator==(const SourceRange& o) const {
     return start == o.start && end == o.end;
   }
-  bool operator!=(const SourceRange& o) const { return !operator==(o); }
 
   unsigned start = 0;
   unsigned end = 0;
@@ -97,7 +97,7 @@ class CSSRuleSourceData final : public GarbageCollected<CSSRuleSourceData> {
            type == StyleRule::kPage || type == StyleRule::kPageMargin ||
            type == StyleRule::kProperty || type == StyleRule::kKeyframe ||
            type == StyleRule::kFontPaletteValues ||
-           type == StyleRule::kPositionTry;
+           type == StyleRule::kFontFeature || type == StyleRule::kPositionTry;
   }
 
   bool HasMedia() const {
@@ -145,6 +145,9 @@ class CSSRuleSourceData final : public GarbageCollected<CSSRuleSourceData> {
   // Only for CSSMediaRules and CSSImportRules.
   // Source ranges for media query -> expression -> value.
   Vector<Vector<SourceRange>> media_query_exp_value_ranges;
+
+  // Only for FontFeatureValues sub-rules.
+  StyleRuleFontFeature::FeatureType font_feature_type;
 };
 
 using CSSRuleSourceDataList = HeapVector<Member<CSSRuleSourceData>>;

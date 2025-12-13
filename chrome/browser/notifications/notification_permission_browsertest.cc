@@ -47,7 +47,7 @@ class StoragePartitioningChromeContentBrowserClient
   content::StoragePartitionConfig GetStoragePartitionConfigForSite(
       content::BrowserContext* browser_context,
       const GURL& site) override {
-    if (site.host() == partitioned_host_) {
+    if (site.GetHost() == partitioned_host_) {
       return content::StoragePartitionConfig::Create(
           browser_context, partitioned_host_, /*partition_name=*/"",
           /*in_memory=*/false);
@@ -263,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPermissionBrowserTest,
   EXPECT_EQ(
       "a JavaScript error: \"NotAllowedError: "
       "Registration failed - permission denied\"\n",
-      EvalJs(iframe, "requestPushPermission()").error);
+      EvalJs(iframe, "requestPushPermission()").ExtractError());
 }
 
 // Test that the Notifications.NonPersistentNotificationThirdPartyCount metric
@@ -359,7 +359,8 @@ IN_PROC_BROWSER_TEST_F(NotificationPermissionBrowserTest,
   std::unique_ptr<NotificationHandler> handler =
       std::make_unique<NonPersistentNotificationHandler>();
   handler->DisableNotifications(browser()->profile(), TesterUrl(),
-                                /*notification_id=*/std::nullopt);
+                                /*notification_id=*/std::nullopt,
+                                /*is_suspicious=*/false);
 
   const auto action_entries = ukm_recorder.GetEntriesByName("Permission");
   ASSERT_EQ(2u, action_entries.size());

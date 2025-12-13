@@ -7,7 +7,6 @@ typedef (ArrayBuffer or ArrayBufferView) BufferSource;
 typedef unsigned long long DOMTimeStamp;
 
 // https://webidl.spec.whatwg.org/#Function
-[SupportsTaskAttribution]
 callback Function = any (any... arguments);
 
 // Blink-specific forEach iterator's callback

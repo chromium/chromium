@@ -33,7 +33,7 @@ std::unique_ptr<SetupSingleton> SetupSingleton::Acquire(
   base::win::ScopedHandle setup_mutex(::CreateMutex(
       nullptr, FALSE,
       (L"Global\\ChromeSetupMutex_" + sync_primitive_name_suffix).c_str()));
-  if (!setup_mutex.IsValid()) {
+  if (!setup_mutex.is_valid()) {
     // UMA data indicates that this happens 0.03 % of the time.
     return nullptr;
   }
@@ -41,7 +41,7 @@ std::unique_ptr<SetupSingleton> SetupSingleton::Acquire(
   base::win::ScopedHandle exit_event(::CreateEvent(
       nullptr, TRUE, FALSE,
       (L"Global\\ChromeSetupExitEvent_" + sync_primitive_name_suffix).c_str()));
-  if (!exit_event.IsValid()) {
+  if (!exit_event.is_valid()) {
     // UMA data indicates that this happens < 0.01 % of the time.
     return nullptr;
   }
@@ -57,7 +57,7 @@ std::unique_ptr<SetupSingleton> SetupSingleton::Acquire(
         nullptr, FALSE,
         (L"Global\\ChromeSetupExitEventMutex_" + sync_primitive_name_suffix)
             .c_str()));
-    if (!exit_event_mutex.IsValid()) {
+    if (!exit_event_mutex.is_valid()) {
       // UMA data indicates that this happens < 0.01 % of the time.
       return nullptr;
     }
@@ -124,7 +124,7 @@ bool SetupSingleton::ScopedHoldMutex::Acquire(HANDLE mutex) {
 SetupSingleton::SetupSingleton(base::win::ScopedHandle setup_mutex,
                                base::win::ScopedHandle exit_event)
     : setup_mutex_(std::move(setup_mutex)), exit_event_(std::move(exit_event)) {
-  DCHECK(setup_mutex_.IsValid());
+  DCHECK(setup_mutex_.is_valid());
 }
 
 }  // namespace installer

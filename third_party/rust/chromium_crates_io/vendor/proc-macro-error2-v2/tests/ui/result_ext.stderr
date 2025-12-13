@@ -1,0 +1,11 @@
+error: Result::unwrap_or_abort() test
+ --> tests/ui/result_ext.rs:3:25
+  |
+3 | result_unwrap_or_abort!(one, two);
+  |                         ^^^
+
+error: BOOM: Result::expect_or_abort() test
+ --> tests/ui/result_ext.rs:4:25
+  |
+4 | result_expect_or_abort!(one, two);
+  |                         ^^^

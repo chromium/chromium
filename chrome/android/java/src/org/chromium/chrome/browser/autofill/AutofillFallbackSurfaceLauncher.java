@@ -9,13 +9,13 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -28,6 +28,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 /** A helper class to open web pages from the keyboard accessory manual filling UI. */
 @JNINamespace("autofill")
+@NullMarked
 public class AutofillFallbackSurfaceLauncher {
     // GMS Core accountsettings screen that comes from the resource_id.proto.
     private static final int PLUS_ADDRESS_EMAIL_SCREEN = 10764;
@@ -44,8 +45,7 @@ public class AutofillFallbackSurfaceLauncher {
     }
 
     public static void openManagePlusAddresses(Activity activity, Profile profile) {
-        @Nullable
-        IdentityManager identityManager =
+        @Nullable IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         if (identityManager == null) {
             // There's no identity manager in the incognito mode. Make sure management UI is not
@@ -59,8 +59,8 @@ public class AutofillFallbackSurfaceLauncher {
             return;
         }
 
-        @Nullable
-        CoreAccountInfo accountInfo = identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        @Nullable CoreAccountInfo accountInfo =
+                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         if (accountInfo == null) {
             // Signed out users should not be able to open the plus address management UI. Early
             // return if account information is not available for whatever reason.

@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <string>
 
+#include "gpu/config/gpu_config_export.h"
+
 namespace wgpu {
 class Adapter;
 struct AdapterInfo;
@@ -16,16 +18,18 @@ struct AdapterInfo;
 // Bitmask of blocklist reasons.
 enum class WebGPUBlocklistReason : uint64_t {
   None = 0,
-  StringPattern = 1,
+  StringPatternOther = 1,
   DynamicArrayIndexInStruct = 1 << 1,
   IndirectComputeRootConstants = 1 << 2,
-  WindowsARM = 1 << 3,
+  WindowsLimitedSupport = 1 << 3,
   AndroidGLES = 1 << 4,
   AndroidLimitedSupport = 1 << 5,
   AMDMissingDrmFormatModifier = 1 << 6,
   CPUAdapter = 1 << 7,
   D3D11 = 1 << 8,
   Consteval22ndBit = 1 << 9,
+  QualcommWindows = 1 << 10,
+  StringPatternQualcommWindows = 1 << 11,
   // When adding an enum, update kKnownReasons with a description.
 };
 
@@ -62,19 +66,18 @@ struct WebGPUBlocklistOptions {
 };
 
 namespace detail {
-WebGPUBlocklistReason GetWebGPUAdapterBlocklistReason(
-    const wgpu::AdapterInfo& info,
-    const WebGPUBlocklistOptions& options);
+GPU_CONFIG_EXPORT WebGPUBlocklistReason
+GetWebGPUAdapterBlocklistReason(const wgpu::AdapterInfo& info,
+                                const WebGPUBlocklistOptions& options);
 }  // namespace detail
 
-WebGPUBlocklistResultImpl IsWebGPUAdapterBlocklisted(
-    const wgpu::Adapter& adapter,
-    WebGPUBlocklistOptions options = {});
+GPU_CONFIG_EXPORT WebGPUBlocklistResultImpl
+IsWebGPUAdapterBlocklisted(const wgpu::Adapter& adapter,
+                           WebGPUBlocklistOptions options = {});
 
-WebGPUBlocklistResultImpl IsWebGPUAdapterBlocklisted(
-    const wgpu::AdapterInfo& info,
-    WebGPUBlocklistOptions options);
-
+GPU_CONFIG_EXPORT WebGPUBlocklistResultImpl
+IsWebGPUAdapterBlocklisted(const wgpu::AdapterInfo& info,
+                           WebGPUBlocklistOptions options = {});
 }  // namespace gpu
 
 #endif  // GPU_CONFIG_WEBGPU_BLOCKLIST_IMPL_H_

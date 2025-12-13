@@ -127,7 +127,7 @@ fn count_default(source: impl Source) -> usize {
     count.0
 }
 
-impl<'a, T> Source for &'a T
+impl<T> Source for &T
 where
     T: Source + ?Sized,
 {
@@ -237,6 +237,7 @@ pub trait VisitSource<'kvs> {
     fn visit_pair(&mut self, key: Key<'kvs>, value: Value<'kvs>) -> Result<(), Error>;
 }
 
+#[allow(clippy::needless_lifetimes)] // Not needless.
 impl<'a, 'kvs, T> VisitSource<'kvs> for &'a mut T
 where
     T: VisitSource<'kvs> + ?Sized,

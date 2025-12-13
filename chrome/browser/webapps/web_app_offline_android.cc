@@ -89,3 +89,5 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
 }
 
 }  // namespace web_app
+
+DEFINE_JNI(WebApkDataProvider)

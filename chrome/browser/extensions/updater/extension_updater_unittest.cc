@@ -45,15 +45,15 @@
 #include "chrome/browser/extensions/fake_crx_installer.h"
 #include "chrome/browser/extensions/mock_crx_installer.h"
 #include "chrome/browser/extensions/sync/extension_sync_data.h"
-#include "chrome/browser/extensions/test_extension_prefs.h"
 #include "chrome/browser/extensions/test_extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/extensions/updater/chrome_extension_downloader_factory.h"
 #include "chrome/browser/google/google_brand.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/crx_file/id_util.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/update_client/update_query_params.h"
@@ -68,6 +68,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/browser/test_extension_prefs.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/browser/updater/extension_downloader_test_delegate.h"
@@ -101,13 +102,13 @@
 #include "base/files/scoped_temp_dir.h"
 #include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/updater/chromeos_extension_cache_delegate.h"
 #include "chrome/browser/extensions/updater/extension_cache_impl.h"
 #include "chrome/browser/extensions/updater/local_extension_cache.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager_impl.h"
+#include "extensions/browser/load_error_reporter.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -117,7 +118,6 @@ using content::BrowserThread;
 using extensions::mojom::ManifestLocation;
 using testing::_;
 using testing::DoAll;
-using testing::Invoke;
 using testing::InvokeWithoutArgs;
 using testing::Mock;
 using testing::NiceMock;
@@ -160,9 +160,10 @@ const net::BackoffEntry::Policy kNoBackoffPolicy = {
 
 const char kAuthUserQueryKey[] = "authuser";
 
-int kExpectedLoadFlags = net::LOAD_DISABLE_CACHE;
+constexpr int kExpectedLoadFlags = net::LOAD_DISABLE_CACHE;
 
-int kExpectedLoadFlagsForDownloadWithCookies = net::LOAD_DISABLE_CACHE;
+constexpr int kExpectedLoadFlagsForDownloadWithCookies =
+    net::LOAD_DISABLE_CACHE;
 
 // Fake authentication constants
 const char kFakeOAuth2Token[] = "ce n'est pas un jeton";
@@ -179,7 +180,7 @@ constexpr base::TimeDelta kUpdateFrequency = base::Seconds(15);
 // Extracts the integer value of the |authuser| query parameter. Returns 0 if
 // the parameter is not set.
 int GetAuthUserQueryValue(const GURL& url) {
-  std::string_view query_piece = url.query_piece();
+  std::string_view query_piece = url.query();
   url::Component query(0, query_piece.length());
   url::Component key, value;
   while (url::ExtractQueryKeyValue(query_piece, &query, &key, &value)) {
@@ -231,7 +232,13 @@ class StubExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
 
 class MockUpdateService : public UpdateService {
  public:
-  MockUpdateService() : UpdateService(nullptr, nullptr) {}
+  MockUpdateService()
+      : UpdateService(nullptr,
+                      nullptr,
+                      base::BindRepeating([](const std::vector<std::string>&,
+                                             base::OnceClosure callback) {
+                        std::move(callback).Run();
+                      })) {}
   MOCK_CONST_METHOD0(IsBusy, bool());
   MOCK_METHOD3(SendUninstallPing,
                void(const std::string& id,
@@ -425,8 +432,8 @@ static std::map<std::string, ParamsMap> GetPingDataFromURL(
   std::map<std::string, ParamsMap> result;
 
   base::StringPairs toplevel_params;
-  base::SplitStringIntoKeyValuePairs(
-      manifest_url.query(), '=', '&', &toplevel_params);
+  base::SplitStringIntoKeyValuePairs(manifest_url.GetQuery(), '=', '&',
+                                     &toplevel_params);
   for (const auto& param : toplevel_params) {
     if (param.first != "x")
       continue;
@@ -449,8 +456,9 @@ static std::map<std::string, ParamsMap> GetPingDataFromURL(
       base::StringPairs ping_params;
       base::SplitStringIntoKeyValuePairs(ping, '=', '&', &ping_params);
       for (const auto& ping_param : ping_params) {
-        if (!base::Contains(result[id], ping_param.first))
+        if (!base::Contains(result[id], ping_param.first)) {
           result[id][ping_param.first] = std::set<std::string>();
+        }
         result[id][ping_param.first].insert(ping_param.second);
       }
     }
@@ -482,14 +490,14 @@ static void VerifyQueryAndExtractParameters(
 class ExtensionUpdaterTest : public testing::Test {
  public:
   ExtensionUpdaterTest()
-      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
-        testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
   void SetUp() override {
     prefs_ = std::make_unique<TestExtensionPrefs>(
-        base::SingleThreadTaskRunner::GetCurrentDefault());
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        std::make_unique<TestingProfile>());
     // The registrar needs a delegate in order to call certain methods on it.
-    ExtensionRegistrar::Get(prefs_->profile())
+    ExtensionRegistrar::Get(prefs_->browser_context())
         ->Init(&stub_extension_registrar_delegate_,
                /*extensions_enabled=*/true,
                base::CommandLine::ForCurrentProcess(), base::FilePath(),
@@ -502,14 +510,16 @@ class ExtensionUpdaterTest : public testing::Test {
     // those objects are released.
     RunUntilIdle();
     // Reset the ExtensionRegistrar delegate.
-    ExtensionRegistrar::Get(prefs_->profile())
+    ExtensionRegistrar::Get(prefs_->browser_context())
         ->Init(/*delegate=*/nullptr, /*extensions_enabled=*/true,
                base::CommandLine::ForCurrentProcess(), base::FilePath(),
                base::FilePath());
     prefs_.reset();
   }
 
-  TestingProfile* profile() { return prefs_->profile(); }
+  Profile* profile() {
+    return Profile::FromBrowserContext(prefs_->browser_context());
+  }
 
   ExtensionPrefs* extension_prefs() { return prefs_->prefs(); }
 
@@ -660,14 +670,14 @@ class ExtensionUpdaterTest : public testing::Test {
     EXPECT_FALSE(url.is_empty());
     EXPECT_TRUE(url.is_valid());
     EXPECT_TRUE(url.SchemeIs("http"));
-    EXPECT_EQ("foo.com", url.host());
-    EXPECT_EQ("/bar", url.path());
+    EXPECT_EQ("foo.com", url.GetHost());
+    EXPECT_EQ("/bar", url.GetPath());
 
     // Validate the extension request parameters in the query. It should
     // look something like "x=id%3D<id>%26v%3D<version>%26uc".
     EXPECT_TRUE(url.has_query());
     std::map<std::string, std::string> params;
-    VerifyQueryAndExtractParameters(url.query(), &params);
+    VerifyQueryAndExtractParameters(url.GetQuery(), &params);
     if (pending) {
       EXPECT_TRUE(pending_extension_manager->IsIdPending(params["id"]));
       EXPECT_EQ("0.0.0.0", params["v"]);
@@ -692,7 +702,7 @@ class ExtensionUpdaterTest : public testing::Test {
                                       kUpdateURL);
 
     std::map<std::string, std::string> params;
-    VerifyQueryAndExtractParameters(fetch_data->full_url().query(), &params);
+    VerifyQueryAndExtractParameters(fetch_data->full_url().GetQuery(), &params);
     EXPECT_EQ(id, params["id"]);
     EXPECT_EQ(version, params["v"]);
     EXPECT_EQ(0U, params.count("ap"));
@@ -711,7 +721,7 @@ class ExtensionUpdaterTest : public testing::Test {
                              "bar", std::string(), ManifestLocation::kInternal,
                              DownloadFetchPriority::kBackground);
     std::map<std::string, std::string> params;
-    VerifyQueryAndExtractParameters(fetch_data->full_url().query(), &params);
+    VerifyQueryAndExtractParameters(fetch_data->full_url().GetQuery(), &params);
     EXPECT_EQ(id, params["id"]);
     EXPECT_EQ(version, params["v"]);
     EXPECT_EQ("bar", params["ap"]);
@@ -730,7 +740,7 @@ class ExtensionUpdaterTest : public testing::Test {
         "a=1&b=2&c", std::string(), ManifestLocation::kInternal,
         DownloadFetchPriority::kBackground);
     std::map<std::string, std::string> params;
-    VerifyQueryAndExtractParameters(fetch_data->full_url().query(), &params);
+    VerifyQueryAndExtractParameters(fetch_data->full_url().GetQuery(), &params);
     EXPECT_EQ(id, params["id"]);
     EXPECT_EQ(version, params["v"]);
     EXPECT_EQ("a%3D1%26b%3D2%26c", params["ap"]);
@@ -839,7 +849,7 @@ class ExtensionUpdaterTest : public testing::Test {
         ExtensionDownloaderTestHelper::kEmptyUpdateUrlData, install_source,
         ManifestLocation::kInternal, DownloadFetchPriority::kBackground);
     std::map<std::string, std::string> params;
-    VerifyQueryAndExtractParameters(fetch_data->full_url().query(), &params);
+    VerifyQueryAndExtractParameters(fetch_data->full_url().GetQuery(), &params);
     EXPECT_EQ(id, params["id"]);
     EXPECT_EQ(version, params["v"]);
     EXPECT_EQ(install_source, params["installsource"]);
@@ -859,7 +869,7 @@ class ExtensionUpdaterTest : public testing::Test {
         ManifestLocation::kExternalPrefDownload,
         DownloadFetchPriority::kBackground);
     std::map<std::string, std::string> params;
-    VerifyQueryAndExtractParameters(fetch_data->full_url().query(), &params);
+    VerifyQueryAndExtractParameters(fetch_data->full_url().GetQuery(), &params);
     EXPECT_EQ(id, params["id"]);
     EXPECT_EQ(version, params["v"]);
     EXPECT_EQ(install_location, params["installedby"]);
@@ -1622,10 +1632,10 @@ class ExtensionUpdaterTest : public testing::Test {
         });
     // Just let the real CrxInstaller implementation have the callback.
     EXPECT_CALL(*mock_installer, AddInstallerCallback(_))
-        .WillOnce(Invoke([&](CrxInstaller::InstallerResultCallback callback) {
+        .WillOnce([&](CrxInstaller::InstallerResultCallback callback) {
           mock_installer->CrxInstaller::AddInstallerCallback(
               std::move(callback));
-        }));
+        });
 
     mock_installer->set_expected_id(kTestExtensionId);
     mock_installer->set_expected_hash(hash);
@@ -1636,7 +1646,7 @@ class ExtensionUpdaterTest : public testing::Test {
     TestCrxInstallerFactory crx_installer_factory;
     crx_installer_factory.AddFakeCrxInstaller(kTestExtensionId, mock_installer);
 
-    ExtensionUpdater updater(prefs_->profile());
+    ExtensionUpdater updater(this->profile());
     updater.InitAndEnable(extension_prefs(), pref_service(), kUpdateFrequency,
                           nullptr, factory.GetDownloaderFactory());
     updater.set_crx_installer_factory_for_test(&crx_installer_factory);
@@ -2139,7 +2149,8 @@ class ExtensionUpdaterTest : public testing::Test {
     // Set up 2 mock extensions, one with a google.com update url and one
     // without.
     prefs_ = std::make_unique<TestExtensionPrefs>(
-        base::SingleThreadTaskRunner::GetCurrentDefault());
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        std::make_unique<TestingProfile>());
     ExtensionDownloaderTestHelper helper;
     TestDownloaderFactory factory(helper.url_loader_factory());
     TestCrxInstallerFactory crx_installer_factory;
@@ -2203,17 +2214,17 @@ class ExtensionUpdaterTest : public testing::Test {
     GURL url2_fetch_url;
     std::string url1_query;
     std::string url2_query;
-    if (fetched_urls[0].host() == url1.host()) {
+    if (fetched_urls[0].GetHost() == url1.GetHost()) {
       url1_fetch_url = fetched_urls[0];
       url2_fetch_url = fetched_urls[1];
 
-      url1_query = fetched_urls[0].query();
-      url2_query = fetched_urls[1].query();
-    } else if (fetched_urls[0].host() == url2.host()) {
+      url1_query = fetched_urls[0].GetQuery();
+      url2_query = fetched_urls[1].GetQuery();
+    } else if (fetched_urls[0].GetHost() == url2.GetHost()) {
       url1_fetch_url = fetched_urls[1];
       url2_fetch_url = fetched_urls[0];
-      url1_query = fetched_urls[1].query();
-      url2_query = fetched_urls[0].query();
+      url1_query = fetched_urls[1].GetQuery();
+      url2_query = fetched_urls[0].GetQuery();
     } else {
       NOTREACHED();
     }
@@ -2221,8 +2232,9 @@ class ExtensionUpdaterTest : public testing::Test {
     std::map<std::string, ParamsMap> url1_ping_data =
         GetPingDataFromURL(url1_fetch_url);
     ParamsMap url1_params = ParamsMap();
-    if (!url1_ping_data.empty() && base::Contains(url1_ping_data, id))
+    if (!url1_ping_data.empty() && base::Contains(url1_ping_data, id)) {
       url1_params = url1_ping_data[id];
+    }
 
     // First make sure the non-google query had no ping parameter.
     EXPECT_TRUE(GetPingDataFromURL(url2_fetch_url).empty());
@@ -2351,14 +2363,12 @@ class ExtensionUpdaterTest : public testing::Test {
  private:
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper_;
 
-  ScopedTestingLocalState testing_local_state_;
-
 #if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   user_manager::ScopedUserManager user_manager_{
       std::make_unique<user_manager::UserManagerImpl>(
           std::make_unique<ash::UserManagerDelegateImpl>(),
-          testing_local_state_.Get(),
+          TestingBrowserProcess::GetGlobal()->local_state(),
           ash::CrosSettings::Get())};
 #endif
 
@@ -2916,6 +2926,28 @@ TEST_F(ExtensionUpdaterTest, TestExtensionPriority) {
   TestSingleExtensionDownloadingPriority(DownloadFetchPriority::kBackground);
   TestSingleExtensionDownloadingPriority(DownloadFetchPriority::kForeground);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+TEST_F(ExtensionUpdaterTest, TestProfileDestruction) {
+  ExtensionUpdater updater(profile());
+  // Create an active ProfileManager, and do NOT make it the owner of profile().
+  // This causes ScopedProfileKeepAlive::TryAcquire() to fail.
+  auto testing_profile_manager = std::make_unique<TestingProfileManager>(
+      TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(testing_profile_manager->SetUp());
+
+  ExtensionDownloaderTestHelper helper;
+  TestDownloaderFactory factory(helper.url_loader_factory());
+  // Verify that CheckNow() doesn't do anything in this state.
+  updater.SetUpdatingStartedCallbackForTesting(base::BindLambdaForTesting(
+      [&]() { ADD_FAILURE() << "Updating should not have started."; }));
+  updater.InitAndEnable(extension_prefs(), pref_service(), kUpdateFrequency,
+                        nullptr, factory.GetDownloaderFactory());
+  updater.Start();
+  updater.CheckNow(ExtensionUpdater::CheckParams());
+  base::RunLoop().RunUntilIdle();
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 class CanUseUpdateServiceTest : public ExtensionUpdaterTest {
  public:

@@ -19,7 +19,7 @@
 #include "base/trace_event/trace_event.h"
 
 namespace base::android {
-BASE_FEATURE(kShouldFreezeSelf, "ShouldFreezeSelf", FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kShouldFreezeSelf, FEATURE_ENABLED_BY_DEFAULT);
 
 // Max amount of compaction to do in each chunk, measured in MiB.
 BASE_FEATURE_PARAM(size_t,
@@ -35,9 +35,7 @@ BASE_FEATURE_PARAM(size_t,
                    "delay_after_tasks",
                    30);
 
-BASE_FEATURE(kUseRunningCompact,
-             "UseRunningCompact",
-             FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUseRunningCompact, FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(size_t,
                    kUseRunningCompactDelayAfterPreFreezeTasks,
                    &kUseRunningCompact,
@@ -47,7 +45,7 @@ BASE_FEATURE_PARAM(size_t,
                    kUseRunningCompactMaxSize,
                    &kUseRunningCompact,
                    "running_compact_max_chunk_size",
-                   10);
+                   100);
 
 namespace {
 
@@ -82,10 +80,6 @@ bool IsMadvisePageoutSupported() {
 // Based on UMA data, >99.5% of the compaction should take < 6s, so 10s should
 // be more than enough.
 constexpr base::TimeDelta kCompactionTimeout = base::Seconds(10);
-
-uint64_t BytesToMiB(uint64_t v) {
-  return v / 1024 / 1024;
-}
 
 uint64_t MiBToBytes(uint64_t v) {
   return v * 1024 * 1024;
@@ -240,6 +234,34 @@ void SelfCompactionManager::MaybeCancelCompactionInternal(
   }
   compaction_last_finished_ = compaction_last_cancelled_ =
       base::TimeTicks::Now();
+}
+
+// static
+void SelfCompactionManager::OnTriggerRunningCompact(
+    std::unique_ptr<CompactionState> state) {
+  base::AutoLock locker(lock());
+  Instance().OnTriggerCompact(std::move(state));
+}
+
+// static
+void SelfCompactionManager::RequestRunningCompactWithDelay(
+    const TimeDelta delay) {
+  TRACE_EVENT0("base", "RequestRunningCompactWithDelay");
+
+  const auto triggered_at = base::TimeTicks::Now();
+  base::AutoLock locker(lock());
+  Instance().compaction_last_triggered_ = triggered_at;
+
+  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::BEST_EFFORT, MayBlock()});
+  auto state =
+      std::make_unique<RunningCompactionState>(task_runner, triggered_at);
+
+  task_runner->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&SelfCompactionManager::OnTriggerRunningCompact,
+                     std::move(state)),
+      delay);
 }
 
 // static
@@ -515,11 +537,11 @@ void SelfCompactionManager::CompactionMetric::MaybeRecordCompactionMetrics() {
 }
 
 void SelfCompactionManager::CompactionMetric::RecordCompactionMetric(
-    size_t value_bytes,
+    ByteCount value_bytes,
     std::string_view metric_name,
     std::string_view suffix) {
   UmaHistogramMemoryMB(GetMetricName(metric_name, suffix),
-                       static_cast<int>(BytesToMiB(value_bytes)));
+                       static_cast<int>(value_bytes.InMiB()));
 }
 
 void SelfCompactionManager::CompactionMetric::RecordCompactionMetrics(
@@ -533,12 +555,13 @@ void SelfCompactionManager::CompactionMetric::RecordCompactionMetrics(
 }
 
 void SelfCompactionManager::CompactionMetric::RecordCompactionDiffMetric(
-    size_t before_value_bytes,
-    size_t after_value_bytes,
+    ByteCount before_value_bytes,
+    ByteCount after_value_bytes,
     std::string_view name,
     std::string_view suffix) {
-  size_t diff_non_negative = std::max(before_value_bytes, after_value_bytes) -
-                             std::min(before_value_bytes, after_value_bytes);
+  ByteCount diff_non_negative =
+      std::max(before_value_bytes, after_value_bytes) -
+      std::min(before_value_bytes, after_value_bytes);
   const std::string full_suffix = StrCat(
       {"Diff.", suffix, ".",
        before_value_bytes < after_value_bytes ? "Increase" : "Decrease"});

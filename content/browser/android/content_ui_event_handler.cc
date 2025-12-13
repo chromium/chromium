@@ -15,14 +15,15 @@
 #include "ui/events/android/key_event_android.h"
 #include "ui/events/android/motion_event_android_factory.h"
 #include "ui/events/android/motion_event_android_java.h"
+#include "ui/events/android/motion_event_android_source_java.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/ContentUiEventHandler_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -87,12 +88,8 @@ bool ContentUiEventHandler::ScrollTo(float x, float y) {
 
 void ContentUiEventHandler::SendMouseWheelEvent(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& motion_event,
-    jlong time_ns,
-    jfloat x,
-    jfloat y,
-    jfloat ticks_x,
-    jfloat ticks_y) {
+    const base::android::JavaRef<jobject>& motion_event,
+    jlong time_ns) {
   auto* event_handler = GetRenderWidgetHostView();
   if (!event_handler)
     return;
@@ -101,8 +98,11 @@ void ContentUiEventHandler::SendMouseWheelEvent(
   base::TimeTicks current_time = ui::EventTimeForNow();
   base::TimeTicks event_time = base::TimeTicks::FromJavaNanoTime(time_ns);
   ComputeEventLatencyOS(ui::EventType::kMousewheel, event_time, current_time);
+
+  auto source = ui::MotionEventAndroidSourceJava::Create(motion_event, false);
   ui::MotionEventAndroid::Pointer pointer(
-      /*id=*/0, /*pos_x_pixels=*/x, /*pos_y_pixels=*/y,
+      /*id=*/0, /*pos_x_pixels=*/source->GetXPix(0),
+      /*pos_y_pixels=*/source->GetYPix(0),
       /*touch_major_pixels=*/0.0f,
       /*touch_minor_pixels=*/0.0f, /*pressure=*/0.0f, /*orientation_rad=*/0.0f,
       /*tilt_rad=*/0.0f, /*tool_type=*/0);
@@ -114,7 +114,9 @@ void ContentUiEventHandler::SendMouseWheelEvent(
              : ui::kDefaultMouseWheelTickMultiplier * view->GetDipScale();
   auto event = ui::MotionEventAndroidFactory::CreateFromJava(
       env, motion_event,
-      /*pix_to_dip=*/1.f / view->GetDipScale(), ticks_x, ticks_y,
+      /*pix_to_dip=*/1.f / view->GetDipScale(),
+      /*ticks_x=*/source->GetAxisHscroll(0),
+      /*ticks_y=*/source->GetAxisVscroll(0),
       /*tick_multiplier=*/pixels_per_tick,
       /*oldest_event_time=*/base::TimeTicks::FromJavaNanoTime(time_ns),
       /*android_action=*/0,
@@ -134,31 +136,26 @@ void ContentUiEventHandler::SendMouseWheelEvent(
 
 void ContentUiEventHandler::SendMouseEvent(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& motion_event,
+    const base::android::JavaRef<jobject>& motion_event,
     jlong time_ns,
-    jint android_action,
-    jfloat x,
-    jfloat y,
-    jint pointer_id,
-    jfloat pressure,
-    jfloat orientation,
-    jfloat tilt,
     jint android_action_button,
-    jint android_button_state,
     jint android_tool_type) {
   auto* event_handler = GetRenderWidgetHostView();
   if (!event_handler)
     return;
 
+  auto source = ui::MotionEventAndroidSourceJava::Create(motion_event, false);
+
   // Construct a motion_event object minimally, only to convert the raw
   // parameters to ui::MotionEvent values. Since we used only the cached values
   // at index=0, it is okay to even pass a null event to the constructor.
   ui::MotionEventAndroid::Pointer pointer(
-      /*id=*/pointer_id, /*pos_x_pixels=*/x, /*pos_y_pixels=*/y,
+      /*id=*/source->GetPointerId(0), /*pos_x_pixels=*/source->GetXPix(0),
+      /*pos_y_pixels=*/source->GetYPix(0),
       /*touch_major_pixels=*/0.0f,
-      /*touch_minor_pixels=*/0.0f, /*pressure=*/pressure,
-      /*orientation_rad=*/orientation,
-      /*tilt_rad=*/tilt, /*tool_type=*/android_tool_type);
+      /*touch_minor_pixels=*/0.0f, /*pressure=*/source->GetPressure(0),
+      /*orientation_rad=*/source->GetRawOrientation(0),
+      /*tilt_rad=*/source->GetRawTilt(0), /*tool_type=*/android_tool_type);
   auto event = ui::MotionEventAndroidFactory::CreateFromJava(
       env, /*event=*/motion_event,
       /*pix_to_dip=*/1.f / web_contents_->GetNativeView()->GetDipScale(),
@@ -166,11 +163,12 @@ void ContentUiEventHandler::SendMouseEvent(
       /*ticks_y=*/0.f,
       /*tick_multiplier=*/0.f,
       /*oldest_event_time=*/base::TimeTicks::FromJavaNanoTime(time_ns),
-      android_action,
+      /*android_action=*/source->GetActionMasked(),
       /*pointer_count=*/1,
       /*history_size=*/0,
       /*action_index=*/0, android_action_button,
-      /*android_gesture_classification=*/0, android_button_state,
+      /*android_gesture_classification=*/0,
+      /*android_button_state=*/source->GetButtonState(),
       /*raw_offset_x_pixels=*/0,
       /*raw_offset_y_pixels=*/0,
       /*for_touch_handle=*/false,
@@ -194,16 +192,16 @@ void ContentUiEventHandler::SendScrollEvent(JNIEnv* env,
   constexpr bool prevent_boosting = false;
   event_handler->OnGestureEvent(ui::GestureEventAndroid(
       ui::GESTURE_EVENT_TYPE_SCROLL_START, gfx::PointF(), gfx::PointF(),
-      time_ms, 0, -delta_xdip, -delta_ydip, 0, 0, target_viewport,
-      synthetic_scroll, prevent_boosting));
+      time_ms, ui::GestureDeviceType::DEVICE_TOUCHSCREEN, 0, -delta_xdip,
+      -delta_ydip, 0, 0, target_viewport, synthetic_scroll, prevent_boosting));
   event_handler->OnGestureEvent(ui::GestureEventAndroid(
       ui::GESTURE_EVENT_TYPE_SCROLL_BY, gfx::PointF(), gfx::PointF(), time_ms,
-      0, -delta_xdip, -delta_ydip, 0, 0, target_viewport, synthetic_scroll,
-      prevent_boosting));
+      ui::GestureDeviceType::DEVICE_TOUCHSCREEN, 0, -delta_xdip, -delta_ydip, 0,
+      0, target_viewport, synthetic_scroll, prevent_boosting));
   event_handler->OnGestureEvent(ui::GestureEventAndroid(
       ui::GESTURE_EVENT_TYPE_SCROLL_END, gfx::PointF(), gfx::PointF(), time_ms,
-      0, -delta_xdip, -delta_ydip, 0, 0, target_viewport, synthetic_scroll,
-      prevent_boosting));
+      ui::GestureDeviceType::DEVICE_TOUCHSCREEN, 0, -delta_xdip, -delta_ydip, 0,
+      0, target_viewport, synthetic_scroll, prevent_boosting));
 }
 
 void ContentUiEventHandler::CancelFling(JNIEnv* env, jlong time_ms) {
@@ -212,14 +210,15 @@ void ContentUiEventHandler::CancelFling(JNIEnv* env, jlong time_ms) {
     return;
   event_handler->OnGestureEvent(ui::GestureEventAndroid(
       ui::GESTURE_EVENT_TYPE_FLING_CANCEL, gfx::PointF(), gfx::PointF(),
-      time_ms, 0, 0, 0, 0, 0, /*target_viewport*/ false,
+      time_ms, ui::GestureDeviceType::DEVICE_TOUCHSCREEN, 0, 0, 0, 0, 0,
+      /*target_viewport*/ false,
       /*synthetic_scroll*/ false, true));
 }
 
-jlong JNI_ContentUiEventHandler_Init(
+static jlong JNI_ContentUiEventHandler_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jweb_contents) {
   WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
       WebContents::FromJavaWebContents(jweb_contents));
   CHECK(web_contents)
@@ -233,3 +232,5 @@ jlong JNI_ContentUiEventHandler_Init(
 }
 
 }  // namespace content
+
+DEFINE_JNI(ContentUiEventHandler)

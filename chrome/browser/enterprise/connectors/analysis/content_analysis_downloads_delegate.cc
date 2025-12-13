@@ -4,7 +4,6 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
 
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"

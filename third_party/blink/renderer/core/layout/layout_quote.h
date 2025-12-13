@@ -89,7 +89,9 @@ class LayoutQuote final : public LayoutInline {
     NOT_DESTROYED();
     return true;
   }
-  void StyleDidChange(StyleDifference, const ComputedStyle*) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle*,
+                      const StyleChangeContext&) override;
   void WillBeRemovedFromTree() override;
 
   String ComputeText() const;

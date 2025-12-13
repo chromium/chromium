@@ -18,11 +18,17 @@ source_set("tab_alert") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/vr:vr",
+    "//chrome/browser/vr",
     "//content/public/browser",
+    "//ui/base/unowned_user_data",
   ]
 
-  deps = [ "//chrome/browser/media/webrtc:webrtc" ]
+  deps = [
+    "//chrome/browser/actor/ui",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/tabs",
+  ]
 }
 
 source_set("impl") {
@@ -34,14 +40,18 @@ source_set("impl") {
   deps = [
     ":tab_alert",
     ":tab_alert_enum",
-    "//chrome/app/vector_icons:vector_icons",
-    "//chrome/browser/media/webrtc:webrtc",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/actor/resources:grit",
+    "//chrome/browser/actor/ui",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui/color:color_headers",
     "//chrome/common:chrome_features",
-    "//components/vector_icons:vector_icons",
+    "//components/vector_icons",
   ]
 
   if (enable_glic) {
-    deps += [ "//chrome/browser/glic:glic" ]
+    deps += [ "//chrome/browser/glic" ]
   }
 }
 
@@ -49,6 +59,36 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [ "tab_alert_controller_unittest.cc" ]
+
+  deps = [
+    ":impl",
+    ":tab_alert",
+    "//chrome/browser/permissions/system",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/tabs:test_support",
+    "//chrome/test:test_support",
+    "//components/tabs:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (enable_glic) {
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/glic:mojo_bindings_shared_cpp_sources",
+      "//chrome/browser/glic/test_support",
+    ]
+  }
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  if (enable_glic) {
+    sources = [ "tab_alert_controller_interactive_uitest.cc" ]
+  }
 
   deps = [
     ":impl",

@@ -92,6 +92,8 @@ component("gtk") {
     "native_theme_gtk.h",
     "nav_button_provider_gtk.cc",
     "nav_button_provider_gtk.h",
+    "os_settings_provider_gtk.cc",
+    "os_settings_provider_gtk.h",
     "select_file_dialog_linux_gtk.cc",
     "select_file_dialog_linux_gtk.h",
     "settings_provider.h",
@@ -119,6 +121,7 @@ component("gtk") {
   deps = [
     ":gtk_stubs",
     "//base",
+    "//cc/paint",
     "//printing/buildflags",
     "//skia",
 

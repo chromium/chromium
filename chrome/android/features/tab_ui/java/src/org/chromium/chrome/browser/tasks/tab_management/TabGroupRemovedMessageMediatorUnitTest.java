@@ -12,9 +12,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType.ALL;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupListCoordinator.RowType.TAB_GROUP_REMOVED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType.ALL;
 
 import android.content.Context;
 
@@ -29,8 +29,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.DismissActionProvider;
-import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.MessageAttribution;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
@@ -43,7 +44,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /** Unit tests for {@link TabGroupRemovedMessageMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -68,8 +68,7 @@ public class TabGroupRemovedMessageMediatorUnitTest {
 
     @Test
     public void testQueueMessageIfNeeded_noMessages() {
-        when(mMessagingBackendService.getMessages(
-                        Optional.of(PersistentNotificationType.TOMBSTONED)))
+        when(mMessagingBackendService.getMessages(PersistentNotificationType.TOMBSTONED))
                 .thenReturn(Collections.emptyList());
 
         mMediator.queueMessageIfNeeded();
@@ -84,8 +83,7 @@ public class TabGroupRemovedMessageMediatorUnitTest {
         PersistentMessage invalidIdMessage =
                 createMessage(null, "title2", CollaborationEvent.TAB_GROUP_REMOVED);
 
-        when(mMessagingBackendService.getMessages(
-                        Optional.of(PersistentNotificationType.TOMBSTONED)))
+        when(mMessagingBackendService.getMessages(PersistentNotificationType.TOMBSTONED))
                 .thenReturn(List.of(wrongTypeMessage, invalidIdMessage));
 
         mMediator.queueMessageIfNeeded();
@@ -98,8 +96,7 @@ public class TabGroupRemovedMessageMediatorUnitTest {
         String title = "My Awesome Group";
         PersistentMessage message1 =
                 createMessage("id1", title, CollaborationEvent.TAB_GROUP_REMOVED);
-        when(mMessagingBackendService.getMessages(
-                        Optional.of(PersistentNotificationType.TOMBSTONED)))
+        when(mMessagingBackendService.getMessages(PersistentNotificationType.TOMBSTONED))
                 .thenReturn(List.of(message1));
 
         mMediator.queueMessageIfNeeded();
@@ -123,8 +120,7 @@ public class TabGroupRemovedMessageMediatorUnitTest {
                 createMessage("id1", title1, CollaborationEvent.TAB_GROUP_REMOVED);
         PersistentMessage message2 =
                 createMessage("id2", title2, CollaborationEvent.TAB_GROUP_REMOVED);
-        when(mMessagingBackendService.getMessages(
-                        Optional.of(PersistentNotificationType.TOMBSTONED)))
+        when(mMessagingBackendService.getMessages(PersistentNotificationType.TOMBSTONED))
                 .thenReturn(List.of(message1, message2));
 
         mMediator.queueMessageIfNeeded();
@@ -147,8 +143,7 @@ public class TabGroupRemovedMessageMediatorUnitTest {
         PersistentMessage message3 =
                 createMessage("id3", "t3", CollaborationEvent.TAB_GROUP_REMOVED);
 
-        when(mMessagingBackendService.getMessages(
-                        Optional.of(PersistentNotificationType.TOMBSTONED)))
+        when(mMessagingBackendService.getMessages(PersistentNotificationType.TOMBSTONED))
                 .thenReturn(List.of(message1, message2, message3));
 
         mMediator.queueMessageIfNeeded();
@@ -171,8 +166,7 @@ public class TabGroupRemovedMessageMediatorUnitTest {
         PersistentMessage message1 =
                 createMessage("id1", title1, CollaborationEvent.TAB_GROUP_REMOVED);
         PersistentMessage message2 = createMessage("id2", "", CollaborationEvent.TAB_GROUP_REMOVED);
-        when(mMessagingBackendService.getMessages(
-                        Optional.of(PersistentNotificationType.TOMBSTONED)))
+        when(mMessagingBackendService.getMessages(PersistentNotificationType.TOMBSTONED))
                 .thenReturn(List.of(message1, message2));
 
         mMediator.queueMessageIfNeeded();
@@ -197,33 +191,30 @@ public class TabGroupRemovedMessageMediatorUnitTest {
                 createMessage(id1, "title1", CollaborationEvent.TAB_GROUP_REMOVED);
         PersistentMessage message2 =
                 createMessage(id2, "title2", CollaborationEvent.TAB_GROUP_REMOVED);
-        when(mMessagingBackendService.getMessages(
-                        Optional.of(PersistentNotificationType.TOMBSTONED)))
+        when(mMessagingBackendService.getMessages(PersistentNotificationType.TOMBSTONED))
                 .thenReturn(List.of(message1, message2));
 
         mMediator.queueMessageIfNeeded();
         assertEquals(1, mModelList.size());
 
         PropertyModel model = mModelList.get(0).model;
-        MessageCardView.DismissActionProvider reviewProvider =
+        ActionProvider reviewProvider =
                 model.get(MessageCardViewProperties.UI_DISMISS_ACTION_PROVIDER);
-        reviewProvider.dismiss(ALL);
+        reviewProvider.action();
 
         assertTrue(mModelList.isEmpty());
 
         verify(mMessagingBackendService, times(1))
-                .clearPersistentMessage(
-                        eq(id1), eq(Optional.of(PersistentNotificationType.TOMBSTONED)));
+                .clearPersistentMessage(eq(id1), eq(PersistentNotificationType.TOMBSTONED));
         verify(mMessagingBackendService, times(1))
-                .clearPersistentMessage(
-                        eq(id2), eq(Optional.of(PersistentNotificationType.TOMBSTONED)));
+                .clearPersistentMessage(eq(id2), eq(PersistentNotificationType.TOMBSTONED));
     }
 
     @Test
     public void testDismissActionProvider_onEmptyList() {
         assertTrue(mModelList.isEmpty());
 
-        DismissActionProvider dismissProvider = ignored -> mMediator.removeMessageCard();
+        ServiceDismissActionProvider dismissProvider = ignored -> mMediator.removeMessageCard();
         dismissProvider.dismiss(DISMISS_MSG_TYPE);
     }
 
@@ -236,7 +227,7 @@ public class TabGroupRemovedMessageMediatorUnitTest {
                         .build();
         mModelList.add(new ListItem(TAB_GROUP_REMOVED, wrongTypeModel));
 
-        DismissActionProvider dismissProvider = ignored -> mMediator.removeMessageCard();
+        ServiceDismissActionProvider dismissProvider = ignored -> mMediator.removeMessageCard();
         dismissProvider.dismiss(DISMISS_MSG_TYPE);
 
         assertEquals(1, mModelList.size());

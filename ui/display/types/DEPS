@@ -1,5 +1,7 @@
 include_rules = [
   "-ui",
+  "+components/viz/common/resources/shared_image_format.h",
+  "+components/viz/common/resources/shared_image_format_utils.h",
   "+ui/display/types",
   "+ui/gfx/buffer_types.h",
   "+ui/gfx/color_space.h",

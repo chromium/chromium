@@ -75,7 +75,7 @@ std::string SecurityStatePageLoadMetricsObserver::
 
 SecurityStatePageLoadMetricsObserver::SecurityStatePageLoadMetricsObserver(
     site_engagement::SiteEngagementService* engagement_service)
-    : content::WebContentsObserver(), engagement_service_(engagement_service) {}
+    : engagement_service_(engagement_service) {}
 
 SecurityStatePageLoadMetricsObserver::~SecurityStatePageLoadMetricsObserver() =
     default;
@@ -146,6 +146,9 @@ void SecurityStatePageLoadMetricsObserver::OnComplete(
   // prerendered page is not used.
   if (GetDelegate().GetPrerenderingState() ==
       page_load_metrics::PrerenderingState::kInPrerendering) {
+    return;
+  }
+  if (!security_state_tab_helper_) {
     return;
   }
 

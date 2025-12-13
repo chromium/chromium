@@ -33,6 +33,9 @@ enum Command {
   // kOpenHistorySearchSettings = 15 - deprecated
   kOpenGlic = 16,
   kOpenGlicSettings = 17,
+  kPrewarmGlicFre = 18,
+  kOpenSplitView = 19,
+  kOpenAutofillSettings = 20,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:PromoBrowserCommandEnum)
 

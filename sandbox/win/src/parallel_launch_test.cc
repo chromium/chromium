@@ -23,8 +23,6 @@ namespace sandbox {
 // BrokerServicesDelegate common implementation.
 class TestBrokerServicesDelegateBase : public BrokerServicesDelegate {
  public:
-  bool ParallelLaunchEnabled() override { return true; }
-
   void ParallelLaunchPostTaskAndReplyWithResult(
       const base::Location& from_here,
       base::OnceCallback<CreateTargetResult()> task,

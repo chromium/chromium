@@ -15,7 +15,7 @@ import {makeRecipientInfo} from './test_util.js';
 
 function assertVisibleTextContent(element: HTMLElement, expectedText: string) {
   assertTrue(isVisible(element));
-  assertEquals(expectedText, element?.textContent!.trim());
+  assertEquals(expectedText, element?.textContent.trim());
 }
 
 function countSelectedRecipients(dialog: HTMLElement): number {

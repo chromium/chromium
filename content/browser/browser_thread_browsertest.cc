@@ -37,24 +37,32 @@ IN_PROC_BROWSER_TEST_F(BrowserThreadPostTaskBeforeInitBrowserTest,
                        ExpectFailures) {}
 
 IN_PROC_BROWSER_TEST_F(ContentBrowserTest, ExpectedThreadPriorities) {
-  base::ThreadPriorityForTest expected_priority;
+  base::ThreadType expected_priority;
   // In browser main loop the kDisplayCritical thread type is set.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-  // TODO(40230522): ChromeOS and Linux result a kNormal priority unexpectedly.
-  expected_priority = base::ThreadPriorityForTest::kNormal;
+  // TODO(40230522): ChromeOS and Linux result in a kDefault priority
+  // unexpectedly.
+  expected_priority = base::ThreadType::kDefault;
 #else
-  expected_priority = base::ThreadPriorityForTest::kDisplay;
+  expected_priority = base::ThreadType::kDisplayCritical;
 #endif
 
-  EXPECT_EQ(base::PlatformThread::GetCurrentThreadPriorityForTest(),
+  EXPECT_EQ(base::PlatformThread::GetCurrentEffectiveThreadTypeForTest(),
             expected_priority);
 
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::ThreadPriorityForTest expected_priority) {
-            EXPECT_EQ(base::PlatformThread::GetCurrentThreadPriorityForTest(),
-                      expected_priority);
+          [](base::ThreadType expected_priority) {
+            // Under IOThreadInteractiveThreadType, the IO thread will have a
+            // higher priority on Windows.
+            // TODO(crbug.com/423313079): Update expectation once
+            // IOThreadInteractiveThreadType is enabled by default.
+            EXPECT_TRUE(
+                base::PlatformThread::GetCurrentEffectiveThreadTypeForTest() ==
+                    expected_priority ||
+                base::PlatformThread::GetCurrentEffectiveThreadTypeForTest() ==
+                    base::ThreadType::kInteractive);
           },
           expected_priority));
   BrowserThread::RunAllPendingTasksOnThreadForTesting(BrowserThread::IO);

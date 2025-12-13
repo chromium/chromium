@@ -78,6 +78,9 @@ enum class FREDefaultBrowserIntent {
 // Checks that the default browser screen is displayed.
 - (void)verifyDefaultBrowserIsDisplayed;
 
+// Checks that the default browser screen is not displayed.
+- (void)verifyDefaultBrowserNotDisplayed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_FIRST_RUN_UI_BUNDLED_FIRST_RUN_TEST_CASE_BASE_H_

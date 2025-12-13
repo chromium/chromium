@@ -19,7 +19,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/services/media_gallery_util/public/cpp/safe_audio_video_checker.h"
-#include "components/download/public/common/quarantine_connection.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/mime_util.h"
@@ -86,10 +85,19 @@ void SupportedAudioVideoChecker::StartPreWriteValidation(
                      weak_factory_.GetWeakPtr()));
 }
 
+void SupportedAudioVideoChecker::StartPostWriteValidation(
+    const base::FilePath& dest_platform_path,
+    ResultCallback result_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  // StartPostWriteValidation() implementation is required. So effectively do
+  // nothing here.
+  std::move(result_callback).Run(base::File::FILE_OK);
+}
+
 SupportedAudioVideoChecker::SupportedAudioVideoChecker(
-    const base::FilePath& path,
-    download::QuarantineConnectionCallback quarantine_connection_callback)
-    : AVScanningFileValidator(quarantine_connection_callback), path_(path) {}
+    const base::FilePath& path)
+    : path_(path) {}
 
 void SupportedAudioVideoChecker::OnFileOpen(base::File file) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);

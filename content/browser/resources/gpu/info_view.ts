@@ -309,7 +309,6 @@ const kSections = {
   angleFeatures: ['ANGLE Features', 'ul'],
   dawnInfo: ['Dawn Info', 'ul'],
   compositorInfo: ['Compositor Information', 'div'],
-  gpuMemoryBufferInfo: ['GpuMemoryBuffers Status', 'div'],
   displayInfo: ['Display(s) Information', 'div'],
   videoAccelerationInfo: ['Video Acceleration Information', 'div'],
   vulkanInfo: ['Vulkan Information', 'div'],
@@ -566,7 +565,6 @@ export class InfoViewElement extends CustomElement {
 
       this.setTable_(sections.basicInfo, gpuInfo.basicInfo);
       this.setTable_(sections.compositorInfo, gpuInfo.compositorInfo);
-      this.setTable_(sections.gpuMemoryBufferInfo, gpuInfo.gpuMemoryBufferInfo);
       this.setTable_(sections.displayInfo, gpuInfo.displayInfo);
       this.setTable_(
           sections.videoAccelerationInfo, gpuInfo.videoAcceleratorsInfo);
@@ -667,7 +665,6 @@ export class InfoViewElement extends CustomElement {
       'protected_video_decode': 'Hardware Protected Video Decode',
       'surface_control': 'Surface Control',
       'vpx_decode': 'VPx Video Decode',
-      'webgl2': 'WebGL2',
       'canvas_oop_rasterization': 'Canvas out-of-process rasterization',
       'raw_draw': 'Raw Draw',
       'video_encode': 'Video Encode',

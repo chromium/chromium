@@ -75,10 +75,6 @@
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "base/notreached.h"
-#endif
-
 namespace {
 
 ui::ImageModel GetDefaultIcon() {
@@ -160,7 +156,7 @@ void DownloadBubbleRowView::UpdateRow(bool initial_setup) {
 
 void DownloadBubbleRowView::AddedToWidget() {
   current_scale_ =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetPreferredScaleFactorForView(GetWidget()->GetNativeView())
           .value_or(1.0);
   SetIcon();
@@ -223,16 +219,11 @@ bool DownloadBubbleRowView::StartLoadFileIcon() {
     OnFileIconLoaded(*image);
     return true;
   }
-#if BUILDFLAG(IS_CHROMEOS)
-  // On ChromeOS the LookupIconFromFilepath() call should always succeed.
-  NOTREACHED();
-#else
   im->LoadIcon(file_path, icon_loader_size, current_scale_,
                base::BindOnce(&DownloadBubbleRowView::OnFileIconLoaded,
                               weak_factory_.GetWeakPtr()),
                &cancelable_task_tracker_);
   return false;
-#endif
 }
 
 void DownloadBubbleRowView::OnFileIconLoaded(gfx::Image icon) {
@@ -353,7 +344,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
                                                /*highlight_on_hover=*/true,
                                                /*highlight_on_focus=*/true);
-  views::InkDrop::Get(this)->SetBaseColorId(kColorDownloadBubbleRowHover);
+  views::InkDrop::Get(this)->SetBaseColor(kColorDownloadBubbleRowHover);
   views::InkDrop::Get(this)->SetHighlightOpacity(1.0f);
 
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -647,7 +638,7 @@ void DownloadBubbleRowView::OnMainButtonPressed(const ui::Event& event) {
     return;
   }
   if (input_protector_->IsPossiblyUnintendedInteraction(
-          event, /*allow_key_events=*/true)) {
+          event, /*allow_key_events=*/false)) {
     return;
   }
   if (info_->has_subpage()) {
@@ -666,7 +657,7 @@ void DownloadBubbleRowView::OnActionButtonPressed(
     const ui::Event& event) {
   if (!bubble_controller_ || !info_->model() ||
       input_protector_->IsPossiblyUnintendedInteraction(
-          event, /*allow_key_events=*/true)) {
+          event, /*allow_key_events=*/false)) {
     return;
   }
   bubble_controller_->ProcessDownloadButtonPress(info_->model()->GetWeakPtr(),
@@ -810,7 +801,7 @@ void DownloadBubbleRowView::AddQuickAction(DownloadCommands::Command command) {
   quick_action->SetProperty(views::kMarginsKey, kRowInterElementPadding);
   quick_action->SetVisible(false);
   views::InkDrop::Get(quick_action)
-      ->SetBaseColorId(views::TypographyProvider::Get().GetColorId(
+      ->SetBaseColor(views::TypographyProvider::Get().GetColorId(
           views::style::CONTEXT_BUTTON, views::style::STYLE_SECONDARY));
   quick_actions_[command] = quick_action;
 }

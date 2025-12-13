@@ -9,6 +9,8 @@
 
 namespace segmentation_platform {
 
+using Feature = IosModuleRanker::Feature;
+
 class IosModuleRankerTest : public DefaultModelTestBase {
  public:
   IosModuleRankerTest()
@@ -30,14 +32,14 @@ TEST_F(IosModuleRankerTest, ExecuteModelWithInputForDefaultOrder) {
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
 
-  std::vector<float> input(40, 0);
+  std::vector<float> input(Feature::kFeatureCount, 0);
 
-  input[34] = -1;  // mvt_freshness
-  input[35] = -1;  // shortcuts_freshness
-  input[36] = -1;  // safety_check_freshness
-  input[37] = -1;  // tab_resumption_freshness
-  input[38] = -1;  // parcel_tracking_freshness
-  input[39] = -1;  // shop_card_freshness
+  input[Feature::kFeatureMostVisitedTilesFreshness] = -1;
+  input[Feature::kFeatureShortcutsFreshness] = -1;
+  input[Feature::kFeatureSafetyCheckFreshness] = -1;
+  input[Feature::kFeatureTabResumptionFreshness] = -1;
+  input[Feature::kFeatureParcelTrackingFreshness] = -1;
+  input[Feature::kFeatureShopCardFreshness] = -1;
 
   ExpectClassifierResults(input, {kMostVisitedTiles, kShortcuts, kSafetyCheck,
                                   kTabResumption, kParcelTracking, kShopCard});
@@ -49,26 +51,26 @@ TEST_F(IosModuleRankerTest, ExecuteModelWithInputForAllModules) {
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
 
-  std::vector<float> input(40, 0);
-  input[6] = 3.0;    // mvt_engagement
-  input[7] = 11.0;   // mvt_impression
-  input[8] = 4.0;    // shortcuts_engagement
-  input[9] = 2.0;    // shortcuts_impression
-  input[10] = 1.0;   // safety_check_engagement
-  input[11] = 1.0;   // safety_check_impression
-  input[24] = 3.0;   // tab_resumption_engagement
-  input[25] = 11.0;  // tab_resumption_impression
-  input[28] = 3.0;   // parcel_tracking_engagement
-  input[29] = 11.0;  // parcel_tracking_impression
-  input[32] = 3.0;   // shop_card_engagement
-  input[33] = 11.0;  // shop_card_impression
+  std::vector<float> input(Feature::kFeatureCount, 0);
+  input[Feature::kFeatureMVTClick28Days] = 3.0;
+  input[Feature::kFeatureMVTImpression28Days] = 11.0;
+  input[Feature::kFeatureShortcutsClick28Days] = 4.0;
+  input[Feature::kFeatureShortcutsImpression28Days] = 2.0;
+  input[Feature::kFeatureSafetyCheckClick28Days] = 1.0;
+  input[Feature::kFeatureSafetyCheckImpression28Days] = 1.0;
+  input[Feature::kFeatureTabResumptionClick28Days] = 3.0;
+  input[Feature::kFeatureTabResumptionImpression28Days] = 11.0;
+  input[Feature::kFeatureParcelTrackingClick28Days] = 3.0;
+  input[Feature::kFeatureParcelTrackingImpression28Days] = 11.0;
+  input[Feature::kFeatureShopCardClick28Days] = 3.0;
+  input[Feature::kFeatureShopCardImpression28Days] = 11.0;
 
-  input[34] = -1;  // mvt_freshness
-  input[35] = -1;  // shortcuts_freshness
-  input[36] = -1;  // safety_check_freshness
-  input[37] = -1;  // tab_resumption_freshness
-  input[38] = -1;  // parcel_tracking_freshness
-  input[39] = -1;  // shop_card_freshness
+  input[Feature::kFeatureMostVisitedTilesFreshness] = -1;
+  input[Feature::kFeatureShortcutsFreshness] = -1;
+  input[Feature::kFeatureSafetyCheckFreshness] = -1;
+  input[Feature::kFeatureTabResumptionFreshness] = -1;
+  input[Feature::kFeatureParcelTrackingFreshness] = -1;
+  input[Feature::kFeatureShopCardFreshness] = -1;
 
   ExpectClassifierResults(input, {kMostVisitedTiles, kShortcuts, kTabResumption,
                                   kSafetyCheck, kShopCard, kParcelTracking});
@@ -80,24 +82,24 @@ TEST_F(IosModuleRankerTest, ExecuteModelWithFreshnessInputOnly) {
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
 
-  std::vector<float> input(40, 0);
-  input[34] = 0;  // mvt_freshness
-  input[35] = 0;  // shortcuts_freshness
-  input[36] = 0;  // safety_check_freshness
-  input[37] = 0;  // tab_resumption_freshness
-  input[38] = 0;  // parcel_tracking_freshness
-  input[39] = 0;  // shop_card_freshness
+  std::vector<float> input(Feature::kFeatureCount, 0);
+  input[Feature::kFeatureMostVisitedTilesFreshness] = 0;
+  input[Feature::kFeatureShortcutsFreshness] = 0;
+  input[Feature::kFeatureSafetyCheckFreshness] = 0;
+  input[Feature::kFeatureTabResumptionFreshness] = 0;
+  input[Feature::kFeatureParcelTrackingFreshness] = 0;
+  input[Feature::kFeatureShopCardFreshness] = 0;
 
   ExpectClassifierResults(input,
                           {kParcelTracking, kSafetyCheck, kShopCard, kShortcuts,
                            kMostVisitedTiles, kTabResumption});
 
-  input[34] = 1;  // mvt_freshness
-  input[35] = 1;  // shortcuts_freshness
-  input[36] = 2;  // safety_check_freshness
-  input[37] = 2;  // tab_resumption_freshness
-  input[38] = 1;  // parcel_tracking_freshness
-  input[39] = 1;  // shop_card_freshness
+  input[Feature::kFeatureMostVisitedTilesFreshness] = 1;
+  input[Feature::kFeatureShortcutsFreshness] = 1;
+  input[Feature::kFeatureSafetyCheckFreshness] = 2;
+  input[Feature::kFeatureTabResumptionFreshness] = 2;
+  input[Feature::kFeatureParcelTrackingFreshness] = 1;
+  input[Feature::kFeatureShopCardFreshness] = 1;
 
   ExpectClassifierResults(input,
                           {kParcelTracking, kSafetyCheck, kShopCard, kShortcuts,

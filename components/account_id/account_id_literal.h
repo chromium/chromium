@@ -27,6 +27,7 @@ class AccountIdLiteral {
   }
 
   const std::string_view GetUserEmail() const { return user_email_; }
+  const GaiaId::Literal GetGaiaId() const { return gaia_id_; }
 
   // Allows implicit conversion so functions taking AccountId can use the
   // constexpr literal.

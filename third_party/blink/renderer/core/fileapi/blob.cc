@@ -117,6 +117,12 @@ class BlobFileReaderClient : public GarbageCollected<BlobFileReaderClient>,
     } else if (read_type_ == FileReadType::kReadAsArrayBuffer) {
       DOMArrayBuffer* result = std::move(contents).AsDOMArrayBuffer();
       resolver_->DowncastTo<DOMArrayBuffer>()->Resolve(result);
+    } else if (read_type_ == FileReadType::kReadAsBytes) {
+      DOMArrayBuffer* buffer = std::move(contents).AsDOMArrayBuffer();
+      DOMUint8Array* result =
+          DOMUint8Array::Create(buffer, /*byte_offset=*/0, buffer->ByteLength());
+      resolver_->DowncastTo<NotShared<DOMUint8Array>>()->Resolve(
+          NotShared(result));
     } else {
       NOTREACHED() << "Unknown ReadType supplied to BlobFileReaderClient";
     }
@@ -145,7 +151,8 @@ Blob* Blob::Create(ExecutionContext* context,
                    const BlobPropertyBag* options) {
   DCHECK(options->hasType());
   DCHECK(options->hasEndings());
-  bool normalize_line_endings_to_native = (options->endings() == "native");
+  const bool normalize_line_endings_to_native =
+      (options->endings() == V8EndingType::Enum::kNative);
   if (normalize_line_endings_to_native)
     UseCounter::Count(context, WebFeature::kFileAPINativeLineEndings);
   UseCounter::Count(context, WebFeature::kCreateObjectBlob);
@@ -271,6 +278,19 @@ ScriptPromise<DOMArrayBuffer> Blob::arrayBuffer(ScriptState* script_state) {
       ExecutionContext::From(script_state)
           ->GetTaskRunner(TaskType::kFileReading),
       FileReadType::kReadAsArrayBuffer, resolver);
+  return promise;
+}
+
+ScriptPromise<NotShared<DOMUint8Array>> Blob::bytes(ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<NotShared<DOMUint8Array>>>(
+          script_state);
+  auto promise = resolver->Promise();
+  MakeGarbageCollected<BlobFileReaderClient>(
+      blob_data_handle_,
+      ExecutionContext::From(script_state)
+          ->GetTaskRunner(TaskType::kFileReading),
+      FileReadType::kReadAsBytes, resolver);
   return promise;
 }
 

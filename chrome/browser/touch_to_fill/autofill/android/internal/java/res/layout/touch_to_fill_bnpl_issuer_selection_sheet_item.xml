@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:descendantFocusability="blocksDescendants"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/ttf_for_sheet_item_margin_bottom"
+    android:layout_marginHorizontal="@dimen/ttf_for_sheet_item_margin_horizontal"
+    android:background="@drawable/touch_to_fill_credential_background_modern_rounded_all"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="@dimen/ttf_for_sheet_item_padding">
+
+    <ImageView
+        android:id="@+id/bnpl_issuer_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/ttf_for_sheet_item_icon_margin_end"
+        android:importantForAccessibility="no"
+        android:layout_gravity="center"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/bnpl_issuer_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            android:ellipsize="end"/>
+        <TextView
+            android:id="@+id/bnpl_issuer_selection_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:ellipsize="end"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/bnpl_issuer_linked_status_pill"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:background="@drawable/touch_to_fill_bnpl_issuer_linked_background"
+        android:text="@string/autofill_card_bnpl_linked_issuer_pill_label"
+        android:textAppearance="@style/TextAppearance.Pill"
+        android:paddingHorizontal="@dimen/bnpl_issuer_linked_status_pill_padding_horizontal"
+        android:paddingVertical="@dimen/bnpl_issuer_linked_status_pill_padding_vertical"
+        android:visibility="gone"/>
+</LinearLayout>

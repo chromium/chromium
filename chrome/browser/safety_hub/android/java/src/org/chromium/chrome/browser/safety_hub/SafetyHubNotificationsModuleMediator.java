@@ -133,7 +133,10 @@ public class SafetyHubNotificationsModuleMediator
         }
         return mPreference
                 .getContext()
-                .getString(R.string.safety_hub_notifications_review_warning_summary);
+                .getResources()
+                .getQuantityString(
+                        R.plurals.safety_hub_notifications_review_warning_summary,
+                        mNotificationPermissionsForReviewCount);
     }
 
     private @Nullable String getPrimaryButtonText() {

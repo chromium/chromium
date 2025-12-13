@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -17,6 +18,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 
 class FindBarHost;
 class FindBarMatchCountLabel;

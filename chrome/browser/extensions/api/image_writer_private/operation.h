@@ -12,6 +12,7 @@
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"

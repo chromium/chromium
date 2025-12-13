@@ -12,6 +12,7 @@ import android.graphics.Color;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
+import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
@@ -327,6 +328,65 @@ public class TabGroupColorPickerUtils {
                 yield Resources.ID_NULL;
             }
         };
+    }
+
+    /**
+     * Get the {@link TabGroupColorId} associated with a tab group color plain integer. This
+     * function should only be used for mapping a tab group color back to its IntDef value.
+     *
+     * @param colorId The plain color id corresponding to the color of the Tab Group.
+     */
+    public static @TabGroupColorId int getTabGroupCardColorId(int colorId) {
+        return switch (colorId) {
+                // LINT.IfChange
+            case 0 -> TabGroupColorId.GREY;
+            case 1 -> TabGroupColorId.BLUE;
+            case 2 -> TabGroupColorId.RED;
+            case 3 -> TabGroupColorId.YELLOW;
+            case 4 -> TabGroupColorId.GREEN;
+            case 5 -> TabGroupColorId.PINK;
+            case 6 -> TabGroupColorId.PURPLE;
+            case 7 -> TabGroupColorId.CYAN;
+            case 8 -> TabGroupColorId.ORANGE;
+            default -> {
+                assert false : "Invalid tab group color id " + colorId;
+                yield TabGroupColorId.GREY;
+            }
+                // LINT.ThenChange(//components/tab_groups/tab_group_color.h)
+        };
+    }
+
+    /**
+     * Get the accessibility string corresponding to the respective color item. This function should
+     * only be used for retrieving items from the tab group color picker.
+     *
+     * @param colorId The color id corresponding to the color item in the color picker.
+     */
+    public static @StringRes int getTabGroupColorPickerItemColorAccessibilityString(
+            @TabGroupColorId int colorId) {
+        switch (colorId) {
+            case TabGroupColorId.GREY:
+                return R.string.tab_group_color_grey;
+            case TabGroupColorId.BLUE:
+                return R.string.tab_group_color_blue;
+            case TabGroupColorId.RED:
+                return R.string.tab_group_color_red;
+            case TabGroupColorId.YELLOW:
+                return R.string.tab_group_color_yellow;
+            case TabGroupColorId.GREEN:
+                return R.string.tab_group_color_green;
+            case TabGroupColorId.PINK:
+                return R.string.tab_group_color_pink;
+            case TabGroupColorId.PURPLE:
+                return R.string.tab_group_color_purple;
+            case TabGroupColorId.CYAN:
+                return R.string.tab_group_color_cyan;
+            case TabGroupColorId.ORANGE:
+                return R.string.tab_group_color_orange;
+            default:
+                assert false : "Invalid tab group color id " + colorId;
+                return Resources.ID_NULL;
+        }
     }
 
     private static @ColorInt int resolveGroupRelatedColor(

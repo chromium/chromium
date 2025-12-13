@@ -2126,4 +2126,8 @@ message ChromeDeviceSettingsProto {
   optional BooleanPolicyProto DeviceBluetoothJustWorksPairingEnabled = 1373;
   optional BooleanPolicyProto
       DeviceUserInitiatedFlexSystemFirmwareUpdatesEnabled = 1375;
+  optional StringListPolicyProto DeviceLoginScreenSecurityKeyPermitAttestation =
+      1385;
+  optional StringPolicyProto DeviceLoginScreenPreferSlowKexAlgorithms = 1414;
+  optional StringPolicyProto DeviceLoginScreenPreferSlowCiphers = 1415;
 }

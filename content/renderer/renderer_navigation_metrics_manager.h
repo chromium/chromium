@@ -87,6 +87,10 @@ class CONTENT_EXPORT RendererNavigationMetricsManager {
     // an initial blank document.
     std::optional<TimelineEvent> create_frame_event;
 
+    // The time at which the CommitNavigation IPC was sent to this renderer
+    // process from the browser process.
+    base::TimeTicks commit_sent;
+
     // The time at which this navigation started processing the CommitNavigation
     // IPC.
     base::TimeTicks commit_start;
@@ -107,6 +111,12 @@ class CONTENT_EXPORT RendererNavigationMetricsManager {
     // the first navigation begins, to give a sense of how often a process
     // is ready to go when it's needed for a navigation.
     bool is_first_navigation_in_this_process;
+
+    // Whether this navigation was in a main frame, as defined by
+    // RenderFrameImpl::IsMainFrame(). Useful for recording metrics for main
+    // frames only. Note that this is not limited to outermost or primary main
+    // frames.
+    bool is_main_frame;
   };
 
   // The following methods are called to add timestamps for processing the
@@ -163,11 +173,15 @@ class CONTENT_EXPORT RendererNavigationMetricsManager {
   // This is a signal for this class to generate trace events and metrics using
   // all the timestamps collected so far for it. `navigation_start_time`
   // identifies the time at which this navigation was started, possibly in
-  // another process.
+  // another process. `commit_sent_time` is the time at which the
+  // CommitNavigation IPC was sent by the browser process to this renderer
+  // process.
   void ProcessNavigationCommit(
       const base::UnguessableToken& navigation_metrics_token,
       const GURL& url,
-      const base::TimeTicks& navigation_start_time);
+      const base::TimeTicks& navigation_start_time,
+      const base::TimeTicks& commit_sent_time,
+      bool is_main_frame);
 
  private:
   ~RendererNavigationMetricsManager();

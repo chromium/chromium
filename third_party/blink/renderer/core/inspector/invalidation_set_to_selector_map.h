@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INVALIDATION_SET_TO_SELECTOR_MAP_H_
 
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
-#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/inspector/style_rule_to_style_sheet_contents_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -21,6 +20,7 @@ class InvalidationSet;
 class RuleFeatureSet;
 class StyleEngine;
 class StyleRule;
+class TreeScope;
 
 // Implements a back-mapping from InvalidationSet entries to the selectors that
 // placed them there, for use in diagnostic traces.
@@ -41,8 +41,7 @@ class CORE_EXPORT InvalidationSetToSelectorMap final
     const StyleSheetContents* GetStyleSheetContents() const;
 
    private:
-    friend struct WTF::HashTraits<
-        blink::InvalidationSetToSelectorMap::IndexedSelector>;
+    friend struct HashTraits<InvalidationSetToSelectorMap::IndexedSelector>;
     Member<StyleRule> style_rule_;
     unsigned selector_index_;
   };

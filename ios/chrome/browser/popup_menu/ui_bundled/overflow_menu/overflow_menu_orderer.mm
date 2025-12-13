@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_action_provider.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_metrics.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_swift.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -417,7 +418,7 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
   [self recordMetricsForActionCustomizationWithNewOrderData:actionOrderData];
 
   _actionOrderData = actionOrderData;
-  [self flushActionsToPrefs];
+  [self maybeFlushActionsToPrefs:YES];
 
   [self updatePageActions];
 
@@ -601,7 +602,12 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
       if (actionsSet.contains(*actionType)) {
         continue;
       }
-
+      if (*actionType == overflow_menu::ActionType::ReaderMode &&
+          !IsReaderModeAvailable()) {
+        // Reader mode may have been disabled since the last update, if so do
+        // not add it to `actionsSet`.
+        continue;
+      }
       actionsSet.insert(*actionType);
       actionOrderData.shownActions.push_back(*actionType);
     }
@@ -622,7 +628,12 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
       if (actionsSet.contains(*actionType)) {
         continue;
       }
-
+      if (*actionType == overflow_menu::ActionType::ReaderMode &&
+          !IsReaderModeAvailable()) {
+        // Reader mode may have been disabled since the last update, if so do
+        // not add it to `actionsSet`.
+        continue;
+      }
       actionsSet.insert(*actionType);
       actionOrderData.hiddenActions.push_back(*actionType);
     }
@@ -683,50 +694,66 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
 }
 
 // Write stored action data back to local prefs/disk.
-- (void)flushActionsToPrefs {
+// If `forcePrefUpdate` is YES, the action order is written to
+// kOverflowMenuActionsOrder. This ensures that action order is only updated if
+// a user has customized the action order.
+- (void)maybeFlushActionsToPrefs:(BOOL)forcePrefUpdate {
   if (!_localStatePrefs) {
     return;
   }
   base::Value::Dict storedActions;
 
-  base::Value::List shownActions;
-  for (overflow_menu::ActionType action : _actionOrderData.shownActions) {
-    shownActions.Append(overflow_menu::StringNameForActionType(action));
+  // Only update prefs if a user has a customized action order.
+  if (forcePrefUpdate ||
+      _localStatePrefs->GetDict(prefs::kOverflowMenuActionsOrder).size() > 0) {
+    base::Value::List shownActions;
+    for (overflow_menu::ActionType action : _actionOrderData.shownActions) {
+      shownActions.Append(overflow_menu::StringNameForActionType(action));
+    }
+
+    base::Value::List hiddenActions;
+    for (overflow_menu::ActionType action : _actionOrderData.hiddenActions) {
+      hiddenActions.Append(overflow_menu::StringNameForActionType(action));
+    }
+
+    storedActions.Set(kShownActionsKey, std::move(shownActions));
+    storedActions.Set(kHiddenActionsKey, std::move(hiddenActions));
+
+    _localStatePrefs->SetDict(prefs::kOverflowMenuActionsOrder,
+                              std::move(storedActions));
   }
-
-  base::Value::List hiddenActions;
-  for (overflow_menu::ActionType action : _actionOrderData.hiddenActions) {
-    hiddenActions.Append(overflow_menu::StringNameForActionType(action));
-  }
-
-  storedActions.Set(kShownActionsKey, std::move(shownActions));
-  storedActions.Set(kHiddenActionsKey, std::move(hiddenActions));
-
-  _localStatePrefs->SetDict(prefs::kOverflowMenuActionsOrder,
-                            std::move(storedActions));
 }
 
 // Uses the current `actionProvider` to add any new actions to the shown list.
 // This handles new users with no stored data and new actions added.
 - (void)updateActionOrderData {
   ActionRanking availableActions = [self.actionProvider basePageActions];
-  std::set<overflow_menu::ActionType> sortedAvailableActions{
-      availableActions.begin(), availableActions.end()};
 
-  // Add any available actions not present in shown or hidden to the shown list.
-  std::set<overflow_menu::ActionType> knownActions(
-      _actionOrderData.shownActions.begin(),
-      _actionOrderData.shownActions.end());
-  knownActions.insert(_actionOrderData.hiddenActions.begin(),
-                      _actionOrderData.hiddenActions.end());
+  // If a custom order is set, use the user's custom action order and append
+  // new items.
+  if (_localStatePrefs->GetDict(prefs::kOverflowMenuActionsOrder).size() > 0) {
+    std::set<overflow_menu::ActionType> sortedAvailableActions{
+        availableActions.begin(), availableActions.end()};
 
-  // std::set_difference input ranges have to be sorted.
-  std::set_difference(sortedAvailableActions.begin(),
-                      sortedAvailableActions.end(), knownActions.begin(),
-                      knownActions.end(),
-                      std::back_inserter(_actionOrderData.shownActions));
+    // Add any available actions not present in shown or hidden to the shown
+    // list.
+    std::set<overflow_menu::ActionType> knownActions(
+        _actionOrderData.shownActions.begin(),
+        _actionOrderData.shownActions.end());
+    knownActions.insert(_actionOrderData.hiddenActions.begin(),
+                        _actionOrderData.hiddenActions.end());
 
-  [self flushActionsToPrefs];
+    // std::set_difference input ranges have to be sorted.
+    std::set_difference(sortedAvailableActions.begin(),
+                        sortedAvailableActions.end(), knownActions.begin(),
+                        knownActions.end(),
+                        std::back_inserter(_actionOrderData.shownActions));
+  } else {
+    // Otherwise, use the default action order.
+    _actionOrderData.shownActions = availableActions;
+  }
+
+  [self maybeFlushActionsToPrefs:NO];
 }
 
 // Uses the current `destinationProvider` to get the initial order of

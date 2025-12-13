@@ -25,7 +25,7 @@
 #include "content/public/browser/android/compositor.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/main_function_params.h"
-#include "device/fido/features.h"
+#include "device/fido/public/features.h"
 #include "net/base/network_change_notifier.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_bundle_android.h"
@@ -111,3 +111,5 @@ void ChromeBrowserMainPartsAndroid::PostBrowserStart() {
 void ChromeBrowserMainPartsAndroid::ShowMissingLocaleMessageBox() {
   NOTREACHED();
 }
+
+DEFINE_JNI(ChromeBackupWatcher)

@@ -252,6 +252,7 @@ TaskQueueImpl::TaskQueueImpl(SequenceManagerImpl* sequence_manager,
       should_monitor_quiescence_(spec.should_monitor_quiescence),
       should_notify_observers_(spec.should_notify_observers),
       delayed_fence_allowed_(spec.delayed_fence_allowed),
+      scoped_execution_fence_allowed_(spec.scoped_execution_fence_allowed),
       default_task_runner_(CreateTaskRunner(kTaskTypeNone)) {
   UpdateCrossThreadQueueStateLocked();
   // SequenceManager can't be set later, so we need to prevent task runners
@@ -1610,6 +1611,10 @@ void TaskQueueImpl::RemoveCancelledTasks() {
   debug::SetCrashKeyString(
       post_remove_cancelled_tasks_delayed_work_queue_size,
       NumberToString(main_thread_only_.delayed_work_queue->Size()));
+}
+
+bool TaskQueueImpl::IsBlockedByScopedExecutionFences() {
+  return scoped_execution_fence_allowed_;
 }
 
 void TaskQueueImpl::AddQueueEnabledVoter(bool voter_is_enabled,

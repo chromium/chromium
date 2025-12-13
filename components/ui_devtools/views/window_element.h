@@ -10,7 +10,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui_devtools {
 

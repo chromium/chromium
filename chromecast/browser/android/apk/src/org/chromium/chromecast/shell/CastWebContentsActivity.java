@@ -4,6 +4,9 @@
 
 package org.chromium.chromecast.shell;
 
+import static org.chromium.chromecast.base.Observable.any;
+import static org.chromium.chromecast.base.Observable.not;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.PictureInPictureParams;
@@ -12,6 +15,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -27,15 +31,22 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.chromecast.base.Both;
 import org.chromium.chromecast.base.CastSwitches;
 import org.chromium.chromecast.base.Controller;
+import org.chromium.chromecast.base.Dict;
 import org.chromium.chromecast.base.Observable;
 import org.chromium.chromecast.base.Observer;
 import org.chromium.chromecast.base.Unit;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import java.util.Scanner;
 
 /**
  * Activity for displaying a WebContents in CastShell.
@@ -48,33 +59,51 @@ import org.chromium.content_public.browser.WebContents;
 public class CastWebContentsActivity extends Activity {
     private static final String TAG = "CastWebActivity";
 
-    // JavaScript to execute on WebContents when the back key is pressed.
-    // This will return a value that indicates whether or not the default
-    // Android behavior for the back key should be disabled or not.
-    private static final String BACK_PRESSED_JAVASCRIPT = "{"
-            + "  let getActiveElement = function() {"
-            + "    let activeElement = document.activeElement;"
-            + "    while (activeElement && activeElement.shadowRoot && activeElement.shadowRoot.activeElement) {"
-            + "      activeElement = activeElement.shadowRoot.activeElement;"
-            + "    }"
-            + "    return activeElement;"
-            + "  };"
-            + "  let backPressEvent = new KeyboardEvent("
-            + "     \"keydown\", {"
-            + "      bubbles: true,"
-            + "      key: \"BrowserBack\","
-            + "      cancelable: true,"
-            + "      composed: true"
-            + "     }"
-            + "  );"
-            + "  let activeElement = getActiveElement();"
-            + "  if (activeElement) {"
-            + "    activeElement.dispatchEvent(backPressEvent);"
-            + "  } else {"
-            + "    document.dispatchEvent(backPressEvent);"
-            + "  }"
-            + "  backPressEvent.defaultPrevented;"
-            + "};";
+    @VisibleForTesting
+    static class MediaPlaying {
+        public final boolean hasAudio;
+        public final boolean hasVideo;
+
+        public MediaPlaying(boolean hasAudio, boolean hasVideo) {
+            this.hasAudio = hasAudio;
+            this.hasVideo = hasVideo;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (other instanceof MediaPlaying) {
+                MediaPlaying that = (MediaPlaying) other;
+                return this.hasAudio == that.hasAudio && this.hasVideo == that.hasVideo;
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(hasAudio, hasVideo);
+        }
+
+        @Override
+        public String toString() {
+            return "MediaPlaying{hasAudio=" + hasAudio + ", hasVideo=" + hasVideo + "}";
+        }
+
+        public static Observable<MediaPlaying> observeFromWebContents(WebContents webContents) {
+            Dict<Integer, MediaPlaying> dict = new Dict<>();
+            new WebContentsObserver(webContents) {
+                @Override
+                public void mediaStartedPlaying(int id, boolean hasAudio, boolean hasVideo) {
+                    dict.put(id, new MediaPlaying(hasAudio, hasVideo));
+                }
+
+                @Override
+                public void mediaStoppedPlaying(int id) {
+                    dict.remove(id);
+                }
+            };
+            return dict.values();
+        }
+    }
 
     // Tracks whether this Activity is between onCreate() and onDestroy().
     private final Controller<Unit> mCreatedState = new Controller<>();
@@ -99,28 +128,26 @@ public class CastWebContentsActivity extends Activity {
     // SessionId provided in the original Intent used to start the Activity.
     private String mRootSessionId;
 
-    private boolean mAllowPictureInPicture;
+    private boolean mAudioIsPlaying;
+    private boolean mVideoIsPlaying;
     private boolean mIsInPictureInPictureMode;
 
     {
         Observable<Intent> gotIntentAfterFinishingState =
                 mIsFinishingState.andThen(mGotIntentState).map(Both::getSecond);
-        Observable<?> createdAndNotTestingState =
-                mCreatedState.and(Observable.not(mIsTestingState));
-        createdAndNotTestingState.subscribe(
-                x -> {
-                    // Register handler for web content stopped event while we have an Intent.
-                    IntentFilter filter = new IntentFilter();
-                    filter.addAction(CastIntents.ACTION_ON_WEB_CONTENT_STOPPED);
-                    return new LocalBroadcastReceiverScope(
-                            filter,
-                            (Intent intent) -> {
-                                mIsFinishingState.set("Stopped by intent: " + intent.getAction());
-                            });
-                });
+        Observable<?> createdAndNotTestingState = mCreatedState.and(not(mIsTestingState));
         createdAndNotTestingState.subscribe(
                 Observer.onOpen(
                         x -> {
+                            // Abort if the browser process has not been initialized. This can
+                            // happen in exotic race conditions where CastBrowserService kills the
+                            // process before the teardown timer in CastWebContentsSurfaceHelper
+                            // fires.
+                            if (!CastBrowserHelper.isBrowserInitialized()) {
+                                finishAndRemoveTask();
+                                return;
+                            }
+
                             setContentView(R.layout.cast_web_contents_activity);
 
                             mSurfaceHelperState.set(
@@ -150,44 +177,6 @@ public class CastWebContentsActivity extends Activity {
 
         mCreatedState.subscribe(Observer.onClose(x -> mSurfaceHelperState.reset()));
 
-        mCreatedState.subscribe(
-                x -> {
-                    IntentFilter filter = new IntentFilter();
-                    filter.addAction(CastWebContentsIntentUtils.ACTION_ALLOW_PICTURE_IN_PICTURE);
-                    return new LocalBroadcastReceiverScope(
-                            filter,
-                            (Intent intent) -> {
-                                mAllowPictureInPicture =
-                                        CastWebContentsIntentUtils.isPictureInPictureAllowed(
-                                                intent);
-                            });
-                });
-
-        final Controller<Unit> mediaPlaying = new Controller<>();
-        mCreatedState
-                .and(mSessionIdState)
-                .map(Both::getSecond)
-                .subscribe(
-                        sessionId -> {
-                            IntentFilter filter =
-                                    new IntentFilter(
-                                            CastWebContentsIntentUtils.ACTION_MEDIA_PLAYING);
-                            LocalBroadcastReceiverScope scope =
-                                    new LocalBroadcastReceiverScope(
-                                            filter,
-                                            (Intent intent) -> {
-                                                if (CastWebContentsIntentUtils.isMediaPlaying(
-                                                        intent)) {
-                                                    mediaPlaying.set(Unit.unit());
-                                                } else {
-                                                    mediaPlaying.reset();
-                                                }
-                                            });
-                            // Ensure we get an update if media playback had already started.
-                            requestMediaPlayingStatus(sessionId);
-                            return scope;
-                        });
-
         final Controller<Unit> isDocked = new Controller<>();
         mCreatedState.subscribe(
                 x -> {
@@ -213,9 +202,9 @@ public class CastWebContentsActivity extends Activity {
                                         TAG,
                                         "ACTION_USER_PRESENT received. canUsePictureInPicture: "
                                                 + canUsePictureInPicture()
-                                                + " mAllowPictureInPicture: "
-                                                + mAllowPictureInPicture);
-                                if (canUsePictureInPicture() && mAllowPictureInPicture) {
+                                                + " mVideoIsPlaying: "
+                                                + mVideoIsPlaying);
+                                if (canUsePictureInPicture() && mVideoIsPlaying) {
                                     enterPictureInPictureMode(
                                             new PictureInPictureParams.Builder().build());
                                 }
@@ -229,17 +218,6 @@ public class CastWebContentsActivity extends Activity {
                                         CastWebContentsIntentUtils.shouldKeepScreenOn(intent)
                                                 || isInLockTaskMode(this))
                         .opaque();
-
-        shouldKeepScreenOn
-                .or(mediaPlaying.and(isDocked).opaque())
-                .subscribe(
-                        (x) -> {
-                            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                            return () ->
-                                    getWindow()
-                                            .clearFlags(
-                                                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                        });
 
         isDocked.subscribe(
                 (x) -> {
@@ -283,7 +261,7 @@ public class CastWebContentsActivity extends Activity {
         // Handle each new Intent.
         Controller<CastWebContentsSurfaceHelper.StartParams> startParamsState = new Controller<>();
         mGotIntentState
-                .and(Observable.not(mIsFinishingState))
+                .and(not(mIsFinishingState))
                 .map(Both::getFirst)
                 .map(Intent::getExtras)
                 .map(CastWebContentsSurfaceHelper.StartParams::fromBundle)
@@ -295,22 +273,61 @@ public class CastWebContentsActivity extends Activity {
                         Observer.onOpen(
                                 Both.adapt(CastWebContentsSurfaceHelper::onNewStartParams)));
 
+        final Observable<MediaPlaying> mediaPlaying =
+                startParamsState
+                        .map(params -> params.webContents)
+                        .flatMap(MediaPlaying::observeFromWebContents)
+                        .share();
+        final var audioPlaying = any(mediaPlaying.filter(x -> x.hasAudio));
+        final var videoPlaying = any(mediaPlaying.filter(x -> x.hasVideo));
+        final var anyMediaPlaying = any(audioPlaying.or(videoPlaying));
+
+        videoPlaying.subscribe(
+                x -> {
+                    Log.i(TAG, "video playing");
+                    mVideoIsPlaying = true;
+                    return () -> {
+                        Log.i(TAG, "video stopped");
+                        mVideoIsPlaying = false;
+                    };
+                });
+        audioPlaying.subscribe(
+                x -> {
+                    Log.i(TAG, "audio playing");
+                    mAudioIsPlaying = true;
+                    return () -> {
+                        Log.i(TAG, "audio stopped");
+                        mAudioIsPlaying = false;
+                    };
+                });
+
+        any(shouldKeepScreenOn
+                        .or(anyMediaPlaying.and(isDocked).opaque())
+                        .or(audioPlaying.filter(x -> !canPlayBackgroundAudio()).opaque()))
+                .subscribe(
+                        (x) -> {
+                            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                            return () ->
+                                    getWindow()
+                                            .clearFlags(
+                                                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                        });
+
         mGotIntentState
-                .and(Observable.not(mIsFinishingState))
+                .and(not(mIsFinishingState))
                 .map(Both::getFirst)
                 .map(CastWebContentsIntentUtils::getSessionId)
                 .subscribe(
-                        Observer.onOpen(
-                                sessionId -> {
-                                    TaskRemovedMonitorService.start(mRootSessionId, sessionId);
-                                }));
+                        sessionId -> {
+                            TaskRemovedMonitorService.start(mRootSessionId, sessionId);
+                            return () -> TaskRemovedMonitorService.stop();
+                        });
 
         mIsFinishingState.subscribe(
                 Observer.onOpen(
                         (String reason) -> {
                             Log.d(TAG, "Finishing activity: " + reason);
                             mSurfaceHelperState.reset();
-                            TaskRemovedMonitorService.stop();
                             finishAndRemoveTask();
                         }));
 
@@ -344,6 +361,17 @@ public class CastWebContentsActivity extends Activity {
         // For more information read:
         // http://developer.android.com/training/managing-audio/volume-playback.html
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
+
+        // switch to fullscreen (immersive) mode
+        getWindow()
+                .getDecorView()
+                .setSystemUiVisibility(
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
     }
 
     @Override
@@ -392,8 +420,16 @@ public class CastWebContentsActivity extends Activity {
             super.onBackPressed();
             return;
         }
+        String backPressedJs;
+        try {
+            backPressedJs = loadBackPressedJavaScript(this);
+        } catch (IOException | Resources.NotFoundException e) {
+            Log.e(TAG, "Failed to find JS resource for handling back press key events", e);
+            super.onBackPressed();
+            return;
+        }
         webContents.evaluateJavaScript(
-                BACK_PRESSED_JAVASCRIPT,
+                backPressedJs,
                 defaultPrevented -> {
                     if (!"true".equals(defaultPrevented)) {
                         super.onBackPressed();
@@ -401,21 +437,13 @@ public class CastWebContentsActivity extends Activity {
                 });
     }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        Log.d(TAG, "onWindowFocusChanged(%b)", hasFocus);
-        super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
-            // switch to fullscreen (immersive) mode
-            getWindow()
-                    .getDecorView()
-                    .setSystemUiVisibility(
-                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                                    | View.SYSTEM_UI_FLAG_FULLSCREEN
-                                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+    private static String loadBackPressedJavaScript(Context context)
+            throws IOException, Resources.NotFoundException {
+        try (Scanner scanner =
+                new Scanner(
+                        context.getResources().openRawResource(R.raw.back_pressed),
+                        StandardCharsets.UTF_8.name())) {
+            return scanner.useDelimiter("\\A").next();
         }
     }
 
@@ -428,10 +456,16 @@ public class CastWebContentsActivity extends Activity {
     @Override
     public void onUserLeaveHint() {
         Log.d(TAG, "onUserLeaveHint");
-        if (canUsePictureInPicture() && mAllowPictureInPicture) {
+        if (canUsePictureInPicture() && mVideoIsPlaying) {
+            Log.i(TAG, "entering picture-in-picture mode");
             enterPictureInPictureMode(new PictureInPictureParams.Builder().build());
+        } else if (canPlayBackgroundAudio() && mAudioIsPlaying) {
+            Log.i(TAG, "entering background audio mode");
         } else {
             mSurfaceAvailable.reset();
+            CastWebContentsComponent.onComponentClosed(
+                    CastWebContentsIntentUtils.getSessionId(getIntent()));
+            mIsFinishingState.set("User exit while backgroundable media is not playing");
         }
     }
 
@@ -465,7 +499,20 @@ public class CastWebContentsActivity extends Activity {
     private boolean canUsePictureInPicture() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                 && getPackageManager().hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
-                && !BuildInfo.getInstance().isTV;
+                && !DeviceInfo.isTV();
+    }
+
+    private boolean canPlayBackgroundAudio() {
+        return !DeviceInfo.isTV();
+    }
+
+    private static boolean isDocked(Intent intent) {
+        if (intent == null || !Intent.ACTION_DOCK_EVENT.equals(intent.getAction())) {
+            Log.w(TAG, "Invalid dock intent:" + intent);
+            return false;
+        }
+        int dockState = intent.getIntExtra(Intent.EXTRA_DOCK_STATE, -1);
+        return dockState != Intent.EXTRA_DOCK_STATE_UNDOCKED;
     }
 
     // Sends the specified visibility change event to the current app (as reported by getIntent()).
@@ -473,12 +520,6 @@ public class CastWebContentsActivity extends Activity {
         Context ctx = getApplicationContext();
         Intent event = CastWebContentsIntentUtils.onVisibilityChange(sessionId, visibilityType);
         LocalBroadcastManager.getInstance(ctx).sendBroadcastSync(event);
-    }
-
-    private void requestMediaPlayingStatus(String sessionId) {
-        Context ctx = getApplicationContext();
-        Intent intent = CastWebContentsIntentUtils.requestMediaPlayingStatus(sessionId);
-        LocalBroadcastManager.getInstance(ctx).sendBroadcastSync(intent);
     }
 
     public void finishForTesting() {
@@ -491,14 +532,5 @@ public class CastWebContentsActivity extends Activity {
 
     public void setSurfaceHelperForTesting(CastWebContentsSurfaceHelper surfaceHelper) {
         mSurfaceHelperState.set(surfaceHelper);
-    }
-
-    private static boolean isDocked(Intent intent) {
-        if (intent == null || !Intent.ACTION_DOCK_EVENT.equals(intent.getAction())) {
-            Log.w(TAG, "Invalid dock intent:" + intent);
-            return false;
-        }
-        int dockState = intent.getIntExtra(Intent.EXTRA_DOCK_STATE, -1);
-        return dockState != Intent.EXTRA_DOCK_STATE_UNDOCKED;
     }
 }

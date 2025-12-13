@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/settings/ui_bundled/cells/clear_browsing_data_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_mutator.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_presentation_commands.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/table_view_pop_up_cell.h"
@@ -23,8 +23,10 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -63,10 +65,6 @@ constexpr CGFloat kSectionFooterHeight = 0;
 
 // TableView's corner radius size.
 constexpr CGFloat kTableViewCornerRadius = 10;
-
-// Horizontal padding for the primary button.
-constexpr CGFloat kPrimaryButtonHorizontalPaddingIpad = 64.0;
-constexpr CGFloat kPrimaryButtonHorizontalPaddingIphone = 24.0;
 
 // Section identifiers in Quick Delete's table view.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
@@ -117,11 +115,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 #pragma mark - UIViewController
 
-- (instancetype)init {
-  self = [super init];
-  return self;
-}
-
 - (void)viewDidLoad {
   base::RecordAction(
       base::UserMetricsAction("ClearBrowsingData_DialogCreated"));
@@ -138,47 +131,34 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   self.titleTextStyle = UIFontTextStyleTitle2;
   self.titleString = l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE);
   self.customSpacing = kTitleVerticalPadding;
-  self.primaryActionString =
+  self.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_BUTTON);
-  self.secondaryActionString =
+  self.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_CANCEL);
+  self.configuration.primaryButtonStyle = ChromeButtonStylePrimaryDestructive;
 
   self.underTitleView = _tableView;
 
   self.showsVerticalScrollIndicator = NO;
-  self.showDismissBarButton = NO;
   self.topAlignedLayout = YES;
-  self.customScrollViewBottomInsets = 0;
+  self.addsContentViewBottomInset = NO;
   self.actionHandler = self;
 
   [super viewDidLoad];
 
-  [self adjustPrimaryActionButtonHorizontalPadding];
-  [self displayGradientView:NO];
+  self.showsGradientView = NO;
 
-  // Configure the color of the primary button to red in several states, as the
-  // default colour is blue.
   [self updatePrimaryActionButtonEnabledStatus];
-  self.confirmationCheckmarkColor = [UIColor colorNamed:kRed600Color];
-  self.confirmationButtonColor = [UIColor colorNamed:kRed100Color];
 
   // Assign the table view's anchors now that it is in the same hierarchy as the
   // top view and that the content has been loaded.
   _tableViewHeightConstraint = [_tableView.heightAnchor
       constraintEqualToConstant:_tableView.contentSize.height];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [_tableView.widthAnchor
-        constraintEqualToAnchor:self.primaryActionButton.widthAnchor],
-    _tableViewHeightConstraint
-  ]];
-
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitPreferredContentSizeCategory.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(updateBottomSheetHeight)];
-  }
+  _tableViewHeightConstraint.active = YES;
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitPreferredContentSizeCategory.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(updateBottomSheetHeight)];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -193,21 +173,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   // text is bigger then the standard row height.
   [self updateBottomSheetHeight];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-  // Update the bottomsheet height when trait collection changed (for example
-  // when the user uses large font).
-  if (self.traitCollection.preferredContentSizeCategory !=
-      previousTraitCollection.preferredContentSizeCategory) {
-    [self updateBottomSheetHeight];
-  }
-}
-#endif
 
 #pragma mark - ConfirmationAlertActionHandler
 
@@ -409,8 +374,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 - (void)deletionInProgress {
   self.primaryActionButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_IN_PROGRESS_NOTICE);
-  self.isLoading = YES;
-  self.isConfirmed = NO;
+  [self setLoading:YES];
 
   self.view.window.userInteractionEnabled = NO;
   // Disable accessibility elements on entire window to avoid Voiceover focusing
@@ -427,8 +391,8 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   self.view.window.userInteractionEnabled = YES;
   self.view.window.accessibilityElementsHidden = NO;
 
-  self.isLoading = NO;
-  self.isConfirmed = YES;
+  [self setLoading:NO];
+  [self setConfirmed:YES];
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
 
   // If Voiceover is enabled, inform users that their browsing data has been
@@ -462,37 +426,12 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 #pragma mark - Private
 
-// Adjusts the primary action button horizontal padding. It affects the
-// padding of the content of the bottom sheet.
-- (void)adjustPrimaryActionButtonHorizontalPadding {
-  CGFloat buttonHorizontalPadding =
-      ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad
-           ? kPrimaryButtonHorizontalPaddingIpad
-           : kPrimaryButtonHorizontalPaddingIphone);
-
-  [NSLayoutConstraint activateConstraints:@[
-    [self.primaryActionButton.leadingAnchor
-        constraintEqualToAnchor:(self.view.leadingAnchor)
-                       constant:buttonHorizontalPadding],
-    [self.primaryActionButton.trailingAnchor
-        constraintEqualToAnchor:(self.view.trailingAnchor)
-                       constant:-buttonHorizontalPadding],
-  ]];
-}
-
 // Updates the enabled status of the primary button. The primary button should
 // only be enabled if at least one browsing data type is selected for deletion.
 - (void)updatePrimaryActionButtonEnabledStatus {
   self.primaryActionButton.enabled = _historySelected || _tabsSelected ||
                                      _siteDataSelected || _cacheSelected ||
                                      _passwordsSelected || _autofillSelected;
-
-  UIButtonConfiguration* buttonConfiguration =
-      self.primaryActionButton.configuration;
-  buttonConfiguration.background.backgroundColor =
-      self.primaryActionButton.enabled ? [UIColor colorNamed:kRedColor]
-                                       : [UIColor colorNamed:kRed100Color];
-  self.primaryActionButton.configuration = buttonConfiguration;
 }
 
 // Action handler that executes when a voiceover announcement ends.
@@ -576,7 +515,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
                }];
 
   RegisterTableViewCell<TableViewPopUpCell>(_tableView);
-  RegisterTableViewCell<TableViewDetailTextCell>(_tableView);
+  [TableViewCellContentConfiguration registerCellForTableView:_tableView];
   RegisterTableViewHeaderFooter<TableViewLinkHeaderFooterView>(_tableView);
 
   NSDiffableDataSourceSnapshot* snapshot =
@@ -612,22 +551,20 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
       return timeRangeCell;
     }
     case ItemIdentifierBrowsingData: {
-      TableViewDetailTextCell* browsingDataCell =
-          DequeueTableViewCell<TableViewDetailTextCell>(tableView);
-      browsingDataCell.textLabel.text =
+      TableViewCellContentConfiguration* configuration =
+          [[TableViewCellContentConfiguration alloc] init];
+      configuration.title =
           l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_TITLE);
-      browsingDataCell.detailTextLabel.text = _browsingDataSummary;
-      browsingDataCell.detailTextLabel.textColor =
-          [UIColor colorNamed:kTextSecondaryColor];
-      browsingDataCell.allowMultilineDetailText = YES;
-      browsingDataCell.accessoryType =
-          UITableViewCellAccessoryDisclosureIndicator;
-      browsingDataCell.userInteractionEnabled = YES;
-      browsingDataCell.backgroundColor =
-          [UIColor colorNamed:kSecondaryBackgroundColor];
-      browsingDataCell.accessibilityIdentifier =
-          kQuickDeleteBrowsingDataButtonIdentifier;
-      return browsingDataCell;
+      configuration.titleNumberOfLines = 1;
+      configuration.subtitle = _browsingDataSummary;
+
+      UITableViewCell* cell =
+          [TableViewCellContentConfiguration dequeueTableViewCell:_tableView];
+      cell.contentConfiguration = configuration;
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+      cell.accessibilityIdentifier = kQuickDeleteBrowsingDataButtonIdentifier;
+      return cell;
     }
   }
   NOTREACHED();

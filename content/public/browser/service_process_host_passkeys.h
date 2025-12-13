@@ -8,13 +8,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/types/pass_key.h"
 
-namespace video_effects {
-namespace mojom {
-class VideoEffectsService;
+namespace shape_detection::mojom {
+class ShapeDetectionService;
 }
-
-video_effects::mojom::VideoEffectsService* GetVideoEffectsService();
-}  // namespace video_effects
 
 namespace screen_ai {
 class ScreenAIServiceHandlerBase;
@@ -26,6 +22,7 @@ class OnDeviceTranslationServiceController;
 
 namespace content {
 class VideoCaptureServiceLauncher;
+shape_detection::mojom::ShapeDetectionService* GetShapeDetectionService();
 
 class ServiceProcessHostPreloadLibraries {
  public:
@@ -37,9 +34,9 @@ class ServiceProcessHostPreloadLibraries {
   // Service launchers using `ServiceProcessHost::Options::WithPreloadLibraries`
   // should be added here and must be reviewed by the security team.
   friend class screen_ai::ScreenAIServiceHandlerBase;
-  friend video_effects::mojom::VideoEffectsService*
-  video_effects::GetVideoEffectsService();
   friend class on_device_translation::OnDeviceTranslationServiceController;
+  friend shape_detection::mojom::ShapeDetectionService*
+  content::GetShapeDetectionService();
 
   // Tests.
   FRIEND_TEST_ALL_PREFIXES(ServiceProcessHostBrowserTest,

@@ -1,17 +1,19 @@
 include_rules = [
+  "+components/application_locale_storage",
   "+components/autofill/core/browser",
   "+components/bookmarks",
   "+components/breadcrumbs/core",
   "+components/browser_sync",
   "+components/browsing_data/core",
+  "+components/commerce/core",
   "+components/content_settings/core",
-  "+components/application_locale_storage",
   "+components/crash/core/common",
   "+components/feature_engagement/public/feature_activation.h",
   "+components/history/core/browser",
   "+components/keyed_service/core",
   "+components/language",
   "+components/metrics",
+  "+components/metrics_services_manager",
   "+components/network_time",
   "+components/os_crypt/async",
   "+components/password_manager/core/common",
@@ -20,8 +22,8 @@ include_rules = [
   "+components/signin/public/base",
   "+components/signin/public/identity_manager",
   "+components/sync",
-  "+components/sync_sessions",
   "+components/sync_device_info",
+  "+components/sync_sessions",
   "+components/translate",
   "+components/unified_consent",
   "+components/variations",
@@ -32,8 +34,8 @@ include_rules = [
   "+ios/components/security_interstitials/safe_browsing",
   "+ios/components/webui",
   "+ios/public/provider/chrome",
-  "+ios/web/web_state/ui",
   "+ios/public/test",
+  "+ios/web/web_state/ui",
   "+mojo/core/embedder",
   "+net/url_request",
   "+services/network/public/cpp",
@@ -45,8 +47,8 @@ include_rules = [
   "+components/strings/grit",
   "+ios/chrome/grit",
 
-  # Use ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h instead
-  "-ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_app_interface.h",
+  # Use ios/chrome/browser/authentication/test/signin_earl_grey.h instead
+  "-ios/chrome/browser/authentication/test/signin_earl_grey_app_interface.h",
   # use ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h instead
   "-ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_app_interface.h",
 ]

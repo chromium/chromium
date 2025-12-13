@@ -24,7 +24,6 @@
   },
   "accessibilityServicePrivate": {
     "dependencies": ["permission:accessibilityServicePrivate"],
-    "channel": "stable",
     "contexts": ["privileged_extension"],
     "platforms": ["chromeos"]
   },
@@ -63,13 +62,11 @@
   }],
   "experimentalActor": {
     "contexts": ["privileged_extension"],
-    "dependencies": ["permission:experimentalActor"],
-    "channel": "stable"
+    "dependencies": ["permission:experimentalActor"]
   },
   "experimentalAiData": {
     "contexts": ["privileged_extension"],
-    "dependencies": ["permission:experimentalAiData"],
-    "channel": "stable"
+    "dependencies": ["permission:experimentalAiData"]
   },
   "app": {
     "blocklist": [
@@ -226,9 +223,9 @@
     "channel": "stable",
     "contexts": ["webui"],
     "matches": [
-      "chrome://assistant-optin/*",
       "chrome://add-supervision/*",
       "chrome://chrome-signin/*",
+      "chrome://contextual-tasks/*",
       "chrome://glic/*",
       "chrome://glic-fre/*",
       "chrome://graduation/*",
@@ -246,7 +243,8 @@
       "webui_untrusted"
     ],
     "matches": [
-      "chrome-untrusted://boca-app/*"
+      "chrome-untrusted://boca-app/*",
+      "chrome-untrusted://lens/*"
     ]
   }],
   "chromeWebViewInternal": [{
@@ -268,7 +266,8 @@
       "webui_untrusted"
     ],
     "matches": [
-      "chrome-untrusted://boca-app/*"
+      "chrome-untrusted://boca-app/*",
+      "chrome-untrusted://lens/*"
     ]
   }, {
     // This feature is used by the Controlled Frame API and is specifically
@@ -398,7 +397,6 @@
   },
   "downloadsInternal": {
     "internal": true,
-    "channel": "stable",
     "contexts": ["privileged_extension"],
     "dependencies": ["permission:downloads"]
   },
@@ -685,7 +683,9 @@
     "allowlist": [
       "93B7178E8C275515C38D4F43D9DF4648F0EA9B03", // Identity Card Connector
       "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519", // Login screen APIs test extension
-      "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F"  // Login screen APIs in-session test extension
+      "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F", // Login screen APIs in-session test extension
+      // https://crbug.com/433867146
+      "4B7E9789426EBD1BB3F99D72690DAE303FC042DF"  // AuthX Secure for ChromeOS
     ]
   }],
   "login.exitCurrentSession": [{
@@ -697,10 +697,19 @@
       "93B7178E8C275515C38D4F43D9DF4648F0EA9B03", // Identity Card Connector
       "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519", // Login screen APIs test extension
       "3F5995FE79A861F019C6F093BEF98D73FA9D3A5F", // Login screen APIs in-session test extension
+      // https://crbug.com/433867146
+      "4B7E9789426EBD1BB3F99D72690DAE303FC042DF", // AuthX Secure for ChromeOS
       // Only has access to login.exitCurrentSession
       "8ECFC754A70BE499325FA4BB705E62EFEEC1BC80", // b/314208017
       "ECD28F2B60BDB3B4E566D6C60BD88BE0774044C1",  // b/314208017
       "C03440D5E6161ED58738ABA11586B1DB4B4DCA8A"  // b/379564028#comment27
+    ]
+  }, {
+    "channel": "stable",
+    "contexts": ["webui_untrusted"],
+    "dependencies": [],
+    "matches": [
+      "chrome-untrusted://class-tools-remote-display/*"
     ]
   }],
   "loginScreenStorage": {
@@ -1090,7 +1099,6 @@
   }],
   "webviewTag": {
     "internal": true,
-    "channel": "stable",
     "dependencies": ["permission:webview"],
     "contexts": ["privileged_extension"]
   },

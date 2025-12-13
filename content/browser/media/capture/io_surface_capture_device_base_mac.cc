@@ -58,9 +58,7 @@ void IOSurfaceCaptureDeviceBase::SendLastReceivedIOSurfaceToClient() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Package `last_received_io_surface_` as a GpuMemoryBuffer.
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-  handle.io_surface = last_received_io_surface_;
+  gfx::GpuMemoryBufferHandle handle(last_received_io_surface_);
 
   const auto now = base::TimeTicks::Now();
   if (first_frame_time_.is_null())

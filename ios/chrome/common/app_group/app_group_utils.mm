@@ -10,8 +10,9 @@
 
 namespace {
 
-NSString* const kShareExtensionForMultiprofileKey =
-    @"ShareExtensionForMultiprofileKey";
+NSString* const kConfirmationButtonSwapOrderKey =
+    @"ConfirmationButtonSwapOrderKey";
+
 NSString* const kFieldTrialValueKey = @"FieldTrialValue";
 
 void ClearAppGroupFolder(NSString* app_group) {
@@ -62,7 +63,7 @@ NSString* UserDefaultsStringForKey(NSString* key, NSString* default_value) {
   return string ?: default_value;
 }
 
-BOOL MultiProfileShareExtensionEnabled() {
+BOOL IsConfirmationButtonSwapOrderEnabled() {
   NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
 
   NSDictionary* field_trial_values = [shared_defaults
@@ -72,21 +73,21 @@ BOOL MultiProfileShareExtensionEnabled() {
     return NO;
   }
 
-  NSDictionary* share_extension_pref =
-      field_trial_values[kShareExtensionForMultiprofileKey];
-  if (!share_extension_pref ||
-      ![share_extension_pref isKindOfClass:[NSDictionary class]]) {
+  NSDictionary* confirmation_button_pref =
+      field_trial_values[kConfirmationButtonSwapOrderKey];
+  if (!confirmation_button_pref ||
+      ![confirmation_button_pref isKindOfClass:[NSDictionary class]]) {
     return NO;
   }
 
-  NSNumber* share_extension_mim_value =
-      share_extension_pref[kFieldTrialValueKey];
-  if (!share_extension_mim_value ||
-      ![share_extension_mim_value isKindOfClass:[NSNumber class]]) {
+  NSNumber* confirmation_button_value =
+      confirmation_button_pref[kFieldTrialValueKey];
+  if (!confirmation_button_value ||
+      ![confirmation_button_value isKindOfClass:[NSNumber class]]) {
     return NO;
   }
 
-  return [share_extension_mim_value boolValue];
+  return [confirmation_button_value boolValue];
 }
 
 }  // namespace app_group

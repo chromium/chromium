@@ -23,7 +23,8 @@ class AutocompleteResult;
 // chrome://version, as well as the built-in Starter Pack search engines.
 class FeaturedSearchProvider : public AutocompleteProvider {
  public:
-  explicit FeaturedSearchProvider(AutocompleteProviderClient* client);
+  FeaturedSearchProvider(AutocompleteProviderClient* client,
+                         bool show_iph_matches);
   FeaturedSearchProvider(const FeaturedSearchProvider&) = delete;
   FeaturedSearchProvider& operator=(const FeaturedSearchProvider&) = delete;
 
@@ -96,6 +97,7 @@ class FeaturedSearchProvider : public AutocompleteProvider {
 
   raw_ptr<AutocompleteProviderClient> client_;
   raw_ptr<TemplateURLService> template_url_service_;
+  const bool show_iph_matches_;
 
   // The number of times the IPH row has been shown so far in this browser
   // session. Shared by all IPH types. Reset when, e.g., the user opens a new

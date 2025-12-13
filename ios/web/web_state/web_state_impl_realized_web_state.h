@@ -37,7 +37,6 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   // WebStateImpl.
   RealizedWebState(WebStateImpl* owner,
                    base::Time creation_time,
-                   NSString* stable_identifier,
                    WebStateID unique_identifier);
 
   RealizedWebState(const RealizedWebState&) = delete;
@@ -179,7 +178,6 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   void WasHidden();
   void SetKeepRenderProcessAlive(bool keep_alive);
   BrowserState* GetBrowserState() const;
-  NSString* GetStableIdentifier() const;
   WebStateID GetUniqueIdentifier() const;
   void OpenURL(const WebState::OpenURLParams& params);
   void Stop();
@@ -234,10 +232,11 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   void GoToBackForwardListItem(WKBackForwardListItem* wk_item,
                                NavigationItem* item,
                                NavigationInitiationType type,
-                               bool has_user_gesture) final;
-  void RemoveWebView() final;
-  NavigationItemImpl* GetPendingItem() final;
-  GURL GetCurrentURL() const final;
+                               bool has_user_gesture) override;
+  void RemoveWebView() override;
+  NavigationItemImpl* GetPendingItem() override;
+  void UpdateSSLStatusForCurrentNavigationItem() override;
+  GURL GetCurrentURL() const override;
 
  private:
   // Class storing metadata needed while the navigation history restoration
@@ -321,10 +320,6 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
 
   // The User-Agent type.
   UserAgentType user_agent_type_ = UserAgentType::AUTOMATIC;
-
-  // The stable identifier. Set during `Init()` call. Never nil after this
-  // method has been called. Stable across application restarts.
-  __strong NSString* const stable_identifier_;
 
   // The unique identifier. Stable across application restarts.
   const WebStateID unique_identifier_;

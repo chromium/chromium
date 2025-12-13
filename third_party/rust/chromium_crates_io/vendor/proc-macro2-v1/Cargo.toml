@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.56"
+rust-version = "1.60"
 name = "proc-macro2"
-version = "1.0.95"
+version = "1.0.103"
 authors = [
     "David Tolnay <dtolnay@gmail.com>",
     "Alex Crichton <alex@alexcrichton.com>",
@@ -37,15 +37,16 @@ repository = "https://github.com/dtolnay/proc-macro2"
 
 [package.metadata.docs.rs]
 rustc-args = ["--cfg=procmacro2_semver_exempt"]
+targets = ["x86_64-unknown-linux-gnu"]
 rustdoc-args = [
     "--cfg=procmacro2_semver_exempt",
     "--generate-link-to-definition",
+    "--generate-macro-expansion",
     "--extern-html-root-url=core=https://doc.rust-lang.org",
     "--extern-html-root-url=alloc=https://doc.rust-lang.org",
     "--extern-html-root-url=std=https://doc.rust-lang.org",
     "--extern-html-root-url=proc_macro=https://doc.rust-lang.org",
 ]
-targets = ["x86_64-unknown-linux-gnu"]
 
 [package.metadata.playground]
 features = ["span-locations"]

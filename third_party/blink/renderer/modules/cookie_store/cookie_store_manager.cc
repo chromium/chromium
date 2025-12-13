@@ -132,8 +132,8 @@ ScriptPromise<IDLUndefined> CookieStoreManager::subscribe(
       script_state, exception_state.GetContext());
   backend_->AddSubscriptions(
       registration_->RegistrationId(), std::move(backend_subscriptions),
-      WTF::BindOnce(&CookieStoreManager::OnSubscribeResult,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+      BindOnce(&CookieStoreManager::OnSubscribeResult, WrapPersistent(this),
+               WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -158,8 +158,8 @@ ScriptPromise<IDLUndefined> CookieStoreManager::unsubscribe(
       script_state, exception_state.GetContext());
   backend_->RemoveSubscriptions(
       registration_->RegistrationId(), std::move(backend_subscriptions),
-      WTF::BindOnce(&CookieStoreManager::OnSubscribeResult,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+      BindOnce(&CookieStoreManager::OnSubscribeResult, WrapPersistent(this),
+               WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -177,8 +177,8 @@ CookieStoreManager::getSubscriptions(ScriptState* script_state,
       script_state, exception_state.GetContext());
   backend_->GetSubscriptions(
       registration_->RegistrationId(),
-      WTF::BindOnce(&CookieStoreManager::OnGetSubscriptionsResult,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+      BindOnce(&CookieStoreManager::OnGetSubscriptionsResult,
+               WrapPersistent(this), WrapPersistent(resolver)));
   return resolver->Promise();
 }
 

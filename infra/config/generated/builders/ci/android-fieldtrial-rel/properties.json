@@ -13,7 +13,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-android-archive",
               "builder_group": "chromium.fyi",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
@@ -52,7 +51,8 @@
           "group": "tryserver.chromium.android"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-fieldtrial-rel/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/android-fieldtrial-rel/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
@@ -20,7 +16,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
@@ -186,18 +184,16 @@ IN_PROC_BROWSER_TEST_F(UserCloudPolicyManagerNewManagedUserTest, StartSession) {
   StartUserLogIn(true /*wait_for_active_session*/);
 
   // Check that the startup pages specified in policy were opened.
-  BrowserList* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(1U, browser_list->size());
-  Browser* browser = browser_list->get(0);
-  ASSERT_TRUE(browser);
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  ASSERT_TRUE(browser());
 
-  TabStripModel* tabs = browser->tab_strip_model();
+  TabStripModel* const tabs = browser()->GetTabStripModel();
   ASSERT_TRUE(tabs);
   const int expected_tab_count = static_cast<int>(std::size(kStartupURLs));
   EXPECT_EQ(expected_tab_count, tabs->count());
   for (int i = 0; i < expected_tab_count && i < tabs->count(); ++i) {
-    EXPECT_EQ(GURL(kStartupURLs[i]),
-              tabs->GetWebContentsAt(i)->GetVisibleURL());
+    UNSAFE_TODO(EXPECT_EQ(GURL(kStartupURLs[i]),
+                          tabs->GetWebContentsAt(i)->GetVisibleURL()));
   }
 
   // User should be marked as requiring policy.

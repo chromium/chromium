@@ -1,6 +1,19 @@
 
 ## `bytemuck_derive` changelog
 
+## 1.10.2
+
+* [Extend #[derive(TransparentWrapper)](https://github.com/Lokathor/bytemuck/pull/147)
+
+## 1.10.1
+
+* changes the derive macros to not use `transmute` size matching when checking
+  fof padding in a type. instead, an actual assert is used in a const block.
+
+## 1.10.0
+
+* add support for deriving NoUninit on enums with fields.
+
 ## 1.9.2
 
 * Removes the `resolver` key from the manifest. This breaks the build

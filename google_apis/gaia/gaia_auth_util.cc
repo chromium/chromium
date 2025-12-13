@@ -13,7 +13,6 @@
 #include "base/base64url.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
@@ -106,14 +105,17 @@ bool AreEmailsSame(std::string_view email1, std::string_view email2) {
 
 std::string ExtractDomainName(std::string_view email_address) {
   // First canonicalize which will also verify we have proper domain part.
+  if (email_address == "") {
+    DUMP_WILL_BE_NOTREACHED();
+    return std::string();
+  }
   std::string email = CanonicalizeEmail(email_address);
   size_t separator_pos = email.find('@');
   if (separator_pos != std::string::npos &&
       separator_pos < email.length() - 1) {
     return email.substr(separator_pos + 1);
-  } else {
-    DUMP_WILL_BE_NOTREACHED() << "Not a proper email address: " << email;
   }
+  DUMP_WILL_BE_NOTREACHED() << "Not a proper email address: " << email;
   return std::string();
 }
 
@@ -136,74 +138,6 @@ bool HasGaiaSchemeHostPort(const GURL& url) {
       gaia_origin.GetTupleOrPrecursorTupleIfOpaque();
 
   return url::SchemeHostPort(url) == gaia_scheme_host_port;
-}
-
-bool ParseListAccountsData(std::string_view data,
-                           std::vector<ListedAccount>* accounts) {
-  if (accounts)
-    accounts->clear();
-
-  // Parse returned data and make sure we have data.
-  std::optional<base::Value> value = base::JSONReader::Read(data);
-  if (!value)
-    return false;
-
-  if (!value->is_list())
-    return false;
-  const base::Value::List& list = value->GetList();
-  if (list.size() < 2u)
-    return false;
-
-  // Get list of account info.
-  if (!list[1].is_list())
-    return false;
-  const base::Value::List& account_list = list[1].GetList();
-
-  // Build a vector of accounts from the cookie.  Order is important: the first
-  // account in the list is the primary account.
-  for (size_t i = 0; i < account_list.size(); ++i) {
-    if (account_list[i].is_list()) {
-      const base::Value::List& account = account_list[i].GetList();
-      std::string email;
-      // Canonicalize the email since ListAccounts returns "display email".
-      if (3u < account.size() && account[3].is_string() &&
-          !(email = account[3].GetString()).empty()) {
-        // New version if ListAccounts indicates whether the email's session
-        // is still valid or not.  If this value is present and false, assume
-        // its invalid.  Otherwise assume it's valid to remain compatible with
-        // old version.
-        int is_email_valid = 1;
-        if (9u < account.size() && account[9].is_int())
-          is_email_valid = account[9].GetInt();
-
-        int signed_out = 0;
-        if (14u < account.size() && account[14].is_int())
-          signed_out = account[14].GetInt();
-
-        int verified = 1;
-        if (15u < account.size() && account[15].is_int())
-          verified = account[15].GetInt();
-
-        GaiaId gaia_id;
-        // ListAccounts must also return the Gaia Id.
-        if (10u < account.size() && account[10].is_string() &&
-            !(gaia_id = GaiaId(account[10].GetString())).empty()) {
-          ListedAccount listed_account;
-          listed_account.email = CanonicalizeEmail(email);
-          listed_account.gaia_id = gaia_id;
-          listed_account.valid = is_email_valid != 0;
-          listed_account.signed_out = signed_out != 0;
-          listed_account.verified = verified != 0;
-          listed_account.raw_email = email;
-          if (accounts) {
-            accounts->push_back(listed_account);
-          }
-        }
-      }
-    }
-  }
-
-  return true;
 }
 
 bool ParseBinaryListAccountsData(const std::string& data,
@@ -238,13 +172,13 @@ bool ParseBinaryListAccountsData(const std::string& data,
     ListedAccount listed_account;
     listed_account.email = CanonicalizeEmail(account.display_email());
     listed_account.gaia_id = GaiaId(account.obfuscated_id());
-    listed_account.valid = (
-        // Assume the account is valid if unspecified for backcompat.
-        account.has_valid_session() ? account.valid_session() : true);
+    // Assume the account is valid if unspecified for backcompat.
+    listed_account.valid =
+        !account.has_valid_session() || account.valid_session();
     listed_account.signed_out =
-        (account.has_signed_out() ? account.signed_out() : false);
+        account.has_signed_out() && account.signed_out();
     listed_account.verified =
-        (account.has_is_verified() ? account.is_verified() : true);
+        !account.has_is_verified() || account.is_verified();
     listed_account.raw_email = account.display_email();
     if (accounts) {
       accounts->push_back(std::move(listed_account));

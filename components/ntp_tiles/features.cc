@@ -21,4 +21,14 @@ BASE_FEATURE(kNtpMostLikelyFaviconsFromServerFeature,
              "NTPMostLikelyFaviconsFromServer",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNtpEnterpriseShortcuts,
+             "NTPEnterpriseShortcuts",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kNtpEnterpriseShortcutsUseFakeDataParam{
+    &kNtpEnterpriseShortcuts, "use_fake_data", false};
+
+const base::FeatureParam<bool> kNtpEnterpriseShortcutsAllowMixingParam{
+    &kNtpEnterpriseShortcuts, "allow_mixing", true};
+
 }  // namespace ntp_tiles

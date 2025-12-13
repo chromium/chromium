@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_ENCODED_UNDERLYING_SOURCE_WRAPPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_ENCODED_UNDERLYING_SOURCE_WRAPPER_H_
 
-#include "base/gtest_prod_util.h"
+#include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
@@ -26,8 +26,7 @@ class MODULES_EXPORT RTCEncodedUnderlyingSourceWrapper
  public:
   explicit RTCEncodedUnderlyingSourceWrapper(
       ScriptState*,
-      WTF::CrossThreadOnceClosure disconnect_callback =
-          WTF::CrossThreadOnceClosure());
+      CrossThreadOnceClosure disconnect_callback = CrossThreadOnceClosure());
 
   // UnderlyingSourceBase
   ScriptPromise<IDLUndefined> Pull(ScriptState*, ExceptionState&) override;
@@ -37,15 +36,15 @@ class MODULES_EXPORT RTCEncodedUnderlyingSourceWrapper
   void Close();
 
   void CreateAudioUnderlyingSource(
-      WTF::CrossThreadOnceClosure disconnect_callback_source,
+      CrossThreadOnceClosure disconnect_callback_source,
       base::UnguessableToken owner_id);
   void CreateVideoUnderlyingSource(
-      WTF::CrossThreadOnceClosure disconnect_callback_source,
+      CrossThreadOnceClosure disconnect_callback_source,
       base::UnguessableToken owner_id);
 
-  using VideoTransformer = WTF::CrossThreadRepeatingFunction<void(
+  using VideoTransformer = CrossThreadRepeatingFunction<void(
       std::unique_ptr<webrtc::TransformableVideoFrameInterface>)>;
-  using AudioTransformer = WTF::CrossThreadRepeatingFunction<void(
+  using AudioTransformer = CrossThreadRepeatingFunction<void(
       std::unique_ptr<webrtc::TransformableAudioFrameInterface>)>;
 
   VideoTransformer GetVideoTransformer();

@@ -223,7 +223,7 @@ suite('<network-summary-item>', () => {
     assertTrue(!!networkStateText);
     assertEquals(
         netSummaryItem.i18n('internetDeviceFlashing'),
-        networkStateText.textContent!.trim());
+        networkStateText.textContent.trim());
 
 
     netSummaryItem.setProperties({
@@ -256,7 +256,7 @@ suite('<network-summary-item>', () => {
     assertTrue(!!newNetworkStateText);
     assertEquals(
         netSummaryItem.i18n('deviceOff'),
-        newNetworkStateText.textContent!.trim());
+        newNetworkStateText.textContent.trim());
   });
 
   test('Toggle should be disabled when device state is unavailable', () => {

@@ -14,13 +14,17 @@
 #include "base/values.h"
 #include "components/webapps/common/web_app_id.h"
 
+namespace base {
+class Clock;
+}
+
 namespace web_app {
 
 class VisitedManifestManager;
 class WebAppLockManager;
 class WebContentsManager;
 class WebAppOriginAssociationManager;
-struct PartitionedLockHolder;
+class PartitionedLockHolder;
 
 // Represents a lock in the WebAppProvider system. Locks can be acquired by
 // creating one of the subclasses of this class, and using the
@@ -76,7 +80,7 @@ std::ostream& operator<<(std::ostream& os,
 // system has shutdown (or the profile has shut down) will CHECK-fail.
 class Lock {
  public:
-  ~Lock();
+  virtual ~Lock();
 
   // Returns if the lock is granted. If this returns `false`, then all accessors
   // on this method will CHECK-fail.
@@ -90,9 +94,15 @@ class Lock {
   // Will CHECK-fail if accessed before the lock is granted.
   WebAppOriginAssociationManager& origin_association_manager();
 
-  PartitionedLockHolder& GetLockHolder(base::PassKey<WebAppLockManager>) {
-    return *holder_;
-  }
+  // Convenience method for accessing the clock on the WebAppProvider.
+  base::Clock& clock();
+
+  // Used by WebAppLockManager to manage locks and upgrading.
+  PartitionedLockHolder& InitializeLockHolderForAcquire(
+      base::PassKey<WebAppLockManager>);
+  PartitionedLockHolder& InitializeLockHolderForUpgrade(
+      std::unique_ptr<Lock> from_lock,
+      base::PassKey<WebAppLockManager>);
 
  protected:
   Lock();
@@ -100,8 +110,6 @@ class Lock {
   void GrantLockResources(WebAppLockManager& lock_manager);
 
  private:
-  // TODO(crbug.com/370534630) Store this by-value after header file is split
-  // off.
   std::unique_ptr<PartitionedLockHolder> holder_;
   base::WeakPtr<WebAppLockManager> lock_manager_;
 };

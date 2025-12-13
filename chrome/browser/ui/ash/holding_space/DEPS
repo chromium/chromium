@@ -12,7 +12,6 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/arc/arc_util.h",
   "+chrome/browser/ash/arc/fileapi",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/fileapi",
   "+chrome/browser/ash/file_manager",
@@ -26,7 +25,6 @@ include_rules = [
   "+chrome/browser/nearby_sharing/common",
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/ash/clipboard",
   "+chrome/browser/ui/ash/thumbnail_loader",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_window.h",

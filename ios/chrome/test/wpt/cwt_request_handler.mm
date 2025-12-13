@@ -207,8 +207,8 @@ std::optional<base::Value> CWTRequestHandler::ProcessCommand(
   }
 
   if (http_method == net::test_server::METHOD_POST) {
-    std::optional<base::Value::Dict> content_dict =
-        base::JSONReader::ReadDict(request_content);
+    std::optional<base::Value::Dict> content_dict = base::JSONReader::ReadDict(
+        request_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!content_dict) {
       return CreateErrorValue(kWebDriverInvalidArgumentError,
                               kWebDriverMissingRequestMessage);
@@ -306,9 +306,7 @@ CWTRequestHandler::HandleRequest(const net::test_server::HttpRequest& request) {
 
   auto response_content =
       base::Value::Dict().Set(kWebDriverValueResponseField, std::move(*result));
-  std::string response_content_string;
-  base::JSONWriter::Write(response_content, &response_content_string);
-  response->set_content(response_content_string);
+  response->set_content(base::WriteJson(response_content).value_or(""));
 
   return std::move(response);
 }
@@ -572,7 +570,8 @@ base::Value CWTRequestHandler::ExecuteScript(const std::string* script,
   }
 
   std::optional<base::Value> result =
-      base::JSONReader::Read(base::SysNSStringToUTF8(result_as_json));
+      base::JSONReader::Read(base::SysNSStringToUTF8(result_as_json),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   DCHECK(result);
   return std::move(*result);
 }

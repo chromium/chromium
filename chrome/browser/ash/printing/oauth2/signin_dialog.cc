@@ -14,6 +14,7 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
@@ -57,7 +58,8 @@ void SigninDialog::StartAuthorizationProcedure(const GURL& auth_url,
 }
 
 web_modal::WebContentsModalDialogHost*
-SigninDialog::GetWebContentsModalDialogHost() {
+SigninDialog::GetWebContentsModalDialogHost(
+    content::WebContents* web_contents) {
   return this;
 }
 

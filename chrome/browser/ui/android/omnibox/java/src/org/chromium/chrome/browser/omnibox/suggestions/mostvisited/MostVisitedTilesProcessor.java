@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.mostvisited;
 
-import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -13,10 +12,12 @@ import android.view.View;
 import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.DynamicSpacingRecyclerViewItemDecoration;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
@@ -34,40 +35,39 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /** SuggestionProcessor for Most Visited URL tiles. */
 @NullMarked
 public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     private final SuggestionHost mSuggestionHost;
-    private final Optional<OmniboxImageSupplier> mImageSupplier;
+    private final @Nullable OmniboxImageSupplier mImageSupplier;
     private final @Px int mCarouselItemViewWidth;
     private final @Px int mCarouselItemViewHeight;
     private final @Px int mInitialSpacing;
     private final @Px int mElementSpacing;
 
     /**
-     * Constructor.
-     *
-     * @param context An Android context.
-     * @param host SuggestionHost receiving notifications about user actions.
-     * @param imageSupplier Class retrieving favicons for the MV Tiles.
+     * @param uiContext Context object containing common UI dependencies.
      */
-    public MostVisitedTilesProcessor(
-            Context context, SuggestionHost host, Optional<OmniboxImageSupplier> imageSupplier) {
-        super(context);
-        mSuggestionHost = host;
-        mImageSupplier = imageSupplier;
+    public MostVisitedTilesProcessor(AutocompleteUIContext uiContext) {
+        super(uiContext.context);
+        mSuggestionHost = uiContext.host;
+        mImageSupplier = uiContext.imageSupplier;
         mCarouselItemViewWidth =
                 mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_width);
         mCarouselItemViewHeight =
                 mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_min_height);
 
         mInitialSpacing =
-                OmniboxResourceProvider.getHeaderStartPadding(context)
-                        - context.getResources().getDimensionPixelSize(R.dimen.tile_view_padding);
+                OmniboxResourceProvider.getHeaderStartPadding(uiContext.context)
+                        - uiContext
+                                .context
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.tile_view_padding);
         mElementSpacing =
-                context.getResources()
+                uiContext
+                        .context
+                        .getResources()
                         .getDimensionPixelSize(
                                 R.dimen.omnibox_carousel_suggestion_minimum_item_spacing);
     }
@@ -144,7 +144,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                             mSuggestionHost.onSuggestionClicked(match, matchIndex, match.getUrl());
                         },
                         v -> {
-                            mSuggestionHost.onDeleteMatch(match, title);
+                            mSuggestionHost.confirmDeleteMatch(match, title);
                             return true;
                         });
 
@@ -204,31 +204,29 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
 
         // Fetch site favicon for MV tiles.
         if (!isSearch) {
-            mImageSupplier.ifPresent(
-                    s ->
-                            s.fetchFavicon(
-                                    url,
-                                    icon -> {
-                                        if (icon == null) {
-                                            s.generateFavicon(
-                                                    url,
-                                                    fallback -> {
-                                                        if (fallback == null) return;
-                                                        model.set(
-                                                                TileViewProperties.ICON,
-                                                                new BitmapDrawable(
-                                                                        mContext.getResources(),
-                                                                        fallback));
-                                                        model.set(
-                                                                TileViewProperties.ICON_TINT, null);
-                                                    });
-                                            return;
-                                        }
-                                        model.set(
-                                                TileViewProperties.ICON,
-                                                new BitmapDrawable(mContext.getResources(), icon));
-                                        model.set(TileViewProperties.ICON_TINT, null);
-                                    }));
+            if (mImageSupplier != null) {
+                mImageSupplier.fetchFavicon(
+                        url,
+                        icon -> {
+                            if (icon == null) {
+                                mImageSupplier.generateFavicon(
+                                        url,
+                                        fallback -> {
+                                            if (fallback == null) return;
+                                            model.set(
+                                                    TileViewProperties.ICON,
+                                                    new BitmapDrawable(
+                                                            mContext.getResources(), fallback));
+                                            model.set(TileViewProperties.ICON_TINT, null);
+                                        });
+                                return;
+                            }
+                            model.set(
+                                    TileViewProperties.ICON,
+                                    new BitmapDrawable(mContext.getResources(), icon));
+                            model.set(TileViewProperties.ICON_TINT, null);
+                        });
+            }
         }
 
         return model;

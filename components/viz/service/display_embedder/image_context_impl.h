@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/service/display/external_use_client.h"
@@ -26,8 +26,6 @@
 #include "third_party/skia/include/gpu/graphite/BackendTexture.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/geometry/size.h"
-
-class SkColorSpace;
 
 namespace gpu {
 class SharedContextState;
@@ -55,7 +53,7 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   ImageContextImpl(const gpu::Mailbox& mailbox,
                    const gfx::Size& size,
                    SharedImageFormat format,
-                   sk_sp<SkColorSpace> color_space);
+                   const gfx::ColorSpace& color_space);
 
   ImageContextImpl(const ImageContextImpl&) = delete;
   ImageContextImpl& operator=(const ImageContextImpl&) = delete;

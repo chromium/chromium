@@ -353,7 +353,8 @@ TEST_F(IntersectionObserverTest, DocumentRootClips) {
   EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
 
   iframe_document->View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 1000), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 1000), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   Compositor().BeginFrame();
   test::RunPendingTasks();
   EXPECT_EQ(observer_delegate->CallCount(), 2);
@@ -657,9 +658,9 @@ TEST_F(IntersectionObserverTest, ResumePostsTask) {
   EXPECT_EQ(observer_delegate->CallCount(), 1);
 
   // When document is not suspended, beginFrame() will generate notifications
-  // and post a task to deliver them.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 300), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 300), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   Compositor().BeginFrame();
   EXPECT_EQ(observer_delegate->CallCount(), 1);
   test::RunPendingTasks();
@@ -670,17 +671,17 @@ TEST_F(IntersectionObserverTest, ResumePostsTask) {
   // available via takeRecords();
   WebView().GetPage()->SetPaused(true);
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 0), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 0), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   Compositor().BeginFrame();
   EXPECT_EQ(observer_delegate->CallCount(), 2);
   test::RunPendingTasks();
   EXPECT_EQ(observer_delegate->CallCount(), 2);
   EXPECT_FALSE(observer->takeRecords(exception_state).empty());
 
-  // Generate a notification while document is suspended; then resume
-  // document. Notification should happen in a post task.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 300), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 300), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   Compositor().BeginFrame();
   test::RunPendingTasks();
   EXPECT_EQ(observer_delegate->CallCount(), 2);
@@ -725,7 +726,8 @@ TEST_F(IntersectionObserverTest, HitTestAfterMutation) {
   EXPECT_EQ(observer_delegate->CallCount(), 1);
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 300), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 300), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
 
   HitTestLocation location{PhysicalOffset()};
   HitTestResult result(
@@ -774,7 +776,8 @@ TEST_F(IntersectionObserverTest, DisconnectClearsNotifications) {
   // If disconnect() is called while an observer has unsent notifications,
   // those notifications should be discarded.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 300), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 300), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   Compositor().BeginFrame();
   observer->disconnect();
   EXPECT_EQ(controller.GetTrackedObserverCountForTesting(), 0u);
@@ -827,7 +830,8 @@ TEST_F(IntersectionObserverTest, RootIntersectionWithForceZeroLayoutHeight) {
   EXPECT_TRUE(observer_delegate->LastIntersectionRect().IsEmpty());
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 600), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 600), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   Compositor().BeginFrame();
   test::RunPendingTasks();
   ASSERT_EQ(observer_delegate->CallCount(), 2);
@@ -836,7 +840,8 @@ TEST_F(IntersectionObserverTest, RootIntersectionWithForceZeroLayoutHeight) {
             observer_delegate->LastIntersectionRect());
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 1200), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 1200), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   Compositor().BeginFrame();
   test::RunPendingTasks();
   ASSERT_EQ(observer_delegate->CallCount(), 3);
@@ -875,6 +880,7 @@ TEST_F(IntersectionObserverTest, TrackedTargetBookkeeping) {
   EXPECT_EQ(controller.GetTrackedObserverCountForTesting(), 0u);
 
   target->remove();
+  Compositor().BeginFrame();
   EXPECT_EQ(controller.GetTrackedObservationCountForTesting(), 0u);
   GetDocument().body()->AppendChild(target);
   EXPECT_EQ(controller.GetTrackedObservationCountForTesting(), 2u);
@@ -931,6 +937,7 @@ TEST_F(IntersectionObserverTest, TrackedRootBookkeeping) {
 
   // Root should not be tracked if it's not connected.
   root->remove();
+  Compositor().BeginFrame();
   EXPECT_EQ(controller.GetTrackedObserverCountForTesting(), 0u);
   GetDocument().body()->AppendChild(root);
   EXPECT_EQ(controller.GetTrackedObserverCountForTesting(), 1u);
@@ -963,8 +970,6 @@ TEST_F(IntersectionObserverTest, TrackedRootBookkeeping) {
   target->remove();
   target = nullptr;
   target_data = nullptr;
-  // Removing the target from the DOM tree forces a notification to be
-  // queued, so flush it out.
   test::RunPendingTasks();
   observer_delegate->Clear();
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -991,6 +996,7 @@ TEST_F(IntersectionObserverTest, TrackedRootBookkeeping) {
   target->remove();
   root->remove();
   root = nullptr;
+  Compositor().BeginFrame();
   test::RunPendingTasks();
   observer_delegate->Clear();
   observer_delegate = nullptr;
@@ -1049,6 +1055,7 @@ TEST_F(IntersectionObserverTest, InaccessibleTarget) {
   target = nullptr;
   observer = nullptr;
   observer_delegate = nullptr;
+  Compositor().BeginFrame();
   test::RunPendingTasks();
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_FALSE(target_weak);

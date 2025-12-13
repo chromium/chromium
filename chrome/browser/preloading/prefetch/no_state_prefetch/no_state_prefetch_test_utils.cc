@@ -120,7 +120,7 @@ TestNoStatePrefetchContents::~TestNoStatePrefetchContents() {
   }
 
   EXPECT_EQ(expected_final_status_, final_status())
-      << " when testing URL " << prefetch_url().path()
+      << " when testing URL " << prefetch_url().GetPath()
       << " (Expected: " << NameFromFinalStatus(expected_final_status_)
       << ", Actual: " << NameFromFinalStatus(final_status()) << ")";
 

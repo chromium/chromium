@@ -31,7 +31,7 @@ p {
 cr-tab-box {
   font-size: 1.3rem;
 }
-table.request-response {
+table.expandable-events {
   border: 1px solid #cecece;
   border-radius: 3px;
   table-layout: fixed;
@@ -39,9 +39,66 @@ table.request-response {
   width: 100%;
   word-break: break-all;
 }
-table.request-response td {
-  width: 50%;
+
+table.expandable-events th {
+  background-color: #f2f2f2;
+  border-bottom: #ddd;
+  padding: 8px;
+  text-align: left;
+  vertical-align: top;
 }
+
+table.expandable-events td {
+  background-color: #ffffff;
+  padding: 5px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.expander::before {
+  content: '▶';
+  cursor: pointer;
+  display: inline-block;
+  transition: transform 0.1s;
+}
+
+.expander.expanded::before {
+  transform: rotate(90deg);
+}
+
+.details-row {
+  display: none;
+}
+
+.details-row.visible {
+  display: table-row;
+}
+
+.details-cell {
+  background-color: #f0f0f0;
+  padding: 10px;
+  white-space: pre-wrap;
+}
+
+.expander-cell {
+  display: flex;
+  white-space: nowrap;
+}
+
+.copy-button {
+  background-color: #eee;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.9em;
+  margin-inline-start: 10px;
+  padding: 2px 6px;
+}
+
+.copy-button:hover {
+  background-color: #e0e0e0;
+}
+
 .bold-span {
   font-weight: bold;
 }

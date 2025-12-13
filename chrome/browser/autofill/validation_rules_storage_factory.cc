@@ -5,6 +5,7 @@
 #include "chrome/browser/autofill/validation_rules_storage_factory.h"
 
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/prefs/json_pref_store.h"
@@ -17,12 +18,11 @@ using ::i18n::addressinput::Storage;
 
 // static
 std::unique_ptr<Storage> ValidationRulesStorageFactory::CreateStorage() {
-  // It's OK to leak the ValidationRulesStorageFactory instance; the
+  // It's OK to not destroy the ValidationRulesStorageFactory instance; the
   // JsonPrefStore will block on any write during shutdown anyway.
-  static base::LazyInstance<ValidationRulesStorageFactory>::Leaky instance =
-      LAZY_INSTANCE_INITIALIZER;
+  static base::NoDestructor<ValidationRulesStorageFactory> instance;
   return std::unique_ptr<Storage>(
-      new ChromeStorageImpl(instance.Get().json_pref_store_.get()));
+      new ChromeStorageImpl(instance->json_pref_store_.get()));
 }
 
 ValidationRulesStorageFactory::ValidationRulesStorageFactory() {

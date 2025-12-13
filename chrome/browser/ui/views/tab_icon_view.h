@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/menu_button.h"
+#include "ui/views/metadata/view_factory.h"
 
 class TabIconViewModel;
 

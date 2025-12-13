@@ -35,7 +35,7 @@ component("platform") {
     "//chrome/browser/accessibility:utils",
     "//chrome/browser/ui/webui/accessibility",
     "//ui/accessibility",
-    "//ui/views:views",
+    "//ui/views",
   ]
 
   sources = [
@@ -238,6 +238,7 @@ component("platform") {
         "inspect/ax_tree_formatter_win.cc",
         "inspect/ax_tree_formatter_win.h",
         "inspect/ax_tree_indexer_win.h",
+        "sequence_affine_com_object_root_win.cc",
         "sequence_affine_com_object_root_win.h",
         "uia_registrar_win.cc",
         "uia_registrar_win.h",

@@ -8,8 +8,8 @@
 #include "ui/views/widget/widget.h"
 
 enum class NativeWidgetType {
-  NATIVE_WIDGET_AURA,
-  DESKTOP_NATIVE_WIDGET_AURA,
+  kNativeWidgetAura,
+  kDesktopNativeWidgetAura,
 };
 
 // Responsible for creating and configuring a NativeWidget type.

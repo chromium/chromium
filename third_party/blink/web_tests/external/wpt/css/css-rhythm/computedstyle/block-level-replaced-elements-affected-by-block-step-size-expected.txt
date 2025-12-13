@@ -9,7 +9,7 @@ This is a testharness.js-based test.
   assert_equals: \n<canvas width="20" height="20" class="block-step test" data-expected-margin-top="40" data-expected-margin-bottom="40"></canvas>\nheight expected 100 but got 20
 [FAIL] .test 5
   assert_equals: \n<div class="container test" data-expected-height="100">\n  <svg class="block-step test" viewBox="0 0 100 50" data-expected-margin-top="25" data-expected-margin-bottom="25"></svg>\n</div>\nheight expected 100 but got 50
-[FAIL] .test 6: undefined
+[FAIL] .test 6
   assert_equals: \n<svg class="block-step test" viewBox="0 0 100 50" data-expected-margin-top="25" data-expected-margin-bottom="25"></svg>\nheight expected 100 but got 50
 [FAIL] .test 7
   assert_equals: \n<div class="container test" data-expected-height="100">\n  <embed type="text/xml" width="20" height="20" class="block-step test" data-expected-margin-top="40" data-expected-margin-bottom="40">\n</div>\nheight expected 100 but got 20

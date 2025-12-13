@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/341324165): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/sandbox_ipc_linux.h"
 
 #include <fcntl.h>
@@ -18,6 +13,8 @@
 #include <sys/stat.h>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 #include "base/linux_util.h"
 #include "base/logging.h"
@@ -112,7 +109,7 @@ void SandboxIPCHandler::HandleRequestFromChild(int fd) {
     return;
 
   base::Pickle pickle = base::Pickle::WithUnownedBuffer(
-      base::span(buf, base::checked_cast<size_t>(len)));
+      base::span(buf).first(base::checked_cast<size_t>(len)));
   base::PickleIterator iter(pickle);
 
   int kind;
@@ -124,47 +121,14 @@ void SandboxIPCHandler::HandleRequestFromChild(int fd) {
   if (sandbox::HandleInterceptedCall(kind, fd, iter, fds))
     return;
 
-  if (kind ==
-      sandbox::policy::SandboxLinux::METHOD_MAKE_SHARED_MEMORY_SEGMENT) {
-    HandleMakeSharedMemorySegment(fd, iter, fds);
-    return;
-  }
   NOTREACHED();
-}
-
-void SandboxIPCHandler::HandleMakeSharedMemorySegment(
-    int fd,
-    base::PickleIterator iter,
-    const std::vector<base::ScopedFD>& fds) {
-  uint32_t size;
-  if (!iter.ReadUInt32(&size))
-    return;
-  // TODO(crbug.com/41470149): executable shared memory should be removed when
-  // NaCl is unshipped.
-  bool executable;
-  if (!iter.ReadBool(&executable))
-    return;
-  base::ScopedFD shm_fd;
-  if (executable) {
-    shm_fd =
-        base::subtle::PlatformSharedMemoryRegion::ExecutableRegion::CreateFD(
-            size);
-  } else {
-    base::subtle::PlatformSharedMemoryRegion region =
-        base::subtle::PlatformSharedMemoryRegion::CreateUnsafe(size);
-    shm_fd = std::move(region.PassPlatformHandle().fd);
-  }
-  base::Pickle reply;
-  SendRendererReply(fds, reply, shm_fd.get());
-  // shm_fd will close the handle which is no longer needed by this process.
 }
 
 void SandboxIPCHandler::SendRendererReply(
     const std::vector<base::ScopedFD>& fds,
     const base::Pickle& reply,
     int reply_fd) {
-  struct msghdr msg;
-  memset(&msg, 0, sizeof(msg));
+  struct msghdr msg = {};
   struct iovec iov = {const_cast<uint8_t*>(reply.data()), reply.size()};
   msg.msg_iov = &iov;
   msg.msg_iovlen = 1;
@@ -187,7 +151,7 @@ void SandboxIPCHandler::SendRendererReply(
     cmsg->cmsg_level = SOL_SOCKET;
     cmsg->cmsg_type = SCM_RIGHTS;
     cmsg->cmsg_len = CMSG_LEN(sizeof(reply_fd));
-    memcpy(CMSG_DATA(cmsg), &reply_fd, sizeof(reply_fd));
+    UNSAFE_TODO(memcpy(CMSG_DATA(cmsg), &reply_fd, sizeof(reply_fd)));
     msg.msg_controllen = cmsg->cmsg_len;
   }
 

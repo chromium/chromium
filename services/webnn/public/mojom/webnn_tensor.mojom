@@ -4,6 +4,7 @@
 
 module webnn.mojom;
 
+import "gpu/ipc/common/sync_token.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "services/webnn/public/mojom/webnn_graph.mojom";
 import "services/webnn/public/mojom/webnn_error.mojom";
@@ -47,4 +48,32 @@ interface WebNNTensor {
   // Called by the renderer process to carryout writing to a `WebNNTensor`.
   // The src_buffer is a BigBuffer representing the data to write from.
   WriteTensor(mojo_base.mojom.BigBuffer src_buffer);
+
+  // Transfers access from WebNN to the renderer for an exportable
+  // `WebNNTensor`. This temporarily ends WebNN's ability to use the tensor so
+  // that other APIs (e.g., WebGPU) can access it.
+  //
+  // Returns a verified SyncToken that will be released once all prior
+  // operations scheduled through `WebNNContextImpl`—including those issued by
+  // `WebNNContext` and its associated interfaces—have completed execution in
+  // the WebNN service.
+  //
+  // TODO(crbug.com/345352987): If the SyncPointGraphValidation feature is
+  // enabled, consider removing this callback. In that case, the release ID can
+  // be tracked directly from the renderer or converted to [Sync], since these
+  // operations do not involve actual GPU execution.
+  //
+  // See docs/gpu/sync_token_internals.md for SyncToken explainer.
+  ExportTensor() => result<gpu.mojom.SyncToken, Error>;
+
+  // Returns access of an exportable `WebNNTensor` back to WebNN after the
+  // renderer is finished with it.
+  //
+  // WebNN execution will be deferred asynchronously until the provided fence
+  // has been released, ensuring that any renderer-side work is complete.
+  //
+  // This call is the counterpart to `ExportTensor()`. Ownership of an
+  // exportable tensor may be passed back and forth between WebNN and the
+  // renderer multiple times.
+  ImportTensor(gpu.mojom.SyncToken fence);
 };

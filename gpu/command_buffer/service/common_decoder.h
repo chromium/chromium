@@ -23,10 +23,6 @@
 using GLsizei = int;
 using GLint = int;
 
-namespace gfx {
-class ColorSpace;
-}  // namespace gfx
-
 namespace gpu {
 
 class CommandBufferServiceBase;
@@ -160,6 +156,10 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT CommonDecoder {
     return static_cast<T>(GetAddressAndCheckSize(shm_id, offset, size));
   }
 
+  base::span<uint8_t> GetSharedMemoryAsSpan(uint32_t shm_id,
+                                            uint32_t offset,
+                                            uint32_t size);
+
   void* GetAddressAndSize(unsigned int shm_id,
                           unsigned int offset,
                           unsigned int minimum_size,
@@ -198,13 +198,6 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT CommonDecoder {
   // Exit the command processing loop to allow context preemption and GPU
   // watchdog checks in CommandExecutor().
   virtual void ExitCommandProcessingEarly() {}
-
-  // Read a serialized gfx::ColorSpace. Return true on success and false if the
-  // serialization was invalid.
-  bool ReadColorSpace(uint32_t shm_id,
-                      uint32_t shm_offset,
-                      uint32_t color_space_size,
-                      gfx::ColorSpace* color_space);
 
  private:
   // Generate a member function prototype for each command in an automated and

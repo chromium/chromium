@@ -14,12 +14,11 @@ static_library("boca") {
     "boca_manager.h",
     "boca_manager_factory.cc",
     "boca_manager_factory.h",
+    "shared_crd_session_wrapper_impl.cc",
+    "shared_crd_session_wrapper_impl.h",
   ]
 
-  public_deps = [
-    "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ui:browser_list",
-  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
     "//ash/constants",
@@ -28,7 +27,11 @@ static_library("boca") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/boca/babelorca",
     "//chrome/browser/ash/boca/spotlight",
+    "//chrome/browser/ash/browser_delegate",
+    "//chrome/browser/ash/policy/remote_commands/crd/public",
+    "//chrome/browser/ash/policy/remote_commands/crd/public:interface",
     "//chrome/browser/ash/settings",
+    "//chrome/browser/device_identity",
     "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
@@ -39,6 +42,7 @@ static_library("boca") {
     "//chromeos/ash/components/boca/babelorca",
     "//chromeos/ash/components/boca/babelorca:soda_installer",
     "//chromeos/ash/components/boca/on_task",
+    "//chromeos/ash/components/boca/receiver",
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/components/browser_context_helper",
     "//components/gcm_driver",
@@ -48,7 +52,7 @@ static_library("boca") {
     "//components/soda:constants",
     "//components/user_manager",
     "//extensions/browser",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//services/network/public/cpp",
   ]
 }

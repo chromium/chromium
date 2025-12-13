@@ -1,6 +1,6 @@
 owners:
 - hiramahmood@google.com
-- file://ios/chrome/browser/parcel_tracking/OWNERS
+- bling-pandamonium@google.com
 caption: Allows users to track their packages on Chrome.
 deprecated: true
 desc: |-

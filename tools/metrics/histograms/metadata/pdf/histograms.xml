@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="PDF.Actions" enum="ChromePDFViewerActions"
-    expires_after="2025-12-21">
+    expires_after="2026-04-26">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -33,6 +33,18 @@ chromium-metrics-reviews@google.com.
     are named &quot;First&quot; are logged only once per document, so that we
     can measure in what percentage of documents a given action was performed at
     least once.
+  </summary>
+</histogram>
+
+<histogram name="PDF.Caret.FirstVisible" enum="Boolean"
+    expires_after="2026-10-27">
+  <owner>andyphan@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks the PDF caret becoming visible for the first time when caret browsing
+    mode is enabled. Logged only once per document. Always records true. Not
+    recorded for Print Preview, since caret browsing mode is always disabled
+    there.
   </summary>
 </histogram>
 
@@ -46,7 +58,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.EngineLifetime" units="ms" expires_after="2026-01-04">
+<histogram name="PDF.EngineLifetime" units="ms" expires_after="2026-05-10">
   <owner>rhalavati@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -56,7 +68,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.FirstPaintTime" units="ms" expires_after="2026-01-04">
+<histogram name="PDF.FirstPaintTime" units="ms" expires_after="2026-05-10">
   <owner>rhalavati@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -68,7 +80,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.FormType" enum="PDFFormTypes" expires_after="2026-01-04">
+<histogram name="PDF.FormType" enum="PDFFormTypes" expires_after="2026-05-10">
   <owner>dhoss@chromium.org</owner>
   <owner>kmoon@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
@@ -78,12 +90,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.HasAttachment" enum="Boolean" expires_after="2025-11-30">
+<histogram name="PDF.HasAttachment" enum="Boolean" expires_after="2026-06-07">
   <owner>nigi@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
     Measures if PDFs opened in the PDF viewer have attachments. This is logged
     whenever a document is opened in the PDF viewer.
+  </summary>
+</histogram>
+
+<histogram name="PDF.InfoBar.SettingsResult" enum="PdfInfoBarSettingsResult"
+    expires_after="2026-04-25">
+  <owner>jessemckenna@google.com</owner>
+  <owner>davidbienvenu@chromium.org</owner>
+  <summary>
+    The result of showing the Windows settings UI to set Chrome as the default
+    PDF viewer. Recorded 30 seconds after the call to open the settings dialog
+    returns. Only recorded on Windows.
   </summary>
 </histogram>
 
@@ -104,7 +127,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2StrokeBrushType" enum="PDFInk2StrokeBrushType"
-    expires_after="2025-12-01">
+    expires_after="2026-06-07">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -118,7 +141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2StrokeHighlighterColor"
-    enum="PDFInk2StrokeHighlighterColor" expires_after="2025-12-01">
+    enum="PDFInk2StrokeHighlighterColor" expires_after="2026-06-07">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -130,7 +153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2StrokeInputDeviceType"
-    enum="PDFInk2StrokeInputDeviceType" expires_after="2025-12-01">
+    enum="PDFInk2StrokeInputDeviceType" expires_after="2026-06-07">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -145,7 +168,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2StrokePenColor" enum="PDFInk2StrokePenColor"
-    expires_after="2025-12-01">
+    expires_after="2026-06-07">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -156,7 +179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2Stroke{Brush}Size" enum="PDFInk2StrokeBrushSize"
-    expires_after="2025-12-01">
+    expires_after="2026-06-07">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -173,7 +196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2TextHighlighterColor"
-    enum="PDFInk2StrokeHighlighterColor" expires_after="2025-12-01">
+    enum="PDFInk2StrokeHighlighterColor" expires_after="2026-06-07">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -187,7 +210,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2TextHighlightInputDeviceType"
-    enum="PDFInk2StrokeInputDeviceType" expires_after="2025-12-01">
+    enum="PDFInk2StrokeInputDeviceType" expires_after="2026-06-07">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -201,7 +224,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.LoadedWithV2InkAnnotations2"
-    enum="PDFLoadedWithV2InkAnnotations" expires_after="2025-12-01">
+    enum="PDFLoadedWithV2InkAnnotations" expires_after="2026-04-05">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -212,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.LoadStatus2" enum="ChromePDFViewerLoadStatus"
-    expires_after="2025-12-14">
+    expires_after="2026-04-26">
   <owner>kmoon@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -222,7 +245,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.PageCount" units="pages" expires_after="2025-12-21">
+<histogram name="PDF.PageCount" units="pages" expires_after="2026-04-26">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -230,7 +253,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.PageHasText" enum="Boolean" expires_after="2026-01-04">
+<histogram name="PDF.PageHasText" enum="Boolean" expires_after="2026-05-10">
   <owner>rhalavati@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -240,7 +263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.PostMessageDataType" enum="PDFPostMessageDataType"
-    expires_after="2025-12-14">
+    expires_after="2026-04-19">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -248,18 +271,130 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.RenderAndPaintVisiblePagesTime" units="ms"
-    expires_after="2025-11-16">
-  <owner>nigi@chromium.org</owner>
+<histogram name="PDF.RenderAndPaintTime" units="ms" expires_after="2026-05-24">
   <owner>thestig@chromium.org</owner>
+  <owner>ask@chromium.org</owner>
   <summary>
-    Time used for rendering and painting all the visible pages in the PDF
+    Time used for a full paint operation cycle in the PDF viewer, sans time
+    spent to flush afterwards. This encompasses multiple
+    PDF.RenderAndPaintVisiblePagesTime records.
+  </summary>
+</histogram>
+
+<histogram name="PDF.RenderAndPaintVisiblePagesTime" units="ms"
+    expires_after="2026-05-24">
+  <owner>thestig@chromium.org</owner>
+  <owner>ask@chromium.org</owner>
+  <summary>
+    Time used for rendering and painting all the visible pages in the PDF viewer
+    that require repainting because they intersect a damaged rect.
+  </summary>
+</histogram>
+
+<histogram name="PDF.RenderPaintAndFlushTime" units="ms"
+    expires_after="2026-05-24">
+  <owner>thestig@chromium.org</owner>
+  <owner>ask@chromium.org</owner>
+  <summary>
+    Time used for a full paint operation cycle in the PDF viewer, including time
+    spent to flush afterwards. This encompasses multiple
+    PDF.RenderAndPaintVisiblePagesTime records.
+  </summary>
+</histogram>
+
+<histogram name="PDF.SaveToDrive.BubbleAction"
+    enum="PDFSaveToDriveBubbleAction" expires_after="2026-09-26">
+  <owner>faizur@google.com</owner>
+  <owner>clarkbrian@chromium.org</owner>
+  <summary>
+    Records the action taken in the Save to Drive bubble from the PDF viewer.
+  </summary>
+</histogram>
+
+<histogram name="PDF.SaveToDrive.BubbleState" enum="PDFSaveToDriveBubbleState"
+    expires_after="2026-09-26">
+  <owner>faizur@google.com</owner>
+  <owner>clarkbrian@chromium.org</owner>
+  <summary>
+    Records the UI state of the opened Save to Drive bubble from the PDF viewer,
+    i.e., whether it is showing a success or a failure message.
+  </summary>
+</histogram>
+
+<histogram name="PDF.SaveToDrive.FileSize" units="KB"
+    expires_after="2026-09-26">
+  <owner>faizur@google.com</owner>
+  <owner>clarkbrian@chromium.org</owner>
+  <summary>
+    Records the size of the file being saved to Drive from the PDF viewer.
+    Recorded when an upload completes successfully.
+  </summary>
+</histogram>
+
+<histogram name="PDF.SaveToDrive.PrimaryAccountSelectionStatus"
+    enum="PDFSaveToDrivePrimaryAccountSelectionStatus"
+    expires_after="2026-09-26">
+  <owner>faizur@google.com</owner>
+  <owner>clarkbrian@chromium.org</owner>
+  <summary>
+    Records which account was used for Save to Drive from the PDF viewer
+    relative to the primary account. Recorded when an upload completes
+    successfully.
+  </summary>
+</histogram>
+
+<histogram name="PDF.SaveToDrive.RetrySaveType" enum="PDFSaveToDriveSaveType"
+    expires_after="2026-09-26">
+  <owner>faizur@google.com</owner>
+  <owner>clarkbrian@chromium.org</owner>
+  <summary>
+    Records the save request type of the Save to Drive retry operation from the
+    PDF viewer.
+  </summary>
+</histogram>
+
+<histogram name="PDF.SaveToDrive.SaveType" enum="PDFSaveToDriveSaveType"
+    expires_after="2026-09-26">
+  <owner>faizur@google.com</owner>
+  <owner>clarkbrian@chromium.org</owner>
+  <summary>
+    Records the save request type of the Save to Drive operation from the PDF
     viewer.
   </summary>
 </histogram>
 
+<histogram name="PDF.SaveToDrive.UploadError" enum="PdfSaveToDriveErrorType"
+    expires_after="2026-09-26">
+  <owner>faizur@google.com</owner>
+  <owner>clarkbrian@chromium.org</owner>
+  <summary>
+    Records the error type when a Save to Drive upload fails from the PDF
+    viewer. Recorded when an upload fails.
+  </summary>
+</histogram>
+
+<histogram name="PDF.SaveToDrive.UploadLatency" units="ms"
+    expires_after="2026-09-26">
+  <owner>faizur@google.com</owner>
+  <owner>clarkbrian@chromium.org</owner>
+  <summary>
+    Tracks the time from when a Save to Drive upload is started to when it
+    completes successfully.
+  </summary>
+</histogram>
+
+<histogram name="PDF.SaveToDrive.UploadStatus" enum="PdfSaveToDriveStatus"
+    expires_after="2026-09-26">
+  <owner>faizur@google.com</owner>
+  <owner>clarkbrian@chromium.org</owner>
+  <summary>
+    Records the status of a Save to Drive upload from the PDF viewer, and
+    important intermediate steps. Recorded when status changes.
+  </summary>
+</histogram>
+
 <histogram name="PDF.SearchifyAddedText" enum="Boolean"
-    expires_after="2026-01-04">
+    expires_after="2026-06-30">
   <owner>rhalavati@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -270,7 +405,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.SearchifySuccessful2" enum="Boolean"
-    expires_after="2025-11-01">
+    expires_after="2026-06-30">
   <owner>rhalavati@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -281,7 +416,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.Version" enum="PDFVersion" expires_after="2025-11-16">
+<histogram name="PDF.SkiaFontMapperWindows.EnumFontsTime" units="ms"
+    expires_after="2026-11-20">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>ajgo@chromium.org</owner>
+  <summary>
+    Records the time spent in SkiaFontMapper's EnumFonts on Windows. This
+    operation iterates over all installed system fonts, which may be inefficient
+    and long on some devices (particularly slow disks and machines with large
+    amounts of installed fonts).
+  </summary>
+</histogram>
+
+<histogram name="PDF.Version" enum="PDFVersion" expires_after="2026-05-24">
   <owner>dhoss@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>Tracks versions of documents opened in the PDF viewer.</summary>

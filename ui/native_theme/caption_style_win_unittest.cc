@@ -4,18 +4,14 @@
 
 #include "ui/native_theme/caption_style.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_com_initializer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ui_base_features.h"
 
 namespace ui {
 
 // Test to ensure closed caption styling from system settings can be obtained
 // (we obtain a CaptionStyle).
 TEST(CaptionStyleWinTest, TestWinCaptionStyle) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
   base::win::ScopedCOMInitializer com_initializer;
   ASSERT_TRUE(com_initializer.Succeeded());
 

@@ -37,9 +37,8 @@ enum SessionStorageCloneType {
 // Controls the state of Session Storage within a partition. This is a
 // privileged interface and must not be brokered to untrusted clients.
 //
-// Currently this is consumed and implemented in the browser process, but the
-// implementation will eventually live in the storage service which may run
-// out-of-process.
+// Currently this is consumed in the browser process and implemented in the
+// storage service.
 interface SessionStorageControl {
   // Binds a control interface for the given namespace. Returns `true` if
   // `namespace_id` matched a valid namespace name and `false` otherwise.

@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Прамое падключэнне да інтэрнэту</translation>
 <translation id="1272293450992660632">PIN-коды не супадаюць.</translation>
+<translation id="1279040297980392566">Выконваецца сканіраванне. Паўтарыце спробу пазней.</translation>
 <translation id="1280820357415527819">Ідзе пошук мабільных сетак</translation>
 <translation id="1293556467332435079">Файлы</translation>
 <translation id="1297922636971898492">Google Дыск зараз недаступны. Як толькі доступ адновіцца, запампоўванне пачнецца аўтаматычна.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">Выбраны 1 файл</translation>
 <translation id="3817579325494460411">URL-адрас не ўказаны</translation>
 <translation id="3819448694985509187">Няправільны PIN-код. У вас засталася 1 спроба.</translation>
-<translation id="3822559385185038546">Адміністратар зрабіў выкарыстанне гэтага проксі-сервера абавязковым</translation>
 <translation id="3830674330436234648">Прайграванне недаступна</translation>
 <translation id="383652340667548381">Сербская</translation>
 <translation id="3839045880592694915">Мадэм не мае дазволу аператара на падключэнне. Падрабязнасці можна атрымаць у аператара.</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Дадатковыя параметры</translation>
 <translation id="5602622065581044566">Балгарская (фанетычная раскладка)</translation>
 <translation id="5605830556594064952">ЗША (раскладка Дворака)</translation>
+<translation id="560739212255190568">Адміністратар наладзіў правілы перавызначэння проксі-сервера і прымусовае выкарыстанне наступнага проксі-сервера</translation>
 <translation id="5618330573454123917">Гэты файл прызначаны для камп’ютара з праграмным забеспячэннем Macintosh. Ён несумяшчальны з вашай прыладай Chrome OS. <ph name="BEGIN_LINK_HELP" />Даведайцеся больш<ph name="END_LINK_HELP" /> пра адкрыццё файлаў на Chrome OS.</translation>
 <translation id="5625294776298156701">Тамільская (раскладка Tamil99)</translation>
 <translation id="5633226425545095130">Пры перамяшчэнні гэтага элемента ён будзе абагулены з усімі карыстальнікамі, якія могуць бачыць абагуленую папку "<ph name="DESTINATION_NAME" />".</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
 <translation id="8545476925160229291">Англійская (ЗША)</translation>
 <translation id="854655314928502177">URL-адрас аўтаматычнага выяўлення вэб-проксі:</translation>
+<translation id="8547747809824590510">Адміністратар наладзіў правілы перавызначэння проксі-сервера</translation>
 <translation id="8549186985808798022">Італьянская</translation>
 <translation id="8551494947769799688">Латышская</translation>
 <translation id="8560515948038859357">Кантонскі дыялект</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Файл пад назвай "<ph name="FILE_NAME" />" ужо існуе. Выберыце іншую назву.</translation>
 <translation id="9046895021617826162">Збой падключэння</translation>
 <translation id="9065512565307033593">Калі вы ўведзяце няправільны PUK-код, доступ да сеткі будзе адключаны.</translation>
+<translation id="9079844694307518094">Адміністратар наладзіў прымусовае выкарыстанне наступнага проксі-сервера</translation>
 <translation id="908378762078012445">Руская (фанетычная раскладка AATSEEL)</translation>
 <translation id="9086302186042011942">Сінхранізацыя</translation>
 <translation id="9099674669267916096">Колькасць старонак</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">Пачалося ўсталяванне.</translation>
 <translation id="9219103736887031265">Відарысы</translation>
 <translation id="9219908252191632183">Месячны ландшафт</translation>
+<translation id="931652069802536959">Сетка заблакіравана ў адпаведнасці з палітыкай арганізацыі</translation>
 <translation id="938470336146445890">Усталюйце сертыфікат карыстальніка.</translation>
 <translation id="939736085109172342">Новая папка</translation>
 <translation id="943972244133411984">Зменена карыстальнікам</translation>

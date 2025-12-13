@@ -14,6 +14,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation_traits.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/console_message.h"
@@ -107,7 +108,8 @@ class ServiceWorkerContextObserverSynchronous : public base::CheckedObserver {
 
   // Called when a console message is reported for the service worker with id
   // |version_id|.
-  virtual void OnReportConsoleMessageSync(int64_t version_id,
+  virtual void OnReportConsoleMessageSync(int render_process_id,
+                                          int64_t version_id,
                                           const GURL& scope,
                                           const ConsoleMessage& message) {}
 
@@ -133,6 +135,10 @@ class ServiceWorkerContextObserverSynchronous : public base::CheckedObserver {
 // All methods must be called on the UI thread.
 class CONTENT_EXPORT ServiceWorkerContext {
  public:
+  // The delay from navigation to starting an update of a service
+  // worker's script.
+  static constexpr base::TimeDelta kUpdateDelay = base::Milliseconds(1000);
+
   using ResultCallback = base::OnceCallback<void(bool success)>;
 
   using GetInstalledRegistrationOriginsCallback =
@@ -167,10 +173,6 @@ class CONTENT_EXPORT ServiceWorkerContext {
                       const base::Location& from_here,
                       ServiceWorkerContext* service_worker_context,
                       base::OnceClosure task);
-
-  // Returns the delay from navigation to starting an update of a service
-  // worker's script.
-  static base::TimeDelta GetUpdateDelay();
 
   // Add/remove an observer that is asynchronously notified.
   virtual void AddObserver(ServiceWorkerContextObserver* observer) = 0;

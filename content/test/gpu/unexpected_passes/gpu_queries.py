@@ -9,7 +9,6 @@ from unexpected_passes_common import queries as queries_module
 
 from gpu_tests import gpu_integration_test
 
-
 # This query gets us the most recent |num_builds| CI builds from the past month
 # for each builder.
 CI_BUILDS_SUBQUERY = """\
@@ -80,7 +79,6 @@ TRY_BUILDS_SUBQUERY = """\
     WHERE rank_idx <= {num_builds}
   )"""
 
-
 # step_name can be either the step_name tag or test_suite variant because of the
 # way Skylab builders work. In normal Chromium test tasks, the step name is
 # reported to the task-level RDB invocation, which then gets applied to every
@@ -94,6 +92,7 @@ RESULTS_SUBQUERY = """\
     SELECT
       exported.id,
       test_id,
+      test_metadata.name as test_name,
       status,
       (
         SELECT value
@@ -129,11 +128,10 @@ RESULTS_SUBQUERY = """\
           "gpu_tests\\\\.{suite}\\\\.")
   )"""
 
-
 # Selects the relevant columns from results that had either a Failure or a
 # RetryOnFailure expectation when they were run, ordered by builder name.
 FINAL_SELECTOR_QUERY = """\
-SELECT id, test_id, builder_name, status, step_name, typ_tags
+SELECT id, test_id, test_name, builder_name, status, step_name, typ_tags
 FROM results
 WHERE
   "Failure" IN UNNEST(typ_expectations)
@@ -165,13 +163,15 @@ INTERNAL_TRY_SUBMITTED_BUILDS_SUBQUERY = f"""\
 
 
 class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
+
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
 
     name_mapping = gpu_integration_test.GenerateTestNameMapping()
+    self._suite_class = name_mapping[self._suite]
     # The suite name we use for identification (return value of Name()) is not
     # the same as the one used by ResultDB (Python module), so convert here.
-    self._suite = name_mapping[self._suite].__module__.split('.')[-1]
+    self._suite = self._suite_class.__module__.split('.')[-1]
 
   def _CiBuildsFor(self, project: str) -> str:
     """Helper function to generate a CI builds subquery."""
@@ -228,13 +228,3 @@ WITH
     # Only one expectation file is ever used for the GPU tests, so just use
     # whichever one we've read in.
     return None
-
-  def _StripPrefixFromTestId(self, test_id: str) -> str:
-    # GPU test IDs provided by ResultDB are the test name as known by the test
-    # runner prefixed by
-    # "ninja://<target>/gpu_tests.<suite>_integration_test.<class>.", e.g.
-    #     "ninja://chrome/test:telemetry_gpu_integration_test/
-    #      gpu_tests.pixel_integration_test.PixelIntegrationTest."
-    split_id = test_id.split('.', 3)
-    assert len(split_id) == 4
-    return split_id[-1]

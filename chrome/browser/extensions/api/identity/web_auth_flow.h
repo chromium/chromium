@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -16,8 +15,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
@@ -146,6 +148,13 @@ class WebAuthFlow : public content::WebContentsObserver,
   void MaybeStartTimeout();
   void OnTimeout();
 
+  // Displays the auth page in a popup window if that is possible.
+  //
+  // Returns true if the auth page is displayed and false otherwise (e.g.
+  // popup is disabled, API is called from incognito).
+  // TODO(crbug.com/434156398): Android desktop implementation temporarily
+  // returns false. Update the implementation to display the auth page in a
+  // popup or a tab and return true.
   bool DisplayAuthPageInPopupWindow();
 
   void DisplayInfoBar();
@@ -155,7 +164,9 @@ class WebAuthFlow : public content::WebContentsObserver,
   raw_ptr<Profile> profile_;
   const GURL provider_url_;
   const Mode mode_;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   const bool user_gesture_;
+#endif
 
   // WebContents used to initialize the authentication. It is not displayed
   // and not owned by browser window. This WebContents is observed by

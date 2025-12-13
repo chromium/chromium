@@ -19,7 +19,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -33,7 +34,8 @@ import java.util.concurrent.TimeoutException;
 public class BackPressManagerUnitTest {
 
     private static class EmptyBackPressHandler implements BackPressHandler {
-        private final ObservableSupplierImpl<Boolean> mSupplier = new ObservableSupplierImpl<>();
+        private final SettableNonNullObservableSupplier<Boolean> mSupplier =
+                ObservableSuppliers.createNonNull(false);
         protected final CallbackHelper mCallbackHelper = new CallbackHelper();
 
         @Override
@@ -43,16 +45,13 @@ public class BackPressManagerUnitTest {
         }
 
         @Override
-        public ObservableSupplierImpl<Boolean> getHandleBackPressChangedSupplier() {
+        public SettableNonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
             return mSupplier;
         }
 
         public CallbackHelper getCallbackHelper() {
             return mCallbackHelper;
         }
-
-        @Override
-        public void handleOnBackCancelled() {}
 
         @Override
         public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {}
@@ -403,7 +402,7 @@ public class BackPressManagerUnitTest {
                 "Callback should be enabled if any of handlers are enabled",
                 manager.getCallback().isEnabled());
 
-        h1.getHandleBackPressChangedSupplier().set(null);
+        h1.getHandleBackPressChangedSupplier().set(false);
         Assert.assertFalse(
                 "Callback should be disabled if no handler is enabled",
                 manager.getCallback().isEnabled());
@@ -604,8 +603,8 @@ public class BackPressManagerUnitTest {
         // Fail if the BackPressManager calls the fallback method, which it shouldn't.
         manager.setFallbackOnBackPressed(
                 () -> {
-                    assert false
-                            : "BackPressManager should not call fallback on escape key presses.";
+                    throw new AssertionError(
+                            "BackPressManager should not call fallback on escape key presses.");
                 });
 
         manager.addHandler(h1, 3);

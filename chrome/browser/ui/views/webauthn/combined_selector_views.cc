@@ -84,10 +84,6 @@ void CombinedSelectorRadioButton::SetChecked(bool checked) {
   Checkbox::SetChecked(checked);
 }
 
-bool CombinedSelectorRadioButton::IsGroupFocusTraversable() const {
-  return true;
-}
-
 void CombinedSelectorRadioButton::GetRadioButtonsInList(int group,
                                                         Views* views) {
   auto* row_view = parent();
@@ -263,6 +259,8 @@ CombinedSelectorListView::CombinedSelectorListView(
         CombinedSelectorSheetModel::SelectionStatus::kSelected) {
       selected_view_ = row;
     }
+
+    SetOwnedGroup(kGroupId);
   }
 
   if (num_mechanisms > 1) {

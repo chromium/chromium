@@ -86,6 +86,8 @@ const char* WhatsNewTypeToString(WhatsNewType type) {
       return "ChooseFromDrive";
     case WhatsNewType::kSaveToDrive:
       return "SaveToDrive";
+    case WhatsNewType::kBlingEnterpriseProfiles:
+      return "BlingEnterpriseProfiles";
     case WhatsNewType::kError:
       return nil;
   };

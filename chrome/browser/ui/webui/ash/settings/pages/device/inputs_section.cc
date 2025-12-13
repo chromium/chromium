@@ -74,30 +74,6 @@ base::span<const SearchConcept> GetDefaultSearchConcepts() {
   return tags;
 }
 
-base::span<const SearchConcept> GetSuggestionsSearchConcepts() {
-  static constexpr auto tags = std::to_array<SearchConcept>({
-      {IDS_OS_SETTINGS_TAG_LANGUAGES_SUGGESTIONS,
-       mojom::kInputSubpagePath,
-       mojom::SearchResultIcon::kLanguage,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kInput}},
-  });
-  return tags;
-}
-
-base::span<const SearchConcept> GetEmojiSuggestionSearchConcepts() {
-  static constexpr auto tags = std::to_array<SearchConcept>({
-      {IDS_OS_SETTINGS_TAG_LANGUAGES_EMOJI_SUGGESTIONS,
-       mojom::kInputSubpagePath,
-       mojom::SearchResultIcon::kLanguage,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kShowEmojiSuggestions}},
-  });
-  return tags;
-}
-
 base::span<const SearchConcept> GetSpellCheckSearchConcepts() {
   static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_EDIT_DICTIONARY,
@@ -227,14 +203,14 @@ void AddInputMethodOptionsLoadTimeData(
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SPACE_INPUT_STYLE_FULLWIDTH},
       {"inputMethodOptionsJapaneseSpaceInputStyleHalfwidth",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SPACE_INPUT_STYLE_HALFWIDTH},
-      {"inputMethodOptionsJapaneseSectionShortcut",
-       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SECTION_SHORTCUT},
-      {"inputMethodOptionsJapaneseSectionShortcutNoShortcut",
-       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SECTION_SHORTCUT_NO_SHORTCUT},
-      {"inputMethodOptionsJapaneseSectionShortcut123456789",
-       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SECTION_SHORTCUT_123456789},
-      {"inputMethodOptionsJapaneseSectionShortcutAsdfghjkl",
-       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SECTION_SHORTCUT_ASDFGHJKL},
+      {"inputMethodOptionsJapaneseSelectionShortcut",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SELECTION_SHORTCUT},
+      {"inputMethodOptionsJapaneseSelectionShortcutNoShortcut",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SELECTION_SHORTCUT_NO_SHORTCUT},
+      {"inputMethodOptionsJapaneseSelectionShortcut123456789",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SELECTION_SHORTCUT_123456789},
+      {"inputMethodOptionsJapaneseSelectionShortcutAsdfghjkl",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SELECTION_SHORTCUT_ASDFGHJKL},
       {"inputMethodOptionsJapaneseKeymapStyle",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE},
       {"inputMethodOptionsJapaneseKeymapStyleAtok",
@@ -316,21 +292,7 @@ void AddInputMethodOptionsLoadTimeData(
   html_source->AddBoolean(
       "autocorrectEnableByDefault",
       base::FeatureList::IsEnabled(features::kAutocorrectByDefault));
-  html_source->AddBoolean(
-      "allowFirstPartyVietnameseInput",
-      base::FeatureList::IsEnabled(features::kFirstPartyVietnameseInput));
-}
-
-void AddSuggestionsLoadTimeData(content::WebUIDataSource* html_source,
-                                bool allow_emoji_suggestion_settings_to_show) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"suggestionsTitle", IDS_SETTINGS_SUGGESTIONS_TITLE},
-      {"emojiSuggestionTitle", IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_TITLE},
-      {"emojiSuggestionDescription",
-       IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_DESCRIPTION}};
-  html_source->AddLocalizedStrings(kLocalizedStrings);
-  html_source->AddBoolean("allowEmojiSuggestion",
-                          allow_emoji_suggestion_settings_to_show);
+  html_source->AddBoolean("allowFirstPartyVietnameseInput", true);
 }
 
 }  // namespace
@@ -358,13 +320,6 @@ InputsSection::InputsSection(Profile* profile,
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetDefaultSearchConcepts());
-
-  bool should_show_emoji_suggestions_settings =
-      ShouldShowEmojiSuggestionsSettings();
-  if (should_show_emoji_suggestions_settings) {
-    updater.AddSearchTags(GetSuggestionsSearchConcepts());
-    updater.AddSearchTags(GetEmojiSuggestionSearchConcepts());
-  }
 
   UpdateSpellCheckSearchTags();
 
@@ -508,9 +463,6 @@ void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       base::FeatureList::IsEnabled(features::kOnDeviceGrammarCheck));
 
   html_source->AddBoolean(
-      "systemJapanesePhysicalTyping",
-      base::FeatureList::IsEnabled(features::kSystemJapanesePhysicalTyping));
-  html_source->AddBoolean(
       "languagePacksInSettingsEnabled",
       base::FeatureList::IsEnabled(features::kLanguagePacksInSettings));
   // TODO(b/290861003): Update the settings code and remove this.
@@ -520,9 +472,6 @@ void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       html_source,
       input_method::IsPhysicalKeyboardAutocorrectAllowed(*pref_service_),
       input_method::IsPhysicalKeyboardPredictiveWritingAllowed(*pref_service_));
-
-  AddSuggestionsLoadTimeData(html_source,
-                             ShouldShowEmojiSuggestionsSettings());
 }
 
 void InputsSection::AddHandlers(content::WebUI* web_ui) {
@@ -563,7 +512,6 @@ void InputsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Setting::kAddInputMethod,
       mojom::Setting::kRemoveInputMethod,
       mojom::Setting::kSetCurrentInputMethod,
-      mojom::Setting::kShowEmojiSuggestions,
       mojom::Setting::kShowInputOptionsInShelf,
       mojom::Setting::kSpellCheckOnOff,
       mojom::Setting::kAddSpellCheckLanguage,
@@ -636,10 +584,6 @@ void InputsSection::InputMethodChanged(
     Profile* profile,
     bool show_message) {
   UpdateAutocorrectTags(manager);
-}
-
-bool InputsSection::ShouldShowEmojiSuggestionsSettings() const {
-  return pref_service_->GetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed);
 }
 
 bool InputsSection::IsSpellCheckEnabled() const {

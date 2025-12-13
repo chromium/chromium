@@ -1,0 +1,35 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("types") {
+  sources = [
+    "node_id.cc",
+    "node_id.h",
+    "position.cc",
+    "position.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/tab_groups",
+    "//components/tabs:public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "node_id_unittest.cc",
+    "position_unittest.cc",
+    "tab_strip_service_traits_unittest.cc",
+  ]
+
+  deps = [
+    ":types",
+    "//base/test:test_support",
+    "//components/browser_apis/tab_strip:mojom",
+    "//testing/gtest",
+  ]
+}

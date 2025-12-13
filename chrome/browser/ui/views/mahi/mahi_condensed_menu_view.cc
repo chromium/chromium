@@ -78,7 +78,7 @@ class MahiCondensedMenuButton : public views::LabelButton {
   void OnButtonClicked() {
     // TODO(b/324647147): Add separate button type for condensed menu.
     chromeos::MahiWebContentsManager::Get()->OnContextMenuClicked(
-        display::Screen::GetScreen()
+        display::Screen::Get()
             ->GetDisplayNearestWindow(GetWidget()->GetNativeWindow())
             .id(),
         /*button_type=*/::chromeos::mahi::ButtonType::kSummary,

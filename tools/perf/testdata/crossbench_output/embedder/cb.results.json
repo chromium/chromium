@@ -4,6 +4,7 @@
     "chrome_v139_android.arm64.remote_0": {
       "cwd": "/example/path/chrome_v139_android.arm64.remote_0/stories",
       "probes": {
+        "perfetto": null,
         "embedder": {
           "json": [
             "/example/path/chrome_v139_android.arm64.remote_0/stories/embedder.json"
@@ -20,6 +21,7 @@
             "/example/path/chrome_v139_android.arm64.remote_0/stories/chrome_histograms.csv"
           ]
         },
+        "trace_processor": null,
         "cb.thermal_monitor": {
           "json": [
             "/example/path/chrome_v139_android.arm64.remote_0/stories/cb.thermal_monitor.json"
@@ -38,6 +40,7 @@
     }
   },
   "probes": {
+    "perfetto": null,
     "embedder": {
       "json": [
         "/example/path/embedder.json"
@@ -58,6 +61,14 @@
       ],
       "xlsx": [
         "/example/path/chrome_histograms.xlsx"
+      ]
+    },
+    "trace_processor": {
+      "csv": [
+        "/example/path/trace_processor/query_name.csv"
+      ],
+      "json": [
+        "/example/path/trace_processor/query_name.json"
       ]
     },
     "cb.thermal_monitor": {

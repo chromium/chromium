@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -13,7 +15,11 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.components.tabs.TabStripCollection;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -22,8 +28,18 @@ import java.util.Set;
  */
 @NullMarked
 public interface TabModel extends SupportsTabModelObserver, TabList {
+    Map<Integer, Long> sTabPinTimestampMap = new HashMap<>();
+
     /** Returns the profile associated with the current model. */
     @Nullable Profile getProfile();
+
+    /**
+     * Associates this tab model with a browser window. This should be called shortly after startup
+     * to associate the tab model with a AndroidBrowserWindow.
+     *
+     * @param nativeAndroidBrowserWindow The native AndroidBrowserWindow pointer.
+     */
+    void associateWithBrowserWindow(long nativeAndroidBrowserWindow);
 
     /** Returns the matching tab that has the given id, or null if there is none. */
     @Nullable Tab getTabById(@TabId int tabId);
@@ -94,7 +110,7 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      * the model or selected. The contained tab should always match the result of {@code
      * getTabAt(index())}.
      */
-    ObservableSupplier<@Nullable Tab> getCurrentTabSupplier();
+    NullableObservableSupplier<Tab> getCurrentTabSupplier();
 
     /**
      * Selects a tab by its index.
@@ -102,7 +118,7 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      * @param i The index of the tab to select.
      * @param type The type of selection.
      */
-    void setIndex(int i, final @TabSelectionType int type);
+    void setIndex(int i, @TabSelectionType int type);
 
     /**
      * @return Whether this tab model is currently selected in the correspond {@link
@@ -122,8 +138,26 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      * Pins a tab to the model.
      *
      * @param tabId The id of the tab to pin.
+     * @param showUngroupDialog Whether to possibly show a dialog to the user when pinning the last
+     *     tab in a group.
      */
-    void pinTab(int tabId);
+    default void pinTab(int tabId, boolean showUngroupDialog) {
+        pinTab(tabId, showUngroupDialog, /* tabModelActionListener= */ null);
+    }
+
+    /**
+     * Pins a tab to the model.
+     *
+     * @param tabId The id of the tab to pin.
+     * @param showUngroupDialog Whether to possibly show a dialog to the user when pinning the last
+     *     tab in a group.
+     * @param tabModelActionListener A listener that is notified in response to the user actions
+     *     taken in the ungroup dialog (if shown).
+     */
+    void pinTab(
+            int tabId,
+            boolean showUngroupDialog,
+            @Nullable TabModelActionListener tabModelActionListener);
 
     /**
      * Unpins a tab from the model.
@@ -136,7 +170,7 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      * Returns a supplier for the number of tabs in this tab model. This does not count tabs that
      * are pending closure.
      */
-    ObservableSupplier<Integer> getTabCountSupplier();
+    NonNullObservableSupplier<Integer> getTabCountSupplier();
 
     /** Returns the tab creator for this tab model. */
     TabCreator getTabCreator();
@@ -188,4 +222,79 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      * @return The total count of selected tabs.
      */
     int getMultiSelectedTabsCount();
+
+    /**
+     * Returns the index of the first non-pinned tab in the model.
+     *
+     * @return The index of the first non-pinned tab, or the model count if all tabs are pinned.
+     */
+    int findFirstNonPinnedTabIndex();
+
+    /**
+     * @return The number of pinned tabs in this model.
+     */
+    int getPinnedTabsCount();
+
+    /** Returns the native {@code SessionID} as returned by {@code tab_model.h:GetSessionId()}. */
+    @Nullable Integer getNativeSessionIdForTesting();
+
+    /**
+     * Sets the mute setting for the sites of the provided tabs.
+     *
+     * @param tabs The list of {@link Tab}s whose sites will have their sound setting changed.
+     * @param mute If true, it will block sound (muted); if false, it will allow sound (unmuted).
+     */
+    void setMuteSetting(List<Tab> tabs, boolean mute);
+
+    /**
+     * Returns whether a tab is muted. This is determined by the audio state of the WebContents if
+     * it's available, otherwise it falls back to the sound content setting for the tab's URL.
+     *
+     * @param tab The {@link Tab} to check.
+     */
+    boolean isMuted(Tab tab);
+
+    private static long getCurrentTimeMillis() {
+        return System.currentTimeMillis();
+    }
+
+    /**
+     * Records the timestamp when a tab is pinned.
+     *
+     * @param tab The tab that was pinned.
+     */
+    default void recordPinTimestamp(Tab tab) {
+        sTabPinTimestampMap.put(tab.getId(), getCurrentTimeMillis());
+    }
+
+    /**
+     * Records the duration for which a tab was pinned. This is called when a tab is unpinned. If a
+     * timestamp for the tab's pinning exists, it calculates the duration and records it to a
+     * histogram.
+     *
+     * @param tab The tab that was unpinned.
+     */
+    default void recordPinnedDuration(Tab tab) {
+        if (sTabPinTimestampMap.containsKey(tab.getId())) {
+            long pinTimestamp = sTabPinTimestampMap.get(tab.getId());
+            long duration = getCurrentTimeMillis() - pinTimestamp;
+            RecordHistogram.recordLongTimesHistogram100("Tab.PinnedDuration", duration);
+            sTabPinTimestampMap.remove(tab.getId());
+        }
+    }
+
+    /**
+     * Returns the {@link TabStripCollection} associated with this {@link TabModel} if tab
+     * collections are enabled. Otherwise, returns null.
+     */
+    @Nullable TabStripCollection getTabStripCollection();
+
+    /** Returns {@link ActivityType} of the this tab model. */
+    default int getActivityTypeForTesting() {
+        // Return an invalid type for the implementation to fail tests by default.
+        return -1;
+    }
+
+    /** Duplicates the given tab. */
+    @Nullable Tab duplicateTab(Tab tab);
 }

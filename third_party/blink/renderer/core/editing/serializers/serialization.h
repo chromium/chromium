@@ -49,6 +49,10 @@ class CSSPropertyValueSet;
 
 enum ChildrenOnly { kIncludeNode, kChildrenOnly };
 
+// ForceInertTemplate specifies whether the HTML parser should parse into an
+// inert (non-active) template document.
+enum class ForceInertTemplate { kDontForce, kForce };
+
 using ShadowRootSet = HeapHashSet<Member<ShadowRoot>>;
 struct ShadowRootInclusion final {
   STACK_ALLOCATED();
@@ -93,6 +97,8 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
     ParserContentPolicy,
     Element::ParseDeclarativeShadowRoots parse_declarative_shadows,
     Element::ForceHtml force_html,
+    ForceInertTemplate force_inert,
+    CustomElementRegistry* registry,
     ExceptionState&);
 DocumentFragment* CreateFragmentForTransformToFragment(
     const String&,

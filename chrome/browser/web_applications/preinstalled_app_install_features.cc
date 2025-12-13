@@ -63,17 +63,15 @@ constexpr const raw_ref<const base::Feature> kPreinstalledAppInstallFeatures[] =
 }  // namespace
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Use `IsPreinstalledDocsSheetsSlidesDriveStandaloneTabbed` instead of checking
+// Use `IsPreinstalledWorkspaceStandaloneTabbed` instead of checking
 // this flag directly to correctly exclude managed devices.
-BASE_FEATURE(kDocsSheetsSlidesDrivePreinstallStandaloneTabbed,
-             "DocsSheetsSlidesDrivePreinstallStandaloneTabbed",
+BASE_FEATURE(kPreinstalledWorkspaceStandaloneTabbed,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-bool IsPreinstalledDocsSheetsSlidesDriveStandaloneTabbed(Profile& profile) {
+bool IsPreinstalledWorkspaceStandaloneTabbed(Profile& profile) {
 #if BUILDFLAG(IS_CHROMEOS)
-  if (!base::FeatureList::IsEnabled(
-          kDocsSheetsSlidesDrivePreinstallStandaloneTabbed)) {
+  if (!base::FeatureList::IsEnabled(kPreinstalledWorkspaceStandaloneTabbed)) {
     return false;
   }
   // Exclude managed devices.

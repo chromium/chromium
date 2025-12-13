@@ -202,7 +202,8 @@ bool LayoutText::IsWordBreak() const {
 }
 
 void LayoutText::StyleWillChange(StyleDifference diff,
-                                 const ComputedStyle& new_style) {
+                                 const ComputedStyle& new_style,
+                                 StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
 
   if (const ComputedStyle* current_style = Style()) {
@@ -216,8 +217,10 @@ void LayoutText::StyleWillChange(StyleDifference diff,
   }
 }
 
-void LayoutText::StyleDidChange(StyleDifference diff,
-                                const ComputedStyle* old_style) {
+void LayoutText::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   // There is no need to ever schedule paint invalidations from a style change
   // of a text run, since we already did this for the parent of the text run.
@@ -370,7 +373,6 @@ Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {
   NOT_DESTROYED();
   // This function may kick the layout (e.g., |LocalRect()|), but Inspector may
   // call this function outside of the layout phase.
-  FontCachePurgePreventer fontCachePurgePreventer;
 
   Vector<TextBoxInfo> results;
   if (const OffsetMapping* mapping = GetOffsetMapping()) {
@@ -623,9 +625,7 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
         // ​​are equal, it signifies a collapsed range. In this case, we
         // should skip processing `item`.
         if (start > offset.end || end < offset.start ||
-            (RuntimeEnabledFeatures::
-                 SkipLineBreakItemWhenIsCollapsedEnabled() &&
-             item.IsLineBreak() && start == end)) {
+            (item.IsLineBreak() && start == end)) {
           is_last_end_included = false;
           continue;
         }
@@ -646,7 +646,7 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
         rect = text_combine->AdjustRectForBoundingBox(rect);
       }
       gfx::QuadF quad;
-      if (const SvgFragmentData* svg_data = item.GetSvgFragmentData()) {
+      if (const TextFragmentRareData* svg_data = item.GetSvgFragmentData()) {
         gfx::RectF float_rect(rect);
         float_rect.Offset(svg_data->rect.OffsetFromOrigin());
         quad = item.BuildSvgTransformForBoundingBox().MapQuad(
@@ -655,11 +655,7 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
         quad.Scale(1 / scaling_factor, 1 / scaling_factor);
         quad = LocalToAbsoluteQuad(quad);
       } else {
-        if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-          rect.Move(cursor.CurrentOffsetInFirstContainerFragment());
-        } else {
-          rect.Move(cursor.CurrentOffsetInBlockFlow());
-        }
+        rect.Move(cursor.CurrentOffsetInFirstContainerFragment());
         quad = LocalRectToAbsoluteQuad(rect);
       }
       if (!is_collapsed) {
@@ -675,7 +671,8 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
   }
 }
 
-gfx::RectF LayoutText::LocalBoundingBoxRectForAccessibility() const {
+gfx::RectF LayoutText::LocalBoundingBoxRectForAccessibility(
+    IncludeDescendants include_descendants) const {
   NOT_DESTROYED();
   gfx::RectF result;
   CollectLineBoxRects(
@@ -689,8 +686,8 @@ PositionWithAffinity LayoutText::PositionForPoint(
   NOT_DESTROYED();
   // NG codepath requires |kPrePaintClean|.
   // |SelectionModifier| calls this only in legacy codepath.
-  DCHECK(!IsLayoutNGObject() || GetDocument().Lifecycle().GetState() >=
-                                    DocumentLifecycle::kPrePaintClean);
+  DCHECK(GetDocument().Lifecycle().GetState() >=
+         DocumentLifecycle::kPrePaintClean);
 
   if (IsInLayoutNGInlineFormattingContext()) {
     // Because of Texts in "position:relative" can be outside of line box, we
@@ -816,7 +813,7 @@ void LayoutText::LogicalStartingPointAndHeight(
       logical_starting_point = {physical_offset.left, physical_offset.top};
       return;
     }
-    PhysicalSize outer_size = ContainingBlock()->Size();
+    PhysicalSize outer_size = ContainingBlock()->StitchedSize();
     logical_starting_point =
         WritingModeConverter(StyleRef().GetWritingDirection(), outer_size)
             .ToLogical(physical_offset, cursor.Current().Size());
@@ -882,9 +879,7 @@ UChar LayoutText::PreviousCharacter() const {
   // find previous text layoutObject if one exists
   const LayoutObject* previous_text = PreviousInPreOrder();
   for (; previous_text; previous_text = previous_text->PreviousInPreOrder()) {
-    if (RuntimeEnabledFeatures::
-            IgnoreOutOfFlowPositionForPreviousTextEnabled() &&
-        previous_text->IsOutOfFlowPositioned()) {
+    if (previous_text->IsOutOfFlowPositioned()) {
       continue;
     }
     if (!IsInlineFlowOrEmptyText(previous_text)) {
@@ -1060,10 +1055,11 @@ void LayoutText::TextDidChangeWithoutInvalidation() {
   TextOffsetMap offset_map;
   bool is_password_echo_enabled =
       GetDocument().GetSettings() &&
-      GetDocument().GetSettings()->GetPasswordEchoEnabled();
+      GetDocument().GetSettings()->GetPasswordEchoEnabledPhysical() &&
+      GetDocument().GetSettings()->GetPasswordEchoEnabledTouch();
   String original_text =
       (RuntimeEnabledFeatures::UseOriginalDomOffsetsForOffsetMapEnabled() &&
-       OriginalText() && is_password_echo_enabled)
+       !OriginalText().empty() && is_password_echo_enabled)
           ? OriginalText()
           : text_;
   wtf_size_t original_length = original_text.length();

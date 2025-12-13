@@ -193,6 +193,11 @@ declare_args() {
 assert(!is_hwasan || (target_os == "android" && target_cpu == "arm64"),
        "HWASan only supported on Android ARM64 builds.")
 
+if (is_asan && target_os == "android") {
+  print(
+      "Warning: is_asan is no longer supported on Android. It might work, but you'll probably have better luck with is_hwasan=true (which requires arm64). https://crbug.com/441905843")
+}
+
 assert(
     !(enable_fuzztest_fuzz && use_libfuzzer),
     "Can't specify enable_fuzztest_fuzz and use_libfuzzer. When libfuzzer is enabled, fuzztest executables automatically support --fuzz but provide output that's libfuzzer compatible.")
@@ -306,10 +311,10 @@ assert(!is_cfi || is_clang,
 prebuilt_instrumented_libraries_available =
     is_msan && (msan_track_origins == 0 || msan_track_origins == 2)
 
-if (use_libfuzzer && (is_linux || is_chromeos)) {
+if (use_fuzzing_engine && (is_linux || is_chromeos)) {
   if (is_asan) {
-    # We do leak checking with libFuzzer on Linux. Set is_lsan for code that
-    # relies on LEAK_SANITIZER define to avoid false positives.
+    # We do leak checking when fuzzing with ASan on Linux. Set is_lsan for code
+    # that relies on LEAK_SANITIZER define to avoid false positives.
     is_lsan = true
   }
 }

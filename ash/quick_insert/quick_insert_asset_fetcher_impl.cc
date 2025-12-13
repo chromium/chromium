@@ -5,6 +5,7 @@
 #include "ash/quick_insert/quick_insert_asset_fetcher_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -32,18 +33,16 @@ using DownloadGifMediaToStringCallback =
     base::OnceCallback<void(const std::string& gif_media_data)>;
 
 bool IsValidGifMediaUrl(const GURL& url) {
-  // TODO: b/323784358 - Check requirements for validating GIF urls.
   return url.DomainIs("media.tenor.com") && url.SchemeIs(url::kHttpsScheme);
 }
 
 void OnGifMediaDownloaded(base::WeakPtr<const network::SimpleURLLoader> loader,
                           DownloadGifMediaToStringCallback callback,
-                          std::unique_ptr<std::string> response_body) {
+                          std::optional<std::string> response_body) {
   if (loader && loader->NetError() == net::OK && response_body) {
     std::move(callback).Run(*response_body);
     return;
   }
-  // TODO: b/325368650 - Determine how network errors should be handled.
   std::move(callback).Run(std::string());
 }
 

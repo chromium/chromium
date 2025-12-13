@@ -17,6 +17,8 @@ FakeIToastNotification::FakeIToastNotification(const std::wstring& xml,
                                                const std::wstring& tag)
     : xml_(xml), group_(L"Notifications"), tag_(tag) {}
 
+FakeIToastNotification::~FakeIToastNotification() = default;
+
 HRESULT FakeIToastNotification::get_Content(winxml::Dom::IXmlDocument** value) {
   mswr::ComPtr<winxml::Dom::IXmlDocumentIO> xml_document_io;
   base::win::ScopedHString id = base::win::ScopedHString::Create(

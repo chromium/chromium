@@ -49,4 +49,18 @@ suite('controlled radio button', function() {
         radioButton.shadowRoot!.querySelector(
                                    'cr-policy-pref-indicator')!.style.display);
   });
+
+  test('additional content slot is present', function() {
+    const additionalContent = document.createElement('div');
+    additionalContent.slot = 'additional-content';
+    additionalContent.textContent = 'foo';
+    radioButton.appendChild(additionalContent);
+    flush();
+    const slot = radioButton.shadowRoot!.querySelector<HTMLSlotElement>(
+        'slot[name="additional-content"]');
+    assertTrue(!!slot);
+    assertEquals(1, slot.assignedElements().length);
+    const slotElement = slot.assignedElements()[0] as HTMLElement;
+    assertEquals('foo', slotElement.textContent);
+  });
 });

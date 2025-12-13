@@ -64,6 +64,11 @@ bool VideoColorSpace::IsSpecified() const {
          range != gfx::ColorSpace::RangeID::INVALID;
 }
 
+bool VideoColorSpace::IsHDR() const {
+  return transfer == TransferID::SMPTEST2084 ||
+         transfer == TransferID::ARIB_STD_B67;
+}
+
 gfx::ColorSpace VideoColorSpace::ToGfxColorSpace() const {
   return ToGfxColorSpaceInternal(/*allow_guessing=*/false);
 }

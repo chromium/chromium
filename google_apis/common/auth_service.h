@@ -9,10 +9,11 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 #include "google_apis/common/auth_service_interface.h"
 #include "google_apis/gaia/core_account_id.h"
 
@@ -41,7 +42,7 @@ class AuthService : public AuthServiceInterface {
   AuthService(signin::IdentityManager* identity_manager,
               const CoreAccountId& account_id,
               scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-              const std::vector<std::string>& scopes);
+              signin::OAuthConsumerId oauth_consumer_id);
   AuthService(const AuthService&) = delete;
   AuthService& operator=(const AuthService&) = delete;
   ~AuthService() override;
@@ -75,7 +76,7 @@ class AuthService : public AuthServiceInterface {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   bool has_refresh_token_;
   std::string access_token_;
-  std::vector<std::string> scopes_;
+  signin::OAuthConsumerId oauth_consumer_id_;
   base::ObserverList<AuthServiceObserver>::Unchecked observers_;
   base::ThreadChecker thread_checker_;
 

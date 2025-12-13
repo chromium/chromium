@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<title>Overscroll Position Parsing Test - computed</title>
+<meta name="assert" content="overscroll-position supports the full grammar 'none | <dashed-ident>'.">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+
+<div id=target></div>
+
+<script>
+test_computed_value("overscroll-position", "none", "none");
+test_computed_value("overscroll-position", "nOnE", "none");
+test_computed_value("overscroll-position", "--foo", "--foo");
+</script>
+
+

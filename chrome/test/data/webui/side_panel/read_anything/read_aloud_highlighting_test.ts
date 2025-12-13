@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {playFromSelectionTimeout, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentController, playFromSelectionTimeout, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
@@ -14,6 +14,7 @@ import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 suite('ReadAloudHighlight', () => {
   let app: AppElement;
   let speechController: SpeechController;
+  let selectionController: SelectionController;
   const sentence1 = 'Only need the light when it\'s burning low.\n';
   const sentence2 = 'Only miss the sun when it starts to snow.\n';
   const sentenceSegment1 = 'Only know you love her when you let her go';
@@ -67,12 +68,18 @@ suite('ReadAloudHighlight', () => {
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
     SpeechBrowserProxyImpl.setInstance(new TestSpeechBrowserProxy());
+    selectionController = new SelectionController();
+    SelectionController.setInstance(selectionController);
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
     VoiceLanguageController.setInstance(new VoiceLanguageController());
+    ContentController.setInstance(new ContentController());
+    // Ensure the ReadAloudModel is not shared between tests.
+    setInstance(null);
 
     app = await createApp();
     chrome.readingMode.setContentForTesting(axTree, leafIds);
+    selectionController.onSelectionChange(app.getSelection());
   });
 
   test('on speak first sentence highlights are correct', () => {
@@ -249,7 +256,7 @@ suite('ReadAloudHighlight', () => {
           },
           axTree);
       chrome.readingMode.setContentForTesting(selectedTree, leafIds);
-      app.updateSelection();
+      selectionController.updateSelection(app.getSelection(), app.$.container);
       emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       mockTimer.tick(playFromSelectionTimeout);
       mockTimer.uninstall();

@@ -38,9 +38,33 @@ class COMPONENT_EXPORT(SCENARIO_API) ScopedReadOnlyScenarioMemory {
   ScopedReadOnlyScenarioMemory& operator=(const ScopedReadOnlyScenarioMemory&) =
       delete;
 
+  static void OnScenarioObserverListCreated(
+      base::PassKey<ScopedScenarioObserverList>,
+      ScenarioScope scope);
+
  private:
   using PassKey = base::PassKey<ScopedReadOnlyScenarioMemory>;
   ScenarioScope scope_;
+};
+
+// A scoped object that owns the PerformanceScenarioObserverList to notify when
+// the scenario state in shared memory changes. This should be created near the
+// start of any process where PerformanceScenarioObserverList is supported so
+// callers can register observers before ScopedReadOnlyScenarioMemory is mapped.
+//
+// As long as this exists PerformanceScenarioObserverList::GetForScope() will
+// return an object. Otherwise GetForScope() will return nullptr.
+class COMPONENT_EXPORT(SCENARIO_API) ScopedScenarioObserverList {
+ public:
+  ScopedScenarioObserverList();
+  ~ScopedScenarioObserverList();
+
+  ScopedScenarioObserverList(const ScopedScenarioObserverList&) = delete;
+  ScopedScenarioObserverList& operator=(const ScopedScenarioObserverList&) =
+      delete;
+
+ private:
+  using PassKey = base::PassKey<ScopedScenarioObserverList>;
 };
 
 // Returns a pointer to the shared memory mapping registered for `scope`, or

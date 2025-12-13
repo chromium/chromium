@@ -121,6 +121,8 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   BOOL _editMode;
   // Whether the user is syncing tabs.
   BOOL _tabSynced;
+  // Whether a new tab should be inserted into the new group.
+  BOOL _createNewTabForGroup;
   // Number of tabs in the group.
   NSInteger _tabsCount;
   // Title of the group.
@@ -147,11 +149,14 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   UIScrollView* _colorsScrollView;
 }
 
-- (instancetype)initWithEditMode:(BOOL)editMode tabSynced:(BOOL)tabSynced {
+- (instancetype)initWithEditMode:(BOOL)editMode
+                       tabSynced:(BOOL)tabSynced
+            createNewTabForGroup:(BOOL)createNewTabForGroup {
   self = [super init];
   if (self) {
     _editMode = editMode;
     _tabSynced = tabSynced;
+    _createNewTabForGroup = createNewTabForGroup;
 
     // Create the `_snapshotsView` early. Favicon and snapshot fetches begin
     // before the view loads, and `_snapshotsView` is updated incrementally as
@@ -189,11 +194,9 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   [self createConfigurations];
   [self updateViews:self.view previousTraitCollection:nil];
 
-  if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
-                       withAction:@selector(updateViews:
-                                      previousTraitCollection:)];
-  }
+  [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
+                     withAction:@selector(updateViews:
+                                    previousTraitCollection:)];
 
   // To force display the keyboard when the view is shown.
   [_tabGroupTextField becomeFirstResponder];
@@ -202,20 +205,6 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 - (UIStatusBarStyle)preferredStatusBarStyle {
   return UIStatusBarStyleLightContent;
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-  if (self.traitCollection.verticalSizeClass !=
-      previousTraitCollection.verticalSizeClass) {
-    [self updateViews:self.view
-        previousTraitCollection:previousTraitCollection];
-  }
-}
-#endif
 
 #pragma mark - Private helpers
 
@@ -780,6 +769,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 - (UIView*)configuredSnapshotsContainer {
   UIView* snapshotsBackground =
       [[CreateTabGroupSnapshotContainerView alloc] init];
+  snapshotsBackground.hidden = _createNewTabForGroup;
   snapshotsBackground.translatesAutoresizingMaskIntoConstraints = NO;
   snapshotsBackground.backgroundColor = [[UIColor colorNamed:kSolidWhiteColor]
       colorWithAlphaComponent:kBackgroundAlpha];

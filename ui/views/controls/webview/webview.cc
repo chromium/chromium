@@ -15,17 +15,22 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
+#include "ui/views/accessibility/tree/widget_ax_manager.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/views_delegate.h"
+#include "ui/views/views_features.h"
+#include "ui/views/widget/widget.h"
 
 namespace views {
 
@@ -89,12 +94,13 @@ bool WebView::IsWebViewContents(const content::WebContents* web_contents) {
   return web_contents->GetUserData(kIsWebViewContentsKey);
 }
 
-content::WebContents* WebView::GetWebContents(base::Location creator_location) {
+content::WebContents* WebView::GetWebContents(const GURL& url,
+                                              base::Location creator_location) {
   if (!web_contents()) {
     if (!browser_context_) {
       return nullptr;
     }
-    wc_owner_ = CreateWebContents(browser_context_, creator_location);
+    wc_owner_ = CreateWebContents(browser_context_, url, creator_location);
     wc_owner_->SetDelegate(this);
     SetWebContents(wc_owner_.get());
   }
@@ -150,13 +156,23 @@ void WebView::LoadInitialURL(const GURL& url,
   params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
   params.force_no_https_upgrade =
       https_upgrade_policy == HttpsUpgradePolicy::kNoUpgrade;
-  content::WebContents* web_contents = GetWebContents(invoke_location);
+
+  const GURL initial_url =
+      base::FeatureList::IsEnabled(features::kApplyInitialUrlToWebContents)
+          ? url
+          : GURL();
+  content::WebContents* web_contents =
+      GetWebContents(initial_url, invoke_location);
   DCHECK(web_contents);
   web_contents->GetController().LoadURLWithParams(params);
 }
 
 void WebView::SetFastResize(bool fast_resize) {
   holder_->set_fast_resize(fast_resize);
+}
+
+bool WebView::GetFastResize() const {
+  return holder_->fast_resize();
 }
 
 void WebView::EnableSizingFromWebContents(const gfx::Size& min_size,
@@ -320,6 +336,8 @@ void WebView::AddedToWidget() {
   if (holder_->native_view()) {
     UpdateNativeViewHostAccessibleParent(holder_, parent());
   }
+
+  HandleWidgetAXManagerEnablement();
 }
 
 void WebView::RemovedFromWidget() {
@@ -328,6 +346,8 @@ void WebView::RemovedFromWidget() {
   if (holder_->native_view()) {
     holder_->SetParentAccessible(gfx::NativeViewAccessible());
   }
+
+  widget_ax_manager_observation_.Reset();
 }
 
 gfx::NativeViewAccessible WebView::GetNativeViewAccessible() {
@@ -355,11 +375,16 @@ void WebView::OnAXModeAdded(ui::AXMode mode) {
     return;
   }
 
-  // Normally, it is set during AttachWebContentsNativeView when the WebView is
+  // AX platform may have been initialized after the holder_'s native view was
   // created but this may not happen on some platforms as the accessible object
   // may not have been present when this WebView was created. So, update it when
   // AX mode is added.
-  UpdateNativeViewHostAccessibleParent(holder(), parent());
+  //
+  // TODO(crbug.com/40672441): Remove when we enable ViewsAX by default.
+  // `OnWidgetAXManagerEnabled` will take care of this instead.
+  if (!::features::IsAccessibilityTreeForViewsEnabled()) {
+    UpdateNativeViewHostAccessibleParent(holder(), parent());
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -466,6 +491,8 @@ void WebView::AttachWebContentsNativeView() {
   // We set the parent accessible of the native view to be our parent.
   UpdateNativeViewHostAccessibleParent(holder(), parent());
 
+  HandleWidgetAXManagerEnablement();
+
   // The WebContents is not focused automatically when attached, so we need to
   // tell the WebContents it has focus if this has focus.
   if (HasFocus()) {
@@ -509,8 +536,53 @@ void WebView::NotifyAccessibilityWebContentsChanged() {
   NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged, false);
 }
 
+void WebView::OnWidgetAXManagerEnabled() {
+  if (holder_->native_view()) {
+    UpdateNativeViewHostAccessibleParent(holder_, parent());
+  }
+
+  widget_ax_manager_observation_.Reset();
+}
+
+void WebView::HandleWidgetAXManagerEnablement() {
+  if (!::features::IsAccessibilityTreeForViewsEnabled()) {
+    return;
+  }
+
+  Widget* widget = GetWidget();
+  if (!widget) {
+    return;
+  }
+
+  WidgetAXManager* manager = widget->ax_manager();
+  if (!manager) {
+    return;
+  }
+
+  if (manager->is_enabled()) {
+    if (holder_->native_view()) {
+      UpdateNativeViewHostAccessibleParent(holder_, parent());
+    }
+    widget_ax_manager_observation_.Reset();
+    return;
+  }
+
+  if (!widget_ax_manager_observation_.IsObserving()) {
+    widget_ax_manager_observation_.Observe(manager);
+  }
+}
+
+bool WebView::IsObservingAXModeForTesting() {
+  return ax_mode_observation_.IsObserving();
+}
+
+bool WebView::IsObservingWidgetAXManagerForTesting() {
+  return widget_ax_manager_observation_.IsObserving();
+}
+
 std::unique_ptr<content::WebContents> WebView::CreateWebContents(
     content::BrowserContext* browser_context,
+    const GURL& url,
     base::Location creator_location) {
   std::unique_ptr<content::WebContents> contents;
   if (*GetCreatorForTesting()) {
@@ -520,6 +592,10 @@ std::unique_ptr<content::WebContents> WebView::CreateWebContents(
   if (!contents) {
     content::WebContents::CreateParams create_params(browser_context,
                                                      creator_location);
+    if (!url.is_empty()) {
+      create_params.site_instance =
+          content::SiteInstance::CreateForURL(browser_context, url);
+    }
     return content::WebContents::Create(create_params);
   }
 

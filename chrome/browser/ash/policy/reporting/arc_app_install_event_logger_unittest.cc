@@ -12,7 +12,6 @@
 #include "base/values.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
@@ -34,7 +33,6 @@ namespace {
 
 using ::testing::_;
 using ::testing::DoAll;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::WithArgs;
 namespace em = ::enterprise_management;
@@ -145,28 +143,6 @@ class MockAppInstallEventLoggerDelegate
   MOCK_CONST_METHOD1(GetAndroidId_, void(AndroidIdCallback*));
 };
 
-class MockArcAppInstallPolicyDataHelper : public ArcAppInstallPolicyDataHelper {
- public:
-  MockArcAppInstallPolicyDataHelper() = default;
-
-  MockArcAppInstallPolicyDataHelper(const MockArcAppInstallPolicyDataHelper&) =
-      delete;
-  MockArcAppInstallPolicyDataHelper& operator=(
-      const MockArcAppInstallPolicyDataHelper&) = delete;
-
-  MOCK_METHOD2(AddPolicyData,
-               void(const std::set<std::string>& current_pending,
-                    std::int64_t num_apps_previously_installed));
-
-  MOCK_METHOD(void, CheckForPolicyDataTimeout, ());
-
-  MOCK_METHOD2(UpdatePolicySuccessRate,
-               void(const std::string& package, bool success));
-
-  MOCK_METHOD2(UpdatePolicySuccessRateForPackages,
-               void(const std::set<std::string>& packages, bool success));
-};
-
 void SetPolicy(PolicyMap* map, const char* name, base::Value value) {
   map->Set(name, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
            std::move(value), nullptr);
@@ -234,10 +210,10 @@ class AppInstallEventLoggerTest : public testing::Test {
     }
     EXPECT_CALL(delegate_, GetAndroidId_(_))
         .WillOnce(WithArgs<0>(
-            Invoke([=](ArcAppInstallEventLogger::Delegate::AndroidIdCallback*
-                           callback) {
+            [=](ArcAppInstallEventLogger::Delegate::AndroidIdCallback*
+                    callback) {
               std::move(*callback).Run(android_id, kAndroidId);
-            })));
+            }));
   }
 
   PolicyMap CreatePolicyWithForceInstalls(std::set<std::string> package_names) {
@@ -254,8 +230,7 @@ class AppInstallEventLoggerTest : public testing::Test {
     }
 
     arc_policy.Set("applications", std::move(list));
-    std::string arc_policy_string;
-    base::JSONWriter::Write(arc_policy, &arc_policy_string);
+    std::string arc_policy_string = base::WriteJson(arc_policy).value_or("");
     SetPolicy(&policy_map, key::kArcEnabled, base::Value(true));
     SetPolicy(&policy_map, key::kArcPolicy, base::Value(arc_policy_string));
 
@@ -279,14 +254,10 @@ class AppInstallEventLoggerTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
   ash::NetworkHandlerTestHelper network_handler_test_helper_;
   TestingProfile profile_;
 
   MockAppInstallEventLoggerDelegate delegate_;
-
-  MockArcAppInstallPolicyDataHelper policy_data_helper_;
 
   em::AppInstallReportLogEvent event_;
 
@@ -489,8 +460,7 @@ TEST_F(AppInstallEventLoggerTest, UpdatePolicy) {
   list.Append(std::move(package5));
   arc_policy.Set("applications", std::move(list));
 
-  std::string arc_policy_string;
-  base::JSONWriter::Write(arc_policy, &arc_policy_string);
+  std::string arc_policy_string = base::WriteJson(arc_policy).value_or("");
   SetPolicy(&new_policy_map, key::kArcEnabled, base::Value(true));
   SetPolicy(&new_policy_map, key::kArcPolicy, base::Value(arc_policy_string));
 
@@ -530,15 +500,12 @@ TEST_F(AppInstallEventLoggerTest, PolicySuccessRate_AddPolicyData) {
 
   logger_->OnPolicyUpdated(PolicyNamespace(), /* previous */ PolicyMap(),
                            policy);
-  ON_CALL(policy_data_helper_, UpdatePolicySuccessRateForPackages);
-  ON_CALL(policy_data_helper_, AddPolicyData);
 }
 
 TEST_F(AppInstallEventLoggerTest, PolicySuccessRate_UpdatePolicySuccessRate) {
   CreateLogger();
   logger_->SetStatefulPathForTesting(base::FilePath(kStatefulPath));
   logger_->UpdatePolicySuccessRate(kPackageName, true);
-  ON_CALL(policy_data_helper_, UpdatePolicySuccessRate);
 }
 
 }  // namespace policy

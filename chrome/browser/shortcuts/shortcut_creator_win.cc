@@ -23,8 +23,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shortcuts/platform_util_win.h"
 #include "chrome/common/chrome_switches.h"
-#include "ui/gfx/icon_util.h"
 #include "ui/gfx/image/image_family.h"
+#include "ui/gfx/win/icon_util.h"
 #include "url/gurl.h"
 
 namespace shortcuts {

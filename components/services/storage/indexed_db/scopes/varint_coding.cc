@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 
 #include <array>
@@ -40,9 +39,27 @@ bool DecodeVarInt(std::string_view* from, int64_t* into) {
       return false;
 
     unsigned char c = *it;
-    ret |= static_cast<uint64_t>(c & 0x7f) << shift;
+
+    if ((shift != 0) && (c == 0)) {
+      // On the first iteration, the entire byte can be 0, which represents the
+      // value 0. On every other iteration (input byte), this is not a valid
+      // input, as EncodeVarInt() would have marked the top bit of the previous
+      // byte as 0, and iteration would have stopped.
+      return false;
+    }
+
+    uint64_t pre_shift = static_cast<uint64_t>(c & 0x7f);
+    uint64_t shifted = pre_shift << shift;
+    if ((shifted >> shift) != pre_shift) {
+      // Make sure that no bits are shifted off the left, which would be another
+      // form of invalid input (which can occur in the last byte).
+      return false;
+    }
+
+    ret |= shifted;
     shift += 7;
   } while (*it++ & 0x80);
+
   *into = static_cast<int64_t>(ret);
   from->remove_prefix(it - from->begin());
   return true;

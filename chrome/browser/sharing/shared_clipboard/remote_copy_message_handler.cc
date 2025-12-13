@@ -5,6 +5,8 @@
 #include "chrome/browser/sharing/shared_clipboard/remote_copy_message_handler.h"
 
 #include <algorithm>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -176,13 +178,13 @@ void RemoteCopyMessageHandler::HandleImage(const std::string& image_url) {
 bool RemoteCopyMessageHandler::IsImageSourceAllowed(const GURL& image_url) {
   // The actual image URL may have a hash in the subdomain. This means we
   // cannot match the entire host - we'll match the domain instead.
-  return image_url.SchemeIs(allowed_origin_.scheme_piece()) &&
-         image_url.DomainIs(allowed_origin_.host_piece()) &&
+  return image_url.SchemeIs(allowed_origin_.scheme()) &&
+         image_url.DomainIs(allowed_origin_.host()) &&
          image_url.EffectiveIntPort() == allowed_origin_.EffectiveIntPort();
 }
 
 void RemoteCopyMessageHandler::OnURLLoadComplete(
-    std::unique_ptr<std::string> content) {
+    std::optional<std::string> content) {
   TRACE_EVENT0("sharing", "RemoteCopyMessageHandler::OnURLLoadComplete");
 
   url_loader_.reset();

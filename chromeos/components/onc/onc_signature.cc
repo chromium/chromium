@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/components/onc/onc_signature.h"
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "components/onc/onc_constants.h"
 using base::Value;
@@ -577,7 +573,8 @@ const OncFieldSignature* GetFieldSignature(const OncValueSignature& signature,
   if (!signature.fields)
     return nullptr;
   for (const OncFieldSignature* field_signature = signature.fields;
-       field_signature->onc_field_name != nullptr; ++field_signature) {
+       field_signature->onc_field_name != nullptr;
+       UNSAFE_TODO(++field_signature)) {
     if (onc_field_name == field_signature->onc_field_name)
       return field_signature;
   }
@@ -616,7 +613,7 @@ const CredentialEntry credentials[] = {
 bool FieldIsCredential(const OncValueSignature& signature,
                        const std::string& onc_field_name) {
   for (const CredentialEntry* entry = credentials;
-       entry->value_signature != nullptr; ++entry) {
+       entry->value_signature != nullptr; UNSAFE_TODO(++entry)) {
     if (&signature == entry->value_signature &&
         onc_field_name == entry->field_name) {
       return true;

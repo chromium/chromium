@@ -13,7 +13,10 @@
 #include "chrome/common/extensions/api/windows.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/base_window.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -48,6 +51,15 @@ void WindowControllerList::NotifyWindowBoundsChanged(WindowController* window) {
   if (base::Contains(windows_, window)) {
     for (auto& observer : observers_)
       observer.OnWindowBoundsChanged(window);
+  }
+}
+
+void WindowControllerList::NotifyWindowFocusChanged(WindowController* window,
+                                                    bool has_focus) {
+  if (base::Contains(windows_, window)) {
+    for (auto& observer : observers_) {
+      observer.OnWindowFocusChanged(window, has_focus);
+    }
   }
 }
 

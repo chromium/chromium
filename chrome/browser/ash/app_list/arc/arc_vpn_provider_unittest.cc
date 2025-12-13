@@ -68,8 +68,9 @@ class ArcVpnProviderTest : public AppListTestBase {
 
   // AppListTestBase:
   void SetUp() override {
+    arc_app_test_.PreProfileSetUp();
     AppListTestBase::SetUp();
-    arc_test_.SetUp(profile());
+    arc_app_test_.PostProfileSetUp(profile());
     ArcVpnProviderManager* arc_vpn_provider_manager =
         ArcVpnProviderManager::Get(profile());
     DCHECK(arc_vpn_provider_manager);
@@ -81,8 +82,9 @@ class ArcVpnProviderTest : public AppListTestBase {
         ArcVpnProviderManager::Get(profile());
     DCHECK(arc_vpn_provider_manager);
     arc_vpn_provider_manager->RemoveObserver(&arc_vpn_observer_);
-    arc_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
     AppListTestBase::TearDown();
+    arc_app_test_.PostProfileTearDown();
   }
 
   void AddArcApp(const std::string& app_name,
@@ -105,14 +107,14 @@ class ArcVpnProviderTest : public AppListTestBase {
     app_instance()->UninstallPackage(package_name);
   }
 
-  ArcAppTest& arc_test() { return arc_test_; }
+  ArcAppTest& arc_app_test() { return arc_app_test_; }
 
-  arc::FakeAppInstance* app_instance() { return arc_test_.app_instance(); }
+  arc::FakeAppInstance* app_instance() { return arc_app_test_.app_instance(); }
 
   ArcVpnObserver& arc_vpn_observer() { return arc_vpn_observer_; }
 
  private:
-  ArcAppTest arc_test_;
+  ArcAppTest arc_app_test_;
   ArcVpnObserver arc_vpn_observer_;
 };
 
@@ -137,7 +139,7 @@ TEST_F(ArcVpnProviderTest, ArcVpnProviderUpdateCount) {
   // Arc Vpn Observer observes Arc Vpn app launch time and app name updates.
   std::string vpnAppId =
       ArcAppListPrefs::GetAppId(kVpnPackageName, kVpnAppActivity);
-  arc_test().arc_app_list_prefs()->SetLastLaunchTime(vpnAppId);
+  arc_app_test().arc_app_list_prefs()->SetLastLaunchTime(vpnAppId);
   EXPECT_EQ(2,
             arc_vpn_observer().GetArcVpnProviderUpdateCount(kVpnPackageName));
   AddArcApp(kVpnAppNameUpdate, kVpnPackageName, kVpnAppActivity);

@@ -3,26 +3,28 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/background/glic/glic_background_mode_manager.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
-#include "chrome/browser/background/startup_launch_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
-#include "chrome/browser/glic/glic_keyed_service.h"
-#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/startup/startup_launch_manager.h"
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/installer/util/auto_launch_util.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -34,14 +36,24 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/shell.h"
+#endif
+
+using auto_launch_util::StartupLaunchMode;
 
 namespace {
 class TestStartupLaunchManager : public StartupLaunchManager {
  public:
-  TestStartupLaunchManager() = default;
-  MOCK_METHOD1(UpdateLaunchOnStartup, void(bool should_launch_on_startup));
+  explicit TestStartupLaunchManager(BrowserProcess* browser_process)
+      : StartupLaunchManager(browser_process) {}
+
+  MOCK_METHOD1(UpdateLaunchOnStartup,
+               void(std::optional<StartupLaunchMode> startup_mode));
 };
 }  // namespace
 
@@ -49,6 +61,15 @@ namespace glic {
 
 class GlicBackgroundModeManagerUiTest : public test::InteractiveGlicTest {
  public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_override_ =
+        GlobalFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+            base::BindRepeating([](BrowserProcess& browser_process) {
+              return std::make_unique<TestStartupLaunchManager>(
+                  &browser_process);
+            }));
+  }
+
   void TearDownOnMainThread() override {
     // Disable glic so that the glic_background_mode_manager won't prevent the
     // browser process from closing which causes the test to hang.
@@ -58,10 +79,19 @@ class GlicBackgroundModeManagerUiTest : public test::InteractiveGlicTest {
   }
 
   bool IsHotkeySupported() {
+    // ChromeOS uses ash's accelerator controller rather than global accelerator
+    // listener.
+#if BUILDFLAG(IS_CHROMEOS)
+    if (ash::Shell::HasInstance()) {
+      return ash::Shell::Get()->accelerator_controller() != nullptr;
+    }
+    return false;
+#else
     auto* const global_shortcut_listener =
         ui::GlobalAcceleratorListener::GetInstance();
     return global_shortcut_listener != nullptr &&
            !global_shortcut_listener->IsRegistrationHandledExternally();
+#endif
   }
 
   void RegisterHotkey(ui::Accelerator updated_hotkey) {
@@ -72,6 +102,7 @@ class GlicBackgroundModeManagerUiTest : public test::InteractiveGlicTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  ui::UserDataFactory::ScopedOverride scoped_override_;
 };
 
 // Checks that modifying the pref propagates to KeepAliveRegistry.
@@ -92,7 +123,13 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, KeepAlive) {
 }
 
 // Checks that the status icon exists when the pref is enabled.
-IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, StatusIcon) {
+// TODO(crbug.com/460829115): Enable on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_StatusIcon DISABLED_StatusIcon
+#else
+#define MAYBE_StatusIcon StatusIcon
+#endif
+IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, MAYBE_StatusIcon) {
   ASSERT_FALSE(g_browser_process->status_tray()->HasStatusIconOfTypeForTesting(
       StatusTray::StatusIconType::GLIC_ICON));
 
@@ -119,6 +156,8 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
   EXPECT_EQ(ui::Accelerator(ui::VKEY_G,
 #if BUILDFLAG(IS_MAC)
                             ui::EF_CONTROL_DOWN
+#elif BUILDFLAG(IS_CHROMEOS)
+                            ui::EF_COMMAND_DOWN
 #else
                             ui::EF_ALT_DOWN
 #endif
@@ -191,19 +230,20 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
 
 #if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, LaunchOnStartup) {
-  auto launch_manager = std::make_unique<TestStartupLaunchManager>();
-  StartupLaunchManager::SetInstanceForTesting(launch_manager.get());
+  auto* launch_manager = static_cast<TestStartupLaunchManager*>(
+      StartupLaunchManager::From(g_browser_process));
 
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup(true))
+  EXPECT_CALL(*launch_manager,
+              UpdateLaunchOnStartup({StartupLaunchMode::kBackground}))
       .Times(testing::Exactly(1));
   g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                true);
-  testing::Mock::VerifyAndClearExpectations(launch_manager.get());
-  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup(false))
+  testing::Mock::VerifyAndClearExpectations(launch_manager);
+  EXPECT_CALL(*launch_manager, UpdateLaunchOnStartup({std::nullopt}))
       .Times(testing::Exactly(1));
   g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                false);
-  testing::Mock::VerifyAndClearExpectations(launch_manager.get());
+  testing::Mock::VerifyAndClearExpectations(launch_manager);
 }
 #endif
 
@@ -221,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, HotkeyPressed) {
   ui::Accelerator default_hotkey =
       GlicLauncherConfiguration::GetDefaultHotkey();
   EXPECT_EQ(default_hotkey, manager->RegisteredHotkeyForTesting());
-  manager->OnKeyPressed(default_hotkey);
+  manager->HandleHotkey(default_hotkey);
   histogram_tester.ExpectBucketCount("Glic.Usage.Hotkey", HotkeyUsage::kDefault,
                                      1);
   histogram_tester.ExpectBucketCount("Glic.Usage.Hotkey", HotkeyUsage::kCustom,
@@ -230,13 +270,16 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, HotkeyPressed) {
   ui::Accelerator custom_hotkey(ui::VKEY_A, ui::EF_CONTROL_DOWN);
   RegisterHotkey(custom_hotkey);
   EXPECT_EQ(custom_hotkey, manager->RegisteredHotkeyForTesting());
-  manager->OnKeyPressed(custom_hotkey);
+  manager->HandleHotkey(custom_hotkey);
   histogram_tester.ExpectBucketCount("Glic.Usage.Hotkey", HotkeyUsage::kDefault,
                                      1);
   histogram_tester.ExpectBucketCount("Glic.Usage.Hotkey", HotkeyUsage::kCustom,
                                      1);
 }
 
+// In ChromeOS, we do not expect removing a user Profile during the user
+// session.
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, DeleteEligibleProfile) {
   GlicBackgroundModeManager* const background_mode_manager =
       g_browser_process->GetFeatures()->glic_background_mode_manager();
@@ -268,8 +311,10 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, DeleteEligibleProfile) {
   GlicKeyedService* const second_keyed_service =
       GlicKeyedServiceFactory::GetGlicKeyedService(second_browser->profile());
   EXPECT_FALSE(second_keyed_service->enabling().HasConsented());
-  second_keyed_service->window_controller().fre_controller()->AcceptFre();
+  second_keyed_service->fre_controller().AcceptFre(/*handler=*/nullptr);
   EXPECT_TRUE(second_keyed_service->enabling().HasConsented());
   EXPECT_TRUE(background_mode_manager->IsInBackgroundModeForTesting());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace glic

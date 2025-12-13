@@ -10,8 +10,10 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/add_account_signin/coordinator/add_account_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/consistency_promo_signin/coordinator/consistency_promo_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator.h"
+#import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/history_sync/history_sync_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/instant_signin/instant_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/logging/first_run_signin_logger.h"
@@ -20,8 +22,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_in_progress.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_screen_provider.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/two_screens_signin/two_screens_signin_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -31,6 +31,8 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 
 using signin_metrics::AccessPoint;
@@ -47,6 +49,12 @@ using signin_metrics::PromoAction;
                                    (signin_metrics::AccessPoint)accessPoint {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
+    CHECK(browser);
+    CHECK_EQ(browser->type(), Browser::Type::kRegular,
+             base::NotFatalUntil::M145);
+    auto* authService =
+        AuthenticationServiceFactory::GetForProfile(self.profile);
+    CHECK(authService->SigninEnabled(), base::NotFatalUntil::M146);
     _contextStyle = contextStyle;
     _accessPoint = accessPoint;
     _creationTimeTicks = base::TimeTicks::Now();
@@ -65,6 +73,9 @@ using signin_metrics::PromoAction;
                                            browser:(Browser*)browser
                                 baseViewController:
                                     (UIViewController*)baseViewController {
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
+  CHECK(authenticationService->SigninEnabled(), base::NotFatalUntil::M146);
   SigninCoordinator* signinCoordinator;
   switch (command.operation) {
     case AuthenticationOperation::kResignin: {
@@ -172,16 +183,16 @@ using signin_metrics::PromoAction;
 }
 
 + (SigninCoordinator*)
-    upgradeSigninPromoCoordinatorWithBaseViewController:
+    fullscreenSigninPromoCoordinatorWithBaseViewController:
         (UIViewController*)viewController
-                                                browser:(Browser*)browser
-                                           contextStyle:
-                                               (SigninContextStyle)contextStyle
-                      changeProfileContinuationProvider:
-                          (const ChangeProfileContinuationProvider&)
-                              changeProfileContinuationProvider {
+                                                   browser:(Browser*)browser
+                                              contextStyle:(SigninContextStyle)
+                                                               contextStyle
+                         changeProfileContinuationProvider:
+                             (const ChangeProfileContinuationProvider&)
+                                 changeProfileContinuationProvider {
   CHECK(changeProfileContinuationProvider);
-  AccessPoint accessPoint = AccessPoint::kSigninPromo;
+  AccessPoint accessPoint = AccessPoint::kFullscreenSigninPromo;
   PromoAction promoAction = PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
   return [[TwoScreensSigninCoordinator alloc]
       initWithBaseViewController:viewController
@@ -198,6 +209,7 @@ using signin_metrics::PromoAction;
                                         browser:(Browser*)browser
                                    contextStyle:(SigninContextStyle)contextStyle
                                     accessPoint:(AccessPoint)accessPoint
+                                 prefilledEmail:(NSString*)email
                            continuationProvider:
                                (const ChangeProfileContinuationProvider&)
                                    continuationProvider {
@@ -211,6 +223,7 @@ using signin_metrics::PromoAction;
                      accessPoint:accessPoint
                      promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
                     signinIntent:AddAccountSigninIntent::kAddAccount
+                  prefilledEmail:email
             continuationProvider:continuationProvider];
 }
 
@@ -237,6 +250,7 @@ using signin_metrics::PromoAction;
                      accessPoint:accessPoint
                      promoAction:promoAction
                     signinIntent:AddAccountSigninIntent::kPrimaryAccountReauth
+                  prefilledEmail:nil
             continuationProvider:continuationProvider];
 }
 
@@ -263,6 +277,7 @@ using signin_metrics::PromoAction;
                      accessPoint:accessPoint
                      promoAction:promoAction
                     signinIntent:AddAccountSigninIntent::kResignin
+                  prefilledEmail:nil
             continuationProvider:continuationProvider];
 }
 
@@ -342,7 +357,7 @@ using signin_metrics::PromoAction;
 - (void)start {
   // `signinCompletion` needs to be set by the owner to know when the sign-in
   // is finished.
-  DCHECK(self.signinCompletion);
+  CHECK(self.signinCompletion, base::NotFatalUntil::M151);
 }
 
 #pragma mark - AnimatedCoordinator
@@ -357,21 +372,30 @@ using signin_metrics::PromoAction;
 - (void)runCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
                    completionIdentity:(id<SystemIdentity>)completionIdentity {
   // `identity` is set, if and only if the sign-in is successful.
-  DCHECK(
-      ((signinResult == SigninCoordinatorResultSuccess ||
-        signinResult == SigninCoordinatorProfileSwitch) &&
-       completionIdentity) ||
-      ((signinResult != SigninCoordinatorResultSuccess) && !completionIdentity))
+  CHECK(((signinResult == SigninCoordinatorResultSuccess ||
+          signinResult == SigninCoordinatorProfileSwitch) &&
+         completionIdentity) ||
+            ((signinResult != SigninCoordinatorResultSuccess) &&
+             !completionIdentity),
+        base::NotFatalUntil::M151)
       << "signinResult: " << signinResult
       << ", identity: " << (completionIdentity ? "YES" : "NO");
   // If `self.signinCompletion` is nil, this method has been probably called
   // twice.
-  DCHECK(self.signinCompletion);
+  CHECK(self.signinCompletion, base::NotFatalUntil::M151);
   SigninCoordinatorCompletionCallback signinCompletion = self.signinCompletion;
   // The owner should call the stop method, during the callback.
   // `self.signinCompletion` needs to be set to nil before calling it.
   self.signinCompletion = nil;
-  signinCompletion(signinResult, completionIdentity);
+  signinCompletion(self, signinResult, completionIdentity);
+}
+
+#pragma mark - BuggyAuthenticationViewOwner
+
+- (BOOL)viewWillPersist {
+  // Subclasses must implement this property. See the description in the header
+  // file for its implementation.
+  NOTREACHED();
 }
 
 @end

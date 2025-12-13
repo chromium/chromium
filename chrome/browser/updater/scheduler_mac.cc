@@ -8,15 +8,16 @@
 #include "base/functional/callback.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ui/cocoa/keystone_infobar_delegate.h"
 #include "chrome/browser/updater/browser_updater_client.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
+#include "chrome/browser/updater/updater.h"
 
 namespace updater {
 
-void DoPeriodicTasks(base::OnceClosure callback) {
+void DoPeriodicTasks(base::RepeatingClosure prompt,
+                     base::OnceClosure callback) {
   EnsureUpdater(
-      base::BindOnce(&ShowUpdaterPromotionInfoBar),
+      base::TaskPriority::BEST_EFFORT, prompt,
       base::BindOnce(
           [](base::OnceClosure callback) {
             // Run updater periodic tasks in case the launchd scheduled task is

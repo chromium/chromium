@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.permissions.PermissionCallback;
@@ -74,7 +75,7 @@ import java.util.concurrent.ExecutionException;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        shadows = {ShadowLog.class, RecognitionTestHelper.ShadowUserPrefs.class})
+        shadows = {ShadowLog.class})
 public class VoiceRecognitionHandlerUnitTest {
     private static final GURL DEFAULT_URL = JUnitTestGURLs.URL_1;
     private static final GURL DEFAULT_SEARCH_URL = JUnitTestGURLs.SEARCH_URL;
@@ -105,7 +106,7 @@ public class VoiceRecognitionHandlerUnitTest {
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         AutocompleteControllerJni.setInstanceForTesting(mAutocompleteControllerJniMock);
         doReturn(mAutocompleteController).when(mAutocompleteControllerJniMock).getForProfile(any());
-        RecognitionTestHelper.ShadowUserPrefs.setPrefService(mPrefs);
+        UserPrefs.setPrefServiceForTesting(mPrefs);
         doReturn(true).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
         ProfileManager.onProfileAdded(mProfile);
         ProfileManager.setLastUsedProfileForTesting(mProfile);

@@ -15,20 +15,20 @@ import android.view.View;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.settings.ContainedRadioButtonGroupPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.prefs.PrefService;
 
 /** A three state(loud, cpss, quiet) radio group preference for notifications and geolocation */
 @NullMarked
-public class TriStatePermissionPreference extends Preference
+public class TriStatePermissionPreference extends ContainedRadioButtonGroupPreference
         implements RadioGroup.OnCheckedChangeListener {
 
     private RadioButtonWithDescription mQuiet;

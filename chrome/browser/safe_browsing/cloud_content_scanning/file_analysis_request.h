@@ -5,22 +5,21 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_FILE_ANALYSIS_REQUEST_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_FILE_ANALYSIS_REQUEST_H_
 
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_rar_analyzer.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_zip_analyzer.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/file_access/scoped_file_access.h"
 
 namespace safe_browsing {
 
-// A BinaryUploadService::Request implementation that gets the data to scan
-// from the contents of a file. It caches the results so that future calls to
+// A BinaryUploadRequest implementation that gets the data to scan from the
+// contents of a file. It caches the results so that future calls to
 // GetRequestData will return quickly.
-class FileAnalysisRequest : public BinaryUploadService::Request {
+class FileAnalysisRequest : public enterprise_connectors::BinaryUploadRequest {
  public:
   FileAnalysisRequest(
       const enterprise_connectors::AnalysisSettings& analysis_settings,
@@ -28,17 +27,18 @@ class FileAnalysisRequest : public BinaryUploadService::Request {
       base::FilePath file_name,
       std::string mime_type,
       bool delay_opening_file,
-      BinaryUploadService::ContentAnalysisCallback callback,
-      BinaryUploadService::Request::RequestStartCallback start_callback =
-          base::DoNothing(),
+      enterprise_connectors::BinaryUploadRequest::ContentAnalysisCallback
+          callback,
+      enterprise_connectors::BinaryUploadRequest::RequestStartCallback
+          start_callback = base::DoNothing(),
       bool is_obfuscated = false);
   FileAnalysisRequest(const FileAnalysisRequest&) = delete;
   FileAnalysisRequest& operator=(const FileAnalysisRequest&) = delete;
   ~FileAnalysisRequest() override;
 
-  // BinaryUploadService::Request implementation. If |delay_opening_file_| is
-  // false, OnGotFileData is called by posting after GetFileDataBlocking runs
-  // a base::MayBlock() thread, otherwise the callback will be stored and run
+  // BinaryUploadRequest implementation. If |delay_opening_file_| is false,
+  // OnGotFileData is called by posting after GetFileDataBlocking runs a
+  // base::MayBlock() thread, otherwise the callback will be stored and run
   // later when OpenFile is called.
   void GetRequestData(DataCallback callback) override;
 
@@ -47,8 +47,8 @@ class FileAnalysisRequest : public BinaryUploadService::Request {
   void OpenFile();
 
  private:
-  void OnGotFileData(
-      std::pair<BinaryUploadService::Result, Data> result_and_data);
+  void OnGotFileData(std::pair<enterprise_connectors::ScanRequestUploadResult,
+                               Data> result_and_data);
 
   void OnCheckedForEncryption(Data data,
                               const ArchiveAnalyzerResults& analyzer_result);
@@ -56,7 +56,8 @@ class FileAnalysisRequest : public BinaryUploadService::Request {
   // Helper functions to access the request proto.
   bool HasMalwareRequest() const;
 
-  void CacheResultAndData(BinaryUploadService::Result result, Data data);
+  void CacheResultAndData(enterprise_connectors::ScanRequestUploadResult result,
+                          Data data);
 
   // Runs |data_callback_|.
   void RunCallback();
@@ -64,7 +65,7 @@ class FileAnalysisRequest : public BinaryUploadService::Request {
   void GetData(file_access::ScopedFileAccess file_access);
 
   bool has_cached_result_;
-  BinaryUploadService::Result cached_result_;
+  enterprise_connectors::ScanRequestUploadResult cached_result_;
   Data cached_data_;
 
   // Analysis settings relevant to file analysis requests, copied from the

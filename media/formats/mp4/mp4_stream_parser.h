@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 #include "media/base/stream_parser.h"
@@ -72,8 +71,8 @@ class MEDIA_EXPORT MP4StreamParser : public StreamParser {
   };
 
   // Wrappers of `queue_` that observe constraint of `max_parse_offset_`.
-  void ModulatedPeek(const uint8_t** buf, int* size);
-  void ModulatedPeekAt(int64_t offset, const uint8_t** buf, int* size);
+  base::span<const uint8_t> ModulatedPeek();
+  base::span<const uint8_t> ModulatedPeekAt(int64_t offset);
   bool ModulatedTrim(int64_t max_offset);
 
   ParseResult ParseBox();

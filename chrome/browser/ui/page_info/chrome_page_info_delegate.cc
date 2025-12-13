@@ -6,13 +6,16 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
+#include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
@@ -43,6 +46,7 @@
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "media/base/media_switches.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "url/origin.h"
@@ -55,7 +59,6 @@
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/lookalikes/safety_tip_ui_helper.h"
-#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -217,13 +220,11 @@ bool ChromePageInfoDelegate::IsRwsManaged(const GURL& site_url) {
       ->IsPartOfManagedRelatedWebsiteSet(net::SchemefulSite(site_url));
 }
 
-bool ChromePageInfoDelegate::CreateInfoBarDelegate(
-    content::ReloadType reload_type) {
+bool ChromePageInfoDelegate::CreateInfoBarDelegate() {
   infobars::ContentInfoBarManager* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents_);
   if (infobar_manager) {
-    auto* delegate = PageInfoInfoBarDelegate::Create(infobar_manager);
-    delegate->set_reload_type(reload_type);
+    PageInfoInfoBarDelegate::Create(infobar_manager);
     return true;
   }
   return false;
@@ -252,7 +253,8 @@ bool ChromePageInfoDelegate::IsIsolatedWebApp() {
 
   const webapps::AppId* app_id =
       web_app::WebAppTabHelper::GetAppId(web_contents_);
-  return app_id && provider->registrar_unsafe().IsIsolated(*app_id);
+  return app_id && provider->registrar_unsafe().AppMatches(
+                       *app_id, web_app::WebAppFilter::IsIsolatedApp());
 }
 
 void ChromePageInfoDelegate::ShowSiteSettings(const GURL& site_url) {
@@ -267,11 +269,6 @@ void ChromePageInfoDelegate::ShowSiteSettings(const GURL& site_url) {
 void ChromePageInfoDelegate::ShowCookiesSettings() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents_);
   chrome::ShowSettingsSubPage(browser, chrome::kCookieSettingsSubPage);
-}
-
-void ChromePageInfoDelegate::ShowIncognitoSettings() {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
-  chrome::ShowSettingsSubPage(browser, chrome::kIncognitoSettingsSubPage);
 }
 
 void ChromePageInfoDelegate::ShowAllSitesSettingsFilteredByRwsOwner(
@@ -368,6 +365,11 @@ ChromePageInfoDelegate::GetPermissionDecisionAutoblocker() {
   return PermissionDecisionAutoBlockerFactory::GetForProfile(GetProfile());
 }
 
+permissions::PermissionActionsHistory*
+ChromePageInfoDelegate::GetPermissionActionsHistory() {
+  return PermissionActionsHistoryFactory::GetForProfile(GetProfile());
+}
+
 StatefulSSLHostStateDelegate*
 ChromePageInfoDelegate::GetStatefulSSLHostStateDelegate() {
   return StatefulSSLHostStateDelegateFactory::GetForProfile(GetProfile());
@@ -389,13 +391,14 @@ bool ChromePageInfoDelegate::IsSubresourceFilterActivated(
 
 bool ChromePageInfoDelegate::HasAutoPictureInPictureBeenRegistered() {
 #if BUILDFLAG(IS_ANDROID)
-  return false;
-#else
+  if (!base::FeatureList::IsEnabled(media::kAutoPictureInPictureAndroid)) {
+    return false;
+  }
+#endif
   auto* auto_pip_tab_helper =
       AutoPictureInPictureTabHelper::FromWebContents(web_contents_);
   return auto_pip_tab_helper &&
          auto_pip_tab_helper->HasAutoPictureInPictureBeenRegistered();
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool ChromePageInfoDelegate::IsContentDisplayedInVrHeadset() {

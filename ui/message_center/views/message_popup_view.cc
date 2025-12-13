@@ -249,7 +249,7 @@ void MessagePopupView::OnWorkAreaChanged() {
     return;
 
   if (popup_collection_->RecomputeAlignment(
-          display::Screen::GetScreen()->GetDisplayNearestView(native_view))) {
+          display::Screen::Get()->GetDisplayNearestView(native_view))) {
     popup_collection_->ResetBounds();
   }
 }

@@ -32,11 +32,11 @@ class AwVariationsServiceClient : public variations::VariationsServiceClient {
   base::Version GetVersionForSimulation() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
-  version_info::Channel GetChannel() override;
   bool OverridesRestrictParameter(std::string* parameter) override;
   bool IsEnterprise() override;
   void RemoveGoogleGroupsFromPrefsForDeletedProfiles(
       PrefService* local_state) override;
+  version_info::Channel GetChannel() override;
 };
 
 }  // namespace android_webview

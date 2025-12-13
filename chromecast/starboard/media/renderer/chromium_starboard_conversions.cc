@@ -33,13 +33,13 @@ const char* RegisterMimeType(std::string mime) {
     return "";
   }
 
-  static base::Lock lock;
+  static base::NoDestructor<base::Lock> lock;
   // A node_hash_set is used here because we require key ptr stability (so that
   // c strings remain valid).
   static base::NoDestructor<absl::node_hash_set<std::string>> registry
-      GUARDED_BY(lock);
+      GUARDED_BY(*lock);
 
-  base::AutoLock autlock(lock);
+  base::AutoLock autlock(*lock);
   auto it_and_inserted = registry->insert(std::move(mime));
   return it_and_inserted.first->c_str();
 }
@@ -126,7 +126,7 @@ void PopulateHdrMetadata(const gfx::HDRMetadata& hdr_metadata,
 // Converts chromium color metadata to starboard color metadata, returning
 // nullopt if the chromium color metadata cannot be converted.
 std::optional<StarboardColorMetadata> ToSbColorMetadata(
-    const std::optional<gfx::HDRMetadata>& hdr_metadata,
+    const gfx::HDRMetadata& hdr_metadata,
     const ::media::VideoColorSpace& color_space) {
   StarboardColorMetadata color_metadata = {};
   // bits_per_channel and the chroma_*/cb_* fields below need to be derived from
@@ -146,9 +146,9 @@ std::optional<StarboardColorMetadata> ToSbColorMetadata(
   color_metadata.chroma_siting_horizontal = 0;
   color_metadata.chroma_siting_vertical = 0;
 
-  if (hdr_metadata) {
+  if (!hdr_metadata.IsEmpty()) {
     LOG(INFO) << "Video config has HDR metadata.";
-    PopulateHdrMetadata(*hdr_metadata, color_metadata);
+    PopulateHdrMetadata(hdr_metadata, color_metadata);
   } else {
     LOG(INFO) << "Video config has no HDR metadata.";
     color_metadata.max_cll = 0;

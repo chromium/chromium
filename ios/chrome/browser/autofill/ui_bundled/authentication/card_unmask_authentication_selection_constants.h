@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 
 extern NSString* const
+    kCardUnmaskAuthenticationActivityIndicatorAccessibilityIdentifier;
+extern NSString* const
     kCardUnmaskAuthenticationSelectionAcceptanceButtonAccessibilityIdentifier;
 extern NSString* const
     kCardUnmaskAuthenticationSelectionCancelButtonAccessibilityIdentifier;

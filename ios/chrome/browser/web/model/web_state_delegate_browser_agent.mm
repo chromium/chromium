@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/dialogs/ui_bundled/nsurl_protection_space_util.h"
+#import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
@@ -107,7 +108,7 @@ WebStateDelegateBrowserAgent::WebStateDelegateBrowserAgent(
       << "WebStateDelegateBrowserAgent created for a Browser with a non-empty "
          "WebStateList.";
 
-  StartObserving(web_state_list_, Policy::kOnlyRealized);
+  StartObserving(browser, Policy::kOnlyRealized);
 }
 
 WebStateDelegateBrowserAgent::~WebStateDelegateBrowserAgent() {
@@ -351,4 +352,31 @@ void WebStateDelegateBrowserAgent::OnNewWebViewCreated(web::WebState* source) {
   // Focusing a newly-created web view allows it to request auth-based API. See
   // crbug.com/369996712.
   [source->GetWebViewProxy() becomeFirstResponder];
+}
+
+void WebStateDelegateBrowserAgent::ShouldAllowCopy(
+    web::WebState* source,
+    base::OnceCallback<void(bool)> callback) {
+  data_controls::DataControlsTabHelper::GetOrCreateForWebState(source)
+      ->ShouldAllowCopy(std::move(callback));
+}
+
+void WebStateDelegateBrowserAgent::ShouldAllowPaste(
+    web::WebState* source,
+    base::OnceCallback<void(bool)> callback) {
+  data_controls::DataControlsTabHelper::GetOrCreateForWebState(source)
+      ->ShouldAllowPaste(std::move(callback));
+}
+
+void WebStateDelegateBrowserAgent::ShouldAllowCut(
+    web::WebState* source,
+    base::OnceCallback<void(bool)> callback) {
+  data_controls::DataControlsTabHelper::GetOrCreateForWebState(source)
+      ->ShouldAllowCut(std::move(callback));
+}
+
+void WebStateDelegateBrowserAgent::DidFinishClipboardRead(
+    web::WebState* source) {
+  data_controls::DataControlsTabHelper::GetOrCreateForWebState(source)
+      ->DidFinishClipboardRead();
 }

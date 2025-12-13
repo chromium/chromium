@@ -131,14 +131,14 @@ TEST_F(TouchUiControllerTest, RecordDevicePostureMode) {
     histogram_tester.ExpectBucketCount(kStartup, PostureMode::kDesktop, 1);
     histogram_tester.ExpectBucketCount(kStartup, PostureMode::kTablet, 0);
 
-    // Verify the tablet switch happens when the device posture mode
-    // changes from desktop to tablet.
+    // Verify the tablet switch histogram happens when the device posture
+    // mode changes from desktop to tablet.
     controller.OnTabletModeToggled(true);
     histogram_tester.ExpectBucketCount(kSwitch, PostureMode::kTablet, 1);
     histogram_tester.ExpectBucketCount(kSwitch, PostureMode::kDesktop, 0);
 
-    // Verify the desktop switch happens when the device posture mode
-    // changes from tablet to desktop.
+    // Verify the desktop switch histogram happens when the device posture
+    // mode changes from tablet to desktop.
     controller.OnTabletModeToggled(false);
     histogram_tester.ExpectBucketCount(kSwitch, PostureMode::kDesktop, 1);
     histogram_tester.ExpectBucketCount(kSwitch, PostureMode::kTablet, 1);

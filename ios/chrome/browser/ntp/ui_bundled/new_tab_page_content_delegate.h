@@ -23,9 +23,6 @@
 // Refreshes NTP content, such as content suggestions and feed.
 - (void)refreshNTPContent;
 
-// Updates the NTP for the selected feed.
-- (void)updateForSelectedFeed:(FeedType)selectedFeed;
-
 // Updates the NTP for changes in module visibility.
 - (void)updateModuleVisibility;
 

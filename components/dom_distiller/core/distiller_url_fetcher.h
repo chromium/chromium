@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DOM_DISTILLER_CORE_DISTILLER_URL_FETCHER_H_
 #define COMPONENTS_DOM_DISTILLER_CORE_DISTILLER_URL_FETCHER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -53,7 +54,7 @@ class DistillerURLFetcher {
       const std::string& url);
 
  private:
-  void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoadComplete(std::optional<std::string> response_body);
 
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   URLFetcherCallback callback_;

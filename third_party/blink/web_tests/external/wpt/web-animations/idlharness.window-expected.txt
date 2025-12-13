@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] AnimationTimeline interface: operation play(optional AnimationEffect?)
   assert_own_property: interface prototype object missing non-static operation expected property "play" missing
 [FAIL] AnimationTimeline interface: document.timeline must inherit property "currentTime" with the proper type
@@ -26,10 +26,6 @@ Found 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: interface prototype object missing non-static operation expected property "replace" missing
 [FAIL] AnimationEffect interface: operation remove()
   assert_own_property: interface prototype object missing non-static operation expected property "remove" missing
-[FAIL] KeyframeEffect interface: attribute iterationComposite
-  assert_true: The prototype object must have a property "iterationComposite" expected true got false
-[FAIL] KeyframeEffect interface: new KeyframeEffect(null, null) must inherit property "iterationComposite" with the proper type
-  assert_inherits: property "iterationComposite" not found in prototype chain
 [FAIL] AnimationEffect interface: new KeyframeEffect(null, null) must inherit property "parent" with the proper type
   assert_inherits: property "parent" not found in prototype chain
 [FAIL] AnimationEffect interface: new KeyframeEffect(null, null) must inherit property "previousSibling" with the proper type
@@ -105,16 +101,16 @@ Found 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SequenceEffect interface: operation clone()
   assert_own_property: self does not have own property "SequenceEffect" expected property "SequenceEffect" missing
 [FAIL] AnimationTrigger interface: attribute timeline
-  assert_equals: setter must be function for PutForwards, Replaceable, or non-readonly attributes expected "function" but got "undefined"
+  assert_true: The prototype object must have a property "timeline" expected true got false
 [FAIL] AnimationTrigger interface: attribute behavior
-  assert_equals: setter must be function for PutForwards, Replaceable, or non-readonly attributes expected "function" but got "undefined"
+  assert_true: The prototype object must have a property "behavior" expected true got false
 [FAIL] AnimationTrigger interface: attribute rangeStart
-  assert_equals: setter must be function for PutForwards, Replaceable, or non-readonly attributes expected "function" but got "undefined"
+  assert_true: The prototype object must have a property "rangeStart" expected true got false
 [FAIL] AnimationTrigger interface: attribute rangeEnd
-  assert_equals: setter must be function for PutForwards, Replaceable, or non-readonly attributes expected "function" but got "undefined"
+  assert_true: The prototype object must have a property "rangeEnd" expected true got false
 [FAIL] AnimationTrigger interface: attribute exitRangeStart
-  assert_equals: setter must be function for PutForwards, Replaceable, or non-readonly attributes expected "function" but got "undefined"
+  assert_true: The prototype object must have a property "exitRangeStart" expected true got false
 [FAIL] AnimationTrigger interface: attribute exitRangeEnd
-  assert_equals: setter must be function for PutForwards, Replaceable, or non-readonly attributes expected "function" but got "undefined"
+  assert_true: The prototype object must have a property "exitRangeEnd" expected true got false
 Harness: the test ran to completion.
 

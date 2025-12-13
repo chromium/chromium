@@ -27,6 +27,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/debug/alias.h"
 #include "base/memory/values_equivalent.h"
 #include "base/metrics/histogram_functions.h"
@@ -59,6 +60,7 @@
 #include "third_party/blink/renderer/core/layout/custom/layout_worklet.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
@@ -102,8 +104,11 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/math_transform.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_offset_map.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -176,34 +181,6 @@ const ComputedStyle* ComputedStyle::GetInitialStyleSingleton() {
   Persistent<const ComputedStyle>& persistent = *thread_specific_initial_style;
   if (!persistent) [[unlikely]] {
     persistent = MakeGarbageCollected<ComputedStyle>(PassKey());
-    LEAK_SANITIZER_IGNORE_OBJECT(&persistent);
-  }
-  return persistent.Get();
-}
-
-namespace {
-
-const ComputedStyle* BuildInitialStyleForImg(
-    const ComputedStyle& initial_style) {
-  // This matches the img {} declarations in html.css to avoid copy-on-write
-  // when only UA styles apply for these properties. See crbug.com/1369454
-  // for details.
-  ComputedStyleBuilder builder(initial_style);
-  builder.SetOverflowX(EOverflow::kClip);
-  builder.SetOverflowY(EOverflow::kClip);
-  builder.SetOverflowClipMargin(StyleOverflowClipMargin::CreateContent());
-  return builder.TakeStyle();
-}
-
-}  // namespace
-
-const ComputedStyle* ComputedStyle::GetInitialStyleForImgSingleton() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<Persistent<const ComputedStyle>>,
-      thread_specific_initial_style, ());
-  Persistent<const ComputedStyle>& persistent = *thread_specific_initial_style;
-  if (!persistent) [[unlikely]] {
-    persistent = BuildInitialStyleForImg(*GetInitialStyleSingleton());
     LEAK_SANITIZER_IGNORE_OBJECT(&persistent);
   }
   return persistent.Get();
@@ -341,6 +318,9 @@ bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
   if (!old_style->ScrollMarkerGroupEqual(*new_style)) {
     return true;
   }
+  if (old_style->OverscrollArea() != new_style->OverscrollArea()) {
+    return true;
+  }
   // We need to perform a reattach if a "display: layout(foo)" has changed to a
   // "display: layout(bar)". This is because one custom layout could be
   // registered and the other may not, affecting the box-tree construction.
@@ -365,9 +345,10 @@ bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
     return true;
   }
 
-  // We use LayoutTextCombine only for vertical writing mode.
-  if (new_style->HasTextCombine() && old_style->IsHorizontalWritingMode() !=
-                                         new_style->IsHorizontalWritingMode()) {
+  // We use LayoutTextCombine only for vertical typographic mode.
+  if (new_style->HasTextCombine() &&
+      LayoutTextCombine::IsSupportedMode(old_style->GetWritingMode()) !=
+          LayoutTextCombine::IsSupportedMode(new_style->GetWritingMode())) {
     DCHECK_EQ(old_style->HasTextCombine(), new_style->HasTextCombine());
     return true;
   }
@@ -470,6 +451,13 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
     }
     return Difference::kPseudoElementStyle;
   }
+  if (old_style.OverscrollArea() != new_style.OverscrollArea()) {
+    // TODO(crbug.com/447642032): Should we return kDescendantAffecting since
+    // descendants may move into or out of a newly declared or no longer
+    // declared overscroll area?
+    return Difference::kPseudoElementStyle;
+  }
+
   if (new_style.HasAnyPseudoElementStyles() ||
       old_style.HasAnyPseudoElementStyles()) {
     return Difference::kPseudoElementStyle;
@@ -552,7 +540,7 @@ bool ComputedStyle::HighlightPseudoElementStylesDependOnRelativeUnits() const {
   }
   const CustomHighlightsStyleMap& custom_highlights =
       highlight_data.CustomHighlights();
-  for (auto custom_highlight : custom_highlights) {
+  for (const auto& custom_highlight : custom_highlights) {
     if (custom_highlight.value->HasAnyRelativeUnits()) {
       return true;
     }
@@ -581,7 +569,7 @@ bool ComputedStyle::HighlightPseudoElementStylesDependOnContainerUnits() const {
   }
   const CustomHighlightsStyleMap& custom_highlights =
       highlight_data.CustomHighlights();
-  for (auto custom_highlight : custom_highlights) {
+  for (const auto& custom_highlight : custom_highlights) {
     if (custom_highlight.value->HasContainerRelativeValue()) {
       return true;
     }
@@ -610,7 +598,7 @@ bool ComputedStyle::HighlightPseudoElementStylesDependOnViewportUnits() const {
   }
   const CustomHighlightsStyleMap& custom_highlights =
       highlight_data.CustomHighlights();
-  for (auto custom_highlight : custom_highlights) {
+  for (const auto& custom_highlight : custom_highlights) {
     if (custom_highlight.value->HasViewportUnits()) {
       return true;
     }
@@ -639,7 +627,7 @@ bool ComputedStyle::HighlightPseudoElementStylesHaveVariableReferences() const {
   }
   const CustomHighlightsStyleMap& custom_highlights =
       highlight_data.CustomHighlights();
-  for (auto custom_highlight : custom_highlights) {
+  for (const auto& custom_highlight : custom_highlights) {
     if (custom_highlight.value->HasVariableReference()) {
       return true;
     }
@@ -655,15 +643,13 @@ const ComputedStyle* ComputedStyle::GetCachedPseudoElementStyle(
     return nullptr;
   }
 
-  for (const auto& pseudo_style : *GetPseudoElementStyleCache()) {
-    if (pseudo_style->StyleType() == pseudo_id &&
-        (!PseudoElementHasArguments(pseudo_id) ||
-         pseudo_style->PseudoArgument() == pseudo_argument)) {
-      return pseudo_style.Get();
-    }
+  auto result = GetPseudoElementStyleCache()->find(
+      PseudoElementStyleCacheKey{pseudo_id, pseudo_argument});
+  if (result == GetPseudoElementStyleCache()->end()) {
+    return nullptr;
+  } else {
+    return result->value.Get();
   }
-
-  return nullptr;
 }
 
 const ComputedStyle* ComputedStyle::AddCachedPseudoElementStyle(
@@ -672,21 +658,21 @@ const ComputedStyle* ComputedStyle::AddCachedPseudoElementStyle(
     const AtomicString& pseudo_argument) const {
   DCHECK(pseudo);
 
-  // Confirm that the styles being cached are for the (PseudoId,argument) that
+  // Confirm that the styles being cached are for the PseudoId that
   // the caller intended (and presumably had checked was not present).
   DCHECK_EQ(static_cast<unsigned>(pseudo->StyleType()),
             static_cast<unsigned>(pseudo_id));
-  DCHECK_EQ(pseudo->PseudoArgument(), pseudo_argument);
+
+  const ComputedStyle* result = pseudo;
+
+  auto add_result = EnsurePseudoElementStyleCache().insert(
+      PseudoElementStyleCacheKey{pseudo_id, pseudo_argument},
+      std::move(pseudo));
 
   // The pseudo style cache assumes that only one entry will be added for any
   // any given (PseudoId,argument). Adding more than one entry is a bug, even
   // if the styles being cached are equal.
-  DCHECK(!GetCachedPseudoElementStyle(pseudo->StyleType(),
-                                      pseudo->PseudoArgument()));
-
-  const ComputedStyle* result = pseudo;
-
-  EnsurePseudoElementStyleCache().push_back(std::move(pseudo));
+  DCHECK(add_result.is_new_entry);
 
   return result;
 }
@@ -698,14 +684,13 @@ const ComputedStyle* ComputedStyle::ReplaceCachedPseudoElementStyle(
   DCHECK(pseudo_style->StyleType() != kPseudoIdNone &&
          pseudo_style->StyleType() != kPseudoIdFirstLineInherited);
   if (HasCachedPseudoElementStyles()) {
-    for (auto& cached_style : *GetPseudoElementStyleCache()) {
-      if (cached_style->StyleType() == pseudo_id &&
-          (!PseudoElementHasArguments(pseudo_id) ||
-           cached_style->PseudoArgument() == pseudo_argument)) {
-        SECURITY_CHECK(cached_style->IsEnsuredInDisplayNone());
-        cached_style = pseudo_style;
-        return pseudo_style;
-      }
+    auto slot = GetPseudoElementStyleCache()->find(
+        PseudoElementStyleCacheKey{pseudo_id, pseudo_argument});
+    if (slot != GetPseudoElementStyleCache()->end()) {
+      Member<const ComputedStyle>& cached_style = slot->value;
+      SECURITY_CHECK(cached_style->IsEnsuredInDisplayNone());
+      cached_style = pseudo_style;
+      return pseudo_style;
     }
   }
   return AddCachedPseudoElementStyle(pseudo_style, pseudo_id, pseudo_argument);
@@ -751,11 +736,12 @@ bool ComputedStyle::NonInheritedEqual(const ComputedStyle& other) const {
   return ComputedStyleBase::NonInheritedEqual(other);
 }
 
-bool ComputedStyle::InheritedDataShared(const ComputedStyle& other) const {
+bool ComputedStyle::InheritedEqualIncludingInheritedVariables(
+    const ComputedStyle& other) const {
   // We use a by-value check that is a bit more expensive than
-  // pointer comparison, but yields many more full MPC hits,
+  // pointer comparison, but yields many more MPC hits,
   // so it generally makes up for it.
-  return ComputedStyleBase::InheritedDataShared(other);
+  return ComputedStyleBase::InheritedEqualIncludingInheritedVariables(other);
 }
 
 StyleDifference ComputedStyle::VisualInvalidationDiff(
@@ -764,7 +750,7 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
   StyleDifference diff;
   uint64_t field_diff = FieldInvalidationDiff(*this, other);
 
-  if ((field_diff & kReshape) || ShouldWrapLine() != other.ShouldWrapLine()) {
+  if (DiffNeedsReshape(other, field_diff)) {
     diff.SetNeedsReshape();
     diff.SetNeedsFullLayout();
     diff.SetNeedsNormalPaintInvalidation();
@@ -916,6 +902,21 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
   // transition properly.
 
   return diff;
+}
+
+bool ComputedStyle::DiffNeedsReshape(const ComputedStyle& other,
+                                     uint64_t field_diff) const {
+  if (field_diff & kReshape) {
+    return true;
+  }
+
+  if (field_diff & kBorderWidth) {
+    if (Display() == EDisplay::kInline && HasBorder() != other.HasBorder()) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 bool ComputedStyle::DiffNeedsFullLayoutAndPaintInvalidation(
@@ -1899,6 +1900,8 @@ ETextAlign ComputedStyle::GetTextAlign(bool is_last_line) const {
       return ETextAlign::kCenter;
     case ETextAlignLast::kJustify:
       return ETextAlign::kJustify;
+    case ETextAlignLast::kMatchParent:
+      return ETextAlign::kMatchParent;
     case ETextAlignLast::kAuto:
       ETextAlign text_align = GetTextAlign();
       if (text_align == ETextAlign::kJustify) {
@@ -1940,6 +1943,137 @@ static String DisableNewGeorgianCapitalLetters(const String& text) {
 }
 
 namespace {
+
+UChar32 FullwidthVariant(UChar32 code_point) {
+  // ASCII printable characters (U+0021..U+007E) to full-width (U+FF01..U+FF5E).
+  if (code_point >= 0x21 && code_point <= 0x7E) {
+    return code_point + 0xFEE0;
+  }
+
+  // Half-width Katakana (U+FF61..U+FF9F) to full-width Katakana.
+  // Katakana characters are contiguous, so we can use direct array indexing.
+  if (code_point >= 0xFF61 && code_point <= 0xFF9F) {
+    auto kKatakanaTable = std::to_array<UChar32>(
+        {0x3002, 0x300C, 0x300D, 0x3001, 0x30FB, 0x30F2, 0x30A1, 0x30A3,
+         0x30A5, 0x30A7, 0x30A9, 0x30E3, 0x30E5, 0x30E7, 0x30C3, 0x30FC,
+         0x30A2, 0x30A4, 0x30A6, 0x30A8, 0x30AA, 0x30AB, 0x30AD, 0x30AF,
+         0x30B1, 0x30B3, 0x30B5, 0x30B7, 0x30B9, 0x30BB, 0x30BD, 0x30BF,
+         0x30C1, 0x30C4, 0x30C6, 0x30C8, 0x30CA, 0x30CB, 0x30CC, 0x30CD,
+         0x30CE, 0x30CF, 0x30D2, 0x30D5, 0x30D8, 0x30DB, 0x30DE, 0x30DF,
+         0x30E0, 0x30E1, 0x30E2, 0x30E4, 0x30E6, 0x30E8, 0x30E9, 0x30EA,
+         0x30EB, 0x30EC, 0x30ED, 0x30EF, 0x30F3, 0x3099, 0x309A});
+    size_t index = code_point - 0xFF61;
+    return kKatakanaTable[index];
+  }
+
+  // Half-width Hangul to full-width Hangul mapping.
+  // Hangul characters have gaps, so we need a lookup table.
+  if ((code_point >= 0xFFA0 && code_point <= 0xFFBE) ||
+      (code_point >= 0xFFC2 && code_point <= 0xFFC7) ||
+      (code_point >= 0xFFCA && code_point <= 0xFFCF) ||
+      (code_point >= 0xFFD2 && code_point <= 0xFFD7) ||
+      (code_point >= 0xFFDA && code_point <= 0xFFDC)) {
+    static const struct {
+      UChar32 halfwidth;
+      UChar32 fullwidth;
+    } kHangulTable[] = {
+        {0xFFA0, 0x3164}, {0xFFA1, 0x3131}, {0xFFA2, 0x3132}, {0xFFA3, 0x3133},
+        {0xFFA4, 0x3134}, {0xFFA5, 0x3135}, {0xFFA6, 0x3136}, {0xFFA7, 0x3137},
+        {0xFFA8, 0x3138}, {0xFFA9, 0x3139}, {0xFFAA, 0x313A}, {0xFFAB, 0x313B},
+        {0xFFAC, 0x313C}, {0xFFAD, 0x313D}, {0xFFAE, 0x313E}, {0xFFAF, 0x313F},
+        {0xFFB0, 0x3140}, {0xFFB1, 0x3141}, {0xFFB2, 0x3142}, {0xFFB3, 0x3143},
+        {0xFFB4, 0x3144}, {0xFFB5, 0x3145}, {0xFFB6, 0x3146}, {0xFFB7, 0x3147},
+        {0xFFB8, 0x3148}, {0xFFB9, 0x3149}, {0xFFBA, 0x314A}, {0xFFBB, 0x314B},
+        {0xFFBC, 0x314C}, {0xFFBD, 0x314D}, {0xFFBE, 0x314E}, {0xFFC2, 0x314F},
+        {0xFFC3, 0x3150}, {0xFFC4, 0x3151}, {0xFFC5, 0x3152}, {0xFFC6, 0x3153},
+        {0xFFC7, 0x3154}, {0xFFCA, 0x3155}, {0xFFCB, 0x3156}, {0xFFCC, 0x3157},
+        {0xFFCD, 0x3158}, {0xFFCE, 0x3159}, {0xFFCF, 0x315A}, {0xFFD2, 0x315B},
+        {0xFFD3, 0x315C}, {0xFFD4, 0x315D}, {0xFFD5, 0x315E}, {0xFFD6, 0x315F},
+        {0xFFD7, 0x3160}, {0xFFDA, 0x3161}, {0xFFDB, 0x3162}, {0xFFDC, 0x3163},
+    };
+    for (const auto& entry : kHangulTable) {
+      if (entry.halfwidth == code_point) {
+        return entry.fullwidth;
+      }
+    }
+  }
+
+  // Special character mappings.
+  switch (code_point) {
+    case uchar::kSpace:
+      return uchar::kIdeographicSpace;
+    case 0x00A2:  // Cent sign
+      return 0xFFE0;
+    case 0x00A3:  // Pound sign
+      return 0xFFE1;
+    case 0x00AC:  // Not sign
+      return 0xFFE2;
+    case 0x00AF:  // Macron
+      return 0xFFE3;
+    case 0x00A6:  // Broken bar
+      return 0xFFE4;
+    case uchar::kYenSign:
+      return 0xFFE5;
+    case 0x20A9:  // Won sign
+      return 0xFFE6;
+    case 0x2985:  // Left white parenthesis
+      return 0xFF5F;
+    case 0x2986:  // Right white parenthesis
+      return 0xFF60;
+    case 0xFFE8:  // Halfwidth forms light vertical
+      return 0x2502;
+    case 0xFFE9:  // Halfwidth leftwards arrow
+      return 0x2190;
+    case 0xFFEA:  // Halfwidth upwards arrow
+      return 0x2191;
+    case 0xFFEB:  // Halfwidth rightwards arrow
+      return 0x2192;
+    case 0xFFEC:  // Halfwidth downwards arrow
+      return 0x2193;
+    case 0xFFED:  // Halfwidth black square
+      return uchar::kBlackSquare;
+    case 0xFFEE:  // Halfwidth white circle
+      return uchar::kWhiteCircle;
+  }
+
+  return code_point;
+}
+
+String ApplyFullwidthTransform(const String& text,
+                               TextOffsetMap* offset_map,
+                               bool preserve_white_space) {
+  StringBuilder result;
+  result.ReserveCapacity(text.length());
+
+  CodePointIterator begin(text);
+  CodePointIterator end = CodePointIterator::End(text);
+  for (auto it = begin; it != end; ++it) {
+    UChar32 code_point = *it;
+
+    // Surrogate pairs are not affected by full-width.
+    if (!U_IS_BMP(code_point)) {
+      result.Append(code_point);
+      continue;
+    }
+
+    // Per CSS Text Level 3, spaces (U+0020) are transformed to ideographic
+    // spaces (U+3000) only when white space is preserved. Spaces that will be
+    // collapsed during white space processing should not be transformed.
+    UChar32 transformed_char;
+    if (code_point == uchar::kSpace && !preserve_white_space) {
+      transformed_char = code_point;
+    } else {
+      transformed_char = FullwidthVariant(code_point);
+    }
+    result.Append(transformed_char);
+  }
+
+  String transformed_string = result.ReleaseString();
+  if (offset_map) {
+    offset_map->Append(text.length(), transformed_string.length());
+  }
+  return transformed_string;
+}
 
 String ApplyMathAutoTransform(const String& text, TextOffsetMap* offset_map) {
   if (text.length() != 1) {
@@ -1988,6 +2122,9 @@ String ComputedStyle::ApplyTextTransform(const String& text,
       CaseMap case_map(locale ? locale->CaseMapLocale() : CaseMap::Locale());
       return case_map.ToLower(text, offset_map);
     }
+    case ETextTransform::kFullWidth:
+      return ApplyFullwidthTransform(text, offset_map,
+                                     ShouldPreserveWhiteSpaces());
     case ETextTransform::kMathAuto:
       return ApplyMathAutoTransform(text, offset_map);
   }
@@ -2212,7 +2349,8 @@ static bool HasInitialVariables(const StyleInitialData* initial_data) {
 }
 
 bool ComputedStyle::HasVariables() const {
-  return InheritedVariables() || NonInheritedVariables() ||
+  return !InheritedVariables().IsEmpty() ||
+         !NonInheritedVariables().IsEmpty() ||
          HasInitialVariables(InitialData());
 }
 
@@ -2234,48 +2372,28 @@ const Vector<AtomicString>& ComputedStyle::GetVariableNames() const {
   if (auto* initial_data = InitialData()) {
     initial_data->CollectVariableNames(names);
   }
-  if (auto* inherited_variables = InheritedVariables()) {
-    inherited_variables->CollectNames(names);
-  }
-  if (auto* non_inherited_variables = NonInheritedVariables()) {
-    non_inherited_variables->CollectNames(names);
-  }
+  InheritedVariables().CollectNames(names);
+  NonInheritedVariables().CollectNames(names);
   cache.assign(names);
 
   return cache;
 }
 
-const StyleInheritedVariables* ComputedStyle::InheritedVariables() const {
-  return InheritedVariablesInternal().Get();
+const StyleInheritedVariables& ComputedStyle::InheritedVariables() const {
+  return InheritedVariablesInternal();
 }
 
-const StyleNonInheritedVariables* ComputedStyle::NonInheritedVariables() const {
-  return NonInheritedVariablesInternal().Get();
+const StyleNonInheritedVariables& ComputedStyle::NonInheritedVariables() const {
+  return NonInheritedVariablesInternal();
 }
 
 // static
 const ComputedGridTrackList& ComputedStyle::ComputedGridTemplate(
-    const Member<ComputedGridTrackList>& track_list,
-    const bool use_masonry_default) {
+    const Member<ComputedGridTrackList>& track_list) {
   if (track_list) {
     return *track_list;
   }
-  // If `track_list` is null, that means it is the initial value. The default
-  // value for 'grid-template-*' in masonry layout is 'repeat(auto-fill,
-  // auto)'.
-  //
-  // TODO(almaher): Update this depending on the resolution to
-  // https://github.com/w3c/csswg-drafts/issues/10869.
-  if (use_masonry_default) {
-    DEFINE_STATIC_LOCAL(
-        Persistent<ComputedGridTrackList>, auto_fill_auto_list,
-        (MakeGarbageCollected<ComputedGridTrackList>(
-            ComputedGridTrackList(GridTrackList(GridTrackSize(Length::Auto()),
-                                                GridTrackRepeater::kAutoFill),
-                                  AutoRepeatType::kAutoFill))));
-    return *auto_fill_auto_list;
-  }
-
+  // If `track_list` is null, that means it is the initial value.
   DEFINE_STATIC_LOCAL(
       Persistent<ComputedGridTrackList>, default_track_list,
       (MakeGarbageCollected<ComputedGridTrackList>(ComputedGridTrackList())));
@@ -2294,21 +2412,19 @@ bool ComputedStyle::HasPropertyDependingOnCurrentColor() const {
   return false;
 }
 
-namespace {
-
 template <typename T>
-CSSVariableData* GetVariableData(
-    const T& style_or_builder,
-    const AtomicString& name,
-    std::optional<bool> inherited_hint = std::nullopt) {
-  if (inherited_hint.value_or(true) && style_or_builder.InheritedVariables()) {
-    if (auto data = style_or_builder.InheritedVariables()->GetData(name)) {
+CSSVariableData* GetVariableDataInternal(const T& style_or_builder,
+                                         const AtomicString& name,
+                                         std::optional<bool> inherited_hint) {
+  if (inherited_hint.value_or(true)) {
+    if (auto data =
+            style_or_builder.InheritedVariablesInternal().GetData(name)) {
       return *data;
     }
   }
-  if (!inherited_hint.value_or(false) &&
-      style_or_builder.NonInheritedVariables()) {
-    if (auto data = style_or_builder.NonInheritedVariables()->GetData(name)) {
+  if (!inherited_hint.value_or(false)) {
+    if (auto data =
+            style_or_builder.NonInheritedVariablesInternal().GetData(name)) {
       return *data;
     }
   }
@@ -2323,14 +2439,13 @@ const CSSValue* GetVariableValue(
     const T& style_or_builder,
     const AtomicString& name,
     std::optional<bool> inherited_hint = std::nullopt) {
-  if (inherited_hint.value_or(true) && style_or_builder.InheritedVariables()) {
-    if (auto data = style_or_builder.InheritedVariables()->GetValue(name)) {
+  if (inherited_hint.value_or(true)) {
+    if (auto data = style_or_builder.InheritedVariables().GetValue(name)) {
       return *data;
     }
   }
-  if (!inherited_hint.value_or(false) &&
-      style_or_builder.NonInheritedVariables()) {
-    if (auto data = style_or_builder.NonInheritedVariables()->GetValue(name)) {
+  if (!inherited_hint.value_or(false)) {
+    if (auto data = style_or_builder.NonInheritedVariables().GetValue(name)) {
       return *data;
     }
   }
@@ -2340,17 +2455,15 @@ const CSSValue* GetVariableValue(
   return nullptr;
 }
 
-}  // namespace
-
 CSSVariableData* ComputedStyle::GetVariableData(
     const AtomicString& name) const {
-  return blink::GetVariableData(*this, name);
+  return blink::GetVariableDataInternal(*this, name, std::nullopt);
 }
 
 CSSVariableData* ComputedStyle::GetVariableData(
     const AtomicString& name,
     bool is_inherited_property) const {
-  return blink::GetVariableData(*this, name, is_inherited_property);
+  return blink::GetVariableDataInternal(*this, name, is_inherited_property);
 }
 
 const CSSValue* ComputedStyle::GetVariableValue(
@@ -2510,11 +2623,6 @@ Color ComputedStyle::VisitedDependentColor(const Longhand& color_property,
 
   blink::Color unvisited_color =
       color_property.ColorIncludingFallback(false, *this, is_current_color);
-  if (RuntimeEnabledFeatures::CSSDoNotHideVisitedColorEnabled()) {
-    // Under this flag, we treat :visited like any other pseudo-class,
-    // and we never touch the -internal-visited-* properties.
-    return unvisited_color;
-  }
   if (InsideLink() != EInsideLink::kInsideVisitedLink) {
     return unvisited_color;
   }
@@ -2805,19 +2913,6 @@ bool ComputedStyle::MarkerShouldBeInside(
       ListStylePosition() == EListStylePosition::kInside) {
     return true;
   }
-  if (!RuntimeEnabledFeatures::ListStylePositionQuirkStandardEnabled()) {
-    // Force the marker of <li> elements with no <ol> or <ul> ancestor to have
-    // an inside position.
-    // TODO(crbug.com/41241289): This quirk predates WebKit, it was added to
-    // match the behavior of the Internet Explorer from that time. However,
-    // Microsoft ended up removing it (before switching to Blink), and Firefox
-    // never had it, so it may be possible to get rid of it.
-    if (IsA<HTMLLIElement>(parent) && !IsInsideListElement() &&
-        PseudoElementLayoutObjectIsNeeded(kPseudoIdMarker, marker_style,
-                                          &parent)) {
-      return true;
-    }
-  }
   return false;
 }
 
@@ -2989,6 +3084,26 @@ bool ComputedStyle::ApplyControlFixedSize(const Node* node) const {
   return control && control->GetAutofillState() != WebAutofillState::kNotFilled;
 }
 
+bool ComputedStyle::HasAnimationTrigger() const {
+  CSSAnimationData* data = Animations();
+  if (!data) {
+    return false;
+  }
+
+  return std::any_of(data->TriggerAttachmentsList().begin(),
+                     data->TriggerAttachmentsList().end(),
+                     [](Member<StyleTriggerAttachmentVector> attachments_list) {
+                       return attachments_list.Get();
+                     });
+}
+
+bool ComputedStyle::HasBaseEffectiveAppearance() const {
+  DCHECK(RuntimeEnabledFeatures::AppearanceBaseEnabled() ||
+         EffectiveAppearance() != AppearanceValue::kBase);
+  return EffectiveAppearance() == AppearanceValue::kBaseSelect ||
+         EffectiveAppearance() == AppearanceValue::kBase;
+}
+
 ComputedStyleBuilder::ComputedStyleBuilder(const ComputedStyle& style)
     : ComputedStyleBuilderBase(style) {}
 
@@ -3020,8 +3135,6 @@ const ComputedStyle* ComputedStyleBuilder::TakeStyle() {
 
 const ComputedStyle* ComputedStyleBuilder::CloneStyle() const {
   ResetAccess();
-  has_own_inherited_variables_ = false;
-  has_own_non_inherited_variables_ = false;
   has_own_animations_ = false;
   has_own_transitions_ = false;
   return MakeGarbageCollected<ComputedStyle>(ComputedStyle::BuilderPassKey(),
@@ -3033,11 +3146,8 @@ void ComputedStyleBuilder::PropagateIndependentInheritedProperties(
   ComputedStyleBuilderBase::PropagateIndependentInheritedProperties(
       parent_style);
   if (!HasVariableReference() && !HasVariableDeclaration() &&
-      (InheritedVariablesInternal().Get() !=
-       parent_style.InheritedVariables())) {
-    has_own_inherited_variables_ = false;
-    MutableInheritedVariablesInternal() =
-        parent_style.InheritedVariablesInternal();
+      InheritedVariablesInternal() != parent_style.InheritedVariables()) {
+    SetInheritedVariablesInternal(parent_style.InheritedVariablesInternal());
   }
 }
 
@@ -3176,50 +3286,29 @@ void ComputedStyleBuilder::SetUsedColorScheme(
   SetColorSchemeFlagsIsNormal(is_normal);
 }
 
-CSSVariableData* ComputedStyleBuilder::GetVariableData(
-    const AtomicString& name,
-    bool is_inherited_property) const {
-  return blink::GetVariableData(*this, name, is_inherited_property);
-}
-
 StyleInheritedVariables& ComputedStyleBuilder::MutableInheritedVariables() {
-  Member<StyleInheritedVariables>& variables =
-      MutableInheritedVariablesInternal();
-  if (!has_own_inherited_variables_) {
-    variables = variables
-                    ? MakeGarbageCollected<StyleInheritedVariables>(*variables)
-                    : MakeGarbageCollected<StyleInheritedVariables>();
-  }
-  has_own_inherited_variables_ = true;
-  DCHECK(variables);
-  return *variables;
+  return MutableInheritedVariablesInternal();
 }
 
 StyleNonInheritedVariables&
 ComputedStyleBuilder::MutableNonInheritedVariables() {
-  Member<StyleNonInheritedVariables>& variables =
-      MutableNonInheritedVariablesInternal();
-  if (!has_own_non_inherited_variables_) {
-    variables =
-        variables ? MakeGarbageCollected<StyleNonInheritedVariables>(*variables)
-                  : MakeGarbageCollected<StyleNonInheritedVariables>();
-  }
-  has_own_non_inherited_variables_ = true;
-  DCHECK(variables);
-  return *variables;
+  return MutableNonInheritedVariablesInternal();
+}
+
+CSSVariableData* ComputedStyleBuilder::GetVariableData(
+    const AtomicString& name,
+    bool is_inherited_property) const {
+  return blink::GetVariableDataInternal(*this, name, is_inherited_property);
 }
 
 void ComputedStyleBuilder::SetInheritedVariablesFrom(
     const ComputedStyle* style) {
-  MutableInheritedVariablesInternal() = style->InheritedVariablesInternal();
-  has_own_inherited_variables_ = false;
+  SetInheritedVariablesInternal(style->InheritedVariablesInternal());
 }
 
 void ComputedStyleBuilder::SetNonInheritedVariablesFrom(
     const ComputedStyle* style) {
-  MutableNonInheritedVariablesInternal() =
-      style->NonInheritedVariablesInternal();
-  has_own_non_inherited_variables_ = false;
+  SetNonInheritedVariablesInternal(style->NonInheritedVariablesInternal());
 }
 
 STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kAuto,

@@ -128,7 +128,7 @@ class IOSChromeSharedPasswordControllerTest : public PlatformTest {
  protected:
   base::test::TaskEnvironment task_environment_;
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
-  raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
+  raw_ptr<web::FakeWebFramesManager, DanglingUntriaged> web_frames_manager_;
   web::FakeWebState fake_web_state_;
   raw_ptr<web::WebFrame> frame_;
   id suggestion_helper_;

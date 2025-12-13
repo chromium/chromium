@@ -41,7 +41,7 @@
 
     [RaisesException=Getter] readonly attribute boolean         booleanValue;
 
-    [RaisesException=Getter] readonly attribute Node            singleNodeValue;
+    [RaisesException=Getter] readonly attribute Node?           singleNodeValue;
 
     readonly attribute boolean         invalidIteratorState;
     [RaisesException=Getter] readonly attribute unsigned long   snapshotLength;

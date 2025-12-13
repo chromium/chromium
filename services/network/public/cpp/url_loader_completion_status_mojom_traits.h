@@ -54,11 +54,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return status.exists_in_cache;
   }
 
-  static bool exists_in_memory_cache(
-      const network::URLLoaderCompletionStatus& status) {
-    return status.exists_in_memory_cache;
-  }
-
   static const base::TimeTicks& completion_time(
       const network::URLLoaderCompletionStatus& status) {
     return status.completion_time;
@@ -82,12 +77,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static const std::optional<network::CorsErrorStatus>& cors_error_status(
       const network::URLLoaderCompletionStatus& status) {
     return status.cors_error_status;
-  }
-
-  static network::mojom::PrivateNetworkAccessPreflightResult
-  private_network_access_preflight_result(
-      const network::URLLoaderCompletionStatus& status) {
-    return status.private_network_access_preflight_result;
   }
 
   static network::mojom::TrustTokenOperationStatus trust_token_operation_status(

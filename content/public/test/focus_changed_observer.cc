@@ -19,9 +19,9 @@ FocusedNodeDetails FocusChangedObserver::Wait() {
   return *observed_details_;
 }
 
-void FocusChangedObserver::OnFocusChangedInPage(FocusedNodeDetails* details) {
-  DCHECK(details);
-  observed_details_ = *details;
+void FocusChangedObserver::OnFocusChangedInPage(
+    const FocusedNodeDetails& details) {
+  observed_details_ = details;
   run_loop_.Quit();
 }
 

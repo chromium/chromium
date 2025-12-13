@@ -90,7 +90,6 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
   void OnDecoderWaiting(WaitingReason reason);
 
   void OnDecoderRequestedOverlayInfo(
-      bool restart_for_transitions,
       ProvideOverlayInfoCB provide_overlay_info_cb);
 
   // Whether this instance is active (Decode() was called at least once).

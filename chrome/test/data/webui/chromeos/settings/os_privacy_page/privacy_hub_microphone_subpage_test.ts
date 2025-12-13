@@ -83,12 +83,12 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
 
   function getOnOffText(): string {
     return privacyHubMicrophoneSubpage.shadowRoot!.querySelector('#onOffText')!
-        .textContent!.trim();
+        .textContent.trim();
   }
 
   function getOnOffSubtext(): string {
     return privacyHubMicrophoneSubpage.shadowRoot!
-        .querySelector('#onOffSubtext')!.textContent!.trim();
+        .querySelector('#onOffSubtext')!.textContent.trim();
   }
 
   function isMicrophoneListSectionVisible(): boolean {
@@ -224,7 +224,7 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
     assertTrue(!!getNoMicrophoneTextElement());
     assertEquals(
         privacyHubMicrophoneSubpage.i18n('noMicrophoneConnectedText'),
-        getNoMicrophoneTextElement()!.textContent!.trim());
+        getNoMicrophoneTextElement()!.textContent.trim());
   });
 
   test(
@@ -358,7 +358,7 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
     assertEquals(
         privacyHubMicrophoneSubpage.i18n('privacyHubAppsSectionTitle'),
         privacyHubMicrophoneSubpage.shadowRoot!
-            .querySelector('#appsSectionTitle')!.textContent!.trim());
+            .querySelector('#appsSectionTitle')!.textContent.trim());
     assertTrue(!!getAppList());
     assertNull(getNoAppHasAccessTextSection());
   });
@@ -374,7 +374,7 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
     assertTrue(!!getNoAppHasAccessTextSection());
     assertEquals(
         privacyHubMicrophoneSubpage.i18n('noAppCanUseMicText'),
-        getNoAppHasAccessTextSection()!.textContent!.trim());
+        getNoAppHasAccessTextSection()!.textContent.trim());
   });
 
   function initializeObserver(): Promise<void> {
@@ -450,7 +450,7 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
     assertEquals(
         privacyHubMicrophoneSubpage.i18n('websitesSectionTitle'),
         privacyHubMicrophoneSubpage.shadowRoot!
-            .querySelector('#websitesSectionTitle')!.textContent!.trim());
+            .querySelector('#websitesSectionTitle')!.textContent.trim());
 
     assertEquals(
         privacyHubMicrophoneSubpage.i18n('manageMicPermissionsInChromeText'),
@@ -458,7 +458,7 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
 
     assertEquals(
         privacyHubMicrophoneSubpage.i18n('noWebsiteCanUseMicText'),
-        getNoWebsiteHasAccessTextRow().textContent!.trim());
+        getNoWebsiteHasAccessTextRow().textContent.trim());
   });
 
   test('Websites section when microphone allowed', () => {
@@ -514,7 +514,7 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
         privacyHubMicrophoneSubpage.i18n(
             'privacyHubSystemServicesSectionTitle'),
         privacyHubMicrophoneSubpage.shadowRoot!
-            .querySelector('#systemServicesSectionTitle')!.textContent!.trim());
+            .querySelector('#systemServicesSectionTitle')!.textContent.trim());
 
     await flushTasks();
     const systemServices =

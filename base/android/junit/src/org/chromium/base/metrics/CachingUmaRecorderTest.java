@@ -4,10 +4,10 @@
 
 package org.chromium.base.metrics;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
+
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -316,7 +316,7 @@ public final class CachingUmaRecorderTest {
         final Instant start = Instant.now();
 
         while (true) {
-            assertThat(timeLimit, greaterThan(Duration.between(start, Instant.now())));
+            assertThat(timeLimit).isGreaterThan(Duration.between(start, Instant.now()));
             switch (thread.getState()) {
                 case BLOCKED:
                 case WAITING:
@@ -428,7 +428,9 @@ public final class CachingUmaRecorderTest {
             for (HistogramTestingUmaRecorder recorder : testingRecorders) {
                 actualSamples += recorder.recordedSamples.get(i);
             }
-            assertThat(String.format("thread[%d] total samples", i), actualSamples, is(numSamples));
+            assertWithMessage(String.format("thread[%d] total samples", i))
+                    .that(actualSamples)
+                    .isEqualTo(numSamples);
         }
     }
 
@@ -542,7 +544,9 @@ public final class CachingUmaRecorderTest {
             for (UserActionTestingUmaRecorder recorder : testingRecorders) {
                 actualSamples += recorder.recordedSamples.get(i);
             }
-            assertThat(String.format("thread[%d] total samples", i), actualSamples, is(numSamples));
+            assertWithMessage(String.format("thread[%d] total samples", i))
+                    .that(actualSamples)
+                    .isEqualTo(numSamples);
         }
     }
 

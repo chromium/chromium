@@ -5,25 +5,37 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_UTILS_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_UTILS_H_
 
-#include <string>
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-forward.h"
 
-#include "url/gurl.h"
-#include "url/origin.h"
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace resource_coordinator {
 
 class TabLifecycleUnitSource;
 
-// Serialize an Origin into the representation used by the different databases
-// that need it.
-std::string SerializeOriginIntoDatabaseKey(const url::Origin& origin);
-
-// Indicates if |url| should have an entry in the local site characteristics
-// database.
-bool URLShouldBeStoredInLocalDatabase(const GURL& url);
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(AttemptFastKillForDiscardResult)
+enum class AttemptFastKillForDiscardResult {
+  kKilled = 0,
+  kSkipped = 1,
+  kKilledWithoutUnloadHandlers = 2,
+  kKilledWithoutUnloadHandlersAndWorkers = 3,
+  kMaxValue = kKilledWithoutUnloadHandlersAndWorkers,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:AttemptFastKillForDiscardResult)
 
 // Returns the TabLifecycleUnitSource indirectly owned by g_browser_process.
 TabLifecycleUnitSource* GetTabLifecycleUnitSource();
+
+// Attempts to fast kill the process hosting the main frame of `web_contents`
+// if only hosting the main frame.
+void AttemptFastKillForDiscard(
+    content::WebContents* web_contents,
+    ::mojom::LifecycleUnitDiscardReason discard_reason);
 
 }  // namespace resource_coordinator
 

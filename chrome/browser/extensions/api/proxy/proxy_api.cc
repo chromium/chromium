@@ -17,7 +17,10 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/net_errors.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

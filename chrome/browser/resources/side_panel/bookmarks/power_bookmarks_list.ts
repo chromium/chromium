@@ -19,6 +19,7 @@ import '//bookmarks-side-panel.top-chrome/shared/sp_shared_style.css.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
@@ -276,11 +277,22 @@ export class PowerBookmarksListElement extends PolymerElement implements
         observer: 'onCanDragChange_',
       },
 
+      hasActiveDrag_: {
+        type: Boolean,
+        value: false,
+      },
+
       sectionVisibility_: {
         type: Object,
         computed: 'computeSectionVisibility_(hasLoadedData_,' +
             'activeFolderPath_.length, hasShownBookmarks_,' +
             'labels_.length, hasSomeActiveFilter_)',
+      },
+
+      hasFolders_: {
+        type: Boolean,
+        computed: 'computeHasFolders_(displayLists_.*)',
+        reflect: true,
       },
     };
   }
@@ -322,9 +334,11 @@ export class PowerBookmarksListElement extends PolymerElement implements
   declare private contextMenuBookmark_: BookmarksTreeNode|undefined;
   declare private hasLoadedData_: boolean;
   declare private canDrag_: boolean;
+  declare private hasActiveDrag_: boolean;
   declare private hasSomeActiveFilter_: boolean;
   declare private hasShownBookmarks_: boolean;
   declare private sectionVisibility_: SectionVisibility;
+  declare private hasFolders_: boolean;
   declare private shoppingCollectionFolderId_: string;
   private recordCountMetricsOnNextUpdate_: boolean = false;
   declare private updatedElementIds_: string[];
@@ -472,7 +486,6 @@ export class PowerBookmarksListElement extends PolymerElement implements
     this.updatedElementIds_ = [bookmark.id];
     this.updateShoppingData_();
     this.notifyPathIfVisible_(parent.id, 'children');
-    this.keyArrowNavigationService_.rebuildNavigationElements();
   }
 
   onBookmarkMoved(
@@ -503,11 +516,11 @@ export class PowerBookmarksListElement extends PolymerElement implements
     if (this.bookmarksTreeViewEnabled_ && this.compact_) {
       this.notifyBookmarksListResize_();
     }
-    this.keyArrowNavigationService_.rebuildNavigationElements();
   }
 
   onBookmarkRemoved(bookmark: BookmarksTreeNode) {
     const scrollTop = this.$.bookmarks.scrollTop;
+    this.updateDisplayLists_();
     const isShown = this.bookmarkIsShowing_(bookmark);
     if (isShown) {
       this.removeNodeFromDisplayLists_(bookmark.id);
@@ -569,6 +582,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
 
   /** PowerBookmarksDragDelegate */
   onFinishDrop(dropTarget: BookmarksTreeNode): void {
+    this.updateDisplayLists_();
     this.focusBookmark_(dropTarget.id);
 
     // Show the focus state immediately after dropping a bookmark to indicate
@@ -578,7 +592,11 @@ export class PowerBookmarksListElement extends PolymerElement implements
     document.addEventListener('mousedown', () => {
       this.focusOutlineManager_.visible = false;
     }, {once: true});
-    this.keyArrowNavigationService_.rebuildNavigationElements();
+  }
+
+  /** PowerBookmarksDragDelegate */
+  setHasActiveDrag(hasActiveDrag: boolean): void {
+    this.hasActiveDrag_ = hasActiveDrag;
   }
 
   clickBookmarkRowForTests(bookmark: BookmarksTreeNode) {
@@ -611,6 +629,10 @@ export class PowerBookmarksListElement extends PolymerElement implements
     return this.keyArrowNavigationService_;
   }
 
+  getDragManagerForTesting() {
+    return this.bookmarksDragManager_;
+  }
+
   private notifyPathIfVisible_(id: string, key: string) {
     for (let i = 0; i < this.displayLists_.length; i++) {
       const listIndex = this.displayLists_[i].findIndex(b => b.id === id);
@@ -619,6 +641,15 @@ export class PowerBookmarksListElement extends PolymerElement implements
         return;
       }
     }
+  }
+
+  private computeHasFolders_(): boolean {
+    if (!this.displayLists_ || this.displayLists_.length === 0) {
+      return false;
+    }
+    return this.displayLists_.some(
+        list => list.some(bookmark => !!bookmark.children),
+    );
   }
 
   private computeCanDrag_(): boolean {
@@ -714,9 +745,6 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   private getActiveFolderLabel_(): string {
-    if (this.bookmarksTreeViewEnabled_ && this.compact_) {
-      return loadTimeData.getString('allBookmarks');
-    }
     return getFolderLabel(this.getActiveFolder_());
   }
 
@@ -749,9 +777,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
    * Update the lists of bookmarks and folders displayed to the user.
    */
   private updateDisplayLists_() {
-    const activeFolder = this.bookmarksTreeViewEnabled_ && this.compact_ ?
-        undefined :
-        this.getActiveFolder_();
+    const activeFolder = this.getActiveFolder_();
     const primaryList = this.bookmarksService_.filterBookmarks(
         activeFolder, this.activeSortIndex_, this.searchQuery_, this.labels_);
     if (this.hasSomeActiveFilter_ && !!activeFolder) {
@@ -778,7 +804,13 @@ export class PowerBookmarksListElement extends PolymerElement implements
           [...this.shadowRoot!.querySelectorAll('power-bookmark-row')];
       if (children.length > 0) {
         Promise.all(children.map(el => el.updateComplete))
-            .then(() => this.notifyBookmarksListResize_());
+            .then(() => {
+              this.notifyBookmarksListResize_();
+
+              // Make sure the keyboard navigation tree is rebuilt whenever the
+              // iron-list is updated.
+              this.keyArrowNavigationService_.rebuildNavigationElements();
+            });
       }
     });
   }
@@ -823,7 +855,8 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   private recordBookmarkCountMetrics_() {
-    const count =
+    const count = this.bookmarksTreeViewEnabled_ ?
+        this.keyArrowNavigationService_.getElementCount() :
         this.displayLists_.reduce((prev, curr) => prev + curr.length, 0);
     const metricName = `PowerBookmarks.SidePanel${
         this.hasSomeActiveFilter_ ? '.SearchOrFilter' : ''}.BookmarksShown`;
@@ -848,18 +881,13 @@ export class PowerBookmarksListElement extends PolymerElement implements
         sortType.sortOrder;
   }
 
-  private onRowToggled_(event: CustomEvent<{
+  private onRowToggled_(_event: CustomEvent<{
     bookmark: BookmarksTreeNode,
     expanded: boolean,
     event: MouseEvent,
   }>) {
-    const bookmark = event.detail.bookmark;
-    if (event.detail.expanded) {
-      this.activeFolderPath_ = this.bookmarksService_.findPathToId(bookmark.id);
-    } else if (bookmark === this.getActiveFolder_()) {
-      this.pop('activeFolderPath_');
-    }
     this.notifyBookmarksListResize_();
+    afterNextRender(this, () => this.recordBookmarkCountMetrics_());
   }
   /**
    * Invoked when the user clicks a power bookmarks row. This will either
@@ -1024,9 +1052,6 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   private shouldHideBackButton_(): boolean {
-    if (this.compact_ && this.bookmarksTreeViewEnabled_) {
-      return true;
-    }
     return !this.activeFolderPath_.length;
   }
 

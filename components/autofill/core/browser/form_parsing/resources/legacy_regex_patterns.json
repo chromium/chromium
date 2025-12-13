@@ -1,3 +1,9 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Below we use `"__comment__": "Foo."` instead of `// Foo.` to preserve the
+// comments during sorting.
 {
   "__comment__": [
     "This file is identified by PatternFile::kLegacy in the code.",
@@ -1332,7 +1338,7 @@
     ],
     "en": [
       {
-        "positive_pattern": "city|town|suburb",
+        "positive_pattern": "(?<!(?:pa|ri|li|di|ni|lo))city|town|suburb",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": [
@@ -5360,39 +5366,75 @@
     ]
   },
   "ZIP_4": {
-    "en": [
-      {
-        "positive_pattern": "zip|^-$|post2",
-        "positive_score": 1.1,
-        "negative_pattern": "\\.zip",
-        "negative_patterns_explainer": ".zip refers to a file extension",
-        "match_field_attributes": [
-          "LABEL",
-          "NAME"
-        ],
-        "form_control_types": [
-          "INPUT_TEXT",
-          "INPUT_TELEPHONE",
-          "INPUT_NUMBER"
-        ]
-      }
-    ],
-    "pt": [
-      {
-        "positive_pattern": "codpos2",
-        "positive_score": 1.1,
-        "negative_pattern": null,
-        "match_field_attributes": [
-          "LABEL",
-          "NAME"
-        ],
-        "form_control_types": [
-          "INPUT_TEXT",
-          "INPUT_TELEPHONE",
-          "INPUT_NUMBER"
-        ]
-      }
-    ]
+    "en": {
+      "": [
+        {
+          "positive_pattern": "zip|^-$|post2",
+          "positive_score": 1.1,
+          "negative_pattern": "\\.zip",
+          "negative_patterns_explainer": ".zip refers to a file extension",
+          "match_field_attributes": [
+            "LABEL",
+            "NAME"
+          ],
+          "form_control_types": [
+            "INPUT_TEXT",
+            "INPUT_TELEPHONE",
+            "INPUT_NUMBER"
+          ]
+        }
+      ],
+      "AutofillSupportSplitZipCode": [
+        {
+          "positive_pattern": "(?:(?:zip|post(?:al)?)[\\W_]*code|zip)[\\W_]*(?:0?2|ext|plus|complement|suffix|second)",
+          "positive_score": 1.1,
+          "negative_pattern": null,
+          "match_field_attributes": [
+            "LABEL",
+            "NAME"
+          ],
+          "form_control_types": [
+            "INPUT_TEXT",
+            "INPUT_TELEPHONE",
+            "INPUT_NUMBER"
+          ]
+        }
+      ]
+    },
+    "pt": {
+      "": [
+        {
+          "positive_pattern": "codpos2",
+          "positive_score": 1.1,
+          "negative_pattern": null,
+          "match_field_attributes": [
+            "LABEL",
+            "NAME"
+          ],
+          "form_control_types": [
+            "INPUT_TEXT",
+            "INPUT_TELEPHONE",
+            "INPUT_NUMBER"
+          ]
+        }
+      ],
+      "AutofillSupportSplitZipCode": [
+        {
+          "positive_pattern": "(?:codigo[\\W_]?postal|cep)[\\W_]?2",
+          "positive_score": 1.1,
+          "negative_pattern": null,
+          "match_field_attributes": [
+            "LABEL",
+            "NAME"
+          ],
+          "form_control_types": [
+            "INPUT_TEXT",
+            "INPUT_TELEPHONE",
+            "INPUT_NUMBER"
+          ]
+        }
+      ]
+    }
   },
   "ZIP_CODE": {
     "de": [

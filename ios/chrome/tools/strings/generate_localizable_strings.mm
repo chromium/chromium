@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // Helper tool that is built and run during a build to pull strings from the
 // GRD files and generate a localized string files needed for iOS app bundles.
 // Arguments:
@@ -26,8 +21,8 @@
 //   pt pt-PT ro ru sk sv th tr uk vi zh-CN zh-TW
 
 #import <Foundation/Foundation.h>
-#import <stdio.h>
 
+#import <iostream>
 #import <map>
 #import <set>
 #import <string>
@@ -36,6 +31,7 @@
 #import <vector>
 
 #import "base/apple/foundation_util.h"
+#import "base/containers/span.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -117,14 +113,15 @@ NSDictionary* GenerateLocalizableStringsDictionary(
       resource_name = [resource objectForKey:@"input"];
       resource_output_name = [resource objectForKey:@"output"];
       if (!resource_name || !resource_output_name) {
-        fprintf(
-            stderr,
-            "ERROR: resources must be given in <string> or <dict> format.\n");
+        std::cerr
+            << "ERROR: resources must be given in <string> or <dict> format."
+            << std::endl;
         return nil;
       }
     } else {
-      fprintf(stderr,
-              "ERROR: resources must be given in <string> or <dict> format.\n");
+      std::cerr
+          << "ERROR: resources must be given in <string> or <dict> format."
+          << std::endl;
       return nil;
     }
     NSInteger resource_id =
@@ -133,8 +130,9 @@ NSDictionary* GenerateLocalizableStringsDictionary(
     if (string) {
       [dictionary setObject:string forKey:resource_output_name];
     } else {
-      fprintf(stderr, "ERROR: fail to load string '%s' for locale '%s'\n",
-              base::SysNSStringToUTF8(resource_name).c_str(), locale);
+      std::cerr << "ERROR: fail to load string '"
+                << base::SysNSStringToUTF8(resource_name) << "' for locale '"
+                << locale << "'" << std::endl;
       return nil;
     }
   }
@@ -145,7 +143,7 @@ NSDictionary* GenerateLocalizableStringsDictionary(
 NSDictionary* LoadResourcesListFromHeaders(NSArray* header_list,
                                            NSString* root_header_dir) {
   if (![header_list count]) {
-    fprintf(stderr, "ERROR: No header file in the config.\n");
+    std::cerr << "ERROR: No header file in the config." << std::endl;
     return nil;
   }
 
@@ -188,8 +186,8 @@ bool SavePropertyList(NSDictionary* dictionary,
                withIntermediateDirectories:YES
                                 attributes:nil
                                      error:nil]) {
-    fprintf(stderr, "ERROR: '%s' didn't exist or failed to create it\n",
-            base::SysNSStringToUTF8(output_path).c_str());
+    std::cerr << "ERROR: '" << base::SysNSStringToUTF8(output_path)
+              << "' didn't exist or failed to create it." << std::endl;
     return false;
   }
 
@@ -201,23 +199,24 @@ bool SavePropertyList(NSDictionary* dictionary,
                    options:0
                      error:&error];
   if (!data) {
-    fprintf(stderr, "ERROR: conversion to property list failed: %s\n",
-            base::SysNSStringToUTF8([error localizedDescription]).c_str());
+    std::cerr << "ERROR: conversion to property list failed: "
+              << base::SysNSStringToUTF8([error localizedDescription])
+              << std::endl;
     return false;
   }
 
   // Save the strings to the disk.
   output_path = [output_path stringByAppendingPathComponent:output_filename];
   if (![data writeToFile:output_path atomically:YES]) {
-    fprintf(stderr, "ERROR: Failed to write out '%s'\n",
-            base::SysNSStringToUTF8(output_filename).c_str());
+    std::cerr << "ERROR: Failed to write out '"
+              << base::SysNSStringToUTF8(output_filename) << "'" << std::endl;
     return false;
   }
 
   return true;
 }
 
-int real_main(int argc, char* const argv[]) {
+int real_main(int argc, char** argv) {
   NSString* output_dir = nil;
   NSString* data_pack_dir = nil;
   NSString* root_header_dir = nil;
@@ -239,43 +238,41 @@ int real_main(int argc, char* const argv[]) {
         output_dir = base::SysUTF8ToNSString(optarg);
         break;
       case 'h':
-        fprintf(stdout,
-                "usage: generate_localizable_strings  -p data_pack_dir "
-                "-o output_dir -c config_file -I input_root "
-                "locale [locale...]\n"
-                "\n"
-                "Generate localized string files specified in |config_file|\n"
-                "for all specified locales in output_dir from packed data\n"
-                "packs in data_pack_dir.\n");
+        std::cout << "usage: generate_localizable_strings  -p data_pack_dir -o "
+                     "output_dir -c config_file -I input_root locale "
+                     "[locale...]\n\nGenerate localized string files specified "
+                     "in |config_file|\nfor all specified locales in "
+                     "output_dir from packed data\npacks in data_pack_dir."
+                  << std::endl;
         exit(0);
       default:
-        fprintf(stderr, "ERROR: bad command line arg: %c.n\n", ch);
+        std::cerr << "ERROR: bad command line arg: " << ch << std::endl;
         exit(1);
     }
   }
 
   if (!config_file) {
-    fprintf(stderr, "ERROR: missing config file.\n");
+    std::cerr << "ERROR: missing config file." << std::endl;
     exit(1);
   }
 
   if (!root_header_dir) {
-    fprintf(stderr, "ERROR: missing root header dir.\n");
+    std::cerr << "ERROR: missing root header dir." << std::endl;
     exit(1);
   }
 
   if (!output_dir) {
-    fprintf(stderr, "ERROR: missing output directory.\n");
+    std::cerr << "ERROR: missing output directory." << std::endl;
     exit(1);
   }
 
   if (!data_pack_dir) {
-    fprintf(stderr, "ERROR: missing data pack directory.\n");
+    std::cerr << "ERROR: missing data pack directory." << std::endl;
     exit(1);
   }
 
   if (optind == argc) {
-    fprintf(stderr, "ERROR: missing locale list.\n");
+    std::cerr << "ERROR: missing locale list." << std::endl;
     exit(1);
   }
 
@@ -289,12 +286,18 @@ int real_main(int argc, char* const argv[]) {
     exit(1);
   }
 
-  NSMutableArray* locales = [NSMutableArray arrayWithCapacity:(argc - optind)];
-  for (int i = optind; i < argc; ++i) {
+  // SAFETY: libc ensure that main(...) is called with a buffer argv that
+  // contains at least argc elements.
+  const base::span<char*> args =
+      UNSAFE_BUFFERS(base::span(argv, static_cast<size_t>(argc)))
+          .subspan(static_cast<size_t>(optind));
+
+  NSMutableArray* locales = [NSMutableArray arrayWithCapacity:args.size()];
+  for (const char* arg : args) {
     // In order to find the locale at runtime, it needs to use '_' instead of
     // '-' (http://crbug.com/20441).  Also, 'en-US' should be represented
     // simply as 'en' (http://crbug.com/19165, http://crbug.com/25578).
-    NSString* locale = [NSString stringWithUTF8String:argv[i]];
+    NSString* locale = base::SysUTF8ToNSString(arg);
     if ([locale isEqualToString:@"en-US"]) {
       locale = @"en";
     } else {
@@ -307,7 +310,7 @@ int real_main(int argc, char* const argv[]) {
   NSArray* outputs = [config objectForKey:@"outputs"];
 
   if (![outputs count]) {
-    fprintf(stderr, "ERROR: No output in config file\n");
+    std::cerr << "ERROR: No output in config file." << std::endl;
     exit(1);
   }
 
@@ -315,21 +318,21 @@ int real_main(int argc, char* const argv[]) {
     std::unique_ptr<ui::DataPack> data_pack =
         LoadResourceDataPack(data_pack_dir, locale);
     if (!data_pack) {
-      fprintf(stderr, "ERROR: Failed to load branded pak for language: %s\n",
-              base::SysNSStringToUTF8(locale).c_str());
+      std::cerr << "ERROR: Failed to load branded pak for language:"
+                << base::SysNSStringToUTF8(locale) << std::endl;
       exit(1);
     }
 
     for (NSDictionary* output : [config objectForKey:@"outputs"]) {
       NSString* output_name = [output objectForKey:@"name"];
       if (!output_name) {
-        fprintf(stderr, "ERROR: Output without name.\n");
+        std::cerr << "ERROR: Output without name." << std::endl;
         exit(1);
       }
       NSArray* output_strings = [output objectForKey:@"strings"];
       if (![output_strings count]) {
-        fprintf(stderr, "ERROR: Output without strings: %s.\n",
-                base::SysNSStringToUTF8(output_name).c_str());
+        std::cerr << "ERROR: Output without strings: "
+                  << base::SysNSStringToUTF8(output_name) << std::endl;
         exit(1);
       }
 
@@ -339,8 +342,8 @@ int real_main(int argc, char* const argv[]) {
       if (dictionary) {
         SavePropertyList(dictionary, locale, output_dir, output_name);
       } else {
-        fprintf(stderr, "ERROR: Unable to create %s.\n",
-                base::SysNSStringToUTF8(output_name).c_str());
+        std::cerr << "ERROR: Unable to create: "
+                  << base::SysNSStringToUTF8(output_name) << std::endl;
         exit(1);
       }
     }
@@ -350,7 +353,7 @@ int real_main(int argc, char* const argv[]) {
 
 }  // namespace
 
-int main(int argc, char* const argv[]) {
+int main(int argc, char** argv) {
   @autoreleasepool {
     return real_main(argc, argv);
   }

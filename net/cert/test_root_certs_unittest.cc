@@ -47,7 +47,9 @@ class TestRootCertsTest : public testing::TestWithParam<bool> {
           /*cert_net_fetcher=*/nullptr, CRLSet::BuiltinCRLSet().get(),
           std::make_unique<DoNothingCTVerifier>(),
           base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
-          /*root_store_data=*/nullptr, /*instance_params=*/{}, std::nullopt);
+          /*root_store_data=*/nullptr,
+          /*root_store_mtc_metadata=*/nullptr,
+          /*instance_params=*/{}, std::nullopt);
     } else {
       return CertVerifyProc::CreateSystemVerifyProc(
           /*cert_net_fetcher=*/nullptr, CRLSet::BuiltinCRLSet().get());
@@ -57,7 +59,9 @@ class TestRootCertsTest : public testing::TestWithParam<bool> {
         /*cert_net_fetcher=*/nullptr, CRLSet::BuiltinCRLSet().get(),
         std::make_unique<DoNothingCTVerifier>(),
         base::MakeRefCounted<DefaultCTPolicyEnforcer>(),
-        /*root_store_data=*/nullptr, /*instance_params=*/{}, std::nullopt);
+        /*root_store_data=*/nullptr,
+        /*root_store_mtc_metadata=*/nullptr,
+        /*instance_params=*/{}, std::nullopt);
 #elif BUILDFLAG(IS_FUCHSIA)
     return CertVerifyProc::CreateBuiltinVerifyProc(
         /*cert_net_fetcher=*/nullptr, CRLSet::BuiltinCRLSet().get(),

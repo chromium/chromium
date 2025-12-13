@@ -2,10 +2,6 @@
   "extends": "../../../../../tools/typescript/tsconfig_base.json",
   "compilerOptions": {
     "noUncheckedIndexedAccess": false,
-    "allowJs": true,
-    "typeRoots": ["../../../../../third_party/node/node_modules/@types"],
-    "types": [
-      "w3c-image-capture"
-    ]
+    "allowJs": true
   }
 }

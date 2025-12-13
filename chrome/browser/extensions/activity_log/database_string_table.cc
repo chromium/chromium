@@ -7,8 +7,11 @@
 #include <stddef.h>
 
 #include "base/strings/strcat.h"
+#include "extensions/buildflags/buildflags.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

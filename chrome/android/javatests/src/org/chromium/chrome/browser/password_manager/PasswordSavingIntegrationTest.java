@@ -90,7 +90,7 @@ public class PasswordSavingIntegrationTest {
     @Before
     public void setup() throws Exception {
         mStartingPage = mActivityTestRule.startOnBlankPage();
-        PasswordManagerTestHelper.setAccountForPasswordStore(SigninTestRule.TEST_ACCOUNT_EMAIL);
+        PasswordManagerTestHelper.setAccountForPasswordStore(TestAccounts.ACCOUNT1.getEmail());
         PasswordManagerTestUtilsBridge.disableServerPredictions();
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
@@ -104,7 +104,7 @@ public class PasswordSavingIntegrationTest {
                             new PasswordStoreBridge(mActivityTestRule.getProfile(false));
                 });
 
-        mWebContents = mStartingPage.webContentsElement.get();
+        mWebContents = mStartingPage.webContentsElement.value();
         ImeAdapter imeAdapter = WebContentsUtils.getImeAdapter(mWebContents);
         mInputMethodManagerWrapper = TestInputMethodManagerWrapper.create(imeAdapter);
         imeAdapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);

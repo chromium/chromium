@@ -9,7 +9,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
@@ -99,7 +98,7 @@ void ExtensionWebSocketApiTest::RunServiceWorkerWebSocketTest(
     const char* test_directory) {
   ExtensionTestMessageListener socket_ready_listener("socket ready");
   service_worker_test_utils::TestServiceWorkerContextObserver observer(
-      browser()->profile());
+      profile());
   ResultCatcher catcher;
   const Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII(test_directory));
@@ -120,8 +119,7 @@ void ExtensionWebSocketApiTest::RunServiceWorkerWebSocketTest(
 
   // Set idle timeout to 1 second.
   content::ServiceWorkerContext* context =
-      util::GetServiceWorkerContextForExtensionId(extension->id(),
-                                                  browser()->profile());
+      util::GetServiceWorkerContextForExtensionId(extension->id(), profile());
   content::SetServiceWorkerIdleDelay(context, version_id, base::Seconds(1));
 
   // Wait for two seconds of web socket activity, after which the socket will

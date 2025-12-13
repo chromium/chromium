@@ -14,7 +14,7 @@ namespace {
 
 std::string GenerateCacheGUID() {
   // Generate a GUID with 128 bits of randomness.
-  const int kGuidBytes = 128 / 8;
+  constexpr int kGuidBytes = 128 / 8;
   return base::Base64Encode(base::RandBytesAsVector(kGuidBytes));
 }
 

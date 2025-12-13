@@ -1,0 +1,19 @@
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsUsbDevices}"
+    learn-more-url="$i18n{chooserUsbOverviewURL}"
+    route-path$="[[routePath]]">
+  <div class="content-settings-header secondary">
+    $i18n{siteSettingsUsbDescription}
+  </div>
+  <settings-category-default-radio-group
+      category="[[contentSettingsTypesEnum_.USB_DEVICES]]"
+      allow-option-label="$i18n{siteSettingsUsbAllowed}"
+      allow-option-icon="privacy:usb"
+      block-option-label="$i18n{siteSettingsUsbBlocked}"
+      block-option-icon="privacy:usb-off">
+  </settings-category-default-radio-group>
+  <chooser-exception-list
+      category="[[contentSettingsTypesEnum_.USB_DEVICES]]"
+      chooser-type="[[chooserTypeEnum_.USB_DEVICES]]">
+  </chooser-exception-list>
+</settings-subpage>

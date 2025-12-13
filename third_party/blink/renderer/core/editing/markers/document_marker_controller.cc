@@ -145,16 +145,14 @@ void InvalidatePaintForNode(const Node& node) {
   layout_object->SetShouldDoFullPaintInvalidation(
       PaintInvalidationReason::kDocumentMarker);
 
-  if (RuntimeEnabledFeatures::PaintHighlightsForFirstLetterEnabled()) {
-    // When first-letter css is present, the node only points to remainder.
-    // So first letter part would not be invalidated by the above.
-    auto* text_layout = DynamicTo<LayoutTextFragment>(layout_object);
-    if (text_layout && text_layout->GetFirstLetterPseudoElement()) {
-      LayoutText* first_letter_layout = text_layout->GetFirstLetterPart();
-      CHECK(first_letter_layout);
-      first_letter_layout->SetShouldDoFullPaintInvalidation(
-          PaintInvalidationReason::kDocumentMarker);
-    }
+  // When first-letter css is present, the node only points to remainder.
+  // So first letter part would not be invalidated by the above.
+  auto* text_layout = DynamicTo<LayoutTextFragment>(layout_object);
+  if (text_layout && text_layout->GetFirstLetterPseudoElement()) {
+    LayoutText* first_letter_layout = text_layout->GetFirstLetterPart();
+    CHECK(first_letter_layout);
+    first_letter_layout->SetShouldDoFullPaintInvalidation(
+        PaintInvalidationReason::kDocumentMarker);
   }
 
   // Tell accessibility about the new marker.
@@ -232,19 +230,25 @@ DocumentMarkerController::DocumentMarkerController(Document& document)
   markers_.Grow(DocumentMarker::kMarkerTypeIndexesCount);
 }
 
-void DocumentMarkerController::AddSpellingMarker(const EphemeralRange& range,
-                                                 const String& description) {
-  AddMarkerInternal(range, [&description](int start_offset, int end_offset) {
-    return MakeGarbageCollected<SpellingMarker>(start_offset, end_offset,
-                                                description);
+void DocumentMarkerController::AddSpellingMarker(
+    const EphemeralRange& range,
+    const String& description,
+    bool should_hide_suggestion_menu) {
+  AddMarkerInternal(range, [&description, &should_hide_suggestion_menu](
+                               int start_offset, int end_offset) {
+    return MakeGarbageCollected<SpellingMarker>(
+        start_offset, end_offset, description, should_hide_suggestion_menu);
   });
 }
 
-void DocumentMarkerController::AddGrammarMarker(const EphemeralRange& range,
-                                                const String& description) {
-  AddMarkerInternal(range, [&description](int start_offset, int end_offset) {
-    return MakeGarbageCollected<GrammarMarker>(start_offset, end_offset,
-                                               description);
+void DocumentMarkerController::AddGrammarMarker(
+    const EphemeralRange& range,
+    const String& description,
+    bool should_hide_suggestion_menu) {
+  AddMarkerInternal(range, [&description, &should_hide_suggestion_menu](
+                               int start_offset, int end_offset) {
+    return MakeGarbageCollected<GrammarMarker>(
+        start_offset, end_offset, description, should_hide_suggestion_menu);
   });
 }
 

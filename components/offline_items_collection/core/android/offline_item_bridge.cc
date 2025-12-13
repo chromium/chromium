@@ -39,7 +39,7 @@ void TruncatedDataUrlIfNeeded(GURL* url) {
 // - If |jlist| is specified (an ArrayList<OfflineItem>), the item is added to
 //   that list.  |jlist| can also be null, in which case the item isn't added to
 //   anything.
-ScopedJavaLocalRef<jobject>
+static ScopedJavaLocalRef<jobject>
 JNI_OfflineItemBridge_createOfflineItemAndMaybeAddToList(
     JNIEnv* env,
     ScopedJavaLocalRef<jobject> jlist,
@@ -111,3 +111,5 @@ OfflineItemBridge::OfflineItemBridge() = default;
 
 }  // namespace android
 }  // namespace offline_items_collection
+
+DEFINE_JNI(OfflineItemBridge)

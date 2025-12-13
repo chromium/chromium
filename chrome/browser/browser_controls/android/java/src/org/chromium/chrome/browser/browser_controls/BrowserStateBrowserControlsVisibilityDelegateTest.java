@@ -13,11 +13,13 @@ import static org.chromium.chrome.browser.browser_controls.BrowserStateBrowserCo
 import android.os.SystemClock;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -30,6 +32,7 @@ import org.chromium.cc.input.BrowserControlsState;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BrowserStateBrowserControlsVisibilityDelegateTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Callback<Integer> mCallback;
 
     private BrowserStateBrowserControlsVisibilityDelegate mDelegate;
@@ -37,8 +40,6 @@ public class BrowserStateBrowserControlsVisibilityDelegateTest {
 
     @Before
     public void beforeTest() {
-        MockitoAnnotations.initMocks(this);
-
         mPersistentModeSupplier = new ObservableSupplierImpl<>();
         mPersistentModeSupplier.set(false);
 

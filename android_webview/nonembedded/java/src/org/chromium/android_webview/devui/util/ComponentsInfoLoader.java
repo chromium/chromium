@@ -40,8 +40,6 @@ public class ComponentsInfoLoader {
         for (File componentDirectory : componentDirectories) {
             String[] componentVersions = componentDirectory.list();
 
-            // TODO(crbug.com/40779741): Handle multiple versions by sorting semantically and
-            // picking out the highest version
             String version =
                     (componentVersions == null || componentVersions.length == 0)
                             ? ""

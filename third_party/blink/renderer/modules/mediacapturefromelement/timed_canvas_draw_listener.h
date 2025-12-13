@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIACAPTUREFROMELEMENT_TIMED_CANVAS_DRAW_LISTENER_H_
 
 #include <memory>
-#include "base/memory/weak_ptr.h"
+
 #include "base/time/time.h"
 #include "third_party/blink/renderer/modules/mediacapturefromelement/canvas_capture_handler.h"
 #include "third_party/blink/renderer/modules/mediacapturefromelement/on_request_canvas_draw_listener.h"

@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/pam_authorization_factory_posix.h"
 
 #include <security/pam_appl.h>
 
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -184,12 +181,18 @@ int PamAuthorizer::PamConversation(int num_messages,
   // need to be free()-able zero-initialized memory.
   *responses = static_cast<struct pam_response*>(
       calloc(num_messages, sizeof(struct pam_response)));
-
+  // SAFETY: `messages` is a pointer to a dynamically allocated array of
+  // `pam_message`s, which should be at least `num_messages` long.
+  // PamConversation is invoked as a callback from pam_start API, and is
+  // documented to have this signature:
+  // https://man7.org/linux/man-pages/man3/pam_start.3.html,
+  // https://linux.die.net/man/3/pam_conv
+  auto messages_span =
+      UNSAFE_BUFFERS(base::span(messages, static_cast<size_t>(num_messages)));
   // We don't expect this function to be called. Since we have no easy way
   // of returning a response, we consider it to be an error if we're asked
   // for one and abort. Informational and error messages are logged.
-  for (int i = 0; i < num_messages; ++i) {
-    const struct pam_message* message = messages[i];
+  for (const pam_message* message : messages_span) {
     switch (message->msg_style) {
       case PAM_ERROR_MSG:
         LOG(ERROR) << "PAM conversation error message: " << message->msg;
@@ -217,6 +220,11 @@ PamAuthorizationFactory::CreateAuthenticator(const std::string& local_jid,
   std::unique_ptr<protocol::Authenticator> authenticator(
       underlying_->CreateAuthenticator(local_jid, remote_jid));
   return std::make_unique<PamAuthorizer>(std::move(authenticator));
+}
+
+std::unique_ptr<protocol::AuthenticatorFactory> PamAuthorizationFactory::Clone()
+    const {
+  return std::make_unique<PamAuthorizationFactory>(underlying_->Clone());
 }
 
 }  // namespace remoting

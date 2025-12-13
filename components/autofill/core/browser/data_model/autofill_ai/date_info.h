@@ -14,7 +14,6 @@
 namespace autofill {
 
 // Stores a year, month, day tuple.
-// For the grammar of format strings, see `AutofillField::format_string()`.
 class DateInfo {
  public:
   DateInfo();
@@ -32,7 +31,15 @@ class DateInfo {
   //   GetDate(u"DD/MM/YYYY") == u"16/12/2022"
   void SetDate(std::u16string_view date, std::u16string_view format);
 
+  // For the grammar of format strings, see `data_util::IsValidDateFormat()`.
   std::u16string GetDate(std::u16string_view format) const;
+
+  // Returns the date formatted according to `format` and `locale` using ICU.
+  // Returns an empty string if the date is partially set (e.g. day is not set)
+  // or in case of an error. For the grammar of format strings, see
+  // https://unicode.org/reports/tr35/tr35-dates.html#Date_Format_Patterns.
+  std::u16string GetIcuDate(std::u16string_view format,
+                            std::string_view locale) const;
 
   friend bool operator==(const DateInfo&, const DateInfo&) = default;
 

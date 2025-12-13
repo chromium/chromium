@@ -65,8 +65,9 @@ base::Time GetFileCreationTime(const base::FilePath& file) {
       FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL,
       OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_BACKUP_SEMANTICS, NULL));
   FILETIME creation_filetime;
-  if (!file_handle.IsValid())
+  if (!file_handle.is_valid()) {
     return creation_time;
+  }
   if (GetFileTime(file_handle.Get(), &creation_filetime, NULL, NULL))
     creation_time = base::Time::FromFileTime(creation_filetime);
   return creation_time;
@@ -522,8 +523,9 @@ void IEImporter::ImportHistory() {
 
       GURL url(base::AsStringPiece16(url_string));
       // Skips the URLs that are invalid or have other schemes.
-      if (!url.is_valid() || !base::Contains(kSchemes, url.scheme()))
+      if (!url.is_valid() || !base::Contains(kSchemes, url.GetScheme())) {
         continue;
+      }
 
       user_data_importer::ImporterURLRow row(url);
       row.title = base::AsString16(title_string);
@@ -696,8 +698,9 @@ void IEImporter::ParseFavoritesFolder(
     // which URLs IE has as default, to some another sites.
     // We expect that users will never themselves create bookmarks having this
     // hostname.
-    if (url.host() == "go.microsoft.com")
+    if (url.GetHost() == "go.microsoft.com") {
       continue;
+    }
     // Read favicon.
     UpdateFaviconMap(shortcut, url, url_locator.Get(), &favicon_map);
 

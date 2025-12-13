@@ -4,33 +4,34 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
+import "skia/public/mojom/skcolor.mojom";
 import "third_party/blink/public/mojom/css/preferred_color_scheme.mojom";
 import "third_party/blink/public/mojom/css/preferred_contrast.mojom";
 import "third_party/blink/public/mojom/v8_cache_options.mojom";
 import "url/mojom/url.mojom";
-import "mojo/public/mojom/base/string16.mojom";
-import "skia/public/mojom/skcolor.mojom";
 
 enum PointerType {
-  kPointerNone                              = 1,             // 1 << 0
-  kPointerFirstType                         = kPointerNone,
-  kPointerCoarseType                        = 2,             // 1 << 1
-  kPointerFineType                          = 4              // 1 << 2
+  kPointerNone = 1,  // 1 << 0
+  kPointerFirstType = kPointerNone,
+  kPointerCoarseType = 2,  // 1 << 1
+  kPointerFineType = 4,  // 1 << 2
 };
 
 enum HoverType {
-  kHoverNone                                 = 1,            // 1 << 0
-  kHoverFirstType                            = kHoverNone,
-  kHoverHoverType                            = 2             // 1 << 1
+  kHoverNone = 1,  // 1 << 0
+  kHoverFirstType = kHoverNone,
+  kHoverHoverType = 2,  // 1 << 1
 };
 
-// For media feature update, indicating the update ability of the output display,
+// For media feature update, indicating the update ability of the output
+// display,
 // once renering is done:
 // Slow - e-ink screens, underpowered devices.
 // Fast - regular computer screen.
 enum OutputDeviceUpdateAbilityType {
   kSlowType,
-  kFastType
+  kFastType,
 };
 
 // There are multiple editing details that are different on Windows than
@@ -52,7 +53,7 @@ enum EditingBehavior {
   kEditingWindowsBehavior,
   kEditingUnixBehavior,
   kEditingAndroidBehavior,
-  kEditingChromeOSBehavior
+  kEditingChromeOSBehavior,
 };
 
 // ImageAnimationPolicy is used for controlling image animation
@@ -62,10 +63,15 @@ enum EditingBehavior {
 enum ImageAnimationPolicy {
   kImageAnimationPolicyAllowed,
   kImageAnimationPolicyAnimateOnce,
-  kImageAnimationPolicyNoAnimation
+  kImageAnimationPolicyNoAnimation,
 };
 
-enum ViewportStyle { kDefault, kMobile, kTelevision, kLast = kTelevision };
+enum ViewportStyle {
+  kDefault,
+  kMobile,
+  kTelevision,
+  kLast = kTelevision,
+};
 
 // Defines the autoplay policy to be used. Should match the class in
 // WebSettings.h.
@@ -131,6 +137,7 @@ struct WebPreferences {
   bool shrinks_standalone_images_to_fit;
   bool text_areas_are_resizable;
   bool allow_scripts_to_close_windows;
+  bool allow_window_focus_without_user_gesture;
   bool remote_fonts_enabled;
   bool javascript_can_access_clipboard;
   // We don't use dns_prefetching_enabled to disable DNS prefetching.  Instead,
@@ -175,7 +182,8 @@ struct WebPreferences {
   // Disallow user opt-in for blockable mixed content.
   bool strictly_block_blockable_mixed_content;
   bool block_mixed_plugin_content;
-  bool password_echo_enabled;
+  bool password_echo_enabled_physical;
+  bool password_echo_enabled_touch;
   bool should_clear_document_background;
   bool enable_scroll_animator;
   bool prefers_reduced_motion;
@@ -321,7 +329,7 @@ struct WebPreferences {
   [EnableIf=is_android]
   bool report_screen_size_in_physical_pixels_quirk;
 
-  // Used by Android_WebView only to support legacy apps that inject script int32o
+  // Used by Android_WebView only to support legacy apps that inject script into
   // a top-level initial empty document and expect it to persist on navigation.
   [EnableIf=is_android]
   bool reuse_global_for_unowned_main_frame;
@@ -354,12 +362,12 @@ struct WebPreferences {
   [EnableIf=is_android]
   bool scroll_top_left_interop_enabled;
 
-  [EnableIf=is_android]
   // Don't accelerate small canvases to avoid crashes TODO(crbug.com/1004304)
+  [EnableIf=is_android]
   bool disable_accelerated_small_canvases;
 
-  [EnableIf=is_android]
   // Long press on links selects text instead of triggering context menu.
+  [EnableIf=is_android]
   bool long_press_link_select_text;
 
   // Disable the Web Authentication (WebAuthn) API.
@@ -498,15 +506,25 @@ struct WebPreferences {
   bool modal_context_menu = true;
 
   // Whether the safe-area-insets should be changed dynamically based on
-  // browser controls shown ratio. This value is used in web settings only
-  // when feature DynamicSafeAreaInsets is enabled.
+  // browser controls shown ratio on Android.
+  [EnableIf=is_android]
   bool dynamic_safe_area_insets_enabled = false;
 
   // Whether PaymentRequest is enabled. Controlled by WebView settings on
   // WebView and by `kWebPayments` feature flag everywhere.
   bool payment_request_enabled = false;
 
-  bool api_based_fingerprinting_interventions_enabled = false;
+  bool ai_prompt_api_enabled = false;
 
-  bool content_based_fingerprinting_protection_enabled = false;
+  [EnableIf=is_android]
+  bool should_screenshot_on_mainframe_same_doc_navigation = true;
+
+  // On macOS, the popup UI for <select> elements is rendered with native
+  // (external) popup controls, but these are not visible to
+  // RenderWidgetHostView::CopyFromSurface().
+  //
+  // This property allows disabling the external popups to use the internal
+  // Chrome-rendered popups instead.
+  [EnableIf=is_mac]
+  bool should_disable_external_popups = false;
 };

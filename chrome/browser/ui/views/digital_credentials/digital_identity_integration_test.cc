@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/digital_credentials/digital_identity_safety_interstitial_controller_desktop.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/digital_identity_provider.h"
@@ -63,7 +64,8 @@ class TestDigitalIdentityProvider final
     // Calling the callback might destroy `this`.
     std::move(callback).Run(DigitalCredential(
         /*protocol=*/std::nullopt,
-        base::JSONReader::Read(R"({"token" : "test token"})")));
+        base::JSONReader::Read(R"({"token" : "test token"})",
+                               base::JSON_PARSE_CHROMIUM_EXTENSIONS)));
     if (observer) {
       std::move(observer).Run();
     }
@@ -176,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentityIntegrationTest,
   dialog_observer->set_shown_callback(base::BindRepeating(
       &OnDialogShown, run_loop.QuitClosure(), kExpectedDialogTitle));
 
-  GURL url = ui_test_utils::GetTestUrl(
+  GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(),
       base::FilePath(FILE_PATH_LITERAL("digital_credentials.html")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -211,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(DigitalIdentityIntegrationTest, InterstitialNotShown) {
       base::BindRepeating(dialog_shown_action, std::ref(was_dialog_shown)),
       kExpectedDialogTitle));
 
-  GURL url = ui_test_utils::GetTestUrl(
+  GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(),
       base::FilePath(FILE_PATH_LITERAL("digital_credentials.html")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));

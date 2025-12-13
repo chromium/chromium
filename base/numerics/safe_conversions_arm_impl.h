@@ -16,7 +16,7 @@
 #include "base/numerics/safe_conversions_impl.h"
 
 namespace base {
-namespace internal {
+namespace numerics_internal {
 
 // Fast saturation to a destination type.
 template <typename Dst, typename Src>
@@ -47,7 +47,7 @@ struct SaturateFastAsmOp {
   }
 };
 
-}  // namespace internal
+}  // namespace numerics_internal
 }  // namespace base
 
 #endif  // BASE_NUMERICS_SAFE_CONVERSIONS_ARM_IMPL_H_

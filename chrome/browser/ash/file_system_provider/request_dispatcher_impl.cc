@@ -6,11 +6,10 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/file_system_provider/request_manager.h"
+#include "chrome/browser/ash/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
-#include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
 #include "extensions/browser/event_router.h"
 #include "url/gurl.h"
 
@@ -19,8 +18,7 @@ namespace ash::file_system_provider {
 RequestDispatcherImpl::RequestDispatcherImpl(
     const extensions::ExtensionId& extension_id,
     extensions::EventRouter* event_router,
-    extensions::file_system_provider::ServiceWorkerLifetimeManager*
-        sw_lifetime_manager)
+    ServiceWorkerLifetimeManager* sw_lifetime_manager)
     : extension_id_(extension_id),
       event_router_(event_router),
       sw_lifetime_manager_(sw_lifetime_manager) {}
@@ -33,8 +31,8 @@ bool RequestDispatcherImpl::DispatchRequest(
     std::unique_ptr<extensions::Event> event) {
   if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
     DCHECK(!event->did_dispatch_callback);
-    extensions::file_system_provider::RequestKey request_key{
-        extension_id_, file_system_id.value_or(""), request_id};
+    RequestKey request_key{extension_id_, file_system_id.value_or(""),
+                           request_id};
     event->did_dispatch_callback =
         sw_lifetime_manager_->CreateDispatchCallbackForRequest(request_key);
   }

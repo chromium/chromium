@@ -2,8 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//build/config/freetype/freetype.gni")
+
+assert(enable_freetype)
 
 group("freetype") {
   if (use_system_freetype) {
@@ -11,4 +12,23 @@ group("freetype") {
   } else {
     public_deps = [ "//third_party/freetype" ]
   }
+
+  # This list tracks all current users of the `freetype` library.
+  #
+  # Eventually `freetype` should be replaced with Fontations libraries.
+  # Therefore no new entries should be added to this list.
+  visibility = [
+    "//chrome/test:*",
+    "//content/test:*",
+
+    # The path/label of the PDFium target that depends on `freetype` is
+    # different when building PDFium during Chromium build and during
+    # standalone-PDFium-build:
+    "//:freetype_common",  # Building standalone PDFium
+    "//third_party/pdfium:freetype_common",  # Building Chromium
+
+    # Other dependencies that are PDFium-related:
+    "//components/services/font:font_service_unittests",
+    "//skia",
+  ]
 }

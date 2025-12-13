@@ -868,7 +868,6 @@ TEST_F(FileSystemAccessObserverObservationTest, OnChangesForFile) {
   EXPECT_TRUE(observation.EventsReceivedMatches(
       {{MojoChangeType::kModified, MojoFilePathType::kFile, {}}}));
 }
-
 TEST_F(FileSystemAccessObserverObservationTest, OnChangesForDirectory) {
   base::FilePath dir_path = CreateDirectory();
   storage::FileSystemURL dir_url = CreateFileSystemURL(dir_path);

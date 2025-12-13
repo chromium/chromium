@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.incognito.reauth;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.view.View;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
@@ -18,6 +19,7 @@ import org.chromium.chrome.browser.incognito.R;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.listmenu.BasicListMenu;
+import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -61,7 +63,7 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
      * with the menu items.
      */
     @Override
-    public void onItemSelected(PropertyModel item) {
+    public void onItemSelected(PropertyModel item, View view) {
         int textId = item.get(ListMenuItemProperties.TITLE_ID);
         if (textId == R.string.menu_close_all_incognito_tabs) {
             onCloseAllIncognitoTabsMenuItemClicked();
@@ -89,7 +91,11 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
     private BasicListMenu buildIncognitoReauthMenu() {
         MVCListAdapter.ModelList itemList = buildMenuItems();
         return BrowserUiListMenuUtils.getBasicListMenu(
-                mContext, itemList, this, R.color.menu_item_bg_color_dark_baseline);
+                mContext,
+                itemList,
+                this,
+                R.color.menu_item_bg_color_dark_baseline,
+                mContext.getColor(R.color.divider_color_dark));
     }
 
     private MVCListAdapter.ModelList buildMenuItems() {
@@ -158,7 +164,7 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
             int textAppearanceStyle,
             boolean textEllipsizedAtEnd) {
         return new MVCListAdapter.ListItem(
-                BasicListMenu.ListMenuItemType.MENU_ITEM,
+                ListItemType.MENU_ITEM,
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.TITLE_ID, titleId)
                         .with(ListMenuItemProperties.MENU_ITEM_ID, menuId)

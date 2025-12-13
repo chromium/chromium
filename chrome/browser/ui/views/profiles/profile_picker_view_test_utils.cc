@@ -83,10 +83,12 @@ class TestProfileManagementFlowController
     std::move(initial_step_load_finished_closure_).Run();
   }
 
-  void CancelPostSignInFlow() override { NOTREACHED(); }
+  void CancelSigninFlow() override { NOTREACHED(); }
 
-  void PickProfile(const base::FilePath& profile_path,
-                   ProfilePicker::ProfilePickingArgs args) override {
+  void PickProfile(
+      const base::FilePath& profile_path,
+      ProfilePicker::ProfilePickingArgs args,
+      base::OnceCallback<void(bool)> pick_profile_complete_callback) override {
     NOTREACHED();
   }
 

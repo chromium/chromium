@@ -27,7 +27,6 @@ source_set("web") {
   deps = [
     ":common_js",
     ":core",
-    ":message_js",
     ":navigation_resources",
     ":resources",
     ":threads",
@@ -35,7 +34,6 @@ source_set("web") {
     "//components/leveldb_proto",
     "//ios/third_party/webkit",
     "//ios/web/common",
-    "//ios/web/content_manager",
     "//ios/web/download",
     "//ios/web/favicon",
     "//ios/web/init",
@@ -69,7 +67,6 @@ source_set("web") {
     "browser_state_utils.mm",
     "browser_url_rewriter_impl.h",
     "browser_url_rewriter_impl.mm",
-    "crw_navigation_item_storage.mm",
     "network_context_owner.cc",
     "web_client.mm",
   ]
@@ -181,10 +178,10 @@ test("ios_web_unittests") {
     "//ios/testing:http_server_bundle_data",
     "//ios/web/browsing_data:browsing_data_unittests",
     "//ios/web/common:unittests",
-    "//ios/web/content_manager:content_manager_unittests",
     "//ios/web/download:download_unittests",
     "//ios/web/favicon:unittests",
     "//ios/web/find_in_page:find_in_page_unittests",
+    "//ios/web/js_features/clipboard:unittests",
     "//ios/web/js_features/context_menu:unittests",
     "//ios/web/js_features/fullscreen:unittests",
     "//ios/web/js_features/window_error:unittests",
@@ -234,7 +231,6 @@ source_set("ios_web_general_unittests") {
 
   sources = [
     "browser_state_unittest.mm",
-    "crw_navigation_item_storage_unittest.mm",
     "history_state_util_unittest.mm",
     "network_context_owner_unittest.cc",
     "test/web_test_unittest.mm",
@@ -291,7 +287,6 @@ source_set("ios_web_navigation_unittests") {
   sources = [
     "navigation/crw_error_page_helper_unittest.mm",
     "navigation/crw_navigation_item_holder_unittest.mm",
-    "navigation/crw_session_storage_unittest.mm",
     "navigation/crw_wk_navigation_states_unittest.mm",
     "navigation/navigation_context_impl_unittest.mm",
     "navigation/navigation_item_impl_unittest.mm",
@@ -373,6 +368,7 @@ source_set("ios_web_web_state_unittests") {
     "//base/test:test_support",
     "//components/sessions:session_id",
     "//components/url_formatter",
+    "//ios/components/enterprise/data_controls:metrics",
     "//ios/net",
     "//ios/testing:ocmock_support",
     "//ios/web",
@@ -401,6 +397,7 @@ source_set("ios_web_web_state_unittests") {
     "//ios/web/test:test_support",
     "//ios/web/test/fakes",
     "//ios/web/web_state",
+    "//ios/web/web_state:data_controls",
     "//ios/web/web_state:policy_decision_state_tracker",
     "//ios/web/web_state:test_util",
     "//ios/web/web_state:web_state_impl_header",
@@ -416,6 +413,8 @@ source_set("ios_web_web_state_unittests") {
   ]
 
   sources = [
+    "web_state/crw_web_view_data_controls_unittest.mm",
+    "web_state/data_controls_protocol_smoke_unittest.mm",
     "web_state/policy_decision_state_tracker_unittest.mm",
     "web_state/web_state_context_menu_bridge_unittest.mm",
     "web_state/web_state_delegate_bridge_unittest.mm",
@@ -466,6 +465,7 @@ source_set("ios_web_web_state_ui_unittests") {
     ":core",
     "//base",
     "//base/test:test_support",
+    "//components/test/ios",
     "//components/url_formatter",
     "//ios/net",
     "//ios/testing:ocmock_support",
@@ -488,6 +488,7 @@ source_set("ios_web_web_state_ui_unittests") {
     "//ios/web/test:test_support",
     "//ios/web/test/fakes",
     "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state:web_view_internal_creation_util",
     "//ios/web/web_state/ui",
     "//ios/web/web_state/ui:crw_context_menu_controller",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
@@ -590,6 +591,7 @@ test("ios_web_inttests") {
     "//ios/web/web_state",
     "//ios/web/web_state:test_util",
     "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state:web_view_internal_creation_util",
     "//ios/web/web_state/ui",
     "//ios/web/web_state/ui:crw_context_menu_controller",
     "//ios/web/web_state/ui:web_controller_header",
@@ -603,7 +605,6 @@ test("ios_web_inttests") {
   ]
   sources = [
     "browser_state_web_view_partition_inttest.mm",
-    "find_in_page/java_script_find_in_page_manager_inttest.mm",
     "navigation/crw_error_page_helper_inttest.mm",
     "navigation/crw_wk_navigation_handler_inttest.mm",
     "navigation/history_state_operations_inttest.mm",
@@ -632,14 +633,6 @@ optimize_js("common_js") {
 
   primary_script = "web_state/js/resources/common.js"
   sources = [ "web_state/js/resources/common.js" ]
-}
-
-optimize_ts("message_js") {
-  visibility = [ ":web" ]
-
-  sources = [ "js_messaging/resources/message.ts" ]
-
-  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }
 
 bundle_data("navigation_resources") {

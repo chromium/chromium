@@ -147,6 +147,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Omnibox Most Visited Tile"/>
   <int value="12" label="Tab Strip Item"/>
   <int value="13" label="Share in Web Context Menu"/>
+  <int value="14" label="Tab Share in Reader Mode"/>
 </enum>
 
 <enum name="IOSLensSupportStatus">
@@ -234,6 +235,12 @@ chromium-metrics-reviews@google.com.
   <int value="65" label="Share local tab group"/>
   <int value="66" label="Leave shared tab group"/>
   <int value="67" label="Delete shared tab group"/>
+  <int value="68" label="Gemini with image entry point"/>
+  <int value="69" label="Pin the site to most visited sites section"/>
+  <int value="70" label="Unpin the site from most visited sites section"/>
+  <int value="71" label="Edit on pinned site on most visited sites section"/>
+  <int value="72" label="Delete browsing data"/>
+  <int value="73" label="Create empty tab group"/>
 </enum>
 
 <enum name="IOSMenuScenario">
@@ -271,6 +278,11 @@ chromium-metrics-reviews@google.com.
   <int value="31" label="Autofill Manual Fallback Plus Address Entry"/>
   <int value="32" label="Tab Group Indicator on NTP Entry"/>
   <int value="33" label="Last Visited History Entry"/>
+  <int value="34" label="Image on a Reader Mode page"/>
+  <int value="35" label="Image-Link on a Reader Mode page"/>
+  <int value="36" label="Link on a Reader Mode page"/>
+  <int value="37" label="Tab Group button in the Overflow Menu"/>
+  <int value="38" label="Sad Tab Menu"/>
 </enum>
 
 <enum name="IOSShareAction">
@@ -464,6 +476,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="EditedCardHolderName"/>
   <int value="1" label="EditedExpirationMonth"/>
   <int value="2" label="EditedExpirationYear"/>
+  <int value="3" label="EditedCvc"/>
 </enum>
 
 <enum name="MobileMessagesTranslateBannerEvent">

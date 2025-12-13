@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/gwp_asan/common/allocator_state.h"
 
 #include <algorithm>
 
 #include "base/bits.h"
+#include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
 #include "base/strings/stringprintf.h"
@@ -39,7 +36,7 @@ AllocatorState::GetMetadataReturnType AllocatorState::GetMetadataForAddress(
     return GetMetadataReturnType::kErrorBadSlot;
   }
 
-  AllocatorState::MetadataIdx index = slot_to_metadata[slot_idx];
+  AllocatorState::MetadataIdx index = UNSAFE_TODO(slot_to_metadata[slot_idx]);
   if (index == kInvalidMetadataIdx)
     return GetMetadataReturnType::kGwpAsanCrashWithMissingMetadata;
 
@@ -49,10 +46,10 @@ AllocatorState::GetMetadataReturnType AllocatorState::GetMetadataForAddress(
     return GetMetadataReturnType::kErrorBadMetadataIndex;
   }
 
-  if (GetNearestSlot(metadata_arr[index].alloc_ptr) != slot_idx) {
+  if (GetNearestSlot(UNSAFE_TODO(metadata_arr[index]).alloc_ptr) != slot_idx) {
     *error = base::StringPrintf(
         "Outdated metadata index %u: slot for %zx does not match %zx", index,
-        metadata_arr[index].alloc_ptr, exception_address);
+        UNSAFE_TODO(metadata_arr[index]).alloc_ptr, exception_address);
     return GetMetadataReturnType::kErrorOutdatedMetadataIndex;
   }
 

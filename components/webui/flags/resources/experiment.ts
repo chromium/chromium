@@ -20,7 +20,7 @@ import {FlagsBrowserProxyImpl} from './flags_browser_proxy.js';
  * @param element The element to highlight.
  */
 function highlightMatch(searchTerm: string, element: HTMLElement) {
-  const text = element.textContent!;
+  const text = element.textContent;
   const match = text.toLowerCase().indexOf(searchTerm);
 
   // Assert against cases that are already handled before this function.

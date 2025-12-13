@@ -74,6 +74,8 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
         const blink::mojom::WindowFeatures& window_features,
         bool user_gesture,
         bool* was_blocked);
+    virtual bool PreHandleGestureEvent(content::WebContents* source,
+                                       const blink::WebGestureEvent& event);
   };
 
   WebUIContentsWrapper(const GURL& webui_url,
@@ -123,6 +125,8 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override;
+  bool PreHandleGestureEvent(content::WebContents* source,
+                             const blink::WebGestureEvent& event) override;
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
@@ -192,8 +196,8 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
 template <typename T>
 class WebUIContentsWrapperT : public WebUIContentsWrapper {
  public:
-  // Helper to allow static_assert to concatenate string_view at build time.
-  static consteval std::string ConcatStrings(
+  // Helper to allow static_assert to concatenate string_view.
+  static constexpr std::string ConcatStrings(
       std::initializer_list<std::string_view> strs) {
     std::string result;
     size_t total_length = 0;

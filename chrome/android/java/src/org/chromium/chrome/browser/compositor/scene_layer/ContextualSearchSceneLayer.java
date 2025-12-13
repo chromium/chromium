@@ -11,6 +11,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchBarControl;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchCalloutControl;
@@ -26,6 +28,7 @@ import org.chromium.ui.resources.ResourceManager;
 
 /** A SceneLayer to render layers for ContextualSearchLayout. */
 @JNINamespace("android")
+@NullMarked
 public class ContextualSearchSceneLayer extends SceneOverlayLayer {
     // NOTE: If you use SceneLayer's native pointer here, the JNI generator will try to
     // downcast using reinterpret_cast<>. We keep a separate pointer to avoid it.
@@ -37,7 +40,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
     private final Profile mProfile;
     private final float mDpToPx;
 
-    private ContextualSearchImageControl mImageControl;
+    private @Nullable ContextualSearchImageControl mImageControl;
 
     public ContextualSearchSceneLayer(Profile profile, float dpToPx) {
         mProfile = profile;
@@ -302,7 +305,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 float layoutHeight,
                 float basePageBrightness,
                 float basePageYOffset,
-                @JniType("content::WebContents*") WebContents webContents,
+                @JniType("content::WebContents*") @Nullable WebContents webContents,
                 boolean searchPromoVisible,
                 float searchPromoHeight,
                 float searchPromoOpacity,

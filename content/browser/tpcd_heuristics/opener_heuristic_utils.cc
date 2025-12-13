@@ -42,9 +42,8 @@ std::map<std::string, std::pair<GURL, bool>> GetRedirectHeuristicURLs(
   const std::string& first_party_site = GetSiteForBtm(first_party_url);
   for (size_t redirect_index = 0;
        redirect_index < committed_redirect_context.size(); redirect_index++) {
-    const BtmRedirectInfo& redirect =
-        committed_redirect_context[redirect_index];
-    const GURL& url = redirect.redirecting_url.url;
+    const BtmRedirect& redirect = committed_redirect_context[redirect_index];
+    const GURL& url = redirect.redirector_url;
     const std::string& site = redirect.site;
 
     // The redirect heuristic does not apply for first-party cookie access.

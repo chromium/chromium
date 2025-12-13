@@ -29,7 +29,8 @@ void ReadFileRunCallback(CastAudioJsonProvider::TuningChangedCallback callback,
 
   std::string contents;
   base::ReadFileToString(path, &contents);
-  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(contents);
+  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+      contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (value) {
     callback.Run(std::move(*value));
     return;
@@ -80,7 +81,8 @@ std::optional<base::Value::Dict>
 CastAudioJsonProviderImpl::GetCastAudioConfig() {
   std::string contents;
   base::ReadFileToString(CastAudioJson::GetFilePath(), &contents);
-  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(contents);
+  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+      contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return std::nullopt;
   }

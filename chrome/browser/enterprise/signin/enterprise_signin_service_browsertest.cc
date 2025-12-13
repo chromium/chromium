@@ -23,6 +23,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/service/sync_service.h"
@@ -97,7 +98,7 @@ class EnterpriseSigninServiceTest : public InteractiveBrowserTest {
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->profile());
     signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
-                                        signin::ConsentLevel::kSync);
+                                        signin::ConsentLevel::kSignin);
     signin::SetRefreshTokenForPrimaryAccount(identity_manager);
     signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
 

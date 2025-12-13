@@ -5,7 +5,7 @@
             if (window.testRunner)
                 testRunner.dumpAsText();
 
-            window.getSelection().setBaseAndExtent(start, 0, null, 0);
+            window.getSelection().setBaseAndExtent(start, 0, start, 0);
             document.execCommand("Indent");
             document.getElementById("result").innerHTML = "PASS";
         }

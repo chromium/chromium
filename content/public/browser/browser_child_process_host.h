@@ -17,7 +17,6 @@
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/common/process_type.h"
-#include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -37,7 +36,7 @@ struct ChildProcessData;
 
 // This represents child processes of the browser process, i.e. plugins. They
 // will get terminated at browser shutdown.
-class CONTENT_EXPORT BrowserChildProcessHost : public IPC::Sender {
+class CONTENT_EXPORT BrowserChildProcessHost {
  public:
   // Used to create a child process host. The delegate must outlive this object.
   // |process_type| needs to be either an enum value from ProcessType or an
@@ -51,13 +50,12 @@ class CONTENT_EXPORT BrowserChildProcessHost : public IPC::Sender {
   // is the same unique ID as |ChildProcessData::id|.
   static BrowserChildProcessHost* FromID(int child_process_id);
 
-  ~BrowserChildProcessHost() override {}
+  virtual ~BrowserChildProcessHost() = default;
 
   // Derived classes call this to launch the child process asynchronously.
   virtual void Launch(
       std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
-      std::unique_ptr<base::CommandLine> cmd_line,
-      bool terminate_on_shutdown) = 0;
+      std::unique_ptr<base::CommandLine> cmd_line) = 0;
 
   virtual const ChildProcessData& GetData() = 0;
 
@@ -79,12 +77,6 @@ class CONTENT_EXPORT BrowserChildProcessHost : public IPC::Sender {
 
   // Sets the name of the process used for metrics reporting.
   virtual void SetMetricsName(const std::string& metrics_name) = 0;
-
-  // Set the process. BrowserChildProcessHost will do this when the Launch
-  // method is used to start the process. However if the owner of this object
-  // doesn't call Launch and starts the process in another way, they need to
-  // call this method so that the process is associated with this object.
-  virtual void SetProcess(base::Process process) = 0;
 
 #if BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_IOS_TVOS)
   // Returns a PortProvider used to get the task port for child processes.

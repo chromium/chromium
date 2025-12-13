@@ -23,10 +23,11 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 
 namespace autofill {
 
@@ -182,7 +183,8 @@ class AutofillUiTest : public InProcessBrowserTest,
       base::BindRepeating(&AutofillUiTest::HandleKeyPressEvent,
                           base::Unretained(this))};
 
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> disable_animation_;
+  ui::MockOsSettingsProvider os_settings_provider_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> disable_animation_;
 };
 
 }  // namespace autofill

@@ -58,7 +58,8 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   }
 
   function step1() {
-    TestRunner.DebuggerAgent.setPauseOnExceptions(SDK.DebuggerModel.PauseOnExceptionsState.PauseOnUncaughtExceptions);
+    TestRunner.DebuggerAgent.invoke_setPauseOnExceptions(
+        {state: SDK.DebuggerModel.PauseOnExceptionsState.PauseOnUncaughtExceptions});
     SourcesTestRunner.showScriptSource('async-pause-on-exception.js', step2);
   }
 
@@ -69,14 +70,16 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   }
 
   function step3() {
-    TestRunner.DebuggerAgent.setPauseOnExceptions(SDK.DebuggerModel.PauseOnExceptionsState.PauseOnAllExceptions);
+    TestRunner.DebuggerAgent.invoke_setPauseOnExceptions(
+        {state: SDK.DebuggerModel.PauseOnExceptionsState.PauseOnAllExceptions});
     TestRunner.addResult('\n=== Pausing on all exceptions ===');
     SourcesTestRunner.runTestFunction();
     waitUntilPausedNTimes(2, step4);
   }
 
   function step4() {
-    TestRunner.DebuggerAgent.setPauseOnExceptions(SDK.DebuggerModel.PauseOnExceptionsState.DontPauseOnExceptions);
+    TestRunner.DebuggerAgent.invoke_setPauseOnExceptions(
+        {state: SDK.DebuggerModel.PauseOnExceptionsState.DontPauseOnExceptions});
     SourcesTestRunner.completeDebuggerTest();
   }
 })();

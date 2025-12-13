@@ -74,13 +74,7 @@ class WebRtcMediaRecorderTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug/361123384): Re-enable.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_Start DISABLED_Start
-#else
-#define MAYBE_Start Start
-#endif
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_Start) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, Start) {
   MakeTypicalCall("testStartAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
@@ -88,26 +82,13 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, StartAndStop) {
   MakeTypicalCall("testStartStopAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1222675
-#define MAYBE_StartAndDataAvailable DISABLED_StartAndDataAvailable
-#else
-#define MAYBE_StartAndDataAvailable StartAndDataAvailable
-#endif
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_StartAndDataAvailable) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, StartAndDataAvailable) {
   MakeTypicalCall(base::StringPrintf("testStartAndDataAvailable(\"%s\");",
                                      GetParam().mime_type.c_str()),
                   kMediaRecorderHtmlFile);
 }
 
-// TODO(crbug.com/40559669): It seems to be flaky on Android. More details in
-// the bug.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_StartWithTimeSlice DISABLED_StartWithTimeSlice
-#else
-#define MAYBE_StartWithTimeSlice StartWithTimeSlice
-#endif
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_StartWithTimeSlice) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, StartWithTimeSlice) {
   MakeTypicalCall(base::StringPrintf("testStartWithTimeSlice(\"%s\");",
                                      GetParam().mime_type.c_str()),
                   kMediaRecorderHtmlFile);
@@ -121,15 +102,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, NoResumeWhenRecorderInactive) {
   MakeTypicalCall("testIllegalResumeThrowsDOMError();", kMediaRecorderHtmlFile);
 }
 
-// TODO(crbug.com/40903193): Seems the test is not working quite well on
-// android-12l-x64-dbg-tests.
-#if (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_ANDROID)
-// https://crbug.com/1222675
-#define MAYBE_ResumeAndDataAvailable DISABLED_ResumeAndDataAvailable
-#else
-#define MAYBE_ResumeAndDataAvailable ResumeAndDataAvailable
-#endif
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_ResumeAndDataAvailable) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, ResumeAndDataAvailable) {
   MakeTypicalCall(base::StringPrintf("testResumeAndDataAvailable(\"%s\");",
                                      GetParam().mime_type.c_str()),
                   kMediaRecorderHtmlFile);
@@ -139,13 +112,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, Pause) {
   MakeTypicalCall("testPauseAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
-// TODO(crbug.com/40450139): Flaky on TSAN bots.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_PauseStop DISABLED_PauseStop
-#else
-#define MAYBE_PauseStop PauseStop
-#endif
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_PauseStop) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, PauseStop) {
   MakeTypicalCall("testPauseStopAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
@@ -155,29 +122,21 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
                   kMediaRecorderHtmlFile);
 }
 
-// TODO (crbug.com/736268): Flaky on Linux TSan bots.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_IllegalPauseThrowsDOMError DISABLED_IllegalPauseThrowsDOMError
-#else
-#define MAYBE_IllegalPauseThrowsDOMError IllegalPauseThrowsDOMError
-#endif
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
-                       MAYBE_IllegalPauseThrowsDOMError) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, IllegalPauseThrowsDOMError) {
   MakeTypicalCall("testIllegalPauseThrowsDOMError();", kMediaRecorderHtmlFile);
 }
 
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-// https://crbug.com/1222675
-#define MAYBE_TwoChannelAudioRecording DISABLED_TwoChannelAudioRecording
-#else
-#define MAYBE_TwoChannelAudioRecording TwoChannelAudioRecording
-#endif
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
-                       MAYBE_TwoChannelAudioRecording) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, TwoChannelAudioRecording) {
   MakeTypicalCall("testTwoChannelAudio();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, RecordWithTransparency) {
+#if BUILDFLAG(IS_MAC)
+// TODO(https://crbug.com/379271425): Re-enable once flakiness is addressed.
+#define MAYBE_RecordWithTransparency DISABLED_RecordWithTransparency
+#else
+#define MAYBE_RecordWithTransparency RecordWithTransparency
+#endif
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_RecordWithTransparency) {
   MakeTypicalCall(base::StringPrintf("testRecordWithTransparency(\"%s\");",
                                      GetParam().mime_type.c_str()),
                   kMediaRecorderHtmlFile);
@@ -195,15 +154,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
                   kMediaRecorderHtmlFile);
 }
 
-// Flaky on Linux Tsan (crbug.com/736268)
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_IllegalRequestDataThrowsDOMError \
-  DISABLED_IllegalRequestDataThrowsDOMError
-#else
-#define MAYBE_IllegalRequestDataThrowsDOMError IllegalRequestDataThrowsDOMError
-#endif
 IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
-                       MAYBE_IllegalRequestDataThrowsDOMError) {
+                       IllegalRequestDataThrowsDOMError) {
   MakeTypicalCall("testIllegalRequestDataThrowsDOMError();",
                   kMediaRecorderHtmlFile);
 }

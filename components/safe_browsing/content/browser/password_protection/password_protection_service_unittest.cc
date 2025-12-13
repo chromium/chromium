@@ -117,6 +117,12 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   MOCK_METHOD2(CheckCsdAllowlistUrl,
                AsyncMatch(const GURL&, SafeBrowsingDatabaseManager::Client*));
 
+  MOCK_METHOD(bool, IsDatabaseReady, (), (const, override));
+  MOCK_METHOD(void,
+              CheckUrlForHighConfidenceAllowlist,
+              (const GURL&, CheckUrlForHighConfidenceAllowlistCallback),
+              (override));
+
   // Override to silence not implemented warnings.
   bool CanCheckUrl(const GURL& url) const override {
     return (url != GURL("about:blank"));
@@ -202,6 +208,14 @@ class TestPasswordProtectionService : public MockPasswordProtectionService {
       PasswordProtectionRequest* request,
       RequestOutcome outcome,
       std::unique_ptr<LoginReputationClientResponse> response) override {
+    if (request->HasOtpPhishingVerdictCallback()) {
+      bool is_phishing =
+          response && (response->verdict_type() ==
+                           LoginReputationClientResponse::PHISHING ||
+                       response->verdict_type() ==
+                           LoginReputationClientResponse::LOW_REPUTATION);
+      request->TakeOtpPhishingVerdictCallback().Run(is_phishing);
+    }
     latest_request_ = request;
     latest_response_ = std::move(response);
     run_loop_.Quit();
@@ -300,6 +314,18 @@ class PasswordProtectionServiceTest : public ::testing::Test {
         matching_reused_credentials = {};
     content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
     password_protection_service_->InitTestApi(rfh);
+    // Delegate MaybeStartOtpPhishingRequest calls to the real implementation in
+    // PasswordProtectionService to test the behavior.
+    ON_CALL(*password_protection_service_,
+            MaybeStartOtpPhishingRequest(_, _, _))
+        .WillByDefault(
+            [this](content::WebContents* web_contents, const GURL& url,
+                   PasswordProtectionRequest::OtpPhishingVerdictCallback
+                       callback) {
+              password_protection_service_
+                  ->PasswordProtectionService::MaybeStartOtpPhishingRequest(
+                      web_contents, url, std::move(callback));
+            });
     request_ =
         base::MakeRefCounted<safe_browsing::PasswordProtectionRequestContent>(
             web_contents_.get(), GURL(kTargetUrl),
@@ -309,7 +335,8 @@ class PasswordProtectionServiceTest : public ::testing::Test {
             PasswordType::PASSWORD_TYPE_UNKNOWN, matching_reused_credentials,
             LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
             /*password_field_exists=*/true, password_protection_service_.get(),
-            /*request_timeout_in_ms=*/10000);
+            /*request_timeout_in_ms=*/10000,
+            /*otp_phishing_verdict_callback=*/std::nullopt);
   }
 
   void TearDown() override {
@@ -355,6 +382,80 @@ TEST_F(PasswordProtectionServiceTest,
   EXPECT_EQ(1U, GetNumberOfDeferredNavigations());
   request_->Cancel(/*timed_out=*/false);
   EXPECT_EQ(0U, GetNumberOfDeferredNavigations());
+}
+
+TEST_F(PasswordProtectionServiceTest,
+       MaybeStartOtpPhishingRequest_DatabaseReady) {
+  EXPECT_CALL(*database_manager_, IsDatabaseReady())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*database_manager_, CheckUrlForHighConfidenceAllowlist(_, _))
+      .WillOnce(testing::WithArgs<1>(
+          [](SafeBrowsingDatabaseManager::
+                 CheckUrlForHighConfidenceAllowlistCallback callback) {
+            std::move(callback).Run(false, std::nullopt);
+          }));
+  base::RunLoop run_loop;
+  password_protection_service_->MaybeStartOtpPhishingRequest(
+      web_contents_.get(), GURL(kTargetUrl),
+      base::BindLambdaForTesting([&](bool verdict) { run_loop.Quit(); }));
+  run_loop.Run();
+}
+
+TEST_F(PasswordProtectionServiceTest,
+       MaybeStartOtpPhishingRequest_DatabaseNotReady) {
+  EXPECT_CALL(*database_manager_, IsDatabaseReady())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*database_manager_, CheckUrlForHighConfidenceAllowlist(_, _))
+      .Times(0);
+  base::RunLoop run_loop;
+  password_protection_service_->MaybeStartOtpPhishingRequest(
+      web_contents_.get(), GURL(kTargetUrl),
+      base::BindLambdaForTesting([&](bool verdict) { run_loop.Quit(); }));
+  run_loop.Run();
+}
+
+TEST_F(PasswordProtectionServiceTest,
+       MaybeStartOtpPhishingRequest_AllowlistMatch_NoRequest) {
+  EXPECT_CALL(*database_manager_, IsDatabaseReady())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*database_manager_, CheckUrlForHighConfidenceAllowlist(_, _))
+      .WillOnce(testing::WithArgs<1>(
+          [](SafeBrowsingDatabaseManager::
+                 CheckUrlForHighConfidenceAllowlistCallback callback) {
+            std::move(callback).Run(true, std::nullopt);
+          }));
+  EXPECT_CALL(*password_protection_service_, IsPingingEnabled(_, _)).Times(0);
+
+  base::RunLoop run_loop;
+  password_protection_service_->MaybeStartOtpPhishingRequest(
+      web_contents_.get(), GURL(kTargetUrl),
+      base::BindLambdaForTesting([&](bool verdict) {
+        EXPECT_FALSE(verdict);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(PasswordProtectionServiceTest,
+       MaybeStartOtpPhishingRequest_NoAllowlistMatch_RequestMade) {
+  EXPECT_CALL(*database_manager_, IsDatabaseReady())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*database_manager_, CheckUrlForHighConfidenceAllowlist(_, _))
+      .WillOnce(testing::WithArgs<1>(
+          [](SafeBrowsingDatabaseManager::
+                 CheckUrlForHighConfidenceAllowlistCallback callback) {
+            std::move(callback).Run(false, std::nullopt);
+          }));
+  EXPECT_CALL(*password_protection_service_, IsPingingEnabled(_, _)).Times(1);
+
+  base::RunLoop run_loop;
+  password_protection_service_->MaybeStartOtpPhishingRequest(
+      web_contents_.get(), GURL(kTargetUrl),
+      base::BindLambdaForTesting([&](bool verdict) {
+        EXPECT_FALSE(verdict);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 TEST_F(PasswordProtectionServiceTest, NoSendPingPrivateIpHostname) {
@@ -442,7 +543,8 @@ class PasswordProtectionServiceBaseTest
         web_contents->GetContentsMimeType(), kUserName,
         PasswordType::PASSWORD_TYPE_UNKNOWN, {},
         LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE, true,
-        password_protection_service_.get(), timeout_in_ms);
+        password_protection_service_.get(), timeout_in_ms,
+        /*otp_phishing_verdict_callback=*/std::nullopt);
     request_->Start();
   }
 
@@ -463,7 +565,29 @@ class PasswordProtectionServiceBaseTest
         web_contents->GetContentsMimeType(), kUserName, type,
         matching_reused_credentials,
         LoginReputationClientRequest::PASSWORD_REUSE_EVENT, true,
-        password_protection_service_.get(), timeout_in_ms);
+        password_protection_service_.get(), timeout_in_ms,
+        /*otp_phishing_verdict_callback=*/std::nullopt);
+    request_->Start();
+  }
+
+  void InitializeAndStartOtpRequest(
+      bool match_allowlist,
+      int timeout_in_ms,
+      content::WebContents* web_contents,
+      std::optional<PasswordProtectionRequest::OtpPhishingVerdictCallback>
+          otp_phishing_verdict_callback) {
+    GURL target_url(kTargetUrl);
+    EXPECT_CALL(*database_manager_, CheckCsdAllowlistUrl(target_url, _))
+        .WillRepeatedly(
+            Return(match_allowlist ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH));
+
+    request_ = new PasswordProtectionRequestContent(
+        web_contents, target_url, GURL(), GURL(),
+        web_contents->GetContentsMimeType(), "",
+        PasswordType::PASSWORD_TYPE_UNKNOWN, {},
+        LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED, false,
+        password_protection_service_.get(), timeout_in_ms,
+        std::move(otp_phishing_verdict_callback));
     request_->Start();
   }
 
@@ -958,7 +1082,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
                LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
                reused_password_account_type,
                LoginReputationClientResponse::LOW_REPUTATION, base::Minutes(10),
-               GURL(kTargetUrl).host().append("/"), base::Time::Now());
+               GURL(kTargetUrl).GetHost().append("/"), base::Time::Now());
   InitializeAndStartPasswordOnFocusRequest(/*match_allowlist=*/false,
                                            /*timeout_in_ms=*/10000,
                                            web_contents.get());
@@ -1024,7 +1148,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
   // Set up valid response.
   LoginReputationClientResponse expected_response =
       CreateVerdictProto(LoginReputationClientResponse::PHISHING,
-                         base::Minutes(10), GURL(kTargetUrl).host());
+                         base::Minutes(10), GURL(kTargetUrl).GetHost());
   test_url_loader_factory_.AddResponse(url_.spec(),
                                        expected_response.SerializeAsString());
   std::unique_ptr<content::WebContents> web_contents = GetWebContents();
@@ -1113,19 +1237,19 @@ TEST_P(PasswordProtectionServiceBaseTest,
   // Set up valid response.
   LoginReputationClientResponse expected_response =
       CreateVerdictProto(LoginReputationClientResponse::PHISHING,
-                         base::Minutes(10), GURL(kTargetUrl).host());
+                         base::Minutes(10), GURL(kTargetUrl).GetHost());
   test_url_loader_factory_.AddResponse(url_.spec(),
                                        expected_response.SerializeAsString());
   std::unique_ptr<content::WebContents> web_contents = GetWebContents();
 
   // Initiate a saved password entry request (w/ no sync password).
-  AccountInfo account_info;
-  account_info.account_id = CoreAccountId::FromGaiaId(GaiaId("gaia"));
-  account_info.email = "email";
-  account_info.gaia = GaiaId("gaia");
-  account_info.hosted_domain = "example.com";
+  AccountInfo account_info =
+      AccountInfo::Builder(GaiaId("gaia"), "email")
+          .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("gaia")))
+          .SetHostedDomain("example.com")
+          .Build();
   AccountCapabilitiesTestMutator(&account_info.capabilities)
-      .set_is_subject_to_enterprise_policies(true);
+      .set_is_subject_to_enterprise_features(true);
   EXPECT_CALL(*password_protection_service_, GetAccountInfoForUsername(_))
       .WillRepeatedly(Return(account_info));
 
@@ -1163,7 +1287,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
   // Set up valid response.
   LoginReputationClientResponse expected_response =
       CreateVerdictProto(LoginReputationClientResponse::PHISHING,
-                         base::Minutes(10), GURL(kTargetUrl).host());
+                         base::Minutes(10), GURL(kTargetUrl).GetHost());
   test_url_loader_factory_.AddResponse(url_.spec(),
                                        expected_response.SerializeAsString());
   EXPECT_CALL(*password_protection_service_, IsPrimaryAccountSyncingHistory())
@@ -1195,6 +1319,56 @@ TEST_P(PasswordProtectionServiceBaseTest,
   histograms_.ExpectTotalCount(kNonSyncPasswordEntryVerdictHistogram, 0);
 }
 
+TEST_P(PasswordProtectionServiceBaseTest, TestOtpRequestAndResponseSuccessful) {
+  histograms_.ExpectTotalCount(
+      kOneTimePasswordFieldDetectedRequestOutcomeHistogram, 0);
+  histograms_.ExpectTotalCount(kOneTimePasswordFieldDetectedVerdictHistogram,
+                               0);
+  // Set up valid response.
+  LoginReputationClientResponse expected_response =
+      CreateVerdictProto(LoginReputationClientResponse::PHISHING,
+                         base::Minutes(10), GURL(kTargetUrl).GetHost());
+  test_url_loader_factory_.AddResponse(url_.spec(),
+                                       expected_response.SerializeAsString());
+  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
+
+  bool callback_called = false;
+  InitializeAndStartOtpRequest(
+      /*match_allowlist=*/false, /*timeout_in_ms=*/10000, web_contents.get(),
+      base::BindLambdaForTesting(
+          [&](bool verdict) { callback_called = true; }));
+  password_protection_service_->WaitForResponse();
+  EXPECT_TRUE(callback_called);
+
+  EXPECT_THAT(histograms_.GetAllSamples(
+                  kOneTimePasswordFieldDetectedRequestOutcomeHistogram),
+              ElementsAre(base::Bucket(1 /* SUCCEEDED */, 1)));
+  EXPECT_THAT(
+      histograms_.GetAllSamples(kOneTimePasswordFieldDetectedVerdictHistogram),
+      ElementsAre(base::Bucket(3 /* PHISHING */, 1)));
+  LoginReputationClientResponse* actual_response =
+      password_protection_service_->latest_response();
+  EXPECT_EQ(expected_response.verdict_type(), actual_response->verdict_type());
+}
+
+TEST_P(PasswordProtectionServiceBaseTest, TestOtpRequestCallbackIsCalled) {
+  // Set up valid response.
+  LoginReputationClientResponse expected_response =
+      CreateVerdictProto(LoginReputationClientResponse::PHISHING,
+                         base::Minutes(10), GURL(kTargetUrl).GetHost());
+  test_url_loader_factory_.AddResponse(url_.spec(),
+                                       expected_response.SerializeAsString());
+  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
+
+  bool callback_called = false;
+  InitializeAndStartOtpRequest(
+      /*match_allowlist=*/false, /*timeout_in_ms=*/10000, web_contents.get(),
+      base::BindLambdaForTesting(
+          [&](bool verdict) { callback_called = true; }));
+  password_protection_service_->WaitForResponse();
+  EXPECT_TRUE(callback_called);
+}
+
 TEST_P(PasswordProtectionServiceBaseTest, TestTearDownWithPendingRequests) {
   histograms_.ExpectTotalCount(kPasswordOnFocusRequestOutcomeHistogram, 0);
   GURL target_url(kTargetUrl);
@@ -1221,7 +1395,7 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyPasswordOnFocusRequestProto) {
   // Set up valid response.
   LoginReputationClientResponse expected_response =
       CreateVerdictProto(LoginReputationClientResponse::PHISHING,
-                         base::Minutes(10), GURL(kTargetUrl).host());
+                         base::Minutes(10), GURL(kTargetUrl).GetHost());
   test_url_loader_factory_.AddResponse(url_.spec(),
                                        expected_response.SerializeAsString());
   std::unique_ptr<content::WebContents> web_contents = GetWebContents();
@@ -1252,7 +1426,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
   // Set up valid response.
   LoginReputationClientResponse expected_response =
       CreateVerdictProto(LoginReputationClientResponse::PHISHING,
-                         base::Minutes(10), GURL(kTargetUrl).host());
+                         base::Minutes(10), GURL(kTargetUrl).GetHost());
   test_url_loader_factory_.AddResponse(url_.spec(),
                                        expected_response.SerializeAsString());
   std::unique_ptr<content::WebContents> web_contents = GetWebContents();
@@ -1276,7 +1450,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
   // Set up valid response.
   LoginReputationClientResponse expected_response =
       CreateVerdictProto(LoginReputationClientResponse::PHISHING,
-                         base::Minutes(10), GURL(kTargetUrl).host());
+                         base::Minutes(10), GURL(kTargetUrl).GetHost());
   test_url_loader_factory_.AddResponse(url_.spec(),
                                        expected_response.SerializeAsString());
   std::unique_ptr<content::WebContents> web_contents = GetWebContents();
@@ -1308,7 +1482,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
   // Set up valid response.
   LoginReputationClientResponse expected_response =
       CreateVerdictProto(LoginReputationClientResponse::PHISHING,
-                         base::Minutes(10), GURL(kTargetUrl).host());
+                         base::Minutes(10), GURL(kTargetUrl).GetHost());
   test_url_loader_factory_.AddResponse(url_.spec(),
                                        expected_response.SerializeAsString());
   std::unique_ptr<content::WebContents> web_contents = GetWebContents();
@@ -1342,6 +1516,30 @@ TEST_P(PasswordProtectionServiceBaseTest,
 #endif
 }
 
+TEST_P(PasswordProtectionServiceBaseTest, VerifyOtpRequestProto) {
+  // Set up valid response.
+  LoginReputationClientResponse expected_response =
+      CreateVerdictProto(LoginReputationClientResponse::PHISHING,
+                         base::Minutes(10), GURL(kTargetUrl).GetHost());
+  test_url_loader_factory_.AddResponse(url_.spec(),
+                                       expected_response.SerializeAsString());
+  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
+
+  InitializeAndStartOtpRequest(/*match_allowlist=*/false,
+                               /*timeout_in_ms=*/10000, web_contents.get(),
+                               /*otp_phishing_verdict_callback=*/std::nullopt);
+  password_protection_service_->WaitForResponse();
+
+  const LoginReputationClientRequest* actual_request =
+      password_protection_service_->GetLatestRequestProto();
+  EXPECT_EQ(kTargetUrl, actual_request->page_url());
+  EXPECT_EQ(LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
+            actual_request->trigger_type());
+  ASSERT_EQ(1, actual_request->frames_size());
+  EXPECT_EQ(kTargetUrl, actual_request->frames(0).url());
+  EXPECT_EQ(false, actual_request->frames(0).has_password_field());
+}
+
 TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
   EXPECT_CALL(*password_protection_service_,
               GetPasswordProtectionWarningTriggerPref(_))
@@ -1362,6 +1560,11 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
   reused_password_account_type.set_is_account_syncing(true);
   EXPECT_FALSE(password_protection_service_->ShouldShowModalWarning(
       LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
+      reused_password_account_type, LoginReputationClientResponse::PHISHING));
+
+  reused_password_account_type.set_is_account_syncing(true);
+  EXPECT_FALSE(password_protection_service_->ShouldShowModalWarning(
+      LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
       reused_password_account_type, LoginReputationClientResponse::PHISHING));
 
   reused_password_account_type.set_account_type(
@@ -1469,7 +1672,7 @@ TEST_P(PasswordProtectionServiceBaseTest, VerifyShouldShowModalWarning) {
 TEST_P(PasswordProtectionServiceBaseTest, VerifyContentTypeIsPopulated) {
   LoginReputationClientResponse response =
       CreateVerdictProto(LoginReputationClientResponse::SAFE, base::Minutes(10),
-                         GURL(kTargetUrl).host());
+                         GURL(kTargetUrl).GetHost());
   test_url_loader_factory_.AddResponse(url_.spec(),
                                        response.SerializeAsString());
 
@@ -1514,7 +1717,7 @@ TEST_P(PasswordProtectionServiceBaseTest, TestPingsForAboutBlank) {
   histograms_.ExpectTotalCount(kPasswordOnFocusRequestOutcomeHistogram, 0);
   LoginReputationClientResponse expected_response =
       CreateVerdictProto(LoginReputationClientResponse::PHISHING,
-                         base::Minutes(10), GURL("about:blank").host());
+                         base::Minutes(10), GURL("about:blank").GetHost());
   test_url_loader_factory_.AddResponse(url_.spec(),
                                        expected_response.SerializeAsString());
   std::unique_ptr<content::WebContents> web_contents = GetWebContents();
@@ -1535,7 +1738,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
        TestVisualFeaturesPopulatedInOnFocusPing) {
   LoginReputationClientResponse expected_response =
       CreateVerdictProto(LoginReputationClientResponse::PHISHING,
-                         base::Minutes(10), GURL("about:blank").host());
+                         base::Minutes(10), GURL("about:blank").GetHost());
   test_url_loader_factory_.AddResponse(url_.spec(),
                                        expected_response.SerializeAsString());
   EXPECT_CALL(*password_protection_service_, GetCurrentContentAreaSize())
@@ -1558,10 +1761,37 @@ TEST_P(PasswordProtectionServiceBaseTest,
   }
 }
 
+TEST_P(PasswordProtectionServiceBaseTest,
+       TestVisualFeaturesPopulatedInOtpPing) {
+  LoginReputationClientResponse expected_response =
+      CreateVerdictProto(LoginReputationClientResponse::PHISHING,
+                         base::Minutes(10), GURL("about:blank").GetHost());
+  test_url_loader_factory_.AddResponse(url_.spec(),
+                                       expected_response.SerializeAsString());
+  EXPECT_CALL(*password_protection_service_, GetCurrentContentAreaSize())
+      .Times(AnyNumber())
+      .WillOnce(Return(gfx::Size(1000, 1000)));
+  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
+  password_protection_service_->StartRequest(
+      web_contents.get(), GURL("about:blank"), GURL(), GURL(), kUserName,
+      PasswordType::SAVED_PASSWORD,
+      {{"example.com", GURL("https://example.com/"), u"username"}},
+      LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED, true);
+  base::RunLoop().RunUntilIdle();
+
+  bool is_sber = GetParam();
+  if (is_sber) {
+    password_protection_service_->WaitForResponse();
+    ASSERT_NE(nullptr, password_protection_service_->GetLatestRequestProto());
+    EXPECT_TRUE(password_protection_service_->GetLatestRequestProto()
+                    ->has_visual_features());
+  }
+}
+
 TEST_P(PasswordProtectionServiceBaseTest, TestDomFeaturesPopulated) {
   LoginReputationClientResponse expected_response =
       CreateVerdictProto(LoginReputationClientResponse::PHISHING,
-                         base::Minutes(10), GURL("about:blank").host());
+                         base::Minutes(10), GURL("about:blank").GetHost());
   test_url_loader_factory_.AddResponse(url_.spec(),
                                        expected_response.SerializeAsString());
   EXPECT_CALL(*password_protection_service_, GetCurrentContentAreaSize())
@@ -1587,7 +1817,7 @@ TEST_P(PasswordProtectionServiceBaseTest, TestDomFeaturesTimeout) {
   password_protection_service_->SetDomFeatureCollectionTimeout(true);
   LoginReputationClientResponse expected_response =
       CreateVerdictProto(LoginReputationClientResponse::PHISHING,
-                         base::Minutes(10), GURL("about:blank").host());
+                         base::Minutes(10), GURL("about:blank").GetHost());
   test_url_loader_factory_.AddResponse(url_.spec(),
                                        expected_response.SerializeAsString());
   EXPECT_CALL(*password_protection_service_, GetCurrentContentAreaSize())
@@ -1620,7 +1850,7 @@ TEST_P(PasswordProtectionServiceBaseTest, TestWebContentsDestroyed) {
 TEST_P(PasswordProtectionServiceBaseTest, TestCSDVerdictInCache) {
   LoginReputationClientResponse expected_response =
       CreateVerdictProto(LoginReputationClientResponse::PHISHING,
-                         base::Minutes(10), GURL(kTargetUrl).host());
+                         base::Minutes(10), GURL(kTargetUrl).GetHost());
   test_url_loader_factory_.AddResponse(url_.spec(),
                                        expected_response.SerializeAsString());
 
@@ -1658,13 +1888,9 @@ TEST_P(PasswordProtectionServiceBaseTest, TestCSDDebuggingMetadataInCache) {
     return;
   }
 
-  std::vector<base::test::FeatureRef> enabled_features = {};
-  enabled_features.push_back(kClientSideDetectionDebuggingMetadataCache);
-  SetFeatures(enabled_features, {});
-
   LoginReputationClientResponse expected_response =
       CreateVerdictProto(LoginReputationClientResponse::PHISHING,
-                         base::Minutes(10), GURL(kTargetUrl).host());
+                         base::Minutes(10), GURL(kTargetUrl).GetHost());
   test_url_loader_factory_.AddResponse(url_.spec(),
                                        expected_response.SerializeAsString());
 

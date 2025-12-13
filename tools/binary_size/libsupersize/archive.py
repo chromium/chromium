@@ -83,6 +83,8 @@ class ApkSpec:
   mapping_path: str = None
   # Path to the .pathmap.txt file for the apk. Used to deobfuscate res/ files.
   resources_pathmap_path: str = None
+  # Path to the .R.txt file for the apk. Used to resolve resource names.
+  rtxt_path: str = None
   # Name of the apk split when .apks is being analyzed.
   split_name: str = None
   # Path such as: out/Release/size-info/BaseName
@@ -522,8 +524,10 @@ def _AddContainerArguments(parser, is_top_args=False):
   group.add_argument('--mapping-file',
                      help='Proguard .mapping file for deobfuscation.')
   group.add_argument('--resources-pathmap-file',
-                     help='.pathmap.txt file that contains a maping from '
+                     help='.pathmap.txt file that contains a mapping from '
                      'original resource paths to shortened resource paths.')
+  group.add_argument('--rtxt-file',
+                     help='.R.txt file that contains resource names and IDs.')
   group.add_argument('--abi-filter',
                      dest='abi_filters',
                      action='append',
@@ -667,24 +671,18 @@ def _MakeNativeSpec(json_config, **kwargs):
   return native_spec
 
 
-def _ElfIsMainPartition(elf_path):
-  section_ranges = readelf.SectionInfoFromElf(elf_path)
-  return models.SECTION_PART_END in section_ranges.keys()
-
-
 def _DeduceMapPath(elf_path):
-  if _ElfIsMainPartition(elf_path):
-    map_path = elf_path.replace('.so', '__combined.so') + '.map'
-  else:
-    map_path = elf_path + '.map'
-  if not os.path.exists(map_path):
-    map_path += '.gz'
-    if not os.path.exists(map_path):
-      map_path = None
-
-  if map_path:
-    logging.debug('Detected map_path=%s', map_path)
-  return map_path
+  to_try = [
+      elf_path.replace('.so', '__combined.so') + '.map',
+      elf_path.replace('.so', '__combined.so') + '.map.gz',
+      elf_path + '.map',
+      elf_path + '.map.gz',
+  ]
+  for path in to_try:
+    if os.path.exists(path):
+      logging.debug('Detected map_path=%s', path)
+      return path
+  return None
 
 
 def _CreateNativeSpecs(*, tentative_output_dir, symbols_dir, apk_infolist,
@@ -816,6 +814,19 @@ def _DeducePathmapPath(resources_pathmap_path, apk_prefix):
   return resources_pathmap_path
 
 
+# Cache to prevent excess log messages.
+@functools.lru_cache
+def _DeduceRtxtPath(rtxt_path, apk_prefix):
+  if apk_prefix:
+    if not rtxt_path:
+      possible_path = apk_prefix + '.R.txt'
+      if os.path.exists(possible_path):
+        rtxt_path = possible_path
+        logging.debug('Detected --rtxt-file=%s', rtxt_path)
+      # Path shortening is optional, so do not warn for missing file.
+  return rtxt_path
+
+
 def _ReadMultipleArgsFromStream(lines, base_dir, err_prefix, on_config_error):
   try:
     ret = ParseSsargs(lines)
@@ -884,12 +895,14 @@ def _CreateContainerSpecs(apk_file_manager,
     mapping_path = _DeduceMappingPath(sub_args.mapping_file, apk_prefix)
   resources_pathmap_path = _DeducePathmapPath(sub_args.resources_pathmap_file,
                                               apk_prefix)
+  rtxt_path = _DeduceRtxtPath(sub_args.rtxt_file, apk_prefix)
   apk_spec = None
   if apk_prefix:
     apk_spec = ApkSpec(apk_path=apk_path,
                        minimal_apks_path=sub_args.minimal_apks_file,
                        mapping_path=mapping_path,
                        resources_pathmap_path=resources_pathmap_path,
+                       rtxt_path=rtxt_path,
                        split_name=split_name)
     size_info_prefix = os.path.join(top_args.output_directory, 'size-info',
                                     os.path.basename(apk_prefix))
@@ -978,7 +991,6 @@ def _CreateContainerSpecs(apk_file_manager,
     if apk_spec.analyze_dex:
       apk_spec.ignore_apk_paths.update(i.filename for i in apk_infolist
                                        if i.filename.endswith('.dex'))
-    apk_spec.ignore_apk_paths.add(apk.RESOURCES_ARSC_FILE)
 
     for native_spec in native_specs:
       so_name = posixpath.basename(native_spec.apk_so_path)

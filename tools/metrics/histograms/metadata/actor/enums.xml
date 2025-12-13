@@ -28,7 +28,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="ActionResultCode">
   <int value="0" label="Ok"/>
-  <int value="10" label="Error"/>
+  <int value="10" label="(Obsolete) Error. Removed in Dec 2025."/>
   <int value="11" label="UrlBlocked"/>
   <int value="12" label="NewTabCreationFailed"/>
   <int value="13" label="TabWentAway"/>
@@ -50,7 +50,19 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="ExecutorBusy"/>
   <int value="30" label="ObservedTargetElementDestroyed"/>
   <int value="31" label="ObservedTargetElementChanged"/>
+  <int value="32" label="TargetNodeInteractionPointObscured"/>
+  <int value="33" label="ToolTimeout"/>
+  <int value="34" label="kFilePickerTriggered"/>
+  <int value="35" label="kFilePickerConfirmed"/>
+  <int value="36" label="kFilePickerCancelled"/>
+  <int value="37" label="ExecutionEngineExistingAction"/>
+  <int value="38" label="ExternalProtocolNavigationBlocked"/>
+  <int value="39" label="RendererCrashed"/>
+  <int value="40" label="NotImplemented"/>
+  <int value="41" label="InvokeCanceled"/>
   <int value="100" label="NavigateInvalidUrl"/>
+  <int value="101" label="NavigateFailedToStart"/>
+  <int value="102" label="NavigateCommittedErrorPage"/>
   <int value="200" label="ClickSuppressed"/>
   <int value="300" label="DragAndReleaseFromOffscreen"/>
   <int value="301" label="DragAndReleaseToOffscreen"/>
@@ -71,15 +83,144 @@ chromium-metrics-reviews@google.com.
   <int value="702" label="TypeUnsupportedCharacters"/>
   <int value="703" label="TypeFailedMappingCharToKey"/>
   <int value="704" label="TypeKeyDownSuppressed"/>
+  <int value="705" label="TypeInvalidTextEncoding"/>
   <int value="800" label="HistoryNoNavigationsCreated"/>
   <int value="801" label="HistoryCancelledBeforeStart"/>
   <int value="802" label="HistoryNoBackEntries"/>
   <int value="803" label="HistoryNoForwardEntries"/>
   <int value="804" label="HistoryFailedBeforeCommit"/>
   <int value="805" label="HistoryErrorPage"/>
+  <int value="806" label="HistoryNavigationEntryChanged"/>
+  <int value="900" label="LoginNoCredentialsAvailable"/>
+  <int value="901" label="LoginNotLoginPage"/>
+  <int value="902" label="LoginCredentialsEnteredButAnotherActionNeeded"/>
+  <int value="903" label="LoginNoFillableFields"/>
+  <int value="904" label="LoginFillingNotAllowed"/>
+  <int value="905" label="LoginPageChangedDuringSelection"/>
+  <int value="906" label="LoginDeviceReauthRequired"/>
+  <int value="907" label="LoginDeviceReauthFailed"/>
+  <int value="908" label="LoginFeatureDisabled"/>
+  <int value="909" label="LoginTooManyRequests"/>
+  <int value="1000" label="MediaControlNoMedia"/>
+  <int value="1100" label="FormFillingAutofillUnavailable"/>
+  <int value="1101" label="FormFillingNoSuggestionsAvailable"/>
+  <int value="1102" label="FormFillingDialogError"/>
+  <int value="1103" label="FormFillingFieldNotFound"/>
+  <int value="1104" label="FormFillingUnknownAutofillError"/>
+  <int value="1105" label="FormFillingNoLastTabObservation"/>
+  <int value="1106" label="FormFillingInvalidSuggestionId"/>
+  <int value="1200" label="ScriptToolNoResponse"/>
+  <int value="1300" label="ActorUiError"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/common/actor.mojom:ActionResultCode) -->
+
+<!-- LINT.IfChange(ActorUiTabControllerError) -->
+
+<enum name="ActorUiTabControllerError">
+  <int value="0" label="kRequestedForNonExistentTab"/>
+  <int value="1" label="kCallbackError"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/ui/actor_ui_metrics_types.h:ActorUiTabControllerError) -->
+
+<!-- LINT.IfChange(ComputedTargetResult) -->
+
+<enum name="ComputedTargetResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kMissingActorTabData"/>
+  <int value="2" label="kMissingAnnotatedPageContent"/>
+  <int value="3" label="kTargetNotResolvedInApc"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/ui/actor_ui_metrics_types.h:ComputedTargetResult) -->
+
+<!-- LINT.IfChange(GatingDecision) -->
+
+<enum name="GatingDecision">
+  <int value="0" label="kAllowSameOrigin"/>
+  <int value="1" label="kAllowByStaticList"/>
+  <int value="2" label="kBlockByStaticList"/>
+  <int value="3" label="kNeedsAsyncCheck"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/execution_engine.h:GatingDecision) -->
+
+<!-- LINT.IfChange(GetDomNodeResult) -->
+
+<enum name="GetDomNodeResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kNoApcMainFrameData"/>
+  <int value="2" label="kNodeNotFoundInApc"/>
+  <int value="3" label="kNoGeometry"/>
+  <int value="4" label="kOffScreen"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/ui/dom_node_geometry_types.h:GetDomNodeResult) -->
+
+<!-- LINT.IfChange(ModelPageTargetType) -->
+
+<enum name="ModelPageTargetType">
+  <int value="0" label="kDomNode"/>
+  <int value="1" label="kPoint"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/ui/actor_ui_metrics_types.h:ModelPageTargetType) -->
+
+<!-- LINT.IfChange(PageStabilityOutcome) -->
+
+<enum name="PageStabilityOutcome">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kNetworkAndMainThread"/>
+  <int value="2" label="kNetworkAndMainThreadDelayed"/>
+  <int value="3" label="kPaint"/>
+  <int value="4" label="kPaintDelayed"/>
+  <int value="5" label="kTimeout"/>
+  <int value="6" label="kRenderFrameGoingAway"/>
+  <int value="7" label="kMojoDisconnected"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/common/actor/page_stability_metrics_common.h:PageStabilityOutcome) -->
+
+<!-- LINT.IfChange(StoppedReasonEnum) -->
+
+<enum name="StoppedReasonEnum">
+  <int value="0" label="Stopped By User"/>
+  <int value="1" label="Task complete"/>
+  <int value="2" label="Model error"/>
+  <int value="3" label="Chrome Failure"/>
+  <int value="4" label="Tab Detached"/>
+  <int value="5" label="Shutdown"/>
+  <int value="6" label="Started new chat"/>
+  <int value="7" label="Loaded previous chat"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/actor_task.h:StoppedReason) -->
+
+<!-- LINT.IfChange(TaskNudgeState) -->
+
+<enum name="TaskNudgeState">
+  <int value="0" label="kDefault"/>
+  <int value="1" label="kNeedsAttention"/>
+  <int value="2" label="kMultipleTasksNeedAttention"/>
+  <int value="3" label="kCompleteTasks"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/ui/states/actor_task_nudge_state.h:ActorTaskNudgeState) -->
+
+<!-- LINT.IfChange(TimeOfUseResult) -->
+
+<enum name="TimeOfUseResult">
+  <int value="0" label="Valid"/>
+  <int value="1" label="Wrong node at coordinate"/>
+  <int value="2" label="Target node at intersection point obscured"/>
+  <int value="3" label="Target node missing"/>
+  <int value="4" label="Target point outside APC bounding box"/>
+  <int value="5" label="Target node is missing APC geometry"/>
+  <int value="6" label="No valid APC node for target"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/renderer/actor/tool_base.cc:TimeOfUseResult) -->
 
 </enums>
 

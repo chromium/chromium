@@ -70,8 +70,6 @@ class MetricsLogStore : public LogStore {
 
   // Saves |log_data| as the given |log_type|. Before being stored, the data
   // will be compressed, and a hash and signature will be computed.
-  // TODO(crbug.com/40119012): Remove this function, and use StoreLogInfo()
-  // everywhere instead.
   void StoreLog(const std::string& log_data,
                 MetricsLog::LogType log_type,
                 const LogMetadata& log_metadata,

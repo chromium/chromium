@@ -17,7 +17,6 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "cc/base/container_util.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
-#include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -117,9 +116,9 @@ StagingBufferPool::StagingBufferPool(
       this, "cc::StagingBufferPool",
       base::SingleThreadTaskRunner::GetCurrentDefault());
 
-  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE, base::BindRepeating(&StagingBufferPool::OnMemoryPressure,
-                                     weak_ptr_factory_.GetWeakPtr()));
+  memory_pressure_listener_registration_ =
+      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
+          FROM_HERE, base::MemoryPressureListenerTag::kStagingBufferPool, this);
 
   reduce_memory_usage_callback_ = base::BindRepeating(
       &StagingBufferPool::ReduceMemoryUsage, weak_ptr_factory_.GetWeakPtr());
@@ -392,14 +391,13 @@ void StagingBufferPool::ReleaseBuffersNotUsedSince(base::TimeTicks time) {
   }
 }
 
-void StagingBufferPool::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
+void StagingBufferPool::OnMemoryPressure(base::MemoryPressureLevel level) {
   base::AutoLock lock(lock_);
   switch (level) {
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+    case base::MEMORY_PRESSURE_LEVEL_NONE:
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
       break;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
       // Release all buffers, regardless of how recently they were used.
       ReleaseBuffersNotUsedSince(base::TimeTicks() + base::TimeDelta::Max());
       break;

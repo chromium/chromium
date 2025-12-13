@@ -220,6 +220,10 @@ static EGLBoolean GL_BINDING_CALL Mock_eglPostSubBufferNV(EGLDisplay dpy,
                                                           EGLint y,
                                                           EGLint width,
                                                           EGLint height);
+static EGLBoolean GL_BINDING_CALL
+Mock_eglPresentationTimeANDROID(EGLDisplay dpy,
+                                EGLSurface surface,
+                                EGLnsecsANDROID time);
 static EGLenum GL_BINDING_CALL Mock_eglQueryAPI(void);
 static EGLBoolean GL_BINDING_CALL Mock_eglQueryContext(EGLDisplay dpy,
                                                        EGLContext ctx,

@@ -13,6 +13,11 @@ namespace quick_answers {
 class QuickAnswersBrowserTestBase : public InProcessBrowserTest,
                                     public testing::WithParamInterface<bool> {
  public:
+  static std::string GetTestVariantName(
+      const testing::TestParamInfo<bool>& info) {
+    return info.param ? "MagicBoostOn" : "MagicBoostOff";
+  }
+
   struct ShowMenuParams {
     std::string selected_text;
     int x = 0;

@@ -122,8 +122,8 @@ class SaveCardBottomSheetModelTest : public PlatformTest {
   }
 
  protected:
-  raw_ptr<MockAutofillSaveCardDelegate> save_card_delegate_ = nil;
   std::unique_ptr<SaveCardBottomSheetModel> save_card_bottom_sheet_model_;
+  raw_ptr<MockAutofillSaveCardDelegate> save_card_delegate_ = nil;
   bool ran_on_confirmation_closed_callback_ = false;
 };
 
@@ -179,6 +179,9 @@ TEST_F(SaveCardBottomSheetModelTest, OnConfirmationDismissed) {
           base::Unretained(this)));
   EXPECT_EQ(save_card_bottom_sheet_model_->save_card_state(),
             SaveCardBottomSheetModel::SaveCardState::kSaved);
+
+  // Stop observing the delegate before it gets destroyed.
+  save_card_delegate_ = nullptr;
 
   save_card_bottom_sheet_model_.reset();
   EXPECT_TRUE(ran_on_confirmation_closed_callback_);

@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
+#include "chrome/utility/safe_browsing/archive_analysis_delegate.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 
 namespace safe_browsing {
@@ -44,6 +45,9 @@ class ArchiveAnalyzer {
 
   void SetResultsForTesting(ArchiveAnalyzerResults* results);
   void SetFinishedCallbackForTesting(FinishedAnalysisCallback callback);
+
+  void SetAnalysisDelegate(
+      std::unique_ptr<ArchiveAnalysisDelegate> analysis_delegate);
 
  protected:
   // Called when starting extraction. Subclasses should call `InitComplete` when
@@ -89,6 +93,8 @@ class ArchiveAnalyzer {
 
   // Returns whether we're currently unpacking the top-level archive.
   bool IsTopLevelArchive() const;
+
+  std::unique_ptr<ArchiveAnalysisDelegate> analysis_delegate_;
 
  private:
   // Tracks the relative path of the current archive within the overall archive

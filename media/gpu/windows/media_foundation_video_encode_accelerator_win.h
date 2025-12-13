@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -43,6 +44,7 @@ namespace media {
 
 class VideoRateControlWrapper;
 class TemporalScalabilityIdExtractor;
+class VEAEncodingLatencyMetricsHelper;
 
 // Media Foundation implementation of the VideoEncodeAccelerator interface for
 // Windows.
@@ -132,6 +134,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
     std::optional<int> qp;
     uint32_t frame_id;
     base::TimeDelta timestamp;
+    base::TimeTicks frame_encode_start_time;
   };
 
   // Encoder state.
@@ -197,9 +200,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   HRESULT PopulateInputSampleBuffer(const PendingInput& input,
                                     scoped_refptr<VideoFrame> frame);
   HRESULT PopulateInputSampleBufferGpu(scoped_refptr<VideoFrame> frame,
-                                       ComMFSample& input_sample);
+                                       const PendingInput& input);
   HRESULT CopyInputSampleBufferFromGpu(scoped_refptr<VideoFrame> frame,
-                                       ComMFSample& input_sample);
+                                       const PendingInput& input);
 
   bool IsTemporalScalabilityCoding() const { return num_temporal_layers_ > 1; }
 
@@ -237,10 +240,14 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   void OnCommandBufferHelperAvailable(
       const GetCommandBufferHelperResult& result);
 
-  // Called when a shared image backed sample is available
-  void OnSharedImageSampleAvailable(scoped_refptr<VideoFrame> frame,
-                                    ComMFSample sample,
-                                    HRESULT hr);
+  // Called when a shared image backed resource is available.
+  // See `ResourceAvailableCB` in mf_helpers.h for parameter details.
+  void OnSharedImageResourceAvailable(
+      scoped_refptr<VideoFrame> frame,
+      Microsoft::WRL::ComPtr<IMFSample> sample,
+      std::optional<base::win::ScopedHandle> texture_handle,
+      std::optional<bool> has_been_copied,
+      HRESULT hr);
 
   bool InitMFVideoProcessor();
 
@@ -303,6 +310,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Vendor of the active video encoder.
   DriverVendor vendor_ = DriverVendor::kOther;
+  std::string hardware_encoder_name_;
 
   // Group of picture length for encoded output stream, indicates the
   // distance between two key frames.
@@ -326,6 +334,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // MF video processor used for color format conversion; only
   // created if needed.
   std::unique_ptr<MediaFoundationVideoProcessorAccelerator> mf_video_processor_;
+
+  std::unique_ptr<VEAEncodingLatencyMetricsHelper> metrics_helper_;
 
   // Variables used by video processing for scaling.
   ComD3D11VideoProcessor video_processor_;

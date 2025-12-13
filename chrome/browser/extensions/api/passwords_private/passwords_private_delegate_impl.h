@@ -31,7 +31,7 @@
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
 #include "components/password_manager/core/browser/sharing/recipients_fetcher.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#include "components/password_manager/core/browser/ui/passwords_provider.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "extensions/browser/extension_function.h"
@@ -68,6 +68,8 @@ class PasswordsPrivateDelegateImpl
       delete;
 
   // PasswordsPrivateDelegate implementation.
+  password_manager::SavedPasswordsPresenter* GetSavedPasswordsPresenter()
+      override;
   void GetSavedPasswordsList(UiEntriesCallback callback) override;
   CredentialsGroups GetCredentialGroups() override;
   void GetPasswordExceptionsList(ExceptionEntriesCallback callback) override;
@@ -84,12 +86,17 @@ class PasswordsPrivateDelegateImpl
   void RemoveCredential(
       int id,
       api::passwords_private::PasswordStoreSet from_stores) override;
+  void RemoveBackupPassword(int id) override;
   void RemovePasswordException(int id) override;
   void UndoRemoveSavedPasswordOrException() override;
   void RequestPlaintextPassword(int id,
                                 api::passwords_private::PlaintextReason reason,
                                 PlaintextPasswordCallback callback,
                                 content::WebContents* web_contents) override;
+  void CopyPlaintextBackupPassword(
+      int id,
+      content::WebContents* web_contents,
+      base::OnceCallback<void(bool)> callback) override;
   void RequestCredentialsDetails(const std::vector<int>& ids,
                                  UiEntriesCallback callback,
                                  content::WebContents* web_contents) override;
@@ -211,6 +218,10 @@ class PasswordsPrivateDelegateImpl
       api::passwords_private::PlaintextReason reason,
       PlaintextPasswordCallback callback,
       bool authenticated);
+
+  void OnCopyBackupPasswordAuthResult(int id,
+                                      base::OnceCallback<void(bool)> callback,
+                                      bool authenticated);
 
   // Callback for RequestCredentialDetails() after authentication check.
   void OnRequestCredentialDetailsAuthResult(

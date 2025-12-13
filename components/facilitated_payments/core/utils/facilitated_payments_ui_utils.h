@@ -72,6 +72,28 @@ enum class FopSelectorAction {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.FopSelectorAction)
 
+// This enum is used to denote user actions on the non-card FOP selector.
+//
+// LINT.IfChange(PaymentLinkFopSelectorAction)
+//
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.components.facilitated_payments.core.ui_utils)
+enum class PaymentLinkFopSelectorAction {
+  // User has selected eWallet for payment.
+  kEwalletSelected = 0,
+  // User has selected payment app for payment.
+  kPaymentAppSelected = 1,
+  // User clicked on the link to disable payment for the type of FOP shown in
+  // the FOP selector. The link takes them to the settings page where the type
+  // of FOPs shown can be managed.
+  kTurnOffPaymentPromptLinkClicked = 2,
+  // User selected the "Manage payment accounts" option. This takes them to
+  // Chrome's Payments settings page.
+  kManagePaymentMethodsOptionSelected = 3,
+  kMaxValue = kManagePaymentMethodsOptionSelected,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.PaymentLinkFopSelectorAction)
+
 }  // namespace payments::facilitated
 
 #endif  // COMPONENTS_FACILITATED_PAYMENTS_CORE_UTILS_FACILITATED_PAYMENTS_UI_UTILS_H_

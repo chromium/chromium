@@ -35,7 +35,6 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
       const GURL& main_frame_url,
       const UnsafeResourceList& unsafe_resources,
       const BaseSafeBrowsingErrorUI::SBErrorDisplayOptions& display_options,
-      bool should_trigger_reporting,
       bool is_proceed_anyway_disabled,
       bool is_safe_browsing_surveys_enabled,
       base::OnceCallback<void(bool, SBThreatType)>
@@ -84,7 +83,6 @@ class TestSafeBrowsingBlockingPageFactory
       WebContents* web_contents,
       const GURL& main_frame_url,
       const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
-      bool should_trigger_reporting,
       std::optional<base::TimeTicks> blocked_page_shown_timestamp) override;
   security_interstitials::SecurityInterstitialPage* CreateEnterpriseWarnPage(
       BaseUIManager* ui_manager,

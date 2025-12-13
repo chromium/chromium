@@ -156,18 +156,6 @@ public class TabTestUtils {
     }
 
     /**
-     * Swap {@link WebContents} object being used in a tab.
-     * @param tab {@link Tab} object.
-     * @param webContents {@link WebContents} to swap in.
-     * @param didStartLoad Whether the content started loading.
-     * @param didFinishLoad Whether the content finished loading.
-     */
-    public static void swapWebContents(
-            Tab tab, WebContents webContents, boolean didStartLoad, boolean didFinishLoad) {
-        ((TabImpl) tab).swapWebContents(webContents, didStartLoad, didFinishLoad);
-    }
-
-    /**
      * @param tab {@link Tab} object.
      * @return {@link TabDelegateFactory} for a given tab.
      */
@@ -235,5 +223,13 @@ public class TabTestUtils {
      */
     public static @ChildProcessImportance int getImportance(Tab tab) {
         return ((TabImpl) tab).getImportance();
+    }
+
+    /**
+     * @param tab {@link Tab} object.
+     * @return {@link WebContents} object for a given tab.
+     */
+    public static @Nullable WebContents getWebContents(Tab tab) {
+        return ((TabImpl) tab).getWebContents();
     }
 }

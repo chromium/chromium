@@ -23,7 +23,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Pair;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.trusted.sharing.ShareData;
 
@@ -35,6 +34,8 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -61,6 +62,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /** Factory for building {@link BrowserServicesIntentDataProvider} for WebAPKs. */
+@NullMarked
 public class WebApkIntentDataProviderFactory {
     public static final String RESOURCE_NAME = "name";
     public static final String RESOURCE_SHORT_NAME = "short_name";
@@ -84,9 +86,10 @@ public class WebApkIntentDataProviderFactory {
     /**
      * Constructs a BrowserServicesIntentDataProvider from the passed in Intent and <meta-data> in
      * the WebAPK's Android manifest.
+     *
      * @param intent Intent containing info about the app.
      */
-    public static BrowserServicesIntentDataProvider create(Intent intent) {
+    public static @Nullable BrowserServicesIntentDataProvider create(Intent intent) {
         String webApkPackageName = WebappIntentUtils.getWebApkPackageName(intent);
 
         if (TextUtils.isEmpty(webApkPackageName)) {
@@ -238,23 +241,23 @@ public class WebApkIntentDataProviderFactory {
      * @param url Url that the WebAPK should navigate to when launched.
      * @param source Source that the WebAPK was launched from.
      * @param forceNavigation Whether the WebAPK should navigate to {@link url} if it is already
-     *                        running.
-     * @param canUseSplashFromContentProvider Whether the WebAPK's content provider can be
-     *                                        queried for a screenshot of the splash screen.
+     *     running.
+     * @param canUseSplashFromContentProvider Whether the WebAPK's content provider can be queried
+     *     for a screenshot of the splash screen.
      * @param shareData Shared information from the share intent.
      * @param shareDataActivityClassName Name of WebAPK activity which received share intent.
      */
     // looking up resources from other apps requires the use of getIdentifier()
     @SuppressWarnings("DiscouragedApi")
-    public static BrowserServicesIntentDataProvider create(
+    public static @Nullable BrowserServicesIntentDataProvider create(
             Intent intent,
             String webApkPackageName,
-            String url,
+            @Nullable String url,
             int source,
             boolean forceNavigation,
             boolean canUseSplashFromContentProvider,
-            ShareData shareData,
-            String shareDataActivityClassName) {
+            @Nullable ShareData shareData,
+            @Nullable String shareDataActivityClassName) {
         // Unlike non-WebAPK web apps, WebAPK ids are predictable. A malicious actor may send an
         // intent with a valid start URL and arbitrary other data. Only use the start URL, the
         // package name and the ShortcutSource from the launch intent and extract the remaining data
@@ -468,14 +471,14 @@ public class WebApkIntentDataProviderFactory {
      * @param webApkVersionCode WebAPK's version code.
      * @param lastUpdateTime WebAPK's last update timestamp.
      */
-    public static BrowserServicesIntentDataProvider create(
+    public static @Nullable BrowserServicesIntentDataProvider create(
             Intent intent,
-            String url,
-            String scope,
+            @Nullable String url,
+            @Nullable String scope,
             WebappIcon primaryIcon,
             WebappIcon splashIcon,
-            String name,
-            String shortName,
+            @Nullable String name,
+            @Nullable String shortName,
             boolean hasCustomName,
             @DisplayMode.EnumType int displayMode,
             int orientation,
@@ -487,18 +490,18 @@ public class WebApkIntentDataProviderFactory {
             int defaultBackgroundColor,
             boolean isPrimaryIconMaskable,
             boolean isSplashIconMaskable,
-            String webApkPackageName,
+            @Nullable String webApkPackageName,
             int shellApkVersion,
-            String manifestUrl,
-            String manifestStartUrl,
-            String manifestId,
-            String appKey,
+            @Nullable String manifestUrl,
+            @Nullable String manifestStartUrl,
+            @Nullable String manifestId,
+            @Nullable String appKey,
             @WebApkDistributor int distributor,
             Map<String, String> iconUrlToMurmur2HashMap,
-            WebApkShareTarget shareTarget,
+            @Nullable WebApkShareTarget shareTarget,
             boolean forceNavigation,
             boolean isSplashProvidedByWebApk,
-            ShareData shareData,
+            @Nullable ShareData shareData,
             List<ShortcutItem> shortcutItems,
             int webApkVersionCode,
             long lastUpdateTime) {
@@ -586,7 +589,7 @@ public class WebApkIntentDataProviderFactory {
                 webApkExtras);
     }
 
-    private static int computeSource(Intent intent, ShareData shareData) {
+    private static int computeSource(Intent intent, @Nullable ShareData shareData) {
         int source =
                 IntentUtils.safeGetIntExtra(
                         intent, WebappConstants.EXTRA_SOURCE, ShortcutSource.UNKNOWN);
@@ -609,10 +612,11 @@ public class WebApkIntentDataProviderFactory {
 
     /**
      * Extracts meta data from a WebAPK's Android Manifest.
+     *
      * @param webApkPackageName WebAPK's package name.
      * @return Bundle with the extracted meta data.
      */
-    private static Bundle extractWebApkMetaData(String webApkPackageName) {
+    private static @Nullable Bundle extractWebApkMetaData(String webApkPackageName) {
         PackageManager packageManager = ContextUtils.getApplicationContext().getPackageManager();
         try {
             ApplicationInfo appInfo =
@@ -653,10 +657,11 @@ public class WebApkIntentDataProviderFactory {
 
     /**
      * Returns the DisplayMode which matches {@link DisplayMode}.
+     *
      * @param displayMode One of https://www.w3.org/TR/appmanifest/#dfn-display-modes-values
      * @return The matching DisplayMode. {@link DisplayMode#Undefined} if there is no match.
      */
-    private static @DisplayMode.EnumType int displayModeFromString(String displayMode) {
+    private static @DisplayMode.EnumType int displayModeFromString(@Nullable String displayMode) {
         if (displayMode == null) {
             return DisplayMode.UNDEFINED;
         }
@@ -676,12 +681,12 @@ public class WebApkIntentDataProviderFactory {
 
     /**
      * Returns the ScreenOrientationLockType which matches {@link orientation}.
+     *
      * @param orientation One of https://w3c.github.io/screen-orientation/#orientationlocktype-enum
      * @return The matching ScreenOrientationLockType. {@link ScreenOrientationLockType#DEFAULT} if
-     *         there
-     * is no match.
+     *     there is no match.
      */
-    private static int orientationFromString(String orientation) {
+    private static int orientationFromString(@Nullable String orientation) {
         if (orientation == null) {
             return ScreenOrientationLockType.DEFAULT;
         }
@@ -708,10 +713,9 @@ public class WebApkIntentDataProviderFactory {
     }
 
     /**
-     * Returns the name of activity or activity alias in WebAPK which handles share intents, and
-     * the data about the handler.
+     * Returns the name of activity or activity alias in WebAPK which handles share intents, and the
+     * data about the handler.
      */
-    @NonNull
     private static Pair<String, WebApkShareTarget> extractFirstShareTarget(
             String webApkPackageName) {
         Intent shareIntent = new Intent();

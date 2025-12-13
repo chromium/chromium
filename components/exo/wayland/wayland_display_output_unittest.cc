@@ -120,8 +120,7 @@ TEST_F(WaylandDisplayOutputTest, InitializesAndUpdatesMetrics) {
   // Start with a typical display configuration and confirm dimensions are
   // reflected in the metrics.
   UpdateDisplay("800x600");
-  const int64_t display_id =
-      display::Screen::GetScreen()->GetAllDisplays()[0].id();
+  const int64_t display_id = display::Screen::Get()->GetAllDisplays()[0].id();
   OutputControllerTestApi output_controller_test_api(
       *server_->output_controller_for_testing());
   WaylandDisplayOutput* display_output =

@@ -11,8 +11,6 @@
 
 namespace features {
 
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2AllowActivationInBackground);
-
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2FallbackPrefetchSpecRules);
 
 // Controls whether `PrefetchMatchResolver` use timeout for prefetch ahead of
@@ -33,6 +31,11 @@ enum class Prerender2FallbackPrefetchSchedulerPolicy {
 CONTENT_EXPORT extern const base::FeatureParam<
     Prerender2FallbackPrefetchSchedulerPolicy>
     kPrerender2FallbackPrefetchSchedulerPolicy;
+
+// If enabled, `PreloadServingMetrics` is collected and metrics are rerpoted.
+// For more details, see `PreloadServingMetrics`.
+CONTENT_EXPORT extern const base::FeatureParam<bool>
+    kPrerender2FallbackUsePreloadServingMetrics;
 
 // This feature was used to launch Prerender2 support for No-Vary-Search header.
 // This work has finished and the old implementation was deleted. Now this flag
@@ -68,7 +71,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2WarmUpCompositorForImmediate);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2WarmUpCompositorForNonImmediate);
 
 CONTENT_EXPORT bool UsePrefetchPrerenderIntegration();
-
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_FEATURES_H_

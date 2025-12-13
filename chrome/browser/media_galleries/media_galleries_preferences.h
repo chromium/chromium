@@ -191,8 +191,8 @@ class MediaGalleriesPreferences
   // Before the callback is run, other calls may not return the correct results.
   // Should be invoked on the UI thread; callbacks will be run on the UI thread.
   // This call also ensures that the StorageMonitor is initialized.
-  // Note for unit tests: This requires an active TaskEnvironment and
-  // EnsureMediaDirectoriesExists instance to complete reliably.
+  // Note for unit tests: This requires an active TaskEnvironment to complete
+  // reliably.
   void EnsureInitialized(base::OnceClosure callback);
 
   // Return true if the storage monitor has already been initialized.

@@ -14,7 +14,7 @@
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_provider_key.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
 
@@ -88,9 +88,9 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
 
   virtual void ReparentNativeViewImpl(gfx::NativeView new_parent) = 0;
 
-  // Returns a NonClientFrameView for the widget's NonClientView, or NULL if
-  // the NativeWidget wants no special NonClientFrameView.
-  virtual std::unique_ptr<NonClientFrameView> CreateNonClientFrameView() = 0;
+  // Returns a FrameView for the widget's NonClientView, or NULL if
+  // the NativeWidget wants no special FrameView.
+  virtual std::unique_ptr<FrameView> CreateFrameView() = 0;
 
   virtual bool ShouldUseNativeFrame() const = 0;
   virtual bool ShouldWindowContentsBeTransparent() const = 0;
@@ -184,10 +184,9 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   // initially parented.
   virtual void InitModalType(ui::mojom::ModalType modal_type) = 0;
 
-  // Notifies the NativeWidget that the widget theme has changed.
-  virtual void OnWidgetThemeChanged(
-      ui::ColorProviderKey::ColorMode color_mode,
-      std::optional<SkColor> background_color) = 0;
+  // Sets the color used to fill the native widget. The native widget may use
+  // this color to determine the border color and caption button colors.
+  virtual void SetBackgroundColor(SkColor background_color) = 0;
 
   // See method documentation in Widget.
   virtual gfx::Rect GetWindowBoundsInScreen() const = 0;

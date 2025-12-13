@@ -11,8 +11,8 @@
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos_factory.h"
 #include "chrome/browser/speech/extension_api/tts_extension_api_constants.h"
-#include "chrome/common/extensions/api/speech/tts_engine_manifest_handler.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "extensions/common/api/speech/tts_engine_manifest_handler.h"
 #include "extensions/common/extension.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -59,7 +59,7 @@ void TtsExtensionEngineChromeOS::Speak(content::TtsUtterance* utterance,
 
   base::Value::List args = BuildSpeakArgs(utterance, voice);
   if (!RefreshAudioStreamOptionsForExtension(engine_id, profile) &&
-      playback_tts_stream_) {
+      playback_tts_stream_ && audio_parameters_) {
     Play(std::move(args), engine_id, profile);
     return;
   }
@@ -187,7 +187,7 @@ bool TtsExtensionEngineChromeOS::RefreshAudioStreamOptionsForExtension(
     return false;
 
   current_playback_engine_ = engine_id;
-  auto* info = extensions::TtsVoices::GetTtsEngineInfo(extension);
+  auto* info = extensions::TtsEngine::GetTtsEngineInfo(extension);
   if (!info || !info->sample_rate || !info->buffer_size) {
     bool had_params = !!audio_parameters_;
     audio_parameters_.reset();

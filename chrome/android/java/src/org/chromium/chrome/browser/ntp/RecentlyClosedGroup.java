@@ -12,11 +12,17 @@ import java.util.List;
 
 /** Represents a recently closed group from TabRestoreService. */
 @NullMarked
-public class RecentlyClosedGroup extends RecentlyClosedEntry {
+public class RecentlyClosedGroup extends SessionRecentlyClosedEntry {
     private final String mTitle;
     private final @TabGroupColorId int mColor;
     private final List<RecentlyClosedTab> mTabs = new ArrayList<>();
 
+    /**
+     * @param sessionId The Session ID of this entry.
+     * @param timestamp The milliseconds since the Unix Epoch this entry was created.
+     * @param title The title of the recently closed group.
+     * @param color The color of the recently closed group.
+     */
     public RecentlyClosedGroup(
             int sessionId, long timestamp, String title, @TabGroupColorId int color) {
         super(sessionId, timestamp);

@@ -36,3 +36,5 @@ static jlong JNI_SubresourceFilterFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace subresource_filter
+
+DEFINE_JNI(SubresourceFilterFeatureMap)

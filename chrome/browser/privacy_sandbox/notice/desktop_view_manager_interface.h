@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 #ifndef CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_DESKTOP_VIEW_MANAGER_INTERFACE_H_
 #define CHROME_BROWSER_PRIVACY_SANDBOX_NOTICE_DESKTOP_VIEW_MANAGER_INTERFACE_H_
+
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -11,8 +13,6 @@
 class BrowserWindowInterface;
 
 namespace privacy_sandbox {
-
-class NavigationHandler;
 
 // This class will:
 // 1. Manage the showing, hiding and closing of notices in the correct order on
@@ -31,9 +31,6 @@ class DesktopViewManagerInterface {
   };
 
   virtual ~DesktopViewManagerInterface();
-
-  // Returns handler responsible for tracking navigations.
-  virtual NavigationHandler* GetNavigationHandler() = 0;
 
   // Called by navigation handler when a suitable URL has
   // been found. All suitable URLs are chrome-owned.

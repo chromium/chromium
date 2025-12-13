@@ -1,0 +1,276 @@
+//
+// Copyright 2023 The Project Oak Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package oak.attestation.v1;
+
+import "proto/crypto/certificate.proto";
+import "proto/variant.proto";
+
+option go_package = "proto/oak/attestation/v1";
+option java_multiple_files = true;
+option java_package = "com.google.oak.attestation.v1";
+
+message Endorsement {
+  enum Format {
+    // Undefined and hence invalid format of the endorsement.
+    ENDORSEMENT_FORMAT_UNDEFINED = 0;
+
+    // Endorsement is a JSON in-toto statement (all variants and versions).
+    ENDORSEMENT_FORMAT_JSON_INTOTO = 1;
+  }
+
+  // The format of the serialized endorsement.
+  Format format = 1;
+
+  // The serialized endorsement, e.g. serialized JSON for an in-toto
+  // statement.
+  bytes serialized = 2;
+
+  // Can pass the endorsed subject when needed and when it is sufficiently
+  // small. In most use cases this field will remain empty.
+  bytes subject = 3;
+}
+
+message Signature {
+  // The ID of the key in a key set that was used to generate the
+  // signature.
+  uint32 key_id = 1;
+
+  // The raw signature. The type and format of the key used to generate it
+  // can be inferred from `key_id`.
+  bytes raw = 2;
+}
+
+// A signed endorsement which is optionally published.
+message SignedEndorsement {
+  // The underlying unsigned endorsement.
+  Endorsement endorsement = 1;
+
+  // The signature over `endorsement.serialized`. Unsigned endorsements are
+  // not supported.
+  Signature signature = 2;
+
+  // The Rekor log entry about the endorsement or empty if there is no log
+  // entry.
+  bytes rekor_log_entry = 3;
+}
+
+// Tink endorsement consists of a single Tink signature over the endorsed
+// evidence.
+// DEPRECATED: This message is no longer used
+message TinkEndorsement {
+  // Serialized signature generated with a structured Tink keyset.
+  bytes signature = 1;
+}
+
+// Endorsement containing a certificate that signs one of the enclave public
+// keys. The public key is specified by the certificate itself.
+// Certificate is represented as a [`oak.crypto.v1.Certificate`] proto message.
+message CertificateAuthorityEndorsement {
+  oak.crypto.v1.Certificate certificate = 1;
+}
+
+// A Transparent Release endorsement for a binary which includes the actual
+// endorsement, a signature over it, and optionally a transparency log entry.
+// Don't use this message in new code, use `SignedEndorsement` instead.
+// `SignedEndorsement` supersedes `TransparentReleaseEndorsement`.
+message TransparentReleaseEndorsement {
+  // JSON string comtaining the endorsement statement for the underlying binary.
+  // The format is described here:
+  // https://project-oak.github.io/oak/tr/endorsement/v1
+  bytes endorsement = 1;
+
+  // The data hashed as endorsement subject can be inlined here when needed.
+  // Can be the binary or the attachment, depending on the usage specified
+  // in the endorsement.
+  bytes subject = 4;
+
+  // The signature for the endorsement.
+  bytes endorsement_signature = 2;
+
+  // The log entry as proof of inclusion of the endorsement statement in Rekor.
+  bytes rekor_log_entry = 3;
+}
+
+message RootLayerEndorsements {
+  // The serialized TEE certificate(s). The details of the format and how the
+  // certificate(s) are encoded into this byte array are implementation
+  // specific. In case of AMD-SEV-SNP (as described in
+  // https://www.amd.com/system/files/TechDocs/57230.pdf) there are three
+  // different certificates packaged in two different files. We only include
+  // the machine-specific VCEK certificate since the AMD Root Key (ARK) and
+  // AMD SEV Key (ASK) are long-lived.
+  bytes tee_certificate = 1;
+
+  // Endorsement of the Stage0 binary.
+  TransparentReleaseEndorsement stage0 = 2;
+}
+
+message KernelLayerEndorsements {
+  TransparentReleaseEndorsement kernel = 1;
+  TransparentReleaseEndorsement kernel_cmd_line = 2;
+  TransparentReleaseEndorsement init_ram_fs = 4;
+  TransparentReleaseEndorsement memory_map = 5;
+  TransparentReleaseEndorsement acpi = 6;
+
+  reserved 7;
+}
+
+message SystemLayerEndorsements {
+  TransparentReleaseEndorsement system_image = 1;
+}
+
+message ApplicationLayerEndorsements {
+  TransparentReleaseEndorsement binary = 1;
+  TransparentReleaseEndorsement configuration = 2;
+}
+
+message ContainerLayerEndorsements {
+  TransparentReleaseEndorsement binary = 1;
+  TransparentReleaseEndorsement configuration = 2;
+}
+
+message OakRestrictedKernelEndorsements {
+  RootLayerEndorsements root_layer = 1;
+  KernelLayerEndorsements kernel_layer = 2;
+  ApplicationLayerEndorsements application_layer = 3;
+}
+
+message OakContainersEndorsements {
+  RootLayerEndorsements root_layer = 1;
+  KernelLayerEndorsements kernel_layer = 2;
+  SystemLayerEndorsements system_layer = 3;
+  ContainerLayerEndorsements container_layer = 4;
+}
+
+message CBEndorsements {
+  RootLayerEndorsements root_layer = 1;
+}
+
+message AmdSevSnpEndorsement {
+  // The serialized TEE certificate(s). The details of the format and how the
+  // certificate(s) are encoded into this byte array are implementation
+  // specific. In case of AMD-SEV-SNP (as described in
+  // https://www.amd.com/system/files/TechDocs/57230.pdf), there are three
+  // different certificates packaged in two different files. We only include
+  // the machine-specific VCEK certificate since the AMD Root Key (ARK) and
+  // AMD SEV Key (ASK) are long-lived.
+  bytes tee_certificate = 1;
+}
+
+message FirmwareEndorsement {
+  // Endorsement of the stage0 firmware binary.
+  SignedEndorsement firmware = 1;
+}
+
+message KernelEndorsement {
+  SignedEndorsement kernel = 1;
+  SignedEndorsement kernel_cmd_line = 2;
+  SignedEndorsement init_ram_fs = 3;
+  SignedEndorsement memory_map = 4;
+  SignedEndorsement acpi = 5;
+}
+
+message SystemEndorsement {
+  SignedEndorsement system_image = 1;
+}
+
+message ApplicationEndorsement {
+  SignedEndorsement binary = 1;
+  SignedEndorsement configuration = 2;
+}
+
+message ContainerEndorsement {
+  SignedEndorsement binary = 1;
+  SignedEndorsement configuration = 2;
+}
+
+// Endorsement for a public key used to verify that an encrypted session is
+// bound to the enclave's evidence.
+// Next ID: 4
+message SessionBindingPublicKeyEndorsement {
+  // DEPRECATED: All type fields should not be used in favor of `ca_endorsement`
+  // TODO: b/417151897 - Remove oneof type.
+  oneof type {
+    // Certificate authority signature over the session binding public key
+    // generated by Tink.
+    // <https://developers.google.com/tink>
+    // DEPRECATED: This field will stop being populated in favor of the
+    // ca_endorsement field. This is to ensure a validity window is linked to
+    // the signed public key.
+    TinkEndorsement tink_endorsement = 1 [deprecated = true];
+    // Certificate created by the certificate authority that signs the session
+    // binding public key.
+    // DEPRECATED: This field should not be used. Use the Certificate
+    // certificate_authority field to read the certificate authority
+    // endorsement.
+    // TODO: b/417151897 - Remove once all clients are migrated to
+    // `ca_endorsement`.
+    CertificateAuthorityEndorsement certificate_authority_endorsement = 2
+        [deprecated = true];
+  }
+  // Certificate created by the certificate authority that signs the session
+  // binding public key. If this field is not populated, use the oneof
+  // tink_endorsement field.
+  // TODO: b/417151897 - Rename this field to certificate_authority_endorsement.
+  CertificateAuthorityEndorsement ca_endorsement = 3;
+}
+
+// Endorsement for any evidence generated by Cloud Confidential Space.
+message ConfidentialSpaceEndorsement {
+  // JWT token that signs a hash of the endorsed evidence.
+  // - The "audience" claims field should be set to unique string, for example
+  //   `http://<project-id>.attestation.oak`.
+  // - The "eat_nonce" field should contain the digest (e.g. SHA-256) of the
+  //   endorsed evidence.
+  // - Any other claims can be set as needed.
+  string jwt_token = 1;
+
+  // An endorsement of the workload image running in the VM.
+  // If present, it must match the image mentioned in the jwt_token.
+  SignedEndorsement workload_endorsement = 2;
+}
+
+// This message contains statements that some entity (e.g. a hardware provider)
+// vouches for the integrity of claims about the TEE or the software running
+// on it.
+//
+// The name is chosen to match the RATS terminology:
+// https://www.rfc-editor.org/rfc/rfc9334.html#name-endorsements
+message Endorsements {
+  // TODO: b/380407219 - Remove this field once Oak clients switch to policies.
+  oneof type {
+    OakRestrictedKernelEndorsements oak_restricted_kernel = 1;
+    OakContainersEndorsements oak_containers = 2;
+    CBEndorsements cb = 3;
+  }
+
+  // Endorsement that proves the TEE platform authenticity.
+  oak.Variant platform = 8;
+
+  // Endorsement corresponding to the initial measurement done by the TEE
+  // platform.
+  // Initial endorsement is not included in the event log, because
+  // events can only be generated after the TEE starts up.
+  oak.Variant initial = 9;
+
+  // Endorsements corresponding to the event log.
+  repeated oak.Variant events = 10;
+
+  reserved 4 to 7;
+};

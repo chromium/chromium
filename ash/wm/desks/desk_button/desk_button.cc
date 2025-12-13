@@ -48,7 +48,7 @@
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 

@@ -12,7 +12,7 @@
 #include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "components/viz/common/resources/resource_sizes.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 
 namespace viz {
 namespace {
@@ -27,14 +27,12 @@ constexpr DXGI_FORMAT kDXGISwapChainFormat = DXGI_FORMAT_B8G8R8A8_UNORM;
 // a valid size this will return true and |out_bytes| will contain the size in
 // bytes. If |viewport_size| is not a valid size then this will return false.
 bool GetViewportSizeInBytes(const gfx::Size& viewport_size, size_t* out_bytes) {
-  size_t bytes;
-  if (!ResourceSizes::MaybeSizeInBytes(viewport_size,
-                                       SinglePlaneFormat::kRGBA_8888, &bytes)) {
+  auto bytes = SharedMemorySizeForSharedImageFormat(
+      SinglePlaneFormat::kRGBA_8888, viewport_size);
+  if (!bytes || bytes.value() > kMaxBitmapSizeBytes) {
     return false;
   }
-  if (bytes > kMaxBitmapSizeBytes)
-    return false;
-  *out_bytes = bytes;
+  *out_bytes = bytes.value();
   return true;
 }
 

@@ -531,12 +531,6 @@ constexpr bool IsWhitespace(Char c) {
   }
 }
 
-// Return a byte string in human-readable format with a unit suffix. Not
-// appropriate for use in any UI; use of FormatBytes and friends in ui/base is
-// highly recommended instead. TODO(avi): Figure out how to get callers to use
-// FormatBytes instead; remove this.
-BASE_EXPORT std::u16string FormatBytesUnlocalized(int64_t bytes);
-
 // Starting at |start_offset| (usually 0), replace the first instance of
 // |find_this| with |replace_with|.
 BASE_EXPORT void ReplaceFirstSubstringAfterOffset(

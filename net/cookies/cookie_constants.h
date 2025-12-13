@@ -6,6 +6,8 @@
 #define NET_COOKIES_COOKIE_CONSTANTS_H_
 
 #include <string>
+#include <string_view>
+#include <utility>
 
 #include "base/time/time.h"
 #include "net/base/net_export.h"
@@ -329,12 +331,10 @@ NET_EXPORT std::string CookieSameSiteToString(CookieSameSite same_site);
 
 // Converts the Set-Cookie header SameSite token |same_site| to a
 // CookieSameSite. Defaults to CookieSameSite::UNSPECIFIED for empty or
-// unrecognized strings. Returns an appropriate value of CookieSameSiteString in
-// |samesite_string| to indicate what type of string was parsed as the SameSite
-// attribute value, if a pointer is provided.
-NET_EXPORT CookieSameSite
-StringToCookieSameSite(const std::string& same_site,
-                       CookieSameSiteString* samesite_string = nullptr);
+// unrecognized strings. Returns an appropriate value of CookieSameSiteString to
+// indicate what type of string was parsed as the SameSite attribute value.
+NET_EXPORT std::pair<CookieSameSite, CookieSameSiteString>
+StringToCookieSameSite(std::string_view same_site);
 
 NET_EXPORT void RecordCookieSameSiteAttributeValueHistogram(
     CookieSameSiteString value);

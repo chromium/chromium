@@ -10,11 +10,10 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/browser_instance/browser_app_instance.h"
-#include "chrome/browser/apps/browser_instance/browser_app_instance_tracker.h"
 #include "chrome/browser/autofill/address_normalizer_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/validation_rules_storage_factory.h"
@@ -32,10 +31,10 @@
 #include "components/autofill/core/browser/geo/region_data_loader_impl.h"
 #include "components/autofill/core/browser/ui/region_combobox_model.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_request_dialog.h"
 #include "components/payments/content/ssl_validity_checker.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/webauthn/content/browser/internal_authenticator_impl.h"
@@ -49,9 +48,19 @@
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 #include "third_party/libaddressinput/chromium/chrome_storage_impl.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/common/chrome_version.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace payments {
 
 namespace {
+
+#if BUILDFLAG(IS_MAC)
+constexpr char kSecurePaymentConfirmationKeychainAccessGroup[] =
+    MAC_TEAM_IDENTIFIER_STRING "." MAC_BUNDLE_IDENTIFIER_STRING
+                               ".secure-payment-confirmation";
+#endif  // BUILDFLAG(IS_MAC)
 
 std::unique_ptr<::i18n::addressinput::Source> GetAddressInputSource() {
   return std::unique_ptr<::i18n::addressinput::Source>(
@@ -69,6 +78,20 @@ bool FrameSupportsPayments(content::RenderFrameHost* rfh) {
   return rfh && rfh->IsActive() && rfh->IsRenderFrameLive() &&
          rfh->IsFeatureEnabled(
              network::mojom::PermissionsPolicyFeature::kPayment);
+}
+
+base::OnceClosure ChainSpcFallbackOutcomeLogToCallback(
+    SecurePaymentRequestOutcome outcome,
+    base::OnceClosure callback) {
+  return callback.is_null()
+             ? std::move(callback)
+             : base::BindOnce(
+                   [](SecurePaymentRequestOutcome outcome) {
+                     base::UmaHistogramEnumeration(
+                         "SecurePaymentRequest.Fallback.Outcome", outcome);
+                   },
+                   outcome)
+                   .Then(std::move(callback));
 }
 
 }  // namespace
@@ -178,22 +201,22 @@ ukm::UkmRecorder* ChromePaymentRequestDelegate::GetUkmRecorder() {
 
 std::string ChromePaymentRequestDelegate::GetAuthenticatedEmail() const {
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  if (!rfh)
+  if (!rfh) {
     return std::string();
+  }
 
-  // Check if the profile is authenticated.  Guest profiles or incognito
-  // windows may not have a sign in manager, and are considered not
-  // authenticated.
+  // Check if the profile is signed in. Guest profiles or incognito windows may
+  // not have an IdentityManager, and are considered not signed in.
   Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  if (identity_manager &&
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
-    return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-        .email;
+  if (!identity_manager) {
+    return std::string();
   }
-
-  return std::string();
+  // If there's no primary account, `GetPrimaryAccountInfo()` will return an
+  // empty result.
+  return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+      .email;
 }
 
 PrefService* ChromePaymentRequestDelegate::GetPrefService() {
@@ -222,10 +245,15 @@ void ChromePaymentRequestDelegate::ShowNoMatchingPaymentCredentialDialog(
       content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents)
     return;
+
   spc_no_creds_dialog_ = SecurePaymentConfirmationNoCreds::Create();
-  spc_no_creds_dialog_->ShowDialog(web_contents, merchant_name, rp_id,
-                                   std::move(response_callback),
-                                   std::move(opt_out_callback));
+  spc_no_creds_dialog_->ShowDialog(
+      web_contents, merchant_name, rp_id,
+      ChainSpcFallbackOutcomeLogToCallback(
+          SecurePaymentRequestOutcome::kAnotherWay,
+          std::move(response_callback)),
+      ChainSpcFallbackOutcomeLogToCallback(SecurePaymentRequestOutcome::kOptOut,
+                                           std::move(opt_out_callback)));
 }
 
 content::RenderFrameHost* ChromePaymentRequestDelegate::GetRenderFrameHost()
@@ -253,10 +281,10 @@ ChromePaymentRequestDelegate::CreateInternalAuthenticator() const {
   return std::make_unique<content::InternalAuthenticatorImpl>(rfh);
 }
 
-scoped_refptr<PaymentManifestWebDataService>
-ChromePaymentRequestDelegate::GetPaymentManifestWebDataService() const {
+scoped_refptr<WebPaymentsWebDataService>
+ChromePaymentRequestDelegate::GetWebPaymentsWebDataService() const {
   return webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetBrowserContextOrNull(), ServiceAccessType::EXPLICIT_ACCESS);
 }
 
@@ -308,6 +336,16 @@ ChromePaymentRequestDelegate::GetNoMatchingCredentialsDialogForTesting() {
 std::optional<base::UnguessableToken>
 ChromePaymentRequestDelegate::GetChromeOSTWAInstanceId() const {
   return std::nullopt;
+}
+
+std::string
+ChromePaymentRequestDelegate::GetSecurePaymentConfirmationKeychainAccessGroup()
+    const {
+#if BUILDFLAG(IS_MAC)
+  return kSecurePaymentConfirmationKeychainAccessGroup;
+#else
+  return "";
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 const base::WeakPtr<PaymentUIObserver>

@@ -4,7 +4,7 @@
 
 #include "components/exo/xdg_shell_surface.h"
 
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/display.h"
@@ -48,7 +48,7 @@ bool XdgShellSurface::ShouldAutoMaximize() {
   }
 
   DCHECK(!widget_);
-  gfx::Size work_area_size = display::Screen::GetScreen()
+  gfx::Size work_area_size = display::Screen::Get()
                                  ->GetDisplayNearestWindow(host_window())
                                  .work_area_size();
   DCHECK(!work_area_size.IsEmpty());

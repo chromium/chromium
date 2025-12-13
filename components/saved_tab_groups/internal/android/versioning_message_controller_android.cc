@@ -9,7 +9,7 @@
 #include "base/android/jni_string.h"
 #include "components/saved_tab_groups/internal/jni_headers/VersioningMessageControllerImpl_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace tab_groups {
 using MessageType = VersioningMessageController::MessageType;
@@ -19,8 +19,7 @@ VersioningMessageControllerAndroid::VersioningMessageControllerAndroid(
     : versioning_message_controller_(versioning_message_controller) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(env, Java_VersioningMessageControllerImpl_create(
-                           env, reinterpret_cast<int64_t>(this))
-                           .obj());
+                           env, reinterpret_cast<int64_t>(this)));
 }
 
 VersioningMessageControllerAndroid::~VersioningMessageControllerAndroid() {
@@ -35,13 +34,13 @@ VersioningMessageControllerAndroid::GetJavaObject(JNIEnv* env) {
 
 bool VersioningMessageControllerAndroid::IsInitialized(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_caller) {
+    const JavaRef<jobject>& j_caller) {
   return versioning_message_controller_->IsInitialized();
 }
 
 bool VersioningMessageControllerAndroid::ShouldShowMessageUi(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_caller,
+    const JavaRef<jobject>& j_caller,
     jint j_message_type) {
   MessageType message_type = static_cast<MessageType>(j_message_type);
   return versioning_message_controller_->ShouldShowMessageUi(message_type);
@@ -49,9 +48,9 @@ bool VersioningMessageControllerAndroid::ShouldShowMessageUi(
 
 void VersioningMessageControllerAndroid::ShouldShowMessageUiAsync(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_caller,
+    const JavaRef<jobject>& j_caller,
     jint j_message_type,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jobject>& j_callback) {
   MessageType message_type = static_cast<MessageType>(j_message_type);
   base::OnceCallback<void(bool)> callback = base::BindOnce(
       [](const base::android::JavaRef<jobject>& j_callback, bool result) {
@@ -64,7 +63,7 @@ void VersioningMessageControllerAndroid::ShouldShowMessageUiAsync(
 
 void VersioningMessageControllerAndroid::OnMessageUiShown(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_caller,
+    const JavaRef<jobject>& j_caller,
     jint j_message_type) {
   MessageType message_type = static_cast<MessageType>(j_message_type);
   versioning_message_controller_->OnMessageUiShown(message_type);
@@ -72,10 +71,12 @@ void VersioningMessageControllerAndroid::OnMessageUiShown(
 
 void VersioningMessageControllerAndroid::OnMessageUiDismissed(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_caller,
+    const JavaRef<jobject>& j_caller,
     jint j_message_type) {
   MessageType message_type = static_cast<MessageType>(j_message_type);
   versioning_message_controller_->OnMessageUiDismissed(message_type);
 }
 
 }  // namespace tab_groups
+
+DEFINE_JNI(VersioningMessageControllerImpl)

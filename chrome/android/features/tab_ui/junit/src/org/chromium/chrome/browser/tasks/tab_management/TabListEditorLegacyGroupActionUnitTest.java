@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
@@ -236,7 +237,10 @@ public class TabListEditorLegacyGroupActionUnitTest {
         Tab destinationTab = selectedTabs.get(2);
         assertTrue(mAction.perform());
         verify(mGroupFilter)
-                .mergeListOfTabsToGroup(selectedTabs.subList(0, 2), destinationTab, true);
+                .mergeListOfTabsToGroup(
+                        selectedTabs.subList(0, 2),
+                        destinationTab,
+                        MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTabGroupCreationDialogManager)
                 .showDialog(destinationTab.getTabGroupId(), mGroupFilter);
         verify(mDelegate).hideByAction();
@@ -290,7 +294,10 @@ public class TabListEditorLegacyGroupActionUnitTest {
         Tab destinationTab = selectedTabs.get(2);
         assertTrue(mAction.perform());
         verify(mGroupFilter)
-                .mergeListOfTabsToGroup(selectedTabs.subList(0, 2), destinationTab, true);
+                .mergeListOfTabsToGroup(
+                        selectedTabs.subList(0, 2),
+                        destinationTab,
+                        MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mDelegate).hideByAction();
 
         helper.waitForOnly();
@@ -298,12 +305,16 @@ public class TabListEditorLegacyGroupActionUnitTest {
 
         assertTrue(mAction.perform());
         verify(mGroupFilter, times(2))
-                .mergeListOfTabsToGroup(selectedTabs.subList(0, 2), destinationTab, true);
+                .mergeListOfTabsToGroup(
+                        selectedTabs.subList(0, 2),
+                        destinationTab,
+                        MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mDelegate, times(2)).hideByAction();
         assertEquals(1, helper.getCallCount());
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testGroupActionWithTabGroups_MergeIndividalTabsToExistingGroup() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -365,11 +376,15 @@ public class TabListEditorLegacyGroupActionUnitTest {
                 mGroupFilter.getRelatedTabList(holder.getSelectedItemIds().get(2).getTabId());
         expectedTabs.removeAll(destinationAndRelatedTabs);
         verify(mGroupFilter)
-                .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(2), true);
+                .mergeListOfTabsToGroup(
+                        expectedTabs,
+                        holder.getSelectedTabs().get(2),
+                        MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mDelegate).hideByAction();
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testGroupActionWithTabGroups_MergeGroupToExistingGroup() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -431,11 +446,15 @@ public class TabListEditorLegacyGroupActionUnitTest {
                 mGroupFilter.getRelatedTabList(holder.getSelectedItemIds().get(0).getTabId());
         expectedTabs.removeAll(destinationAndRelatedTabs);
         verify(mGroupFilter)
-                .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(0), true);
+                .mergeListOfTabsToGroup(
+                        expectedTabs,
+                        holder.getSelectedTabs().get(0),
+                        MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mDelegate).hideByAction();
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testGroupActionWithTabGroups_MergeTabsAndGroupsToExistingGroup() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -509,11 +528,15 @@ public class TabListEditorLegacyGroupActionUnitTest {
                 mGroupFilter.getRelatedTabList(holder.getSelectedItemIds().get(0).getTabId());
         expectedTabs.removeAll(destinationAndRelatedTabs);
         verify(mGroupFilter)
-                .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(0), true);
+                .mergeListOfTabsToGroup(
+                        expectedTabs,
+                        holder.getSelectedTabs().get(0),
+                        MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mDelegate).hideByAction();
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testGroupActionWithTabGroups_MergeTabsAndGroupsToCollaborationGroup() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -591,11 +614,15 @@ public class TabListEditorLegacyGroupActionUnitTest {
                 mGroupFilter.getRelatedTabList(holder.getSelectedItemIds().get(1).getTabId());
         expectedTabs.removeAll(destinationAndRelatedTabs);
         verify(mGroupFilter)
-                .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(1), true);
+                .mergeListOfTabsToGroup(
+                        expectedTabs,
+                        holder.getSelectedTabs().get(1),
+                        MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mDelegate).hideByAction();
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testGroupActionWithTabGroups_MergeCollaborationIsFirst() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(
@@ -632,11 +659,15 @@ public class TabListEditorLegacyGroupActionUnitTest {
                 mGroupFilter.getRelatedTabList(holder.getSelectedItemIds().get(0).getTabId());
         expectedTabs.removeAll(destinationAndRelatedTabs);
         verify(mGroupFilter)
-                .mergeListOfTabsToGroup(expectedTabs, holder.getSelectedTabs().get(0), true);
+                .mergeListOfTabsToGroup(
+                        expectedTabs,
+                        holder.getSelectedTabs().get(0),
+                        MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mDelegate).hideByAction();
     }
 
     @Test(expected = AssertionError.class)
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testGroupActionWithTabGroups_MergeCollaborationsAsserts() {
         List<TabIdGroup> tabIdGroups = new ArrayList<>();
         tabIdGroups.add(

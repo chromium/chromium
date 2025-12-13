@@ -117,6 +117,9 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
   out->selection_clipboard_buffer_available =
       data.selection_clipboard_buffer_available();
 #endif
+#if BUILDFLAG(IS_LINUX)
+  out->middle_click_paste_allowed = data.middle_click_paste_allowed();
+#endif
   out->plugin_fullscreen_allowed = data.plugin_fullscreen_allowed();
   out->caret_browsing_enabled = data.caret_browsing_enabled();
 
@@ -128,8 +131,6 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
           &out->explicitly_allowed_network_ports)) {
     return false;
   }
-
-  out->canvas_noise_token = data.canvas_noise_token();
 
   out->view_source_line_wrap_enabled = data.view_source_line_wrap_enabled();
 

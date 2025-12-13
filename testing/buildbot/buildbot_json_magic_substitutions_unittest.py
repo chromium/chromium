@@ -50,6 +50,32 @@ class AndroidDesktopForceMainuserTest(unittest.TestCase):
         ])
 
 
+class AndroidDesktopGtestRemoteTest(unittest.TestCase):
+
+  def testNonAndroid(self):
+    test_config = CreateConfigWithPool('chromium.tests', board='brya')
+    with self.assertRaises(AssertionError):
+      magic_substitutions.AndroidDesktopGtestRemote(test_config, None,
+                                                    {'os_type': 'linux'})
+
+  def testNoBoard(self):
+    test_config = CreateConfigWithPool('chromium.tests')
+    self.assertEqual(
+        magic_substitutions.AndroidDesktopGtestRemote(test_config, None,
+                                                      {'os_type': 'android'}),
+        [])
+
+  def testSuccess(self):
+    test_config = CreateConfigWithPool('chromium.tests', board='brya')
+    self.assertEqual(
+        magic_substitutions.AndroidDesktopGtestRemote(test_config, None,
+                                                      {'os_type': 'android'}),
+        [
+            '--device=variable_lab_dut_hostname',
+            '--connect-over-network',
+        ])
+
+
 class AndroidDesktopTelemetryRemoteTest(unittest.TestCase):
 
   def testNonAndroid(self):

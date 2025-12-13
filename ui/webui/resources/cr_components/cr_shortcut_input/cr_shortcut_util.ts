@@ -166,6 +166,8 @@ export function keystrokeToString(e: KeyboardEvent): string {
         case Key.UP:
           output.push('Up');
           break;
+        default:
+          break;
       }
     }
   }

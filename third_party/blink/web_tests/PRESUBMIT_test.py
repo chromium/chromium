@@ -117,6 +117,35 @@ class PresubmitTest(unittest.TestCase):
         self.assertEqual(1, len(messages))
         self.assertEqual("warning", messages[0].type)
 
+    def testCheckForUnlistedDirsInBuildGn(self):
+        mock_input_api = MockInputApi()
+        web_tests_dir = os.path.join('third_party', 'blink', 'web_tests')
+        build_file = MockAffectedFile(os.path.join(
+            web_tests_dir, 'BUILD.gn'), [
+                'group("web_tests") {',
+                '  data = [',
+                '    # === List Test Cases folders here ===',
+                '    "a/"',
+                '',
+                '    # === List Case Folders Ends ===',
+                '  ]'
+                '}',
+            ])
+        mock_input_api.InitFiles([
+            build_file,
+            MockAffectedFile(os.path.join(web_tests_dir, 'a', 'a.html'), []),
+            MockAffectedFile(os.path.join(web_tests_dir, 'b', 'b.html'), []),
+            MockAffectedFile(
+                os.path.join(web_tests_dir, 'platform', 'c', 'c-expected.txt'),
+                []),
+        ])
+
+        messages = PRESUBMIT._CheckForUnlistedTestFolder(
+            mock_input_api, MockOutputApi())
+        self.assertEqual(1, len(messages))
+        self.assertEqual(['b'], messages[0].items)
+        self.assertRegex(messages[0].message, r'Please add b to BUILD\.gn')
+
 
 if __name__ == "__main__":
     unittest.main()

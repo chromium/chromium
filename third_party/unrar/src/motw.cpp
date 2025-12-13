@@ -56,7 +56,7 @@ void MarkOfTheWeb::ReadZoneIdStream(const std::wstring &FileName,bool AllFields)
 // and either raw or cleaned stream data on output.
 int MarkOfTheWeb::ParseZoneIdStream(std::string &Stream)
 {
-  if (Stream.rfind("[ZoneTransfer]",0)==std::string::npos)
+  if (!starts_with(Stream,"[ZoneTransfer]"))
     return -1; // Not a valid Mark of the Web. Prefer the archive MOTW if any.
 
   std::string::size_type ZoneId=Stream.find("ZoneId=",0);

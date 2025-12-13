@@ -15,7 +15,8 @@ class WebState;
 }  // namespace web
 
 // Return data to power PriceCardView for a given WebState
-PriceCardItem* CreatePriceCardItem(web::WebState* web_state);
+void CreatePriceCardItem(web::WebState* web_state,
+                         base::OnceCallback<void(PriceCardItem*)> callback);
 // Return a WebState for a tab identifier, given the WebStateList
 web::WebState* GetWebState(WebStateList* webStateList, NSString* tab_id);
 

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/base/silent_sink_suspender.h"
 
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_message_loop.h"
+#include "media/base/audio_bus.h"
 #include "media/base/fake_audio_render_callback.h"
 #include "media/base/mock_audio_renderer_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -117,7 +113,7 @@ TEST_F(SilentSinkSuspenderTest, SuspendResumeTriggered) {
   EXPECT_EQ(temp_bus_->frames(),
             suspender_.Render(base::TimeDelta(), base::TimeTicks(), {},
                               temp_bus_.get()));
-  EXPECT_EQ(temp_bus_->channel_span(0), true_bus->channel_span(0));
+  EXPECT_EQ(temp_bus_->channel(0), true_bus->channel(0));
 }
 
 TEST_F(SilentSinkSuspenderTest, MultipleSuspend) {
@@ -162,7 +158,7 @@ TEST_F(SilentSinkSuspenderTest, MultipleResume) {
   std::unique_ptr<AudioBus> true_bus2 = AudioBus::Create(params_);
   fake_callback_.Render(base::TimeDelta(), base::TimeTicks(), {},
                         true_bus2.get());
-  EXPECT_NE(true_bus1->channel_span(0), true_bus2->channel_span(0));
+  EXPECT_NE(true_bus1->channel(0), true_bus2->channel(0));
 
   // Reset the fake callback data generation and force two Render() calls before
   // the sink can transition.
@@ -181,11 +177,11 @@ TEST_F(SilentSinkSuspenderTest, MultipleResume) {
   EXPECT_EQ(temp_bus_->frames(),
             suspender_.Render(base::TimeDelta(), base::TimeTicks(), {},
                               temp_bus_.get()));
-  EXPECT_EQ(temp_bus_->channel_span(0), true_bus1->channel_span(0));
+  EXPECT_EQ(temp_bus_->channel(0), true_bus1->channel(0));
   EXPECT_EQ(temp_bus_->frames(),
             suspender_.Render(base::TimeDelta(), base::TimeTicks(), {},
                               temp_bus_.get()));
-  EXPECT_EQ(temp_bus_->channel_span(0), true_bus2->channel_span(0));
+  EXPECT_EQ(temp_bus_->channel(0), true_bus2->channel(0));
 }
 
 TEST_F(SilentSinkSuspenderTest, SetDetectSilence) {

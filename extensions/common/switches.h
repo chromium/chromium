@@ -113,12 +113,33 @@ extern const char kZeroStatePromoCustomActionIph[];
 // When the user has no extensions installed, display a custom UI IPH that
 // presents the user with different collections of extensions to explore,
 // each in a cr-chip button.
-extern const char kZeroStatePromoCustomUiChipIph[];
+extern const char kZeroStatePromoCustomUiChipIphV1[];
+
+// When the user has no extensions installed, display a custom UI IPH that
+// presents the user with different collections of extensions to explore,
+// each in a cr-chip button. This variation has a different color scheme
+// to highlight the chips.
+extern const char kZeroStatePromoCustomUiChipIphV2[];
+
+// When the user has no extensions installed, display a custom UI IPH that
+// presents the user with different collections of extensions to explore,
+// each in a cr-chip button. This variation has a different color scheme
+// to highlight the chips. The ordering and selection of the chips are
+// slightly different than variation 2.
+extern const char kZeroStatePromoCustomUiChipIphV3[];
 
 // When the user has no extensions installed, display a custom UI IPH that
 // presents the user with different collections of extensions to explore,
 // each in a plain text link.
 extern const char kZeroStatePromoCustomUiPlainLinkIph[];
+
+// Turns on extension install verification if it would not otherwise have been
+// turned on.
+extern const char kExtensionsInstallVerification[];
+
+// Specifies a comma-separated list of extension ids that should be forced to
+// be treated as not from the webstore when doing install verification.
+extern const char kExtensionsNotWebstore[];
 
 // Checks if extensions are allowed to run on chrome:// URLs.
 bool AreExtensionsOnChromeURLsAllowed();

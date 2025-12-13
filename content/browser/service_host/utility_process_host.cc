@@ -43,7 +43,6 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
-#include "media/webrtc/webrtc_features.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
@@ -54,10 +53,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "services/network/public/mojom/network_service.mojom.h"
-#endif
-
-#if BUILDFLAG(IS_MAC)
-#include "components/os_crypt/sync/os_crypt_switches.h"
 #endif
 
 #if BUILDFLAG(IS_OZONE)
@@ -389,11 +384,11 @@ bool UtilityProcessHost::StartProcess() {
       network::switches::kAdditionalTrustTokenKeyCommitments,
       network::switches::kForceEffectiveConnectionType,
       network::switches::kHostResolverRules,
+      network::switches::kHostRules,
       network::switches::kIgnoreBadMessageForTesting,
       network::switches::kIgnoreCertificateErrorsSPKIList,
       network::switches::kTestThirdPartyCookiePhaseout,
       network::switches::kDisableSharedDictionaryStorageCleanupForTesting,
-      network::switches::kStoreProbabilisticRevealTokens,
       sandbox::policy::switches::kNoSandbox,
       sandbox::policy::switches::kDisableLandlockSandbox,
       sandbox::policy::switches::kDisableSeccompFilterSandbox,
@@ -454,7 +449,7 @@ bool UtilityProcessHost::StartProcess() {
       switches::kSchedulerBoostUrgent,
 #endif
       switches::kFakeBackgroundBlurTogglePeriod,
-#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
+#if BUILDFLAG(USE_V4L2_CODEC)
       switches::kHardwareVideoDecodeFrameRate,
 #endif
 #if BUILDFLAG(IS_OZONE)
@@ -547,7 +542,7 @@ bool UtilityProcessHost::StartProcess() {
 #endif  // BUILDFLAG(USE_ZYGOTE)
 
   process_->LaunchWithFileData(std::move(delegate), std::move(cmd_line),
-                               std::move(options_.file_data_), true);
+                               std::move(options_.file_data_));
 
   return true;
 }

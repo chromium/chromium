@@ -28,7 +28,6 @@
 
 using borealis::NiceCallbackFactory;
 using testing::_;
-using testing::Invoke;
 using testing::IsFalse;
 
 namespace guest_os {

@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/search_engines/template_url.h"
@@ -40,7 +41,7 @@ namespace {
 std::unique_ptr<HttpResponse> HandleRequest(const std::string& match_path,
                                             const std::string& osdd_xml_url,
                                             const HttpRequest& request) {
-  if (!match_path.empty() && request.GetURL().path() != match_path) {
+  if (!match_path.empty() && request.GetURL().GetPath() != match_path) {
     return nullptr;
   }
 
@@ -115,7 +116,7 @@ class SearchEngineTabHelperBrowserTest : public InProcessBrowserTest {
   // Starts a test server that serves a page pointing to a opensearch descriptor
   // from a file:// url.
   bool StartTestServer() {
-    GURL file_url = ui_test_utils::GetTestUrl(
+    GURL file_url = chrome_test_utils::GetTestUrl(
         base::FilePath(),
         base::FilePath().AppendASCII("simple_open_search.xml"));
     embedded_test_server()->RegisterRequestHandler(

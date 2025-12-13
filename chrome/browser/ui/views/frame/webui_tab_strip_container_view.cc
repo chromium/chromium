@@ -684,8 +684,8 @@ void WebUITabStripContainerView::SetContainerTargetVisibility(
     }
 
     immersive_revealed_lock_ =
-        browser_view_->immersive_mode_controller()->GetRevealedLock(
-            ImmersiveModeController::ANIMATE_REVEAL_YES);
+        ImmersiveModeController::From(browser_view_->browser())
+            ->GetRevealedLock(ImmersiveModeController::ANIMATE_REVEAL_YES);
 
     SetVisible(true);
     PreferredSizeChanged();
@@ -788,14 +788,15 @@ void WebUITabStripContainerView::ShowEditDialogForGroupAtPoint(
   ConvertPointToScreen(this, &point);
   rect.set_origin(point);
   editor_bubble_widget_ = TabGroupEditorBubbleView::Show(
-      browser_view_->browser(), group, nullptr, rect, this);
+      browser_view_->browser(), group, /*anchor_view=*/this,
+      /*anchor_rect=*/rect, /*stop_context_menu_propagation=*/false);
   scoped_widget_observation_.Observe(editor_bubble_widget_.get());
 }
 
 void WebUITabStripContainerView::HideEditDialogForGroup() {
   if (editor_bubble_widget_) {
     editor_bubble_widget_->CloseWithReason(
-        BrowserFrame::ClosedReason::kUnspecified);
+        BrowserWidget::ClosedReason::kUnspecified);
   }
 }
 

@@ -55,17 +55,20 @@ class BreadcrumbManagerBrowserAgentTest : public PlatformTest {
     profile_ = std::move(test_profile_builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
-    OverlayPresenter::FromBrowser(browser_.get(),
-                                  OverlayModality::kWebContentArea)
-        ->SetPresentationContext(&presentation_context_);
+    overlay_presenter_ = OverlayPresenter::FromBrowser(
+        browser_.get(), OverlayModality::kWebContentArea);
+    overlay_presenter_->SetPresentationContext(&presentation_context_);
   }
 
-  ~BreadcrumbManagerBrowserAgentTest() override { browser_.reset(); }
+  ~BreadcrumbManagerBrowserAgentTest() override {
+    overlay_presenter_->SetPresentationContext(nullptr);
+  }
 
   web::WebTaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
+  raw_ptr<OverlayPresenter> overlay_presenter_ = nullptr;
   FakeOverlayPresentationContext presentation_context_;
 };
 

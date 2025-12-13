@@ -44,6 +44,7 @@ inline constexpr size_t kDefaultSMBPageSizeBytes = 4 * 1024;
 // Returns true if the system tracing Perfetto producer should be setup. This
 // can be influenced by the feature above or other situations (like debug
 // android builds).
+// This function is safe to call even if feature flags are not yet initialized.
 bool COMPONENT_EXPORT(TRACING_CPP) ShouldSetupSystemTracing();
 
 // Returns true if the system tracing backend is available for background

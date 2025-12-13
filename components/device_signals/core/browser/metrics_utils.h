@@ -65,6 +65,13 @@ void LogSignalCollectionSucceeded(
 // CrowdStrike data.zta file.
 void LogCrowdStrikeParsingError(SignalsParsingError error);
 
+// Records that the system signals service was disconnected with a given number
+// of `pending_requests`.
+void LogSystemSignalCollectionDisconnect(size_t pending_requests);
+
+// Records that the system signals service is running in another process.
+void LogSystemSignalCollectionMissingPendingCallback();
+
 }  // namespace device_signals
 
 #endif  // COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_METRICS_UTILS_H_

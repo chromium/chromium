@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/policy/model/profile_policy_connector.h"
 
+#import "base/functional/callback_helpers.h"
 #import "components/policy/core/common/cloud/cloud_policy_store.h"
 #import "components/policy/core/common/local_test_policy_provider.h"
 #import "components/policy/core/common/policy_service_impl.h"
@@ -91,3 +92,12 @@ bool ProfilePolicyConnector::IsUsingLocalTestPolicyProvider() const {
 }
 
 void ProfilePolicyConnector::Shutdown() {}
+
+base::flat_set<std::string> ProfilePolicyConnector::GetUserAffiliationIds()
+    const {
+  if (!policy_store_ || !policy_store_->has_policy()) {
+    return {};
+  }
+  const auto& ids = policy_store_->policy()->user_affiliation_ids();
+  return {ids.begin(), ids.end()};
+}

@@ -20,8 +20,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -36,7 +35,6 @@ import org.chromium.chrome.browser.compositor.layouts.eventfilter.MotionEventHan
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.OverlayPanelEventFilter;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
-import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -53,7 +51,7 @@ import org.chromium.ui.resources.ResourceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.List;
+import java.util.function.Supplier;
 
 /** Controls the Overlay Panel. */
 @NullMarked
@@ -448,13 +446,15 @@ public class OverlayPanel extends OverlayPanelAnimation
     }
 
     /**
-     * Set the visibility of the base page text selection controls. This will also attempt to
-     * remove focus from the base page to clear any open controls.
+     * Set the visibility of the base page text selection controls. This will also attempt to remove
+     * focus from the base page to clear any open controls.
+     *
      * @param visible If the text controls are visible.
      */
     protected void setBasePageTextControlsVisibility(boolean visible) {
         if (mActivity == null) return;
-        if (!mCurrentTabSupplier.hasValue()) return;
+        var currentTab = mCurrentTabSupplier.get();
+        if (currentTab == null) return;
 
         WebContents baseWebContents = assumeNonNull(mCurrentTabSupplier.get()).getWebContents();
         if (baseWebContents == null) return;
@@ -984,7 +984,7 @@ public class OverlayPanel extends OverlayPanelAnimation
 
     @Override
     public @Nullable SceneOverlayLayer getUpdatedSceneOverlayTree(
-            RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
+            RectF viewport, RectF visibleViewport, ResourceManager resourceManager) {
         return null;
     }
 
@@ -1029,11 +1029,6 @@ public class OverlayPanel extends OverlayPanelAnimation
     }
 
     @Override
-    public void getVirtualViews(List<VirtualView> views) {
-        // TODO(mdjones): Add views for accessibility.
-    }
-
-    @Override
     public boolean handlesTabCreating() {
         // If the panel is not opened, do not handle tab creating.
         if (!isPanelOpened()) return false;
@@ -1065,7 +1060,7 @@ public class OverlayPanel extends OverlayPanelAnimation
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return isShowingSupplier();
     }
 

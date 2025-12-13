@@ -5,31 +5,14 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_IMPL_BROWSER_FEATURE_PROMO_CONTROLLER_20_H_
 #define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_IMPL_BROWSER_FEATURE_PROMO_CONTROLLER_20_H_
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller.h"
-#include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/feature_promo/impl/feature_promo_controller_20.h"
 #include "ui/base/interaction/element_identifier.h"
-
-namespace feature_engagement {
-class Tracker;
-}
 
 namespace ui {
 class TrackedElement;
 }  // namespace ui
-
-namespace user_education {
-class FeaturePromoRegistry;
-class FeaturePromoSessionPolicy;
-class UserEducationStorageService;
-class HelpBubbleFactoryRegistry;
-class ProductMessagingController;
-class TutorialService;
-}  // namespace user_education
-
-class BrowserView;
 
 // Browser implementation of FeaturePromoController for User Education 20.
 // There is one instance per browser window.
@@ -43,15 +26,7 @@ class BrowserFeaturePromoController20
  public:
   // Create the instance for the given |browser_view|. Prefer to call
   // `MaybeCreateForBrowserView()` instead.
-  BrowserFeaturePromoController20(
-      BrowserView* browser_view,
-      feature_engagement::Tracker* feature_engagement_tracker,
-      user_education::FeaturePromoRegistry* registry,
-      user_education::HelpBubbleFactoryRegistry* help_bubble_registry,
-      user_education::UserEducationStorageService* storage_service,
-      user_education::FeaturePromoSessionPolicy* session_policy,
-      user_education::TutorialService* tutorial_service,
-      user_education::ProductMessagingController* messaging_controller);
+  using BrowserFeaturePromoController::BrowserFeaturePromoController;
   ~BrowserFeaturePromoController20() override;
 
  protected:
@@ -59,7 +34,8 @@ class BrowserFeaturePromoController20
 
   // FeaturePromoController:
   user_education::FeaturePromoResult CanShowPromoForElement(
-      ui::TrackedElement* anchor_element) const override;
+      ui::TrackedElement* anchor_element,
+      const user_education::UserEducationContextPtr& context) const override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_IMPL_BROWSER_FEATURE_PROMO_CONTROLLER_20_H_

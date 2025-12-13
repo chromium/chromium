@@ -59,7 +59,7 @@ namespace {
 constexpr int kActionExampleVerticalSpacing = 3;
 constexpr int kActionExampleLeftPadding = 8;
 constexpr gfx::Insets kSeparatorPadding = gfx::Insets::TLBR(5, 0, 5, 0);
-const char* kBoolStrings[2] = {"false", "true"};
+constexpr const char* kBoolStrings[2] = {"false", "true"};
 
 #define MAP_ACTION_IDS_TO_STRINGS
 #include "ui/actions/action_id_macros.inc"
@@ -205,47 +205,6 @@ std::u16string ControlTypeComboboxModel::GetItemAt(size_t index) const {
   }
 }
 
-class FlowLayout : public LayoutManagerBase {
- public:
-  FlowLayout() = default;
-  FlowLayout(const FlowLayout&) = delete;
-  FlowLayout& operator=(const FlowLayout&) = delete;
-  ~FlowLayout() override = default;
-
- protected:
-  ProposedLayout CalculateProposedLayout(
-      const SizeBounds& size_bounds) const override;
-};
-
-ProposedLayout FlowLayout::CalculateProposedLayout(
-    const SizeBounds& size_bounds) const {
-  ProposedLayout layout;
-  int x = 0;
-  int y = 0;
-  int max_height = 0;
-  for (views::View* view : host_view()->children()) {
-    bool view_visible = view->GetVisible();
-    gfx::Size preferred_size = view->GetPreferredSize(size_bounds);
-    if (view_visible) {
-      max_height = std::max(max_height, preferred_size.height());
-      if (x > 0 && (x + preferred_size.width() > size_bounds.width())) {
-        x = 0;
-        y += max_height;
-        max_height = 0;
-      }
-    }
-    gfx::Rect proposed_bounds = gfx::Rect(gfx::Point(x, y), preferred_size);
-    SizeBounds available_bounds = SizeBounds(preferred_size);
-    ChildLayout child_layout = {view, view_visible, proposed_bounds,
-                                available_bounds};
-    layout.child_layouts.push_back(child_layout);
-    if (view_visible) {
-      x += preferred_size.width();
-    }
-  }
-  return layout;
-}
-
 }  // namespace
 
 ActionsExample::ActionsExample() : ExampleBase("Actions") {
@@ -264,9 +223,13 @@ void ActionsExample::CreateExampleView(View* container) {
           Builder<BoxLayoutView>()
               .SetOrientation(BoxLayout::Orientation::kHorizontal)
               .AddChildren(
-                  Builder<View>()
+                  Builder<BoxLayoutView>()
                       .CopyAddressTo(&action_panel_)
-                      .SetLayoutManager(std::make_unique<FlowLayout>())
+                      .SetOrientation(BoxLayout::Orientation::kVertical)
+                      .SetInsideBorderInsets(
+                          gfx::Insets::VH(kActionExampleVerticalSpacing,
+                                          kActionExampleLeftPadding))
+                      .SetBetweenChildSpacing(kActionExampleVerticalSpacing)
                       .SetBorder(CreateSolidBorder(
                           1, ui::kColorFocusableBorderUnfocused)),
                   Builder<BoxLayoutView>()
@@ -275,15 +238,7 @@ void ActionsExample::CreateExampleView(View* container) {
                       .SetInsideBorderInsets(
                           gfx::Insets::VH(kActionExampleVerticalSpacing,
                                           kActionExampleLeftPadding))
-                      .SetBetweenChildSpacing(kActionExampleVerticalSpacing))
-              .AfterBuild(base::BindOnce(
-                  [](raw_ptr<View>* action_panel,
-                     raw_ptr<BoxLayoutView>* control_panel,
-                     BoxLayoutView* box) {
-                    box->SetFlexForView((*action_panel).get(), 4);
-                    box->SetFlexForView((*control_panel).get(), 1);
-                  },
-                  &action_panel_, &control_panel_)))
+                      .SetBetweenChildSpacing(kActionExampleVerticalSpacing)))
       .BuildChildren();
 
   auto add_row = [this]() {
@@ -438,7 +393,7 @@ void ActionsExample::CreateActions(actions::ActionManager* manager) {
                            base::BindRepeating(&ActionsExample::ActionInvoked,
                                                base::Unretained(this)))
                            .SetText(u"Test Action 3")
-                           .SetActionId(kActionTest2))
+                           .SetActionId(kActionTest3))
           .Build(),
       actions::ActionItem::Builder()
           .AddChildren(

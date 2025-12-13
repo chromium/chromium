@@ -217,8 +217,10 @@ HRESULT MediaFoundationSourceWrapper::Start(
       continue;
     }
 
+    // TODO(crbug.com/460732308): Need to add unittest coverage to prevent
+    // regression in race condition where stream samples are processed in
+    // parallel just prior to stream start/seek event is sent.
     ComPtr<MediaFoundationStreamWrapper> stream = media_streams_[stream_id];
-    stream->SetFlushed(false);
     if (selected) {
       MediaEventType event_type = MENewStream;
       if (stream->IsSelected()) {
@@ -582,7 +584,7 @@ void MediaFoundationSourceWrapper::FlushStreams() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   for (auto stream : media_streams_) {
-    stream->SetFlushed(true);
+    stream->Flush();
   }
 }
 

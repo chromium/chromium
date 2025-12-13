@@ -61,18 +61,18 @@ class PaymentRequestWebContentsManagerTest : public testing::Test {
 TEST_F(PaymentRequestWebContentsManagerTest, SPCTransactionMode) {
   // The mode given to the PaymentRequest is exposed on its API.
   PaymentRequest* request1 =
-      CreateAndReturnPaymentRequest(SPCTransactionMode::NONE);
-  ASSERT_EQ(request1->spc_transaction_mode(), SPCTransactionMode::NONE);
+      CreateAndReturnPaymentRequest(SPCTransactionMode::kNone);
+  ASSERT_EQ(request1->spc_transaction_mode(), SPCTransactionMode::kNone);
   PaymentRequest* request2 =
-      CreateAndReturnPaymentRequest(SPCTransactionMode::AUTOACCEPT);
-  ASSERT_EQ(request2->spc_transaction_mode(), SPCTransactionMode::AUTOACCEPT);
+      CreateAndReturnPaymentRequest(SPCTransactionMode::kAutoAccept);
+  ASSERT_EQ(request2->spc_transaction_mode(), SPCTransactionMode::kAutoAccept);
   PaymentRequest* request3 =
-      CreateAndReturnPaymentRequest(SPCTransactionMode::AUTOREJECT);
-  ASSERT_EQ(request3->spc_transaction_mode(), SPCTransactionMode::AUTOREJECT);
+      CreateAndReturnPaymentRequest(SPCTransactionMode::kAutoReject);
+  ASSERT_EQ(request3->spc_transaction_mode(), SPCTransactionMode::kAutoReject);
 
   // Check that already-created PaymentRequests were not altered.
-  ASSERT_EQ(request1->spc_transaction_mode(), SPCTransactionMode::NONE);
-  ASSERT_EQ(request2->spc_transaction_mode(), SPCTransactionMode::AUTOACCEPT);
+  ASSERT_EQ(request1->spc_transaction_mode(), SPCTransactionMode::kNone);
+  ASSERT_EQ(request2->spc_transaction_mode(), SPCTransactionMode::kAutoAccept);
 }
 
 TEST_F(PaymentRequestWebContentsManagerTest, HadActivationlessShow) {

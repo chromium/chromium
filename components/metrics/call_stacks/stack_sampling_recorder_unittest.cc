@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/metrics/call_stacks/stack_sampling_recorder.h"
 
 #include <sys/file.h>
@@ -15,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -75,6 +71,8 @@ class StackSamplingRecorderTest : public testing::Test {
   base::FilePath output_path_;
   scoped_refptr<TestingStackSamplingRecorder> recorder_;
 };
+
+namespace {
 
 TEST_F(StackSamplingRecorderTest, ProducesValidFile) {
   metrics::CallStackProfileMetricsProvider::ProcessThreadCount counts;
@@ -256,7 +254,7 @@ static void LockFileAndPreventChange(base::FilePath path,
                             base::File::FLAG_WRITE);
   CHECK(file.IsValid());
   constexpr char kPattern[] = "Not a valid proto";
-  CHECK_EQ(file.Write(0, kPattern, sizeof(kPattern)),
+  CHECK_EQ(UNSAFE_TODO(file.Write(0, kPattern, sizeof(kPattern))),
            static_cast<int>(sizeof(kPattern)));
 
   // 2. Lock the file
@@ -277,8 +275,8 @@ static void LockFileAndPreventChange(base::FilePath path,
 
   // 5. CHECK that the file still contains the original pattern.
   char buffer[sizeof(kPattern) + 1];
-  CHECK_EQ(file.Read(0, buffer, sizeof(buffer)),
-           static_cast<int>(sizeof(kPattern)));
+  UNSAFE_TODO(CHECK_EQ(file.Read(0, buffer, sizeof(buffer)),
+                       static_cast<int>(sizeof(kPattern))));
   CHECK_EQ(std::string(buffer), std::string(kPattern));
 }
 
@@ -339,4 +337,5 @@ TEST_F(StackSamplingRecorderTest, DoesNotWriteToLockedFile) {
             17);
 }
 
+}  // namespace
 }  // namespace metrics

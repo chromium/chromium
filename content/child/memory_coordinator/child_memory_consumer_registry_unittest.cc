@@ -29,6 +29,10 @@ using ConsumerInfo = ChildMemoryConsumerRegistry::ConsumerInfo;
 class DummyBrowserMemoryConsumerRegistry
     : public mojom::BrowserMemoryConsumerRegistry {
  public:
+  explicit DummyBrowserMemoryConsumerRegistry(
+      mojo::PendingReceiver<mojom::BrowserMemoryConsumerRegistry> receiver)
+      : receiver_(this, std::move(receiver)) {}
+
   // mojom::BrowserMemoryConsumerRegistry:
   void RegisterChildMemoryConsumer(
       const std::string& consumer_id,
@@ -44,7 +48,7 @@ class DummyBrowserMemoryConsumerRegistry
   }
 
  private:
-  mojo::Receiver<mojom::BrowserMemoryConsumerRegistry> receiver_{this};
+  mojo::Receiver<mojom::BrowserMemoryConsumerRegistry> receiver_;
 
   mojo::RemoteSet<mojom::ChildMemoryConsumer> remote_set_;
 };
@@ -55,15 +59,15 @@ const base::MemoryConsumerTraits kTestTraits1{};
 
 class ChildMemoryConsumerRegistryTest : public testing::Test {
  protected:
-  ChildMemoryConsumerRegistryTest()
-      : registry_(browser_registry_.BindNewPipeAndPassRemote()) {}
-
   ChildMemoryConsumerRegistry* registry() { return &registry_; }
+
+  std::unique_ptr<DummyBrowserMemoryConsumerRegistry> CreateBrowserRegistry() {
+    return std::make_unique<DummyBrowserMemoryConsumerRegistry>(
+        registry_.BindAndPassReceiverForTesting());
+  }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DummyBrowserMemoryConsumerRegistry browser_registry_;
 
   ChildMemoryConsumerRegistry registry_;
 };
@@ -104,6 +108,53 @@ TEST_F(ChildMemoryConsumerRegistryTest, Iterator) {
 
   // Remove the consumer.
   registry()->RemoveMemoryConsumer("consumer", &consumer);
+}
+
+// Same as ChildMemoryConsumerRegistryTest.LocalConsumer, but the consumer is
+// added after the bind to the browser registry, and removed while the receiver
+// still exists.
+TEST_F(ChildMemoryConsumerRegistryTest, BindBrowser_Initial) {
+  auto browser_registry = CreateBrowserRegistry();
+
+  base::MockMemoryConsumer consumer;
+
+  // Add the consumer.
+  registry()->AddMemoryConsumer("consumer", kTestTraits1, &consumer);
+  ASSERT_EQ(registry()->size(), 1u);
+
+  ConsumerInfo& consumer_info = *registry()->begin();
+
+  // // Notify the consumer.
+  EXPECT_CALL(consumer, OnReleaseMemory());
+  consumer_info.consumer.ReleaseMemory();
+  testing::Mock::VerifyAndClearExpectations(&consumer);
+
+  // Remove the consumer.
+  registry()->RemoveMemoryConsumer("consumer", &consumer);
+  ASSERT_EQ(registry()->size(), 0u);
+}
+
+// Same as ChildMemoryConsumerRegistryTest.LocalConsumer, but the consumer is
+// added before the bind to the browser registry, but removed after.
+TEST_F(ChildMemoryConsumerRegistryTest, BindBrowser_AfterRegisteredConsumer) {
+  base::MockMemoryConsumer consumer;
+
+  // Add the consumer.
+  registry()->AddMemoryConsumer("consumer", kTestTraits1, &consumer);
+  ASSERT_EQ(registry()->size(), 1u);
+
+  ConsumerInfo& consumer_info = *registry()->begin();
+
+  // // Notify the consumer.
+  EXPECT_CALL(consumer, OnReleaseMemory());
+  consumer_info.consumer.ReleaseMemory();
+  testing::Mock::VerifyAndClearExpectations(&consumer);
+
+  auto browser_registry = CreateBrowserRegistry();
+
+  // Remove the consumer.
+  registry()->RemoveMemoryConsumer("consumer", &consumer);
+  ASSERT_EQ(registry()->size(), 0u);
 }
 
 }  // namespace content

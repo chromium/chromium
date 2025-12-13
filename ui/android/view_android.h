@@ -67,6 +67,8 @@ class UI_ANDROID_EXPORT ViewAndroid {
   using CopyViewCallback =
       base::RepeatingCallback<void(std::unique_ptr<viz::CopyOutputRequest>)>;
 
+  using HitTestCallback = base::RepeatingCallback<bool()>;
+
   // Stores an anchored view to delete itself at the end of its lifetime
   // automatically. This helps manage the lifecyle without the dependency
   // on |ViewAndroid|.
@@ -193,6 +195,7 @@ class UI_ANDROID_EXPORT ViewAndroid {
   void OnVerticalScrollDirectionChanged(bool direction_up,
                                         float current_scroll_ratio);
   void OnControlsResizeViewChanged(bool controls_resize_view);
+  void DispatchWindowPositionChange();
 
   // Gets the Visual Viewport inset to apply in physical pixels.
   int GetViewportInsetBottom();
@@ -224,6 +227,8 @@ class UI_ANDROID_EXPORT ViewAndroid {
   std::unique_ptr<viz::CopyOutputRequest> MaybeRequestCopyOfView(
       std::unique_ptr<viz::CopyOutputRequest> request);
 
+  void SetHitTestCallback(HitTestCallback callback);
+
   void set_event_handler(EventHandlerAndroid* handler) {
     event_handler_ = handler;
   }
@@ -236,8 +241,6 @@ class UI_ANDROID_EXPORT ViewAndroid {
 
   void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect);
 
-  void NotifyContextMenuInsetsObservers(const gfx::Rect&);
-
   void ShowInterestInElement(int);
 
   void SetLayoutForTesting(int x, int y, int width, int height);
@@ -247,6 +250,15 @@ class UI_ANDROID_EXPORT ViewAndroid {
   size_t GetChildrenCountForTesting() const;
 
   const ViewAndroid* GetTopMostChildForTesting() const;
+
+  void SetIsHitTestEligible(bool is_hit_test_eligible) {
+    is_hit_test_eligible_ = is_hit_test_eligible;
+  }
+
+  // Checks whether the view is eligible for a Check Hit. This checks the
+  // visibility of the view so that we make sure that we do not send a touch
+  // event to a prerendered (and hidden) view.
+  bool IsCheckHitEligible() const;
 
  protected:
   void RemoveAllChildren(bool attached_to_window);
@@ -348,7 +360,17 @@ class UI_ANDROID_EXPORT ViewAndroid {
   // Copy output of View rather than window.
   CopyViewCallback copy_view_callback_;
 
+  // Conducts additional HitTest check to determine if a HitTest can actually
+  // be sent to the view.
+  HitTestCallback hit_test_callback_;
+
   bool controls_resize_view_ = false;
+
+  // Whether the view is showing. This is used to check if the view is eligible
+  // for a Check Hit.
+  // TODO(crbug.com/442832509): Replace this temporary fix in favor of
+  // a more clean solution by checking the existence of the parent for the view.
+  bool is_hit_test_eligible_ = false;
 };
 
 }  // namespace ui

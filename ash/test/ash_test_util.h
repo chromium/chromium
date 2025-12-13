@@ -160,7 +160,7 @@ std::string StableHashOfCollection(const Range& range, Proj proj = {}) {
   }
   std::array<uint8_t, crypto::hash::kSha256Size> hash;
   hasher.Finish(hash);
-  return base::ToLowerASCII(base::HexEncode(base::as_string_view(hash)));
+  return base::HexEncodeLower(hash);
 }
 
 }  // namespace ash

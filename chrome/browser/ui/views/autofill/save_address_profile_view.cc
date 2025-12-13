@@ -47,7 +47,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
@@ -114,7 +114,7 @@ std::unique_ptr<views::View> CreateStreetAddressView(
 }  // namespace
 
 SaveAddressProfileView::SaveAddressProfileView(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor_view,
     std::unique_ptr<SaveAddressBubbleController> controller,
     content::WebContents* web_contents)
     : AddressBubbleBaseView(anchor_view, web_contents),
@@ -135,9 +135,7 @@ SaveAddressProfileView::SaveAddressProfileView(
   SetTitle(controller_->GetWindowTitle());
   SetButtonLabel(ui::mojom::DialogButton::kOk, controller_->GetOkButtonLabel());
   SetButtonLabel(ui::mojom::DialogButton::kCancel,
-                 l10n_util::GetStringUTF16(
-                     IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL));
-
+                 controller_->GetNegativeButtonLabel());
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       views::LayoutProvider::Get()->GetDistanceMetric(

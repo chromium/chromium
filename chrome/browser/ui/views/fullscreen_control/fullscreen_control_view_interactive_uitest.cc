@@ -22,6 +22,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/fullscreen_control/fullscreen_control_view.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -85,10 +86,12 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
             [](content::RenderFrameHost* render_frame_host,
                content::PermissionRequestDescription request_description,
                base::OnceCallback<void(
-                   const std::vector<content::PermissionStatus>&)> callback) {
-              std::move(callback).Run(std::vector<content::PermissionStatus>(
+                   const std::vector<content::PermissionResult>&)> callback) {
+              std::move(callback).Run(std::vector<content::PermissionResult>(
                   request_description.permissions.size(),
-                  content::PermissionStatus::GRANTED));
+                  content::PermissionResult(
+                      content::PermissionStatus::GRANTED,
+                      content::PermissionStatusSource::UNSPECIFIED)));
             });
   }
 
@@ -100,9 +103,7 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
 
  protected:
   FullscreenControlHost* GetFullscreenControlHost() {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->fullscreen_control_host_for_test();
+    return browser()->GetFeatures().fullscreen_control_host();
   }
 
   FullscreenControlView* GetFullscreenControlView() {
@@ -120,7 +121,7 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
   ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->exclusive_access_bubble();
+    return browser_view->GetExclusiveAccessBubble();
   }
 
   KeyboardLockController* GetKeyboardLockController() {
@@ -182,6 +183,8 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
     return &GetFullscreenControlHost()->popup_timeout_timer_;
   }
 
+  bool IsInFullScreen() { return !!GetFullscreenControlHost()->event_monitor_; }
+
   void RunLoopUntilVisibilityChanges() {
     base::RunLoop run_loop;
     SetPopupVisibilityChangedCallback(run_loop.QuitClosure());
@@ -240,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, MouseExitFullscreen) {
   views::test::ButtonTestApi(GetFullscreenExitButton())
       .NotifyClick(mouse_click);
 
-  ASSERT_FALSE(GetFullscreenControlHost());
+  ASSERT_FALSE(IsInFullScreen());
   ASSERT_FALSE(browser_view->IsFullscreen());
 }
 
@@ -427,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, TouchPopupInteraction) {
   views::test::ButtonTestApi(GetFullscreenExitButton())
       .NotifyClick(touch_event);
 
-  ASSERT_FALSE(GetFullscreenControlHost());
+  ASSERT_FALSE(IsInFullScreen());
   ASSERT_FALSE(browser_view->IsFullscreen());
 }
 

@@ -545,5 +545,25 @@ base::TimeDelta GetHardwareLatency(AudioUnit audio_unit,
   return total_latency;
 }
 
+std::optional<AudioDeviceID> GetDefaultDevice(bool input) {
+  // Obtain the AudioDeviceID of the default input or output AudioDevice.
+  AudioObjectPropertyAddress pa;
+  pa.mSelector = input ? kAudioHardwarePropertyDefaultInputDevice
+                       : kAudioHardwarePropertyDefaultOutputDevice;
+  pa.mScope = kAudioObjectPropertyScopeGlobal;
+  pa.mElement = kAudioObjectPropertyElementMain;
+
+  AudioDeviceID device;
+
+  UInt32 size = sizeof(AudioDeviceID);
+  OSStatus result = AudioObjectGetPropertyData(kAudioObjectSystemObject, &pa, 0,
+                                               nullptr, &size, &device);
+  if (result != kAudioHardwareNoError || device == kAudioDeviceUnknown) {
+    DLOG(ERROR) << "Error getting default AudioDevice.";
+    return std::nullopt;
+  }
+  return device;
+}
+
 }  // namespace core_audio_mac
 }  // namespace media

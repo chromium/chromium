@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef CHROMEOS_ASH_COMPONENTS_KCER_CHAPS_HIGH_LEVEL_CHAPS_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_KCER_CHAPS_HIGH_LEVEL_CHAPS_CLIENT_H_
 
@@ -14,6 +9,7 @@
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
@@ -39,7 +35,7 @@ template <typename T>
 COMPONENT_EXPORT(KCER)
 base::span<const uint8_t> MakeSpan(T* value) {
   static_assert(std::is_integral_v<T>);
-  return base::as_bytes(base::span<T>(value, /*count=*/1u));
+  return base::as_bytes(UNSAFE_TODO(base::span<T>(value, /*count=*/1u)));
 }
 
 // The main class to communicate with Chaps. Further simplifies the D-Bus

@@ -6,6 +6,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
@@ -110,6 +111,18 @@ std::string_view GetStringNameForModelExecutionFeature(
       return "ZeroStateSuggestions";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PROOFREADER_API:
       return "ProofreaderApi";
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_WALLETABLE_PASS_EXTRACTION:
+      return "WalletablePassExtraction";
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_AMOUNT_EXTRACTION:
+      return "AmountExtraction";
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION:
+      return "OnDeviceSpeechRecognition";
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_IOS_SMART_TAB_GROUPING:
+      return "IosSmartTabGrouping";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       return "Unknown";
       // Must be in sync with the ModelExecutionFeature variant in

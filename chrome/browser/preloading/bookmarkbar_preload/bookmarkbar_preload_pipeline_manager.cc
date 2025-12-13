@@ -11,48 +11,60 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(BookmarkBarPreloadPipelineManager);
-
 BookmarkBarPreloadPipelineManager::BookmarkBarPreloadPipelineManager(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<BookmarkBarPreloadPipelineManager>(
-          *web_contents) {}
+    : content::WebContentsObserver(web_contents) {}
 
 BookmarkBarPreloadPipelineManager::~BookmarkBarPreloadPipelineManager() =
     default;
 
-// static
-BookmarkBarPreloadPipelineManager*
-BookmarkBarPreloadPipelineManager::GetOrCreateForWebContents(
-    content::WebContents* web_contents) {
-  auto* bookmarkbar_preload_manager =
-      BookmarkBarPreloadPipelineManager::FromWebContents(web_contents);
-  if (!bookmarkbar_preload_manager) {
-    BookmarkBarPreloadPipelineManager::CreateForWebContents(web_contents);
-    bookmarkbar_preload_manager =
-        BookmarkBarPreloadPipelineManager::FromWebContents(web_contents);
-  }
+void BookmarkBarPreloadPipelineManager::StartPrefetch(const GURL& url) {
+  EnsurePipelineForUrl(url);
+  pipeline_->StartPrefetch(
+      *web_contents(),
+      chrome_preloading_predictor::kMouseHoverOrMouseDownOnBookmarkBar);
 
-  return bookmarkbar_preload_manager;
+  if (on_prefetch_completed_or_failed_for_testing_) {
+    pipeline_->SetOnPrefetchCompletedOrFailedCallbackForTesting(  // IN-TEST
+        std::move(on_prefetch_completed_or_failed_for_testing_));
+  }
 }
 
 void BookmarkBarPreloadPipelineManager::StartPrerender(const GURL& url) {
-  if (pipeline_) {
-    // TODO(https://crbug.com/413259638) Adds back the CHECK which checks `url
-    // == pipeline_->url()` when the investigation is done. Prerender is
-    // expected to be reset when mouseExit happens or every primary page
-    // changed, so if a pipeline is present, the url is expected to be the same.
-    // But the CHECK is causing https://crbug.com/425612820 unexpectedly, the
-    // CHECK is removed at the moment.
-    return;
+  EnsurePipelineForUrl(url);
+  pipeline_->StartPrerender(
+      *web_contents(),
+      chrome_preloading_predictor::kMouseHoverOrMouseDownOnBookmarkBar);
+}
+
+void BookmarkBarPreloadPipelineManager::EnsurePipelineForUrl(const GURL& url) {
+  if (pipeline_ && pipeline_->url() != url) {
+    pipeline_.reset();
   }
 
-  pipeline_ = std::make_unique<BookmarkBarPreloadPipeline>(url);
-  if (!pipeline_->StartPrerender(
-          *web_contents(),
-          chrome_preloading_predictor::kMouseHoverOrMouseDownOnBookmarkBar)) {
-    pipeline_.reset();
+  if (!pipeline_) {
+    pipeline_ = std::make_unique<BookmarkBarPreloadPipeline>(url);
+  }
+}
+
+void BookmarkBarPreloadPipelineManager::
+    SetOnPrefetchCompletedOrFailedCallbackForTesting(
+        base::RepeatingCallback<
+            void(const network::URLLoaderCompletionStatus& completion_status,
+                 const std::optional<int>& response_code)>
+            on_prefetch_completed_or_failed) {
+  if (pipeline_) {
+    pipeline_->SetOnPrefetchCompletedOrFailedCallbackForTesting(  // IN-TEST
+        on_prefetch_completed_or_failed);
+  } else {
+    // This callback is used in tests only. Since the test triggers
+    // preloading by mouse events, and it is currently no way to sync between
+    // setting the callback and triggering preloading. If pipeline hasn't been
+    // triggered yet, buffer the callback function for the upcoming trigger.
+    // This is necessary for
+    // PreloadBookmarkBarPrefetchEnabledPrerenderEnabledNavigationTest.*
+    on_prefetch_completed_or_failed_for_testing_ =
+        std::move(on_prefetch_completed_or_failed);
   }
 }
 
@@ -69,5 +81,7 @@ void BookmarkBarPreloadPipelineManager::DidFinishNavigation(
 }
 
 void BookmarkBarPreloadPipelineManager::ResetPrerender() {
-  pipeline_.reset();
+  if (pipeline_) {
+    pipeline_->ResetPrerender();
+  }
 }

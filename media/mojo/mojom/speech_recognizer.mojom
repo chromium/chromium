@@ -95,7 +95,6 @@ interface OnDeviceSpeechRecognition {
 // SpeechRecognizer::Start, and is bound to an implementation there.
 // SpeechRecognitionSession and SpeechRecognitionSessionClient are 1:1 with each
 // other and with WebSpeechRecognitionHandle.
-[Stable]
 interface SpeechRecognitionSession {
   // Requests the speech recognition service to abort speech recognition for the
   // associated session.
@@ -117,7 +116,6 @@ interface SpeechRecognitionSession {
 // process via SpeechRecognizer::Start. SpeechRecognitionSession and
 // SpeechRecognitionSessionClient are 1:1 with each other and with
 // WebSpeechRecognitionHandle.
-[Stable]
 interface SpeechRecognitionSessionClient {
   // Called to dispatch the "result" event.
   ResultRetrieved@0(array<WebSpeechRecognitionResult> results);

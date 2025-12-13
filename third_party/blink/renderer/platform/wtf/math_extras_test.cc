@@ -27,7 +27,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace WTF {
+namespace blink {
 
 TEST(MathExtrasTest, Lrint) {
   EXPECT_EQ(-8, lrint(-7.5));
@@ -238,4 +238,4 @@ TEST(MathExtrasTest, infinityMath) {
   EXPECT_EQ(1.0, pow(nan, 0.0));
 }
 
-}  // namespace WTF
+}  // namespace blink

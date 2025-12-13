@@ -5,10 +5,8 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_SHORTCUTS_PROVIDER_H_
 #define COMPONENTS_OMNIBOX_BROWSER_SHORTCUTS_PROVIDER_H_
 
-#include <map>
 #include <string>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/shortcuts_backend.h"

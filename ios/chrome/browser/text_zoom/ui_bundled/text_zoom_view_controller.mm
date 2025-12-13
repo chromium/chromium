@@ -54,6 +54,7 @@ const CGFloat kDividerWidth = 1;
   [super viewDidLoad];
 
   self.view.translatesAutoresizingMaskIntoConstraints = NO;
+  self.view.accessibilityIdentifier = kTextZoomViewAccessibilityIdentifier;
 
   [self.view addSubview:self.resetButton];
   [self.view addSubview:self.centerItemsStackView];
@@ -115,6 +116,8 @@ const CGFloat kDividerWidth = 1;
     _resetButton = [self newButtonWithDefaultStyling];
     [_resetButton setTitle:l10n_util::GetNSString(IDS_IOS_RESET_ZOOM)
                   forState:UIControlStateNormal];
+    _resetButton.accessibilityIdentifier =
+        kTextZoomResetButtonAccessibilityIdentifier;
     [_resetButton addTarget:self.zoomHandler
                      action:@selector(resetZoom)
            forControlEvents:UIControlEventTouchUpInside];
@@ -129,6 +132,8 @@ const CGFloat kDividerWidth = 1;
     UIImage* image = [UIImage imageNamed:@"text_zoom_zoom_in"];
     image.accessibilityLabel =
         l10n_util::GetNSString(IDS_IOS_TEXT_ZOOM_ZOOM_IN);
+    _incrementButton.accessibilityIdentifier =
+        kTextZoomIncreaseButtonAccessibilityIdentifier;
     [_incrementButton setImage:image forState:UIControlStateNormal];
     [_incrementButton addTarget:self.zoomHandler
                          action:@selector(zoomIn)
@@ -149,6 +154,8 @@ const CGFloat kDividerWidth = 1;
     UIImage* image = [UIImage imageNamed:@"text_zoom_zoom_out"];
     image.accessibilityLabel =
         l10n_util::GetNSString(IDS_IOS_TEXT_ZOOM_ZOOM_OUT);
+    _decrementButton.accessibilityIdentifier =
+        kTextZoomDecreaseButtonAccessibilityIdentifier;
     [_decrementButton setImage:image forState:UIControlStateNormal];
     [_decrementButton addTarget:self.zoomHandler
                          action:@selector(zoomOut)

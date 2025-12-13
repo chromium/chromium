@@ -64,7 +64,7 @@ WebContents* ChromeWebContentsHandler::OpenURLFromTab(
   } else {
     nav_params.disposition = params.disposition;
   }
-  nav_params.window_action = NavigateParams::SHOW_WINDOW;
+  nav_params.window_action = NavigateParams::WindowAction::kShowWindow;
   base::WeakPtr<content::NavigationHandle> navigation_handle =
       Navigate(&nav_params);
   if (navigation_handle_callback && navigation_handle) {
@@ -115,7 +115,7 @@ void ChromeWebContentsHandler::AddNewContents(
   params.source_contents = source;
   params.disposition = disposition;
   params.window_features = window_features;
-  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.window_action = NavigateParams::WindowAction::kShowWindow;
   params.user_gesture = user_gesture;
   Navigate(&params);
 

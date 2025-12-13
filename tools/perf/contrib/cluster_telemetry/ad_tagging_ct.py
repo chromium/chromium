@@ -54,6 +54,8 @@ class AdTaggingClusterTelemetry(perf_benchmark.PerfBenchmark):
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
     category_filter = chrome_trace_category_filter.CreateLowOverheadFilter()
+    category_filter.AddDisabledByDefault(
+        'disabled-by-default-histogram_samples')
     if self.enable_memory_metric:
       tbm_options = memory.CreateCoreTimelineBasedMemoryMeasurementOptions()
 
@@ -81,6 +83,7 @@ class AdTaggingClusterTelemetry(perf_benchmark.PerfBenchmark):
       tbm_options.config.chrome_trace_config.EnableUMAHistograms(histogram)
 
     tbm_options.AddTimelineBasedMetric('umaMetric')
+    tbm_options.AddTimelineBasedMetric('tbmv3:uma_metrics')
     if self.enable_limited_cpu_time_metric:
       tbm_options.AddTimelineBasedMetric('limitedCpuTimeMetric')
 

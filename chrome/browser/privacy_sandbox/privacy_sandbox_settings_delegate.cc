@@ -252,7 +252,7 @@ TpcdExperimentEligibility PrivacySandboxSettingsDelegate::
 
   // Whether it's a dasher account.
   if (tpcd::experiment::kExcludeDasherAccount.Get() &&
-      IsSubjectToEnterprisePolicies()) {
+      IsSubjectToEnterpriseFeatures()) {
     return TpcdExperimentEligibility(
         TpcdExperimentEligibility::Reason::kEnterpriseUser);
   }
@@ -286,7 +286,7 @@ TpcdExperimentEligibility PrivacySandboxSettingsDelegate::
       TpcdExperimentEligibility::Reason::kEligible);
 }
 
-bool PrivacySandboxSettingsDelegate::IsSubjectToEnterprisePolicies() const {
+bool PrivacySandboxSettingsDelegate::IsSubjectToEnterpriseFeatures() const {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   if (!identity_manager ||
       !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
@@ -299,7 +299,7 @@ bool PrivacySandboxSettingsDelegate::IsSubjectToEnterprisePolicies() const {
       identity_manager->FindExtendedPrimaryAccountInfo(
           signin::ConsentLevel::kSignin);
   auto capability =
-      account_info.capabilities.is_subject_to_enterprise_policies();
+      account_info.capabilities.is_subject_to_enterprise_features();
   return capability == signin::Tribool::kTrue;
 }
 
@@ -310,46 +310,6 @@ void PrivacySandboxSettingsDelegate::OverrideWebappRegistryForTesting(
   webapp_registry_ = std::move(webapp_registry);
 }
 #endif
-
-bool PrivacySandboxSettingsDelegate::IsCookieDeprecationLabelAllowed() const {
-  if (!IsCookieDeprecationExperimentEligible()) {
-    return false;
-  }
-
-  auto* tracking_protection_onboarding =
-      TrackingProtectionOnboardingFactory::GetForProfile(profile_);
-  if (!tracking_protection_onboarding) {
-    return false;
-  }
-
-  if (tpcd::experiment::kDisable3PCookies.Get()) {
-    switch (tracking_protection_onboarding->GetOnboardingStatus()) {
-      case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
-          kIneligible:
-        return false;
-      case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
-          kEligible:
-        return !tpcd::experiment::kNeedOnboardingForLabel.Get();
-      case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
-          kOnboarded:
-        return true;
-    }
-  } else if (tpcd::experiment::kEnableSilentOnboarding.Get()) {
-    switch (tracking_protection_onboarding->GetSilentOnboardingStatus()) {
-      case privacy_sandbox::TrackingProtectionOnboarding::
-          SilentOnboardingStatus::kIneligible:
-        return false;
-      case privacy_sandbox::TrackingProtectionOnboarding::
-          SilentOnboardingStatus::kEligible:
-        return !tpcd::experiment::kNeedOnboardingForLabel.Get();
-      case privacy_sandbox::TrackingProtectionOnboarding::
-          SilentOnboardingStatus::kOnboarded:
-        return true;
-    }
-  } else {
-    return true;
-  }
-}
 
 bool PrivacySandboxSettingsDelegate::
     AreThirdPartyCookiesBlockedByCookieDeprecationExperiment() const {
@@ -385,18 +345,8 @@ bool PrivacySandboxSettingsDelegate::
 
   // Respect user preferences.
 
-  auto* tracking_protection_settings =
-      TrackingProtectionSettingsFactory::GetForProfile(profile_);
-  if (tracking_protection_settings &&
-      tracking_protection_settings->AreAllThirdPartyCookiesBlocked()) {
-    return false;
-  }
-
-  const auto cookie_controls_mode =
-      static_cast<content_settings::CookieControlsMode>(
-          profile_->GetPrefs()->GetInteger(prefs::kCookieControlsMode));
-
-  if (cookie_controls_mode ==
+  if (static_cast<content_settings::CookieControlsMode>(
+          profile_->GetPrefs()->GetInteger(prefs::kCookieControlsMode)) ==
       content_settings::CookieControlsMode::kBlockThirdParty) {
     return false;
   }

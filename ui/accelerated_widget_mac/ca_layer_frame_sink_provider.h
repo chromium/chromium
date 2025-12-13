@@ -8,7 +8,7 @@
 #include <UIKit/UIKit.h>
 
 #include "build/build_config.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if !BUILDFLAG(IS_IOS_TVOS)
 #include <BrowserEngineKit/BrowserEngineKit.h>

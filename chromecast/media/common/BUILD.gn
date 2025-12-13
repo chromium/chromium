@@ -40,7 +40,7 @@ cast_source_set("media_pipeline_backend_manager") {
     ":media_resource_tracker",
     "//base",
     "//chromecast:chromecast_buildflags",
-    "//chromecast/base/metrics:metrics",
+    "//chromecast/base/metrics",
     "//chromecast/media/common/base",
   ]
 

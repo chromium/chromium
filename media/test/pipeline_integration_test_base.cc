@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -54,6 +55,10 @@
 #include "media/filters/hls_manifest_demuxer_engine.h"
 #include "media/filters/manifest_demuxer.h"
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
+
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+#include "media/filters/symphonia_audio_decoder.h"
+#endif
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -129,6 +134,11 @@ static std::vector<std::unique_ptr<AudioDecoder>> CreateAudioDecodersForTest(
     audio_decoders = prepend_audio_decoders_cb.Run();
     DCHECK(!audio_decoders.empty());
   }
+
+#if BUILDFLAG(ENABLE_SYMPHONIA)
+  audio_decoders.push_back(
+      std::make_unique<SymphoniaAudioDecoder>(media_task_runner, media_log));
+#endif
 
 #if BUILDFLAG(ENABLE_FFMPEG)
   audio_decoders.push_back(
@@ -409,10 +419,10 @@ PipelineStatus PipelineIntegrationTestBase::Start(
                        prepend_audio_decoders_cb);
 }
 
-PipelineStatus PipelineIntegrationTestBase::Start(const uint8_t* data,
-                                                  size_t size,
-                                                  uint8_t test_type) {
-  return StartInternal(std::make_unique<MemoryDataSource>(data, size), nullptr,
+PipelineStatus PipelineIntegrationTestBase::Start(
+    base::span<const uint8_t> data,
+    uint8_t test_type) {
+  return StartInternal(std::make_unique<MemoryDataSource>(data), nullptr,
                        test_type);
 }
 
@@ -594,7 +604,7 @@ std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateRendererImpl(
       task_environment_.GetMainThreadTaskRunner(), video_sink_.get(),
       base::BindRepeating(&CreateVideoDecodersForTest, &media_log_,
                           prepend_video_decoders_cb_),
-      false, &media_log_, nullptr, 0);
+      false, &media_log_, nullptr, MediaPlayerLoggingID(0));
 
   if (!clockless_playback_) {
     DCHECK(!mono_output_) << " NullAudioSink doesn't specify output parameters";
@@ -628,7 +638,7 @@ std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateRendererImpl(
       base::BindRepeating(&CreateAudioDecodersForTest, &media_log_,
                           task_environment_.GetMainThreadTaskRunner(),
                           prepend_audio_decoders_cb_),
-      &media_log_, 0, nullptr);
+      &media_log_, MediaPlayerLoggingID(0), nullptr);
   if (hashing_enabled_) {
     if (clockless_playback_)
       clockless_audio_sink_->StartAudioHashForTesting();
@@ -685,7 +695,7 @@ std::string PipelineIntegrationTestBase::GetVideoHash() {
   DCHECK(hashing_enabled_);
   std::array<uint8_t, crypto::hash::kSha256Size> digest;
   hash_context_->Finish(digest);
-  return base::ToLowerASCII(base::HexEncode(digest));
+  return base::HexEncodeLower(digest);
 }
 
 const AudioHash& PipelineIntegrationTestBase::GetAudioHash() const {

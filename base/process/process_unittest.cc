@@ -251,6 +251,13 @@ TEST_F(ProcessTest, Terminate) {
 #endif
 }
 
+TEST_F(ProcessTest, TerminateProcessForBadMessage) {
+  Process process(SpawnChild("SleepyChildProcess"));
+  ASSERT_TRUE(process.IsValid());
+  int exit_code = Process::kResultCodeKilledBadMessage;
+  EXPECT_TRUE(process.Terminate(exit_code, /* wait= */ false));
+}
+
 void AtExitHandler(void*) {
   // At-exit handler should not be called at
   // Process::TerminateCurrentProcessImmediately.

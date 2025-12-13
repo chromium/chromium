@@ -80,7 +80,7 @@ suite('reimagingCalibrationSetupPageTest', function() {
     assertEquals(
         loadTimeData.getString('calibrateBaseInstructionsText'),
         strictQuery(instructionsSelector, component.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
     assertEquals(
         'chrome://shimless-rma/illustrations/base_on_flat_surface.svg',
         strictQuery('img', component.shadowRoot, HTMLImageElement).src);
@@ -96,7 +96,7 @@ suite('reimagingCalibrationSetupPageTest', function() {
     assertEquals(
         loadTimeData.getString('calibrateLidInstructionsText'),
         strictQuery(instructionsSelector, component.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
     assertEquals(
         'chrome://shimless-rma/illustrations/lid_on_flat_surface.svg',
         strictQuery('img', component.shadowRoot, HTMLImageElement).src);

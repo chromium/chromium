@@ -42,7 +42,7 @@ enum TypesettingFeature {
 
 typedef unsigned TypesettingFeatures;
 
-PLATFORM_EXPORT WTF::String ToString(TypesettingFeatures);
+PLATFORM_EXPORT String ToString(TypesettingFeatures);
 
 }  // namespace blink
 

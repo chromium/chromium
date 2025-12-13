@@ -10,6 +10,7 @@
 #include <optional>
 #include <set>
 
+#include "base/cfi_buildflags.h"
 #include "pdf/pdf_ink_ids.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -427,11 +428,14 @@ TEST(PdfInkUndoRedoModelTest, DrawDrawEraseStrokesAndShapesUndoRedo) {
 }
 
 TEST(PdfInkUndoRedoModelTest, Stress) {
-#if defined(NDEBUG)
-  constexpr size_t kCycles = 10000;
-#else
-  // The larger non-debug value is too slow for "dbg" bots.
+#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||         \
+    defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) || \
+    BUILDFLAG(CFI_ICALL_CHECK)
+  // The larger non-debug value is too slow for "dbg" bots and bots with
+  // sanitizers enabled.
   constexpr size_t kCycles = 1000;
+#else
+  constexpr size_t kCycles = 10000;
 #endif
 
   PdfInkUndoRedoModel undo_redo;

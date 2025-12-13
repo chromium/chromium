@@ -23,8 +23,8 @@ namespace net {
 
 namespace {
 
-constexpr char kHello[] = "Hello, world!";
-constexpr uint64_t kHelloLength = std::size(kHello) - 1;
+constexpr auto kHello = base::span_from_cstring("Hello, world!");
+constexpr size_t kHelloLength = kHello.size();
 constexpr char kHelloFrame[] = "\x81\x0DHello, world!";
 constexpr char kMaskedHelloFrame[] =
     "\x81\x8D\xDE\xAD\xBE\xEF"
@@ -84,9 +84,8 @@ TEST(WebSocketFrameParserTest, DecodeNormalFrame) {
   }
   EXPECT_TRUE(frame->final_chunk);
 
-  ASSERT_EQ(static_cast<size_t>(kHelloLength), frame->payload.size());
-  UNSAFE_TODO(EXPECT_TRUE(
-      std::equal(kHello, kHello + kHelloLength, frame->payload.data())));
+  ASSERT_EQ(kHelloLength, frame->payload.size());
+  EXPECT_EQ(kHello, frame->payload);
 }
 
 TEST(WebSocketFrameParserTest, DecodeMaskedFrame) {
@@ -113,64 +112,61 @@ TEST(WebSocketFrameParserTest, DecodeMaskedFrame) {
   }
   EXPECT_TRUE(frame->final_chunk);
 
-  ASSERT_EQ(static_cast<size_t>(kHelloLength), frame->payload.size());
+  ASSERT_EQ(kHelloLength, frame->payload.size());
 
-  std::string payload(frame->payload.data(), frame->payload.size());
+  std::string payload(frame->payload.begin(), frame->payload.end());
   MaskWebSocketFramePayload(header->masking_key, 0,
                             base::as_writable_byte_span(payload));
-  EXPECT_EQ(payload, kHello);
+  EXPECT_EQ(base::span(payload), kHello);
 }
 
 TEST(WebSocketFrameParserTest, DecodeManyFrames) {
   struct Input {
-    const char* frame;
-    size_t frame_length;
-    const char* expected_payload;
-    size_t expected_payload_length;
+    base::span<const char> frame;
+    base::span<const char> expected_payload;
   };
   constexpr static const auto kInputs = std::to_array<Input>({
       // Each |frame| data is split into two string literals because C++ lexers
       // consume unlimited number of hex characters in a hex character escape
       // (e.g. "\x05F" is not treated as { '\x5', 'F', '\0' } but as
       // { '\x5F', '\0' }).
-      {"\x81\x05"
-       "First",
-       7, "First", 5},
-      {"\x81\x06"
-       "Second",
-       8, "Second", 6},
-      {"\x81\x05"
-       "Third",
-       7, "Third", 5},
-      {"\x81\x06"
-       "Fourth",
-       8, "Fourth", 6},
-      {"\x81\x05"
-       "Fifth",
-       7, "Fifth", 5},
-      {"\x81\x05"
-       "Sixth",
-       7, "Sixth", 5},
-      {"\x81\x07"
-       "Seventh",
-       9, "Seventh", 7},
-      {"\x81\x06"
-       "Eighth",
-       8, "Eighth", 6},
-      {"\x81\x05"
-       "Ninth",
-       7, "Ninth", 5},
-      {"\x81\x05"
-       "Tenth",
-       7, "Tenth", 5},
+      {base::span_from_cstring("\x81\x05"
+                               "First"),
+       base::span_from_cstring("First")},
+      {base::span_from_cstring("\x81\x06"
+                               "Second"),
+       base::span_from_cstring("Second")},
+      {base::span_from_cstring("\x81\x05"
+                               "Third"),
+       base::span_from_cstring("Third")},
+      {base::span_from_cstring("\x81\x06"
+                               "Fourth"),
+       base::span_from_cstring("Fourth")},
+      {base::span_from_cstring("\x81\x05"
+                               "Fifth"),
+       base::span_from_cstring("Fifth")},
+      {base::span_from_cstring("\x81\x05"
+                               "Sixth"),
+       base::span_from_cstring("Sixth")},
+      {base::span_from_cstring("\x81\x07"
+                               "Seventh"),
+       base::span_from_cstring("Seventh")},
+      {base::span_from_cstring("\x81\x06"
+                               "Eighth"),
+       base::span_from_cstring("Eighth")},
+      {base::span_from_cstring("\x81\x05"
+                               "Ninth"),
+       base::span_from_cstring("Ninth")},
+      {base::span_from_cstring("\x81\x05"
+                               "Tenth"),
+       base::span_from_cstring("Tenth")},
   });
   static constexpr int kNumInputs = std::size(kInputs);
 
   std::vector<uint8_t> input;
   // Concatenate all frames.
   for (const auto& data : kInputs) {
-    input.insert(input.end(), data.frame,
-                 UNSAFE_TODO(data.frame + data.frame_length));
+    input.insert(input.end(), data.frame.begin(), data.frame.end());
   }
 
   WebSocketFrameParser parser;
@@ -186,12 +182,9 @@ TEST(WebSocketFrameParserTest, DecodeManyFrames) {
     if (!frame)
       continue;
     EXPECT_TRUE(frame->final_chunk);
-    ASSERT_EQ(kInputs[i].expected_payload_length,
+    ASSERT_EQ(kInputs[i].expected_payload.size(),
               static_cast<uint64_t>(frame->payload.size()));
-    UNSAFE_TODO(EXPECT_TRUE(std::equal(
-        kInputs[i].expected_payload,
-        kInputs[i].expected_payload + kInputs[i].expected_payload_length,
-        frame->payload.data())));
+    EXPECT_EQ(kInputs[i].expected_payload, frame->payload);
 
     const WebSocketFrameHeader* header = frame->header.get();
     EXPECT_TRUE(header != nullptr);
@@ -203,7 +196,7 @@ TEST(WebSocketFrameParserTest, DecodeManyFrames) {
     EXPECT_FALSE(header->reserved3);
     EXPECT_EQ(WebSocketFrameHeader::kOpCodeText, header->opcode);
     EXPECT_FALSE(header->masked);
-    EXPECT_EQ(kInputs[i].expected_payload_length, header->payload_length);
+    EXPECT_EQ(kInputs[i].expected_payload.size(), header->payload_length);
   }
 }
 
@@ -216,9 +209,7 @@ TEST(WebSocketFrameParserTest, DecodePartialFrame) {
     auto [input1, input2] =
         base::span(hello_frame_data).split_at(kFrameHeaderSize + cutting_pos);
 
-    std::vector<char> expected1(kHello, UNSAFE_TODO(kHello + cutting_pos));
-    std::vector<char> expected2(UNSAFE_TODO(kHello + cutting_pos),
-                                UNSAFE_TODO(kHello + kHelloLength));
+    auto [expected1, expected2] = kHello.split_at(cutting_pos);
 
     WebSocketFrameParser parser;
 
@@ -236,9 +227,8 @@ TEST(WebSocketFrameParserTest, DecodePartialFrame) {
     if (expected1.size() == 0) {
       EXPECT_EQ(nullptr, frame1->payload.data());
     } else {
-      ASSERT_EQ(cutting_pos, static_cast<size_t>(frame1->payload.size()));
-      EXPECT_TRUE(std::equal(expected1.begin(), expected1.end(),
-                             frame1->payload.data()));
+      ASSERT_EQ(cutting_pos, frame1->payload.size());
+      EXPECT_EQ(expected1, frame1->payload);
     }
     const WebSocketFrameHeader* header1 = frame1->header.get();
     EXPECT_TRUE(header1 != nullptr);
@@ -266,10 +256,8 @@ TEST(WebSocketFrameParserTest, DecodePartialFrame) {
     if (expected2.size() == 0) {
       EXPECT_EQ(nullptr, frame2->payload.data());
     } else {
-      ASSERT_EQ(expected2.size(),
-                static_cast<uint64_t>(frame2->payload.size()));
-      EXPECT_TRUE(std::equal(expected2.begin(), expected2.end(),
-                             frame2->payload.data()));
+      ASSERT_EQ(expected2.size(), frame2->payload.size());
+      EXPECT_EQ(expected2, frame2->payload);
     }
     const WebSocketFrameHeader* header2 = frame2->header.get();
     EXPECT_TRUE(header2 == nullptr);
@@ -286,9 +274,7 @@ TEST(WebSocketFrameParserTest, DecodePartialMaskedFrame) {
     auto [input1, input2] = base::span(masked_hello_frame_data)
                                 .split_at(kFrameHeaderSize + cutting_pos);
 
-    std::vector<char> expected1(kHello, UNSAFE_TODO(kHello + cutting_pos));
-    std::vector<char> expected2(UNSAFE_TODO(kHello + cutting_pos),
-                                UNSAFE_TODO(kHello + kHelloLength));
+    auto [expected1, expected2] = kHello.split_at(cutting_pos);
 
     WebSocketFrameParser parser;
 
@@ -310,14 +296,12 @@ TEST(WebSocketFrameParserTest, DecodePartialMaskedFrame) {
     if (expected1.size() == 0) {
       EXPECT_EQ(nullptr, frame1->payload.data());
     } else {
-      ASSERT_EQ(expected1.size(),
-                static_cast<uint64_t>(frame1->payload.size()));
-      std::vector<char> payload1(
-          frame1->payload.data(),
-          UNSAFE_TODO(frame1->payload.data() + frame1->payload.size()));
+      ASSERT_EQ(expected1.size(), frame1->payload.size());
+      std::vector<char> payload1(frame1->payload.begin(),
+                                 frame1->payload.end());
       MaskWebSocketFramePayload(header1->masking_key, 0,
                                 base::as_writable_byte_span(payload1));
-      EXPECT_EQ(expected1, payload1);
+      EXPECT_EQ(expected1, base::span(payload1));
     }
     EXPECT_TRUE(header1->final);
     EXPECT_FALSE(header1->reserved1);
@@ -341,14 +325,12 @@ TEST(WebSocketFrameParserTest, DecodePartialMaskedFrame) {
     if (expected2.size() == 0) {
       EXPECT_EQ(nullptr, frame2->payload.data());
     } else {
-      ASSERT_EQ(expected2.size(),
-                static_cast<uint64_t>(frame2->payload.size()));
-      std::vector<char> payload2(
-          frame2->payload.data(),
-          UNSAFE_TODO(frame2->payload.data() + frame2->payload.size()));
+      ASSERT_EQ(expected2.size(), frame2->payload.size());
+      std::vector<char> payload2(frame2->payload.begin(),
+                                 frame2->payload.end());
       MaskWebSocketFramePayload(header1->masking_key, cutting_pos,
                                 base::as_writable_byte_span(payload2));
-      EXPECT_EQ(expected2, payload2);
+      EXPECT_EQ(expected2, base::span(payload2));
     }
     const WebSocketFrameHeader* header2 = frame2->header.get();
     EXPECT_TRUE(header2 == nullptr);

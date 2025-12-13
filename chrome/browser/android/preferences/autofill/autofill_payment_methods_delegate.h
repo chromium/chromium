@@ -8,24 +8,20 @@
 #include <jni.h>
 #include <stdint.h>
 
-#include "build/build_config.h"
-
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
+#include "components/autofill/core/browser/payments/multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 class Profile;
 
 namespace autofill {
 class PersonalDataManager;
 class VirtualCardEnrollmentManager;
-
-namespace payments {
-class PaymentsNetworkInterface;
-}
 
 // Delegate that listens to changes made in the settings related to payment
 // methods.
@@ -46,20 +42,19 @@ class AutofillPaymentMethodsDelegate {
   // Trigger enrollment/unenrollment action.
   void InitVirtualCardEnrollment(JNIEnv* env,
                                  int64_t instrument_id,
-                                 const JavaParamRef<jobject>& jcallback);
-  void EnrollOfferedVirtualCard(JNIEnv* env,
-                                const JavaParamRef<jobject>& jcallback);
+                                 const JavaRef<jobject>& jcallback);
+  void EnrollOfferedVirtualCard(JNIEnv* env, const JavaRef<jobject>& jcallback);
   void UnenrollVirtualCard(JNIEnv* env,
                            int64_t instrument_id,
-                           const JavaParamRef<jobject>& jcallback);
+                           const JavaRef<jobject>& jcallback);
 
   void DeleteSavedCvcs(JNIEnv* env);
 
  private:
   raw_ptr<Profile> profile_;                            // weak reference
   raw_ptr<PersonalDataManager> personal_data_manager_;  // weak reference
-  std::unique_ptr<payments::PaymentsNetworkInterface>
-      payments_network_interface_;
+  std::unique_ptr<payments::MultipleRequestPaymentsNetworkInterface>
+      multiple_request_payments_network_interface_;
   std::unique_ptr<VirtualCardEnrollmentManager>
       virtual_card_enrollment_manager_;
 };

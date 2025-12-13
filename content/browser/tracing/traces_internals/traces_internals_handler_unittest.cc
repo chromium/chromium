@@ -5,6 +5,7 @@
 #include "content/browser/tracing/traces_internals/traces_internals_handler.h"
 
 #include "base/base_paths.h"
+#include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/strings/string_view_util.h"
 #include "base/test/gmock_callback_support.h"

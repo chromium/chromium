@@ -24,6 +24,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "The Rust Project Developers"
   cargo_pkg_name = "num-rational"
   cargo_pkg_description = "Rational numbers implementation for Rust"
+  cargo_pkg_repository = "https://github.com/rust-num/num-rational"
   cargo_pkg_version = "0.4.2"
 
   allow_unsafe = false

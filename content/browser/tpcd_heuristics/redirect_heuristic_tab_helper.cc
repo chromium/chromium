@@ -84,7 +84,7 @@ void RedirectHeuristicTabHelper::MaybeRecordRedirectHeuristic(
   }
   size_t third_party_site_index = third_party_site_info->first;
   ukm::SourceId third_party_source_id =
-      third_party_site_info->second->redirecting_url.source_id;
+      third_party_site_info->second->redirector_source_id;
   bool is_current_interaction =
       detector_->CommittedRedirectContext().SiteHadUserActivationOrAuthn(
           third_party_site);
@@ -185,12 +185,6 @@ void RedirectHeuristicTabHelper::RecordRedirectHeuristic(
 
 void RedirectHeuristicTabHelper::CreateAllRedirectHeuristicGrants(
     const GURL& first_party_url) {
-  if (web_contents()->IsPartitionedPopin()) {
-    // Skip heuristics if this is a popin as we should treat this context as as
-    // embedded and not its own window for storage access purposes.
-    // See https://explainers-by-googlers.github.io/partitioned-popins/
-    return;
-  }
 
   base::TimeDelta grant_duration =
       content_settings::features::kTpcdWriteRedirectHeuristicGrants.Get();

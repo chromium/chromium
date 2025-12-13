@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_handler.h"
+#include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -29,7 +30,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 NewTabFooterUIConfig::NewTabFooterUIConfig()
@@ -92,13 +92,6 @@ void NewTabFooterUI::BindInterface(
 }
 
 void NewTabFooterUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
-}
-
-void NewTabFooterUI::BindInterface(
     mojo::PendingReceiver<
         customize_buttons::mojom::CustomizeButtonsHandlerFactory>
         pending_receiver) {
@@ -106,6 +99,15 @@ void NewTabFooterUI::BindInterface(
     customize_buttons_factory_receiver_.reset();
   }
   customize_buttons_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+void NewTabFooterUI::BindInterface(
+    mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
+        pending_receiver) {
+  if (help_bubble_handler_factory_receiver_.is_bound()) {
+    help_bubble_handler_factory_receiver_.reset();
+  }
+  help_bubble_handler_factory_receiver_.Bind(std::move(pending_receiver));
 }
 
 void NewTabFooterUI::CreateNewTabFooterHandler(
@@ -120,6 +122,15 @@ void NewTabFooterUI::CreateNewTabFooterHandler(
   if (!source_tab_url_.is_empty()) {
     handler_->AttachedTabStateUpdated(source_tab_url_);
   }
+}
+
+void NewTabFooterUI::CreateHelpBubbleHandler(
+    mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
+    mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
+  help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
+      std::move(handler), std::move(client), this,
+      std::vector<ui::ElementIdentifier>{
+          CustomizeButtonsHandler::kCustomizeChromeButtonElementId});
 }
 
 void NewTabFooterUI::AttachedTabStateUpdated(const GURL& url) {

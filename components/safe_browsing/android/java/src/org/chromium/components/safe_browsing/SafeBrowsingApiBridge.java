@@ -201,6 +201,20 @@ public final class SafeBrowsingApiBridge {
         }
 
         @Override
+        public void onHasHarmfulAppsDone(long callbackId, int result, int numberOfApps) {
+            onHasHarmfulAppsDone(callbackId, result, numberOfApps, 0);
+        }
+
+        @Override
+        public void onHasHarmfulAppsDone(
+                long callbackId, int result, int numberOfApps, int statusCode) {
+            synchronized (sSafetyNetApiHandlerLock) {
+                SafeBrowsingApiBridgeJni.get()
+                        .onHasHarmfulAppsDone(callbackId, result, numberOfApps, statusCode);
+            }
+        }
+
+        @Override
         public void onGetSafetyNetIdDone(String result) {
             synchronized (sSafetyNetApiHandlerLock) {
                 SafeBrowsingApiBridgeJni.get().onGetSafetyNetIdDone(result);
@@ -321,6 +335,21 @@ public final class SafeBrowsingApiBridge {
     }
 
     /**
+     * Check if any potentially harmful app is present through the SafetyNet API.
+     *
+     * <p>Must only be called if {@link #ensureSafetyNetApiInitialized()} returns true.
+     */
+    @CalledByNative
+    public static void hasPotentiallyHarmfulApps(long callbackId) {
+        synchronized (sSafetyNetApiHandlerLock) {
+            assert sSafetyNetApiHandlerInitCalled;
+            assert sSafetyNetApiHandler != null;
+            assert sSafetyNetApiState != SafetyNetApiHandler.SafetyNetApiState.NOT_AVAILABLE;
+            sSafetyNetApiHandler.hasPotentiallyHarmfulApps(callbackId);
+        }
+    }
+
+    /**
      * Gets the device's shared UUID from the SafetyNet API.
      *
      * <p>Must only be called if {@code #ensureSafetyNetApiInitialized(true)} returns true.
@@ -347,6 +376,8 @@ public final class SafeBrowsingApiBridge {
                 long checkDeltaUs);
 
         void onVerifyAppsEnabledDone(long callbackId, int result);
+
+        void onHasHarmfulAppsDone(long callbackId, int result, int numberOfApps, int statusCode);
 
         void onGetSafetyNetIdDone(String result);
     }

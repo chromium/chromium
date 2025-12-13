@@ -8,7 +8,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -16,8 +15,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
 #include "chrome/common/pref_names.h"
@@ -31,7 +30,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 // Tests for the chrome://profile-picker/ WebUI page. They live here
 // and not in the webui directory because they manipulate views.
@@ -45,6 +44,9 @@ struct ProfilePickerTestParam {
   bool use_glic_version = false;
   bool no_glic_eligible_profiles = false;
   bool is_enterprise_badging_enabled = false;
+  bool is_profile_picker_first_run = true;
+  bool open_all_profiles_experiment_enabled = false;
+  std::string text_variation_feature_param;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -59,6 +61,8 @@ std::string ParamToTestSuffix(
 // Permutations of supported parameters.
 const ProfilePickerTestParam kTestParams[] = {
     {.pixel_test_param = {.test_suffix = "Regular"}},
+    {.pixel_test_param = {.test_suffix = "RegularSecondPickerRun"},
+     .is_profile_picker_first_run = false},
     {
         .pixel_test_param = {.test_suffix = "MultipleProfiles"},
         .use_multiple_profiles = true,
@@ -124,6 +128,22 @@ const ProfilePickerTestParam kTestParams[] = {
                               PixelTestParam::kPortraitModeWindowSize},
      .use_multiple_profiles = true,
      .use_glic_version = true},
+    {.pixel_test_param = {.test_suffix = "VariationKeepWorkAndLifeSeparate"},
+     .text_variation_feature_param = "keep-work-and-life-separate"},
+    {.pixel_test_param = {.test_suffix = "VariationGotAnotherGoogleAccount"},
+     .text_variation_feature_param = "got-another-google-account"},
+    {.pixel_test_param = {.test_suffix = "VariationKeepTasksSeparate"},
+     .text_variation_feature_param = "keep-tasks-separate"},
+    {.pixel_test_param = {.test_suffix = "VariationSharingAComputer"},
+     .text_variation_feature_param = "sharing-a-computer"},
+    {.pixel_test_param = {.test_suffix = "VariationKeepEverythingInChrome"},
+     .text_variation_feature_param = "keep-everything-in-chrome"},
+    {.pixel_test_param = {.test_suffix = "OpenAllProfilesExperimentNoButton"},
+     .open_all_profiles_experiment_enabled = true},
+    {.pixel_test_param = {.test_suffix =
+                              "OpenAllProfilesExperimentButtonShown"},
+     .use_multiple_profiles = true,
+     .open_all_profiles_experiment_enabled = true},
 };
 
 enum class ProfileStatus {
@@ -219,16 +239,23 @@ void AddMultipleProfiles(bool is_glic_version, bool has_supervised_user) {
 }  // namespace
 
 class ProfilePickerUIPixelTest
-    : public ProfilesPixelTestBaseT<UiBrowserTest>,
+    : public WithProfilePickerTestHelpers,
+      public ProfilesPixelTestBaseT<UiBrowserTest>,
       public testing::WithParamInterface<ProfilePickerTestParam> {
  public:
   ProfilePickerUIPixelTest()
       : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kEnterpriseProfileBadgingForAvatar,
-          GetParam().is_enterprise_badging_enabled}});
-#endif
+    if (!GetParam().text_variation_feature_param.empty()) {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          {{switches::kProfilePickerTextVariations,
+            {{"profile-picker-variation",
+              GetParam().text_variation_feature_param}}}},
+          {});
+    }
+    if (GetParam().open_all_profiles_experiment_enabled) {
+      scoped_feature_list_.InitAndEnableFeature(
+          switches::kOpenAllProfilesFromProfilePickerExperiment);
+    }
   }
 
   void ShowUi(const std::string& name) override {
@@ -268,8 +295,8 @@ class ProfilePickerUIPixelTest
           prefs::kBrowserAddPersonEnabled, false);
     }
 
-    ui::ScopedAnimationDurationScaleMode disable_animation(
-        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode disable_animation(
+        gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
     GURL profile_picker_main_view_url = GURL(chrome::kChromeUIProfilePickerUrl);
     // Since we override the FlowController, we need to give in the full Url
@@ -291,6 +318,15 @@ class ProfilePickerUIPixelTest
             // the only constructor that lets us force a profile to use.
             : ProfilePicker::Params::ForFirstRun(
                   browser()->profile()->GetPath(), base::DoNothing());
+
+    if (!GetParam().is_profile_picker_first_run) {
+      ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+          ProfilePicker::EntryPoint::kProfileMenuManageProfiles));
+      WaitForLoadStop(GURL("chrome://profile-picker"));
+      CHECK(ProfilePicker::IsOpen());
+      ProfilePicker::Hide();
+      WaitForPickerClosed();
+    }
 
     profile_picker_view_ = new ProfileManagementStepTestView(
         std::move(params),
@@ -326,9 +362,9 @@ class ProfilePickerUIPixelTest
     return profile_picker_view_->GetWidget();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<ProfileManagementStepTestView, DanglingUntriaged>
       profile_picker_view_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ProfilePickerUIPixelTest, InvokeUi_default) {

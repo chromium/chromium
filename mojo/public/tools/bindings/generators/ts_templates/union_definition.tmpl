@@ -17,3 +17,26 @@ export interface {{union.name}} {
   {{field.name}}?: {{field.kind|ts_type_maybe_nullable}},
 {%- endfor %}
 }
+
+export enum {{union.name}}FieldTags {
+{%- for field in union.fields %}
+  {{field.name|to_union_field_tag_name}},
+{%- endfor %}
+}
+
+export function which{{union.name}}(u: {{union.name}}): {{union.name}}FieldTags {
+{#- do not use falsy checks, because that would capture falsy values like 0 -#}
+{#- and boolean false -#}
+{% for field in union.fields %}
+{%-   set field_access = 'u.' + field.name %}
+  if ({{field_access}} !== null && {{field_access}} !== undefined) {
+    return {{union.name}}FieldTags.{{field.name|to_union_field_tag_name}};
+  }
+{%- endfor %}
+
+{%- if union.extensible %}
+  return {{union.name}}FieldTags.{{union.default_field.name|to_union_field_tag_name}};
+{%- else %}
+  throw new Error("no union field has been set, this is an illegal state");
+{%- endif %}
+}

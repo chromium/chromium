@@ -87,7 +87,7 @@ void SurfaceTexture::UpdateTexImage() {
 void SurfaceTexture::GetTransformMatrix(base::span<float, 16> mtx) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  base::android::ScopedJavaLocalRef<jfloatArray> jmatrix(
+  auto jmatrix = base::android::ScopedJavaLocalRef<jfloatArray>::Adopt(
       env, env->NewFloatArray(16));
   Java_ChromeSurfaceTexture_getTransformMatrix(env, j_surface_texture_,
                                                jmatrix);
@@ -143,3 +143,5 @@ void SurfaceTexture::SetDefaultBufferSize(int width, int height) {
 }
 
 }  // namespace gl
+
+DEFINE_JNI(ChromeSurfaceTexture)

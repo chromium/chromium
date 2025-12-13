@@ -46,14 +46,15 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void GetTextSurroundingSelection(
       uint32_t max_length,
       GetTextSurroundingSelectionCallback callback) override;
-  void SendInterventionReport(const std::string& id,
-                              const std::string& message) override;
+  void SendInterventionReport(
+      const std::string& id,
+      const std::string& message,
+      const std::optional<blink::FrameToken>& child_frame_token) override;
   void SetFrameOwnerProperties(
       blink::mojom::FrameOwnerPropertiesPtr properties) override;
   void NotifyUserActivation(
       blink::mojom::UserActivationNotificationType notification_type) override;
   void NotifyVirtualKeyboardOverlayRect(const gfx::Rect&) override;
-  void NotifyContextMenuInsetsObservers(const gfx::Rect&) override;
   void ShowInterestInElement(int) override;
   void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
                            const std::string& message,
@@ -91,8 +92,8 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       blink::mojom::FrameVisibility visibility) override;
   void PostMessageEvent(
       const std::optional<blink::RemoteFrameToken>& source_frame_token,
-      const std::u16string& source_origin,
-      const std::u16string& target_origin,
+      const std::optional<url::Origin>& source_origin,
+      const std::optional<url::Origin>& target_origin,
       blink::TransferableMessage message) override;
   void JavaScriptMethodExecuteRequest(
       const std::u16string& object_name,
@@ -185,6 +186,9 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void UpdatePrerenderURL(const ::GURL& matched_url,
                           UpdatePrerenderURLCallback callback) override;
   void GetScrollPosition(GetScrollPositionCallback callback) override;
+#if BUILDFLAG(IS_ANDROID)
+  void PerformSpellCheck() override;
+#endif
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

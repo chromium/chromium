@@ -741,12 +741,15 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 
 // Annotates a pointer or reference parameter or return value for a member
 // function as having lifetime intertwined with the instance on which the
-// function is called. For parameters, the function is assumed to store the
-// value into the called-on object, so if the referred-to object is later
-// destroyed, the called-on object is also considered to be dangling. For return
-// values, the value is assumed to point into the called-on object, so if that
-// object is destroyed, the returned value is also considered to be dangling.
-// Useful to diagnose some cases of lifetime errors.
+// function is called. For function parameters, the function is assumed to store
+// the reference into the return value, so if the referred-to object is later
+// destroyed, the returned value is also considered to be dangling. For
+// constructor parameters, the constructor is assumed to store the reference
+// into the object, so if the referred-to object is later destroyed, the object
+// is considered to be dangling. For return values, the value is assumed to
+// point into the called-on object, so if that object is destroyed, the returned
+// value is also considered to be dangling. Useful to diagnose some cases of
+// lifetime errors.
 //
 // See also:
 //   https://clang.llvm.org/docs/AttributeReference.html#lifetimebound
@@ -756,6 +759,8 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 //   struct S {
 //      S(int* p LIFETIME_BOUND);
 //      int* Get() LIFETIME_BOUND;
+//      std::string_view GetSubstring(
+//          const std::string& s LIFETIME_BOUND) const;
 //   };
 //   S Func1() {
 //     int i = 0;
@@ -768,11 +773,46 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 //     // of a local temporary.
 //     return S(p).Get();
 //   }
+//   std::string_view Func3(const S& s) {
+//     // The following return will not compile; diagnosed as returning address
+//     // of a local temporary object.
+//     return s.GetSubstring(NumberToString(3));
+//   }
 // ```
 #if __has_cpp_attribute(clang::lifetimebound)
 #define LIFETIME_BOUND [[clang::lifetimebound]]
 #else
 #define LIFETIME_BOUND
+#endif
+
+// Annotates a parameter of a member function to indicate that the function
+// stores a reference to the parameter, and that the lifetime of the stored
+// reference is tied to the lifetime of the object on which the function is
+// called. If the referred-to object is later destroyed, the stored reference
+// is considered to be dangling. Useful to diagnose some cases of lifetime
+// errors.
+//
+// See also
+//   https://clang.llvm.org/docs/AttributeReference.html#lifetime-capture-by
+//
+// Usage:
+// ```
+//   struct S {
+//     void Store(const int& p LIFETIME_CAPTURE_BY(this));
+//     const int* ptr_ = nullptr;
+//   };
+//   void Func1() {
+//     S s;
+//     // The following line will not compile; diagnosed as object whose
+//     // reference is captured by 's' will be destroyed at the end of the
+//     // full-expression
+//     s.Store(3);
+//   }
+// ```
+#if __has_cpp_attribute(clang::lifetime_capture_by)
+#define LIFETIME_CAPTURE_BY(x) [[clang::lifetime_capture_by(x)]]
+#else
+#define LIFETIME_CAPTURE_BY(x)
 #endif
 
 // Annotates a function or variable to indicate that it should have weak

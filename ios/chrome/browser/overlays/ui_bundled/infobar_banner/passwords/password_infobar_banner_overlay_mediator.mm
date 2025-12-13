@@ -90,11 +90,9 @@
 
   [super finishDismissal];
 
-  // Check if the feature is enabled before showing the promo
-  if (IsNonModalSignInPromoEnabled()) {
-    [self.nonModalSignInPromoHandler
-        showNonModalSignInPromoWithType:SignInPromoType::kPassword];
-  }
+  // Shows the promo.
+  [self.nonModalSignInPromoHandler
+      showNonModalSignInPromoWithType:SignInPromoType::kPassword];
 }
 
 #pragma mark - Private

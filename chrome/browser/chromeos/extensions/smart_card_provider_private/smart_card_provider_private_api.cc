@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/timer/timer.h"
+#include "base/types/expected_macros.h"
 #include "chrome/common/extensions/api/smart_card_provider_private.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -550,11 +551,8 @@ void SmartCardProviderPrivateAPI::SendReleaseContext(ContextId scard_context) {
           .Append(scard_context.GetUnsafeValue()),
       &*browser_context_);
 
-  const std::string provider_extension_id = GetListenerExtensionId(*event);
-
-  if (provider_extension_id.empty()) {
-    return;
-  }
+  ASSIGN_OR_RETURN(const std::string provider_extension_id,
+                   GetListenerExtensionId(*event), [] {});
 
   auto pending = std::make_unique<PendingResult>();
   pending->scard_context = scard_context;
@@ -912,9 +910,13 @@ void SmartCardProviderPrivateAPI::ReportConnectResult(
     device::mojom::SmartCardProtocol active_protocol,
     device::mojom::SmartCardResultPtr result) {
   if (!pending_results_.contains(request_id)) {
-    // TODO(crbug.com/40247152): send disconnect request to PC/SC provider if
-    // the handle is valid and the result is success to avoid leaking this
-    // seemingly unrequested connection.
+    if (result->is_success() && !handle.is_null()) {
+      LOG(WARNING) << "Provider reported a connection for an unknown request. "
+                   << "Attempting to disconnect to prevent leaks.";
+      SendDisconnect(ContextId(), handle,
+                     device::mojom::SmartCardDisposition::kLeave,
+                     base::DoNothing());
+    }
     return;
   }
 
@@ -1058,25 +1060,40 @@ void SmartCardProviderPrivateAPI::SetDisconnectObserverForTesting(
   disconnect_observer_ = observer;
 }
 
-// TODO(crbug.com/40247152): Consider if we need to wait for a known
-// SmartCard provider Extension to load or finish installation
-// before querying for listeners.
-// Use case is if the Web API is used immediately after a user logs
-// in.
-std::string SmartCardProviderPrivateAPI::GetListenerExtensionId(
+// This might fail when one attempts to use this API immediately after system
+// startup or before the appropriate extension is installed. However waiting for
+// this to happen instead of immediately failing is not an option, as:
+// - The application is provided with the descriptive error, so it can implement
+//   retry mechanisms and knows what is happening.
+// - There are cases in which the subscription will never happen (e.g. extension
+//   is not installed and the user is not planning on doing it); not resolving
+//   the promise for a long time would be confusing for the application and
+//   indistinguishable from e.g. a long-running PC/SC operation.
+std::optional<std::string> SmartCardProviderPrivateAPI::GetListenerExtensionId(
     const extensions::Event& event) {
   std::set<const extensions::EventListener*> listener_set =
       event_router_->listeners().GetEventListeners(event);
 
   if (listener_set.empty()) {
     LOG(ERROR) << "No extension listening to " << event.event_name << ".";
-    return std::string();
+    return std::nullopt;
   }
 
-  // Allow list on the extension API permission enforces that there can't
-  // be multiple extensions with access to it. Thus don't bother
-  // iterating through the set.
-  return (*listener_set.cbegin())->extension_id();
+  // There may be multiple listeners within the same extension.
+  std::set<std::string> extension_ids;
+  std::ranges::transform(
+      listener_set, std::inserter(extension_ids, extension_ids.end()),
+      [](auto* event_listener) { return event_listener->extension_id(); });
+
+  if (extension_ids.size() > 1) {
+    LOG(ERROR) << "Multiple extensions listening to " << event.event_name
+               << ". This should never happen, as multiple PC/SC providers "
+                  "will collide with each other. Check whether you have not "
+                  "installed both beta and stable versions at the same time.";
+    return std::nullopt;
+  }
+
+  return *extension_ids.begin();
 }
 
 template <typename ResultPtr>
@@ -1101,13 +1118,13 @@ void SmartCardProviderPrivateAPI::DispatchEventWithTimeout(
                                                    std::move(event_arguments),
                                                    &*browser_context_);
 
-  const std::string provider_extension_id = GetListenerExtensionId(*event);
-  if (provider_extension_id.empty()) {
-    using Result = typename ResultPtr::element_type;
-    ResultPtr error = Result::NewError(SmartCardError::kNoService);
-    std::move(callback).Run(std::move(error));
-    return;
-  }
+  ASSIGN_OR_RETURN(const std::string provider_extension_id,
+                   GetListenerExtensionId(*event), [&callback] {
+                     using Result = typename ResultPtr::element_type;
+                     ResultPtr error =
+                         Result::NewError(SmartCardError::kNoService);
+                     std::move(callback).Run(std::move(error));
+                   });
 
   auto pending = std::make_unique<PendingResult>();
   pending->scard_context = scard_context;

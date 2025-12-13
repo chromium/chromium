@@ -17,7 +17,6 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "content/browser/attribution_reporting/aggregatable_result.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_resolver.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
@@ -73,7 +72,6 @@ class CONTENT_EXPORT AttributionResolverImpl : public AttributionResolver {
   bool UpdateReportForSendFailure(AttributionReport::Id report_id,
                                   base::Time new_report_time) override;
   std::optional<base::Time> AdjustOfflineReportTimes() override;
-  std::optional<base::Time> AdjustNavigationRetryReportTimes() override;
   void ClearData(base::Time delete_begin,
                  base::Time delete_end,
                  StoragePartition::StorageKeyMatcherFunction filter,

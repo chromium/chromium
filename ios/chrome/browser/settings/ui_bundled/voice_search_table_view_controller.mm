@@ -16,7 +16,6 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/voice/model/speech_input_locale_config.h"
@@ -103,6 +102,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   tts.text = l10n_util::GetNSString(IDS_IOS_VOICE_SEARCH_SETTING_TTS);
   BOOL enabled = [self currentLanguageSupportsTTS];
   tts.on = enabled && _ttsEnabled.GetValue();
+  tts.target = self;
+  tts.selector = @selector(TTSSwitchToggled:);
   tts.enabled = enabled;
   [model addItem:tts toSectionWithIdentifier:SectionIdentifierTTS];
 
@@ -153,27 +154,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   base::RecordAction(base::UserMetricsAction("MobileVoiceSearchSettingsBack"));
 }
 
-#pragma mark - UITableViewDelegate
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
-
-  if (itemType == ItemTypeTTSEnabled) {
-    // Have the switch send a message on UIControlEventValueChanged.
-    TableViewSwitchCell* switchCell =
-        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-    switchCell.selectionStyle = UITableViewCellSelectionStyleNone;
-    [switchCell.switchView addTarget:self
-                              action:@selector(ttsToggled:)
-                    forControlEvents:UIControlEventValueChanged];
-  }
-
-  return cell;
-}
-
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   [super tableView:tableView didSelectRowAtIndexPath:indexPath];
@@ -205,7 +185,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - Actions
 
-- (void)ttsToggled:(id)sender {
+- (void)TTSSwitchToggled:(UISwitch*)sender {
   NSIndexPath* switchPath =
       [self.tableViewModel indexPathForItemType:ItemTypeTTSEnabled
                               sectionIdentifier:SectionIdentifierTTS];
@@ -213,13 +193,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewSwitchItem* switchItem =
       base::apple::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
-  TableViewSwitchCell* switchCell =
-      base::apple::ObjCCastStrict<TableViewSwitchCell>(
-          [self.tableView cellForRowAtIndexPath:switchPath]);
-
-  // Update the model and the preference with the current value of the switch.
-  DCHECK_EQ(switchCell.switchView, sender);
-  BOOL isOn = switchCell.switchView.isOn;
+  BOOL isOn = sender.isOn;
   switchItem.on = isOn;
   _ttsEnabled.SetValue(isOn);
 }

@@ -20,7 +20,6 @@
 
 using ::testing::_;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::WithArg;
 
@@ -38,9 +37,9 @@ class ReportQueueTest : public ::testing::Test {
 TEST_F(ReportQueueTest, EnqueueTest) {
   MockReportQueue queue;
   EXPECT_CALL(queue, AddRecord(_, _, _))
-      .WillOnce(WithArg<2>(Invoke([](ReportQueue::EnqueueCallback cb) {
+      .WillOnce(WithArg<2>([](ReportQueue::EnqueueCallback cb) {
         std::move(cb).Run(Status::StatusOK());
-      })));
+      }));
   EXPECT_CALL(queue, GetDestination)
       .WillOnce(Return(Destination::EVENT_METRIC));
   base::test::TestFuture<Status> test_future;
@@ -66,9 +65,9 @@ TEST_F(ReportQueueTest, EnqueueTest) {
 TEST_F(ReportQueueTest, EnqueueWithErrorTest) {
   MockReportQueue queue;
   EXPECT_CALL(queue, AddRecord(_, _, _))
-      .WillOnce(WithArg<2>(Invoke([](ReportQueue::EnqueueCallback cb) {
+      .WillOnce(WithArg<2>([](ReportQueue::EnqueueCallback cb) {
         std::move(cb).Run(Status(error::CANCELLED, "Cancelled by test"));
-      })));
+      }));
   EXPECT_CALL(queue, GetDestination)
       .WillOnce(Return(Destination::EVENT_METRIC));
   base::test::TestFuture<Status> test_future;
@@ -96,9 +95,9 @@ TEST_F(ReportQueueTest, EnqueueWithErrorTest) {
 TEST_F(ReportQueueTest, FlushTest) {
   MockReportQueue queue;
   EXPECT_CALL(queue, Flush(_, _))
-      .WillOnce(WithArg<1>(Invoke([](ReportQueue::FlushCallback cb) {
+      .WillOnce(WithArg<1>([](ReportQueue::FlushCallback cb) {
         std::move(cb).Run(Status::StatusOK());
-      })));
+      }));
   base::test::TestFuture<Status> test_future;
   queue.Flush(MANUAL_BATCH, test_future.GetCallback());
   ASSERT_OK(test_future.Take());

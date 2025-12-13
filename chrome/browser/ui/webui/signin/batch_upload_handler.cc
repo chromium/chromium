@@ -15,10 +15,12 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/local_data_description.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
@@ -45,34 +47,75 @@ std::string ComputeBatchUploadSubtitle(syncer::DataType first_type,
                                        size_t first_type_item_count,
                                        size_t number_of_types,
                                        size_t total_item_count) {
+  // Duplication of the code below (with different strings) to simplify cleanup
+  // later.
+  // This section should be remoevd when cleaning up
+  // `syncer::kReplaceSyncPromosWithSignInPromos`.
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    // Check for the "hero" type availability.
+    if (first_type == syncer::DataType::PASSWORDS) {
+      if (number_of_types > 1) {
+        // Returns "passwords + other items" combo string.
+        return l10n_util::GetPluralStringFUTF8(
+            IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS_COMBO,
+            first_type_item_count);
+      }
+      // Returns the passwords only string.
+      return l10n_util::GetPluralStringFUTF8(
+          IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS,
+          first_type_item_count);
+    }
+
+    if (first_type == syncer::DataType::BOOKMARKS) {
+      if (number_of_types > 1) {
+        // Returns "bookmarks + other items" combo string.
+        return l10n_util::GetPluralStringFUTF8(
+            IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_BOOKMARKS_COMBO,
+            first_type_item_count);
+      }
+      // Returns the bookmarks only string.
+      return l10n_util::GetPluralStringFUTF8(
+          IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_BOOKMARKS,
+          first_type_item_count);
+    }
+
+    // Returns the generic items string.
+    return l10n_util::GetPluralStringFUTF8(
+        IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_ITEMS, total_item_count);
+  }
+
   // Check for the "hero" type availability.
   if (first_type == syncer::DataType::PASSWORDS) {
     if (number_of_types > 1) {
       // Returns "passwords + other items" combo string.
       return l10n_util::GetPluralStringFUTF8(
-          IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS_COMBO,
+          IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS_COMBO_WITH_DEDUPLICATION,
           first_type_item_count);
     }
     // Returns the passwords only string.
     return l10n_util::GetPluralStringFUTF8(
-        IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS, first_type_item_count);
+        IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS_WITH_DEDUPLICATION,
+        first_type_item_count);
   }
 
   if (first_type == syncer::DataType::BOOKMARKS) {
     if (number_of_types > 1) {
       // Returns "bookmarks + other items" combo string.
       return l10n_util::GetPluralStringFUTF8(
-          IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_BOOKMARKS_COMBO,
+          IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_BOOKMARKS_COMBO_WITH_DEDUPLICATION,
           first_type_item_count);
     }
     // Returns the bookmarks only string.
     return l10n_util::GetPluralStringFUTF8(
-        IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_BOOKMARKS, first_type_item_count);
+        IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_BOOKMARKS_WITH_DEDUPLICATION,
+        first_type_item_count);
   }
 
   // Returns the generic items string.
   return l10n_util::GetPluralStringFUTF8(
-      IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_ITEMS, total_item_count);
+      IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_ITEMS_WITH_DEDUPLICATION,
+      total_item_count);
 }
 
 GURL ComputeIconUrl(const syncer::LocalDataItemModel::Icon& icon) {
@@ -82,6 +125,12 @@ GURL ComputeIconUrl(const syncer::LocalDataItemModel::Icon& icon) {
 
   if (const GURL* page_url =
           std::get_if<syncer::LocalDataItemModel::PageUrlIcon>(&icon)) {
+    // Icons that have the data:// scheme can be used as-is (e.g. base64 icons
+    // for extensions).
+    if (page_url->SchemeIs(url::kDataScheme)) {
+      return *page_url;
+    }
+
     // Add the http:// scheme if a scheme is not already present.
     GURL::Replacements replace_scheme;
     replace_scheme.SetSchemeStr(url::kHttpScheme);
@@ -300,6 +349,8 @@ int BatchUploadHandler::GetTypeSectionTitleId(syncer::DataType type) {
       return IDS_BATCH_UPLOAD_SECTION_TITLE_READING_LIST;
     case syncer::DataType::CONTACT_INFO:
       return IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES;
+    case syncer::DataType::EXTENSIONS:
+      return IDS_BATCH_UPLOAD_SECTION_TITLE_EXTENSIONS;
     case syncer::DataType::THEMES:
       return IDS_BATCH_UPLOAD_SECTION_TITLE_THEMES_WITH_DESCRIPTION;
     default:

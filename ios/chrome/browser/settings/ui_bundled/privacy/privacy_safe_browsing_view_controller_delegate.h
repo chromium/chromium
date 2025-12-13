@@ -15,9 +15,6 @@
 // Sends `item` to the model to handle logic and navigation.
 - (void)didSelectItem:(TableViewItem*)item;
 
-// Handles navigation related to an accessory view being clicked.
-- (void)didTapInfoButton:(UIButton*)button onItem:(TableViewItem*)item;
-
 // Selects the item based on the most recent preference values
 // changes.
 - (void)selectItem;

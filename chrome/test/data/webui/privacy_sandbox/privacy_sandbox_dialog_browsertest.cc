@@ -59,10 +59,6 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, Combined) {
   RunTestSuite("Combined");
 }
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, NoticeEEA) {
-  RunTestSuite("NoticeEEA");
-}
-
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, NoticeROW) {
   RunTestSuite("NoticeROW");
 }
@@ -73,11 +69,6 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, NoticeRestricted) {
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, Mixin) {
   RunTestSuite("Mixin");
-}
-
-IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest,
-                       CombinedAdsApiUxEnhancementDisabled) {
-  RunTestSuite("CombinedAdsApiUxEnhancementDisabled");
 }
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, CombinedAdsApiUxEnhancement) {
@@ -95,9 +86,4 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, NoticeEEAAdsApiUxEnhancement) {
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, NoticeROWAdsApiUxEnhancement) {
   RunTestSuite("NoticeROWAdsApiUxEnhancement");
-}
-
-IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest,
-                       NoticeROWAdsApiUxEnhancementDisabled) {
-  RunTestSuite("NoticeROWAdsApiUxEnhancementDisabled");
 }

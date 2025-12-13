@@ -78,10 +78,11 @@ void FakeUsbDeviceHandle::ControlTransfer(
     return;
   }
 
-  if (data_[position_++] % 2) {
+  if (UNSAFE_TODO(data_[position_++]) % 2) {
     size_t bytes_transferred = 0;
     if (position_ + 2 <= size_) {
-      bytes_transferred = data_[position_] | data_[position_ + 1] << 8;
+      bytes_transferred = UNSAFE_TODO(data_[position_]) |
+                          UNSAFE_TODO(data_[position_ + 1]) << 8;
       position_ += 2;
       bytes_transferred = std::min(bytes_transferred, buffer->size());
       bytes_transferred = std::min(bytes_transferred, size_ - position_);

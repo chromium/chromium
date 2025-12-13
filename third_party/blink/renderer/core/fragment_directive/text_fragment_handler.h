@@ -70,6 +70,7 @@ class CORE_EXPORT TextFragmentHandler final
   FRIEND_TEST_ALL_PREFIXES(TextFragmentHandlerTest,
                            IfGeneratorResetShouldRecordCorrectError);
   FRIEND_TEST_ALL_PREFIXES(TextFragmentHandlerTest, NotGenerated);
+  FRIEND_TEST_ALL_PREFIXES(TextFragmentHandlerTest, NotGeneratedWithFileInput);
   // Returns whether preemptive generation should run for the given frame.
   static bool ShouldPreemptivelyGenerateFor(LocalFrame* frame);
 

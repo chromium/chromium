@@ -4,6 +4,8 @@
 
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 
+#include "base/functional/callback.h"
+#include "base/notreached.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
 
 namespace privacy_sandbox {

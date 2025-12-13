@@ -41,10 +41,6 @@ class StoragePartition;
 class GURL;
 class BoundSessionParamsStorage;
 
-// Enables bound sessions marked with "wsbeta" flag even when the main
-// `switches::kBoundSessionCredentialsEnabled` feature is disabled.
-BASE_DECLARE_FEATURE(kEnableBoundSessionCredentialsWsbetaBypass);
-
 // Enables the maintenance of bound sessions stored on disk even after the main
 // `switches::kBoundSessionCredentialsEnabled` feature gets disabled.
 BASE_DECLARE_FEATURE(kEnableBoundSessionCredentialsContinuity);
@@ -61,7 +57,8 @@ class BoundSessionCookieRefreshServiceImpl
     kCookiesCleared = 1,
     kSessionTerminationHeader = 2,
     kSessionOverride = 3,
-    kMaxValue = kSessionOverride,
+    kRotationStoppedTimeout = 4,
+    kMaxValue = kRotationStoppedTimeout,
   };
 
   BoundSessionCookieRefreshServiceImpl(
@@ -87,6 +84,7 @@ class BoundSessionCookieRefreshServiceImpl
           receiver) override;
   void CreateRegistrationRequest(
       BoundSessionRegistrationFetcherParam registration_params) override;
+  void StopCookieRotation(const BoundSessionKey& key) override;
   base::WeakPtr<BoundSessionCookieRefreshService> GetWeakPtr() override;
   void AddObserver(
       BoundSessionCookieRefreshService::Observer* observer) override;
@@ -160,6 +158,8 @@ class BoundSessionCookieRefreshServiceImpl
   void OnPersistentErrorEncountered(
       BoundSessionCookieController* controller,
       BoundSessionRefreshCookieFetcher::Result refresh_error) override;
+  void OnCookieRotationStoppedTimeout(
+      BoundSessionCookieController* controller) override;
 
   // StoragePartition::DataRemovalObserver:
   void OnStorageKeyDataCleared(
@@ -184,7 +184,6 @@ class BoundSessionCookieRefreshServiceImpl
                         SessionTerminationTrigger trigger,
                         std::optional<BoundSessionRefreshCookieFetcher::Result>
                             refresh_error = std::nullopt);
-  void RecordSessionTerminationTrigger(SessionTerminationTrigger trigger);
   void NotifyBoundSessionTerminated(
       const GURL& site,
       const base::flat_set<std::string>& bound_cookie_names);

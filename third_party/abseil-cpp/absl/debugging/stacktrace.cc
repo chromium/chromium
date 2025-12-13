@@ -38,6 +38,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include <algorithm>
 #include <atomic>
@@ -46,31 +47,8 @@
 #include "absl/base/config.h"
 #include "absl/base/optimization.h"
 #include "absl/base/port.h"
+#include "absl/debugging/internal/borrowed_fixup_buffer.h"
 #include "absl/debugging/internal/stacktrace_config.h"
-
-#ifdef ABSL_INTERNAL_HAVE_ALLOCA
-#error ABSL_INTERNAL_HAVE_ALLOCA cannot be directly set
-#endif
-
-#ifdef _WIN32
-#include <malloc.h>
-#define ABSL_INTERNAL_HAVE_ALLOCA 1
-#else
-#ifdef __has_include
-#if __has_include(<alloca.h>)
-#include <alloca.h>
-#define ABSL_INTERNAL_HAVE_ALLOCA 1
-#elif !defined(alloca)
-static void* alloca(size_t) noexcept { return nullptr; }
-#endif
-#endif
-#endif
-
-#ifdef ABSL_INTERNAL_HAVE_ALLOCA
-static constexpr bool kHaveAlloca = true;
-#else
-static constexpr bool kHaveAlloca = false;
-#endif
 
 #if defined(ABSL_STACKTRACE_INL_HEADER)
 #include ABSL_STACKTRACE_INL_HEADER
@@ -97,25 +75,63 @@ std::atomic<Unwinder> custom;
 
 template <bool IS_STACK_FRAMES, bool IS_WITH_CONTEXT>
 ABSL_ATTRIBUTE_ALWAYS_INLINE inline int Unwind(void** result, uintptr_t* frames,
-                                               int* sizes, int max_depth,
+                                               int* sizes, size_t max_depth,
                                                int skip_count, const void* uc,
-                                               int* min_dropped_frames) {
+                                               int* min_dropped_frames,
+                                               bool unwind_with_fixup = true) {
+  unwind_with_fixup =
+      unwind_with_fixup && internal_stacktrace::ShouldFixUpStack();
+
+#ifdef _WIN32
+  if (unwind_with_fixup) {
+    // TODO(b/434184677): Fixups are flaky and not supported on Windows
+    unwind_with_fixup = false;
+#ifndef NDEBUG
+    abort();
+#endif
+  }
+#endif
+
+  // Some implementations of FixUpStack may need to be passed frame
+  // information from Unwind, even if the caller doesn't need that
+  // information. We allocate the necessary buffers for such implementations
+  // here.
+  const internal_stacktrace::BorrowedFixupBuffer fixup_buffer(
+      unwind_with_fixup ? max_depth : 0);
+  if (frames == nullptr) {
+    frames = fixup_buffer.frames();
+  }
+  if (sizes == nullptr) {
+    sizes = fixup_buffer.sizes();
+  }
+
   Unwinder g = custom.load(std::memory_order_acquire);
-  int size;
+  size_t size;
   // Add 1 to skip count for the unwinder function itself
   ++skip_count;
   if (g != nullptr) {
-    size = (*g)(result, sizes, max_depth, skip_count, uc, min_dropped_frames);
+    size = static_cast<size_t>((*g)(result, sizes, static_cast<int>(max_depth),
+                                    skip_count, uc, min_dropped_frames));
     // Frame pointers aren't returned by existing hooks, so clear them.
     if (frames != nullptr) {
       std::fill(frames, frames + size, uintptr_t());
     }
   } else {
-    size = UnwindImpl<IS_STACK_FRAMES, IS_WITH_CONTEXT>(
-        result, frames, sizes, max_depth, skip_count, uc, min_dropped_frames);
+    size = static_cast<size_t>(
+        unwind_with_fixup
+            ? UnwindImpl<true, IS_WITH_CONTEXT>(
+                  result, frames, sizes, static_cast<int>(max_depth),
+                  skip_count, uc, min_dropped_frames)
+            : UnwindImpl<IS_STACK_FRAMES, IS_WITH_CONTEXT>(
+                  result, frames, sizes, static_cast<int>(max_depth),
+                  skip_count, uc, min_dropped_frames));
   }
+  if (unwind_with_fixup) {
+    internal_stacktrace::FixUpStack(result, frames, sizes, max_depth, size);
+  }
+
   ABSL_BLOCK_TAIL_CALL_OPTIMIZATION();
-  return size;
+  return static_cast<int>(size);
 }
 
 }  // anonymous namespace
@@ -123,15 +139,8 @@ ABSL_ATTRIBUTE_ALWAYS_INLINE inline int Unwind(void** result, uintptr_t* frames,
 ABSL_ATTRIBUTE_NOINLINE ABSL_ATTRIBUTE_NO_TAIL_CALL int
 internal_stacktrace::GetStackFrames(void** result, uintptr_t* frames,
                                     int* sizes, int max_depth, int skip_count) {
-  if (internal_stacktrace::ShouldFixUpStack()) {
-    size_t depth = static_cast<size_t>(Unwind<true, true>(
-        result, frames, sizes, max_depth, skip_count, nullptr, nullptr));
-    internal_stacktrace::FixUpStack(result, frames, sizes,
-                                    static_cast<size_t>(max_depth), depth);
-    return static_cast<int>(depth);
-  }
-
-  return Unwind<true, false>(result, frames, sizes, max_depth, skip_count,
+  return Unwind<true, false>(result, frames, sizes,
+                             static_cast<size_t>(max_depth), skip_count,
                              nullptr, nullptr);
 }
 
@@ -140,56 +149,32 @@ internal_stacktrace::GetStackFramesWithContext(void** result, uintptr_t* frames,
                                                int* sizes, int max_depth,
                                                int skip_count, const void* uc,
                                                int* min_dropped_frames) {
-  if (internal_stacktrace::ShouldFixUpStack()) {
-    size_t depth = static_cast<size_t>(Unwind<true, true>(
-        result, frames, sizes, max_depth, skip_count, uc, min_dropped_frames));
-    internal_stacktrace::FixUpStack(result, frames, sizes,
-                                    static_cast<size_t>(max_depth), depth);
-    return static_cast<int>(depth);
-  }
-
-  return Unwind<true, true>(result, frames, sizes, max_depth, skip_count, uc,
+  return Unwind<true, true>(result, frames, sizes,
+                            static_cast<size_t>(max_depth), skip_count, uc,
                             min_dropped_frames);
+}
+
+ABSL_ATTRIBUTE_NOINLINE ABSL_ATTRIBUTE_NO_TAIL_CALL int
+internal_stacktrace::GetStackTraceNoFixup(void** result, int max_depth,
+                                          int skip_count) {
+  return Unwind<false, false>(result, nullptr, nullptr,
+                              static_cast<size_t>(max_depth), skip_count,
+                              nullptr, nullptr, /*unwind_with_fixup=*/false);
 }
 
 ABSL_ATTRIBUTE_NOINLINE ABSL_ATTRIBUTE_NO_TAIL_CALL int GetStackTrace(
     void** result, int max_depth, int skip_count) {
-  if (internal_stacktrace::ShouldFixUpStack()) {
-    if constexpr (kHaveAlloca) {
-      const size_t nmax = static_cast<size_t>(max_depth);
-      uintptr_t* frames =
-          static_cast<uintptr_t*>(alloca(nmax * sizeof(*frames)));
-      int* sizes = static_cast<int*>(alloca(nmax * sizeof(*sizes)));
-      size_t depth = static_cast<size_t>(Unwind<true, false>(
-          result, frames, sizes, max_depth, skip_count, nullptr, nullptr));
-      internal_stacktrace::FixUpStack(result, frames, sizes, nmax, depth);
-      return static_cast<int>(depth);
-    }
-  }
-
-  return Unwind<false, false>(result, nullptr, nullptr, max_depth, skip_count,
+  return Unwind<false, false>(result, nullptr, nullptr,
+                              static_cast<size_t>(max_depth), skip_count,
                               nullptr, nullptr);
 }
 
 ABSL_ATTRIBUTE_NOINLINE ABSL_ATTRIBUTE_NO_TAIL_CALL int
 GetStackTraceWithContext(void** result, int max_depth, int skip_count,
                          const void* uc, int* min_dropped_frames) {
-  if (internal_stacktrace::ShouldFixUpStack()) {
-    if constexpr (kHaveAlloca) {
-      const size_t nmax = static_cast<size_t>(max_depth);
-      uintptr_t* frames =
-          static_cast<uintptr_t*>(alloca(nmax * sizeof(*frames)));
-      int* sizes = static_cast<int*>(alloca(nmax * sizeof(*sizes)));
-      size_t depth = static_cast<size_t>(
-          Unwind<true, true>(result, frames, sizes, max_depth, skip_count, uc,
-                             min_dropped_frames));
-      internal_stacktrace::FixUpStack(result, frames, sizes, nmax, depth);
-      return static_cast<int>(depth);
-    }
-  }
-
-  return Unwind<false, true>(result, nullptr, nullptr, max_depth, skip_count,
-                             uc, min_dropped_frames);
+  return Unwind<false, true>(result, nullptr, nullptr,
+                             static_cast<size_t>(max_depth), skip_count, uc,
+                             min_dropped_frames);
 }
 
 void SetStackUnwinder(Unwinder w) {

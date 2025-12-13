@@ -33,7 +33,6 @@ class MockIdentityRequestDialogController
                const std::vector<IdentityProviderDataPtr>&,
                const std::vector<IdentityRequestAccountPtr>&,
                blink::mojom::RpMode,
-               const std::vector<IdentityRequestAccountPtr>&,
                AccountSelectionCallback,
                LoginToIdPCallback,
                DismissCallback,
@@ -90,6 +89,7 @@ class MockIdentityRequestDialogController
               RequestIdPRegistrationPermision,
               (const url::Origin&, base::OnceCallback<void(bool accepted)>),
               (override));
+  MOCK_METHOD(bool, DidShowUi, (), (const override));
 };
 
 }  // namespace content

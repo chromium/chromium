@@ -9,7 +9,10 @@ source_set("browser") {
     "passkey_data_type_controller.cc",
     "passkey_data_type_controller.h",
   ]
-  deps = [ "//components/sync" ]
+  deps = [
+    "//components/sync",
+    "//components/webauthn:features",
+  ]
 
   if (!is_android && !is_ios) {
     sources += [
@@ -39,12 +42,15 @@ source_set("browser") {
     deps += [
       ":passkey_model",
       "//base",
+      "//components/webauthn/core/browser/import",
     ]
   }
 }
 
 source_set("passkey_model") {
   sources = [
+    "gpm_user_verification_policy.cc",
+    "gpm_user_verification_policy.h",
     "passkey_model.cc",
     "passkey_model.h",
     "passkey_model_change.cc",
@@ -61,6 +67,26 @@ source_set("passkey_model") {
     "//device/fido",
   ]
   frameworks = [ "Foundation.framework" ]
+}
+
+source_set("client_data") {
+  sources = [
+    "client_data_json.cc",
+    "client_data_json.h",
+  ]
+  deps = [
+    ":common_utils",
+    "//base",
+    "//url",
+  ]
+}
+
+source_set("common_utils") {
+  sources = [
+    "common_utils.cc",
+    "common_utils.h",
+  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

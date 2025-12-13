@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Aspect ratio for regular video with aspect-ratio:auto
-  assert_approx_equals: aspect ratio before load expected 2 +/- 0.001 but got 0.6666666666666666
-Harness: the test ran to completion.
-

@@ -17,10 +17,9 @@
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 #include "components/paint_preview/common/recording_map.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
-#include "skia/rusty_png_feature.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkStream.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
+#include "third_party/skia/include/encode/SkPngRustEncoder.h"
 #include "ui/gfx/geometry/rect.h"
 
 constexpr size_t kMaxScreenshotFileSize = 50 * 1000L * 1000L;  // 50 MB.
@@ -74,7 +73,7 @@ void WriteBitmapToPng(const SkBitmap& bitmap) {
     return;
   }
   bool success_encode =
-      skia::EncodePng(&out_file, cropped_pixmap, /*options=*/{});
+      SkPngRustEncoder::Encode(&out_file, cropped_pixmap, /*options=*/{});
   if (success_encode) {
     VLOG(2) << "Wrote debug file: " << screenshot_filepath;
   } else {

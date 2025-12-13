@@ -175,7 +175,8 @@ void ServiceWorkerInstalledScriptReader::OnReadDataPrepared(
     // TODO(crbug.com/40120038): Avoid copying |metadata| if |client_| doesn't
     // need it.
     auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(metadata->size());
-    UNSAFE_TODO(memmove(buffer->data(), metadata->data(), metadata->size()));
+    base::as_writable_bytes(buffer->span())
+        .copy_from(base::as_bytes(base::span(*metadata)));
     meta_data_sender_ = std::make_unique<MetaDataSender>(
         std::move(buffer), std::move(meta_producer_handle));
     meta_data_sender_->Start(base::BindOnce(

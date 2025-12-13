@@ -11,7 +11,6 @@
 #include "chrome/browser/chromeos/printing/print_preview/print_view_manager_cros_base.h"
 #include "components/printing/common/print.mojom-forward.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "stdint.h"
 
 namespace content {

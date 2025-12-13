@@ -83,6 +83,7 @@ buildflag_header("buildflags") {
 if (is_android) {
   java_cpp_enum("blink_headers_java_enums_srcjar") {
     sources = [
+      "./common/context_menu_data/context_menu_data.h",
       "./common/input/web_input_event.h",
       "./mojom/context_menu/context_menu.mojom",
       "./mojom/input/input_handler.mojom",
@@ -107,7 +108,6 @@ source_set("test_headers") {
     "common/interest_group/test_interest_group_builder.h",
     "common/origin_trials/scoped_test_origin_trial_policy.h",
     "platform/scheduler/test/renderer_scheduler_test_support.h",
-    "platform/scheduler/test/web_fake_thread_scheduler.h",
     "platform/scheduler/test/web_mock_thread_scheduler.h",
     "test/frame_widget_test_helper.h",
     "test/test_web_frame_content_dumper.h",
@@ -115,9 +115,9 @@ source_set("test_headers") {
   ]
   public_deps = [ ":blink_headers" ]
   deps = [
-    "//base:base",
-    "//cc:cc",
-    "//testing/gmock:gmock",
+    "//base",
+    "//cc",
+    "//testing/gmock",
   ]
 }
 
@@ -223,7 +223,6 @@ source_set("blink_headers") {
     "platform/web_media_player_encrypted_media_client.h",
     "platform/web_media_player_source.h",
     "platform/web_media_source.h",
-    "platform/web_memory_pressure_listener.h",
     "platform/web_navigation_body_loader.h",
     "platform/web_network_state_notifier.h",
     "platform/web_policy_container.h",
@@ -242,7 +241,6 @@ source_set("blink_headers") {
     "platform/web_text_input_info.h",
     "platform/web_text_input_mode.h",
     "platform/web_text_input_type.h",
-    "platform/web_text_run.h",
     "platform/web_theme_engine.h",
     "platform/web_thread_safe_data.h",
     "platform/web_time_range.h",
@@ -325,6 +323,8 @@ source_set("blink_headers") {
     "web/web_image_cache.h",
     "web/web_input_element.h",
     "web/web_input_method_controller.h",
+    "web/web_interaction_effects_monitor.h",
+    "web/web_interaction_effects_monitor_observer.h",
     "web/web_label_element.h",
     "web/web_language_detection_details.h",
     "web/web_lifecycle_update.h",
@@ -437,7 +437,7 @@ source_set("blink_headers") {
     "//ui/base/dragdrop/mojom:mojom_shared",
     "//ui/base/ime",
     "//ui/base/ime/mojom",
-    "//ui/base/prediction:prediction",
+    "//ui/base/prediction",
     "//url",
   ]
 
@@ -446,22 +446,21 @@ source_set("blink_headers") {
   }
 
   deps = [
-    "//base:base",
-    "//cc:cc",
-    "//cc/paint:paint",
+    "//base",
+    "//cc",
+    "//cc/paint",
     "//components/viz/common",
     "//media/capture:capture_base",
     "//media/capture:capture_lib",
-    "//media/webrtc:webrtc",
-    "//mojo/public/cpp/bindings:bindings",
-    "//mojo/public/cpp/system:system",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
     "//printing/mojom",
     "//services/device/public/mojom:mojom_shared_cpp_sources",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//services/network/public/mojom",
-    "//third_party/blink/renderer/platform/wtf:wtf",
+    "//third_party/blink/renderer/platform/wtf",
     "//third_party/webrtc_overrides:webrtc_component",
-    "//ui/base:base",
+    "//ui/base",
     "//v8:v8_headers",
   ]
 }

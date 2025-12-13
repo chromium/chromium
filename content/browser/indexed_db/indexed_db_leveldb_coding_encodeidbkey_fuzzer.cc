@@ -20,27 +20,7 @@ using blink::mojom::IDBKeyType;
 // IDBKeyType has 7 possible values, so the lower 3 bits of |data| are used to
 // determine the IDBKeyType to return.
 IDBKeyType GetIDBKeyType(uint8_t data) {
-  auto enum_mask = data & 0x7;
-  switch (enum_mask) {
-    case 0:
-      return IDBKeyType::Invalid;
-    case 1:
-      return IDBKeyType::Array;
-    case 2:
-      return IDBKeyType::Binary;
-    case 3:
-      return IDBKeyType::String;
-    case 4:
-      return IDBKeyType::Date;
-    case 5:
-      return IDBKeyType::Number;
-    case 6:
-      return IDBKeyType::None;
-    case 7:
-      return IDBKeyType::Min;
-    default:
-      return IDBKeyType::Invalid;
-  }
+  return static_cast<IDBKeyType>(data & 0x7);
 }
 
 // Parse |fuzzed_data| to create an IndexedDBKey. This method takes uses the
@@ -103,16 +83,32 @@ IndexedDBKey CreateKey(FuzzedDataProvider* fuzzed_data,
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider fuzzed_data(data, size);
-  auto key = CreateKey(&fuzzed_data);
-  // Encoding fails if the key is invalid or if the recursion depth is too much.
-  // In prod, either of these cases will CHECK, but here we fail gracefully.
-  std::string result;
-  if (!content::indexed_db::MaybeEncodeIDBKey(key, &result)) {
-    return 0;
+  blink::IndexedDBKey key = CreateKey(&fuzzed_data);
+
+  // Old encoding scheme.
+  {
+    // Encoding fails if the key is invalid or if the recursion depth is too
+    // much. In prod, either of these cases will CHECK, but here we fail
+    // gracefully.
+    std::string result;
+    if (content::indexed_db::MaybeEncodeIDBKey(key, &result)) {
+      // Ensure that |result| can be decoded back into the original key.
+      auto result_str_view = std::string_view(result);
+      CHECK(content::indexed_db::DecodeIDBKey(&result_str_view).Equals(key));
+    }
   }
 
-  // Ensure that |result| can be decoded back into the original key.
-  auto result_str_view = std::string_view(result);
-  CHECK(content::indexed_db::DecodeIDBKey(&result_str_view).Equals(key));
+  // New (sortable) encoding scheme.
+  if (key.IsValid()) {
+    std::string encoded = content::indexed_db::EncodeSortableIDBKey(key);
+    IndexedDBKey decoded = content::indexed_db::DecodeSortableIDBKey(encoded);
+    // If too deeply nested, decoding will reject the input by returning an
+    // invalid key.
+    if (decoded.IsValid()) {
+      CHECK(decoded.Equals(key))
+          << key.DebugString()
+          << " could not be round-tripped through sortable encoding.";
+    }
+  }
   return 0;
 }

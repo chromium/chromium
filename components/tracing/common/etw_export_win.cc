@@ -18,9 +18,7 @@
 namespace tracing {
 namespace {
 
-BASE_FEATURE(kEnableEtwExports,
-             "EnableEtwExports",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableEtwExports, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Used to protect the upper 16 bits reserved by winmeta.xml as they
 // should not be used but older logging code and tools incorrectly used

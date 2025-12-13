@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/multi_draw_manager.h"
 
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 
@@ -275,39 +271,39 @@ void MultiDrawManager::CopyArraysHelper(GLsizei drawcount,
                                         const GLint* basevertices,
                                         const GLuint* baseinstances) {
   if (firsts) {
-    std::copy(firsts, firsts + drawcount,
+    std::copy(firsts, UNSAFE_TODO(firsts + drawcount),
               &result_.firsts[current_draw_offset_]);
   }
 
   if (counts) {
-    std::copy(counts, counts + drawcount,
+    std::copy(counts, UNSAFE_TODO(counts + drawcount),
               &result_.counts[current_draw_offset_]);
   }
 
   if (instance_counts) {
-    std::copy(instance_counts, instance_counts + drawcount,
+    std::copy(instance_counts, UNSAFE_TODO(instance_counts + drawcount),
               &result_.instance_counts[current_draw_offset_]);
   }
 
   if (basevertices) {
-    std::copy(basevertices, basevertices + drawcount,
+    std::copy(basevertices, UNSAFE_TODO(basevertices + drawcount),
               &result_.basevertices[current_draw_offset_]);
   }
 
   if (baseinstances) {
-    std::copy(baseinstances, baseinstances + drawcount,
+    std::copy(baseinstances, UNSAFE_TODO(baseinstances + drawcount),
               &result_.baseinstances[current_draw_offset_]);
   }
 
   if (offsets) {
     switch (index_type_) {
       case IndexStorageType::Offset:
-        std::copy(offsets, offsets + drawcount,
+        std::copy(offsets, UNSAFE_TODO(offsets + drawcount),
                   &result_.offsets[current_draw_offset_]);
         break;
       case IndexStorageType::Pointer:
         std::transform(
-            offsets, offsets + drawcount,
+            offsets, UNSAFE_TODO(offsets + drawcount),
             &result_.indices[current_draw_offset_], [](uint32_t offset) {
               return reinterpret_cast<void*>(static_cast<intptr_t>(offset));
             });

@@ -2,15 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/download/internal/common/in_memory_download_file.h"
 
 #include "base/android/jni_string.h"
-#include "base/files/file_util.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/process/process_handle.h"
 #include "base/strings/stringprintf.h"
@@ -145,7 +140,7 @@ void InMemoryDownloadFile::StreamActive(MojoResult result) {
             env, java_ref_,
             std::vector<unsigned char>(
                 incoming_data->data(),
-                incoming_data->data() + incoming_data_size));
+                UNSAFE_TODO(incoming_data->data() + incoming_data_size)));
         total_bytes_ += incoming_data_size;
         rate_estimator_.Increment(incoming_data_size);
         break;
@@ -216,3 +211,5 @@ bool InMemoryDownloadFile::IsMemoryFile() {
 }
 
 }  //  namespace download
+
+DEFINE_JNI(InMemoryDownloadFile)

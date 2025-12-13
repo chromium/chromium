@@ -2,29 +2,40 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/config.gni")
-import("//build/config/android/rules.gni")
-import("//chrome/browser/buildflags.gni")
-import("//third_party/jni_zero/jni_zero.gni")
-
-android_library("java") {
-  sources = [ "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuNativeDelegateImpl.java" ]
-
-  srcjar_deps = [ ":jni_headers" ]
-
-  deps = [
-    "//base:base_java",
-    "//build/android:build_java",
-    "//components/browser_ui/share/android:java",
-    "//components/embedder_support/android:context_menu_java",
-    "//content/public/android:content_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/jni_zero:jni_zero_java",
-    "//ui/android:ui_no_recycler_view_java",
-    "//url:gurl_java",
+source_set("contextmenu") {
+  sources = [
+    "context_menu_features.cc",
+    "context_menu_features.h",
   ]
+
+  public_deps = [ "//base" ]
 }
 
-generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuNativeDelegateImpl.java" ]
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//chrome/browser/buildflags.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+
+  android_library("java") {
+    sources = [ "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuNativeDelegateImpl.java" ]
+
+    srcjar_deps = [ ":jni_headers" ]
+
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//components/browser_ui/share/android:java",
+      "//components/embedder_support/android:context_menu_java",
+      "//content/public/android:content_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//ui/android:ui_no_recycler_view_java",
+      "//url:gurl_java",
+    ]
+  }
+
+  generate_jni("jni_headers") {
+    sources = [ "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuNativeDelegateImpl.java" ]
+  }
 }

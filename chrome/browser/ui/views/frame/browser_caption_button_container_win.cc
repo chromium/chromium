@@ -45,26 +45,26 @@ BrowserCaptionButtonContainer::BrowserCaptionButtonContainer(
     BrowserFrameViewWin* frame_view)
     : frame_view_(frame_view),
       minimize_button_(AddChildView(CreateCaptionButton(
-          base::BindRepeating(&BrowserFrame::Minimize,
-                              base::Unretained(frame_view_->frame())),
+          base::BindRepeating(&BrowserWidget::Minimize,
+                              base::Unretained(frame_view_->browser_widget())),
           frame_view_,
           VIEW_ID_MINIMIZE_BUTTON,
           IDS_APP_ACCNAME_MINIMIZE))),
       maximize_button_(AddChildView(CreateCaptionButton(
-          base::BindRepeating(&BrowserFrame::Maximize,
-                              base::Unretained(frame_view_->frame())),
+          base::BindRepeating(&BrowserWidget::Maximize,
+                              base::Unretained(frame_view_->browser_widget())),
           frame_view_,
           VIEW_ID_MAXIMIZE_BUTTON,
           IDS_APP_ACCNAME_MAXIMIZE))),
       restore_button_(AddChildView(CreateCaptionButton(
-          base::BindRepeating(&BrowserFrame::Restore,
-                              base::Unretained(frame_view_->frame())),
+          base::BindRepeating(&BrowserWidget::Restore,
+                              base::Unretained(frame_view_->browser_widget())),
           frame_view_,
           VIEW_ID_RESTORE_BUTTON,
           IDS_APP_ACCNAME_RESTORE))),
       close_button_(AddChildView(CreateCaptionButton(
-          base::BindRepeating(&BrowserFrame::CloseWithReason,
-                              base::Unretained(frame_view_->frame()),
+          base::BindRepeating(&BrowserWidget::CloseWithReason,
+                              base::Unretained(frame_view_->browser_widget()),
                               views::Widget::ClosedReason::kCloseButtonClicked),
           frame_view_,
           VIEW_ID_CLOSE_BUTTON,
@@ -83,7 +83,7 @@ BrowserCaptionButtonContainer::BrowserCaptionButtonContainer(
                                    /* adjust_width_for_height */ false,
                                    views::MinimumFlexSizeRule::kScaleToZero));
 
-  if (frame_view_->browser_view()->AppUsesWindowControlsOverlay()) {
+  if (frame_view_->GetBrowserView()->AppUsesWindowControlsOverlay()) {
     UpdateButtonToolTipsForWindowControlsOverlay();
   }
 }
@@ -98,7 +98,7 @@ int BrowserCaptionButtonContainer::NonClientHitTest(
   // The native window that encompasses Web Contents gets the mouse events meant
   // for the caption buttons, so returning HTClient allows these buttons to be
   // highlighted on hover.
-  if (frame_view_->browser_view()->IsWindowControlsOverlayEnabled() &&
+  if (frame_view_->GetBrowserView()->IsWindowControlsOverlayEnabled() &&
       (HitTestCaptionButton(minimize_button_, point) ||
        HitTestCaptionButton(maximize_button_, point) ||
        HitTestCaptionButton(restore_button_, point) ||
@@ -121,7 +121,7 @@ int BrowserCaptionButtonContainer::NonClientHitTest(
 }
 
 void BrowserCaptionButtonContainer::OnWindowControlsOverlayEnabledChanged() {
-  if (frame_view_->browser_view()->IsWindowControlsOverlayEnabled()) {
+  if (frame_view_->GetBrowserView()->IsWindowControlsOverlayEnabled()) {
     SetBackground(
         views::CreateSolidBackground(frame_view_->GetTitlebarColor()));
 
@@ -136,7 +136,7 @@ void BrowserCaptionButtonContainer::OnWindowControlsOverlayEnabledChanged() {
 }
 
 void BrowserCaptionButtonContainer::OnThemeChanged() {
-  if (frame_view_->browser_view()->IsWindowControlsOverlayEnabled()) {
+  if (frame_view_->GetBrowserView()->IsWindowControlsOverlayEnabled()) {
     SetBackground(
         views::CreateSolidBackground(frame_view_->GetTitlebarColor()));
   }
@@ -159,7 +159,7 @@ void BrowserCaptionButtonContainer::AddedToWidget() {
 
   UpdateButtons();
 
-  if (frame_view_->browser_view()->IsWindowControlsOverlayEnabled()) {
+  if (frame_view_->GetBrowserView()->IsWindowControlsOverlayEnabled()) {
     SetBackground(
         views::CreateSolidBackground(frame_view_->GetTitlebarColor()));
     // BrowserView paints to a layer, so this must do the same to ensure that it
@@ -180,7 +180,7 @@ void BrowserCaptionButtonContainer::OnWidgetBoundsChanged(
 }
 
 void BrowserCaptionButtonContainer::UpdateButtons() {
-  if (!ShouldBrowserCustomDrawTitlebar(frame_view_->browser_view())) {
+  if (!ShouldBrowserCustomDrawTitlebar(frame_view_->GetBrowserView())) {
     minimize_button_->SetVisible(false);
     maximize_button_->SetVisible(false);
     restore_button_->SetVisible(false);
@@ -188,10 +188,10 @@ void BrowserCaptionButtonContainer::UpdateButtons() {
     return;
   }
 
-  minimize_button_->SetVisible(frame_view_->browser_view()->CanMinimize());
+  minimize_button_->SetVisible(frame_view_->GetBrowserView()->CanMinimize());
 
   const bool is_maximized = frame_view_->IsMaximized();
-  const bool can_maximize = frame_view_->browser_view()->CanMaximize();
+  const bool can_maximize = frame_view_->GetBrowserView()->CanMaximize();
   restore_button_->SetVisible(is_maximized && can_maximize);
   maximize_button_->SetVisible(!is_maximized && can_maximize);
 
@@ -207,7 +207,7 @@ void BrowserCaptionButtonContainer::UpdateButtons() {
 
 void BrowserCaptionButtonContainer::
     UpdateButtonToolTipsForWindowControlsOverlay() {
-  if (frame_view_->browser_view()->IsWindowControlsOverlayEnabled()) {
+  if (frame_view_->GetBrowserView()->IsWindowControlsOverlayEnabled()) {
     minimize_button_->SetTooltipText(
         minimize_button_->GetViewAccessibility().GetCachedName());
     maximize_button_->SetTooltipText(

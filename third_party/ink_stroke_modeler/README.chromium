@@ -1,7 +1,8 @@
 Name: Ink Stroke Modeler
 URL: https://github.com/google/ink-stroke-modeler
 Version: N/A
-Revision: fe79520c9ad7d2d445d26d3c59fda6fc54eb4d5c
+Revision: 2cd45e8683025c28fa2efcf672ad46607e8af869
+Update Mechanism: Manual
 License: Apache-2.0
 License File: LICENSE
 Shipped: yes

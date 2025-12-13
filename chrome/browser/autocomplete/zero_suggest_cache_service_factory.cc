@@ -27,7 +27,7 @@ ZeroSuggestCacheServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<ZeroSuggestCacheService>(
       std::make_unique<ChromeAutocompleteSchemeClassifier>(profile),
-      profile->GetPrefs(), OmniboxFieldTrial::kZeroSuggestCacheMaxSize.Get());
+      profile->GetPrefs());
 }
 
 ZeroSuggestCacheServiceFactory::ZeroSuggestCacheServiceFactory()

@@ -26,6 +26,7 @@
 #include "google_apis/credentials_mode.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -132,7 +133,8 @@ std::optional<std::string> MapJsonErrorToReason(const std::string& error_body) {
 }
 
 std::unique_ptr<base::Value> ParseJson(const std::string& json) {
-  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(json);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json.has_value()) {
     std::string trimmed_json;
     if (json.size() < 80) {
@@ -243,7 +245,8 @@ void UrlFetchRequestBase::StartAfterPrepare(
   // headers, so calling it for each header will result in only the last header
   // being set in request headers.
   if (!custom_user_agent.empty())
-    request->headers.SetHeader("User-Agent", custom_user_agent);
+    request->headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
+                               custom_user_agent);
   request->headers.AddHeaderFromString(kGDataVersionHeader);
   request->headers.AddHeaderFromString(
       base::StringPrintf(kAuthorizationHeaderFormat, access_token.data()));

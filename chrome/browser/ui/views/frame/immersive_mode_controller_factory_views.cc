@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_stub.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -17,16 +19,20 @@
 namespace chrome {
 
 std::unique_ptr<ImmersiveModeController> CreateImmersiveModeController(
-    const BrowserView* browser_view) {
+    BrowserView* browser_view) {
 #if BUILDFLAG(IS_CHROMEOS)
-  return std::make_unique<ImmersiveModeControllerChromeos>();
+  return std::make_unique<ImmersiveModeControllerChromeos>(
+      browser_view->browser());
 #elif BUILDFLAG(IS_MAC)
   if (browser_view->UsesImmersiveFullscreenMode()) {
-    return CreateImmersiveModeControllerMac(browser_view);
+    return std::make_unique<ImmersiveModeControllerMac>(
+        browser_view->browser(),
+        /*separate_tab_strip=*/browser_view
+            ->UsesImmersiveFullscreenTabbedMode());
   }
-  return std::make_unique<ImmersiveModeControllerStub>();
+  return std::make_unique<ImmersiveModeControllerStub>(browser_view->browser());
 #else
-  return std::make_unique<ImmersiveModeControllerStub>();
+  return std::make_unique<ImmersiveModeControllerStub>(browser_view->browser());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

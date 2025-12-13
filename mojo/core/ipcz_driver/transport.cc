@@ -356,9 +356,17 @@ bool Transport::Activate(IpczHandle transport,
   // within Start(), so it's critical that we don't call it while holding our
   // lock.
   channel->Start();
+
+  if (channel->SupportsChannelUpgrade() &&
+      source_type() == EndpointType::kBroker &&
+      destination_type() == EndpointType::kNonBroker) {
+    base::AutoLock lock(lock_);
+    channel->OfferChannelUpgrade();
+  }
+
   for (auto& transmission : pending_transmissions) {
-    channel->Write(Channel::Message::CreateIpczMessage(
-        base::span(transmission.bytes), std::move(transmission.handles)));
+    channel->WriteNextIpczMessage(base::span(transmission.bytes),
+                                  std::move(transmission.handles));
   }
 
   return true;
@@ -418,8 +426,7 @@ bool Transport::Transmit(base::span<const uint8_t> data,
     channel = channel_;
   }
 
-  channel->Write(
-      Channel::Message::CreateIpczMessage(data, std::move(platform_handles)));
+  channel->WriteNextIpczMessage(data, std::move(platform_handles));
   return true;
 }
 

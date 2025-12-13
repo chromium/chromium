@@ -84,9 +84,6 @@ class CookieSettingsBase {
   // Enum for measuring the mechanism for re-enabling third-party cookies when
   // applying 3PCD experiment. These values are persisted to logs. Entries
   // should not be renumbered and numeric values should never be reused.
-  //
-  // Keep in sync with ThirdPartyCookieAllowMechanism at
-  // //src/tools/metrics/histograms/metadata/page/enums.xml
   enum class ThirdPartyCookieAllowMechanism {
     kNone = 0,
     // Allow by explicit cookie content setting (e.g. UserBypass).
@@ -136,7 +133,7 @@ class CookieSettingsBase {
     // Allowed by scheme.
     kAllowByScheme = 19,
     // Allowed by tracking protection exception.
-    kAllowByTrackingProtectionException = 20,
+    // kAllowByTrackingProtectionException = 20,  // Deprecated
     // Allowed by sandbox 'allow-same-site-none-cookies' value.
     kAllowBySandboxValue = 21,
 
@@ -259,7 +256,7 @@ class CookieSettingsBase {
   };
 
   // Set of types relevant for CookieSettings.
-  using CookieSettingsTypeSet = base::fixed_flat_set<ContentSettingsType, 11>;
+  using CookieSettingsTypeSet = base::fixed_flat_set<ContentSettingsType, 8>;
 
   // ContentSettings listed in this set will be automatically synced to the
   // CookieSettings instance in the network service.
@@ -279,7 +276,7 @@ class CookieSettingsBase {
   // This may be called on any thread.
   bool ShouldDeleteCookieOnExit(
       const ContentSettingsForOneType& cookie_settings,
-      const std::string& domain,
+      std::string_view domain,
       net::CookieSourceScheme scheme) const;
 
   // Returns true if the page identified by (`url`, `site_for_cookies`,
@@ -340,21 +337,21 @@ class CookieSettingsBase {
   // Legacy behavior is based on the domain of the cookie itself, effectively
   // the domain of the requested URL, which may be embedded in another domain.
   net::CookieAccessSemantics GetCookieAccessSemanticsForDomain(
-      const std::string& cookie_domain) const;
+      std::string_view cookie_domain) const;
 
   // Gets the setting that controls whether legacy access is allowed for a given
   // cookie domain. The |cookie_domain| can be provided as the direct output of
   // CanonicalCookie::Domain(), i.e. any leading dot does not have to be
   // removed.
   ContentSetting GetSettingForLegacyCookieAccess(
-      const std::string& cookie_domain) const;
+      std::string_view cookie_domain) const;
 
   // Gets the setting that controls whether legacy scope is allowed for a given
   // cookie domain. The `cookie_domain` can be provided as the direct output of
   // CanonicalCookie::Domain(), i.e. any leading dot does not have to be
   // removed.
   ContentSetting GetSettingForLegacyCookieScope(
-      const std::string& cookie_domain) const;
+      std::string_view cookie_domain) const;
 
   // Returns the cookie legacy scope (legacy or nonlegacy) to be applied for
   // cookies on the given domain. The `cookie_domain` can be provided as the
@@ -364,7 +361,7 @@ class CookieSettingsBase {
   // Legacy behavior is based on the domain of the cookie itself, effectively
   // the domain of the requested URL, which may be embedded in another domain.
   net::CookieScopeSemantics GetCookieScopeSemanticsForDomain(
-      const std::string& cookie_domain) const;
+      std::string_view cookie_domain) const;
 
   // Returns whether a cookie should be attached regardless of its SameSite
   // value vs the request context.
@@ -431,13 +428,8 @@ class CookieSettingsBase {
       const GURL& first_party_url,
       net::CookieSettingOverrides overrides) const;
 
-  // Returns true if there is a settings for the origin trial for third-party
-  // cookie deprecation blocking third-party cookie access under
-  // `first_party_url`.
-  bool IsBlockedByTopLevel3pcdOriginTrial(const GURL& first_party_url) const;
-
   // The cookie behavior that may result from a cookie settings modifier
-  // (`CookieSettingOverrides` or origin trial).
+  // (`CookieSettingOverrides`).
   enum class ModifierMode {
     // Indicates that the modifiers are not enough to determine the resulting
     // cookie behavior.
@@ -454,14 +446,14 @@ class CookieSettingsBase {
     kBlock = 3,
   };
 
-  // Will return the `ModifierMode` based on the `CookieSettingOverrides` and
-  // top-level 3pcd origin trial status.
+  // Will return the `ModifierMode` based on the `CookieSettingOverrides`
+  // status.
   ModifierMode GetModifierMode(
       base::optional_ref<const url::Origin> top_frame_origin,
       net::CookieSettingOverrides overrides) const;
 
   // Returns whether third-party cookies should be blocked solely due to
-  // third-party-cookie "modifiers" (`CookieSettingOverrides` or origin trial).
+  // third-party-cookie "modifiers" (`CookieSettingOverrides`).
   // If the modifiers are not enough to determine a decision, `std::nullopt`
   // will be returned.
   std::optional<bool> MaybeBlockThirdPartyCookiesPerModifiers(
@@ -471,9 +463,9 @@ class CookieSettingsBase {
  private:
   // Returns a content setting for the requested parameters and populates |info|
   // if not null. Implementations might only implement a subset of all
-  // ContentSettingsTypes. Currently only COOKIES, TPCD_TRIAL, STORAGE_ACCESS,
-  // TPCD_METADATA_GRANTS, TPCD_HEURISTICS_GRANTS, TOP_LEVEL_TPCD_TRIAL,
-  // TOP_LEVEL_STORAGE_ACCESS, and FEDERATED_IDENTITY_SHARING are required.
+  // ContentSettingsTypes. Currently only COOKIES, STORAGE_ACCESS,
+  // TPCD_METADATA_GRANTS, TPCD_HEURISTICS_GRANTS, TOP_LEVEL_STORAGE_ACCESS, and
+  // FEDERATED_IDENTITY_SHARING are required.
   virtual ContentSetting GetContentSetting(const GURL& primary_url,
                                            const GURL& secondary_url,
                                            ContentSettingsType content_type,
@@ -498,18 +490,9 @@ class CookieSettingsBase {
                                const GURL& first_party_url,
                                net::CookieSettingOverrides overrides) const;
 
-  bool IsAllowedBy3pcdTrialSettings(
-      const GURL& url,
-      const GURL& first_party_url,
-      net::CookieSettingOverrides overrides) const;
-
   IsAllowedWithMetadata IsAllowedByTrackingProtectionSetting(
       const GURL& url,
       const GURL& first_party_url) const;
-
-  bool IsAllowedByTopLevel3pcdTrialSettings(
-      const GURL& first_party_url,
-      net::CookieSettingOverrides overrides) const;
 
   bool IsAllowedBy3pcdHeuristicsGrantsSettings(
       const GURL& url,
@@ -558,11 +541,9 @@ class CookieSettingsBase {
       net::CookieSettingOverrides overrides) const = 0;
 
   // Returns whether Third Party Cookie Deprecation mitigations should take
-  // effect (under `first_party_url`). True when mitigations are enabled for
-  // 3PCD or when third-party cookies are not blocked and the origin trial for
-  // 3PCD is enabled for `first_party_url`.
+  // effect. True when mitigations are enabled for
+  // 3PCD.
   bool ShouldConsiderMitigationsFor3pcd(
-      const GURL& first_party_url,
       net::CookieSettingOverrides overrides) const;
   // Returns whether Third Party Cookie Deprecation mitigations are enabled,
   // which requires that we are not blocking or allowing all 3PC and that either
@@ -571,7 +552,7 @@ class CookieSettingsBase {
 
   // Returns whether |scheme| is always allowed to access 3p cookies.
   virtual bool IsThirdPartyCookiesAllowedScheme(
-      const std::string& scheme) const = 0;
+      std::string_view scheme) const = 0;
 };
 
 }  // namespace content_settings

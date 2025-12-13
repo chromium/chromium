@@ -57,10 +57,11 @@ void PluginPrefs::UpdatePdfPolicy(const std::string& pref_name) {
   always_open_pdf_externally_ =
       prefs_->GetBoolean(prefs::kPluginsAlwaysOpenPdfExternally);
 
-  content::PluginService::GetInstance()->PurgePluginListCache(profile_, false);
+  content::PluginService::GetInstance()->PurgePluginListCache(profile_);
   std::vector<Profile*> otr_profiles = profile_->GetAllOffTheRecordProfiles();
-  for (Profile* otr : otr_profiles)
-    content::PluginService::GetInstance()->PurgePluginListCache(otr, false);
+  for (Profile* otr : otr_profiles) {
+    content::PluginService::GetInstance()->PurgePluginListCache(otr);
+  }
 }
 
 void PluginPrefs::SetPrefs(PrefService* prefs) {

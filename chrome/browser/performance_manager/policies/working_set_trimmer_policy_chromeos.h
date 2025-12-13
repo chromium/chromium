@@ -37,7 +37,8 @@ class WorkingSetTrimmerPolicyChromeOSTest;
 // all frames frozen, additionally it will add working set trim under memory
 // pressure.
 class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
-                                        chromeos::PowerManagerClient::Observer {
+                                        chromeos::PowerManagerClient::Observer,
+                                        public base::MemoryPressureListener {
  public:
   // A delegate interface for checking ARCVM status. This interface allows us 1)
   // to test WorkingSetTrimmerPolicyChromeOS more easily, and 2) to have all the
@@ -103,9 +104,7 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
  protected:
   friend class WorkingSetTrimmerPolicyChromeOSTest;
 
-  // virtual for testing
-  virtual void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  void OnMemoryPressure(base::MemoryPressureLevel level) override;
   virtual mechanism::WorkingSetTrimmerChromeOS* GetTrimmer();
 
   void set_trim_on_freeze(bool enabled) { trim_on_freeze_ = enabled; }
@@ -128,8 +127,7 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
 
   // TrimArcVmProcesses will ask the delegate if it is safe to reclaim memory
   // from ARCVM, and do that when it is. These are virtual for testing.
-  virtual void TrimArcVmProcesses(
-      base::MemoryPressureListener::MemoryPressureLevel level);
+  virtual void TrimArcVmProcesses(base::MemoryPressureLevel level);
   virtual void OnTrimArcVmProcesses(mechanism::ArcVmReclaimType reclaim_type,
                                     bool is_first_trim_post_boot);
   virtual void OnArcVmTrimStarting();
@@ -155,7 +153,8 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
   std::optional<base::TimeTicks> last_arcvm_trim_;
   std::optional<base::TimeTicks> last_arcvm_trim_success_;
 
-  std::optional<base::MemoryPressureListener> memory_pressure_listener_;
+  std::optional<base::MemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 
  private:
   bool trim_on_freeze_ = false;

@@ -55,6 +55,11 @@ ServiceEnvironment::ServiceEnvironment(
 
 ServiceEnvironment::~ServiceEnvironment() = default;
 
+base::Process ServiceEnvironment::GetRunningService() {
+  return is_valid() && service_->is_valid() ? service_->GetRunningService()
+                                            : base::Process();
+}
+
 void ServiceEnvironment::SetLogMessageCallback(
     ScopedLogGrabber::LogMessageCallback callback) {
   log_grabber_.SetLogMessageCallback(std::move(callback));

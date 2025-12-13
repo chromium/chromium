@@ -11,7 +11,7 @@
 #include "components/remote_cocoa/common/application.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace remote_cocoa {
 

@@ -6,8 +6,6 @@
 
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/webnn_constant_operand.h"
-#include "services/webnn/webnn_object_impl.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace webnn {
 
@@ -15,8 +13,7 @@ WebNNPendingConstantOperand::WebNNPendingConstantOperand(
     blink::WebNNPendingConstantToken handle,
     OperandDataType data_type,
     base::span<const uint8_t> data)
-    : webnn::WebNNObjectImpl<blink::WebNNPendingConstantToken>(
-          std::move(handle)),
+    : handle_(std::move(handle)),
       data_type_(data_type),
       data_(base::HeapArray<uint8_t>::CopiedFrom(data)) {}
 

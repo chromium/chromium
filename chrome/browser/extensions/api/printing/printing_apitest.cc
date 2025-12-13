@@ -69,7 +69,7 @@ class PrintingApiTest : public PrintingApiTestBase {
  public:
   void PreRunTestOnMainThread() override {
     PrintingApiTestBase::PreRunTestOnMainThread();
-    helper_->Init(browser()->profile());
+    helper_->Init(profile());
   }
 
   void TearDownOnMainThread() override {

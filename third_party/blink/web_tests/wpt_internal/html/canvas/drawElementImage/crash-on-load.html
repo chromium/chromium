@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<title>Canvas.drawElementImage: drawElementImage with missing images doesn't crash</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<link rel="author" href="mailto:schenney@chromium.org">
+<link rel="match" href="basic-rect-ref.html">
+<style>
+#child {
+  width: 100px;
+  height: 100px;
+  background: green;
+}
+#canvas {
+  background: grey;
+}
+img {
+    width: 100px;
+    height: 100px;
+}
+</style>
+<canvas id=canvas width="200px" height="200px" style="background-color: grey" layoutsubtree=true>
+  <div id=child>
+     <img id=image src="resoces/red-green-animated.gif"/>
+  </div>
+</canvas>
+<script>
+function runTest() {
+  canvas.getContext("2d").drawElementImage(child, 20, 30);
+}
+runTest();
+</script>
+</html>

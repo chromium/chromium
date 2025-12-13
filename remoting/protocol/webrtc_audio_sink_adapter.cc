@@ -61,11 +61,17 @@ void WebrtcAudioSinkAdapter::OnData(const void* audio_data,
   }
   audio_packet->set_bytes_per_sample(AudioPacket::BYTES_PER_SAMPLE_2);
 
-  if (number_of_channels != 2) {
-    LOG(WARNING) << "Unsupported number of channels: " << number_of_channels;
-    return;
+  switch (number_of_channels) {
+    case 1:
+      audio_packet->set_channels(AudioPacket::CHANNELS_MONO);
+      break;
+    case 2:
+      audio_packet->set_channels(AudioPacket::CHANNELS_STEREO);
+      break;
+    default:
+      LOG(WARNING) << "Unsupported number of channels: " << number_of_channels;
+      return;
   }
-  audio_packet->set_channels(AudioPacket::CHANNELS_STEREO);
 
   size_t data_size =
       number_of_frames * number_of_channels * (bits_per_sample / 8);
@@ -73,7 +79,7 @@ void WebrtcAudioSinkAdapter::OnData(const void* audio_data,
 
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&AudioStub::ProcessAudioPacket, audio_stub_,
-                                std::move(audio_packet), base::OnceClosure()));
+                                std::move(audio_packet), base::DoNothing()));
 }
 
 }  // namespace remoting::protocol

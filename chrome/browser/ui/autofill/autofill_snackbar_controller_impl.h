@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/autofill/autofill_snackbar_controller.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_type.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_view.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill {
@@ -43,6 +44,14 @@ class AutofillSnackbarControllerImpl : public AutofillSnackbarController {
       base::OnceClosure on_action_clicked_callback,
       std::optional<base::OnceClosure> on_dismiss_callback);
 
+  // Similar to Show() but includes a `filled_card`. For some cards such as BNPL
+  // virtual cards, data from `filled_card_` will be used to customize the
+  // snackbar text.
+  virtual void ShowPaymentsSnackbar(
+      AutofillSnackbarType type,
+      const CreditCard& filled_card,
+      base::OnceClosure on_action_clicked_callback);
+
   // AutofillSnackbarController:
   void OnActionClicked() override;
   void OnDismissed() override;
@@ -62,6 +71,13 @@ class AutofillSnackbarControllerImpl : public AutofillSnackbarController {
   raw_ptr<content::WebContents> web_contents_;
 
   raw_ptr<AutofillSnackbarView> autofill_snackbar_view_ = nullptr;
+
+  // The filled card for which the snackbar was shown. Currently used for some
+  // flows if the name or nickname of the filled card is used in the snackbar
+  // text, for example in the text for a BNPL virtual card. This is set during
+  // `AutofillSnackbarControllerImpl::ShowPaymentsSnackbar()`, and is
+  // `std::nullopt` otherwise.
+  std::optional<CreditCard> filled_card_;
 
   // The type of the progress dialog that is being displayed.
   AutofillSnackbarType autofill_snackbar_type_ =

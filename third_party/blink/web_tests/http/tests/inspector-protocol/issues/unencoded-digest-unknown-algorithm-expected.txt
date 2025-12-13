@@ -1,0 +1,16 @@
+Verifies issue creation for an `Unencoded-Digest` header with an unknown algorithm.
+Issue reported: {
+    issue : {
+        code : UnencodedDigestIssue
+        details : {
+            unencodedDigestIssueDetails : {
+                error : UnknownAlgorithm
+                request : {
+                    requestId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/unencoded-digest-test.php?digest=unknown%3D%3ASGVsbG8sIFdvcmxkIQ%3D%3D%3A
+                }
+            }
+        }
+    }
+}
+

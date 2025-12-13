@@ -9,9 +9,7 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/install_signer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -20,9 +18,14 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/install_prefs_helper.h"
+#include "extensions/browser/install_signer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_constants.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
+#endif
 
 namespace safe_browsing {
 

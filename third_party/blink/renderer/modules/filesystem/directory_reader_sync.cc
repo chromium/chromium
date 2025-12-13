@@ -46,7 +46,7 @@ DirectoryReaderSync::DirectoryReaderSync(DOMFileSystemBase* file_system,
 
 EntrySyncHeapVector DirectoryReaderSync::readEntries(
     ExceptionState& exception_state) {
-  auto success_callback_wrapper = WTF::BindRepeating(
+  auto success_callback_wrapper = BindRepeating(
       [](DirectoryReaderSync* persistent_reader, GCedEntryHeapVector* entries) {
         persistent_reader->entries_.reserve(persistent_reader->entries_.size() +
                                             entries->size());
@@ -56,7 +56,7 @@ EntrySyncHeapVector DirectoryReaderSync::readEntries(
         }
       },
       WrapPersistentIfNeeded(this));
-  auto error_callback_wrapper = WTF::BindOnce(
+  auto error_callback_wrapper = BindOnce(
       [](DirectoryReaderSync* persistent_reader, base::File::Error error) {
         persistent_reader->error_code_ = error;
       },

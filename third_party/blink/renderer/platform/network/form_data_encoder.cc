@@ -27,8 +27,8 @@
 
 #include <array>
 #include <limits>
+#include <string_view>
 
-#include "base/compiler_specific.h"
 #include "base/rand_util.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
@@ -249,7 +249,7 @@ void FormDataEncoder::EncodeStringAsFormData(Vector<char>& buffer,
                                              const std::string& string,
                                              Mode mode) {
   // Same safe characters as Netscape for compatibility.
-  static const char kSafeCharacters[] = "-._*";
+  static constexpr std::string_view kSafeCharacters = "-._*";
 
   // http://www.w3.org/TR/html4/interact/forms.html#h-17.13.4.1
   const size_t length = string.length();
@@ -258,7 +258,7 @@ void FormDataEncoder::EncodeStringAsFormData(Vector<char>& buffer,
 
     if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
         (c >= '0' && c <= '9') ||
-        (c != '\0' && UNSAFE_TODO(strchr(kSafeCharacters, c)))) {
+        (c != '\0' && kSafeCharacters.find(c) != std::string_view::npos)) {
       buffer.push_back(c);
     } else if (c == ' ') {
       buffer.push_back('+');

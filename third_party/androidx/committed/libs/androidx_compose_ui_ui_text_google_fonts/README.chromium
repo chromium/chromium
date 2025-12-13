@@ -1,7 +1,7 @@
 Name: Compose Google Fonts integration
 Short Name: ui-text-google-fonts
-URL: https://developer.android.com/jetpack/androidx/releases/compose-ui#1.10.0-SNAPSHOT
-Version: 1.10.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/14586925/artifacts/repository/androidx/compose/ui/ui-text-google-fonts/1.11.0-SNAPSHOT/ui-text-google-fonts-1.11.0-20251213.041943-1.aar
+Version: 1.11.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 Compose Downloadable Fonts integration for Google Fonts
+
+See also: https://developer.android.com/jetpack/androidx/releases/compose-ui#1.11.0-SNAPSHOT
+
 
 Local Modifications:
 No modifications.

@@ -156,7 +156,10 @@ enum class EditorStates {
   //  Increase by 1 when the feature is blocked because there is an associated
   //  policy that disables the feature.
   kBlockedByPolicy = 47,
-  kMaxValue = kBlockedByPolicy,
+  kBlockedByInvalidSelection = 48,
+  //  Increase by 1 when the feature is blocked because the current selection is
+  //  invalid, e.g. selection that causes the utf conversion to fail.
+  kMaxValue = kBlockedByInvalidSelection,
 };
 
 }  // namespace ash::input_method

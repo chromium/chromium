@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_safe_browsing_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/apple/url_conversions.h"
@@ -144,19 +144,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       base::UserMetricsAction("IOSPrivacySafeBrowsingSettingsCloseWithSwipe"));
 }
 
-#pragma mark - Actions
-
-// Called when the user clicks on a information button.
-- (void)didTapUIInfoButton:(UIButton*)buttonView {
-  CGPoint hitPoint = [buttonView convertPoint:CGPointZero
-                                       toView:self.tableView];
-  NSIndexPath* indexPath = [self.tableView indexPathForRowAtPoint:hitPoint];
-  TableViewModel* model = self.tableViewModel;
-  TableViewItem* selectedItem = [model itemAtIndexPath:indexPath];
-
-  [self.modelDelegate didTapInfoButton:buttonView onItem:selectedItem];
-}
-
 #pragma mark - UITableViewDataSource
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
@@ -165,11 +152,14 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
                      cellForRowAtIndexPath:indexPath];
   cell.selectionStyle = UITableViewCellSelectionStyleBlue;
 
-  TableViewInfoButtonCell* infoCell =
-      base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
-  [infoCell.trailingButton addTarget:self
-                              action:@selector(didTapUIInfoButton:)
-                    forControlEvents:UIControlEventTouchUpInside];
+  UIColor* selectedColor =
+      [UIColor colorNamed:kTextfieldHighlightBackgroundColor];
+
+  if (![cell.selectedBackgroundView.backgroundColor isEqual:selectedColor]) {
+    UIView* selectedBackgroundView = [[UIView alloc] init];
+    selectedBackgroundView.backgroundColor = selectedColor;
+    cell.selectedBackgroundView = selectedBackgroundView;
+  }
 
   return cell;
 }

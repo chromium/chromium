@@ -31,9 +31,10 @@ Feature::Availability PermissionFeature::IsAvailableToContextImpl(
     return availability;
 
   if (extension && !extension->permissions_data()->HasAPIPermission(name()))
-    return CreateAvailability(NOT_PRESENT, extension->GetType());
+    return CreateAvailability(AvailabilityResult::kNotPresent,
+                              extension->GetType());
 
-  return CreateAvailability(IS_AVAILABLE);
+  return CreateAvailability(AvailabilityResult::kIsAvailable);
 }
 
 }  // namespace extensions

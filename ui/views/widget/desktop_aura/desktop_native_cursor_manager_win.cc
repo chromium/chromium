@@ -4,12 +4,17 @@
 
 #include "ui/views/widget/desktop_aura/desktop_native_cursor_manager_win.h"
 
+#include <windows.h>
+#include <winuser.h>
+
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/win/windows_types.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/wm/core/native_cursor_manager_delegate.h"
 
 namespace views {
@@ -18,14 +23,63 @@ namespace {
 
 constexpr int kDefaultCursorSize = 32;
 
+// DesktopNativeCursorManager(Win) operates as a singleton through
+// aura::client::SetCursorShapeClient(). These global variables points to the
+// current instance.
+HWINEVENTHOOK g_cursor_event_hook = nullptr;
+HWINEVENTHOOK g_desktop_switch_event_hook = nullptr;
+DesktopNativeCursorManagerWin* g_instance = nullptr;
+wm::NativeCursorManagerDelegate* g_delegate = nullptr;
+
+bool IsSystemCursorVisible() {
+  CURSORINFO cursor_info;
+  cursor_info.cbSize = sizeof(cursor_info);
+
+  if (!GetCursorInfo(&cursor_info)) {
+    // Chromium does not have permission to access the cursor info when it is
+    // not on the active desktop, which includes lock (win+L), sleep, remote
+    // connection, sign in as other user, etc.. In these cases, we assume the
+    // cursor is visible.
+    PLOG(INFO) << "Unable to get cursor info. Error = " << GetLastError();
+    return true;
+  }
+
+  // Taking both CURSOR_SHOWING and CURSOR_SUPPRESSED as visible. This is to
+  // avoid a bug that Chromium keeps considering the cursor is invisible when
+  // Windows fails to send EVENT_OBJECT_SHOW event under cases like unlocking
+  // the screen.
+  // See crbug.com/391914239#comment46 for more details.
+  return cursor_info.flags != 0;
+}
+
+void CALLBACK CursorEventProc(HWINEVENTHOOK hook,
+                              DWORD event,
+                              HWND hwnd,
+                              LONG id_object,
+                              LONG id_child,
+                              DWORD id_event_thread,
+                              DWORD time) {
+  g_instance->OnSystemCursorVisibilityChanged(IsSystemCursorVisible());
+}
+
 }  // namespace
 
 DesktopNativeCursorManagerWin::DesktopNativeCursorManagerWin() = default;
 
-DesktopNativeCursorManagerWin::~DesktopNativeCursorManagerWin() = default;
+DesktopNativeCursorManagerWin::~DesktopNativeCursorManagerWin() {
+  if (g_cursor_event_hook) {
+    UnhookWinEvent(g_cursor_event_hook);
+    g_cursor_event_hook = nullptr;
+  }
+  if (g_desktop_switch_event_hook) {
+    UnhookWinEvent(g_desktop_switch_event_hook);
+    g_desktop_switch_event_hook = nullptr;
+  }
+  g_instance = nullptr;
+  g_delegate = nullptr;
+}
 
-void DesktopNativeCursorManagerWin::SetSystemCursorSize(
-    wm::NativeCursorManagerDelegate* delegate) {
+void DesktopNativeCursorManagerWin::SetSystemCursorSize() {
   DWORD cursor_base_size = 0;
   if (hkcu_cursor_regkey_.Valid() &&
       hkcu_cursor_regkey_.ReadValueDW(L"CursorBaseSize", &cursor_base_size) ==
@@ -35,37 +89,77 @@ void DesktopNativeCursorManagerWin::SetSystemCursorSize(
   }
 
   // Report cursor size.
-  delegate->CommitSystemCursorSize(system_cursor_size_);
+  DCHECK(g_delegate);
+  g_delegate->CommitSystemCursorSize(system_cursor_size_);
 }
 
-void DesktopNativeCursorManagerWin::RegisterCursorRegkeyObserver(
-    wm::NativeCursorManagerDelegate* delegate) {
+void DesktopNativeCursorManagerWin::RegisterCursorRegkeyObserver() {
   if (!hkcu_cursor_regkey_.Valid()) {
     return;
   }
 
   hkcu_cursor_regkey_.StartWatching(base::BindOnce(
-      [](DesktopNativeCursorManagerWin* manager,
-         wm::NativeCursorManagerDelegate* delegate) {
-        manager->SetSystemCursorSize(delegate);
+      [](DesktopNativeCursorManagerWin* manager) {
+        manager->SetSystemCursorSize();
         // RegKey::StartWatching only provides one notification.
         // Reregistration is required to get future notifications.
-        manager->RegisterCursorRegkeyObserver(delegate);
+        manager->RegisterCursorRegkeyObserver();
       },
       // It's safe to use |base::Unretained(this)| here, because |this| owns
       // the |hkcu_cursor_regkey_|, and the callback will be cancelled if
       // |hkcu_cursor_regkey_| is destroyed.
-      base::Unretained(this), delegate));
+      base::Unretained(this)));
 }
 
-void DesktopNativeCursorManagerWin::InitCursorSizeObserver(
+void DesktopNativeCursorManagerWin::InitSystemCursorObservers(
     wm::NativeCursorManagerDelegate* delegate) {
-  // Validity of this key is checked at time-of-use.
-  (void)hkcu_cursor_regkey_.Open(HKEY_CURRENT_USER, L"Control Panel\\Cursors",
-                                 KEY_READ | KEY_NOTIFY);
-  system_cursor_size_ = gfx::Size(kDefaultCursorSize, kDefaultCursorSize);
-  RegisterCursorRegkeyObserver(delegate);
-  SetSystemCursorSize(delegate);
+  // Register cursor size observer if enabled.
+  if (features::IsSystemCursorSizeSupported()) {
+    DCHECK(!g_delegate);
+    g_delegate = delegate;
+    // Validity of this key is checked at time-of-use.
+    (void)hkcu_cursor_regkey_.Open(HKEY_CURRENT_USER, L"Control Panel\\Cursors",
+                                   KEY_READ | KEY_NOTIFY);
+    system_cursor_size_ = gfx::Size(kDefaultCursorSize, kDefaultCursorSize);
+    RegisterCursorRegkeyObserver();
+    SetSystemCursorSize();
+  }
+
+  // Register cursor visibility observer if enabled.
+  if (features::ShouldUseCursorEventHook()) {
+    g_delegate = delegate;
+    DCHECK(!g_instance);
+    g_instance = this;
+    // Register for cursor show/hide events. WINEVENT_SKIPOWNPROCESS is set to
+    // skip the events generated by Chromium itself.
+    DCHECK(!g_cursor_event_hook);
+    g_cursor_event_hook = SetWinEventHook(
+        EVENT_OBJECT_SHOW, EVENT_OBJECT_HIDE, nullptr, CursorEventProc, 0, 0,
+        WINEVENT_OUTOFCONTEXT | WINEVENT_SKIPOWNPROCESS);
+
+    // Also listen to desktop switch events to handle cases where the cursor
+    // visibility changes due to desktop switching without a cursor show/hide
+    // event.
+    // See crbug.com/391914239#comment46 for more details.
+    DCHECK(!g_desktop_switch_event_hook);
+    g_desktop_switch_event_hook = SetWinEventHook(
+        EVENT_SYSTEM_DESKTOPSWITCH, EVENT_SYSTEM_DESKTOPSWITCH, nullptr,
+        CursorEventProc, 0, 0, WINEVENT_OUTOFCONTEXT | WINEVENT_SKIPOWNPROCESS);
+
+    // Report the initial cursor visibility.
+    OnSystemCursorVisibilityChanged(IsSystemCursorVisible());
+  }
+}
+
+void DesktopNativeCursorManagerWin::OnSystemCursorVisibilityChanged(
+    bool visible) {
+  if (system_cursor_visible_ == visible) {
+    return;
+  }
+
+  system_cursor_visible_ = visible;
+  DCHECK(g_delegate);
+  g_delegate->CommitSystemCursorVisibility(visible);
 }
 
 }  // namespace views

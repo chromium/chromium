@@ -96,9 +96,6 @@ class PLATFORM_EXPORT CullRect {
 inline bool operator==(const CullRect& a, const CullRect& b) {
   return a.Rect() == b.Rect();
 }
-inline bool operator!=(const CullRect& a, const CullRect& b) {
-  return !(a == b);
-}
 
 inline std::ostream& operator<<(std::ostream& os, const CullRect& cull_rect) {
   return os << cull_rect.ToString();

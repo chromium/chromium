@@ -724,7 +724,16 @@ bool AXTreeSerializer<AXSourceNode,
       // to delete the subtree before receiving it, so that the final result
       // does not contain two subtrees with the same node. The LCA now contains
       // subtrees for both the old and new parent.
-      out_update->node_id_to_clear = tree_->GetId(lca);
+      if (!lca) {
+        // TODO(442619489) Fix the root cause of this issue, replacing the
+        // DUMP_WILL_BE_NOTREACHED with a CHECK once we have ensured this
+        // can no longer occur.
+        DUMP_WILL_BE_NOTREACHED()
+            << "We should not have a null LCA when ComputeReparentingLCA "
+               "returns with 'true'.";
+      } else {
+        out_update->node_id_to_clear = tree_->GetId(lca);
+      }
     }
   } else {
     // First serialization for this tree, after a changed root, or after a

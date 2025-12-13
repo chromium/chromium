@@ -14,6 +14,10 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
+namespace base::trace_event {
+class TracedValue;
+}  // namespace base::trace_event
+
 namespace viz {
 namespace mojom {
 class OffsetTagDataView;
@@ -120,6 +124,7 @@ struct VIZ_COMMON_EXPORT OffsetTagDefinition {
 
   // Validates that tag is non-empty plus provider and constraints are valid.
   bool IsValid() const;
+  void AsValueInto(base::trace_event::TracedValue* value) const;
 
   OffsetTag tag;
   SurfaceRange provider;

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -18,6 +17,7 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * Helper class that encapsulates the logic for which optional button is displayed on the browsing

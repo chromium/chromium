@@ -11,6 +11,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -152,9 +153,9 @@ class QuantizerEstimator {
   // Returns a value in the range [0,log2(num_buckets)], the Shannon Entropy
   // based on the probabilities of values falling within each of the buckets of
   // the given |histogram|.
-  static double ComputeEntropyFromHistogram(const int* histogram,
-                                            size_t histogram_size,
-                                            int num_samples);
+  static double ComputeEntropyFromHistogram(
+      base::span<const int> histogram,
+      int num_samples);
 
   // Map the |shannon_entropy| to its corresponding software VP8 quantizer.
   static double ToQuantizerEstimate(double shannon_entropy);

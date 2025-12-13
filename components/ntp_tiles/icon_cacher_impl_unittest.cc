@@ -47,7 +47,6 @@ using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -153,42 +152,22 @@ class IconCacherTestPopularSites : public IconCacherTestBase {
         image_decoder_() {}
 
   void SetUp() override {
-    if (ui::ResourceBundle::HasSharedInstance()) {
-      ui::ResourceBundle::CleanupSharedInstance();
-    }
     ON_CALL(mock_resource_delegate_, GetPathForResourcePack(_, _))
         .WillByDefault(ReturnArg<0>());
-    ON_CALL(mock_resource_delegate_, GetPathForLocalePack(_, _))
-        .WillByDefault(ReturnArg<0>());
-    ui::ResourceBundle::InitSharedInstanceWithLocale(
-        "en-US", &mock_resource_delegate_,
-        ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
-  }
-
-  void TearDown() override {
-    if (ui::ResourceBundle::HasSharedInstance()) {
-      ui::ResourceBundle::CleanupSharedInstance();
-    }
-    base::FilePath pak_path;
-#if BUILDFLAG(IS_ANDROID)
-    base::PathService::Get(ui::DIR_RESOURCE_PAKS_ANDROID, &pak_path);
-#else
-    base::PathService::Get(base::DIR_ASSETS, &pak_path);
-#endif
-
-    base::FilePath ui_test_pak_path;
-    ASSERT_TRUE(base::PathService::Get(ui::UI_TEST_PAK, &ui_test_pak_path));
-    ui::ResourceBundle::InitSharedInstanceWithPakPath(ui_test_pak_path);
-
-    ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        pak_path.AppendASCII("components_tests_resources.pak"),
-        ui::kScaleFactorNone);
   }
 
   PopularSites::Site site_;
   std::unique_ptr<MockImageFetcher> image_fetcher_;
   image_fetcher::FakeImageDecoder image_decoder_;
   NiceMock<ui::MockResourceBundleDelegate> mock_resource_delegate_;
+
+  // A ResourceBundle that uses the test's mock delegate.
+  ui::ResourceBundle resource_bundle_with_mock_delegate_{
+      &mock_resource_delegate_};
+
+  // Swap in the test ResourceBundle for the lifetime of the test.
+  ui::ResourceBundle::SharedInstanceSwapperForTesting resource_bundle_swapper_{
+      &resource_bundle_with_mock_delegate_};
 };
 
 TEST_F(IconCacherTestPopularSites, LargeCached) {

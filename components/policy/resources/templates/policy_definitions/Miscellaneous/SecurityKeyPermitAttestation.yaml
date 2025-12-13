@@ -11,6 +11,8 @@ future_on:
 owners:
 - agl@chromium.org
 - martinkr@google.com
+- file://components/webauthn/OWNERS
+- chrome-webauthn@google.com
 schema:
   items:
     type: string

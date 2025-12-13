@@ -9,6 +9,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/rounded_rect_cutout_path_builder.h"
 #include "base/i18n/rtl.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -17,6 +18,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/property_effects.h"
 
 namespace ash {
 namespace {
@@ -140,7 +142,7 @@ void PlaylistImageButton::SetIsSelected(bool is_selected) {
           : IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_PLAYLIST_UNSELECTED_ACCESSIBLE_DESCRIPTION));
   NotifyAccessibilityEventDeprecated(ax::mojom::Event::kStateChanged, true);
 
-  OnPropertyChanged(&is_selected_, views::kPropertyEffectsPaint);
+  OnPropertyChanged(&is_selected_, views::PropertyEffects::kPaint);
 }
 
 void PlaylistImageButton::UpdateContents(const gfx::ImageSkia& image) {

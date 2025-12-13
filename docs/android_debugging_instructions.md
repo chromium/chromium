@@ -1,4 +1,5 @@
 # Android Debugging Instructions
+
 Chrome on Android has java and c/c++ code. Each "side" have its own set of tools
 for debugging. Here's some tips.
 
@@ -10,6 +11,7 @@ See also
 [go/clankium/06-debugging-clank](https://goto.google.com/clankium/06-debugging-clank).
 
 ## Launching
+
 You can run the app by using one of the wrappers.
 
 ```shell
@@ -20,6 +22,7 @@ out/Default/bin/chrome_public_apk launch --args='--disable-fre' 'data:text/html;
 ```
 
 ## Logging
+
 [Chromium logging from LOG(INFO)](https://chromium.googlesource.com/chromium/src/+/main/docs/android_logging.md)
 etc., is directed to the Android logcat logging facility. You can filter the
 messages, e.g. view chromium verbose logging, everything else at warning level
@@ -30,29 +33,33 @@ with:
 out/Default/bin/chrome_public_apk logcat [-v]  # Use -v to show logs for other processes
 ```
 
-If this doesn't display the logs you're looking for, try `adb logcat` with your system `adb`
-or the one in `//third_party/android_sdk/`.
+If this doesn't display the logs you're looking for, try `adb logcat` with your
+system `adb` or the one in `//third_party/android_sdk/`.
 
 ### Warnings for Blink developers
-*   **Do not use fprintf or printf debugging!** This does not
-    redirect to adb logcat. Use `LOG(ERROR)` etc. instead.
-    See also the "Get Blink code to output to the adb log" section.
 
-*   Redirecting stdio to logcat, as documented
-    [here](https://developer.android.com/studio/command-line/logcat.html#viewingStd),
-    has a bad side-effect in that it breaks `adb_install.py`. See
-    [here for details](http://stackoverflow.com/questions/28539676/android-adb-fails-to-install-apk-to-nexus-5-on-windows-8-1).
+- **Do not use fprintf or printf debugging!** This does not redirect to adb
+  logcat. Use `LOG(ERROR)` etc. instead. See also the "Get Blink code to output
+  to the adb log" section.
+
+- Redirecting stdio to logcat, as documented
+  [here](https://developer.android.com/studio/command-line/logcat.html#viewingStd),
+  has a bad side-effect in that it breaks `adb_install.py`. See
+  [here for details](http://stackoverflow.com/questions/28539676/android-adb-fails-to-install-apk-to-nexus-5-on-windows-8-1).
 
 ## Take a Screenshot
+
 ```shell
 build/android/screenshot.py /tmp/screenshot.png
 ```
 
 ## Inspecting the View Hierarchy
+
 Generate an [Android Studio](android_studio.md) project, and then use
 [Layout Inspector](https://developer.android.com/studio/debug/layout-inspector).
 
 ## Debugging Java
+
 For both apk and test targets, pass `--wait-for-java-debugger` to the wrapper
 scripts.
 
@@ -74,33 +81,18 @@ out/Default/bin/run_chrome_junit_tests --wait-for-java-debugger  # Specify custo
 ```
 
 ### Android Studio
-*   Open Android Studio ([instructions](android_studio.md))
-*   Click "Run"->"Attach debugger to Android process" (see
-[here](https://developer.android.com/studio/debug/index.html) for more).
-*   Click "Run"->"Attach to Local Process..." for Robolectric junit tests.
-    * If this fails, you likely need to follow [these instructions](https://stackoverflow.com/questions/21114066/attach-intellij-idea-debugger-to-a-running-java-process).
 
-### Eclipse
-*   In Eclipse, make a debug configuration of type "Remote Java Application".
-    Choose a "Name" and set "Port" to `8700`.
-
-*   Make sure Eclipse Preferences > Run/Debug > Launching > "Build (if required)
-    before launching" is unchecked.
-
-*   Run Android Device Monitor:
-
-    ```shell
-    third_party/android_sdk/public/tools/monitor
-    ```
-
-*   Now select the process you want to debug in Device Monitor (the port column
-    should now mention 8700 or xxxx/8700).
-
-*   Run your debug configuration, and switch to the Debug perspective.
+- Open Android Studio ([instructions](android_studio.md))
+- Click "Run"->"Attach debugger to Android process" (see
+  [here](https://developer.android.com/studio/debug/index.html) for more).
+- Click "Run"->"Attach to Local Process..." for Robolectric junit tests.
+  - If this fails, you likely need to follow
+    [these instructions](https://stackoverflow.com/questions/21114066/attach-intellij-idea-debugger-to-a-running-java-process).
 
 ## Debugging C/C++
-While the app is running, use the wrapper script's `lldb` command to enter into a
-lldb shell.
+
+While the app is running, use the wrapper script's `lldb` command to enter into
+a lldb shell.
 
 When running with `lldb` attached, the app runs **extremely slowly**.
 
@@ -125,6 +117,7 @@ you would like to take this on, please use:
 [crbug/1266055](https://bugs.chromium.org/p/chromium/issues/detail?id=1266055).
 
 ### Waiting for Debugger on Early Startup
+
 ```shell
 # Install, launch, and wait:
 out/Default/bin/chrome_public_apk run --args="--wait-for-debugger"
@@ -135,8 +128,9 @@ out/Default/bin/chrome_public_apk launch --args="--wait-for-debugger-children=re
 ```
 
 #### With Command-line LLDB
-Once attached, `lldb` will drop into a prompt. Set your breakpoints and run "c" to
-continue.
+
+Once attached, `lldb` will drop into a prompt. Set your breakpoints and run "c"
+to continue.
 
 ## Symbolizing Crash Stacks and Tombstones (C++)
 
@@ -213,9 +207,9 @@ adb shell start
 ```
 
 In the source itself, use `LOG(ERROR),` `LOG(INFO)`, etc. whenever you need to
-output a message, and it will be automatically redirected to adb logcat.
-Running `adb logcat chromium:E`, for example, will show all log lines from
-`LOG(ERROR)` (plus others that match "chromium").
+output a message, and it will be automatically redirected to adb logcat. Running
+`adb logcat chromium:E`, for example, will show all log lines from `LOG(ERROR)`
+(plus others that match "chromium").
 
 ## Debug unit tests with LLDB
 
@@ -235,10 +229,11 @@ build/android/connect_lldb.sh --output-directory=out/Default --package-name=org.
 
 ## Examine app data on a non-rooted device
 
-If you're developing on a non-rooted device such as a retail phone, security restrictions
-will prevent directly accessing the application's data. However, as long as the app is
-built with debugging enabled, you can use `adb shell run-as PACKAGENAME` to execute
-shell commands using the app's authorization, roughly equivalent to `su $user`.
+If you're developing on a non-rooted device such as a retail phone, security
+restrictions will prevent directly accessing the application's data. However, as
+long as the app is built with debugging enabled, you can use
+`adb shell run-as PACKAGENAME` to execute shell commands using the app's
+authorization, roughly equivalent to `su $user`.
 
 Non-Play-Store builds with `is_official_build=false` will by default set
 `android:debuggable="true"` in the app's manifest to allow debugging.
@@ -249,12 +244,12 @@ For exammple, for a Chromium build, run the following:
 adb shell run-as org.chromium.chrome
 ```
 
-If successful, this will silently wait for input without printing anything.
-It acts as a simple shell despite not showing the usual `$ ` shell prompt.
-Just type commands and press RETURN to execute them.
+If successful, this will silently wait for input without printing anything. It
+acts as a simple shell despite not showing the usual `$ ` shell prompt. Just
+type commands and press RETURN to execute them.
 
-The starting directory is the app's user data directory where user preferences and other
-profile data are stored.
+The starting directory is the app's user data directory where user preferences
+and other profile data are stored.
 
 ```
 pwd
@@ -265,9 +260,9 @@ find -type f
 ./shared_prefs/org.chromium.chrome_preferences.xml
 ```
 
-If you need to access the app's application data directory, you need to look up the
-obfuscated installation path since you don't have read access to the */data/app/* directory.
-For example:
+If you need to access the app's application data directory, you need to look up
+the obfuscated installation path since you don't have read access to the
+*/data/app/* directory. For example:
 
 ```
 pm list packages -f org.chromium.chrome
@@ -281,5 +276,4 @@ drwxr-xr-x 3 system system      3452 2022-11-05 01:49 lib
 -rw-r--r-- 1 system system  21258500 2022-11-05 01:49 split_chrome.apk
 -rw-r--r-- 1 system system   1298934 2022-11-05 01:49 split_config.en.apk
 -rw-r--r-- 1 system system    413913 2022-11-05 01:49 split_dev_ui.apk
--rw-r--r-- 1 system system     12432 2022-11-05 01:49 split_weblayer.apk
 ```

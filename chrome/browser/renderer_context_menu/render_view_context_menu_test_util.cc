@@ -14,6 +14,10 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #endif
 
+#if BUILDFLAG(ENABLE_COMPOSE)
+#include "chrome/browser/compose/chrome_compose_client.h"
+#endif
+
 using ui::MenuModel;
 
 TestRenderViewContextMenu::TestRenderViewContextMenu(

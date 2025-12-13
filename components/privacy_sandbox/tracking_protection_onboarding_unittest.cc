@@ -23,9 +23,6 @@ namespace {
 using ::privacy_sandbox::tracking_protection::
     TrackingProtectionOnboardingStatus;
 
-using ::privacy_sandbox::tracking_protection::
-    TrackingProtectionOnboardingAckAction;
-
 using ::testing::Combine;
 using ::testing::Values;
 
@@ -81,37 +78,6 @@ INSTANTIATE_TEST_SUITE_P(
                   TrackingProtectionOnboarding::OnboardingStatus::kEligible),
         std::pair(TrackingProtectionOnboardingStatus::kOnboarded,
                   TrackingProtectionOnboarding::OnboardingStatus::kOnboarded)));
-
-class TrackingProtectionSilentOnboardingTest
-    : public TrackingProtectionOnboardingTest {};
-
-class TrackingProtectionSilentOnboardingAccessorTest
-    : public TrackingProtectionOnboardingTest,
-      public testing::WithParamInterface<
-          std::pair<TrackingProtectionOnboardingStatus,
-                    TrackingProtectionOnboarding::SilentOnboardingStatus>> {};
-
-TEST_P(TrackingProtectionSilentOnboardingAccessorTest,
-       ReturnsCorrectOnboardingValue) {
-  prefs()->SetInteger(prefs::kTrackingProtectionSilentOnboardingStatus,
-                      static_cast<int>(std::get<0>(GetParam())));
-  EXPECT_EQ(tracking_protection_onboarding()->GetSilentOnboardingStatus(),
-            std::get<1>(GetParam()));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    TrackingProtectionSilentOnboardingAccessorTest,
-    TrackingProtectionSilentOnboardingAccessorTest,
-    testing::Values(
-        std::pair(
-            TrackingProtectionOnboardingStatus::kIneligible,
-            TrackingProtectionOnboarding::SilentOnboardingStatus::kIneligible),
-        std::pair(
-            TrackingProtectionOnboardingStatus::kEligible,
-            TrackingProtectionOnboarding::SilentOnboardingStatus::kEligible),
-        std::pair(
-            TrackingProtectionOnboardingStatus::kOnboarded,
-            TrackingProtectionOnboarding::SilentOnboardingStatus::kOnboarded)));
 
 }  // namespace
 }  // namespace privacy_sandbox

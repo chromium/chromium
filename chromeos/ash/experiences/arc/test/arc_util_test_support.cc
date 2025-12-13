@@ -33,7 +33,7 @@ void SetArcAvailableCommandLineForTesting(base::CommandLine* command_line) {
 }
 
 bool GetSystemMemoryInfoForTesting(const std::string& file_name,
-                                   base::SystemMemoryInfoKB* mem_info) {
+                                   base::SystemMemoryInfo* mem_info) {
   base::FilePath base_path;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &base_path);
   const base::FilePath test_path = base_path.Append("chromeos")

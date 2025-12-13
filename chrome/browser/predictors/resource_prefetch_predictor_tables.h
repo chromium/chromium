@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PREDICTORS_RESOURCE_PREFETCH_PREDICTOR_TABLES_H_
 
 #include <cstddef>
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>

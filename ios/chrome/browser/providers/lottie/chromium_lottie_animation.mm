@@ -73,6 +73,11 @@
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
 }
 
+- (void)setGradientValue:(NSArray<UIColor*>*)colors
+              forKeypath:(NSString*)keypath {
+  // Not available for the objc version of Lottie in Chromium.
+}
+
 - (void)setDictionaryTextProvider:
     (NSDictionary<NSString*, NSString*>*)dictionaryTextProvider {
   // Not available for the objc version of Lottie in Chromium.

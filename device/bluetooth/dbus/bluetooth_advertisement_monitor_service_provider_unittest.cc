@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
@@ -97,7 +98,7 @@ TEST(BluetoothAdvertisementMonitorServiceProviderImplTest, Activate) {
 
   dbus::Bus::Options options;
   options.bus_type = dbus::Bus::SYSTEM;
-  scoped_refptr<dbus::MockBus> mock_bus = new dbus::MockBus(options);
+  scoped_refptr<dbus::MockBus> mock_bus = new dbus::MockBus(std::move(options));
   dbus::ObjectPath object_path = dbus::ObjectPath("/path");
   scoped_refptr<dbus::MockExportedObject> mock_exported_object =
       new dbus::MockExportedObject(/*bus=*/mock_bus.get(), object_path);
@@ -121,7 +122,7 @@ TEST(BluetoothAdvertisementMonitorServiceProviderImplTest, Release) {
 
   dbus::Bus::Options options;
   options.bus_type = dbus::Bus::SYSTEM;
-  scoped_refptr<dbus::MockBus> mock_bus = new dbus::MockBus(options);
+  scoped_refptr<dbus::MockBus> mock_bus = new dbus::MockBus(std::move(options));
   dbus::ObjectPath object_path = dbus::ObjectPath("/path");
   scoped_refptr<dbus::MockExportedObject> mock_exported_object =
       new dbus::MockExportedObject(/*bus=*/mock_bus.get(), object_path);
@@ -150,7 +151,7 @@ TEST(BluetoothAdvertisementMonitorServiceProviderImplTest, DeviceFound) {
 
   dbus::Bus::Options options;
   options.bus_type = dbus::Bus::SYSTEM;
-  scoped_refptr<dbus::MockBus> mock_bus = new dbus::MockBus(options);
+  scoped_refptr<dbus::MockBus> mock_bus = new dbus::MockBus(std::move(options));
   dbus::ObjectPath object_path = dbus::ObjectPath("/path");
   scoped_refptr<dbus::MockExportedObject> mock_exported_object =
       new dbus::MockExportedObject(/*bus=*/mock_bus.get(), object_path);
@@ -176,7 +177,7 @@ TEST(BluetoothAdvertisementMonitorServiceProviderImplTest, DeviceFoundFailure) {
 
   dbus::Bus::Options options;
   options.bus_type = dbus::Bus::SYSTEM;
-  scoped_refptr<dbus::MockBus> mock_bus = new dbus::MockBus(options);
+  scoped_refptr<dbus::MockBus> mock_bus = new dbus::MockBus(std::move(options));
   dbus::ObjectPath object_path = dbus::ObjectPath("/path");
   scoped_refptr<dbus::MockExportedObject> mock_exported_object =
       new dbus::MockExportedObject(/*bus=*/mock_bus.get(), object_path);
@@ -205,7 +206,7 @@ TEST(BluetoothAdvertisementMonitorServiceProviderImplTest, DeviceLost) {
 
   dbus::Bus::Options options;
   options.bus_type = dbus::Bus::SYSTEM;
-  scoped_refptr<dbus::MockBus> mock_bus = new dbus::MockBus(options);
+  scoped_refptr<dbus::MockBus> mock_bus = new dbus::MockBus(std::move(options));
   dbus::ObjectPath object_path = dbus::ObjectPath("/path");
   scoped_refptr<dbus::MockExportedObject> mock_exported_object =
       new dbus::MockExportedObject(/*bus=*/mock_bus.get(), object_path);
@@ -231,7 +232,7 @@ TEST(BluetoothAdvertisementMonitorServiceProviderImplTest, DeviceLostFailure) {
 
   dbus::Bus::Options options;
   options.bus_type = dbus::Bus::SYSTEM;
-  scoped_refptr<dbus::MockBus> mock_bus = new dbus::MockBus(options);
+  scoped_refptr<dbus::MockBus> mock_bus = new dbus::MockBus(std::move(options));
   dbus::ObjectPath object_path = dbus::ObjectPath("/path");
   scoped_refptr<dbus::MockExportedObject> mock_exported_object =
       new dbus::MockExportedObject(/*bus=*/mock_bus.get(), object_path);

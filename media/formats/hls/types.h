@@ -163,6 +163,13 @@ struct MEDIA_EXPORT DecimalResolution
 // https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis#section-4.4.4.2
 struct MEDIA_EXPORT ByteRangeExpression
     : public SubstitutingParser<ByteRangeExpression, ByteRangeExpression> {
+  ByteRangeExpression(types::DecimalInteger length,
+                      std::optional<types::DecimalInteger> offset);
+  ByteRangeExpression(const ByteRangeExpression& other);
+  ByteRangeExpression(ByteRangeExpression&& other);
+  ByteRangeExpression& operator=(const ByteRangeExpression& other);
+  ByteRangeExpression& operator=(ByteRangeExpression&& other);
+
   static ParseStatus::Or<ByteRangeExpression> Parse(
       ResolvedSourceString source_str);
 

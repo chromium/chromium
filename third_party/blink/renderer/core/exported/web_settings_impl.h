@@ -63,6 +63,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetAllowGeolocationOnInsecureOrigins(bool) override;
   void SetAllowRunningOfInsecureContent(bool) override;
   void SetAllowScriptsToCloseWindows(bool) override;
+  void SetAllowWindowFocusWithoutUserGesture(bool) override;
   void SetAllowUniversalAccessFromFileURLs(bool) override;
   void SetAlwaysShowContextMenuOnTouch(bool) override;
   void SetAntialiased2dCanvasEnabled(bool) override;
@@ -129,7 +130,8 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetHideScrollbars(bool) override;
   void SetPrefersDefaultScrollbarStyles(bool) override;
   void SetPasswordEchoDurationInSeconds(double) override;
-  void SetPasswordEchoEnabled(bool) override;
+  void SetPasswordEchoEnabledPhysical(bool) override;
+  void SetPasswordEchoEnabledTouch(bool) override;
   void SetPluginsEnabled(bool) override;
   void SetAvailablePointerTypes(int) override;
   void SetPrimaryPointerType(mojom::blink::PointerType) override;
@@ -231,6 +233,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
 
   void SetAriaModalPrunesAXTree(bool) override;
   void SetSelectionClipboardBufferAvailable(bool) override;
+  void SetMiddleClickPasteAllowed(bool) override;
   void SetAccessibilityIncludeSvgGElement(bool) override;
   void SetWebXRImmersiveArAllowed(bool webxr_immersive_ar_allowed) override;
   void SetModalContextMenu(bool) override;

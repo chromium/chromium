@@ -34,6 +34,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ATTRIBUTE_COLLECTION_H_
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_table.h"
@@ -157,9 +158,9 @@ class AttributeCollection
       : AttributeCollectionGeneric<const AttributeArray>(
             AttributeArray(nullptr, 0)) {}
 
-  AttributeCollection(const Attribute* array, unsigned size)
+  explicit AttributeCollection(base::span<const Attribute> attributes)
       : AttributeCollectionGeneric<const AttributeArray>(
-            AttributeArray(array, size)) {}
+            AttributeArray(attributes.data(), attributes.size())) {}
 };
 
 using AttributeVector = Vector<Attribute, 4>;

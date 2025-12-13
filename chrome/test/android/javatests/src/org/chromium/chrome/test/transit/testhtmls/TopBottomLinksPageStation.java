@@ -9,7 +9,7 @@ import android.util.Pair;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.context_menu.LinkContextMenuFacility;
-import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.test.transit.HtmlElement;
 import org.chromium.content_public.browser.test.transit.HtmlElementSpec;
@@ -31,7 +31,7 @@ public class TopBottomLinksPageStation extends WebPageStation {
 
     /** Load the page, land at the {@link TopFacility} of a {@link TopBottomLinksPageStation}. */
     public static Pair<TopBottomLinksPageStation, TopFacility> loadPage(
-            ChromeTabbedActivityTestRule activityTestRule, PageStation currentPageStation) {
+            ChromeTabbedActivityTestRule activityTestRule, CtaPageStation currentPageStation) {
         String url = activityTestRule.getTestServer().getURL(PATH);
         TopFacility topFacility = new TopFacility();
         TopBottomLinksPageStation station =

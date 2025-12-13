@@ -8,11 +8,12 @@ import android.app.Activity;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.GestureStateListener;
@@ -22,14 +23,16 @@ import org.chromium.ui.touch_selection.SelectionEventType;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Controls selection gesture interaction for Contextual Search.
- * Receives low-level events and feeds them to the {@link ContextualSearchManager}
- * while tracking the selection state.
+ * Controls selection gesture interaction for Contextual Search. Receives low-level events and feeds
+ * them to the {@link ContextualSearchManager} while tracking the selection state.
  */
+@NullMarked
 public class ContextualSearchSelectionController {
     /** The type of selection made by the user. */
     @IntDef({
@@ -61,6 +64,7 @@ public class ContextualSearchSelectionController {
 
     // Max selection length must be limited or the entire request URL can go past the 2K limit.
     private static final int MAX_SELECTION_LENGTH = 1000;
+    private static @Nullable Consumer<String> sHandleSelectionForTesting;
 
     private final Activity mActivity;
     private final ContextualSearchSelectionHandler mHandler;
@@ -68,13 +72,13 @@ public class ContextualSearchSelectionController {
     private final Pattern mContainsWordPattern;
 
     /** A means of accessing the currently active tab. */
-    private final Supplier<Tab> mTabSupplier;
+    private final Supplier<@Nullable Tab> mTabSupplier;
 
     /**
      * The current selected text, either from tap or longpress, or {@code null} when the selection
      * has been programatically cleared.
      */
-    @Nullable private String mSelectedText;
+    private @Nullable String mSelectedText;
 
     /**
      * Identifies what caused the selection (Tap or Longpress) whenever the selection is not null.
@@ -89,7 +93,7 @@ public class ContextualSearchSelectionController {
 
     private boolean mWasTapGestureDetected;
     // Reflects whether the last tap was valid and whether we still have a tap-based selection.
-    private ContextualSearchTapState mLastTapState;
+    private @Nullable ContextualSearchTapState mLastTapState;
     // Whether the selection was automatically expanded due to an adjustment (e.g. Resolve).
     private boolean mDidExpandSelection;
 
@@ -137,9 +141,15 @@ public class ContextualSearchSelectionController {
         }
     }
 
+    public static void setHandleSelectionForTesting(Consumer<String> consumer) {
+        sHandleSelectionForTesting = consumer;
+        ResettersForTesting.register(() -> sHandleSelectionForTesting = null);
+    }
+
     /**
-     * Constructs a new Selection controller for the given activity.  Callbacks will be issued
+     * Constructs a new Selection controller for the given activity. Callbacks will be issued
      * through the given selection handler.
+     *
      * @param activity The activity for resource and view access.
      * @param handler The handler for callbacks.
      * @param tabSupplier Access to the currently active tab.
@@ -147,7 +157,7 @@ public class ContextualSearchSelectionController {
     public ContextualSearchSelectionController(
             Activity activity,
             ContextualSearchSelectionHandler handler,
-            Supplier<Tab> tabSupplier) {
+            Supplier<@Nullable Tab> tabSupplier) {
         mActivity = activity;
         mHandler = handler;
         mTabSupplier = tabSupplier;
@@ -184,8 +194,10 @@ public class ContextualSearchSelectionController {
         return new ContextualSearchGestureStateListener();
     }
 
-    /** @return A supplier of the currently active tab. */
-    Supplier<Tab> getTabSupplier() {
+    /**
+     * @return A supplier of the currently active tab.
+     */
+    Supplier<@Nullable Tab> getTabSupplier() {
         return mTabSupplier;
     }
 
@@ -200,7 +212,7 @@ public class ContextualSearchSelectionController {
     /**
      * @return the selected text.
      */
-    String getSelectedText() {
+    @Nullable String getSelectedText() {
         return mSelectedText;
     }
 
@@ -249,7 +261,7 @@ public class ContextualSearchSelectionController {
     /**
      * @return The {@link SelectionPopupController} for the base WebContents.
      */
-    protected SelectionPopupController getSelectionPopupController() {
+    protected @Nullable SelectionPopupController getSelectionPopupController() {
         WebContents baseContents = getBaseWebContents();
         return baseContents != null ? SelectionPopupController.fromWebContents(baseContents) : null;
     }
@@ -348,10 +360,15 @@ public class ContextualSearchSelectionController {
     /**
      * Re-enables selection modification handling and invokes
      * ContextualSearchSelectionHandler.handleSelection().
+     *
      * @param selection The text that was selected.
      * @param type The type of selection made by the user.
      */
     private void handleSelection(String selection, @SelectionType int type) {
+        if (sHandleSelectionForTesting != null) {
+            sHandleSelectionForTesting.accept(selection);
+            return;
+        }
         boolean isValidSelection = validateSelectionSuppression(selection);
         mHandler.handleSelection(selection, isValidSelection, type, mX, mY);
     }
@@ -449,8 +466,7 @@ public class ContextualSearchSelectionController {
     /**
      * @return The Base Page's {@link WebContents}, or {@code null} if there is no current tab.
      */
-    @Nullable
-    WebContents getBaseWebContents() {
+    @Nullable WebContents getBaseWebContents() {
         Tab currentTab = mTabSupplier.get();
         if (currentTab == null) return null;
 
@@ -501,12 +517,13 @@ public class ContextualSearchSelectionController {
     /**
      * Determines if the given selection is text and some other conditions needed to trigger the
      * feature.
+     *
      * @param selection The selection string to evaluate.
      * @param controller The popup controller so we can look at the focused node.
      * @return If the selection is OK for this feature.
      */
     @VisibleForTesting
-    boolean isValidSelection(String selection, SelectionPopupController controller) {
+    boolean isValidSelection(String selection, @Nullable SelectionPopupController controller) {
         if (selection.length() > MAX_SELECTION_LENGTH) return false;
         if (!doesContainAWord(selection)) return false;
         if (controller != null && controller.isFocusedNodeEditable()) return false;

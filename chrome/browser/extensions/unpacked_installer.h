@@ -18,7 +18,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
-#include "chrome/browser/profiles/profile_observer.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/preload_check.h"
@@ -26,8 +25,6 @@
 #include "extensions/common/manifest.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
-
-class Profile;
 
 namespace content {
 class BrowserContext;
@@ -46,8 +43,7 @@ class PreloadCheckGroup;
 // (presumably into memory) without installing it.
 class UnpackedInstaller : public base::RefCountedThreadSafe<
                               UnpackedInstaller,
-                              content::BrowserThread::DeleteOnUIThread>,
-                          public ProfileObserver {
+                              content::BrowserThread::DeleteOnUIThread> {
  public:
   // Manifest settings override types.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -70,10 +66,12 @@ class UnpackedInstaller : public base::RefCountedThreadSafe<
 
   using CompletionCallback = base::OnceCallback<void(const Extension* extension,
                                                      const base::FilePath&,
-                                                     const std::string&)>;
+                                                     const std::u16string&)>;
 
   UnpackedInstaller(const UnpackedInstaller&) = delete;
   UnpackedInstaller& operator=(const UnpackedInstaller&) = delete;
+
+  static void EnsureShutdownNotifierFactoryBuilt();
 
   static scoped_refptr<UnpackedInstaller> Create(
       content::BrowserContext* context);
@@ -127,7 +125,7 @@ class UnpackedInstaller : public base::RefCountedThreadSafe<
   friend class base::DeleteHelper<UnpackedInstaller>;
 
   explicit UnpackedInstaller(content::BrowserContext* context);
-  ~UnpackedInstaller() override;
+  ~UnpackedInstaller();
 
   // Must be called from the UI thread. Begin management policy and requirements
   // checks.
@@ -168,34 +166,28 @@ class UnpackedInstaller : public base::RefCountedThreadSafe<
   // error, returns false and populates `error`.
   bool LoadExtension(mojom::ManifestLocation location,
                      int flags,
-                     std::string* error);
+                     std::u16string* error);
 
   // Reads the Declarative Net Request JSON rulesets for the extension, if it
   // provided any, and persists the indexed rulesets. Returns false and
   // populates `error` in case of an error. Should be called on a sequence where
   // file IO is allowed.
-  bool IndexAndPersistRulesIfNeeded(std::string* error);
+  bool IndexAndPersistRulesIfNeeded(std::u16string* error);
 
   // Records command-line extension metrics, emitted when a command line
   // extension is installed.
   void RecordCommandLineMetrics();
 
-  // ProfileObserver
-  void OnProfileWillBeDestroyed(Profile* profile) override;
-
-  // Called when the browser is terminating.
-  void OnBrowserTerminating();
+  // Called on BrowserContext shutdown.
+  void Shutdown();
 
   const Extension* extension() { return extension_.get(); }
 
   // The service we will report results back to.
   raw_ptr<ExtensionService> service_ = nullptr;
 
-  // The Profile the extension is being installed in.
-  raw_ptr<Profile, DanglingUntriaged> profile_;
-
-  // Observes profile destruction.
-  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+  // The BrowserContext the extension is being installed in.
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // The pathname of the directory to load from, which is an absolute path
   // after GetAbsolutePath has been called.
@@ -235,8 +227,9 @@ class UnpackedInstaller : public base::RefCountedThreadSafe<
   // True if the browser is terminating.
   bool browser_terminating_ = false;
 
-  // Subscription to browser termination.
-  base::CallbackListSubscription on_browser_terminating_subscription_;
+  // Subscription for a callback that runs when the BrowserContext* is
+  // destroyed.
+  base::CallbackListSubscription browser_context_shutdown_subscription_;
 };
 
 }  // namespace extensions

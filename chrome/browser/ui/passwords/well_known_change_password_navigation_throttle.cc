@@ -21,6 +21,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "net/base/isolation_info.h"
+#include "net/http/http_response_headers.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -78,7 +79,8 @@ void WellKnownChangePasswordNavigationThrottle::MaybeCreateAndAdd(
   // Don't handle navigations in subframes or main frames that are in a nested
   // frame tree (e.g. fenced frames)
   if (handle.IsInOutermostMainFrame() &&
-      IsWellKnownChangePasswordUrl(handle.GetURL()) &&
+      IsWellKnownChangePasswordUrl(handle.GetURL(),
+                                   registry.IsHTTPOrHTTPS()) &&
       IsTriggeredByGoogleOwnedUI(&handle)) {
     registry.AddThrottle(
         std::make_unique<WellKnownChangePasswordNavigationThrottle>(registry));

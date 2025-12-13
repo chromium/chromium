@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "url/gurl.h"
 

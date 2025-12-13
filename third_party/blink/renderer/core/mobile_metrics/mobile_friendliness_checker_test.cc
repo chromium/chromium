@@ -684,8 +684,8 @@ TEST_F(MobileFriendlinessCheckerTest,
               100);
 }
 
-// This test shows that text will grow with text-size-adjust: auto in a
-// fixed-width table.
+// This test shows that text will no longer, as of late 2025, grow with
+// text-size-adjust: auto in a fixed-width table.
 TEST_F(MobileFriendlinessCheckerTest, FixedWidthTableTextSizeAdjustAuto) {
   ukm::mojom::UkmEntry ukm = CalculateMetricsForHTMLString(R"HTML(
 <html>
@@ -701,7 +701,8 @@ TEST_F(MobileFriendlinessCheckerTest, FixedWidthTableTextSizeAdjustAuto) {
   </body>
 </html>
 )HTML");
-  ExpectUkm(ukm, ukm::builders::MobileFriendliness::kSmallTextRatioNameHash, 0);
+  ExpectUkm(ukm, ukm::builders::MobileFriendliness::kSmallTextRatioNameHash,
+            100);
 }
 
 // This test shows that text remains small with text-size-adjust: none in a

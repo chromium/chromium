@@ -640,12 +640,13 @@ void PaymentRequestDialogView::OnOcclusionStateChanged(bool occluded) {
 }
 
 void PaymentRequestDialogView::ResizeDialogWindow() {
-  if (GetWidget() && request_->web_contents()) {
+  content::WebContents* const web_contents = request_->web_contents();
+  if (GetWidget() && web_contents) {
     constrained_window::UpdateWebContentsModalDialogPosition(
-        GetWidget(), web_modal::WebContentsModalDialogManager::FromWebContents(
-                         request_->web_contents())
-                         ->delegate()
-                         ->GetWebContentsModalDialogHost());
+        GetWidget(),
+        web_modal::WebContentsModalDialogManager::FromWebContents(web_contents)
+            ->delegate()
+            ->GetWebContentsModalDialogHost(web_contents));
   }
 }
 

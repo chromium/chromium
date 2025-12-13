@@ -197,13 +197,13 @@ UIImage* CloseButtonImage(BOOL highlighted) {
                        constant:kDragHandleTopMargin],
   ]];
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* logoImage = MakeSymbolMulticolor(
       CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kLogoSize));
 #else
   UIImage* logoImage =
       CustomSymbolWithPointSize(kChromeProductSymbol, kLogoSize);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
   UIImageView* logoImageView = [[UIImageView alloc] initWithImage:logoImage];
   logoImageView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -252,11 +252,9 @@ UIImage* CloseButtonImage(BOOL highlighted) {
   [self.sheetDisplayController
       setContentHeight:[self preferredHeightForContent]];
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(notifyDelegateOfTraitChange)];
-  }
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(notifyDelegateOfTraitChange)];
 
   [[NSNotificationCenter defaultCenter]
       addObserver:self
@@ -355,17 +353,6 @@ UIImage* CloseButtonImage(BOOL highlighted) {
 
   [self setCollectionViewScrollIndicatorInsets];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self notifyDelegateOfTraitChange];
-}
-#endif
 
 // Removes the white-ish background color of one of UIVisualEffectView's
 // subviews that is not desired for this feature.

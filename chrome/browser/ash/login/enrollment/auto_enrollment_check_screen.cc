@@ -6,12 +6,14 @@
 
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/error_screens_histogram_helper.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
+#include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -258,6 +261,14 @@ bool AutoEnrollmentCheckScreen::IsCompleted() const {
 
 void AutoEnrollmentCheckScreen::OnConnectRequested() {
   auto_enrollment_controller_->Start();
+}
+
+void AutoEnrollmentCheckScreen::RunExitCallback(Result result) {
+  if (ash::features::IsOobeAutoEnrollmentCheckForcedEnabled()) {
+    g_browser_process->local_state()->SetBoolean(
+        ash::prefs::kAutoEnrollmentCheckExited, true);
+  }
+  exit_callback_.Run(result);
 }
 
 }  // namespace ash

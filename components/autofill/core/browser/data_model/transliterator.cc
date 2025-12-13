@@ -13,6 +13,7 @@
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/address.h"
@@ -54,8 +55,28 @@ GetTransliteratorsMap() {
 
 std::unique_ptr<base::i18n::Transliterator> CreateTransliterator(
     TransliterationId id) {
-  std::string transliteration_rules;
   std::unique_ptr<base::i18n::Transliterator> transliterator;
+
+  // Apply a simplified version of the "::de-ASCII" transliteration, which
+  // follows DIN 5007-2 ("ö" becomes "oe"). Here we map everything to lower case
+  // because that happens with "::Lower" anyway.
+  constexpr std::string_view kGermanRules =
+      "[ö {o \u0308} Ö {O \u0308}] → oe;"
+      "[ä {a \u0308} Ä {A \u0308}] → ae;"
+      "[ü {u \u0308} Ü {U \u0308}] → ue;";
+
+  // The following rules are happening in the following order:
+  // First there are `TransliterationId::kGerman` specific rules if they are
+  // present, then
+  // "::NFD;" performs a decomposition and normalization. (â becomes a and ̂)
+  // "::[:Nonspacing Mark:] Remove;" removes the " ̂"
+  // "::Lower;" converts the result to lower case
+  // "::NFC;" re-composes the decomposed characters
+  // "::Latin-ASCII;" converts various other Latin characters to an ASCII
+  //   representation (e.g. "ł", which does not get decomposed, to "l"; "ß"
+  //   to "ss").
+  constexpr std::string_view kDefaultRules =
+      "::NFD; ::[:Nonspacing Mark:] Remove; ::Lower; ::NFC; ::Latin-ASCII;";
 
   switch (id) {
     case TransliterationId::kKatakanaToHiragana:
@@ -65,30 +86,12 @@ std::unique_ptr<base::i18n::Transliterator> CreateTransliterator(
       transliterator = base::i18n::CreateTransliterator("Hiragana-Katakana");
       break;
     case TransliterationId::kGerman:
-      // Apply a simplified version of the "::de-ASCII" transliteration, which
-      // follows DIN 5007-2 ("ö" becomes "oe"). Here we map everything to
-      // lower case because that happens with "::Lower" anyway.
-      transliteration_rules =
-          "[ö {o \u0308} Ö {O \u0308}] → oe;"
-          "[ä {a \u0308} Ä {A \u0308}] → ae;"
-          "[ü {u \u0308} Ü {U \u0308}] → ue;";
-      [[fallthrough]];
-    case TransliterationId::kDefault:
-      // These rules are happening in the following order:
-      // First there are `TransliterationId::kGerman` specific rules if they are
-      // present, then
-      // "::NFD;" performs a decomposition and normalization.
-      // (â becomes a and ̂)
-      // "::[:Nonspacing Mark:] Remove;" removes the " ̂"
-      // "::Lower;" converts the result to lower case
-      // "::NFC;" re-composes the decomposed characters
-      // "::Latin-ASCII;" converts various other Latin characters to an ASCII
-      //   representation (e.g. "ł", which does not get decomposed, to "l"; "ß"
-      //   to "ss").
-      transliteration_rules +=
-          "::NFD; ::[:Nonspacing Mark:] Remove; ::Lower; ::NFC; ::Latin-ASCII;";
       transliterator = base::i18n::CreateTransliteratorFromRules(
-          "NormalizeForAddresses", transliteration_rules);
+          "DE_NormalizForAddress", base::StrCat({kGermanRules, kDefaultRules}));
+      break;
+    case TransliterationId::kDefault:
+      transliterator = base::i18n::CreateTransliteratorFromRules(
+          "NormalizeForAddress", kDefaultRules);
       break;
   }
 

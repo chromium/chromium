@@ -1,0 +1,19 @@
+Name: Sample Library 2a
+URL: https://example.com
+Shipped: Yes
+License: Apache 2.0, MIT
+License File: LICENSE.apache, LICENSE.mit
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: Sample Library 2b
+Short Name: sample-2b
+URL: https://chromium.tools.licenses.test/multi/src.git
+Version: 0
+Revision: v1.0.0
+Update Mechanism: Manual
+License: Shakespearean
+License File: LICENSE.notshipped
+Shipped in Chromium: no
+Shipped: yes
+Security Critical: no

@@ -8,9 +8,11 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/test_future.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -92,12 +94,20 @@ class PermissionServiceContextTest : public RenderViewHostTestHarness {
       PermissionType type,
       blink::mojom::PermissionStatus last_status,
       blink::mojom::PermissionStatus current_status) {
-    permission_controller()->SetOverrideForDevTools(origin_, type, last_status);
+    base::test::TestFuture<PermissionControllerImpl::OverrideStatus> future;
+
+    permission_controller()->SetPermissionOverride(
+        origin_, origin_, type, last_status, future.GetCallback());
+
+    EXPECT_EQ(future.Get(),
+              PermissionControllerImpl::OverrideStatus::kOverrideSet);
+
     auto observer = std::make_unique<TestPermissionObserver>();
     permission_service_context()->CreateSubscription(
         content::PermissionDescriptorUtil::
             CreatePermissionDescriptorForPermissionType(type),
-        origin_, current_status, last_status,
+        origin_, PermissionResult(current_status),
+        PermissionResult(last_status),
         /*should_include_device_status=*/false, observer->GetRemote());
     WaitForAsyncTasksToComplete();
     return observer;
@@ -105,7 +115,11 @@ class PermissionServiceContextTest : public RenderViewHostTestHarness {
 
   void SimulatePermissionChangedEvent(PermissionType type,
                                       blink::mojom::PermissionStatus status) {
-    permission_controller()->SetOverrideForDevTools(origin_, type, status);
+    base::test::TestFuture<PermissionControllerImpl::OverrideStatus> future;
+    permission_controller()->SetPermissionOverride(
+        origin_, origin_, type, status, future.GetCallback());
+    ASSERT_EQ(future.Get(),
+              PermissionControllerImpl::OverrideStatus::kOverrideSet);
     WaitForAsyncTasksToComplete();
   }
 
@@ -173,8 +187,9 @@ TEST_F(PermissionServiceContextTest,
       content::PermissionDescriptorUtil::
           CreatePermissionDescriptorForPermissionType(
               PermissionType::GEOLOCATION),
-      url::Origin::Create(GURL(kTestUrl)), blink::mojom::PermissionStatus::ASK,
-      blink::mojom::PermissionStatus::ASK,
+      url::Origin::Create(GURL(kTestUrl)),
+      PermissionResult(blink::mojom::PermissionStatus::ASK),
+      PermissionResult(blink::mojom::PermissionStatus::ASK),
       /*should_include_device_status=*/false, observer_child->GetRemote());
   SimulatePermissionChangedEvent(blink::PermissionType::GEOLOCATION,
                                  blink::mojom::PermissionStatus::ASK);

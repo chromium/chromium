@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.payments.ui;
 import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillContact;
 import org.chromium.chrome.browser.payments.ContactEditor;
@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /** The data to show in the contact details section where the user can select something. */
+@NullMarked
 public class ContactDetailsSection extends SectionInformation {
     private final Context mContext;
     private final ContactEditor mContactEditor;
@@ -66,8 +67,7 @@ public class ContactDetailsSection extends SectionInformation {
         // contacts section refresh. The updatedContact can be null when user has added a new
         // shipping address without an email, but the contact info section requires only email
         // address. Null updatedContact should not be added to the mItems list.
-        @Nullable
-        AutofillContact updatedContact =
+        @Nullable AutofillContact updatedContact =
                 createAutofillContactFromProfile(editedAddress.getProfile());
         if (null == updatedContact) return;
 

@@ -1,0 +1,13 @@
+include_rules = [
+  "+chromeos/ash/components/dbus/fwupd",
+  "+chromeos/ash/components/fwupd",
+  "+chromeos/ash/components/peripheral_notification",
+  "+content/public/browser/device_service.h"
+]
+
+specific_include_rules = {
+  "ash_usb_detector_unittest\\.cc": [
+    "+chromeos/ash/components/dbus/pciguard/pciguard_client.h",
+    "+chromeos/ash/components/dbus/typecd/typecd_client.h",
+  ]
+}

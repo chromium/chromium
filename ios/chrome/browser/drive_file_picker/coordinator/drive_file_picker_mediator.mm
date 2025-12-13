@@ -10,16 +10,17 @@
 #import "base/apple/foundation_util.h"
 #import "base/cancelable_callback.h"
 #import "base/files/file_path.h"
-#import "base/files/file_util.h"
+#import "base/functional/callback_helpers.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/timer/timer.h"
-#import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/drive/model/drive_file_downloader.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
+#import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_collection.h"
+#import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_image_fetcher.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_helper.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_metrics_helper.h"
@@ -50,46 +51,15 @@ constexpr base::TimeDelta kFetchItemsDelayToRetryMin = base::Seconds(0.5);
 constexpr base::TimeDelta kFetchItemsDelayToRetryMax = base::Seconds(10.0);
 // Delay before current items are cleared if fetching new items takes too long.
 constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
-// folder_identifier parameter for the My Drive view.
-NSString* kMyDriveFolderIdentifier = @"root";
-// Dimension to resize background images for shared drives.
-constexpr int kBackgroundImageResizeDimension = 64;
-// Dimension to resize thumbnails.
-constexpr int kThumbnailResizeDimension = 64;
-// Prefix of links to icons in the Drive third-party icon repository.
-NSString* kDriveIconRepositoryPrefix =
-    @"https://drive-thirdparty.googleusercontent.com/";
-// MIME type for folder items.
-NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
 
 }  // namespace
 
-@interface DriveFilePickerMediator ()
-@end
-
 @implementation DriveFilePickerMediator {
   base::WeakPtr<web::WebState> _webState;
-  id<SystemIdentity> _identity;
-  // The folder associated to the current `BrowseDriveFilePickerCoordinator`.
-  raw_ptr<drive::DriveService> _driveService;
   std::unique_ptr<DriveList> _driveList;
   std::unique_ptr<DriveFileDownloader> _driveDownloader;
-  NSString* _title;
-  // Type of collection presented in the consumer (outside search).
-  DriveFilePickerCollectionType _collectionType;
-  // If `_collectionType` is `kFolder`, identifier of that folder.
-  NSString* _folderIdentifier;
+  std::unique_ptr<DriveFilePickerCollection> _collection;
   std::vector<DriveItem> _fetchedDriveItems;
-  raw_ptr<signin::IdentityManager> _identityManager;
-  raw_ptr<ChromeAccountManagerService> _accountManagerService;
-  // The service responsible for fetching a `DriveFilePickerItem`'s image data.
-  std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
-  // The set of images being fetched, soon to be added to `_imageCache`.
-  __weak NSMutableSet<NSString*>* _imagesPending;
-  // Cache of fetched images for the Drive file picker.
-  __weak NSCache<NSString*, UIImage*>* _imageCache;
-  // JavaScript image transcoder to locally re-encode icons, thumbnails, etc.
-  std::unique_ptr<web::JavaScriptImageTranscoder> _imageTranscoder;
   // The selected files. These come from `_fetchedDriveItems` but are not
   // necessarily contained in `_fetchedDriveItems` at all times.
   std::unordered_set<DriveItem> _selectedFiles;
@@ -107,18 +77,12 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
   // If `_selectedFiles` is not empty, then this indicates whether the files are
   // search items or not.
   BOOL _selectedFilesAreSearchItems;
-  // If this is true, all downloadable files can be selected regardless of type.
-  BOOL _ignoreAcceptedTypes;
-  // Filter used to only show items matching a certain type.
-  DriveFilePickerFilter _filter;
+  // Options used to display the current collection.
+  DriveFilePickerOptions _options;
   // Types accepted by the WebState.
   NSArray<UTType*>* _acceptedTypes;
   // Whether the WebState accepts multiple files.
   BOOL _allowsMultipleSelection;
-  // Sorting criteria.
-  DriveItemsSortingType _sortingCriteria;
-  // Sorting direction.
-  DriveItemsSortingOrder _sortingDirection;
   // Whether the search bar is currently focused.
   BOOL _searchBarFocused;
   // Search text.
@@ -132,89 +96,72 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
   base::OneShotTimer _timerAfterFetchBeforeClearItems;
   // The page token to use to continue the current list/search.
   NSString* _nextPageToken;
-  // A filter that has been set externally. The value will be applied the next
-  // time the mediator is active.
-  std::optional<DriveFilePickerFilter> _pendingFilter;
-  // A sorting criteria that has been set externally. The value will be applied
-  // the next time the mediator is active.
-  std::optional<DriveItemsSortingType> _pendingSortingCriteria;
-  // A sorting direction that has been set externally. The value will be applied
-  // the next time the mediator is active.
-  std::optional<DriveItemsSortingOrder> _pendingSortingDirection;
-  // A flag to ignore accepted types that has been set externally. The value
-  // will be applied the next time the mediator is active.
-  std::optional<BOOL> _pendingIgnoreAcceptedTypes;
   // A helper to report metrics.
   __weak DriveFilePickerMetricsHelper* _metricsHelper;
 }
 
-- (instancetype)
-         initWithWebState:(web::WebState*)webState
-                 identity:(id<SystemIdentity>)identity
-                    title:(NSString*)title
-            imagesPending:(NSMutableSet<NSString*>*)imagesPending
-               imageCache:(NSCache<NSString*, UIImage*>*)imageCache
-           collectionType:(DriveFilePickerCollectionType)collectionType
-         folderIdentifier:(NSString*)folderIdentifier
-                   filter:(DriveFilePickerFilter)filter
-      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
-          sortingCriteria:(DriveItemsSortingType)sortingCriteria
-         sortingDirection:(DriveItemsSortingOrder)sortingDirection
-             driveService:(drive::DriveService*)driveService
-          identityManager:(signin::IdentityManager*)identityManager
-    accountManagerService:(ChromeAccountManagerService*)accountManagerService
-             imageFetcher:
-                 (std::unique_ptr<image_fetcher::ImageDataFetcher>)imageFetcher
-            metricsHelper:(DriveFilePickerMetricsHelper*)metricsHelper {
+- (instancetype)initWithWebState:(web::WebState*)webState
+                      collection:
+                          (std::unique_ptr<DriveFilePickerCollection>)collection
+                         options:(DriveFilePickerOptions)options {
   self = [super init];
   if (self) {
     CHECK(webState);
-    CHECK(identity);
-    CHECK(driveService);
-    CHECK(identityManager);
-    CHECK(accountManagerService);
-    CHECK(imagesPending);
-    CHECK(imageCache);
+    CHECK(collection);
     _webState = webState->GetWeakPtr();
-    _identity = identity;
-    _driveService = driveService;
-    _identityManager = identityManager;
-    _accountManagerService = accountManagerService;
-    _title = [title copy];
-    _collectionType = collectionType;
-    _folderIdentifier = [folderIdentifier copy];
-    _filter = filter;
-    _ignoreAcceptedTypes = ignoreAcceptedTypes;
-    _sortingCriteria = sortingCriteria;
-    _sortingDirection = sortingDirection;
+    _collection = std::move(collection);
+    _options = options;
     _fetchedDriveItems = {};
-    _imageFetcher = std::move(imageFetcher);
-    _metricsHelper = metricsHelper;
-    _metricsHelper.searchingState = DriveFilePickerSearchState::kNotSearching;
     // Initialize the list of accepted types.
     ChooseFileTabHelper* tab_helper =
-        ChooseFileTabHelper::GetOrCreateForWebState(webState);
+        ChooseFileTabHelper::FromWebState(webState);
     CHECK(tab_helper->IsChoosingFiles());
     const ChooseFileEvent& event = tab_helper->GetChooseFileEvent();
     _acceptedTypes = UTTypesAcceptedForEvent(event);
     _allowsMultipleSelection = event.allow_multiple_files;
-    _driveList = _driveService->CreateList(_identity);
-    _driveDownloader = _driveService->CreateFileDownloader(_identity);
-    _imageTranscoder = std::make_unique<web::JavaScriptImageTranscoder>();
-    _imagesPending = imagesPending;
-    _imageCache = imageCache;
-    if (collectionType == DriveFilePickerCollectionType::kRoot) {
-      [_metricsHelper reportActivationMetricsForEvent:event];
-    }
   }
   return self;
 }
 
+#pragma mark - Public properties
+
+- (void)setMetricsHelper:(DriveFilePickerMetricsHelper*)metricsHelper {
+  if (_metricsHelper == metricsHelper) {
+    return;
+  }
+  _metricsHelper = metricsHelper;
+  if (_metricsHelper) {
+    _metricsHelper.searchingState = DriveFilePickerSearchState::kNotSearching;
+    if (_collection->IsRoot()) {
+      ChooseFileTabHelper* tab_helper =
+          ChooseFileTabHelper::FromWebState(_webState.get());
+      CHECK(tab_helper);
+      [_metricsHelper
+          reportActivationMetricsForEvent:tab_helper->GetChooseFileEvent()];
+    }
+  }
+}
+
+- (void)setDriveService:(raw_ptr<drive::DriveService>)driveService {
+  if (_driveService == driveService) {
+    return;
+  }
+  _driveService = driveService;
+  if (_driveService) {
+    _driveList = _driveService->CreateList(_collection->GetIdentity());
+    _driveDownloader =
+        _driveService->CreateFileDownloader(_collection->GetIdentity());
+  }
+}
+
+#pragma mark - Public methods
+
 - (void)disconnect {
-  if (_collectionType == DriveFilePickerCollectionType::kRoot && _webState &&
-      !_webState->IsBeingDestroyed()) {
+  if (_collection->IsRoot() && _webState && !_webState->IsBeingDestroyed()) {
     ChooseFileTabHelper* tab_helper =
-        ChooseFileTabHelper::GetOrCreateForWebState(_webState.get());
+        ChooseFileTabHelper::FromWebState(_webState.get());
+
+    CHECK(tab_helper);
     if (tab_helper->IsChoosingFiles()) {
       tab_helper->StopChoosingFiles();
     }
@@ -230,61 +177,47 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
   _accountManagerService = nullptr;
   _identityManager = nullptr;
   _imageFetcher = nullptr;
-  _imageTranscoder = nullptr;
 }
 
-- (void)setConsumer:(id<DriveFilePickerConsumer>)consumer {
-  _consumer = consumer;
-  [_consumer setSelectedUserIdentityEmail:_identity.userEmail];
-  [self configureConsumerIdentitiesMenu];
-  [self updateTitle];
-  [_consumer setFilter:_filter];
-  [_consumer setAllFilesEnabled:_ignoreAcceptedTypes];
-  [_consumer setSortingCriteria:_sortingCriteria direction:_sortingDirection];
-  [_consumer setBackground:DriveFilePickerBackground::kLoadingIndicator];
-  [_consumer setCancelButtonVisible:_collectionType ==
-                                    DriveFilePickerCollectionType::kRoot];
-  [_consumer setFilterMenuEnabled:[self filterMenuShouldBeEnabled]];
-  [_consumer setSortingMenuEnabled:[self sortingMenuShouldBeEnabled]];
-  [_consumer setAllowsMultipleSelection:_allowsMultipleSelection];
-}
-
-- (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
-  if (_identity == selectedIdentity) {
-    return;
-  }
-  _identity = selectedIdentity;
+- (void)setCollection:(std::unique_ptr<DriveFilePickerCollection>)collection {
+  _collection = std::move(collection);
 
   [self setShouldShowSearchItems:NO];
   [self setSelectedFiles:{}];
   _searchBarFocused = NO;
   _searchText = nil;
-  [_consumer setSelectedUserIdentityEmail:_identity.userEmail];
+  [_consumer setSelectedUserIdentityEmail:_collection->GetIdentity().userEmail];
   [self clearItemsAndShowLoadingIndicator];
   [self configureConsumerIdentitiesMenu];
   [self updateTitle];
-  _driveList = _driveService->CreateList(_identity);
-  _driveDownloader = _driveService->CreateFileDownloader(_identity);
-  [_consumer setFilter:_filter];
-  [_consumer setAllFilesEnabled:_ignoreAcceptedTypes];
-  [_consumer setSortingCriteria:_sortingCriteria direction:_sortingDirection];
-  [_consumer setCancelButtonVisible:_collectionType ==
-                                    DriveFilePickerCollectionType::kRoot];
+  _driveList = _driveService->CreateList(_collection->GetIdentity());
+  _driveDownloader =
+      _driveService->CreateFileDownloader(_collection->GetIdentity());
+  [_consumer setFilter:_options.filter];
+  [_consumer setAllFilesEnabled:_options.ignore_accepted_types];
+  [_consumer setSortingCriterion:_options.sorting_criterion
+                       direction:_options.sorting_direction];
+  [_consumer setCancelButtonVisible:_collection->IsRoot()];
   [_consumer setSearchBarFocused:NO searchText:nil];
   [self loadFirstPage];
 }
 
-- (void)setPendingFilter:(DriveFilePickerFilter)filter
-         sortingCriteria:(DriveItemsSortingType)sortingCriteria
-        sortingDirection:(DriveItemsSortingOrder)sortingDirection
-     ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes {
-  _pendingFilter = filter;
-  _pendingSortingCriteria = sortingCriteria;
-  _pendingSortingDirection = sortingDirection;
-  _pendingIgnoreAcceptedTypes = ignoreAcceptedTypes;
-  if (_active) {
-    [self applyPendingFilterAndSorting];
-  }
+#pragma mark - Public properties
+
+- (void)setConsumer:(id<DriveFilePickerConsumer>)consumer {
+  _consumer = consumer;
+  [_consumer setSelectedUserIdentityEmail:_collection->GetIdentity().userEmail];
+  [self configureConsumerIdentitiesMenu];
+  [self updateTitle];
+  [_consumer setFilter:_options.filter];
+  [_consumer setAllFilesEnabled:_options.ignore_accepted_types];
+  [_consumer setSortingCriterion:_options.sorting_criterion
+                       direction:_options.sorting_direction];
+  [_consumer setBackground:DriveFilePickerBackground::kLoadingIndicator];
+  [_consumer setCancelButtonVisible:_collection->IsRoot()];
+  [_consumer setFilterMenuEnabled:[self filterMenuShouldBeEnabled]];
+  [_consumer setSortingMenuEnabled:[self sortingMenuShouldBeEnabled]];
+  [_consumer setAllowsMultipleSelection:_allowsMultipleSelection];
 }
 
 - (void)setActive:(BOOL)active {
@@ -305,7 +238,14 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
       _metricsHelper.searchingState = DriveFilePickerSearchState::kNotSearching;
     }
   }
-  [self applyPendingFilterAndSorting];
+  [self applyPendingOptions];
+}
+
+- (void)setPendingOptions:(std::optional<DriveFilePickerOptions>)options {
+  _pendingOptions = options;
+  if (_active) {
+    [self applyPendingOptions];
+  }
 }
 
 #pragma mark - DriveFilePickerMutator
@@ -316,9 +256,6 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
   // virtual collection.
   std::optional<DriveItem> driveItem =
       FindDriveItemFromIdentifier(_fetchedDriveItems, driveItemIdentifier);
-  BOOL driveItemIsShortcutToFolder =
-      driveItem && driveItem->is_shortcut &&
-      [driveItem->shortcut_target_mime_type isEqualToString:kFolderMIMEType];
 
   // Types of items are handled in the following order:
   // I. Real items (items for which `driveItem` is not null)
@@ -327,12 +264,9 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
   // II. Virtual items
   //    1. Virtual collections i.e. "My Drive", "Starred items", etc.
 
-  // I.1. If this is a file or shortcut to a file, select and download it.
-  if (driveItem && !driveItem->is_folder && !driveItem->is_shared_drive &&
-      !driveItemIsShortcutToFolder) {
-    // Unfocusing the search bar so the confirmation button can become visible.
-    _searchBarFocused = NO;
-    [self.consumer setSearchBarFocused:NO searchText:_searchText];
+  // I.1. If this item cannot be browsed then it is a file or shortcut to a
+  // file, so select it and download it.
+  if (driveItem && !driveItem->CanBeBrowsed()) {
     [self selectOrDeselectFile:*driveItem];
     return;
   }
@@ -343,92 +277,26 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
 
   // I.2. Handle real collections i.e. shared drives, folders or shortcuts to
   // folders.
-  if (driveItem && (driveItem->is_folder || driveItem->is_shared_drive ||
-                    driveItemIsShortcutToFolder)) {
-    if (_collectionType == DriveFilePickerCollectionType::kRoot &&
-        _shouldShowSearchItems) {
-      _metricsHelper.firstLevelItem = DriveFilePickerFirstLevel::kSearch;
-    }
-    NSString* folderIdentifier = nil;
-    if (driveItem->is_folder || driveItem->is_shared_drive) {
-      folderIdentifier = driveItem->identifier;
-    } else if (driveItemIsShortcutToFolder) {
-      folderIdentifier = driveItem->shortcut_target_identifier;
-    }
-    if (!folderIdentifier) {
-      // If no appropriate folder identifier could be retrieved from `driveItem`
-      // then do nothing.
-      return;
-    }
-    // If this is a real folder or shared drive, then open it.
-    [self.delegate
-        browseDriveCollectionWithMediator:self
-                                    title:driveItem->name
-                            imagesPending:_imagesPending
-                               imageCache:_imageCache
-                           collectionType:DriveFilePickerCollectionType::kFolder
-                         folderIdentifier:folderIdentifier
-                                   filter:_filter
-                      ignoreAcceptedTypes:_ignoreAcceptedTypes
-                          sortingCriteria:_sortingCriteria
-                         sortingDirection:_sortingDirection];
+  if (driveItem && driveItem->CanBeBrowsed()) {
+    [self browseDriveCollectionForItem:*driveItem];
     return;
   }
 
   // II.1. Handle browsing to virtual collections.
-  DriveFilePickerItem* myDriveItem = [DriveFilePickerItem myDriveItem];
-  DriveFilePickerItem* starredItem = [DriveFilePickerItem starredItem];
-  DriveFilePickerItem* recentItem = [DriveFilePickerItem recentItem];
-  DriveFilePickerItem* sharedWithMeItem =
-      [DriveFilePickerItem sharedWithMeItem];
-  DriveFilePickerItem* sharedDrivesItem =
-      [DriveFilePickerItem sharedDrivesItem];
-
-  NSString* title;
-  DriveFilePickerCollectionType collectionType;
-  NSString* folderIdentifier;
-  if ([driveItemIdentifier isEqual:myDriveItem.identifier]) {
-    title = myDriveItem.title;
-    collectionType = DriveFilePickerCollectionType::kFolder;
-    folderIdentifier = kMyDriveFolderIdentifier;
-    _metricsHelper.firstLevelItem = DriveFilePickerFirstLevel::kMyDrive;
-  } else if ([driveItemIdentifier isEqual:starredItem.identifier]) {
-    title = starredItem.title;
-    collectionType = DriveFilePickerCollectionType::kStarred;
-    folderIdentifier = nil;
-    _metricsHelper.firstLevelItem = DriveFilePickerFirstLevel::kStarred;
-  } else if ([driveItemIdentifier isEqual:recentItem.identifier]) {
-    title = recentItem.title;
-    collectionType = DriveFilePickerCollectionType::kRecent;
-    folderIdentifier = nil;
-    _metricsHelper.firstLevelItem = DriveFilePickerFirstLevel::kRecent;
-  } else if ([driveItemIdentifier isEqual:sharedWithMeItem.identifier]) {
-    title = sharedWithMeItem.title;
-    collectionType = DriveFilePickerCollectionType::kSharedWithMe;
-    folderIdentifier = nil;
-    _metricsHelper.firstLevelItem = DriveFilePickerFirstLevel::kSharedWithMe;
-  } else if ([driveItemIdentifier isEqual:sharedDrivesItem.identifier]) {
-    title = sharedDrivesItem.title;
-    collectionType = DriveFilePickerCollectionType::kSharedDrives;
-    folderIdentifier = nil;
-    _metricsHelper.firstLevelItem = DriveFilePickerFirstLevel::kSharedDrive;
-  } else {
-    NOTREACHED();
+  std::unique_ptr<DriveFilePickerCollection> collection =
+      _collection->GetFirstLevelCollection(driveItemIdentifier);
+  if (!collection) {
+    // If no first level collection corresponds to this item, do nothing.
+    return;
   }
-
-  // If the collection type is `kFolder`, then `folderIdentifier` should be set.
-  CHECK(collectionType != DriveFilePickerCollectionType::kFolder ||
-        folderIdentifier != nil);
+  std::optional<DriveFilePickerFirstLevel> firstLevel =
+      collection->GetFirstLevel();
+  if (firstLevel) {
+    _metricsHelper.firstLevelItem = *firstLevel;
+  }
   [self.delegate browseDriveCollectionWithMediator:self
-                                             title:title
-                                     imagesPending:_imagesPending
-                                        imageCache:_imageCache
-                                    collectionType:collectionType
-                                  folderIdentifier:folderIdentifier
-                                            filter:_filter
-                               ignoreAcceptedTypes:_ignoreAcceptedTypes
-                                   sortingCriteria:_sortingCriteria
-                                  sortingDirection:_sortingDirection];
+                                        collection:std::move(collection)
+                                           options:_options];
 }
 
 - (void)loadFirstPage {
@@ -440,100 +308,39 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
   [self loadItemsAppending:YES delayed:NO animated:YES];
 }
 
-- (void)setSortingCriteria:(DriveItemsSortingType)criteria
-                 direction:(DriveItemsSortingOrder)direction {
-  if (_sortingCriteria == criteria && _sortingDirection == direction) {
+- (void)setSortingCriterion:(DriveFilePickerSortingCriterion)criterion
+                  direction:(DriveFilePickerSortingDirection)direction {
+  if (_options.sorting_criterion == criterion &&
+      _options.sorting_direction == direction) {
     // If no sorting parameter changed, do nothing.
     return;
   }
-  _sortingCriteria = criteria;
-  _sortingDirection = direction;
-  [_metricsHelper reportSortingCriteriaChange:_sortingCriteria
-                                withDirection:_sortingDirection];
+  _options.sorting_criterion = criterion;
+  _options.sorting_direction = direction;
+  [_metricsHelper reportSortingCriterionChange:criterion
+                                 withDirection:direction];
   [self.delegate browseDriveCollectionWithMediator:self
-                                   didUpdateFilter:_filter
-                                   sortingCriteria:criteria
-                                  sortingDirection:direction
-                               ignoreAcceptedTypes:_ignoreAcceptedTypes];
-  [self.consumer setSortingCriteria:criteria direction:direction];
+                                  didUpdateOptions:_options];
+  [self.consumer setSortingCriterion:criterion direction:direction];
   [self loadItemsAppending:NO delayed:NO animated:YES];
 }
 
 - (void)fetchIconForDriveItem:(NSString*)itemIdentifier {
   std::optional<DriveItem> driveItem =
       FindDriveItemFromIdentifier(_fetchedDriveItems, itemIdentifier);
-  CHECK(driveItem);
-  NSString* imageLink = GetImageLinkForDriveItem(*driveItem);
-  CHECK(imageLink);
-  BOOL isIcon = [imageLink isEqualToString:driveItem->icon_link];
-  BOOL isThumbnail = [imageLink isEqualToString:driveItem->thumbnail_link];
-  BOOL isBackgroundImage =
-      [imageLink isEqualToString:driveItem->background_image_link];
-  __weak __typeof(self) weakSelf = self;
-  if (!isThumbnail) {
-    // If there is a cached image, use it.
-    UIImage* cachedImage = [_imageCache objectForKey:imageLink];
-    if (cachedImage) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              [](DriveFilePickerMediator* mediator, UIImage* cachedImage,
-                 NSString* imageLink, BOOL isThumbnail) {
-                [mediator setFetchedIcon:cachedImage
-                    forItemsWithImageLink:imageLink
-                              isThumbnail:isThumbnail];
-              },
-              weakSelf, cachedImage, imageLink, isThumbnail));
-      // Since `setIcon:` has to be called asynchronously, if there were other
-      // cells with the same image appearing in this cycle for which
-      // `shouldFetchIcon` is also YES, then this task would be posted once for
-      // each cell, which is duplicated work. To avoid this, set
-      // `shouldFetchIcon` to NO for all these items synchronously.
-      [self setShouldFetchIcon:NO forItemsWithImageLink:imageLink];
-      return;
-    }
-  }
-  // If the image is being fetched, do nothing.
-  if ([_imagesPending containsObject:imageLink]) {
+  if (!driveItem || _imageFetcher->IsFetchInProgress(*driveItem)) {
+    // If no item is associated with `itemIdentifier` or if the image is already
+    // being fetched, do nothing.
     return;
   }
-  [_imagesPending addObject:imageLink];
   // Otherwise fetch the image.
-  NSString* processedImageLink;
-  if (!isIcon) {
-    // If the image link is not coming from `item.icon_link` then no
-    // post-processing step is required.
-    processedImageLink = imageLink;
-  } else {
-    // By default drive api provides a 16 resolution icons, replacing 16 by 64
-    // in the icon URLs provide better sized icons e.g. the URL
-    // https://drive-thirdparty.googleusercontent.com/16/type/video/mp4 becomes
-    // https://drive-thirdparty.googleusercontent.com/64/type/video/mp4
-    NSString* target =
-        [kDriveIconRepositoryPrefix stringByAppendingString:@"16"];
-    NSString* replacement =
-        [kDriveIconRepositoryPrefix stringByAppendingString:@"64"];
-    processedImageLink =
-        [imageLink stringByReplacingOccurrencesOfString:target
-                                             withString:replacement];
-  }
-  GURL processedImageURL = GURL(base::SysNSStringToUTF16(processedImageLink));
-  _imageFetcher->FetchImageData(
-      processedImageURL,
-      base::BindOnce(
-          [](DriveFilePickerMediator* mediator, NSString* imageLink,
-             NSString* itemIdentifier, BOOL isThumbnail, BOOL isBackgroundImage,
-             const std::string& imageData,
-             const image_fetcher::RequestMetadata& metadata) {
-            NSData* imageNSData = [NSData dataWithBytes:imageData.data()
-                                                 length:imageData.length()];
-            [mediator processUnsafeImageData:imageNSData
-                             fetchedFromLink:imageLink
-                                 isThumbnail:isThumbnail
-                           isBackgroundImage:isBackgroundImage];
-          },
-          weakSelf, imageLink, itemIdentifier, isThumbnail, isBackgroundImage),
-      NO_TRAFFIC_ANNOTATION_YET);
+  __weak __typeof(self) weakSelf = self;
+  _imageFetcher->FetchImage(*driveItem,
+                            base::BindOnce(^(DriveItem item, UIImage* image) {
+                              [weakSelf setFetchedIcon:image
+                                  forItemsWithImageLink:item.GetImageLink()
+                                              imageType:item.GetImageType()];
+                            }));
 }
 
 - (void)submitFileSelection {
@@ -542,7 +349,8 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
     return;
   }
   ChooseFileTabHelper* tab_helper =
-      ChooseFileTabHelper::GetOrCreateForWebState(_webState.get());
+      ChooseFileTabHelper::FromWebState(_webState.get());
+  CHECK(tab_helper);
   if (!tab_helper->IsChoosingFiles()) {
     [self.driveFilePickerHandler hideDriveFilePicker];
     return;
@@ -558,34 +366,28 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
   CHECK(fileURLs.count > 0);
   _metricsHelper.submittedFiles = fileURLs;
   NSString* displayString = GetDisplayStringForFileUrls(fileURLs);
-  tab_helper->StopChoosingFiles(fileURLs, displayString, nil);
+  tab_helper->StopChoosingFiles(fileURLs, displayString, /*icon_image=*/nil);
   [self.delegate mediatorDidStopFileSelection:self];
 }
 
 - (void)setAcceptedTypesIgnored:(BOOL)ignoreAcceptedTypes {
-  if (ignoreAcceptedTypes == _ignoreAcceptedTypes) {
+  if (ignoreAcceptedTypes == _options.ignore_accepted_types) {
     return;
   }
-  _ignoreAcceptedTypes = ignoreAcceptedTypes;
+  _options.ignore_accepted_types = ignoreAcceptedTypes;
   [self updateAcceptableItems];
   [self.delegate browseDriveCollectionWithMediator:self
-                                   didUpdateFilter:_filter
-                                   sortingCriteria:_sortingCriteria
-                                  sortingDirection:_sortingDirection
-                               ignoreAcceptedTypes:_ignoreAcceptedTypes];
+                                  didUpdateOptions:_options];
 }
 
 - (void)setFilter:(DriveFilePickerFilter)filter {
-  if (_filter == filter) {
+  if (_options.filter == filter) {
     return;
   }
-  _filter = filter;
-  [_metricsHelper reportFilterChange:_filter];
+  _options.filter = filter;
+  [_metricsHelper reportFilterChange:filter];
   [self.delegate browseDriveCollectionWithMediator:self
-                                   didUpdateFilter:_filter
-                                   sortingCriteria:_sortingCriteria
-                                  sortingDirection:_sortingDirection
-                               ignoreAcceptedTypes:_ignoreAcceptedTypes];
+                                  didUpdateOptions:_options];
   [self.consumer setFilter:filter];
   [self loadItemsAppending:NO delayed:NO animated:YES];
 }
@@ -648,19 +450,43 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
   }
 }
 
-#pragma mark - Private
+#pragma mark - Private methods
+
+// Browses to the collection corresponding to `item`.
+- (void)browseDriveCollectionForItem:(const DriveItem&)item {
+  if (_collection->IsRoot() && _shouldShowSearchItems) {
+    _metricsHelper.firstLevelItem = DriveFilePickerFirstLevel::kSearch;
+  }
+  NSString* folderIdentifier = nil;
+  if (item.is_shortcut) {
+    folderIdentifier = item.shortcut_target_identifier;
+  } else {
+    folderIdentifier = item.identifier;
+  }
+  if (!folderIdentifier) {
+    // If no appropriate folder identifier could be retrieved from `driveItem`
+    // then do nothing.
+    return;
+  }
+  // If this is a real folder or shared drive, then open it.
+  std::unique_ptr<DriveFilePickerCollection> collection =
+      _collection->GetFolder(item.name, folderIdentifier);
+  [self.delegate browseDriveCollectionWithMediator:self
+                                        collection:std::move(collection)
+                                           options:_options];
+}
 
 // Updates the title in the consumer.
 - (void)updateTitle {
   if (_shouldShowSearchItems) {
     // No title in search mode.
     [self.consumer setTitle:nil];
-  } else if (_collectionType == DriveFilePickerCollectionType::kRoot) {
+  } else if (_collection->IsRoot()) {
     // When presenting the root collection, out of search mode, show root title.
     [self.consumer setRootTitle];
   } else {
     // Otherwise, out of search mode, show the provided collection title.
-    [self.consumer setTitle:_title];
+    [self.consumer setTitle:_collection->GetTitle()];
   }
 }
 
@@ -669,17 +495,17 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
   NSMutableSet<NSString*>* enabledItemsIdentifiers = [NSMutableSet set];
   for (const DriveItem& item : _fetchedDriveItems) {
     if (DriveFilePickerItemShouldBeEnabled(item, _acceptedTypes,
-                                           _ignoreAcceptedTypes)) {
+                                           _options.ignore_accepted_types)) {
       [enabledItemsIdentifiers addObject:item.identifier];
     }
   }
   [self.consumer setEnabledItems:enabledItemsIdentifiers];
-  [self.consumer setAllFilesEnabled:_ignoreAcceptedTypes];
+  [self.consumer setAllFilesEnabled:_options.ignore_accepted_types];
   // Update selected files to exclude items which should not be enabled.
   std::unordered_set<DriveItem> enabledSelectedFiles;
   for (const DriveItem& selectedFile : _selectedFiles) {
     if (DriveFilePickerItemShouldBeEnabled(selectedFile, _acceptedTypes,
-                                           _ignoreAcceptedTypes)) {
+                                           _options.ignore_accepted_types)) {
       enabledSelectedFiles.insert(selectedFile);
     }
   }
@@ -718,6 +544,10 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
   [self.consumer setBackground:DriveFilePickerBackground::kLoadingIndicator];
 }
 
+// Sets whether the file picker should show "search" items or instead items
+// corresponding to the current collection. This method manages the transition
+// between "search" mode and "non-search", so it reloads items, updates the
+// current selection and the consumer accordingly.
 - (void)setShouldShowSearchItems:(BOOL)shouldShowSearchItems {
   if (shouldShowSearchItems == _shouldShowSearchItems) {
     return;
@@ -765,7 +595,13 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
   [self loadItemsAppending:NO delayed:NO animated:YES];
 }
 
+// If multifile selection is possible, then this toggles the selection of
+// `file`. Otherwise, the current selection is cleared and replaced with `file`.
 - (void)selectOrDeselectFile:(const DriveItem&)file {
+  // Unfocusing the search bar so the confirmation button can become visible.
+  _searchBarFocused = NO;
+  [self.consumer setSearchBarFocused:NO searchText:_searchText];
+
   if (_shouldShowSearchItems && !_selectedFilesAreSearchItems) {
     // If the file picker is now in search mode but the selected files come from
     // outside search mode, reset the selection before editing it further. This
@@ -801,6 +637,7 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
   [self setSelectedFiles:{file}];
 }
 
+// Removes `file` from the set of selected files.
 - (void)deselectFile:(const DriveItem&)file {
   std::unordered_set<DriveItem> newSelectedFiles = _selectedFiles;
   newSelectedFiles.erase(file);
@@ -912,16 +749,17 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
       },
       weakSelf, fileURL, fileToDownload.identifier));
   ChooseFileTabHelper* tabHelper =
-      ChooseFileTabHelper::GetOrCreateForWebState(_webState.get());
+      ChooseFileTabHelper::FromWebState(_webState.get());
+  CHECK(tabHelper);
   tabHelper->CheckFileUrlReadyForSelection(
       fileURL, fileToDownload.modified_time,
       _fileVersionReadyCallback.callback());
 }
 
-// Called when a local copy of the correct version of the file with identifier
-// `fileIdentifier` has been found to exist at URL `fileURL`. If
-// `readyForSelection` is false then it means there is no local copy ready for
-// selection, in which case the file should be downloaded.
+// If `readyForSelection` is `YES`, this means there is a file at `fileURL`
+// ready to be submitted to the page so this pops the download queue and
+// continues to process the downloading queue.
+// Otherwise, downloads the file at the front of the queue.
 - (void)handleFileURL:(NSURL*)fileURL
     readyForSelection:(BOOL)readyForSelection
        fileIdentifier:(NSString*)fileIdentifier {
@@ -970,13 +808,15 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
           weakSelf, fileURL));
   // Inform the WebState that the destination URL isn't ready for selection yet.
   ChooseFileTabHelper* tabHelper =
-      ChooseFileTabHelper::GetOrCreateForWebState(_webState.get());
+      ChooseFileTabHelper::FromWebState(_webState.get());
+  CHECK(tabHelper);
   tabHelper->RemoveFileUrlReadyForSelection(fileURL);
 }
 
-// Called when a file was downloaded at `fileURL`. If `error` is nil then it
-// means the download was successful. It is expected that the file associated
-// with `fileURL` is the file at the front of `_downloadingQueue`.
+// If there is an `error` then shows an alert to let the user decide whether to
+// retry the download of the file at the front of the download queue or instead
+// skip it. Otherwise, mark the file as ready to be submitted to the page, pop
+// it from the queue and continue to process the download queue.
 - (void)handleDownloadResponse:(DriveFileDownloadID)driveFileDownloadID
                          error:(NSError*)error
                        fileURL:(NSURL*)fileURL {
@@ -1019,18 +859,22 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
   // selection, pop the file from the queue and continue processing the download
   // queue.
   ChooseFileTabHelper* tabHelper =
-      ChooseFileTabHelper::GetOrCreateForWebState(_webState.get());
+      ChooseFileTabHelper::FromWebState(_webState.get());
+  CHECK(tabHelper);
   tabHelper->AddFileUrlReadyForSelection(
       fileURL, _downloadingQueue.front().modified_time);
   _downloadingQueue.pop();
   [self processDownloadingQueue];
 }
 
-// If root items should be loaded, then there are no items to fetch so this
-// asynchronously populates the consumer. Otherwise, this fetches items.
+// Updates the presented list of items by replacing them or appending new ones,
+// as a function of the currently presented collection and current projection.
 - (void)loadItemsAppending:(BOOL)append
                    delayed:(BOOL)delayed
                   animated:(BOOL)animated {
+  // If root items should be loaded, then there are no items to fetch so this
+  // asynchronously populates the consumer. Otherwise, this fetches items.
+
   if (!_driveList) {
     // When disconnected, do nothing.
     return;
@@ -1044,8 +888,7 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
     _driveList->CancelCurrentQuery();
   }
 
-  if (_collectionType != DriveFilePickerCollectionType::kRoot ||
-      _shouldShowSearchItems) {
+  if (!_collection->IsRoot() || _shouldShowSearchItems) {
     const base::TimeDelta delay =
         delayed ? kFetchItemsDelay : base::TimeDelta();
     [self fetchItemsAppending:append
@@ -1109,8 +952,8 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
   }
 
   DriveListQuery query = CreateDriveListQuery(
-      _collectionType, _folderIdentifier, _filter, _sortingCriteria,
-      _sortingDirection, _shouldShowSearchItems, _searchText, _nextPageToken);
+      _collection->GetType(), _collection->GetFolderIdentifier(), _options,
+      _shouldShowSearchItems, _searchText, _nextPageToken);
 
   auto completion = base::BindOnce(
       [](DriveFilePickerMediator* mediator, const base::TimeDelta& delayToRetry,
@@ -1120,18 +963,18 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
                                  animated:animated];
       },
       weakSelf, delayToRetry, animated);
-  if (_shouldShowSearchItems ||
-      _collectionType != DriveFilePickerCollectionType::kSharedDrives) {
+  if (_shouldShowSearchItems || !_collection->IsSharedDrives()) {
     _driveList->ListFiles(query, std::move(completion));
   } else {
     _driveList->ListSharedDrives(query, std::move(completion));
   }
 }
 
-// Called as a completion of `_driveList->ListItems(...)`. Either replaces
-// exisiting items with new ones (`append` is NO) or appends new items to
-// existing ones (`append` is YES). If `animated` is YES then new items are
-// animated into the consumer.
+// Processes the `result` of querying a list of items and either replaces
+// exisiting items with the new ones (`append` is NO) or appends the new items
+// to the existing ones (`append` is YES). If `animated` is YES then new items
+// are animated into the consumer. Called as a completion of
+// `_driveList->ListItems(...)`.
 - (void)handleListItemsResponse:(const DriveListResult&)result
                    delayToRetry:(base::TimeDelta)delayToRetry
                        animated:(BOOL)animated {
@@ -1171,7 +1014,7 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
     _fetchedDriveItems = result.items;
   }
 
-  NSMutableArray<DriveFilePickerItem*>* res = [[NSMutableArray alloc] init];
+  NSMutableArray<DriveFilePickerItem*>* res = [NSMutableArray array];
   NSMutableArray<NSString*>* itemsToReconfigure = [NSMutableArray array];
   for (const DriveItem& item : result.items) {
     if ([previousIdentifiers containsObject:item.identifier]) {
@@ -1184,13 +1027,11 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
         [itemsToReconfigure addObject:item.identifier];
       }
     }
-    NSString* imageLink = GetImageLinkForDriveItem(item);
-    UIImage* fetchedIcon = [_imageCache objectForKey:imageLink];
     DriveFilePickerItem* filePickerItem = DriveItemToDriveFilePickerItem(
-        item, _collectionType, _sortingCriteria, _shouldShowSearchItems,
-        _searchText, fetchedIcon, imageLink);
+        item, _collection->GetType(), _options.sorting_criterion,
+        _shouldShowSearchItems, _searchText);
     filePickerItem.enabled = DriveFilePickerItemShouldBeEnabled(
-        item, _acceptedTypes, _ignoreAcceptedTypes);
+        item, _acceptedTypes, _options.ignore_accepted_types);
     // If the search text is not empty, emphasize the first match of the search
     // text inside the name of the item.
     if (_searchText.length != 0) {
@@ -1216,7 +1057,7 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
     // If there are items to present, then clear the background.
     [self.consumer setBackground:DriveFilePickerBackground::kNoBackground];
   } else if (_shouldShowSearchItems ||
-             _filter != DriveFilePickerFilter::kShowAllFiles) {
+             _options.filter != DriveFilePickerFilter::kShowAllFiles) {
     // If there are no items during search or while applying a filter, then show
     // "No matching results" as explanation.
     [self.consumer setBackground:DriveFilePickerBackground::kNoMatchingResults];
@@ -1226,6 +1067,8 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
   }
 }
 
+// Gives the consumer an account-switching menu with an up-to-date list of
+// available identities.
 - (void)configureConsumerIdentitiesMenu {
   ActionFactory* actionFactory = [[ActionFactory alloc]
       initWithScenario:kMenuScenarioHistogramSelectDriveIdentityEntry];
@@ -1240,7 +1083,7 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
       menuToSelectDriveIdentityWithIdentities:signin::GetIdentitiesOnDevice(
                                                   _identityManager,
                                                   _accountManagerService)
-                              currentIdentity:_identity
+                              currentIdentity:_collection->GetIdentity()
                                         block:actionResult];
   // TODO(crbug.com/344812396): Add the new account block.
   UIAction* addAccountAction =
@@ -1252,126 +1095,60 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
                  ]]];
 }
 
-// Transcodes `unsafeImageData` into `safeImageData` and forwards
-// `safeImageData` to `processSafeImageData:`.
-- (void)processUnsafeImageData:(NSData*)unsafeImageData
-               fetchedFromLink:(NSString*)imageLink
-                   isThumbnail:(BOOL)isThumbnail
-             isBackgroundImage:(BOOL)isBackgroundImage {
-  NSNumber* resizedWidth = nil;
-  NSNumber* resizedHeight = nil;
-  if (isBackgroundImage) {
-    resizedWidth = resizedHeight = @(kBackgroundImageResizeDimension);
-  }
-  __weak __typeof(self) weakSelf = self;
-  _imageTranscoder->TranscodeImage(
-      unsafeImageData, @"image/png", resizedWidth, resizedHeight, nil,
-      base::BindOnce(
-          [](DriveFilePickerMediator* mediator,
-             NSMutableSet<NSString*>* imagesPending, NSString* imageLink,
-             BOOL isThumbnail, NSData* safeImageData, NSError* error) {
-            if (!safeImageData) {
-              // If there is no data, then remove `imageLink` from
-              // `imagesPending` and try again next time the item appears on the
-              // screen.
-              [imagesPending removeObject:imageLink];
-              return;
-            }
-            [mediator processSafeImageData:safeImageData
-                           fetchedFromLink:imageLink
-                               isThumbnail:isThumbnail];
-          },
-          weakSelf, _imagesPending, imageLink, isThumbnail));
-}
-
-// Decodes and caches `imageData` using `imageLink` as key and updates the
-// consumer items associated with image link `imageLink`.
-- (void)processSafeImageData:(NSData*)imageData
-             fetchedFromLink:(NSString*)imageLink
-                 isThumbnail:(BOOL)isThumbnail {
-  UIImage* image = [UIImage imageWithData:imageData];
-  if (isThumbnail) {
-    image = ResizeImage(
-        image, CGSizeMake(kThumbnailResizeDimension, kThumbnailResizeDimension),
-        ProjectionMode::kAspectFill);
-  } else {
-    [_imageCache setObject:image forKey:imageLink];
-  }
-  [_imagesPending removeObject:imageLink];
-  [self setFetchedIcon:image
-      forItemsWithImageLink:imageLink
-                isThumbnail:isThumbnail];
-}
-
-// Set `shouldFetchIcon` for all consumer items associated with image link
-// `imageLink`.
-- (void)setShouldFetchIcon:(BOOL)shouldFetchIcon
-     forItemsWithImageLink:(NSString*)imageLink {
-  // Update items with the same image link in the consumer.
-  NSMutableSet<NSString*>* itemsToUpdate = [NSMutableSet set];
-  for (const DriveItem& item : _fetchedDriveItems) {
-    if ([GetImageLinkForDriveItem(item) isEqualToString:imageLink]) {
-      [itemsToUpdate addObject:item.identifier];
-    }
-  }
-  [self.consumer setShouldFetchIcon:shouldFetchIcon forItems:itemsToUpdate];
-}
-
 // Sets `fetchedIcon` as icon for all consumer items associated with image link
-// `imageLink`.
+// `imageLink` and type `imageType`.
 - (void)setFetchedIcon:(UIImage*)fetchedIcon
     forItemsWithImageLink:(NSString*)imageLink
-              isThumbnail:(BOOL)isThumbnail {
+                imageType:(DriveItem::ImageType)imageType {
+  if (!fetchedIcon) {
+    // If the icon could not be fetched, do nothing.
+    return;
+  }
   // Update items with the same image link in the consumer.
   NSMutableSet<NSString*>* itemsToUpdate = [NSMutableSet set];
   for (const DriveItem& item : _fetchedDriveItems) {
-    if ([GetImageLinkForDriveItem(item) isEqualToString:imageLink]) {
+    if ([item.GetImageLink() isEqualToString:imageLink]) {
       [itemsToUpdate addObject:item.identifier];
     }
   }
   [self.consumer setFetchedIcon:fetchedIcon
                        forItems:itemsToUpdate
-                    isThumbnail:isThumbnail];
+                    isThumbnail:imageType == DriveItem::ImageType::kThumbnail];
 }
 
-// Check if the pending sorting criteria and filter are different from the
-// current one, and if it is the case, update them.
-- (void)applyPendingFilterAndSorting {
+// Checks if the pending options i.e. sorting criterion/direction and filter are
+// different from the current ones, and if it is the case, updates them.
+- (void)applyPendingOptions {
+  if (!_pendingOptions) {
+    return;
+  }
+
+  DriveFilePickerOptions newOptions = *_pendingOptions;
+  _pendingOptions.reset();
+
   BOOL refresh = NO;
   BOOL refreshAcceptedItems = NO;
-  if (_pendingFilter) {
-    if (_filter != *_pendingFilter) {
-      _filter = *_pendingFilter;
-      refresh = YES;
-    }
-    _pendingFilter.reset();
+  if (_options.filter != newOptions.filter) {
+    _options.filter = newOptions.filter;
+    refresh = YES;
   }
-  if (_pendingSortingCriteria) {
-    if (_sortingCriteria != *_pendingSortingCriteria) {
-      _sortingCriteria = *_pendingSortingCriteria;
-      refresh = YES;
-    }
-    _pendingSortingCriteria.reset();
+  if (_options.sorting_criterion != newOptions.sorting_criterion) {
+    _options.sorting_criterion = newOptions.sorting_criterion;
+    refresh = YES;
   }
-  if (_pendingSortingDirection) {
-    if (_sortingDirection != *_pendingSortingDirection) {
-      _sortingDirection = *_pendingSortingDirection;
-      refresh = YES;
-    }
-    _pendingSortingDirection.reset();
+  if (_options.sorting_direction != newOptions.sorting_direction) {
+    _options.sorting_direction = newOptions.sorting_direction;
+    refresh = YES;
   }
-  if (_pendingIgnoreAcceptedTypes) {
-    if (_ignoreAcceptedTypes != *_pendingIgnoreAcceptedTypes) {
-      _ignoreAcceptedTypes = *_pendingIgnoreAcceptedTypes;
-      refreshAcceptedItems = YES;
-    }
-    _pendingIgnoreAcceptedTypes.reset();
+  if (_options.ignore_accepted_types != newOptions.ignore_accepted_types) {
+    _options.ignore_accepted_types = newOptions.ignore_accepted_types;
+    refreshAcceptedItems = YES;
   }
 
   if (refresh) {
-    [self.consumer setFilter:_filter];
-    [self.consumer setSortingCriteria:_sortingCriteria
-                            direction:_sortingDirection];
+    [self.consumer setFilter:_options.filter];
+    [self.consumer setSortingCriterion:_options.sorting_criterion
+                             direction:_options.sorting_direction];
 
     [self loadItemsAppending:NO delayed:NO animated:YES];
     // If items were refreshed, the acceptedItems were also automatically
@@ -1388,9 +1165,7 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
   if (_shouldShowSearchItems) {
     return _searchText.length > 0;
   }
-  return _collectionType != DriveFilePickerCollectionType::kRoot &&
-         _collectionType != DriveFilePickerCollectionType::kRecent &&
-         _collectionType != DriveFilePickerCollectionType::kSharedDrives;
+  return _collection->SupportsFiltering();
 }
 
 // Helper function to compute whether the sorting menu should be enabled.
@@ -1398,11 +1173,7 @@ NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
   if (_shouldShowSearchItems) {
     return _searchText.length > 0;
   }
-
-  return _collectionType != DriveFilePickerCollectionType::kRoot &&
-         _collectionType != DriveFilePickerCollectionType::kRecent &&
-         _collectionType != DriveFilePickerCollectionType::kSharedWithMe &&
-         _collectionType != DriveFilePickerCollectionType::kSharedDrives;
+  return _collection->SupportsSorting();
 }
 
 // Sets `_nextPageToken` and updates consumer accordingly.

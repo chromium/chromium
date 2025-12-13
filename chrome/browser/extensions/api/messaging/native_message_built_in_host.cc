@@ -11,7 +11,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/url_pattern.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
 
 namespace extensions {

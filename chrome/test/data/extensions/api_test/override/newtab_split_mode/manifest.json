@@ -1,0 +1,10 @@
+{
+  "name": "New tab override test with incognito split mode",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "Test chrome://newtab override",
+  "incognito": "split",
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  }
+}

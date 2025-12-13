@@ -20,8 +20,7 @@ DataTypeStoreBase::WriteBatch::~WriteBatch() = default;
 
 void DataTypeStoreBase::WriteBatch::TakeMetadataChangesFrom(
     std::unique_ptr<MetadataChangeList> mcl) {
-  static_cast<InMemoryMetadataChangeList*>(mcl.get())->TransferChangesTo(
-      GetMetadataChangeList());
+  mcl->TransferChangesTo(GetMetadataChangeList());
 }
 
 DataTypeStoreBase::DataTypeStoreBase() = default;

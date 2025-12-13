@@ -13,6 +13,8 @@ include_rules = [
   "+third_party/blink/public",
   "+third_party/ink",
   "+third_party/skia/include/core",
+  "+third_party/skia/include/ports",
+  "+ui/accessibility/ax_enums.mojom-data-view.h",
   "+ui/base",
   "+ui/events",
   "+ui/gfx",
@@ -22,6 +24,7 @@ include_rules = [
 specific_include_rules = {
   ".*_unittest.*\.cc": [
     "+cc/test",
+    "+crypto",
     "+ui/latency/latency_info.h",
   ],
 }

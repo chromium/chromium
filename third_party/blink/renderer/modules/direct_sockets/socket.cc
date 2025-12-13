@@ -39,9 +39,9 @@ CreateDOMExceptionCodeAndMessageFromNetErrorCode(int32_t net_error) {
               "Access to the requested host or port is blocked."};
     case net::ERR_NETWORK_ACCESS_DENIED:
       return {DOMExceptionCode::kInvalidAccessError, "Firewall error."};
-    case net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS:
+    case net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS:
       return {DOMExceptionCode::kInvalidAccessError,
-              "Access to private network is blocked."};
+              "Access to local network is blocked."};
     default:
       return {DOMExceptionCode::kNetworkError, "Network Error."};
   }
@@ -70,7 +70,7 @@ Socket::Socket(ScriptState* script_state)
       service_.BindNewPipeAndPassReceiver(
           GetExecutionContext()->GetTaskRunner(TaskType::kNetworking)));
   service_.set_disconnect_handler(
-      WTF::BindOnce(&Socket::OnServiceConnectionError, WrapPersistent(this)));
+      BindOnce(&Socket::OnServiceConnectionError, WrapPersistent(this)));
 
   // |closed| promise is just one of the ways to learn that the socket state has
   // changed. Therefore it's not necessary to force developers to handle

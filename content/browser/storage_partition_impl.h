@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -17,10 +16,12 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
+#include "base/unguessable_token.h"
+#include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/public/mojom/storage_service.mojom-forward.h"
 #include "content/browser/background_sync/background_sync_context_impl.h"
@@ -45,11 +46,12 @@
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/cert_verifier_service_updater.mojom.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/network_context_client.mojom.h"
-#include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_settings.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/dom_storage/dom_storage.mojom.h"
@@ -71,6 +73,7 @@ class DeviceBoundSessionAccessObserver;
 }  // namespace network
 
 namespace storage {
+class BlobUrlRegistry;
 struct BucketClientInfo;
 class SharedStorageManager;
 }
@@ -95,7 +98,6 @@ class CacheStorageControlWrapper;
 class CdmStorageDataModel;
 class CdmStorageManager;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
-class CookieDeprecationLabelManagerImpl;
 class CookieStoreManager;
 class DevToolsBackgroundServicesContextImpl;
 class FileSystemAccessEntryFactory;
@@ -122,7 +124,8 @@ class CONTENT_EXPORT StoragePartitionImpl
     : public StoragePartition,
       public blink::mojom::DomStorage,
       public network::mojom::NetworkContextClient,
-      public network::mojom::URLLoaderNetworkServiceObserver {
+      public network::mojom::URLLoaderNetworkServiceObserver,
+      public performance_scenarios::MatchingScenarioObserver {
  public:
   StoragePartitionImpl(const StoragePartitionImpl&) = delete;
   StoragePartitionImpl& operator=(const StoragePartitionImpl&) = delete;
@@ -217,7 +220,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   // Use outside content.
   AttributionDataModel* GetAttributionDataModel() override;
   PrivateAggregationDataModel* GetPrivateAggregationDataModel() override;
-  CookieDeprecationLabelManager* GetCookieDeprecationLabelManager() override;
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   CdmStorageDataModel* GetCdmStorageDataModel() override;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -266,7 +268,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   void FlushNetworkInterfaceForTesting() override;
   void FlushCertVerifierInterfaceForTesting() override;
   void WaitForDeletionTasksForTesting() override;
-  void WaitForCodeCacheShutdownForTesting() override;
   void SetNetworkContextForTesting(
       mojo::PendingRemote<network::mojom::NetworkContext>
           network_context_remote) override;
@@ -357,6 +358,7 @@ class CONTENT_EXPORT StoragePartitionImpl
       mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
           listener) override;
   void OnWebSocketConnectedToPrivateNetwork(
+      const GURL& request_url,
       network::mojom::IPAddressSpace ip_address_space) override;
   void OnUrlLoaderConnectedToPrivateNetwork(
       const GURL& request_url,
@@ -372,13 +374,8 @@ class CONTENT_EXPORT StoragePartitionImpl
       const scoped_refptr<net::HttpResponseHeaders>& head_headers,
       mojo::PendingRemote<network::mojom::AuthChallengeResponder>
           auth_challenge_responder) override;
-  void OnPrivateNetworkAccessPermissionRequired(
-      const GURL& url,
-      const net::IPAddress& ip_address,
-      const std::optional<std::string>& private_network_device_id,
-      const std::optional<std::string>& private_network_device_name,
-      OnPrivateNetworkAccessPermissionRequiredCallback callback) override;
   void OnLocalNetworkAccessPermissionRequired(
+      network::mojom::TransportType transport_type,
       OnLocalNetworkAccessPermissionRequiredCallback callback) override;
   void OnClearSiteData(
       const GURL& url,
@@ -402,11 +399,13 @@ class CONTENT_EXPORT StoragePartitionImpl
       network::AdAuctionEventRecord event_record,
       const std::optional<url::Origin>& top_frame_origin) override;
 
+  // performance_scenarios::MatchingScenarioObserver overrides:
+  void OnScenarioMatchChanged(performance_scenarios::ScenarioScope scope,
+                              bool matches_pattern) override;
+
   SharedStorageHeaderObserver* shared_storage_header_observer() {
     return shared_storage_header_observer_.get();
   }
-
-  bool IsStorageServiceRemoteValid() const;
 
   // Can return nullptr while `this` is being destroyed.
   BrowserContext* browser_context() const;
@@ -477,7 +476,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   CreateSharedDictionaryAccessObserverForServiceWorker();
 
   mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
-  CreateURLLoaderNetworkObserverForServiceWorker(
+  CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
       int process_id,
       const url::Origin& worker_origin);
 
@@ -523,8 +522,9 @@ class CONTENT_EXPORT StoragePartitionImpl
   // function saves the nonces so that they can be restored in case of a
   // `NetworkService` crash.
   void RevokeNetworkForNoncesInNetworkContext(
-      const std::vector<base::UnguessableToken>& nonces,
-      network::mojom::NetworkContext::RevokeNetworkForNoncesCallback callback);
+      const std::map<base::UnguessableToken, std::set<std::string>>&
+          nonces_to_patterns,
+      base::OnceClosure callback);
 
   // Forward the call to `NetworkContext::ClearNonces` and remove the stored
   // nonce values in `StoragePartitionImpl`. Clients should clear nonces using
@@ -551,6 +551,9 @@ class CONTENT_EXPORT StoragePartitionImpl
       const base::TimeDelta& delay,
       base::RepeatingClosure callback);
 
+  base::UnguessableToken GetPartitionUUIDPerStorageKey(
+      const blink::StorageKey& storage_key);
+
   // Increments/decrements/gets the active document count tracked in
   // `active_document_per_nik_count_`.
   void IncrementActiveDocumentCount(const net::NetworkIsolationKey& nik);
@@ -560,7 +563,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   enum class ContextType {
     kRenderFrameHostContext,
     kNavigationRequestContext,
-    kServiceWorkerContext,
+    kSharedOrServiceWorkerContext,
   };
 
  private:
@@ -634,7 +637,7 @@ class CONTENT_EXPORT StoragePartitionImpl
     explicit URLLoaderNetworkContext(
         GlobalRenderFrameHostId global_render_frame_host_id);
 
-    // Used when `type` is `kServiceWorkerContext`.
+    // Used when `type` is `kSharedOrServiceWorkerContext`.
     URLLoaderNetworkContext(int process_id, const url::Origin& worker_origin);
 
     // Used when `type` is `kNavigationRequestContext`.
@@ -654,8 +657,8 @@ class CONTENT_EXPORT StoragePartitionImpl
       return worker_origin_;
     }
 
-    // If `type_` is kServiceWorkerContext, returns nullptr. Otherwise returns
-    // the WebContents.
+    // If `type_` is kSharedOrServiceWorkerContext, returns nullptr. Otherwise
+    // returns the WebContents.
     WebContents* GetWebContents();
 
     // Returns true if the request is the primary main frame navigation.
@@ -665,10 +668,10 @@ class CONTENT_EXPORT StoragePartitionImpl
     ContextType type_;
     scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_;
 
-    // Only valid when `type_` is kServiceWorkerContext.
+    // Only valid when `type_` is kSharedOrServiceWorkerContext.
     int process_id_ = content::ChildProcessHost::kInvalidUniqueID;
 
-    // Only valid and non-nullopt when `type_` is kServiceWorkerContext.
+    // Only valid and non-nullopt when `type_` is kSharedOrServiceWorkerContext.
     std::optional<url::Origin> worker_origin_;
   };
 
@@ -827,9 +830,6 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   std::unique_ptr<PrivateAggregationManagerImpl> private_aggregation_manager_;
 
-  std::unique_ptr<CookieDeprecationLabelManagerImpl>
-      cookie_deprecation_label_manager_;
-
   // ReceiverSet for DomStorage, using the
   // ChildProcessSecurityPolicyImpl::Handle as the binding context type. The
   // handle can subsequently be used during interface method calls to
@@ -840,7 +840,8 @@ class CONTENT_EXPORT StoragePartitionImpl
       dom_storage_receivers_;
 
   // A client interface for each receiver above.
-  std::map<mojo::ReceiverId, mojo::Remote<blink::mojom::DomStorageClient>>
+  absl::flat_hash_map<mojo::ReceiverId,
+                      mojo::Remote<blink::mojom::DomStorageClient>>
       dom_storage_clients_;
 
   // Owns the NetworkContext used to make requests for the StoragePartition.
@@ -920,9 +921,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   // `navigation_state_keep_alive_map_`, so this map must still be alive when
   // that happens.
   using TokenNavigationStateKeepAliveMap =
-      std::unordered_map<blink::LocalFrameToken,
-                         NavigationStateKeepAlive*,
-                         blink::LocalFrameToken::Hasher>;
+      absl::flat_hash_map<blink::LocalFrameToken, NavigationStateKeepAlive*>;
   TokenNavigationStateKeepAliveMap navigation_state_keep_alive_map_;
 
   // Active keepalive handles for in-flight navigations. They are retained
@@ -942,10 +941,12 @@ class CONTENT_EXPORT StoragePartitionImpl
   bool on_browser_context_will_be_destroyed_called_ = false;
 #endif
 
-  // A copy of the network revocation nonces in `NetworkContext`. It is used for
-  // restoring the network revocation states of fenced frames when there is a
-  // `NetworkService` crash.
-  std::set<base::UnguessableToken> network_revocation_nonces_;
+  // A copy of the network restriction nonces and their corresponding URL
+  // allowlists in `NetworkContext`. It is used for restoring the
+  // `NetworkContext` nonces when there is a `NetworkService`
+  // crash.
+  std::map<base::UnguessableToken, std::set<std::string>>
+      network_revocation_nonces_;
 
   // We need to delay deleting stale session cookies until after the cookie db
   // has initialized, otherwise we will bypass lazy loading and block.
@@ -964,7 +965,20 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   // Tracks the number of active documents within the same StoragePartition,
   // keyed by NetworkIsolationKeys.
-  std::map<net::NetworkIsolationKey, int> active_document_per_nik_count_;
+  absl::flat_hash_map<net::NetworkIsolationKey, int>
+      active_document_per_nik_count_;
+
+  // This is a unique identifier of a pair (partition, storage key) across the
+  // lifetime of the browser. Used mostly for computing clipboard version token
+  // for the particular partition.
+  absl::flat_hash_map<blink::StorageKey, base::UnguessableToken>
+      partition_uuid_per_storage_key_;
+
+  // Used to observe idle scenario.
+  base::ScopedObservation<
+      performance_scenarios::PerformanceScenarioObserverList,
+      performance_scenarios::MatchingScenarioObserver>
+      performance_scenario_observation_{this};
 
   base::WeakPtrFactory<StoragePartitionImpl> weak_factory_{this};
 };

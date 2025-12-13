@@ -23,7 +23,6 @@
 #include "ash/quick_insert/views/quick_insert_view_delegate.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -51,7 +50,6 @@ using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::FieldsAre;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::IsSupersetOf;
 using ::testing::Ne;

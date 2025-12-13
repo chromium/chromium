@@ -164,14 +164,12 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
 
   override ready() {
     super.ready();
-    if (loadTimeData.getBoolean('isOobeLazyLoadingEnabled')) {
-      // Disable the 'Get Started' & 'Enable Debugging' button until OOBE is
-      // fully initialized.
-      this.getGetStartedButton().disabled = true;
-      this.getEnableDebuggingButton().disabled = true;
-      document.addEventListener(
-        'oobe-screens-loaded', this.enableButtonsWhenLoaded.bind(this));
-    }
+    // Disable the 'Get Started' & 'Enable Debugging' button until OOBE is
+    // fully initialized.
+    this.getGetStartedButton().disabled = true;
+    this.getEnableDebuggingButton().disabled = true;
+    document.addEventListener(
+      'oobe-screens-loaded', this.enableButtonsWhenLoaded.bind(this));
   }
 
   override onBeforeShow() {

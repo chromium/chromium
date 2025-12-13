@@ -12,7 +12,6 @@
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/omnibox_pedal_swift.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
@@ -24,14 +23,10 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/components/webui/web_ui_url_constants.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-
-/// Hard-coded here to avoid dependency on //content. This needs to be kept in
-/// sync with kChromeUIScheme in `content/public/common/url_constants.h`.
-const char kChromeUIScheme[] = "chrome";
-
 const CGFloat kSymbolSize = 18;
 }  // namespace
 
@@ -100,23 +95,18 @@ const CGFloat kSymbolSize = 18;
                        type:pedalType
                      action:^{
                        [omniboxHandler cancelOmniboxEdit];
-                       if (IsIosQuickDeleteEnabled()) {
-                         [quickDeleteHandler
-                             showQuickDeleteAndCanPerformTabsClosureAnimation:
-                                 YES];
-                       } else {
-                         [settingsHandler showClearBrowsingDataSettings];
-                       }
+                       [quickDeleteHandler
+                           showQuickDeleteAndCanPerformRadialWipeAnimation:YES];
                      }];
     }
     case OmniboxPedalId::SET_CHROME_AS_DEFAULT_BROWSER: {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
       UIImage* image = MakeSymbolMulticolor(
           CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kSymbolSize));
 #else
       UIImage* image = DefaultSymbolTemplateWithPointSize(kDefaultBrowserSymbol,
                                                           kSymbolSize);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
       DefaultBrowserSettingsPageSource source =
           DefaultBrowserSettingsPageSource::kOmnibox;
       ProceduralBlock action = ^{
@@ -130,7 +120,7 @@ const CGFloat kSymbolSize = 18;
                                 IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_DEFAULT_BROWSER)
           accessibilityHint:suggestionContents
                       image:image
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
              imageTintColor:nil
             backgroundColor:UIColor.whiteColor
            imageBorderColor:[UIColor colorNamed:kLightOnlyGrey200Color]
@@ -138,7 +128,7 @@ const CGFloat kSymbolSize = 18;
              imageTintColor:nil
             backgroundColor:[UIColor colorNamed:kPurple500Color]
            imageBorderColor:nil
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
                        type:pedalType
                      action:action];
     }

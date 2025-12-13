@@ -18,6 +18,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/view.h"
 
@@ -155,4 +157,27 @@ IN_PROC_BROWSER_TEST_F(ManagePasswordsControllerTest,
   // All interactions with the bubble will close it and invoke OnBubbleHidden().
   GetController()->OnBubbleHidden();
   EXPECT_EQ(GetController()->GetState(), password_manager::ui::MANAGE_STATE);
+}
+// This test verifies that a crash does not occur in a specific scenario
+// involving tab navigation. The test sets up a pending password state, then
+// simulates opening a new tab and navigating the original tab, and finally
+// asserts that the Manage Passwords UI is in an inactive state at the end.
+IN_PROC_BROWSER_TEST_F(ManagePasswordsControllerTest,
+                       ReproduceCrashOnPechewebNavigation) {
+  SetupPendingPassword();
+  EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE, GetViewState());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  ui_test_utils::AllBrowserTabAddedWaiter tabs_waiter;
+  content::TestNavigationObserver nav_observer(web_contents);
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents, "window.open(); window.location = 'http://example.com';"));
+
+  nav_observer.Wait();
+  tabs_waiter.Wait();
+  EXPECT_EQ(password_manager::ui::INACTIVE_STATE, GetViewState());
 }

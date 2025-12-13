@@ -19,7 +19,7 @@
 namespace viz {
 class BeginFrameSource;
 class FrameSinkId;
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }  // namespace viz
 
 namespace cc {
@@ -44,6 +44,7 @@ class LayerTreeHostImplClient {
   virtual void SetNeedsCommitOnImplThread(bool urgent = false) = 0;
   virtual void SetNeedsPrepareTilesOnImplThread() = 0;
   virtual void SetVideoNeedsBeginFrames(bool needs_begin_frames) = 0;
+  virtual void DidChangeBeginFrameSourcePaused(bool paused) = 0;
   virtual void SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) = 0;
   virtual bool IsInsideDraw() = 0;
   virtual void RenewTreePriority() = 0;

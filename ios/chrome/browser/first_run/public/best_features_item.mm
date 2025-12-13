@@ -7,16 +7,31 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+namespace {
+
+// Returns the color provider for the Lens Search animation.
+NSDictionary<NSString*, UIColor*>* LensColorProvider(
+    int omnibox_color,
+    int lens_background_color) {
+  return @{
+    @"Omnibox.*.*.Color" : UIColorFromRGB(omnibox_color),
+    @"Lens_Icon_Background.*.*.Color" : UIColorFromRGB(lens_background_color),
+  };
+}
+
+}  // namespace
+
 @implementation BestFeaturesItem
 - (instancetype)initWithType:(BestFeaturesItemType)type {
   self = [super init];
   if (self) {
-    self.type = type;
+    _type = type;
   }
   return self;
 }
@@ -24,194 +39,200 @@
 #pragma mark - Getters
 
 - (NSString*)title {
-  if (!_title) {
-    _title = l10n_util::GetNSString([self titleID]);
-  }
-  return _title;
+  return l10n_util::GetNSString([self titleID]);
 }
 
 - (NSString*)subtitle {
-  if (!_subtitle) {
-    _subtitle = l10n_util::GetNSString([self subtitleID]);
-  }
-  return _subtitle;
+  return l10n_util::GetNSString([self subtitleID]);
 }
 
 - (NSString*)caption {
-  if (!_caption) {
-    _caption = l10n_util::GetNSString([self captionID]);
-  }
-  return _caption;
+  return l10n_util::GetNSString([self captionID]);
 }
 
 - (UIImage*)iconImage {
-  if (!_iconImage) {
     UIImageConfiguration* configuration = [UIImageSymbolConfiguration
         configurationWithPointSize:20.0
                             weight:UIImageSymbolWeightSemibold
                              scale:UIImageSymbolScaleMedium];
     switch (self.type) {
       case BestFeaturesItemType::kLensSearch:
-        _iconImage = MakeSymbolMulticolor(
+        return MakeSymbolMulticolor(
             CustomSymbolWithConfiguration(kCameraLensSymbol, configuration));
-        break;
       case BestFeaturesItemType::kEnhancedSafeBrowsing:
-        _iconImage = SymbolWithPalette(
+        return SymbolWithPalette(
             CustomSymbolWithConfiguration(kSafetyCheckSymbol, configuration),
             @[ [UIColor whiteColor] ]);
-        break;
       case BestFeaturesItemType::kLockedIncognitoTabs:
-        _iconImage = SymbolWithPalette(
+        return SymbolWithPalette(
             CustomSymbolWithConfiguration(kIncognitoSymbol, configuration),
             @[ [UIColor whiteColor] ]);
-        break;
       case BestFeaturesItemType::kSaveAndAutofillPasswords:
       case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
       case BestFeaturesItemType::kSharePasswordsWithFamily:
-        _iconImage = MakeSymbolMulticolor(CustomSymbolWithConfiguration(
+        return MakeSymbolMulticolor(CustomSymbolWithConfiguration(
             kPasswordManagerSymbol, configuration));
-        break;
       case BestFeaturesItemType::kTabGroups:
-        _iconImage = SymbolWithPalette(
+        return SymbolWithPalette(
             DefaultSymbolWithConfiguration(kTabGroupsSymbol, configuration),
             @[ [UIColor whiteColor] ]);
-        break;
       case BestFeaturesItemType::kPriceTrackingAndInsights:
-        _iconImage = SymbolWithPalette(
+        return SymbolWithPalette(
             DefaultSymbolWithConfiguration(kChartLineDowntrendXYAxisSymbol,
                                            configuration),
             @[ [UIColor whiteColor] ]);
-        break;
     }
-  }
-  return _iconImage;
 }
 
 - (UIColor*)iconBackgroundColor {
-  if (!_iconBackgroundColor) {
-    switch (self.type) {
-      case BestFeaturesItemType::kLensSearch:
-      case BestFeaturesItemType::kSaveAndAutofillPasswords:
-      case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
-      case BestFeaturesItemType::kSharePasswordsWithFamily:
-        _iconBackgroundColor = [UIColor whiteColor];
-        break;
-      case BestFeaturesItemType::kEnhancedSafeBrowsing:
-        _iconBackgroundColor = [UIColor colorNamed:kBlue500Color];
-        break;
-      case BestFeaturesItemType::kLockedIncognitoTabs:
-        _iconBackgroundColor = [UIColor colorNamed:kGrey700Color];
-        break;
-      case BestFeaturesItemType::kTabGroups:
-        _iconBackgroundColor = [UIColor colorNamed:kGreen500Color];
-        break;
-      case BestFeaturesItemType::kPriceTrackingAndInsights:
-        _iconBackgroundColor = [UIColor colorNamed:kPink500Color];
-        break;
-    }
+  switch (self.type) {
+    case BestFeaturesItemType::kLensSearch:
+    case BestFeaturesItemType::kSaveAndAutofillPasswords:
+    case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
+    case BestFeaturesItemType::kSharePasswordsWithFamily:
+      return [UIColor whiteColor];
+    case BestFeaturesItemType::kEnhancedSafeBrowsing:
+      return [UIColor colorNamed:kBlue500Color];
+    case BestFeaturesItemType::kLockedIncognitoTabs:
+      return [UIColor colorNamed:kGrey700Color];
+    case BestFeaturesItemType::kTabGroups:
+      return [UIColor colorNamed:kGreen500Color];
+    case BestFeaturesItemType::kPriceTrackingAndInsights:
+      return [UIColor colorNamed:kPink500Color];
   }
-  return _iconBackgroundColor;
 }
 
 - (NSDictionary*)textProvider {
-  if (!_textProvider) {
-    _textProvider = [self retrieveTextLocalization];
+  switch (self.type) {
+    case BestFeaturesItemType::kLensSearch:
+      // Animation has no strings.
+      return nil;
+    case BestFeaturesItemType::kEnhancedSafeBrowsing:
+      return @{
+        @"Safe Browsing" :
+            l10n_util::GetNSString(IDS_IOS_PRIVACY_SAFE_BROWSING_TITLE),
+        @"Enhanced Protection" : l10n_util::GetNSString(
+            IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_TITLE),
+        @"Standard Protection" : l10n_util::GetNSString(
+            IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_TITLE),
+        @"No Protection" : l10n_util::GetNSString(
+            IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_DETAIL_TITLE),
+      };
+    case BestFeaturesItemType::kLockedIncognitoTabs:
+      return @{
+        @"Close Incognito tabs" : l10n_util::GetNSString(
+            IDS_IOS_INCOGNITO_REAUTH_CLOSE_INCOGNITO_TABS),
+        @"face_id" : l10n_util::GetNSStringF(
+            IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON,
+            base::SysNSStringToUTF16(BiometricAuthenticationTypeString())),
+      };
+    case BestFeaturesItemType::kSaveAndAutofillPasswords:
+      return @{
+        @"save_password" : l10n_util::GetNSString(
+            IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_PROMPT),
+        @"save" : l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_SAVE_BUTTON),
+        @"done" : l10n_util::GetNSString(IDS_IOS_SUGGESTIONS_DONE),
+      };
+    case BestFeaturesItemType::kTabGroups:
+      return @{
+        @"Tab Groups" : l10n_util ::GetNSString(
+            IDS_IOS_BEST_FEATURES_TAB_GROUPS_ANIMATION_TEXT_1),
+      };
+    case BestFeaturesItemType::kPriceTrackingAndInsights:
+      return @{
+        @"Smart Watch" : l10n_util::GetNSString(
+            IDS_IOS_BEST_FEATURES_PRICE_TRACKING_ANIMATION_TEXT_1),
+        @"Price $100 - $180" : l10n_util::GetNSString(
+            IDS_IOS_BEST_FEATURES_PRICE_TRACKING_ANIMATION_TEXT_2),
+        @"Track Price" : l10n_util::GetNSString(
+            IDS_IOS_BEST_FEATURES_PRICE_TRACKING_ANIMATION_TEXT_3),
+      };
+    case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
+      // Animation has no strings.
+      return nil;
+    case BestFeaturesItemType::kSharePasswordsWithFamily:
+      return @{
+        @"SharePass_Light" : l10n_util::GetNSString(
+            IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_ANIMATION_TEXT_1),
+        @"Share" : l10n_util::GetNSString(
+            IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_ANIMATION_TEXT_1),
+      };
   }
-  return _textProvider;
 }
 
 - (NSString*)animationName {
-  if (!_animationName) {
     switch (self.type) {
       case BestFeaturesItemType::kLensSearch:
-        _animationName = @"lens_promo";
-        break;
+        return @"lens_promo";
       case BestFeaturesItemType::kEnhancedSafeBrowsing:
-        _animationName = @"enhanced_safe_browsing_promo";
-        break;
+        return @"enhanced_safe_browsing_promo";
       case BestFeaturesItemType::kLockedIncognitoTabs:
-        _animationName = @"locked_incognito_tabs";
-        break;
+        return @"locked_incognito_tabs";
       case BestFeaturesItemType::kSaveAndAutofillPasswords:
-        _animationName = @"save_passwords";
-        break;
+        return @"save_passwords";
       case BestFeaturesItemType::kTabGroups:
-        _animationName = @"tab_groups";
-        break;
+        return @"tab_groups";
       case BestFeaturesItemType::kPriceTrackingAndInsights:
-        _animationName = @"price_tracking";
-        break;
+        return @"price_tracking";
       case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
-        _animationName = @"CPE_promo_animation_edu_autofill";
-        break;
+        return @"CPE_promo_animation_edu_autofill";
       case BestFeaturesItemType::kSharePasswordsWithFamily:
-        _animationName = @"password_sharing";
-        break;
+        return @"password_sharing";
     }
-  }
-  return _animationName;
 }
 
 - (NSArray<NSString*>*)instructionSteps {
-  if (!_instructionSteps) {
-    NSMutableArray* instructions = [[NSMutableArray alloc] init];
     switch (self.type) {
       case BestFeaturesItemType::kLensSearch:
-        [instructions addObjectsFromArray:@[
+        return @[
           l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_LENS_STEP_1),
           l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_LENS_STEP_2),
           l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_LENS_STEP_3),
-        ]];
-        break;
+        ];
       case BestFeaturesItemType::kEnhancedSafeBrowsing:
-        [instructions addObjectsFromArray:@[
+        return @[
           l10n_util::GetNSString(
               IDS_IOS_ENHANCED_SAFE_BROWSING_PROMO_INSTRUCTIONS_STEP1),
           l10n_util::GetNSString(
               IDS_IOS_ENHANCED_SAFE_BROWSING_PROMO_INSTRUCTIONS_STEP2),
           l10n_util::GetNSString(
               IDS_IOS_ENHANCED_SAFE_BROWSING_PROMO_INSTRUCTIONS_STEP3),
-        ]];
-        break;
+        ];
       case BestFeaturesItemType::kLockedIncognitoTabs:
-        [instructions addObjectsFromArray:@[
+        return @[
           l10n_util::GetNSString(
               IDS_IOS_BEST_FEATURES_LOCKED_INCOGNITO_FIRST_STEP),
           l10n_util::GetNSString(
               IDS_IOS_BEST_FEATURES_LOCKED_INCOGNITO_SECOND_STEP),
           l10n_util::GetNSString(
               IDS_IOS_BEST_FEATURES_LOCKED_INCOGNITO_THIRD_STEP),
-        ]];
-        break;
+        ];
       case BestFeaturesItemType::kSaveAndAutofillPasswords:
-        [instructions addObjectsFromArray:@[
+        return @[
           l10n_util::GetNSString(
               IDS_IOS_BEST_FEATURES_NEVER_FORGET_PASSWORDS_FIRST_STEP),
           l10n_util::GetNSString(
               IDS_IOS_BEST_FEATURES_NEVER_FORGET_PASSWORDS_SECOND_STEP),
           l10n_util::GetNSString(
               IDS_IOS_BEST_FEATURES_NEVER_FORGET_PASSWORDS_THIRD_STEP),
-        ]];
-        break;
+        ];
       case BestFeaturesItemType::kTabGroups:
-        [instructions addObjectsFromArray:@[
+        return @[
           l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_TAB_GROUPS_STEP_1),
           l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_TAB_GROUPS_STEP_2),
           l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_TAB_GROUPS_STEP_3),
           l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_TAB_GROUPS_STEP_4),
-        ]];
-        break;
+        ];
       case BestFeaturesItemType::kPriceTrackingAndInsights:
-        [instructions addObjectsFromArray:@[
+        return @[
           l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_PRICE_TRACKING_STEP_1),
           l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_PRICE_TRACKING_STEP_2),
           l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_PRICE_TRACKING_STEP_3),
-        ]];
-        break;
+        ];
       case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
         // Add the correct strings depending on the device OS.
         if (@available(iOS 18, *)) {
-          [instructions addObjectsFromArray:@[
+          return @[
             l10n_util::GetNSString(
                 IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_STEP_1),
             l10n_util::GetNSString(
@@ -220,32 +241,56 @@
                 IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_STEP_3_AUTOFILL_SETTINGS),
             l10n_util::GetNSString(
                 IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_STEP_4_TOGGLE),
-          ]];
-        } else {
-          [instructions addObjectsFromArray:@[
-            l10n_util::GetNSString(
-                IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_STEP_1),
-            l10n_util::GetNSString(
-                IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_STEP_2_PASSWORDS),
-            l10n_util::GetNSString(
-                IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_STEP_3_PASSWORD_OPTIONS),
-            l10n_util::GetNSString(
-                IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_STEP_4_SELECT),
-          ]];
+          ];
         }
-        break;
+        return @[
+          l10n_util::GetNSString(
+              IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_STEP_1),
+          l10n_util::GetNSString(
+              IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_STEP_2_PASSWORDS),
+          l10n_util::GetNSString(
+              IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_STEP_3_PASSWORD_OPTIONS),
+          l10n_util::GetNSString(
+              IDS_IOS_BEST_FEATURES_PASSWORDS_IN_OTHER_APPS_STEP_4_SELECT),
+        ];
       case BestFeaturesItemType::kSharePasswordsWithFamily:
-        [instructions addObjectsFromArray:@[
+        return @[
           l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_STEP_1),
           l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_STEP_2),
           l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_STEP_3),
           l10n_util::GetNSString(IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_STEP_4),
-        ]];
-        break;
+        ];
     }
-    _instructionSteps = instructions;
+}
+
+- (NSDictionary<NSString*, UIColor*>*)lightModeColorProvider {
+  switch (self.type) {
+    case BestFeaturesItemType::kLensSearch:
+      return LensColorProvider(0xEDF4FE, 0xFFFFFF);
+    case BestFeaturesItemType::kEnhancedSafeBrowsing:
+    case BestFeaturesItemType::kLockedIncognitoTabs:
+    case BestFeaturesItemType::kSaveAndAutofillPasswords:
+    case BestFeaturesItemType::kTabGroups:
+    case BestFeaturesItemType::kPriceTrackingAndInsights:
+    case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
+    case BestFeaturesItemType::kSharePasswordsWithFamily:
+      return nil;
   }
-  return _instructionSteps;
+}
+
+- (NSDictionary<NSString*, UIColor*>*)darkModeColorProvider {
+  switch (self.type) {
+    case BestFeaturesItemType::kLensSearch:
+      return LensColorProvider(0x232428, 0x464A4E);
+    case BestFeaturesItemType::kEnhancedSafeBrowsing:
+    case BestFeaturesItemType::kLockedIncognitoTabs:
+    case BestFeaturesItemType::kSaveAndAutofillPasswords:
+    case BestFeaturesItemType::kTabGroups:
+    case BestFeaturesItemType::kPriceTrackingAndInsights:
+    case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
+    case BestFeaturesItemType::kSharePasswordsWithFamily:
+      return nil;
+  }
 }
 
 #pragma mark - Private
@@ -314,73 +359,6 @@
     case BestFeaturesItemType::kSharePasswordsWithFamily:
       return IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_CAPTION;
   }
-}
-
-// Returns the text dictionary for the given `BestFeaturesItemType`.
-- (NSDictionary*)retrieveTextLocalization {
-  NSDictionary* textProvider;
-  switch (self.type) {
-    case BestFeaturesItemType::kLensSearch:
-      // Animation has no strings.
-      return nil;
-    case BestFeaturesItemType::kEnhancedSafeBrowsing:
-      textProvider = @{
-        @"Safe Browsing" :
-            l10n_util::GetNSString(IDS_IOS_PRIVACY_SAFE_BROWSING_TITLE),
-        @"Enhanced Protection" : l10n_util::GetNSString(
-            IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_TITLE),
-        @"Standard Protection" : l10n_util::GetNSString(
-            IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_TITLE),
-        @"No Protection" : l10n_util::GetNSString(
-            IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_DETAIL_TITLE),
-      };
-      break;
-    case BestFeaturesItemType::kLockedIncognitoTabs:
-      textProvider = @{
-        @"Close Incognito tabs" : l10n_util::GetNSString(
-            IDS_IOS_INCOGNITO_REAUTH_CLOSE_INCOGNITO_TABS),
-        @"face_id" : l10n_util::GetNSStringF(
-            IDS_IOS_INCOGNITO_REAUTH_UNLOCK_BUTTON,
-            base::SysNSStringToUTF16(BiometricAuthenticationTypeString())),
-      };
-      break;
-    case BestFeaturesItemType::kSaveAndAutofillPasswords:
-      textProvider = @{
-        @"save_password" : l10n_util::GetNSString(
-            IDS_IOS_PASSWORD_MANAGER_SAVE_PASSWORD_PROMPT),
-        @"save" : l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_SAVE_BUTTON),
-        @"done" : l10n_util::GetNSString(IDS_IOS_SUGGESTIONS_DONE),
-      };
-      break;
-    case BestFeaturesItemType::kTabGroups:
-      textProvider = @{
-        @"Tab Groups" : l10n_util ::GetNSString(
-            IDS_IOS_BEST_FEATURES_TAB_GROUPS_ANIMATION_TEXT_1),
-      };
-      break;
-    case BestFeaturesItemType::kPriceTrackingAndInsights:
-      textProvider = @{
-        @"Smart Watch" : l10n_util::GetNSString(
-            IDS_IOS_BEST_FEATURES_PRICE_TRACKING_ANIMATION_TEXT_1),
-        @"Price $100 - $180" : l10n_util::GetNSString(
-            IDS_IOS_BEST_FEATURES_PRICE_TRACKING_ANIMATION_TEXT_2),
-        @"Track Price" : l10n_util::GetNSString(
-            IDS_IOS_BEST_FEATURES_PRICE_TRACKING_ANIMATION_TEXT_3),
-      };
-      break;
-    case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
-      // Animation has no strings.
-      return nil;
-    case BestFeaturesItemType::kSharePasswordsWithFamily:
-      textProvider = @{
-        @"SharePass_Light" : l10n_util::GetNSString(
-            IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_ANIMATION_TEXT_1),
-        @"Share" : l10n_util::GetNSString(
-            IDS_IOS_BEST_FEATURES_SHARE_PASSWORDS_ANIMATION_TEXT_1),
-      };
-      break;
-  }
-  return textProvider;
 }
 
 @end

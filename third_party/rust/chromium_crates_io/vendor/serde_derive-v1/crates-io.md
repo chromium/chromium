@@ -6,7 +6,7 @@
 
 You may be looking for:
 
-- [An overview of Serde](https://serde.rs/)
+- [An overview of Serde](https://serde.rs)
 - [Data formats supported by Serde](https://serde.rs/#data-formats)
 - [Setting up `#[derive(Serialize, Deserialize)]`](https://serde.rs/derive.html)
 - [Examples](https://serde.rs/examples.html)

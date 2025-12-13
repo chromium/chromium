@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/install_static/product_install_details.h"
 
 #include <windows.h>
@@ -14,6 +9,7 @@
 #include <algorithm>
 #include <iterator>
 
+#include "base/compiler_specific.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
@@ -53,8 +49,9 @@ bool IsPathParentOf(const wchar_t* parent,
                     size_t parent_len,
                     const std::wstring& path) {
   // Ignore all terminating path separators in |parent|.
-  while (parent_len && parent[parent_len - 1] == L'\\')
+  while (parent_len && UNSAFE_TODO(parent[parent_len - 1]) == L'\\') {
     --parent_len;
+  }
   // Pass if the parent was all separators.
   if (!parent_len)
     return false;

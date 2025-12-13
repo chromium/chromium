@@ -5,6 +5,7 @@
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_usage_indicator_service_factory.h"
 
 #include "base/memory/ptr_util.h"
+#include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service_factory.h"
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_usage_indicator_service.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
+#include "multi_capture_data_service_factory.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS), "For ChromeOS only");
 
@@ -34,12 +36,9 @@ MultiCaptureUsageIndicatorServiceFactory::GetInstance() {
 
 MultiCaptureUsageIndicatorServiceFactory::
     MultiCaptureUsageIndicatorServiceFactory()
-    : ProfileKeyedServiceFactory(
-          "MultiCaptureUsageIndicatorServiceFactory",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
-              .Build()) {
-  DependsOn(web_app::WebAppProviderFactory::GetInstance());
+    : web_app::IsolatedWebAppBrowserContextServiceFactory(
+          "MultiCaptureUsageIndicatorServiceFactory") {
+  DependsOn(MultiCaptureDataServiceFactory::GetInstance());
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
 }
 
@@ -52,8 +51,8 @@ MultiCaptureUsageIndicatorServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   CHECK(profile);
   return MultiCaptureUsageIndicatorService::Create(
-      profile->GetPrefs(), web_app::WebAppProvider::GetForWebApps(profile),
-      NotificationDisplayServiceFactory::GetForProfile(profile));
+      profile, profile->GetPrefs(),
+      MultiCaptureDataServiceFactory::GetForBrowserContext(profile));
 }
 
 bool MultiCaptureUsageIndicatorServiceFactory::

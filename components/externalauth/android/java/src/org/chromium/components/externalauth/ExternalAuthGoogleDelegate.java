@@ -5,19 +5,21 @@
 package org.chromium.components.externalauth;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
- * Base class for defining methods where different behavior is required by downstream targets.
- * The correct version of {@link ExternalAuthGoogleDelegateImpl} will be determined at compile time
- * via build rules.
+ * Base class for defining methods where different behavior is required by downstream targets. The
+ * correct version of {@link ExternalAuthGoogleDelegateImpl} will be determined at compile time via
+ * build rules.
  */
 @NullMarked
 public class ExternalAuthGoogleDelegate {
     /**
      * Returns whether the call is originating from a Google-signed package.
+     *
      * @param packageName The package name to inquire about.
      */
-    public boolean isGoogleSigned(String packageName) {
+    public boolean isGoogleSigned(@Nullable String packageName) {
         return false;
     }
 }

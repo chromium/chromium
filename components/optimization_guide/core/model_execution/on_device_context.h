@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/safety_checker.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
@@ -45,8 +46,7 @@ struct OnDeviceOptions final {
   scoped_refptr<const OnDeviceModelFeatureAdapter> adapter;
   std::unique_ptr<SafetyChecker> safety_checker;
   TokenLimits token_limits;
-  on_device_model::Capabilities capabilities;
-  SamplingParams sampling_params;
+  SessionConfigParams session_params;
 
   base::WeakPtr<OptimizationGuideLogger> logger;
 
@@ -60,13 +60,12 @@ struct OnDeviceOptions final {
 // CloneSession() call is made.
 class OnDeviceContext : public on_device_model::mojom::ContextClient {
  public:
-  OnDeviceContext(OnDeviceOptions opts, ModelBasedCapabilityKey feature);
+  OnDeviceContext(OnDeviceOptions opts, mojom::OnDeviceFeature feature);
   ~OnDeviceContext() override;
 
   // Constructs the input context and begins processing it.
-  bool SetInput(
-      MultimodalMessageReadView request,
-      OptimizationGuideModelExecutor::Session::SetInputCallback callback);
+  bool SetInput(MultimodalMessageReadView request,
+                OnDeviceSession::SetInputCallback callback);
 
   // Get the session that we've sent the input to, creating it if does not
   // exist (e.g. due to a disconnect.)
@@ -79,7 +78,7 @@ class OnDeviceContext : public on_device_model::mojom::ContextClient {
       proto::OnDeviceModelServiceRequest* logged_request,
       bool ignore_context);
 
-  const OnDeviceOptions& opts() { return opts_; }
+  const OnDeviceOptions& opts() const { return opts_; }
 
   // Whether using this session is still allowed.
   // This should be checked before called any other public methods.
@@ -99,14 +98,14 @@ class OnDeviceContext : public on_device_model::mojom::ContextClient {
   void OnComplete(uint32_t tokens_processed) override;
 
   OnDeviceOptions opts_;
-  ModelBasedCapabilityKey feature_;
+  mojom::OnDeviceFeature feature_;
   mojo::Remote<on_device_model::mojom::Session> session_;
   on_device_model::mojom::InputPtr input_ =
       on_device_model::mojom::Input::New();
   uint32_t tokens_processed_ = 0;
   on_device_model::mojom::Priority priority_ =
       on_device_model::mojom::Priority::kForeground;
-  OptimizationGuideModelExecutor::Session::SetInputCallback callback_;
+  OnDeviceSession::SetInputCallback callback_;
   mojo::ReceiverSet<on_device_model::mojom::ContextClient> clients_;
 };
 

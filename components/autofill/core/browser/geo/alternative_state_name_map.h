@@ -8,15 +8,17 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/i18n/case_conversion.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/types/strong_alias.h"
-#include "components/autofill/core/browser/proto/states.pb.h"
 
 namespace autofill {
+
+class StateEntry;
 
 // AlternativeStateNameMap encapsulates mappings from state names in the
 // profiles to their localized and the abbreviated names.

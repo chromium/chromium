@@ -12,9 +12,10 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 
-class Browser;
+class AccountId;
 
 namespace ash {
+class BrowserDelegate;
 class ShelfModel;
 }
 
@@ -48,10 +49,13 @@ bool IsAppPinEditable(apps::AppType app_type,
                       const std::string& app_id,
                       Profile* profile);
 
-// Returns true when the given |browser| is listed in the browser application
-// list.
-bool IsBrowserRepresentedInBrowserList(Browser* browser,
+// Returns true when the given |browser| is listed in the browser
+// application list.
+bool IsBrowserRepresentedInBrowserList(const ash::BrowserDelegate* browser,
                                        const ash::ShelfModel* model);
+
+void ShowAndActivateBrowser(bool move_to_current_desktop,
+                            ash::BrowserDelegate* browser);
 
 // Pins an app to the shelf using only an app_id.
 // If the app is already present in the shelf and is unpinned, mark it as
@@ -68,10 +72,10 @@ void UnpinAppWithIDFromShelf(const std::string& app_id);
 apps::LaunchSource ShelfLaunchSourceToAppsLaunchSource(
     ash::ShelfLaunchSource source);
 
-// Records an app launch from shelf event in `ScalableIph`. Note that
-// `ScalableIph` records events for a subset of app ids.
-void MaybeRecordAppLaunchForScalableIph(const std::string& app_id,
-                                        Profile* profile,
-                                        ash::ShelfLaunchSource source);
+// Returns the (non-empty) account id of the user associated with the currently
+// active session.
+const AccountId& GetActiveAccountId();
+
+bool IsAppBrowser(const ash::BrowserDelegate& browser);
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_CHROME_SHELF_CONTROLLER_UTIL_H_

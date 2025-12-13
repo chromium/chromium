@@ -32,17 +32,6 @@ class FFmpegCommonTest : public testing::Test {
 
 uint8_t kExtraData[5] = {0x00, 0x01, 0x02, 0x03, 0x04};
 
-inline base::span<uint8_t> AVCodecParametersExtraDataToSpan(
-    const AVCodecParameters* codec_context) {
-  // SAFETY:
-  // https://ffmpeg.org/doxygen/trunk/structAVCodecParameters.html#a9befe0b86412646017afb0051d144d13
-  // ffmpeg documentation: The allocated size of `extradata` must be at least
-  // `extradata_size + AV_INPUT_BUFFER_PADDING_SIZE`.
-  return UNSAFE_BUFFERS(
-      base::span(codec_context->extradata,
-                 base::checked_cast<size_t>(codec_context->extradata_size)));
-}
-
 template <typename T>
 void TestConfigConvertExtraData(
     AVStream* stream,
@@ -372,9 +361,8 @@ TEST_F(FFmpegCommonTest, VerifyHDRMetadataAndColorSpaceInfo) {
 
   VideoDecoderConfig video_config;
   EXPECT_TRUE(AVStreamToVideoDecoderConfig(stream, &video_config));
-  ASSERT_TRUE(video_config.hdr_metadata().has_value());
-  const auto& smpte_st_2086 =
-      video_config.hdr_metadata()->smpte_st_2086.value();
+  ASSERT_TRUE(video_config.hdr_metadata().smpte_st_2086.has_value());
+  const auto& smpte_st_2086 = video_config.hdr_metadata().smpte_st_2086.value();
   EXPECT_EQ(30.0, smpte_st_2086.luminance_min);
   EXPECT_EQ(40.0, smpte_st_2086.luminance_max);
   EXPECT_EQ(0.1f, smpte_st_2086.primaries.fRX);
@@ -385,7 +373,7 @@ TEST_F(FFmpegCommonTest, VerifyHDRMetadataAndColorSpaceInfo) {
   EXPECT_EQ(0.2f, smpte_st_2086.primaries.fBY);
   EXPECT_EQ(0.1f, smpte_st_2086.primaries.fWX);
   EXPECT_EQ(0.2f, smpte_st_2086.primaries.fWY);
-  const auto& cta_861_3 = video_config.hdr_metadata()->cta_861_3.value();
+  const auto& cta_861_3 = video_config.hdr_metadata().cta_861_3.value();
   EXPECT_EQ(11.0f, cta_861_3.max_content_light_level);
   EXPECT_EQ(12.0f, cta_861_3.max_frame_average_light_level);
   EXPECT_EQ(VideoColorSpace(VideoColorSpace::PrimaryID::SMPTEST428_1,

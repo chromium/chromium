@@ -205,6 +205,15 @@ void NativeWidgetNSWindowFullscreenController::OnWindowDidEnterFullscreen() {
   }
 }
 
+void NativeWidgetNSWindowFullscreenController::
+    OnWindowDidFailToEnterFullscreen() {
+  if (state_ != State::kWindowed) {
+    SetStateAndCancelPostedTasks(State::kWindowed);
+    client_->FullscreenControllerTransitionComplete(
+        /*is_fullscreen=*/false);
+  }
+}
+
 void NativeWidgetNSWindowFullscreenController::OnWindowWillExitFullscreen() {
   // If we are starting a new transition, then notify `client_`.
   if (!IsInFullscreenTransition())

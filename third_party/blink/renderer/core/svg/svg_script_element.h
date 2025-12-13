@@ -100,7 +100,7 @@ class SVGScriptElement final : public SVGElement,
   }
   bool IsPotentiallyRenderBlocking() const override { return false; }
   bool AllowInlineScriptForCSP(const AtomicString& nonce,
-                               const WTF::OrdinalNumber&,
+                               const OrdinalNumber&,
                                const String& script_content) override;
   Document& GetDocument() const override;
   ExecutionContext* GetExecutionContext() const override;
@@ -109,7 +109,8 @@ class SVGScriptElement final : public SVGElement,
 
   Type GetScriptElementType() override;
 
-  Element& CloneWithoutAttributesAndChildren(Document&) const override;
+  Element& CloneWithoutAttributesAndChildren(Document&, CustomElementRegistry*)
+      const override;
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override {
     return false;
   }

@@ -46,7 +46,6 @@
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/variations/service/variations_service.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -86,6 +85,8 @@ autofill_private::AddressRecordType ConvertProfileRecordType(
       return autofill_private::AddressRecordType::kAccountHome;
     case autofill::AutofillProfile::RecordType::kAccountWork:
       return autofill_private::AddressRecordType::kAccountWork;
+    case autofill::AutofillProfile::RecordType::kAccountNameEmail:
+      return autofill_private::AddressRecordType::kAccountNameEmail;
   }
   NOTREACHED();
 }
@@ -98,9 +99,9 @@ autofill_private::AddressEntry ProfileToAddressEntry(
   // Add all address fields to the entry.
   address.guid = profile.guid();
 
-  std::ranges::transform(
+  address.fields = base::ToVector(
       autofill::AutofillProfile::kDatabaseStoredTypes,
-      back_inserter(address.fields), [&profile](auto field_type) {
+      [&profile](auto field_type) {
         autofill_private::AddressField field;
         field.type =
             autofill_private::ParseFieldType(FieldTypeToStringView(field_type));
@@ -288,9 +289,9 @@ CountryEntryList GenerateCountryList() {
   const variations::VariationsService* variations_service =
       g_browser_process->variations_service();
   model.SetCountries(
-      GeoIpCountryCode(variations_service
-                           ? variations_service->GetLatestCountry()
-                           : std::string()),
+      autofill::GeoIpCountryCode(variations_service
+                                     ? variations_service->GetLatestCountry()
+                                     : std::string()),
       extensions::ExtensionsBrowserClient::Get()->GetApplicationLocale());
   const std::vector<std::unique_ptr<autofill::AutofillCountry>>& countries =
       model.countries();
@@ -328,8 +329,21 @@ IbanEntryList GenerateIbanList(const autofill::PaymentsDataManager& paydm) {
 
 PayOverTimeIssuerEntryList GeneratePayOverTimeIssuerList(
     const autofill::PaymentsDataManager& paydm) {
-  return base::ToVector(paydm.GetLinkedBnplIssuers(),
-                        &BnplIssuerToPayOverTimeIssuerEntry);
+  std::vector<autofill::BnplIssuer> linked_issuers =
+      base::ToVector(paydm.GetLinkedBnplIssuers());
+
+  // Remove the issuer entry if a BNPL issuer is linked externally, due to
+  // missing terms of services acceptance.
+  linked_issuers.erase(
+      std::remove_if(
+          linked_issuers.begin(), linked_issuers.end(),
+          [](autofill::BnplIssuer& issuer) {
+            return issuer.payment_instrument()->action_required().contains(
+                autofill::PaymentInstrument::ActionRequired::kAcceptTos);
+          }),
+      linked_issuers.end());
+
+  return base::ToVector(linked_issuers, &BnplIssuerToPayOverTimeIssuerEntry);
 }
 
 std::optional<api::autofill_private::AccountInfo> GetAccountInfo(
@@ -341,13 +355,8 @@ std::optional<api::autofill_private::AccountInfo> GetAccountInfo(
 
   api::autofill_private::AccountInfo api_account;
   api_account.email = account->email;
-  // TODO(crbug.com/40066949): Remove `is_sync_enabled_for_autofill_profiles`
-  // from `AccountInfo` in favor of `is_autofill_sync_toggle_enabled` after
-  // Sync-the-feature users are migrated to ConsentLevel::kSignin.
   api_account.is_sync_enabled_for_autofill_profiles =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? adm.IsAutofillUserSelectableTypeEnabled()
-          : adm.IsSyncFeatureEnabledForAutofill();
+      adm.IsSyncFeatureEnabledForAutofill();
   api_account.is_eligible_for_address_account_storage =
       adm.IsEligibleForAddressAccountStorage();
   api_account.is_autofill_sync_toggle_enabled =

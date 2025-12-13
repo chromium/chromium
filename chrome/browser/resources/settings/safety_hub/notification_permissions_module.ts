@@ -17,6 +17,7 @@ import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import '../settings_shared.css.js';
 import '../i18n_setup.js';
 import '../icons.html.js';
+import './safety_hub_module.js';
 
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -94,9 +95,6 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
       // Text below primary header label.
       subheaderString_: String,
 
-      // The icon next to primary header label.
-      headerIconString_: String,
-
       // The text that will be shown in the undo toast element.
       toastText_: String,
 
@@ -132,7 +130,6 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
 
   declare private headerString_: string;
   declare private subheaderString_: string;
-  declare private headerIconString_: string;
   declare private toastText_: string|null;
   declare private sites_: NotificationPermissionsDisplay[]|null;
   declare private shouldShowCompletionInfo_: boolean;
@@ -194,7 +191,6 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
     assert(this.toastText_);
     this.headerString_ = this.toastText_!;
     this.subheaderString_ = '';
-    this.headerIconString_ = 'cr:check';
   }
 
   private async onSitesChanged_() {
@@ -221,7 +217,6 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
         await PluralStringProxyImpl.getInstance().getPluralString(
             'safetyHubNotificationPermissionsSecondaryLabel',
             this.sites_.length);
-    this.headerIconString_ = 'settings:notifications-none';
   }
 
   /** Clears all the changes made by a previous action. */

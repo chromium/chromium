@@ -41,10 +41,6 @@ void JavascriptTest::AddCommonScript() {
   AddUserScript(@"common");
 }
 
-void JavascriptTest::AddMessageScript() {
-  AddUserScript(@"message");
-}
-
 void JavascriptTest::AddUserScript(NSString* script_name) {
   WKUserScript* script = [[WKUserScript alloc]
         initWithSource:web::test::GetPageScript(script_name)

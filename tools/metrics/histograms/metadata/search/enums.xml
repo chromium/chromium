@@ -80,6 +80,7 @@ chromium-metrics-reviews@google.com.
   <int value="28"
       label="Lens Overlay Location Bar entry point that leads to Lens
              Overlay, entered via keyboard (Image)"/>
+  <int value="29" label="Composebox"/>
 </enum>
 
 <enum name="AuxiliarySearchRequestStatus">
@@ -113,6 +114,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="iOS Shortcuts App"/>
   <int value="11" label="Web Images Search Bar"/>
   <int value="12" label="What's New Promo"/>
+  <int value="13" label="Composebox"/>
 </enum>
 
 <enum name="CameraResult">
@@ -289,6 +291,27 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/search_engines/android/java/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceDialogCoordinator.java:DialogSuppressionStatus) -->
 
+<!-- LINT.IfChange(PendingChoiceScreenDisplayStateStatus) -->
+
+<enum name="PendingChoiceScreenDisplayStateStatus">
+  <int value="0" label="ParseError">
+    Terminal state, the pending data seems corrupted and will be wiped
+  </int>
+  <int value="1" label="TimedOut">
+    Terminal state, the mismatch was not resolved within the time limit. The
+    pending data will be wiped
+  </int>
+  <int value="2" label="Uploaded">
+    Terminal state, the pending data was logged to metrics, the local cache will
+    be wiped
+  </int>
+  <int value="3" label="StayPending">
+    Intermediate state, the pending data processing will be re-attempted later
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/search_engines/search_engine_choice/search_engine_choice_service.cc:PendingDisplayStateStatus) -->
+
 <enum name="QueryTilesGroupPruneReason">
   <int value="0" label="Expired"/>
   <int value="1" label="InvalidLocale"/>
@@ -423,9 +446,25 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Dialog is already shown in the same browser"/>
   <int value="17"
       label="Skipped by using a choice persisted across guest sessions"/>
+  <int value="18"
+      label="Skipped because the current location does not match the active
+             program's requirement to be in one of the associated countries"/>
+  <int value="19" label="Account not eligible">
+    The account is not eligible based on its account capabilities. See
+    go/capability-registry/chrome/canmakechromesearchenginechoicescreenchoice.
+  </int>
+  <int value="20" label="Non-FRE trigger">
+    The choice screen could not be presented because this is not an FRE entry
+    point. Recorded on iOS only, for programs where the choice screen is
+    currently enabled only in the First Run Experience.
+  </int>
+  <int value="21" label="Managed">
+    There is device-level management, and the regional program does not treat
+    managed profiles as eligible for the choice screen.
+  </int>
 </enum>
 
-<!-- LINT.ThenChange(/components/search_engines/search_engine_choice/search_engine_choice_utils.h:SearchEngineChoiceScreenConditions) -->
+<!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_metrics.h:SearchEngineChoiceScreenConditions) -->
 
 <!-- LINT.IfChange(SearchEngineChoiceScreenEvents) -->
 
@@ -469,6 +508,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Device restore (iOS only)"/>
   <int value="6" label="Invalid choice metadata: Other"/>
   <int value="7" label="Missing default search engine"/>
+  <int value="8" label="Choice remade after import"/>
 </enum>
 
 <!-- LINT.IfChange(SearchPolicyConflictType) -->
@@ -517,16 +557,28 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(UnknownCountryIdStored) -->
 
 <enum name="UnknownCountryIdStored">
-  <int value="0" label="Valid country stored in the static pref"/>
-  <int value="1" label="Clearing feature disabled (Deprecated 07/2025)"/>
-  <int value="2" label="Cleared static pref due to invalid country ID"/>
-  <int value="3" label="Valid country stored in the dynamic pref"/>
-  <int value="4"
-      label="Cleared dynamic pref due to invalid country ID and fallen back
-             to the static pref"/>
+  <int value="0" label="ValidStaticCountryId">
+    Valid country stored in the static pref
+  </int>
+  <int value="1" label="DontClearInvalidCountry">
+    Clearing feature disabled (Deprecated 07/2025)
+  </int>
+  <int value="2" label="InvalidStaticPref">
+    Invalid country in static prefs, clearing it
+  </int>
+  <int value="3" label="ValidDynamicCountryId">
+    Valid country stored in the dynamic pref
+  </int>
+  <int value="4" label="InvalidDynamicPref">
+    Invalid country in dynamic pref, using legacy static prefs as fallback, and
+    clearing the dynamic pref
+  </int>
+  <int value="5" label="NoPersistedValue">
+    There is no persisted country ID in the prefs
+  </int>
 </enum>
 
-<!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_service.cc:UnknownCountryIdStored) -->
+<!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_service.cc:CountryIdStoreStatus) -->
 
 </enums>
 

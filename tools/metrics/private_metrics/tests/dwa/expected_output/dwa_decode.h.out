@@ -1,0 +1,24 @@
+// Generated from gen_private_metrics_builders.py.  DO NOT EDIT!
+// source: dwa.xml
+
+#ifndef TEST_RELPATH_DWA_DECODE_H
+#define TEST_RELPATH_DWA_DECODE_H
+
+#include <cstdint>
+#include <map>
+
+namespace dwa::builders {
+
+typedef std::map<uint64_t, const char*> MetricDecodeMap;
+typedef std::map<uint32_t, const char*> StudyDecodeMap;
+struct EntryDecoder {
+  const char* name;
+  const MetricDecodeMap metric_map;
+  const StudyDecodeMap study_map;
+};
+typedef std::map<uint64_t, EntryDecoder> DecodeMap;
+DecodeMap CreateDecodeMap();
+
+}  // namespace dwa::builders
+
+#endif  // TEST_RELPATH_DWA_DECODE_H

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/bookmarks/bookmark_html_writer.h"
 
 #include <stddef.h>
@@ -15,7 +10,9 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/containers/auto_spanification_helper.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/time_formatting.h"
@@ -43,9 +40,9 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "components/user_data_importer/common/importer_data_types.h"
-#include "components/user_data_importer/content/content_bookmark_parser.h"
+#include "components/user_data_importer/content/content_bookmark_parser_utils.h"
+#include "components/user_data_importer/content/fake_bookmark_html_parser.h"
 #include "content/public/test/browser_task_environment.h"
-#include "skia/rusty_png_feature.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -64,9 +61,12 @@ SkBitmap MakeTestSkBitmap(int w, int h) {
   SkBitmap bmp;
   bmp.allocN32Pixels(w, h);
 
-  uint32_t* src_data = bmp.getAddr32(0, 0);
-  for (int i = 0; i < w * h; i++) {
-    src_data[i] = SkPreMultiplyARGB(i % 255, i % 250, i % 245, i % 240);
+  for (int y = 0; y < h; y++) {
+    base::span<uint32_t> src_data = UNSAFE_SKBITMAP_GETADDR32(bmp, 0, y);
+    for (int x = 0; x < w; x++) {
+      int i = y * w + x;
+      src_data[x] = SkPreMultiplyARGB(i % 255, i % 250, i % 245, i % 240);
+    }
   }
   return bmp;
 }
@@ -296,11 +296,8 @@ TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenBookmarksInLocalBookmarkBar) {
   ASSERT_EQ(WriteBookmarksAndWait(), bookmark_html_writer::Result::kSuccess);
 
   // Check against the golden file.
-  const char* kGoldenFilename =
-      skia::IsRustyPngEnabled() ? "bookmarks_in_bookmarks_bar.html"
-                                : "bookmarks_in_bookmarks_bar_with_libpng.html";
   EXPECT_TRUE(base::TextContentsEqual(
-      path_, test_data_path_.AppendASCII(kGoldenFilename)));
+      path_, test_data_path_.AppendASCII("bookmarks_in_bookmarks_bar.html")));
 }
 
 TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenBookmarksInAccountBookmarkBar) {
@@ -322,11 +319,8 @@ TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenBookmarksInAccountBookmarkBar) {
   ASSERT_EQ(WriteBookmarksAndWait(), bookmark_html_writer::Result::kSuccess);
 
   // Check against the golden file.
-  const char* kGoldenFilename =
-      skia::IsRustyPngEnabled() ? "bookmarks_in_bookmarks_bar.html"
-                                : "bookmarks_in_bookmarks_bar_with_libpng.html";
   EXPECT_TRUE(base::TextContentsEqual(
-      path_, test_data_path_.AppendASCII(kGoldenFilename)));
+      path_, test_data_path_.AppendASCII("bookmarks_in_bookmarks_bar.html")));
 }
 
 TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenBookmarksInLocalOther) {
@@ -344,11 +338,8 @@ TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenBookmarksInLocalOther) {
   ASSERT_EQ(WriteBookmarksAndWait(), bookmark_html_writer::Result::kSuccess);
 
   // Check against the golden file.
-  const char* kGoldenFilename = skia::IsRustyPngEnabled()
-                                    ? "bookmarks_in_other.html"
-                                    : "bookmarks_in_other_with_libpng.html";
   EXPECT_TRUE(base::TextContentsEqual(
-      path_, test_data_path_.AppendASCII(kGoldenFilename)));
+      path_, test_data_path_.AppendASCII("bookmarks_in_other.html")));
 }
 
 TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenBookmarksInAccountOther) {
@@ -370,11 +361,8 @@ TEST_F(BookmarkHTMLWriterTest, CheckOutputWhenBookmarksInAccountOther) {
   ASSERT_EQ(WriteBookmarksAndWait(), bookmark_html_writer::Result::kSuccess);
 
   // Check against the golden file.
-  const char* kGoldenFilename = skia::IsRustyPngEnabled()
-                                    ? "bookmarks_in_other.html"
-                                    : "bookmarks_in_other_with_libpng.html";
   EXPECT_TRUE(base::TextContentsEqual(
-      path_, test_data_path_.AppendASCII(kGoldenFilename)));
+      path_, test_data_path_.AppendASCII("bookmarks_in_other.html")));
 }
 
 // Tests bookmark_html_writer by populating a BookmarkModel, writing it out by
@@ -458,19 +446,16 @@ TEST_F(BookmarkHTMLWriterTest, ExportThenImport) {
                     gfx::Image());
 
   // Read the bookmarks back in.
-  base::test::TestFuture<
-      user_data_importer::BookmarkParser::BookmarkParsingResult>
-      bookmarks_parsed_future;
-  user_data_importer::MakeBookmarkParser()->Parse(
-      path_, bookmarks_parsed_future.GetCallback());
-  user_data_importer::BookmarkParser::BookmarkParsingResult result =
-      bookmarks_parsed_future.Take();
+  std::string html_content;
+  ASSERT_TRUE(base::ReadFileToString(path_, &html_content));
+  auto result =
+      user_data_importer::ParseBookmarksUnsafe(std::move(html_content));
 
   std::vector<user_data_importer::ImportedBookmarkEntry> parsed_bookmarks =
-      result->bookmarks;
+      result.bookmarks;
   std::vector<user_data_importer::SearchEngineInfo> parsed_search_engines =
-      result->search_engines;
-  favicon_base::FaviconUsageDataList favicons = result->favicons;
+      result.search_engines;
+  favicon_base::FaviconUsageDataList favicons = result.favicons;
 
   // Check loaded favicon (url1 is represented by 4 separate bookmarks).
   EXPECT_EQ(4U, favicons.size());

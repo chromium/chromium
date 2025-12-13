@@ -16,7 +16,7 @@ When Chrome displays notifications for the associated website, it will connect t
 
 Location permission will only be granted when running as a TWA.
 
-When a web content running in TWA trying to access geolocation, we will look for a TWA app that handles Intents for the site URL and query the TWA app’s Android permissions, and treat Android permissions to the corresponding ContentSettingValues.
+When a web content running in TWA trying to access geolocation, we will look for a TWA app that handles Intents for the site URL and query the TWA app’s Android permissions, and treat Android permissions to the corresponding ContentSetting.
 
 If the location permission is granted, Chrome will connect to the TrustedWebActivityService and the client app should access the Android location API and provide the location data to Chrome.
 

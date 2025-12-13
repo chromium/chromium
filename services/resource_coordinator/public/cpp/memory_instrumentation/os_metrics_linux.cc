@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/os_metrics.h"
 
 #include <dlfcn.h>
@@ -16,8 +11,7 @@
 
 #include <memory>
 
-#include "base/android/library_loader/anchor_functions.h"
-#include "base/android/library_loader/anchor_functions_buildflags.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/debug/elf_reader.h"
 #include "base/debug/proc_maps_linux.h"
@@ -35,6 +29,11 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/library_loader/anchor_functions.h"
+#include "base/android/library_loader/anchor_functions_buildflags.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Symbol with virtual address of the start of ELF header of the current binary.
 extern char __ehdr_start;
@@ -104,9 +103,10 @@ bool ParseSmapsHeader(const char* header_line,
   char protection_flags[5] = {};
   char mapped_file[kMaxLineSize];
 
-  if (sscanf(header_line, "%" SCNx64 "-%" SCNx64 " %4c %*s %*s %*s%4095[^\n]\n",
-             &region->start_address, &end_addr, protection_flags,
-             mapped_file) != 4) {
+  if (UNSAFE_TODO(sscanf(
+          header_line, "%" SCNx64 "-%" SCNx64 " %4c %*s %*s %*s%4095[^\n]\n",
+          &region->start_address, &end_addr, protection_flags, mapped_file)) !=
+      4) {
     return false;
   }
 
@@ -153,7 +153,8 @@ bool ParseSmapsHeader(const char* header_line,
 
 uint64_t ReadCounterBytes(char* counter_line) {
   uint64_t counter_value = 0;
-  int res = sscanf(counter_line, "%*s %" SCNu64 " kB", &counter_value);
+  int res =
+      UNSAFE_TODO(sscanf(counter_line, "%*s %" SCNu64 " kB", &counter_value));
   return res == 1 ? counter_value * 1024 : 0;
 }
 
@@ -161,23 +162,23 @@ uint32_t ParseSmapsCounter(char* counter_line, VmRegion* region) {
   // A smaps counter lines looks as follows: "RSS:  0 Kb\n"
   uint32_t res = 1;
   char counter_name[20];
-  int did_read = sscanf(counter_line, "%19[^\n ]", counter_name);
+  int did_read = UNSAFE_TODO(sscanf(counter_line, "%19[^\n ]", counter_name));
   if (did_read != 1)
     return 0;
 
-  if (strcmp(counter_name, "Pss:") == 0) {
+  if (UNSAFE_TODO(strcmp(counter_name, "Pss:")) == 0) {
     region->byte_stats_proportional_resident = ReadCounterBytes(counter_line);
-  } else if (strcmp(counter_name, "Private_Dirty:") == 0) {
+  } else if (UNSAFE_TODO(strcmp(counter_name, "Private_Dirty:")) == 0) {
     region->byte_stats_private_dirty_resident = ReadCounterBytes(counter_line);
-  } else if (strcmp(counter_name, "Private_Clean:") == 0) {
+  } else if (UNSAFE_TODO(strcmp(counter_name, "Private_Clean:")) == 0) {
     region->byte_stats_private_clean_resident = ReadCounterBytes(counter_line);
-  } else if (strcmp(counter_name, "Shared_Dirty:") == 0) {
+  } else if (UNSAFE_TODO(strcmp(counter_name, "Shared_Dirty:")) == 0) {
     region->byte_stats_shared_dirty_resident = ReadCounterBytes(counter_line);
-  } else if (strcmp(counter_name, "Shared_Clean:") == 0) {
+  } else if (UNSAFE_TODO(strcmp(counter_name, "Shared_Clean:")) == 0) {
     region->byte_stats_shared_clean_resident = ReadCounterBytes(counter_line);
-  } else if (strcmp(counter_name, "Swap:") == 0) {
+  } else if (UNSAFE_TODO(strcmp(counter_name, "Swap:")) == 0) {
     region->byte_stats_swapped = ReadCounterBytes(counter_line);
-  } else if (strcmp(counter_name, "Locked:") == 0) {
+  } else if (UNSAFE_TODO(strcmp(counter_name, "Locked:")) == 0) {
     region->byte_locked = ReadCounterBytes(counter_line);
   } else {
     res = 0;
@@ -202,8 +203,10 @@ uint32_t ReadLinuxProcSmapsFile(FILE* smaps_file,
   ModuleData main_module_data = GetMainModuleData();
   for (;;) {
     line[0] = '\0';
-    if (fgets(line, kMaxLineSize, smaps_file) == nullptr || !strlen(line))
+    if (UNSAFE_TODO(fgets(line, kMaxLineSize, smaps_file)) == nullptr ||
+        !strlen(line)) {
       break;
+    }
     if (absl::ascii_isxdigit(static_cast<unsigned char>(line[0])) &&
         !absl::ascii_isupper(static_cast<unsigned char>(line[0]))) {
       region = VmRegion();
@@ -307,11 +310,11 @@ uint32_t CountMappings(base::ProcessId pid) {
 }
 
 // Get values from smaps_rollup for the current process.
-void GetSmapsRollup(uint32_t* pss, uint32_t* swap_pss) {
+void GetSmapsRollup(base::ByteCount* pss, base::ByteCount* swap_pss) {
   auto value = base::debug::ReadAndParseSmapsRollup();
   if (!value) {
-    *pss = 0;
-    *swap_pss = 0;
+    *pss = base::ByteCount(0);
+    *swap_pss = base::ByteCount(0);
     return;
   }
   *pss = value->pss;
@@ -346,7 +349,10 @@ bool OSMetrics::FillOSMemoryDump(base::ProcessHandle handle,
     dump->mappings_count = CountMappings(handle);
   }
   if (flags.Has(mojom::MemDumpFlags::MEM_DUMP_PSS)) {
-    GetSmapsRollup(&dump->pss_kb, &dump->swap_pss_kb);
+    base::ByteCount pss, swap_pss;
+    GetSmapsRollup(&pss, &swap_pss);
+    dump->pss_kb = pss.InKiB();
+    dump->swap_pss_kb = swap_pss.InKiB();
   }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -439,8 +445,8 @@ OSMetrics::MappedAndResidentPagesDumpState OSMetrics::GetMappedAndResidentPages(
   // |entries| will be 2kB/MB (if |kPageSize| = 4096),
   // that would only be ~80kB on Android, and up to 200kB on Linux (for 100MB)
   std::vector<uint64_t> entries(total_pages);
-  if (fread(&entries[0], sizeof(uint64_t), total_pages, pagemap_file.get()) !=
-      total_pages) {
+  if (UNSAFE_TODO(fread(&entries[0], sizeof(uint64_t), total_pages,
+                        pagemap_file.get())) != total_pages) {
     return OSMetrics::MappedAndResidentPagesDumpState::kFailure;
   }
 

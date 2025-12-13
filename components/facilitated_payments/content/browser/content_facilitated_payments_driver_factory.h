@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -42,6 +43,12 @@ class ContentFacilitatedPaymentsDriverFactory
       content::RenderFrameHost* render_frame_host);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(
+      ContentFacilitatedPaymentsDriverFactoryTest,
+      OnTextCopiedToClipboard_PixCodeInIFrame_DoesNotTriggerPixDetection_PixFlowExitedReasonLogged);
+  FRIEND_TEST_ALL_PREFIXES(
+      ContentFacilitatedPaymentsDriverFactoryTest,
+      OnTextCopiedToClipboard_FrameNotActive_DoesNotTriggerPixDetection_PixFlowExitedReasonLogged);
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameHostStateChanged(

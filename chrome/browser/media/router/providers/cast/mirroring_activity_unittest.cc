@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
@@ -478,7 +479,8 @@ TEST_F(MirroringActivityTest, GetScrubbedLogMessage) {
       "type": "OFFER"
     })";
 
-  std::optional<base::Value> message_json = base::JSONReader::Read(message);
+  std::optional<base::Value> message_json =
+      base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(message_json);
   EXPECT_TRUE(message_json.value().is_dict());
   EXPECT_THAT(scrubbed_message,
@@ -579,9 +581,9 @@ TEST_F(MirroringActivityTest, EnableRtcpReports) {
       });
 
   EXPECT_CALL(mock_debugger_, OnMirroringStats)
-      .WillOnce(testing::Invoke([&](const base::Value json_stats_cb) {
+      .WillOnce([&](const base::Value json_stats_cb) {
         EXPECT_EQ(base::Value("foo"), json_stats_cb);
-      }));
+      });
   // A call to fetch mirroring stats should have been posted at this point. Fast
   // forward past the delay of this posted task.
   task_environment_.FastForwardBy(media::cast::kRtcpReportInterval);
@@ -602,7 +604,7 @@ TEST_F(MirroringActivityTest, Pause) {
   mojom::MediaStatusPtr expected_status = mojom::MediaStatus::New();
   expected_status->play_state = mojom::MediaStatus::PlayState::PAUSED;
   auto cb = [&](base::OnceClosure callback) { std::move(callback).Run(); };
-  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(testing::Invoke(cb));
+  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(cb);
   EXPECT_CALL(media_status_observer, OnMediaStatusUpdated(_))
       .WillOnce([&](mojom::MediaStatusPtr status) {
         EXPECT_EQ(expected_status->play_state, status->play_state);
@@ -627,7 +629,7 @@ TEST_F(MirroringActivityTest, Play) {
   mojom::MediaStatusPtr expected_status = mojom::MediaStatus::New();
   expected_status->play_state = mojom::MediaStatus::PlayState::PLAYING;
   auto cb = [&](base::OnceClosure callback) { std::move(callback).Run(); };
-  EXPECT_CALL(*mirroring_service_, Resume(_)).WillOnce(testing::Invoke(cb));
+  EXPECT_CALL(*mirroring_service_, Resume(_)).WillOnce(cb);
   EXPECT_CALL(media_status_observer, OnMediaStatusUpdated(_))
       .WillOnce([&](mojom::MediaStatusPtr status) {
         EXPECT_EQ(expected_status->play_state, status->play_state);
@@ -645,8 +647,8 @@ TEST_F(MirroringActivityTest, PauseAndPlay) {
   MakeActivity(source, kFrameTreeNodeId,
                CastDiscoveryType::kAccessCodeManualEntry);
   auto cb = [&](base::OnceClosure callback) { std::move(callback).Run(); };
-  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(testing::Invoke(cb));
-  EXPECT_CALL(*mirroring_service_, Resume(_)).WillOnce(testing::Invoke(cb));
+  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(cb);
+  EXPECT_CALL(*mirroring_service_, Resume(_)).WillOnce(cb);
 
   activity_->DidStart();
   activity_->Pause();
@@ -667,7 +669,7 @@ TEST_F(MirroringActivityTest, PauseAndReset) {
   MakeActivity(source, kFrameTreeNodeId,
                CastDiscoveryType::kAccessCodeManualEntry);
   auto cb = [&](base::OnceClosure callback) { std::move(callback).Run(); };
-  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(testing::Invoke(cb));
+  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(cb);
 
   activity_->DidStart();
   activity_->Pause();
@@ -742,7 +744,7 @@ TEST_F(MirroringActivityTest, MultipleMediaControllersNotified) {
   mojom::MediaStatusPtr expected_status = mojom::MediaStatus::New();
   expected_status->play_state = mojom::MediaStatus::PlayState::PAUSED;
   auto cb = [&](base::OnceClosure callback) { std::move(callback).Run(); };
-  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(testing::Invoke(cb));
+  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(cb);
   EXPECT_CALL(media_status_observer_1, OnMediaStatusUpdated(_))
       .WillOnce([&](mojom::MediaStatusPtr status) {
         EXPECT_EQ(expected_status->play_state, status->play_state);
@@ -835,7 +837,8 @@ TEST_F(MirroringActivityTest, CastStreamingSenderUma) {
       ]
     }
     })";
-  std::optional<base::Value> stats = base::JSONReader::Read(kJsonStats);
+  std::optional<base::Value> stats =
+      base::JSONReader::Read(kJsonStats, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(stats.has_value());
 
   MediaSource source = MediaSource::ForDesktop(kDesktopMediaId, true);
@@ -850,10 +853,10 @@ TEST_F(MirroringActivityTest, CastStreamingSenderUma) {
           });
 
   EXPECT_CALL(mock_debugger_, OnMirroringStats)
-      .WillOnce(testing::Invoke([&stats](const base::Value json_stats_cb) {
+      .WillOnce([&stats](const base::Value json_stats_cb) {
         ASSERT_TRUE(json_stats_cb.is_dict());
         EXPECT_EQ(stats, json_stats_cb.GetDict());
-      }));
+      });
 
   // A call to fetch mirroring stats should have been posted at this point. Fast
   // forward past the delay of this posted task.

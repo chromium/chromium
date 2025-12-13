@@ -9,6 +9,10 @@
     html {
       height: auto;
       overflow: hidden;
+
+      /* Note: Needed to prevent a horizontal scrollbar when this UI is shown
+         via OmniboxPopupPresenter (not reproducible in a tab). */
+      max-width: 100vw;
     }
 
     body {

@@ -21,7 +21,7 @@ TEST(URLParse, FullURL) {
   base::PerfTimeLogger timer("Full_URL_Parse_AMillion");
 
   for (int i = 0; i < 1000000; i++)
-    parsed = url::ParseStandardURL(kUrl);
+    parsed = url::ParseStandardUrl(kUrl);
   timer.Done();
 }
 
@@ -46,9 +46,9 @@ TEST(URLParse, TypicalURLParse) {
   // Do this 1/3 of a million times since we do 3 different URLs.
   base::PerfTimeLogger parse_timer("Typical_URL_Parse_AMillion");
   for (int i = 0; i < 333333; i++) {
-    parsed1 = url::ParseStandardURL(kTypicalUrl1);
-    parsed2 = url::ParseStandardURL(kTypicalUrl2);
-    parsed3 = url::ParseStandardURL(kTypicalUrl3);
+    parsed1 = url::ParseStandardUrl(kTypicalUrl1);
+    parsed2 = url::ParseStandardUrl(kTypicalUrl2);
+    parsed3 = url::ParseStandardUrl(kTypicalUrl3);
   }
   parse_timer.Done();
 }
@@ -60,20 +60,20 @@ TEST(URLParse, TypicalURLParseCanon) {
   url::RawCanonOutput<1024> output;
   for (int i = 0; i < 333333; i++) {  // divide by 3 so we get 1M
     output.set_length(0);
-    url::CanonicalizeStandardURL(
-        kTypicalUrl1.data(), url::ParseStandardURL(kTypicalUrl1),
+    url::CanonicalizeStandardUrl(
+        kTypicalUrl1, url::ParseStandardUrl(kTypicalUrl1),
         url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr, &output,
         &out_parsed);
 
     output.set_length(0);
-    url::CanonicalizeStandardURL(
-        kTypicalUrl2.data(), url::ParseStandardURL(kTypicalUrl2),
+    url::CanonicalizeStandardUrl(
+        kTypicalUrl2, url::ParseStandardUrl(kTypicalUrl2),
         url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr, &output,
         &out_parsed);
 
     output.set_length(0);
-    url::CanonicalizeStandardURL(
-        kTypicalUrl3.data(), url::ParseStandardURL(kTypicalUrl3),
+    url::CanonicalizeStandardUrl(
+        kTypicalUrl3, url::ParseStandardUrl(kTypicalUrl3),
         url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr, &output,
         &out_parsed);
   }
@@ -87,22 +87,22 @@ TEST(URLParse, TypicalURLParseCanonStdString) {
   for (int i = 0; i < 333333; i++) {  // divide by 3 so we get 1M
     std::string out1;
     url::StdStringCanonOutput output1(&out1);
-    url::CanonicalizeStandardURL(
-        kTypicalUrl1.data(), url::ParseStandardURL(kTypicalUrl1),
+    url::CanonicalizeStandardUrl(
+        kTypicalUrl1, url::ParseStandardUrl(kTypicalUrl1),
         url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr, &output1,
         &out_parsed);
 
     std::string out2;
     url::StdStringCanonOutput output2(&out2);
-    url::CanonicalizeStandardURL(
-        kTypicalUrl2.data(), url::ParseStandardURL(kTypicalUrl2),
+    url::CanonicalizeStandardUrl(
+        kTypicalUrl2, url::ParseStandardUrl(kTypicalUrl2),
         url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr, &output2,
         &out_parsed);
 
     std::string out3;
     url::StdStringCanonOutput output3(&out3);
-    url::CanonicalizeStandardURL(
-        kTypicalUrl3.data(), url::ParseStandardURL(kTypicalUrl3),
+    url::CanonicalizeStandardUrl(
+        kTypicalUrl3, url::ParseStandardUrl(kTypicalUrl3),
         url::SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION, nullptr, &output3,
         &out_parsed);
   }

@@ -14,9 +14,7 @@
 namespace device {
 
 DeviceInfoQueryWin::DeviceInfoQueryWin()
-    : device_info_list_(SetupDiCreateDeviceInfoList(nullptr, nullptr)) {
-  UNSAFE_TODO(memset(&device_info_data_, 0, sizeof(device_info_data_)));
-}
+    : device_info_list_(SetupDiCreateDeviceInfoList(nullptr, nullptr)) {}
 
 DeviceInfoQueryWin::~DeviceInfoQueryWin() {
   if (device_info_list_valid()) {

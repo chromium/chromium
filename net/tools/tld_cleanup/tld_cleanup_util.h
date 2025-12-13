@@ -7,7 +7,7 @@
 
 #include <map>
 #include <string>
-#include <tuple>
+#include <utility>
 
 namespace base {
 class FilePath;
@@ -20,13 +20,10 @@ struct Rule {
   bool wildcard;
   bool is_private;
 
-  bool operator==(const Rule& other) const {
-    return std::tie(exception, wildcard, is_private) ==
-           std::tie(other.exception, other.wildcard, other.is_private);
-  }
+  friend bool operator==(const Rule&, const Rule&) = default;
 };
 
-typedef std::map<std::string, Rule> RuleMap;
+using RuleMap = std::map<std::string, Rule>;
 
 // These result codes should be in increasing order of severity.
 enum class NormalizeResult {
@@ -48,7 +45,8 @@ NormalizeResult NormalizeFile(const base::FilePath& in_filename,
 
 // Parses |data|, and converts it to the internal data format RuleMap. Returns
 // the most severe of the result codes encountered when normalizing the rules.
-NormalizeResult NormalizeDataToRuleMap(const std::string& data, RuleMap& rules);
+std::pair<NormalizeResult, RuleMap> NormalizeDataToRuleMap(
+    const std::string& data);
 
 }  // namespace net::tld_cleanup
 

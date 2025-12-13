@@ -32,6 +32,9 @@ namespace media {
 // reported via UKM, and are treated differently than if the field was reported
 // as the default value, e.g 0.
 struct MEDIA_EXPORT CdmMetricsData {
+  CdmMetricsData();
+  ~CdmMetricsData();
+
   std::optional<uint64_t> license_sdk_version;
   uint64_t number_of_update_calls = 0;
   uint64_t number_of_on_message_events = 0;

@@ -43,9 +43,6 @@ class AppPreloadServiceBrowserTest : public InProcessBrowserTest {
   AppPreloadServiceBrowserTest()
       : startup_check_resetter_(
             AppPreloadService::DisablePreloadsOnStartupForTesting()) {
-    feature_list_.InitWithFeatures(
-        {/*enabled_features=*/features::kAppPreloadService},
-        /*disabled_features=*/{});
     AppPreloadServiceFactory::SkipApiKeyCheckForTesting(true);
   }
 
@@ -124,7 +121,6 @@ class AppPreloadServiceBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_;
   std::map<std::string, std::string> manifest_responses_;
   std::optional<proto::AppPreloadListResponse> apps_proto_;

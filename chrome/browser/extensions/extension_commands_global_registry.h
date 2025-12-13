@@ -10,8 +10,11 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;

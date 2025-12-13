@@ -6,32 +6,71 @@
 
 #import <memory>
 
+#import "base/functional/callback_helpers.h"
 #import "base/notreached.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "components/dom_distiller/core/extraction_utils.h"
+#import "components/language/ios/browser/language_detection_java_script_feature.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_scroll_anchor_java_script_feature.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
-#import "ios/web/js_messaging/java_script_feature_manager.h"
+#import "ios/chrome/browser/safe_browsing/model/safe_browsing_client_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
+#import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_client.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/web_state.h"
 #import "third_party/dom_distiller_js/dom_distiller.pb.h"
 #import "third_party/dom_distiller_js/dom_distiller_json_converter.h"
 
+namespace {
+
+std::unique_ptr<KeyedService> BuildSafeBrowsingClient(ProfileIOS* profile) {
+  return std::make_unique<FakeSafeBrowsingClient>(
+      GetApplicationContext()->GetLocalState());
+}
+
+}  // namespace
+
 ReaderModeTest::ReaderModeTest() = default;
+
 ReaderModeTest::~ReaderModeTest() = default;
 
 void ReaderModeTest::SetUp() {
-  scoped_feature_list_.InitAndEnableFeature(kEnableReaderMode);
-  profile_ = TestProfileIOS::Builder().Build();
+  base::FieldTrialParams custom_time_params = {
+      {kReaderModeHeuristicPageLoadDelayDurationStringName, "1s"},
+      {kReaderModeDistillationTimeoutDurationStringName, "5s"}};
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kEnableReaderMode, custom_time_params}, {kEnableReaderModeInUS, {}}},
+      /*disabled_features=*/{});
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(
+      OptimizationGuideServiceFactory::GetInstance(),
+      OptimizationGuideServiceFactory::GetDefaultFactory());
+  builder.AddTestingFactory(SafeBrowsingClientFactory::GetInstance(),
+                            base::BindOnce(&BuildSafeBrowsingClient));
+  profile_ = std::move(builder).Build();
 
-  web::JavaScriptFeatureManager::FromBrowserState(profile_.get())
-      ->ConfigureFeatures({ReaderModeJavaScriptFeature::GetInstance()});
+  web::test::OverrideJavaScriptFeatures(
+      profile_.get(),
+      {ReaderModeJavaScriptFeature::GetInstance(),
+       ReaderModeScrollAnchorJavaScriptFeature::GetInstance(),
+       language::LanguageDetectionJavaScriptFeature::GetInstance()});
+}
+
+void ReaderModeTest::TearDown() {
+  scoped_feature_list_.Reset();
+  PlatformTest::TearDown();
 }
 
 std::unique_ptr<web::FakeWebState> ReaderModeTest::CreateWebState() {
@@ -44,16 +83,18 @@ std::unique_ptr<web::FakeWebState> ReaderModeTest::CreateWebState() {
   // Attach tab helpers
   ReaderModeTabHelper::CreateForWebState(
       web_state.get(), DistillerServiceFactory::GetForProfile(profile()));
+  SnapshotSourceTabHelper::CreateForWebState(web_state.get());
 
   return web_state;
 }
 
-void ReaderModeTest::EnableReaderMode(web::WebState* web_state) {
-  ReaderModeTabHelper::FromWebState(web_state)->SetActive(true);
+void ReaderModeTest::EnableReaderMode(web::WebState* web_state,
+                                      ReaderModeAccessPoint access_point) {
+  ReaderModeTabHelper::FromWebState(web_state)->ActivateReader(access_point);
 }
 
 void ReaderModeTest::DisableReaderMode(web::WebState* web_state) {
-  ReaderModeTabHelper::FromWebState(web_state)->SetActive(false);
+  ReaderModeTabHelper::FromWebState(web_state)->DeactivateReader();
 }
 
 void ReaderModeTest::LoadWebpage(web::FakeWebState* web_state,
@@ -88,35 +129,53 @@ void ReaderModeTest::SetReaderModeState(web::FakeWebState* web_state,
   }
 
   // Set up the fake web frame to return a custom result after executing
-  // the DOM distiller Javascript.
-  dom_distiller::proto::DomDistillerOptions options;
-  std::u16string script =
-      base::UTF8ToUTF16(dom_distiller::GetDistillerScriptWithOptions(options));
-  dom_distiller::proto::DomDistillerResult distiller_result;
-  distiller_result.mutable_distilled_content()->set_html(
-      std::move(distilled_content));
-  base::Value distiller_result_value =
-      dom_distiller::proto::json::DomDistillerResult::WriteToValue(
-          std::move(distiller_result));
+  // the Readability Javascript.
+  std::u16string readability_script =
+      base::UTF8ToUTF16(dom_distiller::GetReadabilityDistillerScript());
+  base::Value::Dict readability_result;
+  readability_result.Set("content", distilled_content);
+  readability_result.Set("title", "fake title");
   distiller_result_values_.push_back(
-      std::make_unique<base::Value>(std::move(distiller_result_value)));
+      std::make_unique<base::Value>(std::move(readability_result)));
   web_frame->AddResultForExecutedJs(distiller_result_values_.back().get(),
-                                    script);
+                                    readability_script);
+
   auto* tab_helper = ReaderModeTabHelper::FromWebState(web_state);
   if (!tab_helper) {
     return;
   }
-  web_frame->set_call_java_script_function_callback(base::BindRepeating(^{
-    // Overrides the result from DOM distiller heuristic with a custom entry.
-    tab_helper->HandleReaderModeHeuristicResult(url, result);
-  }));
+  // `url` is captured by copy to ensure it is still valid when the block is
+  // executed.
+  web_frame->set_call_java_script_function_callback(base::BindRepeating(
+      ^(GURL url_copy) {
+        // Overrides the result from DOM distiller heuristic with a custom
+        // entry.
+        tab_helper->HandleReaderModeHeuristicResult(result);
+        web_frame->set_call_java_script_function_callback(base::DoNothing());
+      },
+      url));
 }
 
-void ReaderModeTest::WaitForReaderModeContentReady() {
+void ReaderModeTest::WaitForPageLoadDelayAndRunUntilIdle() {
   // Waits for asynchronous trigger heuristic delay
-  // `kReaderModeDistillerPageLoadDelay` after the page is loaded.
+  // `kReaderModeHeuristicPageLoadDelay` after the page is loaded.
   task_environment_.AdvanceClock(base::Seconds(1));
   task_environment_.RunUntilIdle();
+}
+
+bool ReaderModeTest::WaitForAvailableReaderModeContentInWebState(
+    web::WebState* web_state) {
+  // For the Reader mode WebState to be ready, distillation must complete
+  // (JavaScript completion) and the distilled content must be loaded in to the
+  // Reader mode WebState (page load).
+  constexpr base::TimeDelta timeout =
+      base::test::ios::kWaitForJSCompletionTimeout +
+      base::test::ios::kWaitForPageLoadTimeout;
+  return base::test::ios::WaitUntilConditionOrTimeout(
+      timeout, true, ^{
+        return ReaderModeTabHelper::FromWebState(web_state)
+                   ->GetReaderModeWebState() != nullptr;
+      });
 }
 
 void ReaderModeTest::AddReadabilityHeuristicResultToFrame(
@@ -136,6 +195,10 @@ void ReaderModeTest::AddReadabilityHeuristicResultToFrame(
       break;
     case ReaderModeHeuristicResult::kReaderModeNotEligibleContentOnly:
     case ReaderModeHeuristicResult::kReaderModeNotEligibleContentLength:
+    case ReaderModeHeuristicResult::
+        kReaderModeNotEligibleOptimizationGuideIneligible:
+    case ReaderModeHeuristicResult::
+        kReaderModeNotEligibleOptimizationGuideUnknown:
       NOTREACHED();
   }
   web_frame->AddResultForExecutedJs(readability_heuristic_value_.get(),
@@ -156,5 +219,11 @@ std::string ReaderModeTest::TestParametersReaderModeHeuristicResultToString(
       return "ReaderModeNotEligibleContentLength";
     case ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength:
       return "ReaderModeNotEligibleContentAndLength";
+    case ReaderModeHeuristicResult::
+        kReaderModeNotEligibleOptimizationGuideIneligible:
+      return "ReaderModeNotEligibleOptimizationGuideIneligible";
+    case ReaderModeHeuristicResult::
+        kReaderModeNotEligibleOptimizationGuideUnknown:
+      return "ReaderModeNotEligibleOptimizationGuideUnknown";
   }
 }

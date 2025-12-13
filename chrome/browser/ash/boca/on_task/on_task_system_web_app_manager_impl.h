@@ -49,6 +49,9 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
       GURL url,
       ::boca::LockedNavigationOptions::NavigationType restriction_level)
       override;
+  void SetParentTabsRestriction(SessionID window_id,
+                                ::boca::LockedNavigationOptions::NavigationType
+                                    restriction_level) override;
   void RemoveTabsWithTabIds(
       SessionID window_id,
       const std::set<SessionID>& tab_ids_to_remove) override;
@@ -57,6 +60,7 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
   SessionID GetActiveTabID() override;
   void SwitchToTab(SessionID tab_id) override;
   void SetAllChromeTabsMuted(bool muted) override;
+  bool IsWindowPinned(SessionID window_id) override;
 
   void SetWindowTrackerForTesting(LockedSessionWindowTracker* window_tracker);
 

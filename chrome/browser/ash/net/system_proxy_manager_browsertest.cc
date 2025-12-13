@@ -4,16 +4,12 @@
 
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 
-#include <array>
 #include <string>
-#include <string_view>
-#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
-#include "base/test/bind.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -21,12 +17,9 @@
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/login/login_handler.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -50,19 +43,18 @@
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/proxy_config/proxy_prefs.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_server.h"
-#include "net/http/http_auth_cache.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/register_basic_auth_handler.h"
-#include "net/url_request/url_request_context.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/test/message_center_waiter.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 
@@ -174,8 +166,6 @@ class SystemProxyManagerBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     GetSystemProxyManager()->StartObservingPrimaryProfilePrefs(
         browser()->profile());
-    display_service_tester_ =
-        std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
     GetSystemProxyManager()->SetSystemProxyEnabledForTest(true);
   }
 
@@ -208,15 +198,6 @@ class SystemProxyManagerBrowserTest : public InProcessBrowserTest {
 
     client_test_interface()->SendAuthenticationRequiredSignal(details);
   }
-
-  void WaitForNotification() {
-    base::RunLoop run_loop;
-    display_service_tester_->SetNotificationAddedClosure(
-        run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
-  std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 };
 
 // Tests the flow for setting user credentials for System-proxy:
@@ -229,16 +210,16 @@ IN_PROC_BROWSER_TEST_F(SystemProxyManagerBrowserTest, AuthenticationDialog) {
       run_loop.QuitClosure());
 
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kSystemProxyNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kSystemProxyNotificationId));
+  message_center::MessageCenterWaiter waiter(kSystemProxyNotificationId);
   SendAuthenticationRequest(/* bad_cached_credentials = */ false);
-  WaitForNotification();
+  waiter.WaitUntilAdded();
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      kSystemProxyNotificationId));
 
-  EXPECT_TRUE(
-      display_service_tester_->GetNotification(kSystemProxyNotificationId));
-
-  display_service_tester_->SimulateClick(
-      NotificationHandler::Type::TRANSIENT, kSystemProxyNotificationId,
-      /*action_index=*/std::nullopt, /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotification(
+      kSystemProxyNotificationId);
   // Dialog is created.
   ASSERT_TRUE(dialog());
 
@@ -265,7 +246,8 @@ IN_PROC_BROWSER_TEST_F(SystemProxyManagerBrowserTest, AuthenticationDialog) {
   // Verify that the UI elements are reset.
   GetSystemProxyManager()->CloseAuthDialogForTest();
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kSystemProxyNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kSystemProxyNotificationId));
   EXPECT_FALSE(dialog());
 }
 
@@ -274,15 +256,16 @@ IN_PROC_BROWSER_TEST_F(SystemProxyManagerBrowserTest, AuthenticationDialog) {
 IN_PROC_BROWSER_TEST_F(SystemProxyManagerBrowserTest,
                        CancelAuthenticationDialog) {
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kSystemProxyNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kSystemProxyNotificationId));
+  message_center::MessageCenterWaiter waiter(kSystemProxyNotificationId);
   SendAuthenticationRequest(/* bad_cached_credentials = */ false);
-  WaitForNotification();
-  EXPECT_TRUE(
-      display_service_tester_->GetNotification(kSystemProxyNotificationId));
+  waiter.WaitUntilAdded();
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      kSystemProxyNotificationId));
 
-  display_service_tester_->SimulateClick(
-      NotificationHandler::Type::TRANSIENT, kSystemProxyNotificationId,
-      /*action_index=*/std::nullopt, /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotification(
+      kSystemProxyNotificationId);
 
   // Dialog is created.
   ASSERT_TRUE(dialog());
@@ -309,7 +292,8 @@ IN_PROC_BROWSER_TEST_F(SystemProxyManagerBrowserTest,
   // Verify that the UI elements are reset.
   GetSystemProxyManager()->CloseAuthDialogForTest();
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kSystemProxyNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kSystemProxyNotificationId));
   EXPECT_FALSE(dialog());
 }
 
@@ -318,15 +302,16 @@ IN_PROC_BROWSER_TEST_F(SystemProxyManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(SystemProxyManagerBrowserTest,
                        BadCachedCredentialsWarning) {
   EXPECT_FALSE(
-      display_service_tester_->GetNotification(kSystemProxyNotificationId));
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          kSystemProxyNotificationId));
+  message_center::MessageCenterWaiter waiter(kSystemProxyNotificationId);
   SendAuthenticationRequest(/* bad_cached_credentials = */ true);
-  WaitForNotification();
-  EXPECT_TRUE(
-      display_service_tester_->GetNotification(kSystemProxyNotificationId));
+  waiter.WaitUntilAdded();
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      kSystemProxyNotificationId));
 
-  display_service_tester_->SimulateClick(
-      NotificationHandler::Type::TRANSIENT, kSystemProxyNotificationId,
-      /*action_index=*/std::nullopt, /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotification(
+      kSystemProxyNotificationId);
   ASSERT_TRUE(dialog());
 
   // Expect warning is shown.

@@ -31,7 +31,7 @@ void MemorySaverBubbleDelegate::OnAddSiteToTabDiscardExceptionsListClicked() {
   content::WebContents* const web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
   CHECK(web_contents);
-  const std::string host = web_contents->GetURL().host();
+  const std::string host = web_contents->GetURL().GetHost();
   PrefService* const pref_service = browser_->profile()->GetPrefs();
   performance_manager::user_tuning::prefs::AddSiteToTabDiscardExceptionsList(
       pref_service, host);

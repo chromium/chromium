@@ -36,9 +36,6 @@ class CORE_EXPORT CascadeFilter {
   bool operator==(const CascadeFilter& o) const {
     return required_bits_ == o.required_bits_;
   }
-  bool operator!=(const CascadeFilter& o) const {
-    return required_bits_ != o.required_bits_;
-  }
 
   // Add a given rule to the filter. For instance:
   //

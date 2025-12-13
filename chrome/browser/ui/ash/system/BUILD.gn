@@ -47,6 +47,7 @@ static_library("system") {
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/phonehub",
+    "//chromeos/ash/experiences/settings_ui",
     "//components/access_code_cast/common:metrics",
     "//components/prefs",
     "//components/session_manager/core",
@@ -78,6 +79,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/new_window",
     "//chrome/test:test_support",
     "//url",
   ]

@@ -88,7 +88,7 @@ void CheckPdfRendering(FPDF_PAGE page,
 
   ASSERT_TRUE(RenderPageToBitmap(page, settings, page_bitmap.getPixels()));
 
-  EXPECT_TRUE(MatchesPngFile(page_bitmap.asImage().get(), expected_png_file));
+  EXPECT_TRUE(MatchesPngFile(*page_bitmap.asImage(), expected_png_file));
 }
 
 }  // namespace chrome_pdf

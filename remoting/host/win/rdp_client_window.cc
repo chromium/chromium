@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_bstr.h"
+#include "ui/base/win/atl_module.h"
 
 namespace remoting {
 
@@ -149,7 +150,9 @@ RdpClientWindow::RdpClientWindow(const net::IPEndPoint& server_endpoint,
                                  EventHandler* event_handler)
     : event_handler_(event_handler),
       server_endpoint_(server_endpoint),
-      terminal_id_(terminal_id) {}
+      terminal_id_(terminal_id) {
+  ui::win::CreateATLModuleIfNeeded();
+}
 
 RdpClientWindow::~RdpClientWindow() {
   if (m_hWnd) {

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/history/core/browser/visit_tracker.h"
 
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history {
@@ -45,9 +41,10 @@ void AddVisitToTracker(const VisitToTest& test_data, VisitTracker* tracker) {
                     test_data.visit_id);
 }
 
-void RunTest(VisitTracker* tracker, VisitToTest* test, int test_count) {
-  for (int i = 0; i < test_count; i++)
+void RunTest(VisitTracker* tracker, base::span<VisitToTest> test) {
+  for (size_t i = 0; i < test.size(); i++) {
     AddVisitToTracker(test[i], tracker);
+  }
 }
 
 }  // namespace
@@ -65,7 +62,7 @@ TEST(VisitTracker, SimpleTransitions) {
   };
 
   VisitTracker tracker;
-  RunTest(&tracker, test_simple, std::size(test_simple));
+  RunTest(&tracker, test_simple);
 }
 
 // Test that referrer is properly computed when there are different frame
@@ -87,7 +84,7 @@ TEST(VisitTracker, Frames) {
   };
 
   VisitTracker tracker;
-  RunTest(&tracker, test_frames, std::size(test_frames));
+  RunTest(&tracker, test_frames);
 }
 
 // Test frame navigation to make sure that the referrer is properly computed
@@ -109,7 +106,7 @@ TEST(VisitTracker, MultiProcess) {
   };
 
   VisitTracker tracker;
-  RunTest(&tracker, test_processes, std::size(test_processes));
+  RunTest(&tracker, test_processes);
 }
 
 // Test that processes get removed properly.
@@ -121,7 +118,7 @@ TEST(VisitTracker, ProcessRemove) {
   };
 
   VisitTracker tracker;
-  RunTest(&tracker, part1, std::size(part1));
+  RunTest(&tracker, part1);
 
   // Say that context has been invalidated.
   tracker.ClearCachedDataForContextID(1);
@@ -131,7 +128,7 @@ TEST(VisitTracker, ProcessRemove) {
   VisitToTest part2[] = {
       {1, 1, "http://images.google.com/", 2, "http://www.google.com/", 0},
   };
-  RunTest(&tracker, part2, std::size(part2));
+  RunTest(&tracker, part2);
 }
 
 TEST(VisitTracker, RemoveVisitById) {
@@ -142,7 +139,7 @@ TEST(VisitTracker, RemoveVisitById) {
   };
 
   VisitTracker tracker;
-  RunTest(&tracker, test_simple, std::size(test_simple));
+  RunTest(&tracker, test_simple);
 
   // Remove the first visit.
   const VisitToTest& removed = test_simple[0];
@@ -189,7 +186,7 @@ TEST(VisitTracker, Clear) {
   };
 
   VisitTracker tracker;
-  RunTest(&tracker, test_simple, std::size(test_simple));
+  RunTest(&tracker, test_simple);
   EXPECT_FALSE(tracker.IsEmpty());
   tracker.Clear();
   EXPECT_TRUE(tracker.IsEmpty());

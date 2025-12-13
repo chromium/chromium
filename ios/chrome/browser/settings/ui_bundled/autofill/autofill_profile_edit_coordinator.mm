@@ -11,10 +11,11 @@
 #import "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_country_selection_table_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator_delegate.h"
-#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_profile_edit_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
@@ -43,7 +44,7 @@
   // The view controller attached to this coordinator.
   AutofillSettingsProfileEditTableViewController* _viewController;
 
-  AutofillProfileEditTableViewController* _sharedViewController;
+  AutofillProfileEditTableViewHelper* _sharedViewController;
 
   // Default NO. Yes when the country selection view has been presented.
   BOOL _isCountrySelectorPresented;
@@ -91,12 +92,12 @@
                       initWithDelegate:_mediator
       shouldShowMigrateToAccountButton:_showMigrateToAccountButton
                              userEmail:[self userEmail]];
-  _sharedViewController = [[AutofillProfileEditTableViewController alloc]
-      initWithDelegate:_mediator
-             userEmail:[self userEmail]
-            controller:_viewController
-          settingsView:YES
-      addManualAddress:NO];
+  _sharedViewController = [[AutofillProfileEditTableViewHelper alloc]
+       initWithDelegate:_mediator
+              userEmail:[self userEmail]
+             controller:_viewController
+      textFieldDelegate:_viewController
+         addressContext:SaveAddressContext::kEditingSavedAddress];
   _mediator.consumer = _sharedViewController;
   _viewController.handler = _sharedViewController;
   _viewController.snackbarCommandsHandler = HandlerForProtocol(

@@ -5,7 +5,10 @@
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_item.h"
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/activity_indicator_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/info_button_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -29,16 +32,19 @@ TEST_F(SettingsCheckItemTest, ConfigureCell) {
   item.detailText = detailText;
 
   id cell = [[[item cellClass] alloc] init];
-  ASSERT_TRUE([cell isMemberOfClass:[SettingsCheckCell class]]);
+  ASSERT_TRUE([cell isMemberOfClass:[LegacyTableViewCell class]]);
 
-  SettingsCheckCell* CheckCell =
-      base::apple::ObjCCastStrict<SettingsCheckCell>(cell);
-  EXPECT_FALSE(CheckCell.textLabel.text);
-  EXPECT_FALSE(CheckCell.detailTextLabel.text);
+  LegacyTableViewCell* checkCell =
+      base::apple::ObjCCastStrict<LegacyTableViewCell>(cell);
+  EXPECT_FALSE(checkCell.contentConfiguration);
 
   [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
-  EXPECT_NSEQ(text, CheckCell.textLabel.text);
-  EXPECT_NSEQ(detailText, CheckCell.detailTextLabel.text);
+
+  TableViewCellContentConfiguration* contentConfiguration =
+      base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+          checkCell.contentConfiguration);
+  EXPECT_NSEQ(text, contentConfiguration.title);
+  EXPECT_NSEQ(detailText, contentConfiguration.subtitle);
 }
 
 // Tests that cell is configured properly based on infoButtonHidden property of
@@ -50,17 +56,29 @@ TEST_F(SettingsCheckItemTest, InfoButtonVisibility) {
   item.enabled = YES;
   item.indicatorHidden = YES;
   item.infoButtonHidden = NO;
+  // Target is required for the info button to be shown.
+  item.infoButtonTarget = [[NSObject alloc] init];
 
   id cell = [[[item cellClass] alloc] init];
-  SettingsCheckCell* CheckCell =
-      base::apple::ObjCCastStrict<SettingsCheckCell>(cell);
+  LegacyTableViewCell* checkCell =
+      base::apple::ObjCCastStrict<LegacyTableViewCell>(cell);
 
   [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
-  EXPECT_FALSE(CheckCell.infoButton.hidden);
+
+  TableViewCellContentConfiguration* contentConfiguration =
+      base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+          checkCell.contentConfiguration);
+  EXPECT_TRUE([contentConfiguration.trailingConfiguration
+      isKindOfClass:[InfoButtonContentConfiguration class]]);
 
   item.infoButtonHidden = YES;
   [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
-  EXPECT_TRUE(CheckCell.infoButton.hidden);
+
+  contentConfiguration =
+      base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+          checkCell.contentConfiguration);
+  EXPECT_FALSE([contentConfiguration.trailingConfiguration
+      isKindOfClass:[InfoButtonContentConfiguration class]]);
 }
 
 // Tests that infoButton won't be shown in case of a conflict.
@@ -71,16 +89,23 @@ TEST_F(SettingsCheckItemTest, InfoButtonVisibilityDuringConflict) {
   item.enabled = YES;
   item.indicatorHidden = NO;
   item.infoButtonHidden = NO;
+  // Target is required for the info button to be shown.
+  item.infoButtonTarget = [[NSObject alloc] init];
 
   id cell = [[[item cellClass] alloc] init];
-  SettingsCheckCell* CheckCell =
-      base::apple::ObjCCastStrict<SettingsCheckCell>(cell);
+  LegacyTableViewCell* checkCell =
+      base::apple::ObjCCastStrict<LegacyTableViewCell>(cell);
 
   [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
-  EXPECT_TRUE(CheckCell.infoButton.hidden);
+
+  TableViewCellContentConfiguration* contentConfiguration =
+      base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+          checkCell.contentConfiguration);
+  EXPECT_TRUE([contentConfiguration.trailingConfiguration
+      isKindOfClass:[ActivityIndicatorContentConfiguration class]]);
 }
 
-// Tests that infoButton would be greyed out when the item is not enabled.
+// Tests that infoButton would be disabled when the item is not enabled.
 TEST_F(SettingsCheckItemTest, InfoButtonVisibilityWhenDisabled) {
   SettingsCheckItem* item = [[SettingsCheckItem alloc] initWithType:0];
   item.text = @"Test Text";
@@ -88,15 +113,24 @@ TEST_F(SettingsCheckItemTest, InfoButtonVisibilityWhenDisabled) {
   item.enabled = NO;
   item.indicatorHidden = YES;
   item.infoButtonHidden = NO;
+  // Target is required for the info button to be shown.
+  item.infoButtonTarget = [[NSObject alloc] init];
 
   id cell = [[[item cellClass] alloc] init];
-  SettingsCheckCell* CheckCell =
-      base::apple::ObjCCastStrict<SettingsCheckCell>(cell);
+  LegacyTableViewCell* checkCell =
+      base::apple::ObjCCastStrict<LegacyTableViewCell>(cell);
 
   [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
-  EXPECT_FALSE(CheckCell.infoButton.hidden);
-  EXPECT_NSEQ(CheckCell.infoButton.tintColor,
-              [UIColor colorNamed:kTextSecondaryColor]);
+
+  TableViewCellContentConfiguration* contentConfiguration =
+      base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+          checkCell.contentConfiguration);
+  EXPECT_TRUE([contentConfiguration.trailingConfiguration
+      isKindOfClass:[InfoButtonContentConfiguration class]]);
+  InfoButtonContentConfiguration* infoButtonConfiguration =
+      base::apple::ObjCCastStrict<InfoButtonContentConfiguration>(
+          contentConfiguration.trailingConfiguration);
+  EXPECT_FALSE(infoButtonConfiguration.enabled);
 }
 
 }  // namespace

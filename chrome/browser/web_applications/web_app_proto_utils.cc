@@ -3,47 +3,34 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
+
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/check.h"
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_tab_strip.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_url_pattern.pb.h"
-#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
+#include "components/sync/protocol/web_app_specifics.pb.h"
+#include "components/webapps/common/web_app_id.h"
+#include "content/browser/background_fetch/background_fetch.pb.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
-#include "third_party/liburlpattern/pattern.h"
+#include "third_party/liburlpattern/part.h"
 #include "ui/gfx/geometry/size.h"
+#include "url/gurl.h"
 
 namespace web_app {
 
 namespace {
-
-std::optional<apps::IconInfo::Purpose> SyncPurposeToIconInfoPurpose(
-    sync_pb::WebAppIconInfo_Purpose purpose) {
-  switch (purpose) {
-    // Treat UNSPECIFIED purpose as invalid. It means a new purpose was added
-    // that this client does not understand.
-    case sync_pb::WebAppIconInfo_Purpose_UNSPECIFIED:
-      return std::nullopt;
-    case sync_pb::WebAppIconInfo_Purpose_ANY:
-      return apps::IconInfo::Purpose::kAny;
-    case sync_pb::WebAppIconInfo_Purpose_MASKABLE:
-      return apps::IconInfo::Purpose::kMaskable;
-    case sync_pb::WebAppIconInfo_Purpose_MONOCHROME:
-      return apps::IconInfo::Purpose::kMonochrome;
-  }
-}
-
-sync_pb::WebAppIconInfo_Purpose IconInfoPurposeToSyncPurpose(
-    apps::IconInfo::Purpose purpose) {
-  switch (purpose) {
-    case apps::IconInfo::Purpose::kAny:
-      return sync_pb::WebAppIconInfo_Purpose_ANY;
-    case apps::IconInfo::Purpose::kMonochrome:
-      return sync_pb::WebAppIconInfo_Purpose_MONOCHROME;
-    case apps::IconInfo::Purpose::kMaskable:
-      return sync_pb::WebAppIconInfo_Purpose_MASKABLE;
-  }
-}
 
 content::proto::ImageResource_Purpose
 ManifestImageResourcePurposeToImageResoucePurposeProto(
@@ -128,6 +115,22 @@ TabStrip::Visibility ProtoToTabStripVisibility(
 
 }  // namespace
 
+std::optional<apps::IconInfo::Purpose> SyncPurposeToIconInfoPurpose(
+    sync_pb::WebAppIconInfo_Purpose purpose) {
+  switch (purpose) {
+    // Treat UNSPECIFIED purpose as invalid. It means a new purpose was added
+    // that this client does not understand.
+    case sync_pb::WebAppIconInfo_Purpose_UNSPECIFIED:
+      return std::nullopt;
+    case sync_pb::WebAppIconInfo_Purpose_ANY:
+      return apps::IconInfo::Purpose::kAny;
+    case sync_pb::WebAppIconInfo_Purpose_MASKABLE:
+      return apps::IconInfo::Purpose::kMaskable;
+    case sync_pb::WebAppIconInfo_Purpose_MONOCHROME:
+      return apps::IconInfo::Purpose::kMonochrome;
+  }
+}
+
 std::optional<std::vector<apps::IconInfo>> ParseAppIconInfos(
     const char* container_name_for_logging,
     const RepeatedIconInfosProto& manifest_icons_proto) {
@@ -135,8 +138,9 @@ std::optional<std::vector<apps::IconInfo>> ParseAppIconInfos(
   for (const sync_pb::WebAppIconInfo& icon_info_proto : manifest_icons_proto) {
     apps::IconInfo icon_info;
 
-    if (icon_info_proto.has_size_in_px())
+    if (icon_info_proto.has_size_in_px()) {
       icon_info.square_size_px = icon_info_proto.size_in_px();
+    }
 
     if (!icon_info_proto.has_url()) {
       DLOG(ERROR) << container_name_for_logging << " IconInfo has missing url";
@@ -152,8 +156,9 @@ std::optional<std::vector<apps::IconInfo>> ParseAppIconInfos(
     if (icon_info_proto.has_purpose()) {
       std::optional<apps::IconInfo::Purpose> opt_purpose =
           SyncPurposeToIconInfoPurpose(icon_info_proto.purpose());
-      if (!opt_purpose.has_value())
+      if (!opt_purpose.has_value()) {
         return std::nullopt;
+      }
       icon_info.purpose = opt_purpose.value();
     } else {
       // Treat unset purpose as ANY so that old data without the field is
@@ -227,11 +232,24 @@ ParseAppImageResource(const char* container_name_for_logging,
   return manifest_icons;
 }
 
+sync_pb::WebAppIconInfo_Purpose IconInfoPurposeToSyncPurpose(
+    apps::IconInfo::Purpose purpose) {
+  switch (purpose) {
+    case apps::IconInfo::Purpose::kAny:
+      return sync_pb::WebAppIconInfo_Purpose_ANY;
+    case apps::IconInfo::Purpose::kMonochrome:
+      return sync_pb::WebAppIconInfo_Purpose_MONOCHROME;
+    case apps::IconInfo::Purpose::kMaskable:
+      return sync_pb::WebAppIconInfo_Purpose_MASKABLE;
+  }
+}
+
 sync_pb::WebAppIconInfo AppIconInfoToSyncProto(
     const apps::IconInfo& icon_info) {
   sync_pb::WebAppIconInfo icon_info_proto;
-  if (icon_info.square_size_px.has_value())
+  if (icon_info.square_size_px.has_value()) {
     icon_info_proto.set_size_in_px(icon_info.square_size_px.value());
+  }
   DCHECK(!icon_info.url.is_empty());
   icon_info_proto.set_url(icon_info.url.spec());
   icon_info_proto.set_purpose(IconInfoPurposeToSyncPurpose(icon_info.purpose));
@@ -340,6 +358,19 @@ std::optional<blink::SafeUrlPattern> ToUrlPattern(
   return url_pattern;
 }
 
+std::optional<std::vector<blink::SafeUrlPattern>> ToUrlPatterns(
+    const RepeatedUrlPatternProto& proto_url_patterns) {
+  std::vector<blink::SafeUrlPattern> result;
+  for (const auto& proto_pattern : proto_url_patterns) {
+    auto url_pattern = ToUrlPattern(proto_pattern);
+    if (!url_pattern.has_value()) {
+      return std::nullopt;
+    }
+    result.push_back(url_pattern.value());
+  }
+  return result;
+}
+
 proto::UrlPattern ToUrlPatternProto(const blink::SafeUrlPattern& url_pattern) {
   proto::UrlPattern url_pattern_proto;
   for (const auto& part : url_pattern.pathname) {
@@ -372,17 +403,12 @@ std::optional<TabStrip> ProtoToTabStrip(proto::TabStrip tab_strip_proto) {
       home_tab_params.icons = std::move(*icons);
     }
 
-    std::vector<blink::SafeUrlPattern> scope_patterns;
-    for (const proto::UrlPattern& proto_url_pattern :
-         tab_strip_proto.home_tab_params().scope_patterns()) {
-      std::optional<blink::SafeUrlPattern> url_pattern =
-          ToUrlPattern(proto_url_pattern);
-      if (!url_pattern) {
-        return std::nullopt;
-      }
-      scope_patterns.push_back(url_pattern.value());
+    std::optional<std::vector<blink::SafeUrlPattern>> scope_patterns =
+        ToUrlPatterns(tab_strip_proto.home_tab_params().scope_patterns());
+    if (!scope_patterns.has_value()) {
+      return std::nullopt;
     }
-    home_tab_params.scope_patterns = std::move(scope_patterns);
+    home_tab_params.scope_patterns = std::move(scope_patterns.value());
 
     tab_strip.home_tab = std::move(home_tab_params);
   }

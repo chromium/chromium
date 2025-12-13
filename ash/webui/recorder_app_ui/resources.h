@@ -188,6 +188,8 @@ const webui::LocalizedString kLocalizedStrings[] = {
      IDS_RECORDER_ONBOARDING_DIALOG_TRANSCRIPTION_TURN_ON_HEADER},
     {"onboardingDialogWelcomeDescription",
      IDS_RECORDER_ONBOARDING_DIALOG_WELCOME_DESCRIPTION},
+    {"onboardingDialogWelcomeDescriptionWithoutGenAiFeatures",
+     IDS_RECORDER_ONBOARDING_DIALOG_WELCOME_DESCRIPTION_WITHOUT_GEN_AI_FEATURES},
     {"onboardingDialogWelcomeHeader",
      IDS_RECORDER_ONBOARDING_DIALOG_WELCOME_HEADER},
     {"onboardingDialogWelcomeNextButton",

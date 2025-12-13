@@ -19,38 +19,37 @@ namespace segmentation_platform {
 
 namespace {
 
-enum class DeviceSwitcherClass {
-  kAndroidPhone = 0,
-  kIosPhoneChrome = 1,
-  kAndroidTablet = 2,
-  kIosTablet = 3,
-  kDesktop = 4,
-  kOther = 5,
-  kSyncedAndFirstDevice = 6,
-  kNotSynced = 7,
-  kMaxValue = kNotSynced
-};
-
-constexpr std::array<const char*, 8> kOutputLabels = {
-    DeviceSwitcherModel::kAndroidPhoneLabel,
-    DeviceSwitcherModel::kIosPhoneChromeLabel,
-    DeviceSwitcherModel::kAndroidTabletLabel,
-    DeviceSwitcherModel::kIosTabletLabel,
-    DeviceSwitcherModel::kDesktopLabel,
-    DeviceSwitcherModel::kOtherLabel,
-    DeviceSwitcherModel::kSyncedAndFirstDeviceLabel,
-    DeviceSwitcherModel::kNotSyncedLabel};
-
-static_assert(kOutputLabels.size() == (int)DeviceSwitcherClass::kMaxValue + 1,
-              "labels size must be same as the classes");
-#define RANK(x) static_cast<int>(x)
-
 using proto::SegmentId;
 
 // Default parameters for Chrome Start model.
 constexpr SegmentId kDeviceSwitcherModelId =
     SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DEVICE_SWITCHER;
 constexpr int64_t kDeviceSwitcherMinSignalCollectionLength = 0;
+
+constexpr LabelPair<DeviceSwitcherModel::Label> kDeviceSwitcherLabels[] = {
+    {DeviceSwitcherModel::kLabelAndroidPhone,
+     DeviceSwitcherModel::kAndroidPhoneLabel},
+    {DeviceSwitcherModel::kLabelIosPhoneChrome,
+     DeviceSwitcherModel::kIosPhoneChromeLabel},
+    {DeviceSwitcherModel::kLabelAndroidTablet,
+     DeviceSwitcherModel::kAndroidTabletLabel},
+    {DeviceSwitcherModel::kLabelIosTablet,
+     DeviceSwitcherModel::kIosTabletLabel},
+    {DeviceSwitcherModel::kLabelDesktop, DeviceSwitcherModel::kDesktopLabel},
+    {DeviceSwitcherModel::kLabelOther, DeviceSwitcherModel::kOtherLabel},
+    {DeviceSwitcherModel::kLabelSyncedAndFirstDevice,
+     DeviceSwitcherModel::kSyncedAndFirstDeviceLabel},
+    {DeviceSwitcherModel::kLabelNotSynced,
+     DeviceSwitcherModel::kNotSyncedLabel}};
+
+constexpr FeaturePair<DeviceSwitcherModel::Feature> kDeviceSwitcherFeatures[] =
+    {std::make_pair(
+        // Since this feature has tensor length > 1, just use the first index.
+        DeviceSwitcherModel::kFeatureSyncSuccess,
+        features::Feature::FromCustomInput(features::CustomInput{
+            .tensor_length = 10,
+            .fill_policy = proto::CustomInput::FILL_SYNC_DEVICE_INFO,
+            .name = "SyncDeviceInfo"}))};
 
 }  // namespace
 
@@ -83,15 +82,17 @@ DeviceSwitcherModel::GetModelConfig() {
   metadata.set_return_type(
       proto::SegmentationModelMetadata::RETURN_TYPE_MULTISEGMENT);
 
-  auto* sync_input = writer.AddCustomInput(MetadataWriter::CustomInput{
-      .tensor_length = 10,
-      .fill_policy = proto::CustomInput::FILL_SYNC_DEVICE_INFO,
-      .name = "SyncDeviceInfo"});
+  writer.AddFeatures<Feature>(kDeviceSwitcherFeatures);
+
+  // TODO(ssid): Add an API to define additional args in the const feature list.
+  auto* sync_input = metadata.mutable_input_features(0)->mutable_custom_input();
   (*sync_input->mutable_additional_args())["wait_for_device_info_in_seconds"] =
       "60";
 
-  writer.AddOutputConfigForMultiClassClassifier(kOutputLabels,
-                                                kOutputLabels.size(), 0.1);
+  writer.AddOutputConfigForMultiClassClassifier(
+      base::span<const LabelPair<DeviceSwitcherModel::Label>>(
+          kDeviceSwitcherLabels),
+      0.1);
 
   constexpr int kModelVersion = 1;
   return std::make_unique<ModelConfig>(std::move(metadata), kModelVersion);
@@ -100,35 +101,36 @@ DeviceSwitcherModel::GetModelConfig() {
 void DeviceSwitcherModel::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
-  // The custom input added should return 10 float values.
-  if (inputs.size() != 10) {
+  // The custom input added should return `kFeatureCount` float values.
+  if (inputs.size() != kFeatureCount) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 
-  ModelProvider::Response result(kOutputLabels.size(), 0);
+  ModelProvider::Response result(kLabelCount, 0);
 
-  if (inputs[0] != 0) {
+  if (inputs[kFeatureSyncSuccess] != 0) {
     // Inputs failed to fetch from sync.
-    result[RANK(DeviceSwitcherClass::kNotSynced)] = 1;
+    result[kLabelNotSynced] = 1;
   } else {
     // Order the labels based on the count of devices and additionally increase
     // by a priority factor to break ties.
-    result[RANK(DeviceSwitcherClass::kAndroidPhone)] = inputs[1] * 1.10;
-    result[RANK(DeviceSwitcherClass::kIosPhoneChrome)] = inputs[3] * 1.09;
-    result[RANK(DeviceSwitcherClass::kAndroidTablet)] = inputs[2] * 1.08;
-    result[RANK(DeviceSwitcherClass::kIosTablet)] = inputs[4] * 1.07;
-    result[RANK(DeviceSwitcherClass::kDesktop)] =
-        (inputs[5] + inputs[6] + inputs[7] + inputs[8]) * 1.06;
-    result[RANK(DeviceSwitcherClass::kOther)] = inputs[9] * 1.05;
+    result[kLabelAndroidPhone] = inputs[kFeatureAndroidPhoneCount] * 1.10;
+    result[kLabelIosPhoneChrome] = inputs[kFeatureIosPhoneCount] * 1.09;
+    result[kLabelAndroidTablet] = inputs[kFeatureAndroidTabletCount] * 1.08;
+    result[kLabelIosTablet] = inputs[kFeatureIosTabletCount] * 1.07;
+    result[kLabelDesktop] =
+        (inputs[kFeatureLinuxCount] + inputs[kFeatureMacCount] +
+         inputs[kFeatureWindowsCount] + inputs[kFeatureChromeOsCount]) *
+        1.06;
+    result[kLabelOther] = inputs[kFeatureOtherCount] * 1.05;
 
     int total = 0;
-    for (unsigned i = 1; i < 10; ++i) {
+    for (unsigned i = kFeatureAndroidPhoneCount; i < kFeatureCount; ++i) {
       total += inputs[i];
     }
-    result[RANK(DeviceSwitcherClass::kSyncedAndFirstDevice)] =
-        total == 0 ? 1 : 0;
+    result[kLabelSyncedAndFirstDevice] = total == 0 ? 1 : 0;
   }
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

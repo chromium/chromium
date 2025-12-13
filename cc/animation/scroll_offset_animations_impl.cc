@@ -273,15 +273,7 @@ void ScrollOffsetAnimationImpl::ReattachScrollOffsetAnimationIfNeeded(
 
 ScrollOffsetAnimationsImpl::ScrollOffsetAnimationsImpl(
     AnimationHost* animation_host)
-    : animation_host_(animation_host) {
-  if (!features::MultiImplOnlyScrollAnimationsSupported()) {
-    // If MultiImplOnlyScrollAnimations is not supported only one impl-only
-    // scroll animation can be run at a time and it is managed through the
-    // singleton instantiated here.
-    scroll_offset_animation_ =
-        std::make_unique<ScrollOffsetAnimationImpl>(animation_host_);
-  }
-}
+    : animation_host_(animation_host) {}
 
 ScrollOffsetAnimationsImpl::~ScrollOffsetAnimationsImpl() = default;
 
@@ -291,21 +283,14 @@ void ScrollOffsetAnimationsImpl::AutoScrollAnimationCreate(
     const gfx::PointF& current_offset,
     float autoscroll_velocity,
     base::TimeDelta animation_start_offset) {
-  if (features::MultiImplOnlyScrollAnimationsSupported()) {
-    element_to_animation_map_.insert(std::pair(
-        element_id,
-        std::make_unique<ScrollOffsetAnimationImpl>(animation_host_)));
-    std::unique_ptr<ScrollOffsetAnimationImpl>& impl_animation =
-        element_to_animation_map_.at(element_id);
-    impl_animation->AutoScrollAnimationCreate(
-        element_id, target_offset, current_offset, autoscroll_velocity,
-        animation_start_offset);
-  } else {
-    DCHECK(scroll_offset_animation_);
-    scroll_offset_animation_->AutoScrollAnimationCreate(
-        element_id, target_offset, current_offset, autoscroll_velocity,
-        animation_start_offset);
-  }
+  element_to_animation_map_.insert(
+      std::pair(element_id,
+                std::make_unique<ScrollOffsetAnimationImpl>(animation_host_)));
+  std::unique_ptr<ScrollOffsetAnimationImpl>& impl_animation =
+      element_to_animation_map_.at(element_id);
+  impl_animation->AutoScrollAnimationCreate(element_id, target_offset,
+                                            current_offset, autoscroll_velocity,
+                                            animation_start_offset);
 }
 
 void ScrollOffsetAnimationsImpl::MouseWheelScrollAnimationCreate(
@@ -314,7 +299,6 @@ void ScrollOffsetAnimationsImpl::MouseWheelScrollAnimationCreate(
     const gfx::PointF& current_offset,
     base::TimeDelta delayed_by,
     base::TimeDelta animation_start_offset) {
-  if (features::MultiImplOnlyScrollAnimationsSupported()) {
     element_to_animation_map_.insert(std::pair(
         element_id,
         std::make_unique<ScrollOffsetAnimationImpl>(animation_host_)));
@@ -323,12 +307,6 @@ void ScrollOffsetAnimationsImpl::MouseWheelScrollAnimationCreate(
     impl_animation->MouseWheelScrollAnimationCreate(element_id, target_offset,
                                                     current_offset, delayed_by,
                                                     animation_start_offset);
-  } else {
-    DCHECK(scroll_offset_animation_);
-    scroll_offset_animation_->MouseWheelScrollAnimationCreate(
-        element_id, target_offset, current_offset, delayed_by,
-        animation_start_offset);
-  }
 }
 
 std::optional<gfx::PointF>
@@ -338,127 +316,76 @@ ScrollOffsetAnimationsImpl::ScrollAnimationUpdateTarget(
     base::TimeTicks frame_monotonic_time,
     base::TimeDelta delayed_by,
     ElementId element_id) {
-  if (features::MultiImplOnlyScrollAnimationsSupported()) {
-    ScrollOffsetAnimationImpl* animation = GetScrollAnimation(element_id);
-    DCHECK(animation);
-    return animation->ScrollAnimationUpdateTarget(
-        scroll_delta, max_scroll_offset, frame_monotonic_time, delayed_by);
-  } else {
-    DCHECK(scroll_offset_animation_);
-    return scroll_offset_animation_->ScrollAnimationUpdateTarget(
-        scroll_delta, max_scroll_offset, frame_monotonic_time, delayed_by);
-  }
+  ScrollOffsetAnimationImpl* animation = GetScrollAnimation(element_id);
+  DCHECK(animation);
+  return animation->ScrollAnimationUpdateTarget(
+      scroll_delta, max_scroll_offset, frame_monotonic_time, delayed_by);
 }
 
 void ScrollOffsetAnimationsImpl::ScrollAnimationApplyAdjustment(
     ElementId element_id,
     const gfx::Vector2dF& adjustment) {
-  if (features::MultiImplOnlyScrollAnimationsSupported()) {
-    if (ScrollOffsetAnimationImpl* animation = GetScrollAnimation(element_id)) {
-      animation->ScrollAnimationApplyAdjustment(element_id, adjustment);
-    }
-  } else {
-    DCHECK(scroll_offset_animation_);
-    return scroll_offset_animation_->ScrollAnimationApplyAdjustment(element_id,
-                                                                    adjustment);
+  if (ScrollOffsetAnimationImpl* animation = GetScrollAnimation(element_id)) {
+    animation->ScrollAnimationApplyAdjustment(element_id, adjustment);
   }
 }
 
 void ScrollOffsetAnimationsImpl::ScrollAnimationAbort(bool needs_completion,
                                                       ElementId element_id) {
-  if (features::MultiImplOnlyScrollAnimationsSupported()) {
-    if (ScrollOffsetAnimationImpl* animation = GetScrollAnimation(element_id)) {
-      animation->ScrollAnimationAbort(needs_completion);
-    }
-  } else {
-    DCHECK(scroll_offset_animation_);
-    scroll_offset_animation_->ScrollAnimationAbort(needs_completion);
+  if (ScrollOffsetAnimationImpl* animation = GetScrollAnimation(element_id)) {
+    animation->ScrollAnimationAbort(needs_completion);
   }
 }
 
 void ScrollOffsetAnimationsImpl::HandleRemovedScrollAnimatingElements(
     bool commits_to_active) {
-  if (features::MultiImplOnlyScrollAnimationsSupported()) {
-    std::vector<ElementId> deleted;
-    for (auto& entry : element_to_animation_map_) {
-      ElementId element_id = entry.first;
-      if (!animation_host_->IsElementInPropertyTrees(element_id,
-                                                     commits_to_active)) {
-        // We probably shouldn't need to check IsAnimating here,
-        // but some bots recycle AnimationHost between tests
-        // which seems to lead to referencing Animations with null
-        // KeyframeModels. Checking IsAnimating guards against this and also
-        // matches what was done pre-MultiImplOnlyScrollAnimationsSupported.
-        if (entry.second->IsAnimating()) {
-          entry.second->AnimatingElementRemovedByCommit();
-        }
-        deleted.push_back(element_id);
+  std::vector<ElementId> deleted;
+  for (auto& entry : element_to_animation_map_) {
+    ElementId element_id = entry.first;
+    if (!animation_host_->IsElementInPropertyTrees(element_id,
+                                                   commits_to_active)) {
+      // We probably shouldn't need to check IsAnimating here,
+      // but some bots recycle AnimationHost between tests
+      // which seems to lead to referencing Animations with null
+      // KeyframeModels.
+      if (entry.second->IsAnimating()) {
+        entry.second->AnimatingElementRemovedByCommit();
       }
+      deleted.push_back(element_id);
     }
+  }
 
-    for (auto& entry : deleted) {
-      element_to_animation_map_.erase(entry);
-    }
-  } else {
-    DCHECK(scroll_offset_animation_);
-    if (scroll_offset_animation_->IsAnimating()) {
-      if (!animation_host_->IsElementInPropertyTrees(
-              scroll_offset_animation_->GetElementId(), commits_to_active)) {
-        scroll_offset_animation_->AnimatingElementRemovedByCommit();
-      }
-    }
+  for (auto& entry : deleted) {
+    element_to_animation_map_.erase(entry);
   }
 }
 
 bool ScrollOffsetAnimationsImpl::ElementHasImplOnlyScrollAnimation(
     ElementId element_id) const {
-  if (features::MultiImplOnlyScrollAnimationsSupported()) {
-    ScrollOffsetAnimationImpl* impl_animation = GetScrollAnimation(element_id);
-    return impl_animation && impl_animation->IsAnimating();
-  } else {
-    DCHECK(scroll_offset_animation_);
-    return scroll_offset_animation_->GetElementId() == element_id &&
-           scroll_offset_animation_->IsAnimating();
-  }
+  ScrollOffsetAnimationImpl* impl_animation = GetScrollAnimation(element_id);
+  return impl_animation && impl_animation->IsAnimating();
 }
 
 bool ScrollOffsetAnimationsImpl::HasImplOnlyScrollAnimatingElement() const {
-  if (features::MultiImplOnlyScrollAnimationsSupported()) {
-    for (auto& entry : element_to_animation_map_) {
-      if (entry.second->IsAnimating()) {
-        return true;
-      }
+  for (auto& entry : element_to_animation_map_) {
+    if (entry.second->IsAnimating()) {
+      return true;
     }
-    return false;
-  } else {
-    DCHECK(scroll_offset_animation_);
-    return scroll_offset_animation_ && scroll_offset_animation_->IsAnimating();
   }
+  return false;
 }
 
 bool ScrollOffsetAnimationsImpl::HasImplOnlyAutoScrollAnimatingElement() const {
-  if (features::MultiImplOnlyScrollAnimationsSupported()) {
-    for (auto& entry : element_to_animation_map_) {
-      if (entry.second->IsAutoScrolling()) {
-        return true;
-      }
+  for (auto& entry : element_to_animation_map_) {
+    if (entry.second->IsAutoScrolling()) {
+      return true;
     }
-    return false;
-  } else {
-    DCHECK(scroll_offset_animation_);
-    return scroll_offset_animation_ &&
-           scroll_offset_animation_->IsAutoScrolling();
   }
-}
-
-ElementId ScrollOffsetAnimationsImpl::GetElementId() const {
-  DCHECK(!features::MultiImplOnlyScrollAnimationsSupported());
-  return scroll_offset_animation_->GetElementId();
+  return false;
 }
 
 ScrollOffsetAnimationImpl* ScrollOffsetAnimationsImpl::GetScrollAnimation(
     ElementId element_id) const {
-  DCHECK(features::MultiImplOnlyScrollAnimationsSupported());
   auto iter = element_to_animation_map_.find(element_id);
   if (iter != element_to_animation_map_.end()) {
     return iter->second.get();

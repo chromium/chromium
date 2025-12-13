@@ -12,13 +12,11 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
 
@@ -35,7 +33,6 @@ import java.util.Objects;
 @NullMarked
 public class HubPaneHostView extends FrameLayout {
     private FrameLayout mPaneFrame;
-    private ImageView mHairline;
     private ViewGroup mSnackbarContainer;
     private @Nullable View mCurrentViewRoot;
     private final AnimationHandler mFadeAnimatorHandler;
@@ -54,7 +51,6 @@ public class HubPaneHostView extends FrameLayout {
         super.onFinishInflate();
 
         mPaneFrame = findViewById(R.id.pane_frame);
-        mHairline = findViewById(R.id.pane_top_hairline);
         mSnackbarContainer = findViewById(R.id.pane_host_view_snackbar_container);
     }
 
@@ -165,15 +161,6 @@ public class HubPaneHostView extends FrameLayout {
                         PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
                         colorScheme -> getBackgroundColor(context, colorScheme),
                         mPaneFrame::setBackgroundColor));
-        mixer.registerBlend(
-                new SingleHubViewColorBlend(
-                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
-                        colorScheme -> HubColors.getHairlineColor(context, colorScheme),
-                        this::setHairlineColor));
-    }
-
-    void setHairlineVisibility(boolean visible) {
-        mHairline.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     void setSnackbarContainerConsumer(Callback<ViewGroup> consumer) {
@@ -194,10 +181,6 @@ public class HubPaneHostView extends FrameLayout {
         boolean isXrFullSpaceMode =
                 mXrSpaceModeObservableSupplier != null && mXrSpaceModeObservableSupplier.get();
         return HubColors.getBackgroundColor(context, colorScheme, isXrFullSpaceMode);
-    }
-
-    void setHairlineColor(@ColorInt int hairlineColor) {
-        mHairline.setImageTintList(ColorStateList.valueOf(hairlineColor));
     }
 
     public void setXrSpaceModeObservableSupplier(

@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Direkt Internetanslutning</translation>
 <translation id="1272293450992660632">Pinkoderna matchar inte.</translation>
+<translation id="1279040297980392566">Väntar på att sökningen ska slutföras. Försök igen senare.</translation>
 <translation id="1280820357415527819">Söker efter mobilnätverk</translation>
 <translation id="1293556467332435079">Filer</translation>
 <translation id="1297922636971898492">Google Drive är inte tillgängligt för närvarande. Överföringen fortsätter automatiskt när Google Drive är tillgängligt igen.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">1 fil har valts</translation>
 <translation id="3817579325494460411">Inte angiven</translation>
 <translation id="3819448694985509187">Fel pinkod. Du har 1 försök kvar</translation>
-<translation id="3822559385185038546">Administratören har gjort den här proxyn obligatorisk</translation>
 <translation id="3830674330436234648">Ingen uppspelning är tillgänglig</translation>
 <translation id="383652340667548381">serbiska</translation>
 <translation id="3839045880592694915">Operatören tillåter inte att modemet ansluter. Kontakta mobiloperatören för mer information.</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="5602622065581044566">bulgariskt fonetiskt tangentbord</translation>
 <translation id="5605830556594064952">USA (dvorak)</translation>
+<translation id="560739212255190568">Administratören har angett regler för åsidosättande av proxy utöver att tillämpa följande proxy</translation>
 <translation id="5618330573454123917">Den här filen är avsedd för en Macintosh. Den är inte kompatibel med din enhet, som har ChromeOS. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i ChromeOS.</translation>
 <translation id="5625294776298156701">tamilskt tangentbord (Tamil99)</translation>
 <translation id="5633226425545095130">Om du flyttar det här objektet delas det med alla som har åtkomst till den delade mappen <ph name="DESTINATION_NAME" />.</translation>
@@ -657,7 +658,7 @@
 <translation id="6096979789310008754">Söktexten har tagits bort och alla filer och mappar visas.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> flyttas till <ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">CSV-text</translation>
-<translation id="6129953537138746214">Rymden</translation>
+<translation id="6129953537138746214">Mellanslag</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> flyttas ...</translation>
 <translation id="6133877453787250710">Administratören övervakar följande:</translation>
 <translation id="613750717151263950">japanska med amerikanskt tangentbord</translation>
@@ -925,7 +926,7 @@
 <translation id="8116072619078571545">Isvatten</translation>
 <translation id="8120392982188717723">Tillåt synkronisering i nätverk med datapriser</translation>
 <translation id="8124093710070495550">Problem med synkronisering</translation>
-<translation id="8128733386027980860">engelska (Förenade kungariket) med Dvorak-tangentbord</translation>
+<translation id="8128733386027980860">engelska (Storbritannien) med Dvorak-tangentbord</translation>
 <translation id="8137331602592933310"><ph name="FILENAME" /> har delats med dig. Du kan inte ta bort det eftersom du inte äger det.</translation>
 <translation id="8138705869659070104">Aktivera efter enhetskonfig.</translation>
 <translation id="813913629614996137">Initierar …</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, information</translation>
 <translation id="8545476925160229291">engelska (USA)</translation>
 <translation id="854655314928502177">Webbadress för automatisk identifiering av webbproxy:</translation>
+<translation id="8547747809824590510">Administratören har angett regler för åsidosättande av proxy</translation>
 <translation id="8549186985808798022">italienska</translation>
 <translation id="8551494947769799688">lettiska</translation>
 <translation id="8560515948038859357">kantonesiska</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Det finns redan en fil med namnet <ph name="FILE_NAME" />. Välj ett annat namn.</translation>
 <translation id="9046895021617826162">Anslutningen misslyckades</translation>
 <translation id="9065512565307033593">Nätverksåtkomsten kommer att inaktiveras om du misslyckas med verifieringen.</translation>
+<translation id="9079844694307518094">Administratören tillämpar följande proxy</translation>
 <translation id="908378762078012445">ryskt fonetiskt tangentbord (AATSEEL)</translation>
 <translation id="9086302186042011942">Synkroniserar</translation>
 <translation id="9099674669267916096">Sidantal</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">Installationen har påbörjats.</translation>
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="9219908252191632183">Måne</translation>
+<translation id="931652069802536959">Nätverket blockeras av en princip</translation>
 <translation id="938470336146445890">Installera ett användarcertifikat.</translation>
 <translation id="939736085109172342">Ny mapp</translation>
 <translation id="943972244133411984">Ändrades av</translation>

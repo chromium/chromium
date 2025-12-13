@@ -17,13 +17,9 @@
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -88,30 +84,17 @@ TextMetrics::TextMetrics(const Font* font,
                          const V8CanvasTextBaseline::Enum baseline,
                          const V8CanvasTextAlign::Enum align,
                          const String& text,
-                         PlainTextPainter* text_painter)
+                         PlainTextPainter& text_painter)
     : TextMetrics() {
   Update(font, direction, baseline, align, text, text_painter);
 }
-
-namespace {
-const ShapeResult* ShapeWord(const TextRun& word_run, const Font& font) {
-  ShapeResultSpacing<TextRun> spacing(word_run);
-  spacing.SetSpacingAndExpansion(font.GetFontDescription());
-  HarfBuzzShaper shaper(word_run.NormalizedUTF16());
-  ShapeResult* shape_result = shaper.Shape(&font, word_run.Direction());
-  if (!spacing.HasSpacing()) {
-    return shape_result;
-  }
-  return shape_result->ApplySpacingToCopy(spacing, word_run);
-}
-}  // namespace
 
 void TextMetrics::Update(const Font* font,
                          const TextDirection& direction,
                          const V8CanvasTextBaseline::Enum baseline,
                          const V8CanvasTextAlign::Enum align,
                          const String& text,
-                         PlainTextPainter* text_painter) {
+                         PlainTextPainter& text_painter) {
   const SimpleFontData* font_data = font->PrimaryFont();
   if (!font_data)
     return;
@@ -184,99 +167,33 @@ void TextMetrics::Update(const Font* font,
 }
 
 std::pair<float, gfx::RectF> TextMetrics::MeasureRuns(
-    PlainTextPainter* text_painter) {
+    PlainTextPainter& text_painter) {
   runs_with_offset_.clear();
 
-  if (text_painter) {
-    // The CanvasTextNg feature enables obtaining the ShapeResult objects
-    // directly, so we don't need to lazily obtain them again later.
-    shaping_needed_ = false;
-    // getIndexFromOffset() and CorrectMixedBidi() need to change behavior
-    // for word-split runs.
-    split_by_word_ = true;
-    const PlainTextNode& node = text_painter->SegmentAndShape(
-        TextRun(text_, direction_, /* directional_override */ false,
-                /* normalize_space */ true),
-        *font_);
-    gfx::RectF glyph_bounds;
-    float xpos = 0;
-    runs_with_offset_.reserve(node.ItemList().size());
-    for (const auto& item : node.ItemList()) {
-      // Save the run for computing additional metrics.
-      const ShapeResult* shape_result = item.GetShapeResult();
-
-      runs_with_offset_.push_back(
-          RunWithOffset{.shape_result_ = shape_result,
-                        .text_ = item.Text(),
-                        .direction_ = item.Direction(),
-                        .character_offset_ = item.StartOffset(),
-                        .num_characters_ = item.Length(),
-                        .x_position_ = xpos});
-
-      // Accumulate the position and the glyph bounding box.
-      gfx::RectF run_glyph_bounds = item.InkBounds();
-      run_glyph_bounds.Offset(xpos, 0);
-      glyph_bounds.Union(run_glyph_bounds);
-      xpos += shape_result->Width();
-    }
-    return {xpos, glyph_bounds};
-  }
-  // If CanvasTextNg is not enabled, Font::Width is called, which causes a
-  // shaping via CachingWordShaper. Since we still need the ShapeResult objects,
-  // these are lazily created the first time they are required.
-  shaping_needed_ = true;
-
-  // x direction
-  // Run bidi algorithm on the given text. Step 5 of:
-  // https://html.spec.whatwg.org/multipage/canvas.html#text-preparation-algorithm
+  const PlainTextNode& node =
+      text_painter.SegmentAndShape(TextRun(text_, direction_), *font_);
   gfx::RectF glyph_bounds;
-  String text16 = text_;
-  text16.Ensure16Bit();
-  BidiParagraph bidi;
-  bidi.SetParagraph(text16, direction_);
-  BidiParagraph::Runs runs;
-  bidi.GetVisualRuns(text16, &runs);
   float xpos = 0;
-  runs_with_offset_.reserve(runs.size());
-  for (const auto& run : runs) {
-    // Measure each run.
-    TextRun text_run(StringView(text_, run.start, run.Length()),
-                     run.Direction(),
-                     /* directional_override */ false,
-                     /* normalize_space */ true);
+  runs_with_offset_.reserve(node.ItemList().size());
+  for (const auto& item : node.ItemList()) {
+    // Save the run for computing additional metrics.
+    const ShapeResult* shape_result = item.GetShapeResult();
 
-    // Save the run for computing additional metrics. Whether we calculate the
-    // ShapeResult objects right away, or lazily when needed, depends on the
-    // CanvasTextNg feature.
-    RunWithOffset run_with_offset = {
-        .shape_result_ = nullptr,
-        .text_ = text_run.ToStringView().ToString(),
-        .direction_ = run.Direction(),
-        .character_offset_ = run.start,
-        .num_characters_ = run.Length(),
-        .x_position_ = xpos};
-
-    gfx::RectF run_glyph_bounds;
-    float run_width = font_->DeprecatedWidth(text_run, &run_glyph_bounds);
-    runs_with_offset_.push_back(run_with_offset);
+    runs_with_offset_.push_back(
+        RunWithOffset{.shape_result_ = shape_result,
+                      .text_ = item.Text(),
+                      .direction_ = item.Direction(),
+                      .character_offset_ = item.StartOffset(),
+                      .num_characters_ = item.Length(),
+                      .x_position_ = xpos});
 
     // Accumulate the position and the glyph bounding box.
+    gfx::RectF run_glyph_bounds = item.InkBounds();
     run_glyph_bounds.Offset(xpos, 0);
     glyph_bounds.Union(run_glyph_bounds);
-    xpos += run_width;
+    xpos += shape_result->Width();
   }
   return {xpos, glyph_bounds};
-}
-
-void TextMetrics::ShapeTextIfNeeded() {
-  if (!shaping_needed_) {
-    return;
-  }
-  for (auto& run : runs_with_offset_) {
-    TextRun word_run(run.text_, run.direction_, false);
-    run.shape_result_ = ShapeWord(word_run, *font_);
-  }
-  shaping_needed_ = false;
 }
 
 const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
@@ -296,7 +213,6 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
     return selection_rects;
   }
 
-  ShapeTextIfNeeded();
   const double height = font_bounding_box_ascent_ + font_bounding_box_descent_;
   const double y = -font_bounding_box_ascent_;
 
@@ -328,9 +244,7 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
           selection_rects.push_back(DOMRectReadOnly::Create(
               to_x - text_align_dx_, y, from_x - to_x, height));
         }
-        if (split_by_word_) {
-          direction_list.push_back(run_with_offset.direction_);
-        }
+        direction_list.push_back(run_with_offset.direction_);
       }
       continue;
     }
@@ -363,9 +277,7 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
       selection_rects.push_back(DOMRectReadOnly::Create(
           to_x - text_align_dx_, y, from_x - to_x, height));
     }
-    if (split_by_word_) {
-      direction_list.push_back(run_with_offset.direction_);
-    }
+    direction_list.push_back(run_with_offset.direction_);
   }
 
   // Merges touching rectangles. Rectangles in `selection_rects` are
@@ -374,7 +286,7 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
   //
   // Test:
   // external/wpt/html/canvas/element/text/2d.text.measure.selection-rects.tentative.html
-  if (split_by_word_ && selection_rects.size() >= 2) {
+  if (selection_rects.size() >= 2) {
     DCHECK_EQ(selection_rects.size(), direction_list.size());
     auto approximately_equal = [](double v1, double v2) {
       return std::abs(v1 - v2) <= 0.1;
@@ -417,8 +329,6 @@ DOMRectReadOnly* TextMetrics::getActualBoundingBox(
     return DOMRectReadOnly::FromRectF(bounding_box);
   }
 
-  ShapeTextIfNeeded();
-
   for (const auto& run_with_offset : runs_with_offset_) {
     const unsigned int run_start_index = run_with_offset.character_offset_;
     const unsigned int run_end_index =
@@ -460,9 +370,9 @@ DOMRectReadOnly* TextMetrics::getActualBoundingBox(
 
 namespace {
 float getTextAlignDelta(float width,
-                        const V8CanvasTextAlign& text_align,
+                        const V8CanvasTextAlign::Enum text_align,
                         const TextDirection& direction) {
-  switch (text_align.AsEnum()) {
+  switch (text_align) {
     case V8CanvasTextAlign::Enum::kRight:
       return width;
     case V8CanvasTextAlign::Enum::kCenter:
@@ -529,16 +439,16 @@ HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
     return clusters_for_range;
   }
 
-  V8CanvasTextAlign cluster_text_align(ctx_text_align_);
-  V8CanvasTextBaseline cluster_text_baseline(ctx_text_baseline_);
-  if (options != nullptr && options->hasAlign()) {
-    cluster_text_align = options->align();
+  V8CanvasTextAlign::Enum cluster_text_align(ctx_text_align_);
+  V8CanvasTextBaseline::Enum cluster_text_baseline(ctx_text_baseline_);
+  if (options) {
+    if (options->hasAlign()) {
+      cluster_text_align = options->align().AsEnum();
+    }
+    if (options->hasBaseline()) {
+      cluster_text_baseline = options->baseline().AsEnum();
+    }
   }
-  if (options != nullptr && options->hasBaseline()) {
-    cluster_text_baseline = options->baseline();
-  }
-
-  ShapeTextIfNeeded();
 
   for (const auto& run_with_offset : runs_with_offset_) {
     HeapVector<TextClusterCallbackContext> clusters_for_run;
@@ -581,7 +491,7 @@ HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
       text_cluster->OffsetPosition(
           getTextAlignDelta(clusters_for_run[i].width_, cluster_text_align,
                             direction_),
-          getTextBaselineDelta(baseline_y, cluster_text_baseline.AsEnum(),
+          getTextBaselineDelta(baseline_y, cluster_text_baseline,
                                *font_->PrimaryFont()));
       text_cluster->OffsetPosition(-text_align_dx_, 0);
       minimal_clusters.push_back(text_cluster);
@@ -615,8 +525,6 @@ unsigned TextMetrics::getIndexFromOffset(double x) {
     target_x = width_;
   }
 
-  ShapeTextIfNeeded();
-
   for (HeapVector<RunWithOffset>::reverse_iterator riter =
            runs_with_offset_.rbegin();
        riter != runs_with_offset_.rend(); riter++) {
@@ -646,7 +554,7 @@ unsigned TextMetrics::CorrectForMixedBidi(
       // Move it to the start of the next RTL run on its left.
       auto next_run = riter + 1;
       if (next_run != runs_with_offset_.rend()) {
-        if (!split_by_word_ || IsRtl(next_run->direction_)) {
+        if (IsRtl(next_run->direction_)) {
           return next_run->character_offset_;
         }
       }
@@ -655,9 +563,6 @@ unsigned TextMetrics::CorrectForMixedBidi(
       // it to the last position of the RTL run to the right, which is the first
       // position of the LTR run, unless there is no run to the right.
       if (riter != runs_with_offset_.rbegin()) {
-        if (!split_by_word_) {
-          return riter->character_offset_;
-        }
         auto right_run = riter - 1;
         if (IsRtl(right_run->direction_)) {
           //   rtl_run_1, ltr_run_1, ltr_run_2(*riter), rtl_run_2(right_run)
@@ -676,7 +581,7 @@ unsigned TextMetrics::CorrectForMixedBidi(
       // Move it to the start of the next LTR run on its right.
       if (riter != runs_with_offset_.rbegin()) {
         auto previous_run = riter - 1;
-        if (!split_by_word_ || IsLtr(previous_run->direction_)) {
+        if (IsLtr(previous_run->direction_)) {
           return previous_run->character_offset_;
         }
       }
@@ -686,7 +591,7 @@ unsigned TextMetrics::CorrectForMixedBidi(
       // no run to the left.
       auto next_run = riter + 1;
       if (next_run != runs_with_offset_.rend()) {
-        if (!split_by_word_ || IsLtr(next_run->direction_)) {
+        if (IsLtr(next_run->direction_)) {
           return next_run->character_offset_ + next_run->num_characters_;
         }
       }

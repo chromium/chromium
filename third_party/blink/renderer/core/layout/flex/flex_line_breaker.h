@@ -17,15 +17,12 @@ struct InitialFlexLine {
   DISALLOW_NEW();
 
  public:
-  InitialFlexLine(base::span<FlexItem> line_items,
-                  LayoutUnit sum_flex_base_size,
+  InitialFlexLine(wtf_size_t count,
                   LayoutUnit sum_hypothetical_main_size)
-      : line_items(std::move(line_items)),
-        sum_flex_base_size(sum_flex_base_size),
+      : count(count),
         sum_hypothetical_main_size(sum_hypothetical_main_size) {}
 
-  base::span<FlexItem> line_items;
-  const LayoutUnit sum_flex_base_size;
+  const wtf_size_t count;
   const LayoutUnit sum_hypothetical_main_size;
 };
 

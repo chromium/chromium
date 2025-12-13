@@ -12,13 +12,13 @@ import re
 from util import build_utils
 
 _CHROMIUM_SRC = os.path.normpath(os.path.join(__file__, '..', '..', '..', '..'))
-_NINJA_PATH = os.path.join(_CHROMIUM_SRC, 'third_party', 'ninja', 'ninja')
+_SISO_PATH = os.path.join(_CHROMIUM_SRC, 'third_party', 'siso', 'cipd', 'siso')
 
 # Relative to _CHROMIUM_SRC
 _GN_SRC_REL_PATH = os.path.join('buildtools', 'linux64', 'gn')
 
 # Regex for determining whether compile failed because 'gn gen' needs to be run.
-_GN_GEN_REGEX = re.compile(r'ninja: (error|fatal):')
+_GN_GEN_REGEX = re.compile(r'Error: build.ninja not found')
 
 
 def _raise_command_exception(args, returncode, output):
@@ -115,7 +115,7 @@ def _do_build_get_failure_output(gn_path, gn_cmd, options):
     ]
     _run_command(gn_args, cwd=_CHROMIUM_SRC)
 
-  ninja_args = [_NINJA_PATH, '-C', options.out_dir, gn_path]
+  ninja_args = [_SISO_PATH, 'ninja', '-C', options.out_dir, gn_path]
   return _run_command_get_failure_output(ninja_args)
 
 

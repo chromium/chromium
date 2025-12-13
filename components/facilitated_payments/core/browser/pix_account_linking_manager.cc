@@ -8,13 +8,19 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
+#include "components/facilitated_payments/core/browser/device_delegate.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "url/origin.h"
 
 namespace payments::facilitated {
+
+// Delay before showing the account linking prompt.
+constexpr base::TimeDelta kShowPromptDelay = base::Seconds(3);
 
 PixAccountLinkingManager::PixAccountLinkingManager(
     FacilitatedPaymentsClient* client)
@@ -33,20 +39,36 @@ void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt(
   // Reset to default state to prepare for a new account linking flow.
   Reset();
   pix_payment_page_origin_ = pix_payment_page_origin;
-  if (!client_->GetDeviceDelegate()->IsPixAccountLinkingSupported()) {
-    return;
+
+  WalletEligibilityForPixAccountLinking wallet_eligibility =
+      client_->GetDeviceDelegate()->IsPixAccountLinkingSupported();
+  switch (wallet_eligibility) {
+    case WalletEligibilityForPixAccountLinking::kWalletNotInstalled:
+      LogPixAccountLinkingFlowExitedReason(
+          PixAccountLinkingFlowExitedReason::kWalletNotInstalled);
+      return;
+    case WalletEligibilityForPixAccountLinking::kWalletVersionNotSupported:
+      LogPixAccountLinkingFlowExitedReason(
+          PixAccountLinkingFlowExitedReason::kWalletVersionNotSupported);
+      return;
+    case WalletEligibilityForPixAccountLinking::kEligible:
+      break;
   }
+
   if (!client_->GetPaymentsDataManager()
            ->IsFacilitatedPaymentsPixAccountLinkingUserPrefEnabled()) {
+    LogPixAccountLinkingFlowExitedReason(
+        PixAccountLinkingFlowExitedReason::kUserOptedOut);
     return;
   }
 
   if (!client_->HasScreenlockOrBiometricSetup()) {
-    // TODO(crbug.com/419108993): Add metrics.
+    LogPixAccountLinkingFlowExitedReason(
+        PixAccountLinkingFlowExitedReason::kNoScreenlockOrBiometricSetup);
     return;
   }
 
-  // Make a request to payments backend to check if user is eligible for pix
+  // Make a request to payments backend to check if user is eligible for Pix
   // account linking.
   auto billing_customer_id = autofill::payments::GetBillingCustomerId(
       CHECK_DEREF(client_->GetPaymentsDataManager()));
@@ -57,7 +79,7 @@ void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt(
   } else {
     // The user is an existing payments customer. Make a backend call to check
     // eligibility for Pix account linking.
-    client_->GetMultipleRequestFacilitatedPaymentsNetworkInterface()
+    client_->GetFacilitatedPaymentsNetworkInterface()
         ->GetDetailsForCreatePaymentInstrument(
             billing_customer_id,
             base::BindOnce(
@@ -94,13 +116,15 @@ void PixAccountLinkingManager::ShowPixAccountLinkingPromptIfEligible() {
   // account linking, exit.
   if (!is_eligible_for_pix_account_linking_.has_value() ||
       !is_eligible_for_pix_account_linking_.value()) {
+    LogPixAccountLinkingFlowExitedReason(
+        PixAccountLinkingFlowExitedReason::kServerSideIneligible);
     return;
   }
 
   // If the user has switched to a different tab, don't show the prompt.
   if (!client_->IsWebContentsVisibleOrOccluded()) {
-    // TODO(crbug.com/419108993): Add metrics for when the prompt is not shown
-    // because the tab is not active.
+    LogPixAccountLinkingFlowExitedReason(
+        PixAccountLinkingFlowExitedReason::kTabIsNotActive);
     return;
   }
 
@@ -109,11 +133,20 @@ void PixAccountLinkingManager::ShowPixAccountLinkingPromptIfEligible() {
   // URLs have the same scheme, the same host, and the same port.
   if (!pix_payment_page_origin_.IsSameOriginWith(
           client_->GetLastCommittedOrigin())) {
-    // TODO(crbug.com/419108993): Add metrics for when the prompt is not shown
-    // because the user is on a different website.
+    LogPixAccountLinkingFlowExitedReason(
+        PixAccountLinkingFlowExitedReason::kUserSwitchedWebsite);
     return;
   }
 
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &PixAccountLinkingManager::ShowPixAccountLinkingPromptAfterDelay,
+          weak_ptr_factory_.GetWeakPtr()),
+      kShowPromptDelay);
+}
+
+void PixAccountLinkingManager::ShowPixAccountLinkingPromptAfterDelay() {
   client_->SetUiEventListener(
       base::BindRepeating(&PixAccountLinkingManager::OnUiScreenEvent,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -136,7 +169,12 @@ void PixAccountLinkingManager::DismissPrompt() {
 void PixAccountLinkingManager::OnAccepted() {
   LogPixAccountLinkingPromptAccepted();
   DismissPrompt();
-  client_->GetDeviceDelegate()->LaunchPixAccountLinkingPage();
+  auto account_info =
+      client_->GetPaymentsDataManager()->GetAccountInfoForPaymentsServer();
+  if (!account_info.IsEmpty() && !account_info.email.empty()) {
+    client_->GetDeviceDelegate()->LaunchPixAccountLinkingPage(
+        account_info.email);
+  }
 }
 
 void PixAccountLinkingManager::OnDeclined() {

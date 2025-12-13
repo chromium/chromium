@@ -30,10 +30,12 @@ struct ModelAssets {
   // Currently the only usage of sp model will be passed by file path.
   mojo_base.mojom.FilePath? sp_model_path;
 
-  // File which may be used to store a backend-specific cache of the model
-  // weights or to load previously-cached model weights from. This file must be
-  // writable to allow the backend to write out its custom data.
+  // Files which may be used to store a backend-specific cache of the model
+  // weights or to load previously-cached model weights from. These files must
+  // be writable to allow the backend to write out its custom data.
   mojo_base.mojom.File? cache;
+  mojo_base.mojom.File? encoder_cache;
+  mojo_base.mojom.File? adapter_cache;
 };
 
 // Type of the backend to run the model.
@@ -78,12 +80,21 @@ struct TextSafetyModelAssets {
   mojo_base.mojom.ReadOnlyFile sp_model;
 };
 
+struct BertSafetyModelAssets {
+  mojo_base.mojom.ReadOnlyFile model;
+};
+
 struct LanguageModelAssets {
   mojo_base.mojom.ReadOnlyFile model;
 };
 
+union SafetyModelAssets {
+  TextSafetyModelAssets ts_assets;
+  BertSafetyModelAssets bs_assets;
+};
+
 struct TextSafetyModelParams {
-  TextSafetyModelAssets? ts_assets;
+  SafetyModelAssets? safety_assets;
   LanguageModelAssets? language_assets;
 };
 
@@ -146,8 +157,10 @@ interface OnDeviceModelService {
   LoadTextSafetyModel(
       TextSafetyModelParams params, pending_receiver<TextSafetyModel> model);
 
-  // Returns performance benchmark results for the device.
-  GetDevicePerformanceInfo() => (DevicePerformanceInfo perf_info);
+  // Returns performance benchmark results for the device as well as
+  // its info (vendor id, device id, driver version, fp16 support).
+  GetDeviceAndPerformanceInfo() =>
+      (DevicePerformanceInfo performanceInfo, DeviceInfo device_info);
 };
 
 // A service which allows loading platform trusted models which are stored

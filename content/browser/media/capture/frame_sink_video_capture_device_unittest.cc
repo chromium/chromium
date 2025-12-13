@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "content/browser/media/capture/frame_sink_video_capture_device.h"
 
 #include <array>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -34,7 +30,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
 
 using testing::_;
 using testing::ByRef;
@@ -113,13 +108,13 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
                     bool use_fixed_aspect_ratio));
   MOCK_METHOD1(SetAutoThrottlingEnabled, void(bool));
   void ChangeTarget(const std::optional<viz::VideoCaptureTarget>& target,
-                    uint32_t sub_capture_target_version) final {
+                    uint32_t sub_capture_version) final {
     DCHECK_NOT_ON_DEVICE_THREAD();
-    MockChangeTarget(target, sub_capture_target_version);
+    MockChangeTarget(target, sub_capture_version);
   }
   MOCK_METHOD2(MockChangeTarget,
                void(const std::optional<viz::VideoCaptureTarget>& target,
-                    uint32_t sub_capture_target_version));
+                    uint32_t sub_capture_version));
   void Start(
       mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumer> consumer,
       viz::mojom::BufferFormatPreference buffer_format_preference) final {
@@ -217,8 +212,8 @@ class MockVideoFrameReceiver : public media::VideoFrameReceiver {
   MOCK_METHOD1(OnBufferRetired, void(int buffer_id));
   MOCK_METHOD1(OnError, void(media::VideoCaptureError error));
   MOCK_METHOD1(OnFrameDropped, void(media::VideoCaptureFrameDropReason reason));
-  MOCK_METHOD1(OnNewSubCaptureTargetVersion,
-               void(uint32_t sub_capture_target_version));
+  MOCK_METHOD1(OnNewCaptureVersion,
+               void(media::CaptureVersion capture_version));
   MOCK_METHOD0(OnFrameWithEmptyRegionCapture, void());
   MOCK_METHOD1(OnLog, void(const std::string& message));
   MOCK_METHOD0(OnStarted, void());
@@ -364,7 +359,7 @@ class FrameSinkVideoCaptureDeviceTest : public testing::Test {
 
     EXPECT_FALSE(capturer_.is_bound());
     POST_DEVICE_METHOD_CALL(OnTargetChanged, target,
-                            /*sub_capture_target_version=*/0);
+                            /*sub_capture_version=*/0);
     POST_DEVICE_METHOD_CALL(AllocateAndStartWithReceiver, GetCaptureParams(),
                             std::move(receiver));
     WAIT_FOR_DEVICE_TASKS();
@@ -392,8 +387,8 @@ class FrameSinkVideoCaptureDeviceTest : public testing::Test {
         base::ReadOnlySharedMemoryRegion::Create(
             media::VideoFrame::AllocationSize(kFormat, kResolution));
     CHECK(region.IsValid());
-    memset(region.mapping.memory(), GetFrameFillValue(frame_number),
-           region.mapping.size());
+    UNSAFE_TODO(memset(region.mapping.memory(), GetFrameFillValue(frame_number),
+                       region.mapping.size()));
 
     mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
         callbacks_remote;
@@ -606,7 +601,7 @@ TEST_F(FrameSinkVideoCaptureDeviceTest, ShutsDownOnFatalError) {
   {
     EXPECT_CALL(capturer_,
                 MockChangeTarget(std::optional<viz::VideoCaptureTarget>(),
-                                 /*sub_capture_target_version=*/0));
+                                 /*sub_capture_version=*/0));
     EXPECT_CALL(capturer_, MockStop());
     POST_DEVICE_METHOD_CALL0(OnTargetPermanentlyLost);
     WAIT_FOR_DEVICE_TASKS();

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/web_test/renderer/event_sender.h"
 
 #include <stddef.h>
@@ -20,6 +15,9 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
+#include "base/containers/auto_spanification_helper.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -282,68 +280,68 @@ void InitMouseEvent(WebMouseEvent::Button b,
 
 int GetKeyModifier(const std::string& modifier_name) {
   const char* characters = modifier_name.c_str();
-  if (!strcmp(characters, "ctrlKey")
+  if (!UNSAFE_TODO(strcmp(characters, "ctrlKey"))
 #ifndef __APPLE__
-      || !strcmp(characters, "addSelectionKey")
+      || !UNSAFE_TODO(strcmp(characters, "addSelectionKey"))
 #endif
   ) {
     return WebInputEvent::kControlKey;
-  } else if (!strcmp(characters, "shiftKey") ||
-             !strcmp(characters, "rangeSelectionKey")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "shiftKey")) ||
+             !UNSAFE_TODO(strcmp(characters, "rangeSelectionKey"))) {
     return WebInputEvent::kShiftKey;
-  } else if (!strcmp(characters, "altKey")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "altKey"))) {
     return WebInputEvent::kAltKey;
 #ifdef __APPLE__
-  } else if (!strcmp(characters, "metaKey") ||
-             !strcmp(characters, "addSelectionKey")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "metaKey")) ||
+             !UNSAFE_TODO(strcmp(characters, "addSelectionKey"))) {
     return WebInputEvent::kMetaKey;
 #else
-  } else if (!strcmp(characters, "metaKey")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "metaKey"))) {
     return WebInputEvent::kMetaKey;
 #endif
-  } else if (!strcmp(characters, "autoRepeat")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "autoRepeat"))) {
     return WebInputEvent::kIsAutoRepeat;
-  } else if (!strcmp(characters, "copyKey")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "copyKey"))) {
 #ifdef __APPLE__
     return WebInputEvent::kAltKey;
 #else
     return WebInputEvent::kControlKey;
 #endif
-  } else if (!strcmp(characters, "accessKey")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "accessKey"))) {
 #ifdef __APPLE__
     return WebInputEvent::kAltKey | WebInputEvent::kControlKey;
 #else
     return WebInputEvent::kAltKey;
 #endif
-  } else if (!strcmp(characters, "leftButton")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "leftButton"))) {
     return WebInputEvent::kLeftButtonDown;
-  } else if (!strcmp(characters, "middleButton")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "middleButton"))) {
     return WebInputEvent::kMiddleButtonDown;
-  } else if (!strcmp(characters, "rightButton")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "rightButton"))) {
     return WebInputEvent::kRightButtonDown;
-  } else if (!strcmp(characters, "backButton")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "backButton"))) {
     return WebInputEvent::kBackButtonDown;
-  } else if (!strcmp(characters, "forwardButton")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "forwardButton"))) {
     return WebInputEvent::kForwardButtonDown;
-  } else if (!strcmp(characters, "capsLockOn")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "capsLockOn"))) {
     return WebInputEvent::kCapsLockOn;
-  } else if (!strcmp(characters, "numLockOn")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "numLockOn"))) {
     return WebInputEvent::kNumLockOn;
-  } else if (!strcmp(characters, "locationLeft")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "locationLeft"))) {
     return WebInputEvent::kIsLeft;
-  } else if (!strcmp(characters, "locationRight")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "locationRight"))) {
     return WebInputEvent::kIsRight;
-  } else if (!strcmp(characters, "locationNumpad")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "locationNumpad"))) {
     return WebInputEvent::kIsKeyPad;
-  } else if (!strcmp(characters, "isComposing")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "isComposing"))) {
     return WebInputEvent::kIsComposing;
-  } else if (!strcmp(characters, "altGraphKey")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "altGraphKey"))) {
     return WebInputEvent::kAltGrKey;
-  } else if (!strcmp(characters, "fnKey")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "fnKey"))) {
     return WebInputEvent::kFnKey;
-  } else if (!strcmp(characters, "symbolKey")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "symbolKey"))) {
     return WebInputEvent::kSymbolKey;
-  } else if (!strcmp(characters, "scrollLockOn")) {
+  } else if (!UNSAFE_TODO(strcmp(characters, "scrollLockOn"))) {
     return WebInputEvent::kScrollLockOn;
   }
 
@@ -474,8 +472,9 @@ std::vector<std::string> MakeMenuItemStringsFor(ContextMenuData* context_menu) {
   PopulateCustomItems(context_menu->custom_items, "", &strings);
 
   if (context_menu->is_editable) {
-    for (const char** item = kEditableMenuStrings; *item; ++item) {
-      strings.push_back(*item);
+    for (base::span<const char*> item = kEditableMenuStrings; item[0];
+         base::PreIncrementSpan(item)) {
+      strings.push_back(item[0]);
     }
     std::vector<WebString> suggestions;
     WebTestSpellChecker::FillSuggestionList(
@@ -483,8 +482,9 @@ std::vector<std::string> MakeMenuItemStringsFor(ContextMenuData* context_menu) {
     for (const WebString& suggestion : suggestions)
       strings.push_back(suggestion.Utf8());
   } else {
-    for (const char** item = kNonEditableMenuStrings; *item; ++item) {
-      strings.push_back(*item);
+    for (base::span<const char*> item = kNonEditableMenuStrings; item[0];
+         base::PreIncrementSpan(item)) {
+      strings.push_back(item[0]);
     }
   }
 

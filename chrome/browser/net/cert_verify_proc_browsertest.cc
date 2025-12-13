@@ -47,7 +47,8 @@ class NetLogPlatformBrowserTestBase : public PlatformBrowserTest {
       std::string file_contents;
       ASSERT_TRUE(base::ReadFileToString(net_log_path_, &file_contents));
 
-      parsed_net_log = base::JSONReader::Read(file_contents);
+      parsed_net_log = base::JSONReader::Read(
+          file_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (parsed_net_log)
         break;
 

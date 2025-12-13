@@ -1,5 +1,29 @@
 use crate::prelude::*;
 
+// This module contains bindings to the native Haiku API. The Haiku API
+// originates from BeOS, and it was the original way to perform low level
+// system and IO operations. The POSIX API was in that era was like a
+// compatibility layer. In current Haiku development, both the POSIX API and
+// the Haiku API are considered to be co-equal status. However, they are not
+// integrated like they are on other UNIX platforms, which means that for many
+// low level concepts there are two versions, like processes (POSIX) and
+// teams (Haiku), or pthreads and native threads.
+//
+// Both the POSIX API and the Haiku API live in libroot.so, the library that is
+// linked to any binary by default. Additionally, Haiku supports several
+// non-POSIX APIs from BSD and GNU, which live in libbsd.so and libgnu.so. These
+// modules are also supported.
+//
+// The module is comprised of the following files:
+// - `mod.rs` (this file) implements the C11 and POSIX API found in
+//     `headers/posix`
+// - `b32.rs`, `b64.rs` and `x86_64.rs` contain platform-specific definitions
+//      of the C11 and POSIX APIs
+// - `native.rs` defines the native Haiku API that is implemented in
+//     `libroot.so` and that are found in `headers/os`.
+// - `bsd.rs` defines the BSD customizations available on Haiku found in
+//     `headers/compatibility/bsd`
+
 pub type rlim_t = crate::uintptr_t;
 pub type sa_family_t = u8;
 pub type pthread_key_t = c_int;
@@ -56,15 +80,8 @@ pub type ACTION = c_int;
 pub type posix_spawnattr_t = *mut c_void;
 pub type posix_spawn_file_actions_t = *mut c_void;
 
-pub type StringList = _stringlist;
-
-#[cfg_attr(feature = "extra_traits", derive(Debug))]
-pub enum timezone {}
-impl Copy for timezone {}
-impl Clone for timezone {
-    fn clone(&self) -> timezone {
-        *self
-    }
+extern_ty! {
+    pub enum timezone {}
 }
 
 impl siginfo_t {
@@ -259,17 +276,17 @@ s! {
 
     pub struct glob_t {
         pub gl_pathc: size_t,
-        __unused1: size_t,
+        __unused1: Padding<size_t>,
         pub gl_offs: size_t,
-        __unused2: size_t,
+        __unused2: Padding<size_t>,
         pub gl_pathv: *mut *mut c_char,
 
-        __unused3: *mut c_void,
-        __unused4: *mut c_void,
-        __unused5: *mut c_void,
-        __unused6: *mut c_void,
-        __unused7: *mut c_void,
-        __unused8: *mut c_void,
+        __unused3: Padding<*mut c_void>,
+        __unused4: Padding<*mut c_void>,
+        __unused5: Padding<*mut c_void>,
+        __unused6: Padding<*mut c_void>,
+        __unused7: Padding<*mut c_void>,
+        __unused8: Padding<*mut c_void>,
     }
 
     pub struct pthread_mutex_t {
@@ -441,21 +458,6 @@ s! {
         pub val: c_int,
     }
 
-    pub struct _stringlist {
-        pub sl_str: *mut *mut c_char,
-        pub sl_max: size_t,
-        pub sl_cur: size_t,
-    }
-
-    pub struct dl_phdr_info {
-        pub dlpi_addr: crate::Elf_Addr,
-        pub dlpi_name: *const c_char,
-        pub dlpi_phdr: *const crate::Elf_Phdr,
-        pub dlpi_phnum: crate::Elf_Half,
-    }
-}
-
-s_no_extra_traits! {
     pub struct sockaddr_un {
         pub sun_len: u8,
         pub sun_family: sa_family_t,
@@ -464,9 +466,9 @@ s_no_extra_traits! {
     pub struct sockaddr_storage {
         pub ss_len: u8,
         pub ss_family: sa_family_t,
-        __ss_pad1: [u8; 6],
-        __ss_pad2: u64,
-        __ss_pad3: [u8; 112],
+        __ss_pad1: Padding<[u8; 6]>,
+        __ss_pad2: Padding<u64>,
+        __ss_pad3: Padding<[u8; 112]>,
     }
     pub struct dirent {
         pub d_dev: dev_t,
@@ -481,7 +483,7 @@ s_no_extra_traits! {
         pub sigev_notify: c_int,
         pub sigev_signo: c_int,
         pub sigev_value: crate::sigval,
-        __unused1: *mut c_void, // actually a function pointer
+        __unused1: Padding<*mut c_void>, // actually a function pointer
         pub sigev_notify_attributes: *mut crate::pthread_attr_t,
     }
 
@@ -494,132 +496,6 @@ s_no_extra_traits! {
         pub ut_line: [c_char; 16],
         pub ut_host: [c_char; 128],
         __ut_reserved: [c_char; 64],
-    }
-}
-
-cfg_if! {
-    if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for utmpx {
-            fn eq(&self, other: &utmpx) -> bool {
-                self.ut_type == other.ut_type
-                    && self.ut_tv == other.ut_tv
-                    && self.ut_id == other.ut_id
-                    && self.ut_pid == other.ut_pid
-                    && self.ut_user == other.ut_user
-                    && self.ut_line == other.ut_line
-                    && self
-                        .ut_host
-                        .iter()
-                        .zip(other.ut_host.iter())
-                        .all(|(a, b)| a == b)
-                    && self.__ut_reserved == other.__ut_reserved
-            }
-        }
-
-        impl Eq for utmpx {}
-        impl hash::Hash for utmpx {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ut_type.hash(state);
-                self.ut_tv.hash(state);
-                self.ut_id.hash(state);
-                self.ut_pid.hash(state);
-                self.ut_user.hash(state);
-                self.ut_line.hash(state);
-                self.ut_host.hash(state);
-                self.__ut_reserved.hash(state);
-            }
-        }
-        impl PartialEq for sockaddr_un {
-            fn eq(&self, other: &sockaddr_un) -> bool {
-                self.sun_len == other.sun_len
-                    && self.sun_family == other.sun_family
-                    && self
-                        .sun_path
-                        .iter()
-                        .zip(other.sun_path.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for sockaddr_un {}
-        impl hash::Hash for sockaddr_un {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sun_len.hash(state);
-                self.sun_family.hash(state);
-                self.sun_path.hash(state);
-            }
-        }
-
-        impl PartialEq for sockaddr_storage {
-            fn eq(&self, other: &sockaddr_storage) -> bool {
-                self.ss_len == other.ss_len
-                    && self.ss_family == other.ss_family
-                    && self
-                        .__ss_pad1
-                        .iter()
-                        .zip(other.__ss_pad1.iter())
-                        .all(|(a, b)| a == b)
-                    && self.__ss_pad2 == other.__ss_pad2
-                    && self
-                        .__ss_pad3
-                        .iter()
-                        .zip(other.__ss_pad3.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for sockaddr_storage {}
-        impl hash::Hash for sockaddr_storage {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ss_len.hash(state);
-                self.ss_family.hash(state);
-                self.__ss_pad1.hash(state);
-                self.__ss_pad2.hash(state);
-                self.__ss_pad3.hash(state);
-            }
-        }
-
-        impl PartialEq for dirent {
-            fn eq(&self, other: &dirent) -> bool {
-                self.d_dev == other.d_dev
-                    && self.d_pdev == other.d_pdev
-                    && self.d_ino == other.d_ino
-                    && self.d_pino == other.d_pino
-                    && self.d_reclen == other.d_reclen
-                    && self
-                        .d_name
-                        .iter()
-                        .zip(other.d_name.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for dirent {}
-        impl hash::Hash for dirent {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.d_dev.hash(state);
-                self.d_pdev.hash(state);
-                self.d_ino.hash(state);
-                self.d_pino.hash(state);
-                self.d_reclen.hash(state);
-                self.d_name.hash(state);
-            }
-        }
-
-        impl PartialEq for sigevent {
-            fn eq(&self, other: &sigevent) -> bool {
-                self.sigev_notify == other.sigev_notify
-                    && self.sigev_signo == other.sigev_signo
-                    && self.sigev_value == other.sigev_value
-                    && self.sigev_notify_attributes == other.sigev_notify_attributes
-            }
-        }
-        impl Eq for sigevent {}
-        impl hash::Hash for sigevent {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sigev_notify.hash(state);
-                self.sigev_signo.hash(state);
-                self.sigev_value.hash(state);
-                self.sigev_notify_attributes.hash(state);
-            }
-        }
     }
 }
 
@@ -742,9 +618,6 @@ pub const F_OK: c_int = 0;
 pub const R_OK: c_int = 4;
 pub const W_OK: c_int = 2;
 pub const X_OK: c_int = 1;
-pub const STDIN_FILENO: c_int = 0;
-pub const STDOUT_FILENO: c_int = 1;
-pub const STDERR_FILENO: c_int = 2;
 
 pub const SIGHUP: c_int = 1;
 pub const SIGINT: c_int = 2;
@@ -1051,7 +924,7 @@ pub const FD_SETSIZE: usize = 1024;
 pub const RTLD_LOCAL: c_int = 0x0;
 pub const RTLD_NOW: c_int = 0x1;
 pub const RTLD_GLOBAL: c_int = 0x2;
-pub const RTLD_DEFAULT: *mut c_void = 0isize as *mut c_void;
+pub const RTLD_DEFAULT: *mut c_void = ptr::null_mut();
 
 pub const BUFSIZ: c_uint = 8192;
 pub const FILENAME_MAX: c_uint = 256;
@@ -1252,6 +1125,8 @@ pub const SOCK_STREAM: c_int = 1;
 pub const SOCK_DGRAM: c_int = 2;
 pub const SOCK_RAW: c_int = 3;
 pub const SOCK_SEQPACKET: c_int = 5;
+pub const SOCK_NONBLOCK: c_int = 0x00040000;
+pub const SOCK_CLOEXEC: c_int = 0x00080000;
 
 pub const SOL_SOCKET: c_int = -1;
 pub const SO_ACCEPTCONN: c_int = 0x00000001;
@@ -1503,15 +1378,13 @@ pub const POSIX_SPAWN_SETSIGDEF: c_int = 0x10;
 pub const POSIX_SPAWN_SETSIGMASK: c_int = 0x20;
 pub const POSIX_SPAWN_SETSID: c_int = 0x40;
 
-const_fn! {
-    {const} fn CMSG_ALIGN(len: usize) -> usize {
-        len + mem::size_of::<usize>() - 1 & !(mem::size_of::<usize>() - 1)
-    }
+const fn CMSG_ALIGN(len: usize) -> usize {
+    len + size_of::<usize>() - 1 & !(size_of::<usize>() - 1)
 }
 
 f! {
     pub fn CMSG_FIRSTHDR(mhdr: *const msghdr) -> *mut cmsghdr {
-        if (*mhdr).msg_controllen as usize >= mem::size_of::<cmsghdr>() {
+        if (*mhdr).msg_controllen as usize >= size_of::<cmsghdr>() {
             (*mhdr).msg_control as *mut cmsghdr
         } else {
             core::ptr::null_mut::<cmsghdr>()
@@ -1519,15 +1392,15 @@ f! {
     }
 
     pub fn CMSG_DATA(cmsg: *const cmsghdr) -> *mut c_uchar {
-        (cmsg as *mut c_uchar).offset(CMSG_ALIGN(mem::size_of::<cmsghdr>()) as isize)
+        (cmsg as *mut c_uchar).offset(CMSG_ALIGN(size_of::<cmsghdr>()) as isize)
     }
 
-    pub {const} fn CMSG_SPACE(length: c_uint) -> c_uint {
-        (CMSG_ALIGN(length as usize) + CMSG_ALIGN(mem::size_of::<cmsghdr>())) as c_uint
+    pub const fn CMSG_SPACE(length: c_uint) -> c_uint {
+        (CMSG_ALIGN(length as usize) + CMSG_ALIGN(size_of::<cmsghdr>())) as c_uint
     }
 
-    pub {const} fn CMSG_LEN(length: c_uint) -> c_uint {
-        CMSG_ALIGN(mem::size_of::<cmsghdr>()) as c_uint + length
+    pub const fn CMSG_LEN(length: c_uint) -> c_uint {
+        CMSG_ALIGN(size_of::<cmsghdr>()) as c_uint + length
     }
 
     pub fn CMSG_NXTHDR(mhdr: *const msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
@@ -1536,7 +1409,7 @@ f! {
         }
         let next = cmsg as usize
             + CMSG_ALIGN((*cmsg).cmsg_len as usize)
-            + CMSG_ALIGN(mem::size_of::<cmsghdr>());
+            + CMSG_ALIGN(size_of::<cmsghdr>());
         let max = (*mhdr).msg_control as usize + (*mhdr).msg_controllen as usize;
         if next > max {
             core::ptr::null_mut::<cmsghdr>()
@@ -1547,20 +1420,20 @@ f! {
 
     pub fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
-        let size = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let size = size_of_val(&(*set).fds_bits[0]) * 8;
         (*set).fds_bits[fd / size] &= !(1 << (fd % size));
         return;
     }
 
     pub fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
         let fd = fd as usize;
-        let size = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let size = size_of_val(&(*set).fds_bits[0]) * 8;
         return ((*set).fds_bits[fd / size] & (1 << (fd % size))) != 0;
     }
 
     pub fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
         let fd = fd as usize;
-        let size = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let size = size_of_val(&(*set).fds_bits[0]) * 8;
         (*set).fds_bits[fd / size] |= 1 << (fd % size);
         return;
     }
@@ -1573,36 +1446,36 @@ f! {
 }
 
 safe_f! {
-    pub {const} fn WIFEXITED(status: c_int) -> bool {
+    pub const fn WIFEXITED(status: c_int) -> bool {
         (status & !0xff) == 0
     }
 
-    pub {const} fn WEXITSTATUS(status: c_int) -> c_int {
+    pub const fn WEXITSTATUS(status: c_int) -> c_int {
         status & 0xff
     }
 
-    pub {const} fn WIFSIGNALED(status: c_int) -> bool {
+    pub const fn WIFSIGNALED(status: c_int) -> bool {
         ((status >> 8) & 0xff) != 0
     }
 
-    pub {const} fn WTERMSIG(status: c_int) -> c_int {
+    pub const fn WTERMSIG(status: c_int) -> c_int {
         (status >> 8) & 0xff
     }
 
-    pub {const} fn WIFSTOPPED(status: c_int) -> bool {
+    pub const fn WIFSTOPPED(status: c_int) -> bool {
         ((status >> 16) & 0xff) != 0
     }
 
-    pub {const} fn WSTOPSIG(status: c_int) -> c_int {
+    pub const fn WSTOPSIG(status: c_int) -> c_int {
         (status >> 16) & 0xff
     }
 
     // actually WIFCORED, but this is used everywhere else
-    pub {const} fn WCOREDUMP(status: c_int) -> bool {
+    pub const fn WCOREDUMP(status: c_int) -> bool {
         (status & 0x10000) != 0
     }
 
-    pub {const} fn WIFCONTINUED(status: c_int) -> bool {
+    pub const fn WIFCONTINUED(status: c_int) -> bool {
         (status & 0x20000) != 0
     }
 }
@@ -1772,13 +1645,19 @@ extern "C" {
         addr: *mut crate::sockaddr,
         addrlen: *mut crate::socklen_t,
     ) -> ssize_t;
-    pub fn mkstemps(template: *mut c_char, suffixlen: c_int) -> c_int;
     pub fn nl_langinfo(item: crate::nl_item) -> *mut c_char;
 
     pub fn bind(
         socket: c_int,
         address: *const crate::sockaddr,
         address_len: crate::socklen_t,
+    ) -> c_int;
+
+    pub fn accept4(
+        socket: c_int,
+        address: *mut crate::sockaddr,
+        addressLength: *mut crate::socklen_t,
+        flags: c_int,
     ) -> c_int;
 
     pub fn writev(fd: c_int, iov: *const crate::iovec, count: c_int) -> ssize_t;
@@ -2032,46 +1911,6 @@ extern "C" {
     pub fn getentropy(buf: *mut c_void, buflen: size_t) -> c_int;
 }
 
-#[link(name = "bsd")]
-extern "C" {
-    pub fn lutimes(file: *const c_char, times: *const crate::timeval) -> c_int;
-    pub fn daemon(nochdir: c_int, noclose: c_int) -> c_int;
-    pub fn forkpty(
-        amaster: *mut c_int,
-        name: *mut c_char,
-        termp: *mut termios,
-        winp: *mut crate::winsize,
-    ) -> crate::pid_t;
-    pub fn openpty(
-        amaster: *mut c_int,
-        aslave: *mut c_int,
-        name: *mut c_char,
-        termp: *mut termios,
-        winp: *mut crate::winsize,
-    ) -> c_int;
-    pub fn strsep(string: *mut *mut c_char, delimiters: *const c_char) -> *mut c_char;
-    pub fn explicit_bzero(buf: *mut c_void, len: size_t);
-    pub fn login_tty(_fd: c_int) -> c_int;
-
-    pub fn sl_init() -> *mut StringList;
-    pub fn sl_add(sl: *mut StringList, n: *mut c_char) -> c_int;
-    pub fn sl_free(sl: *mut StringList, i: c_int);
-    pub fn sl_find(sl: *mut StringList, n: *mut c_char) -> *mut c_char;
-
-    pub fn getprogname() -> *const c_char;
-    pub fn setprogname(progname: *const c_char);
-    pub fn dl_iterate_phdr(
-        callback: Option<
-            unsafe extern "C" fn(info: *mut dl_phdr_info, size: usize, data: *mut c_void) -> c_int,
-        >,
-        data: *mut c_void,
-    ) -> c_int;
-
-    pub fn arc4random() -> u32;
-    pub fn arc4random_uniform(upper_bound: u32) -> u32;
-    pub fn arc4random_buf(buf: *mut c_void, n: size_t);
-}
-
 #[link(name = "gnu")]
 extern "C" {
     pub fn memmem(
@@ -2114,6 +1953,9 @@ cfg_if! {
         // pub use self::aarch64::*;
     }
 }
+
+mod bsd;
+pub use self::bsd::*;
 
 mod native;
 pub use self::native::*;

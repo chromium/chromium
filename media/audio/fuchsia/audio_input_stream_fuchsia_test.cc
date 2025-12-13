@@ -16,6 +16,7 @@
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/test/task_environment.h"
 #include "media/audio/audio_device_description.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
 #include "media/fuchsia/audio/fake_audio_capturer.h"

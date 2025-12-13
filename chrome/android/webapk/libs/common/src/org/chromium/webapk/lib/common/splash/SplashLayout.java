@@ -62,7 +62,7 @@ public class SplashLayout {
             @Nullable Bitmap icon,
             boolean isIconAdaptive,
             boolean isIconGenerated,
-            String text,
+            @Nullable String text,
             boolean useLightTextColor) {
         int layoutId = selectLayout(appContext.getResources(), icon, isIconGenerated);
         ViewGroup layout =

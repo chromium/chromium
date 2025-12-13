@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PRELOADING_BOOKMARKBAR_PRELOAD_BOOKMARKBAR_PRELOAD_PIPELINE_H_
 #define CHROME_BROWSER_PRELOADING_BOOKMARKBAR_PRELOAD_BOOKMARKBAR_PRELOAD_PIPELINE_H_
 
+#include "content/public/browser/prefetch_handle.h"
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/prerender_handle.h"
 #include "url/gurl.h"
@@ -27,18 +28,30 @@ class BookmarkBarPreloadPipeline {
   BookmarkBarPreloadPipeline& operator=(const BookmarkBarPreloadPipeline&) =
       delete;
 
-  // Returns true if prerender starts successfully or a started prerender is
-  // present, false otherwise.
-  bool StartPrerender(content::WebContents& web_contents,
+  void StartPrefetch(content::WebContents& web_contents,
+                     content::PreloadingPredictor predictor);
+
+  void StartPrerender(content::WebContents& web_contents,
                       content::PreloadingPredictor predictor);
+  bool IsPrerenderValid() {
+    return prerender_handle_ && prerender_handle_->IsValid();
+  }
+  void ResetPrerender() { prerender_handle_.reset(); }
 
   const GURL& url() const { return url_; }
+
+  void SetOnPrefetchCompletedOrFailedCallbackForTesting(
+      base::RepeatingCallback<
+          void(const network::URLLoaderCompletionStatus& completion_status,
+               const std::optional<int>& response_code)>
+          on_prefetch_completed_or_failed);
 
  private:
   const scoped_refptr<content::PreloadPipelineInfo> pipeline_info_;
 
   const GURL url_;
 
+  std::unique_ptr<content::PrefetchHandle> prefetch_handle_;
   std::unique_ptr<content::PrerenderHandle> prerender_handle_;
 };
 

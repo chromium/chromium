@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+#include <string>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -86,8 +89,7 @@ class ProxyBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ProxyBrowserTest, BasicAuthWSConnect) {
   net::test_server::EmbeddedTestServer ws_server{
       net::test_server::EmbeddedTestServer::Type::TYPE_HTTP};
-  net::test_server::InstallDefaultWebSocketHandlers(
-      &ws_server, /*serve_websocket_test_data=*/false);
+  net::test_server::InstallDefaultWebSocketHandlers(&ws_server);
   EXPECT_TRUE(ws_server.Start());
 
   embedded_test_server()->EnableConnectProxy(
@@ -311,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(HangingPacRequestProxyScriptBrowserTest, Shutdown) {
       storage_partition->GetURLLoaderFactoryForBrowserProcess();
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory.get(),
-      base::BindOnce([](std::unique_ptr<std::string> body) {
+      base::BindOnce([](std::optional<std::string> body) {
         ADD_FAILURE() << "This request should never complete.";
       }));
 

@@ -28,7 +28,8 @@ class MockSpeculationHost : public mojom::blink::SpeculationHost {
   ~MockSpeculationHost() override = default;
 
   void UpdateSpeculationCandidates(
-      Vector<mojom::blink::SpeculationCandidatePtr> candidates) override {
+      Vector<mojom::blink::SpeculationCandidatePtr> candidates,
+      bool enable_cross_origin_prerender_iframes) override {
     last_candidates_ = std::move(candidates);
   }
   void OnLCPPredicted() override {}
@@ -56,8 +57,8 @@ class DocumentSpeculationRulesTest : public PageTestBase {
     GetDocument().SetBaseURLOverride(KURL("https://example.com/"));
     GetDocument().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::SpeculationHost::Name_,
-        WTF::BindRepeating(&MockSpeculationHost::BindNewEndpointAndPassReceiver,
-                           WTF::Unretained(&mock_host_)));
+        BindRepeating(&MockSpeculationHost::BindNewEndpointAndPassReceiver,
+                      Unretained(&mock_host_)));
   }
 
  protected:

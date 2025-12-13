@@ -20,28 +20,23 @@ const char kActivityLogsDefaultUrl[] =
 
 }  // namespace
 
-BASE_FEATURE(kCollaborationEntrepriseV2,
-             "CollaborationEntrepriseV2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCollaborationEntrepriseV2, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDataSharingFeature,
              "DataSharing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDataSharingJoinOnly,
-             "DataSharingJoinOnly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDataSharingAccountDataMigration,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDataSharingJoinOnly, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDataSharingNonProductionEnvironment,
-             "DataSharingNonProductionEnvironment",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSharedDataTypesKillSwitch,
-             "SharedDataTypesKillSwitch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSharedDataTypesKillSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDataSharingEnableUpdateChromeUI,
-             "DataSharingEnableUpdateChromeUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDataSharingFunctionalityEnabled() {
@@ -75,7 +70,7 @@ constexpr base::FeatureParam<ServerEnvironment> kServerEnvironment(
     ServerEnvironment::kAutopush,
     &kServerEnvironmentOptions);
 
-ServerEnvironment GetServerEnvironmentParam() {
+ServerEnvironment GetServerEnvironment() {
   if (base::FeatureList::IsEnabled(kDataSharingNonProductionEnvironment)) {
     return kServerEnvironment.Get();
   } else {

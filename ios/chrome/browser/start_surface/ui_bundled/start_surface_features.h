@@ -25,6 +25,9 @@ BASE_DECLARE_FEATURE(kIOSStartTimeBrowserBackgroundRemediations);
 // Feature to enable Startup time remediations in the Start Surface.
 BASE_DECLARE_FEATURE(kIOSStartTimeStartupRemediations);
 
+// The feature to enable or disable the showTabGroupInGrid.
+BASE_DECLARE_FEATURE(kShowTabGroupInGridOnStart);
+
 // The feature parameter to indicate inactive duration to return to the Start
 // Surface in seconds.
 extern const char kReturnToStartSurfaceInactiveDurationInSeconds[];
@@ -41,8 +44,15 @@ extern const char kIOSStartTimeBrowserBackgroundRemediationsUpdateFeedRefresh[];
 // "SaveNewNTPWebState" remediation will be enabled.
 extern const char kIOSStartTimeStartupRemediationsSaveNTPWebState[];
 
+// The feature parameter to indicate inactive duration to return to the tab
+// group in grid view in seconds.
+extern const char kShowTabGroupInGridInactiveDurationInSeconds[];
+
 // Checks whether the Start Surface should be enabled.
 bool IsStartSurfaceEnabled();
+
+// Checks whether the showTabGroupInGrid feature should be enabled.
+bool IsShowTabGroupInGridOnStartEnabled();
 
 // Returns the inactive duration to show the Start Surface.
 base::TimeDelta GetReturnToStartSurfaceDuration();
@@ -58,5 +68,8 @@ bool IsAvoidNTPCleanupOnBackgroundEnabled();
 // kIOSStartTimeBrowserBackgroundRemediationsUpdateFeedRefresh arm of the
 // kIOSStartTimeBrowserBackgroundRemediations is enabled.
 bool IsAvoidFeedRefreshOnBackgroundEnabled();
+
+// Returns the inactive duration to show the tab group in grid view.
+base::TimeDelta GetReturnToTabGroupInGridDuration();
 
 #endif  // IOS_CHROME_BROWSER_START_SURFACE_UI_BUNDLED_START_SURFACE_FEATURES_H_

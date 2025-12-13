@@ -7,15 +7,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "base/scoped_observation.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 class Profile;
 
@@ -28,11 +25,12 @@ class AccountsPolicyManager : public KeyedService,
   AccountsPolicyManager(const AccountsPolicyManager&) = delete;
   AccountsPolicyManager& operator=(const AccountsPolicyManager&) = delete;
 
-  void Initialize();
   void Shutdown() override;
 
  private:
   friend class AccountsPolicyManagerTest;
+
+  void Initialize();
 
   // Handlers for preference changes.
   void OnSigninAllowedPrefChanged();
@@ -49,7 +47,6 @@ class AccountsPolicyManager : public KeyedService,
       Profile* profile,
       signin_metrics::ProfileSignout clear_primary_account_source);
 
-#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)
   class DeleteProfileDialogManager;
 
   // SHows the delete profile dialog.
@@ -62,14 +59,11 @@ class AccountsPolicyManager : public KeyedService,
   void SetHideUIForTesting(bool hide_ui_for_testing) {
     hide_ui_for_testing_ = hide_ui_for_testing;
   }
-#endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   void RemoveUnallowedAccounts();
 
   // IdentityManager::Observer implementation.
   void OnRefreshTokensLoaded() override;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   raw_ptr<Profile> profile_;
 
@@ -80,17 +74,12 @@ class AccountsPolicyManager : public KeyedService,
   // profile-specific local prefs (like kGoogleServicesUsernamePattern).
   PrefChangeRegistrar local_state_pref_registrar_;
 
-#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<DeleteProfileDialogManager> delete_profile_dialog_manager_;
   bool hide_ui_for_testing_ = false;
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
   PrefChangeRegistrar profile_pref_change_registrar_;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   base::WeakPtrFactory<AccountsPolicyManager> weak_pointer_factory_{this};
 };

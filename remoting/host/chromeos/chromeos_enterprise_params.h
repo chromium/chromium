@@ -5,6 +5,8 @@
 #ifndef REMOTING_HOST_CHROMEOS_CHROMEOS_ENTERPRISE_PARAMS_H_
 #define REMOTING_HOST_CHROMEOS_CHROMEOS_ENTERPRISE_PARAMS_H_
 
+#include <string>
+
 #include "base/time/time.h"
 #include "base/values.h"
 
@@ -16,6 +18,19 @@ enum class ChromeOsEnterpriseRequestOrigin {
   kEnterpriseAdmin,
   kClassManagement,
 };
+
+// Where to route audio from the local host during the CRD session, where a
+// remote client is viewing the local host's screen.
+enum class ChromeOsEnterpriseAudioPlayback {
+  kUnknown,
+  kLocalOnly,
+  kRemoteAndLocal,
+  kRemoteOnly,
+};
+
+// Converts a `ChromeOsEnterpriseAudioPlayback` to a string, for logging.
+std::string ConvertChromeOsEnterpriseAudioPlaybackToString(
+    ChromeOsEnterpriseAudioPlayback audio_playback);
 
 // ChromeOS enterprise specific parameters.
 // These parameters are not exposed through the public Mojom APIs, for security
@@ -51,6 +66,8 @@ struct ChromeOsEnterpriseParams {
   bool connection_dialog_required = false;
   ChromeOsEnterpriseRequestOrigin request_origin =
       ChromeOsEnterpriseRequestOrigin::kUnknown;
+  ChromeOsEnterpriseAudioPlayback audio_playback =
+      ChromeOsEnterpriseAudioPlayback::kUnknown;
 
   // Both local and remote machine configuration.
   base::TimeDelta connection_auto_accept_timeout;

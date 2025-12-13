@@ -10,6 +10,7 @@
 
 #include "base/run_loop.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/url_request/url_request.h"
@@ -39,8 +40,9 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
       std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
       const base::TimeTicks timestamp,
       network::mojom::ClientSecurityStatePtr client_security_state,
-      network::mojom::OtherPartitionInfoPtr site_has_cookie_in_other_partition)
-      override;
+      network::mojom::OtherPartitionInfoPtr site_has_cookie_in_other_partition,
+      const std::optional<base::UnguessableToken>&
+          applied_network_conditions_id) override;
 
   void OnRawResponse(
       const std::string& devtools_request_id,
@@ -84,33 +86,6 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
       network::mojom::TrustTokenOperationResultPtr result) override;
 
   MOCK_METHOD(void,
-              OnSubresourceWebBundleMetadata,
-              (const std::string& devtools_request_id,
-               const std::vector<GURL>& urls),
-              (override));
-
-  MOCK_METHOD(void,
-              OnSubresourceWebBundleMetadataError,
-              (const std::string& devtools_request_id,
-               const std::string& error_message),
-              (override));
-
-  MOCK_METHOD(void,
-              OnSubresourceWebBundleInnerResponse,
-              (const std::string& inner_request_devtools_id,
-               const GURL& url,
-               const std::optional<std::string>& bundle_request_devtools_id),
-              (override));
-
-  MOCK_METHOD(void,
-              OnSubresourceWebBundleInnerResponseError,
-              (const std::string& inner_request_devtools_id,
-               const GURL& url,
-               const std::string& error_message,
-               const std::optional<std::string>& bundle_request_devtools_id),
-              (override));
-
-  MOCK_METHOD(void,
               OnSharedDictionaryError,
               (const std::string& devtool_request_id,
                const GURL& url,
@@ -122,6 +97,13 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
               (const std::string& devtool_request_id,
                const GURL& url,
                std::vector<network::mojom::SRIMessageSignatureIssuePtr> issues),
+              (override));
+
+  MOCK_METHOD(void,
+              OnUnencodedDigestError,
+              (const std::string& devtool_request_id,
+               const GURL& url,
+               network::mojom::UnencodedDigestIssue issue),
               (override));
 
   void OnCorsError(const std::optional<std::string>& devtool_request_id,

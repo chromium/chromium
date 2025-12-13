@@ -1,0 +1,61 @@
+=== Accessibility tree before go() pass 1 ===
+[document web] name='Material Web Menu Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[section]
+++++++++[push button] name='Open Menu'
+=== End accessibility tree ===
+STATE-CHANGE:FOCUSED:FALSE role=ROLE_DOCUMENT_WEB name='Material Web Menu Events' ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE
+STATE-CHANGE:FOCUSED:TRUE role=ROLE_MENU_ITEM name='Menu Item 1' ENABLED,FOCUSABLE,FOCUSED,SENSITIVE,SHOWING,VISIBLE
+STATE-CHANGE:SHOWING:TRUE role=ROLE_MENU name='(null)' ENABLED,SENSITIVE,SHOWING,VERTICAL,VISIBLE
+=== Accessibility tree after go() pass 1 ===
+[document web] name='Material Web Menu Events' <<<<<< CHANGED
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[section]
+++++++++[push button] name='Open Menu'
+++++++[menu] <<<<<< CHANGED
+++++++++[section]
+++++++++++[menu item] name='Menu Item 1' focused <<<<<< CHANGED
+++++++++++++[section] <<<<<< CHANGED
+++++++++++++++[section] <<<<<< CHANGED
+++++++++++[menu item] name='Menu Item 2' <<<<<< CHANGED
+++++++++++++[section] <<<<<< CHANGED
+++++++++++++++[section] <<<<<< CHANGED
+++++++++++[menu item] name='Menu Item 3' <<<<<< CHANGED
+++++++++++++[section] <<<<<< CHANGED
+++++++++++++++[section] <<<<<< CHANGED
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+[document web] name='Material Web Menu Events'
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[section]
+++++++++[push button] name='Open Menu'
+++++++[menu]
+++++++++[section]
+++++++++++[menu item] name='Menu Item 1' focused
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++[menu item] name='Menu Item 2'
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++[menu item] name='Menu Item 3'
+++++++++++++[section]
+++++++++++++++[section]
+=== End accessibility tree ===
+STATE-CHANGE:FOCUSED:FALSE role=ROLE_MENU_ITEM name='(null)' ENABLED,SENSITIVE
+STATE-CHANGE:FOCUSED:TRUE role=ROLE_PUSH_BUTTON name='Open Menu' ENABLED,FOCUSABLE,FOCUSED,SENSITIVE,SHOWING,VISIBLE
+STATE-CHANGE:SHOWING:FALSE role=ROLE_MENU name='(null)' ENABLED,SENSITIVE
+=== Accessibility tree after go() pass 2 ===
+[document web] name='Material Web Menu Events'
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[section]
+++++++++[push button] name='Open Menu' focused <<<<<< CHANGED
+=== End accessibility tree ===

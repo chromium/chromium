@@ -31,12 +31,12 @@ class FirstPartySetsOverridesPolicyHandlerTest
 
   policy::PolicyMap MakePolicyWithInput(const std::string& input) {
     policy::PolicyMap policy;
-    policy.Set(GetPolicyUnderTest(),
-               policy::PolicyLevel::POLICY_LEVEL_MANDATORY,
-               policy::PolicyScope::POLICY_SCOPE_MACHINE,
-               policy::PolicySource::POLICY_SOURCE_ENTERPRISE_DEFAULT,
-               base::JSONReader::Read(input),
-               /*external_data_fetcher=*/nullptr);
+    policy.Set(
+        GetPolicyUnderTest(), policy::PolicyLevel::POLICY_LEVEL_MANDATORY,
+        policy::PolicyScope::POLICY_SCOPE_MACHINE,
+        policy::PolicySource::POLICY_SOURCE_ENTERPRISE_DEFAULT,
+        base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS),
+        /*external_data_fetcher=*/nullptr);
     return policy;
   }
 

@@ -41,26 +41,21 @@ constexpr char kRestoreInstallFetchedWebApkResultHistogram[] =
 
 WebApkRestoreData::WebApkRestoreData(
     webapps::AppId id,
-    std::unique_ptr<webapps::ShortcutInfo> info,
-    base::Time time)
-    : app_id(id), shortcut_info(std::move(info)), last_used_time(time) {}
+    std::unique_ptr<webapps::ShortcutInfo> info)
+    : app_id(id), shortcut_info(std::move(info)) {}
 WebApkRestoreData::~WebApkRestoreData() = default;
 
 WebApkRestoreData::WebApkRestoreData(WebApkRestoreData&& other)
-    : app_id(other.app_id),
-      shortcut_info(std::move(other.shortcut_info)),
-      last_used_time(other.last_used_time) {}
+    : app_id(other.app_id), shortcut_info(std::move(other.shortcut_info)) {}
 
 WebApkRestoreTask::WebApkRestoreTask(
     base::PassKey<WebApkRestoreManager> pass_key,
     WebApkInstallService* web_apk_install_service,
     WebApkRestoreWebContentsManager* web_contents_manager,
-    std::unique_ptr<webapps::ShortcutInfo> shortcut_info,
-    base::Time last_used_time)
+    std::unique_ptr<webapps::ShortcutInfo> shortcut_info)
     : web_apk_install_service_(web_apk_install_service),
       web_contents_manager_(web_contents_manager->GetWeakPtr()),
-      fallback_info_(std::move(shortcut_info)),
-      last_used_time_(last_used_time) {}
+      fallback_info_(std::move(shortcut_info)) {}
 
 WebApkRestoreTask::~WebApkRestoreTask() = default;
 

@@ -21,7 +21,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.magic_stack.CirclePagerIndicatorDecoration.getItemPerScreen;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -45,13 +44,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -78,18 +77,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {HomeModulesCoordinatorUnitTest.ShadowSemanticColorUtils.class})
+@Config(manifest = Config.NONE)
 public class HomeModulesCoordinatorUnitTest {
-    @Implements(SemanticColorUtils.class)
-    static class ShadowSemanticColorUtils {
-        @Implementation
-        public static int getDefaultIconColorSecondary(Context context) {
-            return Color.LTGRAY;
-        }
-    }
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Activity mActivity;
@@ -103,7 +92,7 @@ public class HomeModulesCoordinatorUnitTest {
     @Mock private ApplicationInfo mApplicationInfo;
     @Mock private DisplayMetrics mDisplayMetrics;
     @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
-    @Mock private ObservableSupplierImpl<Profile> mProfileSupplier;
+    @Spy private ObservableSupplierImpl<Profile> mProfileSupplier;
     @Mock private Profile mProfile;
     @Mock SegmentationPlatformService mSegmentationPlatformService;
     @Mock private ModuleRegistry mModuleRegistry;
@@ -128,6 +117,7 @@ public class HomeModulesCoordinatorUnitTest {
 
     @Before
     public void setUp() {
+        SemanticColorUtils.setDefaultIconColorSecondaryForTesting(Color.LTGRAY);
         when(mModuleDelegateHost.getUiConfig()).thenReturn(mUiConfig);
         when(mActivity.getResources()).thenReturn(mResources);
         when(mResources.getConfiguration()).thenReturn(mConfiguration);
@@ -271,7 +261,8 @@ public class HomeModulesCoordinatorUnitTest {
                         ModuleType.TAB_GROUP_PROMO,
                         ModuleType.TAB_GROUP_SYNC_PROMO,
                         ModuleType.QUICK_DELETE_PROMO,
-                        ModuleType.HISTORY_SYNC_PROMO);
+                        ModuleType.HISTORY_SYNC_PROMO,
+                        ModuleType.TIPS_NOTIFICATIONS_PROMO);
         when(mHomeModulesConfigManager.getEnabledModuleSet())
                 .thenReturn(new HashSet<>(expectedModuleListBeforeHidingModule));
         mCoordinator = createCoordinator(/* skipInitProfile= */ false);
@@ -329,9 +320,7 @@ public class HomeModulesCoordinatorUnitTest {
         mCoordinator.show(callback);
 
         verify(mProfileSupplier).addObserver(mProfileObserver.capture());
-        when(mProfileSupplier.hasValue()).thenReturn(true);
-        mProfileObserver.getValue().onResult(mProfile);
-
+        mProfileSupplier.set(mProfile);
         verify(mProfileSupplier).removeObserver(mProfileObserver.capture());
     }
 
@@ -356,11 +345,9 @@ public class HomeModulesCoordinatorUnitTest {
     @SmallTest
     public void testRecordMagicStackScroll_NotScrolled() {
         when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
-        mCoordinator = createCoordinator(/* skipInitProfile= */ true);
-        Callback<Boolean> callback = Mockito.mock(Callback.class);
-        when(mProfileSupplier.hasValue()).thenReturn(true);
+        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
         mCoordinator.setMediatorForTesting(mMediator);
-        mCoordinator.show(callback);
+        mCoordinator.show(CallbackUtils.emptyCallback());
 
         mCoordinator.destroy();
 
@@ -373,7 +360,6 @@ public class HomeModulesCoordinatorUnitTest {
         when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
         mCoordinator = createCoordinator(/* skipInitProfile= */ true);
         Callback<Boolean> onHomeModulesShownCallback = Mockito.mock(Callback.class);
-        when(mProfileSupplier.hasValue()).thenReturn(true);
         mCoordinator.setMediatorForTesting(mMediator);
         mCoordinator.setModelForTesting(mModel);
 
@@ -450,8 +436,7 @@ public class HomeModulesCoordinatorUnitTest {
 
     private HomeModulesCoordinator createCoordinator(boolean skipInitProfile) {
         if (!skipInitProfile) {
-            when(mProfileSupplier.hasValue()).thenReturn(true);
-            when(mProfileSupplier.get()).thenReturn(mProfile);
+            mProfileSupplier.set(mProfile);
         }
         HomeModulesCoordinator homeModulesCoordinator =
                 new HomeModulesCoordinator(

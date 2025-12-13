@@ -9,9 +9,14 @@
 
 #import <memory>
 
-#import "base/functional/callback_forward.h"
+#import "base/functional/callback.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
+
+namespace base {
+class TimeDelta;
+}  // namespace base
 
 namespace web {
 class WebState;
@@ -30,6 +35,10 @@ enum class PageContextWrapperError {
   kPDFDataError,
   // The webpage is protected, PageContext was force-detached.
   kForceDetachError,
+  // The Page Context retrieval timed out.
+  kTimeout,
+  // innerText was expected, but none was extracted.
+  kInnerTextError,
 };
 
 using PageContextWrapperCallbackResponse =
@@ -47,24 +56,40 @@ using PageContextWrapperCallbackResponse =
 // disable-by-default behaviour.
 @interface PageContextWrapper : NSObject
 
-// Initializer which takes everything needed to construct the PageContext proto
-// as arguments.
+// Initializer with a PageContextWrapperConfig.
 - (instancetype)initWithWebState:(web::WebState*)webState
+                          config:(PageContextWrapperConfig)config
               completionCallback:
                   (base::OnceCallback<void(PageContextWrapperCallbackResponse)>)
                       completionCallback NS_DESIGNATED_INITIALIZER;
+
+// Initializer with the default config.
+- (instancetype)initWithWebState:(web::WebState*)webState
+              completionCallback:
+                  (base::OnceCallback<void(PageContextWrapperCallbackResponse)>)
+                      completionCallback;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 // Initiates the asynchronous work of populating all the PageContext fields, and
 // executes the `completionCallback` when all async work is complete.
 // Relinquishes ownership of the PageContext proto back to the handler of the
-// callback.
+// callback. Uses a default timeout.
 - (void)populatePageContextFieldsAsync;
+
+// Same as `populatePageContextFieldsAsync`, but with a custom timeout.
+- (void)populatePageContextFieldsAsyncWithTimeout:(base::TimeDelta)timeout;
 
 // Enables force taking snapshots if none could be retrieved from storage, does
 // nothing if `shouldGetSnapshot` is NO.
 @property(nonatomic, assign) BOOL shouldForceUpdateMissingSnapshots;
+
+// Since most of the extraction needs to run on the main thread anyways,
+// enabling this flag will simply post the task on the main thread instead of
+// executing it synchronously, so it can be picked up at a later (hopefully
+// better) time. Use this for non time-sensitive or user-facing PageContext
+// extractions.
+@property(nonatomic, assign) BOOL isLowPriorityExtraction;
 
 // Text to highlight in the snapshot. Will be highlighted just before taking the
 // snapshot, and unhighlighted right after. Nil if no text should be
@@ -94,6 +119,11 @@ using PageContextWrapperCallbackResponse =
 // with their descendents keeping their relative (WRT to their parent
 // cross-origin iframes) hierarchy.
 @property(nonatomic, assign) BOOL shouldGetAnnotatedPageContent;
+
+// Whether the entire webpage's innerText should be fetched. This includes the
+// innerText of all of the webpage's iframes as the information is aggregated
+// while the AnnotatedPageContent (APC) tree is built.
+@property(nonatomic, assign) BOOL shouldGetInnerText;
 
 @end
 

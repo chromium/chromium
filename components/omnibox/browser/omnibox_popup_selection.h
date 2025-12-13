@@ -7,9 +7,12 @@
 
 #include <stddef.h>
 
-#include "components/prefs/pref_service.h"
+#include <tuple>
+#include <vector>
 
+class AutocompleteProviderClient;
 class AutocompleteResult;
+class AutocompleteInput;
 class TemplateURLService;
 
 struct OmniboxPopupSelection {
@@ -43,6 +46,10 @@ struct OmniboxPopupSelection {
     // button is enabled, keyword mode is entered when the keyword button is
     // focused.
     KEYWORD_MODE,
+
+    // FOCUSED_BUTTON_AIM state means that the AIM page action button in the
+    // omnibox text field is focused.
+    FOCUSED_BUTTON_AIM,
 
     // FOCUSED_BUTTON_ACTION state means an Action button (such as a Pedal)
     // is in focus.
@@ -97,8 +104,19 @@ struct OmniboxPopupSelection {
 
   friend bool operator==(const OmniboxPopupSelection&,
                          const OmniboxPopupSelection&) = default;
-  friend auto operator<=>(const OmniboxPopupSelection&,
-                          const OmniboxPopupSelection&) = default;
+
+  // Special handling is required for ordering, since `kNoMatch` can have an
+  // associated `FOCUSED_BUTTON_AIM` state and we need `kNoMatch` to be treated
+  // as the smallest value while it is being represented as the maximum value of
+  // size_t (static_cast<size_t>(-1)).
+  friend std::strong_ordering operator<=>(const OmniboxPopupSelection& a,
+                                          const OmniboxPopupSelection& b) {
+    auto sort_key = [](const OmniboxPopupSelection& selection) {
+      return std::make_tuple(selection.line == kNoMatch ? 0 : 1, selection.line,
+                             selection.state, selection.action_index);
+    };
+    return sort_key(a) <=> sort_key(b);
+  }
 
   // Returns true if going to this selection from given `from` selection
   // results in activation of keyword state when it wasn't active before.
@@ -112,27 +130,25 @@ struct OmniboxPopupSelection {
 
   // Returns true if the control represented by this selection's `state` is
   // present on the match for `line` in given `result`.
-  bool IsControlPresentOnMatch(const AutocompleteResult& result,
-                               const PrefService* pref_service) const;
+  bool IsControlPresentOnMatch(const AutocompleteResult& result) const;
 
   // Returns the next selection after this one in given `result`.
   OmniboxPopupSelection GetNextSelection(
+      const AutocompleteInput& input,
       const AutocompleteResult& result,
-      const PrefService* pref_service,
       TemplateURLService* template_url_service,
+      bool aim_button_visible,
       Direction direction,
-      Step step,
-      bool force_hide_row_header = false) const;
+      Step step) const;
 
  private:
   //  This is a utility function to support `GetNextSelection`.
   static std::vector<OmniboxPopupSelection> GetAllAvailableSelectionsSorted(
+      const AutocompleteInput& input,
       const AutocompleteResult& result,
-      const PrefService* pref_service,
       TemplateURLService* template_url_service,
-      Direction direction,
-      Step step,
-      bool force_hide_row_header);
+      bool aim_button_visible,
+      Step step);
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_POPUP_SELECTION_H_

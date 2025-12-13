@@ -7,6 +7,7 @@
 #import "base/values.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/instruction_view/instruction_view.h"
@@ -16,8 +17,6 @@
 #import "url/gurl.h"
 
 namespace {
-constexpr CGFloat kPreferredCornerRadius = 20;
-constexpr CGFloat kDismissSymbolSize = 22;
 NSString* const kWhatsNewInstructionsLabelAccessibilityIdentifier =
     @"WhatsNewTitleAccessibilityIdentifier";
 }  // namespace
@@ -26,8 +25,6 @@ NSString* const kWhatsNewInstructionsLabelAccessibilityIdentifier =
 
 // Child view controller used to display the alert full-screen.
 @property(nonatomic, strong) ConfirmationAlertViewController* alertScreen;
-// The label with title.
-@property(nonatomic, strong) UILabel* titleLabel;
 // What's New item.
 @property(nonatomic, strong) WhatsNewItem* item;
 
@@ -67,20 +64,20 @@ NSString* const kWhatsNewInstructionsLabelAccessibilityIdentifier =
   instructionView.autoresizingMask =
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-  _alertScreen = [[ConfirmationAlertViewController alloc] init];
-  _alertScreen.primaryActionString = self.item.primaryActionTitle;
+  ButtonStackConfiguration* configuration =
+      [[ButtonStackConfiguration alloc] init];
+  configuration.primaryActionString = self.item.primaryActionTitle;
   if (self.item.learnMoreURL.is_valid()) {
-    _alertScreen.secondaryActionString =
+    configuration.secondaryActionString =
         l10n_util::GetNSString(IDS_IOS_WHATS_NEW_LEARN_MORE_ACTION_TITLE);
   }
+  _alertScreen = [[ConfirmationAlertViewController alloc]
+      initWithConfiguration:configuration];
   _alertScreen.underTitleView = instructionView;
-  _alertScreen.titleView = self.titleLabel;
   _alertScreen.actionHandler = self.actionHandler;
-  _alertScreen.showDismissBarButton = YES;
-  UIImage* xmarkSymbol = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kDismissSymbolSize),
-      @[ [UIColor colorNamed:kGrey600Color] ]);
-  _alertScreen.customDismissBarButtonImage = xmarkSymbol;
+
+  self.title =
+      l10n_util::GetNSString(IDS_IOS_WHATS_NEW_SHOW_INSTRUCTIONS_TITLE);
 
   _alertScreen.topAlignedLayout = YES;
 
@@ -107,27 +104,17 @@ NSString* const kWhatsNewInstructionsLabelAccessibilityIdentifier =
     [UISheetPresentationControllerDetent mediumDetent],
     [UISheetPresentationControllerDetent largeDetent]
   ];
-  presentationController.preferredCornerRadius = kPreferredCornerRadius;
-}
-
-- (UILabel*)titleLabel {
-  if (_titleLabel) {
-    return _titleLabel;
-  }
-
-  _titleLabel = [[UILabel alloc] init];
-  _titleLabel.numberOfLines = 0;
-  _titleLabel.font =
-      CreateDynamicFont(UIFontTextStyleBody, UIFontWeightSemibold);
-  _titleLabel.text = l10n_util::GetNSString(IDS_IOS_WHATS_HOW_TO_ENABLE_TITLE);
-  _titleLabel.textAlignment = NSTextAlignmentCenter;
-  _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  _titleLabel.adjustsFontForContentSizeCategory = YES;
-  _titleLabel.accessibilityIdentifier =
-      kWhatsNewInstructionsLabelAccessibilityIdentifier;
-  _titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
-
-  return _titleLabel;
+  self.alertScreen.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [NSLayoutConstraint activateConstraints:@[
+    [self.alertScreen.view.topAnchor
+        constraintEqualToAnchor:self.view.topAnchor],
+    [self.alertScreen.view.bottomAnchor
+        constraintEqualToAnchor:self.view.bottomAnchor],
+    [self.alertScreen.view.leadingAnchor
+        constraintEqualToAnchor:self.view.leadingAnchor],
+    [self.alertScreen.view.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+  ]];
 }
 
 @end

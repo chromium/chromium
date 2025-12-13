@@ -9,7 +9,6 @@
 namespace enterprise::webstore {
 
 BASE_FEATURE(kChromeWebStoreNavigationThrottle,
-             "ChromeWebStoreNavigationThrottle",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace enterprise::webstore

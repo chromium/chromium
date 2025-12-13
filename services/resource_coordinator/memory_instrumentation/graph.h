@@ -13,7 +13,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"

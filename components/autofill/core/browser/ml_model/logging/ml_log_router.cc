@@ -8,26 +8,26 @@
 
 namespace autofill {
 
-MLLogRouter::MLLogRouter() = default;
+MlLogRouter::MlLogRouter() = default;
 
-MLLogRouter::~MLLogRouter() = default;
+MlLogRouter::~MlLogRouter() = default;
 
-void MLLogRouter::ProcessLog(
-    autofill_ml_internals::mojom::MLPredictionLogPtr log) {
-  for (MLLogReceiver& receiver : receivers_) {
+void MlLogRouter::ProcessLog(
+    autofill_ml_internals::mojom::MlPredictionLogPtr log) {
+  for (MlLogReceiver& receiver : receivers_) {
     receiver.ProcessLog(*log);
   }
 }
 
-bool MLLogRouter::HasReceivers() const {
+bool MlLogRouter::HasReceivers() const {
   return !receivers_.empty();
 }
 
-void MLLogRouter::AddObserver(MLLogReceiver* receiver) {
+void MlLogRouter::AddObserver(MlLogReceiver* receiver) {
   receivers_.AddObserver(receiver);
 }
 
-void MLLogRouter::RemoveObserver(MLLogReceiver* receiver) {
+void MlLogRouter::RemoveObserver(MlLogReceiver* receiver) {
   receivers_.RemoveObserver(receiver);
 }
 

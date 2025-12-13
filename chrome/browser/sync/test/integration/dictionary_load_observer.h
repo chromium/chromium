@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_DICTIONARY_LOAD_OBSERVER_H_
 
 #include "base/functional/callback.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
 
 // DictionaryLoadObserver is used when blocking until the
@@ -13,7 +14,8 @@
 // SpellcheckCustomDictionary finishes loading, the message loop is quit.
 class DictionaryLoadObserver : public SpellcheckCustomDictionary::Observer {
  public:
-  explicit DictionaryLoadObserver(base::OnceClosure quit_task);
+  DictionaryLoadObserver(SpellcheckCustomDictionary* dictionary,
+                         base::OnceClosure quit_task);
 
   DictionaryLoadObserver(const DictionaryLoadObserver&) = delete;
   DictionaryLoadObserver& operator=(const DictionaryLoadObserver&) = delete;
@@ -27,6 +29,9 @@ class DictionaryLoadObserver : public SpellcheckCustomDictionary::Observer {
 
  private:
   base::OnceClosure quit_task_;
+  base::ScopedObservation<SpellcheckCustomDictionary,
+                          SpellcheckCustomDictionary::Observer>
+      scoped_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_DICTIONARY_LOAD_OBSERVER_H_

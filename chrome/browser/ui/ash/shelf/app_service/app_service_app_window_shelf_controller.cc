@@ -8,11 +8,12 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/cpp/app_types_util.h"
-#include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -22,13 +23,14 @@
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_arc_tracker.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_crostini_tracker.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_item_controller.h"
@@ -37,10 +39,6 @@
 #include "chrome/browser/ui/ash/shelf/arc_app_window.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/crostini_app_window.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -96,11 +94,14 @@ AppServiceAppWindowShelfController::AppServiceAppWindowShelfController(
 
   profile_list_.push_back(owner->profile());
 
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser && browser->window() && browser->window()->GetNativeWindow()) {
-      observed_windows_.AddObservation(browser->window()->GetNativeWindow());
-    }
-  }
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingActivationTime,
+      [&](ash::BrowserDelegate& browser) {
+        if (aura::Window* window = browser.GetNativeWindow(); window) {
+          observed_windows_.AddObservation(window);
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
 }
 
 AppServiceAppWindowShelfController::~AppServiceAppWindowShelfController() {
@@ -242,7 +243,7 @@ void AppServiceAppWindowShelfController::OnWindowVisibilityChanged(
   // This will match both the Plugin VM App window and installer.
   if (shelf_id.app_id == plugin_vm::kPluginVmShelfAppId) {
     // Plugin VM can only be used on the primary profile.
-    MultiUserWindowManagerHelper::GetWindowManager()->SetWindowOwner(
+    ash::Shell::Get()->multi_user_window_manager()->SetWindowOwner(
         window,
         user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
   }
@@ -389,7 +390,7 @@ void AppServiceAppWindowShelfController::OnInstanceUpdate(
     // The window is teleported to the current user could be hidden as
     // well. But we only remove the window added for the active user, and skip
     // the window teleported to the current user, because
-    // MultiUserWindowManagerHelper manages those windows.
+    // MultiUserWindowManager manages those windows.
     auto app_window_it = aura_window_to_app_window_.find(window);
     if (app_window_it != aura_window_to_app_window_.end() &&
         proxy_->InstanceRegistry().Exists(window)) {
@@ -721,8 +722,8 @@ void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
   // If the window was created for the inactive user and it has been teleported
   // to the current user's desktop, register it to show an item on the shelf.
   const AccountId current_account_id = multi_user_util::GetCurrentAccountId();
-  MultiUserWindowManagerHelper* helper =
-      MultiUserWindowManagerHelper::GetInstance();
+  auto* multi_user_window_manager =
+      ash::Shell::Get()->multi_user_window_manager();
   aura::Window* other_window = nullptr;
   for (Profile* it : profile_list_) {
     apps::AppServiceProxy* proxy =
@@ -731,10 +732,11 @@ void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
       continue;
     }
     proxy->InstanceRegistry().ForEachInstance(
-        [&other_window, &window, &shelf_id, &browser_context, &helper,
+        [&other_window, &window, &shelf_id, &browser_context,
+         multi_user_window_manager,
          &current_account_id](const apps::InstanceUpdate& update) {
-          if (helper->IsWindowOnDesktopOfUser(update.Window(),
-                                              current_account_id) &&
+          if (multi_user_window_manager->IsWindowOnDesktopOfUser(
+                  update.Window(), current_account_id) &&
               (update.AppId() == shelf_id.app_id) &&
               (update.BrowserContext() == browser_context) &&
               update.Window() != window) {
@@ -746,7 +748,7 @@ void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
     }
   }
   if (other_window) {
-    MultiUserWindowManagerHelper::GetWindowManager()->ShowWindowForUser(
+    multi_user_window_manager->ShowWindowForUser(
         window, multi_user_util::GetCurrentAccountId());
     RegisterWindow(window, shelf_id);
   }

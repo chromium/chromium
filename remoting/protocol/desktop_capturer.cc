@@ -6,7 +6,7 @@
 
 namespace remoting {
 
-bool DesktopCapturer::SupportsFrameCallbacks() {
+bool DesktopCapturer::SupportsFrameCallbacks() const {
   return false;
 }
 

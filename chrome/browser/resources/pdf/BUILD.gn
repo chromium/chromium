@@ -14,10 +14,8 @@ build_webui("build") {
     "index.css",
     "index.html",
     "index_print.html",
+    "pdf_embedder.css",
   ]
-  if (enable_ink) {
-    static_files += [ "ink/index.html" ]
-  }
 
   # TODO(crbug.com/362783117): Check in the .html.ts files for these two
   # elements, once the bug with <if expr> breaking UIs when JS code coverage
@@ -26,16 +24,6 @@ build_webui("build") {
     "elements/viewer_toolbar.ts",
     "pdf_viewer.ts",
   ]
-
-  if (enable_ink) {
-    web_component_files += [
-      "elements/viewer_annotations_bar.ts",
-      "elements/viewer_annotations_mode_dialog.ts",
-      "elements/viewer_ink_host.ts",
-      "elements/viewer_pen_options.ts",
-      "elements/viewer_toolbar_dropdown.ts",
-    ]
-  }
 
   ts_files = [
     "before_unload_proxy.ts",
@@ -100,14 +88,6 @@ build_webui("build") {
     "toolbar_manager.ts",
   ]
 
-  if (enable_ink) {
-    ts_files += [
-      "annotation_tool.ts",
-      "ink/ink_api.ts",
-      "ink_controller.ts",
-    ]
-  }
-
   if (enable_pdf_ink2) {
     ts_files += [
       "elements/ink_annotation_brush_mixin.ts",
@@ -143,8 +123,11 @@ build_webui("build") {
 
   if (enable_pdf_save_to_drive) {
     ts_files += [
+      "save_to_drive_metrics.ts",
       "elements/circular_progress_ring.html.ts",
       "elements/circular_progress_ring.ts",
+      "elements/viewer_save_to_drive_bubble.html.ts",
+      "elements/viewer_save_to_drive_bubble.ts",
       "elements/viewer_save_to_drive_controls.html.ts",
       "elements/viewer_save_to_drive_controls.ts",
     ]
@@ -197,6 +180,7 @@ build_webui("build") {
   if (enable_pdf_save_to_drive) {
     css_files += [
       "elements/circular_progress_ring.css",
+      "elements/viewer_save_to_drive_bubble.css",
       "elements/viewer_save_to_drive_controls.css",
     ]
   }
@@ -206,9 +190,6 @@ build_webui("build") {
   html_to_wrapper_scheme = "chrome"
 
   # TypeScript Compiler parameters
-  if (enable_ink) {
-    ts_tsconfig_base = "tsconfig_base.json"
-  }
   ts_composite = true
   ts_definitions = [
     "//tools/typescript/definitions/chrome_event.d.ts",
@@ -223,24 +204,20 @@ build_webui("build") {
     "//tools/typescript/definitions/tabs.d.ts",
     "//tools/typescript/definitions/windows.d.ts",
   ]
-  if (enable_ink) {
-    ts_definitions +=
-        [ "//chrome/browser/resources/pdf/ink/drawing_canvas.d.ts" ]
-  }
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
-  if (enable_ink) {
-    ts_deps += [ "//third_party/polymer/v3_0:library" ]
-  }
 
   # grd file generation parameters
   grd_prefix = "pdf"
   extra_grdp_deps = [ ":build_internal_plugin_grdp" ]
   extra_grdp_files = [ "$target_gen_dir/internal_plugin_resources.grdp" ]
   grd_resource_path_prefix = "pdf"
+
+  eslint_enable_web_component_missing_deps = true
 
   # Optimization parameters
   webui_context_type = "trusted_only"
@@ -258,12 +235,6 @@ build_webui("build") {
       # pdfCreateOutOfProcessPlugin without importing the entire PDF bundle.
       "pdf_scripting_api.js",
     ]
-    if (enable_ink) {
-      optimize_webui_excludes += [
-        "ink/drawing_canvas_externs.js",
-        "ink/ink_api.js",
-      ]
-    }
     extra_grdp_deps += [ ":build_excluded_grdp" ]
     extra_grdp_files += [ "$target_gen_dir/excluded_resources.grdp" ]
   }
@@ -303,9 +274,6 @@ if (optimize_webui) {
       "main_print.js",
       "pdf_scripting_api.js",
     ]
-    if (enable_ink) {
-      input_files += [ "ink/ink_api.js" ]
-    }
     input_files_base_dir =
         rebase_path("$target_gen_dir/$tsc_folder", root_build_dir)
     deps = [ ":build_ts" ]

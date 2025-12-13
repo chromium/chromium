@@ -175,8 +175,9 @@ void RecordBeaconFileState(BeaconFileState file_state) {
 // 4. A user may delete the file.
 std::unique_ptr<base::Value> MaybeGetFileContents(
     const base::FilePath& beacon_file_path) {
-  if (beacon_file_path.empty())
+  if (beacon_file_path.empty()) {
     return nullptr;
+  }
 
   int error_code;
   JSONFileValueDeserializer deserializer(beacon_file_path);
@@ -382,8 +383,9 @@ void CleanExitBeacon::RegisterPrefs(PrefRegistrySimple* registry) {
 
 // static
 void CleanExitBeacon::EnsureCleanShutdown(PrefService* local_state) {
-  if (!g_skip_clean_shutdown_steps)
+  if (!g_skip_clean_shutdown_steps) {
     CHECK(local_state->GetBoolean(prefs::kStabilityExitedCleanly));
+  }
 }
 
 // static

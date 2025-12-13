@@ -91,6 +91,14 @@ table EmbedderConditions {
   tab_ids_included: [int];
   tab_ids_excluded: [int];
 
+  // The list of top-level frame domains to be included/excluded from the
+  // filter's affected set. Each should either be null or have at least a single
+  // element. The domains should be in lower-case and kept sorted as defined by
+  // url_pattern_index::CompareDomains. The entries must consist of only ASCII
+  // characters. Use punycode encoding for internationalized domains.
+  top_domains_included : [string];
+  top_domains_excluded : [string];
+
   /// Headers to include/exclude. Note that `excluded_response_headers` will
   /// only match on header names.
   /// TODO(crbug.com/41482616): Consider relocating these header conditions as

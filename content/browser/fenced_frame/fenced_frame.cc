@@ -63,8 +63,9 @@ FencedFrame::FencedFrame(
                                       /*manager_delegate=*/web_contents_,
                                       /*page_delegate=*/web_contents_,
                                       FrameTree::Type::kFencedFrame)) {
-  if (was_discarded)
+  if (was_discarded) {
     frame_tree_->root()->set_was_discarded();
+  }
 }
 
 FencedFrame::~FencedFrame() {
@@ -218,7 +219,7 @@ void FencedFrame::SetFocusedFrame(FrameTreeNode* node,
   web_contents_->SetFocusedFrame(node, source);
 }
 
-FrameTree* FencedFrame::GetOwnedPictureInPictureFrameTree() {
+FrameTree* FencedFrame::GetOwnedDocumentPictureInPictureFrameTree() {
   return nullptr;
 }
 
@@ -228,7 +229,7 @@ bool FencedFrame::OnRenderFrameProxyVisibilityChanged(
   return false;
 }
 
-FrameTree* FencedFrame::GetPictureInPictureOpenerFrameTree() {
+FrameTree* FencedFrame::GetDocumentPictureInPictureOpenerFrameTree() {
   return nullptr;
 }
 
@@ -358,6 +359,21 @@ bool FencedFrame::ShouldPreserveAbortedURLs() {
 }
 
 void FencedFrame::UpdateOverridingUserAgent() {}
+
+#if BUILDFLAG(IS_ANDROID)
+
+scoped_refptr<viz::RasterContextProvider>
+FencedFrame::GetRasterContextProvider() {
+  NOTREACHED();
+}
+
+gfx::ColorSpace FencedFrame::GetOutputColorSpace(
+    gfx::ContentColorUsage color_usage,
+    bool needs_alpha) {
+  NOTREACHED();
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void FencedFrame::DidChangeFramePolicy(const blink::FramePolicy& frame_policy) {
   FrameTreeNode* inner_root = frame_tree_->root();

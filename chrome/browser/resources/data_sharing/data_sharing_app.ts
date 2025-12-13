@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
 // <if expr="_google_chrome">
 import './data_sharing_sdk.js';
+
+import {SHAREKIT_SDK_VERSION} from './data_sharing_sdk_version.js';
 // </if>
 // <if expr="not _google_chrome">
-import './dummy_data_sharing_sdk.js';
+import {SHAREKIT_SDK_VERSION} from './dummy_data_sharing_sdk.js';
 // </if>
+// clang-format on
+
+
 
 import '/strings.m.js';
 
@@ -366,6 +372,9 @@ export class DataSharingApp extends CustomElement implements Logger {
 
   constructor() {
     super();
+    this.dataSharingSdk_.setClientVersionAndResetPeopleStore(
+        loadTimeData.getStringF('currentClientVersion'),
+        parseInt(SHAREKIT_SDK_VERSION));
     this.dataSharingSdk_.updateClearcut(
         {enabled: loadTimeData.getBoolean('metricsReportingEnabled')});
     this.browserProxy_.callbackRouter.onAccessTokenFetched.addListener(
@@ -422,6 +431,8 @@ export class DataSharingApp extends CustomElement implements Logger {
         return ProgressType.FAILED;
       case (Progress.SUCCEEDED):
         return ProgressType.SUCCEEDED;
+      default:
+        break;
     }
 
     return ProgressType.UNKNOWN;
@@ -458,6 +469,8 @@ export class DataSharingApp extends CustomElement implements Logger {
         return DataSharingIntentType.ACCEPT_JOIN_AND_OPEN;
       case (LoggingIntent.ABANDON_JOIN):
         return DataSharingIntentType.ABANDON_JOIN;
+      default:
+        break;
     }
 
     return DataSharingIntentType.UNKNOWN;
@@ -493,6 +506,8 @@ export class DataSharingApp extends CustomElement implements Logger {
         break;
       case FlowValues.JOIN:
         document.title = loadTimeData.getStringF('previewA11yName');
+        break;
+      default:
         break;
     }
 

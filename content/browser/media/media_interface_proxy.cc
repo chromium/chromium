@@ -362,9 +362,7 @@ void MediaInterfaceProxy::CreateMediaFoundationRenderer(
     mojo::PendingRemote<media::mojom::MediaLog> media_log_remote,
     mojo::PendingReceiver<media::mojom::Renderer> receiver,
     mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
-        renderer_extension_receiver,
-    mojo::PendingRemote<media::mojom::MediaFoundationRendererClientExtension>
-        client_extension_remote) {
+        renderer_extension_receiver) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DVLOG(1) << __func__ << ": this=" << this;
 
@@ -374,8 +372,7 @@ void MediaInterfaceProxy::CreateMediaFoundationRenderer(
   if (factory) {
     factory->CreateMediaFoundationRenderer(
         std::move(media_log_remote), std::move(receiver),
-        std::move(renderer_extension_receiver),
-        std::move(client_extension_remote));
+        std::move(renderer_extension_receiver));
   }
 }
 #endif  // BUILDFLAG(IS_WIN)

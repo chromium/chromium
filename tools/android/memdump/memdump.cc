@@ -22,10 +22,11 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/files/file_util.h"
+#include "base/check_op.h"
 #include "base/files/scoped_file.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"

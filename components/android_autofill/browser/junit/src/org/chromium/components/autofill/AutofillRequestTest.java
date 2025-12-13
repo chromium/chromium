@@ -20,12 +20,17 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 
 import java.util.Arrays;
 
 /** Unit test for {@link AutofillRequest}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures({
+    "AndroidAutofillForwardIframeOrigin",
+    "AndroidAutofillImprovedVisibilityDetection"
+})
 public class AutofillRequestTest {
     private static final int FORM_SESSION_ID = 123;
     private static final String FORM_DOMAIN = "https://example.com";
@@ -113,7 +118,9 @@ public class AutofillRequestTest {
         fieldBuilder.mHeuristicType = "PASSWORD";
         fieldBuilder.mId = "username-id";
         fieldBuilder.mServerType = "USERNAME";
-        fieldBuilder.mComputedType = "USERNAME";
+        fieldBuilder.mOverallType = "USERNAME";
+        fieldBuilder.mFocusable = true;
+        fieldBuilder.mVisible = false;
 
         TestViewStructure structure =
                 fillStructureForRequest(createRequest(FORM_SESSION_ID, fieldBuilder.build()));
@@ -133,6 +140,7 @@ public class AutofillRequestTest {
         assertEquals("username-id", htmlInfoField.getAttribute("id"));
         assertEquals("USERNAME", htmlInfoField.getAttribute("crowdsourcing-autofill-hints"));
         assertEquals("USERNAME", htmlInfoField.getAttribute("computed-autofill-hints"));
+        assertEquals("invisible", htmlInfoField.getAttribute("visibility"));
     }
 
     @Test

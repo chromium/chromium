@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/threading/simple_thread.h"
@@ -62,8 +58,8 @@ class TestDiscardableSharedMemoryManager
 
  private:
   // Overriden from DiscardableSharedMemoryManager:
-  void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel
-                            memory_pressure_level) override {
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override {
     DiscardableSharedMemoryManager::OnMemoryPressure(memory_pressure_level);
     ++on_memory_pressure_call_count_;
   }
@@ -92,7 +88,7 @@ class DiscardableSharedMemoryManagerTest : public testing::Test {
 TEST_F(DiscardableSharedMemoryManagerTest, AllocateForClient) {
   const int kDataSize = 1024;
   uint8_t data[kDataSize];
-  memset(data, 0x80, kDataSize);
+  UNSAFE_TODO(memset(data, 0x80, kDataSize));
 
   base::UnsafeSharedMemoryRegion shared_region;
   manager_->AllocateLockedDiscardableSharedMemoryForClient(
@@ -257,9 +253,9 @@ TEST_F(DiscardableSharedMemoryManagerTest, OnMemoryPressure) {
   // notifications are received..
   task_environment_.RunUntilIdle();
 
-  const base::MemoryPressureListener::MemoryPressureLevel pressure_levels[] = {
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE,
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL};
+  const base::MemoryPressureLevel pressure_levels[] = {
+      base::MEMORY_PRESSURE_LEVEL_MODERATE,
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL};
 
   for (auto pressure : pressure_levels) {
     base::MemoryPressureListener::NotifyMemoryPressure(pressure);

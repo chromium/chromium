@@ -92,6 +92,12 @@ interface InitData {
 
   detectedATName: string;
   isScreenReaderActive: boolean;
+
+  // <if expr="is_win">
+  dormantCount: string;
+  liveCount: string;
+  ghostCount: string;
+  // </if>
 }
 
 type RequestType = 'showOrRefreshTree';
@@ -189,38 +195,61 @@ function toggleAccessibility(
       data.processId, data.routingId, mode, shouldRequestTree);
 }
 
-function requestTree(data: BrowserData|PageData|WidgetData, element: Element) {
-  const allow = getRequiredElement<HTMLInputElement>('filter-allow').value;
-  const allowEmpty =
-      getRequiredElement<HTMLInputElement>('filter-allow-empty').value;
-  const deny = getRequiredElement<HTMLInputElement>('filter-deny').value;
-  window.localStorage['chrome-accessibility-filter-allow'] = allow;
-  window.localStorage['chrome-accessibility-filter-allow-empty'] = allowEmpty;
-  window.localStorage['chrome-accessibility-filter-deny'] = deny;
+function requestTree(
+  data: BrowserData|PageData|WidgetData,
+  element: Element,
+): Promise<void> {
+  return new Promise((resolve) => {
+    const allow = getRequiredElement<HTMLInputElement>('filter-allow').value;
+    const allowEmpty =
+        getRequiredElement<HTMLInputElement>('filter-allow-empty').value;
+    const deny = getRequiredElement<HTMLInputElement>('filter-deny').value;
+
+    window.localStorage['chrome-accessibility-filter-allow'] = allow;
+    window.localStorage['chrome-accessibility-filter-allow-empty'] = allowEmpty;
+    window.localStorage['chrome-accessibility-filter-deny'] = deny;
 
   // The calling |element| is a button with an id of the format
   // <treeId>-<requestType>, where requestType is one of 'showOrRefreshTree',
   // 'copyTree'. Send the request type to C++ so is calls the corresponding
   // function with the result.
-  const requestType = element.id.split('-')[1] as RequestType;
-  if (data.type === 'browser') {
-    const delay =
-        getRequiredElement<HTMLInputElement>('native-ui-delay').valueAsNumber;
-    setTimeout(() => {
-      browserProxy.requestNativeUiTree(
-          (data as BrowserData).sessionId, requestType, allow, allowEmpty,
+    const requestType = element.id.split('-')[1] as RequestType;
+
+    if (data.type === 'browser') {
+      const delay =
+          getRequiredElement<HTMLInputElement>('native-ui-delay').valueAsNumber;
+      setTimeout(() => {
+        browserProxy.requestNativeUiTree(
+            (data as BrowserData).sessionId,
+            requestType,
+            allow,
+            allowEmpty,
+            deny);
+        resolve();
+      }, delay);
+    } else if (data.type === 'widget') {
+      browserProxy.requestWidgetsTree(
+          (data as WidgetData).widgetId,
+          requestType,
+          allow,
+          allowEmpty,
           deny);
-    }, delay);
-  } else if (data.type === 'widget') {
-    browserProxy.requestWidgetsTree(
-        (data as WidgetData).widgetId, requestType, allow, allowEmpty, deny);
-  } else {
-    const pageData = data as PageData;
-    browserProxy.requestWebContentsTree(
-        pageData.processId, pageData.routingId, requestType, allow, allowEmpty,
-        deny);
-  }
+      resolve();
+    } else {
+      const pageData = data as PageData;
+      browserProxy.requestWebContentsTree(
+          pageData.processId,
+          pageData.routingId,
+          requestType,
+          allow,
+          allowEmpty,
+          deny);
+      resolve();
+    }
+  });
 }
+
+
 
 function requestEvents(data: PageData, element: HTMLElement) {
   const start = element.textContent === 'Start recording';
@@ -304,6 +333,8 @@ function initialize() {
     getRequiredElement('widgets-header').style.display = 'none';
   }
 
+  updateDisplay(data);
+
   // Cache filters so they're easily accessible on page refresh.
   const allow = window.localStorage['chrome-accessibility-filter-allow'];
   const allowEmpty =
@@ -318,6 +349,7 @@ function initialize() {
   addWebUiListener('copyTree', copyTree);
   addWebUiListener('showOrRefreshTree', showOrRefreshTree);
   addWebUiListener('startOrStopEvents', startOrStopEvents);
+  addWebUiListener('updateDisplay', updateDisplay);
 }
 
 function bindCheckbox(name: string, value: boolean, disable?: boolean) {
@@ -368,7 +400,7 @@ function addToPagesList(data: PageData) {
   const row = document.createElement('div');
   row.className = 'row';
   row.id = id;
-  formatRow(row, data, null);
+  formatRow(row, data);
 
   const pages = getRequiredElement('pages');
   pages.appendChild(row);
@@ -379,7 +411,7 @@ function addToBrowsersList(data: BrowserData) {
   const row = document.createElement('div');
   row.className = 'row';
   row.id = id;
-  formatRow(row, data, null);
+  formatRow(row, data);
 
   const browsers = getRequiredElement('browsers');
   browsers.appendChild(row);
@@ -390,15 +422,14 @@ function addToWidgetsList(data: WidgetData) {
   const row = document.createElement('div');
   row.className = 'row';
   row.id = id;
-  formatRow(row, data, null);
+  formatRow(row, data);
 
   const widgets = getRequiredElement('widgets');
   widgets.appendChild(row);
 }
 
 function formatRow(
-    row: HTMLElement, data: BrowserData|PageData|WidgetData,
-    requestType: RequestType|null) {
+    row: HTMLElement, data: BrowserData|PageData|WidgetData) {
   if (!('url' in data)) {
     if ('error' in data) {
       row.appendChild(createErrorMessageElement(data));
@@ -448,7 +479,7 @@ function formatRow(
 
   const hasTree = 'tree' in data;
   row.appendChild(
-      createShowAccessibilityTreeElement(data, row.id, requestType, hasTree));
+      createShowAccessibilityTreeElement(data, row.id, hasTree));
   if (navigator.clipboard) {
     row.appendChild(createCopyAccessibilityTreeElement(data, row.id));
   }
@@ -592,27 +623,25 @@ function createModeElement(
 
 function createShowAccessibilityTreeElement(
     data: BrowserData|PageData|WidgetData, id: string,
-    requestType: RequestType|null, refresh: boolean) {
+    refresh: boolean) {
   const show = document.createElement('button');
-  if (requestType === 'showOrRefreshTree') {
-    // Give feedback that the tree has loaded.
-    show.textContent = 'Accessibility tree loaded';
-    show.ariaLabel = `Accessibility tree loaded for ${data.name}`;
-    setTimeout(() => {
-      show.textContent = 'Refresh accessibility tree';
-      show.ariaLabel = `Refresh accessibility tree for ${data.name}`;
-    }, 5000);
-  } else {
-    const textContent =
-        refresh ? 'Refresh accessibility tree' : 'Show accessibility tree';
-    show.textContent = textContent;
-    show.ariaLabel = `${textContent} for ${data.name}`;
-  }
+  const textContent =
+      refresh ? 'Refresh accessibility tree' : 'Show accessibility tree';
+
+  show.textContent = textContent;
+  show.ariaLabel = `${textContent} for ${data.name}`;
   show.id = id + '-showOrRefreshTree';
   show.setAttribute('aria-expanded', String(refresh));
-  show.addEventListener('click', requestTree.bind(null, data, show));
+
+  show.addEventListener('click', () => {
+    requestTree(data, show).then(() => {
+      show.textContent = 'Refresh accessibility tree';
+      show.ariaLabel = `Refresh accessibility tree for ${data.name}`;
+    });
+  });
   return show;
 }
+
 
 function createHideAccessibilityTreeElement(id: string, name: string) {
   const hide = document.createElement('button');
@@ -686,7 +715,7 @@ function showOrRefreshTree(data: PageData) {
   }
 
   row.textContent = '';
-  formatRow(row, data, 'showOrRefreshTree');
+  formatRow(row, data);
   getRequiredElement(id + '-showOrRefreshTree').focus();
 }
 
@@ -699,7 +728,7 @@ function startOrStopEvents(data: PageData) {
   }
 
   row.textContent = '';
-  formatRow(row, data, null);
+  formatRow(row, data);
   getRequiredElement(id + '-startOrStopEvents').focus();
 }
 
@@ -734,6 +763,68 @@ function copyTree(data: PageData) {
     showOrRefreshTree(data);
     getRequiredElement(id + '-copyTree').focus();
   }
+}
+
+// State that may be periodically updated. Absent members retain their previous
+// state.
+interface DisplayData {
+  native?: boolean;
+  web?: boolean;
+  text?: boolean;
+  extendedProperties?: boolean;
+  screenReader?: boolean;
+  html?: boolean;
+
+  // <if expr="is_win">
+  dormantCount?: string;
+  liveCount?: string;
+  ghostCount?: string;
+  // </if>
+}
+
+// Updates the page with the state contained in `data`.
+function updateDisplay(data: DisplayData) {
+  if (data.native !== undefined) {
+    getRequiredElement<HTMLInputElement>('native').checked = data.native;
+  }
+  if (data.web !== undefined) {
+    getRequiredElement<HTMLInputElement>('web').checked = data.web;
+  }
+  if (data.text !== undefined) {
+    getRequiredElement<HTMLInputElement>('text').checked = data.text;
+  }
+  if (data.extendedProperties !== undefined) {
+    getRequiredElement<HTMLInputElement>('extendedProperties').checked =
+        data.extendedProperties;
+  }
+  if (data.screenReader !== undefined) {
+    getRequiredElement<HTMLInputElement>('screenReader').checked =
+        data.screenReader;
+  }
+  if (data.html !== undefined) {
+    getRequiredElement<HTMLInputElement>('html').checked = data.html;
+  }
+
+  // <if expr="is_win">
+  if (data.dormantCount !== undefined) {
+    getRequiredElement<HTMLElement>('dormantCount').innerText =
+        data.dormantCount;
+  }
+  if (data.liveCount !== undefined) {
+    getRequiredElement<HTMLElement>('liveCount').innerText = data.liveCount;
+  }
+
+  if (data.ghostCount !== undefined) {
+    // All ghost nodes are leaks, so show it in red if non-zero.
+    const ghostSpan = getRequiredElement<HTMLElement>('ghostCount');
+    ghostSpan.innerText = data.ghostCount;
+    if (data.ghostCount !== '0') {
+      ghostSpan.classList.add('red');
+    } else {
+      ghostSpan.classList.remove('red');
+    }
+  }
+  // </if>
 }
 
 // type is either 'tree' or 'eventLogs'

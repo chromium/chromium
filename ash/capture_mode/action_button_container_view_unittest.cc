@@ -16,9 +16,9 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/test/views_test_base.h"
@@ -112,8 +112,8 @@ TEST_F(ActionButtonContainerViewTest, ActionButtonsOrderedByRank) {
 }
 
 TEST_F(ActionButtonContainerViewTest, SmartActionsButtonTransition) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);

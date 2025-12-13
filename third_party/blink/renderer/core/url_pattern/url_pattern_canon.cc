@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_canon.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_component.h"
+#include "third_party/blink/renderer/core/url_pattern/url_pattern_dummy_url_canon.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
@@ -39,6 +41,13 @@ String StringFromCanonOutput(const url::CanonOutput& output,
 String CanonicalizeProtocol(const String& input,
                             ValueType type,
                             ExceptionState& exception_state) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kURLPatternDummyURLCanonicalization)) {
+    return blink::url_pattern_dummy_url_canon::CanonicalizeProtocol(
+        input, static_cast<blink::url_pattern_dummy_url_canon::ValueType>(type),
+        exception_state);
+  }
+
   // We allow the protocol input to optionally contain a ":" suffix.  Strip
   // this for both URL and pattern protocols.
   String stripped = MaybeStripSuffix(input, ":");
@@ -62,7 +71,8 @@ String CanonicalizeProtocol(const String& input,
   }
 
   if (!result) {
-    exception_state.ThrowTypeError("Invalid protocol '" + stripped + "'.");
+    exception_state.ThrowTypeError(
+        StrCat({"Invalid protocol '", stripped, "'."}));
     return String();
   }
 
@@ -75,6 +85,15 @@ void CanonicalizeUsernameAndPassword(const String& username,
                                      String& username_out,
                                      String& password_out,
                                      ExceptionState& exception_state) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kURLPatternDummyURLCanonicalization)) {
+    blink::url_pattern_dummy_url_canon::CanonicalizeUsernameAndPassword(
+        username, password,
+        static_cast<blink::url_pattern_dummy_url_canon::ValueType>(type),
+        username_out, password_out, exception_state);
+    return;
+  }
+
   if (type == ValueType::kPattern) {
     // Canonicalization for patterns is handled during compilation via
     // encoding callbacks.
@@ -106,8 +125,9 @@ void CanonicalizeUsernameAndPassword(const String& username,
   }
 
   if (!result) {
-    exception_state.ThrowTypeError("Invalid username '" + username +
-                                   "' and/or password '" + password + "'.");
+    exception_state.ThrowTypeError(
+        StrCat({"Invalid username '", username, "' and/or password '", password,
+                "'."}));
     return;
   }
 
@@ -120,6 +140,13 @@ void CanonicalizeUsernameAndPassword(const String& username,
 String CanonicalizeHostname(const String& input,
                             ValueType type,
                             ExceptionState& exception_state) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kURLPatternDummyURLCanonicalization)) {
+    return blink::url_pattern_dummy_url_canon::CanonicalizeHostname(
+        input, static_cast<blink::url_pattern_dummy_url_canon::ValueType>(type),
+        exception_state);
+  }
+
   if (type == ValueType::kPattern) {
     // Canonicalization for patterns is handled during compilation via
     // encoding callbacks.
@@ -129,7 +156,7 @@ String CanonicalizeHostname(const String& input,
   bool success = false;
   String result = SecurityOrigin::CanonicalizeSpecialHost(input, &success);
   if (!success) {
-    exception_state.ThrowTypeError("Invalid hostname '" + input + "'.");
+    exception_state.ThrowTypeError(StrCat({"Invalid hostname '", input, "'."}));
     return String();
   }
 
@@ -140,6 +167,13 @@ String CanonicalizePort(const String& input,
                         ValueType type,
                         const String& protocol,
                         ExceptionState& exception_state) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kURLPatternDummyURLCanonicalization)) {
+    return blink::url_pattern_dummy_url_canon::CanonicalizePort(
+        input, static_cast<blink::url_pattern_dummy_url_canon::ValueType>(type),
+        protocol, exception_state);
+  }
+
   if (type == ValueType::kPattern) {
     // Canonicalization for patterns is handled during compilation via
     // encoding callbacks.
@@ -157,9 +191,9 @@ String CanonicalizePort(const String& input,
   StringUtf8Adaptor utf8(input);
   url::RawCanonOutputT<char> canon_output;
   url::Component component;
-  if (!url::CanonicalizePort(utf8.data(), url::Component(0, utf8.size()),
-                             default_port, &canon_output, &component)) {
-    exception_state.ThrowTypeError("Invalid port '" + input + "'.");
+  if (!url::CanonicalizePort(utf8.AsStringView(), default_port, &canon_output,
+                             &component)) {
+    exception_state.ThrowTypeError(StrCat({"Invalid port '", input, "'."}));
     return String();
   }
 
@@ -171,6 +205,14 @@ String CanonicalizePathname(const String& protocol,
                             const String& input,
                             ValueType type,
                             ExceptionState& exception_state) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kURLPatternDummyURLCanonicalization)) {
+    return blink::url_pattern_dummy_url_canon::CanonicalizePathname(
+        protocol, input,
+        static_cast<blink::url_pattern_dummy_url_canon::ValueType>(type),
+        exception_state);
+  }
+
   if (type == ValueType::kPattern) {
     // Canonicalization for patterns is handled during compilation via
     // encoding callbacks.
@@ -213,7 +255,7 @@ String CanonicalizePathname(const String& protocol,
         if (standard) {
           return url::CanonicalizePartialPath(data, &canon_output, &component);
         }
-        url::CanonicalizePathURLPath(data, &canon_output, &component);
+        url::CanonicalizePathUrlPath(data, &canon_output, &component);
         return true;
       };
 
@@ -225,7 +267,7 @@ String CanonicalizePathname(const String& protocol,
   }
 
   if (!result) {
-    exception_state.ThrowTypeError("Invalid pathname '" + input + "'.");
+    exception_state.ThrowTypeError(StrCat({"Invalid pathname '", input, "'."}));
     return String();
   }
 
@@ -235,6 +277,13 @@ String CanonicalizePathname(const String& protocol,
 String CanonicalizeSearch(const String& input,
                           ValueType type,
                           ExceptionState& exception_state) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kURLPatternDummyURLCanonicalization)) {
+    return blink::url_pattern_dummy_url_canon::CanonicalizeSearch(
+        input, static_cast<blink::url_pattern_dummy_url_canon::ValueType>(type),
+        exception_state);
+  }
+
   // We allow the search input to optionally contain a "?" prefix.  Strip
   // this for both URL and pattern protocols.
   String stripped = MaybeStripPrefix(input, "?");
@@ -262,6 +311,13 @@ String CanonicalizeSearch(const String& input,
 String CanonicalizeHash(const String& input,
                         ValueType type,
                         ExceptionState& exception_state) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kURLPatternDummyURLCanonicalization)) {
+    return blink::url_pattern_dummy_url_canon::CanonicalizeHash(
+        input, static_cast<blink::url_pattern_dummy_url_canon::ValueType>(type),
+        exception_state);
+  }
+
   // We allow the hash input to optionally contain a "#" prefix.  Strip
   // this for both URL and pattern protocols.
   String stripped = MaybeStripPrefix(input, "#");

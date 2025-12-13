@@ -51,8 +51,12 @@ bool GetFileSystemInfoOptions::operator==(
          compute_executable_metadata == other.compute_executable_metadata;
 }
 
+bool CrowdStrikeSignals::IsEmpty() const {
+  return customer_id.empty() && agent_id.empty();
+}
+
 std::optional<base::Value> CrowdStrikeSignals::ToValue() const {
-  if (customer_id.empty() && agent_id.empty()) {
+  if (IsEmpty()) {
     return std::nullopt;
   }
 

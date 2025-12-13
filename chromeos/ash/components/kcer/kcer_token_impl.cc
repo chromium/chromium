@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/kcer/kcer_token_impl.h"
 
 #include <stdint.h>
@@ -15,7 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/hash/sha1.h"
+#include "base/compiler_specific.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/components/kcer/attributes.pb.h"
@@ -28,6 +24,7 @@
 #include "chromeos/ash/components/kcer/kcer_utils.h"
 #include "chromeos/constants/pkcs11_definitions.h"
 #include "content/public/browser/browser_thread.h"
+#include "crypto/keypair.h"
 #include "crypto/openssl_util.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/cert_database.h"
@@ -96,8 +93,8 @@ bool GetKeyType(const chaps::Attribute* attr, KeyType& key_type) {
     return false;
   }
   chromeos::PKCS11_CK_KEY_TYPE pkcs_key_type =
-      *reinterpret_cast<const chromeos::PKCS11_CK_KEY_TYPE*>(
-          attr->value().data());
+      *UNSAFE_TODO(reinterpret_cast<const chromeos::PKCS11_CK_KEY_TYPE*>(
+          attr->value().data()));
   if (pkcs_key_type == chromeos::PKCS11_CKK_RSA) {
     key_type = KeyType::kRsa;
     return true;
@@ -138,49 +135,6 @@ bssl::UniquePtr<ASN1_OCTET_STRING> UnwrapEcPoint(
   return result;
 }
 
-// Backwards compatible with how NSS generated CKA_ID for RSA keys.
-Pkcs11Id MakePkcs11IdFromRsaKey(bssl::UniquePtr<RSA> rsa_key) {
-  const BIGNUM* modulus = RSA_get0_n(rsa_key.get());
-  if (!modulus) {
-    LOG(ERROR) << "Could not parse RSA public key";
-    return {};
-  }
-
-  std::vector<uint8_t> modulus_bytes(BN_num_bytes(modulus));
-  // BN_bn2bin returns an absolute value of `modulus`, but according to RFC 8017
-  // Section 3.1 the RSA modulus is a positive integer.
-  BN_bn2bin(modulus, modulus_bytes.data());
-
-  return MakePkcs11Id(modulus_bytes);
-}
-
-// Backwards compatible with how NSS generated CKA_ID for EC keys.
-Pkcs11Id MakePkcs11IdFromEcKey(bssl::UniquePtr<EC_KEY> ec_key) {
-  const EC_POINT* point = EC_KEY_get0_public_key(ec_key.get());
-  const EC_GROUP* group = EC_KEY_get0_group(ec_key.get());
-
-  if (!point || !group) {
-    LOG(ERROR) << "Could not parse EC public key";
-    return {};
-  }
-
-  // Serialize the public key as an uncompressed point in X9.62 form.
-  bssl::ScopedCBB cbb;
-  uint8_t* point_bytes = nullptr;
-  size_t point_bytes_len = 0;
-  if (!CBB_init(cbb.get(), 0) ||
-      !EC_POINT_point2cbb(
-          cbb.get(), group, point,
-          point_conversion_form_t::POINT_CONVERSION_UNCOMPRESSED,
-          /*ctx=*/nullptr) ||
-      !CBB_finish(cbb.get(), &point_bytes, &point_bytes_len)) {
-    return {};
-  }
-  bssl::UniquePtr<uint8_t> point_bytes_deleter(point_bytes);
-
-  return MakePkcs11Id(base::span(point_bytes, point_bytes_len));
-}
-
 // Calculates PKCS#11 id for the provided public key SPKI.
 Pkcs11Id GetPkcs11IdFromSpki(const PublicKeySpki& public_key_spki) {
   if (public_key_spki->empty()) {
@@ -188,29 +142,21 @@ Pkcs11Id GetPkcs11IdFromSpki(const PublicKeySpki& public_key_spki) {
     return {};
   }
 
-  const std::vector<uint8_t>& spki = public_key_spki.value();
-  CBS cbs;
-  CBS_init(&cbs, reinterpret_cast<const uint8_t*>(spki.data()), spki.size());
-  bssl::UniquePtr<EVP_PKEY> evp_key(EVP_parse_public_key(&cbs));
-  if (!evp_key || CBS_len(&cbs) != 0) {
+  std::optional<crypto::keypair::PublicKey> key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(*public_key_spki);
+  if (!key.has_value()) {
     LOG(ERROR) << "Could not parse public key";
     return {};
   }
 
-  if (EVP_PKEY_base_id(evp_key.get()) == EVP_PKEY_RSA) {
-    bssl::UniquePtr<RSA> rsa_key(EVP_PKEY_get1_RSA(evp_key.get()));
-    if (!rsa_key) {
-      return {};
-    }
-    return MakePkcs11IdFromRsaKey(std::move(rsa_key));
+  if (key->IsRsa()) {
+    // Backwards compatible with how NSS generated CKA_ID for RSA keys.
+    return MakePkcs11Id(key->GetRsaModulus());
   }
 
-  if (EVP_PKEY_base_id(evp_key.get()) == EVP_PKEY_EC) {
-    bssl::UniquePtr<EC_KEY> ec_key(EVP_PKEY_get1_EC_KEY(evp_key.get()));
-    if (!ec_key) {
-      return {};
-    }
-    return MakePkcs11IdFromEcKey(std::move(ec_key));
+  if (key->IsEc()) {
+    // Backwards compatible with how NSS generated CKA_ID for EC keys.
+    return MakePkcs11Id(key->ToUncompressedX962Point());
   }
 
   return {};
@@ -298,7 +244,8 @@ base::expected<DigestWithPrefix, Error> DigestOnWorkerThread(
     }
   }
 
-  return DigestWithPrefix(std::vector<uint8_t>(digest, digest + digest_len));
+  return DigestWithPrefix(
+      std::vector<uint8_t>(digest, UNSAFE_TODO(digest + digest_len)));
 }
 
 std::vector<uint8_t> GetPssSignParams(SigningScheme kcer_signing_scheme) {
@@ -331,7 +278,8 @@ std::vector<uint8_t> GetPssSignParams(SigningScheme kcer_signing_scheme) {
   pss_params.sLen = EVP_MD_size(digest_method);
 
   const uint8_t* params_ptr = reinterpret_cast<const uint8_t*>(&pss_params);
-  return std::vector<uint8_t>(params_ptr, params_ptr + sizeof(pss_params));
+  return std::vector<uint8_t>(params_ptr,
+                              UNSAFE_TODO(params_ptr + sizeof(pss_params)));
 }
 
 }  // namespace
@@ -606,7 +554,7 @@ void KcerTokenImpl::GenerateEcKeyImpl(GenerateEcKeyTask task) {
   AddAttribute(public_key_attrs, chromeos::PKCS11_CKA_VERIFY, MakeSpan(&kTrue));
   AddAttribute(public_key_attrs, chromeos::PKCS11_CKA_WRAP, MakeSpan(&kTrue));
   AddAttribute(public_key_attrs, chromeos::PKCS11_CKA_EC_PARAMS,
-               base::span(ec_params_der, ec_params_der_len));
+               UNSAFE_TODO(base::span(ec_params_der, ec_params_der_len)));
 
   chaps::AttributeList private_key_attrs;
   AddAttribute(private_key_attrs, chromeos::PKCS11_CKA_TOKEN, MakeSpan(&kTrue));
@@ -686,7 +634,7 @@ void KcerTokenImpl::DidGetEcPublicKey(
   const uint8_t* ec_point_data = ASN1_STRING_data(ec_point_oct.get());
   size_t ec_point_data_len = ASN1_STRING_length(ec_point_oct.get());
   base::span<const uint8_t> ec_point =
-      base::span(ec_point_data, ec_point_data_len);
+      UNSAFE_TODO(base::span(ec_point_data, ec_point_data_len));
 
   base::expected<PublicKey, Error> kcer_public_key =
       MakeEcPublicKey(token_, ec_point);
@@ -840,7 +788,7 @@ void KcerTokenImpl::ImportCertFromBytesWithExistingCerts(
   }
   PublicKeySpki spki(std::vector<uint8_t>(
       spki_string_piece.data(),
-      spki_string_piece.data() + spki_string_piece.size()));
+      UNSAFE_TODO(spki_string_piece.data() + spki_string_piece.size())));
 
   Pkcs11Id key_id = GetPkcs11IdFromSpki(spki);
   if (key_id->empty()) {
@@ -1146,8 +1094,8 @@ void KcerTokenImpl::RemoveCertImpl(RemoveCertTask task) {
   }
 
   const CRYPTO_BUFFER* buffer = task.cert->GetX509Cert()->cert_buffer();
-  base::span<const uint8_t> cert_der =
-      base::span(CRYPTO_BUFFER_data(buffer), CRYPTO_BUFFER_len(buffer));
+  base::span<const uint8_t> cert_der = UNSAFE_TODO(
+      base::span(CRYPTO_BUFFER_data(buffer), CRYPTO_BUFFER_len(buffer)));
 
   CK_OBJECT_CLASS cert_class = CKO_CERTIFICATE;
   chaps::AttributeList attributes;
@@ -1428,7 +1376,7 @@ void KcerTokenImpl::ListKeysDidGetOneEcKey(ListKeysTask task,
   const uint8_t* ec_point_data = ASN1_STRING_data(ec_point_oct.get());
   size_t ec_point_data_len = ASN1_STRING_length(ec_point_oct.get());
   base::span<const uint8_t> ec_point =
-      base::span(ec_point_data, ec_point_data_len);
+      UNSAFE_TODO(base::span(ec_point_data, ec_point_data_len));
 
   PublicKeySpki spki = MakeEcSpki(ec_point);
   if (spki->empty()) {

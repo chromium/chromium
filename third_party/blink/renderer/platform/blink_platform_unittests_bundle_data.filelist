@@ -19,6 +19,7 @@
 ../../web_tests/external/wpt/fonts/CanvasTest-nospace.ttf
 ../../web_tests/external/wpt/fonts/CanvasTest.ttf
 ../../web_tests/external/wpt/fonts/GentiumPlus-R.woff
+../../web_tests/external/wpt/fonts/Lato-Bold.ttf
 ../../web_tests/external/wpt/fonts/Lato-Medium-Liga.ttf
 ../../web_tests/external/wpt/fonts/Lato-Medium.ttf
 ../../web_tests/external/wpt/fonts/Revalia.woff
@@ -53,6 +54,7 @@
 ../../web_tests/external/wpt/fonts/math/fraction-numeratorgapmin9000-rulethickness1000.woff
 ../../web_tests/external/wpt/fonts/math/fraction-numeratorshiftup11000-axisheight1000-rulethickness1000.woff
 ../../web_tests/external/wpt/fonts/math/fraction-rulethickness10000.woff
+../../web_tests/external/wpt/fonts/math/largeop-displayoperatorminheight1250.woff
 ../../web_tests/external/wpt/fonts/math/largeop-displayoperatorminheight2000-2AFF-italiccorrection3000.woff
 ../../web_tests/external/wpt/fonts/math/largeop-displayoperatorminheight3000-2AFF-axisheight1000.woff
 ../../web_tests/external/wpt/fonts/math/largeop-displayoperatorminheight5000.woff
@@ -130,6 +132,9 @@
 ../../web_tests/external/wpt/fonts/noto/NotoSansMongolian-regular.woff2
 ../../web_tests/external/wpt/fonts/noto/NotoSansNko-regular-webfont.woff2
 ../../web_tests/external/wpt/fonts/noto/cjk/NotoSansCJKjp-Regular-subset-chws.otf
+../../web_tests/external/wpt/fonts/noto/cjk/NotoSansCJKjp-Regular-subset-halt-3002.otf
+../../web_tests/external/wpt/fonts/noto/cjk/NotoSansCJKjp-Regular-subset-halt-300C.otf
+../../web_tests/external/wpt/fonts/noto/cjk/NotoSansCJKjp-Regular-subset-halt-FF1A.otf
 ../../web_tests/external/wpt/fonts/noto/cjk/NotoSansCJKjp-Regular-subset-halt-min.otf
 ../../web_tests/external/wpt/fonts/noto/cjk/NotoSansCJKjp-Regular-subset-halt.otf
 ../../web_tests/external/wpt/fonts/noto/noto-sans-v8-latin-regular.woff
@@ -368,6 +373,8 @@
 ../../web_tests/images/resources/count-down-color-test.webp
 ../../web_tests/images/resources/crbug.364830.webp
 ../../web_tests/images/resources/crbug423310049.png
+../../web_tests/images/resources/crbug432516335-big-height.png
+../../web_tests/images/resources/crbug432516335-i32-overflow.png
 ../../web_tests/images/resources/crbug702934.png
 ../../web_tests/images/resources/crbug752898.bmp
 ../../web_tests/images/resources/crbug779261.gif
@@ -438,6 +445,9 @@
 ../../web_tests/images/resources/icofuzz/png-in-ico.ico
 ../../web_tests/images/resources/icofuzz/twitter_favicon.ico
 ../../web_tests/images/resources/icon-without-and-bitmap.ico
+../../web_tests/images/resources/ihdr50_actl_fctl30_idat.png
+../../web_tests/images/resources/ihdr50_actl_idat_fctl30_fdat.png
+../../web_tests/images/resources/ihdr50_fctl30_idat.png
 ../../web_tests/images/resources/invalid-animated-webp.webp
 ../../web_tests/images/resources/invalid-animated-webp2.webp
 ../../web_tests/images/resources/invalid-animated-webp3.webp
@@ -635,6 +645,7 @@
 ../../web_tests/third_party/adobe-fonts/CSSFWOrientationTest.otf
 ../../web_tests/third_party/adobe-fonts/CSSHWOrientationTest.otf
 ../../web_tests/third_party/gsubtest/gsubtest-lookup3.otf
+image-decoders/testing/actl-num-frames-0.png
 image-decoders/testing/apng-with-malformed-2nd-frame.png
 image-decoders/testing/bad-code.gif
 image-decoders/testing/bad-initial-code.gif
@@ -647,8 +658,10 @@ image-decoders/testing/error_frame.gif
 image-decoders/testing/first-frame-has-greater-size-than-screen-size.gif
 image-decoders/testing/green-exif-ifd-last.jpg
 image-decoders/testing/incomplete-prev-frame-reusing-clusterfuzz-repro.gif
+image-decoders/testing/interlaced-multiframe-with-blending.png
 image-decoders/testing/invalid-disposal-method.gif
 image-decoders/testing/many-progressive-scans.jpg
+image-decoders/testing/plte-weirdness.png
 image-decoders/testing/private-critical-chunk-before-ihdr.png
 image-decoders/testing/radient-bad-terminator.gif
 image-decoders/testing/radient.gif
@@ -709,6 +722,8 @@ testing/data/happy_dog.avif
 testing/data/icc-v2-gbr.jpg
 testing/data/original-cat-420-629x473.jpg
 testing/data/palatted-color-png-gamma-one-color-profile.png
+testing/data/png-zero-gamma-color-profile-ref.png
+testing/data/png-zero-gamma-color-profile.png
 testing/data/red-full-ranged-8bpc.avif
 testing/data/rgb-jpeg-red.jpg
 testing/data/roboto-a-different-cmap.ttf

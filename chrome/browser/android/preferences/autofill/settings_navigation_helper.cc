@@ -23,3 +23,5 @@ void ShowAutofillCreditCardSettings(content::WebContents* web_contents) {
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(SettingsNavigationHelper)

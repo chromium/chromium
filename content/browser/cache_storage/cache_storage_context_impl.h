@@ -8,11 +8,10 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
-#include "base/threading/sequence_bound.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
@@ -22,7 +21,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "services/network/public/mojom/document_isolation_policy.mojom.h"
 #include "storage/browser/quota/quota_manager_proxy.h"

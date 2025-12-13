@@ -63,7 +63,7 @@ class PLATFORM_EXPORT NonMainThreadSchedulerBase : public ThreadSchedulerBase {
 
  protected:
   // ThreadSchedulerBase:
-  WTF::Vector<base::OnceClosure>& GetOnTaskCompletionCallbacks() override;
+  Vector<base::OnceClosure>& GetOnTaskCompletionCallbacks() override;
 
   // |sequence_manager| must remain valid for the entire lifetime of
   // this object.
@@ -79,7 +79,7 @@ class PLATFORM_EXPORT NonMainThreadSchedulerBase : public ThreadSchedulerBase {
   NonMainThreadSchedulerHelper helper_;
 
   // List of callbacks to execute after the current task.
-  WTF::Vector<base::OnceClosure> on_task_completion_callbacks_;
+  Vector<base::OnceClosure> on_task_completion_callbacks_;
 };
 
 }  // namespace blink::scheduler

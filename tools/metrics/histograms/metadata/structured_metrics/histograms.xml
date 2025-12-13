@@ -9,7 +9,7 @@ found in the LICENSE file.
 <histograms>
 
 <histogram name="StructuredMetrics.ExternalMetricsDropped" units="count"
-    expires_after="2025-12-21">
+    expires_after="2026-04-26">
   <owner>andrewbregger@google.com</owner>
   <owner>troywang@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -22,7 +22,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.ExternalMetricsDropped2.{Project}"
-    units="count" expires_after="2025-12-28">
+    units="count" expires_after="2026-05-03">
   <owner>andrewbregger@google.com</owner>
   <owner>troywang@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -53,7 +53,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.ExternalMetricsProduced2.{Project}"
-    units="count" expires_after="2025-12-28">
+    units="count" expires_after="2026-05-03">
   <owner>andrewbregger@google.com</owner>
   <owner>troywang@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -120,7 +120,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.LogStore.CompressionRatio" units="%"
-    expires_after="2025-11-16">
+    expires_after="2026-03-22">
   <owner>andrewbregger@google.com</owner>
   <owner>troywang@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -242,7 +242,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.StorageManager.DiskQuotaExceededDelta"
-    units="KB" expires_after="2025-11-23">
+    units="KB" expires_after="2026-06-07">
   <owner>andrewbregger@google.com</owner>
   <owner>troywang@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -313,7 +313,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.StorageManager.RecordStatus"
-    enum="RecordStatus" expires_after="2025-11-30">
+    enum="RecordStatus" expires_after="2026-06-07">
   <owner>andrewbregger@google.com</owner>
   <owner>troywang@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -324,7 +324,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.UploadSize" units="bytes"
-    expires_after="2025-11-30">
+    expires_after="2026-06-07">
   <owner>andrewbregger@google.com</owner>
   <owner>troywang@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>

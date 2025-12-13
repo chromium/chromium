@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/task/sequenced_task_runner.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
@@ -74,16 +75,13 @@ class MEDIA_GPU_EXPORT CodecImage
 
   // gpu::StreamTextureSharedImageInterface implementation.
   void ReleaseResources() override;
-  void UpdateAndBindTexImage() override;
   bool HasTextureOwner() const override;
-  gpu::TextureBase* GetTextureBase() const override;
   void NotifyOverlayPromotion(bool promotion, const gfx::Rect& bounds) override;
   // Renders this image to the overlay. Returns true if the buffer is in the
   // overlay front buffer. Returns false if the buffer was invalidated.
   bool RenderToOverlay() override;
   std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
   GetAHardwareBuffer() override;
-  bool TextureOwnerBindsTextureOnUpdate() override;
 
   // Whether the codec buffer has been rendered to the front buffer.
   bool was_rendered_to_front_buffer() const {
@@ -127,8 +125,6 @@ class MEDIA_GPU_EXPORT CodecImage
 
  private:
   FRIEND_TEST_ALL_PREFIXES(CodecImageTest, RenderAfterUnusedDoesntCrash);
-
-  bool TextureOwnerBindsOnUpdate() const;
 
   std::unique_ptr<CodecOutputBufferRenderer> output_buffer_renderer_;
 

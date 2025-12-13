@@ -5,11 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_BUBBLE_MODEL_TAB_BASED_IPH_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_BUBBLE_MODEL_TAB_BASED_IPH_BROWSER_AGENT_H_
 
+#import "base/callback_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "components/bookmarks/browser/base_bookmark_model_observer.h"
 #import "components/reading_list/core/reading_list_model_observer.h"
-#import "ios/chrome/browser/browser_view/model/browser_view_visibility_observer.h"
+#import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
@@ -43,7 +44,6 @@ class Tracker;
 class TabBasedIPHBrowserAgent : public bookmarks::BaseBookmarkModelObserver,
                                 public BrowserUserData<TabBasedIPHBrowserAgent>,
                                 public BrowserObserver,
-                                public BrowserViewVisibilityObserver,
                                 public ReadingListModelObserver,
                                 public UrlLoadingObserver,
                                 public web::WebStateObserver {
@@ -79,11 +79,6 @@ class TabBasedIPHBrowserAgent : public bookmarks::BaseBookmarkModelObserver,
 
   // BrowserObserver
   void BrowserDestroyed(Browser* browser) override;
-
-  // BrowserViewVisibilityObserver
-  void BrowserViewVisibilityStateDidChange(
-      BrowserViewVisibilityState current_state,
-      BrowserViewVisibilityState previous_state) override;
 
   // ReadingListModelObserver
   void ReadingListModelLoaded(const ReadingListModel* model) override;
@@ -136,10 +131,18 @@ class TabBasedIPHBrowserAgent : public bookmarks::BaseBookmarkModelObserver,
   // Command handler for popup menu commands.
   id<PopupMenuCommands> PopupMenuHandler();
 
+  // Invoked when the Browser view visibility changed.
+  void BrowserViewVisibilityStateDidChange(
+      BrowserViewVisibilityState current_state,
+      BrowserViewVisibilityState previous_state);
+
   // Observer for the browser's web state list and the active web state.
   raw_ptr<WebStateList> web_state_list_;
   std::unique_ptr<ActiveWebStateObservationForwarder>
       active_web_state_observer_;
+
+  // Subscription for BrowserViewVisibilityNotifierBrowserAgent callback.
+  base::CallbackListSubscription browser_view_visibility_changed_subscription_;
 
 #pragma mark - Observers variables
   // `BookmarkModel` instance providing access to bookmarks. May be `nullptr`.
@@ -160,9 +163,6 @@ class TabBasedIPHBrowserAgent : public bookmarks::BaseBookmarkModelObserver,
       reading_list_model_observation_{this};
   // Observer for URL loading.
   raw_ptr<UrlLoadingNotifierBrowserAgent> url_loading_notifier_;
-  // Observer for browser view visibility.
-  raw_ptr<BrowserViewVisibilityNotifierBrowserAgent>
-      browser_view_visibility_notifier_;
   // Command dispatcher for the browser; used to retrieve help handler.
   CommandDispatcher* command_dispatcher_;
   // Records events for the use of in-product help.

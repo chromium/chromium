@@ -70,7 +70,13 @@ class SpeechRecognitionManagerImplTest
   bool ended_ = false;
 };
 
-TEST_F(SpeechRecognitionManagerImplTest, SodaNotInstalled) {
+// TODO(crbug.com/446260680): Disabled on Windows due to flakiness.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SodaNotInstalled DISABLED_SodaNotInstalled
+#else
+#define MAYBE_SodaNotInstalled SodaNotInstalled
+#endif
+TEST_F(SpeechRecognitionManagerImplTest, MAYBE_SodaNotInstalled) {
   if (!on_device_speech_recognition_supported_) {
     return;
   }
@@ -83,7 +89,7 @@ TEST_F(SpeechRecognitionManagerImplTest, SodaNotInstalled) {
         return langs;
       }));
 
-  EXPECT_EQ(speech::IsOnDeviceSpeechRecognitionAvailable("en-US"),
+  EXPECT_EQ(speech::GetSodaAvailabilityStatus("en-US"),
             media::mojom::AvailabilityStatus::kDownloadable);
 }
 
@@ -98,7 +104,7 @@ TEST_F(SpeechRecognitionManagerImplTest, SodaLanguagesNotAvailable) {
   EXPECT_CALL(mock_soda_installer_, GetAvailableLanguages())
       .WillOnce(InvokeWithoutArgs([]() { return std::vector<std::string>(); }));
 
-  EXPECT_EQ(speech::IsOnDeviceSpeechRecognitionAvailable("en-US"),
+  EXPECT_EQ(speech::GetSodaAvailabilityStatus("en-US"),
             media::mojom::AvailabilityStatus::kUnavailable);
 }
 
@@ -117,7 +123,7 @@ TEST_F(SpeechRecognitionManagerImplTest, SodaLanguageNotInstalled) {
         return langs;
       }));
 
-  EXPECT_EQ(speech::IsOnDeviceSpeechRecognitionAvailable("en-US"),
+  EXPECT_EQ(speech::GetSodaAvailabilityStatus("en-US"),
             media::mojom::AvailabilityStatus::kDownloadable);
 }
 
@@ -138,7 +144,7 @@ TEST_F(SpeechRecognitionManagerImplTest, SodaLanguageInstalled) {
         return langs;
       }));
 
-  EXPECT_EQ(speech::IsOnDeviceSpeechRecognitionAvailable("en-US"),
+  EXPECT_EQ(speech::GetSodaAvailabilityStatus("en-US"),
             media::mojom::AvailabilityStatus::kAvailable);
 }
 
@@ -159,7 +165,7 @@ TEST_F(SpeechRecognitionManagerImplTest, SodaLangcodeMatch) {
         return langs;
       }));
 
-  EXPECT_EQ(speech::IsOnDeviceSpeechRecognitionAvailable("en-US"),
+  EXPECT_EQ(speech::GetSodaAvailabilityStatus("en-US"),
             media::mojom::AvailabilityStatus::kAvailable);
 }
 
@@ -170,6 +176,7 @@ TEST_F(SpeechRecognitionManagerImplTest, LanguageNotSupportedError) {
 
   SpeechRecognitionSessionConfig config;
   config.on_device = true;
+  config.on_device_available = false;
   config.allow_cloud_fallback = false;
   config.language = "en-US";
 
@@ -177,7 +184,7 @@ TEST_F(SpeechRecognitionManagerImplTest, LanguageNotSupportedError) {
   EXPECT_CALL(mock_soda_installer_, GetAvailableLanguages())
       .WillRepeatedly(
           InvokeWithoutArgs([]() { return std::vector<std::string>(); }));
-  EXPECT_EQ(speech::IsOnDeviceSpeechRecognitionAvailable("en-US"),
+  EXPECT_EQ(speech::GetSodaAvailabilityStatus("en-US"),
             media::mojom::AvailabilityStatus::kUnavailable);
 
   manager_->CreateSession(config, mojo::NullReceiver(),

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py http://127.0.0.1:8000 FileHandling --expire-timestamp=2000000000
+-->
+
+<meta http-equiv="origin-trial" content="AyG/U8esmV7nsaxHferX25J8MbrqfBRmSwEzxqKOsHI+7iB7dPmyBTWwU5psQJkHlxt6NLsMnRYi/i2suMk9jwkAAABgeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQ3Jhc2hSZXBvcnRpbmdTdG9yYWdlQVBJIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9">
+<title>CrashReportStorage - interface exposed by origin trial</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/origin-trials-helper.js"></script>
+<script>
+
+test(t => {
+  OriginTrialsHelper.check_properties_exist(this,
+      {
+        'CrashReportStorage': ['initialize', 'set', 'remove'],
+      });
+
+  assert_equals(typeof window.crashReport, 'object');
+  assert_equals(typeof window.crashReport.initialize, 'function');
+  assert_equals(typeof window.crashReport.set, 'function');
+  assert_equals(typeof window.crashReport.remove, 'function');
+}, 'CrashReportStorage interface and properties in Origin-Trial enabled document.');
+</script>

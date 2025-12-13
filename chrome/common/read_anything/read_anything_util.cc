@@ -59,11 +59,26 @@ std::vector<std::string> GetSupportedFonts(std::string_view language_code) {
        "fi", "fil", "fr", "hr", "hu", "id", "it", "kr", "lt",
        "lu", "lv",  "ms", "nd", "nl", "nr", "pl", "pt", "ro",
        "ru", "sk",  "sl", "sr", "sv", "sw", "tr", "uk", "vi"});
-  static constexpr auto kAtkinsonHyperlegibleLangs =
+  static constexpr auto kAtkinsonHyperlegibleNextLangs =
       base::MakeFixedFlatSet<std::string_view>(
-          {"af", "ca", "cs", "da", "de", "en", "es", "et", "eu", "fi", "fil",
-           "fr", "gl", "hr", "hu", "id", "is", "it", "kk", "lt", "ms", "nl",
-           "no", "pl", "pt", "ro", "sl", "sq", "sr", "sv", "sw", "zu"});
+          {"aa",  "aat", "abq", "af",  "ami", "an",  "are", "ast", "aud", "ay",
+           "ba",  "bi",  "bik", "br",  "bs",  "cak", "cbk", "ceb", "ch",  "cic",
+           "cim", "co",  "con", "crh", "crs", "cs",  "csb", "cy",  "da",  "de",
+           "del", "dhu", "en",  "es",  "et",  "eu",  "fi",  "fil", "fj",  "fo",
+           "fol", "fr",  "fur", "fy",  "ga",  "gag", "gcf", "gd",  "gil", "gl",
+           "gni", "gsw", "guc", "gv",  "gwi", "haa", "hil", "hop", "hr",  "ht",
+           "hu",  "ia",  "id",  "ie",  "igl", "ilo", "io",  "is",  "it",  "jam",
+           "jbo", "jer", "jv",  "kaa", "krl", "kea", "kek", "kg",  "kj",  "la",
+           "lb",  "lij", "lld", "lmo", "lt",  "lua", "luo", "moh", "moe", "mrq",
+           "ms",  "mt",  "mus", "mwf", "mwp", "nag", "nap", "nd",  "nds", "ngy",
+           "nl",  "no",  "nov", "oc",  "om",  "os",  "pam", "pap", "pau", "pl",
+           "pms", "pot", "pt",  "qu",  "rar", "rm",  "rn",  "ro",  "roo", "rup",
+           "ruo", "ruq", "rw",  "sc",  "scn", "se",  "sei", "sg",  "shw", "sl",
+           "slv", "sm",  "sn",  "so",  "sq",  "sr",  "srm", "srn", "ss",  "st",
+           "su",  "sv",  "sw",  "szl", "tet", "tkl", "tl",  "tlh", "tn",  "tpi",
+           "tr",  "ts",  "ttm", "tum", "tzo", "ulk", "uz",  "vec", "vep", "vmw",
+           "vo",  "vro", "wa",  "war", "wbp", "wen", "wim", "win", "wir", "xh",
+           "yap", "yij", "zap", "zu",  "zun"});
 
   std::vector<std::string> font_choices = {"Sans-serif", "Serif"};
   if (language_code.empty() || kPoppinsLangs.contains(language_code)) {
@@ -86,8 +101,8 @@ std::vector<std::string> GetSupportedFonts(std::string_view language_code) {
     font_choices.push_back("Andika");
   }
   if (language_code.empty() ||
-      kAtkinsonHyperlegibleLangs.contains(language_code)) {
-    font_choices.push_back("Atkinson Hyperlegible");
+      kAtkinsonHyperlegibleNextLangs.contains(language_code)) {
+    font_choices.push_back("Atkinson Hyperlegible Next");
   }
 
   return font_choices;
@@ -108,8 +123,8 @@ void LogFontName(std::string_view font_name) {
     kEbGaramond = 5,
     kStixTwoText = 6,
     kAndika = 7,
-    kAtkinsonHyperlegible = 8,
-    kMaxValue = kAtkinsonHyperlegible,
+    kAtkinsonHyperlegibleNext = 8,
+    kMaxValue = kAtkinsonHyperlegibleNext,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingFontName)
   static constexpr auto kFontMap =
@@ -122,7 +137,8 @@ void LogFontName(std::string_view font_name) {
            {"EB Garamond", ReadAnythingFont::kEbGaramond},
            {"STIX Two Text", ReadAnythingFont::kStixTwoText},
            {"Andika", ReadAnythingFont::kAndika},
-           {"Atkinson Hyperlegible", ReadAnythingFont::kAtkinsonHyperlegible}});
+           {"Atkinson Hyperlegible Next",
+            ReadAnythingFont::kAtkinsonHyperlegibleNext}});
   if (const auto it = kFontMap.find(font_name); it != kFontMap.end()) {
     base::UmaHistogramEnumeration("Accessibility.ReadAnything.FontName",
                                   it->second);

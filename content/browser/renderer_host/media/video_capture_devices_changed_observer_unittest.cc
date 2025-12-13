@@ -14,7 +14,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 
 namespace content {
 
@@ -36,7 +35,7 @@ class MockVideoCaptureDevicesChangedObserver
         source_provider_receiver_(&mock_source_provider_) {
     OverrideVideoCaptureServiceForTesting(&mock_video_capture_service_);
     ON_CALL(mock_video_capture_service_, DoConnectToVideoSourceProvider(_))
-        .WillByDefault(Invoke(
+        .WillByDefault(
             [this](
                 mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider>
                     receiver) {
@@ -45,7 +44,7 @@ class MockVideoCaptureDevicesChangedObserver
               }
               source_provider_receiver_.Bind(std::move(receiver));
               base::RunLoop().RunUntilIdle();
-            }));
+            });
 
     EnsureConnectedToService();
     base::RunLoop().RunUntilIdle();

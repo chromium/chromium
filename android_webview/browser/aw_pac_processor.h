@@ -34,7 +34,7 @@ class AwPacProcessor {
   bool SetProxyScript(std::string script);
   base::android::ScopedJavaLocalRef<jstring> MakeProxyRequest(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& jurl);
+      const base::android::JavaRef<jstring>& jurl);
   bool MakeProxyRequest(std::string url, std::string* result);
   void SetNetworkAndLinkAddresses(
       JNIEnv* env,

@@ -10,3 +10,5 @@
 static jboolean JNI_ContentCaptureFeatures_IsEnabled(JNIEnv* env) {
   return content_capture::features::IsContentCaptureEnabled();
 }
+
+DEFINE_JNI(ContentCaptureFeatures)

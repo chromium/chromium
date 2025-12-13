@@ -104,8 +104,7 @@ class SupervisedUserLogRecordTest : public ::testing::Test {
   void CreateParentUser(kidsmanagement::FamilyRole family_role) {
     CreateRegularUser();
     supervised_user_test_environment_.pref_service()->SetString(
-        prefs::kFamilyLinkUserMemberRole,
-        supervised_user::FamilyRoleToString(family_role));
+        prefs::kFamilyLinkUserMemberRole, FamilyRoleToString(family_role));
   }
 
   void CreateSupervisedUser(bool is_subject_to_parental_controls,
@@ -121,8 +120,7 @@ class SupervisedUserLogRecordTest : public ::testing::Test {
         is_opted_in_to_parental_supervision);
     GetIdentityTestEnv()->UpdateAccountInfoForAccount(account_info);
 
-    supervised_user::EnableParentalControls(
-        *supervised_user_test_environment_.pref_service());
+    EnableParentalControls(*supervised_user_test_environment_.pref_service());
     // Set the Family Link `Permissions` switch to default value. In prod it's
     // done by the `SupervisedUserPrefStore`, but that requires fully
     // operational Profile.
@@ -146,13 +144,15 @@ class SupervisedUserLogRecordTest : public ::testing::Test {
 
 #if BUILDFLAG(IS_ANDROID)
   void EnableSearchContentFilters() {
-    supervised_user_test_environment_.search_content_filters_observer()
-        ->SetEnabled(true);
+    supervised_user_test_environment_.service()
+        ->GetSearchContentFiltersObserverWeakPtrForTesting()
+        ->SetEnabledForTesting(true);
   }
 
   void EnableBrowserContentFilters() {
-    supervised_user_test_environment_.browser_content_filters_observer()
-        ->SetEnabled(true);
+    supervised_user_test_environment_.service()
+        ->GetBrowserContentFiltersObserverWeakPtrForTesting()
+        ->SetEnabledForTesting(true);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 

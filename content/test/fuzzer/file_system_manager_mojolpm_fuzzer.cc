@@ -8,9 +8,11 @@
 #endif
 
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
@@ -45,7 +47,8 @@ using url::Origin;
 namespace content {
 
 const size_t kNumRenderers = 2;
-const char* kCmdline[] = {"file_system_manager_mojolpm_fuzzer", nullptr};
+constexpr const char* kCmdline[] = {"file_system_manager_mojolpm_fuzzer",
+                                    nullptr};
 
 mojolpm::FuzzerEnvironment& GetEnvironment() {
   static base::NoDestructor<mojolpm::FuzzerEnvironmentWithTaskEnvironment>

@@ -90,7 +90,8 @@ enum MountError {
   unsupported_filesystem,
   need_password,
   cancelled,
-  busy
+  busy,
+  corrupted
 };
 
 // Filesystem to format to.
@@ -1357,15 +1358,6 @@ dictionary BulkPinProgress {
   boolean emptiedQueue;
 };
 
-// Represents a custom view of files to be displayed.
-dictionary MaterializedView {
-  // Unique indentifier for the view.
-  long viewId;
-
-  // Name of the view displayed to the user.
-  DOMString name;
-};
-
 // Used by EntryData to store the file system of the entry.
 dictionary FileSystemData {
   // Name of the file system. Will be unique.
@@ -1536,10 +1528,6 @@ callback ListMountableGuestsCallback = void(MountableGuest[] guest);
 callback ParseTrashInfoFilesCallback = void(ParsedTrashInfoFile[] files);
 
 callback GetBulkPinProgressCallback = void(BulkPinProgress progress);
-
-callback GetMaterializedViewsCallback = void(MaterializedView[] views);
-
-callback ReadMaterializedViewCallback = void(EntryData[] files);
 
 interface Functions {
   // Cancels file selection.
@@ -2082,13 +2070,6 @@ interface Functions {
   // drive.
   [doesNotSupportPromises]
   static void calculateBulkPinRequiredSpace(SimpleCallback callback);
-
-  // Returns a list of views that can be displayed to the user.
-  static void getMaterializedViews(GetMaterializedViewsCallback callback);
-
-  // Returns the list of entries contained in the view identified by `viewId`.
-  static void readMaterializedView(long viewId,
-                                   ReadMaterializedViewCallback callback);
 };
 
 // Events supported by fileManagerPrivate API. These events are broadcasted.

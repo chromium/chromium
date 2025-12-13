@@ -42,6 +42,10 @@ std::string DisableSyncTypes(const syncer::UserSelectableTypeSet& types_set,
                              PrefValueMap* prefs,
                              const std::string& policy_name);
 
+// Returns a list of data types that are not supported on the current platform.
+base::flat_set<std::string> GetBrowsingDataLifetimePlatformUnsupportedTypes(
+    const base::Value& policy_value);
+
 // Converts the browsing data type string to its integer value.
 // The conversion is used to ensure that the number of policy data types that
 // can be managed at any point in time is known and mapped to sync types that

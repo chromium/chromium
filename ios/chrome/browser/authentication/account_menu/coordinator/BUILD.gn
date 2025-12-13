@@ -1,0 +1,117 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("coordinator") {
+  sources = [
+    "account_menu_coordinator.h",
+    "account_menu_coordinator.mm",
+    "account_menu_coordinator_delegate.h",
+    "account_menu_mediator.h",
+    "account_menu_mediator.mm",
+    "account_menu_mediator_delegate.h",
+  ]
+  public_deps = [
+    "//ios/chrome/browser/authentication/account_menu/public",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager/objc",
+    "//components/sync/service",
+    "//components/trusted_vault",
+    "//ios/chrome/app:change_profile_commands",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/account_menu/ui",
+    "//ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation",
+    "//ios/chrome/browser/authentication/ui_bundled/authentication_flow",
+    "//ios/chrome/browser/authentication/ui_bundled/authentication_flow:request_helper",
+    "//ios/chrome/browser/authentication/ui_bundled/cells",
+    "//ios/chrome/browser/authentication/ui_bundled/change_profile",
+    "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_in_progress",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/reauth",
+    "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/policy/ui_bundled:management_util",
+    "//ios/chrome/browser/push_notification/model:push_notification_service_header",
+    "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
+    "//ios/chrome/browser/settings/ui_bundled:constants",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
+    "//ios/chrome/browser/settings/ui_bundled/google_services:sync_error_settings_command_handler",
+    "//ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts",
+    "//ios/chrome/browser/settings/ui_bundled/sync",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator:animated_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
+    "//ios/chrome/browser/sync/model",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "account_menu_coordinator_unittest.mm",
+    "account_menu_mediator_unittest.mm",
+  ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//components/sync:test_support",
+    "//components/sync/service",
+    "//components/test/ios",
+    "//components/trusted_vault",
+    "//ios/chrome/browser/authentication/account_menu/public",
+    "//ios/chrome/browser/authentication/account_menu/ui",
+    "//ios/chrome/browser/authentication/add_account_signin/coordinator",
+    "//ios/chrome/browser/authentication/ui_bundled/authentication_flow",
+    "//ios/chrome/browser/authentication/ui_bundled/cells",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_protected",
+    "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet",
+    "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
+    "//ios/chrome/browser/settings/ui_bundled/google_services:sync_error_settings_command_handler",
+    "//ios/chrome/browser/settings/ui_bundled/sync",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene/test",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

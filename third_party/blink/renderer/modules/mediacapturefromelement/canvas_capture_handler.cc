@@ -179,17 +179,17 @@ CanvasCaptureHandler::GetNewFrameCallback() {
   // to ensure that it be decremented even if the returned callback is dropped
   // instead of being run.
   pending_send_new_frame_calls_ += 1;
-  auto decrement_closure = WTF::BindOnce(
+  auto decrement_closure = blink::BindOnce(
       [](base::WeakPtr<CanvasCaptureHandler> handler) {
         if (handler)
           handler->pending_send_new_frame_calls_ -= 1;
       },
       weak_ptr_factory_.GetWeakPtr());
 
-  return WTF::BindOnce(&CanvasCaptureHandler::OnNewFrameCallback,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       base::ScopedClosureRunner(std::move(decrement_closure)),
-                       base::TimeTicks::Now(), gfx::ColorSpace());
+  return blink::BindOnce(
+      &CanvasCaptureHandler::OnNewFrameCallback, weak_ptr_factory_.GetWeakPtr(),
+      base::ScopedClosureRunner(std::move(decrement_closure)),
+      base::TimeTicks::Now(), gfx::ColorSpace());
 }
 
 void CanvasCaptureHandler::OnNewFrameCallback(
@@ -308,12 +308,13 @@ void CanvasCaptureHandler::SendRefreshFrame() {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   DCHECK_EQ(pending_send_new_frame_calls_, 0u);
   if (last_frame_ && delegate_) {
-    io_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CanvasCaptureHandler::CanvasCaptureHandlerDelegate::
-                           SendNewFrameOnIOThread,
-                       delegate_->GetWeakPtrForIOThread(), last_frame_,
-                       base::TimeTicks::Now()));
+    PostCrossThreadTask(
+        *io_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(
+            &CanvasCaptureHandler::CanvasCaptureHandlerDelegate::
+                SendNewFrameOnIOThread,
+            delegate_->GetWeakPtrForIOThread(), last_frame_,
+            base::TimeTicks::Now()));
   }
   deferred_request_refresh_frame_ = false;
 }

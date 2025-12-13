@@ -24,6 +24,8 @@ class PasswordFieldClassificationModelHandlerFactory
   PasswordFieldClassificationModelHandlerFactory& operator=(
       const PasswordFieldClassificationModelHandlerFactory&) = delete;
 
+  bool ServiceIsCreatedWithBrowserContext() const override;
+
  private:
   friend base::NoDestructor<PasswordFieldClassificationModelHandlerFactory>;
 

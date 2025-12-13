@@ -1,0 +1,10 @@
+{
+  "name": "blink-spec",
+  "version": "1.0.0",
+  "mcpServers": {
+    "blink-spec": {
+      "command": "vpython3",
+      "args": ["third_party/blink/tools/mcp_servers/blink_spec/server.py"]
+    }
+  }
+}

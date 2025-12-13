@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/error_page/common/localized_error.h"
 
 #include <stddef.h>
@@ -18,6 +13,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
@@ -74,7 +70,6 @@ enum NAV_SUGGESTIONS {
   SUGGEST_NAVIGATE_TO_ORIGIN = 1 << 12,
   SUGGEST_SECURE_DNS_CONFIG = 1 << 13,
   SUGGEST_CAPTIVE_PORTAL_SIGNIN = 1 << 14,
-  SUGGEST_RELOAD_PRIVATE_NETWORK_ACCESS = 1 << 15,
 };
 
 enum SHOW_BUTTONS {
@@ -321,11 +316,11 @@ const LocalizedErrorMap net_error_options[] = {
    SUGGEST_NONE,
    SHOW_BUTTON_RELOAD,
   },
-  {net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
+  {net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
    IDS_ERRORPAGES_HEADING_BLOCKED,
-   IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS,
-   SUGGEST_RELOAD_PRIVATE_NETWORK_ACCESS,
-   SHOW_BUTTON_RELOAD,
+   IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS,
+   SUGGEST_NONE,
+   SHOW_NO_BUTTONS,
   },
   {net::ERR_BLOCKED_BY_CSP,
    IDS_ERRORPAGES_HEADING_BLOCKED,
@@ -547,12 +542,13 @@ std::u16string GetStringWithPlaceholder(int resource_id,
   }
 }
 
-const LocalizedErrorMap* FindErrorMapInArray(const LocalizedErrorMap* maps,
-                                                   size_t num_maps,
-                                                   int error_code) {
-  for (size_t i = 0; i < num_maps; ++i) {
-    if (maps[i].error_code == error_code)
-      return &maps[i];
+const LocalizedErrorMap* FindErrorMapInArray(
+    base::span<const LocalizedErrorMap> maps,
+    int error_code) {
+  for (const auto& map : maps) {
+    if (map.error_code == error_code) {
+      return &map;
+    }
   }
   return nullptr;
 }
@@ -572,25 +568,22 @@ const LocalizedErrorMap* LookupErrorMap(const std::string& error_domain,
         net::IsHostnameResolutionError(error_code)) {
       return &secure_dns_network_error;
     }
-    return FindErrorMapInArray(net_error_options, std::size(net_error_options),
-                               error_code);
+    return FindErrorMapInArray(net_error_options, error_code);
   } else if (error_domain == Error::kHttpErrorDomain) {
-    const LocalizedErrorMap* map = FindErrorMapInArray(
-        http_error_options, std::size(http_error_options), error_code);
+    const LocalizedErrorMap* map =
+        FindErrorMapInArray(http_error_options, error_code);
     // Handle miscellaneous 400/500 errors.
     return !map && error_code >= 400 && error_code < 600
                ? &generic_4xx_5xx_error
                : map;
   } else if (error_domain == Error::kDnsProbeErrorDomain) {
     const LocalizedErrorMap* map =
-        FindErrorMapInArray(dns_probe_error_options,
-                            std::size(dns_probe_error_options), error_code);
+        FindErrorMapInArray(dns_probe_error_options, error_code);
     DCHECK(map);
     return map;
   } else if (error_domain == Error::kLinkPreviewErrorDomain) {
     const LocalizedErrorMap* map =
-        FindErrorMapInArray(link_preview_error_options,
-                            std::size(link_preview_error_options), error_code);
+        FindErrorMapInArray(link_preview_error_options, error_code);
     CHECK(map);
     return map;
   } else {
@@ -620,7 +613,7 @@ void AddLinkedSuggestionToList(const int error_code,
   GURL learn_more_url(kRedirectLoopLearnMoreUrl);
   DCHECK(learn_more_url.is_valid());
   // Add the language parameter to the URL.
-  std::string query = learn_more_url.query() + "&hl=" + locale;
+  std::string query = learn_more_url.GetQuery() + "&hl=" + locale;
   GURL::Replacements repl;
   repl.SetQueryStr(query);
   GURL learn_more_url_with_locale = learn_more_url.ReplaceComponents(repl);
@@ -695,11 +688,6 @@ void GetSuggestionsSummaryList(int error_code,
     return;
   }
   DCHECK(!IsSuggested(suggestions, SUGGEST_REPOST_RELOAD));
-
-  if (IsSuggested(suggestions, SUGGEST_RELOAD_PRIVATE_NETWORK_ACCESS)) {
-    suggestions_summary_list.Append(SingleEntryDictionary(
-        "summary", IDS_ERRORPAGES_SUGGESTION_RELOAD_PRIVATE_NETWORK_ACCESS));
-  }
 
   if (IsOnlySuggestion(suggestions, SUGGEST_NAVIGATE_TO_ORIGIN)) {
     DCHECK(suggestions_summary_list.empty());
@@ -905,7 +893,7 @@ void AddSuggestionsDetails(int error_code,
         l10n_util::GetStringFUTF16(
             IDS_ERRORPAGES_SUGGESTION_PROXY_DISABLE_PLATFORM,
             l10n_util::GetStringUTF16(IDS_SETTINGS_TITLE),
-            l10n_util::GetStringUTF16(IDS_SETTINGS_SHOW_ADVANCED_SETTINGS),
+            l10n_util::GetStringUTF16(IDS_SYSTEM_TITLE),
             l10n_util::GetStringUTF16(IDS_OPTIONS_PROXIES_CONFIGURE_BUTTON));
 #else
         l10n_util::GetStringUTF16(
@@ -1004,8 +992,8 @@ LocalizedError::PageState LocalizedError::GetPageState(
 
   webui::SetLoadTimeDataDefaults(locale, &result.strings);
 
-  bool show_game_instructions = failed_url.host() == kChromeUIDinoHost &&
-                                failed_url.scheme() == kChromeUIScheme;
+  bool show_game_instructions = failed_url.GetHost() == kChromeUIDinoHost &&
+                                failed_url.GetScheme() == kChromeUIScheme;
 
   // Grab the strings and settings that depend on the error type.  Init
   // options with default values.
@@ -1027,7 +1015,8 @@ LocalizedError::PageState LocalizedError::GetPageState(
   // ERR_ACCESS_DENIED to the map isn't sufficient, since that message may be
   // generated by some OSs when the operation doesn't involve a file URL.
   if (error_domain == Error::kNetErrorDomain &&
-      error_code == net::ERR_ACCESS_DENIED && failed_url.scheme() == "file") {
+      error_code == net::ERR_ACCESS_DENIED &&
+      failed_url.GetScheme() == "file") {
     options.heading_resource_id = IDS_ERRORPAGES_HEADING_FILE_ACCESS_DENIED;
     options.summary_resource_id = IDS_ERRORPAGES_SUMMARY_FILE_ACCESS_DENIED;
     options.suggestions = SUGGEST_NONE;
@@ -1048,7 +1037,7 @@ LocalizedError::PageState LocalizedError::GetPageState(
   if (base::i18n::IsRTL())
     base::i18n::WrapStringWithLTRFormatting(&failed_url_string);
 
-  std::u16string host_name(url_formatter::IDNToUnicode(failed_url.host()));
+  std::u16string host_name(url_formatter::IDNToUnicode(failed_url.GetHost()));
   if (failed_url.SchemeIsHTTPOrHTTPS()) {
     result.strings.Set("title", host_name);
   } else {
@@ -1058,7 +1047,7 @@ LocalizedError::PageState LocalizedError::GetPageState(
     // instead show the scheme.
     if (error_code == net::ERR_BLOCKED_BY_ADMINISTRATOR && host_name.empty()) {
       options.heading_resource_id = IDS_ERRORPAGES_HEADING_BLOCKED_SCHEME;
-      host_name = base::UTF8ToUTF16(failed_url.scheme());
+      host_name = base::UTF8ToUTF16(failed_url.GetScheme());
     }
   }
 
@@ -1202,7 +1191,8 @@ LocalizedError::PageState LocalizedError::GetPageStateForOverriddenErrorPage(
   webui::SetLoadTimeDataDefaults(locale, &result.strings);
 
   if (failed_url.SchemeIsHTTPOrHTTPS()) {
-    result.strings.Set("title", url_formatter::IDNToUnicode(failed_url.host()));
+    result.strings.Set("title",
+                       url_formatter::IDNToUnicode(failed_url.GetHost()));
   } else {
     std::u16string failed_url_string(url_formatter::FormatUrl(
         failed_url, url_formatter::kFormatUrlOmitNothing,

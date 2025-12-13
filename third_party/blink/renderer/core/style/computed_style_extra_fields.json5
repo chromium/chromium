@@ -52,8 +52,8 @@
         "layout-custom", "inline-layout-custom", "math", "block math",
         "inline list-item", "flow-root list-item", "inline flow-root list-item",
         "ruby", "block ruby", "ruby-text",
-        // Available only if CSSMasonryLayout is enabled:
-        "masonry", "inline-masonry"
+        // Available only if CSSGridLanesLayout is enabled:
+        "grid-lanes", "inline-grid-lanes"
       ],
       default_value: "inline",
     },
@@ -88,6 +88,9 @@
       keywords: ["not-inside-link", "inside-unvisited-link", "inside-visited-link"],
       inherited: true,
       invalidate: ["border-visual", "paint"],
+      // highlight_style_comes_from_originating_element should nominally
+      // be true here, but this propagation happens in a different place
+      // from all the other such properties, so we treat it as a separate case.
     },
     {
       name: "InForcedColorsMode",
@@ -96,6 +99,7 @@
       default_value: "false",
       type_name: "bool",
       inherited: true,
+      highlight_style_comes_from_originating_element: true,
     },
     // Style has a property with attr() values.
     {
@@ -252,7 +256,9 @@
     {
       name: "PseudoElementStyles",
       field_template: "primitive",
-      field_size: 23,
+      // See the definition of the PseudoId enum for details. This field_size
+      // must be updated when public IDs are added or removed.
+      field_size: 24,
       default_value: "kPseudoIdNone",
       type_name: "unsigned",
       reset_on_new_style: true,
@@ -294,15 +300,6 @@
       type_name: "bool",
       reset_on_new_style: true,
       custom_compare: true,
-    },
-    // Used by ::highlight
-    {
-      name: "PseudoArgument",
-      field_template: "external",
-      field_group: "*",
-      type_name: "AtomicString",
-      include_paths: ["third_party/blink/renderer/platform/wtf/text/atomic_string.h"],
-      default_value: "g_null_atom",
     },
     {
       name: "CustomHighlightNames",
@@ -390,15 +387,6 @@
       computed_style_custom_functions: ["setter"],
     },
     {
-      name: "HasAutoStandardLineClamp",
-      field_template: "primitive",
-      type_name: "bool",
-      field_group: "box",
-      default_value: "false",
-      computed_style_custom_functions: ["setter"],
-      invalidate: ["layout", "paint"],
-    },
-    {
       name: "font",
       field_template: "pointer",
       field_group: "inherited",
@@ -408,6 +396,7 @@
       default_value: "MakeGarbageCollected<Font>()",
       wrapper_pointer_name: "Member",
       invalidate: ["reshape"],
+      highlight_style_comes_from_originating_element: true,
     },
     {
       name: "ContainerFont",
@@ -499,7 +488,7 @@
       field_template: "primitive",
       include_paths: ["third_party/blink/renderer/platform/graphics/touch_action.h"],
       type_name: "TouchAction",
-      field_size: 10,
+      field_size: 8,
       default_value: "TouchAction::kAuto",
       field_group: "*",
     },
@@ -538,10 +527,12 @@
       field_template: "external",
       type_name: "StyleInheritedVariables",
       include_paths: ["third_party/blink/renderer/core/style/style_inherited_variables.h"],
-      default_value: "nullptr",
-      wrapper_pointer_name: "Member",
+      default_value: "StyleInheritedVariables()",
       field_group: "inherited",
       computed_style_custom_functions: ["getter", "setter"],
+      // Highlight Pseudos may use var() references but those must be resolved
+      // against the originating element.
+      highlight_style_comes_from_originating_element: true,
     },
     {
       name: "HighlightData",
@@ -613,6 +604,16 @@
       invalidate: ["mask", "paint"],
     },
     {
+      // Scrollbar sizes we subtract from the viewport for viewport units.
+      // Derived during the cascade and stored on ComputedStyle for later use.
+      name: "UnconditionalScrollbarSize",
+      field_template: "external",
+      type_name: "gfx::Size",
+      field_group: "*",
+      default_value: "gfx::Size()",
+      include_paths: ["ui/gfx/geometry/size.h"],
+    },
+    {
       name: "PageSize",
       field_template: "external",
       type_name: "gfx::SizeF",
@@ -667,10 +668,12 @@
       field_template: "external",
       type_name: "StyleNonInheritedVariables",
       field_group: "*",
-      default_value: "nullptr",
-      wrapper_pointer_name: "Member",
+      default_value: "StyleNonInheritedVariables()",
       include_paths: ["third_party/blink/renderer/core/style/style_non_inherited_variables.h"],
       computed_style_custom_functions: ["getter", "setter"],
+      // Highlight Pseudos may use var() references but those must be resolved
+      // against the originating element.
+      highlight_style_comes_from_originating_element: true,
     },
     {
       name: "PageSizeType",
@@ -975,6 +978,7 @@
       custom_compare: true,
       inherited: true,
       invalidate: ["accent-color", "border-visual", "currentcolor", "paint"],
+      highlight_style_comes_from_originating_element: true,
     },
     {
       // This flag is set if both the computed value of color-scheme is 'normal'
@@ -1033,14 +1037,6 @@
       field_template: "monotonic_flag",
       default_value: "false",
       custom_compare: true,
-    },
-    {
-      // crbug.com/41241289 Remove with the "ListStylePositionQuirk" flag.
-      name: "IsInsideListElement",
-      field_template: "monotonic_flag",
-      default_value: "false",
-      custom_compare: true,
-      inherited: true,
     },
 
     // This field disables the 'overflow' check in |LayoutBlock::
@@ -1388,7 +1384,7 @@
       inherited: false,
     },
     {
-      name: "InBaseSelectAppearance",
+      name: "InBaseAppearance",
       inherited: true,
       field_template: "primitive",
       type_name: "bool",

@@ -29,6 +29,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/webshare/win/share_operation.h"
+#include "ui/display/display.h"
 #endif
 
 // IsDangerousFilename() and IsDangerousMimeType() should be kept in sync with

@@ -28,19 +28,24 @@
 #include "content/browser/loader/download_utils_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/base/load_flags.h"
 #include "net/base/mime_sniffer.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_util.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/redirect_util.h"
 #include "net/url_request/referrer_policy.h"
+#include "net/url_request/url_request_job.h"  // For static util methods.
+#include "services/network/public/cpp/content_decoding_interceptor.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
@@ -53,6 +58,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace content {
 
@@ -303,6 +309,10 @@ class HeadersOverride {
         request.referrer_policy = net::ReferrerPolicy::NEVER_CLEAR;
       } else {
         request.headers.SetHeader(entry.first, entry.second);
+        if (base::EqualsCaseInsensitiveASCII(
+                entry.first, net::HttpRequestHeaders::kCookie)) {
+          instance->overridden_cookie_ = entry.second;
+        }
       }
     }
     return instance;
@@ -312,6 +322,11 @@ class HeadersOverride {
     instance->request_->headers = std::move(instance->original_headers_);
     instance->request_->referrer = instance->original_referrer_;
     instance->request_->referrer_policy = instance->original_referrer_policy_;
+    instance->overridden_cookie_.reset();
+  }
+
+  const std::optional<std::string>& overridden_cookie() const {
+    return overridden_cookie_;
   }
 
   void RemoveUnsafeOriginalHeadersOnRedirect() {
@@ -353,12 +368,43 @@ class HeadersOverride {
   net::HttpRequestHeaders original_headers_;
   GURL original_referrer_;
   net::ReferrerPolicy original_referrer_policy_;
+  std::optional<std::string> overridden_cookie_;
+};
+
+// A no-op implementation of network::mojom::TrustedHeaderClient.
+//
+// The kURLLoadOptionUseHeaderClient option requires that the URLLoader's
+// header client receiver is bound to an implementation. If the receiver is
+// dropped, the URLLoader's remote disconnects, causing the request to fail
+// with net::ERR_FAILED.
+//
+// This class is used to fulfill that contract when no real interception is
+// active, ensuring the pipe is safely terminated and the request can proceed.
+class NoOpHeaderClient final : public network::mojom::TrustedHeaderClient {
+ public:
+  NoOpHeaderClient() = default;
+  NoOpHeaderClient(const NoOpHeaderClient&) = delete;
+  NoOpHeaderClient& operator=(const NoOpHeaderClient&) = delete;
+  ~NoOpHeaderClient() override = default;
+
+  void OnBeforeSendHeaders(const net::HttpRequestHeaders& headers,
+                           OnBeforeSendHeadersCallback callback) override {
+    std::move(callback).Run(net::OK, std::nullopt);
+  }
+
+  void OnHeadersReceived(const std::string& headers,
+                         const net::IPEndPoint& endpoint,
+                         const std::optional<net::SSLInfo>& ssl_info,
+                         OnHeadersReceivedCallback callback) override {
+    std::move(callback).Run(net::OK, std::nullopt, std::nullopt);
+  }
 };
 
 }  // namespace
 
 class InterceptionJob : public network::mojom::URLLoaderClient,
-                        public network::mojom::URLLoader {
+                        public network::mojom::URLLoader,
+                        public network::mojom::TrustedHeaderClient {
  public:
   static InterceptionJob* FindByRequestId(
       const GlobalRequestID& global_req_id) {
@@ -382,6 +428,11 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
 
   InterceptionJob(const InterceptionJob&) = delete;
   InterceptionJob& operator=(const InterceptionJob&) = delete;
+
+  void OnLoaderCreated(
+      mojo::PendingReceiver<network::mojom::TrustedHeaderClient>
+          header_client_receiver,
+      mojo::PendingRemote<network::mojom::TrustedHeaderClient> header_client);
 
   void GetResponseBody(std::unique_ptr<GetResponseBodyCallback> callback);
   void TakeResponseBodyPipe(TakeResponseBodyPipeCallback callback);
@@ -475,6 +526,21 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
+  // network::mojom::TrustedHeaderClient methods
+  void OnBeforeSendHeaders(const net::HttpRequestHeaders& headers,
+                           OnBeforeSendHeadersCallback callback) override;
+  void OnHeadersReceived(const std::string& headers,
+                         const net::IPEndPoint& endpoint,
+                         const std::optional<net::SSLInfo>& ssl_info,
+                         OnHeadersReceivedCallback callback) override;
+
+  void OnTargetHeaderClientDisconnect();
+  void OnTargetHeaderClientBeforeSendHeadersComplete(
+      const net::HttpRequestHeaders& original_headers,
+      OnBeforeSendHeadersCallback original_callback,
+      int result_from_target,
+      const std::optional<net::HttpRequestHeaders>& headers_from_target);
+
   void StartLoadingResponseBody(mojo::ScopedDataPipeConsumerHandle body);
 
   bool CanGetResponseBody(std::string* error_reason);
@@ -497,11 +563,14 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
 
   mojo::Receiver<network::mojom::URLLoaderClient> client_receiver_{this};
   mojo::Receiver<network::mojom::URLLoader> loader_receiver_{this};
+  mojo::Receiver<network::mojom::TrustedHeaderClient> header_client_receiver_{
+      this};
 
   mojo::Remote<network::mojom::URLLoaderClient> client_;
   mojo::Remote<network::mojom::URLLoader> loader_;
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
+  mojo::Remote<network::mojom::TrustedHeaderClient> header_client_;
 
   enum State {
     kNotStarted,
@@ -526,6 +595,7 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
 
   std::unique_ptr<BodyReader> body_reader_;
   std::unique_ptr<ResponseMetadata> response_metadata_;
+  std::vector<net::SourceStreamType> client_side_content_decoding_types_;
   mojo::ScopedDataPipeConsumerHandle body_;
   bool registered_in_global_request_map_;
 
@@ -558,6 +628,8 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   std::unique_ptr<RequestBodyCollector> request_body_collector_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<InterceptionJob> weak_ptr_factory_{this};
 };
 
 void DevToolsURLLoaderInterceptor::CreateJob(
@@ -596,7 +668,9 @@ DevToolsURLLoaderInterceptor::GetInterceptionStages(
   return stages;
 }
 
-class DevToolsURLLoaderFactoryProxy : public network::mojom::URLLoaderFactory {
+class DevToolsURLLoaderFactoryProxy
+    : public network::mojom::URLLoaderFactory,
+      public network::mojom::TrustedURLLoaderHeaderClient {
  public:
   DevToolsURLLoaderFactoryProxy(
       const base::UnguessableToken& frame_token,
@@ -605,6 +679,10 @@ class DevToolsURLLoaderFactoryProxy : public network::mojom::URLLoaderFactory {
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           target_factory_remote,
+      mojo::PendingReceiver<network::mojom::TrustedURLLoaderHeaderClient>
+          header_client_receiver,
+      mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
+          target_header_client_remote,
       mojo::PendingRemote<network::mojom::CookieManager> cookie_manager,
       base::WeakPtr<DevToolsURLLoaderInterceptor> interceptor);
   ~DevToolsURLLoaderFactoryProxy() override;
@@ -622,19 +700,36 @@ class DevToolsURLLoaderFactoryProxy : public network::mojom::URLLoaderFactory {
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override;
 
+  // network::mojom::TrustedURLLoaderHeaderClient:
+  void OnLoaderCreated(
+      int32_t request_id,
+      mojo::PendingReceiver<network::mojom::TrustedHeaderClient> receiver)
+      override;
+  void OnLoaderForCorsPreflightCreated(
+      const network::ResourceRequest& request,
+      mojo::PendingReceiver<network::mojom::TrustedHeaderClient> receiver)
+      override;
+
   void OnProxyBindingError();
   void OnTargetFactoryError();
+  void OnTargetHeaderClientError();
 
   const base::UnguessableToken frame_token_;
   const int32_t process_id_;
   const bool is_download_;
 
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
+  mojo::Remote<network::mojom::TrustedURLLoaderHeaderClient>
+      target_url_loader_header_client_;
+  mojo::Receiver<network::mojom::TrustedURLLoaderHeaderClient>
+      url_loader_header_client_receiver_{this};
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
   base::WeakPtr<DevToolsURLLoaderInterceptor> interceptor_;
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<DevToolsURLLoaderFactoryProxy> weak_ptr_factory_{this};
 };
 
 // This class owns itself and will delete self when any mojo
@@ -645,6 +740,10 @@ DevToolsURLLoaderFactoryProxy::DevToolsURLLoaderFactoryProxy(
     bool is_download,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> target_factory_remote,
+    mojo::PendingReceiver<network::mojom::TrustedURLLoaderHeaderClient>
+        header_client_receiver,
+    mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
+        target_header_client_remote,
     mojo::PendingRemote<network::mojom::CookieManager> cookie_manager,
     base::WeakPtr<DevToolsURLLoaderInterceptor> interceptor)
     : frame_token_(frame_token),
@@ -660,6 +759,21 @@ DevToolsURLLoaderFactoryProxy::DevToolsURLLoaderFactoryProxy(
   receivers_.set_disconnect_handler(
       base::BindRepeating(&DevToolsURLLoaderFactoryProxy::OnProxyBindingError,
                           base::Unretained(this)));
+
+  if (header_client_receiver) {
+    url_loader_header_client_receiver_.Bind(std::move(header_client_receiver));
+  }
+  if (target_header_client_remote) {
+    target_url_loader_header_client_.Bind(
+        std::move(target_header_client_remote));
+
+    // Use a WeakPtr for safety. The disconnection of this ancillary header
+    // client pipe is a separate asynchronous event from the disconnection of
+    // the main factory pipe that controls this proxy's lifetime.
+    target_url_loader_header_client_.set_disconnect_handler(base::BindOnce(
+        &DevToolsURLLoaderFactoryProxy::OnTargetHeaderClientError,
+        weak_ptr_factory_.GetWeakPtr()));
+  }
 
   cookie_manager_.Bind(std::move(cookie_manager));
   cookie_manager_.set_disconnect_handler(
@@ -704,6 +818,63 @@ void DevToolsURLLoaderFactoryProxy::Clone(
   receivers_.Add(this, std::move(receiver));
 }
 
+void DevToolsURLLoaderFactoryProxy::OnLoaderCreated(
+    int32_t request_id,
+    mojo::PendingReceiver<network::mojom::TrustedHeaderClient> receiver) {
+  DevToolsURLLoaderInterceptor* interceptor = interceptor_.get();
+  if (interceptor) {
+    if (InterceptionJob* job = interceptor->FindJobByRequestId(request_id)) {
+      // An InterceptionJob exists for this request, so establish the
+      // per-request proxy chain. A new pipe is created for the downstream
+      // client (if any). The job's receiver and the new target remote are then
+      // passed to the job for binding.
+      mojo::PendingRemote<network::mojom::TrustedHeaderClient>
+          target_header_client;
+      if (target_url_loader_header_client_) {
+        target_url_loader_header_client_->OnLoaderCreated(
+            request_id, target_header_client.InitWithNewPipeAndPassReceiver());
+      }
+      job->OnLoaderCreated(std::move(receiver),
+                           std::move(target_header_client));
+      return;
+    }
+  }
+
+  // Fallback path when interception is disabled (e.g., via Fetch.disable)
+  // or a job was not found. The request should proceed as if DevTools was
+  // not attached, by forwarding the header client call transparently.
+  if (target_url_loader_header_client_) {
+    target_url_loader_header_client_->OnLoaderCreated(request_id,
+                                                      std::move(receiver));
+  } else {
+    // There is no downstream client. To prevent the request from failing with
+    // net::ERR_FAILED due to a disconnected header client pipe, bind the
+    // receiver to a self-owned no-op implementation. This safely terminates the
+    // channel and allows the request to proceed unmodified.
+    mojo::MakeSelfOwnedReceiver(std::make_unique<NoOpHeaderClient>(),
+                                std::move(receiver));
+  }
+}
+
+void DevToolsURLLoaderFactoryProxy::OnLoaderForCorsPreflightCreated(
+    const network::ResourceRequest& request,
+    mojo::PendingReceiver<network::mojom::TrustedHeaderClient> receiver) {
+  // CORS preflight requests are handled by the browser and are not currently
+  // intercepted by the DevTools Fetch API. The call must be forwarded or
+  // handled to maintain the integrity of the header client channel.
+  if (target_url_loader_header_client_) {
+    target_url_loader_header_client_->OnLoaderForCorsPreflightCreated(
+        request, std::move(receiver));
+  } else {
+    // There is no downstream client. To prevent the preflight request from
+    // failing with net::ERR_FAILED due to a disconnected pipe, the receiver
+    // must be bound. A self-owned no-op implementation fulfills this contract
+    // and allows the preflight to proceed unmodified.
+    mojo::MakeSelfOwnedReceiver(std::make_unique<NoOpHeaderClient>(),
+                                std::move(receiver));
+  }
+}
+
 void DevToolsURLLoaderFactoryProxy::OnTargetFactoryError() {
   delete this;
 }
@@ -711,6 +882,14 @@ void DevToolsURLLoaderFactoryProxy::OnTargetFactoryError() {
 void DevToolsURLLoaderFactoryProxy::OnProxyBindingError() {
   if (receivers_.empty())
     delete this;
+}
+
+void DevToolsURLLoaderFactoryProxy::OnTargetHeaderClientError() {
+  // The downstream header client factory has disconnected.
+  // The remote is reset to prevent further calls. This proxy is not
+  // destroyed here, as its lifecycle is tied to the main URLLoaderFactory
+  // pipe (`target_factory_`).
+  target_url_loader_header_client_.reset();
 }
 
 // static
@@ -777,7 +956,9 @@ bool DevToolsURLLoaderInterceptor::CreateProxyForInterception(
     const base::UnguessableToken& frame_token,
     bool is_navigation,
     bool is_download,
-    network::mojom::URLLoaderFactoryOverride* intercepting_factory) {
+    network::mojom::URLLoaderFactoryOverride* intercepting_factory,
+    mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
+        header_client) {
   DCHECK(storage_partition);
 
   if (patterns_.empty())
@@ -797,6 +978,21 @@ bool DevToolsURLLoaderInterceptor::CreateProxyForInterception(
       target_remote.InitWithNewPipeAndPassReceiver();
   mojo::PendingRemote<network::mojom::CookieManager> cookie_manager;
 
+  mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
+      target_header_client;
+  mojo::PendingReceiver<network::mojom::TrustedURLLoaderHeaderClient>
+      header_client_receiver;
+
+  // Intercept the TrustedURLLoaderHeaderClient channel to act as a proxy.
+  // The original `header_client` remote, which points to the downstream
+  // client, is moved to become the proxy's target. The caller's `header_client`
+  // is then replaced with a new remote that points to this proxy's receiver,
+  // effectively inserting DevTools into the chain.
+  if (header_client) {
+    target_header_client = std::move(*header_client);
+    *header_client = header_client_receiver.InitWithNewPipeAndPassRemote();
+  }
+
   // TODO(crbug.com/40276949): Using 0 as the process id for navigations
   // can lead to collisions between multiple navigations/service workers main
   // script fetch. It should be replaced by the more robust
@@ -810,7 +1006,8 @@ bool DevToolsURLLoaderInterceptor::CreateProxyForInterception(
   new DevToolsURLLoaderFactoryProxy(
       frame_token, process_id_override, is_download,
       std::move(intercepting_factory->overridden_factory_receiver),
-      std::move(target_remote), std::move(cookie_manager),
+      std::move(target_remote), std::move(header_client_receiver),
+      std::move(target_header_client), std::move(cookie_manager),
       weak_factory_.GetWeakPtr());
   intercepting_factory->overridden_factory_receiver =
       std::move(overridden_factory_receiver);
@@ -867,7 +1064,7 @@ bool InterceptionJob::StartJobAndMaybeNotify() {
   start_time_ = base::Time::Now();
 
   current_id_ = id_prefix_ + base::StringPrintf(".%d", redirect_count_);
-  interceptor_->AddJob(current_id_, this);
+  interceptor_->AddJob(create_loader_params_->request_id, current_id_, this);
 
   const network::ResourceRequest& request = create_loader_params_->request;
   stages_ = interceptor_->GetInterceptionStages(
@@ -994,7 +1191,8 @@ void InterceptionJob::Detach() {
   if (state_ == State::kAuthRequired) {
     state_ = State::kRequestSent;
     waiting_for_resolution_ = false;
-    TRACE_EVENT_NESTABLE_ASYNC_END0("devtools", "Fetch.requestPaused", this);
+    // Corresponds to the TRACE_EVENT_BEGIN in CompleteNotifyingClient.
+    TRACE_EVENT_END("devtools", perfetto::Track::FromPointer(this));
     std::move(pending_auth_callback_).Run(true, std::nullopt);
     return;
   }
@@ -1008,7 +1206,8 @@ Response InterceptionJob::InnerContinueRequest(
         "Invalid state for continueInterceptedRequest");
   }
   waiting_for_resolution_ = false;
-  TRACE_EVENT_NESTABLE_ASYNC_END0("devtools", "Fetch.requestPaused", this);
+  // Corresponds to the TRACE_EVENT_BEGIN in CompleteNotifyingClient.
+  TRACE_EVENT_END("devtools", perfetto::Track::FromPointer(this));
   if (modifications->intercept_response.has_value()) {
     stages_.PutOrRemove(InterceptionStage::kResponse,
                         modifications->intercept_response.value());
@@ -1151,8 +1350,34 @@ void InterceptionJob::ApplyModificationsToRequest(
   if (modifications->modified_url.has_value()) {
     DCHECK_EQ(url_chain_.back(), request->url);
     const GURL new_url(modifications->modified_url.value());
+    const url::Origin original_origin = url::Origin::Create(request->url);
+    const url::Origin new_origin = url::Origin::Create(new_url);
     request->url = new_url;
     url_chain_.back() = new_url;
+
+    // A direct origin comparison is used instead of
+    // `net::SchemefulSite::IsSameSite`. `IsSameSite` considers different ports
+    // on localhost as same-site, which conflicts with the stricter,
+    // origin-based Referrer-Policy check performed later in
+    // `URLRequest::StartJob`. This mismatch would cause the `NetworkDelegate`
+    // to block the request via
+    // `CancelURLRequestWithPolicyViolatingReferrerHeader`, leading to an
+    // `ERR_BLOCKED_BY_CLIENT` failure. Using an origin-based check here aligns
+    // the logic and prevents this error.
+    if (original_origin != new_origin) {
+      GURL new_referrer = net::URLRequestJob::ComputeReferrerForPolicy(
+          request->referrer_policy, request->referrer, new_url,
+          /* same_origin_out_for_metrics*/ nullptr);
+      // net/ has a similar check but would block a request with wrong referrer,
+      // so help clients a bit.
+      if (new_referrer != request->referrer) {
+        request->referrer = {};
+      }
+      request->site_for_cookies = net::SiteForCookies::FromUrl(new_url);
+      if (request->trusted_params) {
+        request->trusted_params->isolation_info = {};
+      }
+    }
   }
 
   if (modifications->modified_method.has_value()) {
@@ -1373,6 +1598,7 @@ void InterceptionJob::SendResponse(scoped_refptr<base::RefCountedMemory> body,
     DCHECK_EQ(0u, res);
     DCHECK_EQ(actually_written_bytes, bytes_to_write.size());
   }
+  response_metadata_->head->client_side_content_decoding_types.clear();
   client_->OnReceiveResponse(std::move(response_metadata_->head),
                              std::move(consumer_handle),
                              std::move(response_metadata_->cached_metadata));
@@ -1396,9 +1622,15 @@ void InterceptionJob::StartRequest() {
 
   state_ = State::kRequestSent;
 
+  uint32_t options = create_loader_params_->options;
+  // Always enable the header client for intercepted requests. Ensures the
+  // header client channel is always available, making the cookie override logic
+  // robust across redirects.
+  options |= network::mojom::kURLLoadOptionUseHeaderClient;
+
   target_factory_->CreateLoaderAndStart(
       loader_.BindNewPipeAndPassReceiver(), create_loader_params_->request_id,
-      create_loader_params_->options, create_loader_params_->request,
+      options, create_loader_params_->request,
       client_receiver_.BindNewPipeAndPassRemote(),
       create_loader_params_->traffic_annotation);
   client_receiver_.set_disconnect_handler(
@@ -1466,7 +1698,9 @@ void InterceptionJob::FetchCookies(base::OnceClosure callback) {
       net::cookie_util::ComputeSameSiteContextForRequest(
           request.method, url_chain_, request.site_for_cookies,
           request.request_initiator, is_main_frame_navigation,
-          should_treat_as_first_party));
+          should_treat_as_first_party,
+          request.destination ==
+              network::mojom::RequestDestination::kWebIdentity));
 
   cookie_manager_->GetCookieList(
       request.url, options, net::CookiePartitionKeyCollection::Todo(),
@@ -1538,7 +1772,8 @@ void InterceptionJob::CompleteNotifyingClient(
           create_loader_params_->request,
           request_cookies_.value_or(std::string()), request_bodies_);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("devtools", "Fetch.requestPaused", this);
+  TRACE_EVENT_BEGIN("devtools", "Fetch.requestPaused",
+                    perfetto::Track::FromPointer(this));
   waiting_for_resolution_ = true;
   interceptor_->request_intercepted_callback_.Run(std::move(request_info));
 }
@@ -1551,7 +1786,7 @@ void InterceptionJob::CompleteRequest(
 
 void InterceptionJob::Shutdown() {
   if (interceptor_)
-    interceptor_->RemoveJob(current_id_);
+    interceptor_->RemoveJob(create_loader_params_->request_id, current_id_);
   delete this;
 }
 
@@ -1618,7 +1853,7 @@ void InterceptionJob::FollowRedirect(
     redirected_request_id_ = current_id_;
     // Pretend that each redirect hop is a new request -- this is for
     // compatibilty with URLRequestJob-based interception implementation.
-    interceptor_->RemoveJob(current_id_);
+    interceptor_->RemoveJob(create_loader_params_->request_id, current_id_);
     redirect_count_++;
     if (StartJobAndMaybeNotify())
       return;
@@ -1660,6 +1895,8 @@ void InterceptionJob::OnReceiveResponse(
   }
   client_receiver_.Pause();
   body_ = std::move(body);
+  client_side_content_decoding_types_ =
+      head->client_side_content_decoding_types;
 
   auto request_info = BuildRequestInfo(head);
   const network::ResourceRequest& request = create_loader_params_->request;
@@ -1720,6 +1957,12 @@ void InterceptionJob::OnTransferSizeUpdated(int32_t transfer_size_diff) {
 
 void InterceptionJob::StartLoadingResponseBody(
     mojo::ScopedDataPipeConsumerHandle body) {
+  if (!client_side_content_decoding_types_.empty()) {
+    network::ContentDecodingInterceptor::DecodeOnNetworkService(
+        *GetNetworkService(), client_side_content_decoding_types_, body,
+        network::ContentDecodingInterceptor::ClientType::kDevTools,
+        base::DoNothing());
+  }
   if (pending_response_body_pipe_callback_) {
     DCHECK_EQ(State::kResponseTaken, state_);
     DCHECK(!body_reader_);
@@ -1762,6 +2005,116 @@ void InterceptionJob::OnComplete(
   DCHECK(waiting_for_resolution_);
 
   response_metadata_->status = status;
+}
+
+void InterceptionJob::OnLoaderCreated(
+    mojo::PendingReceiver<network::mojom::TrustedHeaderClient>
+        header_client_receiver,
+    mojo::PendingRemote<network::mojom::TrustedHeaderClient> header_client) {
+  header_client_receiver_.reset();
+  header_client_receiver_.Bind(std::move(header_client_receiver));
+  if (header_client) {
+    header_client_.reset();
+    header_client_.Bind(std::move(header_client));
+
+    // Use a WeakPtr for safety. A race is possible where the main request is
+    // completed or cancelled (destroying this job) before the disconnect
+    // handler for this separate pipe has a chance to run.
+    header_client_.set_disconnect_handler(
+        base::BindOnce(&InterceptionJob::OnTargetHeaderClientDisconnect,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void InterceptionJob::OnTargetHeaderClientDisconnect() {
+  // The downstream per-request client has disconnected. Forwarding
+  // OnBeforeSendHeaders events to it is no longer possible. The remote is
+  // simply reset, as the job's lifecycle is bound to the main URLLoader
+  // and URLLoaderClient pipes.
+  header_client_.reset();
+}
+
+void InterceptionJob::OnBeforeSendHeaders(
+    const net::HttpRequestHeaders& headers,
+    OnBeforeSendHeadersCallback callback) {
+  if (header_client_) {
+    // Use a WeakPtr for safety. The InterceptionJob can be destroyed if the
+    // main request is cancelled while waiting for this asynchronous callback
+    // from the downstream client.
+    OnBeforeSendHeadersCallback wrapped_callback = base::BindOnce(
+        &InterceptionJob::OnTargetHeaderClientBeforeSendHeadersComplete,
+        weak_ptr_factory_.GetWeakPtr(), headers, std::move(callback));
+    header_client_->OnBeforeSendHeaders(headers, std::move(wrapped_callback));
+    return;
+  }
+
+  if (!headers_override_ ||
+      !headers_override_->overridden_cookie().has_value()) {
+    std::move(callback).Run(net::OK, headers);
+    return;
+  }
+
+  // A targeted override is applied for the Cookie header only. Other headers
+  // from the DevTools `continueRequest` command are not reapplied at this
+  // stage. Modifications to general headers are correctly propagated through
+  // the network stack. The Cookie header is a unique exception, as the network
+  // stack unconditionally overwrites it with values from the browser's cookie
+  // store. This late-stage override ensures the DevTools-provided cookie value
+  // has the final authority.
+  net::HttpRequestHeaders final_headers = headers;
+  final_headers.SetHeader(net::HttpRequestHeaders::kCookie,
+                          headers_override_->overridden_cookie().value());
+  std::move(callback).Run(net::OK, final_headers);
+}
+
+void InterceptionJob::OnHeadersReceived(
+    const std::string& headers,
+    const net::IPEndPoint& endpoint,
+    const std::optional<net::SSLInfo>& ssl_info,
+    OnHeadersReceivedCallback callback) {
+  // If a downstream client exists, delegate the responsibility of handling the
+  // event and invoking the callback entirely to it.
+  if (header_client_) {
+    header_client_->OnHeadersReceived(headers, endpoint, ssl_info,
+                                      std::move(callback));
+    return;
+  }
+
+  // If there is no downstream client, this job is responsible for un-pausing
+  // the request.
+  std::move(callback).Run(net::OK, std::nullopt, std::nullopt);
+}
+
+void InterceptionJob::OnTargetHeaderClientBeforeSendHeadersComplete(
+    const net::HttpRequestHeaders& original_headers,
+    OnBeforeSendHeadersCallback original_callback,
+    int result_from_target,
+    const std::optional<net::HttpRequestHeaders>& headers_from_target) {
+  // If the downstream client (e.g., an extension) blocked or cancelled the
+  // request, we must respect that decision and forward the result immediately.
+  if (result_from_target != net::OK) {
+    std::move(original_callback).Run(result_from_target, headers_from_target);
+    return;
+  }
+
+  if (!headers_override_ ||
+      !headers_override_->overridden_cookie().has_value()) {
+    std::move(original_callback).Run(result_from_target, headers_from_target);
+    return;
+  }
+
+  // A targeted override is applied for the Cookie header only. Other headers
+  // from the DevTools `continueRequest` command are not reapplied at this
+  // stage. Modifications to general headers are correctly propagated through
+  // the network stack. The Cookie header is a unique exception, as the network
+  // stack unconditionally overwrites it with values from the browser's cookie
+  // store. This late-stage override ensures the DevTools-provided cookie value
+  // has the final authority.
+  net::HttpRequestHeaders final_headers =
+      headers_from_target.value_or(original_headers);
+  final_headers.SetHeader(net::HttpRequestHeaders::kCookie,
+                          headers_override_->overridden_cookie().value());
+  std::move(original_callback).Run(result_from_target, final_headers);
 }
 
 void InterceptionJob::OnAuthRequest(

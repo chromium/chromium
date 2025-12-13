@@ -92,10 +92,6 @@ class IntervalMapConstIterator {
     return iter_ == other.iter_;
   }
 
-  bool operator!=(const IntervalMapConstIterator& other) const {
-    return iter_ != other.iter_;
-  }
-
   // Returns the beginning of the current interval.
   KeyType interval_begin() const {
     CHECK(iter_ != map_->end());

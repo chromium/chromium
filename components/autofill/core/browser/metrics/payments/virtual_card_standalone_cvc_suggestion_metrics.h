@@ -11,6 +11,7 @@ namespace autofill::autofill_metrics {
 
 // Enum for different types of virtual card standalone CVC suggestion form
 // events. Used for metrics logging.
+//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class VirtualCardStandaloneCvcSuggestionFormEvent {

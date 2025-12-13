@@ -29,6 +29,9 @@ base::expected<SessionParams, SessionError> ParseSessionInstructionJson(
     std::optional<std::string> expected_session_id,
     std::string_view response_json);
 
+std::optional<WellKnownParams> ParseWellKnownJson(
+    std::string_view response_json);
+
 }  // namespace net::device_bound_sessions
 
 #endif  // NET_DEVICE_BOUND_SESSIONS_SESSION_JSON_UTILS_H_

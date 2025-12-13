@@ -16,15 +16,19 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
+import '../controls/collapse_radio_button.js';
+import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
 import '../privacy_icons.html.js';
-import '../privacy_page/collapse_radio_button.js';
+import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './protocol_handlers.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
@@ -65,7 +69,7 @@ export interface ProtocolHandlersElement {
 }
 
 const ProtocolHandlersElementBase =
-    WebUiListenerMixin(SiteSettingsMixin(PolymerElement));
+    SettingsViewMixin(WebUiListenerMixin(SiteSettingsMixin(PolymerElement)));
 
 export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
   static get is() {
@@ -314,6 +318,11 @@ export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
 
   private getNameText_(item: AppHandlerEntry): string {
     return item.app_name || item.host;
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

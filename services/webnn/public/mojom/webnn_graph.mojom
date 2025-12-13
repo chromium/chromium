@@ -7,6 +7,13 @@ module webnn.mojom;
 import "services/webnn/public/mojom/webnn_context_properties.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
+// Represents the `MLNumber` in the WebIDL definition.
+union Number {
+  double floating_point;
+  int64 signed_integer;
+  uint64 unsigned_integer;
+};
+
 // Represents the `MLOperandType` in the WebIDL definition.
 enum DataType {
   kFloat32,
@@ -25,6 +32,9 @@ enum DataType {
 struct OperandDescriptor {
   DataType data_type;
   array<uint32> shape;
+  // Permutation that needs to be performed on service side for constant
+  // operands.
+  array<uint32> pending_permutation;
 };
 
 struct OperandId {
@@ -117,9 +127,9 @@ struct Clamp {
   OperandId output_operand_id;
 
   // The minimum value of the range.
-  float min_value;
+  Number min_value;
   // The maximum value of the range.
-  float max_value;
+  Number max_value;
   // User defined label from MLOperatorOptions.
   string label;
 };
@@ -306,8 +316,11 @@ struct ElementWiseUnary {
     kLog,
     kNeg,
     kSign,
+    kRoundEven,
     kSin,
     kTan,
+    kIsNaN,
+    kIsInfinite,
     kLogicalNot,
     kIdentity,
     kSqrt,
@@ -344,7 +357,7 @@ struct Expand {
 // Specifies the different ways to pad a tensor. The padding value is only
 // specified when the mode is "constant".
 struct ConstantPadding {
-  float value = 0;
+  Number value;
 };
 
 struct EdgePadding {};

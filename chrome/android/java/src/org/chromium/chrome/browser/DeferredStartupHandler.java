@@ -14,7 +14,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
@@ -26,7 +26,7 @@ public class DeferredStartupHandler {
     private static @Nullable DeferredStartupHandler sInstance;
 
     private final MessageQueue mMessageQueue;
-    private final Queue<Runnable> mDeferredTasks = new LinkedList<>();
+    private final Queue<Runnable> mDeferredTasks = new ArrayDeque<>();
 
     private @Nullable CountDownLatch mLatchForTesting;
 

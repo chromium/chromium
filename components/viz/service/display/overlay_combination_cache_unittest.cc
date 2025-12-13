@@ -35,7 +35,7 @@ class TestOverlayProcessor : public OverlayProcessorUsingStrategy {
   bool IsOverlaySupported() const override { return true; }
   bool NeedsSurfaceDamageRectList() const override { return false; }
   void CheckOverlaySupportImpl(
-      const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
+      const std::optional<OverlayCandidate>& primary_plane,
       OverlayCandidateList* surfaces) override {}
   size_t GetStrategyCount() const { return 1; }
 };
@@ -406,7 +406,7 @@ TEST_F(OverlayCombinationCacheTest, GetIds) {
   ASSERT_THAT(ids, ElementsAre(0, 1, 2, 3));
 
   // Reverse the list.
-  std::reverse(considered_candidates.begin(), considered_candidates.end());
+  std::ranges::reverse(considered_candidates);
   ids = GetIds(considered_candidates);
   // Ids are cached, so the ids list is also reverse.
   ASSERT_THAT(ids, ElementsAre(3, 2, 1, 0));

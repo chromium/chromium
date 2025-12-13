@@ -88,23 +88,23 @@ TEST_F(ActionCustomizationModelTest, HidingMovesToEnd) {
       CreateOverflowMenuAction(overflow_menu::ActionType::Bookmark);
   OverflowMenuAction* textZoom =
       CreateOverflowMenuAction(overflow_menu::ActionType::TextZoom);
-  OverflowMenuAction* follow =
-      CreateOverflowMenuAction(overflow_menu::ActionType::Follow);
+  OverflowMenuAction* translate =
+      CreateOverflowMenuAction(overflow_menu::ActionType::Translate);
   model_ = [[ActionCustomizationModel alloc]
-      initWithActions:@[ bookmark, textZoom, follow ]];
+      initWithActions:@[ bookmark, textZoom, translate ]];
 
-  follow.shown = NO;
+  translate.shown = NO;
   textZoom.shown = NO;
 
   ASSERT_EQ(model_.shownActions.count, 1u);
   EXPECT_EQ(model_.shownActions[0], bookmark);
   ASSERT_EQ(model_.hiddenActions.count, 2u);
   EXPECT_EQ(model_.hiddenActions[0], textZoom);
-  EXPECT_EQ(model_.hiddenActions[1], follow);
+  EXPECT_EQ(model_.hiddenActions[1], translate);
   ASSERT_EQ(model_.actionsGroup.actions.count, 3u);
   ASSERT_EQ(model_.actionsGroup.actions[0], bookmark);
   ASSERT_EQ(model_.actionsGroup.actions[1], textZoom);
-  ASSERT_EQ(model_.actionsGroup.actions[2], follow);
+  ASSERT_EQ(model_.actionsGroup.actions[2], translate);
 }
 
 // Tests that the model partitions actions into shown and hidden halves
@@ -114,26 +114,26 @@ TEST_F(ActionCustomizationModelTest, ModelPartitionsActions) {
       CreateOverflowMenuAction(overflow_menu::ActionType::Bookmark);
   OverflowMenuAction* textZoom =
       CreateOverflowMenuAction(overflow_menu::ActionType::TextZoom);
-  OverflowMenuAction* follow =
-      CreateOverflowMenuAction(overflow_menu::ActionType::Follow);
+  OverflowMenuAction* readerMode =
+      CreateOverflowMenuAction(overflow_menu::ActionType::ReaderMode);
   OverflowMenuAction* translate =
       CreateOverflowMenuAction(overflow_menu::ActionType::Translate);
 
-  follow.shown = NO;
+  readerMode.shown = NO;
   translate.shown = NO;
 
   model_ = [[ActionCustomizationModel alloc]
-      initWithActions:@[ bookmark, follow, textZoom, translate ]];
+      initWithActions:@[ bookmark, readerMode, textZoom, translate ]];
 
   ASSERT_EQ(model_.shownActions.count, 2u);
   EXPECT_EQ(model_.shownActions[0], bookmark);
   EXPECT_EQ(model_.shownActions[1], textZoom);
   ASSERT_EQ(model_.hiddenActions.count, 2u);
-  EXPECT_EQ(model_.hiddenActions[0], follow);
+  EXPECT_EQ(model_.hiddenActions[0], readerMode);
   EXPECT_EQ(model_.hiddenActions[1], translate);
   ASSERT_EQ(model_.actionsGroup.actions.count, 4u);
   ASSERT_EQ(model_.actionsGroup.actions[0], bookmark);
-  ASSERT_EQ(model_.actionsGroup.actions[1], follow);
+  ASSERT_EQ(model_.actionsGroup.actions[1], readerMode);
   ASSERT_EQ(model_.actionsGroup.actions[2], textZoom);
   ASSERT_EQ(model_.actionsGroup.actions[3], translate);
 }

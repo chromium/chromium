@@ -87,7 +87,6 @@ LargestContentfulPaintDetailsForReporting PerformanceTimingForReporting::
           timing.largest_contentful_paint_image_bpp,
           largest_text_paint_time,
           timing.largest_text_paint_size,
-          timing.largest_contentful_paint_time,
 
           timing.largest_contentful_paint_image_request_priority,
           merged_unclamped_paint_time};
@@ -131,23 +130,23 @@ PerformanceTimingForReporting::BackForwardCacheRestore() const {
   if (!interactive_detector)
     return {};
 
-  WTF::Vector<base::TimeTicks> navigation_starts =
+  Vector<base::TimeTicks> navigation_starts =
       load_timing->BackForwardCacheRestoreNavigationStarts();
-  WTF::Vector<base::TimeTicks> first_paints =
+  Vector<base::TimeTicks> first_paints =
       paint_timing->FirstPaintsAfterBackForwardCacheRestore();
-  WTF::Vector<std::array<
+  Vector<std::array<
       base::TimeTicks,
       WebPerformanceMetricsForReporting::
           kRequestAnimationFramesToRecordAfterBackForwardCacheRestore>>
       request_animation_frames =
           paint_timing->RequestAnimationFramesAfterBackForwardCacheRestore();
-  WTF::Vector<std::optional<base::TimeDelta>> first_input_delays =
+  Vector<std::optional<base::TimeDelta>> first_input_delays =
       interactive_detector->GetFirstInputDelaysAfterBackForwardCacheRestore();
   DCHECK_EQ(navigation_starts.size(), first_paints.size());
   DCHECK_EQ(navigation_starts.size(), request_animation_frames.size());
   DCHECK_EQ(navigation_starts.size(), first_input_delays.size());
 
-  WTF::Vector<BackForwardCacheRestoreTiming> restore_timings(
+  Vector<BackForwardCacheRestoreTiming> restore_timings(
       navigation_starts.size());
   for (wtf_size_t i = 0; i < restore_timings.size(); i++) {
     restore_timings[i].navigation_start =
@@ -169,6 +168,15 @@ uint64_t PerformanceTimingForReporting::FirstPaintForMetrics() const {
     return 0;
 
   return MonotonicTimeToIntegerMilliseconds(timing->FirstPaintForMetrics());
+}
+
+base::TimeTicks
+PerformanceTimingForReporting::FirstPaintAsMonotonicTimeForMetrics() const {
+  const PaintTiming* timing = GetPaintTiming();
+  if (!timing) {
+    return base::TimeTicks();
+  }
+  return timing->FirstPaintForMetrics();
 }
 
 uint64_t PerformanceTimingForReporting::FirstImagePaint() const {

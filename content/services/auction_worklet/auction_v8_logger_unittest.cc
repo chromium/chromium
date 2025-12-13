@@ -19,6 +19,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/worklet_v8_debug_test_util.h"
 #include "gin/converter.h"
+#include "gin/public/gin_embedders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "v8/include/v8-context.h"
@@ -44,7 +45,9 @@ class TestLazyFiller {
 
     v8::Maybe<bool> success = object->SetLazyDataProperty(
         isolate->GetCurrentContext(), gin::StringToSymbol(isolate, "warn1"),
-        &TestLazyFiller::Warn1, v8::External::New(isolate, this),
+        &TestLazyFiller::Warn1,
+        v8::External::New(isolate, this,
+                          gin::kAuctionV8LoggerTest_TestLazyFillerTag),
         /*attributes=*/v8::None,
         /*getter_side_effect_type=*/v8::SideEffectType::kHasNoSideEffect,
         /*setter_side_effect_type=*/v8::SideEffectType::kHasSideEffect);
@@ -52,7 +55,9 @@ class TestLazyFiller {
 
     success = object->SetLazyDataProperty(
         isolate->GetCurrentContext(), gin::StringToSymbol(isolate, "warn2"),
-        &TestLazyFiller::Warn2, v8::External::New(isolate, this),
+        &TestLazyFiller::Warn2,
+        v8::External::New(isolate, this,
+                          gin::kAuctionV8LoggerTest_TestLazyFillerTag),
         /*attributes=*/v8::None,
         /*getter_side_effect_type=*/v8::SideEffectType::kHasNoSideEffect,
         /*setter_side_effect_type=*/v8::SideEffectType::kHasSideEffect);
@@ -64,8 +69,9 @@ class TestLazyFiller {
  private:
   static void Warn1(v8::Local<v8::Name> name,
                     const v8::PropertyCallbackInfo<v8::Value>& info) {
-    TestLazyFiller* self =
-        static_cast<TestLazyFiller*>(v8::External::Cast(*info.Data())->Value());
+    TestLazyFiller* self = static_cast<TestLazyFiller*>(
+        v8::External::Cast(*info.Data())
+            ->Value(gin::kAuctionV8LoggerTest_TestLazyFillerTag));
     self->v8_logger_->LogConsoleWarning("Warning 1");
     info.GetReturnValue().Set(
         v8::Boolean::New(self->v8_helper_->isolate(), true));
@@ -73,8 +79,9 @@ class TestLazyFiller {
 
   static void Warn2(v8::Local<v8::Name> name,
                     const v8::PropertyCallbackInfo<v8::Value>& info) {
-    TestLazyFiller* self =
-        static_cast<TestLazyFiller*>(v8::External::Cast(*info.Data())->Value());
+    TestLazyFiller* self = static_cast<TestLazyFiller*>(
+        v8::External::Cast(*info.Data())
+            ->Value(gin::kAuctionV8LoggerTest_TestLazyFillerTag));
     self->v8_logger_->LogConsoleWarning("Warning 2");
     info.GetReturnValue().Set(
         v8::Boolean::New(self->v8_helper_->isolate(), false));

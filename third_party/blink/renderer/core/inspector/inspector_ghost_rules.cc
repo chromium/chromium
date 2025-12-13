@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_counted_set.h"
 
 namespace blink {
 
@@ -124,8 +125,9 @@ void InspectorGhostRules::ActivateTreeScope(TreeScope& tree_scope) {
        resolver->GetActiveStyleSheets()) {
     CSSStyleSheet* sheet = active_stylesheet.first.Get();
     if (affected_stylesheets_.Contains(sheet)) {
+      // TODO(sesse): Collect mixins from here.
       alternative_stylesheets.push_back(ActiveStyleSheet{
-          sheet, style_engine.CreateUnconnectedRuleSet(*sheet)});
+          sheet, style_engine.CreateUnconnectedRuleSet(*sheet, /*mixins=*/{})});
       any_affected = true;
     } else {
       alternative_stylesheets.push_back(active_stylesheet);
@@ -147,7 +149,7 @@ InspectorGhostRules::~InspectorGhostRules() {
     DepopulateSheet(*style_sheet);
   }
   // Restore original active stylesheets.
-  for (auto [tree_scope, active_stylesheet_vector] : affected_tree_scopes) {
+  for (auto& [tree_scope, active_stylesheet_vector] : affected_tree_scopes) {
     tree_scope->GetScopedStyleResolver()->QuietlySwapActiveStyleSheets(
         active_stylesheet_vector);
   }

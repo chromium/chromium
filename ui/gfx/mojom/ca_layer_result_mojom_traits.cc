@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "ui/gfx/mojom/ca_layer_result_mojom_traits.h"
+
+#include "base/notreached.h"
 #include "build/build_config.h"
 
 namespace mojo {

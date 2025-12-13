@@ -62,7 +62,6 @@ class SignedExchangeRequestHandler;
 class StoragePartition;
 class StoragePartitionImpl;
 class WebContents;
-struct WebPluginInfo;
 
 class CONTENT_EXPORT NavigationURLLoaderImpl
     : public NavigationURLLoader,
@@ -108,6 +107,22 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       StoragePartitionImpl* partition,
       std::optional<net::CookieSettingOverrides> devtools_cookie_overrides,
       std::optional<net::CookieSettingOverrides> cookie_overrides);
+
+  // NavigationURLLoader implementation:
+  // Starts the loader by finalizing loader factories initialization and
+  // calling Restart().
+  // This is called only once (while Restart can be called multiple times).
+  // Sets `started_` true.
+  void Start() override;
+  void FollowRedirect(
+      std::vector<std::string> removed_headers,
+      net::HttpRequestHeaders modified_headers,
+      net::HttpRequestHeaders modified_cors_exempt_headers) override;
+  bool SetNavigationTimeout(base::TimeDelta timeout) override;
+  void CancelNavigationTimeout() override;
+
+  void TriggerTimeoutForTesting();
+  const network::ResourceRequest& GetResourceRequestForTesting() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(NavigationURLLoaderImplTest,
@@ -200,11 +215,9 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
           additional_throttles);
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-  void CheckPluginAndContinueOnReceiveResponse(
+  void CheckPluginAndCallOnReceiveResponse(
       network::mojom::URLResponseHeadPtr head,
-      network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
-      bool is_download_if_not_handled_by_plugin,
-      const std::vector<WebPluginInfo>& plugins);
+      network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints);
 #endif
 
   void CallOnReceivedResponse(
@@ -224,16 +237,21 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       const NavigationRequestInfo& request_info,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
-  void ParseHeaders(const GURL& url,
-                    network::mojom::URLResponseHead* head,
-                    base::OnceClosure continuation);
+  // When `clear_parsed_headers_for_testing` is true (which is only allowed in
+  // tests), `head->parsed_headers` is cleared to enforce and test the async
+  // `ParseHeaders()` path. https://crbug.com/434182226
+  void ParseHeaders(
+      const GURL& url,
+      network::mojom::URLResponseHeadPtr head,
+      base::OnceCallback<void(network::mojom::URLResponseHeadPtr)> continuation,
+      bool clear_parsed_headers_for_testing);
 
   void NotifyResponseStarted(
-      network::mojom::URLResponseHeadPtr response_head,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       mojo::ScopedDataPipeConsumerHandle response_body,
       const GlobalRequestID& global_request_id,
-      bool is_download);
+      bool is_download,
+      network::mojom::URLResponseHeadPtr response_head);
 
   void NotifyRequestRedirected(net::RedirectInfo redirect_info,
                                network::mojom::URLResponseHeadPtr response);
@@ -261,19 +279,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       OnAcceptCHFrameReceivedCallback callback) override;
   void Clone(mojo::PendingReceiver<network::mojom::AcceptCHFrameObserver>
                  listener) override;
-
-  // NavigationURLLoader implementation:
-  // Starts the loader by finalizing loader factories initialization and
-  // calling Restart().
-  // This is called only once (while Restart can be called multiple times).
-  // Sets `started_` true.
-  void Start() override;
-  void FollowRedirect(
-      const std::vector<std::string>& removed_headers,
-      const net::HttpRequestHeaders& modified_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_headers) override;
-  bool SetNavigationTimeout(base::TimeDelta timeout) override;
-  void CancelNavigationTimeout() override;
 
   // Records UKM for the navigation load.
   void RecordReceivedResponseUkmForOutermostMainFrame();
@@ -303,12 +308,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
 
   scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory_;
 
-  // Caches the modified request headers provided by clients during redirect,
-  // will be consumed by next `url_loader_->FollowRedirect()`.
-  std::vector<std::string> url_loader_removed_headers_;
-  net::HttpRequestHeaders url_loader_modified_headers_;
-  net::HttpRequestHeaders url_loader_modified_cors_exempt_headers_;
-
   SubresourceLoaderParams subresource_loader_params_;
 
   std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors_;
@@ -316,15 +315,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // Set to true if the default URLLoader (network service) was used for the
   // current navigation.
   bool default_loader_used_ = false;
-
-  // URLLoaderClient receiver for loaders created for responses received from
-  // the network loader.
-  mojo::Receiver<network::mojom::URLLoaderClient> response_loader_receiver_{
-      this};
-
-  // URLLoader instance for response loaders, i.e loaders created for handling
-  // responses received from the network URLLoader.
-  mojo::PendingRemote<network::mojom::URLLoader> response_url_loader_;
 
   // Set to true if we receive a valid response from a URLLoader, i.e.
   // URLLoaderClient::OnReceiveResponse() is called.
@@ -350,7 +340,232 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   std::map<std::string, scoped_refptr<network::SharedURLLoaderFactory>>
       non_network_url_loader_factories_;
 
-  std::unique_ptr<blink::ThrottlingURLLoader> url_loader_;
+  // `NavigationURLLoaderImpl` performs the loading (receiving the
+  // `URLLoaderClient` callbacks and related operations) in multiple ways (e.g.
+  // through `url_loader_` or `response_loader_receiver_`). `LoaderHolder`
+  // centralizes these, to ensure that:
+  // - All related operations are cancelled when `Reset()` is called.
+  // - The state transitions are consistent.
+  //
+  // Note: This isn't a complete encapsulation. Some states and operations
+  // (especially related to https://crbug.com/434182226) are centralized and
+  // checked in `LoaderHolder`, while other operations are still performed
+  // directly via `url_loader()`.
+  class LoaderHolder final {
+   public:
+    explicit LoaderHolder(network::mojom::URLLoaderClient* receiver);
+    ~LoaderHolder();
+
+    // Right now, `State` is used only for `DUMP_WILL_BE_CHECK()`ing and the
+    // other underlying members (e.g. `url_loader_`) should be used to check
+    // state-dependent conditions.
+    // TODO(https://crbug.com/434182226): Once the `DUMP_WILL_BE_CHECK()`s stick
+    // and are turned into `CHECK()`s, `State` must match with `url_loader_`
+    // etc. and thus should be used also for non-CHECK purposes.
+    enum class State {
+      // Neither of the loader or receiver is active right now.
+      // This can be a transient state when processing a redirect (after
+      // resetting the previous redirect leg and just before starting the next
+      // leg).
+      kNone,
+
+      // The loading is ongoing and the `NavigationURLLoaderImpl`'s
+      // `URLLoaderClient` methods are called via `url_loader_` (the primary
+      // cases).
+      // The `URLLoaderClient` methods are called directly (synchronously) by
+      // `blink::ThrottlingURLLoader`.
+      kLoadingViaLoader,
+
+      // The loading is ongoing and the `NavigationURLLoaderImpl`'s
+      // `URLLoaderClient` methods are called via
+      // `response_loader_receiver_` (for `MaybeCreateLoaderForResponse()`).
+      // The `URLLoaderClient` methods are called via mojo.
+      kLoadingViaReceiver,
+
+      // All loading via `NavigationURLLoaderImpl` is done and further
+      // operation on `LoaderHolder` or calls to `NavigationURLLoaderImpl`'s
+      // `URLLoaderClient` methods shouldn't be made, except for some operations
+      // directly through `url_loader()`.
+      kUnbound,
+    };
+
+    State state() const { return state_; }
+
+    blink::ThrottlingURLLoader* url_loader() const { return url_loader_.get(); }
+    mojo::PendingRemote<network::mojom::URLLoader>* response_url_loader() {
+      return &response_url_loader_;
+    }
+
+    // Cancel the current loading, if any.
+    // Any associated pending operations should be cancelled.
+    // Transitions to `State::kNone`.
+    //
+    // Note: The "exclusive tasks" (see `ExclusiveTaskState` below) can't be
+    // gracefully cancelled here and thus `Reset()` should be called only when
+    // there should always be no exclusive tasks. See also `ResetForFailure()`.
+    void Reset();
+
+    // When the caller wants to start a new loading operation while there can be
+    // existing exclusive tasks, the caller should check `HasExclusiveTask()`,
+    // and if there are exclusive tasks, call `ResetForFailure()` and fail the
+    // entire loading instead.
+    //
+    // This is similar to `Reset()`, but also instructs exclusive tasks to be
+    // cancelled.
+    void ResetForFailure();
+
+    // For starting loading via `url_loader` (transitioning from `kNone` to
+    // `kLoadingViaLoader`). THe caller should actually start the loading by
+    // calling `url_loader->Start()`.
+    // Transitions to `State::kLoadingViaLoader`.
+    void SetLoader(std::unique_ptr<blink::ThrottlingURLLoader> url_loader);
+
+    // Switches to loading via `pending_receiver` (transitioning from
+    // `kLoadingViaLoader` to `kLoadingViaReceiver`). The caller might already
+    // call `url_loader()->Unbind()` etc.
+    // Transitions to `State::kLoadingViaReceiver`.
+    void BindReceiver(
+        mojo::PendingReceiver<network::mojom::URLLoaderClient> pending_receiver,
+        scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+    // Unbind the endpoints from ``NavigationURLLoaderImpl`` to
+    // `URLLoaderClientEndpointsPtr` (transitioning to `kUnbound`).
+    // Transitions to `State::kUnbound`.
+    [[nodiscard]] network::mojom::URLLoaderClientEndpointsPtr Unbind();
+
+    // Redirect handling: the expected sequence is:
+    // 1. `NavigationURLLoaderImpl::OnReceiveRedirect()`
+    // 2. `LoaderHolder::SetModifiedHeadersOnRedirect()`
+    // 3. Either:
+    //    - `LoaderHolder::FollowRedirect()`, when we want and can continue
+    //      using the current `url_loader` for the next redirect leg, or
+    //    - `LoaderHolder::ResetForFollowRedirect()` then
+    //      `LoaderHolder::SetLoader()`, when we start the next redirect leg
+    //      with a new loader.
+    // Also `LoaderHolder::Reset()` can be called at any time during this to
+    // cancel loading.
+    // TODO(https://crbug.com/434182226): Add `CHECK()`s to confirm these
+    // sequences.
+
+    // Cache the modified request headers provided by clients during redirect.
+    // They will be consumed by next `FollowRedirect()` or
+    // `ResetForFollowRedirect()`.
+    void SetModifiedHeadersOnRedirect(
+        std::vector<std::string> removed_headers,
+        net::HttpRequestHeaders modified_headers,
+        net::HttpRequestHeaders modified_cors_exempt_headers);
+
+    // Follows the redirect using the current `url_loader_`.
+    void FollowRedirect();
+
+    // Similar to `ResetLoader()`, but also calls
+    // `URLLoader::ResetForFollowRedirect()` if needed.
+    void ResetForFollowRedirect(network::ResourceRequest& resource_request);
+
+    // See the `ExclusiveTaskState` comment below.
+    // TODO(https://crbug.com/434182226): Add more exclusive tasks handing.
+    enum ExclusiveTaskType {
+      // From `OnReceiveRedirect()` until `FollowRedirect()`.
+      // This contains two possible async tasks:
+      // - Waiting for `network.mojom.NetworkService::ParseHeaders()` and
+      // - Waiting for `NavigationURLLoaderDelegate`: from
+      //   `OnRequestRedirected()` until
+      //   `NavigationURLLoaderImpl::FollowRedirect()` is called.
+      kRedirect,
+
+      // Waiting for `NavigationLoaderInterceptor::MaybeCreateLoader()`.
+      // From `NavigationURLLoaderImpl::Restart()`
+      // Until `NavigationURLLoaderImpl::StartNonInterceptedRequest()` or
+      // `NavigationURLLoaderImpl::StartInterceptedRequest()`.
+      kInterceptor,
+    };
+    void OnExclusiveTaskStarted(ExclusiveTaskType exclusive_task_type);
+    void OnExclusiveTaskCompleted(ExclusiveTaskType exclusive_task_type);
+    bool HasExclusiveTask() const;
+    // Should be called only during an exclusive task.
+    bool ShouldCancelExclusiveTask(ExclusiveTaskType exclusive_task_type) const;
+
+    bool receiver_is_bound_for_check() const;
+
+   private:
+    void ResetInternal();
+    void CheckState() const;
+
+    State state_ = State::kNone;
+
+    // `NavigationURLLoaderImpl`'s `URLLoaderClient` methods are called either
+    // via `url_loader_` or `response_loader_receiver_`.
+    // See also the comment at `State` above for details.
+    std::unique_ptr<blink::ThrottlingURLLoader> url_loader_;
+    mojo::Receiver<network::mojom::URLLoaderClient> response_loader_receiver_;
+
+    // URLLoader instance for response loaders, i.e loaders created for handling
+    // responses received from the network URLLoader.
+    //
+    // NOTE: This looks like coupled with
+    // `LoaderHolder::response_loader_receiver_` but actually isn't, because
+    // `response_url_loader_` is never touched during
+    // `MaybeCreateLoaderForResponse()` (at least within Chromium codesearch).
+    // For now this is kept here as-is but probably can be removed.
+    mojo::PendingRemote<network::mojom::URLLoader> response_url_loader_;
+
+    struct ModifiedHeadersOnRedirect final {
+      ModifiedHeadersOnRedirect(
+          std::vector<std::string> removed_headers,
+          net::HttpRequestHeaders modified_headers,
+          net::HttpRequestHeaders modified_cors_exempt_headers);
+      ModifiedHeadersOnRedirect(const ModifiedHeadersOnRedirect&) = delete;
+      ModifiedHeadersOnRedirect(ModifiedHeadersOnRedirect&&) = delete;
+      ~ModifiedHeadersOnRedirect();
+
+      std::vector<std::string> removed_headers_;
+      net::HttpRequestHeaders modified_headers_;
+      net::HttpRequestHeaders modified_cors_exempt_headers_;
+    };
+    std::optional<ModifiedHeadersOnRedirect> modified_headers_on_redirect_;
+
+    // `NavigationURLLoaderImpl` can be waiting for a certain (possibly async)
+    // "exclusive task" and can't start a new request nor receive
+    // URLLoaderClient method calls until the task completes. For example,
+    // `NavigationURLLoaderImpl`, `NavigationLoaderInterceptor` and
+    // `NavigationRequest` are going through checks before sending an initial or
+    // redirected request and in the middle of updating the request and other
+    // states.
+    //
+    // Not all arbitrary async operations are considered exclusive tasks here.
+    // For example, waiting for URLLoaderClient calls from `url_loader_` or
+    // `response_loader_receiver_` aren't considered exclusive tasks, because
+    // e.g. we can cancel the `url_loader_`, issue a synthetic redirect response
+    // as if it would be received from `url_loader_` and continue on the
+    // synthetic redirect.
+    //
+    // Original design doc:
+    // https://docs.google.com/document/d/1xCq9l9mYc3WE1adspyaX7FnPArxKDyz8BcRGTlpQIu8/edit?usp=sharing
+    enum ExclusiveTaskState {
+      kNoExclusiveTask,
+
+      // There is an exclusive task, and therefore:
+      // - No URLLoaderClient methods should be called (except for unexpected
+      //   `OnComplete()` or error events like timeout).
+      // - No actions that could initiate a new request/redirect etc. are
+      //   allowed. When attempting such actions, `NavigationURLLoaderImpl`
+      //   should call `ResetForFailure()` and make the navigation fail
+      //   immediately.
+      //
+      // There should be at most one exclusive task at a time.
+      kHasExclusiveTask,
+
+      // After `ResetForFailure()` is called, navigation fails and existing
+      // exclusive tasks should be cancelled.
+      kCancelExclusiveTask,
+    };
+
+    ExclusiveTaskState exclusive_task_state_ =
+        ExclusiveTaskState::kNoExclusiveTask;
+    std::optional<ExclusiveTaskType> current_exclusive_task_type_;
+  };
+
+  LoaderHolder loader_holder_{this};
 
   std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager_;
 

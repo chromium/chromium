@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSInteger, EmptyThumbnailLayoutType);
+
 // The GroupTabView is a UIView that displays combinations of snapshots,
 // favicons, and a label indicating the number of remaining unsent tabs in a
 // group. This view can be reused and reconfigured for different display modes
@@ -27,6 +29,9 @@
 // one, but the last element is a UILabel with different configurations (+N when
 // N<100 and 99+ when N>99, where N represents the number of remaining tabs).
 @interface GroupTabView : UIView
+
+// The current layout configuration that should be used by the empty thumbnail.
+@property(nonatomic, assign) EmptyThumbnailLayoutType layoutType;
 
 - (instancetype)initWithIsCell:(BOOL)isCell NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

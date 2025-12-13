@@ -157,6 +157,9 @@
   <message name="IDS_EXTENSIONS_ITEM_ERRORS" desc="The label of the button to bring the user to the page showing an extension's errors.">
     Errors
   </message>
+  <message name="IDS_EXTENSIONS_ITEM_WARNINGS" desc="The label of the button to bring the user to the page showing an extension's warnings.">
+    Warnings
+  </message>
   <message name="IDS_EXTENSIONS_ITEM_HOST_PERMISSIONS_HEADING" desc="The heading above the details of which websites an extension is allowed to run on.">
     Allow this extension to read and change all your data on websites you visit:
   </message>
@@ -315,6 +318,9 @@
   </message>
   <message name="IDS_EXTENSIONS_ITEM_CHROME_WEB_STORE" desc="Label for button to visit the Chrome web store.">
     View in Chrome Web Store
+  </message>
+  <message name="IDS_EXTENSIONS_VIEW_IN_DEVTOOLS" desc="Label for a button that opens DevTools for a specific error context">
+    View in DevTools
   </message>
   <message name="IDS_EXTENSIONS_ITEM_OPTIONS" desc="The label on the button to open an extension options page.">
     Extension options
@@ -724,8 +730,17 @@
   <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_HEADER" desc="Header of the extensions zero state in-product help promo.">
     Enhance your browser with extensions
   </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_HEADER_V2" desc="Header of the extensions zero state in-product help promo.">
+    Supercharge your browser with extensions and themes
+  </message>
   <message name="IDS_EXTENSIONS_ZERO_STATE_CHIPS_IPH_DESCRIPTION" desc="An one line description for the extensions zero state in-product-help promo.">
     Extensions are add-ons for Chrome that can help you do more
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_CHIPS_WITH_LINK_IPH_LINK_LABEL" desc="A label of extensions links to chrome web store home page.">
+    Extensions
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_CHIPS_WITH_LINK_IPH_DESCRIPTION" desc="An one line description for the extensions zero state in-product-help promo with links to chrome web store home page.">
+    are add-ons for Chrome that can help you do more
   </message>
   <message name="IDS_EXTENSIONS_ZERO_STATE_PLAIN_LINK_IPH_DESCRIPTION" desc="An one line description for the extensions zero state in-product-help promo.">
     Extensions are add-ons to Chrome that can help you
@@ -756,6 +771,9 @@
   </message>
   <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_AI_PRODUCTIVITY_COLLECTION_LINK" desc="Link text for the button that opens the Chrome Web Store ai productivity collection page.">
     Enhance with AI
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_WEB_STORE_LINK" desc="Link text for the button that opens the Chrome Web Store page.">
+    Visit Web Store
   </message>
   <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_DISMISS_BUTTON_TEXT" desc="Text on the button that dismisses the extensions zero state promo IPH.">
     Got it

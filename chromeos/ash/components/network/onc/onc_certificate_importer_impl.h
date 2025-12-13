@@ -12,7 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/onc/onc_certificate_importer.h"
 #include "chromeos/components/onc/onc_parsed_certificates.h"
@@ -48,15 +48,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporterImpl
   ~CertificateImporterImpl() override;
 
   // CertificateImporter overrides
-  void ImportAllCertificatesUserInitiated(
-      const std::vector<
-          chromeos::onc::OncParsedCertificates::ServerOrAuthorityCertificate>&
-          server_or_authority_certificates,
-      const std::vector<
-          chromeos::onc::OncParsedCertificates::ClientCertificate>&
-          client_certificates,
-      DoneCallback done_callback) override;
-
   void ImportClientCertificates(
       const std::vector<
           chromeos::onc::OncParsedCertificates::ClientCertificate>&
@@ -80,28 +71,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporterImpl
       const std::vector<
           chromeos::onc::OncParsedCertificates::ClientCertificate>&
           client_certificates,
-      net::NSSCertDatabase* nssdb);
-
-  // Synchronously imports all server/authority and client certificates from
-  // |certificates| into |nssdb|. This will be executed on the
-  // |io_task_runner_|.
-  // TODO(crbug.com/40928765): Remove ability for server certs to be imported
-  // into NSS after features::kEnableCertManagementUIV2Write is defaulted to on
-  // for ChromeOS.
-  static bool StoreAllCertificatesUserInitiated(
-      const std::vector<
-          chromeos::onc::OncParsedCertificates::ServerOrAuthorityCertificate>&
-          server_or_authority_certificates,
-      const std::vector<
-          chromeos::onc::OncParsedCertificates::ClientCertificate>&
-          client_certificates,
-      net::NSSCertDatabase* nssdb);
-
-  // Imports the Server or CA certificate |certificate|. Web trust is only
-  // applied if the certificate requests the TrustBits attribute "Web".
-  static bool StoreServerOrCaCertificateUserInitiated(
-      const chromeos::onc::OncParsedCertificates::ServerOrAuthorityCertificate&
-          certificate,
       net::NSSCertDatabase* nssdb);
 
   static bool StoreClientCertificate(

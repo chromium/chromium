@@ -1,0 +1,77 @@
+rootWebArea htmlTag='#document' name='Material Web Radio Buttons'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++radioButton htmlTag='md-radio' checkedState=false
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++radioButton htmlTag='md-radio' checkedState=true
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++radioButton htmlTag='md-radio' checkedState=false
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++radioButton htmlTag='md-radio' restriction=disabled checkedState=false
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++radioButton htmlTag='md-radio' restriction=disabled checkedState=true
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++radioButton htmlTag='md-radio' invalidState=true checkedState=false
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web Radio Buttons'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++radioButton htmlTag='md-radio' checkedState=true
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++radioButton htmlTag='md-radio' checkedState=false
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++radioButton htmlTag='md-radio' checkedState=false
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++radioButton htmlTag='md-radio' restriction=disabled checkedState=false
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++radioButton htmlTag='md-radio' restriction=disabled checkedState=true
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++radioButton htmlTag='md-radio' invalidState=true checkedState=false
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Selected: Option 1'
+++++++++++++inlineTextBox name='Selected: Option 1'
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web Radio Buttons'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++radioButton htmlTag='md-radio' checkedState=false
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++radioButton htmlTag='md-radio' checkedState=false
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++radioButton htmlTag='md-radio' checkedState=true
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++radioButton htmlTag='md-radio' restriction=disabled checkedState=false
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++radioButton htmlTag='md-radio' restriction=disabled checkedState=true
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++radioButton htmlTag='md-radio' invalidState=true checkedState=false
+++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Selected: Option 1'
+++++++++++++inlineTextBox name='Selected: Option 1'
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Selected: Option 3'
+++++++++++++inlineTextBox name='Selected: Option 3'

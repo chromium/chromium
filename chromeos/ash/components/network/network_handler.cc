@@ -23,7 +23,7 @@
 #include "chromeos/ash/components/network/ephemeral_network_configuration_handler.h"
 #include "chromeos/ash/components/network/ephemeral_network_policies_enablement_handler.h"
 #include "chromeos/ash/components/network/fake_network_state_handler.h"
-#include "chromeos/ash/components/network/geolocation_handler.h"
+#include "chromeos/ash/components/network/geolocation_handler_impl.h"
 #include "chromeos/ash/components/network/hidden_network_handler.h"
 #include "chromeos/ash/components/network/hotspot_allowed_flag_handler.h"
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
@@ -111,7 +111,7 @@ NetworkHandler::NetworkHandler(std::unique_ptr<NetworkStateHandler> handler)
   prohibited_technologies_handler_.reset(new ProhibitedTechnologiesHandler());
   network_sms_handler_.reset(new NetworkSmsHandler());
   text_message_provider_.reset(new TextMessageProvider());
-  geolocation_handler_.reset(new GeolocationHandler());
+  geolocation_handler_.reset(new GeolocationHandlerImpl());
   network_3gpp_handler_.reset(new Network3gppHandler());
 
   network_login_screen_protocol_handler_observer_.reset(

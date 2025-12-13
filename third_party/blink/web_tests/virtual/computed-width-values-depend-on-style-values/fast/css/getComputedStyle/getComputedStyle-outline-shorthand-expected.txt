@@ -1,0 +1,11 @@
+Tests that the outline shorthand is computed properly.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS computedStyle.getPropertyValue('outline') is 'rgb(255, 0, 0) solid 5px'
+PASS computedStyle.getPropertyValue('outline') is 'rgb(0, 0, 0) solid 32px'
+FAIL computedStyle.getPropertyValue('outline') should be rgb(255, 0, 0) none 4px. Was rgb(255, 0, 0) none 0px.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

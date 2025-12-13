@@ -261,7 +261,7 @@ class SafeBrowsingTabHelper
     void UpdateToBeCommittedRedirectChain();
 
     // The URL check query manager.
-    raw_ptr<SafeBrowsingQueryManager> query_manager_;
+    raw_ptr<SafeBrowsingQueryManager, DanglingUntriaged> query_manager_;
     // The safe browsing client.
     raw_ptr<SafeBrowsingClient> client_ = nullptr;
     // The pending query for the main frame navigation, if any.

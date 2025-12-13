@@ -168,9 +168,12 @@ bool MergeWithoutIconKey(App* state, const App* delta) {
   SET_OPTIONAL_VALUE(paused);
   SET_OPTIONAL_VALUE(allow_window_mode_selection);
 
-  if (!delta->intent_filters.empty()) {
-    state->intent_filters.clear();
-    state->intent_filters = CloneIntentFilters(delta->intent_filters);
+  if (delta->intent_filters) {
+    if (delta->intent_filters->empty()) {
+      state->intent_filters = std::nullopt;
+    } else {
+      state->intent_filters = CloneIntentFilters(*delta->intent_filters);
+    }
   }
 
   SET_OPTIONAL_VALUE(resize_locked)
@@ -525,18 +528,23 @@ bool AppUpdate::PausedChanged() const {
 }
 
 apps::IntentFilters AppUpdate::IntentFilters() const {
-  if (delta_ && !delta_->intent_filters.empty()) {
-    return CloneIntentFilters(delta_->intent_filters);
+  if (delta_ && delta_->intent_filters) {
+    return CloneIntentFilters(*delta_->intent_filters);
   }
-  if (state_ && !state_->intent_filters.empty()) {
-    return CloneIntentFilters(state_->intent_filters);
+  if (state_ && state_->intent_filters) {
+    return CloneIntentFilters(*state_->intent_filters);
   }
-  return std::vector<IntentFilterPtr>{};
+  return {};
 }
 
 bool AppUpdate::IntentFiltersChanged() const {
-  return delta_ && !delta_->intent_filters.empty() &&
-         (!state_ || !IsEqual(delta_->intent_filters, state_->intent_filters));
+  if (!delta_ || !delta_->intent_filters) {
+    return false;
+  }
+  if (!state_ || !state_->intent_filters) {
+    return !delta_->intent_filters->empty();
+  }
+  return !IsEqual(*state_->intent_filters, *delta_->intent_filters);
 }
 
 std::optional<bool> AppUpdate::ResizeLocked() const {

@@ -24,6 +24,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_service.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/pref_names.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"

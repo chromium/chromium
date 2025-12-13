@@ -7,17 +7,21 @@
 #include <string_view>
 
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
+#include "base/base_paths_android.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
+#include "components/metrics/drive_metrics_provider.h"
 #include "components/metrics/field_trials_provider.h"
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_service.h"
+#include "components/metrics/net/network_metrics_provider.h"
 #include "components/metrics/version_utils.h"
 #include "components/tracing/common/background_tracing_utils.h"
 #include "components/tracing/common/tracing_scenarios_config.h"
 #include "components/version_info/android/channel_getter.h"
+#include "content/public/browser/network_service_instance.h"
 #include "services/tracing/public/cpp/trace_startup_config.h"
 #include "third_party/metrics_proto/trace_log.pb.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -43,6 +47,12 @@ void AwBackgroundTracingMetricsProvider::Init() {
   system_profile_providers_.emplace_back(
       std::make_unique<variations::FieldTrialsProvider>(
           metrics->GetSyntheticTrialRegistry(), std::string_view()));
+  system_profile_providers_.emplace_back(
+      std::make_unique<metrics::DriveMetricsProvider>(
+          base::DIR_ANDROID_APP_DATA));
+  system_profile_providers_.emplace_back(
+      std::make_unique<metrics::NetworkMetricsProvider>(
+          content::CreateNetworkConnectionTrackerAsyncGetter()));
 }
 
 base::OnceCallback<bool(metrics::ChromeUserMetricsExtension*, std::string&&)>

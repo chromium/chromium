@@ -61,6 +61,7 @@ class MockInputRouterClient : public input::InputRouterClient,
       const std::optional<std::vector<gfx::Rect>>& character_bounds) override {}
   input::StylusInterface* GetStylusInterface() override;
   void OnStartStylusWriting() override;
+  void OnUnconfirmedTapConvertedToTap() override {}
   input::DispatchToRendererCallback GetDispatchToRendererCallback() override;
 
   bool GetAndResetFilterEventCalled();
@@ -79,9 +80,6 @@ class MockInputRouterClient : public input::InputRouterClient,
   }
   blink::WebInputEvent::Type last_in_flight_event_type() const {
     return last_filter_event()->GetType();
-  }
-  void set_allow_send_event(bool allow) {
-    filter_state_ = blink::mojom::InputEventResultState::kNoConsumerExists;
   }
   const blink::WebInputEvent* last_filter_event() const {
     return last_filter_event_.get();
@@ -102,7 +100,7 @@ class MockInputRouterClient : public input::InputRouterClient,
       base::WeakPtr<input::FlingController> fling_controller) override {}
   void DidStopFlingingOnBrowser(
       base::WeakPtr<input::FlingController> fling_controller) override {}
-  bool NeedsBeginFrameForFlingProgress() override;
+  bool ProgressFlingOnFlingStart() override;
   bool ShouldUseMobileFlingCurve() override;
   gfx::Vector2dF GetPixelsPerInch(
       const gfx::PointF& position_in_screen) override;

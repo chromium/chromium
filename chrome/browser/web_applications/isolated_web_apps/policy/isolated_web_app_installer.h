@@ -12,13 +12,13 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "base/version.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "components/webapps/isolated_web_apps/download/bundle_downloader.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/web_applications/isolated_web_apps/commands/copy_bundle_to_cache_command.h"
@@ -87,7 +87,7 @@ class IwaInstaller {
     virtual void Install(
         const IsolatedWebAppInstallSource& install_source,
         const IsolatedWebAppUrlInfo& url_info,
-        const base::Version& expected_version,
+        const IwaVersion& expected_version,
         WebAppCommandScheduler::InstallIsolatedWebAppCallback callback) = 0;
   };
 
@@ -99,7 +99,7 @@ class IwaInstaller {
         const IwaInstallCommandWrapperImpl&) = delete;
     void Install(const IsolatedWebAppInstallSource& install_source,
                  const IsolatedWebAppUrlInfo& url_info,
-                 const base::Version& expected_version,
+                 const IwaVersion& expected_version,
                  WebAppCommandScheduler::InstallIsolatedWebAppCallback callback)
         override;
     ~IwaInstallCommandWrapperImpl() override = default;
@@ -130,7 +130,7 @@ class IwaInstaller {
 
   // Installing of the IWA using the cached bundle.
   void InstallFromCache(const base::FilePath& cache_file,
-                        const base::Version& version);
+                        const IwaVersion& version);
   void OnIwaInstalledFromCache(
       base::expected<InstallIsolatedWebAppCommandSuccess,
                      InstallIsolatedWebAppCommandError> result);
@@ -148,26 +148,26 @@ class IwaInstaller {
 
   // Downloading of the update manifest of the current app.
   void DownloadUpdateManifest(
-      base::OnceCallback<void(GURL, base::Version)> next_step_callback);
+      base::OnceCallback<void(GURL, IwaVersion)> next_step_callback);
 
   // Callback when the update manifest has been downloaded and parsed.
   void OnUpdateManifestParsed(
-      base::OnceCallback<void(GURL, base::Version)> next_step_callback,
+      base::OnceCallback<void(GURL, IwaVersion)> next_step_callback,
       base::expected<UpdateManifest, UpdateManifestFetcher::Error>
           fetch_result);
 
   // Downloading of the Signed Web Bundle.
   void DownloadWebBundle(
-      base::OnceCallback<void(base::Version)> next_step_callback,
+      base::OnceCallback<void(IwaVersion)> next_step_callback,
       GURL web_bundle_url,
-      base::Version expected_version);
+      IwaVersion expected_version);
   void OnWebBundleDownloaded(base::OnceClosure next_step_callback,
                              int32_t net_error);
 
   // Installing of the IWA using the downloaded Signed Web Bundle.
-  void RunInstallFromInternetCommand(base::Version expected_version);
+  void RunInstallFromInternetCommand(IwaVersion expected_version);
   void OnIwaInstalledFromInternet(
-      base::Version installed_version,
+      IwaVersion installed_version,
       base::expected<InstallIsolatedWebAppCommandSuccess,
                      InstallIsolatedWebAppCommandError> result);
 

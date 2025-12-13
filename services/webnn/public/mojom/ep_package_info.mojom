@@ -1,0 +1,23 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module webnn.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/wstring.mojom";
+
+// Corresponds to PACKAGE_VERSION.
+struct PackageVersion {
+  uint16 revision;
+  uint16 build;
+  uint16 minor;
+  uint16 major;
+};
+
+// Information about an execution provider package.
+struct EpPackageInfo {
+  mojo_base.mojom.WString family_name;
+  PackageVersion version;
+  mojo_base.mojom.FilePath library_path;
+};

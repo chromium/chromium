@@ -13,8 +13,11 @@
 #include "base/strings/string_view_util.h"
 #include "base/values.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace keys = extension_web_request_api_constants;
 

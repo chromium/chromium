@@ -28,10 +28,9 @@ import java.util.concurrent.TimeUnit;
 @NullMarked
 public class IdleDetector extends BroadcastReceiver {
     private static final String TAG = "IdleDetector";
-    // Memory handled by idle_android:cc: a singleton (```detector```) gets
-    // constructed every time this class gets loaded (which happens the first
-    // time IdleDetector#getIdleTime gets called). Upon construction, the
-    // broadcast receivers are registered.
+    // Memory handled by idle_android.cc: a singleton is constructed in C++ the first time
+    // IdleDetector#getIdleTime is invoked. Upon construction we start observing screen state via
+    // the broadcast receiver.
     private boolean mIdle;
     private long mLast;
 
@@ -42,6 +41,10 @@ public class IdleDetector extends BroadcastReceiver {
             reset();
         }
 
+        // The native counterpart is a global singleton that is never destroyed so there is no
+        // need to unregister the broadcast receiver. While this could be shared with
+        // ScreenOffBroadcastReceiver, it is simpler to just register separately since it handles
+        // other actions.
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_USER_PRESENT);

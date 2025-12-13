@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TACHYON_CLIENT_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
@@ -41,7 +42,7 @@ class TachyonClientImpl : public TachyonClient {
   void OnResponse(std::unique_ptr<network::SimpleURLLoader> url_loader,
                   std::unique_ptr<RequestDataWrapper> request_data,
                   AuthFailureCallback auth_failure_cb,
-                  std::unique_ptr<std::string> response_body);
+                  std::optional<std::string> response_body);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

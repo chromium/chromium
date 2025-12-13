@@ -14,6 +14,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -46,7 +47,7 @@ class ShelfControlButtonHighlightPathGenerator
     gfx::RectF visual_bounds = rect;
     visual_bounds.set_size(
         gfx::SizeF(shelf_config->control_size(), shelf_config->control_size()));
-    if (Shell::Get()->IsInTabletMode() && shelf_config->is_in_app()) {
+    if (display::Screen::Get()->InTabletMode() && shelf_config->is_in_app()) {
       visual_bounds.Inset(gfx::InsetsF::VH(
           shelf_config->in_app_control_button_height_inset(), 0));
     }

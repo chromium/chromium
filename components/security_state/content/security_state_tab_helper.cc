@@ -30,6 +30,11 @@ security_state::SecurityLevel SecurityStateTabHelper::GetSecurityLevel() {
   return security_state::GetSecurityLevel(*GetVisibleSecurityState());
 }
 
+security_state::MaliciousContentStatus
+SecurityStateTabHelper::GetMaliciousContentStatus() {
+  return GetVisibleSecurityState()->malicious_content_status;
+}
+
 std::unique_ptr<security_state::VisibleSecurityState>
 SecurityStateTabHelper::GetVisibleSecurityState() {
   auto state = security_state::GetVisibleSecurityState(&GetWebContents());

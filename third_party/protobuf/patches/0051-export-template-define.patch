@@ -1,24 +1,21 @@
 diff --git a/src/google/protobuf/repeated_ptr_field.cc b/src/google/protobuf/repeated_ptr_field.cc
-index 1eee2f24ac39c..40b2c7a0dd11d 100644
+index b3ebe830d6316..c24f3124e90fd 100644
 --- a/src/google/protobuf/repeated_ptr_field.cc
 +++ b/src/google/protobuf/repeated_ptr_field.cc
-@@ -142,7 +142,8 @@ memswap<ArenaOffsetHelper<RepeatedPtrFieldBase>::value>(
+@@ -132,6 +132,7 @@ memswap<ArenaOffsetHelper<RepeatedPtrFieldBase>::value>(
      char* PROTOBUF_RESTRICT, char* PROTOBUF_RESTRICT);
  
  template <>
--void RepeatedPtrFieldBase::MergeFrom<std::string>(
-+PROTOBUF_EXPORT_TEMPLATE_DEFINE void
-+RepeatedPtrFieldBase::MergeFrom<std::string>(
-     const RepeatedPtrFieldBase& from) {
++PROTOBUF_EXPORT_TEMPLATE_DEFINE
+ void RepeatedPtrFieldBase::MergeFrom<std::string>(
+     const RepeatedPtrFieldBase& from, Arena* arena) {
    Prefetch5LinesFrom1Line(&from);
-   ABSL_DCHECK_NE(&from, this);
-@@ -218,7 +219,8 @@ void RepeatedPtrFieldBase::MergeFromConcreteMessage(
+@@ -208,6 +209,7 @@ void RepeatedPtrFieldBase::MergeFromConcreteMessage(
  }
  
  template <>
--void RepeatedPtrFieldBase::MergeFrom<MessageLite>(
-+PROTOBUF_EXPORT_TEMPLATE_DEFINE void
-+RepeatedPtrFieldBase::MergeFrom<MessageLite>(
-     const RepeatedPtrFieldBase& from) {
++PROTOBUF_EXPORT_TEMPLATE_DEFINE
+ void RepeatedPtrFieldBase::MergeFrom<MessageLite>(
+     const RepeatedPtrFieldBase& from, Arena* arena) {
    Prefetch5LinesFrom1Line(&from);
-   ABSL_DCHECK_NE(&from, this);
+

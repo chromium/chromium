@@ -33,6 +33,11 @@ inline int vsnprintf(char* buffer,
   return ::vsnprintf(buffer, size, format, arguments);
 }
 
+// TODO(crbug.com/40284755): implement spanified version, or just remove
+// this entirely as it has ~no non-test uses.
+// inline int vswprintf(base::span<wchar_t> buffer,
+//                      const wchar_t* format,
+//                      va_list arguments);
 inline int vswprintf(wchar_t* buffer,
                      size_t size,
                      const wchar_t* format,

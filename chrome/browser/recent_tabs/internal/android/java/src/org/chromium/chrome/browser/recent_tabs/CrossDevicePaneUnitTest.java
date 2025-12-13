@@ -25,11 +25,10 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubContainerView;
 import org.chromium.chrome.browser.hub.HubLayoutAnimationType;
 import org.chromium.chrome.browser.hub.LoadHint;
+import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 
@@ -43,7 +42,7 @@ public class CrossDevicePaneUnitTest {
     @Mock private HubContainerView mHubContainerView;
     @Mock private DoubleConsumer mOnToolbarAlphaChange;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
-    private CrossDevicePane mCrossDevicePane;
+    private Pane mCrossDevicePane;
     private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
             new ObservableSupplierImpl<>();
 
@@ -119,7 +118,6 @@ public class CrossDevicePaneUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testSetEdgeToEdgeSupplier_BeforeNotifyLoadHint() {
         mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
         assertFalse(mEdgeToEdgeSupplier.hasObservers());
@@ -131,7 +129,6 @@ public class CrossDevicePaneUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testSetEdgeToEdgeSupplier_AfterNotifyLoadHint() {
         mCrossDevicePane.notifyLoadHint(LoadHint.HOT);
         assertTrue(mEdgeToEdgeSupplier.hasObservers());

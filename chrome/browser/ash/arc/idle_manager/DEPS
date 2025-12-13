@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/ash/arc/instance_throttle",
   "+chrome/browser/ash/arc/session",
   "+chrome/browser/ash/arc/test",
-  "+chrome/browser/ash/arc/util",
   "+chrome/browser/ash/arc/vmm",
   "+chrome/test/base",
 ]

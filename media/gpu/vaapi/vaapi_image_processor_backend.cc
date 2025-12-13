@@ -18,6 +18,8 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "media/base/format_utils.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
@@ -69,13 +71,13 @@ std::unique_ptr<ImageProcessorBackend> VaapiImageProcessorBackend::Create(
   if (!IsSupported(input_config) || !IsSupported(output_config))
     return nullptr;
 
-  if (input_config.storage_type != VideoFrame::STORAGE_GPU_MEMORY_BUFFER &&
+  if (input_config.storage_type != VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE &&
       input_config.storage_type != VideoFrame::STORAGE_DMABUFS) {
     VLOGF(2) << "VaapiImageProcessorBackend supports GpuMemoryBuffer or DMABuf "
                 "based FrameResource only for input";
     return nullptr;
   }
-  if (output_config.storage_type != VideoFrame::STORAGE_GPU_MEMORY_BUFFER &&
+  if (output_config.storage_type != VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE &&
       output_config.storage_type != VideoFrame::STORAGE_DMABUFS) {
     VLOGF(2) << "VaapiImageProcessorBackend supports GpuMemoryBuffer or DMABuf "
                 "based FrameResource only for output";
@@ -130,11 +132,11 @@ const ScopedVASurface* VaapiImageProcessorBackend::GetOrCreateSurfaceForFrame(
   if (iter != allocated_va_surfaces_.end()) {
     const auto* surface = iter->second.get();
     CHECK_EQ(frame.coded_size(), surface->size());
-    const auto buffer_format =
-        VideoPixelFormatToGfxBufferFormat(frame.format());
-    CHECK(buffer_format.has_value());
+    const auto shared_image_format =
+        VideoPixelFormatToSharedImageFormat(frame.format());
+    CHECK(shared_image_format.has_value());
     const unsigned int format =
-        VaapiWrapper::BufferFormatToVARTFormat(*buffer_format);
+        VaapiWrapper::SharedImageFormatToVARTFormat(*shared_image_format);
     CHECK_NE(format, 0u);
     CHECK_EQ(format, surface->format());
     return surface;

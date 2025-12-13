@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -54,6 +50,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
+#include "ui/base/device_form_factor.h"
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #endif
@@ -68,7 +65,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 // If a font name in prefs default values starts with a comma, consider it's a
 // comma-separated font list and resolve it to the first available font.
 #define PREFS_FONT_LIST 1
@@ -228,7 +225,7 @@ UScriptCode GetScriptOfFontPref(const char* pref_name) {
 
   size_t len = strlen(pref_name);
   DCHECK_GT(len, kScriptNameLength);
-  const char* scriptName = &pref_name[len - kScriptNameLength];
+  const char* scriptName = &UNSAFE_TODO(pref_name[len - kScriptNameLength]);
   int32_t code = u_getPropertyValueEnum(UCHAR_SCRIPT, scriptName);
   DCHECK(code >= 0 && code < USCRIPT_CODE_LIMIT);
   return static_cast<UScriptCode>(code);
@@ -388,9 +385,14 @@ void PrefsTabHelper::RegisterProfilePrefs(
   registry->RegisterIntegerPref(prefs::kAccessibilityTextSizeContrastFactor, 0);
   registry->RegisterBooleanPref(prefs::kAccessibilityForceEnableZoom,
                                 pref_defaults.force_enable_zoom);
-  registry->RegisterBooleanPref(prefs::kWebKitPasswordEchoEnabled,
-                                pref_defaults.password_echo_enabled);
+  registry->RegisterBooleanPref(prefs::kWebKitPasswordEchoEnabledPhysical,
+                                pref_defaults.password_echo_enabled_physical);
+  registry->RegisterBooleanPref(prefs::kWebKitPasswordEchoEnabledTouch,
+                                pref_defaults.password_echo_enabled_touch);
   registry->RegisterIntegerPref(prefs::kAccessibilityFontWeightAdjustment, 0);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityTouchpadOverscrollHistoryNavigation,
+      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE);
 
 #endif
 

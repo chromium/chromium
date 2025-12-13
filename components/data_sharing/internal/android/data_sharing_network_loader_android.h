@@ -33,7 +33,6 @@ class DataSharingNetworkLoaderAndroid {
 
   void LoadUrl(JNIEnv* env,
                const JavaRef<jobject>& j_url,
-               const JavaRef<jobjectArray>& j_scopes,
                const JavaRef<jbyteArray>& j_post_data,
                jint j_network_annotation_hash_code,
                const JavaRef<jobject>& j_callback);

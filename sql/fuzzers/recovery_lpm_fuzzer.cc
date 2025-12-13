@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This fuzzer constructs a DB from fuzzer-derived SQL statements and then
 // mutates the file with fuzzer-derived XOR masks before exercising recovery.
 
@@ -28,6 +23,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -36,6 +32,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/logging/log_severity.h"
+#include "base/logging/logging_settings.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -304,8 +301,8 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
       }
 
       uint64_t buf = 0;
-      const int num_read =
-          file.Read(mutation.pos, reinterpret_cast<char*>(&buf), sizeof(buf));
+      const int num_read = UNSAFE_TODO(
+          file.Read(mutation.pos, reinterpret_cast<char*>(&buf), sizeof(buf)));
       CHECK_NE(num_read, -1);
       if (num_read == 0) {
         continue;
@@ -315,9 +312,9 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
 
       // Write `buf` back to the file, being careful not to add bytes to the
       // file that did not exist before.
-      CHECK_NE(
+      UNSAFE_TODO(CHECK_NE(
           file.Write(mutation.pos, reinterpret_cast<char*>(&buf), num_read),
-          -1);
+          -1));
     }
     CHECK_EQ(*file_length, file.GetLength());
   }

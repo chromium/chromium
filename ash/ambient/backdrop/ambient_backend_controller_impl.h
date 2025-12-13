@@ -68,7 +68,7 @@ class AmbientBackendControllerImpl : public AmbientBackendController {
   void OnScreenUpdateInfoFetched(
       OnScreenUpdateInfoFetchedCallback callback,
       std::unique_ptr<BackdropURLLoader> backdrop_url_loader,
-      std::unique_ptr<std::string> response);
+      std::optional<std::string> response);
 
   void GetSettings(GetSettingsCallback callback);
   void StartToGetSettings(GetSettingsCallback callback,
@@ -77,7 +77,7 @@ class AmbientBackendControllerImpl : public AmbientBackendController {
 
   void OnGetSettings(GetSettingsCallback callback,
                      std::unique_ptr<BackdropURLLoader> backdrop_url_loader,
-                     std::unique_ptr<std::string> response);
+                     std::optional<std::string> response);
 
   void StartToUpdateSettings(const AmbientSettings& settings,
                              UpdateSettingsCallback callback,
@@ -87,7 +87,7 @@ class AmbientBackendControllerImpl : public AmbientBackendController {
   void OnUpdateSettings(UpdateSettingsCallback callback,
                         const AmbientSettings& settings,
                         std::unique_ptr<BackdropURLLoader> backdrop_url_loader,
-                        std::unique_ptr<std::string> response);
+                        std::optional<std::string> response);
 
   void FetchPersonalAlbums(int banner_width,
                            int banner_height,
@@ -106,7 +106,7 @@ class AmbientBackendControllerImpl : public AmbientBackendController {
   void OnPersonalAlbumsFetched(
       OnPersonalAlbumsFetchedCallback callback,
       std::unique_ptr<BackdropURLLoader> backdrop_url_loader,
-      std::unique_ptr<std::string> response);
+      std::optional<std::string> response);
 
   void OnSettingsFetched(base::RepeatingClosure on_done,
                          const std::optional<ash::AmbientSettings>& settings);

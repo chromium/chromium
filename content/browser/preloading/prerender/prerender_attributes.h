@@ -21,6 +21,7 @@
 #include "net/http/http_request_headers.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/page_transition_types.h"
 
@@ -50,13 +51,15 @@ struct CONTENT_EXPORT PrerenderAttributes {
       ui::PageTransition transition_type,
       bool should_warm_up_compositor,
       bool should_prepare_paint_tree,
+      blink::mojom::SpeculationAction prerender_action_type,
       base::RepeatingCallback<bool(const GURL&,
                                    const std::optional<UrlMatchType>&)>
           url_match_predicate,
       base::RepeatingCallback<void(NavigationHandle&)>
           prerender_navigation_handle_callback,
       scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info,
-      bool allow_reuse);
+      bool allow_reuse,
+      bool form_submission);
 
   ~PrerenderAttributes();
 
@@ -127,6 +130,9 @@ struct CONTENT_EXPORT PrerenderAttributes {
   // then the intermediate result can be reused after activation.
   bool should_prepare_paint_tree = false;
 
+  // The action type of the speculation rule that triggered this prerender.
+  blink::mojom::SpeculationAction prerender_action_type;
+
   // If the caller wants to override the default holdback processing, they can
   // set this. Otherwise, it will be computed as part of
   // PrerenderHostRegistry::CreateAndStartHost.
@@ -147,6 +153,14 @@ struct CONTENT_EXPORT PrerenderAttributes {
 
   // Whether the created prerender host can be reused for future navigations.
   bool allow_reuse = false;
+
+  // Whether the created prerender is a GET form submission navigation.
+  bool form_submission = false;
+
+  // Enabled the feature for the speculation rules sent from the
+  // renderer process.
+  // TODO(https://crbug.com/440387014): Remove this field once OT is finished.
+  bool enable_cross_origin_prerender_iframes = false;
 
   // This is std::nullopt when prerendering is initiated by the browser.
   std::optional<base::UnguessableToken> initiator_devtools_navigation_token;

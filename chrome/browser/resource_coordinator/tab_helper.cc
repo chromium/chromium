@@ -18,6 +18,7 @@
 #include "chrome/browser/resource_coordinator/tab_memory_metrics_reporter.h"
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"

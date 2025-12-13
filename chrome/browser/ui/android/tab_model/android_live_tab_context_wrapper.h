@@ -40,7 +40,7 @@ class AndroidLiveTabContextCloseWrapper : public AndroidLiveTabContext {
   //   tab group. If an entry does not exist a null value will be used.
   AndroidLiveTabContextCloseWrapper(
       TabModel* tab_model,
-      std::vector<raw_ptr<TabAndroid, VectorExperimental>>&& closed_tabs,
+      std::vector<TabAndroid*>&& closed_tabs,
       std::map<int, tab_groups::TabGroupId>&& tab_id_to_tab_group,
       std::map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>&&
           tab_group_visual_data,
@@ -87,7 +87,7 @@ class AndroidLiveTabContextCloseWrapper : public AndroidLiveTabContext {
 
   // List of indices to close for using BrowserClosing to proxy bulk
   // closure.
-  std::vector<raw_ptr<TabAndroid, VectorExperimental>> closed_tabs_;
+  std::vector<TabAndroid*> closed_tabs_;
 
   // Maps tab IDs to tab groups.
   std::map<int, tab_groups::TabGroupId> tab_id_to_tab_group_;

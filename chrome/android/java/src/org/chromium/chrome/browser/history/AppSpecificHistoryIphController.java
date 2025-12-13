@@ -9,7 +9,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -20,11 +21,14 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.Highl
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 
+import java.util.function.Supplier;
+
 /** Controls showing IPH for App Specific history. */
+@NullMarked
 public class AppSpecificHistoryIphController {
     private final Activity mActivity;
     private final Supplier<Profile> mProfileSupplier;
-    private UserEducationHelper mUserEducationHelper;
+    private @Nullable UserEducationHelper mUserEducationHelper;
 
     /**
      * Constructs the controller.
@@ -38,9 +42,10 @@ public class AppSpecificHistoryIphController {
     }
 
     public void notifyUserEngaged() {
-        if (!mProfileSupplier.hasValue()) return;
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) return;
 
-        var tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
+        var tracker = TrackerFactory.getTrackerForProfile(profile);
         tracker.addOnInitializedCallback(
                 success ->
                         tracker.notifyEvent(
@@ -48,14 +53,20 @@ public class AppSpecificHistoryIphController {
     }
 
     void maybeShowIph() {
-        if (!shouldShowIph()) {
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) return;
+        if (!HistoryManager.isAppSpecificHistoryEnabled()) return;
+
+        var tracker = TrackerFactory.getTrackerForProfile(profile);
+        if (!tracker.isInitialized()
+                || !tracker.wouldTriggerHelpUi(FeatureConstants.APP_SPECIFIC_HISTORY_FEATURE)) {
             return;
         }
         View historyToolbarSearchMenuItem = mActivity.findViewById(R.id.search_menu_id);
         if (mUserEducationHelper == null) {
             mUserEducationHelper =
                     new UserEducationHelper(
-                            mActivity, mProfileSupplier, new Handler(Looper.getMainLooper()));
+                            mActivity, profile, new Handler(Looper.getMainLooper()));
         }
         mUserEducationHelper.requestShowIph(
                 new IphCommandBuilder(
@@ -66,14 +77,6 @@ public class AppSpecificHistoryIphController {
                         .setAnchorView(historyToolbarSearchMenuItem)
                         .setHighlightParams(new HighlightParams(HighlightShape.CIRCLE))
                         .build());
-    }
-
-    private boolean shouldShowIph() {
-        if (!HistoryManager.isAppSpecificHistoryEnabled()) return false;
-
-        var tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
-        return (tracker.isInitialized()
-                && tracker.wouldTriggerHelpUi(FeatureConstants.APP_SPECIFIC_HISTORY_FEATURE));
     }
 
     void setUserEducationHelperForTesting(UserEducationHelper userEducationHelper) {

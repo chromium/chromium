@@ -7,10 +7,15 @@ import {$} from 'chrome://resources/js/util.js';
 
 import {createIceCandidateGrid, updateIceCandidateGrid} from './candidate_grid.js';
 import {MAX_STATS_DATA_POINT_BUFFER_SIZE} from './data_series.js';
-import {DumpCreator, peerConnectionDataStore, userMediaRequests} from './dump_creator.js';
+import {
+    DumpCreator,
+    peerConnectionDataStore,
+    userMediaRequests,
+    addRtcStatsEvent
+} from './dump_creator.js';
 import {PeerConnectionUpdateTable} from './peer_connection_update_table.js';
-import {drawSingleReport, removeStatsReportGraphs} from './stats_graph_helper.js';
-import {StatsRatesCalculator, StatsReport} from './stats_rates_calculator.js';
+import {drawSingleRtcStats, removeStatsReportGraphs} from './stats_graph_helper.js';
+import {StatsRatesCalculator} from './stats_rates_calculator.js';
 import {StatsTable} from './stats_table.js';
 import {TabView} from './tab_view.js';
 import {UserMediaTable} from './user_media_table.js';
@@ -81,15 +86,15 @@ class PeerConnectionRecord {
   }
 
   /**
-   * @param {!Object} update The object contains keys "time", "type", and
+   * @param {!Object} update The object contains keys "timestamp", "type", and
    *   "value".
    */
   addUpdate(update) {
     const time = new Date(parseFloat(update.time));
     this.record_.updateLog.push({
-      time: time.toLocaleString(),
       type: update.type,
       value: update.value,
+      timestamp: update.timestamp,
     });
   }
 }
@@ -111,10 +116,60 @@ function initialize() {
   addWebUiListener('add-media', (data) => {
     userMediaRequests.push(data);
     userMediaTable.addMedia(data)
+    const constraints = {};
+    ['audio', 'video'].forEach(kind => {
+      if (data[kind] !== undefined) {
+        if (data[kind] === '') {
+          constraints[kind] = true;
+        } else {
+          constraints[kind] = data[kind];
+        }
+      }
+    });
+    addRtcStatsEvent(
+      'navigator.mediaDevices.' + data.request_type,
+      [data.rid, 0].join('-'),
+      constraints,
+      // correlation id.
+      [data.request_type, data.rid, data.pid, data.request_id].join('-'),
+      data.url,
+      data.timestamp
+    );
   });
   addWebUiListener('update-media', (data) => {
     userMediaRequests.push(data);
     userMediaTable.updateMedia(data);
+    if (data.error) {
+      addRtcStatsEvent(
+        'navigator.mediaDevices.' + data.request_type + 'OnFailure',
+        [data.rid, 0].join('-'),
+        {
+          error: data.error,
+          error_message: data.error_message
+        },
+        // correlation id.
+        [data.request_type, data.rid, data.pid, data.request_id].join('-'),
+        data.timestamp
+      );
+    } else {
+      const tracks = [];
+      if (data.audio_track_info !== 'null') {
+        const track_data = JSON.parse(data.audio_track_info);
+        tracks.push(['audio', track_data.id, track_data.label, data.stream_id]);
+      }
+      if (data.video_track_info !== 'null') {
+        const track_data = JSON.parse(data.video_track_info);
+        tracks.push(['video', track_data.id, track_data.label, data.stream_id]);
+      }
+      addRtcStatsEvent(
+        'navigator.mediaDevices.' + data.request_type + 'OnSuccess',
+        [data.rid, 0].join('-'),
+        tracks,
+        // correlation id.
+        [data.request_type, data.rid, data.pid, data.request_id].join('-'),
+        data.timestamp
+      );
+    }
   });
   addWebUiListener('remove-media-for-renderer', (data) => {
     for (let i = userMediaRequests.length - 1; i >= 0; --i) {
@@ -161,6 +216,26 @@ function initialize() {
     }
   }
   window.setInterval(requestStats, statsInterval);
+
+  addRtcStatsEvent(
+    'create',
+    null,
+    {
+      hardwareConcurrency: navigator.hardwareConcurrency,
+      userAgentData: navigator.userAgentData,
+      deviceMemory: navigator.deviceMemory,
+      screen: {
+        width: window.screen.availWidth,
+        height: window.screen.availHeight,
+        devicePixelRatio: window.devicePixelRatio,
+      },
+      window: {
+        width: window.innerWidth,
+        height: window.innerHeight,
+      },
+    },
+    Date.now()
+  );
 }
 document.addEventListener('DOMContentLoaded', initialize);
 
@@ -210,6 +285,20 @@ function addPeerConnectionUpdate(peerConnectionElement, update) {
   peerConnectionUpdateTable.addPeerConnectionUpdate(
       peerConnectionElement, update);
   peerConnectionDataStore[peerConnectionElement.id].addUpdate(update);
+  let value = undefined;
+  if (update.value.length) {
+    if (update.value[0] === '{') {
+      value = JSON.parse(update.value);
+    } else {
+      value = update.value;
+    }
+  }
+  addRtcStatsEvent(
+    update.type,
+    peerConnectionElement.id,
+    value,
+    update.timestamp
+  );
 }
 
 
@@ -234,6 +323,14 @@ function removePeerConnection(data) {
     delete peerConnectionDataStore[element.id];
     tabView.removeTab(element.id);
   }
+  // The rtcstats variant could remove from the array based on
+  // peerconnection id but only logs the peerconnection went away.
+  addRtcStatsEvent(
+    'remove',
+    getPeerConnectionId(data),
+    undefined,
+    Date.now()
+  );
 }
 
 /**
@@ -250,6 +347,26 @@ function addPeerConnection(data) {
   }
   peerConnectionDataStore[id].initialize(
       data.pid, data.url, data.rtcConfiguration, data.constraints);
+
+  if (data.rtcConfiguration) {
+    addRtcStatsEvent(
+      'create',
+      getPeerConnectionId(data),
+      JSON.parse(data.rtcConfiguration),
+      data.url,
+      data.timestamp
+    );
+  }
+  // Nonstandard legacy constraints.
+  if (data.constraints) {
+    addRtcStatsEvent(
+      'constraints',
+      getPeerConnectionId(data),
+      JSON.parse(data.constraints),
+      data.url,
+      data.timestamp
+    );
+  }
 
   // Disable getElementById restriction here, since |id| is not always
   // a valid selector.
@@ -367,104 +484,126 @@ function addStandardStats(data) {
     statsRatesCalculator = new StatsRatesCalculator();
     statsRatesCalculatorById.set(pcId, statsRatesCalculator);
   }
-  const r = StatsReport.fromInternalsReportList(data.reports);
-  statsRatesCalculator.addStatsReport(r);
-  data.reports = statsRatesCalculator.currentReport.toInternalsReportList();
-  for (let i = 0; i < data.reports.length; ++i) {
-    const report = data.reports[i];
-    statsTable.addStatsReport(peerConnectionElement, report);
-    drawSingleReport(peerConnectionElement, report);
-  }
-  // Determine currently connected candidate pair.
-  const stats = r.statsById;
+  // Create a map from the stats entries so it behaves like a getStats maplike
+  // and then sort it.
+  const rtcReport = sortStatsReport(new Map(data.reports));
+  addRtcStatsEvent(
+    'getStats',
+    getPeerConnectionId(data),
+    rtcReport.entries().reduce((o, [k, v]) => {
+      o[k] = v;
+      return o;
+    }, {}),
+    data.timestamp
+  );
 
-  let activeCandidatePair = null;
-  let remoteCandidate = null;
-  let localCandidate = null;
+  // This augments stats with [delta] values.
+  statsRatesCalculator.addStatsReport(rtcReport);
+  rtcReport.forEach(rtcStats => {
+    statsTable.addRtcStats(peerConnectionElement, rtcStats);
+    drawSingleRtcStats(peerConnectionElement, rtcStats);
+  });
 
-  // Get the first active candidate pair. This ignores the rare case of
-  // non-bundled connections.
-  stats.forEach(report => {
-    if (report.type === 'transport' && !activeCandidatePair) {
-      activeCandidatePair = stats.get(report.selectedCandidatePairId);
+  let ids = [];
+  rtcReport.forEach(report => {
+    if (!(report.type === 'transport' && report.selectedCandidatePairId)) {
+      return;
+    }
+    const activeCandidatePair = rtcReport.get(report.selectedCandidatePairId);
+    const remoteCandidate =
+        rtcReport.get(activeCandidatePair.remoteCandidateId);
+    const localCandidate = rtcReport.get(activeCandidatePair.localCandidateId);
+
+    const candidateElement = peerConnectionElement
+      .getElementsByClassName('candidatepair')[0].firstElementChild;
+    candidateElement.innerText = '';
+    if (!(localCandidate && remoteCandidate)) {
+      return;
+      candidateElement.innerText = '(not connected)';
+    }
+
+    if (localCandidate.address &&
+        localCandidate.address.indexOf(':') !== -1) {
+      // Show IPv6 in []
+      candidateElement.innerText +='[' + localCandidate.address + ']';
+    } else {
+      candidateElement.innerText += localCandidate.address || '(not set)';
+    }
+    candidateElement.innerText += ':' + localCandidate.port + ' <=> ';
+
+    if (remoteCandidate.address &&
+        remoteCandidate.address.indexOf(':') !== -1) {
+      // Show IPv6 in []
+      candidateElement.innerText +='[' + remoteCandidate.address + ']';
+    } else {
+      candidateElement.innerText += remoteCandidate.address || '(not set)';
+    }
+    candidateElement.innerText += ':' + remoteCandidate.port;
+    ids = ids.concat([
+      peerConnectionElement.id + '-table-' + activeCandidatePair.id,
+      peerConnectionElement.id + '-table-' + localCandidate.id,
+      peerConnectionElement.id + '-table-' + remoteCandidate.id,
+    ]);
+  });
+  // Mark active local-candidate, remote candidate and candidate pair
+  // bold in the table.
+  // Disable getElementById restriction here, since |peerConnectionElement|
+  // doesn't always have a valid selector ID.
+  // First remove bold from each, then re-add for each active pair..
+  const statsContainer =
+    // eslint-disable-next-line no-restricted-properties
+      document.getElementById(peerConnectionElement.id + '-table-container');
+  const activeConnectionClass = 'stats-table-active-connection';
+  statsContainer.childNodes.forEach(node => {
+    if (node.nodeName !== 'DETAILS' || !node.children[1]) {
+      return;
+    }
+    if (ids.includes(node.children[1].id)) {
+      node.firstElementChild.classList.add(activeConnectionClass);
+    } else {
+      node.firstElementChild.classList.remove(activeConnectionClass);
     }
   });
 
-  const candidateElement = peerConnectionElement
-    .getElementsByClassName('candidatepair')[0].firstElementChild;
-  if (activeCandidatePair) {
-    if (activeCandidatePair.remoteCandidateId) {
-      remoteCandidate = stats.get(activeCandidatePair.remoteCandidateId);
+  // Mark active candidate-pair graph bold.
+  const statsGraphContainers = peerConnectionElement
+    .getElementsByClassName('stats-graph-container');
+  for (let i = 0; i < statsGraphContainers.length; i++) {
+    const node = statsGraphContainers[i];
+    if (node.nodeName !== 'DETAILS') {
+      continue;
     }
-    if (activeCandidatePair.localCandidateId) {
-      localCandidate = stats.get(activeCandidatePair.localCandidateId);
+    if (ids.includes(node.children[1].id)) {
+      node.firstElementChild.classList.add(activeConnectionClass);
+    } else {
+      node.firstElementChild.classList.remove(activeConnectionClass);
     }
-    candidateElement.innerText = '';
-    if (localCandidate && remoteCandidate) {
-      if (localCandidate.address &&
-          localCandidate.address.indexOf(':') !== -1) {
-        // Show IPv6 in []
-        candidateElement.innerText +='[' + localCandidate.address + ']';
-      } else {
-        candidateElement.innerText += localCandidate.address || '(not set)';
-      }
-      candidateElement.innerText += ':' + localCandidate.port + ' <=> ';
-
-      if (remoteCandidate.address &&
-          remoteCandidate.address.indexOf(':') !== -1) {
-        // Show IPv6 in []
-        candidateElement.innerText +='[' + remoteCandidate.address + ']';
-      } else {
-        candidateElement.innerText += remoteCandidate.address || '(not set)';
-      }
-      candidateElement.innerText += ':' + remoteCandidate.port;
-    }
-    // Mark active local-candidate, remote candidate and candidate pair
-    // bold in the table.
-    // Disable getElementById restriction here, since |peerConnectionElement|
-    // doesn't always have a valid selector ID.
-    const statsContainer =
-      // eslint-disable-next-line no-restricted-properties
-        document.getElementById(peerConnectionElement.id + '-table-container');
-    const activeConnectionClass = 'stats-table-active-connection';
-    statsContainer.childNodes.forEach(node => {
-      if (node.nodeName !== 'DETAILS' || !node.children[1]) {
-        return;
-      }
-      const ids = [
-        peerConnectionElement.id + '-table-' + activeCandidatePair.id,
-        peerConnectionElement.id + '-table-' + localCandidate.id,
-        peerConnectionElement.id + '-table-' + remoteCandidate.id,
-      ];
-      if (ids.includes(node.children[1].id)) {
-        node.firstElementChild.classList.add(activeConnectionClass);
-      } else {
-        node.firstElementChild.classList.remove(activeConnectionClass);
-      }
-    });
-    // Mark active candidate-pair graph bold.
-    const statsGraphContainers = peerConnectionElement
-      .getElementsByClassName('stats-graph-container');
-    for (let i = 0; i < statsGraphContainers.length; i++) {
-      const node = statsGraphContainers[i];
-      if (node.nodeName !== 'DETAILS') {
-        continue;
-      }
-      if (!node.id.startsWith(pcId + '-candidate-pair')) {
-        continue;
-      }
-      if (node.id === pcId + '-candidate-pair-' + activeCandidatePair.id
-          + '-graph-container') {
-        node.firstElementChild.classList.add(activeConnectionClass);
-      } else {
-        node.firstElementChild.classList.remove(activeConnectionClass);
-      }
-    }
-  } else {
-    candidateElement.innerText = '(not connected)';
   }
 
-  updateIceCandidateGrid(peerConnectionElement, r.statsById);
+  updateIceCandidateGrid(peerConnectionElement, rtcReport);
+
+  // Mark inactive outbound-rtp in grey.
+  const inactiveStatsIds = [];
+  const inactiveRtpStatsClass = 'stats-table-rtp-inactive';
+  rtcReport.forEach(rtcStats => {
+    if (!(rtcStats.type === 'outbound-rtp')) {
+      return;
+    }
+    if (rtcStats.active === false) {
+      inactiveStatsIds.push(
+          peerConnectionElement.id + '-details-' + rtcStats.id);
+    }
+  });
+  statsContainer.childNodes.forEach(node => {
+    if (node.nodeName !== 'DETAILS') {
+      return;
+    }
+    if (inactiveStatsIds.includes(node.id)) {
+      node.classList.add(inactiveRtpStatsClass);
+    } else {
+      node.classList.remove(inactiveRtpStatsClass);
+    }
+  });
 }
 
 /**
@@ -487,4 +626,64 @@ function eventLogRecordingsFileSelectionCancelled() {
 
 function dataChannelRecordingsFileSelectionCancelled() {
   dumpCreator.clearDataChannelRecordingsCheckbox();
+}
+
+// Returns a sorted version of the stats report as a Map.
+// 1. outbound-rtps, sorted by encodingIndex
+// 2. inbound-rtps
+// 3. everything else
+function sortStatsReport(report) {
+  const getOutboundRtpsForMid = (report, mid) => {
+    const outboundRtpsByEncodingIndex = new Map();
+    for (const stats of report.values()) {
+      if (stats.type !== 'outbound-rtp' || stats.mid !== mid) {
+        continue;
+      }
+      let encodingIndex = stats.encodingIndex ? Number(stats.encodingIndex) : 0;
+      outboundRtpsByEncodingIndex.set(encodingIndex, stats);
+    }
+    const orderedOutboundRtps = [];
+    for (let i = 0; i < outboundRtpsByEncodingIndex.size; ++i) {
+      orderedOutboundRtps.push(outboundRtpsByEncodingIndex.get(i));
+    }
+    return orderedOutboundRtps;
+  }
+  // Categorize into outbound-rtp, inbound-rtp and other categories.
+  let outboundRtps = [];
+  let inboundRtps = [];
+  let otherStats = [];
+  const midsIncluded = new Set();
+  for (const stats of report.values()) {
+    if (stats.type === 'outbound-rtp') {
+      if (stats.mid !== undefined) {
+        if (midsIncluded.has(stats.mid)) {
+          continue;  // This outbound-rtp has already been included.
+        }
+        midsIncluded.add(stats.mid);
+        // Add all outbound-rtps for this mid in encodingIndex order.
+        outboundRtps = outboundRtps.concat(
+            getOutboundRtpsForMid(report, stats.mid));
+      } else {
+        // It's unexpected that an outbound-rtp does not have a mid due to
+        // outbound-rtps being created after O/A, but just in case...
+        outboundRtps.push(stats);
+      }
+    } else if (stats.type === 'inbound-rtp') {
+      inboundRtps.push(stats);
+    } else {
+      otherStats.push(stats);
+    }
+  }
+  // Re-build the internal reports in our new preferred order.
+  const sortedReport = new Map();
+  for (const outboundRtp of outboundRtps) {
+    sortedReport.set(outboundRtp.id, outboundRtp);
+  }
+  for (const inboundRtp of inboundRtps) {
+    sortedReport.set(inboundRtp.id, inboundRtp);
+  }
+  for (const other of otherStats) {
+    sortedReport.set(other.id, other);
+  }
+  return sortedReport;
 }

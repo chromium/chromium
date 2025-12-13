@@ -64,7 +64,7 @@ const char kSpellCheckEnabledKey[] = "spell_check_enabled";
 const char kVoiceInputEnabledKey[] = "voice_input_enabled";
 
 std::optional<display::Display> GetFirstTouchDisplay() {
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
     if (display.touch_support() == display::Display::TouchSupport::AVAILABLE)
       return display;
   }
@@ -427,7 +427,7 @@ aura::Window* KeyboardControllerImpl::GetContainerForDisplay(
 }
 
 aura::Window* KeyboardControllerImpl::GetContainerForDefaultDisplay() {
-  const display::Screen* screen = display::Screen::GetScreen();
+  const display::Screen* screen = display::Screen::Get();
   const std::optional<display::Display> first_touch_display =
       GetFirstTouchDisplay();
   const bool has_touch_display = first_touch_display.has_value();

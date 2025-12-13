@@ -33,11 +33,11 @@ enum class PaintPropertyChangeType : unsigned char {
   // We only changed values that are either mutated by compositor animations
   // which are updated automatically during the compositor-side animation tick,
   // or have been updated directly on the associated compositor node during the
-  // PrePaint lifecycle phase.
+  // PrePaint lifecycle phase. Note: Raster-inducing scrolls may also use this
+  // value, but they can affect main-thread generated raster invalidations
+  // which are handled specially (See: PaintArtifactCompositor::UpdateType::
+  // kRasterInducingScroll).
   kChangedOnlyCompositedValues,
-  // We only changed values that don't require re-raster (e.g. compositor
-  // element id changed).
-  kChangedOnlyNonRerasterValues,
   // We only changed values and not the hierarchy of the tree, and we know that
   // the value changes are 'simple' in that they don't cause cascading changes.
   // For example, they do not cause a new render surface to be created, which
@@ -98,10 +98,6 @@ class PLATFORM_EXPORT PaintPropertyNode
   }
 
   PaintPropertyChangeType NodeChanged() const { return changed_; }
-  bool NodeChangeAffectsRaster() const {
-    return changed_ != PaintPropertyChangeType::kUnchanged &&
-           changed_ != PaintPropertyChangeType::kChangedOnlyNonRerasterValues;
-  }
 
 #if DCHECK_IS_ON()
   String ToTreeString() const;

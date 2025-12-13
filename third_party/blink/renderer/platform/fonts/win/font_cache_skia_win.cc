@@ -29,11 +29,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <windows.h>  // For GetACP()
 
 #include <unicode/uscript.h>
@@ -46,6 +41,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/blink/public/platform/web_font_prewarmer.h"
 #include "third_party/blink/renderer/platform/fonts/bitmap_glyphs_block_list.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -183,11 +179,11 @@ const SimpleFontData* FontCache::GetFallbackFamilyNameFromHardcodedChoices(
     UChar32 codepoint,
     FontFallbackPriority fallback_priority) {
   UScriptCode script;
-  DCHECK(font_manager_);
+
   if (const AtomicString fallback_family =
           GetFallbackFamily(codepoint, font_description.GenericFamily(),
                             font_description.Locale(), fallback_priority,
-                            *font_manager_, script)) {
+                            *skia::DefaultFontMgr(), script)) {
     FontFaceCreationParams create_by_family =
         FontFaceCreationParams(fallback_family);
     const FontPlatformData* data =
@@ -240,7 +236,7 @@ const SimpleFontData* FontCache::GetFallbackFamilyNameFromHardcodedChoices(
   // warrant an additional (real coverage) check with fontCotainsCharacter.
   for (int i = 0; i < num_fonts; ++i) {
     FontFaceCreationParams create_by_family =
-        FontFaceCreationParams(AtomicString(pan_uni_fonts[i]));
+        FontFaceCreationParams(AtomicString(UNSAFE_TODO(pan_uni_fonts[i])));
     const FontPlatformData* data =
         GetFontPlatformData(font_description, create_by_family);
     if (data && data->FontContainsCharacter(codepoint))
@@ -261,7 +257,7 @@ const SimpleFontData* FontCache::GetDWriteFallbackFamily(
 
   Bcp47Vector locales;
   locales.push_back(fallback_locale->LocaleForSkFontMgr());
-  sk_sp<SkTypeface> typeface(font_manager_->matchFamilyStyleCharacter(
+  sk_sp<SkTypeface> typeface(skia::DefaultFontMgr()->matchFamilyStyleCharacter(
       family_name.c_str(), font_description.SkiaFontStyle(), locales.data(),
       locales.size(), codepoint));
 
@@ -367,6 +363,9 @@ static bool TypefacesHasWeightSuffix(const AtomicString& family,
   };
   // Mapping from suffix to weight from the DirectWrite documentation.
   // http://msdn.microsoft.com/en-us/library/windows/desktop/dd368082.aspx
+  //
+  // The list is intentionally incomplete, because it is for the backward
+  // compatibility with GDI. See issues for crrev.com/c/542603004.
   const static FamilyWeightSuffix kVariantForSuffix[] = {
       {u" thin", 5, FontSelectionValue(100)},
       {u" extralight", 11, FontSelectionValue(200)},
@@ -382,7 +381,7 @@ static bool TypefacesHasWeightSuffix(const AtomicString& family,
       {u" heavy", 6, FontSelectionValue(900)}};
   size_t num_variants = std::size(kVariantForSuffix);
   for (size_t i = 0; i < num_variants; i++) {
-    const FamilyWeightSuffix& entry = kVariantForSuffix[i];
+    const FamilyWeightSuffix& entry = UNSAFE_TODO(kVariantForSuffix[i]);
     if (family.DeprecatedEndsWithIgnoringCase(entry.suffix)) {
       String family_name = family.GetString();
       family_name.Truncate(family.length() - entry.length);
@@ -419,7 +418,7 @@ static bool TypefacesHasStretchSuffix(const AtomicString& family,
       {u" ultraexpanded", 14, kUltraExpandedWidthValue}};
   size_t num_variants = std::size(kVariantForSuffix);
   for (size_t i = 0; i < num_variants; i++) {
-    const FamilyStretchSuffix& entry = kVariantForSuffix[i];
+    const FamilyStretchSuffix& entry = UNSAFE_TODO(kVariantForSuffix[i]);
     if (family.DeprecatedEndsWithIgnoringCase(entry.suffix)) {
       String family_name = family.GetString();
       family_name.Truncate(family.length() - entry.length);

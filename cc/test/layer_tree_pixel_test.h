@@ -11,15 +11,14 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gl/gl_implementation.h"
-
-class SkBitmap;
 
 namespace base {
 namespace test {

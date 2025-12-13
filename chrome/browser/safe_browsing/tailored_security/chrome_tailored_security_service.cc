@@ -30,6 +30,7 @@
 #include "chrome/browser/safe_browsing/tailored_security/notification_handler_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/safe_browsing/tailored_security_desktop_dialog_manager.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #endif
 
 namespace safe_browsing {
@@ -41,6 +42,10 @@ const bool kRetryMechanismNotTriggered = false;
 #endif
 
 namespace {
+#if !BUILDFLAG(IS_ANDROID)
+DEFINE_LOCAL_REQUIRED_NOTICE_IDENTIFIER(kEnabledEnhancedBrowsingNotice);
+DEFINE_LOCAL_REQUIRED_NOTICE_IDENTIFIER(kDisabledEnhancedBrowsingNotice);
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 content::WebContents* GetWebContentsForProfile(Profile* profile) {
@@ -142,7 +147,13 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
                        is_enabled ? SafeBrowsingState::ENHANCED_PROTECTION
                                   : SafeBrowsingState::STANDARD_PROTECTION,
                        /*is_esb_enabled_by_account_integration=*/is_enabled);
-  DisplayDesktopDialog(browser, is_enabled);
+
+  if (base::FeatureList::IsEnabled(safe_browsing::kNoticeQueueForEsb)) {
+    QueueNotice(is_enabled);
+  } else {
+    DisplayDesktopDialog(browser, is_enabled);
+  }
+
 #endif
   retry_handler_->SaveRetryState(
       MessageRetryHandler::RetryState::NO_RETRY_NEEDED);
@@ -151,6 +162,59 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
     RecordEnabledNotificationResult(TailoredSecurityNotificationResult::kShown);
   }
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ChromeTailoredSecurityService::TriggerDialogDisplay(
+    bool is_enabled,
+    user_education::RequiredNoticePriorityHandle messaging_priority_handle) {
+  if (is_enabled) {
+    enabled_notice_handle_ = std::move(messaging_priority_handle);
+  } else {
+    disabled_notice_handle_ = std::move(messaging_priority_handle);
+  }
+  DisplayDesktopDialog(chrome::FindBrowserWithProfile(profile_), is_enabled);
+}
+
+void ChromeTailoredSecurityService::ReleaseEnabledQueueHandle() {
+  enabled_notice_handle_.Release();
+}
+
+void ChromeTailoredSecurityService::ReleaseDisabledQueueHandle() {
+  disabled_notice_handle_.Release();
+}
+
+void ChromeTailoredSecurityService::QueueNotice(bool is_enabled) {
+  // When we want to display the dialog, add it to the queue. More likely than
+  // not, there will not be other items in the queue, so it was display
+  // immediately. In edge cases, it will display after other entries in the
+  // queue have processed.
+  auto& product_messaging_controller =
+      UserEducationServiceFactory::GetForBrowserContext(profile_)
+          ->product_messaging_controller();
+
+  const auto& notice_to_queue = is_enabled ? kEnabledEnhancedBrowsingNotice
+                                           : kDisabledEnhancedBrowsingNotice;
+
+  // We reference the handle of the opposite state (e.g., if enabling, we look
+  // at the disabled handle).
+  auto& other_notice_handle =
+      is_enabled ? disabled_notice_handle_ : enabled_notice_handle_;
+
+  if (!product_messaging_controller.IsNoticeQueued(notice_to_queue)) {
+    // If the conflicting notice is currently held, release it so the new one
+    // can process.
+    if (other_notice_handle) {
+      other_notice_handle.Release();
+    }
+
+    product_messaging_controller.QueueRequiredNotice(
+        notice_to_queue,
+        base::BindOnce(&ChromeTailoredSecurityService::TriggerDialogDisplay,
+                       weak_factory_.GetWeakPtr(), is_enabled),
+        {});
+  }
+}
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 void ChromeTailoredSecurityService::DidAddTab(TabAndroid* tab,
@@ -238,9 +302,15 @@ void ChromeTailoredSecurityService::DisplayDesktopDialog(
     Browser* browser,
     bool show_enable_modal) {
   if (show_enable_modal) {
-    dialog_manager_.ShowEnabledDialogForBrowser(browser);
+    dialog_manager_.ShowEnabledDialogForBrowser(
+        browser, base::BindOnce(
+                     &ChromeTailoredSecurityService::ReleaseEnabledQueueHandle,
+                     weak_factory_.GetWeakPtr()));
   } else {
-    dialog_manager_.ShowDisabledDialogForBrowser(browser);
+    dialog_manager_.ShowDisabledDialogForBrowser(
+        browser, base::BindOnce(
+                     &ChromeTailoredSecurityService::ReleaseDisabledQueueHandle,
+                     weak_factory_.GetWeakPtr()));
   }
 }
 #endif

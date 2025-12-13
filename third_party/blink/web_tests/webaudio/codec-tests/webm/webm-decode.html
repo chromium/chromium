@@ -1,72 +1,32 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>WebM decoding test </title>
-    <script src="../../../resources/testharness.js"></script>
-    <script src="../../../resources/testharnessreport.js"></script>
-    <script src="../../resources/audit-util.js"></script>
-    <script src="../../resources/audio-file-utils.js"></script>
-  </head>
-  <body>
-    <script>
-      // Absolute tolerance for sample-level comparison.
-      const kAbsTolerance = 4.0234e-5;
 
+<head>
+  <title>
+    WebM decoding test
+  </title>
+  <script src="../../../resources/testharness.js"></script>
+  <script src="../../../resources/testharnessreport.js"></script>
+  <script src="../../resources/audit-util.js"></script>
+  <script src="../../resources/audio-file-utils.js"></script>
+  <script src="../../resources/buffer-loader.js"></script>
+  <script src="../resources/codec-tests.js"></script>
+</head>
+
+<body>
+  <script>
+    runCodecTest({
+      encodedFileName: 'test-webm.webm',
+      // Absolute tolerance for sample-level comparison.
+      absTolerance: 4.0234e-5,
+      // Use 48 kHz to avoid resampling in decodeAudioData.
+      sampleRate: 48000,
       // Minimum acceptable signal-to-noise ratio (SNR) in decibels for each
       // channel.
-      const kMinSnrDb = 110.97;
+      minSnrDb: 110.97,
+      description: 'Decoded WebM matches reference WAV within tolerance',
+    });
+  </script>
+</body>
 
-      promise_test(async t => {
-        // Use 48 kHz to avoid resampling in decodeAudioData.
-        const context = new AudioContext({ sampleRate: 48000 });
-
-        const [expectedBuffer, decodedBuffer] = await loadBuffers(
-            context,
-            [
-              'resources/webm-decode-expected.wav',
-              'test-webm.webm',
-            ]);
-
-        assert_equals(context.sampleRate, 48000, 'AudioContext sampleRate');
-        assert_equals(
-            decodedBuffer.numberOfChannels,
-            expectedBuffer.numberOfChannels,
-            'Channel count');
-        assert_equals(
-          decodedBuffer.length,
-          expectedBuffer.length,
-          'Frame count'
-        );
-
-        for (let channel = 0;
-             channel < expectedBuffer.numberOfChannels;
-             ++channel) {
-          const reference = expectedBuffer.getChannelData(channel);
-          const actual = decodedBuffer.getChannelData(channel);
-
-          // Compute signal-to-noise ratio (SNR).
-          const snrDb = 10 * Math.log10(computeSNR(actual, reference));
-            // Ensure the SNR meets the minimum requirement.
-            assert_greater_than_equal(
-            snrDb,
-            kMinSnrDb,
-            `SNR for channel ${channel}`
-            );
-
-          // Sample-wise comparison with absolute tolerance.
-          for (let i = 0; i < reference.length; ++i) {
-            assert_approx_equals(
-              actual[i], reference[i], kAbsTolerance,
-              `Channel ${channel}, sample ${i}`);
-          }
-        }
-
-        // Optionally save the decoded output for manual inspection.
-        const filename = 'resources/webm-decode-actual.wav';
-        if (downloadAudioBuffer(decodedBuffer, filename)) {
-          assert_true(true, `Saved reference file: ${filename}`);
-        }
-      }, 'Decoded WebM matches reference WAV within tolerance');
-    </script>
-  </body>
 </html>

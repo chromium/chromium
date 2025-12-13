@@ -11,6 +11,8 @@ H264SliceMetadata::H264SliceMetadata() = default;
 
 H264SliceMetadata::H264SliceMetadata(const H264SliceMetadata&) = default;
 
+H264DPB::H264DPB() = default;
+
 int H264DPB::CountRefPics() {
   int ret = 0;
   for (auto& i : *this) {

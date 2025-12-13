@@ -6,15 +6,16 @@
 
 #include <math.h>
 
+#include "base/feature_list.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/layout/text_decoration_offset.h"
 #include "third_party/blink/renderer/core/paint/decoration_line_painter.h"
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -305,7 +306,17 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
   bool antialias = antialias_;
   if (line == TextDecorationLine::kSpellingError ||
       line == TextDecorationLine::kGrammarError) {
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(features::kAndroidSpellcheckNativeUi)) {
+      style = kSolidStroke;
+      antialias = true;
+      spelling_wave = std::nullopt;
+    } else {
+      style = kWavyStroke;
+      spelling_wave =
+          MakeSpellingGrammarWave(decorating_box_style_->EffectiveZoom());
+    }
+#elif BUILDFLAG(IS_APPLE)
     style = kDottedStroke;
     antialias = true;
 #else
@@ -391,7 +402,7 @@ void TextDecorationInfo::SetLineThroughLineData() {
 
 void TextDecorationInfo::SetSpellingOrGrammarErrorLineData(
     const TextDecorationOffset& decoration_offset) {
-  DCHECK(HasSpellingOrGrammerError());
+  DCHECK(HasSpellingOrGrammarError());
   DCHECK(!HasUnderline());
   DCHECK(!HasOverline());
   DCHECK(!HasLineThrough());
@@ -428,38 +439,26 @@ Color TextDecorationInfo::LineColor() const {
 float TextDecorationInfo::ComputeThickness() const {
   DCHECK(applied_text_decoration_);
   const AppliedTextDecoration& decoration = *applied_text_decoration_;
-  if (HasSpellingOrGrammerError()) {
+  if (HasSpellingOrGrammarError()) {
     // Spelling and grammar error thickness doesn't depend on the font size.
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/434081396): Verify with UX that this is accurate.
+    // This number was derived based on visual inspection of the rendered
+    // lines on device.
+    // Android uses 2 "display-independent-pixels". See
+    // "TextAppearance.Suggestion"
+    // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/res/res/values/styles.xml;l=309
+    return (base::FeatureList::IsEnabled(features::kAndroidSpellcheckNativeUi))
+               ? 2.5f * decorating_box_style_->EffectiveZoom()
+               : 1.f * decorating_box_style_->EffectiveZoom();
+#elif BUILDFLAG(IS_APPLE)
     return 2.f * decorating_box_style_->EffectiveZoom();
 #else
     return 1.f * decorating_box_style_->EffectiveZoom();
 #endif
   }
-  return ComputeUnderlineThickness(decoration.Thickness());
-}
-
-float TextDecorationInfo::ComputeUnderlineThickness(
-    const TextDecorationThickness& applied_decoration_thickness) const {
-  float thickness = 0;
-  if (RuntimeEnabledFeatures::
-          SvgTextCentralBaselineTextDecorationFixEnabled() ||
-      flipped_underline_position_ ==
-          ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto ||
-      flipped_underline_position_ ==
-          ResolvedUnderlinePosition::kNearAlphabeticBaselineFromFont ||
-      !decorating_box_style_) {
-    thickness = ComputeDecorationThickness(applied_decoration_thickness,
-                                           computed_font_size_, font_data_);
-  } else {
-    // Compute decorating box. Position and thickness are computed from the
-    // decorating box.
-    // Only for non-Roman for now for the performance implications.
-    // https:// drafts.csswg.org/css-text-decor-3/#decorating-box
-    thickness = ComputeDecorationThickness(
-        applied_decoration_thickness, decorating_box_style_->ComputedFontSize(),
-        decorating_box_style_->GetFont()->PrimaryFont());
-  }
+  const float thickness = ComputeDecorationThickness(
+      decoration.Thickness(), computed_font_size_, font_data_);
   const float minimum_thickness = minimum_thickness_is_one_ ? 1.0f : 0.0f;
   return std::max(minimum_thickness, thickness);
 }

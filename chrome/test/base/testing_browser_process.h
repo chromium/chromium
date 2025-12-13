@@ -16,17 +16,19 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/testing_browser_process_platform_part.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/upgrade_detector/build_state.h"
@@ -54,7 +56,7 @@ class MetricsService;
 namespace network {
 class TestNetworkConnectionTracker;
 class TestNetworkQualityTracker;
-}
+}  // namespace network
 
 namespace os_crypt_async {
 class OSCryptAsync;
@@ -92,7 +94,22 @@ class TestingBrowserProcess
   TestingBrowserProcess(const TestingBrowserProcess&) = delete;
   TestingBrowserProcess& operator=(const TestingBrowserProcess&) = delete;
 
+  // Handles creating the global features and optionally profile manager in the
+  // correct order. Should be called after Init() in unit tests that need to to
+  // create GlobalFeatures after modifying feature flags, or unit tests that
+  // need more than just the core GlobalFeatures initialized.
+  std::unique_ptr<TestingProfileManager> SetUpGlobalFeaturesForTesting(
+      bool profile_manager);
+
+  // Destroys the global features, optionally profile manager, and resource
+  // coordinator parts in the correct order. Should be used if (and only if)
+  // SetUpGlobalFeaturesForTesting() was used in initialization.
+  void TearDownGlobalFeaturesForTesting(
+      std::unique_ptr<TestingProfileManager> profile_manager);
+
   // BrowserProcess overrides:
+  ui::UnownedUserDataHost& GetUnownedUserDataHost() override;
+  const ui::UnownedUserDataHost& GetUnownedUserDataHost() const override;
   void EndSession() override;
   void FlushLocalStateAndReply(base::OnceClosure reply) override;
   metrics_services_manager::MetricsServicesManager* GetMetricsServicesManager()
@@ -122,8 +139,6 @@ class TestingBrowserProcess
   safe_browsing::SafeBrowsingService* safe_browsing_service() override;
   subresource_filter::RulesetService* subresource_filter_ruleset_service()
       override;
-  subresource_filter::RulesetService*
-  fingerprinting_protection_ruleset_service() override;
   BrowserProcessPlatformPart* platform_part() override;
 
   NotificationUIManager* notification_ui_manager() override;
@@ -149,7 +164,9 @@ class TestingBrowserProcess
 #endif
 
   component_updater::ComponentUpdateService* component_updater() override;
+#if BUILDFLAG(IS_CHROMEOS)
   MediaFileSystemRegistry* media_file_system_registry() override;
+#endif
 
   WebRtcLogUploader* webrtc_log_uploader() override;
 
@@ -184,8 +201,6 @@ class TestingBrowserProcess
   void SetVariationsService(variations::VariationsService* variations_service);
   void SetWebRtcLogUploader(std::unique_ptr<WebRtcLogUploader> uploader);
   void SetRulesetService(
-      std::unique_ptr<subresource_filter::RulesetService> ruleset_service);
-  void SetFingerprintingProtectionRulesetService(
       std::unique_ptr<subresource_filter::RulesetService> ruleset_service);
   void SetSharedURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
@@ -222,6 +237,17 @@ class TestingBrowserProcess
   void MaybeStartTearDown();
 
   void ShutdownBrowserPolicyConnector();
+
+  void CreateGlobalFeaturesPreProfileManager();
+  void CreateGlobalFeaturesPostProfileManager();
+
+  ui::UnownedUserDataHost unowned_user_data_host_;
+
+  // This member needs to stay at or near the top of the list so it gets
+  // destroyed late in the shutdown process. Several other members rely on
+  // |features_|, so having it lower in this file could cause use-after-free
+  // issues.
+  std::unique_ptr<GlobalFeatures> features_;
 
   // The value returned by `IsShuttingDown()`.
   bool is_shutting_down_ = false;
@@ -264,8 +290,6 @@ class TestingBrowserProcess
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
   std::unique_ptr<subresource_filter::RulesetService>
       subresource_filter_ruleset_service_;
-  std::unique_ptr<subresource_filter::RulesetService>
-      fingerprinting_protection_ruleset_service_;
   std::unique_ptr<WebRtcLogUploader> webrtc_log_uploader_;
 
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
@@ -277,7 +301,7 @@ class TestingBrowserProcess
   std::unique_ptr<network::TestNetworkConnectionTracker>
       test_network_connection_tracker_;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<MediaFileSystemRegistry> media_file_system_registry_;
 #endif
 
@@ -299,7 +323,6 @@ class TestingBrowserProcess
 
   std::unique_ptr<StatusTray> status_tray_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
-  std::unique_ptr<GlobalFeatures> features_;
 };
 
 // RAII (resource acquisition is initialization) for TestingBrowserProcess.

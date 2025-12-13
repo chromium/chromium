@@ -12,7 +12,6 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -172,8 +171,7 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
         if (configResult.result.result === AcceleratorConfigResult.kConflict) {
           this.statusMessage = this.i18n(
               'restoreDefaultConflictMessage',
-              mojoString16ToString(
-                  configResult.result.shortcutName as String16));
+              configResult.result.shortcutName as String16);
         }
         return;
       } else {

@@ -24,6 +24,7 @@ std::u16string GetFillingValueForCreditCard(
     const std::string& app_locale,
     mojom::ActionPersistence action_persistence,
     const AutofillField& field,
+    bool is_cvc_filling_supported,
     std::string* failure_to_fill = nullptr);
 
 // Determines whether the `autofill_fields` or `trigger_autofill_field` is

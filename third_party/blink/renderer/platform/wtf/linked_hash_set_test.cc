@@ -854,7 +854,7 @@ TEST(LinkedHashSetTest, Clear) {
 // A unit type that has empty std::string value.
 struct EmptyString {
   EmptyString() = default;
-  explicit EmptyString(WTF::HashTableDeletedValueType) : deleted_(true) {}
+  explicit EmptyString(HashTableDeletedValueType) : deleted_(true) {}
   ~EmptyString() { CHECK(ok_); }
 
   bool operator==(const EmptyString& other) const {

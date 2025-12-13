@@ -563,27 +563,58 @@ class FocusControllerTestBase : public aura::test::AuraTestBase {
     //       |    +-- w21
     //       |         +-- w211
     //       +-- w3
-    aura::Window* w1 = aura::test::CreateTestWindowWithDelegate(
-        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), 1,
-        gfx::Rect(0, 0, 50, 50), root_window());
-    aura::test::CreateTestWindowWithDelegate(
-        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), 11,
-        gfx::Rect(5, 5, 10, 10), w1);
-    aura::test::CreateTestWindowWithDelegate(
-        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), 12,
-        gfx::Rect(15, 15, 10, 10), w1);
-    aura::Window* w2 = aura::test::CreateTestWindowWithDelegate(
-        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), 2,
-        gfx::Rect(75, 75, 50, 50), root_window());
-    aura::Window* w21 = aura::test::CreateTestWindowWithDelegate(
-        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), 21,
-        gfx::Rect(5, 5, 10, 10), w2);
-    aura::test::CreateTestWindowWithDelegate(
-        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), 211,
-        gfx::Rect(1, 1, 5, 5), w21);
-    aura::test::CreateTestWindowWithDelegate(
-        aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), 3,
-        gfx::Rect(125, 125, 50, 50), root_window());
+    aura::Window* w1 =
+        aura::test::CreateTestWindow(
+            {.delegate =
+                 aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+             .parent = root_window(),
+             .bounds = {50, 50},
+             .window_id = 1})
+            .release();
+    aura::test::CreateTestWindow(
+        {.delegate =
+             aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+         .parent = w1,
+         .bounds = {5, 5, 10, 10},
+         .window_id = 11})
+        .release();
+    aura::test::CreateTestWindow(
+        {.delegate =
+             aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+         .parent = w1,
+         .bounds = {15, 15, 10, 10},
+         .window_id = 12})
+        .release();
+    aura::Window* w2 =
+        aura::test::CreateTestWindow(
+            {.delegate =
+                 aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+             .parent = root_window(),
+             .bounds = {75, 75, 50, 50},
+             .window_id = 2})
+            .release();
+    aura::Window* w21 =
+        aura::test::CreateTestWindow(
+            {.delegate =
+                 aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+             .parent = w2,
+             .bounds = {5, 5, 10, 10},
+             .window_id = 21})
+            .release();
+    aura::test::CreateTestWindow(
+        {.delegate =
+             aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+         .parent = w21,
+         .bounds = {1, 1, 5, 5},
+         .window_id = 211})
+        .release();
+    aura::test::CreateTestWindow(
+        {.delegate =
+             aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+         .parent = root_window(),
+         .bounds = {125, 125, 50, 50},
+         .window_id = 3})
+        .release();
   }
   void TearDown() override {
     root_window()->RemovePreTargetHandler(focus_controller_.get());
@@ -1032,9 +1063,13 @@ class FocusControllerDirectTestBase : public FocusControllerTestBase {
     }
 
     {
-      aura::test::CreateTestWindowWithDelegate(
-          aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), 4,
-          gfx::Rect(125, 125, 50, 50), root_window());
+      aura::test::CreateTestWindow(
+          {.delegate =
+               aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+           .parent = root_window(),
+           .bounds = {125, 125, 50, 50},
+           .window_id = 4})
+          .release();
 
       EXPECT_EQ(3, GetActiveWindowId());
       EXPECT_EQ(3, GetFocusedWindowId());
@@ -1054,12 +1089,20 @@ class FocusControllerDirectTestBase : public FocusControllerTestBase {
     }
 
     {
-      aura::test::CreateTestWindowWithDelegate(
-          aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), 5,
-          gfx::Rect(125, 125, 50, 50), root_window());
-      aura::test::CreateTestWindowWithDelegate(
-          aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(), 6,
-          gfx::Rect(125, 125, 50, 50), root_window());
+      aura::test::CreateTestWindow(
+          {.delegate =
+               aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+           .parent = root_window(),
+           .bounds = {125, 125, 50, 50},
+           .window_id = 5})
+          .release();
+      aura::test::CreateTestWindow(
+          {.delegate =
+               aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+           .parent = root_window(),
+           .bounds = {125, 125, 50, 50},
+           .window_id = 6})
+          .release();
 
       EXPECT_EQ(4, GetActiveWindowId());
       EXPECT_EQ(4, GetFocusedWindowId());

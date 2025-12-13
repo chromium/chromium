@@ -129,8 +129,10 @@ def CheckCargoTomlIsSorted(crate_toml):
         return "Malformed `Cargo.toml` file?  `dependencies` is not a table."
     problem = _CheckTomlTableIsSorted(deps)
     if problem:
-        return ("Please sort `[dependencies]` table in "
-                f"`{CARGO_TOML_RELATIVE_PATH}`.  Example problem: {problem}")
+        return ("Please sort `[dependencies]` tables in "
+                f"`{CARGO_TOML_RELATIVE_PATH}`.  "
+                f"Example problem: {problem}.  "
+                "Try running `tools/crates/run_gnrt.py fmt`.")
 
     return ""
 
@@ -144,8 +146,10 @@ def CheckGnrtConfigTomlIsSorted(_crate_ids, gnrt_config):
     crates = _GetCratesConfigDict(gnrt_config)
     problem = _CheckTomlTableIsSorted(crates)
     if problem:
-        return ("Please sort `[crates]` table in "
-                f"`{GNRT_CONFIG_RELATIVE_PATH}`.  Example problem: {problem}")
+        return ("Please sort `[crate]` tables in "
+                f"`{GNRT_CONFIG_RELATIVE_PATH}`.  "
+                f"Example problem: {problem}."
+                "Try running `tools/crates/run_gnrt.py fmt`.")
 
     return ""
 

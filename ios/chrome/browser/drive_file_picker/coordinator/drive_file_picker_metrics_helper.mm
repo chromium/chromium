@@ -117,12 +117,13 @@ enum class FilePickerFilterChange {
                                 [self searchOutcome]);
 }
 
-- (void)reportSortingCriteriaChange:(DriveItemsSortingType)criteria
-                      withDirection:(DriveItemsSortingOrder)direction {
+- (void)reportSortingCriterionChange:(DriveFilePickerSortingCriterion)criterion
+                       withDirection:
+                           (DriveFilePickerSortingDirection)direction {
   base::UmaHistogramEnumeration(
       "IOS.FilePicker.Drive.Sorting",
-      [self convertToFilePickerSortingChoiceFromCriteria:criteria
-                                               direction:direction]);
+      [self convertToFilePickerSortingChoiceFromCriterion:criterion
+                                                direction:direction]);
 }
 
 - (void)reportFilterChange:(DriveFilePickerFilter)filter {
@@ -214,31 +215,33 @@ enum class FilePickerFilterChange {
 }
 
 - (FilePickerSortingChoice)
-    convertToFilePickerSortingChoiceFromCriteria:(DriveItemsSortingType)criteria
-                                       direction:
-                                           (DriveItemsSortingOrder)direction {
-  if (criteria == DriveItemsSortingType::kName &&
-      direction == DriveItemsSortingOrder::kAscending) {
+    convertToFilePickerSortingChoiceFromCriterion:
+        (DriveFilePickerSortingCriterion)criterion
+                                        direction:
+                                            (DriveFilePickerSortingDirection)
+                                                direction {
+  if (criterion == DriveFilePickerSortingCriterion::kName &&
+      direction == DriveFilePickerSortingDirection::kAscending) {
     return FilePickerSortingChoice::kNameAscending;
   }
-  if (criteria == DriveItemsSortingType::kName &&
-      direction == DriveItemsSortingOrder::kDescending) {
+  if (criterion == DriveFilePickerSortingCriterion::kName &&
+      direction == DriveFilePickerSortingDirection::kDescending) {
     return FilePickerSortingChoice::kNameDescending;
   }
-  if (criteria == DriveItemsSortingType::kModificationTime &&
-      direction == DriveItemsSortingOrder::kAscending) {
+  if (criterion == DriveFilePickerSortingCriterion::kModificationTime &&
+      direction == DriveFilePickerSortingDirection::kAscending) {
     return FilePickerSortingChoice::kModifiedTimeAscending;
   }
-  if (criteria == DriveItemsSortingType::kModificationTime &&
-      direction == DriveItemsSortingOrder::kDescending) {
+  if (criterion == DriveFilePickerSortingCriterion::kModificationTime &&
+      direction == DriveFilePickerSortingDirection::kDescending) {
     return FilePickerSortingChoice::kModifiedTimeDescending;
   }
-  if (criteria == DriveItemsSortingType::kOpeningTime &&
-      direction == DriveItemsSortingOrder::kAscending) {
+  if (criterion == DriveFilePickerSortingCriterion::kOpeningTime &&
+      direction == DriveFilePickerSortingDirection::kAscending) {
     return FilePickerSortingChoice::kOpenTimeAscending;
   }
-  if (criteria == DriveItemsSortingType::kOpeningTime &&
-      direction == DriveItemsSortingOrder::kDescending) {
+  if (criterion == DriveFilePickerSortingCriterion::kOpeningTime &&
+      direction == DriveFilePickerSortingDirection::kDescending) {
     return FilePickerSortingChoice::kOpenTimeDescending;
   }
   NOTREACHED();

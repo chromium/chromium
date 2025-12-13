@@ -60,6 +60,7 @@ import java.util.List;
 public class SaveUpdateAddressProfilePromptRenderTest {
     private static final long NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER = 100L;
 
+    @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
@@ -148,8 +149,7 @@ public class SaveUpdateAddressProfilePromptRenderTest {
                                             mActivityTestRule.getActivity(),
                                             mProfile,
                                             AutofillProfile.builder().build(),
-                                            /* isUpdate= */ false,
-                                            /* isMigrationToAccount= */ false);
+                                            SaveUpdateAddressProfilePromptMode.SAVE_NEW_PROFILE);
                             mPrompt.setDialogDetails(
                                     /* title= */ "Dialog title",
                                     /* positiveButtonText= */ "Accept",
@@ -178,8 +178,7 @@ public class SaveUpdateAddressProfilePromptRenderTest {
                                             mActivityTestRule.getActivity(),
                                             mProfile,
                                             AutofillProfile.builder().build(),
-                                            /* isUpdate= */ false,
-                                            /* isMigrationToAccount= */ false);
+                                            SaveUpdateAddressProfilePromptMode.SAVE_NEW_PROFILE);
                             mPrompt.setDialogDetails(
                                     /* title= */ "Dialog title",
                                     /* positiveButtonText= */ "Accept",
@@ -215,8 +214,7 @@ public class SaveUpdateAddressProfilePromptRenderTest {
                                             mActivityTestRule.getActivity(),
                                             mProfile,
                                             AutofillProfile.builder().build(),
-                                            /* isUpdate= */ false,
-                                            /* isMigrationToAccount= */ true);
+                                            SaveUpdateAddressProfilePromptMode.MIGRATE_PROFILE);
                             mPrompt.setDialogDetails(
                                     /* title= */ "Dialog title",
                                     /* positiveButtonText= */ "Accept",
@@ -252,8 +250,7 @@ public class SaveUpdateAddressProfilePromptRenderTest {
                                             mActivityTestRule.getActivity(),
                                             mProfile,
                                             AutofillProfile.builder().build(),
-                                            /* isUpdate= */ true,
-                                            /* isMigrationToAccount= */ false);
+                                            SaveUpdateAddressProfilePromptMode.UPDATE_PROFILE);
                             mPrompt.setDialogDetails(
                                     /* title= */ "Dialog title",
                                     /* positiveButtonText= */ "Accept",
@@ -282,8 +279,7 @@ public class SaveUpdateAddressProfilePromptRenderTest {
                                             mActivityTestRule.getActivity(),
                                             mProfile,
                                             AutofillProfile.builder().build(),
-                                            /* isUpdate= */ true,
-                                            /* isMigrationToAccount= */ false);
+                                            SaveUpdateAddressProfilePromptMode.UPDATE_PROFILE);
                             mPrompt.setDialogDetails(
                                     /* title= */ "Dialog title",
                                     /* positiveButtonText= */ "Accept",

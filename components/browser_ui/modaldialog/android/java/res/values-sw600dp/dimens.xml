@@ -6,6 +6,6 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
-    <dimen name="modal_dialog_max_width_major">600dp</dimen>
-    <dimen name="modal_dialog_max_width_minor">600dp</dimen>
+    <dimen name="modal_dialog_max_width_major">560dp</dimen>
+    <dimen name="modal_dialog_max_width_minor">560dp</dimen>
 </resources>

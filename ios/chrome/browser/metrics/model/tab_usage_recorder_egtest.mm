@@ -382,19 +382,14 @@ void SwitchToNormalMode() {
       });
   (void)unused;
 
-  [ChromeEarlGrey waitForWebStateContainingText:kURL2FirstWord];
-
-  const GURL url1 = web::test::HttpServer::MakeUrl(kTestUrl1);
   const GURL url2 = web::test::HttpServer::MakeUrl(kTestUrl2);
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::OmniboxText(url2.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateContainingText:kURL2FirstWord];
+  [ChromeEarlGrey waitForWebStateVisibleURL:url2];
 
   [ChromeEarlGrey selectTabAtIndex:0];
+  const GURL url1 = web::test::HttpServer::MakeUrl(kTestUrl1);
   [ChromeEarlGrey waitForWebStateContainingText:kURL1FirstWord];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::OmniboxText(url1.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:url1];
 }
 
 // Test that USER_DID_NOT_WAIT is reported if the user does not wait for the
@@ -591,9 +586,7 @@ void SwitchToNormalMode() {
 
   NewMainTabWithURL(redirectURL, "arrived");
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          destinationURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
 
   NSUInteger tabIndex = [ChromeEarlGrey mainTabCount] - 1;
   [ChromeEarlGrey openNewTab];

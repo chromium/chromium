@@ -256,7 +256,6 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
   const int kFramesDecoded = 1000;
   const int kFramesDropped = .9 * kFramesDecoded;
   const int kFramesPowerEfficient = 0;
-  const url::Origin kOrigin = url::Origin::Create(GURL("http://example.com"));
   const bool kIsTopFrame = true;
   const uint64_t kPlayerId = 1234u;
 
@@ -273,9 +272,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
   {
     base::RunLoop run_loop;
     video_decode_perf_history->GetSaveCallback().Run(
-        ukm::kInvalidSourceId, media::learning::FeatureValue(0), kIsTopFrame,
-        prediction_features, prediction_targets, kPlayerId,
-        run_loop.QuitWhenIdleClosure());
+        ukm::kInvalidSourceId, kIsTopFrame, prediction_features,
+        prediction_targets, kPlayerId, run_loop.QuitWhenIdleClosure());
     run_loop.Run();
   }
 

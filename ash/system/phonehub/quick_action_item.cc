@@ -8,7 +8,6 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/functional/bind.h"
@@ -116,16 +115,12 @@ void QuickActionItem::SetEnabled(bool enabled) {
 
   // When creating QuickActionItem |sub_label_color_| may have been set to
   // gfx::kPlaceholderColor if color provider was null, update color here.
-  // TODO(b/322067753): Convert all usage of |AshColorProvider| to use
-  // |cros_tokens| instead.
   sub_label_color_ =
       GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant);
 
   if (!enabled) {
-    label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorSecondary));
-    sub_label_->SetEnabledColor(
-        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant));
+    label_->SetEnabledColor(cros_tokens::kTextColorSecondary);
+    sub_label_->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
 
     sub_label_->SetText(l10n_util::GetStringUTF16(
         IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_AVAILABLE_STATE));
@@ -133,8 +128,7 @@ void QuickActionItem::SetEnabled(bool enabled) {
         IDS_ASH_PHONE_HUB_QUICK_ACTIONS_NOT_AVAILABLE_STATE_TOOLTIP,
         std::u16string(GetItemLabel())));
   } else {
-    label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    label_->SetEnabledColor(cros_tokens::kTextColorPrimary);
     sub_label_->SetEnabledColor(sub_label_color_);
   }
 }

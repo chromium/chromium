@@ -17,6 +17,7 @@
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/protocol/protocol.h"
 #include "content/browser/devtools/protocol/schema_handler.h"
+#include "content/browser/devtools/protocol/storage_handler.h"
 #include "content/browser/devtools/protocol/target_handler.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -96,7 +97,10 @@ class ServiceWorkerAutoAttacher
     bool enabled = auto_attach();
     if (have_observer_ != enabled) {
       if (enabled) {
-        ServiceWorkerDevToolsManager::GetInstance()->AddObserver(this);
+        if (!service_worker_devtools_manager_observation_.IsObserving()) {
+          service_worker_devtools_manager_observation_.Observe(
+              ServiceWorkerDevToolsManager::GetInstance());
+        }
         ServiceWorkerDevToolsAgentHost::List agent_hosts;
         ServiceWorkerDevToolsManager::GetInstance()->AddAllAgentHosts(
             &agent_hosts);
@@ -106,7 +110,7 @@ class ServiceWorkerAutoAttacher
           }
         }
       } else {
-        ServiceWorkerDevToolsManager::GetInstance()->RemoveObserver(this);
+        service_worker_devtools_manager_observation_.Reset();
       }
       have_observer_ = enabled;
     }
@@ -126,6 +130,9 @@ class ServiceWorkerAutoAttacher
 
   bool have_observer_ = false;
   raw_ptr<ServiceWorkerDevToolsAgentHost> host_;
+  base::ScopedObservation<ServiceWorkerDevToolsManager,
+                          ServiceWorkerAutoAttacher>
+      service_worker_devtools_manager_observation_{this};
 };
 
 }  // namespace
@@ -183,6 +190,12 @@ ServiceWorkerDevToolsAgentHost::ServiceWorkerDevToolsAgentHost(
   NotifyCreated();
 }
 
+std::optional<blink::StorageKey> ServiceWorkerDevToolsAgentHost::GetStorageKey()
+    const {
+  ServiceWorkerVersion* version = context_wrapper_->GetLiveVersion(version_id_);
+  return version ? std::make_optional(version->key()) : std::nullopt;
+}
+
 BrowserContext* ServiceWorkerDevToolsAgentHost::GetBrowserContext() {
   return context_wrapper_->browser_context();
 }
@@ -237,7 +250,8 @@ bool ServiceWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   session->CreateAndAddHandler<protocol::IOHandler>(GetIOContext());
   session->CreateAndAddHandler<protocol::InspectorHandler>();
   session->CreateAndAddHandler<protocol::NetworkHandler>(
-      GetId(), devtools_worker_token_, GetIOContext(), base::DoNothing(),
+      GetId(), devtools_worker_token_, GetIOContext(), session,
+      context_wrapper()->storage_partition(), base::DoNothing(),
       session->GetClient());
 
   session->CreateAndAddHandler<protocol::FetchHandler>(
@@ -249,7 +263,8 @@ bool ServiceWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session) {
           &ServiceWorkerDevToolsAgentHost::ForceUpdateOnReloadIfModified,
           base::Unretained(this)));
   session->CreateAndAddHandler<protocol::SchemaHandler>();
-
+  session->CreateAndAddHandler<protocol::StorageHandler>(this,
+                                                         session->GetClient());
   auto* target_handler = session->CreateAndAddHandler<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
       auto_attacher_.get(), session);
@@ -427,7 +442,7 @@ ServiceWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
       /*coep_reporter=*/mojo::NullRemote(),
       /*dip_reporter=*/mojo::NullRemote(),
       static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
-          ->CreateURLLoaderNetworkObserverForServiceWorker(
+          ->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
               rph->GetDeprecatedID(), origin),
       NetworkServiceDevToolsObserver::MakeSelfOwned(GetId()),
       /*client_security_state=*/nullptr,

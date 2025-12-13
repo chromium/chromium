@@ -4,6 +4,10 @@
 
 #include "chrome/browser/extensions/api/declarative_content/content_predicate.h"
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 ContentPredicate::~ContentPredicate() = default;

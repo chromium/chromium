@@ -10,6 +10,7 @@
 
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/browser_process.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"

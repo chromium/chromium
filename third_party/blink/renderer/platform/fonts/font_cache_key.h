@@ -78,7 +78,7 @@ struct FontCacheKey {
         font_variant_alternates_(font_variant_alternates),
         is_unique_match_(is_unique_match) {}
 
-  FontCacheKey(WTF::HashTableDeletedValueType)
+  FontCacheKey(HashTableDeletedValueType)
       : font_size_(std::numeric_limits<unsigned>::max()),
         device_scale_factor_(std::numeric_limits<float>::max()) {}
 
@@ -126,8 +126,6 @@ struct FontCacheKey {
                                   other.font_variant_alternates_) &&
            is_unique_match_ == other.is_unique_match_;
   }
-
-  bool operator!=(const FontCacheKey& other) const { return !(*this == other); }
 
   static constexpr unsigned PrecisionMultiplier() {
     return kFontSizePrecisionMultiplier;

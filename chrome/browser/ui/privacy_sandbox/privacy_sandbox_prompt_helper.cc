@@ -22,15 +22,14 @@
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt.h"
 #include "chrome/browser/ui/profiles/profile_customization_bubble_sync_controller.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
-#include "chrome/common/extensions/chrome_manifest_url_handlers.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/manifest_handlers/chrome_url_overrides_handler.h"
 
 namespace {
 constexpr char kPrivacySandboxPromptHelperEventHistogram[] =
@@ -226,9 +225,7 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
           PrivacySandboxServiceFactory::GetForProfile(profile())) {
     privacy_sandbox::PrivacySandboxQueueManager& queue_manager =
         privacy_sandbox_service->GetPrivacySandboxNoticeQueueManager();
-    if (base::FeatureList::IsEnabled(
-            privacy_sandbox::kPrivacySandboxNoticeQueue) &&
-        !queue_manager.IsHoldingHandle()) {
+    if (!queue_manager.IsHoldingHandle()) {
       queue_manager.MaybeEmitQueueStateMetrics();
       return;
     }
@@ -237,7 +234,7 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
   // Record the URL that the prompt was displayed over.
   uint32_t host_hash = base::Hash(navigation_handle->GetURL().IsAboutBlank()
                                       ? "about:blank"
-                                      : navigation_handle->GetURL().host());
+                                      : navigation_handle->GetURL().GetHost());
   base::UmaHistogramSparse(
       "Settings.PrivacySandbox.DialogDisplayHost",
       static_cast<base::HistogramBase::Sample32>(host_hash));

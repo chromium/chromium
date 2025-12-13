@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import <Foundation/Foundation.h>
 #import <stddef.h>
+
+#import <array>
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/public/test/javascript_test.h"
@@ -44,7 +41,7 @@ class CommonJsTest : public web::JavascriptTest {
 
 // Tests __gCrWeb.stringify JavaScript API.
 TEST_F(CommonJsTest, Stringify) {
-  TestScriptAndExpectedValue test_data[] = {
+  const auto kTestData = std::to_array<TestScriptAndExpectedValue>({
       // Stringify a string that contains various characters that must
       // be escaped.
       {@"__gCrWeb.stringify('a\\u000a\\t\\b\\\\\\\"Z')",
@@ -72,17 +69,15 @@ TEST_F(CommonJsTest, Stringify) {
        @"[1,2]"},
       // Stringify an undefined object.
       {@"__gCrWeb.stringify(undefined)", @"undefined"},
-  };
+  });
 
-  for (size_t i = 0; i < std::size(test_data); i++) {
-    TestScriptAndExpectedValue& data = test_data[i];
+  for (const TestScriptAndExpectedValue& data : kTestData) {
     // Load a sample HTML page. As a side-effect, loading HTML via
     // `webController_` will also inject web_bundle.js.
     LoadHtml(@"<p>");
     id result = web::test::ExecuteJavaScript(web_view(), data.test_script);
     EXPECT_NSEQ(data.expected_value, result)
-        << " in test " << i << ": "
-        << base::SysNSStringToUTF8(data.test_script);
+        << " with input: " << base::SysNSStringToUTF8(data.test_script);
   }
 }
 

@@ -18,6 +18,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   blink::PolicyParserMessageBuffer logger;
   // SAFETY: Just make a span from the function arguments provided by libfuzzer.
   blink::DocumentPolicyParser::Parse(
-      WTF::String(UNSAFE_BUFFERS(base::span(data, size))), logger);
+      blink::String(UNSAFE_BUFFERS(base::span(data, size))), logger);
   return 0;
 }

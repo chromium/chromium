@@ -60,7 +60,7 @@ proto_library("coefficient_polynomial_proto") {
 }
 
 # SHELL lib.
-if (is_chromeos) {
+if (is_chromeos || is_linux) {
   component("shell_encryption") {
     public_configs = [ ":shell_encryption_config" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -106,15 +106,13 @@ if (is_chromeos) {
     ]
     public_deps = [
       ":serialization_proto",
-      "//base:base",
+      "//base",
       "//third_party/abseil-cpp:absl",
-      "//third_party/boringssl:boringssl",
+      "//third_party/boringssl",
       "//third_party/protobuf:protobuf_lite",
     ]
   }
-}
 
-if (is_chromeos) {
   source_set("shell_encryption_test_library") {
     testonly = true
     public_configs = [ ":shell_encryption_config" ]
@@ -138,8 +136,8 @@ if (is_chromeos) {
       ":coefficient_polynomial_proto",
       ":serialization_proto",
       ":shell_encryption",
-      "//testing/gmock:gmock",
-      "//testing/gtest:gtest",
+      "//testing/gmock",
+      "//testing/gtest",
     ]
   }
 

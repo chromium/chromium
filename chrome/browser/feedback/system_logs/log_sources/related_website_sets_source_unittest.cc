@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/feedback/system_logs/log_sources/related_website_sets_source.h"
+
 #include <memory>
 
 #include "base/test/bind.h"
 #include "base/version.h"
-#include "chrome/browser/feedback/system_logs/log_sources/related_website_sets_source.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
@@ -14,6 +15,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/feedback/system_logs/system_logs_source.h"
+#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,6 +49,9 @@ class RelatedWebsiteSetsSourceTest : public BrowserWithTestWindowTest {
     service_->WaitForFirstInitCompleteForTesting(run_loop.QuitClosure());
     run_loop.Run();
     service_->ResetForTesting();
+
+    // Explicitly enable Related Website Sets.
+    SetRwsEnabledViaPref(true);
   }
 
   void TearDown() override {

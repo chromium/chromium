@@ -131,7 +131,7 @@ class TwoKeysAdapterMap {
     Value value;
 
     // The primary and secondary keys are cached here, instead of the
-    // respective iterators, because WTF::HashMap invalidates iterators
+    // respective iterators, because blink::HashMap invalidates iterators
     // upon changes on the set (eg insertion, deletions).
     //
     // Entries are only created in TwoKeysAdapterMap::Insert, which initializes
@@ -145,8 +145,8 @@ class TwoKeysAdapterMap {
     std::optional<SecondaryKey> secondary_key;
   };
 
-  using PrimaryMap = WTF::HashMap<PrimaryKey, std::unique_ptr<Entry>>;
-  using SecondaryMap = WTF::HashMap<SecondaryKey, Entry*>;
+  using PrimaryMap = HashMap<PrimaryKey, std::unique_ptr<Entry>>;
+  using SecondaryMap = HashMap<SecondaryKey, Entry*>;
 
   PrimaryMap entries_by_primary_;
   SecondaryMap entries_by_secondary_;

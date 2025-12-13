@@ -85,7 +85,8 @@ TEST(WeeklyTimeCheckedTest, FromDict) {
 TEST(WeeklyTimeCheckedTest, FromDict_MissingDayOfWeek) {
   auto dict = base::JSONReader::ReadDict(R"({
     "milliseconds_since_midnight": 1234
-  })");
+  })",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict.has_value());
   auto result = WeeklyTimeChecked::FromDict(*dict);
   EXPECT_FALSE(result.has_value());
@@ -95,7 +96,8 @@ TEST(WeeklyTimeCheckedTest, FromDict_InvalidDayOfWeek) {
   auto dict = base::JSONReader::ReadDict(R"({
     "day_of_week": "FOOBAR",
     "milliseconds_since_midnight": 1234
-  })");
+  })",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict.has_value());
   auto result = WeeklyTimeChecked::FromDict(*dict);
   EXPECT_FALSE(result.has_value());
@@ -104,7 +106,8 @@ TEST(WeeklyTimeCheckedTest, FromDict_InvalidDayOfWeek) {
 TEST(WeeklyTimeCheckedTest, FromDict_MissingMillisecondsSinceMidnight) {
   auto dict = base::JSONReader::ReadDict(R"({
     "day_of_week": "MONDAY"
-  })");
+  })",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict.has_value());
   auto result = WeeklyTimeChecked::FromDict(*dict);
   EXPECT_FALSE(result.has_value());
@@ -114,7 +117,8 @@ TEST(WeeklyTimeCheckedTest, FromDict_InvalidMillisecondsSinceMidnight) {
   auto dict = base::JSONReader::ReadDict(R"({
     "day_of_week": "MONDAY",
     "milliseconds_since_midnight": -1
-  })");
+  })",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict.has_value());
   auto result = WeeklyTimeChecked::FromDict(*dict);
   EXPECT_FALSE(result.has_value());

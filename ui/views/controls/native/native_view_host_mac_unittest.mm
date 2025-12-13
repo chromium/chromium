@@ -11,7 +11,7 @@
 #include "base/mac/mac_util.h"
 #import "testing/gtest_mac.h"
 #import "ui/base/cocoa/views_hostable.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/native/native_view_host_test_base.h"
@@ -30,7 +30,7 @@ class TestViewsHostable : public ui::ViewsHostableView {
   void ViewsHostableDetach() override {
     parent_accessibility_element_ = gfx::NativeViewAccessible();
   }
-  void ViewsHostableSetBounds(const gfx::Rect& bounds_in_window) override {}
+  void ViewsHostableSetBounds(const gfx::Rect& bounds_in_superview) override {}
   void ViewsHostableSetVisible(bool visible) override {}
   void ViewsHostableMakeFirstResponder() override {}
   void ViewsHostableSetParentAccessible(

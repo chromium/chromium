@@ -31,8 +31,8 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer,
   void PrimaryPageChanged(Page& page) override;
 
   void ProcessCandidatesForPrerender(
-      const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates)
-      override;
+      const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
+      bool enable_cross_origin_prerender_iframes = false) override;
 
   bool MaybePrerender(const blink::mojom::SpeculationCandidatePtr& candidate,
                       const PreloadingPredictor& enacting_predictor,
@@ -102,6 +102,8 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer,
                  PreloadingPredictor /*enacting_predictor*/,
                  PreloadingConfidence /*confidence*/>;
   std::vector<BlockedCandidateInfo> blocked_candidates_;
+
+  bool enable_cross_origin_prerender_iframes_ = false;
 };
 
 }  // namespace content

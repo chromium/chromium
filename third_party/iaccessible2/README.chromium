@@ -5,6 +5,7 @@ Version: 1.3
 License: BSD-3-Clause, BSD-2-Clause
 License File: LICENSE
 Revision: 2b8c2c79417bad4b464761a142fab45ffde8bfa8
+Update Mechanism: Manual
 Security Critical: yes
 Shipped: yes
 

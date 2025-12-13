@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ios/chrome/browser/metrics/model/first_user_action_recorder.h"
 
 #include <memory>
@@ -50,10 +45,8 @@ TEST_F(FirstUserActionRecorderTest, Expire) {
       FirstUserActionRecorder::EXPIRATION, 1);
 
   // Verify the expiration histogram contains a single duration value.
-  // TODO(crbug.com/41211458): Ideally this would also verify the value is in
-  // the correct bucket.
-  histogram_tester_->ExpectTotalCount(
-      kFirstUserActionExpirationHistogramName[is_pad_], 1);
+  histogram_tester_->ExpectUniqueSample(
+      kFirstUserActionExpirationHistogramName[is_pad_], 1, 1);
 }
 
 TEST_F(FirstUserActionRecorderTest, RecordStartOnNTP) {
@@ -76,10 +69,8 @@ TEST_F(FirstUserActionRecorderTest, OnUserAction_Continuation) {
       FirstUserActionRecorder::CONTINUATION, 1);
 
   // Verify the continuation histogram contains a single duration value.
-  // TODO(crbug.com/41211458): Ideally this would also verify the value is in
-  // the correct bucket.
-  histogram_tester_->ExpectTotalCount(
-      kFirstUserActionContinuationHistogramName[is_pad_], 1);
+  histogram_tester_->ExpectUniqueSample(
+      kFirstUserActionContinuationHistogramName[is_pad_], 1, 1);
 }
 
 TEST_F(FirstUserActionRecorderTest, OnUserAction_NewTask) {
@@ -92,10 +83,8 @@ TEST_F(FirstUserActionRecorderTest, OnUserAction_NewTask) {
       FirstUserActionRecorder::NEW_TASK, 1);
 
   // Verify the 'new task' histogram contains a single duration value.
-  // TODO(crbug.com/41211458): Ideally this would also verify the value is in
-  // the correct bucket.
-  histogram_tester_->ExpectTotalCount(
-      kFirstUserActionNewTaskHistogramName[is_pad_], 1);
+  histogram_tester_->ExpectUniqueSample(
+      kFirstUserActionNewTaskHistogramName[is_pad_], 1, 1);
 }
 
 TEST_F(FirstUserActionRecorderTest, OnUserAction_Ignored) {
@@ -125,10 +114,8 @@ TEST_F(FirstUserActionRecorderTest, OnUserAction_RethrowAction_Continuation) {
       FirstUserActionRecorder::CONTINUATION, 1);
 
   // Verify the continuation histogram contains a single duration value.
-  // TODO(crbug.com/41211458): Ideally this would also verify the value is in
-  // the correct bucket.
-  histogram_tester_->ExpectTotalCount(
-      kFirstUserActionContinuationHistogramName[is_pad_], 1);
+  histogram_tester_->ExpectUniqueSample(
+      kFirstUserActionContinuationHistogramName[is_pad_], 1, 1);
 }
 
 TEST_F(FirstUserActionRecorderTest, OnUserAction_RethrowAction_NewTask) {
@@ -142,8 +129,6 @@ TEST_F(FirstUserActionRecorderTest, OnUserAction_RethrowAction_NewTask) {
       FirstUserActionRecorder::NEW_TASK, 1);
 
   // Verify the 'new task' histogram contains the a single duration value.
-  // TODO(crbug.com/41211458): Ideally this would also verify the value is in
-  // the correct bucket.
-  histogram_tester_->ExpectTotalCount(
-      kFirstUserActionNewTaskHistogramName[is_pad_], 1);
+  histogram_tester_->ExpectUniqueSample(
+      kFirstUserActionNewTaskHistogramName[is_pad_], 1, 1);
 }

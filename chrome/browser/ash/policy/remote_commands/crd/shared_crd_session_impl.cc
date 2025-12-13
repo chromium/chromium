@@ -10,7 +10,6 @@
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_logging.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_uma_logger.h"
@@ -32,16 +31,6 @@ std::string GetRobotAccountUserName(const DeviceOAuth2TokenService* service) {
   return account_id.ToString();
 }
 
-// Logs the session length and type to UMA. Also allows consumers of
-// `policy::SharedCrdSession` to provide their own callback for session end.
-void OnCrdSessionFinished(base::OnceClosure session_finished_callback,
-                          base::TimeDelta session_duration) {
-  CrdUmaLogger(CrdSessionType::REMOTE_SUPPORT_SESSION,
-               UserSessionType::AFFILIATED_USER_SESSION)
-      .LogSessionDuration(session_duration);
-
-  std::move(session_finished_callback).Run();
-}
 }  // namespace
 
 SharedCrdSessionImpl::SharedCrdSessionImpl(Delegate& delegate)
@@ -79,13 +68,14 @@ void SharedCrdSessionImpl::StartCrdHost(
   session_parameters.request_origin =
       ConvertToStartCrdSessionJobDelegateRequestOrigin(
           parameters.request_origin);
+  session_parameters.audio_playback =
+      ConvertToStartCrdSessionJobDelegateAudioPlayback(
+          parameters.audio_playback);
 
   CRD_VLOG(1) << "Starting CRD host and retrieving CRD access code";
   delegate_->StartCrdHostAndGetCode(
       session_parameters, std::move(success_callback),
-      std::move(error_callback),
-      base::BindOnce(&OnCrdSessionFinished,
-                     std::move(session_finished_callback)));
+      std::move(error_callback), std::move(session_finished_callback));
 }
 
 void SharedCrdSessionImpl::TerminateSession() {

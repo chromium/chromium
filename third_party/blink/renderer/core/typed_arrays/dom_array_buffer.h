@@ -46,7 +46,7 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
   }
 
   static DOMArrayBuffer* Create(scoped_refptr<SharedBuffer>);
-  static DOMArrayBuffer* Create(const Vector<base::span<const char>>&);
+  static DOMArrayBuffer* Create(const Vector<base::span<const uint8_t>>&);
 
   static DOMArrayBuffer* CreateOrNull(size_t num_elements,
                                       size_t element_byte_size);

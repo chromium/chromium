@@ -372,6 +372,14 @@ RUNTIMES_LIST = {
         "state": "Ready",
         "version": "18.2"
     },
+    "GGGGGG": {
+        "build": "GGGGGG",
+        "kind": "Legacy Download",
+        "deletable": True,
+        "identifier": "GGGGGG",
+        "state": "Unusable",
+        "version": "18.2"
+    },
 }
 
 RUNTIMES_MATCH_LIST = {
@@ -652,11 +660,32 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     iossim_util.delete_simulator_runtime(runtime_id)
 
     calls = [
-        mock.call(['xcrun', 'simctl', 'runtime', 'delete', runtime_id]),
+        mock.call(['xcrun', 'simctl', 'runtime', 'delete', runtime_id],
+                  stderr=subprocess.STDOUT),
     ]
 
     check_output_mock.assert_has_calls(calls)
     self.assertEqual(check_output_mock.call_count, 1)
+
+  def test_delete_simulator_runtime_already_deleted(self, _, _2):
+    error_output = (b'Cannot stage disk image or bundle for delete '
+                    b'Underlying error (domain=NSCocoaErrorDomain, code=4):'
+                    b'The file doesn\xe2\x80\x99t exist.')
+    check_output_mock = mock.Mock(
+        side_effect=subprocess.CalledProcessError(1, 'cmd', error_output))
+    self.mock(subprocess, 'check_output', check_output_mock)
+    runtime_id = '111111'
+    # This should not raise an exception.
+    iossim_util.delete_simulator_runtime(runtime_id)
+
+  def test_delete_simulator_runtime_other_error(self, _, _2):
+    error_output = b'Some other error'
+    check_output_mock = mock.Mock(
+        side_effect=subprocess.CalledProcessError(1, 'cmd', error_output))
+    self.mock(subprocess, 'check_output', check_output_mock)
+    runtime_id = '111111'
+    with self.assertRaises(subprocess.CalledProcessError):
+      iossim_util.delete_simulator_runtime(runtime_id)
 
   def test_delete_least_recently_used_simulator_runtimes(self, _, _2):
     with mock.patch('iossim_util.delete_simulator_runtime') \
@@ -677,6 +706,17 @@ class GetiOSSimUtil(test_runner_test.TestCase):
       iossim_util.delete_least_recently_used_simulator_runtimes()
 
       self.assertEqual(mock_delete_simulator_runtime.call_count, 0)
+
+  def test_delete_stale_simulator_runtimes(self, _, _2):
+    with mock.patch('iossim_util.delete_simulator_runtime') \
+       as mock_delete_simulator_runtime:
+      iossim_util.delete_stale_simulator_runtimes()
+
+      calls = [
+          mock.call('GGGGGG', True),
+      ]
+
+      self.assertEqual(mock_delete_simulator_runtime.call_count, 1)
 
   @mock.patch('builtins.open', new_callable=mock.mock_open)
   @mock.patch.object(plistlib, 'dump')

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
 
 #include <errno.h>
@@ -239,7 +234,7 @@ void SandboxBPF::InstallFilter(bool must_sync_threads, bool enable_ibpb) {
 #pragma clang diagnostic pop
   const struct sock_fprog prog = {static_cast<unsigned short>(program.size()),
                                   bpf};
-  memcpy(bpf, &program[0], sizeof(bpf));
+  UNSAFE_TODO(memcpy(bpf, &program[0], sizeof(bpf)));
   CodeGen::Program().swap(program);  // vector swap trick
 
   // Make an attempt to release memory that is no longer needed here, rather

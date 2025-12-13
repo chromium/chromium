@@ -7,6 +7,7 @@
 
 #include <compare>
 
+#include "base/sequence_checker.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink.h"
 #include "third_party/blink/public/mojom/preloading/anchor_element_interaction_host.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -160,12 +161,12 @@ class CORE_EXPORT AnchorElementMetricsSender final
   // `metrics_removed_anchors_`.
   // Use WeakMember to make sure we don't leak memory on long-lived pages.
   HeapHashSet<WeakMember<HTMLAnchorElementBase>> anchor_elements_to_report_;
-  WTF::Vector<AnchorId> removed_anchors_to_report_;
+  Vector<AnchorId> removed_anchors_to_report_;
 
   // `metrics_` and `metrics_removed_anchors_` buffer metrics updates that are
   // scheduled to be sent to the browser.
-  WTF::Vector<mojom::blink::AnchorElementMetricsPtr> metrics_;
-  WTF::Vector<AnchorId> metrics_removed_anchors_;
+  Vector<mojom::blink::AnchorElementMetricsPtr> metrics_;
+  Vector<AnchorId> metrics_removed_anchors_;
   // Contains the sizes of `metrics_` and `metrics_removed_anchors_`,
   // respectively, at the completion of each layout.
   //
@@ -179,7 +180,7 @@ class CORE_EXPORT AnchorElementMetricsSender final
   //   metrics_[x1..x2], metrics_removed_anchors_[y1..y2]
   // This data is consolidated into a single report representing the
   // net change before reporting to the browser.
-  WTF::Vector<std::pair<wtf_size_t, wtf_size_t>> metrics_partitions_;
+  Vector<std::pair<wtf_size_t, wtf_size_t>> metrics_partitions_;
 
   HeapMojoRemote<mojom::blink::AnchorElementMetricsHost> metrics_host_;
 
@@ -192,7 +193,7 @@ class CORE_EXPORT AnchorElementMetricsSender final
   // Cached field trial param values.
   const int random_anchor_sampling_period_;
 
-  WTF::Vector<mojom::blink::AnchorElementEnteredViewportPtr>
+  Vector<mojom::blink::AnchorElementEnteredViewportPtr>
       entered_viewport_messages_;
 
   struct AnchorElementTimingStats {
@@ -200,16 +201,14 @@ class CORE_EXPORT AnchorElementMetricsSender final
     std::optional<base::TimeTicks> viewport_entry_time_;
     std::optional<base::TimeTicks> pointer_over_timer_;
   };
-  WTF::HashMap<AnchorId, AnchorElementTimingStats>
-      anchor_elements_timing_stats_;
+  HashMap<AnchorId, AnchorElementTimingStats> anchor_elements_timing_stats_;
 
-  WTF::Vector<mojom::blink::AnchorElementLeftViewportPtr>
-      left_viewport_messages_;
+  Vector<mojom::blink::AnchorElementLeftViewportPtr> left_viewport_messages_;
 
-  WTF::Vector<mojom::blink::AnchorElementPositionUpdatePtr>
+  Vector<mojom::blink::AnchorElementPositionUpdatePtr>
       position_update_messages_;
 
-  WTF::Vector<mojom::blink::AnchorElementClickPtr> clicked_messages_;
+  Vector<mojom::blink::AnchorElementClickPtr> clicked_messages_;
 
   const base::TickClock* clock_;
 

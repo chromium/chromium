@@ -16,6 +16,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.incognito.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.text.SpanApplier;
@@ -50,10 +51,15 @@ public class IncognitoReauthSettingUtils {
      * @return A {@link CharSequence} containing the summary string for the Incognito lock setting.
      */
     public static CharSequence getSummaryString(Activity activity) {
-        return isDeviceScreenLockEnabled()
-                ? activity.getString(
-                        R.string.settings_incognito_tab_lock_summary_android_setting_on)
-                : buildLinkToAndroidScreenLockSettings(activity);
+        if (isDeviceScreenLockEnabled()) {
+            return IncognitoUtils.shouldOpenIncognitoAsWindow()
+                    ? activity.getString(
+                            R.string.settings_incognito_window_lock_summary_android_setting_on)
+                    : activity.getString(
+                            R.string.settings_incognito_tab_lock_summary_android_setting_on);
+        } else {
+            return buildLinkToAndroidScreenLockSettings(activity);
+        }
     }
 
     /**

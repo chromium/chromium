@@ -55,6 +55,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/views_features.h"
@@ -312,8 +313,8 @@ FindBarView::~FindBarView() = default;
 
 void FindBarView::SetHost(FindBarHost* host) {
   find_bar_host_ = host;
-  find_text_->SetShouldDoLearning(
-      host && !host->browser_view()->GetProfile()->IsOffTheRecord());
+  find_text_->SetShouldDoLearning(host &&
+                                  !host->find_bar_owner()->IsOffTheRecord());
 }
 
 void FindBarView::SetFindTextAndSelectedRange(

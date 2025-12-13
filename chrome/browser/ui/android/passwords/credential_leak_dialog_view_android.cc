@@ -48,3 +48,5 @@ void CredentialLeakDialogViewAndroid::Cancelled(JNIEnv* env) {
 void CredentialLeakDialogViewAndroid::Closed(JNIEnv* env) {
   controller_->OnCloseDialog();
 }
+
+DEFINE_JNI(CredentialLeakDialogBridge)

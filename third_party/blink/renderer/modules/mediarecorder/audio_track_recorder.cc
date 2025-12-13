@@ -43,30 +43,17 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<std::optional<media::AudioEncoder::CodecDescription>>
-    : public CrossThreadCopierPassThrough<
-          std::optional<media::AudioEncoder::CodecDescription>> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<media::EncoderStatus>
-    : public CrossThreadCopierPassThrough<media::EncoderStatus> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
 // Max size of buffers passed on to encoders.
 const int kMaxChunkedBufferDurationMs = 60;
 
-AudioTrackRecorder::CodecId AudioTrackRecorder::GetPreferredCodecId(
+media::AudioCodec AudioTrackRecorder::GetPreferredCodec(
     MediaTrackContainerType type) {
-  return CodecId::kOpus;
+  return media::AudioCodec::kOpus;
 }
 
 AudioTrackRecorder::AudioTrackRecorder(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
-    CodecId codec,
+    media::AudioCodec codec,
     MediaStreamComponent* track,
     WeakCell<CallbackInterface>* callback_interface,
     uint32_t bits_per_second,
@@ -74,8 +61,8 @@ AudioTrackRecorder::AudioTrackRecorder(
     scoped_refptr<base::SequencedTaskRunner> encoder_task_runner)
     : TrackRecorder(base::BindPostTask(
           main_thread_task_runner,
-          WTF::BindOnce(&CallbackInterface::OnSourceReadyStateChanged,
-                        WrapPersistent(callback_interface)))),
+          BindOnce(&CallbackInterface::OnSourceReadyStateChanged,
+                   WrapPersistent(callback_interface)))),
       track_(track),
       encoder_task_runner_(std::move(encoder_task_runner)),
       encoder_(CreateAudioEncoder(
@@ -108,32 +95,33 @@ AudioTrackRecorder::~AudioTrackRecorder() {
 
 // Creates an audio encoder from the codec. Returns nullptr if the codec is
 // invalid.
-WTF::SequenceBound<AudioTrackEncoder> AudioTrackRecorder::CreateAudioEncoder(
-    CodecId codec,
+SequenceBound<AudioTrackEncoder> AudioTrackRecorder::CreateAudioEncoder(
+    media::AudioCodec codec,
     AudioTrackEncoder::OnEncodedAudioCB on_encoded_audio_cb,
     AudioTrackEncoder::OnEncodedAudioErrorCB on_encoded_audio_error_cb,
     uint32_t bits_per_second,
     BitrateMode bitrate_mode) {
   switch (codec) {
-    case CodecId::kPcm:
-      return WTF::SequenceBound<AudioTrackPcmEncoder>(
+    case media::AudioCodec::kPCM:
+      return SequenceBound<AudioTrackPcmEncoder>(
           encoder_task_runner_, std::move(on_encoded_audio_cb),
           std::move(on_encoded_audio_error_cb));
-    case CodecId::kAac:
+    case media::AudioCodec::kAAC:
 #if HAS_AAC_ENCODER
-      return WTF::SequenceBound<AudioTrackMojoEncoder>(
+      return SequenceBound<AudioTrackMojoEncoder>(
           encoder_task_runner_, encoder_task_runner_, codec,
           std::move(on_encoded_audio_cb), std::move(on_encoded_audio_error_cb),
           bits_per_second);
 #else
       NOTREACHED() << "AAC encoder is not supported.";
 #endif
-    case CodecId::kOpus:
-    default:
-      return WTF::SequenceBound<AudioTrackOpusEncoder>(
+    case media::AudioCodec::kOpus:
+      return SequenceBound<AudioTrackOpusEncoder>(
           encoder_task_runner_, std::move(on_encoded_audio_cb),
           std::move(on_encoded_audio_error_cb), bits_per_second,
           bitrate_mode == BitrateMode::kVariable);
+    default:
+      NOTREACHED() << "Unexpected codec value in CreateAudioEncoder.";
   }
 }
 
@@ -162,13 +150,14 @@ void AudioTrackRecorder::OnData(const media::AudioBus& audio_bus,
   DCHECK(!capture_time.is_null());
   DCHECK_GT(frames_per_chunk_, 0) << "OnSetFormat not called before OnData";
 
+  int chunk_size = 0;
   for (int chunk_start = 0; chunk_start < audio_bus.frames();
-       chunk_start += frames_per_chunk_) {
+       chunk_start += chunk_size) {
+    chunk_size = chunk_start + frames_per_chunk_ >= audio_bus.frames()
+                     ? audio_bus.frames() - chunk_start
+                     : frames_per_chunk_;
     std::unique_ptr<media::AudioBus> audio_data =
-        media::AudioBus::Create(audio_bus.channels(), frames_per_chunk_);
-    int chunk_size = chunk_start + frames_per_chunk_ >= audio_bus.frames()
-                         ? audio_bus.frames() - chunk_start
-                         : frames_per_chunk_;
+        media::AudioBus::Create(audio_bus.channels(), chunk_size);
     audio_bus.CopyPartialFramesTo(chunk_start, chunk_size, 0, audio_data.get());
 
     encoder_.AsyncCall(&AudioTrackEncoder::EncodeAudio)

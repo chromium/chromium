@@ -8,10 +8,7 @@ found in the LICENSE file.
 <!-- LINT.IfChange -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <corners android:radius="@dimen/popup_bg_corner_radius_24dp" />
+    <corners android:radius="?attr/popupBgCornerRadius" />
     <solid android:color="@color/dialog_bg_color_dark_baseline"/>
-    <padding
-        android:top="@dimen/popup_bg_padding"
-        android:bottom="@dimen/popup_bg_padding" />
 </shape>
 <!-- LINT.ThenChange(//components/browser_ui/widget/android/java/res/values/dimens.xml) -->

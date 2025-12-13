@@ -80,8 +80,8 @@ class BrowserAppMenuButton : public AppMenuButton {
   AlertMenuItem GetAlertItemForRunningTutorial();
 
   AppMenuIconController::TypeAndSeverity type_and_severity_{
-      AppMenuIconController::IconType::NONE,
-      AppMenuIconController::Severity::NONE};
+      AppMenuIconController::IconType::kNone,
+      AppMenuIconController::Severity::kNone};
 
   // Our owning toolbar view.
   const raw_ptr<ToolbarView> toolbar_view_;

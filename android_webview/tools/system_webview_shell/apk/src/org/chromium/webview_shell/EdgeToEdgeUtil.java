@@ -23,10 +23,25 @@ public final class EdgeToEdgeUtil {
         ViewCompat.setOnApplyWindowInsetsListener(
                 activity.findViewById(android.R.id.content),
                 (v, windowInsets) -> {
-                    Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+                    int types =
+                            WindowInsetsCompat.Type.systemBars()
+                                    | WindowInsetsCompat.Type.displayCutout();
+                    Insets insets = windowInsets.getInsets(types);
                     // Apply the insets paddings to the view.
                     v.setPadding(insets.left, insets.top, insets.right, insets.bottom);
-                    return windowInsets;
+                    return new WindowInsetsCompat.Builder(windowInsets)
+                            .setInsets(types, Insets.NONE)
+                            .build();
                 });
+    }
+
+    /**
+     * Enable edge-to-edge rendering and add an onApplyWindowInsetsListener that does nothing and
+     * passes the insets down the view hierarchy (to be handled by the web contents).
+     */
+    public static void setupEdgeToEdgeFullscreen(AppCompatActivity activity) {
+        EdgeToEdge.enable(activity);
+        ViewCompat.setOnApplyWindowInsetsListener(
+                activity.findViewById(android.R.id.content), (v, windowInsets) -> windowInsets);
     }
 }

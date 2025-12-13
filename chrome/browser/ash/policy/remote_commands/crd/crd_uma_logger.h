@@ -21,9 +21,6 @@ class CrdUmaLogger {
   // Logs the CRD session launch result to UMA.
   void LogSessionLaunchResult(ExtendedStartCrdSessionResultCode result_code);
 
-  // Logs the CRD session duration to UMA.
-  void LogSessionDuration(base::TimeDelta duration);
-
  private:
   const char* FormatCrdSessionType() const;
   const char* FormatUserSessionType() const;

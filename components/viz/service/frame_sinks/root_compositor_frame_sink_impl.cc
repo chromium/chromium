@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
+#include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -100,7 +101,6 @@ class RootCompositorFrameSinkImpl::StandaloneBeginFrameObserver
   }
 
   void OnBeginFrameSourcePausedChanged(bool paused) override {}
-  bool IsRoot() const override { return true; }
 
  private:
   void StopObserving() {
@@ -532,12 +532,14 @@ void RootCompositorFrameSinkImpl::SetNeedsBeginFrame(bool needs_begin_frame) {
   support_->SetNeedsBeginFrame(needs_begin_frame);
 }
 
-void RootCompositorFrameSinkImpl::SetWantsAnimateOnlyBeginFrames() {
-  support_->SetWantsAnimateOnlyBeginFrames();
-}
-
-void RootCompositorFrameSinkImpl::SetAutoNeedsBeginFrame() {
-  support_->SetAutoNeedsBeginFrame();
+void RootCompositorFrameSinkImpl::SetParams(
+    mojom::CompositorFrameSinkParamsPtr params) {
+  if (params->wants_animate_only_begin_frames) {
+    support_->SetWantsAnimateOnlyBeginFrames();
+  }
+  if (params->auto_needs_begin_frame) {
+    support_->SetAutoNeedsBeginFrame();
+  }
 }
 
 void RootCompositorFrameSinkImpl::SubmitCompositorFrame(

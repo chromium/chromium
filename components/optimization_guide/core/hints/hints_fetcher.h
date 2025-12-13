@@ -118,7 +118,7 @@ class HintsFetcher {
  private:
   // URL loader completion callback.
   void OnURLLoadComplete(bool skip_cache,
-                         std::unique_ptr<std::string> response_body);
+                         std::optional<std::string> response_body);
 
   // Handles the response from the remote Optimization Guide Service.
   // |response| is the response body, |status| is the

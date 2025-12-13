@@ -4,6 +4,8 @@
 
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 
+#include <android/hardware_buffer.h>
+
 #include <utility>
 
 namespace base {
@@ -18,6 +20,10 @@ ScopedHardwareBufferFenceSync::ScopedHardwareBufferFenceSync(
       available_fence_fd_(std::move(available_fence_fd)) {}
 
 ScopedHardwareBufferFenceSync::~ScopedHardwareBufferFenceSync() = default;
+
+AHardwareBuffer_Desc ScopedHardwareBufferFenceSync::Describe() const {
+  return handle_.Describe();
+}
 
 ScopedHardwareBufferHandle ScopedHardwareBufferFenceSync::TakeBuffer() {
   return std::move(handle_);

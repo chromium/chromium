@@ -26,15 +26,15 @@
           &gt;
           <ph name="ADVANCED_TITLE" />କୁ ଯାଆନ୍ତୁ ଏବଂ "<ph name="NO_PREFETCH_DESCRIPTION" />" କୁ ଅଚୟନିତ କରନ୍ତୁ। ଯଦି ଏହା ସମସ୍ୟାର ସମାଧାନ କରିପାରିଲା ନାହିଁ, ତେବେ ଉନ୍ନତ କାର୍ଯ୍ୟଦକ୍ଷତା ପାଇଁ, ଆମେ ଆପଣଙ୍କୁ ଏହି ବିକଳ୍ପକୁ
  ପୁନର୍ବାର ଚୟନ କରିବାକୁ ସୁପାରିଶ କରୁଛୁ।</translation>
-<translation id="6855094794438142393">Chrome ମେନୁ &gt;
-<ph name="SETTINGS_TITLE" />
- &gt;
-<ph name="ADVANCED_TITLE" />
- &gt;
-<ph name="PROXIES_TITLE" />
- &gt;
-LAN ସେଟିଂସକୁ
-ଯାଆନ୍ତୁ ଏବଂ ଚୟନ କରାଯାଇଥିବା "ଆପଣଙ୍କର LAN ପାଇଁ ଏକ ପ୍ରକ୍ସି ସର୍ଭର୍ ବ୍ୟବହାର କରନ୍ତୁ"କୁ ଅଚୟନ କରନ୍ତୁ।</translation>
+<translation id="6581867098636731226">Chrome ମେନୁ &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          &gt;
+          ନେଟୱାର୍କ ଓ ଇଣ୍ଟର୍ନେଟ &gt; ପ୍ରକ୍ସିକୁ ଯାଆନ୍ତୁ
+          ଏବଂ "ସ୍ୱତଃ ସେଟିଂସ ଚିହ୍ନଟ କରନ୍ତୁ"କୁ ଅଚୟନ କରନ୍ତୁ।</translation>
 <translation id="7230956101631259640">ଆପଣ ଏକ ସୁରକ୍ଷିତ Chrome ପୃଷ୍ଠା ଦେଖୁଛନ୍ତି</translation>
 <translation id="8232971017369963250">Chrome <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ଓପନ ସୋର୍ସ ସଫ୍ଟୱେର ପ୍ରୋଜେକ୍ଟ ଦ୍ୱାରା ମଧ୍ୟ ସମ୍ଭବପର ହୋଇଥାଏ।</translation>
 <translation id="8279509328145658601">Chrome ଅନ୍ୟ <ph name="BEGIN_LINK_OSS" />ଓପନ ସୋର୍ସ ସଫ୍ଟୱେର<ph name="END_LINK_OSS" /> ଦ୍ୱାରା ମଧ୍ୟ ସମ୍ଭବପର ହୋଇଥାଏ।</translation>

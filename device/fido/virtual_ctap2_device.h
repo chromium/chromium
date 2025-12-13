@@ -21,9 +21,9 @@
 #include "device/fido/authenticator_supported_options.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/large_blob.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_types.h"
 #include "device/fido/virtual_fido_device.h"
 
 namespace device {
@@ -230,8 +230,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     bool internal_account_chooser = false;
 
     // override_response_map allows overriding the response for a given command
-    // with a given code. The actual command won't be executed.
-    base::flat_map<CtapRequestCommand, CtapDeviceResponseCode>
+    // with a given code and optional value. The actual command won't be
+    // executed.
+    base::flat_map<
+        CtapRequestCommand,
+        std::pair<CtapDeviceResponseCode, std::optional<std::vector<uint8_t>>>>
         override_response_map;
 
     // allow_non_resident_credential_creation_without_uv corresponds to the
@@ -350,8 +353,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
   CtapDeviceResponseCode OnCredentialManagement(
       base::span<const uint8_t> request,
       std::vector<uint8_t>* response);
-  CtapDeviceResponseCode OnBioEnrollment(base::span<const uint8_t> request,
-                                         std::vector<uint8_t>* response);
+  std::optional<CtapDeviceResponseCode> OnBioEnrollment(
+      base::span<const uint8_t> request,
+      std::vector<uint8_t>* response);
   CtapDeviceResponseCode OnLargeBlobs(base::span<const uint8_t> request,
                                       std::vector<uint8_t>* response);
   CtapDeviceResponseCode OnAuthenticatorGetInfo(

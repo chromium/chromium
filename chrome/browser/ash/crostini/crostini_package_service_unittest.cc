@@ -20,7 +20,9 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
@@ -29,6 +31,12 @@
 #include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
+#include "components/account_id/account_id.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -47,7 +55,6 @@ using ::ash::FakeSeneschalClient;
 using ::base::test::TestFuture;
 using ::chromeos::DBusMethodCallback;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::MakeMatcher;
 using ::testing::Matcher;
@@ -159,8 +166,21 @@ class CrostiniPackageServiceTest : public testing::Test {
         base::test::TaskEnvironment::MainThreadType::UI,
         base::test::TaskEnvironment::ThreadPoolExecutionMode::ASYNC,
         content::BrowserTaskEnvironment::REAL_IO_THREAD);
+
+    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<user_manager::FakeUserManagerDelegate>(),
+        TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345"));
+    ASSERT_TRUE(user_manager::TestHelper(user_manager_.Get())
+                    .AddRegularUser(account_id));
+    user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
+
     profile_ = std::make_unique<TestingProfile>(
         base::FilePath("/home/chronos/u-0123456789abcdef"));
+    ash::AnnotatedAccountId::Set(profile_.get(), account_id);
+
     crostini_test_helper_ =
         std::make_unique<CrostiniTestHelper>(profile_.get());
     notification_display_service_tester_ =
@@ -202,6 +222,7 @@ class CrostiniPackageServiceTest : public testing::Test {
     notification_display_service_tester_.reset();
     crostini_test_helper_.reset();
     profile_.reset();
+    user_manager_.Reset();
     task_environment_.reset();
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
@@ -349,6 +370,8 @@ class CrostiniPackageServiceTest : public testing::Test {
       nullptr;
 
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
+
+  user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniTestHelper> crostini_test_helper_;
   std::unique_ptr<NotificationDisplayServiceTester>

@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 
@@ -29,12 +29,10 @@ class PowerSaveBlocker {
   // |reason| and |description| (a more-verbose, human-readable justification of
   // the blocking) may be provided to the underlying system APIs on some
   // platforms.
-  PowerSaveBlocker(
-      mojom::WakeLockType type,
-      mojom::WakeLockReason reason,
-      const std::string& description,
-      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> blocking_task_runner);
+  PowerSaveBlocker(mojom::WakeLockType type,
+                   mojom::WakeLockReason reason,
+                   const std::string& description,
+                   scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   PowerSaveBlocker(const PowerSaveBlocker&) = delete;
   PowerSaveBlocker& operator=(const PowerSaveBlocker&) = delete;
@@ -53,20 +51,7 @@ class PowerSaveBlocker {
  private:
   class Delegate;
 
-  // Implementations of this class may need a second object with different
-  // lifetime than the RAII container, or additional storage. This member is
-  // here for that purpose. If not used, just define the class as an empty
-  // RefCounted (or RefCountedThreadSafe) like so to make it compile:
-  // class PowerSaveBlocker::Delegate
-  //     : public base::RefCounted<PowerSaveBlocker::Delegate> {
-  //  private:
-  //   friend class base::RefCounted<Delegate>;
-  //   ~Delegate() {}
-  // };
-  scoped_refptr<Delegate> delegate_;
-
-  scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
-  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
+  base::SequenceBound<Delegate> delegate_;
 };
 
 }  // namespace device

@@ -282,6 +282,8 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
       case NetworkType.kWiFi:
       case NetworkType.kCellular:
         return deviceState.deviceState !== DeviceStateType.kUninitialized;
+      default:
+        break;
     }
     assertNotReached();
   }
@@ -307,6 +309,8 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
         return this.i18n('internetToggleMobileA11yLabel');
       case NetworkType.kWiFi:
         return this.i18n('internetToggleWiFiA11yLabel');
+      default:
+        break;
     }
     assertNotReached();
   }

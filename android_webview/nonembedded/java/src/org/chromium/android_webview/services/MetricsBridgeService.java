@@ -157,8 +157,6 @@ public final class MetricsBridgeService extends Service {
                                 // embedded WebView connects to the service to retrieve and clear
                                 // the records.
                                 if (mRecordsList.size() >= MAX_HISTOGRAM_COUNT) {
-                                    // TODO(crbug.com/40695441) add a histogram to log the
-                                    // number of dropped histograms.
                                     Log.w(
                                             TAG,
                                             "retained records has reached the max capacity,"

@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
@@ -20,7 +21,7 @@
 #include "content/public/browser/audio_stream_broker.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
-#include "media/mojo/mojom/audio_processing.mojom.h"
+#include "media/mojo/mojom/audio_processing.mojom-forward.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"

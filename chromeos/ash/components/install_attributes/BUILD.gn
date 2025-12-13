@@ -18,8 +18,8 @@ component("install_attributes") {
     "//chromeos/ash/components/dbus/device_management:device_management_proto",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/tpm_manager",
-    "//components/policy/proto:proto",
-    "//google_apis:google_apis",
+    "//components/policy/proto",
+    "//google_apis",
   ]
   sources = [
     "install_attributes.cc",
@@ -50,8 +50,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/device_management",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/tpm_manager",
-    "//components/policy/proto:proto",
-    "//google_apis:google_apis",
+    "//components/policy/proto",
+    "//google_apis",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -4,133 +4,250 @@
 
 #include "chrome/browser/tab/tab_state_storage_service.h"
 
-#include "base/android/callback_android.h"
-#include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
-#include "base/android/jni_bytebuffer.h"
-#include "base/android/jni_string.h"
-#include "base/android/token_android.h"
-#include "base/logging.h"
+#include <memory>
+#include <utility>
+
+#include "base/memory/ptr_util.h"
 #include "base/token.h"
-#include "chrome/browser/tab/jni_headers/TabStateStorageService_jni.h"
+#include "chrome/browser/tab/payload.h"
+#include "chrome/browser/tab/protocol/children.pb.h"
+#include "chrome/browser/tab/protocol/tab_state.pb.h"
+#include "chrome/browser/tab/protocol/tab_strip_collection_state.pb.h"
+#include "chrome/browser/tab/protocol/token.pb.h"
+#include "chrome/browser/tab/restore_entity_tracker.h"
+#include "chrome/browser/tab/storage_id.h"
+#include "chrome/browser/tab/storage_package.h"
+#include "chrome/browser/tab/tab_group_collection_data.h"
+#include "chrome/browser/tab/tab_state_storage_updater_builder.h"
+#include "chrome/browser/tab/tab_storage_packager.h"
+#include "chrome/browser/tab/tab_storage_type.h"
+#include "chrome/browser/tab/tab_storage_util.h"
+#include "components/tabs/public/tab_collection.h"
+#include "components/tabs/public/tab_interface.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace tabs {
 
 namespace {
 
-void RunJavaCallbackLoadAllTabs(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& j_callback,
-    std::vector<tabs_pb::TabState> tab_states) {
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> j_tab_state_vector;
-  for (const tabs_pb::TabState& tab_state : tab_states) {
-    // TODO(skym): Creating copying it into a new string just to pass across
-    // JNI.
-    std::string web_contents_state_bytes = tab_state.web_contents_state_bytes();
-    std::string* heap_web_contents_state_bytes =
-        new std::string(web_contents_state_bytes);
-    base::android::ScopedJavaLocalRef<jobject> j_web_contents_state_buffer(
-        env, env->NewDirectByteBuffer(
-                 static_cast<void*>(heap_web_contents_state_bytes->data()),
-                 heap_web_contents_state_bytes->size()));
-
-    base::Token tab_group_token(tab_state.tab_group_id_high(),
-                                tab_state.tab_group_id_low());
-    base::android::ScopedJavaLocalRef<jobject> j_tab_group_id =
-        base::android::TokenAndroid::Create(env, tab_group_token);
-
-    base::android::ScopedJavaLocalRef<jobject> j_tab_state =
-        Java_TabStateStorageService_createTabState(
-            env, tab_state.parent_id(), tab_state.root_id(),
-            tab_state.timestamp_millis(), j_web_contents_state_buffer,
-            tab_state.opener_app_id(), tab_state.theme_color(),
-            tab_state.launch_type_at_creation(), tab_state.user_agent(),
-            tab_state.last_navigation_committed_timestamp_millis(),
-            j_tab_group_id, tab_state.tab_has_sensitive_content(),
-            tab_state.is_pinned());
-    j_tab_state_vector.push_back(j_tab_state);
+template <typename T>
+StorageId GetOrCreateStorageId(
+    T* object,
+    absl::flat_hash_map<int32_t, StorageId>& handle_map) {
+  int32_t handle_id = object->GetHandle().raw_value();
+  auto it = handle_map.find(handle_id);
+  if (it != handle_map.end()) {
+    return it->second;
   }
-
-  base::android::ScopedJavaLocalRef<jclass> type =
-      base::android::GetClass(env, "org/chromium/chrome/browser/tab/TabState");
-  base::android::ScopedJavaLocalRef<jobjectArray> j_tab_state_array =
-      base::android::ToTypedJavaArrayOfObjects(env, j_tab_state_vector,
-                                               type.obj());
-  base::android::RunObjectCallbackAndroid(j_callback, j_tab_state_array);
+  StorageId storage_id = StorageId::Create();
+  handle_map[handle_id] = storage_id;
+  return storage_id;
 }
 
 }  // namespace
 
+TabStateStorageService::OpenBatches::OpenBatches(
+    TabStateStorageService& service,
+    TabStoragePackager* packager)
+    : builder(service, packager) {}
+
+TabStateStorageService::OpenBatches::~OpenBatches() = default;
+
 TabStateStorageService::TabStateStorageService(
-    std::unique_ptr<TabStateStorageBackend> tab_backend)
-    : tab_backend_(std::move(tab_backend)) {
-  java_ref_.Reset(Java_TabStateStorageService_create(
-      base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this)));
-  tab_backend_->Initialize();
+    const base::FilePath& profile_path,
+    std::unique_ptr<TabStoragePackager> packager,
+    TabCanonicalizer tab_canonicalizer,
+    RestoreEntityTrackerFactory tracker_factory)
+    : tab_backend_(profile_path),
+      packager_(std::move(packager)),
+      tab_canonicalizer_(tab_canonicalizer),
+      tracker_factory_(tracker_factory) {
+  tab_backend_.Initialize();
 }
 
 TabStateStorageService::~TabStateStorageService() = default;
 
-base::android::ScopedJavaLocalRef<jobject>
-TabStateStorageService::GetJavaObject() {
-  return base::android::ScopedJavaLocalRef<jobject>(java_ref_);
+void TabStateStorageService::BoostPriority() {
+  tab_backend_.BoostPriority();
 }
 
-void TabStateStorageService::SaveTab(
-    JNIEnv* env,
-    int id,
-    int parent_collection_id,
-    std::string position,
-    int parent_tab_id,
-    int root_id,
-    long timestamp_millis,
-    const jni_zero::JavaParamRef<jobject>& web_contents_state_buffer,
-    std::string opener_app_id,
-    int theme_color,
-    int launch_type_at_creation,
-    int user_agent,
-    long last_navigation_committed_timestamp_millis,
-    const jni_zero::JavaParamRef<jobject>& j_tab_group_id,
-    bool tab_has_sensitive_content,
-    bool is_pinned) {
-  tabs_pb::TabState tab_state;
-  tab_state.set_parent_id(parent_tab_id);
-  tab_state.set_root_id(root_id);
-  tab_state.set_timestamp_millis(timestamp_millis);
-
-  if (web_contents_state_buffer) {
-    base::span<const uint8_t> span =
-        base::android::JavaByteBufferToSpan(env, web_contents_state_buffer);
-    std::string state_as_string(span.begin(), span.end());
-    tab_state.set_web_contents_state_bytes(state_as_string);
-  }
-
-  tab_state.set_opener_app_id(opener_app_id);
-  tab_state.set_theme_color(theme_color);
-  tab_state.set_launch_type_at_creation(launch_type_at_creation);
-  tab_state.set_user_agent(user_agent);
-  tab_state.set_last_navigation_committed_timestamp_millis(
-      last_navigation_committed_timestamp_millis);
-
-  if (j_tab_group_id) {
-    base::Token tab_group_id =
-        base::android::TokenAndroid::FromJavaToken(env, j_tab_group_id);
-    tab_state.set_tab_group_id_high(tab_group_id.high());
-    tab_state.set_tab_group_id_low(tab_group_id.low());
-  }
-
-  tab_state.set_tab_has_sensitive_content(tab_has_sensitive_content);
-  tab_state.set_is_pinned(is_pinned);
-  tab_backend_->SaveTabState(id, parent_collection_id, position, tab_state);
+StorageId TabStateStorageService::GetStorageId(
+    const TabCollection* collection) {
+  return ::tabs::GetOrCreateStorageId(collection,
+                                      collection_handle_to_storage_id_);
 }
 
-void TabStateStorageService::LoadAllTabs(
-    JNIEnv* env,
-    const jni_zero::JavaParamRef<jobject>& j_callback) {
-  // TODO(skym): Change to also pass back id, parent_collection_id, position.
-  tab_backend_->LoadAllTabStates(
-      base::BindOnce(&RunJavaCallbackLoadAllTabs, env,
-                     jni_zero::ScopedJavaGlobalRef<jobject>(j_callback)));
+StorageId TabStateStorageService::GetStorageId(const TabInterface* tab) {
+  return ::tabs::GetOrCreateStorageId(tab_canonicalizer_.Run(tab),
+                                      tab_handle_to_storage_id_);
+}
+
+void TabStateStorageService::WaitForAllPendingOperations(
+    base::OnceClosure on_idle) {
+  tab_backend_.WaitForAllPendingOperations(std::move(on_idle));
+}
+
+TabStateStorageService::ScopedBatch
+TabStateStorageService::CreateScopedBatch() {
+  if (!open_batches_) {
+    open_batches_.emplace(*this, packager_.get());
+  }
+  open_batches_->batch_cnt++;
+
+  return base::ScopedClosureRunner(
+      base::BindOnce(&TabStateStorageService::OnScopedBatchDestroyed,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TabStateStorageService::OnScopedBatchDestroyed() {
+  if (!open_batches_) {
+    return;
+  }
+  open_batches_->batch_cnt--;
+  if (open_batches_->batch_cnt == 0) {
+    CommitCurrentBatch();
+  }
+}
+
+void TabStateStorageService::Save(const TabInterface* tab) {
+  DCHECK(packager_);
+
+  const TabCollection* parent = tab->GetParentCollection();
+  DCHECK(tab->GetParentCollection()) << "Tab must have a parent collection";
+  std::string window_tag = packager_->GetWindowTag(parent);
+  bool is_off_the_record = packager_->IsOffTheRecord(parent);
+
+  StorageId storage_id = GetStorageId(tab);
+
+  ApplyUpdate([&](TabStateStorageUpdaterBuilder& builder) {
+    builder.SaveNode(storage_id, std::move(window_tag), is_off_the_record,
+                     TabStorageType::kTab, tab->GetHandle());
+  });
+}
+
+void TabStateStorageService::Save(const TabCollection* collection) {
+  DCHECK(packager_);
+
+  std::string window_tag = packager_->GetWindowTag(collection);
+  bool is_off_the_record = packager_->IsOffTheRecord(collection);
+
+  StorageId storage_id = GetStorageId(collection);
+  TabStorageType type = TabCollectionTypeToTabStorageType(collection->type());
+
+  ApplyUpdate([&](TabStateStorageUpdaterBuilder& builder) {
+    builder.SaveNode(storage_id, std::move(window_tag), is_off_the_record, type,
+                     collection->GetHandle());
+  });
+}
+
+void TabStateStorageService::SavePayload(const TabCollection* collection) {
+  DCHECK(packager_);
+
+  StorageId storage_id = GetStorageId(collection);
+  ApplyUpdate([&](TabStateStorageUpdaterBuilder& builder) {
+    builder.SaveNodePayload(storage_id, collection->GetHandle());
+  });
+}
+
+void TabStateStorageService::SaveChildren(const TabCollection* collection) {
+  DCHECK(packager_);
+
+  StorageId storage_id = GetStorageId(collection);
+  ApplyUpdate([&](TabStateStorageUpdaterBuilder& builder) {
+    builder.SaveChildren(storage_id, collection);
+  });
+}
+
+void TabStateStorageService::Remove(const TabInterface* tab) {
+  DCHECK(packager_);
+
+  ApplyUpdate([&](TabStateStorageUpdaterBuilder& builder) {
+    builder.RemoveNode(GetStorageId(tab));
+  });
+}
+
+void TabStateStorageService::Remove(const TabCollection* collection) {
+  DCHECK(packager_);
+
+  ApplyUpdate([&](TabStateStorageUpdaterBuilder& builder) {
+    builder.RemoveNode(GetStorageId(collection));
+  });
+}
+
+void TabStateStorageService::CommitCurrentBatch() {
+  if (!open_batches_) {
+    return;
+  }
+
+  tab_backend_.Update(open_batches_->builder.Build());
+  open_batches_.reset();
+}
+
+void TabStateStorageService::ApplyUpdate(UpdateOperation operation) {
+  if (open_batches_) {
+    operation(open_batches_->builder);
+  } else {
+    TabStateStorageUpdaterBuilder builder(*this, packager_.get());
+    operation(builder);
+    tab_backend_.Update(builder.Build());
+  }
+}
+
+void TabStateStorageService::LoadAllNodes(const std::string& window_tag,
+                                          bool is_off_the_record,
+                                          LoadDataCallback callback) {
+  auto on_tab_association = base::BindRepeating(
+      &TabStateStorageService::OnTabCreated, weak_ptr_factory_.GetWeakPtr());
+  auto on_collection_association =
+      base::BindRepeating(&TabStateStorageService::OnCollectionCreated,
+                          weak_ptr_factory_.GetWeakPtr());
+
+  // It is safe to register entities to the tracker on the background thread.
+  // The callbacks bound above will only be called once the StorageLoadedData
+  // has been fully constructed and passed back to the UI thread.
+  std::unique_ptr<RestoreEntityTracker> tracker =
+      tracker_factory_.Run(on_tab_association, on_collection_association);
+  DCHECK(tracker);
+  auto builder =
+      std::make_unique<StorageLoadedData::Builder>(std::move(tracker));
+  tab_backend_.LoadAllNodes(window_tag, is_off_the_record, std::move(builder),
+                            std::move(callback));
+}
+
+void TabStateStorageService::ClearState() {
+  tab_backend_.ClearAllNodes();
+}
+
+void TabStateStorageService::ClearWindow(const std::string& window_tag) {
+  tab_backend_.ClearWindow(window_tag);
+}
+
+void TabStateStorageService::OnTabCreated(StorageId storage_id,
+                                          const TabInterface* tab) {
+  const TabInterface* canonicalized_tab = tab_canonicalizer_.Run(tab);
+  if (canonicalized_tab == nullptr) {
+    // TODO(https://crbug.com/448151790): Consider removing from the database.
+    // Though if a complete post-initialization raze is coming, maybe it
+    // doesn't matter.
+    return;
+  }
+
+  tab_handle_to_storage_id_[canonicalized_tab->GetHandle().raw_value()] =
+      storage_id;
+}
+
+void TabStateStorageService::OnCollectionCreated(
+    StorageId storage_id,
+    const TabCollection* collection) {
+  if (collection == nullptr) {
+    // TODO(https://crbug.com/448151790): Consider removing from the database.
+    // Though if a complete post-initialization raze is coming, maybe it
+    // doesn't matter.
+    return;
+  }
+
+  collection_handle_to_storage_id_[collection->GetHandle().raw_value()] =
+      storage_id;
 }
 
 }  // namespace tabs

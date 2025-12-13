@@ -19,6 +19,8 @@
 #include "chrome/browser/devtools/device/tcp_device_provider.h"
 #include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/devtools/devtools_browser_context_manager.h"
+#include "chrome/browser/devtools/devtools_connection_dialog.h"
+#include "chrome/browser/devtools/devtools_remote_server_infobar_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/protocol/target_handler.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -28,11 +30,13 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
+#include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -42,6 +46,7 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client_channel.h"
@@ -91,7 +96,8 @@ std::optional<std::string> GetIsolatedWebAppNameAndVersion(
   const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
   const web_app::WebApp* web_app = registrar.GetAppById(*app_id);
 
-  if (web_app && registrar.IsIsolated(*app_id)) {
+  if (web_app &&
+      registrar.AppMatches(*app_id, web_app::WebAppFilter::IsIsolatedApp())) {
     // Version is a key part of IWA so should be displayed in inspect tool
     return base::StrCat({registrar.GetAppShortName(*app_id), " (",
                          web_app->isolation_data()->version().GetString(),
@@ -206,12 +212,47 @@ ChromeDevToolsManagerDelegate::ChromeDevToolsManagerDelegate() {
 ChromeDevToolsManagerDelegate::~ChromeDevToolsManagerDelegate() {
   DCHECK(g_instance == this);
   g_instance = nullptr;
+  if (infobar_) {
+    infobar_->Close();
+  }
 }
 
 void ChromeDevToolsManagerDelegate::Inspect(
     content::DevToolsAgentHost* agent_host) {
   DevToolsWindow::OpenDevToolsWindow(agent_host, nullptr,
                                      DevToolsOpenedByAction::kInspectLink);
+}
+
+scoped_refptr<content::DevToolsAgentHost>
+ChromeDevToolsManagerDelegate::GetDevToolsAgentHost(
+    content::DevToolsAgentHost* agent_host) {
+  scoped_refptr<content::DevToolsAgentHost> tab_agent_host(
+      content::DevToolsAgentHost::GetForTab(agent_host->GetWebContents()));
+  DevToolsWindow* window =
+      DevToolsWindow::FindDevToolsWindow(tab_agent_host.get());
+  if (!window) {
+    return nullptr;
+  }
+  return DevToolsAgentHost::GetOrCreateFor(window->GetDevToolsWebContents());
+}
+
+scoped_refptr<content::DevToolsAgentHost>
+ChromeDevToolsManagerDelegate::OpenDevTools(
+    content::DevToolsAgentHost* agent_host,
+    const content::DevToolsManagerDelegate::DevToolsOptions& devtools_options) {
+  scoped_refptr<content::DevToolsAgentHost> tab_agent_host(
+      content::DevToolsAgentHost::GetOrCreateForTab(
+          agent_host->GetWebContents()));
+  DevToolsWindow::OpenDevToolsWindow(tab_agent_host, nullptr,
+                                     DevToolsOpenedByAction::kUnknown,
+                                     devtools_options);
+  DevToolsWindow* window =
+      DevToolsWindow::FindDevToolsWindow(tab_agent_host.get());
+  if (!window) {
+    return nullptr;
+  }
+
+  return DevToolsAgentHost::GetOrCreateFor(window->GetDevToolsWebContents());
 }
 
 void ChromeDevToolsManagerDelegate::Activate(
@@ -252,12 +293,17 @@ void ChromeDevToolsManagerDelegate::HandleCommand(
 
 std::string ChromeDevToolsManagerDelegate::GetTargetType(
     content::WebContents* web_contents) {
+  if (webui_browser::IsBrowserUIWebContents(web_contents)) {
+    return DevToolsAgentHost::kTypeBrowserUI;
+  }
+
   if (IsIsolatedWebApp(web_contents)) {
     return ChromeDevToolsManagerDelegate::kTypeApp;
   }
 
-  if (base::Contains(AllTabContentses(), web_contents))
+  if (tabs::TabInterface::MaybeGetFromContents(web_contents)) {
     return DevToolsAgentHost::kTypePage;
+  }
 
   std::string extension_name;
   std::string extension_type;
@@ -270,6 +316,23 @@ std::string ChromeDevToolsManagerDelegate::GetTargetType(
   }
 
   return DevToolsAgentHost::kTypeOther;
+}
+
+std::optional<bool> ChromeDevToolsManagerDelegate::ShouldReportAsTabTarget(
+    content::WebContents* web_contents) {
+  if (webui_browser::IsBrowserUIWebContents(web_contents)) {
+    // Return false for browser UI so its WebContents is not reported as Tab.
+    // Browser UI is not a Tab and can not be interacted as a Tab. Reporting
+    // browser UI WebContents as Tab target will confuse tools such as test
+    // drivers and cause them to fail.
+    return false;
+  }
+
+  if (tabs::TabInterface::MaybeGetFromContents(web_contents)) {
+    return true;
+  }
+
+  return std::nullopt;
 }
 
 std::string ChromeDevToolsManagerDelegate::GetTargetTitle(
@@ -291,28 +354,8 @@ bool ChromeDevToolsManagerDelegate::AllowInspectingRenderFrameHost(
     content::RenderFrameHost* rfh) {
   Profile* profile =
       Profile::FromBrowserContext(rfh->GetProcess()->GetBrowserContext());
-  auto* process_manager = extensions::ProcessManager::Get(profile);
-  auto* extension = process_manager
-                        ? process_manager->GetExtensionForRenderFrameHost(rfh)
-                        : nullptr;
-  if (extension || !web_app::AreWebAppsEnabled(profile)) {
-    return IsInspectionAllowed(profile, extension);
-  }
-
-  if (auto* web_app_provider =
-          web_app::WebAppProvider::GetForWebApps(profile)) {
-    std::optional<webapps::AppId> app_id =
-        web_app_provider->registrar_unsafe().FindBestAppWithUrlInScope(
-            rfh->GetMainFrame()->GetLastCommittedURL(),
-            web_app::WebAppFilter::InstalledInChrome());
-    if (app_id) {
-      const auto* web_app =
-          web_app_provider->registrar_unsafe().GetAppById(app_id.value());
-      return IsInspectionAllowed(profile, web_app);
-    }
-  }
-  // |extension| is always nullptr here.
-  return IsInspectionAllowed(profile, extension);
+  return IsInspectionAllowed(profile,
+                             content::WebContents::FromRenderFrameHost(rfh));
 }
 
 void ChromeDevToolsManagerDelegate::ClientAttached(
@@ -412,6 +455,34 @@ void ChromeDevToolsManagerDelegate::UpdateDeviceDiscovery() {
                             base::Unretained(this)));
   }
   remote_locations_.swap(remote_locations);
+}
+
+void ChromeDevToolsManagerDelegate::AcceptDebugging(AcceptCallback callback) {
+  DevToolsConnectionDialog::Show(chrome::FindLastActive(), std::move(callback));
+}
+
+void ChromeDevToolsManagerDelegate::SetActiveWebSocketConnections(
+    size_t count) {
+  if (count == 0 && infobar_) {
+    // We need to reset the pointer to the infobar before closing it because
+    // closing the infobar deletes it.
+    auto* infobar = infobar_.get();
+    infobar_ = nullptr;
+    infobar->Close();
+  } else if (count > 0 && !infobar_) {
+    auto delegate = std::make_unique<DevToolsRemoteServerInfobarDelegate>(
+        chrome::FindLastActive());
+    delegate->AddObserver(this);
+    infobar_ = GlobalConfirmInfoBar::Show(std::move(delegate));
+  }
+}
+
+void ChromeDevToolsManagerDelegate::OnAccept() {
+  infobar_ = nullptr;
+}
+
+void ChromeDevToolsManagerDelegate::OnDismiss() {
+  infobar_ = nullptr;
 }
 
 void ChromeDevToolsManagerDelegate::ResetAndroidDeviceManagerForTesting() {

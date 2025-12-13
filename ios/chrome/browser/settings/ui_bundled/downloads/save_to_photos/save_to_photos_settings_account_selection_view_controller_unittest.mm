@@ -22,7 +22,7 @@ namespace {
 
 // Helper to create AccountPickerSelectionScreenIdentityItemConfigurator.
 AccountPickerSelectionScreenIdentityItemConfigurator* CreateConfigurator(
-    NSString* gaiaID,
+    const GaiaId& gaiaID,
     NSString* name,
     NSString* email,
     UIImage* avatar,
@@ -120,12 +120,12 @@ TEST_F(SaveToPhotosSettingsAccountSelectionViewControllerTest,
   // Populate the table with three accounts.
   NSArray<AccountPickerSelectionScreenIdentityItemConfigurator*>*
       configurators = @[
-        CreateConfigurator(@"gaiaID1", @"Person One", @"user1@example.com", nil,
-                           YES),
-        CreateConfigurator(@"gaiaID2", @"Person Two", @"user2@example.com", nil,
-                           NO),
-        CreateConfigurator(@"gaiaID3", @"Person Three", @"user3@example.com",
-                           nil, NO),
+        CreateConfigurator(GaiaId("gaiaID1"), @"Person One",
+                           @"user1@example.com", nil, YES),
+        CreateConfigurator(GaiaId("gaiaID2"), @"Person Two",
+                           @"user2@example.com", nil, NO),
+        CreateConfigurator(GaiaId("gaiaID3"), @"Person Three",
+                           @"user3@example.com", nil, NO),
       ];
   SaveToPhotosSettingsAccountSelectionViewController*
       accountSelectionController = base::apple::ObjCCast<
@@ -144,7 +144,7 @@ TEST_F(SaveToPhotosSettingsAccountSelectionViewControllerTest,
     TableViewIdentityItem* item =
         base::apple::ObjCCast<TableViewIdentityItem>(GetTableViewItem(0, i));
     EXPECT_TRUE(item);
-    EXPECT_NSEQ(configurators[i].gaiaID, item.gaiaID);
+    EXPECT_EQ(configurators[i].gaiaID, item.gaiaID);
     EXPECT_NSEQ(configurators[i].name, item.name);
     EXPECT_NSEQ(configurators[i].email, item.email);
     EXPECT_NSEQ(configurators[i].avatar, item.avatar);
@@ -153,15 +153,15 @@ TEST_F(SaveToPhotosSettingsAccountSelectionViewControllerTest,
   }
 
   // Test that selecting an identity in the table calls the mutator.
-  EXPECT_FALSE(mutator_.selectedIdentityGaiaID);
+  EXPECT_TRUE(mutator_.selectedIdentityGaiaID.empty());
   [accountSelectionController tableView:controller().tableView
                 didSelectRowAtIndexPath:[NSIndexPath indexPathForItem:1
                                                             inSection:0]];
-  EXPECT_NSEQ(@"gaiaID2", mutator_.selectedIdentityGaiaID);
+  EXPECT_EQ(GaiaId("gaiaID2"), mutator_.selectedIdentityGaiaID);
   [accountSelectionController tableView:controller().tableView
                 didSelectRowAtIndexPath:[NSIndexPath indexPathForItem:0
                                                             inSection:0]];
-  EXPECT_NSEQ(@"gaiaID1", mutator_.selectedIdentityGaiaID);
+  EXPECT_EQ(GaiaId("gaiaID1"), mutator_.selectedIdentityGaiaID);
 
   // Test Add account section has expected content.
   TableViewImageItem* addAccountItem =

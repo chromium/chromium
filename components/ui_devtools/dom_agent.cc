@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/ui_devtools/dom_agent.h"
 
 #include <algorithm>
@@ -89,6 +84,56 @@ bool FindMatchInDomProperties(const std::string& query,
     }
   }
   return false;
+}
+
+// Returns a string of spaces for indentation based on the depth level.
+std::string IndentString(int indent) {
+  return std::string(indent * 2, ' ');
+}
+
+// Recursively serializes a UIElement and its children into a simplified
+// markup-like string (e.g. <Widget>, <View> hierarchy) with attributes.
+std::string SerializeUIElementToMarkup(const ui_devtools::UIElement* element,
+                                       int indent = 0) {
+  if (!element) {
+    return {};
+  }
+
+  std::string markup;
+
+  // Start tag with element type, e.g. <View
+  markup += IndentString(indent) + "<" + element->GetTypeName();
+
+  // UIElement::GetAttributes() always returns a flat vector of
+  // name/value pairs: [name1, value1, name2, value2, ...].
+  // Iterate in steps of 2 to serialize each attribute as name="value".
+  auto attrs = element->GetAttributes();
+  for (size_t i = 0; i + 1 < attrs.size(); i += 2) {
+    markup += " " + attrs[i] + "=\"" + attrs[i + 1] + "\"";
+  }
+
+  const auto& children = element->children();
+  if (children.empty()) {
+    // If there are no children, output explicit closing tag
+    // instead of self-closing syntax so that copied markup matches
+    // what UI DevTools shows in the Elements panel.
+    // Example: <View name="RootView"></View>
+    markup += "></" + element->GetTypeName() + ">\n";
+    return markup;
+  }
+
+  // Close the start tag and add a newline before children.
+  markup += ">\n";
+
+  // Recursively serialize child elements, increasing indentation.
+  for (const auto& child : children) {
+    markup += SerializeUIElementToMarkup(child, indent + 1);
+  }
+
+  // Append closing tag with proper indentation.
+  markup += IndentString(indent) + "</" + element->GetTypeName() + ">\n";
+
+  return markup;
 }
 
 }  // namespace
@@ -480,6 +525,16 @@ protocol::Response DOMAgent::getDeviceScaleFactor(int node_id,
   }
 
   *device_scale_factor = ui_element->GetDeviceScaleFactor();
+  return Response::Success();
+}
+
+protocol::Response DOMAgent::getOuterHTML(int node_id,
+                                          protocol::String* outer_html) {
+  auto* element = GetElementFromNodeId(node_id);
+  if (!element) {
+    return Response::ServerError("Element not found on node id");
+  }
+  *outer_html = SerializeUIElementToMarkup(element);
   return Response::Success();
 }
 

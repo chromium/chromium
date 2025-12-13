@@ -37,7 +37,7 @@
 
 // Cell to display a Card where the username and password are interactable
 // and send the data to the delegate.
-@interface ManualFillCardCell : TableViewCell
+@interface ManualFillCardCell : LegacyTableViewCell
 
 // Updates the cell with credit card and the `navigationDelegate` to be
 // notified. `menuActions` are the UIActions that should be available from the

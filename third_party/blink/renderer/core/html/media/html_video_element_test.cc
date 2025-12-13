@@ -115,9 +115,9 @@ TEST_P(HTMLVideoElementTest, TrackChangeEventPropagationTest) {
   video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
   test::RunPendingTasks();
 
-  video()->AddMediaTrackForTesting(media::MediaTrack::CreateAudioTrack(
+  video()->AddTrackForTesting(media::MediaTrack::CreateAudioTrack(
       "a0", media::MediaTrack::AudioKind::kMain, "zero", "EN", true, 0, true));
-  video()->AddMediaTrackForTesting(media::MediaTrack::CreateAudioTrack(
+  video()->AddTrackForTesting(media::MediaTrack::CreateAudioTrack(
       "a1", media::MediaTrack::AudioKind::kMain, "one", "EN", false, 1, true));
   ASSERT_EQ(video()->audioTracks().length(), 2);
   ASSERT_EQ(video()->audioTracks().AnonymousIndexedGetter(0)->id(), "a0");
@@ -125,9 +125,9 @@ TEST_P(HTMLVideoElementTest, TrackChangeEventPropagationTest) {
   ASSERT_EQ(video()->audioTracks().AnonymousIndexedGetter(1)->id(), "a1");
   ASSERT_FALSE(video()->audioTracks().AnonymousIndexedGetter(1)->enabled());
 
-  video()->AddMediaTrackForTesting(media::MediaTrack::CreateVideoTrack(
+  video()->AddTrackForTesting(media::MediaTrack::CreateVideoTrack(
       "v0", media::MediaTrack::VideoKind::kMain, "zero", "EN", true, 0));
-  video()->AddMediaTrackForTesting(media::MediaTrack::CreateVideoTrack(
+  video()->AddTrackForTesting(media::MediaTrack::CreateVideoTrack(
       "v1", media::MediaTrack::VideoKind::kMain, "one", "EN", false, 1));
   ASSERT_EQ(video()->videoTracks().length(), 2);
   ASSERT_EQ(video()->videoTracks().AnonymousIndexedGetter(0)->id(), "v0");

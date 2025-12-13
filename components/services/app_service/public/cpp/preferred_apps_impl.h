@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_PREFERRED_APPS_IMPL_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_PREFERRED_APPS_IMPL_H_
 
-#include <map>
-
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -58,6 +56,12 @@ class PreferredAppsImpl {
   void RemovePreferredApp(const std::string& app_id);
   void SetSupportedLinksPreference(const std::string& app_id,
                                    IntentFilters all_link_filters);
+#if BUILDFLAG(IS_CHROMEOS)
+  void SetProtocolLinkPreference(const std::string& app_id,
+                                 IntentFilterPtr protocol_link_filter);
+  void RemoveProtocolLinkFilters(const std::string& app_id,
+                                 IntentFilters protocol_link_filters);
+#endif
   void RemoveSupportedLinksPreference(const std::string& app_id);
 
   PreferredAppsListHandle& preferred_apps_list() {
@@ -88,6 +92,12 @@ class PreferredAppsImpl {
   void RemovePreferredAppImpl(const std::string& app_id);
   void SetSupportedLinksPreferenceImpl(const std::string& app_id,
                                        IntentFilters all_link_filters);
+#if BUILDFLAG(IS_CHROMEOS)
+  void SetProtocolLinkPreferenceImpl(const std::string& app_id,
+                                     IntentFilterPtr protocol_link_filter);
+  void RemoveProtocolLinkFiltersImpl(const std::string& app_id,
+                                     IntentFilters protocol_link_filters);
+#endif
   void RemoveSupportedLinksPreferenceImpl(const std::string& app_id);
 
   // `host_` owns `this`.

@@ -102,7 +102,7 @@ void ChromeBrowserMainExtraPartsViews::PostCreateMainMessageLoop() {
 void ChromeBrowserMainExtraPartsViews::PreCreateThreads() {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
   // The Screen instance may already be set in tests.
-  if (!display::Screen::GetScreen()) {
+  if (!display::Screen::Get()) {
     screen_ = views::CreateDesktopScreen();
   }
 #endif

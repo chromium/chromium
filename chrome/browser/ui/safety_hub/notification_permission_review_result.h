@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/gtest_prod_util.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 

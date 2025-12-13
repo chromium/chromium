@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/common/compose/type_conversions.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,19 +17,18 @@ namespace {
 void TestErrorConversion(Error::ModelExecutionError modelError,
                          Status expectedStatus) {
   Status result = ComposeStatusFromOptimizationGuideResult(
-      optimization_guide::OptimizationGuideModelStreamingExecutionResult(
+      optimization_guide::OptimizationGuideModelExecutionResult(
           base::unexpected(Error::FromModelExecutionError(modelError)),
-          /*provided_by_on_device=*/false));
+          /*execution_info=*/nullptr));
   EXPECT_EQ(expectedStatus, result);
 }
 }  // namespace
 
 TEST(ComposeTypeConversions, OptimizationGuideHasResult) {
   Status result = ComposeStatusFromOptimizationGuideResult(
-      optimization_guide::OptimizationGuideModelStreamingExecutionResult(
-          base::ok(optimization_guide::StreamingResponse{
-              .response = optimization_guide::proto::Any()}),
-          /*provided_by_on_device=*/false));
+      optimization_guide::OptimizationGuideModelExecutionResult(
+          base::ok(optimization_guide::proto::Any()),
+          /*execution_info=*/nullptr));
   ASSERT_EQ(Status::kOk, result);
 }
 

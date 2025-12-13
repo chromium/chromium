@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <memory>
 
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/arc_game_controls_flag.h"
@@ -250,7 +250,6 @@ void DisplayOverlayController::AddNewAction(ActionType action_type,
 }
 
 void DisplayOverlayController::RemoveAction(Action* action) {
-  // TODO(b/270973654): Show delete confirmation dialog here.
   touch_injector_->RemoveAction(action);
 }
 

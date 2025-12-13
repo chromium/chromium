@@ -9,14 +9,15 @@
 #include <vector>
 
 #include "base/check_deref.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/btm_redirect_info.h"
+#include "content/public/browser/btm_redirect.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -51,9 +52,15 @@ struct CONTENT_EXPORT BtmNavigationInfo {
   bool was_renderer_initiated;
   ui::PageTransition page_transition;
   // The page where the navigation ultimately committed.
-  UrlAndSourceId destination;
+  GURL destination_url;
+  ukm::SourceId destination_source_id;
 };
 
+// Observes a `WebContents` and reports page visit information to a callback. A
+// page visit is defined as the time from when a primary page is committed until
+// the next primary page change. Also attempts to attribute late cookie access
+// notifications (reports of navigational cookie accesses that are received
+// after the navigation has finished) to the appropriate page or redirect.
 class CONTENT_EXPORT BtmPageVisitObserver : public WebContentsObserver {
  public:
   using VisitCallback =
@@ -97,8 +104,10 @@ class CONTENT_EXPORT BtmPageVisitObserver : public WebContentsObserver {
   BtmPageVisitInfo current_page_;
   raw_ref<base::Clock> clock_;
   base::Time last_page_change_time_;
-  // Past page visits that we are still waiting to see if late cookie accesses
-  // are reported for them.
+  // Past page visits that we are holding on to, to see if any late cookie
+  // access notifications come through for them. A "late" cookie access
+  // notification is when a navigational cookie access is reported after the
+  // navigation has finished.
   std::deque<VisitTuple> pending_visits_;
   base::WeakPtrFactory<BtmPageVisitObserver> weak_factory_{this};
 };

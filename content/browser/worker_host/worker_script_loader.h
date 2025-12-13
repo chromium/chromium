@@ -12,7 +12,6 @@
 
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/public/browser/service_worker_client_info.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

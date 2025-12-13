@@ -21,7 +21,6 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
-import android.os.Looper;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -47,6 +46,7 @@ import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -57,7 +57,7 @@ import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridge
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwm_disabled.PwmDeprecationDialogsMetricsRecorder.DownloadCsvFlowStep;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
-import org.chromium.components.browser_ui.test.BrowserUiDummyFragmentActivity;
+import org.chromium.components.browser_ui.test.BrowserUiTestFragmentActivity;
 import org.chromium.ui.widget.ToastManager;
 
 import java.io.BufferedReader;
@@ -73,7 +73,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        shadows = {ShadowLooper.class, ShadowToast.class})
+        shadows = {ShadowToast.class})
 @DoNotBatch(reason = "The ReauthenticationManager setup should not leak between tests.")
 public class PasswordCsvDownloadFlowControllerTest {
     private static final String TEST_FILE_DATA =
@@ -101,7 +101,7 @@ public class PasswordCsvDownloadFlowControllerTest {
     @Before
     public void setUp() {
         mActivity =
-                Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class)
+                Robolectric.buildActivity(BrowserUiTestFragmentActivity.class)
                         .create()
                         .start()
                         .resume()
@@ -213,7 +213,7 @@ public class PasswordCsvDownloadFlowControllerTest {
 
         // Simulate the user cancelling the activity and not setting a destination file
         shadowActivity.receiveResult(startedIntent, RESULT_OK, new Intent().setData(null));
-        shadowOf(Looper.getMainLooper()).idle();
+        ShadowLooper.idleMainLooper();
 
         assertFalse(exportDialog.isShowing());
 
@@ -270,7 +270,8 @@ public class PasswordCsvDownloadFlowControllerTest {
         // Return the result of the create document intent (the file name).
         shadowActivity.receiveResult(
                 startedIntent, RESULT_OK, new Intent().setData(Uri.fromFile(destinationFile)));
-        shadowOf(Looper.getMainLooper()).idle();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+
         assertFalse(exportDialog.isShowing());
 
         Dialog errorDialog = ShadowDialog.getLatestDialog();
@@ -288,8 +289,7 @@ public class PasswordCsvDownloadFlowControllerTest {
         errorAlertDialog
                 .getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE)
                 .performClick();
-
-        shadowOf(Looper.getMainLooper()).idle();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
 
         // The source file should not have been deleted, because the write to the destination
         // file didn't complete.
@@ -337,7 +337,8 @@ public class PasswordCsvDownloadFlowControllerTest {
         // Return the result of the create document intent (the file name).
         shadowActivity.receiveResult(
                 startedIntent, RESULT_OK, new Intent().setData(Uri.fromFile(destinationFile)));
-        shadowOf(Looper.getMainLooper()).idle();
+        BaseRobolectricTestRule.runAllBackgroundAndUi();
+
         assertFalse(dialog.isShowing());
 
         verifyFakeDataWasCopiedOver(destinationFile);

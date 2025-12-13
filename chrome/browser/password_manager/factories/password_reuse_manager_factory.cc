@@ -13,7 +13,6 @@
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_reuse_detector_impl.h"
 #include "components/password_manager/core/browser/password_reuse_manager_impl.h"
 #include "components/password_manager/core/browser/password_reuse_manager_signin_notifier_impl.h"
@@ -107,13 +106,11 @@ PasswordReuseManagerFactory::BuildServiceInstanceForBrowserContext(
       shared_pref_delegate;
 
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kFetchGaiaHashOnSignIn)) {
-    shared_pref_delegate = std::make_unique<SharedPreferencesDelegateAndroid>();
-  }
+  shared_pref_delegate = std::make_unique<SharedPreferencesDelegateAndroid>();
 #endif
   auto reuse_manager =
-      std::make_unique<password_manager::PasswordReuseManagerImpl>();
+      std::make_unique<password_manager::PasswordReuseManagerImpl>(
+          g_browser_process->os_crypt_async());
   reuse_manager->Init(
       profile->GetPrefs(), g_browser_process->local_state(),
       ProfilePasswordStoreFactory::GetForProfile(

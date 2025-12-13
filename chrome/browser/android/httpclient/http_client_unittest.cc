@@ -255,8 +255,9 @@ TEST_F(HttpClientTest, TestSendDifferentRequestMethod) {
       auto pendingRequest = GetLastPendingRequest()->request;
       EXPECT_EQ(pendingRequest.method, method);
 
-      EXPECT_EQ(pendingRequest.headers.GetHeader("Content-Type"), content_type);
-      EXPECT_EQ(pendingRequest.headers.GetHeader("TestMethod"), method);
+      EXPECT_EQ(pendingRequest.headers.GetHeaderView("Content-Type"),
+                content_type);
+      EXPECT_EQ(pendingRequest.headers.GetHeaderView("TestMethod"), method);
     }
 
     Respond(GURL(request.url), TestHttpResponse());

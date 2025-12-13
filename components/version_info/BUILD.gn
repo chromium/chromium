@@ -41,7 +41,7 @@ source_set("version_string") {
 # Facade for "//base/version_info:channel"
 source_set("channel") {
   sources = [ "channel.h" ]
-  public_deps = [ "//base:base" ]
+  public_deps = [ "//base" ]
 }
 
 # Facade for "//base/version_info:generate_version_info"

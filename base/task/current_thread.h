@@ -9,7 +9,6 @@
 #include <type_traits>
 
 #include "base/base_export.h"
-#include "base/callback_list.h"
 #include "base/check.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -36,6 +35,8 @@ class WebTaskEnvironment;
 }
 
 namespace base {
+
+class CallbackListSubscription;
 
 namespace test {
 bool RunUntil(FunctionRef<bool(void)>);
@@ -250,7 +251,7 @@ class BASE_EXPORT CurrentUIThread : public CurrentThread {
 
   CurrentUIThread* operator->() { return this; }
 
-#if BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_FUCHSIA)
   static_assert(
       std::is_base_of_v<WatchableIOMessagePumpPosix, MessagePumpForUI>,
       "CurrentThreadForUI::WatchFileDescriptor is supported only"

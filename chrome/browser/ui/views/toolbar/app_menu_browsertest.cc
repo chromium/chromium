@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -70,8 +71,12 @@ class AppMenuBrowserTest : public UiBrowserTest {
  public:
   AppMenuBrowserTest() {
     // Disable the comparison tables submenu.
-    scoped_feature_list_.InitAndDisableFeature(
-        commerce::kProductSpecifications);
+    // TODO(crbug.com/429347589): Clean up and update test to work by triggering
+    // disruptive notification revocation (or other SH feature).
+    scoped_feature_list_.InitWithFeatures(
+        {}, /*disabled_features=*/{
+            features::kSafetyHubDisruptiveNotificationRevocation,
+            commerce::kProductSpecifications});
   }
 
   // UiBrowserTest:
@@ -201,8 +206,8 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, ShowWithRecentlyClosedWindow) {
   Browser* second_browser = CreateBrowser(browser()->profile());
   content::WebContents* new_contents = chrome::AddSelectedTabWithURL(
       second_browser,
-      ui_test_utils::GetTestUrl(base::FilePath(),
-                                base::FilePath().AppendASCII("simple.html")),
+      chrome_test_utils::GetTestUrl(
+          base::FilePath(), base::FilePath().AppendASCII("simple.html")),
       ui::PAGE_TRANSITION_TYPED);
   EXPECT_TRUE(content::WaitForLoadStop(new_contents));
   chrome::CloseWindow(second_browser);
@@ -261,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, InvokeUi_main_guest) {
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, InvokeUi_main_incognito) {
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, DISABLED_InvokeUi_main_incognito) {
   auto browser_resetter = SetBrowser(CreateIncognitoBrowser());
   ShowAndVerifyUi();
 }

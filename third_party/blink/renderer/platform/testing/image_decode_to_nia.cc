@@ -4,6 +4,8 @@
 
 #include <array>
 
+#include "base/containers/span.h"
+
 // This program converts an image from stdin (e.g. a JPEG, PNG, etc.) to stdout
 // (in the NIA/NIE format, a trivial image file format).
 //
@@ -38,14 +40,14 @@
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-static inline void set_u32le(uint8_t* ptr, uint32_t val) {
+static inline void set_u32le(base::span<uint8_t> ptr, uint32_t val) {
   ptr[0] = val >> 0;
   UNSAFE_TODO(ptr[1]) = val >> 8;
   UNSAFE_TODO(ptr[2]) = val >> 16;
   UNSAFE_TODO(ptr[3]) = val >> 24;
 }
 
-static inline void set_u64le(uint8_t* ptr, uint64_t val) {
+static inline void set_u64le(base::span<uint8_t> ptr, uint64_t val) {
   ptr[0] = val >> 0;
   UNSAFE_TODO(ptr[1]) = val >> 8;
   UNSAFE_TODO(ptr[2]) = val >> 16;
@@ -57,13 +59,13 @@ static inline void set_u64le(uint8_t* ptr, uint64_t val) {
 }
 
 void write_nix_header(uint32_t magic_u32le, uint32_t width, uint32_t height) {
-  uint8_t data[16];
-  set_u32le(UNSAFE_TODO(data + 0), magic_u32le);
-  set_u32le(UNSAFE_TODO(data + 4),
+  std::array<uint8_t, 16> data;
+  set_u32le(data, magic_u32le);
+  set_u32le(base::span<uint8_t>(data).subspan(4u),
             0x346E62FF);  // 4 bytes per pixel non-premul BGRA.
-  set_u32le(UNSAFE_TODO(data + 8), width);
-  set_u32le(UNSAFE_TODO(data + 12), height);
-  UNSAFE_TODO(fwrite(data, 1, 16, stdout));
+  set_u32le(base::span<uint8_t>(data).subspan(8u), width);
+  set_u32le(base::span<uint8_t>(data).subspan(12u), height);
+  UNSAFE_TODO(fwrite(data.data(), 1, 16, stdout));
 }
 
 bool write_nia_duration(uint64_t total_duration_micros) {
@@ -77,9 +79,9 @@ bool write_nia_duration(uint64_t total_duration_micros) {
   }
   d *= flicks_per_ten_micros;
 
-  uint8_t data[8];
-  set_u64le(UNSAFE_TODO(data + 0), d);
-  UNSAFE_TODO(fwrite(data, 1, 8, stdout));
+  std::array<uint8_t, 8> data;
+  set_u64le(data, d);
+  UNSAFE_TODO(fwrite(data.data(), 1, 8, stdout));
   return true;
 }
 
@@ -110,9 +112,9 @@ void write_nie_pixels(uint32_t width,
 void write_nia_padding(uint32_t width, uint32_t height) {
   // 4 bytes of padding when the width and height are both odd.
   if (width & height & 1) {
-    uint8_t data[4];
-    set_u32le(UNSAFE_TODO(data + 0), 0);
-    UNSAFE_TODO(fwrite(data, 1, 4, stdout));
+    std::array<uint8_t, 4> data;
+    set_u32le(data, 0);
+    UNSAFE_TODO(fwrite(data.data(), 1, 4, stdout));
   }
 }
 
@@ -129,19 +131,19 @@ void write_nia_footer(int repetition_count, size_t frame_count) {
   // useful to canonicalize still images' "number of animation loops" to 0.
   bool override_num_animation_loops = frame_count <= 1;
 
-  uint8_t data[8];
+  std::array<uint8_t, 8> data;
   // kAnimationNone means a still image.
   if (override_num_animation_loops ||
       (repetition_count == blink::kAnimationNone) ||
       (repetition_count == blink::kAnimationLoopInfinite)) {
-    set_u32le(UNSAFE_TODO(data + 0), 0);
+    set_u32le(data, 0);
   } else {
     // NIA's loop count and Chromium/Skia's repetition count differ by one. See
     // https://github.com/google/wuffs/blob/master/doc/spec/nie-spec.md#nii-footer
-    set_u32le(UNSAFE_TODO(data + 0), 1 + repetition_count);
+    set_u32le(data, 1 + repetition_count);
   }
-  set_u32le(UNSAFE_TODO(data + 4), 0x80000000);
-  UNSAFE_TODO(fwrite(data, 1, 8, stdout));
+  set_u32le(base::span<uint8_t>(data).subspan(4u), 0x80000000);
+  UNSAFE_TODO(fwrite(data.data(), 1, 8, stdout));
 }
 
 int main(int argc, char* argv[]) {
@@ -162,7 +164,7 @@ int main(int argc, char* argv[]) {
   }
   static constexpr bool data_complete = true;
   std::unique_ptr<blink::ImageDecoder> decoder = blink::ImageDecoder::Create(
-      WTF::SharedBuffer::Create(src), data_complete,
+      blink::SharedBuffer::Create(src), data_complete,
       blink::ImageDecoder::kAlphaNotPremultiplied,
       blink::ImageDecoder::kDefaultBitDepth, blink::ColorBehavior::kIgnore,
       cc::AuxImage::kDefault, blink::Platform::GetMaxDecodedImageBytes());

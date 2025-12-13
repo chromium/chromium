@@ -65,6 +65,14 @@ class CertificateProvisioningService : public KeyedService {
   // some reason, subsequent calls will retry loading it.
   virtual void GetManagedIdentity(GetManagedIdentityCallback callback) = 0;
 
+  // Deletes the managed identities (permanent and temporary). `callback` will
+  // be invoked with true if the identities were deleted successfully, and false
+  // otherwise. In case of an unexpected failure, the identities might still
+  // exist in the store but not be usable anymore currently we just log an
+  // error.
+  virtual void DeleteManagedIdentities(
+      base::OnceCallback<void(bool)> callback) = 0;
+
   // Returns metadata about the current status of the service, mainly for
   // debugging purposes.
   virtual Status GetCurrentStatus() const = 0;

@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/boca/babelorca/tachyon_response.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -35,7 +36,7 @@ TachyonResponse::TachyonResponse(int rpc_code,
 
 TachyonResponse::TachyonResponse(int net_error,
                                  std::optional<int> http_status_code,
-                                 std::unique_ptr<std::string> response_body) {
+                                 std::optional<std::string> response_body) {
   if (net_error != net::OK &&
       net_error != net::ERR_HTTP_RESPONSE_CODE_FAILURE) {
     status_ = Status::kNetworkError;
@@ -53,7 +54,7 @@ TachyonResponse::TachyonResponse(int net_error,
     status_ = Status::kHttpError;
     return;
   }
-  response_body_ = response_body ? std::move(*response_body) : "";
+  response_body_ = std::move(response_body).value_or("");
   status_ = Status::kOk;
 }
 

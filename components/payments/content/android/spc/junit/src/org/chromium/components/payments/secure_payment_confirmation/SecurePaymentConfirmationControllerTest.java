@@ -229,7 +229,7 @@ public class SecurePaymentConfirmationControllerTest {
 
     @Test
     public void testInitModel() {
-        Context context = mWindow.getContext().get();
+        Context context = RuntimeEnvironment.getApplication();
         createController(/* showOptOut= */ false, /* informOnly= */ false);
         PropertyModel model = mController.getModelForTesting();
 
@@ -291,7 +291,7 @@ public class SecurePaymentConfirmationControllerTest {
 
     @Test
     public void testInitModel_withOptOut() {
-        Context context = mWindow.getContext().get();
+        Context context = RuntimeEnvironment.getApplication();
         createController(/* showOptOut= */ true, /* informOnly= */ false);
 
         String deviceString =
@@ -317,7 +317,7 @@ public class SecurePaymentConfirmationControllerTest {
 
     @Test
     public void testInitModel_withInformOnly() {
-        Context context = mWindow.getContext().get();
+        Context context = RuntimeEnvironment.getApplication();
         createController(/* showOptOut= */ false, /* informOnly= */ true);
         PropertyModel model = mController.getModelForTesting();
 
@@ -479,7 +479,7 @@ public class SecurePaymentConfirmationControllerTest {
     @Test
     public void testTransactionMode_autoAccept() {
         createController(
-                /* showOptOut= */ false, /* informOnly= */ false, SPCTransactionMode.AUTOACCEPT);
+                /* showOptOut= */ false, /* informOnly= */ false, SPCTransactionMode.AUTO_ACCEPT);
         assertTrue(mController.show());
 
         // The automation should run immediately when show is called, and accept the prompt.
@@ -489,7 +489,7 @@ public class SecurePaymentConfirmationControllerTest {
     @Test
     public void testTransactionMode_autoAccept_withInformOnly() {
         createController(
-                /* showOptOut= */ false, /* informOnly= */ true, SPCTransactionMode.AUTOACCEPT);
+                /* showOptOut= */ false, /* informOnly= */ true, SPCTransactionMode.AUTO_ACCEPT);
         assertTrue(mController.show());
 
         // The automation should run immediately when show is called, and accept the prompt. For the
@@ -502,7 +502,7 @@ public class SecurePaymentConfirmationControllerTest {
         createController(
                 /* showOptOut= */ false,
                 /* informOnly= */ false,
-                SPCTransactionMode.AUTOAUTHANOTHERWAY);
+                SPCTransactionMode.AUTO_AUTH_ANOTHER_WAY);
         assertTrue(mController.show());
 
         // The automation should run immediately when show is called, and choose to verify another
@@ -515,7 +515,7 @@ public class SecurePaymentConfirmationControllerTest {
         createController(
                 /* showOptOut= */ false,
                 /* informOnly= */ true,
-                SPCTransactionMode.AUTOAUTHANOTHERWAY);
+                SPCTransactionMode.AUTO_AUTH_ANOTHER_WAY);
         assertTrue(mController.show());
 
         // The automation should run immediately when show is called, and choose to verify another
@@ -526,7 +526,7 @@ public class SecurePaymentConfirmationControllerTest {
     @Test
     public void testTransactionMode_autoReject() {
         createController(
-                /* showOptOut= */ false, /* informOnly= */ false, SPCTransactionMode.AUTOREJECT);
+                /* showOptOut= */ false, /* informOnly= */ false, SPCTransactionMode.AUTO_REJECT);
         assertTrue(mController.show());
 
         // The automation should run immediately when show is called, and reject the prompt.
@@ -536,7 +536,7 @@ public class SecurePaymentConfirmationControllerTest {
     @Test
     public void testTransactionMode_autoReject_withInformOnly() {
         createController(
-                /* showOptOut= */ false, /* informOnly= */ true, SPCTransactionMode.AUTOREJECT);
+                /* showOptOut= */ false, /* informOnly= */ true, SPCTransactionMode.AUTO_REJECT);
         assertTrue(mController.show());
 
         // The automation should run immediately when show is called, and reject the prompt.
@@ -546,7 +546,7 @@ public class SecurePaymentConfirmationControllerTest {
     @Test
     public void testTransactionMode_autoOptOut() {
         createController(
-                /* showOptOut= */ true, /* informOnly= */ false, SPCTransactionMode.AUTOOPTOUT);
+                /* showOptOut= */ true, /* informOnly= */ false, SPCTransactionMode.AUTO_OPT_OUT);
         assertTrue(mController.show());
 
         // The automation should run immediately when show is called, and opt out of the prompt.
@@ -556,7 +556,7 @@ public class SecurePaymentConfirmationControllerTest {
     @Test
     public void testTransactionMode_autoOptOut_withInformOnly() {
         createController(
-                /* showOptOut= */ true, /* informOnly= */ true, SPCTransactionMode.AUTOOPTOUT);
+                /* showOptOut= */ true, /* informOnly= */ true, SPCTransactionMode.AUTO_OPT_OUT);
         assertTrue(mController.show());
 
         // The automation should run immediately when show is called, and opt out of the prompt.

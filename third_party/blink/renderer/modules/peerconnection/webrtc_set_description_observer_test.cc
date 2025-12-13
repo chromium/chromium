@@ -9,13 +9,13 @@
 #include <utility>
 #include <vector>
 
-#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/modules/peerconnection/adapters/web_rtc_cross_thread_copier.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/testing/mock_peer_connection_interface.h"
@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/media/base/fake_media_engine.h"
@@ -115,11 +116,12 @@ class ObserverHandlerWrapper {
  private:
   void InvokeLocalHandlerOnSuccess() {
     base::RunLoop run_loop;
-    signaling_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ObserverHandlerWrapper::
-                           InvokeLocalHandlerOnSuccessOnSignalingThread,
-                       base::Unretained(this), base::Unretained(&run_loop)));
+    PostCrossThreadTask(
+        *signaling_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&ObserverHandlerWrapper::
+                                InvokeLocalHandlerOnSuccessOnSignalingThread,
+                            CrossThreadUnretained(this),
+                            CrossThreadUnretained(&run_loop)));
     run_loop.Run();
   }
   void InvokeLocalHandlerOnSuccessOnSignalingThread(base::RunLoop* run_loop) {
@@ -129,12 +131,12 @@ class ObserverHandlerWrapper {
 
   void InvokeLocalHandlerOnFailure(webrtc::RTCError error) {
     base::RunLoop run_loop;
-    signaling_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ObserverHandlerWrapper::
-                           InvokeLocalHandlerOnFailureOnSignalingThread,
-                       base::Unretained(this), std::move(error),
-                       base::Unretained(&run_loop)));
+    PostCrossThreadTask(
+        *signaling_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&ObserverHandlerWrapper::
+                                InvokeLocalHandlerOnFailureOnSignalingThread,
+                            CrossThreadUnretained(this), std::move(error),
+                            CrossThreadUnretained(&run_loop)));
     run_loop.Run();
   }
   void InvokeLocalHandlerOnFailureOnSignalingThread(webrtc::RTCError error,
@@ -145,12 +147,12 @@ class ObserverHandlerWrapper {
 
   void InvokeRemoteHandlerOnComplete(webrtc::RTCError error) {
     base::RunLoop run_loop;
-    signaling_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ObserverHandlerWrapper::
-                           InvokeRemoteHandlerOnCompleteOnSignalingThread,
-                       base::Unretained(this), std::move(error),
-                       base::Unretained(&run_loop)));
+    PostCrossThreadTask(
+        *signaling_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&ObserverHandlerWrapper::
+                                InvokeRemoteHandlerOnCompleteOnSignalingThread,
+                            CrossThreadUnretained(this), std::move(error),
+                            CrossThreadUnretained(&run_loop)));
     run_loop.Run();
   }
   void InvokeRemoteHandlerOnCompleteOnSignalingThread(webrtc::RTCError error,

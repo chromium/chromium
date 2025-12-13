@@ -2136,13 +2136,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
 IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, DisableBookmarks) {
   ASSERT_TRUE(SetupSync());
 
-  ASSERT_TRUE(
-      GetClient(1)->DisableSyncForType(syncer::UserSelectableType::kBookmarks));
+  ASSERT_TRUE(GetClient(1)->DisableSelectableType(
+      syncer::UserSelectableType::kBookmarks));
   ASSERT_NE(nullptr, AddFolder(1, kGenericFolderName));
   ASSERT_FALSE(AllModelsMatch());
 
-  ASSERT_TRUE(
-      GetClient(1)->EnableSyncForType(syncer::UserSelectableType::kBookmarks));
+  ASSERT_TRUE(GetClient(1)->EnableSelectableType(
+      syncer::UserSelectableType::kBookmarks));
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
 }
 
@@ -2151,8 +2151,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, DisableSync) {
 
   ASSERT_TRUE(GetClient(1)->DisableSyncForAllDatatypes());
   ASSERT_NE(nullptr, AddFolder(0, IndexedFolderName(0)));
-  ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(0, GetSyncService(0),
-                                                    GetFakeServer())
+  ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
+                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer())
                   .Wait());
   ASSERT_FALSE(AllModelsMatch());
 
@@ -2186,8 +2186,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, MC_DuplicateFolders) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, MC_DeleteBookmark) {
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(
-      GetClient(1)->DisableSyncForType(syncer::UserSelectableType::kBookmarks));
+  ASSERT_TRUE(GetClient(1)->DisableSelectableType(
+      syncer::UserSelectableType::kBookmarks));
 
   const GURL bar_url("http://example.com/bar");
   const GURL other_url("http://example.com/other");
@@ -2195,8 +2195,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, MC_DeleteBookmark) {
   ASSERT_NE(nullptr, AddURL(0, GetBookmarkBarNode(0), 0, u"bar", bar_url));
   ASSERT_NE(nullptr, AddURL(0, GetOtherNode(0), 0, u"other", other_url));
 
-  ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(0, GetSyncService(0),
-                                                    GetFakeServer())
+  ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
+                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer())
                   .Wait());
 
   ASSERT_TRUE(HasNodeWithURL(0, bar_url));
@@ -2205,15 +2205,15 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, MC_DeleteBookmark) {
   ASSERT_FALSE(HasNodeWithURL(1, other_url));
 
   Remove(0, GetBookmarkBarNode(0), 0);
-  ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(0, GetSyncService(0),
-                                                    GetFakeServer())
+  ASSERT_TRUE(BookmarkModelMatchesFakeServerChecker(
+                  GetBookmarkModel(0), GetSyncService(0), GetFakeServer())
                   .Wait());
 
   ASSERT_FALSE(HasNodeWithURL(0, bar_url));
   ASSERT_TRUE(HasNodeWithURL(0, other_url));
 
-  ASSERT_TRUE(
-      GetClient(1)->EnableSyncForType(syncer::UserSelectableType::kBookmarks));
+  ASSERT_TRUE(GetClient(1)->EnableSelectableType(
+      syncer::UserSelectableType::kBookmarks));
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
 
   ASSERT_FALSE(HasNodeWithURL(0, bar_url));
@@ -2705,13 +2705,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
   // Disable bookmark syncing on the first client, add another bookmark,
   // re-enable bookmark syncing and see that the second bookmark reaches the
   // second client.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kBookmarks));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kBookmarks));
   const std::u16string url_title_2 = u"another happy little url";
   const GURL url_2("https://example.com/second");
   ASSERT_NE(nullptr, AddURL(0, GetBookmarkBarNode(0), 0, url_title_2, url_2));
-  ASSERT_TRUE(
-      GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kBookmarks));
+  ASSERT_TRUE(GetClient(0)->EnableSelectableType(
+      syncer::UserSelectableType::kBookmarks));
   ASSERT_TRUE(BookmarksMatchChecker().Wait());
   ASSERT_EQ(initial_count + 2, CountAllBookmarks(0));
   ASSERT_EQ(initial_count + 2, CountAllBookmarks(1));

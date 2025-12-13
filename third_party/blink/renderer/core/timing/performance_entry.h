@@ -156,10 +156,6 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   virtual mojom::blink::PerformanceMarkOrMeasurePtr
   ToMojoPerformanceMarkOrMeasure();
 
-  bool IsTriggeredBySoftNavigation() const {
-    return is_triggered_by_soft_navigation_;
-  }
-
   // PaintTimingMixin. It's implemented here for simplicity.
   // If an interface doesn't have PaintTimingMixin, these functions
   // would not be exposed by WebIDL.
@@ -177,14 +173,12 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
                    double start_time,
                    double finish_time,
                    DOMWindow* source,
-                   uint32_t navigation_id,
-                   bool is_triggered_by_soft_navigation = false);
+                   uint32_t navigation_id);
   PerformanceEntry(double duration,
                    const AtomicString& name,
                    double start_time,
                    DOMWindow* source,
-                   uint32_t navigation_id,
-                   bool is_triggered_by_soft_navigation = false);
+                   uint32_t navigation_id);
 
   virtual void BuildJSONValue(V8ObjectBuilder&) const;
 
@@ -201,7 +195,6 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   const uint32_t navigation_id_;
   // For entries implementing PaintTimingMixin.
   std::optional<DOMPaintTimingInfo> paint_timing_info_;
-  const bool is_triggered_by_soft_navigation_;
 };
 
 }  // namespace blink

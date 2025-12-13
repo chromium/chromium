@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.task_manager.ui;
 
+import android.graphics.Bitmap;
+
 import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.task_manager.TaskManagerServiceBridge.GpuMemoryUsage;
@@ -27,7 +29,7 @@ class TaskManagerProperties {
         RowType.TASK,
     })
     @Retention(RetentionPolicy.SOURCE)
-    static @interface RowType {
+    @interface RowType {
         /** Represents a task. Each item with this key has prorperties of the corresponding task. */
         int TASK = 1;
     }
@@ -45,8 +47,8 @@ class TaskManagerProperties {
         @Override
         public boolean equals(Object other) {
             if (this == other) return true;
-            if (other == null) return false;
-            if (this.getClass() != other.getClass()) return false;
+
+            if (!(other instanceof SortDescriptor)) return false;
             SortDescriptor that = (SortDescriptor) other;
             return key == that.key && ascending == that.ascending;
         }
@@ -90,6 +92,9 @@ class TaskManagerProperties {
     /** Property key for GPU memory. */
     static final WritableObjectPropertyKey<GpuMemoryUsage> GPU_MEMORY =
             new WritableObjectPropertyKey<>();
+
+    /** Property key for task icon. */
+    static final WritableObjectPropertyKey<Bitmap> TASK_ICON = new WritableObjectPropertyKey<>();
 
     /**
      * All the property keys that can appear as a column. Sorted in order to appear in the context

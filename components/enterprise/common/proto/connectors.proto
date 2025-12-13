@@ -238,6 +238,10 @@ message ContentAnalysisRequest {
   // Indicates whether the request is for content that is encrypted.
   optional bool is_content_encrypted = 23;
 
+  // If true, the content hash is given during the finalize call rather than
+  // the initial upload, only for larger files.
+  optional bool content_hash_in_final_call = 24;
+
   // Reserved to make sure there is no overlap with DeepScanningClientRequest.
   reserved 3, 4, 6 to 8;
 }
@@ -280,6 +284,7 @@ message ContentAnalysisResponse {
         REPORT_ONLY = 1;
         WARN = 2;
         BLOCK = 3;
+        FORCE_SAVE_TO_CLOUD = 4;
       }
       optional Action action = 1;
       optional string rule_name = 2;
@@ -318,7 +323,15 @@ message ContentAnalysisResponse {
       // displayed instead of the default one. This is set by admins in Rule
       // definition UI. This is set by admins in Rule definition UI.
       optional CustomRuleMessage custom_rule_message = 6;
+
+      enum ForceSaveToCloudDestination {
+        UNSPECIFIED = 0;
+        CORP_G_DRIVE = 1;
+      }
+
+      optional ForceSaveToCloudDestination force_save_to_cloud_destination = 7;
     }
+
     repeated TriggeredRule triggered_rules = 3;
 
     reserved 4, 5, 6;

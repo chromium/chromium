@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_SYNC_SERVICE_SYNC_ERROR_H_
 #define COMPONENTS_SYNC_SERVICE_SYNC_ERROR_H_
 
+#include <optional>
 #include <string>
 
 #include "base/location.h"
+#include "components/sync/model/model_error.h"
 
 namespace syncer {
 
@@ -35,11 +37,15 @@ class SyncError {
     PRECONDITION_ERROR_WITH_CLEAR_DATA,
   };
 
-  // Create a new Sync error of type `error_type` triggered from the specified
-  // location.
-  SyncError(const base::Location& location,
-            ErrorType error_type,
-            const std::string& message);
+  // Create a new Sync error from a `ModelError`.
+  static SyncError CreateFromModelError(const ModelError& model_error);
+
+  // Creates a new Sync error. `error_type` must not be `MODEL_ERROR` and model
+  // errors should use `CreateFromModelError()` instead
+  static SyncError CreateFromErrorType(const base::Location& location,
+                                       ErrorType error_type,
+                                       const std::string& message);
+
   SyncError(const SyncError& other) = default;
   SyncError& operator=(const SyncError& other) = default;
   ~SyncError();
@@ -47,14 +53,21 @@ class SyncError {
   const base::Location& location() const;
   const std::string& message() const;
   ErrorType error_type() const;
+  std::optional<ModelError::Type> model_error_type() const;
 
   // Type specific message prefix for logging and UI purposes.
   std::string GetMessagePrefix() const;
 
  private:
+  SyncError(const base::Location& location,
+            ErrorType error_type,
+            const std::string& message,
+            std::optional<ModelError::Type> model_error_type);
+
   base::Location location_;
   std::string message_;
   ErrorType error_type_;
+  std::optional<ModelError::Type> model_error_type_;
 };
 
 }  // namespace syncer

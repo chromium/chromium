@@ -28,12 +28,6 @@ bool ParamTraits<blink::PageState>::Read(const base::Pickle* m,
   return true;
 }
 
-void ParamTraits<blink::PageState>::Log(const param_type& p, std::string* l) {
-  l->append("(");
-  LogParam(p.ToEncodedData(), l);
-  l->append(")");
-}
-
 }  // namespace IPC
 
 // Generate param traits write methods.
@@ -45,13 +39,6 @@ namespace IPC {
 
 // Generate param traits read methods.
 #include "ipc/param_traits_read_macros.h"
-namespace IPC {
-#undef CONTENT_PUBLIC_COMMON_COMMON_PARAM_TRAITS_MACROS_H_
-#include "content/public/common/common_param_traits_macros.h"
-}  // namespace IPC
-
-// Generate param traits log methods.
-#include "ipc/param_traits_log_macros.h"
 namespace IPC {
 #undef CONTENT_PUBLIC_COMMON_COMMON_PARAM_TRAITS_MACROS_H_
 #include "content/public/common/common_param_traits_macros.h"

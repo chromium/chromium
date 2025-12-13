@@ -145,7 +145,7 @@ impl<'l> Lexer<'l> {
                         let end = self.ptr;
 
                         let mut value = 0;
-                        #[allow(clippy::indexing_slicing)]
+                        #[expect(clippy::indexing_slicing)]
                         // start..end are calculated to be within bounds.
                         for ptr in start..end {
                             let mul = 10_u32.pow((end - ptr - 1) as u32);

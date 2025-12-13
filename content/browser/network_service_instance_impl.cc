@@ -20,7 +20,6 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_functions.h"
@@ -35,6 +34,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/platform_thread_metrics.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
@@ -79,7 +79,9 @@
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/network/public/mojom/socket_broker.mojom.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/background_thread_pool_field_trial.h"
+#else
 #include "content/browser/network_sandbox.h"
 #endif
 
@@ -123,14 +125,6 @@ mojo::Remote<network::mojom::NetworkService>* g_network_service_remote =
     nullptr;
 network::NetworkConnectionTracker* g_network_connection_tracker;
 bool g_network_service_is_responding = false;
-
-// A directory name that is created below the http cache path and passed to the
-// network context when creating a network context with cache enabled.
-// This must be a directory below the main cache path so operations such as
-// resetting the cache via HttpCacheParams.reset_cache can function correctly
-// as they rely on having access to the parent directory of the cache.
-const base::FilePath::CharType kCacheDataDirectoryName[] =
-    FILE_PATH_LITERAL("Cache_Data");
 
 std::unique_ptr<network::NetworkService>& GetLocalNetworkService() {
   static base::SequenceLocalStorageSlot<
@@ -317,12 +311,29 @@ void CreateInProcessNetworkService(
             network::features::kNetworkServiceTaskScheduler)) {
       network::ConfigureSequenceManager(options);
     }
+#if BUILDFLAG(IS_ANDROID)
+    // Local testing shows that when priority inheritance (PI) locks are enabled
+    // on Android, the network service thread is frequently queued behind thread
+    // pool worker threads when contending for a PI lock, regressing startup
+    // time. This is because of the Linux kernel enforcing FIFO ordering on
+    // threads of same priority contending on a PI lock. Increase the network
+    // thread's priority when PI locks are enabled to compensate for the shift
+    // from an unfair to a fair lock.
+    if (base::android::BackgroundThreadPoolFieldTrial::
+            ShouldUsePriorityInheritanceLocks()) {
+      options.thread_type = base::ThreadType::kDisplayCritical;
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
     GetNetworkServiceDedicatedThread().StartWithOptions(std::move(options));
     task_runner = GetNetworkServiceDedicatedThread().task_runner();
     task_runner->PostTask(
         FROM_HERE, base::BindOnce([]() {
           mojo::InterfaceEndpointClient::SetThreadNameSuffixForMetrics(
               "NetworkService");
+#if BUILDFLAG(IS_ANDROID)
+          base::PlatformThreadPriorityMonitor::Get().RegisterCurrentThread(
+              "NetworkService");
+#endif  // BUILDFLAG(IS_ANDROID)
         }));
   } else {
     task_runner = GetIOThreadTaskRunner({});
@@ -418,8 +429,6 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
   }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
-  network_service_params->ip_protection_proxy_bypass_policy =
-      GetContentClient()->browser()->GetIpProtectionProxyBypassPolicy();
   return network_service_params;
 }
 
@@ -547,9 +556,7 @@ base::StrictNumeric<uint64_t> GetNetLogMaximumFileSizeFromCommandLine(
 
 // If this feature is enabled, the Network Service will run on its own thread
 // when running in-process; otherwise it will run on the IO thread.
-BASE_FEATURE(kNetworkServiceDedicatedThread,
-             "NetworkServiceDedicatedThread",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kNetworkServiceDedicatedThread, base::FEATURE_ENABLED_BY_DEFAULT);
 
 uint64_t GetNetLogMaximumFileSizeFromCommandLineForTesting(  // IN-TEST
     const base::CommandLine& command_line) {
@@ -600,7 +607,8 @@ network::mojom::NetworkService* GetNetworkService() {
           CreateInProcessNetworkService(std::move(receiver));
         } else {
           if (service_was_bound)
-            LOG(ERROR) << "Network service crashed, restarting service.";
+            LOG(ERROR) << "Network service crashed or was terminated, "
+                          "restarting service.";
           ServiceProcessHost::Options options;
           options.WithDisplayName(u"Network Service");
           if (g_network_service_crashes_on_next_startup) {
@@ -936,6 +944,14 @@ void CreateNetworkContextInNetworkService(
 
   if (params->http_cache_enabled && params->file_paths &&
       params->file_paths->http_cache_directory) {
+    if (!params->file_paths->no_vary_search_directory.has_value()) {
+      static constexpr base::FilePath::CharType kNoVarySearchDirectoryName[] =
+          FILE_PATH_LITERAL("No_Vary_Search");
+
+      params->file_paths->no_vary_search_directory =
+          params->file_paths->http_cache_directory->path().Append(
+              kNoVarySearchDirectoryName);
+    }
     params->file_paths->http_cache_directory =
         params->file_paths->http_cache_directory->path().Append(
             kCacheDataDirectoryName);

@@ -41,7 +41,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
     async function testInvalidDocumentDoesNotCrash(next) {
       var htmlId = ElementsTestRunner.expandedNodeWithId('html').id;
-      await TestRunner.DOMAgent.setOuterHTML(htmlId, 'foo');
+      await TestRunner.DOMAgent.invoke_setOuterHTML({nodeId: htmlId, outerHTML: 'foo'});
       TestRunner.addResult('PASS: No crash');
       next();
     }

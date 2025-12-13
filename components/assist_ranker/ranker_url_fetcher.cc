@@ -4,6 +4,10 @@
 
 #include "components/assist_ranker/ranker_url_fetcher.h"
 
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/load_flags.h"
@@ -92,11 +96,11 @@ bool RankerURLFetcher::Request(
 }
 
 void RankerURLFetcher::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   std::string data;
   if (response_body) {
     state_ = COMPLETED;
-    data = std::move(*response_body);
+    data = std::move(response_body).value();
   } else {
     state_ = FAILED;
   }

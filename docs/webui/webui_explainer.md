@@ -584,7 +584,8 @@ void DonutsUI::CreatePageHandler(
 ```
 
 You also need to register the PageHandlerFactory to your controller in
-**chrome/browser/chrome_browser_interface_binders_webui.cc**:
+**chrome/browser/chrome_browser_interface_binders_webui.cc**, or the appropriate
+**chrome/browser/chrome_browser_interface_binders_webui_parts_foo.cc**:
 ```c++
 RegisterWebUIControllerInterfaceBinder<donuts::mojom::PageHandlerFactory,
                                        DonutsUI>(map);
@@ -720,7 +721,7 @@ export class BrowserProxyImpl implements BrowserProxy {
   }
 
   static getInstance(): BrowserProxy {
-    return instance || (instance = new BrowserProxy());
+    return instance || (instance = new BrowserProxyImpl());
   }
 
   static setInstance(proxy: BrowserProxy) {

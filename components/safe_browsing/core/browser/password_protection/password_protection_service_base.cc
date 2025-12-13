@@ -183,6 +183,15 @@ void PasswordProtectionServiceBase::RequestFinished(
       request->set_is_modal_warning_showing(true);
       warning_shown = true;
     }
+
+    if (request->trigger_type() ==
+            LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED &&
+        request->HasOtpPhishingVerdictCallback()) {
+      request->TakeOtpPhishingVerdictCallback().Run(
+          response->verdict_type() == LoginReputationClientResponse::PHISHING ||
+          response->verdict_type() ==
+              LoginReputationClientResponse::LOW_REPUTATION);
+    }
   }
 
   ResumeDeferredNavigationsIfNeeded(request);
@@ -336,7 +345,7 @@ PasswordProtectionServiceBase::GetPasswordProtectionReusedPasswordAccountType(
     case PasswordType::OTHER_GAIA_PASSWORD: {
       AccountInfo account_info = GetAccountInfoForUsername(username);
       if (account_info.account_id.empty() ||
-          account_info.hosted_domain.empty()) {
+          !account_info.GetHostedDomain().has_value()) {
         reused_password_account_type.set_account_type(
             ReusedPasswordAccountType::UNKNOWN);
         return reused_password_account_type;

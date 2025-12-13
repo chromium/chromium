@@ -12,23 +12,23 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/test/android/content_test_jni/FencedFrameUtils_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace content {
 
-jint JNI_FencedFrameUtils_GetCount(JNIEnv* env,
-                                   const JavaParamRef<jobject>& jrfh) {
+static jint JNI_FencedFrameUtils_GetCount(JNIEnv* env,
+                                          const JavaRef<jobject>& jrfh) {
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
       content::RenderFrameHost::FromJavaRenderFrameHost(jrfh));
   DCHECK(rfh);
   return rfh->GetFencedFrames().size();
 }
 
-ScopedJavaLocalRef<jobject> JNI_FencedFrameUtils_GetLastFencedFrame(
+static ScopedJavaLocalRef<jobject> JNI_FencedFrameUtils_GetLastFencedFrame(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jrfh,
-    const JavaParamRef<jstring>& jurl) {
+    const JavaRef<jobject>& jrfh,
+    const JavaRef<jstring>& jurl) {
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
       content::RenderFrameHost::FromJavaRenderFrameHost(jrfh));
   DCHECK(rfh);
@@ -47,3 +47,5 @@ ScopedJavaLocalRef<jobject> JNI_FencedFrameUtils_GetLastFencedFrame(
 }
 
 }  // namespace content
+
+DEFINE_JNI(FencedFrameUtils)

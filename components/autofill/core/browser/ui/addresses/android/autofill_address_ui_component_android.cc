@@ -49,4 +49,4 @@ AutofillAddressUiComponentAndroid::FromJavaAutofillAddressUiComponent(
 
 }  // namespace autofill
 
-DEFINE_JNI_FOR_AutofillAddressUiComponent()
+DEFINE_JNI(AutofillAddressUiComponent)

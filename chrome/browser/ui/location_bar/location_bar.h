@@ -18,7 +18,12 @@
 class CommandUpdater;
 class LocationBarModel;
 class LocationBarTesting;
+class OmniboxController;
 class OmniboxView;
+
+namespace bubble_anchor_util {
+struct AnchorConfiguration;
+}
 
 namespace content {
 class WebContents;
@@ -76,18 +81,23 @@ class LocationBar {
 
   virtual OmniboxView* GetOmniboxView() = 0;
 
+  // Returns the OmniboxController owned by this LocationBar.
+  virtual OmniboxController* GetOmniboxController() = 0;
+
   // Returns the WebContents of the currently active tab.
   virtual content::WebContents* GetWebContents() = 0;
 
   virtual LocationBarModel* GetLocationBarModel() = 0;
 
+  // If chip is visible in this LocationBar, return a bubble anchor config that
+  // can be used to anchor to the chip.
+  virtual std::optional<bubble_anchor_util::AnchorConfiguration>
+  GetChipAnchor() = 0;
+
   // Called when anything has changed that might affect the layout or contents
   // of the views around the edit, including the text of the edit and the
   // status of any keyword- or hint-related state.
   virtual void OnChanged() = 0;
-
-  // Called when the omnibox popup is shown or hidden.
-  virtual void OnPopupVisibilityChanged() = 0;
 
   // Called when the edit should update itself without restoring any tab state.
   virtual void UpdateWithoutTabRestore() = 0;

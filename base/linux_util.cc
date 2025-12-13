@@ -194,7 +194,9 @@ pid_t FindThreadIDWithSyscall(pid_t pid,
       continue;
     }
 
-    *syscall_supported = true;
+    if (syscall_supported) {
+      *syscall_supported = true;
+    }
     if (!ReadFromFD(fd.get(), syscall_data)) {
       continue;
     }

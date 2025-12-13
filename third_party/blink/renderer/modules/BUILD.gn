@@ -61,7 +61,6 @@ component("modules") {
     "//third_party/blink/renderer/modules/animationworklet",
     "//third_party/blink/renderer/modules/app_banner",
     "//third_party/blink/renderer/modules/audio_output_devices",
-    "//third_party/blink/renderer/modules/awc",
     "//third_party/blink/renderer/modules/background_fetch",
     "//third_party/blink/renderer/modules/background_sync",
     "//third_party/blink/renderer/modules/badging",
@@ -80,7 +79,6 @@ component("modules") {
     "//third_party/blink/renderer/modules/contacts_picker",
     "//third_party/blink/renderer/modules/content_extraction",
     "//third_party/blink/renderer/modules/content_index",
-    "//third_party/blink/renderer/modules/context_menu",
     "//third_party/blink/renderer/modules/cookie_store",
     "//third_party/blink/renderer/modules/credentialmanagement",
     "//third_party/blink/renderer/modules/crypto",
@@ -101,12 +99,10 @@ component("modules") {
     "//third_party/blink/renderer/modules/file_system_access",
     "//third_party/blink/renderer/modules/font_access",
     "//third_party/blink/renderer/modules/gamepad",
-    "//third_party/blink/renderer/modules/geolocation",
     "//third_party/blink/renderer/modules/handwriting",
     "//third_party/blink/renderer/modules/hid",
     "//third_party/blink/renderer/modules/idle",
     "//third_party/blink/renderer/modules/imagecapture",
-    "//third_party/blink/renderer/modules/cookie_deprecation_label",
     "//third_party/blink/renderer/modules/image_downloader",
     "//third_party/blink/renderer/modules/indexeddb",
     "//third_party/blink/renderer/modules/installation",
@@ -136,7 +132,6 @@ component("modules") {
     "//third_party/blink/renderer/modules/picture_in_picture",
     "//third_party/blink/renderer/modules/plugins",
     "//third_party/blink/renderer/modules/presentation",
-    "//third_party/blink/renderer/modules/private_attribution",
     "//third_party/blink/renderer/modules/push_messaging",
     "//third_party/blink/renderer/modules/quota",
     "//third_party/blink/renderer/modules/remoteplayback",
@@ -167,6 +162,7 @@ component("modules") {
     "//third_party/blink/renderer/modules/websockets",
     "//third_party/blink/renderer/modules/webtransport",
     "//third_party/blink/renderer/modules/webusb",
+    "//third_party/blink/renderer/modules/window_controls_overlay",
     "//third_party/blink/renderer/modules/worklet",
     "//third_party/blink/renderer/modules/xr",
   ]
@@ -183,8 +179,10 @@ component("modules") {
       "//third_party/blink/renderer/modules/direct_sockets",
       "//third_party/blink/renderer/modules/printing",
       "//third_party/blink/renderer/modules/smart_card",
-      "//third_party/blink/renderer/modules/window_controls_overlay",
     ]
+  }
+  if (!is_ios && !target_os_is_android) {
+    sub_modules += [ "//third_party/blink/renderer/modules/awc" ]
   }
 
   if (enable_compute_pressure) {
@@ -197,7 +195,7 @@ component("modules") {
     "//cc",
     "//components/webrtc:thread_wrapper",
     "//gin",
-    "//net:net",
+    "//net",
     "//third_party/blink/renderer/bindings/modules/v8:generated",
     "//third_party/blink/renderer/core",
     "//third_party/icu",
@@ -226,6 +224,8 @@ source_set("modules_testing") {
     "accessibility/testing/internals_accessibility.h",
     "ad_auction/testing/internals_protected_audience.cc",
     "ad_auction/testing/internals_protected_audience.h",
+    "content_extraction/testing/internals_content_extraction.cc",
+    "content_extraction/testing/internals_content_extraction.h",
     "credentialmanagement/testing/internals_fed_cm.cc",
     "credentialmanagement/testing/internals_fed_cm.h",
     "device_posture/testing/internals_device_posture.cc",
@@ -280,7 +280,7 @@ source_set("modules_testing") {
 
   public_deps = [
     "//mojo/public/cpp/bindings",
-    "//testing/gmock:gmock",
+    "//testing/gmock",
   ]
   deps = [
     "//services/device/public/cpp/generic_sensor",
@@ -298,7 +298,6 @@ group("make_modules_generated") {
     ":make_modules_generated_event_names",
     ":make_modules_generated_event_target_names",
     ":make_modules_generated_indexed_db_names",
-    ":make_modules_generated_media_capabilities_names",
     "//components/payments/mojom:mojom_blink_headers",
     "//components/schema_org/common:mojom_blink_headers",
     "//components/services/filesystem/public/mojom:mojom_blink_headers",
@@ -373,12 +372,6 @@ make_names("make_modules_generated_indexed_db_names") {
   deps = []  # Don't use default deps (otherwise it will be circular).
 }
 
-make_names("make_modules_generated_media_capabilities_names") {
-  in_files = [ "media_capabilities/media_capabilities_names.json5" ]
-  output_dir = blink_modules_output_dir
-  deps = []  # Don't use default deps (otherwise it will be circular).
-}
-
 blink_modules_sources("modules_generated") {
   # Targets from above that generate outputs that need to be compiled.
   # All sources declared as outputs from these targets will be compiled
@@ -388,7 +381,6 @@ blink_modules_sources("modules_generated") {
     ":make_modules_generated_event_names",
     ":make_modules_generated_event_target_names",
     ":make_modules_generated_indexed_db_names",
-    ":make_modules_generated_media_capabilities_names",
   ]
 
   sources = []
@@ -408,12 +400,14 @@ source_set("unit_tests") {
     "accessibility/ax_position_test.cc",
     "accessibility/ax_range_test.cc",
     "accessibility/ax_selection_test.cc",
+    "accessibility/testing/accessibility_dom_fuzztest.cc",
     "accessibility/testing/accessibility_selection_test.cc",
     "accessibility/testing/accessibility_selection_test.h",
     "accessibility/testing/accessibility_test.cc",
     "accessibility/testing/accessibility_test.h",
     "ai/ai_utils_test.cc",
     "ai/model_execution_responder_test.cc",
+    "ai/proofreader_test.cc",
     "animationworklet/animation_worklet_global_scope_test.cc",
     "animationworklet/animation_worklet_proxy_client_test.cc",
     "animationworklet/worklet_animation_test.cc",
@@ -433,19 +427,19 @@ source_set("unit_tests") {
     "canvas/canvas2d/canvas_rendering_context_2d_test.cc",
     "canvas/canvas2d/canvas_style_test_utils.cc",
     "canvas/canvas2d/canvas_style_test_utils.h",
-    "canvas/canvas2d/identifiability_study_helper_test.cc",
-    "canvas/canvas_noise_test.cc",
     "canvas/htmlcanvas/html_canvas_element_module_test.cc",
     "canvas/offscreencanvas/offscreen_canvas_rendering_api_ukm_metrics_test.cc",
     "canvas/offscreencanvas/offscreen_canvas_test.cc",
     "canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d_test.cc",
     "content_extraction/ai_page_content_agent_unittest.cc",
+    "content_extraction/frame_metadata_observer_registry_unittest.cc",
     "content_extraction/inner_html_builder_unittest.cc",
     "content_extraction/inner_text_builder_unittest.cc",
     "content_index/content_description_type_converter_test.cc",
     "cookie_store/cookie_store_unittest.cc",
     "credentialmanagement/authentication_credentials_container_test.cc",
     "credentialmanagement/credential_manager_type_converters_unittest.cc",
+    "credentialmanagement/digital_identity_credential_protocol_test.cc",
     "credentialmanagement/digital_identity_credential_test.cc",
     "credentialmanagement/password_credential_test.cc",
     "credentialmanagement/public_key_credential_unittest.cc",
@@ -557,7 +551,6 @@ source_set("unit_tests") {
     "payments/payment_test_helper.h",
     "payments/payments_validators_test.cc",
     "payments/secure_payment_confirmation_helper_test.cc",
-    "peerconnection/byte_buffer_queue_test.cc",
     "peerconnection/media_stream_remote_video_source_test.cc",
     "peerconnection/media_stream_track_metrics_test.cc",
     "peerconnection/media_stream_video_webrtc_sink_test.cc",
@@ -580,9 +573,10 @@ source_set("unit_tests") {
     "peerconnection/rtc_rtp_script_transformer_test.cc",
     "peerconnection/rtc_rtp_sender_impl_test.cc",
     "peerconnection/rtc_rtp_transceiver_impl_test.cc",
-    "peerconnection/rtc_rtp_transport_processor_test.cc",
-    "peerconnection/rtc_rtp_transport_test.cc",
     "peerconnection/rtc_sctp_transport_test.cc",
+    "peerconnection/rtc_transport/rtc_received_packet_test.cc",
+    "peerconnection/rtc_transport/rtc_transport_dependencies_test.cc",
+    "peerconnection/rtc_transport/rtc_transport_test.cc",
     "peerconnection/thermal_resource_test.cc",
     "peerconnection/transceiver_state_surfacer_test.cc",
     "peerconnection/webrtc_audio_renderer_test.cc",
@@ -628,6 +622,7 @@ source_set("unit_tests") {
     "webaudio/convolver_node_test.cc",
     "webaudio/dynamics_compressor_node_test.cc",
     "webaudio/media_stream_audio_destination_handler_test.cc",
+    "webaudio/offline_audio_context_test.cc",
     "webaudio/script_processor_node_test.cc",
     "webaudio/stereo_panner_node_test.cc",
     "webaudio/testing/mock_web_audio_device.h",
@@ -690,12 +685,12 @@ source_set("unit_tests") {
     "//components/ukm:test_support",
     "//media:test_support",
     "//media/capture/mojom:image_capture_blink",
-    "//media/gpu:gpu",
+    "//media/gpu",
     "//media/mojo:buildflags",
     "//media/mojo:test_support",
     "//media/mojo/mojom",
-    "//media/mojo/services:services",
-    "//media/webrtc:webrtc",
+    "//media/mojo/services",
+    "//media/webrtc",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/test_support:test_utils",
     "//net:test_support",
@@ -710,6 +705,7 @@ source_set("unit_tests") {
     "//third_party/blink/public/strings:strings_grit",
     "//third_party/blink/renderer/controller:blink_bindings_test_sources",
     "//third_party/blink/renderer/core",
+    "//third_party/blink/renderer/core:fuzztest_utils",
     "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/core:unit_test_support",
     "//third_party/blink/renderer/core:unit_tests",
@@ -732,10 +728,12 @@ source_set("unit_tests") {
     "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform:test_support",
     "//third_party/blink/renderer/platform/wtf",
+    "//third_party/fuzztest",
     "//third_party/googletest:gmock",
     "//third_party/opus",
     "//third_party/webrtc_overrides:logging_test",
     "//third_party/webrtc_overrides:webrtc_component",
+    "//ui/accessibility",
     "//ui/strings:ax_strings_grit",
     "//v8",
   ]
@@ -965,7 +963,7 @@ fuzzer_test("webcodecs_audio_encoder_fuzzer") {
 
   deps = [
     ":modules",
-    "//media/mojo/services:services",
+    "//media/mojo/services",
     "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/modules/webcodecs:fuzzer_protos",
     "//third_party/blink/renderer/platform:blink_fuzzer_test_support",

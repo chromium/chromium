@@ -39,11 +39,11 @@ bool IsCanonicalHost(std::string_view host, bool is_file_scheme) {
   StdStringCanonOutput canon_host_output(&canon_host);
   CanonHostInfo host_info;
   if (is_file_scheme) {
-    CanonicalizeFileHostVerbose(host.data(), raw_host_component,
-                                canon_host_output, host_info);
+    CanonicalizeFileHostVerbose(host, raw_host_component, canon_host_output,
+                                host_info);
   } else {
-    CanonicalizeSpecialHostVerbose(host.data(), raw_host_component,
-                                   canon_host_output, host_info);
+    CanonicalizeSpecialHostVerbose(host, raw_host_component, canon_host_output,
+                                   host_info);
   }
 
   if (host_info.out_host.is_nonempty() &&
@@ -180,8 +180,8 @@ SchemeHostPort::SchemeHostPort(const GURL& url) {
   if (!url.is_valid())
     return;
 
-  std::string_view scheme = url.scheme_piece();
-  std::string_view host = url.host_piece();
+  std::string_view scheme = url.scheme();
+  std::string_view host = url.host();
 
   // A valid GURL never returns PORT_INVALID.
   int port = url.EffectiveIntPort();

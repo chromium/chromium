@@ -35,6 +35,7 @@
 #include "third_party/perfetto/protos/perfetto/trace/profiling/profile_common.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/profiling/profile_packet.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_thread_descriptor.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/process_descriptor.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/thread_descriptor.pbzero.h"
 
@@ -87,6 +88,10 @@ uintptr_t executable_start_addr() {
 
 // Pointer to the main thread instance, if any.
 TracingSamplerProfiler* g_main_thread_instance = nullptr;
+
+// A random UUID for the track used to emit streaming profile packets, to avoid
+// collisions with other tracks.
+constexpr uint64_t kStreamingProfileTrackUuid = 0x6A7E8A54C18B7778ul;
 
 class TracingSamplerProfilerManager {
  public:
@@ -279,6 +284,8 @@ perfetto::StaticString UnwinderTypeToString(
 
 }  // namespace
 
+TracingSamplerProfiler::DataSource::DataSource() = default;
+
 TracingSamplerProfiler::DataSource::~DataSource() = default;
 
 void TracingSamplerProfiler::DataSource::OnSetup(const SetupArgs& args) {
@@ -361,17 +368,26 @@ void TracingSamplerProfiler::TracingProfileBuilder::WriteSampleToTrace(
     // Note: Make sure ThreadDescriptors we emit here won't cause
     // metadata events to be emitted from the JSON exporter which conflict
     // with the metadata events emitted by the regular TrackEventDataSource.
-    auto* thread_descriptor = trace_packet->set_thread_descriptor();
-    thread_descriptor->set_pid(
-        base::trace_event::TraceLog::GetInstance()->process_id());
-    // We allow thread ids to be truncated to int32 here, since this is
-    // only an id for logging, and there is a low risk of collisions of the
-    // truncated int64 value.
-    thread_descriptor->set_tid(
-        sampled_thread_id_.truncate_to_int32_for_display_only());
+    auto thread_track =
+        perfetto::ThreadTrack::ForThread(sampled_thread_id_.raw());
+    perfetto::Track profile_track(kStreamingProfileTrackUuid, thread_track);
+    auto* track_descriptor = trace_packet->set_track_descriptor();
+    track_descriptor->set_uuid(profile_track.uuid);
+    auto* thread_descriptor = track_descriptor->set_thread();
+    thread_descriptor->set_pid(thread_track.pid);
+    thread_descriptor->set_tid(thread_track.tid);
+
     last_timestamp_ = sample_timestamp;
     thread_descriptor->set_reference_timestamp_us(
         last_timestamp_.since_origin().InMicroseconds());
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
+    if (base::GetCurrentProcId() !=
+        base::trace_event::TraceLog::GetInstance()->process_id()) {
+      auto* chrome_thread = track_descriptor->set_chrome_thread();
+      chrome_thread->set_is_sandboxed_tid(true);
+    }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
 
     TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"),
                         UnwinderTypeToString(unwinder_type_));

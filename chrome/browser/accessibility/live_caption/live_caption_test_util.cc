@@ -27,8 +27,7 @@ namespace {
 // Chrome feature flags that gate Live Caption.
 std::vector<base::test::FeatureRef> RequiredFeatureFlags() {
   std::vector<base::test::FeatureRef> features = {
-      media::kLiveTranslate, media::kFeatureManagementLiveTranslateCrOS,
-      media::kLiveCaptionAutomaticLanguageDownload};
+      media::kLiveTranslate, media::kFeatureManagementLiveTranslateCrOS};
 #if BUILDFLAG(IS_CHROMEOS)
   features.push_back(ash::features::kOnDeviceSpeechRecognition);
 #endif

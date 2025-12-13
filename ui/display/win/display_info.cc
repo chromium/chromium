@@ -4,9 +4,6 @@
 
 #include "ui/display/win/display_info.h"
 
-#include <string.h>
-
-#include "base/compiler_specific.h"
 #include "base/hash/hash.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -15,22 +12,11 @@
 
 namespace display::win::internal {
 
-namespace {
-
-// Return a string view from a fixed-length array representing a string, up
-// until the first nul terminator, if any.
-template <size_t N>
-std::wstring_view FixedArrayToStringView(
-    const std::wstring_view::value_type (&str)[N]) {
-  return std::wstring_view(str, UNSAFE_TODO(::wcsnlen(str, N)));
-}
-
-}  // namespace
-
 DisplayInfo::DisplayInfo(
     std::optional<HMONITOR> hmonitor,
     const MONITORINFOEX& monitor_info,
     float device_scale_factor,
+    int color_depth,
     float sdr_white_level,
     Display::Rotation rotation,
     float display_frequency,
@@ -41,6 +27,7 @@ DisplayInfo::DisplayInfo(
       screen_rect_(monitor_info.rcMonitor),
       screen_work_rect_(monitor_info.rcWork),
       device_scale_factor_(device_scale_factor),
+      color_depth_(color_depth),
       sdr_white_level_(sdr_white_level),
       rotation_(rotation),
       display_frequency_(display_frequency),
@@ -54,6 +41,7 @@ DisplayInfo::DisplayInfo(
     int64_t id,
     const MONITORINFOEX& monitor_info,
     float device_scale_factor,
+    int color_depth,
     float sdr_white_level,
     Display::Rotation rotation,
     float display_frequency,
@@ -64,6 +52,7 @@ DisplayInfo::DisplayInfo(
       screen_rect_(monitor_info.rcMonitor),
       screen_work_rect_(monitor_info.rcWork),
       device_scale_factor_(device_scale_factor),
+      color_depth_(color_depth),
       sdr_white_level_(sdr_white_level),
       rotation_(rotation),
       display_frequency_(display_frequency),

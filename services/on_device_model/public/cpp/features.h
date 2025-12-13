@@ -22,6 +22,10 @@ BASE_DECLARE_FEATURE(kOnDeviceModelForceCpuBackend);
 COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
 BASE_DECLARE_FEATURE(kOnDeviceModelCpuBackend);
 
+// Whether the on-device model should use the LiteRT-LM backend.
+COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
+BASE_DECLARE_FEATURE(kOnDeviceModelLitertLmBackend);
+
 }  // namespace on_device_model::features
 
 #endif  // SERVICES_ON_DEVICE_MODEL_PUBLIC_CPP_FEATURES_H_

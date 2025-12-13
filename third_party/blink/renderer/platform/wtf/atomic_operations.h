@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_ATOMIC_OPERATIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_ATOMIC_OPERATIONS_H_
 
@@ -19,7 +14,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 // TOOD(omerkatz): Replace these casts with std::atomic_ref (C++20) once it
 // becomes available.
@@ -60,18 +55,19 @@ ALWAYS_INLINE void AtomicReadMemcpyAligned(void* to, const void* from) {
 
   if constexpr (bytes % kAlignment == 0 && bytes >= kAlignment &&
                 bytes <= 3 * kAlignment) {
-    *reinterpret_cast<AlignmentType*>(to) =
-        AsAtomicPtr(reinterpret_cast<const AlignmentType*>(from))
-            ->load(std::memory_order_relaxed);
+    AlignmentType* aligned_to = reinterpret_cast<AlignmentType*>(to);
+    const AlignmentType* aligned_from =
+        reinterpret_cast<const AlignmentType*>(from);
+    *aligned_to = AsAtomicPtr(aligned_from)->load(std::memory_order_relaxed);
     if constexpr (bytes >= 2 * kAlignment) {
-      *(reinterpret_cast<AlignmentType*>(to) + 1) =
-          AsAtomicPtr(reinterpret_cast<const AlignmentType*>(from) + 1)
-              ->load(std::memory_order_relaxed);
+      UNSAFE_TODO(
+          *(aligned_to + 1) =
+              AsAtomicPtr(aligned_from + 1)->load(std::memory_order_relaxed));
     }
     if constexpr (bytes == 3 * kAlignment) {
-      *(reinterpret_cast<AlignmentType*>(to) + 2) =
-          AsAtomicPtr(reinterpret_cast<const AlignmentType*>(from) + 2)
-              ->load(std::memory_order_relaxed);
+      UNSAFE_TODO(
+          *(aligned_to + 2) =
+              AsAtomicPtr(aligned_from + 2)->load(std::memory_order_relaxed));
     }
   } else {
     AtomicReadMemcpy(to, from, bytes);
@@ -120,18 +116,17 @@ ALWAYS_INLINE void AtomicWriteMemcpyAligned(void* to, const void* from) {
 
   if constexpr (bytes % kAlignment == 0 && bytes >= kAlignment &&
                 bytes <= 3 * kAlignment) {
-    AsAtomicPtr(reinterpret_cast<AlignmentType*>(to))
-        ->store(*reinterpret_cast<const AlignmentType*>(from),
-                std::memory_order_relaxed);
+    AlignmentType* aligned_to = reinterpret_cast<AlignmentType*>(to);
+    const AlignmentType* aligned_from =
+        reinterpret_cast<const AlignmentType*>(from);
+    AsAtomicPtr(aligned_to)->store(*aligned_from, std::memory_order_relaxed);
     if constexpr (bytes >= 2 * kAlignment) {
-      AsAtomicPtr(reinterpret_cast<AlignmentType*>(to) + 1)
-          ->store(*(reinterpret_cast<const AlignmentType*>(from) + 1),
-                  std::memory_order_relaxed);
+      UNSAFE_TODO(AsAtomicPtr(aligned_to + 1)
+                      ->store(*(aligned_from + 1), std::memory_order_relaxed));
     }
     if constexpr (bytes == 3 * kAlignment) {
-      AsAtomicPtr(reinterpret_cast<AlignmentType*>(to) + 2)
-          ->store(*(reinterpret_cast<const AlignmentType*>(from) + 2),
-                  std::memory_order_relaxed);
+      UNSAFE_TODO(AsAtomicPtr(aligned_to + 2)
+                      ->store(*(aligned_from + 2), std::memory_order_relaxed));
     }
   } else {
     AtomicWriteMemcpy(to, from, bytes);
@@ -176,14 +171,14 @@ ALWAYS_INLINE void AtomicMemzeroAligned(void* buf) {
 
   if constexpr (bytes % kAlignment == 0 && bytes >= kAlignment &&
                 bytes <= 3 * kAlignment) {
-    AsAtomicPtr(reinterpret_cast<AlignmentType*>(buf))
-        ->store(0, std::memory_order_relaxed);
+    AlignmentType* aligned_buf = reinterpret_cast<AlignmentType*>(buf);
+    AsAtomicPtr(aligned_buf)->store(0, std::memory_order_relaxed);
     if constexpr (bytes >= 2 * kAlignment) {
-      AsAtomicPtr(reinterpret_cast<AlignmentType*>(buf) + 1)
+      AsAtomicPtr(UNSAFE_TODO(aligned_buf + 1))
           ->store(0, std::memory_order_relaxed);
     }
     if constexpr (bytes == 3 * kAlignment) {
-      AsAtomicPtr(reinterpret_cast<AlignmentType*>(buf) + 2)
+      AsAtomicPtr(UNSAFE_TODO(aligned_buf + 2))
           ->store(0, std::memory_order_relaxed);
     }
   } else {
@@ -213,14 +208,6 @@ ALWAYS_INLINE void AtomicWriteSwap(T& lhs, T& rhs) {
   AsAtomicPtr(&lhs)->store(tmp_val, std::memory_order_relaxed);
 }
 
-}  // namespace WTF
-
-namespace blink {
-using WTF::AsAtomicPtr;
-using WTF::AtomicMemzero;
-using WTF::AtomicReadMemcpy;
-using WTF::AtomicWriteMemcpy;
-using WTF::AtomicWriteSwap;
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_ATOMIC_OPERATIONS_H_

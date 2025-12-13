@@ -7,19 +7,21 @@
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 15",
           "--version",
-          "17.5",
+          "18.2",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "16c5032a",
+          "17a400",
           "--xctest"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "base_unittests iPhone 14 17.5",
+        "module_name": "//base:base_unittests",
+        "module_scheme": "gtest",
+        "name": "base_unittests iPhone 15 18.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -33,16 +35,16 @@
             }
           ],
           "dimensions": {
-            "cpu": "x86-64",
+            "cpu": "arm64",
             "os": "Mac-15"
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_18_2",
+              "path": "Runtime-ios-18.2"
             },
             {
-              "name": "xcode_ios_16c5032a",
+              "name": "xcode_ios_17a400",
               "path": "Xcode.app"
             }
           ],
@@ -50,24 +52,26 @@
         },
         "test": "base_unittests",
         "test_id_prefix": "ninja://base:base_unittests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPhone 15 18.2"
       },
       {
         "args": [
           "--platform",
-          "iPhone 14",
+          "iPhone 15",
           "--version",
-          "17.5",
+          "18.2",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "16c5032a",
+          "17a400",
           "--xctest"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "highway_tests iPhone 14 17.5",
+        "module_name": "//third_party/highway:highway_tests",
+        "module_scheme": "gtest",
+        "name": "highway_tests iPhone 15 18.2",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -81,16 +85,16 @@
             }
           ],
           "dimensions": {
-            "cpu": "x86-64",
+            "cpu": "arm64",
             "os": "Mac-15"
           },
           "named_caches": [
             {
-              "name": "runtime_ios_17_5",
-              "path": "Runtime-ios-17.5"
+              "name": "runtime_ios_18_2",
+              "path": "Runtime-ios-18.2"
             },
             {
-              "name": "xcode_ios_16c5032a",
+              "name": "xcode_ios_17a400",
               "path": "Xcode.app"
             }
           ],
@@ -98,7 +102,7 @@
         },
         "test": "highway_tests",
         "test_id_prefix": "ninja://third_party/highway:highway_tests/",
-        "variant_id": "iPhone 14 17.5"
+        "variant_id": "iPhone 15 18.2"
       }
     ]
   }

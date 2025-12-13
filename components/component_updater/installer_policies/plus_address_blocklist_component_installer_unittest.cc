@@ -12,9 +12,9 @@
 #include "base/test/task_environment.h"
 #include "base/version.h"
 #include "components/component_updater/mock_component_updater_service.h"
-#include "components/plus_addresses/blocked_facets.pb.h"
-#include "components/plus_addresses/features.h"
-#include "components/plus_addresses/plus_address_blocklist_data.h"
+#include "components/plus_addresses/core/browser/blocked_facets.pb.h"
+#include "components/plus_addresses/core/browser/plus_address_blocklist_data.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 

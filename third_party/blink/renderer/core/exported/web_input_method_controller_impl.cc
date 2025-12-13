@@ -158,11 +158,9 @@ bool WebInputMethodControllerImpl::CommitText(
   GetFrame()->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kInput);
 
   if (!replacement_range.IsNull()) {
-    return GetInputMethodController().ReplaceTextAndMoveCaret(
-        text,
-        PlainTextRange(replacement_range.StartOffset(),
-                       replacement_range.EndOffset()),
-        InputMethodController::MoveCaretBehavior::kDoNotMove);
+    return GetInputMethodController().ReplaceTextAndKeepSelection(
+        text, PlainTextRange(replacement_range.StartOffset(),
+                             replacement_range.EndOffset()));
   }
 
   return GetInputMethodController().CommitText(

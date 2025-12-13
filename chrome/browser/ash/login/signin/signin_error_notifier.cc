@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
@@ -209,7 +210,17 @@ SigninErrorNotifier::SigninErrorNotifier(SigninErrorController* controller,
 void SigninErrorNotifier::OnTokenHandleCheck(const AccountId& account_id,
                                              const std::string& token,
                                              bool reauth_required) {
-  token_handle_fetcher_->DiagnoseTokenHandleMapping(account_id, token);
+  if (ash::features::IsUseTokenHandleStoreEnabled()) {
+    account_manager::AccountManager* account_manager =
+        g_browser_process->platform_part()
+            ->GetAccountManagerFactory()
+            ->GetAccountManager(profile_->GetPath().value());
+
+    token_handle_store_->DiagnoseTokenHandleMapping(
+        profile_->GetPrefs(), account_manager, account_id, token);
+  } else {
+    token_handle_fetcher_->DiagnoseTokenHandleMapping(account_id, token);
+  }
   if (!reauth_required) {
     return;
   }

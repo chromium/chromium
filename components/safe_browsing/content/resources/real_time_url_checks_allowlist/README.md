@@ -37,15 +37,8 @@ allowlist.
           (SafeBrowsing.BrowserThrottle.IsCheckCompletedOnProcessResponse)
         * Time to contentful paint
           (PageLoad.PaintTiming.NavigationToFirstContentfulPaint)
-* **Push** the new version of the component to GCS to roll it out to users.
-    * In a synced checkout, run the following to generate the proto and push it to GCS. Run this
-      from the `/chromium/src/` directory. Replace the arg with your build directory:
-        * % `components/safe_browsing/content/resources/real_time_url_checks_allowlist/push_real_time_url_allowlist_proto.py -d out-gn/Android`
-    * It will ask you to double check its actions before proceeding.  It will fail if you're not
-      a member of `chrome-counter-abuse-core@google.com`, since that's required for access to
-      the GCS bucket.
-    * The Component Updater system will notice those files and gradually push them to users
-      over a 3 day period. If not, contact the Omaha support team.
+* **Push** the new version of the component through Component Updater
+    * See http://go/safe-browsing-real-time-allowlist-push (internal only)
 
 ## Procedure for rollback
 While Omaha allows rollback through the release manager, the Chrome client will

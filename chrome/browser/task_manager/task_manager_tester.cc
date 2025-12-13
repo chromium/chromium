@@ -7,6 +7,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/byte_count.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"
@@ -128,47 +129,33 @@ void TaskManagerTester::ToggleColumnVisibility(ColumnSpecifier column) {
 
 int64_t TaskManagerTester::GetColumnValue(ColumnSpecifier column, size_t row) {
   TaskId task_id = model_->tasks_[row];
-  int64_t value = 0;
-  int64_t ignored = 0;
-  bool success = false;
-
   switch (column) {
     case ColumnSpecifier::COLUMN_NONE:
-      break;
+      return 0;
     case ColumnSpecifier::MEMORY_FOOTPRINT:
-      value = task_manager()->GetMemoryFootprintUsage(task_id);
-      success = true;
-      break;
+      return task_manager()->GetMemoryFootprintUsage(task_id).InBytes();
     case ColumnSpecifier::PROCESS_ID:
-      value = static_cast<int64_t>(task_manager()->GetProcessId(task_id));
-      success = true;
-      break;
+      return task_manager()->GetProcessId(task_id);
     case ColumnSpecifier::V8_MEMORY:
-      success = task_manager()->GetV8Memory(task_id, &value, &ignored);
-      break;
-    case ColumnSpecifier::V8_MEMORY_USED:
-      success = task_manager()->GetV8Memory(task_id, &ignored, &value);
-      break;
+    case ColumnSpecifier::V8_MEMORY_USED: {
+      base::ByteCount allocated;
+      base::ByteCount used;
+      bool success = task_manager()->GetV8Memory(task_id, &allocated, &used);
+      if (!success) {
+        return 0;
+      }
+      return column == ColumnSpecifier::V8_MEMORY ? allocated.InBytes()
+                                                  : used.InBytes();
+    }
     case ColumnSpecifier::SQLITE_MEMORY_USED:
-      value = task_manager()->GetSqliteMemoryUsed(task_id);
-      success = true;
-      break;
+      return task_manager()->GetSqliteMemoryUsed(task_id).InBytes();
     case ColumnSpecifier::IDLE_WAKEUPS:
-      value = task_manager()->GetIdleWakeupsPerSecond(task_id);
-      success = true;
-      break;
+      return task_manager()->GetIdleWakeupsPerSecond(task_id);
     case ColumnSpecifier::NETWORK_USE:
-      value = task_manager()->GetNetworkUsage(task_id);
-      success = true;
-      break;
+      return task_manager()->GetNetworkUsage(task_id).InBytes();
     case ColumnSpecifier::TOTAL_NETWORK_USE:
-      value = task_manager()->GetCumulativeNetworkUsage(task_id);
-      success = true;
-      break;
+      return task_manager()->GetCumulativeNetworkUsage(task_id).InBytes();
   }
-  if (!success)
-    return 0;
-  return value;
 }
 
 SessionID TaskManagerTester::GetTabId(size_t row) {

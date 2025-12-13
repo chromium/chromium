@@ -1,14 +1,125 @@
-# Copyright 2018 The Chromium Authors
+# Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
-import("//components/contextual_search/features.gni")
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
 
-# This file is in a separate target so all targets in the build can refer to the
-# buildflag header to get the necessary preprocessor defines without bringing in
-# any of the other targets in this component.
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags = [ "BUILD_CONTEXTUAL_SEARCH=$build_contextual_search" ]
+if (is_android) {
+  java_cpp_enum("java_enum_srcjar") {
+    visibility = [ ":*" ]
+    sources = [ "contextual_search_types.h" ]
+  }
+
+  android_library("components_contextual_search_java") {
+    srcjar_deps = [ ":java_enum_srcjar" ]
+
+    # Important: the generated enum uses the @IntDef annotation provided by
+    # this dependency.
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
+}
+
+# Public interface target - contains the public types and abstract service API.
+source_set("public") {
+  sources = [
+    "contextual_search_context_controller.h",
+    "contextual_search_metrics_recorder.h",
+    "contextual_search_service.h",
+    "contextual_search_session_handle.h",
+    "contextual_search_types.cc",
+    "contextual_search_types.h",
+  ]
+
+  deps = [
+    "//components/keyed_service/core",
+    "//components/lens/proto/server:proto",
+    "//components/search_engines",
+    "//components/sessions",
+    "//components/signin/public/identity_manager",
+    "//components/variations",
+    "//components/version_info:channel",
+    "//mojo/public/mojom/base",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/lens",
+    "//third_party/lens_server_proto:lens_overlay_proto",
+  ]
+}
+
+# Public implementation target - contains the service implementation.
+source_set("impl") {
+  sources = [
+    "contextual_search_metrics_recorder.cc",
+    "contextual_search_service.cc",
+    "contextual_search_session_entry.cc",
+    "contextual_search_session_entry.h",
+    "contextual_search_session_handle.cc",
+  ]
+
+  deps = [
+    ":prefs",
+    ":public",
+    "//components/contextual_search/internal",
+    "//components/lens",
+    "//components/lens/proto/server:proto",
+    "//components/search_engines",
+    "//components/signin/public/identity_manager",
+    "//components/variations",
+    "//components/version_info:channel",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_variations_client.cc",
+    "fake_variations_client.h",
+    "mock_contextual_search_context_controller.cc",
+    "mock_contextual_search_context_controller.h",
+    "mock_contextual_search_session_handle.cc",
+    "mock_contextual_search_session_handle.h",
+  ]
+  public_deps = [ "//components/variations:variations_mojom" ]
+  deps = [
+    ":public",
+    "//components/lens/proto/server:proto",
+    "//components/variations",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "contextual_search_metrics_recorder_unittest.cc",
+    "contextual_search_service_unittest.cc",
+    "contextual_search_session_entry_unittest.cc",
+  ]
+  deps = [
+    ":impl",
+    ":public",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/lens",
+    "//components/lens/proto/server:proto",
+    "//components/search_engines:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/variations",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("prefs") {
+  sources = [ "pref_names.h" ]
 }

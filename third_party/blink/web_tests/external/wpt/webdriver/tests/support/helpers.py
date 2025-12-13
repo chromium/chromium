@@ -12,9 +12,12 @@ from tests.support.sync import Poll
 
 
 def ignore_exceptions(f):
-    def inner(*args, **kwargs):
+    def inner(session, *args, **kwargs):
+        # Do not try to clean up already ended session.
+        if session.session_id is None:
+            return
         try:
-            return f(*args, **kwargs)
+            return f(session, *args, **kwargs)
         except webdriver.error.WebDriverException as e:
             print("Ignored exception %s" % e, file=sys.stderr)
     inner.__name__ = f.__name__
@@ -80,10 +83,6 @@ def cleanup_session(session):
 
         session.window_handle = current_window
 
-    # Do not try to clean up already ended session.
-    if session.session_id is None:
-        return
-
     _restore_timeouts(session)
     _ensure_valid_window(session)
     _dismiss_user_prompts(session)
@@ -98,7 +97,7 @@ def _switch_to_top_level_browsing_context(session):
     `<frame>` or an `<iframe>`, switch it back to the top-level
     browsing context.
     """
-    session.switch_frame(None)
+    session.switch_to_frame(None)
 
 
 def _windows(session, exclude=None):
@@ -111,9 +110,6 @@ def _windows(session, exclude=None):
     return set(wins)
 
 
-def clear_all_cookies(session):
-    """Removes all cookies associated with the current active document"""
-    session.transport.send("DELETE", "session/%s/cookie" % session.session_id)
 
 
 def deep_update(source, overrides):

@@ -40,13 +40,44 @@ enum class HMRConsentStatus : int {
   kUnset = 3,
 };
 
+COMPONENT_EXPORT(MAGIC_BOOST)
+std::ostream& operator<<(std::ostream& os, HMRConsentStatus status);
+
 // A class that holds MagicBoost related prefs and states.
+//
+// ## Magic Boost prefs model
+//
+// The table below shows the behavior of the HMR feature based on its three
+// main preference values. Other features should follow the same logic.
+//
+// Note that this model is different from Quick Answers prefs model. Refer
+// `quick_answers_state.h` for its prefs model. QuickAnswersState is a class to
+// abstract these differences for Quick Answers code base.
+//
+// | magic_boost_enabled | hmr_enabled    | consent_status     | HMR Behavior |
+// |:--------------------|:---------------|:-------------------|:-------------|
+// | false               | false          | kUnset             | Disabled     |
+// | false               | false          | kPendingDisclaimer | Disabled     |
+// | false               | false          | kApproved          | Disabled     |
+// | false               | false          | kDeclined          | Disabled     |
+// | false               | true           | kUnset             | Disabled     |
+// | false               | true           | kPendingDisclaimer | Disabled     |
+// | false               | true           | kApproved          | Disabled     |
+// | false               | true           | kDeclined          | Disabled     |
+// | true                | false          | kUnset             | Disabled     |
+// | true                | false          | kPendingDisclaimer | Disabled     |
+// | true                | false          | kApproved          | Disabled     |
+// | true                | false          | kDeclined          | Disabled     |
+// | true (default)      | true (default) | kUnset (default)   | Show consent |
+// | true                | true           | kPendingDisclaimer | Show consent |
+// | true                | true           | kApproved          | Show HMR     |
+// | true                | true           | kDeclined          | Disabled     |
 class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
  public:
   // A checked observer which receives MagicBoost state changes.
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnMagicBoostAvailableUpdated(bool available) {}
+    virtual void OnUserEligibleForGenAIFeaturesUpdated(bool eligible) {}
     virtual void OnMagicBoostEnabledUpdated(bool enabled) {}
     virtual void OnHMREnabledUpdated(bool enabled) {}
     virtual void OnHMRConsentStatusUpdated(HMRConsentStatus status) {}
@@ -61,6 +92,9 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   enum class Error {
     kUninitialized,
   };
+
+  // Checks preconditions of HMR and crashes if they are not met.
+  static void AssertPreconditionsOfHelpMeReadOrCrash();
 
   static MagicBoostState* Get();
 
@@ -111,12 +145,12 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   // is approved or pending).
   bool ShouldShowHmrCard();
 
-  // `IsMagicBoostAvailable` tries reading availability value again if it's not
-  // set yet. See crbug.com/429501088 for details.
-  bool IsMagicBoostAvailable();
+  // `IsUserEligibleForGenAIFeature` tries reading eligibility value again if
+  // it's not set yet. See crbug.com/429501088 for details.
+  bool IsUserEligibleForGenAIFeatures();
 
-  base::expected<bool, Error> magic_boost_available() const {
-    return magic_boost_available_;
+  base::expected<bool, Error> is_user_eligible_for_genai_features() const {
+    return is_user_eligible_for_genai_features_;
   }
 
   base::expected<bool, Error> magic_boost_enabled() const {
@@ -134,23 +168,23 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   }
 
  protected:
-  void UpdateMagicBoostAvailable(bool available);
+  void UpdateUserEligibleForGenAIFeatures(bool eligible);
   void UpdateMagicBoostEnabled(bool enabled);
   void UpdateHMREnabled(bool enabled);
   void UpdateHMRConsentStatus(HMRConsentStatus status);
   void UpdateHMRConsentWindowDismissCount(int32_t count);
 
-  // Returns availability of Magic Boost. Returns `Error::kUninitialized` if a
-  // dependent service is not initialized yet.
+  // Returns eligibility of gen-AI features. Returns `Error::kUninitialized` if
+  // a dependent service is not initialized yet.
   virtual base::expected<bool, chromeos::MagicBoostState::Error>
-  IsMagicBoostAvailableExpected() const = 0;
+  IsUserEligibleForGenAIFeaturesExpected() const = 0;
 
  private:
   void NotifyOnIsDeleting();
 
   // Use `base::expected` instead of `std::optional` to avoid implicit bool
   // conversion: https://abseil.io/tips/141.
-  base::expected<bool, Error> magic_boost_available_ =
+  base::expected<bool, Error> is_user_eligible_for_genai_features_ =
       base::unexpected(Error::kUninitialized);
   base::expected<bool, Error> magic_boost_enabled_ =
       base::unexpected(Error::kUninitialized);

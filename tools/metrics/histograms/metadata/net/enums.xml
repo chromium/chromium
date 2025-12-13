@@ -224,36 +224,33 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//services/network/public/mojom/device_bound_sessions.mojom:DeviceBoundSessionDeletionReason) -->
 
-<!-- LINT.IfChange(DeviceBoundSessionError) -->
+<!-- LINT.IfChange(DeviceBoundSessionProactiveRefreshAttempt) -->
 
-<enum name="DeviceBoundSessionError">
-  <int value="0" label="Success"/>
-  <int value="1" label="Key error"/>
-  <int value="2" label="Signing error"/>
-  <int value="3" label="Network error"/>
-  <int value="4" label="HTTP error"/>
-  <int value="5" label="Server requested termination"/>
-  <int value="6" label="Invalid configuration JSON"/>
-  <int value="7" label="Invalid session ID"/>
-  <int value="8" label="Invalid credentials"/>
-  <int value="9" label="Invalid challenge"/>
-  <int value="10" label="Too many challenges"/>
-  <int value="11" label="Invalid fetcher URL"/>
-  <int value="12" label="Invalid refresh URL"/>
-  <int value="13" label="Transient HTTP error"/>
-  <int value="14" label="Persistent HTTP error"/>
-  <int value="15" label="Same-site mismatch scope origin"/>
-  <int value="16" label="Same-site mismatch refresh URL"/>
-  <int value="17" label="Invalid scope origin"/>
-  <int value="18" label="Mismatched session id"/>
-  <int value="19" label="Invalid refresh initiators"/>
-  <int value="20" label="Invalid scope rule"/>
-  <int value="21" label="Missing scope"/>
-  <int value="22" label="No credentials"/>
-  <int value="23" label="Invalid include_site in scope"/>
+<enum name="DeviceBoundSessionProactiveRefreshAttempt">
+  <int value="0" label="Existing deferring refresh"/>
+  <int value="1" label="Existing proactive refresh"/>
+  <int value="2" label="Session key not restored"/>
+  <int value="3" label="Attempted"/>
+  <int value="4" label="Previous failed proactive refresh"/>
+  <int value="5" label="Signing quota exceeded"/>
+  <int value="6" label="Session in backoff"/>
 </enum>
 
-<!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->
+<!-- LINT.ThenChange(//net/device_bound_sessions/session_service_impl.h:ProactiveRefreshAttempt) -->
+
+<!-- LINT.IfChange(DeviceBoundSessionRefreshResult) -->
+
+<enum name="DeviceBoundSessionRefreshResult">
+  <int value="0" label="Refreshed"/>
+  <int value="1" label="Service initialized"/>
+  <int value="2" label="Endpoint unreachable"/>
+  <int value="3" label="Endpoint transient error"/>
+  <int value="4" label="Refresh quota exceeded"/>
+  <int value="5" label="Fatal error"/>
+  <int value="6" label="Signing exceeded"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/device_bound_sessions/refresh_result.h:DeviceBoundSessionRefreshResult) -->
 
 <!-- LINT.IfChange(DeviceBoundSessionUsage) -->
 
@@ -291,29 +288,6 @@ chromium-metrics-reviews@google.com.
   <int value="3"
       label="Would be task-fatal transaction error but finch param disabled"/>
   <int value="4" label="Task-fatal transaction error"/>
-</enum>
-
-<enum name="DNS.TaskTypeMetadataAvailability">
-  <int value="0" label="SYSTEM, no metadata"/>
-  <int value="1" label="SYSTEM, with metadata"/>
-  <int value="2" label="DNS, no metadata"/>
-  <int value="3" label="DNS, with metadata"/>
-  <int value="4" label="SECURE_DNS, no metadata"/>
-  <int value="5" label="SECURE_DNS, with metadata"/>
-  <int value="6" label="MDNS, no metadata"/>
-  <int value="7" label="MDNS, with metadata"/>
-  <int value="8" label="CACHE_LOOKUP, no metadata"/>
-  <int value="9" label="CACHE_LOOKUP, with metadata"/>
-  <int value="10" label="INSECURE_CACHE_LOOKUP, no metadata"/>
-  <int value="11" label="INSECURE_CACHE_LOOKUP, with metadata"/>
-  <int value="12" label="SECURE_CACHE_LOOKUP, no metadata"/>
-  <int value="13" label="SECURE_CACHE_LOOKUP, with metadata"/>
-  <int value="14" label="CONFIG_PRESET, no metadata"/>
-  <int value="15" label="CONFIG_PRESET, with metadata"/>
-  <int value="16" label="NAT64, no metadata"/>
-  <int value="17" label="NAT64, with metadata"/>
-  <int value="18" label="HOSTS, no metadata"/>
-  <int value="19" label="HOSTS, with metadata"/>
 </enum>
 
 <enum name="DNS.UdpLowEntropyReason">
@@ -367,6 +341,14 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="ReadPrimaryDnsSuffixPathFailed"/>
   <int value="10" label="GetNameServersFailed"/>
   <int value="11" label="NoNameServerFound"/>
+</enum>
+
+<enum name="DnsConfigLocalNameserverState">
+  <int value="0" label="DNS Config without local nameservers"/>
+  <int value="1" label="DNS Config with loopback local nameservers"/>
+  <int value="2" label="DNS Config with non-loopback local nameservers"/>
+  <int value="3"
+      label="DNS Config with local nameservers (including loopback)"/>
 </enum>
 
 <enum name="DohServerAutoupgradeStatus">
@@ -489,6 +471,62 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="SpdyProxy Secure Server (Invalid)"/>
 </enum>
 
+<!-- LINT.IfChange(HttpCacheEntryRejectionStatus) -->
+
+<enum name="HttpCacheEntryRejectionStatus">
+  <int value="0" label="Rejection"/>
+  <int value="1" label="No Rejection Usable"/>
+  <int value="2" label="No Rejection Partial"/>
+  <int value="3" label="No Rejection Non-Read-Write-Mode"/>
+  <int value="4" label="No Rejection Skip Cache Validation"/>
+  <int value="5" label="No Rejection Load Only From Cache"/>
+  <int value="6" label="No Rejection Hint disabled"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/http_cache_transaction.h:HttpCacheEntryRejectionStatus) -->
+
+<!-- LINT.IfChange(HttpCacheNotCoveredReason) -->
+
+<enum name="HttpCacheNotCoveredReason">
+  <int value="0" label="No Reason">Should not happen.</int>
+  <int value="1" label="Reading Auth Response">
+    Stopped caching to read the response body of an auth response.
+  </int>
+  <int value="2" label="Network Error">
+    A network error happened in the headers phase.
+  </int>
+  <int value="3" label="Partial Response Validation">
+    A partial response could not be validated, and it was not due to auth.
+  </int>
+  <int value="4" label="Delete Full Entry">
+    We have a full entry, but the server sent a range response that should
+    replace it.
+  </int>
+  <int value="5" label="Partial Request">Partial requests are hard to log.</int>
+  <int value="6" label="Range Header Found">
+    Original request had a Range header.
+  </int>
+  <int value="7" label="Truncated Entry">The cache entry was truncated.</int>
+  <int value="8" label="Partial Validation">
+    Validating a partial entry, and they are hard to log.
+  </int>
+  <int value="9" label="Pre Conditionalized">
+    The request was externally conditionalized and didn't match our existing
+    cache entry.
+  </int>
+  <int value="10" label="Validate Partial">
+    Attempt to validate a partial response failed.
+  </int>
+  <int value="11" label="Ignore Range Request">
+    Range-related failure led to calling IgnoreRangeRequest().
+  </int>
+  <int value="12" label="Blocked By Ip Space">
+    Cached IP address space blocked by Private Network Access policy.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/http_cache_transaction.h:OtherStatusReason) -->
+
 <enum name="HttpCachePattern">
   <int value="0" label="Undefined"/>
   <int value="1" label="Not Covered"/>
@@ -541,6 +579,28 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(HttpsNotAttemptedReason) -->
+
+<enum name="HttpsNotAttemptedReason">
+  <int value="0" label="Unknown">The reason is unknown.</int>
+  <int value="1" label="QueryingHttpsDisabled">Querying HTTPS is disabled.</int>
+  <int value="2" label="BuiltInResolverDisabled">
+    Built-in DNS resolver is disabled.
+  </int>
+  <int value="3" label="NoDnsClient">No DnsClient.</int>
+  <int value="4" label="FallbackFromInsecureTransactionPreferred">
+    DnsTask wasn't scheduled because it hadn't been working for a while.
+  </int>
+  <int value="5" label="InsecureDnsTaskDisabled">
+    Insecure DnsTask was not allowed to query HTTPS.
+  </int>
+  <int value="6" label="FallbackToSystemTaskAfterDnsTask">
+    DnsTask was executed but fell back to the system task.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//net/dns/host_resolver_manager_job.h:HttpsNotAttemptedReason) -->
+
 <enum name="HttpssvcDnsRcode">
   <summary>
     Tracks the result of querying for an INTEGRITY or HTTPSSVC record. This enum
@@ -585,14 +645,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="3G"/>
 </enum>
 
-<enum name="IpProtectionJobResult">
-  <int value="0" label="IP Protection was not attempted"/>
-  <int value="1"
-      label="The request was IP Protected and carried via IP Protection
-             proxies or, if the direct-only parameter is true, made directly"/>
-  <int value="2" label="The request was IP Protected, but fell back to direct"/>
-</enum>
-
 <enum name="JobProtocolErrorLocation">
   <int value="0" label="kSessionStartReadingFailedAsync"/>
   <int value="1" label="kSessionStartReadingFailedSync"/>
@@ -627,6 +679,26 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Pending refresh validation"/>
   <int value="2" label="Waiting for refresh validation"/>
 </enum>
+
+<!-- LINT.IfChange(NeedsObserverCheckReason) -->
+
+<enum name="NeedsObserverCheckReason">
+  <int value="0" label="NotNeeded">The case where it returns false.</int>
+  <int value="1" label="NoEnabledClientHints">
+    No enabled client hints were provided.
+  </int>
+  <int value="2" label="MainFrameOriginMismatch">
+    The origin of the request does not match the main frame origin.
+  </int>
+  <int value="3" label="SubframeFeatureDisabled">
+    The optimization for subframes is disabled.
+  </int>
+  <int value="4" label="HintNotEnabled">
+    One or more hints in the Accept-CH frame are not in the enabled hints list.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/accept_ch_frame_interceptor.h:NeedsObserverCheckReason) -->
 
 <enum name="NegotiatedHttpDatagramVersion">
   <int value="0" label="Not supported"/>
@@ -2481,6 +2553,20 @@ Called by update_net_trust_anchors.py.-->
   <int value="204" label="QUIC_TOO_MANY_CONNECTION_ID_WAITING_TO_RETIRE"/>
   <int value="205" label="QUIC_HTTP_RECEIVE_SERVER_PUSH"/>
   <int value="206" label="QUIC_INVALID_CHARACTER_IN_FIELD_VALUE"/>
+  <int value="207" label="QUIC_HTTP_INVALID_SETTING_VALUE"/>
+  <int value="208" label="QUIC_TLS_UNEXPECTED_KEYING_MATERIAL_EXPORT_LABEL"/>
+  <int value="209" label="QUIC_TLS_KEYING_MATERIAL_EXPORTS_MISMATCH"/>
+  <int value="210" label="QUIC_TLS_KEYING_MATERIAL_EXPORT_NOT_AVAILABLE"/>
+  <int value="211" label="QUIC_UNEXPECTED_DATA_BEFORE_ENCRYPTION_ESTABLISHED"/>
+  <int value="212" label="QUIC_PACKET_WRONG_VERSION"/>
+  <int value="213" label="QUIC_SERVER_UNHEALTHY"/>
+  <int value="214" label="QUIC_HANDSHAKE_FAILED_PACKETS_BUFFERED_TOO_LONG"/>
+  <int value="215" label="QUIC_CLIENT_LOST_NETWORK_ACCESS"/>
+  <int value="216" label="QUIC_HANDSHAKE_FAILED_INVALID_HOSTNAME"/>
+  <int value="217" label="QUIC_HANDSHAKE_FAILED_REJECTING_ALL_CONNECTIONS"/>
+  <int value="218" label="QUIC_HANDSHAKE_FAILED_INVALID_CONNECTION"/>
+  <int value="219" label="QUIC_HANDSHAKE_FAILED_SYNTHETIC_CONNECTION_CLOSE"/>
+  <int value="220" label="QUIC_HANDSHAKE_FAILED_CID_COLLISION"/>
 </enum>
 
 <enum name="QuicFindMatchingIpSessionResult">
@@ -2750,7 +2836,34 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Automatic, by enterprise policy"/>
   <int value="6" label="Secure, by user choice"/>
   <int value="7" label="Secure, by enterprise policy"/>
+  <int value="8" label="Automatic with DoH fallback, by user choice"/>
+  <int value="9" label="Automatic with DoH fallback, by enterprise policy"/>
 </enum>
+
+<!-- LINT.IfChange(SharedDictionaryStorageEvictionReason) -->
+
+<enum name="SharedDictionaryStorageEvictionReason">
+  <int value="0" label="Not Evicted"/>
+  <int value="1" label="Memory Pressure Moderate"/>
+  <int value="2" label="Memory Pressure Critical"/>
+  <int value="3" label="Cache Full"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/shared_dictionary/shared_dictionary_manager.h:SharedDictionaryStorageEvictionReason) -->
+
+<!-- LINT.IfChange(SharedDictionaryStorageResult) -->
+
+<enum name="SharedDictionaryStorageResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Create Entry Failed"/>
+  <int value="2" label="Write Data Failed"/>
+  <int value="3" label="Size Exceeds Limit"/>
+  <int value="4" label="Size Zero"/>
+  <int value="5" label="Aborted"/>
+  <int value="6" label="Database Write Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/shared_dictionary/shared_dictionary_storage_result.h:SharedDictionaryStorageResult) -->
 
 <enum name="SharedDictionaryStoreError">
   <int value="0" label="Ok"/>
@@ -2765,6 +2878,16 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="TooBigDictionary"/>
 </enum>
 
+<!-- LINT.IfChange(SharedDictionaryTransactionOutcome) -->
+
+<enum name="SharedDictionaryTransactionOutcome">
+  <int value="0" label="Dictionary Used (Brotli)"/>
+  <int value="1" label="Dictionary Used (Zstandard)"/>
+  <int value="2" label="Dictionary Not Used"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/shared_dictionary/shared_dictionary_transaction_outcome.h:SharedDictionaryTransactionOutcome) -->
+
 <enum name="SkipCompletionPortOnSuccessOutcome">
   <int value="0"
       label="Not all available transport protocols return Installable File
@@ -2772,6 +2895,20 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="SetFileCompletionNotificationModes failed"/>
   <int value="2" label="Succeeded"/>
 </enum>
+
+<!-- LINT.IfChange(SocketPoolAdditionalCapacityError) -->
+
+<enum name="SocketPoolAdditionalCapacityError">
+  <int value="0" label="InvalidBase"/>
+  <int value="1" label="InvalidCapacity"/>
+  <int value="2" label="InvalidMinimum"/>
+  <int value="3" label="InvalidNoise"/>
+  <int value="4" label="InvalidSocketSoftCap"/>
+  <int value="5" label="InvalidSocketInUse"/>
+  <int value="6" label="InvalidSocketAllocation"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/socket/socket_pool_additional_capacity.cc:SocketPoolAdditionalCapacityError) -->
 
 <enum name="SpdyFrameFlowControlState">
   <int value="0" label="Send not stalled"/>
@@ -2878,6 +3015,35 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="imported from socket"/>
 </enum>
 
+<!-- LINT.IfChange(SqlDiskCacheFakeIndexFileError) -->
+
+<enum name="SqlDiskCacheFakeIndexFileError">
+  <int value="0" label="OkNew"/>
+  <int value="1" label="OkExisting"/>
+  <int value="2" label="CreateFileFailed"/>
+  <int value="3" label="WriteFileFailed"/>
+  <int value="4" label="WrongFileSize"/>
+  <int value="5" label="OpenFileFailed"/>
+  <int value="6" label="ReadFileFailed"/>
+  <int value="7" label="WrongMagicNumber"/>
+  <int value="8" label="FailedToCreateDirectory"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/disk_cache/sql/sql_backend_impl.h:FakeIndexFileError) -->
+
+<!-- LINT.IfChange(SqlDiskCacheIndexMismatchLocation) -->
+
+<enum name="SqlDiskCacheIndexMismatchLocation">
+  <int value="0" label="OpenOrCreateEntry"/>
+  <int value="1" label="CreateEntry"/>
+  <int value="2" label="DoomEntry"/>
+  <int value="3" label="StartEviction"/>
+  <int value="4" label="DeleteLiveEntry"/>
+  <int value="5" label="DeleteLiveEntriesBetween"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/disk_cache/sql/sql_persistent_store_backend_shard.cc:IndexMismatchLocation) -->
+
 <!-- LINT.IfChange(SqlDiskCacheStoreError) -->
 
 <enum name="SqlDiskCacheStoreError">
@@ -2897,6 +3063,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="13" label="NotFound"/>
   <int value="14" label="InvalidArgument"/>
   <int value="15" label="BodyEndMismatch"/>
+  <int value="16" label="FailedForTesting"/>
+  <int value="17" label="Aborted"/>
+  <int value="18" label="NotInitialized"/>
+  <int value="19" label="CheckSumError"/>
+  <int value="20" label="DatabaseClosed"/>
+  <int value="21" label="AbortedDueToBrowserActivity"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/disk_cache/sql/sql_persistent_store.h:SqlDiskCacheStoreError) -->
@@ -2988,39 +3160,32 @@ Called by update_net_trust_anchors.py.-->
 
 <enum name="SSLTrustAnchorIDsResult">
   <summary>
-    The result of a TLS connection that advertised Trust Anchor IDs in DNS
+    Whether a TLS connection relied on the trust anchor ID retry.
   </summary>
-  <int value="0" label="The connection succeeded on the initial connection"/>
+  <int value="0"
+      label="There was a DNS hint, and the connection succeeded on the
+             initial connection"/>
   <int value="1"
-      label="The connection failed on the initial connection, and the client
-             didn't retry"/>
+      label="There was a DNS hint, and the connection failed on the initial
+             connection, without retrying"/>
   <int value="2"
-      label="The connection succeeded after retrying with fresh Trust Anchor
-             IDs"/>
+      label="There was a DNS hint, and the connection succeeded after
+             retrying with fresh Trust Anchor IDs"/>
   <int value="3"
-      label="The connection failed after retrying with fresh Trust Anchor IDs"/>
-</enum>
-
-<enum name="StorageAccessNetRequestKind">
-  <int value="0" label="Same-origin request with storage access override"/>
-  <int value="1"
-      label="Deprecated: Cross-origin, same-site request with storage access
-             override"/>
-  <int value="2" label="Cross-site request with storage access override"/>
-  <int value="3"
-      label="Cross-origin, same-site request with storage access override
-             with credentials mode == 'include'"/>
+      label="There was a DNS hint, and the connection failed after retrying
+             with fresh Trust Anchor IDs"/>
   <int value="4"
-      label="Cross-origin, same-site request with storage access override
-             with credentials mode != 'include'"/>
-</enum>
-
-<enum name="StorageAccessRedirectKind">
-  <int value="0" label="No Storage Access override"/>
-  <int value="1" label="Same-origin redirect with storage access override"/>
-  <int value="2"
-      label="Cross-origin, same-site redirect with storage access override"/>
-  <int value="3" label="Cross-site redirect with storage access override"/>
+      label="There was no DNS hint, and the connection succeeded on the
+             initial connection"/>
+  <int value="5"
+      label="There was no DNS hint, and the connection failed on the initial
+             connection, without retrying"/>
+  <int value="6"
+      label="There was no DNS hint, and the connection succeeded after
+             retrying with fresh Trust Anchor IDs"/>
+  <int value="7"
+      label="There was no DNS hint, and the connection failed after retrying
+             with fresh Trust Anchor IDs"/>
 </enum>
 
 <!-- LINT.IfChange(StreamSocketCloseReason) -->
@@ -3080,6 +3245,17 @@ Called by update_net_trust_anchors.py.-->
 
 <!-- LINT.ThenChange(//services/network/public/mojom/trust_tokens.mojom:TrustTokenOperationStatus) -->
 
+<!-- LINT.IfChange(TrustTokenProtocolVersion) -->
+
+<enum name="TrustTokenProtocolVersion">
+  <int value="0" label="TrustTokenV3Pmb"/>
+  <int value="1" label="TrustTokenV3Voprf"/>
+  <int value="2" label="PrivateStateTokenV1Pmb"/>
+  <int value="3" label="PrivateStateTokenV1Voprf"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/public/mojom/trust_tokens.mojom:TrustTokenProtocolVersion) -->
+
 <enum name="TrustTokenRequestHelperFactoryOutcome">
   <int value="0" label="Successfully created an issuance helper"/>
   <int value="1" label="Successfully created a redemption helper"/>
@@ -3092,6 +3268,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="Rejected by authorizer (check cookie settings?)"/>
 </enum>
 
+<!-- LINT.IfChange(UnexportableKeyServiceResult) -->
+
 <enum name="UnexportableKeyServiceResult">
   <int value="0" label="Success"/>
   <int value="1" label="Crypto API failed"/>
@@ -3100,7 +3278,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="No key provider"/>
   <int value="5" label="Algorithm not supported"/>
   <int value="6" label="Key not ready"/>
+  <int value="7" label="Verify signature failed"/>
+  <int value="8" label="Operation not supported"/>
 </enum>
+
+<!-- LINT.ThenChange(
+    /components/unexportable_keys/mojom/unexportable_key_service.mojom:ServiceError,
+    /components/unexportable_keys/service_error.h:ServiceError
+) -->
 
 <enum name="UnsolicitedHttpsRecordStatus">
   <int value="0" label="Malformed"/>
@@ -3845,7 +4030,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="10" label="EmptyProxyList"/>
 </enum>
 
-<!-- LINT.ThenChange(//services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom:WinHttpStatus) -->
+<!-- LINT.ThenChange(//services/proxy_resolver/public/mojom/proxy_resolver.mojom:WinHttpStatus) -->
 
 <enum name="ZeroRttState">
   <int value="0" label="Attempted and succeeded"/>

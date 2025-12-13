@@ -33,7 +33,6 @@
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/range/range.h"
@@ -58,6 +57,7 @@ class RenderTextTestApi;
 class Canvas;
 struct DecoratedText;
 class Font;
+class PointF;
 
 namespace internal {
 
@@ -1028,6 +1028,8 @@ class COMPONENT_EXPORT(GFX) RenderText {
   internal::StyleArray styles_;
   BreakList<bool> elidings_;
 
+  // Layout breaklists. These are used for eliding, and should not be manually
+  // cleared.
   mutable BreakList<SkColor> layout_colors_;
   mutable BreakList<BaselineStyle> layout_baselines_;
   mutable BreakList<int> layout_font_size_overrides_;

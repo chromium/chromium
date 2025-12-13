@@ -514,8 +514,8 @@ class AppWindow : public content::WebContentsDelegate,
   void SendOnWindowShownIfShown();
 
   // web_modal::WebContentsModalDialogManagerDelegate implementation.
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
-      override;
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
 
   // Starts custom app icon download. To avoid race condition with loading app
   // itself it is started in case `app_icon_url_` is set and app window is

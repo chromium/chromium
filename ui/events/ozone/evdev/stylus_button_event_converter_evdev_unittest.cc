@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/ozone/evdev/stylus_button_event_converter_evdev.h"
 
 #include <errno.h>
@@ -19,6 +14,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
@@ -77,9 +74,9 @@ class MockStylusButtonEventConverterEvdev
 
   ~MockStylusButtonEventConverterEvdev() override {}
 
-  void ConfigureReadMock(struct input_event* queue,
-                         long read_this_many,
-                         long queue_index);
+  void ConfigureReadMock(base::span<struct input_event> queue,
+                         size_t read_this_many,
+                         size_t queue_index);
 
   // Actually dispatch the event reader code.
   void ReadNow() {
@@ -117,10 +114,12 @@ MockStylusButtonEventConverterEvdev::MockStylusButtonEventConverterEvdev(
 }
 
 void MockStylusButtonEventConverterEvdev::ConfigureReadMock(
-    struct input_event* queue,
-    long read_this_many,
-    long queue_index) {
-  int nwrite = HANDLE_EINTR(write(write_pipe_, queue + queue_index,
+    base::span<struct input_event> queue,
+    size_t read_this_many,
+    size_t queue_index) {
+  CHECK_GE(queue.size(), queue_index + read_this_many);
+  int nwrite = HANDLE_EINTR(write(write_pipe_,
+                                  queue.subspan(queue_index).data(),
                                   sizeof(struct input_event) * read_this_many));
   DPCHECK(nwrite ==
           static_cast<int>(sizeof(struct input_event) * read_this_many))

@@ -77,8 +77,7 @@ class DisarmedFeature : public LinkToTextJavaScriptFeature {
 
 class LinkToTextJavaScriptFeatureTest : public PlatformTest {
  public:
-  LinkToTextJavaScriptFeatureTest()
-      : feature_list_(shared_highlighting::kSharedHighlightingAmp) {}
+  LinkToTextJavaScriptFeatureTest() {}
 
   void SetUp() override {
     web_state_.SetTitle(u"Main Frame Title");
@@ -142,45 +141,7 @@ class LinkToTextJavaScriptFeatureTest : public PlatformTest {
 
 TEST_F(LinkToTextJavaScriptFeatureTest, ShouldAttemptIframeGeneration) {
   {
-    base::test::ScopedFeatureList feature_on(
-        shared_highlighting::kSharedHighlightingAmp);
-
-    EXPECT_TRUE(LinkToTextJavaScriptFeature::ShouldAttemptIframeGeneration(
-        shared_highlighting::LinkGenerationError::kIncorrectSelector,
-        GURL("https://www.google.com/amp/")));
-
-    // Only kIncorrectSelector should trigger iframe generation. If we found a
-    // selection in the main frame, then there won't be one in iframes, so it's
-    // pointless to retry in other error cases.
-    EXPECT_FALSE(LinkToTextJavaScriptFeature::ShouldAttemptIframeGeneration(
-        {}, GURL("https://www.google.com/amp/")));
-    EXPECT_FALSE(LinkToTextJavaScriptFeature::ShouldAttemptIframeGeneration(
-        shared_highlighting::LinkGenerationError::kContextExhausted,
-        GURL("https://www.google.com/amp/")));
-    EXPECT_FALSE(LinkToTextJavaScriptFeature::ShouldAttemptIframeGeneration(
-        shared_highlighting::LinkGenerationError::kEmptySelection,
-        GURL("https://www.google.com/amp/")));
-    EXPECT_FALSE(LinkToTextJavaScriptFeature::ShouldAttemptIframeGeneration(
-        shared_highlighting::LinkGenerationError::kUnknown,
-        GURL("https://www.google.com/amp/")));
-    EXPECT_FALSE(LinkToTextJavaScriptFeature::ShouldAttemptIframeGeneration(
-        shared_highlighting::LinkGenerationError::kTimeout,
-        GURL("https://www.google.com/amp/")));
-
-    // Iframe generation is limited to certain domains and paths.
-    EXPECT_FALSE(LinkToTextJavaScriptFeature::ShouldAttemptIframeGeneration(
-        shared_highlighting::LinkGenerationError::kIncorrectSelector,
-        GURL("https://www.google.com")));
-    EXPECT_FALSE(LinkToTextJavaScriptFeature::ShouldAttemptIframeGeneration(
-        shared_highlighting::LinkGenerationError::kIncorrectSelector,
-        GURL("https://www.example.com/amp/")));
-  }
-  {
-    base::test::ScopedFeatureList feature_off;
-    feature_off.InitAndDisableFeature(
-        shared_highlighting::kSharedHighlightingAmp);
-
-    // Retest that the true condition above is false when the feature is off.
+    // Test that ifram generation is false.
     EXPECT_FALSE(LinkToTextJavaScriptFeature::ShouldAttemptIframeGeneration(
         shared_highlighting::LinkGenerationError::kIncorrectSelector,
         GURL("https://www.google.com/amp/")));
@@ -232,19 +193,6 @@ TEST_F(LinkToTextJavaScriptFeatureTest, FailInMainFramePreemptsIframes) {
   EXPECT_FALSE(feature_.WasJsInvokedInFrame(child_frame_raw));
 }
 
-TEST_F(LinkToTextJavaScriptFeatureTest, GenerateInIframe) {
-  base::Value noselect = GetNoSelectionValue();
-  AddMainFrame(GURL("https://www.google.com/amp/"), &noselect);
-
-  auto child_frame = web::FakeWebFrame::CreateChildWebFrame(
-      GURL("https://www.ampproject.org"));
-  base::Value success = GetSuccessValue();
-  feature_.SetResponse(child_frame.get(), &success);
-  manager()->AddWebFrame(std::move(child_frame));
-
-  InvokeGenerationAndExpectSuccess();
-}
-
 TEST_F(LinkToTextJavaScriptFeatureTest, NoIframeGenerationOnUnknownDomain) {
   base::Value noselect = GetNoSelectionValue();
   AddMainFrame(GURL("https://www.example.com"), &noselect);
@@ -260,131 +208,4 @@ TEST_F(LinkToTextJavaScriptFeatureTest, NoIframeGenerationOnUnknownDomain) {
       shared_highlighting::LinkGenerationError::kIncorrectSelector);
 
   EXPECT_FALSE(feature_.WasJsInvokedInFrame(child_frame_raw));
-}
-
-TEST_F(LinkToTextJavaScriptFeatureTest, OnlyGenerateOnIframesFromKnownCache) {
-  base::Value noselect = GetNoSelectionValue();
-  AddMainFrame(GURL("https://www.google.com/amp/"), &noselect);
-
-  auto child_frame_good = web::FakeWebFrame::CreateChildWebFrame(
-      GURL("https://www.ampproject.org"));
-  base::Value success = GetSuccessValue();
-  feature_.SetResponse(child_frame_good.get(), &success);
-  manager()->AddWebFrame(std::move(child_frame_good));
-
-  auto child_frame_bad = web::FakeWebFrame::Create(
-      web::kChildFakeFrameId2, /* is_main_frame */ false,
-      GURL("https://www.example.com"));
-  auto* child_frame_bad_raw = child_frame_bad.get();
-  base::Value failure = GetFailureValue();
-  feature_.SetResponse(child_frame_bad.get(), &failure);
-  manager()->AddWebFrame(std::move(child_frame_bad));
-
-  InvokeGenerationAndExpectSuccess();
-
-  EXPECT_FALSE(feature_.WasJsInvokedInFrame(child_frame_bad_raw));
-}
-
-// If we execute on two iframes, a frame with a success should take precedence
-// over one with an error.
-TEST_F(LinkToTextJavaScriptFeatureTest, SuccessOnIframePreemptsError) {
-  base::Value noselect = GetNoSelectionValue();
-  AddMainFrame(GURL("https://www.google.com/amp/"), &noselect);
-
-  auto child_frame_error = web::FakeWebFrame::Create(
-      web::kChildFakeFrameId2, /* is_main_frame */ false,
-      GURL("https://www.ampproject.org"));
-  auto* child_frame_error_raw = child_frame_error.get();
-  base::Value failure = GetFailureValue();
-  feature_.SetResponse(child_frame_error.get(), &failure);
-  manager()->AddWebFrame(std::move(child_frame_error));
-
-  auto child_frame_success = web::FakeWebFrame::CreateChildWebFrame(
-      GURL("https://www.ampproject.org"));
-  auto* child_frame_success_raw = child_frame_success.get();
-  base::Value success = GetSuccessValue();
-  feature_.SetResponse(child_frame_success.get(), &success);
-  manager()->AddWebFrame(std::move(child_frame_success));
-
-  InvokeGenerationAndExpectSuccess();
-
-  EXPECT_TRUE(feature_.WasJsInvokedInFrame(child_frame_error_raw));
-  EXPECT_TRUE(feature_.WasJsInvokedInFrame(child_frame_success_raw));
-}
-
-// If we execute on two iframes, a frame with a success should take precedence
-// over one with no selection.
-TEST_F(LinkToTextJavaScriptFeatureTest, SuccessOnIframePreemptsNoSelect) {
-  base::Value noselect = GetNoSelectionValue();
-  AddMainFrame(GURL("https://www.google.com/amp/"), &noselect);
-
-  auto child_frame_noselect = web::FakeWebFrame::Create(
-      web::kChildFakeFrameId2, /* is_main_frame */ false,
-      GURL("https://www.ampproject.org"));
-  auto* child_frame_noselect_raw = child_frame_noselect.get();
-  feature_.SetResponse(child_frame_noselect.get(), &noselect);
-  manager()->AddWebFrame(std::move(child_frame_noselect));
-
-  auto child_frame_success = web::FakeWebFrame::CreateChildWebFrame(
-      GURL("https://www.ampproject.org"));
-  auto* child_frame_success_raw = child_frame_success.get();
-  base::Value success = GetSuccessValue();
-  feature_.SetResponse(child_frame_success.get(), &success);
-  manager()->AddWebFrame(std::move(child_frame_success));
-
-  InvokeGenerationAndExpectSuccess();
-
-  EXPECT_TRUE(feature_.WasJsInvokedInFrame(child_frame_noselect_raw));
-  EXPECT_TRUE(feature_.WasJsInvokedInFrame(child_frame_success_raw));
-}
-
-// If we execute on two iframes, a frame with an error (other than no selection)
-// should take precedence over one with no selection.
-TEST_F(LinkToTextJavaScriptFeatureTest, ErrorOnIframePreemptsNoSelect) {
-  base::Value noselect = GetNoSelectionValue();
-  AddMainFrame(GURL("https://www.google.com/amp/"), &noselect);
-
-  auto child_frame_noselect = web::FakeWebFrame::Create(
-      web::kChildFakeFrameId2, /* is_main_frame */ false,
-      GURL("https://www.ampproject.org"));
-  auto* child_frame_noselect_raw = child_frame_noselect.get();
-  feature_.SetResponse(child_frame_noselect.get(), &noselect);
-  manager()->AddWebFrame(std::move(child_frame_noselect));
-
-  auto child_frame_error = web::FakeWebFrame::CreateChildWebFrame(
-      GURL("https://www.ampproject.org"));
-  auto* child_frame_error_raw = child_frame_error.get();
-  base::Value error = GetFailureValue();
-  feature_.SetResponse(child_frame_error.get(), &error);
-  manager()->AddWebFrame(std::move(child_frame_error));
-
-  InvokeGenerationAndExpectError(
-      shared_highlighting::LinkGenerationError::kUnknown);
-
-  EXPECT_TRUE(feature_.WasJsInvokedInFrame(child_frame_noselect_raw));
-  EXPECT_TRUE(feature_.WasJsInvokedInFrame(child_frame_error_raw));
-}
-
-TEST_F(LinkToTextJavaScriptFeatureTest, TwoFramesWithNoSelection) {
-  base::Value noselect = GetNoSelectionValue();
-  AddMainFrame(GURL("https://www.google.com/amp/"), &noselect);
-
-  auto child_frame_noselect = web::FakeWebFrame::CreateChildWebFrame(
-      GURL("https://www.ampproject.org"));
-  auto* child_frame_noselect_raw = child_frame_noselect.get();
-  feature_.SetResponse(child_frame_noselect.get(), &noselect);
-  manager()->AddWebFrame(std::move(child_frame_noselect));
-
-  auto child_frame_noselect2 = web::FakeWebFrame::Create(
-      web::kChildFakeFrameId2, /* is_main_frame */ false,
-      GURL("https://www.ampproject.org"));
-  auto* child_frame_noselect2_raw = child_frame_noselect2.get();
-  feature_.SetResponse(child_frame_noselect2.get(), &noselect);
-  manager()->AddWebFrame(std::move(child_frame_noselect2));
-
-  InvokeGenerationAndExpectError(
-      shared_highlighting::LinkGenerationError::kIncorrectSelector);
-
-  EXPECT_TRUE(feature_.WasJsInvokedInFrame(child_frame_noselect_raw));
-  EXPECT_TRUE(feature_.WasJsInvokedInFrame(child_frame_noselect2_raw));
 }

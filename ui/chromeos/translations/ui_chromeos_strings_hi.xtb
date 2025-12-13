@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">शैली</translation>
 <translation id="1254593899333212300">प्रत्यक्ष इंटरनेट कनेक्‍शन</translation>
 <translation id="1272293450992660632">पिन के मान मेल नहीं खाते.</translation>
+<translation id="1279040297980392566">स्कैन होने की प्रोसेस पूरी होने तक इंतज़ार करें. इसके बाद, फिर से कोशिश करें</translation>
 <translation id="1280820357415527819">मोबाइल नेटवर्क खोजे जा रहे हैं</translation>
 <translation id="1293556467332435079">फ़ाइल</translation>
 <translation id="1297922636971898492">Google डिस्क इस समय उपलब्ध नहीं है. Google डिस्क के वापस आ जाने पर अपलोडिंग अपने आप फिर से प्रारंभ हो जाएगी.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">1 फ़ाइल चुनी गई</translation>
 <translation id="3817579325494460411">नहीं दिया गया</translation>
 <translation id="3819448694985509187">आपने गलत पिन डाला है. आप 1 बार और कोशिश कर सकते हैं.</translation>
-<translation id="3822559385185038546">यह प्रॉक्सी आपके व्‍यवस्‍थापक ने लागू किया है</translation>
 <translation id="3830674330436234648">कोई प्लेबैक उपलब्ध नहीं है</translation>
 <translation id="383652340667548381">सर्बियाई</translation>
 <translation id="3839045880592694915">मोबाइल और इंटरनेट सेवा देने वाली कंपनी, आपके मॉडम को कनेक्ट करने की अनुमति नहीं दे रही है. ज़्यादा जानकारी के लिए, मोबाइल और इंटरनेट सेवा देने वाली कंपनी से संपर्क करें.</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">ज़्यादा विकल्प</translation>
 <translation id="5602622065581044566">फ़ोनेटिक कीबोर्ड के साथ बुल्गेरियन</translation>
 <translation id="5605830556594064952">यूएस ड्वोरक</translation>
+<translation id="560739212255190568">आपके एडमिन ने प्रॉक्सी ओवरराइड के नियम सेट किए हैं. साथ ही, इस प्रॉक्सी को लागू किया है</translation>
 <translation id="5618330573454123917">यह फ़ाइल, Mac OS वाले कंप्यूटर के लिए बनाई गई है. यह ChromeOS वाले आपके डिवाइस के साथ काम नहीं करती. ChromeOS पर फ़ाइलें खोलने के बारे में <ph name="BEGIN_LINK_HELP" />ज़्यादा जानें<ph name="END_LINK_HELP" />.</translation>
 <translation id="5625294776298156701">Tamil99 कीबोर्ड के साथ तमिल</translation>
 <translation id="5633226425545095130">इस आइटम को कहीं और ट्रांसफ़र करने से, यह उन सभी लोगों के साथ शेयर हो जाएगा जो इस शेयर किए जाने वाले फ़ोल्डर '<ph name="DESTINATION_NAME" />' को देख सकते हैं.</translation>
@@ -787,7 +788,7 @@
 <translation id="7075931588889865715">टीआईएस 820-2531 कीबोर्ड के साथ थाई</translation>
 <translation id="708278670402572152">स्कैन करना चालू करने के लिए डिसकनेक्ट करें</translation>
 <translation id="7086590977277044826">इनस्क्रिप्ट कीबोर्ड के साथ तमिल</translation>
-<translation id="7088615885725309056">इससे पुराने</translation>
+<translation id="7088615885725309056">पुराना</translation>
 <translation id="7103992300314999525">मेसिडोनियन</translation>
 <translation id="7104338189998813914">आपके OneDrive खाते को ऐक्सेस करने में कोई समस्या हुई</translation>
 <translation id="7106346894903675391">ज़्यादा स्टोरेज खरीदें...</translation>
@@ -993,6 +994,7 @@
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, जानकारी</translation>
 <translation id="8545476925160229291">अंग्रेज़ी (यूएस)</translation>
 <translation id="854655314928502177">वेब प्रॉक्सी अपने आप खोज संबंधी URL:</translation>
+<translation id="8547747809824590510">आपके एडमिन ने प्रॉक्सी ओवरराइड के नियम सेट किए हैं</translation>
 <translation id="8549186985808798022">इटैलियन</translation>
 <translation id="8551494947769799688">लातवियाई</translation>
 <translation id="8560515948038859357">कैंटोनीज़</translation>
@@ -1053,6 +1055,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" नाम की फ़ाइल पहले से मौजूद है. कृपया कोई दूसरा नाम चुनें.</translation>
 <translation id="9046895021617826162">कनेक्ट करना विफल</translation>
 <translation id="9065512565307033593">अगर आप पुष्टि नहीं कर पाते, तो आपके नेटवर्क का ऐक्सेस बंद कर दिया जाएगा.</translation>
+<translation id="9079844694307518094">आपके एडमिन ने इस प्रॉक्सी को लागू किया है</translation>
 <translation id="908378762078012445">फ़ोनेटिक AATSEEL कीबोर्ड के साथ रशियन</translation>
 <translation id="9086302186042011942">समन्वयित हो रहा है</translation>
 <translation id="9099674669267916096">पेज संख्या</translation>
@@ -1076,6 +1079,7 @@
 <translation id="9213073329713032541">ठीक से इंस्टॉल होना शुरू हो गया है.</translation>
 <translation id="9219103736887031265">इमेज</translation>
 <translation id="9219908252191632183">लूनर</translation>
+<translation id="931652069802536959">नीति के तहत नेटवर्क को ब्लॉक किया गया है</translation>
 <translation id="938470336146445890">कृपया कोई 'उपयोगकर्ता प्रमाणपत्र' इंस्टॉल करें.</translation>
 <translation id="939736085109172342">नया फ़ोल्डर</translation>
 <translation id="943972244133411984">बदलाव करने वाले</translation>

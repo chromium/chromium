@@ -10,7 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -50,14 +50,16 @@ IN_PROC_BROWSER_TEST_F(FastShutdown, DISABLED_SlowTermination) {
   GURL url = embedded_test_server()->GetURL("/fast_shutdown/on_unloader.html");
   EXPECT_EQ("", content::GetCookies(browser()->profile(), url));
 
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
-  ui_test_utils::WaitForBrowserToOpen();
+  BrowserWindowInterface* second_browser = browser_created_observer.Wait();
+  EXPECT_TRUE(second_browser);
 
   // Close the new window, removing the one and only beforeunload handler.
   ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
-  chrome::CloseWindow(*(BrowserList::GetInstance()->begin() + 1));
+  chrome::CloseWindow(second_browser);
 
   // Need to wait for the renderer process to shutdown to ensure that we got the
   // set cookies IPC.

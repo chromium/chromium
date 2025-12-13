@@ -4,10 +4,8 @@
 
 package org.chromium.net;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -110,22 +108,21 @@ public class HttpNegotiateAuthenticatorTest {
                         mBundleCallbackCaptor.capture(),
                         any(Handler.class));
 
-        assertThat(
-                "There is no existing context",
-                mBundleCaptor.getValue().get(HttpNegotiateConstants.KEY_SPNEGO_CONTEXT),
-                nullValue());
-        assertThat(
-                "The existing token is empty",
-                mBundleCaptor.getValue().getString(HttpNegotiateConstants.KEY_INCOMING_AUTH_TOKEN),
-                equalTo(""));
-        assertThat(
-                "Delegation is allowed",
-                mBundleCaptor.getValue().getBoolean(HttpNegotiateConstants.KEY_CAN_DELEGATE),
-                equalTo(true));
-        assertThat(
-                "getAuthTokenByFeatures was called with a callback",
-                mBundleCallbackCaptor.getValue(),
-                notNullValue());
+        assertWithMessage("There is no existing context")
+                .that(mBundleCaptor.getValue().get(HttpNegotiateConstants.KEY_SPNEGO_CONTEXT))
+                .isNull();
+        assertWithMessage("The existing token is empty")
+                .that(
+                        mBundleCaptor
+                                .getValue()
+                                .getString(HttpNegotiateConstants.KEY_INCOMING_AUTH_TOKEN))
+                .isEqualTo("");
+        assertWithMessage("Delegation is allowed")
+                .that(mBundleCaptor.getValue().getBoolean(HttpNegotiateConstants.KEY_CAN_DELEGATE))
+                .isEqualTo(true);
+        assertWithMessage("getAuthTokenByFeatures was called with a callback")
+                .that(mBundleCallbackCaptor.getValue())
+                .isNotNull();
     }
 
     /**
@@ -161,18 +158,18 @@ public class HttpNegotiateAuthenticatorTest {
                         any(HttpNegotiateAuthenticator.GetTokenCallback.class),
                         any(Handler.class));
 
-        assertThat(
-                "There is no existing context",
-                mBundleCaptor.getValue().get(HttpNegotiateConstants.KEY_SPNEGO_CONTEXT),
-                nullValue());
-        assertThat(
-                "The existing token is empty",
-                mBundleCaptor.getValue().getString(HttpNegotiateConstants.KEY_INCOMING_AUTH_TOKEN),
-                equalTo(""));
-        assertThat(
-                "Delegation is allowed",
-                mBundleCaptor.getValue().getBoolean(HttpNegotiateConstants.KEY_CAN_DELEGATE),
-                equalTo(true));
+        assertWithMessage("There is no existing context")
+                .that(mBundleCaptor.getValue().get(HttpNegotiateConstants.KEY_SPNEGO_CONTEXT))
+                .isNull();
+        assertWithMessage("The existing token is empty")
+                .that(
+                        mBundleCaptor
+                                .getValue()
+                                .getString(HttpNegotiateConstants.KEY_INCOMING_AUTH_TOKEN))
+                .isEqualTo("");
+        assertWithMessage("Delegation is allowed")
+                .that(mBundleCaptor.getValue().getBoolean(HttpNegotiateConstants.KEY_CAN_DELEGATE))
+                .isEqualTo(true);
     }
 
     /** Tests the behavior of {@link HttpNegotiateAuthenticator.GetAccountsCallback} */
@@ -230,7 +227,9 @@ public class HttpNegotiateAuthenticatorTest {
         ShadowApplication shadowApplication =
                 shadowOf((Application) RuntimeEnvironment.application);
         List<BroadcastReceiver> receivers = shadowApplication.getReceiversForIntent(intent);
-        assertThat("There is one registered broadcast receiver", receivers.size(), equalTo(1));
+        assertWithMessage("There is one registered broadcast receiver")
+                .that(receivers.size())
+                .isEqualTo(1);
 
         // Send the intent to the receiver.
         BroadcastReceiver receiver = receivers.get(0);
@@ -289,10 +288,9 @@ public class HttpNegotiateAuthenticatorTest {
                         mBundleCallbackCaptor.capture(),
                         any(Handler.class));
 
-        assertThat(
-                "The spnego context is preserved between calls",
-                mBundleCaptor.getValue().getBundle(HttpNegotiateConstants.KEY_SPNEGO_CONTEXT),
-                equalTo(context));
+        assertWithMessage("The spnego context is preserved between calls")
+                .that(mBundleCaptor.getValue().getBundle(HttpNegotiateConstants.KEY_SPNEGO_CONTEXT))
+                .isEqualTo(context);
 
         // Test exception path
         mBundleCallbackCaptor

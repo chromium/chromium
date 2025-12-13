@@ -11,6 +11,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/prefs/testing_pref_service.h"
@@ -63,7 +64,7 @@ TEST_F(PrefBasedQuietPermissionUiSelectorTest, FeatureAndPrefCombinations) {
     bool quiet_ui_enabled_in_prefs;
     std::optional<QuietUiReason> expected_reason;
   } kTests[] = {
-      {false, Decision::UseNormalUi()},
+      {false, std::nullopt},
       {true, QuietUiReason::kEnabledInPrefs},
   };
 
@@ -80,11 +81,11 @@ TEST_F(PrefBasedQuietPermissionUiSelectorTest, FeatureAndPrefCombinations) {
     base::RunLoop callback_loop;
     base::MockCallback<PrefBasedQuietPermissionUiSelector::DecisionMadeCallback>
         mock_callback;
-    Decision actual_decison(std::nullopt, std::nullopt);
+    Decision actual_decision = Decision::UseNormalUiAndShowNoWarning();
 
     // Make a request and wait for the callback.
     EXPECT_CALL(mock_callback, Run)
-        .WillRepeatedly(DoAll(testing::SaveArg<0>(&actual_decison),
+        .WillRepeatedly(DoAll(testing::SaveArg<0>(&actual_decision),
                               QuitMessageLoop(&callback_loop)));
 
     permissions::MockPermissionRequest mock_request(
@@ -95,7 +96,7 @@ TEST_F(PrefBasedQuietPermissionUiSelectorTest, FeatureAndPrefCombinations) {
     testing::Mock::VerifyAndClearExpectations(&mock_callback);
 
     // Check expectations.
-    EXPECT_EQ(test_case.expected_reason, actual_decison.quiet_ui_reason);
-    EXPECT_EQ(Decision::ShowNoWarning(), actual_decison.warning_reason);
+    EXPECT_EQ(test_case.expected_reason, actual_decision.quiet_ui_reason);
+    EXPECT_EQ(Decision::ShowNoWarning(), actual_decision.warning_reason);
   }
 }

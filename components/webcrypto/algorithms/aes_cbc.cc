@@ -2,18 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
 
+#include "base/bits.h"
 #include "base/check.h"
-#include "base/numerics/safe_math.h"
+#include "base/compiler_specific.h"
 #include "components/webcrypto/algorithms/aes.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
@@ -52,21 +48,6 @@ Status AesCbcEncryptDecrypt(EncryptOrDecrypt cipher_operation,
   if (params->Iv().size() != 16)
     return Status::ErrorIncorrectSizeAesCbcIv();
 
-  // According to the openssl docs, the amount of data written may be as large
-  // as (data_size + cipher_block_size - 1), constrained to a multiple of
-  // cipher_block_size.
-  base::CheckedNumeric<int> output_max_len = data.size();
-  output_max_len += AES_BLOCK_SIZE - 1;
-  if (!output_max_len.IsValid())
-    return Status::ErrorDataTooLarge();
-
-  const unsigned remainder =
-      base::ValueOrDieForType<unsigned>(output_max_len % AES_BLOCK_SIZE);
-  if (remainder != 0)
-    output_max_len += AES_BLOCK_SIZE - remainder;
-  if (!output_max_len.IsValid())
-    return Status::ErrorDataTooLarge();
-
   // Note: PKCS padding is enabled by default
   const EVP_CIPHER* const cipher = GetAESCipherByKeyLength(raw_key.size());
   DCHECK(cipher);
@@ -77,25 +58,31 @@ Status AesCbcEncryptDecrypt(EncryptOrDecrypt cipher_operation,
     return Status::OperationError();
   }
 
-  buffer->resize(base::ValueOrDieForType<size_t>(output_max_len));
+  if (cipher_operation == ENCRYPT) {
+    // CBC encryption is padded by at least one byte, up to a block boundary.
+    // (This cannot overflow because `data.size()` is at most `PTRDIFF_MAX`. If
+    // it did wraparound, `EVP_CipherUpdate_ex` and `EVP_CipherFinal_ex2` will
+    // check the provided bounds and cleanly fail.)
+    buffer->resize(
+        base::bits::AlignUp(data.size() + 1, size_t{AES_BLOCK_SIZE}));
+  } else {
+    // CBC decryption will output at most the input size.
+    buffer->resize(data.size());
+  }
 
-  int output_len = 0;
-  if (!EVP_CipherUpdate(context.get(), buffer->data(), &output_len, data.data(),
-                        base::checked_cast<int>(data.size()))) {
+  size_t output_len = 0;
+  if (!EVP_CipherUpdate_ex(context.get(), buffer->data(), &output_len,
+                           buffer->size(), data.data(), data.size())) {
     return Status::OperationError();
   }
-  int final_output_chunk_len = 0;
-  if (!EVP_CipherFinal_ex(context.get(), buffer->data() + output_len,
-                          &final_output_chunk_len)) {
+  auto remainder = base::span(*buffer).subspan(output_len);
+  size_t final_output_chunk_len = 0;
+  if (!EVP_CipherFinal_ex2(context.get(), remainder.data(),
+                           &final_output_chunk_len, remainder.size())) {
     return Status::OperationError();
   }
 
-  const unsigned int final_output_len =
-      static_cast<unsigned int>(output_len) +
-      static_cast<unsigned int>(final_output_chunk_len);
-
-  buffer->resize(final_output_len);
-
+  buffer->resize(output_len + final_output_chunk_len);
   return Status::Success();
 }
 

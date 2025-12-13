@@ -2162,7 +2162,7 @@ class GENnHandler(TypeHandler):
     else:
       alloc_code = ("""\
       GetIdHandler(SharedIdNamespaces::k%(resource_types)s)->
-      MakeIds(this, 0, %(args)s);""" % args)
+      MakeIds(this, %(args)s);""" % args)
     args['alloc_code'] = alloc_code
 
     code = """\
@@ -2171,11 +2171,6 @@ class GENnHandler(TypeHandler):
     %(name)sHelper(%(args)s);
     helper_->%(name)sImmediate(%(args)s);
     """
-    if not not_shared:
-      code += """\
-      if (share_group_->bind_generates_resource())
-      helper_->CommandBufferHelper::Flush();
-      """
     code += """\
     %(log_code)s
     CheckGLError();
@@ -2482,7 +2477,7 @@ TEST_P(%(test_name)s, %(name)sInvalidArgs%(arg_index)d_%(value_index)d) {
       else:
         f.write(
             "  GetIdHandler(SharedIdNamespaces::kProgramsAndShaders)->\n")
-      f.write("      MakeIds(this, 0, 1, &client_id);\n")
+      f.write("      MakeIds(this, 1, &client_id);\n")
     f.write("  helper_->%s(%s);\n" %
                (func.name, func.MakeCmdArgString("")))
     f.write('  GPU_CLIENT_LOG("returned " << client_id);\n')
@@ -7192,7 +7187,7 @@ extern const NameToFunc g_gles2_function_table[] = {
           continue
         if named_type.GetValidValues():
           code = """%(pre)s%(name)s(
-            valid_%(name)s_table, std::size(valid_%(name)s_table))"""
+            valid_%(name)s_table)"""
         else:
           code = "%(pre)s%(name)s()"
         f.write(code % {
@@ -7215,14 +7210,14 @@ extern const NameToFunc g_gles2_function_table[] = {
             continue
           if named_type.GetDeprecatedValuesES3():
             code = """  %(name)s.RemoveValues(
-      deprecated_%(name)s_table_es3, std::size(deprecated_%(name)s_table_es3));
+      deprecated_%(name)s_table_es3);
 """
             f.write(code % {
               'name': ToUnderscore(name),
             })
           if named_type.GetValidValuesES3():
             code = """  %(name)s.AddValues(
-      valid_%(name)s_table_es3, std::size(valid_%(name)s_table_es3));
+      valid_%(name)s_table_es3);
 """
             f.write(code % {
               'name': ToUnderscore(name),

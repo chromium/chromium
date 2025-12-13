@@ -6,6 +6,7 @@
 
 #include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -84,9 +85,14 @@ class SigninMetricsServiceTest : public ::testing::Test {
 
   void Signout() { identity_test_environment_.ClearPrimaryAccount(); }
 
-  void EnableSync(const std::string& email) {
-    identity_test_environment_.MakePrimaryAccountAvailable(
-        email, signin::ConsentLevel::kSync);
+  void EnableSync(const std::string& email,
+                  signin_metrics::AccessPoint access_point =
+                      signin_metrics::AccessPoint::kSettings) {
+    identity_test_environment_.MakeAccountAvailable(
+        signin::AccountAvailabilityOptionsBuilder()
+            .AsPrimary(signin::ConsentLevel::kSync)
+            .WithAccessPoint(access_point)
+            .Build(email));
   }
 
   AccountInfo WebSignin(const std::string& email) {
@@ -188,7 +194,9 @@ class SigninMetricsServiceTest : public ::testing::Test {
             kTokenService_LoadCredentials);
   }
 
-  PrefService& pref_service() { return pref_service_; }
+  sync_preferences::TestingPrefServiceSyncable& pref_service() {
+    return pref_service_;
+  }
 
   signin::ActivePrimaryAccountsMetricsRecorder*
   active_primary_accounts_metrics_recorder() {
@@ -418,6 +426,8 @@ const AccessPointParam params[] = {
      "Signin.WebSignin.TimeToChromeSignin.PasswordSigninPromo"},
     {signin_metrics::AccessPoint::kAddressBubble,
      "Signin.WebSignin.TimeToChromeSignin.AddressSigninPromo"},
+    {signin_metrics::AccessPoint::kBookmarkBubble,
+     "Signin.WebSignin.TimeToChromeSignin.BookmarkSigninPromo"},
     {signin_metrics::AccessPoint::kSettings, ""},
 };
 
@@ -759,3 +769,175 @@ TEST_F(SigninMetricsServiceTest, ErrorNotificationEmptyAccount) {
   EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SyncPaused"),
               base::HistogramTester::CountsMap());
 }
+
+TEST_F(SigninMetricsServiceTest, HistorySyncPromoMetricLogging) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kAvatarButtonSyncPromoForTesting};
+
+  CreateSigninMetricsService();
+
+  const std::string email("test@gmail.com");
+  AccountInfo account = Signin(email);
+  SigninPrefs signin_prefs(pref_service());
+  signin_prefs.IncrementSyncPromoIdentityPillShownCount(account.gaia);
+  signin_prefs.IncrementSyncPromoIdentityPillShownCount(account.gaia);
+
+  EnableSync(
+      email,
+      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SyncOptIn.IdentityPill.SyncAtShowCount",
+      signin_prefs.GetSyncPromoIdentityPillShownCount(account.gaia), 1);
+}
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class SigninMetricsServicePromoLimitsExperimentTest
+    : public SigninMetricsServiceTest {
+ public:
+  SigninMetricsServicePromoLimitsExperimentTest() {
+    // Simulate registering it via signin_promo
+    pref_service().registry()->RegisterIntegerPref(
+        prefs::kPasswordSignInPromoShownCountPerProfileForLimitsExperiment, 0);
+    pref_service().registry()->RegisterIntegerPref(
+        prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment, 0);
+    pref_service().registry()->RegisterIntegerPref(
+        prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment, 0);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kSigninPromoLimitsExperiment};
+};
+
+TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+       AddressPromoShownCountAtSigninFromWebSignin) {
+  base::HistogramTester histogram_tester;
+  CreateSigninMetricsService();
+
+  // Set a random profile value, to ensure that this is not the value being
+  // recorded.
+  pref_service().SetInteger(
+      prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment, 8);
+
+  SigninPrefs signin_prefs(pref_service());
+  GaiaId gaia_id("gaia_id_for_test_gmail.com");
+  const std::string email("test@gmail.com");
+  WebSignin(email);
+  signin_prefs.IncrementAddressSigninPromoImpressionCount(gaia_id);
+
+  Signin(email, signin_metrics::AccessPoint::kAddressBubble, gaia_id);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ShowCountAtSignin.AddressSigninPromo", 1, 1);
+}
+
+TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+       AddressPromoShownCountAtSigninFromSignedOut) {
+  base::HistogramTester histogram_tester;
+  CreateSigninMetricsService();
+
+  pref_service().SetInteger(
+      prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment, 1);
+
+  const std::string email("test@gmail.com");
+  Signin(email, signin_metrics::AccessPoint::kAddressBubble);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ShowCountAtSignin.AddressSigninPromo", 1, 1);
+}
+
+TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+       PasswordPromoShownCountAtSigninFromWebSignin) {
+  base::HistogramTester histogram_tester;
+  CreateSigninMetricsService();
+
+  // Set a random profile value, to ensure that this is not the value being
+  // recorded.
+  pref_service().SetInteger(
+      prefs::kPasswordSignInPromoShownCountPerProfileForLimitsExperiment, 8);
+
+  SigninPrefs signin_prefs(pref_service());
+  GaiaId gaia_id("gaia_id_for_test_gmail.com");
+  const std::string email("test@gmail.com");
+  WebSignin(email);
+
+  signin_prefs.IncrementPasswordSigninPromoImpressionCount(gaia_id);
+  Signin(email, signin_metrics::AccessPoint::kPasswordBubble, gaia_id);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ShowCountAtSignin.PasswordSigninPromo", 1, 1);
+}
+
+TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+       PasswordPromoShownCountAtSigninFromSignedOut) {
+  base::HistogramTester histogram_tester;
+  CreateSigninMetricsService();
+
+  pref_service().SetInteger(
+      prefs::kPasswordSignInPromoShownCountPerProfileForLimitsExperiment, 1);
+
+  const std::string email("test@gmail.com");
+
+  Signin(email, signin_metrics::AccessPoint::kPasswordBubble);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ShowCountAtSignin.PasswordSigninPromo", 1, 1);
+}
+
+TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+       BookmarkPromoShownCountAtSigninFromWebSignin) {
+  base::HistogramTester histogram_tester;
+  CreateSigninMetricsService();
+
+  // Set a random profile value, to ensure that this is not the value being
+  // recorded.
+  pref_service().SetInteger(
+      prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment, 8);
+
+  SigninPrefs signin_prefs(pref_service());
+  GaiaId gaia_id("gaia_id_for_test_gmail.com");
+  const std::string email("test@gmail.com");
+  WebSignin(email);
+
+  signin_prefs.IncrementBookmarkSigninPromoImpressionCount(gaia_id);
+  Signin(email, signin_metrics::AccessPoint::kBookmarkBubble, gaia_id);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ShowCountAtSignin.BookmarkSigninPromo", 1, 1);
+}
+
+TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+       BookmarkPromoShownCountAtSigninFromSignedOut) {
+  base::HistogramTester histogram_tester;
+  CreateSigninMetricsService();
+
+  pref_service().SetInteger(
+      prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment, 1);
+
+  const std::string email("test@gmail.com");
+  Signin(email, signin_metrics::AccessPoint::kBookmarkBubble);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ShowCountAtSignin.BookmarkSigninPromo", 1, 1);
+}
+
+TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+       UnoBubbleRepromptCountAtSigninFromWebSignin) {
+  base::HistogramTester histogram_tester;
+  CreateSigninMetricsService();
+
+  SigninPrefs signin_prefs(pref_service());
+  GaiaId gaia_id("gaia_id_for_test_gmail.com");
+
+  const std::string email("test@gmail.com");
+  WebSignin(email);
+
+  signin_prefs.IncrementChromeSigninBubbleRepromptCount(gaia_id);
+  Signin(email, signin_metrics::AccessPoint::kChromeSigninInterceptBubble,
+         gaia_id);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.ShowCountAtSignin.UnoBubbleReprompt", 1, 1);
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

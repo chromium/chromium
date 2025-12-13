@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
@@ -91,17 +90,21 @@ public class NewTabPageNavigationTest {
     @Test
     @MediumTest
     public void testNavigateToTabSwitcherFromIncognitoNtp() {
-        var histogram =
+        try (var histogram =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords(HISTOGRAM_NTP_MODULE_CLICK)
                         .expectNoRecords(HISTOGRAM_START_SURFACE_MODULE_CLICK)
-                        .build();
+                        .build()) {
+            var incognitoNewTabPageStation = mNtp.openNewIncognitoTabOrWindowFast();
+            var chromeTabbedActivity = incognitoNewTabPageStation.getActivity();
 
-        IncognitoTabSwitcherStation tabSwitcher =
-                mNtp.openNewIncognitoTabFast().openIncognitoTabSwitcher();
+            var incognitoTabSwitcherStation = incognitoNewTabPageStation.openIncognitoTabSwitcher();
 
-        tabSwitcher.verifyTabSwitcherCardCount(1);
-        TabUiTestHelper.verifyTabModelTabCount(mActivityTestRule.getActivity(), 1, 1);
-        histogram.assertExpected();
+            incognitoTabSwitcherStation.verifyTabSwitcherCardCount(1);
+            TabUiTestHelper.verifyTabModelTabCount(
+                    chromeTabbedActivity,
+                    /* normalTabs= */ chromeTabbedActivity.isIncognitoWindow() ? 0 : 1,
+                    /* incognitoTabs= */ 1);
+        }
     }
 }

@@ -11,8 +11,7 @@
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildFaviconLoader(web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+std::unique_ptr<KeyedService> BuildFaviconLoader(ProfileIOS* profile) {
   return std::make_unique<FaviconLoaderImpl>(
       IOSChromeLargeIconServiceFactory::GetForProfile(profile));
 }
@@ -40,9 +39,9 @@ IOSChromeFaviconLoaderFactory* IOSChromeFaviconLoaderFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+IOSChromeFaviconLoaderFactory::TestingFactory
 IOSChromeFaviconLoaderFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildFaviconLoader);
+  return base::BindOnce(&BuildFaviconLoader);
 }
 
 IOSChromeFaviconLoaderFactory::IOSChromeFaviconLoaderFactory()
@@ -56,6 +55,6 @@ IOSChromeFaviconLoaderFactory::~IOSChromeFaviconLoaderFactory() = default;
 
 std::unique_ptr<KeyedService>
 IOSChromeFaviconLoaderFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildFaviconLoader(context);
+    ProfileIOS* profile) const {
+  return BuildFaviconLoader(profile);
 }

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
@@ -17,6 +18,14 @@
 using base::SequencedTaskRunner;
 
 namespace subtle {
+namespace {
+
+// Returns a copy of `view`.
+std::string CopyStringView(std::string_view view) {
+  return std::string(view);
+}
+
+}  // namespace
 
 PrefMemberBase::PrefMemberBase() : prefs_(nullptr), setting_value_(false) {}
 
@@ -24,23 +33,33 @@ PrefMemberBase::~PrefMemberBase() {
   Destroy();
 }
 
-void PrefMemberBase::Init(const std::string& pref_name,
+void PrefMemberBase::Init(std::string pref_name,
                           PrefService* prefs,
-                          const NamedChangeCallback& observer) {
-  observer_ = observer;
-  Init(pref_name, prefs);
+                          NamedChangeCallback observer) {
+  if (observer) {
+    observer_ = base::BindRepeating(&CopyStringView).Then(std::move(observer));
+  }
+  Init(std::move(pref_name), prefs);
 }
 
-void PrefMemberBase::Init(const std::string& pref_name, PrefService* prefs) {
+void PrefMemberBase::Init(std::string pref_name,
+                          PrefService* prefs,
+                          NamedChangeAsViewCallback observer) {
+  observer_ = std::move(observer);
+  Init(std::move(pref_name), prefs);
+}
+
+void PrefMemberBase::Init(std::string pref_name, PrefService* prefs) {
   DCHECK(prefs);
   DCHECK(pref_name_.empty());  // Check that Init is only called once.
   prefs_ = prefs;
-  pref_name_ = pref_name;
+  pref_name_ = std::move(pref_name);
   // Check that the preference is registered.
-  DCHECK(prefs_->FindPreference(pref_name_)) << pref_name << " not registered.";
+  DCHECK(prefs_->FindPreference(pref_name_))
+      << pref_name_ << " not registered.";
 
   // Add ourselves as a pref observer so we can keep our local value in sync.
-  prefs_->AddPrefObserver(pref_name, this);
+  prefs_->AddPrefObserver(pref_name_, this);
 }
 
 void PrefMemberBase::Destroy() {
@@ -59,11 +78,15 @@ void PrefMemberBase::MoveToSequence(
   internal()->MoveToSequence(std::move(task_runner));
 }
 
+void PrefMemberBase::OnServiceDestroyed(PrefService* service) {
+  Destroy();
+}
+
 void PrefMemberBase::OnPreferenceChanged(PrefService* service,
                                          std::string_view pref_name) {
   VerifyValuePrefName();
   UpdateValueFromPref((!setting_value_ && !observer_.is_null())
-                          ? base::BindOnce(observer_, std::string(pref_name))
+                          ? base::BindOnce(observer_, pref_name)
                           : base::OnceClosure());
 }
 

@@ -47,7 +47,8 @@
                          cardNumber:(NSString*)cardNumber
                     expirationMonth:(NSString*)expirationMonth
                      expirationYear:(NSString*)expirationYear
-                       cardNickname:(NSString*)cardNickname {
+                       cardNickname:(NSString*)cardNickname
+                            cardCvc:(NSString*)cardCvc {
   const std::string& appLocal =
       GetApplicationContext()->GetApplicationLocaleStorage()->Get();
   autofill::CreditCard creditCard =
@@ -56,6 +57,7 @@
                                        expirationMonth:expirationMonth
                                         expirationYear:expirationYear
                                           cardNickname:cardNickname
+                                               cardCvc:cardCvc
                                               appLocal:appLocal];
 
   // Validates the credit card number, expiration date, and nickname.
@@ -74,6 +76,10 @@
   if (!autofill::CreditCard::IsNicknameValid(
           base::SysNSStringToUTF16(cardNickname))) {
     [_addCreditCardMediatorDelegate creditCardMediatorHasInvalidNickname:self];
+    return;
+  }
+
+  if (![AutofillCreditCardUtil isValidCardCvc:cardCvc]) {
     return;
   }
 
@@ -99,6 +105,7 @@
                              expirationMonth:expirationMonth
                               expirationYear:expirationYear
                                 cardNickname:cardNickname
+                                     cardCvc:cardCvc
                                     appLocal:appLocal];
 
     _personalDataManager->payments_data_manager().UpdateCreditCard(
@@ -110,6 +117,10 @@
         "Autofill.PaymentMethods.SettingsPage."
         "StoredCreditCardCountBeforeCardAdded",
         _personalDataManager->payments_data_manager().GetCreditCards().size());
+    if (!creditCard.cvc().empty()) {
+      base::RecordAction(
+          base::UserMetricsAction("AutofillCreditCardsAddedWithCvc"));
+    }
     _personalDataManager->payments_data_manager().AddCreditCard(creditCard);
   }
 
@@ -156,10 +167,17 @@
 
 - (bool)addCreditCardViewController:
             (AutofillAddCreditCardViewController*)viewController
+                     isValidCardCvc:(NSString*)cardCvc {
+  return [AutofillCreditCardUtil isValidCardCvc:cardCvc];
+}
+
+- (bool)addCreditCardViewController:
+            (AutofillAddCreditCardViewController*)viewController
             isValidCreditCardNumber:(NSString*)cardNumber
                     expirationMonth:(NSString*)expirationMonth
                      expirationYear:(NSString*)expirationYear
-                       cardNickname:(NSString*)cardNickname {
+                       cardNickname:(NSString*)cardNickname
+                            cardCvc:(NSString*)cardCvc {
   const std::string& appLocal =
       GetApplicationContext()->GetApplicationLocaleStorage()->Get();
   return ([AutofillCreditCardUtil isValidCreditCardNumber:cardNumber
@@ -168,7 +186,8 @@
               isValidCreditCardExpirationMonth:expirationMonth] &&
           [AutofillCreditCardUtil isValidCreditCardExpirationYear:expirationYear
                                                          appLocal:appLocal] &&
-          [AutofillCreditCardUtil isValidCardNickname:cardNickname]);
+          [AutofillCreditCardUtil isValidCardNickname:cardNickname] &&
+          [AutofillCreditCardUtil isValidCardCvc:cardCvc]);
 }
 
 @end

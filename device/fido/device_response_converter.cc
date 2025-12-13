@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "device/fido/device_response_converter.h"
 
 #include <memory>
@@ -15,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/i18n/streaming_utf8_validator.h"
@@ -27,11 +23,11 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_supported_options.h"
-#include "device/fido/features.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
-#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/opaque_attestation_statement.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
 
 namespace device {
 
@@ -272,8 +268,8 @@ std::optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
     if (key.size() != response.large_blob_key->size()) {
       return std::nullopt;
     }
-    memcpy(response.large_blob_key->data(), key.data(),
-           response.large_blob_key->size());
+    UNSAFE_TODO(memcpy(response.large_blob_key->data(), key.data(),
+                       response.large_blob_key->size()));
   }
 
   it = response_map.find(CBOR(0x08));
@@ -1015,6 +1011,17 @@ std::optional<PINUVAuthProtocol> ToPINUVAuthProtocol(int64_t in) {
     return std::nullopt;
   }
   return static_cast<PINUVAuthProtocol>(in);
+}
+
+cbor::Value RedactCtapGetAssertionResponse(const cbor::Value& cbor) {
+  using fido_parsing_utils::ToCborVector;
+  constexpr int kSignature = 0x03;
+  constexpr int kLargeBlobKey = 0x07;
+  constexpr int kExtension = 0x08;
+  return fido_parsing_utils::RedactCbor(
+      cbor, std::array{ToCborVector(kSignature), ToCborVector(kLargeBlobKey),
+                       ToCborVector(kExtension, kExtensionPRF, "results"),
+                       ToCborVector(kExtension, kExtensionLargeBlob)});
 }
 
 }  // namespace device

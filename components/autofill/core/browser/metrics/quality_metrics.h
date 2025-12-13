@@ -28,7 +28,7 @@ enum class AutofillAlternativeNameFieldValueCharacterSet {
 // This method should only be called after the possible field types have been
 // set for each field.
 // `interaction_time` corresponds to the user's first interaction with the form.
-// `submission_time` corresponds to the form's submission time.
+// `now` corresponds to the form's submission time.
 // `source_id` is the UKM source ID of the page at the time of the submission
 // (which may be distinct from the current page because this function is called
 // asynchronously).
@@ -38,7 +38,7 @@ enum class AutofillAlternativeNameFieldValueCharacterSet {
 void LogQualityMetrics(const FormStructure& form_structure,
                        base::TimeTicks load_time,
                        base::TimeTicks interaction_time,
-                       base::TimeTicks submission_time,
+                       base::TimeTicks now,
                        FormInteractionsUkmLogger& form_interactions_ukm_logger,
                        ukm::SourceId source_id,
                        bool observed_submission);

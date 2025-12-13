@@ -29,7 +29,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/wm/core/base_focus_rules.h"
 #include "ui/wm/core/compound_event_filter.h"
 #include "ui/wm/core/cursor_loader.h"
@@ -212,8 +212,7 @@ void ShellDesktopControllerAura::AddAppWindow(AppWindow* app_window,
                                               gfx::NativeWindow window) {
   // Find the closest display to the specified bounds.
   const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayMatching(
-          window->GetBoundsInScreen());
+      display::Screen::Get()->GetDisplayMatching(window->GetBoundsInScreen());
 
   // Create a RootWindowController for the display if necessary.
   if (root_window_controllers_.count(display.id()) == 0) {
@@ -295,8 +294,7 @@ aura::WindowTreeHost* ShellDesktopControllerAura::GetPrimaryHost() {
   if (root_window_controllers_.empty())
     return nullptr;
 
-  const display::Display& display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+  const display::Display& display = display::Screen::Get()->GetPrimaryDisplay();
   if (root_window_controllers_.count(display.id()) == 1)
     return root_window_controllers_[display.id()]->host();
 
@@ -314,8 +312,7 @@ aura::Window::Windows ShellDesktopControllerAura::GetAllRootWindows() {
 void ShellDesktopControllerAura::SetWindowBoundsInScreen(
     AppWindow* app_window,
     const gfx::Rect& bounds) {
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayMatching(bounds);
+  display::Display display = display::Screen::Get()->GetDisplayMatching(bounds);
 
   // Create a RootWindowController for the display if necessary.
   if (root_window_controllers_.count(display.id()) == 0) {
@@ -345,7 +342,7 @@ void ShellDesktopControllerAura::InitWindowManager() {
   root_window_event_filter_ = std::make_unique<wm::CompoundEventFilter>();
 
   // Screen may be initialized in tests.
-  if (!display::Screen::GetScreen()) {
+  if (!display::Screen::Get()) {
 #if BUILDFLAG(IS_CHROMEOS)
     screen_ = std::make_unique<ShellScreen>(this, GetStartingWindowSize());
     // TODO(pkasting): Make ShellScreen() call SetScreenInstance() as the
@@ -361,8 +358,7 @@ void ShellDesktopControllerAura::InitWindowManager() {
       std::make_unique<wm::FocusController>(new AppsFocusRules());
   cursor_manager_ = std::make_unique<wm::CursorManager>(
       std::make_unique<ShellNativeCursorManager>(this));
-  cursor_manager_->SetDisplay(
-      display::Screen::GetScreen()->GetPrimaryDisplay());
+  cursor_manager_->SetDisplay(display::Screen::Get()->GetPrimaryDisplay());
   cursor_manager_->SetCursor(ui::mojom::CursorType::kPointer);
 
 #if BUILDFLAG(IS_CHROMEOS)

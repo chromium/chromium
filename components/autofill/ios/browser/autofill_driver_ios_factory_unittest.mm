@@ -29,7 +29,6 @@ using ::autofill::test::LazyRef;
 using ::autofill::test::SaveArgPtr;
 using ::testing::_;
 using ::testing::AllOf;
-using ::testing::DoAll;
 using ::testing::Each;
 using ::testing::Eq;
 using ::testing::InSequence;
@@ -249,7 +248,7 @@ TEST_P(AutofillDriverIOSFactoryTest_Recursion, RecursiveDriverForFrame) {
 #define EXPECT_DRIVER_CREATED(driver_ptr_ptr)                                  \
   EXPECT_CALL(factory_observer(),                                              \
               OnAutofillDriverIOSCreated(Ref(factory()), HasState(kInactive))) \
-      .WillOnce(DoAll(SaveArgPtr<1>((driver_ptr_ptr))))
+      .WillOnce(SaveArgPtr<1>((driver_ptr_ptr)))
 #define EXPECT_LIFECYCLE_CHANGE(driver_matcher, from, to)                  \
   EXPECT_CALL(factory_observer(),                                          \
               OnAutofillDriverIOSStateChanged(                             \

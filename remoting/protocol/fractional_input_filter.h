@@ -5,7 +5,9 @@
 #ifndef REMOTING_PROTOCOL_FRACTIONAL_INPUT_FILTER_H_
 #define REMOTING_PROTOCOL_FRACTIONAL_INPUT_FILTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "remoting/proto/control.pb.h"
+#include "remoting/protocol/coordinate_converter.h"
 #include "remoting/protocol/input_filter.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
@@ -43,34 +45,21 @@ namespace remoting::protocol {
 // filter that cares about x,y values needs to be aware of this transformation.
 class FractionalInputFilter : public InputFilter {
  public:
-  FractionalInputFilter();
-  explicit FractionalInputFilter(InputStub* input_stub);
+  // Both `input_stub` and `converter` must outlive `this`.
+  FractionalInputFilter(InputStub* input_stub,
+                        const CoordinateConverter* converter);
 
   FractionalInputFilter(const FractionalInputFilter&) = delete;
   FractionalInputFilter& operator=(const FractionalInputFilter&) = delete;
 
   ~FractionalInputFilter() override;
 
-  // Sets the video layout to be used to convert fractional coordinates for
-  // injection.
-  void set_video_layout(const VideoLayout& layout);
-
-  // This method sets the fallback geometry to be used for fractional
-  // coordinates which don't have `screen_id`. If no fallback is set (or has
-  // empty size), no fallback will be used - events will be dropped if
-  // their fractional coordinates don't include any screen_id.
-  void set_fallback_geometry(webrtc::DesktopRect geometry);
-
   // InputStub overrides.
   void InjectMouseEvent(const MouseEvent& event) override;
   void InjectTouchEvent(const TouchEvent& event) override;
 
  private:
-  // Attempts to use the event's fractional coordinates to compute new x,y
-  // values for the event. Returns true if successful and new_x, new_y hold the
-  // values. The event must be a protobuf type with x, y and
-  // fractional_coordinate fields.
-  bool ComputeXY(int& new_x, int& new_y, const auto& event);
+  raw_ptr<const CoordinateConverter> converter_;
 
   VideoLayout video_layout_;
 

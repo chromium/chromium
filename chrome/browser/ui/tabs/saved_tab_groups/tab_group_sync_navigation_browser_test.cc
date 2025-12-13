@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
@@ -102,15 +101,7 @@ class SyncBridgeModelObserverForTest : public SavedTabGroupModelObserver {
 // expected to the sync and database.
 class TabGroupSyncNavigationIntegrationTest : public InProcessBrowserTest {
  public:
-  TabGroupSyncNavigationIntegrationTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    enabled_features.push_back(
-        tab_groups::kTabGroupSyncServiceDesktopMigration);
-
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
+  TabGroupSyncNavigationIntegrationTest() = default;
 
   ~TabGroupSyncNavigationIntegrationTest() override = default;
   TabGroupSyncNavigationIntegrationTest(
@@ -163,7 +154,6 @@ class TabGroupSyncNavigationIntegrationTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   SyncBridgeModelObserverForTest sync_bridge_model_observer_;
 };
 

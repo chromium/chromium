@@ -10,16 +10,23 @@
 
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 
 class GoogleServiceAuthError;
 
 namespace network::mojom {
 class CookieManager;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class DeviceBoundSessionManager;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
 namespace signin {
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class BoundSessionOAuthMultiLoginDelegate;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 struct MultiloginParameters;
 enum class SetAccountsInCookieResult;
 
@@ -38,6 +45,19 @@ class AccountsCookieMutator {
 
     // Returns the CookieManager for the partition.
     virtual network::mojom::CookieManager* GetCookieManagerForPartition() = 0;
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    // Creates a new BoundSessionOAuthMultiLoginDelegate for the partition. If
+    // prototype cookie binding is not supported for the partition, returns
+    // nullptr.
+    virtual std::unique_ptr<BoundSessionOAuthMultiLoginDelegate>
+    CreateBoundSessionOAuthMultiLoginDelegateForPartition();
+
+    // Returns the DeviceBoundSessionManager for the partition. If the
+    // partition does not support standard cookie binding, returns nullptr.
+    virtual network::mojom::DeviceBoundSessionManager*
+    GetDeviceBoundSessionManagerForPartition() = 0;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   };
 
   // Task handle for SetAccountsInCookieForPartition. Deleting this object

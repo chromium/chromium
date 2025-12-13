@@ -306,20 +306,20 @@ AddressFieldParserNG::~AddressFieldParserNG() = default;
 // static
 std::unique_ptr<FormFieldParser> AddressFieldParserNG::Parse(
     ParsingContext& context,
-    AutofillScanner* scanner) {
-  if (scanner->IsEnd()) {
+    AutofillScanner& scanner) {
+  if (scanner.IsEnd()) {
     return nullptr;
   }
 
-  size_t saved_cursor = scanner->SaveCursor();
+  const AutofillScanner::Position saved_cursor = scanner.GetPosition();
   std::unique_ptr<AddressFieldParserNG> address_field(new AddressFieldParserNG(
       AddressCountryCode(context.client_country.value())));
   address_field->context_ = &context;
-  address_field->scanner_ = scanner;
-  address_field->initial_field_ = scanner->Cursor();
+  address_field->scanner_ = &scanner;
+  address_field->initial_field_ = &scanner.Cursor();
 
-  DVLOG(1) << "Parse recursively starting at " << saved_cursor << " "
-           << scanner->Cursor()->parseable_label();
+  DVLOG(1) << "Parse recursively starting at " << scanner.GetOffset() << " "
+           << scanner.Cursor().label();
 
   address_field->ParseRecursively();
 
@@ -333,12 +333,12 @@ std::unique_ptr<FormFieldParser> AddressFieldParserNG::Parse(
   // found, set the cursor to the last classified field + 1, otherwise return
   // the scanner in the initial state.
   if (!address_field->best_classification_.assignments.empty()) {
-    scanner->RewindTo(
-        address_field->best_classification_.last_classified_field_index);
-    scanner->Advance();
+    scanner.Restore(
+        *address_field->best_classification_.last_classified_field_index);
+    scanner.Advance();
     return address_field;
   }
-  scanner->RewindTo(saved_cursor);
+  scanner.Restore(saved_cursor);
   return nullptr;
 }
 
@@ -351,9 +351,9 @@ void AddressFieldParserNG::AddClassifications(
     // TODO(crbug.com/320965828): Support MatchInfo. The NG parser doesn't track
     // how matches are found. `kHighQualityLabel` is merely a placeholder.
     AddClassification(
-        FieldAndMatchInfo{field_ptr,
+        FieldAndMatchInfo(field_ptr,
                           {.matched_attribute =
-                               MatchInfo::MatchAttribute::kHighQualityLabel}},
+                               MatchInfo::MatchAttribute::kHighQualityLabel}),
         field_type, kBaseAddressParserScore, field_candidates);
   }
 }
@@ -406,7 +406,7 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
     // preferred attribute match.
     auto MatchAttribute = [&](bool match_label) -> std::optional<double> {
       if (FieldMatchesMatchPatternRef(
-              *context_, *scanner_->Cursor(), pattern_name,
+              *context_, scanner_->Cursor(), pattern_name,
               {match_label ? MatchOnlyLabel : MatchOnlyName,
                match_pattern_projection})) {
         return score + (match_label == prefer_label ? 0.05 : 0.0);
@@ -414,11 +414,11 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
       return std::nullopt;
     };
     if (prefer_label) {
-      auto r = MatchAttribute(/*match_label*/ true);
-      return r ? r : MatchAttribute(/*match_label*/ false);
+      auto r = MatchAttribute(/*match_label=*/true);
+      return r ? r : MatchAttribute(/*match_label=*/false);
     } else {
-      auto r = MatchAttribute(/*match_label*/ false);
-      return r ? r : MatchAttribute(/*match_label*/ true);
+      auto r = MatchAttribute(/*match_label=*/false);
+      return r ? r : MatchAttribute(/*match_label=*/true);
     }
   };
 
@@ -474,8 +474,8 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
       // An address line 3 can only directly follow an address line 2.
       if (partial_classification_.contained_types.contains_all(
               {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2}) &&
-          partial_classification_.assignments[ADDRESS_HOME_LINE2]->rank() ==
-              scanner_->Cursor()->rank() - 1) {
+          partial_classification_.assignments[ADDRESS_HOME_LINE2] ==
+              scanner_->Predecessor()) {
         if (auto r = Match("ADDRESS_LINE_2", 1.0)) {
           return r;
         }
@@ -662,12 +662,10 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
     case NO_SERVER_DATA:
     case EMPTY_TYPE:
     case AMBIGUOUS_TYPE:
-    case FIELD_WITH_DEFAULT_VALUE:
     case MERCHANT_EMAIL_SIGNUP:
     case PRICE:
     case NUMERIC_QUANTITY:
     case SEARCH_TERM:
-    case PASSPORT_NAME_TAG:
     case PASSPORT_NUMBER:
     case PASSPORT_ISSUING_COUNTRY:
     case PASSPORT_EXPIRATION_DATE:
@@ -675,14 +673,12 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
     case LOYALTY_MEMBERSHIP_PROGRAM:
     case LOYALTY_MEMBERSHIP_PROVIDER:
     case LOYALTY_MEMBERSHIP_ID:
-    case VEHICLE_OWNER_TAG:
     case VEHICLE_LICENSE_PLATE:
     case VEHICLE_VIN:
     case VEHICLE_MAKE:
     case VEHICLE_MODEL:
     case VEHICLE_YEAR:
     case VEHICLE_PLATE_STATE:
-    case DRIVERS_LICENSE_NAME_TAG:
     case DRIVERS_LICENSE_REGION:
     case DRIVERS_LICENSE_NUMBER:
     case DRIVERS_LICENSE_EXPIRATION_DATE:
@@ -692,18 +688,27 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
     case NATIONAL_ID_CARD_EXPIRATION_DATE:
     case NATIONAL_ID_CARD_ISSUE_DATE:
     case NATIONAL_ID_CARD_ISSUING_COUNTRY:
+    case REDRESS_NUMBER:
+    case KNOWN_TRAVELER_NUMBER:
+    case KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
     case ADDRESS_HOME_ZIP_PREFIX:
     case ADDRESS_HOME_ZIP_SUFFIX:
+    case FLIGHT_RESERVATION_FLIGHT_NUMBER:
+    case FLIGHT_RESERVATION_TICKET_NUMBER:
+    case FLIGHT_RESERVATION_CONFIRMATION_CODE:
+    case FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
+    case FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
+    case FLIGHT_RESERVATION_DEPARTURE_DATE:
     case MAX_VALID_FIELD_TYPE:
       return std::nullopt;
   }
 }
 
 void AddressFieldParserNG::ParseRecursively() {
-  const std::string log_prefix(scanner_->SaveCursor(), ' ');
+  auto log_prefix = [&]() { return std::string(scanner_->GetOffset(), ' '); };
   if (scanner_->IsEnd()) {
-    DVLOG(1) << log_prefix << "END of input";
-    DVLOG(1) << log_prefix
+    DVLOG(1) << log_prefix() << "END of input";
+    DVLOG(1) << log_prefix()
              << "score=" << SequenceToScoreString(partial_classification_)
              << ", best_score_so_far="
              << SequenceToScoreString(best_classification_)
@@ -711,7 +716,7 @@ void AddressFieldParserNG::ParseRecursively() {
     // Store classification if it's better.
     if (partial_classification_.BetterThan(best_classification_) &&
         IsClassificationPlausible()) {
-      DVLOG(1) << log_prefix << "NEW BEST SOLUTION";
+      DVLOG(1) << log_prefix() << "NEW BEST SOLUTION";
       best_classification_ = partial_classification_;
     }
     return;
@@ -727,14 +732,14 @@ void AddressFieldParserNG::ParseRecursively() {
     // Skip trying field_type if it's incompatible with already assigned types.
     if (partial_classification_.contained_types.contains_any(
             field_types_->incompatible_field_types(field_type))) {
-      DVLOG(1) << log_prefix << "---- " << FieldTypeToStringView(field_type)
+      DVLOG(1) << log_prefix() << "---- " << FieldTypeToStringView(field_type)
                << " conflict.";
       continue;
     }
 
     std::optional<double> extra_score = FindScoreOfBestMatchingRule(field_type);
     if (!extra_score) {
-      DVLOG(1) << log_prefix << "---- " << FieldTypeToStringView(field_type)
+      DVLOG(1) << log_prefix() << "---- " << FieldTypeToStringView(field_type)
                << " non-match.";
       continue;
     }
@@ -743,28 +748,29 @@ void AddressFieldParserNG::ParseRecursively() {
 
     // Perform new assignment.
     const double old_score = partial_classification_.score;
-    const size_t old_last_classified_field_index =
-        partial_classification_.last_classified_field_index;
+    const std::optional<AutofillScanner::Position>
+        old_last_classified_field_index =
+            partial_classification_.last_classified_field_index;
     if (field_type != UNKNOWN_TYPE) {
       partial_classification_.contained_types.insert(field_type);
-      partial_classification_.assignments[field_type] = scanner_->Cursor();
+      partial_classification_.assignments[field_type] = &scanner_->Cursor();
       partial_classification_.last_classified_field_index =
-          scanner_->SaveCursor();
+          scanner_->GetPosition();
     }
     partial_classification_.score += *extra_score;
 
-    DVLOG(1) << log_prefix << "++++ " << FieldTypeToStringView(field_type)
+    DVLOG(1) << log_prefix() << "++++ " << FieldTypeToStringView(field_type)
              << " match. new score is " << partial_classification_.score;
 
-    const size_t old_position = scanner_->SaveCursor();
+    const AutofillScanner::Position old_position = scanner_->GetPosition();
     scanner_->Advance();
     ParseRecursively();
-    scanner_->RewindTo(old_position);
+    scanner_->Restore(old_position);
 
     // Revert new assignment.
     if (field_type != UNKNOWN_TYPE) {
       partial_classification_.contained_types.erase(field_type);
-      partial_classification_.assignments[field_type] = nullptr;
+      partial_classification_.assignments.erase(field_type);
       partial_classification_.last_classified_field_index =
           old_last_classified_field_index;
     }
@@ -778,15 +784,15 @@ void AddressFieldParserNG::ParseRecursively() {
     }
   }
   if (!found_extra_assignment) {
-    DVLOG(1) << log_prefix << "END did not find another classification.";
-    DVLOG(1) << log_prefix
+    DVLOG(1) << log_prefix() << "END did not find another classification.";
+    DVLOG(1) << log_prefix()
              << "score=" << SequenceToScoreString(partial_classification_)
              << ", best_score_so_far="
              << SequenceToScoreString(best_classification_)
              << ", plausible=" << IsClassificationPlausible();
     if (partial_classification_.BetterThan(best_classification_) &&
         IsClassificationPlausible()) {
-      DVLOG(1) << log_prefix << "NEW BEST SOLUTION";
+      DVLOG(1) << log_prefix() << "NEW BEST SOLUTION";
       best_classification_ = partial_classification_;
     }
   }

@@ -20,11 +20,13 @@
 #include "android_webview/browser/aw_contents.h"
 #include "android_webview/browser/aw_contents_client_bridge.h"
 #include "android_webview/browser/aw_contents_io_thread_client.h"
+#include "android_webview/browser/aw_contents_statics.h"
 #include "android_webview/browser/aw_cookie_access_policy.h"
 #include "android_webview/browser/aw_devtools_manager_delegate.h"
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "android_webview/browser/aw_http_auth_handler.h"
 #include "android_webview/browser/aw_origin_matched_header.h"
+#include "android_webview/browser/aw_policy_blocklist_service_factory.h"
 #include "android_webview/browser/aw_settings.h"
 #include "android_webview/browser/aw_speech_recognition_manager_delegate.h"
 #include "android_webview/browser/aw_web_contents_delegate.h"
@@ -48,7 +50,6 @@
 #include "android_webview/common/aw_paths.h"
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/common/url_constants.h"
-#include "base/android/build_info.h"
 #include "base/android/locale_utils.h"
 #include "base/android/yield_to_looper_checker.h"
 #include "base/base_paths_android.h"
@@ -62,6 +63,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -79,6 +81,7 @@
 #include "components/page_load_metrics/browser/metrics_navigation_throttle.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
+#include "components/policy/content/safe_search_service.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
@@ -88,6 +91,7 @@
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/url_matcher/url_matcher.h"
 #include "components/url_matcher/url_util.h"
+#include "components/user_prefs/user_prefs.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -173,39 +177,6 @@ bool g_created_network_context_params = false;
 // On apps targeting API level O or later, check cleartext is enforced.
 bool g_check_cleartext_permitted = false;
 
-BASE_FEATURE(kWebViewOptimizeXrwNavigationFlow,
-             "WebViewOptimizeXrwNavigationFlow",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// A throttle which checks if the XRW origin trial is enabled for this
-// navigation, and forwards it to the proxying loader factory.
-class XrwNavigationThrottle : public content::NavigationThrottle {
- public:
-  explicit XrwNavigationThrottle(content::NavigationThrottleRegistry& registry)
-      : NavigationThrottle(registry) {}
-  ~XrwNavigationThrottle() override {
-    AwProxyingURLLoaderFactory::ClearXrwResultForNavigation(
-        navigation_handle()->GetNavigationId());
-  }
-
-  ThrottleCheckResult WillStartRequest() override {
-    auto* handle = navigation_handle();
-    content::OriginTrialsControllerDelegate* delegate =
-        handle->GetWebContents()
-            ->GetBrowserContext()
-            ->GetOriginTrialsControllerDelegate();
-    AwProxyingURLLoaderFactory::SetXrwResultForNavigation(
-        delegate, handle->GetURL(),
-        handle->IsInOutermostMainFrame()
-            ? blink::mojom::ResourceType::kMainFrame
-            : blink::mojom::ResourceType::kSubFrame,
-        handle->GetFrameTreeNodeId(), handle->GetNavigationId());
-    return content::NavigationThrottle::PROCEED;
-  }
-
-  const char* GetNameForLogging() override { return "XrwNavigationThrottle"; }
-};
-
 // Get async check tracker to make Safe Browsing v5 check asynchronous
 base::WeakPtr<AsyncCheckTracker> GetAsyncCheckTracker(
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
@@ -243,8 +214,15 @@ std::string GetUserAgent() {
 
   if (base::FeatureList::IsEnabled(
           features::kWebViewReduceUAAndroidVersionDeviceModel)) {
-    return embedder_support::BuildUnifiedPlatformUAFromProductAndExtraOs(
-        product, "; wv");
+    // The user-agent reduction feature for WebView, when enabled, should
+    // produce a consistent, unified platform string to ensure predictable
+    // behavior. This hardcoded value prevents device-specific platform details
+    // (e.g., "X11; Linux" on desktop devices) from appearing in the reduced
+    // User-Agent. The "Linux; Android 10; K; wv" string matches the expected
+    // format for a reduced WebView User-Agent.
+    constexpr char kUnifiedPlatformOsInfoWebview[] = "Linux; Android 10; K; wv";
+    return embedder_support::BuildUserAgentFromOSAndProduct(
+        kUnifiedPlatformOsInfoWebview, product);
   }
 
   return embedder_support::BuildUserAgentFromProductAndExtraOSInfo(
@@ -436,7 +414,7 @@ bool AwContentBrowserClient::IsHandledURL(const GURL& url) {
     return true;
   }
 
-  const std::string scheme = url.scheme();
+  const std::string scheme = url.GetScheme();
   DCHECK_EQ(scheme, base::ToLowerASCII(scheme));
   static const char* const kProtocolList[] = {
       url::kHttpScheme,         url::kHttpsScheme,
@@ -483,6 +461,29 @@ void AwContentBrowserClient::AppendExtraCommandLineSwitches(
 
     command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                                    kSwitchNames);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewConfigurableLibraryPrefetch)) {
+    RendererLibraryPrefetchMode mode = GetRendererLibraryPrefetchMode();
+    switch (mode) {
+      case RendererLibraryPrefetchMode::kDisabled:
+        command_line->AppendSwitchASCII(
+            switches::kWebViewRendererLibraryPrefetch,
+            switches::kWebViewRendererLibraryPrefetchDisabled);
+        break;
+      case RendererLibraryPrefetchMode::kEnabled:
+        command_line->AppendSwitchASCII(
+            switches::kWebViewRendererLibraryPrefetch,
+            switches::kWebViewRendererLibraryPrefetchEnabled);
+        break;
+      default:
+        // kDefault or unknown values are ignored. But sanitize for histograms.
+        mode = RendererLibraryPrefetchMode::kDefault;
+        break;
+    }
+    base::UmaHistogramEnumeration("Android.WebView.RendererLibraryPrefetchMode",
+                                  mode);
   }
 }
 
@@ -661,6 +662,9 @@ void AwContentBrowserClient::OverrideWebPreferences(
     aw_settings->PopulateWebPreferences(web_prefs);
   }
 
+  // Back-forward transitions are not enabled for webview (crbug.com/361600214).
+  web_prefs->should_screenshot_on_mainframe_same_doc_navigation = false;
+
   AwWebContentsDelegate* delegate =
       static_cast<AwWebContentsDelegate*>(web_contents->GetDelegate());
   web_prefs->modal_context_menu =
@@ -691,19 +695,19 @@ void AwContentBrowserClient::CreateThrottlesForNavigation(
   navigation_interception::InterceptNavigationDelegate::MaybeCreateAndAdd(
       registry, navigation_interception::SynchronyMode::kSync);
 
+  AwBrowserContext* context =
+      AwBrowserContext::FromWebContents(navigation_handle.GetWebContents());
   registry.AddThrottle(std::make_unique<PolicyBlocklistNavigationThrottle>(
-      registry,
-      AwBrowserContext::FromWebContents(navigation_handle.GetWebContents())));
+      registry, user_prefs::UserPrefs::Get(context),
+      AwPolicyBlocklistServiceFactory::GetForBrowserContext(context),
+      SafeSearchFactory::GetForBrowserContext(context)));
 
   AwSafeBrowsingNavigationThrottle::MaybeCreateAndAdd(registry);
-  if (base::FeatureList::IsEnabled(kWebViewOptimizeXrwNavigationFlow)) {
-    registry.AddThrottle(std::make_unique<XrwNavigationThrottle>(registry));
-  }
 
   if ((navigation_handle.GetNavigatingFrameType() ==
            FrameType::kPrimaryMainFrame ||
        navigation_handle.GetNavigatingFrameType() == FrameType::kSubframe) &&
-      navigation_handle.GetURL().SchemeIsHTTPOrHTTPS()) {
+      registry.IsHTTPOrHTTPS()) {
     AwSupervisedUserUrlClassifier* urlClassifier =
         AwSupervisedUserUrlClassifier::GetInstance();
     if (urlClassifier->ShouldCreateThrottle()) {
@@ -995,7 +999,6 @@ bool AwContentBrowserClient::HandleExternalProtocol(
                 mojo::NullRemote(),
                 /* intercept_only=*/true,
                 /* security_options=*/std::nullopt,
-                /* xrw_allowlist_matcher=*/nullptr,
                 /* origin_matched_headers=*/{},
                 std::move(browser_context_handle),
                 /* navigation_id=*/std::nullopt);
@@ -1178,9 +1181,6 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
     std::optional<WebContentsKey> web_contents_key;
     web_contents_key = GetWebContentsKey(*web_contents);
 
-    auto xrw_allowlist_matcher =
-        AwSettings::FromWebContents(web_contents)->xrw_allowlist_matcher();
-
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&AwProxyingURLLoaderFactory::CreateProxy,
@@ -1188,7 +1188,6 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
                        isolation_info, web_contents_key,
                        frame->GetFrameTreeNodeId(), std::move(proxied_receiver),
                        std::move(target_factory_remote), security_options,
-                       std::move(xrw_allowlist_matcher),
                        aw_browser_context->GetOriginMatchedHeaders(),
                        std::move(browser_context_handle), navigation_id));
   } else {
@@ -1203,7 +1202,6 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
             /*web_contents_key=*/std::nullopt, content::FrameTreeNodeId(),
             std::move(proxied_receiver), std::move(target_factory_remote),
             std::nullopt /* security_options */,
-            aw_browser_context->service_worker_xrw_allowlist_matcher(),
             aw_browser_context->GetOriginMatchedHeaders(),
             std::move(browser_context_handle), navigation_id));
   }
@@ -1465,18 +1463,6 @@ AwContentBrowserClient::GetAttributionReportingOsRegistrars(
   NOTREACHED();
 }
 
-network::mojom::IpProtectionProxyBypassPolicy
-AwContentBrowserClient::GetIpProtectionProxyBypassPolicy() {
-  // The exact WebView-specific exclusion policy that is used will depend
-  // on android_webview::features::kWebViewIpProtectionExclusionCriteria
-  return network::mojom::IpProtectionProxyBypassPolicy::kExclusionList;
-}
-
-bool AwContentBrowserClient::WillProvidePublicFirstPartySets() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kWebViewFpsComponent);
-}
-
 bool AwContentBrowserClient::IsFullCookieAccessAllowed(
     content::BrowserContext* browser_context,
     content::WebContents* web_contents,
@@ -1530,6 +1516,10 @@ bool AwContentBrowserClient::IsSharedStorageSelectURLAllowed(
   // TODO(https://crbug.com/401255068): We should have a more stringent check
   // here before launching beyond DEV.
   return base::FeatureList::IsEnabled(network::features::kSharedStorageAPI);
+}
+
+bool AwContentBrowserClient::ShouldAnimateBackForwardTransitions() {
+  return false;
 }
 
 }  // namespace android_webview

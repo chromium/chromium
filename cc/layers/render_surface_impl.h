@@ -328,9 +328,10 @@ class CC_EXPORT RenderSurfaceImpl {
   ElementId id_;
   int effect_tree_index_;
 
-  // A unique id in the same namespace as `Layer::layer_id_`, so viz can
-  // identify `RenderPassDrawQuads` across the frame, similarly to other quads.
-  uint32_t layer_id_ = 0;
+  // A unique id in the same namespace as
+  // `LayerImpl::stable_id_for_shared_quad_state`, so viz can identify
+  // `RenderPassDrawQuads` across the frame, similarly to other quads.
+  const int stable_id_for_shared_quad_state_ = 0;
 
   // Container for properties that render surfaces need to compute before they
   // can be drawn.

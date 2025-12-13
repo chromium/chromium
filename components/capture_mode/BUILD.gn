@@ -20,6 +20,7 @@ component("capture_mode") {
     "//mojo/public/cpp/bindings",
     "//services/audio/public/cpp",
     "//services/video_capture/public/mojom",
+    "//ui/base:features",
     "//ui/compositor",
     "//ui/gfx",
   ]

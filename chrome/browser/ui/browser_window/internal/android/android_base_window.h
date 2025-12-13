@@ -5,15 +5,23 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_INTERNAL_ANDROID_ANDROID_BASE_WINDOW_H_
 #define CHROME_BROWSER_UI_BROWSER_WINDOW_INTERNAL_ANDROID_ANDROID_BASE_WINDOW_H_
 
+#include <jni.h>
+
+#include "base/android/scoped_java_ref.h"
 #include "ui/base/base_window.h"
 
 // Android implementation of |ui::BaseWindow|.
 class AndroidBaseWindow final : public ui::BaseWindow {
  public:
-  AndroidBaseWindow();
+  AndroidBaseWindow(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& java_android_base_window);
   AndroidBaseWindow(const AndroidBaseWindow&) = delete;
   AndroidBaseWindow& operator=(const AndroidBaseWindow&) = delete;
   ~AndroidBaseWindow();
+
+  // Implements Java |AndroidBaseWindow.Natives#destroy|.
+  void Destroy(JNIEnv* env);
 
   // Implements |ui::BaseWindow|.
   bool IsActive() const override;
@@ -38,6 +46,9 @@ class AndroidBaseWindow final : public ui::BaseWindow {
   void FlashFrame(bool flash) override;
   ui::ZOrderLevel GetZOrderLevel() const override;
   void SetZOrderLevel(ui::ZOrderLevel order) override;
+
+ private:
+  base::android::ScopedJavaGlobalRef<jobject> java_android_base_window_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_INTERNAL_ANDROID_ANDROID_BASE_WINDOW_H_

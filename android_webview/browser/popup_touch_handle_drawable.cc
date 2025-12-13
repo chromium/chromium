@@ -7,7 +7,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/PopupTouchHandleDrawable_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace android_webview {
@@ -86,10 +86,12 @@ float PopupTouchHandleDrawable::GetDrawableHorizontalPaddingRatio() const {
 
 static jlong JNI_PopupTouchHandleDrawable_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
+    const JavaRef<jobject>& obj,
     const jfloat horizontal_padding_ratio) {
   return reinterpret_cast<intptr_t>(
       new PopupTouchHandleDrawable(env, obj, horizontal_padding_ratio));
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(PopupTouchHandleDrawable)

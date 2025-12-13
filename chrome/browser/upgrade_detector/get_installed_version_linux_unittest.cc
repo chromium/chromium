@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/upgrade_detector/get_installed_version.h"
 
 #include <stdio.h>
+
 #include <string>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/mock_callback.h"
@@ -66,7 +63,7 @@ MULTIPROCESS_TEST_MAIN(GetProductVersionInChildProc) {
 
     case ChildMode::kWithVersion:
       // Print the current version and report success.
-      printf("%s\n", version_info::GetVersionNumber().data());
+      printf("%s\n", std::string(version_info::GetVersionNumber()).c_str());
       return 0;
   }
   return 1;

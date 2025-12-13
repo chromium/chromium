@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "components/component_updater/installer_policies/trust_token_key_commitments_component_installer_policy.h"
 #include "content/public/browser/network_service_instance.h"

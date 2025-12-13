@@ -4,6 +4,8 @@
 
 package org.chromium.components.page_info;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.View;
 
 import androidx.fragment.app.FragmentManager;
@@ -35,7 +37,7 @@ public abstract class PageInfoPreferenceSubpageController implements PageInfoSub
 
         FragmentManager fragmentManager = mDelegate.getFragmentManager();
         // If the activity is getting destroyed or saved, it is not allowed to modify fragments.
-        if (fragmentManager.isStateSaved()) return null;
+        if (assumeNonNull(fragmentManager).isStateSaved()) return null;
 
         mSubPage = fragment;
         mSubPage.setSiteSettingsDelegate(mDelegate.getSiteSettingsDelegate());
@@ -56,6 +58,11 @@ public abstract class PageInfoPreferenceSubpageController implements PageInfoSub
 
     /** @return Whether it is possible to add preference fragments. */
     protected boolean canCreateSubpageFragment() {
-        return !mDelegate.getFragmentManager().isStateSaved();
+        return !assumeNonNull(mDelegate.getFragmentManager()).isStateSaved();
+    }
+
+    @Override
+    public @Nullable View getCurrentSubpageView() {
+        return mSubPage != null ? mSubPage.requireView() : null;
     }
 }

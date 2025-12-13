@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -39,6 +40,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/painter.h"
+#include "ui/views/property_effects.h"
 
 namespace views {
 
@@ -273,7 +275,7 @@ void ToggleButton::AnimateIsOn(bool is_on) {
   GetViewAccessibility().SetCheckedState(GetIsOn()
                                              ? ax::mojom::CheckedState::kTrue
                                              : ax::mojom::CheckedState::kFalse);
-  OnPropertyChanged(&slide_animation_, kPropertyEffectsNone);
+  OnPropertyChanged(&slide_animation_, PropertyEffects::kNone);
 }
 
 void ToggleButton::SetIsOn(bool is_on) {
@@ -285,7 +287,7 @@ void ToggleButton::SetIsOn(bool is_on) {
                                              ? ax::mojom::CheckedState::kTrue
                                              : ax::mojom::CheckedState::kFalse);
   UpdateThumb();
-  OnPropertyChanged(&slide_animation_, kPropertyEffectsPaint);
+  OnPropertyChanged(&slide_animation_, PropertyEffects::kPaint);
 }
 
 bool ToggleButton::GetIsOn() const {
@@ -313,7 +315,7 @@ void ToggleButton::SetInnerBorderEnabled(bool enabled) {
     return;
   }
   inner_border_enabled_ = enabled;
-  OnPropertyChanged(&inner_border_enabled_, kPropertyEffectsPaint);
+  OnPropertyChanged(&inner_border_enabled_, PropertyEffects::kPaint);
 }
 
 bool ToggleButton::GetInnerBorderEnabled() const {
@@ -325,7 +327,7 @@ void ToggleButton::SetAcceptsEvents(bool accepts_events) {
     return;
   }
   accepts_events_ = accepts_events;
-  OnPropertyChanged(&accepts_events_, kPropertyEffectsNone);
+  OnPropertyChanged(&accepts_events_, PropertyEffects::kNone);
 }
 
 bool ToggleButton::GetAcceptsEvents() const {
@@ -457,12 +459,10 @@ void ToggleButton::UpdateAccessibleCheckedState() {
 }
 
 SkPath ToggleButton::GetFocusRingPath() const {
-  SkPath path;
   gfx::RectF bounds(GetTrackBounds());
   const SkRect sk_rect = gfx::RectFToSkRect(bounds);
   const float corner_radius = sk_rect.height() / 2;
-  path.addRoundRect(sk_rect, corner_radius, corner_radius);
-  return path;
+  return SkPath::RRect(sk_rect, corner_radius, corner_radius);
 }
 
 void ToggleButton::PaintButtonContents(gfx::Canvas* canvas) {

@@ -20,9 +20,10 @@ SpeculationCandidate::SpeculationCandidate(
     mojom::blink::SpeculationEagerness eagerness,
     network::mojom::blink::NoVarySearchPtr no_vary_search,
     mojom::blink::SpeculationInjectionType injection_type,
-    Vector<WTF::String> tags,
+    Vector<String> tags,
     SpeculationRuleSet* rule_set,
-    HTMLAnchorElementBase* anchor)
+    HTMLAnchorElementBase* anchor,
+    SpeculationRule::FormSubmission form_submission)
     : url_(url),
       action_(action),
       referrer_(std::move(referrer)),
@@ -34,7 +35,8 @@ SpeculationCandidate::SpeculationCandidate(
       injection_type_(injection_type),
       tags_(std::move(tags)),
       rule_set_(rule_set),
-      anchor_(anchor) {
+      anchor_(anchor),
+      form_submission_(form_submission) {
   DCHECK(rule_set);
   DCHECK(url.ProtocolIsInHTTPFamily());
 }
@@ -50,7 +52,7 @@ mojom::blink::SpeculationCandidatePtr SpeculationCandidate::ToMojom() const {
       mojom::blink::Referrer::New(KURL(referrer_.referrer),
                                   referrer_.referrer_policy),
       requires_anonymous_client_ip_when_cross_origin_, target_hint_, eagerness_,
-      no_vary_search_.Clone(), injection_type_, tags_);
+      no_vary_search_.Clone(), injection_type_, tags_, form_submission_);
 }
 
 bool SpeculationCandidate::IsSimilarFromAuthorPerspectiveExceptForTags(

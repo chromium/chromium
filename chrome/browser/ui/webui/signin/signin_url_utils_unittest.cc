@@ -39,7 +39,7 @@ TEST(SigninURLUtilsSyncConfirmationURLTest, GetAndParseURL) {
       GURL(chrome::kChromeUISyncConfirmationURL),
       SyncConfirmationStyle::kDefaultModal, /*is_sync_promo=*/false);
   EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(url.host(), chrome::kChromeUISyncConfirmationHost);
+  EXPECT_EQ(url.GetHost(), chrome::kChromeUISyncConfirmationHost);
   EXPECT_EQ(SyncConfirmationStyle::kDefaultModal,
             GetSyncConfirmationStyle(url));
   EXPECT_FALSE(IsSyncConfirmationPromo(url));
@@ -50,7 +50,7 @@ TEST(SigninURLUtilsSyncConfirmationURLTest, GetAndParseURL) {
       SyncConfirmationStyle::kSigninInterceptModal,
       /*is_sync_promo=*/false);
   EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(url.host(), chrome::kChromeUISyncConfirmationHost);
+  EXPECT_EQ(url.GetHost(), chrome::kChromeUISyncConfirmationHost);
   EXPECT_EQ(SyncConfirmationStyle::kSigninInterceptModal,
             GetSyncConfirmationStyle(url));
   EXPECT_FALSE(IsSyncConfirmationPromo(url));
@@ -60,7 +60,7 @@ TEST(SigninURLUtilsSyncConfirmationURLTest, GetAndParseURL) {
       GURL(chrome::kChromeUISyncConfirmationURL),
       SyncConfirmationStyle::kWindow, /*is_sync_promo=*/false);
   EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(url.host(), chrome::kChromeUISyncConfirmationHost);
+  EXPECT_EQ(url.GetHost(), chrome::kChromeUISyncConfirmationHost);
   EXPECT_EQ(SyncConfirmationStyle::kWindow, GetSyncConfirmationStyle(url));
   EXPECT_FALSE(IsSyncConfirmationPromo(url));
 
@@ -69,7 +69,7 @@ TEST(SigninURLUtilsSyncConfirmationURLTest, GetAndParseURL) {
       GURL(chrome::kChromeUISyncConfirmationURL),
       SyncConfirmationStyle::kWindow, /*is_sync_promo=*/true);
   EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(url.host(), chrome::kChromeUISyncConfirmationHost);
+  EXPECT_EQ(url.GetHost(), chrome::kChromeUISyncConfirmationHost);
   EXPECT_EQ(SyncConfirmationStyle::kWindow, GetSyncConfirmationStyle(url));
   EXPECT_TRUE(IsSyncConfirmationPromo(url));
 }
@@ -87,7 +87,7 @@ TEST(SigninURLUtilsProfileCustomizationURLTest, GetAndParseURL) {
       GURL(chrome::kChromeUIProfileCustomizationURL),
       ProfileCustomizationStyle::kDefault);
   EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(url.host(), chrome::kChromeUIProfileCustomizationHost);
+  EXPECT_EQ(url.GetHost(), chrome::kChromeUIProfileCustomizationHost);
   EXPECT_EQ(ProfileCustomizationStyle::kDefault,
             GetProfileCustomizationStyle(url));
 
@@ -96,7 +96,7 @@ TEST(SigninURLUtilsProfileCustomizationURLTest, GetAndParseURL) {
       GURL(chrome::kChromeUIProfileCustomizationURL),
       ProfileCustomizationStyle::kLocalProfileCreation);
   EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(url.host(), chrome::kChromeUIProfileCustomizationHost);
+  EXPECT_EQ(url.GetHost(), chrome::kChromeUIProfileCustomizationHost);
   EXPECT_EQ(ProfileCustomizationStyle::kLocalProfileCreation,
             GetProfileCustomizationStyle(url));
 }

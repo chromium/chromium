@@ -81,6 +81,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
   void OnPaint(gfx::Canvas* canvas) override;
   void OnFocus() override;
   void OnBlur() override;
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
   ui::Cursor GetCursor(const ui::MouseEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
@@ -163,6 +165,10 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaProgressView
   // Animation for progress path to transition between squiggly and straight
   // lines.
   gfx::SlideAnimation slide_animation_;
+
+  // Animation for progress line to transition between thicker and less thick
+  // states.
+  gfx::SlideAnimation thickness_animation_;
 
   // Timer to continuously update the progress value if the media is playing.
   std::unique_ptr<base::OneShotTimer> update_progress_timer_ =

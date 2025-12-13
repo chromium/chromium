@@ -11,6 +11,8 @@
 namespace ios_web_view {
 void RegisterCWVAutofillPrefs(user_prefs::PrefRegistrySyncable* pref_registry) {
   pref_registry->RegisterBooleanPref(kCWVAutofillAddressSyncEnabled, false);
+  pref_registry->RegisterBooleanPref(kCWVAutofillVCNUsageEnabled, false);
+  pref_registry->RegisterBooleanPref(kUseImageFetcherEnabled, false);
 }
 
 bool IsAutofillAddressSyncEnabled(const PrefService* prefs) {
@@ -20,4 +22,21 @@ bool IsAutofillAddressSyncEnabled(const PrefService* prefs) {
 void SetAutofillAddressSyncEnabled(PrefService* prefs, bool enabled) {
   prefs->SetBoolean(kCWVAutofillAddressSyncEnabled, enabled);
 }
+
+bool IsAutofillVCNUsageEnabled(const PrefService* prefs) {
+  return prefs->GetBoolean(kCWVAutofillVCNUsageEnabled);
+}
+
+void SetAutofillVCNUsageEnabled(PrefService* prefs, bool enabled) {
+  prefs->SetBoolean(kCWVAutofillVCNUsageEnabled, enabled);
+}
+
+bool IsUseImageFetcherEnabled(const PrefService* prefs) {
+  return prefs->GetBoolean(kUseImageFetcherEnabled);
+}
+
+void SetUseImageFetcherEnabled(PrefService* prefs, bool enabled) {
+  prefs->SetBoolean(kUseImageFetcherEnabled, enabled);
+}
+
 }  // namespace ios_web_view

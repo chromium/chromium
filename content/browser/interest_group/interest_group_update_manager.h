@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
@@ -218,7 +219,7 @@ class CONTENT_EXPORT InterestGroupUpdateManager {
       UrlLoadersList::iterator simple_url_loader,
       blink::InterestGroupKey group_key,
       base::TimeTicks start_time,
-      std::unique_ptr<std::string> fetch_body);
+      std::optional<std::string> fetch_body);
   void DidUpdateInterestGroupsOfOwnerJsonParse(
       blink::InterestGroupKey group_key,
       data_decoder::DataDecoder::ValueOrError result);

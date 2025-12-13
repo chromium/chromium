@@ -9,6 +9,7 @@
 #include <array>
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -213,8 +214,8 @@ ReadCompleteLogFile(const base::FilePath& log_path) {
     return base::unexpected(::testing::AssertionFailure()
                             << log_path.value() << " could not be read.");
   }
-  std::optional<base::Value::Dict> log_parsed =
-      base::JSONReader::ReadDict(log_string);
+  std::optional<base::Value::Dict> log_parsed = base::JSONReader::ReadDict(
+      log_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!log_parsed) {
     return base::unexpected(::testing::AssertionFailure()
                             << "Contents of " << log_path.value()
@@ -782,7 +783,7 @@ TEST_F(NetExportFileWriterTest, StartWithNetworkContextActive) {
       url_loader_factory.get(),
       base::BindOnce(
           [](base::OnceClosure quit_closure,
-             std::unique_ptr<std::string> response_body) {
+             std::optional<std::string> response_body) {
             std::move(quit_closure).Run();
           },
           run_loop2.QuitClosure()));

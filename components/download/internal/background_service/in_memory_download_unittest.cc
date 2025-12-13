@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/download/internal/background_service/in_memory_download.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
@@ -187,7 +183,7 @@ class InMemoryDownloadTest : public testing::Test {
     EXPECT_EQ(bytes_read, static_cast<int>(expected.size()));
     EXPECT_EQ(async_bytes_read, 0);
     for (size_t i = 0; i < expected.size(); i++) {
-      EXPECT_EQ(expected[i], buffer->data()[i]);
+      UNSAFE_TODO(EXPECT_EQ(expected[i], buffer->data()[i]));
     }
   }
 

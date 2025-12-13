@@ -4,11 +4,9 @@
 
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
 
-#include "base/feature_list.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
-#include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -44,21 +42,9 @@ CloseImageButton::CloseImageButton(PressedCallback callback)
 void CloseImageButton::SetPosition(
     const gfx::Size& size,
     VideoOverlayWindowViews::WindowQuadrant quadrant) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (quadrant == VideoOverlayWindowViews::WindowQuadrant::kBottomLeft) {
-    views::ImageButton::SetPosition(
-        gfx::Point(kCloseButtonMargin, kCloseButtonMargin));
-    return;
-  }
-#endif
-
-  const int top_margin = base::FeatureList::IsEnabled(
-                             media::kVideoPictureInPictureControlsUpdate2024)
-                             ? kCloseButtonTopMargin
-                             : kCloseButtonMargin;
-
-  views::ImageButton::SetPosition(gfx::Point(
-      size.width() - kCloseButtonSize - kCloseButtonMargin, top_margin));
+  views::ImageButton::SetPosition(
+      gfx::Point(size.width() - kCloseButtonSize - kCloseButtonMargin,
+                 kCloseButtonTopMargin));
 }
 
 BEGIN_METADATA(CloseImageButton)

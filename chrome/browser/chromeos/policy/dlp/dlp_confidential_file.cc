@@ -14,7 +14,8 @@ namespace policy {
 DlpConfidentialFile::DlpConfidentialFile(const base::FilePath& file_path)
     : icon(chromeos::GetIconForPath(
           file_path,
-          ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors())),
+          ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+              ui::NativeTheme::PreferredColorScheme::kDark)),
       title(file_path.BaseName().LossyDisplayName()),
       file_path(file_path) {}
 

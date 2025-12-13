@@ -1,0 +1,7 @@
+Tests updating request URL to a cross-origin one.
+Initial navigation
+http://domain1.test:8080/inspector-protocol/resources/image.html => http://domain2.test:8080/inspector-protocol/resources/image.html
+http://domain1.test:8080/inspector-protocol/resources/image.png => http://domain2.test:8080/inspector-protocol/resources/image.png
+Anchor navigation
+http://domain1.test:8080/inspector-protocol/resource/empty.html => http://domain2.test:8080/inspector-protocol/resource/empty.html
+

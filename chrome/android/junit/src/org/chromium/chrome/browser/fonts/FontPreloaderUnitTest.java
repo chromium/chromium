@@ -30,6 +30,7 @@ import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.annotation.Resetter;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.fonts.FontPreloaderUnitTest.ShadowResourcesCompat;
 
 import java.util.ArrayList;
@@ -43,9 +44,7 @@ import java.util.List;
 @LooperMode(Mode.PAUSED)
 public class FontPreloaderUnitTest {
     private static final Integer[] FONTS = {
-        org.chromium.chrome.R.font.chrome_google_sans,
-        org.chromium.chrome.R.font.chrome_google_sans_medium,
-        org.chromium.chrome.R.font.chrome_google_sans_bold
+        R.font.chrome_google_sans, R.font.chrome_google_sans_medium, R.font.chrome_google_sans_bold
     };
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

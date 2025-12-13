@@ -61,9 +61,6 @@ class PLATFORM_EXPORT DisplayItemList {
     bool operator==(const IteratorWrapper& other) const {
       return it_ == other.it_;
     }
-    bool operator!=(const IteratorWrapper& other) const {
-      return it_ != other.it_;
-    }
     bool operator<(const IteratorWrapper& other) const {
       return it_ < other.it_;
     }

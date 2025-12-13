@@ -12,6 +12,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
 #include "components/optimization_guide/core/model_execution/redactor.h"
@@ -20,7 +21,6 @@
 #include "components/optimization_guide/core/model_execution/simple_response_parser.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 
 namespace optimization_guide {
@@ -36,28 +36,24 @@ OnDeviceModelFeatureAdapter::OnDeviceModelFeatureAdapter(
   // Set limits values in `token_limits_`.
   auto& input_config = config_.input_config();
   auto& output_config = config_.output_config();
-  uint32_t max_tokens = features::GetOnDeviceModelMaxTokens();
+  uint32_t max_tokens = kOnDeviceModelMaxTokens;
   token_limits_.max_tokens = max_tokens;
   token_limits_.min_context_tokens =
       input_config.has_min_context_tokens()
           ? std::min(input_config.min_context_tokens(), max_tokens)
-          : static_cast<uint32_t>(
-                features::GetOnDeviceModelMinTokensForContext());
+          : 1024;
   token_limits_.max_context_tokens =
       input_config.has_max_context_tokens()
           ? std::min(input_config.max_context_tokens(), max_tokens)
-          : static_cast<uint32_t>(
-                features::GetOnDeviceModelMaxTokensForContext());
+          : 8192;
   token_limits_.max_execute_tokens =
       input_config.has_max_execute_tokens()
           ? std::min(input_config.max_execute_tokens(), max_tokens)
-          : static_cast<uint32_t>(
-                features::GetOnDeviceModelMaxTokensForExecute());
+          : 1024;
   token_limits_.max_output_tokens =
       output_config.has_max_output_tokens()
           ? std::min(output_config.max_output_tokens(), max_tokens)
-          : static_cast<uint32_t>(
-                features::GetOnDeviceModelMaxTokensForOutput());
+          : 1024;
 }
 
 OnDeviceModelFeatureAdapter::~OnDeviceModelFeatureAdapter() = default;
@@ -177,6 +173,12 @@ SamplingParamsConfig OnDeviceModelFeatureAdapter::GetSamplingParamsConfig()
       .default_top_k = config_.sampling_params().top_k(),
       .default_temperature = config_.sampling_params().temperature(),
   };
+}
+
+SamplingParams OnDeviceModelFeatureAdapter::GetDefaultSamplingParams() const {
+  SamplingParamsConfig feature_params = GetSamplingParamsConfig();
+  return SamplingParams{.top_k = feature_params.default_top_k,
+                        .temperature = feature_params.default_temperature};
 }
 
 const proto::Any& OnDeviceModelFeatureAdapter::GetFeatureMetadata() const {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/exo/surface_tree_host.h"
 
 #include <memory>
@@ -14,6 +9,7 @@
 
 #include "ash/display/display_configuration_controller.h"
 #include "ash/shell.h"
+#include "base/compiler_specific.h"
 #include "base/test/bind.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/sub_surface.h"
@@ -103,50 +99,6 @@ TEST_F(SurfaceTreeHostTest, UpdatePrimaryDisplayWithSurfaceUpdateFailure) {
   ASSERT_EQ(leave_enter_ids.size(), 3u);
   EXPECT_EQ(leave_enter_ids[2],
             std::make_pair(display::kInvalidDisplayId, display2.id()));
-}
-
-TEST_F(SurfaceTreeHostTest,
-       BuiltinDisplayMirrorModeToExtendModeWithExternalDisplayAsPrimary) {
-  UpdateDisplay("800x600,1000x800@1.2");
-
-  // Set first display as internal, so it'll be primary source in mirror mode.
-  int64_t internal_display_id =
-      display::test::DisplayManagerTestApi(display_manager())
-          .SetFirstDisplayAsInternalDisplay();
-  int64_t external_display_id = GetSecondaryDisplay().id();
-
-  ASSERT_NE(internal_display_id, external_display_id);
-
-  std::vector<std::pair<int64_t, int64_t>> leave_enter_ids;
-  shell_surface_->root_surface()->set_leave_enter_callback(
-      base::BindLambdaForTesting(
-          [&leave_enter_ids](int64_t old_display_id, int64_t new_display_id) {
-            leave_enter_ids.emplace_back(old_display_id, new_display_id);
-            return true;
-          }));
-
-  // Make external display primary.
-  display_config_controller()->SetPrimaryDisplayId(external_display_id, false);
-
-  ASSERT_EQ(leave_enter_ids.size(), 1u);
-  EXPECT_EQ(leave_enter_ids[0],
-            std::make_pair(internal_display_id, external_display_id));
-
-  // Change to mirror mode, which should make internal display primary.
-  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_EQ(leave_enter_ids.size(), 2u);
-  EXPECT_EQ(leave_enter_ids[1],
-            std::make_pair(external_display_id, internal_display_id));
-
-  // Switch back to extend mode, which should restore external as primary.
-  display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_EQ(leave_enter_ids.size(), 3u);
-  EXPECT_EQ(leave_enter_ids[2],
-            std::make_pair(internal_display_id, external_display_id));
 }
 
 TEST_F(SurfaceTreeHostTest,
@@ -327,8 +279,8 @@ class InterceptingTestRasterInterface : public viz::TestRasterInterface {
     ResetSyncTokensCount();
     for (GLsizei i = 0; i < count; ++i) {
       gpu::SyncToken sync_token_data;
-      memcpy(sync_token_data.GetData(), sync_tokens[i],
-             sizeof(sync_token_data));
+      UNSAFE_TODO(memcpy(sync_token_data.GetData(), sync_tokens[i],
+                         sizeof(sync_token_data)));
       if (sync_token_data.verified_flush()) {
         verified_sync_tokens_++;
       } else {
@@ -378,10 +330,6 @@ class FakeRasterContextProvider
     return nullptr;
   }
   gpu::ContextSupport* ContextSupport() override { return nullptr; }
-  class GrDirectContext* GrContext() override {
-    ADD_FAILURE();
-    return nullptr;
-  }
   gpu::SharedImageInterface* SharedImageInterface() override {
     ADD_FAILURE();
     return nullptr;
@@ -398,11 +346,6 @@ class FakeRasterContextProvider
   }
   gpu::raster::RasterInterface* RasterInterface() override {
     return GetInterceptingTestRasterInterface();
-  }
-  unsigned int GetGrGLTextureFormat(
-      viz::SharedImageFormat format) const override {
-    ADD_FAILURE();
-    return 0;
   }
 
   InterceptingTestRasterInterface* GetInterceptingTestRasterInterface() {

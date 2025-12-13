@@ -17,6 +17,8 @@ source_set("internal") {
     "tab_group_sync_coordinator_impl.h",
     "tab_group_sync_metrics_logger_impl.cc",
     "tab_group_sync_metrics_logger_impl.h",
+    "tab_group_sync_personal_collaboration_data_handler.cc",
+    "tab_group_sync_personal_collaboration_data_handler.h",
     "tab_group_sync_service_factory_helper.cc",
     "tab_group_sync_service_impl.cc",
     "tab_group_sync_service_impl.h",
@@ -26,10 +28,12 @@ source_set("internal") {
     "versioning_message_controller_impl.h",
   ]
   deps = [
+    ":migration",
     ":tab_group_sync_bridge",
     "//base",
     "//components/data_sharing/public:features",
     "//components/data_sharing/public:logger",
+    "//components/data_sharing/public:personal_collaboration_data",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
     "//components/saved_tab_groups/delegate",
@@ -61,6 +65,20 @@ source_set("internal") {
   }
 
   public_deps = [ ":model" ]
+}
+
+source_set("migration") {
+  sources = [
+    "migration/tab_group_entity_converter.cc",
+    "migration/tab_group_entity_converter.h",
+  ]
+  deps = [
+    "//base",
+    "//components/data_sharing/migration/public",
+    "//components/saved_tab_groups/public",
+    "//components/sync/protocol:util",
+    "//components/tab_groups",
+  ]
 }
 
 source_set("model") {
@@ -167,30 +185,36 @@ source_set("service_test_utils") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "migration/tab_group_entity_converter_unittest.cc",
     "saved_tab_group_model_unittest.cc",
     "saved_tab_group_proto_conversion_unittest.cc",
     "saved_tab_group_sync_bridge_unittest.cc",
     "shared_tab_group_account_data_sync_bridge_unittest.cc",
     "shared_tab_group_data_sync_bridge_unittest.cc",
     "startup_helper_unittest.cc",
+    "stats_unittest.cc",
     "tab_group_sync_bridge_mediator_unittest.cc",
     "tab_group_sync_coordinator_unittest.cc",
     "tab_group_sync_metrics_logger_unittest.cc",
+    "tab_group_sync_personal_collaboration_data_handler_unittest.cc",
     "tab_group_sync_service_impl_unittest.cc",
     "tab_group_type_observer_unittest.cc",
     "versioning_message_controller_impl_unittest.cc",
   ]
   deps = [
     ":internal",
+    ":migration",
     ":model",
     ":tab_group_sync_bridge",
     "//base",
     "//base/test:test_support",
+    "//components/data_sharing:personal_collaboration_data_test_support_proto",
+    "//components/data_sharing:test_support",
     "//components/data_sharing/public:features",
     "//components/data_sharing/public:logger",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
-    "//components/pref_registry:pref_registry",
+    "//components/pref_registry",
     "//components/prefs:test_support",
     "//components/saved_tab_groups/delegate",
     "//components/saved_tab_groups/proto",
@@ -227,16 +251,17 @@ source_set("tab_group_sync_bridge") {
     # This is allowed until usage of SavedTabGroupKeyedService has been migrated
     # to TabGroupSyncService.
     "//chrome/android:browser_test_support",
-    "//chrome/browser",
     "//chrome/browser/sync/test/integration:*",
-    "//chrome/browser/ui",
     "//chrome/browser/ui/tabs:tab_group_impl",
+    "//chrome/browser/ui/tabs/saved_tab_groups:impl",
     "//chrome/test:*",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/test/app:test_support",
   ]
 
   sources = [
+    "personal_collaboration_data_conversion_utils.cc",
+    "personal_collaboration_data_conversion_utils.h",
     "saved_tab_group_proto_conversions.cc",
     "saved_tab_group_proto_conversions.h",
     "saved_tab_group_sync_bridge.cc",
@@ -258,12 +283,12 @@ source_set("tab_group_sync_bridge") {
     "//components/data_sharing/public:logger",
     "//components/saved_tab_groups/proto",
     "//components/saved_tab_groups/public",
-    "//components/tab_groups:tab_groups",
+    "//components/tab_groups",
   ]
 
   public_deps = [
     "//base",
-    "//components/saved_tab_groups/proto:proto",
+    "//components/saved_tab_groups/proto",
     "//components/sync/base",
     "//components/sync/model",
   ]

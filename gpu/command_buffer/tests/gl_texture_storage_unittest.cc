@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <stdint.h>
 
+#include <string_view>
+
+#include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
@@ -93,12 +92,12 @@ class TextureStorageTest : public testing::Test {
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                            tex_, 0);
 
-    const GLubyte* extensions = glGetString(GL_EXTENSIONS);
-    ext_texture_storage_available_ = strstr(
-        reinterpret_cast<const char*>(extensions), "GL_EXT_texture_storage");
+    std::string_view extensions =
+        reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
+    ext_texture_storage_available_ =
+        base::Contains(extensions, "GL_EXT_texture_storage");
     oes_required_internal_format_available_ =
-        strstr(reinterpret_cast<const char*>(extensions),
-               "GL_OES_required_internalformat");
+        base::Contains(extensions, "GL_OES_required_internalformat");
   }
 
   void TearDown() override { gl_.Destroy(); }
@@ -331,6 +330,3 @@ TEST_F(TextureStorageTest, LuminanceAlphaEmulation) {
 }
 
 }  // namespace gpu
-
-
-

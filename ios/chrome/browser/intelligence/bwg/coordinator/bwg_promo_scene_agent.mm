@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 
 @implementation BWGPromoSceneAgent {
-  raw_ptr<PromosManager> _promosManager;
+  raw_ptr<PromosManager, DanglingUntriaged> _promosManager;
 }
 
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager {

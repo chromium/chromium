@@ -5,17 +5,21 @@
 package org.chromium.chrome.browser.keyboard_accessory;
 
 import android.content.Context;
+import android.graphics.RectF;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
-import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
+import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
 import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -25,11 +29,12 @@ import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.AsyncViewStub;
-import org.chromium.ui.DropdownPopupWindow;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.insets.InsetObserver;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /**
  * Handles requests to the manual UI for filling passwords, payments and other user data. Ideally,
@@ -41,8 +46,9 @@ import java.util.function.BooleanSupplier;
 class ManualFillingCoordinator implements ManualFillingComponent {
     private final ManualFillingMediator mMediator = new ManualFillingMediator();
     private final ObserverList<Observer> mObserverList = new ObserverList<>();
+    private KeyboardAccessoryCoordinator mKeyboardAccessoryCoordinator;
 
-    public ManualFillingCoordinator() {}
+    ManualFillingCoordinator() {}
 
     @Override
     public void initialize(
@@ -52,7 +58,8 @@ class ManualFillingCoordinator implements ManualFillingComponent {
             BooleanSupplier isContextualSearchOpened,
             SoftKeyboardDelegate keyboardDelegate,
             BackPressManager backPressManager,
-            Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            InsetObserver insetObserver,
             AsyncViewStub sheetStub,
             AsyncViewStub barStub) {
         Context context = windowAndroid.getContext().get();
@@ -64,16 +71,30 @@ class ManualFillingCoordinator implements ManualFillingComponent {
         sheetStub.setLayoutResource(R.layout.keyboard_accessory_sheet);
         barStub.setShouldInflateOnBackgroundThread(true);
         sheetStub.setShouldInflateOnBackgroundThread(true);
+        mKeyboardAccessoryCoordinator =
+                new KeyboardAccessoryCoordinator(
+                        profile,
+                        mMediator,
+                        mMediator,
+                        edgeToEdgeControllerSupplier,
+                        insetObserver,
+                        barStub,
+                        mMediator::isLargeFormFactor,
+                        this::dismiss);
+        BrowserControlsManager browserControlsManager =
+                BrowserControlsManagerSupplier.getValueOrNullFrom(windowAndroid);
+
         initialize(
                 windowAndroid,
-                new KeyboardAccessoryCoordinator(profile, mMediator, mMediator, barStub),
+                mKeyboardAccessoryCoordinator,
                 new AccessorySheetCoordinator(sheetStub, mMediator),
                 sheetController,
                 isContextualSearchOpened,
                 backPressManager,
                 edgeToEdgeControllerSupplier,
                 keyboardDelegate,
-                new ConfirmationDialogHelper(context));
+                new ConfirmationDialogHelper(context),
+                browserControlsManager);
     }
 
     @VisibleForTesting
@@ -86,7 +107,8 @@ class ManualFillingCoordinator implements ManualFillingComponent {
             BackPressManager backPressManager,
             Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             SoftKeyboardDelegate keyboardDelegate,
-            ConfirmationDialogHelper confirmationHelper) {
+            ConfirmationDialogHelper confirmationHelper,
+            @Nullable BrowserControlsManager controlsManager) {
         mMediator.initialize(
                 accessoryBar,
                 accessorySheet,
@@ -96,13 +118,17 @@ class ManualFillingCoordinator implements ManualFillingComponent {
                 backPressManager,
                 edgeToEdgeControllerSupplier,
                 keyboardDelegate,
-                confirmationHelper);
+                confirmationHelper,
+                controlsManager);
     }
 
     @Override
     public void destroy() {
         for (Observer observer : mObserverList) observer.onDestroy();
         mMediator.destroy();
+        if (mKeyboardAccessoryCoordinator != null) {
+            mKeyboardAccessoryCoordinator.destroy();
+        }
     }
 
     @Override
@@ -116,18 +142,13 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mMediator.getHandleBackPressChangedSupplier();
     }
 
     @Override
     public void dismiss() {
         mMediator.dismiss();
-    }
-
-    @Override
-    public void notifyPopupAvailable(DropdownPopupWindow popup) {
-        mMediator.notifyPopupOpened(popup);
     }
 
     @Override
@@ -142,8 +163,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
 
     @Override
     public void registerActionProvider(
-            WebContents webContents,
-            PropertyProvider<KeyboardAccessoryData.Action[]> actionProvider) {
+            WebContents webContents, Provider<KeyboardAccessoryData.Action[]> actionProvider) {
         mMediator.registerActionProvider(webContents, actionProvider);
     }
 
@@ -151,7 +171,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     public void registerSheetDataProvider(
             WebContents webContents,
             @AccessoryTabType int sheetType,
-            PropertyProvider<KeyboardAccessoryData.AccessorySheetData> sheetDataProvider) {
+            Provider<KeyboardAccessoryData.AccessorySheetData> sheetDataProvider) {
         mMediator.registerSheetDataProvider(webContents, sheetType, sheetDataProvider);
     }
 
@@ -162,15 +182,18 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
-    public void registerAutofillProvider(
-            PropertyProvider<List<AutofillSuggestion>> autofillProvider,
-            AutofillDelegate delegate) {
-        mMediator.registerAutofillProvider(autofillProvider, delegate);
+    public void setFieldBounds(RectF bounds) {
+        mMediator.setFieldBounds(bounds);
     }
 
     @Override
-    public void show(boolean waitForKeyboard) {
-        mMediator.show(waitForKeyboard);
+    public void setSuggestions(List<AutofillSuggestion> suggestions, AutofillDelegate delegate) {
+        mMediator.setSuggestions(suggestions, delegate);
+    }
+
+    @Override
+    public void show(boolean waitForKeyboard, boolean isCredentialFieldOrHasAutofillSuggestions) {
+        mMediator.show(waitForKeyboard, isCredentialFieldOrHasAutofillSuggestions);
     }
 
     @Override
@@ -214,9 +237,14 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
-    public void confirmOperation(
-            String title, String message, Runnable confirmedCallback, Runnable declinedCallback) {
-        mMediator.confirmOperation(title, message, confirmedCallback, declinedCallback);
+    public void confirmDeletionOperation(
+            String title,
+            CharSequence message,
+            String confirmButtonText,
+            Runnable confirmedCallback,
+            Runnable declinedCallback) {
+        mMediator.confirmDeletionOperation(
+                title, message, confirmButtonText, confirmedCallback, declinedCallback);
     }
 
     ManualFillingMediator getMediatorForTesting() {
@@ -242,6 +270,7 @@ class ManualFillingCoordinator implements ManualFillingComponent {
 
     @Override
     public void forceShowForTesting() {
-        mMediator.show(true);
+        mMediator.show(
+                /* waitForKeyboard= */ true, /* isCredentialFieldOrHasAutofillSuggestions= */ true);
     }
 }

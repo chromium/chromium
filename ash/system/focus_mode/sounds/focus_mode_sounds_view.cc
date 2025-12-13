@@ -97,8 +97,8 @@ std::unique_ptr<views::BoxLayoutView> CreateYouTubeMusicAlternateViewBase(
   auto* button = box_view->AddChildView(std::make_unique<PillButton>(
       std::move(callback), l10n_util::GetStringUTF16(button_message_id),
       PillButton::Type::kSecondaryWithoutIcon));
-  button->SetBackgroundColorId(cros_tokens::kCrosSysSystemPrimaryContainer);
-  button->SetButtonTextColorId(cros_tokens::kCrosSysSystemOnPrimaryContainer);
+  button->SetBackgroundColor(cros_tokens::kCrosSysSystemPrimaryContainer);
+  button->SetButtonTextColor(cros_tokens::kCrosSysSystemOnPrimaryContainer);
   return box_view;
 }
 

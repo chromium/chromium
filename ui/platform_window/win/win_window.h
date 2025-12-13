@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
+#include "ui/base/ime/input_method_observer.h"
 #include "ui/gfx/win/msg_util.h"
 #include "ui/gfx/win/window_impl.h"
 #include "ui/platform_window/platform_window.h"
@@ -20,7 +20,8 @@ namespace ui {
 class WinCursor;
 
 class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
-                                    public gfx::WindowImpl {
+                                    public gfx::WindowImpl,
+                                    public InputMethodObserver {
  public:
   WinWindow(PlatformWindowDelegate* delegate, const gfx::Rect& bounds);
 
@@ -29,8 +30,17 @@ class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
 
   ~WinWindow() override;
 
+  void SetInputMethod(InputMethod* input_method);
+
  private:
   void Destroy();
+
+  // InputMethodObserver:
+  void OnInputMethodDestroyed(const InputMethod* input_method) override;
+  void OnFocus() override;
+  void OnBlur() override;
+  void OnCaretBoundsChanged(const TextInputClient* client) override;
+  void OnTextInputStateChanged(const TextInputClient* client) override;
 
   // PlatformWindow:
   void Show(bool inactive) override;
@@ -81,6 +91,7 @@ class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
     CR_MESSAGE_RANGE_HANDLER_EX(WM_MOUSEFIRST, WM_MOUSELAST, OnMouseRange)
     CR_MESSAGE_RANGE_HANDLER_EX(WM_NCMOUSEMOVE, WM_NCXBUTTONDBLCLK,
                                 OnMouseRange)
+    CR_MESSAGE_HANDLER_EX(WM_SETCURSOR, OnSetCursor);
     CR_MESSAGE_HANDLER_EX(WM_CAPTURECHANGED, OnCaptureChanged)
 
     CR_MESSAGE_HANDLER_EX(WM_KEYDOWN, OnKeyEvent)
@@ -88,8 +99,14 @@ class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
     CR_MESSAGE_HANDLER_EX(WM_SYSKEYDOWN, OnKeyEvent)
     CR_MESSAGE_HANDLER_EX(WM_SYSKEYUP, OnKeyEvent)
     CR_MESSAGE_HANDLER_EX(WM_CHAR, OnKeyEvent)
-    CR_MESSAGE_HANDLER_EX(WM_SYSCHAR, OnKeyEvent)
-    CR_MESSAGE_HANDLER_EX(WM_IME_CHAR, OnKeyEvent)
+    CR_MESSAGE_HANDLER_EX(WM_IME_SETCONTEXT, OnImeMessages)
+    CR_MESSAGE_HANDLER_EX(WM_IME_STARTCOMPOSITION, OnImeMessages)
+    CR_MESSAGE_HANDLER_EX(WM_IME_COMPOSITION, OnImeMessages)
+    CR_MESSAGE_HANDLER_EX(WM_IME_ENDCOMPOSITION, OnImeMessages)
+    CR_MESSAGE_HANDLER_EX(WM_IME_REQUEST, OnImeMessages)
+    CR_MESSAGE_HANDLER_EX(WM_IME_NOTIFY, OnImeMessages)
+    CR_MESSAGE_HANDLER_EX(WM_SYSCHAR, OnImeMessages)
+    CR_MESSAGE_HANDLER_EX(WM_IME_CHAR, OnImeMessages)
     CR_MESSAGE_HANDLER_EX(WM_NCACTIVATE, OnNCActivate)
 
     CR_MSG_WM_CLOSE(OnClose)
@@ -102,18 +119,24 @@ class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
   LRESULT OnMouseRange(UINT message, WPARAM w_param, LPARAM l_param);
   LRESULT OnCaptureChanged(UINT message, WPARAM w_param, LPARAM l_param);
   LRESULT OnKeyEvent(UINT message, WPARAM w_param, LPARAM l_param);
+  LRESULT OnImeMessages(UINT message, WPARAM w_param, LPARAM l_param);
   LRESULT OnNCActivate(UINT message, WPARAM w_param, LPARAM l_param);
   void OnClose();
   LRESULT OnCreate(CREATESTRUCT* create_struct);
   void OnDestroy();
   void OnPaint(HDC);
   void OnWindowPosChanged(WINDOWPOS* window_pos);
+  LRESULT OnSetCursor(UINT message, WPARAM w_param, LPARAM l_param);
 
   raw_ptr<PlatformWindowDelegate> delegate_;
 
   // Keep a reference to the current cursor to make sure the wrapped HCURSOR
   // isn't destroyed after the call to SetCursor().
   scoped_refptr<WinCursor> cursor_;
+
+  // An `InputMethod` pointer for handling IME messages.
+  // When the `input_method_` is destroyed, it will be set to null.
+  raw_ptr<InputMethod> input_method_;
 
   CR_MSG_MAP_CLASS_DECLARATIONS(WinWindow)
 };

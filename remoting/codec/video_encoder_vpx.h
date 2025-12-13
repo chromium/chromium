@@ -6,7 +6,6 @@
 #define REMOTING_CODEC_VIDEO_ENCODER_VPX_H_
 
 #include "base/containers/heap_array.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // Tests for the Command Buffer Helper.
+
+#include "gpu/command_buffer/client/cmd_buffer_helper.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -15,11 +12,11 @@
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "gpu/command_buffer/client/cmd_buffer_helper.h"
 #include "gpu/command_buffer/client/command_buffer_direct_locked.h"
 #include "gpu/command_buffer/service/mocks.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -82,9 +79,9 @@ class CommandBufferHelperTest : public testing::Test {
     CommandBufferEntry* cmds =
         static_cast<CommandBufferEntry*>(helper_->GetSpace(arg_count + 1));
     CommandBufferOffset put = 0;
-    cmds[put++].value_header = header;
+    UNSAFE_TODO(cmds[put++]).value_header = header;
     for (int ii = 0; ii < arg_count; ++ii) {
-      cmds[put++] = args[ii];
+      UNSAFE_TODO(cmds[put++]) = UNSAFE_TODO(args[ii]);
     }
 
     EXPECT_CALL(*api_mock_, DoCommand(command, arg_count,
@@ -103,7 +100,7 @@ class CommandBufferHelperTest : public testing::Test {
         std::make_unique<CommandBufferEntry[]>(arg_count ? arg_count : 1);
 
     for (int32_t ii = 0; ii < arg_count; ++ii) {
-      args_ptr[ii].value_uint32 = 0xF00DF00D + ii;
+      UNSAFE_TODO(args_ptr[ii]).value_uint32 = 0xF00DF00D + ii;
     }
 
     // Add command and save args in test_command_args_ until the test completes.
@@ -460,7 +457,7 @@ TEST_F(CommandBufferHelperTest, TestCommandWrappingExactMultiple) {
                 "kTotalNumCommandEntries should be a multiple of kCommandSize");
   CommandBufferEntry args1[kNumArgs];
   for (size_t ii = 0; ii < kNumArgs; ++ii) {
-    args1[ii].value_uint32 = ii + 1;
+    UNSAFE_TODO(args1[ii]).value_uint32 = ii + 1;
   }
 
   for (unsigned int i = 0; i < 5; ++i) {

@@ -42,12 +42,16 @@ class NotificationsEngagementService : public KeyedService {
   void RecordNotificationDisplayed(const GURL& url);
   void RecordNotificationDisplayed(const GURL& url, int display_count);
   void RecordNotificationInteraction(const GURL& url);
+  void RecordNotificationSuspicious(const GURL& url);
 
   static std::map<std::pair<ContentSettingsPattern, ContentSettingsPattern>,
                   int>
   GetNotificationCountMapPerPatternPair(const HostContentSettingsMap* hcsm);
   static int GetDailyAverageNotificationCount(
       const base::Value::Dict& engagement);
+  static int GetSuspiciousNotificationCountForPeriod(
+      const base::Value::Dict& engagement,
+      int days);
 
   static std::string GetBucketLabel(base::Time time);
   static std::optional<base::Time> ParsePeriodBeginFromBucketLabel(
@@ -56,7 +60,8 @@ class NotificationsEngagementService : public KeyedService {
  private:
   void IncrementCounts(const GURL& url,
                        const int display_count_delta,
-                       const int click_count_delta);
+                       const int click_count_delta,
+                       const int suspicious_count_delta);
 
   static int GetDailyAverageNotificationCount(
       const ContentSettingPatternSource& setting);

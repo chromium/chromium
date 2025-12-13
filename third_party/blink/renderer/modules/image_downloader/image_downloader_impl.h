@@ -37,7 +37,7 @@ class ImageDownloaderImpl final : public GarbageCollected<ImageDownloaderImpl>,
   ~ImageDownloaderImpl() override;
 
   using DownloadCallback =
-      base::OnceCallback<void(int32_t, const WTF::Vector<SkBitmap>&)>;
+      base::OnceCallback<void(int32_t, const Vector<SkBitmap>&)>;
 
   static ImageDownloaderImpl* From(LocalFrame&);
 
@@ -74,7 +74,7 @@ class ImageDownloaderImpl final : public GarbageCollected<ImageDownloaderImpl>,
   void DidDownloadImage(uint32_t max_bitmap_size,
                         DownloadImageCallback callback,
                         int32_t http_status_code,
-                        const WTF::Vector<SkBitmap>& images);
+                        const Vector<SkBitmap>& images);
 
   void CreateMojoService(
       mojo::PendingReceiver<mojom::blink::ImageDownloader> receiver);
@@ -100,7 +100,7 @@ class ImageDownloaderImpl final : public GarbageCollected<ImageDownloaderImpl>,
                      const std::string& image_data,
                      const WebString& mime_type);
 
-  typedef WTF::Vector<std::unique_ptr<MultiResolutionImageResourceFetcher>>
+  typedef Vector<std::unique_ptr<MultiResolutionImageResourceFetcher>>
       ImageResourceFetcherList;
 
   // ImageResourceFetchers schedule via FetchImage.

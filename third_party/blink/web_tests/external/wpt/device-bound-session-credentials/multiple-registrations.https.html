@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>DBSC multiple registrations</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="helper.js" type="module"></script>
@@ -17,7 +16,7 @@
     addCookieAndSessionCleanup(t);
 
     // Configure server to configure cookies for next two created sessions.
-    configureServer({
+    await configureServer({
       cookieDetailsForNextRegisteredSessions: [[{ nameAndValue: expectedCookieAndValue1 }], [{ nameAndValue: expectedCookieAndValue2 }]]
     });
 

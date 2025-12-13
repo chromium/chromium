@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//components/supervised_user/buildflags.gni")
 
 static_library("browser_sync") {
@@ -11,8 +10,6 @@ static_library("browser_sync") {
     "active_devices_provider_impl.h",
     "common_controller_builder.cc",
     "common_controller_builder.h",
-    "signin_confirmation_helper.cc",
-    "signin_confirmation_helper.h",
     "sync_engine_factory_impl.cc",
     "sync_engine_factory_impl.h",
     "sync_internals_message_handler.cc",
@@ -34,18 +31,17 @@ static_library("browser_sync") {
     "//components/collaboration/public",
     "//components/collaboration/public:data_type_controller",
     "//components/commerce/core:feature_list",
-    "//components/commerce/core/product_specifications:product_specifications",
+    "//components/commerce/core/product_specifications",
     "//components/consent_auditor",
     "//components/data_sharing/public",
+    "//components/data_sharing/public:personal_collaboration_data",
     "//components/history/core/browser",
     "//components/history/core/common",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/sharing",
-    "//components/plus_addresses/settings",
-    "//components/plus_addresses/sync_utils",
-    "//components/plus_addresses/webdata",
-    "//components/power_bookmarks/core",
-    "//components/power_bookmarks/core:features",
+    "//components/plus_addresses/core/browser/settings",
+    "//components/plus_addresses/core/browser/sync_utils",
+    "//components/plus_addresses/core/browser/webdata",
     "//components/prefs",
     "//components/reading_list/core",
     "//components/saved_tab_groups/public",

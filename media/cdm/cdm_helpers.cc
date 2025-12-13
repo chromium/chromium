@@ -96,22 +96,22 @@ cdm::Buffer* VideoFrameImpl::FrameBuffer() {
 }
 
 void VideoFrameImpl::SetPlaneOffset(cdm::VideoPlane plane, uint32_t offset) {
-  CHECK(plane < cdm::kMaxPlanes, base::NotFatalUntil::M140);
+  CHECK(plane < cdm::kMaxPlanes);
   plane_offsets_[plane] = offset;
 }
 
 uint32_t VideoFrameImpl::PlaneOffset(cdm::VideoPlane plane) {
-  CHECK(plane < cdm::kMaxPlanes, base::NotFatalUntil::M140);
+  CHECK(plane < cdm::kMaxPlanes);
   return plane_offsets_[plane];
 }
 
 void VideoFrameImpl::SetStride(cdm::VideoPlane plane, uint32_t stride) {
-  CHECK(plane < cdm::kMaxPlanes, base::NotFatalUntil::M140);
+  CHECK(plane < cdm::kMaxPlanes);
   strides_[plane] = stride;
 }
 
 uint32_t VideoFrameImpl::Stride(cdm::VideoPlane plane) {
-  CHECK(plane < cdm::kMaxPlanes, base::NotFatalUntil::M140);
+  CHECK(plane < cdm::kMaxPlanes);
   return strides_[plane];
 }
 

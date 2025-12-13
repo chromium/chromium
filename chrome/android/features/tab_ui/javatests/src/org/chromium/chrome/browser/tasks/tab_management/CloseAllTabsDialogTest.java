@@ -9,12 +9,13 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 
+import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.os.SystemClock;
@@ -36,7 +37,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations.EnableAnimations;
 import org.chromium.build.annotations.Nullable;
@@ -139,7 +139,6 @@ public class CloseAllTabsDialogTest {
     @LargeTest
     @EnableAnimations
     @Restriction({DeviceFormFactor.PHONE})
-    @DisabledTest(message = "Flaky - crbug.com/417752224")
     public void testCloseAllTabs_CustomAnimation() {
         TabModelSelector selector =
                 mActivityTestRule.getActivity().getTabModelSelectorSupplier().get();
@@ -154,8 +153,8 @@ public class CloseAllTabsDialogTest {
     }
 
     private void navigateToCloseAllTabsDialog(TabModelSelector selector) {
-
-        assertThat(selector.getModel(mIsIncognito).getCount(), greaterThanOrEqualTo(1));
+        int tabCount = getTabCountOnUiThread(selector.getModel(mIsIncognito));
+        assertThat(tabCount).isAtLeast(1);
 
         // Open the AppMenu in the Tab Switcher and ensure it shows.
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());

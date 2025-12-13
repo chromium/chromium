@@ -95,7 +95,6 @@ suite('DuplexSettingsTest', function() {
     assertTrue(duplexSection.getSetting('duplexShortEdge').setFromUi);
   });
 
-  // <if expr="is_chromeos">
   // Tests that if settings are enforced by enterprise policy the
   // appropriate UI is disabled.
   test('disabled by global policy', function() {
@@ -131,5 +130,4 @@ suite('DuplexSettingsTest', function() {
     assertTrue(checkbox.disabled);
     assertTrue(select.disabled);
   });
-  // </if>
 });

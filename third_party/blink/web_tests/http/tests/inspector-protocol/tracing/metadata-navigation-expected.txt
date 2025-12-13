@@ -6,7 +6,7 @@ FrameCommittedInBrowser [
         frame : <string>
         isInPrimaryMainFrame : true
         isOutermostMainFrame : true
-        name : 
+        name :
         processId : <number>
         url : http://127.0.0.1:8000/inspector-protocol/resources/test-page.html
     }

@@ -11,14 +11,16 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/omnibox/browser/omnibox_controller.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/views/widget/widget.h"
 
 // Base class for omnibox browser and ui tests.
@@ -38,12 +40,6 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
     test::ThemeServiceChangedWaiter waiter_;
   };
 
-  OmniboxPopupViewViewsTest() = default;
-
-  OmniboxPopupViewViewsTest(const OmniboxPopupViewViewsTest&) = delete;
-  OmniboxPopupViewViewsTest& operator=(const OmniboxPopupViewViewsTest&) =
-      delete;
-
   views::Widget* CreatePopupForTestQuery();
   views::Widget* GetPopupWidget() { return popup_view()->GetWidget(); }
   OmniboxHeaderView* GetHeaderViewAt(int index) {
@@ -53,15 +49,21 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
     return popup_view()->result_view_at(index);
   }
 
+  ui::MockOsSettingsProvider& os_settings_provider() {
+    return os_settings_provider_;
+  }
   LocationBarView* location_bar() {
     auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
     return browser_view->toolbar()->location_bar();
   }
   OmniboxViewViews* omnibox_view() { return location_bar()->omnibox_view(); }
-  OmniboxController* controller() { return omnibox_view()->controller(); }
-  OmniboxEditModel* edit_model() { return omnibox_view()->model(); }
+  OmniboxController* controller() {
+    return location_bar()->GetOmniboxController();
+  }
+  OmniboxEditModel* edit_model() { return controller()->edit_model(); }
   OmniboxPopupViewViews* popup_view() {
-    return static_cast<OmniboxPopupViewViews*>(edit_model()->get_popup_view());
+    return static_cast<OmniboxPopupViewViews*>(
+        location_bar()->GetOmniboxPopupViewForTesting());
   }
 
   SkColor GetSelectedColor(Browser* browser) {
@@ -74,12 +76,6 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
     return BrowserView::GetBrowserViewForBrowser(browser)
         ->GetColorProvider()
         ->GetColor(kColorOmniboxResultsBackground);
-  }
-
-  void SetUseDarkColor(bool use_dark) {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    browser_view->GetNativeTheme()->set_use_dark_colors(use_dark);
   }
 
   void SetIsGrayscale(bool is_grayscale) {
@@ -103,6 +99,7 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
   }
 
  private:
+  ui::MockOsSettingsProvider os_settings_provider_;
   OmniboxTriggeredFeatureService triggered_feature_service_;
 };
 

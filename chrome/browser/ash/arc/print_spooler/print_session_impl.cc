@@ -284,6 +284,7 @@ PrintSessionImpl::~PrintSessionImpl() {
 }
 
 void PrintSessionImpl::OnWindowDestroying(aura::Window* window) {
+  arc_window_observation_.Reset();
   // The parent window is being destroyed. Close this print session.
   Close();
 }

@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
@@ -26,8 +27,8 @@ namespace android_webview {
 
 namespace {
 
-int kRenderProcessIDForTesting = 8;
-int kRenderFrameIDForTesting = 19;
+constexpr int kRenderProcessIDForTesting = 8;
+constexpr int kRenderFrameIDForTesting = 19;
 const char kEmbeddingOrigin[] = "https://www.google.com/";
 const char kRequestingOrigin1[] = "https://www.google.com/";
 const char kRequestingOrigin2[] = "https://www.chromium.org/";
@@ -39,8 +40,9 @@ class AwBrowserPermissionRequestDelegateForTesting final
                        PermissionType type,
                        bool grant) {
     for (auto it = request_.begin(); it != request_.end(); ++it) {
-      if ((*it)->type != type || (*it)->origin != origin)
+      if ((*it)->type != type || (*it)->origin != origin) {
         continue;
+      }
       PermissionCallback callback = std::move((*it)->callback);
       request_.erase(it);
       std::move(callback).Run(grant);
@@ -60,11 +62,6 @@ class AwBrowserPermissionRequestDelegateForTesting final
   void RequestGeolocationPermission(const GURL& origin,
                                     PermissionCallback callback) override {
     RequestPermission(origin, PermissionType::GEOLOCATION, std::move(callback));
-  }
-
-  void RequestStorageAccess(const url::Origin& origin,
-                            PermissionCallback callback) override {
-    NOTREACHED();
   }
 
   void CancelGeolocationPermissionRequests(const GURL& origin) override {
@@ -196,19 +193,21 @@ class AwPermissionManagerTest : public testing::Test {
   AwPermissionManagerTest()
       : render_frame_host(nullptr) {}
 
-  void PermissionRequestResponse(int id,
-                                 const std::vector<PermissionStatus>& status) {
-    ASSERT_EQ(status.size(), 1u);
-    resolved_permission_status.push_back(status[0]);
+  void PermissionRequestResponse(
+      int id,
+      const std::vector<content::PermissionResult>& permission_result) {
+    ASSERT_EQ(permission_result.size(), 1u);
+    resolved_permission_status.push_back(permission_result[0].status);
     resolved_permission_request_id.push_back(id);
   }
 
-  void PermissionsRequestResponse(int id,
-                                  const std::vector<PermissionStatus>& status) {
-    resolved_permission_status.insert(resolved_permission_status.end(),
-                                      status.begin(), status.end());
-    for (size_t i = 0; i < status.size(); ++i)
+  void PermissionsRequestResponse(
+      int id,
+      const std::vector<content::PermissionResult>& permission_result) {
+    for (const auto& result : permission_result) {
+      resolved_permission_status.push_back(result.status);
       resolved_permission_request_id.push_back(id);
+    }
   }
 
  protected:
@@ -229,8 +228,8 @@ class AwPermissionManagerTest : public testing::Test {
       content::RenderFrameHost* rfh,
       const GURL& requesting_origin,
       bool user_gesture,
-      base::OnceCallback<void(const std::vector<PermissionStatus>& status)>
-          callback) {
+      base::OnceCallback<void(
+          const std::vector<content::PermissionResult>& status)> callback) {
     CHECK(manager);
     manager->RequestPermissions(
         rfh,
@@ -275,6 +274,27 @@ TEST_F(AwPermissionManagerTest,
        LocalNetworkAccessPermissionIsGrantedSynchronously) {
   RequestPermissions(
       {PermissionType::LOCAL_NETWORK_ACCESS}, render_frame_host,
+      GURL(kRequestingOrigin1), true,
+      base::BindOnce(&AwPermissionManagerTest::PermissionRequestResponse,
+                     base::Unretained(this), 0));
+  ASSERT_EQ(1u, resolved_permission_status.size());
+  EXPECT_EQ(PermissionStatus::GRANTED, resolved_permission_status[0]);
+}
+
+TEST_F(AwPermissionManagerTest, LocalAccessPermissionIsGrantedSynchronously) {
+  RequestPermissions(
+      {PermissionType::LOCAL_NETWORK}, render_frame_host,
+      GURL(kRequestingOrigin1), true,
+      base::BindOnce(&AwPermissionManagerTest::PermissionRequestResponse,
+                     base::Unretained(this), 0));
+  ASSERT_EQ(1u, resolved_permission_status.size());
+  EXPECT_EQ(PermissionStatus::GRANTED, resolved_permission_status[0]);
+}
+
+TEST_F(AwPermissionManagerTest,
+       LoopbackAccessPermissionIsGrantedSynchronously) {
+  RequestPermissions(
+      {PermissionType::LOOPBACK_NETWORK}, render_frame_host,
       GURL(kRequestingOrigin1), true,
       base::BindOnce(&AwPermissionManagerTest::PermissionRequestResponse,
                      base::Unretained(this), 0));

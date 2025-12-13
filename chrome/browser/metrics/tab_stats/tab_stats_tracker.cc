@@ -37,6 +37,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -44,6 +45,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
+// We add nognchecks on some includes so that Android bots do not fail
+// dependency checks.
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -59,7 +62,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -152,42 +156,46 @@ void TabStatsTracker::TabStripInterface::ForEach(
 #else  // !BUILDFLAG(IS_ANDROID)
 
 size_t TabStatsTracker::TabStripInterface::GetTabCount() const {
-  return browser()->tab_strip_model()->count();
+  return browser_window_interface()->GetTabStripModel()->count();
 }
 
 content::WebContents* TabStatsTracker::TabStripInterface::GetActiveWebContents()
     const {
-  return browser()->tab_strip_model()->GetActiveWebContents();
+  return browser_window_interface()->GetTabStripModel()->GetActiveWebContents();
 }
 
 content::WebContents* TabStatsTracker::TabStripInterface::GetWebContentsAt(
     size_t index) const {
-  return browser()->tab_strip_model()->GetWebContentsAt(index);
+  return browser_window_interface()->GetTabStripModel()->GetWebContentsAt(
+      index);
 }
 
 Profile* TabStatsTracker::TabStripInterface::GetProfile() const {
-  return browser()->profile();
+  return const_cast<Profile*>(browser_window_interface()->GetProfile());
 }
 
 bool TabStatsTracker::TabStripInterface::IsInNormalBrowser() const {
-  return browser()->type() == Browser::TYPE_NORMAL;
+  return browser_window_interface()->GetType() ==
+         BrowserWindowInterface::Type::TYPE_NORMAL;
 }
 
 void TabStatsTracker::TabStripInterface::ActivateTabAtForTesting(size_t index) {
-  browser()->tab_strip_model()->ActivateTabAt(index);
+  browser_window_interface()->GetTabStripModel()->ActivateTabAt(index);
 }
 
 void TabStatsTracker::TabStripInterface::CloseTabAtForTesting(size_t index) {
-  browser()->tab_strip_model()->CloseWebContentsAt(
+  browser_window_interface()->GetTabStripModel()->CloseWebContentsAt(
       index, TabCloseTypes::CLOSE_USER_GESTURE);
 }
 
 // static
 void TabStatsTracker::TabStripInterface::ForEach(
     base::FunctionRef<void(const TabStripInterface&)> func) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    func(TabStripInterface(browser));
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&func](BrowserWindowInterface* browser) {
+        func(TabStripInterface(browser));
+        return true;
+      });
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -351,17 +359,19 @@ class TabStatsTracker::TabWatcher final : public BrowserListObserver,
                                           public TabStripModelObserver {
  public:
   explicit TabWatcher(TabStatsTracker& tracker) : tracker_(tracker) {
-    BrowserList* browser_list = BrowserList::GetInstance();
-    for (Browser* browser : *browser_list) {
-      OnBrowserAdded(browser);
-      for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-        content::WebContents* web_contents =
-            browser->tab_strip_model()->GetWebContentsAt(i);
-        CHECK(web_contents);
-        tracker_->OnInitialOrInsertedTab(web_contents);
-      }
-      tracker_->OnTabStripNewTabCount(browser->tab_strip_model()->count());
-    }
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [this](BrowserWindowInterface* browser) {
+          OnBrowserAdded(browser->GetBrowserForMigrationOnly());
+          TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+          for (int i = 0; i < tab_strip_model->count(); ++i) {
+            content::WebContents* const web_contents =
+                tab_strip_model->GetWebContentsAt(i);
+            CHECK(web_contents);
+            tracker_->OnInitialOrInsertedTab(web_contents);
+          }
+          tracker_->OnTabStripNewTabCount(tab_strip_model->count());
+          return true;
+        });
     browser_list_observation_.Observe(BrowserList::GetInstance());
   }
 
@@ -696,8 +706,7 @@ void TabStatsTracker::OnResume() {
 // Android.
 void TabStatsTracker::OnLifecycleUnitStateChanged(
     resource_coordinator::LifecycleUnit* lifecycle_unit,
-    ::mojom::LifecycleUnitState previous_state,
-    ::mojom::LifecycleUnitStateChangeReason reason) {
+    ::mojom::LifecycleUnitState previous_state) {
   const ::mojom::LifecycleUnitState new_state = lifecycle_unit->GetState();
   if (previous_state == ::mojom::LifecycleUnitState::DISCARDED ||
       new_state == ::mojom::LifecycleUnitState::DISCARDED) {
@@ -852,7 +861,8 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportHeartbeatMetrics(
       return;
     }
 
-    const BrowserWindow* window = tab_strip.browser()->window();
+    const ui::BaseWindow* window =
+        tab_strip.browser_window_interface()->GetWindow();
 
     // Only consider visible windows.
     if (!window->IsVisible() || window->IsMinimized()) {

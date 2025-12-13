@@ -2,18 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/public/browser/site_isolation_policy.h"
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,19 +20,28 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/site_isolation/features.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/android/advanced_protection_status_manager_test_util.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/ui_test_utils.h"
 #endif
 
 class SiteIsolationPolicyBrowserTest : public PlatformBrowserTest {
@@ -55,27 +59,26 @@ class SiteIsolationPolicyBrowserTest : public PlatformBrowserTest {
     bool isolated;
   };
 
-  void CheckExpectations(Expectations* expectations, size_t count) {
+  void CheckExpectations(base::span<Expectations> expectations) {
     content::BrowserContext* context = chrome_test_utils::GetProfile(this);
-    for (size_t i = 0; i < count; ++i) {
-      const GURL url(expectations[i].url);
+    for (auto& expectation : expectations) {
+      const GURL url(expectation.url);
       auto instance = content::SiteInstance::CreateForURL(context, url);
-      EXPECT_EQ(expectations[i].isolated, instance->RequiresDedicatedProcess())
+      EXPECT_EQ(expectation.isolated, instance->RequiresDedicatedProcess())
           << "; url = " << url;
     }
   }
 
-  void CheckIsolatedOriginExpectations(Expectations* expectations,
-                                       size_t count) {
+  void CheckIsolatedOriginExpectations(base::span<Expectations> expectations) {
     if (!content::AreAllSitesIsolatedForTesting()) {
-      CheckExpectations(expectations, count);
+      CheckExpectations(expectations);
     }
 
     auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-    for (size_t i = 0; i < count; ++i) {
-      const GURL url(expectations[i].url);
+    for (auto& expectation : expectations) {
+      const GURL url(expectation.url);
       const url::Origin origin = url::Origin::Create(url);
-      EXPECT_EQ(expectations[i].isolated,
+      EXPECT_EQ(expectation.isolated,
                 policy->IsGloballyIsolatedOriginForTesting(origin))
           << "; origin = " << origin;
     }
@@ -151,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPolicyBrowserTestEnabled, Simple) {
       {"http://foo.com/", true},
       {"http://example.org/pumpkins.html", true},
   };
-  CheckExpectations(expectations, std::size(expectations));
+  CheckExpectations(expectations);
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
@@ -195,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(IsolateOriginsPolicyBrowserTest, Simple) {
       {"https://policy1.example.org/pumpkins.html", true},
       {"http://policy2.example.com/index.php", true},
   };
-  CheckIsolatedOriginExpectations(expectations, std::size(expectations));
+  CheckIsolatedOriginExpectations(expectations);
 
   // Simulate updating the policy at "browser runtime".
   policy::PolicyMap values;
@@ -219,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(IsolateOriginsPolicyBrowserTest, Simple) {
       {"https://policy3.example.org/pumpkins.html", true},
       {"http://policy4.example.com/index.php", true},
   };
-  CheckIsolatedOriginExpectations(expectations2, std::size(expectations2));
+  CheckIsolatedOriginExpectations(expectations2);
 }
 #endif
 
@@ -228,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(NoOverrideSitePerProcessPolicyBrowserTest, Simple) {
       {"https://foo.com/noodles.html", true},
       {"http://example.org/pumpkins.html", true},
   };
-  CheckExpectations(expectations, std::size(expectations));
+  CheckExpectations(expectations);
 }
 
 // After https://crbug.com/910273 was fixed, enterprise policy can only be used
@@ -276,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPolicyBrowserTestFieldTrialTest, Simple) {
       {"https://foo.com/noodles.html", false},
       {"http://example.org/pumpkins.html", false},
   };
-  CheckExpectations(expectations, std::size(expectations));
+  CheckExpectations(expectations);
 }
 #endif
 
@@ -284,12 +287,12 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPolicyBrowserTestFieldTrialTest, Simple) {
 namespace {
 bool CheckUseDedicatedProcessesForAllSitesWithAndroidState(
     bool is_under_advanced_protection,
-    uint64_t ram_kb) {
+    base::ByteCount ram) {
   safe_browsing::SetAdvancedProtectionStateForTesting(
       is_under_advanced_protection);
   ChromeContentBrowserClient::DisableAdvancedProtectionCachingForTests();
 
-  base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(ram_kb);
+  base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(ram);
   site_isolation::SiteIsolationPolicy::
       SetDisallowMemoryThresholdCachingForTesting(true);
   return content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites();
@@ -303,16 +306,19 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationPolicyBrowserTest,
   // without an explicit enterprise policy).
   EXPECT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kDisableSiteIsolation));
-#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(ENABLE_ANDROID_SITE_ISOLATION)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kDisableSiteIsolationForPolicy));
   EXPECT_EQ(CheckUseDedicatedProcessesForAllSitesWithAndroidState(
                 /*is_under_advanced_protection=*/false,
-                /*ram_kb=*/8000),
+                // TODO(crbug.com/429140103): Comments in the original code
+                // suggested that this was in KiB, but it was in fact in MiB.
+                // Needs investigation.
+                /*ram=*/base::MiB(8000)),
             base::FeatureList::IsEnabled(features::kSitePerProcess));
 #else
   EXPECT_TRUE(content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
-#endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(ENABLE_ANDROID_SITE_ISOLATION)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -324,7 +330,9 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationPolicyBrowserTest,
       command_line->HasSwitch(switches::kDisableSiteIsolationForPolicy));
   EXPECT_TRUE(CheckUseDedicatedProcessesForAllSitesWithAndroidState(
       /*is_under_advanced_protection=*/true,
-      /*ram_kb=*/8000));
+      // TODO(crbug.com/429140103): Comments in the original code suggested that
+      // this was in KiB, but it was in fact in MiB. Needs investigation.
+      /*ram=*/base::MiB(8000)));
 }
 
 IN_PROC_BROWSER_TEST_F(SiteIsolationPolicyBrowserTest,
@@ -341,6 +349,115 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationPolicyBrowserTest,
       command_line->HasSwitch(switches::kDisableSiteIsolationForPolicy));
   EXPECT_FALSE(CheckUseDedicatedProcessesForAllSitesWithAndroidState(
       /*is_under_advanced_protection=*/true,
-      /*ram_kb=*/1000));
+      // TODO(crbug.com/429140103): Comments in the original code suggested that
+      // this was in KiB, but it was in fact in MiB. Needs investigation.
+      /*ram=*/base::MiB(1000)));
 }
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
+// Parameterized test class to check that an enterprise policy can set the
+// origin-keyed processes by default feature, but a user can override the value
+// that was set by the enterprise policy (via either the command-line flags or
+// about:flags).
+class OriginKeyedProcessesEnabledPolicyBrowserTest
+    : public SiteIsolationPolicyBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  OriginKeyedProcessesEnabledPolicyBrowserTest(
+      const OriginKeyedProcessesEnabledPolicyBrowserTest&) = delete;
+  OriginKeyedProcessesEnabledPolicyBrowserTest& operator=(
+      const OriginKeyedProcessesEnabledPolicyBrowserTest&) = delete;
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ protected:
+  OriginKeyedProcessesEnabledPolicyBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    if (GetParam()) {
+      // Turn off the origin-keyed processes feature via user intervention. This
+      // will override the enterprise setting which will have it set to be
+      // enabled.
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          {/*enabled_features*/},
+          {/*disabled_features=*/features::kOriginKeyedProcessesByDefault});
+    } else {
+      // Without user override, set the memory threshold to a high value that
+      // would not be reached, normally causing the feature to remain disabled.
+      // This will check that overrides will ignore memory threshold limits.
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          {{site_isolation::features::kOriginIsolationMemoryThreshold,
+            {{site_isolation::features::
+                  kOriginIsolationMemoryThresholdParamName,
+              std::string("524288")}}}},
+          {/*disabled_features*/});
+    }
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    // We setup the policy here, because the policy must be 'live' before
+    // the renderer is created, since the value for this policy is passed
+    // to the renderer via a command-line. Setting the policy in the test
+    // itself or in SetUpOnMainThread works for update-able policies, but
+    // is too late for this one.
+    provider_.SetDefaultReturns(
+        true /* is_initialization_complete_return */,
+        true /* is_first_policy_load_complete_return */);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+
+    policy::PolicyMap values;
+    values.Set(policy::key::kOriginKeyedProcessesEnabled,
+               policy::POLICY_LEVEL_RECOMMENDED, policy::POLICY_SCOPE_MACHINE,
+               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+    provider_.UpdateChromePolicy(values);
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server()->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    content::SetupCrossSiteRedirector(https_server());
+    net::test_server::RegisterDefaultHandlers(https_server());
+    ASSERT_TRUE(https_server()->Start());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  net::EmbeddedTestServer https_server_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OriginKeyedProcessesEnabledPolicyBrowserTest,
+                         testing::Bool(),
+                         [](auto& info) {
+                           return info.param ? "WithUserOverride"
+                                             : "WithoutUserOverride";
+                         });
+
+IN_PROC_BROWSER_TEST_P(OriginKeyedProcessesEnabledPolicyBrowserTest, Simple) {
+  GURL start_url(https_server()->GetURL("a.test", "/iframe.html"));
+  GURL cross_origin_url(
+      https_server()->GetURL("crossorigin.a.test", "/simple.html"));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
+  EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", cross_origin_url));
+
+  content::RenderFrameHost* root_rfh = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* child_rfh = ChildFrameAt(root_rfh, 0);
+
+  if (GetParam()) {
+    // The user overrode the enterprise policy to turn the feature off.
+    EXPECT_EQ(root_rfh->GetProcess(), child_rfh->GetProcess())
+        << "The root frame and child iframe should be in the same process.";
+  } else {
+    // There is no user override. The enterprise policy has highest priority and
+    // turns the feature on, even if the memory threshold is higher than this
+    // machine's physical memory.
+    EXPECT_NE(root_rfh->GetProcess(), child_rfh->GetProcess())
+        << "The root frame and child iframe should be in separate processes.";
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)

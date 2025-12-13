@@ -168,7 +168,9 @@ The following features are available:
 #![forbid(unsafe_code)]
 #![deny(missing_docs, rustdoc::broken_intra_doc_links)]
 #![warn(missing_debug_implementations)]
-#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+// This adds Cargo feature annotations to items in the rustdoc output. Which is
+// sadly hugely beneficial for this crate due to the number of features.
+#![cfg_attr(docsrs_regex, feature(doc_cfg))]
 
 #[cfg(any(test, feature = "std"))]
 extern crate std;
@@ -269,7 +271,7 @@ pub fn is_meta_character(c: char) -> bool {
 ///
 /// This returns true in all cases that `is_meta_character` returns true, but
 /// also returns true in some cases where `is_meta_character` returns false.
-/// For example, `%` is not a meta character, but it is escapeable. That is,
+/// For example, `%` is not a meta character, but it is escapable. That is,
 /// `%` and `\%` both match a literal `%` in all contexts.
 ///
 /// The purpose of this routine is to provide knowledge about what characters
@@ -278,7 +280,7 @@ pub fn is_meta_character(c: char) -> bool {
 /// though there is no actual _need_ to do so.
 ///
 /// This will return false for some characters. For example, `e` is not
-/// escapeable. Therefore, `\e` will either result in a parse error (which is
+/// escapable. Therefore, `\e` will either result in a parse error (which is
 /// true today), or it could backwards compatibly evolve into a new construct
 /// with its own meaning. Indeed, that is the purpose of banning _some_
 /// superfluous escapes: it provides a way to evolve the syntax in a compatible
@@ -301,30 +303,30 @@ pub fn is_meta_character(c: char) -> bool {
 /// assert!(!is_escapeable_character('e'));
 /// ```
 pub fn is_escapeable_character(c: char) -> bool {
-    // Certainly escapeable if it's a meta character.
+    // Certainly escapable if it's a meta character.
     if is_meta_character(c) {
         return true;
     }
-    // Any character that isn't ASCII is definitely not escapeable. There's
+    // Any character that isn't ASCII is definitely not escapable. There's
     // no real need to allow things like \☃ right?
     if !c.is_ascii() {
         return false;
     }
-    // Otherwise, we basically say that everything is escapeable unless it's a
+    // Otherwise, we basically say that everything is escapable unless it's a
     // letter or digit. Things like \3 are either octal (when enabled) or an
     // error, and we should keep it that way. Otherwise, letters are reserved
     // for adding new syntax in a backwards compatible way.
     match c {
         '0'..='9' | 'A'..='Z' | 'a'..='z' => false,
-        // While not currently supported, we keep these as not escapeable to
+        // While not currently supported, we keep these as not escapable to
         // give us some flexibility with respect to supporting the \< and
         // \> word boundary assertions in the future. By rejecting them as
-        // escapeable, \< and \> will result in a parse error. Thus, we can
+        // escapable, \< and \> will result in a parse error. Thus, we can
         // turn them into something else in the future without it being a
         // backwards incompatible change.
         //
         // OK, now we support \< and \>, and we need to retain them as *not*
-        // escapeable here since the escape sequence is significant.
+        // escapable here since the escape sequence is significant.
         '<' | '>' => false,
         _ => true,
     }

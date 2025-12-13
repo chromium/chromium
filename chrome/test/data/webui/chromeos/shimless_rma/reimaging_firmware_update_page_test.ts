@@ -60,7 +60,7 @@ suite('reimagingFirmwareUpdatePageTest', function() {
     const updateStatus =
         strictQuery('#firmwareUpdateStatus', component.shadowRoot, HTMLElement);
     assertFalse(updateStatus.hidden);
-    assertEquals('', updateStatus.textContent!.trim());
+    assertEquals('', updateStatus.textContent.trim());
   });
 
   // Verify unplugging the USB while still updating won't trigger update
@@ -103,7 +103,7 @@ suite('reimagingFirmwareUpdatePageTest', function() {
         strictQuery('#titleText', component.shadowRoot, HTMLElement);
     assertEquals(
         loadTimeData.getString('firmwareUpdateInstallImageTitleText'),
-        firmwareTitle.textContent!.trim());
+        firmwareTitle.textContent.trim());
 
     let callCount = 0;
     const resolver = new PromiseResolver<{stateResult: StateResult}>();
@@ -124,7 +124,7 @@ suite('reimagingFirmwareUpdatePageTest', function() {
     // Confirm the page title changes after firmware install completes.
     assertEquals(
         loadTimeData.getString('firmwareUpdateInstallCompleteTitleText'),
-        firmwareTitle.textContent!.trim());
+        firmwareTitle.textContent.trim());
 
     // Unplug the USB and verify that the transition happened.
     service.triggerExternalDiskObserver(

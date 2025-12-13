@@ -14,8 +14,17 @@
 namespace collaboration::messaging {
 using InstantMessageDelegate = MessagingBackendService::InstantMessageDelegate;
 
-// Queues and processes instant messages. Performs aggregation whenever there
-// are similar types of messages available.
+// The `InstantMessageProcessor` is an interface for a class that manages the
+// queueing, aggregation, and display of instant messages.
+//
+// This class is responsible for:
+// - Holding and managing a queue of pending instant messages.
+// - Aggregating similar messages to create concise and informative
+//   notifications.
+// - Interacting with an `InstantMessageDelegate` to render the messages on the
+//   UI.
+// - Handling success callbacks from the delegate to clear messages from the
+//   queue once they have been successfully displayed.
 class InstantMessageProcessor {
  public:
   virtual ~InstantMessageProcessor() = default;

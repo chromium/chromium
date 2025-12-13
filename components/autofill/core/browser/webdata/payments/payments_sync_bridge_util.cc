@@ -363,25 +363,22 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
   }
   result.set_card_info_retrieval_enrollment_state(enrollment_state);
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableCardBenefitsSourceSync)) {
-    std::string benefit_source;
-    switch (card.card_benefit_source()) {
-      case sync_pb::WalletMaskedCreditCard::SOURCE_UNKNOWN:
-        benefit_source = "";
-        break;
-      case sync_pb::WalletMaskedCreditCard::SOURCE_AMEX:
-        benefit_source = std::string(kAmexCardBenefitSource);
-        break;
-      case sync_pb::WalletMaskedCreditCard::SOURCE_BMO:
-        benefit_source = std::string(kBmoCardBenefitSource);
-        break;
-      case sync_pb::WalletMaskedCreditCard::SOURCE_CURINOS:
-        benefit_source = std::string(kCurinosCardBenefitSource);
-        break;
-    }
-    result.set_benefit_source(benefit_source);
+  std::string benefit_source;
+  switch (card.card_benefit_source()) {
+    case sync_pb::WalletMaskedCreditCard::SOURCE_UNKNOWN:
+      benefit_source = "";
+      break;
+    case sync_pb::WalletMaskedCreditCard::SOURCE_AMEX:
+      benefit_source = std::string(kAmexCardBenefitSource);
+      break;
+    case sync_pb::WalletMaskedCreditCard::SOURCE_BMO:
+      benefit_source = std::string(kBmoCardBenefitSource);
+      break;
+    case sync_pb::WalletMaskedCreditCard::SOURCE_CURINOS:
+      benefit_source = std::string(kCurinosCardBenefitSource);
+      break;
   }
+  result.set_benefit_source(benefit_source);
 
   return result;
 }
@@ -606,19 +603,16 @@ void SetAutofillWalletSpecificsFromServerCard(
   }
   wallet_card->set_card_info_retrieval_enrollment_state(enrollment_state);
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableCardBenefitsSourceSync)) {
-    sync_pb::WalletMaskedCreditCard::CardBenefitSource benefit_source =
-        sync_pb::WalletMaskedCreditCard::SOURCE_UNKNOWN;
-    if (card.benefit_source() == kAmexCardBenefitSource) {
-      benefit_source = sync_pb::WalletMaskedCreditCard::SOURCE_AMEX;
-    } else if (card.benefit_source() == kBmoCardBenefitSource) {
-      benefit_source = sync_pb::WalletMaskedCreditCard::SOURCE_BMO;
-    } else if (card.benefit_source() == kCurinosCardBenefitSource) {
-      benefit_source = sync_pb::WalletMaskedCreditCard::SOURCE_CURINOS;
-    }
-    wallet_card->set_card_benefit_source(benefit_source);
+  sync_pb::WalletMaskedCreditCard::CardBenefitSource benefit_source =
+      sync_pb::WalletMaskedCreditCard::SOURCE_UNKNOWN;
+  if (card.benefit_source() == kAmexCardBenefitSource) {
+    benefit_source = sync_pb::WalletMaskedCreditCard::SOURCE_AMEX;
+  } else if (card.benefit_source() == kBmoCardBenefitSource) {
+    benefit_source = sync_pb::WalletMaskedCreditCard::SOURCE_BMO;
+  } else if (card.benefit_source() == kCurinosCardBenefitSource) {
+    benefit_source = sync_pb::WalletMaskedCreditCard::SOURCE_CURINOS;
   }
+  wallet_card->set_card_benefit_source(benefit_source);
 }
 
 void SetAutofillWalletSpecificsFromPaymentsCustomerData(
@@ -1253,8 +1247,7 @@ bool IsAutofillWalletCredentialDataSpecificsValid(
 
 bool AreMaskedBankAccountSupported() {
 #if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(
-      features::kAutofillEnableSyncingOfPixBankAccounts);
+  return true;
 #else
   return false;
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -1262,13 +1255,13 @@ bool AreMaskedBankAccountSupported() {
 
 bool IsBnplIssuerSupported() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(
       features::kAutofillEnableBuyNowPayLaterSyncing);
 #else
   return false;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 }
 
 bool IsEwalletAccountSupported() {

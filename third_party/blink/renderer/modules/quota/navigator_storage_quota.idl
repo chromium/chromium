@@ -27,7 +27,4 @@
 
     // As of crbug.com/1233525, webkitPersistentStorage is an alias to webkitTemporaryStorage.
     [MeasureAs=PrefixedStorageQuota] readonly attribute DeprecatedStorageQuota webkitPersistentStorage;
-
-    // https://storage.spec.whatwg.org/#api
-    [SecureContext] readonly attribute StorageManager storage;
 };

@@ -28,7 +28,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/views/border.h"
 
 namespace ash {
 
@@ -103,9 +105,7 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
                                : gfx::kGoogleGrey900);
     }
     button->SetBorder(views::CreateRoundedRectBorder(
-        /*thickness=*/4, /*corner_radius=*/16,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kSeparatorColor)));
+        /*thickness=*/4, /*corner_radius=*/16, cros_tokens::kSeparatorColor));
     return button;
   }
 
@@ -114,7 +114,7 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
     base::UmaHistogramEnumeration(
         kPersonalizationEntryPointHistogramName,
         PersonalizationEntryPoint::kKeyboardBrightnessSlider);
-    NewWindowDelegate* primary_delegate = NewWindowDelegate::GetPrimary();
+    NewWindowDelegate* primary_delegate = NewWindowDelegate::GetInstance();
     primary_delegate->OpenPersonalizationHub();
     return;
   }

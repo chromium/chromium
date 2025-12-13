@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include <array>
-#include <map>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -24,14 +23,17 @@
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
-#include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
 
 namespace autofill {
 
-class FormStructure;
+class AutofillQueryResponse_FormSuggestion_FieldSuggestion_FieldPrediction;
+enum FormatString_Type : int;
+
+using FieldPrediction =
+    AutofillQueryResponse_FormSuggestion_FieldSuggestion_FieldPrediction;
 
 // Enum representing prediction sources that are recognized.
 enum class AutofillPredictionSource {
@@ -121,6 +123,46 @@ class Section {
 LogBuffer& operator<<(LogBuffer& buffer, const Section& section);
 std::ostream& operator<<(std::ostream& os, const Section& section);
 
+// Describes formatting information for a field. Currently used only for
+// filling Autofill AI data.
+//
+// Currently, the following kinds of format stings are supported:
+// - Affix format strings: data_util::IsValidAffixFormat().
+// - Date format strings: data_util::IsValidDateFormat().
+// - Date format strings: ICU format.
+// - Flight number format strings (data_util::IsValidFlightNumberFormat().
+struct AutofillFormatString final {
+  AutofillFormatString();
+  AutofillFormatString(std::u16string value, FormatString_Type type);
+
+  AutofillFormatString(const AutofillFormatString&);
+  AutofillFormatString& operator=(const AutofillFormatString&);
+  AutofillFormatString(AutofillFormatString&&);
+  AutofillFormatString& operator=(AutofillFormatString&&);
+  ~AutofillFormatString();
+
+  static bool IsValid(std::u16string_view value, FormatString_Type type);
+
+  friend bool operator==(const AutofillFormatString&,
+                         const AutofillFormatString&) = default;
+
+  // The actual format string.
+  std::u16string value;
+
+  // Format strings can have different types: They can specify a date
+  // format, an affix format, etc. See `FormatString_Type` for allowed values.
+  FormatString_Type type{};
+};
+
+// The ordering matters: higher values overrule lower values (e.g., kServer
+// overrules kHeuristics).
+enum class AutofillFormatStringSource {
+  kUnset = 0,        // No format string set.
+  kHeuristics = 1,   // Set by local heuristics.
+  kModelResult = 2,  // Set by a direct model response
+  kServer = 3,       // Set by an (Autofill) server response.
+};
+
 class AutofillField : public FormFieldData {
  public:
   using FieldLogEventType = std::variant<std::monostate,
@@ -159,26 +201,14 @@ class AutofillField : public FormFieldData {
   FieldType heuristic_type(HeuristicSource s) const;
   FieldType server_type() const;
   bool server_type_prediction_is_override() const;
-  const std::vector<
-      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>&
-  server_predictions() const {
+  const std::vector<FieldPrediction>& server_predictions() const {
     return server_predictions_;
   }
 
-  // Returns the first server prediction value of `FieldTypeGroup::kAutofillAi`
-  // group. Returns `std::nullopt` if none exists.
-  std::optional<FieldType> GetAutofillAiServerTypePredictions() const;
-  const std::vector<
-      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>&
-  experimental_server_predictions() const {
-    return experimental_server_predictions_;
-  }
   HtmlFieldType html_type() const { return html_type_; }
   HtmlFieldMode html_mode() const { return html_mode_; }
   const FieldTypeSet& possible_types() const { return possible_types_; }
   bool previously_autofilled() const { return previously_autofilled_; }
-  const std::u16string& parseable_name() const { return parseable_name_; }
-  const std::u16string& parseable_label() const { return parseable_label_; }
   bool only_fill_when_focused() const { return only_fill_when_focused_; }
 
   void set_heuristic_type(HeuristicSource s, FieldType t);
@@ -186,15 +216,11 @@ class AutofillField : public FormFieldData {
   // Sets the server predictions to `predictions` after performing some
   // filtering. If `predictions` is empty, it creates a `NO_SERVER_DATA`
   // prediction.
-  void set_server_predictions(
-      std::vector<AutofillQueryResponse::FormSuggestion::FieldSuggestion::
-                      FieldPrediction> predictions);
+  void set_server_predictions(std::vector<FieldPrediction> predictions);
   // Adds `prediction` to the back of the existing `server_predictions_` if
   // the prediction's source passes various validity checks. If the only
   // existing server prediction is an empty one, it replaces that one.
-  void MaybeAddServerPrediction(
-      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
-          prediction);
+  void MaybeAddServerPrediction(FieldPrediction prediction);
 
   void set_possible_types(const FieldTypeSet& possible_types) {
     possible_types_ = possible_types;
@@ -205,24 +231,18 @@ class AutofillField : public FormFieldData {
   void set_previously_autofilled(bool previously_autofilled) {
     previously_autofilled_ = previously_autofilled;
   }
-  void set_parseable_name(std::u16string parseable_name) {
-    parseable_name_ = std::move(parseable_name);
-  }
-  void set_parseable_label(std::u16string parseable_label) {
-    parseable_label_ = std::move(parseable_label);
-  }
 
   void set_only_fill_when_focused(bool fill_when_focused) {
     only_fill_when_focused_ = fill_when_focused;
   }
 
-  // Set the type of the field. This sets the value returned by |Type|.
+  // Set the type of the field. This sets the value returned by Type().
   // This function can be used to override the value that would be returned by
-  // |ComputedType|.
-  // As the |type| is expected to depend on |ComputedType|, the value will be
-  // reset to |ComputedType| if some internal value change (e.g. on call to
-  // (|set_heuristic_type|).
-  // |SetTypeTo| cannot be called with type.GetStorableType() == NO_SERVER_DATA.
+  // ComputedType().
+  // As the `type` is expected to depend on ComputedType(), the value will be
+  // reset to ComputedType() if some internal value change (e.g. on call to
+  // (set_heuristic_type()).
+  // SetTypeTo() must not be called with `type.GetTypes().empty()`.
   void SetTypeTo(const AutofillType& type,
                  std::optional<AutofillPredictionSource> source);
 
@@ -284,12 +304,10 @@ class AutofillField : public FormFieldData {
 
   // Address Autofill is disabled for fields with unrecognized autocomplete
   // attribute - except if the field has a server overwrite.
-  // Without `kAutofillPredictionsForAutocompleteUnrecognized`, this happens
-  // implicitly, since ac=unrecognized suppresses the predicted type. As of
-  // `kAutofillPredictionsForAutocompleteUnrecognized`, ac=unrecognized fields
-  // receive a predictions, but suggestions and filling are still suppressed.
-  // This function can be used to determine whether suggestions and filling
-  // should be suppressed for this field (independently of the predicted type).
+  // Fields with `autocomplete=unrecognized` receive a predictions, but
+  // suggestions and filling are suppressed on Desktop. This function can be
+  // used to determine whether suggestions and filling should be suppressed for
+  // this field (independently of the predicted type).
   bool ShouldSuppressSuggestionsAndFillingByDefault() const;
 
   // Returns the current value, formatted as desired for import:
@@ -323,7 +341,7 @@ class AutofillField : public FormFieldData {
   // For the field's current value, see FormFieldData::value().
   const std::u16string& initial_value() const { return initial_value_; }
 
-  // Sets the field's current value.
+  // Sets the field's initial value.
   void set_initial_value(std::u16string initial_value,
                          base::PassKey<FormStructure> pass_key) {
     initial_value_ = std::move(initial_value);
@@ -341,34 +359,22 @@ class AutofillField : public FormFieldData {
     return password_requirements_;
   }
 
-  // The ordering ordering matters: higher values overrule lower values (e.g.,
-  // kServer overrules kHeuristics).
-  enum class FormatStringSource {
-    kUnset = 0,        // No format string set.
-    kHeuristics = 1,   // Set by local heuristics.
-    kModelResult = 2,  // Set by a direct model response
-    kServer = 3,       // Set by an (Autofill) server response.
-  };
-
-  // The format of the value expected by the web document. For now, format
-  // strings are only aimed at dates for Autofill AI:
-  //
-  // The alphabet is "YYYY", "YY", "MM", "M", "DD", "D", "/", ".", "-", and " "
-  // (space, U+0020). A format string contains at most one occurrence of "YYYY"
-  // or "YY", at most one of "MM" or "M", at most one of "DD" or "D", and at
-  // most two occurrences of one separator. A separator is "/", ".", "-",
-  // optionally with surrounding spaces, or space itself.
+  // The format of the value expected by the web document.
   //
   // Only one format string is stored at a time: the one with the
-  // highest-ranking `FormatStringSource`.
-  base::optional_ref<const std::u16string> format_string() const LIFETIME_BOUND;
+  // highest-ranking `AutofillFormatString::Source`.
+  //
+  // The server currently does not predict ICU-format dates
+  // (`FormatString_Type_ICU_DATE`).
+  base::optional_ref<const AutofillFormatString> format_string() const
+      LIFETIME_BOUND;
 
-  FormatStringSource format_string_source() const {
+  AutofillFormatStringSource format_string_source() const {
     return format_string_source_;
   }
 
-  void set_format_string_unless_overruled(std::u16string format_string,
-                                          FormatStringSource source) {
+  void set_format_string_unless_overruled(AutofillFormatString format_string,
+                                          AutofillFormatStringSource source) {
     if (format_string_source_ <= source) {
       format_string_ = std::move(format_string);
       format_string_source_ = source;
@@ -440,6 +446,11 @@ class AutofillField : public FormFieldData {
     return ml_supported_types_;
   }
 
+  void UpdateFieldData(const FormFieldData& field_data,
+                       base::PassKey<FormStructure> pass_key) {
+    UpdateFieldData(field_data);
+  }
+
 #if defined(UNIT_TEST)
   const std::array<FieldType,
                    static_cast<size_t>(HeuristicSource::kMaxValue) + 1>&
@@ -449,15 +460,38 @@ class AutofillField : public FormFieldData {
 #endif
 
  private:
+  friend class AutofillFieldTestApi;
   struct PredictionResult {
+    // The type may be a union type, i.e., hold multiple FieldTypes.
     AutofillType type;
+    // The source of the primary FieldType in `type`: If there are multiple
+    // FieldTypes in `type`, the source only refers to the non-Autofill AI
+    // types.
+    // TODO(crbug.com/432645177): Make the FieldType to which the `source`
+    // applies explicit?
     std::optional<AutofillPredictionSource> source;
   };
 
   explicit AutofillField(FieldSignature field_signature);
 
+  // Copies the information from `field_data` into the members of
+  // `AutofillField` that were inherited from `FormFieldData`.
+  void UpdateFieldData(const FormFieldData& field_data);
+
   // Whether the heuristics or server predict a credit card field.
   bool IsCreditCardPrediction() const;
+
+  // Creates a union type that contains
+  // - the `primary_field_type` and
+  // - the Autofill AI FieldTypes in the `server_predictions_` (modulo conflict
+  //   resolution).
+  //
+  // A union type is an AutofillType that holds multiple FieldType.
+  // See AutofillType for details.
+  //
+  // TODO(crbug.com/436013479): Remove the hack that represents country codes.
+  AutofillType MakeAutofillType(FieldType primary_field_type,
+                                bool is_country_code = false) const;
 
   // Combines the server, heuristic and HTML type based predictions. Doesn't
   // take server overwrites or rationalization into consideration.
@@ -477,21 +511,15 @@ class AutofillField : public FormFieldData {
   size_t rank_in_host_form_signature_group_ = 0;
 
   // The possible types of the field, as determined by the Autofill server.
-  std::vector<
-      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>
-      server_predictions_;
-  // Predictions from the Autofill server which are not intended for general
-  // consumption. They are used for metrics and/or finch experiments.
-  std::vector<
-      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>
-      experimental_server_predictions_;
+  std::vector<FieldPrediction> server_predictions_;
 
   // Requirements the site imposes to passwords (for password generation).
   // Corresponds to the requirements determined by the Autofill server.
   std::optional<PasswordRequirementsSpec> password_requirements_;
 
-  std::u16string format_string_;
-  FormatStringSource format_string_source_ = FormatStringSource::kUnset;
+  AutofillFormatString format_string_;
+  AutofillFormatStringSource format_string_source_ =
+      AutofillFormatStringSource::kUnset;
 
   // Predictions which where calculated on the client. This is initialized to
   // `NO_SERVER_DATA`, which means "NO_DATA", i.e. no classification was
@@ -520,9 +548,10 @@ class AutofillField : public FormFieldData {
   // submission time.
   FieldTypeSet possible_types_;
 
-  // The field's initial value. By default, it's the same as the field's
-  // `value()`, but FormStructure::RetrieveFromCache() may override it.
-  std::u16string initial_value_ = value();
+  // The field's initial value. Initially, it is the same as
+  // `FormFieldData::value()`, but unlike value(), it remains unchanged over
+  // time.
+  std::u16string initial_value_;
 
   // Used to hold the position of the first digit to be copied as a substring
   // from credit card number.
@@ -533,15 +562,6 @@ class AutofillField : public FormFieldData {
 
   // Whether the field should be filled when it is not the highlighted field.
   bool only_fill_when_focused_ = false;
-
-  // The parseable name attribute, with unnecessary information removed (such as
-  // a common prefix shared with other fields). Will be used for heuristics
-  // parsing.
-  std::u16string parseable_name_;
-
-  // The parseable label attribute is potentially only a part of the original
-  // label when the label is divided between subsequent fields.
-  std::u16string parseable_label_;
 
   // A list of field log events, which record when user interacts the field
   // during autofill or editing, such as user clicks on the field, the

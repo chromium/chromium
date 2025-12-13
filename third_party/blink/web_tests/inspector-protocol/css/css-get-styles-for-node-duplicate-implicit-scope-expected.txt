@@ -1,0 +1,12 @@
+The test verifies functionality of protocol method CSS.getMatchedStylesForNode for implicit @scope.
+Style rules within duplicate implicit @scope rules do appear
+Dumping inline style: 
+{
+}
+Dumping matched rules: 
+*#example* {    regular
+    color: red; @[3:10-3:21]
+    color: red; @[undefined-undefined]
+}
+Dumping inherited rules: 
+

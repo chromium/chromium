@@ -7,14 +7,14 @@ This is a testharness.js-based test.
   Failed to construct 'CustomElementRegistry': Illegal constructor
 [FAIL] Adding definition to scoped registry should not affect shadow roots using other registries
   Failed to construct 'CustomElementRegistry': Illegal constructor
-[FAIL] Adding definition to global registry should not upgrade nodes no longer using the registry
+[FAIL] Adding definition to scoped registry should upgrade nodes even after the node is moved into a separate shadow tree.
   Failed to construct 'CustomElementRegistry': Illegal constructor
-[FAIL] Adding definition to scoped registry should not upgrade nodes no longer using the registry
+[FAIL] Adding definition to scoped registry should upgrade nodes even after the node is moved to a separate shadow tree using a different registry.
   Failed to construct 'CustomElementRegistry': Illegal constructor
 [FAIL] Adding definition to scoped registry affects associated shadow roots in all iframes
   Failed to construct 'CustomElementRegistry': Illegal constructor
 [FAIL] Adding definition to scoped registry affects associated shadow roots in other frame trees
-  assert_true: expected true got false
+  Failed to construct 'CustomElementRegistry': Illegal constructor
 [FAIL] Adding definition to scoped registry should not upgrade disconnected elements
   Failed to construct 'CustomElementRegistry': Illegal constructor
 [FAIL] Adding definition to scoped registry should not upgrade nodes in constructed documents

@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_USERSPACE_SWAP_POLICY_CHROMEOS_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_USERSPACE_SWAP_POLICY_CHROMEOS_H_
 
+#include <optional>
+
+#include "base/byte_count.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -13,24 +16,18 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/process_node.h"
-#include "components/performance_manager/public/graph/system_node.h"
 
-namespace ash {
-namespace memory {
-namespace userspace_swap {
+namespace ash::memory::userspace_swap {
 struct UserspaceSwapConfig;
-}  // namespace userspace_swap
-}  // namespace memory
-}  // namespace ash
+}  // namespace ash::memory::userspace_swap
 
-namespace performance_manager {
-namespace policies {
+namespace performance_manager::policies {
 
 // UserspaceSwapPolicy is a policy which will trigger a renderer to swap itself
 // via userspace.
 class UserspaceSwapPolicy : public GraphOwned,
                             public ProcessNodeObserver,
-                            public SystemNodeObserver {
+                            public base::MemoryPressureListener {
  public:
   UserspaceSwapPolicy();
 
@@ -48,10 +45,6 @@ class UserspaceSwapPolicy : public GraphOwned,
   void OnProcessNodeAdded(const ProcessNode* process_node) override;
   void OnProcessLifetimeChange(const ProcessNode* process_node) override;
 
-  // SystemNodeObserver:
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel new_level) override;
-
   // Returns true if running on a platform that supports the kernel features
   // necessary for userspace swapping, most important would be userfaultfd(2).
   static bool UserspaceSwapSupportedAndEnabled();
@@ -63,12 +56,12 @@ class UserspaceSwapPolicy : public GraphOwned,
   // The following methods are virtual for testing.
   virtual void SwapNodesOnGraph();
   virtual bool InitializeProcessNode(const ProcessNode* process_node);
-  virtual uint64_t GetTotalSwapFileUsageBytes();
-  virtual uint64_t GetSwapDeviceFreeSpaceBytes();
+  virtual base::ByteCount GetTotalSwapFileUsage();
+  virtual base::ByteCount GetSwapDeviceFreeSpace();
   virtual void SwapProcessNode(const ProcessNode* process_node);
-  virtual uint64_t GetProcessNodeSwapFileUsageBytes(
+  virtual base::ByteCount GetProcessNodeSwapFileUsage(
       const ProcessNode* process_node);
-  virtual uint64_t GetProcessNodeReclaimedBytes(
+  virtual base::ByteCount GetProcessNodeReclaimedSpace(
       const ProcessNode* process_node);
   virtual bool IsPageNodeVisible(const PageNode* page_node);
   virtual bool IsPageNodeAudible(const PageNode* page_node);
@@ -100,13 +93,18 @@ class UserspaceSwapPolicy : public GraphOwned,
   // swap files to make sure we're not letting it get below the configured
   // limit, we don't want to completely exhaust free space on a device.
   base::TimeTicks last_device_space_check_;
-  uint64_t backing_store_available_bytes_ = 0;
+  base::ByteCount backing_store_available_bytes_;
 
  private:
+  void OnMemoryPressure(base::MemoryPressureLevel new_level) override;
+
   // A helper method which sets the last trim time to the specified time.
   void SetLastSwapTime(const ProcessNode* process_node, base::TimeTicks time);
 
   void PrintAllSwapMetrics();
+
+  std::optional<base::MemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 
   std::unique_ptr<base::RepeatingTimer> metrics_timer_ =
       std::make_unique<base::RepeatingTimer>();
@@ -114,7 +112,6 @@ class UserspaceSwapPolicy : public GraphOwned,
   base::WeakPtrFactory<UserspaceSwapPolicy> weak_factory_{this};
 };
 
-}  // namespace policies
-}  // namespace performance_manager
+}  // namespace performance_manager::policies
 
 #endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_USERSPACE_SWAP_POLICY_CHROMEOS_H_

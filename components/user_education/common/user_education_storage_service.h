@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_USER_EDUCATION_STORAGE_SERVICE_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_USER_EDUCATION_STORAGE_SERVICE_H_
 
-#include <map>
 #include <optional>
 
 #include "base/feature_list.h"
@@ -111,11 +110,17 @@ class UserEducationStorageService : public UserEducationTimeProvider {
     set_profile_creation_time(profile_creation_time);
   }
 
-  virtual std::optional<KeyedNtpPromoData> ReadNtpPromoData(
+  // Gets or sets individual NTP promo data.
+  virtual std::optional<NtpPromoData> ReadNtpPromoData(
       const NtpPromoIdentifier& id) const = 0;
   virtual void SaveNtpPromoData(const NtpPromoIdentifier& id,
-                                const KeyedNtpPromoData& data) = 0;
-  virtual void ResetNtpPromoData() = 0;
+                                const NtpPromoData& data) = 0;
+  virtual void ResetNtpPromoData(const NtpPromoIdentifier& id) = 0;
+
+  // Gets or sets global NTP promo preferences.
+  virtual NtpPromoPreferences ReadNtpPromoPreferences() = 0;
+  virtual void SaveNtpPromoPreferences(const NtpPromoPreferences& data) = 0;
+  virtual void ResetNtpPromoPreferences() = 0;
 
  protected:
   friend UserEducationInternalsPageHandlerImpl;

@@ -6,8 +6,8 @@
 
 #import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
-#import "components/plus_addresses/features.h"
-#import "components/plus_addresses/plus_address_service.h"
+#import "components/plus_addresses/core/browser/plus_address_service.h"
+#import "components/plus_addresses/core/common/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/address_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/expanded_manual_fill_view_controller.h"
@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/public/provider/chrome/browser/keyboard/keyboard_api.h"
@@ -86,8 +85,7 @@ using manual_fill::ManualFillDataType;
   [super stop];
 
   // On iPad, dismiss the popover.
-  if (IsKeyboardAccessoryUpgradeEnabled() &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
       self.viewController.presentingViewController) {
     [self.viewController dismissViewControllerAnimated:true completion:nil];
   }

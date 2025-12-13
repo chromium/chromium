@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Property animation value 'auto cubic-bezier(0, -2, 1, 3) -3s 4 reverse both paused anim'
+  assert_equals: expected "0s cubic-bezier(0, -2, 1, 3) -3s 4 reverse both paused anim" but got "cubic-bezier(0, -2, 1, 3) 0s -3s 4 reverse both paused anim"
+Harness: the test ran to completion.
+

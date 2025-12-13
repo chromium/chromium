@@ -17,7 +17,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/net/dns_over_https_config_source.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "services/network/public/mojom/host_resolver.mojom-forward.h"
+#include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
+#include "net/dns/public/dns_over_https_config.h"
+#include "net/dns/public/dns_protocol.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -26,6 +29,39 @@ class SecureDnsConfig;
 // Retriever for Chrome configuration for the built-in DNS stub resolver.
 class StubResolverConfigReader {
  public:
+  // Detailed descriptions of the secure DNS mode. These values are logged to
+  // UMA. Entries should not be renumbered and numeric values should never be
+  // reused.
+  //
+  // LINT.IfChange(SecureDnsModeDetailsForHistogram)
+  enum class SecureDnsModeDetailsForHistogram {
+    // The mode is controlled by the user and is set to 'off'.
+    kOffByUser = 0,
+    // The mode is controlled via enterprise policy and is set to 'off'.
+    kOffByEnterprisePolicy = 1,
+    // Chrome detected a managed environment and forced the mode to 'off'.
+    kOffByDetectedManagedEnvironment = 2,
+    // Chrome detected parental controls and forced the mode to 'off'.
+    kOffByDetectedParentalControls = 3,
+    // The mode is controlled by the user and is set to 'automatic' (the
+    // default mode).
+    kAutomaticByUser = 4,
+    // The mode is controlled via enterprise policy and is set to 'automatic'.
+    kAutomaticByEnterprisePolicy = 5,
+    // The mode is controlled by the user and is set to 'secure'.
+    kSecureByUser = 6,
+    // The mode is controlled via enterprise policy and is set to 'secure'.
+    kSecureByEnterprisePolicy = 7,
+    // The mode is controlled by the user and is set to 'automatic with
+    // fallback to well-known DoH provider'.
+    kAutomaticWithDohFallbackByUser = 8,
+    // The mode is controlled via enterprise policy and is set to 'automatic
+    // with fallback to well-known DoH provider'.
+    kAutomaticWithDohFallbackByEnterprisePolicy = 9,
+    kMaxValue = kAutomaticWithDohFallbackByEnterprisePolicy,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/histograms.xml:SecureDnsModeDetails)
+
   static constexpr base::TimeDelta kParentalControlsCheckDelay =
       base::Seconds(2);
 
@@ -96,6 +132,8 @@ class StubResolverConfigReader {
     return is_ztdns_enabled_for_testing_;
   }
 #endif
+
+  static std::vector<net::IPEndPoint> GetFallbackDohNameservers();
 
  private:
   void OnParentalControlsDelayTimer();

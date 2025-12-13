@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_options.h"
 
 // Mutator interface for the Drive file picker.
 @protocol DriveFilePickerMutator <NSObject>
@@ -22,9 +23,9 @@
 // Ask the mutator to load the next drive items.
 - (void)loadNextPage;
 
-// Sets the current sorting criteria and direction.
-- (void)setSortingCriteria:(DriveItemsSortingType)criteria
-                 direction:(DriveItemsSortingOrder)direction;
+// Sets the current sorting criterion and direction.
+- (void)setSortingCriterion:(DriveFilePickerSortingCriterion)criterion
+                  direction:(DriveFilePickerSortingDirection)direction;
 
 // Toggles whether to ignore the list of types accepted by the website.
 - (void)setAcceptedTypesIgnored:(BOOL)ignoreAcceptedTypes;

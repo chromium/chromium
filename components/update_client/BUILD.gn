@@ -104,7 +104,6 @@ static_library("update_client") {
     "crx_downloader_factory.cc",
     "crx_downloader_factory.h",
     "crx_update_item.h",
-    "network.cc",
     "network.h",
     "op_download.cc",
     "op_download.h",
@@ -222,11 +221,6 @@ if (is_mac) {
 
 source_set("test_support") {
   testonly = true
-  visibility = [
-    ":unit_tests",
-    "//chrome/test:test_support",
-    "//components/component_updater:unit_tests",
-  ]
   sources = [
     "net/url_loader_post_interceptor.cc",
     "net/url_loader_post_interceptor.h",

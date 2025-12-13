@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_EXTERNAL_CONSTANTS_H_
 #define CHROME_UPDATER_EXTERNAL_CONSTANTS_H_
 
+#include <cstdint>
 #include <optional>
 #include <vector>
 
@@ -67,6 +68,9 @@ class ExternalConstants : public base::RefCountedThreadSafe<ExternalConstants> {
 
   // CRX format verification requirements.
   virtual crx_file::VerifierFormat CrxVerifierFormat() const = 0;
+
+  // Required CRX key (this is a SHA256 hash of the public key).
+  virtual std::optional<std::vector<uint8_t>> CrxPublicKeyHash() const = 0;
 
   // Minimum amount of time between successive event logging transmissions.
   virtual base::TimeDelta MinimumEventLoggingCooldown() const = 0;

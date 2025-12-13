@@ -26,7 +26,7 @@ namespace {
 //      to be simple overrides).
 // If the field controls anything else, it should be disallowed, and added to
 // this file's corresponding unittest.cc.
-const char* kAllowlistedManifestKeys[] = {
+constexpr const char* kAllowlistedManifestKeys[] = {
     "author",  // "author" is a recognized key, but never used as a constant.
     extensions::manifest_keys::kAboutPage,
     extensions::manifest_keys::kCurrentLocale,

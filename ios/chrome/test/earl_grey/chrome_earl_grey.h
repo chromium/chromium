@@ -101,6 +101,15 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns whether the Enhanced Safe Browsing Infobar Promo feature is enabled.
 - (BOOL)isEnhancedSafeBrowsingInfobarEnabled;
 
+// Returns whether the Ask Gemini Chip feature is enabled.
+- (BOOL)isAskGeminiChipEnabled;
+
+// Returns whether the ComposeboxIOS feature is enabled.
+- (BOOL)isComposeboxIOSEnabled;
+
+// Returns the interface orientation of the scene.
+- (UIInterfaceOrientation)interfaceOrientation;
+
 #pragma mark - Profile Utilities (EG2)
 
 // Returns the name (as in `ProfileIOS::GetProfileName()`) of the current
@@ -550,6 +559,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)waitForIncognitoTabCount:(NSUInteger)count
               inWindowWithNumber:(int)windowNumber;
 
+// Opens the settings menu directly (not via the UI) in the window with the
+// given number. EarlGrey + Multiwindow + SwiftUI (the tools menu) do not
+// play well together, so EG often fails to interact with the tools menu in
+// secondary windows.
+- (void)openSettingsInWindowWithNumber:(int)windowNumber;
+
 #pragma mark - SignIn Utilities (EG2)
 
 // Signs the user out, clears the known accounts & browsing data, and wait for
@@ -644,6 +659,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns the current web state's last committed URL.
 - (GURL)webStateLastCommittedURL;
 
+// Waits for the current web state's visible URL to be `URL`.
+- (void)waitForWebStateVisibleURL:(const GURL&)URL;
+
 // Purges cached web view pages, so the next time back navigation will not use
 // a cached page. Browsers don't have to use a fresh version for back/forward
 // navigation for HTTP pages and may serve a version from the cache even if the
@@ -731,9 +749,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns YES if UKM feature is enabled.
 - (BOOL)isUKMEnabled [[nodiscard]];
 
-// Returns YES if DWA feature is enabled.
-- (BOOL)isDWAEnabled [[nodiscard]];
-
 // Returns YES if kTestFeature is enabled.
 - (BOOL)isTestFeatureEnabled;
 
@@ -760,9 +775,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Returns whether the UseLensToSearchForImage feature is enabled;
 - (BOOL)isUseLensToSearchForImageEnabled;
-
-// Returns whether the Tab Group Sync feature is enabled.
-- (BOOL)isTabGroupSyncEnabled;
 
 // Returns whether the unfocused omnibox is at the bottom.
 - (BOOL)isUnfocusedOmniboxAtBottom;
@@ -912,16 +924,16 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)verifyCopyLinkActionWithText:(NSString*)text;
 
 // Taps on the Open in New Tab context menu action and waits for the `URL` to be
-// present in the omnibox.
-- (void)verifyOpenInNewTabActionWithURL:(const std::string&)URL;
+// present the URL of the current tab.
+- (void)verifyOpenInNewTabActionWithURL:(const GURL&)URL;
 
 // Taps on the Open in New Window context menu action and waits for the
 // `content` to be present in webview.
 - (void)verifyOpenInNewWindowActionWithContent:(const std::string&)content;
 
 // Taps on the Open in Incognito context menu action and waits for the `URL` to
-// be present in the omnibox.
-- (void)verifyOpenInIncognitoActionWithURL:(const std::string&)URL;
+// be present the URL of the current tab.
+- (void)verifyOpenInIncognitoActionWithURL:(const GURL&)URL;
 
 // Taps on the Share context menu action and validates that the ActivityView
 // was brought up with the correct title in its header. The title starts as the
@@ -1007,6 +1019,15 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Waits for the MessagingBackendService to be initialized.
 - (NSError*)waitForMessagingBackendServiceInitialized;
+
+#pragma mark - Reader mode Utilities
+
+// Shows Reader mode in the current tab and wait for the Reader mode WebState to
+// be ready.
+- (BOOL)showReaderModeAndWaitUntilReaderModeWebStateIsReady;
+
+// Hides Reader mode in the current tab.
+- (void)hideReaderMode;
 
 @end
 

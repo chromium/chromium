@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.82"
+rust-version = "1.83"
 name = "icu_normalizer"
-version = "2.0.0"
+version = "2.1.1"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -73,9 +73,10 @@ serde = [
 ]
 utf16_iter = [
     "dep:utf16_iter",
-    "write16",
+    "dep:write16",
 ]
 utf8_iter = ["dep:utf8_iter"]
+write16 = []
 
 [lib]
 name = "icu_normalizer"
@@ -118,36 +119,36 @@ path = "benches/decomposing_normalizer_nfd.rs"
 name = "decomposing_normalizer_nfkd"
 path = "benches/decomposing_normalizer_nfkd.rs"
 
+[[bench]]
+name = "utf16_throughput"
+path = "benches/utf16_throughput.rs"
+
 [dependencies.databake]
 version = "0.2.0"
 features = ["derive"]
 optional = true
 default-features = false
 
-[dependencies.displaydoc]
-version = "0.2.3"
-default-features = false
-
 [dependencies.icu_collections]
-version = "~2.0.0"
+version = "~2.1.1"
 default-features = false
 
 [dependencies.icu_normalizer_data]
-version = "~2.0.0"
+version = "~2.1.1"
 optional = true
 default-features = false
 
 [dependencies.icu_properties]
-version = "~2.0.0"
+version = "~2.1.1"
 optional = true
 default-features = false
 
 [dependencies.icu_provider]
-version = "2.0.0"
+version = "2.1.1"
 default-features = false
 
 [dependencies.serde]
-version = "1.0.110"
+version = "1.0.220"
 features = [
     "derive",
     "alloc",
@@ -176,7 +177,7 @@ optional = true
 default-features = false
 
 [dependencies.zerovec]
-version = "0.11.1"
+version = "0.11.3"
 default-features = false
 
 [dev-dependencies.arraystring]
@@ -194,8 +195,16 @@ version = "1.0.0"
 
 [dev-dependencies.write16]
 version = "1.0.0"
-features = ["arrayvec"]
+features = [
+    "arrayvec",
+    "smallvec",
+]
 default-features = false
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies.criterion]
 version = "0.5.0"
+
+[lints.rust.unexpected_cfgs]
+level = "warn"
+priority = 0
+check-cfg = ["cfg(icu4x_unstable_fast_trie_only)"]

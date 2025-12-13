@@ -1,0 +1,18 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://www.w3.org/TR/webxrlayers-1/#xrquadlayertype
+[
+  SecureContext,
+  Exposed=Window,
+  RuntimeEnabled=WebXRLayers
+] interface XRQuadLayer : XRCompositionLayer {
+  attribute XRSpace space;
+  attribute XRRigidTransform transform;
+
+  attribute float width;
+  attribute float height;
+
+  attribute EventHandler onredraw;
+};

@@ -23,14 +23,11 @@ class ComposeManager : public autofill::AutofillComposeDelegate {
 
   // TODO(b/300325327): Add non-Autofill specific methods.
   // Opens the Compose UI. `ui_entry_point` and `trigger_field` describe the
-  // field on which Compose was triggered. `popup_screen_location` contains the
-  // location (and arrow position) of the currently open popup bubble (if there
-  // is one) and `callback` is the response callback to Autofill.
+  // field on which Compose was triggered and `callback` is the response
+  // callback to Autofill.
   virtual void OpenComposeWithFormFieldData(
       UiEntryPoint ui_entry_point,
       const autofill::FormFieldData& trigger_field,
-      std::optional<autofill::AutofillClient::PopupScreenLocation>
-          popup_screen_location,
       ComposeCallback callback) = 0;
 };
 

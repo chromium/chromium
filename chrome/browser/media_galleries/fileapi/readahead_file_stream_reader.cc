@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/media_galleries/fileapi/readahead_file_stream_reader.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "net/base/io_buffer.h"
@@ -23,8 +19,9 @@ using storage::FileStreamReader;
 
 namespace {
 
-const size_t kDesiredNumberOfBuffers = 2;  // So we are always one buffer ahead.
-const int kBufferSize = 1024*1024;  // 1MB to minimize transaction costs.
+// So that we are always one buffer ahead.
+constexpr size_t kDesiredNumberOfBuffers = 2;
+constexpr int kBufferSize = 1024 * 1024;  // 1MB to minimize transaction costs.
 
 }  // namespace
 
@@ -77,13 +74,11 @@ int ReadaheadFileStreamReader::FinishReadFromCacheOrStoredError(
   while (sink->BytesRemaining() > 0 && !buffers_.empty()) {
     net::DrainableIOBuffer* source_buffer = buffers_.front().get();
 
-    DCHECK(source_buffer->BytesRemaining() > 0);
+    DCHECK_GT(source_buffer->BytesRemaining(), 0);
 
-    int copy_len = std::min(source_buffer->BytesRemaining(),
-                            sink->BytesRemaining());
-    std::copy(source_buffer->data(), source_buffer->data() + copy_len,
-              sink->data());
-
+    const int copy_len =
+        std::min(source_buffer->BytesRemaining(), sink->BytesRemaining());
+    sink->first(copy_len).copy_from(source_buffer->first(copy_len));
     source_buffer->DidConsume(copy_len);
     sink->DidConsume(copy_len);
 

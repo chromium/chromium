@@ -45,14 +45,14 @@ class Cursor;
 }  // namespace ui
 
 namespace viz {
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }  // namespace viz
 
 namespace blink {
 
 class AnimationFrameTimingInfo;
 class LocalFrame;
-// In interface exposed within Blink from local root frames that provides
+// An interface exposed within Blink from local root frames that provides
 // local-root specific things related to compositing and input. This
 // class extends the FrameWidgetInputHandler implementation. All API calls
 // on this class occur on the main thread. input/FrameWidgetInputHandlerImpl
@@ -85,7 +85,6 @@ class PLATFORM_EXPORT FrameWidget {
   virtual void RequestDecode(const cc::DrawImage&,
                              base::OnceCallback<void(bool)>,
                              bool speculative) = 0;
-  virtual bool SpeculativeDecodeRequestInFlight() const = 0;
 
   // Forwards to `WebFrameWidget::NotifyPresentationTime()`.
   // `presentation_callback` will be fired when the corresponding renderer frame
@@ -249,6 +248,7 @@ class PLATFORM_EXPORT FrameWidget {
   virtual gfx::PointF DIPsToBlinkSpace(const gfx::PointF& point) = 0;
   virtual gfx::Point DIPsToRoundedBlinkSpace(const gfx::Point& point) = 0;
   virtual float DIPsToBlinkSpace(float scalar) = 0;
+  virtual gfx::RectF DIPsToBlinkSpace(const gfx::RectF& rect) = 0;
 
   virtual void RequestMouseLock(
       bool has_transient_user_activation,
@@ -324,6 +324,9 @@ class PLATFORM_EXPORT FrameWidget {
   // other parameters are recorded earlier).
   virtual AnimationFrameTimingInfo* RecordRenderingUpdateEndTime(
       base::TimeTicks) = 0;
+
+  virtual void OnFirstContentfulPaint(
+      const base::TimeTicks& first_paint_time) = 0;
 };
 
 }  // namespace blink

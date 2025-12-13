@@ -1105,19 +1105,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="EasyUnlock.AuthProximity.RemoteDeviceModelHash"
-    enum="EasyUnlockDeviceModelHash" expires_after="2026-05-05">
-  <owner>hansberry@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    The hash of the phone model used to successfully sign in or unlock using
-    Smart Lock.
-
-    This hash is calculated by taking the first 4 bytes of the MD5 hash of the
-    device model.
-  </summary>
-</histogram>
-
 <histogram name="EasyUnlock.AuthProximity.RollingRssi" units="dBm"
     expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
@@ -2179,14 +2166,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.AuthMethodChoice.Unlock"
-    enum="SmartLockAuthMethodChoice" expires_after="2026-05-05">
+    enum="SmartLockAuthMethodChoice" expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Records the user's unlock method choice.</summary>
 </histogram>
 
 <histogram name="SmartLock.AuthMethodChoice.Unlock.PasswordState"
-    enum="SmartLockAuthEventPasswordState" expires_after="2026-05-05">
+    enum="SmartLockAuthEventPasswordState" expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2196,7 +2183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.AuthResult" enum="BooleanSuccess"
-    expires_after="2026-05-05">
+    expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2206,7 +2193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.AuthResult.Unlock" enum="BooleanSuccess"
-    expires_after="2026-05-05">
+    expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2216,7 +2203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.AuthResult.Unlock.Failure"
-    enum="SmartLockAuthResultFailureReason" expires_after="2026-05-05">
+    enum="SmartLockAuthResultFailureReason" expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2226,7 +2213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.EnabledDevicesCount" units="devices"
-    expires_after="2026-05-05">
+    expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2237,7 +2224,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.EnabledState" enum="SmartLockEnabledState"
-    expires_after="2026-05-05">
+    expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2250,7 +2237,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.FindAndConnectToHostResult.Unlock"
-    enum="SmartLockFindAndConnectToHostResult" expires_after="2026-05-05">
+    enum="SmartLockFindAndConnectToHostResult" expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2260,7 +2247,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.FirstStatusToUser" enum="FirstSmartLockStatus"
-    expires_after="2026-05-05">
+    expires_after="2026-11-26">
   <owner>bhartmire@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2271,7 +2258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.GetRemoteStatus.Unlock" enum="BooleanSuccess"
-    expires_after="2026-05-05">
+    expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2282,7 +2269,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SmartLock.GetRemoteStatus.Unlock.Failure"
     enum="SmartLockGetRemoteStatusResultFailureReason"
-    expires_after="2026-05-05">
+    expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2292,7 +2279,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.MultiDeviceFeatureState"
-    enum="MultiDevice_FeatureState" expires_after="2026-05-05">
+    enum="MultiDevice_FeatureState" expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2304,7 +2291,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SmartLock.Performance.AuthenticationToReceiveFirstRemoteStatusDuration.Unlock{SmartLockStatusTypes}"
-    units="ms" expires_after="2026-05-05">
+    units="ms" expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2328,7 +2315,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SmartLock.Performance.ShowLockScreenToShowFirstStatusToUserDuration.Unlock{SmartLockStatusTypes}"
-    units="ms" expires_after="2026-05-05">
+    units="ms" expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2352,7 +2339,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SmartLock.Performance.StartScanToReceiveFirstRemoteStatusDuration.Unlock{SmartLockStatusTypes}"
-    units="ms" expires_after="2026-05-05">
+    units="ms" expires_after="2026-11-26">
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2381,7 +2368,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.Toggle" enum="SmartLockToggle"
-    expires_after="2026-01-02">
+    expires_after="2026-11-26">
   <owner>bhartmire@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>

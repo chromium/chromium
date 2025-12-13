@@ -2,20 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/393091624): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include "reference_drivers/sync_reference_driver.h"
-
 #include <cstddef>
 #include <functional>
 #include <string>
 #include <vector>
 
 #include "ipcz/api_object.h"
+#include "reference_drivers/sync_reference_driver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "util/unsafe_buffers.h"
 
 namespace ipcz::reference_drivers {
 namespace {
@@ -70,7 +65,8 @@ class TransportReceiver
 
     const std::string message(reinterpret_cast<const char*>(data), num_bytes);
     std::vector<IpczDriverHandle> handles(num_driver_handles);
-    std::copy(driver_handles, driver_handles + num_driver_handles,
+    std::copy(driver_handles,
+              IPCZ_UNSAFE_TODO(driver_handles + num_driver_handles),
               handles.begin());
     return handlers.on_message(
         {.data = std::move(message), .handles = std::move(handles)});

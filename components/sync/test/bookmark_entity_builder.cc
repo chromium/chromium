@@ -28,10 +28,10 @@ using syncer::LoopbackServerEntity;
 
 // A version must be passed when creating a LoopbackServerEntity, but this value
 // is overrideen immediately when saving the entity in FakeServer.
-const int64_t kUnusedVersion = 0L;
+constexpr int64_t kUnusedVersion = 0L;
 
 // Default time (creation and last modified) used when creating entities.
-const int64_t kDefaultTime = 1234L;
+constexpr int64_t kDefaultTime = 1234L;
 
 namespace fake_server {
 

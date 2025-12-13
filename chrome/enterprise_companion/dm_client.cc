@@ -75,9 +75,10 @@ device_management_storage::DMPolicyMap ToDMPolicyMap(
   device_management_storage::DMPolicyMap out;
   std::ranges::transform(
       in, std::inserter(out, out.end()),
-      [](const std::pair<std::pair<std::string, std::string>,
-                         enterprise_management::PolicyFetchResponse> response) {
-        return std::make_pair(response.first.first,
+      [](const std::pair<policy::CloudPolicyClientTypeParams,
+                         enterprise_management::PolicyFetchResponse>&
+             response) {
+        return std::make_pair(response.first.policy_type(),
                               response.second.SerializeAsString());
       });
   return out;
@@ -115,7 +116,6 @@ class ClientDataDelegate : public policy::ClientDataDelegate {
   void FillRegisterBrowserRequest(
       enterprise_management::RegisterBrowserRequest* request,
       base::OnceClosure callback) const override {
-    request->set_machine_name(policy::GetMachineName());
     request->set_os_platform(policy::GetOSPlatform());
     request->set_os_version(policy::GetOSVersion());
     request->set_allocated_browser_device_identifier(
@@ -452,7 +452,8 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
               cached_policy_info_->timestamp(), response);
       CHECK(validation_result) << "Policy validation result cannot be null";
       if (validation_result->status != FetchedPolicyValidator::VALIDATION_OK) {
-        VLOG(1) << "Policy validation failed for " << key.first << " response: "
+        VLOG(1) << "Policy validation failed for " << key.policy_type()
+                << " response: "
                 << FetchedPolicyValidator::StatusToString(
                        validation_result->status);
         return *validation_result;

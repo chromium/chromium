@@ -15,9 +15,9 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/camera_mic/vm_camera_mic_manager.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"
@@ -28,7 +28,7 @@ using GetSourceInfosResult =
 
 class MediaClientImpl : public ash::MediaClient,
                         public ash::VmCameraMicManager::Observer,
-                        public BrowserListObserver,
+                        public ash::BrowserController::Observer,
                         public MediaCaptureDevicesDispatcher::Observer,
                         public media::CameraPrivacySwitchObserver,
                         public media::CameraActiveClientObserver {
@@ -67,8 +67,8 @@ class MediaClientImpl : public ash::MediaClient,
                        blink::mojom::MediaStreamType stream_type,
                        const content::MediaRequestState state) override;
 
-  // BrowserListObserver:
-  void OnBrowserSetLastActive(Browser* browser) override;
+  // ash::BrowserController::Observer:
+  void OnBrowserActivated(ash::BrowserDelegate* browser) override;
 
   // ash::VmCameraMicManager::Observer
   void OnVmCameraMicActiveChanged(ash::VmCameraMicManager* manager) override;
@@ -205,6 +205,10 @@ class MediaClientImpl : public ash::MediaClient,
 
   // Can be used to disable/enable the display of HW switch toasts.
   bool hw_switch_toasts_disabled_ = false;
+
+  base::ScopedObservation<ash::BrowserController,
+                          ash::BrowserController::Observer>
+      browser_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 

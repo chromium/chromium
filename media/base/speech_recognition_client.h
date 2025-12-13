@@ -11,10 +11,12 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "media/base/audio_buffer.h"
-#include "media/base/audio_bus.h"
 #include "media/base/media_export.h"
 
 namespace media {
+
+class AudioBus;
+class AudioParameters;
 
 // The interface for the speech recognition client used to transcribe audio into
 // captions.

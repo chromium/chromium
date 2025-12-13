@@ -11,9 +11,11 @@
 #include <unordered_map>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -58,8 +60,16 @@ power_manager::PowerSupplyProperties SanitizePowerSupplyProperties(
     const power_manager::PowerSupplyProperties& proto) {
   power_manager::PowerSupplyProperties sanitized = proto;
 
+  // This code is used to round the battery percent (say 99.2%) to exactly
+  // 100% when the battery is reported as full. However when charge limited, the
+  // battery is still reported as full, but it's not actually full. Therefore,
+  // this rounding should not occur, since the battery could be significantly
+  // lowered than 99.2% (e.g., somewhere between 80% <= x <= 100%).
+  const bool isChargeLimitFeatureEnabled =
+      base::FeatureList::IsEnabled(ash::features::kBatteryChargeLimit);
   if (sanitized.battery_state() ==
-      power_manager::PowerSupplyProperties_BatteryState_FULL) {
+          power_manager::PowerSupplyProperties_BatteryState_FULL &&
+      (isChargeLimitFeatureEnabled ? !sanitized.charge_limited() : true)) {
     sanitized.set_battery_percent(100.0);
   }
 

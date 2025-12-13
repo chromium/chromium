@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/engine/configure_reason.h"
@@ -31,6 +32,7 @@
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_engine.h"
 #include "components/sync/engine/sync_engine_host.h"
+#include "components/sync/service/bookmark_sync_error_state.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/data_type_manager.h"
 #include "components/sync/service/data_type_manager_observer.h"
@@ -51,6 +53,10 @@ namespace network {
 class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 }  // namespace network
+
+namespace os_crypt_async {
+class OSCryptAsync;
+}  // namespace os_crypt_async
 
 namespace syncer {
 
@@ -93,6 +99,7 @@ class SyncServiceImpl : public SyncService,
         nullptr;
     version_info::Channel channel = version_info::Channel::UNKNOWN;
     std::string debug_identifier;
+    raw_ptr<os_crypt_async::OSCryptAsync> os_crypt_async = nullptr;
   };
 
   explicit SyncServiceImpl(InitParams init_params);
@@ -122,7 +129,6 @@ class SyncServiceImpl : public SyncService,
   GoogleServiceAuthError GetAuthError() const override;
   base::Time GetAuthErrorTime() const override;
   bool HasCachedPersistentAuthErrorForMetrics() const override;
-  bool RequiresClientUpgrade() const override;
   std::unique_ptr<SyncSetupInProgressHandle> GetSetupInProgressHandle()
       override;
   bool IsSetupInProgress() const override;
@@ -131,7 +137,8 @@ class SyncServiceImpl : public SyncService,
   DataTypeSet GetActiveDataTypes() const override;
   DataTypeSet GetTypesWithPendingDownloadForInitialSync() const override;
   void OnDataTypeRequestsSyncStartup(DataType type) override;
-  void TriggerRefresh(const DataTypeSet& types) override;
+  void TriggerRefresh(TriggerRefreshSource source,
+                      const DataTypeSet& types) override;
   void DataTypePreconditionChanged(DataType type) override;
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
   void SendExplicitPassphraseToPlatformClient() override;
@@ -169,6 +176,7 @@ class SyncServiceImpl : public SyncService,
   void SelectTypeAndMigrateLocalDataItemsWhenActive(
       DataType data_type,
       std::vector<LocalDataItemModel::DataId> items) override;
+  void AcknowledgeBookmarksLimitExceededError() override;
 
   // SyncEngineHost implementation.
   void OnEngineInitialized(bool success,
@@ -272,6 +280,9 @@ class SyncServiceImpl : public SyncService,
   // Simulates data type error reported by the bridge.
   void ReportDataTypeErrorForTest(DataType type);
 
+  // Wraps RunOrQueueTaskOnEngineInitialized() for testing.
+  void RunOrQueueTaskOnEngineInitializedForTest(base::OnceClosure task);
+
   size_t GetQueuedLocalDataMigrationItemCountForTest() const;
 
  private:
@@ -345,13 +356,15 @@ class SyncServiceImpl : public SyncService,
 
   void ClearUnrecoverableError();
 
-  // Posts a task to create the sync engine, if IsEngineAllowedToRun() is true
-  // and there is no engine yet (no-op otherwise). This method posts a task so
-  // callers can set up other state as necessary before the engine starts.
+  // Asynchronously tries to start the sync engine, if IsEngineAllowedToRun() is
+  // true and there is no engine yet (no-op otherwise). This is asynchronous to
+  // allow OSCrypt to be initialized first and set to up other state as
+  // necessary before the engine starts.
   void TryStart();
 
   // The actual synchronous implementation of TryStart().
-  void TryStartImpl();
+  void TryStartImpl(base::TimeTicks try_start_time,
+                    std::vector<os_crypt_async::Encryptor> encryptors);
 
   // Whether sync has been authenticated with an account ID.
   bool IsSignedIn() const;
@@ -367,11 +380,17 @@ class SyncServiceImpl : public SyncService,
   // Called when a SetupInProgressHandle issued by this instance is destroyed.
   void OnSetupInProgressHandleDestroyed();
 
+  // Queues a task to be run once the engine is initialized. If the engine is
+  // already initialized, the task is run immediately.
+  void RunOrQueueTaskOnEngineInitialized(base::OnceClosure task);
+
+  // The implementation of SendExplicitPassphraseToPlatformClient, to be run
+  // once the engine is initialized.
+  void SendExplicitPassphraseToPlatformClientImpl();
+
   // Records (or may record) histograms related to trusted vault passphrase
   // type.
   void MaybeRecordTrustedVaultHistograms();
-
-  void OnPasswordSyncAllowedChanged();
 
   // Updates PrefService (SyncPrefs) to cache the last known value for trusted
   // vault AutoUpgradeDebugInfo. It also notifies SyncClient.
@@ -392,11 +411,16 @@ class SyncServiceImpl : public SyncService,
   // This profile's SyncClient.
   const std::unique_ptr<SyncClient> sync_client_;
 
+  BookmarkSyncErrorState bookmark_sync_error_state_;
+
   // Callback used to create network connections.
   const CreateHttpPostProviderFactory create_http_post_provider_factory_;
 
   std::optional<CreateHttpPostProviderFactory>
       create_http_post_provider_factory_override_for_test_;
+
+  // The global OSCryptAsync instance.
+  raw_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
   // The class that handles getting, setting, and persisting sync preferences.
   SyncPrefs sync_prefs_;
@@ -473,11 +497,10 @@ class SyncServiceImpl : public SyncService,
   // Note: This is an Optional so that we can control its destruction - in
   // particular, to trigger the "check_empty" test in Shutdown().
   std::optional<base::ObserverList<SyncServiceObserver,
-                                   /*check_empty=*/true>::Unchecked>
+                                   /*check_empty=*/true>>
       observers_;
 
-  base::ObserverList<ProtocolEventObserver>::Unchecked
-      protocol_event_observers_;
+  base::ObserverList<ProtocolEventObserver> protocol_event_observers_;
 
   std::unique_ptr<BackendMigrator> migrator_;
 
@@ -511,6 +534,9 @@ class SyncServiceImpl : public SyncService,
   std::unique_ptr<SyncFeatureStatusForMigrationsRecorder> sync_status_recorder_;
 
   std::unique_ptr<LocalDataMigrationItemQueue> local_data_migration_item_queue_;
+
+  // Tasks that should run after the engine is initialized.
+  std::vector<base::OnceClosure> tasks_waiting_for_engine_initialization_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Manage and fetch the java object that wraps this SyncService on

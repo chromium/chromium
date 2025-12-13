@@ -27,21 +27,12 @@ class GURL;
 // Username associated with this item.
 @property(nonatomic, readonly) NSString* username;
 
-// The cell won't show a title (site name) label if it is connected to the
-// previous password item.
-@property(nonatomic, readonly) BOOL isConnectedToPreviousItem;
-
 // `cellIndex` indicates the index (0-based) at which the password represented
 // by this item is positioned in the list of passwords to show.
 // `cellIndexAccessibilityLabel` is the cell's accessibility label and is used
 // to indicate the cell's index (1-based) and the number of available passwords
 // to accessibility users.
-// TODO(crbug.com/326398845): Remove the `isConnectedToPreviousItem` and
-// `isConnectedToNextItem` params once the Keyboard Accessory Upgrade feature
-// has launched both on iPhone and iPad.
 - (instancetype)initWithCredential:(ManualFillCredential*)credential
-         isConnectedToPreviousItem:(BOOL)isConnectedToPreviousItem
-             isConnectedToNextItem:(BOOL)isConnectedToNextItem
                    contentInjector:
                        (id<ManualFillContentInjector>)contentInjector
                        menuActions:(NSArray<UIAction*>*)menuActions
@@ -57,7 +48,7 @@ class GURL;
 
 // Cell to display a Credential where the username and password are interactable
 // and send the data to the delegate.
-@interface ManualFillPasswordCell : TableViewCell
+@interface ManualFillPasswordCell : LegacyTableViewCell
 
 // Identifier to match a URLItem with its URLCell.
 @property(nonatomic, readonly) NSString* uniqueIdentifier;
@@ -72,8 +63,6 @@ class GURL;
 // `fromAllPasswordsContext` indicates whether the cell is presented in the all
 // password list.
 - (void)setUpWithCredential:(ManualFillCredential*)credential
-      isConnectedToPreviousCell:(BOOL)isConnectedToPreviousCell
-          isConnectedToNextCell:(BOOL)isConnectedToNextCell
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
                       cellIndex:(NSInteger)cellIndex

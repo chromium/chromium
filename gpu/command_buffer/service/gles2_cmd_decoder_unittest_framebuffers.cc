@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -518,7 +514,8 @@ class ReadPixelsEmulator {
     for (GLint yy = 0; yy < height; ++yy) {
       const int8_t* src = GetPixelAddress(src_pixels_, x, y + yy);
       const void* dst = ComputePackAlignmentAddress(0, yy, width, pixels);
-      memcpy(const_cast<void*>(dst), src, width * bytes_per_pixel_);
+      UNSAFE_TODO(
+          memcpy(const_cast<void*>(dst), src, width * bytes_per_pixel_));
     }
   }
 
@@ -527,9 +524,8 @@ class ReadPixelsEmulator {
                          GLsizei width,
                          const void* data) const {
     DCHECK(x + width <= width_ || width == 0);
-    return memcmp(data,
-                  GetPixelAddress(expected_pixels_, x, y),
-                  width * bytes_per_pixel_) == 0;
+    return UNSAFE_TODO(memcmp(data, GetPixelAddress(expected_pixels_, x, y),
+                              width * bytes_per_pixel_)) == 0;
   }
 
   // Helper to compute address of pixel in pack aligned data.
@@ -541,7 +537,7 @@ class ReadPixelsEmulator {
     GLint two_rows_size = ComputeImageDataSize(width, 2);
     GLsizei padded_row_size = two_rows_size - unpadded_row_size;
     GLint offset = y * padded_row_size + x * bytes_per_pixel_;
-    return static_cast<const int8_t*>(address) + offset;
+    return UNSAFE_TODO(static_cast<const int8_t*>(address) + offset);
   }
 
   GLint ComputeImageDataSize(GLint width, GLint height) const {
@@ -558,7 +554,7 @@ class ReadPixelsEmulator {
 
  private:
   const int8_t* GetPixelAddress(const int8_t* base, GLint x, GLint y) const {
-    return base + (width_ * y + x) * bytes_per_pixel_;
+    return UNSAFE_TODO(base + (width_ * y + x)) * bytes_per_pixel_;
   }
 
   GLsizei width_;
@@ -616,7 +612,7 @@ void GLES2DecoderTest::CheckReadPixelsOutOfRange(GLint in_read_x,
   uint32_t result_shm_offset = kSharedMemoryOffset;
   uint32_t pixels_shm_id = shared_memory_id_;
   uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
-  void* dest = &result[1];
+  void* dest = UNSAFE_TODO(&result[1]);
 
   EXPECT_CALL(*gl_, GetError())
       .WillOnce(Return(GL_NO_ERROR))
@@ -657,33 +653,33 @@ void GLES2DecoderTest::CheckReadPixelsOutOfRange(GLint in_read_x,
   GLint unpadded_row_size = emu.ComputeImageDataSize(in_read_width, 1);
   auto zero = base::HeapArray<int8_t>::Uninit(unpadded_row_size);
   auto pack = base::HeapArray<int8_t>::Uninit(kPackAlignment);
-  memset(zero.data(), kInitialMemoryValue, unpadded_row_size);
-  memset(pack.data(), kInitialMemoryValue, kPackAlignment);
+  UNSAFE_TODO(memset(zero.data(), kInitialMemoryValue, unpadded_row_size));
+  UNSAFE_TODO(memset(pack.data(), kInitialMemoryValue, kPackAlignment));
   for (GLint yy = 0; yy < in_read_height; ++yy) {
     const int8_t* row = static_cast<const int8_t*>(
         emu.ComputePackAlignmentAddress(0, yy, in_read_width, dest));
     GLint y = in_read_y + yy;
     if (y < 0 || y >= kHeight) {
-      EXPECT_EQ(0, memcmp(zero.data(), row, unpadded_row_size));
+      UNSAFE_TODO(EXPECT_EQ(0, memcmp(zero.data(), row, unpadded_row_size)));
     } else {
       // check off left.
       GLint num_left_pixels = std::max(-in_read_x, 0);
       GLint num_left_bytes = num_left_pixels * kBytesPerPixel;
-      EXPECT_EQ(0, memcmp(zero.data(), row, num_left_bytes));
+      UNSAFE_TODO(EXPECT_EQ(0, memcmp(zero.data(), row, num_left_bytes)));
 
       // check off right.
       GLint num_right_pixels = std::max(in_read_x + in_read_width - kWidth, 0);
       GLint num_right_bytes = num_right_pixels * kBytesPerPixel;
-      EXPECT_EQ(0,
-                memcmp(zero.data(), row + unpadded_row_size - num_right_bytes,
-                       num_right_bytes));
+      UNSAFE_TODO(EXPECT_EQ(
+          0, memcmp(zero.data(), row + unpadded_row_size - num_right_bytes,
+                    num_right_bytes)));
 
       // check middle.
       GLint x = std::max(in_read_x, 0);
       GLint num_middle_pixels =
           std::max(in_read_width - num_left_pixels - num_right_pixels, 0);
-      EXPECT_TRUE(
-          emu.CompareRowSegment(x, y, num_middle_pixels, row + num_left_bytes));
+      UNSAFE_TODO(EXPECT_TRUE(emu.CompareRowSegment(x, y, num_middle_pixels,
+                                                    row + num_left_bytes)));
     }
 
     // check padding
@@ -692,8 +688,8 @@ void GLES2DecoderTest::CheckReadPixelsOutOfRange(GLint in_read_x,
       GLint padded_row_size = (temp / kPackAlignment ) * kPackAlignment;
       GLint num_padding_bytes = padded_row_size - unpadded_row_size;
       if (num_padding_bytes) {
-        EXPECT_EQ(
-            0, memcmp(pack.data(), row + unpadded_row_size, num_padding_bytes));
+        UNSAFE_TODO(EXPECT_EQ(0, memcmp(pack.data(), row + unpadded_row_size,
+                                        num_padding_bytes)));
       }
     }
   }
@@ -719,7 +715,7 @@ TEST_P(GLES2DecoderTest, ReadPixels) {
   uint32_t result_shm_offset = kSharedMemoryOffset;
   uint32_t pixels_shm_id = shared_memory_id_;
   uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
-  void* dest = &result[1];
+  void* dest = UNSAFE_TODO(&result[1]);
   EXPECT_CALL(*gl_, GetError())
       .WillOnce(Return(GL_NO_ERROR))
       .WillOnce(Return(GL_NO_ERROR))
@@ -986,7 +982,7 @@ TEST_P(GLES2DecoderManualInitTest, ReadPixels2AlignmentWorkaround) {
   EXPECT_CALL(*gl_, PixelStorei(GL_PACK_ALIGNMENT, 1))
       .Times(1)
       .RetiresOnSaturation();
-  offset += (kWidth * kBytesPerPixel + kPadding) * (kHeight - 1);
+  UNSAFE_TODO(offset += (kWidth * kBytesPerPixel + kPadding) * (kHeight - 1));
   EXPECT_CALL(*gl_,
               ReadPixels(0, kHeight - 1, kWidth, 1, kFormat, kType, offset))
       .Times(1)
@@ -1086,7 +1082,7 @@ TEST_P(GLES2DecoderRGBBackbufferTest, ReadPixelsNoAlphaBackbuffer) {
   uint32_t result_shm_offset = kSharedMemoryOffset;
   uint32_t pixels_shm_id = shared_memory_id_;
   uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
-  void* dest = &result[1];
+  void* dest = UNSAFE_TODO(&result[1]);
   EXPECT_CALL(*gl_, GetError())
       .WillOnce(Return(GL_NO_ERROR))
       .WillOnce(Return(GL_NO_ERROR))
@@ -1141,7 +1137,8 @@ TEST_P(GLES2DecoderTest, ReadPixelsOutOfRange) {
 
   for (size_t tt = 0; tt < std::size(tests); ++tt) {
     CheckReadPixelsOutOfRange(
-        tests[tt][0], tests[tt][1], tests[tt][2], tests[tt][3], tt == 0);
+        UNSAFE_TODO(tests[tt])[0], UNSAFE_TODO(tests[tt])[1],
+        UNSAFE_TODO(tests[tt])[2], UNSAFE_TODO(tests[tt])[3], tt == 0);
   }
 }
 
@@ -1342,7 +1339,7 @@ class GLES2ReadPixelsAsyncTest : public GLES2DecoderManualInitTest {
     const size_t kBufferSize = width * height * 4;
     auto buffer = std::make_unique<char[]>(kBufferSize);
     for (size_t i = 0; i < kBufferSize; ++i)
-      buffer[i] = i;
+      UNSAFE_TODO(buffer[i]) = i;
 
     GLsync sync = reinterpret_cast<GLsync>(kServiceSyncId);
     EXPECT_CALL(*gl_, ClientWaitSync(sync, 0, 0))
@@ -1359,7 +1356,7 @@ class GLES2ReadPixelsAsyncTest : public GLES2DecoderManualInitTest {
     EXPECT_CALL(*gl_, DeleteSync(sync)).Times(1);
     decoder_->PerformIdleWork();
     EXPECT_FALSE(decoder_->HasMoreIdleWork());
-    EXPECT_EQ(0, memcmp(pixels, buffer.get(), kBufferSize));
+    UNSAFE_TODO(EXPECT_EQ(0, memcmp(pixels, buffer.get(), kBufferSize)));
   }
 };
 
@@ -1371,7 +1368,7 @@ TEST_P(GLES2ReadPixelsAsyncTest, ReadPixelsAsync) {
   uint32_t result_shm_offset = kSharedMemoryOffset;
   uint32_t pixels_shm_id = shared_memory_id_;
   uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
-  char* pixels = reinterpret_cast<char*>(result + 1);
+  char* pixels = reinterpret_cast<char*>(UNSAFE_TODO(result + 1));
 
   SetupReadPixelsAsyncExpectation(kWidth, kHeight);
 
@@ -1399,7 +1396,7 @@ TEST_P(GLES2ReadPixelsAsyncTest, ReadPixelsAsyncModifyCommand) {
   uint32_t result_shm_offset = kSharedMemoryOffset;
   uint32_t pixels_shm_id = shared_memory_id_;
   uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
-  char* pixels = reinterpret_cast<char*>(result + 1);
+  char* pixels = reinterpret_cast<char*>(UNSAFE_TODO(result + 1));
 
   SetupReadPixelsAsyncExpectation(kWidth, kHeight);
 
@@ -1427,7 +1424,7 @@ TEST_P(GLES2ReadPixelsAsyncTest, ReadPixelsAsyncChangePackAlignment) {
   uint32_t result_shm_offset = kSharedMemoryOffset;
   uint32_t pixels_shm_id = shared_memory_id_;
   uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
-  char* pixels = reinterpret_cast<char*>(result + 1);
+  char* pixels = reinterpret_cast<char*>(UNSAFE_TODO(result + 1));
 
   SetupReadPixelsAsyncExpectation(kWidth, kHeight);
 

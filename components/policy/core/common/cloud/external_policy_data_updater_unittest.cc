@@ -36,12 +36,12 @@ namespace policy {
 
 namespace {
 
-auto kExternalPolicyDataKeys = std::to_array<const char*>({
+constexpr auto kExternalPolicyDataKeys = std::to_array<const char*>({
     "external_policy_data_1",
     "external_policy_data_2",
     "external_policy_data_3",
 });
-auto kExternalPolicyDataURLs = std::to_array<const char*>({
+constexpr auto kExternalPolicyDataURLs = std::to_array<const char*>({
     "http://example.com/data_1",
     "http://example.com/data_2",
     "http://example.com/data_3",

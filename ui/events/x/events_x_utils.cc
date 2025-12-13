@@ -81,10 +81,12 @@ class XModifierStateWatcher {
       else
         state_ = static_cast<int>(key->state) & ~mask;
     } else if (auto* device = xev.As<x11::Input::DeviceEvent>()) {
-      if (device->opcode == x11::Input::DeviceEvent::KeyPress)
-        state_ = device->mods.effective | mask;
-      else if (device->opcode == x11::Input::DeviceEvent::KeyPress)
-        state_ = device->mods.effective & ~mask;
+      uint32_t state = ui::GetXI2StateFromEvent(*device);
+      if (device->opcode == x11::Input::DeviceEvent::KeyPress) {
+        state_ = state | mask;
+      } else if (device->opcode == x11::Input::DeviceEvent::KeyRelease) {
+        state_ = state & ~mask;
+      }
     }
   }
 
@@ -169,8 +171,8 @@ int GetEventFlagsFromXGenericEvent(const x11::Event& x11_event) {
          xievent->opcode == x11::Input::DeviceEvent::KeyRelease);
   bool is_repeat =
       static_cast<bool>(xievent->flags & x11::Input::KeyEventFlags::KeyRepeat);
-  return GetEventFlagsFromXState(xievent->mods.effective) |
-         (is_repeat ? ui::EF_IS_REPEAT : 0) |
+  uint32_t state = ui::GetXI2StateFromEvent(*xievent);
+  return GetEventFlagsFromXState(state) | (is_repeat ? ui::EF_IS_REPEAT : 0) |
          (x11_event.send_event() ? ui::EF_FINAL : 0);
 }
 

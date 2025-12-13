@@ -3,16 +3,12 @@
 // found in the LICENSE file.
 
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/linux/x_server_clipboard.h"
 
 #include <array>
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -358,7 +354,8 @@ bool XServerClipboard::HandleSelectionTargetsEvent(
     if (data && format == 32) {
       const uint32_t* targets = static_cast<const uint32_t*>(data);
       for (int i = 0; i < item_count; i++) {
-        if (targets[i] == static_cast<uint32_t>(utf8_string_atom_)) {
+        if (UNSAFE_TODO(targets[i]) ==
+            static_cast<uint32_t>(utf8_string_atom_)) {
           RequestSelectionString(selection, utf8_string_atom_);
           return false;
         }

@@ -14,6 +14,20 @@ enum MediaSessionPlaybackState {
      PLAYING,
 };
 
+enum MediaSessionEnterPictureInPictureReason {
+  // `enterpictureinpicture` has been triggered due to a reason not already
+  // covered by another option (e.g. the user has started a screenshare).
+  kOther,
+
+  // `enterpictureinpicture` has been triggered due to an explicit user action
+  // (e.g. due to the user clicking on an "Enter picture-in-picture" button.
+  kUserAction,
+
+  // `enterpictureinpicture` has been triggered due to the page being occluded
+  // (e.g. due to the user switching to a different tab).
+  kContentOccluded,
+};
+
 interface MediaSessionClient {
   // Notifies the Blink side that a MediaSessionAction has been fired from the
   // UI or the platform. |details| may contain extra information that will be
@@ -29,8 +43,13 @@ struct MediaSessionSeekToDetails {
   bool fast_seek;
 };
 
+struct MediaSessionEnterPictureInPictureDetails {
+  MediaSessionEnterPictureInPictureReason reason;
+};
+
 union MediaSessionActionDetails {
   MediaSessionSeekToDetails seek_to;
+  MediaSessionEnterPictureInPictureDetails enter_picture_in_picture;
 };
 
 // MediaMetadata

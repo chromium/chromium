@@ -72,9 +72,8 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ime/ash/input_method_manager.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
@@ -393,8 +392,7 @@ void OSSettingsUI::BindInterface(
   auto* provider =
       OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
           ->input_device_settings_provider();
-  if (features::IsPeripheralCustomizationEnabled() ||
-      ::features::IsAccessibilityFaceGazeEnabled()) {
+  if (features::IsPeripheralCustomizationEnabled()) {
     provider->Initialize(web_ui());
   }
   provider->BindInterface(std::move(receiver));
@@ -417,8 +415,7 @@ void OSSettingsUI::BindInterface(
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<::ash::common::mojom::ShortcutInputProvider>
         receiver) {
-  CHECK(features::IsPeripheralCustomizationEnabled() ||
-        ::features::IsAccessibilityFaceGazeEnabled());
+  CHECK(features::IsPeripheralCustomizationEnabled());
   auto* shortcut_input_provider =
       OsSettingsManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
           ->shortcut_input_provider();
@@ -428,12 +425,6 @@ void OSSettingsUI::BindInterface(
     shortcut_input_provider->TieProviderToWidget(widget);
   }
   shortcut_input_provider->BindInterface(std::move(receiver));
-}
-
-void OSSettingsUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void OSSettingsUI::BindInterface(

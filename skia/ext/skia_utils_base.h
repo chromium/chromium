@@ -78,6 +78,10 @@ SK_API std::string SkcmsTransferFunctionToString(
 SK_API base::span<const uint8_t> as_byte_span(
     const SkData& sk_data LIFETIME_BOUND);
 
+// Helper for getting a writable (byte) span from a `SkData`. Requires that the
+// SkData only has a single reference.
+SK_API base::span<uint8_t> as_writable_byte_span(SkData& data LIFETIME_BOUND);
+
 }  // namespace skia
 
 #endif  // SKIA_EXT_SKIA_UTILS_BASE_H_

@@ -11,10 +11,10 @@
 
 #include "base/functional/callback.h"
 #include "base/strings/stringize_macros.h"
+#include "remoting/base/environment_details.h"
 #include "remoting/base/instance_identity_token_getter.h"
 #include "remoting/base/oauth_token_getter_impl.h"
 #include "remoting/base/protobuf_http_client.h"
-#include "remoting/host/host_details.h"
 #include "remoting/host/version.h"
 #include "remoting/proto/google/internal/remoting/cloud/v1alpha/empty.pb.h"
 #include "remoting/proto/google/internal/remoting/cloud/v1alpha/remote_access_host.pb.h"
@@ -148,8 +148,8 @@ void CloudHeartbeatServiceClient::MakeUpdateRemoteAccessHostCall(
     CloudServiceClient::UpdateRemoteAccessHostCallback callback) {
   constexpr auto* host_version = STRINGIZE(VERSION);
   client_->UpdateRemoteAccessHost(directory_id_, host_version, signaling_id,
-                                  offline_reason, GetHostOperatingSystemName(),
-                                  GetHostOperatingSystemVersion(),
+                                  offline_reason, GetOperatingSystemName(),
+                                  GetOperatingSystemVersion(),
                                   instance_identity_token, std::move(callback));
 }
 

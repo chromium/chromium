@@ -52,25 +52,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="First-party resource Allowed"/>
 </enum>
 
-<enum name="ClearOnExitSyncEvent">
-  <int value="0" label="Profile startup, sync is disabled"/>
-  <int value="1" label="Profile startup, sync is paused"/>
-  <int value="2" label="Profile startup, sync is active"/>
-  <int value="3" label="Re-login to a sync paused account"/>
-  <int value="4" label="Logout of a sync paused account"/>
-  <int value="5"
-      label="Profile shutdown, sync is active, started paused, consent change"/>
-  <int value="6"
-      label="Profile shutdown, sync is active, started paused, no consent
-             change"/>
-  <int value="7"
-      label="Profile shutdown, sync is active, started active, consent change"/>
-  <int value="8"
-      label="Profile shutdown, sync is active, started active, no consent
-             change"/>
-  <int value="9" label="Profile shutdown, sync is paused"/>
-</enum>
-
 <enum name="ConsentAuditorFeature">
   <int value="0" label="CHROME_SYNC"/>
   <int value="1" label="PLAY_STORE"/>
@@ -222,18 +203,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Client redirect"/>
   <int value="1" label="Server redirect"/>
 </enum>
-
-<!-- LINT.IfChange(PrivacySandboxActSurveyStatus) -->
-
-<enum name="PrivacySandboxActSurveyStatus">
-  <int value="0" label="Survey was successfully launched"/>
-  <int value="1" label="Feature not enabled"/>
-  <int value="2" label="Failed to fetch HaTS service"/>
-  <int value="3" label="Failed to launch survey"/>
-  <int value="4" label="Not in Incognito profile"/>
-</enum>
-
-<!-- LINT.ThenChange(/chrome/browser/privacy_sandbox/incognito/privacy_sandbox_incognito_survey_service.h:PrivacySandboxActSurveyStatus) -->
 
 <enum name="PrivacySandboxAggregationServiceKeyFetcherStatus">
   <int value="0" label="Success"/>
@@ -500,11 +469,15 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="All time deletion time range selected"/>
 </enum>
 
-<enum name="SecCookieDeprecationHeaderStatus">
-  <int value="0" label="kSet"/>
-  <int value="1" label="kNoLabel"/>
-  <int value="2" label="kNoCookie"/>
+<!-- LINT.IfChange(RollBack3pcdNoticeAction) -->
+
+<enum name="RollBack3pcdNoticeAction">
+  <int value="0" label="kGotIt"/>
+  <int value="1" label="kSettings"/>
+  <int value="2" label="kClosed"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/roll_back_3pcd_notice_action.h:RollBack3pcdNoticeAction) -->
 
 <enum name="ThirdPartySiteDataAccessType">
   <int value="0" label="Any blocked third-party site data accesses"/>

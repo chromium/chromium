@@ -5,6 +5,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/permissions/permissions_api.h"
 #include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
@@ -33,6 +34,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
+#include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -478,8 +480,6 @@ IN_PROC_BROWSER_TEST_F(EventsApiTest, MAYBE_NewlyIntroducedListener) {
 // Tests that, if an extension registers multiple listeners for a filtered
 // event where the listeners overlap, but are not identical, each listener is
 // only triggered once for a given event.
-// TODO(crbug.com/40365717): This test is currently (intentionally)
-// testing improper behavior and will be fixed as part of the linked bug.
 IN_PROC_BROWSER_TEST_F(
     EventsApiTest,
     MultipleFilteredListenersWithOverlappingFiltersShouldOnlyTriggerOnce) {
@@ -520,8 +520,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), extension->GetResourceURL("page.html")));
 
-  content::WebContents* extension_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* extension_contents = GetActiveWebContents();
 
   // So far, no events should have been received.
   EXPECT_EQ(0, content::EvalJs(extension_contents, "self.receivedEvents;"));
@@ -529,19 +528,9 @@ IN_PROC_BROWSER_TEST_F(
   // Navigate to http://example.com/simple.html.
   const GURL url =
       embedded_test_server()->GetURL("example.com", "/simple.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  NavigateToURLInNewTab(url);
 
-  // TODO(crbug.com/40365717): This should be:
-  // EXPECT_EQ(2, content::EvalJs(extension_contents, "self.receivedEvents;"));
-  // because each listener should fire exactly once (we only visited one new
-  // page).
-  // However, currently we'll dispatch the event to the same process twice
-  // (once for each listener), and each dispatch will match both listeners,
-  // resulting in each listener being triggered twice (for a total of four
-  // received events).
-  EXPECT_EQ(4, content::EvalJs(extension_contents, "self.receivedEvents;"));
+  EXPECT_EQ(2, content::EvalJs(extension_contents, "self.receivedEvents;"));
 }
 
 class ChromeUpdatesEventsApiTest : public EventsApiTest,
@@ -743,10 +732,6 @@ class NavigatingEventDispatchingApiTest : public EventDispatchingApiTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
-
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
 };
 
 using PersistentBackgroundPageDispatchEventToSenderEventApiTest =
@@ -906,7 +891,7 @@ IN_PROC_BROWSER_TEST_P(NavigatingEventDispatchingApiTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL("example.com", "/simple.html")));
-  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+  ASSERT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
   ASSERT_TRUE(content_script_loaded.WaitUntilSatisfied());
 
   // Set storage value which should fire chrome.storage.onChanged listeners.
@@ -992,6 +977,47 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventAckBrowserTest,
       content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   extension_process->Shutdown(content::RESULT_CODE_KILLED);
   process_exit_observer.Wait();
+
+  // Confirm we no longer have the `EventInfo` for the unacked event.
+  EXPECT_FALSE(event_router->event_ack_data()->HasUnackedEventForTesting(
+      /*event_id=*/1));
+}
+
+// Tests that when a service worker is stopped that we clear any unacked events
+// from EventAckData for that specific worker. Otherwise we would leak these
+// unacked events. Regression test for crbug.com/444671406.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerEventAckBrowserTest,
+                       ServiceWorkerStops_ClearsUnackedEventData) {
+  // Load an extension and wait until the service worker is running.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ExtensionTestMessageListener extension_oninstall_listener_fired(
+      "installed listener fired");
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("events/listener_spins_forever"));
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
+  content::ServiceWorkerContext* sw_context = GetServiceWorkerContext();
+  ASSERT_TRUE(content::CheckServiceWorkerIsRunning(
+      // The first SW version ID is always 0.
+      sw_context, /*service_worker_version_id=*/0));
+
+  // Dispatch an event that the renderer will never ack.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+
+  // Confirm the `EventInfo` for the above event is still unacked.
+  EventRouter* event_router = EventRouter::Get(profile());
+  // 1 is inferred since the extension has two listeners and the above
+  // navigation should be the second event encountered.
+  EXPECT_TRUE(event_router->event_ack_data()->HasUnackedEventForTesting(
+      /*event_id=*/1));
+
+  // Stop the service worker, which triggers the cleanup logic.
+  service_worker_test_utils::TestServiceWorkerContextObserver observer(
+      profile());
+  sw_context->StopAllServiceWorkers(base::DoNothing());
+  observer.WaitForWorkerStopped();
 
   // Confirm we no longer have the `EventInfo` for the unacked event.
   EXPECT_FALSE(event_router->event_ack_data()->HasUnackedEventForTesting(

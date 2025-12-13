@@ -27,23 +27,18 @@ TEST(BlinkIPAddressTest, HashTraits) {
   EXPECT_NE(deleted_value, kIPAddr1);
   EXPECT_NE(deleted_value, kIPAddr2);
   EXPECT_TRUE(
-      WTF::IsHashTraitsDeletedValue<HashTraits<net::IPAddress>>(deleted_value));
+      IsHashTraitsDeletedValue<HashTraits<net::IPAddress>>(deleted_value));
 
   EXPECT_FALSE(
-      WTF::IsHashTraitsDeletedValue<HashTraits<net::IPAddress>>(kEmptyIPAddr));
-  EXPECT_FALSE(
-      WTF::IsHashTraitsDeletedValue<HashTraits<net::IPAddress>>(kIPAddr1));
-  EXPECT_FALSE(
-      WTF::IsHashTraitsDeletedValue<HashTraits<net::IPAddress>>(kIPAddr2));
+      IsHashTraitsDeletedValue<HashTraits<net::IPAddress>>(kEmptyIPAddr));
+  EXPECT_FALSE(IsHashTraitsDeletedValue<HashTraits<net::IPAddress>>(kIPAddr1));
+  EXPECT_FALSE(IsHashTraitsDeletedValue<HashTraits<net::IPAddress>>(kIPAddr2));
 
-  EXPECT_TRUE(
-      WTF::IsHashTraitsEmptyValue<HashTraits<net::IPAddress>>(kEmptyIPAddr));
+  EXPECT_TRUE(IsHashTraitsEmptyValue<HashTraits<net::IPAddress>>(kEmptyIPAddr));
   EXPECT_FALSE(
-      WTF::IsHashTraitsEmptyValue<HashTraits<net::IPAddress>>(deleted_value));
-  EXPECT_FALSE(
-      WTF::IsHashTraitsEmptyValue<HashTraits<net::IPAddress>>(kIPAddr1));
-  EXPECT_FALSE(
-      WTF::IsHashTraitsEmptyValue<HashTraits<net::IPAddress>>(kIPAddr2));
+      IsHashTraitsEmptyValue<HashTraits<net::IPAddress>>(deleted_value));
+  EXPECT_FALSE(IsHashTraitsEmptyValue<HashTraits<net::IPAddress>>(kIPAddr1));
+  EXPECT_FALSE(IsHashTraitsEmptyValue<HashTraits<net::IPAddress>>(kIPAddr2));
 
   // Should be a 1 out of 4 billion chance these collide.
   EXPECT_NE(HashTraits<net::IPAddress>::GetHash(kIPAddr1),
@@ -51,7 +46,7 @@ TEST(BlinkIPAddressTest, HashTraits) {
 }
 
 TEST(BlinkIPAddressTest, HashIpAddress) {
-  WTF::HashMap<net::IPAddress, int> ip_address_map;
+  HashMap<net::IPAddress, int> ip_address_map;
 
   const net::IPAddress kIPAddr1(kIpAddressBytes1);
   const net::IPAddress kIPAddr2(kIpAddressBytes2);

@@ -356,7 +356,8 @@ regexps = [item() for item in  # type: ignore
             rules.AssertThrowsRegexp,
             rules.PromiseRejectsRegexp,
             rules.AssertPreconditionRegexp,
-            rules.HTMLInvalidSyntaxRegexp]]
+            rules.HTMLInvalidSyntaxRegexp,
+            rules.TestDriverInternalRegexp]]
 
 
 def check_regexp_line(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]:
@@ -599,7 +600,7 @@ def check_parsed(repo_root: Text, path: Text, f: IO[bytes]) -> List[rules.Error]
         if not is_path_correct("testdriver.js", src):
             errors.append(rules.TestdriverPath.error(path))
         if not is_query_string_correct("testdriver.js", src,
-                                       {'feature': ['bidi']}):
+                                       {'feature': ['bidi', 'extensions']}):
             errors.append(rules.TestdriverUnsupportedQueryParameter.error(path))
 
         if (not is_path_correct("testdriver-vendor.js", src) or

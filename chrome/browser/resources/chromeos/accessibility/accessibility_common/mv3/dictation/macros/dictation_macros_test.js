@@ -17,7 +17,7 @@ DictationMacrosTest = class extends DictationE2ETestBase {
 
 AX_TEST_F('DictationMacrosTest', 'ValidInputTextViewMacro', async function() {
   // Toggle Dictation on so that the Macro will be runnable.
-  this.toggleDictationOn();
+  await this.toggleDictationOn();
   const macro = await this.getInputTextStrategy().parse('Hello world');
   assertEquals('INPUT_TEXT_VIEW', macro.getNameAsString());
   const checkContextResult = macro.checkContext();
@@ -44,7 +44,7 @@ AX_TEST_F('DictationMacrosTest', 'InvalidInputTextViewMacro', async function() {
 AX_TEST_F('DictationMacrosTest', 'RepeatableKeyPressMacro', async function() {
   // DELETE_PREV_CHAR is one of many RepeatableKeyPressMacros.
   // Toggle Dictation on so that the Macro will be runnable.
-  this.toggleDictationOn();
+  await this.toggleDictationOn();
   const macro = await this.getSimpleParseStrategy().parse('delete');
   assertEquals('DELETE_PREV_CHAR', macro.getNameAsString());
   const checkContextResult = macro.checkContext();
@@ -58,7 +58,7 @@ AX_TEST_F('DictationMacrosTest', 'RepeatableKeyPressMacro', async function() {
 // TODO(crbug.com/420947900): Test is flaky.
 AX_TEST_F(
     'DictationMacrosTest', 'DISABLED_ListCommandsMacro', async function() {
-      this.toggleDictationOn();
+      await this.toggleDictationOn();
       const macro = await this.getSimpleParseStrategy().parse('help');
       assertEquals('LIST_COMMANDS', macro.getNameAsString());
       const checkContextResult = macro.checkContext();
@@ -70,7 +70,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F('DictationMacrosTest', 'StopListeningMacro', async function() {
-  this.toggleDictationOn();
+  await this.toggleDictationOn();
   assertTrue(this.getDictationActive());
   assertTrue(this.getSpeechRecognitionActive());
   const macro = new ToggleDictationMacro();

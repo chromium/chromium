@@ -207,21 +207,17 @@ class VpnProviderApiTest : public VpnProviderApiTestBase {
                                                       configuration_name);
   }
 
-  bool DoesConfigExist(const std::string& configuration_name) const {
-    const auto& mapping = GetVpnServiceAsh()->extension_id_to_service_;
-    if (!base::Contains(mapping, extension_id())) {
-      return false;
-    }
-    return base::Contains(mapping.at(extension_id())->key_to_configuration_map_,
+  bool DoesConfigExist(const std::string& configuration_name) {
+    return base::Contains(service()->key_to_configuration_map_,
                           GetKey(configuration_name));
   }
 
-  bool IsConfigConnected() const {
+  bool IsConfigConnected() {
     const auto& mapping = GetVpnServiceAsh()->extension_id_to_service_;
     if (!base::Contains(mapping, extension_id())) {
       return false;
     }
-    return mapping.at(extension_id())->OwnsActiveConfiguration();
+    return service()->OwnsActiveConfiguration(extension_id());
   }
 
   std::string GetSingleServicePath() {

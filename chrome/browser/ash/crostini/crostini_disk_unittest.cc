@@ -13,13 +13,21 @@
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
+#include "components/account_id/account_id.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,16 +62,26 @@ class CrostiniDiskTest : public testing::Test {
 
 class CrostiniDiskTestDbus : public CrostiniDiskTest {
  public:
-  CrostiniDiskTestDbus() {
+  void SetUp() override {
     ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
     fake_concierge_client_ = ash::FakeConciergeClient::Get();
-  }
 
-  void SetUp() override {
+    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<user_manager::FakeUserManagerDelegate>(),
+        TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345"));
+    ASSERT_TRUE(user_manager::TestHelper(user_manager_.Get())
+                    .AddRegularUser(account_id));
+    user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
+
     profile_ = std::make_unique<TestingProfile>();
+    ash::AnnotatedAccountId::Set(profile_.get(), account_id);
+
     test_helper_ = std::make_unique<CrostiniTestHelper>(profile_.get());
     CrostiniManager::GetForProfile(profile_.get())
         ->set_skip_restart_for_testing();
@@ -72,6 +90,9 @@ class CrostiniDiskTestDbus : public CrostiniDiskTest {
   void TearDown() override {
     test_helper_.reset();
     profile_.reset();
+    user_manager_.Reset();
+
+    fake_concierge_client_ = nullptr;
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
@@ -92,8 +113,8 @@ class CrostiniDiskTestDbus : public CrostiniDiskTest {
   Profile* profile() { return profile_.get(); }
 
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<ash::FakeConciergeClient, DanglingUntriaged> fake_concierge_client_;
-
+  raw_ptr<ash::FakeConciergeClient> fake_concierge_client_;
+  user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniTestHelper> test_helper_;
 };

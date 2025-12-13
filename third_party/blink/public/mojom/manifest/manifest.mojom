@@ -6,7 +6,6 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 import "services/device/public/mojom/screen_orientation_lock_types.mojom";
-import "third_party/blink/public/mojom/manifest/capture_links.mojom";
 import "third_party/blink/public/mojom/manifest/display_mode.mojom";
 import "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom";
 import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
@@ -60,6 +59,8 @@ struct Manifest {
   DisplayMode display;
 
   array<DisplayMode> display_override;
+
+  array<SafeUrlPattern> borderless_url_patterns;
 
   device.mojom.ScreenOrientationLockType orientation;
 
@@ -117,13 +118,12 @@ struct Manifest {
   // filename, query, and fragment removed if not present.
   url.mojom.Url scope;
 
-  // TODO(crbug.com/1163398): This field is non-standard and part of a Chrome
-  // experiment. See:
-  // https://github.com/WICG/web-app-launch/blob/main/declarative_link_capturing.md#proposal
-  // As such, this field should not be exposed by default.
-  CaptureLinks capture_links;
-
   array<network.mojom.ParsedPermissionsPolicyDeclaration> permissions_policy;
+
+  // TODO(crbug.com/454569670): This field is non-standard and used for
+  // unmanaged IWA installs.
+  // See: https://github.com/WICG/isolated-web-apps
+  url.mojom.Url? update_manifest_url;
 
   // TODO(crbug.com/1231886): This field is non-standard and part of a Chrome
   // experiment. See:
@@ -152,6 +152,22 @@ struct Manifest {
   // TODO(crbug.com/1444407): This field is non-standard and part of an
   // experiment. See: https://github.com/WICG/isolated-web-apps
   mojo_base.mojom.String16? version;
+
+  // Localized fields map locales with localized value.
+  // See: https://www.w3.org/TR/appmanifest/#x_localized-members
+  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> name_localized;
+  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> short_name_localized;
+  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> description_localized;
+  map<mojo_base.mojom.String16, array<ManifestImageResource>> icons_localized;
+};
+
+struct ManifestLocalizedTextObject {
+  // value is required
+  mojo_base.mojom.String16 value;
+
+  Manifest.TextDirection? dir;
+
+  mojo_base.mojom.String16? lang;
 };
 
 // Structure representing a Shortcut Item per the Manifest specification, see:
@@ -170,6 +186,11 @@ struct ManifestShortcutItem {
   url.mojom.Url url;
 
   array<ManifestImageResource> icons;
+
+  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> name_localized;
+  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> short_name_localized;
+  map<mojo_base.mojom.String16, ManifestLocalizedTextObject> description_localized;
+  map<mojo_base.mojom.String16, array<ManifestImageResource>> icons_localized;
 };
 
 // Structure representing an icon as per the Manifest specification, see:

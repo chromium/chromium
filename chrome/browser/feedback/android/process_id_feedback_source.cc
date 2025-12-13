@@ -18,7 +18,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/feedback/android/jni_headers/ProcessIdFeedbackSource_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using content::BrowserThread;
 using jni_zero::AttachCurrentThread;
@@ -26,20 +26,19 @@ using jni_zero::AttachCurrentThread;
 namespace chrome {
 namespace android {
 
-int64_t JNI_ProcessIdFeedbackSource_GetCurrentPid(JNIEnv* env) {
+static int64_t JNI_ProcessIdFeedbackSource_GetCurrentPid(JNIEnv* env) {
   return base::GetCurrentProcId();
 }
 
-void JNI_ProcessIdFeedbackSource_Start(JNIEnv* env,
-                                       const JavaParamRef<jobject>& obj) {
+static void JNI_ProcessIdFeedbackSource_Start(JNIEnv* env,
+                                              const JavaRef<jobject>& obj) {
   scoped_refptr<ProcessIdFeedbackSource> source =
       new ProcessIdFeedbackSource(env, obj);
   source->PrepareProcessIds();
 }
 
-ProcessIdFeedbackSource::ProcessIdFeedbackSource(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj)
+ProcessIdFeedbackSource::ProcessIdFeedbackSource(JNIEnv* env,
+                                                 const JavaRef<jobject>& obj)
     : java_ref_(env, obj) {}
 
 ProcessIdFeedbackSource::~ProcessIdFeedbackSource() = default;
@@ -90,3 +89,5 @@ ScopedJavaLocalRef<jlongArray> ProcessIdFeedbackSource::GetProcessIdsForType(
 
 }  // namespace android
 }  // namespace chrome
+
+DEFINE_JNI(ProcessIdFeedbackSource)

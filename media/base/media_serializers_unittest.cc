@@ -16,9 +16,7 @@ std::string ToString(const base::Value& value) {
   if (value.is_string()) {
     return value.GetString();
   }
-  std::string output_str;
-  base::JSONWriter::Write(value, &output_str);
-  return output_str;
+  return base::WriteJson(value).value_or("");
 }
 
 TEST(MediaSerializersTest, BaseTypes) {

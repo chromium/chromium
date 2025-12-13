@@ -59,6 +59,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -76,8 +77,10 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "components/location/android/location_settings_dialog_outcome.h"
 #include "components/location/android/mock_location_settings.h"
+#include "components/permissions/android/android_permission_util.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/prefs/pref_service.h"
+#include "ui/android/window_android.h"
 #endif
 
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
@@ -167,7 +170,7 @@ class GeolocationPermissionContextTests
       const GURL& requesting_origin);
 
   void PermissionResponse(const PermissionRequestID& id,
-                          PermissionStatus permission_status);
+                          content::PermissionResult permission_result);
   void CheckPermissionMessageSent(int request_id, bool allowed);
   void CheckPermissionMessageSentForTab(int tab, int request_id, bool allowed);
   void CheckPermissionMessageSentInternal(MockRenderProcessHost* process,
@@ -222,11 +225,13 @@ class GeolocationPermissionContextTests
 
   // A map between renderer child id and a pair represending the bridge id and
   // whether the requested permission was allowed.
-  std::map<int, std::pair<PermissionRequestID::RequestLocalId, bool>>
+  std::map<content::ChildProcessId,
+           std::pair<PermissionRequestID::RequestLocalId, bool>>
       responses_;
   int num_permission_updates_ = 0;
   raw_ptr<ContentSettingsPattern> expected_primary_pattern_ = nullptr;
   raw_ptr<ContentSettingsPattern> expected_secondary_pattern_ = nullptr;
+  std::vector<std::string> events_;
 
   base::test::ScopedFeatureList feature_list_;
 };
@@ -257,13 +262,14 @@ void GeolocationPermissionContextTests::RequestGeolocationPermission(
     const GURL& requesting_frame,
     bool user_gesture,
     bool embedded_permission_element_initiated) {
-  std::unique_ptr<permissions::PermissionRequestData> request_data =
-      std::make_unique<permissions::PermissionRequestData>(
-          std::make_unique<ContentSettingPermissionResolver>(
-              ContentSettingsType::GEOLOCATION),
-          id, user_gesture, requesting_frame);
-  request_data->embedded_permission_element_initiated =
-      embedded_permission_element_initiated;
+  auto request_data = std::make_unique<permissions::PermissionRequestData>(
+      std::make_unique<ContentSettingPermissionResolver>(
+          ContentSettingsType::GEOLOCATION),
+      id, user_gesture, requesting_frame);
+  if (embedded_permission_element_initiated) {
+    request_data->embedded_permission_request_descriptor =
+        blink::mojom::EmbeddedPermissionRequestDescriptor::New();
+  }
   geolocation_permission_context_->RequestPermission(
       std::move(request_data),
       base::BindOnce(&GeolocationPermissionContextTests::PermissionResponse,
@@ -294,12 +300,13 @@ GeolocationPermissionContextTests::GetPermissionStatus(
 
 void GeolocationPermissionContextTests::PermissionResponse(
     const PermissionRequestID& id,
-    PermissionStatus permission_status) {
+    content::PermissionResult permission_result) {
   LOG(ERROR) << "GeolocationPermissionContextTests::PermissionResponse "
-             << id.ToString() << " " << permission_status;
+             << id.ToString() << " " << permission_result.status;
   responses_[id.global_render_frame_host_id().child_id] =
       std::make_pair(id.request_local_id_for_testing(),
-                     permission_status == PermissionStatus::GRANTED);
+                     permission_result.status == PermissionStatus::GRANTED);
+  events_.push_back("PermissionResponse");
 }
 
 void GeolocationPermissionContextTests::OnPermissionChanged(
@@ -312,6 +319,7 @@ void GeolocationPermissionContextTests::OnPermissionChanged(
   EXPECT_EQ(*expected_secondary_pattern_, secondary_pattern);
   EXPECT_EQ(content_type_set.GetType(), ContentSettingsType::GEOLOCATION);
   num_permission_updates_++;
+  events_.push_back("OnPermissionChanged");
 }
 
 void GeolocationPermissionContextTests::CheckPermissionMessageSent(
@@ -334,11 +342,11 @@ void GeolocationPermissionContextTests::CheckPermissionMessageSentInternal(
     MockRenderProcessHost* process,
     int request_id,
     bool allowed) {
-  ASSERT_EQ(responses_.count(process->GetDeprecatedID()), 1U);
+  ASSERT_EQ(responses_.count(process->GetID()), 1U);
   EXPECT_EQ(PermissionRequestID::RequestLocalId(request_id),
-            responses_[process->GetDeprecatedID()].first);
-  EXPECT_EQ(allowed, responses_[process->GetDeprecatedID()].second);
-  responses_.erase(process->GetDeprecatedID());
+            responses_[process->GetID()].first);
+  EXPECT_EQ(allowed, responses_[process->GetID()].second);
+  responses_.erase(process->GetID());
 }
 
 void GeolocationPermissionContextTests::AddNewTab(const GURL& url) {
@@ -559,7 +567,7 @@ std::u16string GeolocationPermissionContextTests::GetPromptText() {
   PermissionRequestManager* manager =
       PermissionRequestManager::FromWebContents(web_contents());
   auto& request = manager->Requests().front();
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return request
       ->GetDialogAnnotatedMessageText(
           /*embedding_origin=*/request->requesting_origin())
@@ -567,7 +575,7 @@ std::u16string GeolocationPermissionContextTests::GetPromptText() {
 #else
   return base::ASCIIToUTF16(request->requesting_origin().spec()) +
          request->GetMessageTextFragment();
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 // Tests ----------------------------------------------------------------------
@@ -991,12 +999,17 @@ TEST_F(GeolocationPermissionContextTests,
   GURL requesting_frame("https://www.example.com/geolocation");
   NavigateAndCommit(requesting_frame);
   RequestManagerDocumentLoadCompleted();
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window.get()->get()->AddChild(web_contents()->GetNativeView());
   MockLocationSettings::SetLocationStatus(
       /*has_android_coarse_location_permission=*/false,
       /*has_android_fine_location_permission=*/false,
       /*is_system_location_setting_enabled=*/true);
   MockLocationSettings::SetCanPromptForAndroidPermission(true);
-
+  SetGeolocationContentSetting(requesting_frame, requesting_frame,
+                               CONTENT_SETTING_ALLOW);
+  auto system_location_setting = EnableSystemLocationSettingForTesting();
   EXPECT_FALSE(HasActivePrompt());
   RequestGeolocationPermission(RequestID(0), requesting_frame, true,
                                /*embedded_permission_element_initiated=*/true);
@@ -1369,4 +1382,29 @@ TEST_F(GeolocationPermissionContextTests, SystemPermissionUpdates) {
 }
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
+TEST_F(GeolocationPermissionContextTests, DecisionEventOrder) {
+  GURL requesting_frame("https://www.example.com/geolocation");
+  NavigateAndCommit(requesting_frame);
+  RequestManagerDocumentLoadCompleted();
+  // Clear any previous event order.
+  events_.clear();
+  ContentSettingsPattern primary_pattern =
+      ContentSettingsPattern::FromURLNoWildcard(requesting_frame);
+  ContentSettingsPattern secondary_pattern = ContentSettingsPattern::Wildcard();
+  expected_primary_pattern_ = &primary_pattern;
+  expected_secondary_pattern_ = &secondary_pattern;
+  geolocation_permission_context_->AddObserver(this);
+  RequestGeolocationPermission(RequestID(0), requesting_frame, true,
+                               /*embedded_permission_element_initiated=*/true);
+  AcceptPrompt();
+  content::RunAllTasksUntilIdle();
+  CheckPermissionMessageSent(0, true);
+  geolocation_permission_context_->RemoveObserver(this);
+
+  // Verify the order of events. OnPermissionChanged should be called before
+  // PermissionResponse.
+  ASSERT_EQ(2U, events_.size());
+  EXPECT_EQ("OnPermissionChanged", events_[0]);
+  EXPECT_EQ("PermissionResponse", events_[1]);
+}
 }  // namespace permissions

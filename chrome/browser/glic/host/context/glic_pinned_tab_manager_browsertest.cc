@@ -9,7 +9,10 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -103,30 +106,42 @@ class GlicPinnedTabManagerWithOverrides : public GlicPinnedTabManager {
               IsBrowserValidForSharing,
               (BrowserWindowInterface*),
               (override));
+  MOCK_METHOD(bool,
+              IsValidForSharing,
+              (content::WebContents*),
+              (override));
+  MOCK_METHOD(bool, IsGlicWindowShowing, (), (override));
 };
 
-class GlicPinnedTabManagerBrowserTest : public InProcessBrowserTest {
+class GlicPinnedTabManagerBrowserTest : public NonInteractiveGlicTest {
  public:
   GlicPinnedTabManagerBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    NonInteractiveGlicTest::SetUpOnMainThread();
     https_server_.RegisterRequestHandler(
         base::BindRepeating(&GlicPinnedTabManagerBrowserTest::HandleRequest,
                             base::Unretained(this)));
     https_server_handle_ = https_server_.StartAndReturnHandle();
     ASSERT_TRUE(https_server_handle_);
 
+    auto* metrics = glic_service()->metrics();
     pinned_tab_manager_ = std::make_unique<GlicPinnedTabManagerWithOverrides>(
-        browser()->profile(), nullptr);
+        browser()->profile(), /*window_controller=*/nullptr, metrics);
     ON_CALL(*pinned_tab_manager_, IsBrowserValidForSharing(_))
         .WillByDefault(Return(true));
+    // TODO(mcrouse): Add tests for invalid candidates once testing harness for sharing manager is enabled.
+    ON_CALL(*pinned_tab_manager_, IsValidForSharing(_))
+        .WillByDefault(Return(true));
+
+    ON_CALL(*pinned_tab_manager_, IsGlicWindowShowing())
+        .WillByDefault(Return(false));
   }
 
   void TearDownOnMainThread() override {
     pinned_tab_manager_.reset();
-    InProcessBrowserTest::TearDownOnMainThread();
+    NonInteractiveGlicTest::TearDownOnMainThread();
   }
 
   // Helper function to create, navigate, set title, and add a new tab to the
@@ -214,6 +229,86 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
           HasTitle("Competitive Napping: A Professional's Guide"),
           HasTitle("Pigeons Aren't Real: The Government Drone Conspiracy"),
           HasTitle("Advanced Goldfish Obedience Training")));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest, PinTabs) {
+  CreateAndAddTab("/why-cats-are-liquid");
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(1));
+  ASSERT_TRUE(tab_interface);
+  const tabs::TabHandle tab_handle = tab_interface->GetHandle();
+
+  base::test::TestFuture<tabs::TabInterface*, bool> pin_status_future;
+  auto subscription = pinned_tab_manager_->AddTabPinningStatusChangedCallback(
+      pin_status_future.GetRepeatingCallback());
+
+  // Pin a tab and verify it was pinned.
+  EXPECT_TRUE(pinned_tab_manager_->PinTabs({tab_handle}));
+  EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
+  EXPECT_EQ(1u, pinned_tab_manager_->GetNumPinnedTabs());
+
+
+  // Check that the callback was called with pinned=true.
+  {
+    auto [result_interface, result_pinned] = pin_status_future.Get();
+    EXPECT_EQ(tab_interface, result_interface);
+    EXPECT_TRUE(result_pinned);
+  }
+}
+
+// Ensure that a pinned tab can be dragged out to another window without
+// crashing.
+IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
+                       DragPinnedTabsToNewWindow) {
+  // We intentionally create a second window.
+  browser_activator().SetMode(BrowserActivator::Mode::kFirst);
+
+  CreateAndAddTab("/why-cats-are-liquid");
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(1));
+  ASSERT_TRUE(tab_interface);
+  const tabs::TabHandle tab_handle = tab_interface->GetHandle();
+
+  EXPECT_TRUE(pinned_tab_manager_->PinTabs({tab_handle}));
+  EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
+
+  chrome::MoveTabsToNewWindow(browser(), {1});
+}
+
+IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest, unpinTabs) {
+  CreateAndAddTab("/why-cats-are-liquid");
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(1));
+  ASSERT_TRUE(tab_interface);
+  const tabs::TabHandle tab_handle = tab_interface->GetHandle();
+
+  // Pin a tab and verify it was pinned.
+  EXPECT_TRUE(pinned_tab_manager_->PinTabs({tab_handle}));
+  EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
+  EXPECT_EQ(1u, pinned_tab_manager_->GetNumPinnedTabs());
+
+
+  base::test::TestFuture<tabs::TabInterface*, bool> pin_status_future;
+  auto subscription = pinned_tab_manager_->AddTabPinningStatusChangedCallback(
+      pin_status_future.GetRepeatingCallback());
+
+  // Unpin the tab and verify it was unpinned.
+  EXPECT_TRUE(pinned_tab_manager_->UnpinTabs({tab_handle}));
+  EXPECT_FALSE(pinned_tab_manager_->IsTabPinned(tab_handle));
+  EXPECT_EQ(0u, pinned_tab_manager_->GetNumPinnedTabs());
+
+  // Check that the callback was called with pinned=false.
+  {
+    auto [result_interface, result_pinned] = pin_status_future.Get();
+    EXPECT_EQ(tab_interface, result_interface);
+    EXPECT_FALSE(result_pinned);
+  }
 }
 
 }  // namespace glic

@@ -5,13 +5,14 @@
 package org.chromium.chrome.browser.customtabs.content;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+
+import java.util.function.Supplier;
 
 /**
  * Holds the Tab currently shown in a Custom Tab activity. Unlike {@link ActivityTabProvider}, is

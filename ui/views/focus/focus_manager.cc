@@ -89,8 +89,19 @@ bool FocusManager::OnKeyEvent(const ui::KeyEvent& event) {
         (is_left || is_right)) {
       bool next = is_right;
       View::Views views;
-      focused_view_->parent()->GetViewsInGroup(focused_view_->GetGroup(),
-                                               &views);
+
+      // Default to the parent if no owner is set.
+      View* group_owner = focused_view_->parent();
+      // Search for the owner in the focused view's hierarchy.
+      for (View* potential_owner = focused_view_->parent();
+           potential_owner != nullptr;
+           potential_owner = potential_owner->parent()) {
+        if (potential_owner->GetOwnedGroup() == focused_view_->GetGroup()) {
+          group_owner = potential_owner;
+          break;
+        }
+      }
+      group_owner->GetViewsInGroup(focused_view_->GetGroup(), &views);
       // Remove any views except current, which are disabled or hidden.
       std::erase_if(views, [this](View* v) {
         return v != focused_view_ &&
@@ -537,7 +548,6 @@ void FocusManager::ViewRemoved(View* removed) {
   if (removed->Contains(focused_view_)) {
     SetFocusedView(nullptr);
   }
-  removed->PropagateWillClearFocusManager();
 }
 
 void FocusManager::AddFocusChangeListener(FocusChangeListener* listener) {

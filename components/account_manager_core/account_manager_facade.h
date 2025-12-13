@@ -24,7 +24,8 @@ namespace account_manager {
 // Implementations of this interface hide the in-process / out-of-process nature
 // of this communication.
 // Instances of this class are singletons, and are independent of a |Profile|.
-// Use |GetAccountManagerFacade()| to get an instance of this class.
+// Use |ash::AccountManagerFactory::Get()->GetAccountManagerFacade()| to get an
+// instance of this class.
 class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
  public:
   // UMA histogram name.

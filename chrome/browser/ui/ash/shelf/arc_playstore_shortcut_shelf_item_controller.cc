@@ -11,8 +11,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
-#include "chromeos/ash/components/scalable_iph/scalable_iph.h"
-#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
 #include "ui/events/event_constants.h"
@@ -32,16 +30,6 @@ void ArcPlaystoreShortcutShelfItemController::ItemSelected(
     ItemSelectedCallback callback,
     const ItemFilterPredicate& filter_predicate) {
   Profile* profile = ChromeShelfController::instance()->profile();
-
-  // Launches from app list are covered in `AppListClientImpl::ActivateItem`.
-  if (source == ash::ShelfLaunchSource::LAUNCH_FROM_SHELF) {
-    scalable_iph::ScalableIph* scalable_iph =
-        ScalableIphFactory::GetForBrowserContext(profile);
-    if (scalable_iph) {
-      scalable_iph->RecordEvent(
-          scalable_iph::ScalableIph::Event::kShelfItemActivationGooglePlay);
-    }
-  }
 
   // Report |callback| now, once Play Store launch request may cause inline
   // replacement of this controller to deferred launch controller and |callback|

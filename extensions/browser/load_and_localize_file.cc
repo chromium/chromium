@@ -5,6 +5,8 @@
 #include "extensions/browser/load_and_localize_file.h"
 
 #include <algorithm>
+#include <string>
+#include <utility>
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -53,9 +55,8 @@ void MaybeLocalizeInBackground(
 
 // A simple wrapper around MaybeLocalizeInBackground() that returns |data| to
 // serve as an adapter for PostTaskAndReply.
-std::vector<std::unique_ptr<std::string>>
-LocalizeComponentResourcesInBackground(
-    std::vector<std::unique_ptr<std::string>> data,
+std::vector<std::string> LocalizeComponentResourcesInBackground(
+    std::vector<std::string> data,
     const ExtensionId& extension_id,
     const base::FilePath& extension_path,
     const std::string& extension_default_locale,
@@ -63,17 +64,17 @@ LocalizeComponentResourcesInBackground(
   for (auto& resource : data) {
     MaybeLocalizeInBackground(extension_id, extension_path,
                               extension_default_locale, gzip_permission,
-                              resource.get());
+                              &resource);
   }
 
   return data;
 }
 
 // A helper function to load component resources.
-std::vector<std::unique_ptr<std::string>> LoadComponentResources(
+std::vector<std::string> LoadComponentResources(
     const ComponentExtensionResourceManager& resource_manager,
     const std::vector<ExtensionResource>& resources) {
-  std::vector<std::unique_ptr<std::string>> data;
+  std::vector<std::string> data;
   data.reserve(resources.size());
   for (const auto& resource : resources) {
     int resource_id = 0;
@@ -82,9 +83,9 @@ std::vector<std::unique_ptr<std::string>> LoadComponentResources(
     DCHECK(is_component_resource)
         << "If any resources passed to LoadAndLocalizeResources() "
            "are component resources, they all must be.";
-    auto resource_data = std::make_unique<std::string>(
+    auto resource_data =
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-            resource_id));
+            resource_id);
     data.push_back(std::move(resource_data));
   }
 
@@ -128,7 +129,7 @@ void LoadAndLocalizeResources(const Extension& extension,
           resources.front().extension_root(), resources.front().relative_path(),
           &unused_resource_id);
   if (are_component_resources) {
-    std::vector<std::unique_ptr<std::string>> data = LoadComponentResources(
+    std::vector<std::string> data = LoadComponentResources(
         *component_extension_resource_manager, resources);
     // Even if no localization is necessary, we post the task asynchronously
     // so that |callback| is not run re-entrantly.
@@ -137,11 +138,10 @@ void LoadAndLocalizeResources(const Extension& extension,
           FROM_HERE,
           base::BindOnce(std::move(callback), std::move(data), std::nullopt));
     } else {
-      auto callback_adapter =
-          [](LoadAndLocalizeResourcesCallback callback,
-             std::vector<std::unique_ptr<std::string>> data) {
-            std::move(callback).Run(std::move(data), std::nullopt);
-          };
+      auto callback_adapter = [](LoadAndLocalizeResourcesCallback callback,
+                                 std::vector<std::string> data) {
+        std::move(callback).Run(std::move(data), std::nullopt);
+      };
       base::ThreadPool::PostTaskAndReplyWithResult(
           FROM_HERE,
           {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},

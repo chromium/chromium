@@ -18,6 +18,7 @@
 #include "base/unguessable_token.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/buckets/bucket_context.h"
+#include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/common/content_export.h"
@@ -35,6 +36,7 @@
 #include "services/device/public/cpp/compute_pressure/buildflags.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-forward.h"
@@ -126,6 +128,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
 
   void CreateWebTransportConnector(
       mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver);
+  void CreateWebSocketConnector(
+      mojo::PendingReceiver<blink::mojom::WebSocketConnector> receiver);
   void BindCacheStorage(
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
   void CreateBroadcastChannelProvider(
@@ -148,8 +152,7 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
 
   void AddClient(mojo::PendingRemote<blink::mojom::SharedWorkerClient> client,
                  GlobalRenderFrameHostId client_render_frame_host_id,
-                 const blink::MessagePortChannel& port,
-                 ukm::SourceId client_ukm_source_id);
+                 const blink::MessagePortChannel& port);
 
   void SetServiceWorkerHandle(
       std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle);
@@ -160,6 +163,13 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
 
   // Returns true if this worker is connected to at least one client.
   bool HasClients() const;
+
+  // Returns true if the worker has a client with `render_frame_host`.
+  bool ContainsClient(const RenderFrameHostImpl* render_frame_host) const;
+
+  // Evicts other BFCached clients and returns true if `render_frame_host` is
+  // the last active client.
+  bool EvictBFCachedClientsIfLastActive(RenderFrameHostImpl* render_frame_host);
 
   // Returns the frame ids of this worker's clients.
   std::vector<GlobalRenderFrameHostId> GetRenderFrameIDsForWorker();
@@ -275,6 +285,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
       mojo::PendingRemote<blink::mojom::DevToolsAgent>,
       mojo::PendingReceiver<blink::mojom::DevToolsAgentHost>) override;
   void OnScriptLoadFailed(const std::string& error_message) override;
+  void OnReportException(
+      blink::mojom::SharedWorkerExceptionDetailsPtr details) override;
   void OnFeatureUsed(blink::mojom::WebFeature feature) override;
 
   // RenderProcessHostObserver methods:

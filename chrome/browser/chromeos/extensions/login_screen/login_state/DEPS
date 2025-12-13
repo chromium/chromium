@@ -16,4 +16,12 @@ include_rules = [
   "+chrome/browser/profiles/profile.h",
   "+chrome/common",
   "+chrome/test",
+  "+chrome/browser/ash/login/lock/screen_locker_tester.h",
+  "+chrome/browser/ash/login/test/device_state_mixin.h",
+  "+chrome/browser/ash/login/test/login_manager_mixin.h",
+  "+chrome/browser/ash/profiles/profile_helper.h",
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/policy/extension_force_install_mixin.h",
+  "+chrome/browser/profiles/profile_manager.h",
+  "+chrome/browser/ash/extensions/authentication_screen_extensions_external_loader.h",
 ]

@@ -78,15 +78,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   ~QuotaDatabase();
 
   // Gets the bucket described by `params.storage_key` and `params.name`
-  // for StorageType kTemporary and returns the BucketInfo. If a bucket fitting
-  // the params doesn't exist, it creates a new bucket with the policies in
-  // `params`. If the bucket exists but policies don't match what's provided in
-  // `params`, the existing bucket will be updated and returned (for those
-  // policies that are possible to modify --- expiration and persistence).
-  // Returns a QuotaError if the operation has failed. If `max_bucket_count` is
-  // greater than zero, and this operation would create a new bucket, then fail
-  // to create the new bucket if the total bucket count for this storage key is
-  // already at or above the max.
+  // and returns the BucketInfo. If a bucket fitting the params doesn't exist,
+  // it creates a new bucket with the policies in `params`. If the bucket exists
+  // but policies don't match what's provided in `params`, the existing bucket
+  // will be updated and returned (for those policies that are possible to
+  // modify --- expiration and persistence). Returns a QuotaError if the
+  // operation has failed. If `max_bucket_count` is greater than zero, and this
+  // operation would create a new bucket, then fail to create the new bucket if
+  // the total bucket count for this storage key is already at or above the max.
   QuotaErrorOr<BucketInfo> UpdateOrCreateBucket(const BucketInitParams& params,
                                                 int max_bucket_count);
 
@@ -277,7 +276,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
   // Adds a new bucket entry in the buckets table. Will return a
   // QuotaError::kDatabaseError if the query fails. Will fail if adding the new
-  // bucket would cause the count of buckets for that storage key and type to
+  // bucket would cause the count of buckets for that storage key to
   // exceed `max_bucket_count`, if `max_bucket_count` is greater than zero.
   QuotaErrorOr<BucketInfo> CreateBucketInternal(const BucketInitParams& params,
                                                 int max_bucket_count = 0);
@@ -307,9 +306,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   static const size_t kTableCount;
   static const IndexSchema kIndexes[];
   static const size_t kIndexCount;
-
-  // A descriptor of the last SQL statement that was executed, used for metrics.
-  std::optional<std::string> last_operation_;
 
   base::RepeatingCallback<void(int)> db_error_callback_;
 

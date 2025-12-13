@@ -1,0 +1,114 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/enterprise/buildflags/buildflags.gni")
+
+assert(enterprise_data_controls)
+
+source_set("model") {
+  sources = [
+    "data_controls_edit_menu_builder.h",
+    "data_controls_edit_menu_builder.mm",
+    "data_controls_metrics.h",
+    "data_controls_metrics.mm",
+    "data_controls_pasteboard_manager.h",
+    "data_controls_pasteboard_manager.mm",
+    "data_controls_tab_helper.h",
+    "data_controls_tab_helper.mm",
+    "pasteboard_observer.h",
+    "pasteboard_observer.mm",
+  ]
+  deps = [
+    ":ios_rules_service",
+    "//base",
+    "//components/enterprise/data_controls/core/browser",
+    "//components/open_from_clipboard:open_from_clipboard_impl",
+    "//components/policy/core/common:common_constants",
+    "//components/strings",
+    "//ios/chrome/browser/browser_container/model",
+    "//ios/chrome/browser/enterprise/common",
+    "//ios/chrome/browser/enterprise/data_controls/utils",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/snackbar",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/components/enterprise/data_controls:features",
+    "//ios/web/public",
+    "//ui/base/clipboard",
+    "//url",
+  ]
+}
+
+source_set("ios_rules_service") {
+  sources = [
+    "ios_rules_service.h",
+    "ios_rules_service.mm",
+    "ios_rules_service_factory.h",
+    "ios_rules_service_factory.mm",
+  ]
+
+  public_deps = [ "//components/enterprise/data_controls/core/browser" ]
+
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "data_controls_test_utils.h",
+    "data_controls_test_utils.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//base/test:test_support",
+    "//components/enterprise/data_controls/core/browser:test_support",
+    "//components/prefs",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "data_controls_edit_menu_builder_unittest.mm",
+    "data_controls_pasteboard_manager_unittest.mm",
+    "data_controls_tab_helper_unittest.mm",
+    "ios_rules_service_unittest.mm",
+  ]
+  deps = [
+    ":ios_rules_service",
+    ":model",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/enterprise/connectors/core",
+    "//components/enterprise/data_controls/core/browser:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/strings",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/enterprise/common/test",
+    "//ios/chrome/browser/enterprise/connectors/reporting",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/snackbar",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/chrome/test/fakes",
+    "//ios/components/enterprise/data_controls:features",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}

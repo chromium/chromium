@@ -53,7 +53,7 @@ public class OtrProfileId {
      * @return A string that represents the given otrProfileId.
      */
     @CalledByNative
-    public static @Nullable String serialize(OtrProfileId otrProfileId) {
+    public static @Nullable String serialize(@Nullable OtrProfileId otrProfileId) {
         // The OtrProfileId might be null, if it represents the regular profile.
         if (otrProfileId == null) return null;
 
@@ -69,7 +69,7 @@ public class OtrProfileId {
      * @throws IllegalStateException when the OTR profile belongs to the OtrProfileId is not
      *     available. The off-the-record profile should exist when OtrProfileId will be used.
      */
-    public static @Nullable OtrProfileId deserialize(String value) {
+    public static @Nullable OtrProfileId deserialize(@Nullable String value) {
         OtrProfileId otrProfileId = deserializeWithoutVerify(value);
 
         // The off-the-record profile should exist for the given OtrProfileId, since OtrProfileId

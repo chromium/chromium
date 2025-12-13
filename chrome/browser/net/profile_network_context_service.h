@@ -17,7 +17,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -38,6 +37,10 @@
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 #include "components/server_certificate_database/server_certificate_database.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ssl/ssl_config_overlay.h"
 #endif
 
 class PrefRegistrySimple;
@@ -202,6 +205,14 @@ class ProfileNetworkContextService
 
   void UpdateCorsNonWildcardRequestHeadersSupport();
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // These settings are only managed at a Profile level on ChromeOS for the
+  // login screen profile. (In other cases they are managed by
+  // SSLConfigServiceManager on a NetworkService-global basis.)
+  void ConfigureSSLComplianceSettings(network::mojom::SSLConfig* config) const;
+  void UpdateSSLComplianceConfig();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(ENABLE_REPORTING)
   base::flat_map<std::string, GURL> GetEnterpriseReportingEndpoints() const;
   void UpdateEnterpriseReportingEndpoints();
@@ -245,6 +256,18 @@ class ProfileNetworkContextService
   StringPrefMember pref_accept_language_;
   BooleanPrefMember enable_referrers_;
   PrefChangeRegistrar pref_change_registrar_;
+#if BUILDFLAG(IS_CHROMEOS)
+  // These prefs are only used on ChromeOS in the login screen profile.
+  StringPrefMember profile_key_exchange_compliance_;
+  StringPrefMember profile_tls13_cipher_compliance_;
+
+  // Only populated on ChromeOS for the login screen profile.
+  // Holds helper objects used to override certain SSLConfig settings for the
+  // NetworkContexts associated with this object's Profile. Each
+  // SSLConfigOverlay corresponds to a single NetworkContext. Inactive instances
+  // may get deleted but nulls are not removed from the vector.
+  std::vector<std::unique_ptr<SSLConfigOverlay>> ssl_config_overlays_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   base::ScopedObservation<content_settings::CookieSettings,

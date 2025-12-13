@@ -13,13 +13,8 @@ found in the LICENSE file.
     android:paddingStart="0dp"
     android:paddingEnd="0dp"
     android:padding="0dp"
-    android:orientation="vertical" >
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/draggable_list_item_padding"
-        android:text="@string/languages_list_description" />
+    android:orientation="vertical"
+    android:clickable="false" >
 
     <FrameLayout
         android:id="@android:id/widget_frame"

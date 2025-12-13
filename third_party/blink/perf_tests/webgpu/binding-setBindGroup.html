@@ -13,11 +13,7 @@
   <canvas id="canvas" width=400 height=400></canvas>
   <script>
     (async () => {
-      const adapter = navigator.gpu && await navigator.gpu.requestAdapter();
-      if (!adapter) {
-        return skipTest('WebGPU not supported');
-      }
-
+      const adapter = await getAdapter();
       const device = await adapter.requestDevice();
       const canvas = document.getElementById('canvas');
       const context = canvas.getContext('webgpu');
@@ -33,7 +29,7 @@
         vertex: {
           module: device.createShaderModule({
             code: `
-              @group(0) @binding(0) var<storage, read> pos : array<vec2f, 3>;
+              @group(0) @binding(0) var<uniform> pos : array<vec2f, 3>;
 
               @vertex
               fn main(@builtin(vertex_index) VertexIndex : u32) -> @builtin(position) vec4<f32> {

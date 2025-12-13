@@ -127,7 +127,7 @@ std::optional<device::ConnectionFailureReason> GetConnectionFailureReason(
 
 std::string GetListenerId(const EventListenerInfo& details) {
   return !details.extension_id.empty() ? details.extension_id
-                                       : details.listener_url.host();
+                                       : details.listener_url.GetHost();
 }
 
 bt_private::ConnectResultType DeviceConnectErrorToConnectResult(

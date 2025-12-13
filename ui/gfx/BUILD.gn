@@ -99,16 +99,8 @@ component("gfx") {
     "font_util.cc",
     "font_util.h",
     "frame_data.h",
-    "gdi_util.cc",
-    "gdi_util.h",
     "gpu_extra_info.cc",
     "gpu_extra_info.h",
-    "half_float.cc",
-    "half_float.h",
-    "icon_util.cc",
-    "icon_util.h",
-    "image/buffer_w_stream.cc",
-    "image/buffer_w_stream.h",
     "image/image.cc",
     "image/image.h",
     "image/image_family.cc",
@@ -128,6 +120,7 @@ component("gfx") {
     "interpolated_transform.h",
     "monogram_utils.cc",
     "monogram_utils.h",
+    "native_ui_util.h",
     "overlay_layer_id.cc",
     "overlay_layer_id.h",
     "overlay_plane_data.cc",
@@ -147,8 +140,6 @@ component("gfx") {
     "skbitmap_operations.cc",
     "skbitmap_operations.h",
     "swap_result.cc",
-    "sys_color_change_listener.cc",
-    "sys_color_change_listener.h",
     "text_constants.h",
     "text_elider.cc",
     "text_elider.h",
@@ -166,139 +157,6 @@ component("gfx") {
     "vsync_provider.cc",
     "vsync_provider.h",
   ]
-  if (is_android) {
-    sources += [
-      "android/achoreographer_compat.cc",
-      "android/achoreographer_compat.h",
-      "android/android_surface_control_compat.cc",
-      "android/android_surface_control_compat.h",
-      "android/java_bitmap.cc",
-      "android/java_bitmap.h",
-      "android/surface_control_frame_rate.h",
-      "android/view_configuration.cc",
-      "android/view_configuration.h",
-    ]
-  }
-  if (is_linux || is_chromeos) {
-    sources += [
-      "font_fallback_linux.cc",
-      "font_fallback_linux.h",
-      "font_render_params_linux.cc",
-      "font_render_params_linux.h",
-      "linux/fontconfig_util.cc",
-      "linux/fontconfig_util.h",
-    ]
-  }
-  if (is_mac) {
-    sources += [
-      "ca_layer_result.h",
-      "decorated_text_mac.h",
-      "decorated_text_mac.mm",
-      "font_fallback_mac.mm",
-      "image/image_mac.mm",
-      "image/image_skia_util_mac.h",
-      "image/image_skia_util_mac.mm",
-      "image/image_util_mac.mm",
-      "mac/coordinate_conversion.h",
-      "mac/coordinate_conversion.mm",
-      "mac/nswindow_frame_controls.h",
-      "mac/nswindow_frame_controls.mm",
-      "mac/scoped_cocoa_disable_screen_updates.h",
-      "mac/scoped_cocoa_disable_screen_updates.mm",
-      "platform_font_mac.h",
-      "platform_font_mac.mm",
-      "scoped_cg_context_save_gstate_mac.h",
-      "scoped_ns_graphics_context_save_gstate_mac.h",
-      "scoped_ns_graphics_context_save_gstate_mac.mm",
-    ]
-  }
-  if (is_win) {
-    sources += [
-      "font_fallback_win.cc",
-      "font_fallback_win.h",
-      "font_render_params_win.cc",
-      "font_util_win.cc",
-      "font_util_win.h",
-      "path_win.cc",
-      "path_win.h",
-      "system_fonts_win.cc",
-      "system_fonts_win.h",
-      "win/crash_id_helper.cc",
-      "win/crash_id_helper.h",
-      "win/d3d_shared_fence.cc",
-      "win/d3d_shared_fence.h",
-      "win/direct_write.cc",
-      "win/direct_write.h",
-      "win/get_elevation_icon.cc",
-      "win/get_elevation_icon.h",
-      "win/hwnd_util.cc",
-      "win/hwnd_util.h",
-      "win/msg_util.h",
-      "win/physical_size.cc",
-      "win/physical_size.h",
-      "win/rendering_window_manager.cc",
-      "win/rendering_window_manager.h",
-      "win/scoped_set_map_mode.h",
-      "win/singleton_hwnd.cc",
-      "win/singleton_hwnd.h",
-      "win/singleton_hwnd_hot_key_observer.cc",
-      "win/singleton_hwnd_hot_key_observer.h",
-      "win/singleton_hwnd_observer.cc",
-      "win/singleton_hwnd_observer.h",
-      "win/text_analysis_source.cc",
-      "win/text_analysis_source.h",
-      "win/window_impl.cc",
-      "win/window_impl.h",
-    ]
-  }
-  if (is_apple) {
-    sources += [ "font_render_params_mac.cc" ]
-  }
-  if (is_ios) {
-    sources += [
-      "image/image_ios.mm",
-      "image/image_skia_util_ios.h",
-      "image/image_skia_util_ios.mm",
-      "image/image_util_ios.mm",
-      "ios/NSString+CrStringDrawing.h",
-      "ios/NSString+CrStringDrawing.mm",
-      "platform_font_ios.h",
-      "platform_font_ios.mm",
-      "scoped_ui_graphics_push_context_ios.h",
-      "scoped_ui_graphics_push_context_ios.mm",
-      "text_utils_ios.mm",
-    ]
-    if (!use_blink) {
-      sources += [
-        "image/image_skia_rep_ios.cc",
-        "image/image_skia_rep_ios.h",
-      ]
-    }
-  }
-  if (use_blink) {
-    sources += [
-      "blit.cc",
-      "blit.h",
-      "canvas.cc",
-      "canvas.h",
-      "canvas_skia.cc",
-      "image/canvas_image_source.cc",
-      "image/canvas_image_source.h",
-      "image/image_generic.cc",
-      "image/image_skia_operations.cc",
-      "image/image_skia_operations.h",
-      "image/image_skia_rep_default.cc",
-      "image/image_skia_rep_default.h",
-      "paint_throbber.cc",
-      "paint_throbber.h",
-      "scoped_canvas.cc",
-      "scoped_canvas.h",
-      "shadow_util.cc",
-      "shadow_util.h",
-      "skia_paint_util.cc",
-      "skia_paint_util.h",
-    ]
-  }
 
   configs += [
     ":gfx_impl_define",
@@ -339,26 +197,19 @@ component("gfx") {
     "//ui/base:ui_data_pack",
   ]
 
-  if (!is_apple) {
-    sources += [
-      "platform_font_skia.cc",
-      "platform_font_skia.h",
-    ]
-  }
-
-  # iOS.
-  if (is_ios) {
-    sources += [ "scoped_cg_context_save_gstate_mac.h" ]
-    public_deps += [ "//ui/gfx/ios:uikit_util" ]
-  }
-
-  if (use_blink) {
-    public_deps += [ "//cc/paint" ]
-    deps += [ "//third_party/harfbuzz-ng" ]
-  }
-
-  # Android.
   if (is_android) {
+    sources += [
+      "android/achoreographer_compat.cc",
+      "android/achoreographer_compat.h",
+      "android/android_surface_control_compat.cc",
+      "android/android_surface_control_compat.h",
+      "android/java_bitmap.cc",
+      "android/java_bitmap.h",
+      "android/surface_control_frame_rate.h",
+      "android/view_configuration.cc",
+      "android/view_configuration.h",
+    ]
+
     if (!is_debug) {
       configs -= [ "//build/config/compiler:default_optimization" ]
       configs += [ "//build/config/compiler:optimize_max" ]
@@ -371,7 +222,175 @@ component("gfx") {
     ]
   }
 
+  if (is_linux) {
+    deps += [ "//ui/linux:linux_ui" ]
+  }
+
+  if (is_linux || is_chromeos) {
+    sources += [
+      "font_fallback_linux.cc",
+      "font_fallback_linux.h",
+      "font_render_params_linux.cc",
+      "font_render_params_linux.h",
+      "linux/fontconfig_util.cc",
+      "linux/fontconfig_util.h",
+    ]
+    deps += [ "//third_party/fontconfig" ]
+  }
+
+  if (is_apple) {
+    sources += [ "font_render_params_mac.cc" ]
+    frameworks = [ "IOSurface.framework" ]
+    deps += [ "//ui/base:features" ]
+  } else {
+    sources += [
+      "platform_font_skia.cc",
+      "platform_font_skia.h",
+    ]
+  }
+  if (is_mac) {
+    sources += [
+      "ca_layer_result.h",
+      "decorated_text_mac.h",
+      "decorated_text_mac.mm",
+      "font_fallback_mac.mm",
+      "image/image_mac.mm",
+      "image/image_skia_util_mac.h",
+      "image/image_skia_util_mac.mm",
+      "image/image_util_mac.mm",
+      "mac/coordinate_conversion.h",
+      "mac/coordinate_conversion.mm",
+      "mac/nswindow_frame_controls.h",
+      "mac/nswindow_frame_controls.mm",
+      "mac/scoped_cocoa_disable_screen_updates.h",
+      "mac/scoped_cocoa_disable_screen_updates.mm",
+      "native_ui_util_mac.mm",
+      "platform_font_mac.h",
+      "platform_font_mac.mm",
+      "scoped_cg_context_save_gstate_mac.h",
+      "scoped_ns_graphics_context_save_gstate_mac.h",
+      "scoped_ns_graphics_context_save_gstate_mac.mm",
+    ]
+    frameworks += [
+      "AppKit.framework",
+      "CoreFoundation.framework",
+      "CoreGraphics.framework",
+      "CoreText.framework",
+    ]
+  }
+  if (is_ios) {
+    sources += [
+      "image/image_ios.mm",
+      "image/image_skia_util_ios.h",
+      "image/image_skia_util_ios.mm",
+      "image/image_util_ios.mm",
+      "ios/NSString+CrStringDrawing.h",
+      "ios/NSString+CrStringDrawing.mm",
+      "platform_font_ios.h",
+      "platform_font_ios.mm",
+      "scoped_cg_context_save_gstate_mac.h",
+      "scoped_ui_graphics_push_context_ios.h",
+      "scoped_ui_graphics_push_context_ios.mm",
+      "text_utils_ios.mm",
+    ]
+    public_deps += [ "//ui/gfx/ios:uikit_util" ]
+
+    if (!use_blink) {
+      sources += [
+        "image/image_skia_rep_ios.cc",
+        "image/image_skia_rep_ios.h",
+      ]
+    }
+  }
+
+  if (is_win) {
+    sources += [
+      "font_fallback_win.cc",
+      "font_fallback_win.h",
+      "font_render_params_win.cc",
+      "font_util_win.cc",
+      "font_util_win.h",
+      "path_win.cc",
+      "path_win.h",
+      "system_fonts_win.cc",
+      "system_fonts_win.h",
+      "win/crash_id_helper.cc",
+      "win/crash_id_helper.h",
+      "win/d3d_shared_fence.cc",
+      "win/d3d_shared_fence.h",
+      "win/direct_write.cc",
+      "win/direct_write.h",
+      "win/gdi_util.cc",
+      "win/gdi_util.h",
+      "win/get_elevation_icon.cc",
+      "win/get_elevation_icon.h",
+      "win/hwnd_util.cc",
+      "win/hwnd_util.h",
+      "win/icon_util.cc",
+      "win/icon_util.h",
+      "win/msg_util.h",
+      "win/physical_size.cc",
+      "win/physical_size.h",
+      "win/rendering_window_manager.cc",
+      "win/rendering_window_manager.h",
+      "win/scoped_set_map_mode.h",
+      "win/singleton_hwnd.cc",
+      "win/singleton_hwnd.h",
+      "win/singleton_hwnd_hot_key_observer.cc",
+      "win/singleton_hwnd_hot_key_observer.h",
+      "win/text_analysis_source.cc",
+      "win/text_analysis_source.h",
+      "win/window_impl.cc",
+      "win/window_impl.h",
+    ]
+    libs = [
+      "setupapi.lib",
+      "dwmapi.lib",
+      "dwrite.lib",
+      "onecore.lib",
+    ]
+    all_dependent_configs = [ ":gfx_win_linker_flags" ]
+    public_deps += [ "//components/crash/core/common" ]
+  }
+
   if (use_blink) {
+    sources += [
+      "bidi_line_iterator.cc",
+      "bidi_line_iterator.h",
+      "blit.cc",
+      "blit.h",
+      "canvas.cc",
+      "canvas.h",
+      "canvas_skia.cc",
+      "harfbuzz_font_skia.cc",
+      "harfbuzz_font_skia.h",
+      "image/canvas_image_source.cc",
+      "image/canvas_image_source.h",
+      "image/image_generic.cc",
+      "image/image_skia_operations.cc",
+      "image/image_skia_operations.h",
+      "image/image_skia_rep_default.cc",
+      "image/image_skia_rep_default.h",
+      "paint_throbber.cc",
+      "paint_throbber.h",
+      "paint_vector_icon.cc",
+      "paint_vector_icon.h",
+      "render_text.cc",
+      "render_text.h",
+      "render_text_harfbuzz.cc",
+      "render_text_harfbuzz.h",
+      "scoped_canvas.cc",
+      "scoped_canvas.h",
+      "shadow_util.cc",
+      "shadow_util.h",
+      "skia_paint_util.cc",
+      "skia_paint_util.h",
+      "text_utils_skia.cc",
+    ]
+
+    public_deps += [ "//cc/paint" ]
+    deps += [ "//third_party/harfbuzz-ng" ]
+
     if (is_android || is_fuchsia || is_ios) {
       sources += [
         "font_fallback_skia.cc",
@@ -385,63 +404,6 @@ component("gfx") {
         "font_fallback_skia_impl.h",
       ]
     }
-
-    sources += [
-      "bidi_line_iterator.cc",
-      "bidi_line_iterator.h",
-      "harfbuzz_font_skia.cc",
-      "harfbuzz_font_skia.h",
-      "paint_vector_icon.cc",
-      "paint_vector_icon.h",
-      "render_text.cc",
-      "render_text.h",
-      "render_text_harfbuzz.cc",
-      "render_text_harfbuzz.h",
-      "text_utils_skia.cc",
-    ]
-  }
-
-  # Windows.
-  if (is_win) {
-    libs = [
-      "setupapi.lib",
-      "dwmapi.lib",
-      "dwrite.lib",
-      "onecore.lib",
-    ]
-
-    all_dependent_configs = [ ":gfx_win_linker_flags" ]
-    public_deps += [ "//components/crash/core/common" ]
-  } else {
-    sources -= [
-      "gdi_util.cc",
-      "gdi_util.h",
-      "icon_util.cc",
-      "icon_util.h",
-      "sys_color_change_listener.cc",
-      "sys_color_change_listener.h",
-    ]
-  }
-
-  # Linux.
-  if (is_linux) {
-    deps += [ "//ui/linux:linux_ui" ]
-  }
-  if (is_linux || is_chromeos) {
-    deps += [ "//third_party/fontconfig" ]
-  }
-
-  if (is_apple) {
-    frameworks = [ "IOSurface.framework" ]
-    deps += [ "//ui/base:features" ]
-  }
-  if (is_mac) {
-    frameworks += [
-      "AppKit.framework",
-      "CoreFoundation.framework",
-      "CoreGraphics.framework",
-      "CoreText.framework",
-    ]
   }
 
   if (use_aura || toolkit_views) {
@@ -449,6 +411,10 @@ component("gfx") {
       "nine_image_painter.cc",
       "nine_image_painter.h",
     ]
+  }
+
+  if (use_aura) {
+    sources += [ "native_ui_util_aura.cc" ]
   }
 }
 
@@ -463,8 +429,6 @@ component("color_space") {
     "display_color_spaces.h",
     "hdr_metadata.cc",
     "hdr_metadata.h",
-    "hdr_metadata_agtm.cc",
-    "hdr_metadata_agtm.h",
     "hdr_static_metadata.cc",
     "hdr_static_metadata.h",
     "icc_profile.cc",
@@ -479,8 +443,10 @@ component("color_space") {
     ]
   }
   deps = [
+    "//components/viz/common/resources:shared_image_format",
     "//skia:skcms",
     "//ui/gfx:buffer_types",
+    "//ui/gfx:gfx_skia",
     "//ui/gfx:gfx_switches",
     "//ui/gfx/geometry:geometry_skia",
   ]
@@ -512,6 +478,15 @@ component("color_space") {
   defines = [ "COLOR_SPACE_IMPLEMENTATION" ]
 }
 
+component("animation_scale") {
+  sources = [
+    "scoped_animation_duration_scale_mode.cc",
+    "scoped_animation_duration_scale_mode.h",
+  ]
+  deps = [ "//base" ]
+  defines = [ "IS_ANIMATION_SCALE_IMPL" ]
+}
+
 # Depend on this to use image/resize_image_dimensions.h without pulling in
 # all of gfx.
 source_set("resize_image_dimensions") {
@@ -532,7 +507,7 @@ group("native_widget_types") {
 source_set("native_widget_types_sources") {
   visibility = [ ":*" ]  # Depend on through ":native_widget_types".
 
-  public = [ "native_widget_types.h" ]
+  public = [ "native_ui_types.h" ]
 
   public_deps = [ "//base" ]
 
@@ -541,7 +516,7 @@ source_set("native_widget_types_sources") {
   deps = [ "//build:blink_buildflags" ]
 
   if (is_mac) {
-    sources = [ "native_widget_types_mac.mm" ]
+    sources = [ "native_ui_types_mac.mm" ]
     frameworks = [ "AppKit.framework" ]
   }
 }
@@ -578,6 +553,7 @@ source_set("selection_bound_sources") {
 # Depend on this to use buffer_types.h without pulling in all of gfx.
 source_set("buffer_types") {
   sources = [ "buffer_types.h" ]
+  deps = [ "//base" ]
 }
 
 # The GPU memory buffer stuff is separate from "gfx" to allow GPU-related
@@ -641,6 +617,8 @@ source_set("memory_buffer_sources") {
     ":native_widget_types_sources",
     "//base",
     "//build:chromecast_buildflags",
+    "//build:chromeos_buildflags",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/vulkan:buildflags",
     "//ui/gfx/geometry",
   ]
@@ -667,9 +645,14 @@ source_set("memory_buffer_sources") {
     sources += [
       "mac/io_surface.cc",
       "mac/io_surface.h",
+      "mac/mtl_shared_event_fence.h",
+      "mac/mtl_shared_event_fence.mm",
     ]
 
-    public_deps += [ "//ui/gfx:color_space" ]
+    public_deps += [
+      "//components/viz/common/resources:shared_image_format",
+      "//ui/gfx:color_space",
+    ]
   }
 
   if (is_win) {
@@ -768,7 +751,6 @@ test("gfx_unittests") {
     "geometry/sin_cos_degrees_unittest.cc",
     "geometry/transform_operations_unittest.cc",
     "geometry/transform_unittest.cc",
-    "image/buffer_w_stream_unittest.cc",
     "image/image_family_unittest.cc",
     "image/image_skia_unittest.cc",
     "image/image_unittest.cc",
@@ -868,7 +850,6 @@ test("gfx_unittests") {
       "geometry/vector2d_f_unittest.cc",
       "geometry/vector2d_unittest.cc",
       "geometry/vector3d_f_unittest.cc",
-      "half_float_unittest.cc",
       "icc_profile_unittest.cc",
       "image/image_skia_operations_unittest.cc",
       "image/image_util_unittest.cc",
@@ -906,7 +887,7 @@ test("gfx_unittests") {
     "//skia:skcms",
     "//testing/gtest",
     "//third_party/icu:icuuc",
-    "//third_party/libpng",
+    "//third_party/libpng:libpng_for_testonly",
     "//third_party/zlib",
     "//ui/base",
     "//ui/gfx/animation",
@@ -945,12 +926,12 @@ test("gfx_unittests") {
     sources += [
       "font_render_params_win_unittest.cc",
       "font_util_win.cc",
-      "icon_util_unittest.cc",
-      "icon_util_unittests.rc",
-      "icon_util_unittests_resource.h",
       "path_win_unittest.cc",
       "win/crash_id_helper_unittest.cc",
       "win/direct_write_unittest.cc",
+      "win/icon_util_unittest.cc",
+      "win/icon_util_unittests.rc",
+      "win/icon_util_unittests_resource.h",
       "win/text_analysis_source_unittest.cc",
     ]
 
@@ -991,7 +972,10 @@ test("gfx_unittests") {
       "linux/fontconfig_util_unittest.cc",
       "linux/native_pixmap_dmabuf_unittest.cc",
     ]
-    deps += [ "//third_party/fontconfig" ]
+    deps += [
+      "//components/viz/common/resources:shared_image_format",
+      "//third_party/fontconfig",
+    ]
   }
 
   if (is_fuchsia) {

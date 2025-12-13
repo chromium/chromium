@@ -19,7 +19,6 @@
 
 using ::testing::_;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::StrEq;
 using ::testing::WithArg;
 
@@ -82,22 +81,22 @@ TEST_F(RealTimeUploaderTest, UploadReport) {
     EXPECT_CALL(*mock_report_queue,
                 AddRecord(StrEq(expected_report_1), kPriority, _))
         .Times(1)
-        .WillOnce(WithArg<2>(
-            Invoke([](reporting::ReportQueue::EnqueueCallback callback) {
+        .WillOnce(
+            WithArg<2>([](reporting::ReportQueue::EnqueueCallback callback) {
               base::ThreadPool::PostTask(
                   base::BindOnce(std::move(callback),
                                  reporting::Status(reporting::error::OK, "")));
-            })));
+            }));
 
     EXPECT_CALL(*mock_report_queue,
                 AddRecord(StrEq(expected_report_2), kPriority, _))
         .Times(1)
-        .WillOnce(WithArg<2>(
-            Invoke([](reporting::ReportQueue::EnqueueCallback callback) {
+        .WillOnce(
+            WithArg<2>([](reporting::ReportQueue::EnqueueCallback callback) {
               base::ThreadPool::PostTask(base::BindOnce(
                   std::move(callback),
                   reporting::Status(reporting::error::UNKNOWN, "")));
-            })));
+            }));
   }
 
   EXPECT_CALL(mock_enqueue_callback_, Run(true)).Times(1);

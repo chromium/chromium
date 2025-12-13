@@ -8,6 +8,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/to_vector.h"
@@ -19,20 +20,39 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_format_provider.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
-namespace {
 
+namespace {
 // The list of countries where the fallback parsing is not supported.
 static constexpr auto countries_not_supporting_fallback_parsing =
     base::MakeFixedFlatSet<AddressCountryCode>({AddressCountryCode("IN")});
-
 }  // namespace
+
+std::string_view VerificationStatusToStringView(VerificationStatus status) {
+  switch (status) {
+    case VerificationStatus::kNoStatus:
+      return "NoStatus";
+    case VerificationStatus::kParsed:
+      return "Parsed";
+    case VerificationStatus::kFormatted:
+      return "Formatted";
+    case VerificationStatus::kObserved:
+      return "Observed";
+    case VerificationStatus::kServerParsed:
+      return "ServerParsed";
+    case VerificationStatus::kUserVerified:
+      return "UserVerified";
+  }
+  NOTREACHED();
+}
 
 bool IsLessSignificantVerificationStatus(VerificationStatus left,
                                          VerificationStatus right) {
@@ -81,26 +101,7 @@ std::optional<VerificationStatus> ToSafeVerificationStatus(
 }
 
 std::ostream& operator<<(std::ostream& os, VerificationStatus status) {
-  switch (status) {
-    case VerificationStatus::kNoStatus:
-      os << "NoStatus";
-      break;
-    case VerificationStatus::kParsed:
-      os << "Parsed";
-      break;
-    case VerificationStatus::kFormatted:
-      os << "Formatted";
-      break;
-    case VerificationStatus::kObserved:
-      os << "Observed";
-      break;
-    case VerificationStatus::kServerParsed:
-      os << "ServerParsed";
-      break;
-    case VerificationStatus::kUserVerified:
-      os << "UserVerified";
-      break;
-  }
+  os << VerificationStatusToStringView(status);
   return os;
 }
 
@@ -239,7 +240,7 @@ const std::u16string& AddressComponent::GetValue() const {
 std::u16string AddressComponent::GetValueForComparison(
     const std::u16string& value,
     const AddressCountryCode& common_country_code) const {
-  return NormalizeValue(value);
+  return normalization::NormalizeForComparison(value);
 }
 
 std::optional<std::u16string> AddressComponent::GetCanonicalizedValue() const {
@@ -351,7 +352,7 @@ std::vector<FieldType> AddressComponent::GetSubcomponentTypes() const {
 
 bool AddressComponent::SetValueForType(
     FieldType field_type,
-    const std::u16string& value,
+    std::u16string_view value,
     const VerificationStatus& verification_status,
     bool invalidate_child_nodes) {
   AddressComponent* node_for_type = GetNodeForType(field_type);
@@ -359,9 +360,9 @@ bool AddressComponent::SetValueForType(
     return false;
   }
   node_for_type->GetStorageType() == field_type
-      ? node_for_type->SetValue(value, verification_status)
-      : node_for_type->SetValueForOtherSupportedType(field_type, value,
-                                                     verification_status);
+      ? node_for_type->SetValue(std::u16string(value), verification_status)
+      : node_for_type->SetValueForOtherSupportedType(
+            field_type, std::u16string(value), verification_status);
   if (invalidate_child_nodes) {
     node_for_type->UnsetSubcomponents();
   }
@@ -501,7 +502,8 @@ void AddressComponent::ParseValueAndAssignSubcomponents() {
   // As a final fallback, parse using the fallback method.
   // In some countries (e.g. India), the parsing cannot be reliably implemented
   // and the fallback method does more harm than good.
-  if (!countries_not_supporting_fallback_parsing.contains(GetCountryCode())) {
+  if (!countries_not_supporting_fallback_parsing.contains(GetCountryCode()) ||
+      !base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel)) {
     ParseValueAndAssignSubcomponentsByFallbackMethod();
   }
 }
@@ -986,11 +988,6 @@ bool AddressComponent::IsMergeableWithComponent(
     return true;
   }
 
-  if (merge_mode_ & kUseNewerIfDifferent ||
-      merge_mode_ & kUseBetterOrMostRecentIfDifferent) {
-    return true;
-  }
-
   if ((merge_mode_ & kReplaceEmpty) &&
       (older_comparison_value.empty() || newer_comparison_value.empty())) {
     return true;
@@ -1038,27 +1035,15 @@ bool AddressComponent::IsMergeableWithComponent(
     }
   }
 
-  if ((merge_mode_ & (kRecursivelyMergeTokenEquivalentValues |
-                      kRecursivelyMergeSingleTokenSubset)) &&
+  if ((merge_mode_ & (kRecursivelyMergeTokenEquivalentValues)) &&
       token_comparison_result.status == SortedTokenComparisonStatus::kMatch) {
     return true;
   }
 
-  if ((merge_mode_ & (kReplaceSubset | kReplaceSuperset)) &&
+  if ((merge_mode_ & kReplaceSubset) &&
       (token_comparison_result.OneIsSubset() ||
        token_comparison_result.status == SortedTokenComparisonStatus::kMatch)) {
     return true;
-  }
-
-  if ((merge_mode_ & kRecursivelyMergeSingleTokenSubset) &&
-      token_comparison_result.IsSingleTokenSuperset()) {
-    // This strategy is only applicable if also the unnormalized values have a
-    // single-token-superset relation.
-    SortedTokenComparisonResult unnormalized_token_comparison_result =
-        CompareSortedTokens(GetValue(), newer_component.GetValue());
-    if (unnormalized_token_comparison_result.IsSingleTokenSuperset()) {
-      return true;
-    }
   }
 
   // If the one value is a substring of the other, use the substring of the
@@ -1157,46 +1142,13 @@ bool AddressComponent::MergeWithComponent(
     return true;
   }
 
-  // Replace the superset with the subset if the corresponding mode is active.
-  if ((merge_mode_ & kReplaceSuperset) &&
-      token_comparison_result.OneIsSubset()) {
-    if (token_comparison_result.status ==
-        SortedTokenComparisonStatus::kSuperset) {
-      CopyFrom(newer_component);
-    }
-    return true;
-  }
-
   // If the tokens are already equivalent, use the more recently used one.
-  if ((merge_mode_ & (kReplaceSuperset | kReplaceSubset)) &&
+  if ((merge_mode_ & kReplaceSubset) &&
       token_comparison_result.status == SortedTokenComparisonStatus::kMatch) {
     if (newer_was_more_recently_used &&
         newer_component_has_better_or_equal_status) {
       CopyFrom(newer_component);
     }
-    return true;
-  }
-
-  // Recursively merge a single-token subset if the corresponding mode is
-  // active.
-  if ((merge_mode_ & kRecursivelyMergeSingleTokenSubset) &&
-      token_comparison_result.IsSingleTokenSuperset()) {
-    // For the merging of subset token, the tokenization must be done without
-    // prior normalization of the values.
-    SortedTokenComparisonResult unnormalized_token_comparison_result =
-        CompareSortedTokens(GetValue(), newer_component.GetValue());
-    // The merging strategy can only be applied when the comparison of the
-    // unnormalized tokens still yields a single token superset.
-    if (unnormalized_token_comparison_result.IsSingleTokenSuperset()) {
-      return MergeSubsetComponent(newer_component,
-                                  unnormalized_token_comparison_result);
-    }
-  }
-
-  // Replace the older value with the newer one if the corresponding mode is
-  // active.
-  if (merge_mode_ & kUseNewerIfDifferent) {
-    CopyFrom(newer_component);
     return true;
   }
 
@@ -1269,14 +1221,6 @@ bool AddressComponent::MergeWithComponent(
     return true;
   }
 
-  if (merge_mode_ & kUseBetterOrMostRecentIfDifferent) {
-    if (HasNewerValuePrecedenceInMerging(newer_component)) {
-      SetValue(newer_component.GetValue(),
-               newer_component.GetVerificationStatus());
-    }
-    return true;
-  }
-
   // If the corresponding mode is active, ignore this mode and pair-wise merge
   // the child tokens. Reformat this nodes from its children after the merge.
   if (merge_mode_ & kMergeChildrenAndReformatIfNeeded) {
@@ -1309,7 +1253,7 @@ bool AddressComponent::MergeWithComponent(
                      VerificationStatus::kFormatted, GetVerificationStatus()));
       } else if (formatted_value == newer_component.GetValue()) {
         // Otherwise test if the value is the same as the one of
-        // |newer_component|. If yes, maintain the better verification status.
+        // `newer_component`. If yes, maintain the better verification status.
         SetValue(formatted_value, GetMoreSignificantVerificationStatus(
                                       VerificationStatus::kFormatted,
                                       newer_component.GetVerificationStatus()));
@@ -1391,14 +1335,14 @@ bool AddressComponent::MergeTokenEquivalentComponent(
   // is sufficient to apply a recursive merging strategy.
   //
   // * None of the nodes of the substructure are pairwise mergeable. In this
-  // case, either the complete substructure of |this| or |newer_component|
+  // case, either the complete substructure of `this` or `newer_component`
   // must be used. Which one to use can be decided by the higher validation
   // score.
   //
   // * In a mixed scenario, there is at least one pair of mergeable nodes
   // in the substructure and at least on pair of non-mergeable nodes. Here,
   // the mergeable nodes are merged while all other nodes are taken either
-  // from |this| or the |newer_component| decided by the higher validation
+  // from `this` or the `newer_component` decided by the higher validation
   // score of the unmerged nodes.
   //
   // The following algorithm combines the three cases by first trying to merge
@@ -1465,88 +1409,6 @@ void AddressComponent::ConsumeAdditionalToken(
   // Otherwise append the value to the first component.
   subcomponents_[0]->SetValue(base::StrCat({GetValue(), u" ", token_value}),
                               VerificationStatus::kParsed);
-}
-
-bool AddressComponent::MergeSubsetComponent(
-    const AddressComponent& subset_component,
-    const SortedTokenComparisonResult& token_comparison_result) {
-  CHECK(token_comparison_result.IsSingleTokenSuperset());
-  CHECK_EQ(token_comparison_result.additional_tokens.size(), 1u);
-  std::u16string token_to_consume =
-      token_comparison_result.additional_tokens.back().value;
-
-  int this_component_verification_score = 0;
-  int newer_component_verification_score = 0;
-  bool found_subset_component = false;
-
-  std::vector<int> unmerged_indices;
-  unmerged_indices.reserve(subcomponents_.size());
-
-  const SubcomponentsList& subset_subcomponents =
-      subset_component.Subcomponents();
-
-  unmerged_indices.reserve(subcomponents_.size());
-
-  for (size_t i = 0; i < subcomponents_.size(); i++) {
-    CHECK_EQ(subcomponents_[i]->GetStorageType(),
-             subset_subcomponents.at(i)->GetStorageType());
-    AddressComponent* subcomponent = subcomponents_[i];
-    const AddressComponent* subset_subcomponent = subset_subcomponents.at(i);
-
-    std::u16string additional_token;
-
-    // If the additional token is the value of this token. Just leave it in.
-    if (!found_subset_component &&
-        subcomponent->GetValue() == token_to_consume &&
-        subset_subcomponent->GetValue().empty()) {
-      found_subset_component = true;
-      continue;
-    }
-
-    SortedTokenComparisonResult subtoken_comparison_result =
-        CompareSortedTokens(subcomponent->GetSortedTokens(),
-                            subset_subcomponent->GetSortedTokens());
-
-    // Recursive case.
-    if (!found_subset_component &&
-        subtoken_comparison_result.IsSingleTokenSuperset()) {
-      found_subset_component = true;
-      subcomponent->MergeSubsetComponent(*subset_subcomponent,
-                                         subtoken_comparison_result);
-      continue;
-    }
-
-    // If the tokens are the equivalent, they can directly be merged.
-    if (subtoken_comparison_result.status ==
-        SortedTokenComparisonStatus::kMatch) {
-      subcomponent->MergeTokenEquivalentComponent(*subset_subcomponent);
-      continue;
-    }
-
-    // Otherwise calculate the verification score.
-    this_component_verification_score +=
-        subcomponent->GetStructureVerificationScore();
-    newer_component_verification_score +=
-        subset_subcomponent->GetStructureVerificationScore();
-    unmerged_indices.emplace_back(i);
-  }
-
-  // If the total verification score of all unmerged components of the other
-  // component is equal or larger than the score of this component, use its
-  // subcomponents including their substructure for all unmerged components.
-  if (newer_component_verification_score >= this_component_verification_score) {
-    for (size_t i : unmerged_indices) {
-      subcomponents_[i]->CopyFrom(*subset_subcomponents[i]);
-    }
-
-    if (!found_subset_component) {
-      this->ConsumeAdditionalToken(token_to_consume);
-    }
-  }
-
-  // In the current implementation it is always possible to merge.
-  // Once more tokens are supported this may change.
-  return true;
 }
 
 int AddressComponent::GetStructureVerificationScore() const {

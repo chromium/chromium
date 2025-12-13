@@ -1,0 +1,32 @@
+From e7217415ed7150b05c8f5661dab5d28b8b731e48 Mon Sep 17 00:00:00 2001
+From: Victor Vianna <victor.vianna10@gmail.com>
+Date: Thu, 9 Oct 2025 21:26:28 +0100
+Subject: [PATCH] Drop std::has_denorm[_loss] deprecated in C++23 (#24)
+
+These are deprecated in C++23.
+
+Bug: crbug.com/388070065
+
+Co-authored-by: Victor Hugo Vianna Silva <victorvianna@google.com>
+---
+ int256.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/int256.h b/int256.h
+index 66432c3..e81d43d 100644
+--- a/int256.h
++++ b/int256.h
+@@ -585,8 +585,11 @@ class numeric_limits<rlwe::uint256> {
+   static constexpr bool has_infinity = false;
+   static constexpr bool has_quiet_NaN = false;
+   static constexpr bool has_signaling_NaN = false;
++// has_denorm and has_denorm_loss are deprecated in C++23.
++#if !defined(__cplusplus) || __cplusplus < 202302L
+   static constexpr float_denorm_style has_denorm = denorm_absent;
+   static constexpr bool has_denorm_loss = false;
++#endif
+   static constexpr float_round_style round_style = round_toward_zero;
+   static constexpr bool is_iec559 = false;
+   static constexpr bool is_bounded = true;
+--
+2.51.0.760.g7b8bcc2412-goog

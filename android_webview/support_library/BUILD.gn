@@ -7,9 +7,9 @@ import("//build/config/android/rules.gni")
 
 android_library("support_lib_glue_java") {
   sources = [
-    "java/src/org/chromium/support_lib_glue/IsomorphicAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibDropDataContentProviderAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibJsReplyProxyAdapter.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibOriginMatchedHeader.java",
     "java/src/org/chromium/support_lib_glue/SupportLibProfile.java",
     "java/src/org/chromium/support_lib_glue/SupportLibProfileStore.java",
     "java/src/org/chromium/support_lib_glue/SupportLibProxyControllerAdapter.java",
@@ -37,6 +37,7 @@ android_library("support_lib_glue_java") {
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewCookieManagerAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewNavigationAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewNavigationClientAdapter.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibWebViewNavigationListenerAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewPageAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewRendererAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewRendererClientAdapter.java",

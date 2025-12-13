@@ -34,7 +34,7 @@ namespace blink {
 // from sources that have global limits in the number of in-flight frames
 // allowed. Thus, frames are monitored per source. Sources are identified with
 // a nonempty std::string, so any way to group frames can be used as long as a
-// source ID is given. std::string is chosen over the Blink-standard WTF::String
+// source ID is given. std::string is chosen over the Blink-standard String
 // because:
 //   1. source IDs often come from outside Blink (e.g., camera and screen
 //      device IDs)
@@ -96,8 +96,7 @@ class MODULES_EXPORT VideoFrameMonitor {
   // key: unique ID of a frame.
   // value: reference count for the frame (among objects explicitly tracking
   //        the frame with VideoFrameMonitor).
-  struct VideoFrameIDHashTraits
-      : WTF::GenericHashTraits<media::VideoFrame::ID> {
+  struct VideoFrameIDHashTraits : GenericHashTraits<media::VideoFrame::ID> {
     static unsigned GetHash(media::VideoFrame::ID key) {
       static_assert(std::is_same_v<decltype(key.GetUnsafeValue()), uint64_t>);
       return HashInt(key.GetUnsafeValue());

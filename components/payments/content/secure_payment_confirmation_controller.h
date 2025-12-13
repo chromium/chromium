@@ -15,6 +15,17 @@ namespace payments {
 
 class PaymentRequest;
 
+// LINT.IfChange(SecurePaymentRequestOutcome)
+enum class SecurePaymentRequestOutcome {
+  kUnknown = 0,
+  kAccept = 1,
+  kAnotherWay = 2,
+  kCancel = 3,
+  kOptOut = 4,
+  kMaxValue = kOptOut,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/payment/enums.xml:SecurePaymentRequestOutcome)
+
 // Controls the user interface in the secure payment confirmation flow.
 class SecurePaymentConfirmationController
     : public PaymentRequestDialog,
@@ -46,14 +57,20 @@ class SecurePaymentConfirmationController
   void OnInitialized(InitializationTask* initialization_task) override;
 
   // Callbacks for user interaction.
-  void OnCancel();
   void OnConfirm();
+  void OnAnotherWay();
+  void OnCancel();
   void OnOptOut();
+
+  void SetIsDialogShowingForTesting(bool is_dialog_showing) {
+    is_dialog_showing_ = is_dialog_showing;
+  }
 
   base::WeakPtr<SecurePaymentConfirmationController> GetWeakPtr();
 
  private:
   void SetupModelAndShowDialogIfApplicable();
+  void CreateTransactionView();
 
   // Can be null when the webpage closes or the iframe refreshes or navigates.
   base::WeakPtr<PaymentRequest> request_;
@@ -67,6 +84,7 @@ class SecurePaymentConfirmationController
   base::WeakPtr<SecurePaymentConfirmationView> view_;
 
   int number_of_initialization_tasks_ = 0;
+  bool is_dialog_showing_ = false;
 
   base::WeakPtrFactory<SecurePaymentConfirmationController> weak_ptr_factory_{
       this};

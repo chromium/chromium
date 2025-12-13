@@ -51,7 +51,6 @@ action_foreach("validation_test_data_list") {
 mojom("test_deserializer_interface") {
   testonly = true
   generate_java = true
-  generate_rust = true
   sources = [ "deserializer.test-mojom" ]
   js_generate_struct_deserializers = true
 }
@@ -59,7 +58,6 @@ mojom("test_deserializer_interface") {
 mojom("test_interfaces") {
   testonly = true
   generate_java = true
-  generate_rust = true
   webui_module_path = "/"
   generate_legacy_js_bindings = true
 
@@ -286,7 +284,6 @@ mojom("test_export2") {
 mojom("test_mojom_import") {
   testonly = true
   generate_java = true
-  generate_rust = true
   webui_module_path = "/"
   generate_legacy_js_bindings = true
   sources = [ "sample_import.test-mojom" ]
@@ -295,21 +292,18 @@ mojom("test_mojom_import") {
 mojom("test_mojom_import_wrapper") {
   testonly = true
   generate_java = true
-  generate_rust = true
   public_deps = [ ":test_mojom_import" ]
 }
 
 mojom("test_mojom_import_wrapper_wrapper") {
   testonly = true
   generate_java = true
-  generate_rust = true
   public_deps = [ ":test_mojom_import_wrapper" ]
 }
 
 mojom("test_mojom_import2") {
   testonly = true
   generate_java = true
-  generate_rust = true
   webui_module_path = "/"
   generate_legacy_js_bindings = true
   sources = [ "sample_import2.test-mojom" ]
@@ -417,7 +411,6 @@ mojom("test_no_sources") {
 mojom("echo") {
   testonly = true
   generate_java = true
-  generate_rust = true
   sources = [
     "echo.test-mojom",
     "echo_import/echo_import.test-mojom",

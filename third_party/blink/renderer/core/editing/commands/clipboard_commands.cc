@@ -34,6 +34,7 @@
 #include "base/auto_reset.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
+#include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer_access_policy.h"
 #include "third_party/blink/renderer/core/clipboard/paste_mode.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
@@ -444,12 +445,15 @@ void ClipboardCommands::PasteAsFragment(LocalFrame& frame,
                                         DocumentFragment* pasting_fragment,
                                         bool smart_replace,
                                         bool match_style,
-                                        EditorCommandSource source) {
+                                        EditorCommandSource source,
+                                        DataTransfer* data_transfer) {
   Element* const target = FindEventTargetForClipboardEvent(frame, source);
-  if (!target)
+  if (!target) {
     return;
+  }
   target->DispatchEvent(*TextEvent::CreateForFragmentPaste(
-      frame.DomWindow(), pasting_fragment, smart_replace, match_style));
+      frame.DomWindow(), pasting_fragment, smart_replace, match_style,
+      data_transfer));
 }
 
 void ClipboardCommands::PasteAsPlainTextFromClipboard(
@@ -502,7 +506,8 @@ ClipboardCommands::GetFragmentFromClipboard(LocalFrame& frame) {
 }
 
 void ClipboardCommands::PasteFromClipboard(LocalFrame& frame,
-                                           EditorCommandSource source) {
+                                           EditorCommandSource source,
+                                           DataTransfer* data_transfer) {
   const ClipboardCommands::FragmentAndPlainText fragment_and_plain_text =
       GetFragmentFromClipboard(frame);
 
@@ -510,7 +515,7 @@ void ClipboardCommands::PasteFromClipboard(LocalFrame& frame,
     return;
   PasteAsFragment(frame, fragment_and_plain_text.first,
                   CanSmartReplaceInClipboard(frame),
-                  fragment_and_plain_text.second, source);
+                  fragment_and_plain_text.second, source, data_transfer);
 }
 
 void ClipboardCommands::Paste(LocalFrame& frame, EditorCommandSource source) {
@@ -550,10 +555,11 @@ void ClipboardCommands::Paste(LocalFrame& frame, EditorCommandSource source) {
                                    ? PasteMode::kAllMimeTypes
                                    : PasteMode::kPlainTextOnly;
 
+  DataTransfer* data_transfer = nullptr;
   if (source == EditorCommandSource::kMenuOrKeyBinding) {
     Element* const target = FindEventTargetForClipboardEvent(frame, source);
 
-    DataTransfer* data_transfer = DataTransfer::Create(
+    data_transfer = DataTransfer::Create(
         DataTransfer::kCopyAndPaste, DataTransferAccessPolicy::kReadable,
         DataObject::CreateFromClipboard(
             target ? target->GetExecutionContext() : nullptr,
@@ -574,7 +580,9 @@ void ClipboardCommands::Paste(LocalFrame& frame, EditorCommandSource source) {
   }
 
   if (paste_mode == PasteMode::kAllMimeTypes) {
-    PasteFromClipboard(frame, source);
+    RuntimeEnabledFeatures::InputEventDataTransferForInsertCmdEnabled()
+        ? PasteFromClipboard(frame, source, data_transfer)
+        : PasteFromClipboard(frame, source);
     return;
   }
   PasteAsPlainTextFromClipboard(frame, source);

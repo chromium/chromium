@@ -165,25 +165,21 @@ bool ExaminePublicKeys(const scoped_refptr<X509Certificate>& cert,
       cert->valid_start() >= kBaselineEffectiveDate &&
       cert->valid_expiry() >= kBaselineKeysizeEffectiveDate;
 
-  X509Certificate::GetPublicKeyInfo(cert->cert_buffer(), &size_bits, &type);
-  if (should_histogram) {
-    RecordPublicKeyHistogram(kLeafCert, baseline_keysize_applies, size_bits,
-                             type);
-  }
-  if (IsWeakKey(type, size_bits))
-    weak_key = true;
-
-  const std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>& intermediates =
-      cert->intermediate_buffers();
-  for (size_t i = 0; i < intermediates.size(); ++i) {
-    X509Certificate::GetPublicKeyInfo(intermediates[i].get(), &size_bits,
-                                      &type);
+  const std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>& certs =
+      cert->cert_buffers();
+  for (size_t i = 0; i < certs.size(); ++i) {
+    X509Certificate::GetPublicKeyInfo(certs[i].get(), &size_bits, &type);
     if (should_histogram) {
-      RecordPublicKeyHistogram(
-          (i < intermediates.size() - 1) ? kIntermediateCert : kRootCert,
-          baseline_keysize_applies,
-          size_bits,
-          type);
+      const char* chain_position;
+      if (i == 0) {
+        chain_position = kLeafCert;
+      } else if (i < certs.size() - 1) {
+        chain_position = kIntermediateCert;
+      } else {
+        chain_position = kRootCert;
+      }
+      RecordPublicKeyHistogram(chain_position, baseline_keysize_applies,
+                               size_bits, type);
     }
     if (!weak_key && IsWeakKey(type, size_bits))
       weak_key = true;
@@ -336,29 +332,23 @@ void RecordTrustAnchorHistogram(const std::vector<SHA256HashValue>& spki_hashes,
 // in order to prevent such confusion.
 [[nodiscard]] bool InspectSignatureAlgorithmsInChain(
     CertVerifyResult* verify_result) {
-  const std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>& intermediates =
-      verify_result->verified_cert->intermediate_buffers();
-
   // If there are no intermediates, then the leaf is trusted or verification
   // failed.
-  if (intermediates.empty())
+  if (verify_result->verified_cert->intermediate_buffers().empty()) {
     return true;
+  }
 
   DCHECK(!verify_result->has_sha1);
 
-  // Fill in hash algorithms for the leaf certificate.
-  if (!InspectSignatureAlgorithmForCert(
-          verify_result->verified_cert->cert_buffer(), verify_result)) {
-    return false;
-  }
-
-  // Fill in hash algorithms for the intermediate cerificates, excluding the
+  // Fill in hash algorithms for the certificates, excluding the
   // final one (which is presumably the trust anchor; may be incorrect for
   // partial chains).
-  for (size_t i = 0; i + 1 < intermediates.size(); ++i) {
-    if (!InspectSignatureAlgorithmForCert(intermediates[i].get(),
-                                          verify_result))
+  for (const auto& cert :
+       base::span(verify_result->verified_cert->cert_buffers())
+           .first(verify_result->verified_cert->cert_buffers().size() - 1)) {
+    if (!InspectSignatureAlgorithmForCert(cert.get(), verify_result)) {
       return false;
+    }
   }
 
   return true;
@@ -373,11 +363,11 @@ base::Value::Dict CertVerifyParams(X509Certificate* cert,
   base::Value::Dict dict;
   dict.Set("certificates", NetLogX509CertificateList(cert));
   if (!ocsp_response.empty()) {
-    dict.Set("ocsp_response",
+    dict.Set("stapled_ocsp_response",
              bssl::PEMEncode(ocsp_response, "NETLOG OCSP RESPONSE"));
   }
   if (!sct_list.empty()) {
-    dict.Set("sct_list", bssl::PEMEncode(sct_list, "NETLOG SCT LIST"));
+    dict.Set("tls_sct_list", bssl::PEMEncode(sct_list, "NETLOG SCT LIST"));
   }
   dict.Set("host", NetLogStringValue(hostname));
   dict.Set("verify_flags", flags);
@@ -430,11 +420,12 @@ scoped_refptr<CertVerifyProc> CertVerifyProc::CreateBuiltinWithChromeRootStore(
     std::unique_ptr<CTVerifier> ct_verifier,
     scoped_refptr<CTPolicyEnforcer> ct_policy_enforcer,
     const ChromeRootStoreData* root_store_data,
+    const ChromeRootStoreMtcMetadata* root_store_mtc_metadata,
     const InstanceParams instance_params,
     std::optional<network_time::TimeTracker> time_tracker) {
   std::unique_ptr<TrustStoreChrome> chrome_root =
-      root_store_data ? std::make_unique<TrustStoreChrome>(*root_store_data)
-                      : std::make_unique<TrustStoreChrome>();
+      std::make_unique<TrustStoreChrome>(root_store_data,
+                                         root_store_mtc_metadata);
   return CreateCertVerifyProcBuiltin(
       std::move(cert_net_fetcher), std::move(crl_set), std::move(ct_verifier),
       std::move(ct_policy_enforcer),
@@ -481,7 +472,7 @@ int CertVerifyProc::Verify(X509Certificate* cert,
 
   CHECK(verify_result->verified_cert);
   if (rv == OK) {
-    CHECK_EQ(verify_result->verified_cert->intermediate_buffers().size() + 1,
+    CHECK_EQ(verify_result->verified_cert->cert_buffers().size(),
              verify_result->public_key_hashes.size());
   }
 
@@ -642,26 +633,21 @@ void CertVerifyProc::LogNameNormalizationMetrics(
     return;
   }
 
-  std::vector<CRYPTO_BUFFER*> der_certs;
-  der_certs.push_back(verified_cert->cert_buffer());
-  for (const auto& buf : verified_cert->intermediate_buffers())
-    der_certs.push_back(buf.get());
-
   bssl::ParseCertificateOptions options;
   options.allow_invalid_serial_numbers = true;
 
   std::vector<bssl::der::Input> subjects;
   std::vector<bssl::der::Input> issuers;
 
-  for (auto* buf : der_certs) {
+  for (const auto& buf : verified_cert->cert_buffers()) {
     bssl::der::Input tbs_certificate_tlv;
     bssl::der::Input signature_algorithm_tlv;
     bssl::der::BitString signature_value;
     bssl::ParsedTbsCertificate tbs;
-    if (!bssl::ParseCertificate(
-            bssl::der::Input(CRYPTO_BUFFER_data(buf), CRYPTO_BUFFER_len(buf)),
-            &tbs_certificate_tlv, &signature_algorithm_tlv, &signature_value,
-            nullptr /* errors*/) ||
+    if (!bssl::ParseCertificate(bssl::der::Input(CRYPTO_BUFFER_data(buf.get()),
+                                                 CRYPTO_BUFFER_len(buf.get())),
+                                &tbs_certificate_tlv, &signature_algorithm_tlv,
+                                &signature_value, nullptr /* errors*/) ||
         !ParseTbsCertificate(tbs_certificate_tlv, options, &tbs,
                              nullptr /*errors*/)) {
       LogNameNormalizationResult(histogram_suffix,
@@ -758,7 +744,7 @@ bool CertVerifyProc::HasNameConstraintsViolation(
   // openssl x509 -noout -in <cert>.pem -pubkey | \
   //   openssl asn1parse -noout -inform pem -out - | \
   //   openssl dgst -sha256 -binary | xxd -i
-  static const struct PublicKeyDomainLimitation {
+  static constexpr struct PublicKeyDomainLimitation {
     SHA256HashValue public_key_hash;
     base::raw_span<const std::string_view> domains;
   } kLimits[] = {
@@ -829,14 +815,48 @@ bool CertVerifyProc::HasTooLongValidity(const X509Certificate& cert) {
   // * Certificates issued on-or-after 1 March 2018: 825 days.
   //   * Last possible expiry: 1 September 2020 + 825 days = 2022-12-05
   //
-  // The current limit, from Chrome Root Certificate Policy:
-  // * Certificates issued on-or-after 1 September 2020: 398 days.
+  // No certificates issued under these older lifetime requirements could
+  // possibly still be accepted, so we don't need to check the older limits
+  // explicitly.
 
   base::TimeDelta validity_duration = cert.valid_expiry() - cert.valid_start();
 
-  // No certificates issued before the latest lifetime requirement was enacted
-  // could possibly still be accepted, so we don't need to check the older
-  // limits explicitly.
+  // The current limits, from section 6.3.2 (Certificate operational periods
+  // and key pair usage periods) of CABF Baseline Requirements version 2.1.7.
+  //
+  // The "Last possible expiry" date indicates the date after which each
+  // condition is no longer relevant and can be removed.
+
+  // datetime.datetime(2029,3,15,tzinfo=datetime.timezone.utc).timestamp()*1000
+  static constexpr base::Time kTime_2029_03_15 =
+      base::Time::FromMillisecondsSinceUnixEpoch(1868227200000);
+  // datetime.datetime(2027,3,15,tzinfo=datetime.timezone.utc).timestamp()*1000
+  static constexpr base::Time kTime_2027_03_15 =
+      base::Time::FromMillisecondsSinceUnixEpoch(1805068800000);
+  // datetime.datetime(2026,3,15,tzinfo=datetime.timezone.utc).timestamp()*1000
+  static constexpr base::Time kTime_2026_03_15 =
+      base::Time::FromMillisecondsSinceUnixEpoch(1773532800000);
+
+  // For certificates issued on-or-after March 15, 2029: 47 days.
+  if (start >= kTime_2029_03_15) {
+    return validity_duration > base::Days(47);
+  }
+
+  // For certificates issued on-or-after March 15, 2027: 100 days.
+  // Last possible expiry: March 15, 2029 + 100 days = 2029-06-23
+  if (start >= kTime_2027_03_15) {
+    return validity_duration > base::Days(100);
+  }
+
+  // For certificates issued on-or-after March 15, 2026: 200 days.
+  // Last possible expiry: March 15, 2027 + 200 days = 2027-10-01
+  if (start >= kTime_2026_03_15) {
+    return validity_duration > base::Days(200);
+  }
+
+  // The current limit, from Chrome Root Certificate Policy:
+  // Certificates issued on-or-after 1 September 2020: 398 days.
+  // Last possible expiry: March 15, 2026 + 398 days = 2027-04-17
   return validity_duration > base::Days(398);
 }
 

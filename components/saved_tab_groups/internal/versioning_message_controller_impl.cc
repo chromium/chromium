@@ -9,6 +9,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/utils.h"
 
 namespace tab_groups {
 namespace {
@@ -121,6 +122,14 @@ void VersioningMessageControllerImpl::ComputePrefsOnStartup() {
       if (had_any_shared_tab_groups) {
         pref_service_->SetBoolean(
             prefs::kEligibleForVersionOutOfDatePersistentMessage, true);
+
+        // For desktop, instant message should be shown if there are any shared
+        // tab groups in the previous session regardless of whether they were
+        // open or closed.
+        if (!AreLocalIdsPersisted()) {
+          pref_service_->SetBoolean(
+              prefs::kEligibleForVersionOutOfDateInstantMessage, true);
+        }
       }
 
       // Always reset the 'updated' message eligibility when out of date.
@@ -190,6 +199,23 @@ bool VersioningMessageControllerImpl::IsInitialized() {
 void VersioningMessageControllerImpl::ShouldShowMessageUiAsync(
     MessageType message_type,
     base::OnceCallback<void(bool)> callback) {
+  // The VERSION_UPDATED_MESSAGE requires waiting for tab groups to be
+  // downloaded. We handle it separately by queueing the callback.
+  if (message_type == MessageType::VERSION_UPDATED_MESSAGE) {
+    // If the check has already completed and final state of the eligibility is
+    // already determined, we can respond immediately with the final state.
+    if (processed_version_updated_callbacks_) {
+      std::move(callback).Run(ShouldShowMessageUi(message_type));
+    } else {
+      // Otherwise, queue the callback. It will be run later by either
+      // OnInitialized or OnTabGroupAdded.
+      pending_version_updated_callbacks_.push_back(std::move(callback));
+    }
+    return;
+  }
+
+  // For all other message types, queue callbacks if init isn't complete,
+  // otherwise invoke them right away.
   if (!is_initialized_) {
     pending_callbacks_.push_back(base::BindOnce(
         &VersioningMessageControllerImpl::ShouldShowMessageUiAsync,
@@ -235,10 +261,69 @@ void VersioningMessageControllerImpl::OnInitialized() {
   is_initialized_ = true;
   ComputePrefsOnStartup();
 
+  // Attempt to resolve any pending VERSION_UPDATED_MESSAGE callbacks. This
+  // handles cases where conditions are already met (or definitively not met)
+  // at startup.
+  MaybeResolvePendingVersionUpdatedCallbacks();
+
+  // Run pending callbacks for other message types that were waiting for init.
   for (auto& callback : pending_callbacks_) {
     std::move(callback).Run();
   }
   pending_callbacks_.clear();
+}
+
+void VersioningMessageControllerImpl::OnTabGroupAdded(
+    const SavedTabGroup& group,
+    TriggerSource source) {
+  // We only care about the first shared group that appears.
+  if (processed_version_updated_callbacks_ || !group.is_shared_tab_group()) {
+    return;
+  }
+
+  // A shared group has been added. Re-evaluate the conditions to see if we
+  // can resolve the pending callbacks now.
+  MaybeResolvePendingVersionUpdatedCallbacks();
+}
+
+void VersioningMessageControllerImpl::
+    MaybeResolvePendingVersionUpdatedCallbacks() {
+  if (processed_version_updated_callbacks_) {
+    return;
+  }
+
+  // The message can only be shown if the version is up to date and the user is
+  // eligible (they have seen an out-of-date message before).
+  const bool can_ever_show =
+      GetVersionState() == VersionState::kUpToDate &&
+      pref_service_->GetBoolean(prefs::kEligibleForVersionUpdatedMessage);
+
+  bool should_resolve = false;
+  bool resolution_value = false;
+
+  if (!can_ever_show) {
+    // If base conditions aren't met, we can definitively resolve with `false`.
+    should_resolve = true;
+    resolution_value = false;
+  } else if (HasCurrentSharedTabGroups(tab_group_sync_service_)) {
+    // If base conditions *are* met and we have shared groups, resolve with
+    // `true`.
+    should_resolve = true;
+    resolution_value = true;
+  }
+
+  // If `should_resolve` is false, it means conditions are plausible but we are
+  // still waiting for a shared tab group to be added. We'll wait for another
+  // call from OnTabGroupAdded.
+  if (!should_resolve) {
+    return;
+  }
+
+  for (auto& callback : pending_version_updated_callbacks_) {
+    std::move(callback).Run(resolution_value);
+  }
+  pending_version_updated_callbacks_.clear();
+  processed_version_updated_callbacks_ = true;
 }
 
 }  // namespace tab_groups

@@ -15,11 +15,14 @@
 #include "android_webview/renderer/aw_content_settings_client.h"
 #include "android_webview/renderer/aw_print_render_frame_helper_delegate.h"
 #include "android_webview/renderer/aw_render_frame_ext.h"
+#include "android_webview/renderer/aw_render_frame_observer.h"
 #include "android_webview/renderer/aw_render_view_ext.h"
 #include "android_webview/renderer/aw_url_loader_throttle_provider.h"
 #include "android_webview/renderer/browser_exposed_renderer_interfaces.h"
 #include "base/android/library_loader/library_prefetcher.h"
+#include "base/android/orderfile/orderfile_buildflags.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -75,12 +78,31 @@ void AwContentRendererClient::RenderThreadStarted() {
       blink::Platform::Current()->GetBrowserInterfaceBroker();
 
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING)
-  if (base::FeatureList::IsEnabled(features::kWebViewPrefetchNativeLibrary) &&
-      features::kWebViewPrefetchFromRenderer.Get()) {
-    base::ThreadPool::PostTask(FROM_HERE, base::BindOnce([] {
-                                 base::android::NativeLibraryPrefetcher::
-                                     ForkAndPrefetchNativeLibrary();
-                               }));
+  // Default behavior.
+  bool shouldPrefetchNativeLibrary =
+      base::FeatureList::IsEnabled(features::kWebViewPrefetchNativeLibrary) &&
+      features::kWebViewPrefetchFromRenderer.Get();
+
+  // The new API can override the default.
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewConfigurableLibraryPrefetch)) {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(switches::kWebViewRendererLibraryPrefetch)) {
+      std::string value = command_line->GetSwitchValueASCII(
+          switches::kWebViewRendererLibraryPrefetch);
+      if (value == switches::kWebViewRendererLibraryPrefetchEnabled) {
+        shouldPrefetchNativeLibrary = true;
+      } else if (value == switches::kWebViewRendererLibraryPrefetchDisabled) {
+        shouldPrefetchNativeLibrary = false;
+      }
+    }
+  }
+
+  if (shouldPrefetchNativeLibrary) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, base::BindOnce([] {
+          base::android::NativeLibraryPrefetcher::PrefetchNativeLibrary();
+        }));
   }
 #endif
 
@@ -184,6 +206,12 @@ void AwContentRendererClient::RenderFrameCreated(
 
   // Owned by |render_frame|.
   new page_load_metrics::MetricsRenderFrameObserver(render_frame);
+  // Currently, AwRenderFrameObserver is only used for orderfile
+  // instrumentation. So we avoid creating the observer unless orderfile
+  // instrumentation is enabled.
+#if BUILDFLAG(ORDERFILE_INSTRUMENTATION)
+  new AwRenderFrameObserver(render_frame);
+#endif
 }
 
 std::unique_ptr<blink::WebPrescientNetworking>
@@ -196,17 +224,18 @@ AwContentRendererClient::CreatePrescientNetworking(
 void AwContentRendererClient::
     SetRuntimeFeaturesDefaultsBeforeBlinkInitialization() {
   if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillSharedAutofill)) {
-    blink::WebRuntimeFeatures::EnableSharedAutofill(true);
+          autofill::features::kAutofillPolicyControlledFeatureAutofill)) {
+    blink::WebRuntimeFeatures::EnableAutofill(true);
+  }
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillPolicyControlledFeatureManualText)) {
+    blink::WebRuntimeFeatures::EnableManualText(true);
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kWebViewMediaIntegrityApiBlinkExtension)) {
-    // Enable the overall android.webview namespace.
-    blink::WebRuntimeFeatures::EnableBlinkExtensionWebView(true);
-    // Enable the android.webview.getExperimentalMediaIntegrityProvider API.
-    blink::WebRuntimeFeatures::EnableBlinkExtensionWebViewMediaIntegrity(true);
-  }
+  // Enable the overall android.webview namespace.
+  blink::WebRuntimeFeatures::EnableBlinkExtensionWebView(true);
+  // Enable the android.webview.getExperimentalMediaIntegrityProvider API.
+  blink::WebRuntimeFeatures::EnableBlinkExtensionWebViewMediaIntegrity(true);
 }
 
 void AwContentRendererClient::WebViewCreated(
@@ -282,8 +311,6 @@ void AwContentRendererClient::GetInterface(
     const std::string& interface_name,
     mojo::ScopedMessagePipeHandle interface_pipe) {
   // A dirty hack to make SpellCheckHost requests work on WebView.
-  // TODO(crbug.com/40560165): Use a WebView-specific service for SpellCheckHost
-  // and SafeBrowsing, instead of |content_browser|.
   RenderThread::Get()->BindHostReceiver(
       mojo::GenericPendingReceiver(interface_name, std::move(interface_pipe)));
 }

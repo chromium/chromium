@@ -74,8 +74,7 @@ class ChromeNativeAppWindowViewsAuraAsh
       const extensions::AppWindow::CreateParams& create_params,
       views::Widget::InitParams* init_params,
       views::Widget* widget) override;
-  std::unique_ptr<views::NonClientFrameView> CreateNonStandardAppFrame()
-      override;
+  std::unique_ptr<views::FrameView> CreateNonStandardAppFrame() override;
   bool ShouldRemoveStandardFrame() override;
   void EnsureAppIconCreated() override;
   gfx::RoundedCornersF GetWindowRadii() const override;
@@ -92,7 +91,7 @@ class ChromeNativeAppWindowViewsAuraAsh
       ui::mojom::MenuSourceType source_type) override;
 
   // WidgetDelegate:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
   views::ClientView* CreateClientView(views::Widget* widget) override;
   ui::ImageModel GetWindowIcon() override;
@@ -113,7 +112,7 @@ class ChromeNativeAppWindowViewsAuraAsh
   bool IsFullscreen() const override;
   void EnterFullscreen(const url::Origin& origin,
                        ExclusiveAccessBubbleType bubble_type,
-                       int64_t display_id) override;
+                       FullscreenTabParams fullscreen_tab_params) override;
   void ExitFullscreen() override;
   void UpdateExclusiveAccessBubble(
       const ExclusiveAccessBubbleParams& params,

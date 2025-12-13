@@ -13,10 +13,11 @@ class LensSidePanelWebUIBrowserTest : public WebUIMochaBrowserTest {
   LensSidePanelWebUIBrowserTest() {
     set_test_loader_scheme(content::kChromeUIUntrustedScheme);
     set_test_loader_host(chrome::kChromeUILensSidePanelHost);
-    scoped_feature_list_.InitWithFeatures(
-        {lens::features::kLensOverlay,
-         lens::features::kLensSearchSidePanelScrollToAPI},
-        {lens::features::kLensOverlayContextualSearchbox});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensOverlay, {}},
+         {lens::features::kLensAimSuggestions,
+          {{"lens-aim-suggestions-type", "Contextual"}}}},
+        {});
   }
 
  private:
@@ -50,6 +51,11 @@ IN_PROC_BROWSER_TEST_F(LensSidePanelTest, FeedbackToast) {
 
 IN_PROC_BROWSER_TEST_F(LensSidePanelTest, PostMessageCommunication) {
   RunTest("lens/side_panel/post_message_communication_test.js", "mocha.run()");
+}
+
+// TODO(crbug.com/451340876): Test is flaky.
+IN_PROC_BROWSER_TEST_F(LensSidePanelTest, DISABLED_Composebox) {
+  RunTest("lens/side_panel/composebox_test.js", "mocha.run()");
 }
 
 using LensGhostLoaderTest = LensSidePanelWebUIBrowserTest;

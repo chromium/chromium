@@ -8,17 +8,12 @@
 #import <UIKit/UIKit.h>
 
 @class FaviconView;
-@class TableViewURLCellFaviconBadgeView;
 
 @interface FaviconTableViewCell : UITableViewCell
 
 // The image view that is displayed on the leading edge of the cell. This
 // contains a favicon composited on top of an off-white background.
 @property(nonatomic, readonly, strong) FaviconView* faviconView;
-
-// The image view used to display the favicon badge.
-@property(nonatomic, readonly, strong)
-    TableViewURLCellFaviconBadgeView* faviconBadgeView;
 
 // The text to display.
 @property(nonatomic, readonly, strong) UILabel* textLabel;

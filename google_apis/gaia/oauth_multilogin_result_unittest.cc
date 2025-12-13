@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
@@ -23,13 +24,25 @@
 
 using ::net::CanonicalCookie;
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::DoubleNear;
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::Field;
 using ::testing::FieldsAre;
 using ::testing::IsEmpty;
 using ::testing::IsTrue;
+using ::testing::Optional;
 using ::testing::Property;
+using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
+
+using Credential = ::RegisterBoundSessionPayload::Credential;
+using DeviceBoundSession = ::OAuthMultiloginResult::DeviceBoundSession;
+using Scope = ::RegisterBoundSessionPayload::Scope;
+using SessionScope = ::RegisterBoundSessionPayload::SessionScope;
+
+using enum ::OAuthMultiloginResult::DeviceBoundSession::Domain;
 
 namespace {
 
@@ -202,7 +215,7 @@ TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
           net::CookieSameSite::UNSPECIFIED,
           net::CookiePriority::COOKIE_PRIORITY_HIGH)};
 
-  EXPECT_EQ((int)result.cookies().size(), 4);
+  EXPECT_EQ(result.cookies().size(), 4u);
 
   EXPECT_TRUE(result.cookies()[0].IsEquivalent(cookies[0]));
   EXPECT_TRUE(result.cookies()[1].IsEquivalent(cookies[1]));
@@ -842,7 +855,7 @@ TEST(OAuthMultiloginResultTest, ParseRealResponseFromGaia_2021_10) {
 
   result.TryParseCookiesFromValue(base::test::ParseJsonDict(data));
 
-  ASSERT_EQ((int)result.cookies().size(), 31);
+  ASSERT_EQ(result.cookies().size(), 31u);
 
   EXPECT_THAT(
       result.cookies(),
@@ -1023,4 +1036,649 @@ TEST(OAuthMultiloginResultTest, ParseEncryptedCookiesDecryptionFails) {
           base::Bucket(
               TokenBindingResponseEncryptionError::kSuccessfullyDecrypted,
               /*count=*/1)));
+}
+
+TEST(OAuthMultiloginResultTest, NoDeviceBoundSessionInfo) {
+  base::HistogramTester histogram_tester;
+
+  const std::string raw_data =
+      R"()]}'
+        {
+          "status": "OK",
+          "cookies":[
+            {
+              "name": "__Secure-1PSIDTS",
+              "value": "secure-1p-sidts-value",
+              "domain": ".google.com",
+              "path": "/",
+              "isSecure": true,
+              "isHttpOnly": true,
+              "maxAge": 31536000,
+              "priority": "HIGH",
+              "sameParty": "1"
+            }
+          ],
+          "token_binding_directed_response": {}
+        }
+      )";
+  const OAuthMultiloginResult result(
+      raw_data, net::HTTP_OK,
+      /*cookie_decryptor=*/
+      base::BindLambdaForTesting([](std::string_view encrypted_cookie) {
+        return base::StrCat({encrypted_cookie, ".decrypted"});
+      }));
+  ASSERT_EQ(result.status(), OAuthMultiloginResponseStatus::kOk);
+  EXPECT_THAT(result.device_bound_sessions(), IsEmpty());
+
+  histogram_tester.ExpectTotalCount(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.UnknownDomain",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.ParsingError",
+      /*expected_count=*/0);
+}
+
+TEST(OAuthMultiloginResultTest, ReuseExistingDeviceBoundSession) {
+  base::HistogramTester histogram_tester;
+
+  const std::string raw_data =
+      R"()]}'
+        {
+          "status": "OK",
+          "cookies":[
+            {
+              "name": "__Secure-1PSIDTS",
+              "value": "secure-1p-sidts-value",
+              "domain": ".google.com",
+              "path": "/",
+              "isSecure": true,
+              "isHttpOnly": true,
+              "maxAge": 31536000,
+              "priority": "HIGH",
+              "sameParty": "1"
+            }
+          ],
+          "token_binding_directed_response": {},
+          "device_bound_session_info": [
+            {
+              "domain": "GOOGLE_COM",
+              "is_device_bound": true
+            }
+          ]
+        }
+      )";
+  const OAuthMultiloginResult result(
+      raw_data, net::HTTP_OK,
+      /*cookie_decryptor=*/
+      base::BindLambdaForTesting([](std::string_view encrypted_cookie) {
+        return base::StrCat({encrypted_cookie, ".decrypted"});
+      }));
+  ASSERT_EQ(result.status(), OAuthMultiloginResponseStatus::kOk);
+  EXPECT_THAT(result.device_bound_sessions(),
+              UnorderedElementsAre(
+                  AllOf(Field(&DeviceBoundSession::is_device_bound, true),
+                        Field(&DeviceBoundSession::domain, kGoogle),
+                        Field(&DeviceBoundSession::register_session_payload,
+                              Eq(std::nullopt)))));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.UnknownDomain",
+      /*sample=*/0,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.ParsingError",
+      OAuthMultiloginDeviceBoundSessionParsingError::kNone,
+      /*expected_bucket_count=*/1);
+}
+
+TEST(OAuthMultiloginResultTest, RegisterNewDeviceBoundSession) {
+  base::HistogramTester histogram_tester;
+
+  const std::string raw_data =
+      R"()]}'
+        {
+          "status": "OK",
+          "cookies":[
+            {
+              "name": "__Secure-1PSIDTS",
+              "value": "secure-1p-sidts-value",
+              "domain": ".google.com",
+              "path": "/",
+              "isSecure": true,
+              "isHttpOnly": true,
+              "maxAge": 31536000,
+              "priority": "HIGH",
+              "sameParty": "1"
+            },
+            {
+              "name": "__Secure-Google-Cookie",
+              "value": "secure-google-cookie-value",
+              "domain": ".google.com",
+              "path": "/",
+              "isSecure": true,
+              "isHttpOnly": true,
+              "maxAge": 31536000,
+              "priority": "HIGH",
+              "sameParty": "1"
+            }
+          ],
+          "token_binding_directed_response": {},
+          "device_bound_session_info": [
+            {
+              "domain": "GOOGLE_COM",
+              "is_device_bound": true,
+              "register_session_payload": {
+                "session_identifier": "id",
+                "credentials": [
+                  {
+                    "type": "cookie",
+                    "name": "__Secure-1PSIDTS",
+                    "scope": {
+                      "domain": ".google.com",
+                      "path": "/"
+                    }
+                  }
+                ],
+                "refresh_url": "/RotateBoundCookies"
+              }
+            },
+            {
+              "domain": "GOOGLE_COM",
+              "is_device_bound": true
+            }
+          ]
+        }
+      )";
+  const OAuthMultiloginResult result(
+      raw_data, net::HTTP_OK,
+      /*cookie_decryptor=*/
+      base::BindLambdaForTesting([](std::string_view encrypted_cookie) {
+        return base::StrCat({encrypted_cookie, ".decrypted"});
+      }));
+  ASSERT_EQ(result.status(), OAuthMultiloginResponseStatus::kOk);
+  EXPECT_THAT(
+      result.device_bound_sessions(),
+      UnorderedElementsAre(
+          AllOf(
+              Field(&DeviceBoundSession::is_device_bound, true),
+              Field(&DeviceBoundSession::domain, kGoogle),
+              Field(&DeviceBoundSession::register_session_payload,
+                    Optional(AllOf(
+                        Field(&RegisterBoundSessionPayload::session_id, "id"),
+                        Field(&RegisterBoundSessionPayload::refresh_url,
+                              "/RotateBoundCookies"),
+                        Field(&RegisterBoundSessionPayload::credentials,
+                              UnorderedElementsAre(AllOf(
+                                  Field(&Credential::name, "__Secure-1PSIDTS"),
+                                  Field(&Credential::scope,
+                                        AllOf(Field(&Scope::domain,
+                                                    ".google.com"),
+                                              Field(&Scope::path, "/")))))))))),
+          AllOf(Field(&DeviceBoundSession::is_device_bound, true),
+                Field(&DeviceBoundSession::domain, kGoogle))));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.UnknownDomain",
+      /*sample=*/0,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.ParsingError",
+      OAuthMultiloginDeviceBoundSessionParsingError::kNone,
+      /*expected_bucket_count=*/1);
+}
+
+TEST(OAuthMultiloginResultTest, GetDeviceBoundSessionsToRegister) {
+  const std::string raw_data =
+      R"()]}'
+        {
+          "status": "OK",
+          "cookies":[],
+          "device_bound_session_info": [
+            {
+              "domain": "GOOGLE_COM",
+              "is_device_bound": true,
+              "register_session_payload": {
+                "session_identifier": "id",
+                "credentials": [
+                  {
+                    "type": "cookie",
+                    "name": "__Secure-1PSIDTS",
+                    "scope": {
+                      "domain": ".google.com",
+                      "path": "/"
+                    }
+                  }
+                ],
+                "refresh_url": "/RotateBoundCookies"
+              }
+            },
+            {
+              "domain": "GOOGLE_COM",
+              "is_device_bound": true
+            },
+            {
+              "domain": "GOOGLE_COM",
+              "is_device_bound": false
+            }
+          ]
+        }
+      )";
+
+  const OAuthMultiloginResult result(raw_data, net::HTTP_OK);
+
+  ASSERT_EQ(result.status(), OAuthMultiloginResponseStatus::kOk);
+  // Not bound sessions are filtered out during parsing.
+  EXPECT_THAT(result.device_bound_sessions(), SizeIs(2));
+  EXPECT_THAT(
+      result.GetDeviceBoundSessionsToRegister(),
+      UnorderedElementsAre(Pointee(Field(
+          &DeviceBoundSession::register_session_payload,
+          Optional(Field(&RegisterBoundSessionPayload::session_id, "id"))))));
+}
+
+TEST(OAuthMultiloginResultTest, UnknownDeviceBoundSessionDomain) {
+  base::HistogramTester histogram_tester;
+
+  const std::string raw_data =
+      R"()]}'
+        {
+          "status": "OK",
+          "cookies":[
+            {
+              "name": "unknown-cookie",
+              "value": "unknown-cookie-value",
+              "domain": ".unknown.com",
+              "path": "/",
+              "isSecure": true,
+              "isHttpOnly": true,
+              "maxAge": 31536000,
+              "priority": "HIGH",
+              "sameParty": "1"
+            }
+          ],
+          "token_binding_directed_response": {},
+          "device_bound_session_info": [
+            {
+              "domain": "UNKNOWN_COM",
+              "is_device_bound": true
+            },
+            {
+              "domain": "GOOGLE_COM",
+              "is_device_bound": true
+            }
+          ]
+        }
+      )";
+  const OAuthMultiloginResult result(
+      raw_data, net::HTTP_OK,
+      /*cookie_decryptor=*/
+      base::BindLambdaForTesting([](std::string_view encrypted_cookie) {
+        return base::StrCat({encrypted_cookie, ".decrypted"});
+      }));
+  ASSERT_EQ(result.status(), OAuthMultiloginResponseStatus::kOk);
+  EXPECT_THAT(result.device_bound_sessions(),
+              UnorderedElementsAre(
+                  AllOf(Field(&DeviceBoundSession::is_device_bound, true),
+                        Field(&DeviceBoundSession::domain, kGoogle))));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.UnknownDomain",
+      /*sample=*/1,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.ParsingError",
+      OAuthMultiloginDeviceBoundSessionParsingError::kNone,
+      /*expected_bucket_count=*/1);
+}
+
+TEST(OAuthMultiloginResultTest, IsNotDeviceBoundSession) {
+  base::HistogramTester histogram_tester;
+
+  const std::string raw_data =
+      R"()]}'
+        {
+          "status": "OK",
+          "cookies":[
+            {
+              "name": "__Secure-1PSIDTS",
+              "value": "secure-1p-sidts-value",
+              "domain": ".google.com",
+              "path": "/",
+              "isSecure": true,
+              "isHttpOnly": true,
+              "maxAge": 31536000,
+              "priority": "HIGH",
+              "sameParty": "1"
+            }
+          ],
+          "token_binding_directed_response": {},
+          "device_bound_session_info": [
+            {
+              "domain": "GOOGLE_COM",
+              "is_device_bound": false
+            }
+          ]
+        }
+      )";
+  const OAuthMultiloginResult result(
+      raw_data, net::HTTP_OK,
+      /*cookie_decryptor=*/
+      base::BindLambdaForTesting([](std::string_view encrypted_cookie) {
+        return base::StrCat({encrypted_cookie, ".decrypted"});
+      }));
+  ASSERT_EQ(result.status(), OAuthMultiloginResponseStatus::kOk);
+  EXPECT_THAT(result.device_bound_sessions(), IsEmpty());
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.UnknownDomain",
+      /*sample=*/0,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.ParsingError",
+      OAuthMultiloginDeviceBoundSessionParsingError::kNone,
+      /*expected_bucket_count=*/1);
+}
+
+TEST(OAuthMultiloginResultTest, RegisterNewDeviceBoundSessionInvalidPayload) {
+  base::HistogramTester histogram_tester;
+
+  // The payload is invalid because it's missing the `session_identifier` field.
+  const std::string raw_data =
+      R"()]}'
+        {
+          "status": "OK",
+          "cookies":[
+            {
+              "name": "__Secure-1PSIDTS",
+              "value": "secure-1p-sidts-value",
+              "domain": ".google.com",
+              "path": "/",
+              "isSecure": true,
+              "isHttpOnly": true,
+              "maxAge": 31536000,
+              "priority": "HIGH",
+              "sameParty": "1"
+            }
+          ],
+          "token_binding_directed_response": {},
+          "device_bound_session_info": [
+            {
+              "domain": "GOOGLE_COM",
+              "is_device_bound": true,
+              "register_session_payload": {
+                "credentials": [
+                  {
+                    "type": "cookie",
+                    "name": "__Secure-1PSIDTS",
+                    "scope": {
+                      "domain": ".google.com",
+                      "path": "/"
+                    }
+                  }
+                ],
+                "refresh_url": "/RotateBoundCookies"
+              }
+            }
+          ]
+        }
+      )";
+  const OAuthMultiloginResult result(
+      raw_data, net::HTTP_OK,
+      /*cookie_decryptor=*/
+      base::BindLambdaForTesting([](std::string_view encrypted_cookie) {
+        return base::StrCat({encrypted_cookie, ".decrypted"});
+      }));
+  ASSERT_EQ(result.status(), OAuthMultiloginResponseStatus::kOk);
+  EXPECT_THAT(result.device_bound_sessions(), IsEmpty());
+
+  histogram_tester.ExpectTotalCount(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.UnknownDomain",
+      /*expected_count=*/0);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.ParsingError",
+      OAuthMultiloginDeviceBoundSessionParsingError::
+          kRegisterPayloadRequiredFieldMissing,
+      /*expected_bucket_count=*/1);
+}
+
+TEST(OAuthMultiloginResultTest, RegisterNewStandardDeviceBoundSession) {
+  base::HistogramTester histogram_tester;
+
+  const std::string raw_data =
+      R"()]}'
+        {
+          "status": "OK",
+          "cookies":[
+            {
+              "name": "__Secure-1PSIDTS",
+              "value": "secure-1p-sidts-value",
+              "domain": ".google.com",
+              "path": "/",
+              "isSecure": true,
+              "isHttpOnly": true,
+              "maxAge": 31536000,
+              "priority": "HIGH",
+              "sameParty": "1"
+            },
+            {
+              "name": "__Secure-Google-Cookie",
+              "value": "secure-google-cookie-value",
+              "domain": ".google.com",
+              "path": "/",
+              "isSecure": true,
+              "isHttpOnly": true,
+              "maxAge": 31536000,
+              "priority": "HIGH",
+              "sameParty": "1"
+            }
+          ],
+          "token_binding_directed_response": {},
+          "device_bound_session_info": [
+            {
+              "domain": "GOOGLE_COM",
+              "is_device_bound": true,
+              "register_session_payload": {
+                "session_identifier": "id",
+                "refresh_url": "/RotateBoundCookies",
+                "scope": {
+                  "origin": "https://google.com",
+                  "include_site": true,
+                  "scope_specification" : [
+                    {
+                      "type": "include",
+                      "domain": ".google.com",
+                      "path": "/"
+                    }
+                  ]
+                },
+                "credentials": [{
+                  "type": "cookie",
+                  "name": "__Secure-1PSIDTS",
+                  "attributes": "Domain=.google.com; Path=/; Secure"
+                }]
+              }
+            }
+          ]
+        }
+      )";
+  const OAuthMultiloginResult result(
+      raw_data, net::HTTP_OK,
+      /*cookie_decryptor=*/
+      base::BindLambdaForTesting([](std::string_view encrypted_cookie) {
+        return base::StrCat({encrypted_cookie, ".decrypted"});
+      }),
+      /*standard_device_bound_session_credentials=*/true);
+  ASSERT_EQ(result.status(), OAuthMultiloginResponseStatus::kOk);
+  EXPECT_THAT(
+      result.device_bound_sessions(),
+      UnorderedElementsAre(AllOf(
+          Field(&DeviceBoundSession::is_device_bound, true),
+          Field(&DeviceBoundSession::domain, kGoogle),
+          Field(
+              &DeviceBoundSession::register_session_payload,
+              Optional(AllOf(
+                  Field(&RegisterBoundSessionPayload::session_id, "id"),
+                  Field(&RegisterBoundSessionPayload::refresh_url,
+                        "/RotateBoundCookies"),
+                  Field(
+                      &RegisterBoundSessionPayload::scope,
+                      AllOf(
+                          Field(&SessionScope::origin, "https://google.com"),
+                          Field(&SessionScope::include_site, true),
+                          Field(&SessionScope::specifications,
+                                UnorderedElementsAre(AllOf(
+                                    Field(&Scope::type, Scope::Type::kInclude),
+                                    Field(&Scope::domain, ".google.com"),
+                                    Field(&Scope::path, "/")))))),
+                  Field(
+                      &RegisterBoundSessionPayload::credentials,
+                      UnorderedElementsAre(AllOf(
+                          Field(&Credential::name, "__Secure-1PSIDTS"),
+                          Field(&Credential::type, "cookie"),
+                          Field(&Credential::attributes,
+                                "Domain=.google.com; Path=/; Secure"))))))))));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.UnknownDomain",
+      /*sample=*/0,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.ParsingError",
+      OAuthMultiloginDeviceBoundSessionParsingError::kNone,
+      /*expected_bucket_count=*/1);
+}
+
+TEST(OAuthMultiloginResultTest, GetStandardDeviceBoundSessionsToRegister) {
+  const std::string raw_data =
+      R"()]}'
+        {
+          "status": "OK",
+          "cookies":[],
+          "device_bound_session_info": [
+            {
+              "domain": "GOOGLE_COM",
+              "is_device_bound": true,
+              "register_session_payload": {
+                "session_identifier": "id",
+                "refresh_url": "/RotateBoundCookies",
+                "scope": {
+                  "origin": "https://google.com",
+                  "include_site": true,
+                  "scope_specification" : [
+                    {
+                      "type": "include",
+                      "domain": ".google.com",
+                      "path": "/"
+                    }
+                  ]
+                },
+                "credentials": [{
+                  "type": "cookie",
+                  "name": "__Secure-1PSIDTS",
+                  "attributes": "Domain=.google.com; Path=/; Secure"
+                }]
+              }
+            },
+            {
+              "domain": "GOOGLE_COM",
+              "is_device_bound": true
+            },
+            {
+              "domain": "GOOGLE_COM",
+              "is_device_bound": false
+            }
+          ]
+        }
+      )";
+
+  const OAuthMultiloginResult result(
+      raw_data, net::HTTP_OK,
+      /*cookie_decryptor=*/base::NullCallback(),
+      /*standard_device_bound_session_credentials=*/true);
+
+  ASSERT_EQ(result.status(), OAuthMultiloginResponseStatus::kOk);
+  // Not bound sessions are filtered out during parsing.
+  EXPECT_THAT(result.device_bound_sessions(), SizeIs(2));
+  EXPECT_THAT(
+      result.GetDeviceBoundSessionsToRegister(),
+      UnorderedElementsAre(Pointee(Field(
+          &DeviceBoundSession::register_session_payload,
+          Optional(Field(&RegisterBoundSessionPayload::session_id, "id"))))));
+}
+
+TEST(OAuthMultiloginResultTest,
+     RegisterNewStandardDeviceBoundSessionInvalidPayload) {
+  base::HistogramTester histogram_tester;
+
+  // The payload is invalid because it has the `scope::scope_specification`
+  // field malformed.
+  const std::string raw_data =
+      R"()]}'
+        {
+          "status": "OK",
+          "cookies":[
+            {
+              "name": "__Secure-1PSIDTS",
+              "value": "secure-1p-sidts-value",
+              "domain": ".google.com",
+              "path": "/",
+              "isSecure": true,
+              "isHttpOnly": true,
+              "maxAge": 31536000,
+              "priority": "HIGH",
+              "sameParty": "1"
+            },
+            {
+              "name": "__Secure-Google-Cookie",
+              "value": "secure-google-cookie-value",
+              "domain": ".google.com",
+              "path": "/",
+              "isSecure": true,
+              "isHttpOnly": true,
+              "maxAge": 31536000,
+              "priority": "HIGH",
+              "sameParty": "1"
+            }
+          ],
+          "token_binding_directed_response": {},
+          "device_bound_session_info": [
+            {
+              "domain": "GOOGLE_COM",
+              "is_device_bound": true,
+              "register_session_payload": {
+                "session_identifier": "id",
+                "refresh_url": "/RotateBoundCookies",
+                "scope": {
+                  "origin": "https://google.com",
+                  "include_site": true,
+                  "scope_specification" : [ "malformed" ]
+                },
+                "credentials": [{
+                  "type": "cookie",
+                  "name": "__Secure-1PSIDTS",
+                  "attributes": "Domain=.google.com; Path=/; Secure"
+                }]
+              }
+            }
+          ]
+        }
+      )";
+  const OAuthMultiloginResult result(
+      raw_data, net::HTTP_OK,
+      /*cookie_decryptor=*/
+      base::BindLambdaForTesting([](std::string_view encrypted_cookie) {
+        return base::StrCat({encrypted_cookie, ".decrypted"});
+      }),
+      /*standard_device_bound_session_credentials=*/true);
+  ASSERT_EQ(result.status(), OAuthMultiloginResponseStatus::kOk);
+  EXPECT_THAT(result.device_bound_sessions(), IsEmpty());
+
+  histogram_tester.ExpectTotalCount(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.UnknownDomain",
+      /*expected_count=*/0);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.OAuthMultilogin.ParsingError",
+      OAuthMultiloginDeviceBoundSessionParsingError::
+          kRegisterPayloadMalformedSessionScopeSpecification,
+      /*expected_bucket_count=*/1);
 }

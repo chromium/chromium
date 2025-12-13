@@ -91,9 +91,12 @@ void MacScrollbarImplV2::MouseDidExit() {
     overlay_animator_->MouseDidExit();
 }
 
-void MacScrollbarImplV2::DidScroll() {
-  if (overlay_animator_)
+bool MacScrollbarImplV2::DidScroll() {
+  if (overlay_animator_) {
     overlay_animator_->DidScroll();
+    return true;
+  }
+  return false;
 }
 
 float MacScrollbarImplV2::GetKnobAlpha() {
@@ -187,6 +190,18 @@ void MacScrollbarAnimatorV2::DidChangeUserVisibleScrollOffset(
     horizontal_scrollbar_->DidScroll();
   if (vertical_scrollbar_ && new_offset.y() != 0)
     vertical_scrollbar_->DidScroll();
+}
+
+bool MacScrollbarAnimatorV2::FadeInScrollbarIfExists(bool horizontal,
+                                                     bool vertical) {
+  bool did_scroll = false;
+  if (horizontal && horizontal_scrollbar_) {
+    did_scroll |= horizontal_scrollbar_->DidScroll();
+  }
+  if (vertical && vertical_scrollbar_) {
+    did_scroll |= vertical_scrollbar_->DidScroll();
+  }
+  return did_scroll;
 }
 
 void MacScrollbarAnimatorV2::Dispose() {

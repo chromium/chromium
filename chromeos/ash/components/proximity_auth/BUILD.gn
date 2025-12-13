@@ -55,7 +55,7 @@ static_library("proximity_auth") {
     "//chromeos/ash/services/secure_channel/public/mojom",
     "//chromeos/dbus/power",
     "//components/account_id",
-    "//components/pref_registry:pref_registry",
+    "//components/pref_registry",
     "//components/prefs",
     "//device/bluetooth",
     "//net",

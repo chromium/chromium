@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/os_feedback/chrome_os_feedback_delegate.h"
 
 #include <optional>
@@ -20,6 +15,7 @@
 #include "ash/webui/os_feedback_ui/backend/histogram_util.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -29,20 +25,17 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/feedback/feedback_uploader_chrome.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
 #include "chrome/browser/ui/webui/ash/os_feedback_dialog/os_feedback_dialog.h"
 #include "chrome/common/webui_url_constants.h"
@@ -51,6 +44,7 @@
 #include "components/feedback/feedback_common.h"
 #include "components/feedback/feedback_data.h"
 #include "components/feedback/feedback_report.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -145,12 +139,18 @@ ChromeOsFeedbackDelegate::ChromeOsFeedbackDelegate(
     Profile* profile,
     scoped_refptr<extensions::FeedbackService> feedback_service)
     : profile_(profile), feedback_service_(feedback_service) {
-  Browser* browser = BrowserList::GetInstance()->GetLastActive();
-  if (browser) {
-    // Save the last active page url before opening the feedback tool.
-    page_url_ = chrome::GetTargetTabUrl(
-        browser->session_id(), browser->tab_strip_model()->active_index());
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetLastUsedBrowser();
+  if (!browser) {
+    return;
   }
+
+  auto* web_contents = (browser->GetType() == BrowserType::kDevTools)
+                           ? browser->GetInspectedWebContents()
+                           : browser->GetActiveWebContents();
+
+  // Save the last active page url before opening the feedback tool.
+  page_url_ = web_contents ? web_contents->GetLastCommittedURL() : GURL();
 }
 
 // Static.
@@ -243,7 +243,7 @@ void ChromeOsFeedbackDelegate::GetScreenshotPng(
   scoped_refptr<base::RefCountedMemory> png_data = GetScreenshotData();
   if (png_data && png_data.get()) {
     std::vector<uint8_t> data(png_data->data(),
-                              png_data->data() + png_data->size());
+                              UNSAFE_TODO(png_data->data() + png_data->size()));
     std::move(callback).Run(data);
   } else {
     std::vector<uint8_t> empty_data;
@@ -288,9 +288,6 @@ void ChromeOsFeedbackDelegate::SendReport(
                           feedback_context->extra_diagnostics.value());
   }
   feedback_data->set_trace_id(report->feedback_context->trace_id);
-  feedback_data->set_from_assistant(feedback_context->from_assistant);
-  feedback_data->set_assistant_debug_info_allowed(
-      feedback_context->assistant_debug_info_allowed);
 
   if (feedback_context->category_tag.has_value()) {
     feedback_data->set_category_tag(feedback_context->category_tag.value());

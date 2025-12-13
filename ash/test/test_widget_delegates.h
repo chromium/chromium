@@ -6,6 +6,13 @@
 #define ASH_TEST_TEST_WIDGET_DELEGATES_H_
 
 #include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/test/test_widget_builder.h"
+
+namespace views {
+
+class WidgetDelegate;
+
+}  // namespace views
 
 namespace ash {
 
@@ -25,6 +32,15 @@ class CenteredBubbleDialogModelHost : public views::BubbleDialogModelHost {
 
   gfx::Size size_;
 };
+
+// Creates a test widget delegate that
+// 1) makes the window resizable, maximizable and minimizale.
+// 2) creates an ash's window frame.
+views::WidgetDelegate* CreateTestWidgetBuilderDelegate();
+
+// Creates a test widget builder with a above delegate.
+views::test::TestWidgetBuilder CreateWidgetBuilderWithDelegate(
+    views::test::WidgetBuilderParams params = {});
 
 }  // namespace ash
 

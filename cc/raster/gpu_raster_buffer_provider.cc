@@ -46,17 +46,9 @@ namespace cc {
 GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     GpuRasterBufferProvider* client,
     const ResourcePool::InUsePoolResource& in_use_resource,
-    bool resource_has_previous_content,
-    bool depends_on_at_raster_decodes,
-    bool depends_on_hardware_accelerated_jpeg_candidates,
-    bool depends_on_hardware_accelerated_webp_candidates)
+    bool resource_has_previous_content)
     : client_(client),
-      resource_has_previous_content_(resource_has_previous_content),
-      depends_on_at_raster_decodes_(depends_on_at_raster_decodes),
-      depends_on_hardware_accelerated_jpeg_candidates_(
-          depends_on_hardware_accelerated_jpeg_candidates),
-      depends_on_hardware_accelerated_webp_candidates_(
-          depends_on_hardware_accelerated_webp_candidates) {
+      resource_has_previous_content_(resource_has_previous_content) {
   if (!in_use_resource.backing()) {
     auto backing = std::make_unique<ResourcePool::Backing>(
         in_use_resource.size(), in_use_resource.format(),
@@ -74,16 +66,6 @@ GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     // raster.
     backing_->can_access_shared_image_on_compositor_thread = false;
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Only do this in ChromeOS because:
-  //   1) We will use this timestamp to measure raster scheduling delay and we
-  //      only need to collect that data to assess the impact of hardware
-  //      acceleration of image decodes which works only on ChromeOS.
-  //   2) We use CLOCK_MONOTONIC in that OS to get timestamps, so we can assert
-  //      certain assumptions.
-  creation_time_ = base::TimeTicks::Now();
-#endif
 }
 
 GpuRasterBufferProvider::RasterBufferImpl::~RasterBufferImpl() {
@@ -154,17 +136,11 @@ GpuRasterBufferProvider::~GpuRasterBufferProvider() = default;
 std::unique_ptr<RasterBuffer> GpuRasterBufferProvider::AcquireBufferForRaster(
     const ResourcePool::InUsePoolResource& resource,
     uint64_t resource_content_id,
-    uint64_t previous_content_id,
-    bool depends_on_at_raster_decodes,
-    bool depends_on_hardware_accelerated_jpeg_candidates,
-    bool depends_on_hardware_accelerated_webp_candidates) {
+    uint64_t previous_content_id) {
   bool resource_has_previous_content =
       resource_content_id && resource_content_id == previous_content_id;
-  return std::make_unique<RasterBufferImpl>(
-      this, resource, resource_has_previous_content,
-      depends_on_at_raster_decodes,
-      depends_on_hardware_accelerated_jpeg_candidates,
-      depends_on_hardware_accelerated_webp_candidates);
+  return std::make_unique<RasterBufferImpl>(this, resource,
+                                            resource_has_previous_content);
 }
 
 void GpuRasterBufferProvider::Flush() {
@@ -226,18 +202,11 @@ void GpuRasterBufferProvider::RasterBufferImpl::PlaybackOnWorkerThread(
     const RasterSource::PlaybackSettings& playback_settings,
     const GURL& url) {
   RasterQuery query;
-  query.depends_on_hardware_accelerated_jpeg_candidates =
-      depends_on_hardware_accelerated_jpeg_candidates_;
-  query.depends_on_hardware_accelerated_webp_candidates =
-      depends_on_hardware_accelerated_webp_candidates_;
   PlaybackOnWorkerThreadInternal(raster_source, raster_full_rect,
                                  raster_dirty_rect, new_content_id, transform,
                                  playback_settings, url, &query);
 
   if (query.raster_duration_query_id) {
-    if (query.raster_start_query_id)
-      query.raster_buffer_creation_time = creation_time_;
-
     // Note that it is important to scope the raster context lock to
     // PlaybackOnWorkerThreadInternal and release it before calling this
     // function to avoid a deadlock in
@@ -273,26 +242,6 @@ void GpuRasterBufferProvider::RasterBufferImpl::PlaybackOnWorkerThreadInternal(
       << "Why are we rastering a tile that's not dirty?";
 
   if (measure_raster_metric) {
-#if BUILDFLAG(IS_CHROMEOS)
-    // Use a query to detect when the GPU side is ready to start issuing raster
-    // work to the driver. We will use the resulting timestamp to measure raster
-    // scheduling delay. We only care about this in ChromeOS because we will
-    // use this timestamp to measure raster scheduling delay and we only need to
-    // collect that data to assess the impact of hardware acceleration of image
-    // decodes which work only in ChromeOS. Furthermore, we don't count raster
-    // work that depends on at-raster image decodes. This is because we want the
-    // delay to always include image decoding and uploading time, and at-raster
-    // decodes should be relatively rare.
-    if (!depends_on_at_raster_decodes_) {
-      ri->GenQueriesEXT(1, &query->raster_start_query_id);
-      DCHECK_GT(query->raster_start_query_id, 0u);
-      ri->QueryCounterEXT(query->raster_start_query_id,
-                          GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM);
-    }
-#else
-    std::ignore = depends_on_at_raster_decodes_;
-#endif
-
     // Use a query to time the GPU side work for rasterizing this tile.
     ri->GenQueriesEXT(1, &query->raster_duration_query_id);
     DCHECK_GT(query->raster_duration_query_id, 0u);
@@ -330,8 +279,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
     // This SharedImage will serve as the destination of the raster defined by
     // `raster_source` before being sent off to the display compositor.
     gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                     gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+                                     gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
     if (client_->tile_overlay_candidate_) {
       flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     } else if (client_->is_using_raw_draw_) {

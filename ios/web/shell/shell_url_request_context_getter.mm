@@ -56,7 +56,8 @@ net::URLRequestContext* ShellURLRequestContextGetter::GetURLRequestContext() {
         web::GetWebClient()->GetUserAgent(web::UserAgentType::MOBILE));
     builder.set_proxy_resolution_service(
         net::ConfiguredProxyResolutionService::CreateUsingSystemProxyResolver(
-            std::move(proxy_config_service_), net::NetLog::Get(),
+            std::move(proxy_config_service_),
+            /*host_resolver_for_override_rules=*/nullptr, net::NetLog::Get(),
             /*quick_check_enabled=*/true));
     net::URLRequestContextBuilder::HttpCacheParams cache_params;
     cache_params.type = net::URLRequestContextBuilder::HttpCacheParams::DISK;

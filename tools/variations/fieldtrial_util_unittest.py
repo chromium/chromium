@@ -278,7 +278,7 @@ class FieldTrialUtilUnittest(unittest.TestCase):
 
     # For each flag, we expect alphabetical ordering of the pieces merged as
     # they are sorted first.
-    self.assertEquals(args, [
+    self.assertEqual(args, [
         '--foo',
         '--bar',
         '--disable-features=Feature1,Feature2,Feature3',

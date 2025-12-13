@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -27,6 +28,8 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.Highl
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.url.GURL;
+
+import java.util.function.Supplier;
 
 /** Controls showing IPH for Custom Tabs history. */
 @NullMarked
@@ -72,9 +75,10 @@ public class CustomTabHistoryIphController {
     }
 
     public void notifyUserEngaged() {
-        if (!mProfileSupplier.hasValue()) return;
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) return;
 
-        var tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
+        var tracker = TrackerFactory.getTrackerForProfile(profile);
         tracker.addOnInitializedCallback(
                 success -> tracker.notifyEvent(EventConstants.CCT_HISTORY_MENU_ITEM_CLICKED));
     }
@@ -84,7 +88,9 @@ public class CustomTabHistoryIphController {
         if (mUserEducationHelper == null) {
             mUserEducationHelper =
                     new UserEducationHelper(
-                            mActivity, mProfileSupplier, new Handler(Looper.getMainLooper()));
+                            mActivity,
+                            (Supplier<@Nullable Profile>) mProfileSupplier,
+                            new Handler(Looper.getMainLooper()));
         }
 
         View ctOverflowMenu = mActivity.findViewById(R.id.menu_button_wrapper);
@@ -104,9 +110,10 @@ public class CustomTabHistoryIphController {
     private boolean shouldShowIph() {
         if (!ChromeFeatureList.sAppSpecificHistory.isEnabled()) return false;
 
-        if (mProfileSupplier.get().isOffTheRecord()) return false;
+        Profile profile = assumeNonNull(mProfileSupplier.get());
+        if (profile.isOffTheRecord()) return false;
 
-        var tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
+        var tracker = TrackerFactory.getTrackerForProfile(profile);
         return (tracker.isInitialized()
                 && tracker.wouldTriggerHelpUi(FeatureConstants.CCT_HISTORY_FEATURE));
     }

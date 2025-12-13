@@ -21,10 +21,10 @@
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/clipboard/clipboard_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
+#include "chromeos/ash/experiences/clipboard/clipboard_util.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/mime_util.h"
@@ -131,20 +131,22 @@ void HoldingSpaceClientImpl::CopyImageToClipboard(const HoldingSpaceItem& item,
   }
 
   // Reading and decoding of the image file needs to be done on an I/O thread.
-  base::ThreadPool::PostTaskAndReply(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&clipboard_util::ReadFileAndCopyToClipboardLocal,
-                     item.file().file_path),
-      base::BindOnce(
-          [](SuccessCallback callback) {
-            // We don't currently receive a signal regarding whether image
-            // decoding was successful or not. For the time being, assume
-            // success when the task runs until proven otherwise.
-            std::move(callback).Run(/*success=*/true);
-          },
-          std::move(callback)));
+  clipboard_util::ReadFileAndCopyToClipboard(
+      item.file().file_path,
+      base::BindOnce([](clipboard_util::ReadFileAndCopyToClipboardResult result)
+                         -> bool {
+        using Result = clipboard_util::ReadFileAndCopyToClipboardResult;
+        switch (result) {
+          case Result::kSuccess:
+            return true;
+          case Result::kFailedToReadFile:
+            LOG(ERROR) << "Failed to read the screenshot file";
+            return false;
+          case Result::kFailedToDecodeImage:
+            LOG(ERROR) << "Failed to decode the screenshot image";
+            return false;
+        }
+      }).Then(std::move(callback)));
 }
 
 base::FilePath HoldingSpaceClientImpl::CrackFileSystemUrl(

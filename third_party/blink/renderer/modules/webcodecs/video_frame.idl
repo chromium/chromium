@@ -35,11 +35,9 @@ typedef ([AllowShared] ArrayBuffer or [AllowShared] ArrayBufferView) AllowShared
   readonly attribute DOMRectReadOnly? visibleRect;
 
   // Rotation to apply when rendering, in degrees clockwise.
-  [RuntimeEnabled=WebCodecsOrientation]
   readonly attribute unsigned long rotation;
 
   // Whether the rendering is flipped horizontally after rotation.
-  [RuntimeEnabled=WebCodecsOrientation]
   readonly attribute boolean flip;
 
   // Display aspect ratio of visible rect, after accounting for rotation.
@@ -52,7 +50,7 @@ typedef ([AllowShared] ArrayBuffer or [AllowShared] ArrayBufferView) AllowShared
   // The VideoFrameMetadata associated with this frame. Possible members are
   // recorded in https://www.w3.org/TR/webcodecs-video-frame-metadata-registry/.
   // By design, all VideoFrameMetadata properties are serializable.
-  [RaisesException, RuntimeEnabled="VideoFrameMetadataBackgroundBlur"]
+  [RaisesException, RuntimeEnabled="VideoFrameMetadataRtpTimestamp"]
   VideoFrameMetadata metadata();
 
   // Returns the minimum size (in bytes) of a buffer that copyTo() could

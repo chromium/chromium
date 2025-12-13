@@ -24,7 +24,6 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -75,6 +74,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/test/kiosk_app_logged_in_browser_test_mixin.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -242,8 +242,7 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
     params.command_line = command_line;
     params.current_directory = test_data_dir_;
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-        ->BrowserAppLauncher()
-        ->LaunchAppWithParamsForTesting(std::move(params));
+        ->LaunchAppWithParams(std::move(params));
 
     if (!catcher.GetNextResult()) {
       message_ = catcher.message();
@@ -339,8 +338,19 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AppWithContextMenu) {
 }
 
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, InstalledAppWithContextMenu) {
+  const Extension* extension = InstallPlatformApp("context_menu");
+  ASSERT_TRUE(extension);
+#if BUILDFLAG(IS_CHROMEOS)
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      extension->id());
+#endif
+
   ExtensionTestMessageListener launched_listener("Launched");
-  InstallAndLaunchPlatformApp("context_menu");
+  {
+    content::CreateAndLoadWebContentsObserver app_loaded_observer;
+    LaunchPlatformApp(extension);
+    app_loaded_observer.Wait();
+  }
 
   // Wait for the extension to tell us it's initialized its context menus and
   // launched a window.
@@ -922,13 +932,16 @@ void MAYBE_PlatformAppDevToolsBrowserTest::RunTestWithDevTools(const char* name,
     CloseAppWindow(window);
     ASSERT_FALSE(GetFirstAppWindow());
 
+#if BUILDFLAG(IS_CHROMEOS)
+    apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+        extension->id());
+#endif
+
     // Relaunch the app and get a new AppWindow.
     content::CreateAndLoadWebContentsObserver app_loaded_observer(
         /*num_expected_contents=*/2);
-
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-        ->BrowserAppLauncher()
-        ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+        ->LaunchAppWithParams(apps::AppLaunchParams(
             extension->id(), apps::LaunchContainer::kLaunchContainerNone,
             WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
     app_loaded_observer.Wait();
@@ -1116,8 +1129,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 
   ExtensionTestMessageListener launched_listener("Launched");
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+      ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), apps::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
 
@@ -1140,8 +1152,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, PRE_ComponentAppBackgroundPage) {
 
   ExtensionTestMessageListener launched_listener("Launched");
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+      ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), apps::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
 
@@ -1177,8 +1188,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, ComponentAppBackgroundPage) {
 
   ExtensionTestMessageListener launched_listener("Launched");
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+      ->LaunchAppWithParams(apps::AppLaunchParams(
           extension->id(), apps::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
 
@@ -1202,8 +1212,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   {
     ExtensionTestMessageListener launched_listener("Launched");
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-        ->BrowserAppLauncher()
-        ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+        ->LaunchAppWithParams(apps::AppLaunchParams(
             extension->id(), apps::LaunchContainer::kLaunchContainerNone,
             WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
     ASSERT_TRUE(launched_listener.WaitUntilSatisfied());
@@ -1426,6 +1435,10 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AppsIgnoreDefaultZoom) {
   // that would have been delivered to the app renderer and back for zoom have
   // made it through.
   ExtensionTestMessageListener launched_listener("Launched");
+#if BUILDFLAG(IS_CHROMEOS)
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      extension->id());
+#endif
   LaunchPlatformApp(extension);
   EXPECT_TRUE(launched_listener.WaitUntilSatisfied());
 

@@ -19,6 +19,7 @@ typedef struct AInputTransferToken AInputTransferToken;
 typedef struct AInputReceiver AInputReceiver;
 typedef bool (*AInputReceiver_onMotionEvent)(void* context,
                                              AInputEvent* motionEvent);
+typedef bool (*AInputReceiver_onKeyEvent)(void* context, AInputEvent* keyEvent);
 
 using pAInputTransferToken_fromJava = AInputTransferToken* (*)(JNIEnv*,
                                                                jobject);
@@ -33,6 +34,8 @@ using pAInputReceiverCallbacks_release =
     void (*)(AInputReceiverCallbacks* callbacks);
 using pAInputReceiverCallbacks_setMotionEventCallback =
     void (*)(AInputReceiverCallbacks*, AInputReceiver_onMotionEvent);
+using pAInputReceiverCallbacks_setKeyEventCallback =
+    void (*)(AInputReceiverCallbacks*, AInputReceiver_onKeyEvent);
 using pAInputReceiver_createBatchedInputReceiver =
     AInputReceiver* (*)(AChoreographer*,
                         const AInputTransferToken*,
@@ -71,6 +74,8 @@ class BASE_EXPORT AndroidInputReceiverCompat {
   pAInputReceiverCallbacks_release AInputReceiverCallbacks_releaseFn;
   pAInputReceiverCallbacks_setMotionEventCallback
       AInputReceiverCallbacks_setMotionEventCallbackFn;
+  pAInputReceiverCallbacks_setKeyEventCallback
+      AInputReceiverCallbacks_setKeyEventCallbackFn;
   pAInputReceiver_createUnbatchedInputReceiver
       AInputReceiver_createUnbatchedInputReceiverFn;
   pAInputReceiver_createBatchedInputReceiver

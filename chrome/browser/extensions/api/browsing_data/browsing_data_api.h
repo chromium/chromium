@@ -42,7 +42,7 @@ inline constexpr char kFormDataKey[] = "formData";
 inline constexpr char kHistoryKey[] = "history";
 inline constexpr char kIndexedDBKey[] = "indexedDB";
 inline constexpr char kLocalStorageKey[] = "localStorage";
-inline constexpr char kPasswordsKey[] = "passwords";
+inline constexpr char kPasswordsKeyDeprecated[] = "passwords";
 inline constexpr char kPluginDataKeyDeprecated[] = "pluginData";
 inline constexpr char kServiceWorkersKey[] = "serviceWorkers";
 inline constexpr char kCacheStorageKey[] = "cacheStorage";
@@ -69,6 +69,10 @@ inline constexpr char kNonFilterableError[] =
 inline constexpr char kIncompatibleFilterError[] =
     "Don't set both 'origins' and 'excludeOrigins' at the same time.";
 inline constexpr char kInvalidOriginError[] = "'%s' is not a valid origin.";
+inline constexpr char kUnsupportedDataTypeWarning[] =
+    "Requested data type(s) are not supported: %s.";
+inline constexpr char kDeprecatedDataTypeError[] =
+    "Requested data type is deprecated.";
 
 }  // namespace extension_browsing_data_api_constants
 
@@ -121,6 +125,9 @@ class BrowsingDataRemoverFunction
  protected:
   ~BrowsingDataRemoverFunction() override;
 
+  // Writes a console log warning when a datatype is unsupported.
+  void LogUnsupportedDataTypeWarning(const std::string& data_type);
+
  private:
   // Children should override this method to provide the proper removal mask
   // based on the API call they represent.
@@ -133,6 +140,10 @@ class BrowsingDataRemoverFunction
   // being paused. This is important when synced data is being removed, and
   // pausing Sync would prevent the data from being deleted on the server.
   virtual bool IsPauseSyncAllowed();
+
+  // Returns true if the data removal is not allowed because the datatype is
+  // deprecated.
+  virtual bool IsRemovalDeprecated();
 
   // Parse the developer-provided `origin_types` object into `origin_type_mask`
   // that can be used with the BrowsingDataRemover.
@@ -312,6 +323,7 @@ class BrowsingDataRemovePasswordsFunction : public BrowsingDataRemoverFunction {
 
   // BrowsingDataRemoverFunction:
   bool GetRemovalMask(uint64_t* removal_mask) override;
+  bool IsRemovalDeprecated() override;
 };
 
 class BrowsingDataRemoveServiceWorkersFunction

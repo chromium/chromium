@@ -68,14 +68,14 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
   AffineTransform LocalToSVGParentTransform() const override;
 
   // LayoutBox override:
-  PhysicalOffset PhysicalLocation(
-      const LayoutBox* location_container = nullptr) const override;
-  DeprecatedLayoutPoint DeprecatedLocationInternal() const override;
+  PhysicalOffset PhysicalLocation() const override;
   PaintLayerType LayerTypeRequired() const override;
   bool CreatesNewFormattingContext() const override;
 
   // LayoutBlock override:
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
 
   // The resolved viewport in the regular SVG coordinate space (after any
   // 'transform' has been applied but without zoom-adjustment).

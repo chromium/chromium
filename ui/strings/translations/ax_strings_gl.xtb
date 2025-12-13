@@ -37,7 +37,6 @@
 <translation id="2311842470354187719">salto de páxina</translation>
 <translation id="2335594187091864976">selector de data e hora</translation>
 <translation id="2393030564806080191">Valor hexadecimal da cor</translation>
-<translation id="2398813069815436052">cadro de diálogo aberto.</translation>
 <translation id="245932805758469625">número de segundos restantes do vídeo</translation>
 <translation id="248395913932153421">Día</translation>
 <translation id="2508569020611168319">lista de pestanas</translation>
@@ -149,7 +148,7 @@
 <translation id="6281763101136022427">URL</translation>
 <translation id="6398862346408813489">Mostra o panel de selección do mes</translation>
 <translation id="6404546809543547843">barra de reprodución do audio</translation>
-<translation id="6443871981718447451">mostra o menú de subtítulos</translation>
+<translation id="6443871981718447451">mostra o menú de subtítulos descritivos</translation>
 <translation id="6453774872122745852">agradecementos</translation>
 <translation id="648732519525291180">seleccionador de hora</translation>
 <translation id="6567071839949112727">fai clic no antecesor</translation>
@@ -223,6 +222,7 @@
 <translation id="8634971699417195529">Mostrar o selector de mes</translation>
 <translation id="8711688047404765493">saída</translation>
 <translation id="8808573423886751634">capítulo</translation>
+<translation id="8826423933757944500">lenda</translation>
 <translation id="8851136666856101339">principal</translation>
 <translation id="8861621546968757188">botón emerxente de cadro de diálogo</translation>
 <translation id="8889402386540077796">Tonalidade</translation>

@@ -4,7 +4,7 @@
 
 """Presubmit script for Chromium browser code."""
 
-
+import os
 import re
 
 # Checks whether an autofill-related browsertest fixture class inherits from
@@ -228,6 +228,119 @@ def _CheckBuildFilesForIndirectAshSources(input_api, output_api):
   return results
 
 
+def _CheckAshSourcesForBadIncludes(input_api, output_api):
+  """Make sure changes to Ash sources don't include c/b/ui/browser.h
+
+  Intentionally not using BanRule as that may report includes as new that were
+  already present.
+  """
+
+  MSG = ("Please don't add new #include's of chrome/browser/ui/browser.h to "
+         "Ash code. Instead, use the BrowserDelegate/BrowserController "
+         "abstraction in chrome/browser/ash/browser_delegate/ (preferred) or "
+         "chrome/browser/ui/browser_window/public/browser_window_interface.h. "
+         "If in doubt, please contact neis@google.com and hidehiko@google.com.")
+
+  # If you add other files here, please adapt the message and comment above.
+  bad_includes = [
+      "chrome/browser/ui/browser.h",
+  ]
+
+  def should_check_path(affected_path):
+    # TODO(crbug.com/447299513): Use pathlib's full_match once we are at Python
+    # >= 3.13
+    return (affected_path.startswith('chrome/browser/') and
+            ('/ash/' in affected_path or '/chromeos/' in affected_path))
+
+  bad_includes_re = re.compile(
+      '|'.join(re.escape(f'#include "{file}"') for file in bad_includes)
+  )
+
+  def find_bad_includes(lines):
+    return [line for line in lines if bad_includes_re.match(line)]
+
+  results = []
+  for f in input_api.AffectedTestableFiles():
+    if not should_check_path(f.UnixLocalPath()):
+      continue
+
+    bad_includes_new = find_bad_includes(f.NewContents())
+    if not bad_includes_new:
+      continue
+
+    bad_includes_old = find_bad_includes(f.OldContents())
+    added_bad_includes = (
+        set(bad_includes_new) - set(bad_includes_old))
+
+    if added_bad_includes:
+      results.append(output_api.PresubmitError(
+          "Bad includes detected in the following files.",
+          [f.LocalPath()],
+          f"{MSG}\n"))
+  return results
+
+
+###############################################################################
+# Check if all flag_descriptions are used from about_flags (cleanup)
+###############################################################################
+
+FLAG_DESCRIPTIONS  = 'chrome/browser/flag_descriptions.h'
+ABOUT_FLAGS        = 'chrome/browser/about_flags.cc'
+IDENTIFIER_FLAG_RE = re.compile(r'\bk[A-Z][A-Za-z0-9]+\b')
+PREPROCESSOR_RE    = re.compile(r'^#if(?!ndef CHROME_BROWSER)', re.MULTILINE)
+
+def _ReadFile(input_api, relpath: str):
+  root = input_api.change.RepositoryRoot()
+  abspath = os.path.join(root, relpath)
+  with open(abspath, 'r', encoding='utf-8', errors='ignore') as f:
+    return f.read()
+
+def _NaiveExtractIdentifiers(text: str) -> set[str]:
+    return set(IDENTIFIER_FLAG_RE.findall(text))
+
+def _ReadIdentifiersFromFile(input_api, relpath: str):
+  root = input_api.change.RepositoryRoot()
+  abspath = os.path.join(root, relpath)
+  with open(abspath, 'r', encoding='utf-8', errors='ignore') as f:
+    return set(IDENTIFIER_FLAG_RE.findall(f.read()))
+
+def _FlagFilesHaveChanged(input_api) -> bool:
+  """ Detect if any of the files of interest have changed. """
+  flag_files = {FLAG_DESCRIPTIONS, ABOUT_FLAGS}
+  for f in input_api.AffectedFiles(include_deletes=False):
+    if f.LocalPath().replace('\\', '/') in flag_files:
+      return True
+  return False
+
+def _CheckForUnwantedFlagDescriptionContent(input_api, output_api):
+  result = []
+
+  fd_content = _ReadFile(input_api, FLAG_DESCRIPTIONS)
+  about_content = _ReadFile(input_api, ABOUT_FLAGS)
+
+  fd_idents = _NaiveExtractIdentifiers(fd_content)
+  about_idents = _NaiveExtractIdentifiers(about_content)
+
+  redundant_idents = sorted(list(fd_idents - about_idents))
+  if len(redundant_idents) > 0:
+    result.append(output_api.PresubmitError(
+        'The following flag_descriptions.h identifiers are no longer needed '
+        'and should be removed:\n\t- ' + '\n\t- '.join(redundant_idents)))
+
+  # Check for newly added #if(defined) -- can't have #else/#elif/#endif without
+  # #if, so no need to look for that.
+  if PREPROCESSOR_RE.search(fd_content):
+    result.append(output_api.PresubmitError(
+        'Preprocessor conditional directives should not be used in {}'.format(FLAG_DESCRIPTIONS)))
+
+  # TODO: check if fd_flags are sorted.
+
+  return result
+
+###############################################################################
+# Presubmit aggregator
+###############################################################################
+
 def _CommonChecks(input_api, output_api):
   """Checks common to both upload and commit."""
   results = []
@@ -241,7 +354,12 @@ def _CommonChecks(input_api, output_api):
       input_api, output_api))
   results.extend(_CheckForUselessExterns(input_api, output_api))
   results.extend(_CheckBuildFilesForIndirectAshSources(input_api, output_api))
+  results.extend(_CheckAshSourcesForBadIncludes(input_api, output_api))
+
+  if _FlagFilesHaveChanged(input_api):
+    results.extend(_CheckForUnwantedFlagDescriptionContent(input_api, output_api))
   return results
+
 
 def CheckChangeOnUpload(input_api, output_api):
   return _CommonChecks(input_api, output_api)

@@ -28,10 +28,15 @@ namespace blink {
 // A blocking task is posted to the main thread to create the context, so do
 // not call this method from code which may block main thread progress.
 PLATFORM_EXPORT std::unique_ptr<WebGraphicsContext3DProvider>
-CreateOffscreenGraphicsContext3DProvider(
-    Platform::ContextAttributes context_attributes,
-    Platform::GraphicsInfo* gl_info,
-    const KURL& url);
+CreateRasterGraphicsContextProvider(const KURL& url,
+                                    Platform::RasterContextType context_type);
+
+PLATFORM_EXPORT std::unique_ptr<WebGraphicsContext3DProvider>
+CreateWebGLGraphicsContextProvider(bool prefer_low_power_gpu,
+                                   bool fail_if_major_performance_caveat,
+                                   Platform::WebGLContextType context_type,
+                                   Platform::WebGLContextInfo* gl_info,
+                                   const KURL& url);
 
 // Synchronously creates a WebGPUGraphicsContext3DProvider on any thread.
 // Note if this method is not called on the main thread it will block waiting
@@ -43,8 +48,8 @@ CreateWebGPUGraphicsContext3DProvider(const KURL& url);
 PLATFORM_EXPORT void CreateWebGPUGraphicsContext3DProviderAsync(
     const KURL& url,
     scoped_refptr<base::SingleThreadTaskRunner> current_thread_task_runner,
-    WTF::CrossThreadOnceFunction<
-        void(std::unique_ptr<WebGraphicsContext3DProvider>)> callback);
+    CrossThreadOnceFunction<void(std::unique_ptr<WebGraphicsContext3DProvider>)>
+        callback);
 
 // If the shared GPU context exists, sets whether it aggressively frees
 // resources to `value`.

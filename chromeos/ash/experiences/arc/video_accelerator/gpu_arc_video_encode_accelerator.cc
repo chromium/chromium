@@ -15,13 +15,16 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/video_accelerator/arc_video_accelerator_util.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/ipc/service/arc_shared_image_interface.h"
 #include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_log.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/gpu/buffer_validation.h"
@@ -41,6 +44,17 @@ namespace {
 // VEAs. Currently this value is selected as 40 instances are enough to pass
 // the CTS tests.
 constexpr size_t kMaxConcurrentClients = 8;
+
+bool ForceL1T3Encode(const media::VideoEncodeAccelerator::Config& config) {
+  if (media::VideoCodecProfileToVideoCodec(config.output_profile) !=
+      media::VideoCodec::kH264) {
+    return false;
+  }
+  // We force to encode in L1T3 for H264 stream in ChromeOS Selphie.
+  static bool isSelphie = base::SysInfo::GetLsbReleaseBoard() == "selphie";
+
+  return isSelphie;
+}
 }  // namespace
 
 // static
@@ -135,6 +149,26 @@ GpuArcVideoEncodeAccelerator::InitializeTask(
     return mojom::VideoEncodeAccelerator::Result::kInsufficientResourcesError;
   }
 
+  if (!sii_) {
+    DLOG(ERROR) << "Was passed null SharedImageInterface on construction";
+    return mojom::VideoEncodeAccelerator::Result::kPlatformFailureError;
+  }
+
+  if (ForceL1T3Encode(config)) {
+    auto& cfg = const_cast<media::VideoEncodeAccelerator::Config&>(config);
+    cfg.spatial_layers.clear();
+    cfg.spatial_layers.push_back(
+        media::VideoEncodeAccelerator::Config::SpatialLayer{
+            .width = config.input_visible_size.width(),
+            .height = config.input_visible_size.height(),
+            .bitrate_bps = config.bitrate.target_bps(),
+            .framerate = config.framerate,
+            .max_qp = 0,  // Not used by ChromeOS VEA.
+            .num_of_temporal_layers = 3,
+        });
+    DVLOGF(1) << "Enforce L1T3 encoding for H264 stream for ARC";
+  }
+
   visible_size_ = config.input_visible_size;
   accelerator_.reset();
   auto accelerator_or_error =
@@ -199,19 +233,29 @@ void GpuArcVideoEncodeAccelerator::Encode(
     return;
   }
 
-  std::optional<gfx::BufferFormat> buffer_format =
-      VideoPixelFormatToGfxBufferFormat(format);
-  if (!format) {
-    DLOG(ERROR) << "Unexpected format: " << format;
+  std::optional<viz::SharedImageFormat> si_format =
+      VideoPixelFormatToSharedImageFormat(format);
+  if (!si_format) {
+    DLOG(ERROR) << "Unexpected si_format";
     client_->NotifyError(Error::kInvalidArgumentError);
     return;
   }
-  auto frame = media::VideoFrame::WrapExternalGpuMemoryBufferHandle(
-      gfx::Rect(visible_size_), visible_size_,
-      client_native_pixmap_factory_.get(), std::move(gmb_handle).value(),
-      coded_size_, *buffer_format,
+  scoped_refptr<media::VideoFrame> frame;
+  auto shared_image = sii_->CreateSharedImage(
+      {*si_format, visible_size_, gfx::ColorSpace(),
+       gpu::SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE,
+       "GpuArcVideoEncodeAccelerator"},
+      gpu::kNullSurfaceHandle,
       gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-      base::Microseconds(timestamp));
+      std::move(gmb_handle).value());
+  if (!shared_image) {
+    DLOG(ERROR) << "Failed to create mappable SharedImage";
+    client_->NotifyError(Error::kInvalidArgumentError);
+  }
+
+  frame = media::VideoFrame::WrapMappableSharedImage(
+      std::move(shared_image), gpu::SyncToken(), base::NullCallback(),
+      gfx::Rect(visible_size_), visible_size_, base::Microseconds(timestamp));
 
   if (!frame) {
     DLOG(ERROR) << "Failed to create VideoFrame";

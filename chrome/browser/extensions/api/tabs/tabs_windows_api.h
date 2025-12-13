@@ -39,8 +39,9 @@ class TabsWindowsAPI : public BrowserContextKeyedAPI,
   TabsEventRouterAndroid* tabs_event_router_android();
 #else
   TabsEventRouter* tabs_event_router();
-  WindowsEventRouter* windows_event_router();
 #endif
+
+  WindowsEventRouter* windows_event_router();
 
   // KeyedService implementation.
   void Shutdown() override;
@@ -68,8 +69,8 @@ class TabsWindowsAPI : public BrowserContextKeyedAPI,
   std::unique_ptr<TabsEventRouterAndroid> tabs_event_router_android_;
 #else
   std::unique_ptr<TabsEventRouter> tabs_event_router_;
-  std::unique_ptr<WindowsEventRouter> windows_event_router_;
 #endif
+  std::unique_ptr<WindowsEventRouter> windows_event_router_;
 };
 
 }  // namespace extensions

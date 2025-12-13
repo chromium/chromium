@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "components/media_router/common/media_route_provider_helper.h"
 #include "components/media_router/common/media_source.h"

@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 #
 # Generate extra functionality for protobuf messages, including:
-# - Serialization to base::DictValue.
+# - Serialization to base::Value.
 # - Stream operator support for C++ printing.
 # - equality operator support
 # - (future) gtest matchers.
@@ -11,18 +11,22 @@
 # callers must include the build target for C++ bindings in the deps. It
 # is intended to be used in conjunction with proto_library, not on its own.
 #
-# Conversion to `base::DictValue` support:
-# - The main generated method is `Serialize(const ProtoMessage& message)`, and
-#   resides in the namespace of the proto message. There is a helper method as
-#   well to facilitate the serialization of optional messages, called
-#   `MaybeSerialize`.
+# Conversion to `base::Value` support:
+# - The main generated method is `Serialize(const ProtoMessage& message)`, which
+#   returns a `base::Value` (as a dictionary), and resides in the namespace of
+#   the proto message.
+# - There is a helper method to facilitate the serialization of optional
+#   messages, called `MaybeSerialize(const std::optional<ProtoMessage>&
+#   message, std::string_view name, base::DictValue& output_dictionary)`.
+#   This will serialize the proto to a `base::DictValue` and set it on the
+#   passed in `output_dictionary` with the given `name`.
 # - Include via <name>.to_value.h.
 # - Disable via `omit_to_value_serialization` (default is false)
 # - Caveats:
 #   - Integer types in the proto that are not compatible with base::Value are
 #     serialized as strings (e.g. uint64_t).
 #   - Map field scalar keys (numbers) are always converted to a string, as
-#     base::DictValue does not support other types as keys.
+#     `base::Value` does not support other types as keys for dictionaries.
 #
 # Stream operator (<<) support:
 # - The generated operator resides in the namespace of the proto message.
@@ -73,7 +77,12 @@
 #     # Note: This target fails as there is no functionality being generated!
 #   }
 #
-#  Consumers would then depend on ":foo_extras",
+# Consumers would then depend on ":foo_extras", and include foo.to_value.h,
+# foo.ostream.h, etc.
+#
+# Other Notes:
+# - base::DictValue is the preferred type to base::Value::Dict, as it is
+#   forward-declarable, allowing for less header includes.
 
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -86,7 +95,7 @@ template("proto_extras") {
   }
   _generate_ostream = true
   if (defined(invoker.omit_stream_operators) &&
-      !invoker.omit_stream_operators) {
+      invoker.omit_stream_operators) {
     _generate_ostream = false
   }
   _generate_equality = true

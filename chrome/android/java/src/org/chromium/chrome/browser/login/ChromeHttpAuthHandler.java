@@ -15,10 +15,14 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
+import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.components.browser_ui.http_auth.LoginPrompt;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -107,7 +111,12 @@ public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginProm
         mTab.addObserver(this);
         String messageBody =
                 ChromeHttpAuthHandlerJni.get().getMessageBody(mNativeChromeHttpAuthHandler);
-        mLoginPrompt = new LoginPrompt(activity, messageBody, null, this);
+        mLoginPrompt =
+                new LoginPrompt(
+                        activity,
+                        messageBody,
+                        shouldProvideAutofillUrl() ? mTab.getUrl() : null,
+                        this);
         // In case the autofill data arrives before the prompt is created.
 
         if (mAutofillUsername != null && mAutofillPassword != null) {
@@ -138,6 +147,10 @@ public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginProm
         cancel();
     }
 
+    public @Nullable LoginPrompt getLoginPromptForTesting() {
+        return mLoginPrompt;
+    }
+
     @CalledByNative
     private void onAutofillDataAvailable(
             @JniType("std::u16string") String username,
@@ -147,6 +160,14 @@ public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginProm
         if (mLoginPrompt != null) {
             mLoginPrompt.onAutofillDataAvailable(username, password);
         }
+    }
+
+    private boolean shouldProvideAutofillUrl() {
+        if (mTab == null) return false;
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_AUTOFILL_SUPPORT_FOR_HTTP_AUTH)
+                && (AutofillClientProviderUtils.getAndroidAutofillFrameworkAvailability(
+                                UserPrefs.get(mTab.getProfile()))
+                        == AndroidAutofillAvailabilityStatus.AVAILABLE);
     }
 
     @NativeMethods

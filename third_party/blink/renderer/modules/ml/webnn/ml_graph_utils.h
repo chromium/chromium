@@ -74,6 +74,9 @@ webnn::OperandDataType FromBlinkDataType(V8MLOperandDataType::Enum data_type);
 MODULES_EXPORT bool IsLogicalBinaryOperator(
     webnn::mojom::blink::ElementWiseBinary::Kind kind);
 
+MODULES_EXPORT bool IsLogicalUnaryOperator(
+    webnn::mojom::blink::ElementWiseUnary::Kind kind);
+
 MODULES_EXPORT void LogConsoleWarning(
     ScriptState* script_state,
     const String& message,

@@ -1,0 +1,46 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("migration_state_proto") {
+  sources = [ "protocol/migration_state.proto" ]
+}
+
+source_set("internal") {
+  defines = [ "IS_DATA_SHARING_MIGRATION_IMPL=1" ]
+
+  sources = [
+    "base_migratable_sync_service.cc",
+    "migratable_sync_bridge.cc",
+    "migratable_sync_service_coordinator_impl.cc",
+    "migratable_sync_service_coordinator_impl.h",
+    "migration_state_database.h",
+    "migration_state_database_impl.cc",
+    "migration_state_database_impl.h",
+  ]
+
+  deps = [
+    ":migration_state_proto",
+    "//base",
+    "//components/data_sharing/migration/public",
+    "//components/data_sharing/public",
+    "//components/prefs",
+    "//components/sqlite_proto",
+    "//sql",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "migration_state_database_impl_unittest.cc" ]
+  deps = [
+    ":internal",
+    ":migration_state_proto",
+    "//base",
+    "//base/test:test_support",
+    "//components/data_sharing/public",
+    "//testing/gtest",
+  ]
+}

@@ -55,9 +55,6 @@
    <message name="IDS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_ENABLED" desc="1 of 3 possible states for the Third-party cookies setting. This text appears beneath the 'Third-party cookies' button label.">
     Third-party cookies are allowed
   </message>
-  <message name="IDS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_DISABLED_INCOGNITO" desc="2 of 3 possible states for the Third-party cookies setting. This text appears beneath the 'Third-party cookies' button label.">
-    Third-party cookies are blocked in Incognito mode
-  </message>
   <message name="IDS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_DISABLED" desc="3 of 3 possible states for the Third-party cookies setting. This text appears beneath the 'Third-party cookies' button label." >
     Third-party cookies are blocked
   </message>
@@ -73,11 +70,14 @@
   <message name="IDS_WEBSITE_SETTINGS_DEVICE_LOCATION" desc="Title for Location settings, which control which websites can access your location." meaning="Geolocation">
     Location
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_USING_APPROXIMATE_LOCATION_SUMMARY" desc="Summary text under the precise location radio button, explaining that the site is using approximate location, altough the user has granted precise location access to the site.">
+    Using approximate location
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_FEDERATED_IDENTITY" desc="Title for Third-Party Sign In settings, which control whether websites can access browser third-party sign in API.">
     Third-party sign-in
   </message>
   <message name="IDS_WEBSITE_SETTINGS_JAVASCRIPT_OPTIMIZER_LINK_ROW_LABEL" desc="Title for V8 Optimizer settings, which controls whether the browser's JavaScript engine runs in a mode which is more resilient from attacks by malicious actors with the tradeoff of slightly reducing website performance.">
-    Javascript optimization &amp; security
+    JavaScript optimization &amp; security
   </message>
   <message name="IDS_WEBSITE_SETTINGS_FILE_SYSTEM_WRITE_GUARD_TITLE" desc="Title of the permission to edit files [CHAR_LIMIT=32]">
     File editing
@@ -133,6 +133,9 @@
   <message name="IDS_WINDOW_MANAGEMENT_PERMISSION_TITLE" desc="Title of the permission for Window Management [CHAR_LIMIT=32]">
     Window management
   </message>
+  <message name="IDS_AUTO_PICTURE_IN_PICTURE_PERMISSION_TITLE" desc="Title of the permission for Automatic Picture-in-Picture [CHAR_LIMIT=32]">
+    Automatic picture-in-picture
+  </message>
 
   <!-- Site settings global toggles -->
 
@@ -142,8 +145,26 @@
     <message name="IDS_WEBSITE_SETTINGS_CATEGORY_ALLOWED_THIS_TIME" desc="Summary text explaining that a permission is allowed ephemerally, e.g. JavaScript: allowed.">
     Allowed this time
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_APPROX_GEO_ALLOWED" desc="Summary text explaining that the approximate location permission is allowed.">
+    Allowed • Approximate
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_APPROX_GEO_ALLOWED_THIS_TIME" desc="Summary text explaining that the approximate location permission is allowed ephemerally.">
+    Allowed this time • Approximate
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_PRECISE_GEO_ALLOWED" desc="Summary text explaining that the precise location permission is allowed.">
+    Allowed • Precise
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_PRECISE_GEO_ALLOWED_THIS_TIME" desc="Summary text explaining that the precise location permission is allowed ephemerally.">
+    Allowed this time • Precise
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_ALLOWED_EXCEPT_THIRD_PARTY" desc="Summary text for when only third-party cookies are blocked.">
     Allowed, except third-party
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_PRECISE_GEO_ALLOWED_USING_APPROXIMATE" desc="Summary text explaining that geolocation permission is allowed for the site (and precise location access was granted by the user to the site), but the site is only receiving approximate location because Chrome only has access to approximate location.">
+    Allowed • Using approximate
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_PRECISE_GEO_ALLOWED_THIS_TIME_USING_APPROXIMATE" desc="Summary text explaining that a permission is allowed ephemerally, but is using approximate location.">
+    Allowed this time • Using approximate
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_ALLOWED_RECOMMENDED" desc="Summary text explaining that a permission is allowed, which is the recommended setting.">
     Allowed (recommended)
@@ -157,8 +178,8 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_ASK" desc="Summary text explaining that Chrome will ask the user before allowing a site to use a certain permission, e.g. JavaScript: ask first.">
     Ask first
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_BLOCKED" desc="Summary text explaining that a permission is blocked, e.g. JavaScript: blocked.">
-    Blocked
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_NOT_ALLOWED" desc="Summary text explaining that a permission is not allowed (blocked), e.g. Notifications: not allowed.">
+    Not allowed
   </message>
 
   <!-- Site settings supplemental global toggle settings -->
@@ -222,6 +243,9 @@
   <message name="IDS_ANDROID_PERMISSION_OFF_PLURAL" desc="Text at the top of the Website list, explaining to the user that multiple permissions, such as the location service, are turned off. Contains a link to the settings menu to change it.">
     Turn on permissions for <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph> in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
   </message>
+  <message name="IDS_ANDROID_TURN_ON_GEO_PRECISE_PERMISSION" desc="Text at the top of the Website list, explaining to the user that the precise location permission is turned off and they can turn it on in the Android Settings.">
+    You can turn on precise location in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_EMBEDDED_ON" desc="String used to indicate the embedder origin of a site">
       Embedded on <ph name="WEBSITE_URL">%1$s<ex>google.com</ex></ph>
   </message>
@@ -263,6 +287,12 @@
   <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_BLOCK" desc="Summary text explaining that Chrome will block a website from accessing some permission, e.g. JavaScript: block.">
     Block
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_GEOLOCATION_APPROXIMATE" desc="Summary text explaining that Chrome will allow a website to access approximate geolocation.">
+    Approximate
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_GEOLOCATION_PRECISE" desc="Summary text explaining that Chrome will allow a website to access precise geolocation.">
+    Precise
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_DOMAIN_EXCEPTION_LABEL" desc="The label for site exceptions that apply to the entire domain.">
     All sites under <ph name="DOMAIN">%1$s<ex>google.com</ex></ph>
   </message>
@@ -274,6 +304,9 @@
       =1 {Expires tomorrow}
       other {Expires in # days}
     }
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_PERMISSIONS_GEOLOCATION_DESCRIPTION" desc="The description of the settings page to edit geolocation access options for a website.">
+    Sites usually use your location for relevant features or info, like local news or nearby shops
   </message>
 
   <!-- Site settings Add Exception dialog -->
@@ -304,6 +337,9 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_EDIT_SITE_DIALOG_DESCRIPTION" desc="The description of the dialog to edit permissions for a website from a list.">
     Select an option for <ph name="SITE_NAME">%1$s<ex>google.com</ex></ph>
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_EDIT_SITE_DIALOG_GEOLOCATION_ACCESS_DESCRIPTION" desc="The description of the dialog to edit geolocation access for a website from a list.">
+    Location access for this site
   </message>
 
   <!-- Site settings Delete Data Dialog and other ways of resetting permissions -->
@@ -499,9 +535,9 @@
     After closing a page, tasks you started might not finish
   </message>
 
-  <!-- Javascript Optimizer -->
+  <!-- JavaScript Optimizer -->
 
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_JAVASCRIPT_OPTIMIZER_A11Y" desc="The screen reader announcement describing a toggle with two states, controlling whether Javascript Optimizer is enabled. Disabling the JavaScript optimizer reduces performance but makes the JavaScript engine more resilient to attacks by malicious actors.">
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_JAVASCRIPT_OPTIMIZER_A11Y" desc="The screen reader announcement describing a toggle with two states, controlling whether JavaScript Optimizer is enabled. Disabling the JavaScript optimizer reduces performance but makes the JavaScript engine more resilient to attacks by malicious actors.">
     When on, Chrome runs faster and features that use JavaScript should work as designed. When off, this reduces performance but makes V8 more resistant to attacks.
   </message>
 
@@ -511,22 +547,22 @@
   <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_JAVASCRIPT_OPTIMIZER_BLOCK" desc="The description for the block-v8-optimizer-for-website dialog.">
     Block site from using V8 optimizer.
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_JAVASCRIPT_OPTIMIZER_TOGGLE" desc="Label for toggle for the Javascript optimizer setting.">
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_JAVASCRIPT_OPTIMIZER_TOGGLE" desc="Label for toggle for the JavaScript optimizer setting.">
     Speed up sites with Chrome's V8 engine but make Chrome slightly less resistant to attacks
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_JAVASCRIPT_OPTIMIZER_ALLOWED_LIST" desc="Summary text explaining that sites will use the Javascript optimizer. To be shown in the list of permission categories.">
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_JAVASCRIPT_OPTIMIZER_ALLOWED_LIST" desc="Summary text explaining that sites will use the JavaScript optimizer. To be shown in the list of permission categories.">
     Sites are faster but less secure
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_JAVASCRIPT_OPTIMIZER_BLOCKED_LIST" desc="Summary text explaining that sites will not use the Javascript optimizer. To be shown in the list of permission categories.">
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_JAVASCRIPT_OPTIMIZER_BLOCKED_LIST" desc="Summary text explaining that sites will not use the JavaScript optimizer. To be shown in the list of permission categories.">
     Sites are slower but more secure
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_JAVASCRIPT_OPTIMIZER_PAGE_DESCRIPTION" desc="An explanation of what V8 is which appears beneath the page title: 'V8 optimizer'.">
     V8 is Chrome’s JavaScript and WebAssembly engine used to improve site performance
   </message>
   <message name="IDS_WEBSITE_SETTINGS_PRIVACY_AND_SECURITY_JAVASCRIPT_OPTIMIZER_ROW_LABEL" desc="Title for the link row to the V8 security settings.">
-    Javascript optimization &amp; security
+    JavaScript optimization &amp; security
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_SINGLE_WEBSITE_JAVASCRIPT_OPTIMIZER_TOGGLE" desc="Label for toggle for the Javascript optimizer setting.">
+  <message name="IDS_WEBSITE_SETTINGS_SINGLE_WEBSITE_JAVASCRIPT_OPTIMIZER_TOGGLE" desc="Label for toggle for the JavaScript optimizer setting.">
     Speed up sites with Chrome's V8 engine but make Chrome slightly less resistant to attacks
   </message>
   <message name="IDS_WEBSITE_SETTINGS_JAVASCRIPT_OPTIMIZER_ALLOWED" desc="Primary text corresponding to the allow button in the V8 optimizer permission radio button group.">
@@ -534,6 +570,10 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_JAVASCRIPT_OPTIMIZER_BLOCKED" desc="Primary text corresponding to the block button in the V8 optimizer permission radio button group.">
     Do not speed up sites with Chrome's V8 engine but make Chrome slightly more resistant to attacks
+  </message>
+
+  <message name="IDS_WEBSITE_SETTINGS_JS_OPT_ADD_EXCEPTIONS_DISABLED_REASON" desc="Explains that the add-exception button is disabled because the Android device does not have enough RAM.">
+    Exceptions for specific websites disallowed because Android device does not have enough RAM.
   </message>
 
   <!-- Bluetooth -->
@@ -647,15 +687,6 @@
   <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_ALLOW_RADIO_LABEL" desc="1 of 3 options the user has to configure cookies. See the cookies page for context: chrome://settings/cookies.">
     Allow third-party cookies
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_ALLOW_RADIO_SUB_LABEL" desc="This string appears as a sub label beneath the 'Allow all cookies' label. It summarizes the result of choosing this option.">
-    Sites will work normally
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_INCOGNITO_RADIO_LABEL" desc="2 of 3 options the user has to configure cookies. See the cookies page for context: chrome://settings/cookies. For more about Incognito mode, see https://support.google.com/chrome?p=incognito.">
-    Block third-party cookies in Incognito mode
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_INCOGNITO_RADIO_SUB_LABEL" desc="This string appears as a sub label beneath the 'Block third-party cookies in Incognito mode' label. It summarizes the result of choosing this option. A site you visit may rely on cookies for certain functionality, such as remembering your language preferences or maintaining a shopping cart. If the user chooses this option, some sites they visit may not work as designed.">
-    Features on some sites may not work in Incognito mode
-  </message>
   <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_RADIO_LABEL" desc="3 of 3 options the user has to configure cookies. See the cookies page for context: chrome://settings/cookies">
     Block third-party cookies
   </message>
@@ -665,23 +696,8 @@
   <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_ADD_ALLOW_EXCEPTION_DESCRIPTION" desc="The description of a dialog box. Dialog to add a third-party cookie exception to allow a site">
     Allow a site to use third-party cookies
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_RADIO_SUB_LABEL_RWS_ENABLED" desc="* 'related sites': These words reference a new feature that's part of the Privacy Sandbox project (see details below). What are 'related sites'? ** Chrome will limit how much information 2 sites can share about a user. ** But there are legitimate purposes for sharing information about a user between 2 domains. ** For example, a company might have 2 sites, www.showBiz-music.com and www.showBiz-films.com. The company showBiz might want to keep users signed in across these sites. ** Chrome is launching a new service that allows companies to define groups of related sites. The number of sites in a group is limited to just a few. ** 'related sites' is referring to this new feature. As a counter example, www.some-shoe-store.com and www.a-different-shoe-store.com aren't considered 'related' in this context even though both sites sell shoes. * So this sentence, 'Related sites can still...' explains to the user that there is an exception to the 'Block third-party cookies' option they chose. That exception exists because the use has previously chosen to enable 'Related sites'.">
-    Some features may not work. Related sites can still use third-party cookies.
-  </message>
   <message name="IDS_WEBSITE_SETTINGS_THIRD_PARTY_COOKIES_PAGE_BLOCK_RADIO_SUB_LABEL_RWS_DISABLED" desc="This string appears as a sub label beneath the 'Block third-party cookies' label. It summarizes the result of choosing this option. A site you visit may rely on cookies for certain functionality, such as remembering your language preferences or maintaining a shopping cart. If the user chooses this option, some sites they visit may not work as designed.">
     Features on some sites may not work
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_SUBPAGE_BULLET_ONE" desc="Description for the first bullet of cookie settings subpage.">
-    Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_SUBPAGE_BULLET_TWO" desc="Description for the second bullet of cookie settings subpage.">
-    Sites can't use your cookies to see your browsing activity across different sites, for example, to personalize ads. Features on some sites may not work.
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_SUBPAGE_INCOGNITO_BULLET_TWO" desc="Description for the second bullet of cookie settings subpage.">
-    While in Incognito, sites can't use your cookies to see your browsing activity across sites, even related sites. Your browsing activity isn't used for things like personalizing ads. Features on some sites may not work.
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_INCOGNITO_SUBTITLE" desc="Text used as subtitle for the block third-party cookies subpage in Incognito option in settings">
-    Block third-party cookies in Incognito:
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_SUBTITLE" desc="Text used as subtitle for the block third-party cookies subpage option in settings">
     Block third-party cookies:
@@ -823,25 +839,25 @@
 
   <!-- JavaScript -->
 
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_JAVASCRIPT_ALLOWED" desc="Summary text explaining that sites are allowed to run Javascript and that it is the recommended setting.">
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_JAVASCRIPT_ALLOWED" desc="Summary text explaining that sites are allowed to run JavaScript and that it is the recommended setting.">
     Allow sites to run JavaScript (recommended)
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_JAVASCRIPT_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can run Javascript. It is important to keep this string as two full sentences terminated by a period.">
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_JAVASCRIPT_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can run JavaScript. It is important to keep this string as two full sentences terminated by a period.">
     When on, sites can use JavaScript. When off, sites can’t use JavaScript.
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_JAVASCRIPT_ALLOW" desc="The description for the allow Javascript for website dialog.">
+  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_JAVASCRIPT_ALLOW" desc="The description for the allow JavaScript for website dialog.">
     Allow JavaScript for a specific site.
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_JAVASCRIPT_BLOCK" desc="The description for the block Javascript for website dialog.">
+  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_JAVASCRIPT_BLOCK" desc="The description for the block JavaScript for website dialog.">
     Block JavaScript for a specific site.
   </message>
   <message name="IDS_WEBSITE_SETTINGS_JAVASCRIPT_PAGE_DESCRIPTION" desc="Description of the JavaScript content setting.">
     Sites usually use JavaScript to display interactive features, like video games or web forms
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_JAVASCRIPT_ALLOW" desc="Primary text corresponding to the allow button in the Javascript permission radio button group.">
+  <message name="IDS_WEBSITE_SETTINGS_JAVASCRIPT_ALLOW" desc="Primary text corresponding to the allow button in the JavaScript permission radio button group.">
     Sites can use JavaScript
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_JAVASCRIPT_BLOCK" desc="Primary text corresponding to the block button in the Javascript permission radio button group.">
+  <message name="IDS_WEBSITE_SETTINGS_JAVASCRIPT_BLOCK" desc="Primary text corresponding to the block button in the JavaScript permission radio button group.">
     Don't allow sites to use JavaScript
   </message>
 
@@ -985,7 +1001,12 @@
   <message name="IDS_WEBSITE_SETTINGS_NOTIFICATIONS_BLOCK" desc="Primary text corresponding to the block button in the notifications permission radio buttons group.">
     Don't allow sites to send notifications
   </message>
-
+  <message name="IDS_NOTIFICATIONS_PERMISSION_SUBSCRIBE" desc="The message displayed on a button inside PageInfo Notifications row. Taping on the button results in subscribing to notifications from this site.">
+    Subscribe
+  </message>
+  <message name="IDS_NOTIFICATIONS_PERMISSION_SUBSCRIBE_A11Y" desc="Accessibility string for the subscribe for notifications button">
+    Subscribe for notifications from this site
+  </message>
   <!-- Pop-ups and redirects -->
 
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_POPUPS_REDIRECTS_BLOCKED" desc="Summary text explaining that sites are blocked from showing popups/redirects and that it is the recommended setting.">
@@ -1244,6 +1265,26 @@
     Don’t allow sites to manage windows on all your displays
   </message>
 
+    <!-- Automatic Picture-in-Picture -->
+  <message name="IDS_WEBSITE_SETTINGS_AUTOMATIC_PICTURE_IN_PICTURE_PAGE_DESCRIPTION" desc="Description of the automatic picture-in-picture content setting.">
+    Sites use this feature to enter picture-in-picture automatically. This lets you continue watching a video, while freeing up your screen for other tasks.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_AUTOMATIC_PICTURE_IN_PICTURE_ALLOWED" desc="Summary text explaining that sites are alllowed to enter picture-in-picture automatically.">
+   Sites can enter picture-in-picture automatically
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_AUTOMATIC_PICTURE_IN_PICTURE_BLOCKED" desc="Summary text explaining that sites are blocked from entering picture-in-picture automatically.">
+    Don't allow sites to enter picture-in-picture automatically
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_AUTOMATIC_PICTURE_IN_PICTURE_A11Y" desc="The screen reader announcement describing a toggle with two states, controling whether sites can enter picture-in-picture automatically. It is important to keep this string as two full sentences terminated by a period.">
+    When on, sites can enter picture-in-picture automatically. When off, sites can’t enter picture-in-picture automatically.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_AUTOMATIC_PICTURE_IN_PICTURE_ALLOW" desc="Primary text corresponding to the ask button in the automatic picture-in-picture permission radio button group.">
+    Sites can enter picture-in-picture automatically
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_AUTOMATIC_PICTURE_IN_PICTURE_BLOCK" desc="Primary text corresponding to the block button in the automatic picture-in-picture permission radio button group.">
+    Don't allow sites to enter picture-in-picture automatically
+  </message>
+
   <!-- Advanced protection -->
   <message name="IDS_SETTINGS_PRIVACY_AND_SECURITY_ADVANCED_PROTECTION_SECTION_TITLE" desc="Title for section on privacy settings page. Section displays information about how Android-OS advanced-protection 'on' setting affects Chrome settings. Section is shown for for a few days after the user has turned on advanced-protection in Android-OS-settings.">
     Advanced Protection is on
@@ -1253,7 +1294,7 @@ Manage in <ph name="BEGIN_LINK1">&lt;link_android_advanced_protection&gt;</ph>An
 
 Advanced Protection controls these Chrome settings:
 • "Always use secure connections" is on.
-• "Javascript optimizer" is off. <ph name="BEGIN_LINK2">&lt;link_javascript_optimizer&gt;</ph>Manage Site exceptions<ph name="END_LINK2">&lt;/link_javascript_optimizer&gt;</ph>
+• "JavaScript optimizer" is off. <ph name="BEGIN_LINK2">&lt;link_javascript_optimizer&gt;</ph>Manage Site exceptions<ph name="END_LINK2">&lt;/link_javascript_optimizer&gt;</ph>
   </message>
 
   <!-- Permission result announcement -->

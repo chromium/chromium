@@ -10,7 +10,7 @@
 @protocol InfobarPasswordModalConsumer <NSObject>
 
 // The username being displayed in the InfobarModal.
-- (void)setUsername:(NSString*)username;
+- (void)setOriginalUsername:(NSString*)username;
 // The masked password being displayed in the InfobarModal.
 - (void)setMaskedPassword:(NSString*)maskedPassword;
 // The unmasked password for the InfobarModal.

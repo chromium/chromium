@@ -16,6 +16,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
 #include "components/user_education/test/mock_anchor_element_provider.h"
+#include "components/user_education/test/mock_user_education_context.h"
 #include "components/user_education/test/test_user_education_storage_service.h"
 #include "components/user_education/test/user_education_session_mocks.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -32,6 +33,8 @@ namespace {
 BASE_FEATURE(kTestFeature, "TestFeature", base::FEATURE_ENABLED_BY_DEFAULT);
 using TestLifecycleData =
     ui::test::ScopedTypedData<std::unique_ptr<FeaturePromoLifecycle>>;
+constexpr ui::ElementContext kTestContext =
+    ui::ElementContext::CreateFakeContextForTesting(1);
 }
 
 TEST(CommonPreconditionsTest,
@@ -118,9 +121,26 @@ TEST(CommonPreconditionsTest, MeetsFeatureEngagementCriteriaPrecondition) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+TEST(CommonPreconditionsTest, ContextValidPrecondition) {
+  auto context = base::MakeRefCounted<test::MockUserEducationContext>();
+
+  // Must be valid on construction.
+  EXPECT_CALL(*context, IsValid).WillOnce(testing::Return(true));
+  ContextValidPrecondition precond(context);
+  ui::UnownedTypedDataCollection data;
+
+  // Try with valid context.
+  EXPECT_CALL(*context, IsValid).WillOnce(testing::Return(true));
+  EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition(data));
+
+  // Try with invalid context.
+  EXPECT_CALL(*context, IsValid).WillOnce(testing::Return(false));
+  EXPECT_EQ(FeaturePromoResult::kAnchorNotVisible,
+            precond.CheckPrecondition(data));
+}
+
 TEST(CommonPreconditionsTest, AnchorElementPrecondition) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestId);
-  static const ui::ElementContext kTestContext(1);
   ui::test::TestElement el(kTestId, kTestContext);
   el.Show();
   test::MockAnchorElementProvider provider;
@@ -162,7 +182,6 @@ TEST(CommonPreconditionsTest, AnchorElementPrecondition) {
 TEST(CommonPreconditionsTest,
      AnchorElementPrecondition_ExtractCachedDataReturnsElement) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestId);
-  static const ui::ElementContext kTestContext(1);
   ui::test::TestElement el(kTestId, kTestContext);
   el.Show();
 
@@ -193,7 +212,6 @@ TEST(CommonPreconditionsTest,
 
 TEST(CommonPreconditionsTest,
      AnchorElementPrecondition_ExtractCachedDataReturnsNull) {
-  static const ui::ElementContext kTestContext(1);
 
   test::MockAnchorElementProvider provider;
   AnchorElementPrecondition precond(provider, kTestContext, false);

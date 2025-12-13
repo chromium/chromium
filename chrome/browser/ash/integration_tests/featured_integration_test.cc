@@ -201,24 +201,26 @@ IN_PROC_BROWSER_TEST_P(FeaturedIntegrationTest, FeatureLibraryLateBoot) {
   ASSERT_EQ(split_out.size(), 2u);
 
   // The first line of the output is the state of the default enabled feature.
-  std::optional<base::Value> default_enabled =
-      base::JSONReader::Read(split_out[0]);
+  std::optional<base::Value> default_enabled = base::JSONReader::Read(
+      split_out[0], base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(default_enabled.has_value());
 
   // The test case has the expected JSON for the default enabled feature.
   std::optional<base::Value> expected_default_enabled =
-      base::JSONReader::Read(GetParam().expected_default_enabled);
+      base::JSONReader::Read(GetParam().expected_default_enabled,
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected_default_enabled.has_value());
   EXPECT_EQ(default_enabled, expected_default_enabled);
 
   // The second line of the output is the default disabled feature.
-  std::optional<base::Value> default_disabled =
-      base::JSONReader::Read(split_out[1]);
+  std::optional<base::Value> default_disabled = base::JSONReader::Read(
+      split_out[1], base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(default_disabled.has_value());
 
   // The test case has the expected JSON for the default disabled feature.
   std::optional<base::Value> expected_default_disabled =
-      base::JSONReader::Read(GetParam().expected_default_disabled);
+      base::JSONReader::Read(GetParam().expected_default_disabled,
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected_default_disabled.has_value());
   EXPECT_EQ(default_disabled, expected_default_disabled);
 }

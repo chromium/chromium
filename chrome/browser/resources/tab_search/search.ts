@@ -131,6 +131,12 @@ function hasRegexMatch(
   });
 }
 
+// https://crbug.com/433531973: Replace single and double left and right
+// quotation characters with the regular ones.
+function replaceSpecialQuotationCharacters(text: string) {
+  return text.replace(/[‘’]/g, '\'').replace(/[“”]/g, '"');
+}
+
 /**
  * Returns an array of matches that indicate where in the target string the
  * searchText appears. If there are no identified matches an empty array is
@@ -138,6 +144,8 @@ function hasRegexMatch(
  */
 function getRanges(target: string, searchText: string):
     Array<{start: number, length: number}> {
+  target = replaceSpecialQuotationCharacters(target);
+  searchText = replaceSpecialQuotationCharacters(searchText);
   const escapedText = quoteString(searchText);
   const ranges = [];
   let match = null;

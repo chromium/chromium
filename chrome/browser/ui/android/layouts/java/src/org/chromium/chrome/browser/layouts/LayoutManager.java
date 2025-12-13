@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.layouts;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -34,7 +35,8 @@ public interface LayoutManager extends LayoutStateProvider {
     <V extends SceneLayer> CompositorModelChangeProcessor<V> createCompositorMCP(
             PropertyModel model,
             V view,
-            PropertyModelChangeProcessor.ViewBinder<PropertyModel, V, PropertyKey> viewBinder);
+            PropertyModelChangeProcessor.ViewBinder<PropertyModel, V, @Nullable PropertyKey>
+                    viewBinder);
 
     /**
      * Creates a CompositorModelChangeProcessor observing the given {@code model} that will operate
@@ -50,7 +52,8 @@ public interface LayoutManager extends LayoutStateProvider {
     <V extends SceneLayer> CompositorModelChangeProcessor<V> createCompositorMCPWithExclusions(
             PropertyModel model,
             V view,
-            PropertyModelChangeProcessor.ViewBinder<PropertyModel, V, PropertyKey> viewBinder,
+            PropertyModelChangeProcessor.ViewBinder<PropertyModel, V, @Nullable PropertyKey>
+                    viewBinder,
             Set<PropertyKey> exclusions);
 
     /**

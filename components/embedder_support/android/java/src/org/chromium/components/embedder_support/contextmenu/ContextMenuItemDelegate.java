@@ -21,7 +21,7 @@ public interface ContextMenuItemDelegate {
     // The type of the data to save to the clipboard.
     @IntDef({ClipboardType.LINK_URL, ClipboardType.LINK_TEXT, ClipboardType.IMAGE_URL})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface ClipboardType {
+    @interface ClipboardType {
         int LINK_URL = 0;
         int LINK_TEXT = 1;
         int IMAGE_URL = 2;

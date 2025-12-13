@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_url.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -59,82 +60,6 @@ using BodyVariant = blink::BackgroundResponseProcessor::BodyVariant;
 }  // namespace
 
 namespace blink {
-
-template <>
-struct CrossThreadCopier<FollowRedirectCallback> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = FollowRedirectCallback;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
-template <>
-struct CrossThreadCopier<url::Origin> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = url::Origin;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
-template <>
-struct CrossThreadCopier<network::mojom::URLResponseHeadPtr> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = network::mojom::URLResponseHeadPtr;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
-template <>
-struct CrossThreadCopier<network::URLLoaderCompletionStatus>
-    : public CrossThreadCopierByValuePassThrough<
-          network::URLLoaderCompletionStatus> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<net::RedirectInfo>
-    : public CrossThreadCopierByValuePassThrough<net::RedirectInfo> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-template <>
-struct CrossThreadCopier<std::vector<std::string>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = std::vector<std::string>;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
-template <>
-struct CrossThreadCopier<std::vector<std::unique_ptr<URLLoaderThrottle>>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = std::vector<std::unique_ptr<URLLoaderThrottle>>;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
-template <>
-struct CrossThreadCopier<std::optional<mojo_base::BigBuffer>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = std::optional<mojo_base::BigBuffer>;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
-template <>
-struct CrossThreadCopier<net::HttpRequestHeaders> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = net::HttpRequestHeaders;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
-template <>
-struct CrossThreadCopier<BodyVariant> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = BodyVariant;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
-template <>
-struct CrossThreadCopier<std::optional<network::URLLoaderCompletionStatus>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = std::optional<network::URLLoaderCompletionStatus>;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
 
 namespace {
 
@@ -179,7 +104,7 @@ BackgroundResourceFetchSupportStatus CanHandleRequestInternal(
 }  // namespace
 
 class BackgroundURLLoader::Context
-    : public WTF::ThreadSafeRefCounted<BackgroundURLLoader::Context> {
+    : public ThreadSafeRefCounted<BackgroundURLLoader::Context> {
  public:
   Context(scoped_refptr<WebBackgroundResourceFetchAssets>
               background_resource_fetch_context,
@@ -410,13 +335,18 @@ class BackgroundURLLoader::Context
       return;
     }
 
+    // Keep the refptr of WebBackgroundResourceFetchAssets to ensure it survives
+    // for the duration of the request.
+    cross_thread_background_resource_fetch_context_ =
+        std::move(background_resource_fetch_context);
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     URLLoaderThrottleProvider* throttle_provider =
-        background_resource_fetch_context->GetThrottleProvider();
+        cross_thread_background_resource_fetch_context_->GetThrottleProvider();
     if (throttle_provider) {
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>> web_throttles =
           throttle_provider->CreateThrottles(
-              background_resource_fetch_context->GetLocalFrameToken(),
+              cross_thread_background_resource_fetch_context_
+                  ->GetLocalFrameToken(),
               *request);
       throttles.reserve(base::checked_cast<wtf_size_t>(web_throttles.size()));
       for (auto& throttle : web_throttles) {
@@ -444,7 +374,7 @@ class BackgroundURLLoader::Context
             background_response_processor_factory
                 ? std::move(*background_response_processor_factory).Create()
                 : nullptr),
-        background_resource_fetch_context->GetLoaderFactory(),
+        cross_thread_background_resource_fetch_context_->GetLoaderFactory(),
         std::move(throttles), std::move(resource_load_info_notifier_wrapper),
         should_use_code_cache_host && background_code_cache_host_
             ? &background_code_cache_host_->GetCodeCacheHost(
@@ -460,6 +390,7 @@ class BackgroundURLLoader::Context
     if (request_id_ != -1) {
       resource_request_sender_->Cancel(background_task_runner_);
       resource_request_sender_.reset();
+      cross_thread_background_resource_fetch_context_.reset();
       request_id_ = -1;
     }
   }
@@ -687,6 +618,10 @@ class BackgroundURLLoader::Context
 
   scoped_refptr<BackgroundCodeCacheHost> background_code_cache_host_
       GUARDED_BY_CONTEXT(background_sequence_checker_);
+
+  scoped_refptr<WebBackgroundResourceFetchAssets>
+      cross_thread_background_resource_fetch_context_
+          GUARDED_BY_CONTEXT(background_sequence_checker_);
 
   Deque<CrossThreadOnceFunction<void(void)>> tasks_ GUARDED_BY(tasks_lock_);
   base::Lock tasks_lock_;

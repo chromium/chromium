@@ -15,6 +15,20 @@ struct Config;
 // model and metadata for the device tier segment target.
 class DeviceTierSegment : public DefaultModelProvider {
  public:
+  enum Label {
+    kLabelNone = 0,
+    kLabelLow = 1,
+    kLabelMedium = 2,
+    kLabelHigh = 3,
+    kLabelCount
+  };
+  enum Feature {
+    kFeatureDeviceRamInMb,
+    kFeatureDeviceOsVersionNumber,
+    kFeatureDevicePpi,
+    kFeatureCount
+  };
+
   DeviceTierSegment();
   ~DeviceTierSegment() override = default;
 

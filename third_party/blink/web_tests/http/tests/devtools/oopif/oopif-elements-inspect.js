@@ -23,7 +23,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
       if (target === SDK.TargetManager.TargetManager.instance().rootTarget() || target === SDK.TargetManager.TargetManager.instance().primaryPageTarget())
         return;
       let complete = false;
-      target.pageAgent().setLifecycleEventsEnabled(true);
+      target.pageAgent().invoke_setLifecycleEventsEnabled({enabled: true});
       target.model(SDK.ResourceTreeModel.ResourceTreeModel).addEventListener(SDK.ResourceTreeModel.Events.LifecycleEvent, async (event) => {
         if (event.data.name === 'load' && !complete) {
           complete = true;

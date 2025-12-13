@@ -14,13 +14,19 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.IntentHandler.ExternalAppId;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Bridge between Java and native SafeBrowsing code to get referring app information. */
+@NullMarked
 public class SafeBrowsingReferringAppBridge {
     private SafeBrowsingReferringAppBridge() {}
 
@@ -34,6 +40,7 @@ public class SafeBrowsingReferringAppBridge {
             ReferringAppSource.UNKNOWN_APP_ID,
             ReferringAppSource.ACTIVITY_REFERRER
         })
+        @Retention(RetentionPolicy.SOURCE)
         public @interface ReferringAppSource {
             int REFERRING_APP_SOURCE_UNSPECIFIED = 0;
             int KNOWN_APP_ID = 1;
@@ -50,9 +57,9 @@ public class SafeBrowsingReferringAppBridge {
         public ReferringAppInfo(
                 @ReferringAppSource int referringAppSource,
                 String referringAppName,
-                String targetUrl,
-                String referringWebApkStartUrl,
-                String referringWebApkManifestId) {
+                @Nullable String targetUrl,
+                @Nullable String referringWebApkStartUrl,
+                @Nullable String referringWebApkManifestId) {
             // Do not return null strings to native code.
             if (targetUrl == null) {
                 targetUrl = "";

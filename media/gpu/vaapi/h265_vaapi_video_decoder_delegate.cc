@@ -9,6 +9,7 @@
 
 #include "media/gpu/vaapi/h265_vaapi_video_decoder_delegate.h"
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "media/base/cdm_context.h"
@@ -306,7 +307,7 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitFrameMetadata(
   }
 
   memcpy(iq_matrix_buf.ScalingListDC16x16,
-         scaling_list.scaling_list_dc_coef_16x16,
+         scaling_list.scaling_list_dc_coef_16x16.data(),
          sizeof(iq_matrix_buf.ScalingListDC16x16));
   iq_matrix_buf.ScalingListDC32x32[0] =
       scaling_list.scaling_list_dc_coef_32x32[0];
@@ -592,7 +593,7 @@ void H265VaapiVideoDecoderDelegate::FillVAPicture(
 
 void H265VaapiVideoDecoderDelegate::FillVARefFramesFromRefList(
     const H265Picture::Vector& ref_pic_list,
-    VAPictureHEVC* va_pics) {
+    base::span<VAPictureHEVC> va_pics) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ref_pic_list_pocs_.clear();
   for (auto& it : ref_pic_list) {

@@ -31,6 +31,17 @@ id<GREYMatcher> incognitoHelpContainsText() {
   return chrome_test_util::ContainsPartialText(
       l10n_util::GetNSString(IDS_SAD_TAB_RELOAD_INCOGNITO));
 }
+
+// A matcher for a link to load the learn more page.
+id<GREYMatcher> learnMoreText() {
+  return grey_text(l10n_util::GetNSString(IDS_SAD_TAB_RELOAD_LEARN_MORE));
+}
+
+// A matcher for a link to load the learn more page.
+id<GREYMatcher> sadTabReloadButton() {
+  return grey_text(
+      l10n_util::GetNSString(IDS_SAD_TAB_RELOAD_LABEL).uppercaseString);
+}
 }  // namespace
 
 // Sad Tab View integration tests for Chrome.
@@ -44,8 +55,7 @@ id<GREYMatcher> incognitoHelpContainsText() {
 // visited within 60 seconds, for this reason this one test can not
 // be easily split up across multiple tests
 // as visiting Sad Tab may not be idempotent.
-// TODO(crbug.com/40671245): Test fails when run on iOS 13.
-- (void)DISABLED_testSadTabView {
+- (void)testSadTabView {
   // Prepare a simple but known URL to avoid testing from the NTP.
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   const GURL simple_URL = self.testServer->GetURL("/destination.html");
@@ -109,6 +119,36 @@ id<GREYMatcher> incognitoHelpContainsText() {
   // Finally, ensure that the user can browse away from the Sad Tab page
   // in Incognito Mode.
   loadAndCheckSimpleURL();
+}
+
+// Tests that the context menu is correctly shown.
+- (void)testSadTabContextMenu {
+  // Prepare a simple but known URL to avoid testing from the NTP.
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+
+  // Navigate to the chrome://crash URL and reload to show the Learn More link.
+  const GURL crash_URL = GURL("chrome://crash");
+  [ChromeEarlGrey loadURL:crash_URL waitForCompletion:YES];
+  [[EarlGrey selectElementWithMatcher:sadTabReloadButton()]
+      performAction:grey_tap()];
+
+  // Verify the feedback message is shown.
+  [[EarlGrey selectElementWithMatcher:feedbackSadTabTitleContainsText()]
+      assertWithMatcher:grey_notNil()];
+
+  // Find the text view containing the learn more link and long press it.
+  id<GREYMatcher> feedbackTextView =
+      grey_allOf(learnMoreText(), grey_kindOfClass([UITextView class]),
+                 grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:feedbackTextView]
+      performAction:grey_longPress()];
+
+  // Verify that the context menu is shown with the expected items.
+  // "Open in New Tab" is a standard item in the context menu for links.
+  id<GREYMatcher> openInNewTabMatcher =
+      chrome_test_util::OpenLinkInNewTabButton();
+  [[EarlGrey selectElementWithMatcher:openInNewTabMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

@@ -16,6 +16,7 @@
     this.testRunner_ = testRunner;
     this.dp_ = dp;
     this.disableRequestedUrlsLogging = false;
+    this.ignoreFavIconRequests = true;
     this.responses_ = new Map();
     this.requestedUrls_ = [];
     this.requestedMethods_ = [];
@@ -36,6 +37,11 @@
       const url =
           event.params.request.url + (event.params.request.urlFragment || '');
       this.requestedUrls_.push(url);
+
+      if (this.ignoreFavIconRequests && url.endsWith('/favicon.ico')) {
+        this.dp_.Fetch.failRequest({requestId: event.params.requestId});
+        return;
+      }
 
       var response = this.responses_.get(url);
       if (response) {
@@ -72,6 +78,17 @@
   }
 
   /**
+   * Ignores fav icon requests. This fixes tests that are failing due to the
+   * missing fav icon request response.
+   *
+   * @param {boolean} value True if fav icon requests are ignored, false
+   *     otherwise.
+   */
+  setIgnoreFavIconRequests(value) {
+    this.ignoreFavIconRequests = value;
+  }
+
+  /**
    * Adds request response.
    *
    * @param {!string} url Request url, including #fragment.
@@ -92,22 +109,6 @@
       }
     }
     this.responses_.set(url, {body, headers, responseCode, responsePhrase});
-  }
-
-  /**
-   * Adds favicon request handler that returns transparent 1x1 GIF image by
-   * default.
-   */
-  addFavIconResponse(url, image, type) {
-    while (url.endsWith('/')) {
-      url = url.slice(0, -1);
-    }
-    image = image || 'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-    type = type || 'image/gif';
-    this.addResponse(url + '/favicon.ico', image, [
-      `HTTP/1.1 200 OK`,
-      `Content-Type: ` + type,
-    ]);
   }
 
   /**

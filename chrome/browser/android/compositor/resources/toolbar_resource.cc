@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/check_op.h"
+
 namespace android {
 
 // static

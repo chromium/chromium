@@ -17,7 +17,7 @@ namespace optimization_guide {
 
 namespace {
 
-size_t kMaxURLKeyedHintCacheSize = 50;
+constexpr size_t kMaxURLKeyedHintCacheSize = 50;
 
 }  // namespace
 

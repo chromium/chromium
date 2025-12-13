@@ -95,6 +95,10 @@ enum LayoutConstant {
   // The size of the trailing icons used inside the LocationBar.
   LOCATION_BAR_TRAILING_ICON_SIZE,
 
+  // The corner radius of the MainBackgroundRegion when tool bar height side
+  // panel is visible
+  MAIN_BACKGROUND_REGION_CORNER_RADIUS,
+
   // Additional space beyond TAB_STRIP_PADDING between the tab strip and the
   // new tab button.
   NEW_TAB_BUTTON_LEADING_MARGIN,
@@ -173,6 +177,28 @@ enum LayoutConstant {
 
   // corner radius on the top of the toolbar introduced in chrome refresh 2023
   TOOLBAR_CORNER_RADIUS,
+
+  // The padding between the bottom of the tab strip and top of the toolbar
+  // height side panel.
+  TOOLBAR_HEIGHT_SIDE_PANEL_INSET,
+
+  // The corner radius used for borders, fill, and hover targets with vertical
+  // tabs.
+  VERTICAL_TAB_CORNER_RADIUS,
+
+  // The height of a vertical tab.
+  VERTICAL_TAB_HEIGHT,
+
+  // The width of the border stroke around pinned tabs in a vertical tab strip.
+  VERTICAL_TAB_PINNED_BORDER_THICKNESS,
+
+  // The horizontal padding between the sides of the vertical tab strip and its
+  // content.
+  VERTICAL_TAB_STRIP_HORIZONTAL_PADDING,
+
+  // The horiziontal padding between the two buttons in the bottom container of
+  // the vertical tab strip when it is uncollapsed.
+  VERTICAL_TAB_STRIP_BOTTOM_BUTTON_PADDING,
 
   // The size of the app menu button in a web app browser window.
   WEB_APP_MENU_BUTTON_SIZE,

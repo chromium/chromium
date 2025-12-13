@@ -240,14 +240,6 @@ RecorderAppUI::~RecorderAppUI() {
 }
 
 void RecorderAppUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
-}
-
-void RecorderAppUI::BindInterface(
     mojo::PendingReceiver<recorder_app::mojom::PageHandler> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -646,8 +638,6 @@ void RecorderAppUI::InstallSoda(const std::string& language,
 
   // Get SODA state directly from SodaInstaller in case the cached state is
   // outdated.
-  // TODO: b/375306309 - Get cached state instead when SODA states are always
-  // consistent after having `OnSodaUninstalled` event.
   auto soda_state = GetSodaState(language_code);
   if (soda_state.type == recorder_app::mojom::ModelStateType::kNotInstalled ||
       soda_state.type == recorder_app::mojom::ModelStateType::kError) {

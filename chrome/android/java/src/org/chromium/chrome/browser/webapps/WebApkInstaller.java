@@ -13,23 +13,25 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.components.webapps.WebApkInstallResult;
 
 /**
- * Java counterpart to webapk_installer.h
- * Contains functionality to install / update WebAPKs.
- * This Java object is created by and owned by the native WebApkInstaller.
+ * Java counterpart to webapk_installer.h Contains functionality to install / update WebAPKs. This
+ * Java object is created by and owned by the native WebApkInstaller.
  */
+@NullMarked
 public class WebApkInstaller {
 
     /** Weak pointer to the native WebApkInstaller. */
     private long mNativePointer;
 
     /** Talks to Google Play to install WebAPKs. */
-    private final GooglePlayWebApkInstallDelegate mInstallDelegate;
+    private final @Nullable GooglePlayWebApkInstallDelegate mInstallDelegate;
 
     private final String mWebApkServerUrl;
 

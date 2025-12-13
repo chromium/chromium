@@ -12,21 +12,18 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/metrics/login_event_recorder.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 
@@ -35,20 +32,14 @@ namespace ash {
 namespace {
 
 using ::content::BrowserThread;
-using ::content::NavigationController;
+using ::content::RenderViewHost;
 using ::content::RenderWidgetHost;
-using ::content::RenderWidgetHostView;
 using ::content::WebContents;
 
 const std::string GetTabUrl(RenderWidgetHost* rwh) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    for (int i = 0, tab_count = browser->tab_strip_model()->count();
-         i < tab_count;
-         ++i) {
-      WebContents* tab = browser->tab_strip_model()->GetWebContentsAt(i);
-      if (tab->GetPrimaryMainFrame()->GetRenderWidgetHost() == rwh) {
-        return tab->GetLastCommittedURL().spec();
-      }
+  if (auto* rvh = RenderViewHost::From(rwh)) {
+    if (auto* tab = WebContents::FromRenderViewHost(rvh)) {
+      return tab->GetLastCommittedURL().spec();
     }
   }
   return std::string();
@@ -115,6 +106,7 @@ void BootTimesRecorder::LoginDone(bool is_user_new) {
   LoginEventRecorder::Get()->ScheduleWriteLoginTimes(
       kLoginTimes, (is_user_new ? kUmaLoginNewUser : kUmaLogin),
       kUmaLoginPrefix);
+  render_widget_host_observations_.RemoveAllObservations();
 }
 
 void BootTimesRecorder::WriteLogoutTimes() {
@@ -250,8 +242,10 @@ void BootTimesRecorder::RenderFrameHostChanged(
   RenderWidgetHost* old_rwh = old_host->GetRenderWidgetHost();
   if (render_widget_host_observations_.IsObservingSource(old_rwh)) {
     render_widget_host_observations_.RemoveObservation(old_rwh);
-    render_widget_host_observations_.AddObservation(
-        new_host->GetRenderWidgetHost());
+    RenderWidgetHost* new_rwh = new_host->GetRenderWidgetHost();
+    if (!render_widget_host_observations_.IsObservingSource(new_rwh)) {
+      render_widget_host_observations_.AddObservation(new_rwh);
+    }
   }
 }
 

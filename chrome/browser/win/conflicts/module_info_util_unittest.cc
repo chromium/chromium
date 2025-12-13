@@ -15,7 +15,6 @@
 #include "base/environment.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/scoped_environment_variable_override.h"

@@ -11,7 +11,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/readaloud/android/jni_headers/ReadAloudMiniPlayerSceneLayer_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace android {
@@ -49,7 +48,7 @@ void ReadAloudMiniPlayerSceneLayer::UpdateReadAloudMiniPlayerLayer(
 
 void ReadAloudMiniPlayerSceneLayer::SetContentTree(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcontent_tree) {
+    const JavaRef<jobject>& jcontent_tree) {
   SceneLayer* content_tree = FromJavaObject(env, jcontent_tree);
   if (!content_tree || !content_tree->layer()) {
     return;
@@ -76,7 +75,7 @@ bool ReadAloudMiniPlayerSceneLayer::ShouldShowBackground() {
 
 static jlong JNI_ReadAloudMiniPlayerSceneLayer_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj) {
+    const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
   ReadAloudMiniPlayerSceneLayer* scene_layer =
       new ReadAloudMiniPlayerSceneLayer(env, jobj);
@@ -84,3 +83,5 @@ static jlong JNI_ReadAloudMiniPlayerSceneLayer_Init(
 }
 
 }  // namespace android
+
+DEFINE_JNI(ReadAloudMiniPlayerSceneLayer)

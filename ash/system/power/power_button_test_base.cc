@@ -102,19 +102,6 @@ void PowerButtonTestBase::GenerateMouseMoveEvent() {
   GetEventGenerator()->MoveMouseTo(10, 10);
 }
 
-void PowerButtonTestBase::Initialize(
-    PowerButtonController::ButtonType button_type,
-    LoginStatus status) {
-  power_button_test_api_->SetPowerButtonType(button_type);
-  if (status == LoginStatus::NOT_LOGGED_IN)
-    ClearLogin();
-  else
-    SimulateUserLogin(kRegularUserLoginInfo);
-
-  if (status == LoginStatus::GUEST)
-    SetCanLockScreen(false);
-}
-
 void PowerButtonTestBase::LockScreen() {
   lock_state_controller_->OnLockStateChanged(true);
   GetSessionControllerClient()->LockScreen();

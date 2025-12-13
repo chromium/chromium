@@ -48,11 +48,12 @@ class CONTENT_EXPORT RendererSandboxedProcessLauncherDelegateWin
 
   // SandboxedProcessLauncherDelegate:
   bool ShouldUseUntrustedMojoInvitation() override;
+  bool RestrictCoreSharing() override;
 
  private:
-  const bool renderer_code_integrity_enabled_;
   const bool renderer_app_container_disabled_;
   const bool is_pdf_renderer_ = false;
+  const bool restrict_core_sharing_ = false;
   bool dynamic_code_can_be_disabled_ = false;
 };
 #endif  // BUILDFLAG(IS_WIN)

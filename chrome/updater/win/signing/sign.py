@@ -72,14 +72,21 @@ import argparse
 import array
 import ast
 import hashlib
+import logging
 import os
 import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import uuid
 
 import resedit
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s',
+)
 
 
 class SigningError(Exception):
@@ -121,12 +128,12 @@ class Signer:
         subprocess.run(
             [self._tagging_exe, '--set-tag',
              '--out=%s' % out_file, in_file],
-            check=True)
+            check=True,
+            stdout=subprocess.DEVNULL)
         return out_file
 
     def _sign_item(self, in_file):
         """Sign an executable in-place."""
-        # Retries may be required: lore states the timestamp server is flaky.
         for flags in self._sign_flags:
             command = [self._signtool_exe, 'sign']
             command += flags
@@ -138,7 +145,28 @@ class Signer:
                 command += ['/s', 'My', '/n', self._identity]
 
             command += [in_file]
-            subprocess.run(command, check=True)
+
+            # Timestamp server is flaky, retry sign if timestamp server is used
+            attempts = 10 if ({'/tr', '/tseal'} & set(command)) else 1
+            delay = 1
+            for attempt in range(1, attempts + 1):
+                try:
+                    subprocess.run(command,
+                                   check=True,
+                                   stdout=subprocess.DEVNULL)
+                except subprocess.CalledProcessError:
+                    if attempt == attempts:
+                        raise
+                    logging.exception(
+                        'Sign attempt failed, attempts left: %d',
+                        attempts - attempt
+                    )
+                    logging.info(
+                        'Waiting for %d seconds before next attempt...', delay
+                    )
+                    time.sleep(delay)
+                    continue
+                break
 
     def _generate_target_manifest(self, appid, installer_path, manifest_path,
                                   manifest_dict_replacements):
@@ -193,7 +221,8 @@ class Signer:
         tmp = tempfile.mkdtemp(dir=self._tmpdir)
         subprocess.run([self._lzma_exe, 'x', in_file,
                         '-o%s' % tmp],
-                       check=True)
+                       check=True,
+                       stdout=subprocess.DEVNULL)
         signable_exts = frozenset([
             '.exe', '.dll', '.msi', '.cat', '.ps1', '.psm1', '.psd1', '.ps1xml'
         ])
@@ -212,7 +241,8 @@ class Signer:
                                                    manifest_dict_replacements)
         subprocess.run([self._lzma_exe, 'a', '-mx0', in_file, '*'],
                        check=True,
-                       cwd=tmp)
+                       cwd=tmp,
+                       stdout=subprocess.DEVNULL)
 
     def sign_metainstaller(self,
                            in_file,

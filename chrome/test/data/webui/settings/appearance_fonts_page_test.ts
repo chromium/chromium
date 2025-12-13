@@ -81,7 +81,7 @@ suite('AppearanceFontHandler', function() {
       assertEquals(expectedFontSize, value);
       // Check that the font size value is displayed correctly.
       assertTrue(
-          element.textContent!.trim().startsWith(expectedFontSize.toString()));
+          element.textContent.trim().startsWith(expectedFontSize.toString()));
     }
 
     fontsPage.prefs = {
@@ -231,7 +231,7 @@ suite('AppearanceFontHandler', function() {
     // Check that the math preview demonstrates a few characters.
     const textContentArray: string[] = [];
     math.querySelectorAll('mn,mo,mi').forEach(element => {
-      textContentArray.push(element.textContent!);
+      textContentArray.push(element.textContent);
     });
     ['0', '∞', 'n', '−', 'π', '∊', 'ℝ', '∑', '∫'].forEach(textContent => {
       assertTrue(

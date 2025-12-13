@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -59,6 +60,10 @@ constexpr char kProfileUpdateNumberOfAffectedTypesHistogram[] =
     "Autofill.ProfileImport.UpdateProfileNumberOfAffectedFields";
 constexpr char kHomeAndWorkProfileUpdateHistogram[] =
     "Autofill.ProfileImport.HomeAndWorkSupersetProfileDecision";
+constexpr char kNameEmailProfileSupersetHistogram[] =
+    "Autofill.ProfileImport.NameEmailSupersetProfileDecision";
+constexpr char kHomeOrWorkAndNameEmailMergeHistogram[] =
+    "Autofill.ProfileImport.HomeOrWorkAndNameEmailMergeDecision";
 
 // Test that two AutofillProfiles have the same `record_type() and `Compare()`
 // equal.
@@ -172,6 +177,16 @@ bool IsHomeAndWorkSuperset(const ImportScenarioTestCase& test_scenario) {
          AutofillProfileImportType::kHomeAndWorkSuperset;
 }
 
+bool IsNameEmailSuperset(const ImportScenarioTestCase& test_scenario) {
+  return test_scenario.expected_import_type ==
+         AutofillProfileImportType::kNameEmailSuperset;
+}
+
+bool IsHomeWorkNameEmailMerge(const ImportScenarioTestCase& test_scenario) {
+  return test_scenario.expected_import_type ==
+         AutofillProfileImportType::kHomeWorkNameEmailMerge;
+}
+
 class AddressProfileSaveManagerTest
     : public testing::Test,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
@@ -200,6 +215,13 @@ class AddressProfileSaveManagerTest
 
   const ProfileImportMetadata& import_metadata() const {
     return import_metadata_;
+  }
+
+  void AddGuidsToImportMetadataCollection(
+      std::initializer_list<std::string> guids) {
+    for (const auto& guid : guids) {
+      import_metadata_.unedited_autofilled_profile_guids.insert(guid);
+    }
   }
 
   GURL form_url() const {
@@ -268,7 +290,7 @@ void AddressProfileSaveManagerTest::TestImportScenario(
                 ->GetMaxStrikesLimit()
           : 1;
   address_data_manager().GetProfileSaveStrikeDatabase()->AddStrikes(
-      initial_strikes_for_domain, form_url().host());
+      initial_strikes_for_domain, form_url().GetHost());
   ASSERT_EQ(
       address_data_manager().IsNewProfileImportBlockedForDomain(form_url()),
       test_scenario.new_profiles_suppresssed_for_domain);
@@ -318,7 +340,23 @@ void AddressProfileSaveManagerTest::TestImportScenario(
 
   // Test that the merge and import candidates are correct.
   EXPECT_EQ(test_scenario.merge_candidate, last_import->merge_candidate());
-  EXPECT_EQ(test_scenario.import_candidate, last_import->import_candidate());
+  if (!IsHomeAndWorkSuperset(test_scenario) &&
+      !IsNameEmailSuperset(test_scenario) &&
+      !IsHomeWorkNameEmailMerge(test_scenario)) {
+    EXPECT_EQ(test_scenario.import_candidate, last_import->import_candidate());
+  } else {
+    // In the case of
+    // 1. Home & Work superset profile import
+    // 2. `kAccountNameEmail` superset profile import
+    // 3. `kAccountNameEmail` and Home & Work merge
+    // the import candidate is converted to an account profile,
+    // which changes its GUID. The same issue exists for new profile tests too.
+    // But in all of them, account storage eligibility is set to false, so the
+    // GUID doesn't change.
+    EXPECT_THAT(std::tie(*test_scenario.import_candidate,
+                         *last_import->import_candidate()),
+                CompareWithRecordType());
+  }
 
   VerifyUMAMetricsCollection(test_scenario, histogram_tester);
   VerifyStrikeCounts(test_scenario, *last_import, initial_strikes_for_domain);
@@ -338,8 +376,11 @@ void AddressProfileSaveManagerTest::VerifyFinalProfiles(
   // During a profile migration, a new GUID is assigned to the migrated profile.
   // Since this GUID is randomly selected, the `expected_final_profiles` cannot
   // be set correctly. Thus, for migrations, don't compare the GUIDs.
-  // Same applies to Home & Work profiles.
-  if (!IsMigration(test_scenario) && !IsHomeAndWorkSuperset(test_scenario)) {
+  // Same applies to Home & Work profiles, `kAccountNameEmail`
+  // superset profile import, `kAccountNameEmail` and Home & Work merge.
+  if (!IsMigration(test_scenario) && !IsHomeAndWorkSuperset(test_scenario) &&
+      !IsNameEmailSuperset(test_scenario) &&
+      !IsHomeWorkNameEmailMerge(test_scenario)) {
     EXPECT_THAT(test_scenario.expected_final_profiles,
                 testing::UnorderedElementsAreArray(final_profiles));
   } else {
@@ -387,15 +428,22 @@ void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
       kProfileMigrationDecisionHistogram, kProfileMigrationEditsHistogram};
   constexpr ImportHistogramNames update_home_and_work_profile_histograms = {
       kHomeAndWorkProfileUpdateHistogram};
-
+  constexpr ImportHistogramNames name_email_profile_superset_histogram = {
+      kNameEmailProfileSupersetHistogram};
+  constexpr ImportHistogramNames home_or_work_name_email_merge_histogram = {
+      kHomeOrWorkAndNameEmailMergeHistogram};
   // If the import was not a new profile, confirmable merge or migration, test
   // that the corresponding histograms are unchanged.
   if (!IsNewProfile(test_scenario) && !IsConfirmableMerge(test_scenario) &&
-      !IsMigration(test_scenario) && !IsHomeAndWorkSuperset(test_scenario)) {
+      !IsMigration(test_scenario) && !IsHomeAndWorkSuperset(test_scenario) &&
+      !IsNameEmailSuperset(test_scenario) &&
+      !IsHomeWorkNameEmailMerge(test_scenario)) {
     new_profile_histograms.ExpectAllEmpty(histogram_tester);
     update_profile_histograms.ExpectAllEmpty(histogram_tester);
     migrate_profile_histograms.ExpectAllEmpty(histogram_tester);
     update_home_and_work_profile_histograms.ExpectAllEmpty(histogram_tester);
+    name_email_profile_superset_histogram.ExpectAllEmpty(histogram_tester);
+    home_or_work_name_email_merge_histogram.ExpectAllEmpty(histogram_tester);
     return;
   }
   // The import can only be one of {new, updated, migrated} profile at once.
@@ -403,7 +451,9 @@ void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
       std::ranges::count(
           std::vector<bool>{
               IsNewProfile(test_scenario), IsConfirmableMerge(test_scenario),
-              IsMigration(test_scenario), IsHomeAndWorkSuperset(test_scenario)},
+              IsMigration(test_scenario), IsHomeAndWorkSuperset(test_scenario),
+              IsNameEmailSuperset(test_scenario),
+              IsHomeWorkNameEmailMerge(test_scenario)},
           true),
       1);
 
@@ -412,6 +462,10 @@ void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
       : IsConfirmableMerge(test_scenario) ? update_profile_histograms
       : IsHomeAndWorkSuperset(test_scenario)
           ? update_home_and_work_profile_histograms
+      : IsNameEmailSuperset(test_scenario)
+          ? name_email_profile_superset_histogram
+      : IsHomeWorkNameEmailMerge(test_scenario)
+          ? home_or_work_name_email_merge_histogram
           : migrate_profile_histograms;
   // Expect records in the affected histograms.
   histogram_tester.ExpectUniqueSample(affected_histograms.decision,
@@ -427,8 +481,9 @@ void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
   // Expect no records in all unaffected histograms.
   for (const ImportHistogramNames* histograms :
        {&new_profile_histograms, &update_profile_histograms,
-        &migrate_profile_histograms,
-        &update_home_and_work_profile_histograms}) {
+        &migrate_profile_histograms, &update_home_and_work_profile_histograms,
+        &name_email_profile_superset_histogram,
+        &home_or_work_name_email_merge_histogram}) {
     if (histograms != &affected_histograms) {
       histograms->ExpectAllEmpty(histogram_tester);
     }
@@ -482,7 +537,7 @@ void AddressProfileSaveManagerTest::VerifyStrikeCounts(
   // profile was declined.
   const int profile_save_strikes =
       address_data_manager().GetProfileSaveStrikeDatabase()->GetStrikes(
-          form_url().host());
+          form_url().GetHost());
   if (IsNewProfile(test_scenario) && last_import.UserDeclined()) {
     EXPECT_EQ(initial_strikes_for_domain + 1, profile_save_strikes);
   } else if (IsNewProfile(test_scenario) && last_import.UserAccepted()) {
@@ -496,7 +551,7 @@ void AddressProfileSaveManagerTest::VerifyStrikeCounts(
 
   // Check that the strike count for profile updates is reset if a profile was
   // updated.
-  const StrikeDatabaseIntegratorBase* db =
+  const strike_database::StrikeDatabaseIntegratorBase* db =
       address_data_manager().GetProfileUpdateStrikeDatabase();
   if ((IsConfirmableMerge(test_scenario) ||
        IsHomeAndWorkSuperset(test_scenario)) &&
@@ -526,12 +581,18 @@ void AddressProfileSaveManagerTest::VerifyStrikeCounts(
     // Note that in these tests each profiles starts with one strike.
     EXPECT_EQ(last_import.user_decision() == UserDecision::kNever ? 3 : 2,
               db->GetStrikes(test_scenario.import_candidate->guid()));
-  } else if (test_scenario.import_candidate.has_value() &&
-             !IsNewProfile(test_scenario)) {
-    // The initial strike count of 1 is only set for all
-    // `test_scenario.existing_profiles`. New profiles start at 0.
-    EXPECT_EQ(IsNewProfile(test_scenario) ? 0 : 1,
-              db->GetStrikes(test_scenario.import_candidate->guid()));
+  } else if (test_scenario.import_candidate.has_value()) {
+    // The test fixture adds one strike for every existing profile. But since
+    // the import candidate in new profile scenarios (including Home & Work,
+    // `kAccountNameEmail`, `kAccountNameEmail` and Home & Work merge) is not an
+    // existing profile, their strike count is 0.
+    if (IsNewProfile(test_scenario) || IsHomeAndWorkSuperset(test_scenario) ||
+        IsNameEmailSuperset(test_scenario) ||
+        IsHomeWorkNameEmailMerge(test_scenario)) {
+      EXPECT_EQ(0, db->GetStrikes(test_scenario.import_candidate->guid()));
+    } else {
+      EXPECT_EQ(1, db->GetStrikes(test_scenario.import_candidate->guid()));
+    }
   }
 }
 
@@ -555,7 +616,11 @@ void AddressProfileSaveManagerTest::VerifyUkmForAddressImport(
           AutofillProfileImportType::
               kSuppressedConfirmableMergeAndSilentUpdate &&
       test_scenario.expected_import_type !=
-          AutofillProfileImportType::kHomeAndWorkSuperset;
+          AutofillProfileImportType::kHomeAndWorkSuperset &&
+      test_scenario.expected_import_type !=
+          AutofillProfileImportType::kNameEmailSuperset &&
+      test_scenario.expected_import_type !=
+          AutofillProfileImportType::kHomeWorkNameEmailMerge;
 
   auto entries =
       ukm_recorder->GetEntriesByName(UkmAddressProfileImportType::kEntryName);
@@ -773,7 +838,7 @@ TEST_P(AddressProfileSaveManagerTest,
        SilentlyUpdateProfile_DisabledByFeatureFlag) {
   base::test::ScopedFeatureList disabled_update_feature;
   disabled_update_feature.InitAndEnableFeature(
-      features::test::kAutofillDisableSilentProfileUpdates);
+      features::debug::kAutofillDisableSilentProfileUpdates);
 
   AutofillProfile observed_profile = test::StandardProfile();
   AutofillProfile updateable_profile = test::UpdateableStandardProfile();
@@ -866,7 +931,7 @@ TEST_P(AddressProfileSaveManagerTest,
        UserConfirmableMerge_DisabledByFeatureFlag) {
   base::test::ScopedFeatureList disabled_update_feature;
   disabled_update_feature.InitAndEnableFeature(
-      features::test::kAutofillDisableProfileUpdates);
+      features::debug::kAutofillDisableProfileUpdates);
 
   AutofillProfile observed_profile = test::StandardProfile();
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
@@ -989,209 +1054,25 @@ TEST_P(AddressProfileSaveManagerTest, UserConfirmableMerge_Declined) {
 
 // Test a mixed scenario in which a duplicate profile already exists, but a
 // another profile is mergeable with the observed profile.
+// In this case prevent showing an update dialog because the user may have just
+// autofilled the form. Seeing an update prompt for the data that was just
+// filled would be surprising. On the next version update, the mergeable profile
+// will be deduped.
+// Regression test for crbug.com/447295932.
 TEST_P(AddressProfileSaveManagerTest, UserConfirmableMergeAndDuplicate) {
   AutofillProfile observed_profile = test::StandardProfile();
   AutofillProfile existing_duplicate = test::StandardProfile();
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
 
-  AutofillProfile merged_profile = observed_profile;
-  test::CopyGUID(mergeable_profile, &merged_profile);
-
   ImportScenarioTestCase test_scenario{
       .existing_profiles = {existing_duplicate, mergeable_profile},
-      .observed_profile = observed_profile,
-      .is_prompt_expected = true,
-      .user_decision = UserDecision::kAccepted,
-      .expected_import_type = AutofillProfileImportType::kConfirmableMerge,
-      .is_profile_change_expected = true,
-      .merge_candidate = mergeable_profile,
-      .import_candidate = merged_profile,
-      .expected_final_profiles = {existing_duplicate, merged_profile},
-      .expected_affected_types_in_merge_for_metrics = {
-          SettingsVisibleFieldTypeForMetrics::kZip,
-          SettingsVisibleFieldTypeForMetrics::kCity}};
-
-  TestImportScenario(test_scenario);
-}
-
-// Test a mixed scenario in which a duplicate profile already exists, but a
-// another profile is mergeable with the observed profile. The result should not
-// be affected by the fact that the domain is blocked for the import of new
-// profiles.
-TEST_P(AddressProfileSaveManagerTest,
-       UserConfirmableMergeAndDuplicateOnBlockedDomain) {
-  AutofillProfile observed_profile = test::StandardProfile();
-  AutofillProfile existing_duplicate = test::StandardProfile();
-  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
-
-  AutofillProfile merged_profile = observed_profile;
-  test::CopyGUID(mergeable_profile, &merged_profile);
-
-  ImportScenarioTestCase test_scenario{
-      .existing_profiles = {existing_duplicate, mergeable_profile},
-      .observed_profile = observed_profile,
-      .is_prompt_expected = true,
-      .user_decision = UserDecision::kAccepted,
-      .expected_import_type = AutofillProfileImportType::kConfirmableMerge,
-      .is_profile_change_expected = true,
-      .merge_candidate = mergeable_profile,
-      .import_candidate = merged_profile,
-      .expected_final_profiles = {existing_duplicate, merged_profile},
-      .expected_affected_types_in_merge_for_metrics =
-          {SettingsVisibleFieldTypeForMetrics::kZip,
-           SettingsVisibleFieldTypeForMetrics::kCity},
-      .new_profiles_suppresssed_for_domain = true};
-
-  TestImportScenario(test_scenario);
-}
-
-// Test a mixed scenario in which a duplicate profile already exists, but a
-// another profile is mergeable with the observed profile and yet another
-// profile can be silently updated.
-TEST_P(AddressProfileSaveManagerTest,
-       UserConfirmableMergeAndUpdateAndDuplicate) {
-  AutofillProfile observed_profile = test::StandardProfile();
-  AutofillProfile existing_duplicate = test::StandardProfile();
-  AutofillProfile updateable_profile = test::UpdateableStandardProfile();
-  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
-
-  // Both the mergeable and updateable profile should have the same values as
-  // the observed profile.
-  AutofillProfile merged_profile = observed_profile;
-  AutofillProfile updated_profile = observed_profile;
-  // However, the GUIDs must be maintained.
-  test::CopyGUID(updateable_profile, &updated_profile);
-  test::CopyGUID(mergeable_profile, &merged_profile);
-
-  ImportScenarioTestCase test_scenario{
-      .existing_profiles = {existing_duplicate, mergeable_profile,
-                            updateable_profile},
-      .observed_profile = observed_profile,
-      .is_prompt_expected = true,
-      .user_decision = UserDecision::kAccepted,
-      .expected_import_type =
-          AutofillProfileImportType::kConfirmableMergeAndSilentUpdate,
-      .is_profile_change_expected = true,
-      .merge_candidate = mergeable_profile,
-      .import_candidate = merged_profile,
-      .expected_final_profiles = {existing_duplicate, updated_profile,
-                                  merged_profile},
-      .expected_affected_types_in_merge_for_metrics = {
-          SettingsVisibleFieldTypeForMetrics::kZip,
-          SettingsVisibleFieldTypeForMetrics::kCity}};
-
-  TestImportScenario(test_scenario);
-}
-
-// Same as above, but the merge candidate is blocked for updates.
-TEST_P(AddressProfileSaveManagerTest,
-       UserConfirmableMergeAndUpdateAndDuplicate_Blocked) {
-  AutofillProfile observed_profile = test::StandardProfile();
-  AutofillProfile existing_duplicate = test::StandardProfile();
-  AutofillProfile updateable_profile = test::UpdateableStandardProfile();
-  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
-
-  // Both the mergeable and updateable profile should have the same values as
-  // the observed profile.
-  AutofillProfile merged_profile = observed_profile;
-  AutofillProfile updated_profile = observed_profile;
-  // However, the GUIDs must be maintained.
-  test::CopyGUID(updateable_profile, &updated_profile);
-  test::CopyGUID(mergeable_profile, &merged_profile);
-
-  ImportScenarioTestCase test_scenario{
-      .existing_profiles = {existing_duplicate, mergeable_profile,
-                            updateable_profile},
       .observed_profile = observed_profile,
       .is_prompt_expected = false,
       .user_decision = UserDecision::kUserNotAsked,
       .expected_import_type =
-          AutofillProfileImportType::kSuppressedConfirmableMergeAndSilentUpdate,
-      .is_profile_change_expected = true,
-      .expected_final_profiles = {existing_duplicate, mergeable_profile,
-                                  updated_profile},
-      .blocked_guids_for_updates = {mergeable_profile.guid()}};
-
-  TestImportScenario(test_scenario);
-}
-
-// Test a mixed scenario in which a duplicate profile already exists, but a
-// another profile is mergeable with the observed profile and yet another
-// profile can be silently updated. Here, the merge is declined.
-TEST_P(AddressProfileSaveManagerTest,
-       UserConfirmableMergeAndUpdateAndDuplicate_Declined) {
-  AutofillProfile observed_profile = test::StandardProfile();
-  AutofillProfile existing_duplicate = test::StandardProfile();
-  AutofillProfile updateable_profile = test::UpdateableStandardProfile();
-  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
-
-  // Both the mergeable and updateable profile should have the same values as
-  // the observed profile.
-  AutofillProfile merged_profile = observed_profile;
-  AutofillProfile updated_profile = observed_profile;
-  // However, the GUIDs must be maintained.
-  test::CopyGUID(updateable_profile, &updated_profile);
-  test::CopyGUID(mergeable_profile, &merged_profile);
-
-  ImportScenarioTestCase test_scenario{
-      .existing_profiles = {existing_duplicate, mergeable_profile,
-                            updateable_profile},
-      .observed_profile = observed_profile,
-      .is_prompt_expected = true,
-      .user_decision = UserDecision::kDeclined,
-      .expected_import_type =
-          AutofillProfileImportType::kConfirmableMergeAndSilentUpdate,
-      .is_profile_change_expected = true,
-      .merge_candidate = mergeable_profile,
-      .import_candidate = merged_profile,
-      .expected_final_profiles = {existing_duplicate, updated_profile,
-                                  mergeable_profile},
-      .expected_affected_types_in_merge_for_metrics = {
-          SettingsVisibleFieldTypeForMetrics::kZip,
-          SettingsVisibleFieldTypeForMetrics::kCity}};
-
-  TestImportScenario(test_scenario);
-}
-
-// Test a mixed scenario in which a duplicate profile already exists, but a
-// another profile is mergeable with the observed profile and yet another
-// profile can be silently updated. Here, the merge is accepted with edits.
-TEST_P(AddressProfileSaveManagerTest,
-       UserConfirmableMergeAndUpdateAndDuplicate_Edited) {
-  AutofillProfile observed_profile = test::StandardProfile();
-  AutofillProfile existing_duplicate = test::StandardProfile();
-  AutofillProfile updateable_profile = test::UpdateableStandardProfile();
-  AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
-  AutofillProfile edited_profile = test::DifferentFromStandardProfile();
-
-  // Both the mergeable and updateable profile should have the same values as
-  // the observed profile.
-  AutofillProfile merged_profile = observed_profile;
-  AutofillProfile updated_profile = observed_profile;
-  // However, the GUIDs must be maintained.
-  test::CopyGUID(updateable_profile, &updated_profile);
-  test::CopyGUID(mergeable_profile, &merged_profile);
-  test::CopyGUID(mergeable_profile, &edited_profile);
-
-  ImportScenarioTestCase test_scenario{
-      .existing_profiles = {existing_duplicate, mergeable_profile,
-                            updateable_profile},
-      .observed_profile = observed_profile,
-      .is_prompt_expected = true,
-      .user_decision = UserDecision::kEditAccepted,
-      .edited_profile = edited_profile,
-      .expected_import_type =
-          AutofillProfileImportType::kConfirmableMergeAndSilentUpdate,
-      .is_profile_change_expected = true,
-      .merge_candidate = mergeable_profile,
-      .import_candidate = merged_profile,
-      .expected_final_profiles = {existing_duplicate, updated_profile,
-                                  edited_profile},
-      .expected_edited_types_for_metrics = {
-          SettingsVisibleFieldTypeForMetrics::kName,
-          SettingsVisibleFieldTypeForMetrics::kStreetAddress,
-          SettingsVisibleFieldTypeForMetrics::kCity,
-          SettingsVisibleFieldTypeForMetrics::kZip}};
+          AutofillProfileImportType::kSuppressedConfirmableMerge,
+      .is_profile_change_expected = false,
+      .expected_final_profiles = {existing_duplicate, mergeable_profile}};
 
   TestImportScenario(test_scenario);
 }
@@ -1396,14 +1277,12 @@ TEST_P(AddressProfileSaveManagerTest, Migration_Never) {
 // observed, it is offered as an update profile prompt but results in the
 // creation of a new profile.
 TEST_P(AddressProfileSaveManagerTest, HomeAndWorkSuperset_UpdateHomeProfile) {
+  address_data_manager().SetIsEligibleForAddressAccountStorage(true);
   AutofillProfile observed_profile = test::StandardProfile();
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
   test_api(mergeable_profile)
       .set_record_type(AutofillProfile::RecordType::kAccountHome);
-  AutofillProfile final_profile = observed_profile;
-  test_api(final_profile)
-      .set_record_type(AutofillProfile::RecordType::kAccountHome);
-  test::CopyGUID(mergeable_profile, &final_profile);
+  AutofillProfile final_profile = observed_profile.ConvertToAccountProfile();
 
   ImportScenarioTestCase test_scenario{
       .existing_profiles = {mergeable_profile},
@@ -1414,8 +1293,7 @@ TEST_P(AddressProfileSaveManagerTest, HomeAndWorkSuperset_UpdateHomeProfile) {
       .is_profile_change_expected = true,
       .merge_candidate = mergeable_profile,
       .import_candidate = final_profile,
-      .expected_final_profiles = {observed_profile.ConvertToAccountProfile(),
-                                  mergeable_profile},
+      .expected_final_profiles = {final_profile},
       .expected_affected_types_in_merge_for_metrics = {
           SettingsVisibleFieldTypeForMetrics::kZip,
           SettingsVisibleFieldTypeForMetrics::kCity}};
@@ -1427,14 +1305,12 @@ TEST_P(AddressProfileSaveManagerTest, HomeAndWorkSuperset_UpdateHomeProfile) {
 // observed, it is offered as an update profile prompt but results in the
 // creation of a new profile.
 TEST_P(AddressProfileSaveManagerTest, HomeAndWorkSuperset_UpdateWorkProfile) {
+  address_data_manager().SetIsEligibleForAddressAccountStorage(true);
   AutofillProfile observed_profile = test::StandardProfile();
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
   test_api(mergeable_profile)
       .set_record_type(AutofillProfile::RecordType::kAccountWork);
-  AutofillProfile final_profile = observed_profile;
-  test_api(final_profile)
-      .set_record_type(AutofillProfile::RecordType::kAccountWork);
-  test::CopyGUID(mergeable_profile, &final_profile);
+  AutofillProfile final_profile = observed_profile.ConvertToAccountProfile();
 
   ImportScenarioTestCase test_scenario{
       .existing_profiles = {mergeable_profile},
@@ -1445,8 +1321,7 @@ TEST_P(AddressProfileSaveManagerTest, HomeAndWorkSuperset_UpdateWorkProfile) {
       .is_profile_change_expected = true,
       .merge_candidate = mergeable_profile,
       .import_candidate = final_profile,
-      .expected_final_profiles = {observed_profile.ConvertToAccountProfile(),
-                                  mergeable_profile},
+      .expected_final_profiles = {final_profile},
       .expected_affected_types_in_merge_for_metrics = {
           SettingsVisibleFieldTypeForMetrics::kZip,
           SettingsVisibleFieldTypeForMetrics::kCity}};
@@ -1458,14 +1333,12 @@ TEST_P(AddressProfileSaveManagerTest, HomeAndWorkSuperset_UpdateWorkProfile) {
 // user.
 TEST_P(AddressProfileSaveManagerTest,
        HomeAndWorkSuperset_UpdateHomeProfile_Declined) {
+  address_data_manager().SetIsEligibleForAddressAccountStorage(true);
   AutofillProfile observed_profile = test::StandardProfile();
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
   test_api(mergeable_profile)
       .set_record_type(AutofillProfile::RecordType::kAccountHome);
-  AutofillProfile final_profile = observed_profile;
-  test_api(final_profile)
-      .set_record_type(AutofillProfile::RecordType::kAccountHome);
-  test::CopyGUID(mergeable_profile, &final_profile);
+  AutofillProfile final_profile = observed_profile.ConvertToAccountProfile();
 
   ImportScenarioTestCase test_scenario{
       .existing_profiles = {mergeable_profile},
@@ -1488,14 +1361,12 @@ TEST_P(AddressProfileSaveManagerTest,
 // user.
 TEST_P(AddressProfileSaveManagerTest,
        HomeAndWorkSuperset_UpdateWorkProfile_Declined) {
+  address_data_manager().SetIsEligibleForAddressAccountStorage(true);
   AutofillProfile observed_profile = test::StandardProfile();
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
   test_api(mergeable_profile)
       .set_record_type(AutofillProfile::RecordType::kAccountWork);
-  AutofillProfile final_profile = observed_profile;
-  test_api(final_profile)
-      .set_record_type(AutofillProfile::RecordType::kAccountWork);
-  test::CopyGUID(mergeable_profile, &final_profile);
+  AutofillProfile final_profile = observed_profile.ConvertToAccountProfile();
 
   ImportScenarioTestCase test_scenario{
       .existing_profiles = {mergeable_profile},
@@ -1565,6 +1436,216 @@ TEST_P(AddressProfileSaveManagerTest,
       .merge_candidate = std::nullopt,
       .import_candidate = std::nullopt,
       .expected_final_profiles = {final_profile}};
+  TestImportScenario(test_scenario);
+}
+
+// Tests that when a profile which is a superset of a `kAccountNameEmail`
+// profile is observed, the save profile prompt is offered to the user. In this
+// scenario the user is eligible for the address account storage, thus the save
+// should result in a creation of a new `kAccount` profile. Also, accepting this
+// save should result in the removal of the `kAccountNameEmail` profile.
+TEST_P(AddressProfileSaveManagerTest,
+       NameEmailSuperset_SaveProfile_EligibleUser) {
+  address_data_manager().SetIsEligibleForAddressAccountStorage(true);
+  const AutofillProfile account_name_email_profile =
+      test::AccountNameEmailProfile();
+  const AutofillProfile observed_profile =
+      test::AccountNameEmailProfileSuperset();
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {account_name_email_profile},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = true,
+      .user_decision = UserDecision::kAccepted,
+      .expected_import_type = AutofillProfileImportType::kNameEmailSuperset,
+      .is_profile_change_expected = true,
+      .merge_candidate = std::nullopt,
+      .import_candidate = observed_profile,
+      .expected_final_profiles = {observed_profile}};
+
+  TestImportScenario(test_scenario);
+}
+
+// Tests that when a profile which is a superset of a `kAccountNameEmail`
+// profile is observed, the save profile prompt is offered to the user. In this
+// scenario the user is ineligible for the address account storage, thus the
+// save should result in a creation of a new `kLocalOrSyncable` profile. Also,
+// accepting this save should result in the removal of the `kAccountNameEmail`
+// profile.
+TEST_P(AddressProfileSaveManagerTest,
+       NameEmailSuperset_SaveProfile_IneligibleUser) {
+  address_data_manager().SetIsEligibleForAddressAccountStorage(false);
+  const AutofillProfile account_name_email_profile =
+      test::AccountNameEmailProfile();
+  const AutofillProfile observed_profile =
+      test::AccountNameEmailProfileSuperset();
+  AutofillProfile final_profile = test::AccountNameEmailProfileSuperset();
+  test_api(final_profile)
+      .set_record_type(AutofillProfile::RecordType::kLocalOrSyncable);
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {account_name_email_profile},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = true,
+      .user_decision = UserDecision::kAccepted,
+      .expected_import_type = AutofillProfileImportType::kNameEmailSuperset,
+      .is_profile_change_expected = true,
+      .merge_candidate = std::nullopt,
+      .import_candidate = final_profile,
+      .expected_final_profiles = {final_profile}};
+
+  TestImportScenario(test_scenario);
+}
+
+// Tests that when the user declines the save profile prompt, offered due to a
+// creation of a new `kAccountNameEmail` superset profile, no new profile is
+// created and no existing profile is removed.
+TEST_P(AddressProfileSaveManagerTest, NameEmailSuperset_SaveProfile_Declined) {
+  address_data_manager().SetIsEligibleForAddressAccountStorage(true);
+  const AutofillProfile account_name_email_profile =
+      test::AccountNameEmailProfile();
+  const AutofillProfile observed_profile =
+      test::AccountNameEmailProfileSuperset();
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {account_name_email_profile},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = true,
+      .user_decision = UserDecision::kDeclined,
+      .expected_import_type = AutofillProfileImportType::kNameEmailSuperset,
+      .is_profile_change_expected = false,
+      .merge_candidate = std::nullopt,
+      .import_candidate = observed_profile,
+      .expected_final_profiles = {account_name_email_profile}};
+
+  TestImportScenario(test_scenario);
+}
+
+// Tests that importing an observed profile created as a result of filling both
+// `kAccountNameEmail` and `kAccountWork` profiles, results in a save prompt.
+// When accepted, a new superset profile should be created while the
+// `kAccountNameEmail` profile and the `kAccountWork` profiles should be
+// removed.
+TEST_P(AddressProfileSaveManagerTest, NameEmail_Work_SaveProfile) {
+  address_data_manager().SetIsEligibleForAddressAccountStorage(true);
+  const AutofillProfile account_name_email_profile =
+      test::AccountNameEmailProfile();
+  const AutofillProfile work_profile =
+      test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountWork);
+  const AutofillProfile observed_profile =
+      test::SupersetProfileOf({account_name_email_profile, work_profile},
+                              address_data_manager().app_locale(),
+                              AutofillProfile::RecordType::kAccount);
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {account_name_email_profile, work_profile},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = true,
+      .user_decision = UserDecision::kAccepted,
+      .expected_import_type =
+          AutofillProfileImportType::kHomeWorkNameEmailMerge,
+      .is_profile_change_expected = true,
+      .merge_candidate = std::nullopt,
+      .import_candidate = observed_profile,
+      .expected_final_profiles = {observed_profile}};
+  AddGuidsToImportMetadataCollection(
+      {account_name_email_profile.guid(), work_profile.guid()});
+
+  TestImportScenario(test_scenario);
+}
+
+// Tests that importing an observed profile created as a result of filling both
+// `kAccountNameEmail` and `kAccountHome` profiles, results in a save prompt.
+// When accepted, a new superset profile should be created while the
+// `kAccountNameEmail` profile and the `kAccountHome` profiles should be
+// removed.
+TEST_P(AddressProfileSaveManagerTest, NameEmail_Home_SaveProfile) {
+  address_data_manager().SetIsEligibleForAddressAccountStorage(true);
+  const AutofillProfile account_name_email_profile =
+      test::AccountNameEmailProfile();
+  const AutofillProfile home_profile =
+      test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountHome);
+  const AutofillProfile observed_profile =
+      test::SupersetProfileOf({account_name_email_profile, home_profile},
+                              address_data_manager().app_locale(),
+                              AutofillProfile::RecordType::kAccount);
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {account_name_email_profile, home_profile},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = true,
+      .user_decision = UserDecision::kAccepted,
+      .expected_import_type =
+          AutofillProfileImportType::kHomeWorkNameEmailMerge,
+      .is_profile_change_expected = true,
+      .merge_candidate = std::nullopt,
+      .import_candidate = observed_profile,
+      .expected_final_profiles = {observed_profile}};
+  AddGuidsToImportMetadataCollection(
+      {account_name_email_profile.guid(), home_profile.guid()});
+
+  TestImportScenario(test_scenario);
+}
+
+// Tests that when the user declines the save profile prompt, offered due to a
+// creation of a new `kAccountNameEmail` and `kAccountWork` superset profile, no
+// new profile is created and no existing profile is removed.
+TEST_P(AddressProfileSaveManagerTest, NameEmail_Work_SaveProfile_Declined) {
+  address_data_manager().SetIsEligibleForAddressAccountStorage(true);
+  const AutofillProfile account_name_email_profile =
+      test::AccountNameEmailProfile();
+  const AutofillProfile work_profile =
+      test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountWork);
+  const AutofillProfile observed_profile =
+      test::SupersetProfileOf({account_name_email_profile, work_profile},
+                              address_data_manager().app_locale(),
+                              AutofillProfile::RecordType::kAccount);
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {account_name_email_profile, work_profile},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = true,
+      .user_decision = UserDecision::kDeclined,
+      .expected_import_type =
+          AutofillProfileImportType::kHomeWorkNameEmailMerge,
+      .is_profile_change_expected = false,
+      .merge_candidate = std::nullopt,
+      .import_candidate = observed_profile,
+      .expected_final_profiles = {account_name_email_profile, work_profile}};
+  AddGuidsToImportMetadataCollection(
+      {account_name_email_profile.guid(), work_profile.guid()});
+
+  TestImportScenario(test_scenario);
+}
+
+// Tests that when the user declines the save profile prompt, offered due to a
+// creation of a new `kAccountNameEmail` and `kAccountHome` superset profile, no
+// new profile is created and no existing profile is removed.
+TEST_P(AddressProfileSaveManagerTest, NameEmail_Home_SaveProfile_Declined) {
+  address_data_manager().SetIsEligibleForAddressAccountStorage(true);
+  const AutofillProfile account_name_email_profile =
+      test::AccountNameEmailProfile();
+  const AutofillProfile home_profile =
+      test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountHome);
+  const AutofillProfile observed_profile =
+      test::SupersetProfileOf({account_name_email_profile, home_profile},
+                              address_data_manager().app_locale(),
+                              AutofillProfile::RecordType::kAccount);
+
+  ImportScenarioTestCase test_scenario{
+      .existing_profiles = {account_name_email_profile, home_profile},
+      .observed_profile = observed_profile,
+      .is_prompt_expected = true,
+      .user_decision = UserDecision::kDeclined,
+      .expected_import_type =
+          AutofillProfileImportType::kHomeWorkNameEmailMerge,
+      .is_profile_change_expected = false,
+      .merge_candidate = std::nullopt,
+      .import_candidate = observed_profile,
+      .expected_final_profiles = {account_name_email_profile, home_profile}};
+  AddGuidsToImportMetadataCollection(
+      {account_name_email_profile.guid(), home_profile.guid()});
+
   TestImportScenario(test_scenario);
 }
 

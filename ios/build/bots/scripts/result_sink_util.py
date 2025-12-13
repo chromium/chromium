@@ -196,10 +196,9 @@ def _get_struct_test_dict(test_id):
     struct_test_dict['caseNameComponents'] = [re_match.group(2)]
     found_match = True
 
+  # Assume it's a flat test format otherwise.
   if not found_match:
-    logging.error(
-        'Test id %s did not match known format, so could not be parsed.' %
-        test_id)
+    struct_test_dict['caseNameComponents'] = [test_id]
 
   return struct_test_dict
 

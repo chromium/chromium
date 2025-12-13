@@ -309,6 +309,9 @@ class URLResult : public URLRow {
     blocked_visit_ = blocked_visit;
   }
 
+  bool has_actor_source() const { return actor_source_; }
+  void set_actor_source(bool actor_source) { actor_source_ = actor_source; }
+
   std::optional<std::string> app_id() const { return app_id_; }
   void set_app_id(std::optional<std::string> app_id) { app_id_ = app_id; }
 
@@ -318,8 +321,6 @@ class URLResult : public URLRow {
   const query_parser::Snippet::MatchPositions& title_match_positions() const {
     return title_match_positions_;
   }
-
-  void SwapResult(URLResult* other);
 
   static bool CompareVisitTime(const URLResult& lhs, const URLResult& rhs);
 
@@ -338,6 +339,9 @@ class URLResult : public URLRow {
 
   // Whether a managed user was blocked when attempting to visit this URL.
   bool blocked_visit_ = false;
+
+  // Whether a corresponding visit has `SOURCE_ACTOR` visit source.
+  bool actor_source_ = false;
 
   // ID of the app this entry was generated for. Set to a non-null value
   // on Android only.

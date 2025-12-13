@@ -10,7 +10,8 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/password_manager/android/test_support_jni_headers/PasswordManagerTestUtilsBridge_jni.h"
 
-void JNI_PasswordManagerTestUtilsBridge_DisableServerPredictions(JNIEnv* env) {
+static void JNI_PasswordManagerTestUtilsBridge_DisableServerPredictions(
+    JNIEnv* env) {
   password_manager::PasswordFormManager::
       DisableFillingServerPredictionsForTesting();
 }
@@ -19,3 +20,5 @@ void SetUpGmsCoreFakeBackends() {
   Java_PasswordManagerTestUtilsBridge_setUpGmsCoreFakeBackends(
       jni_zero::AttachCurrentThread());
 }
+
+DEFINE_JNI(PasswordManagerTestUtilsBridge)

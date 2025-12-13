@@ -13,7 +13,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-gpu-fyi-archive",
               "builder_group": "tryserver.chromium.win",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -40,7 +39,8 @@
         }
       ],
       "retry_failed_shards": false,
-      "targets_spec_directory": "src/infra/config/generated/builders/try/win_optional_gpu_tests_rel/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/win_optional_gpu_tests_rel/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/flakiness": {

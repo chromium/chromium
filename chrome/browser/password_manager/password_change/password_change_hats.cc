@@ -37,7 +37,8 @@ PasswordChangeHats::~PasswordChangeHats() = default;
 
 void PasswordChangeHats::MaybeLaunchSurvey(
     const std::string& trigger,
-    base::TimeDelta password_change_duration,
+    std::optional<base::TimeDelta> password_change_duration,
+    std::optional<bool> blocking_challenge_detected,
     content::WebContents* web_contents) {
   if (!hats_service_) {
     return;
@@ -48,8 +49,6 @@ void PasswordChangeHats::MaybeLaunchSurvey(
       ukm::GetExponentialBucketMinForCounts1000(passwords_count_);
   int64_t bucketed_leaked_passwords_count =
       ukm::GetExponentialBucketMinForCounts1000(leaked_passwords_count_);
-  int64_t bucketed_runtime = ukm::GetSemanticBucketMinForDurationTiming(
-      password_change_duration.InMilliseconds());
 
   // Hats service requires defined product-specific data to be non-empty.
   // Pass -1 if the data is not fetched yet, so it can be filtered out.
@@ -58,19 +57,32 @@ void PasswordChangeHats::MaybeLaunchSurvey(
     bucketed_leaked_passwords_count = -1;
   }
 
+  SurveyStringData survey_string_data = {
+      {password_manager::features_util::kPasswordChangeBreachedPasswordsCount,
+       base::ToString(bucketed_leaked_passwords_count)},
+      {password_manager::features_util::kPasswordChangeSavedPasswordsCount,
+       base::ToString(bucketed_passwords_count)}};
+  if (password_change_duration.has_value()) {
+    int64_t bucketed_runtime = ukm::GetSemanticBucketMinForDurationTiming(
+        password_change_duration->InMilliseconds());
+    survey_string_data
+        [password_manager::features_util::kPasswordChangeRuntime] =
+            base::ToString(bucketed_runtime);
+  }
+
+  SurveyBitsData survey_bits_data = {
+      {password_manager::features_util::
+           kPasswordChangeSuggestedPasswordsAdoption,
+       adopted_generated_passwords_}};
+  if (blocking_challenge_detected.has_value()) {
+    survey_bits_data[password_manager::features_util::
+                         kPasswordChangeBlockingChallengeDetected] =
+        *blocking_challenge_detected;
+  }
+
   hats_service_->LaunchDelayedSurveyForWebContents(
       trigger, web_contents,
-      /*timeout_ms=*/0, /*product_specific_bits_data=*/
-      {{password_manager::features_util::
-            kPasswordChangeSuggestedPasswordsAdoption,
-        adopted_generated_passwords_}},
-      /*product_specific_string_data=*/
-      {{password_manager::features_util::kPasswordChangeBreachedPasswordsCount,
-        base::ToString(bucketed_leaked_passwords_count)},
-       {password_manager::features_util::kPasswordChangeSavedPasswordsCount,
-        base::ToString(bucketed_passwords_count)},
-       {password_manager::features_util::kPasswordChangeRuntime,
-        base::ToString(bucketed_runtime)}});
+      /*timeout_ms=*/0, survey_bits_data, survey_string_data);
 }
 
 void PasswordChangeHats::OnGetPasswordStoreResultsOrErrorFrom(

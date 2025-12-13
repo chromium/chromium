@@ -313,7 +313,7 @@ IDBRequest* IDBCursor::Delete(ScriptState* script_state,
       script_state, this, transaction_.Get(), std::move(metrics));
   transaction_->db().Delete(
       transaction_->Id(), EffectiveObjectStore()->Id(), IdbPrimaryKey(),
-      WTF::BindOnce(&IDBRequest::OnDelete, WrapPersistent(request)));
+      BindOnce(&IDBRequest::OnDelete, WrapPersistent(request)));
   return request;
 }
 
@@ -496,9 +496,9 @@ void IDBCursor::AdvanceImpl(uint32_t count, IDBRequest* request) {
   // Reset all cursor prefetch caches except for this cursor.
   ResetCursorPrefetchCaches(transaction_->Id(), this);
 
-  remote_->Advance(
-      count, WTF::BindOnce(&IDBCursor::AdvanceCallback, WrapPersistent(this),
-                           WrapWeakPersistent(request)));
+  remote_->Advance(count,
+                   BindOnce(&IDBCursor::AdvanceCallback, WrapPersistent(this),
+                            WrapWeakPersistent(request)));
 }
 
 void IDBCursor::AdvanceCallback(IDBRequest* request,
@@ -531,8 +531,8 @@ void IDBCursor::CursorContinue(const IDBKey* key,
 
       remote_->Prefetch(
           prefetch_amount_,
-          WTF::BindOnce(&IDBCursor::PrefetchCallback, WrapPersistent(this),
-                        WrapWeakPersistent(request)));
+          BindOnce(&IDBCursor::PrefetchCallback, WrapPersistent(this),
+                   WrapWeakPersistent(request)));
 
       // Increase prefetch_amount_ exponentially.
       prefetch_amount_ *= 2;
@@ -549,10 +549,9 @@ void IDBCursor::CursorContinue(const IDBKey* key,
 
   // Reset all cursor prefetch caches except for this cursor.
   ResetCursorPrefetchCaches(transaction_->Id(), this);
-  remote_->Continue(
-      IDBKey::Clone(key), IDBKey::Clone(primary_key),
-      WTF::BindOnce(&IDBCursor::AdvanceCallback, WrapPersistent(this),
-                    WrapWeakPersistent(request)));
+  remote_->Continue(IDBKey::Clone(key), IDBKey::Clone(primary_key),
+                    BindOnce(&IDBCursor::AdvanceCallback, WrapPersistent(this),
+                             WrapWeakPersistent(request)));
 }
 
 void IDBCursor::PrefetchCallback(IDBRequest* request,
@@ -659,9 +658,9 @@ void IDBCursor::CachedContinue(IDBRequest* request) {
     request->GetExecutionContext()
         ->GetTaskRunner(TaskType::kDatabaseAccess)
         ->PostTask(FROM_HERE,
-                   WTF::BindOnce(&IDBRequest::HandleResponseAdvanceCursor,
-                                 WrapWeakPersistent(request), std::move(key),
-                                 std::move(primary_key), std::move(value)));
+                   BindOnce(&IDBRequest::HandleResponseAdvanceCursor,
+                            WrapWeakPersistent(request), std::move(key),
+                            std::move(primary_key), std::move(value)));
   }
 }
 

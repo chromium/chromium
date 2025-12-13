@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">流派</translation>
 <translation id="1254593899333212300">直接连接到互联网</translation>
 <translation id="1272293450992660632">PIN 码的值不一致。</translation>
+<translation id="1279040297980392566">正在等待扫描完成，请稍后重试</translation>
 <translation id="1280820357415527819">正在搜索移动网络</translation>
 <translation id="1293556467332435079">文件</translation>
 <translation id="1297922636971898492">Google云端硬盘暂时无法使用。Google云端硬盘恢复正常后，系统将自动重新开始上传。</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">已选择 1 个文件</translation>
 <translation id="3817579325494460411">未提供</translation>
 <translation id="3819448694985509187">PIN 码不正确。您还有 1 次尝试机会。</translation>
-<translation id="3822559385185038546">此代理已由您的管理员强制启用</translation>
 <translation id="3830674330436234648">无法播放</translation>
 <translation id="383652340667548381">塞尔维亚语</translation>
 <translation id="3839045880592694915">您的运营商不允许连接到您的调制解调器。如需了解详情，请与运营商联系。</translation>
@@ -499,7 +499,7 @@
 <translation id="4935975195727477204">杂色菊</translation>
 <translation id="4943368462779413526">美式足球</translation>
 <translation id="4961158930123534723">已与 Parallels Desktop 共享 1 个文件夹</translation>
-<translation id="4965874878399872778">正在检查文件是否符合贵组织的安全政策…</translation>
+<translation id="4965874878399872778">正在检查文件是否符合您的组织安全政策…</translation>
 <translation id="496656650103537022">“<ph name="FILE_NAME" />”已恢复</translation>
 <translation id="4969785127455456148">专辑</translation>
 <translation id="4972330214479971536">无法完成文件同步设置</translation>
@@ -591,6 +591,7 @@
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="5602622065581044566">保加利亚语注音键盘</translation>
 <translation id="5605830556594064952">美国英语(Dvorak)</translation>
+<translation id="560739212255190568">您的管理员设置了代理替换规则，并强制启用了以下代理</translation>
 <translation id="5618330573454123917">此文件适用于运行 Macintosh 软件的计算机，不适用于运行 Chrome 操作系统的设备。<ph name="BEGIN_LINK_HELP" />详细了解<ph name="END_LINK_HELP" />如何在 Chrome 操作系统中打开文件。</translation>
 <translation id="5625294776298156701">泰米尔语 Tamil99 键盘</translation>
 <translation id="5633226425545095130">移动此内容会将其分享给所有能看到共享文件夹“<ph name="DESTINATION_NAME" />”的人。</translation>
@@ -628,7 +629,7 @@
 <translation id="5838825566232597749">美式 Workman 国际</translation>
 <translation id="5845721951356578987">护士</translation>
 <translation id="5858478190805449225">省电模式已开启。请在省电模式关闭后重试。</translation>
-<translation id="5860491529813859533">启用</translation>
+<translation id="5860491529813859533">开启</translation>
 <translation id="5861477046012235702">玩家</translation>
 <translation id="5864471791310927901">DHCP 查找失败</translation>
 <translation id="5896749729057314184">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，未激活，信号强度 <ph name="SIGNAL_STRENGTH" />%，详细信息</translation>
@@ -700,7 +701,7 @@
 <translation id="6430271654280079150">您还有 1 次尝试机会。</translation>
 <translation id="643243556292470964">被删除的文件现已移至回收站</translation>
 <translation id="6438480100790416671">正在检查存储空间…</translation>
-<translation id="6451527188465304418">正在检查文件是否符合贵组织的安全政策…</translation>
+<translation id="6451527188465304418">正在检查文件是否符合您的组织安全政策…</translation>
 <translation id="6485131920355264772">检索存储空间信息失败</translation>
 <translation id="6495925982925244349">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，由您的管理员管理，详细信息</translation>
 <translation id="649877868557234318">正在将文件“<ph name="FILE_NAME" />”提取到文件夹“<ph name="FOLDER_NAME" />”</translation>
@@ -782,7 +783,7 @@
 <translation id="7075931588889865715">泰语 TIS 820-2531 键盘</translation>
 <translation id="708278670402572152">要想启用扫描，请先断开连接</translation>
 <translation id="7086590977277044826">泰米尔语 InScript 键盘</translation>
-<translation id="7088615885725309056">往前</translation>
+<translation id="7088615885725309056">较早</translation>
 <translation id="7103992300314999525">马其顿语</translation>
 <translation id="7104338189998813914">访问您的 OneDrive 账号时出现问题</translation>
 <translation id="7106346894903675391">购买更多存储空间...</translation>
@@ -990,6 +991,7 @@
 <translation id="8540608333167683902">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，详细信息</translation>
 <translation id="8545476925160229291">英语（美国）</translation>
 <translation id="854655314928502177">网络代理自动发现网址：</translation>
+<translation id="8547747809824590510">您的管理员设置了代理替换规则</translation>
 <translation id="8549186985808798022">意大利语</translation>
 <translation id="8551494947769799688">拉脱维亚语</translation>
 <translation id="8560515948038859357">粤语</translation>
@@ -1050,6 +1052,7 @@
 <translation id="9038620279323455325">已有名为“<ph name="FILE_NAME" />”的文件。请另选一个名称。</translation>
 <translation id="9046895021617826162">连接失败</translation>
 <translation id="9065512565307033593">如果您未通过验证，我们将禁止您访问网络。</translation>
+<translation id="9079844694307518094">您的管理员正在强制启用以下代理</translation>
 <translation id="908378762078012445">俄语注音 AATSEEL 键盘</translation>
 <translation id="9086302186042011942">正在同步</translation>
 <translation id="9099674669267916096">页数</translation>
@@ -1073,6 +1076,7 @@
 <translation id="9213073329713032541">安装已成功启动。</translation>
 <translation id="9219103736887031265">图片</translation>
 <translation id="9219908252191632183">月球表面</translation>
+<translation id="931652069802536959">网络已被政策屏蔽</translation>
 <translation id="938470336146445890">请安装用户证书。</translation>
 <translation id="939736085109172342">新建文件夹</translation>
 <translation id="943972244133411984">修改者</translation>

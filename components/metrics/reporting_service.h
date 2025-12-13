@@ -13,6 +13,7 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/metrics/data_use_tracker.h"

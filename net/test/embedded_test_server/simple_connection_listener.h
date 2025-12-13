@@ -42,8 +42,6 @@ class SimpleConnectionListener : public EmbeddedTestServerConnectionListener {
   std::unique_ptr<StreamSocket> AcceptedSocket(
       std::unique_ptr<StreamSocket> socket) override;
   void ReadFromSocket(const StreamSocket& socket, int rv) override;
-  void OnResponseCompletedSuccessfully(
-      std::unique_ptr<StreamSocket> socket) override;
 
   // Wait until the expected number of connections have been seen.
   void WaitForConnections();

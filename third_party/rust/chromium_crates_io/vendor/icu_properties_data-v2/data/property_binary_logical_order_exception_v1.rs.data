@@ -16,9 +16,9 @@
 #[macro_export]
 macro_rules! __impl_property_binary_logical_order_exception_v1 {
     ($ provider : ty) => {
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl $provider {
             #[doc(hidden)]
             pub const SINGLETON_PROPERTY_BINARY_LOGICAL_ORDER_EXCEPTION_V1: &'static <icu::properties::provider::PropertyBinaryLogicalOrderExceptionV1 as icu_provider::DynamicDataMarker>::DataStruct = &icu::properties::provider::PropertyCodePointSet::InversionList(unsafe {
@@ -26,7 +26,7 @@ macro_rules! __impl_property_binary_logical_order_exception_v1 {
                 icu::collections::codepointinvlist::CodePointInversionList::from_parts_unchecked(unsafe { zerovec::ZeroVec::from_bytes_unchecked(b"@\x0E\0E\x0E\0\xC0\x0E\0\xC5\x0E\0\xB5\x19\0\xB8\x19\0\xBA\x19\0\xBB\x19\0\xB5\xAA\0\xB7\xAA\0\xB9\xAA\0\xBA\xAA\0\xBB\xAA\0\xBD\xAA\0") }, 19u32)
             });
         }
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl icu_provider::DataProvider<icu::properties::provider::PropertyBinaryLogicalOrderExceptionV1> for $provider {
             fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu::properties::provider::PropertyBinaryLogicalOrderExceptionV1>, icu_provider::DataError> {
                 if req.id.locale.is_unknown() {
@@ -39,7 +39,7 @@ macro_rules! __impl_property_binary_logical_order_exception_v1 {
     };
     ($ provider : ty , ITER) => {
         __impl_property_binary_logical_order_exception_v1!($provider);
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl icu_provider::IterableDataProvider<icu::properties::provider::PropertyBinaryLogicalOrderExceptionV1> for $provider {
             fn iter_ids(&self) -> Result<std::collections::BtreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
                 Ok([Default::default()].into_iter().collect())
@@ -48,7 +48,7 @@ macro_rules! __impl_property_binary_logical_order_exception_v1 {
     };
     ($ provider : ty , DRY) => {
         __impl_property_binary_logical_order_exception_v1!($provider);
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl icu_provider::DryDataProvider<icu::properties::provider::PropertyBinaryLogicalOrderExceptionV1> for $provider {
             fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
                 if req.id.locale.is_unknown() {
@@ -61,7 +61,7 @@ macro_rules! __impl_property_binary_logical_order_exception_v1 {
     };
     ($ provider : ty , DRY , ITER) => {
         __impl_property_binary_logical_order_exception_v1!($provider);
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl icu_provider::DryDataProvider<icu::properties::provider::PropertyBinaryLogicalOrderExceptionV1> for $provider {
             fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
                 if req.id.locale.is_unknown() {
@@ -71,7 +71,7 @@ macro_rules! __impl_property_binary_logical_order_exception_v1 {
                 }
             }
         }
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl icu_provider::IterableDataProvider<icu::properties::provider::PropertyBinaryLogicalOrderExceptionV1> for $provider {
             fn iter_ids(&self) -> Result<std::collections::BtreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
                 Ok([Default::default()].into_iter().collect())

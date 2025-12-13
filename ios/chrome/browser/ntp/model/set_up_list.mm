@@ -6,17 +6,17 @@
 
 #import <vector>
 
-#import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/ntp_tiles/pref_names.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/base/user_selectable_type.h"
-#import "components/sync/service/sync_service.h"
-#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
-#import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_delegate.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
@@ -27,8 +27,6 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 
 using set_up_list_prefs::SetUpListItemState;
@@ -38,10 +36,8 @@ namespace {
 bool GetIsItemComplete(SetUpListItemType type,
                        PrefService* prefs,
                        PrefService* local_state,
-                       AuthenticationService* auth_service) {
+                       signin::IdentityManager* identity_manager) {
   switch (type) {
-    case SetUpListItemType::kSignInSync:
-      return auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
     case SetUpListItemType::kDefaultBrowser:
       return IsChromeLikelyDefaultBrowser();
     case SetUpListItemType::kAutofill:
@@ -54,13 +50,11 @@ bool GetIsItemComplete(SetUpListItemType type,
           auth_status == UNAuthorizationStatusProvisional) {
         return false;
       }
-      id<SystemIdentity> identity =
-          auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+      CoreAccountInfo account = identity_manager->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
       return push_notification_settings::
-          IsMobileNotificationsEnabledForAnyClient(GaiaId(identity.gaiaID),
-                                                   prefs);
+          IsMobileNotificationsEnabledForAnyClient(account.gaia, prefs);
     }
-    case SetUpListItemType::kFollow:
     case SetUpListItemType::kAllSet:
       NOTREACHED();
   }
@@ -69,14 +63,14 @@ bool GetIsItemComplete(SetUpListItemType type,
 SetUpListItem* BuildItem(SetUpListItemType type,
                          PrefService* prefs,
                          PrefService* local_state,
-                         AuthenticationService* auth_service) {
+                         signin::IdentityManager* identity_manager) {
   SetUpListItemState state = set_up_list_prefs::GetItemState(local_state, type);
   SetUpListItemState new_state = state;
   bool complete = false;
   switch (state) {
     case SetUpListItemState::kUnknown:
     case SetUpListItemState::kNotComplete:
-      complete = GetIsItemComplete(type, prefs, local_state, auth_service);
+      complete = GetIsItemComplete(type, prefs, local_state, identity_manager);
       // If complete, mark it as "not in list" for next time, but add to list
       // this time.
       new_state = complete ? SetUpListItemState::kCompleteInList
@@ -111,22 +105,11 @@ BOOL AllItemsComplete(NSArray<SetUpListItem*>* items) {
 }
 
 // Returns an ordered list of SetUpListItemType to show.
-std::vector<SetUpListItemType> GetSetUpListItemTypeOrder(
-    syncer::SyncService* sync_service,
-    AuthenticationService* auth_service,
-    bool is_content_notification_enabled) {
+std::vector<SetUpListItemType> GetSetUpListItemTypeOrder() {
   std::vector<SetUpListItemType> items;
   items.push_back(SetUpListItemType::kDefaultBrowser);
   items.push_back(SetUpListItemType::kAutofill);
   items.push_back(SetUpListItemType::kNotifications);
-
-  if (auth_service->SigninEnabled() &&
-      !sync_service->HasDisableReason(
-          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) &&
-      !HasManagedSyncDataType(sync_service) &&
-      !base::FeatureList::IsEnabled(set_up_list::kSetUpListWithoutSignInItem)) {
-    items.push_back(SetUpListItemType::kSignInSync);
-  }
 
   return items;
 }
@@ -146,19 +129,17 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder(
 }
 
 + (instancetype)buildFromPrefs:(PrefService*)prefs
-                    localState:(PrefService*)localState
-                   syncService:(syncer::SyncService*)syncService
-         authenticationService:(AuthenticationService*)authService
-    contentNotificationEnabled:(BOOL)isContentNotificationEnabled {
-  if (!prefs->GetBoolean(prefs::kHomeCustomizationMagicStackSetUpListEnabled)) {
+               identityManager:(signin::IdentityManager*)identityManager
+                    localState:(PrefService*)localState {
+  if (!prefs->GetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled)) {
     return nil;
   }
 
   NSMutableArray<SetUpListItem*>* items = [NSMutableArray array];
-  std::vector<SetUpListItemType> itemTypeOrder = GetSetUpListItemTypeOrder(
-      syncService, authService, isContentNotificationEnabled);
+  std::vector<SetUpListItemType> itemTypeOrder = GetSetUpListItemTypeOrder();
   for (SetUpListItemType itemType : itemTypeOrder) {
-    AddItemIfNotNil(items, BuildItem(itemType, prefs, localState, authService));
+    AddItemIfNotNil(items,
+                    BuildItem(itemType, prefs, localState, identityManager));
   }
 
   // Once all items are complete, set them to disappear from the list the next
@@ -171,17 +152,11 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder(
     set_up_list_prefs::MarkAllItemsComplete(localState);
   }
 
-  // TODO(crbug.com/40262090): Add a Follow item to the Set Up List.
-  return [[self alloc] initWithItems:items
-                          localState:localState
-               authenticationService:authService
-          contentNotificationEnabled:isContentNotificationEnabled];
+  return [[self alloc] initWithItems:items localState:localState];
 }
 
 - (instancetype)initWithItems:(NSArray<SetUpListItem*>*)items
-                    localState:(PrefService*)localState
-         authenticationService:(AuthenticationService*)authService
-    contentNotificationEnabled:(BOOL)isContentNotificationEnabled {
+                   localState:(PrefService*)localState {
   self = [super init];
   if (self) {
     _items = items;
@@ -189,13 +164,9 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder(
     _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
     _prefChangeRegistrar.Init(localState);
     _prefObserverBridge->ObserveChangesForPreference(
-        set_up_list_prefs::kSigninSyncItemState, &_prefChangeRegistrar);
-    _prefObserverBridge->ObserveChangesForPreference(
         set_up_list_prefs::kDefaultBrowserItemState, &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
         set_up_list_prefs::kAutofillItemState, &_prefChangeRegistrar);
-    _prefObserverBridge->ObserveChangesForPreference(
-        set_up_list_prefs::kFollowItemState, &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(
         set_up_list_prefs::kNotificationsItemState, &_prefChangeRegistrar);
   }
@@ -216,9 +187,6 @@ std::vector<SetUpListItemType> GetSetUpListItemTypeOrder(
   NSMutableArray* itemTypes = [[NSMutableArray alloc]
       initWithObjects:@(int(SetUpListItemType::kDefaultBrowser)),
                       @(int(SetUpListItemType::kAutofill)), nil];
-  if (!base::FeatureList::IsEnabled(set_up_list::kSetUpListWithoutSignInItem)) {
-    [itemTypes addObject:@(int(SetUpListItemType::kSignInSync))];
-  }
   [itemTypes addObject:@(int(SetUpListItemType::kNotifications))];
 
   for (SetUpListItem* item in _items) {

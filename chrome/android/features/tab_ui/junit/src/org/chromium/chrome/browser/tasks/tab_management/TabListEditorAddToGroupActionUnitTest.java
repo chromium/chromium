@@ -9,7 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -37,7 +37,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -56,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Tests for {@link TabListEditorAddToGroupAction}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -239,12 +239,13 @@ public class TabListEditorAddToGroupActionUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testPerformAction_NoTabGroups() {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(0);
 
         assertTrue(mAction.performAction(tabs, Collections.emptyList()));
-        verify(mTabGroupModelFilter).mergeListOfTabsToGroup(eq(tabs), eq(mTab1), anyBoolean());
+        verify(mTabGroupModelFilter).mergeListOfTabsToGroup(eq(tabs), eq(mTab1), anyInt());
         verify(mTabGroupCreationDialogManager)
                 .showDialog(eq(mTab1.getTabGroupId()), eq(mTabGroupModelFilter));
         verify(mCoordinator, never()).showBottomSheet(tabs);

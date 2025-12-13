@@ -18,6 +18,10 @@ class AutofillLocationBarBubble : public AutofillBubbleBase,
                                   public LocationBarBubbleDelegateView {
   METADATA_HEADER(AutofillLocationBarBubble, LocationBarBubbleDelegateView)
   using LocationBarBubbleDelegateView::LocationBarBubbleDelegateView;
+
+ public:
+  // AutofillBubbleBase:
+  bool IsMouseHovered() const override;
 };
 
 }  // namespace autofill

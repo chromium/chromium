@@ -76,13 +76,14 @@ UploadState GetUploadToGoogleState(const SyncService* sync_service,
   NOTREACHED();
 }
 
-void RecordKeyRetrievalTrigger(TrustedVaultUserActionTriggerForUMA trigger) {
+void RecordKeyRetrievalTrigger(
+    trusted_vault::TrustedVaultUserActionTriggerForUMA trigger) {
   base::UmaHistogramEnumeration("Sync.TrustedVaultKeyRetrievalTrigger",
                                 trigger);
 }
 
 void RecordRecoverabilityDegradedFixTrigger(
-    TrustedVaultUserActionTriggerForUMA trigger) {
+    trusted_vault::TrustedVaultUserActionTriggerForUMA trigger) {
   base::UmaHistogramEnumeration(
       "Sync.TrustedVaultRecoverabilityDegradedFixTrigger", trigger);
 }

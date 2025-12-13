@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/app/chrome_main_delegate.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include "base/base_paths.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/cpu.h"
 #include "base/dcheck_is_on.h"
 #include "base/features.h"
@@ -40,7 +36,6 @@
 #include "base/threading/hang_watcher.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/trace_event/trace_event_impl.h"
 #include "build/build_config.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -82,6 +77,8 @@
 #include "components/metrics/persistent_histograms.h"
 #include "components/sampling_profiler/thread_profiler.h"
 #include "components/startup_metric_utils/common/startup_metric_utils.h"
+#include "components/variations/service/variations_network_clock.h"
+#include "components/variations/variations_ids_provider.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "content/public/app/initialize_mojo_core.h"
@@ -103,6 +100,11 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/scoped_startup_resource_bundle.h"
 #include "ui/base/ui_base_switches.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
+#include "components/webapps/isolated_web_apps/scheme.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include <malloc.h>
@@ -194,7 +196,7 @@
 #include "components/crash/core/app/crashpad.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/startup_helper.h"  // nogncheck
 #include "extensions/common/constants.h"
 #endif
@@ -218,10 +220,14 @@ base::LazyInstance<ChromeContentRendererClient>::DestructorAtExit
     g_chrome_content_renderer_client = LAZY_INSTANCE_INITIALIZER;
 
 const char* const ChromeMainDelegate::kNonWildcardDomainNonPortSchemes[] = {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     extensions::kExtensionScheme,
 #endif
-    chrome::kChromeSearchScheme,       chrome::kIsolatedAppScheme,
+    chrome::kChromeSearchScheme,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
+    webapps::kIsolatedAppScheme,
+#endif
     content::kChromeDevToolsScheme,    content::kChromeUIScheme,
     content::kChromeUIUntrustedScheme,
 };
@@ -358,15 +364,16 @@ bool HandleCreditsSwitch(const base::CommandLine& command_line) {
 bool HandleVersionSwitches(const base::CommandLine& command_line) {
 #if !BUILDFLAG(IS_MAC)
   if (command_line.HasSwitch(switches::kProductVersion)) {
-    printf("%s\n", version_info::GetVersionNumber().data());
+    UNSAFE_TODO(printf("%s\n", version_info::GetVersionNumber().data()));
     return true;
   }
 #endif
 
   if (command_line.HasSwitch(switches::kVersion)) {
-    printf("%s %s %s\n", version_info::GetProductName().data(),
-           version_info::GetVersionNumber().data(),
-           chrome::GetChannelName(chrome::WithExtendedStable(true)).c_str());
+    UNSAFE_TODO(printf(
+        "%s %s %s\n", version_info::GetProductName().data(),
+        version_info::GetVersionNumber().data(),
+        chrome::GetChannelName(chrome::WithExtendedStable(true)).c_str()));
     return true;
   }
 
@@ -389,7 +396,7 @@ void HandleHelpSwitches(const base::CommandLine& command_line) {
 void SIGTERMProfilingShutdown(int signal) {
   content::Profiling::Stop();
   struct sigaction sigact;
-  memset(&sigact, 0, sizeof(sigact));
+  UNSAFE_TODO(memset(&sigact, 0, sizeof(sigact)));
   sigact.sa_handler = SIG_DFL;
   CHECK_EQ(sigaction(SIGTERM, &sigact, nullptr), 0);
   raise(signal);
@@ -446,10 +453,10 @@ std::optional<int> HandlePackExtensionSwitches(
   ui::ScopedStartupResourceBundle ensure_startup_resource_bundle;
 
   extensions::StartupHelper extension_startup_helper;
-  std::string error_message;
+  std::u16string error_message;
   if (!extension_startup_helper.PackExtension(command_line, &error_message)) {
     if (!error_message.empty()) {
-      LOG(ERROR) << error_message.c_str();
+      LOG(ERROR) << error_message;
     }
     return CHROME_RESULT_CODE_PACK_EXTENSION_ERROR;
   }
@@ -596,6 +603,14 @@ void InitializeUserDataDir(base::CommandLine* command_line) {
   // child or service processes will attempt to use the invalid directory.
   if (specified_directory_was_invalid)
     command_line->AppendSwitchPath(switches::kUserDataDir, user_data_dir);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Set the same value to ash::DIR_USER_DATA. The directory should be already
+  // created above, so `create` should be set to false.
+  CHECK(base::PathService::OverrideAndCreateIfNeeded(
+      ash::DIR_USER_DATA, user_data_dir, /*absolute=*/false, /*create=*/false));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #endif  // BUILDFLAG(IS_WIN)
 }
 
@@ -792,12 +807,15 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   ash::InitializeDBus();
 #endif
 
-  // The DBus initialization above is needed for FeatureList creation here; and
-  // features are needed for Mojo initialization.
   ChromeFeatureListCreator* chrome_feature_list_creator =
       chrome_content_browser_client_->startup_data()
           ->chrome_feature_list_creator();
-  chrome_feature_list_creator->CreateFeatureList();
+
+  if (!IsInitFeatureListEarly()) {
+    // The DBus initialization above is needed for FeatureList creation here;
+    // and features are needed for Mojo initialization.
+    chrome_feature_list_creator->CreateFeatureList();
+  }
 
 #if BUILDFLAG(IS_OZONE)
   // Initialize Ozone platform and add required feature flags as per platform's
@@ -884,11 +902,29 @@ bool ChromeMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
   return ShouldCreateFeatureList(invoked_in);
 }
 
+::variations::VariationsIdsProvider*
+ChromeMainDelegate::CreateVariationsIdsProvider() {
+  // At the time this method is called, the global browser instance is not yet
+  // created. This means the `NetworkTimeTracker` is still owned by the
+  // 'ChromeFeatureListCreator', which is within the `startup_data` held by the
+  // `ChromeContentBrowserClient`. Once the global browser instance is
+  // created, it will take over ownership of the NetworkTimeTracker.
+
+  return ::variations::VariationsIdsProvider::CreateInstance(
+      ::variations::VariationsIdsProvider::Mode::kUseSignedInState,
+      std::make_unique<::variations::VariationsNetworkClock>(
+          chrome_content_browser_client_->startup_data()
+              ->chrome_feature_list_creator()
+              ->network_time_tracker()));
+}
+
 void ChromeMainDelegate::CreateThreadPool(std::string_view name) {
-  // The ThreadGroupProfiler client must be set before thread pool is created.
-  base::ThreadGroupProfiler::SetClient(
-      std::make_unique<ChromeThreadGroupProfilerClient>());
-  base::ThreadPoolInstance::Create(name);
+  if (!IsInitFeatureListEarly()) {
+    // The ThreadGroupProfiler client must be set before thread pool is created.
+    base::ThreadGroupProfiler::SetClient(
+        std::make_unique<ChromeThreadGroupProfilerClient>());
+    base::ThreadPoolInstance::Create(name);
+  }
 
   // The ThreadProfiler client must be set before main thread profiling is
   // started (below).
@@ -912,7 +948,9 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
   bool is_browser_process = process_type.empty();
 
 #if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kDisableBoostPriority)) {
+  if (base::FeatureList::IsEnabled(features::kDisableBoostPriority) &&
+      features::kDisableBoostPriorityMode.Get() ==
+          features::DisableBoostPriorityMode::kAtStartup) {
     // The second argument to this function *disables* boosting if true. See
     // https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-setprocesspriorityboost
     SetProcessPriorityBoost(/*hProcess=*/base::GetCurrentProcessHandle(),
@@ -954,11 +992,10 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
     hang_watcher_process_type = base::HangWatcher::ProcessType::kUnknownProcess;
   }
 
-  const bool is_canary_dev = IsCanaryDev();
   const bool emit_crashes =
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-      is_canary_dev;
+      IsCanaryDev();
 #else
       false;
 #endif
@@ -966,13 +1003,7 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
   base::HangWatcher::InitializeOnMainThread(hang_watcher_process_type,
                                             emit_crashes);
 
-  // Force emitting `ThreadController` profiler metadata on Canary and Dev only,
-  // since they are the only channels where the data is used.
-  base::features::Init(
-      is_canary_dev
-          ? base::features::EmitThreadControllerProfilerMetadata::kForce
-          : base::features::EmitThreadControllerProfilerMetadata::
-                kFeatureDependent);
+  base::features::Init();
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -1125,7 +1156,10 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
 
 #endif  // BUILDFLAG(IS_WIN)
 
-  chrome::RegisterPathProvider();
+  if (!IsInitFeatureListEarly()) {
+    chrome::RegisterPathProvider();
+  }
+
 #if BUILDFLAG(IS_CHROMEOS)
   ash::RegisterPathProvider();
   chromeos::dbus_paths::RegisterPathProvider();
@@ -1379,15 +1413,24 @@ void ChromeMainDelegate::PreSandboxStartup() {
       }
     }
 
-    int extra_pak_keys[] = {
-        kAndroidChrome100PercentPakDescriptor,
-        kAndroidUIResourcesPakDescriptor,
+    // Define PAK file configurations with their scale factors
+    struct {
+      int key;
+      ui::ResourceScaleFactor scale;
+    } pak_configs[] = {
+        {kAndroidChrome100PercentPakDescriptor, ui::k100Percent},
+        {kAndroidUIResourcesPakDescriptor, ui::k100Percent},
+#if BUILDFLAG(ENABLE_HIDPI)
+        {kAndroidChrome200PercentPakDescriptor, ui::k200Percent},
+#endif
     };
-    for (int extra_pak_key : extra_pak_keys) {
-      pak_fd = global_descriptors->Get(extra_pak_key);
-      pak_region = global_descriptors->GetRegion(extra_pak_key);
+
+    // Load all configured PAK files
+    for (const auto& config : pak_configs) {
+      pak_fd = global_descriptors->Get(config.key);
+      pak_region = global_descriptors->GetRegion(config.key);
       ui::ResourceBundle::GetSharedInstance().AddDataPackFromFileRegion(
-          base::File(pak_fd), pak_region, ui::k100Percent);
+          base::File(pak_fd), pak_region, config.scale);
     }
 
     // For Android: Native resources for DFMs should only be used by the browser
@@ -1498,8 +1541,10 @@ std::variant<int, content::MainFunctionParams> ChromeMainDelegate::RunProcess(
   };
 
   for (size_t i = 0; i < std::size(kMainFunctions); ++i) {
-    if (process_type == kMainFunctions[i].name)
-      return kMainFunctions[i].function(std::move(main_function_params));
+    if (process_type == UNSAFE_TODO(kMainFunctions[i]).name) {
+      return UNSAFE_TODO(kMainFunctions[i])
+          .function(std::move(main_function_params));
+    }
   }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -1621,12 +1666,6 @@ std::optional<int> ChromeMainDelegate::PreBrowserMain() {
   // Initialize NSApplication using the custom subclass.
   chrome_browser_application_mac::RegisterBrowserCrApp();
 
-  // Perform additional initialization when running in headless mode: hide
-  // dock icon and menu bar.
-  if (headless::IsHeadlessMode()) {
-    chrome_browser_application_mac::InitializeHeadlessMode();
-  }
-
   if (l10n_util::GetLocaleOverride().empty()) {
     // The browser process only wants to support the language Cocoa will use,
     // so force the app locale to be overridden with that value. This must
@@ -1676,4 +1715,17 @@ void ChromeMainDelegate::InitializeMemorySystem() {
                                    PoissonAllocationSamplerInclusion::kEnforce,
                                allocation_recorder_inclusion, process_type)
       .Initialize(memory_system_);
+}
+
+bool ChromeMainDelegate::IsInitFeatureListEarly() {
+#if BUILDFLAG(IS_ANDROID)
+  return base::CommandLine::ForCurrentProcess()
+             ->GetSwitchValueASCII(switches::kProcessType)
+             .empty() &&
+         chrome::android::IsJavaDrivenFeatureEnabled(
+             chrome::android::kLoadNativeEarly) &&
+         chrome::android::IsInitFeatureListEarlyFeatureParamEnabled();
+#else
+  return false;
+#endif
 }

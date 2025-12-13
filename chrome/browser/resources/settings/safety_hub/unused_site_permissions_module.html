@@ -1,4 +1,8 @@
 <style include="cr-shared-style settings-shared">
+  :host {
+    display: block;
+  }
+
   cr-tooltip {
     --paper-tooltip-min-width: max-content;
   }
@@ -9,24 +13,26 @@
     on-sh-module-item-button-click="onAllowAgainClick_"
     header="[[headerString_]]"
     subheader="[[subheaderString_]]"
-    header-icon="[[headerIconString_]]"
     button-aria-label-id="safetyHubUnusedSitePermissionsAllowAgainAriaLabel"
     button-icon="settings20:undo"
     button-tooltip-text="$i18n{safetyHubUnusedSitePermissionsAllowAgainLabel}"
     sites="[[sites_]]">
   <div slot="button-container">
     <cr-button id="gotItButton" on-click="onGotItClick_"
-        hidden$="[[shouldShowCompletionInfo_]]">
+        hidden$="[[shouldShowCompletionInfo_]]"
+        aria-description$="[[subheaderString_]]">
       $i18n{safetyHubUnusedSitePermissionsGotItLabel}
     </cr-button>
     <cr-icon-button id="moreActionButton" class="icon-more-vert"
         on-click="onMoreActionClick_" hidden$="[[shouldShowCompletionInfo_]]"
-        title="$i18n{moreActions}">
+        title="$i18n{moreActions}"
+        aria-description$="[[headerString_]]">
     </cr-icon-button>
     <cr-icon-button id="bulkUndoButton" iron-icon="settings20:undo"
         on-click="onUndoClick_" hidden$="[[!shouldShowCompletionInfo_]]"
         on-focus="showUndoTooltip_" on-mouseenter="showUndoTooltip_"
-        aria-label$="$i18n{safetyHubUnusedSitePermissionsUndoLabel}">
+        aria-label="$i18n{safetyHubUnusedSitePermissionsUndoLabel}"
+        aria-description$="[[headerString_]]">
     </cr-icon-button>
   </div>
 </settings-safety-hub-module>

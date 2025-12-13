@@ -47,6 +47,10 @@ group("webgpu") {
   }
 }
 
+source_set("export") {
+  sources = [ "gpu_command_buffer_client_export.h" ]
+}
+
 source_set("client_sources") {
   # External code should depend on this via //gpu/client above rather than
   # depending on this directly or the component build will break.
@@ -55,8 +59,6 @@ source_set("client_sources") {
   sources = [
     "client_discardable_manager.cc",
     "client_discardable_manager.h",
-    "client_discardable_texture_manager.cc",
-    "client_discardable_texture_manager.h",
     "client_shared_image.cc",
     "client_shared_image.h",
     "cmd_buffer_helper.cc",
@@ -67,9 +69,7 @@ source_set("client_sources") {
     "gl_helper.h",
     "gl_helper_scaling.cc",
     "gl_helper_scaling.h",
-    "gpu_command_buffer_client_export.h",
     "gpu_control.h",
-    "image_decode_accelerator_interface.h",
     "mapped_memory.cc",
     "mapped_memory.h",
     "ring_buffer.cc",
@@ -88,12 +88,14 @@ source_set("client_sources") {
 
   public_deps = [
     "//base",
-    "//components/viz/common:shared_image_format",
+    "//components/viz/common/resources:shared_image_format",
     "//skia",
   ]
   deps = [
+    ":export",
     ":gles2_interface",
     ":webgpu_interface",
+    "//gpu/command_buffer/client/internal",
     "//gpu/command_buffer/common",
     "//gpu/ipc/common",
     "//gpu/ipc/common:surface_handle_type",
@@ -204,10 +206,10 @@ source_set("raster_interface") {
   deps = [
     ":interface_base",
     "//base",
-    "//components/viz/common:shared_image_format",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/common:raster",
-    "//skia:skia",
+    "//skia",
     "//ui/gfx:buffer_types",
   ]
 }
@@ -241,7 +243,7 @@ component("gles2_implementation") {
     ":gles2_cmd_helper",
     ":gles2_interface",
     "//base",
-    "//components/viz/common:shared_image_format",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/common:gles2",
     "//gpu/command_buffer/common:gles2_utils",
@@ -264,8 +266,7 @@ source_set("raster_sources") {
     ":gles2_interface",
     "//base",
     "//cc/paint",
-    "//components/miracle_parameter/common",
-    "//components/viz/common:shared_image_format",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/common:gles2",
     "//gpu/command_buffer/common:gles2_utils",
@@ -286,8 +287,6 @@ source_set("raster_sources") {
     "raster_implementation.cc",
     "raster_implementation.h",
     "raster_implementation_autogen.h",
-    "raster_implementation_gles.cc",
-    "raster_implementation_gles.h",
     "raster_implementation_impl_autogen.h",
   ]
 }

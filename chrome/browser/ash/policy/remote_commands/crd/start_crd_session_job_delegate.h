@@ -22,12 +22,19 @@ class StartCrdSessionJobDelegate {
   using ErrorCallback =
       base::OnceCallback<void(ExtendedStartCrdSessionResultCode,
                               const std::string&)>;
-  using SessionEndCallback = base::OnceCallback<void(base::TimeDelta)>;
+  using SessionEndCallback = base::OnceClosure;
 
   // The caller who initiated the request.
   enum class RequestOrigin {
     kEnterpriseAdmin,
     kClassManagement,
+  };
+
+  // The audio playback mode for the CRD session.
+  enum class AudioPlayback {
+    kLocalOnly,
+    kRemoteAndLocal,
+    kRemoteOnly,
   };
 
   // Session parameters used to start the CRD host.
@@ -43,6 +50,9 @@ class StartCrdSessionJobDelegate {
     std::string user_name = "";
     std::optional<std::string> admin_email;
     RequestOrigin request_origin = RequestOrigin::kEnterpriseAdmin;
+    // Currently, the default behavior for enterprise/remote admin sessions is
+    // that audio is not streamed to the client.
+    AudioPlayback audio_playback = AudioPlayback::kLocalOnly;
     bool terminate_upon_input = false;
     bool show_confirmation_dialog = false;
     bool curtain_local_user_session = false;

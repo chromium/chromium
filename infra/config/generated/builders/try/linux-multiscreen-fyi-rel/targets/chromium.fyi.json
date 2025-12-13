@@ -8,6 +8,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//chrome/test:interactive_ui_tests",
+        "module_scheme": "gtest",
         "name": "multiscreen_interactive_ui_tests",
         "swarming": {
           "dimensions": {

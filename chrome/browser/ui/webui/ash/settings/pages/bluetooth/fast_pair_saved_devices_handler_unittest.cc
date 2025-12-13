@@ -25,7 +25,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "content/public/test/test_web_ui.h"
-#include "skia/rusty_png_feature.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -134,23 +133,13 @@ class TestFastPairSavedDevicesHandler : public FastPairSavedDevicesHandler {
 };
 
 const char* GetExpectedImageDataUrl() {
-  if (skia::IsRustyPngEnabled()) {
-    return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/"
-           "gAIDAAAA10lEQVR4nOzQMQEAMAjAMA78W94s0D+"
-           "RkJ03HO1wJiuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrE"
-           "BWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQF"
-           "cgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWy"
-           "AlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFXwAAAD//"
-           "yb4x2UAAAAGSURBVAMAZRgCkGqWb1EAAAAASUVORK5CYII=";
-  } else {
-    return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/"
-           "gAIDAAAA5klEQVR4nO3QQQkAIADAQLV/"
-           "Z63gXiLcJRibYw8urdcBPzErMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCs"
-           "wKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKz"
-           "ArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArM"
-           "CswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCswKzArMCsw"
-           "KzArMCswKzArMCs4iV8Bx6UARfcAAAAASUVORK5CYII=";
-  }
+  return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/"
+         "gAIDAAAA10lEQVR4nOzQMQEAMAjAMA78W94s0D+"
+         "RkJ03HO1wJiuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrE"
+         "BWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQF"
+         "cgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWy"
+         "AlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFXwAAAD//"
+         "yb4x2UAAAAGSURBVAMAZRgCkGqWb1EAAAAASUVORK5CYII=";
 }
 
 }  // namespace

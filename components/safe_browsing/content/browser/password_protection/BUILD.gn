@@ -20,15 +20,15 @@ source_set("password_protection") {
 
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-    public_deps = [ "//google_apis:google_apis" ]
+    public_deps = [ "//google_apis" ]
 
     deps = [
-      "//base:base",
-      "//components/content_settings/core/browser:browser",
-      "//components/history/core/browser:browser",
-      "//components/password_manager/core/browser:browser",
+      "//base",
+      "//components/content_settings/core/browser",
+      "//components/history/core/browser",
+      "//components/password_manager/core/browser",
       "//components/safe_browsing/content/browser:client_side_detection_images_cache",
-      "//components/safe_browsing/content/browser/web_ui:web_ui",
+      "//components/safe_browsing/content/browser/web_ui",
       "//components/safe_browsing/content/common:interfaces",
       "//components/safe_browsing/content/common:visual_utils",
       "//components/safe_browsing/core/browser:referrer_chain_provider",
@@ -38,7 +38,7 @@ source_set("password_protection") {
       "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
       "//components/safe_browsing/core/browser/password_protection",
       "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
-      "//components/safe_browsing/core/common:common",
+      "//components/safe_browsing/core/common",
       "//components/safe_browsing/core/common:interfaces",
       "//components/safe_browsing/core/common:safe_browsing_prefs",
       "//components/safe_browsing/core/common/fbs:client_model",
@@ -48,9 +48,9 @@ source_set("password_protection") {
       "//components/signin/public/base",
       "//components/signin/public/identity_manager",
       "//components/url_formatter",
-      "//content/public/browser:browser",
+      "//content/public/browser",
       "//mojo/public/mojom/base:protobuf_support",
-      "//net:net",
+      "//net",
       "//third_party/protobuf:protobuf_lite",
       "//ui/gfx:color_utils",
     ]
@@ -79,16 +79,16 @@ source_set("password_protection_unittest") {
       ":password_protection",
       "//base",
       "//base/test:test_support",
-      "//components/content_settings/core/browser:browser",
-      "//components/history/core/browser:browser",
-      "//components/password_manager/core/browser:browser",
+      "//components/content_settings/core/browser",
+      "//components/history/core/browser",
+      "//components/password_manager/core/browser",
       "//components/safe_browsing/content/browser:client_side_detection_images_cache",
       "//components/safe_browsing/content/common:interfaces",
       "//components/safe_browsing/core/browser:verdict_cache_manager",
       "//components/safe_browsing/core/browser/db:test_database_manager",
       "//components/safe_browsing/core/browser/password_protection",
       "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
-      "//components/safe_browsing/core/common:common",
+      "//components/safe_browsing/core/common",
       "//components/safe_browsing/core/common:safe_browsing_prefs",
       "//components/safe_browsing/core/common/fbs:client_model",
       "//components/safe_browsing/core/common/proto:csd_proto",
@@ -117,10 +117,10 @@ source_set("mock_password_protection") {
     deps = [
       ":password_protection",
       "//base",
-      "//components/content_settings/core/browser:browser",
+      "//components/content_settings/core/browser",
       "//components/safe_browsing/core/browser/db:database_manager",
       "//net:test_support",
-      "//services/network/public/cpp:cpp",
+      "//services/network/public/cpp",
       "//testing/gmock",
       "//testing/gtest",
     ]

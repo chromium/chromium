@@ -15,7 +15,6 @@
 
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
-#include "partition_alloc/partition_alloc_base/ranges/algorithm.h"
 
 namespace partition_alloc::internal::base {
 
@@ -36,7 +35,8 @@ constexpr bool is_sorted_and_unique(const Range& range, Comp comp) {
   // Being unique implies that there are no adjacent elements that
   // compare equal. So this checks that each element is strictly less
   // than the element after it.
-  return ranges::adjacent_find(range, std::not_fn(comp)) == ranges::end(range);
+  return std::ranges::adjacent_find(range, std::not_fn(comp)) ==
+         std::ranges::end(range);
 }
 
 // This is a convenience trait inheriting from std::true_type if Iterator is at
@@ -673,7 +673,7 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::begin()
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 constexpr auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::begin()
     const -> const_iterator {
-  return ranges::begin(body_);
+  return std::ranges::begin(body_);
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
@@ -690,7 +690,7 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::end() -> iterator {
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 constexpr auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::end()
     const -> const_iterator {
-  return ranges::end(body_);
+  return std::ranges::end(body_);
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
@@ -797,7 +797,7 @@ void flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::insert(
 
   // Loop over the input range while appending new values and overwriting
   // existing ones, if applicable. Keep track of the first insertion point.
-  for (; first != last; ++first) {
+  for (; first != last; PA_UNSAFE_TODO(++first)) {
     std::pair<iterator, bool> result = append_unique(begin(), middle(), *first);
     if (result.second) {
       pos_first_new =
@@ -1022,7 +1022,7 @@ template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::lower_bound(
     const Key& key) const -> const_iterator {
   KeyValueCompare comp(comp_);
-  return ranges::lower_bound(*this, key, comp);
+  return std::ranges::lower_bound(*this, key, comp);
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
@@ -1043,7 +1043,7 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::lower_bound(
   const KeyTypeOrK<K>& key_ref = key;
 
   KeyValueCompare comp(comp_);
-  return ranges::lower_bound(*this, key_ref, comp);
+  return std::ranges::lower_bound(*this, key_ref, comp);
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
@@ -1056,7 +1056,7 @@ template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::upper_bound(
     const Key& key) const -> const_iterator {
   KeyValueCompare comp(comp_);
-  return ranges::upper_bound(*this, key, comp);
+  return std::ranges::upper_bound(*this, key, comp);
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
@@ -1077,7 +1077,7 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::upper_bound(
   const KeyTypeOrK<K>& key_ref = key;
 
   KeyValueCompare comp(comp_);
-  return ranges::upper_bound(*this, key_ref, comp);
+  return std::ranges::upper_bound(*this, key_ref, comp);
 }
 
 // ----------------------------------------------------------------------------
@@ -1135,6 +1135,7 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::
 // Free functions.
 
 // Erases all elements that match predicate. It has O(size) complexity.
+// Erases all elements that match predicate. It has O(size) complexity.
 template <class Key,
           class GetKeyFromValue,
           class KeyCompare,
@@ -1144,10 +1145,10 @@ size_t EraseIf(
     base::internal::flat_tree<Key, GetKeyFromValue, KeyCompare, Container>&
         container,
     Predicate pred) {
-  auto it = ranges::remove_if(container, pred);
-  size_t removed = std::distance(it, container.end());
-  container.erase(it, container.end());
-  return removed;
+  auto removed = std::ranges::remove_if(container, pred);
+  size_t num_removed = removed.size();
+  container.erase(removed.begin(), removed.end());
+  return num_removed;
 }
 
 }  // namespace partition_alloc::internal::base

@@ -6,6 +6,7 @@
 import logging
 import pathlib
 import subprocess
+import tempfile
 import zipfile
 from typing import List, Optional, Union
 
@@ -18,11 +19,22 @@ _IGNORED_JAR_PATHS = [
     'cipd/libs/org_ow2_asm_asm',
 ]
 
+
 def _should_ignore(jar_path: pathlib.Path) -> bool:
   for ignored_jar_path in _IGNORED_JAR_PATHS:
     if ignored_jar_path in str(jar_path):
       return True
   return False
+
+
+def _create_filtered_jar_tempfile(jar_path: pathlib):
+  ret = tempfile.NamedTemporaryFile(suffix='-jdeps.jar')
+  with zipfile.ZipFile(jar_path) as in_z:
+    with zipfile.ZipFile(ret, 'w') as out_z:
+      for info in in_z.infolist():
+        if info.filename != 'module-info.class':
+          out_z.writestr(info, in_z.read(info), zipfile.ZIP_STORED)
+  return ret
 
 
 def run_jdeps(filepath: pathlib.Path,
@@ -46,21 +58,26 @@ def run_jdeps(filepath: pathlib.Path,
 
   if verbose:
     logging.debug('Starting %s', filepath)
-  try:
-    return subprocess.run(
-        cmd,
-        check=True,
-        text=True,
-        capture_output=True,
-    ).stdout
-  except subprocess.CalledProcessError as e:
-    # Pack all the information into the error message since that is the last
-    # thing visible in the output.
-    raise RuntimeError(f'\nFilepath:\n{filepath}\ncmd:\n{" ".join(cmd)}\n'
-                       f'stdout:\n{e.stdout}\nstderr:{e.stderr}\n') from e
-  finally:
-    if verbose:
-      logging.debug('Finished %s', filepath)
+  result = subprocess.run(cmd, text=True, check=False, capture_output=True)
+  if result.returncode and result.stdout.startswith('Error: Module '):
+    logging.info('Retrying without modules: %s', filepath)
+    # E.g.: Error: Module net.bytebuddy not found, required by org.mockito
+    # See: https://stackoverflow.com/questions/64066952/jdeps-module-not-found-exception-when-listing-dependancies
+    with _create_filtered_jar_tempfile(filepath) as f:
+      new_cmd = cmd[:-1] + [f.name]
+      result = subprocess.run(new_cmd,
+                              text=True,
+                              check=False,
+                              capture_output=True)
+      if result.returncode:
+        # Pack all the information into the error message since that is the last
+        # thing visible in the output.
+        raise RuntimeError(
+            f'\nFilepath:\n{filepath}\ncmd:\n{" ".join(cmd)}\n'
+            f'stdout:\n{result.stdout}\nstderr:{result.stderr}\n')
+  if verbose:
+    logging.debug('Finished %s', filepath)
+  return result.stdout
 
 
 def extract_full_class_names_from_jar(

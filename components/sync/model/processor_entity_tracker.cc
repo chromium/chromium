@@ -156,8 +156,8 @@ std::vector<std::string> ProcessorEntityTracker::RemoveInactiveCollaborations(
   CHECK(
       IsInitialSyncAtLeastPartiallyDone(data_type_state_.initial_sync_state()));
   std::vector<std::string> removed_storage_keys;
-  std::erase_if(entities_, [&removed_storage_keys,
-                            &active_collaborations](const auto& item) {
+  absl::erase_if(entities_, [&removed_storage_keys,
+                             &active_collaborations](const auto& item) {
     const std::unique_ptr<ProcessorEntity>& entity = item.second;
     if (!active_collaborations.contains(
             entity->metadata().collaboration().collaboration_id())) {
@@ -235,6 +235,15 @@ ProcessorEntityTracker::GetAllEntitiesIncludingTombstones() const {
   return entities;
 }
 
+std::vector<std::string> ProcessorEntityTracker::GetAllStorageKeys() const {
+  std::vector<std::string> storage_keys;
+  storage_keys.reserve(storage_key_to_tag_hash_.size());
+  for (const auto& [storage_key, client_tag_hash] : storage_key_to_tag_hash_) {
+    storage_keys.push_back(storage_key);
+  }
+  return storage_keys;
+}
+
 std::vector<ProcessorEntity*>
 ProcessorEntityTracker::GetEntitiesWithLocalChanges(size_t max_entries) {
   std::vector<ProcessorEntity*> entities;
@@ -269,12 +278,11 @@ size_t ProcessorEntityTracker::size() const {
 
 std::vector<const ProcessorEntity*>
 ProcessorEntityTracker::IncrementSequenceNumberForAllExcept(
-    const std::unordered_set<std::string>& already_updated_storage_keys) {
+    const absl::flat_hash_set<std::string>& already_updated_storage_keys) {
   std::vector<const ProcessorEntity*> affected_entities;
   for (const auto& [client_tag_hash, entity] : entities_) {
     if (entity->storage_key().empty() ||
-        (already_updated_storage_keys.find(entity->storage_key()) !=
-         already_updated_storage_keys.end())) {
+        already_updated_storage_keys.contains(entity->storage_key())) {
       // Entities with empty storage key were already processed. ProcessUpdate()
       // incremented their sequence numbers and cached commit data. Their
       // metadata will be persisted in UpdateStorageKey().

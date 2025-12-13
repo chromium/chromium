@@ -15,11 +15,12 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pair;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.EntryPointType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.R;
@@ -35,12 +36,14 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.RectProvider;
 
+import java.util.function.Supplier;
+
 @NullMarked
 public class HomePageButtonsMediator {
     private static final int ID_SETTINGS = 0;
 
     private final Context mContext;
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final Supplier<@Nullable Profile> mProfileSupplier;
     private final Supplier<Boolean> mIsHomeButtonMenuDisabled;
     private final Callback<Context> mOnHomeButtonMenuClickCallback;
     private MVCListAdapter.@Nullable ModelList mHomeButtonMenuList;
@@ -65,7 +68,7 @@ public class HomePageButtonsMediator {
      */
     public HomePageButtonsMediator(
             Context context,
-            ObservableSupplier<Profile> profileSupplier,
+            Supplier<@Nullable Profile> profileSupplier,
             PropertyModel model,
             Callback<Context> onHomeButtonMenuClickCallback,
             Supplier<Boolean> isHomepageMenuDisabledSupplier,
@@ -91,13 +94,17 @@ public class HomePageButtonsMediator {
 
         mNtpCustomizationButtonData =
                 new HomePageButtonData(
-                        /* onClickListener= */ view ->
-                                new NtpCustomizationCoordinator(
-                                                mContext,
-                                                mBottomSheetController,
-                                                mProfileSupplier,
-                                                NtpCustomizationCoordinator.BottomSheetType.MAIN)
-                                        .showBottomSheet(),
+                        /* onClickListener= */ view -> {
+                            NtpCustomizationCoordinatorFactory.getInstance()
+                                    .create(
+                                            mContext,
+                                            mBottomSheetController,
+                                            mProfileSupplier,
+                                            NtpCustomizationCoordinator.BottomSheetType.MAIN)
+                                    .showBottomSheet();
+                            NtpCustomizationMetricsUtils.recordOpenBottomSheetEntry(
+                                    EntryPointType.TOOL_BAR);
+                        },
                         /* onLongClickListener= */ null);
         mModel.set(BUTTON_DATA, new Pair<>(1, mNtpCustomizationButtonData));
     }
@@ -144,7 +151,8 @@ public class HomePageButtonsMediator {
                     BrowserUiListMenuUtils.getBasicListMenu(
                             mContext,
                             mHomeButtonMenuList,
-                            (model) -> mOnHomeButtonMenuClickCallback.onResult(mContext));
+                            (model, unusedView) ->
+                                    mOnHomeButtonMenuClickCallback.onResult(mContext));
             mHomeButtonListMenuDelegate =
                     new ListMenuDelegate() {
                         @Override

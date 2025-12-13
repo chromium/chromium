@@ -374,9 +374,8 @@ class DemoSessionLoginTest : public LoginManagerTest,
     login_manager_mixin_.WaitForActiveSession();
     SystemWebAppManager::GetForTest(ProfileManager::GetActiveUserProfile())
         ->InstallSystemAppsForTesting();
-    ui_test_utils::BrowserChangeObserver browser_opened(
-        nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-    browser_opened.Wait();
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
+    browser_created_observer.Wait();
   }
 
   base::FilePath growth_campaigns_mounted_path() {

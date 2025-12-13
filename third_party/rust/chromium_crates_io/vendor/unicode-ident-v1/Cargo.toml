@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.31"
 name = "unicode-ident"
-version = "1.0.18"
+version = "1.0.22"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 autolib = false
@@ -37,13 +37,14 @@ license = "(MIT OR Apache-2.0) AND Unicode-3.0"
 repository = "https://github.com/dtolnay/unicode-ident"
 
 [package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
 rustdoc-args = [
     "--generate-link-to-definition",
+    "--generate-macro-expansion",
     "--extern-html-root-url=core=https://doc.rust-lang.org",
     "--extern-html-root-url=alloc=https://doc.rust-lang.org",
     "--extern-html-root-url=std=https://doc.rust-lang.org",
 ]
-targets = ["x86_64-unknown-linux-gnu"]
 
 [lib]
 name = "unicode_ident"
@@ -63,7 +64,7 @@ path = "benches/xid.rs"
 harness = false
 
 [dev-dependencies.criterion]
-version = "0.5"
+version = "0.7"
 default-features = false
 
 [dev-dependencies.fst]
@@ -73,7 +74,7 @@ version = "0.4"
 version = "0.9"
 
 [dev-dependencies.roaring]
-version = "0.10"
+version = "0.11"
 
 [dev-dependencies.ucd-trie]
 version = "0.1"

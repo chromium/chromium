@@ -1209,8 +1209,8 @@ TEST_F(CorsURLLoaderTest, OriginAccessList_Allowed) {
 
   // Adds an entry to allow the cross origin request beyond the CORS
   // rules.
-  AddAllowListEntryForOrigin(url::Origin::Create(origin), url.scheme(),
-                             url.host(),
+  AddAllowListEntryForOrigin(url::Origin::Create(origin), url.GetScheme(),
+                             url.GetHost(),
                              mojom::CorsDomainMatchMode::kDisallowSubdomains);
 
   CreateLoaderAndStart(origin, url, mojom::RequestMode::kCors);
@@ -1243,7 +1243,8 @@ TEST_F(CorsURLLoaderTest, OriginAccessList_IsolatedWorldOrigin) {
   factory_params.ignore_isolated_world_origin = false;
   ResetFactory(main_world_origin, kRendererProcessId, factory_params);
 
-  AddAllowListEntryForOrigin(isolated_world_origin, url.scheme(), url.host(),
+  AddAllowListEntryForOrigin(isolated_world_origin, url.GetScheme(),
+                             url.GetHost(),
                              mojom::CorsDomainMatchMode::kDisallowSubdomains);
 
   ResourceRequest request;
@@ -1287,10 +1288,11 @@ TEST_F(CorsURLLoaderTest, OriginAccessList_IsolatedWorldOrigin_Redirect) {
   factory_params.ignore_isolated_world_origin = false;
   ResetFactory(main_world_origin, kRendererProcessId, factory_params);
 
-  AddAllowListEntryForOrigin(isolated_world_origin, url.scheme(), url.host(),
+  AddAllowListEntryForOrigin(isolated_world_origin, url.GetScheme(),
+                             url.GetHost(),
                              mojom::CorsDomainMatchMode::kDisallowSubdomains);
-  AddAllowListEntryForOrigin(isolated_world_origin, new_url.scheme(),
-                             new_url.host(),
+  AddAllowListEntryForOrigin(isolated_world_origin, new_url.GetScheme(),
+                             new_url.GetHost(),
                              mojom::CorsDomainMatchMode::kDisallowSubdomains);
 
   ResourceRequest request;
@@ -1339,7 +1341,8 @@ TEST_F(CorsURLLoaderTest, OriginAccessList_IsolatedWorldOriginIgnored) {
 
   ResetFactory(main_world_origin, kRendererProcessId);
 
-  AddAllowListEntryForOrigin(isolated_world_origin, url.scheme(), url.host(),
+  AddAllowListEntryForOrigin(isolated_world_origin, url.GetScheme(),
+                             url.GetHost(),
                              mojom::CorsDomainMatchMode::kDisallowSubdomains);
 
   ResourceRequest request;
@@ -1369,11 +1372,11 @@ TEST_F(CorsURLLoaderTest, OriginAccessList_Blocked) {
   const GURL origin("https://example.com");
   const GURL url("http://other.example.com/foo.png");
 
-  AddAllowListEntryForOrigin(url::Origin::Create(origin), url.scheme(),
-                             url.host(),
+  AddAllowListEntryForOrigin(url::Origin::Create(origin), url.GetScheme(),
+                             url.GetHost(),
                              mojom::CorsDomainMatchMode::kDisallowSubdomains);
-  AddBlockListEntryForOrigin(url::Origin::Create(origin), url.scheme(),
-                             url.host(),
+  AddBlockListEntryForOrigin(url::Origin::Create(origin), url.GetScheme(),
+                             url.GetHost(),
                              mojom::CorsDomainMatchMode::kDisallowSubdomains);
 
   CreateLoaderAndStart(origin, url, mojom::RequestMode::kCors);
@@ -1397,8 +1400,8 @@ TEST_F(CorsURLLoaderTest, OriginAccessList_NoCors) {
 
   // Adds an entry to allow the cross origin request without using
   // CORS.
-  AddAllowListEntryForOrigin(url::Origin::Create(origin), url.scheme(),
-                             url.host(),
+  AddAllowListEntryForOrigin(url::Origin::Create(origin), url.GetScheme(),
+                             url.GetHost(),
                              mojom::CorsDomainMatchMode::kDisallowSubdomains);
 
   CreateLoaderAndStart(origin, url, mojom::RequestMode::kNoCors);
@@ -1424,8 +1427,8 @@ TEST_F(CorsURLLoaderTest, OriginAccessList_POST) {
 
   // Adds an entry to allow the cross origin request beyond the CORS
   // rules.
-  AddAllowListEntryForOrigin(url::Origin::Create(origin), url.scheme(),
-                             url.host(),
+  AddAllowListEntryForOrigin(url::Origin::Create(origin), url.GetScheme(),
+                             url.GetHost(),
                              mojom::CorsDomainMatchMode::kDisallowSubdomains);
 
   ResourceRequest request;
@@ -2389,36 +2392,6 @@ TEST_F(CorsURLLoaderTest, NonBrowserNavigationRedirect) {
                           "should not call FollowRedirect"));
 }
 
-TEST_F(CorsURLLoaderTest, PrivateNetworkAccessTargetAddressSpaceCheck) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kPrivateNetworkAccessPermissionPrompt);
-
-  auto initiator = url::Origin::Create(GURL("https://foo.example"));
-  ResetFactoryParams factory_params;
-  factory_params.is_trusted = true;
-  factory_params.client_security_state = mojom::ClientSecurityState::New();
-  factory_params.client_security_state->is_web_secure_context = true;
-  ResetFactory(initiator, mojom::kBrowserProcessId, factory_params);
-
-  ResourceRequest request;
-  request.mode = mojom::RequestMode::kCors;
-  request.required_ip_address_space = mojom::IPAddressSpace::kLocal;
-  request.target_ip_address_space = mojom::IPAddressSpace::kLocal;
-  request.url = GURL("http://foo.example/");
-  request.request_initiator = initiator;
-  request.trusted_params = ResourceRequest::TrustedParams();
-  request.trusted_params->client_security_state =
-      mojom::ClientSecurityState::New();
-  request.trusted_params->client_security_state->is_web_secure_context = true;
-
-  BadMessageTestHelper bad_message_helper;
-  CreateLoaderAndStart(request);
-  RunUntilCreateLoaderAndStartCalled();
-
-  EXPECT_EQ(client().completion_status().error_code, net::OK);
-}
-
 class StorageAccessHeadersCorsURLLoaderTest : public CorsURLLoaderTest {
  public:
   StorageAccessHeadersCorsURLLoaderTest() : CorsURLLoaderTest() {
@@ -2588,7 +2561,7 @@ TEST_F(StorageAccessHeadersCorsURLLoaderTest,
        ResourceRequestParamsActivateAccess) {
   ResetFactoryParams factory_params;
   factory_params.is_trusted = true;
-  url::Origin initiator = url::Origin::Create(GURL("https://sub.example.com"));
+  url::Origin initiator = url::Origin::Create(kUrl);
   ResetFactory(initiator, kRendererProcessId, factory_params);
   network_context()->cookie_manager()->BlockThirdPartyCookies(true);
   base::test::TestFuture<void> future;
@@ -2614,8 +2587,8 @@ TEST_F(StorageAccessHeadersCorsURLLoaderTest,
   // The status is active because this is a cross-site context, cross-site
   // cookies are blocked, there's a matching STORAGE_ACCESS grant that could
   // allow access, the caller is opting to use that permission via
-  // `storage_access_api_status`, *and* the request initiator is same-site with
-  // the target URL.
+  // `storage_access_api_status`, *and* the request initiator is same-origin
+  // with the target URL.
   ASSERT_EQ(ComputeStorageAccessStatus(request),
             net::cookie_util::StorageAccessStatus::kActive);
 

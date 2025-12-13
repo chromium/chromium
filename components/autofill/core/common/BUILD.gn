@@ -80,7 +80,7 @@ static_library("common") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/variations",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//ui/base",
     "//ui/gfx/geometry",
     "//url",
@@ -119,6 +119,8 @@ component("features") {
   output_name = "autofill_core_common_features"
   defines = [ "IS_AUTOFILL_IMPL" ]
   sources = [
+    "autofill_debug_features.cc",
+    "autofill_debug_features.h",
     "autofill_features.cc",
     "autofill_features.h",
     "autofill_payments_features.cc",
@@ -155,6 +157,7 @@ source_set("unit_tests") {
     "autocomplete_parsing_util_unittest.cc",
     "autofill_internals/log_message_unittest.cc",
     "autofill_internals/logging_scope_unittest.cc",
+    "autofill_prefs_unittest.cc",
     "autofill_regexes_unittest.cc",
     "autofill_util_unittest.cc",
     "credit_card_number_validation_unittest.cc",
@@ -165,6 +168,7 @@ source_set("unit_tests") {
     "logging/log_buffer_unittest.cc",
     "save_password_progress_logger_unittest.cc",
     "signatures_unittest.cc",
+    "unique_ids_unittest.cc",
   ]
 
   deps = [
@@ -178,8 +182,9 @@ source_set("unit_tests") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",
-    "//crypto:crypto",
-    "//google_apis:google_apis",
+    "//components/sync_preferences:test_support",
+    "//crypto",
+    "//google_apis",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

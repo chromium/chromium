@@ -105,13 +105,13 @@ TEST_F(LoginShelfViewPixelTest, FocusTraversalWithinShelf) {
   aura::Window* primary_shelf_window = GetPrimaryShelf()->GetWindow();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_calendar_view",
-      /*revision_number=*/9, primary_shelf_window));
+      /*revision_number=*/10, primary_shelf_window));
 
   // Focus on the time view.
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focus_on_time_view.rev_0",
-      /*revision_number=*/9, primary_shelf_window));
+      /*revision_number=*/10, primary_shelf_window));
 
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
@@ -119,7 +119,7 @@ TEST_F(LoginShelfViewPixelTest, FocusTraversalWithinShelf) {
   // Move the focus back to the add person button.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "refocus_on_login_shelf",
-      /*revision_number=*/9, primary_shelf_window));
+      /*revision_number=*/10, primary_shelf_window));
 }
 
 class LoginShelfWithPolicyWallpaperPixelTestWithRTL

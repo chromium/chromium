@@ -249,13 +249,9 @@ void ImageController::ConvertImagesToTasks(
     std::vector<DrawImage>* sync_decoded_images,
     std::vector<scoped_refptr<TileTask>>* tasks,
     bool* has_at_raster_images,
-    bool* has_hardware_accelerated_jpeg_candidates,
-    bool* has_hardware_accelerated_webp_candidates,
     const ImageDecodeCache::TracingInfo& tracing_info) {
   DCHECK(cache_);
   *has_at_raster_images = false;
-  *has_hardware_accelerated_jpeg_candidates = false;
-  *has_hardware_accelerated_webp_candidates = false;
 
   // We may read/write stand-alone decode image tasks if they are duplicates of
   // raster tasks.
@@ -270,17 +266,6 @@ void ImageController::ConvertImagesToTasks(
     ImageDecodeCache::TaskResult result = cache_->GetTaskForImageAndRef(
         image_cache_client_id_, *it, tracing_info);
     *has_at_raster_images |= result.is_at_raster_decode;
-
-    ImageType image_type =
-        it->paint_image().GetImageHeaderMetadata()
-            ? it->paint_image().GetImageHeaderMetadata()->image_type
-            : ImageType::kInvalid;
-    *has_hardware_accelerated_jpeg_candidates |=
-        (result.can_do_hardware_accelerated_decode &&
-         image_type == ImageType::kJPEG);
-    *has_hardware_accelerated_webp_candidates |=
-        (result.can_do_hardware_accelerated_decode &&
-         image_type == ImageType::kWEBP);
 
     if (result.task) {
       if (scoped_refptr<TileTask>& dependent =
@@ -320,11 +305,8 @@ std::vector<scoped_refptr<TileTask>> ImageController::SetPredecodeImages(
   // getting rasterized, we will still have a chance to record the raster
   // scheduling delay UMAs when we create and run the raster task.
   bool has_at_raster_images = false;
-  bool has_hardware_accelerated_jpeg_candidates = false;
-  bool has_hardware_accelerated_webp_candidates = false;
   ConvertImagesToTasks(&images, &new_tasks, &has_at_raster_images,
-                       &has_hardware_accelerated_jpeg_candidates,
-                       &has_hardware_accelerated_webp_candidates, tracing_info);
+                       tracing_info);
   UnrefImages(predecode_locked_images_);
   predecode_locked_images_ = std::move(images);
   return new_tasks;
@@ -346,8 +328,7 @@ ImageController::ImageDecodeRequestId ImageController::QueueImageDecode(
   // Get the tasks for this decode.
   ImageDecodeCache::TaskResult result(
       /*need_unref=*/false,
-      /*is_at_raster_decode=*/false,
-      /*can_do_hardware_accelerated_decode=*/false);
+      /*is_at_raster_decode=*/false);
   if (is_image_lazy) {
     if (!cache_) {
       orphaned_decode_requests_.emplace_back(

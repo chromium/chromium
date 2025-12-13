@@ -10,7 +10,8 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
-#include "content/browser/preloading/prefetch/prefetch_params.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/browser/preloading/prefetch/prefetch_key.h"
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/preloading.h"
@@ -20,6 +21,7 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
@@ -85,14 +87,39 @@ CreateStreamingURLLoaderWithoutPrefetchContainerForTests(
     NotReachedTagForTestsOr<base::RunLoop*> on_head_received,
     std::optional<PrefetchErrorOnResponseReceived> error_on_response_received,
     base::TimeDelta timeout_duration) {
-  auto response_reader = base::MakeRefCounted<PrefetchResponseReader>();
+  auto on_complete_callback = base::BindOnce(
+      [](NotReachedTagForTestsOr<OnPrefetchCompleteTestFuture*> on_complete,
+         bool is_success,
+         const network::URLLoaderCompletionStatus& completion_status) {
+        if (std::holds_alternative<NotReachedTagForTests>(on_complete)) {
+          NOTREACHED();
+        }
+        if (auto future = std::get<0>(on_complete)) {
+          future->SetValue(completion_status);
+        }
+      },
+      on_complete);
+
+  auto on_head_received_callback = base::BindOnce(
+      [](NotReachedTagForTestsOr<base::RunLoop*> on_head_received,
+         bool is_successful_determined_head) {
+        if (std::holds_alternative<NotReachedTagForTests>(on_head_received)) {
+          NOTREACHED();
+        }
+        if (auto run_loop = std::get<0>(on_head_received)) {
+          run_loop->Quit();
+        }
+      },
+      on_head_received);
+
+  auto response_reader = base::MakeRefCounted<PrefetchResponseReader>(
+      std::move(on_head_received_callback), std::move(on_complete_callback));
   return std::make_tuple(
       response_reader,
       CreateStreamingURLLoaderForTests(
           /*prefetch_container=*/nullptr, response_reader->GetWeakPtr(),
           std::move(url_loader_factory), prefetch_request, on_response_received,
-          on_complete, on_receive_redirect, on_head_received,
-          error_on_response_received, timeout_duration));
+          on_receive_redirect, error_on_response_received, timeout_duration));
 }
 
 base::WeakPtr<PrefetchStreamingURLLoader> CreateStreamingURLLoaderForTests(
@@ -101,10 +128,8 @@ base::WeakPtr<PrefetchStreamingURLLoader> CreateStreamingURLLoaderForTests(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const network::ResourceRequest& prefetch_request,
     NotReachedTagForTestsOr<base::RunLoop*> on_response_received,
-    NotReachedTagForTestsOr<OnPrefetchCompleteTestFuture*> on_complete,
     NotReachedTagForTestsOr<OnPrefetchReceiveRedirectTestFuture*>
         on_receive_redirect,
-    NotReachedTagForTestsOr<base::RunLoop*> on_head_received,
     std::optional<PrefetchErrorOnResponseReceived> error_on_response_received,
     base::TimeDelta timeout_duration) {
   CHECK(response_reader);
@@ -124,22 +149,6 @@ base::WeakPtr<PrefetchStreamingURLLoader> CreateStreamingURLLoaderForTests(
       },
       on_response_received, error_on_response_received);
 
-  auto on_complete_callback = base::BindOnce(
-      [](base::WeakPtr<PrefetchContainer> prefetch_container,
-         NotReachedTagForTestsOr<OnPrefetchCompleteTestFuture*> on_complete,
-         const network::URLLoaderCompletionStatus& completion_status) {
-        if (std::holds_alternative<NotReachedTagForTests>(on_complete)) {
-          NOTREACHED();
-        }
-        if (prefetch_container) {
-          prefetch_container->OnPrefetchComplete(completion_status);
-        }
-        if (auto future = std::get<0>(on_complete)) {
-          future->SetValue(completion_status);
-        }
-      },
-      prefetch_container, on_complete);
-
   auto on_receive_redirect_callback = base::BindRepeating(
       [](NotReachedTagForTestsOr<OnPrefetchReceiveRedirectTestFuture*>
              on_receive_redirect,
@@ -155,27 +164,21 @@ base::WeakPtr<PrefetchStreamingURLLoader> CreateStreamingURLLoaderForTests(
       },
       on_receive_redirect);
 
-  auto on_head_received_callback = base::BindOnce(
-      [](base::WeakPtr<PrefetchContainer> prefetch_container,
-         NotReachedTagForTestsOr<base::RunLoop*> on_head_received) {
-        if (std::holds_alternative<NotReachedTagForTests>(on_head_received)) {
-          NOTREACHED();
-        }
-        if (prefetch_container) {
-          prefetch_container->OnDeterminedHead();
-        }
-        if (auto run_loop = std::get<0>(on_head_received)) {
-          run_loop->Quit();
-        }
-      },
-      prefetch_container, on_head_received);
-
   auto streaming_loader = PrefetchStreamingURLLoader::CreateAndStart(
       std::move(url_loader_factory), prefetch_request,
       TRAFFIC_ANNOTATION_FOR_TESTS, timeout_duration,
-      std::move(on_receive_response_callback), std::move(on_complete_callback),
-      std::move(on_receive_redirect_callback),
-      std::move(on_head_received_callback), std::move(response_reader));
+      std::move(on_receive_response_callback),
+      std::move(on_receive_redirect_callback), std::move(response_reader),
+      // Because `browser_context_for_service_worker` is null, we don't test
+      // ServiceWorker-controlled prefetches (covered by WPTs instead). Still
+      // `OnServiceWorkerStateDetermined()` callback should be passed, to go
+      // through `PrefetchServiceWorkerState` transitions for
+      // `prefetch_container` if non-null.
+      prefetch_container ? prefetch_container->service_worker_state()
+                         : PrefetchServiceWorkerState::kDisallowed,
+      /*browser_context_for_service_worker=*/nullptr,
+      base::BindOnce(&PrefetchContainer::OnServiceWorkerStateDetermined,
+                     prefetch_container));
 
   if (prefetch_container) {
     prefetch_container->SetStreamingURLLoader(streaming_loader);
@@ -208,9 +211,8 @@ void MakeServableStreamingURLLoaderForTest(
       prefetch_container->GetWeakPtr(), weak_response_reader,
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory),
-      *request, &on_response_received_loop, /*on_complete=*/nullptr,
-      /*on_receive_redirect=*/NotReachedTagForTests(),
-      /*on_head_received=*/nullptr);
+      *request, &on_response_received_loop,
+      /*on_receive_redirect=*/NotReachedTagForTests());
 
   test_url_loader_factory.AddResponse(
       kTestUrl, std::move(head), body, status,
@@ -242,9 +244,8 @@ MakeManuallyServableStreamingURLLoaderForTest(
       prefetch_container->GetResponseReaderForCurrentPrefetch(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory),
-      *request, /*on_response_received=*/nullptr, /*on_complete=*/nullptr,
-      /*on_receive_redirect=*/NotReachedTagForTests(),
-      /*on_head_received=*/nullptr);
+      *request, /*on_response_received=*/nullptr,
+      /*on_receive_redirect=*/NotReachedTagForTests());
 
   CHECK_EQ(test_url_loader_factory.pending_requests()->size(), 1u);
   return std::move(test_url_loader_factory.pending_requests()->at(0));
@@ -273,9 +274,7 @@ void MakeServableStreamingURLLoaderWithRedirectForTest(
       prefetch_container->GetWeakPtr(), weak_first_response_reader,
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory),
-      *request, &on_response_received_loop, /*on_complete=*/nullptr,
-      &on_receive_redirect,
-      /*on_head_received=*/nullptr);
+      *request, &on_response_received_loop, &on_receive_redirect);
 
   network::URLLoaderCompletionStatus status(net::OK);
 
@@ -337,8 +336,7 @@ void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory),
       *original_request, /*on_response_received=*/NotReachedTagForTests(),
-      /*on_complete=*/NotReachedTagForTests(), &on_receive_redirect,
-      /*on_head_received=*/nullptr);
+      &on_receive_redirect);
 
   net::RedirectInfo original_redirect_info = SyntheticRedirect(redirect_url);
 
@@ -376,9 +374,8 @@ void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
       prefetch_container->GetWeakPtr(), weak_second_response_reader,
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory),
-      *redirect_request, &on_response_received_loop, /*on_complete=*/nullptr,
-      /*on_receive_redirect=*/NotReachedTagForTests(),
-      /*on_head_received=*/nullptr);
+      *redirect_request, &on_response_received_loop,
+      /*on_receive_redirect=*/NotReachedTagForTests());
 
   network::URLLoaderCompletionStatus status(net::OK);
   test_url_loader_factory.AddResponse(
@@ -503,7 +500,6 @@ TestPrefetchService::~TestPrefetchService() = default;
 
 void TestPrefetchService::PrefetchUrl(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
-  prefetch_container->DisablePrecogLoggingForTest();
   prefetches_.push_back(prefetch_container);
 }
 
@@ -604,9 +600,6 @@ void PrefetchingMetricsTestBase::ExpectPrefetchFailedNetError(
     blink::mojom::SpeculationEagerness eagerness,
     bool is_accurate_triggering,
     bool browser_initiated_prefetch) {
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL", false, 1);
-
   histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
                                     0);
   histogram_tester.ExpectUniqueSample(
@@ -644,9 +637,6 @@ void PrefetchingMetricsTestBase::ExpectPrefetchFailedAfterResponseReceived(
     int expected_body_length,
     PrefetchStatus expected_prefetch_status) {
   histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL", false, 1);
-
-  histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", expected_response_code, 1);
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);
@@ -675,9 +665,6 @@ void PrefetchingMetricsTestBase::ExpectPrefetchSuccess(
     int expected_body_length,
     blink::mojom::SpeculationEagerness eagerness,
     bool is_accurate) {
-  histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL", false, 1);
-
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
   histogram_tester.ExpectUniqueSample(
@@ -743,6 +730,82 @@ void PrefetchingMetricsTestBase::ExpectCorrectUkmLogs(
                                                   expected_attempts);
   // We do not test the `PreloadingPrediction` as it is added in
   // `PreloadingDecider`.
+}
+
+WithPrefetchRearchParam::WithPrefetchRearchParam(PrefetchRearchParam param)
+    : param_(param) {}
+WithPrefetchRearchParam::~WithPrefetchRearchParam() = default;
+
+// static
+std::vector<PrefetchRearchParam> PrefetchRearchParam::Params() {
+  return {PrefetchRearchParam{
+              .prefetch_scheduler = false,
+              .prefetch_scheduler_progress_sync_best_effort = false,
+              .graceful_notification = false,
+          },
+          PrefetchRearchParam{
+              .prefetch_scheduler = true,
+              .prefetch_scheduler_progress_sync_best_effort = false,
+              .graceful_notification = false,
+          },
+          PrefetchRearchParam{
+              .prefetch_scheduler = true,
+              .prefetch_scheduler_progress_sync_best_effort = true,
+              .graceful_notification = false,
+          },
+          PrefetchRearchParam{
+              .prefetch_scheduler = false,
+              .prefetch_scheduler_progress_sync_best_effort = false,
+              .graceful_notification = true,
+          },
+          PrefetchRearchParam{
+              .prefetch_scheduler = true,
+              .prefetch_scheduler_progress_sync_best_effort = false,
+              .graceful_notification = true,
+          },
+          PrefetchRearchParam{
+              .prefetch_scheduler = true,
+              .prefetch_scheduler_progress_sync_best_effort = true,
+              .graceful_notification = true,
+          }};
+}
+
+void WithPrefetchRearchParam::InitRearchFeatures() {
+  if (param_.prefetch_scheduler) {
+    feature_list_prefetch_scheduler_.InitWithFeaturesAndParameters(
+        {{
+            features::kPrefetchScheduler,
+            {
+                {"kPrefetchSchedulerProgressSyncBestEffort",
+                 param_.prefetch_scheduler_progress_sync_best_effort ? "true"
+                                                                     : "false"},
+            },
+        }},
+        {});
+  }
+  if (!param_.graceful_notification) {
+    feature_list_graceful_notification_.InitAndDisableFeature(
+        features::kPrefetchGracefulNotification);
+  }
+}
+
+PrefetchServiceInjectedEligibilityCheckFuture::
+    PrefetchServiceInjectedEligibilityCheckFuture(
+        PrefetchService& prefetch_service)
+    : prefetch_service_(prefetch_service) {
+  prefetch_service_->SetInjectedEligibilityCheckForTesting(base::BindRepeating(
+      [](TestFutureType* result_callback_future,
+         PrefetchService::InjectedEligibilityCheckResultCallbackForTesting
+             callback) {
+        result_callback_future->SetValue(std::move(callback));
+      },
+      base::Unretained(&result_callback_future_)));
+}
+
+PrefetchServiceInjectedEligibilityCheckFuture::
+    ~PrefetchServiceInjectedEligibilityCheckFuture() {
+  prefetch_service_->SetInjectedEligibilityCheckForTesting(
+      base::NullCallback());
 }
 
 }  // namespace content

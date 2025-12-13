@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"

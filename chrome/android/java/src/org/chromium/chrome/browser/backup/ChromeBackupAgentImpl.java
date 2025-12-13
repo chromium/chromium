@@ -32,6 +32,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
+import org.chromium.chrome.browser.base.SplitCompatBackupAgent;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.init.AsyncInitTaskRunner;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -41,7 +42,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.AccountInfo;
@@ -73,7 +73,7 @@ import java.util.function.Predicate;
 /** Backup agent for Chrome, using Android key/value backup. */
 @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
 @NullMarked
-public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
+public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
     private static final String ANDROID_DEFAULT_PREFIX = "AndroidDefault.";
 
     private static final String TAG = "ChromeBackupAgent";
@@ -181,6 +181,14 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
     // Timeout for the sign-in flow and related preferences commit.
     private static final long SIGNIN_TIMEOUT_SECS = 10;
 
+    // LINT.IfChange(HistogramSpareFile)
+    @VisibleForTesting
+    public static final String HISTOGRAM_SPARE_FILE_NAME = "BrowserMetrics-spare.pma";
+
+    @VisibleForTesting public static final int HISTOGRAM_SPARE_FILE_SIZE = 4 * 1024 * 1024;
+
+    // LINT.ThenChange(/components/metrics/persistent_histograms.cc)
+
     /**
      * Class to save and restore the backup state, used to decide if backups are needed. Since the
      * backup data is small, and stored as private data by the backup service, this can simply store
@@ -260,7 +268,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         final ArrayList<String> backupNames = new ArrayList<>();
         final ArrayList<byte[]> backupValues = new ArrayList<>();
 
-        final AtomicReference<CoreAccountInfo> signedInAccount = new AtomicReference<>();
+        final AtomicReference<@Nullable CoreAccountInfo> signedInAccount = new AtomicReference<>();
 
         // The native preferences can only be read on the UI thread.
         Boolean nativePrefsRead =
@@ -562,10 +570,17 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             }
         }
 
-        Profile profile = ProfileManager.getLastUsedRegularProfile();
-        IdentityManager identityManager =
-                assertNonNull(IdentityServicesProvider.get().getIdentityManager(profile));
-        if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+        boolean hasPrimaryAccount =
+                PostTask.runSynchronously(
+                        TaskTraits.UI_DEFAULT,
+                        () -> {
+                            Profile profile = ProfileManager.getLastUsedRegularProfile();
+                            return assertNonNull(
+                                            IdentityServicesProvider.get()
+                                                    .getIdentityManager(profile))
+                                    .hasPrimaryAccount(ConsentLevel.SIGNIN);
+                        });
+        if (!hasPrimaryAccount) {
             if (signedInAccountInfo != null) {
                 editor.apply();
                 signInAndWaitForResult(signedInAccountInfo);
@@ -621,18 +636,13 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         // install - there won't be a spare file to be used, breaking persistent histograms and
         // thus restore flow metrics. To work around this issue and still get metrics from the
         // restore flow - create a spare file manually.
-        // LINT.IfChange
-        final String spareFileName = "BrowserMetrics-spare.pma";
-        final int spareFileSize = 4 * 1024 * 1024;
-        // LINT.ThenChange(/components/metrics/persistent_histograms.cc)
-
-        File spareFile = new File(dataDirectory, spareFileName);
+        File spareFile = new File(dataDirectory, HISTOGRAM_SPARE_FILE_NAME);
         try (OutputStream outputStream = new FileOutputStream(spareFile)) {
             // Zero-initialize the whole file to make sure the space is actually allocated and it
             // can be used for persisting histograms.
             byte[] buffer = new byte[8192];
-            for (int writtenBytes = 0; writtenBytes < spareFileSize; ) {
-                int writeSize = Math.min(buffer.length, spareFileSize - writtenBytes);
+            for (int writtenBytes = 0; writtenBytes < HISTOGRAM_SPARE_FILE_SIZE; ) {
+                int writeSize = Math.min(buffer.length, HISTOGRAM_SPARE_FILE_SIZE - writtenBytes);
                 outputStream.write(buffer, 0, writeSize);
                 writtenBytes += writeSize;
             }
@@ -731,12 +741,18 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
         PostTask.runSynchronously(
                 TaskTraits.UI_DEFAULT,
                 () -> {
+                    Profile profile = ProfileManager.getLastUsedRegularProfile();
                     SigninManager signinManager =
-                            IdentityServicesProvider.get()
-                                    .getSigninManager(ProfileManager.getLastUsedRegularProfile());
-                    assertNonNull(signinManager);
-                    final AccountManagerFacade accountManagerFacade =
-                            AccountManagerFacadeProvider.getInstance();
+                            assertNonNull(IdentityServicesProvider.get().getSigninManager(profile));
+                    IdentityManager identityManager =
+                            assertNonNull(
+                                    IdentityServicesProvider.get().getIdentityManager(profile));
+                    if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+                        // This may happen if the user is supervised as they will be signed in via
+                        // {@link SigninChecker}.
+                        callback.onSignInAborted();
+                        return;
+                    }
 
                     Callback<Boolean> accountManagedCallback =
                             (isManaged) -> {
@@ -754,22 +770,7 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                                         });
                             };
 
-                    AccountManagerFacade.ChildAccountStatusListener listener =
-                            (isChild, unused) -> {
-                                if (isChild) {
-                                    // TODO(crbug.com/40835324):
-                                    // Pre-AllowSyncOffForChildAccounts, the backup sign-in for
-                                    // child accounts would happen in SigninChecker anyways.
-                                    // Maybe it should be handled by this  class once the
-                                    // feature launches.
-                                    callback.onSignInAborted();
-                                    return;
-                                }
-                                signinManager.isAccountManaged(accountInfo, accountManagedCallback);
-                            };
-
-                    AccountUtils.checkIsSubjectToParentalControls(
-                            accountManagerFacade, getAccounts(), listener);
+                    signinManager.isAccountManaged(accountInfo, accountManagedCallback);
                 });
     }
 

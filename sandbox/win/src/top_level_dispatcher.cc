@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/win/src/top_level_dispatcher.h"
 
 #include <stdint.h>
 #include <string.h>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/filesystem_dispatcher.h"
@@ -28,7 +24,7 @@ namespace sandbox {
 
 TopLevelDispatcher::TopLevelDispatcher(PolicyBase* policy) : policy_(policy) {
   // Initialize the IPC dispatcher array.
-  memset(ipc_targets_, 0, sizeof(ipc_targets_));
+  UNSAFE_TODO(memset(ipc_targets_, 0, sizeof(ipc_targets_)));
 
   ConfigBase* config = policy_->config();
   CHECK(config->IsConfigured());
@@ -41,7 +37,8 @@ TopLevelDispatcher::TopLevelDispatcher(PolicyBase* policy) : policy_(policy) {
         filesystem_dispatcher_ =
             std::make_unique<FilesystemDispatcher>(policy_);
       }
-      ipc_targets_[static_cast<size_t>(service)] = filesystem_dispatcher_.get();
+      UNSAFE_TODO(ipc_targets_[static_cast<size_t>(service)]) =
+          filesystem_dispatcher_.get();
     }
   }
 
@@ -52,7 +49,7 @@ TopLevelDispatcher::TopLevelDispatcher(PolicyBase* policy) : policy_(policy) {
         thread_process_dispatcher_ =
             std::make_unique<ThreadProcessDispatcher>();
       }
-      ipc_targets_[static_cast<size_t>(service)] =
+      UNSAFE_TODO(ipc_targets_[static_cast<size_t>(service)]) =
           thread_process_dispatcher_.get();
     }
   }
@@ -67,7 +64,7 @@ TopLevelDispatcher::TopLevelDispatcher(PolicyBase* policy) : policy_(policy) {
       }
       // Technically we don't need to register for IPCs but we do need this
       // here to write the intercepts in SetupService.
-      ipc_targets_[static_cast<size_t>(service)] =
+      UNSAFE_TODO(ipc_targets_[static_cast<size_t>(service)]) =
           process_mitigations_win32k_dispatcher_.get();
     }
   }
@@ -84,7 +81,7 @@ TopLevelDispatcher::~TopLevelDispatcher() {}
 std::vector<IpcTag> TopLevelDispatcher::ipc_targets() {
   std::vector<IpcTag> results = {IpcTag::PING1, IpcTag::PING2};
   for (size_t ipc = 0; ipc < kSandboxIpcCount; ipc++) {
-    if (ipc_targets_[ipc]) {
+    if (UNSAFE_TODO(ipc_targets_[ipc])) {
       results.push_back(static_cast<IpcTag>(ipc));
     }
   }
@@ -158,7 +155,7 @@ Dispatcher* TopLevelDispatcher::GetDispatcher(IpcTag ipc_tag) {
     return nullptr;
   }
 
-  return ipc_targets_[static_cast<size_t>(ipc_tag)];
+  return UNSAFE_TODO(ipc_targets_[static_cast<size_t>(ipc_tag)]);
 }
 
 }  // namespace sandbox

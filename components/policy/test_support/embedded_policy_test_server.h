@@ -72,7 +72,7 @@ class EmbeddedPolicyTestServer {
   virtual ~EmbeddedPolicyTestServer();
 
   // Initializes and waits until the server is ready to accept requests.
-  virtual bool Start();
+  bool Start(int port = 0, std::string_view address = "127.0.0.1");
 
   ClientStorage* client_storage();
 

@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2023 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/text_size_contrast_view_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -21,8 +24,19 @@
       android:background="@drawable/page_zoom_ripple"
       android:tint="@color/default_icon_color_tint_list" />
 
-  <SeekBar
-      android:id="@+id/text_size_contrast_slider"
+    <com.google.android.material.slider.Slider
+        android:id="@+id/text_size_contrast_slider"
+        style="@style/Widget.PageZoomSlider"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:tickVisible="false"
+        android:contentDescription="@string/page_zoom_label" />
+
+    <!-- TODO(crbug.com/439911511): Legacy seekbar. -->
+    <SeekBar
+        android:id="@+id/text_size_contrast_slider_legacy"
       android:layout_weight="1"
       android:layout_width="0dp"
       android:layout_height="@dimen/min_touch_target_size"
@@ -33,7 +47,7 @@
       android:id="@+id/text_size_contrast_increase_zoom_button"
       android:layout_width="@dimen/min_touch_target_size"
       android:layout_height="@dimen/min_touch_target_size"
-      android:src="@drawable/ic_add"
+      android:src="@drawable/ic_add_24dp"
       android:visibility="gone"
       android:background="@drawable/page_zoom_ripple"
       android:tint="@color/default_icon_color_tint_list" />

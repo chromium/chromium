@@ -228,6 +228,8 @@ def main():
                    ['--cross-file', '../crossfiles/arm.crossfile'])
     GenerateConfig('config/linux/arm64', linux_env,
                    ['--cross-file', '../crossfiles/arm64.crossfile'])
+    GenerateConfig('config/linux/riscv64', linux_env,
+                   ['--cross-file', '../crossfiles/riscv64.crossfile'])
 
     win_x86_env = SetupWindowsCrossCompileToolchain('x86')
     GenerateConfig('config/win/x86', win_x86_env,

@@ -42,18 +42,14 @@ java_group("cast_shell_android_resources") {
 android_resources("cast_browser_android_resources") {
   sources = [
     "apk/res/drawable-anydpi-v26/ic_settings_cast.xml",
-    "apk/res/drawable-hdpi/ic_notification_cast.png",
     "apk/res/drawable-hdpi/ic_settings_cast.png",
-    "apk/res/drawable-mdpi/ic_notification_cast.png",
     "apk/res/drawable-mdpi/ic_settings_cast.png",
     "apk/res/drawable-nodpi/ic_cast_vector.xml",
-    "apk/res/drawable-xhdpi/ic_notification_cast.png",
     "apk/res/drawable-xhdpi/ic_settings_cast.png",
-    "apk/res/drawable-xxhdpi/ic_notification_cast.png",
     "apk/res/drawable-xxhdpi/ic_settings_cast.png",
-    "apk/res/drawable-xxxhdpi/ic_notification_cast.png",
     "apk/res/drawable-xxxhdpi/ic_settings_cast.png",
     "apk/res/layout/cast_web_contents_activity.xml",
+    "apk/res/raw/back_pressed.js",
   ]
 }
 
@@ -61,7 +57,6 @@ android_resources("cast_shell_android_stub_resources") {
   sources = [
     "apk/res-values/values-v17/styles.xml",
     "apk/res-values/values/colors.xml",
-    "apk/res-values/values/strings.xml",
   ]
 }
 
@@ -145,6 +140,7 @@ common_android_library_deps = [
   "//components/embedder_support/android:view_java",
   "//components/module_installer/android:module_installer_java",
   "//components/module_installer/android:module_interface_java",
+  "//components/viz/service:service_java",
   "//content/public/android:content_java",
   "//media/base/android:media_java",
   "//net/android:net_java",

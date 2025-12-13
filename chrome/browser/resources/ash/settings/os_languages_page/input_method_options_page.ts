@@ -38,9 +38,6 @@ import type {LanguageHelper} from './languages_types.js';
  */
 const PREFS_PATH = 'settings.language.input_method_specific_settings';
 
-// This type seems incorrect, as this includes
-// OPTION_DEFAULT[OptionType.PINYIN_FUZZY_CONFIG] which is a big object literal.
-// TODO(b/263829863): Investigate and fix this type.
 type OptionValue = ReturnType<typeof getDefaultValue>;
 
 // This type is the expected type of the dictionary pref stored in PREFS_PATH,
@@ -249,8 +246,6 @@ export class SettingsInputMethodOptionsPageElement extends
           loadTimeData.getBoolean('isPhysicalKeyboardAutocorrectAllowed'),
       isPhysicalKeyboardPredictiveWritingAllowed:
           loadTimeData.getBoolean('isPhysicalKeyboardPredictiveWritingAllowed'),
-      isJapaneseSettingsAllowed:
-          loadTimeData.getBoolean('systemJapanesePhysicalTyping'),
       isVietnameseFirstPartyInputSettingsAllowed:
           loadTimeData.getBoolean('allowFirstPartyVietnameseInput'),
     });

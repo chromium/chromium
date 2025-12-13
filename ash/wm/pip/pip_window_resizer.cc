@@ -303,7 +303,7 @@ void PipWindowResizer::CompleteDrag() {
     window_util::CloseWidgetForWindow(window_state()->window());
   } else if (should_tuck) {
     const gfx::Point display_bounds_center =
-        display::Screen::GetScreen()
+        display::Screen::Get()
             ->GetDisplayMatching(GetTarget()->bounds())
             .bounds()
             .CenterPoint();

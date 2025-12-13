@@ -72,7 +72,7 @@ static jlong JNI_FeedServiceBridge_GetReliabilityLoggingId(JNIEnv* env) {
 
 static jlong JNI_FeedServiceBridge_AddUnreadContentObserver(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_observer,
+    const base::android::JavaRef<jobject>& j_observer,
     jboolean is_web_feed) {
   FeedApi* api = GetFeedApi();
   if (!api)
@@ -206,3 +206,5 @@ void JavaUnreadContentObserver::Destroy(JNIEnv*) {
 }
 
 }  // namespace feed
+
+DEFINE_JNI(FeedServiceBridge)

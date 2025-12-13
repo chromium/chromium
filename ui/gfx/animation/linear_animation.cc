@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/animation_delegate.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/switches.h"
 
 namespace gfx {
@@ -44,7 +45,7 @@ double LinearAnimation::GetCurrentValue() const {
 
 void LinearAnimation::SetCurrentValue(double new_value) {
   new_value = std::clamp(new_value, 0.0, 1.0);
-  const base::TimeDelta time_delta = duration_ * (new_value - state_);
+  const base::TimeDelta time_delta = GetDuration() * (new_value - state_);
   SetStartTime(start_time() - time_delta);
   state_ = new_value;
 }
@@ -60,23 +61,16 @@ void LinearAnimation::End() {
 }
 
 void LinearAnimation::SetDuration(base::TimeDelta duration) {
-  static const double duration_scale_factor = []() {
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    double animation_duration_scale;
-    return (base::StringToDouble(command_line->GetSwitchValueASCII(
-                                     switches::kAnimationDurationScale),
-                                 &animation_duration_scale) &&
-            (animation_duration_scale >= 0.0))
-               ? animation_duration_scale
-               : 1.0;
-  }();
-  duration_ = std::max(duration * duration_scale_factor, timer_interval());
+  duration_ = std::max(duration, timer_interval());
   if (is_animating())
     SetStartTime(container()->last_tick_time());
 }
 
 void LinearAnimation::Step(base::TimeTicks time_now) {
-  state_ = std::min((time_now - start_time()) / duration_, 1.0);
+  auto duration = GetDuration();
+  state_ = duration.is_zero()
+               ? 1.0f
+               : std::min((time_now - start_time()) / duration, 1.0);
 
   AnimateToState(state_);
 
@@ -103,6 +97,11 @@ void LinearAnimation::AnimationStopped() {
 
 bool LinearAnimation::ShouldSendCanceledFromStop() {
   return state_ != 1;
+}
+
+base::TimeDelta LinearAnimation::GetDuration() const {
+  return duration_ *
+         gfx::ScopedAnimationDurationScaleMode::duration_multiplier();
 }
 
 }  // namespace gfx

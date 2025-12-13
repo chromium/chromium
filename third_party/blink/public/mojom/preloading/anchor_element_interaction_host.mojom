@@ -25,14 +25,26 @@ interface AnchorElementInteractionHost {
     // In the browser process, the URL gets preloaded.
     OnPointerDown(url.mojom.Url target);
 
-    // On pointer hover events for anchor elements that are part of the HTTP family,
-    // the renderer calls OnPointerHover to pass the URL to the browser process.
-    // In the browser process, the URL gets preloaded.
-    OnPointerHover(url.mojom.Url target,
-                   AnchorElementPointerData mouse_data);
+    // After the user hovers over qualified anchor elements for a short time,
+    // the renderer calls OnPointerHoverEager to pass the URL to the browser
+    // process. In the browser process, the URL gets preloaded.
+    OnPointerHoverEager(url.mojom.Url target,
+                        AnchorElementPointerData mouse_data);
 
-    // The renderer calls OnViewportHeuristicTriggered for selected anchor
+    // After the user hovers over qualified anchor elements for a longer time,
+    // the renderer calls OnPointerHoverModerate to pass the URL to the browser
+    // process. In the browser process, the URL gets preloaded.
+    OnPointerHoverModerate(url.mojom.Url target,
+                           AnchorElementPointerData mouse_data);
+
+    // The renderer calls OnModerateViewportHeuristicTriggered for selected
+    // anchor elements that are part of the HTTP family, in the viewport, and
+    // meet certain other criteria used by the heuristic.
+    OnModerateViewportHeuristicTriggered(url.mojom.Url target);
+
+    // The renderer calls OnEagerViewportHeuristicTriggered for selected anchor
     // elements that are part of the HTTP family, in the viewport, and meet
-    // certain other criteria used by the heuristic.
-    OnViewportHeuristicTriggered(url.mojom.Url target);
+    // certain other criteria used by the heuristic. This function accepts
+    // multiple target URLs at once to reduce the number of IPC calls.
+    OnEagerViewportHeuristicTriggered(array<url.mojom.Url> targets);
 };

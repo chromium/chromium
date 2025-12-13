@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
-#include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
 #include "chrome/browser/password_manager/android/password_manager_ui_util_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_delegate.h"
@@ -31,23 +30,41 @@ namespace {
 using password_manager::PasskeyCredential;
 using password_manager::UiCredential;
 using webauthn::WebAuthnCredManDelegate;
+using Credential = TouchToFillView::Credential;
 using DisplayTarget = TouchToFillController::DisplayTarget;
 
-std::vector<UiCredential> SortCredentials(
-    base::span<const UiCredential> credentials) {
-  std::vector<UiCredential> result(credentials.begin(), credentials.end());
+// Constants used to rank passkeys and passwords in the default credential
+// sorting. Passkeys have a higher value so they will be sorted above
+// passwords.
+constexpr int kPasskeySortValue = 1;
+constexpr int kPasswordSortValue = 0;
+// `kPlaceholderSortValue` is an arbitrary value for credential type, which
+// is not used for passkeys.
+constexpr int kPlaceholderSortValue = 0;
+
+std::vector<Credential> DefaultSortCredentials(
+    base::span<const Credential> credentials) {
+  std::vector<Credential> result(credentials.begin(), credentials.end());
   // Sort `credentials` according to the following criteria:
-  // 1) List exact matches first, then affiliated, then PSL matches.
-  // 2) List credentials that were used recently before others.
-  // 3) List recovery passwords immediately after their corresponding main
+  // 1) List passkeys before passwords.
+  // 2) List exact matches first, then affiliated, then PSL matches.
+  // 3) List credentials that were used recently before others.
+  // 4) List recovery passwords immediately after their corresponding main
   //    password (note: main and recovery passwords have the same last used
   //    date).
   //
   // Note: This ordering matches password_manager_util::FindBestMatches(),
   // apart from the backup password which only exists separately in the UI.
-  std::ranges::sort(result, std::greater<>{}, [](const UiCredential& cred) {
-    return std::make_tuple(-static_cast<int>(cred.match_type()),
-                           cred.last_used(), !cred.is_backup_credential());
+  std::ranges::sort(result, std::greater<>{}, [](const Credential& cred) {
+    if (const auto* passkey = std::get_if<PasskeyCredential>(&cred)) {
+      return std::make_tuple(
+          kPasskeySortValue, kPlaceholderSortValue,
+          passkey->last_used_time().value_or(base::Time::Min()), false);
+    }
+    const auto* password = &std::get<UiCredential>(cred);
+    return std::make_tuple(
+        kPasswordSortValue, -static_cast<int>(password->match_type()),
+        password->last_used(), !password->is_backup_credential());
   });
 
   return result;
@@ -68,12 +85,10 @@ TouchToFillController::TouchToFillController(
 TouchToFillController::~TouchToFillController() = default;
 
 void TouchToFillController::InitData(
-    base::span<const password_manager::UiCredential> credentials,
-    std::vector<password_manager::PasskeyCredential> passkey_credentials,
+    std::vector<Credential> credentials,
     base::WeakPtr<password_manager::ContentPasswordManagerDriver>
         frame_driver) {
-  credentials_ = std::vector(credentials.begin(), credentials.end());
-  passkey_credentials_ = std::move(passkey_credentials);
+  credentials_ = std::move(credentials);
   frame_driver_ = frame_driver;
 }
 
@@ -90,13 +105,13 @@ bool TouchToFillController::Show(
   cred_man_delegate_ = cred_man_delegate;
   visibility_controller_->SetVisible(frame_driver_);
 
-  ttf_delegate_->OnShow(credentials_, passkey_credentials_);
+  ttf_delegate_->OnShow(credentials_);
   GURL url = ttf_delegate_->GetFrameUrl();
   // If the render frame host has been destroyed already, the url will be empty
   // in which case Show() should never be called.
   CHECK(!url.is_empty());
 
-  switch (GetResponsibleDisplayTarget(credentials_, passkey_credentials_)) {
+  switch (GetResponsibleDisplayTarget(credentials_)) {
     case DisplayTarget::kNone:
       // Ideally this should never happen. However, in case we do end up
       // invoking Show() without credentials, we should not show Touch To Fill
@@ -134,10 +149,6 @@ bool TouchToFillController::Show(
       if (ttf_delegate_->ShouldTriggerSubmission()) {
         flags |= TouchToFillView::kTriggerSubmission;
       }
-      if (password_manager_launcher::CanManagePasswordsWhenPasskeysPresent(
-              profile_)) {
-        flags |= TouchToFillView::kCanManagePasswordsWhenPasskeysPresent;
-      }
       if (ttf_delegate_->ShouldShowHybridOption()) {
         flags |= TouchToFillView::kShouldShowHybridOption;
       }
@@ -150,12 +161,17 @@ bool TouchToFillController::Show(
         flags |= TouchToFillView::kShouldShowCredManEntry;
       }
 
+      std::optional<std::vector<Credential>> sorted_credentials =
+          ttf_delegate_->SortCredentials(credentials_);
+      if (!sorted_credentials.has_value()) {
+        sorted_credentials = DefaultSortCredentials(credentials_);
+      }
+
       return view_->Show(url,
                          TouchToFillView::IsOriginSecure(
                              network::IsOriginPotentiallyTrustworthy(
                                  url::Origin::Create(url))),
-                         SortCredentials(credentials_), passkey_credentials_,
-                         flags);
+                         *sorted_credentials, flags);
   }
 }
 
@@ -181,9 +197,11 @@ void TouchToFillController::OnCredentialSelected(
   }
 
   // Emit UMA if grouped affiliation match was available for the user.
-  if (std::ranges::find_if(credentials_, [](const UiCredential& login) {
-        return login.match_type() ==
-               password_manager_util::GetLoginMatchType::kGrouped;
+  if (std::ranges::find_if(credentials_, [](const Credential& login) {
+        const UiCredential* password_login = std::get_if<UiCredential>(&login);
+        return password_login &&
+               password_login->match_type() ==
+                   password_manager_util::GetLoginMatchType::kGrouped;
       }) != credentials_.end()) {
     password_manager::metrics_util::LogFillSuggestionGroupedMatchAccepted(
         /*grouped_match_accepted=*/false);
@@ -294,7 +312,6 @@ void TouchToFillController::Reset() {
   }
   visibility_controller_->Reset();
   credentials_.clear();
-  passkey_credentials_.clear();
 }
 
 void TouchToFillController::ActionCompleted() {
@@ -305,12 +322,11 @@ void TouchToFillController::ActionCompleted() {
 }
 
 DisplayTarget TouchToFillController::GetResponsibleDisplayTarget(
-    base::span<const password_manager::UiCredential> credentials,
-    base::span<password_manager::PasskeyCredential> passkey_credentials) const {
+    base::span<const Credential> credentials) const {
   bool has_passkeys_in_cred_man =
       cred_man_delegate_ && cred_man_delegate_->HasPasskeys() ==
                                 WebAuthnCredManDelegate::State::kHasPasskeys;
-  if (!credentials.empty() || !passkey_credentials.empty()) {
+  if (!credentials.empty()) {
     return DisplayTarget::kShowTouchToFill;
   }
 

@@ -33,62 +33,34 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
   MerchantPromoCodeSuggestionGenerator merchant_promo_code_suggestion_generator;
   bool suggestions_generated = false;
 
-  auto on_suggestions_generated = base::BindOnce(
-      [](SingleFieldFillRouter::OnSuggestionsReturnedCallback& callback,
-         const FormFieldData& field, bool& suggestions_generated,
-         SuggestionGenerator::ReturnedSuggestions returned_suggestions) {
+  auto on_suggestions_generated =
+      [&on_suggestions_returned, &field, &suggestions_generated](
+          SuggestionGenerator::ReturnedSuggestions returned_suggestions) {
         suggestions_generated = !returned_suggestions.second.empty();
         if (suggestions_generated) {
-          std::move(callback).Run(field.global_id(),
-                                  returned_suggestions.second);
+          std::move(on_suggestions_returned)
+              .Run(field.global_id(), std::move(returned_suggestions.second));
         }
-      },
-      std::ref(on_suggestions_returned), std::cref(field),
-      std::ref(suggestions_generated));
+      };
 
-  auto on_suggestion_data_returned = base::BindOnce(
-      [](base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>
-             callback,
-         const FormStructure& form, const AutofillField& autofill_field,
-         base::WeakPtr<MerchantPromoCodeSuggestionGenerator>
-             merchant_promo_code_suggestion_generator,
-         std::pair<FillingProduct,
-                   std::vector<SuggestionGenerator::SuggestionData>>
-             suggestion_data) {
-        if (merchant_promo_code_suggestion_generator) {
-          merchant_promo_code_suggestion_generator->GenerateSuggestions(
-              form, autofill_field, {suggestion_data}, std::move(callback));
-        }
-      },
-      std::move(on_suggestions_generated), std::cref(form_structure),
-      std::cref(autofill_field),
-      merchant_promo_code_suggestion_generator.GetWeakPtr());
+  auto on_suggestion_data_returned =
+      [&on_suggestions_generated, &field, &form_structure, &autofill_field,
+       &client, &merchant_promo_code_suggestion_generator](
+          std::pair<SuggestionGenerator::SuggestionDataSource,
+                    std::vector<SuggestionGenerator::SuggestionData>>
+              suggestion_data) {
+        merchant_promo_code_suggestion_generator.GenerateSuggestions(
+            form_structure.ToFormData(), field, &form_structure,
+            &autofill_field, client, {std::move(suggestion_data)},
+            on_suggestions_generated);
+      };
 
   // Since the `on_suggestion_data_returned` callback is called synchronously,
   // we can assume that `suggestions_generated` will hold correct value.
   merchant_promo_code_suggestion_generator.FetchSuggestionData(
-      form_structure, autofill_field, client,
-      std::move(on_suggestion_data_returned));
+      form_structure.ToFormData(), field, &form_structure, &autofill_field,
+      client, on_suggestion_data_returned);
   return suggestions_generated;
-}
-
-void MerchantPromoCodeManager::SendPromoCodeSuggestions(
-    std::vector<const AutofillOfferData*> promo_code_offers,
-    const FormFieldData& field,
-    SingleFieldFillRouter::OnSuggestionsReturnedCallback
-        on_suggestions_returned) {
-  // If the input box content equals any of the available promo codes, then
-  // assume the promo code has been filled, and don't show any suggestions.
-  for (const AutofillOfferData* promo_code_offer : promo_code_offers) {
-    if (field.value() == base::ASCIIToUTF16(promo_code_offer->GetPromoCode())) {
-      std::move(on_suggestions_returned).Run(field.global_id(), {});
-      return;
-    }
-  }
-
-  std::move(on_suggestions_returned)
-      .Run(field.global_id(),
-           GetPromoCodeSuggestionsFromPromoCodeOffers(promo_code_offers));
 }
 
 }  // namespace autofill

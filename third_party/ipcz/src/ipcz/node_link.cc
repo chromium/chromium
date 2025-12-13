@@ -2,13 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
-#include "ipcz/node_link.h"
-
 #include <algorithm>
 #include <atomic>
 #include <cstddef>
@@ -26,6 +19,7 @@
 #include "ipcz/message.h"
 #include "ipcz/node.h"
 #include "ipcz/node_connector.h"
+#include "ipcz/node_link.h"
 #include "ipcz/node_link_memory.h"
 #include "ipcz/node_messages.h"
 #include "ipcz/parcel.h"
@@ -38,6 +32,7 @@
 #include "util/log.h"
 #include "util/ref_counted.h"
 #include "util/safe_math.h"
+#include "util/unsafe_buffers.h"
 
 namespace ipcz {
 
@@ -134,6 +129,7 @@ Ref<RemoteRouterLink> NodeLink::AddRemoteRouterLink(
     return nullptr;
   }
 
+  DVLOG(4) << "Adding sublink " << sublink;
   auto [it, added] = sublinks_.try_emplace(
       sublink, Sublink(std::move(link), std::move(router)));
   if (!added) {
@@ -146,7 +142,9 @@ Ref<RemoteRouterLink> NodeLink::AddRemoteRouterLink(
 
 void NodeLink::RemoveRemoteRouterLink(SublinkId sublink) {
   absl::MutexLock lock(&mutex_);
+  DVLOG(4) << "Removing RemoteRouterLink for sublink " << sublink;
   sublinks_.erase(sublink);
+  deleted_sublinks_.Insert(sublink);
 }
 
 std::optional<NodeLink::Sublink> NodeLink::GetSublink(SublinkId sublink) {
@@ -278,8 +276,9 @@ void NodeLink::RelayMessage(const NodeName& to_node, Message& message) {
   relay.v0()->destination = to_node;
   relay.v0()->data = relay.AllocateArray<uint8_t>(message.data_view().size());
   relay.v0()->padding = 0;
-  memcpy(relay.GetArrayData(relay.v0()->data), message.data_view().data(),
-         message.data_view().size());
+  IPCZ_UNSAFE_TODO(memcpy(relay.GetArrayData(relay.v0()->data),
+                          message.data_view().data(),
+                          message.data_view().size()));
   relay.v0()->driver_objects =
       relay.AppendDriverObjects(message.driver_objects());
   Transmit(relay);
@@ -348,8 +347,18 @@ void NodeLink::Transmit(Message& message) {
     return;
   }
 
-  message.header().sequence_number = GenerateOutgoingSequenceNumber();
+  message.header().node_sequence_number = GenerateOutgoingSequenceNumber();
   transport_->Transmit(message);
+}
+
+size_t NodeLink::DeletedSublinkCountForTesting() {
+  absl::MutexLock lock(&mutex_);
+  return deleted_sublinks_.Size();
+}
+
+size_t NodeLink::EarlyParcelCountForTesting() {
+  absl::MutexLock lock(&mutex_);
+  return early_parcels_for_sublink_.size();
 }
 
 void NodeLink::AcceptEarlyParcelsForSublink(SublinkId sublink_id) {
@@ -358,10 +367,6 @@ void NodeLink::AcceptEarlyParcelsForSublink(SublinkId sublink_id) {
     absl::MutexLock lock(&mutex_);
     auto it = early_parcels_for_sublink_.find(sublink_id);
     if (it != early_parcels_for_sublink_.end()) {
-      // TODO(crbug.com/410594534): Add CQ coverage for this condition. As of
-      // 2025-06 one known way to exercise it is to "upgrade" ChannelLinux to
-      // sending messages using eventfd and an additional shared memory region
-      // (crrev.com/c/6316751). A simpler reproducer is needed.
       early_parcels.swap(it->second);
       early_parcels_for_sublink_.erase(it);
     }
@@ -856,9 +861,12 @@ void NodeLink::HandleTransportError() {
   SublinkMap sublinks;
   SubparcelTrackerMap subparcel_trackers;
   ReferralCallbackMap pending_referrals;
+  SublinkEarlyParcelsMap early_parcels_for_sublink;
   {
     absl::MutexLock lock(&mutex_);
     sublinks.swap(sublinks_);
+    deleted_sublinks_.Clear();
+    early_parcels_for_sublink_.swap(early_parcels_for_sublink);
     subparcel_trackers.swap(subparcel_trackers_);
     pending_referrals.swap(pending_referrals_);
   }
@@ -991,12 +999,14 @@ bool NodeLink::AcceptCompleteParcel(SublinkId for_sublink,
                                     std::unique_ptr<Parcel> parcel) {
   const std::optional<Sublink> sublink = GetSublink(for_sublink);
   if (!sublink) {
-    DVLOG(4) << "Queuing " << parcel->Describe() << " at "
-             << local_node_name_.ToString() << ", arriving from "
-             << remote_node_name_.ToString() << " via unknown sublink "
-             << for_sublink;
     absl::MutexLock lock(&mutex_);
-    early_parcels_for_sublink_[for_sublink].emplace_back(std::move(parcel));
+    if (!deleted_sublinks_.Contains(for_sublink)) {
+      DVLOG(4) << "Queuing " << parcel->Describe() << " at "
+               << local_node_name_.ToString() << ", arriving from "
+               << remote_node_name_.ToString() << " via unknown sublink "
+               << for_sublink;
+      early_parcels_for_sublink_[for_sublink].emplace_back(std::move(parcel));
+    }
     return true;
   }
 
@@ -1076,6 +1086,51 @@ bool NodeLink::AcceptCompleteParcel(SublinkId for_sublink,
   DVLOG(4) << "Accepting outbound " << parcel->Describe() << " at "
            << sublink->router_link->Describe();
   return sublink->receiver->AcceptOutboundParcel(std::move(parcel));
+}
+
+namespace {
+
+std::chrono::time_point<std::chrono::steady_clock> TimePointNow() {
+  return std::chrono::steady_clock::now();
+}
+
+}  // namespace
+
+NodeLink::AutoClearedSublinkSet::AutoClearedSublinkSet()
+    : last_clear_time_(TimePointNow()) {}
+
+void NodeLink::AutoClearedSublinkSet::ClearExpiredIdsIfNeeded() {
+  if (current_.empty() && previous_.empty()) {
+    // Fast path to avoid measuring time ticks.
+    return;
+  }
+
+  const auto now = TimePointNow();
+  if (now - last_clear_time_ > kClearDurationMinutes) {
+    previous_.clear();
+    previous_.swap(current_);
+    last_clear_time_ = now;
+  }
+}
+
+void NodeLink::AutoClearedSublinkSet::Insert(SublinkId id) {
+  ClearExpiredIdsIfNeeded();
+  current_.insert(id);
+}
+
+bool NodeLink::AutoClearedSublinkSet::Contains(SublinkId id) {
+  ClearExpiredIdsIfNeeded();
+  return current_.contains(id) || previous_.contains(id);
+}
+
+size_t NodeLink::AutoClearedSublinkSet::Size() {
+  return previous_.size() + current_.size();
+}
+
+void NodeLink::AutoClearedSublinkSet::Clear() {
+  previous_.clear();
+  current_.clear();
+  last_clear_time_ = TimePointNow();
 }
 
 NodeLink::Sublink::Sublink(Ref<RemoteRouterLink> router_link,

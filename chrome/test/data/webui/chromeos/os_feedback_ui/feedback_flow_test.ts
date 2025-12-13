@@ -122,22 +122,6 @@ suite('FeedbackFlowTestSuite', () => {
     setFeedbackServiceProviderForTesting(feedbackServiceProvider);
   }
 
-  function setFromAssistantFlag(fromAssistant: boolean) {
-    if (fromAssistant) {
-      const queryParams = new URLSearchParams(window.location.search);
-      const fromAssistant = 'true';
-      queryParams.set(
-          AdditionalContextQueryParam.FROM_ASSISTANT, fromAssistant);
-
-      window.history.replaceState(null, '', '?' + queryParams.toString());
-    } else {
-      window.history.replaceState(
-          null, '',
-          '?' +
-              '');
-    }
-  }
-
   function setSettingsSearchDoNotRecordMetricsFlag(
       settingsSearchDoNotRecordMetrics: boolean) {
     if (settingsSearchDoNotRecordMetrics) {
@@ -193,13 +177,13 @@ suite('FeedbackFlowTestSuite', () => {
     const title =
         strictQuery('.page-title', activePage.shadowRoot, HTMLElement);
     assertTrue(!!title);
-    assertEquals('Send feedback', title.textContent!.trim());
+    assertEquals('Send feedback', title.textContent.trim());
 
     // Verify the continue button is in the page.
     const buttonContinue =
         strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement);
     assertTrue(!!buttonContinue);
-    assertEquals('Continue', buttonContinue.textContent!.trim());
+    assertEquals('Continue', buttonContinue.textContent.trim());
   });
 
 
@@ -216,19 +200,19 @@ suite('FeedbackFlowTestSuite', () => {
     const title =
         strictQuery('.page-title', activePage.shadowRoot, HTMLElement);
     assertTrue(!!title);
-    assertEquals('Send feedback', title.textContent!.trim());
+    assertEquals('Send feedback', title.textContent.trim());
 
     // Verify the back button is in the page.
     const buttonBack =
         strictQuery('#buttonBack', activePage.shadowRoot, CrButtonElement);
     assertTrue(!!buttonBack);
-    assertEquals('Back', buttonBack.textContent!.trim());
+    assertEquals('Back', buttonBack.textContent.trim());
 
     // Verify the send button is in the page.
     const buttonSend =
         strictQuery('#buttonSend', activePage.shadowRoot, CrButtonElement);
     assertTrue(!!buttonSend);
-    assertEquals('Send', buttonSend.textContent!.trim());
+    assertEquals('Send', buttonSend.textContent.trim());
   });
 
 
@@ -246,19 +230,19 @@ suite('FeedbackFlowTestSuite', () => {
     const title =
         strictQuery('.page-title', activePage.shadowRoot, HTMLElement);
     assertTrue(!!title);
-    assertEquals('Thanks for your feedback', title.textContent!.trim());
+    assertEquals('Thanks for your feedback', title.textContent.trim());
 
     // Verify the done button is in the page.
     const buttonDone =
         strictQuery('#buttonDone', activePage.shadowRoot, CrButtonElement);
     assertTrue(!!buttonDone);
-    assertEquals('Done', buttonDone.textContent!.trim());
+    assertEquals('Done', buttonDone.textContent.trim());
 
     // Verify the startNewReport button is in the page.
     const buttonNewReport = strictQuery(
         '#buttonNewReport', activePage.shadowRoot, CrButtonElement);
     assertTrue(!!buttonNewReport);
-    assertEquals('Send new report', buttonNewReport.textContent!.trim());
+    assertEquals('Send new report', buttonNewReport.textContent.trim());
   });
 
   // Test the navigation from search page to share data page.
@@ -767,77 +751,6 @@ suite('FeedbackFlowTestSuite', () => {
     assertFalse(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
   });
 
-  // Test the assistant logs will show up if logged with internal account and
-  // the fromAssistant flag is true.
-  test('ShowAssistantCheckboxWithInternalAccountAndFlagSetTrue', async () => {
-    // Replacing the query string to set the fromAssistant flag as true.
-    setFromAssistantFlag(true);
-    testWithInternalAccount();
-    await initializePage();
-    page.setCurrentStateForTesting(FeedbackFlowState.SHARE_DATA);
-
-    const feedbackContext = getFeedbackContext();
-    assertTrue(feedbackContext.isInternalAccount);
-    assertTrue(feedbackContext.fromAssistant);
-    // Check the assistant checkbox component visible when input is not
-    // related to bluetooth.
-    const activePage = getActivePage();
-    assertEquals('shareDataPage', activePage.id);
-
-    const assistantCheckbox = strictQuery(
-        '#assistantLogsContainer', activePage.shadowRoot, HTMLElement);
-
-    assertTrue(!!assistantCheckbox);
-    assertTrue(isVisible(assistantCheckbox));
-  });
-
-  // Test the assistant checkbox will not show up to external account user
-  // with fromAssistant flag passed.
-  test('AssistantCheckboxHiddenWithExternalAccount', async () => {
-    // Replacing the query string to set the fromAssistant flag as true.
-    setFromAssistantFlag(true);
-    await initializePage();
-    page.setCurrentStateForTesting(FeedbackFlowState.SHARE_DATA);
-
-    const feedbackContext = getFeedbackContext();
-    assertFalse(feedbackContext.isInternalAccount);
-    assertTrue(feedbackContext.fromAssistant);
-    let activePage = getActivePage();
-    activePage = getActivePage();
-
-    assertEquals('shareDataPage', activePage.id);
-    const assistantCheckbox = strictQuery(
-        '#assistantLogsContainer', activePage.shadowRoot, HTMLElement);
-    assertTrue(!!assistantCheckbox);
-    assertFalse(isVisible(assistantCheckbox));
-  });
-
-  // Test the assistant logs will not show up if fromAssistant flag is not
-  // passed but logged in with Internal google account.
-  test('AssistantCheckboxHiddenWithoutFlagPassed', async () => {
-    // Replace the current querystring back to default.
-    setFromAssistantFlag(false);
-    // Set Internal Account flag as true.
-    testWithInternalAccount();
-    await initializePage();
-    page.setCurrentStateForTesting(FeedbackFlowState.SHARE_DATA);
-
-    const feedbackContext = getFeedbackContext();
-    assertTrue(feedbackContext.isInternalAccount);
-    assertFalse(feedbackContext.fromAssistant);
-    // Set input description related to bluetooth.
-    let activePage = getActivePage();
-    activePage = getActivePage();
-
-    assertEquals('shareDataPage', activePage.id);
-    const assistantCheckbox = strictQuery(
-        '#assistantLogsContainer', activePage.shadowRoot, HTMLElement);
-    assertTrue(!!assistantCheckbox);
-    assertFalse(isVisible(assistantCheckbox));
-    // Set the flag back to true.
-    fakeInternalUserFeedbackContext.fromAssistant = true;
-  });
-
   // Test the sys info and metrics checkbox will not be checked if
   // settingsSearchDoNotRecordMetrics flag has been passed.
   test(
@@ -967,7 +880,7 @@ suite('FeedbackFlowTestSuite', () => {
     assertEquals(1, feedbackServiceProvider.getFeedbackContextCallCount());
   });
 
-  // Test that the extra diagnostics, category tag, page_url, fromAssistant
+  // Test that the extra diagnostics, category tag, page_url
   // and settingsSearchDoNotRecordMetrics flag get set when query parameter is
   // non-empty.
   test(
@@ -990,9 +903,6 @@ suite('FeedbackFlowTestSuite', () => {
         queryParams.set(AdditionalContextQueryParam.CATEGORY_TAG, category_tag);
         const page_url = 'some%20page%20url';
         queryParams.set(AdditionalContextQueryParam.PAGE_URL, page_url);
-        const fromAssistant = 'true';
-        queryParams.set(
-            AdditionalContextQueryParam.FROM_ASSISTANT, fromAssistant);
         const settingsSearchDoNotRecordMetrics = 'true';
         queryParams.set(
             AdditionalContextQueryParam.SETTINGS_SEARCH_DO_NOT_RECORD_METRICS,
@@ -1016,7 +926,6 @@ suite('FeedbackFlowTestSuite', () => {
             descriptionElement.placeholder);
         assertEquals(
             decodeURIComponent(category_tag), feedbackContext.categoryTag);
-        assertTrue(feedbackContext.fromAssistant);
         assertTrue(feedbackContext.settingsSearchDoNotRecordMetrics);
 
         // Set the pageUrl in fake feedback context back to its origin value
@@ -1047,7 +956,6 @@ suite('FeedbackFlowTestSuite', () => {
         assertEquals('', feedbackContext.extraDiagnostics);
         assertEquals('', descriptionElement.value);
         assertEquals('', feedbackContext.categoryTag);
-        assertFalse(feedbackContext.fromAssistant);
         assertFalse(feedbackContext.settingsSearchDoNotRecordMetrics);
       });
 
@@ -1280,7 +1188,6 @@ suite('FeedbackFlowTestSuite', () => {
             '"categoryTag":"Login",' +
             '"description":"fake description",' +
             '"descriptionPlaceholder":"fake description placeholder",' +
-            '"fromAssistant": true, ' +
             '"fromAutofill": true, ' +
             '"settingsSearchDoNotRecordMetrics": true, ' +
             '"hasLinkedCrossDevicePhone": true, ' +
@@ -1306,7 +1213,6 @@ suite('FeedbackFlowTestSuite', () => {
     assertEquals('chrome://flags/', feedbackContext.pageUrl!.url);
     assertEquals(
         '{"fake key1":"fake value1"}', feedbackContext.autofillMetadata);
-    assertTrue(feedbackContext.fromAssistant);
     assertTrue(feedbackContext.fromAutofill);
     assertTrue(feedbackContext.settingsSearchDoNotRecordMetrics);
     assertTrue(feedbackContext.hasLinkedCrossDevicePhone);
@@ -1344,7 +1250,6 @@ suite('FeedbackFlowTestSuite', () => {
         assertEquals('', feedbackContext.extraDiagnostics);
         assertEquals('', feedbackContext.pageUrl!.url);
         assertEquals('{}', feedbackContext.autofillMetadata);
-        assertFalse(feedbackContext.fromAssistant);
         assertFalse(feedbackContext.fromAutofill);
         assertFalse(feedbackContext.settingsSearchDoNotRecordMetrics);
         assertFalse(feedbackContext.isInternalAccount);

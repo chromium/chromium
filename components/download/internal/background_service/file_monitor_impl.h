@@ -5,18 +5,17 @@
 #ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_FILE_MONITOR_IMPL_H_
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_FILE_MONITOR_IMPL_H_
 
-#include "components/download/internal/background_service/file_monitor.h"
-
 #include <memory>
 #include <set>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/download/internal/background_service/driver_entry.h"
+#include "components/download/internal/background_service/file_monitor.h"
 #include "components/download/internal/background_service/model.h"
 #include "components/download/internal/background_service/stats.h"
 

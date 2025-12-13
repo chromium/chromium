@@ -18,6 +18,8 @@
 
 namespace spellcheck {
 
+namespace {
+
 struct LanguageRegion {
   const char* language;         // The language.
   const char* language_region;  // language & region, used by dictionaries.
@@ -58,6 +60,7 @@ static constexpr LanguageRegion kSupportedSpellCheckerLanguages[] = {
     {"fo", "fo-FO"},
     {"fr", "fr-FR"},
     {"fr-FR", "fr-FR"},
+    {"gl", "gl"},
     {"he", "he-IL"},
     {"hi", "hi-IN"},
     {"hr", "hr-HR"},
@@ -91,14 +94,6 @@ static constexpr LanguageRegion kSupportedSpellCheckerLanguages[] = {
     // clang-format on
 };
 
-bool IsValidRegion(const std::string& region) {
-  for (const auto& lang_region : kSupportedSpellCheckerLanguages) {
-    if (lang_region.language_region == region)
-      return true;
-  }
-  return false;
-}
-
 // This function returns the language-region version of language name.
 // e.g. returns hi-IN for hi.
 std::string GetSpellCheckLanguageRegion(std::string_view input_language) {
@@ -109,6 +104,8 @@ std::string GetSpellCheckLanguageRegion(std::string_view input_language) {
 
   return std::string(input_language);
 }
+
+}  // namespace
 
 base::FilePath GetVersionedFileName(std::string_view input_language,
                                     const base::FilePath& dict_dir) {
@@ -150,6 +147,9 @@ base::FilePath GetVersionedFileName(std::string_view input_language,
 
       // March 2022: Update uk-UA dictionary from upstream.
       {"uk-UA", "-5-0"},
+
+      // Nov 2025: Initial check-in of Galician
+      {"gl", "-1-0"},
   };
 
   // Generate the bdict file name using default version string or special

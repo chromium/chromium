@@ -20,7 +20,7 @@ class ManageSavedIbanBubbleView : public AutofillLocationBarBubble {
   METADATA_HEADER(ManageSavedIbanBubbleView, AutofillLocationBarBubble)
  public:
   // Bubble will be anchored to `anchor_view`.
-  ManageSavedIbanBubbleView(views::View* anchor_view,
+  ManageSavedIbanBubbleView(views::BubbleAnchor anchor_view,
                             content::WebContents* web_contents,
                             IbanBubbleController* controller);
   ManageSavedIbanBubbleView(const ManageSavedIbanBubbleView&) = delete;

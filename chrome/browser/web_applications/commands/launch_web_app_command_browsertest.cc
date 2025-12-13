@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -47,7 +48,6 @@
 #include "url/gurl.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::WithArg;
 
@@ -164,13 +164,11 @@ class LaunchWebAppCommandTest : public WebAppBrowserTestBase {
       WindowOpenDisposition disposition,
       apps::LaunchSource source,
       const std::vector<base::FilePath>& launch_files,
-      const std::optional<GURL>& url_handler_launch_url,
       const std::optional<GURL>& protocol_handler_launch_url) {
     apps::AppLaunchParams params(app_id, container, disposition, source);
     params.current_directory = base::FilePath(kCurrentDirectory);
     params.command_line = CreateCommandLine();
     params.launch_files = launch_files;
-    params.url_handler_launch_url = url_handler_launch_url;
     params.protocol_handler_launch_url = protocol_handler_launch_url;
 
     return params;
@@ -183,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, TabbedLaunchCurrentBrowser) {
   apps::AppLaunchParams launch_params = CreateLaunchParams(
       app_id_, apps::LaunchContainer::kLaunchContainerTab,
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      apps::LaunchSource::kFromCommandLine, {}, std::nullopt, std::nullopt);
+      apps::LaunchSource::kFromCommandLine, {}, std::nullopt);
 
   base::WeakPtr<Browser> launch_browser;
   base::WeakPtr<content::WebContents> web_contents;
@@ -201,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, StandaloneLaunch) {
   apps::AppLaunchParams launch_params = CreateLaunchParams(
       app_id_, apps::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::CURRENT_TAB, apps::LaunchSource::kFromCommandLine,
-      {}, std::nullopt, std::nullopt);
+      {}, std::nullopt);
 
   base::WeakPtr<Browser> launch_browser;
   base::WeakPtr<content::WebContents> web_contents;
@@ -211,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, StandaloneLaunch) {
 
   EXPECT_TRUE(AppBrowserController::IsWebApp(launch_browser.get()));
   EXPECT_NE(launch_browser.get(), browser());
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2ul);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2ul);
   EXPECT_EQ(launch_browser->tab_strip_model()->count(), 1);
   EXPECT_EQ(web_contents->GetVisibleURL(), kAppStartUrl);
 }
@@ -232,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, StandaloneLaunchAppConfig) {
 
   EXPECT_TRUE(AppBrowserController::IsWebApp(launch_browser.get()));
   EXPECT_NE(launch_browser.get(), browser());
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2ul);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2ul);
   EXPECT_EQ(launch_browser->tab_strip_model()->count(), 1);
   EXPECT_EQ(web_contents->GetVisibleURL(), kAppStartUrl);
 }
@@ -282,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, AppLaunchNoIntegration) {
   // Check the state is correct.
   EXPECT_TRUE(AppBrowserController::IsWebApp(
       launch_future.Get<base::WeakPtr<Browser>>().get()));
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2ul);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2ul);
   EXPECT_EQ(
       launch_future.Get<base::WeakPtr<content::WebContents>>()->GetVisibleURL(),
       kStartUrl);

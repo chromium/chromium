@@ -1,5 +1,29 @@
 # See https://jj-vcs.github.io/jj/latest/config/ for the schema.
 
+[aliases]
+# This allows the script to be run from directories other than the workspace
+# root.
+"relative-script" = [
+  "util",
+  "exec",
+  "python3",
+  "--",
+  "-c",
+  "import os; import sys; script = os.path.join(os.environ['JJ_WORKSPACE_ROOT'], sys.argv[1]); os.execv(script, [script, *sys.argv[2:]])"
+]
+# cr-* aliases are the equivalent of "porcelain" commands and should not
+# be overridden.
+# All cr-foo commands will have a corresponding foo command that you can
+# override with your preference (eg. sync -> ["cr-sync", "-a"])
+"cr-sync" = ["relative-script", "tools/jj/sync.py"]
+"sync" = ["cr-sync"]
+
+"cr-upload" = ["relative-script", "tools/jj/upload.py"]
+"upload" = ["cr-upload"]
+
+"cr-bug" = ["relative-script", "tools/jj/bug.py"]
+"bug" = ["cr-bug"]
+
 [revset-aliases]
 "trunk()" = "main@origin"
 "immutable_heads()" = "remote_bookmarks() | tags()"
@@ -10,19 +34,14 @@ auto-local-bookmark = false
 # It will eventually be supported by gerrit instead of the Change-ID footer.
 write-change-id-header = true
 
-[templates]
-# This is a little awkward to use during `jj split` operations.
-# Two commits will share the same gerrit change-ID
-# We should be able to remove this once gerrit supports git headers.
-# See https://github.com/jj-vcs/jj/issues/4387#issuecomment-2865171741
-commit_trailers = '''
-if(!trailers.contains_key("Change-Id"), format_gerrit_change_id_trailer(self))
-'''
-
 # For users of jj-on-piper, this is enabled by default for *all* repos.
 # We want chrome's formatters, not google3's.
 [fix.tools.google3format]
 enabled = false
+# If you're not using the google-internal jj, this will complain that
+# google3format is an invalid fix tool because it has no command/patterns
+command = ["/dev/null"]
+patterns = ["null"]
 
 # The source of truth for the following formatters is depot_tools' git_cl.py
 [fix.tools.gn-format]
@@ -58,10 +77,6 @@ patterns = [
 command = ["tools/jj/formatters/python.py", "$path"]
 patterns = ["glob:'**/*.py'"]
 
-[fix.tools.swift-format]
-command = ["tools/jj/formatters/swift.py", "format"]
-patterns = ["glob:'**/*.swift'"]
-
 [fix.tools.mojom-format]
 command = ["vpython3", "mojo/public/tools/mojom/mojom_format.py"]
 patterns = [
@@ -72,3 +87,10 @@ patterns = [
 [fix.tools.lucicfg-format]
 command = ["lucicfg", "fmt", "-stdio", "$path"]
 patterns = ["glob:'**/*.star'"]
+
+# This formatter is only available on macos
+[[--scope]]
+--when.platforms = ["macos"]
+[--scope.fix.tools.swift-format]
+command = ["third_party/depot_tools/swift_format", "format"]
+patterns = ["glob:'**/*.swift'"]

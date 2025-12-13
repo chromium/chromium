@@ -42,12 +42,9 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
   class VIZ_SERVICE_EXPORT ImageContext {
    public:
     ImageContext(const gpu::Mailbox& mailbox,
-                 const gpu::SyncToken& sync_token,
-                 uint32_t texture_target,
                  const gfx::Size& size,
                  SharedImageFormat format,
-                 sk_sp<SkColorSpace> color_space,
-                 GrSurfaceOrigin origin);
+                 const gfx::ColorSpace& color_space);
 
     explicit ImageContext(const TransferableResource& resource);
 
@@ -69,7 +66,9 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     gpu::SyncToken* mutable_sync_token() { return &sync_token_; }
     const gfx::Size& size() const { return size_; }
     SharedImageFormat format() const { return format_; }
-    sk_sp<SkColorSpace> color_space() const;
+    const gfx::ColorSpace& color_space() { return color_space_; }
+
+    sk_sp<SkColorSpace> GetSkColorSpace() const;
 
     SkAlphaType alpha_type() const { return alpha_type_; }
     void set_alpha_type(SkAlphaType alpha_type) {
@@ -116,7 +115,7 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
 
     const gfx::Size size_;
     const SharedImageFormat format_;
-    const sk_sp<SkColorSpace> color_space_;
+    const gfx::ColorSpace color_space_;
     const GrSurfaceOrigin origin_;
     const TransferableResource::ResourceSource resource_source_ =
         TransferableResource::ResourceSource::kUnknown;

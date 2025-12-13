@@ -13,9 +13,7 @@
 #include "components/dom_distiller/ios/distiller_page_ios.h"
 #include "url/gurl.h"
 
-namespace web {
-class BrowserState;
-}
+class ProfileIOS;
 
 namespace reading_list {
 
@@ -53,7 +51,7 @@ class ReadingListDistillerPage : public dom_distiller::DistillerPageIOS {
   // `browser_state`, `web_state_dispatcher` and `delegate` must not be null.
   explicit ReadingListDistillerPage(
       const GURL& url,
-      web::BrowserState* browser_state,
+      ProfileIOS* profile,
       FaviconWebStateDispatcher* web_state_dispatcher,
       ReadingListDistillerPageDelegate* delegate);
 
@@ -64,6 +62,7 @@ class ReadingListDistillerPage : public dom_distiller::DistillerPageIOS {
 
   // dom_distiller::DistillerPage implementation.
   bool ShouldFetchOfflineData() override;
+  dom_distiller::DistillerType GetDistillerType() override;
 
  protected:
   void DistillPageImpl(const GURL& url, const std::string& script) override;

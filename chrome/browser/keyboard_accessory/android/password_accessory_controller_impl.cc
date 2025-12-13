@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_utils.h"
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller.h"
-#include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_controller.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
@@ -58,9 +58,9 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
-#include "components/plus_addresses/grit/plus_addresses_strings.h"
-#include "components/plus_addresses/plus_address_service.h"
-#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
+#include "components/plus_addresses/core/browser/plus_address_service.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/url_formatter/elide_url.h"
@@ -389,7 +389,6 @@ void PasswordAccessoryControllerImpl::CreateForWebContents(
             ChromePasswordManagerClient::FromWebContents(web_contents),
             base::BindRepeating(GetPasswordManagerDriver),
             std::make_unique<AcknowledgeGroupedCredentialSheetController>(),
-            std::make_unique<PasswordAccessLossWarningBridgeImpl>(),
             std::make_unique<PasswordManagerErrorMessageHelperBridgeImpl>())));
   }
 }
@@ -403,7 +402,6 @@ void PasswordAccessoryControllerImpl::CreateForWebContentsForTesting(
     PasswordDriverSupplierForFocusedFrame driver_supplier,
     std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
         grouped_credential_sheet_controller,
-    std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_warning_bridge,
     std::unique_ptr<PasswordManagerErrorMessageHelperBridge>
         password_manager_error_message_helper_bridge) {
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
@@ -417,7 +415,6 @@ void PasswordAccessoryControllerImpl::CreateForWebContentsForTesting(
           web_contents, credential_cache, std::move(manual_filling_controller),
           password_client, std::move(driver_supplier),
           std::move(grouped_credential_sheet_controller),
-          std::move(access_loss_warning_bridge),
           std::move(password_manager_error_message_helper_bridge))));
 }
 
@@ -478,21 +475,6 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
         }
       }
       return;
-    case autofill::AccessoryAction::CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET:
-      if (auto* client = autofill::ContentAutofillClient::FromWebContents(
-              &GetWebContents())) {
-        client->OfferPlusAddressCreation(
-            client->GetLastCommittedPrimaryMainFrameOrigin(),
-            /*is_manual_fallback=*/true,
-            base::BindOnce(
-                &PasswordAccessoryControllerImpl::OnPlusAddressCreated,
-                weak_ptr_factory_.GetWeakPtr()));
-        base::RecordAction(base::UserMetricsAction(
-            "PlusAddresses."
-            "CreateSuggestionOnPasswordManualFallbackSelected"));
-        GetManualFillingController()->Hide();
-      }
-      return;
     case autofill::AccessoryAction::SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET:
       all_plus_addresses_bottom_sheet_controller_ = std::make_unique<
           plus_addresses::AllPlusAddressesBottomSheetController>(
@@ -513,8 +495,9 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
     case autofill::AccessoryAction::RETRIEVE_TRUSTED_VAULT_KEY:
       password_manager_error_message_helper_bridge_
           ->StartTrustedVaultKeyRetrievalFlow(
-              &GetWebContents(), syncer::TrustedVaultUserActionTriggerForUMA::
-                                     kPasswordManagerKeyboardAccessory);
+              &GetWebContents(),
+              trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                  kPasswordManagerKeyboardAccessory);
       return;
     default:
       NOTREACHED() << "Unhandled selected action: "
@@ -630,7 +613,6 @@ PasswordAccessoryControllerImpl::PasswordAccessoryControllerImpl(
     PasswordDriverSupplierForFocusedFrame driver_supplier,
     std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
         grouped_credential_sheet_controller,
-    std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_warning_bridge,
     std::unique_ptr<PasswordManagerErrorMessageHelperBridge>
         password_manager_error_message_helper_bridge)
     : content::WebContentsObserver(web_contents),
@@ -644,7 +626,6 @@ PasswordAccessoryControllerImpl::PasswordAccessoryControllerImpl(
           std::move(password_manager_error_message_helper_bridge)),
       grouped_credential_sheet_controller_(
           std::move(grouped_credential_sheet_controller)),
-      access_loss_warning_bridge_(std::move(access_loss_warning_bridge)),
       plus_address_service_(PlusAddressServiceFactory::GetForBrowserContext(
           GetWebContents().GetBrowserContext())) {}
 
@@ -721,19 +702,6 @@ PasswordAccessoryControllerImpl::CreateManagePasswordsFooter() const {
       manage_passwords_title, autofill::AccessoryAction::MANAGE_PASSWORDS);
 
   if (plus_address_service_) {
-    // Offer plus address creation if it's supported for the current user
-    // session and if the user doesn't have any plus addresses created for the
-    // current domain.
-    if (plus_address_service_->IsPlusAddressCreationEnabled(
-            password_client_->GetLastCommittedOrigin(),
-            password_client_->IsOffTheRecord()) &&
-        plus_profiles_provider_ &&
-        plus_profiles_provider_->GetAffiliatedPlusProfiles().empty()) {
-      footer_commands_to_add.emplace_back(
-          l10n_util::GetStringUTF16(
-              IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID),
-          autofill::AccessoryAction::CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
-    }
     // Offer the user to select the plus address manually if plus address
     // filling is supported for the last committed origin and the user has at
     // least 1 plus address.
@@ -860,8 +828,6 @@ void PasswordAccessoryControllerImpl::ShowAllPasswords() {
   // |AllPasswordsSheetDismissed| we are sure that this controller is alive as
   // it owns |AllPasswordsBottomSheetController| from which the method is
   // called.
-  // TODO(crbug.com/40139552): Update the controller with the last focused
-  // field.
   all_passords_bottom_sheet_controller_ =
       std::make_unique<AllPasswordsBottomSheetController>(
           &GetWebContents(), password_client_->GetProfilePasswordStore(),
@@ -919,17 +885,6 @@ void PasswordAccessoryControllerImpl::FillSelection(
       autofill_client->TriggerPlusAddressUserPerceptionSurvey(
           plus_addresses::hats::SurveyType::kFilledPlusAddressViaManualFallack);
     }
-  }
-
-  Profile* profile =
-      Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
-  if (profile && access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(
-                     profile->GetPrefs(), /*called_at_startup=*/false)) {
-    access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
-        profile->GetPrefs(), GetWebContents().GetTopLevelNativeWindow(),
-        profile, /*called_at_startup=*/false,
-        password_manager_android_util::PasswordAccessLossWarningTriggers::
-            kKeyboardAcessorySheet);
   }
 }
 
@@ -1045,6 +1000,13 @@ void PasswordAccessoryControllerImpl::EnsureAcknowledgementBeforeFilling(
       credential_cache_->GetCredentialStore(origin).GetCredentials();
   base::span<const UiCredential>::iterator cred =
       GetUiCredentialForSelection(matching_creds, selection);
+
+  if (cred != matching_creds.end() && cred->is_backup_credential()) {
+    password_manager::metrics_util::LogPasswordDropdownItemSelected(
+        password_manager::metrics_util::PasswordDropdownSelectedOption::
+            kBackupPassword);
+  }
+
   if (selection.is_obfuscated() && cred != matching_creds.end() &&
       cred->match_type() == GetLoginMatchType::kGrouped) {
     // Use `cred->display_name()` instead of origin here to correctly display

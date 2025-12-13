@@ -13,7 +13,6 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -71,6 +70,7 @@ std::string_view AutoEnrollmentStateToUmaSuffix(AutoEnrollmentState state) {
       case AutoEnrollmentResult::kEnrollment:
       case AutoEnrollmentResult::kSuggestedEnrollment:
         return kUMASuffixEnrollment;
+      case AutoEnrollmentResult::kDeviceAlreadyOwned:
       case AutoEnrollmentResult::kNoEnrollment:
         return kUMASuffixNoEnrollment;
       case AutoEnrollmentResult::kDisabled:
@@ -817,24 +817,7 @@ class EnrollmentStateFetcherImpl : public EnrollmentStateFetcher {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       ServerBackedStateKeysBroker* state_key_broker,
       ash::DeviceSettingsService* device_settings_service,
-      ash::OobeConfiguration* oobe_configuration) {
-    DCHECK(report_result);
-    DCHECK(local_state);
-    DCHECK(rlwe_client_factory);
-    DCHECK(device_management_service);
-    DCHECK(url_loader_factory);
-    DCHECK(state_key_broker);
-    DCHECK(device_settings_service);
-    DCHECK(oobe_configuration);
-
-    call_sequence_ = std::make_unique<Sequence>(
-        std::move(report_result), local_state,
-        DeterminationContext{std::move(rlwe_client_factory),
-                             ash::system::StatisticsProvider::GetInstance(),
-                             device_management_service, url_loader_factory,
-                             state_key_broker, device_settings_service,
-                             GetEnrollmentToken(oobe_configuration)});
-  }
+      ash::OobeConfiguration* oobe_configuration);
 
   void Start() override;
 
@@ -880,10 +863,10 @@ class EnrollmentStateFetcherImpl::Sequence {
       // Skip enrollment if serial number or brand code are missing.
       // This is expected to happen for prototype devices, for instance.
       // See crbug.com/376581659.
+      LOG(WARNING) << "Serial number or brand code are missing";
       return ReportResult(AutoEnrollmentResult::kNoEnrollment);
     }
 
-    step_started_ = base::TimeTicks::Now();
     ownership_.Check(context_.device_settings_service,
                      base::BindOnce(&Sequence::OnOwnershipChecked,
                                     weak_factory_.GetWeakPtr()));
@@ -891,14 +874,8 @@ class EnrollmentStateFetcherImpl::Sequence {
 
  private:
   void OnOwnershipChecked(ash::DeviceSettingsService::OwnershipStatus status) {
-    ReportStepDurationAndResetTimer(kUMASuffixOwnershipCheck);
     base::UmaHistogramEnumeration(kUMAStateDeterminationOwnershipStatus,
                                   status);
-    if (local_state_->GetBoolean(prefs::kEnrollmentRecoveryRequired)) {
-      base::UmaHistogramEnumeration(
-          kUMAStateDeterminationOwnershipStatusDuringEnrollmentRecovery,
-          status);
-    }
     if (status ==
         ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown) {
       LOG(ERROR) << "Device ownership is unknown. Skipping enrollment";
@@ -908,7 +885,7 @@ class EnrollmentStateFetcherImpl::Sequence {
     if (status ==
         ash::DeviceSettingsService::OwnershipStatus::kOwnershipTaken) {
       LOG(WARNING) << "Device ownership is already taken. Skipping enrollment";
-      return ReportResult(AutoEnrollmentResult::kNoEnrollment);
+      return ReportResult(AutoEnrollmentResult::kDeviceAlreadyOwned);
     }
 
     oprf_.Request(context_, base::BindOnce(&Sequence::OnOprfRequestDone,
@@ -916,7 +893,6 @@ class EnrollmentStateFetcherImpl::Sequence {
   }
 
   void OnOprfRequestDone(RlweOprf::Result result) {
-    ReportStepDurationAndResetTimer(kUMASuffixOPRFRequest);
     if (!result.has_value()) {
       StorePsmError(local_state_);
       if (std::holds_alternative<AutoEnrollmentPsmError>(result.error())) {
@@ -931,7 +907,6 @@ class EnrollmentStateFetcherImpl::Sequence {
   }
 
   void OnQueryRequestDone(RlweQuery::Result result) {
-    ReportStepDurationAndResetTimer(kUMASuffixQueryRequest);
 
     if (!result.has_value()) {
       StorePsmError(local_state_);
@@ -978,7 +953,6 @@ class EnrollmentStateFetcherImpl::Sequence {
   void OnStateKeyRetrieved(
       base::expected<std::optional<std::string>,
                      ServerBackedStateKeysBroker::ErrorType> state_key) {
-    ReportStepDurationAndResetTimer(kUMASuffixStateKeysRetrieval);
     base::UmaHistogramEnumeration(
         kUMAStateDeterminationStateKeysRetrievalErrorType,
         state_key.error_or(ServerBackedStateKeysBroker::ErrorType::kNoError));
@@ -997,7 +971,6 @@ class EnrollmentStateFetcherImpl::Sequence {
   }
 
   void OnStateRequestDone(EnrollmentState::Result result) {
-    ReportStepDurationAndResetTimer(kUMASuffixStateRequest);
     base::UmaHistogramBoolean(kUMAStateDeterminationStateReturned,
                               result.state.has_value());
     if (result.state.has_value()) {
@@ -1019,13 +992,6 @@ class EnrollmentStateFetcherImpl::Sequence {
         fetch_duration);
   }
 
-  void ReportStepDurationAndResetTimer(std::string_view uma_step_suffix) {
-    base::UmaHistogramTimes(
-        base::StrCat({kUMAStateDeterminationStepDuration, uma_step_suffix}),
-        base::TimeTicks::Now() - step_started_);
-    step_started_ = base::TimeTicks::Now();
-  }
-
   void ReportResult(AutoEnrollmentState state) {
     ReportTotalDuration(base::TimeTicks::Now() - fetch_started_, state);
     std::move(report_result_).Run(state);
@@ -1037,7 +1003,6 @@ class EnrollmentStateFetcherImpl::Sequence {
 
   // Time at which overall fetch or individual step has been started.
   base::TimeTicks fetch_started_;
-  base::TimeTicks step_started_;
 
   // Used to store the initial enrollment state (if available) in a dict at
   // `prefs::kServerBackedDeviceState`.
@@ -1054,6 +1019,33 @@ class EnrollmentStateFetcherImpl::Sequence {
   DeterminationContext context_;
   base::WeakPtrFactory<Sequence> weak_factory_{this};
 };
+
+EnrollmentStateFetcherImpl::EnrollmentStateFetcherImpl(
+    base::OnceCallback<void(AutoEnrollmentState)> report_result,
+    PrefService* local_state,
+    RlweClientFactory rlwe_client_factory,
+    DeviceManagementService* device_management_service,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    ServerBackedStateKeysBroker* state_key_broker,
+    ash::DeviceSettingsService* device_settings_service,
+    ash::OobeConfiguration* oobe_configuration) {
+  DCHECK(report_result);
+  DCHECK(local_state);
+  DCHECK(rlwe_client_factory);
+  DCHECK(device_management_service);
+  DCHECK(url_loader_factory);
+  DCHECK(state_key_broker);
+  DCHECK(device_settings_service);
+  DCHECK(oobe_configuration);
+
+  call_sequence_ = std::make_unique<Sequence>(
+      std::move(report_result), local_state,
+      DeterminationContext{std::move(rlwe_client_factory),
+                           ash::system::StatisticsProvider::GetInstance(),
+                           device_management_service, url_loader_factory,
+                           state_key_broker, device_settings_service,
+                           GetEnrollmentToken(oobe_configuration)});
+}
 
 void EnrollmentStateFetcherImpl::Start() {
   call_sequence_->Start();

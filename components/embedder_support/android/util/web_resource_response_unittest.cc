@@ -187,3 +187,5 @@ TEST_F(WebResourceResponseTest, IgnoresUnsetCharset) {
 }
 
 }  // namespace embedder_support
+
+DEFINE_JNI(WebResourceResponseUnittest)

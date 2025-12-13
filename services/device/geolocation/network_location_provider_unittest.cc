@@ -243,8 +243,8 @@ class GeolocationNetworkProviderTest : public testing::Test {
     std::string upload_data = network::GetUploadData(pending_request.request);
     ASSERT_FALSE(upload_data.empty());
 
-    std::optional<base::Value> parsed_json =
-        base::JSONReader::Read(upload_data);
+    std::optional<base::Value> parsed_json = base::JSONReader::Read(
+        upload_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(parsed_json);
     ASSERT_TRUE(parsed_json->is_dict());
 
@@ -309,15 +309,20 @@ TEST_F(GeolocationNetworkProviderTest, EmptyApiKey) {
 // Tests that, with non-empty api_key, a "key" query string parameter is
 // included in the request.
 TEST_F(GeolocationNetworkProviderTest, NonEmptyApiKey) {
-  const std::string api_key = "something";
-  std::unique_ptr<LocationProvider> provider(CreateProvider(true, api_key));
+  const char kTestGeolocationApiKey[] = "fake_api_key_for_test";
+  std::unique_ptr<LocationProvider> provider(
+      CreateProvider(true, kTestGeolocationApiKey));
   provider->StartProvider(false);
 
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
   const GURL& request_url =
       test_url_loader_factory_.pending_requests()->back().request.url;
-  EXPECT_TRUE(request_url.has_query());
-  EXPECT_TRUE(base::StartsWith(request_url.query_piece(), "key="));
+
+  std::string expected_url =
+      "https://www.googleapis.com/geolocation/v1/geolocate?key=";
+  expected_url.append(kTestGeolocationApiKey);
+
+  EXPECT_EQ(request_url.spec(), expected_url);
 }
 
 // Tests that, after StartProvider(), a TestURLFetcher can be extracted,

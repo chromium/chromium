@@ -8,7 +8,7 @@ import type {ChromeSigninUserChoiceInfo} from 'chrome://settings/settings.js';
 import {PageStatus, SignedInState, StatusAction, ChromeSigninUserChoice} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 // <if expr="not is_chromeos">
-import type {UserSelectableType} from 'chrome://settings/settings.js';
+import type {ChromeSigninAccessPoint, UserSelectableType} from 'chrome://settings/settings.js';
 // </if>
 
 // clang-format on
@@ -54,6 +54,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
       'startSignIn',
       'didNavigateToAccountSettingsPage',
       'setSyncDatatype',
+      'recordSigninPendingOffered',
       // </if>
 
       // <if expr="is_chromeos">
@@ -108,8 +109,8 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('pauseSync');
   }
 
-  startSignIn() {
-    this.methodCalled('startSignIn');
+  startSignIn(accessPoint: ChromeSigninAccessPoint) {
+    this.methodCalled('startSignIn', accessPoint);
   }
 
   didNavigateToAccountSettingsPage() {
@@ -119,6 +120,10 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   setSyncDatatype(pref: UserSelectableType, value: boolean) {
     this.methodCalled('setSyncDatatype', pref, value);
     return Promise.resolve(PageStatus.CONFIGURE);
+  }
+
+  recordSigninPendingOffered(): void {
+    this.methodCalled('recordSigninPendingOffered');
   }
   // </if>
 

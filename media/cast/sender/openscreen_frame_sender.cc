@@ -20,6 +20,7 @@
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
 #include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media::cast {
 namespace {
@@ -228,10 +229,11 @@ CastStreamingFrameDropReason OpenscreenFrameSender::EnqueueFrame(
     send_target_playout_delay_ = false;
   }
 
-  static const char* name = is_audio_ ? "Audio Transport" : "Video Transport";
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+  static const perfetto::StaticString name =
+      is_audio_ ? "Audio Transport" : "Video Transport";
+  TRACE_EVENT_BEGIN(
       "cast.stream", name,
-      TRACE_ID_WITH_SCOPE(name, encoded_frame->frame_id.lower_32_bits()),
+      perfetto::NamedTrack(name, encoded_frame->frame_id.lower_32_bits()),
       "rtp_timestamp", encoded_frame->rtp_timestamp.lower_32_bits());
 
   // The `FrameId` given to us by child classes such as VideoSender should

@@ -82,7 +82,7 @@ export class AppearanceElement extends AppearanceElementBase {
       showEditTheme_: {type: Boolean},
       managedByName_: {type: String},
       managedByDescription_: {type: String},
-      newTabPageType_: {type: NewTabPageType},
+      newTabPageType_: {type: Number},
 
       wallpaperSearchButtonEnabled_: {
         type: Boolean,

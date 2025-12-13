@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 
 #include "ash/public/cpp/window_properties.h"
@@ -18,6 +17,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/media_device_salt/media_device_salt_service.h"
@@ -36,16 +36,13 @@
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/aura/window.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_allowlist.h"
 
 namespace ash {
 
 namespace {
 
-BASE_FEATURE(kCCALocalOverride,
-             "CCALocalOverride",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCCALocalOverride, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FilePath::CharType kCCALocalOverrideDirectoryPath[] =
     FILE_PATH_LITERAL("/etc/camera/cca");
 
@@ -66,7 +63,7 @@ void HandleLocalOverrideRequest(
                        base::FilePath file_path =
                            base::FilePath(kCCALocalOverrideDirectoryPath)
                                .Append(base::TrimString(
-                                   parsed_url.path_piece(), "/",
+                                   parsed_url.path(), "/",
                                    base::TrimPositions::TRIM_LEADING));
                        std::string result;
                        if (base::ReadFileToString(file_path, &result)) {
@@ -273,6 +270,14 @@ CameraAppUI::CameraAppUI(content::WebUI* web_ui,
   }
 
   content::DevToolsAgentHost::AddObserver(this);
+
+  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window());
+  if (widget) {
+    // Camera app is always dark.
+    widget->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
+  } else {
+    LOG(ERROR) << "Can't find widget for CCA window.";
+  }
 }
 
 CameraAppUI::~CameraAppUI() {
@@ -294,21 +299,6 @@ void CameraAppUI::BindInterface(
   helper_ = CreateCameraAppHelper(
       this, web_ui()->GetWebContents()->GetBrowserContext(), window());
   helper_->Bind(std::move(receiver));
-}
-
-void CameraAppUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window());
-  if (widget) {
-    // Camera app is always dark.
-    widget->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark,
-                                 /*background_color=*/std::nullopt);
-  } else {
-    LOG(ERROR) << "Can't find widget for CCA window.";
-  }
-
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 aura::Window* CameraAppUI::window() {

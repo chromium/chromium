@@ -130,6 +130,10 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // TODO(crbug.com/40598679): Remove once focus is fixed during DND sessions.
   WaylandWindow* entered_window() const { return window_; }
 
+  WaylandPointer::Delegate* pointer_delegate() const {
+    return pointer_delegate_;
+  }
+
   // Returns false iff the data is for a window dragging session.
   bool ShouldReleaseCaptureForDrag(ui::OSExchangeData* data) const;
 
@@ -281,7 +285,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   std::unique_ptr<WaylandSurface> origin_surface_;
 
   // Current window under pointer.
-  raw_ptr<WaylandWindow, DanglingUntriaged> window_ = nullptr;
+  raw_ptr<WaylandWindow> window_ = nullptr;
 
   // The most recent location received while dragging the data.
   gfx::PointF last_drag_location_;

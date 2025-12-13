@@ -165,8 +165,6 @@ class FetchManifestAndInstallCommand
 
   bool did_navigation_occur_before_start_ = false;
 
-  InstallErrorLogEntry install_error_log_entry_;
-
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
   blink::mojom::ManifestPtr opt_manifest_;
   bool valid_manifest_for_crafted_web_app_ = false;

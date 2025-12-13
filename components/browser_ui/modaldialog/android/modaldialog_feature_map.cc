@@ -35,3 +35,5 @@ static jlong JNI_ModalDialogFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace browser_ui
+
+DEFINE_JNI(ModalDialogFeatureMap)

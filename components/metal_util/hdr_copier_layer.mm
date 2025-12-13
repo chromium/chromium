@@ -30,9 +30,7 @@
 namespace {
 
 // If true, then use the HDRCopierLayer for all HLG video content.
-BASE_FEATURE(kMacHlgUseHdrCopier,
-             "MacHlgUseHdrCopier",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMacHlgUseHdrCopier, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Source of the shader to perform tonemapping. Note that the functions
 // ToLinearSRGBIsh, ToLinearPQ, and ToLinearHLG are copy-pasted from the GLSL
@@ -281,7 +279,7 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
                 device:(id<MTLDevice>)device
      screenHdrHeadroom:(float)screenHdrHeadroom
             colorSpace:(gfx::ColorSpace)colorSpace
-              metadata:(std::optional<gfx::HDRMetadata>)hdrMetadata;
+              metadata:(gfx::HDRMetadata)hdrMetadata;
 @end
 
 @implementation HDRCopierLayer {
@@ -290,7 +288,7 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
   id<MTLDevice> _device;
   float _screenHdrHeadroom;
   gfx::ColorSpace _colorSpace;
-  std::optional<gfx::HDRMetadata> _hdrMetadata;
+  gfx::HDRMetadata _hdrMetadata;
 }
 - (id)init {
   if ((self = [super init])) {
@@ -315,7 +313,7 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
                 device:(id<MTLDevice>)device
      screenHdrHeadroom:(float)screenHdrHeadroom
             colorSpace:(gfx::ColorSpace)colorSpace
-              metadata:(std::optional<gfx::HDRMetadata>)hdrMetadata {
+              metadata:(gfx::HDRMetadata)hdrMetadata {
   // HLG does not use the OS-provided tone mapping, so it will need to be
   // re-drawn whenever the HDR headroom changes.
   // https://crbug.com/343249142
@@ -528,7 +526,7 @@ void UpdateHDRCopierLayer(CALayer* layer,
                           id<MTLDevice> device,
                           float screen_hdr_headroom,
                           const gfx::ColorSpace& color_space,
-                          const std::optional<gfx::HDRMetadata>& hdr_metadata) {
+                          const gfx::HDRMetadata& hdr_metadata) {
   if (auto* hdr_copier_layer = base::apple::ObjCCast<HDRCopierLayer>(layer)) {
     [hdr_copier_layer setHDRContents:buffer
                               device:device
@@ -575,10 +573,10 @@ bool ShouldUseHDRCopier(IOSurfaceRef buffer,
   }
 
   // Rasterized tiles and the primary plane specify a color space of SRGB_HDR
-  // with no extended range metadata.
+  // LINEAR_HDR, or CUSTOM_HDR, with no extended range metadata.
   // TODO(crbug.com/40268540): Use extended range metadata instead of
   // the SDR_HDR color space to indicate this.
-  if (color_space.GetTransferID() == gfx::ColorSpace::TransferID::SRGB_HDR) {
+  if (color_space.IsHDR()) {
     return !is_unorm;
   }
 

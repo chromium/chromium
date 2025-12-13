@@ -1,4 +1,0 @@
-include_rules = [
-  "+crypto/obsolete/md5.h",
-  "+third_party/zlib/google/compression_utils_portable.h",
-]

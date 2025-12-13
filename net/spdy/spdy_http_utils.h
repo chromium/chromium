@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"

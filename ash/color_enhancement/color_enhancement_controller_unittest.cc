@@ -4,6 +4,8 @@
 
 #include "ash/color_enhancement/color_enhancement_controller.h"
 
+#include <optional>
+
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/flash_screen_controller.h"
 #include "ash/constants/ash_pref_names.h"
@@ -18,6 +20,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -52,6 +55,8 @@ class ColorEnhancementControllerTest : public AshTestBase {
     scoped_feature_list_.InitAndEnableFeature(
         ::features::kAccessibilityFlashScreenFeature);
     AshTestBase::SetUp();
+    normal_duration_.emplace(
+        gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   }
 
   bool IsCursorCompositingEnabled() const {
@@ -98,6 +103,7 @@ class ColorEnhancementControllerTest : public AshTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::optional<gfx::ScopedAnimationDurationScaleMode> normal_duration_;
 };
 
 TEST_F(ColorEnhancementControllerTest, HighContrast) {

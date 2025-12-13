@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"

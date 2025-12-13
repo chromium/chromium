@@ -9,6 +9,9 @@
 
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 

@@ -46,7 +46,7 @@ robolectric_library("junit") {
     "//components/page_image_service/mojom:mojo_bindings_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/jni_zero:jni_zero_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//url:gurl_junit_test_support",
     "//url:url_java",

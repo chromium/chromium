@@ -14,9 +14,14 @@
 
 namespace ui {
 
+ColorMixer::ColorMixer() = default;
+
+ColorMixer::ColorMixer(MixerGetter previous_mixer_getter)
+    : previous_mixer_getter_(std::move(previous_mixer_getter)) {}
+
 ColorMixer::ColorMixer(MixerGetter previous_mixer_getter,
                        MixerGetter input_mixer_getter)
-    : previous_mixer_getter_(previous_mixer_getter),
+    : previous_mixer_getter_(std::move(previous_mixer_getter)),
       input_mixer_getter_(std::move(input_mixer_getter)) {}
 
 ColorMixer::ColorMixer(ColorMixer&&) noexcept = default;
@@ -32,16 +37,18 @@ ColorRecipe& ColorMixer::operator[](ColorId id) {
 SkColor ColorMixer::GetInputColor(ColorId id) const {
   const ColorMixer* previous_mixer =
       previous_mixer_getter_ ? previous_mixer_getter_.Run() : nullptr;
+  if (!previous_mixer) {
+    // If there's no previous mixer, always log color id misses.
+    DVLOG(2) << "GetInputColor: ColorId " << ColorIdName(id) << " not found. "
+             << "Returning gfx::kPlaceholderColor.";
+    return gfx::kPlaceholderColor;
+  }
+
   // Don't log transitions to previous mixers unless the logging level is a
   // little higher.
-  DVLOG_IF(3, previous_mixer) << "GetInputColor: ColorId " << ColorIdName(id)
-                              << " not found. " << "Checking previous mixer.";
-  // If there's no previous mixer, always log color id misses.
-  DVLOG_IF(2, !previous_mixer)
-      << "GetInputColor: ColorId " << ColorIdName(id) << " not found. "
-      << "Returning gfx::kPlaceholderColor.";
-  return previous_mixer ? previous_mixer->GetResultColor(id)
-                        : gfx::kPlaceholderColor;
+  DVLOG(3) << "GetInputColor: ColorId " << ColorIdName(id) << " not found. "
+           << "Checking previous mixer.";
+  return previous_mixer->GetResultColor(id);
 }
 
 SkColor ColorMixer::GetResultColor(ColorId id) const {

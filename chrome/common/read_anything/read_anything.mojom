@@ -31,7 +31,8 @@ enum ErrorCode {
   kWrongId = 2,
   kNeedReboot = 3,
   kAllocation = 4,
-  kUnsupportedPlatform = 5
+  kUnsupportedPlatform = 5,
+  [MinVersion=2] kNotReached = 6,
 };
 
 union VoicePackInstallationState {
@@ -57,7 +58,7 @@ interface UntrustedPageHandlerFactory {
 };
 
 // Used as identifiers for the Read Anything theme options.
-// Next value: 5
+// Next value: 9
 [Extensible, Stable, Uuid="03f38cfc-a34f-460a-a0a7-faf711f11a64"]
 // LINT.IfChange(Colors)
 enum Colors {
@@ -66,6 +67,10 @@ enum Colors {
   kDark = 2,
   kYellow = 3,
   [MinVersion=1] kBlue = 4,
+  [MinVersion=2] kHighContrast = 5,
+  [MinVersion=2] kLowContrast = 6,
+  [MinVersion=2] kSepiaLight = 7,
+  [MinVersion=2] kSepiaDark = 8,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingColor)
 
@@ -106,6 +111,17 @@ enum HighlightGranularity {
   [MinVersion=1] kPhrase = 3,
   [MinVersion=1] kSentence = 4
 };
+
+// LINT.IfChange(DistillationStatus)
+// Distillation status after a page has been opened with reading mode. Used for
+// metrics logging.
+enum DistillationStatus {
+  kFailure = 0,
+  kSuccess = 1,
+  kStillRunning = 2,
+  kRestarted = 3
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingDistillationStatus)
 
 // Browser-side handler for requests from untrusted WebUI page.
 interface UntrustedPageHandler {
@@ -174,6 +190,10 @@ interface UntrustedPageHandler {
   // Informs the browser controller that the user enabled/disabled a language.
   OnLanguagePrefChange(string lang, bool enabled);
 
+  // Logs the installation state of the TTS engine extension when a system voice
+  // is used for a speech session.
+  LogExtensionState();
+
   // Informs the browser controller that the user updated the granularity of
   // the highlight that follows along with speech via the webui toolbar.
   OnHighlightGranularityChanged(read_anything.mojom.HighlightGranularity granularity);
@@ -212,6 +232,10 @@ interface UntrustedPageHandler {
 
   // Requests the browser to take a screenshot of the active web contents.
   OnScreenshotRequested();
+
+  // Informs the browser of the status of the latest distillation attempt.
+  OnDistillationStatus(read_anything.mojom.DistillationStatus status,
+                       int32 word_count);
 
   // Informs the browser controller that the side page was scrolled to the end.
   // The browser controller responds by scrolling the main page to show the
@@ -295,7 +319,10 @@ interface UntrustedPage {
   // might be due to a different side panel opening, the side panel closing
   // while reading mode is open, or a new tab opening. If reading mode is closed
   // because of the tab closing, OnTabWillDetach is called instead.
-  OnReadingModeHidden();
+  // tab_active indicates whether the tab for reading mode is still the active
+  // tab. If it's true, then Reading mode was closed. If false, then the tab was
+  // switched.
+  OnReadingModeHidden(bool tab_active);
 
   // Notifies the WebUI that current tab will detach so it can clean up.
   OnTabWillDetach();

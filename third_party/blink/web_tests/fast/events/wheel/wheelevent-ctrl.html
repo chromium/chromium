@@ -31,7 +31,7 @@ const scroller = document.getElementById('scroller');
 const insideScroller = elementCenter(scroller);
 const outsideScroller =
     elementCenter(document.getElementById('outsideScroller'));
-const expectedWheelTickDelta = pixelsPerTick();
+const defaultWheelTickDelta = pixelsPerTick();
 
 // Each test gets a fresh wheel promise.
 let wheelPromise;
@@ -73,15 +73,15 @@ promise_test(async () => {
     return scroller.scrollTop == 0;
   };
   const event = await wheelTickNoScroll(insideScroller, holdCondition);
-  assert_equals(event.deltaY, expectedWheelTickDelta);
+  assert_equals(event.deltaY, defaultWheelTickDelta);
   assert_true(event.ctrlKey);
 }, "Scroll container: Ctrl+wheel doesn't scroll.");
 
 promise_test(async () => {
   await reset();
   const event = await wheelTickAndScroll(insideScroller, scroller);
-  assert_equals(scroller.scrollTop, expectedWheelTickDelta);
-  assert_equals(event.deltaY, expectedWheelTickDelta);
+  assert_equals(scroller.scrollTop, scroller.clientHeight);
+  assert_equals(event.deltaY, defaultWheelTickDelta);
   assert_false(event.ctrlKey);
 }, "Scroll container: No-Ctrl wheel scrolls.");
 
@@ -91,7 +91,7 @@ promise_test(async () => {
     return window.scrollY == 0;
   };
   const event = await wheelTickNoScroll(outsideScroller, holdCondition);
-  assert_equals(event.deltaY, expectedWheelTickDelta);
+  assert_equals(event.deltaY, defaultWheelTickDelta);
   assert_true(event.ctrlKey);
   assert_equals(window.scrollY, 0);
 }, "Doc: Ctrl+wheel doesn't scroll.");
@@ -99,8 +99,8 @@ promise_test(async () => {
 promise_test(async () => {
   await reset();
   const event = await wheelTickAndScroll(outsideScroller, document);
-  assert_equals(window.scrollY, expectedWheelTickDelta);
-  assert_equals(event.deltaY, expectedWheelTickDelta);
+  assert_equals(window.scrollY, defaultWheelTickDelta);
+  assert_equals(event.deltaY, defaultWheelTickDelta);
   assert_false(event.ctrlKey);
 }, "Doc: No-Ctrl wheel scrolls.");
 
@@ -121,8 +121,8 @@ promise_test(async () => {
   const event  =
       await Promise.all([ gesturePromise, wheelPromise, scrollPromise ])
           .then(responses => { return responses[1]; });
-  assert_equals(window.scrollY, expectedWheelTickDelta);
-  assert_equals(event.deltaY, expectedWheelTickDelta);
+  assert_equals(window.scrollY, defaultWheelTickDelta);
+  assert_equals(event.deltaY, defaultWheelTickDelta);
   assert_true(event.ctrlKey);
 }, "Doc: Ctrl+high precision touchpad scroll scrolls.");
 

@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_PREFERRED_AUDIO_OUTPUT_DEVICE_MANAGER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_PREFERRED_AUDIO_OUTPUT_DEVICE_MANAGER_H_
 
-#include <map>
 #include <string>
 #include <vector>
 
@@ -14,7 +13,6 @@
 #include "content/browser/renderer_host/media/audio_output_authorization_handler.h"
 #include "content/public/browser/global_routing_id.h"
 #include "media/base/output_device_info.h"
-#include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 
 namespace content {
 

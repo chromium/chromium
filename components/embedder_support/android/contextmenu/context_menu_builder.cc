@@ -50,16 +50,15 @@ base::android::ScopedJavaGlobalRef<jobject> BuildJavaContextMenuParams(
             attribution_src_token);
   }
 
-  ui::MenuModelBridge* menu_model_bridge = new ui::MenuModelBridge();
-  if (menu_model != nullptr) {
-    menu_model_bridge->AddExtensionItems(menu_model);
-  }
+  ui::MenuModelBridge* menu_model_bridge =
+      new ui::MenuModelBridge(menu_model ? menu_model->AsWeakPtr() : nullptr);
 
   return base::android::ScopedJavaGlobalRef<jobject>(
       Java_ContextMenuParams_create(
           env, reinterpret_cast<intptr_t>(&params),
           menu_model_bridge->GetJavaObject(),
           static_cast<int>(params.media_type),
+          static_cast<int>(params.media_flags),
           url::GURLAndroid::FromNativeGURL(env, params.page_url),
           url::GURLAndroid::FromNativeGURL(env, params.link_url),
           ConvertUTF16ToJavaString(env, params.link_text),
@@ -83,3 +82,5 @@ content::ContextMenuParams* ContextMenuParamsFromJavaObject(
 }
 
 }  // namespace context_menu
+
+DEFINE_JNI(ContextMenuParams)

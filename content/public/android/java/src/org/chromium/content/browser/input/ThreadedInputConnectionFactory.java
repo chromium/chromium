@@ -309,7 +309,7 @@ public class ThreadedInputConnectionFactory implements ChromiumBaseInputConnecti
         if (mProxyView != null) mProxyView.onOriginalViewWindowFocusChanged(gainFocus);
         if (!gainFocus) {
             mFocusState = FocusState.WINDOW_FOCUS_LOST;
-        } else if (gainFocus && mFocusState == FocusState.VIEW_FOCUSED_WITHOUT_WINDOW_FOCUS) {
+        } else if (mFocusState == FocusState.VIEW_FOCUSED_WITHOUT_WINDOW_FOCUS) {
             mFocusState = FocusState.VIEW_FOCUSED_THEN_WINDOW_FOCUSED;
         } else {
             mFocusState = FocusState.NOT_APPLICABLE;

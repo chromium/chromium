@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "mojo/core/platform_handle_dispatcher.h"
 
 #include <stdio.h>
+
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -35,8 +32,8 @@ TEST(PlatformHandleDispatcherTest, Basic) {
   base::ScopedFILE fp =
       CreateAndOpenTemporaryStreamInDir(temp_dir.GetPath(), &unused);
   ASSERT_TRUE(fp);
-  EXPECT_EQ(sizeof(kHelloWorld),
-            fwrite(kHelloWorld, 1, sizeof(kHelloWorld), fp.get()));
+  UNSAFE_TODO(EXPECT_EQ(sizeof(kHelloWorld),
+                        fwrite(kHelloWorld, 1, sizeof(kHelloWorld), fp.get())));
 
   PlatformHandle h = test::PlatformHandleFromFILE(std::move(fp));
   EXPECT_FALSE(fp);
@@ -56,8 +53,8 @@ TEST(PlatformHandleDispatcherTest, Basic) {
 
   rewind(fp.get());
   char read_buffer[1000] = {};
-  EXPECT_EQ(sizeof(kHelloWorld),
-            fread(read_buffer, 1, sizeof(read_buffer), fp.get()));
+  UNSAFE_TODO(EXPECT_EQ(sizeof(kHelloWorld),
+                        fread(read_buffer, 1, sizeof(read_buffer), fp.get())));
   EXPECT_STREQ(kHelloWorld, read_buffer);
 
   // Try getting the handle again. (It should fail cleanly.)
@@ -76,7 +73,8 @@ TEST(PlatformHandleDispatcherTest, Serialization) {
   base::FilePath unused;
   base::ScopedFILE fp =
       CreateAndOpenTemporaryStreamInDir(temp_dir.GetPath(), &unused);
-  EXPECT_EQ(sizeof(kFooBar), fwrite(kFooBar, 1, sizeof(kFooBar), fp.get()));
+  UNSAFE_TODO(EXPECT_EQ(sizeof(kFooBar),
+                        fwrite(kFooBar, 1, sizeof(kFooBar), fp.get())));
 
   scoped_refptr<PlatformHandleDispatcher> dispatcher =
       PlatformHandleDispatcher::Create(
@@ -118,8 +116,8 @@ TEST(PlatformHandleDispatcherTest, Serialization) {
 
   rewind(fp.get());
   char read_buffer[1000] = {};
-  EXPECT_EQ(sizeof(kFooBar),
-            fread(read_buffer, 1, sizeof(read_buffer), fp.get()));
+  UNSAFE_TODO(EXPECT_EQ(sizeof(kFooBar),
+                        fread(read_buffer, 1, sizeof(read_buffer), fp.get())));
   EXPECT_STREQ(kFooBar, read_buffer);
 
   EXPECT_EQ(MOJO_RESULT_OK, dispatcher->Close());

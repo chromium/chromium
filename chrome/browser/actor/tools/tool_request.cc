@@ -4,6 +4,8 @@
 
 #include "chrome/browser/actor/tools/tool_request.h"
 
+#include <optional>
+
 #include "chrome/browser/actor/tools/tool.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -38,6 +40,25 @@ GURL ToolRequest::GetURLForJournal() const {
 
 tabs::TabHandle ToolRequest::GetTabHandle() const {
   return tabs::TabHandle();
+}
+
+std::string ToolRequest::JournalEvent() const {
+  return std::string(Name());
+}
+
+bool ToolRequest::RequiresUrlCheckInCurrentTab() const {
+  // By default, tab scoped tools require current tab URL checks but individual
+  // tools can override this.
+  return IsTabScoped();
+}
+
+std::optional<url::Origin> ToolRequest::AssociatedOriginGrant() const {
+  return std::nullopt;
+}
+
+ObservationDelayController::PageStabilityConfig
+ToolRequest::GetObservationPageStabilityConfig() const {
+  return ObservationDelayController::PageStabilityConfig();
 }
 
 TabToolRequest::TabToolRequest(const tabs::TabHandle tab_handle)

@@ -20,10 +20,6 @@ OffscreenFontSelector::OffscreenFontSelector(WorkerGlobalScope* worker)
 
 OffscreenFontSelector::~OffscreenFontSelector() = default;
 
-FontMatchingMetrics* OffscreenFontSelector::GetFontMatchingMetrics() const {
-  return worker_->GetFontMatchingMetrics();
-}
-
 UseCounter* OffscreenFontSelector::GetUseCounter() const {
   return GetExecutionContext();
 }

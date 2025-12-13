@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
+#include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/credit_card_number_validation.h"
@@ -17,18 +18,46 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
+namespace {
+using autofill_metrics::SaveAndFillDialogResult;
+}
 
 SaveAndFillDialogControllerImpl::SaveAndFillDialogControllerImpl() = default;
 SaveAndFillDialogControllerImpl::~SaveAndFillDialogControllerImpl() = default;
 
-void SaveAndFillDialogControllerImpl::ShowDialog(
+void SaveAndFillDialogControllerImpl::ShowLocalDialog(
     base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>
         create_and_show_view_callback,
     payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
         card_save_and_fill_dialog_callback) {
+  dialog_state_ = SaveAndFillDialogState::kLocalDialog;
   dialog_view_ = std::move(create_and_show_view_callback).Run();
   card_save_and_fill_dialog_callback_ =
       std::move(card_save_and_fill_dialog_callback);
+  CHECK(dialog_view_);
+  autofill_metrics::LogSaveAndFillDialogShown(/*is_upload=*/false);
+}
+
+void SaveAndFillDialogControllerImpl::ShowUploadDialog(
+    const LegalMessageLines& legal_message_lines,
+    base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>
+        create_and_show_view_callback,
+    payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
+        card_save_and_fill_dialog_callback) {
+  dialog_state_ = SaveAndFillDialogState::kUploadDialog;
+  legal_message_lines_ = legal_message_lines;
+  dialog_view_ = std::move(create_and_show_view_callback).Run();
+  card_save_and_fill_dialog_callback_ =
+      std::move(card_save_and_fill_dialog_callback);
+  CHECK(dialog_view_);
+  autofill_metrics::LogSaveAndFillDialogShown(/*is_upload=*/true);
+}
+
+void SaveAndFillDialogControllerImpl::ShowPendingDialog(
+    base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>
+        create_and_show_view_callback) {
+  dialog_state_ = SaveAndFillDialogState::kPendingDialog;
+  dialog_view_ = std::move(create_and_show_view_callback).Run();
   CHECK(dialog_view_);
 }
 
@@ -38,10 +67,16 @@ std::u16string SaveAndFillDialogControllerImpl::GetWindowTitle() const {
 }
 
 std::u16string SaveAndFillDialogControllerImpl::GetExplanatoryMessage() const {
-  return l10n_util::GetStringUTF16(
-      IsUploadSaveAndFill()
-          ? IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_UPLOAD
-          : IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_LOCAL);
+  switch (dialog_state_) {
+    case SaveAndFillDialogState::kUploadDialog:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_UPLOAD);
+    case SaveAndFillDialogState::kLocalDialog:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_LOCAL);
+    case SaveAndFillDialogState::kPendingDialog:
+      return std::u16string();
+  }
 }
 
 std::u16string SaveAndFillDialogControllerImpl::GetCardNumberLabel() const {
@@ -137,8 +172,8 @@ std::u16string SaveAndFillDialogControllerImpl::FormatExpirationDateInput(
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-bool SaveAndFillDialogControllerImpl::IsUploadSaveAndFill() const {
-  return is_upload_save_and_fill_;
+SaveAndFillDialogState SaveAndFillDialogControllerImpl::GetDialogState() const {
+  return dialog_state_;
 }
 
 bool SaveAndFillDialogControllerImpl::IsValidCreditCardNumber(
@@ -205,6 +240,11 @@ bool SaveAndFillDialogControllerImpl::IsValidNameOnCard(
   return autofill::IsValidNameOnCard(input_text);
 }
 
+const LegalMessageLines& SaveAndFillDialogControllerImpl::GetLegalMessageLines()
+    const {
+  return legal_message_lines_;
+}
+
 void SaveAndFillDialogControllerImpl::Dismiss() {
   dialog_view_.reset();
 }
@@ -212,19 +252,55 @@ void SaveAndFillDialogControllerImpl::Dismiss() {
 void SaveAndFillDialogControllerImpl::OnUserAcceptedDialog(
     const payments::PaymentsAutofillClient::UserProvidedCardSaveAndFillDetails&
         user_provided_card_save_and_fill_details) {
-  std::move(card_save_and_fill_dialog_callback_)
-      .Run(payments::PaymentsAutofillClient::CardSaveAndFillDialogUserDecision::
-               kAccepted,
-           user_provided_card_save_and_fill_details);
-  Dismiss();
+  bool with_cvc =
+      !user_provided_card_save_and_fill_details.security_code.value_or(u"")
+           .empty();
+  switch (dialog_state_) {
+    case SaveAndFillDialogState::kLocalDialog:
+      autofill_metrics::LogSaveAndFillDialogResult(
+          with_cvc ? SaveAndFillDialogResult::kLocalAcceptedWithCvc
+                   : SaveAndFillDialogResult::kLocalAcceptedWithoutCvc);
+      break;
+    case SaveAndFillDialogState::kUploadDialog:
+      autofill_metrics::LogSaveAndFillDialogResult(
+          with_cvc ? SaveAndFillDialogResult::kUploadAcceptedWithCvc
+                   : SaveAndFillDialogResult::kUploadAcceptedWithoutCvc);
+      break;
+    case SaveAndFillDialogState::kPendingDialog:
+      // No metric is logged for the pending dialog.
+      // TODO(crbug.com/468350241): Investigate using NOTREACHED() here.
+      break;
+  }
+  if (!card_save_and_fill_dialog_callback_.is_null()) {
+    std::move(card_save_and_fill_dialog_callback_)
+        .Run(payments::PaymentsAutofillClient::
+                 CardSaveAndFillDialogUserDecision::kAccepted,
+             user_provided_card_save_and_fill_details);
+  }
 }
 
 void SaveAndFillDialogControllerImpl::OnUserCanceledDialog() {
-  std::move(card_save_and_fill_dialog_callback_)
-      .Run(payments::PaymentsAutofillClient::CardSaveAndFillDialogUserDecision::
-               kDeclined,
-           /*user_provided_card_save_and_fill_details=*/{});
+  switch (dialog_state_) {
+    case SaveAndFillDialogState::kLocalDialog:
+      autofill_metrics::LogSaveAndFillDialogResult(
+          SaveAndFillDialogResult::kLocalCanceled);
+      break;
+    case SaveAndFillDialogState::kUploadDialog:
+      autofill_metrics::LogSaveAndFillDialogResult(
+          SaveAndFillDialogResult::kUploadCanceled);
+      break;
+    case SaveAndFillDialogState::kPendingDialog:
+      autofill_metrics::LogSaveAndFillDialogResult(
+          SaveAndFillDialogResult::kPendingCanceled);
+      break;
+  }
   Dismiss();
+  if (!card_save_and_fill_dialog_callback_.is_null()) {
+    std::move(card_save_and_fill_dialog_callback_)
+        .Run(payments::PaymentsAutofillClient::
+                 CardSaveAndFillDialogUserDecision::kDeclined,
+             /*user_provided_card_save_and_fill_details=*/{});
+  }
 }
 
 base::WeakPtr<SaveAndFillDialogController>

@@ -28,7 +28,6 @@ source_set("metrics") {
     "//ios/chrome/browser/discover_feed/model:discover_feed_refresher",
     "//ios/chrome/browser/favicon/ui_bundled",
     "//ios/chrome/browser/metrics/model:constants",
-    "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/ui_bundled",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
@@ -41,7 +40,6 @@ source_set("constants") {
   sources = [
     "feed_metrics_constants.h",
     "feed_metrics_constants.mm",
-    "new_tab_page_metrics_constants.h",
     "new_tab_page_metrics_constants.h",
     "new_tab_page_metrics_constants.mm",
   ]
@@ -89,6 +87,7 @@ source_set("unit_tests") {
     ":home_metrics",
     ":metrics",
     "//base",
+    "//base:build_time",
     "//base/test:test_support",
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
@@ -96,7 +95,6 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/metrics/model:constants",
-    "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/ui_bundled",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",

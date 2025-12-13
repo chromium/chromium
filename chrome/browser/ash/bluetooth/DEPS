@@ -16,7 +16,6 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/hats",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/notifications",
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
   "+chrome/browser/ui/webui/bluetooth_internals",
@@ -29,5 +28,9 @@ specific_include_rules = {
     "+chrome/browser/ui/chrome_pages.h",
     "+chrome/browser/ui/settings_window_manager_chromeos.h",
     "+chrome/test/base",
+  ],
+
+  "hats_bluetooth_revamp_trigger_impl_browsertest\\.cc": [
+    "+ui/message_center/test/message_center_waiter.h",
   ],
 }

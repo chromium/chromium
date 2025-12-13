@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/experiences/arc/bluetooth/bluetooth_type_converters.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/values.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 #include "device/bluetooth/bluez/bluetooth_service_attribute_value_bluez.h"
@@ -93,7 +89,7 @@ TEST(BluetoothTypeConverterTest, ConvertMojoBluetoothAddressFromString) {
       arc::mojom::BluetoothAddress::From(std::string(kAddressStr));
   EXPECT_EQ(kAddressSize, address_mojo->address.size());
   for (size_t i = 0; i < kAddressSize; i++) {
-    EXPECT_EQ(kAddressArray[i], address_mojo->address[i]);
+    UNSAFE_TODO(EXPECT_EQ(kAddressArray[i], address_mojo->address[i]));
   }
 }
 
@@ -102,7 +98,7 @@ TEST(BluetoothTypeConverterTest, ConvertMojoBluetoothAddressToString) {
       arc::mojom::BluetoothAddress::New();
   // Test address is shorter than expected (invalid address).
   for (size_t i = 0; i < kAddressSize - 1; i++) {
-    address_mojo->address.push_back(kAddressArray[i]);
+    address_mojo->address.push_back(UNSAFE_TODO(kAddressArray[i]));
   }
   EXPECT_EQ(kInvalidAddressStr, address_mojo->To<std::string>());
 

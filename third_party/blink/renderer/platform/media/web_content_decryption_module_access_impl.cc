@@ -65,9 +65,15 @@ WebContentDecryptionModuleAccessImpl::WebContentDecryptionModuleAccessImpl(
 WebContentDecryptionModuleAccessImpl::~WebContentDecryptionModuleAccessImpl() =
     default;
 
-WebString WebContentDecryptionModuleAccessImpl::GetKeySystem() {
+WebString WebContentDecryptionModuleAccessImpl::GetRequestedKeySystem() {
   // crbug.com/421223928: Returns the originally requested key system
   return requested_key_system_;
+}
+
+WebString WebContentDecryptionModuleAccessImpl::GetInternalKeySystem() {
+  // crbug.com/421223928: Returns the internal key system (base key system if
+  // exists)
+  return WebString::FromUTF8(cdm_config_.key_system);
 }
 
 WebMediaKeySystemConfiguration
@@ -84,8 +90,8 @@ void WebContentDecryptionModuleAccessImpl::CreateContentDecryptionModule(
   // gets garbage-collected.
   auto result_copy = std::make_unique<WebContentDecryptionModuleResult>(result);
   task_runner->PostTask(FROM_HERE,
-                        WTF::BindOnce(&CreateCdm, client_, security_origin_,
-                                      cdm_config_, std::move(result_copy)));
+                        blink::BindOnce(&CreateCdm, client_, security_origin_,
+                                        cdm_config_, std::move(result_copy)));
 }
 
 bool WebContentDecryptionModuleAccessImpl::UseHardwareSecureCodecs() const {

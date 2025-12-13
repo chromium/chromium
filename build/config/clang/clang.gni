@@ -2,22 +2,61 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/c++/c++.gni")
+import("//build/config/cast.gni")
+import("//build/config/cronet/config.gni")
+import("//build/config/gclient_args.gni")
+import("//build/toolchain/cc_wrapper.gni")
+import("//build/toolchain/kythe.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/siso.gni")
 import("//build/toolchain/toolchain.gni")
+import("//build_overrides/build.gni")
+
+# ChromeOS is the only OS for which we support clang modules with a custom
+# sysroot. See http://crbug.com/443587270.
+# Android is here because on android, sysroot.gni would introduce a circular
+# dependency. We just assume that android is always safe to use clang modules
+# for, but we can change this later down the line if that turns out to be false.
+if (is_chromeos || is_android) {
+  using_tested_sysroot = true
+} else {
+  import("//build/config/sysroot.gni")
+
+  using_tested_sysroot =
+      use_sysroot && (current_os != target_os || current_cpu != target_cpu ||
+                      target_sysroot == "")
+}
 
 default_clang_base_path = "//third_party/llvm-build/Release+Asserts"
 
+# These platforms have been well-tested with clang modules.
+# Platforms not in this list *may* work with clang modules, but we don't
+# guarantee it, and we don't test them on CI/CQ with modules, so breakages may
+# occur.
+android_supported_cpus = [
+  "arm",
+  "arm64",
+  "x64",
+  "x86",
+]
+clang_modules_platform_supported =
+    # s390x should work, but IBM doesn't want it enabled for that cpu arch.
+    (is_linux && current_cpu != "s390x") ||
+    (is_android &&
+     filter_include(android_supported_cpus, [ current_cpu ]) != []) ||
+    is_apple || is_fuchsia || is_chromeos ||
+    # Cross-compiling linux -> windows works, but win -> win appears to still
+    # have issues.
+    (is_win && current_cpu == "x64" && current_os != target_os)
+
 declare_args() {
   # Indicates if the build should use the Chrome-specific plugins for enforcing
-  # coding guidelines, etc. Only used when compiling with Chrome's Clang, not
-  # Chrome OS's.
-  clang_use_chrome_plugins =
-      is_clang && current_os != "zos" &&
-      default_toolchain != "//build/toolchain/cros:target"
+  # coding guidelines, etc. Only used when compiling with Chromium's Clang.
+  # Setting this enables all of the functionality of the plugin.
+  clang_use_chrome_plugins = is_clang && current_os != "zos"
 
-  # Use this instead of clang_use_chrome_plugins to enable just the raw-ptr-plugin.
+  # Use this instead of clang_use_chrome_plugins to enable just the raw-ptr
+  # functionality of the plugin.
   clang_use_raw_ptr_plugin = false
 
   enable_check_raw_ptr_fields =
@@ -32,6 +71,10 @@ declare_args() {
       ((is_linux && !is_castos) || (is_android && !is_cast_android) || is_win ||
        is_mac || is_ios || is_chromeos)
 
+  # Use this instead of clang_use_chrome_plugins to enable just the unsafe
+  # buffers functionality of the plugin
+  clang_use_unsafe_buffers_plugin = false
+
   clang_base_path = default_clang_base_path
 
   # Specifies whether or not bitcode should be embedded during compilation.
@@ -41,6 +84,22 @@ declare_args() {
   # Set to true to enable output of ThinLTO index and import files used for
   # creating a Chromium MLGO corpus in the ThinLTO case.
   lld_emit_indexes_and_imports = false
+
+  # Use explicit Clang header modules for libc++.
+  # We'll gradually expand supported platform of modules
+  # (https://crbug.com/40440396).
+  # For details on the current state of modules in Chromium see
+  # https://chromium.googlesource.com/chromium/src/+/main/docs/modules.md
+  #
+  # TODO(https://crbug.com/440260716): Enable for Cronet in AOSP once gn2bp
+  # supports copy targets.
+  use_clang_modules =
+      # Clang modules doesn't work with translation_unit used in codesearch
+      # pipeline http://b/436082487.
+      !enable_kythe_annotations && is_clang &&
+      clang_modules_platform_supported && using_tested_sysroot &&
+      # reclient and icecc don't handle headers in modulemap config.
+      !use_reclient && !is_cronet_for_aosp_build && cc_wrapper != "icecc"
 }
 
 # We don't really need to collect a corpus for the host tools, just for the target.
@@ -51,7 +110,8 @@ lld_emit_indexes_and_imports =
 # targets. We work around the bug in Reclient by
 # specifying the files here.
 rbe_bug_326584510_missing_input_list = []
-if (clang_use_chrome_plugins && defined(clang_unsafe_buffers_paths) &&
+if ((clang_use_chrome_plugins || clang_use_unsafe_buffers_plugin) &&
+    defined(clang_unsafe_buffers_paths) &&
     "$clang_unsafe_buffers_paths" != "") {
   rbe_bug_326584510_missing_input_list +=
       [ rebase_path(clang_unsafe_buffers_paths, rbe_exec_root) ]
@@ -65,3 +125,9 @@ if (defined(clang_warning_suppression_file) &&
 # The leading space is important, if the string is non-empty.
 rbe_bug_326584510_missing_inputs =
     " -inputs=" + string_join(",", rbe_bug_326584510_missing_input_list)
+
+if (is_win) {
+  clang_arg_prefix = "/clang:"
+} else {
+  clang_arg_prefix = ""
+}

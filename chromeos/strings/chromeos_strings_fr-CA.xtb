@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">oranges</translation>
 <translation id="1275718070701477396">Sélectionné</translation>
 <translation id="1290331692326790741">Signal faible</translation>
+<translation id="1292474106138697109">Affichage d'Outils de cours</translation>
 <translation id="1300115153046603471">Le nom de point d'accès est de type par défaut et <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Convertir</translation>
@@ -756,6 +757,7 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
 <translation id="4300272766492248925">Ouvrir l'application</translation>
 <translation id="430786093962686457">mousseline</translation>
+<translation id="4309762678330556039">Créez automatiquement des transcriptions et recherchez des contenus audio. Vous pouvez créer des enregistrements même lorsque vous n'êtes pas connecté à Internet.</translation>
 <translation id="4310735698903592804">Fonds d'écran récents propulsés par l'IA de Google</translation>
 <translation id="4320904097188876154">rose néon</translation>
 <translation id="432961742358282111">Faites un clic droit ou maintenez le doigt sur du texte pour obtenir des définitions, des traductions ou des conversions d'unités. Utilisez les touches de flèche vers la droite ou vers la gauche pour gérer cette fonctionnalité.</translation>
@@ -1045,6 +1047,7 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="5596627076506792578">Autres options</translation>
 <translation id="5600027863942488546">Touche <ph name="KEY_NAME" /> testée</translation>
 <translation id="5606865426897221650">Onglet</translation>
+<translation id="5612205513582918357">Outils de cours partage votre écran avec <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Vous avez été déconnecté</translation>
 <translation id="5620281292257375798">Pour usage interne seulement</translation>
 <translation id="5628106863521633649">Langues prises en charge</translation>
@@ -1178,7 +1181,6 @@ L'IA générative peut se tromper, même à propos de personnes. Veuillez donc v
 <translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Aucun numériseur n'a été trouvé</translation>
-<translation id="6231648282154119906">Les fichiers suspects seront analysés automatiquement par la Navigation sécurisée Google dans le cadre de la protection renforcée que vous avez choisie</translation>
 <translation id="6232017090690406397">Pile</translation>
 <translation id="6234024205316847054">Afficher la structure</translation>
 <translation id="6243280677745499710">Fond d'écran actuel</translation>

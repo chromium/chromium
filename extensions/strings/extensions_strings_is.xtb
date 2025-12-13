@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Forritsgluggi: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Þessi viðbót inniheldur lykilskrána „<ph name="KEY_PATH" />“. Þetta er líklega eitthvað sem þú vilt ekki.</translation>
 <translation id="5486326529110362464">Inntaksgildi einkalykils verður að vera til staðar.</translation>
+<translation id="5707185214361380026">Mistókst að hlaða viðbót frá:</translation>
 <translation id="5972529113578162692">Stjórnandi þessarar vélar krefst þess að <ph name="EXTENSION_NAME" /> sé uppsett. Ekki er hægt að fjarlægja hana.</translation>
 <translation id="6027032947578871493">Óþekkt vara <ph name="PRODUCT_ID" /> frá <ph name="VENDOR_NAME" /> (raðnúmer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> frá framleiðandanum <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Villa við að hlaða viðbót</translation>
 <translation id="6322279351188361895">Mistókst að lesa einkalykil.</translation>
 <translation id="6391538222494443604">Inntaksmappa verður að vera fyrir hendi.</translation>
 <translation id="641087317769093025">Ekki var hægt að afþjappa viðbót</translation>

@@ -154,7 +154,7 @@ if (enable_remoting_host) {
       "//remoting/codec:encoder",
       "//remoting/host:common",
       "//remoting/host:test_support",
-      "//remoting/protocol:protocol",
+      "//remoting/protocol",
       "//remoting/signaling:test_support",
       "//remoting/test:test_support",
       "//testing/gtest",

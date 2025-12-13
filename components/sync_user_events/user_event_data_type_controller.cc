@@ -48,4 +48,8 @@ void UserEventDataTypeController::OnStateChanged(syncer::SyncService* sync) {
   sync->DataTypePreconditionChanged(type());
 }
 
+void UserEventDataTypeController::OnSyncShutdown(syncer::SyncService* sync) {
+  // Nothing to be done, `this` will be destructed imminently.
+}
+
 }  // namespace syncer

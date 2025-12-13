@@ -13,6 +13,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/api/messaging/message.h"
+#include "extensions/common/api/messaging/messaging_util.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -86,6 +87,7 @@ void EmptySetter(v8::Local<v8::Name> name,
 }
 
 constexpr char kGetManifest[] = "runtime.getManifest";
+constexpr char kGetVersion[] = "runtime.getVersion";
 constexpr char kGetURL[] = "runtime.getURL";
 constexpr char kConnect[] = "runtime.connect";
 constexpr char kConnectNative[] = "runtime.connectNative";
@@ -195,7 +197,8 @@ RequestResult RuntimeHooksDelegate::GetURL(
   // as part of the path, there should be no way this could conceivably fail.
   DCHECK(url.is_valid());
 
-  if (WebAccessibleResourcesInfo::ShouldUseDynamicUrl(extension, url.path())) {
+  if (WebAccessibleResourcesInfo::ShouldUseDynamicUrl(extension,
+                                                      url.GetPath())) {
     GURL::Replacements replacements;
     replacements.SetHostStr(extension->guid());
     url = url.ReplaceComponents(replacements);
@@ -223,6 +226,7 @@ RequestResult RuntimeHooksDelegate::HandleRequest(
       {&RuntimeHooksDelegate::HandleConnect, kConnect},
       {&RuntimeHooksDelegate::HandleGetURL, kGetURL},
       {&RuntimeHooksDelegate::HandleGetManifest, kGetManifest},
+      {&RuntimeHooksDelegate::HandleGetVersion, kGetVersion},
       {&RuntimeHooksDelegate::HandleConnectNative, kConnectNative},
       {&RuntimeHooksDelegate::HandleSendNativeMessage, kSendNativeMessage},
       {&RuntimeHooksDelegate::HandleGetBackgroundPage, kGetBackgroundPage},
@@ -295,6 +299,20 @@ RequestResult RuntimeHooksDelegate::HandleGetManifest(
   return result;
 }
 
+RequestResult RuntimeHooksDelegate::HandleGetVersion(
+    ScriptContext* script_context,
+    const APISignature::V8ParseResult& parse_result) {
+  DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
+  CHECK(script_context->extension());
+
+  RequestResult result(RequestResult::HANDLED);
+  result.return_value = content::V8ValueConverter::Create()->ToV8Value(
+      script_context->extension()->VersionString(),
+      script_context->v8_context());
+
+  return result;
+}
+
 RequestResult RuntimeHooksDelegate::HandleGetURL(
     ScriptContext* script_context,
     const APISignature::V8ParseResult& parse_result) {
@@ -321,9 +339,12 @@ RequestResult RuntimeHooksDelegate::HandleSendMessage(
   v8::Local<v8::Context> v8_context = script_context->v8_context();
 
   v8::Local<v8::Value> v8_message = arguments[1];
+  mojom::ChannelType channel_type = mojom::ChannelType::kSendMessage;
   std::unique_ptr<Message> message = messaging_util::MessageFromV8(
       v8_context, v8_message,
-      messaging_util::GetSerializationFormat(*script_context), &error);
+      messaging_util::GetSerializationFormat(script_context->extension(),
+                                             channel_type),
+      &error);
   if (!message) {
     RequestResult result(RequestResult::INVALID_INVOCATION);
     result.error = std::move(error);
@@ -340,9 +361,8 @@ RequestResult RuntimeHooksDelegate::HandleSendMessage(
     response_callback = arguments[3].As<v8::Function>();
 
   v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
-      script_context, MessageTarget::ForExtension(target_id),
-      mojom::ChannelType::kSendMessage, *message, parse_result.async_type,
-      response_callback);
+      script_context, MessageTarget::ForExtension(target_id), channel_type,
+      *message, parse_result.async_type, response_callback);
   DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
             !promise.IsEmpty())
       << "SendOneTimeMessage should only return a Promise for promise based "
@@ -368,11 +388,12 @@ RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
   DCHECK(!v8_message.IsEmpty());
   std::string error;
 
-  // Native messaging always uses JSON since a native host doesn't understand
-  // structured cloning serialization.
-  std::unique_ptr<Message> message =
-      messaging_util::MessageFromV8(script_context->v8_context(), v8_message,
-                                    mojom::SerializationFormat::kJson, &error);
+  mojom::ChannelType channel_type = mojom::ChannelType::kNative;
+  std::unique_ptr<Message> message = messaging_util::MessageFromV8(
+      script_context->v8_context(), v8_message,
+      messaging_util::GetSerializationFormat(script_context->extension(),
+                                             channel_type),
+      &error);
   if (!message) {
     RequestResult result(RequestResult::INVALID_INVOCATION);
     result.error = std::move(error);
@@ -385,8 +406,7 @@ RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
 
   v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForNativeApp(application_name),
-      mojom::ChannelType::kNative, *message, parse_result.async_type,
-      response_callback);
+      channel_type, *message, parse_result.async_type, response_callback);
   DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
             !promise.IsEmpty())
       << "SendOneTimeMessage should only return a Promise for promise based "
@@ -426,7 +446,8 @@ RequestResult RuntimeHooksDelegate::HandleConnect(
   GinPort* port = messaging_service_->Connect(
       script_context, MessageTarget::ForExtension(target_id),
       options.channel_name,
-      messaging_util::GetSerializationFormat(*script_context));
+      messaging_util::GetSerializationFormat(script_context->extension(),
+                                             mojom::ChannelType::kConnect));
   DCHECK(port);
   DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
 
@@ -447,12 +468,11 @@ RequestResult RuntimeHooksDelegate::HandleConnectNative(
   std::string application_name =
       gin::V8ToString(script_context->isolate(), arguments[0]);
 
-  // Native messaging always uses JSON since a native host doesn't understand
-  // structured cloning serialization.
-  auto format = mojom::SerializationFormat::kJson;
   GinPort* port = messaging_service_->Connect(
       script_context, MessageTarget::ForNativeApp(application_name),
-      std::string(), format);
+      std::string(),
+      messaging_util::GetSerializationFormat(script_context->extension(),
+                                             mojom::ChannelType::kNative));
 
   RequestResult result(RequestResult::HANDLED);
   result.return_value =

@@ -11,6 +11,7 @@
 #include <optional>
 
 #include "base/component_export.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace webnn {
 
@@ -25,7 +26,7 @@ class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) ScopedTrace {
   // Create a ScopedTrace instance.
   //
   // Important note: Use literal strings only. See trace_event_common.h.
-  explicit ScopedTrace(const char* name);
+  explicit ScopedTrace(perfetto::StaticString name);
   ScopedTrace(ScopedTrace&& other);
   ScopedTrace& operator=(ScopedTrace&& other);
   ScopedTrace(const ScopedTrace&) = delete;
@@ -34,12 +35,14 @@ class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) ScopedTrace {
 
   // Starts a nested sub-trace in the current trace. The next AddStep() call
   // will mark the end of the previous sub-trace.
-  void AddStep(const char* step_name);
+  void AddStep(perfetto::StaticString step_name);
+
+  perfetto::Track track() const { return perfetto::Track(id_.value()); }
 
  private:
-  ScopedTrace(const char* name, uint64_t id);
+  ScopedTrace(perfetto::StaticString, uint64_t id);
 
-  const char* name_;
+  perfetto::StaticString name_;
 
   // The trace ID.
   //
@@ -53,7 +56,7 @@ class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) ScopedTrace {
   // An `std::nullopt` means that either the trace has been transferred to
   // another `ScopedTrace` object or there is no active sub-trace, and stops
   // `this`'s destruction from ending the sub-trace.
-  std::optional<const char*> step_name_;
+  std::optional<perfetto::StaticString> step_name_;
 };
 
 }  // namespace webnn

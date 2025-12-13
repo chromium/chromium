@@ -17,8 +17,8 @@ import org.chromium.components.tab_group_sync.EitherId.EitherTabId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /** Implementation of {@link MessagingBackendService} that connects to the native counterpart. */
@@ -65,19 +65,10 @@ import java.util.Set;
     }
 
     @Override
-    @SuppressWarnings("NullableOptional")
     public List<PersistentMessage> getMessagesForTab(
-            @Nullable EitherTabId tabId,
-            @Nullable Optional</* @PersistentNotificationType */ Integer> type) {
+            @Nullable EitherTabId tabId, @PersistentNotificationType int type) {
         if (mNativeMessagingBackendServiceBridge == 0) {
             return new ArrayList<>();
-        }
-
-        Integer type_int;
-        if (type == null || !type.isPresent()) {
-            type_int = PersistentNotificationType.UNDEFINED;
-        } else {
-            type_int = type.get();
         }
 
         int localTabId;
@@ -90,23 +81,14 @@ import java.util.Set;
 
         return MessagingBackendServiceBridgeJni.get()
                 .getMessagesForTab(
-                        mNativeMessagingBackendServiceBridge, localTabId, syncTabId, type_int);
+                        mNativeMessagingBackendServiceBridge, localTabId, syncTabId, type);
     }
 
     @Override
-    @SuppressWarnings("NullableOptional")
     public List<PersistentMessage> getMessagesForGroup(
-            @Nullable EitherGroupId groupId,
-            @Nullable Optional</* @PersistentNotificationType */ Integer> type) {
+            @Nullable EitherGroupId groupId, @PersistentNotificationType int type) {
         if (mNativeMessagingBackendServiceBridge == 0) {
             return new ArrayList<>();
-        }
-
-        Integer type_int;
-        if (type == null || !type.isPresent()) {
-            type_int = PersistentNotificationType.UNDEFINED;
-        } else {
-            type_int = type.get();
         }
 
         LocalTabGroupId localGroupId;
@@ -119,26 +101,17 @@ import java.util.Set;
 
         return MessagingBackendServiceBridgeJni.get()
                 .getMessagesForGroup(
-                        mNativeMessagingBackendServiceBridge, localGroupId, syncGroupId, type_int);
+                        mNativeMessagingBackendServiceBridge, localGroupId, syncGroupId, type);
     }
 
     @Override
-    @SuppressWarnings("NullableOptional")
-    public List<PersistentMessage> getMessages(
-            @Nullable Optional</* @PersistentNotificationType */ Integer> type) {
+    public List<PersistentMessage> getMessages(@PersistentNotificationType int type) {
         if (mNativeMessagingBackendServiceBridge == 0) {
-            return new ArrayList<>();
-        }
-
-        Integer type_int;
-        if (type == null || !type.isPresent()) {
-            type_int = PersistentNotificationType.UNDEFINED;
-        } else {
-            type_int = type.get();
+            return Collections.emptyList();
         }
 
         return MessagingBackendServiceBridgeJni.get()
-                .getMessages(mNativeMessagingBackendServiceBridge, type_int);
+                .getMessages(mNativeMessagingBackendServiceBridge, type);
     }
 
     @Override
@@ -163,18 +136,9 @@ import java.util.Set;
     }
 
     @Override
-    @SuppressWarnings("NullableOptional")
-    public void clearPersistentMessage(
-            String messageId, @Nullable Optional</* @PersistentNotificationType */ Integer> type) {
-        Integer type_int;
-        if (type == null || !type.isPresent()) {
-            type_int = PersistentNotificationType.UNDEFINED;
-        } else {
-            type_int = type.get();
-        }
-
+    public void clearPersistentMessage(String messageId, @PersistentNotificationType int type) {
         MessagingBackendServiceBridgeJni.get()
-                .clearPersistentMessage(mNativeMessagingBackendServiceBridge, messageId, type_int);
+                .clearPersistentMessage(mNativeMessagingBackendServiceBridge, messageId, type);
     }
 
     @CalledByNative

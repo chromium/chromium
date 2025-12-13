@@ -1177,10 +1177,12 @@ TEST_F(SSLConnectJobTest, TrustAnchorIDs) {
     socket_factory_.AddSocketDataProvider(&data);
     SSLSocketDataProvider ssl(ASYNC, OK);
     // Trust Anchor IDs should be passed if and only if the feature is enabled.
-    ssl.expected_trust_anchor_ids =
-        trust_anchor_ids_enabled
-            ? std::vector<uint8_t>({0x03, 0x01, 0x02, 0x03, 0x02, 0x04, 0x04})
-            : std::vector<uint8_t>{};
+    if (trust_anchor_ids_enabled) {
+      ssl.expected_trust_anchor_ids =
+          std::vector<uint8_t>{0x03, 0x01, 0x02, 0x03, 0x02, 0x04, 0x04};
+    } else {
+      ssl.expect_no_trust_anchor_ids = true;
+    }
     socket_factory_.AddSSLSocketDataProvider(&ssl);
 
     base::HistogramTester histogram_tester;
@@ -1195,7 +1197,7 @@ TEST_F(SSLConnectJobTest, TrustAnchorIDs) {
         "Net.SSL_Connection_Latency_TrustAnchorIDs", 1);
     histogram_tester.ExpectUniqueSample(
         "Net.SSL.TrustAnchorIDsResult",
-        SSLClientSocket::TrustAnchorIDsResult::kSuccessInitial, 1);
+        SSLClientSocket::TrustAnchorIDsResult::kDnsSuccessInitial, 1);
   }
 }
 
@@ -1259,7 +1261,7 @@ TEST_F(SSLConnectJobTest, TrustAnchorIDsRetry) {
                                     1);
   histogram_tester.ExpectUniqueSample(
       "Net.SSL.TrustAnchorIDsResult",
-      SSLClientSocket::TrustAnchorIDsResult::kSuccessRetry, 1);
+      SSLClientSocket::TrustAnchorIDsResult::kDnsSuccessRetry, 1);
 }
 
 // Test that when `SSLConnectJob` sends Trust Anchor IDs and the connection
@@ -1309,7 +1311,7 @@ TEST_F(SSLConnectJobTest, NoRetryIfNoServerTrustAnchorIDs) {
                                       std::abs(ERR_CERT_AUTHORITY_INVALID), 1);
   histogram_tester.ExpectUniqueSample(
       "Net.SSL.TrustAnchorIDsResult",
-      SSLClientSocket::TrustAnchorIDsResult::kErrorInitial, 1);
+      SSLClientSocket::TrustAnchorIDsResult::kDnsErrorInitial, 1);
 }
 
 // Test that when `SSLConnectJob` sends Trust Anchor IDs and the connection
@@ -1361,7 +1363,7 @@ TEST_F(SSLConnectJobTest, NoRetryIfNoIntersectionWithServerTrustAnchorIDs) {
                                       std::abs(ERR_CERT_AUTHORITY_INVALID), 1);
   histogram_tester.ExpectUniqueSample(
       "Net.SSL.TrustAnchorIDsResult",
-      SSLClientSocket::TrustAnchorIDsResult::kErrorInitial, 1);
+      SSLClientSocket::TrustAnchorIDsResult::kDnsErrorInitial, 1);
 }
 
 // Test that when `SSLConnectJob` sends Trust Anchor IDs and the connection
@@ -1407,7 +1409,7 @@ TEST_F(SSLConnectJobTest, NoRetryIfNotCertificateError) {
                                       1);
   histogram_tester.ExpectUniqueSample(
       "Net.SSL.TrustAnchorIDsResult",
-      SSLClientSocket::TrustAnchorIDsResult::kErrorInitial, 1);
+      SSLClientSocket::TrustAnchorIDsResult::kDnsErrorInitial, 1);
 }
 
 // Test that `SSLConnectJob` does not retry more than once even if the server
@@ -1473,7 +1475,7 @@ TEST_F(SSLConnectJobTest, TrustAnchorIDsRetryOnlyOnce) {
                                       std::abs(ERR_CERT_AUTHORITY_INVALID), 1);
   histogram_tester.ExpectUniqueSample(
       "Net.SSL.TrustAnchorIDsResult",
-      SSLClientSocket::TrustAnchorIDsResult::kErrorRetry, 1);
+      SSLClientSocket::TrustAnchorIDsResult::kDnsErrorRetry, 1);
 }
 
 // Tests that when `SSLConnectJob` retries due to an error after sending Trust
@@ -1533,6 +1535,66 @@ TEST_F(SSLConnectJobTest, TrustAnchorIDsRetryUsesSameEndpoint) {
   EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
 }
 
+// Tests that `SSLConnectJob` continues to send the trust anchors extension,
+// and handle retries, even if there were no IDs in the service endpoint.
+TEST_F(SSLConnectJobTest, TrustAnchorIDsNoDnsThenRetry) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTLSTrustAnchorIDs);
+
+  SSLContextConfig config;
+  config.trust_anchor_ids = {{0x01, 0x02, 0x03}, {0x02, 0x02}, {0x04, 0x04}};
+  ssl_config_service_->UpdateSSLConfigAndNotify(config);
+
+  HostResolverEndpointResult endpoint;
+  endpoint.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
+  host_resolver_.rules()->AddRule(
+      "host",
+      MockHostResolverBase::RuleResolver::RuleResult(std::vector{endpoint}));
+
+  StaticSocketDataProvider data1;
+  data1.set_expected_addresses(AddressList(endpoint.ip_endpoints));
+  data1.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data1);
+  // The service endpoint had no trust anchor hints, but the first connection
+  // attempt should still send an empty trust anchor ID extension. Configure it
+  // to fail with a certificate error, simulating the server's default
+  // certificate being unacceptable.
+  SSLSocketDataProvider ssl_fail(ASYNC, ERR_CERT_INVALID);
+  ssl_fail.expected_trust_anchor_ids = std::vector<uint8_t>();
+  // Simulate the server having non-default certificates available, which would
+  // be acceptable.
+  ssl_fail.server_trust_anchor_ids_for_retry =
+      std::vector<std::vector<uint8_t>>({{0x02, 0x02}, {0x05, 0x6}});
+  socket_factory_.AddSSLSocketDataProvider(&ssl_fail);
+  // The second connection attempt should now request a trust anchor ID.
+  // Configure it to now succeed, simulating the server sending an acceptable
+  // non-default certificate.
+  StaticSocketDataProvider data2;
+  data2.set_expected_addresses(AddressList(endpoint.ip_endpoints));
+  data2.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory_.AddSocketDataProvider(&data2);
+  SSLSocketDataProvider ssl_success(ASYNC, OK);
+  ssl_success.expected_trust_anchor_ids =
+      std::vector<uint8_t>({0x02, 0x02, 0x02});
+  socket_factory_.AddSSLSocketDataProvider(&ssl_success);
+
+  base::HistogramTester histogram_tester;
+  TestConnectJobDelegate test_delegate;
+  std::unique_ptr<ConnectJob> ssl_connect_job =
+      CreateConnectJob(&test_delegate, ProxyChain::Direct(), MEDIUM);
+  EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
+  // These metrics are only recorded when there is a DNS hint.
+  histogram_tester.ExpectTotalCount("Net.SSL_Connection_Error_TrustAnchorIDs",
+                                    0);
+  histogram_tester.ExpectTotalCount("Net.SSL_Connection_Latency_TrustAnchorIDs",
+                                    0);
+  // But even without a DNS hint, we record the result of a retry.
+  histogram_tester.ExpectUniqueSample(
+      "Net.SSL.TrustAnchorIDsResult",
+      SSLClientSocket::TrustAnchorIDsResult::kNoDnsSuccessRetry, 1);
+}
+
 // Test that `SSLConnectJob` passes the ECHConfigList from DNS to
 // `SSLClientSocket`.
 TEST_F(SSLConnectJobTest, EncryptedClientHello) {
@@ -1586,10 +1648,6 @@ TEST_F(SSLConnectJobTest, EncryptedClientHello) {
     EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
     EXPECT_THAT(test_delegate.WaitForResult(), test::IsOk());
 
-    // Whether or not the feature is enabled, we should record data for the
-    // ECH-capable server.
-    histogram_tester.ExpectUniqueSample("Net.SSL_Connection_Error_ECH", OK, 1);
-    histogram_tester.ExpectTotalCount("Net.SSL_Connection_Latency_ECH", 1);
     // The ECH result should only be recorded if ECH was actually enabled.
     if (ech_enabled) {
       histogram_tester.ExpectUniqueSample("Net.SSL.ECHResult",

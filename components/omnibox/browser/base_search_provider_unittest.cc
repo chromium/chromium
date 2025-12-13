@@ -16,7 +16,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
-#include "components/omnibox/browser/actions/omnibox_answer_action.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
@@ -206,10 +205,6 @@ TEST_F(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
 }
 
 TEST_F(BaseSearchProviderTest, PreserveImageWhenDeduplicating) {
-  // Ensure categorical suggestions are enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kCategoricalSuggestions);
-
   TemplateURLData data;
   data.SetURL("http://foo.com/url?bar={searchTerms}");
   auto template_url = std::make_unique<TemplateURL>(data);
@@ -296,10 +291,6 @@ TEST_F(BaseSearchProviderTest, PreserveImageWhenDeduplicating) {
 }
 
 TEST_F(BaseSearchProviderTest, PreserveSubtypesWhenDeduplicating) {
-  // Ensure categorical suggestions are enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({omnibox::kCategoricalSuggestions}, {});
-
   TemplateURLData data;
   data.SetURL("http://foo.com/url?bar={searchTerms}");
   auto template_url = std::make_unique<TemplateURL>(data);
@@ -649,7 +640,7 @@ TEST_P(BaseSearchProviderOnDeviceSuggestionTest,
 }
 
 TEST_F(BaseSearchProviderTest, CreateActionInSuggest_BuildActionURL) {
-  using omnibox::ActionInfo;
+  using TemplateAction = omnibox::SuggestTemplateInfo::TemplateAction;
   // Correlation between ActionType and UMA-recorded bucket.
   struct {
     const char* test_name;
@@ -665,12 +656,12 @@ TEST_F(BaseSearchProviderTest, CreateActionInSuggest_BuildActionURL) {
     // Cases explicitly not meant to produce any changes.
     { "no change: no supplied url, no search params",
       "https://www.google.com",
-      // ActionInfo action_uri and search_params:
+      // TemplateAction action_uri and search_params:
       "", {}, {}},
 
     { "no change: supplied url, no search params",
       "https://www.google.com",
-      // ActionInfo action_uri and search_params:
+      // TemplateAction action_uri and search_params:
       "https://maps.google.com", {}, {}},
 
     // Cases meant to generate new URL:
@@ -678,22 +669,22 @@ TEST_F(BaseSearchProviderTest, CreateActionInSuggest_BuildActionURL) {
     // - search_params have to be non-empty.
     { "generate: single query param",
       "https://g.co",
-      // ActionInfo action_uri and search_params:
+      // TemplateAction action_uri and search_params:
       "", {{"a", "3"}}, {"a=3"}},
 
     { "generate: multiple query params",
       "https://g.co:119/search?q=a#f",
-      // ActionInfo action_uri and search_params:
+      // TemplateAction action_uri and search_params:
       "", {{"a", "3"}, {"A", "7"}},
         {"A=7&a=3", "a=3&A=7"}},
       // clang-format on
   };
 
   for (const auto& test_case : test_cases) {
-    ActionInfo action_info;
-    action_info.set_action_uri(test_case.action_url);
+    TemplateAction template_action;
+    template_action.set_action_uri(test_case.action_url);
     for (const auto& param : test_case.search_params) {
-      action_info.mutable_search_parameters()->insert(
+      template_action.mutable_search_parameters()->insert(
           {param.first, param.second});
     }
 
@@ -705,7 +696,7 @@ TEST_F(BaseSearchProviderTest, CreateActionInSuggest_BuildActionURL) {
     auto template_url = std::make_unique<TemplateURL>(template_url_data);
 
     auto action = BaseSearchProvider::CreateActionInSuggest(
-        std::move(action_info), template_url->url_ref(), search_terms_args,
+        std::move(template_action), template_url->url_ref(), search_terms_args,
         search_terms_data);
 
     auto* action_in_suggest = OmniboxActionInSuggest::FromAction(action.get());
@@ -729,58 +720,7 @@ TEST_F(BaseSearchProviderTest, CreateActionInSuggest_BuildActionURL) {
   }
 }
 
-TEST_F(BaseSearchProviderTest, CreateAnswerAction) {
-  struct {
-    std::string query;
-    std::vector<std::pair<std::string, std::string>> query_cgi_params;
-    std::vector<std::string> possible_param_variations;
-  } test_cases[]{
-      // No additional params.
-      {/*query=*/"Alphabet Inc Class C compare", /*query_cgi_params=*/{},
-       /*possible_param_variations=*/{}},
-      // One additional param.
-      {/*query=*/"Alphabet Inc Class C financials",
-       /*query_cgi_params=*/{{"name", "value"}},
-       /*possible_param_variations=*/{"name=value"}},
-      // Multiple additional params.
-      {/*query=*/"About Alphabet Inc Class C",
-       /*query_cgi_params=*/{{"name1", "value1"}, {"name2", "value2"}},
-       /*possible_param_variations=*/
-       {"name1=value1&name2=value2", "name2=value2&name1=value1"}},
-  };
-  omnibox::RichAnswerTemplate answer_template;
-  for (const auto& test_case : test_cases) {
-    omnibox::SuggestionEnhancement* enhancement =
-        answer_template.mutable_enhancements()->add_enhancements();
-    enhancement->set_query(test_case.query);
-    for (const auto& param : test_case.query_cgi_params) {
-      enhancement->mutable_query_cgi_params()->insert(
-          {param.first, param.second});
-    }
-    TemplateURLRef::SearchTermsArgs search_terms_args;
-    SearchTermsData search_terms_data;
-    TemplateURLData template_url_data;
-    template_url_data.SetURL("https://www.google.com/search?q={searchTerms}");
-    auto template_url = std::make_unique<TemplateURL>(template_url_data);
 
-    auto action = BaseSearchProvider::CreateAnswerAction(
-        std::move(*enhancement), search_terms_args,
-        omnibox::ANSWER_TYPE_FINANCE);
-
-    auto* answer_action = OmniboxAnswerAction::FromAction(action.get());
-    // Ensure search terms additional params match. Checking the exact value is
-    // not easily possible as param order is not guaranteed.
-    bool found_matching_param_sequence =
-        test_case.possible_param_variations.empty();
-    for (const std::string& param_sequence :
-         test_case.possible_param_variations) {
-      found_matching_param_sequence |=
-          answer_action->search_terms_args.additional_query_params ==
-          param_sequence;
-    }
-    EXPECT_TRUE(found_matching_param_sequence);
-  }
-}
 
 TEST_F(BaseSearchProviderTest, SuggestTemplateInfoPopulatesMatch) {
   TemplateURLData data;

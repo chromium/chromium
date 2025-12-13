@@ -10,10 +10,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.browser_ui.widget.FadingShadow;
@@ -70,8 +72,8 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
     private final ViewGroup mView;
     private final DownloadHomeToolbar mToolbar;
     private final FadingShadowView mShadow;
-    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     private boolean mShowToolbarShadow;
 
@@ -95,8 +97,7 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
             ToolbarListActionDelegate listActionDelegate,
             View listContentView,
             SelectionDelegate<ListItem> selectionDelegate,
-            boolean hasCloseButton,
-            boolean autoFocusSearchBox,
+            DownloadManagerUiConfig config,
             Tracker tracker) {
         mDelegate = delegate;
         mListActionDelegate = listActionDelegate;
@@ -112,15 +113,15 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
                 R.string.menu_downloads,
                 R.id.normal_menu_group,
                 R.id.selection_mode_menu_group,
-                hasCloseButton);
+                config.isSeparateActivity);
         mToolbar.setOnMenuItemClickListener(this::onMenuItemClick);
         mToolbar.setFocusable(true);
         mToolbar.setListContentView(listContentView);
-        if (autoFocusSearchBox) {
-            // Request focus for the toolbar by default attach state listener
-            mView.addOnAttachStateChangeListener(new FocusListener());
+
+        if (config.inlineSearchBar) {
+            mToolbar.removeMenuItem(R.id.search_menu_id);
         }
-        // TODO(crbug.com/41412009): Pass the visible group to the toolbar during initialization.
+
         mToolbar.initializeSearchView(
                 mSearchDelegate, R.string.download_manager_search, R.id.search_menu_id);
 
@@ -128,7 +129,7 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
 
         mShadow.init(context.getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_TOP);
 
-        if (!hasCloseButton) mToolbar.removeMenuItem(R.id.close_menu_id);
+        if (!config.isSeparateActivity) mToolbar.removeMenuItem(R.id.close_menu_id);
         mBackPressStateSupplier.set(mToolbar.isSearching());
         mToolbar.isSearchingSupplier().addObserver(mBackPressStateSupplier::set);
     }
@@ -184,7 +185,7 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mBackPressStateSupplier;
     }
 
@@ -214,21 +215,6 @@ public class ToolbarCoordinator implements SelectionObserver<ListItem>, BackPres
         } else {
             return false;
         }
-    }
-
-    /**
-     * A listener in download page that focuses the search view when the toolbar is first attached
-     * to the window, then removes itself.
-     */
-    private class FocusListener implements View.OnAttachStateChangeListener {
-        @Override
-        public void onViewAttachedToWindow(View v) {
-            mToolbar.showSearchView(true);
-            v.removeOnAttachStateChangeListener(this);
-        }
-
-        @Override
-        public void onViewDetachedFromWindow(View v) {}
     }
 
     // TODO(shaktisahu): May be merge toolbar shadow logic into the toolbar itself.

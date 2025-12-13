@@ -19,7 +19,7 @@
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/aura/window.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/accessibility/views_utilities_aura.h"
 #include "ui/views/view.h"
 #include "ui/views/views_delegate.h"

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.ui.hierarchicalmenu.MenuItemWithSubmenuView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/listChoiceBackgroundIndicator"
+    style="@style/ListMenuItemStyle" >
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/menu_item_icon"
+        android:duplicateParentState="true"
+        android:importantForAccessibility="no"
+        android:visibility="gone"
+        style="@style/ListMenuItemIconStyle.Start" />
+
+    <TextView
+        android:id="@+id/menu_row_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        style="@style/TextAppearance.DensityAdaptive.ListMenuItem" />
+
+    <ImageView
+        android:id="@+id/submenu_arrow"
+        android:src="@drawable/outline_chevron_right_24dp"
+        android:importantForAccessibility="no"
+        android:layout_width="?attr/listItemIconSize"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:background="@android:color/transparent" />
+</org.chromium.ui.hierarchicalmenu.MenuItemWithSubmenuView>

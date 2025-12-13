@@ -22,6 +22,7 @@ bool IsRestrictAccountsToPatternsEnabled() {
 }
 
 std::optional<BOOL> IsIdentityManaged(id<SystemIdentity> identity) {
+  CHECK(identity, base::NotFatalUntil::M147);
   SystemIdentityManager* system_identity_manager =
       GetApplicationContext()->GetSystemIdentityManager();
   NSString* hosted_domain =

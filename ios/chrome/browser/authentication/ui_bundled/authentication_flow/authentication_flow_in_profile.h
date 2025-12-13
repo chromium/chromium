@@ -25,7 +25,7 @@ enum class AccessPoint;
 @interface AuthenticationFlowInProfile : NSObject
 
 // Designated initializer.
-// `browser` is the browser of the current profile.
+// `browser` is the regular browser of the current profile.
 // `identity` to sign in. This identity must be assigned the current profile.
 // `precedingHistorySync` specifies whether the History Sync Opt-In screen
 //   follows after authentication flow completes with success.

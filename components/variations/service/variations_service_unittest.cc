@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/version_info/version_info.h"
+#include "components/variations/service/variations_service.h"
 
 #include <stddef.h>
 
@@ -22,9 +22,11 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "base/version_info/version_info.h"
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/client_info.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -35,7 +37,6 @@
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/scoped_variations_ids_provider.h"
-#include "components/variations/service/variations_service.h"
 #include "components/variations/variations_seed_simulator.h"
 #include "components/variations/variations_switches.h"
 #include "components/version_info/channel.h"
@@ -93,8 +94,9 @@ class TestVariationsServiceClient : public VariationsServiceClient {
     return nullptr;
   }
   bool OverridesRestrictParameter(std::string* parameter) override {
-    if (restrict_parameter_.empty())
+    if (restrict_parameter_.empty()) {
       return false;
+    }
     *parameter = restrict_parameter_;
     return true;
   }
@@ -323,9 +325,8 @@ class VariationsServiceTest : public ::testing::Test {
       : network_tracker_(network::TestNetworkConnectionTracker::GetInstance()),
         enabled_state_provider_(
             new metrics::TestEnabledStateProvider(false, false)) {
-    metrics::CleanExitBeacon::RegisterPrefs(prefs_.registry());
-    VariationsService::RegisterPrefs(prefs_.registry());
     metrics::MetricsStateManager::RegisterPrefs(prefs_.registry());
+    VariationsService::RegisterPrefs(prefs_.registry());
   }
 
   VariationsServiceTest(const VariationsServiceTest&) = delete;
@@ -349,7 +350,7 @@ class VariationsServiceTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<metrics::TestEnabledStateProvider> enabled_state_provider_;
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
@@ -422,9 +423,13 @@ TEST_F(VariationsServiceTest, VariationsURLHasParams) {
   raw_client->set_channel(version_info::Channel::UNKNOWN);
   GURL url = service.GetVariationsServerURL(TestVariationsService::USE_HTTPS);
 
-  std::string value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "osname", &value));
-  EXPECT_FALSE(value.empty());
+  // Corpus param should not be present by default.
+  std::string corpus;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(url, "corpus", &corpus));
+
+  std::string osname;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "osname", &osname));
+  EXPECT_FALSE(osname.empty());
 
   std::string milestone;
   EXPECT_TRUE(net::GetValueForKeyInQuery(url, "milestone", &milestone));
@@ -439,6 +444,14 @@ TEST_F(VariationsServiceTest, VariationsURLHasParams) {
   url = service.GetVariationsServerURL(TestVariationsService::USE_HTTPS);
   EXPECT_TRUE(net::GetValueForKeyInQuery(url, "channel", &channel));
   EXPECT_FALSE(channel.empty());
+
+  // Corpus param should be present if set via command line.
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      variations::switches::kVariationsSeedCorpus, "test_corpus");
+  url = service.GetVariationsServerURL(TestVariationsService::USE_HTTPS);
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "corpus", &corpus));
+  EXPECT_EQ(corpus, "test_corpus");
 }
 
 TEST_F(VariationsServiceTest, RequestsInitiallyNotAllowed) {

@@ -92,15 +92,6 @@ bool IOSChromeSyncClient::IsCustomPassphraseAllowed() {
   return true;
 }
 
-bool IOSChromeSyncClient::IsPasswordSyncAllowed() {
-  return true;
-}
-
-void IOSChromeSyncClient::SetPasswordSyncAllowedChangeCb(
-    const base::RepeatingClosure& cb) {
-  // IsPasswordSyncAllowed() doesn't change on //ios/chrome.
-}
-
 void IOSChromeSyncClient::RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
     const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group) {
   CHECK(group.is_valid());

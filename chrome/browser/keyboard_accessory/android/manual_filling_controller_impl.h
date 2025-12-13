@@ -11,14 +11,13 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/trace_event/memory_dump_provider.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace autofill {
@@ -32,8 +31,7 @@ class PasswordAccessoryController;
 // Use ManualFillingController::GetOrCreate to obtain instances of this class.
 class ManualFillingControllerImpl
     : public ManualFillingController,
-      public content::WebContentsUserData<ManualFillingControllerImpl>,
-      public base::trace_event::MemoryDumpProvider {
+      public content::WebContentsUserData<ManualFillingControllerImpl> {
  public:
   ManualFillingControllerImpl(const ManualFillingControllerImpl&) = delete;
   ManualFillingControllerImpl& operator=(const ManualFillingControllerImpl&) =
@@ -121,13 +119,9 @@ class ManualFillingControllerImpl
   // dependencies are not `nullptr`.
   void InitializePlusProfilesCache();
 
-  // MemoryDumpProvider:
-  bool OnMemoryDump(
-      const base::trace_event::MemoryDumpArgs& args,
-      base::trace_event::ProcessMemoryDump* process_memory_dump) override;
-
-  // Returns true if the keyboard accessory needs to be shown.
-  bool ShouldShowAccessory() const;
+  // Returns true if the keyboard accessory needs to be shown for last focused
+  // field type..
+  bool ShouldShowAccessoryForLastFocusedFieldType() const;
 
   // Adjusts visibility based on focused field type and available suggestions.
   void UpdateVisibility();

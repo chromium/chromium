@@ -46,7 +46,8 @@ std::string ReadAppLocale() {
     return std::string();
   }
 
-  std::optional<base::Value> settings = base::JSONReader::Read(input);
+  std::optional<base::Value> settings =
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!settings.has_value()) {
     return std::string();
   }

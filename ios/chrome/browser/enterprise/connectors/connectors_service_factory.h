@@ -22,9 +22,9 @@ class ConnectorsServiceFactory : public ProfileKeyedServiceFactoryIOS {
   ConnectorsServiceFactory();
   ~ConnectorsServiceFactory() override;
 
-  // ProfileKeyedServiceFactoryIOS:
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* browser_state) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace enterprise_connectors

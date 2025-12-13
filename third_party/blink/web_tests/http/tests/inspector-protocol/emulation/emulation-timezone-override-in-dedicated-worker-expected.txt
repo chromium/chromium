@@ -1,0 +1,20 @@
+Tests that Emulation.setTimezoneOverride works when sent to a dedicated worker target.
+
+Set timezone to Asia/Shanghai in dedicated worker
+Detected main page timezone: Asia/Shanghai
+Detected dedicated worker timezone: Asia/Shanghai
+
+Tried to set override from main page
+Timezone override is already in effect
+
+Overwrite timezone with Europe/Paris in dedicated worker
+Detected main page timezone: Europe/Paris
+Detected dedicated worker timezone: Europe/Paris
+
+Reset timezone to default in dedicated worker
+Timezone correctly reset to initial value: true
+
+Set timezone to Europe/Moscow in main page after dedicated worker reset
+Detected main page timezone: Europe/Moscow
+Detected dedicated worker timezone: Europe/Moscow
+

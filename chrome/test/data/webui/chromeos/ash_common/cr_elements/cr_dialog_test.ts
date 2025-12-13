@@ -405,6 +405,8 @@ suite('cr-dialog', function() {
           observer.disconnect();
           done();
           break;
+        default:
+          assertNotReached();
       }
     });
     observer.observe(topShadow, {attributes: true});

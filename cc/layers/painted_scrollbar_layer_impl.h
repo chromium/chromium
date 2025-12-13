@@ -52,8 +52,8 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
   void SetSupportsDragSnapBack(bool supports_drag_snap_back);
   void SetBackButtonRect(gfx::Rect back_button_rect);
   void SetForwardButtonRect(gfx::Rect forward_button_rect);
-  void SetThumbThickness(int thumb_thickness);
-  void SetThumbLength(int thumb_length);
+  void SetThumbThickness(int32_t thumb_thickness);
+  void SetMinimumThumbLength(int32_t minimum_thumb_length);
   void SetTrackRect(gfx::Rect track_rect);
   void SetScrollbarPaintedOpacity(float opacity);
   void SetThumbColor(SkColor4f thumb_color);
@@ -79,8 +79,8 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
 
   bool jump_on_track_click() const { return jump_on_track_click_; }
   bool supports_drag_snap_back() const { return supports_drag_snap_back_; }
-  int thumb_thickness() const { return thumb_thickness_; }
-  int thumb_length() const { return thumb_length_; }
+  int32_t thumb_thickness() const { return thumb_thickness_; }
+  int32_t minimum_thumb_length() const { return minimum_thumb_length_; }
   gfx::Rect back_button_rect() const { return back_button_rect_; }
   gfx::Rect forward_button_rect() const { return forward_button_rect_; }
   gfx::Rect track_rect() const { return track_rect_; }
@@ -111,7 +111,7 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
   gfx::Rect ForwardButtonRect() const override;
   gfx::Rect BackTrackRect() const override;
   gfx::Rect ForwardTrackRect() const override;
-  int ThumbThickness() const override;
+  int32_t ThumbThickness() const override;
 
   LayerTreeSettings::ScrollbarAnimator GetScrollbarAnimator() const override;
 
@@ -123,9 +123,9 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
                             bool is_overlay);
 
   // ScrollbarLayerImplBase implementation.
-  int ThumbLength() const override;
+  int32_t MinimumThumbLength() const override;
   float TrackLength() const override;
-  int TrackStart() const override;
+  int32_t TrackStart() const override;
   bool IsThumbResizable() const override;
 
  private:
@@ -155,8 +155,8 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
 
   bool jump_on_track_click_ = false;
   bool supports_drag_snap_back_ = false;
-  int thumb_thickness_ = 0;
-  int thumb_length_ = 0;
+  int32_t thumb_thickness_ = 0;
+  int32_t minimum_thumb_length_ = 0;
   gfx::Rect back_button_rect_;
   gfx::Rect forward_button_rect_;
   gfx::Rect track_rect_;

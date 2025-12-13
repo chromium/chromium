@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_INDEXED_RULESET_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_INDEXED_RULESET_H_
 
@@ -86,7 +81,8 @@ class RulesetIndexer {
   // Returns a pointer to the buffer containing the serialized flat data
   // structures. Should only be called after Finish().
   base::span<const uint8_t> data() const LIFETIME_BOUND {
-    return base::span(builder_.GetBufferPointer(), builder_.GetSize());
+    return UNSAFE_TODO(
+        base::span(builder_.GetBufferPointer(), builder_.GetSize()));
   }
 
  private:

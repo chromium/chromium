@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_SYNTHESIS_H_
 
 #include "third_party/blink/public/mojom/speech/speech_synthesis.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_speech_synthesis_error_code.h"
 #include "third_party/blink/renderer/core/speech/speech_synthesis_base.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -122,7 +123,7 @@ class MODULES_EXPORT SpeechSynthesis final
 
   void FireErrorEvent(SpeechSynthesisUtterance*,
                       uint32_t char_index,
-                      const String& error);
+                      V8SpeechSynthesisErrorCode::Enum error);
 
   // Returns the utterance at the front of the queue.
   SpeechSynthesisUtterance* CurrentSpeechUtterance() const;
@@ -132,8 +133,6 @@ class MODULES_EXPORT SpeechSynthesis final
   bool GetElapsedTimeMillis(double* millis);
 
   bool IsAllowedToStartByAutoplay() const;
-
-  void RecordVoicesForIdentifiability() const;
 
   void SetMojomSynthesisForTesting(
       mojo::PendingRemote<mojom::blink::SpeechSynthesis>);

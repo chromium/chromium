@@ -27,8 +27,8 @@ from build import (CheckoutGitRepo, DownloadAndUnpack, LLVM_BUILD_TOOLS_DIR,
 from update import (RmTree)
 
 # The git hash to use.  See https://github.com/rust-lang/rust-bindgen/tags.
-# The current hash below corresponds to version 0.72.0
-BINDGEN_GIT_VERSION = 'd0e7d6b5b763e93dd38f9ece05230979ede95a0a'
+# The current hash below corresponds to something between 0.72.0 and 0.73.0.
+BINDGEN_GIT_VERSION = '2426dd68cd12e0ac022bca18efb9c7d0acd27e12'
 BINDGEN_GIT_REPO = ('https://chromium.googlesource.com/external/' +
                     'github.com/rust-lang/rust-bindgen')
 
@@ -44,25 +44,18 @@ BINDGEN_CROSS_TARGET_BUILD_DIR = os.path.join(THIRD_PARTY_DIR,
 NCURSESW_CIPD_LINUX_AMD_PATH = 'infra/3pp/static_libs/ncursesw/linux-amd64'
 NCURSESW_CIPD_LINUX_AMD_VERSION = '6.0.chromium.1'
 
-RUST_BETA_SYSROOT_DIR = os.path.join(THIRD_PARTY_DIR,
-                                     'rust-toolchain-intermediate',
-                                     'beta-sysroot')
-
 EXE = '.exe' if sys.platform == 'win32' else ''
 
-
-def InstallRustBetaSysroot(rust_git_hash, target_triples):
-    if os.path.exists(RUST_BETA_SYSROOT_DIR):
-        RmTree(RUST_BETA_SYSROOT_DIR)
-    InstallBetaPackage(FetchBetaPackage('cargo', rust_git_hash),
-                       RUST_BETA_SYSROOT_DIR)
-    InstallBetaPackage(FetchBetaPackage('rustc', rust_git_hash),
-                       RUST_BETA_SYSROOT_DIR)
-    for t in target_triples:
-        InstallBetaPackage(
-            FetchBetaPackage('rust-std', rust_git_hash, triple=t),
-            RUST_BETA_SYSROOT_DIR)
-
+# TODO(crbug.com/440975178) Not all tests pass.
+EXCLUDED_TESTS = [
+    'emit_depfile',
+    'header_allowlist_file_hpp',
+    'header_blocklist_file_hpp',
+    'header_constified_enum_module_overflow_hpp',
+    'header_issue_544_stylo_creduce_2_hpp',
+    'header_nsbasehashtable_hpp',
+    'header_typedef_pointer_overlap_h'
+]
 
 def FetchNcurseswLibrary():
     assert sys.platform.startswith('linux')
@@ -83,8 +76,8 @@ def RunCargo(cargo_args):
     wouldn't work on the toolchain bots.
 
     Note that some environment variables populated below are not necessary for
-    all users of this function (e.g. `build_vet.py` doesn't need clang/llvm
-    parts).  That's a bit icky, but ultimately okay.
+    all potential users of this function (e.g. `build_vet.py` didn't need
+    clang/llvm parts).  That's a bit icky, but ultimately okay.
     """
     ncursesw_dir = None
     if sys.platform.startswith('linux'):
@@ -181,6 +174,9 @@ def main():
         '--skip-checkout',
         action='store_true',
         help='skip downloading the git repo. Useful for trying local changes')
+    parser.add_argument('--skip-test',
+                        action='store_true',
+                        help='skip running tests')
     args, rest = parser.parse_known_args()
 
     if not args.skip_checkout:
@@ -229,6 +225,14 @@ def main():
                 shutil.copy(os.path.join(llvm_dir, 'lib', filename),
                             os.path.join(install_dir, 'lib'),
                             follow_symlinks=False)
+
+    if not args.skip_test:
+        test_args = ['test', '--lib', '--bins', '--tests', '--']
+        for excluded in EXCLUDED_TESTS:
+            test_args.append('--skip')
+            test_args.append(excluded)
+        RunCargo(test_args)
+
     return 0
 
 

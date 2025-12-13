@@ -13,7 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace base {
 class SingleThreadTaskRunner;

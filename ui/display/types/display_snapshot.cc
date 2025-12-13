@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 
 namespace display {
 
@@ -155,8 +156,8 @@ std::string DisplaySnapshot::ToString() const {
 }
 
 // static
-gfx::BufferFormat DisplaySnapshot::PrimaryFormat() {
-  return gfx::BufferFormat::BGRA_8888;
+viz::SharedImageFormat DisplaySnapshot::PrimaryFormat() {
+  return viz::SinglePlaneFormat::kBGRA_8888;
 }
 
 void DisplaySnapshot::AddIndexToDisplayId() {

@@ -9,10 +9,10 @@
 #import "base/i18n/message_formatter.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/constants.h"
-#import "ios/chrome/browser/bring_android_tabs/ui_bundled/tab_list_from_android_table_view_item.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/tab_list_from_android_view_controller_delegate.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
@@ -75,10 +75,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   CHECK_EQ(tableView, self.tableView);
+  [self loadFaviconForIndexPath:indexPath];
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
-  [self loadFaviconForCell:cell indexPath:indexPath];
   return cell;
 }
 
@@ -99,11 +99,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 #pragma mark - TabListFromAndroidConsumer
 
-- (void)setTabListItems:(NSArray<TabListFromAndroidTableViewItem*>*)items {
+- (void)setTabListItems:(NSArray<TableViewURLItem*>*)items {
   [self loadModel];
 
   [self.tableViewModel addSectionWithIdentifier:TabListSectionIdentifier];
-  for (TabListFromAndroidTableViewItem* item : items) {
+  for (TableViewURLItem* item : items) {
     item.accessoryType = UITableViewCellAccessoryCheckmark;
     [self.tableViewModel addItem:item
          toSectionWithIdentifier:TabListSectionIdentifier];
@@ -124,25 +124,26 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 #pragma mark - Helpers
 
-// Retrieves favicon from FaviconLoader and sets FaviconView in given `cell`.
-- (void)loadFaviconForCell:(UITableViewCell*)cell
-                 indexPath:(NSIndexPath*)indexPath {
+// Retrieves favicon from FaviconLoader and sets FaviconView.
+- (void)loadFaviconForIndexPath:(NSIndexPath*)indexPath {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   CHECK(item);
-  CHECK(cell);
-  TabListFromAndroidTableViewItem* tabListItem =
-      base::apple::ObjCCastStrict<TabListFromAndroidTableViewItem>(item);
-  TabListFromAndroidTableViewCell* tabListCell =
-      base::apple::ObjCCastStrict<TabListFromAndroidTableViewCell>(cell);
 
-  NSString* itemIdentifier = tabListItem.uniqueIdentifier;
+  TableViewURLItem* URLItem =
+      base::apple::ObjCCastStrict<TableViewURLItem>(item);
+
+  if (URLItem.faviconAttributes) {
+    return;
+  }
+
+  __weak UITableView* tableView = self.tableView;
+
   [_faviconDataSource
-      faviconForPageURL:tabListItem.URL
-             completion:^(FaviconAttributes* attributes) {
-               // Only set favicon if the cell hasn't been reused.
-               if ([tabListCell.cellUniqueIdentifier
-                       isEqualToString:itemIdentifier]) {
-                 [tabListCell.faviconView configureWithAttributes:attributes];
+      faviconForPageURL:URLItem.URL
+             completion:^(FaviconAttributes* attributes, bool cached) {
+               URLItem.faviconAttributes = attributes;
+               if (!cached && attributes.faviconImage) {
+                 [tableView reconfigureRowsAtIndexPaths:@[ indexPath ]];
                }
              }];
 }

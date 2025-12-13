@@ -9,6 +9,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/wm/overview/overview_item_base.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_utils.h"
@@ -47,6 +48,32 @@ class SnapGroupPixelTest : public AshTestBase {
     return pixel_test::InitParams();
   }
 };
+
+class SnapGroupWindowCyclePixelTest
+    : public SnapGroupPixelTest,
+      public testing::WithParamInterface</*enable_system_blur=*/bool> {
+ public:
+  SnapGroupWindowCyclePixelTest() = default;
+
+  SnapGroupWindowCyclePixelTest(const SnapGroupPixelTest&) = delete;
+  SnapGroupWindowCyclePixelTest& operator=(const SnapGroupPixelTest&) = delete;
+
+  ~SnapGroupWindowCyclePixelTest() override = default;
+
+ private:
+  // SnapGroupPixelTest:
+  std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
+      const override {
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = GetParam();
+    return init_params;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    SnapGroupWindowCyclePixelTest,
+    testing::Bool());
 
 // -----------------------------------------------------------------------------
 // Landscape:
@@ -147,7 +174,7 @@ TEST_F(SnapGroupPixelTest, OverviewGroupItem) {
 }
 
 // Visual regression test for Snap Group in window cycle view.
-TEST_F(SnapGroupPixelTest, WindowCycleView) {
+TEST_P(SnapGroupWindowCyclePixelTest, WindowCycleView) {
   WindowCycleList::SetDisableInitialDelayForTesting(true);
 
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
@@ -180,14 +207,16 @@ TEST_F(SnapGroupPixelTest, WindowCycleView) {
 
   // Verify the visuals with secondary-snapped window gets focused.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "window_cycle_with_snap_group_secondary_focused",
-      /*revision_number=*/4, window_cycle_widget));
+      GenerateScreenshotName("window_cycle_with_snap_group_secondary_focused"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 0,
+      window_cycle_widget));
 
   // Verify the visuals with primary-snapped window gets focused.
   event_generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "window_cycle_with_snap_group_primary_focused",
-      /*revision_number=*/4, window_cycle_widget));
+      GenerateScreenshotName("window_cycle_with_snap_group_primary_focused"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 0,
+      window_cycle_widget));
 
   // Verify the visuals after one of the windows in the group got destroyed
   // while stepping.
@@ -202,8 +231,9 @@ TEST_F(SnapGroupPixelTest, WindowCycleView) {
   ASSERT_TRUE(updated_window_cycle_widget);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "window_cycle_with_snap_group_window_destruction",
-      /*revision_number=*/4, updated_window_cycle_widget));
+      GenerateScreenshotName("window_cycle_with_snap_group_window_destruction"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 0,
+      updated_window_cycle_widget));
 }
 
 // -----------------------------------------------------------------------------
@@ -271,12 +301,12 @@ TEST_F(SnapGroupPixelTest, OverviewGroupItemInPortrait) {
   // Verify the `OverviewGroupItem` visuals in portrait.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "overviewgroupitem_in_portrait",
-      /*revision_number=*/4, group_item_widget));
+      /*revision_number=*/5, group_item_widget));
 }
 
 // Portrait mode visual regression test for Snap Group visuals in window cycle
 // view.
-TEST_F(SnapGroupPixelTest, WindowCycleViewInPortrait) {
+TEST_P(SnapGroupWindowCyclePixelTest, WindowCycleViewInPortrait) {
   UpdateDisplay("900x1200");
 
   WindowCycleList::SetDisableInitialDelayForTesting(true);
@@ -311,14 +341,18 @@ TEST_F(SnapGroupPixelTest, WindowCycleViewInPortrait) {
 
   // Verify the visuals with secondary-snapped window gets focused.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "window_cycle_with_snap_group_secondary_focused_in_portrait",
-      /*revision_number=*/4, window_cycle_widget));
+      GenerateScreenshotName(
+          "window_cycle_with_snap_group_secondary_focused_in_portrait"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 0,
+      window_cycle_widget));
 
   // Verify the visuals with primary-snapped window gets focused.
   event_generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "window_cycle_with_snap_group_primary_focused_in_portrait",
-      /*revision_number=*/4, window_cycle_widget));
+      GenerateScreenshotName(
+          "window_cycle_with_snap_group_primary_focused_in_portrait"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 0,
+      window_cycle_widget));
 }
 
 }  // namespace ash

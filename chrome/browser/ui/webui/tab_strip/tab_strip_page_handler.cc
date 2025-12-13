@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
@@ -48,6 +49,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/common/drop_data.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "ui/aura/window_delegate.h"
@@ -478,8 +480,9 @@ bool TabStripPageHandler::CanDragEnter(
   if (auto it = data.custom_data.find(kWebUITabGroupIdDataType);
       it != data.custom_data.end()) {
     std::string group_id = base::UTF16ToUTF8(it->second);
-    Browser* found_browser = tab_strip_ui::GetBrowserWithGroupId(
-        Profile::FromBrowserContext(browser_->profile()), group_id);
+    BrowserWindowInterface* const found_browser =
+        tab_strip_ui::GetBrowserWithGroupId(
+            Profile::FromBrowserContext(browser_->profile()), group_id);
     return found_browser != nullptr;
   }
 
@@ -551,9 +554,8 @@ tab_strip::mojom::TabPtr TabStripPageHandler::GetTabData(
   tab_data->crashed = tab_renderer_data.IsCrashed();
   // TODO(johntlee): Add the rest of TabRendererData
 
-  for (const auto alert_state : GetTabAlertStatesForTab(tab)) {
-    tab_data->alert_states.push_back(alert_state);
-  }
+  tab_data->alert_states =
+      tabs::TabAlertController::From(tab)->GetAllActiveAlerts();
 
   return tab_data;
 }
@@ -643,18 +645,19 @@ void TabStripPageHandler::MoveGroup(const std::string& group_id_string,
   }
 
   auto* target_browser = browser_.get();
-  Browser* source_browser =
+  BrowserWindowInterface* const source_browser =
       tab_strip_ui::GetBrowserWithGroupId(browser_->profile(), group_id_string);
   if (!source_browser) {
     return;
   }
 
+  TabStripModel* const source_tab_strip_model =
+      source_browser->GetTabStripModel();
   std::optional<tab_groups::TabGroupId> group_id =
       tab_strip_ui::GetTabGroupIdFromString(
-          source_browser->tab_strip_model()->group_model(), group_id_string);
-  TabGroup* group =
-      source_browser->tab_strip_model()->group_model()->GetTabGroup(
-          group_id.value());
+          source_tab_strip_model->group_model(), group_id_string);
+  TabGroup* const group =
+      source_tab_strip_model->group_model()->GetTabGroup(group_id.value());
   const gfx::Range tabs_in_group = group->ListTabs();
 
   if (source_browser == target_browser) {

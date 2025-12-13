@@ -8,10 +8,14 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -53,9 +57,9 @@ BOOL CALLBACK IsBrowserWindowTopmostWindowEnumerator(HWND hwnd, LPARAM lParam) {
   return TRUE;
 }
 
-bool IsBrowserWindowTopmostWindow(Browser* browser) {
+bool IsBrowserWindowTopmostWindow(BrowserWindowInterface* bwi) {
   HWND browser_hwnd =
-      browser->window()->GetNativeWindow()->GetHost()->GetAcceleratedWidget();
+      bwi->GetWindow()->GetNativeWindow()->GetHost()->GetAcceleratedWidget();
 
   struct IsBrowserTopmostWindowState state{browser_hwnd, false};
   EnumWindows(&IsBrowserWindowTopmostWindowEnumerator,
@@ -65,37 +69,45 @@ bool IsBrowserWindowTopmostWindow(Browser* browser) {
 
 #endif  // BUILDFLAG(IS_WIN)
 
-bool IsBrowserGlicCompatible(Profile* profile, Browser* browser) {
+bool IsBrowserGlicCompatible(Profile* profile,
+                             BrowserWindowInterface* browser) {
   // A browser is not compatible if it:
   // - is not a TYPE_NORMAL browser
   // - is from a glic-disabled profile
   // - uses a different Profile from glic
   // WARNING: updating these conditions will require updating
   // BrowserAttachObservation.
-  return GlicEnabling::IsEnabledForProfile(browser->profile()) &&
-         browser->is_type_normal() && browser->profile() == profile;
+  return GlicEnabling::IsEnabledForProfile(browser->GetProfile()) &&
+         browser->GetType() == BrowserWindowInterface::TYPE_NORMAL &&
+         browser->GetProfile() == profile;
 }
 
 }  // namespace
 
-bool IsBrowserGlicAttachable(Profile* profile, Browser* browser) {
+bool IsBrowserGlicAttachable(Profile* profile,
+                             BrowserWindowInterface* browser) {
   return IsBrowserGlicCompatible(profile, browser) &&
-         browser->window()->IsVisible() && !browser->window()->IsMinimized();
+         browser->GetWindow()->IsVisible() &&
+         !browser->GetWindow()->IsMinimized();
 }
 
-Browser* FindBrowserForAttachment(Profile* profile) {
+BrowserWindowInterface* FindBrowserForAttachment(Profile* profile) {
   // TODO (crbug.com/390472495) Determine which browser to attach to. Currently
   // attaches to the last focused glic-compatible browser.
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (IsBrowserGlicAttachable(profile, browser)) {
-      return browser;
-    }
-  }
-  return nullptr;
+  BrowserWindowInterface* browser_for_attachment = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (IsBrowserGlicAttachable(profile, browser)) {
+          browser_for_attachment = browser;
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      });
+  return browser_for_attachment;
 }
 
-bool IsBrowserInForeground(Browser* browser) {
-  if (browser->IsActive()) {
+bool IsBrowserInForeground(BrowserWindowInterface* bwi) {
+  if (bwi->IsActive()) {
     return true;
   }
 #if BUILDFLAG(IS_WIN)
@@ -103,45 +115,67 @@ bool IsBrowserInForeground(Browser* browser) {
   // inactive, but it will still be the last active browser. Attach to the
   // last active browser if it's the foremost visible window, other than the
   // system tray.
-  return IsBrowserWindowTopmostWindow(browser);
+  return IsBrowserWindowTopmostWindow(bwi);
 #else
   return false;
 #endif  // BUILDFLAG(IS_WIN)
 }
 
+bool IsBrowserVisible(Browser* browser) {
+  return browser && browser->window() &&
+         browser->GetBrowserView().GetWidget() &&
+         browser->window()->IsVisible() && !browser->window()->IsMinimized() &&
+         browser->capabilities()->IsVisibleOnScreen();
+}
+
+BrowserWindowInterface* GetActiveGlicEligibleBrowser(Profile* profile) {
+  BrowserWindowInterface* const active_bwi =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  if (active_bwi && IsBrowserGlicAttachable(profile, active_bwi) &&
+      IsBrowserInForeground(active_bwi)) {
+    return active_bwi;
+  }
+  return nullptr;
+}
+
 class BrowserAttachObservationImpl : public BrowserAttachObservation,
-                                     public BrowserListObserver,
+                                     public BrowserCollectionObserver,
                                      public views::WidgetObserver {
  public:
   BrowserAttachObservationImpl(Profile* profile,
                                BrowserAttachObserver* observer)
       : profile_(profile),
         observer_(observer),
-        browser_list_observation_(this),
+        browser_collection_observation_(this),
         browser_widget_observations_(this) {
-    for (auto browser : *BrowserList::GetInstance()) {
-      OnBrowserAdded(browser);
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [this](BrowserWindowInterface* browser_window_interface) {
+          OnBrowserCreated(browser_window_interface);
+          return true;
+        });
+    if (profile_->AllowsBrowserWindows()) {
+      browser_collection_observation_.Observe(
+          ProfileBrowserCollection::GetForProfile(profile_));
     }
-    browser_list_observation_.Observe(BrowserList::GetInstance());
     current_value_ = FindBrowserForAttachment(profile_);
   }
 
   bool CanAttachToBrowser() const override { return current_value_ != nullptr; }
 
-  // BrowserListObserver implementation.
-  void OnBrowserSetLastActive(Browser* browser) override {
+  // BrowserCollectionObserver implementation.
+  void OnBrowserActivated(BrowserWindowInterface* browser) override {
     // BrowserList updates the active browser list before this call, so
     // `CheckForChange` will find the correct browser.
     CheckForChange();
   }
-  void OnBrowserAdded(Browser* browser) override {
+  void OnBrowserCreated(BrowserWindowInterface* browser) override {
     if (IsBrowserGlicCompatible(profile_, browser)) {
       browser_widget_observations_.AddObservation(
-          browser->GetBrowserView().GetWidget());
+          browser->GetBrowserForMigrationOnly()->GetBrowserView().GetWidget());
     }
   }
-  void OnBrowserRemoved(Browser* browser) override {
-    if (current_value_ == browser) {
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
+    if (current_value_ != nullptr && current_value_ == browser) {
       // BrowserList updates the active browser list before this call, so
       // `CheckForChange` will find the correct browser.
       CheckForChange();
@@ -174,7 +208,7 @@ class BrowserAttachObservationImpl : public BrowserAttachObservation,
     SetBrowserForAttachment(FindBrowserForAttachment(profile_));
   }
 
-  void SetBrowserForAttachment(Browser* browser) {
+  void SetBrowserForAttachment(BrowserWindowInterface* browser) {
     if (current_value_ == browser) {
       return;
     }
@@ -188,11 +222,11 @@ class BrowserAttachObservationImpl : public BrowserAttachObservation,
   }
 
   raw_ptr<Profile> profile_;
-  raw_ptr<Browser> current_value_;
+  raw_ptr<BrowserWindowInterface> current_value_;
   raw_ptr<BrowserAttachObserver> observer_;
   base::OneShotTimer check_for_change_timer_;
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      browser_list_observation_;
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_;
   base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
       browser_widget_observations_;
 };

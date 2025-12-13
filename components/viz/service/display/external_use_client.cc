@@ -3,39 +3,35 @@
 // found in the LICENSE file.
 
 #include "components/viz/service/display/external_use_client.h"
+
 #include "base/check.h"
 #include "base/notreached.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "ui/gl/gl_bindings.h"
 
 namespace viz {
 
-ExternalUseClient::ImageContext::ImageContext(const gpu::Mailbox& mailbox,
-                                              const gpu::SyncToken& sync_token,
-                                              uint32_t texture_target,
-                                              const gfx::Size& size,
-                                              SharedImageFormat format,
-                                              sk_sp<SkColorSpace> color_space,
-                                              GrSurfaceOrigin origin)
+ExternalUseClient::ImageContext::ImageContext(
+    const gpu::Mailbox& mailbox,
+    const gfx::Size& size,
+    SharedImageFormat format,
+    const gfx::ColorSpace& color_space)
     : mailbox_(mailbox),
-      sync_token_(sync_token),
-      texture_target_(texture_target),
+      texture_target_(GL_TEXTURE_2D),
       size_(size),
       format_(format),
       color_space_(std::move(color_space)),
-      origin_(origin) {}
+      origin_(kTopLeft_GrSurfaceOrigin) {}
 
 ExternalUseClient::ImageContext::ImageContext(
     const TransferableResource& resource)
     : mailbox_(resource.mailbox()),
       sync_token_(resource.sync_token()),
       texture_target_(resource.texture_target()),
-      size_(resource.size),
-      format_(resource.format),
-      // SkColorSpace covers only RGB portion of the gfx::ColorSpace, YUV
-      // portion is handled via SkYuvColorSpace at places where we create YUV
-      // images.
-      color_space_(resource.color_space.GetAsFullRangeRGB().ToSkColorSpace()),
-      origin_(resource.origin),
+      size_(resource.GetSize()),
+      format_(resource.GetFormat()),
+      color_space_(resource.GetColorSpace()),
+      origin_(resource.GetOrigin()),
       resource_source_(resource.resource_source) {
 #if BUILDFLAG(IS_ANDROID)
   ycbcr_info_ = resource.ycbcr_info;
@@ -44,8 +40,11 @@ ExternalUseClient::ImageContext::ImageContext(
 
 ExternalUseClient::ImageContext::~ImageContext() = default;
 
-sk_sp<SkColorSpace> ExternalUseClient::ImageContext::color_space() const {
-  return color_space_;
+sk_sp<SkColorSpace> ExternalUseClient::ImageContext::GetSkColorSpace() const {
+  // SkColorSpace covers only RGB portion of the gfx::ColorSpace, YUV
+  // portion is handled via SkYuvColorSpace at places where we create YUV
+  // images.
+  return color_space_.GetAsFullRangeRGB().ToSkColorSpace();
 }
 
 void ExternalUseClient::ImageContext::OnContextLost() {

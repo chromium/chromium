@@ -8,6 +8,7 @@
 #include <array>
 
 #include "ash/quick_pair/common/account_key_failure.h"
+#include "ash/quick_pair/common/pair_failure.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 inline constexpr int kBlockByteSize = 16;

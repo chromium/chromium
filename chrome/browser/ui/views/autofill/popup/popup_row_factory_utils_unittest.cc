@@ -23,7 +23,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/plus_addresses/grit/plus_addresses_strings.h"
+#include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -97,32 +97,12 @@ class PopupRowFactoryUtilsRowWithButtonTest : public PopupRowFactoryUtilsTest {
         Suggestion(u"Some entry", SuggestionType::kAutocompleteEntry));
   }
 
-  void ShowCreateNewPlusAddressInlineSuggestion() {
-    Suggestion suggestion(u"Create new plus address",
-                          SuggestionType::kCreateNewPlusAddressInline);
-    suggestion.payload = Suggestion::PlusAddressPayload();
-    ShowSuggestion(suggestion);
-  }
-
  protected:
   PopupRowWithButtonView& row_with_button_view() {
     CHECK(views::IsViewClass<PopupRowWithButtonView>(&row_view()));
     return static_cast<PopupRowWithButtonView&>(row_view());
   }
 };
-
-// Tests that if `offer_refresh` is set to `false` in the payload, then a plus
-// address error suggestion does not have a refresh button.
-TEST_F(PopupRowFactoryUtilsTest, PlusAddressErrorSuggestionWithoutRefresh) {
-  Suggestion suggestion(u"Create new plus address",
-                        SuggestionType::kPlusAddressError);
-  Suggestion::PlusAddressPayload payload;
-  payload.offer_refresh = false;
-  suggestion.payload = std::move(payload);
-  ShowSuggestion(suggestion);
-
-  EXPECT_FALSE(views::IsViewClass<PopupRowWithButtonView>(&row_view()));
-}
 
 TEST_F(PopupRowFactoryUtilsRowWithButtonTest,
        AutocompleteDeleteInvokesController) {
@@ -167,50 +147,6 @@ TEST_F(PopupRowFactoryUtilsRowWithButtonTest,
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_A11Y_HINT, u"Some entry"),
       node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
-}
-
-TEST_F(PopupRowFactoryUtilsRowWithButtonTest,
-       CreateNewPlusAddressInlineSuggestionRefreshInvokesController) {
-  ShowCreateNewPlusAddressInlineSuggestion();
-  views::ImageButton* button = row_with_button_view().GetButtonForTest();
-  row_with_button_view().SetSelectedCell(PopupRowView::CellType::kContent);
-  // In test env we have to manually set the bounds when a view becomes visible.
-  button->parent()->SetBoundsRect(gfx::Rect(0, 0, 30, 30));
-
-  base::RunLoop loop;
-  base::RepeatingClosure quit_closure = loop.QuitClosure();
-  EXPECT_CALL(controller(),
-              PerformButtonActionForSuggestion(0, SuggestionButtonAction()))
-      .WillOnce([&quit_closure] { std::move(quit_closure).Run(); });
-
-  generator().MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
-  generator().ClickLeftButton();
-  loop.Run();
-}
-
-TEST_F(PopupRowFactoryUtilsRowWithButtonTest,
-       CreateNewPlusAddressInlineSuggestionHasTooltip) {
-  ShowCreateNewPlusAddressInlineSuggestion();
-  views::ImageButton* button = row_with_button_view().GetButtonForTest();
-  EXPECT_EQ(button->GetTooltipText(),
-            l10n_util::GetStringUTF16(
-                IDS_PLUS_ADDRESS_CREATE_INLINE_REFRESH_TOOLTIP));
-}
-
-TEST_F(PopupRowFactoryUtilsRowWithButtonTest,
-       CreateNewPlusAddressInlineSuggestionSetsAccessibility) {
-  ShowCreateNewPlusAddressInlineSuggestion();
-  views::ImageButton* button = row_with_button_view().GetButtonForTest();
-
-  views::IgnoreMissingWidgetForTestingScopedSetter ignore_missing_widget(
-      button->GetViewAccessibility());
-  ui::AXNodeData node_data;
-  button->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-
-  EXPECT_EQ(node_data.role, ax::mojom::Role::kMenuItem);
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_PLUS_ADDRESS_CREATE_INLINE_REFRESH_A11Y_NAME),
-            node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
 class PasswordPopupRowViewTest : public PopupRowFactoryUtilsTest {

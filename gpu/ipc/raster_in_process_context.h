@@ -20,7 +20,6 @@ class ServiceTransferCache;
 class SharedImageInterface;
 class TransferBuffer;
 struct GpuFeatureInfo;
-struct SharedMemoryLimits;
 
 // Runs client and server side command buffer code in process. Only supports
 // RasterInterface.
@@ -34,8 +33,6 @@ class RasterInProcessContext {
   ~RasterInProcessContext();
 
   ContextResult Initialize(CommandBufferTaskExecutor* task_executor,
-                           const ContextCreationAttribs& attribs,
-                           const SharedMemoryLimits& memory_limits,
                            gpu::raster::GrShaderCache* gr_shader_cache,
                            GpuProcessShmCount* use_shader_cache_shm_count);
 

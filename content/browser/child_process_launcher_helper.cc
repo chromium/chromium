@@ -27,6 +27,7 @@
 #include "content/browser/child_process_launcher.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_launcher_utils.h"
+#include "content/public/browser/tracing_support.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -267,13 +268,14 @@ ChildProcessLauncherHelper::Process::Process::operator=(
     ChildProcessLauncherHelper::Process&& other) = default;
 
 ChildProcessLauncherHelper::ChildProcessLauncherHelper(
-    int child_process_id,
+    ChildProcessId child_process_id,
     std::unique_ptr<base::CommandLine> command_line,
     std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
     const base::WeakPtr<ChildProcessLauncher>& child_process_launcher,
     bool terminate_on_shutdown,
 #if BUILDFLAG(IS_ANDROID)
     bool can_use_warm_up_connection,
+    bool is_spare_renderer,
 #endif
     mojo::OutgoingInvitation mojo_invitation,
     const mojo::ProcessErrorCallback& process_error_callback,
@@ -295,6 +297,7 @@ ChildProcessLauncherHelper::ChildProcessLauncherHelper(
       file_data_(std::move(file_data)),
 #if BUILDFLAG(IS_ANDROID)
       can_use_warm_up_connection_(can_use_warm_up_connection),
+      is_spare_renderer_(is_spare_renderer),
 #endif
       histogram_memory_region_(std::move(histogram_memory_region)),
       tracing_config_memory_region_(std::move(tracing_config_memory_region)),
@@ -388,18 +391,22 @@ void ChildProcessLauncherHelper::LaunchOnLauncherThread() {
                                     : nullptr,
       command_line(), options_ptr, files_to_register.get());
 
+  auto track = GetChildProcessTracingTrack(child_process_id());
+  command_line_->AppendSwitchASCII(switches::kTraceProcessTrackUuid,
+                                   base::NumberToString(track.uuid));
+
   // Transfer logging switches & handles if necessary.
   PassLoggingSwitches(options_ptr, command_line());
 
   // Launch the child process.
   Process process;
   if (BeforeLaunchOnLauncherThread(*files_to_register, options_ptr)) {
-    process =
-        LaunchProcessOnLauncherThread(options_ptr, std::move(files_to_register),
+    process = LaunchProcessOnLauncherThread(
+        options_ptr, std::move(files_to_register),
 #if BUILDFLAG(IS_ANDROID)
-                                      can_use_warm_up_connection_,
+        can_use_warm_up_connection_, is_spare_renderer_,
 #endif
-                                      &is_synchronous_launch, &launch_result);
+        &is_synchronous_launch, &launch_result);
     AfterLaunchOnLauncherThread(process, options_ptr);
   }
 

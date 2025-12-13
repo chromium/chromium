@@ -39,11 +39,7 @@ class CORE_EXPORT ElementIntersectionObserverData final
   void RemoveObserver(IntersectionObserver&);
   bool IsEmpty() const { return observations_.empty() && observers_.empty(); }
   void TrackWithController(IntersectionObserverController&);
-  void StopTrackingWithController(IntersectionObserverController&);
 
-  // Run the IntersectionObserver algorithm for all observations for which this
-  // element is target.
-  void ComputeIntersectionsForTarget();
   bool NeedsOcclusionTracking() const;
 
   void Trace(Visitor*) const override;

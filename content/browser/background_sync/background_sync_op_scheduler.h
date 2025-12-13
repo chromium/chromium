@@ -5,14 +5,13 @@
 #ifndef CONTENT_BROWSER_BACKGROUND_SYNC_BACKGROUND_SYNC_OP_SCHEDULER_H_
 #define CONTENT_BROWSER_BACKGROUND_SYNC_BACKGROUND_SYNC_OP_SCHEDULER_H_
 
-#include <map>
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
 

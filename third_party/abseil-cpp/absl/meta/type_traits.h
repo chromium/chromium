@@ -40,6 +40,7 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "absl/base/attributes.h"
@@ -166,6 +167,28 @@ struct remove_cvref {
 
 template <typename T>
 using remove_cvref_t = typename remove_cvref<T>::type;
+#endif
+
+#if defined(__cpp_lib_type_identity) && __cpp_lib_type_identity >= 201806L
+template <typename T>
+using type_identity = std::type_identity<T>;
+
+template <typename T>
+using type_identity_t = std::type_identity_t<T>;
+#else
+// type_identity
+//
+// Back-fill of C++20's `std::type_identity`.
+template <typename T>
+struct type_identity {
+  typedef T type;
+};
+
+// type_identity_t
+//
+// Back-fill of C++20's `std::type_identity_t`.
+template <typename T>
+using type_identity_t = typename type_identity<T>::type;
 #endif
 
 namespace type_traits_internal {
@@ -451,7 +474,7 @@ namespace type_traits_internal {
 
 // Detects if a class's definition has declared itself to be an owner by
 // declaring
-//   using absl_internal_is_view = std::true_type;
+//   using absl_internal_is_view = std::false_type;
 // as a member.
 // Types that don't want either must either omit this declaration entirely, or
 // (if e.g. inheriting from a base class) define the member to something that
@@ -478,6 +501,17 @@ struct IsOwnerImpl<
 // https://wg21.link/p1179
 template <typename T>
 struct IsOwner : IsOwnerImpl<T> {};
+
+// This allows incomplete types to be used for associative containers, and also
+// expands the set of types we can handle to include std::pair.
+template <typename T1, typename T2>
+struct IsOwner<std::pair<T1, T2>>
+    : std::integral_constant<
+          bool, std::conditional_t<std::is_reference_v<T1>, std::false_type,
+                                   IsOwner<std::remove_cv_t<T1>>>::value &&
+                    std::conditional_t<std::is_reference_v<T2>, std::false_type,
+                                       IsOwner<std::remove_cv_t<T2>>>::value> {
+};
 
 template <typename T, typename Traits, typename Alloc>
 struct IsOwner<std::basic_string<T, Traits, Alloc>> : std::true_type {};
@@ -512,6 +546,13 @@ struct IsViewImpl<
 template <typename T>
 struct IsView : std::integral_constant<bool, std::is_pointer<T>::value ||
                                                  IsViewImpl<T>::value> {};
+
+// This allows incomplete types to be used for associative containers, and also
+// expands the set of types we can handle to include std::pair.
+template <typename T1, typename T2>
+struct IsView<std::pair<T1, T2>>
+    : std::integral_constant<bool, IsView<std::remove_cv_t<T1>>::value &&
+                                       IsView<std::remove_cv_t<T2>>::value> {};
 
 template <typename Char, typename Traits>
 struct IsView<std::basic_string_view<Char, Traits>> : std::true_type {};

@@ -1,0 +1,14 @@
+{
+  "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
+  "gn_args": {
+    "dcheck_always_on": true,
+    "is_chromeos_device": true,
+    "ozone_platform_headless": true,
+    "target_cpu": "x64",
+    "target_os": "chromeos",
+    "use_real_dbus_clients": false,
+    "use_reclient": false,
+    "use_remoteexec": true,
+    "use_siso": true
+  }
+}

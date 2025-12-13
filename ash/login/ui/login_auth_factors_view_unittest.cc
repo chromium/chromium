@@ -17,8 +17,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/ax_update_observer.h"
 #include "ui/views/layout/box_layout.h"
@@ -192,8 +192,8 @@ class LoginAuthFactorsViewUnittest : public LoginTestBase {
   }
 
   void TestArrowButtonClearsFocus(AuthFactorState state_after_click_required) {
-    ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-        ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+    gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+        gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
     AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
 
     LoginAuthFactorsView::TestApi test_api(view_);
@@ -310,8 +310,8 @@ TEST_F(LoginAuthFactorsViewUnittest, MultipleAuthFactorsInReadyState) {
 // Note: At the moment, Smart Lock is the only auth factor that uses state
 // kClickRequired (hence no similar test for Fingerprint).
 TEST_F(LoginAuthFactorsViewUnittest, ClickRequired_SmartLock) {
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
   ASSERT_FALSE(ShouldHidePasswordField());
@@ -341,8 +341,8 @@ TEST_F(LoginAuthFactorsViewUnittest, ClickRequired_SmartLock) {
 }
 
 TEST_F(LoginAuthFactorsViewUnittest, ClickingArrowButton) {
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
   LoginAuthFactorsView::TestApi test_api(view_);
@@ -555,8 +555,8 @@ TEST_F(LoginAuthFactorsViewUnittest, CanUsePin) {
 // Ensure that when Smart Lock state is kClickRequired, the arrow button
 // automatically becomes focused.
 TEST_F(LoginAuthFactorsViewUnittest, ArrowButtonRequestsFocus) {
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
   LoginAuthFactorsView::TestApi test_api(view_);
   auth_factors_[0]->state_ = AuthFactorState::kReady;

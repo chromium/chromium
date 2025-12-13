@@ -10,7 +10,7 @@ Node: {
     nodeId : <number>
     nodeName : DIV
     nodeType : 1
-    nodeValue : 
+    nodeValue :
     parentId : <number>
 }
 FrameID matched: true

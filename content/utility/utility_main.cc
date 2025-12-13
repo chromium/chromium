@@ -37,7 +37,6 @@
 #include "sandbox/policy/sandbox_type.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 #include "services/tracing/public/cpp/trace_startup.h"
-#include "services/video_effects/public/cpp/buildflags.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/file_descriptor_store.h"
@@ -53,6 +52,7 @@
 #include "services/audio/audio_sandbox_hook_linux.h"
 #include "services/network/network_sandbox_hook_linux.h"
 #include "services/screen_ai/buildflags/buildflags.h"
+#include "services/shape_detection/shape_detection_sandbox_hook.h"
 
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #include "gpu/config/gpu_info_collector.h"
@@ -83,20 +83,9 @@
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS) && BUILDFLAG(IS_LINUX)
-#include "services/video_effects/video_effects_sandbox_hook_linux.h"  // nogncheck
-#endif  // BUILDFLAG(IS_LINUX)
-
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/services/ime/ime_sandbox_hook.h"
 #include "chromeos/services/tts/tts_sandbox_hook.h"
-
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#include "chromeos/ash/services/libassistant/libassistant_sandbox_hook.h"  // nogncheck
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-
-#include "services/shape_detection/shape_detection_sandbox_hook.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
@@ -122,9 +111,11 @@
 sandbox::TargetServices* g_utility_target_services = nullptr;
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION) && BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 #include "components/services/on_device_translation/sandbox_hook.h"
-#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION) && BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION) &&  (BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS))
 
 namespace content {
 
@@ -268,7 +259,8 @@ int UtilityMain(MainFunctionParams parameters) {
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
   // The main task executor of the utility process.
-  base::SingleThreadTaskExecutor main_thread_task_executor(message_pump_type);
+  base::SingleThreadTaskExecutor main_thread_task_executor(
+      message_pump_type, /*is_main_thread=*/true);
   const std::string utility_sub_type =
       parameters.command_line->GetSwitchValueASCII(switches::kUtilitySubType);
   SetUtilityThreadName(utility_sub_type);
@@ -332,12 +324,14 @@ int UtilityMain(MainFunctionParams parameters) {
       pre_sandbox_hook =
           base::BindOnce(&speech::SpeechRecognitionPreSandboxHook);
       break;
-#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION) && BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
     case sandbox::mojom::Sandbox::kOnDeviceTranslation:
       pre_sandbox_hook = base::BindOnce(
           &on_device_translation::OnDeviceTranslationSandboxHook);
       break;
-#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION) && BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION) && (BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS))
     case sandbox::mojom::Sandbox::kScreenAI:
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       pre_sandbox_hook =
@@ -348,15 +342,11 @@ int UtilityMain(MainFunctionParams parameters) {
 #else
       NOTREACHED();
 #endif
-#if BUILDFLAG(IS_LINUX)
-    case sandbox::mojom::Sandbox::kVideoEffects:
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-      pre_sandbox_hook =
-          base::BindOnce(&video_effects::VideoEffectsPreSandboxHook);
-#endif
-      break;
-#endif  // BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    case sandbox::mojom::Sandbox::kShapeDetection:
+      pre_sandbox_hook =
+          base::BindOnce(&shape_detection::ShapeDetectionPreSandboxHook);
+      break;
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
     case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
       pre_sandbox_hook =
@@ -377,16 +367,6 @@ int UtilityMain(MainFunctionParams parameters) {
     case sandbox::mojom::Sandbox::kTts:
       pre_sandbox_hook = base::BindOnce(&chromeos::tts::TtsPreSandboxHook);
       break;
-    case sandbox::mojom::Sandbox::kShapeDetection:
-      pre_sandbox_hook =
-          base::BindOnce(&shape_detection::ShapeDetectionPreSandboxHook);
-      break;
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-    case sandbox::mojom::Sandbox::kLibassistant:
-      pre_sandbox_hook =
-          base::BindOnce(&ash::libassistant::LibassistantPreSandboxHook);
-      break;
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS)
     default:
       break;

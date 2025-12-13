@@ -64,6 +64,11 @@ class CC_PAINT_EXPORT FilterOperations {
   // in the destination rect. See PaintFilter::MapRect() about `ctm`.
   gfx::Rect MapRectReverse(const gfx::Rect& rect, const SkMatrix& matrix) const;
 
+  // Expands `rect` to include both MapRect and MapRectReverse. This should be
+  // used only when the mapping direction is uncertain. The returned result is
+  // safe to use in either situation but may not be optimal.
+  gfx::Rect ExpandRect(const gfx::Rect& rect, const SkMatrix& matrix) const;
+
   bool HasFilterThatMovesPixels() const;
 
   bool HasFilterThatAffectsOpacity() const;

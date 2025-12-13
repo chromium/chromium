@@ -7,14 +7,18 @@
  * 'settings-manage-profile' is the settings subpage containing controls to
  * edit a profile's name, icon, and desktop shortcut.
  */
-import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.js';
-import '../settings_shared.css.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
+import '../settings_page/settings_subpage.js';
+import '../settings_shared.css.js';
 
-import type {SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import type {ProfileInfo} from '/shared/settings/people_page/profile_info_browser_proxy.js';
+import {ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import type {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -22,18 +26,20 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
+import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './manage_profile.html.js';
 import type {ManageProfileBrowserProxy} from './manage_profile_browser_proxy.js';
 import {ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from './manage_profile_browser_proxy.js';
 
 const SettingsManageProfileElementBase =
-    RouteObserverMixin(WebUiListenerMixin(PolymerElement));
+    SettingsViewMixin(RouteObserverMixin(WebUiListenerMixin(PolymerElement)));
 
 export interface SettingsManageProfileElement {
   $: {
-    name: CrInputElement,
+    nameInput: CrInputElement,
   };
 }
 
@@ -62,7 +68,7 @@ export class SettingsManageProfileElement extends
       /**
        * The current profile name.
        */
-      profileName: String,
+      profileName_: String,
 
       /**
        * True if the current profile has a shortcut.
@@ -78,11 +84,6 @@ export class SettingsManageProfileElement extends
           return [];
         },
       },
-
-      /**
-       * The current sync status.
-       */
-      syncStatus: Object,
 
       /**
        * True if the profile shortcuts feature is enabled.
@@ -111,10 +112,9 @@ export class SettingsManageProfileElement extends
   }
 
   declare private profileAvatar_: AvatarIcon;
-  declare profileName: string;
+  declare private profileName_: string;
   declare private hasProfileShortcut_: boolean;
   declare availableIcons: AvatarIcon[];
-  declare syncStatus: SyncStatus|null;
   declare private isProfileShortcutSettingVisible_: boolean;
   declare private hasEnterpriseLabel_: boolean;
   declare private pattern_: string;
@@ -130,15 +130,19 @@ export class SettingsManageProfileElement extends
 
     this.addWebUiListener('available-icons-changed', setIcons);
     this.browserProxy_.getAvailableIcons().then(setIcons);
+
+    ProfileInfoBrowserProxyImpl.getInstance().getProfileInfo().then(
+        this.onProfileInfoChanged_.bind(this));
+    this.addWebUiListener(
+        'profile-info-changed', this.onProfileInfoChanged_.bind(this));
   }
 
-  override currentRouteChanged() {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     if (Router.getInstance().getCurrentRoute() === routes.MANAGE_PROFILE) {
-      if (this.profileName) {
-        const profileNameInput = this.$.name;
-        if (profileNameInput) {
-          profileNameInput.value = this.profileName;
-        }
+      if (this.profileName_) {
+        this.$.nameInput.value = this.profileName_;
       }
       if (loadTimeData.getBoolean('profileShortcutsEnabled')) {
         this.browserProxy_.getProfileShortcutStatus().then(status => {
@@ -156,10 +160,14 @@ export class SettingsManageProfileElement extends
     }
   }
 
+  private onProfileInfoChanged_(info: ProfileInfo) {
+    this.profileName_ = info.name;
+  }
+
   /**
    * Handler for when the profile name field is changed, then blurred.
    */
-  private onProfileNameChanged_(event: Event) {
+  private onNameInputChange_(event: Event) {
     const target = event.target as CrInputElement;
     if (target.invalid) {
       return;
@@ -171,10 +179,10 @@ export class SettingsManageProfileElement extends
   /**
    * Handler for profile name keydowns.
    */
-  private onProfileNameKeydown_(event: KeyboardEvent) {
+  private onNameInputKeydown_(event: KeyboardEvent) {
     if (event.key === 'Escape') {
       const target = event.target as CrInputElement;
-      target.value = this.profileName;
+      target.value = this.profileName_;
       target.blur();
     }
   }
@@ -204,6 +212,11 @@ export class SettingsManageProfileElement extends
     } else {
       this.browserProxy_.removeProfileShortcut();
     }
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

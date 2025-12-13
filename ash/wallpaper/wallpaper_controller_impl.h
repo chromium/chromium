@@ -32,6 +32,7 @@
 #include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 #include "ash/wallpaper/wallpaper_blur_manager.h"
 #include "ash/wallpaper/wallpaper_file_manager.h"
+#include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/wallpaper/wallpaper_time_of_day_scheduler.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
@@ -71,7 +72,6 @@ class WallpaperDailyRefreshScheduler;
 class WallpaperDriveFsDelegate;
 class WallpaperImageDownloader;
 class WallpaperMetricsManager;
-class WallpaperPrefManager;
 class WallpaperResizer;
 class WallpaperWindowStateManager;
 
@@ -90,6 +90,7 @@ using CustomWallpaperMap = std::map<AccountId, CustomWallpaperElement>;
 //     state is ACTIVE;
 class ASH_EXPORT WallpaperControllerImpl
     : public WallpaperController,
+      public WallpaperPrefManager::Observer,
       public display::DisplayManagerObserver,
       public ShellObserver,
       public LoginDataDispatcher::Observer,
@@ -122,13 +123,12 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Returns custom wallpaper path. Appends |sub_dir|, |wallpaper_files_id| and
   // |file_name| to custom wallpaper directory.
-  static base::FilePath GetCustomWallpaperPath(
-      const std::string& sub_dir,
-      const std::string& wallpaper_files_id,
-      const std::string& file_name);
+  base::FilePath GetCustomWallpaperPath(const std::string& sub_dir,
+                                        const std::string& wallpaper_files_id,
+                                        const std::string& file_name) const;
 
   // Returns custom wallpaper directory by appending corresponding |sub_dir|.
-  static base::FilePath GetCustomWallpaperDir(const std::string& sub_dir);
+  base::FilePath GetCustomWallpaperDir(const std::string& sub_dir) const;
 
   // Returns the k mean color of the current wallpaper.
   SkColor GetKMeanColor() const;
@@ -238,10 +238,6 @@ class ASH_EXPORT WallpaperControllerImpl
   void SetClient(WallpaperControllerClient* client) override;
   void SetDriveFsDelegate(
       std::unique_ptr<WallpaperDriveFsDelegate> drivefs_delegate) override;
-  void Init(const base::FilePath& user_data,
-            const base::FilePath& wallpapers,
-            const base::FilePath& custom_wallpapers,
-            const base::FilePath& device_policy_wallpaper) override;
   bool CanSetUserWallpaper(const AccountId& account_id) const override;
   void SetCustomWallpaper(const AccountId& account_id,
                           const base::FilePath& file_path,
@@ -334,6 +330,10 @@ class ASH_EXPORT WallpaperControllerImpl
       RefreshWallpaperCallback callback = base::DoNothing()) override;
   void SyncLocalAndRemotePrefs(const AccountId& account_id) override;
   const AccountId& CurrentAccountId() const override;
+
+  // ash::WallpaperPrefManager::Observer:
+  void OnDeviceWallpaperImageFilePathUpdated(
+      const base::FilePath& path) override;
 
   // display::DisplayManagerObserver:
   void OnDidApplyDisplayChanges() override;
@@ -718,6 +718,10 @@ class ASH_EXPORT WallpaperControllerImpl
   // If the user has a Google Photos wallpaper set.
   bool IsGooglePhotosWallpaperSet() const;
 
+  base::FilePath GetUserGooglePhotosWallpaperDir(
+      const AccountId& account_id) const;
+  base::FilePath GetUserSeaPenWallpaperDir(const AccountId& account_id) const;
+
   // Checks to make sure the currently selected Google Photos wallpaper still
   // exists in the user's Google Photos library.
   void CheckGooglePhotosStaleness(const AccountId& account_id,
@@ -813,6 +817,12 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Cached OOBE wallpaper.
   CachedDefaultWallpaper cached_oobe_wallpaper_;
+
+  // The paths of wallpaper directories.
+  base::FilePath wallpapers_dir_;
+  base::FilePath custom_wallpapers_dir_;
+  base::FilePath google_photos_wallpapers_dir_;
+  base::FilePath sea_pen_wallpaper_dir_;
 
   // The paths of the customized default wallpapers, if they exist.
   base::FilePath customized_default_small_path_;
@@ -917,6 +927,9 @@ class ASH_EXPORT WallpaperControllerImpl
   // 'set wallpaper' request. (e.g. when a custom wallpaper decoding fails, a
   // default wallpaper decoding is initiated.)
   std::vector<base::FilePath> decode_requests_for_testing_;
+
+  base::ScopedObservation<WallpaperPrefManager, WallpaperPrefManager::Observer>
+      pref_manager_observation_{this};
 
   base::WeakPtrFactory<WallpaperControllerImpl> weak_factory_{this};
 

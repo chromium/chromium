@@ -85,7 +85,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsUIHandlerDelegateBrowserTest,
   ASSERT_TRUE(dialog);
 
   // Check dialog args.
-  auto dict = base::JSONReader::ReadDict(dialog->GetDialogArgs());
+  auto dict = base::JSONReader::ReadDict(dialog->GetDialogArgs(),
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict.has_value());
   auto* set_name = dict->FindString(kDialogArgsName);
   ASSERT_TRUE(set_name);

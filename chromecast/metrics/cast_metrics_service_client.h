@@ -12,7 +12,7 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chromecast/public/cast_sys_info.h"

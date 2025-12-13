@@ -7,6 +7,7 @@
 #include "base/files/file.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace ash::file_system_provider {
 namespace {
@@ -46,9 +47,8 @@ int RequestManager::CreateRequest(RequestType type,
   if (requests_.find(request_id) != requests_.end())
     return 0;
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("file_system_provider",
-                                    "RequestManager::Request",
-                                    TRACE_ID_LOCAL(request_id), "type", type);
+  TRACE_EVENT_BEGIN("file_system_provider", "RequestManager::Request",
+                    perfetto::Track(request_id), "type", type);
 
   std::unique_ptr<Request> request = std::make_unique<Request>();
   request->handler = std::move(handler);
@@ -229,9 +229,7 @@ void RequestManager::DestroyRequest(int request_id,
   for (auto& observer : observers_)
     observer.OnRequestDestroyed(request_id, completion);
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("file_system_provider",
-                                  "RequestManager::Request",
-                                  TRACE_ID_LOCAL(request_id));
+  TRACE_EVENT_END("file_system_provider", perfetto::Track(request_id));
 }
 
 }  // namespace ash::file_system_provider

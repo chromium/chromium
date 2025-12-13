@@ -253,6 +253,9 @@ TEST_F(AcceptLanguageUtilsTests, FirstMatchPreferredLang) {
 
 TEST_F(AcceptLanguageUtilsTests, AddNavigationRequestAcceptLanguageHeaders) {
   base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {}, {network::features::kReduceAcceptLanguage,
+           network::features::kReduceAcceptLanguageHTTP});
 
   MockReduceAcceptLanguageControllerDelegate delegate =
       MockReduceAcceptLanguageControllerDelegate("en,zh");
@@ -275,8 +278,8 @@ TEST_F(AcceptLanguageUtilsTests, AddNavigationRequestAcceptLanguageHeaders) {
 
   // Test add navigation header with reduce accept language feature turns on.
   scoped_feature_list.Reset();
-  scoped_feature_list.InitWithFeatures(
-      {network::features::kReduceAcceptLanguage}, {});
+  scoped_feature_list.InitAndEnableFeature(
+      network::features::kReduceAcceptLanguage);
   {
     // Verify root frame node has the accept language header.
     net::HttpRequestHeaders headers;
@@ -680,6 +683,38 @@ TEST_F(AcceptLanguageUtilsTests, ThrottleProcessResponse) {
   }
 }
 
+TEST_F(AcceptLanguageUtilsTests, GetLanguageWithDefaultLimits) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      network::features::kReduceAcceptLanguageCount);
+
+  EXPECT_EQ("en-US,ja,en-CA,fr-CA,zh-CN,en-GB,es,ru,pt,it",
+            ReduceAcceptLanguageUtils::GetLanguagesWithMaxCount(
+                "en-US,ja,en-CA,fr-CA,zh-CN,en-GB,es,ru,pt,it,ko"));
+}
+
+TEST_F(AcceptLanguageUtilsTests, GetLanguageWithCustomLimits) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      network::features::kReduceAcceptLanguageCount,
+      {{network::features::kMaxAcceptLanguage.name, "5"}});
+
+  EXPECT_EQ("en-US,ja,en-CA,fr-CA,zh-CN",
+            ReduceAcceptLanguageUtils::GetLanguagesWithMaxCount(
+                "en-US,ja,en-CA,fr-CA,zh-CN,en-GB,es,ru,pt,it,ko"));
+}
+
+TEST_F(AcceptLanguageUtilsTests, GetLanguageWithInvalidLimits) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      network::features::kReduceAcceptLanguageCount,
+      {{network::features::kMaxAcceptLanguage.name, "0"}});
+
+  EXPECT_EQ("en-US,ja,en-CA,fr-CA,zh-CN,en-GB,es,ru,pt,it,ko",
+            ReduceAcceptLanguageUtils::GetLanguagesWithMaxCount(
+                "en-US,ja,en-CA,fr-CA,zh-CN,en-GB,es,ru,pt,it,ko"));
+}
+
 class CreateAcceptLanguageUtilsTest : public ::testing::Test {
  public:
   CreateAcceptLanguageUtilsTest() = default;
@@ -708,7 +743,8 @@ TEST_F(CreateAcceptLanguageUtilsTest, CreateUtils) {
 
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures(
-      {}, {network::features::kReduceAcceptLanguage});
+      {}, {network::features::kReduceAcceptLanguage,
+           network::features::kReduceAcceptLanguageHTTP});
   // Feature reset should expect no instance returns
   EXPECT_EQ(ReduceAcceptLanguageUtils::Create(browser_context()), std::nullopt);
 }

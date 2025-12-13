@@ -15,7 +15,10 @@ class ProfileIOS;
 @interface PushNotificationDelegate
     : NSObject <UNUserNotificationCenterDelegate>
 
-- (instancetype)initWithAppState:(AppState*)appState NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithAppState:(AppState*)appState
+          userNotificationCenter:
+              (UNUserNotificationCenter*)userNotificationCenter
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

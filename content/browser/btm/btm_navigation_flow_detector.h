@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "content/browser/btm/btm_page_visit_observer.h"
 #include "content/common/content_export.h"
@@ -26,6 +25,8 @@ enum class DirectNavigationSource {
   kBookmark = 2,
 };
 
+// An entrypoint is the first site in a navigation flow that is not the
+// referrer. For example, in a flow A->B->C, B is the entrypoint.
 struct EntrypointInfo {
   // Used when the entrypoint has a server redirect exit.
   explicit EntrypointInfo(const BtmServerRedirectInfo& server_redirect_info,
@@ -44,12 +45,21 @@ struct EntrypointInfo {
   bool was_referral_client_redirect;
 };
 
+// The status of a navigation flow.
 enum class FlowStatus {
+  // The most recent sequence of navigations did not qualify as a navigation
+  // flow.
   kInvalidated = 0,
+  // The most recent sequence of navigations may be part of a navigation flow,
+  // but we can't know until we observe more navigations.
   kOngoing,
+  // The most recent sequence of navigations is a valid and complete navigation
+  // flow.
   kEnded,
 };
 
+// State necessary for deciding whether to emit, and actually emitting, the UKM
+// `DIPS.TrustIndicator.InFlowSuccessorInteractionV2`.
 class InFlowSuccessorInteractionState {
  public:
   explicit InFlowSuccessorInteractionState(btm::EntrypointInfo flow_entrypoint);
@@ -79,13 +89,14 @@ class InFlowSuccessorInteractionState {
 // Detects possible navigation flows with the aim of discovering how to
 // distinguish user-interest navigation flows from navigational tracking.
 //
-// For most events a navigation flow consists of three consecutive navigations
-// in a tab (A->B->C). Some events might be recorded for flows with more than
-// three navigations e.g. InFlowSuccessorInteraction where there is 4 or more
-// navigations.
-//
 // Currently only reports UKM to inform how we might identify possible
 // navigational tracking by sites that also perform user-interest activity.
+//
+// For most UKM events emitted by this class, a navigation flow consists of
+// three consecutive navigations in the same tab (A->B->C). Some events might be
+// recorded for flows with more than three navigations (such as
+// `DIPS.TrustIndicator.InFlowSuccessorInteractionV2`, where there are 4 or more
+// navigations).
 class CONTENT_EXPORT BtmNavigationFlowDetector
     : public WebContentsUserData<BtmNavigationFlowDetector> {
  public:
@@ -150,13 +161,13 @@ class CONTENT_EXPORT BtmNavigationFlowDetector
   const std::string GetSiteForCurrentPage() const;
 
   // Navigation Flow:
-  // A navigation flow consists of three navigations in a tab (A->B->C).
-  // The infos below are updated when the primary page changes.
+  // A navigation flow consists of three navigations in a tab (A->B->C). The
+  // state below is updated when the primary page changes.
   //
   // Note that server redirects don't commit, so if there's a server redirect
   // from B->C, B is not committed and not reported as a page visit, but instead
-  // in the `server_redirects` field of the corresponding `BtmNavigationInfo`.
-  // In this case, `previous_page_` corresponds to A,
+  // is captured in the `server_redirects` field of the corresponding
+  // `BtmNavigationInfo`. In this case, `previous_page_` corresponds to A,
   // `previous_page_to_current_page_->server_redirects` will contain B, and
   // `previous_page_to_current_page_->destination` will have some limited
   // information about C.

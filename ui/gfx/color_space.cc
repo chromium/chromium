@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/color_space.h"
 
 #include <iomanip>
@@ -15,6 +10,8 @@
 #include <sstream>
 
 #include "base/atomic_sequence_num.h"
+#include "base/compiler_specific.h"
+#include "base/debug/crash_logging.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -40,7 +37,7 @@ static bool FloatsEqualWithinTolerance(const float* a,
                                        int n,
                                        float tol) {
   for (int i = 0; i < n; ++i) {
-    if (std::abs(a[i] - b[i]) > tol) {
+    if (std::abs(UNSAFE_TODO(a[i]) - UNSAFE_TODO(b[i])) > tol) {
       return false;
     }
   }
@@ -97,7 +94,10 @@ ColorSpace::ColorSpace(PrimaryID primaries,
     SetCustomPrimaries(*custom_primary_matrix);
   }
   if (custom_transfer_fn) {
-    SetCustomTransferFunction(*custom_transfer_fn);
+    DCHECK(transfer_ == TransferID::CUSTOM ||
+           transfer_ == TransferID::CUSTOM_HDR);
+    SetCustomTransferFunction(*custom_transfer_fn,
+                              transfer_ == TransferID::CUSTOM_HDR);
   }
 }
 
@@ -108,13 +108,18 @@ ColorSpace::ColorSpace(const SkColorSpace& sk_color_space, bool is_hdr)
                  RangeID::FULL) {
   skcms_TransferFunction fn;
   if (sk_color_space.isNumericalTransferFn(&fn)) {
-    transfer_ = is_hdr ? TransferID::CUSTOM_HDR : TransferID::CUSTOM;
-    SetCustomTransferFunction(fn);
+    SetCustomTransferFunction(fn, is_hdr);
   } else if (skcms_TransferFunction_isHLGish(&fn)) {
     transfer_ = TransferID::HLG;
+    transfer_params_[0] = 203.f;
+    transfer_params_[1] = 1000.f;
+    transfer_params_[2] = 1.2f;
   } else if (skcms_TransferFunction_isPQish(&fn)) {
     transfer_ = TransferID::PQ;
     transfer_params_[0] = GetSDRWhiteLevelFromPQSkTransferFunction(fn);
+    if (transfer_params_[0] == 10000.f) {
+      transfer_params_[0] = 203.f;
+    }
   } else if (skcms_TransferFunction_isHLG(&fn)) {
     transfer_ = TransferID::HLG;
     transfer_params_[0] = fn.a;
@@ -194,14 +199,12 @@ void ColorSpace::SetCustomPrimaries(const skcms_Matrix3x3& to_XYZD50) {
     }
   }
 
-  memcpy(custom_primary_matrix_, &to_XYZD50, 9 * sizeof(float));
+  UNSAFE_TODO(memcpy(custom_primary_matrix_, &to_XYZD50, 9 * sizeof(float)));
   primaries_ = PrimaryID::CUSTOM;
 }
 
-void ColorSpace::SetCustomTransferFunction(const skcms_TransferFunction& fn) {
-  DCHECK(transfer_ == TransferID::CUSTOM ||
-         transfer_ == TransferID::CUSTOM_HDR);
-
+void ColorSpace::SetCustomTransferFunction(const skcms_TransferFunction& fn,
+                                           bool is_hdr) {
   auto check_transfer_fn = [this, &fn](TransferID id) {
     skcms_TransferFunction id_fn;
     GetTransferFunction(id, &id_fn);
@@ -211,6 +214,8 @@ void ColorSpace::SetCustomTransferFunction(const skcms_TransferFunction& fn) {
     transfer_ = id;
     return true;
   };
+
+  transfer_ = is_hdr ? TransferID::CUSTOM_HDR : TransferID::CUSTOM;
 
   if (transfer_ == TransferID::CUSTOM) {
     // These are all TransferIDs that will return a transfer function from
@@ -273,14 +278,14 @@ bool ColorSpace::operator==(const ColorSpace& other) const {
     return false;
   }
   if (primaries_ == PrimaryID::CUSTOM) {
-    if (memcmp(custom_primary_matrix_, other.custom_primary_matrix_,
-               sizeof(custom_primary_matrix_))) {
+    if (UNSAFE_TODO(memcmp(custom_primary_matrix_, other.custom_primary_matrix_,
+                           sizeof(custom_primary_matrix_)))) {
       return false;
     }
   }
   if (size_t param_count = TransferParamCount(transfer_)) {
-    if (memcmp(transfer_params_, other.transfer_params_,
-               param_count * sizeof(float))) {
+    if (UNSAFE_TODO(memcmp(transfer_params_, other.transfer_params_,
+                           param_count * sizeof(float)))) {
       return false;
     }
   }
@@ -363,16 +368,16 @@ bool ColorSpace::operator<(const ColorSpace& other) const {
     return false;
   if (primaries_ == PrimaryID::CUSTOM) {
     int primary_result =
-        memcmp(custom_primary_matrix_, other.custom_primary_matrix_,
-               sizeof(custom_primary_matrix_));
+        UNSAFE_TODO(memcmp(custom_primary_matrix_, other.custom_primary_matrix_,
+                           sizeof(custom_primary_matrix_)));
     if (primary_result < 0)
       return true;
     if (primary_result > 0)
       return false;
   }
   if (size_t param_count = TransferParamCount(transfer_)) {
-    int transfer_result = memcmp(transfer_params_, other.transfer_params_,
-                                 param_count * sizeof(float));
+    int transfer_result = UNSAFE_TODO(memcmp(
+        transfer_params_, other.transfer_params_, param_count * sizeof(float)));
     if (transfer_result < 0)
       return true;
     if (transfer_result > 0)
@@ -390,15 +395,15 @@ size_t ColorSpace::GetHash() const {
     const uint32_t* params =
         reinterpret_cast<const uint32_t*>(custom_primary_matrix_);
     result ^= params[0];
-    result ^= params[4];
-    result ^= params[8];
+    result ^= UNSAFE_TODO(params[4]);
+    result ^= UNSAFE_TODO(params[8]);
   }
   {
     // Note that |transfer_params_| must be zero when they are unused.
     const uint32_t* params =
         reinterpret_cast<const uint32_t*>(transfer_params_);
-    result ^= params[3];
-    result ^= params[6];
+    result ^= UNSAFE_TODO(params[3]);
+    result ^= UNSAFE_TODO(params[6]);
   }
   return result;
 }
@@ -552,7 +557,7 @@ ColorSpace ColorSpace::GetScaledColorSpace(float factor) const {
   GetPrimaryMatrix(&to_XYZD50);
   for (int row = 0; row < 3; ++row) {
     for (int col = 0; col < 3; ++col) {
-      to_XYZD50.vals[row][col] *= factor;
+      UNSAFE_TODO(to_XYZD50.vals[row][col]) *= factor;
     }
   }
   result.SetCustomPrimaries(to_XYZD50);
@@ -596,6 +601,30 @@ ColorSpace ColorSpace::GetWithMatrixAndRange(MatrixID matrix,
 
   result.matrix_ = matrix;
   result.range_ = range;
+  return result;
+}
+
+ColorSpace ColorSpace::GetAsHDR() const {
+  ColorSpace result = *this;
+  skcms_TransferFunction fn;
+  if (result.GetTransferFunction(&fn)) {
+    result.SetCustomTransferFunction(fn, /*is_hdr=*/true);
+  }
+  return result;
+}
+
+ColorSpace ColorSpace::GetWithTransferFunction(TransferID transfer) const {
+  DCHECK_NE(transfer, TransferID::CUSTOM);
+  DCHECK_NE(transfer, TransferID::CUSTOM_HDR);
+  ColorSpace result(*this);
+  result.transfer_ = transfer;
+  return result;
+}
+
+ColorSpace ColorSpace::GetWithTransferFunction(const skcms_TransferFunction& fn,
+                                               bool is_hdr) const {
+  ColorSpace result(*this);
+  result.SetCustomTransferFunction(fn, is_hdr);
   return result;
 }
 
@@ -751,8 +780,10 @@ bool ColorSpace::Contains(const ColorSpace& other) const {
   constexpr float epsilon = 0.001f;
   for (int r = 0; r < 3; r++) {
     for (int c = 0; c < 3; c++) {
-      if (matrix.vals[r][c] < -epsilon || matrix.vals[r][c] > 1 + epsilon)
+      if (UNSAFE_TODO(matrix.vals[r][c]) < -epsilon ||
+          UNSAFE_TODO(matrix.vals[r][c]) > 1 + epsilon) {
         return false;
+      }
     }
   }
   return true;
@@ -826,7 +857,7 @@ SkColorSpacePrimaries ColorSpace::GetColorSpacePrimaries(
 
 SkColorSpacePrimaries ColorSpace::GetPrimaries() const {
   skcms_Matrix3x3 matrix;
-  memcpy(&matrix, custom_primary_matrix_, 9 * sizeof(float));
+  UNSAFE_TODO(memcpy(&matrix, custom_primary_matrix_, 9 * sizeof(float)));
   return GetColorSpacePrimaries(primaries_, &matrix);
 }
 
@@ -844,7 +875,7 @@ void ColorSpace::GetPrimaryMatrix(PrimaryID primary_id,
 
 void ColorSpace::GetPrimaryMatrix(skcms_Matrix3x3* to_XYZD50) const {
   if (primaries_ == PrimaryID::CUSTOM) {
-    memcpy(to_XYZD50, custom_primary_matrix_, 9 * sizeof(float));
+    UNSAFE_TODO(memcpy(to_XYZD50, custom_primary_matrix_, 9 * sizeof(float)));
   } else {
     GetPrimaryMatrix(primaries_, to_XYZD50);
   }
@@ -1103,6 +1134,16 @@ SkM44 ColorSpace::GetRangeAdjustMatrix(int bit_depth) const {
 }
 
 bool ColorSpace::ToSkYUVColorSpace(int bit_depth, SkYUVColorSpace* out) const {
+  // There should be no usages of RGB matrix for YUV conversion.
+  if (matrix_ == gfx::ColorSpace::MatrixID::RGB) {
+    [[maybe_unused]] static bool call_once = [&]() {
+      SCOPED_CRASH_KEY_STRING256("ToSkYUVColorSpace", "ColorSpace", ToString());
+      DUMP_WILL_BE_CHECK(false)
+          << "ToSkYUVColorSpace called on RGB color space = " << ToString();
+      return true;
+    }();
+  }
+
   switch (matrix_) {
     case MatrixID::BT709:
       *out = range_ == RangeID::FULL ? kRec709_Full_SkYUVColorSpace

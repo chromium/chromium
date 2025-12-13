@@ -92,21 +92,23 @@ class ScriptPromiseResolverWithTrackerTest : public testing::Test {
   }
 
   void CheckResultHistogram(int expected_count,
-                            const std::string& result_string = "Result") {
+                            const String& result_string = "Result") {
     histogram_tester_.ExpectTotalCount(
-        base::StrCat({metric_name_prefix_, ".", result_string}),
+        StrCat({metric_name_prefix_, ".", result_string}).Utf8(),
         expected_count);
   }
 
-  void CheckLatencyHistogram(int expected_count) {
-    histogram_tester_.ExpectTotalCount(metric_name_prefix_ + ".Latency",
-                                       expected_count);
+  void CheckLatencyHistogram(int expected_count,
+                             const String& latency_string = "Latency") {
+    histogram_tester_.ExpectTotalCount(
+        StrCat({metric_name_prefix_, ".", latency_string}).Utf8(),
+        expected_count);
   }
 
  protected:
   test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
-  std::string metric_name_prefix_;
+  String metric_name_prefix_;
   std::unique_ptr<DummyPageHolder> page_holder_;
 };
 
@@ -203,6 +205,19 @@ TEST_F(ScriptPromiseResolverWithTrackerTest, SetResultSuffix) {
   EXPECT_EQ(String(), on_rejected);
   CheckResultHistogram(/*expected_count=*/1, "NewResultSuffix");
   CheckLatencyHistogram(/*expected_count=*/1);
+}
+
+TEST_F(ScriptPromiseResolverWithTrackerTest, SetLatencySuffix) {
+  String on_fulfilled, on_rejected;
+  auto* result_tracker = CreateResultTracker(on_fulfilled, on_rejected);
+  result_tracker->SetLatencySuffix("NewLatencySuffix");
+  result_tracker->Resolve(/*value=*/"hello", /*result=*/TestEnum::kOk);
+  PerformMicrotaskCheckpoint();
+
+  EXPECT_EQ("hello", on_fulfilled);
+  EXPECT_EQ(String(), on_rejected);
+  CheckResultHistogram(/*expected_count=*/1);
+  CheckLatencyHistogram(/*expected_count=*/1, "NewLatencySuffix");
 }
 
 }  // namespace blink

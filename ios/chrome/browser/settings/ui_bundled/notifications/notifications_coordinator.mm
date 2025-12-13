@@ -83,7 +83,6 @@
       AuthenticationServiceFactory::GetForProfile(self.profile);
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  const GaiaId gaiaID(identity.gaiaID);
   PrefService* prefService = self.profile->GetPrefs();
   syncer::DeviceInfoSyncService* deviceInfoSyncService =
       DeviceInfoSyncServiceFactory::GetForProfile(self.profile);
@@ -93,7 +92,7 @@
 
   self.mediator =
       [[NotificationsMediator alloc] initWithPrefService:prefService
-                                                  gaiaID:gaiaID
+                                                  gaiaID:identity.gaiaId
                                    deviceInfoSyncService:deviceInfoSyncService];
   self.mediator.handler = self;
   self.mediator.presenter = self;
@@ -140,6 +139,9 @@
     case PushNotificationClientId::kSendTab:
     case PushNotificationClientId::kReminders:
       return ItemIdentifierSendTab;
+    case PushNotificationClientId::kCrossPlatformPromos:
+      // TODO:(crbug.com/445662240): Add toggle for this feature.
+      NOTREACHED();
   }
 }
 

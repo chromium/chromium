@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_win.h"
 
 #include <math.h>
@@ -15,6 +10,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/heap_array.h"
@@ -923,11 +919,11 @@ std::string AXTreeFormatterWin::ProcessTreeForOutput(
         // Currently all dictionary values are coordinates.
         // Revisit this if that changes.
         const base::Value::Dict& dict_value = value->GetDict();
-        if (strcmp(attribute_name, "size") == 0) {
+        if (std::string_view(attribute_name) == "size") {
           WriteAttribute(
               false, FormatCoordinates(dict_value, "size", "width", "height"),
               &line);
-        } else if (strcmp(attribute_name, "location") == 0) {
+        } else if (std::string_view(attribute_name) == "location") {
           WriteAttribute(false,
                          FormatCoordinates(dict_value, "location", "x", "y"),
                          &line);

@@ -31,7 +31,8 @@ SaturatedGain::SaturatedGain(const std::string& config, int channels)
   status_.output_channels = channels;
   status_.ringing_time_frames = 0;
   status_.rendering_delay_frames = 0;
-  auto config_dict = base::JSONReader::ReadDict(config);
+  auto config_dict =
+      base::JSONReader::ReadDict(config, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   CHECK(config_dict) << "SaturatedGain config is not valid json: " << config;
   auto gain_db = config_dict->FindDouble(kGainKey);
   CHECK(gain_db) << config;

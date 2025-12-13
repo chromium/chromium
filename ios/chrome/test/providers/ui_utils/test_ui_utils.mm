@@ -13,11 +13,6 @@ void InitializeUI() {
   // Tests do not have global UI state.
 }
 
-id<LogoVendor> CreateLogoVendor(Browser* browser, web::WebState* web_state) {
-  // Tests do not use LogoVendor.
-  return nil;
-}
-
 UIImageView* CreateAnimatedImageView() {
   return [[UIImageView alloc] init];
 }

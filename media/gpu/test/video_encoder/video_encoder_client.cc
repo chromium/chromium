@@ -342,7 +342,7 @@ void VideoEncoderClient::RequireBitstreamBuffers(
       /*natural_size=*/encoder_client_config_.output_resolution, frame_rate,
       encoder_client_config_.input_storage_type ==
               VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer
-          ? VideoFrame::STORAGE_GPU_MEMORY_BUFFER
+          ? VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE
           : VideoFrame::STORAGE_SHMEM);
 
   output_buffer_size_ = output_buffer_size;

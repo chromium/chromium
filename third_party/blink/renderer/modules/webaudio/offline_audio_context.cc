@@ -31,6 +31,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_offline_audio_context_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_audiocontextrendersizecategory_unsignedlong.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -44,6 +45,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
@@ -53,6 +55,7 @@ OfflineAudioContext* OfflineAudioContext::Create(
     unsigned number_of_channels,
     unsigned number_of_frames,
     float sample_rate,
+    uint32_t render_quantum_frames,
     ExceptionState& exception_state) {
   // FIXME: add support for workers.
   auto* window = DynamicTo<LocalDOMWindow>(context);
@@ -101,11 +104,24 @@ OfflineAudioContext* OfflineAudioContext::Create(
     return nullptr;
   }
 
+  if (!audio_utilities::IsValidRenderQuantumSize(render_quantum_frames,
+                                                 sample_rate)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        ExceptionMessages::IndexOutsideRange(
+            "renderSizeHint", render_quantum_frames,
+            audio_utilities::MinRenderQuantumSize(),
+            ExceptionMessages::kInclusiveBound,
+            audio_utilities::MaxRenderQuantumSize(sample_rate),
+            ExceptionMessages::kInclusiveBound));
+    return nullptr;
+  }
+
   SCOPED_UMA_HISTOGRAM_TIMER("WebAudio.OfflineAudioContext.CreateTime");
   OfflineAudioContext* audio_context =
-      MakeGarbageCollected<OfflineAudioContext>(window, number_of_channels,
-                                                number_of_frames, sample_rate,
-                                                exception_state);
+      MakeGarbageCollected<OfflineAudioContext>(
+          window, number_of_channels, number_of_frames, sample_rate,
+          exception_state, render_quantum_frames);
   audio_context->UpdateStateIfNeeded();
 
 #if DEBUG_AUDIONODE_REFERENCES
@@ -117,21 +133,38 @@ OfflineAudioContext* OfflineAudioContext::Create(
 
 OfflineAudioContext* OfflineAudioContext::Create(
     ExecutionContext* context,
+    unsigned number_of_channels,
+    unsigned number_of_frames,
+    float sample_rate,
+    ExceptionState& exception_state) {
+  return Create(context, number_of_channels, number_of_frames, sample_rate,
+                /*render_quantum_frames=*/128, exception_state);
+}
+
+OfflineAudioContext* OfflineAudioContext::Create(
+    ExecutionContext* context,
     const OfflineAudioContextOptions* options,
     ExceptionState& exception_state) {
-  OfflineAudioContext* offline_context =
-      Create(context, options->numberOfChannels(), options->length(),
-             options->sampleRate(), exception_state);
-
-  return offline_context;
+  uint32_t render_quantum_frames = 128;
+  if (RuntimeEnabledFeatures::WebAudioConfigurableRenderQuantumEnabled() &&
+      options->hasRenderSizeHint()) {
+    if (options->renderSizeHint()->IsUnsignedLong()) {
+      render_quantum_frames = options->renderSizeHint()->GetAsUnsignedLong();
+    }
+  }
+  return Create(context, options->numberOfChannels(), options->length(),
+                options->sampleRate(), render_quantum_frames, exception_state);
 }
 
 OfflineAudioContext::OfflineAudioContext(LocalDOMWindow* window,
                                          unsigned number_of_channels,
                                          uint32_t number_of_frames,
                                          float sample_rate,
-                                         ExceptionState& exception_state)
-    : BaseAudioContext(window, ContextType::kOfflineContext),
+                                         ExceptionState& exception_state,
+                                         uint32_t render_quantum_frames)
+    : BaseAudioContext(window,
+                       ContextType::kOfflineContext,
+                       render_quantum_frames),
       total_render_frames_(number_of_frames) {
   destination_node_ = OfflineAudioDestinationNode::Create(
       this, number_of_channels, number_of_frames, sample_rate);
@@ -174,7 +207,7 @@ ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         StrCat({"cannot startRendering when an OfflineAudioContext is ",
-                state().AsString()}));
+                state().AsStringView()}));
     return EmptyPromise();
   }
 

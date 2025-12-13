@@ -16,15 +16,20 @@ import android.view.View;
 import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.base.test.transit.Facility;
+import org.chromium.base.test.transit.Trip;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.hub.HubToolbarView;
 import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
+import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.layouts.LayoutTypeVisibleCondition;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** The base station for Hub, with several panes and a toolbar. */
 public abstract class HubBaseStation
@@ -36,6 +41,7 @@ public abstract class HubBaseStation
     public final ViewElement<TabLayout> paneSwitcherElement;
     public final @Nullable ViewElement<View> regularTabsButtonElement;
     public final @Nullable ViewElement<View> incognitoTabsButtonElement;
+    protected final boolean mIsStandaloneIncognitoWindow;
     protected final boolean mIncognitoTabsExist;
     protected final boolean mRegularTabsExist;
 
@@ -56,15 +62,22 @@ public abstract class HubBaseStation
                         ? declareView(toolbarElement.descendant(withId(R.id.menu_button)))
                         : null;
 
+        mIsStandaloneIncognitoWindow = IncognitoUtils.shouldOpenIncognitoAsWindow() && isIncognito;
         paneSwitcherElement =
-                declareView(toolbarElement.descendant(TabLayout.class, withId(R.id.pane_switcher)));
+                mIsStandaloneIncognitoWindow
+                        ? null
+                        : declareView(
+                                toolbarElement.descendant(
+                                        TabLayout.class, withId(R.id.pane_switcher)));
 
         // TODO(crbug.com/386819654): Add a member of type ViewElement representing tab group pane
         // The non-regular toggle tab button contentDescription is a substring found in the string:
         // R.string.accessibility_tab_switcher_standard_stack.
         regularTabsButtonElement =
-                declareView(withContentDescription(containsString("standard tab")));
-        if (mIncognitoTabsExist) {
+                mIsStandaloneIncognitoWindow
+                        ? null
+                        : declareView(withContentDescription(containsString("standard tab")));
+        if (mIncognitoTabsExist && !mIsStandaloneIncognitoWindow) {
             incognitoTabsButtonElement =
                     declareView(
                             withContentDescription(
@@ -85,13 +98,18 @@ public abstract class HubBaseStation
      *
      * @return the corresponding subclass of {@link HubBaseStation}.
      */
-    public <T extends HubBaseStation> T selectPane(
+    private <T extends HubBaseStation> T selectPane(
             @PaneId int paneId, Class<T> expectedDestination) {
-        recheckActiveConditions();
-
         if (getPaneId() == paneId) {
             return expectedDestination.cast(this);
         }
+
+        return selectPaneTo(paneId, expectedDestination).complete().get(expectedDestination);
+    }
+
+    private <T extends HubBaseStation> TripBuilder selectPaneTo(
+            int paneId, Class<T> expectedDestination) {
+        recheckActiveConditions();
 
         T destinationStation =
                 expectedDestination.cast(
@@ -102,7 +120,7 @@ public abstract class HubBaseStation
                 HubStationUtils.getContentDescriptionSubstringForIdPaneSelection(paneId);
         SwitchPaneButtonFacility button =
                 noopTo().enterFacility(new SwitchPaneButtonFacility(contentDescription));
-        return button.buttonElement.clickTo().arriveAt(destinationStation);
+        return button.buttonElement.clickTo().arriveAtAnd(destinationStation);
     }
 
     /** Convenience method to select the Regular Tab Switcher pane. */
@@ -122,7 +140,19 @@ public abstract class HubBaseStation
 
     /** Convenience method to select the History pane. */
     public HistoryPaneStation selectHistoryPane() {
-        return selectPane(PaneId.HISTORY, HistoryPaneStation.class);
+        if (getPaneId() == PaneId.HISTORY) {
+            return HistoryPaneStation.class.cast(this);
+        }
+
+        TripBuilder tripBuilder = selectPaneTo(PaneId.HISTORY, HistoryPaneStation.class);
+
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getActivity())) {
+            Trip trip = tripBuilder.enterFacilityAnd(new SoftKeyboardFacility()).complete();
+            trip.get(SoftKeyboardFacility.class).close();
+            return trip.get(HistoryPaneStation.class);
+        } else {
+            return tripBuilder.complete().get(HistoryPaneStation.class);
+        }
     }
 
     public class SwitchPaneButtonFacility extends Facility<HubBaseStation> {

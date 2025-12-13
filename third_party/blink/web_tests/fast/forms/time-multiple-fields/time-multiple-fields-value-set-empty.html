@@ -1,26 +1,30 @@
 <!DOCTYPE html>
-<body>
-<script src="../../../resources/js-test.js"></script>
+<title>input[type=time] should update hour field on ArrowUp when value is empty</title>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
 <script src="../resources/common.js"></script>
 <script src="../resources/multiple-fields-value-set-empty.js"></script>
+<body></body>
 <script>
-testSettingEmptyStringClearsSubFields('time');
+function getTextContent(input) {
+  const textContent = getUserAgentShadowTextContent(input);
+  return textContent.replace('\u202f', ' ');
+}
 
-debug('');
-input = document.createElement('input');
-input.type = 'time';
-input.min = '11:23:45';
-input.step = '60';
-// Because the step value is 60 seconds, the seconds fields is read-only.
-document.body.appendChild(input);
-debug('Initial text: ' + getUserAgentShadowTextContent(input));
-debug('Empty value should not clear read-only fields.');
-shouldBeEqualToString('input.value = ""; getUserAgentShadowTextContent(input)', '--:--:45\u202f--');
+test(() => {
+  input = document.createElement('input');
+  input.type = 'time';
+  input.min = '11:23:45';
+  input.step = '60';
+  document.body.appendChild(input);
 
-debug('Empty value should clear only editable fields.');
-input.focus();
-shouldBeEqualToString('eventSender.keyDown("ArrowUp"); getUserAgentShadowTextContent(input)', '01:--:45\u202f--');
-shouldBeEqualToString('input.value = ""; getUserAgentShadowTextContent(input)', '--:--:45\u202f--');
-
+  assert_equals('--:--:-- --', getTextContent(input));
+  input.value = '';
+  assert_equals('--:--:-- --', getTextContent(input));
+  input.focus();
+  eventSender.keyDown("ArrowUp");
+  assert_equals('01:--:-- --', getTextContent(input));
+  input.value = '';
+  assert_equals('--:--:-- --', getTextContent(input));
+}, 'Pressing ArrowUp updates the hour field when value is empty');
 </script>
-</body>

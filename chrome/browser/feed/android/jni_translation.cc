@@ -14,7 +14,7 @@ namespace android {
 
 LoggingParameters ToNativeLoggingParameters(
     JNIEnv* env,
-    const base::android::JavaParamRef<jbyteArray>& logging_parameters) {
+    const base::android::JavaRef<jbyteArray>& logging_parameters) {
   std::string bytes;
   base::android::JavaByteArrayToString(env, logging_parameters, &bytes);
   feedui::LoggingParameters logging_parameters_value;

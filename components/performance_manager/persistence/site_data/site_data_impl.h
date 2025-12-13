@@ -118,7 +118,7 @@ class SiteDataImpl : public base::RefCounted<SiteDataImpl> {
   void NotifyLoadTimePerformanceMeasurement(
       base::TimeDelta load_duration,
       base::TimeDelta cpu_usage_estimate,
-      uint64_t private_footprint_kb_estimate);
+      base::ByteCount private_footprint_estimate);
 
   base::TimeDelta last_loaded_time_for_testing() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

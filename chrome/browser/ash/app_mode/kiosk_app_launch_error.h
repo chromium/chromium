@@ -6,10 +6,14 @@
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_LAUNCH_ERROR_H_
 
 #include <string>
+#include <string_view>
+
+class PrefService;
 
 namespace ash {
 
-extern const char kKioskLaunchErrorHistogram[];
+inline constexpr std::string_view kKioskLaunchErrorHistogram =
+    "Kiosk.Launch.Error";
 
 class AuthFailure;
 
@@ -51,17 +55,26 @@ class KioskAppLaunchError {
 
   // Saves a launch error. The error is used on the next Chrome run to report
   // metrics and display a message to the user.
-  static void Save(Error error);
+  static void Save(PrefService& local_state, Error error);
 
   // Saves a cryptohome auth error. The error is used for metrics report on the
   // next Chrome run.
-  static void SaveCryptohomeFailure(const AuthFailure& auth_failure);
+  static void SaveCryptohomeFailure(PrefService& local_state,
+                                    const AuthFailure& auth_failure);
 
   // Gets the last launch error.
-  static Error Get();
+  static Error Get(const PrefService& local_state);
+
+  // Saves that the user cancelled this launch. This flag is used to prevent
+  // Kiosk from re-launching automatically next run.
+  static void SaveUserCancelledLaunch(PrefService& local_state);
+
+  // Returns whether the last Kiosk launch ended because the user cancelled it.
+  // Used to prevent Kiosk from re-launching automatically next run.
+  static bool DidUserCancelLaunch(const PrefService& local_state);
 
   // Records the launch error and cryptohome auth error metric and clears them.
-  static void RecordMetricAndClear();
+  static void RecordMetricAndClear(PrefService& local_state);
 
   KioskAppLaunchError() = delete;
   KioskAppLaunchError(const KioskAppLaunchError&) = delete;

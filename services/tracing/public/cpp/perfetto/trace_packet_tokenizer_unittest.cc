@@ -2,19 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/tracing/public/cpp/perfetto/trace_packet_tokenizer.h"
 
+#include <list>
+
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_packet.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pb.h"
-
-#include <list>
 
 namespace tracing {
 namespace {
@@ -27,9 +23,9 @@ class TracePacketTokenizerTest : public testing::Test {
   // any out-of-bounds reads.
   std::vector<perfetto::TracePacket> ParseChunk(const uint8_t* data,
                                                 size_t size) {
-    input_chunks_.emplace_back(data, data + size);
+    input_chunks_.emplace_back(data, UNSAFE_TODO(data + size));
     auto& it = input_chunks_.back();
-    return tokenizer_.Parse(it.data(), it.size());
+    return tokenizer_.Parse(it);
   }
 
   void Reset() {
@@ -72,8 +68,8 @@ TEST_F(TracePacketTokenizerTest, PartialParse) {
   EXPECT_TRUE(packets.empty());
   EXPECT_TRUE(tokenizer().has_more());
 
-  packets = ParseChunk(reinterpret_cast<const uint8_t*>(packet_data.data() +
-                                                        packet_data.size() / 2),
+  packets = ParseChunk(reinterpret_cast<const uint8_t*>(UNSAFE_TODO(
+                           packet_data.data() + packet_data.size() / 2)),
                        packet_data.size() / 2);
   EXPECT_EQ(1u, packets.size());
   perfetto::protos::TracePacket parsed_packet;
@@ -120,10 +116,10 @@ TEST_F(TracePacketTokenizerTest, Fragmentation) {
   for (size_t chunk_size = 1; chunk_size < packet_data.size(); chunk_size++) {
     size_t packet_count = 0;
     for (size_t offset = 0; offset < packet_data.size(); offset += chunk_size) {
-      const auto* chunk_start =
-          reinterpret_cast<const uint8_t*>(packet_data.data()) + offset;
+      const auto* chunk_start = UNSAFE_TODO(
+          reinterpret_cast<const uint8_t*>(packet_data.data()) + offset);
       const auto* chunk_end =
-          std::min(chunk_start + chunk_size,
+          std::min(UNSAFE_TODO(chunk_start + chunk_size),
                    reinterpret_cast<const uint8_t*>(&*packet_data.end()));
       auto packets = ParseChunk(chunk_start, chunk_end - chunk_start);
       if (packets.empty())

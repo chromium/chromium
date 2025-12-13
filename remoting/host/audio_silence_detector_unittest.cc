@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -15,19 +16,19 @@ namespace {
 const int kSamplingRate = 1000;
 
 void TestSilenceDetector(AudioSilenceDetector* target,
-                         const int16_t* samples,
-                         int samples_count,
+                         base::span<const int16_t> samples,
                          bool silence_expected) {
   target->Reset(kSamplingRate, 1);
   bool silence_started = false;
   int threshold_length = 0;
-  for (int i = 0; i < 3 * kSamplingRate / samples_count; ++i) {
-    bool result = target->IsSilence(samples, samples_count);
+  base::span<const unsigned char> samples_bytes = base::as_bytes(samples);
+  for (size_t i = 0; i < 3 * kSamplingRate / samples.size(); ++i) {
+    bool result = target->IsSilence(samples_bytes);
     if (silence_started) {
       ASSERT_TRUE(result);
     } else if (result) {
       silence_started = true;
-      threshold_length = i * samples_count;
+      threshold_length = i * samples.size();
     }
   }
 
@@ -44,27 +45,28 @@ void TestSilenceDetector(AudioSilenceDetector* target,
 }  // namespace
 
 TEST(AudioSilenceDetectorTest, Silence) {
-  const int16_t kSamples[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  auto kSamples = std::to_array<int16_t>({0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
 
   AudioSilenceDetector target(0);
-  TestSilenceDetector(&target, kSamples, std::size(kSamples), true);
+  TestSilenceDetector(&target, kSamples, true);
 }
 
 TEST(AudioSilenceDetectorTest, Sound) {
-  const int16_t kSamples[] = {65, 73, 83, 89, 92, -1, 5, 9, 123, 0};
+  auto kSamples =
+      std::to_array<int16_t>({65, 73, 83, 89, 92, -1, 5, 9, 123, 0});
 
   AudioSilenceDetector target(0);
-  TestSilenceDetector(&target, kSamples, std::size(kSamples), false);
+  TestSilenceDetector(&target, kSamples, false);
 }
 
 TEST(AudioSilenceDetectorTest, Threshold) {
-  const int16_t kSamples[] = {0, 0, 0, 0, 1, 0, 0, -1, 0, 0};
+  auto kSamples = std::to_array<int16_t>({0, 0, 0, 0, 1, 0, 0, -1, 0, 0});
 
   AudioSilenceDetector target1(0);
-  TestSilenceDetector(&target1, kSamples, std::size(kSamples), false);
+  TestSilenceDetector(&target1, kSamples, false);
 
   AudioSilenceDetector target2(1);
-  TestSilenceDetector(&target2, kSamples, std::size(kSamples), true);
+  TestSilenceDetector(&target2, kSamples, true);
 }
 
 }  // namespace remoting

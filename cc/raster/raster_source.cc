@@ -129,6 +129,7 @@ void RasterSource::PlaybackDisplayListToCanvas(
   PlaybackParams params(settings.image_provider, SkM44());
   params.raster_inducing_scroll_offsets =
       settings.raster_inducing_scroll_offsets;
+  params.destination_hdr_headroom = settings.hdr_headroom;
   for (int i = 0; i < repeat_count; ++i) {
     display_list_->Raster(raster_canvas, params);
   }

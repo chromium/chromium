@@ -29,7 +29,7 @@ void TestConversion(std::vector<std::string> filter_list_rules,
   CHECK(base::WriteFile(input_path, filterlist));
 
   std::optional<base::Value> expected_json =
-      base::JSONReader::Read(json_result);
+      base::JSONReader::Read(json_result, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   CHECK(expected_json.has_value());
 
   base::FilePath output_path = temp_dir.GetPath();

@@ -14,12 +14,9 @@
 
 #include "util/mac/mac_util.h"
 
-#include <Availability.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
-#include <string.h>
 #include <sys/types.h>
-#include <sys/utsname.h>
 
 #include <string_view>
 
@@ -28,7 +25,6 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/mac/scoped_ioobject.h"
-#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -60,45 +56,6 @@ extern const CFStringRef _kCFSystemVersionBuildVersionKey WEAK_IMPORT;
 }  // extern "C"
 
 namespace {
-
-#if __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_13_4
-// Returns the running system’s Darwin major version. Don’t call this, it’s an
-// implementation detail and its result is meant to be cached by
-// MacOSVersionNumber().
-//
-// This is very similar to Chromium’s base/mac/mac_util.mm
-// DarwinMajorVersionInternal().
-int DarwinMajorVersion() {
-  // base::OperatingSystemVersionNumbers calls Gestalt(), which is a
-  // higher-level function than is needed. It might perform unnecessary
-  // operations. On 10.6, it was observed to be able to spawn threads (see
-  // https://crbug.com/53200). It might also read files or perform other
-  // blocking operations. Actually, nobody really knows for sure just what
-  // Gestalt() might do, or what it might be taught to do in the future.
-  //
-  // uname(), on the other hand, is implemented as a simple series of sysctl()
-  // system calls to obtain the relevant data from the kernel. The data is
-  // compiled right into the kernel, so no threads or blocking or other funny
-  // business is necessary.
-
-  utsname uname_info;
-  int rv = uname(&uname_info);
-  PCHECK(rv == 0) << "uname";
-
-  DCHECK_EQ(strcmp(uname_info.sysname, "Darwin"), 0)
-      << "unexpected sysname " << uname_info.sysname;
-
-  char* dot = strchr(uname_info.release, '.');
-  CHECK(dot);
-
-  int darwin_major_version = 0;
-  CHECK(base::StringToInt(
-      std::string_view(uname_info.release, dot - uname_info.release),
-      &darwin_major_version));
-
-  return darwin_major_version;
-}
-#endif  // DT < 10.13.4
 
 // Helpers for the weak-imported private CoreFoundation internals.
 
@@ -132,7 +89,7 @@ bool StringToVersionNumbers(std::string_view version,
     LOG(ERROR) << "version has unexpected format";
     return false;
   }
-  if (!base::StringToInt(version.substr(0, first_dot), major)) {
+  if (!base::StringToInt(std::string_view(&version[0], first_dot), major)) {
     LOG(ERROR) << "version has unexpected format";
     return false;
   }
@@ -144,14 +101,19 @@ bool StringToVersionNumbers(std::string_view version,
   if (second_dot == std::string::npos) {
     second_dot = version.length();
   }
+
   if (!base::StringToInt(
-          version.substr(first_dot + 1, second_dot - first_dot - 1), minor)) {
+          std::string_view(&version[first_dot + 1], second_dot - first_dot - 1),
+          minor)) {
     LOG(ERROR) << "version has unexpected format";
     return false;
   }
   if (second_dot == version.length()) {
     *bugfix = 0;
-  } else if (!base::StringToInt(version.substr(second_dot + 1), bugfix)) {
+  } else if (!base::StringToInt(
+                 std::string_view(&version[second_dot + 1],
+                                  version.length() - second_dot - 1),
+                 bugfix)) {
     LOG(ERROR) << "version has unexpected format";
     return false;
   }
@@ -180,44 +142,24 @@ int MacOSVersionNumber() {
     // version from the kernel without having to open any files or spin up any
     // threads, but it’s only available in macOS 10.13.4 and later.
     std::string macos_version_number_string = ReadStringSysctlByName(
-        "kern.osproductversion",
-        __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_13_4);
-    if (!macos_version_number_string.empty()) {
-      int major;
-      int minor;
-      int bugfix;
-      if (StringToVersionNumbers(
-              macos_version_number_string, &major, &minor, &bugfix)) {
-        DCHECK_GE(major, 10);
-        DCHECK_LE(major, 99);
-        DCHECK_GE(minor, 0);
-        DCHECK_LE(minor, 99);
-        DCHECK_GE(bugfix, 0);
-        DCHECK_LE(bugfix, 99);
-        return major * 1'00'00 + minor * 1'00 + bugfix;
-      }
-    }
+        "kern.osproductversion", true);
+    DCHECK(!macos_version_number_string.empty());
 
-#if __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_13_4
-    // On macOS 10.13.4 and later, the sysctlbyname above should have been
-    // successful.
-    NOTREACHED();
-#else  // DT >= 10.13.4
-    // The Darwin major version is always 4 greater than the macOS minor version
-    // for Darwin versions beginning with 6, corresponding to Mac OS X 10.2,
-    // through Darwin 19, corresponding to macOS 10.15.
-    int darwin_major_version = DarwinMajorVersion();
-    DCHECK_GE(darwin_major_version, 6);
-    DCHECK_LE(darwin_major_version, 19);
+    int major;
+    int minor;
+    int bugfix;
+    bool success = StringToVersionNumbers(
+            macos_version_number_string, &major, &minor, &bugfix);
+    DCHECK(success);
 
-    int macos_version_number = 10'00'00 + (darwin_major_version - 4) * 1'00;
+    DCHECK_GE(major, 10);
+    DCHECK_LE(major, 99);
+    DCHECK_GE(minor, 0);
+    DCHECK_LE(minor, 99);
+    DCHECK_GE(bugfix, 0);
+    DCHECK_LE(bugfix, 99);
 
-    // On macOS 10.13.4 and later, the sysctlbyname above should have been
-    // successful.
-    DCHECK_LT(macos_version_number, 10'13'04);
-
-    return macos_version_number;
-#endif  // DT >= 10.13.4
+    return major * 1'00'00 + minor * 1'00 + bugfix;
   }();
 
   return macos_version_number;
@@ -312,16 +254,18 @@ void MacModelAndBoard(std::string* model, std::string* board_id) {
     model->assign(IORegistryEntryDataPropertyAsString(platform_expert.get(),
                                                       CFSTR("model")));
 #if defined(ARCH_CPU_X86_FAMILY)
-    CFStringRef kBoardProperty = CFSTR("board-id");
-#elif defined(ARCH_CPU_ARM64)
-    // TODO(https://crashpad.chromium.org/bug/352): When production arm64
-    // hardware is available, determine whether board-id works and switch to it
-    // if feasible, otherwise, determine whether target-type remains a viable
-    // alternative.
-    CFStringRef kBoardProperty = CFSTR("target-type");
-#endif
     board_id->assign(IORegistryEntryDataPropertyAsString(platform_expert.get(),
-                                                         kBoardProperty));
+                                                         CFSTR("board-id")));
+#elif defined(ARCH_CPU_ARM64)
+    board_id->assign(IORegistryEntryDataPropertyAsString(
+        platform_expert.get(), CFSTR("target-sub-type")));
+    if (board_id->empty()) {
+      board_id->assign(IORegistryEntryDataPropertyAsString(
+          platform_expert.get(), CFSTR("target-type")));
+    }
+#else
+#error Port.
+#endif
   } else {
     model->clear();
     board_id->clear();

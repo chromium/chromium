@@ -31,8 +31,9 @@ namespace ash {
 
 struct BatteryColorTemplate {
   bool operator==(const BatteryColorTemplate& other) const {
-    bool foreground_colors_match = foreground_color == other.foreground_color;
-    bool badge_colors_match = badge_color == other.badge_color;
+    const bool foreground_colors_match =
+        foreground_color == other.foreground_color;
+    const bool badge_colors_match = badge_color == other.badge_color;
 
     return foreground_colors_match && badge_colors_match;
   }
@@ -164,6 +165,10 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   // Returns true if a battery is present.
   virtual bool IsBatteryPresent() const;
 
+  // Returns true if the battery sustainer feature is currently preventing the
+  // battery from falling below the target threshold (i.e., 80%).
+  bool IsBatteryChargeLimited() const;
+
   // Returns true if the battery is full. This also implies that a charger
   // is connected.
   bool IsBatteryFull() const;
@@ -204,6 +209,10 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
 
   // Returns true if line power (including a charger of any type) is connected.
   virtual bool IsLinePowerConnected() const;
+
+  // Returns true if an incompatible charger is plugged in, which is incapable
+  // of charging the device at all (no trickle charging like with USB chargers).
+  bool IsIncompatibleChargerConnected() const;
 
   // Returns true if an official, non-USB charger is connected.
   bool IsMainsChargerConnected() const;

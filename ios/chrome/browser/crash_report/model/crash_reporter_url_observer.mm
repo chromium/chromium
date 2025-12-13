@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/browser/crash_report/model/crash_reporter_url_observer.h"
 
 #import <Foundation/Foundation.h>
 
+#import <array>
 #import <map>
 
 #import "base/check.h"
@@ -19,9 +15,9 @@
 #import "components/crash/core/common/crash_key.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -36,15 +32,15 @@ namespace {
 const int kNumberOfURLsToSend = 3;
 
 // Keep the following two CrashKey arrays in sync with `kNumberOfURLsToSend`.
-static crash_reporter::CrashKeyString<1024> url_crash_keys[] = {
-    {"url0", CrashKeyString<1024>::Tag::kArray},
-    {"url1", CrashKeyString<1024>::Tag::kArray},
-    {"url2", CrashKeyString<1024>::Tag::kArray},
+static std::array<crash_reporter::CrashKeyString<1024>, 3> url_crash_keys = {
+    crash_reporter::CrashKeyString<1024>{"url0"},
+    crash_reporter::CrashKeyString<1024>{"url1"},
+    crash_reporter::CrashKeyString<1024>{"url2"},
 };
-static CrashKeyString<1024> pending_url_crash_keys[] = {
-    {"url0-pending", CrashKeyString<1024>::Tag::kArray},
-    {"url1-pending", CrashKeyString<1024>::Tag::kArray},
-    {"url2-pending", CrashKeyString<1024>::Tag::kArray},
+static std::array<CrashKeyString<1024>, 3> pending_url_crash_keys = {
+    crash_reporter::CrashKeyString<1024>{"url0-pending"},
+    crash_reporter::CrashKeyString<1024>{"url1-pending"},
+    crash_reporter::CrashKeyString<1024>{"url2-pending"},
 };
 
 // The group for preload WebStates.
@@ -96,9 +92,9 @@ const char kPreloadWebStateGroup[] = "PreloadGroup";
 
 // static
 CrashReporterURLObserver* CrashReporterURLObserver::GetSharedInstance() {
-  static CrashReporterURLObserver* instance =
-      new CrashReporterURLObserver([[CrashReporterParameterSetter alloc] init]);
-  return instance;
+  static base::NoDestructor<CrashReporterURLObserver> instance(
+      [[CrashReporterParameterSetter alloc] init]);
+  return instance.get();
 }
 
 CrashReporterURLObserver::CrashReporterURLObserver(
@@ -112,7 +108,12 @@ CrashReporterURLObserver::CrashReporterURLObserver(
   }
 }
 
-CrashReporterURLObserver::~CrashReporterURLObserver() {}
+CrashReporterURLObserver::~CrashReporterURLObserver() {
+  CHECK(!WebStateListObserver::IsInObserverList() &&
+        !web::WebStateObserver::IsInObserverList())
+      << "CrashReporterURLObserver needs to be removed from "
+         "observer lists before their destruction.";
+}
 
 #pragma mark - Group operations
 

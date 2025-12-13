@@ -151,6 +151,12 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   // timer.
   void ConfigureAutoLogin();
 
+  void FinalizeAuthAndStartSession(const UserContext& user_context,
+                                   bool has_auth_cookies);
+  void FinalizeAuthAndStartSession(const UserContext& user_context);
+
+  bool MaybeShowPasswordSelectionScreen(const UserContext& user_context);
+
   DemoLoginController* GetDemoLoginControllerForTest();
 
  private:
@@ -199,6 +205,10 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   // empty, it specify additional error text provided by authenticator, it is
   // not localized.
   void ShowError(SigninError error, const std::string& details);
+
+  // Shows an error message because the OOBE is not marked as completed.
+  // This occurs if StartupUtils::IsOobeCompleted() returns false unexpectedly.
+  void ShowOobeNotCompletedError();
 
   // Shows privacy notification in case of auto lunch managed guest session.
   void ShowAutoLaunchManagedGuestSessionNotification();
@@ -345,6 +355,9 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   // Initialized with `kExternal` as more restricted mode.
   LoginPerformer::AuthorizationMode auth_mode_ =
       LoginPerformer::AuthorizationMode::kExternal;
+
+  // Whether the user has auth cookies.
+  std::optional<bool> has_auth_cookies_;
 
   // Timer when the signin screen was first displayed. Used to measure the time
   // from showing the screen until a successful login is performed.

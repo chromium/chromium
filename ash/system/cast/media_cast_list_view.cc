@@ -35,6 +35,7 @@
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 
@@ -142,9 +143,9 @@ std::unique_ptr<PillButton> MediaCastListView::CreateStopButton() {
           weak_factory_.GetWeakPtr()),
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_STOP_CASTING),
       PillButton::kDefaultWithIconLeading, &kQuickSettingsCircleStopIcon);
-  stop_button->SetBackgroundColorId(cros_tokens::kCrosSysErrorContainer);
-  stop_button->SetIconColorId(cros_tokens::kCrosSysError);
-  stop_button->SetButtonTextColorId(cros_tokens::kCrosSysError);
+  stop_button->SetBackgroundColor(cros_tokens::kCrosSysErrorContainer);
+  stop_button->SetIconColor(cros_tokens::kCrosSysError);
+  stop_button->SetButtonTextColor(cros_tokens::kCrosSysError);
   stop_button->SetID(kStopCastingButtonId);
   return stop_button;
 }

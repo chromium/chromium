@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -99,14 +100,6 @@ class TabModelObserverJniBridge implements TabModelObserver {
     }
 
     @Override
-    public final void tabPendingClosure(Tab tab, @TabClosingSource int source) {
-        assert mNativeTabModelObserverJniBridge != 0;
-        assert tab.isInitialized();
-        TabModelObserverJniBridgeJni.get()
-                .tabPendingClosure(mNativeTabModelObserverJniBridge, tab, source);
-    }
-
-    @Override
     public final void tabClosureUndone(Tab tab) {
         assert mNativeTabModelObserverJniBridge != 0;
         assert tab.isInitialized();
@@ -122,13 +115,13 @@ class TabModelObserverJniBridge implements TabModelObserver {
     }
 
     @Override
-    public final void multipleTabsPendingClosure(
+    public final void onTabClosePending(
             List<Tab> tabs, boolean isAllTabs, @TabClosingSource int closingSource) {
         // Convert the List to an array of objects. This makes the corresponding C++ code much
         // easier.
         assert mNativeTabModelObserverJniBridge != 0;
         TabModelObserverJniBridgeJni.get()
-                .allTabsPendingClosure(mNativeTabModelObserverJniBridge, tabs.toArray(new Tab[0]));
+                .onTabClosePending(mNativeTabModelObserverJniBridge, tabs, closingSource);
     }
 
     @Override
@@ -191,35 +184,53 @@ class TabModelObserverJniBridge implements TabModelObserver {
     // browser/ui/android/tab_model/tab_model_observer_jni_bridge.*.
     @NativeMethods
     interface Natives {
-        void didSelectTab(long nativeTabModelObserverJniBridge, Tab tab, int type, int lastId);
+        void didSelectTab(
+                long nativeTabModelObserverJniBridge,
+                @JniType("TabAndroid*") Tab tab,
+                int type,
+                int lastId);
 
-        void willCloseTab(long nativeTabModelObserverJniBridge, Tab tab);
+        void willCloseTab(long nativeTabModelObserverJniBridge, @JniType("TabAndroid*") Tab tab);
 
         void onFinishingTabClosure(
-                long nativeTabModelObserverJniBridge, Tab tab, @TabClosingSource int source);
+                long nativeTabModelObserverJniBridge,
+                @JniType("TabAndroid*") Tab tab,
+                @TabClosingSource int source);
 
         void onFinishingMultipleTabClosure(
-                long nativeTabModelObserverJniBridge, Tab[] tabs, boolean canRestore);
+                long nativeTabModelObserverJniBridge,
+                @JniType("std::vector<TabAndroid*>") Tab[] tabs,
+                boolean canRestore);
 
-        void willAddTab(long nativeTabModelObserverJniBridge, Tab tab, int type);
+        void willAddTab(
+                long nativeTabModelObserverJniBridge, @JniType("TabAndroid*") Tab tab, int type);
 
-        void didAddTab(long nativeTabModelObserverJniBridge, Tab tab, int type);
+        void didAddTab(
+                long nativeTabModelObserverJniBridge, @JniType("TabAndroid*") Tab tab, int type);
 
-        void didMoveTab(long nativeTabModelObserverJniBridge, Tab tab, int newIndex, int curIndex);
+        void didMoveTab(
+                long nativeTabModelObserverJniBridge,
+                @JniType("TabAndroid*") Tab tab,
+                int newIndex,
+                int curIndex);
 
-        void tabPendingClosure(
-                long nativeTabModelObserverJniBridge, Tab tab, @TabClosingSource int source);
+        void tabClosureUndone(
+                long nativeTabModelObserverJniBridge, @JniType("TabAndroid*") Tab tab);
 
-        void tabClosureUndone(long nativeTabModelObserverJniBridge, Tab tab);
+        void onTabCloseUndone(
+                long nativeTabModelObserverJniBridge,
+                @JniType("std::vector<TabAndroid*>") Tab[] tab);
 
-        void onTabCloseUndone(long nativeTabModelObserverJniBridge, Tab[] tab);
+        void tabClosureCommitted(
+                long nativeTabModelObserverJniBridge, @JniType("TabAndroid*") Tab tab);
 
-        void tabClosureCommitted(long nativeTabModelObserverJniBridge, Tab tab);
-
-        void allTabsPendingClosure(long nativeTabModelObserverJniBridge, Tab[] tabs);
+        void onTabClosePending(
+                long nativeTabModelObserverJniBridge,
+                @JniType("std::vector<TabAndroid*>") List<Tab> tabs,
+                int source);
 
         void allTabsClosureCommitted(long nativeTabModelObserverJniBridge);
 
-        void tabRemoved(long nativeTabModelObserverJniBridge, Tab tab);
+        void tabRemoved(long nativeTabModelObserverJniBridge, @JniType("TabAndroid*") Tab tab);
     }
 }

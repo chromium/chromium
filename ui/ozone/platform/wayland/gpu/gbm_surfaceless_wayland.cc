@@ -4,8 +4,6 @@
 
 #include "ui/ozone/platform/wayland/gpu/gbm_surfaceless_wayland.h"
 
-#include <sync/sync.h>
-
 #include <algorithm>
 #include <cmath>
 #include <cstdint>

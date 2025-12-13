@@ -143,7 +143,7 @@ message GetHintsResponse {
 // enum in enums.xml and optimization/histograms.xml for metric recording.
 enum OptimizationType {
   // Values for obsolete optimizations.
-  reserved 11, 12, 16, 29, 32, 66, 72, 73, 89, 94, 95, 96, 101;
+  reserved 11, 12, 16, 29, 32, 66, 68, 72, 73, 89, 94, 95, 96, 101;
 
   TYPE_UNSPECIFIED = 0;
   // This optimization blocks JavaScript on the page.
@@ -276,14 +276,11 @@ enum OptimizationType {
   // This optimization helps determine if this merchant page is a good candidate
   // for enabling price/amount extraction.
   AMOUNT_EXTRACTION_ALLOWLIST = 67;
-  // This optimization provides information about sites for which pages Autofill
-  // prediction improvements should be triggered on.
-  AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST = 68;
   // This optimization helps determine if this merchant page is a good candidate
-  // for enabling buy now pay later flow with Affirm.
+  // for enabling buy now pay later flow with Affirm on desktop.
   BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM = 69;
   // This optimization helps determine if this merchant page is a good candidate
-  // for enabling buy now pay later flow with Zip.
+  // for enabling buy now pay later flow with Zip on desktop.
   BUY_NOW_PAY_LATER_ALLOWLIST_ZIP = 70;
   // Provides information about whether a URL can be synced across devices for
   // saved tab groups feature.
@@ -337,8 +334,51 @@ enum OptimizationType {
   // TODO(crbug.com/423826272): Add enum 101 for READALOUD_AUDIO_OVERVIEWS.
 
   // This optimization helps determine if this merchant page is a good candidate
-  // for enabling buy now pay later flow with Klarna.
+  // for enabling buy now pay later flow with Klarna on desktop.
   BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA = 102;
+
+  // This optimization helps determine if this merchant page should be blocked
+  // for the buy now pay later flow with Affirm.
+  BUY_NOW_PAY_LATER_BLOCKLIST_AFFIRM = 103;
+  // This optimization helps determine if this merchant page should be blocked
+  // for the buy now pay later flow with Zip.
+  BUY_NOW_PAY_LATER_BLOCKLIST_ZIP = 104;
+  // This optimization helps determine if this merchant page should be blocked
+  // for the buy now pay later flow with Klarna.
+  BUY_NOW_PAY_LATER_BLOCKLIST_KLARNA = 105;
+
+  // Blocklist for the Lens Overlay EDU action chip.
+  LENS_OVERLAY_EDU_ACTION_CHIP_BLOCKLIST = 106;
+  // Allowlist for the Lens Overlay EDU action chip.
+  LENS_OVERLAY_EDU_ACTION_CHIP_ALLOWLIST = 107;
+  // Provides information about whether a page is eligible for walletable
+  // loyalty pass detection.
+  WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST = 108;
+  // Provides information about whether a page is eligible for walletable
+  // boarding pass detection.
+  WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST = 109;
+
+  // Blocklist for the NTP-Next deep dive action chip.
+  NTP_NEXT_DEEP_DIVE_ACTION_CHIP_BLOCKLIST = 110;
+  // Allowlist for the NTP-Next deep dive action chip.
+  NTP_NEXT_DEEP_DIVE_ACTION_CHIP_ALLOWLIST = 111;
+
+  // This optimization provides information about the eligibility of a URL
+  // for Reader Mode.
+  READER_MODE_ELIGIBLE = 112;
+
+  // This optimization helps determine if this merchant page is a good candidate
+  // for enabling buy now pay later flow with Affirm on Android OS.
+  BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM_ANDROID = 113;
+  // This optimization helps determine if this merchant page is a good candidate
+  // for enabling buy now pay later flow with Zip on Android OS.
+  BUY_NOW_PAY_LATER_ALLOWLIST_ZIP_ANDROID = 114;
+  // This optimization helps determine if this merchant page is a good candidate
+  // for enabling buy now pay later flow with Klarna on Android OS.
+  BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA_ANDROID = 115;
+  // Provides information about whether we may trigger Autofill on a page
+  // element in an iframe with this origin during an actor task.
+  AUTOFILL_ACTOR_IFRAME_ORIGIN_ALLOWLIST = 116;
 }
 
 // Presents semantics for how page load URLs should be matched.

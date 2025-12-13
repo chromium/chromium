@@ -20,9 +20,9 @@
 #import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_prefs.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_app_interface.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_app_interface.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
@@ -35,11 +35,10 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/widget_promo_instructions/widget_promo_instructions_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -91,8 +90,12 @@ using password_manager_test_utils::PasswordSettingsTableView;
 using password_manager_test_utils::PasswordTextfieldForUsernameAndSites;
 using password_manager_test_utils::ReauthenticationController;
 using password_manager_test_utils::SaveExamplePasskeyToStore;
+using password_manager_test_utils::SaveHiddenPasskeyToStore;
 using password_manager_test_utils::SavePasswordFormToProfileStore;
 using password_manager_test_utils::TapNavigationBarEditButton;
+using password_manager_test_utils::TapToolbarSelectButton;
+using password_manager_test_utils::ToolbarEditDoneButton;
+using password_manager_test_utils::ToolbarSelectButton;
 using password_manager_test_utils::UsernameTextfieldForUsernameAndSites;
 using testing::ElementWithAccessibilityLabelSubstring;
 using testing::NavigationBarBackButton;
@@ -179,11 +182,6 @@ id<GREYMatcher> SavedPasswordsPasskeysHeaderMatcher() {
                         IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_SAVED_HEADING)),
                     grey_accessibilityTrait(UIAccessibilityTraitHeader),
                     nullptr);
-}
-
-// Matcher for a UITextField inside a SettingsSearchCell.
-id<GREYMatcher> SearchTextField() {
-  return grey_accessibilityID(kPasswordsSearchBarID);
 }
 
 GREYLayoutConstraint* Below() {
@@ -364,10 +362,8 @@ id<GREYMatcher> PasswordManagerWidgetPromoInstructions() {
 // Returns matcher for the close button of the Password Manager widget promo
 // instruction screen.
 id<GREYMatcher> PasswordManagerWidgetPromoInstructionsCloseButton() {
-  return grey_allOf(
-      grey_accessibilityID(
-          kConfirmationAlertSecondaryActionAccessibilityIdentifier),
-      grey_interactable(), nullptr);
+  return grey_allOf(chrome_test_util::ButtonStackSecondaryButton(),
+                    grey_interactable(), nullptr);
 }
 
 // Returns matcher for the Password Details move to account button.
@@ -745,9 +741,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
     config.iph_feature_enabled = "IPH_iOSPromoPasswordManagerWidget";
   }
 
-  if ([self isRunningTest:@selector(testAutomaticPasskeyUpgradesPrefToggle)]) {
-    config.features_enabled.push_back(
-        kCredentialProviderAutomaticPasskeyUpgrade);
+  if ([self isRunningTest:@selector(testTappingInfoButtonForHiddenPasskey)]) {
+    config.features_enabled.push_back(kCredentialProviderSignalAPI);
   }
 
   return config;
@@ -761,7 +756,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   OpenPasswordManager();
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 
-  TapNavigationBarEditButton();
+  TapToolbarSelectButton();
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
   [[EarlGrey selectElementWithMatcher:EditDoneButton()]
       performAction:grey_tap()];
@@ -1191,7 +1186,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 // Checks that deleting a password from password details can be cancelled.
-- (void)testCancelDeletionInDetailView {
+// TODO(crbug.com/468309777): This test is flaky.
+- (void)FLAKY_testCancelDeletionInDetailView {
   // Save form to be deleted later.
   SavePasswordFormToProfileStore();
 
@@ -1243,7 +1239,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   OpenPasswordManager();
 
-  TapNavigationBarEditButton();
+  TapToolbarSelectButton();
 
   [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
       performAction:grey_tap()];
@@ -1514,6 +1510,13 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // Checks the order of the elements in the detail view layout for a federated
 // credential.
 - (void)testLayoutFederated {
+  // TODO(crbug.com/444185069): Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+#endif
+
   GREYAssert(
       [PasswordSettingsAppInterface
           saveExampleFederatedOriginToProfileStore:
@@ -1697,7 +1700,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   OpenPasswordManager();
 
-  TapNavigationBarEditButton();
+  TapToolbarSelectButton();
 
   // Select password entry to be removed.
   [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
@@ -1734,7 +1737,13 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // storing just about enough passwords to ensure filling more than one page on
 // any device. To limit the effect of (2), custom large scrolling steps are
 // added to the usual scrolling actions.
-- (void)testManyPasswords {
+// TODO(crbug.com/442382530): Re-enable this test once it has been fixed.
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testManyPasswords FLAKY_testManyPasswords
+#else
+#define MAYBE_testManyPasswords testManyPasswords
+#endif
+- (void)MAYBE_testManyPasswords {
   // Enough just to ensure filling more than one page on all devices.
   constexpr int kPasswordsCount = 15;
 
@@ -1783,14 +1792,13 @@ void OpenPasswordManagerWidgetPromoInstructions() {
            usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, kJump)
         onElementWithMatcher:PasswordDetailsTableViewMatcher()]
         assertWithMatcher:grey_notNil()];
+    [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
+        performAction:grey_tap()];
+    [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
+        performAction:grey_tap()];
+    [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+        performAction:grey_tap()];
   }
-
-  [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
 }
 
 // Checks that if all passwords are deleted in the list view, the enabled Add
@@ -1801,7 +1809,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   OpenPasswordManager();
 
-  TapNavigationBarEditButton();
+  TapToolbarSelectButton();
 
   // Select password entry to be removed.
   [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
@@ -1867,6 +1875,14 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
 // Test export flow
 - (void)testExportFlow {
+#if BUILDFLAG(IOS_CREDENTIAL_EXCHANGE_ENABLED)
+  if (@available(iOS 26, *)) {
+    // TODO(crbug.com/463313017): Move this test to credential_export_egtest.mm.
+    EARL_GREY_TEST_SKIPPED(
+        @"This feature is moved elsewhere with credential exchange enabled");
+  }
+#endif
+
   // Saving a form is needed for exporting passwords.
   SavePasswordFormToProfileStore();
 
@@ -1878,9 +1894,11 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:ToolbarSettingsSubmenuButton()]
       performAction:grey_tap()];
 
+  const int exportButtonAccessibilityId = IDS_IOS_EXPORT_PASSWORDS;
+
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(ButtonWithAccessibilityLabelId(
-                                              IDS_IOS_EXPORT_PASSWORDS),
+                                              exportButtonAccessibilityId),
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
                                                   kScrollAmount)
@@ -1889,7 +1907,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   [GetInteractionForPasswordsExportConfirmAlert(
       chrome_test_util::AlertItemWithAccessibilityLabelId(
-          IDS_IOS_EXPORT_PASSWORDS)) performAction:grey_tap()];
+          exportButtonAccessibilityId)) performAction:grey_tap()];
 
   // Wait until the alerts are dismissed.
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -1898,7 +1916,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       grey_accessibilityTrait(UIAccessibilityTraitNotEnabled);
 
   [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_EXPORT_PASSWORDS)]
+                                          exportButtonAccessibilityId)]
       assertWithMatcher:exportButtonStatusMatcher];
 
   [ChromeEarlGrey verifyActivitySheetVisible];
@@ -1910,7 +1928,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // Check that export button is re-enabled.
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ActionSheetItemWithAccessibilityLabelId(
-                     IDS_IOS_EXPORT_PASSWORDS)]
+                     exportButtonAccessibilityId)]
       assertWithMatcher:grey_not(grey_accessibilityTrait(
                             UIAccessibilityTraitNotEnabled))];
   [[EarlGrey
@@ -1924,6 +1942,13 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // Test that when user types text in search field, passwords and blocked
 // items are filtered out correctly.
 - (void)testSearchPasswords {
+  // TODO(crbug.com/444185069): Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+#endif
+
   SaveExamplePasswordForms();
   SaveExampleBlockedFormsToProfileStore();
 
@@ -1938,9 +1963,9 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [GetInteractionForPasswordEntry(@"exclude2.com")
       assertWithMatcher:grey_notNil()];
 
-  [[EarlGrey selectElementWithMatcher:SearchTextField()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:SearchTextField()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
       performAction:grey_replaceText(@"2")];
 
   [[self interactionForSinglePasswordEntryWithDomain:@"example11.com"]
@@ -1952,9 +1977,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [GetInteractionForPasswordEntry(@"exclude2.com")
       assertWithMatcher:grey_notNil()];
 
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(IDS_CANCEL)]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI clearAndDismissSearchBar];
   [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
@@ -1963,12 +1986,19 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
 // Test search and delete all passwords and blocked items.
 - (void)testSearchAndDeleteAllPasswords {
+  // TODO(crbug.com/444185069): Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+#endif
+
   SaveExamplePasswordForms();
   SaveExampleBlockedFormsToProfileStore();
 
   OpenPasswordManager();
 
-  [[EarlGrey selectElementWithMatcher:SearchTextField()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
       performAction:grey_replaceText(@"ex")];
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
@@ -1976,7 +2006,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewID)]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
-  TapNavigationBarEditButton();
+  TapToolbarSelectButton();
 
   // Select all.
   [[self interactionForSinglePasswordEntryWithDomain:@"example11.com"]
@@ -2005,7 +2035,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       assertWithMatcher:grey_nil()];
   [GetInteractionForPasswordEntry(@"exclude2.com")
       assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+  [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
       performAction:grey_tap()];
 }
 
@@ -2014,11 +2044,14 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   SaveExamplePasswordForms();
 
   OpenPasswordManager();
-  TapNavigationBarEditButton();
+  TapToolbarSelectButton();
 
-  // Verify search bar is disabled.
-  [[EarlGrey selectElementWithMatcher:SearchTextField()]
-      assertWithMatcher:grey_not(grey_userInteractionEnabled())];
+  // Try to tap the search field and verify it doesn't get focus.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
+      assertWithMatcher:grey_not(grey_firstResponder())];
+
   [[EarlGrey selectElementWithMatcher:EditDoneButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
@@ -2027,13 +2060,20 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
 // Test that the user can edit a password that is part of search results.
 - (void)testCanEditPasswordsFromASearch {
+  // TODO(crbug.com/444185069): Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+#endif
+
   SaveExamplePasswordForms();
   OpenPasswordManager();
 
-  [[EarlGrey selectElementWithMatcher:SearchTextField()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
       performAction:grey_replaceText(@"2")];
 
-  TapNavigationBarEditButton();
+  TapToolbarSelectButton();
 
   // Select password entry to be edited.
   [GetInteractionForPasswordEntry(@"example12.com") performAction:grey_tap()];
@@ -2051,13 +2091,13 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       assertWithMatcher:grey_nil()];
 
   // Get out of edit mode.
-  [[EarlGrey selectElementWithMatcher:EditDoneButton()]
+  [[EarlGrey selectElementWithMatcher:ToolbarEditDoneButton()]
       performAction:grey_tap()];
 
   // Remove filter search term.
-  // TODO(crbug.com/40916973): Revert to grey_clearText when fixed in EG.
-  [[EarlGrey selectElementWithMatcher:SearchTextField()]
-      performAction:grey_replaceText(@"")];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI clearAndDismissSearchBar];
 
   // Only password 1 should show.
   [GetInteractionForPasswordEntry(@"example11.com")
@@ -2368,6 +2408,44 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
+// Checks interaction with an info button for a hidden passkey.
+- (void)testTappingInfoButtonForHiddenPasskey {
+  SaveHiddenPasskeyToStore();
+
+  OpenPasswordManager();
+
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
+      performAction:grey_tap()];
+
+  // Check that the information about passkey not working is visible.
+  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                          IDS_IOS_PASSKEY_DOES_NOT_WORK))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Click on the info button.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kHiddenPasskeyInfoButtonID),
+                                          grey_kindOfClass([UIButton class]),
+                                          nil)] performAction:grey_tap()];
+
+  // Check the the info popup is visible.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kHiddenPasskeyInfoPopoverViewID)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the "About passkeys" link in the popup.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(@"About passkeys")]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Check that the help center article was opened.
+  GREYAssertEqual(std::string("support.google.com"),
+                  [ChromeEarlGrey webStateVisibleURL].GetHost(),
+                  @"Did not navigate to the help center article.");
+}
+
 // Checks that attempts to edit a username provide appropriate feedback.
 - (void)testCancelDuringEditing {
   SavePasswordFormToProfileStore();
@@ -2415,7 +2493,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   OpenPasswordManager();
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 
-  TapNavigationBarEditButton();
+  TapToolbarSelectButton();
 
   [[GetInteractionForPasswordEntry(@"example.com, 4 accounts")
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
@@ -2458,7 +2536,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   SavePasswordFormToProfileStore();
   OpenPasswordManager();
 
-  TapNavigationBarEditButton();
+  TapToolbarSelectButton();
 
   [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
       performAction:grey_tap()];
@@ -2593,6 +2671,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // Tests that when a new credential is saved or an existing one is updated via
 // the add credential flow, the VC auto scrolls to the newly created or the
 // updated entry.
+// TODO(crbug.com/460743577): Test is flaky.
 - (void)testAutoScroll {
   for (int i = 0; i < 20; i++) {
     NSString* username = [NSString stringWithFormat:@"username %d", i];
@@ -2623,17 +2702,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
       performAction:grey_tap()];
 
-  // Verify that the added credential was automatically scrolled at and visible.
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityID(kAddedDomain)]
-        assertWithMatcher:grey_sufficientlyVisible()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(
-      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
-      @"Didn't scroll to the added credential item");
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityID(kAddedDomain)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that adding new password credential where the username and website
@@ -3275,9 +3345,9 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       performAction:grey_tap()];
 }
 
-// Tests that the save passwords in account section is hidden when not opted-in
-// for account storage.
-- (void)testSavePasswordsInAccountHiddenWhenNotOptedInToAccountStorage {
+// Tests that the save passwords in account section is hidden when account
+// storage disabled.
+- (void)testSavePasswordsInAccountHiddenWhenAccountStorageDisabled {
   SavePasswordFormToProfileStore();
 
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
@@ -3289,7 +3359,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   OpenSettingsSubmenu();
   [ChromeEarlGreyUI waitForAppToIdle];
 
-  // Opt out of account storage.
+  // Disable account storage.
   [SigninEarlGreyAppInterface
       setSelectedType:(syncer::UserSelectableType::kPasswords)
               enabled:NO];
@@ -3572,7 +3642,9 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
 // Checks opening the password manager with a failed reauthentication does not
 // show passwords and closes the Password Manager.
-- (void)testOpenPasswordManagerWithFailedAuth {
+//
+// TODO(crbug.com/468305089): This test is flaky.
+- (void)FLAKY_testOpenPasswordManagerWithFailedAuth {
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
   // Delay the auth result to be able to validate that the passwords are not
@@ -3680,6 +3752,13 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // Tests that the Password Manager is opened is search mode when opened from the
 // Search Passwords widget.
 - (void)testOpenSearchPasswordsWidget {
+  // TODO(crbug.com/444185069): Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+#endif
+
   // Add a saved password to not get the Password Manager's empty state.
   SavePasswordFormToProfileStore();
 
@@ -3690,19 +3769,18 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       sceneOpenURL:
           GURL("chromewidgetkit://search-passwords-widget/search-passwords")];
 
-  // The Password Manager should be visible behind the keyboard.
-  [ChromeEarlGrey waitForKeyboardToAppear];
+  // The Password Manager should be visible.
   [[EarlGrey selectElementWithMatcher:PasswordsTableViewMatcher()]
       assertWithMatcher:grey_minimumVisiblePercent(0.5)];
 
   // The search bar should be enabled.
-  [[EarlGrey selectElementWithMatcher:SearchTextField()]
-      assertWithMatcher:grey_userInteractionEnabled()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
+      assertWithMatcher:grey_firstResponder()];
 
   // Dismiss the search controller and the Password Manager.
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(IDS_CANCEL)]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI clearAndDismissSearchBar];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
 }
@@ -3712,25 +3790,32 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // get automatically enabled when going back to the Password Manager when the
 // Password Manager was initially opened with the Search Passwords widget.
 - (void)testGoingBackAfterOpeningInSearchMode {
+  // TODO(crbug.com/444185069): Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+#endif
+
   // Add a saved password to not get the Password Manager's empty state.
   SavePasswordFormToProfileStore();
 
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
-  // Open the Password Manager in search mode with the  Search Passwords widget.
+  // Open the Password Manager in search mode with the Search Passwords widget.
   [ChromeEarlGrey
       sceneOpenURL:
           GURL("chromewidgetkit://search-passwords-widget/search-passwords")];
 
   // The search bar should be enabled.
-  [[EarlGrey selectElementWithMatcher:SearchTextField()]
-      assertWithMatcher:grey_userInteractionEnabled()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
+      assertWithMatcher:grey_firstResponder()];
 
   // Dismiss the search controller.
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(IDS_CANCEL)]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI clearAndDismissSearchBar];
 
   // Open password details.
   [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
@@ -3740,8 +3825,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // enabled.
   [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:SearchTextField()]
-      assertWithMatcher:grey_userInteractionEnabled()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SearchBar()]
+      assertWithMatcher:grey_not(grey_firstResponder())];
 }
 
 // Tests that tapping the close button of the Password Manager widget promo
@@ -3807,7 +3892,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   OpenPasswordManager();
 
-  TapNavigationBarEditButton();
+  TapToolbarSelectButton();
 
   // The Password Manager widget promo should be visible.
   [[EarlGrey selectElementWithMatcher:PasswordManagerWidgetPromo()]
@@ -3842,8 +3927,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   // The Password Manager widget promo's elements should be visible in landscape
   // mode.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeRight
+                                   error:nil];
   CheckPasswordManagerWidgetPromoVisible();
 
   // The promo's close button should still be tappable in landscape mode.
@@ -3923,14 +4008,15 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   // The Password Manager widget promo's instructions should be visible with no
   // image in landscape mode.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeRight
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeRight
+                                   error:nil];
   CheckPasswordManagerWidgetPromoInstructionScreenVisible(
       /*image_hidden=*/true);
 
   // When going back to portrait mode, the Password Manager widget promo's
   // instructions should be visible with its image.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                   error:nil];
   CheckPasswordManagerWidgetPromoInstructionScreenVisible();
 }
 

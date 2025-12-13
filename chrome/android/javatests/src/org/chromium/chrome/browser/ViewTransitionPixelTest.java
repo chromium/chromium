@@ -30,10 +30,8 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -95,7 +93,7 @@ public class ViewTransitionPixelTest {
 
     @Before
     public void setUp() {
-        mViewportTestUtils = new ViewportTestUtils(mActivityTestRule.getActivityTestRule());
+        mViewportTestUtils = new ViewportTestUtils(mActivityTestRule);
         mViewportTestUtils.setUpForBrowserControls();
     }
 
@@ -125,7 +123,6 @@ public class ViewTransitionPixelTest {
                             mActivityTestRule
                                     .getKeyboardDelegate()
                                     .isKeyboardShowing(
-                                            mActivityTestRule.getActivity(),
                                             mActivityTestRule.getActivity().getTabsView());
                     Criteria.checkThat(isKeyboardShowing, Matchers.is(show));
                 },
@@ -134,7 +131,7 @@ public class ViewTransitionPixelTest {
     }
 
     private WebContents getWebContents() {
-        return mActivityTestRule.getActivity().getActivityTab().getWebContents();
+        return mActivityTestRule.getActivityTab().getWebContents();
     }
 
     private void showAndWaitForKeyboard() throws Throwable {
@@ -148,7 +145,7 @@ public class ViewTransitionPixelTest {
 
         assertWaitForKeyboardStatus(true);
 
-        double keyboardHeight = getKeyboardHeightDp();
+        int keyboardHeight = getKeyboardHeightPx();
 
         if (mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_VISUAL) {
             mViewportTestUtils.waitForExpectedVisualViewportHeight(
@@ -178,22 +175,16 @@ public class ViewTransitionPixelTest {
         }
     }
 
-    private double getKeyboardHeightDp() {
-        double keyboardHeightPx =
-                mActivityTestRule
-                        .getKeyboardDelegate()
-                        .calculateTotalKeyboardHeight(
-                                mActivityTestRule
-                                        .getActivity()
-                                        .getWindow()
-                                        .getDecorView()
-                                        .getRootView());
-        return keyboardHeightPx / mViewportTestUtils.getDeviceScaleFactor();
+    private int getKeyboardHeightPx() {
+        return mActivityTestRule
+                .getKeyboardDelegate()
+                .calculateTotalKeyboardHeight(
+                        mActivityTestRule.getActivity().getWindow().getDecorView().getRootView());
     }
 
     private void setLocationAndWaitForLoad(String url) {
         ChromeTabUtils.waitForTabPageLoaded(
-                mActivityTestRule.getActivity().getActivityTab(),
+                mActivityTestRule.getActivityTab(),
                 url,
                 () -> {
                     try {
@@ -273,8 +264,7 @@ public class ViewTransitionPixelTest {
     }
 
     private String getCurrentUrl() {
-        return ChromeTabUtils.getUrlStringOnUiThread(
-                mActivityTestRule.getActivity().getActivityTab());
+        return ChromeTabUtils.getUrlStringOnUiThread(mActivityTestRule.getActivityTab());
     }
 
     /**
@@ -287,6 +277,7 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/435692206")
     public void testVirtualKeyboardResizesVisual() throws Throwable {
         startKeyboardTest(VirtualKeyboardMode.RESIZES_VISUAL);
 
@@ -329,22 +320,23 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/435692206")
     public void testVirtualKeyboardResizesContent() throws Throwable {
         doTestVirtualKeyboardResizesContent();
     }
 
     /**
-     * Same as {@code #testVirtualKeyboardResizesContent()}, but with TabStripLayoutOptimization
-     * enabled. This tablet feature uses caption bar insets to draw custom app headers and is known
-     * to have caused regressions in bottom Chrome UI placement when OSK is visible.
+     * Same as {@code #testVirtualKeyboardResizesContent()}, but assuming the presence of caption
+     * bar insets to draw custom app headers. This is known to have caused regressions in bottom
+     * Chrome UI placement when OSK is visible.
      */
     @Test
     @MediumTest
     @Feature({"RenderTest"})
     @MinAndroidSdkLevel(VERSION_CODES.R)
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    public void testVirtualKeyboardResizesContent_TSLOEnabled() throws Throwable {
+    @DisabledTest(message = "crbug.com/435692206")
+    public void testVirtualKeyboardResizesContent_ValidCaptionBarFrame() throws Throwable {
         // Simulate fullscreen window behavior in an environment that supports Android V custom app
         // header APIs.
         WindowInsetsUtils.setFrameForTesting(new Size(2560, 1600));

@@ -34,6 +34,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
+#include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -80,6 +81,8 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/core/mathml/mathml_element.h"
+#include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
@@ -87,6 +90,7 @@
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -128,20 +132,15 @@ class EmptyLocalFrameClientWithFailingLoaderFactory final
  public:
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       override {
-    // TODO(crbug.com/1413912): CreateFragmentFromMarkupWithContext may
-    // call this method for data: URL resources. But ResourceLoader::Start()
-    // don't need to call GetURLLoaderFactory() for data: URL because
-    // ResourceLoader handles the data: URL resource load without the returned
-    // SharedURLLoaderFactory.
-    // Note: Non-data: URL resource can't be loaded because the security checks
-    // in BaseFetchContext::CanRequestInternal fails for non-data: URL
-    // resources.
     return base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
-        WTF::BindOnce(
+        BindOnce(
             [](const network::ResourceRequest& resource_request,
                mojo::PendingReceiver<network::mojom::URLLoader> receiver,
                mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-              NOTREACHED();
+              mojo::Remote<network::mojom::URLLoaderClient> remote(
+                  std::move(client));
+              remote->OnComplete(
+                  network::URLLoaderCompletionStatus(net::ERR_FAILED));
             }));
   }
 };
@@ -179,6 +178,15 @@ static bool IsHTMLBlockElement(const Node* node) {
   DCHECK(node);
   return IsA<HTMLTableCellElement>(*node) ||
          IsNonTableCellHTMLBlockElement(node);
+}
+
+// Helper function to check if a node is a MathML math element
+static bool IsMathMLMathElement(const Node* node) {
+  const auto* element = DynamicTo<MathMLElement>(node);
+  if (!element) {
+    return false;
+  }
+  return element->HasTagName(mathml_names::kMathTag);
 }
 
 static HTMLElement* AncestorToRetainStructureAndAppearanceForBlock(
@@ -224,7 +232,7 @@ bool PropertyMissingOrEqualToNone(CSSPropertyValueSet* style,
 }
 
 template <typename Strategy>
-static HTMLElement* HighestAncestorToWrapMarkup(
+static Element* HighestAncestorToWrapMarkup(
     const PositionTemplate<Strategy>& start_position,
     const PositionTemplate<Strategy>& end_position,
     const CreateMarkupOptions& options) {
@@ -235,7 +243,7 @@ static HTMLElement* HighestAncestorToWrapMarkup(
       Strategy::CommonAncestor(*start_position.ComputeContainerNode(),
                                *end_position.ComputeContainerNode());
   DCHECK(common_ancestor);
-  HTMLElement* special_common_ancestor = nullptr;
+  Element* special_common_ancestor = nullptr;
   if (options.ShouldAnnotateForInterchange()) {
     // Include ancestors that aren't completely inside the range but are
     // required to retain the structure and appearance of the copied markup.
@@ -250,7 +258,7 @@ static HTMLElement* HighestAncestorToWrapMarkup(
           ContainerNode* ancestor = parent_list_node->parentNode();
           while (ancestor && !IsHTMLListElement(ancestor))
             ancestor = ancestor->parentNode();
-          special_common_ancestor = To<HTMLElement>(ancestor);
+          special_common_ancestor = To<Element>(ancestor);
         }
       }
 
@@ -261,6 +269,18 @@ static HTMLElement* HighestAncestorToWrapMarkup(
                   first_node_position, IsMailHTMLBlockquoteElement,
                   kCanCrossEditingBoundary))) {
         special_common_ancestor = highest_mail_blockquote;
+      }
+
+      // Retain MathML structure by including ancestor <math> elements.
+      // This ensures that when copying MathML content, the semantic context
+      // is preserved even for partial selections within math expressions.
+      if (RuntimeEnabledFeatures::MathMLSerializationOnCopyEnabled()) {
+        if (auto* highest_math_element =
+                To<MathMLElement>(HighestEnclosingNodeOfType(
+                    first_node_position, IsMathMLMathElement,
+                    kCanCrossEditingBoundary))) {
+          special_common_ancestor = highest_math_element;
+        }
       }
     }
   }
@@ -278,11 +298,10 @@ static HTMLElement* HighestAncestorToWrapMarkup(
         options.ConstrainingAncestor()
             ? const_cast<Node*>(options.ConstrainingAncestor())
             : EnclosingBlock(check_ancestor);
-    auto* new_special_common_ancestor =
-        To<HTMLElement>(HighestEnclosingNodeOfType(
-            Position::FirstPositionInNode(*check_ancestor),
-            &IsPresentationalHTMLElement, kCanCrossEditingBoundary,
-            constraining_ancestor));
+    auto* new_special_common_ancestor = To<Element>(HighestEnclosingNodeOfType(
+        Position::FirstPositionInNode(*check_ancestor),
+        &IsPresentationalHTMLElement, kCanCrossEditingBoundary,
+        constraining_ancestor));
     if (new_special_common_ancestor)
       special_common_ancestor = new_special_common_ancestor;
   }
@@ -293,18 +312,18 @@ static HTMLElement* HighestAncestorToWrapMarkup(
   // necessarily be above any tab span that needs to be included.
   if (!special_common_ancestor &&
       IsTabHTMLSpanElementTextNode(common_ancestor)) {
-    special_common_ancestor =
-        To<HTMLSpanElement>(Strategy::Parent(*common_ancestor));
+    special_common_ancestor = To<Element>(Strategy::Parent(*common_ancestor));
   }
   if (!special_common_ancestor && IsTabHTMLSpanElement(common_ancestor))
-    special_common_ancestor = To<HTMLSpanElement>(common_ancestor);
+    special_common_ancestor = To<Element>(common_ancestor);
 
-  if (auto* enclosing_anchor = To<HTMLAnchorElement>(EnclosingElementWithTag(
+  if (auto* enclosing_anchor = To<Element>(EnclosingElementWithTag(
           Position::FirstPositionInNode(special_common_ancestor
                                             ? *special_common_ancestor
                                             : *common_ancestor),
-          html_names::kATag)))
+          html_names::kATag))) {
     special_common_ancestor = enclosing_anchor;
+  }
 
   return special_common_ancestor;
 }
@@ -347,7 +366,7 @@ String CreateMarkupAlgorithm<Strategy>::CreateMarkup(
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       document->Lifecycle());
 
-  HTMLElement* special_common_ancestor = HighestAncestorToWrapMarkup<Strategy>(
+  Element* special_common_ancestor = HighestAncestorToWrapMarkup<Strategy>(
       start_position, end_position, options);
   StyledMarkupSerializer<Strategy> serializer(start_position, end_position,
                                               special_common_ancestor, options);
@@ -378,7 +397,8 @@ DocumentFragment* CreateFragmentFromMarkup(
   auto* fake_body = MakeGarbageCollected<HTMLBodyElement>(document);
   DocumentFragment* fragment = DocumentFragment::Create(document);
 
-  fragment->ParseHTML(markup, fake_body, parser_content_policy);
+  fragment->ParseHTML(markup, fake_body, /*registry*/ nullptr,
+                      parser_content_policy);
 
   if (!base_url.empty() && base_url != BlankURL() &&
       base_url != document.BaseURL())
@@ -655,6 +675,8 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
     ParserContentPolicy parser_content_policy,
     Element::ParseDeclarativeShadowRoots parse_declarative_shadows,
     Element::ForceHtml force_html,
+    ForceInertTemplate force_inert,
+    CustomElementRegistry* registry,
     ExceptionState& exception_state) {
   DCHECK(context_element);
   const HTMLTemplateElement* template_element =
@@ -664,7 +686,8 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
   }
 
   Document& document =
-      IsA<HTMLTemplateElement>(*context_element)
+      (IsA<HTMLTemplateElement>(*context_element) ||
+       force_inert == ForceInertTemplate::kForce)
           ? context_element->GetDocument().EnsureTemplateDocument()
           : context_element->GetDocument();
   DocumentFragment* fragment = DocumentFragment::Create(document);
@@ -687,6 +710,18 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
       fragment->SetHoldsUnnotifiedChildren(true);
       fragment->ParserFinishedBuildingDocumentFragment(
           DocumentFragment::ShouldNotifyInsertedNodes::kSkip);
+      // If parsed by fast path, no upgrade will be happening so we can simply
+      // set the custom element registry to the new elements to keep track.
+      // We attempt to optimize the registry setting by checking if the
+      // newly-created elements are using the same registry as the tree scope.
+      // If they're the same, we don't need to set registry on the descendants
+      // as the descendants can look up the registry from tree scope like usual.
+      if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+          registry != context_element->GetTreeScope().customElementRegistry()) {
+        for (Element& element : ElementTraversal::DescendantsOf(*fragment)) {
+          element.SetCustomElementRegistry(registry);
+        }
+      }
       LogFastPathParserTotalTime(parse_timer.Elapsed());
 #if DCHECK_IS_ON()
       // As a sanity check for the fast-path, create another fragment using
@@ -694,7 +729,8 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
       // See https://bugs.chromium.org/p/chromium/issues/detail?id=1407201
       // for details.
       DocumentFragment* fragment2 = DocumentFragment::Create(document);
-      fragment2->ParseHTML(markup, context_element, parser_content_policy);
+      fragment2->ParseHTML(markup, context_element, registry,
+                           parser_content_policy);
       DCHECK_EQ(CreateMarkup(fragment), CreateMarkup(fragment2))
           << " supplied value " << markup;
       DCHECK(fragment->isEqualNode(fragment2));
@@ -702,7 +738,8 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
       return fragment;
     }
     fragment = DocumentFragment::Create(document);
-    fragment->ParseHTML(markup, context_element, parser_content_policy);
+    fragment->ParseHTML(markup, context_element, registry,
+                        parser_content_policy);
     LogFastPathParserTotalTime(parse_timer.Elapsed());
     if (log_tag_stats &&
         RuntimeEnabledFeatures::InnerHTMLParserFastpathLogFailureEnabled()) {
@@ -743,7 +780,7 @@ DocumentFragment* CreateFragmentForTransformToFragment(
     // that effect here by passing in a fake body element as context for the
     // fragment.
     auto* fake_body = MakeGarbageCollected<HTMLBodyElement>(output_doc);
-    fragment->ParseHTML(source_string, fake_body,
+    fragment->ParseHTML(source_string, fake_body, /*registry*/ nullptr,
                         kAllowScriptingContentAndDoNotMarkAlreadyStarted);
   } else if (source_mime_type == "text/plain") {
     fragment->ParserAppendChild(Text::Create(output_doc, source_string));
@@ -781,7 +818,11 @@ DocumentFragment* CreateContextualFragment(
   DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
       markup, element, parser_content_policy,
       Element::ParseDeclarativeShadowRoots::kDontParse,
-      Element::ForceHtml::kDontForce, exception_state);
+      Element::ForceHtml::kDontForce, ForceInertTemplate::kDontForce,
+      RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()
+          ? element->customElementRegistry()
+          : element->GetDocument().customElementRegistry(),
+      exception_state);
   if (!fragment)
     return nullptr;
 

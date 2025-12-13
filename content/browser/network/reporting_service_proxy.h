@@ -14,6 +14,7 @@ class DedicatedWorkerHost;
 class RenderFrameHost;
 class ServiceWorkerHost;
 class SharedWorkerHost;
+class SharedStorageWorkletHost;
 
 // These methods method bind a mojom::ReportingServiceProxy for the specified
 // object type. They must be called on the UI thread.
@@ -28,6 +29,9 @@ void CreateReportingServiceProxyForSharedWorker(
     mojo::PendingReceiver<blink::mojom::ReportingServiceProxy> receiver);
 void CreateReportingServiceProxyForDedicatedWorker(
     DedicatedWorkerHost* dedicated_worker_host,
+    mojo::PendingReceiver<blink::mojom::ReportingServiceProxy> receiver);
+void CreateReportingServiceProxyForSharedStorageWorklet(
+    SharedStorageWorkletHost* shared_storage_worklet_host,
     mojo::PendingReceiver<blink::mojom::ReportingServiceProxy> receiver);
 
 }  // namespace content

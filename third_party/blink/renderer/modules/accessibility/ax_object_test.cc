@@ -115,6 +115,27 @@ TEST_F(AccessibilityTest, IsEditableInTextField) {
   EXPECT_FALSE(textarea_text->IsRichlyEditable());
 }
 
+TEST_F(AccessibilityTest, IsEditableInTextFieldInCanvas) {
+  // Script is required to create a real LayoutHTMLCanvas, see:
+  // `HTMLCanvasElement::CreateLayoutObject`.
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  SetBodyInnerHTML(R"HTML(
+    <canvas id="canvas" width="300" height="300">
+      <input type="text" id="input" value="test"/>
+    </canvas>
+  )HTML");
+
+  const AXObject* root = GetAXRootObject();
+  ASSERT_NE(nullptr, root);
+  const AXObject* input = GetAXObjectByElementId("input");
+  ASSERT_NE(nullptr, input);
+  const AXObject* input_text =
+      input->FirstChildIncludingIgnored()->UnignoredChildAtSlow(0);
+  ASSERT_NE(nullptr, input_text);
+  ASSERT_EQ("test", input_text->GetNode()->nodeValue());
+  EXPECT_EQ(ax::mojom::blink::Role::kStaticText, input_text->RoleValue());
+}
+
 TEST_F(AccessibilityTest, IsEditableInTextFieldWithContentEditableTrue) {
   SetBodyInnerHTML(R"HTML(
       <!-- This is technically an authoring error, but we should still handle
@@ -233,6 +254,9 @@ TEST_F(AccessibilityTest, IsEditableInContentEditable) {
 }
 
 TEST_F(AccessibilityTest, IsEditableInCanvasFallback) {
+  // Script is required to create a real LayoutHTMLCanvas, see:
+  // `HTMLCanvasElement::CreateLayoutObject`.
+  GetDocument().GetSettings()->SetScriptEnabled(true);
   SetBodyInnerHTML(R"HTML(
       <canvas id="canvas" width="300" height="300">
         <input id="input" value="Test">
@@ -848,7 +872,7 @@ TEST_F(AccessibilityTest, AxNodeObjectInPageLinkTargetNonAscii) {
   //
   // This file is forced to be UTF-8 by the build system,
   // the uR"" will create char16_t[] of UTF-16,
-  // WTF::String will wrap the char16_t* as UTF-16.
+  // String will wrap the char16_t* as UTF-16.
   // All this is checked by ensuring a match against u"\u00F6".
   //
   // TODO(1117212): The escaped version currently takes precedence.
@@ -1459,159 +1483,7 @@ TEST_F(AccessibilityTest, GetBoundsInFrameCoordinatesSvgText) {
   EXPECT_GT(bounds1.X(), bounds2.X());
 }
 
-TEST_F(AccessibilityTest, ComputeIsInertReason_CSSInertDisabled) {
-  ScopedCSSInertForTest feature(false);
-
-  NonThrowableExceptionState exception_state;
-  SetBodyInnerHTML(R"HTML(
-    <div id="div1" inert>inert</div>
-    <dialog id="dialog1">dialog</dialog>
-    <dialog id="dialog2" inert>inert dialog</dialog>
-    <p id="p1">fullscreen</p>
-    <p id="p2" inert>inert fullscreen</p>
-  )HTML");
-
-  Document& document = GetDocument();
-  Element* body = document.body();
-  Element* div1 = GetElementById("div1");
-  Node* div1_text = div1->firstChild();
-  auto* dialog1 = To<HTMLDialogElement>(GetElementById("dialog1"));
-  Node* dialog1_text = dialog1->firstChild();
-  auto* dialog2 = To<HTMLDialogElement>(GetElementById("dialog2"));
-  Node* dialog2_text = dialog2->firstChild();
-  Element* p1 = GetElementById("p1");
-  Node* p1_text = p1->firstChild();
-  Element* p2 = GetElementById("p2");
-  Node* p2_text = p2->firstChild();
-
-  auto AssertInertReasons = [&](Node* node, AXIgnoredReason expectation) {
-    AXObject* object = GetAXObjectCache().Get(node);
-    ASSERT_NE(object, nullptr);
-    AXObject::IgnoredReasons reasons;
-    ASSERT_TRUE(object->ComputeIsInert(&reasons));
-    ASSERT_EQ(reasons.size(), 1u);
-    ASSERT_EQ(reasons[0].reason, expectation);
-  };
-  auto AssertNotInert = [&](Node* node) {
-    AXObject* object = GetAXObjectCache().Get(node);
-    ASSERT_NE(object, nullptr);
-    AXObject::IgnoredReasons reasons;
-    ASSERT_FALSE(object->ComputeIsInert(&reasons));
-    ASSERT_EQ(reasons.size(), 0u);
-  };
-  auto EnterFullscreen = [&](Element* element) {
-    LocalFrame::NotifyUserActivation(
-        document.GetFrame(), mojom::UserActivationNotificationType::kTest);
-    Fullscreen::RequestFullscreen(*element);
-    Fullscreen::DidResolveEnterFullscreenRequest(document, /*granted*/ true);
-  };
-  auto ExitFullscreen = [&]() {
-    Fullscreen::FullyExitFullscreen(document);
-    Fullscreen::DidExitFullscreen(document);
-  };
-
-  AssertNotInert(body);
-  AssertInertReasons(div1, kAXInertElement);
-  AssertInertReasons(div1_text, kAXInertSubtree);
-  AssertNotInert(dialog1);
-  AssertNotInert(dialog1_text);
-  AssertInertReasons(dialog2, kAXInertElement);
-  AssertInertReasons(dialog2_text, kAXInertSubtree);
-  AssertNotInert(p1);
-  AssertNotInert(p1_text);
-  AssertInertReasons(p2, kAXInertElement);
-  AssertInertReasons(p2_text, kAXInertSubtree);
-
-  dialog1->showModal(exception_state);
-
-  AssertInertReasons(body, kAXActiveModalDialog);
-  AssertInertReasons(div1, kAXInertElement);
-  AssertInertReasons(div1_text, kAXInertSubtree);
-  AssertNotInert(dialog1);
-  AssertNotInert(dialog1_text);
-  AssertInertReasons(dialog2, kAXInertElement);
-  AssertInertReasons(dialog2_text, kAXInertSubtree);
-  AssertInertReasons(p1, kAXActiveModalDialog);
-  AssertInertReasons(p1_text, kAXActiveModalDialog);
-  AssertInertReasons(p2, kAXInertElement);
-  AssertInertReasons(p2_text, kAXInertSubtree);
-
-  dialog2->showModal(exception_state);
-
-  AssertInertReasons(body, kAXActiveModalDialog);
-  AssertInertReasons(div1, kAXInertElement);
-  AssertInertReasons(div1_text, kAXInertSubtree);
-  AssertInertReasons(dialog1, kAXActiveModalDialog);
-  AssertInertReasons(dialog1_text, kAXActiveModalDialog);
-  AssertInertReasons(dialog2, kAXInertElement);
-  AssertInertReasons(dialog2_text, kAXInertSubtree);
-  AssertInertReasons(p1, kAXActiveModalDialog);
-  AssertInertReasons(p1_text, kAXActiveModalDialog);
-  AssertInertReasons(p2, kAXInertElement);
-  AssertInertReasons(p2_text, kAXInertSubtree);
-
-  EnterFullscreen(p1);
-
-  AssertInertReasons(body, kAXActiveModalDialog);
-  AssertInertReasons(div1, kAXInertElement);
-  AssertInertReasons(div1_text, kAXInertSubtree);
-  AssertInertReasons(dialog1, kAXActiveModalDialog);
-  AssertInertReasons(dialog1_text, kAXActiveModalDialog);
-  AssertInertReasons(dialog2, kAXInertElement);
-  AssertInertReasons(dialog2_text, kAXInertSubtree);
-  AssertInertReasons(p1, kAXActiveModalDialog);
-  AssertInertReasons(p1_text, kAXActiveModalDialog);
-  AssertInertReasons(p2, kAXInertElement);
-  AssertInertReasons(p2_text, kAXInertSubtree);
-
-  dialog1->close();
-  dialog2->close();
-
-  AssertInertReasons(body, kAXActiveFullscreenElement);
-  AssertInertReasons(div1, kAXInertElement);
-  AssertInertReasons(div1_text, kAXInertSubtree);
-  AssertInertReasons(dialog1, kAXActiveFullscreenElement);
-  AssertInertReasons(dialog1_text, kAXActiveFullscreenElement);
-  AssertInertReasons(dialog2, kAXInertElement);
-  AssertInertReasons(dialog2_text, kAXInertSubtree);
-  AssertNotInert(p1);
-  AssertNotInert(p1_text);
-  AssertInertReasons(p2, kAXInertElement);
-  AssertInertReasons(p2_text, kAXInertSubtree);
-
-  ExitFullscreen();
-  EnterFullscreen(p2);
-
-  AssertInertReasons(body, kAXActiveFullscreenElement);
-  AssertInertReasons(div1, kAXInertElement);
-  AssertInertReasons(div1_text, kAXInertSubtree);
-  AssertInertReasons(dialog1, kAXActiveFullscreenElement);
-  AssertInertReasons(dialog1_text, kAXActiveFullscreenElement);
-  AssertInertReasons(dialog2, kAXInertElement);
-  AssertInertReasons(dialog2_text, kAXInertSubtree);
-  AssertInertReasons(p1, kAXActiveFullscreenElement);
-  AssertInertReasons(p1_text, kAXActiveFullscreenElement);
-  AssertInertReasons(p2, kAXInertElement);
-  AssertInertReasons(p2_text, kAXInertSubtree);
-
-  ExitFullscreen();
-
-  AssertNotInert(body);
-  AssertInertReasons(div1, kAXInertElement);
-  AssertInertReasons(div1_text, kAXInertSubtree);
-  AssertNotInert(dialog1);
-  AssertNotInert(dialog1_text);
-  AssertInertReasons(dialog2, kAXInertElement);
-  AssertInertReasons(dialog2_text, kAXInertSubtree);
-  AssertNotInert(p1);
-  AssertNotInert(p1_text);
-  AssertInertReasons(p2, kAXInertElement);
-  AssertInertReasons(p2_text, kAXInertSubtree);
-}
-
 TEST_F(AccessibilityTest, ComputeIsInertReason) {
-  ScopedCSSInertForTest feature(true);
-
   NonThrowableExceptionState exception_state;
   SetBodyInnerHTML(R"HTML(
     <div id="div1" inert>inert</div>
@@ -1759,58 +1631,10 @@ TEST_F(AccessibilityTest, ComputeIsInertReason) {
   AssertInertReasons(p2_text, kAXInertStyle);
 }
 
-TEST_F(AccessibilityTest, ComputeIsInertWithNonHTMLElements_CSSInertDisabled) {
-  ScopedCSSInertForTest feature(false);
-  SetBodyInnerHTML(R"HTML(
-    <main inert>
-      main
-      <foo inert>
-        foo
-        <svg inert>
-          foo
-          <foreignObject inert>
-            foo
-            <div inert>
-              div
-              <math inert>
-                div
-                <mi inert>
-                  div
-                  <span inert>
-                    span
-                  </span>
-                </mi>
-              </math>
-            </div>
-          </foreignObject>
-        </svg>
-      </foo>
-    </main>
-  )HTML");
-
-  Document& document = GetDocument();
-  Element* element = document.QuerySelector(AtomicString("main"));
-  while (element) {
-    Node* node = element->firstChild();
-    AXObject* ax_node = GetAXObjectCache().Get(node);
-
-    // The text indicates the expected inert root, which is the nearest HTML
-    // element ancestor with the 'inert' attribute.
-    AtomicString selector(node->textContent().Impl());
-    Element* inert_root = document.QuerySelector(selector);
-    AXObject* ax_inert_root = GetAXObjectCache().Get(inert_root);
-
-    AXObject::IgnoredReasons reasons;
-    ASSERT_TRUE(ax_node->ComputeIsInert(&reasons));
-    ASSERT_EQ(reasons.size(), 1u);
-    ASSERT_EQ(reasons[0].reason, kAXInertSubtree);
-    ASSERT_EQ(reasons[0].related_object.Get(), ax_inert_root);
-
-    element = ElementTraversal::FirstChild(*element);
-  }
-}
-
 TEST_F(AccessibilityTest, CanSetFocusInCanvasFallbackContent) {
+  // Script is required to create a real LayoutHTMLCanvas, see:
+  // `HTMLCanvasElement::CreateLayoutObject`.
+  GetDocument().GetSettings()->SetScriptEnabled(true);
   SetBodyInnerHTML(R"HTML(
     <canvas>
       <section>
@@ -2007,6 +1831,9 @@ TEST_F(AccessibilityTest, CanComputeAsNaturalParent) {
 }
 
 TEST_F(AccessibilityTest, StitchChildTree) {
+  // Script is required to create a real LayoutHTMLCanvas, see:
+  // `HTMLCanvasElement::CreateLayoutObject`.
+  GetDocument().GetSettings()->SetScriptEnabled(true);
   // Nodes that are descendants of the node at which a child tree was stitched
   // (the host node) make all descendants accessibility ignored, hence the
   // "ignored text" and "ignoredButton" nomenclature. The child tree will take

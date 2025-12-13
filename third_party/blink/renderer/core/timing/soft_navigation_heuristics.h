@@ -7,8 +7,10 @@
 
 #include <optional>
 
+#include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/stack_allocated.h"
+#include "base/unguessable_token.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -20,18 +22,15 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
-namespace scheduler {
-class TaskAttributionInfo;
-}  // namespace scheduler
-
+class InteractionEffectsMonitor;
+class HTMLVideoElement;
 class SoftNavigationContext;
 class SoftNavigationPaintAttributionTracker;
 
 // This class contains the logic for calculating Single-Page-App soft navigation
 // heuristics. See https://github.com/WICG/soft-navigations
 class CORE_EXPORT SoftNavigationHeuristics
-    : public GarbageCollected<SoftNavigationHeuristics>,
-      public scheduler::TaskAttributionTracker::Observer {
+    : public GarbageCollected<SoftNavigationHeuristics> {
  public:
   FRIEND_TEST_ALL_PREFIXES(SoftNavigationHeuristicsTest,
                            EarlyReturnOnInvalidPendingInteractionTimestamp);
@@ -58,19 +57,16 @@ class CORE_EXPORT SoftNavigationHeuristics
     EventScope& operator=(EventScope&&);
 
    private:
-    using ObserverScope = scheduler::TaskAttributionTracker::ObserverScope;
     using TaskScope = scheduler::TaskAttributionTracker::TaskScope;
 
     friend class SoftNavigationHeuristics;
 
     EventScope(SoftNavigationHeuristics*,
-               std::optional<ObserverScope>,
                std::optional<TaskScope>,
                Type,
                bool is_nested);
 
     SoftNavigationHeuristics* heuristics_;
-    std::optional<ObserverScope> observer_scope_;
     std::optional<TaskScope> task_scope_;
     Type type_;
     bool is_nested_;
@@ -88,34 +84,30 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   // Inform `SoftNavigationHeuristics` that `node` was modified in some way.
   // Sets up paint tracking if the modification is attributable to a
-  // `SoftNavigationContext` and connected to the DOM.
-  static void ModifiedNode(Node* node);
+  // `SoftNavigationContext` and connected to the DOM, in which case this
+  // returns true.
+  static bool ModifiedNode(Node* node);
+
+  // Inform `SoftNavigationHeuristics` that the "src" attribute for the video
+  // element changed. Sets up paint tracking if the modification is attributable
+  // to a `SoftNavigationContext` and connected to the DOM.
+  static void OnVideoSrcChanged(HTMLVideoElement*);
 
   // GarbageCollected boilerplate.
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
   void Shutdown();
 
-  // The class's API.
-
-  // Returns an id to be used for retrieving the associated task state during
-  // commit, or nullopt if no `SoftNavigationContext` is associated with the
-  // navigation.
-  std::optional<scheduler::TaskAttributionId>
-  AsyncSameDocumentNavigationStarted();
-
-  void SameDocumentNavigationCommitted(const String& url,
-                                       SoftNavigationContext*);
-  void ModifiedDOM(Node* node);
-  uint32_t SoftNavigationCount() { return soft_navigation_count_; }
-
-  // TaskAttributionTracker::Observer's implementation.
-  void OnCreateTaskScope(scheduler::TaskAttributionInfo&) override;
+  void SameDocumentNavigationCommitted(
+      const String& url,
+      base::UnguessableToken same_document_metrics_token,
+      SoftNavigationContext*);
+  bool ModifiedDOM(Node* node);
+  uint64_t SoftNavigationCount() { return soft_navigation_count_; }
 
   SoftNavigationContext* MaybeGetSoftNavigationContextForTiming(Node* node);
   void OnPaintFinished();
   void OnInputOrScroll();
-  OptionalPaintTimingCallback TakePaintTimingCallback();
   void UpdateSoftLcpCandidate();
 
   const LargestContentfulPaintDetails&
@@ -129,12 +121,11 @@ class CORE_EXPORT SoftNavigationHeuristics
     return CreateEventScope(EventScope::Type::kNavigate);
   }
 
-  // Returns an `EventScope` for the given `Event` if the event is relevant to
-  // soft navigation tracking, otherwise it returns nullopt.
-  std::optional<EventScope> MaybeCreateEventScopeForEvent(const Event&);
+  // Returns an `EventScope` for the given input `Event` if the event is
+  // relevant to soft navigation tracking, otherwise it returns nullopt.
+  std::optional<EventScope> MaybeCreateEventScopeForInputEvent(const Event&);
 
   SoftNavigationPaintAttributionTracker* GetPaintAttributionTracker() {
-    CHECK_EQ(IsPrePaintBasedAttributionEnabled(), !!paint_attribution_tracker_);
     return paint_attribution_tracker_.Get();
   }
 
@@ -145,6 +136,11 @@ class CORE_EXPORT SoftNavigationHeuristics
   bool IsTrackingSoftNavigationsForTest() const {
     return !potential_soft_navigations_.empty();
   }
+
+  void RegisterInteractionEffectsMonitor(InteractionEffectsMonitor*);
+  void UnregisterInteractionEffectsMonitor(InteractionEffectsMonitor*);
+  void ForEachInteractionEffectsMonitor(
+      base::FunctionRef<void(InteractionEffectsMonitor&)>);
 
  private:
   void ReportSoftNavigationToMetrics(SoftNavigationContext*) const;
@@ -158,16 +154,23 @@ class CORE_EXPORT SoftNavigationHeuristics
       SoftNavigationContext*) const;
   SoftNavigationContext* GetSoftNavigationContextForCurrentTask() const;
 
-  void EmitSoftNavigationEntryIfAllConditionsMet(SoftNavigationContext*);
+  // Commits the navigation, assigning the context a new navigation ID, if the
+  // context has met all of the criteria for a soft navigation and it has not
+  // already committed. Emits a SoftNavigationEntry if the navigation was
+  // committed and the context's first contentful paint has its presentation
+  // time.
+  void MaybeCommitNavigationOrEmitSoftNavigationEntry(SoftNavigationContext*);
+
+  // Emits the SoftNavigationEntry for the context. The context must have an
+  // associated committed navigation and first contentful paint timestamp when
+  // this is called, and it must not have already been emitted.
+  void EmitSoftNavigationEntry(SoftNavigationContext*);
+
+  void UpdateSoftLcpCandidateForContext(SoftNavigationContext*);
   void OnSoftNavigationEventScopeDestroyed(const EventScope&);
   EventScope CreateEventScope(EventScope::Type type);
   uint64_t CalculateRequiredPaintArea() const;
   uint64_t CalculateViewportArea() const;
-
-  bool IsPrePaintBasedAttributionEnabled() const {
-    return paint_attribution_mode_ ==
-           features::SoftNavigationHeuristicsMode::kPrePaintBasedAttribution;
-  }
 
   Member<LocalDOMWindow> window_;
 
@@ -204,28 +207,23 @@ class CORE_EXPORT SoftNavigationHeuristics
   // continue measuring paints for a while.
   Member<SoftNavigationContext> context_for_current_url_;
 
-  // Save a strong reference to the most recent context that painted for the
-  // first time, and needs an FCP presentation callback.  This will be picked
-  // up by PaintTimingMixin, cleared, but held strongly until presententation
-  // feedback.  Soft-navigation entries are not reported to the performance
-  // timeline until after FCP is measured.
-  // TODO(crbug.com/424448145): Needs some changes:
-  // - measure first paint update, not the update after criteria met.
-  // - measure first paint of first contentful candidate, not fully loaded
-  // paint.
-  // - support multiple context in a single animation frame, rather than
-  // single value here.  Will become more important when all interactions
-  // measure paint.
-  Member<SoftNavigationContext> context_for_first_contentful_paint_;
+  // `SoftNavigationContext`s that have met all of the soft nav criteria but
+  // haven't emitted the performance entry because they're waiting for
+  // presentation feedback for FCP. Tracking these ensures we always emit an
+  // entry when we update the navigation ID, which might not be the case if the
+  // URL changes and presentation feedback is delayed.
+  HeapHashSet<Member<SoftNavigationContext>>
+      contexts_waiting_for_paint_timestamp_;
 
   // Used to map DOM modifications to `SoftNavigationContext`s for paint
   // attribution. Only set when `IsPrePaintBasedAttributionEnabled()` is true.
   Member<SoftNavigationPaintAttributionTracker> paint_attribution_tracker_;
 
-  uint32_t soft_navigation_count_ = 0;
+  HeapHashSet<Member<InteractionEffectsMonitor>> interaction_effects_monitors_;
+
+  uint64_t soft_navigation_count_ = 0;
   bool has_active_event_scope_ = false;
 
-  const features::SoftNavigationHeuristicsMode paint_attribution_mode_;
   // `task_attribution_tracker_` is cleared during `Shutdown()` (frame detach),
   // which should happen before the tracker is destroyed, since its lifetime is
   // tied to the lifetime of the isolate/main thread.

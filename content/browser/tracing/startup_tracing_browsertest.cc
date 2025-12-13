@@ -280,7 +280,8 @@ class StartupTracingTest
         << "Failed to read file " << path;
 
     if (output_type == OutputType::kJSON) {
-      EXPECT_TRUE(base::JSONReader::Read(trace));
+      EXPECT_TRUE(
+          base::JSONReader::Read(trace, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     }
 
     // Both proto and json should have the trace event name recorded somewhere

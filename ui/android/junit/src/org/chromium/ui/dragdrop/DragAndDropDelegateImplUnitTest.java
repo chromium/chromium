@@ -42,11 +42,11 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowContentResolver;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.dragdrop.DragAndDropDelegateImpl.DragTargetType;
-import org.chromium.ui.util.XrUtils;
 import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link DragAndDropDelegateImpl}. */
@@ -637,7 +637,7 @@ public class DragAndDropDelegateImplUnitTest {
 
     @Test
     public void testStartDragAndDrop_WithAndWithoutGesturesEnabled_SupportedOnXrDevice() {
-        XrUtils.setXrDeviceForTesting(true);
+        DeviceInfo.setIsXrForTesting(true);
         final Bitmap shadowImage = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
         final DropDataAndroid dropData = DropDataAndroid.create("text", null, null, null, null);
 
@@ -700,11 +700,6 @@ public class DragAndDropDelegateImplUnitTest {
     }
 
     private void assertDragOutsideWebContentHistogramsRecorded(boolean dropResult) {
-        // Verify drop outside metrics recorded.
-        final String histogram =
-                "Android.DragDrop.FromWebContent.Duration." + (dropResult ? "Success" : "Canceled");
-        assertHistogramRecorded(histogram, true, "Drop outside of web content.");
-
         // Verify drop inside metrics not recorded.
         assertHistogramRecorded(
                 "Android.DragDrop.FromWebContent.DropInWebContent.Duration",
@@ -718,16 +713,6 @@ public class DragAndDropDelegateImplUnitTest {
                 "Android.DragDrop.FromWebContent.DropInWebContent.Duration",
                 true,
                 "Drop inside web content.");
-
-        // Verify drop outside metrics not recorded.
-        assertHistogramRecorded(
-                "Android.DragDrop.FromWebContent.Duration.Success",
-                false,
-                "Should not recorded when drop inside web content.");
-        assertHistogramRecorded(
-                "Android.DragDrop.FromWebContent.Duration.Canceled",
-                false,
-                "Should not recorded when drop inside web content.");
     }
 
     private void assertHistogramRecorded(String histogram, boolean recorded, String reason) {

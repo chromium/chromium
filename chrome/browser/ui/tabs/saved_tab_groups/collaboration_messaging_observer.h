@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/uuid.h"
@@ -81,6 +82,8 @@ class CollaborationMessagingObserver
                            InstantMessageManagesSharingWithClosedGroup);
   FRIEND_TEST_ALL_PREFIXES(CollaborationMessagingObserverBrowserTest,
                            InstantMessageForTabGroupRemoved);
+  FRIEND_TEST_ALL_PREFIXES(CollaborationMessagingObserverBrowserTest,
+                           IgnoresUnsupportedTabMessages);
 
   // MessagingBackendService::PersistentMessageObserver
   void OnMessagingBackendServiceInitialized() override;

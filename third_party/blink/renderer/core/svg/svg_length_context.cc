@@ -24,7 +24,11 @@
 
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
+#include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
@@ -41,6 +45,45 @@ const ComputedStyle* RootElementStyle(const Element& element) {
       return document_element->GetComputedStyle();
     }
   }
+  return nullptr;
+}
+
+const CSSValue* MaybeResolveUnparsedValueInternal(const Element* context,
+                                                  const CSSValue& value) {
+  const auto* unparsed_value = DynamicTo<CSSUnparsedDeclarationValue>(value);
+  if (!unparsed_value) {
+    return &value;
+  }
+
+  if (!context) {
+    return nullptr;
+  }
+
+  DCHECK(!context->GetDocument().InStyleRecalc());
+  // TODO: The const_cast here is currently safe because
+  // `StyleCascade::ResolveSubstitutions` does not modify the element.
+  // However, if this API changes in the future, this code will need to be
+  // updated accordingly.
+  StyleResolverState state(context->GetDocument(),
+                           const_cast<Element&>(*context));
+  state.EnsureParentStyle();
+  const ComputedStyle* computed_style = context->GetComputedStyle();
+  if (!computed_style) {
+    return nullptr;
+  }
+  state.CreateNewClonedStyle(*computed_style);
+  const CSSUnparsedDeclarationValue* substituted =
+      StyleCascade::ResolveSubstitutions(state, *unparsed_value,
+                                         &context->GetDocument(),
+                                         /*env_bindings=*/nullptr);
+
+  if (substituted) {
+    return CSSParser::ParseSingleValue(CSSPropertyID::kX,
+                                       substituted->CssText(),
+                                       unparsed_value->ParserContext());
+  }
+
+  // Could not resolve the unparsed value.
   return nullptr;
 }
 
@@ -210,6 +253,16 @@ float SVGLengthContext::ConvertValueFromUserUnits(
     return 0;
   }
   return ClampTo<float>(value / reference);
+}
+
+const CSSValue* SVGLengthContext::MaybeResolveUnparsedValue(
+    const CSSValue& value) const {
+  return MaybeResolveUnparsedValueInternal(context_, value);
+}
+
+const CSSValue* SVGLengthConversionData::MaybeResolveUnparsedValue(
+    const CSSValue& value) const {
+  return MaybeResolveUnparsedValueInternal(GetElement(), value);
 }
 
 }  // namespace blink

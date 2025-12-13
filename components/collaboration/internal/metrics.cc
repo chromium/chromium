@@ -154,7 +154,7 @@ std::string_view CollaborationServiceShareOrManageEventToString(
       return "AccountInfoNotReadyOnSignin";
     case CollaborationServiceShareOrManageEvent::
         kCollaborationIdEmptyGroupToken:
-      return "CollarborationIdEmptyGroupToken";
+      return "CollaborationIdEmptyGroupToken";
     case CollaborationServiceShareOrManageEvent::kCollaborationIdShareCanceled:
       return "CollaborationIdShareCanceled";
     case CollaborationServiceShareOrManageEvent::kTabGroupShared:
@@ -280,6 +280,8 @@ std::string_view CollaborationServiceStepToString(
       return "LinkReadyAfterGroupCreation";
     case CollaborationServiceStep::kTabGroupFetchedAfterPeopleGroupJoined:
       return "TabGroupFetchedAfterPeopleGroupJoined";
+    case CollaborationServiceStep::kFullJoinFlowSuccess:
+      return "FullJoinFlowSuccess";
   }
 }
 
@@ -316,6 +318,77 @@ std::string_view CollaborationServiceFlowEventToString(
       return "ManagedAccountSignin";
     case CollaborationServiceFlowEvent::kAccountInfoNotReadyOnSignin:
       return "AccountInfoNotReadyOnSignin";
+    // Join flow metrics
+    case CollaborationServiceFlowEvent::kJoinCanceled:
+      return "JoinCanceled";
+    case CollaborationServiceFlowEvent::kJoinAccepted:
+      return "JoinAccepted";
+    case CollaborationServiceFlowEvent::kJoinOpenedNewGroup:
+      return "JoinOpenedNewGroup";
+    case CollaborationServiceFlowEvent::kJoinOpenedExistingGroup:
+      return "JoinOpenedExistingGroup";
+    case CollaborationServiceFlowEvent::kJoinParsingFailure:
+      return "JoinParsingFailure";
+    case CollaborationServiceFlowEvent::kJoinFoundCollaborationWithoutTabGroup:
+      return "JoinFoundCollaborationWithoutTabGroup";
+    case CollaborationServiceFlowEvent::kJoinReadNewGroupFailed:
+      return "JoinReadNewGroupFailed";
+    case CollaborationServiceFlowEvent::kJoinReadNewGroupSuccess:
+      return "JoinReadNewGroupSuccess";
+    case CollaborationServiceFlowEvent::kJoinAddedUserToGroup:
+      return "JoinAddedUserToGroup";
+    case CollaborationServiceFlowEvent::kJoinPreviewGroupFullError:
+      return "JoinPreviewGroupFullError";
+    case CollaborationServiceFlowEvent::kJoinPreviewFailure:
+      return "JoinPreviewFailure";
+    case CollaborationServiceFlowEvent::kJoinPreviewSuccess:
+      return "JoinPreviewSuccess";
+    case CollaborationServiceFlowEvent::kJoinGroupExistsWhenJoined:
+      return "JoinGroupExistsWhenJoined";
+    case CollaborationServiceFlowEvent::kJoinTabGroupFetched:
+      return "JoinTabGroupFetched";
+    case CollaborationServiceFlowEvent::kJoinPeopleGroupFetched:
+      return "JoinPeopleGroupFetched";
+    case CollaborationServiceFlowEvent::kJoinPromoteTabGroup:
+      return "JoinPromoteTabGroup";
+    case CollaborationServiceFlowEvent::kJoinTimeoutWaitingForServicesReady:
+      return "JoinTimeoutWaitingForServicesReady";
+    case CollaborationServiceFlowEvent::
+        kJoinTimeoutWaitingForSyncAndDataSharingGroup:
+      return "JoinTimeoutWaitingForSyncAndDataSharingGroup";
+    case CollaborationServiceFlowEvent::kJoinReadNewGroupUserIsAlreadyMember:
+      return "JoinReadNewGroupUserIsAlreadyMember";
+    case CollaborationServiceFlowEvent::kJoinFailedAddingUserToGroup:
+      return "JoinFailedAddingUserToGroup";
+    // Share or manage flow metrics
+    case CollaborationServiceFlowEvent::kShareDialogShown:
+      return "ShareDialogShown";
+    case CollaborationServiceFlowEvent::kManageDialogShown:
+      return "ManageDialogShown";
+    case CollaborationServiceFlowEvent::kCollaborationGroupCreated:
+      return "CollaborationGroupCreated";
+    case CollaborationServiceFlowEvent::kUrlReadyToShare:
+      return "UrlReadyToShare";
+    case CollaborationServiceFlowEvent::kSyncedTabGroupNotFound:
+      return "SyncedTabGroupNotFound";
+    case CollaborationServiceFlowEvent::kCollaborationIdMissing:
+      return "CollaborationIdMissing";
+    case CollaborationServiceFlowEvent::kCollaborationIdInvalid:
+      return "CollaborationIdInvalid";
+    case CollaborationServiceFlowEvent::kTabGroupMissingBeforeMigration:
+      return "TabGroupMissingBeforeMigration";
+    case CollaborationServiceFlowEvent::kMigrationFailure:
+      return "MigrationFailure";
+    case CollaborationServiceFlowEvent::kReadGroupFailed:
+      return "ReadGroupFailed";
+    case CollaborationServiceFlowEvent::kUrlCreationFailed:
+      return "UrlCreationFailed";
+    case CollaborationServiceFlowEvent::kCollaborationIdEmptyGroupToken:
+      return "CollaborationIdEmptyGroupToken";
+    case CollaborationServiceFlowEvent::kCollaborationIdShareCanceled:
+      return "CollaborationIdShareCanceled";
+    case CollaborationServiceFlowEvent::kTabGroupShared:
+      return "TabGroupShared";
   }
 }
 

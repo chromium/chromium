@@ -29,6 +29,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
+#include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
@@ -52,6 +53,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 

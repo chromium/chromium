@@ -27,10 +27,24 @@
 function runTest() {
   one.style.background = "grey";
   two.style.background = "pink";
+/*
+  startViewTransition.ready returns when the animation is prepared.
+  This is before the GPU process handles and renders the request.
+  Here we add two no-damage requestAnimationFrame to allow two VSyncs
+  to pass. These should occur after the ViewTransition is received by
+  th GPU Process, and should allow for more reliable timing for the
+  test harness to take screenshots.
+*/
   document.startViewTransition(() => {
     one.style.background = "black";
     two.style.background = "orange";
-  }).ready.then(() => domAutomationController.send("SUCCESS"));
+  }).ready.then(() => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        domAutomationController.send("SUCCESS");
+      });
+    });
+  });
 }
 
 onload = requestAnimationFrame(() => requestAnimationFrame(runTest));

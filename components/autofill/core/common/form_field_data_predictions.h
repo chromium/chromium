@@ -27,11 +27,11 @@ struct FormFieldDataPredictions {
   std::string host_form_signature;
   std::string signature;
   std::string heuristic_type;
+  std::string pwm_ml_type;
   // std::nullopt if the server response has not arrived yet.
   std::optional<std::string> server_type;
   std::string html_type;
   std::string overall_type;
-  std::string autofill_ai_type;
   std::string attribute_types;
   std::string format_string;
   std::string parseable_name;

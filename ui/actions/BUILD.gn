@@ -9,7 +9,6 @@ source_set("actions_headers") {
   sources = [
     "action_id.h",
     "action_id_macros.inc",
-    "action_utils.h",
     "actions.h",
   ]
 

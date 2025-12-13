@@ -102,8 +102,11 @@ struct NET_EXPORT_PRIVATE IndexHeader {
 // The structure of the whole index file.
 struct Index {
   IndexHeader header;
-  CacheAddr table[kIndexTablesize];  // Default size. Actual size controlled
-                                     // by header.table_len.
+  // Default size. Actual size controlled by header.table_len, and may be bigger
+  // or lower than this. Do not make this an std::array as the bound would be
+  // incorrect; see `BackendImpl::index_table_` for how boundary checking of
+  // this works.
+  CacheAddr table[kIndexTablesize];
 };
 
 // Main structure for an entry on the backing storage. If the key is longer than

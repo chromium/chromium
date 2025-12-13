@@ -4,6 +4,8 @@
 
 #include "components/payments/content/browser_binding/browser_bound_key_metadata.h"
 
+#include <compare>
+
 namespace payments {
 
 BrowserBoundKeyMetadata::RelyingPartyAndCredentialId::
@@ -29,6 +31,10 @@ BrowserBoundKeyMetadata::RelyingPartyAndCredentialId::
 
 BrowserBoundKeyMetadata::RelyingPartyAndCredentialId::
     ~RelyingPartyAndCredentialId() = default;
+
+std::strong_ordering
+BrowserBoundKeyMetadata::RelyingPartyAndCredentialId::operator<=>(
+    const RelyingPartyAndCredentialId& other) const = default;
 
 BrowserBoundKeyMetadata::BrowserBoundKeyMetadata() = default;
 

@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationBrowserTest, DISABLED_LockSmoke) {
       "NotSupportedError"; // Locking isn't supported.
 #endif
 
-  EXPECT_EQ(expected, shell()->web_contents()->GetLastCommittedURL().ref());
+  EXPECT_EQ(expected, shell()->web_contents()->GetLastCommittedURL().GetRef());
 }
 
 // Check that using screen orientation after a frame is detached doesn't crash
@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationLockDisabledBrowserTest,
     TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
     navigation_observer.Wait();
     EXPECT_EQ("NotSupportedError",
-              shell()->web_contents()->GetLastCommittedURL().ref());
+              shell()->web_contents()->GetLastCommittedURL().GetRef());
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)

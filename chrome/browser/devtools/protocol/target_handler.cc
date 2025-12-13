@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/common/webui_url_constants.h"
@@ -31,13 +33,18 @@ NavigateParams CreateNavigateParams(Profile* profile,
                                     ui::PageTransition transition,
                                     bool new_window,
                                     bool background,
-                                    Browser* browser) {
+                                    BrowserWindowInterface* bwi) {
+  Browser* browser = nullptr;
+  if (!new_window && bwi) {
+    browser = bwi->GetBrowserForMigrationOnly();
+  }
+
   DCHECK(new_window || browser);
   NavigateParams params(profile, url, transition);
   if (new_window) {
     params.disposition = WindowOpenDisposition::NEW_WINDOW;
     if (background)
-      params.window_action = NavigateParams::WindowAction::SHOW_WINDOW_INACTIVE;
+      params.window_action = NavigateParams::WindowAction::kShowWindowInactive;
   } else {
     params.disposition = (background)
                              ? WindowOpenDisposition::NEW_BACKGROUND_TAB
@@ -115,23 +122,28 @@ protocol::Response TargetHandler::CreateTarget(
 
   bool create_new_window = new_window.value_or(false);
   bool create_in_background = background.value_or(false);
-  Browser* target_browser = nullptr;
+  BrowserWindowInterface* target_browser_interface = nullptr;
 
-  // Must find target_browser if new_window not explicitly true.
+  // Must find target_browser_interface if new_window not explicitly true.
   if (!create_new_window) {
     // Find a browser to open a new tab.
     // We shouldn't use browser that is scheduled to close.
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      if (browser->profile() == profile &&
-          !browser->IsAttemptingToCloseBrowser()) {
-        target_browser = browser;
-        break;
-      }
-    }
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [profile, &target_browser_interface](
+            BrowserWindowInterface* browser_window_interface) {
+          if (browser_window_interface->GetProfile() == profile) {
+            if (!browser_window_interface->capabilities()
+                     ->IsAttemptingToCloseBrowser()) {
+              target_browser_interface = browser_window_interface;
+              return false;
+            }
+          }
+          return true;
+        });
   }
 
   bool explicit_old_window = !new_window.value_or(true);
-  if (explicit_old_window && !target_browser) {
+  if (explicit_old_window && !target_browser_interface) {
     return protocol::Response::ServerError(
         "Failed to open new tab - "
         "no browser is open");
@@ -152,7 +164,7 @@ protocol::Response TargetHandler::CreateTarget(
         "Creating a target with a local URL is not allowed");
   }
 
-  create_new_window = !target_browser;
+  create_new_window = !target_browser_interface;
 
   const bool set_window_position = left || top || width || height;
   if (set_window_position && !create_new_window) {
@@ -183,7 +195,7 @@ protocol::Response TargetHandler::CreateTarget(
 
   NavigateParams params = CreateNavigateParams(
       profile, gurl, ui::PAGE_TRANSITION_AUTO_TOPLEVEL, create_new_window,
-      create_in_background, target_browser);
+      create_in_background, target_browser_interface);
 
   Navigate(&params);
   if (!params.navigated_or_inserted_contents) {
@@ -191,7 +203,7 @@ protocol::Response TargetHandler::CreateTarget(
   }
 
   if (set_window_position) {
-    BrowserWindow* browser_window = params.browser->window();
+    ui::BaseWindow* browser_window = params.browser->GetWindow();
     CHECK(browser_window);
     gfx::Rect bounds = browser_window->GetBounds();
     if (left) {
@@ -211,9 +223,9 @@ protocol::Response TargetHandler::CreateTarget(
 
   if (set_window_state) {
     if (*window_state == protocol::Target::WindowStateEnum::Minimized) {
-      params.browser->window()->Minimize();
+      params.browser->GetWindow()->Minimize();
     } else if (*window_state == protocol::Target::WindowStateEnum::Maximized) {
-      params.browser->window()->Maximize();
+      params.browser->GetWindow()->Maximize();
     } else if (*window_state == protocol::Target::WindowStateEnum::Fullscreen) {
       params.browser->GetFeatures()
           .exclusive_access_manager()

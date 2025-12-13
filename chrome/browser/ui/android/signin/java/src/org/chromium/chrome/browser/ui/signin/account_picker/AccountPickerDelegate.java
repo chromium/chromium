@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
-import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.FlowVariant;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 /**
@@ -14,6 +14,20 @@ import org.chromium.components.signin.base.CoreAccountInfo;
  */
 @NullMarked
 public interface AccountPickerDelegate {
+
+    /** A controller for the state of the sign-in flow, e.g. showing error screens. */
+    interface SigninStateController {
+
+        /** Shows the sign-in flow generic error state. */
+        void showGenericError();
+
+        /** Show the sign-in flow auth error state. */
+        void showAuthError();
+
+        /** Must be called when the sign-in flow finishes. */
+        void onSigninComplete();
+    }
+
     /** Releases resources used by this class. */
     void onAccountPickerDestroy();
 
@@ -30,18 +44,24 @@ public interface AccountPickerDelegate {
      */
     void addAccount();
 
+    /** Called when the current signed-in account is signed-out prior to the sign-in operation. */
+    default void onSignoutBeforeSignin() {}
+
+    /** Called when the sign-in finishes successfully. */
+    void onSignInComplete(
+            CoreAccountInfo accountInfo, AccountPickerDelegate.SigninStateController controller);
+
     /**
-     * Signs in the user with the given accountInfo. The provided mediator can be used to control
-     * the behavior of the bottom sheet in response to failures, etc.
+     * Called when the seamless sign-in process cannot proceed, for example, if the target account
+     * is removed. Implementers should use this to clean up resources and ensure any associated UI
+     * is dismissed.
+     * TODO(crbug.com/464507068): This method name is temporary and linked to a specific
+     * implementation. The interface should be improved to use a generic `onSignInCancel()` from the
+     * delegate.
      */
-    void signIn(CoreAccountInfo accountInfo, AccountPickerBottomSheetMediator mediator);
+    default void onSeamlessSigninAbandoned() {}
 
-    /** Calls the callback with the result of SigninManager#isAccountManaged(). */
-    void isAccountManaged(CoreAccountInfo accountInfo, Callback<Boolean> callback);
-
-    /** See SigninManager#setUserAcceptedAccountManagement. */
-    void setUserAcceptedAccountManagement(boolean confirmed);
-
-    /** See SigninManager#extractDomainName. */
-    String extractDomainName(String accountEmail);
+    default @FlowVariant String getSigninFlowVariant() {
+        return FlowVariant.OTHER;
+    }
 }

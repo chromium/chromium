@@ -58,11 +58,7 @@ TEST_F(StyleAdjusterTest, TouchActionPanningReEnabledByScrollers) {
   UpdateAllLifecyclePhasesForTest();
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
-  // TODO(crbug.com/382525574): Launch or clean up kHandwriting.
-  // This check also tests that TouchAction::kInternalHandwritingPanningRules
-  // is set, as it is included in kManipulation.
-  EXPECT_EQ((TouchAction::kManipulation & ~TouchAction::kInternalHandwriting) |
-                TouchAction::kInternalPanXScrolls |
+  EXPECT_EQ(TouchAction::kManipulation | TouchAction::kInternalPanXScrolls |
                 TouchAction::kInternalNotWritable,
             target->GetComputedStyle()->EffectiveTouchAction());
 }
@@ -95,10 +91,8 @@ TEST_F(StyleAdjusterTest, TouchActionPropagatedWhenAncestorStyleChanges) {
   potential_scroller->setAttribute(html_names::kStyleAttr,
                                    AtomicString("overflow: scroll"));
   UpdateAllLifecyclePhasesForTest();
-  // TODO(crbug.com/382525574): Launch or clean up kHandwriting.
   EXPECT_EQ(TouchAction::kPan | TouchAction::kInternalPanXScrolls |
-                TouchAction::kInternalNotWritable |
-                TouchAction::kInternalHandwritingPanningRules,
+                TouchAction::kInternalNotWritable,
             target->GetComputedStyle()->EffectiveTouchAction());
 }
 
@@ -287,167 +281,6 @@ TEST_F(StyleAdjusterTest, TouchActionWritableArea) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(expected_input_action,
             target->GetComputedStyle()->EffectiveTouchAction());
-}
-
-// Non-writable elements shouldn't signal that they would lose handwriting
-// capabilities.
-TEST_F(StyleAdjusterTest, TouchActionHandwriting_NotWritable) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="width: 100px; height: 100px;"/>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kNonNoneTouchActionWouldLoseEditableHandwriting));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::
-          kNonNoneTouchActionWouldLoseEditableHandwritingRestoredByScroller));
-}
-
-// Non-writable elements shouldn't signal that they would lose handwriting
-// capabilities even if `touch-action` is specified.
-TEST_F(StyleAdjusterTest, TouchActionHandwriting_NotWritableTouchAction) {
-  SetBodyInnerHTML(R"HTML(
-    <div style="touch-action: pan-x; width: 100px; height: 100px;"/>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kNonNoneTouchActionWouldLoseEditableHandwriting));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::
-          kNonNoneTouchActionWouldLoseEditableHandwritingRestoredByScroller));
-}
-
-// Writable elements shouldn't signal that they would lose handwriting
-// capabilities if `touch-action` is not specified.
-TEST_F(StyleAdjusterTest, TouchActionHandwriting_NoTouchAction) {
-  SetBodyInnerHTML(R"HTML(
-    <input type="text" style="width: 100px; height: 100px;"></input>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kNonNoneTouchActionWouldLoseEditableHandwriting));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::
-          kNonNoneTouchActionWouldLoseEditableHandwritingRestoredByScroller));
-}
-
-// Writable elements shouldn't signal that they would lose handwriting
-// capabilities if `touch-action: auto` is specified.
-TEST_F(StyleAdjusterTest, TouchActionHandwriting_Auto) {
-  SetBodyInnerHTML(R"HTML(
-    <input style="touch-action:auto; height:100px; width:100px" type="text"/>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kNonNoneTouchActionWouldLoseEditableHandwriting));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::
-          kNonNoneTouchActionWouldLoseEditableHandwritingRestoredByScroller));
-}
-
-// Writable elements shouldn't signal that they would lose handwriting
-// capabilities if `touch-action: manipulation` is specified.
-TEST_F(StyleAdjusterTest, TouchActionHandwriting_Manipulation) {
-  SetBodyInnerHTML(R"HTML(
-    <input style="touch-action:manipulation; height:100px; width:100px"
-      type="text"/>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kNonNoneTouchActionWouldLoseEditableHandwriting));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::
-          kNonNoneTouchActionWouldLoseEditableHandwritingRestoredByScroller));
-}
-
-// Writable elements shouldn't signal that they would lose handwriting
-// capabilities if `touch-action: none` is specified, as handwriting would be
-// intentionally disabled.
-TEST_F(StyleAdjusterTest, TouchActionHandwriting_TouchActionNone) {
-  SetBodyInnerHTML(R"HTML(
-    <input style="touch-action:none; height:100px; width:100px"
-      type="text"/>
-  )HTML");
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kNonNoneTouchActionWouldLoseEditableHandwriting));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::
-          kNonNoneTouchActionWouldLoseEditableHandwritingRestoredByScroller));
-}
-
-// Writable elements should signal that they would lose handwriting
-// capabilities if `touch-action` is specified with a value other than
-// `manipulation` or `auto`.
-TEST_F(StyleAdjusterTest, TouchActionHandwriting_TouchActionDeclared) {
-  SetBodyInnerHTML(R"HTML(
-    <input style="touch-action:pan-x pan-y pinch-zoom; height:100px; width:100px"
-      type="text"/>
-  )HTML");
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kNonNoneTouchActionWouldLoseEditableHandwriting));
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::
-          kNonNoneTouchActionWouldLoseEditableHandwritingRestoredByScroller));
-}
-
-// Tests that the use counter that follows the panning rules wouldn't be fired
-// when it is re-stablished by a scrollable div, but that the use counter that
-// follows the pinch-zoom rules would.
-TEST_F(StyleAdjusterTest, TouchActionHandwriting_NotInhibitedByParent) {
-  SetBodyInnerHTML(R"HTML(
-    <style>#ancestor { margin: 0; touch-action: pinch-zoom; }
-    #scroller { overflow: scroll; width: 100px; height: 100px; }
-    #target { width: 200px; height: 200px; } </style>
-    <div id='ancestor'><div id='scroller'><div contenteditable="true" id='target'>
-    </div></div></div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-  Element* text = GetDocument().getElementById(AtomicString("target"));
-  EXPECT_NE(TouchAction::kNone,
-            TouchAction::kInternalHandwritingPanningRules &
-                text->GetComputedStyle()->EffectiveTouchAction());
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kNonNoneTouchActionWouldLoseEditableHandwriting));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::
-          kNonNoneTouchActionWouldLoseEditableHandwritingRestoredByScroller));
-}
-
-// Similar to above, but with nested scrollers.
-TEST_F(StyleAdjusterTest, TouchActionHandwriting_NestedScrollers) {
-  SetBodyInnerHTML(R"HTML(
-    <style>#ancestor { margin: 0; touch-action: pinch-zoom; }
-    #scroller { overflow: scroll; width: 200px; height: 200px; touch-action: none; }
-    #scroller_2 { overflow: scroll; width: 100px; height: 100px; }
-    #target { width: 200px; height: 200px; } </style>
-    <div id='ancestor'><div id='scroller'><div id='scroller_2'><div contenteditable="true" id='target'>
-    </div></div></div></div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-  Element* text = GetDocument().getElementById(AtomicString("target"));
-  EXPECT_NE(TouchAction::kNone,
-            TouchAction::kInternalHandwritingPanningRules &
-                text->GetComputedStyle()->EffectiveTouchAction());
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kNonNoneTouchActionWouldLoseEditableHandwriting));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::
-          kNonNoneTouchActionWouldLoseEditableHandwritingRestoredByScroller));
-}
-
-TEST_F(StyleAdjusterTest, TouchActionHandwriting_ScrollerHasItsOwnStyle) {
-  SetBodyInnerHTML(R"HTML(
-    <style>#ancestor { margin: 0; touch-action: pinch-zoom; }
-    #scroller { overflow: scroll; width: 100px; height: 100px; touch-action: pinch-zoom; }
-    #target { width: 200px; height: 200px; } </style>
-    <div id='ancestor'><div id='scroller'><div contenteditable="true" id='target'>
-    </div></div></div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-  Element* text = GetDocument().getElementById(AtomicString("target"));
-  EXPECT_EQ(TouchAction::kNone,
-            TouchAction::kInternalHandwritingPanningRules &
-                text->GetComputedStyle()->EffectiveTouchAction());
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kNonNoneTouchActionWouldLoseEditableHandwriting));
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::
-          kNonNoneTouchActionWouldLoseEditableHandwritingRestoredByScroller));
 }
 
 TEST_F(StyleAdjusterTest, OverflowClipUseCount) {

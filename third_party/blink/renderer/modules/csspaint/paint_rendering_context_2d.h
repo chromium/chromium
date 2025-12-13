@@ -16,6 +16,7 @@
 namespace blink {
 
 class Color;
+class MemoryManagedPaintCanvas;
 
 // In our internal implementation, there are different kinds of canvas such as
 // recording canvas, GPU canvas. The CSS Paint API uses the recording canvas and
@@ -56,10 +57,12 @@ class MODULES_EXPORT PaintRenderingContext2D
 
   Color GetCurrentColor() const final;
 
-  cc::PaintCanvas* GetOrCreatePaintCanvas() final { return GetPaintCanvas(); }
+  MemoryManagedPaintCanvas* GetOrCreatePaintCanvas() final {
+    return GetPaintCanvas();
+  }
   using Canvas2DRecorderContext::GetPaintCanvas;  // Pull the non-const
                                                   // overload.
-  const cc::PaintCanvas* GetPaintCanvas() const final;
+  const MemoryManagedPaintCanvas* GetPaintCanvas() const final;
   const MemoryManagedPaintRecorder* Recorder() const override {
     return &paint_recorder_;
   }

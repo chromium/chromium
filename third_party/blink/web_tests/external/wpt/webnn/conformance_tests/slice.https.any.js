@@ -17,6 +17,30 @@
 
 const sliceTests = [
   {
+    'name':
+        'slicing float32 0D constant tensor with empty starts and sizes should be a no-op',
+    'graph': {
+      'inputs': {
+        'sliceInput': {
+          'data': [28.846250534057617],
+          'descriptor': {shape: [], dataType: 'float32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'slice',
+        'arguments': [{'input': 'sliceInput'}, {'starts': []}, {'sizes': []}],
+        'outputs': 'sliceOutput'
+      }],
+      'expectedOutputs': {
+        'sliceOutput': {
+          'data': [28.846250534057617],
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
     'name': 'slice float32 1D constant tensor',
     'graph': {
       'inputs': {
@@ -625,10 +649,4 @@ const sliceTests = [
   }
 ];
 
-if (navigator.ml) {
-  sliceTests.forEach((test) => {
-    webnn_conformance_test(buildAndExecuteGraph, getZeroULPTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(sliceTests, buildAndExecuteGraph, getZeroULPTolerance);

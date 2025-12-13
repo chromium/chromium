@@ -7,20 +7,26 @@ package org.chromium.content.browser.accessibility;
 import android.os.Bundle;
 import android.view.accessibility.AccessibilityEvent;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-import java.util.LinkedList;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 
 /** Helper class for tracking accessibility actions and events for end-to-end tests. */
 @NullMarked
 public class AccessibilityActionAndEventTracker {
-    private final LinkedList<String> mEvents;
+    private final ArrayList<String> mEvents;
     private final boolean mShouldFilterTrivialEvents;
     private boolean mTestComplete;
+    private @Nullable CountDownLatch mEventLatch;
 
     public AccessibilityActionAndEventTracker() {
-        mEvents = new LinkedList<String>();
+        mEvents = new ArrayList<String>();
         mTestComplete = false;
         mShouldFilterTrivialEvents = true;
     }
@@ -29,26 +35,55 @@ public class AccessibilityActionAndEventTracker {
         // TODO(crbug.com/414363686) this overloaded constructor should be removed after flakiness
         // of event test with trivial events included is solved. mShouldFilterTrivialEvents should
         // also be removed after fixing the flakiness.
-        mEvents = new LinkedList<String>();
+        mEvents = new ArrayList<String>();
         mTestComplete = false;
         mShouldFilterTrivialEvents = shouldFilterTrivialEvents;
     }
 
-    public void addEvent(AccessibilityEvent event) {
+    // This interface allows us to store additional information about WINDOW_CONTENT_CHANGED events
+    // that do not have an assigned content type (i.e. LIVE_REGION_NODE_CHANGED events).
+    @IntDef({
+        WindowContentChangedSubtype.NONE,
+        WindowContentChangedSubtype.LIVE_REGION_NODE_CHANGED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface WindowContentChangedSubtype {
+        int NONE = 0;
+        int LIVE_REGION_NODE_CHANGED = 1;
+    }
+
+    // WINDOW_CONTENT_CHANGED events are eligible to be tracked if they have a specific subtype.
+    public boolean shouldWindowContentChangedSubtypeBeTracked(
+            @WindowContentChangedSubtype int subtype) {
+        return subtype == WindowContentChangedSubtype.LIVE_REGION_NODE_CHANGED;
+    }
+
+    public void setEventLatch(@Nullable CountDownLatch latch) {
+        mEventLatch = latch;
+    }
+
+    public void addEvent(AccessibilityEvent event, @WindowContentChangedSubtype int subtype) {
         // In rare cases there may be a lingering event, so only add if the test is not complete.
         if (!mTestComplete) {
             if (mShouldFilterTrivialEvents) {
                 // Convert event type to a human readable String (except TYPE_WINDOW_CONTENT_CHANGED
-                // with no CONTENT_CHANGE_TYPE_STATE_DESCRIPTION flag or
+                // with an ineligible subtype, no CONTENT_CHANGE_TYPE_STATE_DESCRIPTION flag, and no
                 // CONTENT_CHANGE_TYPE_PANE_TITLE flag)
-                if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
-                        && (event.getContentChangeTypes()
-                                        & AccessibilityEvent.CONTENT_CHANGE_TYPE_STATE_DESCRIPTION)
-                                == 0
-                        && (event.getContentChangeTypes()
-                                        & AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_TITLE)
-                                == 0) {
-                    return;
+                if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+                    boolean hasNoStateDescriptionChange =
+                            (event.getContentChangeTypes()
+                                            & AccessibilityEvent
+                                                    .CONTENT_CHANGE_TYPE_STATE_DESCRIPTION)
+                                    == 0;
+                    boolean hasNoPaneTitleChange =
+                            (event.getContentChangeTypes()
+                                            & AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_TITLE)
+                                    == 0;
+                    if (hasNoStateDescriptionChange
+                            && hasNoPaneTitleChange
+                            && !shouldWindowContentChangedSubtypeBeTracked(subtype)) {
+                        return;
+                    }
                 }
             }
             mEvents.add(eventToString(event));
@@ -65,7 +100,7 @@ public class AccessibilityActionAndEventTracker {
     public String results() {
         StringBuilder results = new StringBuilder();
 
-        for (String event : new LinkedList<String>(mEvents)) {
+        for (String event : new ArrayList<String>(mEvents)) {
             if (event != null && !event.isEmpty()) {
                 results.append(event);
                 results.append('\n');
@@ -83,6 +118,10 @@ public class AccessibilityActionAndEventTracker {
     /** Helper method to signal the end of a given unit test. */
     public void signalEndOfTest() {
         mTestComplete = true;
+        // If a latch is waiting, signal it.
+        if (mEventLatch != null) {
+            mEventLatch.countDown();
+        }
     }
 
     /**
@@ -149,9 +188,22 @@ public class AccessibilityActionAndEventTracker {
                     builder.append("]");
                     break;
                 }
-                // For text selection/traversal, track the To and From indices.
-            case AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY:
+
+            // For text selection, track the To and From indices if they are available.
             case AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED:
+                {
+                    if (event.getFromIndex() != -1 && event.getToIndex() != -1) {
+                        builder.append(" - [");
+                        builder.append(event.getFromIndex());
+                        builder.append(", ");
+                        builder.append(event.getToIndex());
+                        builder.append("]");
+                    }
+                    break;
+                }
+
+            // For text traversal, track the To and From indices.
+            case AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY:
                 {
                     builder.append(" - [");
                     builder.append(event.getFromIndex());

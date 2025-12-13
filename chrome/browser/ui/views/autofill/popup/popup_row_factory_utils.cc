@@ -18,7 +18,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -46,7 +45,7 @@
 #include "components/compose/core/browser/compose_features.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
-#include "components/plus_addresses/grit/plus_addresses_strings.h"
+#include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "components/user_education/views/new_badge_label.h"
@@ -67,6 +66,7 @@
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
@@ -80,10 +80,6 @@ constexpr int kCustomIconSize = 16;
 // The size of a close or delete icon.
 constexpr int kCloseIconSize = 16;
 
-// The size of a refresh icon.
-constexpr int kRefreshIconSize = 16;
-constexpr int kRefreshInkDropRadius = 12;
-
 // Popup items that use a leading icon instead of a trailing one.
 constexpr auto kPopupItemTypesUsingLeadingIcons = DenseSet<SuggestionType>(
     {SuggestionType::kAllLoyaltyCardsEntry,
@@ -91,8 +87,8 @@ constexpr auto kPopupItemTypesUsingLeadingIcons = DenseSet<SuggestionType>(
      SuggestionType::kManageAutofillAi, SuggestionType::kManageCreditCard,
      SuggestionType::kManageIban, SuggestionType::kManageLoyaltyCard,
      SuggestionType::kManagePlusAddress, SuggestionType::kUndoOrClear,
-     SuggestionType::kViewPasswordDetails,
-     SuggestionType::kPendingStateSignin});
+     SuggestionType::kViewPasswordDetails, SuggestionType::kPendingStateSignin,
+     SuggestionType::kWebauthnSignInWithAnotherDevice});
 
 // Max width for the username and masked password.
 constexpr int kAutofillPopupUsernameMaxWidth = 272;
@@ -100,6 +96,8 @@ constexpr int kAutofillPopupPasswordMaxWidth = 108;
 
 // Max width for the Autofill suggestion text.
 constexpr int kAutofillSuggestionMaxWidth = 192;
+// Multiline suggestions look crammed without extra vertical margin.
+constexpr int kAutofillMultilineSuggestionAdditionalVerticalMargin = 8;
 
 constexpr auto kMainTextStyle = views::style::TextStyle::STYLE_BODY_3_MEDIUM;
 constexpr auto kMainTextStyleLight = views::style::TextStyle::STYLE_BODY_3;
@@ -122,9 +120,25 @@ base::RepeatingClosure CreateExecuteSoonWrapper(base::RepeatingClosure task) {
 }
 
 bool IsDeactivatedPasswordOrPasskey(const Suggestion& suggestion) {
-  return suggestion.HasDeactivatedStyle() &&
-         GetFillingProductFromSuggestionType(suggestion.type) ==
-             FillingProduct::kPassword;
+  switch (GetFillingProductFromSuggestionType(suggestion.type)) {
+    case FillingProduct::kPassword:
+    case FillingProduct::kPasskey:
+      return suggestion.HasDeactivatedStyle();
+    case FillingProduct::kAddress:
+    case FillingProduct::kPlusAddresses:
+    case FillingProduct::kCreditCard:
+    case FillingProduct::kIban:
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kCompose:
+    case FillingProduct::kAutofillAi:
+    case FillingProduct::kLoyaltyCard:
+    case FillingProduct::kIdentityCredential:
+    case FillingProduct::kDataList:
+    case FillingProduct::kOneTimePassword:
+    case FillingProduct::kNone:
+      return false;
+  }
 }
 
 std::unique_ptr<views::BoxLayoutView> GetBadgeView(std::u16string_view label) {
@@ -163,6 +177,7 @@ void FormatLabel(views::Label& label,
     case FillingProduct::kCompose:
     case FillingProduct::kIban:
     case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kPasskey:
     case FillingProduct::kPassword:
     case FillingProduct::kDataList:
     case FillingProduct::kNone:
@@ -249,9 +264,7 @@ std::vector<std::unique_ptr<views::View>> CreateSubtextViews(
               ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
               IsDeactivatedPasswordOrPasskey(suggestion) ? kDisabledTextStyle
                                                          : kMinorTextStyle));
-      if (suggestion.type == SuggestionType::kPlusAddressError) {
-        label->SetEnabledColor(ui::kColorSysError);
-      } else if (!IsDeactivatedPasswordOrPasskey(suggestion)) {
+      if (!IsDeactivatedPasswordOrPasskey(suggestion)) {
         label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
       }
       // To make sure the popup width will not exceed its maximum value,
@@ -303,6 +316,11 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
       suggestion.type == SuggestionType::kFreeformFooter) {
     main_text_label->SetMultiLine(true);
     main_text_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+    view->SetInsideBorderInsets(
+        gfx::Insets(view->GetInsideBorderInsets())
+            .set_top_bottom(
+                kAutofillMultilineSuggestionAdditionalVerticalMargin,
+                kAutofillMultilineSuggestionAdditionalVerticalMargin));
   }
 
   view->AddChildView(std::move(main_text_label));
@@ -591,58 +609,6 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
       PopupRowWithButtonView::ButtonSelectBehavior::kUnselectSuggestion);
 }
 
-// Creates the row for creating a plus address inline.
-// TODO(crbug.com/362445807): Add pixel tests once the layout is complete.
-std::unique_ptr<PopupRowView> CreateNewPlusAddressInlineSuggestion(
-    base::WeakPtr<AutofillPopupController> controller,
-    PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
-    PopupRowView::SelectionDelegate& selection_delegate,
-    int line_number,
-    std::optional<user_education::DisplayNewBadge> show_new_badge) {
-  auto view = std::make_unique<PopupRowContentView>();
-
-  const Suggestion& suggestion = controller->GetSuggestionAt(line_number);
-  std::unique_ptr<views::Label> main_text_label =
-      CreateMainTextLabel(suggestion, show_new_badge);
-  FormatLabel(*main_text_label, suggestion.main_text,
-              FillingProduct::kPlusAddresses, kAutofillSuggestionMaxWidth);
-  popup_cell_utils::AddSuggestionContentToView(
-      suggestion, std::move(main_text_label), CreateMinorTextLabels(suggestion),
-      /*description_label=*/nullptr,
-      CreateSubtextViews(*view, suggestion, FillingProduct::kPlusAddresses),
-      popup_cell_utils::GetIconImageView(suggestion), *view);
-
-  // If no refresh is offered, we can just use a "normal" `PopupRowView`.
-  if (!suggestion.GetPayload<Suggestion::PlusAddressPayload>().offer_refresh) {
-    return std::make_unique<PopupRowView>(a11y_selection_delegate,
-                                          selection_delegate, controller,
-                                          line_number, std::move(view));
-  }
-
-  base::RepeatingClosure action = base::BindRepeating(
-      &AutofillPopupController::PerformButtonActionForSuggestion, controller,
-      line_number, SuggestionButtonAction());
-  std::unique_ptr<views::ImageButton> button =
-      views::CreateVectorImageButtonWithNativeTheme(
-          CreateExecuteSoonWrapper(std::move(action)),
-          vector_icons::kReloadIcon, kRefreshIconSize);
-
-  button->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_PLUS_ADDRESS_CREATE_INLINE_REFRESH_TOOLTIP));
-  button->GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
-  button->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
-      IDS_PLUS_ADDRESS_CREATE_INLINE_REFRESH_A11Y_NAME));
-  button->SetVisible(false);
-  views::InstallFixedSizeCircleHighlightPathGenerator(button.get(),
-                                                      kRefreshInkDropRadius);
-
-  return std::make_unique<PopupRowWithButtonView>(
-      a11y_selection_delegate, selection_delegate, controller, line_number,
-      std::move(view), std::move(button),
-      PopupRowWithButtonView::ButtonVisibility::kShowOnHoverOrSelect,
-      PopupRowWithButtonView::ButtonSelectBehavior::kSelectSuggestion);
-}
-
 }  // namespace
 
 std::unique_ptr<PopupRowView> CreatePopupRowView(
@@ -702,12 +668,6 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
           CreateComposePopupRowContentView(suggestion, show_new_badge));
-    }
-    case SuggestionType::kCreateNewPlusAddressInline:
-    case SuggestionType::kPlusAddressError: {
-      return CreateNewPlusAddressInlineSuggestion(
-          controller, a11y_selection_delegate, selection_delegate, line_number,
-          show_new_badge);
     }
     case SuggestionType::kIbanEntry:
     case SuggestionType::kVirtualCreditCardEntry: {

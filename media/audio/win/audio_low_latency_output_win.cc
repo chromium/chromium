@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
@@ -31,6 +32,7 @@
 #include "media/audio/win/avrt_wrapper_win.h"
 #include "media/audio/win/core_audio_util_win.h"
 #include "media/base/amplitude_peak_detector.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -151,11 +153,11 @@ WASAPIAudioOutputStream::WASAPIAudioOutputStream(
   // Create the event which the audio engine will signal each time
   // a buffer becomes ready to be processed by the client.
   audio_samples_render_event_.Set(CreateEvent(nullptr, FALSE, FALSE, nullptr));
-  DCHECK(audio_samples_render_event_.IsValid());
+  DCHECK(audio_samples_render_event_.is_valid());
 
   // Create the event which will be set in Stop() when capturing shall stop.
   stop_render_event_.Set(CreateEvent(nullptr, FALSE, FALSE, nullptr));
-  DCHECK(stop_render_event_.IsValid());
+  DCHECK(stop_render_event_.is_valid());
 }
 
 WASAPIAudioOutputStream::~WASAPIAudioOutputStream() {
@@ -868,8 +870,12 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
 
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     if (params_.format() == AudioParameters::AUDIO_BITSTREAM_DTS) {
-      std::unique_ptr<AudioBus> audio_bus(
-          AudioBus::WrapMemory(params_, audio_data));
+      // SAFETY: `audio_data` points to a WASAPI-allocated buffer of
+      // `packet_size_bytes_` bytes. The Windows audio API guarantees this
+      // buffer is valid and will not overflow.
+      std::unique_ptr<AudioBus> audio_bus(AudioBus::WrapMemory(
+          params_,
+          UNSAFE_BUFFERS(base::span<uint8_t>(audio_data, packet_size_bytes_))));
       audio_bus_->set_is_bitstream_format(true);
       int frames_filled = source_->OnMoreData(
           BoundedDelay(delay), delay_timestamp,
@@ -877,7 +883,11 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
 
       // During pause/seek, keep the pipeline filled with zero'ed frames.
       if (!frames_filled) {
-        memset(audio_data, 0, packet_size_frames_);
+        // SAFETY: `audio_data` points to a WASAPI-allocated buffer of
+        // `packet_size_bytes_` bytes. The Windows audio API guarantees this
+        // buffer is valid and will not overflow.
+        UNSAFE_BUFFERS(std::ranges::fill(
+            base::span<uint8_t>(audio_data, packet_size_bytes_), 0));
       }
 
       peak_detector_->FindPeak(audio_bus_.get());

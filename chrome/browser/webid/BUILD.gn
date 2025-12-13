@@ -12,6 +12,8 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/webid/DigitalCredentialsPresentationDelegate.java",
       "android/java/src/org/chromium/chrome/browser/webid/DigitalIdentityProvider.java",
       "android/java/src/org/chromium/chrome/browser/webid/IdentityCredentialsDelegate.java",
+      "android/java/src/org/chromium/chrome/browser/webid/IdentityProviderService.java",
+      "android/java/src/org/chromium/chrome/browser/webid/TestIdP.java",
     ]
     deps = [
       "$google_play_services_package:google_play_services_identity_credentials_java",
@@ -32,7 +34,10 @@ if (is_android) {
   }
 
   generate_jni("jni_headers") {
-    sources = [ "android/java/src/org/chromium/chrome/browser/webid/DigitalIdentityProvider.java" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/webid/DigitalIdentityProvider.java",
+      "android/java/src/org/chromium/chrome/browser/webid/IdentityProviderService.java",
+    ]
   }
 
   robolectric_library("junit") {
@@ -47,17 +52,152 @@ if (is_android) {
       "$google_play_services_package:google_play_services_identity_credentials_java",
       "//base:base_junit_test_support",
       "//content/public/android:content_java",
-      "//third_party/junit:junit",
+      "//third_party/androidx:androidx_credentials_credentials_java",
+      "//third_party/junit",
       "//third_party/mockito:mockito_java",
     ]
   }
 }
 
 source_set("webid") {
-  sources = [ "identity_provider_permission_request.h" ]
+  sources = [
+    "federated_identity_account_keyed_permission_context.h",
+    "federated_identity_api_permission_context.h",
+    "federated_identity_api_permission_context_factory.h",
+    "federated_identity_auto_reauthn_permission_context.h",
+    "federated_identity_auto_reauthn_permission_context_factory.h",
+    "federated_identity_identity_provider_registration_context.h",
+    "federated_identity_identity_provider_signin_status_context.h",
+    "federated_identity_permission_context.h",
+    "federated_identity_permission_context_factory.h",
+    "identity_provider_permission_request.h",
+  ]
+  if (is_android) {
+    sources += [ "identity_provider_service.h" ]
+  }
   public_deps = [
+    "//chrome/browser/profiles:profile",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/common",
     "//components/permissions",
+    "//components/signin/public/identity_manager",
+    "//components/webid",
+    "//content/public/browser",
+    "//third_party/blink/public/common",
     "//url",
   ]
+  if (is_android) {
+    public_deps += [ "//chrome/browser/webid:jni_headers" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "federated_identity_account_keyed_permission_context.cc",
+    "federated_identity_api_permission_context.cc",
+    "federated_identity_api_permission_context_factory.cc",
+    "federated_identity_auto_reauthn_permission_context.cc",
+    "federated_identity_auto_reauthn_permission_context_factory.cc",
+    "federated_identity_identity_provider_registration_context.cc",
+    "federated_identity_identity_provider_signin_status_context.cc",
+    "federated_identity_permission_context.cc",
+    "federated_identity_permission_context_factory.cc",
+    "identity_provider_permission_request.cc",
+  ]
+  if (is_android) {
+    sources += [ "identity_provider_service.cc" ]
+  }
+  deps = [
+    ":webid",
+    "//base",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/permissions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//components/password_manager/core/browser",
+    "//components/permissions",
+    "//components/signin/public/identity_manager",
+    "//content/public/browser",
+    "//content/public/common",
+    "//google_apis",
+    "//net",
+    "//services/network/public/mojom:cookies_mojom",
+    "//third_party/blink/public:runtime_features_for_public",
+    "//third_party/blink/public/common",
+    "//third_party/blink/public/common:headers",
+    "//url",
+  ]
+  if (!is_android) {
+    deps += [ "//chrome/browser/actor" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "federated_identity_account_keyed_permission_context_unittest.cc",
+    "federated_identity_api_permission_context_unittest.cc",
+    "federated_identity_auto_reauthn_permission_context_unittest.cc",
+    "federated_identity_identity_provider_registration_context_unittest.cc",
+    "federated_identity_identity_provider_signin_status_context_unittest.cc",
+    "federated_identity_permission_context_unittest.cc",
+    "identity_provider_permission_request_unittest.cc",
+  ]
+  deps = [
+    ":webid",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/sync",
+    "//chrome/browser/sync:factories",
+    "//chrome/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/content_settings/core/common",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:test_support",
+    "//components/permissions",
+    "//components/prefs",
+    "//components/sync_preferences:test_support",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public:runtime_features_for_public",
+    "//third_party/blink/public/common",
+    "//third_party/blink/public/common:headers",
+    "//url",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources =
+        [ "federated_identity_auto_reauthn_permission_context_browsertest.cc" ]
+    deps = [
+      ":webid",
+      "//chrome/browser/actor",
+      "//chrome/browser/actor/ui:test_support",
+      "//chrome/browser/password_manager/factories:password_factory_headers",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+    ]
+  }
+}
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("fedcm_clickthrough_rate_metadata_proto") {
+  sources = [ "proto/fedcm_clickthrough_rate_metadata.proto" ]
+  cc_generator_options = "lite=true:"
 }

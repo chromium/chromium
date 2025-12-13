@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "components/mirroring/mojom/resource_provider.mojom.h"
@@ -226,7 +227,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // `video_capture_client_` instance.
   void StartCapturingVideo();
   void PauseCapturingVideo();
-  void ResumeCapturingVideo();
+
+  // Returns `true` if successfully restarted video capture, otherwise it
+  // may need to be started again.
+  bool TryResumeCapturingVideo();
 
   // Called to provide Open Screen with access to this host's network proxy.
   network::mojom::NetworkContext* GetNetworkContext();
@@ -315,9 +319,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // capture should be resumed.
   bool has_video_encoder_been_initialized_ = false;
 
-  // True if video capture has been paused.
-  bool is_video_capture_paused_ = false;
-
   // Manages the clock and thread proxies for the audio sender, video sender,
   // and media remoter.
   //
@@ -377,6 +378,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
 
   // Callback invoked once this instance and all of its resources are released.
   base::OnceClosure deletion_cb_;
+
+  // Ensures that this class is accessed on a single sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Used in callbacks executed on task runners, such as by RtpStream.
   // TODO(crbug.com/40238714): determine if weak pointers can be removed.

@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -124,15 +125,14 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
-        base::BindRepeating(
-            &password_manager::BuildPasswordStore<web::BrowserState,
+        base::BindOnce(
+            &password_manager::BuildPasswordStore<ProfileIOS,
                                                   TestPasswordStore>));
     builder.AddTestingFactory(
         IOSChromeAffiliationServiceFactory::GetInstance(),
-        base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
-          return std::unique_ptr<KeyedService>(
-              std::make_unique<affiliations::FakeAffiliationService>());
-        })));
+        base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
+          return std::make_unique<affiliations::FakeAffiliationService>();
+        }));
     profile_ = std::move(builder).Build();
 
     store_ =
@@ -218,6 +218,7 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
  private:
   base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   scoped_refptr<TestPasswordStore> store_;
   scoped_refptr<IOSChromePasswordCheckManager> password_check_;

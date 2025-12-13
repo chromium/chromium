@@ -24,7 +24,6 @@
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -55,27 +54,15 @@ RasterCommandBufferStub::RasterCommandBufferStub(
 RasterCommandBufferStub::~RasterCommandBufferStub() {}
 
 gpu::ContextResult RasterCommandBufferStub::Initialize(
-    CommandBufferStub* share_command_buffer_stub,
     const mojom::CreateCommandBufferParams& init_params,
     base::UnsafeSharedMemoryRegion shared_state_shm) {
   TRACE_EVENT0("gpu", "RasterBufferStub::Initialize");
   UpdateActiveUrl();
 
+  const auto& attribs = *init_params.attribs->get_raster();
+
   GpuChannelManager* manager = channel_->gpu_channel_manager();
   DCHECK(manager);
-
-  if (share_command_buffer_stub) {
-    LOG(ERROR) << "Using a share group is not supported with RasterDecoder";
-    return ContextResult::kFatalFailure;
-  }
-
-  if (init_params.attribs.gpu_preference != gl::GpuPreference::kLowPower ||
-      init_params.attribs.context_type != CONTEXT_TYPE_OPENGLES2 ||
-      init_params.attribs.bind_generates_resource) {
-    LOG(ERROR) << "ContextResult::kFatalFailure: Incompatible creation attribs "
-                  "used with RasterDecoder";
-    return ContextResult::kFatalFailure;
-  }
 
   ContextResult result;
   auto shared_context_state = manager->GetSharedContextState(&result);
@@ -97,11 +84,12 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
 
   command_buffer_ =
       std::make_unique<CommandBufferService>(this, memory_tracker_.get());
-  std::unique_ptr<raster::RasterDecoder> decoder(raster::RasterDecoder::Create(
-      this, command_buffer_.get(), manager->outputter(),
-      manager->gpu_feature_info(), manager->gpu_preferences(), memory_tracker_,
-      manager->shared_image_manager(), shared_context_state,
-      channel()->is_gpu_host()));
+  std::unique_ptr<raster::RasterDecoder> decoder =
+      raster::RasterDecoder::Create(
+          this, command_buffer_.get(), manager->outputter(),
+          manager->gpu_feature_info(), manager->gpu_preferences(),
+          memory_tracker_, manager->shared_image_manager(),
+          shared_context_state, channel()->is_gpu_host());
 
   scoped_sync_point_client_state_ =
       channel_->scheduler()->CreateSyncPointClientState(
@@ -119,9 +107,7 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
   }
 
   // Initialize the decoder with either the view or pbuffer GLContext.
-  result = decoder->Initialize(surface_, context, true /* offscreen */,
-                               gpu::gles2::DisallowedFeatures(),
-                               init_params.attribs);
+  result = decoder->Initialize(attribs.lose_context_when_out_of_memory);
   if (result != gpu::ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize decoder.";
     return result;

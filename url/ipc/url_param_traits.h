@@ -5,9 +5,7 @@
 #ifndef URL_IPC_URL_PARAM_TRAITS_H_
 #define URL_IPC_URL_PARAM_TRAITS_H_
 
-#include <string>
-
-#include "ipc/ipc_param_traits.h"
+#include "ipc/param_traits.h"
 #include "url/gurl.h"
 #include "url/ipc/url_ipc_export.h"
 
@@ -25,7 +23,6 @@ struct URL_IPC_EXPORT ParamTraits<GURL> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* p);
-  static void Log(const param_type& p, std::string* l);
 };
 
 }  // namespace IPC

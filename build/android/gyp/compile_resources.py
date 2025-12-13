@@ -63,7 +63,6 @@ def _ParseArgs(args):
                           'against. Can be specified multiple times.')
   input_opts.add_argument(
       '--dependencies-res-zips',
-      default=[],
       help='Resources zip archives from dependents. Required to '
       'resolve @type/foo references into dependent libraries.')
   input_opts.add_argument(
@@ -155,6 +154,7 @@ def _ParseArgs(args):
       'when --resource-exclusion-regex is set.')
   input_opts.add_argument(
       '--dependencies-res-zip-overlays',
+      action='append',
       help='GN list with subset of --dependencies-res-zips to use overlay '
       'semantics for.')
   input_opts.add_argument(
@@ -613,8 +613,8 @@ def _CompileDeps(aapt2_path, dep_subdirs, dep_subdir_overlay_set, temp_dir,
   return partials_cmd
 
 
-def _CreateResourceInfoFile(path_info, info_path, dependencies_res_zips):
-  for zip_file in dependencies_res_zips:
+def _CreateResourceInfoFile(path_info, info_path, all_res_zips):
+  for zip_file in all_res_zips:
     zip_info_file_path = zip_file + '.info'
     if os.path.exists(zip_info_file_path):
       path_info.MergeInfoFile(zip_info_file_path)
@@ -705,13 +705,16 @@ def _PackageApk(options, build):
     The manifest package name for the APK.
   """
   logging.debug('Extracting resource .zips')
+  all_res_zips = (options.dependencies_res_zips +
+                  options.dependencies_res_zip_overlays)
+  overlay_zips = set(options.dependencies_res_zip_overlays)
   dep_subdirs = []
   dep_subdir_overlay_set = set()
-  for dependency_res_zip in options.dependencies_res_zips:
+  for dependency_res_zip in all_res_zips:
     extracted_dep_subdirs = resource_utils.ExtractDeps([dependency_res_zip],
                                                        build.deps_dir)
     dep_subdirs += extracted_dep_subdirs
-    if dependency_res_zip in options.dependencies_res_zip_overlays:
+    if dependency_res_zip in overlay_zips:
       dep_subdir_overlay_set.update(extracted_dep_subdirs)
 
   logging.debug('Applying locale transformations')
@@ -804,8 +807,7 @@ def _PackageApk(options, build):
   # Create .res.info file in parallel.
   if options.info_path:
     logging.debug('Creating .res.info file')
-    _CreateResourceInfoFile(path_info, build.info_path,
-                            options.dependencies_res_zips)
+    _CreateResourceInfoFile(path_info, build.info_path, all_res_zips)
 
   exit_code = link_proc.wait()
   assert exit_code == 0, f'aapt2 link cmd failed with {exit_code=}'
@@ -838,19 +840,6 @@ def _PackageApk(options, build):
       options.aapt2_path, 'convert', '--output-format', 'proto', '-o',
       build.proto_path, build.arsc_path
   ])
-
-  # Workaround for b/147674078. This is only needed for WebLayer and does not
-  # affect WebView usage, since WebView does not used dynamic attributes.
-  if options.shared_resources:
-    logging.debug('Hardcoding dynamic attributes')
-    protoresources.HardcodeSharedLibraryDynamicAttributes(
-        build.proto_path, options.is_bundle_module,
-        options.shared_resources_allowlist)
-
-    build_utils.CheckOutput([
-        options.aapt2_path, 'convert', '--output-format', 'binary', '-o',
-        build.arsc_path, build.proto_path
-    ])
 
   # Sanity check that the created resources have the expected package ID.
   logging.debug('Performing sanity check')
@@ -952,11 +941,6 @@ def main(args):
       rjava_build_options.ExportSomeResources(
           options.shared_resources_allowlist)
       rjava_build_options.GenerateOnResourcesLoaded()
-      if options.shared_resources:
-        # The final resources will only be used in WebLayer, so hardcode the
-        # package ID to be what WebLayer expects.
-        rjava_build_options.SetFinalPackageId(
-            protoresources.SHARED_LIBRARY_HARDCODED_ID)
     elif options.shared_resources or options.app_as_shared_lib:
       rjava_build_options.ExportAllResources()
       rjava_build_options.GenerateOnResourcesLoaded()

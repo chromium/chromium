@@ -20,7 +20,6 @@
 
 using testing::_;
 using testing::Field;
-using testing::Invoke;
 using testing::Mock;
 using testing::Truly;
 
@@ -76,6 +75,7 @@ class MockPrefNotifier : public PrefNotifierImpl {
 
 class PrefObserverMock : public PrefObserver {
  public:
+  MOCK_METHOD(void, OnServiceDestroyed, (PrefService*), (override));
   MOCK_METHOD(void,
               OnPreferenceChanged,
               (PrefService*, std::string_view),

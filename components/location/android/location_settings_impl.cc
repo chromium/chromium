@@ -5,6 +5,8 @@
 #include "components/location/android/location_settings_impl.h"
 
 #include "base/android/jni_android.h"
+#include "base/android/jni_callback.h"
+#include "base/functional/bind.h"
 #include "components/location/android/location_settings_dialog_outcome.h"
 #include "ui/android/window_android.h"
 
@@ -58,25 +60,17 @@ void LocationSettingsImpl::PromptToEnableSystemLocationSetting(
     return;
   }
   JNIEnv* env = AttachCurrentThread();
-  // Transfers the ownership of the callback to the Java callback. The Java
-  // callback is guaranteed to be called unless the user never replies to the
-  // dialog, and the callback pointer will be destroyed in
-  // OnLocationSettingsDialogOutcome.
-  auto* callback_ptr =
-      new LocationSettingsDialogOutcomeCallback(std::move(callback));
+  // Convert the C++ callback to a JNI callback using ToJniCallback.
   Java_LocationSettings_promptToEnableSystemLocationSetting(
       env, prompt_context, window->GetJavaObject(),
-      reinterpret_cast<jlong>(callback_ptr));
+      base::android::ToJniCallback(
+          env,
+          base::BindOnce(
+              [](LocationSettingsDialogOutcomeCallback callback, int result) {
+                std::move(callback).Run(
+                    static_cast<LocationSettingsDialogOutcome>(result));
+              },
+              std::move(callback))));
 }
 
-static void JNI_LocationSettings_OnLocationSettingsDialogOutcome(
-    JNIEnv* env,
-    jlong callback_ptr,
-    int result) {
-  auto* callback =
-      reinterpret_cast<LocationSettingsDialogOutcomeCallback*>(callback_ptr);
-  std::move(*callback).Run(static_cast<LocationSettingsDialogOutcome>(result));
-  // Destroy the callback whose ownership was transferred in
-  // PromptToEnableSystemLocationSetting.
-  delete callback;
-}
+DEFINE_JNI(LocationSettings)

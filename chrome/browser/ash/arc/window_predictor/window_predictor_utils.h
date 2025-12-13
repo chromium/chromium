@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_WINDOW_PREDICTOR_WINDOW_PREDICTOR_UTILS_H_
 #define CHROME_BROWSER_ASH_ARC_WINDOW_PREDICTOR_WINDOW_PREDICTOR_UTILS_H_
 
-#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
+#include <string>
 
 namespace app_restore {
 struct AppRestoreData;

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
 <translation id="1001534784610492198">‏آرشیو نصب‌کننده خراب یا نامعتبر است. لطفاً دوباره Google Chrome را بارگیری کنید.</translation>
+<translation id="1006034097353797313">‏کارتان را از جایی که متوقف کرده بودید ادامه دهید: Chrome هربار که آن را بازراه‌اندازی کنید، زبانه‌هایتان را بازمی‌گرداند. برای خاموش کردن این ویژگی، به اینجا بروید:</translation>
 <translation id="1018937009655463387">‏برای هم‌رسانی پنجره، ضبط صفحه‌نمایش را در «تنظیمات سیستم» برای Chrome مجاز کنید.</translation>
 <translation id="1026101648481255140">ازسر گرفتن نصب</translation>
 <translation id="102763973188675173">‏سفارشی کردن و کنترل Google Chrome. به‌روزرسانی‌ در دسترس است.</translation>
@@ -10,14 +11,19 @@
 <translation id="1051793555070215510">با تکمیل این نظرسنجی ۱ دقیقه‌ای به ما کمک کنید «حالت ناشناس» را بهبود ببخشیم.</translation>
 <translation id="1059838145689930908">‏برای استفاده از این افزونه با حساب <ph name="USER_EMAIL_ADDRESS" />، به سیستم Chrome وارد شوید.</translation>
 <translation id="1065672644894730302">اولویت‌های شما را نمی‌توان خواند. بعضی ویژگی‌ها ممکن است در دسترس نباشند و تغییرات تنظیمات برگزیده ذخیره نخواهد شد.</translation>
+<translation id="1070377999570795893">‏برنامه دیگری در رایانه شما یک افزونه اضافه کرده است که ممکن است نحوه کارکرد Chrome را تغییر دهد.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1086486568852410168">‏جستجو با «لنز Google»</translation>
 <translation id="1088300314857992706">‏<ph name="USER_EMAIL_ADDRESS" /> قبلاً از Chrome استفاده می‌کرد</translation>
 <translation id="110877069173485804">‏این Chrome شماست</translation>
 <translation id="1125124144982679672">‏چه‌کسی از Chrome استفاده می‌کند؟</translation>
 <translation id="1142745911746664600">‏به‌روزرسانی Chrome امکان‌پذیر نیست</translation>
+<translation id="1148360048981192980">‏دفعه بعد که Chrome را در <ph name="DEVICE_TYPE" /> باز می‌کنید، پیام‌واره‌ای برای استفاده از «مدیر گذرواژه Google» خواهید دید.</translation>
 <translation id="1152920704813762236">‏درباره ChromeOS</translation>
 <translation id="1154147086299354128">‏&amp;باز کردن در Chrome</translation>
 <translation id="1157985233335035034">زبان‌های اخیر</translation>
+<translation id="1158134713295836892">‏‫Gemini در Chrome</translation>
 <translation id="1184145431117212167">‏نصب انجام نشد چون از نسخه Windows شما پشتیبانی نمی‌شود.</translation>
 <translation id="1194807384646768652">‏‫Chrome این بارگیری را مسدود کرد زیرا این نوع فایل معمولاً بارگیری نمی‌شود و ممکن است خطرناک باشد</translation>
 <translation id="1203500561924088507">بابت نصب از شما سپاس‌گزاریم. قبل‌از استفاده از <ph name="BUNDLE_NAME" />، باید مرورگر را بازراه‌اندازی کنید.</translation>
@@ -27,6 +33,7 @@
 <translation id="1330562121671411446">تشخیص دادن زبان</translation>
 <translation id="1335640173511558774">‏<ph name="MANAGER" /> لازم می‌داند که پیش‌از استفاده از این دستگاه، «شرایط خدمات» زیر را بخوانید و آن‌ها را بپذیرید. این شرایط باعث بسط داده شدن، تغییر یافتن،‌ یا محدود شدن «شرایط Google ChromeOS Flex» نمی‌شود.</translation>
 <translation id="1341711321000856656">‏برای دیدن گذرواژه‌های نمایه Chrome دیگر، می‌توانید به آن نمایه بروید</translation>
+<translation id="1343830902827845050">‏ورود به سیستم Chrome</translation>
 <translation id="1356661055722410047">جدید! می‌توانید هم نوشتار و هم تصاویر روی صفحه‌نمایش را ترجمه کنید</translation>
 <translation id="1363996462118479832">‏به‌دلیل بروز خطا هنگام ورود به سیستم، ChromeOS نتوانست داده‌هایتان را همگام‌سازی کند.</translation>
 <translation id="137466361146087520">‏Google Chrome نسخه بتا</translation>
@@ -37,13 +44,18 @@
 <translation id="1434626383986940139">‏برنامه‌های Chrome Canary</translation>
 <translation id="1439793550875056299">‏سنجاق کردن Chrome</translation>
 <translation id="146866447420868597">‏به سیستم Chrome وارد می‌شوید؟</translation>
+<translation id="1476347941828409626">‏مدیریت نمایه‌های Chrome</translation>
 <translation id="1492280395845991349">‏راه‌اندازی مجدد برای تکمیل به‌روزرسانی Chrome</translation>
+<translation id="1496875977627931224">سلام <ph name="USER_NAME" />،<ph name="LINE_BREAK" />امروز در ذهنتان چه می‌گذرد؟</translation>
 <translation id="1497802159252041924">خطای نصب: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">‏سفارشی کردن نمایه جدید Chrome</translation>
 <translation id="1518627427551567882">این صفحه محافظت شده است</translation>
 <translation id="1547295885616600893">‏ارائه ChromeOS به‌کمک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی ممکن شده است.</translation>
 <translation id="1547469039832541117">تکلیف برجسته‌شده را به‌پایان می‌رساند.</translation>
 <translation id="1553358976309200471">‏به‌روزرسانی Chrome</translation>
+<translation id="1585717515139318619">‏برنامه دیگری در رایانه شما یک زمینه اضافه کرده است که ممکن است نحوه کارکرد Chrome را تغییر دهد.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="1587223624401073077">‏Google Chrome درحال استفاده از دوربین شما است.</translation>
 <translation id="1587325591171447154">‏<ph name="FILE_NAME" /> خطرناک است، بنابراین Chrome آن را مسدود کرده ست.</translation>
 <translation id="1597911401261118146">‏برای بررسی اینکه از گذرواژه‌هایتان دربرابر نقض داده یا دیگر مشکلات امنیتی محافظت می‌شود، <ph name="BEGIN_LINK" />به سیستم Chrome وارد شوید<ph name="END_LINK" />.</translation>
@@ -65,23 +77,29 @@
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{‏‫Chrome توصیه می‌کند زبانه‌ای را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}one{‏‫Chrome توصیه می‌کند زبانه‌ای را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}other{‏‫Chrome توصیه می‌کند زبانه‌هایی را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}}</translation>
 <translation id="1832046143430087831">‏با این کار سرعت سایت‌ها با موتور Chrome نسخه ۸ بالاتر می‌رود اما مقاومت Chrome دربرابر حمله‌ها مقداری کمتر می‌شود. این تنظیم خاموش است.</translation>
 <translation id="1838374766361614909">پاک کردن جستجو</translation>
+<translation id="1843347690926158494">‏این زبانه با «لنز Google» جستجو شود</translation>
+<translation id="1849248141818021764">‏فقط شخصی که گذرعبارت شما را دراختیار داشته باشد می‌تواند داده‌های رمزگذاری‌شده‌تان را بخواند. گذرعبارت به Google ارسال نمی‌شود یا توسط آن ذخیره نمی‌شود. اگر گذرعبارت را فراموش کنید یا بخواهید این تنظیم را تغییر دهید، باید <ph name="BEGIN_LINK" />داده‌های Chrome ذخیره‌شده در حسابتان را حذف کنید<ph name="END_LINK" />.</translation>
 <translation id="1860536484129686729">‏Chrome برای این سایت به مجوز دسترسی به دوربین نیاز دارد</translation>
+<translation id="1867503717113754604">‏برای استفاده از <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" />، با «حساب Google» خود به سیستم Chrome وارد شوید</translation>
 <translation id="1873233029667955273">‏Google Chrome مرورگر پیش‌فرض شما نیست</translation>
 <translation id="1874309113135274312">‏Google Chrome نسخه بتا (mDNS-In)</translation>
 <translation id="1877026089748256423">‏نسخه Chrome قدیمی است</translation>
 <translation id="1880677175115548835">انتخاب نوشتار</translation>
 <translation id="1919130412786645364">‏مجاز کردن ورود به سیستم Chrome</translation>
 <translation id="1953553007165777902">درحال بارگیری… <ph name="MINUTE" /> دقیقه باقی مانده است</translation>
+<translation id="1979600810166324878">‏با «مرور ایمن پیشرفته» در Chrome برای iOS، درحرکت ایمن‌تر مرور کنید</translation>
 <translation id="2001586581944147178">‏شرایط را سخت‌تر کنید تا افرادی که به ترافیک اینترنت شما دسترسی دارند نتوانند سایت‌هایی را که بازدید می‌کنید ببینند. ‫Chrome برای جستجوی نشانی IP سایت در ساناد (سیستم نامگذاری دامنه) از اتصال ایمنی استفاده می‌کند.</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{‏دیگر از این افزونه پشتیبانی نمی‌شود. ‫Chrome توصیه می‌کند آن را حذف کنید.}one{‏دیگر از این افزونه‌ها پشتیبانی نمی‌شود. ‫Chrome توصیه می‌کند آن را حذف کنید.}other{‏دیگر از این افزونه‌ها پشتیبانی نمی‌شود. ‫Chrome توصیه می‌کند آن را حذف کنید.}}</translation>
 <translation id="2018528049276128029">‏هرکدام از نمایه‌های Chrome دارای اطلاعات مختص خودش است (مثل نشانک‌ها، سابقه، گذرواژه‌ها، و غیره)</translation>
 <translation id="2018879682492276940">نصب تکمیل نشد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="2024959665595762054">‏برای ذخیره کردن داده‌های Chrome در «حساب Google» خود و استفاده کردن از آن‌ها، هویتتان را درستی‌سنجی کنید</translation>
+<translation id="2026377840141807639">‏نمایه‌های Chrome به شما امکان می‌دهند فضای مرور شخصی و کاری را جدا نگه دارید. اکنون نمایه جدیدی اضافه کنید.</translation>
 <translation id="2034233344106846793">‏‫Chrome اتصال‌های ناامن را درصورت امکان به‌طور خودکار به HTTPS ارتقا می‌دهد</translation>
-<translation id="207902854391093810">‏وقتی نسخه آزمایشی روشن باشد، «سنجش آگهی» به سایت‌هایی که بازدید می‌کنید اجازه می‌دهد اطلاعاتی را از Chrome درخواست کنند که به آن‌ها کمک می‌کند عملکرد آگهی‌هایشان را بسنجند. «سنجش آگهی» ردیابی بین‌سایتی را با انتقال حداقل اطلاعات ممکن بین سایت‌ها محدود می‌کند.</translation>
+<translation id="2039417478970545937">تنظیمات.</translation>
 <translation id="2091012649849228750">‏برای دریافت به‌روزرسانی‌های آتی Google Chrome، باید Windows 10 یا بالاتر داشته باشید. این رایانه از Windows 8 استفاده می‌کند.</translation>
 <translation id="2094648590148273905">‏شرایط ChromeOS Flex</translation>
 <translation id="2094919256425865063">‏درهرصورت از Chrome خارج می‌شوید؟</translation>
+<translation id="2096213354152647998">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION" /> را برداشت.</translation>
 <translation id="2106831557840787829">‏ارائه ChromeOS Flex با <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی مانند <ph name="BEGIN_LINK_LINUX_OSS" />محیط توسعه نرم‌افزاری Linux<ph name="END_LINK_LINUX_OSS" /> ممکن شده است.</translation>
 <translation id="2108778574543343055">‏غیرفعال کردن اجرای Chrome در پس‌زمینه برای برنامه‌ها</translation>
 <translation id="2120620239521071941">‏این کار <ph name="ITEMS_COUNT" /> مورد را از این دستگاه حذف می‌کند. برای بازیابی داده‌هایتان در فرصتی دیگر، با <ph name="USER_EMAIL" /> وارد سیستم Chrome شوید.</translation>
@@ -89,7 +107,6 @@
 <translation id="2123055963409958220">‏با گزارش <ph name="BEGIN_LINK" />تنظیمات کنونی<ph name="END_LINK" />، به بهتر شدن Chrome کمک کنید</translation>
 <translation id="2126108037660393668">فایل بارگیری‌شده تأیید نشد.</translation>
 <translation id="2128411189117340671">‏مدیریت نمایه‌های Chrome</translation>
-<translation id="2131230230468101642">‏برای محافظت از حریم خصوصی شما، علایقی را که قدیمی‌تر از ۴ هفته باشند به‌طور خودکار حذف می‌کنیم. وقتی به مرور کردن ادامه می‌دهید، ممکن است علاقه‌ای مجدداً به فهرست اضافه شود. یا می‌توانید علایقی را که نمی‌خواهید Chrome مدنظر قرار دهد حذف کنید.</translation>
 <translation id="2137162749895930932">بستن صفحه ترجمه</translation>
 <translation id="2139300032719313227">‏بازراه‌اندازی ChromeOS</translation>
 <translation id="2151406531797534936">‏لطفاً اکنون Chrome را بازراه‌اندازی کنید</translation>
@@ -100,8 +117,12 @@
 <translation id="2199691482078155239">‏‫Chrome به شما کمک می‌کند بر آگهی‌هایی که می‌بینید تسلط بیشتری داشته باشید و همچنین میزان اطلاعاتی را که سایت‌ها هنگام نمایش آگهی‌های شخصی‌سازی‌شده به شما درباره‌تان جمع‌آوری می‌کنند محدود می‌کند</translation>
 <translation id="2216543877350048334">‏برای برداشتن «حساب Google» خود از Chrome، از سیستم خارج شوید</translation>
 <translation id="2236949375853147973">فعالیت‌هایم</translation>
+<translation id="22791603784558743">‏بستن «Gemini در Chrome Dev»</translation>
+<translation id="2284380654876659752">‏وقتی‌که از سایتی بازدید می‌کنید، Chrome بخش مبهم‌سازی‌شده‌ای از نشانی وب را ازطریق سرور حافظ حریم خصوصی‌ای که نشانی IP شما را پنهان می‌کند به <ph name="BEGIN_LINK" />مرور ایمن Google<ph name="END_LINK" /> ارسال می‌کند. اگر سایتی کار مشکوکی انجام دهد، نشانی‌های وب کامل و بخش‌هایی از محتوای صفحه نیز ارسال می‌شوند.</translation>
 <translation id="2290014774651636340">‏کلیدهای Google API وجود ندارد. برخی از عملکردهای Google Chrome از کار خواهد افتاد.</translation>
 <translation id="2290095356545025170">‏آیا می‌خواهید Google Chrome را غیر فعال کنید؟</translation>
+<translation id="2301513536169703857">‏برای دریافت گذرواژه‌ها، نشانک‌ها، و موارد دیگر در همه دستگاه‌هایتان، به سیستم Chrome وارد شوید</translation>
+<translation id="2307973900865360088">‏نگه داشتن در Dock</translation>
 <translation id="2309047409763057870">‏این نصب ثانویه Google Chrome است و نمی‌تواند مرورگر پیش‌فرضتان شود.</translation>
 <translation id="2345992953227471816">‏Chrome متوجه شده است که این افزونه‌ها حاوی بدافزار هستند:</translation>
 <translation id="2348335408836342058">‏Chrome برای این سایت به مجوز دسترسی به دوربین و میکروفون نیاز دارد</translation>
@@ -116,12 +137,10 @@
 <translation id="2513154137948333830">بازراه‌اندازی لازم است: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2534365042754120737">‏برای محافظت از داده‌هایتان، به Chrome اجازه داده می‌شود اجازه‌های سایت‌هایی را که اخیراً از آن‌ها بازدید نکرده‌اید حذف کند. اعلان‌ها متوقف نمی‌شود.</translation>
 <translation id="2556847002339236023">‏اگر <ph name="TIMEOUT_DURATION" /> از Chrome استفاده نشود، سازمانتان آن را می‌بندد. داده‌های مرور حذف شد. این داده‌ها می‌تواند شامل سابقه، تکمیل خودکار، و بارگیری‌ها شود.</translation>
-<translation id="2559253115192232574">‏بعداً، سایتی که از آن بازدید می‌کنید می‌تواند برای شخصی کردن آگهی‌هایی که به شما نشان می‌دهد از Chrome بخواهد علایق شما را ببیند. Chrome می‌تواند حداکثر ۳ علاقه را هم‌رسانی کند.</translation>
 <translation id="2563121210305478421">‏Chrome راه‌اندازی مجدد شود؟</translation>
 <translation id="2569974318947988067">‏Chrome سعی می‌کند پیمایش‌ها را به HTTPS ارتقا دهد</translation>
 <translation id="2571392474191184472">‏سازمان شما Chrome را مدیریت می‌کند</translation>
 <translation id="2574930892358684005">‏<ph name="EXISTING_USER" /> قبلاً به سیستم این نمایه Chrome وارد شده است. برای جدا نگه داشتن مرور، Chrome می‌تواند نمایه مختص خودتان را برایتان ایجاد کند.</translation>
-<translation id="2579190314336775785">‏فقط خارج از Chrome می‌توان گذرواژه‌ها را حذف کرد</translation>
 <translation id="2580411288591421699">‏نمی‌توان همان نسخه Google Chrome را که اکنون در حال اجراست نصب کرد. لطفاً Google Chrome را ببندید و دوباره سعی کنید.</translation>
 <translation id="2586406160782125153">‏این کار داده‌های محصول مرورتان را برای همیشه از این دستگاه حذف می‌کند. برای بازیابی داده‌هایتان در فرصتی دیگر، با <ph name="USER_EMAIL" /> وارد سیستم Chrome شوید.</translation>
 <translation id="259935314519650377">نصب‌کننده بارگیری‌شده در حافظه نهان ذخیره نشد. خطا: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -131,13 +150,15 @@
 <translation id="2652691236519827073">‏باز کردن پیوند در &amp;برگه جدید Chrome</translation>
 <translation id="2665296953892887393">‏با ارسال گزارش‌های خرابی و <ph name="UMA_LINK" /> به Google، به بهبود Google Chrome کمک کنید.</translation>
 <translation id="2668094785979141847">‏برای خروج از «لنز Google»، کلیک کنید</translation>
-<translation id="2681444469812712297">‏‫<ph name="URL" /> در برگه جدیدی در Google Chrome باز می‌شود.</translation>
+<translation id="2681444469812712297">‏‫<ph name="URL" /> در زبانه جدیدی در Google Chrome باز می‌شود.</translation>
+<translation id="2699790011615497488">‏باز کردن «Gemini در Chrome نسخه بتا»</translation>
 <translation id="2712141162840347885">‏هرچیزی را که می‌خواهید برای جستجو با «لنز Google» انتخاب کنید یا کلید «گریز» را فشار دهید تا از «لنز Google» خارج شوید</translation>
 <translation id="2738871930057338499">‏اتصال به اینترنت برقرار نشد. HTTP ۴۰۳ ممنوع است. لطفاً پیکربندی پروکسی‌تان را بررسی کنید.</translation>
 <translation id="2742320827292110288">‏اخطار: Google Chrome نمی تواند مانع از ثبت سابقه مرور شما توسط افزونه‌ها شود. برای غیرفعال کردن این افزونه در «حالت ناشناس»، این گزینه را لغو انتخاب کنید.</translation>
+<translation id="2747021967398957654">{count,plural, =1{‏برخی‌از داده‌های Chrome هنوز در «حساب Google» شما ذخیره نشده است. پیش‌از خروج از سیستم، چند دقیقه صبر کنید. اگر اکنون از سیستم خارج شوید، این داده (۱ مورد) حذف خواهد شد.}one{‏برخی‌از داده‌های Chrome هنوز در «حساب Google» شما ذخیره نشده است. پیش‌از خروج از سیستم، چند دقیقه صبر کنید. اگر اکنون از سیستم خارج شوید، این داده ({count} مورد) حذف خواهد شد.}other{‏برخی‌از داده‌های Chrome هنوز در «حساب Google» شما ذخیره نشده است. پیش‌از خروج از سیستم، چند دقیقه صبر کنید. اگر اکنون از سیستم خارج شوید، این داده‌ها ({count} مورد) حذف خواهند شد.}}</translation>
 <translation id="2753623023919742414">برای جستجو، کلیک کنید</translation>
+<translation id="2757826245013442432">{COUNT,plural, =0{‏«محافظت پیشرفته» برای اعمال به‌روزرسانی از شما می‌خواهد Chrome را راه‌اندازی مجدد کنید}=1{‏«محافظت پیشرفته» برای اعمال به‌روزرسانی از شما می‌خواهد Chrome را راه‌اندازی مجدد کنید. پنجره «ناشناس» دوباره باز نمی‌شود.}one{‏«محافظت پیشرفته» برای اعمال به‌روزرسانی از شما می‌خواهد Chrome را راه‌اندازی مجدد کنید. ‫# پنجره «ناشناس» دوباره باز نمی‌شود.}other{‏«محافظت پیشرفته» برای اعمال به‌روزرسانی از شما می‌خواهد Chrome را راه‌اندازی مجدد کنید. ‫# پنجره «ناشناس» دوباره باز نمی‌شود.}}</translation>
 <translation id="2765403129283291972">‏Chrome برای این سایت به مجوز دسترسی به میکروفون نیاز دارد</translation>
-<translation id="2770231113462710648">تغییر مرورگر پیش‌فرض به:</translation>
 <translation id="2775140325783767197">‏Chrome نمی‌تواند گذرواژه‌هایتان را بررسی کند. اتصال اینترنت را بررسی کنید.</translation>
 <translation id="2797864378188255696">‏وقتی با <ph name="USER_EMAIL" /> به سیستم سرویس‌های Google مثل Gmail یا YouTube وارد می‌شوید، می‌توانید به‌طور خودکار با همان حساب به سیستم Chrome وارد شوید</translation>
 <translation id="2799162042226656283">‏‫Chrome شما</translation>
@@ -151,6 +172,7 @@
 <translation id="286025080868315611">‏ببینید چرا Chrome برخی‌از بارگیری‌ها را مسدود می‌کند</translation>
 <translation id="2861074815332034794">‏درحال به‌روزرسانی Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">‏شما در حال حاضر وارد سیستم Chrome شده‌اید!</translation>
+<translation id="2875053229394024379">‏وقتی‌که با «حساب Google» خود به سیستم Chrome وارد می‌شوید، می‌توانید از نمایه Chrome خود همراه با Gemini استفاده کنید. <ph name="BEGIN_LINK" />با نحوه ورود به سیستم Chrome آشنا شوید<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">‏درباره اینکه <ph name="BEGIN_LINK" />Chrome چگونه داده‌های شما را خصوصی نگه می‌دارد<ph name="END_LINK" /> بیشتر بدانید</translation>
 <translation id="2885378588091291677">مدیر وظایف</translation>
 <translation id="2888126860611144412">‏درباره Chrome</translation>
@@ -166,17 +188,23 @@
 <translation id="3003694935412297923">همه تکلیف‌ها</translation>
 <translation id="3018957014024118866">‏داده‌ها از Chrome هم حذف شود (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">‏برای به‌روزرسانی &amp;ChromeOS Flex، راه‌اندازی مجدد کنید</translation>
+<translation id="3037517125981011456">‏درخواست‌های ورود به سیستم Chrome را نشان می‌دهد</translation>
 <translation id="3037838751736561277">‏Google Chrome در حالت پس‌زمینه است.</translation>
 <translation id="3038232873781883849">درانتظار نصب…</translation>
 <translation id="3045032126857188731">زبان ترجمه‌شده: <ph name="LANGUAGE" /></translation>
+<translation id="3047590466164881923">بستن کادر گفتگوی بازخورد</translation>
 <translation id="306179102415443347">‏از میان‌بر برای دسترسی سریع به «مدیر گذرواژه Google» استفاده کنید. می‌توانید میان‌برتان را به صفحه اصلی رایانه یا راه‌انداز برنامه منتقل کنید.</translation>
 <translation id="3065168410429928842">‏برگه Chrome</translation>
+<translation id="3073571714401714450">‏روشن/خاموش کردن Gemini در Chrome Dev</translation>
 <translation id="3080151273017101988">‏ادامه اجرای برنامه‌ها در پس‌زمینه هنگامیکه Google Chrome بسته می‌شود</translation>
+<translation id="308397506772922478">‏اگر گذرعبارت را فراموش کرده‌اید یا می‌خواهید این تنظیم را تغییر دهید، <ph name="BEGIN_LINK" />داده‌های Chrome ذخیره‌شده در حسابتان را حذف کنید<ph name="END_LINK" /></translation>
 <translation id="3100998948628680988">‏نام‌گذاری نمایه Chrome</translation>
 <translation id="310459126943037700">تکلیف(ها) پایان نیافت.</translation>
 <translation id="3112458742631356345">‏‫Chrome این بارگیری را مسدود کرد زیرا این فایل معمولاً بارگیری نمی‌شود و ممکن است خطرناک باشد</translation>
 <translation id="3114643501466072395">‏برای بررسی اینکه از دیگر گذرواژه‌هایتان دربرابر نقض داده یا دیگر مشکلات امنیتی محافظت می‌شود یا نه، <ph name="BEGIN_LINK" />به سیستم Chrome وارد شوید<ph name="END_LINK" />.</translation>
 <translation id="3119573284443908657">‏‫Chrome این بارگیری را مسدود کرد زیرا فایل بایگانی حاوی فایل‌های دیگری است که ممکن است بدافزار باشد</translation>
+<translation id="3124332159330678621">‏با سفارشی‌سازی Chrome، ظاهر جدیدی به مرورگرتان بدهید</translation>
+<translation id="3130333203120345554">جستجوی جدید</translation>
 <translation id="3135560418014806498">‏افزودن نمایه Chrome</translation>
 <translation id="3137969841538672700">برای جستجو، بخش موردنظر را بکشید</translation>
 <translation id="3140883423282498090">‏دفعه بعد که Google Chrome را مجدداً راه‌اندازی می‌کنید، این تغییرات اعمال می‌شوند.</translation>
@@ -188,13 +216,14 @@
 <translation id="3226612997184048185">‏اگر نشانک‌ها را در «حساب Google» هم ذخیره کنید، می‌توانید قیمت محصولات را در Chrome پیگیری کنید و از کاهش قیمت‌ها مطلع شوید</translation>
 <translation id="3242123554343253302">‏افزودن نمایه Chrome</translation>
 <translation id="3245429137663807393">‏اگر گزارش‌های استفاده از Chrome را نیز هم‌رسانی کنید، این گزارش‌ها نشانی‌های وبی را که بازدید می‌کنید دربرمی‌گیرند.</translation>
-<translation id="3282568296779691940">‏ورود به سیستم Chrome</translation>
 <translation id="3286538390144397061">راه‌اندازی مجدد اکنون</translation>
 <translation id="3292333338048274092">‏سپس باید Chrome را بازراه‌اندازی کنید.</translation>
+<translation id="3324218984287646518">‏پرسیدن از «لنز Google» درباره این ویدیو</translation>
 <translation id="3327226547491422998">‏بعداً Chrome می‌تواند از شما بپرسد که آیا می‌خواهید از اطلاعات ذخیره‌شده برای تکمیل خودکار فرم‌ها استفاده کنید</translation>
 <translation id="3352986031709923790">‏گوشه بالا سمت چپ ناحیه جستجو: ‎٪<ph name="RIGHT" /> سمت چپ، ‎٪<ph name="TOP" /> بالا</translation>
 <translation id="3360895254066713204">‏راهنمای Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{‏Chrome هم‌اکنون راه‌اندازی مجدد می‌شود}=1{‏Chrome ‏۱ ثانیه دیگر راه‌اندازی مجدد می‌شود}one{‏Chrome ‏# ثانیه دیگر راه‌اندازی مجدد می‌شود}other{‏Chrome ‏# ثانیه دیگر راه‌اندازی مجدد می‌شود}}</translation>
+<translation id="3380249972812870825">‏برای باز کردن «Gemini در Chrome»، <ph name="GLOBAL_HOTKEY" /> را فشار دهید</translation>
 <translation id="3396977131400919238">‏هنگام نصب یک خطای سیستم‌عامل رخ داد. لطفاً دوباره Google Chrome را بارگیری کنید.</translation>
 <translation id="3428747202529429621">‏وقتی به سیستم وارد شده باشید، امنیت شما را در Chrome حفظ می‌کند و ممکن است برای بهبود امنیت شما در برنامه‌های دیگر Google استفاده شود</translation>
 <translation id="3434246496373299699">‏Chrome زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که با «حساب Google» خود به سیستم وارد شوید</translation>
@@ -209,10 +238,11 @@
 <translation id="3576528680708590453">‏سرپرست سیستم برای باز شدن مرورگری دیگر جهت دسترسی به <ph name="TARGET_URL_HOSTNAME" />، Google Chrome را پیکربندی کرده است.</translation>
 <translation id="3582972582564653026">‏Chrome را در همه دستگاه‌هایتان همگام‌سازی و شخصی‌سازی کنید</translation>
 <translation id="3583751698304738917">‏قبلاً با <ph name="USER_EMAIL_ADDRESS" /> در نمایه Chrome دیگری به سیستم وارد شده‌اید</translation>
+<translation id="358381413217813387">‏جستجوی این صفحه با «لنز Google»</translation>
+<translation id="3589519427766620380">‏درباره این صفحه از «لنز Google» بپرسید</translation>
 <translation id="3595784445906693824">‏در نمایه جدید به سیستم Chrome وارد می‌شوید؟</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{‏سرپرست سیستم لازم می‌داند برای اعمال به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید}=1{‏سرپرست سیستم لازم می‌داند برای اعمال به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. پنجره ناشناس بازگشایی نمی‌شود.}one{‏سرپرست سیستم لازم می‌داند برای اعمال به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. # پنجره ناشناس بازگشایی نمی‌شود.}other{‏سرپرست سیستم لازم می‌داند برای اعمال به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. # پنجره ناشناس بازگشایی نمی‌شود.}}</translation>
 <translation id="3597003331831379823">راه‌اندازی با امتیازهای عالی اجرا نشد. <ph name="METAINSTALLER_ERROR" /></translation>
-<translation id="3609788354808247807">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION_1" />،‏ <ph name="PERMISSION_2" />،‏ و <ph name="PERMISSION_3" /> را برداشت</translation>
 <translation id="3622716124581627104">‏چیزها و مکان‌ها را شناسایی کنید و نوشتار را کپی یا ترجمه کنید. وقتی از «لنز Google» استفاده می‌کنید، نماگرفتی از صفحه به Google ارسال می‌شود. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">‏اکنون استفاده از Chrome با حساب Google شما و در رایانه‌های مشترک آسان‌تر شده است.</translation>
 <translation id="3635073343384702370">‏‫Chrome زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که آن‌ها را ذخیره کرده باشید</translation>
@@ -223,6 +253,7 @@
 <translation id="3716540481907974026">‏نسخه ChromeOS Flex</translation>
 <translation id="3718181793972440140">‏این کار یک مورد را از این دستگاه حذف می‌کند. برای بازیابی داده‌هایتان در فرصتی دیگر، با <ph name="USER_EMAIL" /> وارد سیستم Chrome شوید.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{‏‫Chrome توصیه می‌کند آن را بردارید. <ph name="BEGIN_LINK" />درباره افزونه‌های پشتیبانی‌شده بیشتر بدانید<ph name="END_LINK" />}one{‏‫Chrome توصیه می‌کند آن را بردارید. <ph name="BEGIN_LINK" />درباره افزونه‌های پشتیبانی‌شده بیشتر بدانید<ph name="END_LINK" />}other{‏‫Chrome توصیه می‌کند آن را بردارید. <ph name="BEGIN_LINK" />درباره افزونه‌های پشتیبانی‌شده بیشتر بدانید<ph name="END_LINK" />}}</translation>
+<translation id="3729187154190517324">بااستفاده از دکمه «افزودن زبانه و موارد دیگر»، چند زبانه، فایل، و ابزار اضافه کنید و جستجویتان را عمیق‌تر کنید.</translation>
 <translation id="3756724684201900923">‏درباره نصب Chrome بیشتر بدانید</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">‏به‌دلیل خطای ورود به سیستم، ChromeOS Flex نتوانست داده‌هایتان را همگام‌سازی کند.</translation>
@@ -231,28 +262,33 @@
 <translation id="3810973564298564668">مدیریت</translation>
 <translation id="383928141529488001">‏‫Google Chrome برای کاوش دستگاه‌های بلوتوث
 باید به بلوتوث دسترسی داشته باشد. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**خلاصه کردن:** در یک جمله کمتر از ۳۰ کلمه، موضوع اصلی و هدف محتوای نماگرفت را شرح بده.
+
+          **پیشنهاد سؤال:** فهرستی گلوله‌ای با ۳ تا ۵ سؤال تأمل‌برانگیز تولید کن که کاربر بتواند برای درک بهتر نماگرفت بپرسد. حداقل یک مورد از این سؤالات باید به‌طور خاص درباره یک شیء بصری، طراحی، یا جای آن باشد.</translation>
 <translation id="386202838227397562">‏لطفاً همه پنجره‌های Google Chrome را ببندید و دوباره امتحان کنید.</translation>
 <translation id="3873044882194371212">‏باز کردن پیوند در پنجره &amp;ناشناس Chrome</translation>
 <translation id="3885770153807205175">انتخاب‌گر زبان</translation>
 <translation id="3889417619312448367">‏حذف نصب Google Chrome</translation>
 <translation id="3892148308691398805">کپی کردن نوشتار</translation>
+<translation id="3906096710440765802">‏برای دریافت گذرواژه‌ها، نشانک‌ها، و موارد دیگر در همه دستگاه‌هایتان، به سیستم Chrome وارد شوید</translation>
 <translation id="3941890832296813527">خطای نصب: نام فایل نصب‌کننده نامعتبر است یا از آن پشتیبانی نمی‌شود.</translation>
 <translation id="395904275706073188">صفحه‌های محافظت‌شده خوانده نمی‌شوند. صفحه دیگری را امتحان کنید.</translation>
 <translation id="3968962723676998462">‏برای استفاده از داده‌های Chrome و ذخیره کردن آن‌ها در حسابتان (<ph name="ACCOUNT_EMAIL" />)، گذرعبارت خود را وارد کنید</translation>
 <translation id="3973161977468201858">‏‫Google Chrome می‌خواهد داده‌های «مدیر گذرواژه» شما را حذف کند. برای مجاز کردن این کار، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="400161754580828648">‏برای هم‌رسانی صفحه‌نمایش، ضبط صفحه‌نمایش را در «تنظیمات سیستم» برای Chrome مجاز کنید.</translation>
+<translation id="4012899077942246412">‏اکنون که به سیستم وارد شده‌اید، می‌توانید از گذرواژه‌ها و سایر داده‌های «حساب Google» خود در Chrome استفاده کنید. برای تغییر دادن این تنظیم، به «حساب شما در Chrome» بروید.</translation>
 <translation id="4022972681110646219">ترجمه کردن صفحه‌نمایش</translation>
 <translation id="4023601594785368013">زبان اصلی: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">‏برای اعمال به‌روزرسانی، ChromeOS باید بازراه‌اندازی شود.</translation>
+<translation id="4039097928859803404">میان‌برهای «حالت هوش مصنوعی» همیشه نشان داده شوند</translation>
 <translation id="4050175100176540509">بهبودهای امنیتی مهم و ویژگی‌های جدید در جدیدترین نسخه در دسترس است.</translation>
 <translation id="4053720452172726777">‏‫سفارشی کردن و کنترل Google Chrome</translation>
 <translation id="408393047846373801">‏برای دریافت گذرواژه‌ها و موارد دیگر در همه دستگاه‌هایتان، به سیستم Chrome وارد شوید بعداز اینکه به سیستم وارد شدید، این گذرواژه در «حساب Google» شما ذخیره خواهد شد.</translation>
 <translation id="409936259433005390">‏به‌زودی می‌خواهید به Windows 11 ارتقا دهید؟ نصب‌کننده Chrome را در OneDrive بارگیری کنید تا از همان روز اول آماده باشید.</translation>
 <translation id="4110895483821904099">‏راه‌اندازی نمایه Chrome جدید</translation>
 <translation id="4111566860456076004">‏‫Chrome نمی‌تواند منبع این افزونه را تأیید کند و این افزونه ممکن است ناامن باشد. آن را از Chrome حذف کنید تا دیگر نتواند داده‌های شما را (ازجمله اطلاعات شخصی) در سایت‌هایی که بازدید می‌کنید ببیند و تغییر دهد.</translation>
-<translation id="4128488089242627000">‏Chrome سریع‌تر اجرا می‌شود و ویژگی‌هایی که از جاوا اسکریپت استفاده می‌کنند باید طبق طراحی کار کنند (توصیه می‌شود)</translation>
 <translation id="4147555960264124640">‏شما با حساب مدیریت‌شده وارد سیستم می‌شوید و به سرپرست آن اجازه کنترل بر نمایه Google Chrome خود را می‌دهید. داده‌های Chrome شما شامل برنامه‌ها، نشانک‌ها، سابقه، گذرواژه‌ها و سایر تنظیمات برای همیشه به <ph name="USER_NAME" /> مرتبط خواهد شد. می‌توانید این داده‌ها را از طریق داشبورد حساب‌های Google حذف کنید اما نمی‌توانید این داده‌ها را به حساب دیگری مرتبط سازید. <ph name="LEARN_MORE" /></translation>
-<translation id="4148957013307229264">در حال نصب...</translation>
+<translation id="4148957013307229264">درحال نصب…</translation>
 <translation id="4149882025268051530">‏نصب‌کننده در خارج کردن آرشیو از حالت فشرده ناموفق بود. لطفاً دوباره Google Chrome را بارگیری کنید.</translation>
 <translation id="415112847282352845">‏برای دریافت نشانی‌ها و موارد دیگر در همه دستگاه‌هایتان، به سیستم Chrome وارد شوید. بعداز اینکه به سیستم وارد شدید، این نشانی در «حساب Google» شما ذخیره خواهد شد.</translation>
 <translation id="4153934450158521343">‏Chrome به‌زودی بسته می‌شود و داده‌ها را حذف می‌کند</translation>
@@ -262,6 +298,7 @@
 <translation id="4205939740494406371">‏Chrome نمی‌تواند گذرواژه‌هایتان را بررسی کند. بعد از ۲۴ ساعت دوباره امتحان کنید یا <ph name="BEGIN_LINK" />گذرواژه‌ها را در «حساب Google» خود بررسی کنید<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">درحال لغو کردن…</translation>
 <translation id="4224210481850767180">نصب لغو شده است.</translation>
+<translation id="4230631012078055975">‏با ورود به سیستم Chrome، از مزایای بیشتری بهره‌مند شوید</translation>
 <translation id="4242034826641750751">‏Chrome برای این سایت به اجازه دوربین و میکروفون نیاز دارد</translation>
 <translation id="424864128008805179">‏از سیستم Chrome خارج می شوید؟</translation>
 <translation id="4251615635259297716">‏داده‌های Chrome شما به این حساب مرتبط شوند؟</translation>
@@ -288,9 +325,12 @@
 <translation id="4501471624619070934">نصب انجام نشد زیرا دسترسی در این کشور محدود است.</translation>
 <translation id="4567424176335768812">با حساب <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم شده‌اید. اکنون در همه دستگاه‌هایی که با آنها به سیستم وارد شده‌اید می‌توانید به نشانک‌ها، سابقه و دیگر تنظیماتتان دسترسی داشته باشید.</translation>
 <translation id="4571503333518166079">‏رفتن به تنظیمات اعلان Chrome</translation>
+<translation id="4592634244097223647">‏پرسیدن از Google درباره این تصویر</translation>
 <translation id="459622048091363950">‏وقتی Chrome دسترسی داشته باشد، وب‌سایت‌ها می‌توانند مجوز دسترسی درخواست کنند.</translation>
 <translation id="4598116752460667024">فرایندی را ازطریق فهرست جستجو کنید.</translation>
 <translation id="4600710005438004015">‏Chrome به جدیدترین نسخه به‌روزرسانی نشد، بنابراین قابلیت‌های جدید و رفع اشکال‌های امنیتی را ندارید.</translation>
+<translation id="4606805686144157064">‏اگر Chrome یکی از گذرواژه‌هایتان را در سرقت اطلاعات شبکه عمومی پیدا کند، هشدار دریافت می‌کنید</translation>
+<translation id="4608435347866444037">‏جستجوی این تصویر با «لنز Google»</translation>
 <translation id="4624065194742029982">‏حالت ناشناس Chrome</translation>
 <translation id="4627412468266359539">‏اختیاری: با ارسال خودکار داده‌های عیب‌یابی و داده‌های استفاده به Google، به بهبود ویژگی‌ها و عملکرد ChromeOS Flex کمک کنید.</translation>
 <translation id="4633000520311261472">‏برای ایمن‌تر کردن Chrome، برخی از افزونه‌هایی را که در<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> فهرست نشده‌اند و ممکن است بدون اطلاع شما اضافه شده باشند، غیرفعال کردیم.</translation>
@@ -300,9 +340,9 @@
 <translation id="4728575227883772061">‏به دلیل خطای نامشخص نصب ناموفق بود. اگر Google Chrome در حال اجرا است، لطفاً آن را ببندید و دوباره سعی کنید.</translation>
 <translation id="4737281654364167024">‏برای ادامه دادن، با حساب <ph name="EMAIL" /> به سیستم Chrome وارد شوید. با این کار مطمئن می‌شوید که خط‌مشی‌های سازمانتان اعمال شده‌اند.</translation>
 <translation id="4741235124132242877">‏سنجاق شد! دفعه بعد در نوارابزار از «لنز Google» استفاده کنید</translation>
-<translation id="4747730611090640388">‏Chrome می‌تواند علایقتان را برآورد کند.  بعداً، سایتی که از آن بازدید می‌کنید می‌تواند برای شخصی کردن آگهی‌هایی که به شما نشان می‌دهد از Chrome بخواهد علایق شما را ببیند.</translation>
 <translation id="475321580758063259">‏برای ادامه استفاده از داده‌های Chrome ذخیره‌شده در «حساب Google» خود (<ph name="ACCOUNT_EMAIL" />)،‏ Chrome را به‌روز کنید</translation>
 <translation id="4754614261631455953">‏Google Chrome Canary (ورودی mDNS)</translation>
+<translation id="4756182432527369254">‏سرعت سایت‌ها را با موتور V8 مرورگر Chrome بالاتر می‌برد اما مقاومت Chrome را دربرابر حمله‌ها کمی کمتر می‌کند</translation>
 <translation id="479167709087336770">‏از همان غلط‌یاب املا استفاده می‌کند که در جستجوی Google استفاده می‌شود. نوشتاری که در مرورگر تایپ کرده‌اید برای Google ارسال می‌شود. هروقت بخواهید می‌توانید این رفتار را در تنظیمات تغییر دهید.</translation>
 <translation id="4793679854893018356">‏ببینید Chrome چگونه ایمنی شما را حفظ می‌کند</translation>
 <translation id="4828579605166583682">‏Google Chrome می‌خواهد گذرواژه‌های موجود را جایگزین کند. برای مجاز کردن این کار، گذرواژه Windows خود را تایپ کنید.</translation>
@@ -314,6 +354,7 @@
 <translation id="4891791193823137474">‏اجازه به Google Chrome برای اجرا در پس‌زمینه</translation>
 <translation id="4895437082222824641">‏باز کردن پیوند در &amp;برگه جدید Chrome</translation>
 <translation id="4918844574251943176">تصویر کپی شد</translation>
+<translation id="4926882258455737990">‏برای استفاده از «حساب Google» دیگری با «Gemini در Chrome»، <ph name="BEGIN_LINK" />نمایه جدیدی ایجاد کنید<ph name="END_LINK" /> و با حساب موردنظرتان به سیستم وارد شوید</translation>
 <translation id="492720062778050435">‏Chrome توصیه می‌کند این افزونه را بررسی کنید</translation>
 <translation id="4946912144186040233">‏‫Chrome فرم‌ها را بهتر درک می‌کند و می‌تواند با سرعت بیشتری آن‌ها را برایتان پر کند. این تنظیم خاموش است.</translation>
 <translation id="4953650215774548573">‏تنظیم Google Chrome به عنوان مرورگر پیش‌فرضتان</translation>
@@ -323,20 +364,25 @@
 <translation id="4970880042055371251">‏نسخه ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">‏روی «مدیر گذرواژه Google» کلیک کنید</translation>
+<translation id="5043786843026425788">‏درباره جستجو کردن با «لنز Google» در Chrome بیشتر بدانید</translation>
 <translation id="504867494566807945">‏پیوندها را از هر برنامه‌ای در Chrome باز کنید. همچنین برای دسترسی آسان، Chrome به نوار وظیفه شما سنجاق می‌شود.</translation>
-<translation id="5049567194145991071">‏وقتی روی «متوجهم» کلیک کنید، هرزمان در Chrome به سیستم وارد شده باشید، می‌توانید گذرواژه‌ها و داده‌های دیگر را در «حساب Google» خود ذخیره کنید و از آن‌ها استفاده کنید. <ph name="LEARN_MORE" /></translation>
 <translation id="5114340746415930644">‏برای استفاده از داده‌های Chrome و ذخیره کردن آن‌ها در حسابتان (<ph name="USER_EMAIL" />)، گذرعبارت خود را وارد کنید</translation>
 <translation id="5120334927898581447">‏ورود به سیستم Chrome هنگام وارد شدن به سیستم دیگر سرویس‌های Google</translation>
 <translation id="5126049312684316860">‏Chrome صفحه‌های بیشتری را که احتمالاً از آن‌ها بازدید خواهید کرد پیش‌بارگیری می‌کند تا وقتی از آن‌ها بازدید می‌کنید سریع‌تر بار شوند</translation>
+<translation id="5127558335897923940">‏‫Chrome را در Dock نگه دارید تا هرزمان خواستید سریع به آن دسترسی داشته باشید</translation>
 <translation id="5132929315877954718">‏برنامه‌های کاربردی، بازی‌ها، افزونه‌ها و طرح‌های زمینه فوق‌العاده را برای Google Chrome کاوش کنید.</translation>
 <translation id="5139423532931106058">‏سفارشی کردن نمایه Chrome</translation>
 <translation id="5163087008893166964">‏به Chrome خوش‌آمدید؛ پنجره مرورگر جدید راه‌اندازی شد</translation>
 <translation id="5166439563123238795">‏‫Chrome برای ردیابی کردن دست‌های شما به اجازه نیاز دارد</translation>
+<translation id="5167819546851111585">امروز در ذهنتان چه می‌گذرد؟</translation>
 <translation id="5170938038195470297">‏نمایهٔ شما نمی‌تواند استفاده شود زیرا مربوط به یک نسخه جدیدتر از Google Chrome است. بعضی از ویژگی‌ها ممکن است موجود نباشند. لطفاً یک مسیر دیگر برای نمایه تعیین کنید یا از نسخه جدیدتر Chrome استفاده کنید.</translation>
 <translation id="5174969993834422967">معمولاً اعلان‌ها را مسدود می‌کنید. برای اینکه اجازه دهید این سایت اعلان ارسال کند، روی نماد اعلان در گوشه چپ نوار نشانی کلیک کنید.</translation>
+<translation id="5174983315706567306">فضای دیسک کافی نیست.</translation>
+<translation id="5179933070463113976">‏برای استفاده از «Gemini در Chrome»، باید با «حساب Google» خود به سیستم Chrome وارد شوید</translation>
+<translation id="5190467473654176081">‏با سفارشی‌سازی Chrome، ظاهری جدید به آن ببخشید</translation>
 <translation id="5201744974236816379">‏به‌روزرسانی Chrome</translation>
 <translation id="521447420733633466">‏اگر از دستگاهی به‌صورت مشترک استفاده می‌کنید، دوستان و اعضای خانواده می‌توانند جداگانه مرور کنند و Chrome را به‌شیوه خودشان تنظیم کنند</translation>
-<translation id="5234764350956374838">رد کردن</translation>
+<translation id="5234764350956374838">بستن</translation>
 <translation id="5239627039202700673">‏از Chrome برای باز کردن پیوندهای موجود در پیام‌ها، اسناد، و برنامه‌های دیگر استفاده کنید</translation>
 <translation id="5251420635869119124">‏مهمان‌‌ها می‌توانند از Chrome استفاده کنند بدون اینکه اثری از خود به جا بگذارند.</translation>
 <translation id="5286907366254680517">تشخیص داده شد</translation>
@@ -345,22 +391,28 @@
 <translation id="5334309298019785904">‏ChromeOS نتوانست داده‌هایتان را همگام‌سازی کند، زیرا «همگام‌سازی» برای دامنه شما دردسترس نیست.</translation>
 <translation id="5334487786912937552">‏Chrome برای بارگیری فایل‌ها به اجازه دسترسی به فضای ذخیره‌سازی نیاز دارد</translation>
 <translation id="5337648990166757586">‏اختیاری: با ارسال خودکار داده‌های استفاده و عیب‌یابی به Google، به بهبود ویژگی‌ها و عملکرد ChromeOS کمک کنید.</translation>
+<translation id="5346389065299425353">جستجویتان را با افزودن چند زبانه، فایل، و ابزار عمیق‌تر کنید</translation>
+<translation id="5353252989841766347">‏صادر کردن گذرواژه‌ها از Chrome</translation>
 <translation id="5368118228313795342">کد اضافی: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">‏این برنامه همچنین صفحه‌ای را که هنگام راه‌اندازی Chrome یا جستجو از Omnibox نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="5394833366792865639">‏هم‌رسانی برگه Chrome</translation>
-<translation id="5412485296464121825">‏سایت‌ها می‌توانند بااستفاده از Chrome اطلاعاتی درباره علایقتان ذخیره کنند. برای مثال، اگر برای خرید کفش مخصوص ماراتون از سایتی بازدید کنید، ممکن است آن سایت علاقه شما را به‌صورت دونده ماراتون مشخص کند. بعداً، اگر برای ثبت‌نام در مسابقه‌ای به سایتی دیگر مراجعه کردید، آن سایت می‌تواند براساس علایقتان آگهی‌ای برای کفش مخصوص دویدن به شما نشان دهد.</translation>
+<translation id="5402307365844630024">‏روشن/خاموش کردن Gemini در Chrome نسخه بتا</translation>
 <translation id="5430073640787465221">‏فایل اولویت‌های شما خراب یا نامعتبر است. Google Chrome نمی‌تواند تنظیمات شما را بازیابی کند.</translation>
+<translation id="5465210843490471889">‏انتخاب کردن نمایه Chrome برای استفاده همراه با <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
 <translation id="5468572406162360320">‏برای کمک به بهبود این ویژگی‌ها، Chrome تعاملات شما با این ویژگی‌ها را به Google ارسال می‌کند. ممکن است افراد بازبین این داده‌ها را بخوانند، و پردازش و حاشیه‌نویسی کنند.</translation>
-<translation id="5524761631371622910">‏اگر نسخه آزمایشی روشن باشد و Chrome به‌طور تصادفی نسخه آزمایشی را برایتان فعال کرده باشد، سابقه مرورتان بر آگهی‌هایی که می‌بینید و علایقتان که در زیر برآورد شده است تأثیر می‌گذارد. برای محافظت از حریم خصوصی شما، Chrome علایقتان را هر ماه به‌طور چرخشی حذف می‌کند.</translation>
+<translation id="5510398294750420479">‏با بارگیری Chrome در تلفنتان، یک لایه محافظتی بیشتر برای مرور درحرکت اضافه کنید</translation>
 <translation id="5524890928877629608">‏گوشه بالا سمت راست ناحیه جستجو: ‎٪<ph name="LEFT" /> سمت راست، ‎٪<ph name="TOP" /> بالا</translation>
 <translation id="5530733413481476019">‏سرعت Chrome را افزایش دهید</translation>
+<translation id="5550137307985173298">‏روی دکمه «سفارشی‌سازی Chrome» در «صفحه زبانه جدید» کلیک کنید و ظاهری جدید به Chrome ببخشید</translation>
 <translation id="5566025111015594046">‏Google Chrome (ورودی mDNS)</translation>
 <translation id="5579324208890605088">خطای راه‌اندازی: لطفاً نصب‌کننده را با نقش کاربر معمولی اجرا کنید، نه با نقش سرپرست.</translation>
 <translation id="5596627076506792578">گزینه‌های بیشتر</translation>
 <translation id="5600352656975192682">‏‫Chrome را به نوار وظیفه سنجاق کنید تا هرزمان خواستید سریع‌تر به آن دسترسی داشته باشید</translation>
 <translation id="5602351063754773347">‏‫Chrome توصیه می‌کند آن را بردارید. <ph name="BEGIN_LINK" />درباره افزونه‌های پشتیبانی‌شده بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="5610759359710387751">‏Chrome را مرورگر دلخواه کنید</translation>
 <translation id="5649156266046089790">‏با نمایه‌های Chrome می‌توانید همه چیزهای مربوط به Chrome را از هم جدا کنید. برای دوستان و اعضای خانواده نمایه ایجاد کنید، یا کار و سرگرمی را ازهم جدا کنید.</translation>
 <translation id="565744775970812598">‏<ph name="FILE_NAME" /> ممکن است خطرناک باشد، بنابراین Chrome آن را مسدود کرده است.</translation>
+<translation id="566040795510471729">‏سفارشی‌سازی Chrome</translation>
 <translation id="566568153320186256">‏‫Chrome با محدود کردن فعالیت پس‌زمینه و جلوه‌های دیداری، مثل پیمایش روان و نرخ فریم ویدیو، در مصرف باتری صرفه‌جویی می‌کند. <ph name="BEGIN_LINK" />درباره «بهینه‌سازی انرژی» بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="567202749201779594">‏داده‌های Chrome ذخیره‌شده در حسابتان را پاک کنید</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{‏سرپرست سیستم از شما می‌خواهد برای اعمال این به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید}=1{‏سرپرست سیستم از شما می‌خواهد برای اعمال این به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. پنجره ناشناس بازگشایی نمی‌شود.}one{‏سرپرست سیستم از شما می‌خواهد برای اعمال این به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. # پنجره ناشناس بازگشایی نمی‌شود.}other{‏سرپرست سیستم از شما می‌خواهد برای اعمال این به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. # پنجره ناشناس بازگشایی نمی‌شود.}}</translation>
@@ -368,18 +420,27 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">اتصال به اینترنت برقرار نشد. سرور پروکسی به اصالت‌سنجی نیاز دارد.</translation>
 <translation id="5709557627224531708">‏تنظیم Chrome به‌عنوان مرورگر پیش‌فرض</translation>
-<translation id="5727531838415286053">‏اگر Chrome به‌طور تصادفی نسخه آزمایشی را برایتان فعال کرده باشد، سابقه مرورتان بر آگهی‌هایی که می‌بینید و علایقتان که در زیر برآورد شده است تأثیر می‌گذارد. برای محافظت از حریم خصوصی شما، Chrome علایقتان را هر ماه به‌طور چرخشی حذف می‌کند. ممکن است علایق بازآوری شود، مگر اینکه آن‌ها را بردارید.</translation>
+<translation id="5719324992913248873">‏با این اقدام:
+          <ph name="LINE_BREAKS" />
+           • برخی‌از تنظیمات Chrome و میان‌برهای Chrome بازنشانی می‌شوند
+           <ph name="LINE_BREAK" />
+           • افزونه‌ها غیرفعال می‌شوند
+           <ph name="LINE_BREAK" />
+           • کوکی‌ها و دیگر داده‌های موقت سایت حذف می‌شوند
+            <ph name="LINE_BREAKS" />
+           نشانک‌ها، سابقه، و گذرواژه‌های ذخیره‌شده تحت‌تأثیر قرار نمی‌گیرند.</translation>
 <translation id="5736850870166430177">‏اگر سایتی تلاش کند گذرواژه شما را به‌سرقت ببرد، یا وقتی فایل مخربی بارگیری می‌کنید، Chrome ممکن است نشانی‌های وب را نیز به‌همراه بخش‌های کوچکی از محتوای صفحه، به «مرور ایمن» ارسال کند</translation>
 <translation id="5756509061973259733">‏درحال‌حاضر یک نمایه Chrome با این حساب در این دستگاه وجود دارد</translation>
 <translation id="5759947850379142561">‏نوشتار یا تصویری را برای جستجو کردن با «لنز Google» انتخاب کنید یا برای خارج شدن از «لنز Google»، کلید Escape را فشار دهید</translation>
+<translation id="5762867845020858790">‏نمایه Chrome جدیدی اضافه کنید تا نشانک‌ها، گذرواژه‌ها، و تنظیمات به‌صورت جداگانه نگهداری شوند.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">‏Chrome راه‌اندازی نشد. دوباره امتحان کنید.</translation>
 <translation id="5809516625706423866">‏اتصال به اینترنت برقرار نشد. HTTP ۴۰۱ مجاز نیست. لطفاً پیکربندی پروکسی‌تان را بررسی کنید.</translation>
 <translation id="5824893331272123205">این پانل بارگیری نشد، دوباره امتحان کنید</translation>
 <translation id="5825922397106002626">‏حذف <ph name="EXTENSION_NAME" /> از Chrome</translation>
-<translation id="58431560289969279">‏اکنون که به سیستم وارد شده‌اید، می‌توانید از گذرواژه‌ها و موارد دیگر «حساب Google» خود در Chrome استفاده کنید. هرزمان بخواهید می‌توانید این مورد را در تنظیمات تغییر دهید.</translation>
 <translation id="5858486459377137936">‏وقتی همه پنجره‌های Chrome را ببندید از سیستم اکثر سایت‌ها خارج خواهید شد، اما اگر به سیستم Chrome وارد شده باشید از «حساب Google» خارج نخواهید شد. برای اینکه سایت‌ها شما را به‌خاطر بسپارند، <ph name="SETTINGS_LINK" />.</translation>
 <translation id="586971344380992563">‏‫Chrome درباره بارگیری‌ها و سایت‌های ناامن <ph name="BEGIN_LINK" />به شما هشدار می‌دهد<ph name="END_LINK" /></translation>
+<translation id="5894164573378901688">‏برای استفاده از «Gemini در Chrome»، با «حساب Google» دیگری به سیستم وارد شوید</translation>
 <translation id="5895138241574237353">راه‌اندازی مجدد</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ورود به سیستم شبکه</translation>
 <translation id="5924017743176219022">درحال اتصال به اینترنت…</translation>
@@ -388,15 +449,18 @@
 <translation id="5941711191222866238">کوچک کردن</translation>
 <translation id="5941830788786076944">‏Google Chrome مرورگر پیش‌فرض شود</translation>
 <translation id="5947104538377036631">‏میان‌بر Chrome</translation>
-<translation id="5953954252731207958">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION" /> را برداشت</translation>
+<translation id="5960071705175224773">برنامه‌ای ناشناس تنظیمات شما را تغییر داد</translation>
+<translation id="5968400720580217226">حالت هوش مصنوعی</translation>
 <translation id="5980111191913430208">‏افزونه‌ها، برنامه‌ها، و زمینه‌های دریافتی از منابع ناشناخته می‌توانند به دستگاهتان آسیب برسانند. ‫Chrome توصیه می‌کند آن‌ها را فقط از <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> نصب کنید</translation>
 <translation id="6003112304606738118">درحال بارگیری… <ph name="HOURS" /> ساعت باقی مانده است</translation>
 <translation id="6008161919456049856">‏گذرواژه‌ها، روش‌های پرداخت، و نشانی‌هایی که در «حساب Google» خود ذخیره کرده‌اید از این دستگاه برداشته خواهد شد. برای استفاده مجدد از آن‌ها در Chrome، دوباره به سیستم وارد شوید.</translation>
+<translation id="6009821354356307391">پرسیدن سؤال تعقیبی</translation>
 <translation id="6014316319780893079">‏با <ph name="BEGIN_LINK" />ابزارهای Chrome<ph name="END_LINK" />، می‌توانید به‌طور ایمن مرور کنید و کنترل را دردست بگیرید</translation>
 <translation id="6022659036123304283">‏Chrome را برای خود اختصاصی کنید</translation>
 <translation id="6025087594896450715">‏Google Chrome تا <ph name="REMAINING_TIME" /> دیگر بازراه‌اندازی خواهد شد</translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="604424701295382420">‏سنجاق شد! دفعه بعد می‌توانید ازطریق این دکمه جدید در نوارابزار به «لنز Google» دسترسی پیدا کنید</translation>
+<translation id="6046028983725193307">‏برای هم‌رسانی کردن صدای سیستم، «تنظیمات سیستم» را باز کنید و «فقط ضبط صدای سیستم» را برای Chrome مجاز کنید. سپس باید Chrome را بازراه‌اندازی کنید.</translation>
 <translation id="6069027071882229820">کپی کردن به‌عنوان تصویر</translation>
 <translation id="6070348360322141662">‏برای امنیت بیشتر، Google Chrome داده‌های شما را رمزگذاری می‌کند</translation>
 <translation id="6075300983329039771">‏سازمانتان (<ph name="MANAGER" />) شما را ملزم می‌کند به سیستم Chrome وارد شوید</translation>
@@ -409,11 +473,15 @@
 <translation id="6150706324143004339">‏برای ذخیره و استفاده کردن از داده‌های Chrome در «حساب Google» خود، Chrome را به‌روزرسانی کنید</translation>
 <translation id="6157638032135951407">‏اگر <ph name="TIMEOUT_DURATION" /> از Chrome استفاده نشود، سازمانتان داده‌های آن را حذف می‌کند. این داده‌ها می‌تواند شامل سابقه، تکمیل خودکار، و بارگیری‌ها شود.</translation>
 <translation id="6165508094623778733">بیشتر بدانید</translation>
+<translation id="6166185671393271715">‏وارد کردن گذرواژه‌ها به Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
-<translation id="6180522807229584611">‏این برگه از منابع اضافی استفاده می‌کند. برای بهبود عملکرد، اجازه دهید Chrome آن را غیرفعال کند.</translation>
+<translation id="6180522807229584611">‏این زبانه از منابع اضافی استفاده می‌کند. برای بهبود عملکرد، اجازه دهید Chrome آن را غیرفعال کند.</translation>
 <translation id="6182736845697986886">نصب به‌دلیل وجود خطای داخلی در سرور به‌روزرسانی انجام نشد.</translation>
-<translation id="6200139057479872438">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> را برداشت</translation>
+<translation id="6192058120268468905">‏حساب شما در Chrome</translation>
+<translation id="6220551899604141979">‏‫<ph name="PARTNER_NAME" /> افزونه‌ای اضافه کرده است که ممکن است نحوه کارکرد Chrome را تغییر دهد.
+
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="6235018212288296708">‏قانون ورودی برای Google Chrome به منظور اجازه به ترافیک mDNS.</translation>
 <translation id="624230925347970731">‏Chrome به‌زودی بسته می‌شود</translation>
 <translation id="6247557882553405851">‏مدیر گذرواژه Google</translation>
@@ -423,14 +491,19 @@
 <translation id="6288580400488258237">‏‫Google Chrome را به‌عنوان مرورگر پیش‌فرض خود تنظیم کنید و آن را به نوار وظیفه‌تان سنجاق کنید</translation>
 <translation id="6291089322031436445">‏برنامه‌های Chrome نسخه Dev</translation>
 <translation id="6291549208091401781">‏Google Chrome از قبل برای همه کاربران این رایانه نصب شده است.</translation>
+<translation id="6311220991371174222">‏راه‌اندازی Chrome ممکن نیست زیرا هنگام باز کردن نمایه‌تان مشکلی پیش آمد. Chrome را راه‌اندازی مجدد کنید.</translation>
 <translation id="6319856120645568262">‏‫Chrome برای نقشه‌برداری از محیط اطراف و ردیابی دستان شما به اجازه نیاز دارد</translation>
 <translation id="6321592572353357376">‏افزونه «<ph name="EXTENSION_NAME" />» از شما می‌خواهد به سیستم Chrome وارد شوید</translation>
 <translation id="6326175484149238433">‏حذف از Chrome</translation>
 <translation id="6327105987658262776">به‌روزرسانی دردسترس نیست.</translation>
-<translation id="6360449101159168105">‏وقتی این برگه غیرفعال بود، مقداری از حافظه آزاد شد تا سرعت Chrome حفظ شود. می‌توانید انتخاب کنید این سایت همیشه از غیرفعال شدن مستثنی شود.</translation>
+<translation id="6334815226785304306">‏تنظیم کردن Google Chrome به‌عنوان مرورگر پیش‌فرض و سنجاق کردن آن به نوار وظیفه</translation>
+<translation id="6360449101159168105">‏وقتی این زبانه غیرفعال بود، مقداری از حافظه آزاد شد تا سرعت Chrome حفظ شود. می‌توانید انتخاب کنید این سایت همیشه از غیرفعال شدن مستثنی شود.</translation>
+<translation id="6388799252195623474">در این مورد به من کمک کنید</translation>
 <translation id="6412673304250309937">‏نشانی‌های وب را با فهرست سایت‌های ناامنی که در Chrome ذخیره شده است مقایسه می‌کند. اگر سایتی تلاش کند گذرواژه شما را به‌سرقت ببرد، یا وقتی فایل مخربی بارگیری می‌کنید، Chrome ممکن است نشانی‌های وب را نیز به همراه بخش‌های کوچکی از محتوای صفحه، به «مرور ایمن» ارسال کند.</translation>
 <translation id="6417690341895039567">{COUNT,plural, =1{‏اگر به‌مدت یک دقیقه از Chrome استفاده نشود، سازمانتان آن را به‌طور خودکار می‌بندد. داده‌های مرور حذف می‌شود. این داده‌ها می‌تواند شامل سابقه، تکمیل خودکار، و بارگیری‌ها شود.}one{‏اگر به‌مدت # دقیقه از Chrome استفاده نشود، سازمانتان آن را به‌طور خودکار می‌بندد. داده‌های مرور حذف می‌شود. این داده‌ها می‌تواند شامل سابقه، تکمیل خودکار، و بارگیری‌ها شود.}other{‏اگر به‌مدت # دقیقه از Chrome استفاده نشود، سازمانتان آن را به‌طور خودکار می‌بندد. داده‌های مرور حذف می‌شود. این داده‌ها می‌تواند شامل سابقه، تکمیل خودکار، و بارگیری‌ها شود.}}</translation>
 <translation id="6418662306461808273">‏به نمایه Chrome موجود می‌روید؟</translation>
+<translation id="6426623519983252346">‏دفعه بعد که Chrome iOS را باز می‌کنید، پیام‌واره‌ای برای امتحان کردن «<ph name="FEATURE_NAME" />» خواهید دید.</translation>
+<translation id="6434035853014503219">‏از اینکه Chrome را به‌عنوان مرورگر پیش‌فرض خود انتخاب کردید سپاس‌گزاریم!</translation>
 <translation id="6473905796280459355">‏رفتن به صفحه «درباره Chrome»</translation>
 <translation id="6481963882741794338">‏برای شخصی‌سازی و اهداف بیشتر، Chrome و دیگر سرویس‌های Google را به‌هم پیوند دهید</translation>
 <translation id="648319183876919572">«مرور ایمن پیشرفته» کارهای بیشتری برای محافظت از شما درمقابل وب‌سایت‌ها و بارگیری‌های خطرناک انجام می‌دهد</translation>
@@ -440,7 +513,11 @@
 <translation id="6506909944137591434">‏Chrome برای ایجاد نقشه سه‌بعدی از محیط اطرافتان به اجازه دوربین نیاز دارد</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">‏برای استفاده از مکان، در <ph name="BEGIN_LINK" />تنظیمات سیستم<ph name="END_LINK" /> به Chrome دسترسی دهید</translation>
+<translation id="652948702951888897">‏سابقه Chrome</translation>
+<translation id="6532945796722480006">‏باز کردن «Gemini در Chrome Canary»</translation>
+<translation id="6585124893636629274">‏بستن «Gemini در Chrome»</translation>
 <translation id="659498884637196217">‏در «مدیر گذرواژه Google» در این دستگاه</translation>
+<translation id="6631524303639368205">‏کارتان را از جایی که متوقف کرده بودید ادامه دهید: Chrome زبانه‌های جلسه قبلی‌تان را بازگرداند. می‌توانید این ویژگی را در اینجا خاموش کنید:</translation>
 <translation id="6632473616050862500">‏ارائه ChromeOS Flex به‌کمک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی ممکن شده است.</translation>
 <translation id="6634299872736643004">‏پس‌از بازراه‌اندازی Chrome، تغییرات این تنظیم اعمال خواهد شد.</translation>
 <translation id="6660596345553328257">‏به سیستم Chrome وارد می‌شوید؟</translation>
@@ -448,16 +525,21 @@
 <translation id="6676384891291319759">دسترسی به اینترنت</translation>
 <translation id="6679975945624592337">‏اجازه به Google Chrome برای اجرا در پس‌زمینه</translation>
 <translation id="6696915334902295848">‏Chrome برای این سایت به اجازه میکروفون نیاز دارد</translation>
+<translation id="6706525880530967390">{count,plural, =1{‏قبل‌از اینکه بتوان برخی‌از داده‌ها را در «حساب Google» شما ذخیره کرد و در همه دستگاه‌هایتان استفاده کرد، Chrome باید هویت شما را درستی‌سنجی کند. اگر اکنون از سیستم خارج شوید، این داده (۱ مورد) حذف خواهد شد.}one{‏قبل‌از اینکه بتوان برخی‌از داده‌ها را در «حساب Google» شما ذخیره کرد و در همه دستگاه‌هایتان استفاده کرد، Chrome باید هویت شما را درستی‌سنجی کند. اگر اکنون از سیستم خارج شوید، این داده ({count} مورد) حذف خواهد شد.}other{‏قبل‌از اینکه بتوان برخی‌از داده‌ها را در «حساب Google» شما ذخیره کرد و در همه دستگاه‌هایتان استفاده کرد، Chrome باید هویت شما را درستی‌سنجی کند. اگر اکنون از سیستم خارج شوید، این داده‌ها ({count} مورد) حذف خواهند شد.}}</translation>
 <translation id="6712881677154121168">خطای بارگیری: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">‏سرعت Chrome را افزایش دهید</translation>
+<translation id="6734827584173583205">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION_1" />،‏ <ph name="PERMISSION_2" />،‏ و <ph name="COUNT" /> مورد دیگر را برداشت.</translation>
 <translation id="6735387454586646204">‏سیستم ChromeOS Flex</translation>
 <translation id="6750954913813541382">‏Chrome برای رفع غلط‌های املایی، نوشتاری را که در مرورگر تایپ می‌کنید به Google ارسال می‌کند</translation>
 <translation id="6760235774835597023">‏با این کار سرعت سایت‌ها با موتور Chrome نسخه ۸ بالاتر می‌رود اما مقاومت Chrome دربرابر حمله‌ها مقداری کمتر می‌شود. این تنظیم روشن است.</translation>
 <translation id="677276454032249905">‏درهرصورت از Chrome خارج می‌شوید؟</translation>
 <translation id="6794858689789885890">‏داده‌های سایت همواره بعداز بستن Chrome از دستگاه حذف شود</translation>
+<translation id="6800285125190089494">‏با گذرواژه‌های ذخیره‌شده برای Chrome در iOS، در سایت‌ها سریع‌تر به سیستم وارد شوید</translation>
 <translation id="6831043979455480757">ترجمه</translation>
 <translation id="683440813066116847">‏قانون ترافیک ورودی برای Google Chrome Canary به منظور اجازه به ترافیک mDNS .</translation>
+<translation id="6841242485723266823">‏نمایه‌های Chrome به شما کمک می‌کنند بخش‌های مختلف زندگی‌تان را از هم جدا کنید. اکنون نمایه جدیدی اضافه کنید.</translation>
 <translation id="684888714667046800">نمی‌توان به اینترنت متصل شد. اگر از دیوار آتش استفاده می‌کنید، لطفاً مطمئن شوید <ph name="PRODUCT_EXE_NAME" /> در فهرست مجازها باشد.</translation>
+<translation id="6859580922007887573">برای ادامه دادن، کلید «جهش» را فشار دهید</translation>
 <translation id="6877155553248388166">‏گوشه پایین سمت چپ ناحیه جستجو: ‎٪<ph name="RIGHT" /> سمت چپ، ‎٪<ph name="BOTTOM" /> پایین</translation>
 <translation id="6881299373831449287">‏درحال به‌روزرسانی Chrome</translation>
 <translation id="6885412569789873916">‏برنامه‌های Chrome نسخه بتا</translation>
@@ -469,13 +551,17 @@
 <translation id="6943584222992551122">‏داده‌های محصول مرور این فرد از این دستگاه حذف می‌شود. برای بازیابی داده‌ها، با نام <ph name="USER_EMAIL" /> به سیستم Chrome وارد شوید.</translation>
 <translation id="6965382102122355670">تأیید</translation>
 <translation id="6967962315388095737">‏قانون ترافیک ورودی Google Chrome نسخه بتا برای امکان دادن به ترافیک mDNS.</translation>
-<translation id="6979589607440534284">‏ببینید چرا Chrome برخی‌از فایل‌ها را مسدود می‌کند، در برگه جدید باز می‌شود</translation>
+<translation id="6979589607440534284">‏ببینید چرا Chrome برخی‌از فایل‌ها را مسدود می‌کند، در زبانه جدید باز می‌شود</translation>
 <translation id="6991926986715044139">‏میان‌بر «لنز Google» همیشه نشان داده شود</translation>
+<translation id="6999131147875565462">‏‫Chrome سریع‌تر اجرا می‌شود و ویژگی‌هایی که از جاوا اسکریپت استفاده می‌کنند باید طبق طراحی کار کنند</translation>
 <translation id="7011190694940573312">نصب انجام نشد زیرا این نسخه از سیستم‌عامل پشتیبانی نمی‌شود.</translation>
 <translation id="7024536598735240744">خطای لغو فشرده‌سازی: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">نصب متوقف شد.</translation>
 <translation id="7025800014283535195">‏می‌توانید در اینجا بین نمایه‌های Chrome جابه‌جا شوید</translation>
+<translation id="7047386856539490735">این نتایج مفیدند؟</translation>
+<translation id="7051685429025310665">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION_1" />،‏ <ph name="PERMISSION_2" />،‏ و <ph name="PERMISSION_3" /> را برداشت.</translation>
 <translation id="7059914902409643750">‏Chrome را برای خودتان اختصاصی کنید</translation>
+<translation id="7060643578009939353">‏جستجوی این ویدیو با «لنز Google»</translation>
 <translation id="7071827361006050863">‏Chrome به‌زودی داده‌های مرور را حذف می‌کند</translation>
 <translation id="7085332316435785646">‏انتخاب کنید که آیا سابقه Chrome برای تجربه‌های شخصی‌شده‌تر در سرویس‌های Google لحاظ شود یا نه</translation>
 <translation id="7088681679121566888">‏Chrome به‌روز است</translation>
@@ -483,6 +569,7 @@
 <translation id="7098166902387133879">‏Google Chrome درحال استفاده از میکروفون شما است.</translation>
 <translation id="7099479769133613710">‏راه‌اندازی مجدد برای به‌روزرسانی ChromeOS</translation>
 <translation id="7106741999175697885">‏مدیر وظایف - Google Chrome</translation>
+<translation id="7121179479711575744">‏ورود به سیستم Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{‏به‌روزرسانی جدیدی برای Chrome در دسترس است و به‌محض راه‌اندازی مجدد اعمال خواهد شد.}=1{‏به‌روزرسانی جدیدی برای Chrome در دسترس است و به‌محض راه‌اندازی مجدد اعمال خواهد شد. پنجره ناشناس بازگشایی نمی‌شود.}one{‏به‌روزرسانی جدیدی برای Chrome در دسترس است و به‌محض راه‌اندازی مجدد اعمال خواهد شد. # پنجره ناشناس بازگشایی نمی‌شود.}other{‏به‌روزرسانی جدیدی برای Chrome در دسترس است و به‌محض راه‌اندازی مجدد اعمال خواهد شد. # پنجره ناشناس بازگشایی نمی‌شود.}}</translation>
 <translation id="7155997830309522122">‏در این صورت، لطفاً گذرواژه ذخیره‌شده در Chrome را ویرایش کنید تا با گذرواژه جدیدتان مطابقت داشته باشد.</translation>
 <translation id="7161904924553537242">‏به Google Chrome خوش آمدید</translation>
@@ -497,7 +584,7 @@
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
 <translation id="7386878009611068389">‏برای ایمن‌تر ماندن در فضای آنلاین با کمک انتخاب‌های ولی‌تان، به همان نمایه Chrome بروید که قبلاً با <ph name="USER_EMAIL_ADDRESS" /> به سیستم وارد شده‌اید</translation>
 <translation id="7398801000654795464">‏شما بعنوان <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم Chrome شدید. لطفاً برای ورود به سیستم مجدد از همان حساب استفاده کنید.</translation>
-<translation id="7412494426921990001">‏روی منوی Chrome کلیک کنید</translation>
+<translation id="7412494426921990001">‏روی منو Chrome کلیک کنید</translation>
 <translation id="7419819959108735624">‏هرچیزی را می‌خواهید انتخاب کنید تا با «لنز Google» جستجو شود</translation>
 <translation id="742463671275348370">{NUM_DEVICES,plural, =0{‏یک یا چند افزونه Chrome به یک دستگاه USB دسترسی داشتند}=1{‏یک یا چند افزونه Chrome به یک دستگاه USB دسترسی دارند}one{‏یک یا چند افزونه Chrome به # دستگاه USB دسترسی دارند}other{‏یک یا چند افزونه Chrome به # دستگاه USB دسترسی دارند}}</translation>
 <translation id="7426611252293106642">‏Google Chrome ممکن است درست کار نکند زیرا این توزیع Linux دیگر از آن پشتیبانی نمی‌کند.</translation>
@@ -517,6 +604,10 @@
 <translation id="756809126120519699">‏داده‌های Chrome پاک شد</translation>
 <translation id="7572537927358445944">‏خاموش • Chrome نمی‌تواند منبع این افزونه را تأیید کند</translation>
 <translation id="7583399374488819119">نصب‌کننده <ph name="COMPANY_NAME" /></translation>
+<translation id="7596160425942761210">‏می‌توانید پیوندهای موجود در پیام‌ها، سندها، و برنامه‌های دیگر را همیشه بااستفاده از Chrome باز کنید</translation>
+<translation id="7602868996817972616">‏پرسیدن از Google درباره این صفحه</translation>
+<translation id="760353356052806707">‏برنامه دیگری در رایانه شما یک برنامه اضافه کرده است که ممکن است نحوه کارکرد Chrome را تغییر دهد.
+<ph name="EXTENSION_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626072681686626474">‏<ph name="MANAGER" /> لازم می‌داند که شما «شرایط خدمات» زیر را قبل‌از استفاده از دستگاه بخوانید و بپذیرید. این شرایط بسط داده نمی‌شود، اصلاح نمی‌شود، یا «شرایط Google ChromeOS» را محدود نمی‌کند.</translation>
 <translation id="7627609214560473136">‏برای محافظت از داده‌هایتان، به Chrome اجازه داده می‌شود اجازه‌های سایت‌هایی را که اخیراً از آن‌ها بازدید نکرده‌اید حذف کند.</translation>
@@ -525,30 +616,36 @@
 <translation id="7649070708921625228">راهنما</translation>
 <translation id="7651907282515937834">‏نشان‌واره Chrome Enterprise</translation>
 <translation id="76531479118467370">‏‫Chrome این بارگیری را مسدود کرد زیرا «مرور ایمن» خاموش است و نمی‌توان فایل را تأیید کرد</translation>
-<translation id="7655455401911432608">‏سابقه مرور شما، سابقه سایت‌هایی که بااستفاده از Chrome در این دستگاه از آن‌ها بازدید کرده‌اید.</translation>
 <translation id="7655472416356262023">‏برداشتن حساب از Chrome</translation>
 <translation id="7658239707568436148">لغو</translation>
-<translation id="7661924425853052955">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION_1" />،‏ <ph name="PERMISSION_2" />،‏ و <ph name="COUNT" /> مورد دیگر را برداشت</translation>
 <translation id="7670287553302121848">‏حساب Chrome به اصالت‌سنجی مجدد نیاز دارد</translation>
+<translation id="7675756456029023637">‏پرسیدن از Chrome</translation>
 <translation id="769538538642757151">‏اگر موردی نیاز به بررسی داشته باشد، Chrome به شما اطلاع می‌دهد</translation>
+<translation id="769906121737764913">‏بستن «Gemini در Chrome نسخه بتا»</translation>
 <translation id="7716950018788545737">تکلیف(ها) پایان یافت.</translation>
+<translation id="7723388585204724670">‏بازنشانی به Chrome پیش‌فرض</translation>
 <translation id="77283119132245232">سرویس‌های ردیابی سیستم را برای <ph name="BROWSER_NAME" /> ارائه می‌دهد. اگر این سرویس غیرفعال باشد، ردیابی‌های عملکردی که مرورگر ایجاد می‌کند شامل رویدادهای در سطح سیستم مانند رویدادهای تغییر زمینه و آماده‌سازی رشته نخواهد بود.</translation>
 <translation id="7736869414036750079">‏سازمانتان شما را ملزم می‌کند به سیستم Chrome وارد شوید</translation>
 <translation id="7747138024166251722">نصب‌کننده نتوانست دایرکتوری موقت ایجاد کند. لطفاً فضای خالی دیسک و اجازه نصب نرم‌افزار را بررسی کنید.</translation>
+<translation id="7748969056734910029">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> را برداشت.</translation>
 <translation id="7761834446675418963">‏برای باز کردن Chrome و شروع به مرور، روی نامتان کلیک کنید.</translation>
 <translation id="7777080907402804672">‏اگر تصویری توضیح مفیدی نداشته باشد، Chrome توضیحی برای شما ارائه خواهد کرد. برای ایجاد توضیحات، تصاویر به Google ارسال می‌شود. هروقت خواستید می‌توانید این گزینه را در تنظیمات خاموش کنید.</translation>
 <translation id="778331955594035129">‏Chrome برای این سایت به اجازه مکان نیاز دارد</translation>
 <translation id="7787950393032327779">‏ظاهراً نمایه توسط فرآیند Google Chrome دیگری (<ph name="PROCESS_ID" />) در رایانه‌ای دیگر (<ph name="HOST_NAME" />) در حال استفاده است. Chrome نمایه را قفل کرده است تا خراب نشود. اگر مطمئنید فرآیندهای دیگری از این نمایه استفاده نمی‌کنند، می‌توانید قفل نمایه را باز کنید و Chrome را مجدداً راه‌اندازی نمایید.</translation>
+<translation id="7792336732117553384">‏مدیریت نمایه‌های Chrome</translation>
 <translation id="7801699035218095297">‏Google Chrome می‌خواهد گذرواژه‌ها را کپی کند. برای اینکه اجازه دهید این کار انجام شود، گذرواژه Windows خود را تایپ کنید.</translation>
+<translation id="7804364787702057554">‏حساب شما در Chrome</translation>
 <translation id="7808348361785373670">‏حذف از Chrome...</translation>
-<translation id="7825851276765848807">‏بدلیل خطای نامشخص، نصب ناموفق بود. لطفاً دوباره Google Chrome را بارگیری کنید.</translation>
-<translation id="7826342993930002256">‏‫Chrome شما، در همه‌جا</translation>
 <translation id="7827099906024714326">‏قبل‌از اینکه بتوان برخی‌از داده‌ها را در «حساب Google» شما ذخیره کرد و در همه دستگاه‌هایتان استفاده کرد، Chrome باید هویت شما را تأیید کند. اگر اکنون از سیستم خارج شوید، این داده‌ها حذف خواهد شد.</translation>
+<translation id="7832314606810669113">‏برای دریافت نشانک‌ها و موارد دیگر در همه دستگاه‌هایتان، به سیستم Chrome وارد شوید. بعداز اینکه به سیستم وارد شدید، این نشانک در «حساب Google» شما ذخیره خواهد شد.</translation>
 <translation id="7845233973568007926">بابت نصب از شما سپاس‌گزاریم. قبل‌از استفاده از <ph name="BUNDLE_NAME" />، باید رایانه را بازراه‌اندازی کنید.</translation>
+<translation id="7849037457735762883">‏کارتان را از جایی که متوقف کرده بودید ادامه دهید: Chrome می‌تواند هربار که آن را بازراه‌اندازی می‌کنید، زبانه‌هایتان را بازگرداند. برای روشن کردن این ویژگی، به اینجا بروید:</translation>
 <translation id="7872446069773932638">درحال بارگیری… <ph name="SECONDS" /> ثانیه باقی مانده است</translation>
 <translation id="7886087451482920026">‏انتخاب نوشتار با «لنز Google»</translation>
+<translation id="7887929410013642057">میان‌برهای «حالت هوش مصنوعی» همیشه نشان داده شوند</translation>
 <translation id="7890208801193284374">‏اگر رایانه‌ای را به صورت مشترک استفاده می‌کنید، دوستان و خانواده می‌توانند به صورت جداگانه مرور کنند و Chrome را به صورتی که مایلند تنظیم کنند.</translation>
 <translation id="7896673875602241923">‏شخصی قبلاً به‌عنوان <ph name="ACCOUNT_EMAIL_LAST" /> به سیستم Chrome در این رایانه وارد شده است. برای اینکه اطلاعاتتان جدا حفظ شود، لطفاً کاربر Chrome جدیدی ایجاد کنید.</translation>
+<translation id="7904985524660297937">‏‫Gemini را در Google Chrome امتحان کنید</translation>
 <translation id="7917876797003313048">‏می‌توانید «حساب‌های Google» خودتان را که به سیستم آن‌ها وارد شده‌اید مدیریت کنید. از «حساب‌های Google» شما در مرورگر Chrome، «فروشگاه Play»، ‏Gmail، و محصولات دیگر استفاده می‌شود. اگر می‌خواهید حساب فرد دیگری را اضافه کنید (مثلاً یکی از اعضای خانواده)، به‌جای این کار، شخص جدیدی را به <ph name="DEVICE_TYPE" /> خود اضافه کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">‏‫Chrome این بارگیری را مسدود کرد زیرا این فایل فریب‌دهنده است و ممکن است تغییرات غیرمنتظره‌ای در دستگاهتان ایجاد کند</translation>
 <translation id="7951272445806340501">‏برای اعمال به‌روزرسانی، ChromeOS Flex باید بازراه‌اندازی شود.</translation>
@@ -562,11 +659,13 @@
 <translation id="8013993649590906847">‏اگر تصویری توضیح مفیدی نداشته باشد، Chrome توضیحی برای شما ارائه خواهد کرد. برای ایجاد توضیحات، تصاویر به Google ارسال می‌شود.</translation>
 <translation id="8019103195866286235">‏این افزونه توسط توسعه‌دهنده آن لغو انتشار شده است و ممکن است ناامن باشد. آن را از Chrome حذف کنید تا دیگر نتواند داده‌های شما (ازجمله اطلاعات شخصی) را در سایت‌هایی که بازدید می‌کنید ببیند و تغییر دهد.</translation>
 <translation id="8040768861829554732">‏یکی از افزونه‌ها از شما می‌خواهد به سیستم Chrome وارد شوید</translation>
+<translation id="8041795619940733262">‏از Google<ph name="LINE_BREAK" />درباره این زبانه بپرسید</translation>
 <translation id="80471789339884597">بابت نصب از شما سپاس‌گزاریم. قبل‌از استفاده از <ph name="BUNDLE_NAME" />، باید همه مرورگرها را بازراه‌اندازی کنید.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8077579734294125741">‏دیگر نمایه‌های Chrome</translation>
 <translation id="8086881907087796310">نصب انجام نشد زیرا رایانه شما با حداقل شرایط سخت‌افزاری مطابقت ندارد.</translation>
 <translation id="8113883687556086139">‏برای استفاده از داده‌های Chrome و ذخیره کردن آن‌ها در حسابتان (<ph name="ACCOUNT_EMAIL" />)، هویت خود را به‌تأیید برسانید</translation>
+<translation id="8115695070094288807">‏درحال شخصی‌سازی Chrome…</translation>
 <translation id="8118331347066725040">درباره جستجو با «لنز»، بازخورد ارسال کنید</translation>
 <translation id="8129812357326543296">‏درباره &amp;Google Chrome</translation>
 <translation id="813913629614996137">درحال مقداردهی اولیه…</translation>
@@ -581,8 +680,13 @@
 <translation id="8321888067342493336">ذخیره کردن به‌عنوان تصویر</translation>
 <translation id="8336463659890584292">‏وقتی سایتی برای پیش‌بارگیری خصوصی پیوندها در صفحه خود درخواست می‌کند، Chrome از سرورهای Google استفاده می‌کند. با این کار هویتتان از سایت پیش‌بارگیری‌شده پنهان می‌شود، اما Google متوجه می‌شود که چه سایت‌هایی پیش‌بارگیری شده‌اند.</translation>
 <translation id="8342675569599923794">‏این فایل خطرناک است، بنابراین Chrome آن را مسدود کرده است.</translation>
+<translation id="8349094670477064572">‏هرزمان به سیستم Chrome وارد شده باشید، می‌توانید گذرواژه‌ها و داده‌های دیگر را در «حساب Google» خود ذخیره کنید و از آن‌ها استفاده کنید. <ph name="LEARN_MORE" /></translation>
+<translation id="835927394551949760">‏از Google بپرسید</translation>
 <translation id="8362914115861174987">ترجمه به</translation>
+<translation id="8366770919198174997">‏عملکرد را کاهش می‌دهد اما Chrome را دربرابر حملات مقاوم‌تر می‌کند</translation>
+<translation id="8367705492654390392">هرچه می‌خواهید بپرسید</translation>
 <translation id="8370517070665726704">‏حق نشر <ph name="YEAR" /> Google LLC.‎ کلیه حقوق محفوظ است.</translation>
+<translation id="8377158135256176353">‏روشن/خاموش کردن Gemini در Chrome Canary</translation>
 <translation id="8387459386171870978">‏ادامه استفاده از Chrome</translation>
 <translation id="8394720698884623075">‏نشانی‌های وب را با فهرست سایت‌های ناامنی که در Chrome ذخیره شده است مقایسه می‌کند</translation>
 <translation id="8403038600646341038">‏نشان‌واره Chrome درون صفحه‌نمایش رایانه.</translation>
@@ -598,51 +702,58 @@
 <translation id="8533056045953418157">‏تنظیم Google Chrome به‌عنوان نمایشگر PDF پیش‌فرض</translation>
 <translation id="8555465886620020932">خطای سرویس: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">جستجوی فهرست زبان‌ها</translation>
+<translation id="8575047640889685742">‏استفاده از <ph name="BEGIN_LINK" />گذرعبارت خودتان<ph name="END_LINK" /> برای رمزگذاری همه داده‌های Chrome موجود در «حساب Google» شما. روش‌های پرداخت و نشانی‌های موجود در Google Pay رمزگذاری نخواهند شد. سابقه مرور Chrome همگام‌سازی نخواهد شد.</translation>
 <translation id="8601359445272098721">جدید! با انتخاب دکمه «ترجمه کردن صفحه‌نمایش»، می‌توانید هم نوشتار و هم تصاویر روی صفحه‌نمایش را ترجمه کنید</translation>
 <translation id="8614913330719544658">‏Google Chrome پاسخ نمی‌دهد. مجدداً راه‌اندازی شود؟</translation>
 <translation id="861702415419836452">‏Chrome برای دسترسی به دوربین به اجازه نیاز دارد تا بتواند نقشه سه‌بعدی محیط شما را ایجاد کند</translation>
+<translation id="8624541899164515475">«تنظیمات»، در زبانه جدیدی باز می‌شود.</translation>
 <translation id="8625237574518804553">{0,plural, =1{‏Chrome ‏۱ دقیقه دیگر راه‌اندازی مجدد می‌شود}one{‏Chrome ‏# دقیقه دیگر راه‌اندازی مجدد می‌شود}other{‏Chrome ‏# دقیقه دیگر راه‌اندازی مجدد می‌شود}}</translation>
 <translation id="8637932705841171563">‏برای هم‌رسانی پنجره، ضبط صفحه‌نمایش را در «تنظیمات سیستم» برای Chrome مجاز کنید</translation>
 <translation id="8641606876632989680">‏وقتی با گذرواژه‌ای لورفته به سیستم وارد شوید، Chrome به شما اطلاع می‌دهد</translation>
-<translation id="8649026945479135076">‏امری عادی است که سایت‌هایی که بازدید می‌کنید برای شخصی کردن تجربه‌تان، علایق شما را به‌خاطر آورند. به‌علاوه، سایت‌ها می‌توانند بااستفاده از Chrome اطلاعاتی درباره علایقتان ذخیره کنند.</translation>
+<translation id="8647930742055103497">‏همه‌چیز را در Chrome نگه دارید</translation>
+<translation id="8656634243791296665">‏باز کردن «Gemini در Chrome Dev»</translation>
 <translation id="8669527147644353129">‏راهنمای Google Chrome</translation>
 <translation id="8679801911857917785">‏این برنامه همچنین صفحه‌ای را که هنگام راه‌اندازی Chrome نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8712767363896337380">‏تقریباً به‌روزرسانی شده است! برای تکمیل به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید.</translation>
 <translation id="8718062187489036808">‏ثبت خروج از Chrome</translation>
+<translation id="8725440680697264016">‏پرسیدن از Google درباره این ویدیو</translation>
 <translation id="873133009373065397">‏Google Chrome نمی‌تواند مرورگر پیش‌فرض را تعیین یا تنظیم کند</translation>
 <translation id="8747073452963259673">‏گوشه پایین سمت راست ناحیه جستجو: ‎٪<ph name="LEFT" /> سمت راست، ‎٪<ph name="BOTTOM" /> پایین</translation>
 <translation id="8748735421235723888">‏‫Chrome حافظه را از برگه‌های غیرفعال آزاد می‌کند. با این کار، منابع بیشتری در رایانه به برگه‌های فعال و سایر برنامه‌ها اختصاص داده می‌شود و سرعت بالای Chrome حفظ می‌شود. هرزمان به برگه‌های غیرفعال برگردید، به‌طور خودکار دوباره فعال می‌شوند. <ph name="BEGIN_LINK" />درباره «بهینه‌سازی حافظه» بیشتر بدانید<ph name="END_LINK" /></translation>
-<translation id="8753189155654018347">‏برداشتن این داده‌های برنامه از Chrome</translation>
 <translation id="8765470054473112089">‏وقتی در نوار نشانی یا چارگوش جستجو تایپ می‌کنید، Chrome آنچه تایپ می‌کنید را به موتور جستجوی پیش‌فرض شما ارسال می‌کند تا پیشنهادهای بهتری دریافت کند. این ویژگی در «حالت ناشناس» خاموش است.</translation>
 <translation id="8781673607513845160">‏برای استفاده از دوربین، در <ph name="BEGIN_LINK" />تنظیمات سیستم<ph name="END_LINK" /> به Chrome دسترسی دهید</translation>
 <translation id="878572486461146056">خطای نصب: سرپرست شبکه شما «خط‌مشی گروهی» اعمال کرده است که از نصب جلوگیری می‌کند: <ph name="INSTALL_ERROR" /></translation>
+<translation id="8796919761992612392">‏سفارشی‌سازی Chrome</translation>
 <translation id="8798550110818026746">‏سازمانتان می‌تواند داده‌های مرور، مثل نشانک‌ها، سابقه، و گذرواژه‌هایتان را ببیند و مدیریت کند. سازمانتان نمی‌تواند داده‌های مرور دیگر نمایه‌های Chrome را ببیند</translation>
-<translation id="8801657293260363985">‏V8 موتور WebAssembly و جاوا اسکریپت Chrome است که از آن برای بهبود عملکرد سایت استفاده می‌شود</translation>
 <translation id="8821043148920470810">‏برای دریافت به‌روزرسانی‌های آتی Google Chrome، باید Windows 10 یا بالاتر داشته باشید. این رایانه از Windows 7 استفاده می‌کند.</translation>
 <translation id="8823341990149967727">‏نسخه Chrome قدیمی است</translation>
-<translation id="8825634023950448068">‏برای محافظت از حریم خصوصی شما، علایقی را که قدیمی‌تر از ۴ هفته باشند به‌طور خودکار حذف می‌کنیم. وقتی به مرور کردن ادامه می‌دهید، ممکن است علاقه‌ای مجدداً به فهرست اضافه شود. و اگر Chrome به‌اشتباه علاقه‌ای را اضافه کند یا شما نخواهید آگهی‌های مشخصی را ببینید، می‌توانید آن علاقه را بردارید.</translation>
 <translation id="8834965163890861871">‏Google Chrome می‌خواهد گذرواژه‌ها را ویرایش کند. برای اینکه اجازه دهید این کار انجام شود، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="8843516219908676469">‏‫Chrome فرم‌ها را بهتر درک می‌کند و می‌تواند با سرعت بیشتری آن‌ها را برایتان پر کند</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{‏Chrome توصیه می‌کند آن را بردارید}one{‏Chrome توصیه می‌کند آن را بردارید}other{‏Chrome توصیه می‌کند آن‌ها را بردارید}}</translation>
 <translation id="8862326446509486874">شما حقوق لازم برای نصب در سطح سیستم را ندارید. دوباره به‌عنوان سرپرست نصب‌کننده را اجرا کنید.</translation>
+<translation id="8865415417596392024">‏داده‌های Chrome در حساب شما</translation>
+<translation id="8883862939660515976">‏پرسیدن از «لنز Google» درباره این تصویر</translation>
 <translation id="8914504000324227558">‏راه‌اندازی مجدد Chrome</translation>
 <translation id="8922193594870374009">‏برای ارسال شماره از <ph name="ORIGIN" /> به تلفن Android خود، در هر دو دستگاه به سیستم Chrome وارد شوید.</translation>
+<translation id="8922998289262614701">‏برداشتن داده‌های این برنامه از Chrome</translation>
+<translation id="8936233353620149764">‏روشن/خاموش کردن Gemini در Chrome</translation>
 <translation id="8948460679427074738">‏این افزونه روش‌های اعمال حریم خصوصی، مثل نحوه جمع‌آوری و استفاده از داده‌ها را منتشر نکرده است. ‫Chrome توصیه می‌کند آن را حذف کنید.</translation>
 <translation id="8958307504142971576">‏اکنون ویژگی‌های بیشتری در Chrome دردسترس شما قرار دارد</translation>
-<translation id="8989968390305463310">‏سابقه مرور شما بر آگهی‌هایی که می‌بینید و علایقتان که در زیر برآورد شده است تأثیر می‌گذارد. برای محافظت از حریم خصوصی شما، Chrome علایقتان را هر ماه به‌طور خودکار و چرخشی حذف می‌کند. ممکن است علایق بازآوری شود، مگر اینکه آن‌ها را بردارید.</translation>
+<translation id="8991530961471831170">‏باز کردن «Gemini در Chrome»</translation>
 <translation id="8992769679401294069">‏داده‌هایتان بااستفاده از گذرعبارت شما رمزگذاری شده است. برای ذخیره کردن داده‌های Chrome در «حساب Google» خود و استفاده از آن‌ها، این گذرعبارت را وارد کنید.</translation>
 <translation id="8999117580775242387">‏وقتی HTTPS دردسترس نباشد، Chrome بدون دادن هشدار به شما از اتصال ناامن استفاده می‌کند</translation>
 <translation id="8999208279178790196">{0,plural, =0{‏به‌روزرسانی Chrome دردسترس است}=1{‏به‌روزرسانی Chrome دردسترس است}one{‏به‌روزرسانی Chrome از # روز پیش دردسترس است}other{‏به‌روزرسانی Chrome از # روز پیش دردسترس است}}</translation>
+<translation id="9010418943148193727">‏موتور جستجوی پیش‌فرض شما از خارج از Chrome تغییر کرد. برای محافظت از شما، Chrome آن را بازنشانی کرد.</translation>
 <translation id="9014771989710951291">‏چندین سازمان Chrome را مدیریت می‌کنند</translation>
 <translation id="9024318700713112071">‏تنظیم Chrome به‌عنوان مرورگر پیش‌فرض</translation>
+<translation id="9066987883552592250">‏بستن «Gemini در Chrome Canary»</translation>
 <translation id="9090566250983691233">‏ببینید چرا Chrome برخی‌از فایل‌ها را مسدود می‌کند</translation>
 <translation id="9106236359747881194">نوشتاری را برای جستجو انتخاب کنید</translation>
 <translation id="911206726377975832">داده‌های مرور شما نیز حذف شود؟</translation>
 <translation id="9134482777260927479">کمک در تکالیف</translation>
 <translation id="9138603949443464873">‏برای اعمال تغییراتتان، Chrome را راه‌اندازی مجدد کنید</translation>
 <translation id="9148058034647219655">خروج</translation>
-<translation id="9195993889682885387">‏Chrome می‌توانند علایقتان را براساس سابقه مرور چند هفته گذشته برآورد کند. این اطلاعات از دستگاهتان خارج نمی‌شود.</translation>
 <translation id="919706545465235479">‏به‌روزرسانی Chrome برای شروع همگام‌سازی</translation>
 <translation id="922152298093051471">‏سفارشی‌سازی Chrome</translation>
 <translation id="93760716455950538">‏بازراه‌اندازی ChromeOS Flex</translation>

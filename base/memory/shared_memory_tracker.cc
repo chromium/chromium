@@ -99,14 +99,12 @@ SharedMemoryTracker::GetOrCreateSharedMemoryDumpInternal(
   size_t virtual_size = mapped_size;
   // If resident size is not available, a virtual size is used as fallback.
   size_t size = virtual_size;
-#if defined(COUNT_RESIDENT_BYTES_SUPPORTED)
   std::optional<size_t> resident_size =
       trace_event::ProcessMemoryDump::CountResidentBytesInSharedMemory(
           mapped_memory, mapped_size);
   if (resident_size.has_value()) {
     size = resident_size.value();
   }
-#endif
 
   local_dump = pmd->CreateAllocatorDump(dump_name);
   local_dump->AddScalar(trace_event::MemoryAllocatorDump::kNameSize,

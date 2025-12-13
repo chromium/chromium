@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <memory>
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -255,7 +251,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionAppsChromeOsBrowserTest, NavigateExisting) {
   content::WebContents* web_contents[2];
   for (unsigned short i = 0; i < 2; i++) {
     LaunchExtensionAndCatchResult(*extension);
-    web_contents[i] = browser()->tab_strip_model()->GetActiveWebContents();
+    UNSAFE_TODO(web_contents[i]) =
+        browser()->tab_strip_model()->GetActiveWebContents();
   }
 
   // GetWindowIdOfTab() returns -1 for SessionID::InvalidValue().

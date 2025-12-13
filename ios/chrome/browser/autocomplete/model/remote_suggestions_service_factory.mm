@@ -26,8 +26,7 @@ RemoteSuggestionsServiceFactory::GetInstance() {
 
 std::unique_ptr<KeyedService>
 RemoteSuggestionsServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   return std::make_unique<RemoteSuggestionsService>(
       /*document_suggestions_service=*/nullptr,
       /*enterprise_search_aggregator_suggestions_service=*/nullptr,

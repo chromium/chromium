@@ -10,15 +10,19 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/mock_audio_manager.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/functions.h"
+#include "services/audio/ml_model_manager.h"
 #include "services/audio/stream_factory.h"
 #include "services/audio/test/mock_log.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,6 +46,18 @@ const bool kInvalidStream = false;
 const bool kMuted = true;
 const bool kNotMuted = false;
 const char* kDefaultDeviceId = "default";
+
+class MockMlModelManager : public MlModelManager {
+ public:
+  std::unique_ptr<MlModelHandle> GetResidualEchoEstimationModel() override {
+    model_requested_ = true;
+    return nullptr;
+  }
+  bool model_requested() { return model_requested_; }
+
+ private:
+  bool model_requested_ = false;
+};
 
 class MockStreamClient : public media::mojom::AudioInputStreamClient {
  public:
@@ -122,7 +138,9 @@ class AudioServiceInputStreamTest : public testing::Test {
  public:
   AudioServiceInputStreamTest()
       : audio_manager_(std::make_unique<media::TestAudioThread>(false)),
-        stream_factory_(&audio_manager_, /*aecdump_recording_manager=*/nullptr),
+        stream_factory_(&audio_manager_,
+                        /*aecdump_recording_manager=*/nullptr,
+                        &mock_ml_model_manager_),
         stream_factory_receiver_(
             &stream_factory_,
             remote_stream_factory_.BindNewPipeAndPassReceiver()) {}
@@ -150,7 +168,8 @@ class AudioServiceInputStreamTest : public testing::Test {
         remote_stream.InitWithNewPipeAndPassReceiver(), client_.MakeRemote(),
         observer_.MakeRemote(), log_.MakeRemote(), kDefaultDeviceId,
         media::AudioParameters::UnavailableDeviceParams(),
-        kDefaultSharedMemoryCount, enable_agc, nullptr,
+        base::UnguessableToken::Create(), kDefaultSharedMemoryCount, enable_agc,
+        std::move(processing_config_),
         base::BindOnce(&AudioServiceInputStreamTest::OnCreated,
                        base::Unretained(this)));
     return remote_stream;
@@ -163,7 +182,8 @@ class AudioServiceInputStreamTest : public testing::Test {
         remote_stream.InitWithNewPipeAndPassReceiver(), client_.MakeRemote(),
         observer_.MakeRemote(), mojo::NullRemote(), kDefaultDeviceId,
         media::AudioParameters::UnavailableDeviceParams(),
-        kDefaultSharedMemoryCount, false, nullptr,
+        base::UnguessableToken::Create(), kDefaultSharedMemoryCount, false,
+        std::move(processing_config_),
         base::BindOnce(&AudioServiceInputStreamTest::OnCreated,
                        base::Unretained(this)));
     return remote_stream;
@@ -176,7 +196,8 @@ class AudioServiceInputStreamTest : public testing::Test {
         remote_stream.InitWithNewPipeAndPassReceiver(), client_.MakeRemote(),
         mojo::NullRemote(), log_.MakeRemote(), kDefaultDeviceId,
         media::AudioParameters::UnavailableDeviceParams(),
-        kDefaultSharedMemoryCount, false, nullptr,
+        base::UnguessableToken::Create(), kDefaultSharedMemoryCount, false,
+        std::move(processing_config_),
         base::BindOnce(&AudioServiceInputStreamTest::OnCreated,
                        base::Unretained(this)));
     return remote_stream;
@@ -200,9 +221,11 @@ class AudioServiceInputStreamTest : public testing::Test {
   MOCK_METHOD2(CreatedCallback, void(bool /*valid*/, bool /*initially_muted*/));
   MOCK_METHOD1(BadMessageCallback, void(const std::string&));
 
- private:
+ protected:
   base::test::TaskEnvironment scoped_task_env_;
   media::MockAudioManager audio_manager_;
+  MockMlModelManager mock_ml_model_manager_;
+  media::mojom::AudioProcessingConfigPtr processing_config_ = nullptr;
   StreamFactory stream_factory_;
   mojo::Remote<media::mojom::AudioStreamFactory> remote_stream_factory_;
   mojo::Receiver<media::mojom::AudioStreamFactory> stream_factory_receiver_;
@@ -529,5 +552,56 @@ TEST_F(AudioServiceInputStreamTest,
   EXPECT_CALL(observer(), BindingConnectionError());
   base::RunLoop().RunUntilIdle();
 }
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+TEST_F(AudioServiceInputStreamTest, ResidualEchoEstimationModelRequested) {
+  media::AudioProcessingSettings settings;
+  settings.echo_cancellation = true;  // Enable some processing
+  auto processing_config = media::mojom::AudioProcessingConfig::New();
+  processing_config->settings = settings;
+  mojo::Remote<media::mojom::AudioProcessorControls> controls_remote;
+  processing_config->controls_receiver =
+      controls_remote.BindNewPipeAndPassReceiver();
+
+  // We don't strictly need to check the CreatedCallback for this test's purpose
+  // but it avoids the print of a warning.
+  EXPECT_CALL(*this, CreatedCallback(kValidStream, kNotMuted));
+
+  // Setup MockAudioManager expectations
+  NiceMock<MockStream> mock_stream;
+  media::AudioParameters expected_params(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::ChannelLayoutConfig::Stereo(), 48000, 480);
+
+  audio_manager().SetInputStreamParameters(expected_params);
+
+  audio_manager().SetMakeInputStreamCB(base::BindRepeating(
+      [](media::AudioInputStream* stream, const media::AudioParameters& params,
+         const std::string& device_id) { return stream; },
+      &mock_stream));
+
+  EXPECT_CALL(mock_stream, Open())
+      .WillOnce(Return(MockStream::OpenOutcome::kSuccess));
+  EXPECT_CALL(mock_stream, IsMuted()).WillOnce(Return(kNotMuted));
+  EXPECT_CALL(log(), OnCreated(_, _));
+
+  // Call CreateInputStream directly
+  mojo::PendingRemote<media::mojom::AudioInputStream> remote_stream;
+  remote_stream_factory_->CreateInputStream(
+      remote_stream.InitWithNewPipeAndPassReceiver(), client_.MakeRemote(),
+      observer_.MakeRemote(), log_.MakeRemote(), kDefaultDeviceId,
+      expected_params, base::UnguessableToken::Create(),
+      kDefaultSharedMemoryCount, /*enable_agc=*/false,
+      std::move(processing_config),
+      base::BindOnce(&AudioServiceInputStreamTest::OnCreated,
+                     base::Unretained(this)));
+
+  EXPECT_CALL(client(), BindingConnectionError());
+  EXPECT_CALL(observer(), BindingConnectionError());
+  remote_stream.reset();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return mock_ml_model_manager_.model_requested(); }));
+}
+#endif
 
 }  // namespace audio

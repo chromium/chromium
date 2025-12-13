@@ -9,7 +9,7 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/new_tab_page_app_interface.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/public/set_up_list_constants.h"
 #import "ios/chrome/browser/push_notification/ui_bundled/scoped_notification_auth_swizzler.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"

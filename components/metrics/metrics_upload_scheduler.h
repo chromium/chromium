@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_METRICS_METRICS_UPLOAD_SCHEDULER_H_
 #define COMPONENTS_METRICS_METRICS_UPLOAD_SCHEDULER_H_
 
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_scheduler.h"

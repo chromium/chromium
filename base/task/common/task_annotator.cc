@@ -8,6 +8,8 @@
 
 #include <algorithm>
 #include <array>
+#include <atomic>
+#include <optional>
 #include <string_view>
 
 #include "base/auto_reset.h"
@@ -16,6 +18,7 @@
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/logging.h"
+#include "base/memory/safety_checks.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/time/time.h"
 #include "base/trace_event/heap_profiler.h"
@@ -29,6 +32,9 @@
 namespace base {
 
 namespace {
+
+std::atomic_bool g_scheduler_loop_quarantine_task_controlled_purge_enabled =
+    false;
 
 TaskAnnotator::ObserverForTesting* g_task_annotator_observer = nullptr;
 
@@ -82,6 +88,16 @@ perfetto::protos::pbzero::ChromeTaskAnnotator::DelayPolicy ToProtoEnum(
 }
 
 }  // namespace
+
+void EnableSchedulerLoopQuarantineTaskControlledPurge() {
+  g_scheduler_loop_quarantine_task_controlled_purge_enabled.store(
+      true, std::memory_order_relaxed);
+}
+
+void DisableSchedulerLoopQuarantineTaskControlledPurgeForTesting() {
+  g_scheduler_loop_quarantine_task_controlled_purge_enabled.store(
+      false, std::memory_order_relaxed);
+}
 
 const PendingTask* TaskAnnotator::CurrentTaskForThread() {
   // Workaround false-positive MSAN use-of-uninitialized-value on
@@ -200,6 +216,12 @@ void TaskAnnotator::RunTaskImpl(PendingTask& pending_task) {
   {
     const AutoReset<const PendingTask*> resetter(&current_pending_task,
                                                  &pending_task);
+    std::optional<ScopedSchedulerLoopQuarantineDisallowScanlessPurge>
+        scoped_disallow_purge;
+    if (g_scheduler_loop_quarantine_task_controlled_purge_enabled.load(
+            std::memory_order_relaxed)) {
+      scoped_disallow_purge.emplace();
+    }
 
     if (g_task_annotator_observer) {
       g_task_annotator_observer->BeforeRunTask(&pending_task);

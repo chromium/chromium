@@ -65,7 +65,7 @@ class CORE_EXPORT BlinkAXEventIntent final {
                      ax::mojom::blink::MoveDirection move_direction);
 
   // Used by HashCountedSet to create a deleted BlinkAXEventIntent instance.
-  explicit BlinkAXEventIntent(WTF::HashTableDeletedValueType type);
+  explicit BlinkAXEventIntent(HashTableDeletedValueType type);
 
   ~BlinkAXEventIntent();
 
@@ -73,8 +73,6 @@ class CORE_EXPORT BlinkAXEventIntent final {
   BlinkAXEventIntent& operator=(const BlinkAXEventIntent& intent);
 
   CORE_EXPORT friend bool operator==(const BlinkAXEventIntent& a,
-                                     const BlinkAXEventIntent& b);
-  CORE_EXPORT friend bool operator!=(const BlinkAXEventIntent& a,
                                      const BlinkAXEventIntent& b);
 
   const ui::AXEventIntent& intent() const { return intent_; }
@@ -109,7 +107,7 @@ class CORE_EXPORT BlinkAXEventIntent final {
 };
 
 struct CORE_EXPORT BlinkAXEventIntentHashTraits
-    : WTF::SimpleClassHashTraits<BlinkAXEventIntent> {
+    : SimpleClassHashTraits<BlinkAXEventIntent> {
   // Computes the hash of a BlinkAXEventIntent instance.
   static unsigned GetHash(const BlinkAXEventIntent& key);
   // Zeroed memory cannot be used for BlinkAXEventIntent.

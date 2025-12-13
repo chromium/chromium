@@ -12,6 +12,7 @@
 #include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/video_frame.h"
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/setup/install.h"
 
 #include <stddef.h>
@@ -16,11 +11,13 @@
 #include <tuple>
 
 #include "base/base_paths.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
@@ -262,27 +259,17 @@ class InstallShortcutTest : public testing::Test {
         fake_user_quick_launch_.GetPath().Append(shortcut_name);
     user_start_menu_shortcut_ =
         fake_start_menu_.GetPath().Append(shortcut_name);
-    user_start_menu_subdir_shortcut_ =
-        fake_start_menu_.GetPath()
-            .Append(InstallUtil::GetChromeShortcutDirNameDeprecated())
-            .Append(shortcut_name);
     system_desktop_shortcut_ =
         fake_common_desktop_.GetPath().Append(shortcut_name);
     system_start_menu_shortcut_ =
         fake_common_start_menu_.GetPath().Append(shortcut_name);
-    system_start_menu_subdir_shortcut_ =
-        fake_common_start_menu_.GetPath()
-            .Append(InstallUtil::GetChromeShortcutDirNameDeprecated())
-            .Append(shortcut_name);
   }
 
   void TearDown() override {
     // Try to unpin potentially pinned shortcuts (although pinning isn't tested,
     // the call itself might still have pinned the Start Menu shortcuts).
     UnpinShortcutFromTaskbar(user_start_menu_shortcut_);
-    UnpinShortcutFromTaskbar(user_start_menu_subdir_shortcut_);
     UnpinShortcutFromTaskbar(system_start_menu_shortcut_);
-    UnpinShortcutFromTaskbar(system_start_menu_subdir_shortcut_);
   }
 
   installer::InitialPreferences* GetFakeInitialPrefs(
@@ -301,9 +288,9 @@ class InstallShortcutTest : public testing::Test {
     std::string initial_prefs("{\"distribution\":{");
     for (size_t i = 0; i < std::size(desired_prefs); ++i) {
       initial_prefs += (i == 0 ? "\"" : ",\"");
-      initial_prefs += desired_prefs[i].pref_name;
+      initial_prefs += UNSAFE_TODO(desired_prefs[i]).pref_name;
       initial_prefs += "\":";
-      initial_prefs += base::ToString(desired_prefs[i].is_desired);
+      initial_prefs += base::ToString(UNSAFE_TODO(desired_prefs[i]).is_desired);
     }
     initial_prefs += "}}";
 
@@ -333,7 +320,6 @@ class InstallShortcutTest : public testing::Test {
   base::FilePath user_desktop_shortcut_;
   base::FilePath user_quick_launch_shortcut_;
   base::FilePath user_start_menu_shortcut_;
-  base::FilePath user_start_menu_subdir_shortcut_;
   base::FilePath system_desktop_shortcut_;
   base::FilePath system_start_menu_shortcut_;
   base::FilePath system_start_menu_subdir_shortcut_;
@@ -503,70 +489,6 @@ TEST_F(InstallShortcutTest, ReplaceExisting) {
   ASSERT_FALSE(base::PathExists(user_quick_launch_shortcut_));
   ASSERT_FALSE(base::PathExists(user_start_menu_shortcut_));
 }
-
-class MigrateShortcutTest
-    : public InstallShortcutTest,
-      public testing::WithParamInterface<
-          testing::tuple<installer::InstallShortcutOperation,
-                         installer::InstallShortcutLevel>> {
- public:
-  MigrateShortcutTest()
-      : shortcut_operation_(testing::get<0>(GetParam())),
-        shortcut_level_(testing::get<1>(GetParam())) {}
-
-  MigrateShortcutTest(const MigrateShortcutTest&) = delete;
-  MigrateShortcutTest& operator=(const MigrateShortcutTest&) = delete;
-
- protected:
-  const installer::InstallShortcutOperation shortcut_operation_;
-  const installer::InstallShortcutLevel shortcut_level_;
-};
-
-TEST_P(MigrateShortcutTest, MigrateAwayFromDeprecatedStartMenuTest) {
-  base::win::ShortcutProperties dummy_properties;
-  base::FilePath dummy_target;
-  ASSERT_TRUE(
-      base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &dummy_target));
-  dummy_properties.set_target(expected_properties_.target);
-  dummy_properties.set_working_dir(fake_user_desktop_.GetPath());
-  dummy_properties.set_arguments(L"--dummy --args");
-  dummy_properties.set_app_id(L"El.Dummiest");
-
-  base::FilePath start_menu_shortcut;
-  base::FilePath start_menu_subdir_shortcut;
-  if (shortcut_level_ == installer::CURRENT_USER) {
-    start_menu_shortcut = user_start_menu_shortcut_;
-    start_menu_subdir_shortcut = user_start_menu_subdir_shortcut_;
-  } else {
-    start_menu_shortcut = system_start_menu_shortcut_;
-    start_menu_subdir_shortcut = system_start_menu_subdir_shortcut_;
-  }
-
-  ASSERT_TRUE(base::CreateDirectory(start_menu_subdir_shortcut.DirName()));
-  ASSERT_FALSE(base::PathExists(start_menu_subdir_shortcut));
-  ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
-      start_menu_subdir_shortcut, dummy_properties,
-      base::win::ShortcutOperation::kCreateAlways));
-  ASSERT_TRUE(base::PathExists(start_menu_subdir_shortcut));
-  ASSERT_FALSE(base::PathExists(start_menu_shortcut));
-
-  installer::CreateOrUpdateShortcuts(chrome_exe_, *prefs_, shortcut_level_,
-                                     shortcut_operation_);
-  ASSERT_FALSE(base::PathExists(start_menu_subdir_shortcut));
-  ASSERT_TRUE(base::PathExists(start_menu_shortcut));
-}
-
-// Verify that any installer operation for any installation level triggers
-// the migration from sub-folder to root of start-menu.
-INSTANTIATE_TEST_SUITE_P(
-    MigrateShortcutTests,
-    MigrateShortcutTest,
-    testing::Combine(
-        testing::Values(
-            installer::INSTALL_SHORTCUT_REPLACE_EXISTING,
-            installer::INSTALL_SHORTCUT_CREATE_EACH_IF_NO_SYSTEM_LEVEL,
-            installer::INSTALL_SHORTCUT_CREATE_ALL),
-        testing::Values(installer::CURRENT_USER, installer::ALL_USERS)));
 
 TEST_F(InstallShortcutTest, CreateIfNoSystemLevelAllSystemShortcutsExist) {
   base::win::ShortcutProperties dummy_properties;

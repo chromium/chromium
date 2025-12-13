@@ -28,10 +28,12 @@ class PictureInPictureBoundsCacheTest : public ChromeRenderViewHostTestHarness {
   }
 
   display::Display& display() { return display_; }
+  display::Display& pip_display() { return pip_display_; }
 
  private:
   std::unique_ptr<content::WebContents> child_web_contents_;
   display::Display display_{1};
+  display::Display pip_display_{1};
 };
 
 }  // namespace
@@ -48,9 +50,11 @@ TEST_F(PictureInPictureBoundsCacheTest,
   PictureInPictureBoundsCache::GetBoundsForNewWindow(web_contents(), display(),
                                                      {});
   const gfx::Rect bounds_1(10, 20, 30, 40);
-  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds_1);
+  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds_1,
+                                                  display(), pip_display());
   const gfx::Rect bounds_2(50, 60, 70, 80);
-  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds_2);
+  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds_2,
+                                                  display(), pip_display());
 
   // This also verifies that an empty request size matches with a cache that has
   // an empty request size.
@@ -66,9 +70,11 @@ TEST_F(PictureInPictureBoundsCacheTest,
   PictureInPictureBoundsCache::GetBoundsForNewWindow(web_contents(), display(),
                                                      requested_size);
   const gfx::Rect bounds_1(10, 20, 30, 40);
-  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds_1);
+  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds_1,
+                                                  display(), pip_display());
   const gfx::Rect bounds_2(50, 60, 70, 80);
-  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds_2);
+  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds_2,
+                                                  display(), pip_display());
   auto initial_bounds = PictureInPictureBoundsCache::GetBoundsForNewWindow(
       web_contents(), display(), requested_size);
   EXPECT_TRUE(initial_bounds);
@@ -81,7 +87,8 @@ TEST_F(PictureInPictureBoundsCacheTest, DisplayMismatchDoesNotProvideBounds) {
   PictureInPictureBoundsCache::GetBoundsForNewWindow(web_contents(), display(),
                                                      requested_size);
   const gfx::Rect bounds(10, 20, 30, 40);
-  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds);
+  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds,
+                                                  display(), pip_display());
 
   display::Display display_2(2);
   auto initial_bounds = PictureInPictureBoundsCache::GetBoundsForNewWindow(
@@ -96,7 +103,8 @@ TEST_F(PictureInPictureBoundsCacheTest, SizeMismatchDoesNotProvideBounds) {
   PictureInPictureBoundsCache::GetBoundsForNewWindow(web_contents(), display(),
                                                      requested_size_1);
   const gfx::Rect bounds(10, 20, 30, 40);
-  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds);
+  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds,
+                                                  display(), pip_display());
 
   const gfx::Size requested_size_2(100, 100);
   ASSERT_NE(requested_size_1, requested_size_2);
@@ -112,7 +120,8 @@ TEST_F(PictureInPictureBoundsCacheTest,
   PictureInPictureBoundsCache::GetBoundsForNewWindow(web_contents(), display(),
                                                      gfx::Size(320, 240));
   const gfx::Rect bounds(10, 20, 30, 40);
-  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds);
+  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds,
+                                                  display(), pip_display());
 
   auto initial_bounds = PictureInPictureBoundsCache::GetBoundsForNewWindow(
       web_contents(), display(), {});
@@ -125,8 +134,8 @@ TEST_F(PictureInPictureBoundsCacheTest,
   // A non-empty request size will not match with a cache for an empty size.
   PictureInPictureBoundsCache::GetBoundsForNewWindow(web_contents(), display(),
                                                      {});
-  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(),
-                                                  gfx::Rect(10, 20, 30, 40));
+  PictureInPictureBoundsCache::UpdateCachedBounds(
+      web_contents(), gfx::Rect(10, 20, 30, 40), display(), pip_display());
 
   auto initial_bounds = PictureInPictureBoundsCache::GetBoundsForNewWindow(
       web_contents(), display(), gfx::Size(10, 20));
@@ -140,7 +149,8 @@ TEST_F(PictureInPictureBoundsCacheTest,
   PictureInPictureBoundsCache::GetBoundsForNewWindow(web_contents(), display(),
                                                      {});
   const gfx::Rect bounds(10, 20, 30, 40);
-  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds);
+  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds,
+                                                  display(), pip_display());
 
   NavigateAndCommit(GURL("https://www.example.com"));
   auto initial_bounds = PictureInPictureBoundsCache::GetBoundsForNewWindow(
@@ -161,7 +171,8 @@ TEST_F(PictureInPictureBoundsCacheTest, NavigatingThereAndBackStillMatches) {
   PictureInPictureBoundsCache::GetBoundsForNewWindow(web_contents(), display(),
                                                      {});
   const gfx::Rect bounds(10, 20, 30, 40);
-  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds);
+  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds,
+                                                  display(), pip_display());
 
   // Don't open a new pip window this time.
   NavigateAndCommit(GURL("https://www.example.com"));
@@ -180,7 +191,8 @@ TEST_F(PictureInPictureBoundsCacheTest, SameOriginsDifferentPathsMatch) {
   PictureInPictureBoundsCache::GetBoundsForNewWindow(web_contents(), display(),
                                                      {});
   const gfx::Rect bounds(10, 20, 30, 40);
-  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds);
+  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds,
+                                                  display(), pip_display());
 
   NavigateAndCommit(GURL(
       "https://www.pictureinpicture.com/elvish_sword_of_great_antiquity.html"));
@@ -195,7 +207,8 @@ TEST_F(PictureInPictureBoundsCacheTest, ClearsCachedBounds) {
   PictureInPictureBoundsCache::GetBoundsForNewWindow(web_contents(), display(),
                                                      requested_size);
   const gfx::Rect bounds(10, 20, 30, 40);
-  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds);
+  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds,
+                                                  display(), pip_display());
 
   // Verify initial bounds are set.
   auto initial_bounds = PictureInPictureBoundsCache::GetBoundsForNewWindow(
@@ -208,4 +221,65 @@ TEST_F(PictureInPictureBoundsCacheTest, ClearsCachedBounds) {
   initial_bounds = PictureInPictureBoundsCache::GetBoundsForNewWindow(
       web_contents(), display(), requested_size);
   EXPECT_FALSE(initial_bounds);
+}
+
+TEST_F(PictureInPictureBoundsCacheTest,
+       OpenerMovesToDifferentDisplayThanPipWindow) {
+  // If the opener moves to a display that is different from where the pip
+  // window is, then the cache should be invalidated.
+  const gfx::Size requested_size(320, 240);
+  display::Display opener_display(1);
+  display::Display pip_display(1);
+  PictureInPictureBoundsCache::GetBoundsForNewWindow(
+      web_contents(), opener_display, requested_size);
+  const gfx::Rect bounds(10, 20, 30, 40);
+  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds,
+                                                  opener_display, pip_display);
+
+  // Move opener to a new display.
+  display::Display opener_display_2(2);
+  auto initial_bounds = PictureInPictureBoundsCache::GetBoundsForNewWindow(
+      web_contents(), opener_display_2, requested_size);
+  EXPECT_FALSE(initial_bounds);
+}
+
+TEST_F(PictureInPictureBoundsCacheTest, OpenerMovesToSameDisplayAsPipWindow) {
+  // If the opener moves to the same display as the pip window, then the cache
+  // should still be valid.
+  const gfx::Size requested_size(320, 240);
+  display::Display opener_display(1);
+  display::Display pip_display(2);
+  PictureInPictureBoundsCache::GetBoundsForNewWindow(
+      web_contents(), opener_display, requested_size);
+  const gfx::Rect bounds(10, 20, 30, 40);
+  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds,
+                                                  opener_display, pip_display);
+
+  // Move opener to the same display as the pip window.
+  display::Display opener_display_2(2);
+  auto initial_bounds = PictureInPictureBoundsCache::GetBoundsForNewWindow(
+      web_contents(), opener_display_2, requested_size);
+  EXPECT_TRUE(initial_bounds);
+  EXPECT_EQ(*initial_bounds, bounds);
+}
+
+TEST_F(PictureInPictureBoundsCacheTest, PipWindowMovesToNewDisplay) {
+  // If the pip window moves to a new display, the cache should still be valid.
+  const gfx::Size requested_size(320, 240);
+  display::Display opener_display(1);
+  display::Display pip_display(1);
+  PictureInPictureBoundsCache::GetBoundsForNewWindow(
+      web_contents(), opener_display, requested_size);
+  const gfx::Rect bounds(10, 20, 30, 40);
+  PictureInPictureBoundsCache::UpdateCachedBounds(web_contents(), bounds,
+                                                  opener_display, pip_display);
+
+  // Move pip window to a new display. The cache should still be valid.
+  display::Display pip_display_2(2);
+  PictureInPictureBoundsCache::UpdateCachedBounds(
+      web_contents(), bounds, opener_display, pip_display_2);
+  auto initial_bounds = PictureInPictureBoundsCache::GetBoundsForNewWindow(
+      web_contents(), opener_display, requested_size);
+  EXPECT_TRUE(initial_bounds);
+  EXPECT_EQ(*initial_bounds, bounds);
 }

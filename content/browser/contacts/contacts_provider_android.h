@@ -14,11 +14,11 @@
 
 namespace content {
 
-class RenderFrameHostImpl;
+class RenderFrameHost;
 
 class ContactsProviderAndroid : public ContactsProvider {
  public:
-  explicit ContactsProviderAndroid(RenderFrameHostImpl* render_frame_host);
+  explicit ContactsProviderAndroid(RenderFrameHost* render_frame_host);
 
   ContactsProviderAndroid(const ContactsProviderAndroid&) = delete;
   ContactsProviderAndroid& operator=(const ContactsProviderAndroid&) = delete;
@@ -37,13 +37,12 @@ class ContactsProviderAndroid : public ContactsProvider {
   // Adds one contact to the list of contacts selected. Note, EndContactsList
   // (or EndWithPermissionDenied) must be called to signal the end of the
   // construction of the contacts list.
-  void AddContact(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& names_java,
-      const base::android::JavaParamRef<jobjectArray>& emails_java,
-      const base::android::JavaParamRef<jobjectArray>& tel_java,
-      const base::android::JavaParamRef<jobjectArray>& addresses_java,
-      const base::android::JavaParamRef<jobjectArray>& icons_java);
+  void AddContact(JNIEnv* env,
+                  const base::android::JavaRef<jobjectArray>& names_java,
+                  const base::android::JavaRef<jobjectArray>& emails_java,
+                  const base::android::JavaRef<jobjectArray>& tel_java,
+                  const base::android::JavaRef<jobjectArray>& addresses_java,
+                  const base::android::JavaRef<jobjectArray>& icons_java);
 
   // Signals the end of adding contacts to the list. The contact list is
   // returned to the web page, the other params are logged via UKM.

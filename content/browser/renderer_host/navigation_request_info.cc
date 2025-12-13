@@ -25,14 +25,12 @@ NavigationRequestInfo::NavigationRequestInfo(
         blob_url_loader_factory,
     const base::UnguessableToken& devtools_navigation_token,
     const base::UnguessableToken& devtools_frame_token,
-    net::HttpRequestHeaders cors_exempt_headers,
     network::mojom::ClientSecurityStatePtr client_security_state,
     const std::optional<std::vector<net::SourceStreamType>>&
         devtools_accepted_stream_types,
     bool is_pdf,
     int initiator_process_id,
     std::optional<blink::DocumentToken> initiator_document_token,
-    const GlobalRenderFrameHostId& previous_render_frame_host_id,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         prefetch_serving_page_metrics_container,
     bool allow_cookies_from_browser,
@@ -54,13 +52,11 @@ NavigationRequestInfo::NavigationRequestInfo(
       blob_url_loader_factory(std::move(blob_url_loader_factory)),
       devtools_navigation_token(devtools_navigation_token),
       devtools_frame_token(devtools_frame_token),
-      cors_exempt_headers(std::move(cors_exempt_headers)),
       client_security_state(std::move(client_security_state)),
       devtools_accepted_stream_types(devtools_accepted_stream_types),
       is_pdf(is_pdf),
       initiator_process_id(initiator_process_id),
       initiator_document_token(std::move(initiator_document_token)),
-      previous_render_frame_host_id(previous_render_frame_host_id),
       prefetch_serving_page_metrics_container(
           std::move(prefetch_serving_page_metrics_container)),
       allow_cookies_from_browser(allow_cookies_from_browser),

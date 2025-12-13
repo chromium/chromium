@@ -55,6 +55,10 @@ if (!is_cronet_build) {
     if (is_debug || is_ubsan) {
       all_dependent_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
     }
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   proto_library("skia_image_filter_proto") {

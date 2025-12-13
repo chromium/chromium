@@ -11,10 +11,6 @@
 
 @interface SessionSavingSceneAgent : ObservingSceneAgent
 
-// Saves the scene's sessions if they haven't been saved since the last time
-// the scene was foregrounded.
-- (void)saveSessionsIfNeeded;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_MODEL_SESSION_SAVING_SCENE_AGENT_H_

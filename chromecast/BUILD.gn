@@ -4,13 +4,13 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/cronet/config.gni")
-import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//chromecast/build/tests/cast_test.gni")
 import("//chromecast/chromecast.gni")
 import("//chromecast/resource_sizes/chromecast_resource_sizes.gni")
 import("//media/media_options.gni")
+import("//third_party/ffmpeg/ffmpeg_options.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/repack.gni")
 import("//v8/gni/v8.gni")
@@ -83,7 +83,6 @@ cast_test_group("cast_tests") {
     "//base:base_unittests",
     "//cc:cc_unittests",
     "//chromecast/base:cast_base_unittests",
-    "//chromecast/base/component:cast_component_unittests",
     "//chromecast/common:cast_common_unittests",
     "//chromecast/crypto:cast_crypto_unittests",
     "//chromecast/device/bluetooth:cast_bluetooth_unittests",
@@ -552,6 +551,7 @@ if (!is_fuchsia) {
       "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
       "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
       "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
+      "$root_gen_dir/ui/resources/ui_lottie_resources.pak",
       "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
       "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
       "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
@@ -733,6 +733,11 @@ if (is_android) {
       "//third_party/jni_zero:jni_zero_java",
     ]
 
+    if (is_component_ffmpeg) {
+      native_libraries += [ "$root_build_dir/libffmpeg.so" ]
+      deps += [ "//third_party/ffmpeg" ]
+    }
+
     output = "$root_build_dir/apks/cast_browser.aar"
 
     jar_excluded_patterns = [
@@ -752,6 +757,7 @@ if (is_android) {
 
     resource_excluded_patterns = [
       "*/third_party/android_deps/*",
+      "*/third_party/androidx/*",
       "*/third_party/java_src/*",
     ]
   }

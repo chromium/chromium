@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -447,7 +448,7 @@ class TestPlatformWindowDelegate : public PlatformWindowDelegate {
   void OnWillDestroyAcceleratedWidget() override {}
   void OnAcceleratedWidgetDestroyed() override {}
   void OnActivationChanged(bool active) override {}
-  void OnMouseEnter() override {}
+  void OnCursorUpdate() override {}
   SkPath GetWindowMaskForWindowShapeInPixels() override { return {}; }
 };
 

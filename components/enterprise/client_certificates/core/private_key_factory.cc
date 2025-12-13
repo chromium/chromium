@@ -19,8 +19,9 @@ namespace {
 
 // List of all the key sources ordered by security (i.e. first entry yields most
 // secure key source).
-constexpr std::array<PrivateKeySource, 3> kKeySourcesOrderedBySecurity = {
+constexpr std::array<PrivateKeySource, 4> kKeySourcesOrderedBySecurity = {
     PrivateKeySource::kUnexportableKey,
+    PrivateKeySource::kAndroidKey,
     PrivateKeySource::kOsSoftwareKey,
     PrivateKeySource::kSoftwareKey,
 };

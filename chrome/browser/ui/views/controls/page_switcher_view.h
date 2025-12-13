@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 // A container view that contains one view at a time and can switch between
@@ -31,7 +32,7 @@ class PageSwitcherView : public views::View {
   void ChildPreferredSizeChanged(views::View* child) override;
 
  private:
-  raw_ptr<views::View, DanglingUntriaged> current_page_ = nullptr;
+  raw_ptr<views::View> current_page_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, PageSwitcherView, views::View)

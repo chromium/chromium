@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/channel.h"
 
 #include <windows.h>
@@ -18,6 +13,7 @@
 #include <memory>
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -140,8 +136,7 @@ class ChannelWin : public Channel,
                               size_t num_handles,
                               const void* extra_header,
                               size_t extra_header_size,
-                              std::vector<PlatformHandle>* handles,
-                              bool* deferred) override {
+                              std::vector<PlatformHandle>* handles) override {
     DCHECK(extra_header);
     if (num_handles > std::numeric_limits<uint16_t>::max())
       return false;
@@ -153,8 +148,8 @@ class ChannelWin : public Channel,
     const HandleEntry* extra_header_handles =
         reinterpret_cast<const HandleEntry*>(extra_header);
     for (size_t i = 0; i < num_handles; i++) {
-      HANDLE handle_value =
-          base::win::Uint32ToHandle(extra_header_handles[i].handle);
+      HANDLE handle_value = base::win::Uint32ToHandle(
+          UNSAFE_TODO(extra_header_handles[i]).handle);
       if (PlatformHandleInTransit::IsPseudoHandle(handle_value))
         return false;
       if (remote_process().IsValid() && handle_value != INVALID_HANDLE_VALUE) {

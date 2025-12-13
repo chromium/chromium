@@ -34,7 +34,7 @@ class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
   METADATA_HEADER(SaveCardOfferBubbleViews, SaveCardBubbleViews)
  public:
   // Bubble will be anchored to |anchor_view|.
-  SaveCardOfferBubbleViews(views::View* anchor_view,
+  SaveCardOfferBubbleViews(views::BubbleAnchor anchor_view,
                            content::WebContents* web_contents,
                            SaveCardBubbleController* controller);
   ~SaveCardOfferBubbleViews() override;

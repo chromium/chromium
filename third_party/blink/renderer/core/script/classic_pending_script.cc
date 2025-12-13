@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/script/classic_pending_script.h"
 
 #include "base/feature_list.h"
+#include "base/system/sys_info.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
@@ -248,7 +249,12 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
   DCHECK_EQ(GetSchedulingType(), ScriptSchedulingType::kAsync);
 
   static const bool feature_enabled =
-      base::FeatureList::IsEnabled(features::kLowPriorityAsyncScriptExecution);
+      base::FeatureList::IsEnabled(
+          features::kLowPriorityAsyncScriptExecution) &&
+      !base::SysInfo::IsLowEndDevice() &&
+      (base::SysInfo::AmountOfPhysicalMemory().InGiBF() >=
+       features::kMinimumPhysicalMemoryForLowPriorityAsyncScriptExecution
+           .Get());
   if (!feature_enabled) {
     return false;
   }

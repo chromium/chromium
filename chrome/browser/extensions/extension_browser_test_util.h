@@ -7,6 +7,9 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions::browser_test_util {
 

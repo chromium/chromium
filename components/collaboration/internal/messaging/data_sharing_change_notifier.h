@@ -15,6 +15,17 @@ class Time;
 
 namespace collaboration::messaging {
 
+// The `DataSharingChangeNotifier` is an interface that observes the
+// `DataSharingService` and translates its events into a simplified,
+// delta-based format for the messaging backend.
+//
+// This class is responsible for:
+// - Observing group and member changes from the `DataSharingService`.
+// - Computing deltas (e.g., added, removed) to represent these changes.
+// - Notifying its observers of these deltas asynchronously.
+//
+// The observers of this class are expected to handle the simplified change
+// events to update their own state and the UI accordingly.
 class DataSharingChangeNotifier
     : public data_sharing::DataSharingService::Observer {
  public:

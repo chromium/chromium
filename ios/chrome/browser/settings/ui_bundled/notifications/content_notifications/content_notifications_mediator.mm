@@ -110,6 +110,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _contentNotificationsItem.on = push_notification_settings::
         GetMobileNotificationPermissionStatusForClient(
             PushNotificationClientId::kContent, _gaiaID);
+    _contentNotificationsItem.target = self;
+    _contentNotificationsItem.selector =
+        @selector(contentNotificationSwitchToggled:);
   }
   return _contentNotificationsItem;
 }
@@ -129,6 +132,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _sportsNotificationsItem.on = push_notification_settings::
         GetMobileNotificationPermissionStatusForClient(
             PushNotificationClientId::kSports, _gaiaID);
+    _sportsNotificationsItem.target = self;
+    _sportsNotificationsItem.selector =
+        @selector(sportsNotificationSwitchToggled:);
   }
   return _sportsNotificationsItem;
 }
@@ -155,56 +161,44 @@ typedef NS_ENUM(NSInteger, ItemType) {
       setContentNotificationsFooterItem:self.contentNotificationsFooterItem];
 }
 
-#pragma mark - ContentNotificationsViewControllerDelegate
+#pragma mark - Private
 
-- (void)didToggleSwitchItem:(TableViewItem*)item withValue:(BOOL)value {
-  ItemType type = static_cast<ItemType>(item.type);
-  switch (type) {
-    case ItemTypeContentNotifications: {
-      if (value) {
-        [self.presenter presentPushNotificationPermissionAlertWithClientIds:
-                            {PushNotificationClientId::kContent}];
-        [self recordSettingsActionHistogramForAction:
-                  ContentNotificationSettingsToggleAction::kEnabledContent];
-      } else {
-        [self disablePreferenceFor:PushNotificationClientId::kContent];
-        self.contentNotificationsItem.on = push_notification_settings::
-            GetMobileNotificationPermissionStatusForClient(
-                PushNotificationClientId::kContent, _gaiaID);
-        [self recordSettingsActionHistogramForAction:
-                  ContentNotificationSettingsToggleAction::kDisabledContent];
-      }
-      [self sendNAUForPreferenceChangeWithClientID:PushNotificationClientId::
-                                                       kContent
-                                             value:value];
-      break;
-    }
-    case ItemTypeSportsNotifications: {
-      if (value) {
-        [self.presenter presentPushNotificationPermissionAlertWithClientIds:
-                            {PushNotificationClientId::kSports}];
-        [self recordSettingsActionHistogramForAction:
-                  ContentNotificationSettingsToggleAction::kEnabledSports];
-      } else {
-        [self disablePreferenceFor:PushNotificationClientId::kSports];
-        self.sportsNotificationsItem.on = push_notification_settings::
-            GetMobileNotificationPermissionStatusForClient(
-                PushNotificationClientId::kSports, _gaiaID);
-        [self recordSettingsActionHistogramForAction:
-                  ContentNotificationSettingsToggleAction::kDisabledSports];
-      }
-      [self sendNAUForPreferenceChangeWithClientID:PushNotificationClientId::
-                                                       kSports
-                                             value:value];
-      break;
-    }
-    default:
-      // Not a switch.
-      NOTREACHED();
+- (void)contentNotificationSwitchToggled:(UISwitch*)sender {
+  if (sender.on) {
+    [self.presenter presentPushNotificationPermissionAlertWithClientIds:
+                        {PushNotificationClientId::kContent}];
+    [self recordSettingsActionHistogramForAction:
+              ContentNotificationSettingsToggleAction::kEnabledContent];
+  } else {
+    [self disablePreferenceFor:PushNotificationClientId::kContent];
+    self.contentNotificationsItem.on = push_notification_settings::
+        GetMobileNotificationPermissionStatusForClient(
+            PushNotificationClientId::kContent, _gaiaID);
+    [self recordSettingsActionHistogramForAction:
+              ContentNotificationSettingsToggleAction::kDisabledContent];
   }
+  [self
+      sendNAUForPreferenceChangeWithClientID:PushNotificationClientId::kContent
+                                       value:sender.on];
 }
 
-#pragma mark - Private
+- (void)sportsNotificationSwitchToggled:(UISwitch*)sender {
+  if (sender.on) {
+    [self.presenter presentPushNotificationPermissionAlertWithClientIds:
+                        {PushNotificationClientId::kSports}];
+    [self recordSettingsActionHistogramForAction:
+              ContentNotificationSettingsToggleAction::kEnabledSports];
+  } else {
+    [self disablePreferenceFor:PushNotificationClientId::kSports];
+    self.sportsNotificationsItem.on = push_notification_settings::
+        GetMobileNotificationPermissionStatusForClient(
+            PushNotificationClientId::kSports, _gaiaID);
+    [self recordSettingsActionHistogramForAction:
+              ContentNotificationSettingsToggleAction::kDisabledSports];
+  }
+  [self sendNAUForPreferenceChangeWithClientID:PushNotificationClientId::kSports
+                                         value:sender.on];
+}
 
 - (TableViewSwitchItem*)switchItemWithType:(NSInteger)type
                                       text:(NSString*)text
@@ -219,7 +213,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   switchItem.accessibilityIdentifier = accessibilityIdentifier;
   switchItem.iconImage = symbol;
   switchItem.iconTintColor = tint;
-  switchItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
   switchItem.iconBackgroundColor = backgroundColor;
   switchItem.iconBorderWidth = borderWidth;
 
@@ -230,7 +223,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)disablePreferenceFor:(PushNotificationClientId)clientID {
   PushNotificationService* service =
       GetApplicationContext()->GetPushNotificationService();
-  service->SetPreference(_gaiaID.ToNSString(), clientID, false);
+  service->SetPreference(_gaiaID, clientID, false);
 }
 
 // Sends an NAU when any of the settings preferences have been updated.

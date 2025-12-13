@@ -5,10 +5,11 @@
 package org.chromium.chrome.browser.contextualsearch;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionController.SelectionType;
 
@@ -17,28 +18,33 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Controls the internal state of the Contextual Search Manager.
- * <p>
- * This class keeps track of the current internal state of the {@code ContextualSearchManager} and
- * helps it to transition between states and return to the idle state when work has been
+ *
+ * <p>This class keeps track of the current internal state of the {@code ContextualSearchManager}
+ * and helps it to transition between states and return to the idle state when work has been
  * interrupted or complete.
- * <p>
- * Usage: Call {@link #reset(StateChangeReason)} to reset to the {@code IDLE} state, which hides
+ *
+ * <p>Usage: Call {@link #reset(StateChangeReason)} to reset to the {@code IDLE} state, which hides
  * the UI.<br>
  * Call {@link #enter(InternalState)} to enter a start-state (when a user gesture is recognized).
- * When doing some work on a state, which may be done in an asynchronous manner:<ol>
- * <li>call {@link #notifyStartingWorkOn(InternalState)} to note that work is starting on that state
- * <li>call {@link #notifyFinishedWorkOn(InternalState)} when work is completed.
- * <li>If a handler of an async response needs to do additional work, such as updating the UI, it
- * should first call {@link #isStillWorkingOn(InternalState)} to check that work has not been
- * interrupted since the async operation was started.
- * </ol><p>
- * The {@link #notifyFinishedWorkOn(InternalState)} method will automatically start a transition to
- * the appropriate next state.
- * <p>
- * Policy decisions about state transitions should only be done in the private
- * {@link #transitionTo(InternalState)} method of this class (not within the
- * {@code ContextualSearchManager} itself).
+ * When doing some work on a state, which may be done in an asynchronous manner:
+ *
+ * <ol>
+ *   <li>call {@link #notifyStartingWorkOn(InternalState)} to note that work is starting on that
+ *       state
+ *   <li>call {@link #notifyFinishedWorkOn(InternalState)} when work is completed.
+ *   <li>If a handler of an async response needs to do additional work, such as updating the UI, it
+ *       should first call {@link #isStillWorkingOn(InternalState)} to check that work has not been
+ *       interrupted since the async operation was started.
+ * </ol>
+ *
+ * <p>The {@link #notifyFinishedWorkOn(InternalState)} method will automatically start a transition
+ * to the appropriate next state.
+ *
+ * <p>Policy decisions about state transitions should only be done in the private {@link
+ * #transitionTo(InternalState)} method of this class (not within the {@code
+ * ContextualSearchManager} itself).
  */
+@NullMarked
 class ContextualSearchInternalStateController {
     private static final String TAG = "ContextualSearch";
 

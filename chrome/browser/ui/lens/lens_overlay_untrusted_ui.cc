@@ -23,17 +23,27 @@
 #include "chrome/grit/lens_untrusted_resources.h"
 #include "chrome/grit/lens_untrusted_resources_map.h"
 #include "components/lens/lens_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/webui_util.h"
 
 namespace lens {
 
 // The number of times to show cursor tooltips.
 constexpr int kNumTimesToShowCursorTooltips = 5;
+// Time to wait for Lens text response before displaying the selected region
+// context menu, in milliseconds.
+constexpr int kTextReceivedTimeoutMs = 2000;
+// Time to wait for text in the interaction response before falling back to
+// using the full image response to copy text from a region.
+constexpr int kCopyTextTimeoutMs = 500;
+// Time to wait for text in the interaction response before falling back to
+// using the full image response to translate text from a region.
+constexpr int kTranslateTextTimeoutMs = 500;
 
 LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
     : UntrustedTopChromeWebUIController(web_ui) {
@@ -143,6 +153,26 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddLocalizedString(
       "bottomLeftSliderAriaLabel",
       IDS_LENS_OVERLAY_BOTTOM_LEFT_CORNER_SLIDER_ACCESSIBILITY_LABEL);
+  html_source->AddLocalizedString("privacyNoticeHeader",
+                                  IDS_LENS_PERMISSION_BUBBLE_DIALOG_TITLE);
+  html_source->AddString(
+      "privacyNoticeBody",
+      l10n_util::GetStringFUTF16(
+          IDS_LENS_PERMISSION_BUBBLE_DIALOG_CSB_DESCRIPTION,
+          base::StrCat(
+              {u"<a href=\"#\" on-click=\"onLearnMoreClick\" "
+               u"on-keydown=\"onLearnMoreClick\" aria-label=\"",
+               l10n_util::GetStringUTF16(
+                   IDS_LENS_PERMISSION_BUBBLE_DIALOG_LEARN_MORE_ABOUT_GOOGLE_LENS_LINK),
+               u"\">", l10n_util::GetStringUTF16(IDS_LENS_OVERLAY_LEARN_MORE),
+               u"</a>"})));
+  html_source->AddLocalizedString(
+      "privacyNoticeCancel", IDS_LENS_PERMISSION_BUBBLE_DIALOG_CANCEL_BUTTON);
+  html_source->AddLocalizedString(
+      "privacyNoticeContinue",
+      IDS_LENS_PERMISSION_BUBBLE_DIALOG_CONTINUE_BUTTON);
+  html_source->AddLocalizedString(
+      "tabToContinue", IDS_LENS_PERMISSION_BUBBLE_DIALOG_TAB_TO_CONTINUE);
 
   // Add default theme colors.
   const auto& palette = lens::kPaletteColors.at(lens::PaletteId::kFallback);
@@ -201,18 +231,9 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
                           lens::features::IsLensOverlayCopyAsImageEnabled());
   html_source->AddBoolean("enableSaveAsImage",
                           lens::features::IsLensOverlaySaveAsImageEnabled());
-  html_source->AddInteger(
-      "textReceivedTimeout",
-      lens::features::IsSimplifiedSelectionEnabled()
-          ? lens::features::GetSimplifiedSelectionTextReceivedTimeout()
-          : lens::features::
-                GetLensOverlayImageContextMenuActionsTextReceivedTimeout());
-  html_source->AddInteger("copyTextTimeout",
-                          lens::features::GetCopyTextReceivedTimeout());
-  html_source->AddInteger("translateTextTimeout",
-                          lens::features::GetTranslateTextReceivedTimeout());
-  html_source->AddBoolean("shouldCopyAsImage",
-                          lens::features::GetShouldCopyAsImage());
+  html_source->AddInteger("textReceivedTimeout", kTextReceivedTimeoutMs);
+  html_source->AddInteger("copyTextTimeout", kCopyTextTimeoutMs);
+  html_source->AddInteger("translateTextTimeout", kTranslateTextTimeoutMs);
   html_source->AddBoolean(
       "darkMode",
       lens::LensOverlayShouldUseDarkMode(
@@ -241,8 +262,6 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddInteger(
       "recentLanguagesAmount",
       lens::features::GetLensOverlayTranslateRecentLanguagesAmount());
-  html_source->AddBoolean("simplifiedSelectionEnabled",
-                          lens::features::IsSimplifiedSelectionEnabled());
   html_source->AddBoolean(
       "enableBorderGlow",
       lens::features::GetVisualSelectionUpdatesEnableBorderGlow());
@@ -270,8 +289,6 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableKeyboardSelection",
       lens::features::IsLensOverlayKeyboardSelectionEnabled());
-  html_source->AddBoolean("isBackToPageEnabled",
-                          lens::features::IsLensOverlayBackToPageEnabled());
 
   LensOverlayController& controller = GetLensOverlayController();
   html_source->AddDouble("invocationTime",
@@ -327,18 +344,27 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "forceHideEllipsis",
       lens::features::GetVisualSelectionUpdatesHideCsbEllipsis());
-  html_source->AddBoolean("queryAutocompleteOnEmptyInput", true);
   html_source->AddBoolean(
     "enableThumbnailSizingTweaks",
     lens::features::GetVisualSelectionUpdatesEnableThumbnailSizingTweaks());
+  html_source->AddBoolean("steadyComposeboxShowVoiceSearch", false);
+  html_source->AddBoolean("expandedComposeboxShowVoiceSearch", false);
+  html_source->AddBoolean("expandedSearchboxShowVoiceSearch", false);
+  html_source->AddBoolean("composeboxContextDragAndDropEnabled", false);
 
   // Determine if the cursor tooltip should appear.
   Profile* profile = Profile::FromWebUI(web_ui);
   int lens_overlay_start_count =
-      profile->GetPrefs()->GetInteger(prefs::kLensOverlayStartCount);
+      profile->GetPrefs()->GetInteger(::prefs::kLensOverlayStartCount);
   html_source->AddBoolean(
       "canShowTooltipFromPrefs",
       lens_overlay_start_count <= kNumTimesToShowCursorTooltips);
+
+  html_source->AddBoolean(
+      "enablePrivacyNotice",
+      lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
+          !MaybeIncrementPrivacyNoticeShownCountAndGrantPermissions(
+              profile->GetPrefs()));
 }
 
 void LensOverlayUntrustedUI::BindInterface(
@@ -361,15 +387,8 @@ void LensOverlayUntrustedUI::BindInterface(
 
   auto handler = std::make_unique<LensSearchboxHandler>(
       std::move(receiver), Profile::FromWebUI(web_ui()),
-      web_ui()->GetWebContents(),
-      /*metrics_reporter=*/nullptr, /*lens_searchbox_client=*/controller);
+      web_ui()->GetWebContents(), /*lens_searchbox_client=*/controller);
   controller->SetContextualSearchboxHandler(std::move(handler));
-}
-
-void LensOverlayUntrustedUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void LensOverlayUntrustedUI::BindInterface(
@@ -400,6 +419,7 @@ void LensOverlayUntrustedUI::CreatePageHandler(
     mojo::PendingRemote<lens::mojom::LensPage> page) {
   LensOverlayController& controller = GetLensOverlayController();
 
+  controller.SetInvocationTimeForWebUIBinding(base::TimeTicks::Now());
   // Once the interface is bound, we want to connect this instance with the
   // appropriate instance of LensOverlayController.
   controller.BindOverlay(std::move(receiver), std::move(page));

@@ -12,10 +12,8 @@ import json
 import logging
 import os
 import shutil
-import subprocess
 import sys
 import tempfile
-import time
 from functools import partial
 from http.server import SimpleHTTPRequestHandler
 from threading import Thread
@@ -73,7 +71,6 @@ def _get_httpd():
   hostname = 'localhost'
   port = 8000
   directory = os.path.join(_THIS_DIR, _VARIATIONS_TEST_DATA, 'http_server')
-  httpd = None
   handler = partial(SimpleHTTPRequestHandler, directory=directory)
   httpd = http.server.HTTPServer((hostname, port), handler)
   httpd.timeout = 0.5
@@ -116,93 +113,6 @@ def _find_chrome_binary():  #pylint: disable=inconsistent-return-statements
                         chrome_name)
   if platform == 'win':
     return os.path.join('.', 'chrome.exe')
-
-
-def _confirm_new_seed_downloaded(user_data_dir,
-                                 path_chromedriver,
-                                 chrome_options,
-                                 old_seed=None,
-                                 old_signature=None):
-  """Confirms the new seed to be downloaded from finch server.
-
-  Note that Local State does not dump until Chrome has exited.
-
-  Args:
-    user_data_dir: the use directory used to store fetched seed.
-    path_chromedriver: the path of chromedriver binary.
-    chrome_options: the chrome option used to launch Chrome.
-    old_seed: the old seed serves as a baseline. New seed should be different.
-    old_signature: the old signature serves as a baseline. New signature should
-        be different.
-
-  Returns:
-    True if the new seed is downloaded, otherwise False.
-  """
-  driver = None
-  attempt = 0
-  wait_timeout_in_sec = _WAIT_TIMEOUT_IN_SEC
-  while attempt < _MAX_ATTEMPTS:
-    # Starts Chrome to allow it to download a seed or a seed delta.
-    chromedriver_service = Service(executable_path=path_chromedriver)
-    driver = webdriver.Chrome(service=chromedriver_service,
-                              options=chrome_options)
-    time.sleep(5)
-    # Exits Chrome so that Local State could be serialized to disk.
-    driver.quit()
-    # Checks the seed and signature.
-    current_seed, current_signature = seed_helper.get_current_seed(
-        user_data_dir)
-    if current_seed != old_seed and current_signature != old_signature:
-      return True
-    attempt += 1
-    time.sleep(wait_timeout_in_sec)
-    wait_timeout_in_sec *= 2
-  return False
-
-
-def _check_chrome_version():
-  path_chrome = os.path.abspath(_find_chrome_binary())
-  OS = _get_platform()
-  #(crbug/158372)
-  if OS == 'win':
-    cmd = ('powershell -command "&{(Get-Item'
-           "'" + path_chrome + '\').VersionInfo.ProductVersion}"')
-    version = subprocess.run(cmd, check=True,
-                             capture_output=True).stdout.decode('utf-8')
-  else:
-    cmd = [path_chrome, '--version']
-    version = subprocess.run(cmd, check=True,
-                             capture_output=True).stdout.decode('utf-8')
-    #only return the version number portion
-    version = version.strip().split(' ')[-1]
-  return packaging.version.parse(version)
-
-
-def _inject_seed(user_data_dir, path_chromedriver, chrome_options):
-  # Verify a production version of variations seed was fetched successfully.
-  if not _confirm_new_seed_downloaded(user_data_dir, path_chromedriver,
-                                      chrome_options):
-    logging.error('Failed to fetch variations seed on initial run')
-    # For MacOS, there is sometime the test fail to download seed on initial
-    # run (crbug/1312393)
-    if _get_platform() != 'mac':
-      return 1
-
-  # Inject the test seed.
-  # This is a path as fallback when |seed_helper.load_test_seed_from_file()|
-  # can't find one under src root.
-  hardcoded_seed_path = os.path.join(
-      _THIS_DIR, _VARIATIONS_TEST_DATA,
-      'variations_seed_beta_%s.json' % _get_platform())
-  seed, signature = seed_helper.load_test_seed_from_file(hardcoded_seed_path)
-  if not seed or not signature:
-    logging.error(seed_helper.ILL_FORMED_TEST_SEED_ERROR_MESSAGE)
-    return 1
-
-  if not seed_helper.inject_test_seed(seed, signature, user_data_dir):
-    logging.error('Failed to inject the test seed')
-    return 1
-  return 0
 
 
 def _run_tests(work_dir, skia_util, *args):
@@ -250,12 +160,6 @@ def _run_tests(work_dir, skia_util, *args):
 
   driver = None
   try:
-    chrome_version = _check_chrome_version()
-    # If --variations-test-seed-path flag was not implemented in this version
-    if chrome_version <= _FLAG_RELEASE_VERSION:
-      if _inject_seed(user_data_dir, path_chromedriver, chrome_options) == 1:
-        return 1
-
     # Starts Chrome with the test seed injected.
     chromedriver_service = Service(executable_path=path_chromedriver)
     driver = webdriver.Chrome(service=chromedriver_service,
@@ -319,7 +223,6 @@ def _start_local_http_server():
     A local http.server.HTTPServer.
   """
   httpd = _get_httpd()
-  thread = None
   address = 'http://{}:{}'.format(httpd.server_name, httpd.server_port)
   logging.info('%s is used as local http server.', address)
   thread = Thread(target=httpd.serve_forever)

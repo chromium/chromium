@@ -35,20 +35,21 @@ import android.graphics.drawable.Drawable;
 import android.util.Size;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -73,6 +74,7 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SingleTabSwitcherOnNtpMediatorUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock UrlUtilities.Natives mUrlUtilitiesJniMock;
 
     private final int mTabId = 1;
@@ -89,7 +91,6 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
     @Mock private Tab mTab3;
     @Mock private TabListFaviconProvider mTabListFaviconProvider;
     @Mock private TabContentManager mTabContentManager;
-    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Captor private ArgumentCaptor<Callback<Drawable>> mFaviconCallbackCaptor;
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Mock private UiConfig mUiConfig;
@@ -100,7 +101,6 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
 
         doReturn(true).when(mTabListFaviconProvider).isInitialized();
@@ -397,8 +397,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                 ContextUtils.getApplicationContext()
                         .getResources()
                         .getDimensionPixelSize(
-                                org.chromium.chrome.R.dimen
-                                        .ntp_search_box_lateral_margin_narrow_window_tablet);
+                                R.dimen.ntp_search_box_lateral_margin_narrow_window_tablet);
         UiConfig.DisplayStyle displayStyleRegular =
                 new DisplayStyle(HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR);
         when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyleRegular);

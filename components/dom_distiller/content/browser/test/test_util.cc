@@ -8,8 +8,11 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/viewer.h"
+#include "components/grit/components_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -91,8 +94,34 @@ std::string FakeDistilledPage::GetPageHtmlWithScripts() {
       mojom::Theme::kLight, mojom::FontFamily::kSansSerif, std::string(),
       /*use_offline_data=*/false);
   for (const std::string& file : scripts_) {
+    if (file == "dom_distiller_viewer.js") {
+      // This file is handled separately below.
+      continue;
+    }
     StrAppend(&html, {JsReplace("<script src=$1></script>", file)});
   }
+
+  // Special handling for dom_distiller_viewer.js to allow for placeholder
+  // replacement to align pinch zoom scaling with prefs UI.
+  std::string viewer_js =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_DOM_DISTILLER_VIEWER_JS);
+
+  std::string min_scale = "0.5";
+  std::string max_scale = "2.0";
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(kReaderModeDistillInApp)) {
+    min_scale = "1.0";
+    max_scale = "2.5";
+  }
+#endif
+  base::ReplaceFirstSubstringAfterOffset(&viewer_js, 0, "$MIN_SCALE",
+                                         min_scale);
+  base::ReplaceFirstSubstringAfterOffset(&viewer_js, 0, "$MAX_SCALE",
+                                         max_scale);
+
+  StrAppend(&html, {"<script>", viewer_js, "</script>"});
+
   return html;
 }
 

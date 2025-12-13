@@ -40,6 +40,8 @@ class FrameTracker : public DevToolsEventListener {
                  const std::string& method,
                  const base::Value::Dict& params) override;
 
+  void ForEachTarget(base::RepeatingCallback<void(WebView&)> func);
+
  private:
   std::map<std::string, std::string> frame_to_context_map_;
   std::map<std::string, std::unique_ptr<WebView>> frame_to_target_map_;

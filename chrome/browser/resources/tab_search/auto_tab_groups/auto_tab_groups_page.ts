@@ -12,7 +12,7 @@ import './auto_tab_groups_not_started.js';
 import './auto_tab_groups_results.js';
 
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -294,6 +294,8 @@ export class AutoTabGroupsPageElement extends CrLitElement {
         this.apiProxy_.setUserFeedback(
             this.session_.sessionId, UserFeedback.kUserFeedBackNegative);
         break;
+      default:
+        assertNotReachedCase(event.detail.value);
     }
     if (event.detail.value === CrFeedbackOption.THUMBS_DOWN) {
       // Show feedback dialog
@@ -359,7 +361,7 @@ export class AutoTabGroupsPageElement extends CrLitElement {
       case TabOrganizationState.kFailure:
         return this.getFailureTitle_();
       default:
-        assertNotReached('Invalid tab organization state');
+        assertNotReachedCase(this.state_, 'Invalid tab organization state');
     }
   }
 

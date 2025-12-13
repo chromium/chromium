@@ -396,7 +396,7 @@ TEST_F(FileProxyTest, MAYBE_SetTimes) {
 
 TEST_F(FileProxyTest, SetLength_Shrink) {
   // Setup.
-  const char kTestData[] = "0123456789";
+  const std::string_view kTestData = "0123456789";
   ASSERT_TRUE(base::WriteFile(TestPath(), kTestData));
   File::Info info;
   GetFileInfo(TestPath(), &info);
@@ -425,7 +425,7 @@ TEST_F(FileProxyTest, SetLength_Shrink) {
 
 TEST_F(FileProxyTest, SetLength_Expand) {
   // Setup.
-  const char kTestData[] = "9876543210";
+  const std::string_view kTestData = "9876543210";
   ASSERT_TRUE(base::WriteFile(TestPath(), kTestData));
   File::Info info;
   GetFileInfo(TestPath(), &info);

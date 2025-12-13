@@ -17,6 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/proto/policy_signing_key.pb.h"
@@ -38,18 +39,23 @@ const base::FilePath::CharType kPolicyCacheFile[] =
 const base::FilePath::CharType kKeyCacheFile[] =
     FILE_PATH_LITERAL("Signing Key");
 
+// File in the above directory for storing extension install policy data.
+const base::FilePath::CharType kExtensionInstallPolicyCacheFile[] =
+    FILE_PATH_LITERAL("User Extension Install Policy");
+
 // Maximum policy and key size that will be loaded, in bytes.
 const size_t kPolicySizeLimit = 1024 * 1024;
 const size_t kKeySizeLimit = 16 * 1024;
 
 bool WriteStringToFile(const base::FilePath path, const std::string& data) {
   if (!base::CreateDirectory(path.DirName())) {
-    DLOG(WARNING) << "Failed to create directory " << path.DirName().value();
+    DLOG_POLICY(WARNING, POLICY_FETCHING)
+        << "Failed to create directory " << path.DirName().value();
     return false;
   }
 
   if (!base::WriteFile(path, data)) {
-    DLOG(WARNING) << "Failed to write " << path.value();
+    DLOG_POLICY(WARNING, POLICY_FETCHING) << "Failed to write " << path.value();
     return false;
   }
 
@@ -62,10 +68,11 @@ void StorePolicyToDiskOnBackgroundThread(
     const base::FilePath& policy_path,
     const base::FilePath& key_path,
     const em::PolicyFetchResponse& policy) {
-  DVLOG(1) << "Storing policy to " << policy_path.value();
+  DVLOG_POLICY(1, POLICY_PROCESSING)
+      << "Storing policy to " << policy_path.value();
   std::string data;
   if (!policy.SerializeToString(&data)) {
-    DLOG(WARNING) << "Failed to serialize policy data";
+    DLOG_POLICY(WARNING, POLICY_PROCESSING) << "Failed to serialize policy data";
     return;
   }
 
@@ -85,7 +92,8 @@ void StorePolicyToDiskOnBackgroundThread(
     key_info.set_verification_key(GetPolicyVerificationKey());
     std::string key_data;
     if (!key_info.SerializeToString(&key_data)) {
-      DLOG(WARNING) << "Failed to serialize policy signing key";
+      DLOG_POLICY(WARNING, POLICY_PROCESSING)
+          << "Failed to serialize policy signing key";
       return;
     }
 
@@ -111,7 +119,8 @@ DesktopCloudPolicyStore::~DesktopCloudPolicyStore() = default;
 void DesktopCloudPolicyStore::LoadImmediately() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DVLOG(1) << "Initiating immediate policy load from disk";
+  DVLOG_POLICY(1, POLICY_PROCESSING)
+      << "Initiating immediate policy load from disk";
   // Cancel any pending Load/Store/Validate operations.
   weak_factory_.InvalidateWeakPtrs();
   // Load the policy from disk...
@@ -138,7 +147,7 @@ void DesktopCloudPolicyStore::Clear() {
 void DesktopCloudPolicyStore::Load() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DVLOG(1) << "Initiating policy load from disk";
+  DVLOG_POLICY(1, POLICY_PROCESSING) << "Initiating policy load from disk";
   // Cancel any pending Load/Store/Validate operations.
   weak_factory_.InvalidateWeakPtrs();
 
@@ -180,8 +189,8 @@ PolicyLoadResult DesktopCloudPolicyStore::LoadPolicyFromDisk(
   if (!base::ReadFileToStringWithMaxSize(policy_path, &data,
                                          kPolicySizeLimit) ||
       !result.policy.ParseFromString(data)) {
-    LOG(WARNING) << "Failed to read or parse policy data from "
-                 << policy_path.value();
+    LOG_POLICY(WARNING, POLICY_FETCHING)
+        << "Failed to read or parse policy data from " << policy_path.value();
     result.status = policy::LOAD_RESULT_LOAD_ERROR;
     return result;
   }
@@ -193,7 +202,8 @@ PolicyLoadResult DesktopCloudPolicyStore::LoadPolicyFromDisk(
 
   if (!base::ReadFileToStringWithMaxSize(key_path, &data, kKeySizeLimit) ||
       !result.key.ParseFromString(data)) {
-    LOG(ERROR) << "Failed to read or parse key data from " << key_path;
+    LOG_POLICY(ERROR, POLICY_FETCHING)
+        << "Failed to read or parse key data from " << key_path.value();
     result.key.clear_signing_key();
   }
 
@@ -209,7 +219,7 @@ void DesktopCloudPolicyStore::PolicyLoaded(bool validate_in_background,
       break;
 
     case LOAD_RESULT_NO_POLICY_FILE:
-      DVLOG(1) << "No policy found on disk";
+      DVLOG_POLICY(1, POLICY_PROCESSING) << "No policy found on disk";
       NotifyStoreLoaded();
       break;
 
@@ -227,7 +237,8 @@ void DesktopCloudPolicyStore::PolicyLoaded(bool validate_in_background,
         // rotation - make sure we request a new key from the server on our
         // next fetch.
         doing_key_rotation = true;
-        DLOG(WARNING) << "Verification key rotation detected";
+        DLOG_POLICY(WARNING, POLICY_PROCESSING)
+            << "Verification key rotation detected";
       }
 
       Validate(std::move(cloud_policy), std::move(key), validate_in_background,
@@ -270,8 +281,10 @@ void DesktopCloudPolicyStore::ValidateKeyAndSignature(
     // Loading from cache should not change the cached keys.
     DCHECK(persisted_policy_key_.empty() ||
            persisted_policy_key_ == cached_key->signing_key());
-    DLOG_IF(WARNING, !cached_key->has_signing_key())
-        << "Unsigned policy blob detected";
+    if (!cached_key->has_signing_key()) {
+      DLOG_POLICY(WARNING, POLICY_PROCESSING)
+          << "Unsigned policy blob detected";
+    }
 
     validator->ValidateCachedKey(
         cached_key->signing_key(), cached_key->signing_key_signature(),
@@ -304,15 +317,18 @@ void DesktopCloudPolicyStore::InstallLoadedPolicyAfterValidation(
     UserCloudPolicyValidator* validator) {
   validation_result_ = validator->GetValidationResult();
   if (!validator->success()) {
-    DVLOG(1) << "Validation failed: status=" << validator->status();
+    DVLOG_POLICY(1, POLICY_PROCESSING)
+        << "Validation failed: status=" << validator->status();
     status_ = STATUS_VALIDATION_ERROR;
     NotifyStoreError();
     return;
   }
 
-  DVLOG(1) << "Validation succeeded - installing policy with dm_token: "
-           << validator->policy_data()->request_token();
-  DVLOG(1) << "Device ID: " << validator->policy_data()->device_id();
+  DVLOG_POLICY(1, POLICY_PROCESSING)
+      << "Validation succeeded - installing policy with dm_token: "
+      << validator->policy_data()->request_token();
+  DVLOG_POLICY(1, POLICY_PROCESSING)
+      << "Device ID: " << validator->policy_data()->device_id();
 
   // If we're doing a key rotation, clear the public key version so a future
   // policy fetch will force regeneration of the keys.
@@ -351,7 +367,8 @@ void DesktopCloudPolicyStore::ResetPolicyKey() {
 void DesktopCloudPolicyStore::OnPolicyToStoreValidated(
     UserCloudPolicyValidator* validator) {
   validation_result_ = validator->GetValidationResult();
-  DVLOG(1) << "Policy validation complete: status = " << validator->status();
+  DVLOG_POLICY(1, POLICY_PROCESSING)
+      << "Policy validation complete: status = " << validator->status();
   if (!validator->success()) {
     status_ = STATUS_VALIDATION_ERROR;
     NotifyStoreError();
@@ -403,6 +420,19 @@ void UserCloudPolicyStore::SetSigninAccountId(const AccountId& account_id) {
   account_id_ = account_id;
 }
 
+// static
+std::unique_ptr<UserCloudPolicyStore>
+UserCloudPolicyStore::CreateForExtensionInstall(
+    const base::FilePath& profile_path,
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner) {
+  base::FilePath policy_path =
+      profile_path.Append(kPolicyDir).Append(kExtensionInstallPolicyCacheFile);
+  base::FilePath key_path =
+      profile_path.Append(kPolicyDir).Append(kKeyCacheFile);
+  return base::WrapUnique(
+      new UserCloudPolicyStore(policy_path, key_path, background_task_runner));
+}
+
 void UserCloudPolicyStore::Validate(
     std::unique_ptr<em::PolicyFetchResponse> policy,
     std::unique_ptr<em::PolicySigningKey> cached_key,
@@ -424,7 +454,7 @@ void UserCloudPolicyStore::Validate(
   // be empty during initial policy load because this happens before the
   // Prefs subsystem is initialized.
   if (account_id_.is_valid()) {
-    DVLOG(1) << "Validating account: " << account_id_;
+    DVLOG_POLICY(1, POLICY_PROCESSING) << "Validating account: " << account_id_;
     validator->ValidateUser(account_id_);
     owning_domain = gaia::ExtractDomainName(gaia::CanonicalizeEmail(
         gaia::SanitizeEmail(account_id_.GetUserEmail())));

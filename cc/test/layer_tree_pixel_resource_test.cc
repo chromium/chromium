@@ -52,7 +52,6 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
       layer_tree_frame_sink->context_provider();
   viz::RasterContextProvider* worker_context_provider =
       layer_tree_frame_sink->worker_context_provider();
-  int max_bytes_per_copy_operation = 1024 * 1024;
   int max_staging_buffer_usage_in_bytes = 32 * 1024 * 1024;
 
   switch (raster_type()) {
@@ -87,8 +86,7 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
 
       return std::make_unique<OneCopyRasterBufferProvider>(
           worker_context_provider->SharedImageInterface(), task_runner,
-          compositor_context_provider, worker_context_provider,
-          max_bytes_per_copy_operation, false,
+          compositor_context_provider, worker_context_provider, false,
           max_staging_buffer_usage_in_bytes,
           /*is_overlay_candidate=*/false);
   }

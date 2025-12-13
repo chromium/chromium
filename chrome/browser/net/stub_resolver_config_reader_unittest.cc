@@ -6,16 +6,18 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/net/default_dns_over_https_config_source.h"
 #include "chrome/browser/net/dns_over_https_config_source.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/features.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -66,6 +68,7 @@ class StubResolverConfigReaderTest : public testing::Test {
   }
 
  protected:
+  base::HistogramTester histogram_tester_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple local_state_;
@@ -124,6 +127,81 @@ TEST_F(StubResolverConfigReaderTest, DohEnabled_Secure) {
   EXPECT_EQ(expected_doh_config_, secure_dns_config.doh_servers());
 
   EXPECT_TRUE(config_reader_->parental_controls_checked());
+}
+
+TEST_F(StubResolverConfigReaderTest,
+       Doh_Automatic_WithFallbackEnabled_SetByUser) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kAddAutomaticWithDohFallbackMode);
+  local_state_.SetBoolean(prefs::kBuiltInDnsClientEnabled, true);
+  local_state_.SetString(prefs::kDnsOverHttpsMode,
+                         SecureDnsConfig::kModeAutomatic);
+  local_state_.SetBoolean(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh, true);
+
+  config_reader_->UpdateNetworkService(/*record_metrics=*/true);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Net.DNS.DnsConfig.SecureDnsMode",
+      StubResolverConfigReader::SecureDnsModeDetailsForHistogram::
+          kAutomaticWithDohFallbackByUser,
+      1);
+}
+
+TEST_F(StubResolverConfigReaderTest,
+       Doh_Automatic_WithFallbackEnabled_SetByEnterprisePolicy) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kAddAutomaticWithDohFallbackMode);
+  local_state_.SetBoolean(prefs::kBuiltInDnsClientEnabled, true);
+  local_state_.SetManagedPref(
+      prefs::kDnsOverHttpsMode,
+      std::make_unique<base::Value>(SecureDnsConfig::kModeAutomatic));
+  local_state_.SetManagedPref(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh,
+                              std::make_unique<base::Value>(true));
+
+  config_reader_->UpdateNetworkService(/*record_metrics=*/true);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Net.DNS.DnsConfig.SecureDnsMode",
+      StubResolverConfigReader::SecureDnsModeDetailsForHistogram::
+          kAutomaticWithDohFallbackByEnterprisePolicy,
+      1);
+}
+
+TEST_F(StubResolverConfigReaderTest,
+       Doh_Automatic_DisabledFeature_FallbackConfigUnset) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      net::features::kAddAutomaticWithDohFallbackMode);
+  local_state_.SetBoolean(prefs::kBuiltInDnsClientEnabled, true);
+  local_state_.SetString(prefs::kDnsOverHttpsMode,
+                         SecureDnsConfig::kModeAutomatic);
+  local_state_.SetBoolean(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh, true);
+
+  SecureDnsConfig secure_dns_config = config_reader_->GetSecureDnsConfiguration(
+      /*force_check_parental_controls_for_automatic_mode=*/false);
+
+  EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
+  EXPECT_THAT(secure_dns_config.fallback_doh_nameservers(), testing::IsEmpty());
+}
+
+TEST_F(StubResolverConfigReaderTest,
+       Doh_Automatic_DisabledPref_FallbackConfigUnset) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kAddAutomaticWithDohFallbackMode);
+  local_state_.SetBoolean(prefs::kBuiltInDnsClientEnabled, true);
+  local_state_.SetString(prefs::kDnsOverHttpsMode,
+                         SecureDnsConfig::kModeAutomatic);
+  local_state_.SetBoolean(prefs::kDnsOverHttpsAutomaticModeFallbackToDoh,
+                          false);
+
+  SecureDnsConfig secure_dns_config = config_reader_->GetSecureDnsConfiguration(
+      /* force_check_parental_controls_for_automatic_mode=*/false);
+
+  EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
+  EXPECT_THAT(secure_dns_config.fallback_doh_nameservers(), testing::IsEmpty());
 }
 
 TEST_F(StubResolverConfigReaderTest, DisabledForManaged) {
@@ -287,6 +365,8 @@ class MockDnsOverHttpsSource : public DnsOverHttpsConfigSource {
   }
 
   std::string GetDnsOverHttpsTemplates() const override { return templates_; }
+
+  bool AutomaticModeFallbackToDohEnabled() const override { return false; }
 
   void SetDnsOverHttpsTemplates(const std::string& templates) {
     templates_ = templates;

@@ -28,20 +28,19 @@ class QuickDeleteMediator
     /**
      * @param propertyModel {@link PropertyModel} associated with the quick delete {@link View}.
      * @param profile {@link Profile} to check if the user is signed-in or syncing.
-     * @param quickDeleteBridge {@link QuickDeleteBridge} used to fetch the recent visited domain
-     *     and site data.
-     * @param quickDeleteTabsFilter {@link QuickDeleteTabsFilter} used to fetch the tabs to be
-     *     closed data.
+     * @param quickDeleteRegularTabsFilter {@link QuickDeleteTabsFilter} used to fetch the regular
+     *     tabs to be closed.
+     * @param quickDeleteArchivedTabsFilter {@link QuickDeleteTabsFilter} used to fetch the archived
+     *     tabs to be closed.
      */
     QuickDeleteMediator(
             PropertyModel propertyModel,
             Profile profile,
-            QuickDeleteBridge quickDeleteBridge,
             QuickDeleteTabsFilter quickDeleteRegularTabsFilter,
             @Nullable QuickDeleteTabsFilter quickDeleteArchivedTabsFilter) {
         mPropertyModel = propertyModel;
         mProfile = profile;
-        mQuickDeleteBridge = quickDeleteBridge;
+        mQuickDeleteBridge = new QuickDeleteBridge(mProfile, this);
         mQuickDeleteRegularTabsFilter = quickDeleteRegularTabsFilter;
         mQuickDeleteArchivedTabsFilter = quickDeleteArchivedTabsFilter;
     }
@@ -74,7 +73,7 @@ class QuickDeleteMediator
         mPropertyModel.set(QuickDeleteProperties.IS_SYNCING_HISTORY, false);
         mPropertyModel.set(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING, true);
         // This is an async call which would update the browsing history row.
-        mQuickDeleteBridge.getLastVisitedDomainAndUniqueDomainCount(timePeriod, this);
+        mQuickDeleteBridge.restartCounterForTimePeriod(timePeriod);
     }
 
     /**
@@ -103,5 +102,9 @@ class QuickDeleteMediator
             count += mQuickDeleteArchivedTabsFilter.getListOfTabsFilteredToBeClosed().size();
         }
         return count;
+    }
+
+    public void destroy() {
+        mQuickDeleteBridge.destroy();
     }
 }

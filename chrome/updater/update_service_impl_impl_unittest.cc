@@ -59,8 +59,7 @@ TEST(UpdateServiceImplTest, TestToResult) {
 }
 
 TEST(UpdateServiceImplTest, TestGetComponentsInOrder) {
-  base::test::TaskEnvironment environment_{
-      base::test::TaskEnvironment::MainThreadType::UI};
+  base::test::TaskEnvironment environment_;
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -87,8 +86,8 @@ TEST(UpdateServiceImplTest, TestGetComponentsInOrder) {
   internal::GetComponents(
       base::MakeRefCounted<PolicyService>(CreateExternalConstants(),
                                           /*persisted_data=*/nullptr),
-      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF, metadata, {}, {}, {},
-      UpdateService::Priority::kForeground, false,
+      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF, std::nullopt,
+      metadata, {}, {}, {}, UpdateService::Priority::kForeground, false,
       UpdateService::PolicySameVersionUpdate::kNotAllowed,
       {"id1", "id2", "id3", "id4"},
       base::BindLambdaForTesting(
@@ -347,8 +346,9 @@ INSTANTIATE_TEST_SUITE_P(
          base::WideToUTF8(
              GetLocalizedString(IDS_ERROR_HTTPSTATUS_UNAUTHORIZED_BASE))},
         {UpdateService::ErrorCategory::kUpdateCheck, 401, "ar",
-         "‏تعذر الاتصال بالإنترنت. بروتوكول HTTP 401 محظور. يُرجى التحقق من "
-         "إعدادات الخادم الوكيل."},
+         base::WideToUTF8(
+             GetLocalizedString(IDS_ERROR_HTTPSTATUS_UNAUTHORIZED_BASE,
+                                L"ar"))},
         {UpdateService::ErrorCategory::kUpdateCheck, 403, "en",
          base::WideToUTF8(
              GetLocalizedString(IDS_ERROR_HTTPSTATUS_FORBIDDEN_BASE))},

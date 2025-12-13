@@ -13,7 +13,7 @@ namespace {
 // Fetch the path from the given url (i.e. "http://foo.bar/baz" -> "/baz")
 std::string UrlPath(const std::string& url) {
   GURL gurl(url);
-  return gurl.path();
+  return gurl.GetPath();
 }
 
 }  // namespace

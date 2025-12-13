@@ -14,15 +14,22 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/timer/elapsed_timer.h"
 #include "chromecast/starboard/media/cdm/starboard_drm_wrapper.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 #include "chromecast/starboard/media/renderer/client_stats_tracker.h"
 #include "chromecast/starboard/media/renderer/demuxer_stream_reader.h"
+#include "chromecast/starboard/media/renderer/starboard_buffering_tracker.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/renderer_client.h"
 
 namespace chromecast {
+
+namespace metrics {
+class CastMetricsHelper;
+}  // namespace metrics
+
 namespace media {
 
 // Manages interactions with an SbPlayer. In particular, this class has several
@@ -53,6 +60,7 @@ class StarboardPlayerManager {
       ::media::DemuxerStream* audio_stream,
       ::media::DemuxerStream* video_stream,
       ::media::RendererClient* client,
+      chromecast::metrics::CastMetricsHelper* cast_metrics_helper,
       scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       bool enable_buffering);
 
@@ -94,6 +102,7 @@ class StarboardPlayerManager {
       std::optional<StarboardAudioSampleInfo> audio_sample_info,
       std::optional<StarboardVideoSampleInfo> video_sample_info,
       ::media::RendererClient* client,
+      chromecast::metrics::CastMetricsHelper* cast_metrics_helper,
       scoped_refptr<base::SequencedTaskRunner> media_task_runner);
 
   // Pushes `buffer` to starboard.
@@ -107,6 +116,10 @@ class StarboardPlayerManager {
 
   // Updates the client's stats based on an audio/video buffer being pushed.
   void UpdateStats(const StarboardSampleInfo& sample_info);
+
+  // Updates cast metrics once playback begins (after a period of buffering).
+  // This is a helper function; it is not called directly by Starboard.
+  void UpdateMetricsOnPresenting();
 
   // Called by Starboard when a decoder's status changes.
   void OnDecoderStatus(void* player,
@@ -170,6 +183,9 @@ class StarboardPlayerManager {
   // lifetime.
   base::flat_map<raw_ptr<const void>, scoped_refptr<::media::DecoderBuffer>>
       addr_to_buffer_;
+  std::optional<StarboardBufferingTracker> buffering_tracker_;
+  raw_ptr<chromecast::metrics::CastMetricsHelper> cast_metrics_helper_ =
+      nullptr;
 
   // This should be destructed first, to invalidate any weak ptrs.
   base::WeakPtrFactory<StarboardPlayerManager> weak_factory_{this};

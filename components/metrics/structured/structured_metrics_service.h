@@ -7,12 +7,15 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
+#include "base/time/time.h"
+#include "components/metrics/delegating_provider.h"
+#include "components/metrics/metrics_provider.h"
 #include "components/metrics/structured/reporting/structured_metrics_reporting_service.h"
 #include "components/metrics/structured/storage_manager.h"
 #include "components/metrics/structured/structured_metrics_recorder.h"
@@ -57,6 +60,8 @@ class StructuredMetricsService final : public StorageManager::StorageDelegate {
   StructuredMetricsService& operator=(StructuredMetricsService&) = delete;
 
   void EnableRecording();
+
+  void RegisterMetricsProvider(std::unique_ptr<MetricsProvider> provider);
   void DisableRecording();
 
   void EnableReporting();
@@ -167,6 +172,12 @@ class StructuredMetricsService final : public StorageManager::StorageDelegate {
 
   // Retrieves the storage parameters to control the reporting service.
   static UnsentLogStore::UnsentLogStoreLimits GetLogStoreLimits();
+
+  // The time at which the current log was created.
+  base::TimeTicks log_creation_time_;
+
+  // Registered metrics providers.
+  metrics::DelegatingProvider metrics_providers_;
 
   // Manages on-device recording of events.
   scoped_refptr<StructuredMetricsRecorder> recorder_;

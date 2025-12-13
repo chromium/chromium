@@ -61,14 +61,16 @@ void SetUpButtonWithSymbol(UIButton* button,
     icon = MakeSymbolMulticolor(icon);
   }
 
-  button.backgroundColor = [UIColor colorNamed:kOmniboxKeyboardButtonColor];
   [button setImage:icon forState:UIControlStateNormal];
-  button.layer.cornerRadius = kSymbolButtonSize / 2;
 
-  button.layer.shadowColor = [UIColor blackColor].CGColor;
-  button.layer.shadowOffset = CGSizeMake(0, kButtonShadowVerticalOffset);
-  button.layer.shadowOpacity = kButtonShadowOpacity;
-  button.layer.shadowRadius = kButtonShadowRadius;
+  if (!GlassEffectEnabled()) {
+    button.backgroundColor = [UIColor colorNamed:kOmniboxKeyboardButtonColor];
+    button.layer.cornerRadius = kSymbolButtonSize / 2;
+    button.layer.shadowColor = [UIColor blackColor].CGColor;
+    button.layer.shadowOffset = CGSizeMake(0, kButtonShadowVerticalOffset);
+    button.layer.shadowOpacity = kButtonShadowOpacity;
+    button.layer.shadowRadius = kButtonShadowRadius;
+  }
 
   [NSLayoutConstraint activateConstraints:@[
     [button.widthAnchor constraintEqualToConstant:kSymbolButtonSize],
@@ -90,7 +92,13 @@ NSArray<UIControl*>* OmniboxAssistiveKeyboardLeadingControls(
 
   UIButton* voiceSearchButton =
       [[ExtendedTouchTargetButton alloc] initWithFrame:CGRectZero];
-  SetUpButtonWithIcon(voiceSearchButton, @"keyboard_accessory_voice_search");
+
+  if (GlassEffectEnabled()) {
+    SetUpButtonWithSymbol(voiceSearchButton, kVoiceSymbol, YES);
+  } else {
+    SetUpButtonWithIcon(voiceSearchButton, @"keyboard_accessory_voice_search");
+  }
+
   voiceSearchButton.enabled = ios::provider::IsVoiceSearchEnabled();
   NSString* accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_KEYBOARD_ACCESSORY_VIEW_VOICE_SEARCH);
@@ -138,4 +146,12 @@ NSArray<UIControl*>* OmniboxAssistiveKeyboardLeadingControls(
   }
 
   return controls;
+}
+
+BOOL GlassEffectEnabled() {
+  if (@available(iOS 26, *)) {
+    return YES;
+  }
+
+  return NO;
 }

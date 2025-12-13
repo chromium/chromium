@@ -6,8 +6,6 @@ package org.chromium.support_lib_boundary;
 
 import org.jspecify.annotations.NullMarked;
 
-import java.util.Set;
-
 /** Boundary interface for ServiceWorkerWebSettings. */
 @NullMarked
 public interface ServiceWorkerWebSettingsBoundaryInterface {
@@ -26,10 +24,6 @@ public interface ServiceWorkerWebSettingsBoundaryInterface {
     void setBlockNetworkLoads(boolean flag);
 
     boolean getBlockNetworkLoads();
-
-    void setRequestedWithHeaderOriginAllowList(Set<String> allowedOriginRules);
-
-    Set<String> getRequestedWithHeaderOriginAllowList();
 
     void setIncludeCookiesOnIntercept(boolean includeCookiesOnIntercept);
 

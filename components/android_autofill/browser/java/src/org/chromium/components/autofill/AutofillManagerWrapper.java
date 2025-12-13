@@ -21,6 +21,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CollectionUtil;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.DoNotInline;
 import org.chromium.build.annotations.DoNotStripLogs;
@@ -42,7 +43,7 @@ public class AutofillManagerWrapper {
             "com.google.android.gms/com.google.android.gms.autofill.service.AutofillService";
 
     /** The observer of suggestion window. */
-    public static interface InputUiObserver {
+    public interface InputUiObserver {
         void onInputUiShown();
     }
 
@@ -108,15 +109,9 @@ public class AutofillManagerWrapper {
     public AutofillManagerWrapper(Context context) {
         updateLogStat();
         if (isLoggable()) log("constructor");
-        AutofillManager autofillManager = context.getSystemService(AutofillManager.class);
-        if (!AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT
-                        .isEnabled()
-                && !isEnabled(autofillManager)) {
-            autofillManager = null;
-        }
-        mAutofillManager = autofillManager;
 
-        if (autofillManager == null) {
+        mAutofillManager = retrieveAutofillManager(context);
+        if (mAutofillManager == null) {
             mPackageName = "";
             mIsAwGCurrentAutofillService = false;
             if (isLoggable()) log("disabled");
@@ -124,7 +119,7 @@ public class AutofillManagerWrapper {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            ComponentName componentName = getAutofillServiceComponentName(autofillManager);
+            ComponentName componentName = getAutofillServiceComponentName(mAutofillManager);
             if (componentName != null) {
                 mPackageName = componentName.getPackageName();
                 mIsAwGCurrentAutofillService =
@@ -140,11 +135,19 @@ public class AutofillManagerWrapper {
         }
         mMonitor = new AutofillInputUiMonitor(this);
         try {
-            autofillManager.registerCallback(mMonitor);
+            mAutofillManager.registerCallback(mMonitor);
         } catch (Exception e) {
             AutofillProviderUMA.recordException(
                     e, AutofillProviderUMA.AutofillManagerMethod.REGISTER_CALLBACK);
         }
+    }
+
+    private static @Nullable AutofillManager retrieveAutofillManager(@Nullable Context context) {
+        if (context == null) return null;
+        if (context == ContextUtils.getApplicationContext()) {
+            if (isLoggable()) log("Created with application context.");
+        }
+        return context.getSystemService(AutofillManager.class);
     }
 
     public String getPackageName() {
@@ -295,9 +298,7 @@ public class AutofillManagerWrapper {
         if (mAutofillManager == null || mDestroyed) {
             return true;
         }
-        return AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT
-                        .isEnabled()
-                && !isEnabled(mAutofillManager);
+        return !isEnabled(mAutofillManager);
     }
 
     /**
@@ -324,6 +325,11 @@ public class AutofillManagerWrapper {
             mInputUiObservers = new ArrayList<>();
         }
         mInputUiObservers.add(new WeakReference<>(observer));
+    }
+
+    public void removeInputUiObserver(InputUiObserver observer) {
+        if (observer == null || mInputUiObservers == null) return;
+        mInputUiObservers.removeIf(observerRef -> observerRef.get() == observer);
     }
 
     @VisibleForTesting

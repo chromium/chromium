@@ -209,7 +209,11 @@ if (!is_robolectric && enable_java_templates) {
   #   }
   template("java_cpp_enum") {
     action_with_pydeps(target_name) {
-      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "sources" ])
+      forward_variables_from(invoker,
+                             TESTONLY_AND_VISIBILITY + [
+                                   "sources",
+                                   "deps",
+                                 ])
 
       # The sources aren't compiled so don't check their dependencies.
       check_includes = false
@@ -1120,6 +1124,9 @@ if (!is_robolectric && enable_java_templates) {
 
     _main_class = "org.chromium.testing.local.JunitTestMain"
     _build_config = "$target_gen_dir/$target_name.build_config.json"
+    _res_build_config = "$target_gen_dir/$target_name.res.build_config.json"
+    _manifest_build_config =
+        "$target_gen_dir/$target_name.manifest.build_config.json"
     _build_config_target_name = "$target_name$build_config_target_suffix"
     _java_binary_target_name = "${target_name}__java_binary"
 
@@ -1159,7 +1166,7 @@ if (!is_robolectric && enable_java_templates) {
         manifest_package = _package_name
       }
       output_manifest = _android_manifest
-      build_config = _build_config
+      manifest_build_config = _manifest_build_config
       min_sdk_version = default_min_sdk_version
       target_sdk_version = default_target_sdk_version
       deps = _non_java_deps + _java_assetres_deps +
@@ -1175,7 +1182,7 @@ if (!is_robolectric && enable_java_templates) {
       deps = _non_java_deps + _java_assetres_deps +
              [ ":$_merge_manifest_target_name" ]
       build_config_dep = ":$_build_config_target_name"
-      build_config = _build_config
+      build_config = _res_build_config
       if (defined(_package_name)) {
         rename_manifest_package = _package_name
       }
@@ -1561,10 +1568,10 @@ if (!is_robolectric && enable_java_templates) {
         "--output",
         rebase_path(_zip_jar_path, root_build_dir),
         "--no-compress",
-        "--input-zips=@FileArg($_rebased_build_config:dist_jar:jars)",
+        "--input-zips=@FileArg($_rebased_build_config:dist_classpath)",
       ]
 
-      _excludes = []
+      _excludes = [ "module-info.class" ]
       if (defined(invoker.jar_excluded_patterns)) {
         _excludes += invoker.jar_excluded_patterns
       }
@@ -1691,9 +1698,6 @@ if (!is_robolectric && enable_java_templates) {
   template("dist_aar") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
-    _direct_deps_only =
-        defined(invoker.direct_deps_only) && invoker.direct_deps_only
-
     _deps = []
 
     if (defined(invoker.deps)) {
@@ -1701,11 +1705,17 @@ if (!is_robolectric && enable_java_templates) {
     }
 
     _build_config = "$target_gen_dir/$target_name.build_config.json"
+    _res_build_config = "$target_gen_dir/$target_name.res.build_config.json"
+    _rtxt_build_config = "$target_gen_dir/$target_name.rtxt.build_config.json"
     _build_config_target_name = "$target_name$build_config_target_suffix"
 
     write_build_config(_build_config_target_name) {
       type = "dist_aar"
-      forward_variables_from(invoker, [ "proguard_configs" ])
+      forward_variables_from(invoker,
+                             [
+                               "direct_deps_only",
+                               "proguard_configs",
+                             ])
       possible_config_deps = _deps
       supports_android = true
       requires_android = true
@@ -1715,6 +1725,8 @@ if (!is_robolectric && enable_java_templates) {
     _deps += [ ":$_build_config_target_name" ]
 
     _rebased_build_config = rebase_path(_build_config, root_build_dir)
+    _rebased_res_build_config = rebase_path(_res_build_config, root_build_dir)
+    _rebased_rtxt_build_config = rebase_path(_rtxt_build_config, root_build_dir)
 
     action_with_pydeps(target_name) {
       forward_variables_from(invoker,
@@ -1726,7 +1738,11 @@ if (!is_robolectric && enable_java_templates) {
       deps = _deps
       script = "//build/android/gyp/dist_aar.py"
 
-      inputs = [ _build_config ]
+      inputs = [
+        _build_config,
+        _res_build_config,
+        _rtxt_build_config,
+      ]
 
       # Although these will be listed as deps in the depfile, they must also
       # appear here so that "gn analyze" knows about them.
@@ -1742,16 +1758,12 @@ if (!is_robolectric && enable_java_templates) {
         rebase_path(depfile, root_build_dir),
         "--output",
         rebase_path(invoker.output, root_build_dir),
-        "--dependencies-res-zips=@FileArg($_rebased_build_config:dependency_zips)",
-        "--r-text-files=@FileArg($_rebased_build_config:dependency_rtxt_files)",
+        "--dependencies-res-zips=@FileArg($_rebased_res_build_config:dependency_zips)",
+        "--dependencies-res-zips=@FileArg($_rebased_res_build_config:dependency_zip_overlays)",
+        "--r-text-files=@FileArg($_rebased_rtxt_build_config:dependency_rtxt_files)",
         "--proguard-configs=@FileArg($_rebased_build_config:proguard_all_configs)",
+        "--jars=@FileArg($_rebased_build_config:dist_classpath)",
       ]
-      if (_direct_deps_only) {
-        args += [ "--jars=@FileArg($_rebased_build_config:classpath)" ]
-      } else {
-        args +=
-            [ "--jars=@FileArg($_rebased_build_config:processed_classpath)" ]
-      }
 
       if (defined(invoker.android_manifest)) {
         args += [
@@ -1845,6 +1857,13 @@ if (!is_robolectric && enable_java_templates) {
           "*/R.class",
           "*/R\$*.class",
         ]
+      }
+
+      if ((defined(force_java_location_rewrite) &&
+           force_java_location_rewrite) || enable_java_location_rewrite) {
+        assert(!defined(invoker.bytecode_rewriter_target))
+        bytecode_rewriter_target =
+            "//build/android/location_rewriter:location_rewriter"
       }
     }
   }
@@ -1983,6 +2002,9 @@ if (!is_robolectric && enable_java_templates) {
           "_APK_ASSETS_SUFFIX=${invoker.apk_assets_suffix}",
         ]
       }
+      if (defined(invoker.proguard_enabled) && invoker.proguard_enabled) {
+        defines += [ "_IS_PROGUARD_ENABLED" ]
+      }
 
       _test_only = defined(testonly) && testonly
       if (_test_only) {
@@ -2004,6 +2026,10 @@ if (!is_robolectric && enable_java_templates) {
       }
       if (is_desktop_android) {
         defines += [ "_IS_DESKTOP_ANDROID" ]
+      }
+
+      if (enable_javaless_renderers) {
+        defines += [ "_JAVALESS_RENDERERS_AVAILABLE" ]
       }
 
       if (defined(invoker.write_clang_profiling_data) &&
@@ -2164,6 +2190,9 @@ if (!is_robolectric && enable_java_templates) {
     _template_name = target_name
     _base_path = "$target_out_dir/$target_name/$target_name"
     _build_config = "$target_gen_dir/$target_name.build_config.json"
+    _res_build_config = "$target_gen_dir/$target_name.res.build_config.json"
+    _manifest_build_config =
+        "$target_gen_dir/$target_name.manifest.build_config.json"
     _build_config_target = "$target_name$build_config_target_suffix"
     _java_target_name = "${_template_name}__java"
 
@@ -2357,7 +2386,7 @@ if (!is_robolectric && enable_java_templates) {
                              ])
       input_manifest = invoker.android_manifest
       output_manifest = _android_manifest
-      build_config = _build_config
+      manifest_build_config = _manifest_build_config
       min_sdk_version = _min_sdk_version
       target_sdk_version = _target_sdk_version
 
@@ -2462,7 +2491,7 @@ if (!is_robolectric && enable_java_templates) {
       size_info_path = _res_size_info_path
       proguard_file = _generated_proguard_config
 
-      build_config = _build_config
+      build_config = _res_build_config
       build_config_dep = ":$_build_config_target"
       deps = _java_assetres_deps + _non_java_deps
 
@@ -2476,7 +2505,10 @@ if (!is_robolectric && enable_java_templates) {
         # So that test resources can references under_test resources via
         # @type/name syntax.
         r_java_root_package_name = "test"
-        arsc_package_name = "@FileArg($_rebased_build_config:arsc_package_name)"
+        _rebased_res_build_config =
+            rebase_path(_res_build_config, root_build_dir)
+        arsc_package_name =
+            "@FileArg($_rebased_res_build_config:arsc_package_name)"
 
         # Passing in the --emit-ids mapping will cause aapt2 to assign resources
         # IDs that do not conflict with those from apk_under_test.
@@ -2715,6 +2747,7 @@ if (!is_robolectric && enable_java_templates) {
                                [
                                  "disable_strict_mode_context",
                                  "isolated_splits_enabled",
+                                 "proguard_enabled",
                                ])
         assertions_implicitly_enabled = _assertions_implicitly_enabled
         is_incremental_install = _incremental_apk
@@ -2774,6 +2807,7 @@ if (!is_robolectric && enable_java_templates) {
                                "apk_under_test",
                                "asset_deps",
                                "base_module_target",
+                               "bytecode_rewriter_target",
                                "chromium_code",
                                "deps",
                                "jacoco_never_instrument",
@@ -2792,6 +2826,9 @@ if (!is_robolectric && enable_java_templates) {
                                "suffix_apk_assets_used_by",
                                "uses_split",
                              ])
+      if (_generate_productconfig_java) {
+        create_locales_java_list = true
+      }
       version_code = _version_code
       version_name = _version_name
       enable_lint = _enable_lint
@@ -2903,6 +2940,12 @@ if (!is_robolectric && enable_java_templates) {
           deps += [ ":$_compile_resources_target" ]
           proguard_mapping_path = _proguard_mapping_path
 
+          if (!defined(enable_proguard_checks) && defined(testonly) &&
+              testonly) {
+            # Ignore -checkdiscard and -checkenumunboxed failures.
+            enable_proguard_checks = false
+          }
+
           # Must not be set via write_build_config, because that will cause it
           # to be picked up by test apks that use apk_under_test.
           if (!_assertions_implicitly_enabled && !enable_java_asserts &&
@@ -2950,6 +2993,7 @@ if (!is_robolectric && enable_java_templates) {
             ":$_final_dex_target_name",
           ]
           build_config = _build_config
+          res_build_config = _res_build_config
           if (_proguard_enabled) {
             proguard_mapping_path = _proguard_mapping_path
           }
@@ -3190,7 +3234,7 @@ if (!is_robolectric && enable_java_templates) {
             _static_library_apk_path,
           ]
         }
-        data = []
+        data = [ _generated_script ]
         data_deps = [
           "//build/android:apk_operations_py",
           "//build/android:stack_tools",
@@ -3215,22 +3259,23 @@ if (!is_robolectric && enable_java_templates) {
                                [
                                  "lint_baseline_file",
                                  "lint_gen_dir",
+                                 "lint_jar_path",
                                  "lint_suppressions_file",
-                                 "min_sdk_version",
                                ])
         build_config = _build_config
         build_config_dep = ":$_build_config_target"
+        manifest = _android_manifest
 
         # This will use library subtargets under-the-hood
-        deps = [ ":$_java_target_name" ]
+        deps = [
+          ":$_java_target_name",
+          ":$_merge_manifest_target",
+        ]
         if (defined(invoker.lint_suppressions_dep)) {
           deps += [ invoker.lint_suppressions_dep ]
         }
         if (defined(invoker.asset_deps)) {
           deps += invoker.asset_deps
-        }
-        if (defined(invoker.lint_min_sdk_version)) {
-          min_sdk_version = invoker.lint_min_sdk_version
         }
       }
     } else {
@@ -3239,7 +3284,6 @@ if (!is_robolectric && enable_java_templates) {
                    "lint_baseline_file",
                    "lint_gen_dir",
                    "lint_jar_path",
-                   "lint_min_sdk_version",
                    "lint_suppressions_dep",
                    "lint_suppressions_file",
                  ])
@@ -3326,6 +3370,7 @@ if (!is_robolectric && enable_java_templates) {
             "asset_deps",
             "build_config_include_product_version_resource",
             "bundles_supported",
+            "bytecode_rewriter_target",
             "chromium_code",
             "command_line_flags_file",
             "create_apk_script",
@@ -3787,7 +3832,6 @@ if (!is_robolectric && enable_java_templates) {
         if (defined(invoker.proguard_configs)) {
           proguard_configs += invoker.proguard_configs
         }
-        enable_proguard_checks = false
         if (defined(invoker.final_apk_path)) {
           _final_apk_path = invoker.final_apk_path
         } else {
@@ -3881,9 +3925,12 @@ if (!is_robolectric && enable_java_templates) {
     # as otherwise _use_native_activity and _android_manifest would not be used.
     assert(_use_native_activity != "" && _android_manifest != "")
 
+    # allow_cleartext_traffic only works with the default manifest.
+    _allow_cleartext_traffic = defined(invoker.allow_cleartext_traffic) &&
+                               invoker.allow_cleartext_traffic
+    assert(!defined(invoker.android_manifest) || !_allow_cleartext_traffic)
+
     if (!defined(invoker.android_manifest)) {
-      _allow_cleartext_traffic = defined(invoker.allow_cleartext_traffic) &&
-                                 invoker.allow_cleartext_traffic
       jinja_template("${target_name}_manifest") {
         _native_library_name = get_label_info(invoker.shared_library, "name")
         if (defined(invoker.android_manifest_template)) {
@@ -3907,16 +3954,10 @@ if (!is_robolectric && enable_java_templates) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       create_apk_script = false
 
-      if (!defined(apk_name)) {
-        apk_name = get_label_info(invoker.shared_library, "name")
-      }
-
       if (!defined(android_manifest)) {
         android_manifest_dep = ":${target_name}_manifest"
         android_manifest = _android_manifest
       }
-
-      final_apk_path = "$root_build_dir/${apk_name}_apk/${apk_name}-debug.apk"
 
       if (!defined(use_default_launcher) || use_default_launcher) {
         deps += [
@@ -3929,6 +3970,9 @@ if (!is_robolectric && enable_java_templates) {
         ":${target_name}__secondary_abi_shared_library_list",
         ":${target_name}__shared_library_list",
       ]
+      if (_allow_cleartext_traffic) {
+        deps += [ "//testing/android/native_test:cleartext_traffic_resources" ]
+      }
     }
   }
 
@@ -3972,6 +4016,7 @@ if (!is_robolectric && enable_java_templates) {
                  [
                    "cpp_root_names",
                    "cpp_package_name",
+                   "deps",
                  ])
     }
     action_with_pydeps(_aidl_target) {
@@ -3981,9 +4026,11 @@ if (!is_robolectric && enable_java_templates) {
       depfile = "$target_gen_dir/$target_name.d"
       sources = invoker.sources
 
+      # Use public SDK to ensure LGPL-licensed code can be built without the
+      # internal SDK.
+      _aidl_path = "${public_android_sdk_build_tools}/aidl"
+      _framework_aidl = "$public_android_sdk_platform_root/framework.aidl"
       _srcjar_path = "${target_gen_dir}/${target_name}.srcjar"
-      _aidl_path = "${android_sdk_build_tools}/aidl"
-      _framework_aidl = "$android_sdk/framework.aidl"
       _imports = [ _framework_aidl ]
       if (defined(invoker.interface_file)) {
         assert(invoker.interface_file != "")
@@ -4033,18 +4080,27 @@ if (!is_robolectric && enable_java_templates) {
       args += rebase_path(sources, root_build_dir)
     }
     if (_do_cpp_gen) {
-      _aidl_config = "${_aidl_target}_include_config"
+      _aidl_config = "${_aidl_target}__config"
       config(_aidl_config) {
         include_dirs = [ "$target_gen_dir" ]
       }
       source_set("${_aidl_target}_native") {
         sources = _cpp_outputs + _header_outputs
         deps = [ ":$_aidl_target" ]
+        if (defined(invoker.deps)) {
+          foreach(_dep, invoker.deps) {
+            deps += [ "${_dep}_native" ]
+          }
+        }
         libs = [ "binder_ndk" ]
         public_configs = [
           "//third_party/android_sdk:libbinder_include",
           ":$_aidl_config",
         ]
+
+        # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+        # enable the diagnostic by removing this line.
+        configs += [ "//build/config/compiler:no_exit_time_destructors" ]
       }
     }
   }
@@ -4518,7 +4574,7 @@ if (!is_robolectric && enable_java_templates) {
         if (!defined(requires_android)) {
           requires_android = true
         }
-        include_java_resources = !defined(invoker.include_java_resources) ||
+        include_java_resources = defined(invoker.include_java_resources) &&
                                  invoker.include_java_resources
         supports_android = true
         jar_path = "$_output_path/classes.jar"
@@ -4623,9 +4679,6 @@ if (!is_robolectric && enable_java_templates) {
   #
   #    proguard_enable_obfuscation: Whether to enable obfuscation (default=true)
   #
-  #    proguard_android_sdk_dep: Optional. android_system_java_prebuilt() target
-  #      used as a library jar for synchronized proguarding.
-  #
   #    system_image_locale_allowlist: List of locales that should be included
   #      on system APKs generated from this bundle.
   #
@@ -4695,7 +4748,7 @@ if (!is_robolectric && enable_java_templates) {
     _base_target_gen_dir =
         get_label_info(invoker.base_module_target, "target_gen_dir")
     _base_module_build_config =
-        "$_base_target_gen_dir/${_base_target_name}.build_config.json"
+        "$_base_target_gen_dir/$_base_target_name.build_config.json"
     _base_module_build_config_target =
         "${invoker.base_module_target}$build_config_target_suffix"
     _rebased_base_module_build_config =
@@ -4762,11 +4815,6 @@ if (!is_robolectric && enable_java_templates) {
 
     _build_config = "$target_gen_dir/${_target_name}.build_config.json"
     _rebased_build_config = rebase_path(_build_config, root_build_dir)
-    if (defined(invoker.proguard_android_sdk_dep)) {
-      _android_sdk_dep = invoker.proguard_android_sdk_dep
-    } else {
-      _android_sdk_dep = default_android_sdk_dep
-    }
 
     if (_proguard_enabled) {
       _proguard_mapping_path = "${_bundle_path}.mapping"
@@ -4784,7 +4832,7 @@ if (!is_robolectric && enable_java_templates) {
     _build_config_target = ":$_build_config_target_name"
     write_build_config(_build_config_target_name) {
       type = "android_app_bundle"
-      possible_config_deps = _module_targets + [ _android_sdk_dep ]
+      possible_config_deps = _module_targets
       build_config = _build_config
       proguard_enabled = _proguard_enabled
       enable_lint = _enable_lint
@@ -4972,6 +5020,8 @@ if (!is_robolectric && enable_java_templates) {
         deps = _all_module_unused_resources_deps
         all_module_build_configs = _all_module_build_configs
         build_config = _base_module_build_config
+        res_build_config =
+            "$_base_target_gen_dir/$_base_target_name.res.build_config.json"
         if (_proguard_enabled) {
           proguard_mapping_path = _proguard_mapping_path
         }
@@ -5192,39 +5242,6 @@ if (!is_robolectric && enable_java_templates) {
       if (is_official_build) {
         args += [ "--is-official-build" ]
       }
-    }
-
-    if (_enable_lint) {
-      android_lint("${target_name}__lint") {
-        forward_variables_from(invoker,
-                               [
-                                 "lint_baseline_file",
-                                 "lint_gen_dir",
-                                 "lint_jar_path",
-                                 "lint_suppressions_file",
-                               ])
-        build_config = _build_config
-        build_config_dep = _build_config_target
-        deps = _module_java_targets
-        if (defined(invoker.lint_suppressions_dep)) {
-          deps += [ invoker.lint_suppressions_dep ]
-        }
-        if (defined(invoker.lint_min_sdk_version)) {
-          min_sdk_version = invoker.lint_min_sdk_version
-        } else {
-          min_sdk_version = _min_sdk_version
-        }
-      }
-    } else {
-      not_needed(invoker,
-                 [
-                   "lint_baseline_file",
-                   "lint_gen_dir",
-                   "lint_jar_path",
-                   "lint_min_sdk_version",
-                   "lint_suppressions_dep",
-                   "lint_suppressions_file",
-                 ])
     }
 
     group(_target_name) {

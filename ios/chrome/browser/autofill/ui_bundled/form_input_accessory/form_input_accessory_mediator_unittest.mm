@@ -13,6 +13,7 @@
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
@@ -33,6 +34,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/device_form_factor.h"
 
 using autofill::FormActivityParams;
 
@@ -166,8 +168,16 @@ TEST_F(FormInputAccessoryMediatorTest, Init) {
   EXPECT_TRUE(mediator_);
 }
 
-// Tests consumer and handler are reset when a field is a picker.
+// Tests consumer and handler are reset when a field is a picker on iPad.
 TEST_F(FormInputAccessoryMediatorTest, PickerReset) {
+  // On iPhone, a default input view with navigation buttons is shown for a
+  // picker instead of resetting. Therefore, the test should be skipped if the
+  // device is not an iPad.
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    GTEST_SKIP() << "Skipping FormInputAccessoryMediatorTest.PickerReset: The "
+                    "test is for iPad.";
+  }
+
   FormActivityParams params =
       CreateFormActivityParams(/*field_type=*/"select-one");
 
@@ -175,6 +185,25 @@ TEST_F(FormInputAccessoryMediatorTest, PickerReset) {
   test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
                                                         params);
   [handler_ verify];
+}
+
+// Tests consumer is set to show navigation buttons when a field is a picker on
+// iPhone
+TEST_F(FormInputAccessoryMediatorTest, PickerDoesNotReset) {
+  // Showing navigation buttons is enabled on iPhone, not on iPad.
+  // This test should be skipped if it is not running on an iPhone.
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
+    GTEST_SKIP() << "Skipping FormInputAccessoryMediatorTest.PickerReset: The "
+                    "test is for iPhone.";
+  }
+
+  FormActivityParams params =
+      CreateFormActivityParams(/*field_type=*/"select-one");
+
+  OCMExpect([consumer_ showNavigationButtons]);
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
+                                                        params);
+  [consumer_ verify];
 }
 
 // Tests consumer and handler are not reset when a field is text.
@@ -187,7 +216,10 @@ TEST_F(FormInputAccessoryMediatorTest, TextDoesNotReset) {
 }
 
 // Tests that suggestions are updated and shown.
-TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions) {
+TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_NotStateless) {
+  base::test::ScopedFeatureList scoped_featurelist;
+  scoped_featurelist.InitAndDisableFeature(kStatelessFormSuggestionController);
+
   id providerMock = OCMProtocolMock(@protocol(FormInputSuggestionsProvider));
   [mediator_ injectProvider:providerMock];
 
@@ -196,14 +228,10 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions) {
   __block FormSuggestionsReadyCompletion suggestionsQueryCompletion;
 
   OCMStub([providerMock
-              retrieveSuggestionsForForm:params
-                                webState:web_state_list_.GetActiveWebState()
-                accessoryViewUpdateBlock:OCMOCK_ANY])
-      .andDo(^(NSInvocation* invocation) {
-        __unsafe_unretained FormSuggestionsReadyCompletion completion;
-        [invocation getArgument:&completion atIndex:4];
-        suggestionsQueryCompletion = [completion copy];
-      });
+      retrieveSuggestionsForForm:params
+                        webState:web_state_list_.GetActiveWebState()
+        accessoryViewUpdateBlock:CopyValueToVariable(
+                                     suggestionsQueryCompletion)]);
   OCMStub([providerMock mainFillingProduct])
       .andReturn(autofill::FillingProduct::kAutocomplete);
 
@@ -234,10 +262,7 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions) {
 }
 
 // Tests showing suggestions when Stateless is enabled.
-TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_WhenStateless) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      kStatelessFormSuggestionController};
-
+TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions) {
   id providerMock = OCMProtocolMock(@protocol(FormInputSuggestionsProvider));
   [mediator_ injectProvider:providerMock];
 
@@ -255,14 +280,10 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_WhenStateless) {
   __block FormSuggestionsReadyCompletion suggestionsQueryCompletion;
 
   OCMStub([providerMock
-              retrieveSuggestionsForForm:params
-                                webState:web_state_list_.GetActiveWebState()
-                accessoryViewUpdateBlock:OCMOCK_ANY])
-      .andDo(^(NSInvocation* invocation) {
-        __unsafe_unretained FormSuggestionsReadyCompletion completion;
-        [invocation getArgument:&completion atIndex:4];
-        suggestionsQueryCompletion = [completion copy];
-      });
+      retrieveSuggestionsForForm:params
+                        webState:web_state_list_.GetActiveWebState()
+        accessoryViewUpdateBlock:CopyValueToVariable(
+                                     suggestionsQueryCompletion)]);
 
   // Emit a form registration event to trigger the show suggestions code path.
   test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
@@ -305,14 +326,14 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_WithConcurrentQueries) {
       suggestionsCompletionsQueue = [NSMutableArray array];
 
   OCMStub([providerMock
-              retrieveSuggestionsForForm:params
-                                webState:web_state_list_.GetActiveWebState()
-                accessoryViewUpdateBlock:OCMOCK_ANY])
-      .andDo(^(NSInvocation* invocation) {
-        __unsafe_unretained FormSuggestionsReadyCompletion completion;
-        [invocation getArgument:&completion atIndex:4];
-        [suggestionsCompletionsQueue addObject:[completion copy]];
-      });
+      retrieveSuggestionsForForm:params
+                        webState:web_state_list_.GetActiveWebState()
+        accessoryViewUpdateBlock:[OCMArg checkWithBlock:^BOOL(
+                                             FormSuggestionsReadyCompletion
+                                                 completion) {
+          [suggestionsCompletionsQueue addObject:[completion copy]];
+          return YES;
+        }]]);
 
   // Emit a form registration event to trigger the suggestions update code path.
   test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
@@ -362,8 +383,6 @@ TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_WithConcurrentQueries) {
 // Tests that selecting a suggestion when Stateless is enabled is correctly
 // handled when no reauthentication is needed.
 TEST_F(FormInputAccessoryMediatorTest, DidSelectSuggestion_NoReauth) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      kStatelessFormSuggestionController};
 
   base::HistogramTester histogram_tester;
 

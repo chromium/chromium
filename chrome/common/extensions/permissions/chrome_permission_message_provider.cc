@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/common/extensions/permissions/chrome_permission_message_provider.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/stl_util.h"
@@ -262,8 +258,8 @@ bool ChromePermissionMessageProvider::IsHostPrivilegeIncrease(
     const std::string_view unmatched(requested);
     for (const auto& granted : granted_hosts_set) {
       if (granted.size() > 2 && granted[0] == '*' && granted[1] == '.') {
-        const std::string_view stripped_granted(granted.data() + 1,
-                                                granted.length() - 1);
+        const std::string_view stripped_granted =
+            std::string_view(granted).substr(1);
         // If the unmatched host ends with the the granted host,
         // after removing the '*', then it's a match. In addition,
         // because we consider having access to "*.domain.com" as

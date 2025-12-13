@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/services/file_util/public/cpp/sandboxed_zip_analyzer.h"
 
 #include <stdint.h>
 
+#include <vector>
+
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -26,6 +27,9 @@
 #include "chrome/services/file_util/fake_file_util_service.h"
 #include "chrome/services/file_util/file_util_service.h"
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
+#include "components/enterprise/obfuscation/core/download_obfuscator.h"
+#include "components/enterprise/obfuscation/core/obfuscated_file_reader.h"
+#include "components/enterprise/obfuscation/core/utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -51,7 +55,7 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
   struct BinaryData {
     const char* file_path;
     safe_browsing::ClientDownloadRequest_DownloadType download_type;
-    const uint8_t* sha256_digest;
+    base::raw_span<const uint8_t> sha256_digest;
     int64_t length;
     bool is_signed;
   };
@@ -123,6 +127,41 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
     run_loop.Run();
   }
 
+  void RunObfuscatedAnalyzer(const base::FilePath& file_path,
+                             const std::string& password,
+                             safe_browsing::ArchiveAnalyzerResults* results) {
+    DCHECK(results);
+    mojo::PendingRemote<chrome::mojom::FileUtilService> remote;
+    FileUtilService service(remote.InitWithNewPipeAndPassReceiver());
+    base::RunLoop run_loop;
+    ResultsGetter results_getter(run_loop.QuitClosure(), results);
+    std::unique_ptr<SandboxedZipAnalyzer, base::OnTaskRunnerDeleter> analyzer =
+        SandboxedZipAnalyzer::CreateObfuscatedAnalyzer(
+            file_path, base::optional_ref(password),
+            results_getter.GetCallback(), std::move(remote));
+    analyzer->Start();
+    run_loop.Run();
+  }
+
+  void ObfuscateFile(const base::FilePath& input_path,
+                     const base::FilePath& output_path) {
+    base::File input_file(input_path,
+                          base::File::FLAG_OPEN | base::File::FLAG_READ);
+    ASSERT_TRUE(input_file.IsValid());
+    base::File output_file(
+        output_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+    ASSERT_TRUE(output_file.IsValid());
+
+    enterprise_obfuscation::DownloadObfuscator obfuscator;
+    int64_t file_size = input_file.GetLength();
+    std::vector<uint8_t> content(file_size);
+    ASSERT_TRUE(input_file.Read(0, base::span(content)).has_value());
+
+    auto result = obfuscator.ObfuscateChunk(content, true);
+    ASSERT_TRUE(result.has_value());
+    output_file.WriteAtCurrentPos(base::span(result.value()));
+  }
+
 #if BUILDFLAG(IS_WIN)
   void ExpectPEHeaders(
       const BinaryData& data,
@@ -166,9 +205,9 @@ class SandboxedZipAnalyzerTest : public ::testing::Test {
     EXPECT_EQ(data.download_type, binary.download_type());
     ASSERT_TRUE(binary.has_digests());
     ASSERT_TRUE(binary.digests().has_sha256());
-    EXPECT_EQ(std::string(data.sha256_digest,
-                          data.sha256_digest + crypto::kSHA256Length),
-              binary.digests().sha256());
+    auto actual_digest_span =
+        base::as_bytes(base::span(binary.digests().sha256()));
+    EXPECT_EQ(data.sha256_digest, actual_digest_span);
     EXPECT_FALSE(binary.digests().has_sha1());
     EXPECT_FALSE(binary.digests().has_md5());
     ASSERT_TRUE(binary.has_length());
@@ -231,7 +270,7 @@ const SandboxedZipAnalyzerTest::BinaryData
     SandboxedZipAnalyzerTest::kUnsignedExe = {
         "unsigned.exe",
         safe_browsing::ClientDownloadRequest_DownloadType_WIN_EXECUTABLE,
-        &kUnsignedDigest[0],
+        kUnsignedDigest,
         36864,
         false,  // !is_signed
 };
@@ -239,7 +278,7 @@ const SandboxedZipAnalyzerTest::BinaryData
     SandboxedZipAnalyzerTest::kSignedExe = {
         "signed.exe",
         safe_browsing::ClientDownloadRequest_DownloadType_WIN_EXECUTABLE,
-        &kSignedDigest[0],
+        kSignedDigest,
         37768,
         true,  // is_signed
 };
@@ -247,7 +286,7 @@ const SandboxedZipAnalyzerTest::BinaryData SandboxedZipAnalyzerTest::kJSEFile =
     {
         "hello.jse",
         safe_browsing::ClientDownloadRequest_DownloadType_WIN_EXECUTABLE,
-        &kJSEFileDigest[0],
+        kJSEFileDigest,
         6,
         false,  // is_signed
 };
@@ -261,7 +300,7 @@ const SandboxedZipAnalyzerTest::BinaryData
     SandboxedZipAnalyzerTest::kUnsignedMachO = {
         "app-with-executables.app/Contents/MacOS/executablefat",
         safe_browsing::ClientDownloadRequest_DownloadType_WIN_EXECUTABLE,
-        &kUnsignedMachODigest[0],
+        kUnsignedMachODigest,
         16640,
         false,  // !is_signed
 };
@@ -273,7 +312,7 @@ const SandboxedZipAnalyzerTest::BinaryData
     SandboxedZipAnalyzerTest::kSignedMachO = {
         "app-with-executables.app/Contents/MacOS/signedexecutablefat",
         safe_browsing::ClientDownloadRequest_DownloadType_WIN_EXECUTABLE,
-        &kSignedMachODigest[0],
+        kSignedMachODigest,
         34176,
         true,  // !is_signed
 };
@@ -607,4 +646,73 @@ TEST_F(SandboxedZipAnalyzerTest, NestedEncryptedRar) {
   EXPECT_TRUE(results.success);
   EXPECT_TRUE(results.encryption_info.is_encrypted);
   EXPECT_FALSE(results.encryption_info.is_top_level_encrypted);
+}
+
+TEST_F(SandboxedZipAnalyzerTest, ObfuscatedEncryptedZip) {
+  base::FilePath original_path =
+      dir_test_data_.AppendASCII("download_protection/encrypted.zip");
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath temp_path = temp_dir.GetPath().AppendASCII("obfuscated.zip");
+
+  ObfuscateFile(original_path, temp_path);
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  RunObfuscatedAnalyzer(temp_path, "12345", &results);
+  ASSERT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  EXPECT_FALSE(results.has_archive);
+  ASSERT_EQ(1, results.archived_binary.size());
+  EXPECT_EQ("signed.exe", results.archived_binary.Get(0).file_path());
+
+  EXPECT_TRUE(results.encryption_info.is_encrypted);
+  EXPECT_TRUE(results.encryption_info.is_top_level_encrypted);
+  EXPECT_EQ(results.encryption_info.password_status,
+            safe_browsing::EncryptionInfo::kKnownCorrect);
+}
+
+TEST_F(SandboxedZipAnalyzerTest, ObfuscatedEncryptedZipWrongPassword) {
+  base::FilePath original_path =
+      dir_test_data_.AppendASCII("download_protection/encrypted.zip");
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath temp_path = temp_dir.GetPath().AppendASCII("obfuscated.zip");
+
+  ObfuscateFile(original_path, temp_path);
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  RunObfuscatedAnalyzer(temp_path, "wrong", &results);
+  ASSERT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  EXPECT_FALSE(results.has_archive);
+  ASSERT_EQ(1, results.archived_binary.size());
+
+  const safe_browsing::ClientDownloadRequest_ArchivedBinary& binary =
+      results.archived_binary.Get(0);
+  EXPECT_EQ("signed.exe", binary.file_path());
+  EXPECT_EQ(safe_browsing::ClientDownloadRequest_DownloadType_WIN_EXECUTABLE,
+            binary.download_type());
+
+  EXPECT_TRUE(results.encryption_info.is_encrypted);
+  EXPECT_TRUE(results.encryption_info.is_top_level_encrypted);
+  EXPECT_EQ(results.encryption_info.password_status,
+            safe_browsing::EncryptionInfo::kKnownIncorrect);
+}
+
+TEST_F(SandboxedZipAnalyzerTest, ObfuscatedNestedZip) {
+  base::FilePath original_path = dir_test_data_.AppendASCII(
+      "download_protection/zipfile_nested_archives.zip");
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath temp_path = temp_dir.GetPath().AppendASCII("obfuscated.zip");
+
+  ObfuscateFile(original_path, temp_path);
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  RunObfuscatedAnalyzer(temp_path, "", &results);
+
+  ASSERT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  EXPECT_FALSE(results.has_archive);
+  EXPECT_EQ(6, results.archived_binary.size());
 }

@@ -13,7 +13,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 
 // https://github.com/include-what-you-use/include-what-you-use/issues/1546
-// IWYU pragma: no_forward_declare WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
+// IWYU pragma: no_forward_declare internal::__thisIsHereToForceASemicolonAfterThisMacro
 
 class SkMatrix;
 
@@ -49,7 +49,7 @@ class ClipList {
   // dynamic allocation
   static const size_t kCInlineClipOpCapacity = 4;
 
-  WTF::Vector<ClipOp, kCInlineClipOpCapacity> clip_list_;
+  Vector<ClipOp, kCInlineClipOpCapacity> clip_list_;
 };
 
 }  // namespace blink

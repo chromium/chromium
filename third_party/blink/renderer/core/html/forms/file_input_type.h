@@ -32,7 +32,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_FILE_INPUT_TYPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_FILE_INPUT_TYPE_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/forms/file_chooser.h"
 #include "third_party/blink/renderer/core/html/forms/input_type.h"

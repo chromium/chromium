@@ -24,7 +24,9 @@
 #include "components/cronet/url_request_context_config.h"
 #include "components/cronet/version.h"
 #include "components/grpc_support/include/bidirectional_stream_c.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/hash_value.h"
+#include "net/base/proxy_delegate.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_context_getter.h"
@@ -90,6 +92,132 @@ bool IsValidHostnameForPkp(const std::string& host) {
 }  // namespace
 
 namespace cronet {
+
+// The struct stream_engine for grpc support.
+// Holds net::URLRequestContextGetter and app-specific annotation.
+class Cronet_EngineImpl::StreamEngineImpl : public stream_engine {
+ public:
+  explicit StreamEngineImpl(net::URLRequestContextGetter* context_getter) {
+    context_getter_ = context_getter;
+    obj = context_getter_.get();
+    annotation = nullptr;
+  }
+
+  ~StreamEngineImpl() {
+    obj = nullptr;
+    annotation = nullptr;
+  }
+
+ private:
+  scoped_refptr<net::URLRequestContextGetter> context_getter_;
+};
+
+// Callback is owned by CronetContext. It is invoked and deleted
+// on the network thread.
+class Cronet_EngineImpl::Callback : public CronetContext::Callback {
+ public:
+  explicit Callback(Cronet_EngineImpl* engine);
+
+  Callback(const Callback&) = delete;
+  Callback& operator=(const Callback&) = delete;
+
+  ~Callback() override;
+
+  // CronetContext::Callback implementation:
+  void OnInitNetworkThread() override LOCKS_EXCLUDED(engine_->lock_);
+  void OnDestroyNetworkThread() override;
+  void OnEffectiveConnectionTypeChanged(
+      net::EffectiveConnectionType effective_connection_type) override;
+  void OnRTTOrThroughputEstimatesComputed(
+      int32_t http_rtt_ms,
+      int32_t transport_rtt_ms,
+      int32_t downstream_throughput_kbps) override;
+  void OnRTTObservation(int32_t rtt_ms,
+                        int32_t timestamp_ms,
+                        net::NetworkQualityObservationSource source) override;
+  void OnThroughputObservation(
+      int32_t throughput_kbps,
+      int32_t timestamp_ms,
+      net::NetworkQualityObservationSource source) override;
+  void OnStopNetLogCompleted() override LOCKS_EXCLUDED(engine_->lock_);
+  void OnBeforeTunnelRequest(
+      int chain_id,
+      net::ProxyDelegate::OnBeforeTunnelRequestCallback callback) override {
+    NOTREACHED();
+  }
+  void OnTunnelHeadersReceived(int chain_id,
+                               const net::HttpResponseHeaders& response_headers,
+                               net::CompletionOnceCallback callback) override {
+    NOTREACHED();
+  }
+
+ private:
+  // The engine which owns context that owns |this| callback.
+  const raw_ptr<Cronet_EngineImpl> engine_;
+
+  // All methods are invoked on the network thread.
+  THREAD_CHECKER(network_thread_checker_);
+};
+
+Cronet_EngineImpl::Callback::Callback(Cronet_EngineImpl* engine)
+    : engine_(engine) {
+  DETACH_FROM_THREAD(network_thread_checker_);
+}
+
+Cronet_EngineImpl::Callback::~Callback() = default;
+
+void Cronet_EngineImpl::Callback::OnInitNetworkThread() {
+  DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
+  // It is possible that engine_->context_ is reset from main thread while
+  // being intialized on network thread.
+  base::AutoLock lock(engine_->lock_);
+  if (engine_->context_) {
+    // Initialize bidirectional stream engine for grpc.
+    engine_->stream_engine_ = std::make_unique<StreamEngineImpl>(
+        engine_->context_->CreateURLRequestContextGetter());
+    engine_->init_completed_.Signal();
+  }
+}
+
+void Cronet_EngineImpl::Callback::OnDestroyNetworkThread() {
+  DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
+  DCHECK(!engine_->stream_engine_);
+}
+
+void Cronet_EngineImpl::Callback::OnEffectiveConnectionTypeChanged(
+    net::EffectiveConnectionType effective_connection_type) {
+  NOTIMPLEMENTED();
+}
+
+void Cronet_EngineImpl::Callback::OnRTTOrThroughputEstimatesComputed(
+    int32_t http_rtt_ms,
+    int32_t transport_rtt_ms,
+    int32_t downstream_throughput_kbps) {
+  NOTIMPLEMENTED();
+}
+
+void Cronet_EngineImpl::Callback::OnRTTObservation(
+    int32_t rtt_ms,
+    int32_t timestamp_ms,
+    net::NetworkQualityObservationSource source) {
+  NOTIMPLEMENTED();
+}
+
+void Cronet_EngineImpl::Callback::OnThroughputObservation(
+    int32_t throughput_kbps,
+    int32_t timestamp_ms,
+    net::NetworkQualityObservationSource source) {
+  NOTIMPLEMENTED();
+}
+
+void Cronet_EngineImpl::Callback::OnStopNetLogCompleted() {
+  DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
+  CHECK(engine_);
+  base::AutoLock lock(engine_->lock_);
+  DCHECK(engine_->is_logging_);
+  engine_->is_logging_ = false;
+  engine_->stop_netlog_completed_.Signal();
+}
 
 Cronet_EngineImpl::Cronet_EngineImpl()
     : init_completed_(base::WaitableEvent::ResetPolicy::MANUAL,
@@ -347,133 +475,6 @@ Cronet_RESULT Cronet_EngineImpl::CheckResult(Cronet_RESULT result) {
 bool Cronet_EngineImpl::HasRequestFinishedListener() {
   base::AutoLock lock(lock_);
   return request_finished_registrations_.size() > 0;
-}
-
-// The struct stream_engine for grpc support.
-// Holds net::URLRequestContextGetter and app-specific annotation.
-class Cronet_EngineImpl::StreamEngineImpl : public stream_engine {
- public:
-  explicit StreamEngineImpl(net::URLRequestContextGetter* context_getter) {
-    context_getter_ = context_getter;
-    obj = context_getter_.get();
-    annotation = nullptr;
-  }
-
-  ~StreamEngineImpl() {
-    obj = nullptr;
-    annotation = nullptr;
-  }
-
- private:
-  scoped_refptr<net::URLRequestContextGetter> context_getter_;
-};
-
-// Callback is owned by CronetContext. It is invoked and deleted
-// on the network thread.
-class Cronet_EngineImpl::Callback : public CronetContext::Callback {
- public:
-  explicit Callback(Cronet_EngineImpl* engine);
-
-  Callback(const Callback&) = delete;
-  Callback& operator=(const Callback&) = delete;
-
-  ~Callback() override;
-
-  // CronetContext::Callback implementation:
-  void OnInitNetworkThread() override LOCKS_EXCLUDED(engine_->lock_);
-  void OnDestroyNetworkThread() override;
-  void OnEffectiveConnectionTypeChanged(
-      net::EffectiveConnectionType effective_connection_type) override;
-  void OnRTTOrThroughputEstimatesComputed(
-      int32_t http_rtt_ms,
-      int32_t transport_rtt_ms,
-      int32_t downstream_throughput_kbps) override;
-  void OnRTTObservation(int32_t rtt_ms,
-                        int32_t timestamp_ms,
-                        net::NetworkQualityObservationSource source) override;
-  void OnThroughputObservation(
-      int32_t throughput_kbps,
-      int32_t timestamp_ms,
-      net::NetworkQualityObservationSource source) override;
-  void OnStopNetLogCompleted() override LOCKS_EXCLUDED(engine_->lock_);
-  bool OnBeforeTunnelRequest(int chain_id,
-                             net::HttpRequestHeaders* extra_headers) override {
-    NOTIMPLEMENTED();
-    return false;
-  }
-  bool OnTunnelHeadersReceived(
-      int chain_id,
-      const net::HttpResponseHeaders& response_headers) override {
-    NOTIMPLEMENTED();
-    return false;
-  }
-
- private:
-  // The engine which owns context that owns |this| callback.
-  const raw_ptr<Cronet_EngineImpl> engine_;
-
-  // All methods are invoked on the network thread.
-  THREAD_CHECKER(network_thread_checker_);
-};
-
-Cronet_EngineImpl::Callback::Callback(Cronet_EngineImpl* engine)
-    : engine_(engine) {
-  DETACH_FROM_THREAD(network_thread_checker_);
-}
-
-Cronet_EngineImpl::Callback::~Callback() = default;
-
-void Cronet_EngineImpl::Callback::OnInitNetworkThread() {
-  DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
-  // It is possible that engine_->context_ is reset from main thread while
-  // being intialized on network thread.
-  base::AutoLock lock(engine_->lock_);
-  if (engine_->context_) {
-    // Initialize bidirectional stream engine for grpc.
-    engine_->stream_engine_ = std::make_unique<StreamEngineImpl>(
-        engine_->context_->CreateURLRequestContextGetter());
-    engine_->init_completed_.Signal();
-  }
-}
-
-void Cronet_EngineImpl::Callback::OnDestroyNetworkThread() {
-  DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
-  DCHECK(!engine_->stream_engine_);
-}
-
-void Cronet_EngineImpl::Callback::OnEffectiveConnectionTypeChanged(
-    net::EffectiveConnectionType effective_connection_type) {
-  NOTIMPLEMENTED();
-}
-
-void Cronet_EngineImpl::Callback::OnRTTOrThroughputEstimatesComputed(
-    int32_t http_rtt_ms,
-    int32_t transport_rtt_ms,
-    int32_t downstream_throughput_kbps) {
-  NOTIMPLEMENTED();
-}
-
-void Cronet_EngineImpl::Callback::OnRTTObservation(
-    int32_t rtt_ms,
-    int32_t timestamp_ms,
-    net::NetworkQualityObservationSource source) {
-  NOTIMPLEMENTED();
-}
-
-void Cronet_EngineImpl::Callback::OnThroughputObservation(
-    int32_t throughput_kbps,
-    int32_t timestamp_ms,
-    net::NetworkQualityObservationSource source) {
-  NOTIMPLEMENTED();
-}
-
-void Cronet_EngineImpl::Callback::OnStopNetLogCompleted() {
-  DCHECK_CALLED_ON_VALID_THREAD(network_thread_checker_);
-  CHECK(engine_);
-  base::AutoLock lock(engine_->lock_);
-  DCHECK(engine_->is_logging_);
-  engine_->is_logging_ = false;
-  engine_->stop_netlog_completed_.Signal();
 }
 
 void Cronet_EngineImpl::SetMockCertVerifierForTesting(

@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/web/public/browser_state.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -73,8 +72,7 @@ class MockRouter : public enterprise_connectors::ReportingEventRouter {
       (override));
 };
 
-std::unique_ptr<KeyedService> MakeMockRouter(web::BrowserState* browser_state) {
-  auto* profile = ProfileIOS::FromBrowserState(browser_state);
+std::unique_ptr<KeyedService> MakeMockRouter(ProfileIOS* profile) {
   return std::make_unique<MockRouter>(
       enterprise_connectors::IOSRealtimeReportingClientFactory::GetForProfile(
           profile));
@@ -91,7 +89,7 @@ class IOSChromePasswordManagerClientTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         enterprise_connectors::IOSReportingEventRouterFactory::GetInstance(),
-        base::BindRepeating(&MakeMockRouter));
+        base::BindOnce(&MakeMockRouter));
     profile_ = std::move(builder).Build();
     reporting_event_router_ = static_cast<MockRouter*>(
         enterprise_connectors::IOSReportingEventRouterFactory::GetForProfile(
@@ -244,8 +242,6 @@ TEST_F(IOSChromePasswordManagerClientTest,
 // Tests that MaybeReportEnterpriseLoginEvent invoked router->OnLoginEvent as
 // expected.
 TEST_F(IOSChromePasswordManagerClientTest, OnLogInInvoked) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS};
 
   PasswordManagerClient* client = passwordController_.passwordManagerClient;
   EXPECT_CALL(*reporting_event_router_, OnLoginEvent(_, _, _, _)).Times(1);
@@ -257,8 +253,6 @@ TEST_F(IOSChromePasswordManagerClientTest, OnLogInInvoked) {
 // Tests that MaybeReportEnterprisePasswordBreachEvent invoked
 // router->OnPasswordBreach as expected.
 TEST_F(IOSChromePasswordManagerClientTest, OnPasswordBreachInvoked) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS};
 
   PasswordManagerClient* client = passwordController_.passwordManagerClient;
   std::vector<std::pair<GURL, std::u16string>> expected_data;

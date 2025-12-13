@@ -15,18 +15,19 @@
 #include "components/cbor/writer.h"
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/random.h"
-#include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/cable/pairing.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cbor_extract.h"
-#include "device/fido/features.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/fido_parsing_utils.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/network_context_factory.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_types.h"
 #include "net/base/isolation_info.h"
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
@@ -145,7 +146,8 @@ FidoTunnelDevice::FidoTunnelDevice(
       url, {kCableWebSocketProtocol}, net::SiteForCookies(),
       net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
       /*additional_headers=*/{}, network::mojom::kBrowserProcessId,
-      url::Origin::Create(url), network::mojom::kWebSocketOptionBlockAllCookies,
+      url::Origin::Create(url), network::mojom::ClientSecurityState::New(),
+      network::mojom::kWebSocketOptionBlockAllCookies,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       websocket_client_->BindNewHandshakeClientPipe(),
       /*url_loader_network_observer=*/mojo::NullRemote(),
@@ -202,7 +204,8 @@ FidoTunnelDevice::FidoTunnelDevice(
       url, {kCableWebSocketProtocol}, net::SiteForCookies(),
       net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
       std::move(headers), network::mojom::kBrowserProcessId,
-      url::Origin::Create(url), network::mojom::kWebSocketOptionBlockAllCookies,
+      url::Origin::Create(url), network::mojom::ClientSecurityState::New(),
+      network::mojom::kWebSocketOptionBlockAllCookies,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       websocket_client_->BindNewHandshakeClientPipe(),
       /*url_loader_network_observer=*/mojo::NullRemote(),

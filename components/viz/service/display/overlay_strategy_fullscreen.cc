@@ -61,7 +61,7 @@ void OverlayStrategyFullscreen::Propose(
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
-    const PrimaryPlane* primary_plane,
+    const std::optional<OverlayCandidate>& primary_plane,
     std::vector<OverlayProposedCandidate>* candidates,
     std::vector<gfx::Rect>* content_bounds) {
   auto* render_pass = render_pass_list->back().get();
@@ -168,7 +168,7 @@ bool OverlayStrategyFullscreen::Attempt(
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
-    const PrimaryPlane* primary_plane,
+    const std::optional<OverlayCandidate>& primary_plane,
     OverlayCandidateList* candidate_list,
     std::vector<gfx::Rect>* content_bounds,
     const OverlayProposedCandidate& proposed_candidate) {
@@ -177,7 +177,7 @@ bool OverlayStrategyFullscreen::Attempt(
 
   OverlayCandidateList new_candidate_list;
   new_candidate_list.push_back(proposed_candidate.candidate);
-  capability_checker_->CheckOverlaySupport(nullptr, &new_candidate_list);
+  capability_checker_->CheckOverlaySupport(std::nullopt, &new_candidate_list);
   if (!new_candidate_list.front().overlay_handled)
     return false;
 

@@ -12,10 +12,14 @@
 
 #include "base/functional/callback.h"
 #include "base/values.h"
-#include "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/policy_export.h"
+
+namespace chrome::cros::reporting::proto {
+class Browser;
+class Device;
+}  // namespace chrome::cros::reporting::proto
 
 namespace policy {
 

@@ -37,8 +37,6 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/skia/include/core/SkColorType.h"
 
-class GrDirectContext;
-
 namespace cc {
 class ImageDecodeCache;
 }  // namespace cc
@@ -96,7 +94,6 @@ class WebGraphicsContext3DProvider {
   virtual gpu::ContextSupport* ContextSupport() = 0;
   virtual bool IsContextLost() = 0;  // Has the GPU driver lost this context?
   virtual bool BindToCurrentSequence() = 0;
-  virtual GrDirectContext* GetGrContext() = 0;
   virtual const gpu::Capabilities& GetCapabilities() const = 0;
   virtual const gpu::GpuFeatureInfo& GetGpuFeatureInfo() const = 0;
   virtual const WebglPreferences& GetWebglPreferences() const = 0;
@@ -111,8 +108,6 @@ class WebGraphicsContext3DProvider {
   virtual cc::ImageDecodeCache* ImageDecodeCache(SkColorType color_type) = 0;
   virtual gpu::SharedImageInterface* SharedImageInterface() = 0;
   virtual viz::RasterContextProvider* RasterContextProvider() const = 0;
-  virtual unsigned int GetGrGLTextureFormat(
-      viz::SharedImageFormat format) const = 0;
 };
 
 }  // namespace blink

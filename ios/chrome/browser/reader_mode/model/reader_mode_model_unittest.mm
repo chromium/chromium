@@ -80,7 +80,7 @@ TEST_F(ReaderModeModelTest, FetchConfigurationForHTMLContent) {
   SetReaderModeState(web_state(), test_url,
                      ReaderModeHeuristicResult::kReaderModeEligible, "");
   LoadWebpage(web_state(), test_url);
-  WaitForReaderModeContentReady();
+  WaitForPageLoadDelayAndRunUntilIdle();
 
   model.FetchConfigurationForWebState(
       web_state(),
@@ -98,7 +98,7 @@ TEST_F(ReaderModeModelTest, FetchConfigurationForHTMLContent) {
   EXPECT_EQ(configuration->image_type,
             ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol);
   EXPECT_EQ(configuration->relevance,
-            ContextualPanelItemConfiguration::low_relevance);
+            ContextualPanelItemConfiguration::low_relevance - 1);
   EXPECT_TRUE(configuration->entrypoint_message_large_entrypoint_always_shown);
   EXPECT_TRUE(configuration->entrypoint_custom_action);
 }

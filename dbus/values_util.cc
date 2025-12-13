@@ -55,8 +55,8 @@ bool PopDictionaryEntries(MessageReader* reader,
       base::Value key = PopDataAsValue(&entry_reader);
       if (key.is_none())
         return false;
-      // Use JSONWriter to convert an arbitrary value to a string.
-      base::JSONWriter::Write(key, &key_string);
+      // Convert arbitrary Value to string.
+      key_string = base::WriteJson(key).value_or("");
     }
     // Get the value and set the key-value pair.
     base::Value value = PopDataAsValue(&entry_reader);

@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
-#include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
@@ -134,12 +133,8 @@ class WallpaperControllerClientImpl
   // shown right after boot, regardless of when the login screen is available.
   void ShowWallpaperOnLoginScreen();
 
-  void DeviceWallpaperImageFilePathChanged();
-
   // Returns true if user names should be shown on the login screen.
   bool ShouldShowUserNamesOnLogin() const;
-
-  base::FilePath GetDeviceWallpaperImageFilePath();
 
   void OnDailyImageInfoFetched(DailyWallpaperUrlFetchedCallback callback,
                                bool success,
@@ -169,9 +164,6 @@ class WallpaperControllerClientImpl
   raw_ptr<ash::WallpaperController> wallpaper_controller_;
 
   raw_ref<PrefService> local_state_;
-
-  // The registrar used to watch DeviceWallpaperImageFilePath pref changes.
-  PrefChangeRegistrar pref_registrar_;
 
   // Subscription for a callback that monitors if user names should be shown on
   // the login screen, which determines whether a user wallpaper or a default

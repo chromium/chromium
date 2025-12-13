@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.url.GURL;
@@ -65,7 +66,10 @@ public class NavigationObserver extends TabModelSelectorTabObserver {
 
         if (!mEnableObservers) return;
 
-        if (!navigationHandle.isSaveableNavigation()) {
+        SavedTabGroup group = mTabGroupSyncService.getGroup(localTabGroupId);
+        boolean isExtensionNavigationAllowed = (group == null) || (group.collaborationId == null);
+        if (!TabGroupSyncUtils.isSaveableNavigation(
+                isExtensionNavigationAllowed, navigationHandle)) {
             return;
         }
 

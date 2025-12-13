@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
+#include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/network_delegate.h"
 #include "net/base/proxy_delegate.h"
@@ -94,6 +95,14 @@ URLRequestContext::~URLRequestContext() {
 
   DCHECK(host_resolver());
   host_resolver()->OnShutdown();
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  if (device_bound_session_service_) {
+    // The SessionService may have pending URLRequests that use this
+    // context.
+    device_bound_session_service_.reset();
+  }
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
   AssertNoURLRequests();
 }
@@ -234,6 +243,10 @@ void URLRequestContext::set_client_socket_factory(
     std::unique_ptr<ClientSocketFactory> client_socket_factory) {
   client_socket_factory_ = std::move(client_socket_factory);
 }
+void URLRequestContext::set_cache_encryption_delegate(
+    std::unique_ptr<CacheEncryptionDelegate> cache_encryption_delegate) {
+  cache_encryption_delegate_ = std::move(cache_encryption_delegate);
+}
 #if BUILDFLAG(ENABLE_REPORTING)
 void URLRequestContext::set_persistent_reporting_and_nel_store(
     std::unique_ptr<PersistentReportingAndNelStore>
@@ -266,6 +279,11 @@ void URLRequestContext::set_device_bound_session_store(
     std::unique_ptr<device_bound_sessions::SessionStore>
         device_bound_session_store) {
   device_bound_session_store_ = std::move(device_bound_session_store);
+}
+void URLRequestContext::set_unexportable_key_service(
+    std::unique_ptr<unexportable_keys::UnexportableKeyService>
+        unexportable_key_service) {
+  unexportable_key_service_ = std::move(unexportable_key_service);
 }
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 

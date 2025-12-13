@@ -14,6 +14,7 @@
 #include "chrome/browser/background/glic/glic_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/fake_profile_manager.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -74,11 +74,6 @@ class MockGlicController : public GlicController {
 
 class GlicStatusIconTest : public testing::Test {
  public:
-  GlicStatusIconTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton},
-        /*disabled_features=*/{});
-  }
   ~GlicStatusIconTest() override = default;
 
   void SetUp() override {
@@ -110,13 +105,16 @@ class GlicStatusIconTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
+  GlicUnitTestEnvironment glic_test_env_;
+
   std::unique_ptr<GlicStatusIcon> glic_status_icon_;
   MockStatusTray status_tray_;
   MockGlicController glic_controller_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_;
+#if BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList feature_list_{
+      features::kGlicShowStatusTrayIcon};
+#endif
 };
 
 #if !BUILDFLAG(IS_LINUX)

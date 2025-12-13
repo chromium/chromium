@@ -22,10 +22,12 @@ namespace bubble_anchor_util {
 AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
                                                    Anchor anchor) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  auto* location_bar_view = browser_view->GetLocationBarView();
+  auto* location_bar_view =
+      browser_view ? browser_view->GetLocationBarView() : nullptr;
 
   if (base::FeatureList::IsEnabled(
-          content_settings::features::kLeftHandSideActivityIndicators)) {
+          content_settings::features::kLeftHandSideActivityIndicators) &&
+      location_bar_view) {
     auto* permission_dashboard_view =
         location_bar_view->permission_dashboard_controller()
             ->permission_dashboard_view();
@@ -43,10 +45,9 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
               views::BubbleBorder::TOP_LEFT};
     }
   } else {
-    auto* request_chip_view = location_bar_view->GetChipController()->chip();
-    if (anchor == Anchor::kLocationBar && request_chip_view->GetVisible()) {
-      return {request_chip_view, request_chip_view,
-              views::BubbleBorder::TOP_LEFT};
+    auto chip_anchor = browser->window()->GetLocationBar()->GetChipAnchor();
+    if (anchor == Anchor::kLocationBar && chip_anchor) {
+      return *chip_anchor;
     }
   }
 
@@ -58,7 +59,7 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
   if (anchor == Anchor::kLocationBar &&
       browser_view->GetIsPictureInPictureType()) {
     auto* frame_view = static_cast<PictureInPictureBrowserFrameView*>(
-        browser_view->frame()->GetFrameView());
+        browser_view->browser_widget()->GetFrameView());
     return {frame_view->GetLocationIconView(),
             frame_view->GetLocationIconView(), views::BubbleBorder::TOP_LEFT};
   }
@@ -79,8 +80,8 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
 
   // The app menu button is not visible when immersive mode is enabled and the
   // title bar is not revealed. So return null anchor configuration.
-  if (browser_view->IsImmersiveModeEnabled() &&
-      !browser_view->immersive_mode_controller()->IsRevealed()) {
+  auto* const controller = ImmersiveModeController::From(browser);
+  if (controller->IsEnabled() && !controller->IsRevealed()) {
     return {};
   }
 
@@ -90,7 +91,7 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
 AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
     Browser* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (browser_view->GetLocationBarView()->GetChipController() &&
+  if (browser_view && browser_view->GetLocationBarView()->GetChipController() &&
       browser_view->GetLocationBarView()
           ->GetChipController()
           ->IsPermissionPromptChipVisible()) {
@@ -106,9 +107,10 @@ AnchorConfiguration GetAppMenuAnchorConfiguration(Browser* browser) {
 }
 
 gfx::Rect GetPageInfoAnchorRect(Browser* browser) {
-  // GetPageInfoAnchorConfiguration()'s anchor_view should be preferred if
+  // GetPageInfoAnchorConfiguration()'s anchor should be preferred if
   // available.
-  DCHECK_EQ(GetPageInfoAnchorConfiguration(browser).anchor_view, nullptr);
+  DCHECK(std::holds_alternative<std::nullptr_t>(
+      GetPageInfoAnchorConfiguration(browser).anchor));
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   // Get position in view (taking RTL UI into account).

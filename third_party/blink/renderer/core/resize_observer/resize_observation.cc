@@ -36,8 +36,9 @@ gfx::SizeF ComputeZoomAdjustedSVGBox(ResizeObserverBoxOptions box_option,
       const ComputedStyle& style = layout_object.StyleRef();
       const gfx::SizeF scaled_bounding_box_size(
           gfx::ScaleSize(bounding_box_size, style.EffectiveZoom()));
-      return ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
-          scaled_bounding_box_size, layout_object, style);
+      return gfx::SizeF(
+          ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
+              scaled_bounding_box_size, layout_object, style));
     }
   }
 }
@@ -115,6 +116,23 @@ LogicalSize ResizeObservation::ComputeTargetSize() const {
     return LogicalSize(LayoutUnit(size.width()), LayoutUnit(size.height()));
   }
   return LogicalSize();
+}
+
+bool ResizeObservation::NeedsObservationForRepaint() const {
+  if (!fire_on_every_paint_) {
+    return false;
+  }
+  CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
+  if (!target_ || !target_->GetLayoutObject()) {
+    return false;
+  }
+  const LayoutObject& layout_object = *target_->GetLayoutObject();
+  if (!layout_object.HasLayer()) {
+    return false;
+  }
+  return To<LayoutBoxModelObject>(layout_object)
+      .Layer()
+      ->SelfOrDescendantNeedsRepaint();
 }
 
 void ResizeObservation::Trace(Visitor* visitor) const {

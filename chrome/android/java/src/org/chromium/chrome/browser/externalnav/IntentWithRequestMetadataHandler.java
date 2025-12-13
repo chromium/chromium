@@ -6,47 +6,47 @@ package org.chromium.chrome.browser.externalnav;
 
 import android.content.Intent;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 
 import java.security.SecureRandom;
 import java.util.Arrays;
 
 /**
- * This class generates a token for the most recently launched external intent that has
- * any metadata that the browser is interested in. If the external intent resolves
- * to the browser itself, the token will be used to validate the intent and return the
- * store metadata.
- * Since there could be at most one intent chooser at a time, this class only stores
- * the metadata associated with the most recently launched intent. Token for a previously
- * launched intent will be invalidated if a new one comes.
+ * This class generates a token for the most recently launched external intent that has any metadata
+ * that the browser is interested in. If the external intent resolves to the browser itself, the
+ * token will be used to validate the intent and return the store metadata. Since there could be at
+ * most one intent chooser at a time, this class only stores the metadata associated with the most
+ * recently launched intent. Token for a previously launched intent will be invalidated if a new one
+ * comes.
  */
+@NullMarked
 public class IntentWithRequestMetadataHandler {
     /** Extra to record the token associated with the URL request metadata. */
     public static final String EXTRA_REQUEST_METADATA_TOKEN =
             "org.chromium.chrome.browser.request_metadata_token";
 
     private static final Object INSTANCE_LOCK = new Object();
-    private static IntentWithRequestMetadataHandler sIntentWithRequestMetadataHandler;
+    private static @Nullable IntentWithRequestMetadataHandler sIntentWithRequestMetadataHandler;
     private final SecureRandom mSecureRandom = new SecureRandom();
-    private RequestMetadata mRequestMetadata;
-    private byte[] mIntentToken;
-    private String mUri;
+    private @Nullable RequestMetadata mRequestMetadata;
+    private byte @Nullable [] mIntentToken;
+    private @Nullable String mUri;
 
     /** Class representing the URL request metadata that can be retrieved later. */
     public static class RequestMetadata {
         private final boolean mHasUserGesture;
-        private final boolean mIsRendererIntiated;
+        private final boolean mIsRendererInitiated;
 
-        public RequestMetadata(boolean hasUserGesture, boolean isRendererIntiated) {
+        public RequestMetadata(boolean hasUserGesture, boolean isRendererInitiated) {
             mHasUserGesture = hasUserGesture;
-            mIsRendererIntiated = isRendererIntiated;
+            mIsRendererInitiated = isRendererInitiated;
         }
 
         public boolean isRendererInitiated() {
-            return mIsRendererIntiated;
+            return mIsRendererInitiated;
         }
 
         public boolean hasUserGesture() {

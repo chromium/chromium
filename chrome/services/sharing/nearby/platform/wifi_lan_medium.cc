@@ -122,7 +122,9 @@ WifiLanMedium::WifiLanMedium(
 }
 
 WifiLanMedium::~WifiLanMedium() {
-  mdns_observer_.reset();
+  if (mdns_observer_.is_bound()) {
+    mdns_observer_.reset();
+  }
   // For thread safety, shut down on the |task_runner_|.
   base::WaitableEvent shutdown_waitable_event;
   task_runner_->PostTask(FROM_HERE, base::BindOnce(&WifiLanMedium::Shutdown,

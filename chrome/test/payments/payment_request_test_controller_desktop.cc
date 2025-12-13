@@ -106,6 +106,12 @@ bool PaymentRequestTestController::ConfirmPayment() {
     return false;
   }
 
+  SecurePaymentConfirmationNoCreds* no_creds_dialog =
+      delegate_->GetNoMatchingCredentialsDialogForTesting();
+  if (no_creds_dialog) {
+    return no_creds_dialog->AcceptDialogForTesting();
+  }
+
   PaymentRequestDialog* dialog = delegate_->GetDialogForTesting();
   if (!dialog) {
     return false;

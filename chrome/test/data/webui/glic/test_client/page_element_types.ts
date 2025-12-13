@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 export interface PageElementTypes {
+  actuationOnWebSwitch: HTMLInputElement;
   content: HTMLElement;
   status: HTMLElement;
   pageHeader: HTMLElement;
@@ -23,9 +24,19 @@ export interface PageElementTypes {
   testPermissionSwitch: HTMLButtonElement;
   openGlicSettings: HTMLButtonElement;
   openGlicSettingsHighlight: HTMLSelectElement;
+  pageMetadataNames: HTMLInputElement;
+  pageMetadataOpenTestPage: HTMLButtonElement;
+  pageMetadataRefreshTabs: HTMLButtonElement;
+  pageMetadataSection: HTMLFieldSetElement;
+  pageMetadataResult: HTMLTextAreaElement;
+  pageMetadataStatus: HTMLParagraphElement;
+  pageMetadataSubscribe: HTMLButtonElement;
+  pageMetadataTabsList: HTMLSelectElement;
+  pageMetadataUnsubscribe: HTMLButtonElement;
   microphoneSwitch: HTMLInputElement;
   geolocationSwitch: HTMLInputElement;
   tabContextSwitch: HTMLInputElement;
+  defaultTabContextSwitch: HTMLInputElement;
   newtabbn: HTMLButtonElement;
   reloadpage: HTMLButtonElement;
   getpagecontext: HTMLButtonElement;
@@ -66,9 +77,12 @@ export interface PageElementTypes {
   desktopScreenshotImg: HTMLImageElement;
   desktopScreenshotErrorReason: HTMLSpanElement;
   panelScreenshot: HTMLButtonElement;
+  captureRegionBtn: HTMLButtonElement;
+  captureRegionResultList: HTMLUListElement;
   createTabInBackground: HTMLInputElement;
   canAttachCheckbox: HTMLInputElement;
   scrollToDocumentId: HTMLSpanElement;
+  scrollToURL: HTMLSpanElement;
   scrollToExactText: HTMLInputElement;
   scrollToExactTextSearchStart: HTMLSelectElement;
   scrollToFetchAPCBn: HTMLButtonElement;
@@ -112,8 +126,18 @@ export interface PageElementTypes {
   stopActorTask: HTMLButtonElement;
   actorTaskId: HTMLInputElement;
   executeAction: HTMLButtonElement;
+  credentialSelection: HTMLDivElement;
+  selectCredential: HTMLSelectElement;
+  credentialOnce: HTMLButtonElement;
+  credentialAlways: HTMLButtonElement;
   actionProtoEncodedText: HTMLInputElement;
   actionStatus: HTMLSpanElement;
+  autofillSuggestionsDialogSection: HTMLElement;
+  autofillSuggestionsDialogStatus: HTMLSpanElement;
+  autofillSuggestionsList: HTMLUListElement;
+  selectedAutofillSuggestionId: HTMLInputElement;
+  sendAutofillSuggestionsResponse: HTMLButtonElement;
+  cancelAutofillSuggestionsDialog: HTMLButtonElement;
   actionUpdatedContextResult: HTMLSpanElement;
   actionUpdatedScreenshotImg: HTMLImageElement;
   macOsPermissionsFieldset: HTMLFieldSetElement;
@@ -131,7 +155,22 @@ export interface PageElementTypes {
   fetchPinned: HTMLButtonElement;
   shareCandidateQuery: HTMLInputElement;
   shareCandidates: HTMLElement;
+  enableShareCandidates: HTMLInputElement;
   unpin: HTMLButtonElement;
+  viewChangedBtn: HTMLButtonElement;
+  viewChangedCurrentView: HTMLSelectElement;
+  viewChangedAutomaticallyAccept: HTMLInputElement;
+  mqlsClientIdBtn: HTMLButtonElement;
+  additionalContextResult: HTMLTextAreaElement;
+  additionalContextImages: HTMLDivElement;
+  multiTabFetchScreenshot: HTMLInputElement;
+  conversationIdInput: HTMLInputElement;
+  conversationTitleInput: HTMLInputElement;
+  switchConversationBtn: HTMLButtonElement;
+  registerConversationBtn: HTMLButtonElement;
+  conversationId: HTMLInputElement;
+  textmode: HTMLInputElement;
+  audiomode: HTMLInputElement;
 }
 
 export const $: PageElementTypes = new Proxy({}, {

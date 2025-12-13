@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../controls/collapse_radio_button.js';
 import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
-import '../privacy_page/collapse_radio_button.js';
 import '../settings_columned_section.css.js';
 import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
@@ -17,10 +17,10 @@ import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {SettingsCollapseRadioButtonElement} from '../controls/collapse_radio_button.js';
 import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
-import type {SettingsCollapseRadioButtonElement} from '../privacy_page/collapse_radio_button.js';
 
 import {NetworkPredictionOptions} from './constants.js';
 import {PerformanceBrowserProxyImpl, PerformanceFeedbackCategory} from './performance_browser_proxy.js';

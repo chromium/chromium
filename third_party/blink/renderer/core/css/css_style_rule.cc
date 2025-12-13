@@ -108,7 +108,8 @@ void CSSStyleRule::setSelectorText(const ExecutionContext* execution_context,
   if (GCedHeapVector<Member<StyleRuleBase>>* child_rules =
           style_rule_->ChildRules()) {
     for (StyleRuleBase* child_rule : *child_rules) {
-      new_style_rule->AddChildRule(child_rule->Renest(new_style_rule));
+      new_style_rule->AddChildRule(child_rule->Clone(
+          new_style_rule, /*mixin_parameter_bindings=*/nullptr));
     }
   }
   if (parent_contents) {

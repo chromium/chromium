@@ -22,12 +22,16 @@
 #include "cc/paint/paint_op_writer.h"
 #include "cc/test/transfer_cache_test_helper.h"
 #include "components/viz/test/test_context_provider.h"
+#include "components/viz/test/test_gles2_interface.h"
 #include "gpu/command_buffer/common/buffer.h"
 #include "gpu/command_buffer/service/service_font_manager.h"
+#include "gpu/skia_bindings/gl_bindings_skia_cmd_buffer.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLInterface.h"
 
 struct Environment {
   Environment() {
@@ -76,7 +80,7 @@ class FontSupport : public gpu::ServiceFontManager::Client {
   base::flat_map<uint32_t, scoped_refptr<gpu::Buffer>> buffers_;
 };
 
-void Raster(scoped_refptr<viz::TestContextProvider> context_provider,
+void Raster(GrDirectContext* gr_context,
             SkStrikeClient* strike_client,
             cc::ServicePaintCache* paint_cache,
             const uint8_t* data,
@@ -85,9 +89,8 @@ void Raster(scoped_refptr<viz::TestContextProvider> context_provider,
 
   SkImageInfo image_info = SkImageInfo::MakeN32(
       kRasterDimension, kRasterDimension, kOpaque_SkAlphaType);
-  context_provider->BindToCurrentSequence();
-  sk_sp<SkSurface> surface = SkSurfaces::RenderTarget(
-      context_provider->GrContext(), skgpu::Budgeted::kYes, image_info);
+  sk_sp<SkSurface> surface =
+      SkSurfaces::RenderTarget(gr_context, skgpu::Budgeted::kYes, image_info);
   SkCanvas* canvas = surface->getCanvas();
 
   cc::PlaybackParams params(nullptr, canvas->getLocalToDevice());
@@ -133,6 +136,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   [[maybe_unused]] static Environment* env = new Environment();
   base::CommandLine::Init(0, nullptr);
 
+  // SAFETY: required from fuzzer.
+  base::span<const uint8_t> data_span = UNSAFE_BUFFERS(base::span(data, size));
+
   // Partition the data to use some bytes for populating the font cache.
   uint32_t bytes_for_fonts = data[0];
   if (bytes_for_fonts > size) {
@@ -153,21 +159,31 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   cc::ServicePaintCache paint_cache;
   std::vector<SkDiscardableHandleId> locked_handles;
   if (bytes_for_fonts > 0u) {
-    font_manager->Deserialize(data, bytes_for_fonts, &locked_handles);
+    font_manager->Deserialize(data_span.first(bytes_for_fonts),
+                              &locked_handles);
   }
 
-  auto context_provider_no_support = viz::TestContextProvider::Create();
+  auto context_provider_no_support = viz::TestContextProvider::CreateGLES();
   context_provider_no_support->BindToCurrentSequence();
-  CHECK(!context_provider_no_support->GrContext()->supportsDistanceFieldText());
-  Raster(context_provider_no_support, font_manager->strike_client(),
+  auto gr_context_no_support =
+      GrDirectContexts::MakeGL(skia_bindings::CreateGLES2InterfaceBindings(
+          context_provider_no_support->ContextGL(),
+          context_provider_no_support->ContextSupport()));
+  CHECK(!!gr_context_no_support);
+  CHECK(!gr_context_no_support->supportsDistanceFieldText());
+  Raster(gr_context_no_support.get(), font_manager->strike_client(),
          &paint_cache, raster_data, raster_size);
 
-  auto context_provider_with_support = viz::TestContextProvider::Create(
+  auto context_provider_with_support = viz::TestContextProvider::CreateGLES(
       std::string("GL_OES_standard_derivatives"));
   context_provider_with_support->BindToCurrentSequence();
-  CHECK(
-      context_provider_with_support->GrContext()->supportsDistanceFieldText());
-  Raster(context_provider_with_support, font_manager->strike_client(),
+  auto gr_context_with_support =
+      GrDirectContexts::MakeGL(skia_bindings::CreateGLES2InterfaceBindings(
+          context_provider_with_support->ContextGL(),
+          context_provider_with_support->ContextSupport()));
+  CHECK(!!gr_context_with_support);
+  CHECK(gr_context_with_support->supportsDistanceFieldText());
+  Raster(gr_context_with_support.get(), font_manager->strike_client(),
          &paint_cache, raster_data, raster_size);
 
   font_manager->Unlock(locked_handles);

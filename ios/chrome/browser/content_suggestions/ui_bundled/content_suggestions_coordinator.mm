@@ -8,6 +8,8 @@
 #import <vector>
 
 #import "base/apple/foundation_util.h"
+#import "base/containers/contains.h"
+#import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
@@ -17,9 +19,11 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/commerce_feature_list.h"
+#import "components/commerce/core/shopping_service.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/ntp_tiles/most_visited_sites.h"
+#import "components/ntp_tiles/pref_names.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/prefs/pref_service.h"
@@ -35,51 +39,57 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/app_store_bundle/model/app_store_bundle_service_factory.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_mediator.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/shortcuts_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/coordinator/app_bundle_promo_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_commands.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_image_data_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller_audience.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/impression_limit_service_factory.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_collection_view.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_collection_view_audience.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_container_delegate.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_ranking_model.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_utils.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/default_browser/coordinator/default_browser_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/default_browser/public/features.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/model/impression_limit_service_factory.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/coordinator/magic_stack_ranking_model.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/public/magic_stack_utils.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui/magic_stack_collection_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui/magic_stack_collection_view_audience.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui/magic_stack_module_container_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/coordinator/most_visited_tiles_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/price_tracking_promo_action_delegate.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/price_tracking_promo_mediator.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_magic_stack_mediator.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/types.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/utils.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/send_tab_to_self/send_tab_promo_mediator.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_default_browser_promo_coordinator.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_default_browser_promo_coordinator_delegate.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_item_view.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_mediator.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_show_more_view_controller.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_tap_delegate.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/utils.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_action_delegate.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_mediator.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_mediator.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_magic_stack_mediator.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_metrics.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_module_state.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_passwords_coordinator.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_prefs.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/coordinator/price_tracking_promo_action_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/coordinator/price_tracking_promo_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/coordinator/safety_check_magic_stack_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/model/safety_check_utils.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/ui/safety_check_item_type.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/send_tab_to_self/coordinator/send_tab_promo_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/coordinator/set_up_list_default_browser_promo_coordinator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/coordinator/set_up_list_default_browser_promo_coordinator_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/coordinator/set_up_list_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/public/set_up_list_utils.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/ui/set_up_list_item_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/ui/set_up_list_show_more_view_controller.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/ui/set_up_list_tap_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/coordinator/shop_card_action_delegate.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/coordinator/shop_card_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/coordinator/shortcuts_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/coordinator/tab_resumption_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/coordinator/tips_magic_stack_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/coordinator/tips_passwords_coordinator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/model/tips_metrics.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_state.h"
+#import "ios/chrome/browser/default_browser/model/promo_source.h"
+#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -143,7 +153,6 @@
 #import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
-#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -153,7 +162,6 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -243,6 +251,7 @@ using segmentation_platform::TipIdentifier;
   ShortcutsMediator* _shortcutsMediator;
   SafetyCheckMagicStackMediator* _safetyCheckMediator;
   TipsMagicStackMediator* _tipsMediator;
+  AppBundlePromoMediator* _appBundlePromoMediator;
   MostVisitedTilesMediator* _mostVisitedTilesMediator;
   TabResumptionMediator* _tabResumptionMediator;
   PriceTrackingPromoMediator* _priceTrackingPromoMediator;
@@ -250,6 +259,7 @@ using segmentation_platform::TipIdentifier;
   SendTabPromoMediator* _sendTabPromoMediator;
   SigninCoordinator* _signinCoordinator;
   MagicStackCollectionViewController* _magicStackCollectionView;
+  DefaultBrowserMediator* _defaultBrowserMediator;
 
   raw_ptr<segmentation_platform::SegmentationPlatformService>
       _segmentationService;
@@ -305,11 +315,6 @@ using segmentation_platform::TipIdentifier;
       [[ContentSuggestionsMetricsRecorder alloc]
           initWithLocalState:GetApplicationContext()->GetLocalState()];
 
-  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
-
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(profile);
-
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
 
@@ -347,7 +352,7 @@ using segmentation_platform::TipIdentifier;
       initWithReadingListModel:readingListModel
       featureEngagementTracker:feature_engagement::TrackerFactory::
                                    GetForProfile(profile)
-                   authService:authenticationService];
+               identityManager:identityManager];
   _shortcutsMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
   _shortcutsMediator.NTPActionsDelegate = self.NTPActionsDelegate;
@@ -357,33 +362,32 @@ using segmentation_platform::TipIdentifier;
   [moduleMediators addObject:_shortcutsMediator];
   self.contentSuggestionsMediator.shortcutsMediator = _shortcutsMediator;
 
-  if (IsTabResumptionEnabled()) {
-    _tabResumptionMediator = [[TabResumptionMediator alloc]
-              initWithLocalState:GetApplicationContext()->GetLocalState()
-                     prefService:prefs
-                 identityManager:identityManager
-                         browser:self.browser
-        optimizationGuideService:OptimizationGuideServiceFactory::GetForProfile(
-                                     profile)
-          impressionLimitService:ImpressionLimitServiceFactory::GetForProfile(
-                                     profile)
-                 shoppingService:commerce::ShoppingServiceFactory::
-                                     GetForProfile(profile)
-                   bookmarkModel:ios::BookmarkModelFactory::GetForProfile(
-                                     profile)
-         pushNotificationService:GetApplicationContext()
-                                     ->GetPushNotificationService()
-           authenticationService:self.authService];
-    _tabResumptionMediator.NTPActionsDelegate = self.NTPActionsDelegate;
-    _tabResumptionMediator.contentSuggestionsMetricsRecorder =
-        self.contentSuggestionsMetricsRecorder;
-    _tabResumptionMediator.dispatcher = static_cast<
-        id<ApplicationCommands, PriceTrackedItemsCommands, SnackbarCommands>>(
-        self.browser->GetCommandDispatcher());
+  _tabResumptionMediator = [[TabResumptionMediator alloc]
+            initWithLocalState:GetApplicationContext()->GetLocalState()
+                   prefService:prefs
+               identityManager:identityManager
+                       browser:self.browser
+      optimizationGuideService:OptimizationGuideServiceFactory::GetForProfile(
+                                   profile)
+        impressionLimitService:
+            base::FeatureList::IsEnabled(commerce::kShopCardImpressionLimits)
+                ? ImpressionLimitServiceFactory::GetForProfile(profile)
+                : nil
+               shoppingService:commerce::ShoppingServiceFactory::GetForProfile(
+                                   profile)
+                 bookmarkModel:ios::BookmarkModelFactory::GetForProfile(profile)
+       pushNotificationService:GetApplicationContext()
+                                   ->GetPushNotificationService()
+         authenticationService:self.authService];
+  _tabResumptionMediator.NTPActionsDelegate = self.NTPActionsDelegate;
+  _tabResumptionMediator.contentSuggestionsMetricsRecorder =
+      self.contentSuggestionsMetricsRecorder;
+  _tabResumptionMediator.dispatcher = static_cast<
+      id<ApplicationCommands, PriceTrackedItemsCommands, SnackbarCommands>>(
+      self.browser->GetCommandDispatcher());
 
-    [moduleMediators addObject:_tabResumptionMediator];
-  }
-  if (IsPriceTrackingPromoCardEnabled(shoppingService, authenticationService,
+  [moduleMediators addObject:_tabResumptionMediator];
+  if (IsPriceTrackingPromoCardEnabled(shoppingService, self.authService,
                                       prefs)) {
     _priceTrackingPromoMediator = [[PriceTrackingPromoMediator alloc]
         initWithShoppingService:commerce::ShoppingServiceFactory::GetForProfile(
@@ -407,11 +411,9 @@ using segmentation_platform::TipIdentifier;
     _priceTrackingPromoMediator.NTPActionsDelegate = self.NTPActionsDelegate;
     [moduleMediators addObject:_priceTrackingPromoMediator];
   }
-  if (base::FeatureList::IsEnabled(commerce::kShopCard) &&
-      (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1 ||
-       commerce::kShopCardVariation.Get() == commerce::kShopCardArm2)) {
-    // If ShopCard experiment is on, create the ShopCard mediator.
-    // Note at this point we don't know which of the 4 variants will show.
+  // Only users that are eligible for ShoppingList are eligible for the
+  // ShopCard.
+  if (shoppingService->IsShoppingListEligible()) {
     _shopCardMediator = [[ShopCardMediator alloc]
         initWithShoppingService:commerce::ShoppingServiceFactory::GetForProfile(
                                     profile)
@@ -432,7 +434,6 @@ using segmentation_platform::TipIdentifier;
     _shopCardMediator.shopCardActionDelegate = self;
   }
 
-  if (IsSafetyCheckMagicStackEnabled()) {
     IOSChromeSafetyCheckManager* safetyCheckManager =
         IOSChromeSafetyCheckManagerFactory::GetForProfile(profile);
     _safetyCheckMediator = [[SafetyCheckMagicStackMediator alloc]
@@ -442,7 +443,6 @@ using segmentation_platform::TipIdentifier;
                       profileState:self.browser->GetSceneState().profileState];
     _safetyCheckMediator.presentationAudience = self;
     [moduleMediators addObject:_safetyCheckMediator];
-  }
 
   if (send_tab_to_self::
           IsSendTabIOSPushNotificationsEnabledWithMagicStackCard()) {
@@ -456,8 +456,10 @@ using segmentation_platform::TipIdentifier;
     [moduleMediators addObject:_sendTabPromoMediator];
   }
 
-  if (IsTipsMagicStackEnabled() &&
-      !tips_prefs::IsTipsInMagicStackDisabled(prefs)) {
+  BOOL areTipsCardsEnabled =
+      prefs->GetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled);
+
+  if (IsTipsMagicStackEnabled() && areTipsCardsEnabled) {
     _tipsMediator = [[TipsMagicStackMediator alloc]
         initWithIdentifier:TipIdentifier::kUnknown
         profilePrefService:prefs
@@ -468,6 +470,23 @@ using segmentation_platform::TipIdentifier;
                                profile->GetSharedURLLoaderFactory())];
     _tipsMediator.presentationAudience = self;
     [moduleMediators addObject:_tipsMediator];
+  }
+
+  if (segmentation_platform::features::IsAppBundlePromoEphemeralCardEnabled() &&
+      areTipsCardsEnabled) {
+    _appBundlePromoMediator = [[AppBundlePromoMediator alloc]
+        initWithAppStoreBundleService:AppStoreBundleServiceFactory::
+                                          GetForProfile(self.profile)
+                   profilePrefService:prefs];
+    _appBundlePromoMediator.presentationAudience = self;
+    [moduleMediators addObject:_appBundlePromoMediator];
+  }
+  if (segmentation_platform::features::IsDefaultBrowserMagicStackEnabled() &&
+      areTipsCardsEnabled) {
+    _defaultBrowserMediator =
+        [[DefaultBrowserMediator alloc] initWithProfilePrefService:prefs];
+    _defaultBrowserMediator.presentationAudience = self;
+    [moduleMediators addObject:_defaultBrowserMediator];
   }
 
   ContentSuggestionsViewController* viewController =
@@ -489,13 +508,11 @@ using segmentation_platform::TipIdentifier;
                                  defaultSearchURLTemplate->prepopulate_id() ==
                                      TemplateURLPrepopulateData::google.id;
     _setUpListMediator = [[SetUpListMediator alloc]
-                   initWithPrefService:prefs
-                           syncService:syncService
-                       identityManager:identityManager
-                 authenticationService:authenticationService
-                            sceneState:self.browser->GetSceneState()
-                 isDefaultSearchEngine:isDefaultSearchEngine
-                  priceTrackingEnabled:IsPriceTrackingEnabled(self.profile)];
+          initWithPrefService:prefs
+              identityManager:identityManager
+                   sceneState:self.browser->GetSceneState()
+        isDefaultSearchEngine:isDefaultSearchEngine
+         priceTrackingEnabled:IsPriceTrackingEnabled(self.profile)];
     _setUpListMediator.commandHandler = self;
     _setUpListMediator.contentSuggestionsMetricsRecorder =
         self.contentSuggestionsMetricsRecorder;
@@ -514,7 +531,11 @@ using segmentation_platform::TipIdentifier;
                       tipsManager:TipsManagerIOSFactory::GetForProfile(
                                       self.profile)
                templateURLService:ios::TemplateURLServiceFactory::GetForProfile(
-                                      self.profile)];
+                                      self.profile)
+            appStoreBundleService:AppStoreBundleServiceFactory::GetForProfile(
+                                      self.profile)
+                    bookmarkModel:ios::BookmarkModelFactory::GetForProfile(
+                                      profile)];
   _magicStackRankingModel.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
   self.contentSuggestionsMediator.magicStackRankingModel =
@@ -553,6 +574,8 @@ using segmentation_platform::TipIdentifier;
   _tabResumptionMediator = nil;
   [_magicStackRankingModel disconnect];
   _magicStackRankingModel = nil;
+  [_appBundlePromoMediator disconnect];
+  _appBundlePromoMediator = nil;
   [self.contentSuggestionsMediator disconnect];
   self.contentSuggestionsMediator = nil;
   [self.contentSuggestionsMetricsRecorder disconnect];
@@ -645,6 +668,51 @@ using segmentation_platform::TipIdentifier;
   };
 
   [_tipsMediator removeModuleWithCompletion:completion];
+}
+
+// Removes the App Bundle promo from the Magic Stack and opens the App Store
+// page to install the Best of Google bundle.
+- (void)didSelectAppBundlePromo {
+  // Note: The promo modal only works when the `kAppBundlePromoEphemeralCard`
+  // feature is enabled. If this card is forced in the
+  // #ios-segmentation-ephemeral-card-ranker, tapping the card does NOT do
+  // anything. This is because the creation of the AppStorePromoService is gated
+  // behind the feature flag.
+  CHECK(_appBundlePromoMediator);
+
+  __weak __typeof(self) weakSelf = self;
+
+  ProceduralBlock completion = ^{
+    [weakSelf presentAppStoreBundlePage];
+  };
+
+  [_appBundlePromoMediator removeModuleWithCompletion:completion];
+}
+
+// Presents the Best of Google bundle install page in the App Store.
+- (void)presentAppStoreBundlePage {
+  [_appBundlePromoMediator
+      presentAppStoreBundlePage:self.magicStackCollectionView
+                 withCompletion:nil];
+}
+
+- (void)didTapDefaultBrowserPromo {
+  DefaultBrowserMagicStackIosVariationType variation =
+      GetDefaultBrowserMagicStackIosVariation();
+
+  if (variation ==
+      DefaultBrowserMagicStackIosVariationType::kTapToDeviceSettings) {
+    OpenIOSDefaultBrowserSettingsPage();
+  } else if (variation ==
+             DefaultBrowserMagicStackIosVariationType::kTapToAppSettings) {
+    id<SettingsCommands> settings_handler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), SettingsCommands);
+    [settings_handler
+        showDefaultBrowserSettingsFromViewController:nil
+                                        sourceForUMA:
+                                            DefaultBrowserSettingsPageSource::
+                                                kMagicStackCard];
+  }
 }
 
 - (void)openTipDestination:(segmentation_platform::TipIdentifier)tip {
@@ -781,6 +849,17 @@ using segmentation_platform::TipIdentifier;
       }
       [[fallthrough]];
     }
+    case ContentSuggestionsModuleType::kAppBundlePromo: {
+      registry->NotifyCardShown(
+          segmentation_platform::kAppBundlePromoEphemeralModule);
+      UMA_HISTOGRAM_BOOLEAN(kAppBundlePromoImpression, true);
+      break;
+    }
+    case ContentSuggestionsModuleType::kDefaultBrowser: {
+      registry->NotifyCardShown(
+          segmentation_platform::kDefaultBrowserPromoEphemeralModule);
+      break;
+    }
     default:
       NOTREACHED();
   }
@@ -801,20 +880,16 @@ using segmentation_platform::TipIdentifier;
     case ContentSuggestionsModuleType::kCompactedSetUpList:
       [self showSetUpListSeeMoreMenuExpanded:NO];
       break;
-    case ContentSuggestionsModuleType::kParcelTracking:
-      // TODO(crbug.com/391002352): Remove kParcelTracking entirely.
-      break;
     case ContentSuggestionsModuleType::kTabResumption:
       [self showMagicStackRecentTabs];
       break;
-    case ContentSuggestionsModuleType::kShopCard:
-      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
-        id<PriceTrackedItemsCommands> priceNotificationsCommands =
-            HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                               PriceTrackedItemsCommands);
-        [priceNotificationsCommands showPriceTrackedItems];
-      }
+    case ContentSuggestionsModuleType::kShopCard: {
+      id<PriceTrackedItemsCommands> priceNotificationsCommands =
+          HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                             PriceTrackedItemsCommands);
+      [priceNotificationsCommands showPriceTrackedItems];
       break;
+    }
     default:
       break;
   }
@@ -831,16 +906,6 @@ using segmentation_platform::TipIdentifier;
     case ContentSuggestionsModuleType::kSafetyCheck:
       [_safetyCheckMediator disableModule];
       break;
-    case ContentSuggestionsModuleType::kSetUpListSync:
-    case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
-    case ContentSuggestionsModuleType::kSetUpListAutofill:
-    case ContentSuggestionsModuleType::kSetUpListNotifications:
-    case ContentSuggestionsModuleType::kCompactedSetUpList:
-      [_setUpListMediator disableModule];
-      break;
-    case ContentSuggestionsModuleType::kParcelTracking:
-      // TODO(crbug.com/391002352): Remove kParcelTracking entirely.
-      break;
     case ContentSuggestionsModuleType::kPriceTrackingPromo: {
       base::RecordAction(base::UserMetricsAction(
           "Commerce.PriceTracking.MagicStackPromo.Hidden"));
@@ -853,9 +918,16 @@ using segmentation_platform::TipIdentifier;
       [_sendTabPromoMediator dismissModule];
       break;
     }
+    case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
+    case ContentSuggestionsModuleType::kSetUpListAutofill:
+    case ContentSuggestionsModuleType::kSetUpListNotifications:
+    case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kTipsWithProductImage:
-    case ContentSuggestionsModuleType::kTips: {
-      [_tipsMediator disableModule];
+    case ContentSuggestionsModuleType::kTips:
+    case ContentSuggestionsModuleType::kAppBundlePromo:
+    case ContentSuggestionsModuleType::kDefaultBrowser: {
+      // Disable all cards with "Chrome Tips" header.
+      [self disableTipsModules];
       break;
     }
     case ContentSuggestionsModuleType::kShopCard: {
@@ -872,9 +944,9 @@ using segmentation_platform::TipIdentifier;
 // and Safety Check modules.
 - (PushNotificationClientId)pushNotificationClientId:
     (ContentSuggestionsModuleType)type {
-  // This is only supported for Set Up List, Tips, Send Tab, and Safety Check
+  // This is only supported for Tips, Send Tab, and Safety Check
   // modules.
-  CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
+  CHECK(IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck ||
         type == ContentSuggestionsModuleType::kSendTabPromo);
 
@@ -882,7 +954,7 @@ using segmentation_platform::TipIdentifier;
     return PushNotificationClientId::kSafetyCheck;
   }
 
-  if (IsSetUpListModuleType(type) || IsTipsModuleType(type)) {
+  if (IsTipsModuleType(type)) {
     return PushNotificationClientId::kTips;
   }
 
@@ -898,18 +970,14 @@ using segmentation_platform::TipIdentifier;
 // notifications are exclusively supported by the Set Up List, Send Tab, and
 // Safety Check modules.
 - (int)pushNotificationTitleMessageId:(ContentSuggestionsModuleType)type {
-  // This is only supported for Set Up List, Tips, Send Tab, and Safety Check
+  // This is only supported for Tips, Send Tab, and Safety Check
   // modules.
-  CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
+  CHECK(IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck ||
         type == ContentSuggestionsModuleType::kSendTabPromo);
 
   if (type == ContentSuggestionsModuleType::kSafetyCheck) {
     return IDS_IOS_SAFETY_CHECK_TITLE;
-  }
-
-  if (IsSetUpListModuleType(type)) {
-    return content_suggestions::SetUpListTitleStringID();
   }
 
   if (IsTipsModuleType(type)) {
@@ -930,7 +998,6 @@ using segmentation_platform::TipIdentifier;
       return NotificationOptInAccessPoint::kSafetyCheck;
     case ContentSuggestionsModuleType::kSendTabPromo:
       return NotificationOptInAccessPoint::kSendTabMagicStackPromo;
-    case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListNotifications:
@@ -939,6 +1006,8 @@ using segmentation_platform::TipIdentifier;
       return NotificationOptInAccessPoint::kSetUpList;
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
+    case ContentSuggestionsModuleType::kAppBundlePromo:
+    case ContentSuggestionsModuleType::kDefaultBrowser:
       return NotificationOptInAccessPoint::kTips;
     default:
       NOTREACHED();
@@ -947,9 +1016,9 @@ using segmentation_platform::TipIdentifier;
 
 - (void)enableNotifications:(ContentSuggestionsModuleType)type
              viaContextMenu:(BOOL)viaContextMenu {
-  // This is only supported for Set Up List, Tips, Send Tab, and Safety Check
+  // This is only supported for Tips, Send Tab, and Safety Check
   // modules.
-  CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
+  CHECK(IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck ||
         type == ContentSuggestionsModuleType::kSendTabPromo);
 
@@ -982,9 +1051,9 @@ using segmentation_platform::TipIdentifier;
 
 - (void)disableNotifications:(ContentSuggestionsModuleType)type
               viaContextMenu:(BOOL)viaContextMenu {
-  // This is only supported for Set Up List, Tips, Send Tab, and Safety Check
+  // This is only supported for Tips, Send Tab, and Safety Check
   // modules.
-  CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
+  CHECK(IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck ||
         type == ContentSuggestionsModuleType::kSendTabPromo);
 
@@ -997,7 +1066,7 @@ using segmentation_platform::TipIdentifier;
       [self pushNotificationClientId:type];
 
   GetApplicationContext()->GetPushNotificationService()->SetPreference(
-      identity.gaiaID, clientId, false);
+      identity.gaiaId, clientId, false);
 
   // Show confirmation snackbar.
   NSString* buttonText =
@@ -1044,8 +1113,6 @@ using segmentation_platform::TipIdentifier;
 // Safety Check item `type`, this method fires a UI command to present the
 // Update Chrome page, Password Checkup, or Safety Check half sheet.
 - (void)didSelectSafetyCheckItem:(SafetyCheckItemType)type {
-  CHECK(IsSafetyCheckMagicStackEnabled());
-
   [self.NTPActionsDelegate safetyCheckOpened];
   Browser* browser = self.browser;
   [_magicStackRankingModel logMagicStackEngagementForType:
@@ -1073,9 +1140,10 @@ using segmentation_platform::TipIdentifier;
       password_manager::InsecurePasswordCounts insecure_password_counts =
           safetyCheckManager->GetInsecurePasswordCounts();
 
-      HandleSafetyCheckPasswordTap(insecure_credentials,
-                                   insecure_password_counts, applicationHandler,
-                                   settingsHandler);
+      HandleSafetyCheckPasswordTap(
+          insecure_credentials, insecure_password_counts,
+          password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack,
+          applicationHandler, settingsHandler);
 
       break;
     }
@@ -1141,9 +1209,6 @@ using segmentation_platform::TipIdentifier;
 // Displays the UI for the given SetUpListItemType.
 - (void)showUIForSelectedSetUpListItem:(SetUpListItemType)type {
   switch (type) {
-    case SetUpListItemType::kSignInSync:
-      [self showSignIn];
-      break;
     case SetUpListItemType::kDefaultBrowser:
       [self showDefaultBrowserPromo];
       break;
@@ -1157,9 +1222,7 @@ using segmentation_platform::TipIdentifier;
                                                     kSetUpList
                              baseViewController:self.magicStackCollectionView];
       break;
-    case SetUpListItemType::kFollow:
     case SetUpListItemType::kAllSet:
-      // TODO(crbug.com/40262090): Add a Follow item to the Set Up List.
       NOTREACHED();
   }
 }
@@ -1180,46 +1243,10 @@ using segmentation_platform::TipIdentifier;
   [_defaultBrowserPromoCoordinator start];
 }
 
-// Shows the SigninSync UI with the SetUpList access point.
-- (void)showSignIn {
-  __weak __typeof(self) weakSelf = self;
-  SigninCoordinatorCompletionCallback completion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> completionIdentity) {
-        [weakSelf signinCoordinatiorCompletionWithResult:result];
-      };
-  // If there are 0 identities, kInstantSignin requires less taps.
-  AuthenticationOperation operation =
-      [self hasIdentitiesOnDevice] ? AuthenticationOperation::kSigninOnly
-                                   : AuthenticationOperation::kInstantSignin;
-  ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:operation
-               identity:nil
-            accessPoint:signin_metrics::AccessPoint::kSetUpList
-            promoAction:signin_metrics::PromoAction::
-                            PROMO_ACTION_NO_SIGNIN_PROMO
-             completion:completion];
-  _signinCoordinator =
-      [SigninCoordinator signinCoordinatorWithCommand:command
-                                              browser:self.browser
-                                   baseViewController:self.viewController];
-  [_signinCoordinator start];
-}
-
 // Stops the SigninCoordinator.
 - (void)stopSigninCoordinator {
   [_signinCoordinator stop];
   _signinCoordinator = nil;
-}
-
-// Callback for the SigninCoordinator.
-- (void)signinCoordinatiorCompletionWithResult:(SigninCoordinatorResult)result {
-  [self stopSigninCoordinator];
-  if (result == SigninCoordinatorResultSuccess ||
-      result == SigninCoordinatorResultCanceledByUser) {
-    PrefService* localState = GetApplicationContext()->GetLocalState();
-    set_up_list_prefs::MarkItemComplete(localState,
-                                        SetUpListItemType::kSignInSync);
-  }
 }
 
 // Shows the Credential Provider Promo using the SetUpList trigger.
@@ -1317,8 +1344,7 @@ using segmentation_platform::TipIdentifier;
                   base::RecordAction(base::UserMetricsAction(
                       "Commerce.PriceTracking.MagicStackPromo.Reenable.Deny"));
                   [strongSelf dismissAlertCoordinator];
-                  [strongSelf->_priceTrackingPromoMediator
-                          removePriceTrackingPromo];
+                  [strongSelf->_priceTrackingPromoMediator disableModule];
                 }
                  style:UIAlertActionStyleCancel];
   [_priceTrackingPromoAlertCoordinator start];
@@ -1333,7 +1359,7 @@ using segmentation_platform::TipIdentifier;
           [self->_priceTrackingPromoMediator
                   enablePriceTrackingSettingsAndShowSnackbar];
         }
-        [self->_priceTrackingPromoMediator removePriceTrackingPromo];
+        [self->_priceTrackingPromoMediator disableModule];
       }];
 }
 
@@ -1369,12 +1395,6 @@ using segmentation_platform::TipIdentifier;
 
 #pragma mark - Helpers
 
-- (bool)hasIdentitiesOnDevice {
-  return !IdentityManagerFactory::GetForProfile(self.profile)
-              ->GetAccountsOnDevice()
-              .empty();
-}
-
 - (void)showMagicStackRecentTabs {
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   id<BrowserCoordinatorCommands> browserCoordinatorCommands =
@@ -1404,11 +1424,15 @@ using segmentation_platform::TipIdentifier;
       return ContentSuggestionsModuleType::kSafetyCheck;
     case PushNotificationClientId::kSendTab:
       return ContentSuggestionsModuleType::kSendTabPromo;
-    case PushNotificationClientId::kContent:
-    case PushNotificationClientId::kSports:
-    case PushNotificationClientId::kReminders:
+    default:
       NOTREACHED();
   }
+}
+
+// Disables Magic Stack cards with the "Chrome Tips" header.
+- (void)disableTipsModules {
+  PrefService* prefs = self.profile->GetPrefs();
+  prefs->SetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled, false);
 }
 
 @end

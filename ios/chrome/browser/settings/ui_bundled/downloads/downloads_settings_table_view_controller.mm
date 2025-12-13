@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/identity_button_control.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller_action_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/downloads_settings_table_view_controller_presentation_delegate.h"
@@ -14,7 +15,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_account_selection_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_mutator.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
@@ -99,7 +99,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)setIdentityButtonAvatar:(UIImage*)avatar
                            name:(NSString*)name
                           email:(NSString*)email
-                         gaiaID:(NSString*)gaiaID
+                         gaiaID:(const GaiaId&)gaiaID
            askEveryTimeSwitchOn:(BOOL)askEveryTimeSwitchOn {
   // Update the identity button item.
   IdentityButtonItem* identityButtonItem = self.saveToPhotosDefaultIdentityItem;
@@ -112,15 +112,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Update the "Ask which account to use every time" switch.
   TableViewSwitchItem* switchItem = self.saveToPhotosAskEveryTimeSwitch;
   switchItem.on = askEveryTimeSwitchOn;
-  NSIndexPath* indexPath = [self.tableViewModel indexPathForItem:switchItem];
-  UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
-  TableViewSwitchCell* switchCell =
-      base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-  if (switchCell.switchView.isOn != askEveryTimeSwitchOn) {
-    // Systematically reconfiguring the switch would cancel its animation.
-    // Instead, it is only reconfigured on "external" changes.
-    [self reconfigureCellsForItems:@[ switchItem ]];
-  }
+
+  [self reconfigureCellsForItems:@[ switchItem ]];
 }
 
 - (void)displaySaveToPhotosSettingsUI {
@@ -172,13 +165,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (!_saveToPhotosAskEveryTimeSwitch) {
     _saveToPhotosAskEveryTimeSwitch =
         [[TableViewSwitchItem alloc] initWithType:ItemTypeAskEveryTime];
-    if (IsSaveToPhotosAccountPickerImprovementEnabled()) {
-      _saveToPhotosAskEveryTimeSwitch.text = l10n_util::GetNSString(
-          IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_THIS_ACCOUNT_EVERY_TIME);
-    } else {
-      _saveToPhotosAskEveryTimeSwitch.text = l10n_util::GetNSString(
-          IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_ASK_EVERY_TIME);
-    }
+    _saveToPhotosAskEveryTimeSwitch.target = self;
+    _saveToPhotosAskEveryTimeSwitch.selector =
+        @selector(saveToPhotosAskEveryTimeSwitchAction:);
+    _saveToPhotosAskEveryTimeSwitch.text = l10n_util::GetNSString(
+        IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_THIS_ACCOUNT_EVERY_TIME);
   }
   return _saveToPhotosAskEveryTimeSwitch;
 }
@@ -191,6 +182,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
         l10n_util::GetNSString(IDS_IOS_SETTINGS_DOWNLOADS_SWITCH_ITEM_HEADER);
     _autoDeletionSwitch.detailText = l10n_util::GetNSString(
         IDS_IOS_SETTINGS_DOWNLOADS_SWITCH_ITEM_DETAIL_TEXT);
+    _autoDeletionSwitch.target = self;
+    _autoDeletionSwitch.selector = @selector(autoDeletionSwitchAction:);
     _autoDeletionSwitch.on = _isAutoDeletionEnabled;
   }
 
@@ -203,14 +196,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
-  SEL action = [self actionForItemAtIndexPath:indexPath];
-  if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
-    TableViewSwitchCell* switchCell =
-        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-    [switchCell.switchView addTarget:self
-                              action:action
-                    forControlEvents:UIControlEventValueChanged];
-  } else if ([cell isKindOfClass:[IdentityButtonCell class]]) {
+  if ([cell isKindOfClass:[IdentityButtonCell class]]) {
+    SEL action = [self actionForItemAtIndexPath:indexPath];
     IdentityButtonCell* identityButtonCell =
         base::apple::ObjCCastStrict<IdentityButtonCell>(cell);
     [identityButtonCell.identityButtonControl
@@ -224,16 +211,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Actions
 
 - (void)saveToPhotosAskEveryTimeSwitchAction:(UISwitch*)sender {
-  BOOL askWhichAccountToUseEveryTime = sender.isOn;
-  if (IsSaveToPhotosAccountPickerImprovementEnabled()) {
-    askWhichAccountToUseEveryTime = !sender.isOn;
-  }
+  BOOL askWhichAccountToUseEveryTime = !sender.isOn;
   [self.saveToPhotosSettingsMutator
       setAskWhichAccountToUseEveryTime:askWhichAccountToUseEveryTime];
   if (!askWhichAccountToUseEveryTime) {
-    [self.saveToPhotosSettingsMutator
-        setSelectedIdentityGaiaID:self.saveToPhotosDefaultIdentityItem
-                                      .identityGaiaID];
+    GaiaId gaiaID = self.saveToPhotosDefaultIdentityItem.identityGaiaID;
+    [self.saveToPhotosSettingsMutator setSelectedIdentityGaiaID:&gaiaID];
   }
 }
 
@@ -293,9 +276,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeDefaultIdentity:
       return @selector(saveToPhotosIdentityButtonAction:);
     case ItemTypeAskEveryTime:
-      return @selector(saveToPhotosAskEveryTimeSwitchAction:);
     case ItemTypeAutoDeletion:
-      return @selector(autoDeletionSwitchAction:);
+      NOTREACHED();
   }
 
   NOTREACHED();

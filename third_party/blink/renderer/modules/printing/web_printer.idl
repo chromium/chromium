@@ -16,8 +16,8 @@ interface WebPrinter {
   Promise<WebPrinterAttributes> fetchAttributes();
 
   [CallWith=ScriptState, RaisesException, MeasureAs=WebPrinterPrintJobFunction]
-  Promise<WebPrintJob> printJob(
-    DOMString job_name,
-    WebPrintDocumentDescription document,
+  Promise<WebPrintJob> submitPrintJob(
+    USVString job_name,
+    Blob document_data,
     WebPrintJobTemplateAttributes attributes);
 };

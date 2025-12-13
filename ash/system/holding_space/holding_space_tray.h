@@ -214,7 +214,7 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
 
   // Subscription to receive notification of changes to the
   // `progress_indicator_`'s underlying progress.
-  base::RepeatingClosureList::Subscription
+  base::CallbackListSubscription
       progress_indicator_progress_changed_callback_list_subscription_;
 
   // When the holding space previews feature is enabled, the user can enable/

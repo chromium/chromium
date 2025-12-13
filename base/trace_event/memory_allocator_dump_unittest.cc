@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/format_macros.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -73,8 +75,8 @@ void CheckScalar(const MemoryAllocatorDump* dump,
 }  // namespace
 
 TEST(MemoryAllocatorDumpTest, GuidGeneration) {
-  std::unique_ptr<MemoryAllocatorDump> mad(new MemoryAllocatorDump(
-      "foo", MemoryDumpLevelOfDetail::kFirst, MemoryAllocatorDumpGuid(0x42u)));
+  auto mad = std::make_unique<MemoryAllocatorDump>(
+      "foo", MemoryDumpLevelOfDetail::kFirst, MemoryAllocatorDumpGuid(0x42u));
   ASSERT_EQ("42", mad->guid().ToString());
 }
 
@@ -114,7 +116,7 @@ TEST(MemoryAllocatorDumpTest, DumpIntoProcessMemoryDump) {
   EXPECT_THAT(empty_sub_heap->entries(), IsEmpty());
 
   // Check that calling serialization routines doesn't cause a crash.
-  std::unique_ptr<TracedValue> traced_value(new TracedValue);
+  auto traced_value = std::make_unique<TracedValue>();
   pmd.SerializeAllocatorDumpsInto(traced_value.get());
 }
 

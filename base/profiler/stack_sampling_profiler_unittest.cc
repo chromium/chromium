@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -284,8 +283,7 @@ size_t WaitForSamplingComplete(
                            return &info.get()->completed;
                          });
   // Wait for one profiler to finish.
-  return WaitableEvent::WaitMany(sampling_completed_rawptrs.data(),
-                                 sampling_completed_rawptrs.size());
+  return WaitableEvent::WaitMany(sampling_completed_rawptrs);
 }
 
 // Returns a duration that is longer than the test timeout. We would use

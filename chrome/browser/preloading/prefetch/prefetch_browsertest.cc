@@ -7,6 +7,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/chrome_prefetch_manager.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
@@ -28,8 +29,7 @@ namespace {
 class PrefetchBrowserTest : public PlatformBrowserTest {
  public:
   PrefetchBrowserTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kPrefetchBrowserInitiatedTriggers};
+    std::vector<base::test::FeatureRef> enabled_features = {};
 
 #if BUILDFLAG(IS_ANDROID)
     enabled_features.push_back(chrome::android::kCCTNavigationalPrefetch);
@@ -91,6 +91,11 @@ class PrefetchBrowserTest : public PlatformBrowserTest {
   base::ScopedMockElapsedTimersForTest test_timer_;
   net::test_server::EmbeddedTestServer ssl_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  ::test::ScopedPrewarmFeatureList prewarm_feature_list_{
+      ::test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
+
   base::test::ScopedFeatureList feature_list_;
 
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
@@ -149,6 +154,11 @@ class CCTPrerenderBrowserTestWithHoldback : public PrefetchBrowserTest {
   }
 
  private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  ::test::ScopedPrewarmFeatureList prewarm_feature_list_{
+      ::test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
+
   base::test::ScopedFeatureList feature_list_;
 };
 

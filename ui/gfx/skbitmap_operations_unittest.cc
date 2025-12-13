@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/skbitmap_operations.h"
 
 #include <stdint.h>
 
+#include "base/containers/auto_spanification_helper.h"
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -50,14 +47,17 @@ bool BitmapsClose(const SkBitmap& a, const SkBitmap& b) {
 void FillDataToBitmap(int w, int h, SkBitmap* bmp) {
   bmp->allocN32Pixels(w, h);
 
-  unsigned char* src_data =
-      reinterpret_cast<unsigned char*>(bmp->getAddr32(0, 0));
-  for (int i = 0; i < w * h; i++) {
-    const int alpha = i % 256;
-    src_data[i * 4 + 0] = static_cast<unsigned char>(alpha);
-    src_data[i * 4 + 1] = static_cast<unsigned char>((i + 16) % (alpha + 1));
-    src_data[i * 4 + 2] = static_cast<unsigned char>((i + 32) % (alpha + 1));
-    src_data[i * 4 + 3] = static_cast<unsigned char>((i + 64) % (alpha + 1));
+  for (int y = 0; y < h; y++) {
+    base::span<unsigned char> src_data =
+        base::as_writable_byte_span(UNSAFE_SKBITMAP_GETADDR32(bmp, 0, y));
+    for (int x = 0; x < w; x++) {
+      int i = y * w + x;
+      const int alpha = i % 256;
+      src_data[x * 4 + 0] = static_cast<unsigned char>(alpha);
+      src_data[x * 4 + 1] = static_cast<unsigned char>((i + 16) % (alpha + 1));
+      src_data[x * 4 + 2] = static_cast<unsigned char>((i + 32) % (alpha + 1));
+      src_data[x * 4 + 3] = static_cast<unsigned char>((i + 64) % (alpha + 1));
+    }
   }
 }
 
@@ -71,8 +71,9 @@ SkBitmap ReferenceCreateHSLShiftedBitmap(
 
   // Loop through the pixels of the original bitmap.
   for (int y = 0; y < bitmap.height(); ++y) {
-    SkPMColor* pixels = bitmap.getAddr32(0, y);
-    SkPMColor* tinted_pixels = shifted.getAddr32(0, y);
+    base::span<SkPMColor> pixels = UNSAFE_SKBITMAP_GETADDR32(bitmap, 0, y);
+    base::span<SkPMColor> tinted_pixels =
+        UNSAFE_SKBITMAP_GETADDR32(shifted, 0, y);
 
     for (int x = 0; x < bitmap.width(); ++x) {
       tinted_pixels[x] = SkPreMultiplyColor(color_utils::HSLShift(

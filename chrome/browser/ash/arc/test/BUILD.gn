@@ -21,5 +21,6 @@ static_library("arc_test_support") {
   deps = [
     "//base",
     "//chrome/browser/ash/arc/session",
+    "//chromeos/ash/experiences/arc",
   ]
 }

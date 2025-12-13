@@ -19,14 +19,14 @@
 #include "build/build_config.h"
 #include "content/browser/webauth/authenticator_environment.h"
 #include "device/fido/authenticator_get_assertion_response.h"
-#include "device/fido/cable/cable_discovery_data.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_request_handler_base.h"
-#include "device/fido/fido_types.h"
-#include "device/fido/public_key_credential_descriptor.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/cable_discovery_data.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_types.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "url/origin.h"
 
 namespace content {
@@ -119,6 +119,12 @@ void AuthenticatorRequestClientDelegate::ProvideChallengeUrl(
     const GURL& url,
     base::OnceCallback<void(std::optional<base::span<const uint8_t>>)>
         callback) {}
+
+void AuthenticatorRequestClientDelegate::StartObserving(
+    device::FidoRequestHandlerBase* request_handler) {}
+
+void AuthenticatorRequestClientDelegate::StopObserving(
+    device::FidoRequestHandlerBase* request_handler) {}
 
 void AuthenticatorRequestClientDelegate::OnTransportAvailabilityEnumerated(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {}

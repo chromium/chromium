@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.browserservices.ui.controller.webapps;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
@@ -25,6 +27,7 @@ import org.chromium.components.webapk.lib.common.WebApkConstants;
  * long as the app is open. It should remain active even across pause/resume and should show the
  * next time the app is opened if it hasn't been acknowledged.
  */
+@NullMarked
 public class WebappDisclosureController extends DisclosureController {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
 
@@ -69,7 +72,8 @@ public class WebappDisclosureController extends DisclosureController {
     public void onDisclosureAccepted() {
         WebappDataStorage storage =
                 WebappRegistry.getInstance()
-                        .getWebappDataStorage(mIntentDataProvider.getWebappExtras().id);
+                        .getWebappDataStorage(
+                                assumeNonNull(mIntentDataProvider.getWebappExtras()).id);
         assert storage != null;
 
         storage.clearShowDisclosure();
@@ -92,7 +96,8 @@ public class WebappDisclosureController extends DisclosureController {
 
         WebappDataStorage storage =
                 WebappRegistry.getInstance()
-                        .getWebappDataStorage(mIntentDataProvider.getWebappExtras().id);
+                        .getWebappDataStorage(
+                                assumeNonNull(mIntentDataProvider.getWebappExtras()).id);
         if (storage == null) return false;
 
         // Show only if the correct flag is set.

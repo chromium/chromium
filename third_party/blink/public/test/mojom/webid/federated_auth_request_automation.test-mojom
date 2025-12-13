@@ -16,8 +16,9 @@ interface FederatedAuthRequestAutomation {
   // Gets the dialog type of the current FedCM dialog, if one is open.
   GetDialogType() => (string? title);
 
-  // Returns the title of the current FedCM dialog, if any is open at the time it is invoked.
-  GetFedCmDialogTitle() => (string? title);
+  // Returns the title and subtitle of the current FedCM dialog, if any is open
+  // at the time it is invoked.
+  GetFedCmDialogTitleAndSubtitle() => (string? title, string? subtitle);
 
   // Selects the account with the given account_index, if there is any FedCM account chooser open.
   SelectFedCmAccount(uint32 account_index) => (bool success);

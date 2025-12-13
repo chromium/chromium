@@ -37,6 +37,8 @@ function testKeyOperations(writingMode) {
         input.min = "2023-07-22";
         input.max = "2023-07-24";
         input.focus();
+        // The month field is not disabled, so the focus first moves to the day field.
+        eventSender.keyDown(focusNextKey);
         // Using step down goes to max value
         eventSender.keyDown(stepDownKey);
         assert_equals(input.value, "2023-07-24");
@@ -117,8 +119,6 @@ function testKeyOperations(writingMode) {
         input.focus();
         eventSender.keyDown(stepDownKey);
         assert_equals(input.value, "2023-06");
-        // Using step up cannot access year
-        eventSender.keyDown(focusNextKey);
         eventSender.keyDown(stepUpKey);
         assert_equals(input.value, "2023-07");
         document.body.removeChild(input);
@@ -178,6 +178,11 @@ function testKeyOperations(writingMode) {
         input.min = "2023-06-10T00:00";
         input.step = 60 * 30;
         input.focus();
+        eventSender.keyDown(focusNextKey);
+        eventSender.keyDown(stepDownKey);
+        assert_equals(input.value, "2023-06-11T19:30");
+        // Cannot modify the year field.
+        eventSender.keyDown(focusNextKey);
         eventSender.keyDown(stepDownKey);
         assert_equals(input.value, "2023-06-11T19:30");
         eventSender.keyDown(focusNextKey);
@@ -197,11 +202,13 @@ function testKeyOperations(writingMode) {
         eventSender.keyDown(stepUpKey);
         eventSender.keyDown(focusPrevKey);
         eventSender.keyDown(stepUpKey);
-        assert_equals(input.value, "2023-06-12T19:30");
-        // Cannot modify month and year so moving left will still modify day
         eventSender.keyDown(focusPrevKey);
         eventSender.keyDown(stepUpKey);
-        assert_equals(input.value, "2023-06-13T19:30");
+        assert_equals(input.value, "2023-06-12T19:30");
+        // Cannot modify the month field.
+        eventSender.keyDown(focusPrevKey);
+        eventSender.keyDown(stepUpKey);
+        assert_equals(input.value, "2023-06-12T19:30");
         document.body.removeChild(input);
     }, `input[type=datetime writing-mode=${writingMode}] key operations should respect max/min, step and move between YYYY-MM-DDTHH:MM`);
 }

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and use spans.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/profiler/chrome_unwinder_android_32.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/memory/aligned_memory.h"
 #include "base/profiler/chrome_unwind_info_android_32.h"
 #include "base/profiler/register_context_registers.h"
@@ -32,7 +28,7 @@ TEST(ChromeAndroid32UnwindInstructionTest,
                                      &thread_context),
             UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
-  ASSERT_EQ(current_instruction, &instruction + 1);
+  UNSAFE_TODO(ASSERT_EQ(current_instruction, &instruction + 1));
   EXPECT_EQ(0x10000004ul, thread_context.arm_sp);
 }
 
@@ -48,7 +44,7 @@ TEST(ChromeAndroid32UnwindInstructionTest,
                                      &thread_context),
             UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
-  ASSERT_EQ(current_instruction, &instruction + 1);
+  UNSAFE_TODO(ASSERT_EQ(current_instruction, &instruction + 1));
   EXPECT_EQ(0x10000014ul, thread_context.arm_sp);
 }
 
@@ -63,7 +59,7 @@ TEST(ChromeAndroid32UnwindInstructionTest,
                                      &thread_context),
             UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
-  ASSERT_EQ(current_instruction, &instruction + 1);
+  UNSAFE_TODO(ASSERT_EQ(current_instruction, &instruction + 1));
   EXPECT_EQ(0x10000100ul, thread_context.arm_sp);
 }
 
@@ -77,7 +73,7 @@ TEST(ChromeAndroid32UnwindInstructionTest,
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
             UnwindInstructionResult::kAborted);
-  ASSERT_EQ(current_instruction, &instruction + 1);
+  UNSAFE_TODO(ASSERT_EQ(current_instruction, &instruction + 1));
   EXPECT_EQ(0xffffffff, thread_context.arm_sp);
 }
 
@@ -92,7 +88,7 @@ TEST(ChromeAndroid32UnwindInstructionTest,
                                      &thread_context),
             UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
-  ASSERT_EQ(current_instruction, &instruction + 1);
+  UNSAFE_TODO(ASSERT_EQ(current_instruction, &instruction + 1));
   EXPECT_EQ(0x0ffffffcul, thread_context.arm_sp);
 }
 
@@ -108,7 +104,7 @@ TEST(ChromeAndroid32UnwindInstructionTest,
                                      &thread_context),
             UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
-  ASSERT_EQ(current_instruction, &instruction + 1);
+  UNSAFE_TODO(ASSERT_EQ(current_instruction, &instruction + 1));
   EXPECT_EQ(0x0fffffecul, thread_context.arm_sp);
 }
 
@@ -123,7 +119,7 @@ TEST(ChromeAndroid32UnwindInstructionTest,
                                      &thread_context),
             UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
-  ASSERT_EQ(current_instruction, &instruction + 1);
+  UNSAFE_TODO(ASSERT_EQ(current_instruction, &instruction + 1));
   EXPECT_EQ(0x0fffff00ul, thread_context.arm_sp);
 }
 
@@ -138,7 +134,7 @@ TEST(ChromeAndroid32UnwindInstructionTest,
                                      &thread_context),
             UnwindInstructionResult::kAborted);
   EXPECT_FALSE(pc_was_updated);
-  ASSERT_EQ(current_instruction, &instruction + 1);
+  UNSAFE_TODO(ASSERT_EQ(current_instruction, &instruction + 1));
   EXPECT_EQ(0x0ul, thread_context.arm_sp);
 }
 
@@ -181,7 +177,7 @@ TEST_P(ChromeAndroidUnwindSetStackPointerFromRegisterValueTest,
                                      &thread_context),
             UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
-  ASSERT_EQ(current_instruction, &instruction + 1);
+  UNSAFE_TODO(ASSERT_EQ(current_instruction, &instruction + 1));
   EXPECT_EQ(100ul + register_index, thread_context.arm_sp);
 }
 
@@ -195,7 +191,7 @@ TEST(ChromeAndroid32UnwindInstructionTest, TestCompleteWithNoPriorPCUpdate) {
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
             UnwindInstructionResult::kCompleted);
-  ASSERT_EQ(current_instruction, &instruction + 1);
+  UNSAFE_TODO(ASSERT_EQ(current_instruction, &instruction + 1));
   EXPECT_EQ(114ul, thread_context.arm_pc);
 }
 
@@ -209,7 +205,7 @@ TEST(ChromeAndroid32UnwindInstructionTest, TestCompleteWithPriorPCUpdate) {
   ASSERT_EQ(ExecuteUnwindInstruction(current_instruction, pc_was_updated,
                                      &thread_context),
             UnwindInstructionResult::kCompleted);
-  ASSERT_EQ(current_instruction, &instruction + 1);
+  UNSAFE_TODO(ASSERT_EQ(current_instruction, &instruction + 1));
   EXPECT_EQ(115ul, thread_context.arm_pc);
 }
 
@@ -246,8 +242,9 @@ TEST(ChromeAndroid32UnwindInstructionTest,
                                      &thread_context),
             UnwindInstructionResult::kInstructionPending);
   EXPECT_TRUE(pc_was_updated);
-  ASSERT_EQ(current_instruction, instruction + 2);
-  EXPECT_EQ(reinterpret_cast<uintptr_t>(&stack[0] + 4), thread_context.arm_sp);
+  UNSAFE_TODO(ASSERT_EQ(current_instruction, instruction + 2));
+  UNSAFE_TODO(EXPECT_EQ(reinterpret_cast<uintptr_t>(&stack[0] + 4),
+                        thread_context.arm_sp));
 
   EXPECT_EQ(100ul, thread_context.arm_r0);
   EXPECT_EQ(101ul, thread_context.arm_r1);
@@ -298,8 +295,9 @@ TEST(ChromeAndroid32UnwindInstructionTest, TestPopDiscontinuousRegisters) {
                                      &thread_context),
             UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
-  ASSERT_EQ(current_instruction, instruction + 2);
-  EXPECT_EQ(reinterpret_cast<uintptr_t>(&stack[0] + 3), thread_context.arm_sp);
+  UNSAFE_TODO(ASSERT_EQ(current_instruction, instruction + 2));
+  UNSAFE_TODO(EXPECT_EQ(reinterpret_cast<uintptr_t>(&stack[0] + 3),
+                        thread_context.arm_sp));
 
   EXPECT_EQ(100ul, thread_context.arm_r0);
   EXPECT_EQ(101ul, thread_context.arm_r1);
@@ -349,7 +347,7 @@ TEST(ChromeAndroid32UnwindInstructionTest,
                                      &thread_context),
             UnwindInstructionResult::kAborted);
   EXPECT_FALSE(pc_was_updated);
-  ASSERT_EQ(current_instruction, instruction + 2);
+  UNSAFE_TODO(ASSERT_EQ(current_instruction, instruction + 2));
   EXPECT_EQ(0xffffffff, thread_context.arm_sp);
 
   EXPECT_EQ(100ul, thread_context.arm_r0);
@@ -380,7 +378,7 @@ TEST(ChromeAndroid32UnwindInstructionTest, TestRefuseToUnwind) {
                                      &thread_context),
             UnwindInstructionResult::kAborted);
   EXPECT_FALSE(pc_was_updated);
-  ASSERT_EQ(current_instruction, instruction + 2);
+  UNSAFE_TODO(ASSERT_EQ(current_instruction, instruction + 2));
 }
 
 TEST(ChromeAndroid32UnwindInstructionTest,
@@ -414,8 +412,9 @@ TEST(ChromeAndroid32UnwindInstructionTest,
                                      &thread_context),
             UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
-  ASSERT_EQ(current_instruction, &instruction + 1);
-  EXPECT_EQ(reinterpret_cast<uintptr_t>(&stack[0] + 2), thread_context.arm_sp);
+  UNSAFE_TODO(ASSERT_EQ(current_instruction, &instruction + 1));
+  UNSAFE_TODO(EXPECT_EQ(reinterpret_cast<uintptr_t>(&stack[0] + 2),
+                        thread_context.arm_sp));
 
   EXPECT_EQ(100ul, thread_context.arm_r0);
   EXPECT_EQ(101ul, thread_context.arm_r1);
@@ -464,8 +463,9 @@ TEST(ChromeAndroid32UnwindInstructionTest,
                                      &thread_context),
             UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
-  ASSERT_EQ(current_instruction, &instruction + 1);
-  EXPECT_EQ(reinterpret_cast<uintptr_t>(&stack[0] + 6), thread_context.arm_sp);
+  UNSAFE_TODO(ASSERT_EQ(current_instruction, &instruction + 1));
+  UNSAFE_TODO(EXPECT_EQ(reinterpret_cast<uintptr_t>(&stack[0] + 6),
+                        thread_context.arm_sp));
 
   EXPECT_EQ(100ul, thread_context.arm_r0);
   EXPECT_EQ(101ul, thread_context.arm_r1);
@@ -514,8 +514,9 @@ TEST(ChromeAndroid32UnwindInstructionTest,
                                      &thread_context),
             UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
-  ASSERT_EQ(current_instruction, &instruction + 1);
-  EXPECT_EQ(reinterpret_cast<uintptr_t>(&stack[0] + 9), thread_context.arm_sp);
+  UNSAFE_TODO(ASSERT_EQ(current_instruction, &instruction + 1));
+  UNSAFE_TODO(EXPECT_EQ(reinterpret_cast<uintptr_t>(&stack[0] + 9),
+                        thread_context.arm_sp));
 
   EXPECT_EQ(100ul, thread_context.arm_r0);
   EXPECT_EQ(101ul, thread_context.arm_r1);
@@ -562,7 +563,7 @@ TEST(ChromeAndroid32UnwindInstructionTest,
                                      &thread_context),
             UnwindInstructionResult::kAborted);
   EXPECT_FALSE(pc_was_updated);
-  ASSERT_EQ(current_instruction, &instruction + 1);
+  UNSAFE_TODO(ASSERT_EQ(current_instruction, &instruction + 1));
   EXPECT_EQ(0xffffffff, thread_context.arm_sp);
 
   EXPECT_EQ(100ul, thread_context.arm_r0);
@@ -596,7 +597,8 @@ TEST(ChromeAndroid32UnwindInstructionTest,
                                      &thread_context),
             UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
-  ASSERT_EQ(current_instruction, increment_0 + sizeof(increment_0));
+  UNSAFE_TODO(
+      ASSERT_EQ(current_instruction, increment_0 + sizeof(increment_0)));
   // vsp + 0x204 + (0 << 2)
   // = vsp + 0x204
   EXPECT_EQ(0x10000204ul, thread_context.arm_sp);
@@ -621,7 +623,8 @@ TEST(ChromeAndroid32UnwindInstructionTest,
                                      &thread_context),
             UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
-  ASSERT_EQ(current_instruction, increment_4 + sizeof(increment_4));
+  UNSAFE_TODO(
+      ASSERT_EQ(current_instruction, increment_4 + sizeof(increment_4)));
   EXPECT_EQ(0x10000214ul, thread_context.arm_sp);
 }
 
@@ -645,7 +648,8 @@ TEST(ChromeAndroid32UnwindInstructionTest,
                                      &thread_context),
             UnwindInstructionResult::kInstructionPending);
   EXPECT_FALSE(pc_was_updated);
-  ASSERT_EQ(current_instruction, increment_128 + sizeof(increment_128));
+  UNSAFE_TODO(
+      ASSERT_EQ(current_instruction, increment_128 + sizeof(increment_128)));
   EXPECT_EQ(0x10000404ul, thread_context.arm_sp);
 }
 
@@ -665,8 +669,8 @@ TEST(ChromeAndroid32UnwindInstructionTest,
                                      &thread_context),
             UnwindInstructionResult::kAborted);
   EXPECT_FALSE(pc_was_updated);
-  ASSERT_EQ(current_instruction,
-            increment_overflow + sizeof(increment_overflow));
+  UNSAFE_TODO(ASSERT_EQ(current_instruction,
+                        increment_overflow + sizeof(increment_overflow)));
   EXPECT_EQ(0xfffffffful, thread_context.arm_sp);
 }
 
@@ -1030,7 +1034,8 @@ class AlignedStackMemory {
   }
 
   uintptr_t stack_end_address() const {
-    return reinterpret_cast<uintptr_t>(stack_memory_.get() + size_);
+    return reinterpret_cast<uintptr_t>(
+        UNSAFE_TODO(stack_memory_.get() + size_));
   }
 
  private:

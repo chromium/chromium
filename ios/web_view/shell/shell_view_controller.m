@@ -106,6 +106,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   self.headerBackgroundView = [[UIStackView alloc] init];
   self.headerContentView = [[UIStackView alloc] init];
   self.contentView = [[UIView alloc] init];
+  self.contentView.restorationIdentifier = @"contentView";
   self.backButton = [[UIButton alloc] init];
   self.forwardButton = [[UIButton alloc] init];
   self.reloadOrStopButton = [[UIButton alloc] init];

@@ -117,6 +117,11 @@ class SingleClientAppListSyncTest : public SyncTest {
     SyncAppListHelper::GetInstance();
     return true;
   }
+
+  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
 };
 
 class SingleClientAppListSyncTestWithVerifier
@@ -247,6 +252,11 @@ class SingleClientAppListOsSyncTest : public SyncTest {
  public:
   SingleClientAppListOsSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientAppListOsSyncTest() override = default;
+
+  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientAppListOsSyncTest,
@@ -262,14 +272,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListOsSyncTest,
 
   // Disable all browser types.
   settings->SetSelectedTypes(false, UserSelectableTypeSet());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // APP_LIST is still synced because it is an OS setting.
   EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::APP_LIST));
 
   // Disable OS types.
   settings->SetSelectedOsTypes(false, UserSelectableOsTypeSet());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // APP_LIST is not synced.
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::APP_LIST));

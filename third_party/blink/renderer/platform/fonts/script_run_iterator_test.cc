@@ -366,7 +366,12 @@ TEST_F(ScriptRunIteratorTest, Common) {
 }
 
 TEST_F(ScriptRunIteratorTest, CombiningCircle) {
-  CHECK_SCRIPT_RUNS({{"◌́◌̀◌̈◌̂◌̄◌̊", USCRIPT_COMMON}});
+#if U_ICU_VERSION_MAJOR_NUM >= 76
+  const UScriptCode script = USCRIPT_LATIN;
+#else
+  const UScriptCode script = USCRIPT_COMMON;
+#endif
+  CHECK_SCRIPT_RUNS({{"◌́◌̀◌̈◌̂◌̄◌̊", script}});
 }
 
 TEST_F(ScriptRunIteratorTest, Latin) {
@@ -668,19 +673,26 @@ TEST_F(ScriptRunIteratorTest, CommonWithPriority3) {
   CHECK_MOCK_SCRIPT_RUNS({{"<ch><cl><cg>", USCRIPT_HAN}});
 }
 
-// UDatta (\xE0\xA5\x91) is General Category Mn (Nonspacing Mark), and thus
-// its script value is copied from its base character as per the [UAX24]
-// (https://www.unicode.org/reports/tr24/#Nonspacing_Marks).
-// The previous character, the dotted circle U+25CC (\xE2\x97\x8C) is COMMON
-// and has adopted the preceding LATIN, it gets the LATIN.
+// UDatta (\xE0\xA5\x91) is inherited with LATIN, DEVANAGARI, BENGALI and
+// other Indic scripts. Since it has LATIN, and the
+// dotted circle U+25CC (\xE2\x97\x8C) is COMMON and has adopted the
+// preceding LATIN, it gets the LATIN. This is standard.
 TEST_F(ScriptRunIteratorTest, LatinDottedCircleUdatta) {
   CHECK_SCRIPT_RUNS({{"Latin \xE2\x97\x8C\xE0\xA5\x91", USCRIPT_LATIN}});
 }
 
-// Although UDatta (\xE0\xA5\x91) doesn't have HAN, its used script value is
-// INHERITED, and thus the same logic as `LatinDottedCircleUdatta` apply.
+// In this situation, UDatta U+0951 (\xE0\xA5\x91) doesn't share a script
+// with the value inherited by the dotted circle U+25CC (\xE2\x97\x8C).
+// It captures the preceding dotted circle and breaks it from the run it would
+// normally have been in. U+0951 is used in multiple scripts (DEVA, BENG, LATN,
+// etc) and has multiple values for Script_Extension property. At the moment,
+// getScripts() treats the script with the lowest script code as 'true' primary,
+// and BENG comes before DEVA in the script enum so that we get BENGALI.
+// Taking into account a Unicode block and returning DEVANAGARI would be
+// slightly better.
 TEST_F(ScriptRunIteratorTest, HanDottedCircleUdatta) {
-  CHECK_SCRIPT_RUNS({{"萬國碼 \xE2\x97\x8C\xE0\xA5\x91", USCRIPT_HAN}});
+  CHECK_SCRIPT_RUNS({{"萬國碼 ", USCRIPT_HAN},
+                     {"\xE2\x97\x8C\xE0\xA5\x91", USCRIPT_BENGALI}});
 }
 
 // Tatweel is \xD9\x80 Lm, Fathatan is \xD9\x8B Mn. The script of tatweel is
@@ -710,9 +722,11 @@ TEST_F(ScriptRunIteratorTest, HanUdatta) {
 }
 
 // The Udatta U+0951 (\xE0\xA5\x91) is inherited, and will capture the space
-// which is USCRIPT_COMMON. This will inherit the previous script, USCRIPT_HAN.
+// and turn it into Bengali because SCRIPT_BENAGLI is 4 and SCRIPT_DEVANAGARI
+// is 10. See TODO comment for |getScripts| and HanDottedCircleUdatta.
 TEST_F(ScriptRunIteratorTest, HanSpaceUdatta) {
-  CHECK_SCRIPT_RUNS({{"萬國碼 \xE0\xA5\x91", USCRIPT_HAN}});
+  CHECK_SCRIPT_RUNS(
+      {{"萬國碼", USCRIPT_HAN}, {" \xE0\xA5\x91", USCRIPT_BENGALI}});
 }
 
 // Corresponds to one test in RunSegmenter, where orientation of the
@@ -764,7 +778,7 @@ TEST_F(ScriptRunIteratorTest, OddLatinString) {
 }
 
 TEST_F(ScriptRunIteratorTest, CommonMalayalam) {
-  CHECK_SCRIPT_RUNS({{"100-ാം", USCRIPT_COMMON}});
+  CHECK_SCRIPT_RUNS({{"100-ാം", USCRIPT_MALAYALAM}});
 }
 
 std::pair<int, UChar32> MaximumScriptExtensions() {

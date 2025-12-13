@@ -93,15 +93,6 @@ async def _customize_and_sign_chrome(paths, dist_config, dest_dir,
         # example, the signature's timestamp. All variants of a product sharing
         # the same bundle ID are assumed to have bit-for-bit identical
         # frameworks.
-        #
-        # This is significant because of how binary diff updates work. Binary
-        # diffs are built between two successive versions on the basis of their
-        # inner frameworks being bit-for-bit identical without regard to any
-        # customizations applied only to the outer app. In order for these to
-        # apply to all installations regardless of the presence or specific
-        # values of any app-level customizations, all inner frameworks for a
-        # single version and base bundle ID must always remain bit-for-bit
-        # identical, including their signatures.
         (signed_framework_path, signed_framework_change_count
         ) = signed_frameworks[dist_config.base_bundle_id]
         actual_framework_change_count = commands.copy_dir_overwrite_and_count_changes(
@@ -531,48 +522,6 @@ def _package_zip(paths, config):
     return zip_path
 
 
-def _package_installer_tools(paths, config):
-    """Signs and packages all the installer tools, which are not shipped to end-
-    users.
-
-    Args:
-        paths: A |model.Paths| object.
-        config: The |config.CodeSignConfig| object.
-    """
-    DIFF_TOOLS = 'diff_tools'
-
-    tools_to_sign = parts.get_installer_tools(config)
-    chrome_tools = (
-        'keystone_install.sh',) if config.is_chrome_branded() else ()
-    other_tools = (
-        'dirdiffer.sh',
-        'dirpatcher.sh',
-        'dmgdiffer.sh',
-        'pkg-dmg',
-    ) + chrome_tools
-
-    with commands.WorkDirectory(paths) as paths:
-        diff_tools_dir = os.path.join(paths.work, DIFF_TOOLS)
-        commands.make_dir(diff_tools_dir)
-
-        for part in tools_to_sign.values():
-            commands.copy_files(
-                os.path.join(paths.input, part.path), diff_tools_dir)
-            part.path = os.path.join(DIFF_TOOLS, os.path.basename(part.path))
-            signing.sign_part(paths, config, part)
-
-        for part in tools_to_sign.values():
-            signing.verify_part(paths, part)
-
-        for tool in other_tools:
-            commands.copy_files(
-                os.path.join(paths.packaging_dir(config), tool), diff_tools_dir)
-
-        zip_file = os.path.join(paths.output, DIFF_TOOLS + '.zip')
-        commands.run_command(['zip', '-9ry', zip_file, DIFF_TOOLS],
-                             cwd=paths.work)
-
-
 def _intermediate_work_dir_name(dist):
     """Returns the name of an intermediate work directory for a distribution.
     All distributions that can share the same app bundle share the intermediate
@@ -738,8 +687,6 @@ async def sign_all(orig_paths,
                 _package_and_maybe_notarize_distributions(
                     config, distributions, notary_paths),
                 timeout=60 * 60 * 2)
-
-    _package_installer_tools(orig_paths, config)
 
 
 async def _sign_and_maybe_notarize_distributions(config, distributions,

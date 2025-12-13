@@ -79,20 +79,15 @@
 #include <string_view>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/base_export.h"
-#include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/metrics/persistent_memory_allocator.h"
-#include "base/pickle.h"
 #include "base/synchronization/lock.h"
-#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
@@ -104,11 +99,14 @@
 
 namespace base {
 
+class FeatureList;
+
 namespace test {
 class ScopedFeatureList;
 }  // namespace test
 
 class CompareActiveGroupToFieldTrialMatcher;
+class CommandLine;
 class FieldTrialList;
 struct LaunchOptions;
 
@@ -171,70 +169,6 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
     PickleState();
     PickleState(const PickleState& other);
     ~PickleState();
-  };
-
-  // We create one FieldTrialEntry per field trial in shared memory, via
-  // AddToAllocatorWhileLocked. The FieldTrialEntry is followed by a
-  // base::Pickle object that we unpickle and read from.
-  struct BASE_EXPORT FieldTrialEntry {
-    // SHA1(FieldTrialEntry): Increment this if structure changes!
-    static constexpr uint32_t kPersistentTypeId = 0xABA17E13 + 3;
-
-    // Expected size for 32/64-bit check.
-    static constexpr size_t kExpectedInstanceSize = 16;
-
-    // Return a pointer to the data area immediately following the entry.
-    uint8_t* GetPickledDataPtr() {
-      return UNSAFE_TODO(reinterpret_cast<uint8_t*>(this + 1));
-    }
-    const uint8_t* GetPickledDataPtr() const {
-      return UNSAFE_TODO(reinterpret_cast<const uint8_t*>(this + 1));
-    }
-
-    // Whether or not this field trial is activated. This is really just a
-    // boolean but using a 32 bit value for portability reasons. It should be
-    // accessed via NoBarrier_Load()/NoBarrier_Store() to prevent the compiler
-    // from doing unexpected optimizations because it thinks that only one
-    // thread is accessing the memory location.
-    subtle::Atomic32 activated;
-
-    // On e.g. x86, alignof(uint64_t) is 4.  Ensure consistent size and
-    // alignment of `pickle_size` across platforms. This can be considered
-    // to be padding for the final 32 bit value (activated). If this struct
-    // gains or loses fields, consider if this padding is still needed.
-    uint32_t padding;
-
-    // Size of the pickled structure, NOT the total size of this entry.
-    uint64_t pickle_size;
-
-    // Calling this is only valid when the entry is initialized. That is, it
-    // resides in shared memory and has a pickle containing the trial name,
-    // group name, and is_overridden.
-    bool GetState(std::string_view& trial_name,
-                  std::string_view& group_name,
-                  bool& is_overridden) const;
-
-    // Calling this is only valid when the entry is initialized as well. Reads
-    // the parameters following the trial and group name and stores them as
-    // key-value mappings in |params|.
-    bool GetParams(std::map<std::string, std::string>* params) const;
-
-   private:
-    // Returns an iterator over the data containing names and params.
-    PickleIterator GetPickleIterator() const;
-
-    // Takes the iterator and writes out the first two items into |trial_name|
-    // and |group_name|.
-    bool ReadStringPair(PickleIterator* iter,
-                        std::string_view* trial_name,
-                        std::string_view* group_name) const;
-
-    // Reads the field trial header, which includes the name of the trial and
-    // group, and the is_overridden bool.
-    bool ReadHeader(PickleIterator& iter,
-                    std::string_view& trial_name,
-                    std::string_view& group_name,
-                    bool& is_overridden) const;
   };
 
   typedef std::vector<ActiveGroup> ActiveGroups;
@@ -310,7 +244,7 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
   //
   // Note that currently, States returned here have is_overridden=false, but we
   // are in the process of migrating to marking field trials set manually by
-  // command line as overridden. See b/284986126.
+  // command line as overridden. See crbug.com/438734773.
   static bool ParseFieldTrialsString(std::string_view field_trials_string,
                                      bool override_trials,
                                      std::vector<State>& entries);
@@ -686,13 +620,6 @@ class BASE_EXPORT FieldTrialList {
   // crash.
   static void DumpAllFieldTrialsToPersistentAllocator(
       PersistentMemoryAllocator* allocator);
-
-  // Retrieves field trial state from an allocator so that it can be analyzed
-  // after a crash. The pointers in the returned vector are into the persistent
-  // memory segment and so are only valid as long as the allocator is valid.
-  static std::vector<const FieldTrial::FieldTrialEntry*>
-  GetAllFieldTrialsFromPersistentAllocator(
-      PersistentMemoryAllocator const& allocator);
 
   // Returns a pointer to the global instance. This is exposed so that it can
   // be used in a DCHECK in FeatureList and ScopedFeatureList test-only logic

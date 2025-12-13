@@ -1509,12 +1509,13 @@ public final class Fido2Api {
      * Parse a {@link WebauthnCredentialDetails} list from a parcel.
      *
      * @param parcel the {@link parcel} with current position set to the beginning of the list.
+     * @param fromCache True if the credentials came from the passkey cache.
      * @return The list of {@link WebauthnCredentialDetails} if successfully parsed.
      * @throws IllegalArgumentException if a parsing error is encountered.
      */
-    public static ArrayList<WebauthnCredentialDetails> parseCredentialList(Parcel parcel)
-            throws IllegalArgumentException {
-        log(TAG, "parseCredentialList");
+    public static ArrayList<WebauthnCredentialDetails> parseCredentialList(
+            Parcel parcel, boolean fromCache) throws IllegalArgumentException {
+        log(TAG, "parseCredentialList fromCache=%b", fromCache);
         int numCredentials = parcel.readInt();
         ArrayList<WebauthnCredentialDetails> credentials = new ArrayList<>();
         for (int i = 0; i < numCredentials; i++) {
@@ -1558,10 +1559,18 @@ public final class Fido2Api {
                         details.mCredentialId = parcel.createByteArray();
                         break;
                     case 5:
-                        details.mIsDiscoverable = parcel.readInt() != 0;
+                        if (fromCache) {
+                            // This field is ignored for cached credentials but must be consumed.
+                            parcel.readInt();
+                        } else {
+                            details.mIsDiscoverable = parcel.readInt() != 0;
+                        }
                         break;
                     case 6:
                         details.mIsPayment = parcel.readInt() != 0;
+                        break;
+                    case 7:
+                        details.mLastUsedTimeMs = parcel.readLong();
                         break;
                     default:
                         // unknown tag. Skip over it.

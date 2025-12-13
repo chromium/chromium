@@ -21,8 +21,6 @@ class FontCacheAndroidTest : public testing::Test {
     font_description.SetGenericFamily(FontDescription::kSerifFamily);
     return font_cache.CreateLocaleSpecificTypeface(font_description, "serif");
   }
-
-  FontCachePurgePreventer purge_preventer;
 };
 
 TEST_F(FontCacheAndroidTest, FallbackFontForCharacter) {

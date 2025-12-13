@@ -6,6 +6,7 @@ package org.chromium.net.impl;
 
 import android.os.ConditionVariable;
 import android.os.SystemClock;
+import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -25,6 +26,7 @@ import org.chromium.net.BidirectionalStream;
 import org.chromium.net.EffectiveConnectionType;
 import org.chromium.net.ExperimentalBidirectionalStream;
 import org.chromium.net.ExperimentalUrlRequest;
+import org.chromium.net.NetError;
 import org.chromium.net.NetworkQualityRttListener;
 import org.chromium.net.NetworkQualityThroughputListener;
 import org.chromium.net.RequestFinishedInfo;
@@ -40,7 +42,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandlerFactory;
 import java.nio.ByteBuffer;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,7 +49,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -668,60 +668,59 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     }
 
     @CalledByNative
-    private @JniType("std::optional<std::vector<std::string>>") String[] onBeforeTunnelRequest(
-            int chainId) {
+    private void onBeforeTunnelRequest(int chainId, ProxyCallbackRequestImpl request) {
         try (var traceEvent =
                 ScopedSysTraceEvent.scoped("CronetUrlRequestContext#onBeforeTunnelRequest")) {
             VersionSafeProxyCallback callback = mProxyCallbacks.get(chainId);
-            List<Map.Entry<String, String>> headers;
-            try (var callbackTraceEvent =
-                    ScopedSysTraceEvent.scoped(
-                            "CronetUrlRequestContext#onBeforeTunnelRequest running callback")) {
-                // TODO(https://crbug.com/421341906): Once net::ProxyDelegate supports async
-                // callbacks, stop calling this directly (i.e., on Cronet's network thread).
-                headers = callback.onBeforeTunnelRequest();
-            }
-            if (headers == null) {
-                return null;
-            }
-            List<String> output = new ArrayList<String>();
-            for (Map.Entry<String, String> header : headers) {
-                // TODO(https://crbug.com/425666408): Find a better way to surface this. It's
-                // currently challenging since we're calling into the embedder code, not the other
-                // way around. Making this API async (https://crbug.com/421341906) could be a way of
-                // solving this, since we could throw IAE when the embedder calls back into Cronet.
-                if (!CronetUrlRequestContextJni.get()
-                                .isValidHeaderName(Objects.requireNonNull(header.getKey()))
-                        || !CronetUrlRequestContextJni.get()
-                                .isValidHeaderValue(Objects.requireNonNull(header.getValue()))) {
-                    throw new IllegalArgumentException(
-                            "Invalid header with headername: " + header.getKey());
-                }
-                output.add(header.getKey());
-                output.add(header.getValue());
-            }
-            return output.toArray(new String[output.size()]);
+            postTaskToExecutor(
+                    callback.getExecutor(),
+                    () -> {
+                        callback.onBeforeTunnelRequest(request);
+                    },
+                    "onBeforeTunnelRequest");
         }
     }
 
     @CalledByNative
-    private @JniType("bool") boolean onTunnelHeadersReceived(
-            int chainId, @JniType("std::vector<std::string>") String[] headers, int statusCode) {
+    private void onTunnelHeadersReceived(
+            int chainId,
+            @JniType("std::vector<std::string>") String[] headers,
+            int statusCode,
+            @NonNull CompletionOnceCallback callback) {
         try (var traceEvent =
                 ScopedSysTraceEvent.scoped("CronetUrlRequestContext#onTunnelHeadersReceived")) {
-            ArrayList<Map.Entry<String, String>> headersList = new ArrayList<>();
+            ArrayList<Pair<String, String>> headersList = new ArrayList<>();
             for (int i = 0; i < headers.length; i += 2) {
-                headersList.add(new AbstractMap.SimpleImmutableEntry<>(headers[i], headers[i + 1]));
+                headersList.add(new Pair<>(headers[i], headers[i + 1]));
             }
-            VersionSafeProxyCallback callback = mProxyCallbacks.get(chainId);
-            try (var callbackTraceEvent =
-                    ScopedSysTraceEvent.scoped(
-                            "CronetUrlRequestContext#onTunnelHeadersReceived running callback")) {
-                // TODO(https://crbug.com/421341906): Once net::ProxyDelegate supports async
-                // callbacks, stop calling this directly (i.e., on Cronet's network thread).
-                return callback.onTunnelHeadersReceived(
-                        Collections.unmodifiableList(headersList), statusCode);
-            }
+            VersionSafeProxyCallback proxyCallback = mProxyCallbacks.get(chainId);
+            postTaskToExecutor(
+                    proxyCallback.getExecutor(),
+                    () -> {
+                        try (callback) {
+                            boolean success = false;
+                            // This nested try block is required to execute the finally block
+                            // before `callback` gets closed by the try-with-resources above.
+                            // Without this, we are not guaranteed to call
+                            // CompletionOnceCallback#run before CompletionOnceCallback#close.
+                            try {
+                                success =
+                                        proxyCallback.onTunnelHeadersReceived(
+                                                Collections.unmodifiableList(headersList),
+                                                statusCode);
+                            } finally {
+                                // In case onTunnelHeadersReceived returned false, or threw, report
+                                // it as a failure to //net (see
+                                // Proxy.Callback.onTunnelHeadersReceived documentation).
+                                callback.run(
+                                        success
+                                                ? NetError.OK
+                                                : NetError
+                                                        .ERR_PROXY_DELEGATE_CANCELED_CONNECT_RESPONSE);
+                            }
+                        }
+                    },
+                    "onTunnelHeadersReceived");
         }
     }
 
@@ -1071,6 +1070,19 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         }
     }
 
+    private static void postTaskToExecutor(Executor executor, Runnable task, String name) {
+        executor.execute(
+                () -> {
+                    try (var callbackTraceEvent =
+                            ScopedSysTraceEvent.scoped(
+                                    "CronetUrlRequestContext#postTaskToExecutor "
+                                            + name
+                                            + " running callback")) {
+                        task.run();
+                    }
+                });
+    }
+
     private static void postObservationTaskToExecutor(
             Executor executor, Runnable task, RefCountDelegate inflightCallbackCount, String name) {
         try (var traceEvent =
@@ -1161,11 +1173,5 @@ public class CronetUrlRequestContext extends CronetEngineBase {
 
         @NativeClassQualifiedName("CronetContextAdapter")
         void provideThroughputObservations(long nativePtr, boolean should);
-
-        @JniType("bool")
-        boolean isValidHeaderName(@JniType("std::string") String headerName);
-
-        @JniType("bool")
-        boolean isValidHeaderValue(@JniType("std::string") String headerValue);
     }
 }

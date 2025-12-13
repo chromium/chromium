@@ -15,14 +15,12 @@ enum CredManSupport {
   NOT_EVALUATED = 0,
   // Indicates that CredMan cannot be used.
   DISABLED = -1,
-  // Indicates that CredMan can be used if the particular request demands it.
-  IF_REQUIRED = 1,
   // Indicates that CredMan should be used, unless the request is
   // incompatible. (E.g. if the
   // request is for a non-discoverable credential in Play Services.)
-  FULL_UNLESS_INAPPLICABLE = 2,
+  FULL_UNLESS_INAPPLICABLE = 1,
   // Indicates that CredMan should be used in parallel with Fido2Api.
-  PARALLEL_WITH_FIDO_2 = 3,
+  PARALLEL_WITH_FIDO_2 = 2,
 };
 
 }  // namespace webauthn

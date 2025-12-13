@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/fido/virtual_ctap2_device.h"
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -39,13 +35,13 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/device_response_converter.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/opaque_attestation_statement.h"
 #include "device/fido/pin.h"
 #include "device/fido/pin_internal.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_types.h"
 #include "device/fido/public_key.h"
 #include "device/fido/virtual_u2f_device.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
@@ -792,9 +788,11 @@ FidoDevice::CancelToken VirtualCtap2Device::DeviceTransact(
 
   const CtapRequestCommand ctap_command =
       static_cast<CtapRequestCommand>(cmd_type);
-  if (config_.override_response_map.contains(ctap_command)) {
-    ReturnCtap2Response(std::move(cb),
-                        config_.override_response_map.at(ctap_command), {});
+  const auto override_response_it =
+      config_.override_response_map.find(ctap_command);
+  if (override_response_it != config_.override_response_map.end()) {
+    ReturnCtap2Response(std::move(cb), override_response_it->second.first,
+                        override_response_it->second.second);
     return 0;
   }
 
@@ -850,9 +848,16 @@ FidoDevice::CancelToken VirtualCtap2Device::DeviceTransact(
       response_code = OnCredentialManagement(request_bytes, &response_data);
       break;
     case CtapRequestCommand::kAuthenticatorBioEnrollment:
-    case CtapRequestCommand::kAuthenticatorBioEnrollmentPreview:
-      response_code = OnBioEnrollment(request_bytes, &response_data);
+    case CtapRequestCommand::kAuthenticatorBioEnrollmentPreview: {
+      std::optional<CtapDeviceResponseCode> maybe_response_code =
+          OnBioEnrollment(request_bytes, &response_data);
+      if (!maybe_response_code) {
+        // Simulate timeout due to unresponded user tap.
+        return 0;
+      }
+      response_code = *maybe_response_code;
       break;
+    }
     case CtapRequestCommand::kAuthenticatorSelection:
       DCHECK(SupportsAtLeast(Ctap2Version::kCtap2_1));
       if (!SimulatePress()) {
@@ -902,8 +907,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::CheckUserVerification(
   if (mutable_state()->pin_uv_token_rpid &&
       rp_id != mutable_state()->pin_uv_token_rpid) {
     // Invalidate the PIN token.
-    memset(mutable_state()->pin_token, 0xff,
-           sizeof(mutable_state()->pin_token));
+    std::ranges::fill(mutable_state()->pin_token, 0xff);
     mutable_state()->pin_uv_token_permissions = 0;
     mutable_state()->pin_uv_token_rpid.reset();
   }
@@ -1299,7 +1303,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
 
   AuthenticatorData authenticator_data(
       rp_id_hash, !mutable_state()->unset_up_bit,
-      mutable_state()->unset_uv_bit ? false : user_verified,
+      user_verified && !mutable_state()->unset_uv_bit,
       mutable_state()->default_backup_eligibility,
       mutable_state()->default_backup_state,
       /*sign_counter=*/01ul,
@@ -1618,11 +1622,12 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
     }
 
     hmac_salt1.emplace();
-    memcpy(hmac_salt1->data(), salts.data(), hmac_salt1->size());
+    base::span(*hmac_salt1)
+        .copy_from(base::span(salts).first(hmac_salt1->size()));
     if (salts.size() == 64) {
       hmac_salt2.emplace();
-      memcpy(hmac_salt2->data(), salts.data() + hmac_salt1->size(),
-             hmac_salt2->size());
+      base::span(*hmac_salt2)
+          .copy_from(base::span(salts).subspan(hmac_salt1->size()));
     }
 
     hmac_shared_key = std::move(shared_key);
@@ -1682,8 +1687,8 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
 
     AuthenticatorData authenticator_data(
         rp_id_hash,
-        mutable_state()->unset_up_bit ? false : request.user_presence_required,
-        mutable_state()->unset_uv_bit ? false : user_verified,
+        request.user_presence_required && !mutable_state()->unset_up_bit,
+        user_verified && !mutable_state()->unset_uv_bit,
         registration.second->backup_eligible, registration.second->backup_state,
         registration.second->counter, std::move(opt_attested_cred_data),
         std::move(extensions));
@@ -2370,7 +2375,9 @@ CtapDeviceResponseCode VirtualCtap2Device::OnCredentialManagement(
   NOTREACHED();
 }
 
-CtapDeviceResponseCode VirtualCtap2Device::OnBioEnrollment(
+// Returns std::nullopt if the request should be left hanging due to a simulate
+// user not tapping the security key sensor.
+std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnBioEnrollment(
     base::span<const uint8_t> request_bytes,
     std::vector<uint8_t>* response) {
   request_state_.Reset();
@@ -2480,6 +2487,9 @@ CtapDeviceResponseCode VirtualCtap2Device::OnBioEnrollment(
           config_.bio_enrollment_capacity) {
         return CtapDeviceResponseCode::kCtap2ErrFpDatabaseFull;
       }
+      if (!SimulatePress()) {
+        return std::nullopt;
+      }
       mutable_state()->bio_current_template_id = 0;
       while (mutable_state()->bio_templates.find(
                  ++(*mutable_state()->bio_current_template_id)) !=
@@ -2503,6 +2513,9 @@ CtapDeviceResponseCode VirtualCtap2Device::OnBioEnrollment(
       if (!mutable_state()->bio_current_template_id ||
           mutable_state()->bio_current_template_id != *template_id) {
         NOTREACHED() << "Invalid current enrollment or template id parameter.";
+      }
+      if (!SimulatePress()) {
+        return std::nullopt;
       }
       if (mutable_state()->bio_enrollment_next_sample_error) {
         response_map.emplace(

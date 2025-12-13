@@ -1,7 +1,7 @@
 Name: play-services-auth-api-phone
 Short Name: play-services-auth-api-phone
-URL: https://developers.google.com/android/guides/setup
-Version: 18.2.0
+URL: https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-auth-api-phone/18.3.0/play-services-auth-api-phone-18.3.0.aar
+Version: 18.3.0
 Update Mechanism: Autoroll
 License: Android Software Development Kit License
 License File: LICENSE

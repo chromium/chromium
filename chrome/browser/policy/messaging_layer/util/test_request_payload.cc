@@ -456,7 +456,8 @@ bool RequestContainingRecordMatcher::MatchAndExplain(
     return false;
   }
 
-  const auto matched_record = base::JSONReader::Read(matched_record_json_);
+  const auto matched_record = base::JSONReader::Read(
+      matched_record_json_, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!matched_record.has_value()) {
     *listener << "The specified record cannot be parsed as a JSON object.";
     return false;

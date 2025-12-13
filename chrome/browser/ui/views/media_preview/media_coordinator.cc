@@ -4,41 +4,17 @@
 
 #include "chrome/browser/ui/views/media_preview/media_coordinator.h"
 
-#include <algorithm>
 #include <memory>
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/browser/ui/views/media_preview/media_view.h"
-#include "components/permissions/permission_prompt.h"
-#include "components/permissions/permission_request.h"
-#include "components/permissions/request_type.h"
 #include "components/user_prefs/user_prefs.h"
 #include "ui/color/color_id.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
-
-namespace {
-base::WeakPtr<permissions::PermissionRequest> FindPermissionRequest(
-    base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
-    permissions::RequestType request_type) {
-  if (!delegate) {
-    return nullptr;
-  }
-
-  auto request_it =
-      std::ranges::find(delegate->Requests(), request_type,
-                        &permissions::PermissionRequest::request_type);
-
-  if (request_it != delegate->Requests().end()) {
-    return (*request_it)->GetWeakPtr();
-  }
-
-  return nullptr;
-}
-}  // namespace
 
 MediaCoordinator::EligibleDevices::EligibleDevices() = default;
 MediaCoordinator::EligibleDevices::EligibleDevices(
@@ -56,8 +32,7 @@ MediaCoordinator::MediaCoordinator(
     EligibleDevices eligible_devices,
     base::WeakPtr<content::BrowserContext> browser_context,
     bool allow_device_selection,
-    const media_preview_metrics::Context& metrics_context,
-    base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate) {
+    const media_preview_metrics::Context& metrics_context) {
   media_view_ =
       parent_view.AddChildView(std::make_unique<MediaView>(is_subsection));
   media_view_->SetBetweenChildSpacing(
@@ -78,26 +53,17 @@ MediaCoordinator::MediaCoordinator(
   }
 
   if (view_type != ViewType::kMicOnly) {
-    auto camera_request = FindPermissionRequest(
-        delegate, permissions::RequestType::kCameraStream);
-    camera_coordinator_.emplace(
-        *media_view_, /*needs_borders=*/!is_subsection,
-        eligible_devices.cameras, allow_device_selection, browser_context,
-        media_preview_metrics::Context(
-            metrics_context.ui_location, metrics_context.preview_type,
-            metrics_context.prompt_type, camera_request));
+    camera_coordinator_.emplace(*media_view_, /*needs_borders=*/!is_subsection,
+                                eligible_devices.cameras,
+                                allow_device_selection, browser_context,
+                                metrics_context);
   }
 
   if (view_type != ViewType::kCameraOnly) {
-    auto mic_request =
-        FindPermissionRequest(delegate, permissions::RequestType::kMicStream);
-    mic_coordinator_.emplace(
-        *media_view_, /*needs_borders=*/!is_subsection, eligible_devices.mics,
-        *user_prefs::UserPrefs::Get(browser_context.get()),
-        allow_device_selection,
-        media_preview_metrics::Context(
-            metrics_context.ui_location, metrics_context.preview_type,
-            metrics_context.prompt_type, mic_request));
+    mic_coordinator_.emplace(*media_view_, /*needs_borders=*/!is_subsection,
+                             eligible_devices.mics,
+                             *user_prefs::UserPrefs::Get(browser_context.get()),
+                             allow_device_selection, metrics_context);
   }
 }
 
@@ -137,18 +103,6 @@ media_preview_metrics::PreviewType GetPreviewTypeFromMediaCoordinatorViewType(
       return media_preview_metrics::PreviewType::kCamera;
     case MediaCoordinator::ViewType::kMicOnly:
       return media_preview_metrics::PreviewType::kMic;
-  }
-}
-
-media_preview_metrics::PromptType GetPromptTypeFromMediaCoordinatorViewType(
-    MediaCoordinator::ViewType view_type) {
-  switch (view_type) {
-    case MediaCoordinator::ViewType::kBoth:
-      return media_preview_metrics::PromptType::kCombined;
-    case MediaCoordinator::ViewType::kCameraOnly:
-      [[fallthrough]];
-    case MediaCoordinator::ViewType::kMicOnly:
-      return media_preview_metrics::PromptType::kSingle;
   }
 }
 

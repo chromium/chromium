@@ -4,15 +4,23 @@
 
 #include "chrome/browser/ui/views/frame/multi_contents_view_delegate.h"
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_visual_data.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/common/url_constants.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
+#include "url/url_constants.h"
 
 MultiContentsViewDelegateImpl::MultiContentsViewDelegateImpl(Browser& browser)
     : browser_(browser), tab_strip_model_(*browser.tab_strip_model()) {}
@@ -63,9 +71,21 @@ void MultiContentsViewDelegateImpl::ResizeWebContents(double start_ratio,
 
 void MultiContentsViewDelegateImpl::HandleLinkDrop(
     MultiContentsDropTargetView::DropSide side,
-    const std::vector<GURL>& urls) {
+    const ui::DropTargetEvent& event) {
+  auto urls = event.data().GetURLs(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
   CHECK(!urls.empty());
-  CHECK(!tab_strip_model_->GetActiveTab()->IsSplit());
+  tabs::TabInterface* active_tab = tab_strip_model_->GetActiveTab();
+  CHECK(!active_tab->IsSplit());
+
+  // Disallow javascript: URLs to prevent self-XSS.
+  std::vector<GURL> filtered_urls;
+  for (const auto& url_info : urls) {
+    if (url_info.url.SchemeIs(url::kJavaScriptScheme)) {
+      filtered_urls.emplace_back(content::kBlockedURL);
+    } else {
+      filtered_urls.push_back(url_info.url);
+    }
+  }
 
   // Insert the tab before or after the active tab, according to the drop side.
   const int new_tab_idx =
@@ -78,8 +98,23 @@ void MultiContentsViewDelegateImpl::HandleLinkDrop(
 
   // We currently only support creating a split with one link; i.e., the first
   // link in the provided list.
-  tab_strip_model_->delegate()->AddTabAt(urls.front(), new_tab_idx,
-                                         /*foreground=*/true);
+  NavigateParams params(&browser_.get(), filtered_urls.front(),
+                        ui::PAGE_TRANSITION_LINK);
+  params.tabstrip_index = new_tab_idx;
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.initiator_origin = event.data().GetRendererTaintedOrigin();
+  if (active_tab->IsPinned()) {
+    params.tabstrip_add_types |= AddTabTypes::ADD_PINNED;
+  }
+  if (active_tab->GetGroup()) {
+    params.group = active_tab->GetGroup().value();
+  }
+
+  // If the navigation failed, don't try to create a split view.
+  if (!Navigate(&params)) {
+    return;
+  }
+
   // Create a split with the previously active tab, which should be before or
   // after the newly created tab.
   tab_strip_model_->AddToNewSplit(
@@ -106,9 +141,12 @@ void MultiContentsViewDelegateImpl::HandleTabDrop(
   const int new_tab_idx =
       tab_strip_model_->active_index() +
       (side == MultiContentsDropTargetView::DropSide::START ? 0 : 1);
+
+  tabs::TabInterface* active_tab = tab_strip_model_->GetActiveTab();
   const int inserted_tab_idx = tab_strip_model_->InsertDetachedTabAt(
-      new_tab_idx, std::move(detached_tab), AddTabTypes::ADD_NONE,
-      std::nullopt);
+      new_tab_idx, std::move(detached_tab),
+      active_tab->IsPinned() ? AddTabTypes::ADD_PINNED : AddTabTypes::ADD_NONE,
+      active_tab->GetGroup());
   tab_strip_model_->AddToNewSplit(
       {inserted_tab_idx}, split_data,
       split_tabs::SplitTabCreatedSource::kDragAndDropTab);

@@ -4,6 +4,9 @@
 
 #include "components/policy/core/common/cloud/user_info_fetcher.h"
 
+#include <optional>
+#include <string>
+
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
@@ -13,6 +16,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -36,7 +40,7 @@ static const char kLegacyGoogleApisHost[] = "www.googleapis.com";
 // doesn't support the User Info API anymore. This is needed on iOS, which is
 // the only platform that uses the new OAuth2 host at the moment.
 GURL SwitchBackToLegacyHostIfNeeded(const GURL& url) {
-  if (url.host() == "oauth2.googleapis.com") {
+  if (url.GetHost() == "oauth2.googleapis.com") {
     GURL::Replacements replace_host;
     replace_host.SetHostStr(kLegacyGoogleApisHost);
     return url.ReplaceComponents(replace_host);
@@ -110,7 +114,7 @@ void UserInfoFetcher::Start(const std::string& access_token) {
 }
 
 void UserInfoFetcher::OnFetchComplete(
-    std::unique_ptr<std::string> unparsed_data) {
+    std::optional<std::string> unparsed_data) {
   std::unique_ptr<network::SimpleURLLoader> url_loader = std::move(url_loader_);
 
   GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
@@ -138,8 +142,8 @@ void UserInfoFetcher::OnFetchComplete(
   DCHECK(unparsed_data);
   DVLOG_POLICY(1, POLICY_AUTH)
       << "Received UserInfo response: " << *unparsed_data;
-  std::optional<base::Value> parsed_value =
-      base::JSONReader::Read(*unparsed_data);
+  std::optional<base::Value> parsed_value = base::JSONReader::Read(
+      *unparsed_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (parsed_value && parsed_value->is_dict()) {
     RecordFetchStatus(EnterpriseUserInfoFetchStatus::kSuccess);
     delegate_->OnGetUserInfoSuccess(parsed_value->GetDict());

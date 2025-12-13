@@ -14,7 +14,8 @@ namespace google_apis::classroom {
 using ::base::JSONReader;
 
 TEST(ClassroomApiStudentSubmissionsResponseTypesTest, ConvertsEmptyResponse) {
-  auto raw_student_submissions = JSONReader::Read("{}");
+  auto raw_student_submissions =
+      JSONReader::Read("{}", base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_student_submissions);
 
   auto submissions =
@@ -25,7 +26,8 @@ TEST(ClassroomApiStudentSubmissionsResponseTypesTest, ConvertsEmptyResponse) {
 }
 
 TEST(ClassroomApiStudentSubmissionsResponseTypesTest, ConvertsSubmissions) {
-  const auto raw_student_submissions = JSONReader::Read(R"(
+  const auto raw_student_submissions =
+      JSONReader::Read(R"(
       {
         "studentSubmissions": [
           {
@@ -57,7 +59,8 @@ TEST(ClassroomApiStudentSubmissionsResponseTypesTest, ConvertsSubmissions) {
             "assignedGrade": 99.99
           }
         ]
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_student_submissions);
 
   const auto submissions =
@@ -98,11 +101,13 @@ TEST(ClassroomApiStudentSubmissionsResponseTypesTest, ConvertsSubmissions) {
 }
 
 TEST(ClassroomApiStudentSubmissionsResponseTypesTest, ConvertsNextPageToken) {
-  const auto raw_submissions = JSONReader::Read(R"(
+  const auto raw_submissions =
+      JSONReader::Read(R"(
       {
         "studentSubmissions": [],
         "nextPageToken": "qwerty"
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_submissions);
 
   const auto submissions =
@@ -113,11 +118,13 @@ TEST(ClassroomApiStudentSubmissionsResponseTypesTest, ConvertsNextPageToken) {
 
 TEST(ClassroomApiStudentSubmissionsResponseTypesTest,
      DoesNotCrashOnUnexpectedResponse) {
-  const auto raw_submissions = JSONReader::Read(R"(
+  const auto raw_submissions =
+      JSONReader::Read(R"(
       {
         "studentSubmissions": [{"id": []}],
         "nextPageToken": true
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_submissions);
 
   const auto submissions =

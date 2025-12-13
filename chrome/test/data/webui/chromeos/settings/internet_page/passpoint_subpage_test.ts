@@ -72,14 +72,14 @@ suite('PasspointSubpage', () => {
     const div = passpointSubpage_.shadowRoot!.querySelector<HTMLElement>(
         '#passpointSourceText');
     assertTrue(!!div);
-    return div.textContent!.trim();
+    return div.textContent.trim();
   }
 
   function getCertificateName(): string {
     const div = passpointSubpage_.shadowRoot!.querySelector<HTMLElement>(
         '#passpointCertificateName');
     assertTrue(!!div);
-    return div.textContent!.trim();
+    return div.textContent.trim();
   }
 
   function getRemovalDialog(): HTMLDialogElement|null {

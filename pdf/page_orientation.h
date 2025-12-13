@@ -28,6 +28,27 @@ enum class PageOrientation : uint8_t {
   kLast = kClockwise270
 };
 
+// Returns the number of 90 degree clockwise rotation steps for `orientation`.
+// The return value is appropriate for use with PDFium APIs that expect a
+// rotation value.
+constexpr int GetClockwiseRotationSteps(PageOrientation orientation) {
+  // Could use static_cast<int>(orientation), but using an exhaustive switch
+  // will trigger an error if the definition of `PageOrientation` changes.
+  switch (orientation) {
+    case PageOrientation::kOriginal:
+      return 0;
+    case PageOrientation::kClockwise90:
+      return 1;
+    case PageOrientation::kClockwise180:
+      return 2;
+    case PageOrientation::kClockwise270:
+      return 3;
+  }
+}
+
+// Whether the page orientation is `kClockwise90` or `kClockwise270`.
+bool IsTransposedPageOrientation(PageOrientation orientation);
+
 // Rotates a page orientation clockwise by one step (90 degrees).
 PageOrientation RotateClockwise(PageOrientation orientation);
 

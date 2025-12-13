@@ -6,7 +6,6 @@
 #define CHROME_UPDATER_CLEANUP_TASK_H_
 
 #include "base/functional/callback_forward.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -32,10 +31,6 @@ class CleanupTask : public base::RefCountedThreadSafe<CleanupTask> {
   UpdaterScope scope_;
   scoped_refptr<Configurator> config_;
 };
-
-#if BUILDFLAG(IS_MAC)
-void CleanOldCrxCache();
-#endif  // IS_MAC
 
 }  // namespace updater
 

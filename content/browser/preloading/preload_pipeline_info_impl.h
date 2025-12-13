@@ -11,6 +11,7 @@
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/preloading.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace content {
 
@@ -28,6 +29,9 @@ class CONTENT_EXPORT PreloadPipelineInfoImpl final
   PreloadPipelineInfoImpl& operator=(PreloadPipelineInfoImpl&& other) = delete;
   PreloadPipelineInfoImpl(const PreloadPipelineInfoImpl&) = delete;
   PreloadPipelineInfoImpl& operator=(const PreloadPipelineInfoImpl&) = delete;
+
+  const perfetto::Track& GetTrack() const;
+  perfetto::Flow GetFlow() const;
 
   const base::UnguessableToken& id() const { return id_; }
 
@@ -53,6 +57,8 @@ class CONTENT_EXPORT PreloadPipelineInfoImpl final
   const base::UnguessableToken id_;
 
   const PreloadingType planned_max_preloading_type_;
+
+  const perfetto::Track track_;
 
   PreloadingEligibility prefetch_eligibility_ =
       PreloadingEligibility::kUnspecified;

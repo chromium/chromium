@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/relative_utils.h"
+#include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
 #include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
@@ -84,7 +85,11 @@ void FieldsetPainter::PaintBoxDecorationBackground(
 
   BoxFragmentPainter fragment_painter(fieldset_);
   if (box_decoration_data.ShouldPaintShadow()) {
-    fragment_painter.PaintNormalBoxShadow(paint_info, contracted_rect, style);
+    std::optional<BorderShapeReferenceRects> border_shape_rects =
+        ComputeBorderShapeReferenceRects(contracted_rect, fieldset_.Style(),
+                                         *fieldset_.GetLayoutObject());
+    fragment_painter.PaintNormalBoxShadow(paint_info, contracted_rect, style,
+                                          border_shape_rects);
   }
 
   GraphicsContext& graphics_context = paint_info.context;
@@ -126,11 +131,15 @@ void FieldsetPainter::PaintBoxDecorationBackground(
 
     const LayoutObject* layout_object = fieldset_.GetLayoutObject();
     Node* node = layout_object->GeneratingNode();
+    std::optional<BorderShapeReferenceRects> border_shape_rects =
+        ComputeBorderShapeReferenceRects(contracted_rect, fieldset_.Style(),
+                                         *layout_object);
     fragment_painter.PaintBorder(
         *fieldset_.GetLayoutObject(), layout_object->GetDocument(), node,
         paint_info, contracted_rect, fieldset_.Style(),
         box_decoration_data.GetBackgroundBleedAvoidance(),
-        fieldset_.SidesToInclude());
+        fieldset_.SidesToInclude(),
+        border_shape_rects ? &*border_shape_rects : nullptr);
   }
 
   if (needs_end_layer)

@@ -1,0 +1,28 @@
+Tests that Preload.prerenderStatusUpdated is sent for speculation rule with "prerender_until_script" action.
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : PrerenderUntilScript
+            loaderId : <string>
+            url : http://127.0.0.1:8000/inspector-protocol/prerender/resources/prerender.html
+        }
+        pipelineId : <string>
+        status : Pending
+    }
+    sessionId : <string>
+}
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : PrerenderUntilScript
+            loaderId : <string>
+            url : http://127.0.0.1:8000/inspector-protocol/prerender/resources/prerender.html
+        }
+        pipelineId : <string>
+        status : Running
+    }
+    sessionId : <string>
+}
+

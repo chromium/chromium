@@ -1,6 +1,6 @@
 Name: NullAway
 Short Name: NullAway
-Version: 0.12.7
+Version: 0.12.14
 Update Mechanism: Autoroll
 License: MIT
 License File: LICENSE
@@ -21,5 +21,20 @@ What version is this:
   * The bot autoruns every 6 hours. Ping a trooper or a clank-build-core@ dev to
     trigger it if you need it sooner:
     https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
-  * New versions are rolled automatically by:
-    TODO(crbug.com/40657579): Add auto-roller.
+  * New versions are packaged automatically, but rolled manually.
+
+Tips on Rolling:
+If there are a lot of new warnings, suppress them by:
+
+1) Create a copy / paste of NullAway.assumeNonNull() (e.g. "suppressNullAway")
+2) Update errorprone.py:
+   -ERRORPRONE_CHECKS_TO_APPLY = []
+   +ERRORPRONE_CHECKS_TO_APPLY = ['NullAway']
+   ...
+   +    errorprone_flags += ['-XepOpt:NullAway:SuggestSuppressions=true']
+   ..
+   -                          'org.chromium.build.NullUtil.assumeNonNull')]
+   +                          'org.chromium.build.NullUtil.suppressNullAway')]
+3) Update build/config/siso/android.star (for "android/errorprone" block):
+   +            "remote": False,
+4) Build all targets: cd out/Debug && autoninja

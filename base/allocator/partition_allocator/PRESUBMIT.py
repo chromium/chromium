@@ -129,23 +129,8 @@ def CheckNoExternalImportInGn(input_api, output_api):
                 (f.LocalPath(), line_number + 1, import_path)))
     return errors;
 
-# partition_alloc still supports C++17, because Skia still uses C++17.
-def CheckCpp17CompatibleHeaders(input_api, output_api):
-    CPP_20_HEADERS = [
-        "barrier",
-        "bit",
-        #"compare",  Three-way comparison may be used under appropriate guards.
-        "format",
-        "numbers",
-        "ranges",
-        "semaphore",
-        "source_location",
-        "span",
-        "stop_token",
-        "syncstream",
-        "version",
-    ]
-
+# partition_alloc uses C++20.
+def CheckCpp20CompatibleHeaders(input_api, output_api):
     CPP_23_HEADERS = [
         "expected",
         "flat_map",
@@ -171,13 +156,6 @@ def CheckCpp17CompatibleHeaders(input_api, output_api):
     for f in input_api.AffectedSourceFiles(sources):
         # for line_number, line in f.ChangedContents():
         for line_number, line in enumerate(f.NewContents()):
-            for header in CPP_20_HEADERS:
-                if not "#include <%s>" % header in line:
-                    continue
-                errors.append(
-                    output_api.PresubmitError(
-                        '%s:%d\nPartitionAlloc disallows C++20 headers: <%s>'
-                        % (f.LocalPath(), line_number + 1, header)))
             for header in CPP_23_HEADERS:
                 if not "#include <%s>" % header in line:
                     continue
@@ -185,50 +163,6 @@ def CheckCpp17CompatibleHeaders(input_api, output_api):
                     output_api.PresubmitError(
                         '%s:%d\nPartitionAlloc disallows C++23 headers: <%s>'
                         % (f.LocalPath(), line_number + 1, header)))
-    return errors
-
-def CheckCpp17CompatibleKeywords(input_api, output_api):
-    CPP_20_KEYWORDS = [
-        "concept",
-        "consteval",
-        "constinit",
-        "co_await",
-        "co_return",
-        "co_yield",
-        "requires",
-        "std::hardware_",
-        "std::is_constant_evaluated",
-        "std::bit_cast",
-        "std::midpoint",
-        "std::to_array",
-    ]
-    # Note: C++23 doesn't introduce new keywords.
-
-    sources = lambda affected_file: input_api.FilterSourceFile(
-        affected_file,
-        # compiler_specific.h may use these keywords in guarded macros.
-        files_to_skip=[r'.*partition_alloc_base/compiler_specific\.h'],
-        files_to_check=[_SOURCE_FILE_PATTERN])
-
-    errors = []
-    for f in input_api.AffectedSourceFiles(sources):
-        for line_number, line in f.ChangedContents():
-            for keyword in CPP_20_KEYWORDS:
-                if not keyword in line:
-                    continue
-                # Skip if part of a comment
-                if '//' in line and line.index('//') < line.index(keyword):
-                    continue
-
-                # Make sure there are word separators around the keyword:
-                regex = r'\b%s\b' % keyword
-                if not input_api.re.search(regex, line):
-                    continue
-
-                errors.append(
-                    output_api.PresubmitError(
-                        '%s:%d\nPartitionAlloc disallows C++20 keywords: %s'
-                        % (f.LocalPath(), line_number + 1, keyword)))
     return errors
 
 # Check `NDEBUG` is not used inside partition_alloc. We prefer to use the

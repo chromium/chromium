@@ -5,6 +5,7 @@
 #include "content/browser/shared_storage/shared_storage_code_cache_host_proxy.h"
 
 #include "base/logging.h"
+#include "components/persistent_cache/pending_backend.h"
 
 namespace content {
 
@@ -17,6 +18,14 @@ SharedStorageCodeCacheHostProxy::SharedStorageCodeCacheHostProxy(
       script_url_(script_url) {}
 
 SharedStorageCodeCacheHostProxy::~SharedStorageCodeCacheHostProxy() = default;
+
+void SharedStorageCodeCacheHostProxy::GetPendingBackend(
+    blink::mojom::CodeCacheType cache_type,
+    GetPendingBackendCallback callback) {
+  // Shared Storage does not use a code cache when
+  // UsePersistentCacheForCodeCache is enabled.
+  NOTREACHED();
+}
 
 void SharedStorageCodeCacheHostProxy::DidGenerateCacheableMetadata(
     blink::mojom::CodeCacheType cache_type,

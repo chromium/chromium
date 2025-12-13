@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "remoting/test/cli_util.h"
 
 #include <string.h>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
@@ -71,7 +67,7 @@ void RunCommandOptionsLoop(const std::vector<CommandOption>& options) {
 std::string ReadString() {
   const int kMaxLen = 1024;
   std::string str(kMaxLen, 0);
-  char* result = fgets(&str[0], kMaxLen, stdin);
+  char* result = UNSAFE_TODO(fgets(&str[0], kMaxLen, stdin));
   if (!result) {
     return std::string();
   }

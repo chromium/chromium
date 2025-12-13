@@ -65,6 +65,8 @@ GL_EXPORT bool IsSwiftShaderAllowed(const base::CommandLine* command_line);
 GL_EXPORT BASE_DECLARE_FEATURE(kAllowD3D11WarpFallback);
 #endif
 
+GL_EXPORT bool IsWARPAllowed(const base::CommandLine* command_line);
+
 // Check if any form of software WebGL fallback is available
 GL_EXPORT bool IsAnySoftwareGLAllowed(const base::CommandLine* command_line);
 
@@ -76,6 +78,13 @@ GL_EXPORT bool IsSoftwareGLFallbackDueToCrashesAllowed(
 // Query the delay we add to glCompileShader.
 // Default is 0 if kAddDelayToGLCompileShader is off.
 GL_EXPORT base::TimeDelta GetGLCompileShaderDelay();
+
+#if BUILDFLAG(IS_ANDROID)
+GL_EXPORT BASE_DECLARE_FEATURE(kAndroidLimitRgb565DisplayToApi32);
+
+GL_EXPORT bool PreferRGB565ResourcesForDisplay();
+#endif
+
 }  // namespace features
 
 #endif  // UI_GL_GL_FEATURES_H_

@@ -48,20 +48,17 @@ AxisEdge AxisEdgeFromItemPosition(GridTrackSizingDirection track_direction,
   *auto_behavior = AutoSizeBehavior::kFitContent;
   *is_overflow_safe = alignment.Overflow() == OverflowAlignment::kSafe;
 
-  const bool is_masonry = parent_grid_style.IsDisplayMasonryBox();
   const bool applies_alignment = ([&]() {
-    if (!is_masonry) {
+    if (!parent_grid_style.IsDisplayGridLanesBox()) {
       return true;
     }
 
-    // We currently only apply alignment in the grid axis of a masonry
+    // We currently only apply alignment in the grid axis of a grid-lanes
     // container.
     //
     // TODO(almaher): Update alignment logic if needed once we resolve on
     // https://github.com/w3c/csswg-drafts/issues/10275.
-    //
-    // TODO(almaher): We need more masonry alignment tests.
-    return parent_grid_style.MasonryTrackSizingDirection() == track_direction;
+    return parent_grid_style.GridLanesTrackSizingDirection() == track_direction;
   })();
 
   // Auto-margins take precedence over any alignment properties.
@@ -139,14 +136,8 @@ AxisEdge AxisEdgeFromItemPosition(GridTrackSizingDirection track_direction,
                                                  : AxisEdge::kEnd;
     case ItemPosition::kNormal:
       if (applies_alignment) {
-        // Don't apply special 'fit-content' behavior for replaced items in
-        // a masonry container.
-        if (is_masonry) {
-          *auto_behavior = AutoSizeBehavior::kStretchImplicit;
-        } else {
-          *auto_behavior = is_replaced ? AutoSizeBehavior::kFitContent
-                                       : AutoSizeBehavior::kStretchImplicit;
-        }
+        *auto_behavior = is_replaced ? AutoSizeBehavior::kFitContent
+                                     : AutoSizeBehavior::kStretchImplicit;
       }
       return AxisEdge::kStart;
     case ItemPosition::kLegacy:
@@ -315,6 +306,17 @@ void GridItemData::SetAlignmentFallback(
             ? AxisEdge::kStart
             : AxisEdge::kEnd;
   }
+}
+
+void GridItemData::UpdateSpan(
+    const GridSpan& span,
+    GridTrackSizingDirection track_direction,
+    wtf_size_t start_offset,
+    const GridLayoutTrackCollection& track_collection) {
+  resolved_position.SetSpan(span, track_direction);
+  MaybeTranslateSpan(start_offset, track_direction);
+  ResetPlacementIndices();
+  ComputeSetIndices(track_collection);
 }
 
 void GridItemData::ComputeSetIndices(

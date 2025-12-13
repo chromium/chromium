@@ -39,7 +39,8 @@ base::Value::Dict ReadConfigFile(const base::FilePath& path) {
   bool loaded = base::ReadFileToString(path, &file_content);
   CHECK(loaded) << "Couldn't read config file: " << path;
 
-  auto parsed = base::JSONReader::ReadAndReturnValueWithError(file_content);
+  auto parsed = base::JSONReader::ReadAndReturnValueWithError(
+      file_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   CHECK(parsed.has_value())
       << "Failed to parse " << path << ": " << parsed.error().message;
   CHECK(parsed->is_dict()) << "Config is not a JSON dictionary: " << path;

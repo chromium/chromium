@@ -10,6 +10,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
@@ -21,8 +22,10 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -49,21 +52,13 @@ void IbanBubbleControllerImpl::OfferLocalSave(
     payments::PaymentsAutofillClient::SaveIbanPromptCallback
         save_iban_prompt_callback) {
   // Don't show the bubble if it's already visible.
-  if (bubble_view()) {
+  if (bubble_view() || !MaySetUpBubble()) {
     return;
   }
 
-  iban_ = iban;
-  is_reshow_ = false;
-  is_upload_save_ = false;
-  legal_message_lines_.clear();
-  save_iban_prompt_callback_ = std::move(save_iban_prompt_callback);
-  current_bubble_type_ = IbanBubbleType::kLocalSave;
-  // Save callback should not be null for IBAN save.
-  CHECK(!save_iban_prompt_callback_.is_null());
-
+  SetupLocalSave(iban, std::move(save_iban_prompt_callback));
   if (should_show_prompt) {
-    Show();
+    QueueOrShowBubble();
   } else {
     ShowIconOnly();
   }
@@ -76,11 +71,41 @@ void IbanBubbleControllerImpl::OfferUploadSave(
     payments::PaymentsAutofillClient::SaveIbanPromptCallback
         save_iban_prompt_callback) {
   // Don't show the bubble if it's already visible.
-  if (bubble_view()) {
+  if (bubble_view() || !MaySetUpBubble()) {
     return;
   }
 
-  iban_ = iban;
+  SetupUploadSave(iban, std::move(legal_message_lines),
+                  std::move(save_iban_prompt_callback));
+  if (should_show_prompt) {
+    QueueOrShowBubble();
+  } else {
+    ShowIconOnly();
+  }
+}
+
+void IbanBubbleControllerImpl::SetupLocalSave(
+    Iban iban,
+    payments::PaymentsAutofillClient::SaveIbanPromptCallback
+        save_iban_prompt_callback) {
+  was_bubble_shown_ = false;
+  iban_ = std::move(iban);
+  is_reshow_ = false;
+  is_upload_save_ = false;
+  legal_message_lines_.clear();
+  save_iban_prompt_callback_ = std::move(save_iban_prompt_callback);
+  current_bubble_type_ = IbanBubbleType::kLocalSave;
+  // Save callback should not be null for IBAN save.
+  CHECK(!save_iban_prompt_callback_.is_null());
+}
+
+void IbanBubbleControllerImpl::SetupUploadSave(
+    Iban iban,
+    LegalMessageLines legal_message_lines,
+    payments::PaymentsAutofillClient::SaveIbanPromptCallback
+        save_iban_prompt_callback) {
+  was_bubble_shown_ = false;
+  iban_ = std::move(iban);
   is_reshow_ = false;
   is_upload_save_ = true;
   legal_message_lines_ = std::move(legal_message_lines);
@@ -88,11 +113,6 @@ void IbanBubbleControllerImpl::OfferUploadSave(
   current_bubble_type_ = IbanBubbleType::kUploadSave;
   // Save callback should not be null for IBAN save.
   CHECK(!save_iban_prompt_callback_.is_null());
-  if (should_show_prompt) {
-    Show();
-  } else {
-    ShowIconOnly();
-  }
 }
 
 void IbanBubbleControllerImpl::ReshowBubble() {
@@ -110,14 +130,16 @@ void IbanBubbleControllerImpl::ReshowBubble() {
     CHECK(current_bubble_type_ == IbanBubbleType::kManageSavedIban ||
           current_bubble_type_ == IbanBubbleType::kUploadInProgress);
   }
-  Show();
+  QueueOrShowBubble(/*force_show=*/true);
 }
 
 void IbanBubbleControllerImpl::ShowConfirmationBubbleView(
     bool iban_saved,
     bool hit_max_strikes) {
+  DoNotShowNextQueuedBubbleGuard guard = DoNotShowNextQueuedBubble();
+
   // Hide the current bubble if still showing.
-  HideBubble();
+  HideBubble(/*initiated_by_bubble_manager=*/false);
 
   is_reshow_ = false;
   current_bubble_type_ = IbanBubbleType::kUploadCompleted;
@@ -132,14 +154,17 @@ void IbanBubbleControllerImpl::ShowConfirmationBubbleView(
       chrome::FindBrowserWithTab(web_contents())
           ->window()
           ->GetAutofillBubbleHandler();
-  set_bubble_view(autofill_bubble_handler->ShowSaveIbanConfirmationBubble(
+  SetBubbleView(*autofill_bubble_handler->ShowSaveIbanConfirmationBubble(
       web_contents(), this));
+  UpdatePageActionIcon();
+
   // Auto close confirmation bubble when IBAN saved is successful.
   if (iban_saved) {
     auto_close_confirmation_timer_.Start(
         FROM_HERE, kAutoCloseConfirmationBubbleWaitSec,
         base::BindOnce(&IbanBubbleControllerImpl::HideBubble,
-                       base::Unretained(this)));
+                       base::Unretained(this),
+                       /*initiated_by_bubble_manager=*/false));
   }
 }
 
@@ -289,25 +314,14 @@ void IbanBubbleControllerImpl::OnManageSavedIbanExtraButtonClicked() {
   OnBubbleClosed(PaymentsUiClosedReason::kClosed);
 }
 
-void IbanBubbleControllerImpl::OnBubbleClosed(
+void IbanBubbleControllerImpl::OnBubbleDiscarded() {
+  LogBubbleCloseMetrics(was_bubble_shown_
+                            ? PaymentsUiClosedReason::kNotInteracted
+                            : PaymentsUiClosedReason::kUnknown);
+}
+
+void IbanBubbleControllerImpl::LogBubbleCloseMetrics(
     PaymentsUiClosedReason closed_reason) {
-  if (current_bubble_type_ == IbanBubbleType::kLocalSave ||
-      current_bubble_type_ == IbanBubbleType::kUploadSave) {
-    if (closed_reason == PaymentsUiClosedReason::kCancelled) {
-      std::move(save_iban_prompt_callback_)
-          .Run(payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::
-                   kDeclined,
-               /*nickname=*/u"");
-    } else if (closed_reason == PaymentsUiClosedReason::kClosed) {
-      std::move(save_iban_prompt_callback_)
-          .Run(payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::
-                   kIgnored,
-               /*nickname=*/u"");
-    }
-  }
-
-  set_bubble_view(nullptr);
-
   auto get_metric = [](PaymentsUiClosedReason reason) {
     switch (reason) {
       case PaymentsUiClosedReason::kAccepted:
@@ -344,6 +358,30 @@ void IbanBubbleControllerImpl::OnBubbleClosed(
         break;
     }
   }
+}
+
+void IbanBubbleControllerImpl::OnBubbleClosed(
+    PaymentsUiClosedReason closed_reason) {
+  if (current_bubble_type_ == IbanBubbleType::kLocalSave ||
+      current_bubble_type_ == IbanBubbleType::kUploadSave) {
+    if (closed_reason == PaymentsUiClosedReason::kCancelled) {
+      std::move(save_iban_prompt_callback_)
+          .Run(payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::
+                   kDeclined,
+               /*nickname=*/u"");
+    } else if (closed_reason == PaymentsUiClosedReason::kClosed) {
+      std::move(save_iban_prompt_callback_)
+          .Run(payments::PaymentsAutofillClient::SaveIbanOfferUserDecision::
+                   kIgnored,
+               /*nickname=*/u"");
+    }
+  }
+
+  ResetBubbleViewAndInformBubbleManager();
+
+  if (!bubble_hide_initiated_by_bubble_manager_) {
+    LogBubbleCloseMetrics(closed_reason);
+  }
 
   if (current_bubble_type_ == IbanBubbleType::kUploadCompleted) {
     current_bubble_type_ = IbanBubbleType::kInactive;
@@ -362,8 +400,11 @@ void IbanBubbleControllerImpl::OnBubbleClosed(
     } else {
       current_bubble_type_ = IbanBubbleType::kInactive;
     }
-  } else if (closed_reason == PaymentsUiClosedReason::kCancelled) {
-    current_bubble_type_ = IbanBubbleType::kInactive;
+  } else if (closed_reason == PaymentsUiClosedReason::kCancelled ||
+             closed_reason == PaymentsUiClosedReason::kClosed) {
+    if (current_bubble_type_ != IbanBubbleType::kManageSavedIban) {
+      current_bubble_type_ = IbanBubbleType::kInactive;
+    }
   }
   UpdatePageActionIcon();
   confirmation_ui_params_.reset();
@@ -374,7 +415,7 @@ IbanBubbleControllerImpl::IbanBubbleControllerImpl(
     : AutofillBubbleControllerBase(web_contents),
       content::WebContentsUserData<IbanBubbleControllerImpl>(*web_contents) {}
 
-IbanBubbleType IbanBubbleControllerImpl::GetBubbleType() const {
+IbanBubbleType IbanBubbleControllerImpl::GetIbanBubbleType() const {
   return current_bubble_type_;
 }
 
@@ -424,17 +465,30 @@ IbanBubbleControllerImpl::GetConfirmationUiParams() const {
   return confirmation_ui_params_.value();
 }
 
-PageActionIconType IbanBubbleControllerImpl::GetPageActionIconType() {
+std::optional<PageActionIconType>
+IbanBubbleControllerImpl::GetPageActionIconType() {
   return PageActionIconType::kSaveIban;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+std::optional<actions::ActionId>
+IbanBubbleControllerImpl::GetActionIdForPageAction() {
+  return kActionShowPaymentsBubbleOrPage;
+}
+
+std::optional<std::u16string>
+IbanBubbleControllerImpl::GetPageActionTooltipText() {
+  return GetSavePaymentIconTooltipText();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void IbanBubbleControllerImpl::DoShowBubble() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   AutofillBubbleHandler* autofill_bubble_handler =
       browser->window()->GetAutofillBubbleHandler();
-  set_bubble_view(autofill_bubble_handler->ShowIbanBubble(
-      web_contents(), this, /*is_user_gesture=*/is_reshow_,
-      current_bubble_type_));
+  SetBubbleView(*autofill_bubble_handler->ShowIbanBubble(
+      web_contents(), this,
+      /*is_user_gesture=*/is_reshow_, current_bubble_type_));
   CHECK(bubble_view());
   CHECK(current_bubble_type_ != IbanBubbleType::kInactive);
 
@@ -462,6 +516,19 @@ void IbanBubbleControllerImpl::DoShowBubble() {
   if (observer_for_testing_) {
     observer_for_testing_->OnBubbleShown();
   }
+}
+
+bool IbanBubbleControllerImpl::CanBeReshown() const {
+  return current_bubble_type_ != IbanBubbleType::kUploadCompleted;
+}
+
+BubbleType IbanBubbleControllerImpl::GetBubbleType() const {
+  return BubbleType::kSaveIban;
+}
+
+base::WeakPtr<BubbleControllerBase>
+IbanBubbleControllerImpl::GetBubbleControllerBaseWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 Profile* IbanBubbleControllerImpl::GetProfile() {

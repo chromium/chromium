@@ -19,9 +19,10 @@ import * as ObjectUI from 'devtools/ui/legacy/components/object_ui/object_ui.js'
     };
   `);
 
-  TestRunner.RuntimeAgent.evaluate('window', 'console', false).then(evalCallback);
+  TestRunner.RuntimeAgent.invoke_evaluate({expression: 'window', objectGroup: 'console', includeCommandLineAPI: false})
+      .then(evalCallback);
 
-  function evalCallback(result) {
+  function evalCallback({result}) {
     if (!result) {
       testController.notifyDone('Exception');
       return;

@@ -763,7 +763,7 @@ void UserScriptsExecuteFunction::DidLoadResources(
     if (!source.has_value()) {
       CHECK_LT(file_index, static_cast<int>(file_sources.size()));
       source = mojom::JSSource::New(
-          std::move(*file_sources[file_index].data),
+          std::move(file_sources[file_index].data),
           extension()->GetResourceURL(
               base::EscapePath(file_sources[file_index].file_name)));
       file_index++;

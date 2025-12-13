@@ -30,7 +30,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/test/app/mock_reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -52,17 +52,16 @@ class AddPasswordCoordinatorTest : public PlatformTest {
     // Add test password store. Used by the mediator.
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
-        base::BindRepeating(
-            &password_manager::BuildPasswordStore<
-                web::BrowserState, password_manager::TestPasswordStore>));
+        base::BindOnce(&password_manager::BuildPasswordStore<
+                       ProfileIOS, password_manager::TestPasswordStore>));
 
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
 
     builder.AddTestingFactory(
         IOSPasswordRequirementsServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](web::BrowserState* /*unused*/) -> std::unique_ptr<KeyedService> {
+        base::BindOnce(
+            [](ProfileIOS*) -> std::unique_ptr<KeyedService> {
               return std::make_unique<
                   password_manager::PasswordRequirementsService>(nil);
             }));

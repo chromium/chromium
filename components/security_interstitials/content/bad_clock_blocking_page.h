@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "components/security_interstitials/content/ssl_blocking_page_base.h"
 #include "components/ssl_errors/error_classification.h"

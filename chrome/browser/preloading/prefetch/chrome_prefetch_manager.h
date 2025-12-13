@@ -5,13 +5,16 @@
 #ifndef CHROME_BROWSER_PRELOADING_PREFETCH_CHROME_PREFETCH_MANAGER_H_
 #define CHROME_BROWSER_PRELOADING_PREFETCH_CHROME_PREFETCH_MANAGER_H_
 
+#include "base/containers/circular_deque.h"
 #include "content/public/browser/prefetch_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+#if BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/379140429): Create `preloading_utils` and move this to it.
 inline constexpr char kCCTMetricsSuffix[] = "ChromeCustomTabs";
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Manages all prefetch triggers from the //chrome.
 class ChromePrefetchManager
@@ -32,7 +35,8 @@ class ChromePrefetchManager
   explicit ChromePrefetchManager(content::WebContents* web_contents);
   friend class content::WebContentsUserData<ChromePrefetchManager>;
 
-  std::vector<std::unique_ptr<content::PrefetchHandle>> all_prefetches_;
+  base::circular_deque<std::unique_ptr<content::PrefetchHandle>>
+      all_prefetches_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

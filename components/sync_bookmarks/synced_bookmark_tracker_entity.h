@@ -46,6 +46,11 @@ class SyncedBookmarkTrackerEntity {
   // A commit may or may not be in progress at this time.
   bool IsUnsynced() const;
 
+  // Returns true if this entity was created locally and not yet committed to
+  // the server (including while the commit is in flight, until a response is
+  // received from the server).
+  bool IsUnsyncedLocalCreation() const;
+
   // Check whether |data| matches the stored specifics hash. It also compares
   // parent information (which is included in specifics).
   bool MatchesData(const syncer::EntityData& data) const;

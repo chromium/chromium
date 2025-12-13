@@ -42,7 +42,6 @@ inline constexpr char kBackgroundServiceWorkerScript[] =
     "background.service_worker";
 inline constexpr char kBackgroundServiceWorkerType[] = "background.type";
 inline constexpr char kBluetooth[] = "bluetooth";
-inline constexpr char kBookmarkUI[] = "bookmarks_ui";
 inline constexpr char kBrowserAction[] = "browser_action";
 inline constexpr char kChromeOSSystemExtension[] = "chromeos_system_extension";
 inline constexpr char kCommands[] = "commands";
@@ -60,7 +59,6 @@ inline constexpr char kDevToolsPage[] = "devtools_page";
 inline constexpr char kDifferentialFingerprint[] = "differential_fingerprint";
 inline constexpr char kDisplayInLauncher[] = "display_in_launcher";
 inline constexpr char kDisplayInNewTabPage[] = "display_in_new_tab_page";
-inline constexpr char kEventName[] = "event_name";
 inline constexpr char kExternallyConnectable[] = "externally_connectable";
 inline constexpr char kEventRules[] = "event_rules";
 inline constexpr char kFileAccessList[] = "file_access";
@@ -74,7 +72,6 @@ inline constexpr char kFileHandlerVerb[] = "verb";
 inline constexpr char kFileHandlers[] = "file_handlers";
 inline constexpr char kGlobal[] = "global";
 inline constexpr char kHandwritingLanguage[] = "handwriting_language";
-inline constexpr char kHideBookmarkButton[] = "hide_bookmark_button";
 inline constexpr char kHomepageURL[] = "homepage_url";
 inline constexpr char kHostPermissions[] = "host_permissions";
 inline constexpr char kIcons[] = "icons";
@@ -102,8 +99,6 @@ inline constexpr char kLaunchWebURL[] = "app.launch.web_url";
 inline constexpr char kLaunchWidth[] = "app.launch.width";
 inline constexpr char kLayouts[] = "layouts";
 inline constexpr char kLinkedAppIcons[] = "app.linked_icons";
-inline constexpr char kLinkedAppIconURL[] = "url";
-inline constexpr char kLinkedAppIconSize[] = "size";
 inline constexpr char kManifestVersion[] = "manifest_version";
 inline constexpr char kMatches[] = "matches";
 inline constexpr char kMIMETypes[] = "mime_types";
@@ -179,7 +174,6 @@ inline constexpr char kWebviewPartitions[] = "partitions";
 #if BUILDFLAG(IS_CHROMEOS)
 inline constexpr char kFileSystemProviderCapabilities[] =
     "file_system_provider_capabilities";
-inline constexpr char kActionHandlers[] = "action_handlers";
 inline constexpr char kActionHandlerActionKey[] = "action";
 #endif
 
@@ -189,14 +183,9 @@ inline constexpr char kActionHandlerActionKey[] = "action";
 namespace manifest_values {
 
 inline constexpr char kActionCommandEvent[] = "_execute_action";
-inline constexpr char kApiKey[] = "api_key";
 inline constexpr char kBrowserActionCommandEvent[] = "_execute_browser_action";
-inline constexpr char kIncognitoNotAllowed[] = "not_allowed";
-inline constexpr char kIncognitoSplit[] = "split";
-inline constexpr char kIncognitoSpanning[] = "spanning";
 inline constexpr char kLaunchContainerPanelDeprecated[] = "panel";
 inline constexpr char kLaunchContainerTab[] = "tab";
-inline constexpr char kLaunchContainerWindow[] = "window";
 inline constexpr char kPageActionCommandEvent[] = "_execute_page_action";
 
 }  // namespace manifest_values
@@ -326,8 +315,6 @@ inline constexpr char16_t kInvalidBackgroundPersistentNoPage[] =
     " background.persistent.";
 inline constexpr char kInvalidBrowserAction[] =
     "Invalid value for 'browser_action'.";
-inline constexpr char kInvalidChromeURLOverrides[] =
-    "Invalid value for 'chrome_url_overrides'.";
 inline constexpr char16_t kInvalidCommandsKey[] =
     u"Invalid value for 'commands'.";
 inline constexpr char16_t kInvalidContentCapabilities[] =
@@ -440,10 +427,6 @@ inline constexpr char kInvalidInputComponentName[] =
     "Invalid value for 'input_components[*].name";
 inline constexpr char kInvalidInputView[] =
     "Invalid value for 'input_components[*].input_view'.";
-inline constexpr char16_t kInvalidIsolation[] =
-    u"Invalid value for 'app.isolation'.";
-inline constexpr char kInvalidIsolationValue[] =
-    "Invalid value for 'app.isolation[*]'.";
 inline constexpr char16_t kInvalidKey[] = u"Value 'key' is missing or invalid.";
 inline constexpr char kInvalidKeyBinding[] =
     "Invalid value for 'commands[*].*': *.";
@@ -484,14 +467,6 @@ inline constexpr char16_t kInvalidLaunchContainer[] =
 inline constexpr char kInvalidLaunchValue[] = "Invalid value for '*'.";
 inline constexpr char kInvalidLaunchValueContainer[] =
     "Invalid container type for '*'.";
-inline constexpr char kInvalidLinkedAppIcon[] =
-    "Invalid linked app icon. Must be a dictionary";
-inline constexpr char kInvalidLinkedAppIconSize[] =
-    "Invalid 'size' for linked app icon. Must be an integer";
-inline constexpr char kInvalidLinkedAppIconURL[] =
-    "Invalid 'url' for linked app icon. Must be a string that is a valid URL";
-inline constexpr char kInvalidLinkedAppIcons[] =
-    "Invalid 'app.linked_icons'. Must be an array";
 inline constexpr char kInvalidManifest[] = "Manifest file is invalid";
 inline constexpr char kInvalidManifestKey[] = "Invalid value for '*'.";
 inline constexpr char kInvalidManifestVersionMissingKey[] =
@@ -534,10 +509,6 @@ inline constexpr char kInvalidOptionsPage[] =
 inline constexpr char16_t kInvalidOptionsPageInHostedApp[] =
     u"Invalid value for 'options_page'. Hosted apps must specify an "
     "absolute URL.";
-inline constexpr char kInvalidOptionsUIChromeStyle[] =
-    "Invalid value for 'options_ui.chrome_style'.";
-inline constexpr char kInvalidOptionsUIOpenInTab[] =
-    "Invalid value for 'options_ui.open_in_tab'.";
 inline constexpr char kInvalidPageAction[] = "Invalid value for 'page_action'.";
 inline constexpr char kInvalidPermission[] =
     "Invalid value for 'permissions[*]'.";
@@ -548,8 +519,6 @@ inline constexpr char16_t kInvalidPermissions[] =
     u"Invalid value for 'permissions'.";
 inline constexpr char kInvalidProtocolHandlersEmpty[] =
     "The 'protocol_handlers' value must be a non-empty list.";
-inline constexpr char kInvalidProtocolHandlers[] =
-    "Invalid value for 'protocol_handlers'.";
 inline constexpr char kProtocolHandlerEmptyName[] =
     "The 'name' must be a non-empty string.";
 inline constexpr char kProtocolHandlerSchemeNotInSafeList[] =
@@ -586,21 +555,23 @@ inline constexpr char kInvalidStartupOverrideURL[] =
 inline constexpr char16_t kInvalidTheme[] = u"Invalid value for 'theme'.";
 inline constexpr char16_t kInvalidThemeColors[] =
     u"Invalid value for theme colors - colors must be integers";
-inline constexpr char16_t kInvalidThemeImages[] =
+inline constexpr char16_t kInvalidThemeImagesValueType[] =
     u"Invalid value for theme images - images must be strings.";
+inline constexpr char16_t kInvalidThemeImagesPath[] =
+    u"Invalid path for theme images.";
 inline constexpr char kInvalidThemeImageMimeType[] =
     "Invalid mime type for theme image '*'.";
 inline constexpr char kThemeImageMissingFileExtension[] =
     "A file name extension is missing for theme image '*'. The image is "
     "accepted for compatibility reasons, but such images might become "
     "unsupported in the future.";
-inline constexpr char kInvalidThemeImagesMissing[] =
-    "An image specified in the theme is missing.";
 inline constexpr char16_t kInvalidThemeTints[] =
     u"Invalid value for theme images - tints must be decimal numbers.";
 inline constexpr char16_t kInvalidThemeTabGroupColorPalette[] =
     u"Invalid value for theme tab group color palette - tab group color "
     u"palette values must be integers.";
+inline constexpr char kInvalidThemeDictImagePath[] =
+    "Invalid path for theme image: entry '*', scale '*', path '*'.";
 inline constexpr char kInvalidTrialTokensNonEmptyList[] =
     "Invalid value for 'trial_tokens'. Must be a non-empty list.";
 inline constexpr char kInvalidTrialTokensValue[] =
@@ -722,8 +693,6 @@ inline constexpr char kPermissionCannotBeOptional[] =
 inline constexpr char kPermissionMarkedOptionalAndRequired[] =
     "Optional permission '*' is redundant with the required permissions;"
     "this permission will be omitted.";
-inline constexpr char kPermissionNotAllowed[] =
-    "Access to permission '*' denied.";
 inline constexpr char kPermissionUnknown[] = "Permission '*' is unknown.";
 inline constexpr char kPermissionUnknownOrMalformed[] =
     "Permission '*' is unknown or URL pattern is malformed.";
@@ -739,7 +708,10 @@ inline constexpr char kRulesetCountExceeded[] =
 inline constexpr char16_t kSandboxPagesCSPKeyNotAllowed[] =
     u"The Content Security Policy for sandboxed pages should be specified in "
     "'content_security_policy.sandbox'.";
-inline constexpr char kSidePanelManifestDefaultPathError[] =
+inline constexpr char16_t kSidePanelManifestDefaultPathInvalid[] =
+    u"Side panel file path must be a relative URL to a valid extension "
+    u"resource.";
+inline constexpr char kSidePanelManifestDefaultPathDoesNotExist[] =
     "Side panel file path must exist.";
 inline constexpr char16_t
     kTransientBackgroundConflictsWithPersistentBackground[] =
@@ -750,18 +722,6 @@ inline constexpr char kUnrecognizedManifestKey[] =
 inline constexpr char16_t kWebRequestConflictsWithLazyBackground[] =
     u"The 'webRequest' API cannot be used with event pages.";
 #if BUILDFLAG(IS_CHROMEOS)
-inline constexpr char kDuplicateActionHandlerFound[] =
-    "'action_handlers' list contains duplicate entries for the action: \"*\".";
-inline constexpr char kIllegalPlugins[] =
-    "Extensions cannot install plugins on Chrome OS.";
-inline constexpr char16_t kInvalidActionHandlerDictionary[] =
-    u"Invalid action handler dictionary in 'action_handlers': 'action' key "
-    "missing.";
-inline constexpr char kInvalidActionHandlersActionType[] =
-    "Invalid entry in 'action_handlers': \"*\".";
-inline constexpr char16_t kInvalidActionHandlersType[] =
-    u"Invalid value for 'action_handlers'. Value must be a list of strings or "
-    "a dictionary with 'action' key.";
 inline constexpr char16_t kInvalidFileSystemProviderMissingCapabilities[] =
     u"The 'fileSystemProvider' permission requires the "
     "'file_system_provider_capabilities' section to be specified in the "

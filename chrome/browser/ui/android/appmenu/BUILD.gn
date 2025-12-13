@@ -14,8 +14,10 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuDelegate.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuHandler.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuItemWithSubmenuProperties.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuObserver.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuPropertiesDelegate.java",
+    "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuSubmenuHeaderItemProperties.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/AppMenuUtil.java",
     "java/src/org/chromium/chrome/browser/ui/appmenu/MenuButtonDelegate.java",
   ]
@@ -52,7 +54,6 @@ android_resources("java_resources") {
     "java/res/drawable/menu_action_bar_bg.xml",
     "java/res/values/attrs.xml",
     "java/res/values/ids.xml",
-    "java/res/values/styles.xml",
   ]
   deps = [
     "//components/browser_ui/styles/android:java_resources",

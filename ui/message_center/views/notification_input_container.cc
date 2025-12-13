@@ -201,7 +201,7 @@ views::InkDropContainerView* NotificationInputContainer::InstallInkDrop() {
   views::InkDrop::Get(this)->SetMode(
       views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
   views::InkDrop::Get(this)->SetVisibleOpacity(1);
-  views::InkDrop::Get(this)->SetBaseColorId(
+  views::InkDrop::Get(this)->SetBaseColor(
       ui::kColorNotificationInputBackground);
 
   auto* ink_drop_container =

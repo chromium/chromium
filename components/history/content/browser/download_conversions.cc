@@ -101,6 +101,8 @@ download::DownloadDangerType ToContentDownloadDangerType(
       return download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING;
     case DownloadDangerType::BLOCKED_SCAN_FAILED:
       return download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED;
+    case DownloadDangerType::FORCED_SAVE_TO_GDRIVE:
+      return download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE;
     case DownloadDangerType::INVALID:
       NOTREACHED();
   }
@@ -137,6 +139,8 @@ DownloadDangerType ToHistoryDownloadDangerType(
       return DownloadDangerType::BLOCKED_TOO_LARGE;
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
       return DownloadDangerType::SENSITIVE_CONTENT_WARNING;
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
+      return DownloadDangerType::FORCED_SAVE_TO_GDRIVE;
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
       return DownloadDangerType::SENSITIVE_CONTENT_BLOCK;
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:

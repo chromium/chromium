@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/features.gni")
 import("//chrome/services/file_util/public/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
@@ -53,8 +52,8 @@ mojom("mojom") {
         traits_private_headers = [ "safe_archive_analyzer_param_traits.h" ]
         traits_public_deps = [
           "//chrome/common/safe_browsing:archive_analyzer_results",
-          "//chrome/common/safe_browsing:proto",
           "//components/safe_browsing:buildflags",
+          "//components/safe_browsing/core/common/proto:crx_info_proto",
           "//components/safe_browsing/core/common/proto:csd_proto",
           "//ipc:protobuf_support",
         ]

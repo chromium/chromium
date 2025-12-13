@@ -37,7 +37,6 @@ import org.chromium.components.signin.test.util.TestAccounts;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ChildAccountStatusSupplierTest {
-    private static final String ADULT_ACCOUNT_EMAIL = "adult.account@gmail.com";
 
     FakeAccountManagerFacade mAccountManagerFacade = new FakeAccountManagerFacade();
 
@@ -92,7 +91,7 @@ public class ChildAccountStatusSupplierTest {
 
     @Test
     public void testNonChildAccount() {
-        mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
 
         ChildAccountStatusSupplier supplier =
                 new ChildAccountStatusSupplier(mAccountManagerFacade, mAppRestrictionSupplierMock);
@@ -108,7 +107,7 @@ public class ChildAccountStatusSupplierTest {
     @Test
     public void testOneChildAccountWithNonChildAccounts() {
         mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
-        mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
 
         ChildAccountStatusSupplier supplier =
                 new ChildAccountStatusSupplier(mAccountManagerFacade, mAppRestrictionSupplierMock);
@@ -123,7 +122,7 @@ public class ChildAccountStatusSupplierTest {
 
     @Test
     public void testNonChildWhenNoAppRestrictions() {
-        mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
         // Block getAccounts call to make sure ChildAccountStatusSupplier checks app restrictions.
         try (var ignored = mAccountManagerFacade.blockGetAccounts(/* populateCache= */ false)) {
             when(mAppRestrictionSupplierMock.onAvailable(mCallbackCaptor.capture()))

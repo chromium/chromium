@@ -22,22 +22,24 @@ vars = {
 
   'chromium_git': 'https://chromium.googlesource.com',
 
-  'abseil_revision': 'cc230bcfdbc1814256376e30b84be7b2f0d1335f',
-  'build_revision': '10bd27f7de8a48c05205b92ccdaf782ae6f2fe17',
-  'buildtools_revision': '571c37f17dd4d1de37cc2efb6b32ff1032e47be2',
-  'catapult_revision': 'e939ac77bb9471acc10f49e82cfe65790068c3d1',
-  'chromium_googletest_revision': 'c5396f931a1319b98da4915f090d00c4d9900601',
-  'chromium_re2_revision': '716d20b6550107ddeba09ed39f2f8185cd6a4aab',
-  'chromium_testing_revision': '870c20f1d8079296b7cf86b85b0e9a0b9b252342',
-  'clang_format_revision': '3c0acd2d4e73dd911309d9e970ba09d58bf23a62',
-  'clang_revision': 'bca0c9f60a365ef2294c42e216420c561093f06f',
-  'depot_tools_revision': '6ba67afd6fb7718743af91b847ddf1907f3ee9a6',
-  'gn_version': 'git_revision:155c53952ec2dc324b0438ce5b9bd4a286577d25',
-  'googletest_revision': '5a37b517ad4ab6738556f0284c256cae1466c5b4',
-  'libcxx_revision':       'e3b94d0e5b86883fd77696bf10dc33ba250ba99b',
-  'libcxxabi_revision':    '51fe3584464d29067c8f0663f6e6dec84cc86868',
-  'ninja_version': 'version:2@1.11.1.chromium.6',
-  're2_revision': 'b84e3ff189980a33d4a0c6fa1201aa0b3b8bab4a',
+  'abseil_revision': 'c54e50d9f14471146af9f1f357b3c525c2ff5bb7',
+  'build_revision': '3c58005adf6e658f44946971a544d62815373e00',
+  'buildtools_revision': '5df641722f2e50623646d702e0046fb68c0f5ce1',
+  'catapult_revision': '6fd8bbe723677254ff1130a1a416988b8b3e285e',
+  'chromium_googletest_revision': '91e8a4cf5607164178e0455bbea40845c9b0d93c',
+  'chromium_re2_revision': '581c1f779dffb7d5ffd4296b79736c9ce961caae',
+  'chromium_testing_revision': '6bf7e8e674b4552e12d140378e4394e7970e3fbc',
+  'clang_format_revision': 'c2725e0622e1a86d55f14514f2177a39efea4a0e',
+  'clang_revision': 'f0aeeca2d4eea4ade7308a31bc4023fc52614332',
+  'compiler_rt_revision': 'd4d5a24a5514088089ccbaebda6576da640f04e8',
+  'depot_tools_revision': '8e49ae5de847360974fb5352cd23ca2794d57222',
+  'gn_version': 'git_revision:c5a0003bcc2ac3f8d128aaffd700def6068e9a76',
+  'googletest_revision': '4fe3307fb2d9f86d19777c7eb0e4809e9694dde7',
+  'libcxx_revision':       '454a561737fb62e75ba82bfae9fb07ee64acdd68',
+  'libcxxabi_revision':    'de02e5d57052b3b6d5fcd76dccde9380bca39360',
+  'llvm_libc_revision':    '74b25173cba70124bff5da97cc339d90c516c5f6',
+  'ninja_version': 'version:3@1.12.1.chromium.4',
+  're2_revision': 'e7aec5985072c1dbe735add802653ef4b36c231a',
 }
 
 deps = {
@@ -93,6 +95,8 @@ deps = {
   'testing': '{chromium_git}/chromium/src/testing.git@{chromium_testing_revision}',
   'third_party/abseil-cpp': '{chromium_git}/chromium/src/third_party/abseil-cpp@{abseil_revision}',
   'third_party/catapult': '{chromium_git}/catapult.git@{catapult_revision}',
+  'third_party/compiler-rt/src':
+    '{chromium_git}/external/github.com/llvm/llvm-project/compiler-rt.git@{compiler_rt_revision}',
   'third_party/depot_tools': '{chromium_git}/chromium/tools/depot_tools.git@{depot_tools_revision}',
   'third_party/googletest':
       '{chromium_git}/chromium/src/third_party/googletest.git@{chromium_googletest_revision}',
@@ -104,6 +108,87 @@ deps = {
 
   'third_party/libc++abi/src':
       '{chromium_git}/external/github.com/llvm/llvm-project/libcxxabi.git@{libcxxabi_revision}',
+
+  'third_party/llvm-build/Release+Asserts': {
+    'dep_type': 'gcs',
+    'bucket': 'chromium-browser-clang',
+    'objects': [
+      {
+        # The Android libclang_rt.builtins libraries are currently only included in the Linux clang package.
+        'object_name': 'Linux_x64/clang-llvmorg-22-init-14273-gea10026b-1.tar.xz',
+        'sha256sum': '1ef7b1d60fb433100c27b4552b44577ab86ef5394531d1fbebc237db64a893fd',
+        'size_bytes': 56552908,
+        'generation': 1762971374100697,
+        'condition': 'host_os == "linux" or checkout_android',
+      },
+      {
+        'object_name': 'Linux_x64/llvmobjdump-llvmorg-22-init-14273-gea10026b-1.tar.xz',
+        'sha256sum': 'ec1d88867045b8348659f7a8f677d12aa91d7d61a68603a82bad1926bf57c3b0',
+        'size_bytes': 5723188,
+        'generation': 1762971374436694,
+        'condition': '(checkout_linux or checkout_mac or checkout_android) and host_os == "linux"',
+      },
+      {
+        'object_name': 'Mac/clang-llvmorg-22-init-14273-gea10026b-1.tar.xz',
+        'sha256sum': 'f266b79576d4fc0075e9380b68b8879ec2bc9617c973e7bdea694ec006f43636',
+        'size_bytes': 54056416,
+        'generation': 1762971376161293,
+        'condition': 'host_os == "mac" and host_cpu == "x64"',
+      },
+      {
+        'object_name': 'Mac/clang-mac-runtime-library-llvmorg-22-init-14273-gea10026b-1.tar.xz',
+        'sha256sum': '6f2d61383a3c0ab28286e5a57b7e755eb14726bb9a73a7737b685488eae18b90',
+        'size_bytes': 1010052,
+        'generation': 1762971385382392,
+        'condition': 'checkout_mac and not host_os == "mac"',
+      },
+      {
+        'object_name': 'Mac/llvmobjdump-llvmorg-22-init-14273-gea10026b-1.tar.xz',
+        'sha256sum': '9a282bf252e0c7ac88152844f347428e02970aa22941fb583439ce72134f0161',
+        'size_bytes': 5607404,
+        'generation': 1762971376526568,
+        'condition': 'host_os == "mac" and host_cpu == "x64"',
+      },
+      {
+        'object_name': 'Mac_arm64/clang-llvmorg-22-init-14273-gea10026b-1.tar.xz',
+        'sha256sum': 'a7b7caf53f4e722234e85aecfdbb3eeb94608c37394672bebd074d6b2f300362',
+        'size_bytes': 45184380,
+        'generation': 1762971386895625,
+        'condition': 'host_os == "mac" and host_cpu == "arm64"',
+      },
+      {
+        'object_name': 'Mac_arm64/llvmobjdump-llvmorg-22-init-14273-gea10026b-1.tar.xz',
+        'sha256sum': 'c5ee70e78ae5aa7a0d9b613ea5a8e21629438f12acb50bca0f7e18fae6abfe0a',
+        'size_bytes': 5353832,
+        'generation': 1762971387217357,
+        'condition': 'host_os == "mac" and host_cpu == "arm64"',
+      },
+      {
+        'object_name': 'Win/clang-llvmorg-22-init-14273-gea10026b-1.tar.xz',
+        'sha256sum': '483b9b2809c3f53b9640e77d83ca6ab3017a0974979d242198abf23d99639e62',
+        'size_bytes': 48337640,
+        'generation': 1762971401378315,
+        'condition': 'host_os == "win"',
+      },
+      {
+        'object_name': 'Win/clang-win-runtime-library-llvmorg-22-init-14273-gea10026b-1.tar.xz',
+        'sha256sum': 'd8b3310760c3a8f5dac4801583f7872601f4ba312742b0bf530f043ce6b6f36f',
+        'size_bytes': 2520664,
+        'generation': 1762971410370409,
+        'condition': 'checkout_win and not host_os == "win"',
+      },
+      {
+        'object_name': 'Win/llvmobjdump-llvmorg-22-init-14273-gea10026b-1.tar.xz',
+        'sha256sum': '00c4dab7747534548e2111b3adbdbf9ef561887e18c7d6de4c7e273af799c190',
+        'size_bytes': 5742908,
+        'generation': 1762971401692156,
+        'condition': '(checkout_linux or checkout_mac or checkout_android) and host_os == "win"',
+      },
+    ]
+  },
+
+  'third_party/llvm-libc/src':
+    '{chromium_git}/external/github.com/llvm/llvm-project/libc.git@{llvm_libc_revision}',
 
   'third_party/ninja': {
     'packages': [
@@ -199,14 +284,6 @@ hooks = [
     'action': ['python3', 'build/mac_toolchain.py'],
   },
 
-  {
-    # Update the prebuilt clang toolchain.
-    # Note: On Win, this should run after win_toolchain, as it may use it.
-    'name': 'clang',
-    'pattern': '.',
-    'action': ['python3', 'tools/clang/scripts/update.py'],
-  },
-
   # Update LASTCHANGE.
   {
     'name': 'lastchange',
@@ -223,44 +300,6 @@ hooks = [
       'python3',
       'third_party/depot_tools/update_depot_tools_toggle.py',
       '--disable',
-    ],
-  },
-
-  # Pull clang-format binaries using checked-in hashes.
-  {
-    'name': 'clang_format_win',
-    'pattern': '.',
-    'condition': 'host_os == "win"',
-    'action': [ 'python3',
-                'third_party/depot_tools/download_from_google_storage.py',
-                '--no_resume',
-                '--no_auth',
-                '--bucket', 'chromium-clang-format',
-                '-s', 'buildtools/win/clang-format.exe.sha1',
-    ],
-  },
-  {
-    'name': 'clang_format_mac',
-    'pattern': '.',
-    'condition': 'host_os == "mac"',
-    'action': [ 'python3',
-                'third_party/depot_tools/download_from_google_storage.py',
-                '--no_resume',
-                '--no_auth',
-                '--bucket', 'chromium-clang-format',
-                '-s', 'buildtools/mac/clang-format.sha1',
-    ],
-  },
-  {
-    'name': 'clang_format_linux',
-    'pattern': '.',
-    'condition': 'host_os == "linux"',
-    'action': [ 'python3',
-                'third_party/depot_tools/download_from_google_storage.py',
-                '--no_resume',
-                '--no_auth',
-                '--bucket', 'chromium-clang-format',
-                '-s', 'buildtools/linux64/clang-format.sha1',
     ],
   },
 
@@ -323,4 +362,3 @@ hooks = [
                ],
   },
 ]
-

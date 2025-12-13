@@ -32,9 +32,9 @@ component("touch_selection") {
   defines = [ "UI_TOUCH_SELECTION_IMPLEMENTATION" ]
 
   deps = [
-    "//base:base",
-    "//ui/base:base",
-    "//ui/events:events",
+    "//base",
+    "//ui/base",
+    "//ui/events",
     "//ui/events:gesture_detection",
     "//ui/gfx",
     "//ui/gfx/geometry",
@@ -43,15 +43,14 @@ component("touch_selection") {
   if (use_aura) {
     deps += [
       "//cc/paint",
-      "//skia:skia",
+      "//skia",
       "//ui/aura",
       "//ui/base",
       "//ui/color",
       "//ui/color:mixers",
-      "//ui/compositor:compositor",
-      "//ui/gfx:gfx",
+      "//ui/compositor",
+      "//ui/gfx",
       "//ui/native_theme",
-      "//ui/native_theme:native_theme_browser",
       "//ui/resources",
       "//ui/touch_selection/vector_icons",
     ]
@@ -81,7 +80,7 @@ static_library("test_support") {
 
   deps = [
     ":touch_selection",
-    "//base:base",
+    "//base",
   ]
 }
 
@@ -98,18 +97,18 @@ test("ui_touch_selection_unittests") {
     ":test_support",
     ":touch_selection",
     "//base/test:run_all_unittests",
-    "//testing/gmock:gmock",
-    "//testing/gtest:gtest",
-    "//ui/base:base",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
     "//ui/events:test_support",
-    "//ui/gfx:gfx",
+    "//ui/gfx",
     "//ui/gfx:test_support",
   ]
 
   data_deps = [ "//third_party/angle:includes" ]
 
   if (use_aura) {
-    deps += [ "//ui/compositor:compositor" ]
+    deps += [ "//ui/compositor" ]
 
     sources += [ "touch_selection_magnifier_aura_unittest.cc" ]
   }

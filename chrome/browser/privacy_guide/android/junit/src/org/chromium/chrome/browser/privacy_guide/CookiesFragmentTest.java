@@ -26,10 +26,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
@@ -43,7 +40,6 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 
 /** Robolectric tests of the class {@link CookiesFragment} */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
 public class CookiesFragmentTest {
     // TODO(crbug.com/40860773): Use Espresso for view interactions
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -102,16 +98,9 @@ public class CookiesFragmentTest {
         mScenario.onFragment(
                 fragment -> {
                     mBlockThirdPartyIncognito =
-                            fragment.getView().findViewById(R.id.block_third_party_incognito);
+                            fragment.getView().findViewById(R.id.allow_third_party);
                     mBlockThirdParty = fragment.getView().findViewById(R.id.block_third_party);
                 });
-    }
-
-    // TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
-    @Test(expected = AssertionError.class)
-    @DisableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
-    public void testInitWhenCookiesAllowed() {
-        initFragmentWithCookiesState(CookieControlsMode.OFF, true);
     }
 
     @Test
@@ -146,8 +135,6 @@ public class CookiesFragmentTest {
         mBlockThirdPartyIncognito.performClick();
         verify(mPrefServiceMock)
                 .setInteger(PrefNames.COOKIE_CONTROLS_MODE, CookieControlsMode.INCOGNITO_ONLY);
-        verify(mWebsitePreferenceNativesMock)
-                .setContentSettingEnabled(mProfile, ContentSettingsType.COOKIES, true);
     }
 
     @Test
@@ -156,8 +143,6 @@ public class CookiesFragmentTest {
         mBlockThirdParty.performClick();
         verify(mPrefServiceMock)
                 .setInteger(PrefNames.COOKIE_CONTROLS_MODE, CookieControlsMode.BLOCK_THIRD_PARTY);
-        verify(mWebsitePreferenceNativesMock)
-                .setContentSettingEnabled(mProfile, ContentSettingsType.COOKIES, true);
     }
 
     @Test
@@ -166,8 +151,6 @@ public class CookiesFragmentTest {
         mBlockThirdParty.performClick();
         verify(mPrefServiceMock)
                 .setInteger(PrefNames.COOKIE_CONTROLS_MODE, CookieControlsMode.BLOCK_THIRD_PARTY);
-        verify(mWebsitePreferenceNativesMock)
-                .setContentSettingEnabled(mProfile, ContentSettingsType.COOKIES, true);
     }
 
     @Test

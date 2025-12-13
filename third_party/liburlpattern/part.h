@@ -101,6 +101,12 @@ inline bool operator!=(const Part& lh, const Part& rh) {
 COMPONENT_EXPORT(LIBURLPATTERN)
 std::ostream& operator<<(std::ostream& o, const Part& part);
 
+COMPONENT_EXPORT(LIBURLPATTERN)
+std::ostream& operator<<(std::ostream& o, PartType type);
+
+COMPONENT_EXPORT(LIBURLPATTERN)
+std::ostream& operator<<(std::ostream& o, Modifier modifier);
+
 }  // namespace liburlpattern
 
 #endif  // THIRD_PARTY_LIBURLPATTERN_PART_H_

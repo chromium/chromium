@@ -27,6 +27,10 @@ const base::FilePath::CharType kPolicyCache[] =
 const base::FilePath::CharType kKeyCache[] =
     FILE_PATH_LITERAL("Profile Cloud Policy Signing Key");
 
+// File in the above directory for storing extension install policy data.
+const base::FilePath::CharType kExtensionInstallPolicyCacheFile[] =
+    FILE_PATH_LITERAL("Profile Cloud Extension Install Policy");
+
 }  // namespace
 
 ProfileCloudPolicyStore::ProfileCloudPolicyStore(
@@ -55,6 +59,20 @@ std::unique_ptr<ProfileCloudPolicyStore> ProfileCloudPolicyStore::Create(
       policy_cache_file, key_cache_file, background_task_runner, is_dasherless);
 }
 
+// static
+std::unique_ptr<ProfileCloudPolicyStore>
+ProfileCloudPolicyStore::CreateForExtensionInstall(
+    const base::FilePath& profile_dir,
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+    bool is_dasherless) {
+  base::FilePath policy_dir = profile_dir.Append(kPolicy);
+  base::FilePath policy_cache_file =
+      policy_dir.Append(kExtensionInstallPolicyCacheFile);
+  base::FilePath key_cache_file = policy_dir.Append(kKeyCache);
+  return std::make_unique<ProfileCloudPolicyStore>(
+      policy_cache_file, key_cache_file, background_task_runner, is_dasherless);
+}
+
 std::unique_ptr<UserCloudPolicyValidator>
 ProfileCloudPolicyStore::CreateValidator(
     std::unique_ptr<enterprise_management::PolicyFetchResponse>
@@ -66,7 +84,7 @@ ProfileCloudPolicyStore::CreateValidator(
   // validation.
 
   validator->ValidatePolicyType(
-      is_dasherless_ ? dm_protocol::kChromeUserPolicyType
+      is_dasherless_ ? dm_protocol::GetChromeUserPolicyType()
                      : dm_protocol::kChromeMachineLevelUserCloudPolicyType);
   validator->ValidateAgainstCurrentPolicy(
       policy(), option, CloudPolicyValidatorBase::DM_TOKEN_REQUIRED,

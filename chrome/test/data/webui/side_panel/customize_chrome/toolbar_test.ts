@@ -109,21 +109,21 @@ suite('CustomizerToolbarTest', () => {
 
     const navigationCategory = categories[0];
     assertTrue(!!navigationCategory);
-    assertEquals('Navigation', navigationCategory.textContent!.trim());
+    assertEquals('Navigation', navigationCategory.textContent.trim());
     const homeAction = actions[0];
     assertTrue(!!homeAction);
     assertEquals(
-        'Home', homeAction.querySelector('.toggle-title')!.textContent!.trim());
+        'Home', homeAction.querySelector('.toggle-title')!.textContent.trim());
 
     const yourChromeCategory = categories[1];
     assertTrue(!!yourChromeCategory);
-    assertEquals('Your Chrome', yourChromeCategory.textContent!.trim());
+    assertEquals('Your Chrome', yourChromeCategory.textContent.trim());
     const showPasswordManagerAction = actions[1];
     assertTrue(!!showPasswordManagerAction);
     assertEquals(
         'Show Password Manager',
         showPasswordManagerAction.querySelector(
-                                     '.toggle-title')!.textContent!.trim());
+                                     '.toggle-title')!.textContent.trim());
 
     const children = Array.from(toolbarElement.$.pinningSelectionCard.children);
     assertGE(

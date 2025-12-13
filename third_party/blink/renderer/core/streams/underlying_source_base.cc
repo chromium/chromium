@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
@@ -83,9 +84,8 @@ void UnderlyingStartAlgorithm::Trace(Visitor* visitor) const {
 
 ScriptPromise<IDLUndefined> UnderlyingPullAlgorithm::Run(
     ScriptState* script_state,
-    int argc,
-    v8::Local<v8::Value> argv[]) {
-  DCHECK_EQ(argc, 0);
+    base::span<v8::Local<v8::Value>> argv) {
+  DCHECK_EQ(argv.size(), 0u);
   return source_->Pull(script_state,
                        PassThroughException(script_state->GetIsolate()));
 }
@@ -97,11 +97,10 @@ void UnderlyingPullAlgorithm::Trace(Visitor* visitor) const {
 
 ScriptPromise<IDLUndefined> UnderlyingCancelAlgorithm::Run(
     ScriptState* script_state,
-    int argc,
-    v8::Local<v8::Value> argv[]) {
+    base::span<v8::Local<v8::Value>> argv) {
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::Local<v8::Value> reason =
-      argc > 0 ? argv[0] : v8::Undefined(isolate).As<v8::Value>();
+      !argv.empty() ? argv[0] : v8::Undefined(isolate).As<v8::Value>();
   return source_->CancelWrapper(
       script_state, ScriptValue(isolate, reason),
       PassThroughException(script_state->GetIsolate()));

@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
@@ -25,8 +24,6 @@ class MenuRunner;
 
 class BrowserWindowInterface;
 class WebUIContentsWrapper;
-
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kNtpFooterId);
 
 namespace new_tab_footer {
 

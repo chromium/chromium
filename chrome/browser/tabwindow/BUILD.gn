@@ -8,7 +8,9 @@ import("//chrome/android/features/android_library_factory_tmpl.gni")
 android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/tabwindow/TabModelSelectorFactory.java",
+    "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowInfo.java",
     "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManager.java",
+    "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerUtils.java",
     "android/java/src/org/chromium/chrome/browser/tabwindow/WindowId.java",
   ]
   deps = [
@@ -18,6 +20,7 @@ android_library("java") {
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/multiwindow:java",
+    "//components/tab_groups:tab_groups_java",
     "//ui/android:ui_java",
   ]
 }
@@ -29,4 +32,17 @@ android_library_factory("factory_java") {
   ]
 
   sources = [ "internal/android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerFactory.java" ]
+}
+
+static_library("tabwindow") {
+  sources = [
+    "tab_window_manager_observer.cc",
+    "tab_window_manager_observer.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/android:chrome_jni_headers",
+    "//chrome/browser/ui/android/tab_model",
+  ]
 }

@@ -144,26 +144,28 @@
 
 - (TableViewSwitchItem*)tipsNotificationsItem {
   if (!_tipsNotificationsItem) {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     UIImage* image = MakeSymbolMulticolor(
         CustomSettingsRootSymbol(kMulticolorChromeballSymbol));
 #else
     UIImage* image = CustomSettingsRootSymbol(kChromeProductSymbol);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     _tipsNotificationsItem = [self
              switchItemWithType:NotificationsItemIdentifier::ItemIdentifierTips
                            text:l10n_util::GetNSString(
-                                    IDS_IOS_SET_UP_LIST_TIPS_TITLE)
+                                    IDS_IOS_MAGIC_STACK_TIP_TITLE)
                      detailText:l10n_util::GetNSString(
                                     IDS_IOS_TIPS_NOTIFICATION_SETTINGS_FOOTER)
                          symbol:image
                      symbolTint:nil
           symbolBackgroundColor:nil
               symbolBorderWidth:1
-        accessibilityIdentifier:kSettingsNotificationsContentCellId];
+        accessibilityIdentifier:kSettingsNotificationsTipsCellId];
     _tipsNotificationsItem.on = push_notification_settings::
         GetMobileNotificationPermissionStatusForClient(
             PushNotificationClientId::kTips, _gaiaID);
+    _tipsNotificationsItem.target = self;
+    _tipsNotificationsItem.selector = @selector(tipsSwitchToggled:);
   }
   return _tipsNotificationsItem;
 }
@@ -182,10 +184,12 @@
                      symbolTint:nil
           symbolBackgroundColor:nil
               symbolBorderWidth:1
-        accessibilityIdentifier:kSettingsNotificationsContentCellId];
+        accessibilityIdentifier:kSettingsNotificationsSafetyCheckCellId];
     _safetyCheckItem.on = push_notification_settings::
         GetMobileNotificationPermissionStatusForClient(
             PushNotificationClientId::kSafetyCheck, _gaiaID);
+    _safetyCheckItem.target = self;
+    _safetyCheckItem.selector = @selector(safetyCheckSwitchToggled:);
   }
   return _safetyCheckItem;
 }
@@ -217,10 +221,12 @@
                      symbolTint:nil
           symbolBackgroundColor:nil
               symbolBorderWidth:1
-        accessibilityIdentifier:kSettingsNotificationsContentCellId];
+        accessibilityIdentifier:kSettingsNotificationsSendTabCellId];
     _sendTabNotificationsItem.on = push_notification_settings::
         GetMobileNotificationPermissionStatusForClient(
             PushNotificationClientId::kSendTab, _gaiaID);
+    _sendTabNotificationsItem.target = self;
+    _sendTabNotificationsItem.selector = @selector(sendTabSwitchToggled:);
   }
   return _sendTabNotificationsItem;
 }
@@ -263,7 +269,6 @@
   detailItem.accessibilityIdentifier = accessibilityIdentifier;
   detailItem.iconImage = symbol;
   detailItem.iconTintColor = tint;
-  detailItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
   detailItem.iconBackgroundColor = backgroundColor;
 
   return detailItem;
@@ -333,54 +338,6 @@
 
 #pragma mark - NotificationsViewControllerDelegate
 
-- (void)didToggleSwitchItem:(TableViewSwitchItem*)item withValue:(BOOL)value {
-  NotificationsItemIdentifier itemIdentifier =
-      static_cast<NotificationsItemIdentifier>(item.type);
-  switch (itemIdentifier) {
-    case ItemIdentifierSafetyCheck: {
-      if (value) {
-        [self.presenter presentPushNotificationPermissionAlertWithClientIds:
-                            {PushNotificationClientId::kSafetyCheck}];
-      } else {
-        [self disablePreferenceFor:PushNotificationClientId::kSafetyCheck];
-        self.safetyCheckItem.on = push_notification_settings::
-            GetMobileNotificationPermissionStatusForClient(
-                PushNotificationClientId::kSafetyCheck, _gaiaID);
-      }
-      break;
-    }
-    case ItemIdentifierTips: {
-      if (value) {
-        [self.presenter presentPushNotificationPermissionAlertWithClientIds:
-                            {PushNotificationClientId::kTips}];
-      } else {
-        [self disablePreferenceFor:PushNotificationClientId::kTips];
-        self.tipsNotificationsItem.on = push_notification_settings::
-            GetMobileNotificationPermissionStatusForClient(
-                PushNotificationClientId::kTips, _gaiaID);
-      }
-      break;
-    }
-    case ItemIdentifierSendTab: {
-      if (value) {
-        [self.presenter presentPushNotificationPermissionAlertWithClientIds:
-                            std::vector{PushNotificationClientId::kSendTab}];
-      } else {
-        [self disablePreferenceFor:PushNotificationClientId::kSendTab];
-        self.sendTabNotificationsItem.on = push_notification_settings::
-            GetMobileNotificationPermissionStatusForClient(
-                PushNotificationClientId::kSendTab, _gaiaID);
-        // Refresh enabled status in DeviceInfo.
-        _deviceInfoSyncService->RefreshLocalDeviceInfo();
-      }
-      break;
-    }
-    default:
-      // Not a switch.
-      NOTREACHED();
-  }
-}
-
 - (void)didSelectItem:(TableViewItem*)item {
   NotificationsItemIdentifier type =
       static_cast<NotificationsItemIdentifier>(item.type);
@@ -441,6 +398,9 @@
     case PushNotificationClientId::kReminders:
       // Reminders does not exist as an item in the UI.
       NOTREACHED();
+    case PushNotificationClientId::kCrossPlatformPromos:
+      // TODO:(crbug.com/445662240): Add toggle for this feature.
+      NOTREACHED();
   }
   // If Send Tab has not previously been disabled, then whenever another
   // notification type is enabled through the notification settings, Send Tab
@@ -454,7 +414,7 @@
           prefs::kSendTabNotificationsPreviouslyDisabled) &&
       clientEnabled) {
     pushNotificationService->SetPreference(
-        _gaiaID.ToNSString(), PushNotificationClientId::kSendTab, true);
+        _gaiaID, PushNotificationClientId::kSendTab, true);
     // Refresh enabled status in DeviceInfo.
     _deviceInfoSyncService->RefreshLocalDeviceInfo();
   }
@@ -466,7 +426,7 @@
 - (void)disablePreferenceFor:(PushNotificationClientId)clientID {
   PushNotificationService* service =
       GetApplicationContext()->GetPushNotificationService();
-  service->SetPreference(_gaiaID.ToNSString(), clientID, false);
+  service->SetPreference(_gaiaID, clientID, false);
 }
 
 // Returns the TableViewSwitchItem for the given `clientId`.
@@ -485,6 +445,47 @@
     case PushNotificationClientId::kReminders:
       // Not a switch.
       NOTREACHED();
+    case PushNotificationClientId::kCrossPlatformPromos:
+      // TODO:(crbug.com/445662240): Add toggle for this feature.
+      NOTREACHED();
+  }
+}
+
+- (void)safetyCheckSwitchToggled:(UISwitch*)sender {
+  if (sender.on) {
+    [self.presenter presentPushNotificationPermissionAlertWithClientIds:
+                        {PushNotificationClientId::kSafetyCheck}];
+  } else {
+    [self disablePreferenceFor:PushNotificationClientId::kSafetyCheck];
+    self.safetyCheckItem.on = push_notification_settings::
+        GetMobileNotificationPermissionStatusForClient(
+            PushNotificationClientId::kSafetyCheck, _gaiaID);
+  }
+}
+
+- (void)tipsSwitchToggled:(UISwitch*)sender {
+  if (sender.on) {
+    [self.presenter presentPushNotificationPermissionAlertWithClientIds:
+                        {PushNotificationClientId::kTips}];
+  } else {
+    [self disablePreferenceFor:PushNotificationClientId::kTips];
+    self.tipsNotificationsItem.on = push_notification_settings::
+        GetMobileNotificationPermissionStatusForClient(
+            PushNotificationClientId::kTips, _gaiaID);
+  }
+}
+
+- (void)sendTabSwitchToggled:(UISwitch*)sender {
+  if (sender.on) {
+    [self.presenter presentPushNotificationPermissionAlertWithClientIds:
+                        std::vector{PushNotificationClientId::kSendTab}];
+  } else {
+    [self disablePreferenceFor:PushNotificationClientId::kSendTab];
+    self.sendTabNotificationsItem.on = push_notification_settings::
+        GetMobileNotificationPermissionStatusForClient(
+            PushNotificationClientId::kSendTab, _gaiaID);
+    // Refresh enabled status in DeviceInfo.
+    _deviceInfoSyncService->RefreshLocalDeviceInfo();
   }
 }
 

@@ -43,7 +43,8 @@ class SystemTracingSession
           ISystemTraceSessionChrome,
           ISystemTraceSessionChromeBeta,
           ISystemTraceSessionChromeDev,
-          ISystemTraceSessionChromeCanary> {
+          ISystemTraceSessionChromeCanary,
+          IFastRundown> {
  public:
   SystemTracingSession();
   SystemTracingSession(const SystemTracingSession&) = delete;

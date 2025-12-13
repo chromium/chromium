@@ -34,17 +34,20 @@ class CORE_EXPORT InvalidatableInterpolation : public Interpolation {
  public:
   InvalidatableInterpolation(const PropertyHandle& property,
                              PropertySpecificKeyframe* start_keyframe,
-                             PropertySpecificKeyframe* end_keyframe)
-      : Interpolation(),
-        property_(property),
+                             PropertySpecificKeyframe* end_keyframe,
+                             PropertySpecificKeyframe* final_keyframe = nullptr)
+      : property_(property),
         interpolation_types_version_(0),
         start_keyframe_(start_keyframe),
         end_keyframe_(end_keyframe),
-        current_fraction_(std::numeric_limits<double>::quiet_NaN()),
-        is_conversion_cached_(false) {}
+        final_keyframe_(final_keyframe),
+        current_fraction_(std::numeric_limits<double>::quiet_NaN()) {}
 
   const PropertyHandle& GetProperty() const final { return property_; }
-  void Interpolate(int iteration, double fraction) override;
+  void Interpolate(
+      int iteration,
+      double fraction,
+      EffectModel::IterationCompositeOperation iteration_composite) override;
   bool DependsOnUnderlyingValue() const final;
   static void ApplyStack(const ActiveInterpolations&,
                          CSSInterpolationEnvironment&);
@@ -59,9 +62,11 @@ class CORE_EXPORT InvalidatableInterpolation : public Interpolation {
     visitor->Trace(interpolation_types_);
     visitor->Trace(start_keyframe_);
     visitor->Trace(end_keyframe_);
+    visitor->Trace(final_keyframe_);
     visitor->Trace(cached_pair_conversion_);
     visitor->Trace(conversion_checkers_);
     visitor->Trace(cached_value_);
+    visitor->Trace(cached_end_value_);
     Interpolation::Trace(visitor);
   }
 
@@ -89,17 +94,25 @@ class CORE_EXPORT InvalidatableInterpolation : public Interpolation {
                              ConversionCheckers&) const;
   void SetFlagIfInheritUsed(CSSInterpolationEnvironment&) const;
   double UnderlyingFraction() const;
+  void ApplyIterationAccumulation() const;
 
   const PropertyHandle property_;
   mutable Member<const InterpolationTypes> interpolation_types_;
   mutable size_t interpolation_types_version_;
   Member<PropertySpecificKeyframe> start_keyframe_;
   Member<PropertySpecificKeyframe> end_keyframe_;
+  Member<PropertySpecificKeyframe> final_keyframe_;
   double current_fraction_;
-  mutable bool is_conversion_cached_;
+  int current_iteration_ = 0;
+  EffectModel::IterationCompositeOperation current_iteration_composite_ =
+      EffectModel::kIterationCompositeReplace;
+  mutable bool is_conversion_cached_ = false;
   mutable Member<PrimitiveInterpolation> cached_pair_conversion_;
   mutable ConversionCheckers conversion_checkers_;
   mutable Member<TypedInterpolationValue> cached_value_;
+  mutable Member<TypedInterpolationValue> cached_end_value_;
+  mutable EffectModel::IterationCompositeOperation cached_iteration_composite_ =
+      EffectModel::kIterationCompositeReplace;
 };
 
 template <>

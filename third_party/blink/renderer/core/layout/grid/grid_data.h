@@ -31,10 +31,6 @@ struct CORE_EXPORT GridPlacementData {
            line_resolver == other.line_resolver;
   }
 
-  bool operator!=(const GridPlacementData& other) const {
-    return !(*this == other);
-  }
-
   wtf_size_t AutoRepeatTrackCount(
       GridTrackSizingDirection track_direction) const {
     return line_resolver.AutoRepeatTrackCount(track_direction);
@@ -100,10 +96,6 @@ class CORE_EXPORT GridLayoutData {
 
   bool operator==(const GridLayoutData& other) const {
     return AreEqual(columns_, other.columns_) && AreEqual(rows_, other.rows_);
-  }
-
-  bool operator!=(const GridLayoutData& other) const {
-    return !(*this == other);
   }
 
   bool HasSubgriddedAxis(GridTrackSizingDirection track_direction) const {

@@ -27,6 +27,7 @@
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/safety_check/features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
@@ -483,7 +484,7 @@ TEST_F(PasswordStatusCheckServiceBaseTest, PrefInitialized) {
       safety_hub_prefs::kBackgroundPasswordCheckTimeAndInterval));
 
   EXPECT_EQ(service()->GetScheduledPasswordCheckInterval(),
-            features::kBackgroundPasswordCheckInterval.Get());
+            safety_check::features::kBackgroundPasswordCheckInterval.Get());
 
   EXPECT_GE(service()->GetScheduledPasswordCheckTime(), base::Time::Now());
   EXPECT_LT(service()->GetScheduledPasswordCheckTime(),
@@ -495,9 +496,10 @@ TEST_F(PasswordStatusCheckServiceBaseTest, PrefInitialized) {
 TEST_F(PasswordStatusCheckServiceBaseTest, CheckTimeUpdatedOnIntervalChange) {
   base::test::ScopedFeatureList feature_list;
   base::FieldTrialParams params_before;
-  params_before[features::kBackgroundPasswordCheckInterval.name] = "10d";
-  feature_list.InitAndEnableFeatureWithParameters(features::kSafetyHub,
-                                                  params_before);
+  params_before[safety_check::features::kBackgroundPasswordCheckInterval.name] =
+      "10d";
+  feature_list.InitAndEnableFeatureWithParameters(
+      safety_check::features::kSafetyHub, params_before);
 
   service()->StartRepeatedUpdates();
 
@@ -506,10 +508,11 @@ TEST_F(PasswordStatusCheckServiceBaseTest, CheckTimeUpdatedOnIntervalChange) {
   base::Time check_time_before = service()->GetScheduledPasswordCheckTime();
 
   base::FieldTrialParams params_after;
-  params_after[features::kBackgroundPasswordCheckInterval.name] = "20d";
+  params_after[safety_check::features::kBackgroundPasswordCheckInterval.name] =
+      "20d";
   feature_list.Reset();
-  feature_list.InitAndEnableFeatureWithParameters(features::kSafetyHub,
-                                                  params_after);
+  feature_list.InitAndEnableFeatureWithParameters(
+      safety_check::features::kSafetyHub, params_after);
 
   service()->StartRepeatedUpdates();
 
@@ -566,7 +569,7 @@ TEST_F(PasswordStatusCheckServiceBaseTest,
   // If the scheduled check time is in the past, it should run within the
   // overdue interval.
   task_environment()->AdvanceClock(
-      features::kPasswordCheckOverdueInterval.Get());
+      safety_check::features::kPasswordCheckOverdueInterval.Get());
   RunUntilIdle();
 
   // After password check is completed, the next one should be scheduled.
@@ -592,7 +595,7 @@ TEST_F(PasswordStatusCheckServiceBaseTest,
   // If the scheduled check time is in the past, it should run within the
   // overdue interval.
   task_environment()->AdvanceClock(
-      features::kPasswordCheckOverdueInterval.Get());
+      safety_check::features::kPasswordCheckOverdueInterval.Get());
   RunUntilIdle();
 
   // After password check is completed, the next one should be scheduled.
@@ -938,7 +941,7 @@ TEST_P(PasswordStatusCheckServiceParameterizedSchedulingTest,
   // Make the probabality of all other days 0, except the current week day.
   // Current week day should be selected to run the checks.
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kSafetyHub,
+      safety_check::features::kSafetyHub,
       {
           {"password-check-sun-weight", GetWeightForDay(0)},
           {"password-check-mon-weight", GetWeightForDay(1)},

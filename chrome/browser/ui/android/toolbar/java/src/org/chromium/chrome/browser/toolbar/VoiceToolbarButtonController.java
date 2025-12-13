@@ -11,7 +11,6 @@ import android.view.View;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -27,6 +26,8 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.function.Supplier;
+
 /**
  * Handles displaying the voice search button on toolbar depending on several conditions (e.g.
  * device width, whether NTP is shown, whether voice is enabled).
@@ -36,7 +37,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  */
 @NullMarked
 public class VoiceToolbarButtonController extends BaseButtonDataProvider {
-    private final Supplier<Tracker> mTrackerSupplier;
+    private final Supplier<@Nullable Tracker> mTrackerSupplier;
 
     private final VoiceSearchDelegate mVoiceSearchDelegate;
 
@@ -57,7 +58,7 @@ public class VoiceToolbarButtonController extends BaseButtonDataProvider {
      * @param context The context for retrieving string resources.
      * @param buttonDrawable Drawable for the voice button.
      * @param activeTabSupplier Provides the currently displayed {@link Tab}.
-     * @param trackerSupplier  Supplier for the current profile tracker.
+     * @param trackerSupplier Supplier for the current profile tracker.
      * @param modalDialogManager Dispatcher for modal lifecycle events
      * @param voiceSearchDelegate Provides interaction with voice search.
      */
@@ -65,7 +66,7 @@ public class VoiceToolbarButtonController extends BaseButtonDataProvider {
             Context context,
             Drawable buttonDrawable,
             Supplier<@Nullable Tab> activeTabSupplier,
-            Supplier<Tracker> trackerSupplier,
+            Supplier<@Nullable Tracker> trackerSupplier,
             ModalDialogManager modalDialogManager,
             VoiceSearchDelegate voiceSearchDelegate) {
         super(
@@ -87,10 +88,9 @@ public class VoiceToolbarButtonController extends BaseButtonDataProvider {
         RecordUserAction.record("MobileTopToolbarVoiceButton");
         mVoiceSearchDelegate.startVoiceRecognition();
 
-        if (mTrackerSupplier.hasValue()) {
-            mTrackerSupplier
-                    .get()
-                    .notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_OPENED);
+        Tracker tracker = mTrackerSupplier.get();
+        if (tracker != null) {
+            tracker.notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_OPENED);
         }
     }
 

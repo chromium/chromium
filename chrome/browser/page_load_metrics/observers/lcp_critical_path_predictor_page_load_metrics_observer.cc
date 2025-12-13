@@ -8,6 +8,7 @@
 
 #include "base/check_is_test.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "chrome/browser/predictors/loading_predictor.h"
@@ -20,6 +21,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace internal {
 
@@ -102,7 +104,7 @@ void RemoveFetchedSubresourceUrlsAfterLCP(
 }
 
 bool IsSameSite(const GURL& url1, const GURL& url2) {
-  return url1.SchemeIs(url2.scheme()) &&
+  return url1.SchemeIs(url2.GetScheme()) &&
          net::registry_controlled_domains::SameDomainOrHost(
              url1, url2,
              net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
@@ -716,8 +718,6 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::FinalizeLCP() {
       predictor ? predictor->GetLcppStat(initiator_origin_, *commit_url_)
                 : std::nullopt;
 
-  // TODO(crbug.com/40517495): kSpeculativePreconnectFeature flag can also
-  // affect this. Unflag the feature.
   if (lcpp_data_inputs_.has_value()
       // Don't learn LCPP when prerender to avoid data skew. Activation LCP
       // should be much shorter than regular LCP.
@@ -834,12 +834,11 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::
         "Blink.LCPP.NavigationToStartPreload.MainFrame.FirstSubresource.Time",
         subresource_load_start);
     const base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-        "loading", "NavigationToStartFirstPreload", TRACE_ID_LOCAL(this),
-        navigation_start, "url", subresource_url);
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        "loading", "NavigationToStartFirstPreload", TRACE_ID_LOCAL(this),
-        navigation_start + subresource_load_start);
+    TRACE_EVENT_BEGIN("loading", "NavigationToStartFirstPreload",
+                      perfetto::Track::FromPointer(this), navigation_start,
+                      "url", subresource_url);
+    TRACE_EVENT_END("loading", perfetto::Track::FromPointer(this),
+                    navigation_start + subresource_load_start);
   }
   base::UmaHistogramMediumTimes(
       "Blink.LCPP.NavigationToStartPreload.MainFrame.EachSubresource.Time",

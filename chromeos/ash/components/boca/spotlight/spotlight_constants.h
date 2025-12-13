@@ -15,6 +15,7 @@ enum class CrdConnectionState {
   kConnected = 2,
   kDisconnected = 3,
   kFailed = 4,
+  kTimeout = 5
 };
 
 using SpotlightCrdStateUpdatedCallback =

@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -17,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/rtp_dump_type.h"
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
@@ -132,6 +132,8 @@ class WebRtcLoggingController
                          int output_period_ms,
                          size_t web_app_id,
                          const StartEventLoggingCallback& callback);
+
+  base::RepeatingCallback<void(const std::string&)> GetLogMessageCallback();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // Ensures that the WebRTC Logs directory exists and then grants render

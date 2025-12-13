@@ -16,9 +16,9 @@
 #[macro_export]
 macro_rules! __impl_property_binary_deprecated_v1 {
     ($ provider : ty) => {
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         const _: () = <$provider>::MUST_USE_MAKE_PROVIDER_MACRO;
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl $provider {
             #[doc(hidden)]
             pub const SINGLETON_PROPERTY_BINARY_DEPRECATED_V1: &'static <icu::properties::provider::PropertyBinaryDeprecatedV1 as icu_provider::DynamicDataMarker>::DataStruct = &icu::properties::provider::PropertyCodePointSet::InversionList(unsafe {
@@ -26,7 +26,7 @@ macro_rules! __impl_property_binary_deprecated_v1 {
                 icu::collections::codepointinvlist::CodePointInversionList::from_parts_unchecked(unsafe { zerovec::ZeroVec::from_bytes_unchecked(b"I\x01\0J\x01\0s\x06\0t\x06\0w\x0F\0x\x0F\0y\x0F\0z\x0F\0\xA3\x17\0\xA5\x17\0j \0p \0)#\0+#\0\x01\0\x0E\x02\0\x0E") }, 15u32)
             });
         }
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl icu_provider::DataProvider<icu::properties::provider::PropertyBinaryDeprecatedV1> for $provider {
             fn load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponse<icu::properties::provider::PropertyBinaryDeprecatedV1>, icu_provider::DataError> {
                 if req.id.locale.is_unknown() {
@@ -39,7 +39,7 @@ macro_rules! __impl_property_binary_deprecated_v1 {
     };
     ($ provider : ty , ITER) => {
         __impl_property_binary_deprecated_v1!($provider);
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl icu_provider::IterableDataProvider<icu::properties::provider::PropertyBinaryDeprecatedV1> for $provider {
             fn iter_ids(&self) -> Result<std::collections::BtreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
                 Ok([Default::default()].into_iter().collect())
@@ -48,7 +48,7 @@ macro_rules! __impl_property_binary_deprecated_v1 {
     };
     ($ provider : ty , DRY) => {
         __impl_property_binary_deprecated_v1!($provider);
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl icu_provider::DryDataProvider<icu::properties::provider::PropertyBinaryDeprecatedV1> for $provider {
             fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
                 if req.id.locale.is_unknown() {
@@ -61,7 +61,7 @@ macro_rules! __impl_property_binary_deprecated_v1 {
     };
     ($ provider : ty , DRY , ITER) => {
         __impl_property_binary_deprecated_v1!($provider);
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl icu_provider::DryDataProvider<icu::properties::provider::PropertyBinaryDeprecatedV1> for $provider {
             fn dry_load(&self, req: icu_provider::DataRequest) -> Result<icu_provider::DataResponseMetadata, icu_provider::DataError> {
                 if req.id.locale.is_unknown() {
@@ -71,7 +71,7 @@ macro_rules! __impl_property_binary_deprecated_v1 {
                 }
             }
         }
-        #[clippy::msrv = "1.82"]
+        #[clippy::msrv = "1.83"]
         impl icu_provider::IterableDataProvider<icu::properties::provider::PropertyBinaryDeprecatedV1> for $provider {
             fn iter_ids(&self) -> Result<std::collections::BtreeSet<icu_provider::DataIdentifierCow<'static>>, icu_provider::DataError> {
                 Ok([Default::default()].into_iter().collect())

@@ -211,6 +211,15 @@ base::flat_map<std::string, IntentFilters> CloneIntentFiltersMap(
 COMPONENT_EXPORT(APP_TYPES)
 bool IsEqual(const IntentFilters& source, const IntentFilters& target);
 
+// Note that the comparison rules are somewhat specific:
+// * If both `source` and `target` are defined, normal comparison rules apply;
+// * If both `source` and `target` are undefined, they're equal;
+// * If only one of the two is undefined, then they're equal if and only if the
+// other one has length of zero.
+COMPONENT_EXPORT(APP_TYPES)
+bool IsEqual(const std::optional<IntentFilters>& source,
+             const std::optional<IntentFilters>& target);
+
 // Returns true if `intent_filters` contains `intent_filter`.
 COMPONENT_EXPORT(APP_TYPES)
 bool Contains(const IntentFilters& intent_filters,

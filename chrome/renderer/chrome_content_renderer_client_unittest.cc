@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/common/privacy_budget/scoped_privacy_budget_config.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -75,7 +74,7 @@ scoped_refptr<const extensions::Extension> CreateTestExtension(
                              std::move(url_list));
     manifest.SetByDottedPath(extensions::manifest_keys::kLaunchWebURL, app_url);
   }
-  std::string error;
+  std::u16string error;
   return extensions::Extension::Create(base::FilePath(), location, manifest,
                                        flags, &error);
 }

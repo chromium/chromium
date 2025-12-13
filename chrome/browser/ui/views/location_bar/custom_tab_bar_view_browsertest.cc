@@ -87,9 +87,7 @@ class TestTitleObserver : public TabStripModelObserver {
 // Opens a new popup window from |web_contents| on |target_url| and returns
 // the Browser it opened in.
 Browser* OpenPopup(content::WebContents* web_contents, const GURL& target_url) {
-  ui_test_utils::BrowserChangeObserver browser_change_observer(
-      /*browser=*/nullptr,
-      ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   content::TestNavigationObserver nav_observer(target_url);
   nav_observer.StartWatchingNewWebContents();
 
@@ -98,7 +96,7 @@ Browser* OpenPopup(content::WebContents* web_contents, const GURL& target_url) {
   EXPECT_TRUE(content::ExecJs(web_contents, script));
   nav_observer.Wait();
 
-  return browser_change_observer.Wait();
+  return browser_created_observer.Wait();
 }
 
 // Navigates to |target_url| and waits for navigation to complete.

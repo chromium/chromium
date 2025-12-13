@@ -58,6 +58,10 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   void HandleExportCrostiniContainer(const base::Value::List& args);
   // Import the crostini container.
   void HandleImportCrostiniContainer(const base::Value::List& args);
+  // Export a guest disk image.
+  void HandleExportDiskImage(const base::Value::List& args);
+  // Import a guest disk image.
+  void HandleImportDiskImage(const base::Value::List& args);
   // Handle a request for the CrostiniInstallerView status.
   void HandleCrostiniInstallerStatusRequest(const base::Value::List& args);
   // crostini::CrostiniDialogStatusObserver

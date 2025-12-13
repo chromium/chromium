@@ -45,7 +45,9 @@ bool IsProcessRunningAtMediumOrLower(ProcessId process_id) {
 
 // Based on
 // https://learn.microsoft.com/en-us/archive/blogs/aaron_margosis/faq-how-do-i-start-a-program-as-the-desktop-user-from-an-elevated-app.
-expected<Process, DWORD> RunDeElevated(const CommandLine& command_line) {
+expected<Process, DWORD> RunDeElevated(
+    const CommandLine& command_line,
+    std::optional<ProcessId> medium_process_id) {
   if (!::IsUserAnAdmin()) {
     if (auto process = LaunchProcess(command_line, {}); process.IsValid()) {
       return ok(std::move(process));
@@ -53,13 +55,14 @@ expected<Process, DWORD> RunDeElevated(const CommandLine& command_line) {
     return unexpected(::GetLastError());
   }
 
-  ProcessId explorer_pid = GetExplorerPid();
-  if (!explorer_pid || !IsProcessRunningAtMediumOrLower(explorer_pid)) {
+  const ProcessId medium_pid =
+      medium_process_id ? *medium_process_id : GetExplorerPid();
+  if (!medium_pid || !IsProcessRunningAtMediumOrLower(medium_pid)) {
     return unexpected(static_cast<DWORD>(ERROR_ACCESS_DENIED));
   }
 
   auto shell_process =
-      Process::OpenWithAccess(explorer_pid, PROCESS_QUERY_LIMITED_INFORMATION);
+      Process::OpenWithAccess(medium_pid, PROCESS_QUERY_LIMITED_INFORMATION);
   if (!shell_process.IsValid()) {
     return unexpected(::GetLastError());
   }

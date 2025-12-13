@@ -23,11 +23,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 #include <memory>
@@ -151,7 +146,7 @@ TEST(VectorTest, Erase) {
   EXPECT_EQ(int_vector.end(), end);
 
   auto item2 = std::lower_bound(int_vector.begin(), int_vector.end(), 2);
-  auto item4 = int_vector.erase(item2, item2 + 2);
+  auto item4 = int_vector.erase(item2, UNSAFE_TODO(item2 + 2));
   EXPECT_EQ(2u, int_vector.size());
   EXPECT_EQ(4, *item4);
 
@@ -188,13 +183,13 @@ TEST(VectorTest, Iterator) {
   EXPECT_TRUE(end != it);
 
   EXPECT_EQ(10, *it);
-  ++it;
+  UNSAFE_TODO(++it);
   EXPECT_EQ(11, *it);
-  ++it;
+  UNSAFE_TODO(++it);
   EXPECT_EQ(12, *it);
-  ++it;
+  UNSAFE_TODO(++it);
   EXPECT_EQ(13, *it);
-  ++it;
+  UNSAFE_TODO(++it);
 
   EXPECT_TRUE(end == it);
 }
@@ -239,7 +234,7 @@ TEST(VectorTest, OwnPtr) {
 
   wtf_size_t index = 0;
   for (OwnPtrVector::iterator iter = vector.begin(); iter != vector.end();
-       ++iter) {
+       UNSAFE_TODO(++iter)) {
     std::unique_ptr<DestructCounter>& ref_counter = *iter;
     EXPECT_EQ(index, static_cast<wtf_size_t>(ref_counter.get()->Get()));
     EXPECT_EQ(index, static_cast<wtf_size_t>(ref_counter->Get()));
@@ -381,36 +376,36 @@ TEST(VectorTest, ContainerAnnotations) {
   vector_a.reserve(32);
 
   volatile int* int_pointer_a = vector_a.data();
-  EXPECT_DEATH(int_pointer_a[1] = 11, "container-overflow");
+  EXPECT_DEATH(UNSAFE_TODO(int_pointer_a[1]) = 11, "container-overflow");
   vector_a.push_back(11);
-  int_pointer_a[1] = 11;
-  EXPECT_DEATH(int_pointer_a[2] = 12, "container-overflow");
-  EXPECT_DEATH((void)int_pointer_a[2], "container-overflow");
+  UNSAFE_TODO(int_pointer_a[1]) = 11;
+  EXPECT_DEATH(UNSAFE_TODO(int_pointer_a[2]) = 12, "container-overflow");
+  EXPECT_DEATH((void)UNSAFE_TODO(int_pointer_a[2]), "container-overflow");
   vector_a.shrink_to_fit();
   vector_a.reserve(16);
   int_pointer_a = vector_a.data();
-  EXPECT_DEATH((void)int_pointer_a[2], "container-overflow");
+  EXPECT_DEATH((void)UNSAFE_TODO(int_pointer_a[2]), "container-overflow");
 
   Vector<int> vector_b(vector_a);
   vector_b.reserve(16);
   volatile int* int_pointer_b = vector_b.data();
-  EXPECT_DEATH((void)int_pointer_b[2], "container-overflow");
+  EXPECT_DEATH((void)UNSAFE_TODO(int_pointer_b[2]), "container-overflow");
 
   Vector<int> vector_c((Vector<int>(vector_a)));
   volatile int* int_pointer_c = vector_c.data();
-  EXPECT_DEATH((void)int_pointer_c[2], "container-overflow");
+  EXPECT_DEATH((void)UNSAFE_TODO(int_pointer_c[2]), "container-overflow");
   vector_c.push_back(13);
   vector_c.swap(vector_b);
 
   volatile int* int_pointer_b2 = vector_b.data();
   volatile int* int_pointer_c2 = vector_c.data();
-  int_pointer_b2[2] = 13;
-  EXPECT_DEATH((void)int_pointer_b2[3], "container-overflow");
-  EXPECT_DEATH((void)int_pointer_c2[2], "container-overflow");
+  UNSAFE_TODO(int_pointer_b2[2]) = 13;
+  EXPECT_DEATH((void)UNSAFE_TODO(int_pointer_b2[3]), "container-overflow");
+  EXPECT_DEATH((void)UNSAFE_TODO(int_pointer_c2[2]), "container-overflow");
 
   vector_b = vector_c;
   volatile int* int_pointer_b3 = vector_b.data();
-  EXPECT_DEATH((void)int_pointer_b3[2], "container-overflow");
+  EXPECT_DEATH((void)UNSAFE_TODO(int_pointer_b3[2]), "container-overflow");
 }
 #endif  // defined(ANNOTATE_CONTIGUOUS_CONTAINER)
 
@@ -434,11 +429,11 @@ void Compare() {
 TEST(VectorTest, Compare) {
   Compare<int>();
   Compare<Comparable>();
-  Compare<WTF::String>();
+  Compare<String>();
 }
 
 TEST(VectorTest, AppendFirst) {
-  Vector<WTF::String> vector;
+  Vector<String> vector;
   vector.push_back("string");
   // Test passes if it does not crash (reallocation did not make
   // the input reference stale).
@@ -448,7 +443,7 @@ TEST(VectorTest, AppendFirst) {
 
   limit = vector.capacity() + 1;
   for (size_t i = 0; i < limit; i++)
-    vector.push_back(const_cast<const WTF::String&>(vector.front()));
+    vector.push_back(const_cast<const String&>(vector.front()));
 }
 
 // The test below is for the following issue:

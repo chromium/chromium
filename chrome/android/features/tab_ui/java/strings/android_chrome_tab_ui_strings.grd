@@ -241,11 +241,17 @@
       <message name="IDS_TAB_SELECTION_EDITOR_TOOLBAR_SELECT_ITEMS" desc="Label shown on Tab Selection Editor Toolbar asking user to select tabs and tab groups denoted as items from the list.">
         Select items
       </message>
+      <message name="IDS_TAB_SELECTION_EDITOR_TOOLBAR_ADD_RECENT_TABS" desc="Label shown on Tab Selection Editor Toolbar asking user to add tabs as context for the ChromeItemPickerActivity.">
+        Add recent tabs
+      </message>
       <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_BACK_BUTTON" desc="Accessibility string for the back button in the Tab Selection Editor Toolbar. Tap this button to exit out of the multi-select mode">
         Hide multi-select mode
       </message>
       <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR" desc="Accessibility string for Tab Selection Editor view. This string is announced when the Tab Selection Editor is shown to screen.">
         Multi-select mode
+      </message>
+      <message name="IDS_TAB_ITEM_PICKER_LIMIT_REACHED" desc="Notification shown on Tab Item Picker when maximum item limit is reached.">
+        Add up to 10 files, tabs, or images
       </message>
       <!-- Tab Selection Editor V2 strings -->
       <message name="IDS_TAB_SELECTION_EDITOR_SELECT_ALL" desc="This text button is shown in the Tab Selection Editor Toolbar. When the user taps the button, Chrome selects all the tabs shown in the editor. [CHAR_LIMIT=27]">
@@ -353,8 +359,35 @@
           other {Close <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
         }
       </message>
+      <message name="IDS_TAB_SELECTION_EDITOR_PIN_TABS" desc="This text menu item is shown in the Tab Selection Editor menu. 'Pin' is a verb. When the user taps the menu item, Chrome pins the selected tabs. [CHAR_LIMIT=27]">
+        {TABS_COUNT, plural,
+          =1 {Pin tab}
+          other {Pin tabs}
+        }
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_PIN_TABS" desc="The accessibility text to read when the 'Pin tabs' menu item in the selection mode menu is focused. When this menu item is tapped, all the selected tabs will be pinned.">
+        {TABS_COUNT, plural,
+          =1 {Pin <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected tab}
+          other {Pin <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
+        }
+      </message>
+      <message name="IDS_TAB_SELECTION_EDITOR_UNPIN_TABS" desc="This text menu item is shown in the Tab Selection Editor menu. 'Unpin' is a verb. When the user taps the menu item, Chrome unpins the selected tabs. [CHAR_LIMIT=27]">
+        {TABS_COUNT, plural,
+          =1 {Unpin tab}
+          other {Unpin tabs}
+        }
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_UNPIN_TABS" desc="The accessibility text to read when the 'Unpin tabs' menu item in the selection mode menu is focused. When this menu item is tapped, all the selected tabs will be unpinned.">
+        {TABS_COUNT, plural,
+          =1 {Unpin <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected tab}
+          other {Unpin <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
+        }
+      </message>
       <message name="IDS_TAB_SELECTION_EDITOR_ADD_BOOKMARKS_FOLDER_NAME" desc="File name for a new folder containing all selected bookmarks to add from the Tab Selection Editor menu, followed by a timestamp">
         New Folder - <ph name="CURRENT_TIMESTAMP_MS">%1$s<ex>1582667748515</ex></ph>
+      </message>
+      <message name="IDS_DONE_BUTTON_TEXT" desc="Text for the Done button used to confirm selections in the Tab Editor/Item Picker. [CHAR_LIMIT=12]">
+        Done
       </message>
 
       <!-- Tab Grid Dialog strings -->
@@ -422,6 +455,9 @@
       </message>
       <message name="IDS_ACCESSIBILITY_TAB_GRID_DIALOG" desc="Accessibility string for Tab Grid Dialog view. This string is announced when the dialog with tab group is expanded and shown to screen.">
         Tab group expanded
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_GROUP_TITLE_FIELD" desc="The accessibility text to read when the tab group title field is focused.">
+        Tab group title <ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph>
       </message>
 
       <!-- GTS Tab Group Suggestions strings -->
@@ -613,33 +649,6 @@
       <!-- Tab Group Parity Strings -->
       <message name="IDS_ACCESSIBILITY_TAB_GROUP_COLOR_ICON_DESCRIPTION" desc="Accessibility string describing what color the current tab group color icon has. Tap this item to change the color.">
         <ph name="COLOR_NAME">%1$s<ex>Blue</ex></ph> tab group color icon
-      </message>
-      <message name="IDS_ACCESSIBILITY_TAB_GROUP_COLOR_PICKER_COLOR_ITEM_GREY" desc="The accessibility string for the grey color item in the tab group color picker. Tap this item to toggle the color selection.">
-        Grey
-      </message>
-      <message name="IDS_ACCESSIBILITY_TAB_GROUP_COLOR_PICKER_COLOR_ITEM_BLUE" desc="The accessibility string for the blue color item in the tab group color picker. Tap this item to toggle the color selection.">
-        Blue
-      </message>
-      <message name="IDS_ACCESSIBILITY_TAB_GROUP_COLOR_PICKER_COLOR_ITEM_RED" desc="The accessibility string for the red color item in the tab group color picker. Tap this item to toggle the color selection.">
-        Red
-      </message>
-      <message name="IDS_ACCESSIBILITY_TAB_GROUP_COLOR_PICKER_COLOR_ITEM_YELLOW" desc="The accessibility string for the yellow color item in the tab group color picker. Tap this item to toggle the color selection.">
-        Yellow
-      </message>
-      <message name="IDS_ACCESSIBILITY_TAB_GROUP_COLOR_PICKER_COLOR_ITEM_GREEN" desc="The accessibility string for the green color item in the tab group color picker. Tap this item to toggle the color selection.">
-        Green
-      </message>
-      <message name="IDS_ACCESSIBILITY_TAB_GROUP_COLOR_PICKER_COLOR_ITEM_PINK" desc="The accessibility string for the pink color item in the tab group color picker. Tap this item to toggle the color selection.">
-        Pink
-      </message>
-      <message name="IDS_ACCESSIBILITY_TAB_GROUP_COLOR_PICKER_COLOR_ITEM_PURPLE" desc="The accessibility string for the purple color item in the tab group color picker. Tap this item to toggle the color selection.">
-        Purple
-      </message>
-      <message name="IDS_ACCESSIBILITY_TAB_GROUP_COLOR_PICKER_COLOR_ITEM_CYAN" desc="The accessibility string for the cyan color item in the tab group color picker. Tap this item to toggle the color selection.">
-        Cyan
-      </message>
-      <message name="IDS_ACCESSIBILITY_TAB_GROUP_COLOR_PICKER_COLOR_ITEM_ORANGE" desc="The accessibility string for the orange color item in the tab group color picker. Tap this item to toggle the color selection.">
-        Orange
       </message>
       <message name="IDS_ACCESSIBILITY_TAB_GROUP_COLOR_PICKER_COLOR_ITEM_SELECTED_DESCRIPTION" desc="Accessibility string describing the icon that indicates that this color item is the currently selected one.">
         <ph name="COLOR_NAME">%1$s<ex>Blue</ex></ph> Selected
@@ -987,14 +996,17 @@
           other {Inactive tabs and groups will be closed after <ph name="MONTH_COUNT_MANY">%1$d<ex>3</ex></ph> months}
         }
       </message>
-      <message name="IDS_ARCHIVE_SETTINGS_TIME_DELTA" desc="The string to show how many days until a tab is considered inactive.">
-        {DAY_COUNT, plural,
-          =1 {After 1 day inactive}
-          other {After <ph name="DAY_COUNT_MANY">%1$d<ex>15</ex></ph> days inactive}
-        }
-      </message>
       <message name="IDS_ARCHIVE_SETTINGS_TIME_DELTA_NEVER" desc="The string for the option to never archive tabs.">
         Never
+      </message>
+      <message name="IDS_ARCHIVE_SETTINGS_TIME_DELTA_7_DAYS" desc="The string to show that it will be 7 days until a tab is considered inactive.">
+        After 7 days inactive
+      </message>
+      <message name="IDS_ARCHIVE_SETTINGS_TIME_DELTA_14_DAYS" desc="The string to show that it will be 14 days until a tab is considered inactive.">
+        After 14 days inactive
+      </message>
+      <message name="IDS_ARCHIVE_SETTINGS_TIME_DELTA_21_DAYS" desc="The string to show that it will be 21 days until a tab is considered inactive.">
+        After 21 days inactive
       </message>
       <message name="IDS_ARCHIVE_DIALOG_CLOSE_ALL_INACTIVE_TABS_CONFIRMATION_TITLE" desc="The title to show in the action confirmation dialog.">
         {TAB_COUNT, plural,
@@ -1042,7 +1054,7 @@
         Got it
       </message>
       <message name="IDS_ARCHIVED_TABS_AUTO_DELETE_PROMO_NO_BUTTON" desc="Button to take the user to archived tabs settings page.">
-        Go to Settings
+        Go to settings
       </message>
 
       <!-- Tab Group Removed Message Strings -->
@@ -1062,7 +1074,7 @@
         Dismiss the card.
       </message>
 
-      <!-- Tab context menu (for individual tabs) -->
+      <!-- Tab context menu -->
       <message name="IDS_SELECT_TAB" desc="Content description for an action which selects a singular tab.">
         Select tab
       </message>
@@ -1074,8 +1086,60 @@
           =1 {Move tab to new window}
           other {Move tab to another window}}
       </message>
+      <message name="IDS_MOVE_TABS_LEFT" desc="Menu item for moving tab(s) to the left in the tab strip order.">
+        {TAB_COUNT, plural,
+          =1 {Move tab left}
+          other {Move tabs left}}
+      </message>
+      <message name="IDS_MOVE_TABS_RIGHT" desc="Menu item for moving tab(s) to the right in the tab strip order.">
+        {TAB_COUNT, plural,
+          =1 {Move tab right}
+          other {Move tabs right}}
+      </message>
+      <message name="IDS_MOVE_TAB_GROUP_LEFT" desc="Menu item for moving a tab group to the left in the tab strip order.">
+        Move tab group left
+      </message>
+      <message name="IDS_MOVE_TAB_GROUP_RIGHT" desc="Menu item for moving a tab group to the right in the tab strip order.">
+        Move tab group right
+      </message>
+      <message name="IDS_PIN_TABS_MENU_ITEM" desc="Content description for an action which pins a selection of tabs.">
+        {TAB_COUNT, plural,
+          =1 {Pin tab}
+          other {Pin tabs}}
+      </message>
+      <message name="IDS_UNPIN_TABS_MENU_ITEM" desc="Content description for an action which unpins a selection of tabs.">
+        {TAB_COUNT, plural,
+          =1 {Unpin tab}
+          other {Unpin tabs}}
+      </message>
       <message name="IDS_PIN_TAB" desc="Content description for an action which pins a singular tab.">
         Pin tab
+      </message>
+      <message name="IDS_UNPIN_TAB" desc="Content description for an action which unpins a singular tab.">
+        Unpin tab
+      </message>
+      <message name="IDS_REMOVE_TABS_FROM_GROUP_MENU_ITEM" desc="Content description for an action which removes a list of selected tabs from their group.">
+        {TAB_COUNT, plural,
+          =1 {Remove tab from group}
+          other {Remove tabs from group}}
+      </message>
+      <message name="IDS_MOVE_TABS_TO_ANOTHER_WINDOW" desc="Content description for an action which moves a list of selected tabs to another window.">
+        {WINDOW_COUNT, plural,
+          =1 {Move tabs to new window}
+          other {Move tabs to another window}}
+      </message>
+      <message name="IDS_MUTE_SITES_MENU_ITEM" desc="Content description for an action which mutes a selection of sites.">
+         {TAB_COUNT, plural,
+            =1 {Mute site}
+            other {Mute sites}}
+      </message>
+      <message name="IDS_UNMUTE_SITES_MENU_ITEM" desc="Content description for an action which unmutes a selection of sites.">
+        {TAB_COUNT, plural,
+            =1 {Unmute site}
+            other {Unmute sites}}
+      </message>
+      <message name="IDS_DUPLICATE_TAB_MENU_ITEM" desc="Content description for an action which duplicates a selection of tabs.">
+        Duplicate
       </message>
 
       <!-- Tab Group List Bottom Sheet -->
@@ -1106,10 +1170,25 @@
           other {Add to group named <ph name="TITLE_OF_GROUP">%1$s<ex>shopping</ex></ph> with <ph name="TAB_COUNT1">%2$d<ex>12</ex></ph> tabs}
         }
       </message>
+      <message name="IDS_NUMBER_OF_SELECTED_ITEMS" desc="String to display the number of selected items">
+        {ITEMS_COUNT, plural,
+          =1 {<ph name="ITEMS_COUNT_ONE">%1$d<ex>1</ex></ph> selected}
+          other {<ph name="ITEMS_COUNT_MANY">%1$d<ex>8</ex></ph> selected}
+        }
+      </message>
 
-      <!-- Multi Selected Tabs Context Menu -->
-      <message name="IDS_REMOVE_TABS_FROM_GROUP" desc="Content description for an action which removes a list of selected tabs from their group.">
-        Remove tabs from group
+      <!-- Tab group media indicator accessibility strings -->
+      <message name="IDS_ACCESSIBILITY_TAB_GROUP_AUDIBLE" desc="Accessibility description for a tab group that contains a tab that is playing audio.">
+        Playing audio
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_GROUP_MUTED" desc="Accessibility description for a tab group that contains a tab that is playing audio but has been muted.">
+        Muted audio
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_GROUP_RECORDING" desc="Accessibility description for a tab group that contains a tab that is recording media.">
+        Recording media
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_GROUP_SHARING" desc="Accessibility description for a tab group that contains a tab that is sharing its screen.">
+        Sharing tab screen
       </message>
     </messages>
   </release>

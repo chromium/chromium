@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_VIEWS_H_
 
 #include "base/memory/raw_ptr.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -36,9 +35,6 @@ class ContentAnalysisBaseView {
     // Returns true if the dialog is showing a non-pending state representing
     // the final result of the content analysis.
     virtual bool is_result() const = 0;
-
-    // Returns the web contents the content analysis view is being shown for.
-    content::WebContents* web_contenst();
   };
 
   explicit ContentAnalysisBaseView(Delegate* delegate);

@@ -4,11 +4,11 @@
 
 module blink.mojom;
 
-import "url/mojom/url.mojom";
-import "services/network/public/mojom/cookie_manager.mojom";
-import "services/network/public/mojom/blocked_by_response_reason.mojom";
-import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/blocked_by_response_reason.mojom";
+import "services/network/public/mojom/cookie_manager.mojom";
+import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
+import "url/mojom/url.mojom";
 
 // A code that uniquely identifies an issue. This type should be descriptive
 // enough for the front-end to provide a clear description of the issue.
@@ -124,13 +124,13 @@ struct MixedContentIssueDetails {
 };
 
 enum ContentSecurityPolicyViolationType {
-    kInlineViolation,
-    kEvalViolation,
-    kURLViolation,
-    kSRIViolation,
-    kTrustedTypesSinkViolation,
-    kTrustedTypesPolicyViolation,
-    kWasmEvalViolation,
+  kInlineViolation,
+  kEvalViolation,
+  kURLViolation,
+  kSRIViolation,
+  kTrustedTypesSinkViolation,
+  kTrustedTypesPolicyViolation,
+  kWasmEvalViolation,
 };
 
 struct ContentSecurityPolicyIssueDetails {
@@ -145,7 +145,8 @@ struct ContentSecurityPolicyIssueDetails {
 };
 
 enum CookieOperation {
-  kSetCookie, kReadCookie
+  kSetCookie,
+  kReadCookie,
 };
 
 // Reasons why a cookie was excluded from a cookie get or set operation,
@@ -272,19 +273,23 @@ struct FederatedAuthRequestIssueDetails {
 // which includes all cases except for kSuccess and kUnhandledRequest.
 // Do not modify or reorder existing values, as this is used in metrics
 // recording.
+// LINT.IfChange(FederatedAuthUserInfoRequestResult)
+
 enum FederatedAuthUserInfoRequestResult {
-  kSuccess,
-  kNotSameOrigin,
-  kNotIframe,
-  kNotPotentiallyTrustworthy,
-  kNoApiPermission,
-  kNotSignedInWithIdp,
-  kNoAccountSharingPermission,
-  kInvalidConfigOrWellKnown,
-  kInvalidAccountsResponse,
-  kNoReturningUserFromFetchedAccounts,
-  kUnhandledRequest
+  kSuccess = 0,
+  kNotSameOrigin = 1,
+  kNotIframe = 2,
+  kNotPotentiallyTrustworthy = 3,
+  kNoApiPermission = 4,
+  kNotSignedInWithIdp = 5,
+  kNoAccountSharingPermission = 6,
+  kInvalidConfigOrWellKnown = 7,
+  kInvalidAccountsResponse = 8,
+  kNoReturningUserFromFetchedAccounts = 9,
+  kUnhandledRequest = 10,
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmUserInfoStatus)
 
 struct FederatedAuthUserInfoRequestIssueDetails {
   FederatedAuthUserInfoRequestResult status;
@@ -317,12 +322,16 @@ enum GenericIssueErrorType {
   kFormInputWithNoLabelError,
   kFormAutocompleteAttributeEmptyError,
   kFormEmptyIdAndNameAttributesForInputError,
-  kFormAriaLabelledByToNonExistingId,
+  kFormAriaLabelledByToNonExistingIdError,
   kFormInputAssignedAutocompleteValueToIdOrNameAttributeError,
-  kFormLabelHasNeitherForNorNestedInput,
+  kFormLabelHasNeitherForNorNestedInputError,
   kFormLabelForMatchesNonExistingIdError,
   kFormInputHasWrongButWellIntendedAutocompleteValueError,
   kResponseWasBlockedByORB,
+  kNavigationEntryMarkedSkippable,
+  kAutofillAndManualTextPolicyControlledFeaturesInfo,
+  kAutofillPolicyControlledFeatureInfo,
+  kManualTextPolicyControlledFeatureInfo,
 };
 
 struct GenericIssueDetails {
@@ -334,7 +343,8 @@ struct GenericIssueDetails {
 };
 
 enum DeprecationIssueType {
-  kPrivacySandboxExtensionsAPI,
+  kExampleBrowserProcessDeprecation,
+  kRelatedWebsiteSets,
 };
 
 struct DeprecationIssueDetails {
@@ -345,13 +355,17 @@ struct DeprecationIssueDetails {
 enum UserReidentificationIssueType {
   kBlockedFrameNavigation,
   kBlockedSubresource,
+  kNoisedCanvasReadback,
 };
 
-// Information for an issue notifying on subresources or navigations that may be
-// blocked for suspected user reidentification.
+// Information for an issue notifying the user about an intervention that took
+// place as the result of a suspected user reidentification. This type of issue
+// is used for several interventions such as blocking subresources or
+// navigations, and canvas noise.
 struct UserReidentificationIssueDetails {
   UserReidentificationIssueType type;
   AffectedRequest? request;
+  AffectedLocation? sourceCodeLocation;
 };
 
 // A collection of optional fields that may store additional data depending
@@ -368,10 +382,12 @@ struct InspectorIssueDetails {
   FederatedAuthRequestIssueDetails? federated_auth_request_details;
   BounceTrackingIssueDetails? bounce_tracking_issue_details;
   PartitioningBlobURLIssueDetails? partitioning_blob_url_issue_details;
-  CookieDeprecationMetadataIssueDetails? cookie_deprecation_metadata_issue_details;
+  CookieDeprecationMetadataIssueDetails?
+      cookie_deprecation_metadata_issue_details;
   GenericIssueDetails? generic_issue_details;
   DeprecationIssueDetails? deprecation_issue_details;
-  FederatedAuthUserInfoRequestIssueDetails? federated_auth_user_info_request_details;
+  FederatedAuthUserInfoRequestIssueDetails?
+      federated_auth_user_info_request_details;
   UserReidentificationIssueDetails? user_reidentification_issue_details;
   mojo_base.mojom.UnguessableToken? issue_id;
 };

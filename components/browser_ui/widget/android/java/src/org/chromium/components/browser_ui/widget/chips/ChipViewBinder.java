@@ -34,11 +34,12 @@ public class ChipViewBinder {
                 boolean isSelected =
                         model.getAllSetProperties().contains(ChipProperties.SELECTED)
                                 && model.get(ChipProperties.SELECTED);
-                chip.setIcon(
+                chip.setIconWithTint(
                         isSelected ? R.drawable.ic_check_googblue_24dp : iconId,
                         model.get(ChipProperties.APPLY_ICON_TINT));
             } else {
-                chip.setIcon(ChipProperties.INVALID_ICON_ID, false);
+                chip.setIconWithTint(
+                        ChipProperties.INVALID_ICON_ID, /* tintWithTextColor= */ false);
             }
 
         } else if (ChipProperties.ID == key) {

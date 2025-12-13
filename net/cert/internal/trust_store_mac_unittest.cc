@@ -22,7 +22,7 @@
 #include "base/synchronization/lock.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "crypto/mac_security_services_lock.h"
+#include "crypto/apple/security_framework_lock.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/cert/internal/test_helpers.h"
@@ -51,23 +51,12 @@ const char kCertificateHeader[] = "CERTIFICATE";
 ::testing::AssertionResult ReadTestCert(
     const std::string& file_name,
     std::shared_ptr<const bssl::ParsedCertificate>* result) {
-  std::string der;
-  const PemBlockMapping mappings[] = {
-      {kCertificateHeader, &der},
-  };
+  const std::string path = "net/data/ssl/certificates/" + file_name;
 
-  ::testing::AssertionResult r = ReadTestDataFromPemFile(
-      "net/data/ssl/certificates/" + file_name, mappings);
-  if (!r)
-    return r;
-
-  bssl::CertErrors errors;
-  *result = bssl::ParsedCertificate::Create(x509_util::CreateCryptoBuffer(der),
-                                            {}, &errors);
+  *result = ReadCertFromFile(path);
   if (!*result) {
     return ::testing::AssertionFailure()
-           << "bssl::ParseCertificate::Create() failed:\n"
-           << errors.ToDebugString();
+           << "ReadCertFromFile(" << path << ") failed";
   }
   return ::testing::AssertionSuccess();
 }
@@ -76,8 +65,9 @@ const char kCertificateHeader[] = "CERTIFICATE";
 std::vector<std::string> ParsedCertificateListAsDER(
     bssl::ParsedCertificateList list) {
   std::vector<std::string> result;
-  for (const auto& it : list)
-    result.push_back(it->der_cert().AsString());
+  for (const auto& it : list) {
+    result.emplace_back(base::as_string_view(it->der_cert()));
+  }
   return result;
 }
 
@@ -338,7 +328,7 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
     // Check if this cert is considered a trust anchor by the OS.
     base::apple::ScopedCFTypeRef<SecTrustRef> trust;
     {
-      base::AutoLock lock(crypto::GetMacSecurityServicesLock());
+      base::AutoLock lock(crypto::apple::GetSecurityFrameworkLock());
       ASSERT_EQ(noErr, SecTrustCreateWithCertificates(cert_handle.get(),
                                                       sec_policy.get(),
                                                       trust.InitializeInto()));

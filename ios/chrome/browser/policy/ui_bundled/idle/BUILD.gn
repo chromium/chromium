@@ -24,11 +24,9 @@ source_set("idle_timeout_policy_scene_agent") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/snackbar",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/shared/ui/util:snackbar_util",
-    "//ios/chrome/browser/signin/model:authentication_service",
-    "//ios/chrome/browser/signin/model:authentication_service_factory",
-    "//ios/third_party/material_components_ios",
+    "//ios/chrome/browser/signin/model",
     "//ios/web/public",
     "//ui/base",
   ]
@@ -72,6 +70,7 @@ source_set("idle_timeout_policy_ui") {
     "//ios/chrome/browser/shared/ui/elements:activity_overlay",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/confirmation_alert:constants",
@@ -86,6 +85,8 @@ source_set("constants") {
     "constants.h",
     "constants.mm",
   ]
+  deps = [ "//base" ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("unit_tests") {
@@ -118,6 +119,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:fake_system_identity",
@@ -144,14 +146,14 @@ source_set("eg2_tests") {
     "//components/policy:policy_code_generate",
     "//components/policy/core/common:common_constants",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/shared/public/snackbar:constants",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/common:string_util",
-    "//ios/chrome/common/ui/confirmation_alert:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",

@@ -32,7 +32,8 @@ class CollaborationServiceFactory : public ProfileKeyedServiceFactory {
 
   // Disallow copy/assign.
   CollaborationServiceFactory(const CollaborationServiceFactory&) = delete;
-  void operator=(const CollaborationServiceFactory&) = delete;
+  CollaborationServiceFactory& operator=(const CollaborationServiceFactory&) =
+      delete;
 
  private:
   friend base::NoDestructor<CollaborationServiceFactory>;

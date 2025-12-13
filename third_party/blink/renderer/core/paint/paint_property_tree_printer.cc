@@ -140,7 +140,7 @@ void SetDebugName(const PaintPropertyNode* node,
                   const String& name,
                   const LayoutObject& object) {
   if (node) {
-    SetDebugName(node, name + " (" + object.DebugName() + ")");
+    SetDebugName(node, StrCat({name, " (", object.DebugName(), ")"}));
   }
 }
 
@@ -209,8 +209,8 @@ void UpdateDebugNames(const LayoutObject& object,
   SetDebugName(properties.EffectIsolationNode(), "EffectIsolationNode", object);
   SetDebugName(properties.ViewTransitionEffect(), "ViewTransitionEffect",
                object);
-  SetDebugName(properties.ViewTransitionSubframeRootEffect(),
-               "ViewTransitionSubframeRootEffect", object);
+  SetDebugName(properties.ViewTransitionScopeRootEffect(),
+               "ViewTransitionScopeRootEffect", object);
 
   SetDebugName(properties.Scroll(), "Scroll", object);
 }

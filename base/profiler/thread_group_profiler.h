@@ -14,6 +14,7 @@
 #include "base/profiler/periodic_sampling_scheduler.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/stack_sampling_profiler.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"

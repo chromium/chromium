@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/scoped_scheduler_overrider.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 namespace {
@@ -68,8 +69,8 @@ class TestTaskRunner : public scheduler::FakeTaskRunner {
         pass_key, from_here, std::move(task), delay);
     return base::DelayedTaskHandle(
         std::make_unique<DelayedTaskHandleDelegateFacade>(
-            std::move(handle),
-            base::BindOnce(&TestTaskRunner::OnTaskCancelled, this)));
+            std::move(handle), blink::BindOnce(&TestTaskRunner::OnTaskCancelled,
+                                               blink::Unretained(this))));
   }
 
   void OnTaskCancelled() { ++task_cancelled_count_; }
@@ -200,8 +201,7 @@ class IdleTaskControllerFrameScheduler : public FrameScheduler {
                                 DidCommitProvisionalLoadParams) override {}
   void OnFirstContentfulPaintInMainFrame() override {}
   void OnMainFrameInteractive() override {}
-  void OnFirstMeaningfulPaint(base::TimeTicks timestamp) override {}
-  void OnDispatchLoadEvent() override {}
+  void OnFirstMeaningfulPaint() override {}
   void OnDidInstallNewDocument() override {}
   bool IsExemptFromBudgetBasedThrottling() const override { return false; }
   std::unique_ptr<blink::mojom::blink::PauseSubresourceLoadingHandle>
@@ -227,9 +227,9 @@ class IdleTaskControllerFrameScheduler : public FrameScheduler {
       override {
     return weak_ptr_factory_.GetWeakPtr();
   }
-  WTF::HashSet<SchedulingPolicy::Feature>
+  HashSet<SchedulingPolicy::Feature>
   GetActiveFeaturesTrackedForBackForwardCacheMetrics() override {
-    return WTF::HashSet<SchedulingPolicy::Feature>();
+    return HashSet<SchedulingPolicy::Feature>();
   }
   base::WeakPtr<FrameScheduler> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

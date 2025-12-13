@@ -20,7 +20,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -60,6 +59,7 @@ import org.chromium.ui.util.ColorUtils;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Controls the Contextual Search Panel, primarily the Bar - the {@link ContextualSearchBarControl}
@@ -230,8 +230,7 @@ public class ContextualSearchPanel extends OverlayPanel {
 
     @Override
     public SceneOverlayLayer getUpdatedSceneOverlayTree(
-            RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
-        super.getUpdatedSceneOverlayTree(viewport, visibleViewport, resourceManager, yOffset);
+            RectF viewport, RectF visibleViewport, ResourceManager resourceManager) {
         mSceneLayer.update(
                 resourceManager,
                 this,
@@ -493,8 +492,6 @@ public class ContextualSearchPanel extends OverlayPanel {
     public float getBarMarginBottomPx() {
         // When Edge To Edge is enabled and drawing to the bottom edge, pass in the bottom inset
         // to pad the search bar (specifically, the caption's bottom padding). Use 0 otherwise.
-        // TODO(crbug.com/332543636) Remove padding when it's no longer needed in EXPANDED and
-        //  MAXIMIZED states
         @Nullable EdgeToEdgeController edgeToEdgeController = mEdgeToEdgeControllerSupplier.get();
         return edgeToEdgeController != null ? edgeToEdgeController.getBottomInsetPx() : 0;
     }
@@ -904,11 +901,11 @@ public class ContextualSearchPanel extends OverlayPanel {
 
         scrimImage(
                 R.id.drag_handlebar,
-                SemanticColorUtils.getDragHandlebarColor(getContext()),
+                SemanticColorUtils.getDragHandleColor(getContext()),
                 scrimFraction);
         scrimImage(
                 R.id.toolbar_hairline,
-                SemanticColorUtils.getDividerLineBgColor(getContext()),
+                SemanticColorUtils.getDividerColor(getContext()),
                 scrimFraction);
     }
 
@@ -1138,7 +1135,7 @@ public class ContextualSearchPanel extends OverlayPanel {
         ViewGroup result = mContainerView;
         assumeNonNull(mContainerView);
         // Use the coordinator inside of the container if we can get it. See crbug.com/1258902.
-        ViewGroup coordinator = mContainerView.findViewById(org.chromium.chrome.R.id.coordinator);
+        ViewGroup coordinator = mContainerView.findViewById(R.id.coordinator);
         // Returns null in tests. TODO(donnd): figure out why - tests should have the same views.
         if (coordinator != null) result = coordinator;
         return result;

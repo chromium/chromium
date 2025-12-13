@@ -512,7 +512,8 @@ TEST_P(PaintLayerScrollableAreaTest, HideTooltipWhenScrollPositionChanges) {
                                      GetDocument().GetFrame(), String(), _))
       .Times(1);
   scrollable_area->SetScrollOffset(ScrollOffset(1, 1),
-                                   mojom::blink::ScrollType::kUser);
+                                   mojom::blink::ScrollType::kUser,
+                                   cc::ScrollSourceType::kNone);
 
   // Programmatic scrolling should not dismiss the tooltip, so
   // UpdateTooltipUnderCursor should not be called for this invocation.
@@ -520,7 +521,8 @@ TEST_P(PaintLayerScrollableAreaTest, HideTooltipWhenScrollPositionChanges) {
                                      GetDocument().GetFrame(), String(), _))
       .Times(0);
   scrollable_area->SetScrollOffset(ScrollOffset(2, 2),
-                                   mojom::blink::ScrollType::kProgrammatic);
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kNone);
 }
 
 TEST_P(PaintLayerScrollableAreaTest, IncludeOverlayScrollbarsInVisibleWidth) {
@@ -540,7 +542,8 @@ TEST_P(PaintLayerScrollableAreaTest, IncludeOverlayScrollbarsInVisibleWidth) {
       scroller->GetLayoutBox()->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
   scrollable_area->SetScrollOffset(ScrollOffset(100, 0),
-                                   mojom::blink::ScrollType::kClamping);
+                                   mojom::blink::ScrollType::kClamping,
+                                   cc::ScrollSourceType::kStationaryScroll);
   EXPECT_EQ(scrollable_area->GetScrollOffset().x(), 15);
 }
 
@@ -656,7 +659,8 @@ TEST_P(PaintLayerScrollableAreaTest, OverflowHiddenScrollOffsetInvalidation) {
 
   // A property update is needed when scroll offset changes.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
-                                   mojom::blink::ScrollType::kProgrammatic);
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kNone);
   EXPECT_TRUE(scroller->NeedsPaintPropertyUpdate());
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(scroller->PaintingLayer()->SelfNeedsRepaint());
@@ -668,7 +672,8 @@ TEST_P(PaintLayerScrollableAreaTest, OverflowHiddenScrollOffsetInvalidation) {
   UpdateAllLifecyclePhasesForTest();
 
   scrollable_area->SetScrollOffset(ScrollOffset(0, 2),
-                                   mojom::blink::ScrollType::kProgrammatic);
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kNone);
   EXPECT_TRUE(scroller->NeedsPaintPropertyUpdate());
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(scroller->PaintingLayer()->SelfNeedsRepaint());
@@ -680,7 +685,8 @@ TEST_P(PaintLayerScrollableAreaTest, OverflowHiddenScrollOffsetInvalidation) {
   UpdateAllLifecyclePhasesForTest();
 
   scrollable_area->SetScrollOffset(ScrollOffset(0, 0),
-                                   mojom::blink::ScrollType::kProgrammatic);
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kNone);
   EXPECT_TRUE(scroller->NeedsPaintPropertyUpdate());
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(scroller->PaintingLayer()->SelfNeedsRepaint());
@@ -715,7 +721,8 @@ TEST_P(PaintLayerScrollableAreaTest, ScrollDoesNotInvalidate) {
 
   // Changing the scroll offset should not require paint invalidation.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
-                                   mojom::blink::ScrollType::kProgrammatic);
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kNone);
   EXPECT_FALSE(scroller->ShouldDoFullPaintInvalidation());
   EXPECT_TRUE(scroller->NeedsPaintPropertyUpdate());
   UpdateAllLifecyclePhasesForTest();
@@ -750,7 +757,8 @@ TEST_P(PaintLayerScrollableAreaTest, ScrollWithStickyNeedsCompositingUpdate) {
   // Changing the scroll offset requires a compositing update to rerun overlap
   // testing.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
-                                   mojom::blink::ScrollType::kProgrammatic);
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_EQ(GetDocument().View()->GetPaintArtifactCompositor()->NeedsUpdate(),
             PaintArtifactCompositor::UpdateType::kNone);
@@ -787,7 +795,8 @@ TEST_P(PaintLayerScrollableAreaTest,
   // though fixed-pos content is present as fixed bounds is already expanded to
   // include all possible scroll offsets.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
-                                   mojom::blink::ScrollType::kProgrammatic);
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_EQ(GetDocument().View()->GetPaintArtifactCompositor()->NeedsUpdate(),
             PaintArtifactCompositor::UpdateType::kNone);
@@ -821,7 +830,8 @@ TEST_P(PaintLayerScrollableAreaTest,
 
   // Programmatically changing the scroll offset.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
-                                   mojom::blink::ScrollType::kProgrammatic);
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kNone);
   // No paint invalidation because it uses composited scrolling.
   EXPECT_FALSE(scroller->ShouldDoFullPaintInvalidation());
   EXPECT_FALSE(scroller->BackgroundNeedsFullPaintInvalidation());
@@ -883,7 +893,8 @@ TEST_P(PaintLayerScrollableAreaTest,
 
   // Programmatically changing the scroll offset.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
-                                   mojom::blink::ScrollType::kProgrammatic);
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kNone);
   // No invalidation because the background paints into the main layer.
   EXPECT_TRUE(scroller->ShouldDoFullPaintInvalidation());
   EXPECT_TRUE(scroller->BackgroundNeedsFullPaintInvalidation());
@@ -922,8 +933,9 @@ TEST_P(PaintLayerScrollableAreaTest, ViewScrollWithFixedAttachmentBackground) {
 
   // Programmatically changing the view's scroll offset. Should invalidate all
   // objects with fixed attachment background.
-  view_scrollable_area->SetScrollOffset(
-      ScrollOffset(0, 1), mojom::blink::ScrollType::kProgrammatic);
+  view_scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
+                                        mojom::blink::ScrollType::kProgrammatic,
+                                        cc::ScrollSourceType::kNone);
   EXPECT_TRUE(fixed_background_div->ShouldDoFullPaintInvalidation());
   EXPECT_TRUE(fixed_background_div->BackgroundNeedsFullPaintInvalidation());
   EXPECT_FALSE(fixed_background_div->NeedsPaintPropertyUpdate());
@@ -935,7 +947,8 @@ TEST_P(PaintLayerScrollableAreaTest, ViewScrollWithFixedAttachmentBackground) {
   // Programmatically changing the div's scroll offset. Should invalidate the
   // scrolled div with fixed attachment background.
   div_scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
-                                       mojom::blink::ScrollType::kProgrammatic);
+                                       mojom::blink::ScrollType::kProgrammatic,
+                                       cc::ScrollSourceType::kNone);
   EXPECT_TRUE(fixed_background_div->ShouldDoFullPaintInvalidation());
   EXPECT_TRUE(fixed_background_div->BackgroundNeedsFullPaintInvalidation());
   EXPECT_TRUE(fixed_background_div->NeedsPaintPropertyUpdate());
@@ -975,8 +988,9 @@ TEST_P(PaintLayerScrollableAreaTest,
 
   // Programmatically changing the view's scroll offset. Should invalidate all
   // objects with fixed attachment background.
-  view_scrollable_area->SetScrollOffset(
-      ScrollOffset(0, 1), mojom::blink::ScrollType::kProgrammatic);
+  view_scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
+                                        mojom::blink::ScrollType::kProgrammatic,
+                                        cc::ScrollSourceType::kNone);
   EXPECT_FALSE(fixed_background_div->ShouldDoFullPaintInvalidation());
   EXPECT_FALSE(fixed_background_div->BackgroundNeedsFullPaintInvalidation());
   EXPECT_FALSE(fixed_background_div->NeedsPaintPropertyUpdate());
@@ -988,7 +1002,8 @@ TEST_P(PaintLayerScrollableAreaTest,
   // Programmatically changing the div's scroll offset. Should invalidate the
   // scrolled div with fixed attachment background.
   div_scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
-                                       mojom::blink::ScrollType::kProgrammatic);
+                                       mojom::blink::ScrollType::kProgrammatic,
+                                       cc::ScrollSourceType::kNone);
   EXPECT_FALSE(fixed_background_div->ShouldDoFullPaintInvalidation());
   EXPECT_FALSE(fixed_background_div->BackgroundNeedsFullPaintInvalidation());
   EXPECT_TRUE(fixed_background_div->NeedsPaintPropertyUpdate());
@@ -1029,8 +1044,9 @@ TEST_P(PaintLayerScrollableAreaTest,
 
   // Programmatically changing the view's scroll offset. Should invalidate all
   // objects with fixed attachment background except the layout view.
-  view_scrollable_area->SetScrollOffset(
-      ScrollOffset(0, 1), mojom::blink::ScrollType::kProgrammatic);
+  view_scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
+                                        mojom::blink::ScrollType::kProgrammatic,
+                                        cc::ScrollSourceType::kNone);
   EXPECT_TRUE(fixed_background_div->ShouldDoFullPaintInvalidation());
   EXPECT_TRUE(fixed_background_div->BackgroundNeedsFullPaintInvalidation());
   EXPECT_FALSE(fixed_background_div->NeedsPaintPropertyUpdate());
@@ -1042,7 +1058,8 @@ TEST_P(PaintLayerScrollableAreaTest,
   // Programmatically changing the div's scroll offset. Should invalidate the
   // scrolled div with fixed attachment background.
   div_scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
-                                       mojom::blink::ScrollType::kProgrammatic);
+                                       mojom::blink::ScrollType::kProgrammatic,
+                                       cc::ScrollSourceType::kNone);
   EXPECT_TRUE(fixed_background_div->ShouldDoFullPaintInvalidation());
   EXPECT_TRUE(fixed_background_div->BackgroundNeedsFullPaintInvalidation());
   EXPECT_TRUE(fixed_background_div->NeedsPaintPropertyUpdate());
@@ -1063,8 +1080,9 @@ TEST_P(PaintLayerScrollableAreaTest, ViewScrollWithScrollAttachmentBackground) {
             GetLayoutView().GetBackgroundPaintLocation());
   auto* view_scrollable_area = GetLayoutView().GetScrollableArea();
   EXPECT_FALSE(view_scrollable_area->BackgroundNeedsRepaintOnScroll());
-  view_scrollable_area->SetScrollOffset(
-      ScrollOffset(0, 1), mojom::blink::ScrollType::kProgrammatic);
+  view_scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
+                                        mojom::blink::ScrollType::kProgrammatic,
+                                        cc::ScrollSourceType::kNone);
   EXPECT_FALSE(GetLayoutView().ShouldDoFullPaintInvalidation());
   EXPECT_FALSE(GetLayoutView().BackgroundNeedsFullPaintInvalidation());
   EXPECT_TRUE(GetLayoutView().NeedsPaintPropertyUpdate());
@@ -1082,8 +1100,9 @@ TEST_P(PaintLayerScrollableAreaTest, ViewScrollWithLocalAttachmentBackground) {
             GetLayoutView().GetBackgroundPaintLocation());
   auto* view_scrollable_area = GetLayoutView().GetScrollableArea();
   EXPECT_FALSE(view_scrollable_area->BackgroundNeedsRepaintOnScroll());
-  view_scrollable_area->SetScrollOffset(
-      ScrollOffset(0, 1), mojom::blink::ScrollType::kProgrammatic);
+  view_scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
+                                        mojom::blink::ScrollType::kProgrammatic,
+                                        cc::ScrollSourceType::kNone);
   EXPECT_FALSE(GetLayoutView().ShouldDoFullPaintInvalidation());
   EXPECT_FALSE(GetLayoutView().BackgroundNeedsFullPaintInvalidation());
   EXPECT_TRUE(GetLayoutView().NeedsPaintPropertyUpdate());
@@ -1173,7 +1192,8 @@ TEST_P(PaintLayerScrollableAreaTest,
   EXPECT_FALSE(scrollable_area->UsesCompositedScrolling());
 
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
-                                   mojom::blink::ScrollType::kCompositor);
+                                   mojom::blink::ScrollType::kCompositor,
+                                   cc::ScrollSourceType::kNone);
 
   EXPECT_FALSE(scrollable_area->ScrollbarsHiddenIfOverlay());
 }
@@ -1199,7 +1219,8 @@ TEST_P(PaintLayerScrollableAreaTest, CompositedStickyDescendant) {
                   ->IsIdentity());
 
   scrollable_area->SetScrollOffset(ScrollOffset(0, 50),
-                                   mojom::blink::ScrollType::kUser);
+                                   mojom::blink::ScrollType::kUser,
+                                   cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_EQ(gfx::Vector2dF(0, 50), sticky->FirstFragment()
@@ -1452,7 +1473,8 @@ TEST_P(PaintLayerScrollableAreaTest,
   EXPECT_EQ(ScrollOffset(0, 100), scrollable_area->GetScrollOffset());
 
   scrollable_area->SetScrollOffset(ScrollOffset(0, 50),
-                                   mojom::blink::ScrollType::kUser);
+                                   mojom::blink::ScrollType::kUser,
+                                   cc::ScrollSourceType::kNone);
 
   // The second call to ApplyPendingHistoryRestoreScrollOffset should
   // do nothing, since the history was already restored.
@@ -2146,6 +2168,44 @@ TEST_P(PaintLayerScrollableAreaTest,
   EXPECT_EQ(PhysicalRect(35, 20, 105, 105),
             scroll->GetLayoutBox()->OverflowClipRect(PhysicalOffset()));
   EXPECT_EQ(gfx::Point(230, 0), scroll->ScrollOrigin());
+}
+
+TEST_P(PaintLayerScrollableAreaTest,
+       OverscrollBehaviorWithOverflowHiddenUseCounter) {
+  SetBodyInnerHTML(R"HTML(
+    <div id=scroller style="overflow: hidden; width: 300px; height: 300px; overscroll-behavior: contain;">
+      <div id=content style="width: 200px; height: 200px;"></div>
+    </div>
+  )HTML");
+
+  mojom::WebFeature feature =
+      WebFeature::kOverscrollBehaviorOnNonScrollableScrollContainer;
+  mojom::WebFeature feature_with_hidden =
+      WebFeature::kOverscrollBehaviorWithOverflowHidden;
+  EXPECT_TRUE(GetDocument().IsUseCounted(feature));
+  EXPECT_TRUE(GetDocument().IsUseCounted(feature_with_hidden));
+
+  GetDocument().ClearUseCounterForTesting(feature);
+  GetDocument().ClearUseCounterForTesting(feature_with_hidden);
+  EXPECT_FALSE(GetDocument().IsUseCounted(feature));
+  EXPECT_FALSE(GetDocument().IsUseCounted(feature_with_hidden));
+
+  auto* scroller = GetElementById("scroller");
+  scroller->SetInlineStyleProperty(CSSPropertyID::kOverscrollBehavior,
+                                   CSSValueID::kAuto);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetDocument().IsUseCounted(feature));
+  EXPECT_FALSE(GetDocument().IsUseCounted(feature_with_hidden));
+
+  scroller->SetInlineStyleProperty(CSSPropertyID::kOverscrollBehavior,
+                                   CSSValueID::kContain);
+  scroller->SetInlineStyleProperty(CSSPropertyID::kOverflowX,
+                                   CSSValueID::kHidden);
+  scroller->SetInlineStyleProperty(CSSPropertyID::kOverflowY,
+                                   CSSValueID::kAuto);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(GetDocument().IsUseCounted(feature));
+  EXPECT_FALSE(GetDocument().IsUseCounted(feature_with_hidden));
 }
 
 class PaintLayerScrollableAreaWithWebFrameTest : public ::testing::Test {

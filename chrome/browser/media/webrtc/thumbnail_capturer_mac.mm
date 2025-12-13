@@ -49,12 +49,9 @@ namespace {
 // entire screen. This is distinct from `kUseSCContentSharingPicker`, which uses
 // the native macOS picker.
 BASE_FEATURE(kScreenCaptureKitStreamPickerSonoma,
-             "ScreenCaptureKitStreamPickerSonoma",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kScreenCaptureKitPickerScreen,
-             "ScreenCaptureKitPickerScreen",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kScreenCaptureKitPickerScreen, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Default max frame rate that is used when capturing thumbnails. This is per
 // source so the combined frame rate can be higher if there are multiple
@@ -143,16 +140,14 @@ CGWindowID GetWindowId(CFArrayRef window_array, CFIndex index) {
 
 class API_AVAILABLE(macos(12.3)) ScreenshotManagerCapturer {
  public:
-  using GetShareableDisplayCallback = base::RepeatingCallback<SCDisplay*(
-      ThumbnailCapturer::SourceId source_id)>;
-  using GetShareableWindowCallback =
-      base::RepeatingCallback<SCWindow*(ThumbnailCapturer::SourceId source_id)>;
+  using ContentFilterCallback = base::RepeatingCallback<
+      SCContentFilter*(ThumbnailCapturer::SourceId source_id, CGRect& frame)>;
 
   ScreenshotManagerCapturer(
       DesktopMediaList::Type type,
       int max_frame_rate,
-      GetShareableDisplayCallback get_shareable_display_callback,
-      GetShareableWindowCallback get_shareable_window_callback,
+      ContentFilterCallback get_display_content_filter_callback,
+      ContentFilterCallback get_window_content_filter_callback,
       SampleCallback sample_callback);
   void SelectSources(const std::vector<ThumbnailCapturer::SourceId>& ids,
                      gfx::Size thumbnail_size);
@@ -175,11 +170,11 @@ class API_AVAILABLE(macos(12.3)) ScreenshotManagerCapturer {
   // The type of source, kScreen and kWindow are supported.
   DesktopMediaList::Type type_;
 
-  // Callback to retrieve an SCDisplay* based on source ID.
-  GetShareableDisplayCallback get_shareable_display_callback_;
+  // Callback to retrieve an SCContentFilter* for a display based on source ID.
+  ContentFilterCallback get_display_content_filter_callback_;
 
-  // Callback to retrieve an SCWindow* based on source ID.
-  GetShareableWindowCallback get_shareable_window_callback_;
+  // Callback to retrieve an SCContentFilter* for a window based on source ID.
+  ContentFilterCallback get_window_content_filter_callback_;
 
   // Callback that is used whenever a thumbnail is captured.
   SampleCallback sample_callback_;
@@ -209,13 +204,13 @@ class API_AVAILABLE(macos(12.3)) ScreenshotManagerCapturer {
 ScreenshotManagerCapturer::ScreenshotManagerCapturer(
     DesktopMediaList::Type type,
     int max_frame_rate,
-    GetShareableDisplayCallback get_shareable_display_callback,
-    GetShareableWindowCallback get_shareable_window_callback,
+    ContentFilterCallback get_display_content_filter_callback,
+    ContentFilterCallback get_window_content_filter_callback,
     SampleCallback sample_callback)
     : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       type_(type),
-      get_shareable_display_callback_(get_shareable_display_callback),
-      get_shareable_window_callback_(get_shareable_window_callback),
+      get_display_content_filter_callback_(get_display_content_filter_callback),
+      get_window_content_filter_callback_(get_window_content_filter_callback),
       sample_callback_(sample_callback) {
   if (@available(macOS 14.0, *)) {
     capture_frame_timer_.Start(
@@ -278,33 +273,15 @@ void ScreenshotManagerCapturer::OnRecurrentCaptureTimer() {
 
 void ScreenshotManagerCapturer::CaptureSource(
     ThumbnailCapturer::SourceId source_id) {
+  CGRect frame = CGRectZero;
+  SCContentFilter* filter;
   switch (type_) {
     case DesktopMediaList::Type::kScreen: {
-      // Find the corresponding SCDisplay in the list.
-      SCDisplay* selected_display =
-          get_shareable_display_callback_.Run(source_id);
-      if (!selected_display) {
-        return;
-      }
-
-      SCContentFilter* filter =
-          [[SCContentFilter alloc] initWithDisplay:selected_display
-                                  excludingWindows:@[]];
-      SCScreenshotCaptureSource(filter, [selected_display frame],
-                                [selected_display displayID]);
+      filter = get_display_content_filter_callback_.Run(source_id, frame);
       break;
     }
     case DesktopMediaList::Type::kWindow: {
-      // Find the corresponding SCWindow in the list.
-      SCWindow* selected_window = get_shareable_window_callback_.Run(source_id);
-      if (!selected_window) {
-        return;
-      }
-
-      SCContentFilter* filter = [[SCContentFilter alloc]
-          initWithDesktopIndependentWindow:selected_window];
-      SCScreenshotCaptureSource(filter, [selected_window frame],
-                                [selected_window windowID]);
+      filter = get_window_content_filter_callback_.Run(source_id, frame);
       break;
     }
     case DesktopMediaList::Type::kNone:
@@ -312,6 +289,11 @@ void ScreenshotManagerCapturer::CaptureSource(
     case DesktopMediaList::Type::kCurrentTab:
       NOTREACHED();
   }
+
+  if (!filter) {
+    return;
+  }
+  SCScreenshotCaptureSource(filter, frame, source_id);
 }
 
 void ScreenshotManagerCapturer::OnCapturedFrame(
@@ -399,8 +381,10 @@ class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
   void GetWindowSourceList(SourceList* sources) const;
 
   void UpdateShareableWindows(NSArray<SCWindow*>* content_windows);
-  SCDisplay* GetShareableDisplay(SourceId source_id) const;
-  SCWindow* GetShareableWindow(SourceId source_id) const;
+  SCContentFilter* GetDisplayContentFilter(SourceId source_id,
+                                           CGRect& frame) const;
+  SCContentFilter* GetWindowContentFilter(SourceId source_id,
+                                          CGRect& frame) const;
 
   // Returns the supplied list of windows sorted to have the same order as
   // returned from CGWindowListCopyWindowInfo.
@@ -471,9 +455,9 @@ void ThumbnailCapturerMac::Start(Consumer* consumer) {
   // `this`, and hence has a shorter lifetime than `this`.
   screenshot_manager_capturer_ = std::make_unique<ScreenshotManagerCapturer>(
       type_, max_frame_rate_,
-      base::BindRepeating(&ThumbnailCapturerMac::GetShareableDisplay,
+      base::BindRepeating(&ThumbnailCapturerMac::GetDisplayContentFilter,
                           base::Unretained(this)),
-      base::BindRepeating(&ThumbnailCapturerMac::GetShareableWindow,
+      base::BindRepeating(&ThumbnailCapturerMac::GetWindowContentFilter,
                           base::Unretained(this)),
       base::BindRepeating(&ThumbnailCapturerMac::OnCapturedFrame,
                           weak_factory_.GetWeakPtr()));
@@ -594,12 +578,26 @@ void ThumbnailCapturerMac::UpdateShareableWindows(
   shareable_windows_ = SortOrderByCGWindowList(content_windows);
 }
 
-SCDisplay* ThumbnailCapturerMac::GetShareableDisplay(SourceId source_id) const {
-  return FindDisplay(shareable_displays_, source_id);
+SCContentFilter* ThumbnailCapturerMac::GetDisplayContentFilter(
+    SourceId source_id,
+    CGRect& frame) const {
+  SCDisplay* display = FindDisplay(shareable_displays_, source_id);
+  if (!display) {
+    return nil;
+  }
+  frame = [display frame];
+  return [[SCContentFilter alloc] initWithDisplay:display excludingWindows:@[]];
 }
 
-SCWindow* ThumbnailCapturerMac::GetShareableWindow(SourceId source_id) const {
-  return FindWindow(shareable_windows_, source_id);
+SCContentFilter* ThumbnailCapturerMac::GetWindowContentFilter(
+    SourceId source_id,
+    CGRect& frame) const {
+  SCWindow* window = FindWindow(shareable_windows_, source_id);
+  if (!window) {
+    return nil;
+  }
+  frame = [window frame];
+  return [[SCContentFilter alloc] initWithDesktopIndependentWindow:window];
 }
 
 NSArray<SCWindow*>* ThumbnailCapturerMac::SortOrderByCGWindowList(

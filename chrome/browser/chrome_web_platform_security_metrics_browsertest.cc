@@ -5,6 +5,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
@@ -14,7 +15,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/policy_constants.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
@@ -77,11 +77,10 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
     LoadIFrameInWebContents(web_contents(), url);
   }
 
-  content::WebContents* OpenPopup(const GURL& url, bool is_popin = false) {
+  content::WebContents* OpenPopup(const GURL& url) {
     content::WebContentsAddedObserver new_tab_observer;
-    EXPECT_TRUE(content::ExecJs(
-        web_contents(), "window.open('" + url.spec() + "', '_blank', '" +
-                            (is_popin ? "popin" : "popup") + "')"));
+    EXPECT_TRUE(content::ExecJs(web_contents(), "window.open('" + url.spec() +
+                                                    "', '_blank', 'popup')"));
     content::WebContents* web_contents = new_tab_observer.GetWebContents();
     EXPECT_TRUE(content::WaitForLoadStop(web_contents));
     return web_contents;
@@ -146,8 +145,6 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
         network::features::kCrossOriginOpenerPolicy,
         // SharedArrayBuffer is needed for these tests.
         features::kSharedArrayBuffer,
-        // Some PNA worker feature relies on this.
-        blink::features::kPartitionedPopins,
     };
   }
 
@@ -178,7 +175,18 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
     https_server_.ServeFilesFromSourceDirectory("content/test/data");
     http_server_.ServeFilesFromSourceDirectory("content/test/data");
 
-    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+    https_server_.SetCertHostnames({
+        "a.com",
+        "*.a.com",
+        "b.com",
+        "c.com",
+        "a.test",
+        "*.a.test",
+        "b.test",
+        "c.test",
+        // For PrivateNetworkAccess tests.
+        "b.local",
+    });
     ASSERT_TRUE(https_server_.Start());
     ASSERT_TRUE(http_server_.Start());
     EXPECT_TRUE(content::NavigateToURL(web_contents(), GURL("about:blank")));
@@ -186,8 +194,6 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
 
  private:
   void SetUpCommandLine(base::CommandLine* command_line) final {
-    // For https_server()
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
     // Clear default from InProcessBrowserTest as test doesn't want 127.0.0.1 in
     // the public address space
     command_line->AppendSwitchASCII(network::switches::kIpAddressSpaceOverrides,
@@ -264,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
       web_contents(),
       https_server().GetURL(
           "a.com",
-          "/private_network_access/no-favicon-treat-as-public-address.html")));
+          "/local_network_access/no-favicon-treat-as-public-address.html")));
 
   ASSERT_EQ(true,
             content::EvalJs(
@@ -278,13 +284,15 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 
 // This test verifies that the PNA 2.0 breakage UseCounter
 // (kPrivateNetworkAccessInsecureResourceNotKnownPrivate) is correctly logged.
+//
+// TODO(crbug.com/438315223): Re-enable once test flakiness is addressed.
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       PrivateNetworkAccessV2BreakageUseCounter) {
+                       DISABLED_PrivateNetworkAccessV2BreakageUseCounter) {
   // A top-level navigation request to a site with a private address should not
   // trigger the UseCounter.
   ASSERT_TRUE(content::NavigateToURL(
-      web_contents(), http_server().GetURL(
-                          "a.com", "/private_network_access/no-favicon.html")));
+      web_contents(),
+      http_server().GetURL("a.com", "/local_network_access/no-favicon.html")));
   CheckCounter(WebFeature::kPrivateNetworkAccessInsecureResourceNotKnownPrivate,
                0);
 
@@ -294,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
       https_server().GetURL("a.com",
-                            "/private_network_access/"
+                            "/local_network_access/"
                             "no-favicon-treat-as-public-address.html")));
   EXPECT_EQ(true, content::EvalJs(web_contents(),
                                   content::JsReplace(
@@ -315,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
       http_server().GetURL("a.com",
-                           "/private_network_access/"
+                           "/local_network_access/"
                            "no-favicon-treat-as-public-address.html")));
 
   // Trigger a request to a localhost HTTP site via 127.0.0.1.
@@ -377,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   ASSERT_EQ(true,
             content::NavigateToURL(
                 web_contents(), https_server().GetURL("a.com",
-                                                      "/private_network_access/"
+                                                      "/local_network_access/"
                                                       "no-favicon.html")));
 
   std::string_view kScriptTemplate = R"(
@@ -426,13 +434,40 @@ IN_PROC_BROWSER_TEST_F(
       browser(),
       http_server().GetURL(
           "a.com",
-          "/private_network_access/"
+          "/local_network_access/"
           "websocket-treat-as-public-address.html"
           "?url=" +
               ws_server().GetURL("/echo-with-no-extension").spec())));
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
   CheckCounter(WebFeature::kPrivateNetworkAccessWebSocketConnected, 1);
+  CheckCounter(WebFeature::kLocalNetworkAccessWebSocketResourceNotKnownPrivate,
+               0);
+}
+
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PrivateNetworkAccessWebSocketConnectedPublicToLocalNonLocalHost \
+  DISABLED_PrivateNetworkAccessWebSocketConnectedPublicToLocalNonLocalHost
+#else
+#define MAYBE_PrivateNetworkAccessWebSocketConnectedPublicToLocalNonLocalHost \
+  PrivateNetworkAccessWebSocketConnectedPublicToLocalNonLocalHost
+#endif
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessWebSocketMetricBrowserTest,
+    MAYBE_PrivateNetworkAccessWebSocketConnectedPublicToLocalNonLocalHost) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      http_server().GetURL(
+          "a.com",
+          "/local_network_access/"
+          "websocket-treat-as-public-address.html"
+          "?url=" +
+              ws_server().GetURL("b.com", "/echo-with-no-extension").spec())));
+
+  EXPECT_EQ("PASS", WaitAndGetTitle());
+  CheckCounter(WebFeature::kPrivateNetworkAccessWebSocketConnected, 1);
+  CheckCounter(WebFeature::kLocalNetworkAccessWebSocketResourceNotKnownPrivate,
+               1);
 }
 
 // When WebSocket is connected to the same ip address space, do not log a use
@@ -451,13 +486,15 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWebSocketMetricBrowserTest,
       browser(),
       http_server().GetURL(
           "a.com",
-          "/private_network_access/"
+          "/local_network_access/"
           "websocket.html"
           "?url=" +
               ws_server().GetURL("/echo-with-no-extension").spec())));
 
   EXPECT_EQ("PASS", WaitAndGetTitle());
   CheckCounter(WebFeature::kPrivateNetworkAccessWebSocketConnected, 0);
+  CheckCounter(WebFeature::kLocalNetworkAccessWebSocketResourceNotKnownPrivate,
+               0);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -465,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   ASSERT_EQ(true,
             content::NavigateToURL(
                 web_contents(), https_server().GetURL("a.com",
-                                                      "/private_network_access/"
+                                                      "/local_network_access/"
                                                       "no-favicon.html")));
 
   std::string_view kScriptTemplate = R"(
@@ -2097,154 +2134,6 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                                            1 /*HasBeenActive*/);
       test_ukm_recorder->ExpectEntryMetric(entry, "StorageKeyComparison",
                                            3 /*CrossKey*/);
-    }
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       WindowProxyAccessFromOtherPartitionedPopin) {
-  GURL url = https_server().GetURL("a.com",
-                                   "/partitioned_popins/wildcard_policy.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-
-  struct TestCase {
-    const char* name;
-    const char* property;
-    WebFeature property_access;
-    WebFeature property_access_from_other_page;
-    blink::mojom::WindowProxyAccessType access_type;
-  } cases[] = {
-      {
-          "blur",
-          "try { window.opener.blur(); } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessBlur,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPageBlur,
-          blink::mojom::WindowProxyAccessType::kBlur,
-      },
-      {
-          "closed",
-          "try { window.opener.closed; } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessClosed,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPageClosed,
-          blink::mojom::WindowProxyAccessType::kClosed,
-      },
-      {
-          "focus",
-          "try { window.opener.focus(); } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessFocus,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPageFocus,
-          blink::mojom::WindowProxyAccessType::kFocus,
-      },
-      {
-          "frames",
-          "try { window.opener.frames; } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessFrames,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPageFrames,
-          blink::mojom::WindowProxyAccessType::kFrames,
-      },
-      {
-          "length",
-          "try { window.opener.length; } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessLength,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPageLength,
-          blink::mojom::WindowProxyAccessType::kLength,
-      },
-      {
-          "location get",
-          "try { window.opener.location; } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessLocation,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPageLocation,
-          blink::mojom::WindowProxyAccessType::kLocation,
-      },
-      {
-          "opener get",
-          "try { window.opener.opener; } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessOpener,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPageOpener,
-          blink::mojom::WindowProxyAccessType::kOpener,
-      },
-      {
-          "parent",
-          "try { window.opener.parent; } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessParent,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPageParent,
-          blink::mojom::WindowProxyAccessType::kParent,
-      },
-      {
-          "postMessage",
-          "try { window.opener.postMessage('','*'); } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessPostMessage,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPagePostMessage,
-          blink::mojom::WindowProxyAccessType::kPostMessage,
-      },
-      {
-          "self",
-          "try { window.opener.self; } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessSelf,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPageSelf,
-          blink::mojom::WindowProxyAccessType::kSelf,
-      },
-      {
-          "top",
-          "try { window.opener.top; } catch (_) {}",
-          WebFeature::kWindowProxyCrossOriginAccessTop,
-          WebFeature::kWindowProxyCrossOriginAccessFromOtherPageTop,
-          blink::mojom::WindowProxyAccessType::kTop,
-      }};
-
-  // Check that same-origin access does not register use counters.
-  content::WebContents* same_origin_popin = OpenPopup(url, /*is_popin=*/true);
-  for (auto test : cases) {
-    SCOPED_TRACE(test.name);
-    std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder =
-        std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    EXPECT_TRUE(content::ExecJs(same_origin_popin, test.property));
-    CheckCounter(test.property_access, 0);
-    CheckCounter(test.property_access_from_other_page, 0);
-    const auto& entries =
-        test_ukm_recorder->GetEntriesByName("WindowProxyUsage");
-    ASSERT_EQ(entries.size(), 0u);
-  }
-
-  // Check that cross-origin access does register use counters.
-  BrowserWindow::FindBrowserWindowWithWebContents(same_origin_popin)->Close();
-  GURL cross_origin_url = https_server().GetURL(
-      "b.test", "/partitioned_popins/wildcard_policy.html");
-  content::WebContents* cross_origin_popin =
-      OpenPopup(cross_origin_url, /*is_popin=*/true);
-  for (auto test : cases) {
-    SCOPED_TRACE(test.name);
-    bool is_closed =
-        test.access_type == blink::mojom::WindowProxyAccessType::kClosed;
-    bool is_post_message =
-        test.access_type == blink::mojom::WindowProxyAccessType::kPostMessage;
-    std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder =
-        std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    EXPECT_TRUE(content::ExecJs(cross_origin_popin, test.property));
-    CheckCounter(test.property_access, is_closed || is_post_message ? 1 : 0);
-    CheckCounter(test.property_access_from_other_page,
-                 is_closed || is_post_message ? 1 : 0);
-    auto entries = test_ukm_recorder->GetEntriesByName("WindowProxyUsage");
-    ASSERT_EQ(entries.size(), is_post_message || is_closed ? 1u : 0u);
-    if (is_closed || is_post_message) {
-      auto entry = entries.back();
-      test_ukm_recorder->ExpectEntryMetric(entry, "AccessType",
-                                           (int)test.access_type);
-      test_ukm_recorder->ExpectEntryMetric(entry, "IsSamePage", 0);
-      test_ukm_recorder->ExpectEntryMetric(entry, "LocalFrameContext",
-                                           0 /*TopFrame*/);
-      test_ukm_recorder->ExpectEntryMetric(entry, "LocalPageContext",
-                                           2 /*PartitionedPopin*/);
-      test_ukm_recorder->ExpectEntryMetric(entry, "LocalUserActivationState",
-                                           0 /*IsActive*/);
-      test_ukm_recorder->ExpectEntryMetric(entry, "RemoteFrameContext",
-                                           0 /*TopFrame*/);
-      test_ukm_recorder->ExpectEntryMetric(entry, "RemotePageContext",
-                                           0 /*Window*/);
-      test_ukm_recorder->ExpectEntryMetric(entry, "RemoteUserActivationState",
-                                           1 /*HasBeenActive*/);
-      test_ukm_recorder->ExpectEntryMetric(entry, "StorageKeyComparison",
-                                           1 /*SameTopSiteCrossOrigin*/);
     }
   }
 }

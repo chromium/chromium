@@ -1,0 +1,52 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Async clipboard selective format read</title>
+<link rel="help" href="https://w3c.github.io/clipboard-apis/#async-clipboard-api">
+<body>Body needed for test_driver.click()</body>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<script src="resources/clipboard-write.js"></script>
+<script src="resources/user-activation.js"></script>
+<script>
+//  Tests clipboard.read() edge cases with no matching types or invalid parameters.
+//  Validates behavior with empty types array, invalid types, null values, and functions.
+//  Ensures ClipboardItem.types returns empty array when no formats match request.
+
+promise_test(async t => {
+  await WritePlainTextAndHTMLToClipboard();
+  const items = await navigator.clipboard.read({types: []});
+  assert_equals(items.length, 1);
+  const item = items[0];
+  const clipboard_mime_types = item.types;
+  assert_equals(clipboard_mime_types.length, 0);
+}, 'When types is empty');
+
+promise_test(async t => {
+  await WritePlainTextAndHTMLToClipboard();
+  const items = await navigator.clipboard.read({types: ['text/text']});
+  assert_equals(items.length, 1);
+  const item = items[0];
+  const clipboard_mime_types = item.types;
+  assert_equals(clipboard_mime_types.length, 0);
+}, 'Reading invalid types');
+
+promise_test(async t => {
+  await WritePlainTextAndHTMLToClipboard();
+  const items = await navigator.clipboard.read({types: null});
+  assert_equals(items.length, 1);
+  const item = items[0];
+  const clipboard_mime_types = item.types;
+  assert_equals(clipboard_mime_types.length, 0);
+}, 'types: null should not return any clipboard data');
+
+promise_test(async t => {
+  await WritePlainTextAndHTMLToClipboard();
+  const items = await navigator.clipboard.read({types: [() => {}]});
+  assert_equals(items.length, 1);
+  const item = items[0];
+  const clipboard_mime_types = item.types;
+  assert_equals(clipboard_mime_types.length, 0);
+}, 'types: function in array should not return any clipboard data');
+</script>

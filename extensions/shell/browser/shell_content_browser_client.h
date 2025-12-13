@@ -13,7 +13,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/isolation_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

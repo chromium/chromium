@@ -149,6 +149,7 @@ source_set("unit_tests") {
     "//ios/web/common:uikit",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
+    "//ios/web/web_state:web_view_internal_creation_util",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",

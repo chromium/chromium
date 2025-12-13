@@ -8,3 +8,6 @@
 
 NSString* const kWhatsNewM116UsageEntryKey =
     @"userHasInteractedWithWhatsNewM116";
+
+NSString* const kWhatsNewTableViewNavigationDismissButtonId =
+    @"kWhatsNewTableViewNavigationDismissButtonId";

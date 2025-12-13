@@ -17,13 +17,21 @@ NSString* const kAutofillCreditCardSwitchViewId =
     @"kAutofillCreditCardSwitchViewId";
 NSString* const kAutofillCreditCardManagedViewId =
     @"kAutofillCreditCardManagedViewId";
+NSString* const kAutofillDeleteSecurityCodesButtonId =
+    @"kAutofillDeleteSecurityCodesButtonId";
 NSString* const kAutofillPaymentMethodsToolbarId =
     @"kAutofillPaymentMethodsToolbarId";
 NSString* const kAutofillMandatoryReauthSwitchViewId =
     @"kAutofillMandatoryReauthSwitchViewId";
+NSString* const kAutofillSaveSecurityCodesSwitchViewId =
+    @"kAutofillSaveSecurityCodesSwitchViewId";
+NSString* const kAutofillSecurityCvcsTableViewId =
+    @"kAutofillSecurityCvcsTableViewId";
 
 NSString* const kAutofillCreditCardEditTableViewId =
     @"kAutofillCreditCardEditTableViewId";
 
 NSString* const kAutofillAddressMigrateToAccountButtonId =
     @"kAutofillAddressMigrateToAccountButtonId";
+
+NSString* const kAutofillEditButtonCellId = @"kAutofillEditButtonCellId";

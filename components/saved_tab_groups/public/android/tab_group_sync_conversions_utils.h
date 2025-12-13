@@ -12,7 +12,7 @@
 #include "base/uuid.h"
 #include "components/saved_tab_groups/public/types.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace tab_groups {
@@ -29,13 +29,13 @@ ScopedJavaLocalRef<jstring> UuidToJavaString(JNIEnv* env,
                                              const base::Uuid& uuid);
 
 // Converts a Java string to base::Uuid.
-base::Uuid JavaStringToUuid(JNIEnv* env, const JavaParamRef<jstring>& j_uuid);
+base::Uuid JavaStringToUuid(JNIEnv* env, const JavaRef<jstring>& j_uuid);
 
 // Converts a Java sync or local group ID to EitherGroupID.
 EitherGroupID JavaSyncOrLocalGroupIdToEitherGroupId(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_sync_group_id,
-    const JavaParamRef<jobject>& j_local_group_id);
+    const JavaRef<jstring>& j_sync_group_id,
+    const JavaRef<jobject>& j_local_group_id);
 
 }  // namespace tab_groups
 

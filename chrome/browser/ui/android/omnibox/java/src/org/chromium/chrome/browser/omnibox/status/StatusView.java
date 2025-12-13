@@ -89,6 +89,7 @@ public class StatusView extends LinearLayout {
     private @Nullable BrowserStateBrowserControlsVisibilityDelegate
             mBrowserControlsVisibilityDelegate;
     private int mShowBrowserControlsToken = TokenHolder.INVALID_TOKEN;
+    private int mStatusIconSize;
     private @Nullable Integer mIconAnimationDurationForTests;
 
     public StatusView(Context context, AttributeSet attributes) {
@@ -132,6 +133,10 @@ public class StatusView extends LinearLayout {
                     }
                 });
 
+        mStatusIconSize =
+                getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_search_engine_logo_composed_size);
+
         // Configure icon rounding.
         mIconView.setOutlineProvider(
                 new RoundedCornerOutlineProvider(
@@ -140,7 +145,6 @@ public class StatusView extends LinearLayout {
                                                 R.dimen.omnibox_search_engine_logo_composed_size)
                                 / 2));
         mIconView.setClipToOutline(true);
-        mIconView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
         configureAccessibilityDescriptions();
     }
@@ -302,6 +306,9 @@ public class StatusView extends LinearLayout {
                                 transitionType == IconTransitionType.ROTATE
                                         ? getRotatedIcon(targetIcon)
                                         : targetIcon);
+                newImage.setLayerSize(0, mStatusIconSize, mStatusIconSize);
+                newImage.setLayerSize(1, mStatusIconSize, mStatusIconSize);
+
                 mIconView.setImageDrawable(newImage);
 
                 if (transitionType == IconTransitionType.CROSSFADE) {
@@ -535,7 +542,8 @@ public class StatusView extends LinearLayout {
     }
 
     void setBrowserControlsVisibilityDelegate(
-            BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate) {
+            @Nullable BrowserStateBrowserControlsVisibilityDelegate
+                    browserControlsVisibilityDelegate) {
         mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
     }
 

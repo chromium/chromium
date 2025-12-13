@@ -17,9 +17,7 @@
 #include "components/invalidation/impl/channels_states.h"
 #include "components/invalidation/impl/per_user_topic_subscription_request.h"
 #include "components/invalidation/public/identity_provider.h"
-#include "components/invalidation/public/invalidation_export.h"
 #include "components/invalidation/public/invalidation_util.h"
-#include "components/invalidation/public/invalidator_state.h"
 #include "net/base/backoff_entry.h"
 
 class PrefRegistrySimple;
@@ -37,7 +35,7 @@ namespace invalidation {
 // Manages the details of subscribing to topics for invalidations. For example,
 // Chrome Sync uses the ModelTypes (bookmarks, passwords, autofill data) as
 // topics.
-class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
+class PerUserTopicSubscriptionManager {
  public:
   using RequestType = PerUserTopicSubscriptionRequest::RequestType;
   class Observer {
@@ -85,6 +83,7 @@ class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
   // changed, triggers re-subscription for all topics.
   virtual void UpdateSubscribedTopics(const TopicMap& topics,
                                       const std::string& new_instance_id_token);
+  void UpdateSubscribedTopics(const TopicMap& topics);
 
   // Called when the InstanceID token (previously passed to
   // UpdateSubscribedTopics()) is deleted or revoked. Clears the cached token

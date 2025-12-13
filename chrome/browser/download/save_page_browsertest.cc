@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <string>
 #include <utility>
 #include <vector>
@@ -13,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -69,6 +69,7 @@
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/test/test_future.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -1166,7 +1167,7 @@ IN_PROC_BROWSER_TEST_F(SavePageSitePerProcessBrowserTest,
   web_contents->GetPrimaryMainFrame()
       ->ForEachRenderFrameHostWithAction(
           [web_contents, &did_kill_a_process](RenderFrameHost* frame) {
-            if (frame->GetLastCommittedURL().host() == "bar.com") {
+            if (frame->GetLastCommittedURL().GetHost() == "bar.com") {
               RenderProcessHost* process_to_kill = frame->GetProcess();
               EXPECT_NE(web_contents->GetPrimaryMainFrame()
                             ->GetProcess()
@@ -1712,27 +1713,40 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveHTMLWithDlp) {
 
   chromeos::DlpClient::Shutdown();
   chromeos::DlpClient::InitializeFake();
-  base::test::RepeatingTestFuture<
-      dlp::AddFilesRequest, base::OnceCallback<void(dlp::AddFilesResponse)>>
-      add_file_cb;
-  chromeos::DlpClient::Get()->GetTestInterface()->SetAddFilesMock(
-      add_file_cb.GetCallback());
 
-  url = NavigateToMockURL("a");
+  // Use page "b" which has subresources (1.png, 1.css). Total 3 files.
+  url = NavigateToMockURL("b");
 
-  SaveCurrentTab(url, content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML, "a", 1, &dir,
+  SaveCurrentTab(url, content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML, "b", 3, &dir,
                  &full_file_name);
 
   ASSERT_FALSE(HasFailure());
 
-  auto request = std::get<0>(add_file_cb.Take());
-  ASSERT_EQ(1, request.add_file_requests().size());
-  EXPECT_EQ(full_file_name.value(), request.add_file_requests(0).file_path());
-  EXPECT_EQ(request.add_file_requests(0).source_url(), url.spec());
+  // Asynchronously get the recorded requests from the fake client.
+  base::test::TestFuture<const dlp::GetDatabaseEntriesResponse> future;
+  chromeos::DlpClient::Get()->GetDatabaseEntries(future.GetCallback());
+  const auto& response = future.Get();
+  const auto& requests = response.files_entries();
 
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  EXPECT_TRUE(base::PathExists(full_file_name));
-  EXPECT_FALSE(base::PathExists(dir));
+  // There is a total of 6 requests, 3 for temporary files and 3 for final
+  // destination.
+  ASSERT_EQ(6, requests.size());
+
+  // The order of subresource saving is not guaranteed, so we use a set
+  // to verify the presence of each expected file path.
+  std::set<std::string> expected_paths;
+  expected_paths.insert(full_file_name.value());
+  expected_paths.insert(dir.AppendASCII("1.png").value());
+  expected_paths.insert(dir.AppendASCII("1.css").value());
+
+  std::set<std::string> actual_paths;
+  for (const auto& request : requests) {
+    actual_paths.insert(request.path());
+  }
+
+  for (const auto& expected_path : expected_paths) {
+    EXPECT_TRUE(base::Contains(actual_paths, expected_path));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, SaveMHTMLWithDlp) {

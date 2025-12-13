@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
 
 #include <drm_fourcc.h>
@@ -17,6 +12,7 @@
 #include <set>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -24,7 +20,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/display/display_features.h"
 #include "ui/display/types/display_color_management.h"
-#include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/linux/drm_util_linux.h"
@@ -303,7 +299,7 @@ HardwareDisplayPlaneManager::ResetConnectorsCacheAndGetValidIds(
   base::flat_set<uint32_t> valid_ids;
 
   for (int i = 0; i < resources->count_connectors; ++i) {
-    const uint32_t connector_id = resources->connectors[i];
+    const uint32_t connector_id = UNSAFE_TODO(resources->connectors[i]);
 
     ScopedDrmObjectPropertyPtr props(
         drm_->GetObjectProperties(connector_id, DRM_MODE_OBJECT_CONNECTOR));
@@ -327,7 +323,8 @@ HardwareDisplayPlaneManager::ResetConnectorsCacheAndGetValidIds(
                           &state_props.link_status);
 
     const std::vector<uint32_t> possible_encoder_ids(
-        connector->encoders, connector->encoders + connector->count_encoders);
+        connector->encoders,
+        UNSAFE_TODO(connector->encoders + connector->count_encoders));
     state_props.possible_crtcs_bitmask =
         GetPossibleCrtcsBitmaskFromEncoders(*drm_, possible_encoder_ids);
 
@@ -421,10 +418,10 @@ bool HardwareDisplayPlaneManager::InitializeCrtcState() {
 
   for (int i = 0; i < resources->count_crtcs; ++i) {
     CrtcState state;
-    state.properties.id = resources->crtcs[i];
+    state.properties.id = UNSAFE_TODO(resources->crtcs[i]);
 
-    ScopedDrmObjectPropertyPtr props(
-        drm_->GetObjectProperties(resources->crtcs[i], DRM_MODE_OBJECT_CRTC));
+    ScopedDrmObjectPropertyPtr props(drm_->GetObjectProperties(
+        UNSAFE_TODO(resources->crtcs[i]), DRM_MODE_OBJECT_CRTC));
     if (!props) {
       PLOG(ERROR) << "Failed to get CRTC properties for crtc_id="
                   << state.properties.id;
@@ -481,7 +478,7 @@ void HardwareDisplayPlaneManager::DisableConnectedConnectorsToCrtcs(
 
   for (int i = 0; i < resources->count_connectors; ++i) {
     ScopedDrmConnectorPtr connector =
-        drm_->GetConnector(resources->connectors[i]);
+        drm_->GetConnector(UNSAFE_TODO(resources->connectors[i]));
     if (!connector)
       continue;
     // Disable Zombie connectors (disconnected connectors but holding to an
@@ -567,14 +564,15 @@ HardwareCapabilities HardwareDisplayPlaneManager::GetHardwareCapabilities(
 
   std::ranges::for_each(
       planes_, [crtc_id, &num_overlay_planes = hc.num_overlay_capable_planes,
-                &buffer_formats = hc.supported_buffer_formats](
+                &shared_image_formats = hc.supported_shared_image_formats](
                    const std::unique_ptr<HardwareDisplayPlane>& plane) {
         if (plane->type() != DRM_PLANE_TYPE_CURSOR &&
             plane->CanUseForCrtcId(crtc_id)) {
           num_overlay_planes++;
           for (const auto& format : plane->supported_formats()) {
             if (ui::IsValidBufferFormat(format)) {
-              buffer_formats.emplace(GetBufferFormatFromFourCCFormat(format));
+              shared_image_formats.emplace(
+                  GetSharedImageFormatFromFourCCFormat(format));
             }
           }
         }

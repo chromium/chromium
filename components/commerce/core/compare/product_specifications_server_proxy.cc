@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -20,8 +21,6 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
-#include "services/data_decoder/public/cpp/json_sanitizer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 using endpoint_fetcher::EndpointFetcher;
@@ -268,32 +267,18 @@ void ProductSpecificationsServerProxy::HandleSpecificationsResponse(
     return;
   }
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      responses->response,
-      base::BindOnce(
-          [](base::WeakPtr<ProductSpecificationsServerProxy> proxy,
-             std::vector<uint64_t> cluster_ids,
-             base::OnceCallback<void(std::vector<uint64_t>,
-                                     std::optional<ProductSpecifications>)>
-                 callback,
-             data_decoder::DataDecoder::ValueOrError result) {
-            if (!proxy) {
-              std::move(callback).Run(std::move(cluster_ids), std::nullopt);
-              return;
-            }
+  std::optional<base::Value::Dict> result =
+      base::JSONReader::ReadDict(responses->response, base::JSON_PARSE_RFC);
 
-            if (!result.has_value() || !result->is_dict()) {
-              VLOG(1) << "Failed to parse product specifications JSON!";
-              std::move(callback).Run(std::move(cluster_ids), std::nullopt);
-              return;
-            }
+  if (!result.has_value()) {
+    VLOG(1) << "Failed to parse product specifications JSON!";
+    std::move(callback).Run(std::move(cluster_ids), std::nullopt);
+    return;
+  }
 
             std::move(callback).Run(
                 std::move(cluster_ids),
                 ProductSpecificationsFromJsonResponse(result.value()));
-          },
-          weak_factory_.GetWeakPtr(), std::move(cluster_ids),
-          std::move(callback)));
 }
 
 std::unique_ptr<EndpointFetcher>
@@ -305,11 +290,9 @@ ProductSpecificationsServerProxy::CreateEndpointFetcher(
   request_params.SetUrl(url)
       .SetContentType(kContentType)
       .SetAuthType(endpoint_fetcher::OAUTH)
-      .SetOauthScopes(
-          std::vector<std::string>{GaiaConstants::kChromeMemexOAuth2Scope})
+      .SetOAuthConsumerId(signin::OAuthConsumerId::kChromeMemex)
       .SetConsentLevel(signin::ConsentLevel::kSignin)
       .SetTimeout(base::Milliseconds(kTimeoutMs))
-      .SetOauthConsumerName(kOAuthName)
       .SetPostData(post_data);
   MaybeUseAlternateShoppingServer(request_params);
   return std::make_unique<EndpointFetcher>(
@@ -318,16 +301,12 @@ ProductSpecificationsServerProxy::CreateEndpointFetcher(
 
 std::optional<ProductSpecifications>
 ProductSpecificationsServerProxy::ProductSpecificationsFromJsonResponse(
-    const base::Value& compareJson) {
-  if (!compareJson.is_dict()) {
-    return std::nullopt;
-  }
-
+    const base::DictValue& compare_json) {
   std::optional<ProductSpecifications> product_specs;
   product_specs.emplace();
 
   const base::Value::Dict* product_specs_dict =
-      compareJson.GetDict().FindDict(kProductSpecificationsKey);
+      compare_json.FindDict(kProductSpecificationsKey);
   if (!product_specs_dict) {
     return std::nullopt;
   }

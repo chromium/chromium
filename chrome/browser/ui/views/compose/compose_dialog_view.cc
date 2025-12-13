@@ -176,9 +176,8 @@ gfx::Rect ComposeDialogView::GetBubbleBounds() {
     parent_bounds = GetWidget()->parent()->GetWindowBoundsInScreen();
   }
 
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestView(
-          GetAnchorView()->GetWidget()->GetNativeView());
+  display::Display display = display::Screen::Get()->GetDisplayNearestView(
+      GetAnchorView()->GetWidget()->GetNativeView());
   gfx::Rect screen_work_area = display.work_area();
 
   return CalculateBubbleBounds(screen_work_area, widget_size, anchor_bounds_,

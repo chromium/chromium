@@ -24,7 +24,9 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace cc {
@@ -108,9 +110,7 @@ void NinePatchLayerLayoutTest(const gfx::Size& bitmap_size,
   for (auto* quad : quads) {
     const viz::TextureDrawQuad* tex_quad =
         viz::TextureDrawQuad::MaterialCast(quad);
-    gfx::RectF tex_rect =
-        gfx::BoundingRect(tex_quad->uv_top_left, tex_quad->uv_bottom_right);
-    tex_rect.Scale(bitmap_size.width(), bitmap_size.height());
+    gfx::RectF tex_rect = tex_quad->GetUnnormalizedTexCoords(bitmap_size);
     tex_remaining.Subtract(Region(ToRoundedIntRect(tex_rect)));
   }
 
@@ -218,9 +218,7 @@ void NinePatchLayerLayoutTestWithOcclusion(const gfx::Size& bitmap_size,
   for (auto* quad : quads) {
     const viz::TextureDrawQuad* tex_quad =
         viz::TextureDrawQuad::MaterialCast(quad);
-    gfx::RectF tex_rect =
-        gfx::BoundingRect(tex_quad->uv_top_left, tex_quad->uv_bottom_right);
-    tex_rect.Scale(bitmap_size.width(), bitmap_size.height());
+    gfx::RectF tex_rect = tex_quad->GetUnnormalizedTexCoords(bitmap_size);
     tex_remaining.Subtract(Region(ToRoundedIntRect(tex_rect)));
   }
 

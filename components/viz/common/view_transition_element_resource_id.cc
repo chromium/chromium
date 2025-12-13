@@ -16,10 +16,10 @@ ViewTransitionElementResourceId::~ViewTransitionElementResourceId() = default;
 ViewTransitionElementResourceId::ViewTransitionElementResourceId(
     const blink::ViewTransitionToken& transition_token,
     uint32_t local_id,
-    bool for_subframe_snapshot)
+    bool for_scope_snapshot)
     : transition_token_(transition_token),
       local_id_(local_id),
-      for_subframe_snapshot_(for_subframe_snapshot) {
+      for_scope_snapshot_(for_scope_snapshot) {
   CHECK_NE(local_id, kInvalidLocalId);
 }
 
@@ -31,7 +31,7 @@ bool operator==(const ViewTransitionElementResourceId& lhs,
 
   return lhs.local_id_ == rhs.local_id_ &&
          lhs.transition_token_ == rhs.transition_token_ &&
-         lhs.for_subframe_snapshot_ == rhs.for_subframe_snapshot_;
+         lhs.for_scope_snapshot_ == rhs.for_scope_snapshot_;
 }
 
 bool ViewTransitionElementResourceId::IsValid() const {
@@ -40,10 +40,10 @@ bool ViewTransitionElementResourceId::IsValid() const {
 
 std::string ViewTransitionElementResourceId::ToString() const {
   return base::StringPrintf(
-      "ViewTransitionElementResourceId : %u [transition: %s, for_subframe: %d]",
+      "ViewTransitionElementResourceId : %u [transition: %s, for_scope: %d]",
       local_id_,
       transition_token_ ? transition_token_->ToString().c_str() : "invalid",
-      for_subframe_snapshot_);
+      for_scope_snapshot_);
 }
 
 bool ViewTransitionElementResourceId::MatchesToken(
@@ -51,7 +51,7 @@ bool ViewTransitionElementResourceId::MatchesToken(
   // Subframe snapshot should not match the token, because they are not a part
   // of capture for ViewTransition, but rather they are captures to implement
   // pausing rendering for a subframe.
-  return !for_subframe_snapshot_ && transition_token_ &&
+  return !for_scope_snapshot_ && transition_token_ &&
          tokens.contains(*transition_token_);
 }
 

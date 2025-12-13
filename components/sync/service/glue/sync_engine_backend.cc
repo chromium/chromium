@@ -14,9 +14,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/sync/base/legacy_directory_deletion.h"
 #include "components/sync/base/sync_invalidation_adapter.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
+#include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/engine_components_factory.h"
@@ -43,7 +45,7 @@ namespace syncer {
 
 namespace {
 
-const base::FilePath::CharType kNigoriStorageFilename[] =
+constexpr base::FilePath::CharType kNigoriStorageFilename[] =
     FILE_PATH_LITERAL("Nigori.bin");
 
 void RecordInvalidationPerDataType(DataType type) {
@@ -157,7 +159,8 @@ void SyncEngineBackend::DoInitialize(
   sync_encryption_handler_ = std::make_unique<NigoriSyncBridgeImpl>(
       std::move(nigori_processor),
       std::make_unique<NigoriStorageImpl>(
-          sync_data_folder_.Append(kNigoriStorageFilename)));
+          sync_data_folder_.Append(kNigoriStorageFilename),
+          std::move(params.encryptor)));
 
   sync_manager_ = params.sync_manager_factory->CreateSyncManager(name_);
   sync_manager_->AddObserver(this);
@@ -181,8 +184,8 @@ void SyncEngineBackend::DoInitialize(
   LoadAndConnectNigoriController();
 
   ConfigureReason reason = sync_manager_->InitialSyncEndedTypes().empty()
-                               ? CONFIGURE_REASON_NEW_CLIENT
-                               : CONFIGURE_REASON_EXISTING_CLIENT_RESTART;
+                               ? ConfigureReason::kNewClient
+                               : ConfigureReason::kExistingClientRestart;
 
   DataTypeSet new_control_types =
       Difference(ControlTypes(), sync_manager_->InitialSyncEndedTypes());

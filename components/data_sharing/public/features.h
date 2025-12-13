@@ -18,6 +18,10 @@ BASE_DECLARE_FEATURE(kCollaborationEntrepriseV2);
 // implementation of the service is returned.
 BASE_DECLARE_FEATURE(kDataSharingFeature);
 
+// Migration flag of the SharedTabGroupAccountDataSpecifics into
+// //components/data_sharing.
+BASE_DECLARE_FEATURE(kDataSharingAccountDataMigration);
+
 // Join only feature flag for data sharing. Enabled partial data sharing related
 // functionalities.
 BASE_DECLARE_FEATURE(kDataSharingJoinOnly);
@@ -63,6 +67,10 @@ bool IsDataSharingFunctionalityEnabled();
 // installed, and the user will see the web fallback for the sharing URL.
 // Note : Don't use this method for other versioning related checks.
 bool ShouldInterceptUrlForVersioning();
+
+// Returns the ServerEnvironment to be used for making RPCs call for data
+// sharing service.
+ServerEnvironment GetServerEnvironment();
 
 }  // namespace data_sharing::features
 

@@ -7,8 +7,9 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -23,6 +24,9 @@ class PrefRegistrySimple;
 namespace base {
 class SingleThreadTaskRunner;
 }
+
+// Killswitch for the rules set by the "ProxyOverrideRules" policy.
+PROXY_CONFIG_EXPORT BASE_DECLARE_FEATURE(kEnableProxyOverrideRules);
 
 // A net::ProxyConfigService implementation that applies preference proxy
 // settings (pushed from PrefProxyConfigTrackerImpl) as overrides to the proxy
@@ -172,7 +176,8 @@ class PROXY_CONFIG_EXPORT PrefProxyConfigTrackerImpl
   net::ProxyConfigWithAnnotation pref_config_;
 
   raw_ptr<PrefService> pref_service_;
-  raw_ptr<ProxyConfigServiceImpl> proxy_config_service_impl_;  // Weak ptr.
+  raw_ptr<ProxyConfigServiceImpl, DanglingUntriaged>
+      proxy_config_service_impl_;  // Weak ptr.
   PrefChangeRegistrar proxy_prefs_;
 
   // State of |active_config_|.  |active_config_| is only valid if

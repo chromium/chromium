@@ -30,7 +30,9 @@
 
 #include <cstddef>
 #include <cstdint>
+
 #include "base/check_op.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_animation_trigger_behavior.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -69,6 +71,7 @@ enum PseudoId : uint8_t {
   kPseudoIdBefore,
   kPseudoIdAfter,
   kPseudoIdPickerIcon,
+  kPseudoIdInterestHint,
   kPseudoIdMarker,
   kPseudoIdBackdrop,
   kPseudoIdSelection,
@@ -93,6 +96,9 @@ enum PseudoId : uint8_t {
   kPseudoIdViewTransitionImagePair,
   kPseudoIdViewTransitionOld,
   kPseudoIdViewTransitionNew,
+
+  kPseudoIdOverscrollAreaParent,
+
   // Internal IDs follow:
   kPseudoIdFirstLineInherited,
 
@@ -113,13 +119,71 @@ enum PseudoId : uint8_t {
   kPseudoIdDetailsContent,
   kPseudoIdPickerSelect,
   kPseudoIdPermissionIcon,
+
   // Special values follow:
   kAfterLastInternalPseudoId,
   kPseudoIdInvalid,
   kFirstPublicPseudoId = kPseudoIdFirstLine,
   kLastTrackedPublicPseudoId = kPseudoIdGrammarError,
-  kLastPublicPseudoId = kPseudoIdViewTransitionNew,
+  kLastPublicPseudoId = kPseudoIdOverscrollAreaParent,
   kFirstInternalPseudoId = kPseudoIdFirstLineInherited,
+};
+
+// Stores a set of PseudoId flags, but only in the range
+// [kFirstPublicPseudoId, kLastTrackedPublicPseudoId].
+class PseudoIdFlags {
+ public:
+  PseudoIdFlags() = default;
+
+  static const PseudoId kFirstValid = kFirstPublicPseudoId;
+  static const PseudoId kLastValid = kLastTrackedPublicPseudoId;
+
+  static PseudoIdFlags FromBits(uint32_t bits) { return PseudoIdFlags(bits); }
+
+  // See comment on similar constructor in CSSBitsetBase.
+  template <int N>
+  explicit constexpr PseudoIdFlags(const PseudoId (&list)[N]) {
+    for (PseudoId pseudo_id : list) {
+      bits_ |= uint32_t{1} << Bit(pseudo_id);
+    }
+  }
+
+  bool operator==(const PseudoIdFlags& o) const { return bits_ == o.bits_; }
+
+  PseudoIdFlags& operator|=(const PseudoIdFlags& o) {
+    bits_ |= o.bits_;
+    return *this;
+  }
+
+  void Set(PseudoId pseudo_id) {
+    DCHECK_LT(Bit(pseudo_id), 32u);
+    bits_ |= (uint32_t{1} << Bit(pseudo_id));
+  }
+
+  void MaybeSet(PseudoId pseudo_id) {
+    if (pseudo_id >= kFirstValid && pseudo_id <= kLastValid) {
+      Set(pseudo_id);
+    }
+  }
+
+  bool Has(PseudoId pseudo_id) const {
+    DCHECK_LT(Bit(pseudo_id), 32u);
+    return bits_ & (uint32_t{1} << Bit(pseudo_id));
+  }
+
+  bool HasAny() const { return bits_; }
+
+  uint32_t Bits() const { return bits_; }
+
+ private:
+  explicit PseudoIdFlags(uint32_t bits) : bits_(bits) {}
+
+  static constexpr uint32_t Bit(PseudoId pseudo_id) {
+    return pseudo_id - kFirstValid;
+  }
+
+  static_assert((kLastValid - kFirstValid) < 32);
+  uint32_t bits_ = 0;
 };
 
 inline bool IsHighlightPseudoElement(PseudoId pseudo_id) {
@@ -421,6 +485,13 @@ enum class LineLogicalSide {
   kOver,
   kUnder,
 };
+inline bool operator==(LineLogicalSide line_logical_side,
+                       RubyPosition ruby_position) {
+  return (line_logical_side == LineLogicalSide::kOver &&
+          ruby_position == RubyPosition::kOver) ||
+         (line_logical_side == LineLogicalSide::kUnder &&
+          ruby_position == RubyPosition::kUnder);
+}
 
 constexpr size_t kScrollbarGutterBits = 2;
 enum ScrollbarGutter {
@@ -485,7 +556,9 @@ enum class GeometryBox {
   // <geometry-box> = <shape-box> | fill-box | stroke-box | view-box
   kFillBox,
   kStrokeBox,
-  kViewBox
+  kViewBox,
+  // Additional value for border-shape: a box halfway between border and padding
+  kHalfBorderBox
 };
 
 // https://drafts.fxtf.org/css-masking/#typedef-compositing-operator
@@ -517,14 +590,11 @@ enum class TryTactic : uint8_t {
   kFlipBlock,
   kFlipInline,
   kFlipStart,
+  kFlipX,
+  kFlipY,
 };
 
-enum class EAnimationTriggerBehavior : uint8_t {
-  kOnce,
-  kRepeat,
-  kAlternate,
-  kState,
-};
+typedef V8AnimationTriggerBehavior::Enum EAnimationTriggerBehavior;
 
 // TODO(crbug.com/332933527): Support anchors-valid.
 static const size_t kPositionVisibilityBits = 2;
@@ -540,6 +610,13 @@ inline PositionVisibility operator|(PositionVisibility a,
 inline PositionVisibility& operator|=(PositionVisibility& a,
                                       PositionVisibility b) {
   return a = a | b;
+}
+
+inline PositionVisibility InitialPositionVisibilityKeyword() {
+  if (RuntimeEnabledFeatures::AnchorsVisibleInitialValueEnabled()) {
+    return PositionVisibility::kAnchorsVisible;
+  }
+  return PositionVisibility::kAlways;
 }
 
 enum class FlexWrapMode : uint8_t { kNowrap, kWrap, kWrapReverse };

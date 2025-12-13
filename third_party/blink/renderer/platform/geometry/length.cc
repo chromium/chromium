@@ -39,7 +39,6 @@
 namespace blink {
 
 DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_auto_length);
-DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_fill_available_length);
 DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_stretch_length);
 DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_fit_content_length);
 DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_max_content_length);
@@ -49,8 +48,6 @@ DEFINE_GLOBAL(PLATFORM_EXPORT, Length, g_min_intrinsic_length);
 // static
 void Length::Initialize() {
   new (base::NotNullTag::kNotNull, (void*)&g_auto_length) Length(kAuto);
-  new (base::NotNullTag::kNotNull, (void*)&g_fill_available_length)
-      Length(kFillAvailable);
   new (base::NotNullTag::kNotNull, (void*)&g_stretch_length) Length(kStretch);
   new (base::NotNullTag::kNotNull, (void*)&g_fit_content_length)
       Length(kFitContent);
@@ -288,15 +285,14 @@ bool Length::HasPercentOrStretch() const {
   if (GetType() == kCalculated) {
     return GetCalculationValue().HasPercentOrStretch();
   }
-  return GetType() == kPercent || GetType() == kStretch ||
-         GetType() == kFillAvailable;
+  return GetType() == kPercent || GetType() == kStretch;
 }
 
 bool Length::HasStretch() const {
   if (GetType() == kCalculated) {
     return GetCalculationValue().HasStretch();
   }
-  return GetType() == kStretch || GetType() == kFillAvailable;
+  return GetType() == kStretch;
 }
 
 bool Length::HasMinContent() const {

@@ -44,6 +44,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
@@ -80,7 +81,6 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
                                    bool tablet_mode)
     : view_delegate_(view_delegate) {
   SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
 
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetCallback(base::BindRepeating(&ContinueTaskView::OnButtonPressed,
@@ -111,6 +111,7 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
 
   if (tablet_mode) {
     if (chromeos::features::IsSystemBlurEnabled()) {
+      layer()->SetFillsBoundsOpaquely(false);
       layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
       layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
     }
@@ -126,6 +127,8 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
     SetBorder(std::make_unique<views::HighlightBorder>(
         GetCornerRadius(/*tablet_mode=*/true),
         views::HighlightBorder::Type::kHighlightBorderNoShadow));
+  } else {
+    layer()->SetFillsBoundsOpaquely(false);
   }
 
   auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -335,7 +338,7 @@ ui::SimpleMenuModel* ContinueTaskView::BuildMenuModel() {
                                        ui::kColorAshSystemUIMenuIcon));
   }
 
-  if (Shell::Get()->IsInTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
     context_menu_model_->AddItemWithIcon(
         ContinueTaskCommandId::kHideContinueSection,

@@ -25,6 +25,7 @@
 #include "media/base/video_decoder.h"
 #include "media/filters/decoder_stream_traits.h"
 #include "media/filters/decrypting_demuxer_stream.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -118,9 +119,10 @@ void DecoderSelector<StreamType>::SelectDecoderInternal(
   output_cb_ = std::move(output_cb);
   config_ = traits_->GetDecoderConfig(stream_);
 
-  TRACE_EVENT_ASYNC_BEGIN2("media", kSelectDecoderTrace, this, "type",
-                           DemuxerStream::GetTypeName(StreamType), "config",
-                           config_.AsHumanReadableString());
+  TRACE_EVENT_BEGIN("media", kSelectDecoderTrace,
+                    perfetto::Track::FromPointer(this), "type",
+                    DemuxerStream::GetTypeName(StreamType), "config",
+                    config_.AsHumanReadableString());
 
   if (!config_.IsValidConfig()) {
     DLOG(ERROR) << "Invalid stream config";
@@ -315,8 +317,8 @@ template <DemuxerStream::Type StreamType>
 void DecoderSelector<StreamType>::RunSelectDecoderCB(
     DecoderOrError decoder_or_error) {
   DCHECK(select_decoder_cb_);
-  TRACE_EVENT_ASYNC_END2(
-      "media", kSelectDecoderTrace, this, "type",
+  TRACE_EVENT_END(
+      "media", perfetto::Track::FromPointer(this), "type",
       DemuxerStream::GetTypeName(StreamType), "decoder",
       base::StringPrintf(
           "%s (%s)",

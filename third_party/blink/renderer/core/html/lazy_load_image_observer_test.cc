@@ -75,7 +75,8 @@ TEST_F(LazyLoadImagesSimTest, ImgSrcset) {
 
   // Scrolling down should load the larger image.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 10000), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 10000), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   SimRequest image_resource("https://example.com/img.png?200w", "image/png");
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -275,7 +276,8 @@ TEST_P(LazyLoadImagesParamsTest, FarFromViewport) {
 
   // Scroll down so that the images are near the viewport.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 150), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 150), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -555,7 +557,8 @@ TEST_F(LazyLoadImagesTest, ImageInsideLazyLoadedFrame) {
   // Scroll down so that the iframe is near the viewport, but the images within
   // it aren't near the viewport yet.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 150), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 150), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -617,7 +620,8 @@ TEST_F(LazyLoadImagesTest, ImageInsideLazyLoadedFrame) {
                                       "image/png");
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 250), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 250), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -659,7 +663,7 @@ TEST_F(LazyLoadImagesTest, LazyLoadFileUrls) {
   // Scroll down such that the image is visible.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, kViewportHeight + kLoadingDistanceThreshold),
-      mojom::blink::ScrollType::kProgrammatic);
+      mojom::blink::ScrollType::kProgrammatic, cc::ScrollSourceType::kNone);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();

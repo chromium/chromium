@@ -26,15 +26,15 @@ import java.lang.ref.WeakReference;
 @LooperMode(LooperMode.Mode.PAUSED)
 public class ComposedBrowserControlsVisibilityDelegateTest {
     private ComposedBrowserControlsVisibilityDelegate mComposedDelegate;
-    private TestVisibilityDelegate mDelegate1;
-    private TestVisibilityDelegate mDelegate2;
-    private TestVisibilityDelegate mDelegate3;
+    private BrowserControlsVisibilityDelegate mDelegate1;
+    private BrowserControlsVisibilityDelegate mDelegate2;
+    private BrowserControlsVisibilityDelegate mDelegate3;
 
     @Before
     public void setUp() {
-        mDelegate1 = new TestVisibilityDelegate();
-        mDelegate2 = new TestVisibilityDelegate();
-        mDelegate3 = new TestVisibilityDelegate();
+        mDelegate1 = new BrowserControlsVisibilityDelegate();
+        mDelegate2 = new BrowserControlsVisibilityDelegate();
+        mDelegate3 = new BrowserControlsVisibilityDelegate();
         mComposedDelegate =
                 new ComposedBrowserControlsVisibilityDelegate(mDelegate1, mDelegate2, mDelegate3);
     }
@@ -138,7 +138,7 @@ public class ComposedBrowserControlsVisibilityDelegateTest {
     @Test
     public void testAddDelegate_ObservesChanges() {
         Assert.assertEquals(BrowserControlsState.BOTH, composedState());
-        TestVisibilityDelegate newDelegate = new TestVisibilityDelegate();
+        BrowserControlsVisibilityDelegate newDelegate = new BrowserControlsVisibilityDelegate();
         mComposedDelegate.addDelegate(newDelegate);
         Assert.assertEquals(BrowserControlsState.BOTH, composedState());
         newDelegate.set(BrowserControlsState.HIDDEN);
@@ -148,7 +148,7 @@ public class ComposedBrowserControlsVisibilityDelegateTest {
     @Test
     public void testAddDelegate_WithExistingState() {
         Assert.assertEquals(BrowserControlsState.BOTH, composedState());
-        TestVisibilityDelegate newDelegate = new TestVisibilityDelegate();
+        BrowserControlsVisibilityDelegate newDelegate = new BrowserControlsVisibilityDelegate();
         newDelegate.set(BrowserControlsState.SHOWN);
         mComposedDelegate.addDelegate(newDelegate);
         Assert.assertEquals(BrowserControlsState.SHOWN, composedState());
@@ -168,11 +168,5 @@ public class ComposedBrowserControlsVisibilityDelegateTest {
         mComposedDelegate = null;
         ShadowLooper.idleMainLooper();
         Assert.assertTrue(GarbageCollectionTestUtils.canBeGarbageCollected(delegate));
-    }
-
-    private static class TestVisibilityDelegate extends BrowserControlsVisibilityDelegate {
-        public TestVisibilityDelegate() {
-            super(BrowserControlsState.BOTH);
-        }
     }
 }

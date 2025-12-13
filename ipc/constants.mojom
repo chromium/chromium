@@ -4,9 +4,9 @@
 
 module IPC.mojom;
 
-// NOTE: MUST match the values of MSG_ROUTING_* in ipc/ipc_message.h.
+// NOTE: Formerly the values of MSG_ROUTING_* in ipc/ipc_message.h.
 const int32 kRoutingIdNone = -2;
 const int32 kRoutingIdControl = 2147483647;
 
-// NOTE: MUST match the value of kMaximumMessageSize in ipc/ipc_channel.h
+// NOTE: Formerly the value of kMaximumMessageSize in ipc/ipc_channel.h
 const uint32 kChannelMaximumMessageSize = 134217728;

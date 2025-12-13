@@ -12,6 +12,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 
 // Represents the bubble top border offset, with respect to the
 // Picture-in-Picture window title bar. Used to allow the Bubble to overlap the
@@ -187,9 +188,10 @@ void AutoPipSettingView::InitBubbleTitleView(const GURL& origin) {
   // Determining the origin of a file URL is left as an exercise to the reader
   // https://url.spec.whatwg.org/#concept-url-origin. Therefore, for URLs with a
   // file scheme which do not have an origin, we use the entire URL spec.
-  const std::u16string host = (origin.SchemeIsFile() && !origin.has_host())
-                                  ? base::UTF8ToUTF16(origin.spec())
-                                  : url_formatter::IDNToUnicode(origin.host());
+  const std::u16string host =
+      (origin.SchemeIsFile() && !origin.has_host())
+          ? base::UTF8ToUTF16(origin.spec())
+          : url_formatter::IDNToUnicode(origin.GetHost());
   origin_text_ = gfx::ElideText(host, gfx::FontList(),
                                 kBubbleOriginTextMaximumWidth, elide_behavior);
 
@@ -206,11 +208,13 @@ void AutoPipSettingView::InitBubbleTitleView(const GURL& origin) {
 }
 
 void AutoPipSettingView::OnButtonPressed(UiResult result) {
-  CHECK(result_cb_);
+  if (!result_cb_) {
+    CHECK(GetWidget()->IsClosed());
+    return;
+  }
 
+  // Notify of the result and close the widget.
   std::move(result_cb_).Run(result);
-
-  // Close the widget.
   GetWidget()->Close();
 }
 
@@ -244,8 +248,8 @@ gfx::Rect AutoPipSettingView::GetAnchorRect() const {
 
 ///////////////////////////////////////////////////////////////////////////////
 // views::WidgetDelegate:
-std::unique_ptr<views::NonClientFrameView>
-AutoPipSettingView::CreateNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> AutoPipSettingView::CreateFrameView(
+    views::Widget* widget) {
   // Create the customized bubble border.
   std::unique_ptr<views::BubbleBorder> bubble_border =
       std::make_unique<views::BubbleBorder>(
@@ -255,7 +259,7 @@ AutoPipSettingView::CreateNonClientFrameView(views::Widget* widget) {
   bubble_border->set_md_shadow_elevation(kBubbleBorderMdShadowElevation);
   bubble_border->set_draw_border_stroke(true);
 
-  auto frame = BubbleDialogDelegate::CreateNonClientFrameView(widget);
+  auto frame = BubbleDialogDelegate::CreateFrameView(widget);
   static_cast<views::BubbleFrameView*>(frame.get())
       ->SetBubbleBorder(std::move(bubble_border));
   return frame;

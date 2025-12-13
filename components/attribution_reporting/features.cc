@@ -9,8 +9,6 @@
 namespace attribution_reporting::features {
 
 // Controls whether the Conversion Measurement API infrastructure is enabled.
-BASE_FEATURE(kConversionMeasurement,
-             "ConversionMeasurement",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kConversionMeasurement, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace attribution_reporting::features

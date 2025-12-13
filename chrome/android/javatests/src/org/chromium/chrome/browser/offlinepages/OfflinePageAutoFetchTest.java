@@ -439,7 +439,7 @@ public class OfflinePageAutoFetchTest {
     }
 
     private Tab activityTab() {
-        return mActivityTestRule.getActivity().getActivityTab();
+        return mActivityTestRule.getActivityTab();
     }
 
     // Attempt to load a page on the active tab. Does not assert that the page is loaded
@@ -501,7 +501,8 @@ public class OfflinePageAutoFetchTest {
     }
 
     private Tab getCurrentTab() {
-        return TabModelUtils.getCurrentTab(getCurrentTabModel());
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> TabModelUtils.getCurrentTab(getCurrentTabModel()));
     }
 
     private void logAdditionalContext() {

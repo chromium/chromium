@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_translation_dispatcher.h"
 #include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "components/live_caption/translation_dispatcher.h"

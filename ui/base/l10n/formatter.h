@@ -8,10 +8,10 @@
 #ifndef UI_BASE_L10N_FORMATTER_H_
 #define UI_BASE_L10N_FORMATTER_H_
 
+#include <array>
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/lazy_instance.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/msgfmt.h"
 #include "third_party/icu/source/i18n/unicode/plurrule.h"
@@ -66,6 +66,7 @@ class Formatter {
 
   Formatter(const Formatter&) = delete;
   Formatter& operator=(const Formatter&) = delete;
+  ~Formatter();
 
   void Format(Unit unit, int value, icu::UnicodeString* formatted_string) const;
 
@@ -84,43 +85,19 @@ class Formatter {
   std::unique_ptr<icu::MessageFormat> InitFormat(
       const Pluralities& pluralities);
 
-  std::unique_ptr<icu::MessageFormat> simple_format_[UNIT_COUNT];
-  std::unique_ptr<icu::MessageFormat> detailed_format_[TWO_UNITS_COUNT][2];
+  std::array<std::unique_ptr<icu::MessageFormat>, UNIT_COUNT> simple_format_;
+  std::array<std::array<std::unique_ptr<icu::MessageFormat>, 2>,
+             TWO_UNITS_COUNT>
+      detailed_format_;
 };
 
-// Class to hold all Formatters, intended to be used in a global LazyInstance.
-class COMPONENT_EXPORT(UI_BASE) FormatterContainer {
- public:
-  FormatterContainer();
+COMPONENT_EXPORT(UI_BASE)
+const Formatter* GetFormatter(TimeFormat::Format format,
+                              TimeFormat::Length length);
 
-  FormatterContainer(const FormatterContainer&) = delete;
-  FormatterContainer& operator=(const FormatterContainer&) = delete;
-
-  ~FormatterContainer();
-
-  const Formatter* Get(TimeFormat::Format format,
-                       TimeFormat::Length length) const;
-
-  void ResetForTesting() {
-    Shutdown();
-    Initialize();
-  }
-
- private:
-  void Initialize();
-  void Shutdown();
-
-  std::unique_ptr<Formatter> formatter_[TimeFormat::FORMAT_COUNT]
-                                       [TimeFormat::LENGTH_COUNT];
-};
-
-// Windows compilation requires full definition of FormatterContainer before
-// LazyInstance<FormatterContainter> may be declared.
-extern COMPONENT_EXPORT(UI_BASE) base::LazyInstance<FormatterContainer>::Leaky
-    g_container;
-
-// For use in unit tests only.
-extern COMPONENT_EXPORT(UI_BASE) bool formatter_force_fallback;
+COMPONENT_EXPORT(UI_BASE) void ResetFormatterForTesting();
+COMPONENT_EXPORT(UI_BASE)
+void SetFormatterForceFallbackForTesting(bool force_fallback);
 
 }  // namespace ui
 

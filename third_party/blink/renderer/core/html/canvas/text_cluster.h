@@ -26,16 +26,16 @@ class CORE_EXPORT TextCluster final : public ScriptWrappable {
               double y,
               unsigned start,
               unsigned end,
-              V8CanvasTextAlign align,
-              V8CanvasTextBaseline baseline,
+              V8CanvasTextAlign::Enum align,
+              V8CanvasTextBaseline::Enum baseline,
               TextMetrics& text_metrics);
   static TextCluster* Create(const String& text,
                              double x,
                              double y,
                              unsigned start,
                              unsigned end,
-                             V8CanvasTextAlign align,
-                             V8CanvasTextBaseline baseline,
+                             V8CanvasTextAlign::Enum align,
+                             V8CanvasTextBaseline::Enum baseline,
                              TextMetrics& text_metrics);
 
   const String& text() const { return text_; }
@@ -43,8 +43,10 @@ class CORE_EXPORT TextCluster final : public ScriptWrappable {
   double y() const { return y_; }
   unsigned start() const { return start_; }
   unsigned end() const { return end_; }
-  V8CanvasTextAlign align() const { return align_; }
-  V8CanvasTextBaseline baseline() const { return baseline_; }
+  V8CanvasTextAlign align() const { return V8CanvasTextAlign(align_); }
+  V8CanvasTextBaseline baseline() const {
+    return V8CanvasTextBaseline(baseline_);
+  }
   const Member<TextMetrics> textMetrics() const { return text_metrics_; }
 
   void OffsetPosition(double x_offset, double y_offset);
@@ -58,8 +60,8 @@ class CORE_EXPORT TextCluster final : public ScriptWrappable {
   double y_ = 0.0;
   unsigned start_ = 0;
   unsigned end_ = 0;
-  const V8CanvasTextAlign align_;
-  const V8CanvasTextBaseline baseline_;
+  const V8CanvasTextAlign::Enum align_;
+  const V8CanvasTextBaseline::Enum baseline_;
   const Member<TextMetrics> text_metrics_;
 };
 

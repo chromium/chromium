@@ -23,7 +23,7 @@
                 "abridged": false
             },
             "blink_perf.layout": {
-                "end": 77,
+                "end": 73,
                 "abridged": false
             }
         }
@@ -31,7 +31,7 @@
     "1": {
         "benchmarks": {
             "blink_perf.layout": {
-                "begin": 77,
+                "begin": 73,
                 "abridged": false
             },
             "blink_perf.owp_storage": {
@@ -52,7 +52,7 @@
             "blink_perf.webgl": {
                 "abridged": false
             },
-            "blink_perf.webgl_fast_call": {
+            "blink_perf.webgpu": {
                 "abridged": false
             },
             "dummy_benchmark.noisy_benchmark_1": {
@@ -80,8 +80,7 @@
             "loadline-tablet-fast": {
                 "display_name": "loadline_tablet.crossbench",
                 "arguments": [
-                    "--cool-down-threshold=moderate",
-                    "--no-splash"
+                    "--cool-down-threshold=moderate"
                 ]
             }
         }
@@ -194,13 +193,13 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1111,
+        "num_stories": 1121,
         "predicted_min_shard_time": 3797.0,
         "predicted_min_shard_index": 7,
-        "predicted_max_shard_time": 5620.0,
+        "predicted_max_shard_time": 5699.0,
         "predicted_max_shard_index": 1,
-        "shard #0": 4105.0,
-        "shard #1": 5620.0,
+        "shard #0": 4129.0,
+        "shard #1": 5699.0,
         "shard #2": 3860.0,
         "shard #3": 3837.0,
         "shard #4": 3826.0,

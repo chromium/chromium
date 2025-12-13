@@ -4,10 +4,13 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
 
-#import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
+#import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_image_view.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
-#import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
+#import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -18,9 +21,6 @@ namespace {
 
 // Corner radius applied to the content view.
 const CGFloat kContentViewCornerRadius = 10.88;
-
-// Corner radius applied to the highlight border view.
-const CGFloat kHighlightCornerRadius = 16.0;
 
 // Top margin between contentView and borderWrapperView.
 const CGFloat kContentViewTopMargin = 12.0;
@@ -73,6 +73,10 @@ const CGFloat kFeedsHeight = 67.0;
 // Fixed height for feeds view.
 const CGFloat kFeedsWidth = 70.0;
 
+// When the background is an image, the fake views here should be partially
+// transparent.
+const CGFloat kAlphaValueWhenImageBackround = 0.6;
+
 }  // namespace
 
 @interface HomeCustomizationBackgroundCell ()
@@ -81,10 +85,6 @@ const CGFloat kFeedsWidth = 70.0;
 // Acts as a decorative wrapper for the inner content.
 @property(nonatomic, strong) UIView* borderWrapperView;
 
-// Main content view rendered inside the border wrapper.
-// Displays the core visual element.
-@property(nonatomic, strong) UIStackView* innerContentView;
-
 @end
 
 @implementation HomeCustomizationBackgroundCell {
@@ -92,19 +92,36 @@ const CGFloat kFeedsWidth = 70.0;
   id<BackgroundCustomizationConfiguration> _backgroundConfiguration;
 
   // The background image of the cell.
-  UIImageView* _backgroundImageView;
+  HomeCustomizationImageView* _backgroundImageView;
+
+  // Search Engine Logo Mediator controlling the Logo display.
+  SearchEngineLogoMediator* _searchEngineLogoMediator;
+
+  // View representing the omnibox.
+  UIView* _omniboxView;
+
+  // View representing the magic stack.
+  UIView* _magicStackView;
+
+  // View representing the feeds.
+  UIView* _feedsView;
+
+  // The view holding the default search engine logo.
+  UIView* _logoView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
     self.contentView.backgroundColor = UIColor.clearColor;
+    self.isAccessibilityElement = YES;
+    self.accessibilityTraits |= UIAccessibilityTraitButton;
 
     // Outer container view that holds the highlight border.
     self.borderWrapperView = [[UIView alloc] init];
     self.borderWrapperView.translatesAutoresizingMaskIntoConstraints = NO;
     self.borderWrapperView.backgroundColor = UIColor.clearColor;
-    self.borderWrapperView.layer.cornerRadius = kHighlightCornerRadius;
+    self.borderWrapperView.layer.cornerRadius = 2 * kContentViewCornerRadius;
     self.borderWrapperView.layer.masksToBounds = YES;
     [self.contentView addSubview:self.borderWrapperView];
 
@@ -117,11 +134,10 @@ const CGFloat kFeedsWidth = 70.0;
     self.innerContentView.layer.cornerRadius = kContentViewCornerRadius;
     self.innerContentView.layer.masksToBounds = YES;
     self.innerContentView.axis = UILayoutConstraintAxisVertical;
+    self.innerContentView.layer.borderWidth = 1;
 
     // Adds the empty background image.
-    _backgroundImageView = [[UIImageView alloc] init];
-    _backgroundImageView.contentMode = UIViewContentModeScaleAspectFill;
-    _backgroundImageView.clipsToBounds = YES;
+    _backgroundImageView = [[HomeCustomizationImageView alloc] init];
     _backgroundImageView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.innerContentView addSubview:_backgroundImageView];
     AddSameConstraints(_backgroundImageView, self.innerContentView);
@@ -145,90 +161,114 @@ const CGFloat kFeedsWidth = 70.0;
                                 kGapBorderWidth + kHighlightBorderWidth);
 
     [self setupContentView:self.innerContentView];
+
+    [self registerForTraitChanges:
+              @[ NewTabPageTrait.class, NewTabPageImageBackgroundTrait.class ]
+                       withAction:@selector(applyTheme)];
+
+    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                       withAction:@selector(updateCGColors)];
+    [self updateCGColors];
   }
   return self;
 }
 
-- (void)setupContentView:(UIStackView*)contentView {
-  contentView.backgroundColor = [UIColor colorNamed:@"ntp_background_color"];
+- (void)prepareForReuse {
+  [super prepareForReuse];
 
+  // Clear any trait overrides.
+  CustomUITraitAccessor* traitAccessor =
+      [[CustomUITraitAccessor alloc] initWithMutableTraits:self.traitOverrides];
+  [traitAccessor setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
+  [traitAccessor
+      setBoolForNewTabPageImageBackgroundTrait:[NewTabPageImageBackgroundTrait
+                                                   defaultValue]];
+
+  [_backgroundImageView setImage:nil framingCoordinates:nil];
+  _backgroundConfiguration = nil;
+  [_logoView removeFromSuperview];
+  _logoView = nil;
+}
+
+- (void)setupContentView:(UIStackView*)contentView {
   UIView* spacerView = [[UIView alloc] init];
   spacerView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  UIView* omniboxView =
+  _omniboxView =
       [self createContentViewWithBackgroundColor:
                 [UIColor colorNamed:kMiniFakeOmniboxBackgroundColor]
                                     cornerRadius:kOmniboxCornerRadius];
-  UIView* magicStackView = [self
-      createContentViewWithBackgroundColor:[[UIColor
-                                               colorNamed:kBackgroundColor]
-                                               colorWithAlphaComponent:0.6]
-                              cornerRadius:kSmallCornerRadius];
-  UIView* feedsView = [self
-      createContentViewWithBackgroundColor:[[UIColor
-                                               colorNamed:kBackgroundColor]
-                                               colorWithAlphaComponent:0.6]
-                              cornerRadius:kSmallCornerRadius];
+  _magicStackView =
+      [self createContentViewWithBackgroundColor:
+                [[UIColor colorNamed:kBackgroundColor]
+                    colorWithAlphaComponent:kAlphaValueWhenImageBackround]
+                                    cornerRadius:kSmallCornerRadius];
+  _feedsView =
+      [self createContentViewWithBackgroundColor:
+                [[UIColor colorNamed:kBackgroundColor]
+                    colorWithAlphaComponent:kAlphaValueWhenImageBackround]
+                                    cornerRadius:kSmallCornerRadius];
 
   [contentView addArrangedSubview:spacerView];
-  [contentView addArrangedSubview:omniboxView];
-  [contentView addArrangedSubview:magicStackView];
-  [contentView addArrangedSubview:feedsView];
+  [contentView addArrangedSubview:_omniboxView];
+  [contentView addArrangedSubview:_magicStackView];
+  [contentView addArrangedSubview:_feedsView];
 
-  [contentView setCustomSpacing:kMagicStackTopMargin afterView:omniboxView];
-  [contentView setCustomSpacing:kFeedsTopMargin afterView:magicStackView];
+  [contentView setCustomSpacing:kMagicStackTopMargin afterView:_omniboxView];
+  [contentView setCustomSpacing:kFeedsTopMargin afterView:_magicStackView];
 
   [NSLayoutConstraint activateConstraints:@[
     [spacerView.heightAnchor constraintEqualToAnchor:contentView.heightAnchor
                                           multiplier:kLogoTopMultiplier],
 
-    [omniboxView.widthAnchor constraintEqualToConstant:kOmniboxWidth],
-    [omniboxView.heightAnchor constraintEqualToConstant:kOmniboxHeight],
+    [_omniboxView.widthAnchor constraintEqualToConstant:kOmniboxWidth],
+    [_omniboxView.heightAnchor constraintEqualToConstant:kOmniboxHeight],
 
-    [magicStackView.widthAnchor constraintEqualToConstant:kMagicStackWidth],
-    [magicStackView.heightAnchor constraintEqualToConstant:kMagicStackHeight],
+    [_magicStackView.widthAnchor constraintEqualToConstant:kMagicStackWidth],
+    [_magicStackView.heightAnchor constraintEqualToConstant:kMagicStackHeight],
 
-    [feedsView.widthAnchor constraintEqualToConstant:kFeedsWidth],
-    [feedsView.heightAnchor constraintEqualToConstant:kFeedsHeight]
+    [_feedsView.widthAnchor constraintEqualToConstant:kFeedsWidth],
+    [_feedsView.heightAnchor constraintEqualToConstant:kFeedsHeight]
   ]];
 }
 
 - (void)configureWithBackgroundOption:
             (id<BackgroundCustomizationConfiguration>)option
-                           logoVendor:(id<LogoVendor>)logoVendor
-                         colorPalette:(NewTabPageColorPalette*)colorPalette {
+             searchEngineLogoMediator:
+                 (SearchEngineLogoMediator*)searchEngineLogoMediator {
   if (_backgroundConfiguration) {
     return;
   }
 
-  BOOL imageBackground = !option.thumbnailURL.is_empty();
+  if (searchEngineLogoMediator && searchEngineLogoMediator.view) {
+    _logoView = searchEngineLogoMediator.view;
+    _logoView.translatesAutoresizingMaskIntoConstraints = NO;
+    _logoView.userInteractionEnabled = NO;
 
-  logoVendor.usesMonochromeLogo = colorPalette || imageBackground;
-  UIView* logoView = logoVendor.view;
-  logoView.translatesAutoresizingMaskIntoConstraints = NO;
+    // Insert the logo view right after the spacer.
+    [self.innerContentView insertArrangedSubview:_logoView atIndex:1];
 
-  // Change the tint of the logo based on the background.
-  if (imageBackground) {
-    logoView.tintColor = [UIColor whiteColor];
-  } else if (colorPalette) {
-    logoView.tintColor = colorPalette.tintColor;
+    [NSLayoutConstraint activateConstraints:@[
+      [_logoView.widthAnchor constraintEqualToConstant:kLogoWidth],
+      [_logoView.heightAnchor constraintEqualToConstant:kLogoHeight],
+    ]];
+
+    [self.innerContentView setCustomSpacing:kOmniboxTopMargin
+                                  afterView:_logoView];
   }
 
-  // Insert the logo view right after the spacer.
-  [self.innerContentView insertArrangedSubview:logoView atIndex:1];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [logoView.widthAnchor constraintEqualToConstant:kLogoWidth],
-    [logoView.heightAnchor constraintEqualToConstant:kLogoHeight],
-  ]];
-
-  [self.innerContentView setCustomSpacing:kOmniboxTopMargin afterView:logoView];
-
   _backgroundConfiguration = option;
+  _searchEngineLogoMediator = searchEngineLogoMediator;
+  self.accessibilityLabel = option.accessibilityName;
+  self.accessibilityValue = option.accessibilityValue;
+
+  [self applyTheme];
 }
 
-- (void)updateBackgroundImage:(UIImage*)image {
-  [_backgroundImageView setImage:image];
+- (void)updateBackgroundImage:(UIImage*)image
+           framingCoordinates:
+               (HomeCustomizationFramingCoordinates*)framingCoordinates {
+  [_backgroundImageView setImage:image framingCoordinates:framingCoordinates];
 }
 
 #pragma mark - Setters
@@ -261,6 +301,54 @@ const CGFloat kFeedsWidth = 70.0;
   view.backgroundColor = backgroundColor;
   view.layer.cornerRadius = cornerRadius;
   return view;
+}
+
+// Updates all view state to match the current theme.
+- (void)applyTheme {
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForNewTabPageTrait];
+  BOOL hasImageBackground =
+      [self.traitCollection boolForNewTabPageImageBackgroundTrait];
+
+  UIView* logoView = _searchEngineLogoMediator.view;
+
+  if (hasImageBackground) {
+    _searchEngineLogoMediator.usesMonochromeLogo = YES;
+    logoView.tintColor = [UIColor whiteColor];
+    _omniboxView.backgroundColor =
+        [UIColor colorNamed:kMiniFakeOmniboxBackgroundColor];
+    _magicStackView.backgroundColor = [[UIColor colorNamed:kBackgroundColor]
+        colorWithAlphaComponent:kAlphaValueWhenImageBackround];
+    _feedsView.backgroundColor = [[UIColor colorNamed:kBackgroundColor]
+        colorWithAlphaComponent:kAlphaValueWhenImageBackround];
+    return;
+  }
+
+  if (colorPalette) {
+    _searchEngineLogoMediator.usesMonochromeLogo = YES;
+    logoView.tintColor = colorPalette.tintColor;
+    self.innerContentView.backgroundColor = colorPalette.primaryColor;
+    _omniboxView.backgroundColor = colorPalette.omniboxColor;
+    _magicStackView.backgroundColor = colorPalette.secondaryCellColor;
+    _feedsView.backgroundColor = colorPalette.secondaryCellColor;
+    return;
+  }
+
+  _searchEngineLogoMediator.usesMonochromeLogo = NO;
+  logoView.tintColor = nil;
+  self.innerContentView.backgroundColor =
+      [UIColor colorNamed:@"ntp_background_color"];
+  _omniboxView.backgroundColor =
+      [UIColor colorNamed:kMiniFakeOmniboxBackgroundColor];
+  _magicStackView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  _feedsView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+}
+
+// Updates CGColors when the user interface style changes, as they do not
+// update automatically.
+- (void)updateCGColors {
+  self.innerContentView.layer.borderColor =
+      [UIColor colorNamed:kGrey200Color].CGColor;
 }
 
 @end

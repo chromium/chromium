@@ -129,6 +129,8 @@ enum DistanceMetric {
   DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING,
   // Horizontal spacing between controls that are logically unrelated.
   DISTANCE_UNRELATED_CONTROL_HORIZONTAL,
+  // Horizontal padding for the infobar container.
+  DISTANCE_UNRELATED_INFOBAR_CONTAINER_HORIZONTAL,
   // Vertical spacing between controls that are logically unrelated.
   DISTANCE_UNRELATED_CONTROL_VERTICAL,
   // Padding in vector icons. This is a general number for more vector icons.
@@ -175,8 +177,9 @@ enum class ShapeContextTokens {
   kMenuTouchRadius,
   kOmniboxExpandedRadius,
   kTextfieldRadius,
+  kToolbarHeightSidePanelContentRadius,
   kSidePanelContentRadius,
-  kSidePanelPageContentRadius,
+  kContentSeparatorRadius,
 };
 
 // ShapeSysTokens are tokens that map to a fixed value that aligns with UX/UI.

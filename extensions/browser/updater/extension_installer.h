@@ -46,8 +46,6 @@ class ExtensionInstaller : public update_client::CrxInstaller {
   ExtensionInstaller& operator=(const ExtensionInstaller&) = delete;
 
   // update_client::CrxInstaller::
-  void OnUpdateError(int error) override;
-
   // This function is executed by the component update client, which runs on a
   // blocking thread with background priority.
   // |update_client_callback| is expected to be called on a UI thread.

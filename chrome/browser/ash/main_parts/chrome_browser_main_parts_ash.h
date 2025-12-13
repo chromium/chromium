@@ -10,16 +10,16 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ash/external_metrics/external_metrics.h"
-#include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
 #include "chrome/browser/ash/performance/doze_mode_power_status_scheduler.h"
 #include "chrome/browser/chrome_browser_main_linux.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
+#include "chromeos/ash/components/pcie_peripheral/ash_usb_detector.h"
+#include "chromeos/ash/experiences/arc/arc_platform_support_impl.h"
+#include "printing/buildflags/buildflags.h"  // USE_CUPS
 
 class AmbientClientImpl;
 class AssistantBrowserDelegateImpl;
-class AssistantStateClient;
 class ChromeKeyboardControllerClient;
 class ImageDownloaderImpl;
 class LobsterClientFactoryImpl;
@@ -80,7 +80,6 @@ class LoginScreenExtensionsStorageCleaner;
 class LowDiskNotification;
 class AuthEventsRecorder;
 class MagicBoostControllerAsh;
-class MultiCaptureNotifications;
 class NetworkChangeManagerClient;
 class NetworkPrefStateObserver;
 class NetworkThrottlingObserver;
@@ -99,6 +98,10 @@ class VideoConferenceAshFeatureClient;
 class DozeModePowerStatusScheduler;
 class UserLoginPermissionTracker;
 
+#if BUILDFLAG(USE_CUPS)
+class LocalPrinter;
+#endif
+
 namespace carrier_lock {
 class CarrierLockManager;
 }
@@ -107,12 +110,12 @@ namespace cros_healthd::internal {
 class DataCollector;
 }
 
-namespace file_manager {
-class FileIndexServiceRegistry;
-}
-
 namespace internal {
 class DBusServices;
+}
+
+namespace parent_access {
+class ParentAccessService;
 }
 
 namespace platform_keys {
@@ -156,6 +159,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   int PreEarlyInitialization() override;
   void PreCreateMainMessageLoop() override;
   void PostCreateMainMessageLoop() override;
+  int PreCreateThreads() override;
   int PreMainMessageLoopRun() override;
 
   // Stages called from PreMainMessageLoopRun.
@@ -185,9 +189,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<HatsBluetoothRevampTriggerImpl>
       hats_bluetooth_revamp_trigger_;
 
-  std::unique_ptr<::ash::file_manager::FileIndexServiceRegistry>
-      file_index_service_registry_;
-
   std::unique_ptr<internal::DBusServices> dbus_services_;
 
   base::ScopedClosureRunner mojo_service_manager_closer_;
@@ -214,17 +215,15 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       doze_mode_power_status_scheduler_;
 
   std::unique_ptr<arc::ArcServiceLauncher> arc_service_launcher_;
+  std::unique_ptr<arc::ArcPlatformSupportImpl> arc_platform_support_;
 
   std::unique_ptr<ImageDownloaderImpl> image_downloader_;
-
-  std::unique_ptr<AssistantStateClient> assistant_state_client_;
 
   std::unique_ptr<AssistantBrowserDelegateImpl> assistant_delegate_;
 
   std::unique_ptr<LowDiskNotification> low_disk_notification_;
   std::unique_ptr<KioskController> kiosk_controller_;
   std::unique_ptr<AmbientClientImpl> ambient_client_;
-  std::unique_ptr<MultiCaptureNotifications> multi_capture_notifications_;
 
   std::unique_ptr<ShortcutMappingPrefService> shortcut_mapping_pref_service_;
   std::unique_ptr<ChromeKeyboardControllerClient>
@@ -310,6 +309,12 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<MisconfiguredUserCleaner> misconfigured_user_cleaner_;
 
   std::unique_ptr<ash::MagicBoostControllerAsh> magic_boost_controller_ash_;
+
+  std::unique_ptr<parent_access::ParentAccessService> parent_access_service_;
+
+#if BUILDFLAG(USE_CUPS)
+  std::unique_ptr<ash::LocalPrinter> local_printer_;
+#endif
 
   base::WeakPtrFactory<ChromeBrowserMainPartsAsh> weak_ptr_factory_{this};
 };

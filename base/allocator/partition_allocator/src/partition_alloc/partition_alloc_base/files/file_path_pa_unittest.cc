@@ -6,6 +6,7 @@
 #include <sstream>
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/files/file_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -113,13 +114,15 @@ TEST(PartitionAllocBaseFilePathTest, Append) {
   };
 
   for (size_t i = 0; i < std::size(cases); ++i) {
-    FilePath root(cases[i].inputs[0]);
-    FilePath::StringType leaf(cases[i].inputs[1]);
+    FilePath root(PA_UNSAFE_TODO(cases[i]).inputs[0]);
+    FilePath::StringType leaf(PA_UNSAFE_TODO(cases[i]).inputs[1]);
     FilePath observed_str = root.Append(leaf);
-    EXPECT_EQ(FilePath::StringType(cases[i].expected), observed_str.value())
+    PA_UNSAFE_TODO(EXPECT_EQ(FilePath::StringType(cases[i].expected),
+                             observed_str.value()))
         << "i: " << i << ", root: " << root.value() << ", leaf: " << leaf;
     FilePath observed_path = root.Append(FilePath(leaf));
-    EXPECT_EQ(FilePath::StringType(cases[i].expected), observed_path.value())
+    PA_UNSAFE_TODO(EXPECT_EQ(FilePath::StringType(cases[i].expected),
+                             observed_path.value()))
         << "i: " << i << ", root: " << root.value() << ", leaf: " << leaf;
   }
 }

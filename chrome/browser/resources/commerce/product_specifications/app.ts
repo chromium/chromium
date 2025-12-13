@@ -10,8 +10,10 @@ import './product_selector.js';
 import './table.js';
 import './horizontal_carousel.js';
 import './comparison_table_list.js';
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import './shared_vars.css.js';
 
@@ -27,7 +29,7 @@ import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
@@ -709,6 +711,10 @@ export class ProductSpecificationsElement extends CrLitElement {
       case SectionType.SUGGESTED:
         recordValue = CompareTableColumnAction.ADD_FROM_SUGGESTED;
         break;
+      case SectionType.NONE:
+        break;
+      default:
+        assertNotReachedCase(e.detail.urlSection);
     }
     chrome.metricsPrivate.recordEnumerationValue(
         COLUMN_MODIFICATION_HISTOGRAM_NAME, recordValue,
@@ -748,6 +754,10 @@ export class ProductSpecificationsElement extends CrLitElement {
       case SectionType.SUGGESTED:
         recordValue = CompareTableColumnAction.UPDATE_FROM_SUGGESTED;
         break;
+      case SectionType.NONE:
+        break;
+      default:
+        assertNotReachedCase(e.detail.urlSection);
     }
     chrome.metricsPrivate.recordEnumerationValue(
         COLUMN_MODIFICATION_HISTOGRAM_NAME, recordValue,
@@ -919,6 +929,8 @@ export class ProductSpecificationsElement extends CrLitElement {
         this.shoppingApi_.setProductSpecificationsUserFeedback(
             UserFeedback.kThumbsDown);
         return;
+      default:
+        assertNotReachedCase(e.detail.value);
     }
   }
 

@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerBrowserTest, EnumerationTest) {
     EXPECT_LT(0, result.ExtractInt())
         << "Enumeration should return at least one font on supported OS.";
   } else {
-    EXPECT_TRUE(!result.error.empty());
+    EXPECT_TRUE(!result.is_ok());
   }
 }
 
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerBrowserTest,
     EXPECT_EQ(0, result.ExtractInt())
         << "Enumeration should return no fonts for an invalid postscriptName.";
   } else {
-    EXPECT_TRUE(!result.error.empty());
+    EXPECT_TRUE(!result.is_ok());
   }
 }
 

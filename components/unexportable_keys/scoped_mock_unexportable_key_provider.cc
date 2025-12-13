@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ref.h"
 #include "components/unexportable_keys/mock_unexportable_key.h"
 #include "crypto/unexportable_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -18,56 +19,55 @@ namespace {
 
 ScopedMockUnexportableKeyProvider* g_mock_provider = nullptr;
 
-class MockUnexportableKeyProvider : public crypto::UnexportableKeyProvider {
+class ForwardingUnexportableKeyProvider
+    : public crypto::UnexportableKeyProvider {
  public:
-  MockUnexportableKeyProvider();
-  ~MockUnexportableKeyProvider() override;
+  explicit ForwardingUnexportableKeyProvider(
+      crypto::UnexportableKeyProvider& provider)
+      : provider_(provider) {}
+  ~ForwardingUnexportableKeyProvider() override = default;
 
   // crypto::UnexportableKeyProvider:
   std::optional<crypto::SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
       base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override;
+          acceptable_algorithms) override {
+    return provider_->SelectAlgorithm(acceptable_algorithms);
+  }
+
   std::unique_ptr<crypto::UnexportableSigningKey> GenerateSigningKeySlowly(
       base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override;
+          acceptable_algorithms) override {
+    return provider_->GenerateSigningKeySlowly(acceptable_algorithms);
+  }
+
   std::unique_ptr<crypto::UnexportableSigningKey> FromWrappedSigningKeySlowly(
-      base::span<const uint8_t> wrapped_key) override;
-  bool DeleteSigningKeySlowly(base::span<const uint8_t> wrapped_key) override;
+      base::span<const uint8_t> wrapped_key) override {
+    return provider_->FromWrappedSigningKeySlowly(wrapped_key);
+  }
+
+  crypto::StatefulUnexportableKeyProvider* AsStatefulUnexportableKeyProvider()
+      override {
+    return provider_->AsStatefulUnexportableKeyProvider();
+  }
+
+ private:
+  const raw_ref<crypto::UnexportableKeyProvider> provider_;
 };
 
-MockUnexportableKeyProvider::MockUnexportableKeyProvider() = default;
-MockUnexportableKeyProvider::~MockUnexportableKeyProvider() = default;
-
-std::optional<crypto::SignatureVerifier::SignatureAlgorithm>
-MockUnexportableKeyProvider::SelectAlgorithm(
-    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms) {
-  if (acceptable_algorithms.empty()) {
-    return std::nullopt;
-  }
-  return acceptable_algorithms.front();
-}
-
-std::unique_ptr<crypto::UnexportableSigningKey>
-MockUnexportableKeyProvider::GenerateSigningKeySlowly(
-    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms) {
-  return g_mock_provider->GetNextGeneratedKey();
-}
-
-std::unique_ptr<crypto::UnexportableSigningKey>
-MockUnexportableKeyProvider::FromWrappedSigningKeySlowly(
-    base::span<const uint8_t> wrapped_key) {
-  return g_mock_provider->GetNextGeneratedKey();
-}
-
-bool MockUnexportableKeyProvider::DeleteSigningKeySlowly(
-    base::span<const uint8_t> wrapped_key) {
-  return true;
-}
-
 std::unique_ptr<crypto::UnexportableKeyProvider> GetMockKeyProvider() {
-  return std::make_unique<MockUnexportableKeyProvider>();
+  return std::make_unique<ForwardingUnexportableKeyProvider>(
+      g_mock_provider->mock());
+}
+
+std::unique_ptr<crypto::UnexportableSigningKey> GetNextGeneratedKey(
+    base::queue<std::unique_ptr<crypto::UnexportableSigningKey>>&
+        next_generated_keys) {
+  std::unique_ptr<crypto::UnexportableSigningKey> next_generated_key;
+  if (!next_generated_keys.empty()) {
+    next_generated_key = std::move(next_generated_keys.front());
+    next_generated_keys.pop();
+  }
+  return next_generated_key;
 }
 
 }  // namespace
@@ -78,6 +78,20 @@ ScopedMockUnexportableKeyProvider::ScopedMockUnexportableKeyProvider() {
   // the `next_generated_keys_` queue.
   g_mock_provider = this;
   crypto::internal::SetUnexportableKeyProviderForTesting(&GetMockKeyProvider);
+
+  ON_CALL(mock_provider_, SelectAlgorithm)
+      .WillByDefault(
+          [](base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+                 algorithms) {
+            return algorithms.empty() ? std::nullopt
+                                      : std::optional(algorithms[0]);
+          });
+  ON_CALL(mock_provider_, GenerateSigningKeySlowly).WillByDefault([this](auto) {
+    return GetNextGeneratedKey(next_generated_keys_);
+  });
+  ON_CALL(mock_provider_, FromWrappedSigningKeySlowly)
+      .WillByDefault(
+          [this](auto) { return GetNextGeneratedKey(next_generated_keys_); });
 }
 
 ScopedMockUnexportableKeyProvider::~ScopedMockUnexportableKeyProvider() {
@@ -88,16 +102,6 @@ ScopedMockUnexportableKeyProvider::~ScopedMockUnexportableKeyProvider() {
 void ScopedMockUnexportableKeyProvider::AddNextGeneratedKey(
     std::unique_ptr<crypto::UnexportableSigningKey> key) {
   next_generated_keys_.push(std::move(key));
-}
-
-std::unique_ptr<crypto::UnexportableSigningKey>
-ScopedMockUnexportableKeyProvider::GetNextGeneratedKey() {
-  std::unique_ptr<crypto::UnexportableSigningKey> next_generated_key;
-  if (!next_generated_keys_.empty()) {
-    next_generated_key = std::move(next_generated_keys_.front());
-    next_generated_keys_.pop();
-  }
-  return next_generated_key;
 }
 
 }  // namespace unexportable_keys

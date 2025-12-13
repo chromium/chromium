@@ -133,9 +133,10 @@ class MEDIA_EXPORT MediaCodecAudioDecoder : public AudioDecoder,
   void SetCdm(CdmContext* cdm_context, InitCB init_cb);
 
   // This callback is called after CDM obtained a MediaCrypto object.
-  void OnMediaCryptoReady(InitCB init_cb,
-                          JavaObjectPtr media_crypto,
-                          bool requires_secure_video_codec);
+  void OnMediaCryptoReady(
+      InitCB init_cb,
+      base::android::ScopedJavaGlobalRef<jobject> media_crypto,
+      bool requires_secure_video_codec);
 
   // Callback for the CDM to notify |this|.
   void OnCdmContextEvent(CdmContext::Event event);
@@ -210,7 +211,7 @@ class MEDIA_EXPORT MediaCodecAudioDecoder : public AudioDecoder,
 
   // The MediaCrypto object is used in the MediaCodec.configure() in case of
   // an encrypted stream.
-  JavaObjectPtr media_crypto_;
+  base::android::ScopedJavaGlobalRef<jobject> media_crypto_;
 
   base::WeakPtrFactory<MediaCodecAudioDecoder> weak_factory_{this};
 };

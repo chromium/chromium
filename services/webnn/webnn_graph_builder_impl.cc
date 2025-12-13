@@ -14,12 +14,15 @@
 #include "base/memory/stack_allocated.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/types/expected.h"
+#include "base/types/fixed_array.h"
 #include "base/types/pass_key.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_constant_operand.h"
@@ -28,6 +31,11 @@
 #include "services/webnn/webnn_pending_constant_operand.h"
 #include "services/webnn/webnn_tensor_impl.h"
 #include "services/webnn/webnn_utils.h"
+#include "third_party/tflite/buildflags.h"
+
+#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+#include "third_party/xnnpack/src/include/xnnpack.h"  // nogncheck
+#endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
 
 // Evaluate `condition`, and if it returns false then return false.
 #define RETURN_IF_FALSE(condition) \
@@ -39,6 +47,12 @@
 namespace webnn {
 
 namespace {
+
+#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+// Use XNNPACK to accelerate TransposePendingPermutation.
+BASE_FEATURE(kWebNNUseXNNPackForConstantTransposeFolding,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
 
 using DependentOperationsMap =
     base::flat_map<OperandId, base::flat_set<OperationId>>;
@@ -102,16 +116,13 @@ webnn::PaddingMode MojoPaddingModeToComponent(const mojom::PaddingMode& mode) {
   }
 }
 
-bool ValidateClampAttributes(const mojom::Clamp& clamp) {
-  if (std::isnan(clamp.min_value) || std::isnan(clamp.max_value)) {
-    // The min or max value are nan.
+bool ValidateClampAttributes(const mojom::Clamp& clamp,
+                             webnn::OperandDataType data_type) {
+  if (clamp.min_value.IsNaN() || clamp.max_value.IsNaN()) {
     return false;
   }
-  if (clamp.min_value >= clamp.max_value) {
-    // The min value must be below the max value.
-    return false;
-  }
-  return true;
+
+  return !clamp.min_value.IsGreaterThan(clamp.max_value, data_type);
 }
 
 bool ValidateEluAttributes(const mojom::Elu& elu) {
@@ -822,6 +833,20 @@ bool OperationValidationContext::ValidateUnaryOperation(
     // The data type is not in the constraint.
     return false;
   }
+
+  if constexpr (std::is_same_v<Operation, mojom::ElementWiseUnary>) {
+    if (IsLogicalElementWiseUnary(operation.kind)) {
+      // For logical unary operations, output must be uint8 but shape should
+      // match input.
+      if (output->descriptor.data_type() != OperandDataType::kUint8) {
+        return false;
+      }
+      return output->descriptor.shape() == input->descriptor.shape();
+    }
+  }
+
+  // For all other operations, output descriptor should match input descriptor
+  // exactly.
   return output->descriptor == input->descriptor;
 }
 
@@ -959,7 +984,8 @@ bool OperationValidationContext::ValidateClamp(const mojom::Clamp& clamp,
                               operation_id)) {
     return false;
   }
-  if (!ValidateClampAttributes(clamp)) {
+  const auto* input = GetMojoOperand(clamp.input_operand_id);
+  if (!ValidateClampAttributes(clamp, input->descriptor.data_type())) {
     return false;
   }
 
@@ -1299,6 +1325,14 @@ bool OperationValidationContext::ValidateElementWiseUnary(
       return ValidateUnaryOperation(
           operation, context_properties_->data_type_limits.log_input,
           operation_id);
+    case mojom::ElementWiseUnary::Kind::kIsNaN:
+      return ValidateUnaryOperation(
+          operation, context_properties_->data_type_limits.is_nan_input,
+          operation_id);
+    case mojom::ElementWiseUnary::Kind::kIsInfinite:
+      return ValidateUnaryOperation(
+          operation, context_properties_->data_type_limits.is_infinite_input,
+          operation_id);
     case mojom::ElementWiseUnary::Kind::kLogicalNot:
       return ValidateUnaryOperation(
           operation, context_properties_->data_type_limits.logical_not_input,
@@ -1310,6 +1344,10 @@ bool OperationValidationContext::ValidateElementWiseUnary(
     case mojom::ElementWiseUnary::Kind::kReciprocal:
       return ValidateUnaryOperation(
           operation, context_properties_->data_type_limits.reciprocal_input,
+          operation_id);
+    case mojom::ElementWiseUnary::Kind::kRoundEven:
+      return ValidateUnaryOperation(
+          operation, context_properties_->data_type_limits.round_even_input,
           operation_id);
     case mojom::ElementWiseUnary::Kind::kSign:
       return ValidateUnaryOperation(
@@ -2203,6 +2241,10 @@ bool OperationValidationContext::ValidateReshape(const mojom::Reshape& reshape,
           input->descriptor)) {
     return false;
   }
+  if (!context_properties_->data_type_limits.reshape_input.ranks.Supports(
+          output->descriptor.Rank())) {
+    return false;
+  }
   if (output->descriptor.data_type() != input->descriptor.data_type()) {
     return false;
   }
@@ -2692,6 +2734,143 @@ bool OperationValidationContext::ValidateOperation(
   }
 }
 
+uint32_t GetLinearOffset(base::span<const uint32_t> multi_dim_index,
+                         base::span<const uint32_t> strides) {
+  uint32_t offset = 0;
+  for (uint32_t i = 0; i < multi_dim_index.size(); ++i) {
+    offset += multi_dim_index[i] * strides[i];
+  }
+  return offset;
+}
+
+base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
+TransposePendingPermutation(
+    base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&&
+        constant_operands) {
+  ScopedTrace scoped_trace("TransposePendingPermutation");
+  for (auto& [operand_id, constant] : constant_operands) {
+    if (constant->descriptor().pending_permutation().empty()) {
+      continue;
+    }
+    base::span<const uint8_t> data = constant->ByteSpan();
+    auto& descriptor = constant->descriptor();
+    uint32_t rank = descriptor.Rank();
+    auto& permutation = descriptor.pending_permutation();
+    CHECK_EQ(rank, permutation.size());
+
+    // TODO(crbug.com/428232161): Support sub-byte transposes.
+    size_t bit_size =
+        OperandDescriptor::GetBitsPerElement(descriptor.data_type());
+    CHECK_GE(bit_size, 8u);
+
+    size_t element_size = bit_size / 8;
+
+    base::FixedArray<uint32_t> inverse_permutation(rank);
+    for (size_t i = 0; i < rank; ++i) {
+      inverse_permutation[permutation[i]] = i;
+    }
+    auto& transposed_shape = descriptor.shape();
+    base::FixedArray<uint32_t> original_shape(rank);
+    for (size_t i = 0; i < rank; ++i) {
+      original_shape[i] = descriptor.shape()[inverse_permutation[i]];
+    }
+
+    std::vector<uint32_t> original_strides = CalculateStrides(original_shape);
+    std::vector<uint32_t> transposed_strides =
+        CalculateStrides(transposed_shape);
+
+    // Current logical index in transposed tensor.
+    base::FixedArray<uint32_t> transposed_idx(rank, 0);
+    base::FixedArray<uint32_t> original_idx(rank);
+
+    auto transposed_data = base::HeapArray<uint8_t>::Uninit(data.size());
+
+    bool use_xnnpack = false;
+#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+    if (base::FeatureList::IsEnabled(
+            kWebNNUseXNNPackForConstantTransposeFolding)) {
+      use_xnnpack = true;
+    }
+#endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+
+    if (use_xnnpack) {
+#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+      base::FixedArray<size_t> shape(rank);
+      base::FixedArray<size_t> perm(rank);
+
+      // Use the original shape (not the transposed shape) for XNNPack.
+      for (uint32_t i = 0; i < rank; ++i) {
+        shape[i] = original_shape[i];
+        perm[i] = permutation[i];
+      }
+
+      switch (element_size) {
+        case 1: {
+          xnn_status status =
+              xnn_run_transpose_nd_x8(data.data(), transposed_data.data(), rank,
+                                      shape.data(), perm.data(), 0, nullptr);
+          CHECK_EQ(status, xnn_status_success);
+          break;
+        }
+        case 2: {
+          xnn_status status = xnn_run_transpose_nd_x16(
+              data.data(), transposed_data.data(), rank, shape.data(),
+              perm.data(), 0, nullptr);
+          CHECK_EQ(status, xnn_status_success);
+          break;
+        }
+        case 4: {
+          xnn_status status = xnn_run_transpose_nd_x32(
+              data.data(), transposed_data.data(), rank, shape.data(),
+              perm.data(), 0, nullptr);
+          CHECK_EQ(status, xnn_status_success);
+          break;
+        }
+        case 8: {
+          xnn_status status = xnn_run_transpose_nd_x64(
+              data.data(), transposed_data.data(), rank, shape.data(),
+              perm.data(), 0, nullptr);
+          CHECK_EQ(status, xnn_status_success);
+          break;
+        }
+        default:
+          NOTREACHED() << "Unsupported element size: " << element_size;
+      }
+#endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+    } else {
+      base::span<uint8_t> transposed_span = transposed_data.as_span();
+
+      // Loop through all elements in the transposed tensor.
+      for (size_t i = 0; i < descriptor.NumberOfElements(); ++i) {
+        for (size_t d = 0; d < rank; ++d) {
+          original_idx[d] = transposed_idx[inverse_permutation[d]];
+        }
+
+        uint32_t original_offset =
+            GetLinearOffset(original_idx, original_strides);
+        uint32_t transposed_offset =
+            GetLinearOffset(transposed_idx, transposed_strides);
+
+        transposed_span.subspan(transposed_offset * element_size, element_size)
+            .copy_from(
+                data.subspan(original_offset * element_size, element_size));
+
+        for (int dimension = rank - 1; dimension >= 0; --dimension) {
+          transposed_idx[dimension]++;
+          if (transposed_idx[dimension] < transposed_shape[dimension]) {
+            // Not overflowed, continue to next element.
+            break;
+          }
+          // Reset and carry over.
+          transposed_idx[dimension] = 0;
+        }
+      }
+    }
+    constant->SetData(std::move(transposed_data));
+  }
+  return std::move(constant_operands);
+}
+
 }  // namespace
 
 WebNNGraphBuilderImpl::ValidateGraphSuccessResult::ValidateGraphSuccessResult(
@@ -2781,16 +2960,17 @@ void WebNNGraphBuilderImpl::CreateGraph(mojom::GraphInfoPtr graph_info,
     return;
   }
 
-  mojo::PendingAssociatedRemote<mojom::WebNNGraph> remote;
-  auto receiver = remote.InitWithNewEndpointAndPassReceiver();
-  context_->CreateGraphImpl(
-      std::move(receiver), std::move(graph_info),
-      std::move(validate_graph_result->compute_resource_info),
-      std::move(validate_graph_result->constant_operands),
-      std::move(validate_graph_result->constant_tensor_operands),
-      base::BindOnce(&WebNNGraphBuilderImpl::DidCreateGraph,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(remote)));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
+      base::BindOnce(&TransposePendingPermutation,
+                     std::move(validate_graph_result->constant_operands)),
+      base::BindOnce(&WebNNGraphBuilderImpl::DidTransposePendingPermutations,
+                     weak_factory_.GetWeakPtr(), std::move(graph_info),
+                     std::move(validate_graph_result->compute_resource_info),
+                     std::move(validate_graph_result->constant_tensor_operands),
+                     std::move(callback)));
 }
 
 void WebNNGraphBuilderImpl::SetId(
@@ -2809,10 +2989,31 @@ void WebNNGraphBuilderImpl::IsValidGraphForTesting(
           .has_value());
 }
 
+void WebNNGraphBuilderImpl::DidTransposePendingPermutations(
+    mojom::GraphInfoPtr graph_info,
+    WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+    base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
+    CreateGraphCallback callback,
+    base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&&
+        constant_operands) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  mojo::PendingAssociatedRemote<mojom::WebNNGraph> remote;
+  auto receiver = remote.InitWithNewEndpointAndPassReceiver();
+
+  context_->CreateGraphImpl(
+      std::move(receiver), std::move(graph_info),
+      std::move(compute_resource_info), std::move(constant_operands),
+      std::move(constant_tensor_operands),
+      base::BindOnce(&WebNNGraphBuilderImpl::DidCreateGraph,
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(remote)));
+}
+
 void WebNNGraphBuilderImpl::DidCreateGraph(
     CreateGraphCallback callback,
     mojo::PendingAssociatedRemote<mojom::WebNNGraph> remote,
-    base::expected<std::unique_ptr<WebNNGraphImpl>, mojom::ErrorPtr> result) {
+    base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Ensure `this` is destroyed.
@@ -2897,8 +3098,8 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
           // Input names must be unique.
           return std::nullopt;
         }
-        if (!context_properties.data_type_limits.input.Has(
-                operand->descriptor.data_type())) {
+        if (!context_properties.data_type_limits.input.Supports(
+                operand->descriptor)) {
           // Input data type not supported.
           return std::nullopt;
         }
@@ -2918,8 +3119,8 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
             // Output names must be unique.
             return std::nullopt;
           }
-          if (!context_properties.data_type_limits.input.Has(
-                  operand->descriptor.data_type())) {
+          if (!context_properties.data_type_limits.input.Supports(
+                  operand->descriptor)) {
             // Output data type not supported.
             return std::nullopt;
           }
@@ -2942,9 +3143,9 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
             id_and_handle_it !=
             graph_info.id_to_constant_tensor_operand_map.end()) {
           // `id` must correspond to a handle known by the context...
-          base::optional_ref<WebNNTensorImpl> tensor_impl =
+          scoped_refptr<WebNNTensorImpl> tensor_impl =
               context_->GetWebNNTensorImpl(id_and_handle_it->second);
-          if (!tensor_impl.has_value()) {
+          if (!tensor_impl) {
             return std::nullopt;
           }
 
@@ -2958,7 +3159,7 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
             return std::nullopt;
           }
 
-          graph_constant_tensors.emplace_back(operand_id, tensor_impl.as_ptr());
+          graph_constant_tensors.emplace_back(operand_id, tensor_impl.get());
           processed_operands.insert(operand_id);
           break;
         }
@@ -3052,7 +3253,6 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
   if (!result.has_value()) {
     return std::nullopt;
   }
-
 
   // Now that all the operations have been processed we can check that all the
   // operands are connected to the graph inputs and outputs.

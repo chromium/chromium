@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_UNSET_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_UNSET_VALUE_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
@@ -23,7 +22,7 @@ class CORE_EXPORT CSSUnsetValue : public CSSValue {
 
   explicit CSSUnsetValue(base::PassKey<CSSValuePool>) : CSSValue(kUnsetClass) {}
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
 
   bool Equals(const CSSUnsetValue&) const { return true; }
 

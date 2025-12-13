@@ -1,7 +1,7 @@
 Name: siso
 Short Name: siso
-URL: https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/build/siso/
-Version: v0.2
+URL: https://chromium.googlesource.com/build/+/refs/heads/main/siso/
+Version: v1.4
 Update Mechanism: Manual
 License: BSD-3-Clause
 License File: LICENSE

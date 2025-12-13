@@ -243,7 +243,6 @@ PLATFORM_EXPORT bool operator==(const StepsTimingFunction&,
                                 const TimingFunction&);
 
 PLATFORM_EXPORT bool operator==(const TimingFunction&, const TimingFunction&);
-PLATFORM_EXPORT bool operator!=(const TimingFunction&, const TimingFunction&);
 
 template <>
 struct DowncastTraits<LinearTimingFunction> {

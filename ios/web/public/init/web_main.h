@@ -6,8 +6,10 @@
 #define IOS_WEB_PUBLIC_INIT_WEB_MAIN_H_
 
 #include <memory>
+#include <string>
+#include <vector>
 
-#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "ios/web/public/init/web_main_delegate.h"
 
 namespace web {
@@ -29,10 +31,8 @@ struct WebMainParams {
 
   raw_ptr<WebMainDelegate> delegate;
 
-  bool register_exit_manager;
-
-  int argc;
-  raw_ptr<const char*> argv;
+  bool register_exit_manager = true;
+  std::vector<std::string> args;
 };
 
 // Encapsulates any setup and initialization that is needed by common

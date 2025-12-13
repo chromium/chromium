@@ -8,7 +8,6 @@
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
-#include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "ui/base/interaction/state_observer.h"
 
 namespace ash {

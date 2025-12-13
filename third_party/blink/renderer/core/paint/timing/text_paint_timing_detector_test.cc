@@ -6,16 +6,22 @@
 
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/trace_event_analyzer.h"
+#include "base/test/trace_test_utils.h"
 #include "base/time/time.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_test_helper.h"
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -52,21 +58,8 @@ class TextPaintTimingDetectorTest : public testing::Test {
   }
   Document& GetDocument() { return *GetFrame()->GetDocument(); }
 
-  gfx::Rect GetViewportRect(LocalFrameView& view) {
-    ScrollableArea* scrollable_area = view.GetScrollableArea();
-    DCHECK(scrollable_area);
-    return scrollable_area->VisibleContentRect();
-  }
-
   LocalFrameView& GetChildFrameView() {
     return *To<LocalFrame>(GetFrame()->Tree().FirstChild())->View();
-  }
-  Document* GetChildDocument() {
-    return To<LocalFrame>(GetFrame()->Tree().FirstChild())->GetDocument();
-  }
-
-  TextPaintTimingDetector* GetTextPaintTimingDetector() {
-    return &GetPaintTimingDetector().GetTextPaintTimingDetector();
   }
 
   TextPaintTimingDetector& GetChildFrameTextPaintTimingDetector() {
@@ -76,7 +69,25 @@ class TextPaintTimingDetectorTest : public testing::Test {
   }
 
   LargestTextPaintManager& GetLargestTextPaintManager() {
-    return *GetTextPaintTimingDetector()->ltp_manager_;
+    return GetTextPaintTimingDetector()->ltp_manager_;
+  }
+
+  gfx::Rect GetViewportRect(LocalFrameView& view) {
+    ScrollableArea* scrollable_area = view.GetScrollableArea();
+    DCHECK(scrollable_area);
+    return scrollable_area->VisibleContentRect();
+  }
+
+  Document* GetChildDocument() {
+    return To<LocalFrame>(GetFrame()->Tree().FirstChild())->GetDocument();
+  }
+
+  Element* GetElement(const char* name) {
+    return GetDocument().getElementById(AtomicString(name));
+  }
+
+  TextPaintTimingDetector* GetTextPaintTimingDetector() {
+    return &GetPaintTimingDetector().GetTextPaintTimingDetector();
   }
 
   wtf_size_t CountRecordedSize() {
@@ -92,6 +103,10 @@ class TextPaintTimingDetectorTest : public testing::Test {
 
   wtf_size_t ContainerTotalSize() {
     return CountRecordedSize() + TextQueuedForPaintTimeSize(GetFrameView());
+  }
+
+  bool HasLargestIgnoredText() {
+    return !!GetLargestTextPaintManager().LargestIgnoredText();
   }
 
   void SimulateInputEvent() {
@@ -224,13 +239,13 @@ class TextPaintTimingDetectorTest : public testing::Test {
     return GetChildFrameView()
         .GetPaintTimingDetector()
         .GetTextPaintTimingDetector()
-        .ltp_manager_->LargestText();
+        .ltp_manager_.LargestText();
   }
 
   void SetFontSize(Element* font_element, uint16_t font_size) {
     DCHECK_EQ(font_element->nodeName(), "FONT");
     font_element->setAttribute(html_names::kSizeAttr,
-                               AtomicString(WTF::String::Number(font_size)));
+                               AtomicString(String::Number(font_size)));
   }
 
   void SetElementStyle(Element* element, String style) {
@@ -275,7 +290,7 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_OneText) {
   )HTML");
   Element* only_text = AppendDivElementToBody("The only text");
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  EXPECT_EQ(TextRecordOfLargestTextPaint()->node_, only_text);
+  EXPECT_EQ(TextRecordOfLargestTextPaint()->GetNode(), only_text);
 }
 
 TEST_F(TextPaintTimingDetectorTest, LaterSameSizeCandidate) {
@@ -286,7 +301,7 @@ TEST_F(TextPaintTimingDetectorTest, LaterSameSizeCandidate) {
   AppendDivElementToBody("text");
   AppendDivElementToBody("text");
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  EXPECT_EQ(TextRecordOfLargestTextPaint()->node_, first);
+  EXPECT_EQ(TextRecordOfLargestTextPaint()->GetNode(), first);
 }
 
 TEST_F(TextPaintTimingDetectorTest,
@@ -300,6 +315,7 @@ TEST_F(TextPaintTimingDetectorTest,
 }
 
 TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_TraceEvent_Candidate) {
+  base::test::TracingEnvironment tracing_environment;
   using trace_analyzer::Query;
   trace_analyzer::Start("loading");
   {
@@ -344,6 +360,7 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_TraceEvent_Candidate) {
 
 TEST_F(TextPaintTimingDetectorTest,
        LargestTextPaint_TraceEvent_Candidate_Frame) {
+  base::test::TracingEnvironment tracing_environment;
   using trace_analyzer::Query;
   trace_analyzer::Start("loading");
   {
@@ -407,7 +424,7 @@ TEST_F(TextPaintTimingDetectorTest, AggregationBySelfPaintingInlineElement) {
   )HTML");
   Element* span = GetDocument().getElementById(AtomicString("target"));
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  EXPECT_EQ(TextRecordOfLargestTextPaint()->node_, span);
+  EXPECT_EQ(TextRecordOfLargestTextPaint()->GetNode(), span);
 }
 
 TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_OpacityZero) {
@@ -450,7 +467,7 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_LargestText) {
   AppendDivElementToBody("small");
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
 
-  EXPECT_EQ(TextRecordOfLargestTextPaint()->node_, large_text);
+  EXPECT_EQ(TextRecordOfLargestTextPaint()->GetNode(), large_text);
 }
 
 TEST_F(TextPaintTimingDetectorTest, UpdateResultWhenCandidateChanged) {
@@ -496,7 +513,7 @@ TEST_F(TextPaintTimingDetectorTest, VisitSameNodeTwiceBeforePaintTimeIsSet) {
   text->setAttribute(html_names::kStyleAttr, AtomicString("color:red;"));
   GetFrameView().UpdateAllLifecyclePhasesForTest();
   InvokeCallback();
-  EXPECT_EQ(TextRecordOfLargestTextPaint()->node_, text);
+  EXPECT_EQ(TextRecordOfLargestTextPaint()->GetNode(), text);
 }
 
 TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_ReportFirstPaintTime) {
@@ -513,7 +530,8 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_ReportFirstPaintTime) {
   AdvanceClock(base::Seconds(1));
   TextRecord* record = TextRecordOfLargestTextPaint();
   EXPECT_TRUE(record);
-  EXPECT_EQ(record->paint_time, start_time + base::Seconds(1) + kQuantumOfTime);
+  EXPECT_EQ(record->PaintTime(),
+            start_time + base::Seconds(1) + kQuantumOfTime);
 }
 
 TEST_F(TextPaintTimingDetectorTest,
@@ -541,7 +559,7 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_RemovedText) {
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
   TextRecord* record = TextRecordOfLargestTextPaint();
   EXPECT_NE(record, nullptr);
-  EXPECT_EQ(record->node_, large_text);
+  EXPECT_EQ(record->GetNode(), large_text);
   uint64_t size_before_remove = LargestPaintSize();
   base::TimeTicks time_before_remove = LargestPaintTime();
   EXPECT_GT(size_before_remove, 0u);
@@ -623,7 +641,7 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_TextRecordAfterRemoval) {
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
   TextRecord* record = TextRecordOfLargestTextPaint();
   EXPECT_NE(record, nullptr);
-  EXPECT_EQ(record->node_, text);
+  EXPECT_EQ(record->GetNode(), text);
   base::TimeTicks largest_paint_time = LargestPaintTime();
   EXPECT_NE(largest_paint_time, base::TimeTicks());
   uint64_t largest_paint_size = LargestPaintSize();
@@ -644,7 +662,7 @@ TEST_F(TextPaintTimingDetectorTest,
   AppendDivElementToBody("a long text", "position:fixed;left:-10px");
   Element* short_text = AppendDivElementToBody("short");
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  EXPECT_EQ(TextRecordOfLargestTextPaint()->node_, short_text);
+  EXPECT_EQ(TextRecordOfLargestTextPaint()->GetNode(), short_text);
 }
 
 TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_CompareSizesAtFirstPaint) {
@@ -657,7 +675,7 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_CompareSizesAtFirstPaint) {
   // viewport.
   SetElementStyle(shortening_long_text, "position:fixed;left:-10px");
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  EXPECT_EQ(TextRecordOfLargestTextPaint()->node_, shortening_long_text);
+  EXPECT_EQ(TextRecordOfLargestTextPaint()->GetNode(), shortening_long_text);
 }
 
 TEST_F(TextPaintTimingDetectorTest, TreatEllipsisAsText) {
@@ -680,7 +698,7 @@ TEST_F(TextPaintTimingDetectorTest, CaptureFileUploadController) {
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
 
   EXPECT_EQ(CountRecordedSize(), 1u);
-  EXPECT_EQ(TextRecordOfLargestTextPaint()->node_, element);
+  EXPECT_EQ(TextRecordOfLargestTextPaint()->GetNode(), element);
 }
 
 TEST_F(TextPaintTimingDetectorTest, CapturingListMarkers) {
@@ -707,7 +725,7 @@ TEST_F(TextPaintTimingDetectorTest, CaptureSVGText) {
       GetDocument().QuerySelector(AtomicString("text")));
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
   EXPECT_EQ(CountRecordedSize(), 1u);
-  EXPECT_EQ(TextRecordOfLargestTextPaint()->node_, elem);
+  EXPECT_EQ(TextRecordOfLargestTextPaint()->GetNode(), elem);
 }
 
 // This is for comparison with the ClippedByViewport test.
@@ -759,8 +777,8 @@ TEST_F(TextPaintTimingDetectorTest, ClippedByParentVisibleRect) {
       ->AppendChild(div1);
 
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  EXPECT_EQ(TextRecordOfLargestTextPaint()->node_, div1);
-  EXPECT_EQ(TextRecordOfLargestTextPaint()->recorded_size, 1u);
+  EXPECT_EQ(TextRecordOfLargestTextPaint()->GetNode(), div1);
+  EXPECT_EQ(TextRecordOfLargestTextPaint()->RecordedSize(), 1u);
 
   Element* div2 = GetDocument().CreateRawElement(html_names::kDivTag);
   Text* text2 = GetDocument().createTextNode(
@@ -774,11 +792,11 @@ TEST_F(TextPaintTimingDetectorTest, ClippedByParentVisibleRect) {
       ->AppendChild(div2);
 
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
-  EXPECT_EQ(TextRecordOfLargestTextPaint()->node_, div2);
+  EXPECT_EQ(TextRecordOfLargestTextPaint()->GetNode(), div2);
   // This size is larger than the size of the first object . But the exact size
   // depends on different platforms. We only need to ensure this size is larger
   // than the first size.
-  EXPECT_GT(TextRecordOfLargestTextPaint()->recorded_size, 1u);
+  EXPECT_GT(TextRecordOfLargestTextPaint()->RecordedSize(), 1u);
 }
 
 TEST_F(TextPaintTimingDetectorTest, Iframe) {
@@ -853,12 +871,14 @@ TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTML) {
     <div>Text</div>
   )HTML");
   CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(0u);
+  EXPECT_TRUE(HasLargestIgnoredText());
 
   // Change the opacity of documentElement, now the img should be a candidate.
   GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
                                                 AtomicString("opacity: 1"));
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
   EXPECT_TRUE(TextRecordOfLargestTextPaint());
+  EXPECT_FALSE(HasLargestIgnoredText());
 }
 
 TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTML2) {
@@ -880,6 +900,116 @@ TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTML2) {
   GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
                                                 AtomicString("opacity: 1"));
   CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(0u);
+}
+
+TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTMLTextRecordedOnce) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      :root {
+        opacity: 0;
+        will-change: opacity;
+      }
+    </style>
+    <div id="target">Text</div>
+  )HTML");
+  CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(0u);
+
+  // Change the opacity of documentElement, now the <div> should be a candidate.
+  GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
+                                                AtomicString("opacity: 1"));
+  UpdateAllLifecyclePhasesAndSimulatePresentationTime();
+  EXPECT_TRUE(TextRecordOfLargestTextPaint());
+
+  // Update the <div>'s text. This should not cause the `target` to be
+  // reconsidered for timing since it was already recorded.
+  Element* target = GetElement("target");
+  To<HTMLElement>(target)->setInnerText("Text Text Text");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(TextQueuedForPaintTimeSize(GetFrameView()), 0);
+}
+
+TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTMLWithInput) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      :root {
+        opacity: 0;
+        will-change: opacity;
+      }
+    </style>
+    <div>Text</div>
+  )HTML");
+  CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(0u);
+
+  SimulateInputEvent();
+
+  // Change the opacity of documentElement. The div should not be a candidate
+  // because LCP stops on input.
+  GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
+                                                AtomicString("opacity: 1"));
+  UpdateAllLifecyclePhasesAndSimulatePresentationTime();
+  EXPECT_FALSE(TextRecordOfLargestTextPaint());
+
+  // FCP, however, should be marked, because that does not stop on input.
+  //
+  // Note: `PaintTiming` doesn't support `MockPaintTimingCallbackManager`, so
+  // check the paint time instead of presentation time.
+  base::TimeTicks fcp_timestamp =
+      PaintTiming::From(GetDocument())
+          .FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime();
+  EXPECT_FALSE(fcp_timestamp.is_null());
+}
+
+TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTMLRemoveElement) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      :root {
+        opacity: 0;
+        will-change: opacity;
+      }
+    </style>
+    <div id="target">Text</div>
+  )HTML");
+  CheckSizeOfTextQueuedForPaintTimeAfterUpdateLifecyclePhases(0u);
+  EXPECT_TRUE(HasLargestIgnoredText());
+
+  RemoveElement(GetElement("target"));
+  EXPECT_FALSE(HasLargestIgnoredText());
+  GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
+                                                AtomicString("opacity: 1"));
+  UpdateAllLifecyclePhasesAndSimulatePresentationTime();
+  EXPECT_FALSE(TextRecordOfLargestTextPaint());
+}
+
+TEST_F(TextPaintTimingDetectorTest,
+       QueuedRecordsWaitForCorrectPresentationFeedback) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target1"></div>
+    <div id="target2"></div>
+  )HTML");
+
+  // Simulate painting one of the two text nodes. This should queue up a
+  // presentation callback for this frame.
+  Element* target1 = GetElement("target1");
+  To<HTMLElement>(target1)->setInnerText("text 1");
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(TextQueuedForPaintTimeSize(GetFrameView()), 1);
+
+  // Simulate a second text paint, before getting presentation for the first.
+  // This should queue up another presentation callback, for this frame.
+  Element* target2 = GetElement("target2");
+  To<HTMLElement>(target2)->setInnerText("text 2");
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(TextQueuedForPaintTimeSize(GetFrameView()), 2);
+
+  // Invoking the first presentation callback should only dequeue one text
+  // record, since only `target1` was painted in the first frame.
+  InvokeCallback();
+  EXPECT_EQ(TextQueuedForPaintTimeSize(GetFrameView()), 1);
+  // And this should dequeue the record associated with `target2`, painted in
+  // the second frame.
+  InvokeCallback();
+  EXPECT_EQ(TextQueuedForPaintTimeSize(GetFrameView()), 0);
 }
 
 }  // namespace blink

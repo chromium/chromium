@@ -59,8 +59,10 @@ bool CommerceHeuristicsData::PopulateDataFromComponent(
     const std::string& global_json_data,
     const std::string& product_id_json_data,
     const std::string& cart_extraction_script) {
-  auto hint_json_value = base::JSONReader::ReadDict(hint_json_data);
-  auto global_json_value = base::JSONReader::ReadDict(global_json_data);
+  auto hint_json_value = base::JSONReader::ReadDict(
+      hint_json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  auto global_json_value = base::JSONReader::ReadDict(
+      global_json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!hint_json_value) {
     return false;
   }
@@ -116,9 +118,7 @@ CommerceHeuristicsData::GetHintHeuristicsJSONForDomain(
   }
   base::Value::Dict res_dic;
   res_dic.Set(domain, std::move(domain_heuristics));
-  std::string res_string;
-  base::JSONWriter::Write(res_dic, &res_string);
-  return std::optional<std::string>(res_string);
+  return base::WriteJson(res_dic).value_or("");
 }
 
 std::optional<std::string> CommerceHeuristicsData::GetGlobalHeuristicsJSON() {

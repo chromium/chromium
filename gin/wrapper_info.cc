@@ -12,7 +12,8 @@ DeprecatedWrapperInfo* DeprecatedWrapperInfo::From(
   if (object->InternalFieldCount() != kNumberOfInternalFields)
     return NULL;
   DeprecatedWrapperInfo* info = static_cast<DeprecatedWrapperInfo*>(
-      object->GetAlignedPointerFromInternalField(kWrapperInfoIndex));
+      object->GetAlignedPointerFromInternalField(kWrapperInfoIndex,
+                                                 kDeprecatedData));
   return info->embedder == kEmbedderNativeGin ? info : NULL;
 }
 

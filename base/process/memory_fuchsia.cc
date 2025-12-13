@@ -22,6 +22,15 @@ void EnableTerminationOnHeapCorruption() {
   // Nothing to be done here.
 }
 
+bool UncheckedCalloc(size_t num_items, size_t size, void** result) {
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+  *result = allocator_shim::UncheckedCalloc(num_items, size);
+#else
+  *result = calloc(num_items, size);
+#endif
+  return *result != nullptr;
+}
+
 bool UncheckedMalloc(size_t size, void** result) {
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   *result = allocator_shim::UncheckedAlloc(size);

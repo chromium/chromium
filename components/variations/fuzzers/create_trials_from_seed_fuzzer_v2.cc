@@ -9,11 +9,18 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
+#include "components/metrics/entropy_state.h"
+#include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/fuzzers/create_trials_from_seed_test_case.pb.h"
 #include "components/variations/proto/study.pb.h"
+#include "components/variations/service/limited_entropy_randomization.h"
 #include "components/variations/variations_layers.h"
 #include "components/variations/variations_seed_processor.h"
 #include "components/variations/variations_test_utils.h"
@@ -23,17 +30,15 @@ namespace variations {
 namespace {
 
 struct Environment {
-  Environment() { base::CommandLine::Init(0, nullptr); }
+  Environment() : enabled_state_provider(/*consent=*/true, /*enabled=*/true) {
+    base::CommandLine::Init(0, nullptr);
+    metrics::MetricsStateManager::RegisterPrefs(pref_service.registry());
+  }
 
   base::AtExitManager at_exit_manager;
+  TestingPrefServiceSimple pref_service;
+  metrics::TestEnabledStateProvider enabled_state_provider;
 };
-
-EntropyProviders CreateEntropyProviders(
-    const CreateTrialsFromSeedTestCase::EntropyValues& entropy_values) {
-  return EntropyProviders(
-      entropy_values.client_id(), {entropy_values.low_entropy(), 8000},
-      entropy_values.limited_entropy_randomization_source());
-}
 
 std::unique_ptr<ClientFilterableState> CreateClientFilterableState(
     const CreateTrialsFromSeedTestCase::ClientFilterableState& spec) {
@@ -110,8 +115,29 @@ std::unique_ptr<ClientFilterableState> CreateClientFilterableState(
   return client_state;
 }
 
+std::unique_ptr<metrics::MetricsStateManager>
+CreateMetricsStateManagerForFuzzer(
+    const CreateTrialsFromSeedTestCase::EntropyValues& entropy_values,
+    TestingPrefServiceSimple* pref_service,
+    metrics::EnabledStateProvider* enabled_state_provider) {
+  pref_service->SetInteger(metrics::prefs::kMetricsLowEntropySource,
+                           entropy_values.low_entropy());
+  pref_service->SetString(
+      metrics::prefs::kMetricsLimitedEntropyRandomizationSource,
+      entropy_values.limited_entropy_randomization_source());
+  pref_service->SetString(metrics::prefs::kMetricsClientID,
+                          entropy_values.client_id());
+
+  return metrics::MetricsStateManager::Create(
+      pref_service, enabled_state_provider,
+      /*backup_registry_key=*/std::wstring(),
+      /*user_data_dir=*/base::FilePath());
+}
+
 void CreateTrialsFromSeedFuzzer(
-    const variations::CreateTrialsFromSeedTestCase& test_case) {
+    const variations::CreateTrialsFromSeedTestCase& test_case,
+    TestingPrefServiceSimple* pref_service,
+    metrics::EnabledStateProvider* enabled_state_provider) {
   base::FieldTrialList field_trial_list;
   base::FeatureList feature_list;
 
@@ -119,27 +145,47 @@ void CreateTrialsFromSeedFuzzer(
       test_case.has_client_filterable_state()
           ? test_case.client_filterable_state()
           : variations::CreateTrialsFromSeedTestCase::ClientFilterableState());
-  auto entropy_providers = CreateEntropyProviders(
+
+  const auto& entropy_values =
       test_case.has_entropy()
           ? test_case.entropy()
-          : variations::CreateTrialsFromSeedTestCase::EntropyValues());
+          : variations::CreateTrialsFromSeedTestCase::EntropyValues();
+  auto state_manager = CreateMetricsStateManagerForFuzzer(
+      entropy_values, pref_service, enabled_state_provider);
+  auto entropy_providers = state_manager->CreateEntropyProviders(
+      /*enable_limited_entropy_mode=*/true);
 
   if (!test_case.has_seed()) {
     return;
   }
 
+  base::HistogramTester histogram_tester;
   auto seed = test_case.seed();
-  VariationsLayers layers(seed, entropy_providers);
-  VariationsSeedProcessor().CreateTrialsFromSeed(
-      seed, *client_state, base::BindRepeating(NoopUIStringOverrideCallback),
-      entropy_providers, layers, &feature_list);
+  VariationsLayers layers(seed, *entropy_providers);
+  StickyActivationManager sticky_activation_manager(/*local_state=*/nullptr);
+  VariationsSeedProcessor(sticky_activation_manager)
+      .CreateTrialsFromSeed(seed, *client_state,
+                            base::BindRepeating(NoopUIStringOverrideCallback),
+                            *entropy_providers, layers, &feature_list);
+
+  // There are numerous conditions for which the seed could be rejected. They
+  // should all be caught during the initial seed validation. Post validation,
+  // when attempting to actually use the seed, there are some components which,
+  // for safety, repeat some of the validation and signal a generic "invalid
+  // configuration" rejection reason. This state should not be reachable in
+  // practice.
+  CHECK_EQ(histogram_tester.GetBucketCount(
+               kSeedRejectionReasonHistogram,
+               SeedRejectionReason::kInvalidLayerConfiguration),
+           0);
 }
 
 }  // namespace
 
 DEFINE_PROTO_FUZZER(const variations::CreateTrialsFromSeedTestCase& test_case) {
   static Environment env;
-  CreateTrialsFromSeedFuzzer(test_case);
+  CreateTrialsFromSeedFuzzer(test_case, &env.pref_service,
+                             &env.enabled_state_provider);
 }
 
 }  // namespace variations

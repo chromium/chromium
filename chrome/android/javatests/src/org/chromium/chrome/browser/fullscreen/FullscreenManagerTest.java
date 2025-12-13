@@ -4,13 +4,14 @@
 
 package org.chromium.chrome.browser.fullscreen;
 
+import static android.view.Display.INVALID_DISPLAY;
+
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
 import android.graphics.Point;
 import android.os.SystemClock;
 import android.view.View;
 
-import androidx.test.espresso.Espresso;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -219,7 +220,6 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
-    @DisabledTest(message = "crbug.com/1489541")
     public void testBackPressExitPersistentFullscreen_backGestureRefactor() {
         testBackPressExitPersistentFullscreenInternal(true);
     }
@@ -229,7 +229,8 @@ public class FullscreenManagerTest {
         launchOnFullscreenMode(LONG_HTML_TEST_PAGE, isFullscreenInsetsApiMigrationEnabled);
         Assert.assertTrue(getPersistentFullscreenMode());
 
-        Espresso.pressBack();
+        ThreadUtils.runOnUiThreadBlocking(
+                mActivityTestRule.getActivity().getOnBackPressedDispatcher()::onBackPressed);
 
         Assert.assertFalse(getPersistentFullscreenMode());
     }
@@ -239,7 +240,10 @@ public class FullscreenManagerTest {
     @Feature({"Fullscreen"})
     @DisableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
+        // TODO(https://crbug.com/456056229): investigate supporting delayed fullscreen entry when
+        // using exclusive access manager
+        ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER
     })
     public void testDelayedPersistentFullscreenLegacy() {
         WebPageStation page = mActivityTestRule.startOnUrl(LONG_HTML_TEST_PAGE);
@@ -254,12 +258,12 @@ public class FullscreenManagerTest {
         ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), activity);
 
         // Having the background tab enter fullscreen should be delayed until it comes foreground.
-        FullscreenTestUtils.togglePersistentFullscreen(delegate, true);
+        FullscreenTestUtils.togglePersistentFullscreen(tab, true);
         Assert.assertFalse(getPersistentFullscreenMode());
 
         // Put the tab foreground and assert the fullscreen was entered.
         ChromeTabUtils.switchTabInCurrentTabModel(activity, tab.getId());
-        Assert.assertEquals(tab, activity.getActivityTab());
+        Assert.assertEquals(tab, mActivityTestRule.getActivityTab());
         Assert.assertTrue(getPersistentFullscreenMode());
     }
 
@@ -270,6 +274,9 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
+    // TODO(https://crbug.com/456056229): investigate supporting delayed fullscreen entry when
+    // using exclusive access manager
+    @DisableFeatures({ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER})
     public void testDelayedPersistentFullscreen() {
         WebPageStation page = mActivityTestRule.startOnUrl(LONG_HTML_TEST_PAGE);
 
@@ -283,12 +290,12 @@ public class FullscreenManagerTest {
         ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), activity);
 
         // Having the background tab enter fullscreen should be delayed until it comes foreground.
-        FullscreenTestUtils.togglePersistentFullscreen(delegate, true);
+        FullscreenTestUtils.togglePersistentFullscreen(tab, true);
         Assert.assertFalse(getPersistentFullscreenMode());
 
         // Put the tab foreground and assert the fullscreen was entered.
         ChromeTabUtils.switchTabInCurrentTabModel(activity, tab.getId());
-        Assert.assertEquals(tab, activity.getActivityTab());
+        Assert.assertEquals(tab, mActivityTestRule.getActivityTab());
         Assert.assertTrue(getPersistentFullscreenMode());
     }
 
@@ -384,7 +391,7 @@ public class FullscreenManagerTest {
 
         // Enter fullscreen w/ all system UI hidden:
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
-                tab, true, activity, false, false, false);
+                tab, true, activity, false, false, false, INVALID_DISPLAY);
 
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 
@@ -394,7 +401,7 @@ public class FullscreenManagerTest {
 
         // Adjust the fullscreen options to show navigation bar mid-fullscreen:
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
-                tab, true, activity, true, false, false);
+                tab, true, activity, true, false, false, INVALID_DISPLAY);
 
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 
@@ -404,7 +411,7 @@ public class FullscreenManagerTest {
 
         // Adjust the fullscreen options to show status bar mid-fullscreen:
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
-                tab, true, activity, false, true, false);
+                tab, true, activity, false, true, false, INVALID_DISPLAY);
 
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 
@@ -432,7 +439,7 @@ public class FullscreenManagerTest {
 
         // Enter fullscreen w/ all system UI hidden:
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
-                tab, true, activity, false, false, true);
+                tab, true, activity, false, false, true, INVALID_DISPLAY);
 
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 
@@ -442,7 +449,7 @@ public class FullscreenManagerTest {
 
         // Adjust the fullscreen options to show navigation bar mid-fullscreen:
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
-                tab, true, activity, true, false, true);
+                tab, true, activity, true, false, true, INVALID_DISPLAY);
 
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 
@@ -452,7 +459,7 @@ public class FullscreenManagerTest {
 
         // Adjust the fullscreen options to show status bar mid-fullscreen:
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
-                tab, true, activity, false, true, true);
+                tab, true, activity, false, true, true, INVALID_DISPLAY);
 
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 
@@ -592,7 +599,7 @@ public class FullscreenManagerTest {
         WebPageStation page = mActivityTestRule.startOnUrl(SCROLL_OFFSET_TEST_PAGE);
 
         ChromeTabbedActivity activity = page.getActivity();
-        WebContents webContents = page.webContentsElement.get();
+        WebContents webContents = page.webContentsElement.value();
 
         // Browser startup generates resize events as part of compositor initialization. Depending
         // on the relative timing of that initialization and the initial navigation, the test page
@@ -641,7 +648,7 @@ public class FullscreenManagerTest {
         WebPageStation page = mActivityTestRule.startOnUrl(SCROLL_OFFSET_TEST_PAGE);
 
         ChromeTabbedActivity activity = page.getActivity();
-        WebContents webContents = page.webContentsElement.get();
+        WebContents webContents = page.webContentsElement.value();
 
         // Browser startup generates resize events as part of compositor initialization. Depending
         // on the relative timing of that initialization and the initial navigation, the test page
@@ -771,7 +778,7 @@ public class FullscreenManagerTest {
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, delegate::rendererResponsive);
 
         // TODO(tedchoc): This is running into timing issues with the renderer offset logic.
-        // waitForBrowserControlsToBeMoveable(getActivity().getActivityTab());
+        // waitForBrowserControlsToBeMoveable(getActivityTab());
     }
 
     @Test
@@ -803,7 +810,7 @@ public class FullscreenManagerTest {
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, delegate::rendererResponsive);
 
         // TODO(tedchoc): This is running into timing issues with the renderer offset logic.
-        // waitForBrowserControlsToBeMoveable(getActivity().getActivityTab());
+        // waitForBrowserControlsToBeMoveable(getActivityTab());
     }
 
     @Test
@@ -1263,7 +1270,7 @@ public class FullscreenManagerTest {
                         .getResources()
                         .getDisplayMetrics()
                         .density;
-        View tabView = mActivityTestRule.getActivity().getActivityTab().getContentView();
+        View tabView = mActivityTestRule.getActivityTab().getContentView();
         Assert.assertEquals(tabView.getHeight() / pixelDensity, getPageHeight(), 1);
     }
 
@@ -1283,12 +1290,12 @@ public class FullscreenManagerTest {
                         .getResources()
                         .getDisplayMetrics()
                         .density;
-        View tabView = mActivityTestRule.getActivity().getActivityTab().getContentView();
+        View tabView = mActivityTestRule.getActivityTab().getContentView();
         Assert.assertEquals(tabView.getHeight() / pixelDensity, getPageHeight(), 1);
     }
 
     private WebContents getWebContents() {
-        return mActivityTestRule.getActivity().getActivityTab().getWebContents();
+        return mActivityTestRule.getWebContents();
     }
 
     private int getPageHeight() throws Throwable {

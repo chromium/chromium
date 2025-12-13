@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.auxiliary_search;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationMultiDataSourceHistoryContentTtlHours;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationV2ContentTtlHours;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -61,6 +59,7 @@ import java.util.concurrent.TimeUnit;
 
 /** This class handles the donation of Tabs. */
 @NullMarked
+@SuppressWarnings("CheckReturnValue") // For Futures.transform() and not using the result.
 public class AuxiliarySearchDonor {
 
     /** Callback to set schema visibilities for package names. */
@@ -89,6 +88,8 @@ public class AuxiliarySearchDonor {
     @VisibleForTesting static final String SOURCE_TAB = "Tab";
     @VisibleForTesting static final String SOURCE_CUSTOM_TAB = "CustomTab";
     @VisibleForTesting static final String SOURCE_TOP_SITE = "TopSite";
+    @VisibleForTesting static final int HISTORY_CONTENT_TTL_HOURS = 24;
+    private static final int CONTENT_TTL_HOURS = 168;
 
     private static final String TAG = "AuxiliarySearchDonor";
     private static final String TAB_PREFIX = "Tab-";
@@ -126,9 +127,7 @@ public class AuxiliarySearchDonor {
     private AuxiliarySearchDonor() {
         mContext = ContextUtils.getApplicationContext();
         mNamespace = mContext.getPackageName();
-        mSkipSchemaCheck =
-                AuxiliarySearchUtils.SKIP_SCHEMA_CHECK.getValue()
-                        || AuxiliarySearchUtils.MULTI_DATA_SOURCE_SKIP_SCHEMA_CHECK.getValue();
+        mSkipSchemaCheck = AuxiliarySearchUtils.MULTI_DATA_SOURCE_SKIP_SCHEMA_CHECK.getValue();
 
         mSharedTabsWithOsState = AuxiliarySearchUtils.isShareTabsWithOsEnabled();
         boolean shouldInit = mSharedTabsWithOsState || !isShareTabsWithOsEnabledKeyExist();
@@ -661,8 +660,7 @@ public class AuxiliarySearchDonor {
     @VisibleForTesting
     public long getTabDocumentTtlMs() {
         if (mTabTtlMillis == null) {
-            mTabTtlMillis =
-                    TimeUnit.HOURS.toMillis(sAndroidAppIntegrationV2ContentTtlHours.getValue());
+            mTabTtlMillis = TimeUnit.HOURS.toMillis(CONTENT_TTL_HOURS);
         }
 
         return mTabTtlMillis;
@@ -671,9 +669,7 @@ public class AuxiliarySearchDonor {
     @VisibleForTesting
     public long getHistoryDocumentTtlMs() {
         if (mHistoryTtlMillis == null) {
-            mHistoryTtlMillis =
-                    TimeUnit.HOURS.toMillis(
-                            sAndroidAppIntegrationMultiDataSourceHistoryContentTtlHours.getValue());
+            mHistoryTtlMillis = TimeUnit.HOURS.toMillis(HISTORY_CONTENT_TTL_HOURS);
         }
 
         return mHistoryTtlMillis;

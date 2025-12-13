@@ -14,7 +14,6 @@
 #include "ash/webui/media_app_ui/buildflags.h"
 #include "ash/webui/projector_app/buildflags.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"

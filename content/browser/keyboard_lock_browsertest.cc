@@ -29,7 +29,6 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/gfx/native_widget_types.h"
 
 #ifdef USE_AURA
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"

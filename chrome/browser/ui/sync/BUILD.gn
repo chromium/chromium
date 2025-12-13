@@ -1,0 +1,171 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+source_set("sync") {
+  sources = [ "tab_contents_synced_tab_delegate.h" ]
+  public_deps = [
+    "//base",
+    "//components/sessions:session_id",
+    "//components/sync_sessions",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "browser_synced_tab_delegate.h",
+      "browser_synced_window_delegate.h",
+      "browser_synced_window_delegates_getter.h",
+    ]
+    public_deps += [
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//content/public/browser",
+    ]
+  }
+
+  if (toolkit_views) {
+    sources += [
+      "one_click_signin_links_delegate.h",
+      "one_click_signin_links_delegate_impl.h",
+    ]
+    if (!is_chromeos) {
+      sources += [ "sync_passphrase_dialog.h" ]
+      public_deps += [ "//ui/base/interaction" ]
+    }
+  }
+}
+
+source_set("impl") {
+  sources = [ "tab_contents_synced_tab_delegate.cc" ]
+  deps = [
+    ":sync",
+    "//base",
+    "//chrome/browser/complex_tasks",
+    "//chrome/browser/profiles:profile",
+    "//components/sessions",
+    "//components/sync/base:features",
+    "//components/sync_sessions",
+    "//content/public/browser",
+    "//extensions/buildflags",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/apps/app_service" ]
+  }
+
+  if (!is_android) {
+    sources += [
+      "browser_synced_tab_delegate.cc",
+      "browser_synced_window_delegate.cc",
+      "browser_synced_window_delegates_getter.cc",
+    ]
+    deps += [
+      "//chrome/browser/history",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//components/bookmarks/browser",
+      "//components/browser_sync",
+      "//components/history/core/browser",
+    ]
+  }
+
+  if (toolkit_views) {
+    sources += [ "one_click_signin_links_delegate_impl.cc" ]
+    deps += [ "//chrome/common" ]
+
+    if (!is_chromeos) {
+      sources += [ "sync_passphrase_dialog.cc" ]
+      deps += [
+        "//chrome/browser:browser_process",
+        "//components/strings",
+        "//ui/base",
+        "//url",
+      ]
+    }
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tab_contents_synced_tab_delegate_unittest.cc" ]
+  deps = [
+    ":sync",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/sync/base:features",
+    "//components/sync/protocol",
+    "//components/sync_sessions:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+  ]
+
+  if (!is_android) {
+    deps += [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/extensions:test_support",
+      "//chrome/browser/history",
+      "//chrome/browser/prefs",
+      "//components/bookmarks/test",
+      "//components/pref_registry",
+      "//components/prefs:test_support",
+      "//components/sync_preferences:test_support",
+    ]
+    if (is_chromeos) {
+      deps += [
+        "//chrome/browser/ash/login/users",
+        "//chrome/browser/ash/settings:test_support",
+      ]
+    }
+
+    if (is_linux || is_mac || is_win) {
+      sources += [ "sync_passphrase_dialog_unittest.cc" ]
+      deps += [ "//components/sync:test_support" ]
+    }
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "one_click_signin_links_delegate_impl_browsertest.cc" ]
+    deps = [
+      ":sync",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+    ]
+  }
+
+  if (!is_chromeos_device) {
+    source_set("interactive_ui_tests") {
+      testonly = true
+      defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+      if (is_mac || is_linux || is_win) {
+        sources = [ "sync_passphrase_dialog_browsertest.cc" ]
+        deps = [
+          ":sync",
+          "//base",
+          "//base/test:test_support",
+          "//chrome/browser/ui",
+          "//chrome/common",
+          "//chrome/test:test_support_ui",
+          "//content/test:test_support",
+          "//testing/gtest",
+          "//ui/base",
+          "//ui/base:test_support",
+          "//ui/views",
+          "//url",
+        ]
+      }
+    }
+  }
+}

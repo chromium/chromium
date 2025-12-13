@@ -46,6 +46,7 @@
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/menus/simple_menu_model.h"
 

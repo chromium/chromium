@@ -138,7 +138,7 @@ static_library("test_support") {
     "$mini_chromium_source_parent:base",
     "../snapshot:test_support",
     "../test",
-    "../third_party/googletest:googletest",
+    "../third_party/googletest",
     "../util",
   ]
 
@@ -182,7 +182,7 @@ source_set("minidump_test") {
     "$mini_chromium_source_parent:base",
     "../snapshot:test_support",
     "../test",
-    "../third_party/googletest:googletest",
+    "../third_party/googletest",
     "../util",
   ]
 

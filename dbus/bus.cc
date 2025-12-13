@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/containers/contains.h"
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -157,10 +158,7 @@ Error ToError(const internal::ScopedDBusError& error) {
 
 }  // namespace
 
-Bus::Options::Options()
-  : bus_type(SESSION),
-    connection_type(PRIVATE) {
-}
+Bus::Options::Options() = default;
 
 Bus::Options::~Options() = default;
 
@@ -168,7 +166,7 @@ Bus::Options::Options(Bus::Options&&) = default;
 
 Bus::Options& Bus::Options::operator=(Bus::Options&&) = default;
 
-Bus::Bus(const Options& options)
+Bus::Bus(Options options)
     : bus_type_(options.bus_type),
       connection_type_(options.connection_type),
       dbus_task_runner_(options.dbus_task_runner),

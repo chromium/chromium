@@ -31,6 +31,7 @@ COMPONENT_EXPORT(PRINTING_BASE) extern const char kCUPSBrotherMonoColor[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kCUPSBrotherPrintQuality[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kCUPSCanonCNColorMode[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kCUPSCanonCNIJGrayScale[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kCUPSEpsonEPIJInk[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kCUPSEpsonInk[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kCUPSHpColorMode[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kCUPSHpPjlColorAsGray[];

@@ -112,7 +112,7 @@
         const octaveActual = actual.subarray(start, end);
         const octaveExpected = expected.subarray(start, end);
 
-        compareBuffersWithConstraintsModern(
+        compareBuffersWithConstraints_W3CTH(
             octaveActual, octaveExpected, {
             prefix: i,
             thresholdSNR: testConstraints[i].thresholdSNR,

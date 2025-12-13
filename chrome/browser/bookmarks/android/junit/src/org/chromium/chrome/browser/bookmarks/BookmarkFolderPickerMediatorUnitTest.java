@@ -19,7 +19,6 @@ import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -43,7 +42,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -230,14 +228,13 @@ public class BookmarkFolderPickerMediatorUnitTest {
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private Runnable mFinishRunnable;
     @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
-    @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
-    @Mock private Menu mMenu;
     @Mock private MenuItem mMenuItem;
     @Mock private BookmarkAddNewFolderCoordinator mAddNewFolderCoordinator;
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private ShoppingService mShoppingService;
     @Captor private ArgumentCaptor<BookmarkUiPrefs.Observer> mBookmarkUiPrefsObserverCaptor;
+    private Runnable mFinishModelLoadCallback;
 
     private Activity mActivity;
     private BookmarkFolderPickerMediator mMediator;
@@ -298,12 +295,11 @@ public class BookmarkFolderPickerMediatorUnitTest {
         doReturn(mReadingListItem1).when(mBookmarkModel).getBookmarkById(mReadingListItemId1);
         doReturn(mReadingListItem2).when(mBookmarkModel).getBookmarkById(mReadingListItemId2);
         doReturn(true).when(mBookmarkModel).doesBookmarkExist(any());
-        doCallback((Runnable runnable) -> runnable.run())
+        doCallback((Runnable runnable) -> mFinishModelLoadCallback = runnable)
                 .when(mBookmarkModel)
                 .finishLoadingBookmarkModel(any());
 
         // Setup menu.
-        doReturn(mMenuItem).when(mMenu).add(anyInt());
         doReturn(mMenuItem).when(mMenuItem).setIcon(any());
         doReturn(mMenuItem).when(mMenuItem).setShowAsActionFlags(anyInt());
 
@@ -319,23 +315,8 @@ public class BookmarkFolderPickerMediatorUnitTest {
         doReturn(BookmarkRowDisplayPref.COMPACT).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
         doReturn(BookmarkRowSortOrder.MANUAL).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
 
-        mMediator =
-                new BookmarkFolderPickerMediator(
-                        mActivity,
-                        mBookmarkModel,
-                        Arrays.asList(mUserBookmarkId),
-                        mFinishRunnable,
-                        mBookmarkUiPrefs,
-                        mModel,
-                        mModelList,
-                        mAddNewFolderCoordinator,
-                        new ImprovedBookmarkRowCoordinator(
-                                mActivity,
-                                mBookmarkImageFetcher,
-                                mBookmarkModel,
-                                mBookmarkUiPrefs,
-                                mShoppingService),
-                        mShoppingService);
+        remakeMediator(mBookmarkModel, mUserBookmarkId);
+        mFinishModelLoadCallback.run();
     }
 
     private void remakeMediator(BookmarkModel bookmarkModel, BookmarkId... bookmarkIds) {
@@ -364,6 +345,14 @@ public class BookmarkFolderPickerMediatorUnitTest {
     }
 
     @Test
+    public void testModelNotYetReady() {
+        // Regression test for crbug.com/439882814
+        remakeMediator(mBookmarkModel, mUserFolderId);
+        // Do not call finishLoadingBookmarkModel().
+        mMediator.updateToolbarButtons();
+    }
+
+    @Test
     public void testMoveFolder() {
         remakeMediator(mBookmarkModel, mUserFolderId);
         mMediator.populateFoldersForParentId(mMobileFolderId);
@@ -388,7 +377,8 @@ public class BookmarkFolderPickerMediatorUnitTest {
                 mMobileFolderItem.getTitle(),
                 mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
         // First simulate a long click to verify it does nothing.
-        model.get(ImprovedBookmarkRowProperties.ROW_LONG_CLICK_LISTENER).getAsBoolean();
+        var unused =
+                model.get(ImprovedBookmarkRowProperties.ROW_LONG_CLICK_LISTENER).getAsBoolean();
         assertEquals(
                 mMobileFolderItem.getTitle(),
                 mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
@@ -455,6 +445,7 @@ public class BookmarkFolderPickerMediatorUnitTest {
     @Test
     public void testMoveMultiple_sharedParent() {
         remakeMediator(mBookmarkModel, mUserBookmarkId, mUserBookmarkId1);
+        mFinishModelLoadCallback.run();
         assertEquals("Mobile bookmarks", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
         assertTrue(mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
     }
@@ -462,6 +453,7 @@ public class BookmarkFolderPickerMediatorUnitTest {
     @Test
     public void testMoveMultiple_noSharedParent() {
         remakeMediator(mBookmarkModel, mUserFolderId, mUserBookmarkId1);
+        mFinishModelLoadCallback.run();
         assertEquals("Move to…", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
         assertFalse(mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
     }
@@ -469,6 +461,7 @@ public class BookmarkFolderPickerMediatorUnitTest {
     @Test
     public void testMoveMultiple_readingList() {
         remakeMediator(mBookmarkModel, mReadingListItemId1, mReadingListItemId2);
+        mFinishModelLoadCallback.run();
         assertEquals("Move to…", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
         assertFalse(mModel.get(BookmarkFolderPickerProperties.MOVE_BUTTON_ENABLED));
     }

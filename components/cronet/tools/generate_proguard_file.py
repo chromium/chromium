@@ -44,7 +44,7 @@ def _post_process_concatenated_rules_for_aosp(rules: str) -> str:
     # comments containing these packages names from being modified. Example:
     # -------- Config Path: androidx.annotation/proguard.txt --------
     rules = re.sub(f"([^\*\/]){package_name}",
-                   f"\g<1>android.net.connectivity.{package_name}", rules)
+                   f"\g<1>android.net.http.internal.{package_name}", rules)
   return rules
 
 def main():

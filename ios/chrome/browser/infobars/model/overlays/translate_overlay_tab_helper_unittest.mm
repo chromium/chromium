@@ -78,9 +78,7 @@ class TranslateInfobarOverlayTranslateOverlayTabHelperTest
         ->AddInfoBar(std::move(infobar));
   }
 
-  ~TranslateInfobarOverlayTranslateOverlayTabHelperTest() override {
-    InfoBarManagerImpl::FromWebState(&web_state_)->ShutDown();
-  }
+  ~TranslateInfobarOverlayTranslateOverlayTabHelperTest() override = default;
 
   // Returns the front request of `web_state_`'s OverlayRequestQueue.
   OverlayRequest* front_request() {
@@ -95,8 +93,8 @@ class TranslateInfobarOverlayTranslateOverlayTabHelperTest
   std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
   FakeTranslateInfoBarDelegateFactory delegate_factory_;
-  raw_ptr<FakeTranslateInfoBarDelegate> delegate_ = nullptr;
-  raw_ptr<InfoBarIOS> infobar_ = nullptr;
+  raw_ptr<FakeTranslateInfoBarDelegate, DanglingUntriaged> delegate_ = nullptr;
+  raw_ptr<InfoBarIOS, DanglingUntriaged> infobar_ = nullptr;
 };
 
 // Tests that the inserter adds a placeholder request when Translate begins.

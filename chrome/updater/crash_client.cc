@@ -11,7 +11,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"

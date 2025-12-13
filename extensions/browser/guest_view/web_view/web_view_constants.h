@@ -91,7 +91,6 @@ extern const char kPersistPrefix[];
 extern const char kStoragePartitionId[];
 
 inline constexpr unsigned int kMaxOutstandingPermissionRequests = 1024;
-inline constexpr int kInvalidPermissionRequestID = 0;
 
 // ClearData API constants.
 inline constexpr uint32_t WEB_VIEW_REMOVE_DATA_MASK_CACHE = 1 << 0;

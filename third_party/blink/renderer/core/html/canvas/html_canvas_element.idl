@@ -24,35 +24,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-dictionary CanvasHitTestRect {
-  double x;
-  double y;
-  double? width;
-  double? height;
-};
-
-dictionary CanvasElementHitTestRegion {
-  Element element;
-  CanvasHitTestRect rect;
-};
-
 // https://html.spec.whatwg.org/C/canvas.html#htmlcanvaselement
 [
-    Exposed=Window,
-    HTMLConstructor
+    Exposed=Window
 ] interface HTMLCanvasElement : HTMLElement
 {
-    // Note: Due to dependecies on modules, getContext is defined in a partial
+    [HTMLConstructor] constructor();
+    // Note: Due to dependencies on modules, getContext is defined in a partial
     // interface in html_canvas_element_module.idl
 
     [RaisesException=Setter, CEReactions] attribute unsigned long width;
     [RaisesException=Setter, CEReactions] attribute unsigned long height;
 
     [RuntimeEnabled=CanvasDrawElement] attribute boolean layoutSubtree;
+    [RuntimeEnabled=CanvasDrawElement, RaisesException] DOMMatrix getElementTransform(Element element, DOMMatrix draw_transform);
 
-    [HighEntropy, MeasureAs=CanvasToDataURL, RaisesException] DOMString toDataURL(optional DOMString type = "image/png", optional any quality);
+    [MeasureAs=CanvasToDataURL, RaisesException] DOMString toDataURL(optional DOMString type = "image/png", optional any quality);
 
-    [HighEntropy, MeasureAs=CanvasToBlob, RaisesException] void toBlob(BlobCallback _callback, optional DOMString type = "image/png", optional any quality);
+    [MeasureAs=CanvasToBlob, RaisesException] void toBlob(BlobCallback _callback, optional DOMString type = "image/png", optional any quality);
 
     [RuntimeEnabled=CanvasHDR, RaisesException] void configureHighDynamicRange(CanvasHighDynamicRangeOptions options);
 };

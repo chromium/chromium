@@ -112,7 +112,7 @@ suite('cr-radio-button', function() {
         'rect(0px, 0px, 0px, 0px)');
     assertEquals(radioButton.$.button.getAttribute('aria-labelledby'), 'label');
     assertEquals(
-        radioButton.shadowRoot.querySelector('#label')!.textContent!.trim(),
+        radioButton.shadowRoot.querySelector('#label')!.textContent.trim(),
         'foo');
 
     // Setting hideLabelText true clips label from screen reader.
@@ -123,7 +123,7 @@ suite('cr-radio-button', function() {
         'rect(0px, 0px, 0px, 0px)');
     assertEquals(radioButton.$.button.getAttribute('aria-labelledby'), 'label');
     assertEquals(
-        radioButton.shadowRoot.querySelector('#label')!.textContent!.trim(),
+        radioButton.shadowRoot.querySelector('#label')!.textContent.trim(),
         'foo');
   });
 

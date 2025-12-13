@@ -102,9 +102,8 @@ class AndroidAutofillProvider : public AutofillProvider,
   void OnFocusOnFormField(AndroidAutofillManager* manager,
                           const FormData& form,
                           const FormFieldData& field) override;
-  void OnDidFillAutofillFormData(AndroidAutofillManager* manager,
-                                 const FormData& form,
-                                 base::TimeTicks timestamp) override;
+  void OnDidAutofillForm(AndroidAutofillManager* manager,
+                         const FormData& form) override;
   void OnHidePopup(AndroidAutofillManager* manager) override;
   void OnServerPredictionsAvailable(AndroidAutofillManager& manager,
                                     FormGlobalId form_id) override;
@@ -287,6 +286,50 @@ class AndroidAutofillProvider : public AutofillProvider,
     kClosed,     // The sheet was dismissed and shouldn't be shown again.
   };
 
+  // Groups all state that is specific to the current autofill session.
+  // A session starts when StartNewSession() is called and ends when Reset() is
+  // called.
+  struct SessionState {
+    SessionState();
+    SessionState(SessionState&&);
+    SessionState& operator=(SessionState&&);
+    ~SessionState();
+
+    // The form of the current session (queried input or changed select box).
+    std::unique_ptr<FormDataAndroid> form;
+
+    // The autofill manager for the current session.
+    base::WeakPtr<AndroidAutofillManager> manager;
+
+    // Information about a field in an autofill session.
+    struct CurrentFieldInfo {
+      FieldGlobalId id;
+      FieldTypeGroup group = {FieldTypeGroup::kNoGroup};
+      url::Origin origin;
+    };
+
+    // Properties of the last-focused field of the current session for `form`
+    // (queried input or changed select box).
+    CurrentFieldInfo current_field;
+
+    // The frame of the field for which the last OnAskForValuesToFill()
+    // happened.
+    //
+    // It is not necessarily the same frame as the current session's
+    // `last_focused_field_id_.host_frame` because the session may survive
+    // OnAskForValuesToFill().
+    //
+    // It's not necessarily the same frame as `manager`'s for the same reason as
+    // `last_focused_field_id_`, and also because `manager` may refer to an
+    // ancestor frame of the queried field.
+    content::GlobalRenderFrameHostId last_queried_field_rfh_id;
+  };
+
+  // Current autofill session state. Empty when no session is active.
+  std::optional<SessionState> session_state_;
+
+  // CredMan bottom sheet lifecycle state. This is independent of autofill
+  // sessions because passkey authentication can happen without autofill.
   CredManBottomSheetLifecycle credman_sheet_status_ =
       CredManBottomSheetLifecycle::kNotShown;
 
@@ -296,9 +339,10 @@ class AndroidAutofillProvider : public AutofillProvider,
   // shortly after `WasBottomSheetJustShown()` is called. The timer's function
   // is to handle multiple calls related to the same user event correctly, which
   // can currently happen (crbug.com/1490581).
+  // This tracks bottom sheets from both autofill sessions AND prefill requests.
   bool was_bottom_sheet_just_shown_ = false;
 
-  // Sets `was_bottom_sheet_just_shown` to false after a timeout.
+  // Sets `was_bottom_sheet_just_shown_` to false after a timeout.
   base::OneShotTimer was_shown_bottom_sheet_timer_;
 
   // Helper struct that contains cache data used in prefill requests.
@@ -320,30 +364,6 @@ class AndroidAutofillProvider : public AutofillProvider,
   // form to allow the user to access the keyboard after focusing on the
   // (cached) form a second time.
   bool has_used_cached_form_ = false;
-
-  // The form of the current session (queried input or changed select box).
-  std::unique_ptr<FormDataAndroid> form_;
-
-  // Properties of the last-focused field of the current session for `form_`
-  // (queried input or changed select box).
-  struct {
-    FieldGlobalId id;
-    FieldTypeGroup group = {FieldTypeGroup::kNoGroup};
-    url::Origin origin;
-  } current_field_;
-
-  // The frame of the field for which the last OnAskForValuesToFill() happened.
-  //
-  // It is not necessarily the same frame as the current session's
-  // `last_focused_field_id_.host_frame` because the session may survive
-  // OnAskForValuesToFill().
-  //
-  // It's not necessarily the same frame as `manager_`'s for the same reason as
-  // `last_focused_field_id_`, and also because `manager_` may refer to an
-  // ancestor frame of the queried field.
-  content::GlobalRenderFrameHostId last_queried_field_rfh_id_;
-
-  base::WeakPtr<AndroidAutofillManager> manager_;
 
   static constexpr SessionId kMinimumSessionId = SessionId(1);
   static constexpr SessionId kMaximumSessionId = SessionId(0xffff);

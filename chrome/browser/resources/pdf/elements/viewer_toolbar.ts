@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_progress/cr_progress.js';
 import './icons.html.js';
 import './viewer_download_controls.js';
@@ -12,16 +13,13 @@ import './viewer_page_selector.js';
 import './viewer_save_to_drive_controls.js';
 // </if>
 import './shared_vars.css.js';
-// <if expr="enable_ink">
-import './viewer_annotations_bar.js';
-import './viewer_annotations_mode_dialog.js';
-
-// </if>
 
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-// <if expr="enable_pdf_ink2">
+// <if expr="enable_pdf_ink2 or enable_pdf_save_to_drive">
 import {assert} from 'chrome://resources/js/assert.js';
+// </if>
+// <if expr="enable_pdf_ink2">
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 // </if>
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -29,10 +27,13 @@ import type {LoadTimeDataRaw} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-// <if expr="enable_pdf_ink2 or enable_ink">
+// <if expr="enable_pdf_ink2">
 import {AnnotationMode} from '../constants.js';
 // </if>
 import {FittingType, FormFieldFocusType} from '../constants.js';
+// <if expr="enable_pdf_save_to_drive">
+import {SaveToDriveState} from '../constants.js';
+// </if>
 // <if expr="enable_pdf_ink2">
 import {PluginController, PluginControllerEventType} from '../controller.js';
 // </if>
@@ -43,7 +44,7 @@ import {getHtml} from './viewer_toolbar.html.js';
 
 declare global {
   interface HTMLElementEventMap {
-    // <if expr="enable_pdf_ink2 or enable_ink">
+    // <if expr="enable_pdf_ink2">
     'annotation-mode-updated': CustomEvent<AnnotationMode>;
     // </if>
     'display-annotations-changed': CustomEvent<boolean>;
@@ -107,30 +108,24 @@ export class ViewerToolbarElement extends CrLitElement {
       printingEnabled_: {type: Boolean},
       viewportZoomPercent_: {type: Number},
 
-      // <if expr="enable_ink or enable_pdf_ink2">
+      // <if expr="enable_pdf_ink2">
       annotationAvailable: {type: Boolean},
       annotationMode: {
         type: String,
         reflect: true,
       },
-      // </if>
-
-      // <if expr="enable_ink">
-      pdfInk1AnnotationsEnabled_: {type: Boolean},
-      showAnnotationsModeDialog_: {type: Boolean},
-      // </if>
-
-      // <if expr="enable_pdf_ink2">
       enableUndoRedo: {type: Boolean},
       hasInk2Edits: {type: Boolean},
       pdfInk2Enabled: {type: Boolean},
       canRedoAnnotation_: {type: Boolean},
       canUndoAnnotation_: {type: Boolean},
       pdfTextAnnotationsEnabled_: {type: Boolean},
-      // </if>
+      // </if> enable_pdf_ink2
 
       // <if expr="enable_pdf_save_to_drive">
       pdfSaveToDriveEnabled: {type: Boolean},
+      saveToDriveProgress: {type: Number},
+      saveToDriveState: {type: String},
       // </if> enable_pdf_save_to_drive
     };
   }
@@ -156,24 +151,16 @@ export class ViewerToolbarElement extends CrLitElement {
   protected accessor printingEnabled_: boolean = false;
   private accessor viewportZoomPercent_: number = 0;
 
-  // <if expr="enable_ink or enable_pdf_ink2">
-  // Reactive properties common to ink and ink2
-  accessor annotationAvailable: boolean = false;
-  accessor annotationMode: AnnotationMode = AnnotationMode.OFF;
-  // </if>
-
-  // <if expr="enable_ink">
-  // Ink reactive properties
-  private accessor pdfInk1AnnotationsEnabled_: boolean = false;
-  protected accessor showAnnotationsModeDialog_: boolean = false;
-  // </if>
-
   // <if expr="enable_pdf_save_to_drive">
   accessor pdfSaveToDriveEnabled: boolean = false;
+  accessor saveToDriveProgress: number = 0;
+  accessor saveToDriveState: SaveToDriveState = SaveToDriveState.UNINITIALIZED;
   // </if> enable_pdf_save_to_drive
 
   // <if expr="enable_pdf_ink2">
   // Ink2 reactive properties
+  accessor annotationAvailable: boolean = false;
+  accessor annotationMode: AnnotationMode = AnnotationMode.OFF;
   accessor enableUndoRedo: boolean = true;
   accessor hasInk2Edits: boolean = false;
   accessor pdfInk2Enabled: boolean = false;
@@ -200,7 +187,7 @@ export class ViewerToolbarElement extends CrLitElement {
         PluginControllerEventType.START_INK_STROKE,
         this.handleStartInkStroke_.bind(this));
   }
-  // </if>
+  // </if> enable_pdf_ink2
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -235,10 +222,6 @@ export class ViewerToolbarElement extends CrLitElement {
 
   private updateLoadTimeData_() {
     this.printingEnabled_ = loadTimeData.getBoolean('printingEnabled');
-    // <if expr="enable_ink">
-    this.pdfInk1AnnotationsEnabled_ =
-        loadTimeData.getBoolean('pdfInk1AnnotationsEnabled');
-    // </if>
     // <if expr="enable_pdf_ink2">
     this.pdfTextAnnotationsEnabled_ =
         loadTimeData.getBoolean('pdfTextAnnotationsEnabled');
@@ -266,40 +249,11 @@ export class ViewerToolbarElement extends CrLitElement {
                                                         'tooltipFitToWidth');
   }
 
-  // <if expr="enable_ink">
-  protected showInkAnnotationButton_(): boolean {
-    // <if expr="enable_pdf_ink2">
-    if (this.pdfInk2Enabled) {
-      return false;
-    }
-    // </if> enable_pdf_ink2
-
-    return this.pdfInk1AnnotationsEnabled_;
-  }
-  // </if> enable_ink
-
   // <if expr="enable_pdf_ink2">
   protected showInk2Buttons_(): boolean {
     return this.pdfInk2Enabled;
   }
   // </if>
-
-  // <if expr="enable_ink">
-  protected showAnnotationsBar_(): boolean {
-    return this.pdfInk1AnnotationsEnabled_ && !this.loading_ &&
-        this.isInInk1AnnotationMode_();
-  }
-
-  protected isInInk1AnnotationMode_(): boolean {
-    // <if expr="enable_pdf_ink2">
-    if (this.pdfInk2Enabled) {
-      return false;
-    }
-    // </if> enable_pdf_ink2
-
-    return this.annotationMode === AnnotationMode.DRAW;
-  }
-  // </if> enable_ink
 
   protected onPrintClick_() {
     this.dispatchEvent(new CustomEvent('print'));
@@ -315,13 +269,6 @@ export class ViewerToolbarElement extends CrLitElement {
     this.dispatchEvent(new CustomEvent(
         'display-annotations-changed', {detail: this.displayAnnotations_}));
     this.$.menu.close();
-
-    // <if expr="enable_ink">
-    if (!this.displayAnnotations_ &&
-        this.annotationMode === AnnotationMode.DRAW) {
-      this.setAnnotationMode(AnnotationMode.OFF);
-    }
-    // </if>
   }
 
   protected onPresentClick_() {
@@ -441,66 +388,33 @@ export class ViewerToolbarElement extends CrLitElement {
         this.viewportZoomPercent_ === this.zoomBounds.max;
   }
 
-  // <if expr="enable_ink">
-  protected onDialogClose_() {
-    // The dialog should only show if we are not in annotation mode and the
-    // user wants to transition to drawing annotations.
-    assert(this.annotationMode === AnnotationMode.OFF);
-    const confirmed =
-        this.shadowRoot.querySelector(
-                           'viewer-annotations-mode-dialog')!.wasConfirmed();
-    this.showAnnotationsModeDialog_ = false;
-    if (confirmed) {
-      this.dispatchEvent(new CustomEvent('annotation-mode-dialog-confirmed'));
-      this.setAnnotationMode(AnnotationMode.DRAW);
-    }
-  }
-  // </if>
-
-  // <if expr="enable_ink or enable_pdf_ink2">
+  // <if expr="enable_pdf_ink2">
   // Gets a CSS class of "active" if `mode` is the active annotation mode.
   protected getActive_(mode: AnnotationMode): string {
     return mode === this.annotationMode ? 'active' : '';
   }
 
+  // Returns true if the button is toggled on, false otherwise.
+  protected getAriaPressed_(mode: AnnotationMode): string {
+    return mode === this.annotationMode ? 'true' : 'false';
+  }
+
   protected onAnnotationClick_() {
+    assert(this.pdfInk2Enabled);
+
     const newAnnotationMode = this.annotationMode === AnnotationMode.DRAW ?
         AnnotationMode.OFF :
         AnnotationMode.DRAW;
-
-    // <if expr="enable_pdf_ink2">
-    if (this.pdfInk2Enabled) {
-      this.setAnnotationMode(newAnnotationMode);
-      return;
-    }
-    // </if> enable_pdf_ink2
-
-    // <if expr="enable_ink">
-    if (!this.rotated && !this.twoUpViewEnabled) {
-      this.setAnnotationMode(newAnnotationMode);
-      return;
-    }
-
-    this.showAnnotationsModeDialog_ = true;
-    // </if> enable_ink
+    this.setAnnotationMode(newAnnotationMode);
   }
 
   setAnnotationMode(annotationMode: AnnotationMode) {
+    assert(this.pdfInk2Enabled);
+
     this.dispatchEvent(
         new CustomEvent('annotation-mode-updated', {detail: annotationMode}));
-
-    // <if expr="enable_pdf_ink2">
-    // Don't toggle display annotations for Ink2.
-    if (this.pdfInk2Enabled) {
-      return;
-    }
-    // </if> enable_pdf_ink2
-
-    if (annotationMode !== AnnotationMode.OFF && !this.displayAnnotations_) {
-      this.toggleDisplayAnnotations_();
-    }
   }
-  // </if> enable_ink or enable_pdf_ink2
+  // </if> enable_pdf_ink2
 
   // <if expr="enable_pdf_ink2">
   protected onTextAnnotationClick_() {
@@ -625,13 +539,16 @@ export class ViewerToolbarElement extends CrLitElement {
    * conditions.
    */
   protected presentationModeAvailable_(): boolean {
-    // <if expr="enable_ink">
-    return this.annotationMode === AnnotationMode.OFF && !this.embeddedViewer;
-    // </if>
-    // <if expr="not enable_ink">
     return !this.embeddedViewer;
-    // </if>
   }
+
+  // <if expr="enable_pdf_save_to_drive">
+  getSaveToDriveBubbleAnchor(): HTMLElement {
+    const anchor = this.shadowRoot.querySelector<HTMLElement>('#save-to-drive');
+    assert(anchor);
+    return anchor;
+  }
+  // </if> enable_pdf_save_to_drive
 }
 
 declare global {

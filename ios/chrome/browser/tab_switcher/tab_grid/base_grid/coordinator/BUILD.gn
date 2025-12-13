@@ -26,7 +26,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/ui/util:snackbar_util",
+    "//ios/chrome/browser/shared/public/snackbar",
     "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui",
     "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui:grid_mediator_item_provider",
     "//ios/chrome/browser/tab_switcher/ui_bundled:tab_group_confirmation",
@@ -37,9 +37,9 @@ source_set("coordinator") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:tab_group_creation",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:tab_groups_ui",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions",
-    "//ios/third_party/material_components_ios",
     "//ios/web/public",
     "//ui/base",
+    "//ui/strings",
   ]
 }
 
@@ -81,6 +81,7 @@ source_set("mediator") {
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/snapshots/model:model_common",
     "//ios/chrome/browser/snapshots/model:model_swift",
+    "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/suggested_actions",
     "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui:grid_mediator_item_provider",
     "//ios/chrome/browser/tab_switcher/ui_bundled",
     "//ios/chrome/browser/tab_switcher/ui_bundled:items",
@@ -99,7 +100,6 @@ source_set("mediator") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_utils",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_view_controller_mutator",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:selected_grid_items",
-    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/suggested_actions",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_context_menu:tab_item",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars:toolbars_ui",
@@ -110,6 +110,18 @@ source_set("mediator") {
     "//ios/web/public",
     "//net",
     "//ui/gfx",
+  ]
+}
+
+source_set("scene_agent") {
+  sources = [
+    "tab_grid_observing.h",
+    "tab_grid_scene_agent.h",
+    "tab_grid_scene_agent.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ui/base",
   ]
 }
 

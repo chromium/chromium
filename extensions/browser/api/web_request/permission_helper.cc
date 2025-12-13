@@ -13,6 +13,9 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/process_map_factory.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

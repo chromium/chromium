@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] [required] lstm float32 tensors steps=2, batchSize=1 with options.bias, options.recurrentBias, options.activations=['relu', 'relu', 'relu'] and options.direction='backward'
+  assert_less_than_equal: assert_array_approx_equals_ulp: test lstm float32 actual 12650.0009765625 should be close enough to expected 21955.08984375 by ULP distance: expected a number less than or equal to 3n but got 6676013n
+[FAIL] [required] lstm float32 tensors steps=2 with all options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test lstm float32 actual 1 should be close enough to expected 10.469000816345215 by ULP distance: expected a number less than or equal to 3n but got 27754759n
+[FAIL] [required] lstm float16 tensors steps=2 with all options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test lstm float16 actual 1 should be close enough to expected 10.46875 by ULP distance: expected a number less than or equal to 10 but got 3388
+Harness: the test ran to completion.
+

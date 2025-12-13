@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
 
+#include "base/notreached.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_paint_utils_linux.h"
+#include "chrome/browser/ui/views/frame/browser_native_widget_aura_linux.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -27,10 +28,10 @@ constexpr int kResizeTopBorderThickness = 4;
 }  // namespace
 
 BrowserFrameViewLinux::BrowserFrameViewLinux(
-    BrowserFrame* frame,
+    BrowserWidget* widget,
     BrowserView* browser_view,
     BrowserFrameViewLayoutLinux* layout)
-    : OpaqueBrowserFrameView(frame, browser_view, layout), layout_(layout) {
+    : OpaqueBrowserFrameView(widget, browser_view, layout), layout_(layout) {
   layout->set_view(this);
   if (auto* linux_ui = ui::LinuxUi::instance()) {
     window_button_order_observation_.Observe(linux_ui);
@@ -71,7 +72,7 @@ gfx::ShadowValues BrowserFrameViewLinux::GetShadowValues(bool active) {
 void BrowserFrameViewLinux::PaintRestoredFrameBorder(
     gfx::Canvas* canvas) const {
 #if BUILDFLAG(IS_LINUX)
-  const bool tiled = frame()->tiled();
+  const bool tiled = browser_widget()->tiled();
 #else
   const bool tiled = false;
 #endif
@@ -90,8 +91,8 @@ void BrowserFrameViewLinux::GetWindowMask(const gfx::Size& size,
 }
 
 bool BrowserFrameViewLinux::ShouldDrawRestoredFrameShadow() const {
-  return static_cast<DesktopBrowserFrameAuraLinux*>(
-             frame()->native_browser_frame())
+  return static_cast<BrowserNativeWidgetAuraLinux*>(
+             browser_widget()->browser_native_widget())
       ->ShouldDrawRestoredFrameShadow();
 }
 
@@ -126,7 +127,7 @@ int BrowserFrameViewLinux::NonClientHitTest(const gfx::Point& point) {
 
 float BrowserFrameViewLinux::GetRestoredCornerRadiusDip() const {
 #if BUILDFLAG(IS_LINUX)
-  const bool tiled = frame()->tiled();
+  const bool tiled = browser_widget()->tiled();
 #else
   const bool tiled = false;
 #endif
@@ -140,6 +141,81 @@ float BrowserFrameViewLinux::GetRestoredCornerRadiusDip() const {
 
 int BrowserFrameViewLinux::GetTranslucentTopAreaHeight() const {
   return 0;
+}
+
+void BrowserFrameViewLinux::LayoutWebAppWindowTitle(
+    const gfx::Rect& available_space,
+    views::Label& window_title_label) const {
+  constexpr int kIconTitleSpacing = 4;
+  constexpr int kCaptionSpacing = 5;
+
+  gfx::Rect bounds = available_space;
+  bounds.Inset(gfx::Insets::TLBR(0, kIconTitleSpacing, 0, kCaptionSpacing));
+  window_title_label.SetSubpixelRenderingEnabled(false);
+  window_title_label.SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  window_title_label.SetBoundsRect(bounds);
+}
+
+BrowserLayoutParams BrowserFrameViewLinux::GetBrowserLayoutParams() const {
+  BrowserLayoutParams params;
+  params.visual_client_area = GetBoundsForClientView();
+
+  // Some opaque frames add small margins next to the caption buttons.
+  const int caption_margin =
+      layout_->GetWindowCaptionSpacing(views::FrameButton::kMinimize,
+                                       /*leading_spacing=*/false,
+                                       /*is_leading_button=*/false);
+
+  // On Linux, buttons may be split between leading and trailing.
+  // Account for both in the exclusion areas.
+
+  auto* const provider = views::WindowButtonOrderProvider::GetInstance();
+
+  gfx::Rect leading_bounds;
+  for (auto button : provider->leading_buttons()) {
+    if (auto* const button_view = layout_->GetFrameButton(button);
+        button_view && button_view->GetVisible()) {
+      leading_bounds.Union(button_view->bounds());
+    }
+  }
+  if (!leading_bounds.IsEmpty()) {
+    params.leading_exclusion.content =
+        gfx::SizeF(leading_bounds.right() - params.visual_client_area.x(),
+                   leading_bounds.bottom() - params.visual_client_area.y());
+    params.leading_exclusion.horizontal_padding = caption_margin;
+  }
+
+  gfx::Rect trailing_bounds;
+  for (auto button : provider->trailing_buttons()) {
+    if (auto* const button_view = layout_->GetFrameButton(button);
+        button_view && button_view->GetVisible()) {
+      trailing_bounds.Union(button_view->bounds());
+    }
+  }
+  if (!trailing_bounds.IsEmpty()) {
+    params.trailing_exclusion.content =
+        gfx::SizeF(params.visual_client_area.right() - trailing_bounds.x(),
+                   trailing_bounds.bottom() - params.visual_client_area.y());
+    params.trailing_exclusion.horizontal_padding = caption_margin;
+  }
+
+  MaybeAddAppIconToLayoutParams(params);
+  return params;
+}
+
+bool BrowserFrameViewLinux::CaptionButtonsOnLeadingEdge() const {
+  auto* const provider = views::WindowButtonOrderProvider::GetInstance();
+  return !provider->leading_buttons().empty();
+}
+
+bool BrowserFrameViewLinux::CaptionButtonsOnTrailingEdge() const {
+  auto* const provider = views::WindowButtonOrderProvider::GetInstance();
+  return !provider->trailing_buttons().empty();
+}
+
+BrowserFrameViewLinux::BoundsAndMargins
+BrowserFrameViewLinux::GetCaptionButtonBounds() const {
+  NOTREACHED() << "Linux uses a different computation for caption buttons.";
 }
 
 BEGIN_METADATA(BrowserFrameViewLinux)

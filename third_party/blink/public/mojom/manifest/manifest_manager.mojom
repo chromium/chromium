@@ -7,6 +7,15 @@ module blink.mojom;
 import "third_party/blink/public/mojom/manifest/manifest.mojom";
 import "url/mojom/url.mojom";
 
+
+struct RequestManifestError {
+  // This cannot be kSuccess, as this struct represents an error.
+  // This cannot be kNoManifestSpecified, as that is also a success case where
+  // the default manifest is returned.
+  ManifestRequestResult error;
+  array<ManifestError> details;
+};
+
 // Interface implemented in the renderer, associated with a specific frame,
 // that is used by the browser process to request the manifest and manifest
 // url from a document.
@@ -18,6 +27,12 @@ interface ManifestManager {
   // specified by the document failed to load or parse.
   RequestManifest()
       => (ManifestRequestResult result, url.mojom.Url url, Manifest manifest);
+
+  // Fetches the manifest from the frame's document. If the document has no
+  // manifest, a default manifest is returned (where the manifest's
+  // `manifest_url` is empty).
+  RequestManifestAndErrors()
+      => result<Manifest, RequestManifestError>;
 
   // Requests the manifest URL and the debug info for Manifest of the frame's
   // document. |url| will be empty if the document specifies no manifest.

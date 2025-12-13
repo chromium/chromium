@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
+
+import java.util.function.Supplier;
 
 /** Fulfilled when WebContents are present in the Tab supplied. */
 public class WebContentsPresentCondition extends ConditionWithResult<WebContents> {
@@ -21,7 +22,8 @@ public class WebContentsPresentCondition extends ConditionWithResult<WebContents
 
     @Override
     protected ConditionStatusWithResult<WebContents> resolveWithSuppliers() {
-        return whether(hasValue()).withResult(get());
+        WebContents value = get();
+        return whether(value != null).withResult(value);
     }
 
     @Override
@@ -33,18 +35,10 @@ public class WebContentsPresentCondition extends ConditionWithResult<WebContents
     public WebContents get() {
         // Do not return a WebContents that has been destroyed, so always get it from the
         // Tab instead of letting ConditionWithResult return its |mResult|.
-        if (!mLoadedTabSupplier.hasValue()) {
-            return null;
-        }
         Tab loadedTab = mLoadedTabSupplier.get();
         if (loadedTab == null) {
             return null;
         }
         return loadedTab.getWebContents();
-    }
-
-    @Override
-    public boolean hasValue() {
-        return get() != null;
     }
 }

@@ -45,9 +45,44 @@
 #include "services/network/public/mojom/url_request.mojom-forward.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom-forward.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-forward.h"
+#include "url/mojom/origin_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+    StructTraits<network::mojom::EnabledClientHintsDataView,
+                 network::ResourceRequest::TrustedParams::EnabledClientHints> {
+  static const url::Origin& origin(
+      const network::ResourceRequest::TrustedParams::EnabledClientHints&
+          enabled_client_hints) {
+    return enabled_client_hints.origin;
+  }
+
+  static bool is_outermost_main_frame(
+      const network::ResourceRequest::TrustedParams::EnabledClientHints&
+          enabled_client_hints) {
+    return enabled_client_hints.is_outermost_main_frame;
+  }
+
+  static const std::vector<network::mojom::WebClientHintsType>& hints(
+      const network::ResourceRequest::TrustedParams::EnabledClientHints&
+          enabled_client_hints) {
+    return enabled_client_hints.hints;
+  }
+
+  static const std::vector<network::mojom::WebClientHintsType>&
+  not_allowed_hints(
+      const network::ResourceRequest::TrustedParams::EnabledClientHints&
+          enabled_client_hints) {
+    return enabled_client_hints.not_allowed_hints;
+  }
+
+  static bool Read(
+      network::mojom::EnabledClientHintsDataView data,
+      network::ResourceRequest::TrustedParams::EnabledClientHints* out);
+};
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
@@ -73,7 +108,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest::TrustedParams& trusted_params) {
     return trusted_params.include_request_cookies_with_response;
   }
-  static const std::optional<std::vector<network::mojom::WebClientHintsType>>&
+  static const std::optional<
+      network::ResourceRequest::TrustedParams::EnabledClientHints>&
   enabled_client_hints(
       const network::ResourceRequest::TrustedParams& trusted_params) {
     return trusted_params.enabled_client_hints;
@@ -379,10 +415,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static const std::optional<net::NetLogSource>& net_log_reference_info(
       const network::ResourceRequest& request) {
     return request.net_log_reference_info;
-  }
-  static network::mojom::IPAddressSpace target_ip_address_space(
-      const network::ResourceRequest& request) {
-    return request.target_ip_address_space;
   }
   static net::StorageAccessApiStatus storage_access_api_status(
       const network::ResourceRequest& request) {

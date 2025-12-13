@@ -16,6 +16,7 @@
 #include "google_apis/gaia/gaia_features.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/google_api_keys.h"
+#include "net/base/url_util.h"
 #include "url/url_canon.h"
 #include "url/url_constants.h"
 
@@ -68,10 +69,29 @@ const char kSigninChromeSyncKeysRetrievalUrl[] = "encryption/unlock/desktop";
 const char kSigninChromeSyncKeysRecoverabilityUrlSuffix[] =
     "?kdi=CAIaDgoKY2hyb21lc3luYxAB";
 
+// This kdi parameter allows to open the passkey unlock flow.
+// The kdi parameter here was generated from the following protobuf:
+//
+// {
+//   operation: RETRIEVAL
+//   retrieval_inputs: {
+//     security_domain_name: "hw_protected"
+//   }
+// }
+//
+// And then converted to bytes with:
+//
+// % gqui --outfile=rawproto:/tmp/out.pb from textproto:/tmp/input \
+//       proto gaia_frontend.ClientDecryptableKeyDataInputs
+//
+// Then the contents of `/tmp/out.pb` need to be base64url-encoded to produce
+// the "kdi" parameter's value.
+const char kPasskeyUnlockUrlKdiParameter[] = "CAESDgoMaHdfcHJvdGVjdGVk";
+
 const char kServiceLogoutUrlSuffix[] = "Logout";
 const char kBlankPageSuffix[] = "chrome/blank.html";
 const char kOAuthMultiloginSuffix[] = "oauth/multilogin";
-const char kListAccountsSuffix[] = "ListAccounts?json=standard";
+const char kListAccountsSuffix[] = "ListAccounts?json=standard&laf=b64bin";
 const char kEmbeddedSigninSuffix[] = "embedded/setup/chrome/usermenu";
 const char kAddAccountSuffix[] = "AddSession";
 const char kReauthSuffix[] = "embedded/xreauth/chrome";
@@ -92,6 +112,8 @@ const char kOAuth2IssueTokenUrlSuffix[] = "v1/issuetoken";
 // API calls from accountcapabilities-pa.googleapis.com
 const char kAccountCapabilitiesBatchGetUrlSuffix[] =
     "v1/accountcapabilities:batchGet";
+const char kAccountCapabilitiesGetAllVisibleUrlSuffix[] =
+    "v1/accountcapabilities:getAllVisible";
 
 const char kRotateBoundCookiesUrlSuffix[] = "RotateBoundCookies";
 
@@ -237,6 +259,15 @@ const GURL& GaiaUrls::signin_chrome_sync_keys_retrieval_url() const {
   return signin_chrome_sync_keys_retrieval_url_;
 }
 
+const GURL& GaiaUrls::signin_chrome_passkey_unlock_url() const {
+  return signin_chrome_passkey_unlock_url_;
+}
+
+const std::string_view GaiaUrls::signin_chrome_passkey_unlock_kdi_parameter()
+    const {
+  return kPasskeyUnlockUrlKdiParameter;
+}
+
 const GURL& GaiaUrls::signin_chrome_sync_keys_recoverability_degraded_url()
     const {
   return signin_chrome_sync_keys_recoverability_degraded_url_;
@@ -266,8 +297,12 @@ const GURL& GaiaUrls::reauth_url() const {
   return reauth_url_;
 }
 
-const GURL& GaiaUrls::account_capabilities_url() const {
-  return account_capabilities_url_;
+const GURL& GaiaUrls::account_capabilities_batch_get_url() const {
+  return account_capabilities_batch_get_url_;
+}
+
+const GURL& GaiaUrls::account_capabilities_get_all_visible_url() const {
+  return account_capabilities_get_all_visible_url_;
 }
 
 const std::string& GaiaUrls::oauth2_chrome_client_id() const {
@@ -326,12 +361,7 @@ GURL GaiaUrls::ListAccountsURLWithSource(const std::string& source) {
   if (source.empty()) {
     return list_accounts_url_;
   } else {
-    std::string query = list_accounts_url_.query();
-    if (base::FeatureList::IsEnabled(
-            gaia::features::kListAccountsUsesBinaryFormat)) {
-      return list_accounts_url_.Resolve(base::StringPrintf(
-          "?gpsia=1&source=%s&laf=b64bin&%s", source.c_str(), query.c_str()));
-    }
+    std::string query = list_accounts_url_.GetQuery();
     return list_accounts_url_.Resolve(base::StringPrintf(
         "?gpsia=1&source=%s&%s", source.c_str(), query.c_str()));
   }
@@ -414,6 +444,9 @@ void GaiaUrls::InitializeDefault() {
   ResolveURLIfInvalid(&reauth_chrome_dice_, gaia_url, kAccountChooser);
   ResolveURLIfInvalid(&signin_chrome_sync_keys_retrieval_url_, gaia_url,
                       kSigninChromeSyncKeysRetrievalUrl);
+  ResolveURLIfInvalid(&signin_chrome_passkey_unlock_url_, gaia_url,
+                      base::StrCat({kSigninChromeSyncKeysRetrievalUrl,
+                                    "?kdi=", kPasskeyUnlockUrlKdiParameter}));
   ResolveURLIfInvalid(
       &signin_chrome_sync_keys_recoverability_degraded_url_, gaia_url,
       base::StrCat({kSigninChromeSyncKeysRetrievalUrl,
@@ -450,15 +483,19 @@ void GaiaUrls::InitializeDefault() {
                       kOAuth2IssueTokenUrlSuffix);
 
   // URLs from |account_capabilities_origin_url_|.
-  ResolveURLIfInvalid(&account_capabilities_url_,
+  ResolveURLIfInvalid(&account_capabilities_batch_get_url_,
                       account_capabilities_origin_url_,
                       kAccountCapabilitiesBatchGetUrlSuffix);
+  ResolveURLIfInvalid(&account_capabilities_get_all_visible_url_,
+                      account_capabilities_origin_url_,
+                      kAccountCapabilitiesGetAllVisibleUrlSuffix);
 }
 
 void GaiaUrls::InitializeFromConfig() {
   GaiaConfig* config = GaiaConfig::GetInstance();
-  if (!config)
+  if (!config) {
     return;
+  }
 
   config->GetURLIfExists(URL_KEY_AND_PTR(google_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(secure_google_url));
@@ -484,6 +521,7 @@ void GaiaUrls::InitializeFromConfig() {
   config->GetURLIfExists(URL_KEY_AND_PTR(saml_redirect_chromeos_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(signin_chrome_sync_dice));
   config->GetURLIfExists(URL_KEY_AND_PTR(reauth_chrome_dice));
+  config->GetURLIfExists(URL_KEY_AND_PTR(signin_chrome_passkey_unlock_url));
   config->GetURLIfExists(
       URL_KEY_AND_PTR(signin_chrome_sync_keys_retrieval_url));
   config->GetURLIfExists(
@@ -496,7 +534,9 @@ void GaiaUrls::InitializeFromConfig() {
   config->GetURLIfExists(URL_KEY_AND_PTR(embedded_signin_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(add_account_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(reauth_url));
-  config->GetURLIfExists(URL_KEY_AND_PTR(account_capabilities_url));
+  config->GetURLIfExists(URL_KEY_AND_PTR(account_capabilities_batch_get_url));
+  config->GetURLIfExists(
+      URL_KEY_AND_PTR(account_capabilities_get_all_visible_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(get_check_connection_info_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_token_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_issue_token_url));

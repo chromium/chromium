@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/functional/callback_helpers.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "services/metrics/public/cpp/ukm_builders.h"

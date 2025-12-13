@@ -62,9 +62,8 @@ TEST(TachyonResponseTest, OtherRpcCode) {
 }
 
 TEST_P(TachyonResponseTest, HttpHeader) {
-  TachyonResponse response(
-      GetParam().net_error, GetParam().http_status_code,
-      std::make_unique<std::string>(GetParam().response_body));
+  TachyonResponse response(GetParam().net_error, GetParam().http_status_code,
+                           GetParam().response_body);
   EXPECT_EQ(response.status(), GetParam().expected_status);
   EXPECT_THAT(response.response_body(),
               testing::StrEq(GetParam().response_body));

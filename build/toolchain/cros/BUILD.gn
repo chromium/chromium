@@ -4,125 +4,37 @@
 
 import("//build/config/compiler/compiler.gni")
 import("//build/config/sysroot.gni")
-import("//build/toolchain/cros/cros_config.gni")
 import("//build/toolchain/cros_toolchain.gni")
 import("//build/toolchain/gcc_toolchain.gni")
 
-# This is mostly identical to gcc_toolchain, but handles relativizing toolchain
-# paths. This is needed for CrOS since these paths often change based on the
-# environment. For example, cxx is a relative path picked up on $PATH in the
-# chroot. But in Simple Chrome, cxx is a system-absolute path.
-template("cros_toolchain") {
-  if (lacros_use_chromium_toolchain) {
-    clang_toolchain(target_name) {
-      forward_variables_from(invoker, "*")
-    }
-  } else {
-    gcc_toolchain(target_name) {
-      forward_variables_from(invoker, "*")
-
-      toolchain_args.cc_wrapper = ""
-      toolchain_args.clang_use_chrome_plugins = false
-
-      # CrOS's target toolchain wrapper prefers to invoke rewrapper itself, so
-      # pass it the rewrapper path via cmd-line arg. Otherwise, for both CrOS's
-      # host wrapper (used in the ebuild) and Chrome's clang (used in Simple
-      # Chrome), prepend rewrapper like normal.
-      if (use_reclient && invoker.needs_rewrapper_path_arg) {
-        # crbug.com/417677693: if cppflags exist, give them space.
-        if (extra_cppflags != "") {
-          extra_cppflags += " "
-        }
-        extra_cppflags += "--rewrapper-path $reclient_cros_cc_wrapper --rewrapper-cfg ${reclient_cc_cfg_file}"
-      }
-
-      # crbug.com/397463803: Add these so the compiler wrapper doesn't error
-      # out. Should be removable around Q4 2025.
-      extra_asmflags = "-D_CROSTC_IS_AWARE_OF_THIS_USECASE"
-      extra_cppflags += " -D_CROSTC_IS_AWARE_OF_THIS_USECASE"
-      extra_ldflags += " -D_CROSTC_IS_AWARE_OF_THIS_USECASE"
-
-      # Relativize path if compiler is specified such that not to lookup from
-      # $PATH and cc/cxx does not contain additional flags.
-      if (cc != get_path_info(cc, "file") &&
-          string_replace(cc, " ", "") == cc) {
-        cc = rebase_path(cc, root_build_dir)
-      }
-      if (cxx != get_path_info(cxx, "file") &&
-          string_replace(cxx, " ", "") == cxx) {
-        cxx = rebase_path(cxx, root_build_dir)
-      }
-      if (ar != get_path_info(ar, "file") &&
-          string_replace(ar, " ", "") == ar) {
-        ar = rebase_path(ar, root_build_dir)
-      }
-      if (ld != get_path_info(ld, "file") &&
-          string_replace(ld, " ", "") == ld) {
-        ld = rebase_path(ld, root_build_dir)
-      }
-    }
-  }
-}
-
 # This is the normal toolchain for most targets.
-cros_toolchain("target") {
+clang_toolchain("target") {
   toolchain_args = {
     current_cpu = target_cpu
     current_os = "chromeos"
     sysroot = target_sysroot
   }
 
-  if (!lacros_use_chromium_toolchain) {
-    ar = cros_target_ar
-    cc = cros_target_cc
-    cxx = cros_target_cxx
-    ld = cros_target_ld
-
-    if (cros_target_nm != "") {
-      nm = cros_target_nm
-    }
-    if (cros_target_readelf != "") {
-      readelf = cros_target_readelf
-    }
-    extra_cflags = cros_target_extra_cflags
-    extra_cppflags = cros_target_extra_cppflags
-    extra_cxxflags = cros_target_extra_cxxflags
-    extra_ldflags = cros_target_extra_ldflags
-
-    needs_rewrapper_path_arg = cros_needs_rewrapper_path_arg
-  }
+  extra_cflags = cros_target_extra_cflags
+  extra_cppflags = cros_target_extra_cppflags
+  extra_cxxflags = cros_target_extra_cxxflags
+  extra_ldflags = cros_target_extra_ldflags
 }
 
-cros_toolchain("host") {
+clang_toolchain("host") {
   toolchain_args = {
     current_cpu = host_cpu
     current_os = "linux"
     sysroot = cros_host_sysroot
   }
 
-  if (!lacros_use_chromium_toolchain) {
-    # These are args for the template.
-    ar = cros_host_ar
-    cc = cros_host_cc
-    cxx = cros_host_cxx
-    ld = cros_host_ld
-
-    if (cros_host_nm != "") {
-      nm = cros_host_nm
-    }
-    if (cros_host_readelf != "") {
-      readelf = cros_host_readelf
-    }
-    extra_cflags = cros_host_extra_cflags
-    extra_cppflags = cros_host_extra_cppflags
-    extra_cxxflags = cros_host_extra_cxxflags
-    extra_ldflags = cros_host_extra_ldflags
-
-    needs_rewrapper_path_arg = false
-  }
+  extra_cflags = cros_host_extra_cflags
+  extra_cppflags = cros_host_extra_cppflags
+  extra_cxxflags = cros_host_extra_cxxflags
+  extra_ldflags = cros_host_extra_ldflags
 }
 
-cros_toolchain("v8_snapshot") {
+clang_toolchain("v8_snapshot") {
   toolchain_args = {
     if (target_cpu == "x86" || target_cpu == "arm" || target_cpu == "mipsel") {
       current_cpu = "x86"
@@ -134,24 +46,8 @@ cros_toolchain("v8_snapshot") {
     sysroot = cros_v8_snapshot_sysroot
   }
 
-  if (!lacros_use_chromium_toolchain) {
-    # These are args for the template.
-    ar = cros_v8_snapshot_ar
-    cc = cros_v8_snapshot_cc
-    cxx = cros_v8_snapshot_cxx
-    ld = cros_v8_snapshot_ld
-
-    if (cros_v8_snapshot_nm != "") {
-      nm = cros_v8_snapshot_nm
-    }
-    if (cros_v8_snapshot_readelf != "") {
-      readelf = cros_v8_snapshot_readelf
-    }
-    extra_cflags = cros_v8_snapshot_extra_cflags
-    extra_cppflags = cros_v8_snapshot_extra_cppflags
-    extra_cxxflags = cros_v8_snapshot_extra_cxxflags
-    extra_ldflags = cros_v8_snapshot_extra_ldflags
-
-    needs_rewrapper_path_arg = false
-  }
+  extra_cflags = cros_v8_snapshot_extra_cflags
+  extra_cppflags = cros_v8_snapshot_extra_cppflags
+  extra_cxxflags = cros_v8_snapshot_extra_cxxflags
+  extra_ldflags = cros_v8_snapshot_extra_ldflags
 }

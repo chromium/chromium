@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_delegated_source_list_view.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -14,9 +15,7 @@ namespace {
 // Flag to display an informational message about using the system's
 // screen-sharing picker. When disabled, only the button to open the picker is
 // shown without further instructions.
-BASE_FEATURE(kDelegatedSourceListInfoText,
-             "DelegatedSourceListInfoText",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDelegatedSourceListInfoText, base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::u16string GetMessageText(DesktopMediaList::Type type) {
   switch (type) {

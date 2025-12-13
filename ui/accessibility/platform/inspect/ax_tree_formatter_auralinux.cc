@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_auralinux.h"
 
 #include <dbus/dbus.h>
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -108,7 +104,11 @@ AtkObject* GetAtkObject(AXPlatformNodeDelegate* node) {
 base::Value::Dict AXTreeFormatterAuraLinux::BuildTree(
     AXPlatformNodeDelegate* root) const {
   base::Value::Dict dict;
-  RecursiveBuildTree(GetAtkObject(root), &dict);
+  AtkObject* atk_root = GetAtkObject(root);
+  if (!atk_root) {
+    return dict;
+  }
+  RecursiveBuildTree(atk_root, &dict);
   return dict;
 }
 
@@ -122,6 +122,10 @@ base::Value::Dict AXTreeFormatterAuraLinux::BuildNode(
 void AXTreeFormatterAuraLinux::RecursiveBuildTree(
     AtkObject* atk_node,
     base::Value::Dict* dict) const {
+  if (!atk_node || !dict) {
+    return;
+  }
+
   AXPlatformNodeAuraLinux* platform_node =
       AXPlatformNodeAuraLinux::FromAtkObject(atk_node);
   DCHECK(platform_node);
@@ -158,6 +162,10 @@ void AXTreeFormatterAuraLinux::RecursiveBuildTree(
 void AXTreeFormatterAuraLinux::RecursiveBuildTree(
     AtspiAccessible* node,
     base::Value::Dict* dict) const {
+  if (!node || !dict) {
+    return;
+  }
+
   AddProperties(node, dict);
 
   GError* error = nullptr;
@@ -348,8 +356,8 @@ std::string AXTreeFormatterAuraLinux::ToString(AtkRelation* relation) {
 
   std::vector<std::string> target_roles(relation_targets->len);
   for (guint i = 0; i < relation_targets->len; i++) {
-    AtkObject* atk_target =
-        static_cast<AtkObject*>(g_ptr_array_index(relation_targets, i));
+    AtkObject* atk_target = static_cast<AtkObject*>(
+        UNSAFE_TODO(g_ptr_array_index(relation_targets, i)));
     DCHECK(atk_target);
     target_roles[i] = atk_role_get_name(atk_object_get_role(atk_target));
   }
@@ -591,7 +599,8 @@ void AXTreeFormatterAuraLinux::AddProperties(AtspiAccessible* node,
   GArray* state_array = atspi_state_set_get_states(atspi_states);
   base::Value::List states;
   for (unsigned i = 0; i < state_array->len; i++) {
-    AtspiStateType state_type = g_array_index(state_array, AtspiStateType, i);
+    AtspiStateType state_type =
+        UNSAFE_TODO(g_array_index(state_array, AtspiStateType, i));
     states.Append(ATSPIStateToString(state_type));
   }
   dict->Set("states", std::move(states));

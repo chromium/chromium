@@ -63,7 +63,6 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
     int64_t size;
   };
 
-  // TODO(crbug.com/40535136): Use OnceCallback/RepeatingCallback.
   using GetFileInfoCallback = storage::AsyncFileUtil::GetFileInfoCallback;
   using StatusCallback = storage::AsyncFileUtil::StatusCallback;
   using ReadDirectoryCallback =

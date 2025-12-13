@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_DIALOGS_H_
 #define CHROME_BROWSER_UI_BROWSER_DIALOGS_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -24,7 +23,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class Browser;
 class Profile;

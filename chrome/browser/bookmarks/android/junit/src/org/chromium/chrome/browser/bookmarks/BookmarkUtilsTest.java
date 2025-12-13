@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -193,7 +194,8 @@ public class BookmarkUtilsTest {
                 mBookmarkIdCallback,
                 /* fromExplicitTrackUi= */ false,
                 mBookmarkManagerOpener,
-                mPriceDropNotificationManager);
+                mPriceDropNotificationManager,
+                false);
 
         histograms.assertExpected();
     }
@@ -219,7 +221,8 @@ public class BookmarkUtilsTest {
                 mBookmarkIdCallback,
                 /* fromExplicitTrackUi= */ false,
                 mBookmarkManagerOpener,
-                mPriceDropNotificationManager);
+                mPriceDropNotificationManager,
+                false);
 
         histograms.assertExpected();
     }
@@ -263,8 +266,8 @@ public class BookmarkUtilsTest {
         verify(mMockBookmarkModel)
                 .addBookmark(parent, 0, "Test title", new GURL("https://test.com"));
         assertTrue(bookmark.equals(addedBookmark));
-        // Ensure that cached bookmark parent is set to parent bookmark folder and not null
-        assertTrue(BookmarkUtils.getLastUsedParent().equals(parent));
+        // Ensure that cached bookmark parent is not set to parent bookmark folder
+        assertFalse(BookmarkUtils.getLastUsedParent().equals(parent));
         histograms.assertExpected();
         assertFalse(userActionTester.getActions().contains("BookmarkAdded.Failure"));
         userActionTester.tearDown();
@@ -312,6 +315,88 @@ public class BookmarkUtilsTest {
         assertTrue(BookmarkUtils.getLastUsedParent() == null);
         histograms.assertExpected();
         assertTrue(userActionTester.getActions().contains("BookmarkAdded.Failure"));
+        userActionTester.tearDown();
+    }
+
+    @Test
+    public void testAddBookmarkInternal_addWhenBookmarkBarVisible() {
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Bookmarks.AddBookmarkType", BookmarkType.NORMAL)
+                        .expectIntRecords(
+                                "Bookmarks.AddedPerProfileType", BrowserProfileType.REGULAR)
+                        .build();
+        UserActionTester userActionTester = new UserActionTester();
+        BookmarkModel mMockBookmarkModel = mock(BookmarkModel.class);
+        assertNull(BookmarkUtils.getLastUsedParent());
+
+        // Create a default folder ("Mobile bookmarks").
+        BookmarkId mobileBookmarkFolder = new BookmarkId(1, BookmarkType.NORMAL);
+        when(mMockBookmarkModel.getDefaultBookmarkFolder()).thenReturn(mobileBookmarkFolder);
+        BookmarkItem mobileBookmarkFolderItem =
+                new BookmarkItem(
+                        mobileBookmarkFolder,
+                        "parent",
+                        null,
+                        true,
+                        null,
+                        false,
+                        false,
+                        0,
+                        false,
+                        0,
+                        false);
+        when(mMockBookmarkModel.getBookmarkById(mobileBookmarkFolder))
+                .thenReturn(mobileBookmarkFolderItem);
+
+        // Create a desktop folder ("Bookmark bar").
+        BookmarkId bookmarkBarFolder = new BookmarkId(2, BookmarkType.NORMAL);
+        when(mMockBookmarkModel.getDesktopFolderId()).thenReturn(bookmarkBarFolder);
+        BookmarkItem bookmarkBarFolderItem =
+                new BookmarkItem(
+                        bookmarkBarFolder,
+                        "parent",
+                        null,
+                        true,
+                        null,
+                        false,
+                        false,
+                        0,
+                        false,
+                        0,
+                        false);
+        when(mMockBookmarkModel.getBookmarkById(bookmarkBarFolder))
+                .thenReturn(bookmarkBarFolderItem);
+
+        // Mock adding a new bookmark.
+        BookmarkId newBookmark = new BookmarkId(3, BookmarkType.NORMAL);
+        when(mMockBookmarkModel.addBookmark(
+                        any(BookmarkId.class), anyInt(), anyString(), any(GURL.class)))
+                .thenReturn(newBookmark);
+
+        BookmarkId bookmark =
+                BookmarkUtils.addBookmarkInternal(
+                        null,
+                        mProfile,
+                        mMockBookmarkModel,
+                        "Test title",
+                        new GURL("https://test.com"),
+                        null,
+                        BookmarkType.NORMAL,
+                        true);
+
+        // In this case we should not be adding to the defaultBookmarkFolder, and should instead be
+        // adding to the desktopFolderId (bookmark bar). The last used parent should not update
+        // when we save for this case.
+        verify(mMockBookmarkModel).getDesktopFolderId();
+        verify(mMockBookmarkModel).getBookmarkById(bookmarkBarFolder);
+        verify(mMockBookmarkModel)
+                .addBookmark(bookmarkBarFolder, 0, "Test title", new GURL("https://test.com"));
+        assertTrue(bookmark.equals(newBookmark));
+        // Ensure that cached bookmark parent is not set to parent bookmark folder
+        assertNull(BookmarkUtils.getLastUsedParent());
+        histograms.assertExpected();
+        assertFalse(userActionTester.getActions().contains("BookmarkAdded.Failure"));
         userActionTester.tearDown();
     }
 

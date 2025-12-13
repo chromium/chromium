@@ -13,11 +13,14 @@ import {mojo} from '//resources/mojo/mojo/public/js/bindings.js';
 
 
 
-export class ResultInterfacePendingReceiver implements
-    mojo.internal.interfaceSupport.PendingReceiver {
+export type ResultInterfacePendingReceiverEndpoint =
+  mojo.internal.interfaceSupport.Endpoint<ResultInterfacePendingReceiver>;
 
-  handle: mojo.internal.interfaceSupport.Endpoint;
-  constructor(handle: MojoHandle|mojo.internal.interfaceSupport.Endpoint) {
+export class ResultInterfacePendingReceiver implements
+    mojo.internal.interfaceSupport.PendingReceiver<ResultInterface> {
+
+  handle: mojo.internal.interfaceSupport.Endpoint<ResultInterfacePendingReceiver>;
+  constructor(handle: MojoHandle|ResultInterfacePendingReceiverEndpoint) {
     this.handle = mojo.internal.interfaceSupport.getEndpointForReceiver(handle);
   }
 
@@ -40,7 +43,7 @@ export class ResultInterfaceRemote implements ResultInterfaceInterface {
   onConnectionError: mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
 
   constructor(
-      handle?: MojoHandle|mojo.internal.interfaceSupport.Endpoint) {
+      handle?: MojoHandle|ResultInterfacePendingReceiverEndpoint) {
     this.proxy =
         new mojo.internal.interfaceSupport.InterfaceRemoteBase(
           ResultInterfacePendingReceiver, handle);
@@ -81,9 +84,11 @@ export class ResultInterfaceRemote implements ResultInterfaceInterface {
  * interface.
  */
 export class ResultInterfaceReceiver {
-  private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<ResultInterfaceRemote>;
+  private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<
+    ResultInterfaceRemote, ResultInterfacePendingReceiver>;
 
-  $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<ResultInterfaceRemote>;
+  $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<
+    ResultInterfaceRemote, ResultInterfacePendingReceiver>;
 
   onConnectionError: mojo.internal.interfaceSupport.ConnectionErrorEventRouter;
 
@@ -136,8 +141,10 @@ export class ResultInterface {
  * receiver can have any number of listeners added to it.
  */
 export class ResultInterfaceCallbackRouter {
-  private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<ResultInterfaceRemote>;
-  $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<ResultInterfaceRemote>;
+  private helper_internal_: mojo.internal.interfaceSupport.InterfaceReceiverHelperInternal<
+    ResultInterfaceRemote, ResultInterfacePendingReceiver>;
+  $: mojo.internal.interfaceSupport.InterfaceReceiverHelper<
+    ResultInterfaceRemote, ResultInterfacePendingReceiver>;
   router_: mojo.internal.interfaceSupport.CallbackRouter;
 
   method: mojo.internal.interfaceSupport.InterfaceCallbackReceiver;
@@ -347,6 +354,21 @@ export interface ResultInterface_Method_ResponseParam_Result {
   success?: boolean,
   failure?: ResultTestError,
 }
+
+export enum ResultInterface_Method_ResponseParam_ResultFieldTags {
+  SUCCESS,
+  FAILURE,
+}
+
+export function whichResultInterface_Method_ResponseParam_Result(u: ResultInterface_Method_ResponseParam_Result): ResultInterface_Method_ResponseParam_ResultFieldTags {
+  if (u.success !== null && u.success !== undefined) {
+    return ResultInterface_Method_ResponseParam_ResultFieldTags.SUCCESS;
+  }
+  if (u.failure !== null && u.failure !== undefined) {
+    return ResultInterface_Method_ResponseParam_ResultFieldTags.FAILURE;
+  }
+  throw new Error("no union field has been set, this is an illegal state");
+}
 mojo.internal.Union(
     ResultInterface_SyncMethod_ResponseParam_ResultSpec.$, 'ResultInterface_SyncMethod_ResponseParam_Result',
     {
@@ -363,4 +385,19 @@ mojo.internal.Union(
 export interface ResultInterface_SyncMethod_ResponseParam_Result {
   success?: boolean,
   failure?: ResultTestError,
+}
+
+export enum ResultInterface_SyncMethod_ResponseParam_ResultFieldTags {
+  SUCCESS,
+  FAILURE,
+}
+
+export function whichResultInterface_SyncMethod_ResponseParam_Result(u: ResultInterface_SyncMethod_ResponseParam_Result): ResultInterface_SyncMethod_ResponseParam_ResultFieldTags {
+  if (u.success !== null && u.success !== undefined) {
+    return ResultInterface_SyncMethod_ResponseParam_ResultFieldTags.SUCCESS;
+  }
+  if (u.failure !== null && u.failure !== undefined) {
+    return ResultInterface_SyncMethod_ResponseParam_ResultFieldTags.FAILURE;
+  }
+  throw new Error("no union field has been set, this is an illegal state");
 }

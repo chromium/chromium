@@ -12,6 +12,7 @@
 #import "base/functional/callback.h"
 
 @protocol SystemIdentity;
+@class UIImage;
 
 // A Drive item (file, folder or shared drive).
 struct DriveItem {
@@ -21,6 +22,29 @@ struct DriveItem {
   ~DriveItem();
   DriveItem& operator=(const DriveItem& other);
   DriveItem& operator=(DriveItem&& other);
+
+  // Possible types of image for an item.
+  enum class ImageType {
+    // A generic icon which usually depends on the file type.
+    kIcon,
+    // A thumbnail i.e. preview of the file.
+    kThumbnail,
+    // A background image, only for shared drives.
+    kBackground,
+    // A shortcut image which depends on the target mime type (for shortcuts).
+    kShortcut,
+  };
+
+  // Returns whether this is a folder, shortcut to a folder or shared drive.
+  bool CanBeBrowsed() const;
+
+  // Returns the placeholder image for `item`.
+  UIImage* GetPlaceholderImage() const;
+  // Returns the type of image which should be used for this item.
+  ImageType GetImageType() const;
+  // Returns the appropriate image link to use for a given `item`.
+  // If there is no such link, returns nil instead.
+  NSString* GetImageLink() const;
 
   // Comparison operator relies on `identifier` only.
   bool operator==(const DriveItem& rhs) const {

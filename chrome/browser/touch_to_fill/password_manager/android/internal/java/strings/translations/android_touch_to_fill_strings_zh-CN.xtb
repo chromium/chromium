@@ -27,5 +27,5 @@
 <translation id="8202660122967066153">可在无法登录 <ph name="USERNAME" /> 时使用的临时恢复密码</translation>
 <translation id="8363484128299778310">出现问题时的临时恢复方法</translation>
 <translation id="8614995815226664591"><ph name="SENDER_NAME" />与您分享了一个用于登录 <ph name="SITE_NAME" /> 的密码</translation>
-<translation id="8891372124884726271">凭据列表已关闭。</translation>
+<translation id="8891372124884726271">凭证列表已关闭。</translation>
 </translationbundle>

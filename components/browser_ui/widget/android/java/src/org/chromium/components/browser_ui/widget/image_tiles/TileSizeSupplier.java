@@ -7,10 +7,11 @@ package org.chromium.components.browser_ui.widget.image_tiles;
 import android.content.Context;
 import android.content.res.Resources;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.components.browser_ui.widget.image_tiles.TileSizeSupplier.TileSize;
+
+import java.util.function.Supplier;
 
 /** A helper class to compute dimensions for the carousel layout. */
 @NullMarked

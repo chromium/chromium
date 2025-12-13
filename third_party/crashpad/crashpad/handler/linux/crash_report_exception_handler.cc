@@ -53,9 +53,9 @@ class Logger final : public LogOutputStream::Delegate {
   ~Logger() override = default;
 
 #if BUILDFLAG(IS_ANDROID)
-  int Log(const char* buf) override {
+  bool Log(const char* buf) override {
     return __android_log_buf_write(
-        LOG_ID_CRASH, ANDROID_LOG_FATAL, "crashpad", buf);
+        LOG_ID_CRASH, ANDROID_LOG_FATAL, "crashpad", buf) > 0;
   }
 
   size_t OutputCap() override {
@@ -72,7 +72,7 @@ class Logger final : public LogOutputStream::Delegate {
   }
 #else
   // TODO(jperaza): Log to an appropriate location on Linux.
-  int Log(const char* buf) override { return -ENOTCONN; }
+  bool Log(const char* buf) override { return false; }
   size_t OutputCap() override { return 0; }
   size_t LineWidth() override { return 0; }
 #endif

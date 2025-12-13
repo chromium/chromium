@@ -29,9 +29,11 @@ bool LayoutMathMLBlock::CanHaveChildren() const {
   return LayoutBlock::CanHaveChildren();
 }
 
-void LayoutMathMLBlock::StyleDidChange(StyleDifference diff,
-                                       const ComputedStyle* old_style) {
-  LayoutBlock::StyleDidChange(diff, old_style);
+void LayoutMathMLBlock::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
+  LayoutBlock::StyleDidChange(diff, old_style, style_change_context);
   if (!old_style)
     return;
   if (IsA<MathMLUnderOverElement>(GetNode()) &&

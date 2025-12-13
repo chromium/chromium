@@ -1,5 +1,5 @@
 include_rules = [
-  "+crypto/secure_hash.h",
+  "+crypto/hash.h",
   "+third_party/brotli",
   "+third_party/snappy",
   "+third_party/zlib",

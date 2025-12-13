@@ -51,56 +51,6 @@ Profile* GetOTROrActiveProfile() {
 
 }  // namespace
 
-// static
-NetworkPortalSigninWindow* NetworkPortalSigninWindow::Get() {
-  static base::NoDestructor<NetworkPortalSigninWindow> instance;
-  return instance.get();
-}
-
-NetworkPortalSigninWindow::NetworkPortalSigninWindow() = default;
-
-NetworkPortalSigninWindow::~NetworkPortalSigninWindow() = default;
-
-void NetworkPortalSigninWindow::Show(const GURL& url) {
-  Profile* profile = GetOTROrActiveProfile();
-
-  Browser* browser = chrome::FindBrowserWithID(window_session_id_);
-  if (browser) {
-    NET_LOG(EVENT) << "Show existing portal signin window";
-    NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-    params.window_action = NavigateParams::SHOW_WINDOW;
-    params.user_gesture = true;
-    params.trusted_source = false;
-    ::Navigate(&params);
-    return;
-  }
-
-  NET_LOG(EVENT) << "Show new portal signin window";
-  NavigateParams params(profile, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  params.disposition = WindowOpenDisposition::NEW_POPUP;
-  params.user_gesture = true;
-  params.trusted_source = false;
-  // `captive_portal_window_type = kPopup` is used on desktop Chrome to identify
-  // captive portal signin popup windows. This affects the following behaviors:
-  // * Secure DNS is disabled in ChromeContentBrowserClient
-  // * The window title is customized in Browser
-  params.captive_portal_window_type =
-      captive_portal::CaptivePortalWindowType::kPopup;
-  auto handle = ::Navigate(&params);
-  if (!handle) {
-    NET_LOG(ERROR) << "Failed to navigate to captive portal url: " << url;
-    window_session_id_ = SessionID::InvalidValue();
-    return;
-  }
-  window_session_id_ = params.browser->session_id();
-  window_observer_ =
-      std::make_unique<WindowObserver>(handle->GetWebContents(), this);
-}
-
-Browser* NetworkPortalSigninWindow::GetBrowserForTesting() {
-  return chrome::FindBrowserWithID(window_session_id_);
-}
-
 class NetworkPortalSigninWindow::WindowObserver
     : public content::WebContentsObserver {
  public:
@@ -128,6 +78,56 @@ class NetworkPortalSigninWindow::WindowObserver
  private:
   raw_ptr<NetworkPortalSigninWindow> controller_;
 };
+
+// static
+NetworkPortalSigninWindow* NetworkPortalSigninWindow::Get() {
+  static base::NoDestructor<NetworkPortalSigninWindow> instance;
+  return instance.get();
+}
+
+NetworkPortalSigninWindow::NetworkPortalSigninWindow() = default;
+
+NetworkPortalSigninWindow::~NetworkPortalSigninWindow() = default;
+
+void NetworkPortalSigninWindow::Show(const GURL& url) {
+  Profile* profile = GetOTROrActiveProfile();
+
+  Browser* browser = chrome::FindBrowserWithID(window_session_id_);
+  if (browser) {
+    NET_LOG(EVENT) << "Show existing portal signin window";
+    NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+    params.window_action = NavigateParams::WindowAction::kShowWindow;
+    params.user_gesture = true;
+    params.trusted_source = false;
+    ::Navigate(&params);
+    return;
+  }
+
+  NET_LOG(EVENT) << "Show new portal signin window";
+  NavigateParams params(profile, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  params.disposition = WindowOpenDisposition::NEW_POPUP;
+  params.user_gesture = true;
+  params.trusted_source = false;
+  // `captive_portal_window_type = kPopup` is used on desktop Chrome to identify
+  // captive portal signin popup windows. This affects the following behaviors:
+  // * Secure DNS is disabled in ChromeContentBrowserClient
+  // * The window title is customized in Browser
+  params.captive_portal_window_type =
+      captive_portal::CaptivePortalWindowType::kPopup;
+  auto handle = ::Navigate(&params);
+  if (!handle) {
+    NET_LOG(ERROR) << "Failed to navigate to captive portal url: " << url;
+    window_session_id_ = SessionID::InvalidValue();
+    return;
+  }
+  window_session_id_ = params.browser->GetSessionID();
+  window_observer_ =
+      std::make_unique<WindowObserver>(handle->GetWebContents(), this);
+}
+
+Browser* NetworkPortalSigninWindow::GetBrowserForTesting() {
+  return chrome::FindBrowserWithID(window_session_id_);
+}
 
 content::WebContents* NetworkPortalSigninWindow::GetWebContentsForTesting() {
   if (!window_observer_.get()) {

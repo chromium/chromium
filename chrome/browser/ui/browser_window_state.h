@@ -17,7 +17,6 @@ class Browser;
 
 namespace base {
 class CommandLine;
-class Value;
 }  // namespace base
 
 namespace gfx {

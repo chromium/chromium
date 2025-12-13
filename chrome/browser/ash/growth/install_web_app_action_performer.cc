@@ -88,8 +88,6 @@ void InstallWebAppResult(growth::ActionPerformer::Callback callback,
     return;
   }
 
-  // TODO(b/306023057): Record an UMA metric regarding why
-  // we were not able to successfully record the app.
   std::move(callback).Run(
       growth::ActionResult::kFailure,
       growth::ActionResultReason::kWebAppInstallFailedOther);
@@ -138,8 +136,6 @@ void InstallWebAppActionPerformer::Run(
 
   auto info = ParseInstallWebAppActionPerformerParams(params);
   if (!info) {
-    // TODO(b/306023057): Record an UMA metric that parsing the params
-    // has failed.
     std::move(callback).Run(growth::ActionResult::kFailure,
                             growth::ActionResultReason::kParsingActionFailed);
     return;

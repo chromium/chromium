@@ -134,7 +134,7 @@ bool PermissionsData::IsRestrictedUrl(const GURL& document_url,
   }
 
   // Check if the scheme is valid for extensions. If not, return.
-  if (!URLPattern::IsValidSchemeForExtensions(document_url.scheme()) &&
+  if (!URLPattern::IsValidSchemeForExtensions(document_url.GetScheme()) &&
       document_url.spec() != url::kAboutBlankURL &&
       document_url.spec() != url::kAboutSrcdocURL) {
     if (error) {
@@ -162,7 +162,7 @@ bool PermissionsData::IsRestrictedUrl(const GURL& document_url,
   bool allow_on_extension_urls =
       switches::AreExtensionsOnExtensionURLsAllowed();
   if (document_url.SchemeIs(kExtensionScheme) &&
-      document_url.host() != extension_id_ && !allow_on_extension_urls) {
+      document_url.GetHost() != extension_id_ && !allow_on_extension_urls) {
     if (error)
       *error = manifest_errors::kCannotAccessExtensionUrl;
     return true;
@@ -550,8 +550,9 @@ bool PermissionsData::CanCaptureVisiblePage(
   // the extension page may have embedded web content.
   // TODO(devlin): Should activeTab/<all_urls> account for the extension's own
   // domain?
-  if (origin_url.host() == extension_id_)
+  if (origin_url.GetHost() == extension_id_) {
     return true;
+  }
 
   // The following are special cases that require activeTab explicitly. Normal
   // extensions will never have full access to these pages (i.e., can never

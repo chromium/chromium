@@ -79,4 +79,9 @@ public class TabContextMenuPopulator implements ContextMenuPopulator {
     public @Nullable ChipDelegate getChipDelegate() {
         return mPopulator.getChipDelegate();
     }
+
+    @Override
+    public boolean hasCustomItems() {
+        return mPopulator.hasCustomItems();
+    }
 }

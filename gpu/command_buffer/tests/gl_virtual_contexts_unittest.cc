@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2extchromium.h>
@@ -14,6 +9,7 @@
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
@@ -141,12 +137,8 @@ void SetupSimpleShader(const uint8_t* color) {
   GLTestHelper::SetupUnitQuad(position_loc);
 
   GLuint color_loc = glGetUniformLocation(program, "u_color");
-  glUniform4f(
-      color_loc,
-      color[0] / 255.0f,
-      color[1] / 255.0f,
-      color[2] / 255.0f,
-      color[3] / 255.0f);
+  glUniform4f(color_loc, color[0] / 255.0f, UNSAFE_TODO(color[1]) / 255.0f,
+              UNSAFE_TODO(color[2]) / 255.0f, UNSAFE_TODO(color[3]) / 255.0f);
 }
 
 void TestDraw(int size) {

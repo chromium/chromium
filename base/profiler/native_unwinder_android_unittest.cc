@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/profiler/native_unwinder_android.h"
 
 #include <inttypes.h>
@@ -18,8 +13,9 @@
 #include <iterator>
 #include <vector>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/jni_android.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/profiler/native_unwinder_android_map_delegate.h"
@@ -143,8 +139,8 @@ std::vector<Frame> CaptureScenario(
 
 // Checks that the expected information is present in sampled frames.
 TEST(NativeUnwinderAndroidTest, PlainFunction) {
-  const auto sdk_version = base::android::BuildInfo::GetInstance()->sdk_int();
-  if (sdk_version < base::android::SDK_VERSION_NOUGAT) {
+  const auto sdk_version = base::android::android_info::sdk_int();
+  if (sdk_version < base::android::android_info::SDK_VERSION_NOUGAT) {
     GTEST_SKIP();
   }
 
@@ -182,8 +178,8 @@ TEST(NativeUnwinderAndroidTest, PlainFunction) {
 // Checks that the unwinder handles stacks containing dynamically-allocated
 // stack memory.
 TEST(NativeUnwinderAndroidTest, Alloca) {
-  const auto sdk_version = base::android::BuildInfo::GetInstance()->sdk_int();
-  if (sdk_version < base::android::SDK_VERSION_NOUGAT) {
+  const auto sdk_version = base::android::android_info::sdk_int();
+  if (sdk_version < base::android::android_info::SDK_VERSION_NOUGAT) {
     GTEST_SKIP();
   }
 
@@ -222,8 +218,8 @@ TEST(NativeUnwinderAndroidTest, Alloca) {
 // Checks that a stack that runs through another library produces a stack with
 // the expected functions.
 TEST(NativeUnwinderAndroidTest, OtherLibrary) {
-  const auto sdk_version = base::android::BuildInfo::GetInstance()->sdk_int();
-  if (sdk_version < base::android::SDK_VERSION_NOUGAT) {
+  const auto sdk_version = base::android::android_info::sdk_int();
+  if (sdk_version < base::android::android_info::SDK_VERSION_NOUGAT) {
     GTEST_SKIP();
   }
 
@@ -376,12 +372,11 @@ TEST(NativeUnwinderAndroidTest, ResumeUnwinding) {
 // Checks that java frames can be unwound through.
 // TODO(crbug.com/362210993): Re-enable test.
 TEST(NativeUnwinderAndroidTest, DISABLED_JavaFunction) {
-  auto* build_info = base::android::BuildInfo::GetInstance();
-  const auto sdk_version = build_info->sdk_int();
+  const auto sdk_version = base::android::android_info::sdk_int();
 
   // Skip this test on anything Android O or earlier, because Java unwinding
   // fails on these.
-  if (sdk_version <= base::android::SDK_VERSION_OREO) {
+  if (sdk_version <= base::android::android_info::SDK_VERSION_OREO) {
     GTEST_SKIP();
   }
 
@@ -420,7 +415,8 @@ TEST(NativeUnwinderAndroidTest, DISABLED_JavaFunction) {
 TEST(NativeUnwinderAndroidTest, UnwindStackMemoryTest) {
   std::vector<uint8_t> input = {1, 2, 3, 4, 5};
   uintptr_t begin = reinterpret_cast<uintptr_t>(input.data());
-  uintptr_t end = reinterpret_cast<uintptr_t>(input.data() + input.size());
+  uintptr_t end =
+      reinterpret_cast<uintptr_t>(UNSAFE_TODO(input.data() + input.size()));
   UnwindStackMemoryAndroid memory(begin, end);
 
   const auto check_read_fails = [&](uintptr_t addr, size_t size) {
@@ -430,8 +426,8 @@ TEST(NativeUnwinderAndroidTest, UnwindStackMemoryTest) {
   const auto check_read_succeeds = [&](uintptr_t addr, size_t size) {
     std::vector<uint8_t> output(size);
     EXPECT_EQ(size, memory.Read(addr, output.data(), size));
-    EXPECT_EQ(
-        0, memcmp(reinterpret_cast<const uint8_t*>(addr), output.data(), size));
+    UNSAFE_TODO(EXPECT_EQ(0, memcmp(reinterpret_cast<const uint8_t*>(addr),
+                                    output.data(), size)));
   };
 
   check_read_fails(begin - 1, 1);

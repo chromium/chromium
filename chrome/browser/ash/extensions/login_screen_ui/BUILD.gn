@@ -45,6 +45,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/install_attributes:test_support",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/version_info",
     "//content/test:test_support",
     "//extensions/browser",

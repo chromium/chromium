@@ -37,7 +37,7 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL
@@ -384,8 +384,7 @@ void TouchInjector::UpdatePositionsForRegister() {
   }
 
   // No need to transform if there is no rotation.
-  if (auto display =
-          display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
+  if (auto display = display::Screen::Get()->GetDisplayNearestWindow(window_);
       display.panel_rotation() != display::Display::ROTATE_0) {
     rotation_transform_ =
         std::make_unique<gfx::Transform>(ash::CreateRotationTransform(
@@ -657,10 +656,11 @@ std::unique_ptr<ui::TouchEvent> TouchInjector::CreateTouchEvent(
     ui::PointerId original_id,
     int managed_touch_id,
     gfx::PointF root_location_f) {
-  return std::make_unique<ui::TouchEvent>(ui::TouchEvent(
-      touch_event->type(), root_location_f, root_location_f,
-      touch_event->time_stamp(),
-      ui::PointerDetails(ui::EventPointerType::kTouch, managed_touch_id)));
+  ui::PointerDetails managed_pointer_details = touch_event->pointer_details();
+  managed_pointer_details.id = managed_touch_id;
+  return std::make_unique<ui::TouchEvent>(
+      ui::TouchEvent(touch_event->type(), root_location_f, root_location_f,
+                     touch_event->time_stamp(), managed_pointer_details));
 }
 
 Action* TouchInjector::GetActionById(int id) {

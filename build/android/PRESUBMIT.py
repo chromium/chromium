@@ -134,6 +134,8 @@ def CommonChecks(input_api, output_api, *, is_upload):
                                            output_api,
                                            unit_tests=pytests,
                                            env=pylib_test_env))
+  # Run AyeAye analyzers.
+  tests.extend(input_api.canned_checks.CheckAyeAye(input_api, output_api))
 
   return input_api.RunTests(tests)
 

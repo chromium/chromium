@@ -9,7 +9,6 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -27,11 +26,12 @@ constexpr char kSettingPath[] = "TestSetting";
 
 class LocalStateReportingSettingsTest : public ::testing::Test {
  protected:
-  TestingPrefServiceSimple* local_state() { return local_state_.Get(); }
+  TestingPrefServiceSimple* local_state() {
+    return TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+  }
 
  private:
   ::content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
 
  protected:
   LocalStateReportingSettings local_state_reporting_settings_;

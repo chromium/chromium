@@ -35,12 +35,12 @@
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/model/managed_bookmark_service_factory.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
+#import "ios/chrome/browser/bookmarks/public/bookmarks_ui_constants.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/cells/bookmark_home_node_item.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/cells/bookmark_table_cell_title_editing.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmark_promo_controller.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_home_consumer.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_home_node_item.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/synced_bookmarks_bridge.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -140,7 +140,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   bookmark_utils_ios::NodeSet _selectedNodesForEditMode;
 }
 
-+ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
++ (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   registry->RegisterBooleanPref(
       prefs::kIosBookmarkUploadSyncLeftBehindCompleted, false);
 }
@@ -149,7 +149,7 @@ bool IsABookmarkNodeSectionForIdentifier(
                   bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                   displayedNode:(const BookmarkNode*)displayedNode {
   if ((self = [super init])) {
-    DCHECK(browser);
+    CHECK(browser, base::NotFatalUntil::M152);
     CHECK(displayedNode);
     CHECK(bookmarkModel);
     CHECK(bookmarkModel->loaded());
@@ -162,7 +162,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 - (void)startMediating {
-  DCHECK(self.consumer);
+  CHECK(self.consumer, base::NotFatalUntil::M152);
 
   // Set up observers.
   ProfileIOS* profile = [self originalProfile];
@@ -208,14 +208,15 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 - (void)dealloc {
-  DCHECK(!_bookmarkPromoController);
+  CHECK(!_bookmarkPromoController, base::NotFatalUntil::M152);
 }
 
 - (BOOL)canDismiss {
   // While sign-in is in progress, the UI should be frozen.
   // The promo manager is in charge of displaying the activity overlay, but
   // we’re still in charge of stopping dismiss from occurring.
-  return !_bookmarkPromoController.signinInProgress;
+  // In case of doubt, let dismissal occur, so that we don’t froze the UI.
+  return _bookmarkPromoController.signinInProgress != signin::Tribool::kTrue;
 }
 
 #pragma mark - Initial Model Setup
@@ -336,7 +337,6 @@ bool IsABookmarkNodeSectionForIdentifier(
   // Add "no result" item.
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:BookmarksHomeItemTypeMessage];
-  item.textAlignment = NSTextAlignmentLeft;
   item.textColor = [UIColor colorNamed:kTextPrimaryColor];
   item.text = noResults;
   [self.consumer.tableViewModel addItem:item
@@ -389,8 +389,10 @@ bool IsABookmarkNodeSectionForIdentifier(
   SigninPromoViewMediator* signinPromoViewMediator =
       self.bookmarkPromoController.signinPromoViewMediator;
   if (self.promoVisible) {
-    DCHECK(![self.consumer.tableViewModel
-        hasSectionForSectionIdentifier:BookmarksHomeSectionIdentifierPromo]);
+    CHECK(
+        ![self.consumer.tableViewModel
+            hasSectionForSectionIdentifier:BookmarksHomeSectionIdentifierPromo],
+        base::NotFatalUntil::M152);
     [self.consumer.tableViewModel
         insertSectionWithIdentifier:BookmarksHomeSectionIdentifierPromo
                             atIndex:0];
@@ -422,8 +424,10 @@ bool IsABookmarkNodeSectionForIdentifier(
       [signinPromoViewMediator signinPromoViewIsHidden];
     }
 
-    DCHECK([self.consumer.tableViewModel
-        hasSectionForSectionIdentifier:BookmarksHomeSectionIdentifierPromo]);
+    CHECK(
+        [self.consumer.tableViewModel
+            hasSectionForSectionIdentifier:BookmarksHomeSectionIdentifierPromo],
+        base::NotFatalUntil::M152);
     [self.consumer.tableViewModel
         removeSectionWithIdentifier:BookmarksHomeSectionIdentifierPromo];
   }
@@ -466,7 +470,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 - (void)setCurrentlyInEditMode:(BOOL)currentlyInEditMode {
-  DCHECK(self.consumer.tableView);
+  CHECK(self.consumer.tableView, base::NotFatalUntil::M152);
 
   // If not in editing mode but the tableView's editing is ON, it means the
   // table is waiting for a swipe-to-delete confirmation.  In this case, we need
@@ -513,7 +517,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 // Instances of this class automatically observe the bookmark model.
 // The bookmark model has loaded.
 - (void)bookmarkModelLoaded {
-  NOTREACHED();
+  NOTREACHED(base::NotFatalUntil::M152);
 }
 
 // The node has changed, but not its children.
@@ -569,7 +573,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 // `node` will be deleted from `folder`.
 - (void)willDeleteNode:(const BookmarkNode*)node
             fromFolder:(const BookmarkNode*)folder {
-  DCHECK(node);
+  CHECK(node, base::NotFatalUntil::M152);
   if (self.displayedNode && self.displayedNode->HasAncestor(node)) {
     self.displayedNode = nullptr;
     [self.consumer closeThisFolder];
@@ -589,7 +593,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 
 - (void)didChangeFaviconForNode:(const BookmarkNode*)bookmarkNode {
   // Only urls have favicons.
-  DCHECK(bookmarkNode->is_url());
+  CHECK(bookmarkNode->is_url(), base::NotFatalUntil::M152);
 
   // Update image of corresponding cell.
   BookmarksHomeNodeItem* nodeItem = [self itemForNode:bookmarkNode];
@@ -667,12 +671,11 @@ bool IsABookmarkNodeSectionForIdentifier(
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
-  if (!_browser.get()) {
-    // If `_browser` has been removed, the mediator can be disconnected and the
-    // event can be ignored. See http://crbug.com/1442174.
-    // TODO(crbug.com/40064261): This `if` is a workaround until this bug is
-    // fixed. This if should be remove when the bug will be closed.
-    [self disconnect];
+  CHECK(_browser);
+  if (self.addingNewFolder) {
+    // Adding new folder will trigger a sync update and this callback. Avoid
+    // refreshing content which doesn't add much value and will stop the
+    // editting of the folder name.
     return;
   }
   // If user starts or stops syncing bookmarks, we may have to remove or add the
@@ -914,7 +917,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 
 // Returns YES if the user cannot turn on sync for enterprise policy reasons.
 - (BOOL)isSyncDisabledByAdministrator {
-  DCHECK(self.syncService);
+  CHECK(self.syncService, base::NotFatalUntil::M152);
   bool syncDisabledPolicy = self.syncService->HasDisableReason(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
   bool syncTypesDisabledPolicy =

@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -65,10 +66,8 @@ void QuickInsertAsyncPreviewImageView::OnBoundsChanged(
     const gfx::Rect& previous_bounds) {
   UpdateImageSkia();
 
-  SkPath path;
-  path.addRoundRect(gfx::RectToSkRect(GetLocalBounds()),
-                    SkIntToScalar(kCornerRadius), SkIntToScalar(kCornerRadius));
-  SetClipPath(path);
+  SetClipPath(SkPath::RRect(SkRRect::MakeRectXY(
+      gfx::RectToSkRect(GetLocalBounds()), kCornerRadius, kCornerRadius)));
 
   views::ImageView::OnBoundsChanged(previous_bounds);
 }

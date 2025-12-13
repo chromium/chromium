@@ -42,10 +42,9 @@ bool HostContentSettingsMapFactory::ServiceIsRequiredForContextInitialization()
 
 scoped_refptr<RefcountedKeyedService>
 HostContentSettingsMapFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   // TODO(crbug.com/40130635): Set restore_session to whether or not the phone
   // has been reset, which would mirror iOS's cookie store.
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   const bool is_off_the_record = profile->IsOffTheRecord();
   const bool should_record_metrics = !is_off_the_record;
   return base::MakeRefCounted<HostContentSettingsMap>(

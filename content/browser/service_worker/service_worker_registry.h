@@ -15,8 +15,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/threading/sequence_bound.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"

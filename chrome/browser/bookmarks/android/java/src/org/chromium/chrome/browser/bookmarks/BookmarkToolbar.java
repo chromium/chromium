@@ -35,6 +35,7 @@ import java.util.function.Function;
 @NullMarked
 public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         implements OnMenuItemClickListener, OnClickListener {
+    @SuppressWarnings("HidingField")
     private @Nullable SelectionDelegate<BookmarkId> mSelectionDelegate;
 
     private boolean mEditButtonVisible;

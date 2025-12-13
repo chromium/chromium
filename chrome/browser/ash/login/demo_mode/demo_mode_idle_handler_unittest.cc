@@ -26,7 +26,8 @@
 #include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -76,14 +77,8 @@ class DemoModeIdleHandlerTestBase : public ChromeAshTestBase {
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile(kUser);
     fake_user_manager_->AddUser(kAccountId);
-    ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
 
     wallpaper_controller_ = Shell::Get()->wallpaper_controller();
-    wallpaper_controller_->Init(
-        base::FilePath(), /*online_wallpaper_dir=*/base::FilePath(),
-        /* custom_wallpaper_dir=*/user_data_dir_.GetPath(),
-        /* policy_wallpaper=*/base::FilePath());
-
     wallpaper_controller_->SetClient(&client_);
     client_.set_fake_files_id_for_account_id(kAccountId, "wallpaper_files_id");
     client_.set_wallpaper_sync_enabled(false);
@@ -158,7 +153,6 @@ class DemoModeIdleHandlerTestBase : public ChromeAshTestBase {
   // Disable the dangling detection since we don't own `wallpaper_controller_`.
   raw_ptr<WallpaperControllerImpl, DisableDanglingPtrDetection>
       wallpaper_controller_ = nullptr;
-  base::ScopedTempDir user_data_dir_;
   std::unique_ptr<DemoSessionMetricsRecorder> metrics_recorder_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -181,7 +175,7 @@ TEST_F(DemoModeIdleHandlerTest, CloseAllBrowsers) {
       Browser::CreateParams(profile(), /*user_gesture=*/true));
   std::unique_ptr<Browser> browser_2 = CreateBrowserWithTestWindowForParams(
       Browser::CreateParams(profile(), /*user_gesture=*/true));
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2U);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2U);
 
   // Trigger close all browsers by being idle for
   // `kReLuanchDemoAppIdleDuration`.
@@ -196,7 +190,7 @@ TEST_F(DemoModeIdleHandlerTest, CloseAllBrowsers) {
   browser_2.reset();
 
   EXPECT_EQ(get_launch_demo_app_count(), 1);
-  EXPECT_TRUE(BrowserList::GetInstance()->empty());
+  EXPECT_TRUE(GlobalBrowserCollection::GetInstance()->IsEmpty());
 }
 
 TEST_F(DemoModeIdleHandlerTest, ClearAndCloseClipboard) {

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
@@ -102,8 +98,8 @@ TEST_F(GLES3DecoderPassthroughTest, MapBufferRangeUnmapBufferReadSucceeds) {
              result_shm_id, result_shm_offset);
     *result = 0;
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-    int8_t* mem = reinterpret_cast<int8_t*>(&result[1]);
-    EXPECT_EQ(0, memcmp(&data[0], mem, kSize));
+    int8_t* mem = reinterpret_cast<int8_t*>(&UNSAFE_TODO(result[1]));
+    UNSAFE_TODO(EXPECT_EQ(0, memcmp(&data[0], mem, kSize)));
     EXPECT_EQ(1u, *result);
   }
 
@@ -131,7 +127,8 @@ TEST_F(GLES3DecoderPassthroughTest, MapBufferRangeUnmapBufferWriteSucceeds) {
   uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(uint32_t);
 
   auto* result = GetSharedMemoryAs<cmds::MapBufferRange::Result*>();
-  int8_t* client_data = GetSharedMemoryAs<int8_t*>() + sizeof(uint32_t);
+  int8_t* client_data =
+      UNSAFE_TODO(GetSharedMemoryAs<int8_t*>() + sizeof(uint32_t));
 
   GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   DoBindBuffer(kTarget, kClientBufferId);
@@ -161,11 +158,11 @@ TEST_F(GLES3DecoderPassthroughTest, MapBufferRangeUnmapBufferWriteSucceeds) {
     EXPECT_EQ(mapped_buffer_info.filtered_access, kMappedAccess);
 
     // Verify the buffer range from GPU is copied to client mem.
-    EXPECT_EQ(0, memcmp(&gpu_data[kOffset], client_data, kSize));
+    UNSAFE_TODO(EXPECT_EQ(0, memcmp(&gpu_data[kOffset], client_data, kSize)));
   }
   // Update the client mem.
   const int8_t kValue0 = 21;
-  memset(client_data, kValue0, kSize);
+  UNSAFE_TODO(memset(client_data, kValue0, kSize));
 
   {  // UnmapBuffer succeeds
     cmds::UnmapBuffer cmd;
@@ -175,7 +172,7 @@ TEST_F(GLES3DecoderPassthroughTest, MapBufferRangeUnmapBufferWriteSucceeds) {
 
   // Reset the client data before mapping again
   const int8_t kValue1 = 0;
-  memset(client_data, kValue1, kSize);
+  UNSAFE_TODO(memset(client_data, kValue1, kSize));
 
   {  // Re-map the buffer to verify the data
     const GLbitfield kReadAccess = GL_MAP_READ_BIT;
@@ -190,9 +187,9 @@ TEST_F(GLES3DecoderPassthroughTest, MapBufferRangeUnmapBufferWriteSucceeds) {
     // Verify the GPU mem is updated
     for (GLsizeiptr ii = 0; ii < kTotalSize; ++ii) {
       if (ii < kOffset) {
-        EXPECT_EQ(static_cast<int8_t>(ii % 128), client_data[ii]);
+        UNSAFE_TODO(EXPECT_EQ(static_cast<int8_t>(ii % 128), client_data[ii]));
       } else {
-        EXPECT_EQ(kValue0, client_data[ii]);
+        UNSAFE_TODO(EXPECT_EQ(kValue0, client_data[ii]));
       }
     }
   }
@@ -223,7 +220,8 @@ TEST_F(GLES3DecoderPassthroughTest, FlushMappedBufferRangeSucceeds) {
   uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(uint32_t);
 
   auto* result = GetSharedMemoryAs<cmds::MapBufferRange::Result*>();
-  int8_t* client_data = GetSharedMemoryAs<int8_t*>() + sizeof(uint32_t);
+  int8_t* client_data =
+      UNSAFE_TODO(GetSharedMemoryAs<int8_t*>() + sizeof(uint32_t));
 
   GenHelper<cmds::GenBuffersImmediate>(kClientBufferId);
   DoBindBuffer(kTarget, kClientBufferId);
@@ -241,7 +239,8 @@ TEST_F(GLES3DecoderPassthroughTest, FlushMappedBufferRangeSucceeds) {
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
     EXPECT_EQ(1u, *result);
     // Verify the buffer range from GPU is copied to client mem.
-    EXPECT_EQ(0, memcmp(&gpu_data[kMappedOffset], client_data, kMappedSize));
+    UNSAFE_TODO(EXPECT_EQ(
+        0, memcmp(&gpu_data[kMappedOffset], client_data, kMappedSize)));
 
     PassthroughResources* passthrough_resources = GetPassthroughResources();
     auto mapped_buffer_info_iter =
@@ -255,7 +254,7 @@ TEST_F(GLES3DecoderPassthroughTest, FlushMappedBufferRangeSucceeds) {
 
   // Update the client mem, including data within and outside the flush range.
   const int8_t kValue0 = 21;
-  memset(client_data, kValue0, kTotalSize);
+  UNSAFE_TODO(memset(client_data, kValue0, kTotalSize));
 
   {  // FlushMappedBufferRange succeeds
     cmds::FlushMappedBufferRange cmd;
@@ -271,7 +270,7 @@ TEST_F(GLES3DecoderPassthroughTest, FlushMappedBufferRangeSucceeds) {
 
   // Reset the client data before mapping again
   const int8_t kValue1 = 0;
-  memset(client_data, kValue1, kTotalSize);
+  UNSAFE_TODO(memset(client_data, kValue1, kTotalSize));
 
   {  // Re-map the buffer to verify the data
     const GLbitfield kReadAccess = GL_MAP_READ_BIT;
@@ -287,9 +286,9 @@ TEST_F(GLES3DecoderPassthroughTest, FlushMappedBufferRangeSucceeds) {
     for (GLsizeiptr ii = 0; ii < kTotalSize; ++ii) {
       if (ii >= kMappedOffset + kFlushRangeOffset &&
           ii < kMappedOffset + kFlushRangeOffset + kFlushRangeSize) {
-        EXPECT_EQ(kValue0, client_data[ii]);
+        UNSAFE_TODO(EXPECT_EQ(kValue0, client_data[ii]));
       } else {
-        EXPECT_EQ(static_cast<int8_t>(ii % 128), client_data[ii]);
+        UNSAFE_TODO(EXPECT_EQ(static_cast<int8_t>(ii % 128), client_data[ii]));
       }
     }
   }
@@ -343,8 +342,8 @@ TEST_F(GLES3DecoderPassthroughTest,
   uint32_t data_shm_id = shared_memory_id_;
   uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
-  int8_t* mem = reinterpret_cast<int8_t*>(&result[1]);
-  memset(mem, 72, kSize);  // Init to a random value other than 0.
+  int8_t* mem = reinterpret_cast<int8_t*>(&UNSAFE_TODO(result[1]));
+  UNSAFE_TODO(memset(mem, 72, kSize));  // Init to a random value other than 0.
 
   cmds::MapBufferRange cmd;
   cmd.Init(kTarget, kOffset, kSize, kAccess, data_shm_id, data_shm_offset,
@@ -374,8 +373,8 @@ TEST_F(GLES3DecoderPassthroughTest,
   uint32_t data_shm_id = shared_memory_id_;
   uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
-  int8_t* mem = reinterpret_cast<int8_t*>(&result[1]);
-  memset(mem, 72, kSize);  // Init to a random value other than 0.
+  int8_t* mem = reinterpret_cast<int8_t*>(&UNSAFE_TODO(result[1]));
+  UNSAFE_TODO(memset(mem, 72, kSize));  // Init to a random value other than 0.
 
   cmds::MapBufferRange cmd;
   cmd.Init(kTarget, kOffset, kSize, kAccess, data_shm_id, data_shm_offset,
@@ -411,8 +410,8 @@ TEST_F(GLES3DecoderPassthroughTest, MapBufferRangeWriteUnsynchronizedBit) {
   uint32_t data_shm_id = shared_memory_id_;
   uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
-  int8_t* mem = reinterpret_cast<int8_t*>(&result[1]);
-  memset(mem, 72, kSize);  // Init to a random value other than 0.
+  int8_t* mem = reinterpret_cast<int8_t*>(&UNSAFE_TODO(result[1]));
+  UNSAFE_TODO(memset(mem, 72, kSize));  // Init to a random value other than 0.
 
   cmds::MapBufferRange cmd;
   cmd.Init(kTarget, kOffset, kSize, kAccess, data_shm_id, data_shm_offset,
@@ -446,16 +445,16 @@ TEST_F(GLES3DecoderPassthroughTest, MapBufferRangeWithError) {
   uint32_t data_shm_id = shared_memory_id_;
   uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
-  int8_t* mem = reinterpret_cast<int8_t*>(&result[1]);
-  memset(mem, 72, kSize);  // Init to a random value other than 0.
+  int8_t* mem = reinterpret_cast<int8_t*>(&UNSAFE_TODO(result[1]));
+  UNSAFE_TODO(memset(mem, 72, kSize));  // Init to a random value other than 0.
 
   cmds::MapBufferRange cmd;
   cmd.Init(kTarget, kOffset, kSize, kAccess, data_shm_id, data_shm_offset,
            result_shm_id, result_shm_offset);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  memset(&data[0], 72, kSize);
+  UNSAFE_TODO(memset(&data[0], 72, kSize));
   // Mem is untouched.
-  EXPECT_EQ(0, memcmp(&data[0], mem, kSize));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(&data[0], mem, kSize)));
   EXPECT_EQ(0u, *result);
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
 
@@ -680,9 +679,9 @@ TEST_F(GLES3DecoderPassthroughTest, CopyBufferSubDataValidArgs) {
   DoBindBuffer(kTarget, kClientBufferId);
   DoBufferData(kTarget, kSize, nullptr, GL_STREAM_DRAW);
   base::HeapArray<char> data = base::HeapArray<char>::Uninit(kHalfSize);
-  memset(data.data(), kValue0, kHalfSize);
+  UNSAFE_TODO(memset(data.data(), kValue0, kHalfSize));
   DoBufferSubData(kTarget, 0, kHalfSize, data.data());
-  memset(data.data(), kValue1, kHalfSize);
+  UNSAFE_TODO(memset(data.data(), kValue1, kHalfSize));
   DoBufferSubData(kTarget, kHalfSize, kHalfSize, data.data());
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 

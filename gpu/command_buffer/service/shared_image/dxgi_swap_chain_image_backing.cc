@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -25,7 +26,6 @@
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/size.h"
@@ -61,8 +61,8 @@ std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
   }
 
   Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-  d3d11_device.As(&dxgi_device);
-  DCHECK(dxgi_device);
+  HRESULT hr = d3d11_device.As(&dxgi_device);
+  CHECK_EQ(hr, S_OK);
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
   dxgi_device->GetAdapter(&dxgi_adapter);
   DCHECK(dxgi_adapter);
@@ -93,8 +93,8 @@ std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
   }
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain;
-  HRESULT hr = dxgi_factory->CreateSwapChainForComposition(
-      d3d11_device.Get(), &desc, nullptr, &dxgi_swap_chain);
+  hr = dxgi_factory->CreateSwapChainForComposition(d3d11_device.Get(), &desc,
+                                                   nullptr, &dxgi_swap_chain);
 
   // If CreateSwapChainForComposition fails, we cannot draw to the
   // browser window. Return false after disabling Direct Composition support
@@ -149,17 +149,16 @@ DXGISwapChainImageBacking::DXGISwapChainImageBacking(
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
     Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain,
     int buffers_need_alpha_initialization_count)
-    : ClearTrackingSharedImageBacking(
-          mailbox,
-          format,
-          size,
-          color_space,
-          surface_origin,
-          alpha_type,
-          usage,
-          std::move(debug_label),
-          gfx::BufferSizeForBufferFormat(size, ToBufferFormat(format)),
-          /*is_thread_safe=*/false),
+    : ClearTrackingSharedImageBacking(mailbox,
+                                      format,
+                                      size,
+                                      color_space,
+                                      surface_origin,
+                                      alpha_type,
+                                      usage,
+                                      std::move(debug_label),
+                                      format.EstimatedSizeInBytes(size),
+                                      /*is_thread_safe=*/false),
       d3d11_device_(std::move(d3d11_device)),
       dxgi_swap_chain_(std::move(dxgi_swap_chain)),
       buffers_need_alpha_initialization_count_(

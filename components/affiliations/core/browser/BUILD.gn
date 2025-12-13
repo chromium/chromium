@@ -135,7 +135,7 @@ if (use_fuzzing_engine_with_lpm) {
     deps = [
       ":affiliation_proto",
       ":affiliations",
-      "//base:base",
+      "//base",
       "//base:i18n",
       "//third_party/libprotobuf-mutator",
     ]

@@ -36,9 +36,7 @@ AccountInvestigatorFactory::AccountInvestigatorFactory()
 AccountInvestigatorFactory::~AccountInvestigatorFactory() = default;
 
 std::unique_ptr<KeyedService>
-AccountInvestigatorFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
+AccountInvestigatorFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   std::unique_ptr<AccountInvestigator> investigator =
       std::make_unique<AccountInvestigator>(
           profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile));
@@ -46,7 +44,7 @@ AccountInvestigatorFactory::BuildServiceInstanceFor(
   return std::move(investigator);
 }
 
-void AccountInvestigatorFactory::RegisterBrowserStatePrefs(
+void AccountInvestigatorFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   AccountInvestigator::RegisterPrefs(registry);
 }

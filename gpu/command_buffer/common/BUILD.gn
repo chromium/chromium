@@ -70,14 +70,10 @@ source_set("common_sources") {
     "discardable_handle.h",
     "gl2_types.h",
     "gpu_command_buffer_common_export.h",
-    "gpu_memory_buffer_support.cc",
-    "gpu_memory_buffer_support.h",
     "id_allocator.cc",
     "id_allocator.h",
     "mailbox_holder.cc",
     "mailbox_holder.h",
-    "presentation_feedback_utils.cc",
-    "presentation_feedback_utils.h",
     "scheduling_priority.cc",
     "scheduling_priority.h",
     "shared_image_capabilities.cc",
@@ -104,6 +100,7 @@ source_set("common_sources") {
   public_deps = [
     ":mailbox",
     "//base",
+    "//components/viz/common/resources:shared_image_format",
     "//mojo/public/cpp/system",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
@@ -162,11 +159,11 @@ source_set("raster_sources") {
     ":gles2_utils",
     "//base",
     "//skia",
-    "//ui/gl:gl",
+    "//ui/gl",
   ]
   public_deps = [
     ":common",
-    "//components/viz/common:shared_image_format",
+    "//components/viz/common/resources:shared_image_format",
   ]
 }
 

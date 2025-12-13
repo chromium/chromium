@@ -38,12 +38,18 @@ public class NtpCustomizationViewProperties {
     public static final PropertyModel.WritableIntPropertyKey
             MAIN_BOTTOM_SHEET_MVT_SECTION_SUBTITLE = new PropertyModel.WritableIntPropertyKey();
 
+    /** The New Tab Page Cards section subtitle in the main bottom sheet. */
+    public static final PropertyModel.WritableIntPropertyKey
+            MAIN_BOTTOM_SHEET_NTP_CARDS_SECTION_SUBTITLE_RES_ID =
+                    new PropertyModel.WritableIntPropertyKey();
+
     /** The keys to bind a {@link BottomSheetListContainerView}. */
     public static final PropertyKey[] LIST_CONTAINER_KEYS =
             new PropertyKey[] {
                 LIST_CONTAINER_VIEW_DELEGATE,
                 MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE,
-                MAIN_BOTTOM_SHEET_MVT_SECTION_SUBTITLE
+                MAIN_BOTTOM_SHEET_MVT_SECTION_SUBTITLE,
+                MAIN_BOTTOM_SHEET_NTP_CARDS_SECTION_SUBTITLE_RES_ID,
             };
 
     /** The click listener to handle back button clicks in the bottom sheet. */
@@ -69,7 +75,23 @@ public class NtpCustomizationViewProperties {
                 BACK_PRESS_HANDLER,
                 IS_MVT_SWITCH_CHECKED,
                 MVT_SWITCH_ON_CHECKED_CHANGE_LISTENER,
-                SET_MVT_SWITCH_CONTENT_DESCRIPTION_RES_ID
+                SET_MVT_SWITCH_CONTENT_DESCRIPTION_RES_ID,
+            };
+
+    // Properties specifically for the NTP cards bottom sheet.
+
+    /** {@link OnCheckedChangeListener} called when the "all NTP cards" switch is toggled. */
+    public static final PropertyModel.WritableObjectPropertyKey<OnCheckedChangeListener>
+            ALL_NTP_CARDS_SWITCH_ON_CHECKED_CHANGE_LISTENER =
+                    new PropertyModel.WritableObjectPropertyKey<>();
+
+    /** Whether individual cards' switches should be enabled (true iff "all NTP cards" is on). */
+    public static final PropertyModel.WritableBooleanPropertyKey ARE_CARD_SWITCHES_ENABLED =
+            new PropertyModel.WritableBooleanPropertyKey();
+
+    public static final PropertyKey[] NTP_CARD_SETTINGS_KEYS =
+            new PropertyKey[] {
+                ALL_NTP_CARDS_SWITCH_ON_CHECKED_CHANGE_LISTENER, ARE_CARD_SWITCHES_ENABLED
             };
 
     // Properties specifically for the feed settings bottom sheet:
@@ -87,9 +109,8 @@ public class NtpCustomizationViewProperties {
     public static final PropertyModel.WritableBooleanPropertyKey IS_FEED_LIST_ITEMS_TITLE_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
 
-    public static final PropertyModel.WritableObjectPropertyKey<Integer>
-            SET_FEED_SWITCH_CONTENT_DESCRIPTION_RES_ID =
-                    new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableObjectPropertyKey<String>
+            SET_FEED_SWITCH_CONTENT_DESCRIPTION = new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] FEED_SETTINGS_KEYS =
             new PropertyKey[] {
@@ -97,6 +118,6 @@ public class NtpCustomizationViewProperties {
                 IS_FEED_SWITCH_CHECKED,
                 IS_FEED_LIST_ITEMS_TITLE_VISIBLE,
                 LEARN_MORE_BUTTON_CLICK_LISTENER,
-                SET_FEED_SWITCH_CONTENT_DESCRIPTION_RES_ID
+                SET_FEED_SWITCH_CONTENT_DESCRIPTION
             };
 }

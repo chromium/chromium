@@ -12,6 +12,7 @@
 
 @protocol ApplicationCommands;
 @class SadTabView;
+class GURL;
 
 // Describes the mode of the Sad Tab, whether it should offer an attempt to
 // reload content, or whether it should offer a way to provide feedback.
@@ -27,6 +28,10 @@ enum class SadTabViewMode {
 // Instructs the delegate to show Suggestions help page with the given URL.
 - (void)sadTabView:(SadTabView*)sadTabView
     showSuggestionsPageWithURL:(const GURL&)URL;
+
+// Returns the context menu configuration for the suggestions page.
+- (UIMenu*)sadTabView:(SadTabView*)sadTabView
+    contextMenuConfigurationForURL:(const GURL&)URL;
 
 // Instructs the delegate to reload this page.
 - (void)sadTabViewReload:(SadTabView*)sadTabView;

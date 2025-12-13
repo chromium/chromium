@@ -56,7 +56,8 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   // priority.
   ThreadPoolImpl(std::string_view histogram_label,
                  std::unique_ptr<TaskTrackerImpl> task_tracker,
-                 bool use_background_threads = true);
+                 bool use_background_threads = true,
+                 bool monitor_worker_thread_priorities = true);
 
   ThreadPoolImpl(const ThreadPoolImpl&) = delete;
   ThreadPoolImpl& operator=(const ThreadPoolImpl&) = delete;
@@ -166,9 +167,13 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
       const base::FilePath& path);
 
  private:
-  // Invoked after |num_fences_| or |num_best_effort_fences_| is updated. Sets
-  // the CanRunPolicy in TaskTracker and wakes up workers as appropriate.
-  void UpdateCanRunPolicy();
+  // Use after |num_fences_| or |num_best_effort_fences_| is updated to get the
+  // new effective policy.
+  CanRunPolicy CalculateCanRunPolicy();
+
+  // Sets the CanRunPolicy in TaskTracker to `can_run_policy` and wakes up
+  // workers as appropriate.
+  void UpdateCanRunPolicy(CanRunPolicy can_run_policy);
 
   const ThreadGroup* GetThreadGroupForTraits(const TaskTraits& traits) const;
 

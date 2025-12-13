@@ -68,6 +68,7 @@ class COMPOSITOR_EXPORT CompositorObserver {
 
   // Called when the presentation feedback was received from the viz.
   virtual void OnDidPresentCompositorFrame(
+      Compositor* compositor,
       uint32_t frame_token,
       const gfx::PresentationFeedback& feedback) {}
 

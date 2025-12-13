@@ -4,6 +4,9 @@
 
 #include "components/quirks/quirks_client.h"
 
+#include <optional>
+#include <string>
+
 #include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -14,6 +17,7 @@
 #include "components/quirks/quirks_manager.h"
 #include "components/version_info/version_info.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -124,7 +128,7 @@ void QuirksClient::StartDownload() {
 }
 
 void QuirksClient::OnDownloadComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // Take ownership of the loader in this scope.
@@ -190,7 +194,7 @@ void QuirksClient::Retry() {
 
 bool QuirksClient::ParseResult(const std::string& result, std::string* data) {
   std::optional<base::Value::Dict> maybe_json =
-      base::JSONReader::ReadDict(result);
+      base::JSONReader::ReadDict(result, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!maybe_json) {
     VLOG(1) << "Failed to parse JSON icc data";
     return false;

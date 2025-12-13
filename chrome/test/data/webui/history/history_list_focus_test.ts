@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {HistoryAppElement, HistoryEntry, HistoryListElement} from 'chrome://history/history.js';
-import {BrowserServiceImpl, ensureLazyLoaded} from 'chrome://history/history.js';
+import {BrowserServiceImpl} from 'chrome://history/history.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -44,7 +44,6 @@ suite('<history-list>', function() {
     element = app.$.history;
     return Promise.all([
       testService.handler.whenCalled('queryHistory'),
-      ensureLazyLoaded(),
       microtasksFinished(),
       eventToPromise('viewport-filled', element.$.infiniteList),
     ]);

@@ -13,14 +13,16 @@
 
 namespace ui {
 
-class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
-    uuid("3e1c192b-4348-45ac-8eb6-4b58eeb3dcca")) AXPlatformNodeTextProviderWin
-    : public SequenceAffineComObjectRoot,
-      public ITextEditProvider {
+class COMPONENT_EXPORT(AX_PLATFORM)
+    __declspec(uuid("3e1c192b-4348-45ac-8eb6-4b58eeb3dcca"))
+    AXPlatformNodeTextProviderWin : public SequenceAffineComObjectRoot,
+                                    public ITextEditProvider,
+                                    public IFastRundown {
  public:
   BEGIN_COM_MAP(AXPlatformNodeTextProviderWin)
   COM_INTERFACE_ENTRY(ITextProvider)
   COM_INTERFACE_ENTRY(ITextEditProvider)
+  COM_INTERFACE_ENTRY(IFastRundown)
   COM_INTERFACE_ENTRY(AXPlatformNodeTextProviderWin)
   END_COM_MAP()
 

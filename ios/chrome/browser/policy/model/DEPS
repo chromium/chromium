@@ -1,8 +1,11 @@
 include_rules = [
+  "+ios/chrome/browser/enterprise/identifiers",
   "+ios/chrome/browser/policy_url_blocking/model",
   "+ios/chrome/browser/signin/model",
   "+components/collaboration/public/pref_names.h",
+  "+components/contextual_search/pref_names.h",
   "+components/lens",
+  "+components/themes",
 ]
 
 specific_include_rules = {

@@ -5,8 +5,7 @@
       "linux",
       "mac",
       "chromeos",
-      "desktop_android",
-      "fuchsia"
+      "desktop_android"
     ],
     "policy_pref_mapping_tests": [
       {

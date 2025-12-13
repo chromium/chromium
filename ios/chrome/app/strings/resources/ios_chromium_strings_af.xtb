@@ -4,10 +4,10 @@
 <translation id="1000436330784933699">Jy kan Lens hier oopmaak.</translation>
 <translation id="1042296835509784301">Maak die Wagwoordbestuurder in Chromium oop.</translation>
 <translation id="1047130070405668746">Kies Chromium</translation>
-<translation id="1086486568852410168">Soek met Google Lens</translation>
 <translation id="1091252999271033193">Dit beteken dat Chromium elke keer die mobiele werf sal versoek.</translation>
 <translation id="1115463765356382667">Voltooi die voorgestelde handelinge hier onder om Chromium ten beste te benut.</translation>
 <translation id="1185134272377778587">Meer oor Chromium</translation>
+<translation id="1211450393895337634">Maak Chromium vinniger oop wanneer jy gereed is om op jou iPad te blaai.</translation>
 <translation id="1229234641991056119">Gebruik jou Safari-wagwoorde, -geskiedenis, -boekmerke en -kredietkaarte in Chromium</translation>
 <translation id="1257458525759135959">Om prente te stoor, moet jy op Instellings tik om Chromium toe te laat om foto's by te voeg</translation>
 <translation id="1260702988262336471">Maak die Chromium-kieslys oop</translation>
@@ -22,12 +22,15 @@
 <translation id="1472013873724362412">Jou rekening werk nie in Chromium nie. Kontak asseblief jou domeinadministrateur of gebruik 'n gewone Google-rekening om aan te meld.</translation>
 <translation id="148576268809812097">Stoor jou wagwoorde in Chromium</translation>
 <translation id="1501302548410882220">Gebruik Chromium oral</translation>
+<translation id="1502360822835740515">Maak Chromium jou verstekblaaier</translation>
 <translation id="1503199973012840174">Jou Chromium is verouderd. Dateer dit op om veilig te bly.</translation>
 <translation id="1515748263297244785">Gebruik Chromium vir iPad by verstek</translation>
+<translation id="1530961174488670696">Chromium kon nie vir opdaterings kyk nie. Probeer later weer.</translation>
 <translation id="1531155317299575425">Wys porboodskappe om by Chromium aan te meld.</translation>
 <translation id="1553657876656159572">’n Gepasmaakte stroom wat vir jou gemaak is. Insluitend nuus, sport en die weer.</translation>
 <translation id="1561849081734670621">Skakel snelsluitmodus op jou iPhone af as jy dit in Chromium wil deaktiveer.</translation>
 <translation id="1569258826720962327">Gebruik Chromium-handelinge op iOS</translation>
+<translation id="1573441572176948907">Skuif Chromium na jou dok</translation>
 <translation id="159029779861043703">Chromium hou jou sensitiewe data met Gesig-ID veilig.</translation>
 <translation id="1591119736686995611">Maak die Chromium-oortjierooster oop.</translation>
 <translation id="16001233025397167">Veiligheidskontrole hou jou veilig teen dataskendings, onveilige webwerwe en meer. Ontvang waarskuwings oor enige privaatheid- of sekuriteitkwessies wat Chromium vir jou bespeur.</translation>
@@ -43,6 +46,7 @@
 <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Maps in Chromium</translation>
 <translation id="1867772173333403444">4. Kies Chromium</translation>
+<translation id="1965068424387304464">Chromium-wenk: Stoor wagwoorde</translation>
 <translation id="2006345422933397527">Chromium kon nie vir opdaterings kyk nie. Probeer jou internetverbinding nagaan.</translation>
 <translation id="2042889939382983733">Bekyk jou Chromium-geskiedenis</translation>
 <translation id="2052320862053429062">Chromium vergelyk jou wagwoorde van tyd tot tyd met lyste wat aanlyn gepubliseer is. Wanneer dit gedoen word, word jou wagwoorde en gebruikername geënkripteer sodat niemand, insluitend Google, hulle kan lees nie.</translation>
@@ -53,6 +57,7 @@
 <translation id="2195025571279539885">Wil jy hê dat Chromium volgende keer moet aanbied om bladsye in <ph name="LANGUAGE_NAME" /> van hierdie werf af te vertaal?</translation>
 <translation id="22313767259766852">Hierdie adres is tans in Chromium gestoor. Stoor dit in jou Google-rekening, <ph name="USER_EMAIL" />, om dit in alle Google-produkte te gebruik.</translation>
 <translation id="2236584955986023187">Dit beteken dat Chromium elke keer die rekenaarwerf sal versoek.</translation>
+<translation id="2245694534483711162">Gemini kan jou presiese ligging gebruik, afhangend van die toestemming wat jy reeds vir Chromium gegee het</translation>
 <translation id="2270466829363945454">Winkel</translation>
 <translation id="2313870531055795960">Vergelyk URL'e met 'n lys onveilige werwe wat in Chromium geberg is. As 'n werf probeer om jou wagwoord te steel, of wanneer jy 'n skadelike lêer aflaai, sal Chromium dalk ook URL'e, insluitend stukkies bladsyinhoud, na Veiligblaai toe stuur.</translation>
 <translation id="2314220608288760290">Chromium maak outomaties YouTube Incognito-skakels in Incognito oop.</translation>
@@ -64,6 +69,7 @@ Probeer om ’n paar minute te wag voordat jy afmeld. As jy nou afmeld, sal hier
 <translation id="2340423701577464731">Voeg leeslysitem by Chromium</translation>
 <translation id="2374627437126809292">Chromium gebruik Google Maps om vir jou aanwysings en plaaslike inligting oor bespeurde adresse te gee.</translation>
 <translation id="2386292341327187942">Voer Chromium in die Search-legstuk-boks in</translation>
+<translation id="2389827884654658221">Kry vinniger toegang tot Chromium van jou iPad se tuisskerm af.</translation>
 <translation id="2426113998523353159">Jou organisasie vereis dat jy aanmeld om Chromium te gebruik.</translation>
 <translation id="2450140762465183767">Jy kan Chromium nou enige tyd gebruik wanneer jy op skakels in boodskappe, dokumente en ander programme tik.</translation>
 <translation id="2459183986985456602">Maak my nuutste oortjie in Chromium oop.</translation>
@@ -72,11 +78,15 @@ Probeer om ’n paar minute te wag voordat jy afmeld. As jy nou afmeld, sal hier
 <translation id="2485774047568879945">Stel Chromium as jou verstekblaaier om skakels maklik te deel en oop te maak</translation>
 <translation id="2512597191798760956">Druk en hou die Chromium-ikoon en klik “Wysig tuisskerm”</translation>
 <translation id="2517624234762908348">Sinkroniseer jou Chromium-data</translation>
+<translation id="2575968074225731646">Kry vinniger toegang tot Chromium vanaf jou iPhone se dok.</translation>
 <translation id="2592940277904433508">Hou aan om Chromium te gebruik</translation>
 <translation id="2607609479243848905"><ph name="BEGIN_LINK" />Vee die Chromium-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet het of hierdie instelling wil verander.</translation>
+<translation id="2640367368802736659">Chromium-wenk: Soek wat jy sien met Google Lens</translation>
 <translation id="2650312721222849884">Skakel sinkronisering aan om jou oortjies te sien van waar ook al jy Chromium gebruik</translation>
 <translation id="2684230048001240293">Stel Chromium as verstek om jou oortjies, wagwoorde en betaalinligting op al jou toestelle te sinkroniseer</translation>
+<translation id="2729836253097154631">Meld aan by Chromium om jou goed te kry</translation>
 <translation id="2730884209570016437">Chromium kan nie jou kamera gebruik nie omdat dit deur 'n ander app gebruik word</translation>
+<translation id="2742952311155593352">Jy is amper klaar om Chromium op te stel!</translation>
 <translation id="2798503587425057129">Maak die Chromium-leeslys oop.</translation>
 <translation id="28276745681323897">Jy kan <ph name="BEGIN_LINK" />bestuur watter Chromium-data gestoor word<ph name="END_LINK" /> in jou Google-rekening.
 
@@ -88,7 +98,6 @@ Gaan na <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer in
 <translation id="2977470724722393594">Chromium is op datum</translation>
 <translation id="3044857325852340337">Chromium-data uitgevee</translation>
 <translation id="3054480780637153380">Maak Chromium-instellings in iOS oop, en tik dan op “Verstekblaaier-app” en kies Chromium.</translation>
-<translation id="3102849287235003384"><ph name="BEGIN_LINK" />Meld af by Chromium<ph name="END_LINK" /> om op alle webwerwe by jou Google-rekening af te meld.</translation>
 <translation id="3115956258722352278">Maak Chromium jou verstekblaaier?</translation>
 <translation id="3180939591219927904">Skakel “Sluit Incognito-oortjies wanneer jy Chromium toemaak” aan</translation>
 <translation id="328933489847748230">{count,plural, =1{Wys nou in 1 Chromium-vensters}other{Wys nou in {count} Chromium-vensters}}</translation>
@@ -97,6 +106,7 @@ Gaan na <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer in
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Dit gebeur wanneer Chromium vir {THRESHOLD} minuut nie gebruik word nie. Dit kan geskiedenis en outovul insluit.}other{Dit gebeur wanneer Chromium vir {THRESHOLD} minute nie gebruik word nie. Dit kan geskiedenis en outovul insluit.}}</translation>
 <translation id="3410395242749598859">Sommige van jou Chromium-data is nog nie in <ph name="EMAIL" /> gestoor nie.
 Probeer om ’n paar minute te wag voordat jy rekeninge wissel. As jy nou rekeninge wissel, sal hierdie data uitgevee word.</translation>
+<translation id="3420586870838853527">Chromium-wenk: Verbeterde Veiligblaai sal jou dag red</translation>
 <translation id="3440830787838130530">Deel maklik en veilig ’n kopie van ’n wagwoord met jou gesinsgroep in Google Wagwoordbestuurder</translation>
 <translation id="3472200483164753384">Nie gesteun in Chromium Kanarie nie</translation>
 <translation id="347967311580159871">Gaan na <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer instellings wat data gebruik om jou Chromium-ervaring te verbeter.</translation>
@@ -107,6 +117,8 @@ Probeer om ’n paar minute te wag voordat jy rekeninge wissel. As jy nou rekeni
 <translation id="3581385059720151202">Soek visuele elemente in Chromium</translation>
 <translation id="3582640969619785896">Chromium sal aanbied om jou wagwoord te stoor</translation>
 <translation id="3594315078412605236">Bestuur betaalmetodes in Chromium</translation>
+<translation id="3600428265489994557">Meld by Chromium aan</translation>
+<translation id="3617143087229977194">Maak Default Apps-instellings in iOS oop, en tik dan op “Blaaierapp” en kies Chromium.</translation>
 <translation id="3634039384458740619">Maak Chromium-instellings oop</translation>
 <translation id="3639997914391704523">Chromium kan jou wagwoorde nagaan as jy met jou Google-rekening aanmeld.</translation>
 <translation id="372658070733623520">Verifieer dis jy om Chromium-data in jou Google-rekening te gebruik en te stoor.</translation>
@@ -117,6 +129,8 @@ Probeer om ’n paar minute te wag voordat jy rekeninge wissel. As jy nou rekeni
 <translation id="3816686541346279443">Chromium sal aanbied om jou wagwoord te stoor.</translation>
 <translation id="3827545470516145620">Jy kry tans standaardsekuriteitbeskerming op hierdie toestel</translation>
 <translation id="3833326979834193417">Chromium laat elke dag veiligheidskontrole outomaties loop om jou veilig te hou teen dataskendings, onveilige webwerwe en meer. Jy kan meer oor veiligheidskontrole in instellings kry.</translation>
+<translation id="3837584850181228767">Chromium-wenk: Verbeterde Veiligblaai</translation>
+<translation id="3845223911364528001">Gaan terug na Chromium om jou lêer op te laai</translation>
 <translation id="3855938650519180865">Wat is nuut in Chromium</translation>
 <translation id="3886689467633467988">Meld by hierdie werf en Chromium aan om jou boekmerke en meer op al jou toestelle te kry.</translation>
 <translation id="3949514465204582407">Chromium-wenk: Kry jou wagwoorde in enige app</translation>
@@ -133,6 +147,7 @@ Jou data is met jou wagfrase geënkripteer. Voer dit in om Chromium-data in jou 
 <translation id="420541179527342563">Skakel snelsluitmodus op jou iPhone af as jy dit in Chromium wil deaktiveer.</translation>
 <translation id="4272892696084633551">Help om Chromium se kenmerke en werkverrigting te verbeter</translation>
 <translation id="4302397443352897529">Chromium-instellings</translation>
+<translation id="4304713468139749426">Wagwoordbestuurder</translation>
 <translation id="4408912345039114853">Doen Chromium-veiligheidskontrole</translation>
 <translation id="4432744876818348753">Meld aan om Chromium ten beste te benut.</translation>
 <translation id="4445228361214254027">Jou organisasie het die vermoë afgeskakel om Chromium-data in jou Google-rekening te gebruik en te stoor. Nuwe boekmerke, wagwoorde en meer sal slegs op hierdie toestel gestoor word.</translation>
@@ -169,6 +184,7 @@ Jou data is met jou wagfrase geënkripteer. Voer dit in om Chromium-data in jou 
 <translation id="5131565040785979529">Jou organisasie, <ph name="DOMAIN" />, bestuur die rekening waarby jy aangemeld is en hoe Chromium gebruik word.</translation>
 <translation id="5134464247000681876">Maak skakels vanaf Gmail, Maps, YouTube en ander apps in Chromium oop</translation>
 <translation id="5203244847421322551">Stoor en outovul wagwoorde in Chromium</translation>
+<translation id="5218806323985098884">Kyk wat is nuut in Chromium</translation>
 <translation id="5224391634244552924">Geen gestoorde wagwoorde nie. Chromium kan jou wagwoorde nagaan wanneer jy hulle stoor.</translation>
 <translation id="5259423875997548710">Soek visuele elemente in Chromium.</translation>
 <translation id="5284913972719948193">Voer jou data in om jou wagwoorde, geskiedenis, boekmerke en kredietkaarte in Chromium te gebruiik</translation>
@@ -177,6 +193,7 @@ Jou data is met jou wagfrase geënkripteer. Voer dit in om Chromium-data in jou 
 <translation id="5383251701169024761">Kies Chromium vir Outovul om jou gestoorde wagwoorde maklik in ander apps te kry.</translation>
 <translation id="538767207339317086">Laat Chromium-aanmelding toe</translation>
 <translation id="5389058611415066188">Bly veilig met Chromium</translation>
+<translation id="5414059596208264343">Chromium-wenk: Kry jou wagwoorde</translation>
 <translation id="5415273218238091735">Chromium-wenk</translation>
 <translation id="5427571867875391349">Stel Chromium as jou verstekblaaier</translation>
 <translation id="5434562575369834882">Maak oop in Chromium Incognito</translation>
@@ -189,12 +206,16 @@ Jou data is met jou wagfrase geënkripteer. Voer dit in om Chromium-data in jou 
 <translation id="5521125884468363740">Meld aan en skakel sinkronisering aan om jou oortjies te sien van waar ook al jy Chromium gebruik</translation>
 <translation id="5534584691915394889">Dit sal gebruik word om geleenthede uit Chromium en Google Lens in jou Apple Calendar te skep.</translation>
 <translation id="5571094606370987472">Maak Chromium se onlangse oortjies oop.</translation>
+<translation id="5596644122344097310">Tik hier om die meeste uit Chromium op jou iPhone te kry.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5657280937522795751">Wissel Chromium</translation>
 <translation id="5664395081284292058">Maak my nuutste oortjie in Chromium oop</translation>
 <translation id="5671188105328420281">Chromium-wenke</translation>
 <translation id="5688047395118852662">Hierdie kaart wys vir jou voorstelle oor hoe jy Chromium ten beste kan benut.</translation>
 <translation id="5700709190537129682">Chromium kan nie jou wagwoorde nagaan nie</translation>
+<translation id="5731004036450828399">Om jou toegangsleutels veilig te hou, sal jy eers ’n terugstel-PIN moet skep.
+
+        Toegangsleutels word in Wagwoordbestuurder gestoor, so jy kan hulle op enige toestel in Chromium gebruik.</translation>
 <translation id="584550191241316896">Aangemeld by Chromium</translation>
 <translation id="5862307444128926510">Welkom by Chromium</translation>
 <translation id="5889847953983052353">Wanneer dit aan is:
@@ -218,7 +239,7 @@ Dinge om in ag te neem:
 <translation id="6154098560469640583">Gebruik Chromium enige tyd wanneer jy op skakels in boodskappe, dokumente en ander apps tik.</translation>
 <translation id="6157162508956739031">Meld vinnig by apps en werwe aan deur jou wagwoorde en toegangsleutels vanaf Chromium outomaties in te vul</translation>
 <translation id="6170619162539716595">Laat Chromium toe om Google Maps te gebruik om vir jou aanwysings en plaaslike inligting oor bespeurde adresse te gee.</translation>
-<translation id="6247557882553405851">Google Wagwoordbestuurder</translation>
+<translation id="6244277266078678766">Jou data sal vir <ph name="USER_EMAIL" /> in Wagwoordbestuurder gestoor word</translation>
 <translation id="6268381023930128611">Meld by Chromium af?</translation>
 <translation id="6301717043141881464">Kies Chromium vir Outovul om jou gestoorde wagwoorde maklik in jou ander apps te kry</translation>
 <translation id="6324041800010509197">Besoek die oortjierooster in Chromium</translation>
@@ -227,11 +248,15 @@ Dinge om in ag te neem:
 <translation id="6424492062988593837">Chromium het pas beter geword! 'n Nuwe weergawe is beskikbaar.</translation>
 <translation id="6433172051771630690">Wenke om die meeste uit Chromium te kry.</translation>
 <translation id="65045991564554105">Sien Chromium-boekmerke</translation>
+<translation id="6519797228806907665">Kry vinniger toegang tot Chromium van jou iPhone se tuisskerm af.</translation>
 <translation id="6538713818758208754">Maak die betaalmetode-instellingbladsy in Chromium oop.</translation>
 <translation id="6540186279384079894">Maak nuwe oortjie in Chromium oop</translation>
 <translation id="6563921047760808519">Kom meer te wete oor <ph name="BEGIN_LINK" />hoe Chromium jou data privaat hou<ph name="END_LINK" /></translation>
+<translation id="6564769014061914792">Tik hier om die meeste uit Chromium op jou iPad te kry.</translation>
+<translation id="6566303693324540692">Chromium-wenk: Skuif Chromium na jou tuisskerm</translation>
 <translation id="6574750762636192517">Bestuur wagwoorde in Chromium</translation>
 <translation id="6590232959690355435">Maak jou Chromium-geskiedenisbladsy oop.</translation>
+<translation id="6649269674808477353">Maak Chromium vinniger oop wanneer jy gereed is om op jou iPhone te blaai.</translation>
 <translation id="6674470628873622334">Maak ’n nuwe Chromium Incognito-oortjie oop.</translation>
 <translation id="6680609900732453726">Hou jou blaaiery privaat met toestelstawing wanneer jy Chromium toemaak</translation>
 <translation id="6752854822223394465">Jou organisasie stel tans Chromium op …</translation>
@@ -260,13 +285,14 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="7269362888766543920">Sekere byvoegings veroorsaak dat Chromium omval. Probeer om hulle te deïnstalleer.</translation>
 <translation id="7285031092584344905">Kry toegang tot jou Chromium-wagwoorde en meer van ander apps af.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">Die gekose data is van Chromium en gesinkroniseerde toestelle af verwyder. Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en aktiwiteit, vanaf ander Google-dienste by history.google.com.</translation>
 <translation id="7395825497086981028">Jou wagwoord sal vir <ph name="EMAIL" /> in Wagwoordbestuurder gestoor word.</translation>
+<translation id="7434848749522628428">Hierdie toegangsleutel sal in Google Wagwoordbestuurder vir <ph name="USER_EMAIL" /> gestoor word</translation>
 <translation id="7504829997542308412">Maak Chromium oop</translation>
 <translation id="7531461704633548377">Vanaf Chromium</translation>
 <translation id="7554983317097061001">Chromium-wenk: Skuif Chromium na die dok toe</translation>
 <translation id="7576863740961052505">Bestuur Chromium-instellings</translation>
 <translation id="7674213385180944843">Maak Instellings &gt; Privaatheid &gt; Kamera &gt; Chromium oop en skakel kamera aan.</translation>
+<translation id="7685160423563372998">Skep prent met Gemini in Chromium</translation>
 <translation id="7733418656985455268">Chromium-wenk: Soek met Lens</translation>
 <translation id="7747820849741499258">Soek in Chromium</translation>
 <translation id="7753923083404296545">Oopgemaak in Chromium Incognito</translation>
@@ -281,6 +307,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="7934404985878918282">Sien Chromium-leeslys</translation>
 <translation id="7935734571048689933">Chromium is bestuur</translation>
 <translation id="7951793218148208717">Maak ’n nuwe oortjie in Chromium oop.</translation>
+<translation id="7957726318578167662">Gebruik Chromium enige tyd wanneer jy op skakels in boodskappe of ander apps tik.</translation>
 <translation id="7980860476903281594">Chromium deel jou ligging met werwe wat jy toelaat.</translation>
 <translation id="7994322153108931467">Skakel kennisgewings in jou iOS-instellings aan om nuttige Chromium-wenke te kry.</translation>
 <translation id="7997159823054171568">Stel Chromium as verstekblaaier</translation>
@@ -291,10 +318,11 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="8119542592987737574">Kry vinniger toegang tot Chromium van jou iPhone se tuisskermdok af.</translation>
 <translation id="8164086860209325020">Gaan na Chromium-instellings</translation>
 <translation id="8197822717502700527">Jy sal Chromium nou ten beste op jou toestel benut.</translation>
-<translation id="8240981428553046115">Chromium kon nie vir opdaterings kyk nie. Probeer later weer.</translation>
+<translation id="8236210361418193126">Voer in na Wagwoordbestuurder</translation>
 <translation id="8254729934443216898">Verken nuwe kenmerke wat jou help om die meeste uit Chromium te kry.</translation>
 <translation id="8293572045658095405">Jy is in Chromium Incognito</translation>
 <translation id="830951810931292870">Maak die URL’e wat by Chromium ingevoer word in Incognitomodus oop.</translation>
+<translation id="8385503371191508165">Begin om toegangsleutels met Wagwoordbestuurder te stoor</translation>
 <translation id="8390323835464055390">Meld aan met jou gestoorde wagwoorde en toegangsleutels vanaf enige app wat Chromium vir Outovul gebruik</translation>
 <translation id="8409374867500149834">Jy het Chromium se sterkste sekuriteit teen skadelike webwerwe</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{Dit gebeur wanneer Chromium vir {THRESHOLD} minuut nie gebruik word nie. Data wat net op hierdie toestel gestoor is terwyl jy aangemeld was, sal uitgevee word. Dit kan geskiedenis en wagwoorde insluit.}other{Dit gebeur wanneer Chromium vir {THRESHOLD} minute nie gebruik word nie. Data wat net op hierdie toestel gestoor is terwyl jy aangemeld was, sal uitgevee word. Dit kan geskiedenis en wagwoorde insluit.}}</translation>
@@ -307,6 +335,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="8730503818204408000">Maak die Chromium-instelling oop om Chromium as verstekblaaier te stel.</translation>
 <translation id="8754966941001340678">Chromium beveel verbeterde beskerming aan</translation>
 <translation id="8759037115129007407">Jou gesinslede kan nie nou wagwoorde ontvang nie. Vra hulle om Chromium op te dateer en hul wagwoorde te sinkroniseer. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
+<translation id="8769418653786388149">Neem jou Chromium saam met jou</translation>
 <translation id="8776843108004031667">Hierdie rekening en enige ongstoorde data sal uit Chromium verwyder word.</translation>
 <translation id="8793333988063379360">Jy kan Chromium-instellings en meer hier kry</translation>
 <translation id="8805148242934787134">Stel Chromium as verstekblaaier</translation>
@@ -315,6 +344,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="8860548555286245440">Maak URL’e in Chromium in Incognitomodus oop</translation>
 <translation id="8880024619507699923">Jou organisasie vereis dat jy aanmeld om Chromium te gebruik. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">Kry Chromium se sterkste sekuriteit</translation>
+<translation id="8908791447256515663">Kry vinniger toegang tot Chromium vanaf jou iPad se dok.</translation>
 <translation id="8925569192291721236">Bly op hoogte van prysnasporingopdaterings en Chromium-wenke.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Dit gebeur wanneer Chromium vir {THRESHOLD} minuut nie gebruik word nie}other{Dit gebeur wanneer Chromium vir {THRESHOLD} minute nie gebruik word nie}}</translation>
 <translation id="8963279154877372067">Laat Chromium-kennisgewings toe om prysverlagingopletberigte te kry</translation>
@@ -322,7 +352,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="900560297598578021">Aangemeld as <ph name="EMAIL" />.
 
 Jou data is op <ph name="TIME" /> met jou wagfrase geënkripteer. Voer dit in om Chromium-data in jou Google-rekening te gebruik en te stoor.</translation>
-<translation id="9022552996538154597">Meld by Chromium aan</translation>
 <translation id="9031260906956926157">Sommige van jou Chromium-data is nog nie in jou Google-rekening gestoor nie.
 Probeer om ’n paar minute te wag voordat jy afmeld. As jy nou afmeld, sal hierdie data uitgevee word.</translation>
 <translation id="9050790730841755540">Gebruik Chromium enige tyd wanneer jy op skakels in ander apps tik.</translation>

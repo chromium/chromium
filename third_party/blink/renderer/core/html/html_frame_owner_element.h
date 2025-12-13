@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/embedded_content_view.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
+#include "third_party/blink/renderer/core/html/display_ad_element_monitor.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -42,12 +43,12 @@
 
 namespace blink {
 
-class ExceptionState;
 class Frame;
 class LayoutEmbeddedContent;
 class LazyLoadFrameObserver;
 class WebPluginContainerImpl;
 class ResourceRequestHead;
+class SecurityOrigin;
 
 class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
                                           public FrameOwner {
@@ -72,7 +73,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
 
   virtual const QualifiedName& SubResourceAttributeName() const;
 
-  Document* getSVGDocument(ExceptionState&) const;
+  Document* getSVGDocument() const;
 
   void SetEmbeddedContentView(EmbeddedContentView*);
   EmbeddedContentView* ReleaseEmbeddedContentView();
@@ -141,10 +142,10 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
 
   // Updates the deferred fetch policy and notify the frame loader client of any
   // changes after `LoadOrRedirectSubframe()` is called and navigating to
-  // a target URL `to_url`.
+  // a target URL origin `to_origin`.
   // Must be called during the "Beginning navigation" algorithm as described in
   // https://whatpr.org/html/10903/d1c086a...0e0afb3/browsing-the-web.html#beginning-navigation
-  void UpdateDeferredFetchPolicy(const KURL& to_url);
+  void UpdateDeferredFetchPolicy(scoped_refptr<const SecurityOrigin> to_origin);
 
   // Potentially clear its deferred-fetch policy.
   // Must be called during "document creation" flow as described in
@@ -155,8 +156,11 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
 
   void ParseAttribute(const AttributeModificationParams&) override;
 
+  void DidSetAdStatus();
+
   // Element overrides:
   bool IsAdRelated() const override;
+  bool ShouldHighlightAd() const override;
 
   // If the iframe is lazy-loaded, initiate its load, and return true if such
   // a load was initiated.
@@ -255,6 +259,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   FramePolicy frame_policy_;
 
   Member<LazyLoadFrameObserver> lazy_load_frame_observer_;
+  Member<DisplayAdElementMonitor> display_ad_element_monitor_;
   mojom::blink::ResourceTimingInfoPtr fallback_timing_info_;
   bool should_lazy_load_children_;
   bool is_swapping_frames_{false};

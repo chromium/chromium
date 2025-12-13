@@ -11,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.Browser;
 
-import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.Preference;
 
@@ -25,12 +24,15 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -42,7 +44,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.FaviconLoader;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
-import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
@@ -54,6 +55,7 @@ import org.chromium.components.browsing_data.content.BrowsingDataModel;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.permissions.PermissionUtil;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -62,24 +64,24 @@ import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
-import org.chromium.device.DeviceFeatureList;
-import org.chromium.device.DeviceFeatureMap;
-import org.chromium.ui.base.UiAndroidFeatureList;
+import org.chromium.media.MediaFeatures;
+import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.url.GURL;
 
 import java.util.List;
 import java.util.Set;
 
 /** A SiteSettingsDelegate instance that contains Chrome-specific Site Settings logic. */
+@NullMarked
 public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     private final Context mContext;
     private final Profile mProfile;
     private final PrivacySandboxBridge mPrivacySandboxBridge;
-    private BrowsingDataModel mBrowsingDataModel;
-    private ManagedPreferenceDelegate mManagedPreferenceDelegate;
-    private SnackbarManager mSnackbarManager;
-    private PrivacySandboxSnackbarController mPrivacySandboxController;
-    private LargeIconBridge mLargeIconBridge;
+    private @Nullable BrowsingDataModel mBrowsingDataModel;
+    private @Nullable ManagedPreferenceDelegate mManagedPreferenceDelegate;
+    private @Nullable SnackbarManager mSnackbarManager;
+    private @Nullable PrivacySandboxSnackbarController mPrivacySandboxController;
+    private @Nullable LargeIconBridge mLargeIconBridge;
 
     public ChromeSiteSettingsDelegate(Context context, Profile profile) {
         mContext = context;
@@ -153,6 +155,8 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
             case SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT:
                 return ChromeFeatureList.isEnabled(
                         ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING);
+            case SiteSettingsCategory.Type.AUTO_PICTURE_IN_PICTURE:
+                return ChromeFeatureList.isEnabled(MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID);
             case SiteSettingsCategory.Type.BLUETOOTH:
                 return ContentFeatureMap.isEnabled(
                         ContentFeatureList.WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND);
@@ -166,12 +170,11 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
             case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
                 // Desktop Android always requests desktop sites, so hide the category.
                 return !DeviceInfo.isDesktop();
-            case SiteSettingsCategory.Type.SERIAL_PORT:
-                return DeviceFeatureMap.isEnabled(DeviceFeatureList.BLUETOOTH_RFCOMM_ANDROID);
             case SiteSettingsCategory.Type.LOCAL_NETWORK_ACCESS:
                 return ChromeFeatureList.isEnabled(ChromeFeatureList.LOCAL_NETWORK_ACCESS);
             case SiteSettingsCategory.Type.WINDOW_MANAGEMENT:
-                return UiAndroidFeatureList.sAndroidWindowManagementWebApi.isEnabled();
+                return ChromeFeatureList.sAndroidWindowManagementWebApi.isEnabled()
+                        && DisplayAndroidManager.isDisplayTopologyAvailable();
             default:
                 return true;
         }
@@ -180,6 +183,11 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Override
     public boolean isIncognitoModeEnabled() {
         return IncognitoUtils.isIncognitoModeEnabled(mProfile);
+    }
+
+    @Override
+    public boolean isIncognito() {
+        return mProfile.isIncognitoBranded();
     }
 
     @Override
@@ -196,16 +204,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Override
     public boolean isPermissionSiteSettingsRadioButtonFeatureEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.PERMISSION_SITE_SETTING_RADIO_BUTTON);
-    }
-
-    @Override
-    public boolean isAlwaysBlock3pcsIncognitoEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO);
-    }
-
-    @Override
-    public boolean isDisplayWildcardInContentSettingsEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.DISPLAY_WILDCARD_CONTENT_SETTINGS);
     }
 
     @Override
@@ -359,8 +357,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     @Override
     public boolean shouldShowTrackingProtectionUi() {
-        return UserPrefs.get(mProfile).getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)
-                || ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD);
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD);
     }
 
     @Override
@@ -387,20 +384,17 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     public void launchClearBrowsingDataDialog(Activity currentActivity) {
         SettingsNavigationFactory.createSettingsNavigation()
                 .startSettings(
-                        currentActivity, SettingsNavigation.SettingsFragment.CLEAR_BROWSING_DATA);
+                        currentActivity,
+                        SettingsNavigation.SettingsFragment.CLEAR_BROWSING_DATA,
+                        /* addToBackStack= */ true);
     }
 
     @Override
     // TODO(crbug.com/40880723): Look into a more scalable pattern like
     // notifyPageOpened(String className).
     public void notifyRequestDesktopSiteSettingsPageOpened() {
-        RequestDesktopUtils.notifyRequestDesktopSiteSettingsPageOpened(mProfile);
-    }
-
-    @Override
-    public boolean shouldShowPrivacySandboxRwsUi() {
-        return ChromeFeatureList.isEnabled(
-                ChromeFeatureList.PRIVACY_SANDBOX_RELATED_WEBSITE_SETS_UI);
+        TrackerFactory.getTrackerForProfile(mProfile)
+                .notifyEvent(EventConstants.DESKTOP_SITE_SETTINGS_PAGE_OPENED);
     }
 
     @Override
@@ -423,13 +417,18 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    public boolean isSafetyHubEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.SAFETY_HUB);
+    public boolean isPermissionAutorevocationEnabled() {
+        return UserPrefs.get(mProfile).getBoolean(Pref.UNUSED_SITE_PERMISSIONS_REVOCATION_ENABLED);
     }
 
     @Override
-    public boolean isPermissionAutorevocationEnabled() {
-        return UserPrefs.get(mProfile).getBoolean(Pref.UNUSED_SITE_PERMISSIONS_REVOCATION_ENABLED);
+    public boolean isRelatedWebsiteSetsUiEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_WEBSITE_SETS_UI);
+    }
+
+    @Override
+    public boolean isSettingsContainmentEnabled() {
+        return ChromeFeatureList.sAndroidSettingsContainment.isEnabled();
     }
 
     @Override

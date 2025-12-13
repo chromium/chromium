@@ -26,6 +26,7 @@
 #include "content/browser/media/media_devices_permission_checker.h"
 #include "content/browser/renderer_host/media/mock_video_capture_provider.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_web_contents.h"
@@ -308,13 +309,14 @@ class MockMediaDevicesDispatcherHost
               SetPreferredSinkId,
               (const std::string& sink_id,
                SetPreferredSinkIdCallback callback));
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
   MOCK_METHOD(void, CloseFocusWindowOfOpportunity, (const std::string& label));
   MOCK_METHOD(void,
               ProduceSubCaptureTargetId,
               (SubCaptureTargetType type,
                ProduceSubCaptureTargetIdCallback callback));
-#endif
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 };
 
 class MockBrowserClient : public ContentBrowserClient {
@@ -432,12 +434,12 @@ class MediaDevicesManagerTest : public ::testing::Test {
     mock_video_capture_provider_ = mock_video_capture_provider.get();
     // By default, forward calls to the real video_capture_system.
     ON_CALL(*mock_video_capture_provider_, GetDeviceInfosAsync(_))
-        .WillByDefault(Invoke(
+        .WillByDefault(
             [&](VideoCaptureProvider::GetDeviceInfosCallback result_callback) {
               video_capture_system_->GetDeviceInfosAsync(base::BindOnce(
                   std::move(result_callback),
                   media::mojom::DeviceEnumerationResult::kSuccess));
-            }));
+            });
 
     video_capture_manager_ = new VideoCaptureManager(
         std::move(mock_video_capture_provider), kIgnoreLogMessageCB);
@@ -521,7 +523,7 @@ class MediaDevicesManagerTest : public ::testing::Test {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-#endif
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
   // Must outlive MediaDevicesManager as ~MediaDevicesManager() verifies it's
   // running on the IO thread.
@@ -1523,17 +1525,17 @@ TEST_F(MediaDevicesManagerTest, EnumerateVideoInputFailsOnce) {
   // fall through to the video_capture_system_.
   EXPECT_CALL(*mock_video_capture_provider_, GetDeviceInfosAsync(_))
       .Times(kNumCalls)
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](VideoCaptureProvider::GetDeviceInfosCallback result_callback) {
             std::move(result_callback)
                 .Run(DeviceEnumerationResult::kUnknownError, {});
-          }))
-      .WillRepeatedly(Invoke(
+          })
+      .WillRepeatedly(
           [&](VideoCaptureProvider::GetDeviceInfosCallback result_callback) {
             video_capture_system_->GetDeviceInfosAsync(base::BindOnce(
                 std::move(result_callback),
                 media::mojom::DeviceEnumerationResult::kSuccess));
-          }));
+          });
   EXPECT_CALL(*video_capture_device_factory_, MockGetDevicesInfo())
       .Times(kNumCalls - 1);
 

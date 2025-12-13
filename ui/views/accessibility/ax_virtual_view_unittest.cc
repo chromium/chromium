@@ -5,12 +5,14 @@
 #include "ui/views/accessibility/ax_virtual_view.h"
 
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,7 +25,9 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
+#include "ui/views/accessibility/ax_update_observer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessibility/view_ax_platform_node_delegate.h"
 #include "ui/views/controls/button/button.h"
@@ -51,6 +55,46 @@ class TestButton : public Button {
 
 BEGIN_METADATA(TestButton)
 END_METADATA
+
+class TestAXUpdateObserver : public AXUpdateObserver {
+ public:
+  enum class ChildEventType { kAdded, kRemoved };
+
+  TestAXUpdateObserver() { observation_.Observe(AXUpdateNotifier::Get()); }
+  TestAXUpdateObserver(const TestAXUpdateObserver&) = delete;
+  TestAXUpdateObserver& operator=(const TestAXUpdateObserver&) = delete;
+  ~TestAXUpdateObserver() override = default;
+
+  const std::vector<std::tuple<ChildEventType,
+                               raw_ptr<ViewAccessibility>,
+                               raw_ptr<ViewAccessibility>>>&
+  child_events() const {
+    return child_events_;
+  }
+
+  void Reset() { child_events_.clear(); }
+
+  // AXUpdateObserver:
+  void OnViewEvent(View* view, ax::mojom::Event event_type) override {}
+
+  void OnChildAdded(ViewAccessibility* child,
+                    ViewAccessibility* parent) override {
+    child_events_.emplace_back(ChildEventType::kAdded, child, parent);
+  }
+
+  void OnChildRemoved(ViewAccessibility* child,
+                      ViewAccessibility* parent) override {
+    child_events_.emplace_back(ChildEventType::kRemoved, child, parent);
+  }
+
+ private:
+  std::vector<std::tuple<ChildEventType,
+                         raw_ptr<ViewAccessibility>,
+                         raw_ptr<ViewAccessibility>>>
+      child_events_;
+  base::ScopedObservation<AXUpdateNotifier, AXUpdateObserver> observation_{
+      this};
+};
 
 }  // namespace
 
@@ -305,6 +349,36 @@ TEST_F(AXVirtualViewTest, AddingAndRemovingVirtualChildren) {
                       ax::mojom::Event::kChildrenChanged),
        std::make_pair(GetButtonAccessibility(),
                       ax::mojom::Event::kChildrenChanged)});
+}
+
+TEST_F(AXVirtualViewTest, NotifiesUpdateObserverForVirtualChildChanges) {
+  TestAXUpdateObserver observer;
+  ASSERT_TRUE(observer.child_events().empty());
+
+  auto virtual_child = std::make_unique<AXVirtualView>();
+  AXVirtualView* raw_child = virtual_child.get();
+  virtual_label_->AddChildView(std::move(virtual_child));
+
+  ASSERT_EQ(1u, observer.child_events().size());
+  const auto& add_event = observer.child_events()[0];
+  EXPECT_EQ(TestAXUpdateObserver::ChildEventType::kAdded,
+            std::get<0>(add_event));
+  EXPECT_EQ(raw_child, std::get<1>(add_event));
+  EXPECT_EQ(virtual_label_, std::get<2>(add_event));
+
+  observer.Reset();
+  std::unique_ptr<AXVirtualView> removed_child =
+      virtual_label_->RemoveChildView(raw_child);
+  ASSERT_TRUE(removed_child);
+
+  ASSERT_EQ(1u, observer.child_events().size());
+  const auto& remove_event = observer.child_events()[0];
+  EXPECT_EQ(TestAXUpdateObserver::ChildEventType::kRemoved,
+            std::get<0>(remove_event));
+  EXPECT_EQ(raw_child, std::get<1>(remove_event));
+  EXPECT_EQ(virtual_label_, std::get<2>(remove_event));
+
+  observer.Reset();
 }
 
 TEST_F(AXVirtualViewTest, ReorderingVirtualChildren) {

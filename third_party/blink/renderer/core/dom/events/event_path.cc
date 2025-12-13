@@ -28,9 +28,11 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/window_event_context.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/touch_event.h"
 #include "third_party/blink/renderer/core/events/touch_event_context.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/input/touch.h"
 #include "third_party/blink/renderer/core/input/touch_list.h"
@@ -39,7 +41,8 @@ namespace blink {
 
 EventTarget& EventPath::EventTargetRespectingTargetRules(Node& reference_node) {
   if (reference_node.IsPseudoElement() &&
-      !reference_node.IsScrollControlPseudoElement()) {
+      !reference_node.IsScrollControlPseudoElement() &&
+      !reference_node.IsInterestHintPseudoElement()) {
     DCHECK(reference_node.parentNode());
     return *reference_node.parentNode();
   }
@@ -72,10 +75,6 @@ static inline bool EventPathShouldBeEmptyFor(Node& node) {
   // Event path should be empty for orphaned pseudo-elements, and nodes
   // whose document is stopped. In corner cases (crbug.com/1210480), the node
   // document can get detached before we can remove event listeners.
-  if (RuntimeEnabledFeatures::PseudoElementsFocusableEnabled() &&
-      node.IsScrollControlPseudoElement()) {
-    return false;
-  }
   return (node.IsPseudoElement() && !node.parentElement()) ||
          node.GetDocument().IsStopped();
 }
@@ -99,6 +98,13 @@ void EventPath::CalculatePath() {
   // storing it in a perfectly sized node_event_contexts_ Vector.
   HeapVector<Member<Node>, 64> nodes_in_path;
   Node* current = node_;
+  // Don't expose pseudo-element in the event path.
+  if (auto* pseudo = DynamicTo<PseudoElement>(node_.Get())) {
+    if (event_) {
+      event_->SetPseudoElementTarget(pseudo);
+    }
+    current = &pseudo->UltimateOriginatingElement();
+  }
 
   nodes_in_path.push_back(current);
   while (current) {
@@ -251,6 +257,15 @@ void EventPath::AdjustForRelatedTarget(Node& target,
   Node* related_target_node = related_target->ToNode();
   if (!related_target_node)
     return;
+  // If the related target is a pseudo-element without a parent element,
+  // we don't need to adjust the related target.
+  // This is because pseudo-elements shouldn't be exposed to the web
+  // and when they don't have a parent element in the DOM tree, we can't
+  // retarget them.
+  if (related_target_node->IsPseudoElement() &&
+      !related_target_node->parentNode()) {
+    return;
+  }
   if (target.GetDocument() != related_target_node->GetDocument())
     return;
   RetargetRelatedTarget(*related_target_node);

@@ -16,6 +16,10 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 
+namespace gpu {
+class SharedImageInterface;
+}
+
 namespace media {
 namespace mojom {
 class VideoDecoder;
@@ -36,7 +40,9 @@ class MEDIA_MOJO_EXPORT OOPVideoDecoderFactoryService
     : public mojom::InterfaceFactory {
  public:
   explicit OOPVideoDecoderFactoryService(
-      const gpu::GpuFeatureInfo& gpu_feature_info);
+      const gpu::GpuFeatureInfo& gpu_feature_info,
+      scoped_refptr<gpu::SharedImageInterface> sii);
+
   OOPVideoDecoderFactoryService(const OOPVideoDecoderFactoryService&) = delete;
   OOPVideoDecoderFactoryService& operator=(
       const OOPVideoDecoderFactoryService&) = delete;
@@ -75,11 +81,18 @@ class MEDIA_MOJO_EXPORT OOPVideoDecoderFactoryService
   void CreateCdm(const CdmConfig& cdm_config,
                  CreateCdmCallback callback) override;
 
+  // `shared_image_interface_` is stale on gpu channel loss, reset it for future
+  // decoders.
+  void OnGpuChannelReestablished(
+      scoped_refptr<gpu::SharedImageInterface> new_sii);
+
  private:
   VideoDecoderCreationCBForTesting video_decoder_creation_cb_for_testing_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   mojo::Receiver<mojom::InterfaceFactory> receiver_;
+
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
 
   // |mojo_media_client_| and |cdm_service_context_| must be declared before
   // |video_decoders_| because the interface implementation instances managed by

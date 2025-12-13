@@ -33,18 +33,6 @@
 
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 
-namespace gpu {
-struct SyncToken;
-}
-
-namespace blink {
-
-template <>
-struct CrossThreadCopier<gpu::SyncToken>
-    : public CrossThreadCopierPassThrough<gpu::SyncToken> {
-  STATIC_ONLY(CrossThreadCopier);
-};
-
-}  // namespace blink
+// TODO(crbug.com/460743390): Delete this file after CrossThreadCopier removal.
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_GPU_H_

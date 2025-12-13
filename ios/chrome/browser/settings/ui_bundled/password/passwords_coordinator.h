@@ -43,6 +43,12 @@ class Browser;
 // in search mode.
 @property(nonatomic, assign) BOOL openViewControllerForPasswordSearch;
 
+// Token received from the OS during the app launch for credential exchange
+// import, needed to interact with the OS library to receive credential data.
+// If present, the credential import flow should be started after successful
+// local authentication. Will be set to nil after starting the import flow.
+@property(nonatomic, copy) NSUUID* credentialImportUUID;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PASSWORD_PASSWORDS_COORDINATOR_H_

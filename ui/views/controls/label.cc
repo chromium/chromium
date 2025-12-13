@@ -40,6 +40,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/selection_controller.h"
 #include "ui/views/style/typography_provider.h"
 
@@ -119,7 +120,7 @@ void Label::SetText(std::u16string_view new_text) {
 
   OnPropertyChanged(
       ui::metadata::MakeUniquePropertyKey(&full_text_, kLabelText),
-      kPropertyEffectsPreferredSizeChanged);
+      PropertyEffects::kPreferredSizeChanged);
 
   // The accessibility updates will cause the display text to be rebuilt and the
   // `stored_selection_range_` to be reapplied. Ensure that we cleared it before
@@ -177,7 +178,7 @@ void Label::SetTextContext(int text_context) {
                                      ? ax::mojom::Role::kTitleBar
                                      : ax::mojom::Role::kStaticText);
 
-  OnPropertyChanged(&text_context_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&text_context_, PropertyEffects::kPreferredSizeChanged);
 }
 
 int Label::GetTextStyle() const {
@@ -201,7 +202,7 @@ void Label::ApplyBaselineTextStyle() {
   if (GetWidget()) {
     UpdateColorsFromTheme();
   }
-  OnPropertyChanged(&text_style_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&text_style_, PropertyEffects::kPreferredSizeChanged);
 }
 
 void Label::SetTextStyleRange(int style, const gfx::Range& range) {
@@ -236,7 +237,7 @@ void Label::SetAutoColorReadabilityEnabled(
   }
   auto_color_readability_enabled_ = auto_color_readability_enabled;
   RecalculateColors();
-  OnPropertyChanged(&auto_color_readability_enabled_, kPropertyEffectsPaint);
+  OnPropertyChanged(&auto_color_readability_enabled_, PropertyEffects::kPaint);
 }
 
 SkColor Label::GetEnabledColor() const {
@@ -255,7 +256,7 @@ void Label::SetEnabledColor(ui::ColorVariant color) {
     RecalculateColors();
   }
 
-  OnPropertyChanged(&requested_enabled_color_, kPropertyEffectsPaint);
+  OnPropertyChanged(&requested_enabled_color_, PropertyEffects::kPaint);
 }
 
 std::optional<ui::ColorVariant> Label::GetRequestedEnabledColor() const {
@@ -278,7 +279,7 @@ void Label::SetBackgroundColor(ui::ColorVariant color) {
     RecalculateColors();
   }
 
-  OnPropertyChanged(&requested_background_color_, kPropertyEffectsPaint);
+  OnPropertyChanged(&requested_background_color_, PropertyEffects::kPaint);
 }
 
 SkColor Label::GetSelectionTextColor() const {
@@ -292,7 +293,7 @@ void Label::SetSelectionTextColor(SkColor color) {
   requested_selection_text_color_ = color;
   selection_text_color_set_ = true;
   RecalculateColors();
-  OnPropertyChanged(&requested_selection_text_color_, kPropertyEffectsPaint);
+  OnPropertyChanged(&requested_selection_text_color_, PropertyEffects::kPaint);
 }
 
 SkColor Label::GetSelectionBackgroundColor() const {
@@ -306,7 +307,7 @@ void Label::SetSelectionBackgroundColor(SkColor color) {
   selection_background_color_ = color;
   selection_background_color_set_ = true;
   RecalculateColors();
-  OnPropertyChanged(&selection_background_color_, kPropertyEffectsPaint);
+  OnPropertyChanged(&selection_background_color_, PropertyEffects::kPaint);
 }
 
 const gfx::ShadowValues& Label::GetShadows() const {
@@ -321,7 +322,7 @@ void Label::SetShadows(const gfx::ShadowValues& shadows) {
   ClearDisplayText();
   OnPropertyChanged(
       ui::metadata::MakeUniquePropertyKey(&full_text_, kLabelShadows),
-      kPropertyEffectsPreferredSizeChanged);
+      PropertyEffects::kPreferredSizeChanged);
 }
 
 bool Label::GetSubpixelRenderingEnabled() const {
@@ -334,7 +335,7 @@ void Label::SetSubpixelRenderingEnabled(bool subpixel_rendering_enabled) {
   }
   subpixel_rendering_enabled_ = subpixel_rendering_enabled;
   ApplyTextColors();
-  OnPropertyChanged(&subpixel_rendering_enabled_, kPropertyEffectsPaint);
+  OnPropertyChanged(&subpixel_rendering_enabled_, PropertyEffects::kPaint);
 }
 
 bool Label::GetSkipSubpixelRenderingOpacityCheck() const {
@@ -350,7 +351,7 @@ void Label::SetSkipSubpixelRenderingOpacityCheck(
   skip_subpixel_rendering_opacity_check_ =
       skip_subpixel_rendering_opacity_check;
   OnPropertyChanged(&skip_subpixel_rendering_opacity_check_,
-                    kPropertyEffectsNone);
+                    PropertyEffects::kNone);
 }
 
 gfx::HorizontalAlignment Label::GetHorizontalAlignment() const {
@@ -366,7 +367,7 @@ void Label::SetHorizontalAlignment(gfx::HorizontalAlignment alignment) {
   ClearDisplayText();
   OnPropertyChanged(ui::metadata::MakeUniquePropertyKey(
                         &full_text_, kLabelHorizontalAlignment),
-                    kPropertyEffectsPaint);
+                    PropertyEffects::kPaint);
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
   MaybeRefreshAccessibleTextOffsets();
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
@@ -385,7 +386,7 @@ void Label::SetVerticalAlignment(gfx::VerticalAlignment alignment) {
   ClearDisplayText();
   OnPropertyChanged(
       ui::metadata::MakeUniquePropertyKey(&full_text_, kLabelVerticalAlignment),
-      kPropertyEffectsPaint);
+      PropertyEffects::kPaint);
 }
 
 int Label::GetLineHeight() const {
@@ -405,7 +406,7 @@ void Label::SetLineHeight(int line_height) {
   ClearDisplayText();
   OnPropertyChanged(
       ui::metadata::MakeUniquePropertyKey(&full_text_, kLabelLineHeight),
-      kPropertyEffectsPreferredSizeChanged);
+      PropertyEffects::kPreferredSizeChanged);
 }
 
 bool Label::GetMultiLine() const {
@@ -423,7 +424,7 @@ void Label::SetMultiLine(bool multi_line) {
   max_width_single_line_ = 0;
   full_text_->SetMultiline(multi_line);
   ClearDisplayText();
-  OnPropertyChanged(&multi_line_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&multi_line_, PropertyEffects::kPreferredSizeChanged);
 }
 
 size_t Label::GetMaxLines() const {
@@ -435,7 +436,7 @@ void Label::SetMaxLines(size_t max_lines) {
     return;
   }
   max_lines_ = max_lines;
-  OnPropertyChanged(&max_lines_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&max_lines_, PropertyEffects::kPreferredSizeChanged);
 }
 
 bool Label::GetObscured() const {
@@ -456,7 +457,7 @@ void Label::SetObscured(bool obscured) {
 
   OnPropertyChanged(
       ui::metadata::MakeUniquePropertyKey(&full_text_, kLabelObscured),
-      kPropertyEffectsPreferredSizeChanged);
+      PropertyEffects::kPreferredSizeChanged);
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
   // Since the text might be obscured, we need to make sure we recalculate the
   // offsets if needed.
@@ -500,7 +501,7 @@ void Label::SetAllowCharacterBreak(bool allow_character_break) {
   ClearDisplayText();
   OnPropertyChanged(ui::metadata::MakeUniquePropertyKey(
                         &full_text_, kLabelAllowCharacterBreak),
-                    kPropertyEffectsPreferredSizeChanged);
+                    PropertyEffects::kPreferredSizeChanged);
 }
 
 size_t Label::GetTextIndexOfLine(size_t line) const {
@@ -525,7 +526,7 @@ void Label::SetElideBehavior(gfx::ElideBehavior elide_behavior) {
   UpdateFullTextElideBehavior();
 
   ClearDisplayText();
-  OnPropertyChanged(&elide_behavior_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&elide_behavior_, PropertyEffects::kPreferredSizeChanged);
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
   // Even though the elided behavior will not change the accessible name, it
   // might change the offsets so we must make sure to recompute them if needed.
@@ -582,7 +583,7 @@ void Label::SetHandlesTooltips(bool enabled) {
   handles_tooltips_ = enabled;
 
   UpdateTooltipText();
-  OnPropertyChanged(&handles_tooltips_, kPropertyEffectsNone);
+  OnPropertyChanged(&handles_tooltips_, PropertyEffects::kNone);
 }
 
 int Label::GetFixedWidth() const {
@@ -607,7 +608,7 @@ void Label::SetMaximumWidth(int max_width) {
     return;
   }
   max_width_ = max_width;
-  OnPropertyChanged(&max_width_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&max_width_, PropertyEffects::kPreferredSizeChanged);
 }
 
 void Label::SetMaximumWidthSingleLine(int max_width) {
@@ -618,7 +619,7 @@ void Label::SetMaximumWidthSingleLine(int max_width) {
   max_width_single_line_ = max_width;
   UpdateFullTextElideBehavior();
   OnPropertyChanged(&max_width_single_line_,
-                    kPropertyEffectsPreferredSizeChanged);
+                    PropertyEffects::kPreferredSizeChanged);
 }
 
 bool Label::GetCollapseWhenHidden() const {
@@ -631,7 +632,7 @@ void Label::SetCollapseWhenHidden(bool value) {
   }
   collapse_when_hidden_ = value;
   OnPropertyChanged(&collapse_when_hidden_,
-                    kPropertyEffectsPreferredSizeChanged);
+                    PropertyEffects::kPreferredSizeChanged);
 }
 
 size_t Label::GetRequiredLines() const {

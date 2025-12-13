@@ -6,10 +6,10 @@
 #define CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_REGISTRATION_NOTIFIER_H_
 
 #include <stdint.h>
+
 #include <map>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"

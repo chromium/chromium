@@ -20,7 +20,7 @@ class InfoBarContainerAndroid : public infobars::InfoBarContainer {
   InfoBarContainerAndroid& operator=(const InfoBarContainerAndroid&) = delete;
 
   void SetWebContents(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& web_contents);
+                      const base::android::JavaRef<jobject>& web_contents);
   void Destroy(JNIEnv* env);
 
   JavaObjectWeakGlobalRef java_container() const {

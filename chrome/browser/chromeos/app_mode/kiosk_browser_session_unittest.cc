@@ -23,7 +23,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/json/values_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
@@ -52,7 +51,6 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -60,6 +58,7 @@
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate_map.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "content/public/common/webplugininfo.h"
@@ -89,21 +88,18 @@ constexpr char kTestWebAppName2[] = "test_web_app_name2";
 constexpr char kTestUrl[] = "www.test.com";
 constexpr base::TimeDelta kCloseBrowserTimeout = base::Seconds(2);
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-constexpr char kBrowserPluginFilePath[] = "/path/to/browser_plugin";
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
-
 // This class constructs and owns the `Browser` object. It assumes that the
 // `Browser` uses a `TestBrowserWindow`. The class adds a default tab to the
 // newly constructed browser and handles the closing lifecycle by registering a
 // close callback on the `TestBrowserWindow`.
 class FakeBrowser {
  public:
-  explicit FakeBrowser(Browser::CreateParams(params))
-      : FakeBrowser(Browser::Create(params)) {}
+  explicit FakeBrowser(Browser::CreateParams params)
+      : FakeBrowser(Browser::DeprecatedCreateOwnedForTesting(params)) {}
 
-  explicit FakeBrowser(Browser* browser) : browser_(browser) {
-    if (!browser->is_type_picture_in_picture()) {
+  explicit FakeBrowser(std::unique_ptr<Browser> browser)
+      : browser_(std::move(browser)) {
+    if (!browser_->is_type_picture_in_picture()) {
       // Add a tab to the browser to ensure that `CloseAllTabs()` works.
       // Note that tabs are not supported with PICTURE_IN_PICTURE windows.
       TabActivitySimulator().AddWebContentsAndNavigate(
@@ -169,7 +165,7 @@ class FullscreenTestBrowserWindow : public TestBrowserWindow,
   bool IsFullscreen() const override { return fullscreen_; }
   void EnterFullscreen(const url::Origin& origin,
                        ExclusiveAccessBubbleType type,
-                       int64_t display_id) override {
+                       FullscreenTabParams fullscreen_tab_params) override {
     fullscreen_ = true;
   }
   void ExitFullscreen() override { fullscreen_ = false; }
@@ -205,40 +201,8 @@ std::unique_ptr<FakeBrowser> CreateBrowserWithFullscreenTestWindowForParams(
   // production.
   auto window = std::make_unique<FullscreenTestBrowserWindow>(
       profile, /*fullscreen=*/is_main_browser);
-  params.window = window.get();
-  // Self deleting.
-  new TestBrowserWindowOwner(std::move(window));
+  params.window = window.release();
   return std::make_unique<FakeBrowser>(params);
-}
-
-void EmulateDeviceReboot() {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kFirstExecAfterBoot);
-}
-
-struct KioskSessionRestartTestCase {
-  std::string test_name;
-  bool run_with_reboot = false;
-};
-
-struct KioskSessionPowerManagerRequestRestartTestCase {
-  power_manager::RequestRestartReason power_manager_reason;
-  KioskSessionRestartReason restart_reason;
-};
-
-void CheckSessionRestartReasonHistogramDependingOnRebootStatus(
-    bool run_with_reboot,
-    const KioskSessionRestartReason& reasonWithoutReboot,
-    const KioskSessionRestartReason& reasonWithReboot,
-    const base::HistogramTester* histogram) {
-  if (run_with_reboot) {
-    histogram->ExpectBucketCount(kKioskSessionRestartReasonHistogram,
-                                 reasonWithReboot, 1);
-  } else {
-    histogram->ExpectBucketCount(kKioskSessionRestartReasonHistogram,
-                                 reasonWithoutReboot, 1);
-  }
-  histogram->ExpectTotalCount(kKioskSessionRestartReasonHistogram, 1);
 }
 
 class SystemWebAppWaiter {
@@ -262,19 +226,18 @@ class SystemWebAppWaiter {
 
 
 enum class KioskType { kChromeApp = 0, kWebApp = 1, kIwa = 2 };
+enum class NoParam {};
 
 }  // namespace
 
 // TODO(b/271336749): split kiosk_browser_session_unittest.cc file into smaller
 // test files.
-template <typename KioskBrowserSessionParamType = KioskSessionRestartTestCase>
+template <typename KioskBrowserSessionParamType>
 class KioskBrowserSessionBaseTest
     : public ::testing::TestWithParam<KioskBrowserSessionParamType> {
  public:
   KioskBrowserSessionBaseTest()
-      : local_state_(std::make_unique<ScopedTestingLocalState>(
-            TestingBrowserProcess::GetGlobal())),
-        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
   KioskBrowserSessionBaseTest(const KioskBrowserSessionBaseTest&) = delete;
   KioskBrowserSessionBaseTest& operator=(const KioskBrowserSessionBaseTest&) =
@@ -293,7 +256,9 @@ class KioskBrowserSessionBaseTest
 
   static void TearDownTestSuite() { chromeos::PowerManagerClient::Shutdown(); }
 
-  TestingPrefServiceSimple* local_state() { return local_state_->Get(); }
+  PrefService* local_state() {
+    return TestingBrowserProcess::GetGlobal()->local_state();
+  }
 
   TestingProfile* profile() { return profile_; }
 
@@ -415,7 +380,6 @@ class KioskBrowserSessionBaseTest
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
   ash::AshTestHelper ash_test_helper_;
 
   // `RenderViewHostTestEnabled` is required to make the navigation work that
@@ -430,9 +394,7 @@ class KioskBrowserSessionBaseTest
   std::unique_ptr<KioskBrowserSession> kiosk_browser_session_;
 };
 
-using KioskBrowserSessionTest = KioskBrowserSessionBaseTest<>;
-using KioskBrowserSessionRestartReasonTest =
-    KioskBrowserSessionBaseTest<KioskSessionRestartTestCase>;
+using KioskBrowserSessionTest = KioskBrowserSessionBaseTest<NoParam>;
 
 TEST_F(KioskBrowserSessionTest, WebKioskTracksBrowserCreation) {
   local_state()->SetDict(
@@ -731,161 +693,6 @@ TEST_F(KioskBrowserSessionTest, InitialBrowserShouldBeHandledAsRegularBrowser) {
   EXPECT_TRUE(IsSessionShuttingDown());
 }
 
-TEST_P(KioskBrowserSessionRestartReasonTest, StoppedMetric) {
-  const KioskSessionRestartTestCase& test_config = GetParam();
-  StartWebKioskSession();
-  // Emulate exiting the kiosk session.
-  CloseMainBrowser();
-  EXPECT_TRUE(IsSessionShuttingDown());
-  if (test_config.run_with_reboot) {
-    EmulateDeviceReboot();
-  }
-  histogram()->ExpectTotalCount(kKioskSessionRestartReasonHistogram, 0);
-
-  StartWebKioskSession();
-
-  if (test_config.run_with_reboot) {
-    histogram()->ExpectBucketCount(
-        kKioskSessionRestartReasonHistogram,
-        KioskSessionRestartReason::kStoppedWithReboot, 1);
-  } else {
-    histogram()->ExpectBucketCount(kKioskSessionRestartReasonHistogram,
-                                   KioskSessionRestartReason::kStopped, 1);
-  }
-  histogram()->ExpectTotalCount(kKioskSessionRestartReasonHistogram, 1);
-}
-
-TEST_P(KioskBrowserSessionRestartReasonTest, CrashMetric) {
-  const KioskSessionRestartTestCase& test_config = GetParam();
-  // Setup `kKioskSessionStartTime` and add a file to the crash directory to
-  // emulate previous kiosk session crash.
-  local_state()->SetDict(
-      prefs::kKioskMetrics,
-      base::Value::Dict().Set(
-          kKioskSessionStartTime,
-          base::TimeToValue(base::Time::Now() - base::Hours(1))));
-  base::FilePath crash_file;
-  ASSERT_TRUE(base::CreateTemporaryFileInDir(crash_path(), &crash_file));
-  if (test_config.run_with_reboot) {
-    EmulateDeviceReboot();
-  }
-
-  StartWebKioskSession();
-
-  CheckSessionRestartReasonHistogramDependingOnRebootStatus(
-      test_config.run_with_reboot, KioskSessionRestartReason::kCrashed,
-      KioskSessionRestartReason::kCrashedWithReboot, histogram());
-}
-
-TEST_P(KioskBrowserSessionRestartReasonTest, LocalStateWasNotSavedMetric) {
-  const KioskSessionRestartTestCase& test_config = GetParam();
-  // Setup `kKioskSessionStartTime` to emulate previous kiosk session stopped
-  // correctly, but because of race condition, `kKioskSessionStartTime` was not
-  // cleaned.
-  local_state()->SetDict(
-      prefs::kKioskMetrics,
-      base::Value::Dict().Set(
-          kKioskSessionStartTime,
-          base::TimeToValue(base::Time::Now() - base::Hours(1))));
-  if (test_config.run_with_reboot) {
-    EmulateDeviceReboot();
-  }
-
-  StartWebKioskSession();
-
-  CheckSessionRestartReasonHistogramDependingOnRebootStatus(
-      test_config.run_with_reboot,
-      KioskSessionRestartReason::kLocalStateWasNotSaved,
-      KioskSessionRestartReason::kLocalStateWasNotSavedWithReboot, histogram());
-}
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-TEST_P(KioskBrowserSessionRestartReasonTest, PluginCrashedMetric) {
-  const KioskSessionRestartTestCase& test_config = GetParam();
-  StartWebKioskSession();
-
-  KioskSessionPluginHandlerDelegate* delegate = GetPluginHandlerDelegate();
-  delegate->OnPluginCrashed(base::FilePath(kBrowserPluginFilePath));
-
-  // Emulate exiting the kiosk session.
-  CloseMainBrowser();
-  EXPECT_TRUE(IsSessionShuttingDown());
-  if (test_config.run_with_reboot) {
-    EmulateDeviceReboot();
-  }
-  histogram()->ExpectTotalCount(kKioskSessionRestartReasonHistogram, 0);
-
-  StartWebKioskSession();
-
-  CheckSessionRestartReasonHistogramDependingOnRebootStatus(
-      test_config.run_with_reboot, KioskSessionRestartReason::kPluginCrashed,
-      KioskSessionRestartReason::kPluginCrashedWithReboot, histogram());
-}
-
-TEST_P(KioskBrowserSessionRestartReasonTest, PluginHungMetric) {
-  const KioskSessionRestartTestCase& test_config = GetParam();
-  // Create a fake power manager client.
-  // FakePowerManagerClient client;
-  StartWebKioskSession();
-
-  KioskSessionPluginHandlerDelegate* delegate = GetPluginHandlerDelegate();
-  delegate->OnPluginHung(std::set<int>());
-
-  // Emulate exiting the kiosk session.
-  CloseMainBrowser();
-  EXPECT_TRUE(IsSessionShuttingDown());
-  if (test_config.run_with_reboot) {
-    EmulateDeviceReboot();
-  }
-  histogram()->ExpectTotalCount(kKioskSessionRestartReasonHistogram, 0);
-
-  StartWebKioskSession();
-
-  CheckSessionRestartReasonHistogramDependingOnRebootStatus(
-      test_config.run_with_reboot, KioskSessionRestartReason::kPluginHung,
-      KioskSessionRestartReason::kPluginHungWithReboot, histogram());
-}
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
-
-INSTANTIATE_TEST_SUITE_P(
-    KioskBrowserSessionRestartReasons,
-    KioskBrowserSessionRestartReasonTest,
-    testing::ValuesIn<KioskSessionRestartTestCase>({
-        {/*test_name=*/"WithReboot", /*run_with_reboot=*/true},
-        {/*test_name=*/"WithoutReboot", /*run_with_reboot=*/false},
-    }),
-    [](const testing::TestParamInfo<
-        KioskBrowserSessionRestartReasonTest::ParamType>& info) {
-      return info.param.test_name;
-    });
-
-TEST_F(KioskBrowserSessionRestartReasonTest, PowerManagerRequestRestart) {
-  std::vector<KioskSessionPowerManagerRequestRestartTestCase> test_cases = {
-      {/*power_manager_reason=*/power_manager::RequestRestartReason::
-           REQUEST_RESTART_SCHEDULED_REBOOT_POLICY,
-       /*restart_reason=*/KioskSessionRestartReason::kRebootPolicy},
-      {/*power_manager_reason=*/power_manager::RequestRestartReason::
-           REQUEST_RESTART_REMOTE_ACTION_REBOOT,
-       /*restart_reason=*/KioskSessionRestartReason::kRemoteActionReboot},
-      {/*power_manager_reason=*/power_manager::RequestRestartReason::
-           REQUEST_RESTART_API,
-       /*restart_reason=*/KioskSessionRestartReason::kRestartApi}};
-
-  for (auto test_case : test_cases) {
-    StartWebKioskSession();
-    chromeos::FakePowerManagerClient::Get()->RequestRestart(
-        test_case.power_manager_reason, "test reboot description");
-    // Emulate exiting the kiosk session.
-    CloseMainBrowser();
-    EXPECT_TRUE(IsSessionShuttingDown());
-
-    StartWebKioskSession();
-
-    histogram()->ExpectBucketCount(kKioskSessionRestartReasonHistogram,
-                                   test_case.restart_reason, 1);
-  }
-}
-
 // Kiosk type agnostic test class. Runs all tests for web and chrome app kiosks.
 class KioskBrowserSessionTroubleshootingTest
     : public KioskBrowserSessionBaseTest<KioskType> {
@@ -912,9 +719,7 @@ class KioskBrowserSessionTroubleshootingTest
     auto params = Browser::CreateParams::CreateForDevTools(profile());
 
     auto test_window = std::make_unique<TestBrowserWindow>();
-    params.window = test_window.get();
-    // Self deleting.
-    new TestBrowserWindowOwner(std::move(test_window));
+    params.window = test_window.release();
 
     return std::make_unique<FakeBrowser>(params);
   }
@@ -928,7 +733,7 @@ class KioskBrowserSessionTroubleshootingTest
     Browser::CreateParams params(profile(), /*user_gesture=*/true);
     params.type = type;
     return std::make_unique<FakeBrowser>(
-        CreateBrowserWithTestWindowForParams(params).release());
+        CreateBrowserWithTestWindowForParams(params));
   }
 
  private:
@@ -1286,8 +1091,5 @@ INSTANTIATE_TEST_SUITE_P(KioskBrowserSessionTroubleshootingShortcuts,
                          ::testing::Values(KioskType::kChromeApp,
                                            KioskType::kWebApp,
                                            KioskType::kIwa));
-
-// TODO(b/325648738): add KioskBrowserSessionDeathTest to check kiosk session
-// crash when unexpected browser is not closed.
 
 }  // namespace chromeos

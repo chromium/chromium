@@ -52,9 +52,7 @@ struct CORE_EXPORT BfcOffset {
            std::tie(line_offset, block_offset);
   }
 
-  bool operator!=(const BfcOffset& other) const { return !operator==(other); }
-
-  WTF::String ToString() const;
+  String ToString() const;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const BfcOffset&);

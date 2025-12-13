@@ -139,6 +139,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
     def mock_updater(self, host) -> WPTExpectationsUpdater:
         updater = WPTExpectationsUpdater(host)
+        updater.options.builders = host.builders.filter_builders(is_try=True)
         updater.git_cl = MockGitCL(
             host, {
                 Build('MOCK Try Mac10.10', 333, 'Build-1'):
@@ -194,6 +195,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
         # Set up fake try job results.
         updater = WPTExpectationsUpdater(host)
+        updater.options.builders = host.builders.filter_builders(is_try=True)
         updater.git_cl = MockGitCL(
             updater.host, {
                 Build('MOCK Try Mac10.10', 333, 'Build-1'):
@@ -245,6 +247,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             },
         })
         updater = WPTExpectationsUpdater(host)
+        updater.options.builders = host.builders.filter_builders(is_try=True)
         expectations_path = updater.finder.path_from_web_tests(
             'TestExpectations')
         host.filesystem.write_text_file(
@@ -302,6 +305,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 """))
         # Set up fake try job results.
         updater = WPTExpectationsUpdater(host)
+        updater.options.builders = host.builders.filter_builders(is_try=True)
         updater.git_cl = MockGitCL(
             updater.host, {
                 Build('MOCK Try Mac10.10', 333, 'Build-1'):
@@ -360,6 +364,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
         # Set up fake try job results.
         updater = WPTExpectationsUpdater(host)
+        updater.options.builders = host.builders.filter_builders(is_try=True)
         updater.git_cl = MockGitCL(
             updater.host, {
                 Build('MOCK Try Mac10.10', 333, 'Build-1'):

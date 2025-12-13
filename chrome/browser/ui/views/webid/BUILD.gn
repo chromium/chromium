@@ -38,11 +38,13 @@ source_set("interactive_ui_tests") {
   sources = [ "fedcm_interactive_uitest.cc" ]
   deps = [
     ":test_support",
+    "//build/config/linux/dbus:buildflags",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/test:test_support_ui",
     "//content/public/browser",
     "//content/test:test_support",
+    "//ui/base:ozone_buildflags",
     "//ui/base:test_support",
   ]
 }

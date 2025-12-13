@@ -320,7 +320,7 @@
 //! | `Option<Vec<Vec<T>>>` | `0..` occurrences of argument, grouped by occurrence | `.action(ArgAction::Append).required(false)`  | requires `unstable-v5` |
 //!
 //! In addition, [`.value_parser(value_parser!(T))`][crate::value_parser!] is called for each
-//! field.
+//! field in the absence of a [`#[arg(value_parser)]` attribute](#arg-attributes).
 //!
 //! Notes:
 //! - For custom type behavior, you can override the implied attributes/settings and/or set additional ones

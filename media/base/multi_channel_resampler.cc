@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/multi_channel_resampler.h"
 
 #include <algorithm>
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/numerics/safe_conversions.h"
@@ -44,7 +40,7 @@ MultiChannelResampler::MultiChannelResampler(int channels,
     resampler_audio_bus_ = AudioBus::Create(channels - 1, request_size);
     for (int i = 0; i < resampler_audio_bus_->channels(); ++i) {
       wrapped_resampler_audio_bus_->SetChannelData(
-          i + 1, resampler_audio_bus_->channel_span(i));
+          i + 1, resampler_audio_bus_->channel(i));
     }
   }
 }
@@ -54,13 +50,13 @@ MultiChannelResampler::~MultiChannelResampler() = default;
 void MultiChannelResampler::Resample(int frames, AudioBus* audio_bus) {
   DCHECK_EQ(static_cast<size_t>(audio_bus->channels()), resamplers_.size());
 
+  const size_t total_frames = base::checked_cast<size_t>(frames);
   // Optimize the single channel case to avoid the chunking process below.
   if (audio_bus->channels() == 1) {
-    resamplers_[0]->Resample(frames, audio_bus->channel_span(0).data());
+    resamplers_[0]->Resample(audio_bus->channel(0).first(total_frames));
     return;
   }
 
-  const size_t total_frames = base::checked_cast<size_t>(frames);
 
   // We need to ensure that SincResampler only calls ProvideInput once for each
   // channel.  To ensure this, we chunk the number of requested frames into
@@ -82,9 +78,9 @@ void MultiChannelResampler::Resample(int frames, AudioBus* audio_bus) {
       // the first channel, then it will call it for the remaining channels,
       // since they all buffer in the same way and are processing the same
       // number of frames.
-      resamplers_[i]->Resample(
-          frames_this_time,
-          audio_bus->channel_span(i).subspan(output_frames_ready_).data());
+      resamplers_[i]->Resample(audio_bus->channel(i)
+                                   .subspan(output_frames_ready_)
+                                   .first(frames_this_time));
     }
 
     output_frames_ready_ += frames_this_time;
@@ -95,7 +91,7 @@ void MultiChannelResampler::ProvideInput(int channel,
                                          int frames,
                                          float* destination) {
   const size_t frames_to_provide = base::checked_cast<size_t>(frames);
-  auto dest_span = base::span(destination, frames_to_provide);
+  auto dest_span = UNSAFE_TODO(base::span(destination, frames_to_provide));
 
   // Get the data from the multi-channel provider when the first channel asks
   // for it.  For subsequent channels, we can just dish out the channel data
@@ -110,7 +106,7 @@ void MultiChannelResampler::ProvideInput(int channel,
 
     // Copy the channel data from what we received from |read_cb_|.
     dest_span.copy_from_nonoverlapping(
-        wrapped_resampler_audio_bus_->channel_span(channel).first(
+        wrapped_resampler_audio_bus_->channel(channel).first(
             frames_to_provide));
   }
 }

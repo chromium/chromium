@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/gcm_driver/crypto/encryption_header_parsers.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -69,23 +65,24 @@ TEST(EncryptionHeaderParsersTest, ParseValidMultiValueEncryptionHeaders) {
 
   struct ExpectedResults {
     const char* const header;
-    struct {
+    struct ParsedValues {
       const char* const keyid;
       const char* const salt;
       uint64_t rs;
-    } parsed_values[kNumberOfValues];
+    };
+    std::array<ParsedValues, kNumberOfValues> parsed_values;
   };
   auto expected_results = std::to_array<ExpectedResults>({
       {"keyid=foo;salt=c2l4dGVlbmNvb2xieXRlcw;rs=1024,keyid=foo;salt=c2l4dGVlbm"
        "Nvb2xieXRlcw;rs=1024",
-       {{"foo", "sixteencoolbytes", 1024}, {"foo", "sixteencoolbytes", 1024}}},
+       {{{"foo", "sixteencoolbytes", 1024}, {"foo", "sixteencoolbytes", 1024}}}},
       {"keyid=foo,salt=c2l4dGVlbmNvb2xieXRlcw;rs=1024",
-       {{"foo", "", kDefaultRecordSize}, {"", "sixteencoolbytes", 1024}}},
+       {{{"foo", "", kDefaultRecordSize}, {"", "sixteencoolbytes", 1024}}}},
       {"keyid=foo,keyid=bar;salt=c2l4dGVlbmNvb2xieXRlcw;rs=1024",
-       {{"foo", "", kDefaultRecordSize}, {"bar", "sixteencoolbytes", 1024}}},
+       {{{"foo", "", kDefaultRecordSize}, {"bar", "sixteencoolbytes", 1024}}}},
       {"keyid=\"foo,keyid=bar\",salt=c2l4dGVlbmNvb2xieXRlcw",
-       {{"foo,keyid=bar", "", kDefaultRecordSize},
-        {"", "sixteencoolbytes", kDefaultRecordSize}}},
+       {{{"foo,keyid=bar", "", kDefaultRecordSize},
+         {"", "sixteencoolbytes", kDefaultRecordSize}}}},
   });
 
   for (size_t i = 0; i < std::size(expected_results); i++) {
@@ -216,23 +213,24 @@ TEST(EncryptionHeaderParsersTest, ParseValidMultiValueCryptoKeyHeaders) {
 
   struct ExpectedResults {
     const char* const header;
-    struct {
+    struct ParsedValues {
       const char* const keyid;
       const char* const aesgcm128;
       const char* const dh;
-    } parsed_values[kNumberOfValues];
+    };
+    std::array<ParsedValues, kNumberOfValues> parsed_values;
   };
   auto expected_results = std::to_array<ExpectedResults>({
       {"keyid=foo;aesgcm128=c2l4dGVlbmNvb2xieXRlcw;dh=dHdlbHZlY29vbGJ5dGVz,"
        "keyid=bar;aesgcm128=dHdlbHZlY29vbGJ5dGVz;dh=c2l4dGVlbmNvb2xieXRlcw",
-       {{"foo", "sixteencoolbytes", "twelvecoolbytes"},
-        {"bar", "twelvecoolbytes", "sixteencoolbytes"}}},
+       {{{"foo", "sixteencoolbytes", "twelvecoolbytes"},
+         {"bar", "twelvecoolbytes", "sixteencoolbytes"}}}},
       {"keyid=foo,aesgcm128=c2l4dGVlbmNvb2xieXRlcw",
-       {{"foo", "", ""}, {"", "sixteencoolbytes", ""}}},
+       {{{"foo", "", ""}, {"", "sixteencoolbytes", ""}}}},
       {"keyid=foo,keyid=bar;dh=dHdlbHZlY29vbGJ5dGVz",
-       {{"foo", "", ""}, {"bar", "", "twelvecoolbytes"}}},
+       {{{"foo", "", ""}, {"bar", "", "twelvecoolbytes"}}}},
       {"keyid=\"foo,keyid=bar\",aesgcm128=c2l4dGVlbmNvb2xieXRlcw",
-       {{"foo,keyid=bar", "", ""}, {"", "sixteencoolbytes", ""}}},
+       {{{"foo,keyid=bar", "", ""}, {"", "sixteencoolbytes", ""}}}},
   });
 
   for (size_t i = 0; i < std::size(expected_results); i++) {

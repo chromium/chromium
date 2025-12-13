@@ -21,14 +21,16 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/extensions/signin_test_util.h"
 #include "chrome/browser/extensions/sync/account_extension_tracker.h"
 #include "chrome/browser/extensions/sync/extension_sync_data.h"
 #include "chrome/browser/extensions/sync/extension_sync_util.h"
-#include "chrome/browser/extensions/test_blocklist.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -38,14 +40,11 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/app_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/extension_specifics.pb.h"
-#include "components/sync/test/fake_sync_change_processor.h"
-#include "components/sync/test/sync_change_processor_wrapper_for_test.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -57,6 +56,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/pending_extension_manager.h"
+#include "extensions/browser/test_blocklist.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_urls.h"
@@ -122,76 +122,7 @@ SyncChangeList MakeSyncChangeList(const std::string& id,
   return SyncChangeList(1, SyncChange(FROM_HERE, change_type, sync_data));
 }
 
-// This is a FakeSyncChangeProcessor specialization that maintains a store of
-// SyncData items in the superclass' data_ member variable, treating it like a
-// map keyed by the extension id from the SyncData. Each instance of this class
-// should only be used for one data type (which should be either extensions or
-// apps) to match how the real sync system handles things.
-class StatefulChangeProcessor : public syncer::FakeSyncChangeProcessor {
- public:
-  explicit StatefulChangeProcessor(syncer::DataType expected_type)
-      : expected_type_(expected_type) {
-    EXPECT_TRUE(expected_type == syncer::DataType::EXTENSIONS ||
-                expected_type == syncer::DataType::APPS);
-  }
 
-  StatefulChangeProcessor(const StatefulChangeProcessor&) = delete;
-  StatefulChangeProcessor& operator=(const StatefulChangeProcessor&) = delete;
-
-  ~StatefulChangeProcessor() override = default;
-
-  // We let our parent class, FakeSyncChangeProcessor, handle saving the
-  // changes for us, but in addition we "apply" these changes by treating
-  // the FakeSyncChangeProcessor's SyncDataList as a map keyed by extension
-  // id.
-  std::optional<syncer::ModelError> ProcessSyncChanges(
-      const base::Location& from_here,
-      const syncer::SyncChangeList& change_list) override {
-    syncer::FakeSyncChangeProcessor::ProcessSyncChanges(from_here, change_list);
-    for (const auto& change : change_list) {
-      syncer::SyncData sync_data = change.sync_data();
-      EXPECT_EQ(expected_type_, sync_data.GetDataType());
-
-      std::unique_ptr<ExtensionSyncData> modified =
-          ExtensionSyncData::CreateFromSyncData(sync_data);
-
-      // Start by removing any existing entry for this extension id.
-      for (auto iter = data_.begin(); iter != data_.end(); ++iter) {
-        std::unique_ptr<ExtensionSyncData> existing =
-            ExtensionSyncData::CreateFromSyncData(*iter);
-        if (existing->id() == modified->id()) {
-          data_.erase(iter);
-          break;
-        }
-      }
-
-      // Now add in the new data for this id, if appropriate.
-      if (change.change_type() == SyncChange::ACTION_ADD ||
-          change.change_type() == SyncChange::ACTION_UPDATE) {
-        data_.push_back(sync_data);
-      } else if (change.change_type() != SyncChange::ACTION_DELETE) {
-        ADD_FAILURE() << "Unexpected change type " << change.change_type();
-      }
-    }
-    return std::nullopt;
-  }
-
-  // This is a helper to vend a wrapped version of this object suitable for
-  // passing in to MergeDataAndStartSyncing, which takes a
-  // std::unique_ptr<SyncChangeProcessor>, since in tests we typically don't
-  // want to
-  // give up ownership of a local change processor.
-  std::unique_ptr<syncer::SyncChangeProcessor> GetWrapped() {
-    return std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(this);
-  }
-
-  const syncer::SyncDataList& data() const { return data_; }
-
- private:
-  // The expected DataType of changes that this processor will see.
-  const syncer::DataType expected_type_;
-  syncer::SyncDataList data_;
-};
 
 }  // namespace
 
@@ -877,6 +808,43 @@ TEST_F(ExtensionSyncServiceTest, SyncForUninstalledExternalExtension) {
   extension_sync_service()->ProcessSyncChanges(FROM_HERE, list);
   EXPECT_TRUE(
       ExtensionPrefs::Get(profile())->IsExternalExtensionUninstalled(kGoodCrx));
+}
+
+TEST_F(ExtensionSyncServiceTest, DontSyncPolicyUninstalls) {
+  InitializeEmptyExtensionService();
+  service()->Init();
+  ASSERT_TRUE(extension_system()->is_ready());
+
+  extensions::StatefulChangeProcessor extensions_processor(
+      syncer::DataType::EXTENSIONS);
+  extension_sync_service()->MergeDataAndStartSyncing(
+      syncer::EXTENSIONS, syncer::SyncDataList(),
+      extensions_processor.GetWrapped());
+
+  // 1. Install an extension.
+  const Extension* extension =
+      InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_NEW);
+  ASSERT_TRUE(extension);
+  const std::string extension_id = extension->id();
+
+  // The installation should cause one ADD change.
+  ASSERT_EQ(1u, extensions_processor.data().size());
+  ASSERT_EQ(1u, extensions_processor.changes().size());
+  EXPECT_EQ(SyncChange::ACTION_ADD,
+            extensions_processor.changes()[0].change_type());
+
+  // Clear changes to prepare for uninstall check.
+  extensions_processor.changes().clear();
+
+  // 2. Uninstall the extension with reason INTERNAL_MANAGEMENT.
+  UninstallExtension(extension_id,
+                     UninstallExtensionFileDeleteType::kDeleteAllVersions,
+                     extensions::UNINSTALL_REASON_INTERNAL_MANAGEMENT);
+  EXPECT_FALSE(registry()->GetInstalledExtension(extension_id));
+
+  // 3. Verify that no deletion was synced.
+  EXPECT_TRUE(extensions_processor.changes().empty());
+  EXPECT_EQ(1u, extensions_processor.data().size());
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1918,8 +1886,9 @@ TEST_F(ExtensionSyncServiceTest, AppToExtension) {
   EXPECT_FALSE(v1->is_extension());
   std::string id = v1->id();
 
-  StatefulChangeProcessor extensions_processor(syncer::DataType::EXTENSIONS);
-  StatefulChangeProcessor apps_processor(syncer::DataType::APPS);
+  extensions::StatefulChangeProcessor extensions_processor(
+      syncer::DataType::EXTENSIONS);
+  extensions::StatefulChangeProcessor apps_processor(syncer::DataType::APPS);
   extension_sync_service()->MergeDataAndStartSyncing(
       syncer::EXTENSIONS, syncer::SyncDataList(),
       extensions_processor.GetWrapped());
@@ -2125,13 +2094,11 @@ TEST_F(BlocklistedExtensionSyncServiceTest, InstallBlocklistedExtension) {
   EXPECT_TRUE(processor()->changes().empty());
 }
 
+// Users should not be able to sign into transport mode on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
 class ExtensionSyncServiceTransportModeTest : public ExtensionSyncServiceTest {
  public:
-  ExtensionSyncServiceTransportModeTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        switches::kEnableExtensionsExplicitBrowserSignin);
-  }
-
+  ExtensionSyncServiceTransportModeTest() = default;
   ExtensionSyncServiceTransportModeTest(
       const ExtensionSyncServiceTransportModeTest&) = delete;
   ExtensionSyncServiceTransportModeTest& operator=(
@@ -2162,8 +2129,6 @@ class ExtensionSyncServiceTransportModeTest : public ExtensionSyncServiceTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
 };
@@ -2387,3 +2352,4 @@ TEST_F(ExtensionSyncServiceTransportModeTest,
   EXPECT_THAT(signed_in_account_extensions,
               ::testing::ElementsAre(second_extension.get()));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)

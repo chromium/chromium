@@ -25,7 +25,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
-#include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -66,7 +66,7 @@ class AutofillAiModelExecutorImplTest : public testing::Test {
 
   MockAutofillAiModelCache& model_cache() { return model_cache_; }
 
-  optimization_guide::MockOptimizationGuideModelExecutor* model_executor() {
+  optimization_guide::MockRemoteModelExecutor* model_executor() {
     return &model_executor_;
   }
 
@@ -79,7 +79,7 @@ class AutofillAiModelExecutorImplTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
   test::AutofillUnitTestEnvironment autofill_test_env_;
   MockAutofillAiModelCache model_cache_;
-  testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
+  testing::NiceMock<optimization_guide::MockRemoteModelExecutor>
       model_executor_;
   optimization_guide::TestModelQualityLogsUploaderService mqls_uploader_;
   std::unique_ptr<AutofillAiModelExecutor> engine_;
@@ -245,7 +245,7 @@ TEST_F(AutofillAiModelExecutorImplTest, OngoingRequestWithSameSignature) {
   const FormData form2 =
       test::GetFormData({.fields = {{.name = u"First name"}}});
   AutofillAiTypeResponse response2;
-  response2.add_field_responses()->set_field_type(PASSPORT_NAME_TAG);
+  response2.add_field_responses()->set_field_type(NAME_FIRST);
 
   ASSERT_NE(CalculateFormSignature(form1), CalculateFormSignature(form2));
 
@@ -354,12 +354,8 @@ TEST_F(AutofillAiModelExecutorImplTest, WrongTypeReturned) {
 }
 
 TEST_F(AutofillAiModelExecutorImplTest, MqlsUpload) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/
-      {optimization_guide::features::kFormsClassificationsMqlsLogging,
-       autofill::features::kAutofillAiUploadModelRequestAndResponse},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList features{
+      optimization_guide::features::kFormsClassificationsMqlsLogging};
 
   const FormData form =
       test::GetFormData({.fields = {{.name = u"Passport number"}}});
@@ -397,12 +393,8 @@ TEST_F(AutofillAiModelExecutorImplTest, MqlsUpload) {
 
 // Tests that no MQLS log is sent if the server returned with an error.
 TEST_F(AutofillAiModelExecutorImplTest, NoMqlsUploadOnError) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/
-      {optimization_guide::features::kFormsClassificationsMqlsLogging,
-       autofill::features::kAutofillAiUploadModelRequestAndResponse},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList features{
+      optimization_guide::features::kFormsClassificationsMqlsLogging};
 
   const FormData form;
   MockOnModelExecutedCallback on_model_executed;

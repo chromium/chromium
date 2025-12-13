@@ -21,7 +21,7 @@ CGPoint ScreenPointFromWindow(NSPoint window_point, NSWindow* window) {
                              : window_rect.origin;
   CGFloat primary_screen_height = NSHeight(NSScreen.screens.firstObject.frame);
   screen_point.y = primary_screen_height - screen_point.y;
-  return NSPointToCGPoint(screen_point);
+  return screen_point;
 }
 
 NSEvent* AttachWindowToCGEvent(CGEventRef event, NSWindow* window) {

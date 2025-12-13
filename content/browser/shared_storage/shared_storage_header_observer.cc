@@ -334,7 +334,7 @@ SharedStorageHeaderObserver::DoPermissionsPolicyDoubleCheck(
                  ? PermissionsPolicyDoubleCheckStatus::kEnabled
                  : PermissionsPolicyDoubleCheckStatus::kDisabled;
     }
-    case ContextType::kServiceWorkerContext:
+    case ContextType::kSharedOrServiceWorkerContext:
       // TODO(cammie): Handle the service worker case. Currently, the headers
       // aren't available to requests initiated by service workers.
       [[fallthrough]];

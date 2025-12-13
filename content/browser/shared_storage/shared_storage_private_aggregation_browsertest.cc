@@ -25,6 +25,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -77,6 +78,7 @@ using testing::_;
 using testing::Args;
 using testing::Eq;
 using testing::FieldsAre;
+using testing::InvokeWithoutArgs;
 using testing::Ne;
 using testing::Optional;
 using AccessScope = blink::SharedStorageAccessScope;
@@ -315,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -335,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                 null_report_behavior,
                 PrivateAggregationHost::NullReportBehavior::kDontSendReport);
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -415,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -436,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                 null_report_behavior,
                 PrivateAggregationHost::NullReportBehavior::kDontSendReport);
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -467,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                        TimeoutBeforeOperationFinish) {
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -488,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_THAT(request.additional_fields(),
                         testing::ElementsAre(
                             testing::Pair("context_id", "example_context_id")));
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -543,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
           PrivateAggregationHost::kDefaultFilteringIdMaxBytes)));
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -565,7 +567,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                 null_report_behavior,
                 PrivateAggregationHost::NullReportBehavior::kSendNullReport);
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -618,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -639,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                 null_report_behavior,
                 PrivateAggregationHost::NullReportBehavior::kSendNullReport);
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -691,7 +693,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -715,7 +717,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                 null_report_behavior,
                 PrivateAggregationHost::NullReportBehavior::kSendNullReport);
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -812,7 +814,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -827,7 +829,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().debug_mode,
                       AggregatableReportSharedInfo::DebugMode::kDisabled);
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -869,7 +871,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -885,7 +887,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().debug_mode,
                       AggregatableReportSharedInfo::DebugMode::kEnabled);
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -944,7 +946,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
           PrivateAggregationHost::kDefaultFilteringIdMaxBytes)));
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -959,7 +961,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().debug_mode,
                       AggregatableReportSharedInfo::DebugMode::kEnabled);
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -1009,7 +1011,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -1025,7 +1027,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().debug_mode,
                       AggregatableReportSharedInfo::DebugMode::kEnabled);
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -1075,7 +1077,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -1091,7 +1093,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().debug_mode,
                       AggregatableReportSharedInfo::DebugMode::kEnabled);
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -1254,7 +1256,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
           Ne(PrivateAggregationHost::kDefaultFilteringIdMaxBytes))));
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -1269,7 +1271,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().debug_mode,
                       AggregatableReportSharedInfo::DebugMode::kEnabled);
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -1345,7 +1347,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
           Ne(PrivateAggregationHost::kDefaultFilteringIdMaxBytes))));
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -1360,7 +1362,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().debug_mode,
                       AggregatableReportSharedInfo::DebugMode::kEnabled);
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -1427,7 +1429,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -1442,7 +1444,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
             EXPECT_EQ(request.shared_info().debug_mode,
                       AggregatableReportSharedInfo::DebugMode::kEnabled);
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -1513,7 +1515,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                   /*contributions=*/_,
                   /*budget_key=*/_,
                   PrivateAggregationHost::NullReportBehavior::kSendNullReport))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -1532,7 +1534,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                           ? AggregatableReportSharedInfo::DebugMode::kEnabled
                           : AggregatableReportSharedInfo::DebugMode::kDisabled);
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -1797,7 +1799,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
 
   EXPECT_CALL(mock_callback(), Run)
       .Times(3)
-      .WillRepeatedly(testing::Invoke(
+      .WillRepeatedly(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -1824,7 +1826,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                 null_report_behavior,
                 PrivateAggregationHost::NullReportBehavior::kDontSendReport);
             barrier.Run();
-          }));
+          });
 
   EXPECT_TRUE(ExecJs(shell(), R"(
       sharedStorage.run('slow-operation', {keepAlive: true});
@@ -1839,10 +1841,10 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   EXPECT_EQ(num_one_contribution_reports, 1);
 }
 
-class SharedStoragePrivateAggregationInvalidMaxContributionsBrowserTest
+class SharedStoragePrivateAggregationInvalidOrEmptyMaxContributionsBrowserTest
     : public SharedStoragePrivateAggregationEnabledBrowserTest {
  public:
-  SharedStoragePrivateAggregationInvalidMaxContributionsBrowserTest() {
+  SharedStoragePrivateAggregationInvalidOrEmptyMaxContributionsBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
         blink::features::kPrivateAggregationApiMaxContributions);
   }
@@ -1889,7 +1891,7 @@ class SharedStoragePrivateAggregationInvalidMaxContributionsBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(
-    SharedStoragePrivateAggregationInvalidMaxContributionsBrowserTest,
+    SharedStoragePrivateAggregationInvalidOrEmptyMaxContributionsBrowserTest,
     Zero) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   GURL out_script_url;
@@ -1905,7 +1907,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    SharedStoragePrivateAggregationInvalidMaxContributionsBrowserTest,
+    SharedStoragePrivateAggregationInvalidOrEmptyMaxContributionsBrowserTest,
     TooBigForType) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   GURL out_script_url;
@@ -1922,6 +1924,37 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(out_error, testing::HasSubstr(
                              "TypeError: Value is outside the 'unsigned long "
                              "long' value range."));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SharedStoragePrivateAggregationInvalidOrEmptyMaxContributionsBrowserTest,
+    NoMaxContributionsSpecified_MetricsRecorded) {
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  GURL out_script_url;
+  base::HistogramTester histogram_tester;
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(mock_callback(), Run)
+      .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+
+  // Set the context ID to ensure an empty report wouldn't be dropped.
+  ExecuteScriptInWorklet(shell(), "", &out_script_url,
+                         /*expected_total_host_count=*/1u,
+                         /*keep_alive_after_operation=*/true,
+                         /*context_id=*/"example-context-id",
+                         /*filtering_id_max_bytes=*/std::nullopt,
+                         /*max_contributions=*/std::nullopt,
+                         /*out_error=*/nullptr);
+  run_loop.Run();
+
+  FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectUniqueSample(
+      "Storage.SharedStorage.PrivateAggregationConfig.HasMaxContributions",
+      false, 1);
+  histogram_tester.ExpectTotalCount(
+      "Storage.SharedStorage.PrivateAggregationConfig."
+      "RequestedMaxContributions",
+      0);
 }
 
 // Describes a test case for the Private Aggregation config's `maxContributions`
@@ -2179,6 +2212,7 @@ IN_PROC_BROWSER_TEST_P(
       .Times(testing::AnyNumber());
 
   GURL out_script_url;
+  base::HistogramTester histogram_tester;
   ExecuteScriptInWorklet(
       shell(), worklet_script, &out_script_url,
       /*expected_total_host_count=*/1u,
@@ -2188,6 +2222,25 @@ IN_PROC_BROWSER_TEST_P(
       /*max_contributions=*/base::NumberToString(GetParam().max_contributions));
   EXPECT_TRUE(console_observer.messages().empty());
   run_loop.Run();
+
+  FetchHistogramsFromChildProcesses();
+  if (GetParam().is_feature_enabled) {
+    histogram_tester.ExpectUniqueSample(
+        "Storage.SharedStorage.PrivateAggregationConfig.HasMaxContributions",
+        true, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Storage.SharedStorage.PrivateAggregationConfig."
+        "RequestedMaxContributions",
+        GetParam().max_contributions, 1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "Storage.SharedStorage.PrivateAggregationConfig.HasMaxContributions",
+        0);
+    histogram_tester.ExpectTotalCount(
+        "Storage.SharedStorage.PrivateAggregationConfig."
+        "RequestedMaxContributions",
+        0);
+  }
 
   std::optional<uint16_t> expected_max_contributions;
   if (GetParam().is_feature_enabled) {
@@ -2366,7 +2419,7 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -2382,7 +2435,7 @@ IN_PROC_BROWSER_TEST_F(
                       3u);
 
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -2432,7 +2485,7 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -2460,7 +2513,7 @@ IN_PROC_BROWSER_TEST_F(
                                    Field("filtering_id",
                                          &Contribution::filtering_id, 4))));
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -2524,7 +2577,7 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -2541,7 +2594,7 @@ IN_PROC_BROWSER_TEST_F(
                       5u);
 
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -2590,7 +2643,7 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -2623,7 +2676,7 @@ IN_PROC_BROWSER_TEST_F(
                                          &Contribution::filtering_id, 5))));
 
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -2670,7 +2723,7 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -2711,7 +2764,7 @@ IN_PROC_BROWSER_TEST_F(
                       7u);
 
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -2768,7 +2821,7 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -2819,7 +2872,7 @@ IN_PROC_BROWSER_TEST_F(
                       2u);
 
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -2878,7 +2931,7 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -2915,7 +2968,7 @@ IN_PROC_BROWSER_TEST_F(
             EXPECT_TRUE(request.payload_contents().contributions.empty());
 
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -2966,7 +3019,7 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -2994,7 +3047,7 @@ IN_PROC_BROWSER_TEST_F(
                                    Field("filtering_id",
                                          &Contribution::filtering_id, 5))));
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -3046,7 +3099,7 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -3074,7 +3127,7 @@ IN_PROC_BROWSER_TEST_F(
                                    Field("filtering_id",
                                          &Contribution::filtering_id, 3))));
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -3139,7 +3192,7 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -3155,7 +3208,7 @@ IN_PROC_BROWSER_TEST_F(
                       std::nullopt);
 
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -3198,7 +3251,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -3218,7 +3271,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                 null_report_behavior,
                 PrivateAggregationHost::NullReportBehavior::kDontSendReport);
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -3309,7 +3362,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   base::RunLoop run_loop;
 
   EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               PrivateAggregationPendingContributions::Wrapper contributions,
               PrivateAggregationBudgetKey budget_key,
@@ -3329,7 +3382,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                 null_report_behavior,
                 PrivateAggregationHost::NullReportBehavior::kDontSendReport);
             run_loop.Quit();
-          }));
+          });
 
   EXPECT_CALL(browser_client(),
               LogWebFeatureForCurrentPage(
@@ -3402,7 +3455,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
           .Serialize());
 
   EvalJsResult result = EvalJs(shell(), select_url_operation_script);
-  EXPECT_TRUE(result.error.empty());
+  EXPECT_TRUE(result.is_ok());
 
   CHECK(worklet_host);
   worklet_host->WaitForWorkletResponses();

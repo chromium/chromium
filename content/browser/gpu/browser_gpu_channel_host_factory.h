@@ -8,7 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"

@@ -195,7 +195,7 @@ AnnotationsOverlayController::AnnotationsOverlayController(
   overlay_window->SetEventTargeter(
       std::make_unique<OverlayTargeter>(overlay_window));
   UpdateWidgetStacking();
-  display_observation_.Observe(display::Screen::GetScreen());
+  display_observation_.Observe(display::Screen::Get());
   window_observation_.Observe(window_);
 }
 

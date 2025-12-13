@@ -14,7 +14,7 @@
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
-#import "components/plus_addresses/features.h"
+#import "components/plus_addresses/core/common/features.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/search_engines/template_url_service.h"
@@ -78,8 +78,8 @@ class SettingsTableViewControllerTest
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
-        base::BindRepeating(
-            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+        base::BindOnce(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               return std::make_unique<syncer::TestSyncService>();
             }));
     builder.AddTestingFactory(
@@ -93,9 +93,8 @@ class SettingsTableViewControllerTest
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
-        base::BindRepeating(
-            &password_manager::BuildPasswordStore<
-                web::BrowserState, password_manager::TestPasswordStore>));
+        base::BindOnce(&password_manager::BuildPasswordStore<
+                       ProfileIOS, password_manager::TestPasswordStore>));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     // Prepare mocks for PushNotificationClient dependency

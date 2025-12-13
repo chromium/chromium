@@ -58,8 +58,8 @@ public class RepostFormWarningTest {
     @Before
     public void setUp() throws Exception {
         mInitialPage = mActivityTestRule.startOnBlankPage();
-        mTab = mInitialPage.loadedTabElement.get();
-        mCallbackHelper = new TestCallbackHelperContainer(mInitialPage.webContentsElement.get());
+        mTab = mInitialPage.loadedTabElement.value();
+        mCallbackHelper = new TestCallbackHelperContainer(mInitialPage.webContentsElement.value());
         mTestServer = mActivityTestRule.getTestServer();
     }
 

@@ -44,6 +44,7 @@ DnsConfigOverrides::CreateOverridingEverythingWithDefaults() {
   overrides.secure_dns_mode = defaults.secure_dns_mode;
   overrides.allow_dns_over_https_upgrade =
       defaults.allow_dns_over_https_upgrade;
+  overrides.fallback_doh_nameservers = defaults.fallback_doh_nameservers;
   overrides.clear_hosts = true;
 
   return overrides;
@@ -54,7 +55,8 @@ bool DnsConfigOverrides::OverridesEverything() const {
          search && append_to_multi_label_name && ndots && fallback_period &&
          attempts && doh_attempts && rotate && use_local_ipv6 &&
          dns_over_https_config && secure_dns_mode &&
-         allow_dns_over_https_upgrade && clear_hosts;
+         allow_dns_over_https_upgrade && fallback_doh_nameservers &&
+         clear_hosts;
 }
 
 DnsConfig DnsConfigOverrides::ApplyOverrides(const DnsConfig& config) const {
@@ -92,6 +94,9 @@ DnsConfig DnsConfigOverrides::ApplyOverrides(const DnsConfig& config) const {
   if (allow_dns_over_https_upgrade) {
     overridden.allow_dns_over_https_upgrade =
         allow_dns_over_https_upgrade.value();
+  }
+  if (fallback_doh_nameservers) {
+    overridden.fallback_doh_nameservers = fallback_doh_nameservers.value();
   }
   if (clear_hosts)
     overridden.hosts.clear();

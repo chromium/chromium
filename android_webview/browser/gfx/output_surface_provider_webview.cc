@@ -44,8 +44,6 @@ using GLSurfaceContextPair =
     std::pair<scoped_refptr<gl::GLSurface>, scoped_refptr<gl::GLContext>>;
 
 GLSurfaceContextPair GetRealContextForVulkan() {
-  // TODO(crbug.com/40155015): Remove all of this after code no longer expects
-  // GL to be present (eg for getting capabilities or calling glGetError).
   static base::NoDestructor<base::WeakPtr<gl::GLSurface>> cached_surface;
   static base::NoDestructor<base::WeakPtr<gl::GLContext>> cached_context;
 
@@ -222,9 +220,7 @@ void OutputSurfaceProviderWebView::InitializeContext() {
       /*dawn_context_provider=*/nullptr, /*peak_memory_monitor=*/nullptr,
       /*direct_rendering_display_compositor_enabled=*/false,
       /*created_on_compositor_gpu_thread=*/false,
-      base::FeatureList::IsEnabled(features::kWebViewDisableSharpeningAndMSAA)
-          ? aw_gr_context_options_provider_.get()
-          : nullptr);
+      aw_gr_context_options_provider_.get());
   if (!enable_vulkan_) {
     auto feature_info = base::MakeRefCounted<gpu::gles2::FeatureInfo>(
         workarounds, GpuServiceWebView::GetInstance()->gpu_feature_info());

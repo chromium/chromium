@@ -117,7 +117,8 @@ v8::Local<v8::WasmModuleObject> WasmModuleScript::WasmModule() const {
 ScriptValue WasmModuleScript::Instantiate() const {
   v8::Isolate* isolate = settings_object_->GetScriptState()->GetIsolate();
   v8::Local<v8::Value> error = V8ThrowException::CreateSyntaxError(
-      isolate, SourceUrl().GetString() + kWasmImportInEvaluationPhaseError);
+      isolate,
+      StrCat({SourceUrl().GetString(), kWasmImportInEvaluationPhaseError}));
   return ScriptValue(isolate, error);
 }
 

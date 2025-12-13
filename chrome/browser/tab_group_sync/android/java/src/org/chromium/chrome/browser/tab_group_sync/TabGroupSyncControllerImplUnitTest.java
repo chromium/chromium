@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tab_group_sync;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -29,7 +28,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -45,6 +43,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncController;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 /** Unit tests for the {@link TabGroupSyncControllerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -135,7 +134,7 @@ public class TabGroupSyncControllerImplUnitTest {
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         when(mTabGroupSyncService.getGroup(savedTabGroup.syncId)).thenReturn(savedTabGroup);
         mController.openTabGroup(savedTabGroup.syncId);
-        verify(mTabGroupModelFilter, times(1)).mergeListOfTabsToGroup(any(), any(), anyBoolean());
+        verify(mTabGroupModelFilter, times(1)).mergeListOfTabsToGroup(any(), any(), anyInt());
     }
 
     @Test
@@ -149,6 +148,6 @@ public class TabGroupSyncControllerImplUnitTest {
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         when(mTabGroupSyncService.getGroup(savedTabGroup.syncId)).thenReturn(savedTabGroup);
         mController.openTabGroup(savedTabGroup.syncId);
-        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(any(), any(), anyBoolean());
+        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
     }
 }

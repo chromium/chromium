@@ -39,7 +39,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"

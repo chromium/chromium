@@ -36,7 +36,7 @@ namespace ash {
 namespace {
 
 display::Display GetDisplayForWindow(aura::Window* window) {
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+  return display::Screen::Get()->GetDisplayNearestWindow(window);
 }
 
 gfx::Rect ConvertToScreenForWindow(aura::Window* window,
@@ -87,7 +87,8 @@ TEST_F(CollisionDetectionUtilsTest, AvoidObstaclesAvoidsUnifiedSystemTray) {
 
 TEST_F(CollisionDetectionUtilsTest, AvoidObstaclesAvoidsPopupNotification) {
   UpdateDisplay("1000x900");
-  auto* window = CreateTestWindowInShellWithId(kShellWindowId_ShelfContainer);
+  auto* window =
+      CreateTestWindowInShell({.window_id = kShellWindowId_ShelfContainer});
   window->SetName(AshMessagePopupCollection::kMessagePopupWidgetName);
   window->Show();
 

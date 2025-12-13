@@ -10,6 +10,7 @@
 
 #include "base/base64url.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"

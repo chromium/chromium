@@ -15,7 +15,6 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -68,6 +67,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     private static @Nullable PackageManagerDelegate sPackageManagerDelegateForTest;
     private static @Nullable PaymentManifestDownloader sDownloaderForTest;
     private static boolean sBypassIsReadyToPayServiceInTest;
+    private static boolean sIsReadyToPayResponseInTest = true;
     private static @Nullable AndroidIntentLauncher sAndroidIntentLauncherForTest;
 
     /**
@@ -77,7 +77,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     private final Set<GURL> mMerchantRequestedUrlPaymentMethods = new HashSet<>();
 
     private final PaymentManifestDownloader mDownloader;
-    private final PaymentManifestWebDataService mWebDataService;
+    private final WebPaymentsWebDataService mWebDataService;
     private final PaymentManifestParser mParser;
     private final PackageManagerDelegate mPackageManagerDelegate;
     private final PaymentAppFactoryDelegate mFactoryDelegate;
@@ -160,6 +160,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     private int mPendingVerifiersCount;
     private int mPendingIsReadyToPayQueries;
     private int mPendingResourceUsersCount;
+    private boolean mIsCanMakePaymentReportedToFactoryDelegate;
 
     /**
      * @param delegate The package manager delegate to use in testing.
@@ -193,6 +194,13 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     }
 
     /**
+     * @param isReadyToPay The response of IS_READY_TO_PAY in test. The default is true.
+     */
+    public static void setIsReadyToPayResponseInTest(boolean isReadyToPay) {
+        sIsReadyToPayResponseInTest = isReadyToPay;
+    }
+
+    /**
      * @param launcher The Android intent launcher for testing.
      */
     @VisibleForTesting
@@ -213,7 +221,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
      *     call.
      */
     public AndroidPaymentAppFinder(
-            PaymentManifestWebDataService webDataService,
+            WebPaymentsWebDataService webDataService,
             PaymentManifestDownloader downloader,
             PaymentManifestParser parser,
             PackageManagerDelegate packageManagerDelegate,
@@ -353,7 +361,17 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                     String.join(", ", getActivityPackageNames(allInstalledPaymentApps)));
         }
 
-        if (!mIsOffTheRecord) {
+        boolean isReadyToPayQueryRestricted =
+                !mFactoryDelegate.prefsCanMakePayment()
+                        && PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                                PaymentFeatureList.RESTRICT_IS_READY_TO_PAY_QUERY);
+        if (mIsOffTheRecord) {
+            Log.i(TAG, "Off the record, skipping isReadyToPay service registration.");
+        } else if (isReadyToPayQueryRestricted) {
+            Log.i(
+                    TAG,
+                    "Payment app checking disabled, skipping isReadyToPay service registration.");
+        } else {
             addIntentServiceToServiceMap(
                     WebPaymentIntentHelper.ACTION_IS_READY_TO_PAY, mIsReadyToPayServices);
         }
@@ -534,16 +552,6 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
                             defaultUrlMethod,
                             supportedUrlMethods,
                             mMerchantRequestedUrlPaymentMethods));
-
-            // Record the total number of payment methods that this activity `ResolveInfo app`
-            // declares to support in its metadata.
-            if (!TextUtils.isEmpty(defaultMethod)) supportedMethods.add(defaultMethod);
-            RecordHistogram.recordCustomCountHistogram(
-                    /* name= */ "PaymentRequest.NumberOfSupportedMethods.AndroidApp",
-                    /* sample= */ supportedMethods.size(),
-                    /* min= */ 1,
-                    /* max= */ 10,
-                    /* numBuckets= */ 10);
         }
 
         List<PaymentManifestVerifier> manifestVerifiers = new ArrayList<>();
@@ -751,9 +759,8 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         assert mPendingVerifiersCount == 0;
 
         boolean hasValidApps = mValidApps.size() > 0;
-        mFactoryDelegate.onCanMakePaymentCalculated(hasValidApps);
-
         if (!hasValidApps) {
+            onCanMakePaymentCalculated(false);
             Log.e(TAG, "No valid apps found.");
         }
 
@@ -765,7 +772,10 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         mPendingIsReadyToPayQueries = mValidApps.size();
         for (Map.Entry<String, AndroidPaymentApp> entry : mValidApps.entrySet()) {
             AndroidPaymentApp app = entry.getValue();
-            if (sBypassIsReadyToPayServiceInTest) app.bypassIsReadyToPayServiceInTest();
+            if (sBypassIsReadyToPayServiceInTest) {
+                app.bypassIsReadyToPayServiceInTest();
+                app.setIsReadyToPayResponseInTest(sIsReadyToPayResponseInTest);
+            }
             app.maybeQueryIsReadyToPayService(
                     filterMethodDataForApp(
                             mFactoryDelegate.getParams().getMethodData(),
@@ -813,6 +823,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         if (isReadyToPay
                 || PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
                         PaymentFeatureList.ALLOW_SHOW_WITHOUT_READY_TO_PAY)) {
+            onCanMakePaymentCalculated(true);
             mFactoryDelegate.onPaymentAppCreated(app);
         }
 
@@ -821,14 +832,21 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
         }
     }
 
+    private void onCanMakePaymentCalculated(boolean value) {
+        if (!mIsCanMakePaymentReportedToFactoryDelegate) {
+            mIsCanMakePaymentReportedToFactoryDelegate = true;
+            Log.i(TAG, "Can make payment: \"%b\".", value);
+            mFactoryDelegate.onCanMakePaymentCalculated(value);
+        }
+    }
+
     /**
      * Enables the given payment app to use this method name.
      *
      * @param resolveInfo The payment app that's allowed to use the method name.
-     * @param methodName  The method name that can be used by the app.
+     * @param methodName The method name that can be used by the app.
      */
-    private void onValidPaymentAppForPaymentMethodName(
-            ResolveInfo resolveInfo, String methodName) {
+    private void onValidPaymentAppForPaymentMethodName(ResolveInfo resolveInfo, String methodName) {
         if (mFactoryDelegate.getParams().hasClosed()) return;
         String packageName = resolveInfo.activityInfo.packageName;
 

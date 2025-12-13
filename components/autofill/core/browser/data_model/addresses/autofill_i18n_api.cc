@@ -68,7 +68,34 @@ std::u16string GetFormattingExpressionOverrides(
            u"${ADDRESS_HOME_FLOOR;, ;º}${ADDRESS_HOME_APT_NUM;, ;ª}";
   }
 
+  // The set of countries without separate address model
+  // with space zip code separator.
+  static constexpr auto kSpaceZipCodeSeparatorCountriesSet =
+      base::MakeFixedFlatSet<std::string_view>(
+          {"CZ", "GB", "GR", "HR", "IE", "LB", "MT", "SE", "SK", "IN"});
+
+  if (field_type == ADDRESS_HOME_ZIP &&
+      base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
+    if (base::Contains(kSpaceZipCodeSeparatorCountriesSet,
+                       country_code.value())) {
+      return u"${ADDRESS_HOME_ZIP_PREFIX;;} ${ADDRESS_HOME_ZIP_SUFFIX;;}";
+    }
+  }
+
   return u"";
+}
+
+// Returns true if a standalone parsing rule is available for the country and
+// type. This is used to enable parsing rules defined for countries without
+// custom hierarchy.
+bool IsStandaloneParsingRuleAvailable(AddressCountryCode country_code,
+                                      FieldType field_type) {
+  if (field_type == ADDRESS_HOME_ZIP && country_code.value() == "JP" &&
+      base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
+    return true;
+  }
+
+  return false;
 }
 
 // Returns an instance of the `AddressComponent` implementation that matches
@@ -84,8 +111,10 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
       return std::make_unique<AddressNode>(std::move(children));
     case ADDRESS_HOME_ADMIN_LEVEL2:
       return std::make_unique<AdminLevel2Node>(std::move(children));
-    case ADDRESS_HOME_APT_NUM:
+    case ADDRESS_HOME_APT:
       return std::make_unique<ApartmentNode>(std::move(children));
+    case ADDRESS_HOME_APT_NUM:
+      return std::make_unique<ApartmentNumNode>(std::move(children));
     case ADDRESS_HOME_BETWEEN_STREETS:
       return std::make_unique<BetweenStreetsNode>(std::move(children));
     case ADDRESS_HOME_BETWEEN_STREETS_1:
@@ -102,6 +131,8 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
       return std::make_unique<FloorNode>(std::move(children));
     case ADDRESS_HOME_HOUSE_NUMBER:
       return std::make_unique<HouseNumberNode>(std::move(children));
+    case ADDRESS_HOME_HOUSE_NUMBER_AND_APT:
+      return std::make_unique<HouseNumberAndApartmentNode>(std::move(children));
     case ADDRESS_HOME_LANDMARK:
       return std::make_unique<LandmarkNode>(std::move(children));
     case ADDRESS_HOME_SORTING_CODE:
@@ -129,9 +160,7 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case ADDRESS_HOME_LINE1:
     case ADDRESS_HOME_LINE2:
     case ADDRESS_HOME_LINE3:
-    case ADDRESS_HOME_APT:
     case ADDRESS_HOME_APT_TYPE:
-    case ADDRESS_HOME_HOUSE_NUMBER_AND_APT:
     case ADDRESS_HOME_OTHER_SUBUNIT:
     case ADDRESS_HOME_ADDRESS_WITH_NAME:
     case ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY:
@@ -176,7 +205,6 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
     case CREDIT_CARD_TYPE:
     case CREDIT_CARD_VERIFICATION_CODE:
-    case FIELD_WITH_DEFAULT_VALUE:
     case MERCHANT_EMAIL_SIGNUP:
     case MERCHANT_PROMO_CODE:
     case PASSWORD:
@@ -207,7 +235,6 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case ONE_TIME_CODE:
     case SINGLE_USERNAME_FORGOT_PASSWORD:
     case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
-    case PASSPORT_NAME_TAG:
     case PASSPORT_NUMBER:
     case PASSPORT_ISSUING_COUNTRY:
     case PASSPORT_EXPIRATION_DATE:
@@ -215,14 +242,12 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case LOYALTY_MEMBERSHIP_PROGRAM:
     case LOYALTY_MEMBERSHIP_PROVIDER:
     case LOYALTY_MEMBERSHIP_ID:
-    case VEHICLE_OWNER_TAG:
     case VEHICLE_LICENSE_PLATE:
     case VEHICLE_VIN:
     case VEHICLE_MAKE:
     case VEHICLE_MODEL:
     case VEHICLE_YEAR:
     case VEHICLE_PLATE_STATE:
-    case DRIVERS_LICENSE_NAME_TAG:
     case DRIVERS_LICENSE_REGION:
     case DRIVERS_LICENSE_NUMBER:
     case DRIVERS_LICENSE_EXPIRATION_DATE:
@@ -232,6 +257,15 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case NATIONAL_ID_CARD_EXPIRATION_DATE:
     case NATIONAL_ID_CARD_ISSUE_DATE:
     case NATIONAL_ID_CARD_ISSUING_COUNTRY:
+    case REDRESS_NUMBER:
+    case KNOWN_TRAVELER_NUMBER:
+    case KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
+    case FLIGHT_RESERVATION_FLIGHT_NUMBER:
+    case FLIGHT_RESERVATION_TICKET_NUMBER:
+    case FLIGHT_RESERVATION_CONFIRMATION_CODE:
+    case FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
+    case FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
+    case FLIGHT_RESERVATION_DEPARTURE_DATE:
     case MAX_VALID_FIELD_TYPE:
       return nullptr;
   }
@@ -267,9 +301,16 @@ AddressComponent* BuildSubTree(
         return it->second.get();
       };
 
+  const bool is_leaf_node =
+      !tree_def.contains(root) ||
+      // ADDRESS_HOME_ZIP is leaf node if split zip code feature is disabled.
+      // TODO(crbug.com/369503318): Remove once launched.
+      (root == ADDRESS_HOME_ZIP &&
+       !base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode));
+
   // Leaf nodes do not have an entry in the `tree_def`. By definition
   // they cannot have children nor be synthesized nodes.
-  if (!tree_def.contains(root)) {
+  if (is_leaf_node) {
     return RegisterNode(BuildTreeNode(root, /*children=*/{}));
   }
 
@@ -393,7 +434,8 @@ i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
   // custom parsing structure (if exist).
   // Otherwise try using a legacy parsing expression (if exist).
   AddressCountryCode country_code_for_parsing =
-      IsCustomHierarchyAvailableForCountry(country_code)
+      (IsCustomHierarchyAvailableForCountry(country_code) ||
+       IsStandaloneParsingRuleAvailable(country_code, field_type))
           ? country_code
           : kLegacyHierarchyCountryCode;
 
@@ -405,6 +447,13 @@ i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
 
 bool IsTypeEnabledForCountry(FieldType field_type,
                              AddressCountryCode country_code) {
+  // TODO(crbug.com/369503318): Remove once launched.
+  if (!base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode) &&
+      (field_type == ADDRESS_HOME_ZIP_PREFIX ||
+       field_type == ADDRESS_HOME_ZIP_SUFFIX)) {
+    return false;
+  }
+
   if (!IsCustomHierarchyAvailableForCountry(country_code)) {
     country_code = kLegacyHierarchyCountryCode;
   }

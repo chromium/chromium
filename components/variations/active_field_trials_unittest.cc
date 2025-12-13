@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
+namespace {
 
 TEST(ActiveFieldTrialsTest, GetFieldTrialActiveGroups) {
   typedef std::set<ActiveGroupId, ActiveGroupIdCompare> ActiveGroupIdSet;
@@ -41,8 +42,8 @@ TEST(ActiveFieldTrialsTest, GetFieldTrialActiveGroups) {
   expected_groups.insert(name_group_id);
 
   std::vector<ActiveGroupId> active_group_ids;
-  testing::TestGetFieldTrialActiveGroupIds(std::string_view(), active_groups,
-                                           &active_group_ids);
+  test::TestGetFieldTrialActiveGroupIds(std::string_view(), active_groups,
+                                        &active_group_ids);
   EXPECT_EQ(2U, active_group_ids.size());
   for (size_t i = 0; i < active_group_ids.size(); ++i) {
     auto expected_group = expected_groups.find(active_group_ids[i]);
@@ -64,8 +65,8 @@ TEST(ActiveFieldTrialsTest, GetFieldTrialActiveGroupsWithSuffix) {
   active_groups.push_back(active_group);
 
   std::vector<ActiveGroupId> active_group_ids;
-  testing::TestGetFieldTrialActiveGroupIds(suffix, active_groups,
-                                           &active_group_ids);
+  test::TestGetFieldTrialActiveGroupIds(suffix, active_groups,
+                                        &active_group_ids);
   EXPECT_EQ(1U, active_group_ids.size());
 
   uint32_t expected_name = HashName("trial onesome_suffix");
@@ -85,19 +86,20 @@ TEST(ActiveFieldTrialsTest,
   active_group.is_overridden = true;
 
   std::vector<ActiveGroupId> active_group_ids;
-  testing::TestGetFieldTrialActiveGroupIds(std::string_view(), {active_group},
-                                           &active_group_ids);
+  test::TestGetFieldTrialActiveGroupIds(std::string_view(), {active_group},
+                                        &active_group_ids);
   ASSERT_EQ(1U, active_group_ids.size());
   EXPECT_EQ(active_group_ids[0].name, HashName(trial_one));
   EXPECT_EQ(active_group_ids[0].group, HashName("group one_MANUALLY_FORCED"));
 
   active_group_ids.clear();
-  testing::TestGetFieldTrialActiveGroupIds("_suffix", {active_group},
-                                           &active_group_ids);
+  test::TestGetFieldTrialActiveGroupIds("_suffix", {active_group},
+                                        &active_group_ids);
   ASSERT_EQ(1U, active_group_ids.size());
   EXPECT_EQ(active_group_ids[0].name, HashName("trial one_suffix"));
   EXPECT_EQ(active_group_ids[0].group,
             HashName("group one_suffix_MANUALLY_FORCED"));
 }
 
+}  // namespace
 }  // namespace variations

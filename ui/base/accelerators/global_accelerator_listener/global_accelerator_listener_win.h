@@ -35,7 +35,7 @@ class GlobalAcceleratorListenerWin : public GlobalAcceleratorListener,
   ~GlobalAcceleratorListenerWin() override;
 
  private:
-  // The implementation of our Window Proc, called by SingletonHwndObserver.
+  // The implementation of our Window Proc, called by SingletonHwnd.
   void OnWndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 
   // GlobalAcceleratorListener implementation.

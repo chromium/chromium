@@ -72,6 +72,7 @@ used when committed.
 *   [iOS Build Instructions](ios/build_instructions.md) - iOS target (on a MacOS
     host)
 *   [Gerrit Guide](gerrit_guide.md) - Setup Gerrit access
+*   [Gerrit ReAuth](gerrit_reauth.md) - Gerrit ReAuth guide
 *   [Chrome OS Build Instructions](chromeos_build_instructions.md) - Chrome OS
 *   [Linux Chromium ARM Recipes](linux/chromium_arm.md) - Recipes for building
     Chromium for ARM on Linux.
@@ -433,7 +434,7 @@ used when committed.
     in Chrome to bootstrap CrOS services' Mojo connection.
 
 ### Security
-*   [The Rule Of 2](security/rule-of-2.md) - An imoportant security rule when
+*   [The Rule Of 2](security/rule-of-2.md) - An important security rule when
     handling untrustworthy contents (like anything downloaded from the web).
 
 ### Speed

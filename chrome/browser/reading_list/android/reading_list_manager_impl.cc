@@ -25,6 +25,8 @@ constexpr char kReadStatusKey[] = "read_status";
 constexpr char kReadStatusRead[] = "true";
 constexpr char kReadStatusUnread[] = "false";
 
+namespace reading_list {
+
 namespace {
 
 // Sync the bookmark node with |entry|. Returns whether the conversion is
@@ -152,7 +154,8 @@ const BookmarkNode* ReadingListManagerImpl::Add(const GURL& url,
   // Add or swap the reading list entry.
   const auto& new_entry = reading_list_model_->AddOrReplaceEntry(
       url, title, reading_list::ADDED_VIA_CURRENT_APP,
-      /*estimated_read_time=*/base::TimeDelta());
+      /*estimated_read_time=*/std::nullopt,
+      /*creation_time=*/std::nullopt);
   const auto* node = FindBookmarkByURL(new_entry.URL());
   return node;
 }
@@ -321,3 +324,5 @@ void ReadingListManagerImpl::NotifyReadingListChanged() {
   for (Observer& observer : observers_)
     observer.ReadingListChanged();
 }
+
+}  // namespace reading_list

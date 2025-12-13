@@ -5,6 +5,7 @@
     <head>
       <script type="speculationrules" id="prefetch">
         {
+          "tag": "prefetch_tag",
           "prefetch":[
             {
               "source": "list",
@@ -15,10 +16,22 @@
       </script>
       <script type="speculationrules" id="prerender">
         {
+          "tag": "prerender_tag",
           "prerender":[
             {
               "source": "list",
               "urls": ["/page.html"]
+            }
+          ]
+        }
+      </script>
+      <script type="speculationrules" id="prerender-until-script">
+        {
+          "tag": "prerender_until_script_tag",
+          "prerender_until_script":[
+            {
+              "source": "list",
+              "urls": ["/page.html?pus=1"]
             }
           ]
         }
@@ -69,6 +82,7 @@
     const selectors = [
       '#prefetch',
       '#prerender',
+      '#prerender-until-script',
       '#invalid-json',
       '#not-object',
       '#contains-invalid-rule',

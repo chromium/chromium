@@ -8,11 +8,13 @@ import android.content.Context;
 import android.view.ActionMode;
 import android.view.View;
 import android.view.View.OnLongClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
@@ -25,7 +27,6 @@ import org.chromium.ui.widget.ViewRectProvider;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Optional;
 
 /** Coordinates the interactions with the UrlBar text component. */
 @NullMarked
@@ -50,7 +51,11 @@ public class UrlBarCoordinator
     private final UrlBarMediator mMediator;
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final Callback<Boolean> mFocusChangeCallback;
-    private Optional<Runnable> mKeyboardHideTask = Optional.empty();
+    private final Callback<Boolean> mTextWrappedCallback;
+    private final ObserverList<Callback<Boolean>> mTextWrapListeners = new ObserverList<>();
+    private @Nullable Runnable mKeyboardHideTask;
+    private boolean mHasFocus;
+    private boolean mTextIsWrapped;
 
     /**
      * Constructs a coordinator for the given UrlBar view.
@@ -72,7 +77,7 @@ public class UrlBarCoordinator
     public UrlBarCoordinator(
             Context context,
             UrlBar urlBar,
-            ActionMode.Callback actionModeCallback,
+            ActionMode.@Nullable Callback actionModeCallback,
             Callback<Boolean> focusChangeCallback,
             UrlBarDelegate delegate,
             KeyboardVisibilityDelegate keyboardVisibilityDelegate,
@@ -81,6 +86,7 @@ public class UrlBarCoordinator
         mUrlBar = urlBar;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mFocusChangeCallback = focusChangeCallback;
+        mTextWrappedCallback = this::onTextWrappingChanged;
 
         PropertyModel model =
                 new PropertyModel.Builder(UrlBarProperties.ALL_KEYS)
@@ -88,6 +94,7 @@ public class UrlBarCoordinator
                         .with(UrlBarProperties.DELEGATE, delegate)
                         .with(UrlBarProperties.INCOGNITO_COLORS_ENABLED, isIncognitoBranded)
                         .with(UrlBarProperties.LONG_CLICK_LISTENER, onLongClickListener)
+                        .with(UrlBarProperties.TEXT_WRAPPED_CALLBACK, mTextWrappedCallback)
                         .build();
         PropertyModelChangeProcessor.create(model, urlBar, UrlBarViewBinder::bind);
 
@@ -98,8 +105,40 @@ public class UrlBarCoordinator
     public void destroy() {
         mMediator.destroy();
         mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(this);
-        mKeyboardHideTask.ifPresent(r -> mUrlBar.removeCallbacks(r));
+        if (mKeyboardHideTask != null) {
+            mUrlBar.removeCallbacks(mKeyboardHideTask);
+        }
         mUrlBar.destroy();
+    }
+
+    /** Returns whether the url bar currently contains more than a single line of text. */
+    public boolean isTextWrapped() {
+        return mTextIsWrapped;
+    }
+
+    /**
+     * Adds a listener for text wrapping changes.
+     *
+     * @param listener The listener to be added.
+     */
+    public void addTextWrappingChangeListener(Callback<Boolean> listener) {
+        mTextWrapListeners.addObserver(listener);
+    }
+
+    /**
+     * Removes a listener for text wrapping changes.
+     *
+     * @param listener The listener to be removed.
+     */
+    public void removeTextWrappingChangeListener(Callback<Boolean> listener) {
+        mTextWrapListeners.removeObserver(listener);
+    }
+
+    private void onTextWrappingChanged(boolean isWrapped) {
+        mTextIsWrapped = isWrapped;
+        for (Callback<Boolean> listener : mTextWrapListeners) {
+            listener.onResult(isWrapped);
+        }
     }
 
     /**
@@ -230,6 +269,17 @@ public class UrlBarCoordinator
         return mUrlBar.getTextWithoutAutocomplete();
     }
 
+    /**
+     * Sets the selection anchor to startPos and the selection edge to endPos. When startPos is same
+     * as endPos, no text is selected and the cursor moves to startPos/EndPos.
+     *
+     * @param startPos The start position of the selection.
+     * @param endPos The end position of the selection
+     */
+    public void setSelection(int startPos, int endPos) {
+        mUrlBar.setSelection(startPos, endPos);
+    }
+
     /** Returns the {@link ViewRectProvider} for the UrlBar. */
     public ViewRectProvider getViewRectProvider() {
         return new ViewRectProvider(mUrlBar);
@@ -255,7 +305,7 @@ public class UrlBarCoordinator
     }
 
     /* package */ boolean hasFocus() {
-        return mUrlBar.hasFocus();
+        return mHasFocus;
     }
 
     /* package */ void requestFocus() {
@@ -268,6 +318,11 @@ public class UrlBarCoordinator
 
     /* package */ void requestAccessibilityFocus() {
         mUrlBar.requestAccessibilityFocus();
+    }
+
+    /* package */ void dispatchGoEvent() {
+        if (!mHasFocus) return;
+        mUrlBar.onEditorAction(EditorInfo.IME_ACTION_GO);
     }
 
     /**
@@ -292,8 +347,10 @@ public class UrlBarCoordinator
      */
     public void setKeyboardVisibility(boolean showKeyboard, boolean shouldDelayHiding) {
         // Cancel pending jobs to prevent any possibility of keyboard flicker.
-        mKeyboardHideTask.ifPresent(r -> mUrlBar.removeCallbacks(r));
-        mKeyboardHideTask = Optional.empty();
+        if (mKeyboardHideTask != null) {
+            mUrlBar.removeCallbacks(mKeyboardHideTask);
+        }
+        mKeyboardHideTask = null;
 
         // Note: due to nature of this mechanism, we may occasionally experience subsequent requests
         // to show or hide keyboard anyway. This may happen when we schedule keyboard hide, and
@@ -304,13 +361,11 @@ public class UrlBarCoordinator
             // The animation rendering may not yet be 100% complete and hiding the keyboard makes
             // the animation quite choppy.
             mKeyboardHideTask =
-                    Optional.of(
-                            () -> {
-                                mKeyboardVisibilityDelegate.hideKeyboard(mUrlBar);
-                                mKeyboardHideTask = Optional.empty();
-                            });
-            mUrlBar.postDelayed(
-                    mKeyboardHideTask.get(), shouldDelayHiding ? KEYBOARD_HIDE_DELAY_MS : 0);
+                    () -> {
+                        mKeyboardVisibilityDelegate.hideKeyboard(mUrlBar);
+                        mKeyboardHideTask = null;
+                    };
+            mUrlBar.postDelayed(mKeyboardHideTask, shouldDelayHiding ? KEYBOARD_HIDE_DELAY_MS : 0);
             // Convert the keyboard back to resize mode (delay the change for an arbitrary amount
             // of time in hopes the keyboard will be completely hidden before making this change).
         }
@@ -327,6 +382,7 @@ public class UrlBarCoordinator
         InputMethodManager imm =
                 (InputMethodManager)
                         mUrlBar.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        mHasFocus = hasFocus;
         if (hasFocus) {
             // Explicitly tell InputMethodManager that the url bar is focused before any callbacks
             // so that it updates the active view accordingly. Otherwise, it may fail to update

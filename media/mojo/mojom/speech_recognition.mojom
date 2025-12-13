@@ -16,9 +16,8 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Corresponds to the LangIdEvent.ConfidenceInterval defined in
 // http://google3/speech/soda/public/soda_event.proto.
-[Stable, Extensible]
 enum ConfidenceLevel {
-  [Default] kUnknown,
+  kUnknown,
   kNotConfident,
   kConfident,
   kHighlyConfident,
@@ -26,9 +25,8 @@ enum ConfidenceLevel {
 
 // Corresponds to the LangIdEvent.AsrSwitchResult defined in
 // http://google3/speech/soda/public/soda_event.proto.
-[Stable, Extensible]
 enum AsrSwitchResult {
-  [Default] kDefaultNoSwitch,
+  kDefaultNoSwitch,
   kSwitchSucceeded,
   kSwitchFailed,
   kSwitchSkipedNoLp,
@@ -40,7 +38,6 @@ enum AsrSwitchResult {
 // BrowserInterfaceBroker. For the Web Speech API, the browser is the client and
 // can own one or more Remote<SpeechRecognitionContext>. This is a stable
 // interface that is used across the LaCrOS/Ash boundary.
-[Stable]
 interface SpeechRecognitionContext {
   // Bind the recognizers to the speech recognition service. Returns a flag
   // indicating whether multichannel audio is supported by the speech
@@ -67,7 +64,6 @@ interface SpeechRecognitionContext {
 // Live Caption) or the browser process (for CrOS features like system Live
 // Caption and dictation) and the receiver lives in the speech recognition
 // process.
-[Stable]
 interface SpeechRecognitionRecognizer {
   // Initialize the speech recognition instance. The speech recognition client
   // will return the recognition events containing the transcribed audio back
@@ -106,7 +102,6 @@ interface SpeechRecognitionRecognizer {
 // recognition service to the client that will display the results to the user.
 // The remote lives in the speech recognition process and the receiver lives in
 // the browser process.
-[Stable]
 interface SpeechRecognitionRecognizerClient {
   // Triggered by speech recognition process on a speech recognition event.
   //
@@ -127,7 +122,6 @@ interface SpeechRecognitionRecognizerClient {
 
 // The hypothesis parts that provides timing information for each word in
 // recognized speech.
-[Stable]
 struct HypothesisParts {
   // A section of the final transcription text. Either an entire word or single
   // character (depending on the language) with adjacent punctuation. There will
@@ -141,14 +135,12 @@ struct HypothesisParts {
   mojo_base.mojom.TimeDelta hypothesis_part_offset;
 };
 
-[Stable]
 struct MediaTimestampRange {
   mojo_base.mojom.TimeDelta start;
   mojo_base.mojom.TimeDelta end;
 };
 
 // The timing information for the transcript.
-[Stable]
 struct TimingInformation {
   // Start time in audio time from the start of the SODA session.
   // This time measures the amount of audio input into SODA.
@@ -177,7 +169,6 @@ struct TimingInformation {
 
 // A speech recognition result created by the speech service and passed to the
 // browser.
-[Stable]
 struct SpeechRecognitionResult {
   string transcription;
 
@@ -195,7 +186,6 @@ struct SpeechRecognitionResult {
 
 // A language identification event created by the speech recognition service
 // and passed to the browser and renderer.
-[Stable]
 struct LanguageIdentificationEvent {
   // The locale of the language with the highest confidence.
   string language;
@@ -213,7 +203,6 @@ struct LanguageIdentificationEvent {
 // triggered by the browser. The remote lives in the browser process and the
 // receiver lives either in the renderer process (for web Live Caption) or
 // the browser process (for CrOS system Live Caption).
-[Stable]
 interface SpeechRecognitionBrowserObserver {
   // Notify the speech recognition client when speech recognition availability
   // changes.
@@ -233,7 +222,6 @@ interface SpeechRecognitionBrowserObserver {
 // The user-facing source of recognized speech; typically a tab. The remote
 // lives in the Ash browser process and is used to trigger behavior in lacros
 // (like focusing the tab). The receiver lives in the lacros browser process.
-[Stable]
 interface SpeechRecognitionSurface {
   // "Activate" the surface - i.e. bring it to the front and focus it.
   Activate@0();
@@ -247,7 +235,6 @@ interface SpeechRecognitionSurface {
 // re-render a live caption bubble based on user interaction with the
 // lacros-side surface. The remote lives in the lacros browser process, and the
 // receiver lives in the Ash browser process.
-[Stable]
 interface SpeechRecognitionSurfaceClient {
   // Called when the user navigates away or refreshes the current tab. This
   // comprises the end of a live caption "session", after which the caption
@@ -262,7 +249,6 @@ interface SpeechRecognitionSurfaceClient {
 // The remote lives in the renderer process and the receiver lives in the
 // browser process. Not necessary for browser-side features (e.g. CrOS system
 // Live Caption), which can access browser functionality directly.
-[Stable]
 interface SpeechRecognitionClientBrowserInterface {
   // Bind the speech recognition availability observer.
   BindSpeechRecognitionBrowserObserver@0(
@@ -280,9 +266,8 @@ interface SpeechRecognitionClientBrowserInterface {
 // chrome/services/speech/soda/proto/soda_api.proto and
 // SodaRecognitionMode in
 // chromeos/services/machine_learning/public/mojom/soda.mojom.
-[Stable, Extensible]
 enum SpeechRecognitionMode {
-  [Default] kUnknown,
+  kUnknown,
   // Intended for voice input for keyboard usage.
   kIme,
   // Intended to caption a stream of audio.
@@ -291,9 +276,8 @@ enum SpeechRecognitionMode {
 
 // Which Chrome/ChromeOS application that is triggering the
 // speech recognition session to start.
-[Stable, Extensible]
 enum RecognizerClientType {
-  [Default] kUnknown,
+  kUnknown,
   // Dictation on ChromeOS.
   kDictation,
   // LiveCaption on Chrome/ChromeOS.
@@ -307,7 +291,6 @@ enum RecognizerClientType {
 };
 
 // Options for speech recognition.
-[Stable]
 struct SpeechRecognitionOptions {
   // What kind of recognition to use.
   // In the case of web fallback (not for launch, used for development only),

@@ -10,7 +10,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.url.GURL;
@@ -33,7 +32,6 @@ public class UrlConstantsTest {
             return;
         }
 
-        Assert.assertFalse(LibraryLoader.getInstance().isInitialized());
         Assert.assertTrue(ntpGurl.isValid());
         Assert.assertEquals(UrlConstants.NTP_HOST, ntpGurl.getHost());
         Assert.assertEquals(UrlConstants.CHROME_SCHEME, ntpGurl.getScheme());

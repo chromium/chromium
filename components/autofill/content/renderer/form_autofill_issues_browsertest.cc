@@ -4,139 +4,137 @@
 
 #include "components/autofill/content/renderer/form_autofill_issues.h"
 
-#include "base/strings/string_number_conversions.h"
+#include "base/compiler_specific.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/field_data_manager.h"
-#include "components/autofill/core/common/form_field_data.h"
+#include "content/public/renderer/render_frame.h"
 #include "content/public/test/render_view_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/web/web_autofill_client.h"
-#include "third_party/blink/public/web/web_form_control_element.h"
-#include "third_party/blink/public/web/web_form_element.h"
+#include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
-using blink::WebFormControlElement;
-using blink::WebFormElement;
-using blink::WebLocalFrame;
+using blink::WebDocument;
 using blink::WebString;
 using blink::mojom::GenericIssueErrorType;
+using testing::_;
+using testing::AnyNumber;
+using testing::MockFunction;
 
 namespace autofill::form_issues {
 namespace {
 
-constexpr CallTimerState kCallTimerStateDummy = {
-    .call_site = CallTimerState::CallSite::kUpdateFormCache,
-    .last_autofill_agent_reset = {},
-    .last_dom_content_loaded = {},
-};
+using MockEmit = MockFunction<void(const WebDocument& document,
+                                   GenericIssueErrorType issue_type,
+                                   int violating_node,
+                                   WebString violating_node_attribute)>;
 
-// Checks if the provided list `form_issues` contains a certain issue type.
-// Optionally checks whether the expected issue type has the specified
-// `violating_attr`.
-bool FormIssuesContainIssueType(const std::vector<FormIssue>& form_issues,
-                                GenericIssueErrorType expected_issue,
-                                const std::string& violating_attr = "") {
-  return std::ranges::any_of(form_issues, [&](const auto& form_issue) {
-    return form_issue.issue_type == expected_issue &&
-           (violating_attr.empty() ||
-            violating_attr == form_issue.violating_node_attribute.Utf8());
-  });
+template <typename R, typename... Args>
+auto as_invokable(MockFunction<R(Args...)>& fun LIFETIME_BOUND) {
+  return [&fun](Args... args) { fun.Call(std::forward<Args>(args)...); };
 }
 
 class FormAutofillIssuesTest : public content::RenderViewTest {
  public:
-  FormAutofillIssuesTest() = default;
+  FormAutofillIssuesTest() {
+    feature_list_.InitWithFeatures(
+        {features::kAutofillPolicyControlledFeatureAutofill,
+         features::kAutofillPolicyControlledFeatureManualText},
+        {});
+  }
+
   ~FormAutofillIssuesTest() override = default;
 
-  WebFormElement GetTargetForm() {
-    return GetFormElementById(GetMainFrame()->GetDocument(), "target");
+  WebDocument GetDocument() { return GetMainFrame()->GetDocument(); }
+
+  FormData ExtractTargetForm(std::string_view id) {
+    static constexpr CallTimerState kCallTimerStateDummy = {
+        .call_site = CallTimerState::CallSite::kUpdateFormCache,
+        .last_autofill_agent_reset = {},
+        .last_dom_content_loaded = {},
+    };
+    return *form_util::ExtractFormData(
+        GetDocument(), GetFormElementById(GetDocument(), id),
+        *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy,
+        /*button_titles_cache=*/nullptr);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(FormAutofillIssuesTest, FormLabelHasNeitherForNorNestedInput) {
+TEST_F(FormAutofillIssuesTest, FormLabelHasNeitherForNorNestedInputError) {
+  using enum GenericIssueErrorType;
   LoadHTML(R"(
-       <form id=target>
+       <form>
         <input>
         <label> A label</label>
       </form>)");
-
-  std::vector<FormIssue> form_issues = GetFormIssuesForTesting(
-      GetTargetForm().GetFormControlElements(), {});  // nocheck
-
-  EXPECT_TRUE(FormIssuesContainIssueType(
-      form_issues,
-      GenericIssueErrorType::kFormLabelHasNeitherForNorNestedInput));
+  MockEmit emit;
+  EXPECT_CALL(emit, Call).Times(AnyNumber());
+  EXPECT_CALL(emit, Call(GetDocument(),
+                         kFormLabelHasNeitherForNorNestedInputError, _, _));
+  EmitFormIssues(GetDocument(), {}, as_invokable(emit));
 }
 
 TEST_F(FormAutofillIssuesTest, FormDuplicateIdForInputError) {
+  using enum GenericIssueErrorType;
   LoadHTML(R"(
-      <form id=target>
+      <form>
         <input id=id>
         <input id=id_2>
         <input id=id>
         <input id=id>
       </form>)");
-
-  std::vector<FormIssue> form_issues = GetFormIssuesForTesting(
-      GetTargetForm().GetFormControlElements(), {});  // nocheck
-
-  int duplicated_ids_issue_count =
-      std::ranges::count_if(form_issues, [](const FormIssue& form_issue) {
-        return form_issue.issue_type ==
-                   GenericIssueErrorType::kFormDuplicateIdForInputError &&
-               form_issue.violating_node_attribute.Utf8() == "id";
-      });
-  EXPECT_EQ(duplicated_ids_issue_count, 3);
+  MockEmit emit;
+  EXPECT_CALL(emit, Call(GetDocument(), kFormDuplicateIdForInputError, _,
+                         WebString(u"id")))
+      .Times(3);
+  EmitFormIssues(GetDocument(), {}, as_invokable(emit));
 }
 
-TEST_F(FormAutofillIssuesTest, FormAriaLabelledByToNonExistingId) {
+TEST_F(FormAutofillIssuesTest, FormAriaLabelledByToNonExistingIdError) {
+  using enum GenericIssueErrorType;
   LoadHTML(R"(
-      <form id=target>
+      <form>
         <input aria-labelledby=non_existing>
       </form>)");
-  WebFormElement form_target = GetTargetForm();
-  std::vector<FormIssue> form_issues =
-      GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
-
-  std::vector<FormIssue> form_issues_2 = GetFormIssuesForTesting(
-      form_target.GetFormControlElements(), form_issues);
-  EXPECT_TRUE(FormIssuesContainIssueType(
-      form_issues, GenericIssueErrorType::kFormAriaLabelledByToNonExistingId,
-      /*violating_attr=*/"aria-labelledby"));
+  MockEmit emit;
+  EXPECT_CALL(emit, Call).Times(AnyNumber());
+  EXPECT_CALL(emit, Call(GetDocument(), kFormAriaLabelledByToNonExistingIdError,
+                         _, WebString(u"aria-labelledby")));
+  EmitFormIssues(GetDocument(), {}, as_invokable(emit));
 }
 
 TEST_F(FormAutofillIssuesTest, FormAutocompleteAttributeEmptyError) {
+  using enum GenericIssueErrorType;
   LoadHTML(R"(
-      <form id=target>
+      <form>
         <input autocomplete>
       </form>)");
-  WebFormElement form_target = GetTargetForm();
-
-  std::vector<FormIssue> form_issues =
-      GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
-
-  EXPECT_TRUE(FormIssuesContainIssueType(
-      form_issues, GenericIssueErrorType::kFormAutocompleteAttributeEmptyError,
-      /*violating_attr=*/"autocomplete"));
+  MockEmit emit;
+  EXPECT_CALL(emit, Call).Times(AnyNumber());
+  EXPECT_CALL(emit, Call(GetDocument(), kFormAutocompleteAttributeEmptyError, _,
+                         WebString(u"autocomplete")));
+  EmitFormIssues(GetDocument(), {}, as_invokable(emit));
 }
 
 TEST_F(FormAutofillIssuesTest,
        FormInputHasWrongButWellIntendedAutocompleteValueError) {
+  using enum GenericIssueErrorType;
   LoadHTML(R"(
-      <form id=target>
+      <form>
         <input autocomplete=address-line-1>
       </form>)");
-  WebFormElement form_target = GetTargetForm();
-
-  std::vector<FormIssue> form_issues =
-      GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
-
-  EXPECT_TRUE(FormIssuesContainIssueType(
-      form_issues,
-      GenericIssueErrorType::
-          kFormInputHasWrongButWellIntendedAutocompleteValueError,
-      /*violating_attr=*/"autocomplete"));
+  MockEmit emit;
+  EXPECT_CALL(emit, Call).Times(AnyNumber());
+  EXPECT_CALL(emit,
+              Call(GetDocument(),
+                   kFormInputHasWrongButWellIntendedAutocompleteValueError, _,
+                   WebString(u"autocomplete")));
+  EmitFormIssues(GetDocument(), {}, as_invokable(emit));
 }
 
 // Having an autocomplete attribute that is too large does not trigger issues,
@@ -146,84 +144,71 @@ TEST_F(FormAutofillIssuesTest,
 TEST_F(
     FormAutofillIssuesTest,
     FormInputHasWrongButWellIntendedAutocompleteValueError_LargeAutocompleteString_DoNotCalculateIssue) {
-  std::string autocomplete(100, 'a');
-  autocomplete += "address-line-1";
+  using enum GenericIssueErrorType;
   LoadHTML(R"(
-      <form id=target>
-        <input>
+      <form>
+        <input id=t>
       </form>)");
-  WebFormElement form_target = GetTargetForm();
-  form_target.GetFormControlElements()[0].SetAttribute(
-      "autocomplete", WebString::FromUTF8(autocomplete));
-  std::vector<FormIssue> form_issues =
-      GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
-
-  EXPECT_FALSE(FormIssuesContainIssueType(
-      form_issues,
-      GenericIssueErrorType::
-          kFormInputHasWrongButWellIntendedAutocompleteValueError,
-      /*violating_attr=*/"autocomplete"));
+  GetElementById(GetDocument(), "t")
+      .SetAttribute("autocomplete", WebString::FromUTF8(std::string(100, 'a') +
+                                                        "address-line-1"));
+  MockEmit emit;
+  EXPECT_CALL(emit,
+              Call(GetDocument(),
+                   kFormInputHasWrongButWellIntendedAutocompleteValueError, _,
+                   WebString(u"autocomplete")))
+      .Times(0);
+  EmitFormIssues(GetDocument(), {}, as_invokable(emit));
 }
 
 TEST_F(FormAutofillIssuesTest, FormEmptyIdAndNameAttributesForInputError) {
+  using enum GenericIssueErrorType;
   LoadHTML(R"(
-      <form id=target>
+      <form>
         <input>
       </form>)");
-  WebFormElement form_target = GetTargetForm();
-
-  std::vector<FormIssue> form_issues =
-      GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
-
-  EXPECT_TRUE(FormIssuesContainIssueType(
-      form_issues,
-      GenericIssueErrorType::kFormEmptyIdAndNameAttributesForInputError));
+  MockEmit emit;
+  EXPECT_CALL(emit, Call(GetDocument(),
+                         kFormEmptyIdAndNameAttributesForInputError, _, _));
+  EmitFormIssues(GetDocument(), {}, as_invokable(emit));
 }
 
 TEST_F(FormAutofillIssuesTest,
        FormInputAssignedAutocompleteValueToIdOrNameAttributeError) {
+  using enum GenericIssueErrorType;
   LoadHTML(R"(
-      <form id=target>
+      <form>
         <input id=country>
       </form>)");
-
-  WebFormElement form_target = GetTargetForm();
-
-  std::vector<FormIssue> form_issues =
-      GetFormIssuesForTesting(form_target.GetFormControlElements(), {});
-
-  EXPECT_TRUE(FormIssuesContainIssueType(
-      form_issues,
-      GenericIssueErrorType::
-          kFormInputAssignedAutocompleteValueToIdOrNameAttributeError,
-      /*violating_attr=*/"id"));
+  MockEmit emit;
+  EXPECT_CALL(
+      emit, Call(GetDocument(),
+                 kFormInputAssignedAutocompleteValueToIdOrNameAttributeError, _,
+                 WebString("id")));
+  EmitFormIssues(GetDocument(), {}, as_invokable(emit));
 }
 
 TEST_F(
     FormAutofillIssuesTest,
     FormInputAssignedAutocompleteValueToIdOrNameAttributeErrorUnownedControl) {
+  using enum GenericIssueErrorType;
   LoadHTML(R"(
       <div>
         <label for="country">Country</label>
         <input id=country>
       </div>)");
-  WebLocalFrame* web_frame = GetMainFrame();
-
-  std::vector<FormIssue> form_issues =
-      GetFormIssuesForTesting(form_util::GetOwnedAutofillableFormControls(
-                                  web_frame->GetDocument(), WebFormElement()),
-                              {});
-
-  EXPECT_TRUE(FormIssuesContainIssueType(
-      form_issues,
-      GenericIssueErrorType::
-          kFormInputAssignedAutocompleteValueToIdOrNameAttributeError,
-      /*violating_attr=*/"id"));
+  MockEmit emit;
+  EXPECT_CALL(
+      emit, Call(GetDocument(),
+                 kFormInputAssignedAutocompleteValueToIdOrNameAttributeError, _,
+                 WebString("id")));
+  EmitFormIssues(GetDocument(), {}, as_invokable(emit));
 }
 
 TEST_F(FormAutofillIssuesTest, FormLabelForNameError) {
+  using enum GenericIssueErrorType;
   LoadHTML(R"(
-      <form id=target>
+      <form id=f>
         <input id=id_0 name=name_0>
         <input id=id_1 name=name_1>
         <input id=id_2 name=name_2>
@@ -231,44 +216,81 @@ TEST_F(FormAutofillIssuesTest, FormLabelForNameError) {
         <label for=name_1>incorrect label 1</label>
         <label for=name_2>incorrect label 2</label>
       </form>)");
-  WebLocalFrame* web_frame = GetMainFrame();
-  FormData form_data = *form_util::ExtractFormData(
-      web_frame->GetDocument(), GetTargetForm(),
-      *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy,
-      /*button_titles_cache=*/nullptr);
-
-  std::vector<FormIssue> form_issues =
-      CheckForLabelsWithIncorrectForAttributeForTesting(
-          web_frame->GetDocument(), form_data.fields(), {});
-
-  EXPECT_EQ(form_issues.size(), 2u);
-  EXPECT_TRUE(FormIssuesContainIssueType(
-      form_issues, GenericIssueErrorType::kFormLabelForNameError,
-      /*violating_attr=*/"for"));
+  MockEmit emit;
+  EXPECT_CALL(emit,
+              Call(GetDocument(), kFormLabelForNameError, _, WebString("for")))
+      .Times(2);
+  EmitFormIssues(GetDocument(), base::span_from_ref(ExtractTargetForm("f")),
+                 as_invokable(emit));
 }
 
 TEST_F(FormAutofillIssuesTest, FormLabelForMatchesNonExistingIdError) {
+  using enum GenericIssueErrorType;
   LoadHTML(R"(
-      <form id=target>
+      <form id=f>
         <label for=non_existing />
         <input id=id_0 name=name_0>
-        <label for=id_0 />"
+        <label for=id_0 />
       </form>)");
-  WebLocalFrame* web_frame = GetMainFrame();
-  FormData form_data = *form_util::ExtractFormData(
-      web_frame->GetDocument(), GetTargetForm(),
-      *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy,
-      /*button_titles_cache=*/nullptr);
+  MockEmit emit;
+  EXPECT_CALL(emit, Call(GetDocument(), kFormLabelForMatchesNonExistingIdError,
+                         _, WebString("for")));
+  EmitFormIssues(GetDocument(), base::span_from_ref(ExtractTargetForm("f")),
+                 as_invokable(emit));
+}
 
-  std::vector<FormIssue> form_issues =
-      CheckForLabelsWithIncorrectForAttributeForTesting(
-          web_frame->GetDocument(), form_data.fields(), {});
+// Tests that if the `autofill` and `manual-text` features are disabled in the
+// document, an issue is emitted.
+TEST_F(FormAutofillIssuesTest, NoAutofillNoManualTextPermission) {
+  using enum GenericIssueErrorType;
+  LoadHTML(R"(
+      <iframe
+          id=child_frame
+          allow="autofill 'none'; manual-text 'none'"
+          srcdoc="<label><input id=t></label>"
+      ></iframe>
+      )");
+  MockEmit emit;
+  WebDocument document = GetIframeDocumentById(GetDocument(), "child_frame");
+  EXPECT_CALL(
+      emit,
+      Call(document, kAutofillAndManualTextPolicyControlledFeaturesInfo, _, _));
+  EmitFormIssues(document, {}, as_invokable(emit));
+}
 
-  EXPECT_EQ(form_issues.size(), 1u);
-  EXPECT_TRUE(FormIssuesContainIssueType(
-      form_issues,
-      GenericIssueErrorType::kFormLabelForMatchesNonExistingIdError,
-      /*violating_attr=*/"for"));
+// Tests that if the `manual-text` feature is disabled in the document, an issue
+// is emitted.
+TEST_F(FormAutofillIssuesTest, NoAutofillPermission) {
+  using enum GenericIssueErrorType;
+  LoadHTML(R"(
+      <iframe
+          id=child_frame
+          allow="autofill 'none'; manual-text"
+          srcdoc="<label><input id=t></label>"
+      ></iframe>
+      )");
+  MockEmit emit;
+  WebDocument document = GetIframeDocumentById(GetDocument(), "child_frame");
+  EXPECT_CALL(emit, Call(document, kAutofillPolicyControlledFeatureInfo, _, _));
+  EmitFormIssues(document, {}, as_invokable(emit));
+}
+
+// Tests that if the `autofill` feature is disabled in the document, an issue is
+// emitted.
+TEST_F(FormAutofillIssuesTest, NoManualTextPermission) {
+  using enum GenericIssueErrorType;
+  LoadHTML(R"(
+      <iframe
+          id=child_frame
+          allow="autofill; manual-text 'none'"
+          srcdoc="<label><input id=t></label>"
+      ></iframe>
+      )");
+  MockEmit emit;
+  WebDocument document = GetIframeDocumentById(GetDocument(), "child_frame");
+  EXPECT_CALL(emit,
+              Call(document, kManualTextPolicyControlledFeatureInfo, _, _));
+  EmitFormIssues(document, {}, as_invokable(emit));
 }
 
 }  // namespace

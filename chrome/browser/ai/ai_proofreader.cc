@@ -14,8 +14,7 @@
 
 AIProofreader::AIProofreader(
     AIContextBoundObjectSet& context_bound_object_set,
-    std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-        session,
+    std::unique_ptr<optimization_guide::OnDeviceSession> session,
     blink::mojom::AIProofreaderCreateOptionsPtr options,
     mojo::PendingReceiver<blink::mojom::AIProofreader> receiver)
     : AIContextBoundObject(context_bound_object_set),
@@ -51,6 +50,32 @@ void AIProofreader::Proofread(
     const std::string& input,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
+  StartExecution(input, /*corrected_input=*/"", /*correction_instruction=*/"",
+                 std::move(pending_responder));
+}
+
+void AIProofreader::GetCorrectionType(
+    const std::string& input,
+    const std::string& corrected_input,
+    const std::string& correction_instruction,
+    mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
+        pending_responder) {
+  StartExecution(input, corrected_input, correction_instruction,
+                 std::move(pending_responder));
+}
+
+void AIProofreader::SetPriority(on_device_model::mojom::Priority priority) {
+  if (session_) {
+    session_->SetPriority(priority);
+  }
+}
+
+void AIProofreader::StartExecution(
+    const std::string& input,
+    const std::string& corrected_input,
+    const std::string& correction_instruction,
+    mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
+        pending_responder) {
   if (!session_) {
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
         std::move(pending_responder));
@@ -62,7 +87,7 @@ void AIProofreader::Proofread(
 
   mojo::RemoteSetElementId responder_id =
       responder_set_.Add(std::move(pending_responder));
-  auto request = BuildRequest(input);
+  auto request = BuildRequest(input, corrected_input, correction_instruction);
 
   session_->GetExecutionInputSizeInTokens(
       optimization_guide::MultimodalMessageReadView(request),
@@ -122,8 +147,7 @@ void AIProofreader::ModelExecutionCallback(
 
   if (!result.response.has_value()) {
     AIUtils::SendStreamingStatus(
-        responder,
-        AIUtils::ConvertModelExecutionError(result.response.error().error()));
+        responder, AIUtils::ConvertOnDeviceError(result.response.error()));
     return;
   }
 
@@ -140,9 +164,13 @@ void AIProofreader::ModelExecutionCallback(
 }
 
 optimization_guide::proto::ProofreaderApiRequest AIProofreader::BuildRequest(
-    const std::string& input) {
+    const std::string& input,
+    const std::string& corrected_input,
+    const std::string& correction_instruction) {
   optimization_guide::proto::ProofreaderApiRequest request;
   request.set_text(input);
+  request.set_corrected_text(corrected_input);
+  request.set_correction(correction_instruction);
   request.set_allocated_options(
       AIProofreader::ToProtoOptions(options_).release());
   return request;

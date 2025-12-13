@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/cma/test/frame_segmenter_for_test.h"
 
 #include <stdint.h>
@@ -56,39 +51,42 @@ AudioFrameHeader FindNextMp3Header(const uint8_t* data, size_t data_size) {
     // syncword: 11111111111
     // Mpeg1: 11
     // Layer3: 01
-    if (!(data[k + 0] == 0xff && (data[k + 1] & 0xfe) == 0xfa))
+    if (!(UNSAFE_TODO(data[k + 0]) == 0xff &&
+          (UNSAFE_TODO(data[k + 1]) & 0xfe) == 0xfa)) {
       continue;
+    }
 
-    int bitrate_index = (data[k + 2] >> 4);
+    int bitrate_index = (UNSAFE_TODO(data[k + 2]) >> 4);
     if (bitrate_index == 0 || bitrate_index == 15) {
       // Free size or bad bitrate => not supported.
       continue;
     }
 
-    int sample_rate_index = (data[k + 2] >> 2) & 0x3;
+    int sample_rate_index = (UNSAFE_TODO(data[k + 2]) >> 2) & 0x3;
     if (sample_rate_index == 3)
       continue;
 
     size_t frame_size =
-        ((1152 / 8) *  mp3_bitrate[bitrate_index] * 1000) /
-        mp3_sample_rate[sample_rate_index];
-    if (data[k + 2] & 0x2)
+        ((1152 / 8) * UNSAFE_TODO(mp3_bitrate[bitrate_index]) * 1000) /
+        UNSAFE_TODO(mp3_sample_rate[sample_rate_index]);
+    if (UNSAFE_TODO(data[k + 2]) & 0x2) {
       frame_size++;
+    }
 
     // Make sure the frame is complete.
     if (k + frame_size > data_size)
       break;
 
     if (k + frame_size < data_size - 3 &&
-        !(data[k + frame_size + 0] == 0xff &&
-          (data[k + frame_size + 1] & 0xfe) == 0xfa)) {
+        !(UNSAFE_TODO(data[k + frame_size + 0]) == 0xff &&
+          (UNSAFE_TODO(data[k + frame_size + 1]) & 0xfe) == 0xfa)) {
       continue;
     }
 
     found = true;
     header.offset = k;
     header.frame_size = frame_size;
-    header.sampling_frequency = mp3_sample_rate[sample_rate_index];
+    header.sampling_frequency = UNSAFE_TODO(mp3_sample_rate[sample_rate_index]);
   }
   return header;
 }
@@ -169,7 +167,7 @@ BufferList H264SegmenterForTest(const uint8_t* data_ptr, size_t data_size) {
 
     // To get the NALU syncword offset, substract 3 or 4
     // which corresponds to the possible syncword lengths.
-    size_t nalu_offset = nalu.data - data_ptr;
+    size_t nalu_offset = nalu.data.data() - data_ptr;
     nalu_offset -= 3;
     if (nalu_offset > 0 && data[nalu_offset-1] == 0)
       nalu_offset--;

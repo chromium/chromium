@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "components/omnibox/browser/autocomplete_input.h"
 
 #include <string_view>
@@ -212,8 +211,9 @@ void AutocompleteInput::Init(
       canonicalized_url.is_valid() &&
       (!canonicalized_url.IsStandard() || canonicalized_url.SchemeIsFile() ||
        canonicalized_url.SchemeIsFileSystem() ||
-       !canonicalized_url.host().empty()))
+       !canonicalized_url.GetHost().empty())) {
     canonicalized_url_ = canonicalized_url;
+  }
 }
 
 AutocompleteInput::AutocompleteInput(const AutocompleteInput& other) = default;
@@ -337,8 +337,8 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
         http_parts.username.is_nonempty() &&
         http_parts.password.is_nonempty()) {
       // Recognize and re-classify queries like: `site:web.com @query`
-      auto tentative_password_sv = http_parts.password.as_string_view_on(
-          tentative_url_candidate.c_str());
+      auto tentative_password_sv =
+          http_parts.password.AsViewOn(tentative_url_candidate);
       if (tentative_password_sv.find(u' ') != tentative_password_sv.npos) {
         *canonicalized_url = GURL::EmptyGURL();
         return metrics::OmniboxInputType::QUERY;
@@ -377,13 +377,13 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
   // IPv4 address but with a non-empty desired TLD would return IPV4 before
   // fixup and NEUTRAL afterwards, and we want to treat it as NEUTRAL).
   url::CanonHostInfo host_info;
-  net::CanonicalizeHost(canonicalized_url->host(), &host_info);
+  net::CanonicalizeHost(canonicalized_url->GetHost(), &host_info);
 
   // Check if the canonicalized host has a known TLD, which we'll want to know
   // below.
   const size_t registry_length =
       net::registry_controlled_domains::GetCanonicalHostRegistryLength(
-          canonicalized_url->host(),
+          canonicalized_url->GetHost(),
           net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
           net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
   DCHECK_NE(std::string::npos, registry_length);
@@ -400,7 +400,7 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
   const std::u16string original_host(
       text.substr(parts->host.begin, parts->host.len));
   if (text != u"invalid" && (host_info.family == url::CanonHostInfo::NEUTRAL) &&
-      (!net::IsCanonicalizedHostCompliant(canonicalized_url->host()) ||
+      (!net::IsCanonicalizedHostCompliant(canonicalized_url->GetHost()) ||
        canonicalized_url->DomainIs("invalid"))) {
     // Invalid hostname.  There are several possible cases:
     // * The user is typing a multi-word query.  If we see a space anywhere in
@@ -540,8 +540,9 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
   for (const std::string_view domain : {"example", "test", "local"}) {
     // The +1 accounts for a possible trailing period.
     if (canonicalized_url->DomainIs(domain) &&
-        (canonicalized_url->host().length() > (domain.length() + 1)))
+        (canonicalized_url->GetHost().length() > (domain.length() + 1))) {
       return metrics::OmniboxInputType::URL;
+    }
   }
 
   // No scheme, username, port, and no known TLD on the host.
@@ -614,8 +615,8 @@ bool AutocompleteInput::ShouldUpgradeToHttps(
     int https_port_for_testing,
     bool use_fake_https_for_https_upgrade_testing,
     GURL* upgraded_url) {
-  if (url::HostIsIPAddress(url.host()) ||
-      net::IsHostnameNonUnique(url.host())) {
+  if (url::HostIsIPAddress(url.GetHost()) ||
+      net::IsHostnameNonUnique(url.GetHost())) {
 #if !BUILDFLAG(IS_IOS)
     // Never upgrade IP addresses or non-unique hostnames on non-iOS builds.
     return false;
@@ -628,10 +629,10 @@ bool AutocompleteInput::ShouldUpgradeToHttps(
 #endif
   }
 
-  if (url.scheme() == url::kHttpScheme &&
-      !base::StartsWith(text, base::ASCIIToUTF16(url.scheme()),
+  if (url.GetScheme() == url::kHttpScheme &&
+      !base::StartsWith(text, base::ASCIIToUTF16(url.GetScheme()),
                         base::CompareCase::INSENSITIVE_ASCII) &&
-      (url.port().empty() || https_port_for_testing)) {
+      (url.GetPort().empty() || https_port_for_testing)) {
     // Use HTTPS as the default scheme for URLs that are typed without a scheme.
     // Inputs of type UNKNOWN can still be valid URLs, but these will be mainly
     // intranet hosts which we don't to upgrade to HTTPS so we only check the
@@ -644,7 +645,7 @@ bool AutocompleteInput::ShouldUpgradeToHttps(
     //   simply change the scheme to HTTPS and assume that these will load over
     //   HTTPS. URLs with HTTP port 80 get their port dropped so they will be
     //   upgraded (e.g. example.com:80 will load https://example.com).
-    DCHECK_EQ(url::kHttpScheme, url.scheme());
+    DCHECK_EQ(url::kHttpScheme, url.GetScheme());
     GURL::Replacements replacements;
 #if !BUILDFLAG(IS_IOS)
     // We sometimes use a fake HTTPS server on iOS as we can't serve good HTTPS
@@ -673,7 +674,7 @@ bool AutocompleteInput::ShouldUpgradeToHttps(
 #else
       // On other platforms, tests should always have a non-default port on the
       // input text.
-      DCHECK(!url.port().empty());
+      DCHECK(!url.GetPort().empty());
 #endif
       replacements.SetPortStr(port_str);
     }
@@ -743,30 +744,6 @@ AutocompleteInput::GetFeaturedKeywordMode(std::u16string_view text) {
   if (text.starts_with(u'@'))
     return FeaturedKeywordMode::kPrefix;
   return FeaturedKeywordMode::kFalse;
-}
-
-// static
-const TemplateURL* AutocompleteInput::AdjustInputForStarterPackEngines(
-    TemplateURLService* model,
-    AutocompleteInput* input) {
-  DCHECK(model);
-
-  // If not in keyword mode, then `input` is definitely not in a starter pack
-  // scope, so early exit.
-  if (!input->prefer_keyword()) {
-    return nullptr;
-  }
-
-  // If in a starter pack scope, should run the provider with only
-  // the user text AFTER the keyword.  E.g. if the input is "@history text",
-  // set the autocomplete input to just "text".
-  const TemplateURL* template_url =
-      AutocompleteInput::GetSubstitutingTemplateURLForInput(model, input);
-  if (template_url && template_url->starter_pack_id() > 0) {
-    return template_url;
-  }
-
-  return nullptr;
 }
 
 // static
@@ -863,8 +840,7 @@ std::u16string AutocompleteInput::CleanUserInputKeyword(
 
   // If keyword is not found, try removing a "http" or "https" scheme if any.
   url::Component scheme_component;
-  if (url::ExtractScheme(result.c_str(), static_cast<int>(result.length()),
-                         &scheme_component)) {
+  if (url::ExtractScheme(result, &scheme_component)) {
     const std::u16string_view scheme = std::u16string_view(result).substr(
         scheme_component.begin, scheme_component.len);
     if (scheme == url::kHttpScheme16 || scheme == url::kHttpsScheme16) {
@@ -960,8 +936,11 @@ void AutocompleteInput::Clear() {
   focus_type_ = metrics::OmniboxFocusType::INTERACTION_DEFAULT;
   terms_prefixed_by_http_or_https_.clear();
   lens_overlay_suggest_inputs_.reset();
+  aim_tool_mode_ = omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
   https_port_for_testing_ = 0;
   use_fake_https_for_https_upgrade_testing_ = false;
+  context_tab_title_.clear();
+  context_tab_url_ = GURL();
 }
 
 size_t AutocompleteInput::EstimateMemoryUsage() const {
@@ -975,6 +954,8 @@ size_t AutocompleteInput::EstimateMemoryUsage() const {
   res += base::trace_event::EstimateMemoryUsage(desired_tld_);
   res +=
       base::trace_event::EstimateMemoryUsage(terms_prefixed_by_http_or_https_);
+  res += base::trace_event::EstimateMemoryUsage(context_tab_title_);
+  res += base::trace_event::EstimateMemoryUsage(context_tab_url_);
 
   return res;
 }

@@ -41,6 +41,10 @@ component("accelerated_widget_mac") {
     if (target_platform == "iphoneos") {
       frameworks += [ "BrowserEngineKit.framework" ]
     }
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   if (is_mac) {
@@ -50,8 +54,6 @@ component("accelerated_widget_mac") {
       "accelerated_widget_mac_export.h",
       "ca_transaction_observer.h",
       "ca_transaction_observer.mm",
-      "io_surface_context.h",
-      "io_surface_context.mm",
       "window_resize_helper_mac.cc",
       "window_resize_helper_mac.h",
     ]
@@ -92,6 +94,7 @@ test("accelerated_widget_mac_unittests") {
     "//base",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
+    "//components/metal_util",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",

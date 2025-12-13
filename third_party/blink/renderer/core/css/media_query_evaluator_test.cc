@@ -8,12 +8,9 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_sample_test_utils.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
-#include "third_party/blink/public/common/privacy_budget/scoped_identifiability_test_sample_collector.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
+#include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
@@ -27,7 +24,6 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -451,9 +447,19 @@ MediaQueryEvaluatorTestCase g_scripting_enabled_cases[] = {
     {"(scripting: enabled)", true},
 };
 
+// Exercised for UBSAN:
+MediaQueryEvaluatorTestCase g_float_cast_overflow_cases[] = {
+    {"(color: 3.0e38)", false},
+    {"(color-index: 3.0e38)", false},
+    {"(monochrome: 3.0e38)", false},
+    {"(grid: 3.0e38)", false},
+    {"(-webkit-transform-3d: 3.0e38)", false},
+    {"(horizontal-viewport-segments: 3.0e38)", false},
+    {"(vertical-viewport-segments: 3.0e38)", false},
+};
+
 void TestMQEvaluator(base::span<MediaQueryEvaluatorTestCase> test_cases,
-                     const MediaQueryEvaluator* media_query_evaluator,
-                     CSSParserMode mode) {
+                     const MediaQueryEvaluator* media_query_evaluator) {
   MediaQuerySet* query_set = nullptr;
   for (const MediaQueryEvaluatorTestCase& test_case : test_cases) {
     if (String(test_case.input).empty()) {
@@ -461,17 +467,11 @@ void TestMQEvaluator(base::span<MediaQueryEvaluatorTestCase> test_cases,
     } else {
       StringView str(test_case.input);
       CSSParserTokenStream stream(str);
-      query_set =
-          MediaQueryParser::ParseMediaQuerySetInMode(stream, mode, nullptr);
+      query_set = MediaQueryParser::ParseMediaQuerySet(stream, nullptr);
     }
     EXPECT_EQ(test_case.output, media_query_evaluator->Eval(*query_set))
         << "Query: " << test_case.input;
   }
-}
-
-void TestMQEvaluator(base::span<MediaQueryEvaluatorTestCase> test_cases,
-                     const MediaQueryEvaluator* media_query_evaluator) {
-  TestMQEvaluator(test_cases, media_query_evaluator, kHTMLStandardMode);
 }
 
 TEST(MediaQueryEvaluatorTest, Cached) {
@@ -963,6 +963,14 @@ TEST(MediaQueryEvaluatorTest, CachedScripting) {
   }
 }
 
+TEST(MediaQueryEvaluatorTest, FloatCastOverflow) {
+  MediaValuesCached::MediaValuesCachedData data;
+  MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+  MediaQueryEvaluator* media_query_evaluator =
+      MakeGarbageCollected<MediaQueryEvaluator>(media_values);
+  TestMQEvaluator(g_float_cast_overflow_cases, media_query_evaluator);
+}
+
 TEST(MediaQueryEvaluatorTest, RangedValues) {
   MediaValuesCached::MediaValuesCachedData data;
   data.viewport_width = 500;
@@ -1169,36 +1177,30 @@ TEST(MediaQueryEvaluatorTest, ExpNode) {
   EXPECT_EQ(KleeneValue::kTrue, media_query_evaluator->Eval(*width_lt_600));
   EXPECT_EQ(KleeneValue::kFalse, media_query_evaluator->Eval(*width_lt_400));
 
-  EXPECT_EQ(KleeneValue::kTrue,
-            media_query_evaluator->Eval(
-                *MakeGarbageCollected<MediaQueryNestedExpNode>(width_lt_600)));
-  EXPECT_EQ(KleeneValue::kFalse,
-            media_query_evaluator->Eval(
-                *MakeGarbageCollected<MediaQueryNestedExpNode>(width_lt_400)));
-
-  EXPECT_EQ(KleeneValue::kFalse,
-            media_query_evaluator->Eval(
-                *MakeGarbageCollected<MediaQueryNotExpNode>(width_lt_600)));
-  EXPECT_EQ(KleeneValue::kTrue,
-            media_query_evaluator->Eval(
-                *MakeGarbageCollected<MediaQueryNotExpNode>(width_lt_400)));
-
   EXPECT_EQ(KleeneValue::kTrue, media_query_evaluator->Eval(
-                                    *MakeGarbageCollected<MediaQueryAndExpNode>(
-                                        width_lt_600, width_lt_800)));
+                                    *ConditionalExpNode::Nested(width_lt_600)));
   EXPECT_EQ(
       KleeneValue::kFalse,
-      media_query_evaluator->Eval(*MakeGarbageCollected<MediaQueryAndExpNode>(
-          width_lt_600, width_lt_400)));
+      media_query_evaluator->Eval(*ConditionalExpNode::Nested(width_lt_400)));
 
+  EXPECT_EQ(KleeneValue::kFalse, media_query_evaluator->Eval(
+                                     *ConditionalExpNode::Not(width_lt_600)));
   EXPECT_EQ(KleeneValue::kTrue, media_query_evaluator->Eval(
-                                    *MakeGarbageCollected<MediaQueryOrExpNode>(
-                                        width_lt_600, width_lt_400)));
-  EXPECT_EQ(
-      KleeneValue::kFalse,
-      media_query_evaluator->Eval(*MakeGarbageCollected<MediaQueryOrExpNode>(
-          width_lt_400,
-          MakeGarbageCollected<MediaQueryNotExpNode>(width_lt_800))));
+                                    *ConditionalExpNode::Not(width_lt_400)));
+
+  EXPECT_EQ(KleeneValue::kTrue,
+            media_query_evaluator->Eval(
+                *ConditionalExpNode::And(width_lt_600, width_lt_800)));
+  EXPECT_EQ(KleeneValue::kFalse,
+            media_query_evaluator->Eval(
+                *ConditionalExpNode::And(width_lt_600, width_lt_400)));
+
+  EXPECT_EQ(KleeneValue::kTrue,
+            media_query_evaluator->Eval(
+                *ConditionalExpNode::Or(width_lt_600, width_lt_400)));
+  EXPECT_EQ(KleeneValue::kFalse,
+            media_query_evaluator->Eval(*ConditionalExpNode::Or(
+                width_lt_400, ConditionalExpNode::Not(width_lt_800))));
 }
 
 TEST(MediaQueryEvaluatorTest, DependentResults) {
@@ -1263,8 +1265,7 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
     MediaQueryResultFlags result_flags;
 
     media_query_evaluator->Eval(
-        *MakeGarbageCollected<MediaQueryNestedExpNode>(device_width_lt_600),
-        &result_flags);
+        *ConditionalExpNode::Nested(device_width_lt_600), &result_flags);
 
     EXPECT_FALSE(result_flags.is_viewport_dependent);
     EXPECT_TRUE(result_flags.is_device_dependent);
@@ -1274,9 +1275,8 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
   {
     MediaQueryResultFlags result_flags;
 
-    media_query_evaluator->Eval(
-        *MakeGarbageCollected<MediaQueryNotExpNode>(device_width_lt_600),
-        &result_flags);
+    media_query_evaluator->Eval(*ConditionalExpNode::Not(device_width_lt_600),
+                                &result_flags);
 
     EXPECT_FALSE(result_flags.is_viewport_dependent);
     EXPECT_TRUE(result_flags.is_device_dependent);
@@ -1287,9 +1287,9 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
   {
     MediaQueryResultFlags result_flags;
 
-    media_query_evaluator->Eval(*MakeGarbageCollected<MediaQueryAndExpNode>(
-                                    width_lt_400, device_width_lt_600),
-                                &result_flags);
+    media_query_evaluator->Eval(
+        *ConditionalExpNode::And(width_lt_400, device_width_lt_600),
+        &result_flags);
 
     EXPECT_TRUE(result_flags.is_viewport_dependent);
     EXPECT_TRUE(result_flags.is_device_dependent);
@@ -1304,9 +1304,8 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
     MediaQueryResultFlags result_flags;
 
     media_query_evaluator->Eval(
-        *MakeGarbageCollected<MediaQueryAndExpNode>(
-            MakeGarbageCollected<MediaQueryNotExpNode>(width_lt_400),
-            device_width_lt_600),
+        *ConditionalExpNode::And(ConditionalExpNode::Not(width_lt_400),
+                                 device_width_lt_600),
         &result_flags);
 
     EXPECT_TRUE(result_flags.is_viewport_dependent);
@@ -1321,9 +1320,9 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
   {
     MediaQueryResultFlags result_flags;
 
-    media_query_evaluator->Eval(*MakeGarbageCollected<MediaQueryOrExpNode>(
-                                    width_lt_400, device_width_lt_600),
-                                &result_flags);
+    media_query_evaluator->Eval(
+        *ConditionalExpNode::Or(width_lt_400, device_width_lt_600),
+        &result_flags);
 
     EXPECT_TRUE(result_flags.is_viewport_dependent);
     EXPECT_FALSE(result_flags.is_device_dependent);
@@ -1335,9 +1334,8 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
     MediaQueryResultFlags result_flags;
 
     media_query_evaluator->Eval(
-        *MakeGarbageCollected<MediaQueryOrExpNode>(
-            MakeGarbageCollected<MediaQueryNotExpNode>(width_lt_400),
-            device_width_lt_600),
+        *ConditionalExpNode::Or(ConditionalExpNode::Not(width_lt_400),
+                                device_width_lt_600),
         &result_flags);
 
     EXPECT_TRUE(result_flags.is_viewport_dependent);
@@ -1432,377 +1430,17 @@ TEST(MediaQueryEvaluatorTest, GeneralEnclosed) {
   }
 }
 
-class MediaQueryEvaluatorIdentifiabilityTest : public PageTestBase {
- public:
-  MediaQueryEvaluatorIdentifiabilityTest()
-      : counts_{.response_for_is_active = true,
-                .response_for_is_anything_blocked = false,
-                .response_for_is_allowed = true} {
-    IdentifiabilityStudySettings::SetGlobalProvider(
-        std::make_unique<CountingSettingsProvider>(&counts_));
-  }
-  ~MediaQueryEvaluatorIdentifiabilityTest() override {
-    IdentifiabilityStudySettings::ResetStateForTesting();
-  }
+TEST(MediaQueryEvaluatorTest, TestQueriesWithUndefinedCustomMedias) {
+  MediaValuesCached::MediaValuesCachedData data;
+  auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+  MediaQueryEvaluator* media_query_evaluator =
+      MakeGarbageCollected<MediaQueryEvaluator>(media_values);
 
-  test::ScopedIdentifiabilityTestSampleCollector* collector() {
-    return &collector_;
-  }
+  MediaQueryEvaluatorTestCase test_cases[] = {
+      {"(--undefined)", false},
+  };
 
- protected:
-  CallCounts counts_;
-  test::ScopedIdentifiabilityTestSampleCollector collector_;
-  void UpdateAllLifecyclePhases() {
-    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
-  }
-};
-
-TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
-       MediaFeatureIdentifiableSurfacePrefersReducedMotion) {
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      @media (prefers-reduced-motion: reduce) {
-        div { color: green }
-      }
-    </style>
-    <div id="green"></div>
-    <span></span>
-  )HTML");
-
-  UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(static_cast<int>(
-      IdentifiableSurface::MediaFeatureName::kPrefersReducedMotion)));
-  EXPECT_EQ(collector()->entries().size(), 1u);
-
-  auto& entry = collector()->entries().front();
-  EXPECT_EQ(entry.metrics.size(), 1u);
-  EXPECT_EQ(
-      entry.metrics.begin()->surface,
-      IdentifiableSurface::FromTypeAndToken(
-          IdentifiableSurface::Type::kMediaFeature,
-          IdentifiableToken(
-              IdentifiableSurface::MediaFeatureName::kPrefersReducedMotion)));
-  EXPECT_EQ(entry.metrics.begin()->value, IdentifiableToken(false));
-}
-
-TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
-       MediaFeatureIdentifiableSurfacePrefersReducedTransparency) {
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      @media (prefers-reduced-transparency: reduce) {
-        div { color: green }
-      }
-    </style>
-    <div id="green"></div>
-    <span></span>
-  )HTML");
-
-  UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(static_cast<int>(
-      IdentifiableSurface::MediaFeatureName::kPrefersReducedTransparency)));
-  EXPECT_EQ(collector()->entries().size(), 1u);
-
-  auto& entry = collector()->entries().front();
-  EXPECT_EQ(entry.metrics.size(), 1u);
-  EXPECT_EQ(entry.metrics.begin()->surface,
-            IdentifiableSurface::FromTypeAndToken(
-                IdentifiableSurface::Type::kMediaFeature,
-                IdentifiableToken(IdentifiableSurface::MediaFeatureName::
-                                      kPrefersReducedTransparency)));
-  EXPECT_EQ(entry.metrics.begin()->value, IdentifiableToken(false));
-}
-
-TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
-       MediaFeatureIdentifiableSurfaceOrientation) {
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      @media (orientation: landscape) {
-        div { color: green }
-      }
-    </style>
-    <div id="green"></div>
-    <span></span>
-  )HTML");
-
-  UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(
-      static_cast<int>(IdentifiableSurface::MediaFeatureName::kOrientation)));
-  ASSERT_EQ(collector()->entries().size(), 1u);
-
-  auto& entry = collector()->entries().front();
-  EXPECT_EQ(entry.metrics.size(), 1u);
-  EXPECT_EQ(entry.metrics.begin()->surface,
-            IdentifiableSurface::FromTypeAndToken(
-                IdentifiableSurface::Type::kMediaFeature,
-                IdentifiableToken(
-                    IdentifiableSurface::MediaFeatureName::kOrientation)));
-  EXPECT_EQ(entry.metrics.begin()->value,
-            IdentifiableToken(CSSValueID::kLandscape));
-}
-
-TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
-       MediaFeatureIdentifiableSurfaceCollectOnce) {
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      @media (orientation: landscape) {
-        div { color: green }
-      }
-    </style>
-    <div id="green"></div>
-    <span></span>
-  )HTML");
-
-  // Recompute layout twice but expect only one sample.
-  UpdateAllLifecyclePhases();
-  UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(
-      static_cast<int>(IdentifiableSurface::MediaFeatureName::kOrientation)));
-  EXPECT_EQ(collector()->entries().size(), 1u);
-
-  auto& entry = collector()->entries().front();
-  EXPECT_EQ(entry.metrics.size(), 1u);
-  EXPECT_EQ(entry.metrics.begin()->surface,
-            IdentifiableSurface::FromTypeAndToken(
-                IdentifiableSurface::Type::kMediaFeature,
-                IdentifiableToken(
-                    IdentifiableSurface::MediaFeatureName::kOrientation)));
-  EXPECT_EQ(entry.metrics.begin()->value,
-            IdentifiableToken(CSSValueID::kLandscape));
-}
-
-TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
-       MediaFeatureIdentifiableSurfaceDisplayMode) {
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      @media all and (display-mode: browser) {
-        div { color: green }
-      }
-    </style>
-    <div id="green"></div>
-    <span></span>
-  )HTML");
-
-  UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(
-      static_cast<int>(IdentifiableSurface::MediaFeatureName::kDisplayMode)));
-  EXPECT_EQ(collector()->entries().size(), 1u);
-
-  auto& entry = collector()->entries().front();
-  EXPECT_EQ(entry.metrics.size(), 1u);
-  EXPECT_EQ(entry.metrics.begin()->surface,
-            IdentifiableSurface::FromTypeAndToken(
-                IdentifiableSurface::Type::kMediaFeature,
-                IdentifiableToken(
-                    IdentifiableSurface::MediaFeatureName::kDisplayMode)));
-  EXPECT_EQ(entry.metrics.begin()->value,
-            IdentifiableToken(blink::mojom::DisplayMode::kBrowser));
-}
-
-TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
-       MediaFeatureIdentifiableSurfaceDisplayState) {
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      @media all and (display-state: normal) {
-        div { color: green }
-      }
-    </style>
-    <div id="green"></div>
-    <span></span>
-  )HTML");
-
-  UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(
-      static_cast<int>(IdentifiableSurface::MediaFeatureName::kDisplayState)));
-  EXPECT_EQ(collector()->entries().size(), 1u);
-
-  auto& entry = collector()->entries().front();
-  EXPECT_EQ(entry.metrics.size(), 1u);
-  EXPECT_EQ(entry.metrics.begin()->surface,
-            IdentifiableSurface::FromTypeAndToken(
-                IdentifiableSurface::Type::kMediaFeature,
-                IdentifiableToken(
-                    IdentifiableSurface::MediaFeatureName::kDisplayState)));
-  EXPECT_EQ(entry.metrics.begin()->value,
-            IdentifiableToken(ui::mojom::blink::WindowShowState::kDefault));
-}
-
-TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
-       MediaFeatureIdentifiableSurfaceResizable) {
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      @media all and (resizable: true) {
-        div { color: green }
-      }
-    </style>
-    <div id="green"></div>
-    <span></span>
-  )HTML");
-
-  UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(
-      static_cast<int>(IdentifiableSurface::MediaFeatureName::kResizable)));
-  EXPECT_EQ(collector()->entries().size(), 1u);
-
-  auto& entry = collector()->entries().front();
-  EXPECT_EQ(entry.metrics.size(), 1u);
-  EXPECT_EQ(entry.metrics.begin()->surface,
-            IdentifiableSurface::FromTypeAndToken(
-                IdentifiableSurface::Type::kMediaFeature,
-                IdentifiableToken(
-                    IdentifiableSurface::MediaFeatureName::kResizable)));
-  EXPECT_EQ(entry.metrics.begin()->value, IdentifiableToken(true));
-}
-
-TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
-       MediaFeatureIdentifiableSurfaceForcedColorsHover) {
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      @media all and (forced-colors: active) {
-        div { color: green }
-      }
-    </style>
-    <style>
-      @media all and (hover: hover) {
-        div { color: red }
-      }
-    </style>
-    <div id="green"></div>
-    <span></span>
-  )HTML");
-
-  UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(
-      static_cast<int>(IdentifiableSurface::MediaFeatureName::kForcedColors)));
-  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(
-      static_cast<int>(IdentifiableSurface::MediaFeatureName::kHover)));
-  EXPECT_EQ(collector()->entries().size(), 2u);
-
-  auto& entry_forced_colors = collector()->entries().front();
-  EXPECT_EQ(entry_forced_colors.metrics.size(), 1u);
-  EXPECT_EQ(entry_forced_colors.metrics.begin()->surface,
-            IdentifiableSurface::FromTypeAndToken(
-                IdentifiableSurface::Type::kMediaFeature,
-                IdentifiableToken(
-                    IdentifiableSurface::MediaFeatureName::kForcedColors)));
-  EXPECT_EQ(entry_forced_colors.metrics.begin()->value,
-            IdentifiableToken(ForcedColors::kNone));
-
-  auto& entry_hover = collector()->entries().back();
-  EXPECT_EQ(entry_hover.metrics.size(), 1u);
-  EXPECT_EQ(
-      entry_hover.metrics.begin()->surface,
-      IdentifiableSurface::FromTypeAndToken(
-          IdentifiableSurface::Type::kMediaFeature,
-          IdentifiableToken(IdentifiableSurface::MediaFeatureName::kHover)));
-  EXPECT_EQ(entry_hover.metrics.begin()->value,
-            IdentifiableToken(mojom::blink::HoverType::kHoverNone));
-}
-
-TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
-       MediaFeatureIdentifiableSurfaceAspectRatioNormalized) {
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      @media all and (min-aspect-ratio: 8/5) {
-        div { color: green }
-      }
-    </style>
-    <div id="green"></div>
-    <span></span>
-  )HTML");
-
-  UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(static_cast<int>(
-      IdentifiableSurface::MediaFeatureName::kAspectRatioNormalized)));
-  EXPECT_EQ(collector()->entries().size(), 1u);
-
-  auto& entry = collector()->entries().front();
-  EXPECT_EQ(entry.metrics.size(), 1u);
-  EXPECT_EQ(
-      entry.metrics.begin()->surface,
-      IdentifiableSurface::FromTypeAndToken(
-          IdentifiableSurface::Type::kMediaFeature,
-          IdentifiableToken(
-              IdentifiableSurface::MediaFeatureName::kAspectRatioNormalized)));
-}
-
-TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
-       MediaFeatureIdentifiableSurfaceResolution) {
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      @media all and (min-resolution: 72dpi) {
-        div { color: green }
-      }
-    </style>
-    <div id="green"></div>
-    <span></span>
-  )HTML");
-
-  UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(
-      static_cast<int>(IdentifiableSurface::MediaFeatureName::kResolution)));
-  EXPECT_EQ(collector()->entries().size(), 1u);
-
-  auto& entry = collector()->entries().front();
-  EXPECT_EQ(entry.metrics.size(), 1u);
-  EXPECT_EQ(entry.metrics.begin()->surface,
-            IdentifiableSurface::FromTypeAndToken(
-                IdentifiableSurface::Type::kMediaFeature,
-                IdentifiableToken(
-                    IdentifiableSurface::MediaFeatureName::kResolution)));
-}
-
-TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
-       MediaFeatureIdentifiableSurfaceInvertedColors) {
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      @media (inverted-colors: inverted) {
-        div { color: green }
-      }
-    </style>
-    <div id="green"></div>
-    <span></span>
-  )HTML");
-
-  UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(static_cast<int>(
-      IdentifiableSurface::MediaFeatureName::kInvertedColors)));
-  EXPECT_EQ(collector()->entries().size(), 1u);
-
-  auto& entry = collector()->entries().front();
-  EXPECT_EQ(entry.metrics.size(), 1u);
-  EXPECT_EQ(entry.metrics.begin()->surface,
-            IdentifiableSurface::FromTypeAndToken(
-                IdentifiableSurface::Type::kMediaFeature,
-                IdentifiableToken(
-                    IdentifiableSurface::MediaFeatureName::kInvertedColors)));
-  EXPECT_EQ(entry.metrics.begin()->value, IdentifiableToken(false));
-}
-
-TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
-       MediaFeatureIdentifiableSurfaceScripting) {
-  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      @media (scripting: enabled) {
-        div { color: green }
-      }
-    </style>
-    <div id="green"></div>
-    <span></span>
-  )HTML");
-
-  UpdateAllLifecyclePhases();
-  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(
-      static_cast<int>(IdentifiableSurface::MediaFeatureName::kScripting)));
-  EXPECT_EQ(collector()->entries().size(), 1u);
-
-  auto& entry = collector()->entries().front();
-  EXPECT_EQ(entry.metrics.size(), 1u);
-  EXPECT_EQ(entry.metrics.begin()->surface,
-            IdentifiableSurface::FromTypeAndToken(
-                IdentifiableSurface::Type::kMediaFeature,
-                IdentifiableToken(
-                    IdentifiableSurface::MediaFeatureName::kScripting)));
-  EXPECT_EQ(entry.metrics.begin()->value, IdentifiableToken(Scripting::kNone));
+  TestMQEvaluator(test_cases, media_query_evaluator);
 }
 
 }  // namespace blink

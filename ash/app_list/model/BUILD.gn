@@ -38,7 +38,7 @@ component("app_list_model") {
   defines = [ "APP_LIST_MODEL_IMPLEMENTATION" ]
 
   deps = [
-    "//ash/public/cpp:cpp",
+    "//ash/public/cpp",
     "//base:i18n",
     "//cc/paint",
     "//components/sync",

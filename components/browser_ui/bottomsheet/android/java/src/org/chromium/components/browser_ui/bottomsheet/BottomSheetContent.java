@@ -5,8 +5,10 @@
 package org.chromium.components.browser_ui.bottomsheet;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 
@@ -134,6 +136,19 @@ public interface BottomSheetContent {
      */
     default boolean hasSolidBackgroundColor() {
         return true;
+    }
+
+    /**
+     * Whether the sheet uses a custom background color. If color is not overridden (default to
+     * {@link Color.TRANSPARENT}), the BottomSheetController will set a default background color for
+     * the sheet.
+     *
+     * <p>Note: This color only used if {@link #hasSolidBackgroundColor()} returns true.
+     *
+     * @return The custom background color of the sheet.
+     */
+    default @ColorInt int getSheetBackgroundColorOverride() {
+        return Color.TRANSPARENT;
     }
 
     /**

@@ -15,9 +15,13 @@
 #include "chrome/common/extensions/api/history.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "components/history/core/browser/history_types.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
@@ -38,8 +42,7 @@ class HistoryEventRouter : public history::HistoryServiceObserver {
  private:
   // history::HistoryServiceObserver.
   void OnURLVisited(history::HistoryService* history_service,
-                    const history::URLRow& url_row,
-                    const history::VisitRow& new_visit) override;
+                    const history::VisitedURLInfo& visited_url_info) override;
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
 
@@ -123,7 +126,7 @@ class HistoryGetVisitsFunction : public HistoryFunctionWithCallback {
   ResponseAction Run() override;
 
   // Callback for the history function to provide results.
-  void QueryComplete(history::QueryURLResult result);
+  void QueryComplete(history::QueryURLAndVisitsResult result);
 };
 
 class HistorySearchFunction : public HistoryFunctionWithCallback {
@@ -164,7 +167,6 @@ class HistoryDeleteAllFunction : public HistoryFunctionWithCallback {
   // Callback for the history service to acknowledge deletion.
   void DeleteComplete();
 };
-
 
 class HistoryDeleteUrlFunction : public HistoryFunction {
  public:

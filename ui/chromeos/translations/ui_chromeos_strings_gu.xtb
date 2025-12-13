@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">શૈલી</translation>
 <translation id="1254593899333212300">ડાયરેક્ટ ઇન્ટરનેટ કનેક્શન</translation>
 <translation id="1272293450992660632">પિન મૂલ્યો મેળ ખાતા નથી.</translation>
+<translation id="1279040297980392566">સ્કૅન પૂર્ણ થવાની રાહ જોઈ રહ્યા છીએ, પછીથી ફરી પ્રયાસ કરો</translation>
 <translation id="1280820357415527819">મોબાઇલ નેટવર્ક માટે શોધી રહ્યાં છીએ</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">Google ડ્રાઇવ હાલમાં ઉપલબ્ધ નથી. Google ડ્રાઇવ પાછું આવી જાય તે પછી અપલોડિંગ ઑટોમૅટિક રીતે ફરીથી શરૂ થશે.</translation>
@@ -71,7 +72,7 @@
 <translation id="1572585716423026576">વૉલપેપર તરીકે સેટ કરો</translation>
 <translation id="1576937952766665062">બંગાળી (લિપ્યંતર)</translation>
 <translation id="1577977504532381335">ઍડમિન પૉલિસી રિવ્યૂ કરો</translation>
-<translation id="158849752021629804">હોમ નેટવર્કની આવશ્યકતા છે</translation>
+<translation id="158849752021629804">ઘરના નેટવર્કની આવશ્યકતા છે</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">કૅમેરા</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">1 ફાઇલ પસંદ કરી</translation>
 <translation id="3817579325494460411">પ્રદાન કરેલ નથી</translation>
 <translation id="3819448694985509187">ખોટો પિન. તમારો 1 પ્રયાસ બાકી છે.</translation>
-<translation id="3822559385185038546">આ પ્રૉક્સી તમારા એડમિન દ્વારા લાગુ કરવામાં આવે છે</translation>
 <translation id="3830674330436234648">કોઇ પ્લેબેક ઉપલબ્ધ નથી.</translation>
 <translation id="383652340667548381">સર્બિયન</translation>
 <translation id="3839045880592694915">તમારા મોબાઇલ ઑપરેટર દ્વારા તમારા મૉડેમને કનેક્ટ કરવાની મંજૂરી નથી. વધુ વિગતો માટે તમારા મોબાઇલ ઑપરેટરનો સંપર્ક કરો.</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
 <translation id="5602622065581044566">બલ્ગેરિયન, ફોનેટિક કીબોર્ડ સાથે</translation>
 <translation id="5605830556594064952">યુએસ ડ્વોરેક</translation>
+<translation id="560739212255190568">તમારા ઍડમિને નીચેના પ્રૉક્સીને લાગુ કરવા ઉપરાંત પ્રૉક્સી ઓવરરાઇડના નિયમો સેટ કર્યા છે</translation>
 <translation id="5618330573454123917">આ ફાઇલ Macintosh સૉફ્ટવેરનો ઉપયોગ કરતા કમ્પ્યુટર માટે ડિઝાઇન કરવામાં આવી છે. ChromeOS પર ચાલતા તમારા ડિવાઇસ સાથે આ સુસંગત નથી. ChromeOS પર ફાઇલો ખોલવા વિશે <ph name="BEGIN_LINK_HELP" />વધુ જાણો<ph name="END_LINK_HELP" />.</translation>
 <translation id="5625294776298156701">તમિળ, તમિળ99 કીબોર્ડ સાથે</translation>
 <translation id="5633226425545095130">આ આઇટમ ખસેડવાથી, શેર કરેલું '<ph name="DESTINATION_NAME" />' નામનું ફોલ્ડર જોઈ શકતા પ્રત્યેક વ્યક્તિ સાથે તેને શેર કરશે.</translation>
@@ -787,7 +788,7 @@
 <translation id="7075931588889865715">થાઇ, TIS 820-2531 કીબોર્ડ સાથે</translation>
 <translation id="708278670402572152">સ્કૅનિંગ ચાલુ કરવા માટે ડિસ્કનેક્ટ કરો</translation>
 <translation id="7086590977277044826">તમિળ, ઇનસ્ક્રિપ્ટ કીબોર્ડ સાથે</translation>
-<translation id="7088615885725309056">વધુ જૂનું</translation>
+<translation id="7088615885725309056">જૂનું</translation>
 <translation id="7103992300314999525">મેસિડોનિયન</translation>
 <translation id="7104338189998813914">તમારા OneDrive એકાઉન્ટને ઍક્સેસ કરવામાં સમસ્યા આવી રહી છે</translation>
 <translation id="7106346894903675391">વધુ સ્ટોરેજ ખરીદો...</translation>
@@ -801,7 +802,7 @@
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">ફાઇલના રૂપમાં સાચવો</translation>
-<translation id="7229570126336867161">EVDO ની જરૂર છે</translation>
+<translation id="7229570126336867161">EVDOની જરૂર છે</translation>
 <translation id="7230898482850090046">તમારા ઍડમિનિસ્ટ્રેટરે તમને "સિમ કાર્ડ લૉક કરો" સેટિંગ બંધ કરવાની વિનંતી કરી છે</translation>
 <translation id="7238097264433196391">ડ્રાઇવનું નામ</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, વિગતો</translation>
@@ -993,6 +994,7 @@
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, વિગતો</translation>
 <translation id="8545476925160229291">અંગ્રેજી (યુએસ)</translation>
 <translation id="854655314928502177">વેબ પ્રૉક્સીની ઑટો ખોજ URL:</translation>
+<translation id="8547747809824590510">તમારા ઍડમિન દ્વારા પ્રૉક્સી ઓવરરાઇડના નિયમો સેટ કરવામાં આવ્યા છે</translation>
 <translation id="8549186985808798022">ઇટાલિયન</translation>
 <translation id="8551494947769799688">લાતવિયન</translation>
 <translation id="8560515948038859357">કેન્ટોનીઝ</translation>
@@ -1053,6 +1055,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" નામની ફાઇલ પહેલાંથી અસ્તિત્વમાં છે. કૃપા કરીને કોઈ અલગ નામ પસંદ કરો.</translation>
 <translation id="9046895021617826162">કનેક્ટ કરવું નિષ્ફળ</translation>
 <translation id="9065512565307033593">જો તમે ચકાસણી કરવામાં નિષ્ફળ રહ્યાં, તો તમારા નેટવર્કનો ઍક્સેસ બંધ થઈ જશે.</translation>
+<translation id="9079844694307518094">તમારા ઍડમિન નીચેના પ્રૉક્સીને લાગુ કરી રહ્યાં છે</translation>
 <translation id="908378762078012445">રશિયન, ફોનેટિક AATSEEL કીબોર્ડ સાથે</translation>
 <translation id="9086302186042011942">સમન્વય કરી રહ્યું છે</translation>
 <translation id="9099674669267916096">પેજની સંખ્યા</translation>
@@ -1076,6 +1079,7 @@
 <translation id="9213073329713032541">ઇન્સ્ટૉલેશન સફળતાપૂર્વક શરૂ થયું.</translation>
 <translation id="9219103736887031265">છબીઓ</translation>
 <translation id="9219908252191632183">ચંદ્ર</translation>
+<translation id="931652069802536959">નેટવર્ક પૉલિસી દ્વારા બ્લૉક કરેલું છે</translation>
 <translation id="938470336146445890">કૃપા કરીને એક વપરાશકર્તા  પ્રમાણપત્ર ઇન્સ્ટોલ કરો.</translation>
 <translation id="939736085109172342">નવું ફોલ્ડર</translation>
 <translation id="943972244133411984">ફેરફાર કરનાર</translation>

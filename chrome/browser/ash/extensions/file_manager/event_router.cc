@@ -586,6 +586,8 @@ fmp::MountError MountErrorToMountCompletedStatus(ash::MountError error) {
       return fmp::MountError::kCancelled;
     case ash::MountError::kBusy:
       return fmp::MountError::kBusy;
+    case ash::MountError::kCorrupted:
+      return fmp::MountError::kCorrupted;
     default:
       LOG(ERROR) << "Unexpected mount error: " << error;
       return fmp::MountError::kUnknownError;

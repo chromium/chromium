@@ -28,7 +28,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   var timeZero = 0;
 
   NetworkTestRunner.recordNetwork();
-  TestRunner.NetworkAgent.setCacheDisabled(true).then(step1);
+  TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: true}).then(step1);
 
   function step1() {
     ConsoleTestRunner.addConsoleSniffer(step2);
@@ -44,7 +44,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   }
 
   function step4() {
-    TestRunner.NetworkAgent.setCacheDisabled(true).then(step5);
+    TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: true}).then(step5);
   }
 
   function step5() {
@@ -55,7 +55,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
     TestRunner.addResult('has timing: ' + !!request.timing);
     TestRunner.addResult('');
     timeZero = request.timing.requestTime;
-    TestRunner.NetworkAgent.setCacheDisabled(false).then(step6);
+    TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: false}).then(step6);
   }
 
   function step6() {

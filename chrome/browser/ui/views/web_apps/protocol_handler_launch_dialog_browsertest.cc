@@ -8,14 +8,17 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/web_apps/protocol_handler_launch_dialog_view.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
+#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "content/public/test/browser_test.h"
@@ -27,6 +30,9 @@ namespace web_app {
 
 namespace {
 
+constexpr const char kProtocolHandlerIconUrl[] =
+    "https://www.exmaple.org/protocol/icon";
+
 webapps::AppId InstallTestWebApp(Profile* profile) {
   const GURL example_url = GURL("http://example.org/");
   auto app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(example_url);
@@ -36,6 +42,16 @@ webapps::AppId InstallTestWebApp(Profile* profile) {
   protocol_handler.protocol = "web+test";
   protocol_handler.url = GURL("http://example.org/?uri=%s");
   app_info->protocol_handlers.push_back(std::move(protocol_handler));
+
+  // Add both manifest and trusted icons to `app_info` to test masking.
+  const GeneratedIconsInfo any_icon_info1(IconPurpose::ANY, {icon_size::k32},
+                                          {SK_ColorBLACK});
+  const GeneratedIconsInfo any_icon_info2(IconPurpose::MASKABLE,
+                                          {icon_size::k32}, {SK_ColorBLUE});
+  web_app::AddIconsToWebAppInstallInfo(app_info.get(),
+                                       GURL(kProtocolHandlerIconUrl),
+                                       {any_icon_info1, any_icon_info2});
+
   return test::InstallWebApp(profile, std::move(app_info));
 }
 
@@ -65,6 +81,9 @@ class ProtocolHandlerLaunchDialogBrowserTest : public WebAppBrowserTestBase {
     waiter.WaitIfNeededAndGet()->CloseWithReason(reason);
     run_loop.Run();
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list{features::kWebAppUsePrimaryIcon};
 };
 
 IN_PROC_BROWSER_TEST_F(

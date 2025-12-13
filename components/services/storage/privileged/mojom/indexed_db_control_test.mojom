@@ -29,8 +29,10 @@ enum FailMethod {
 // A test-only interface for creating fake failures in IndexedDB methods.
 interface MockFailureInjector {
   // Causes indexeddb to fail in a given way on a given call.
-  FailOperation(FailClass failure_class, FailMethod failure_method,
-                int32 instance_num, int32 call_num);
+  FailOperation(FailClass failure_class,
+                FailMethod failure_method,
+                int32 instance_num,
+                int32 call_num);
 };
 
 // A test-only interface extending storage.mojom.IndexedDBControl.
@@ -39,25 +41,26 @@ interface IndexedDBControlTest {
   GetBaseDataPathForTesting() => (mojo_base.mojom.FilePath path);
 
   // Gets the name of the local storage file for the given `bucket_locator`.
-  GetFilePathForTesting(storage.mojom.BucketLocator bucket_locator) =>
-      (mojo_base.mojom.FilePath path);
+  GetFilePathForTesting(storage.mojom.BucketLocator bucket_locator,
+                        bool for_sqlite)
+      => (mojo_base.mojom.FilePath path);
 
   // Forgets the storage keys and sizes read from disk.
   ResetCachesForTesting() => ();
 
   // Returns the path for a given key/database/blob.
   GetPathForBlobForTesting(storage.mojom.BucketLocator bucket_locator,
-                           int64 database_id, int64 blob_number) =>
-      (mojo_base.mojom.FilePath path);
+                           int64 database_id,
+                           int64 blob_number)
+      => (mojo_base.mojom.FilePath path);
 
   // Writes backing store files to disk in their long-term format, e.g. converts
   // a log to actual DB files.
-  FlushBackingStoreForTesting(storage.mojom.BucketLocator bucket_locator) =>
-      ();
+  FlushBackingStoreForTesting(storage.mojom.BucketLocator bucket_locator) => ();
 
-  // Computes the scheduling priority for the first bucket in the map. Returns
-  // null if there is no bucket or it doesn't have any open connections.
-  GetSchedulingPriorityForTesting() => (int32? priority);
+  // Runs the currently posted tasks on the sequence associated with a bucket.
+  FlushBucketSequenceForTesting(storage.mojom.BucketLocator bucket_locator)
+      => ();
 
   // Gets the total usage in bytes across all buckets.
   GetUsageForTesting() => (int64 total_usage);

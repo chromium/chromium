@@ -49,9 +49,15 @@ class ProtocolHandler {
       const GURL& url,
       const std::string& app_id);
 
+  static ProtocolHandler CreateExtensionProtocolHandler(
+      const std::string& protocol,
+      const GURL& url,
+      const std::string& extension_id);
+
   ProtocolHandler(const std::string& protocol,
                   const GURL& url,
-                  const std::string& app_id,
+                  std::optional<std::string> app_id,
+                  std::optional<std::string> extension_id,
                   base::Time last_modified,
                   blink::ProtocolHandlerSecurityLevel security_level);
 
@@ -103,9 +109,13 @@ class ProtocolHandler {
   const std::string& protocol() const { return protocol_; }
   const GURL& url() const { return url_; }
   const std::optional<std::string>& web_app_id() const { return web_app_id_; }
+  const std::optional<std::string>& extension_id() const {
+    return extension_id_;
+  }
   const base::Time& last_modified() const { return last_modified_; }
 
   bool IsEmpty() const { return protocol_.empty(); }
+  bool IsExtensionHandler() const { return extension_id_.has_value(); }
 
 #if !defined(NDEBUG)
   // Returns a string representation suitable for use in debugging.
@@ -121,6 +131,7 @@ class ProtocolHandler {
   std::string protocol_;
   GURL url_;
   std::optional<std::string> web_app_id_;
+  std::optional<std::string> extension_id_;
   base::Time last_modified_;
   blink::ProtocolHandlerSecurityLevel security_level_;
 };

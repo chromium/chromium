@@ -12,10 +12,6 @@
 #include "base/values.h"
 #include "components/policy/policy_export.h"
 
-namespace base {
-class Value;
-}
-
 namespace policy {
 
 POLICY_EXPORT extern const char kChromeMetadataVersionKey[];

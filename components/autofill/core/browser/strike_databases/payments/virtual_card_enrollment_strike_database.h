@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/autofill/core/browser/strike_databases/simple_autofill_strike_database.h"
+#include "components/strike_database/simple_strike_database.h"
 
 namespace autofill {
 
@@ -25,11 +25,11 @@ struct VirtualCardEnrollmentStrikeDatabaseTraits {
 };
 
 class VirtualCardEnrollmentStrikeDatabase
-    : public SimpleAutofillStrikeDatabase<
+    : public strike_database::SimpleStrikeDatabase<
           VirtualCardEnrollmentStrikeDatabaseTraits> {
  public:
-  using SimpleAutofillStrikeDatabase<
-      VirtualCardEnrollmentStrikeDatabaseTraits>::SimpleAutofillStrikeDatabase;
+  using strike_database::SimpleStrikeDatabase<
+      VirtualCardEnrollmentStrikeDatabaseTraits>::SimpleStrikeDatabase;
 
   // Whether bubble to be shown is the last offer for the card with
   // |instrument_id|.

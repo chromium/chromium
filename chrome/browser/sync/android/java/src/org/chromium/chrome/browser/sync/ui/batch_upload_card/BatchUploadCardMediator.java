@@ -182,17 +182,16 @@ class BatchUploadCardMediator
                                 R.plurals.batch_upload_saved_snackbar_message,
                                 itemsCount,
                                 coreAccountInfo.getEmail());
-        mSnackbarManagerSupplier
-                .get()
-                .showSnackbar(
-                        Snackbar.make(
-                                        snackbarMessage,
-                                        /* controller= */ null,
-                                        Snackbar.TYPE_ACTION,
-                                        mEntryPoint == EntryPoint.BOOKMARK_MANAGER
-                                                ? Snackbar.UMA_BOOKMARK_BATCH_UPLOAD
-                                                : Snackbar.UMA_SETTINGS_BATCH_UPLOAD)
-                                .setSingleLine(false));
+        SnackbarManager snackbarManager = assumeNonNull(mSnackbarManagerSupplier.get());
+        snackbarManager.showSnackbar(
+                Snackbar.make(
+                                snackbarMessage,
+                                /* controller= */ null,
+                                Snackbar.TYPE_ACTION,
+                                mEntryPoint == EntryPoint.BOOKMARK_MANAGER
+                                        ? Snackbar.UMA_BOOKMARK_BATCH_UPLOAD
+                                        : Snackbar.UMA_SETTINGS_BATCH_UPLOAD)
+                        .setDefaultLines(false));
         immediatelyHideBatchUploadCardAndUpdateItsVisibility();
     }
 

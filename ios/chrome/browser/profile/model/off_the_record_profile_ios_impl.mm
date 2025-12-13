@@ -8,7 +8,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 #import "base/task/sequenced_task_runner.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/proxy_config/ios/proxy_service_factory.h"
 #import "components/proxy_config/pref_proxy_config_tracker.h"
@@ -17,6 +16,7 @@
 #import "ios/chrome/browser/prefs/model/ios_chrome_pref_service_factory.h"
 #import "ios/chrome/browser/profile/model/ios_chrome_url_request_context_getter.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_dependency_manager_ios.h"
 
 OffTheRecordProfileIOSImpl::OffTheRecordProfileIOSImpl(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
@@ -30,7 +30,7 @@ OffTheRecordProfileIOSImpl::OffTheRecordProfileIOSImpl(
       prefs_(CreateIncognitoProfilePrefs(
           static_cast<sync_preferences::PrefServiceSyncable*>(
               original_profile_->GetPrefs()))) {
-  BrowserStateDependencyManager::GetInstance()->MarkBrowserStateLive(this);
+  ProfileDependencyManagerIOS::GetInstance()->MarkProfileLive(this);
 
   user_prefs::UserPrefs::Set(this, GetPrefs());
   io_data_.reset(new OffTheRecordProfileIOSIOData::Handle(this));
@@ -42,14 +42,15 @@ OffTheRecordProfileIOSImpl::OffTheRecordProfileIOSImpl(
 
   // The initialisation of the ProfileIOS is now complete and the
   // service can be safely created.
-  BrowserStateDependencyManager::GetInstance()->CreateBrowserStateServices(
-      this);
+  ProfileDependencyManagerIOS::GetInstance()->CreateProfileServices(this);
 }
 
 OffTheRecordProfileIOSImpl::~OffTheRecordProfileIOSImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BrowserStateDependencyManager::GetInstance()->DestroyBrowserStateServices(
-      this);
+  // Notify the callback of the profile destruction before destroying anything.
+  NotifyProfileDestroyed();
+
+  ProfileDependencyManagerIOS::GetInstance()->DestroyProfileServices(this);
   if (pref_proxy_config_tracker_) {
     pref_proxy_config_tracker_->DetachFromPrefService();
   }

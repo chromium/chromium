@@ -4,6 +4,7 @@
 
 #include "media/capture/video/chromeos/camera_effects_observer.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "media/capture/video/chromeos/mojom/effects_pipeline.mojom.h"

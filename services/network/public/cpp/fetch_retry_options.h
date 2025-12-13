@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/time/time.h"
 #include "services/network/public/mojom/fetch_retry_options.mojom-shared.h"
 
 namespace network {

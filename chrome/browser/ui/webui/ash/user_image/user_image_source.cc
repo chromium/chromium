@@ -36,7 +36,7 @@ const char kFrameIndex[] = "frame";
 void ParseRequest(const GURL& url, std::string* email, int* frame) {
   DCHECK(url.is_valid());
   const std::string serialized_account_id = base::UnescapeURLComponent(
-      url.path().substr(1),
+      url.GetPath().substr(1),
       base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
           base::UnescapeRule::PATH_SEPARATORS | base::UnescapeRule::SPACES);
   AccountId account_id(EmptyAccountId());
@@ -54,7 +54,7 @@ void ParseRequest(const GURL& url, std::string* email, int* frame) {
   *email = account_id.GetUserEmail();
   *frame = -1;
   base::StringPairs parameters;
-  base::SplitStringIntoKeyValuePairs(url.query(), '=', '&', &parameters);
+  base::SplitStringIntoKeyValuePairs(url.GetQuery(), '=', '&', &parameters);
   for (base::StringPairs::const_iterator iter = parameters.begin();
        iter != parameters.end(); ++iter) {
     if (iter->first == kFrameIndex) {
@@ -132,7 +132,7 @@ scoped_refptr<base::RefCountedMemory> GetUserImageInternal(
   ui::ResourceScaleFactor scale_factor = ui::k100Percent;
   // Use the scaling that matches primary display. These source images are
   // 96x96 and often used at that size in WebUI pages.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   if (screen) {
     scale_factor = ui::GetSupportedResourceScaleFactor(
         screen->GetPrimaryDisplay().device_scale_factor());

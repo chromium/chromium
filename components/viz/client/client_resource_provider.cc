@@ -21,7 +21,9 @@
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
+#include "gpu/command_buffer/common/sync_token.h"
 
 namespace viz {
 
@@ -208,8 +210,6 @@ ClientResourceProvider::ClientResourceProvider(
       impl_task_runner_(impl_task_runner),
       resource_flush_callback_(std::move(resource_flush_callback)),
       threaded_release_callbacks_supported_(
-          base::FeatureList::IsEnabled(
-              features::kBatchMainThreadReleaseCallbacks) &&
           main_task_runner_ && impl_task_runner_ &&
           main_task_runner_ != impl_task_runner_ && resource_flush_callback_) {}
 
@@ -227,35 +227,10 @@ ClientResourceProvider::~ClientResourceProvider() {
   BatchResourceRelease();
 }
 
-gpu::SyncToken ClientResourceProvider::GenerateSyncTokenHelper(
-    gpu::raster::RasterInterface* ri) {
-  DCHECK(ri);
-  gpu::SyncToken sync_token;
-  ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-  DCHECK(sync_token.HasData() ||
-         ri->GetGraphicsResetStatusKHR() != GL_NO_ERROR);
-  return sync_token;
-}
-
 void ClientResourceProvider::PrepareSendToParent(
     const std::vector<ResourceId>& export_ids,
     std::vector<TransferableResource>* list,
-    RasterContextProvider* context_provider) {
-  PrepareSendToParentInternal(
-      export_ids, list,
-      base::BindOnce(
-          [](scoped_refptr<RasterContextProvider> context_provider,
-             std::vector<GLbyte*>* tokens) {
-            context_provider->RasterInterface()->VerifySyncTokensCHROMIUM(
-                tokens->data(), tokens->size());
-          },
-          base::WrapRefCounted(context_provider)));
-}
-
-void ClientResourceProvider::PrepareSendToParentInternal(
-    const std::vector<ResourceId>& export_ids,
-    std::vector<TransferableResource>* list,
-    base::OnceCallback<void(std::vector<GLbyte*>* tokens)> verify_sync_tokens) {
+    gpu::SharedImageInterface* shared_image_interface) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // This function goes through the array multiple times, store the resources
@@ -270,19 +245,24 @@ void ClientResourceProvider::PrepareSendToParentInternal(
     imports.push_back(&it->second);
   }
 
-  // Lazily create any mailboxes and verify all unverified sync tokens.
-  std::vector<GLbyte*> unverified_sync_tokens;
-  for (ImportedResource* imported : imports) {
-    if (!imported->resource.is_software &&
-        !imported->resource.sync_token().verified_flush()) {
-      unverified_sync_tokens.push_back(
-          imported->resource.mutable_sync_token().GetData());
-    }
-  }
+  if (shared_image_interface) {
+    // Note for this lamdba -> gpu::SyncToken& is required as implicit auto
+    // decays removing the reference
+    static auto get_sync_token =
+        [](ImportedResource* imported_resource) -> gpu::SyncToken& {
+      CHECK(imported_resource);
+      return imported_resource->resource.mutable_sync_token();
+    };
 
-  if (!unverified_sync_tokens.empty()) {
-    DCHECK(verify_sync_tokens);
-    std::move(verify_sync_tokens).Run(&unverified_sync_tokens);
+    shared_image_interface->VerifySyncTokens(imports, get_sync_token);
+  } else {
+    static auto check_is_verified =
+        [](const ImportedResource* imported_resource) {
+          CHECK(imported_resource);
+          return !imported_resource->resource.sync_token().verified_flush();
+        };
+
+    DCHECK(std::none_of(imports.begin(), imports.end(), check_is_verified));
   }
 
   list->reserve(list->size() + imports.size());
@@ -297,67 +277,19 @@ void ClientResourceProvider::ReceiveReturnsFromParent(
   TRACE_EVENT0("viz", __PRETTY_FUNCTION__);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // |imported_resources_| is a set sorted by id, so if we sort the incoming
-  // |resources| list by id also, we can walk through both structures in order,
-  // replacing  things to be removed from imported_resources_ with things that
-  // we want to keep, making the removal of all items O(N+MlogM) instead of
-  // O(N*M). This algorithm is modelled after std::remove_if() but with a
-  // parallel walk through |resources| instead of an O(logM) lookup into
-  // |resources| for each step.
-  std::sort(resources.begin(), resources.end(),
-            [](const ReturnedResource& a, const ReturnedResource& b) {
-              return a.id < b.id;
-            });
-
-  auto returned_it = resources.begin();
-  auto returned_end = resources.end();
-  auto imported_keep_end_it = imported_resources_.begin();
-  auto imported_compare_it = imported_resources_.begin();
-  auto imported_end = imported_resources_.end();
-
   std::vector<base::OnceClosure> impl_release_callbacks;
   impl_release_callbacks.reserve(resources.size());
   std::vector<base::OnceClosure> main_impl_release_callbacks;
   main_impl_release_callbacks.reserve(resources.size());
 
-  while (imported_compare_it != imported_end) {
-    if (returned_it == returned_end) {
-      // Nothing else to remove from |imported_resources_|.
-      if (imported_keep_end_it == imported_compare_it) {
-        // We didn't remove anything, so we're done.
-        break;
-      }
-      // If something was removed, we need to shift everything into the empty
-      // space that was made.
-      *imported_keep_end_it = std::move(*imported_compare_it);
-      ++imported_keep_end_it;
-      ++imported_compare_it;
+  for (const auto& returned : resources) {
+    auto imported_it = imported_resources_.find(returned.id);
+    if (imported_it == imported_resources_.end()) {
+      // TODO(zmo): In theory, everything being returned should already be in
+      // the imported list. We should figure out why this happens.
       continue;
     }
-
-    const ResourceId returned_resource_id = returned_it->id;
-    const ResourceId imported_resource_id = imported_compare_it->first;
-
-    if (returned_resource_id != imported_resource_id) {
-      // They're both sorted, and everything being returned should already
-      // be in the imported list. So we should be able to walk through the
-      // resources list in order, and find each id in both sets when present.
-      // That means if it's not matching, we should be above it in the sorted
-      // order of the |imported_resources_|, allowing us to get to it by
-      // continuing to traverse |imported_resources_|.
-      DCHECK_GT(returned_resource_id, imported_resource_id);
-      // This means we want to keep the resource at |imported_compare_it|. So go
-      // to the next. If we removed anything previously and made empty space,
-      // fill it as we move.
-      if (imported_keep_end_it != imported_compare_it)
-        *imported_keep_end_it = std::move(*imported_compare_it);
-      ++imported_keep_end_it;
-      ++imported_compare_it;
-      continue;
-    }
-
-    const ReturnedResource& returned = *returned_it;
-    ImportedResource& imported = imported_compare_it->second;
+    auto& imported = imported_it->second;
 
     DCHECK_GE(imported.exported_count, returned.count);
     imported.exported_count -= returned.count;
@@ -366,11 +298,6 @@ void ClientResourceProvider::ReceiveReturnsFromParent(
     if (imported.exported_count) {
       // Can't remove the imported yet so go to the next, looking for the next
       // returned resource.
-      ++returned_it;
-      // The same ResourceId may appear multiple times (in a row) in the
-      // returned set. In that case, we do not want to increment the iterators
-      // in |imported_resources_| yet. So we don't increment them here, and let
-      // the next iteration of the loop do so.
       continue;
     }
 
@@ -383,13 +310,6 @@ void ClientResourceProvider::ReceiveReturnsFromParent(
     if (!imported.marked_for_deletion) {
       // Not going to remove the imported yet so go to the next, looking for the
       // next returned resource.
-      ++returned_it;
-      // If we removed anything previously and made empty space, fill it as we
-      // move.
-      if (imported_keep_end_it != imported_compare_it)
-        *imported_keep_end_it = std::move(*imported_compare_it);
-      ++imported_keep_end_it;
-      ++imported_compare_it;
       continue;
     }
 
@@ -405,20 +325,8 @@ void ClientResourceProvider::ReceiveReturnsFromParent(
                          imported.returned_sync_token, imported.returned_lost));
     }
 
-    // We don't want to keep this resource, so we leave |imported_keep_end_it|
-    // pointing to it (since it points past the end of what we're keeping). We
-    // do move |imported_compare_it| in order to move on to the next resource.
-    ++imported_compare_it;
-    // The imported iterator is pointing at the next element already, so no need
-    // to increment it, and we can move on to looking for the next returned
-    // resource.
-    ++returned_it;
+    imported_resources_.erase(imported_it);
   }
-
-  // Drop anything that was moved after the |imported_end| iterator in a single
-  // O(N) operation.
-  if (imported_keep_end_it != imported_compare_it)
-    imported_resources_.erase(imported_keep_end_it, imported_resources_.end());
 
   for (auto& cb : impl_release_callbacks) {
     std::move(cb).Run();
@@ -469,29 +377,28 @@ void ClientResourceProvider::ReleaseAllExportedResources(bool lose) {
     batch_main_release_callbacks_.reserve(imported_resources_.size());
   }
 
-  auto release_and_remove =
-      [lose, batch, this](std::pair<ResourceId, ImportedResource>& pair) {
-        ImportedResource& imported = pair.second;
-        if (!imported.exported_count) {
-          // Not exported, not up for consideration to be returned here.
-          return false;
-        }
-        imported.exported_count = 0;
-        imported.returned_lost |= lose;
-        if (!imported.marked_for_deletion) {
-          // Was exported, but not removed by the client, so don't return it
-          // yet.
-          return false;
-        }
+  for (auto it = imported_resources_.begin();
+       it != imported_resources_.end();) {
+    ImportedResource& imported = it->second;
+    if (!imported.exported_count) {
+      // Not exported, not up for consideration to be returned here.
+      it++;
+      continue;
+    }
+    imported.exported_count = 0;
+    imported.returned_lost |= lose;
+    if (!imported.marked_for_deletion) {
+      // Was exported, but not removed by the client, so don't return it
+      // yet.
+      it++;
+      continue;
+    }
 
-        TakeOrRunResourceReleases(batch, imported);
-        // Was exported and removed by the client, so return it now.
-        return true;
-      };
+    TakeOrRunResourceReleases(batch, imported);
+    // Was exported and removed by the client, so erase it.
+    it = imported_resources_.erase(it);
+  }
 
-  // This will run |release_and_remove| on each element of |imported_resources_|
-  // and drop any resources from the set that it requests.
-  base::EraseIf(imported_resources_, release_and_remove);
   BatchResourceRelease();
 }
 
@@ -578,14 +485,15 @@ void ClientResourceProvider::HandleEviction() {
   }
   int locked = 0;
   size_t total_mem = 0u;
-  base::flat_map<TransferableResource::ResourceSource, size_t> mem_per_source;
+  std::unordered_map<TransferableResource::ResourceSource, size_t>
+      mem_per_source;
   std::vector<ResourceId> ids_to_unlock;
   for (auto& [id, imported] : imported_resources_) {
     if (!imported.marked_for_deletion) {
       ++locked;
       auto resource_source = imported.resource.resource_source;
-      size_t resource_mem =
-          imported.resource.format.EstimatedSizeInBytes(imported.resource.size);
+      size_t resource_mem = imported.resource.GetFormat().EstimatedSizeInBytes(
+          imported.resource.GetSize());
       total_mem += resource_mem;
       mem_per_source[resource_source] += resource_mem;
 
@@ -593,6 +501,9 @@ void ClientResourceProvider::HandleEviction() {
           !imported.evicted_callback) {
         continue;
       }
+      // We can't call imported.evicted_callback here, nor can we save them and
+      // them in a for-loop after. This is because callbacks may trigger
+      // ClientResourceProvider::RemoveImportedResource().
       ids_to_unlock.push_back(id);
     }
   }

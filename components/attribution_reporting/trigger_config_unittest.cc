@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/test/gmock_expected_support.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -330,14 +329,10 @@ TEST(TriggerDataSetTest, Find_ModulusContiguous) {
   };
 
   for (const auto& test_case : kTestCases) {
-    base::HistogramTester histograms;
     SCOPED_TRACE(test_case.trigger_data);
 
     EXPECT_EQ(kSet.find(test_case.trigger_data, TriggerDataMatching::kModulus),
               test_case.expected);
-    histograms.ExpectUniqueSample(
-        "Conversions.TriggerDataMatchingModulusSameInputOutput",
-        test_case.expected_metric_value, 1);
   }
 }
 

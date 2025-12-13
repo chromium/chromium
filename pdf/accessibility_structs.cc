@@ -34,12 +34,14 @@ AccessibilityTextStyleInfo::~AccessibilityTextStyleInfo() = default;
 AccessibilityTextRunInfo::AccessibilityTextRunInfo() = default;
 
 AccessibilityTextRunInfo::AccessibilityTextRunInfo(
+    uint32_t start_index,
     uint32_t len,
     const std::string& tag_type,
     const gfx::RectF& bounds,
     AccessibilityTextDirection direction,
     const AccessibilityTextStyleInfo& style)
-    : AccessibilityTextRunInfo(len,
+    : AccessibilityTextRunInfo(start_index,
+                               len,
                                tag_type,
                                bounds,
                                direction,
@@ -47,13 +49,15 @@ AccessibilityTextRunInfo::AccessibilityTextRunInfo(
                                /*is_searchified=*/false) {}
 
 AccessibilityTextRunInfo::AccessibilityTextRunInfo(
+    uint32_t start_index,
     uint32_t len,
     const std::string& tag_type,
     const gfx::RectF& bounds,
     AccessibilityTextDirection direction,
     const AccessibilityTextStyleInfo& style,
     bool is_searchified)
-    : len(len),
+    : start_index(start_index),
+      len(len),
       tag_type(tag_type),
       bounds(bounds),
       direction(direction),
@@ -81,19 +85,13 @@ AccessibilityImageInfo::AccessibilityImageInfo(
 
 AccessibilityImageInfo::~AccessibilityImageInfo() = default;
 
+AccessibilityStructureElement::AccessibilityStructureElement() = default;
+
+AccessibilityStructureElement::~AccessibilityStructureElement() = default;
+
 AccessibilityDocInfo::AccessibilityDocInfo() = default;
 
 AccessibilityDocInfo::~AccessibilityDocInfo() = default;
-
-bool AccessibilityDocInfo::operator==(const AccessibilityDocInfo& other) const {
-  return page_count == other.page_count && is_tagged == other.is_tagged &&
-         text_accessible == other.text_accessible &&
-         text_copyable == other.text_copyable;
-}
-
-bool AccessibilityDocInfo::operator!=(const AccessibilityDocInfo& other) const {
-  return !(*this == other);
-}
 
 AccessibilityLinkInfo::AccessibilityLinkInfo() = default;
 

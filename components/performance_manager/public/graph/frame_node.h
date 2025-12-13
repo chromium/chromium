@@ -7,8 +7,10 @@
 
 #include <optional>
 
+#include "base/byte_count.h"
 #include "base/containers/flat_set.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/node.h"
@@ -169,6 +171,10 @@ class FrameNode : public TypedNode<FrameNode> {
   // See FrameNodeObserver::OnCurrentFrameChanged.
   virtual bool IsCurrent() const = 0;
 
+  // Returns true if this frame is active (the document is in the 'active'
+  // lifecycle state). See RenderFrameHost::IsActive() for more details.
+  virtual bool IsActive() const = 0;
+
   // Returns the current priority of the frame, and the reason for the frame
   // having that particular priority.
   virtual const PriorityAndReason& GetPriorityAndReason() const = 0;
@@ -243,6 +249,11 @@ class FrameNode : public TypedNode<FrameNode> {
   // considered important, regardless of this value.
   virtual bool IsImportant() const = 0;
 
+  // Returns false if the frame is not rendered, e.g. because it has
+  // `display: none`. A non-rendered frame is not visible, but a visible frame
+  // is not necessarily rendered.
+  virtual bool IsRendered() const = 0;
+
   // Returns a proxy to the RenderFrameHost associated with this node. The
   // proxy may only be dereferenced on the UI thread.
   virtual const RenderFrameHostProxy& GetRenderFrameHostProxy() const = 0;
@@ -250,15 +261,18 @@ class FrameNode : public TypedNode<FrameNode> {
   // TODO(joenotcharles): Move the resource usage estimates to a separate
   // class.
 
-  // Returns the most recently estimated resident set of the frame, in
-  // kilobytes. This is an estimate because RSS is computed by process, and a
-  // process can host multiple frames.
-  virtual uint64_t GetResidentSetKbEstimate() const = 0;
+  // Returns the most recently estimated resident set of the frame. This is an
+  // estimate because RSS is computed by process, and a process can host
+  // multiple frames.
+  virtual base::ByteCount GetResidentSetEstimate() const = 0;
 
-  // Returns the most recently estimated private footprint of the frame, in
-  // kilobytes. This is an estimate because it is computed by process, and a
-  // process can host multiple frames.
-  virtual uint64_t GetPrivateFootprintKbEstimate() const = 0;
+  // Returns the most recently estimated private footprint of the frame. This is
+  // an estimate because it is computed by process, and a process can host
+  // multiple frames.
+  virtual base::ByteCount GetPrivateFootprintEstimate() const = 0;
+
+  // Called when the process of a cross-process subframe has gone.
+  virtual void CrossProcessSubframeRenderProcessGone() = 0;
 };
 
 // Observer interface for frame nodes.
@@ -408,6 +422,10 @@ class FrameNodeObserver : public base::CheckedObserver {
 
   // Invoked when the `IsImportant` property changes.
   virtual void OnIsImportantChanged(const FrameNode* frame_node) {}
+
+  // Called when the render process of a cross-process subframe exits.
+  virtual void OnCrossProcessSubframeRenderProcessGone(
+      const FrameNode* frame_node) {}
 
   // Events with no property changes.
 

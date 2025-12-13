@@ -106,7 +106,7 @@ Parser::~Parser() = default;
 
 MetadataEntries ToMetadataEntries(const Metadata& metadata) {
   MetadataEntries metadata_entries;
-  for (auto me : metadata.metadata_entries()) {
+  for (const auto& me : metadata.metadata_entries()) {
     metadata_entries.emplace_back(me);
   }
   return metadata_entries;

@@ -5,6 +5,7 @@
 #include "chrome/browser/platform_experience/installer/installer_win.h"
 
 #include "base/command_line.h"
+#include "base/enterprise_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -12,6 +13,7 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/win/scoped_variant.h"
+#include "base/win/windows_version.h"
 #include "chrome/browser/google/google_update_app_command.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/install_static/install_details.h"
@@ -45,6 +47,18 @@ bool PlatformExperienceHelperMightBeInstalled() {
   return base::PathExists(peh_exe_path);
 }
 
+// This function might block.
+// Returns whether we should attempt installing the platform experience helper.
+bool ShouldInstallPlatformExperienceHelper() {
+  if (base::win::GetVersion() < base::win::Version::WIN10) {
+    return false;
+  }
+  if (base::IsManagedOrEnterpriseDevice()) {
+    return false;
+  }
+  return !PlatformExperienceHelperMightBeInstalled();
+}
+
 // Enum for tracking the launch status of the platform experience helper
 // installer for system installs.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -67,8 +81,10 @@ enum class UserInstallerLaunchStatus {
   kSuccess = 0,
   kFileNotFound = 1,
   kAccessDenied = 2,
-  kOtherFailure = 3,
-  kMaxValue = kOtherFailure,
+  kOtherFailure = 3,  // This is a catch-all for all other failures.
+  kInvalidParameter = 4,
+  kElevationRequired = 5,
+  kMaxValue = kElevationRequired,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/windows/enums.xml:UserInstallerLaunchStatus)
 
@@ -117,7 +133,7 @@ void SetInstallerLauncherDelegateForTesting(  // IN-TEST
 }
 
 void MaybeInstallPlatformExperienceHelper() {
-  if (PlatformExperienceHelperMightBeInstalled()) {
+  if (!ShouldInstallPlatformExperienceHelper()) {
     return;
   }
 
@@ -157,10 +173,17 @@ void MaybeInstallPlatformExperienceHelper() {
   if (!process.IsValid()) {
     switch (::GetLastError()) {
       case ERROR_FILE_NOT_FOUND:
+      case ERROR_PATH_NOT_FOUND:
         status = UserInstallerLaunchStatus::kFileNotFound;
         break;
       case ERROR_ACCESS_DENIED:
         status = UserInstallerLaunchStatus::kAccessDenied;
+        break;
+      case ERROR_INVALID_PARAMETER:
+        status = UserInstallerLaunchStatus::kInvalidParameter;
+        break;
+      case ERROR_ELEVATION_REQUIRED:
+        status = UserInstallerLaunchStatus::kElevationRequired;
         break;
       default:
         status = UserInstallerLaunchStatus::kOtherFailure;

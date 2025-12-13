@@ -6,7 +6,12 @@
 
 #include <array>
 
+#include "base/base_paths.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 struct TestCase {
@@ -128,4 +133,67 @@ TEST(HashTest, StringViewHash) {
       0x90, 0x80, 0x9e, 0xc3, 0xa5, 0x31, 0x91, 0xdd, 0x81, 0xc7, 0xf7,
       0x0a, 0x4b, 0x28, 0x68, 0x8a, 0x36, 0x21, 0x82, 0x98, 0x6f};
   EXPECT_EQ(hash, crypto::hash::Sha256("Hello, World!"));
+}
+
+TEST(HashTest, HashKindEVPMDConversions) {
+  constexpr auto kKinds = std::to_array<crypto::hash::HashKind>({
+      crypto::hash::kSha1,
+      crypto::hash::kSha256,
+      crypto::hash::kSha384,
+      crypto::hash::kSha512,
+  });
+  for (auto kind : kKinds) {
+    const EVP_MD* md = crypto::hash::EVPMDForHashKind(kind);
+    auto result_kind = crypto::hash::HashKindForEVPMD(md);
+    ASSERT_TRUE(result_kind.has_value());
+    EXPECT_EQ(kind, *result_kind);
+  }
+  EXPECT_FALSE(crypto::hash::HashKindForEVPMD(EVP_md5()).has_value());
+}
+
+TEST(HashTest, HashFileSuccess) {
+  auto path = base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
+                  .AppendASCII("crypto")
+                  .AppendASCII("test")
+                  .AppendASCII("data")
+                  .AppendASCII("plain-text.txt");
+  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_TRUE(file.IsValid());
+
+  struct TestCase {
+    crypto::hash::HashKind kind;
+    std::string_view hash_hex;
+  };
+
+  const auto kCases = std::to_array<TestCase>({
+      {crypto::hash::kSha256,
+       "f286954f1cd9bf768df3ce4184dfe19b463ab20e8152c73c6cb8fa626122832f"},
+      {crypto::hash::kSha512,
+       "99348f3093f3cc287c781019c854e0101f3c7f4b88b8a15621f75dae99970950"
+       "63be3003154c7966b0a97e611729e2cabee706f7ce5d0d6605d71392fa941948"},
+  });
+
+  for (const auto& c : kCases) {
+    std::array<uint8_t, 64> hash_buffer;
+    auto hash = base::span(hash_buffer)
+                    .first(crypto::hash::DigestSizeForHashKind(c.kind));
+
+    file.Seek(base::File::FROM_BEGIN, 0);
+    EXPECT_TRUE(crypto::hash::HashFile(c.kind, &file, hash));
+    EXPECT_EQ(base::HexEncodeLower(hash), c.hash_hex);
+  }
+}
+
+TEST(HashTest, HashFileFailure) {
+  auto path = base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
+                  .AppendASCII("crypto")
+                  .AppendASCII("test")
+                  .AppendASCII("data")
+                  .AppendASCII("does-not-exist");
+  base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  ASSERT_FALSE(file.IsValid());
+
+  std::array<uint8_t, 64> buffer = {1};
+  EXPECT_FALSE(crypto::hash::HashFile(crypto::hash::kSha256, &file, buffer));
+  EXPECT_FALSE(std::ranges::any_of(buffer, [](uint8_t v) { return v != 0; }));
 }

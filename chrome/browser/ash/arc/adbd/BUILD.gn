@@ -14,6 +14,7 @@ static_library("adbd") {
 
   deps = [
     "//base",
+    "//chrome/browser/ash/arc/session",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/system",
@@ -42,6 +43,7 @@ source_set("unit_tests") {
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/user_manager",
     "//content/test:test_support",
     "//testing/gtest",

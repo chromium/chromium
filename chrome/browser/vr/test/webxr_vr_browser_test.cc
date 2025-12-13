@@ -12,13 +12,13 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 #if BUILDFLAG(ENABLE_VR)
 #include "device/vr/public/cpp/features.h"
 #endif
 
 using testing::_;
-using testing::Invoke;
 
 namespace vr {
 
@@ -131,7 +131,7 @@ WebXrVrRuntimelessBrowserTestSensorless::
 WebXrVrOpenXrBrowserTestBase::WebXrVrOpenXrBrowserTestBase() {
   forced_runtime_ = switches::kWebXrRuntimeOpenXr;
   enable_features_.push_back(device::features::kOpenXR);
-  enable_features_.push_back(device::features::kWebXrHandInput);
+  enable_features_.push_back(blink::features::kWebXRVisibilityMask);
 }
 
 WebXrVrOpenXrBrowserTestBase::~WebXrVrOpenXrBrowserTestBase() = default;

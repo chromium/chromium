@@ -39,8 +39,9 @@ public class CreatorMediator {
 
     private void followClickHandler() {
         if (FeedServiceBridge.isSignedIn()) {
+            byte[] bytes = mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY);
             WebFeedBridge.followFromId(
-                    mCreatorModel.get(CreatorProperties.WEB_FEED_ID_KEY),
+                    bytes,
                     /* isDurable= */ false,
                     WebFeedBridge.CHANGE_REASON_SINGLE_WEB_FEED,
                     (result) -> {

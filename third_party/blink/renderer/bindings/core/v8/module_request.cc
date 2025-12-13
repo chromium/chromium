@@ -18,10 +18,6 @@ String ModuleRequest::GetModuleTypeString() const {
 }
 
 bool ModuleRequest::HasInvalidImportAttributeKey(String* invalid_key) const {
-  if (!RuntimeEnabledFeatures::ImportAttributesDisallowUnknownKeysEnabled()) {
-    return false;
-  }
-
   for (const ImportAttribute& attr : import_attributes) {
     if (attr.key != "type") {
       *invalid_key = attr.key;

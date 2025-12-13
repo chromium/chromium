@@ -8,7 +8,6 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Auxiliary search dimensions. -->
     <dimen name="auxiliary_search_favicon_size">36dp</dimen>
-    <dimen name="auxiliary_search_favicon_size_small">18dp</dimen>
 
     <!-- Auxiliary search module dimensions. -->
     <dimen name="auxiliary_search_module_padding_start">20dp</dimen>

@@ -18,12 +18,14 @@ extern NSString* const kDefaultBrowserInstructionsViewAnimationViewId;
 extern NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId;
 
 // View for the displaying default browser instructions.
+// TODO(crbug.com/433786239): Subclass from AnimatedPromoViewController.
 @interface DefaultBrowserInstructionsViewController : UIViewController
 
 // Creates the view with specified `titleText` based on provided parameters.
 // If `titleText` is nil, default title will be used.
 - (instancetype)initWithDismissButton:(BOOL)hasDismissButton
                      hasRemindMeLater:(BOOL)hasRemindMeLater
+            useDefaultAppsDestination:(BOOL)useDefaultAppsDestination
                              hasSteps:(BOOL)hasSteps
                         actionHandler:
                             (id<ConfirmationAlertActionHandler>)actionHandler

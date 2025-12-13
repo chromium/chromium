@@ -1,7 +1,7 @@
 Name: mockito-core
 Short Name: mockito-core
-URL: https://github.com/mockito/mockito
-Version: 5.11.0
+URL: https://repo.maven.apache.org/maven2/org/mockito/mockito-core/5.19.0/mockito-core-5.19.0.jar
+Version: 5.19.0
 Update Mechanism: Manual
 License: MIT
 License File: LICENSE
@@ -11,6 +11,9 @@ Shipped: no
 
 Description:
 Mockito mock objects library core API and implementation
+
+See also: https://github.com/mockito/mockito
+
 
 Local Modifications:
 No modifications.

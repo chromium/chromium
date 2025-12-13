@@ -2662,6 +2662,10 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
         Toggle marker. <ph name="STATE_TEXT">$1<ex>Marker is on.</ex></ph> Use the trackpad, touchscreen, or stylus to draw onscreen.
       </message>
 
+      <message name="IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_BUBBLE_ACCESSIBLE_TITLE" desc="The accessible title for the dialog bubble that opens when the marker button in the system shelf is clicked. The dialog bubble contains the color options for the marker, and selecting an option changes the color of the marker.">
+        Select color
+      </message>
+
       <message name="IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ON_STATE" desc="Text indicating that the marker is on.">
         Marker is on.
       </message>
@@ -2954,6 +2958,12 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       </message>
 
       <!-- Status tray charging strings. -->
+      <message name="IDS_ASH_STATUS_TRAY_INCOMPATIBLE_CHARGER_TITLE" desc="The title of a notification indicating that an incompatible charger has been connected, and no charging will occur.">
+        Can't charge device
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_INCOMPATIBLE_CHARGER_MESSAGE" desc="The message body of a notification indicating that an incompatible charger has been connected, and that the user needs to connect a more powerful one.">
+        Try a charger with more watts (W) or use your original charger.
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_LOW_POWER_CHARGER_TITLE" desc="The title of a notification indicating that a low-current USB charger has been connected.">
         Low-power charger connected
       </message>
@@ -3063,6 +3073,9 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_CALCULATING_CHARGE_LEVEL" desc="The label in the tray dialog indicating that the battery charge level is being calculated.">
         Calculating battery %...
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_ON_HOLD" desc="The label in the tray dialog indicating that charging has paused.">
+        Charging on hold
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_TIME_LEFT_SHORT" desc="The label in the tray bubble settings row to show a time estimate until the battery is empty.">
         <ph name="time">$1<ex>2:53</ex></ph> left
       </message>
@@ -3087,6 +3100,9 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_BSM_ON_ACCESSIBLE" desc="The message used by accessibility to show battery is being charged with battery saver enabled.">
         Battery at <ph name="percentage">$1<ex>56</ex></ph>% and charging. Battery Saver is on.
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_ON_HOLD_ACCESSIBLE" desc="The message used by accessibility to show the battery percentage and that charging is currently paused.">
+        Battery at <ph name="percentage">$1<ex>56</ex></ph>%. Charging on hold.
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_CALCULATING_ACCESSIBLE" desc="The message used by accessibility to show battery is calculating its time in short message.">
         Calculating battery time.
       </message>
@@ -3104,6 +3120,9 @@ Some features are limited to increase battery life.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_UNRELIABLE_ACCESSIBLE" desc="The message used by accessibility to indicate that battery charging is unreliable.">
         Plugged in to a low-power charger. Battery charging may not be reliable.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_INCOMPATIBLE_CHARGER_ACCESSIBLE" desc="The message used by accessibility to announce that an incompatible charger is connected.">
+        Device plugged in, but not charging. Try a charger with more watts (W) or use your original charger.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_STATUS_SEPARATOR" desc="The separator symbol between battery percentage string and battery remaining time string">
         ''' - '''
@@ -4048,6 +4067,9 @@ No devices connected.
       <message name="IDS_ASH_DISPLAY_FAILURE_SEND_FEEDBACK" desc="Button text below error report to allow user to send feedback report.">
         Send feedback
       </message>
+      <message name="IDS_ASH_DISPLAY_FAILURE_MAX_DISPLAY_LIMIT" desc="An error message to show that the system failed to configure multiple displays due to max display reached.">
+        You can connect up to <ph name="DISPLAY_LIMIT">$1<ex>2</ex></ph> external displays.
+      </message>
       <message name="IDS_ASH_DISPLAY_RESOLUTION_CHANGE_ACCEPT" desc="A button label shown in the notification for the resolution change to accept the change">
         Accept
       </message>
@@ -4353,6 +4375,9 @@ No devices connected.
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_NEW_INCOGNITO_WINDOW" translateable="false" desc="Label for accelerator action - Open new Incognito window.">
         Open new Incognito window
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_NEW_SPLIT_VIEW" desc="Label for accelerator action - Add tab to new split view.">
+        Add tab to new split view
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_NEW_TAB" desc="Label for accelerator action - Open new tab.">
         Open new tab
@@ -6020,213 +6045,6 @@ No devices connected.
         To get the update, use the touchscreen to restart your Chromebook with the keyboard attached.
       </message>
 
-      <!-- Assistant -->
-      <message name="IDS_ASH_ASSISTANT_WINDOW" desc="The accessible description of the Assistant window.">
-        Assistant
-      </message>
-      <message name="IDS_ASH_ASSISTANT_DIALOG_PLATE_HINT" desc="Message shown as a placeholder in Assistant's input textfield when empty.">
-        Type a message
-      </message>
-      <message name="IDS_ASH_ASSISTANT_DIALOG_PLATE_KEYBOARD_ACCNAME" desc="Accessibility name for a keyboard image button when clicked shows an input textfield for user to type in queries.">
-        Start a text query
-      </message>
-      <message name="IDS_ASH_ASSISTANT_DIALOG_PLATE_KEYBOARD_TOOLTIP" desc="Tooltip for a keyboard image button when clicked shows an input textfield for user to type in queries.">
-        Text input
-      </message>
-      <message name="IDS_ASH_ASSISTANT_DIALOG_PLATE_MIC_ACCNAME" desc="Accessibility name for a microphone image button when clicked starts listening for user's voice queries.">
-        Start a voice query
-      </message>
-      <message name="IDS_ASH_ASSISTANT_DIALOG_PLATE_MIC_TOOLTIP" desc="Tooltip for a microphone image button when clicked starts listening for user's voice queries.">
-        Voice input
-      </message>
-      <message name="IDS_ASH_ASSISTANT_DIALOG_PLATE_SETTINGS_ACCNAME_TOOLTIP" desc="Accessibility name and tooltip for a settings image button when clicked shows Assistant settings.">
-        Assistant Settings
-      </message>
-      <message name="IDS_ASH_ASSISTANT_ERROR_GENERIC" desc="Generic message shown when Assistant is in an error state.">
-        Something went wrong. Try again in a few seconds.
-      </message>
-      <message name="IDS_ASH_ASSISTANT_PROMPT_DEFAULT" desc="Message shown to indicate that Assistant is ready to receive a query in Assistant UI.">
-        Hi, how can I help?
-      </message>
-      <message name="IDS_ASH_ASSISTANT_PROMPT_STYLUS" desc="Message shown to indicate that Assistant is ready to receive a selection made using the stylus.">
-        Use your stylus to select
-      </message>
-      <message name="IDS_ASH_ASSISTANT_NOTIFICATION_DISPLAY_SOURCE" desc="The name for the source of the assistant notification.">
-        Assistant
-      </message>
-      <message name="IDS_ASH_ASSISTANT_OPT_IN_ASK_ADMINISTRATOR" desc="Message shown in Assistant UI to direct a G Suite user to a page that specifies how the administrator can remove policy restrictions such that the user has access to more Assistant features.">
-        Ask Administrator
-      </message>
-      <message name="IDS_ASH_ASSISTANT_OPT_IN_GET_STARTED" desc="Message shown in Assistant UI when the user is opted out to promote an opted in experience.">
-        Get Started
-      </message>
-      <message name="IDS_ASH_ASSISTANT_OPT_IN_UNLOCK_MORE_FEATURES" desc="Message shown in Assistant UI when the user is opted out to promote an opted in experience.">
-        Unlock more Assistant features.
-      </message>
-      <message name="IDS_ASH_ASSISTANT_OPT_IN_PROMPT" desc="Message shown in Assistant UI when the user is opted out to promote an opted in experience. $1 = IDS_ASH_ASSISTANT_OPT_IN_UNLOCK_MORE_FEATURES, $2 = IDS_ASH_ASSISTANT_OPT_IN_GET_STARTED">
-        <ph name="UNLOCK_MORE_FEATURES">$1<ex>Unlock more Assistant features.</ex></ph>  <ph name="GET_STARTED">$2<ex>Get Started</ex></ph>
-      </message>
-      <message name="IDS_ASH_ASSISTANT_MULTI_DEVICE_HOTWORD_LOSS" desc="Message shown in Assistant UI when we have detected hotword but are answering on another device.">
-        Answering on another device.
-      </message>
-      <message name="IDS_ASH_ASSISTANT_CHIP_IM_BORED" desc="Message shown on suggestion chip in Assistant UI to initiate a query for something amusing, a joke for example.">
-        I'm bored
-      </message>
-      <message name="IDS_ASH_ASSISTANT_CHIP_OPEN_FILES" desc="Message shown on suggestion chip in Assistant UI to initiate a query to open files.">
-        Open files
-      </message>
-      <message name="IDS_ASH_ASSISTANT_CHIP_PLAY_MUSIC" desc="Message shown on suggestion chip in Assistant UI to initiate a query to play music.">
-        Play music
-      </message>
-      <message name="IDS_ASH_ASSISTANT_CHIP_SEARCH" desc="Message shown on suggestion chip in Assistant UI to initiate a query for search results.">
-        Search
-      </message>
-      <message name="IDS_ASH_ASSISTANT_CHIP_SEND_AN_EMAIL" desc="Message shown on suggestion chip in Assistant UI to initiate a query to send an email.">
-        Send an email
-      </message>
-      <message name="IDS_ASH_ASSISTANT_CHIP_SET_A_REMINDER" desc="Message shown on suggestion chip in Assistant UI to initiate a query to set a reminder.">
-        Set a reminder
-      </message>
-      <message name="IDS_ASH_ASSISTANT_CHIP_TELL_ME_A_JOKE" desc="Message shown on suggestion chip in Assistant UI to initiate a query to tell a joke.">
-        Tell me a joke
-      </message>
-      <message name="IDS_ASH_ASSISTANT_CHIP_WHAT_CAN_YOU_DO" desc="Message shown on suggestion chip in Assistant UI to initiate a query for Assistant capabilities.">
-        What can you do?
-      </message>
-      <message name="IDS_ASH_ASSISTANT_CHIP_WHATS_ON_MY_CALENDAR" desc="Message shown on suggestion chip in Assistant UI to initiate a query for upcoming calendar events.">
-        What's on my calendar?
-      </message>
-      <message name="IDS_ASH_ASSISTANT_CHIP_WHATS_THE_WEATHER" desc="Message shown on suggestion chip in Assistant UI to initiate a query for the current weather.">
-        What's the weather?
-      </message>
-      <message name="IDS_ASH_ASSISTANT_ONBOARDING_SUGGESTION_CONVERSION" desc="Message shown in an onboarding suggestion in Assistant UI to initiate a conversion query.">
-        5K in miles
-      </message>
-      <message name="IDS_ASH_ASSISTANT_ONBOARDING_SUGGESTION_KNOWLEDGE" desc="Message shown in an onboarding suggestion in Assistant UI to initiate a knowledge query.">
-        Population in Nigeria
-      </message>
-      <message name="IDS_ASH_ASSISTANT_ONBOARDING_SUGGESTION_KNOWLEDGE_EDU" desc="Message shown to EDU users in an onboarding suggestion in Assistant UI to initiate a knowledge query.">
-        How far is Venus
-      </message>
-      <message name="IDS_ASH_ASSISTANT_ONBOARDING_SUGGESTION_LANGUAGE" desc="Message shown in an onboarding suggestion in Assistant UI to initiate a personality query.">
-        "Hello" in Chinese
-      </message>
-      <message name="IDS_ASH_ASSISTANT_ONBOARDING_SUGGESTION_MATH" desc="Message shown in an onboarding suggestion in Assistant UI to initiate a math query.">
-        Square root of 71
-      </message>
-      <message name="IDS_ASH_ASSISTANT_ONBOARDING_SUGGESTION_PERSONALITY" desc="Message shown in an onboarding suggestion in Assistant UI to initiate a personality query.">
-        Tell me a joke
-      </message>
-      <message name="IDS_ASH_ASSISTANT_ONBOARDING_SUGGESTION_PRODUCTIVITY" desc="Message shown in an onboarding suggestion in Assistant UI to initiate a productivity query.">
-        Set timer
-      </message>
-      <message name="IDS_ASH_ASSISTANT_ONBOARDING_SUGGESTION_TECHNICAL" desc="Message shown in an onboarding suggestion in Assistant UI to initiate a technical query.">
-        Take a screenshot
-      </message>
-      <message name="IDS_ASSISTANT_TIMER_NOTIFICATION_MESSAGE" desc="Message for Assistant timer notification. Example: 10m timer.">
-        <ph name="TOTAL_TIME">{0}<ex>10m</ex></ph> timer
-      </message>
-      <message name="IDS_ASSISTANT_TIMER_NOTIFICATION_MESSAGE_WITH_LABEL" desc="Message for Assistant timer notification. Example: 10m timer · Eggs.">
-        <ph name="TOTAL_TIME">{0}<ex>10m</ex></ph> timer &#x00B7; <ph name="LABEL">{1}<ex>Eggs</ex></ph>
-      </message>
-      <message name="IDS_ASSISTANT_TIMER_NOTIFICATION_MESSAGE_WHEN_FIRED" desc="Message for Assistant timer notification once the timer has fired.">
-        Time's up
-      </message>
-      <message name="IDS_ASSISTANT_TIMER_NOTIFICATION_MESSAGE_WHEN_FIRED_WITH_LABEL" desc="Message for Assistant timer notification once the timer has fired. Example: Time's up · Eggs.">
-        Time's up &#x00B7; <ph name="LABEL">{1}<ex>Eggs</ex></ph>
-      </message>
-      <message name="IDS_ASSISTANT_TIMER_NOTIFICATION_FORMATTED_TIME_NEGATE" desc="Negates a formatted time string. Example: -10:27.">
-        -<ph name="FORMATTED_TIME">{0}<ex>10:27</ex></ph>
-      </message>
-      <message name="IDS_ASSISTANT_TIMER_NOTIFICATION_FORMATTED_TIME_NARROW_FALLBACK" desc="Fallback for a narrow formatted time string. Example: 10h 27m 0s.">
-        <ph name="HOURS">{0}<ex>10</ex></ph>h <ph name="MINUTES">{1}<ex>27</ex></ph>m <ph name="SECONDS">{2}<ex>0</ex></ph>s
-      </message>
-      <message name="IDS_ASSISTANT_TIMER_NOTIFICATION_FORMATTED_TIME_NUMERIC_FALLBACK" desc="Fallback for a numeric formatted time string. Example: 10:27:00.">
-        <ph name="HOURS">{0, number,00}<ex>10</ex></ph>:<ph name="MINUTES">{1, number,00}<ex>27</ex></ph>:<ph name="SECONDS">{2, number,00}<ex>00</ex></ph>
-      </message>
-      <message name="IDS_ASSISTANT_TIMER_NOTIFICATION_ADD_1_MIN_BUTTON" desc="Label for button to add 1 minute to timer in Assistant timer notification.">
-        Add 1 min
-      </message>
-      <message name="IDS_ASSISTANT_TIMER_NOTIFICATION_CANCEL_BUTTON" desc="Label for cancel button in Assistant timer notification.">
-        Cancel
-      </message>
-      <message name="IDS_ASSISTANT_TIMER_NOTIFICATION_PAUSE_BUTTON" desc="Label for pause button in Assistant timer notification.">
-        Pause
-      </message>
-      <message name="IDS_ASSISTANT_TIMER_NOTIFICATION_RESUME_BUTTON" desc="Label for resume button in Assistant timer notification.">
-        Resume
-      </message>
-      <message name="IDS_ASSISTANT_TIMER_NOTIFICATION_STOP_BUTTON" desc="Label for stop button in Assistant timer notification.">
-        Stop
-      </message>
-      <message name="IDS_ASSISTANT_CREATE_REMINDER_QUERY" desc="Query to issue to create reminder.">
-        Create reminder
-      </message>
-      <message name="IDS_ASSISTANT_EDIT_REMINDER_QUERY" desc="Query to issue to edit reminder.">
-        Edit reminder
-      </message>
-      <message name="IDS_ASSISTANT_AMBIENT_GREETING_MESSAGE" desc="Greetings message shown on Ambient Mode UI.">
-        Hi, <ph name="USERNAME">$1</ph>
-      </message>
-      <message name="IDS_ASSISTANT_BETTER_ONBOARDING_GREETING_MORNING" desc="Message shown to greet the user in Assistant UI during the morning.">
-        Good morning <ph name="GIVEN_NAME">$1<ex>David</ex></ph>,
-      </message>
-      <message name="IDS_ASSISTANT_BETTER_ONBOARDING_GREETING_MORNING_WITHOUT_NAME" desc="Message shown to greet the user in Assistant UI during the morning.">
-        Good morning,
-      </message>
-      <message name="IDS_ASSISTANT_BETTER_ONBOARDING_GREETING_AFTERNOON" desc="Message shown to greet the user in Assistant UI during the afternoon.">
-        Good afternoon <ph name="GIVEN_NAME">$1<ex>David</ex></ph>,
-      </message>
-      <message name="IDS_ASSISTANT_BETTER_ONBOARDING_GREETING_AFTERNOON_WITHOUT_NAME" desc="Message shown to greet the user in Assistant UI during the afternoon.">
-        Good afternoon,
-      </message>
-      <message name="IDS_ASSISTANT_BETTER_ONBOARDING_GREETING_EVENING" desc="Message shown to greet the user in Assistant UI during the evening.">
-        Good evening <ph name="GIVEN_NAME">$1<ex>David</ex></ph>,
-      </message>
-      <message name="IDS_ASSISTANT_BETTER_ONBOARDING_GREETING_EVENING_WITHOUT_NAME" desc="Message shown to greet the user in Assistant UI during the evening.">
-        Good evening,
-      </message>
-      <message name="IDS_ASSISTANT_BETTER_ONBOARDING_GREETING_NIGHT" desc="Message shown to greet the user in Assistant UI during the night.">
-        Good night <ph name="GIVEN_NAME">$1<ex>David</ex></ph>,
-      </message>
-      <message name="IDS_ASSISTANT_BETTER_ONBOARDING_GREETING_NIGHT_WITHOUT_NAME" desc="Message shown to greet the user in Assistant UI during the night.">
-        Good night,
-      </message>
-      <message name="IDS_ASSISTANT_BETTER_ONBOARDING_INTRO" desc="Message shown to introduce Assistant capabilities to the user.">
-        I'm your Google Assistant, here to help you throughout your day!
-Here are some things you can try to get started.
-      </message>
-      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_WEATHER" desc="Message shown on suggestion chip in LauncherSearchIphView to initiate a query." meaning="Query text on the button. [CHAR_LIMIT=14]">
-        Weather
-      </message>
-      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_UNIT_CONVERSION1" desc="Message shown on suggestion chip in LauncherSearchIphView to initiate a query." meaning="Query text on the button. [CHAR_LIMIT=14]">
-        5 ft in m
-      </message>
-      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_UNIT_CONVERSION2" desc="Message shown on suggestion chip in LauncherSearchIphView to initiate a query." meaning="Query text on the button. [CHAR_LIMIT=14]">
-        90°F in C
-      </message>
-      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_TRANSLATION" desc="Message shown on suggestion chip in LauncherSearchIphView to initiate a query." meaning="Query text on the button. [CHAR_LIMIT=14]">
-        Hi in French
-      </message>
-      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_DEFINITION" desc="Message shown on suggestion chip in LauncherSearchIphView to initiate a query." meaning="Query text on the button. [CHAR_LIMIT=14]">
-        Define zenith
-      </message>
-      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_CALCULATION" desc="Message shown on suggestion chip in LauncherSearchIphView to initiate a query." meaning="Query text on the button. [CHAR_LIMIT=14]">
-        50+94/5
-      </message>
-      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_ASSISTANT" desc="Message shown on suggestion chip in LauncherSearchIphView to open the Assistant UI." meaning="Text on the button. [CHAR_LIMIT=14]">
-        Go to Assistant
-      </message>
-      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_ACCNAME_PREFIX" desc="The prefix for the accessible name of the suggestion chip in LauncherSearchIphView.">
-        Search for <ph name="text">$1<ex>Weather</ex></ph>
-      </message>
-      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_TITLE" desc="Text shown in LauncherSearchIphView.">
-        Search for what you need directly in Launcher
-      </message>
-      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_DESCRIPTION" desc="Description shown in LauncherSearchIphView.">
-        Here are a few suggestions to try
-      </message>
-
       <!-- For ScreenCaptureTrayItemView -->
       <message name="IDS_ASH_ADMIN_SCREEN_CAPTURE" desc="Tooltip message shown at the systray screen capture indicator when an administrator is capturing the screens.">
         Your system administrator is monitoring your screens
@@ -7100,7 +6918,7 @@ Here are some things you can try to get started.
 
       <!-- Multipaste -->
       <message name="IDS_ASH_CLIPBOARD_HISTORY_CONTROL_V_LONGPRESS_FOOTER" desc="The message used to educate users about the clipboard history menu that shows when they hold down Ctrl+V.">
-        You’ll see the clipboard when you press and hold Ctrl + V. You can turn off this shortcut by disabling the #clipboard-history-longpress flag in chrome://flags (os://flags if using Lacros).
+        You’ll see the clipboard when you press and hold Ctrl + V. You can turn off this shortcut by disabling the #clipboard-history-longpress flag in chrome://flags.
       </message>
       <message name="IDS_ASH_CLIPBOARD_HISTORY_FOOTER" desc="The message used to educate users about the clipboard history menu that shows when they use the feature for the first time (or for the first time in a long time).">
         Select an item to paste it. You can see the clipboard by pressing <ph name="SHORTCUT_KEY_NAME">$1<ex>Launcher</ex></ph> + v.
@@ -7946,7 +7764,7 @@ New install
       </message>
       <message name="IDS_PICKER_FEATURE_TOUR_START_BUTTON_LABEL"
         desc="This string appears as the label of a button in a feature tour dialog. When selected, this button closes the dialog and activates the feature.">
-        Get started
+        Got it
       </message>
       <message name="IDS_PICKER_LIST_ITEM_ACCESSIBLE_NAME"
         desc="This string is read out by a screen reader to describe a search result. The search result contains two lines of text: a primary text (e.g. the title of a page) and a secondary text (e.g. the URL of a page). The commas are significant as they will introduce a pause in the spoken text. This string is used inside the placeholder of another message.">
@@ -8028,6 +7846,14 @@ New install
       <message name="IDS_QUICK_INSERT_FEATURED_GIFS_CATEGORY_TYPE_SECTION_TITLE"
         desc="This string appears as the heading text of a section. This section contains a grid of featured GIFs (in the sense of highlighted or promoted). The featured GIFs change throughout the day.">
         Featured GIFs
+      </message>
+      <message name="IDS_QUICK_INSERT_FEATURE_TOUR_WITH_EDITOR_BODY_TEXT"
+        desc="The body text for the Quick Insert feature tour when Help Me Write is available.">
+        Insert links, emojis, and more. You can also get help writing with Google AI. <ph name="LINK_TO_LEARN_MORE">$1<ex>Learn more</ex></ph>
+      </message>
+      <message name="IDS_QUICK_INSERT_FEATURE_TOUR_WITHOUT_EDITOR_BODY_TEXT"
+        desc="The body text for the Quick Insert feature tour when Help Me Write is unavailable.">
+        Insert links from places such as your browsing history and Google Drive. You can also insert emojis, image files, and more. <ph name="LINK_TO_LEARN_MORE">$1<ex>Learn more</ex></ph>
       </message>
 
       <!-- Lobster -->
@@ -8591,7 +8417,6 @@ To shut down the device, press and hold the power button on the device again.
         Frequently used controls like Wi-Fi, Bluetooth and volume are in Quick Settings. You can also go here to take screenshots.
       </message>
 
-      <!-- TODO(b/286455407): Update strings once finalized with UX Writing -->
       <!-- Game Dashboard strings -->
       <message name="IDS_ASH_GAME_DASHBOARD_BACK_TOOLTIP" desc="Tooltip for the Game Dashboard back button.">
         Back
@@ -9243,6 +9068,17 @@ To shut down the device, press and hold the power button on the device again.
       </message>
       <message name="IDS_ASH_ERROR_MESSAGE_TOAST_SETTINGS" desc="An error message toast is a notification that shows up when an error occurs. This is the text that is displayed on the button when the action is to upgrade the operating system (by opening settings).">
         Settings
+      </message>
+
+      <!-- Borealis MOTD -->
+      <message name="IDS_ASH_BOREALIS_MOTD_DISMISS_TEXT" desc="Text on dismiss button in Borealis MOTD. Clicking on it will dismiss the dialog.">
+        Dismiss
+      </message>
+      <message name="IDS_ASH_BOREALIS_MOTD_PLACEHOLDER_TEXT" desc="Placeholder text for Borealis MOTD. Shown if the message of the day is unable to be retrieved from the Static Content Service.">
+        Unable to retrieve Steam for Chromebook news.
+      </message>
+      <message name="IDS_ASH_BOREALIS_MOTD_TITLE_TEXT" desc="Title text for Borealis MOTD. Shown at the top of the dialog.">
+        Steam for Chromebook News
       </message>
      </messages>
     </release>

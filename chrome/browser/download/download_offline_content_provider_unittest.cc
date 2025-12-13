@@ -13,12 +13,15 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/uuid.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/download/public/common/mock_simple_download_manager.h"
 #include "components/offline_items_collection/core/test_support/scoped_mock_offline_content_provider.h"
 #include "components/safe_browsing/buildflags.h"
+#include "content/public/test/browser_task_environment.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,7 +30,11 @@
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
-#include "content/public/test/browser_task_environment.h"
+#endif
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#include "chrome/browser/download/download_core_service.h"
+#include "chrome/browser/download/download_core_service_factory.h"
 #endif
 
 using ::testing::_;
@@ -49,21 +56,20 @@ constexpr char kTestReferrerUrl[] = "http://www.examplereferrerurl.com";
 
 }  // namespace
 
-class DownloadOfflineContentProviderTestBase : public testing::Test {
+class DownloadOfflineContentProviderTest : public testing::Test {
  public:
-  // Subclasses must provide a TaskEnvironment directly.
-  explicit DownloadOfflineContentProviderTestBase(
-      std::unique_ptr<base::test::TaskEnvironment> task_environment)
-      : task_environment_(std::move(task_environment)),
-        provider_(&aggregator_, kTestDownloadNamespace),
-        coordinator_(base::NullCallback()) {}
+  DownloadOfflineContentProviderTest()
+      : provider_(&aggregator_, kTestDownloadNamespace),
+        coordinator_(base::NullCallback()) {
+    provider_.OnProfileCreated(&profile_);
+  }
 
-  DownloadOfflineContentProviderTestBase(
-      const DownloadOfflineContentProviderTestBase&) = delete;
-  DownloadOfflineContentProviderTestBase& operator=(
-      const DownloadOfflineContentProviderTestBase&) = delete;
+  DownloadOfflineContentProviderTest(
+      const DownloadOfflineContentProviderTest&) = delete;
+  DownloadOfflineContentProviderTest& operator=(
+      const DownloadOfflineContentProviderTest&) = delete;
 
-  ~DownloadOfflineContentProviderTestBase() override = default;
+  ~DownloadOfflineContentProviderTest() override = default;
 
   void InitializeDownloads(bool full_browser) {
     coordinator_.SetSimpleDownloadManager(&mock_manager_, full_browser);
@@ -110,24 +116,18 @@ class DownloadOfflineContentProviderTestBase : public testing::Test {
 
   void RunUntilMainThreadIdle() {
     ASSERT_TRUE(base::test::RunUntil(
-        [&]() { return task_environment_->MainThreadIsIdle(); }));
+        [&]() { return task_environment_.MainThreadIsIdle(); }));
   }
 
  protected:
-  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  // TestingProfile requires a browser-style task environment.
+  content::BrowserTaskEnvironment task_environment_;
+  // Some methods under test require a profile.
+  TestingProfile profile_;
   OfflineContentAggregator aggregator_;
   DownloadOfflineContentProvider provider_;
   SimpleDownloadManagerCoordinator coordinator_;
   NiceMock<download::MockSimpleDownloadManager> mock_manager_;
-};
-
-class DownloadOfflineContentProviderTest
-    : public DownloadOfflineContentProviderTestBase {
- public:
-  DownloadOfflineContentProviderTest()
-      : DownloadOfflineContentProviderTestBase(
-            std::make_unique<base::test::SingleThreadTaskEnvironment>(
-                base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
 };
 
 TEST_F(DownloadOfflineContentProviderTest, PauseDownloadBeforeInit) {
@@ -274,12 +274,8 @@ TEST_F(DownloadOfflineContentProviderTest, ShowValidatedDownload) {
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && BUILDFLAG(IS_ANDROID)
 class DownloadOfflineContentProviderWithSafeBrowsingTest
-    : public DownloadOfflineContentProviderTestBase {
+    : public DownloadOfflineContentProviderTest {
  public:
-  DownloadOfflineContentProviderWithSafeBrowsingTest()
-      : DownloadOfflineContentProviderTestBase(
-            std::make_unique<content::BrowserTaskEnvironment>()) {}
-
   void SetUp() override {
     sb_service_ =
         base::MakeRefCounted<safe_browsing::TestSafeBrowsingService>();
@@ -287,11 +283,11 @@ class DownloadOfflineContentProviderWithSafeBrowsingTest
         sb_service_.get());
     g_browser_process->safe_browsing_service()->Initialize();
 
-    DownloadOfflineContentProviderTestBase::SetUp();
+    DownloadOfflineContentProviderTest::SetUp();
   }
 
   void TearDown() override {
-    DownloadOfflineContentProviderTestBase::TearDown();
+    DownloadOfflineContentProviderTest::TearDown();
     TestingBrowserProcess::GetGlobal()->safe_browsing_service()->ShutDown();
     TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
     test_safe_browsing_service()->ClearDownloadReport();
@@ -335,3 +331,59 @@ TEST_F(DownloadOfflineContentProviderWithSafeBrowsingTest,
   EXPECT_TRUE(sent_report.did_proceed());
 }
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+// Tests that when the UI is hidden by an extension updates do not show.
+TEST_F(DownloadOfflineContentProviderTest, DoNotShowHiddenByExtension) {
+  DownloadCoreService* service =
+      DownloadCoreServiceFactory::GetForBrowserContext(&profile_);
+  service->SetDownloadUiEnabledForTest(false);
+
+  const std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateMockDownloadItem(guid);
+
+  ScopedMockObserver observer{&provider_};
+  EXPECT_CALL(observer, OnItemUpdated(_, _)).Times(0);
+
+  InitializeDownloads(true);
+  provider_.OnDownloadUpdated(item.get());
+  RunUntilMainThreadIdle();
+}
+
+// Tests that when the UI is hidden by an extension dangerous updates do show.
+TEST_F(DownloadOfflineContentProviderTest, DoShowDangerousHiddenByExtension) {
+  DownloadCoreService* service =
+      DownloadCoreServiceFactory::GetForBrowserContext(&profile_);
+  service->SetDownloadUiEnabledForTest(false);
+
+  const std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  ContentId id(kTestDownloadNamespace, guid);
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateMockDownloadItem(guid);
+
+  EXPECT_CALL(*item, IsDangerous()).WillRepeatedly(Return(true));
+
+  ScopedMockObserver observer{&provider_};
+  EXPECT_CALL(
+      observer,
+      OnItemUpdated(Field(&OfflineItem::id, Eq(id)),
+                    Optional(Field(&UpdateDelta::visuals_changed, true))))
+      .Times(1);
+
+  InitializeDownloads(true);
+  provider_.OnDownloadUpdated(item.get());
+  RunUntilMainThreadIdle();
+}
+
+// Tests that OnDownloadUpdated() does not crash when profile is null.
+TEST_F(DownloadOfflineContentProviderTest, OnDownloadUpdatedWithNullProfile) {
+  provider_.OnProfileCreated(nullptr);
+  const std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateMockDownloadItem(guid);
+  provider_.OnDownloadUpdated(item.get());
+  // No crash.
+  RunUntilMainThreadIdle();
+}
+#endif

@@ -74,6 +74,8 @@ public class QuickDeleteTabsFilterTest {
             mMockTabList.add(mockTab);
         }
         // Update the tab model.
+        when(mTabModelMock.iterator()).thenAnswer(invocation -> mMockTabList.iterator());
+        when(mComprehensiveModel.iterator()).thenAnswer(invocation -> mMockTabList.iterator());
         when(mTabModelMock.getCount()).thenReturn(countOfTabs);
         when(mComprehensiveModel.getCount()).thenReturn(countOfTabs);
         for (int i = 0; i < countOfTabs; i++) {

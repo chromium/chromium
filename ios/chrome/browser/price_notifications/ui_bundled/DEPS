@@ -6,5 +6,5 @@ include_rules = [
   "+ios/chrome/browser/push_notification/model",
   "+ios/chrome/browser/tabs/model/tab_title_util.h",
   "+ios/chrome/browser/first_run/public/best_features_item.h",
-  "+ios/chrome/browser/first_run/public/features.h",
+  "+ios/chrome/browser/welcome_back/model/features.h",
 ]

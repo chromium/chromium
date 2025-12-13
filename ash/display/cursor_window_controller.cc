@@ -63,7 +63,7 @@ std::vector<gfx::ImageSkia> GetCursorImages(
   // or fast ink canvas (for fast ink based cursor), so don't do any
   // rotation here.
   std::optional<ui::CursorData> cursor_data = wm::GetCursorData(
-      type, cursor_size, dsf,
+      type, dsf,
       cursor_size == ui::CursorSize::kLarge
           ? std::make_optional(target_cursor_size_in_dip * dsf)
           : std::nullopt,
@@ -211,7 +211,12 @@ void CursorWindowController::SetLargeCursorSizeInDip(
 void CursorWindowController::SetCursorColor(SkColor cursor_color) {
   if (cursor_color_ == cursor_color)
     return;
+
   cursor_color_ = cursor_color;
+
+  // Reset cursor lottie animation cache when new color needs to be applied.
+  wm::ClearCursorAnimationCache();
+
   if (display_.is_valid())
     UpdateCursorImage();
 }
@@ -298,7 +303,7 @@ void CursorWindowController::SetCursorCompositingEnabled(bool enabled) {
 
 void CursorWindowController::UpdateContainer() {
   if (is_cursor_compositing_enabled_) {
-    display::Screen* screen = display::Screen::GetScreen();
+    display::Screen* screen = display::Screen::Get();
     display::Display display =
         screen->GetDisplayNearestPoint(screen->GetCursorScreenPoint());
     DCHECK(display.is_valid());
@@ -320,6 +325,16 @@ void CursorWindowController::SetDisplay(const display::Display& display) {
   }
 
   display_ = display;
+
+  Shell* shell = Shell::Get();
+  auto& managed_display_info =
+      shell->display_manager()->GetDisplayInfo(display_.id());
+  max_update_rate_ms_ =
+      (1000.f / managed_display_info.refresh_rate()) * 2.f / 3.f;
+
+  // Make sure next mouse event will update the cursor.
+  last_updated_.reset();
+
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display.id());
   if (!root_window)
     return;
@@ -350,7 +365,17 @@ void CursorWindowController::OnFullscreenMagnifierEnabled(bool enabled) {
   UpdateCursorMode();
 }
 
-void CursorWindowController::UpdateLocation() {
+void CursorWindowController::UpdateLocation(bool throttle) {
+  // Throttle cursor updates.
+  if (throttle) {
+    auto now = base::TimeTicks::Now();
+    if (last_updated_ &&
+        (now - *last_updated_).InMilliseconds() < max_update_rate_ms_) {
+      return;
+    }
+    last_updated_ = now;
+  }
+
   if (cursor_view_widget_) {
     gfx::Point cursor_location =
         aura::Env::GetInstance()->last_mouse_location();
@@ -616,6 +641,7 @@ void CursorWindowController::UpdateCursorMode() {
   }
 
   if (ShouldUseFastInk()) {
+    delegate_->SetCursorWindow(nullptr);
     cursor_window_.reset();
     UpdateCursorView();
   } else {

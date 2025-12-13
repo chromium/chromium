@@ -7,6 +7,7 @@
 #include <atomic>
 
 #include "base/functional/bind.h"
+#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom-data-view.h"
 
 namespace memory_instrumentation {
 namespace {
@@ -15,9 +16,9 @@ std::atomic<MemoryInstrumentation*> g_instance = nullptr;
 
 void WrapGlobalMemoryDump(
     MemoryInstrumentation::RequestGlobalDumpCallback callback,
-    bool success,
+    mojom::RequestOutcome outcome,
     mojom::GlobalMemoryDumpPtr dump) {
-  std::move(callback).Run(success, GlobalMemoryDump::MoveFrom(std::move(dump)));
+  std::move(callback).Run(outcome, GlobalMemoryDump::MoveFrom(std::move(dump)));
 }
 }  // namespace
 

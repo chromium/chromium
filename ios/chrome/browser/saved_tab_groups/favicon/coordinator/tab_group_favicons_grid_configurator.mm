@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/saved_tab_groups/favicon/coordinator/tab_group_favicons_grid_configurator.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/notreached.h"
 #import "base/uuid.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -106,11 +107,12 @@ void TabGroupFaviconsGridConfigurator::ConfigureFaviconsGrid(
     favicon = fallback_image;
     const auto saved_tab = saved_tabs[index];
     favicon_loader_->FaviconForPageUrlOrHost(
-        saved_tab.url(), gfx::kFaviconSize, ^(FaviconAttributes* attributes) {
+        saved_tab.url(), gfx::kFaviconSize,
+        ^(FaviconAttributes* attributes, bool cached) {
           if (!weak_token) {
             return;
           }
-          if (attributes.usesDefaultImage || !attributes.faviconImage) {
+          if (!attributes.faviconImage) {
             UpdateFaviconsGrid(favicons_grid, favicon, index);
           } else {
             UpdateFaviconsGrid(favicons_grid, attributes.faviconImage, index);
@@ -188,12 +190,13 @@ void TabGroupFaviconsGridConfigurator::FetchFaviconsGrid(
     const auto saved_tab = saved_tabs[index];
     favicon_loader_->FaviconForPageUrl(
         saved_tab.url(), kFaviconSize, kFaviconMinimumSize,
-        /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {
+        /*fallback_to_google_server=*/true,
+        ^(FaviconAttributes* attributes, bool cached) {
           if (completion_block_executed) {
             return;
           }
           // Synchronously returned default favicon.
-          if (attributes.usesDefaultImage) {
+          if (cached && !attributes.faviconImage) {
             UpdateFaviconsGrid(favicons_grid, favicon, index);
             return;
           }

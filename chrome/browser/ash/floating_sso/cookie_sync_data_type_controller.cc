@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/floating_sso/cookie_sync_data_type_controller.h"
 
 #include "base/functional/bind.h"
-#include "chrome/common/pref_names.h"
+#include "chromeos/constants/pref_names.h"
 #include "components/sync/service/sync_service.h"
 
 namespace ash::floating_sso {
@@ -22,7 +22,7 @@ CookieSyncDataTypeController::CookieSyncDataTypeController(
       prefs_(prefs) {
   pref_change_registrar_.Init(prefs_);
   pref_change_registrar_.Add(
-      prefs::kFloatingSsoEnabled,
+      chromeos::prefs::kFloatingSsoEnabled,
       base::BindRepeating(
           &CookieSyncDataTypeController::OnFloatingSsoPrefChanged,
           base::Unretained(this)));
@@ -34,7 +34,7 @@ syncer::DataTypeController::PreconditionState
 CookieSyncDataTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());
 
-  if (!prefs_->GetBoolean(prefs::kFloatingSsoEnabled)) {
+  if (!prefs_->GetBoolean(chromeos::prefs::kFloatingSsoEnabled)) {
     return PreconditionState::kMustStopAndClearData;
   }
 

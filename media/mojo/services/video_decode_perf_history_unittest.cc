@@ -230,9 +230,9 @@ class VideoDecodePerfHistoryTest : public testing::Test {
     // Check that the UKM verification is complete before the test exits.
     EXPECT_CALL(*this, UkmVerifyDoneCb());
 
-    perf_history_->GetSaveCallback().Run(
-        source_id, learning::FeatureValue(kOrigin.host()), is_top_frame,
-        features, targets, player_id, std::move(save_done_cb));
+    perf_history_->GetSaveCallback().Run(source_id, is_top_frame, features,
+                                         targets, player_id,
+                                         std::move(save_done_cb));
   }
 
  protected:

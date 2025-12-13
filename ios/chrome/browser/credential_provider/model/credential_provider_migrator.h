@@ -26,6 +26,15 @@ enum class PasskeysMigrationStatus {
   kMaxValue = kInvalidPasskey
 };
 
+// Error domain for credential provider migration errors.
+extern NSErrorDomain const kCredentialProviderMigratorErrorDomain;
+
+// Possible error codes in case of migration failure.
+typedef enum : NSInteger {
+  kCredentialProviderMigratorErrorAlreadyRunning,
+  kCredentialProviderMigratorErrorBackgroundedApp,
+} CredentialProviderMigratorErrors;
+
 @interface CredentialProviderMigrator : NSObject
 - (instancetype)
     initWithUserDefaults:(NSUserDefaults*)userDefaults

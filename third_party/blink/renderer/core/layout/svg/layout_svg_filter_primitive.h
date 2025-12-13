@@ -44,7 +44,9 @@ class LayoutSVGFilterPrimitive final : public LayoutObject {
   }
 
   void WillBeDestroyed() override;
-  void StyleDidChange(StyleDifference, const ComputedStyle*) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle*,
+                      const StyleChangeContext&) override;
   SVGLayoutResult UpdateSVGLayout(const SVGLayoutInfo&) override;
 
   const char* GetName() const override {
@@ -71,7 +73,8 @@ class LayoutSVGFilterPrimitive final : public LayoutObject {
     NOT_DESTROYED();
     return gfx::RectF();
   }
-  gfx::RectF LocalBoundingBoxRectForAccessibility() const override {
+  gfx::RectF LocalBoundingBoxRectForAccessibility(
+      IncludeDescendants include_descendants) const override {
     NOT_DESTROYED();
     return gfx::RectF();
   }

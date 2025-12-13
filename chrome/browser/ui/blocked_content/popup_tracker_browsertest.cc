@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
@@ -141,8 +143,9 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
       entry, kUkmNumGestureScrollBeginInteractions, 0u);
 }
 
+// TODO(crbug.com/435578530): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
-                       WindowOpenPopup_WithInteraction) {
+                       DISABLED_WindowOpenPopup_WithInteraction) {
   base::HistogramTester tester;
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
@@ -248,10 +251,10 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   navigation_observer.Wait();
 
   EXPECT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
-  content::WebContents* new_contents = BrowserList::GetInstance()
-                                           ->GetLastActive()
-                                           ->tab_strip_model()
-                                           ->GetActiveWebContents();
+  content::WebContents* new_contents =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+          ->GetTabStripModel()
+          ->GetActiveWebContents();
   EXPECT_TRUE(blocked_content::PopupTracker::FromWebContents(new_contents));
 
   // Close the popup and check metric.

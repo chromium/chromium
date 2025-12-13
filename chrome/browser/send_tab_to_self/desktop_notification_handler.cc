@@ -53,7 +53,7 @@ void DesktopNotificationHandler::DisplayNewEntries(
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE, entry->GetGUID(),
         base::UTF8ToUTF16(entry->GetTitle()), device_info, ui::ImageModel(),
-        base::UTF8ToUTF16(url.host()), url, message_center::NotifierId(url),
+        base::UTF8ToUTF16(url.GetHost()), url, message_center::NotifierId(url),
         optional_fields, /*delegate=*/nullptr);
     NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
         NotificationHandler::Type::SEND_TAB_TO_SELF, notification,
@@ -95,7 +95,7 @@ void DesktopNotificationHandler::OnClick(
     // and close the activated notification.
     NavigateParams params(profile, origin, ui::PAGE_TRANSITION_LINK);
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-    params.window_action = NavigateParams::SHOW_WINDOW;
+    params.window_action = NavigateParams::WindowAction::kShowWindow;
     Navigate(&params);
     NotificationDisplayServiceFactory::GetForProfile(profile)->Close(
         NotificationHandler::Type::SEND_TAB_TO_SELF, notification_id);
@@ -120,7 +120,7 @@ void DesktopNotificationHandler::DisplaySendingConfirmation(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       kDesktopNotificationSharedPrefix + entry.GetGUID(), confirm_str,
       base::UTF8ToUTF16(entry.GetTitle()), ui::ImageModel(),
-      base::UTF8ToUTF16(url.host()), url, message_center::NotifierId(url),
+      base::UTF8ToUTF16(url.GetHost()), url, message_center::NotifierId(url),
       message_center::RichNotificationData(), /*delegate=*/nullptr);
   NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::SEND_TAB_TO_SELF, notification,
@@ -136,7 +136,7 @@ void DesktopNotificationHandler::DisplayFailureMessage(const GURL& url) {
           IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_TITLE),
       l10n_util::GetStringUTF16(
           IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_MESSAGE),
-      ui::ImageModel(), base::UTF8ToUTF16(url.host()), url,
+      ui::ImageModel(), base::UTF8ToUTF16(url.GetHost()), url,
       message_center::NotifierId(url), message_center::RichNotificationData(),
       /*delegate=*/nullptr);
   NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(

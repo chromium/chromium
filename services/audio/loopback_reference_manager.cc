@@ -20,6 +20,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_io.h"
+#include "media/audio/system_glitch_reporter.h"
 #include "media/base/audio_bus.h"
 #include "services/audio/audio_manager_power_user.h"
 #include "services/audio/reference_signal_provider.h"
@@ -110,6 +111,8 @@ class LoopbackReferenceManagerCore
       LoopbackReferenceStreamIdProvider* stream_id_provider,
       ErrorCallback on_error_callback)
       : audio_manager_(audio_manager),
+        glitch_reporter_(
+            media::SystemGlitchReporter::StreamType::kLoopbackReference),
         task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
         stream_id_provider_(stream_id_provider),
         on_error_callback_(std::move(on_error_callback)) {}
@@ -140,6 +143,18 @@ class LoopbackReferenceManagerCore
     audio_log_->OnLogMessage(base::StringPrintf(
         "LRMC::%s [id=%u] [this=0x%" PRIXPTR "]", message.c_str(),
         stream_id_provider_->GetId(), reinterpret_cast<uintptr_t>(this)));
+  }
+
+  void ReportAndResetGlitchStats() {
+    media::SystemGlitchReporter::Stats stats =
+        glitch_reporter_.GetLongTermStatsAndReset();
+    std::string formatted_message = base::StringPrintf(
+        "%s => (num_glitches_detected=[%d], cumulative_audio_lost=[%llu ms], "
+        "largest_glitch=[%llu ms])",
+        __func__, stats.glitches_detected,
+        stats.total_glitch_duration.InMilliseconds(),
+        stats.largest_glitch_duration.InMilliseconds());
+    SendLogMessage(formatted_message);
   }
 
   ReferenceOpenOutcome StartListening(ReferenceOutput::Listener* listener,
@@ -236,6 +251,7 @@ class LoopbackReferenceManagerCore
       listener->OnPlayoutData(*source, sample_rate_,
                               /*audio_delay=*/base::TimeDelta());
     }
+    glitch_reporter_.UpdateStats(audio_glitch_info.duration);
   }
 
   void OnError() override {
@@ -262,6 +278,7 @@ class LoopbackReferenceManagerCore
       return;
     }
     loopback_stream_->Stop();
+    ReportAndResetGlitchStats();
     audio_log_->OnStopped();
     // The the stream will destroy itself upon Close(), so we use
     // ExtractAsDangling() to clear the raw_ptr first.
@@ -271,6 +288,7 @@ class LoopbackReferenceManagerCore
   }
 
   const raw_ptr<media::AudioManager> audio_manager_;
+  media::SystemGlitchReporter glitch_reporter_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const raw_ptr<LoopbackReferenceStreamIdProvider> stream_id_provider_;
   ErrorCallback on_error_callback_;
@@ -291,6 +309,10 @@ class LoopbackReferenceProvider : public ReferenceSignalProvider {
  public:
   LoopbackReferenceProvider(base::WeakPtr<LoopbackReferenceManagerCore> core)
       : core_(core) {}
+
+  ReferenceSignalProvider::Type GetType() const final {
+    return ReferenceSignalProvider::Type::kLoopbackReference;
+  }
 
   ReferenceOpenOutcome StartListening(ReferenceOutput::Listener* listener,
                                       const std::string& device_id) final {

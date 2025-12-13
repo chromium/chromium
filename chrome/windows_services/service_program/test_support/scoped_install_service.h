@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/process/process.h"
 #include "base/win/windows_types.h"
 
 namespace installer {
@@ -29,7 +30,12 @@ class ScopedInstallService {
 
   bool is_valid() const { return bool(work_item_); }
 
+  // Returns a handle to the service process if it is running, or an invalid
+  // process otherwise.
+  base::Process GetRunningService();
+
  private:
+  std::wstring service_name_;
   std::unique_ptr<installer::InstallServiceWorkItem> work_item_;
 };
 

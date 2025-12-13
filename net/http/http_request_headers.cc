@@ -4,6 +4,7 @@
 
 #include "net/http/http_request_headers.h"
 
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -22,10 +23,16 @@
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_values.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
+#include "url/gurl.h"
 
 namespace net {
 
 namespace {
+
+constexpr char kEncodingGzip[] = "gzip";
+constexpr char kEncodingDeflate[] = "deflate";
+constexpr char kEncodingBrotli[] = "br";
+constexpr char kEncodingZstd[] = "zstd";
 
 bool SupportsStreamType(const std::optional<base::flat_set<SourceStreamType>>&
                             accepted_stream_types,
@@ -36,42 +43,6 @@ bool SupportsStreamType(const std::optional<base::flat_set<SourceStreamType>>&
 }
 
 }  // namespace
-
-const char HttpRequestHeaders::kConnectMethod[] = "CONNECT";
-const char HttpRequestHeaders::kDeleteMethod[] = "DELETE";
-const char HttpRequestHeaders::kGetMethod[] = "GET";
-const char HttpRequestHeaders::kHeadMethod[] = "HEAD";
-const char HttpRequestHeaders::kOptionsMethod[] = "OPTIONS";
-const char HttpRequestHeaders::kPatchMethod[] = "PATCH";
-const char HttpRequestHeaders::kPostMethod[] = "POST";
-const char HttpRequestHeaders::kPutMethod[] = "PUT";
-const char HttpRequestHeaders::kTraceMethod[] = "TRACE";
-const char HttpRequestHeaders::kTrackMethod[] = "TRACK";
-const char HttpRequestHeaders::kAccept[] = "Accept";
-const char HttpRequestHeaders::kAcceptCharset[] = "Accept-Charset";
-const char HttpRequestHeaders::kAcceptEncoding[] = "Accept-Encoding";
-const char HttpRequestHeaders::kAcceptLanguage[] = "Accept-Language";
-const char HttpRequestHeaders::kAuthorization[] = "Authorization";
-const char HttpRequestHeaders::kCacheControl[] = "Cache-Control";
-const char HttpRequestHeaders::kConnection[] = "Connection";
-const char HttpRequestHeaders::kContentLength[] = "Content-Length";
-const char HttpRequestHeaders::kContentType[] = "Content-Type";
-const char HttpRequestHeaders::kCookie[] = "Cookie";
-const char HttpRequestHeaders::kHost[] = "Host";
-const char HttpRequestHeaders::kIfMatch[] = "If-Match";
-const char HttpRequestHeaders::kIfModifiedSince[] = "If-Modified-Since";
-const char HttpRequestHeaders::kIfNoneMatch[] = "If-None-Match";
-const char HttpRequestHeaders::kIfRange[] = "If-Range";
-const char HttpRequestHeaders::kIfUnmodifiedSince[] = "If-Unmodified-Since";
-const char HttpRequestHeaders::kOrigin[] = "Origin";
-const char HttpRequestHeaders::kPragma[] = "Pragma";
-const char HttpRequestHeaders::kPriority[] = "Priority";
-const char HttpRequestHeaders::kProxyAuthorization[] = "Proxy-Authorization";
-const char HttpRequestHeaders::kProxyConnection[] = "Proxy-Connection";
-const char HttpRequestHeaders::kRange[] = "Range";
-const char HttpRequestHeaders::kReferer[] = "Referer";
-const char HttpRequestHeaders::kTransferEncoding[] = "Transfer-Encoding";
-const char HttpRequestHeaders::kUserAgent[] = "User-Agent";
 
 HttpRequestHeaders::HeaderKeyValuePair::HeaderKeyValuePair() = default;
 
@@ -113,11 +84,21 @@ HttpRequestHeaders& HttpRequestHeaders::operator=(
 HttpRequestHeaders& HttpRequestHeaders::operator=(HttpRequestHeaders&& other) =
     default;
 
+std::optional<std::string_view> HttpRequestHeaders::GetHeaderView(
+    std::string_view key) const {
+  auto it = FindHeader(key);
+  if (it == headers_.end()) {
+    return std::nullopt;
+  }
+  return std::string_view(it->value);
+}
+
 std::optional<std::string> HttpRequestHeaders::GetHeader(
     std::string_view key) const {
   auto it = FindHeader(key);
-  if (it == headers_.end())
+  if (it == headers_.end()) {
     return std::nullopt;
+  }
   return it->value;
 }
 
@@ -152,8 +133,9 @@ void HttpRequestHeaders::SetHeaderIfMissing(std::string_view key,
   CHECK(HttpUtil::IsValidHeaderName(key));
   CHECK(HttpUtil::IsValidHeaderValue(value));
   auto it = FindHeader(key);
-  if (it == headers_.end())
-    headers_.push_back(HeaderKeyValuePair(key, value));
+  if (it == headers_.end()) {
+    headers_.emplace_back(key, value);
+  }
 }
 
 void HttpRequestHeaders::RemoveHeader(std::string_view key) {
@@ -268,12 +250,13 @@ void HttpRequestHeaders::SetAcceptEncodingIfMissing(
   // will be in the first transmitted packet. This can sometimes make it easier
   // to filter and analyze the streams to assure that a proxy has not damaged
   // these headers. Some proxies deliberately corrupt Accept-Encoding headers.
-  std::vector<std::string> advertised_encoding_names;
+  std::vector<std::string_view> advertised_encoding_names;
+  advertised_encoding_names.reserve(4u);
   if (SupportsStreamType(accepted_stream_types, SourceStreamType::kGzip)) {
-    advertised_encoding_names.push_back("gzip");
+    advertised_encoding_names.emplace_back(kEncodingGzip);
   }
   if (SupportsStreamType(accepted_stream_types, SourceStreamType::kDeflate)) {
-    advertised_encoding_names.push_back("deflate");
+    advertised_encoding_names.emplace_back(kEncodingDeflate);
   }
 
   const bool can_use_advanced_encodings =
@@ -283,18 +266,18 @@ void HttpRequestHeaders::SetAcceptEncodingIfMissing(
   if (enable_brotli &&
       SupportsStreamType(accepted_stream_types, SourceStreamType::kBrotli) &&
       can_use_advanced_encodings) {
-    advertised_encoding_names.push_back("br");
+    advertised_encoding_names.emplace_back(kEncodingBrotli);
   }
   // Advertise "zstd" encoding only if transferred data is opaque to proxy.
   if (enable_zstd &&
       SupportsStreamType(accepted_stream_types, SourceStreamType::kZstd) &&
       can_use_advanced_encodings) {
-    advertised_encoding_names.push_back("zstd");
+    advertised_encoding_names.emplace_back(kEncodingZstd);
   }
   if (!advertised_encoding_names.empty()) {
     // Tell the server what compression formats are supported.
     SetHeader(kAcceptEncoding,
-              base::JoinString(base::span(advertised_encoding_names), ", "));
+              base::JoinString(advertised_encoding_names, ", "));
   }
 }
 

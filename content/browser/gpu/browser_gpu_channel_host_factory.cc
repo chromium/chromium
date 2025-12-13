@@ -169,7 +169,8 @@ void BrowserGpuChannelHostFactory::EstablishRequest::Establish(bool sync) {
 
   bool is_gpu_host = true;
   host->gpu_host()->EstablishGpuChannel(
-      gpu_client_id_, gpu_client_tracing_id_, is_gpu_host, sync,
+      gpu_client_id_, gpu_client_tracing_id_, is_gpu_host,
+      /*enable_extra_handles_validation=*/false, sync,
       base::BindOnce(
           &BrowserGpuChannelHostFactory::EstablishRequest::OnEstablished,
           this));

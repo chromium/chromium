@@ -364,6 +364,75 @@ class HBDArrayBufferSource extends FrameSource {
   }
 }
 
+class HDRCanvasSource extends FrameSource {
+  constructor(width, height) {
+    super();
+    this.width = width;
+    this.height = height;
+    this.timestamp = 0;
+    this.duration = 16666;  // 1/60 s
+    this.frame_index = 0;
+  }
+
+  async getNextFrame() {
+    const canvas2D = document.createElement('canvas');
+    canvas2D.id = 'hdr-2d-canvas';
+    canvas2D.width = this.width;
+    canvas2D.height = this.height;
+    canvas2D.configureHighDynamicRange({ mode: "extended" });
+
+    const ctx2D = canvas2D.getContext('2d', {
+      colorSpace: 'srgb-linear',
+      colorType: 'float16',
+      willReadFrequently: true,
+    });
+
+    const width = this.width;
+    const height = this.height;
+    const halfWidth = width / 2;
+    const halfHeight = height / 2;
+
+    // Clear canvas
+    ctx2D.clearRect(0, 0, width, height);
+
+    // Create HDR colors with higher intensity values for true HDR
+    const hdrIntensity = 5; // HDR multiplier
+
+    // Top-left: Blue (HDR)
+    ctx2D.fillStyle = `color(srgb-linear 0 0 ${hdrIntensity})`;
+    ctx2D.fillRect(0, 0, halfWidth, halfHeight);
+
+    // Top-right: Yellow (HDR)
+    ctx2D.fillStyle = `color(srgb-linear ${hdrIntensity} ${hdrIntensity} 0)`;
+    ctx2D.fillRect(halfWidth, 0, halfWidth, halfHeight);
+
+    // Bottom-left: Green (HDR)
+    ctx2D.fillStyle = `color(srgb-linear 0 ${hdrIntensity} 0)`;
+    ctx2D.fillRect(0, halfHeight, halfWidth, halfHeight);
+
+    // Bottom-right: Red (HDR)
+    ctx2D.fillStyle = `color(srgb-linear ${hdrIntensity} 0 0)`;
+    ctx2D.fillRect(halfWidth, halfHeight, halfWidth, halfHeight);
+
+    // Center white rectangle (Super bright HDR white)
+    const centerW = width * 0.05;
+    const centerH = height * 0.05;
+    const centerX = (width - centerW) / 2;
+    const centerY = (height - centerH) / 2;
+
+    const white = 10.0; // Very bright HDR white
+    ctx2D.fillStyle = `color(srgb-linear ${white} ${white} ${white})`;
+    ctx2D.fillRect(centerX, centerY, centerW, centerH);
+
+    const init = {
+      timestamp: this.timestamp,
+    };
+    this.timestamp += this.duration;
+    this.frame_index++;
+    return new VideoFrame(canvas2D, init);
+  }
+}
+
 // Source of video frames coming from either hardware of software decoder.
 class DecoderSource extends FrameSource {
   constructor(decoderConfig, chunks) {
@@ -565,6 +634,9 @@ async function createFrameSource(type, width, height) {
     }
     case 'hbd_arraybuffer': {
       return new HBDArrayBufferSource(width, height);
+    }
+    case 'hdr_canvas': {
+      return new HDRCanvasSource(width, height);
     }
   }
 }

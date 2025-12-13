@@ -14,13 +14,16 @@ using LensOverlaySuggestInputsCallback = base::OnceCallback<void(
   std::optional<lens::proto::LensOverlaySuggestInputs>)>;
 
 inline bool AreLensSuggestInputsReady(
-  std::optional<lens::proto::LensOverlaySuggestInputs> suggest_inputs) {
-return suggest_inputs.has_value() &&
-       suggest_inputs->has_search_session_id() &&
-       suggest_inputs->has_contextual_visual_input_type() &&
-       suggest_inputs->has_encoded_request_id();
+    const std::optional<lens::proto::LensOverlaySuggestInputs>&
+        suggest_inputs) {
+  return suggest_inputs.has_value() &&
+         suggest_inputs->has_search_session_id() &&
+         suggest_inputs->has_contextual_visual_input_type() &&
+         suggest_inputs->has_encoded_request_id();
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // LINT.IfChange(PaywallSignal)
 enum class PaywallSignal {
   // Whether the paywall signal was unavailable because the page content was

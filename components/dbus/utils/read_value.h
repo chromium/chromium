@@ -9,13 +9,19 @@
 
 #include "base/files/scoped_file.h"
 #include "components/dbus/utils/types.h"
+#include "components/dbus/utils/variant.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 
-namespace dbus_utils::internal {
+namespace dbus_utils {
 
+// Deserializes a D-Bus type T from `reader`. Returns std::nullopt if the value
+// could not be read. `reader` is advanced on success or failure.
 template <typename T>
+  requires IsSupportedDBusType<T>
 std::optional<T> ReadValue(dbus::MessageReader& reader);
+
+namespace internal {
 
 template <typename T>
   requires IsSupportedDBusType<T>
@@ -88,7 +94,10 @@ std::optional<T> ReadStruct(dbus::MessageReader& reader) {
   return s;
 }
 
+}  // namespace internal
+
 template <typename T>
+  requires IsSupportedDBusType<T>
 std::optional<T> ReadValue(dbus::MessageReader& reader) {
   auto read_primitive =
       [&](bool (dbus::MessageReader::*pop)(T*)) -> std::optional<T> {
@@ -123,17 +132,24 @@ std::optional<T> ReadValue(dbus::MessageReader& reader) {
     return read_primitive(&dbus::MessageReader::PopObjectPath);
   } else if constexpr (std::is_same_v<T, base::ScopedFD>) {
     return read_primitive(&dbus::MessageReader::PopFileDescriptor);
-  } else if constexpr (IsSupportedArray<T>::value) {
-    return ReadArray<typename T::value_type>(reader);
-  } else if constexpr (IsSupportedMap<T>::value) {
-    return ReadMap<typename T::key_type, typename T::mapped_type>(reader);
-  } else if constexpr (IsSupportedStruct<T>::value) {
-    return ReadStruct<T>(reader);
+  } else if constexpr (internal::IsSupportedArray<T>::value) {
+    return internal::ReadArray<typename T::value_type>(reader);
+  } else if constexpr (internal::IsSupportedMap<T>::value) {
+    return internal::ReadMap<typename T::key_type, typename T::mapped_type>(
+        reader);
+  } else if constexpr (internal::IsSupportedStruct<T>::value) {
+    return internal::ReadStruct<T>(reader);
+  } else if constexpr (std::is_same_v<T, Variant>) {
+    Variant variant;
+    if (!variant.Read(reader)) {
+      return std::nullopt;
+    }
+    return std::move(variant);
   } else {
     static_assert(false, "Unsupported type for D-Bus reading");
   }
 }
 
-}  // namespace dbus_utils::internal
+}  // namespace dbus_utils
 
 #endif  // COMPONENTS_DBUS_UTILS_READ_VALUE_H_

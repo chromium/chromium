@@ -151,19 +151,6 @@ a <!-- comment --> b
 |   data-y="2"
 |   data-z="3"
 
-
-#data
-<p data-x="1" data-y="2" data-z="3">
-#config
-{
-  "removeAttributes": ["data-z"],
-  "dataAttributes": true
-}
-#document
-| <p>
-|   data-x="1"
-|   data-y="2"
-
 #data
 <p data-x="1" data-y="2" data-z="3">
 #config
@@ -270,6 +257,23 @@ a <!-- comment --> b
 #document
 | <svg svg>
 |   xlink href="about:blank"
+
+</script>
+<script id="defaults-with-attributes-per-element" type="html5lib-testcases">
+#data
+<div start=1 value=5 lang=en><ol start=1 value=5 lang=en><li start=1 value=5 lang=en>xx
+#config
+"default"
+#document
+| <div>
+|   lang="en"
+|   <ol>
+|     lang="en"
+|     start="1"
+|     <li>
+|       lang="en"
+|       value="5"
+|       "xx"
 
 </script>
 <script>

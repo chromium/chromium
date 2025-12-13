@@ -39,9 +39,6 @@ constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
 
 class SessionBindingHelperTest : public testing::Test {
  public:
-  SessionBindingHelperTest()
-      : unexportable_key_service_(unexportable_key_task_manager_) {}
-
   unexportable_keys::UnexportableKeyService& unexportable_key_service() {
     return unexportable_key_service_;
   }
@@ -59,7 +56,7 @@ class SessionBindingHelperTest : public testing::Test {
   }
 
   std::vector<uint8_t> GetWrappedKey(
-      const unexportable_keys::UnexportableKeyId& key_id) {
+      unexportable_keys::UnexportableKeyId key_id) {
     unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> wrapped_key =
         unexportable_key_service_.GetWrappedKey(key_id);
     CHECK(wrapped_key.has_value());
@@ -69,9 +66,10 @@ class SessionBindingHelperTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
-  unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_{
+  unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_;
+  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
+      unexportable_key_task_manager_,
       crypto::UnexportableKeyProvider::Config()};
-  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
 };
 
 TEST_F(SessionBindingHelperTest, MaybeLoadBindingKey) {
@@ -166,8 +164,7 @@ TEST_F(SessionBindingHelperTest, ReloadKeyAfterFailure) {
     EXPECT_CALL(mock_unexportable_key_service,
                 FromWrappedSigningKeySlowlyAsync(base::span(wrapped_key), _, _))
         .WillOnce(RunOnceCallback<2>(key_id));
-    EXPECT_CALL(mock_unexportable_key_service,
-                SignSlowlyAsync(key_id, _, _, _, _))
+    EXPECT_CALL(mock_unexportable_key_service, SignSlowlyAsync(key_id, _, _, _))
         .WillOnce(Invoke(
             &unexportable_key_service(),
             &unexportable_keys::UnexportableKeyService::SignSlowlyAsync));

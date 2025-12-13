@@ -21,13 +21,16 @@ import UIKit
   // Generates a new snapshot and runs a callback with the new snapshot image.
   func generateSnapshot(completion: ((UIImage?) -> Void)?) {
     guard let lastCommittedUrl = webStateInfo.lastCommittedURL(),
-      let lastCommittedNSUrl = lastCommittedUrl.nsurl,
       let newTabPageUrl = URL.init(string: "chrome://newtab/")
     else {
       completion?(nil)
       return
     }
-    let isNTP = lastCommittedNSUrl == newTabPageUrl
+    // TODO(crbug.com/452299163): A last committed URL is nil when this method is called before the
+    // navigation has been committed. For instance, a snapshot is taken prior to the navigation when
+    // opening multiple new tab pages quickly. The execution continues but it may choose the wrong
+    // way to take a snapshot (generateWKWebViewSnapshot() vs generateUIViewSnapshotWithOverlays()).
+    let isNTP = lastCommittedUrl.nsurl == newTabPageUrl
     if !isNTP && webStateInfo.canTakeSnapshot() {
       // Take the snapshot using the optimized WKWebView snapshotting API for pages loaded in the
       // web view when the WebState snapshot API is available.
@@ -134,26 +137,31 @@ import UIKit
 
     let format = UIGraphicsImageRendererFormat.preferred()
     format.scale = SnapshotImageScale.floatForDevice()
-    format.opaque = true
+    format.opaque = false
 
     let renderer = UIGraphicsImageRenderer(bounds: baseView.bounds, format: format)
 
     var snapshotSuccess = true
     let image = renderer.image { context in
-      // Take animations into account by rendering the presentation layer.
-      // Fallback to the rendering the layer if not possible.
-      let layerToRender = baseView.layer.presentation() ?? baseView.layer
+      if #available(iOS 26, *) {
+        // A translucent background starting from iOS 26 only works well with drawHierarchy.
+        snapshotSuccess = baseView.drawHierarchy(in: baseView.bounds, afterScreenUpdates: false)
+      } else {
+        // Take animations into account by rendering the presentation layer.
+        // Fallback to the rendering the layer if not possible.
+        let layerToRender = baseView.layer.presentation() ?? baseView.layer
 
-      // To mitigate against crashes like crbug.com/1429512, ensure that the
-      // layer's position is valid. Otherwise mark the snapshotting as failed.
-      let position = layerToRender.position
-      let validPosition = !position.x.isNaN && !position.y.isNaN
-      guard validPosition else {
-        snapshotSuccess = false
-        return
+        // To mitigate against crashes like crbug.com/1429512, ensure that the
+        // layer's position is valid. Otherwise mark the snapshotting as failed.
+        let position = layerToRender.position
+        let validPosition = !position.x.isNaN && !position.y.isNaN
+        guard validPosition else {
+          snapshotSuccess = false
+          return
+        }
+
+        layerToRender.render(in: context.cgContext)
       }
-
-      layerToRender.render(in: context.cgContext)
     }
 
     // Set the mode to UIViewTintAdjustmentModeAutomatic.
@@ -225,7 +233,7 @@ import UIKit
 
     let format = UIGraphicsImageRendererFormat.preferred()
     format.scale = SnapshotImageScale.floatForDevice()
-    format.opaque = true
+    format.opaque = false
 
     let renderer = UIGraphicsImageRenderer(size: snapshotFrameInWindow.size, format: format)
 
@@ -242,12 +250,21 @@ import UIKit
         x: -snapshotFrameInWindow.origin.x, y: -snapshotFrameInWindow.origin.y)
 
       for overlay in overlays {
-        cgContextRef.saveGState()
-        let frameInWindow = baseView.convert(overlay.frame, to: nil)
-        // This shifts the context so that drawing starts at the overlay's offset.
-        cgContextRef.translateBy(x: frameInWindow.origin.x, y: frameInWindow.origin.y)
-        overlay.layer.render(in: cgContextRef)
-        cgContextRef.restoreGState()
+        if #available(iOS 26, *) {
+          // A translucent background starting from iOS 26 only works well with drawHierarchy.
+          overlay.drawHierarchy(in: overlay.bounds, afterScreenUpdates: false)
+        } else {
+          cgContextRef.saveGState()
+          let superview = overlay.superview ?? baseView
+          // The following is only correct if `superview` is indeed `overlay.superview`, since `frame`
+          // is defined as "the view’s location and size in its superview’s coordinate system".
+          // However it appears that some overlays do not have any superviews.
+          let frameInWindow = superview.convert(overlay.frame, to: nil)
+          overlay.layer.render(in: cgContextRef)
+          // This shifts the context so that drawing starts at the overlay's offset.
+          cgContextRef.translateBy(x: frameInWindow.origin.x, y: frameInWindow.origin.y)
+          cgContextRef.restoreGState()
+        }
       }
     }
   }

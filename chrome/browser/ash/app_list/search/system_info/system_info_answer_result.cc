@@ -9,13 +9,15 @@
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
+#include "base/check_deref.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ash/app_list/search/common/search_result_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -132,8 +134,10 @@ void SystemInfoAnswerResult::UpdateTitleAndDetails(
 
 void SystemInfoAnswerResult::Open(int event_flags) {
   if (system_info_category_ == SystemInfoCategory::kSettings) {
-    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile_,
-                                                                 url_path_);
+    ash::SettingsAppManager::Get()->Open(
+        CHECK_DEREF(ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+            profile_)),
+        {.sub_page = url_path_});
   } else {
     ::ash::SystemAppLaunchParams launch_params;
     launch_params.url = GURL(id());

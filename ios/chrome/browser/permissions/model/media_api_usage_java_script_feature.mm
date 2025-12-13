@@ -48,24 +48,8 @@ MediaAPIUsageJavaScriptFeature* MediaAPIUsageJavaScriptFeature::GetInstance() {
 // static
 bool MediaAPIUsageJavaScriptFeature::ShouldOverrideAPI() {
   // Install JS overrides if access is `...Undetermined` or `...Denied`.
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-  if (@available(iOS 17.0, *)) {
-    return [AVAudioApplication sharedInstance].recordPermission !=
-           AVAudioApplicationRecordPermissionGranted;
-  } else {
-    return [AVAudioSession sharedInstance].recordPermission !=
-           AVAudioSessionRecordPermissionGranted;
-  }
-#else
-  if (@available(iOS 26.0, *)) {
-    // TODO(crbug.com/423826635): This API crashes on Xcode 26 beta 1.
-    // For now, skip this (and the logic will be broken).
-    return false;
-  } else {
-    return [AVAudioApplication sharedInstance].recordPermission !=
-           AVAudioApplicationRecordPermissionGranted;
-  }
-#endif
+  return [AVAudioApplication sharedInstance].recordPermission !=
+         AVAudioApplicationRecordPermissionGranted;
 }
 
 MediaAPIUsageJavaScriptFeature::MediaAPIUsageJavaScriptFeature()
@@ -96,40 +80,17 @@ void MediaAPIUsageJavaScriptFeature::ScriptMessageReceived(
   }
 
   std::string metric_name;
-  if (@available(iOS 17.0, *)) {
-    if (@available(iOS 26.0, *)) {
-      // TODO(crbug.com/423826635): This API crashes on Xcode 26 beta 1.
-      // For now, skip this (and the logic will be broken).
+  switch ([AVAudioApplication sharedInstance].recordPermission) {
+    case AVAudioApplicationRecordPermissionDenied:
+      metric_name = kMediaAPIAccessedHistogramDenied;
+      break;
+    case AVAudioApplicationRecordPermissionGranted:
+      metric_name = kMediaAPIAccessedHistogramGranted;
+      break;
+    case AVAudioApplicationRecordPermissionUndetermined:
       metric_name = kMediaAPIAccessedHistogramUndetermined;
-    } else {
-      switch ([AVAudioApplication sharedInstance].recordPermission) {
-        case AVAudioApplicationRecordPermissionDenied:
-          metric_name = kMediaAPIAccessedHistogramDenied;
-          break;
-        case AVAudioApplicationRecordPermissionGranted:
-          metric_name = kMediaAPIAccessedHistogramGranted;
-          break;
-        case AVAudioApplicationRecordPermissionUndetermined:
-          metric_name = kMediaAPIAccessedHistogramUndetermined;
-          break;
-      }
-    }
+      break;
   }
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-  else {
-    switch ([AVAudioSession sharedInstance].recordPermission) {
-      case AVAudioSessionRecordPermissionDenied:
-        metric_name = kMediaAPIAccessedHistogramDenied;
-        break;
-      case AVAudioSessionRecordPermissionGranted:
-        metric_name = kMediaAPIAccessedHistogramGranted;
-        break;
-      case AVAudioSessionRecordPermissionUndetermined:
-        metric_name = kMediaAPIAccessedHistogramUndetermined;
-        break;
-    }
-  }
-#endif
 
   if (!audio || !video) {
     base::UmaHistogramEnumeration(metric_name, MediaAPIParams::kUnknown);

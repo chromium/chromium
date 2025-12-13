@@ -1,6 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/incognito_reauth/ui_bundled",
   "+ios/chrome/browser/net/model/crurl.h",
+  "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
   "+ios/chrome/browser/policy/model/policy_util.h",
   "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
   "+ios/chrome/browser/signin/model/system_identity.h",

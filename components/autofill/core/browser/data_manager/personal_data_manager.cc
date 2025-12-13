@@ -27,11 +27,12 @@ PersonalDataManager::PersonalDataManager(
     signin::IdentityManager* identity_manager,
     history::HistoryService* history_service,
     syncer::SyncService* sync_service,
-    StrikeDatabaseBase* strike_database,
+    strike_database::StrikeDatabaseBase* strike_database,
     AutofillImageFetcherBase* image_fetcher,
     std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler,
     std::string app_locale,
-    std::string variations_country_code)
+    std::string variations_country_code,
+    AutofillOptimizationGuideDecider* autofill_optimization_guide_decider)
     : pref_service_(pref_service) {
   address_data_manager_ = std::make_unique<AddressDataManager>(
       profile_database, pref_service, local_state, sync_service,
@@ -41,7 +42,7 @@ PersonalDataManager::PersonalDataManager(
       profile_database, account_database, image_fetcher,
       std::move(shared_storage_handler), pref_service, sync_service,
       identity_manager, GeoIpCountryCode(std::move(variations_country_code)),
-      std::move(app_locale));
+      std::move(app_locale), autofill_optimization_guide_decider);
   address_data_manager_observation_.Observe(address_data_manager_.get());
   payments_data_manager_observation_.Observe(payments_data_manager_.get());
 
@@ -59,9 +60,6 @@ PersonalDataManager::PersonalDataManager(
   autofill_metrics::LogIsAutofillEnabledAtStartup(
       address_data_manager_->IsAutofillProfileEnabled() ||
       payments_data_manager_->IsAutofillPaymentMethodsEnabled());
-
-  // Potentially import addresses and credit cards for testing.
-  MaybeImportDataForManualTesting(weak_factory_.GetWeakPtr());
 }
 
 PersonalDataManager::~PersonalDataManager() = default;
@@ -105,8 +103,7 @@ void PersonalDataManager::SetSyncServiceForTest(
 }
 
 bool PersonalDataManager::IsDataLoaded() const {
-  return address_data_manager_->has_initial_load_finished() &&
-         payments_data_manager_->is_payments_data_loaded();
+  return has_initial_load_finished_;
 }
 
 void PersonalDataManager::Refresh() {
@@ -118,6 +115,13 @@ void PersonalDataManager::NotifyPersonalDataObserver() {
   if (address_data_manager_->IsAwaitingPendingAddressChanges() ||
       payments_data_manager_->HasPendingPaymentQueries()) {
     return;
+  }
+  if (!has_initial_load_finished_ &&
+      address_data_manager_->has_initial_load_finished() &&
+      payments_data_manager_->is_payments_data_loaded()) {
+    has_initial_load_finished_ = true;
+    // Potentially import addresses and credit cards for testing.
+    MaybeImportDataForManualTesting(weak_factory_.GetWeakPtr());
   }
   for (PersonalDataManagerObserver& observer : observers_) {
     observer.OnPersonalDataChanged();

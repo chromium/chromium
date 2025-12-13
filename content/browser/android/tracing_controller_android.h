@@ -24,20 +24,19 @@ class TracingControllerAndroid {
   void Destroy(JNIEnv* env);
 
   bool StartTracing(JNIEnv* env,
-                    const base::android::JavaParamRef<jstring>& categories,
-                    const base::android::JavaParamRef<jstring>& trace_options,
+                    const base::android::JavaRef<jstring>& categories,
+                    const base::android::JavaRef<jstring>& trace_options,
                     bool use_protobuf);
   void StopTracing(JNIEnv* env,
-                   const base::android::JavaParamRef<jstring>& jfilepath,
+                   const base::android::JavaRef<jstring>& jfilepath,
                    bool compress_file,
                    bool use_protobuf,
-                   const base::android::JavaParamRef<jobject>& callback);
-  bool GetKnownCategoriesAsync(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& callback);
+                   const base::android::JavaRef<jobject>& callback);
+  bool GetKnownCategoriesAsync(JNIEnv* env,
+                               const base::android::JavaRef<jobject>& callback);
   bool GetTraceBufferUsageAsync(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& callback);
+      const base::android::JavaRef<jobject>& callback);
 
   // Locate the appropriate directory to write the trace to and use it to
   // generate the path. |basename| might be empty, then TracingControllerAndroid

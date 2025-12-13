@@ -25,7 +25,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ContextualSearchSceneLayer_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace android {
@@ -52,7 +51,7 @@ ContextualSearchSceneLayer::ContextualSearchSceneLayer(
 
 void ContextualSearchSceneLayer::CreateContextualSearchLayer(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jresource_manager) {
+    const JavaRef<jobject>& jresource_manager) {
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
   contextual_search_layer_ = ContextualSearchLayer::Create(resource_manager);
@@ -247,7 +246,7 @@ void ContextualSearchSceneLayer::OnFetchComplete(const GURL& url,
 
 void ContextualSearchSceneLayer::SetContentTree(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcontent_tree) {
+    const JavaRef<jobject>& jcontent_tree) {
   SceneLayer* content_tree = FromJavaObject(env, jcontent_tree);
   if (!content_tree || !content_tree->layer())
     return;
@@ -269,9 +268,8 @@ void ContextualSearchSceneLayer::HideTree(JNIEnv* env) {
   content_container_->SetPosition(gfx::PointF(0.0f, 0.0f));
 }
 
-static jlong JNI_ContextualSearchSceneLayer_Init(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jobj) {
+static jlong JNI_ContextualSearchSceneLayer_Init(JNIEnv* env,
+                                                 const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
   ContextualSearchSceneLayer* tree_provider =
       new ContextualSearchSceneLayer(env, jobj);
@@ -279,3 +277,5 @@ static jlong JNI_ContextualSearchSceneLayer_Init(
 }
 
 }  // namespace android
+
+DEFINE_JNI(ContextualSearchSceneLayer)

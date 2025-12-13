@@ -39,12 +39,10 @@ static_library("cert_provisioning") {
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/dbus/constants",
     "//chromeos/ash/components/network",
-    "//components/invalidation/public",
     "//components/keyed_service/core",
   ]
 
   deps = [
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/ash/policy/core",
@@ -58,13 +56,12 @@ static_library("cert_provisioning") {
     "//chromeos/dbus/common",
     "//chromeos/dbus/tpm_manager",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
-    "//components/invalidation:invalidation",
-    "//components/invalidation/impl",
+    "//components/invalidation",
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
     "//components/policy/proto",
     "//components/prefs",
-    "//components/user_manager:user_manager",
+    "//components/user_manager",
     "//content/public/browser",
   ]
 
@@ -78,7 +75,6 @@ source_set("unit_tests") {
     "cert_provisioning_client_unittest.cc",
     "cert_provisioning_common_unittest.cc",
     "cert_provisioning_invalidator_unittest.cc",
-    "cert_provisioning_invalidator_with_listener_unittest.cc",
     "cert_provisioning_platform_keys_helpers_unittest.cc",
     "cert_provisioning_scheduler_unittest.cc",
     "cert_provisioning_test_helpers.cc",
@@ -104,7 +100,6 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/attestation:attestation_proto",
     "//chromeos/ash/components/platform_keys",
     "//components/invalidation:test_support",
-    "//components/invalidation/impl:test_support",
     "//crypto:test_support",
     "//net:test_support",
     "//testing/gtest",

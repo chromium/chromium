@@ -320,7 +320,7 @@ Considerations
 
 To track pages with a certain loading behavior, a `PageLoadMetricsObserver` can implement the `OnLoadingBehaviorObserved` callback, or check the `metadata.behavior_flags` field of the `PageLoadExtraInfo` structure that is passed to various `PageLoadMetricsObserver` callbacks.
 
-[`ServiceWorkerPageLoadMetricsObserver`](service_worker_page_load_metrics_observer.cc) is an observer that tracks metrics for page loads that are controlled by a service worker, as indicated by the `WebLoadingBehaviorServiceWorkerControlled` loading behavior flag.
+[`ServiceWorkerPageLoadMetricsObserver`](/components/page_load_metrics/browser/observers/service_worker_page_load_metrics_observer.cc) is an observer that tracks metrics for page loads that are controlled by a service worker, as indicated by the `WebLoadingBehaviorServiceWorkerControlled` loading behavior flag.
 
 Considerations
 

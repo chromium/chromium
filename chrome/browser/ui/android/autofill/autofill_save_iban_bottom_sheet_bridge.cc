@@ -109,3 +109,6 @@ void AutofillSaveIbanBottomSheetBridge::ResetSaveIbanDelegate() {
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillSaveIbanUiInfo)
+DEFINE_JNI(AutofillSaveIbanBottomSheetBridge)

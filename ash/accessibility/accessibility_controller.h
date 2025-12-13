@@ -768,6 +768,8 @@ class ASH_EXPORT AccessibilityController
   // FaceGaze.
   void RequestDisableFaceGaze();
 
+  PrefService* GetActiveUserPrefs() { return active_user_prefs_; }
+
  private:
   // Populate |features_| with the feature of the correct type.
   void CreateAccessibilityFeatures();

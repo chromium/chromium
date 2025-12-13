@@ -8,7 +8,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

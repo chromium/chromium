@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/space_utils.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -846,26 +845,6 @@ BreakStatus FinishFragmentationForFragmentainer(BoxFragmentBuilder* builder) {
     builder->SetFragmentBlockSize(block_size);
     consumed_block_size += fragmentainer_capacity;
     builder->SetConsumedBlockSize(consumed_block_size);
-
-    if (!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-      // We clamp the fragmentainer block size from 0 to 1 for legacy write-back
-      // if there is content that overflows the zero-height fragmentainer.  Set
-      // the consumed block size adjustment for legacy if this results in a
-      // different consumed block size than is used for NG layout.
-      LayoutUnit consumed_block_size_for_legacy =
-          previous_break_token
-              ? previous_break_token->ConsumedBlockSizeForLegacy()
-              : LayoutUnit();
-      LayoutUnit legacy_fragmentainer_block_size =
-          (builder->IntrinsicBlockSize() > LayoutUnit())
-              ? fragmentainer_capacity
-              : block_size;
-      LayoutUnit consumed_block_size_legacy_adjustment =
-          consumed_block_size_for_legacy + legacy_fragmentainer_block_size -
-          consumed_block_size;
-      builder->SetConsumedBlockSizeLegacyAdjustment(
-          consumed_block_size_legacy_adjustment);
-    }
 
     if (previous_break_token && previous_break_token->MonolithicOverflow()) {
       // Add pages as long as there's monolithic overflow that requires it.

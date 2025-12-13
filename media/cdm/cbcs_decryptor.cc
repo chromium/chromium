@@ -124,14 +124,13 @@ bool DecryptWithPattern(base::span<const uint8_t> key,
 scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(const DecoderBuffer& input,
                                                base::span<const uint8_t> key) {
   const size_t sample_size = input.size();
-  CHECK(sample_size, base::NotFatalUntil::M140) << "No data to decrypt.";
+  CHECK(sample_size) << "No data to decrypt.";
 
   const DecryptConfig* decrypt_config = input.decrypt_config();
-  CHECK(decrypt_config, base::NotFatalUntil::M140)
-      << "No need to call Decrypt() on unencrypted buffer.";
+  CHECK(decrypt_config) << "No need to call Decrypt() on unencrypted buffer.";
   DCHECK_EQ(EncryptionScheme::kCbcs, decrypt_config->encryption_scheme());
 
-  CHECK(decrypt_config->HasPattern(), base::NotFatalUntil::M140);
+  CHECK(decrypt_config->HasPattern());
   const EncryptionPattern pattern =
       decrypt_config->encryption_pattern().value();
 
@@ -179,8 +178,7 @@ scoped_refptr<DecoderBuffer> DecryptCbcsBuffer(const DecoderBuffer& input,
       auto [dest_cypher, dest_rem] = dest.split_at(subsample.cypher_bytes);
       src = src_rem;
       dest = dest_rem;
-      if (!DecryptWithPattern(key,
-                              base::as_bytes(base::span(decrypt_config->iv())),
+      if (!DecryptWithPattern(key, base::as_byte_span(decrypt_config->iv()),
                               pattern, src_cypher, dest_cypher)) {
         return nullptr;
       }

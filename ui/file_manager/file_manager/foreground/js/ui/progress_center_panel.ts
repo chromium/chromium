@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 
 import type {ProgressCenterItem} from '../../../common/js/progress_center_common.js';
 import {PolicyErrorType, type ProgressItemExtraButton, ProgressItemState, ProgressItemType} from '../../../common/js/progress_center_common.js';
@@ -127,10 +127,11 @@ export class ProgressCenterPanel {
         return source || item.message;
       case ProgressItemState.ERROR:
         return item.message;
+      case ProgressItemState.PAUSED:
       case ProgressItemState.CANCELED:
         return '';
       default:
-        assertNotReached();
+        assertNotReachedCase(item.state);
     }
   }
 
@@ -277,6 +278,8 @@ export class ProgressCenterPanel {
                   strf(
                       'MOVE_SKIPPED_ENCRYPTED_FILES',
                       item.skippedEncryptedFiles.length);
+            default:
+              break;
           }
         }
         // General error
@@ -284,7 +287,7 @@ export class ProgressCenterPanel {
       case ProgressItemState.CANCELED:
         return '';
       default:
-        assertNotReached();
+        assertNotReachedCase(item.state);
     }
 
     function getStrForMoveWithDestination(
@@ -431,6 +434,8 @@ export class ProgressCenterPanel {
               console.warn(`Unexpected task type: ${item.type}`);
               return '';
           }
+        default:
+          assertNotReachedCase(item.policyError);
       }
     }
 
@@ -594,6 +599,11 @@ export class ProgressCenterPanel {
           // Make sure the panel is attached so it shows immediately.
           this.feedbackHost_.attachPanelItem(panelItem);
           break;
+        case ProgressItemState.SCANNING:
+        case ProgressItemState.PROGRESSING:
+          break;
+        default:
+          assertNotReachedCase(item.state);
       }
     } else if (panelItem) {
       this.feedbackHost_.removePanelItem(panelItem);

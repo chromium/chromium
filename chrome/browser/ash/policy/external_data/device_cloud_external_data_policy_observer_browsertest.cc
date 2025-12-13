@@ -153,13 +153,12 @@ IN_PROC_BROWSER_TEST_F(DeviceCloudExternalDataPolicyObserverTest, PolicyIsSet) {
       mock_delegate_,
       OnDeviceExternalDataFetchedProxy(
           kPolicyName, testing::Pointee(testing::StrEq(expected_data_file)), _))
-      .WillOnce(
-          testing::Invoke([&on_data_fetched_future](
-                              const std::string& policy, std::string* data,
-                              const base::FilePath& file_path) {
-            ASSERT_TRUE(data);
-            on_data_fetched_future.SetValue(policy, std::string(*data));
-          }));
+      .WillOnce([&on_data_fetched_future](const std::string& policy,
+                                          std::string* data,
+                                          const base::FilePath& file_path) {
+        ASSERT_TRUE(data);
+        on_data_fetched_future.SetValue(policy, std::string(*data));
+      });
 
   SetDevicePrintersExternalData(test::ConstructExternalDataPolicy(
       *embedded_test_server(), kExternalDataPath));
@@ -178,13 +177,12 @@ IN_PROC_BROWSER_TEST_F(DeviceCloudExternalDataPolicyObserverTest,
                 OnDeviceExternalDataFetchedProxy(
                     kPolicyName,
                     testing::Pointee(testing::StrEq(expected_data_file)), _))
-        .WillOnce(
-            testing::Invoke([&on_data_fetched_future](const std::string& policy,
-                                                      std::string* data,
-                                                      const base::FilePath&) {
-              ASSERT_TRUE(data);
-              on_data_fetched_future.SetValue(policy, *data);
-            }));
+        .WillOnce([&on_data_fetched_future](const std::string& policy,
+                                            std::string* data,
+                                            const base::FilePath&) {
+          ASSERT_TRUE(data);
+          on_data_fetched_future.SetValue(policy, *data);
+        });
 
     SetDevicePrintersExternalData(test::ConstructExternalDataPolicy(
         *embedded_test_server(), kExternalDataPath));
@@ -202,13 +200,12 @@ IN_PROC_BROWSER_TEST_F(DeviceCloudExternalDataPolicyObserverTest,
                 OnDeviceExternalDataFetchedProxy(
                     kPolicyName,
                     testing::Pointee(testing::StrEq(expected_data_file)), _))
-        .WillOnce(
-            testing::Invoke([&on_data_fetched_future](const std::string& policy,
-                                                      std::string* data,
-                                                      const base::FilePath&) {
-              ASSERT_TRUE(data);
-              on_data_fetched_future.SetValue(policy, *data);
-            }));
+        .WillOnce([&on_data_fetched_future](const std::string& policy,
+                                            std::string* data,
+                                            const base::FilePath&) {
+          ASSERT_TRUE(data);
+          on_data_fetched_future.SetValue(policy, *data);
+        });
 
     SetDevicePrintersExternalData(test::ConstructExternalDataPolicy(
         *embedded_test_server(), kExternalDataPathUpdated));

@@ -13,6 +13,7 @@
 #include <set>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
@@ -41,13 +42,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -59,6 +61,7 @@
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -108,6 +111,7 @@
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
@@ -129,7 +133,7 @@ using views::View;
 namespace {
 
 // Horizontal padding on the edges of the in-menu buttons.
-const int kHorizontalPadding = 15;
+constexpr int kHorizontalPadding = 15;
 
 constexpr int kBookmarksCommandIdOffset =
     AppMenuModel::kMinBookmarksCommandId - IDC_FIRST_UNBOUNDED_MENU;
@@ -140,12 +144,12 @@ constexpr int kTabGroupsCommandIdOffset =
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Extra horizontal space to reserve for the fullscreen button.
-const int kFullscreenPadding = 74;
+constexpr int kFullscreenPadding = 74;
 // Padding to left and right of the XX% label.
-const int kZoomLabelHorizontalPadding = kHorizontalPadding;
+constexpr int kZoomLabelHorizontalPadding = kHorizontalPadding;
 #else
-const int kFullscreenPadding = 38;
-const int kZoomLabelHorizontalPadding = 2;
+constexpr int kFullscreenPadding = 38;
+constexpr int kZoomLabelHorizontalPadding = 2;
 #endif
 
 // Returns true if |command_id| identifies a bookmark menu item.
@@ -244,7 +248,7 @@ class InMenuButtonBackground : public views::Background {
     ui::NativeTheme::MenuItemExtraParams menu_item;
     if (type_ == ButtonType::kRoundedButton) {
       // Consistent with a hover corner radius (kInkDropSmallCornerRadius).
-      const int kBackgroundCornerRadius = 2;
+      constexpr int kBackgroundCornerRadius = 2;
       menu_item.corner_radius = kBackgroundCornerRadius;
     } else if (shape_ == ButtonShape::kCircular) {
       constexpr int kCircularButtonSize = 28;
@@ -371,8 +375,7 @@ std::u16string GetSigninStatusChipString(Profile* profile) {
 
   if (signin_util::IsSigninPending(
           IdentityManagerFactory::GetForProfile(profile))) {
-    // TODO(b/347011002): Use a non sync related string.
-    return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PAUSED);
+    return l10n_util::GetStringUTF16(IDS_PROFILE_ROW_VERIFY_MESSAGE);
   }
 
   return l10n_util::GetStringUTF16(IDS_PROFILE_ROW_SIGNED_IN_MESSAGE);
@@ -440,6 +443,13 @@ void AddSignedInChipToProfileMenuItem(
   item->AddChildView(std::move(profile_chip));
   item->AddChildView(std::move(profile_chip_edge_spacing_view));
   item->SetHighlightWhenSelectedWithChildViews(true);
+  // MenuItemView only delegates accessible names when its title is empty with a
+  // single container view. The Profile MenuItemView has a title and multiple
+  // views. As a result, the accessible name must be manually computed to
+  // account for the profile chip.
+  item->GetViewAccessibility().SetName(
+      views::MenuItemView::GetAccessibleNameForMenuItem(
+          item->title(), GetSigninStatusChipString(profile), false));
 }
 
 // AppMenuView is a view that can contain label buttons.
@@ -493,7 +503,7 @@ class AppMenuView : public views::View {
     }
 
     // all buttons on menu should must be a custom button in order for
-    // the keyboard nativigation work.
+    // the keyboard navigation work.
     DCHECK(views::IsViewClass<views::Button>(menu_button.get()));
 
     return AddChildView(std::move(menu_button));
@@ -520,25 +530,35 @@ class FullscreenButton : public ImageButton {
 
  public:
   explicit FullscreenButton(PressedCallback callback,
-                            ButtonMenuItemModel* menu_model,
-                            size_t fullscreen_index,
-                            bool is_in_fullscreen)
-      : ImageButton(std::move(callback)) {
+                            ButtonMenuItemModel& menu_model,
+                            size_t button_index)
+      : ImageButton(std::move(callback)),
+        menu_model_(menu_model),
+        button_index_(button_index) {
     // Since |fullscreen_button_| will reside in a menu, make it ALWAYS
     // focusable regardless of the platform.
     SetFocusBehavior(FocusBehavior::ALWAYS);
-    set_tag(fullscreen_index);
+    set_tag(button_index_);
     SetImageHorizontalAlignment(ImageButton::ALIGN_CENTER);
     SetImageVerticalAlignment(ImageButton::ALIGN_MIDDLE);
     SetBackground(std::make_unique<InMenuButtonBackground>(
         InMenuButtonBackground::ButtonType::kLeadingBorder,
         InMenuButtonBackground::ButtonShape::kCircular));
-    const int accname_string_id =
-        is_in_fullscreen ? IDS_ACCNAME_EXIT_FULLSCREEN : IDS_ACCNAME_FULLSCREEN;
-    SetTooltipText(l10n_util::GetStringUTF16(accname_string_id));
     GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
+  }
+  FullscreenButton(const FullscreenButton&) = delete;
+  FullscreenButton& operator=(const FullscreenButton&) = delete;
+
+  void UpdateState(bool is_fullscreen, bool can_fullscreen) {
+    SetEnabled(can_fullscreen || is_fullscreen);
+
+    const int accname_string_id =
+        is_fullscreen ? IDS_ACCNAME_EXIT_FULLSCREEN
+                      : (can_fullscreen ? IDS_ACCNAME_FULLSCREEN
+                                        : IDS_ACCNAME_FULLSCREEN_DISABLED);
+    SetTooltipText(l10n_util::GetStringUTF16(accname_string_id));
     GetViewAccessibility().SetName(GetAccessibleNameForAppMenuItem(
-        menu_model, fullscreen_index, accname_string_id,
+        &menu_model_.get(), button_index_, accname_string_id,
 #if BUILDFLAG(IS_CHROMEOS)
         // ChromeOS uses a dedicated "fullscreen" media key for fullscreen
         // mode on most ChromeOS devices which cannot be specified in the
@@ -551,8 +571,6 @@ class FullscreenButton : public ImageButton {
 #endif
         ));
   }
-  FullscreenButton(const FullscreenButton&) = delete;
-  FullscreenButton& operator=(const FullscreenButton&) = delete;
 
   // Overridden from ImageButton.
   gfx::Size CalculatePreferredSize(
@@ -562,6 +580,12 @@ class FullscreenButton : public ImageButton {
     pref.Enlarge(insets.width(), insets.height());
     return pref;
   }
+
+ private:
+  // The menu model that contains the fullscreen button.
+  const raw_ref<ButtonMenuItemModel> menu_model_;
+  // The index of the fullscreen button in `menu_model_`.
+  const size_t button_index_;
 };
 
 BEGIN_METADATA(FullscreenButton)
@@ -660,7 +684,8 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
                 base::BindRepeating(&AppMenu::ZoomView::OnZoomLevelChanged,
                                     base::Unretained(this)));
     // Disable full screen button when window is not resizable
-    views::Widget* widget = menu->browser_->GetBrowserView().GetWidget();
+    views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
+        menu->browser_->window()->GetNativeWindow());
     if (widget) {
       widget_observation_.Observe(widget);
     }
@@ -720,8 +745,7 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
               menu->CancelAndEvaluate(menu_model, index);
             },
             menu, menu_model, fullscreen_index),
-        menu_model, fullscreen_index,
-        menu->browser_->window() && menu->browser_->window()->IsFullscreen());
+        CHECK_DEREF(menu_model), fullscreen_index);
     const auto& fullscreen_icon = kFullscreenRefreshIcon;
     fullscreen_button->SetImageModel(
         ImageButton::STATE_NORMAL,
@@ -836,15 +860,14 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
   }
 
   void UpdateFullScreenButton() {
-    bool can_fullscreen =
-        menu()->browser_->GetBrowserView().CanUserEnterFullscreen();
-    const int accname_string_id = can_fullscreen
-                                      ? IDS_ACCNAME_FULLSCREEN
-                                      : IDS_ACCNAME_FULLSCREEN_DISABLED;
-
-    fullscreen_button_->SetEnabled(can_fullscreen);
-    fullscreen_button_->SetTooltipText(
-        l10n_util::GetStringUTF16(accname_string_id));
+    const bool is_fullscreen = menu()->browser_->window() &&
+                               menu()->browser_->window()->IsFullscreen();
+    const bool can_fullscreen = menu()
+                                    ->browser_->browser_window_features()
+                                    ->exclusive_access_manager()
+                                    ->context()
+                                    ->CanUserEnterFullscreen();
+    fullscreen_button_->UpdateState(is_fullscreen, can_fullscreen);
   }
 
   // Returns the max width the zoom string can be.
@@ -889,7 +912,7 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
   // Button for decrementing the zoom.
   raw_ptr<Button> decrement_button_ = nullptr;
 
-  raw_ptr<Button> fullscreen_button_ = nullptr;
+  raw_ptr<FullscreenButton> fullscreen_button_ = nullptr;
 
   // Cached width of how wide the zoom label string can be. This is the width at
   // 100%. This should not be accessed directly, use GetZoomLabelMaxWidth()
@@ -1046,6 +1069,19 @@ void AppMenu::RunMenu(views::MenuButtonController* host) {
       "Chrome.AppMenu.MenuHostInitToNextFramePresented");
 }
 
+void AppMenu::RunMenu(views::Widget* parent,
+                      const gfx::Rect& anchor_screen_bounds) {
+  base::RecordAction(UserMetricsAction("ShowAppMenu"));
+  UMA_HISTOGRAM_ENUMERATION("WrenchMenu.MenuAction", MENU_ACTION_MENU_OPENED,
+                            LIMIT_MENU_ACTION);
+
+  menu_runner_->RunMenuAt(
+      parent, nullptr, anchor_screen_bounds,
+      views::MenuAnchorPosition::kTopRight, ui::mojom::MenuSourceType::kNone,
+      /*native_view_for_gestures=*/gfx::NativeView(), /*corners=*/std::nullopt,
+      "Chrome.AppMenu.MenuHostInitToNextFramePresented");
+}
+
 void AppMenu::CloseMenu() {
   if (menu_runner_.get()) {
     menu_runner_->Cancel();
@@ -1187,6 +1223,10 @@ bool AppMenu::IsCommandEnabled(int command_id) const {
     return true;
   }
 
+  if (command_id == IDC_CREATE_NEW_TAB_GROUP_TOP_LEVEL) {
+    return true;
+  }
+
   if (IsTabGroupsCommand(command_id)) {
     return stg_everything_menu_->ShouldEnableCommand(command_id);
   }
@@ -1251,6 +1291,11 @@ void AppMenu::ExecuteCommand(int command_id, int mouse_event_flags) {
     return;
   }
 
+  if (command_id == IDC_CREATE_NEW_TAB_GROUP_TOP_LEVEL) {
+    base::RecordAction(
+        base::UserMetricsAction("TabGroups_NewTabGroup_AppMenu"));
+  }
+
   const Entry& entry = command_id_to_entry_.find(command_id)->second;
   return entry.first->ActivatedAt(entry.second, mouse_event_flags);
 }
@@ -1269,6 +1314,14 @@ bool AppMenu::GetAccelerator(int command_id,
 
     return false;
   }
+
+  if (command_id == IDC_CREATE_NEW_TAB_GROUP_TOP_LEVEL) {
+    // Same as 'Create new tab group' except the menu item is at the top level
+    // of the app menu instead of in the tab groups submenu.
+      return browser_->browser_window_features()
+          ->accelerator_provider()
+          ->GetAcceleratorForCommandId(IDC_CREATE_NEW_TAB_GROUP, accelerator);
+    }
 
   if (IsTabGroupsCommand(command_id)) {
     return false;
@@ -1306,9 +1359,9 @@ void AppMenu::WillShowMenu(MenuItemView* menu) {
                               LIMIT_MENU_ACTION);
     if (!stg_everything_menu_) {
       // Only recreate the menu if we have to.
-      stg_everything_menu_ =
-          std::make_unique<tab_groups::STGEverythingMenu>(nullptr, browser_);
-      stg_everything_menu_->SetShowSubmenu(true);
+      stg_everything_menu_ = std::make_unique<tab_groups::STGEverythingMenu>(
+          nullptr, browser_,
+          tab_groups::STGEverythingMenu::MenuContext::kAppMenu);
       stg_everything_menu_->PopulateMenu(menu);
     }
   } else if (IsTabGroupsCommand(menu->GetCommand())) {

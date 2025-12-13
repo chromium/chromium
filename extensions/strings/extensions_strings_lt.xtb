@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Programų rodinys: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Šiame plėtinyje yra rakto failas „<ph name="KEY_PATH" />“. Neturėtumėte to daryti.</translation>
 <translation id="5486326529110362464">Turi būti privačiojo rakto įvesties vertė.</translation>
+<translation id="5707185214361380026">Nepavyko įkelti plėtinio iš:</translation>
 <translation id="5972529113578162692">Šio įrenginio administratorius reikalauja, kad „<ph name="EXTENSION_NAME" />“ plėtinys būtų įdiegtas. Jo negalima pašalinti.</translation>
 <translation id="6027032947578871493">Nežinomas produktas „<ph name="PRODUCT_ID" />“ iš „<ph name="VENDOR_NAME" />“ (serijos numeris: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721">„<ph name="PRODUCT_NAME" />“ iš teikėjo „<ph name="VENDOR_ID" />“</translation>
+<translation id="6220413761270491930">Klaida įkeliant plėtinį</translation>
 <translation id="6322279351188361895">Nepavyko nuskaityti privačiojo rakto.</translation>
 <translation id="6391538222494443604">Turi būti įvesties katalogas.</translation>
 <translation id="641087317769093025">Nepavyko išarchyvuoti plėtinio</translation>

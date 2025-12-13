@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,9 +25,9 @@ namespace {
 using testing::UnorderedElementsAre;
 
 const char kLocalOrSyncableIdsReassignedMetricName[] =
-    "Bookmarks.IdsReassigned.OnProfileLoad.LocalOrSyncable";
+    "Bookmarks.IdsReassigned2.OnProfileLoad.LocalOrSyncable";
 const char kAccountIdsReassignedMetricName[] =
-    "Bookmarks.IdsReassigned.OnProfileLoad.Account";
+    "Bookmarks.IdsReassigned2.OnProfileLoad.Account";
 
 MATCHER_P(HasUrl, expected_url, "") {
   return arg.url == expected_url;

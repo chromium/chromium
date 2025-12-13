@@ -17,6 +17,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:android_webview_unittests",
+        "module_scheme": "gtest",
         "name": "android_webview_unittests",
         "resultdb": {
           "enable": true,
@@ -63,6 +65,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk",
+        "module_scheme": "junit",
         "name": "system_webview_shell_layout_test_apk",
         "resultdb": {
           "enable": true,
@@ -110,6 +114,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_cts_tests",
+        "module_scheme": "junit",
         "name": "webview_cts_tests",
         "resultdb": {
           "enable": true,
@@ -166,6 +172,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_cts_tests",
+        "module_scheme": "junit",
         "name": "webview_cts_tests_no_field_trial",
         "resultdb": {
           "enable": true,
@@ -222,6 +230,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_instrumentation_test_apk",
+        "module_scheme": "junit",
         "name": "webview_instrumentation_test_apk_mutations",
         "resultdb": {
           "enable": true,
@@ -271,6 +281,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/test:webview_instrumentation_test_apk",
+        "module_scheme": "junit",
         "name": "webview_instrumentation_test_apk_no_field_trial",
         "resultdb": {
           "enable": true,
@@ -318,6 +330,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk",
+        "module_scheme": "junit",
         "name": "webview_ui_test_app_test_apk",
         "resultdb": {
           "enable": true,
@@ -365,6 +379,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk",
+        "module_scheme": "junit",
         "name": "webview_ui_test_app_test_apk_no_field_trial",
         "resultdb": {
           "enable": true,

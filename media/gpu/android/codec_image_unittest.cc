@@ -32,7 +32,6 @@
 using testing::_;
 using testing::Eq;
 using testing::InSequence;
-using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
 
@@ -74,17 +73,15 @@ class CodecImageTest : public testing::Test {
     // The tests rely on this texture being bound.
     glBindTexture(GL_TEXTURE_EXTERNAL_OES, texture_id_);
 
-    auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
-        texture_id_, context_.get(), context_->default_surface(),
-        BindsTextureOnUpdate());
+    auto texture_owner =
+        base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>();
     ON_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _))
-        .WillByDefault(
-            Invoke([](gfx::Size rotated_visible_size, gfx::Size* coded_size,
-                      gfx::Rect* visible_rect) {
-              *visible_rect = gfx::Rect(rotated_visible_size);
-              *coded_size = visible_rect->size();
-              return true;
-            }));
+        .WillByDefault([](gfx::Size rotated_visible_size, gfx::Size* coded_size,
+                          gfx::Rect* visible_rect) {
+          *visible_rect = gfx::Rect(rotated_visible_size);
+          *coded_size = visible_rect->size();
+          return true;
+        });
 
     codec_buffer_wait_coordinator_ =
         base::MakeRefCounted<NiceMock<MockCodecBufferWaitCoordinator>>(
@@ -139,8 +136,6 @@ class CodecImageTest : public testing::Test {
                std::optional<gfx::Rect> visible_rect),
               ());
 
-  virtual bool BindsTextureOnUpdate() { return true; }
-
   base::test::TaskEnvironment task_environment_;
   raw_ptr<NiceMock<MockMediaCodecBridge>> codec_;
   std::unique_ptr<CodecWrapper> wrapper_;
@@ -157,10 +152,6 @@ class CodecImageTest : public testing::Test {
   };
 
   PromotionHintReceiver promotion_hint_receiver_;
-};
-
-class CodecImageTestExplicitBind : public CodecImageTest {
-  bool BindsTextureOnUpdate() override { return false; }
 };
 
 TEST_F(CodecImageTest, UnusedCBRunsOnDestruction) {
@@ -259,22 +250,7 @@ TEST_F(CodecImageTest, FrontBufferRenderingFailsIfBackBufferRenderingFailed) {
   ASSERT_FALSE(i->RenderToFrontBuffer());
 }
 
-TEST_F(CodecImageTest, RenderToFrontBufferRestoresTextureBindings) {
-  GLuint pre_bound_texture = 0;
-  glGenTextures(1, &pre_bound_texture);
-  glBindTexture(GL_TEXTURE_EXTERNAL_OES, pre_bound_texture);
-  auto i = NewImage(kTextureOwner);
-  EXPECT_CALL(*codec_buffer_wait_coordinator_->texture_owner(),
-              UpdateTexImage(_));
-  EXPECT_CALL(*this,
-              OnFrameInfoReady(Eq(kFrameSize), Eq(gfx::Rect(kFrameSize))));
-  i->RenderToFrontBuffer();
-  GLint post_bound_texture = 0;
-  glGetIntegerv(GL_TEXTURE_BINDING_EXTERNAL_OES, &post_bound_texture);
-  ASSERT_EQ(pre_bound_texture, static_cast<GLuint>(post_bound_texture));
-}
-
-TEST_F(CodecImageTestExplicitBind, RenderToFrontBufferDoesNotBindTexture) {
+TEST_F(CodecImageTest, RenderToFrontBufferDoesNotBindTexture) {
   GLuint pre_bound_texture = 0;
   glGenTextures(1, &pre_bound_texture);
   glBindTexture(GL_TEXTURE_EXTERNAL_OES, pre_bound_texture);

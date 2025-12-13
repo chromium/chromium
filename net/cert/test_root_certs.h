@@ -8,8 +8,8 @@
 #include <set>
 
 #include "base/containers/span.h"
-#include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
@@ -82,7 +82,7 @@ class NET_EXPORT TestRootCerts {
   bssl::TrustStore* test_trust_store() { return &test_trust_store_; }
 
  private:
-  friend struct base::LazyInstanceTraitsBase<TestRootCerts>;
+  friend class base::NoDestructor<TestRootCerts>;
   friend class ScopedTestRoot;
   friend class ScopedTestKnownRoot;
 

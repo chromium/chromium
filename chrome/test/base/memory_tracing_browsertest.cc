@@ -32,9 +32,10 @@ using base::trace_event::MemoryDumpType;
 using tracing::BeginTracingWithTraceConfig;
 using tracing::EndTracing;
 
-void RequestGlobalDumpCallback(base::OnceClosure quit_closure,
-                               bool success,
-                               uint64_t) {
+void RequestGlobalDumpCallback(
+    base::OnceClosure quit_closure,
+    memory_instrumentation::mojom::RequestOutcome outcome,
+    uint64_t) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, std::move(quit_closure));
   // TODO(ssid): Check for dump success once crbug.com/709524 is fixed.

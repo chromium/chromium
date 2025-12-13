@@ -69,13 +69,7 @@ void ProximityMonitorImpl::RecordProximityMetricsOnAuthSuccess() {
                                     ? *rssi_rolling_average_
                                     : metrics::kUnknownProximityValue;
 
-  std::string remote_device_model = metrics::kUnknownDeviceModel;
-  ash::multidevice::RemoteDeviceRef remote_device = remote_device_;
-  if (!remote_device.name().empty())
-    remote_device_model = remote_device.name();
-
   metrics::RecordAuthProximityRollingRssi(round(rssi_rolling_average));
-  metrics::RecordAuthProximityRemoteDeviceModelHash(remote_device_model);
 }
 
 void ProximityMonitorImpl::OnAdapterInitialized(

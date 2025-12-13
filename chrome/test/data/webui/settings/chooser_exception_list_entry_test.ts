@@ -7,11 +7,11 @@ import 'chrome://webui-test/cr_elements/cr_policy_strings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ChooserExceptionListEntryElement} from 'chrome://settings/lazy_load.js';
-import {ChooserType, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ChooserType, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import {assertTooltipIsHidden, createChooserException, createSiteException} from './test_util.js';
 // clang-format on
 
@@ -28,12 +28,12 @@ suite('ChooserExceptionListEntry', function() {
   /**
    * The mock proxy object to use during test.
    */
-  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let browserProxy: TestSiteSettingsBrowserProxy;
 
   // Initialize a chooser-exception-list-entry before each test.
   setup(function() {
-    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
+    browserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('chooser-exception-list-entry');
     document.body.appendChild(testElement);

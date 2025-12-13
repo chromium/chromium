@@ -13,7 +13,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_variant.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class GURL;
 class Profile;

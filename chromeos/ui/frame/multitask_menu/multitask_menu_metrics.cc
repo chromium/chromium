@@ -16,8 +16,8 @@ constexpr char kActionTypeHistogramNamePrefix[] =
     "Ash.Float.MultitaskMenuActionType";
 
 std::string GetHistogramNameSuffix() {
-  return display::Screen::GetScreen()->InTabletMode() ? ".TabletMode"
-                                                      : ".ClamshellMode";
+  return display::Screen::Get()->InTabletMode() ? ".TabletMode"
+                                                : ".ClamshellMode";
 }
 
 std::string GetEntryTypeHistogramName() {

@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -25,11 +26,8 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
-#include "chrome/browser/push_messaging/push_messaging_constants.h"
-#include "chrome/browser/push_messaging/push_messaging_features.h"
 #include "chrome/browser/push_messaging/push_messaging_service_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
-#include "chrome/browser/push_messaging/push_messaging_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -55,6 +53,9 @@
 #include "components/gcm_driver/fake_gcm_profile_service.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/push_messaging/push_messaging_constants.h"
+#include "components/push_messaging/push_messaging_features.h"
+#include "components/push_messaging/push_messaging_utils.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/webapps/browser/test/service_worker_registration_waiter.h"
 #include "content/public/browser/push_messaging_service.h"
@@ -561,9 +562,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, WebCannotLoadIwaResources) {
       return response.ok;
     })();
   )",
-                                              url_info.origin().Serialize()))
-          .error,
-      HasSubstr("Failed to fetch"));
+                                              url_info.origin().Serialize())),
+      content::EvalJsResult::ErrorIs(HasSubstr("Failed to fetch")));
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
@@ -600,9 +600,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
       return response.ok;
     })();
   )",
-                                            url_info2.origin().Serialize()))
-          .error,
-      HasSubstr("Failed to fetch"));
+                                            url_info2.origin().Serialize())),
+      content::EvalJsResult::ErrorIs(HasSubstr("Failed to fetch")));
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
@@ -647,7 +646,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, UseCounters) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
-      IsolatedWebAppBuilder(ManifestBuilder()).BuildBundle();
+      IsolatedWebAppBuilder(
+          ManifestBuilder()
+              .AddPermissionsPolicyWildcard(
+                  network::mojom::PermissionsPolicyFeature::kDirectSockets)
+              .AddPermissionsPolicyWildcard(
+                  network::mojom::PermissionsPolicyFeature::
+                      kDirectSocketsPrivate))
+          .BuildBundle();
   ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
 
   histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
@@ -658,6 +664,22 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, UseCounters) {
 
   histogram_tester.ExpectBucketCount("Blink.UseCounter.Features",
                                      blink::mojom::WebFeature::kPageVisits, 1);
+
+  EXPECT_THAT(
+      content::EvalJs(app_frame,
+                      "(new UDPSocket({ localAddress: '127.0.0.1' })).opened"),
+      content::EvalJsResult::IsOk());
+
+  // Wait for all the socket histograms to propagate.
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return std::ranges::all_of(
+        std::to_array({blink::mojom::WebFeature::kUDPSocketConstructor,
+                       blink::mojom::WebFeature::kUDPSocketOpenedAttribute}),
+        [&](blink::mojom::WebFeature feature) {
+          return histogram_tester.GetBucketCount("Blink.UseCounter.Features",
+                                                 feature) > 0;
+        });
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
@@ -679,8 +701,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
       await socket.opened;
     })();
   )";
-  EXPECT_THAT(EvalJs(app_frame, openSocketJs).error,
-              HasSubstr("Permissions-Policy: direct-sockets are disabled."));
+  EXPECT_THAT(EvalJs(app_frame, openSocketJs),
+              content::EvalJsResult::ErrorIs(HasSubstr(
+                  "Permissions-Policy: direct-sockets are disabled.")));
 }
 
 class IsolatedWebAppApiAccessBrowserTest : public IsolatedWebAppBrowserTest {
@@ -943,7 +966,7 @@ class IsolatedWebAppBrowserCookieTest : public IsolatedWebAppBrowserTest {
   void MonitorRequest(const net::test_server::HttpRequest& request) {
     // Replace the host in |request.GetURL()| with the value from the Host
     // header, as GetURL()'s host will be 127.0.0.1.
-    std::string host = GURL("https://" + GetHeader(request, "Host")).host();
+    std::string host = GURL("https://" + GetHeader(request, "Host")).GetHost();
     GURL::Replacements replace_host;
     replace_host.SetHostStr(host);
     GURL url = request.GetURL().ReplaceComponents(replace_host);
@@ -1025,7 +1048,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserCookieTest, Cookies) {
 class IsolatedWebAppBrowserServiceWorkerTest
     : public IsolatedWebAppBrowserTest {
  protected:
-  int64_t InstallIsolatedWebAppAndWaitForServiceWorker() {
+  int64_t InstallIsolatedWebAppAndWaitForServiceWorker(
+      const std::string& service_worker_path) {
     std::unique_ptr<ScopedBundledIsolatedWebApp> app =
         IsolatedWebAppBuilder(ManifestBuilder())
             .AddHtml("/register_service_worker.html", "ABA")
@@ -1035,8 +1059,7 @@ class IsolatedWebAppBrowserServiceWorkerTest
             .AddFileFromDisk(
                 "/register_service_worker.js",
                 "web_apps/simple_isolated_app/register_service_worker.js")
-            .AddFileFromDisk("/service_worker.js",
-                             "web_apps/simple_isolated_app/service_worker.js")
+            .AddFileFromDisk("/service_worker.js", service_worker_path)
             .BuildBundle();
     app->TrustSigningKey();
     IsolatedWebAppUrlInfo url_info = app->InstallChecked(profile());
@@ -1078,10 +1101,20 @@ class IsolatedWebAppBrowserServiceWorkerTest
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserServiceWorkerTest,
                        ServiceWorkerPartitioned) {
-  InstallIsolatedWebAppAndWaitForServiceWorker();
+  InstallIsolatedWebAppAndWaitForServiceWorker(
+      /*service_worker_path=*/"web_apps/simple_isolated_app/service_worker.js");
   test::CheckServiceWorkerStatus(
       app_url(), storage_partition_,
       content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserServiceWorkerTest, CacheTest) {
+  InstallIsolatedWebAppAndWaitForServiceWorker(
+      /*service_worker_path=*/
+      "web_apps/simple_isolated_app/cached_service_worker.js");
+  test::CheckServiceWorkerStatus(
+      app_url(), storage_partition_,
+      content::ServiceWorkerCapability::SERVICE_WORKER_NO_FETCH_HANDLER);
 }
 
 class IsolatedWebAppBrowserServiceWorkerPushTest
@@ -1101,7 +1134,7 @@ class IsolatedWebAppBrowserServiceWorkerPushTest
 
   void SendMessageAndWaitUntilHandled(
       content::BrowserContext* context,
-      const PushMessagingAppIdentifier& app_identifier,
+      const push_messaging::AppIdentifier& app_identifier,
       const gcm::IncomingMessage& message) {
     PushMessagingServiceImpl* push_service =
         PushMessagingServiceFactory::GetForProfile(context);
@@ -1126,11 +1159,12 @@ class IsolatedWebAppBrowserServiceWorkerPushTest
     notification_tester_->SetNotificationAddedClosure(quit_barrier);
     push_service->OnMessage(app_identifier.app_id(), message);
     run_loop.Run();
+    notification_tester_->SetNotificationAddedClosure(base::DoNothing());
   }
 
-  PushMessagingAppIdentifier GetAppIdentifierForServiceWorkerRegistration(
+  push_messaging::AppIdentifier GetAppIdentifierForServiceWorkerRegistration(
       int64_t service_worker_registration_id) {
-    PushMessagingAppIdentifier app_identifier =
+    push_messaging::AppIdentifier app_identifier =
         PushMessagingAppIdentifier::FindByServiceWorker(
             browser()->profile(), app_url(), service_worker_registration_id);
     return app_identifier;
@@ -1147,7 +1181,9 @@ IN_PROC_BROWSER_TEST_F(
     IsolatedWebAppBrowserServiceWorkerPushTest,
     ServiceWorkerPartitionedWhenWakingUpDueToPushNotification) {
   int64_t service_worker_version_id =
-      InstallIsolatedWebAppAndWaitForServiceWorker();
+      InstallIsolatedWebAppAndWaitForServiceWorker(
+          /*service_worker_path=*/
+          "web_apps/simple_isolated_app/service_worker.js");
 
   // Request and confirm permission to show notifications.
   auto* permission_request_manager =
@@ -1186,12 +1222,20 @@ var kApplicationServerKey = new Uint8Array([
 
   size_t last_slash = push_messaging_endpoint.rfind('/');
   ASSERT_NE(last_slash, std::string::npos);
-  ASSERT_EQ(base::FeatureList::IsEnabled(
-                features::kPushMessagingGcmEndpointEnvironment)
-                ? push_messaging::GetGcmEndpointForChannel(chrome::GetChannel())
-                : kPushMessagingGcmEndpoint,
-            push_messaging_endpoint.substr(0, last_slash + 1));
-  PushMessagingAppIdentifier app_identifier =
+
+  std::string push_messaging_endpoint_substr = push_messaging_endpoint.substr(0, last_slash + 1);
+  ASSERT_EQ(push_messaging::GetGcmEndpointForChannel(chrome::GetChannel()),
+            push_messaging_endpoint_substr);
+
+  if (base::FeatureList::IsEnabled(features::kPushMessagingGcmEndpointWebpushPath)) {
+    ASSERT_TRUE(push_messaging_endpoint_substr == kPushMessagingWebpushEndpoint ||
+                push_messaging_endpoint_substr == kPushMessagingStagingWebpushEndpoint);
+  } else {
+    ASSERT_TRUE(push_messaging_endpoint_substr == kPushMessagingGcmEndpoint ||
+                push_messaging_endpoint_substr == kPushMessagingStagingGcmEndpoint);
+  }
+
+  push_messaging::AppIdentifier app_identifier =
       GetAppIdentifierForServiceWorkerRegistration(0LL);
   EXPECT_FALSE(app_identifier.is_null());
 

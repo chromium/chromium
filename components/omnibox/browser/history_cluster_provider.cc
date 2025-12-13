@@ -20,6 +20,7 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/l10n/l10n_util.h"

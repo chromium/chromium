@@ -65,12 +65,6 @@ class _DictionaryMember(object):
         # C++ data member that holds the value of the dictionary member.
         self._value_var = name_style.member_var("member", self._base_name)
 
-        # Migration adapters
-        self._api_has_non_null = name_style.api_func("has", self._base_name,
-                                                     "non_null")
-        self._api_get_non_null = name_style.api_func(self._base_name,
-                                                     "non_null")
-
         self._idl_type = dict_member.idl_type
         self._type_info = blink_type_info(self._idl_type)
         self._is_required = dict_member.is_required
@@ -102,14 +96,6 @@ class _DictionaryMember(object):
     @property
     def api_set(self):
         return self._api_set
-
-    @property
-    def api_has_non_null(self):
-        return self._api_has_non_null
-
-    @property
-    def api_get_non_null(self):
-        return self._api_get_non_null
 
     @property
     def presence_var(self):
@@ -609,70 +595,6 @@ def make_accessor_functions(cg_context):
     return decls, defs
 
 
-def make_backward_compatible_accessors(cg_context):
-    assert isinstance(cg_context, CodeGenContext)
-
-    # TODO(crbug.com/1070871): Remove the accessors introduced just to be
-    # backward compatible.
-
-    F = FormatNode
-
-    decls = ListNode()
-
-    def make_api_has_non_null(member):
-        func_def = CxxFuncDefNode(name=member.api_has_non_null,
-                                  arg_decls=[],
-                                  return_type="bool",
-                                  const=True)
-        func_def.set_base_template_vars(cg_context.template_bindings())
-        func_def.body.append(
-            F("return {}() && {}().has_value();", member.api_has,
-              member.api_get))
-        return func_def
-
-    def make_api_get_non_null(member):
-        func_def = CxxFuncDefNode(name=member.api_get_non_null,
-                                  arg_decls=[],
-                                  return_type=blink_type_info(
-                                      member.idl_type.unwrap()).member_ref_t,
-                                  const=True)
-        func_def.set_base_template_vars(cg_context.template_bindings())
-        func_def.body.extend([
-            F("DCHECK({}());", member.api_has_non_null),
-            F("return {}().value();", member.api_get),
-        ])
-        return func_def
-
-    def make_api_set_enum_string(member):
-        type_info = blink_type_info(member.idl_type.unwrap())
-        func_def = CxxFuncDefNode(name=member.api_set,
-                                  arg_decls=["const String& value"],
-                                  return_type="void")
-        func_def.set_base_template_vars(cg_context.template_bindings())
-        func_def.body.append(
-            F("{} = {}::Create(value).value();", member.value_var,
-              type_info.value_t))
-        if member.does_use_presence_var:
-            func_def.body.append(F("{} = true;", member.presence_var))
-        return func_def
-
-    for member in cg_context.dictionary_own_members:
-        if member.idl_type.unwrap().is_enumeration:
-            decls.append(make_api_set_enum_string(member))
-
-        if (not member.idl_type.unwrap(nullable=False).is_nullable
-                or member.type_info.has_null_value):
-            continue
-        # The Blink type is std::optional<T>.
-        decls.append(make_api_has_non_null(member))
-        decls.append(make_api_get_non_null(member))
-
-    if decls:
-        decls.insert(0, TextNode("// Obsolete accessor functions"))
-
-    return decls, None
-
-
 def make_trace_function(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
@@ -738,7 +660,7 @@ def make_fill_template_properties_function(cg_context):
 
     func_def = CxxFuncDefNode(name="FillTemplateProperties",
                               arg_decls=[
-                                  "WTF::Vector<std::string_view>& properties",
+                                  "Vector<std::string_view>& properties",
                               ],
                               return_type="void",
                               class_name=cg_context.class_name,
@@ -1100,11 +1022,7 @@ def generate_dictionary(dictionary_identifier):
     factory_decls, factory_defs = make_factory_methods(cg_context)
     ctor_decls, ctor_defs = make_constructors(cg_context)
     accessor_decls, accessor_defs = make_accessor_functions(cg_context)
-    backward_compatible_accessor_decls, backward_compatible_accessor_defs = (
-        make_backward_compatible_accessors(cg_context))
     trace_func_decls, trace_func_defs = make_trace_function(cg_context)
-
-    # blink_to_v8_decls, blink_to_v8_defs = make_blink_to_v8_function(cg_context)
 
     v8_to_blink_decls, v8_to_blink_defs = make_v8_to_blink_function(cg_context)
     v8_names_decls, v8_names_defs = make_v8_own_member_names_function(
@@ -1190,11 +1108,6 @@ def generate_dictionary(dictionary_identifier):
     class_def.public_section.append(accessor_decls)
     class_def.public_section.append(EmptyNode())
     source_blink_ns.body.append(accessor_defs)
-    source_blink_ns.body.append(EmptyNode())
-
-    class_def.public_section.append(backward_compatible_accessor_decls)
-    class_def.public_section.append(EmptyNode())
-    source_blink_ns.body.append(backward_compatible_accessor_defs)
     source_blink_ns.body.append(EmptyNode())
 
     class_def.public_section.append(trace_func_decls)

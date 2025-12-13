@@ -270,8 +270,6 @@ public class VariationsSeedFetcher {
         // This is added as a convenience for using Mockito.
         @Override
         public boolean equals(final Object obj) {
-            if (obj == null) return false;
-            if (obj.getClass() != this.getClass()) return false;
             if (!(obj instanceof SeedFetchParameters)) return false;
             SeedFetchParameters castObj = (SeedFetchParameters) obj;
 

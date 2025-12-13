@@ -13,6 +13,7 @@
 
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
+#include "components/autofill/content/renderer/autofill_agent_test_api.h"
 #include "components/autofill/content/renderer/password_autofill_agent.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "content/public/test/render_view_test.h"
@@ -68,7 +69,7 @@ class MockAutofillDriver : public mojom::AutofillDriver {
               (override));
   MOCK_METHOD(void,
               SelectFieldOptionsDidChange,
-              (const FormData& form),
+              (const FormData& form, FieldRendererId field_id),
               (override));
   MOCK_METHOD(void,
               JavaScriptChangedAutofilledValue,
@@ -86,15 +87,17 @@ class MockAutofillDriver : public mojom::AutofillDriver {
        const std::optional<PasswordSuggestionRequest>& password_request),
       (override));
   MOCK_METHOD(void, HidePopup, (), (override));
+  MOCK_METHOD(void,
+              SuppressAutomaticRefills,
+              (const FillId& fill_id),
+              (override));
+  MOCK_METHOD(void, RequestRefill, (const FillId& fill_id), (override));
   MOCK_METHOD(void, FocusOnNonFormField, (), (override));
   MOCK_METHOD(void,
               FocusOnFormField,
               (const FormData& form, FieldRendererId field_id),
               (override));
-  MOCK_METHOD(void,
-              DidFillAutofillFormData,
-              (const FormData& form, base::TimeTicks timestamp),
-              (override));
+  MOCK_METHOD(void, DidAutofillForm, (const FormData& form), (override));
   MOCK_METHOD(void, DidEndTextFieldEditing, (), (override));
 
  private:
@@ -159,6 +162,9 @@ class AutofillRendererTest : public content::RenderViewTest {
 
  protected:
   AutofillAgent& autofill_agent() { return *autofill_agent_; }
+  PasswordAutofillAgent& password_autofill_agent() {
+    return test_api(*autofill_agent_).password_autofill_agent();
+  }
   MockAutofillDriver& autofill_driver() { return autofill_driver_; }
 
  private:

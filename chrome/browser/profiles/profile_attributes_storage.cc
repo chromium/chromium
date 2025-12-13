@@ -31,6 +31,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_downloader.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_metrics.h"
@@ -54,7 +55,7 @@
 #include "ui/gfx/image/image.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"  // nogncheck crbug.com/40147906
 #endif
 
 namespace {
@@ -196,7 +197,9 @@ MultiProfileUserType GetMultiProfileUserType(
     return MultiProfileUserType::kSingleProfile;
 
   int active_count =
-      std::ranges::count_if(entries, &ProfileMetrics::IsProfileActive);
+      std::ranges::count_if(entries, [](ProfileAttributesEntry* entry) {
+        return ProfileMetrics::IsProfileActive(entry);
+      });
 
   if (active_count <= 1)
     return MultiProfileUserType::kLatentMultiProfile;
@@ -608,7 +611,7 @@ ProfileAttributesStorage::GetAllProfilesAttributesSortedForDisplay() const {
 
 std::vector<ProfileAttributesEntry*> ProfileAttributesStorage::
     GetAllProfilesAttributesSortedByLocalProfileNameWithCheck() const {
-  if (base::FeatureList::IsEnabled(kProfilesReordering)) {
+  if (base::FeatureList::IsEnabled(switches::kProfilesReordering)) {
     return GetAllProfilesAttributesSortedForDisplay();
   }
   return GetAllProfilesAttributesSortedByLocalProfileName();
@@ -617,7 +620,7 @@ std::vector<ProfileAttributesEntry*> ProfileAttributesStorage::
 std::vector<ProfileAttributesEntry*>
 ProfileAttributesStorage::GetAllProfilesAttributesSortedByNameWithCheck()
     const {
-  if (base::FeatureList::IsEnabled(kProfilesReordering)) {
+  if (base::FeatureList::IsEnabled(switches::kProfilesReordering)) {
     return GetAllProfilesAttributesSortedForDisplay();
   }
   return GetAllProfilesAttributesSortedByName();
@@ -798,7 +801,8 @@ void ProfileAttributesStorage::RecordDeletedProfileState(
   bool is_last_profile = GetNumberOfProfiles() <= 1u;
   // If the profile has windows opened, they are still open at this moment.
   // Thus, this really means that only the profile manager is open.
-  bool no_browser_windows = BrowserList::GetInstance()->empty();
+  const bool no_browser_windows =
+      GlobalBrowserCollection::GetInstance()->IsEmpty();
   profile_metrics::LogProfileDeletionContext(is_last_profile,
                                              no_browser_windows);
 }

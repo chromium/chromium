@@ -21,8 +21,8 @@ class AnchorElementObserver : public GarbageCollected<AnchorElementObserver>,
                               public ElementRareDataField {
  public:
   // This observer is placed on an element (the "source" element) that has
-  // the anchor attribute. The observer maintains the
-  // "ImplicitlyAnchoredElementCount" on the target element.
+  // the anchor attribute. The observer tags implicit anchors with
+  // "MayBeImplicitAnchor" on the target element.
   explicit AnchorElementObserver(Element* source_element)
       : source_element_(source_element) {
     DCHECK(source_element_);

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_browsertest_base.h"
 
 #include "base/containers/span.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -58,10 +58,9 @@ class UnresponsiveFilesRequestHandler : public FilesRequestHandler {
 
  private:
   void UploadFileForDeepScanning(
-      safe_browsing::BinaryUploadService::Result result,
+      enterprise_connectors::ScanRequestUploadResult result,
       const base::FilePath& path,
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
-      override {
+      std::unique_ptr<BinaryUploadRequest> request) override {
     // Do nothing.
   }
 };

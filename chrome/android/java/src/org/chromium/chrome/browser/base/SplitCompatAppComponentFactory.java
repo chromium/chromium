@@ -13,6 +13,7 @@ import android.content.BroadcastReceiver;
 import android.content.ContentProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 
 import androidx.annotation.IntDef;
 
@@ -22,6 +23,7 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.incognito_window.PreAttachIntentObserver;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -70,7 +72,18 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
         // Activities will not call createContextForSplit() which will normally ensure the preload
         // is finished, so we have to manually ensure that here.
         SplitChromeApplication.finishPreload(CHROME_SPLIT_NAME);
-        return super.instantiateActivity(getComponentClassLoader(cl, className), className, intent);
+
+        var activity =
+                super.instantiateActivity(
+                        getComponentClassLoader(cl, className), className, intent);
+
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                && intent != null
+                && activity instanceof PreAttachIntentObserver observer) {
+            observer.onPreAttachIntentAvailable(intent);
+        }
+
+        return activity;
     }
 
     @Override

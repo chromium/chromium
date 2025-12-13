@@ -12,20 +12,18 @@
 #include <set>
 #include <string>
 
-#include "components/invalidation/public/invalidation_export.h"
-
 namespace invalidation {
 
 using Topic = std::string;
 // It should be std::set, since std::set_difference is used for it.
 using TopicSet = std::set<Topic>;
 
-INVALIDATION_EXPORT struct TopicMetadata {
+struct TopicMetadata {
   // Whether the topic is public.
   bool is_public;
 };
 
-INVALIDATION_EXPORT bool operator==(const TopicMetadata&, const TopicMetadata&);
+bool operator==(const TopicMetadata&, const TopicMetadata&);
 
 using TopicMap = std::map<Topic, TopicMetadata>;
 

@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task_manager.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_worker_interface.h"
@@ -22,14 +23,13 @@
 
 class GURL;
 
+namespace content {
+class BrowserContext;
+}
+
 namespace drive {
 class DriveServiceInterface;
 class DriveUploaderInterface;
-}
-
-namespace extensions {
-class ExtensionRegistrar;
-class ExtensionRegistry;
 }
 
 namespace storage {
@@ -57,11 +57,9 @@ class SyncEngineInitializer;
 class SyncWorker : public SyncWorkerInterface,
                    public SyncTaskManager::Client {
  public:
-  SyncWorker(
-      const base::FilePath& base_dir,
-      const base::WeakPtr<extensions::ExtensionRegistrar> extension_registrar,
-      const base::WeakPtr<extensions::ExtensionRegistry>& extension_registry,
-      leveldb::Env* env_override);
+  SyncWorker(const base::FilePath& base_dir,
+             const base::WeakPtr<content::BrowserContext>& browser_context,
+             leveldb::Env* env_override);
 
   SyncWorker(const SyncWorker&) = delete;
   SyncWorker& operator=(const SyncWorker&) = delete;
@@ -120,8 +118,7 @@ class SyncWorker : public SyncWorkerInterface,
                      SyncStatusCode status);
   void UpdateRegisteredApps();
   static void QueryAppStatusOnUIThread(
-      const base::WeakPtr<extensions::ExtensionRegistrar>& extension_registrar,
-      const base::WeakPtr<extensions::ExtensionRegistry>& extension_registry,
+      const base::WeakPtr<content::BrowserContext>& browser_context,
       const std::vector<std::string>* app_ids,
       AppStatusMap* status,
       base::OnceClosure callback);
@@ -166,8 +163,7 @@ class SyncWorker : public SyncWorkerInterface,
 
   std::unique_ptr<SyncTaskManager> task_manager_;
 
-  base::WeakPtr<extensions::ExtensionRegistrar> extension_registrar_;
-  base::WeakPtr<extensions::ExtensionRegistry> extension_registry_;
+  base::WeakPtr<content::BrowserContext> browser_context_;
 
   std::unique_ptr<SyncEngineContext> context_;
   base::ObserverList<Observer>::Unchecked observers_;

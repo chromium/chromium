@@ -2,6 +2,7 @@ Name: Tinos Bold and Tinos Bold Subset
 Short Name: Tinos
 URL: https://github.com/google/fonts/tree/main/apache/tinos
 Version: 1.230
+Update Mechanism: Static (https://crbug.com/422924397)
 License: Apache-2.0
 License File: LICENSE.txt
 Security Critical: no

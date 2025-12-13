@@ -275,9 +275,8 @@ class VolumeControlInternal : public SystemVolumeControl::Delegate {
     }
 
     stored_values_.SetByDottedPath(ContentTypeToDbFSPath(type), dbfs);
-    std::string output_js;
-    base::JSONWriter::Write(stored_values_, &output_js);
-    saved_volumes_writer_->WriteNow(std::move(output_js));
+    saved_volumes_writer_->WriteNow(
+        base::WriteJson(stored_values_).value_or(""));
   }
 
   void SetVolumeMultiplierOnThread(AudioContentType type, float multiplier) {

@@ -4,33 +4,26 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/table_view_loading_view.h"
 
-#import <MaterialComponents/MaterialActivityIndicator.h>
-
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
-// The MDCActivityIndicator radius.
-const float kLoadingIndicatorRadius = 9.0;
+
+// Scale of activity indicator replacing fav icon when active.
+const CGFloat kIndicatorScale = 0.75;
 // The StackView width.
 const float kStackViewWidth = 227.0;
 // The StackView vertical spacing.
 const float kStackViewVerticalSpacing = 30.0;
+
 }  // namespace
 
-@interface TableViewLoadingView () <MDCActivityIndicatorDelegate>
-// MDCActivityIndicator that will be displayed.
-@property(nonatomic, strong) MDCActivityIndicator* activityIndicator;
-// Completion block ran after `self.activityIndicator` stops.
-@property(nonatomic, copy) ProceduralBlock animateOutCompletionBlock;
-// Message being displayed along the activity indicator.
-@property(nonatomic, copy) NSString* loadingMessage;
-@end
-
-@implementation TableViewLoadingView
-@synthesize activityIndicator = _activityIndicator;
-@synthesize animateOutCompletionBlock = _animateOutCompletionBlock;
-@synthesize loadingMessage = _loadingMessage;
+@implementation TableViewLoadingView {
+  // Activity indicator that will be displayed.
+  UIActivityIndicatorView* _activityIndicator;
+  // Message being displayed along the activity indicator.
+  NSString* _loadingMessage;
+}
 
 #pragma mark - Public Interface
 
@@ -41,21 +34,22 @@ const float kStackViewVerticalSpacing = 30.0;
 - (instancetype)initWithFrame:(CGRect)frame loadingMessage:(NSString*)message {
   self = [super initWithFrame:frame];
   if (self) {
-    self.loadingMessage = message;
+    _loadingMessage = message;
   }
   return self;
 }
 
 - (void)startLoadingIndicator {
-  self.activityIndicator =
-      [[MDCActivityIndicator alloc] initWithFrame:CGRectZero];
-  self.activityIndicator.radius = kLoadingIndicatorRadius;
-  self.activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
-  self.activityIndicator.cycleColors = @[ [UIColor colorNamed:kBlueColor] ];
-  self.activityIndicator.delegate = self;
+  _activityIndicator = [[UIActivityIndicatorView alloc] init];
+  _activityIndicator.color = [UIColor colorNamed:kBlueColor];
+  _activityIndicator.transform = CGAffineTransformScale(
+      _activityIndicator.transform, kIndicatorScale, kIndicatorScale);
+  _activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+  [self addSubview:_activityIndicator];
+  [_activityIndicator startAnimating];
 
   UILabel* messageLabel = [[UILabel alloc] init];
-  messageLabel.text = self.loadingMessage;
+  messageLabel.text = _loadingMessage;
   messageLabel.numberOfLines = 0;
   messageLabel.lineBreakMode = NSLineBreakByWordWrapping;
   messageLabel.textAlignment = NSTextAlignmentCenter;
@@ -64,7 +58,7 @@ const float kStackViewVerticalSpacing = 30.0;
 
   // Vertical stack view that holds the activity indicator and message.
   UIStackView* verticalStack = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ self.activityIndicator, messageLabel ]];
+      initWithArrangedSubviews:@[ _activityIndicator, messageLabel ]];
   verticalStack.axis = UILayoutConstraintAxisVertical;
   verticalStack.spacing = kStackViewVerticalSpacing;
   verticalStack.distribution = UIStackViewDistributionFill;
@@ -76,28 +70,14 @@ const float kStackViewVerticalSpacing = 30.0;
     [verticalStack.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
     [verticalStack.widthAnchor constraintEqualToConstant:kStackViewWidth]
   ]];
-  [self.activityIndicator startAnimating];
+  [_activityIndicator startAnimating];
 }
 
 - (void)stopLoadingIndicatorWithCompletion:(ProceduralBlock)completion {
-  if (self.activityIndicator) {
-    self.animateOutCompletionBlock = completion;
-    [self.activityIndicator stopAnimating];
-  } else if (completion) {
+  [_activityIndicator stopAnimating];
+  if (completion) {
     completion();
   }
-}
-
-#pragma mark - MDCActivityIndicatorDelegate
-
-- (void)activityIndicatorAnimationDidFinish:
-    (MDCActivityIndicator*)activityIndicator {
-  [self.activityIndicator removeFromSuperview];
-  self.activityIndicator = nil;
-  if (self.animateOutCompletionBlock) {
-    self.animateOutCompletionBlock();
-  }
-  self.animateOutCompletionBlock = nil;
 }
 
 @end

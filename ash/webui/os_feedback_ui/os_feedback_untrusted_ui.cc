@@ -18,7 +18,6 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -85,7 +84,6 @@ OsFeedbackUntrustedUI::OsFeedbackUntrustedUI(content::WebUI* web_ui)
   untrusted_source->AddFrameAncestor(GURL(kChromeUIOSFeedbackUrl));
 
   ash::EnableTrustedTypesCSP(untrusted_source);
-  // TODO(b/194964287): Audit and tighten CSP.
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::DefaultSrc, "");
 
@@ -95,12 +93,6 @@ OsFeedbackUntrustedUI::OsFeedbackUntrustedUI(content::WebUI* web_ui)
 }
 
 OsFeedbackUntrustedUI::~OsFeedbackUntrustedUI() = default;
-
-void OsFeedbackUntrustedUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
-}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OsFeedbackUntrustedUI)
 }  // namespace feedback

@@ -174,7 +174,7 @@ void EcheSignaler::ProcessAndroidNetworkInfo(const proto::ExoMessage& message) {
 
 void EcheSignaler::OnConnectionClosed() {
   // When a background connection is closed, reset the timer so no data will be
-  // recoreded into ConnectionFail bucket.
+  // recorded into ConnectionFail bucket.
   signaling_timeout_timer_.reset();
 }
 
@@ -190,11 +190,6 @@ void EcheSignaler::RecordSignalingTimeout() {
 
   PA_LOG(INFO) << "echeapi EcheSignaler timeout: "
                << probably_connection_failed_reason_;
-  if (!features::IsEcheNetworkConnectionStateEnabled()) {
-    base::UmaHistogramEnumeration("Eche.StreamEvent.ConnectionFail",
-                                  probably_connection_failed_reason_);
-    return;
-  }
 
   EcheTray* eche_tray = GetEcheTray();
   if (eche_tray && eche_tray->IsBackgroundConnectionAttemptInProgress()) {

@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/subresource_filter/core/common/constants.h"
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
@@ -110,6 +111,14 @@ const std::string& ExtractStringFromDictionary(
   return *found;
 }
 
+int ExtractIntFromDictionary(const base::Value::Dict& dictionary,
+                             const std::string& key) {
+  const std::string& int_string = ExtractStringFromDictionary(dictionary, key);
+  int result;
+  CHECK(base::StringToInt(int_string, &result));
+  return result;
+}
+
 }  // namespace
 
 FilterTool::FilterTool(
@@ -129,12 +138,11 @@ void FilterTool::Match(const std::string& document_origin,
 }
 
 void FilterTool::MatchBatch(std::istream* request_stream) {
-  MatchBatchImpl(request_stream, true /* print each request */, 1);
+  MatchBatchImpl(request_stream, true /* print each request */);
 }
 
-void FilterTool::MatchRules(std::istream* request_stream, int min_match_count) {
-  MatchBatchImpl(request_stream, false /* print each request */,
-                 min_match_count);
+void FilterTool::MatchRules(std::istream* request_stream) {
+  MatchBatchImpl(request_stream, false /* print each request */);
 }
 
 void FilterTool::PrintResult(bool blocked,
@@ -167,9 +175,9 @@ const url_pattern_index::flat::UrlRule* FilterTool::MatchImpl(
 // to |output_|, just as in Match. Otherwise, the set of matching rules is
 // written to |output_|.
 void FilterTool::MatchBatchImpl(std::istream* request_stream,
-                                bool print_each_request,
-                                int min_match_count) {
-  std::unordered_map<const url_pattern_index::flat::UrlRule*, int>
+                                bool print_each_request) {
+  // Maps each rule to a priority weighting.
+  std::unordered_map<const url_pattern_index::flat::UrlRule*, double>
       matched_rules;
 
   std::string line;
@@ -178,7 +186,8 @@ void FilterTool::MatchBatchImpl(std::istream* request_stream,
       continue;
     }
 
-    std::optional<base::Value> dictionary = base::JSONReader::Read(line);
+    std::optional<base::Value> dictionary =
+        base::JSONReader::Read(line, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(dictionary);
 
     CHECK(dictionary->is_dict());
@@ -188,12 +197,16 @@ void FilterTool::MatchBatchImpl(std::istream* request_stream,
         ExtractStringFromDictionary(dictionary->GetDict(), "request_url");
     const std::string& request_type =
         ExtractStringFromDictionary(dictionary->GetDict(), "request_type");
+    const int site_rank =
+        ExtractIntFromDictionary(dictionary->GetDict(), "site_rank");
 
     bool blocked;
     const url_pattern_index::flat::UrlRule* rule =
         MatchImpl(origin, request_url, request_type, &blocked);
     if (rule) {
-      matched_rules[rule] += 1;
+      // A rough approximation of the power-law relationship between rank and
+      // page views.
+      matched_rules[rule] += pow(site_rank / 2.0, -1.41);
     }
 
     if (print_each_request) {
@@ -205,28 +218,22 @@ void FilterTool::MatchBatchImpl(std::istream* request_stream,
     return;
   }
 
-  // Sort the rules in descending order by match count.
-  std::vector<std::pair<std::string, int>> vector_rules;
-  for (auto rule_and_count : matched_rules) {
-    if (rule_and_count.second < min_match_count) {
-      continue;
-    }
-
-    vector_rules.push_back(std::make_pair(
-        url_pattern_index::FlatUrlRuleToFilterlistString(rule_and_count.first)
-            .c_str(),
-        rule_and_count.second));
+  // Sort the rules in descending order by total weight.
+  std::vector<std::pair<std::string, double>> vector_rules;
+  for (auto rule_and_sum : matched_rules) {
+    vector_rules.emplace_back(
+        url_pattern_index::FlatUrlRuleToFilterlistString(rule_and_sum.first),
+        rule_and_sum.second);
   }
 
   std::sort(vector_rules.begin(), vector_rules.end(),
-            [](const std::pair<std::string, int>& left,
-               const std::pair<std::string, int>& right) {
+            [](const std::pair<std::string, double>& left,
+               const std::pair<std::string, double>& right) {
               return left.second > right.second;
             });
 
-  for (auto rule_and_count : vector_rules) {
-    *output_ << rule_and_count.second << " " << rule_and_count.first
-             << std::endl;
+  for (auto rule_and_sum : vector_rules) {
+    *output_ << rule_and_sum.second << " " << rule_and_sum.first << std::endl;
   }
 }
 

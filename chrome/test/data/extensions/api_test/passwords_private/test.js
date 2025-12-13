@@ -134,6 +134,7 @@ var availableTests = [
           username: 'alice',
           storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
           note: '',
+          hidden: false,
         }),
         expected);
     chrome.test.succeed();
@@ -507,6 +508,7 @@ var availableTests = [
           },
           storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
           note: '',
+          hidden: false,
         },
         () => {
           chrome.test.assertNoLastError();
@@ -534,6 +536,7 @@ var availableTests = [
           },
           storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
           note: '',
+          hidden: false,
         },
         () => {
           chrome.test.assertLastError(
@@ -563,6 +566,7 @@ var availableTests = [
           },
           storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
           note: '',
+          hidden: false,
         },
         () => {
           chrome.test.assertNoLastError();
@@ -590,6 +594,7 @@ var availableTests = [
           },
           storedIn: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
           note: '',
+          hidden: false,
         },
         () => {
           chrome.test.assertLastError(

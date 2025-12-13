@@ -30,9 +30,9 @@ class TestSceneUrlLoadingService : public SceneUrlLoadingService {
   int load_new_tab_call_count_ = 0;
 
   // This can be set by the test.
-  raw_ptr<Browser> current_browser_;
-  raw_ptr<Browser> original_browser_;
-  raw_ptr<Browser> otr_browser_;
+  raw_ptr<Browser, DanglingUntriaged> current_browser_;
+  raw_ptr<Browser, DanglingUntriaged> original_browser_;
+  raw_ptr<Browser, DanglingUntriaged> otr_browser_;
 };
 
 #endif  // IOS_CHROME_BROWSER_URL_LOADING_MODEL_TEST_SCENE_URL_LOADING_SERVICE_H_

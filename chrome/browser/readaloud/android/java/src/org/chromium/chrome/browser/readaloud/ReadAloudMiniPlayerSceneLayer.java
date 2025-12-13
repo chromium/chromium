@@ -13,16 +13,11 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
-import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.ui.resources.ResourceManager;
-
-import java.util.List;
 
 /**
  * A composited view that is positioned below the bottom controls container and is persistent. It is
@@ -104,10 +99,7 @@ public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements 
 
     @Override
     public SceneOverlayLayer getUpdatedSceneOverlayTree(
-            RectF viewport,
-            RectF visibleViewport,
-            ResourceManager resourceManager,
-            float topOffset) {
+            RectF viewport, RectF visibleViewport, ResourceManager resourceManager) {
         ReadAloudMiniPlayerSceneLayerJni.get()
                 .updateReadAloudMiniPlayerLayer(
                         mNativePtr,
@@ -126,36 +118,8 @@ public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements 
     }
 
     @Override
-    public @Nullable EventFilter getEventFilter() {
-        return null;
-    }
-
-    @Override
-    public boolean shouldHideAndroidBrowserControls() {
-        return false;
-    }
-
-    @Override
-    public boolean updateOverlay(long time, long dt) {
-        return false;
-    }
-
-    @Override
-    public boolean onBackPressed() {
-        return false;
-    }
-
-    @Override
-    public boolean handlesTabCreating() {
-        return false;
-    }
-
-    @Override
     public void onSizeChanged(
             float width, float height, float visibleViewportOffsetY, int orientation) {}
-
-    @Override
-    public void getVirtualViews(List<VirtualView> views) {}
 
     @VisibleForTesting
     @NativeMethods

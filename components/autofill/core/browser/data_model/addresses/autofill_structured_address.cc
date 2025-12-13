@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_regex_provider.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
@@ -36,7 +37,12 @@ StreetNameNode::~StreetNameNode() = default;
 StreetLocationNode::StreetLocationNode(SubcomponentsList children)
     : AddressComponent(ADDRESS_HOME_STREET_LOCATION,
                        std::move(children),
-                       MergeMode::kDefault) {}
+                       base::FeatureList::IsEnabled(
+                           features::kAutofillUseChildrenAndReformatMergeMode)
+                           ? (MergeMode::kReplaceEmpty |
+                              MergeMode::kMergeChildrenAndReformatIfNeeded |
+                              MergeMode::kDefault)
+                           : MergeMode::kDefault) {}
 
 StreetLocationNode::~StreetLocationNode() = default;
 
@@ -47,6 +53,31 @@ HouseNumberNode::HouseNumberNode(SubcomponentsList children)
 
 HouseNumberNode::~HouseNumberNode() = default;
 
+std::u16string HouseNumberNode::GetValueForComparison(
+    const std::u16string& value,
+    const AddressCountryCode& common_country_code) const {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUseChildrenAndReformatMergeMode)) {
+    return normalization::NormalizeForComparison(
+        value, normalization::WhitespaceSpec::kDiscard, common_country_code);
+  } else {
+    return AddressComponent::GetValueForComparison(value, common_country_code);
+  }
+}
+
+HouseNumberAndApartmentNode::HouseNumberAndApartmentNode(
+    SubcomponentsList children)
+    : AddressComponent(ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
+                       std::move(children),
+                       base::FeatureList::IsEnabled(
+                           features::kAutofillUseChildrenAndReformatMergeMode)
+                           ? (MergeMode::kReplaceEmpty |
+                              MergeMode::kMergeChildrenAndReformatIfNeeded |
+                              MergeMode::kDefault)
+                           : MergeMode::kDefault) {}
+
+HouseNumberAndApartmentNode::~HouseNumberAndApartmentNode() = default;
+
 FloorNode::FloorNode(SubcomponentsList children)
     : AddressComponent(ADDRESS_HOME_FLOOR,
                        std::move(children),
@@ -55,11 +86,23 @@ FloorNode::FloorNode(SubcomponentsList children)
 FloorNode::~FloorNode() = default;
 
 ApartmentNode::ApartmentNode(SubcomponentsList children)
+    : AddressComponent(ADDRESS_HOME_APT,
+                       std::move(children),
+                       base::FeatureList::IsEnabled(
+                           features::kAutofillUseChildrenAndReformatMergeMode)
+                           ? (MergeMode::kReplaceEmpty |
+                              MergeMode::kMergeChildrenAndReformatIfNeeded |
+                              MergeMode::kDefault)
+                           : MergeMode::kDefault) {}
+
+ApartmentNode::~ApartmentNode() = default;
+
+ApartmentNumNode::ApartmentNumNode(SubcomponentsList children)
     : AddressComponent(ADDRESS_HOME_APT_NUM,
                        std::move(children),
                        MergeMode::kDefault) {}
 
-ApartmentNode::~ApartmentNode() = default;
+ApartmentNumNode::~ApartmentNumNode() = default;
 
 SubPremiseNode::SubPremiseNode(SubcomponentsList children)
     : AddressComponent(ADDRESS_HOME_SUBPREMISE,
@@ -72,10 +115,15 @@ SubPremiseNode::~SubPremiseNode() = default;
 // Take the longer one. If both addresses have the same tokens apply a recursive
 // strategy to merge the substructure.
 StreetAddressNode::StreetAddressNode(SubcomponentsList children)
-    : AddressComponent(ADDRESS_HOME_STREET_ADDRESS,
-                       std::move(children),
-                       MergeMode::kReplaceEmpty | MergeMode::kReplaceSubset |
-                           MergeMode::kDefault) {}
+    : AddressComponent(
+          ADDRESS_HOME_STREET_ADDRESS,
+          std::move(children),
+          base::FeatureList::IsEnabled(
+              features::kAutofillUseChildrenAndReformatMergeMode)
+              ? (MergeMode::kReplaceEmpty | MergeMode::kReplaceSubset |
+                 MergeMode::kMergeChildrenAndReformatIfNeeded | kDefault)
+              : (MergeMode::kReplaceEmpty | MergeMode::kReplaceSubset |
+                 MergeMode::kDefault)) {}
 
 StreetAddressNode::~StreetAddressNode() = default;
 
@@ -311,8 +359,8 @@ PostalCodeNode::~PostalCodeNode() = default;
 std::u16string PostalCodeNode::GetValueForComparison(
     const std::u16string& value,
     const AddressCountryCode& common_country_code) const {
-  return NormalizeAndRewrite(common_country_code, value,
-                             /*keep_white_space=*/false);
+  return normalization::NormalizeForComparison(
+      value, normalization::WhitespaceSpec::kDiscard);
 }
 
 SortingCodeNode::SortingCodeNode(SubcomponentsList children)

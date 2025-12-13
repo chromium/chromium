@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/function_ref.h"
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_constants.h"
@@ -47,11 +48,11 @@ class NET_EXPORT ParsedCookie {
   // class if !IsValid.
   bool IsValid() const;
 
-  const std::string& Name() const { return pairs_[0].first; }
-  const std::string& Token() const { return Name(); }
-  const std::string& Value() const { return pairs_[0].second; }
+  const std::string& Name() const LIFETIME_BOUND { return pairs_[0].first; }
+  const std::string& Token() const LIFETIME_BOUND { return Name(); }
+  const std::string& Value() const LIFETIME_BOUND { return pairs_[0].second; }
 
-  std::optional<std::string_view> Path() const {
+  std::optional<std::string_view> Path() const LIFETIME_BOUND {
     if (path_index_ == 0) {
       return std::nullopt;
     }
@@ -60,19 +61,19 @@ class NET_EXPORT ParsedCookie {
   // Note that Domain() may return the empty string; in the case of cookie_line
   // "domain=", Domain().has_value() will return true (as the empty string is an
   // acceptable domain value), and Domain().value() will be an empty string.
-  std::optional<std::string_view> Domain() const {
+  std::optional<std::string_view> Domain() const LIFETIME_BOUND {
     if (domain_index_ == 0) {
       return std::nullopt;
     }
     return pairs_[domain_index_].second;
   }
-  std::optional<std::string_view> Expires() const {
+  std::optional<std::string_view> Expires() const LIFETIME_BOUND {
     if (expires_index_ == 0) {
       return std::nullopt;
     }
     return pairs_[expires_index_].second;
   }
-  std::optional<std::string_view> MaxAge() const {
+  std::optional<std::string_view> MaxAge() const LIFETIME_BOUND {
     if (maxage_index_ == 0) {
       return std::nullopt;
     }
@@ -81,9 +82,8 @@ class NET_EXPORT ParsedCookie {
   bool IsSecure() const { return secure_index_ != 0; }
   bool IsHttpOnly() const { return httponly_index_ != 0; }
   // Also spits out an enum value representing the string given as the SameSite
-  // attribute value, if |samesite_string| is non-null.
-  CookieSameSite SameSite(
-      CookieSameSiteString* samesite_string = nullptr) const;
+  // attribute value.
+  std::pair<CookieSameSite, CookieSameSiteString> SameSite() const;
   CookiePriority Priority() const;
   bool IsPartitioned() const { return partitioned_index_ != 0; }
   bool HasInternalHtab() const { return internal_htab_; }
@@ -101,16 +101,16 @@ class NET_EXPORT ParsedCookie {
   // Set-Cookie string. The resulting ParsedCookie and its Set-Cookie string
   // should still go through the regular cookie parsing process before entering
   // the cookie jar.
-  bool SetName(const std::string& name);
-  bool SetValue(const std::string& value);
-  bool SetPath(const std::string& path);
-  bool SetDomain(const std::string& domain);
-  bool SetExpires(const std::string& expires);
-  bool SetMaxAge(const std::string& maxage);
+  bool SetName(std::string_view name);
+  bool SetValue(std::string_view value);
+  bool SetPath(std::string_view path);
+  bool SetDomain(std::string_view domain);
+  bool SetExpires(std::string_view expires);
+  bool SetMaxAge(std::string_view maxage);
   bool SetIsSecure(bool is_secure);
   bool SetIsHttpOnly(bool is_http_only);
-  bool SetSameSite(const std::string& same_site);
-  bool SetPriority(const std::string& priority);
+  bool SetSameSite(std::string_view same_site);
+  bool SetPriority(std::string_view priority);
   bool SetIsPartitioned(bool is_partitioned);
 
   // Returns the cookie description as it appears in a HTML response header.
@@ -142,20 +142,20 @@ class NET_EXPORT ParsedCookie {
 
   // Same as the above functions, except the input is assumed to contain the
   // desired token/value and nothing else.
-  static std::string ParseTokenString(std::string_view token);
-  static std::string ParseValueString(std::string_view value);
+  static std::string_view ParseTokenString(std::string_view token);
+  static std::string_view ParseValueString(std::string_view value);
 
   // Returns |true| if the parsed version of |value| matches |value|.
-  static bool ValueMatchesParsedValue(const std::string& value);
+  static bool ValueMatchesParsedValue(std::string_view value);
 
   // Is the string valid as the name of the cookie or as an attribute name?
-  static bool IsValidCookieName(const std::string& name);
+  static bool IsValidCookieName(std::string_view name);
 
   // Is the string valid as the value of the cookie?
-  static bool IsValidCookieValue(const std::string& value);
+  static bool IsValidCookieValue(std::string_view value);
 
   // Is the string free of any characters not allowed in attribute values?
-  static bool CookieAttributeValueHasValidCharSet(const std::string& value);
+  static bool CookieAttributeValueHasValidCharSet(std::string_view value);
 
   // Is the string less than the size limits set for attribute values?
   static bool CookieAttributeValueHasValidSize(std::string_view value);
@@ -165,8 +165,8 @@ class NET_EXPORT ParsedCookie {
   // respectively, in addition to checking that the sum of the two doesn't
   // exceed size limits specified in RFC6265bis.
   static bool IsValidCookieNameValuePair(
-      const std::string& name,
-      const std::string& value,
+      std::string_view name,
+      std::string_view value,
       CookieInclusionStatus* status_out = nullptr);
 
   // Synchronously calls `functor` with each attribute and value in the
@@ -188,16 +188,14 @@ class NET_EXPORT ParsedCookie {
   // to the token matching |index|. If |value| contains invalid characters, the
   // cookie parameter is not changed and the function returns false.
   // If |value| is empty/false the key/value pair is removed.
-  bool SetString(size_t* index,
-                 const std::string& key,
-                 const std::string& value);
-  bool SetBool(size_t* index, const std::string& key, bool value);
+  bool SetString(size_t* index, std::string_view key, std::string_view value);
+  bool SetBool(size_t* index, std::string_view key, bool value);
 
   // Helper function for SetString and SetBool handling the case that the
   // key/value pair shall not be removed.
   bool SetAttributePair(size_t* index,
-                        const std::string& key,
-                        const std::string& value);
+                        std::string_view key,
+                        std::string_view value);
 
   // Removes the key/value pair from a cookie that is identified by |index|.
   // |index| refers to a position in |pairs_|.

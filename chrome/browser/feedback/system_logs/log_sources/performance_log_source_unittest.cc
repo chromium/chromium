@@ -15,10 +15,10 @@
 #include "chrome/browser/performance_manager/test_support/fake_power_monitor_source.h"
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
+#include "components/prefs/pref_service.h"
 
 class QuitRunLoopOnPowerStateChangeObserver
     : public performance_manager::user_tuning::BatterySaverModeManager::
@@ -52,17 +52,16 @@ constexpr char kBatteryPercentage[] = "device_battery_percentage";
 
 class PerformanceLogSourceTest : public BrowserWithTestWindowTest {
  public:
-  PerformanceLogSourceTest()
-      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {
-    local_state_ = testing_local_state_.Get();
-  }
+  PerformanceLogSourceTest() = default;
 
   PerformanceLogSourceTest(const PerformanceLogSourceTest&) = delete;
   PerformanceLogSourceTest& operator=(const PerformanceLogSourceTest&) = delete;
 
   ~PerformanceLogSourceTest() override = default;
 
-  void SetUp() override { environment_.SetUp(local_state_); }
+  void SetUp() override {
+    environment_.SetUp(TestingBrowserProcess::GetGlobal()->local_state());
+  }
 
   void TearDown() override {
     environment_.TearDown();
@@ -86,7 +85,7 @@ class PerformanceLogSourceTest : public BrowserWithTestWindowTest {
                               BatterySaverModeState::kEnabled
                         : performance_manager::user_tuning::prefs::
                               BatterySaverModeState::kDisabled;
-    local_state_->SetInteger(
+    TestingBrowserProcess::GetGlobal()->local_state()->SetInteger(
         performance_manager::user_tuning::prefs::kBatterySaverModeState,
         static_cast<int>(mode));
   }
@@ -113,10 +112,8 @@ class PerformanceLogSourceTest : public BrowserWithTestWindowTest {
         ->RemoveObserver(observer.get());
   }
 
-  ScopedTestingLocalState testing_local_state_;
   performance_manager::user_tuning::TestUserPerformanceTuningManagerEnvironment
       environment_;
-  raw_ptr<TestingPrefServiceSimple> local_state_ = nullptr;
 };
 
 TEST_F(PerformanceLogSourceTest, CheckMemorySaverModeLogs) {

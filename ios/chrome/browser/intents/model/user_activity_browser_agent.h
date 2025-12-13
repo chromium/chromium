@@ -106,7 +106,7 @@ class UserActivityBrowserAgent
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The ProfileIOS associated to the browser.
-  raw_ptr<ProfileIOS> profile_ = nullptr;
+  raw_ptr<ProfileIOS, DanglingUntriaged> profile_ = nullptr;
 
   // Contains information about the initialization of scenes.
   __weak id<ConnectionInformation> connection_information_;

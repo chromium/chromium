@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/process/memory.h"
 #include "build/build_config.h"
 #include "components/zucchini/main_utils.h"

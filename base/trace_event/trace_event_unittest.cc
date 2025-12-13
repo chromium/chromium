@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/trace_event/trace_event.h"
 
 #include <inttypes.h>
@@ -25,6 +20,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -40,6 +36,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/trace_test_utils.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -184,6 +181,7 @@ class TraceEventTestFixture : public testing::Test {
 
  private:
   // We want our singleton torn down after each test.
+  base::test::TracingEnvironment tracing_environment_;
   ShadowingAtExitManager at_exit_manager_;
   Lock lock_;
 };
@@ -259,7 +257,7 @@ static bool IsAllKeyValueInDict(const JsonKeyValue* key_values,
     if (!IsKeyValueInDict(key_values, dict)) {
       return false;
     }
-    ++key_values;
+    UNSAFE_TODO(++key_values);
   }
   return true;
 }
@@ -1343,9 +1341,11 @@ TEST_F(TraceEventTestFixture, MAYBE_ConvertableTypes) {
       TraceConfig(kRecordAllCategoryFilter, ""));
 
   {
-    std::unique_ptr<ConvertableToTraceFormat> data(new MyData());
-    std::unique_ptr<ConvertableToTraceFormat> data1(new MyData());
-    std::unique_ptr<ConvertableToTraceFormat> data2(new MyData());
+    std::unique_ptr<ConvertableToTraceFormat> data = std::make_unique<MyData>();
+    std::unique_ptr<ConvertableToTraceFormat> data1 =
+        std::make_unique<MyData>();
+    std::unique_ptr<ConvertableToTraceFormat> data2 =
+        std::make_unique<MyData>();
     TRACE_EVENT1("foo", "bar", "data", std::move(data));
     TRACE_EVENT2("foo", "baz", "data1", std::move(data1), "data2",
                  std::move(data2));
@@ -1354,10 +1354,10 @@ TEST_F(TraceEventTestFixture, MAYBE_ConvertableTypes) {
   // Check that std::unique_ptr<DerivedClassOfConvertable> are properly treated
   // as convertable and not accidentally casted to bool.
   {
-    std::unique_ptr<MyData> convertData1(new MyData());
-    std::unique_ptr<MyData> convertData2(new MyData());
-    std::unique_ptr<MyData> convertData3(new MyData());
-    std::unique_ptr<MyData> convertData4(new MyData());
+    auto convertData1 = std::make_unique<MyData>();
+    auto convertData2 = std::make_unique<MyData>();
+    auto convertData3 = std::make_unique<MyData>();
+    auto convertData4 = std::make_unique<MyData>();
     TRACE_EVENT2("foo", "string_first", "str", "string value 1", "convert",
                  std::move(convertData1));
     TRACE_EVENT2("foo", "string_second", "convert", std::move(convertData2),

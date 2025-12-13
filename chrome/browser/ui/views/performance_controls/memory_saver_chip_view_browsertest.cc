@@ -91,8 +91,6 @@ class MemorySaverChipViewBrowserTest
 IN_PROC_BROWSER_TEST_F(MemorySaverChipViewBrowserTest,
                        ShowAndHideInkDropOnDialog) {
   PageActionIconView* chip = GetMemorySaverChipView();
-  ui::MouseEvent press(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi test_api(chip);
 
   EXPECT_TRUE(TryDiscardTabAt(0));
@@ -101,12 +99,11 @@ IN_PROC_BROWSER_TEST_F(MemorySaverChipViewBrowserTest,
   EXPECT_EQ(GetInkDropState(), views::InkDropState::HIDDEN);
 
   // Open bubble
-  test_api.NotifyClick(press);
+  test_api.NotifyDefaultMouseClick();
 
   EXPECT_EQ(GetInkDropState(), views::InkDropState::ACTIVATED);
 
-  test_api.NotifyClick(press);
-
+  test_api.NotifyDefaultMouseClick();
   views::InkDropState current_state = GetInkDropState();
   // The deactivated state is HIDDEN on Mac but DEACTIVATED on Linux.
   EXPECT_TRUE(current_state == views::InkDropState::HIDDEN ||

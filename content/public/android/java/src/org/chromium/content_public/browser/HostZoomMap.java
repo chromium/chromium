@@ -4,8 +4,7 @@
 
 package org.chromium.content_public.browser;
 
-import androidx.annotation.VisibleForTesting;
-
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.browser.HostZoomMapImpl;
 
@@ -18,6 +17,7 @@ public class HostZoomMap {
     // not use the slider. These zoom factors correspond to the zoom levels that are used on
     // desktop, i.e. {0.50, 0.67, ... 3.00}, excluding the smallest/largest two, since they are
     // of little value on a mobile device.
+    // TODO(crbug.com/461528057): These are better placed at the embedder layer, such as //chrome.
     public static final double[] AVAILABLE_ZOOM_FACTORS =
             new double[] {
                 -3.80, -2.20, -1.58, -1.22, -0.58, 0.00, 0.52, 1.22, 1.56, 2.22, 3.07, 3.80, 5.03,
@@ -27,11 +27,23 @@ public class HostZoomMap {
     // The value of the base for zoom factor, should match |kTextSizeMultiplierRatio|.
     public static final float TEXT_SIZE_MULTIPLIER_RATIO = 1.2f;
 
+    // A scale factor that can be used to adjust the zoom level transparently to the user. All zoom
+    // levels will be increased/decreased by this factor, which is multiplicative (not additive).
+    // That is, if this factor is 1.10f, a user choice of 100% zoom actually renders at 110% while
+    // still displaying 100% to the user. If the user increases the zoom to 150%, the content would
+    // actually be rendering at 165%. This value can change at runtime, and is set by an embedder.
+    // Use-cases may be windows on an external monitor with a high-density, and the browser is
+    // configured to increase scaling by some set factor to make it easier to read. This factor is
+    // not saved as part of the URL/Host value (i.e. in the above examples, 100% and 150% would be
+    // saved for the user at the URL-level, NOT 110% or 165% respectively).
+    private static float sTransparentZoomAdjustment = 1.0f;
+
     // The current |fontScale| value from Android Configuration. Represents user font size choice.
     // The system font scale acts like the "zoom level" of this component. For the default
     // setting, |fontScale|=1.0; for {Small, Large, XL} the values are {0.85, 1.15, 1.30}.
     // This will be transparently taken into account. If a user has the system font set to
     // XL, then Page Zoom will behave as if it is at 130% while displaying 100% to the user.
+    // TODO(crbug.com/461528057): Combine with above and move any existing logic into //chrome.
     private static float sSystemFontScale = 1.0f;
 
     // Private constructor to prevent unwanted construction.
@@ -46,16 +58,32 @@ public class HostZoomMap {
         assert !webContents.isDestroyed();
 
         // Just before sending the zoom level to the backend, we will take into account the system
-        // level setting. We only do this here and not when applying the default values chosen in
-        // the settings flow so that if the user changes their OS-level setting, the Chrome setting
-        // will continue to display the same value, but adjust accordingly. For example, if the user
-        // chooses 150% zoom in settings with font set to XL, then really that choice is 195%. If
-        // the user then switches to default |fontScale|, we would still want the value to be 150%
-        // shown to the user, and not the 195%.
+        // level setting and any scaling that is a result of the current platform/hardware. We only
+        // do this here and not when applying the default values chosen in the settings flow so that
+        // if the user changes their OS-level setting, the Chrome setting will continue to display
+        // the same value, but adjust accordingly. For example, if the user chooses 150% zoom in
+        // settings with font set to XL, then really that choice is 195%. If the user then switches
+        // to default |fontScale|, we would still want the value to be 150% shown to the user, and
+        // not the 195%. The same logic applies for the platform scaling.
         HostZoomMapImpl.setZoomLevel(
                 webContents,
                 newZoomLevel,
-                HostZoomMapImpl.adjustZoomLevel(newZoomLevel, sSystemFontScale));
+                HostZoomMapImpl.adjustZoomLevel(
+                        newZoomLevel, sSystemFontScale, sTransparentZoomAdjustment));
+    }
+
+    /** Get the current zoom adjustment. */
+    public static float getTransparentZoomAdjustment() {
+        return sTransparentZoomAdjustment;
+    }
+
+    /**
+     * Set the zoom adjustment applied to all pages transparently to the user.
+     *
+     * @param newTransparentZoomAdjustment float, new value.
+     */
+    public static void setTransparentZoomAdjustment(float newTransparentZoomAdjustment) {
+        sTransparentZoomAdjustment = newTransparentZoomAdjustment;
     }
 
     /** Get the current system font scale */
@@ -81,9 +109,12 @@ public class HostZoomMap {
 
         // Just before returning a zoom level from the backend, we must again take into account the
         // system level setting. Here we need to do the reverse operation of the above, effectively
-        // divide rather than multiply, so we will pass the reciprocal of |sSystemFontScale|.
+        // divide rather than multiply, so we will pass the reciprocal of |sSystemFontScale| and
+        // the |sPlatformScale| as the adjustments.
         return HostZoomMapImpl.adjustZoomLevel(
-                HostZoomMapImpl.getZoomLevel(webContents), 1.0f / sSystemFontScale);
+                HostZoomMapImpl.getZoomLevel(webContents),
+                (1.0f / sSystemFontScale),
+                (1.0f / sTransparentZoomAdjustment));
     }
 
     /**
@@ -136,13 +167,37 @@ public class HostZoomMap {
         return HostZoomMapImpl.getDefaultZoomLevel(context);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static void setSystemFontScaleForTesting(float systemFontScale) {
         HostZoomMapImpl.setSystemFontScaleForTesting(systemFontScale);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static void setShouldAdjustForOSLevelForTesting(boolean shouldAdjustForOSLevel) {
         HostZoomMapImpl.setShouldAdjustForOSLevelForTesting(shouldAdjustForOSLevel);
+    }
+
+    /**
+     * Creates a zoom level observer for the given browser context. Ensure that the observer is
+     * removed when it is no longer needed. Otherwise this will leak the callback.
+     *
+     * @param browserContextHandle The BrowserContextHandle to observe.
+     * @param callback The callback to be invoked when the zoom level changes.
+     * @return The key for the native subscription object or -1 if the observer failed to be
+     *     created. This can happen if the browser context is destroyed before the observer is
+     *     created.
+     */
+    public static long addZoomLevelObserver(
+            BrowserContextHandle browserContextHandle, Callback<SiteZoomInfo> callback) {
+        return HostZoomMapImpl.addZoomLevelObserver(browserContextHandle, callback);
+    }
+
+    /**
+     * Destroys the zoom level observer.
+     *
+     * @param browserContextHandle The BrowserContextHandle to observe.
+     * @param subscriptionKey The key for the native subscription object.
+     */
+    public static void removeZoomLevelObserver(
+            BrowserContextHandle browserContextHandle, long subscriptionKey) {
+        HostZoomMapImpl.removeZoomLevelObserver(browserContextHandle, subscriptionKey);
     }
 }

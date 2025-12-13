@@ -46,14 +46,14 @@ TEST_F(ServerPrinterUrlUtilTest, ConvertToGURL) {
   std::optional<GURL> gurl1 = GenerateServerPrinterUrlWithValidScheme(url1);
   DCHECK(gurl1);
   ASSERT_EQ("http://123.123.11.11:631/", gurl1->spec());
-  ASSERT_EQ("http", gurl1->scheme());
-  ASSERT_EQ("631", gurl1->port());
+  ASSERT_EQ("http", gurl1->GetScheme());
+  ASSERT_EQ("631", gurl1->GetPort());
 
   // Test that HTTPS is the default scheme if a scheme is not provided.
   std::string url2("123.123.11.11:631");
   std::optional<GURL> gurl2 = GenerateServerPrinterUrlWithValidScheme(url2);
   DCHECK(gurl2);
-  ASSERT_EQ("https", gurl2->scheme());
+  ASSERT_EQ("https", gurl2->GetScheme());
   ASSERT_EQ("https://123.123.11.11:631/", gurl2->spec());
 
   // Test that if a URL has IPP as its scheme, it will create a new GURL with
@@ -61,8 +61,8 @@ TEST_F(ServerPrinterUrlUtilTest, ConvertToGURL) {
   std::string url3("ipp://123.123.11.11");
   std::optional<GURL> gurl3 = GenerateServerPrinterUrlWithValidScheme(url3);
   DCHECK(gurl3);
-  ASSERT_EQ("http", gurl3->scheme());
-  ASSERT_EQ("631", gurl3->port());
+  ASSERT_EQ("http", gurl3->GetScheme());
+  ASSERT_EQ("631", gurl3->GetPort());
   ASSERT_EQ("http://123.123.11.11:631/", gurl3->spec());
 
   // Test that if a URL has IPP as its scheme and a specified port, it will
@@ -70,8 +70,8 @@ TEST_F(ServerPrinterUrlUtilTest, ConvertToGURL) {
   std::string url4("ipp://123.123.11.11:321");
   std::optional<GURL> gurl4 = GenerateServerPrinterUrlWithValidScheme(url4);
   DCHECK(gurl4);
-  ASSERT_EQ("http", gurl4->scheme());
-  ASSERT_EQ("321", gurl4->port());
+  ASSERT_EQ("http", gurl4->GetScheme());
+  ASSERT_EQ("321", gurl4->GetPort());
   ASSERT_EQ("http://123.123.11.11:321/", gurl4->spec());
 
   // Test that if a URL has IPPS as its scheme and a specified port, a new GURL
@@ -79,8 +79,8 @@ TEST_F(ServerPrinterUrlUtilTest, ConvertToGURL) {
   std::string url5("ipps://123.123.11.11:555");
   std::optional<GURL> gurl5 = GenerateServerPrinterUrlWithValidScheme(url5);
   DCHECK(gurl5);
-  ASSERT_EQ("https", gurl5->scheme());
-  ASSERT_EQ("555", gurl5->port());
+  ASSERT_EQ("https", gurl5->GetScheme());
+  ASSERT_EQ("555", gurl5->GetPort());
   ASSERT_EQ("https://123.123.11.11:555/", gurl5->spec());
 }
 

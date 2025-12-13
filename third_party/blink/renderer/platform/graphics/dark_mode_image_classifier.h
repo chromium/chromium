@@ -24,8 +24,7 @@ FORWARD_DECLARE_TEST(DarkModeImageClassifierTest, FeaturesAndClassification);
 // results is not threadsafe. So it can be used only in blink main thread.
 class PLATFORM_EXPORT DarkModeImageClassifier {
  public:
-  explicit DarkModeImageClassifier(
-      DarkModeImageClassifierPolicy image_classifier_policy);
+  DarkModeImageClassifier();
   ~DarkModeImageClassifier();
 
   struct Features {
@@ -80,8 +79,6 @@ class PLATFORM_EXPORT DarkModeImageClassifier {
   // is grayscale, each bucket is a 4 bit representation of luminance.
   float ComputeColorBucketsRatio(const std::vector<SkColor>& sampled_pixels,
                                  const ColorMode color_mode) const;
-
-  const DarkModeImageClassifierPolicy image_classifier_policy_;
 
   FRIEND_TEST_ALL_PREFIXES(DarkModeImageClassifierTest, BlockSamples);
   FRIEND_TEST_ALL_PREFIXES(DarkModeImageClassifierTest,

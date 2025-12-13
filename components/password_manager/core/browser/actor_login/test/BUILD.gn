@@ -1,0 +1,38 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "actor_login_test_util.cc",
+    "actor_login_test_util.h",
+    "mock_actor_login_delegate.cc",
+    "mock_actor_login_delegate.h",
+    "mock_actor_login_quality_logger.cc",
+    "mock_actor_login_quality_logger.h",
+  ]
+
+  visibility = [
+    "//chrome/browser/password_manager/actor_login:*",
+    "//chrome/browser/password_manager/actor_login/internal:*",
+    "//components/password_manager/core/browser/actor_login/internal:*",
+  ]
+
+  deps = [
+    "//base",
+    "//components/autofill/core/common",
+    "//components/autofill/core/common:test_support",
+    "//components/optimization_guide/core:model_execution",
+    "//components/optimization_guide/proto:optimization_guide_proto_gen",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser/actor_login:common",
+    "//components/password_manager/core/browser/actor_login/internal:delegate",
+    "//testing/gmock",
+    "//url",
+  ]
+}

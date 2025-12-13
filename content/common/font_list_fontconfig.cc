@@ -2,20 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <array>
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <fontconfig/fontconfig.h>
 
+#include <array>
 #include <memory>
 #include <set>
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/values.h"
 #include "content/common/font_list.h"
 
@@ -50,7 +45,7 @@ base::Value::List GetFontList_SlowBlocking() {
         FcFontSetDestroy);
     for (int j = 0; j < fontset->nfont; ++j) {
       char* family_string;
-      FcPatternGetString(fontset->fonts[j], FC_FAMILY, 0,
+      FcPatternGetString(UNSAFE_TODO(fontset->fonts[j]), FC_FAMILY, 0,
                          reinterpret_cast<FcChar8**>(&family_string));
       sorted_families.insert(family_string);
     }

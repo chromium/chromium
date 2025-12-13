@@ -24,6 +24,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/user_script_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/user_scripts_allowed_state.h"
@@ -33,6 +34,8 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -47,12 +50,9 @@ void UserScriptsAPITest::OpenInCurrentTab(const GURL& url) {
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
 
-  content::TestNavigationObserver nav_observer(web_contents);
-  ASSERT_TRUE(NavigateToURL(url));
-  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
-  nav_observer.Wait();
-
-  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  // NavigateToURL() waits for the load to stop and verifies the navigation
+  // succeeded.
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
   EXPECT_EQ(url, web_contents->GetLastCommittedURL());
 }
 
@@ -156,6 +156,8 @@ UserScriptsAPITest::UserScriptsAPITest() {
             extensions_features::kUserScriptUserExtensionToggle});
   }
 }
+
+UserScriptsAPITest::~UserScriptsAPITest() = default;
 
 IN_PROC_BROWSER_TEST_P(UserScriptsAPITest, GetUserScripts) {
   ASSERT_TRUE(RunUserScriptsExtensionTest("user_scripts/get_scripts"))

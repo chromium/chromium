@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -117,7 +118,7 @@ class ProfileWindowBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, CountForNullBrowser) {
   EXPECT_EQ(size_t{0}, chrome::GetBrowserCount(nullptr));
-  EXPECT_EQ(0, BrowserList::GetOffTheRecordBrowsersActiveForProfile(nullptr));
+  EXPECT_EQ(0, chrome::GetOffTheRecordBrowsersActiveForProfile(nullptr));
 }
 
 class ProfileWindowCountBrowserTest : public ProfileWindowBrowserTest,
@@ -128,10 +129,10 @@ class ProfileWindowCountBrowserTest : public ProfileWindowBrowserTest,
   bool is_incognito() { return GetParam(); }
 
   int GetWindowCount() {
-    return is_incognito()
-               ? BrowserList::GetOffTheRecordBrowsersActiveForProfile(
-                     browser()->profile())
-               : BrowserList::GetGuestBrowserCount();
+    return is_incognito() ? static_cast<int>(
+                                chrome::GetOffTheRecordBrowsersActiveForProfile(
+                                    browser()->profile()))
+                          : BrowserList::GetGuestBrowserCount();
   }
 
   Browser* CreateGuestOrIncognitoBrowser() {
@@ -198,6 +199,10 @@ IN_PROC_BROWSER_TEST_P(ProfileWindowCountBrowserTest,
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_window);
 
   EXPECT_EQ(1, GetWindowCount());
+
+  // Close the opened window within the test for a cleaner shutdown.
+  CloseBrowserSynchronously(browser);
+  EXPECT_EQ(0, GetWindowCount());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, ProfileWindowCountBrowserTest, testing::Bool());
@@ -216,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestIgnoresHistory) {
   ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
       guest_browser->profile(), ServiceAccessType::EXPLICIT_ACCESS));
 
-  GURL test_url = ui_test_utils::GetTestUrl(
+  GURL test_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(FILE_PATH_LITERAL("title2.html")));
 
@@ -313,14 +318,14 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestAppMenuLacksBookmarks) {
 
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenBrowserWindowForProfile) {
   Profile* profile = browser()->profile();
-  size_t num_browsers = BrowserList::GetInstance()->size();
+  size_t num_browsers = chrome::GetTotalBrowserCount();
   base::test::TestFuture<Browser*> future;
   profiles::OpenBrowserWindowForProfile(future.GetCallback(), true, false,
-                                        profile);
+                                        false, profile);
   ASSERT_TRUE(future.Get());
   EXPECT_NE(browser(), future.Get());
   EXPECT_EQ(profile, future.Get()->profile());
-  EXPECT_EQ(num_browsers + 1, BrowserList::GetInstance()->size());
+  EXPECT_EQ(num_browsers + 1, chrome::GetTotalBrowserCount());
   EXPECT_FALSE(ProfilePicker::IsOpen());
 }
 
@@ -328,13 +333,13 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenBrowserWindowForProfile) {
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
                        OpenTwoBrowserWindowsForProfile) {
   Profile* profile = browser()->profile();
-  size_t num_browsers = BrowserList::GetInstance()->size();
+  size_t num_browsers = chrome::GetTotalBrowserCount();
   base::test::TestFuture<Browser*> future;
   profiles::OpenBrowserWindowForProfile(future.GetCallback(), true, false,
-                                        profile);
+                                        false, profile);
   CreateBrowser(profile);
   EXPECT_EQ(profile, future.Get()->profile());
-  EXPECT_EQ(num_browsers + 2, BrowserList::GetInstance()->size());
+  EXPECT_EQ(num_browsers + 2, chrome::GetTotalBrowserCount());
   EXPECT_FALSE(ProfilePicker::IsOpen());
 }
 
@@ -356,13 +361,13 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
           .GetProfileAttributesWithPath(profile->GetPath());
   ASSERT_NE(entry, nullptr);
   entry->LockForceSigninProfile(true);
-  size_t num_browsers = BrowserList::GetInstance()->size();
+  size_t num_browsers = chrome::GetTotalBrowserCount();
   base::RunLoop run_loop;
   ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
       run_loop.QuitClosure());
   profiles::OpenBrowserWindowForProfile(base::OnceCallback<void(Browser*)>(),
-                                        true, false, profile);
+                                        true, false, false, profile);
   run_loop.Run();
-  EXPECT_EQ(num_browsers, BrowserList::GetInstance()->size());
+  EXPECT_EQ(num_browsers, chrome::GetTotalBrowserCount());
   EXPECT_TRUE(ProfilePicker::IsOpen());
 }

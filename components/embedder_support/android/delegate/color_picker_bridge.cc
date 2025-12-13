@@ -75,3 +75,5 @@ void ColorPickerBridge::OnColorChosen(JNIEnv* env, jint color) {
 }
 
 }  // namespace web_contents_delegate_android
+
+DEFINE_JNI(ColorPickerBridge)

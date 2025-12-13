@@ -68,10 +68,6 @@ void ExecuteJavaScriptForFeature(web::WebState* web_state,
 // bundled resource file with the given name (excluding extension).
 NSString* GetPageScript(NSString* script_file_name);
 
-// Returns the JavaScript which defines __gCrWeb, __gCrWeb.common, and
-// __gCrWeb.message.
-NSString* GetSharedScripts();
-
 // Manually overrides the built in JavaScriptFeatures and those from
 // `GetWebClient()::GetJavaScriptFeatures()`. This is intended to be used to
 // replace an instance of a built in feature with one created by the test.

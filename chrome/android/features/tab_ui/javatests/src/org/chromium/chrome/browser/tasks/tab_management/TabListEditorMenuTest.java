@@ -27,6 +27,7 @@ import android.widget.LinearLayout;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -107,7 +108,7 @@ public class TabListEditorMenuTest {
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(6)
+                    .setRevision(7)
                     .setDescription("Toolbar string update")
                     .build();
 
@@ -233,6 +234,8 @@ public class TabListEditorMenuTest {
                                     new TabListEditorMenuAdapter());
                     mPropertyListModel.addObserver(mChangeProcessor);
                 });
+
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     @After

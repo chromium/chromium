@@ -103,8 +103,8 @@ TEST_F(DeviceAccountsProviderImplTest, TestFetchWithFakeIdentity) {
         run_loop->Quit();
       },
       &run_loop);
-  GaiaId gaia_id(fake_identity.gaiaID);
-  provider->GetAccessToken(gaia_id, kClientID, scopes, std::move(callback));
+  provider->GetAccessToken(fake_identity.gaiaId, kClientID, scopes,
+                           std::move(callback));
   run_loop.Run();
 }
 
@@ -133,6 +133,6 @@ TEST_F(DeviceAccountsProviderImplTest, TestOnAccountOnDeviceUpdated) {
 
   EXPECT_CALL(observer, OnAccountOnDeviceUpdated(Property(
                             &DeviceAccountsProvider::AccountInfo::GetGaiaId,
-                            Eq(GaiaId(fake_identity.gaiaID)))));
+                            Eq(fake_identity.gaiaId))));
   fake_system_identity_manager_->FireIdentityUpdatedNotification(fake_identity);
 }

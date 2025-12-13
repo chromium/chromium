@@ -4,7 +4,7 @@
 
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_utils.h"
 
-#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -14,7 +14,6 @@ class ProfileKeyedServiceUtilsTest : public PlatformTest {
  public:
   ProfileKeyedServiceUtilsTest() {
     test_profile_ = TestProfileIOS::Builder().Build();
-    test_profile_->CreateOffTheRecordBrowserStateWithTestingFactories();
   }
 
   ProfileIOS* GetRegularProfile() { return test_profile_.get(); }
@@ -32,8 +31,8 @@ class ProfileKeyedServiceUtilsTest : public PlatformTest {
 // profile according to the context and the ProfileSelection.
 TEST_F(ProfileKeyedServiceUtilsTest, GetContextToUseForKeyedServiceFactory) {
   struct TestCase {
-    raw_ptr<web::BrowserState> context;
-    raw_ptr<web::BrowserState> expects;
+    raw_ptr<ProfileIOS> context;
+    raw_ptr<ProfileIOS> expects;
     ProfileSelection profile_selection;
   };
 
@@ -93,7 +92,7 @@ TEST_F(ProfileKeyedServiceUtilsTest, GetContextToUseForKeyedServiceFactory) {
   };
 
   for (const TestCase& test_case : kTestCases) {
-    web::BrowserState* const result = GetContextToUseForKeyedServiceFactory(
+    ProfileIOS* const result = GetContextToUseForKeyedServiceFactory(
         test_case.context, test_case.profile_selection);
 
     EXPECT_EQ(result, test_case.expects);

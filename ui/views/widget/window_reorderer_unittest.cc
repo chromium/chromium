@@ -124,11 +124,18 @@ TEST_F(WindowReordererTest, Association) {
 
   View* contents_view = parent->SetContentsView(std::make_unique<View>());
 
+  // Windows are deleted during shutdown even if it's not owned by the
+  // stack.
   aura::Window* w1 =
-      aura::test::CreateTestWindowWithId(0, parent->GetNativeWindow());
+      aura::test::CreateTestWindow({.parent = parent->GetNativeWindow(),
+                                    .bounds = {100, 100},
+                                    .window_id = 0})
+          .release();
   SetWindowAndLayerName(w1, "w1");
 
-  aura::Window* w2 = aura::test::CreateTestWindowWithId(0, nullptr);
+  aura::Window* w2 =
+      aura::test::CreateTestWindow({.bounds = {100, 100}, .window_id = 0})
+          .release();
   SetWindowAndLayerName(w2, "w2");
 
   // 1) Test that parenting the window to the parent widget last results in a

@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/base/video_codecs.h"
+#include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/video/video_encode_accelerator.h"
 #include "media/video/video_encoder_info.h"
 #include "ui/gfx/geometry/size.h"
@@ -24,7 +25,6 @@
 namespace media {
 struct BitstreamBufferMetadata;
 class CodecPicture;
-class ScopedVABuffer;
 class VideoFrame;
 class VaapiWrapper;
 

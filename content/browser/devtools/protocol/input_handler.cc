@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -575,6 +576,15 @@ CreateWebTouchEvents(
   }
 
   return events;
+}
+
+// Converts a point from the coordinate space of a given RenderWidgetHostView
+// to the absolute screen coordinate space.
+gfx::PointF ConvertWidgetPointToScreenPoint(
+    RenderWidgetHostViewBase& view,
+    const gfx::PointF& point_in_widget) {
+  gfx::Rect view_bounds_in_screen = view.GetViewBounds();
+  return point_in_widget + view_bounds_in_screen.OffsetFromOrigin();
 }
 
 }  // namespace
@@ -1582,7 +1592,8 @@ void InputHandler::OnWidgetForDispatchMouseEvent(
     return;
   }
   event->SetPositionInWidget(*point);
-  event->SetPositionInScreen(event->PositionInWidget());
+  event->SetPositionInScreen(
+      ConvertWidgetPointToScreenPoint(CHECK_DEREF(target.get()), *point));
 
   RenderWidgetHostImpl* widget_host =
       RenderWidgetHostImpl::From(target->GetRenderWidgetHost());
@@ -1699,11 +1710,11 @@ void InputHandler::OnWidgetForDispatchWebTouchEvent(
     event.unique_touch_event_id = ui::GetNextTouchEventId();
     for (unsigned j = 0; j < event.touches_length; j++) {
       gfx::PointF point = event.touches[j].PositionInWidget();
-      event.touches[j].SetPositionInWidget(point.x() + delta.x(),
-                                           point.y() + delta.y());
-      point = event.touches[j].PositionInScreen();
-      event.touches[j].SetPositionInScreen(point.x() + delta.x(),
-                                           point.y() + delta.y());
+      gfx::PointF position_in_widget(point.x() + delta.x(),
+                                     point.y() + delta.y());
+      event.touches[j].SetPositionInWidget(position_in_widget);
+      event.touches[j].SetPositionInScreen(ConvertWidgetPointToScreenPoint(
+          CHECK_DEREF(target.get()), position_in_widget));
     }
   }
   EnsureInjector(widget_host)->InjectTouchEvents(events, std::move(callback));
@@ -1957,14 +1968,17 @@ Response InputHandler::EmulateTouchFromMouseEvent(
     event.reset(mouse_event);
   }
 
-  mouse_event->SetPositionInWidget(x, y);
+  if (!host_ || !host_->GetRenderWidgetHost() || !host_->GetView()) {
+    return Response::InternalError();
+  }
+
+  gfx::PointF position_in_widget(x, y);
+  mouse_event->SetPositionInWidget(position_in_widget);
   mouse_event->button = event_button;
-  mouse_event->SetPositionInScreen(x, y);
+  mouse_event->SetPositionInScreen(ConvertWidgetPointToScreenPoint(
+      CHECK_DEREF(host_->GetView()), position_in_widget));
   mouse_event->click_count = click_count.value_or(0);
   mouse_event->pointer_type = blink::WebPointerProperties::PointerType::kTouch;
-
-  if (!host_ || !host_->GetRenderWidgetHost())
-    return Response::InternalError();
 
   base::OnceCallback<void(bool)> forward_event_func;
 

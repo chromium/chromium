@@ -7,15 +7,27 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/chooser_dialog_view.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_container_outline.h"
+#include "chrome/browser/ui/views/frame/contents_container_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/permissions/fake_bluetooth_chooser_controller.h"
 #include "components/permissions/fake_usb_chooser_controller.h"
+#include "components/tabs/public/split_tab_visual_data.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/page_transition_types.h"
 
 namespace {
 
@@ -235,4 +247,45 @@ IN_PROC_BROWSER_TEST_F(BluetoothChooserBrowserTest, InvokeUi_PairedModal) {
       permissions::FakeBluetoothChooserController::BluetoothStatus::IDLE);
   AddPairedDevice();
   ShowAndVerifyUi();
+}
+
+class DeviceChooserBubbleSplitViewTest : public InProcessBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    InProcessBrowserTest::SetUpOnMainThread();
+  }
+
+  GURL GetURL(const char* hostname) const {
+    return embedded_test_server()->GetURL(hostname, "/title1.html");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DeviceChooserBubbleSplitViewTest,
+                       ShowDeviceChooserDialog) {
+  ASSERT_TRUE(AddTabAtIndex(0, GetURL("example.com"),
+                            ui::PageTransition::PAGE_TRANSITION_TYPED));
+  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+  tab_strip_model->ActivateTabAt(0);
+  tab_strip_model->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  std::vector<ContentsContainerView*> contents_container_views =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->multi_contents_view()
+          ->contents_container_views();
+  ASSERT_EQ(contents_container_views.size(), 2U);
+  EXPECT_FALSE(
+      contents_container_views[0]->contents_outline_view()->is_highlighted());
+  EXPECT_FALSE(
+      contents_container_views[1]->contents_outline_view()->is_highlighted());
+
+  ShowChooserBubble(browser(), std::make_unique<FakeUsbChooserController>(0));
+
+  EXPECT_TRUE(
+      contents_container_views[0]->contents_outline_view()->is_highlighted());
+  EXPECT_FALSE(
+      contents_container_views[1]->contents_outline_view()->is_highlighted());
 }

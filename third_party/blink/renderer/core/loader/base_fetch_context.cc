@@ -83,6 +83,7 @@ bool BaseFetchContext::CalculateIfAdSubresource(
     base::optional_ref<const KURL> alias_url,
     ResourceType type,
     const FetchInitiatorInfo& initiator_info,
+    bool scan_stack_for_ads,
     subresource_filter::ScopedRule* out_rule) {
   // A derived class should override this if they have more signals than just
   // the SubresourceFilter.

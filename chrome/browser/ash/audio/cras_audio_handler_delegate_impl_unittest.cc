@@ -40,12 +40,9 @@ class CrasAudioHandlerDelegateImplTest : public BrowserWithTestWindowTest {
     cras_audio_handler_delegate_impl_ =
         std::make_unique<CrasAudioHandlerDelegateImpl>();
     settings_window_manager_ = std::make_unique<TestSettingsWindowManager>();
-    chrome::SettingsWindowManager::SetInstanceForTesting(
-        settings_window_manager_.get());
   }
 
   void TearDown() override {
-    chrome::SettingsWindowManager::SetInstanceForTesting(nullptr);
     settings_window_manager_.reset();
     cras_audio_handler_delegate_impl_.reset();
     BrowserWithTestWindowTest::TearDown();

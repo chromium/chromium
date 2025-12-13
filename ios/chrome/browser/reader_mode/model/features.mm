@@ -7,79 +7,88 @@
 #import "base/feature_list.h"
 #import "base/json/values_util.h"
 #import "base/metrics/field_trial_params.h"
+#import "base/strings/string_util.h"
+#import "components/variations/service/variations_service_utils.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 
 namespace {
-// The default number of days to span for determining Reading Mode default
-// browser eligibility.
-constexpr int kReaderModeDefaultBrowserPromoNumDaysCriteria = 14;
 
-// The default number of days a user should be active to display the default
-// browser promo.
-constexpr int kReaderModeDefaultBrowserPromoActiveDaysCriteria = 2;
-
-// Name to configure the number of days a user should be active in Reading Mode
-// to display a default browser promo.
-const char kReaderModeDefaultBrowserActiveDaysCriteriaStringName[] =
-    "reader-mode-default-browser-active-days";
-
-// Name to configure the number of days to span for determining the Reading Mode
-// default browser eligibility criteria.
-const char kReaderModeDefaultBrowserNumDaysCriteriaStringName[] =
-    "reader-mode-default-browser-num-days";
+// Returns whether the user's current country code is US.
+bool IsUSCountryCode() {
+  return base::ToLowerASCII(GetCurrentCountryCode(
+             GetApplicationContext()->GetVariationsService())) == "us";
+}
 
 }  // namespace
 
-BASE_FEATURE(kEnableReaderMode,
-             "EnableReaderMode",
+BASE_FEATURE(kEnableReaderMode, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableReaderModeInUS, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableReaderModeOmniboxEntryPoint,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableReaderModeTranslation, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableReaderModeTranslationWithInfobar,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableReadabilityHeuristic,
-             "EnableReadabilityHeuristic",
+BASE_FEATURE(kEnableReadabilityHeuristic, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableReaderModeOptimizationGuideEligibility,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableReaderModePageEligibilityForToolsMenu,
-             "EnableReaderModePageEligibilityForToolsMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableReaderModeBadgeSupport, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableReaderModeDebugInfo,
-             "EnableReaderModeDebugInfo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+const char kReaderModeHeuristicPageLoadDelayDurationStringName[] =
+    "reader-mode-heuristic-page-load-delay-duration-string";
 
-BASE_FEATURE(kEnableReaderModeDefaultBrowserPromo,
-             "EnableReaderModeDefaultBrowserPromo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+const char kReaderModeDistillationTimeoutDurationStringName[] =
+    "reader-mode-distillation-timeout-duration-string";
 
-const char kReaderModeDistillerPageLoadDelayDurationStringName[] =
-    "reader-mode-distiller-page-load-delay-duration-string";
-
-const base::TimeDelta ReaderModeDistillerPageLoadDelay() {
+const base::TimeDelta ReaderModeDistillationTimeout() {
   return base::GetFieldTrialParamByFeatureAsTimeDelta(
       kEnableReaderMode,
-      /*name=*/kReaderModeDistillerPageLoadDelayDurationStringName,
-      /*default_value=*/kReaderModeDistillerPageLoadDelay);
+      /*name=*/kReaderModeDistillationTimeoutDurationStringName,
+      /*default_value=*/kReaderModeDistillationTimeout);
+}
+
+const base::TimeDelta ReaderModeHeuristicPageLoadDelay() {
+  return base::GetFieldTrialParamByFeatureAsTimeDelta(
+      kEnableReaderMode,
+      /*name=*/kReaderModeHeuristicPageLoadDelayDurationStringName,
+      /*default_value=*/kReaderModeHeuristicPageLoadDelay);
 }
 
 bool IsReaderModeAvailable() {
+  if (IsDiamondPrototypeEnabled()) {
+    return true;
+  }
+  if (IsUSCountryCode() &&
+      !experimental_flags::ShouldIgnoreDeviceLocaleConditions()) {
+    return base::FeatureList::IsEnabled(kEnableReaderMode) &&
+           base::FeatureList::IsEnabled(kEnableReaderModeInUS);
+  }
   return base::FeatureList::IsEnabled(kEnableReaderMode);
 }
 
-bool IsReaderModeSnackbarEnabled() {
-  return base::FeatureList::IsEnabled(kEnableReaderModeDebugInfo);
+bool IsReaderModeOmniboxEntryPointEnabled() {
+  return base::FeatureList::IsEnabled(kEnableReaderModeOmniboxEntryPoint);
 }
 
-int ReaderModeDefaultBrowserActiveDaysCriteria() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kEnableReaderModeDefaultBrowserPromo,
-      /*name=*/kReaderModeDefaultBrowserActiveDaysCriteriaStringName,
-      /*default_value=*/kReaderModeDefaultBrowserPromoActiveDaysCriteria);
+bool IsReaderModeTranslationAvailable() {
+  return base::FeatureList::IsEnabled(kEnableReaderModeTranslation) ||
+         base::FeatureList::IsEnabled(kEnableReaderModeTranslationWithInfobar);
 }
 
-int ReaderModeDefaultBrowserNumDaysCriteria() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kEnableReaderModeDefaultBrowserPromo,
-      /*name=*/kReaderModeDefaultBrowserNumDaysCriteriaStringName,
-      /*default_value=*/kReaderModeDefaultBrowserPromoNumDaysCriteria);
+bool IsReaderModeOptimizationGuideEligibilityAvailable() {
+  return base::FeatureList::IsEnabled(
+      kEnableReaderModeOptimizationGuideEligibility);
+}
+
+bool IsReaderModeBadgeSupportEnabled() {
+  return base::FeatureList::IsEnabled(kEnableReaderModeBadgeSupport);
 }

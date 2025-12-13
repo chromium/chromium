@@ -98,11 +98,12 @@ class FakeWebMediaPlayer final : public EmptyWebMediaPlayer {
     }
 
     context_->GetTaskRunner(TaskType::kInternalMediaRealTime)
-        ->PostDelayedTask(FROM_HERE,
-                          WTF::BindOnce(&FakeWebMediaPlayer::AutoTimeIncrement,
-                                        WTF::Unretained(this),
-                                        auto_time_increment_delta_.value()),
-                          auto_time_increment_delta_.value());
+        ->PostDelayedTask(
+            FROM_HERE,
+            blink::BindOnce(&FakeWebMediaPlayer::AutoTimeIncrement,
+                            Unretained(this),
+                            auto_time_increment_delta_.value()),
+            auto_time_increment_delta_.value());
     scheduled_time_increment_ = true;
   }
 
@@ -297,10 +298,10 @@ TEST_F(HTMLMediaElementEventListenersTest,
   Vector<blink::WebFullscreenVideoStatus> observed_results;
 
   ON_CALL(*WebMediaPlayer(), SetIsEffectivelyFullscreen(_))
-      .WillByDefault(testing::Invoke(
+      .WillByDefault(
           [&](blink::WebFullscreenVideoStatus fullscreen_video_status) {
             observed_results.push_back(fullscreen_video_status);
-          }));
+          });
 
   DestroyDocument();
 
@@ -577,17 +578,17 @@ class CueEventListener final : public NativeEventListener {
  public:
   void Invoke(ExecutionContext* ctx, Event* event) override {
     if (event->type() == event_type_names::kEnter) {
-      EXPECT_TRUE(event->target()->GetWrapperTypeInfo()->Equals(
+      EXPECT_TRUE(event->RawTarget()->GetWrapperTypeInfo()->Equals(
           VTTCue::GetStaticWrapperTypeInfo()));
-      auto* const cue = static_cast<VTTCue*>(event->target());
+      auto* const cue = static_cast<VTTCue*>(event->RawTarget());
       auto* const media_element = cue->track()->MediaElement();
 
       OnCueEnter(media_element, cue);
       return;
     } else if (event->type() == event_type_names::kExit) {
-      EXPECT_TRUE(event->target()->GetWrapperTypeInfo()->Equals(
+      EXPECT_TRUE(event->RawTarget()->GetWrapperTypeInfo()->Equals(
           VTTCue::GetStaticWrapperTypeInfo()));
-      auto* const cue = static_cast<VTTCue*>(event->target());
+      auto* const cue = static_cast<VTTCue*>(event->RawTarget());
       auto* const media_element = cue->track()->MediaElement();
 
       OnCueExit(media_element, cue);

@@ -29,7 +29,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "device/fido/mac/credential_store.h"
 #include "device/fido/mac/scoped_touch_id_test_environment.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -119,7 +119,15 @@ IN_PROC_BROWSER_TEST_F(WebAuthnMacAutofillIntegrationTest, SelectAccount) {
   // effect of waiting for the browser to send the renderer the password
   // information, and waiting for the UI to render.
   base::WeakPtr<autofill::AutofillSuggestionController> controller;
-  while (!controller) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  while (!controller ||
+         std::ranges::count(controller->GetSuggestions(),
+                            autofill::SuggestionType::kWebauthnCredential,
+                            &autofill::Suggestion::type) == 0) {
+    if (base::TimeTicks::Now() - start_time > base::Seconds(2)) {
+      ASSERT_TRUE(controller) << "Timed out waiting for suggestion popup.";
+      FAIL() << "Timed out waiting for WebAuthn suggestion in popup.";
+    }
     content::SimulateMouseClickOrTapElementWithId(web_contents, "username");
     controller = autofill_client->suggestion_controller_for_testing();
   }
@@ -138,7 +146,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthnMacAutofillIntegrationTest, SelectAccount) {
   // Click the credential.
   test_api(static_cast<autofill::AutofillPopupControllerImpl&>(*controller))
       .DisableThreshold(true);
-  controller->AcceptSuggestion(it - suggestions.begin());
+  controller->AcceptSuggestion(
+      it - suggestions.begin(),
+      autofill::AutofillMetrics::SuggestionAcceptedMethod::kMouse);
   std::string result;
   ASSERT_TRUE(message_queue.WaitForMessage(&result));
   EXPECT_EQ(result, "\"webauthn: OK\"");

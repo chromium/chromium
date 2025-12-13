@@ -8,7 +8,7 @@
 #import "base/containers/contains.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_web_state_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/tabs/model/features.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
@@ -175,7 +175,7 @@ void SessionRestorationWebStateListObserver::DetachWebState(
 
 void SessionRestorationWebStateListObserver::DetachObserver(
     web::WebState* web_state) {
-  if (CreateTabHelperOnlyForRealizedWebStates()) {
+  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
     if (!web_state->IsRealized()) {
       web_state_observations_.RemoveObservation(web_state);
       return;
@@ -211,7 +211,7 @@ void SessionRestorationWebStateListObserver::AttachWebState(
 
 void SessionRestorationWebStateListObserver::AttachObserver(
     web::WebState* web_state) {
-  if (CreateTabHelperOnlyForRealizedWebStates()) {
+  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
     if (!web_state->IsRealized()) {
       web_state_observations_.AddObservation(web_state);
       return;

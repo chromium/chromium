@@ -24,6 +24,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadow.api.Shadow;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.components.webauthn.WebauthnFeatures;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
@@ -34,6 +36,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
             ShadowCreateCredentialResponse.class,
             ShadowCreateCredentialException.class
         })
+@EnableFeatures({WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_REQUEST_EXTRA_BUNDLE})
 public class GpmCredManRequestDecoratorRobolectricTest {
     private static final String ORIGIN = "www.coolwebsite.com";
     private static final byte[] USER_ID = new byte[] {3, 5, 8};

@@ -73,7 +73,7 @@ public class PaymentRequestFreeShippingTest {
     }
 
     @Before
-    public void setUp() throws TimeoutException {
+    public void setUp() throws Exception {
         mPaymentRequestTestRule.startMainActivity();
         mPaymentRequestTestRule.setObserversAndWaitForInitialPageLoad();
         AutofillTestHelper helper = new AutofillTestHelper();

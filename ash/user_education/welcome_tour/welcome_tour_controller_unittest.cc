@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <variant>
 #include <vector>
 
 #include "ash/accelerators/accelerator_lookup.h"
@@ -27,7 +26,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/power/battery_notification.h"
-#include "ash/test/test_widget_builder.h"
 #include "ash/user_education/mock_user_education_delegate.h"
 #include "ash/user_education/user_education_ash_test_base.h"
 #include "ash/user_education/user_education_types.h"
@@ -67,6 +65,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 
@@ -108,7 +107,6 @@ constexpr char16_t kTotalSteps[] = u"5";
 
 // Actions ---------------------------------------------------------------------
 
-// TODO(http://b/277094923): Try to promote to //base/test/gmock_move_support.h.
 // Existing support is limited in that the gMock framework provides const-only
 // access to `args` for all except the last action. This action lessens the
 // effect of that limitation by supporting multiple moves at a time.
@@ -138,20 +136,6 @@ MATCHER_P4(StringFUTF8Eq, message_id, sub1, sub2, sub3, "") {
   return Matches(l10n_util::GetStringFUTF8(message_id, sub1, sub2, sub3))(arg);
 }
 
-MATCHER_P(ElementSpecifierEq, element_specifier, "") {
-  return std::visit(absl::Overload{
-                        [&](const ui::ElementIdentifier& element_id) {
-                          return arg.element_id() == element_id &&
-                                 arg.element_name().empty();
-                        },
-                        [&](const std::string& element_name) {
-                          return arg.element_name() == element_name &&
-                                 arg.element_id() == ui::ElementIdentifier();
-                        },
-                    },
-                    element_specifier);
-}
-
 MATCHER_P6(BubbleStep,
            element_specifier,
            context_mode,
@@ -163,7 +147,7 @@ MATCHER_P6(BubbleStep,
   namespace util = user_education_util;
   const auto& ext_props = arg.extended_properties();
   return arg.step_type() == ui::InteractionSequence::StepType::kShown &&
-         Matches(ElementSpecifierEq(element_specifier))(arg) &&
+         arg.element() == element_specifier &&
          arg.context_mode() == context_mode &&
          util::GetHelpBubbleId(ext_props) == help_bubble_id &&
          arg.body_text_id() == body_text_id && arg.arrow() == arrow &&
@@ -186,7 +170,7 @@ MATCHER_P7(BubbleStep,
   namespace util = user_education_util;
   const auto& ext_props = arg.extended_properties();
   return arg.step_type() == ui::InteractionSequence::StepType::kShown &&
-         Matches(ElementSpecifierEq(element_specifier))(arg) &&
+         arg.element() == element_specifier &&
          arg.context_mode() == context_mode &&
          util::GetHelpBubbleId(ext_props) == help_bubble_id &&
          arg.body_text_id() == body_text_id && arg.arrow() == arrow &&
@@ -211,7 +195,7 @@ MATCHER_P8(BubbleStep,
   namespace util = user_education_util;
   const auto& ext_props = arg.extended_properties();
   return arg.step_type() == ui::InteractionSequence::StepType::kShown &&
-         Matches(ElementSpecifierEq(element_specifier))(arg) &&
+         arg.element() == element_specifier &&
          arg.context_mode() == context_mode &&
          util::GetHelpBubbleId(ext_props) == help_bubble_id &&
          Matches(accessible_name_matcher)(
@@ -227,7 +211,7 @@ MATCHER_P8(BubbleStep,
 
 MATCHER_P2(HiddenStep, element_specifier, context_mode, "") {
   return arg.step_type() == ui::InteractionSequence::StepType::kHidden &&
-         Matches(ElementSpecifierEq(element_specifier))(arg) &&
+         arg.element() == element_specifier &&
          arg.context_mode() == context_mode;
 }
 
@@ -237,14 +221,14 @@ MATCHER_P3(EventStep,
            has_name_elements_callback,
            "") {
   return arg.step_type() == ui::InteractionSequence::StepType::kCustomEvent &&
-         Matches(ElementSpecifierEq(element_specifier))(arg) &&
+         arg.element() == element_specifier &&
          arg.context_mode() == context_mode &&
          arg.name_elements_callback().is_null() != has_name_elements_callback;
 }
 
 MATCHER_P2(ShownStep, element_specifier, context_mode, "") {
   return arg.step_type() == ui::InteractionSequence::StepType::kShown &&
-         Matches(ElementSpecifierEq(element_specifier))(arg) &&
+         arg.element() == element_specifier &&
          arg.context_mode() == context_mode;
 }
 
@@ -459,8 +443,8 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
                 LaunchSystemWebAppAsync(
                     Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
                     Eq(apps::LaunchSource::kFromWelcomeTour),
-                    Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
-        .Times(display::Screen::GetScreen()->InTabletMode() ? 0u : 1u);
+                    Eq(display::Screen::Get()->GetPrimaryDisplay().id())))
+        .Times(display::Screen::Get()->InTabletMode() ? 0u : 1u);
     std::move(ended_callback).Run();
     Mock::VerifyAndClearExpectations(&observer);
     Mock::VerifyAndClearExpectations(user_education_delegate);
@@ -516,7 +500,7 @@ TEST_F(WelcomeTourControllerTest, AbortsTourAndPropagatesEvents) {
               LaunchSystemWebAppAsync(
                   Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
                   Eq(apps::LaunchSource::kFromWelcomeTour),
-                  Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())));
+                  Eq(display::Screen::Get()->GetPrimaryDisplay().id())));
 
   // Click the `cancel_button` and verify the Welcome Tour is ended.
   const views::View* const cancel_button = GetDialogCancelButton();
@@ -759,7 +743,7 @@ TEST_P(WelcomeTourControllerChromeVoxTest,
               LaunchSystemWebAppAsync(
                   Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
                   Eq(apps::LaunchSource::kFromWelcomeTour),
-                  Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
+                  Eq(display::Screen::Get()->GetPrimaryDisplay().id())))
       .Times(expect_abort ? 1 : 0);
 
   base::HistogramTester histogram_tester;
@@ -807,7 +791,7 @@ TEST_P(WelcomeTourControllerChromeVoxTest,
               LaunchSystemWebAppAsync(
                   Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
                   Eq(apps::LaunchSource::kFromWelcomeTour),
-                  Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
+                  Eq(display::Screen::Get()->GetPrimaryDisplay().id())))
       .Times(expect_prevent ? 1 : 0);
 
   TestSessionControllerClient* const session = GetSessionControllerClient();
@@ -883,7 +867,7 @@ TEST_P(WelcomeTourControllerHoldbackTest, PreventsWelcomeTourForHoldbackArms) {
               LaunchSystemWebAppAsync(
                   Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
                   Eq(apps::LaunchSource::kFromWelcomeTour),
-                  Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
+                  Eq(display::Screen::Get()->GetPrimaryDisplay().id())))
       .Times(IsHoldback().value_or(false) ? 1u : 0u);
 
   // Login the primary user for the first time and verify expectations.
@@ -1003,7 +987,7 @@ TEST_P(WelcomeTourControllerUserEligibilityTest, EnforcesUserEligibility) {
               LaunchSystemWebAppAsync(
                   Eq(primary_account_id()), Eq(ash::SystemWebAppType::HELP),
                   Eq(apps::LaunchSource::kFromWelcomeTour),
-                  Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
+                  Eq(display::Screen::Get()->GetPrimaryDisplay().id())))
       .Times(0);
 
   base::HistogramTester histogram_tester;
@@ -1105,12 +1089,11 @@ class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
     std::move(in_progress_callback).Run();
 
     // When the tour is completed, expect an attempt to launch the Explore app.
-    EXPECT_CALL(
-        *user_education_delegate(),
-        LaunchSystemWebAppAsync(
-            Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
-            Eq(apps::LaunchSource::kFromWelcomeTour),
-            Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())));
+    EXPECT_CALL(*user_education_delegate(),
+                LaunchSystemWebAppAsync(
+                    Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
+                    Eq(apps::LaunchSource::kFromWelcomeTour),
+                    Eq(display::Screen::Get()->GetPrimaryDisplay().id())));
 
     // Click `accept_button` to close the Welcome Tour dialog.
     const views::View* const accept_button = GetDialogAcceptButton();
@@ -1129,7 +1112,7 @@ class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
 TEST_F(WelcomeTourControllerRunTest, BlockInteractionsWithIrrelevantWindow) {
   // Create a random widget to interact with.
   std::unique_ptr<views::Widget> widget =
-      TestWidgetBuilder()
+      views::test::TestWidgetBuilder()
           .SetBounds(gfx::Rect(100, 100))
           .SetParent(Shell::GetPrimaryRootWindow()->GetChildById(
               kShellWindowId_LockScreenContainer))
@@ -1591,7 +1574,7 @@ TEST_F(WelcomeTourControllerTabletTest, DoesNotStart) {
               LaunchSystemWebAppAsync(
                   Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
                   Eq(apps::LaunchSource::kFromWelcomeTour),
-                  Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
+                  Eq(display::Screen::Get()->GetPrimaryDisplay().id())))
       .Times(0);
   SimulateNewUserFirstLogin(primary_account_id.GetUserEmail());
   EXPECT_FALSE(WelcomeTourDialog::Get());
@@ -1634,7 +1617,7 @@ TEST_F(WelcomeTourControllerTabletTest, TriggersAbort) {
               LaunchSystemWebAppAsync(
                   Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
                   Eq(apps::LaunchSource::kFromWelcomeTour),
-                  Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
+                  Eq(display::Screen::Get()->GetPrimaryDisplay().id())))
       .Times(0);
   EXPECT_CALL(*observer(), OnWelcomeTourEnded);
   TabletMode::Get()->SetEnabledForTest(true);

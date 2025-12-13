@@ -26,7 +26,7 @@ const CGFloat kContainerSubstractredStroke = 2;
 const CGFloat kPlusXlabelFontSize = 9;
 
 // horizontal inner margin in for the `_plusXLabel`.
-const CGFloat kPlusXlabelContainerHorizontalInnerMargin = 6;
+const CGFloat kPlusXlabelContainerHorizontalInnerMargin = 3;
 
 // Alpha value of the non-avatar view background color.
 const CGFloat kNonAvatarContainerBackgroundAlpha = 0.2;
@@ -42,6 +42,17 @@ const CGFloat kShareElementSpacing = 7;
 const CGFloat kShareHorizontalInset = 8;
 const CGFloat kShareVerticalInset = 5;
 const CGFloat kShareSymbolPointSize = 12.5;
+
+// Returns the background configuration for the buttons.
+UIBackgroundConfiguration* BackgroundConfiguration() {
+  UIBackgroundConfiguration* background_configuration =
+      [UIBackgroundConfiguration clearConfiguration];
+  background_configuration.visualEffect =
+      [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterial];
+  background_configuration.backgroundColor =
+      TabGroupViewButtonBackgroundColor();
+  return background_configuration;
+}
 
 }  // namespace
 
@@ -65,6 +76,8 @@ const CGFloat kShareSymbolPointSize = 12.5;
   CGFloat _membersCount;
   // View to display when the face pile is empty.
   UIButton* _shareViewContainer;
+  // The background of the non-avatar.
+  UIView* _nonAvatarBackground;
 }
 
 - (instancetype)init {
@@ -145,27 +158,15 @@ const CGFloat kShareSymbolPointSize = 12.5;
 
 // Updates colors after UITrait collection update.
 - (void)updateColors {
-  BOOL isDarkMode =
-      self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
   if (_facePileBackgroundColor) {
-    _nonAvatarContainer.backgroundColor =
-        [isDarkMode ? [UIColor colorNamed:kSolidWhiteColor]
-                    : [UIColor colorNamed:kSolidBlackColor]
-            colorWithAlphaComponent:kNonAvatarContainerBackgroundAlpha];
+    [_nonAvatarBackground removeFromSuperview];
     _nonAvatarContainer.tintColor = [UIColor colorNamed:kSolidWhiteColor];
     _plusXLabel.textColor = [UIColor colorNamed:kSolidWhiteColor];
-    return;
-  }
-  if (isDarkMode) {
-    _nonAvatarContainer.backgroundColor =
-        [UIColor colorNamed:kTertiaryBackgroundColor];
+    _nonAvatarContainer.backgroundColor = [[UIColor colorNamed:kSolidBlackColor]
+        colorWithAlphaComponent:kNonAvatarContainerBackgroundAlpha];
+  } else {
     _peopleWaitingImageView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
     _plusXLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  } else {
-    _nonAvatarContainer.backgroundColor = [UIColor colorNamed:kGrey100Color];
-    _peopleWaitingImageView.tintColor =
-        [UIColor colorNamed:kTextSecondaryColor];
-    _plusXLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   }
 }
 
@@ -220,13 +221,18 @@ const CGFloat kShareSymbolPointSize = 12.5;
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisHorizontal];
 
+  _nonAvatarBackground = [self createNonAvatarBackground];
+
   // Configure a container in order to add an inner horizontal margin around the
   // label.
   UIView* plusXLabelContainer = [[UIView alloc] init];
   plusXLabelContainer.translatesAutoresizingMaskIntoConstraints = NO;
   plusXLabelContainer.layer.cornerRadius = _avatarSize / 2.0;
   plusXLabelContainer.layer.masksToBounds = YES;
+  [plusXLabelContainer addSubview:_nonAvatarBackground];
   [plusXLabelContainer addSubview:plusXLabel];
+
+  AddSameConstraints(plusXLabelContainer, _nonAvatarBackground);
 
   [NSLayoutConstraint activateConstraints:@[
     [plusXLabel.leadingAnchor
@@ -245,14 +251,23 @@ const CGFloat kShareSymbolPointSize = 12.5;
   return _nonAvatarContainer;
 }
 
+// Creates the background view for the non-avatar.
+- (UIView*)createNonAvatarBackground {
+  // Use a button to ensure to have the same configuration as the others.
+  UIButtonConfiguration* configuration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  configuration.background = BackgroundConfiguration();
+
+  UIView* background = [UIButton buttonWithConfiguration:configuration
+                                           primaryAction:nil];
+  background.userInteractionEnabled = NO;
+
+  background.translatesAutoresizingMaskIntoConstraints = NO;
+  return background;
+}
+
 // Adds and configures the `_emptyFacePileLabel`.
 - (void)addShareButtonView {
-  UIBackgroundConfiguration* backgroundConfiguration =
-      [UIBackgroundConfiguration clearConfiguration];
-  backgroundConfiguration.visualEffect = [UIBlurEffect
-      effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterialDark];
-  backgroundConfiguration.backgroundColor = TabGroupViewButtonBackgroundColor();
-
   UIImage* shareSymbol = DefaultSymbolWithConfiguration(
       kPersonFillBadgePlusSymbol,
       [UIImageSymbolConfiguration
@@ -264,7 +279,7 @@ const CGFloat kShareSymbolPointSize = 12.5;
       [UIButtonConfiguration plainButtonConfiguration];
   configuration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
   configuration.baseForegroundColor = UIColor.whiteColor;
-  configuration.background = backgroundConfiguration;
+  configuration.background = BackgroundConfiguration();
   configuration.image = shareSymbol;
   configuration.imagePadding = kShareElementSpacing;
   configuration.contentInsets =
@@ -286,6 +301,9 @@ const CGFloat kShareSymbolPointSize = 12.5;
                                             primaryAction:nil];
   _shareViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
   _shareViewContainer.userInteractionEnabled = NO;
+  [_shareViewContainer.heightAnchor
+      constraintEqualToConstant:kTabGroupButtonHeight]
+      .active = YES;
 
   [self addSubview:_shareViewContainer];
   AddSameConstraints(self, _shareViewContainer);
@@ -351,6 +369,8 @@ const CGFloat kShareSymbolPointSize = 12.5;
       [containerView.heightAnchor constraintEqualToConstant:containerSize]
     ]];
 
+    _nonAvatarBackground = [self createNonAvatarBackground];
+
     _nonAvatarContainer = [[UIView alloc] init];
     _nonAvatarContainer.translatesAutoresizingMaskIntoConstraints = NO;
     _nonAvatarContainer.layer.cornerRadius = _avatarSize / 2.0;
@@ -359,6 +379,9 @@ const CGFloat kShareSymbolPointSize = 12.5;
       [_nonAvatarContainer.widthAnchor constraintEqualToConstant:_avatarSize],
       [_nonAvatarContainer.heightAnchor constraintEqualToConstant:_avatarSize]
     ]];
+
+    [_nonAvatarContainer addSubview:_nonAvatarBackground];
+    AddSameConstraints(_nonAvatarContainer, _nonAvatarBackground);
 
     [containerView addSubview:_nonAvatarContainer];
     AddSameCenterConstraints(_nonAvatarContainer, containerView);

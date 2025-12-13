@@ -85,3 +85,5 @@ static void JNI_AwSupervisedUserUrlClassifier_SetUserRequiresUrlChecks(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwSupervisedUserUrlClassifier)

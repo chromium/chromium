@@ -27,7 +27,7 @@ class EmailFieldParserTest : public FormFieldParserTestBase,
 
  protected:
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                         AutofillScanner* scanner) override {
+                                         AutofillScanner& scanner) override {
     return EmailFieldParser::Parse(context, scanner);
   }
 

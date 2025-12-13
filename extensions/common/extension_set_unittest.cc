@@ -43,7 +43,7 @@ scoped_refptr<Extension> CreateTestExtension(const std::string& name,
     manifest.SetByDottedPath("app.urls", std::move(urls));
   }
 
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension(
       Extension::Create(path, mojom::ManifestLocation::kInternal, manifest,
                         Extension::NO_FLAGS, &error));

@@ -7,6 +7,8 @@
 #include <sstream>
 #include <string_view>
 
+#include "base/check_op.h"
+
 namespace segmentation_platform {
 
 namespace {

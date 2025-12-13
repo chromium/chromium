@@ -41,7 +41,6 @@
 #include "third_party/blink/public/common/switches.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/scoped_authenticator_environment_for_testing.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/content_mock_cert_verifier.h"
@@ -2143,7 +2142,6 @@ class BtmNavigationFlowDetectorWebAuthnTest : public ContentBrowserTest {
     ContentBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
   }
 
   void SetUpInProcessBrowserTestFixture() override {

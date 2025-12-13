@@ -4,12 +4,10 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.tail;
 
-import android.content.Context;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
-import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -18,8 +16,6 @@ import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Optional;
-
 /** A class that handles model and view creation for the tail suggestions. */
 @NullMarked
 public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
@@ -27,12 +23,12 @@ public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
     private @Nullable AlignmentManager mAlignmentManager;
 
     /**
-     * @param context An Android context.
-     * @param suggestionHost A handle to the object using the suggestions.
+     * @param uiContext Context object containing common UI dependencies.
      */
-    public TailSuggestionProcessor(Context context, SuggestionHost suggestionHost) {
-        super(context, suggestionHost, Optional.empty());
-        mAlignTailSuggestions = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
+    public TailSuggestionProcessor(AutocompleteUIContext uiContext) {
+        super(uiContext);
+        mAlignTailSuggestions =
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(uiContext.context);
     }
 
     @Override
@@ -66,7 +62,7 @@ public class TailSuggestionProcessor extends BaseSuggestionViewProcessor {
         applyHighlightToMatchRegions(text, suggestion.getDisplayTextClassifications());
         model.set(TailSuggestionViewProperties.TEXT, text);
 
-        setTabSwitchOrRefineAction(model, input, suggestion, position);
+        setRemoveOrRefineAction(model, input, suggestion, position);
     }
 
     @Override

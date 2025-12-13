@@ -1,0 +1,108 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  /* Variable declarations. */
+  --setup-list-foreground: var(--color-sys-on-surface);
+  --setup-list-icon-foreground: var(--color-sys-on-tonal-container);
+  --setup-list-action-icon-foreground: var(--color-sys-on-surface-subtle);
+  --setup-list-completed-foreground: var(--color-sys-state-disabled);
+  --setup-list-completed-icon-background: var(--color-sys-tertiary-container);
+  --setup-list-completed-icon-foreground: var(--color-sys-on-surface-subtle);
+  --setup-list-element-spacing: 16px;
+  --setup-list-icon-background: var(--color-sys-tonal-container);
+  --setup-list-icon-border-radius: 8px;
+  --setup-list-icon-size: 40px;
+  --setup-list-icon-image-size: 20px;
+  --setup-list-padding: 12px;
+  --setup-list-padding-end: 16px;
+  --setup-list-text-line-height: 20px;
+  --setup-list-text-width: 370px;
+
+  display: flex;
+}
+
+/* This styling includes overriding default <button> properties. */
+#backing {
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  color: var(--setup-list-foreground);
+  cursor: pointer;
+  display: flex;
+  flex-grow: 1;
+  font: inherit;
+  gap: var(--setup-list-element-spacing);
+  padding: var(--setup-list-padding);
+  padding-inline-end: var(--setup-list-padding-end);
+  text-align: start;
+}
+
+#backing.pending:hover {
+  background-color: var(--color-new-tab-page-control-background-hovered);
+}
+
+#bodyIcon {
+  --iron-icon-height: var(--setup-list-icon-image-size);
+  --iron-icon-width: var(--setup-list-icon-image-size);
+
+  background-color: var(--setup-list-icon-background);
+  border-radius: var(--setup-list-icon-border-radius);
+  box-sizing: border-box;
+  color: var(--setup-list-icon-foreground);
+  display: inline-block;
+  height: var(--setup-list-icon-size);
+  margin: 0;
+  padding: calc(
+    (var(--setup-list-icon-size) - var(--setup-list-icon-image-size)) / 2
+  );
+  text-align: center;
+  width: var(--setup-list-icon-size);
+}
+
+.completed #bodyIcon {
+  background-color: var(--setup-list-completed-icon-background);
+  color: var(--setup-list-completed-icon-foreground);
+}
+
+#bodyText {
+  display: inline-block;
+  line-height: var(--setup-list-text-line-height);
+  margin-block: 0;
+  width: var(--setup-list-text-width);
+  vertical-align: middle;
+}
+
+.completed #bodyText {
+  color: var(--setup-list-completed-foreground);
+}
+
+#actionIcon {
+  --iron-icon-height: var(--setup-list-icon-image-size);
+  --iron-icon-width: var(--setup-list-icon-image-size);
+
+  background-color: transparent;
+  box-sizing: border-box;
+  color: var(--setup-list-action-icon-foreground);
+  display: inline-block;
+  height: var(--setup-list-icon-image-size);
+  margin: 0;
+  text-align: center;
+  width: var(--setup-list-icon-image-size);
+}
+
+#actionIcon:dir(rtl) {
+  transform: scaleX(-1);
+}
+
+.completed #actionIcon {
+  color: var(--setup-list-completed-foreground);
+}

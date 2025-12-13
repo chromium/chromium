@@ -9,11 +9,13 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "net/base/backoff_entry.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/port_util.h"
@@ -24,10 +26,31 @@
 #include "services/network/throttling/throttling_controller.h"
 #include "services/network/throttling/throttling_network_interceptor.h"
 #include "services/network/throttling/throttling_p2p_network_interceptor.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/webrtc/media/base/rtp_utils.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
 
 namespace {
+
+// Frequently used type of service (ToS) values. We're using this enum to log
+// failures of commonly used SetTos() arguments.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SetTosArguments {
+  OTHER = 0,
+  DSCP_OTHER_ECN_NOT_ECT = 1,
+  DSCP_OTHER_ECN_ECT1 = 2,
+  DSCP_CS0_ECN_NOT_ECT = 3,
+  DSCP_CS0_ECN_ECT1 = 4,
+  DSCP_CS1_ECN_NOT_ECT = 5,
+  DSCP_CS1_ECN_ECT1 = 6,
+  DSCP_AF41_ECN_NOT_ECT = 7,
+  DSCP_AF41_ECN_ECT1 = 8,
+  DSCP_AF42_ECN_NOT_ECT = 9,
+  DSCP_AF42_ECN_ECT1 = 10,
+  kMaxValue = DSCP_AF42_ECN_ECT1,
+};
 
 // UDP packets cannot be bigger than 64k.
 const int kUdpReadBufferSize = 65536;
@@ -35,6 +58,16 @@ const int kUdpReadBufferSize = 65536;
 const int kUdpRecvSocketBufferSize = 65536;  // 64K
 // Socket send buffer size.
 const int kUdpSendSocketBufferSize = 65536;
+
+constexpr net::BackoffEntry::Policy kSetTosBackoffPolicy = {
+    0,          // Number of initial errors to ignore before backing off.
+    100,        // Initial delay for exponential back-off in ms.
+    2,          // Factor by which the delay will be multiplied.
+    0.0,        // Fuzzing percentage. We're not using any fuzzing.
+    60 * 1000,  // Maximum delay in ms.
+    -1,         // Never discard the entry.
+    false,      // Don't use initial delay.
+};
 
 // Defines set of transient errors. These errors are ignored when we get them
 // from sendto() or recvfrom() calls.
@@ -101,6 +134,39 @@ webrtc::EcnMarking GetEcnMarking(net::DscpAndEcn tos) {
   }
 }
 
+SetTosArguments GetSetTosEnumForLogging(net::DiffServCodePoint dscp,
+                                        net::EcnCodePoint ecn) {
+  if (ecn == net::ECN_NOT_ECT) {
+    switch (dscp) {
+      case net::DSCP_CS0:
+        return SetTosArguments::DSCP_CS0_ECN_NOT_ECT;
+      case net::DSCP_CS1:
+        return SetTosArguments::DSCP_CS1_ECN_NOT_ECT;
+      case net::DSCP_AF41:
+        return SetTosArguments::DSCP_AF41_ECN_NOT_ECT;
+      case net::DSCP_AF42:
+        return SetTosArguments::DSCP_AF42_ECN_NOT_ECT;
+      default:
+        return SetTosArguments::DSCP_OTHER_ECN_NOT_ECT;
+    }
+  } else if (ecn == net::ECN_ECT1) {
+    switch (dscp) {
+      case net::DSCP_CS0:
+        return SetTosArguments::DSCP_CS0_ECN_ECT1;
+      case net::DSCP_CS1:
+        return SetTosArguments::DSCP_CS1_ECN_ECT1;
+      case net::DSCP_AF41:
+        return SetTosArguments::DSCP_AF41_ECN_ECT1;
+      case net::DSCP_AF42:
+        return SetTosArguments::DSCP_AF42_ECN_ECT1;
+      default:
+        return SetTosArguments::DSCP_OTHER_ECN_ECT1;
+    }
+  }
+
+  return SetTosArguments::OTHER;
+}
+
 }  // namespace
 
 namespace network {
@@ -129,6 +195,7 @@ P2PSocketUdp::P2PSocketUdp(
     const DatagramServerSocketFactory& socket_factory,
     std::optional<base::UnguessableToken> devtools_token)
     : P2PSocket(Delegate, std::move(client), std::move(socket), P2PSocket::UDP),
+      set_tos_backoff_(&kSetTosBackoffPolicy),
       throttler_(throttler),
       traffic_annotation_(traffic_annotation),
       net_log_with_source_(
@@ -381,26 +448,12 @@ bool P2PSocketUdp::DoSend(const P2PPendingPacket& packet) {
     }
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("p2p", "UdpAsyncSendTo", packet.id, "size",
-                                    packet.size);
-  // Don't try to set DSCP in following conditions,
-  // 1. If the outgoing packet is set to DSCP_NO_CHANGE
-  // 2. If no change in DSCP value from last packet
-  // 3. If there is any error in setting DSCP on socket.
-  net::DiffServCodePoint dscp =
-      static_cast<net::DiffServCodePoint>(packet.packet_options.dscp);
-  if (dscp != net::DSCP_NO_CHANGE && last_dscp_ != dscp &&
-      last_dscp_ != net::DSCP_NO_CHANGE) {
-    int result = SetSocketDiffServCodePointInternal(dscp);
-    if (result == net::OK) {
-      last_dscp_ = dscp;
-    } else if (!IsTransientError(result) && last_dscp_ != net::DSCP_CS0) {
-      // We receieved a non-transient error, and it seems we have
-      // not changed the DSCP in the past, disable DSCP as it unlikely
-      // to work in the future.
-      last_dscp_ = net::DSCP_NO_CHANGE;
-    }
-  }
+  TRACE_EVENT_BEGIN("p2p", "UdpAsyncSendTo", perfetto::Track(packet.id), "size",
+                    packet.size);
+
+  MaybeUpdateTos(
+      static_cast<net::DiffServCodePoint>(packet.packet_options.dscp),
+      packet.packet_options.ect_1 ? net::ECN_ECT1 : net::ECN_NOT_ECT);
 
   webrtc::ApplyPacketOptions(
       webrtc::ArrayView<uint8_t>(packet.data->bytes(), packet.size),
@@ -463,8 +516,11 @@ bool P2PSocketUdp::HandleSendResult(uint64_t packet_id,
                                     int32_t transport_sequence_number,
                                     int64_t send_time_ms,
                                     int result) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("p2p", "UdpAsyncSendTo", packet_id);
-  TRACE_EVENT_NESTABLE_ASYNC_END1("p2p", "Send", packet_id, "result", result);
+  // End the in-process "UdpAsyncSendTo" event.
+  TRACE_EVENT_END("p2p", perfetto::Track(packet_id), "result", result);
+  // End the "Send" event in the Global parent track - the corresponding
+  // BEGIN is called in |P2PSocketClientImpl| in the renderer process.
+  TRACE_EVENT_END("p2p", perfetto::Track::Global(packet_id), "result", result);
   if (result < 0) {
     if (!IsTransientError(result)) {
       LOG(ERROR) << "Error when sending data in UDP socket: " << result;
@@ -551,8 +607,7 @@ void P2PSocketUdp::SetOption(P2PSocketOption option, int32_t value) {
       socket_->SetSendBufferSize(value);
       break;
     case P2P_SOCKET_OPT_DSCP:
-      SetSocketDiffServCodePointInternal(
-          static_cast<net::DiffServCodePoint>(value));
+      socket_->SetDiffServCodePoint(static_cast<net::DiffServCodePoint>(value));
       break;
     case P2P_SOCKET_OPT_RECV_ECN:
       socket_->SetRecvTos();
@@ -579,9 +634,33 @@ void P2PSocketUdp::SendCompletionFromInterceptor(P2PSendPacketMetrics metrics) {
   client_->SendComplete(metrics);
 }
 
-int P2PSocketUdp::SetSocketDiffServCodePointInternal(
-    net::DiffServCodePoint dscp) {
-  return socket_->SetDiffServCodePoint(dscp);
+void P2PSocketUdp::MaybeUpdateTos(net::DiffServCodePoint dscp,
+                                  net::EcnCodePoint ecn) {
+  bool dscp_changed = dscp != net::DSCP_NO_CHANGE && dscp != last_dscp_;
+  bool ecn_changed = ecn != net::ECN_NO_CHANGE && ecn != last_ecn_;
+  if (set_tos_backoff_.ShouldRejectRequest() ||
+      (!dscp_changed && !ecn_changed)) {
+    return;
+  }
+
+  int result = socket_->SetTos(dscp, ecn);
+  if (result == net::OK) {
+    if (dscp_changed) {
+      last_dscp_ = dscp;
+    }
+    if (ecn_changed) {
+      last_ecn_ = ecn;
+    }
+    // Don't throttle future attempts to set the ToS byte.
+    set_tos_backoff_.Reset();
+  } else if (!IsTransientError(result)) {
+    // A non-transient error may mean that the OS does not support setting
+    // the ToS byte we want. To avoid frequent costly retries, we throttle the
+    // next attempt to call SetTos.
+    base::UmaHistogramEnumeration("WebRTC.P2P.UDP.SetTosErrorCountByArgument",
+                              GetSetTosEnumForLogging(dscp, ecn));
+    set_tos_backoff_.InformOfRequest(false);
+  }
 }
 
 void P2PSocketUdp::DisconnectInterceptor() {

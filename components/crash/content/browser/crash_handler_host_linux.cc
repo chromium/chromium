@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/crash/content/browser/crash_handler_host_linux.h"
 
 #include <errno.h>
@@ -21,6 +16,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -261,7 +257,7 @@ void CrashHandlerHostLinux::OnFileCanReadWithoutBlocking(int fd) {
           LOG(ERROR) << "Death signal contained wrong number of descriptors;"
                      << " num_fds:" << num_fds;
           for (size_t i = 0; i < num_fds; ++i)
-            close(reinterpret_cast<int*>(CMSG_DATA(hdr))[i]);
+            close(UNSAFE_TODO(reinterpret_cast<int*>(CMSG_DATA(hdr))[i]));
           return;
         }
         DCHECK(!signal_fd.is_valid());
@@ -380,7 +376,7 @@ void CrashHandlerHostLinux::FindCrashingThreadAndDump(
   // Freed in CrashDumpTask().
   char* process_type_str = new char[info->process_type_length + 1];
   process_type_.copy(process_type_str, info->process_type_length);
-  process_type_str[info->process_type_length] = '\0';
+  UNSAFE_TODO(process_type_str[info->process_type_length]) = '\0';
   info->process_type = process_type_str;
 
   // Memory released from std::unique_ptrs below are also freed in
@@ -424,7 +420,7 @@ void CrashHandlerHostLinux::WriteDumpFile(BreakpadInfo* info,
   // Freed in CrashDumpTask().
   char* distro_str = new char[info->distro_length + 1];
   distro.copy(distro_str, info->distro_length);
-  distro_str[info->distro_length] = '\0';
+  UNSAFE_TODO(distro_str[info->distro_length]) = '\0';
   info->distro = distro_str;
 
   base::FilePath dumps_path("/tmp");
@@ -454,7 +450,7 @@ void CrashHandlerHostLinux::WriteDumpFile(BreakpadInfo* info,
   // Freed in CrashDumpTask().
   char* minidump_filename_str = new char[minidump_filename.length() + 1];
   minidump_filename.copy(minidump_filename_str, minidump_filename.length());
-  minidump_filename_str[minidump_filename.length()] = '\0';
+  UNSAFE_TODO(minidump_filename_str[minidump_filename.length()]) = '\0';
   info->filename = minidump_filename_str;
 #if defined(ADDRESS_SANITIZER)
   // Freed in CrashDumpTask().
@@ -603,9 +599,9 @@ bool CrashHandlerHost::ReceiveClientMessage(int client_fd,
     }
 
     if (cmsg->cmsg_type == SCM_RIGHTS) {
-      child_fd.reset(*reinterpret_cast<int*>(CMSG_DATA(cmsg)));
+      child_fd.reset(*reinterpret_cast<int*>(UNSAFE_TODO(CMSG_DATA(cmsg))));
     } else if (cmsg->cmsg_type == SCM_CREDENTIALS) {
-      child_pid = reinterpret_cast<ucred*>(CMSG_DATA(cmsg))->pid;
+      child_pid = reinterpret_cast<ucred*>(UNSAFE_TODO(CMSG_DATA(cmsg)))->pid;
     }
   }
 

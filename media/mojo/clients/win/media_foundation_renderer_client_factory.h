@@ -30,7 +30,6 @@ class MediaFoundationRendererClientFactory : public media::RendererFactory {
   MediaFoundationRendererClientFactory(
       MediaLog* media_log,
       GetDCOMPTextureWrapperCB get_dcomp_texture_wrapper_cb,
-      ObserveOverlayStateCB observe_overlay_state_cb,
       std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory,
       mojo::Remote<media::mojom::MediaFoundationRendererNotifier>
           media_foundation_renderer_notifier);
@@ -50,7 +49,6 @@ class MediaFoundationRendererClientFactory : public media::RendererFactory {
   raw_ptr<MediaLog> media_log_ = nullptr;
 
   GetDCOMPTextureWrapperCB get_dcomp_texture_wrapper_cb_;
-  ObserveOverlayStateCB observe_overlay_state_cb_;
   std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory_;
   mojo::Remote<media::mojom::MediaFoundationRendererNotifier>
       media_foundation_renderer_notifier_;

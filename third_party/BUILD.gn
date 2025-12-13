@@ -31,7 +31,7 @@ group("jpeg") {
     public_deps = [ "//third_party/libjpeg_turbo:libjpeg" ]
     public_configs = [ ":libjpeg_turbo_config" ]
   } else {
-    public_deps = [ "//third_party/libjpeg:libjpeg" ]
+    public_deps = [ "//third_party/libjpeg" ]
   }
 }
 

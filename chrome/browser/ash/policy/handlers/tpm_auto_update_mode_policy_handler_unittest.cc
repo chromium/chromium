@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/tpm/tpm_firmware_update.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -44,8 +43,7 @@ namespace policy {
 class TPMAutoUpdateModePolicyHandlerTest : public testing::Test {
  public:
   TPMAutoUpdateModePolicyHandlerTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()),
-        user_manager_(new ash::FakeChromeUserManager()),
+      : user_manager_(new ash::FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_.get())) {
     ash::SessionManagerClient::InitializeFakeInMemory();
   }
@@ -77,7 +75,6 @@ class TPMAutoUpdateModePolicyHandlerTest : public testing::Test {
       ash::TpmAutoUpdateUserNotification::kNone;
 
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState local_state_;
   raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 
@@ -93,7 +90,8 @@ class TPMAutoUpdateModePolicyHandlerTest : public testing::Test {
 // policy option TPMFirmwareUpdateSettings.AutoUpdateMode.
 TEST_F(TPMAutoUpdateModePolicyHandlerTest, PolicyUpdatesTriggered) {
   TPMAutoUpdateModePolicyHandler tpm_update_policy_handler(
-      ash::CrosSettings::Get(), local_state_.Get());
+      ash::CrosSettings::Get(),
+      TestingBrowserProcess::GetGlobal()->local_state());
   tpm_update_policy_handler.SetUpdateCheckerCallbackForTesting(
       base::BindRepeating(&TPMAutoUpdateModePolicyHandlerTest::CheckForUpdate,
                           weak_factory_.GetWeakPtr()));
@@ -131,7 +129,8 @@ TEST_F(TPMAutoUpdateModePolicyHandlerTest, PolicyUpdatesTriggered) {
 // state preserving update is not available.
 TEST_F(TPMAutoUpdateModePolicyHandlerTest, NoUpdatesAvailable) {
   TPMAutoUpdateModePolicyHandler tpm_update_policy_handler(
-      ash::CrosSettings::Get(), local_state_.Get());
+      ash::CrosSettings::Get(),
+      TestingBrowserProcess::GetGlobal()->local_state());
   tpm_update_policy_handler.SetUpdateCheckerCallbackForTesting(
       base::BindRepeating(&TPMAutoUpdateModePolicyHandlerTest::CheckForUpdate,
                           weak_factory_.GetWeakPtr()));
@@ -148,7 +147,8 @@ TEST_F(TPMAutoUpdateModePolicyHandlerTest, NoUpdatesAvailable) {
 // after 24 hours is shown.
 TEST_F(TPMAutoUpdateModePolicyHandlerTest, ShowPlannedUpdateNotification) {
   TPMAutoUpdateModePolicyHandler tpm_update_policy_handler(
-      ash::CrosSettings::Get(), local_state_.Get());
+      ash::CrosSettings::Get(),
+      TestingBrowserProcess::GetGlobal()->local_state());
   tpm_update_policy_handler.SetUpdateCheckerCallbackForTesting(
       base::BindRepeating(&TPMAutoUpdateModePolicyHandlerTest::CheckForUpdate,
                           weak_factory_.GetWeakPtr()));
@@ -182,7 +182,8 @@ TEST_F(TPMAutoUpdateModePolicyHandlerTest, ShowPlannedUpdateNotification) {
 TEST_F(TPMAutoUpdateModePolicyHandlerTest,
        ShowUpdateOnRebootNotificationNoTimer) {
   TPMAutoUpdateModePolicyHandler tpm_update_policy_handler(
-      ash::CrosSettings::Get(), local_state_.Get());
+      ash::CrosSettings::Get(),
+      TestingBrowserProcess::GetGlobal()->local_state());
   tpm_update_policy_handler.SetUpdateCheckerCallbackForTesting(
       base::BindRepeating(&TPMAutoUpdateModePolicyHandlerTest::CheckForUpdate,
                           weak_factory_.GetWeakPtr()));
@@ -197,11 +198,10 @@ TEST_F(TPMAutoUpdateModePolicyHandlerTest,
 
   update_available_ = true;
 
-  // First notification was shwed more than 24 hours ago.
+  // First notification was shown more than 24 hours ago.
   base::Time yesterday = base::Time::Now() - base::Hours(25);
-  local_state_.Get()->SetInt64(
-      prefs::kTPMUpdatePlannedNotificationShownTime,
-      yesterday.ToDeltaSinceWindowsEpoch().InSeconds());
+  TestingBrowserProcess::GetGlobal()->local_state()->SetTime(
+      prefs::kTPMUpdatePlannedNotificationShownTime, yesterday);
 
   SetAutoUpdateMode(AutoUpdateMode::kUserAcknowledgment);
   base::RunLoop().RunUntilIdle();
@@ -220,7 +220,8 @@ TEST_F(TPMAutoUpdateModePolicyHandlerTest,
 TEST_F(TPMAutoUpdateModePolicyHandlerTest,
        ShowUpdateOnRebootNotificationTimer) {
   TPMAutoUpdateModePolicyHandler tpm_update_policy_handler(
-      ash::CrosSettings::Get(), local_state_.Get());
+      ash::CrosSettings::Get(),
+      TestingBrowserProcess::GetGlobal()->local_state());
   tpm_update_policy_handler.SetUpdateCheckerCallbackForTesting(
       base::BindRepeating(&TPMAutoUpdateModePolicyHandlerTest::CheckForUpdate,
                           weak_factory_.GetWeakPtr()));
@@ -260,7 +261,8 @@ TEST_F(TPMAutoUpdateModePolicyHandlerTest,
 // TPM update with user acknowlegment triggered.
 TEST_F(TPMAutoUpdateModePolicyHandlerTest, UpdateWithUserAcknowlegment) {
   TPMAutoUpdateModePolicyHandler tpm_update_policy_handler(
-      ash::CrosSettings::Get(), local_state_.Get());
+      ash::CrosSettings::Get(),
+      TestingBrowserProcess::GetGlobal()->local_state());
   tpm_update_policy_handler.SetUpdateCheckerCallbackForTesting(
       base::BindRepeating(&TPMAutoUpdateModePolicyHandlerTest::CheckForUpdate,
                           weak_factory_.GetWeakPtr()));
@@ -271,8 +273,8 @@ TEST_F(TPMAutoUpdateModePolicyHandlerTest, UpdateWithUserAcknowlegment) {
   update_available_ = true;
 
   // Update at next reboot notification already shown.
-  local_state_.Get()->SetBoolean(prefs::kTPMUpdateOnNextRebootNotificationShown,
-                                 true);
+  TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
+      prefs::kTPMUpdateOnNextRebootNotificationShown, true);
   SetAutoUpdateMode(AutoUpdateMode::kUserAcknowledgment);
   base::RunLoop().RunUntilIdle();
 

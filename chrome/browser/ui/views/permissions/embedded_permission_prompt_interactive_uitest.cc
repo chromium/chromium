@@ -6,15 +6,19 @@
 #include <queue>
 #include <string>
 
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
+#include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_ask_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_policy_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_previously_denied_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_previously_granted_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_show_system_prompt_view.h"
@@ -28,10 +32,14 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -56,6 +64,7 @@ constexpr int kMinWindowHeight = 400;
 
 class EmbeddedPermissionPromptInteractiveTest
     : public InteractiveBrowserTest,
+      public content::TestDevToolsProtocolClient,
       public testing::WithParamInterface<float> {
  public:
   EmbeddedPermissionPromptInteractiveTest() {
@@ -67,6 +76,7 @@ class EmbeddedPermissionPromptInteractiveTest
         net::EmbeddedTestServer::TYPE_HTTPS);
     feature_list_.InitWithFeatures(
         {blink::features::kPermissionElement,
+         blink::features::kUserMediaElement,
          blink::features::kBypassPepcSecurityForTesting},
         {});
   }
@@ -97,7 +107,7 @@ class EmbeddedPermissionPromptInteractiveTest
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InteractiveBrowserTestT::SetUpCommandLine(command_line);
+    InteractiveBrowserTestMixin::SetUpCommandLine(command_line);
     // Disables the disregarding of potentially unintended input events.
     command_line->AppendSwitch(
         views::switches::kDisableInputEventActivationProtectionForTesting);
@@ -109,10 +119,6 @@ class EmbeddedPermissionPromptInteractiveTest
   }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
-
-  ui::ElementContext context() const {
-    return browser()->window()->GetElementContext();
-  }
 
   GURL GetOrigin() { return url::Origin::Create(GetURL()).GetURL(); }
 
@@ -527,7 +533,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
   TestAskBlockAllowFlow(
       "microphone", {ContentSettingsType::MEDIASTREAM_MIC},
       std::vector<std::u16string>(
-          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().port()) + u" wants to",
+          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().GetPort()) + u" wants to",
            u"You have allowed microphone for this site",
            u"You previously didn't allow microphone for this site"}),
       std::vector<std::u16string>({u"Use your microphones"}));
@@ -538,7 +544,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
   TestAskBlockAllowFlow(
       "camera", {ContentSettingsType::MEDIASTREAM_CAMERA},
       std::vector<std::u16string>(
-          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().port()) + u" wants to",
+          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().GetPort()) + u" wants to",
            u"You have allowed camera for this site",
            u"You previously didn't allow camera for this site"}),
       std::vector<std::u16string>({u"Use your cameras"}));
@@ -547,9 +553,9 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
 IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
                        BasicFlowGeolocation) {
   TestAskBlockAllowFlow(
-      "geolocation", {ContentSettingsType::GEOLOCATION},
+      "geolocation", {permissions::PermissionUtil::GetGeolocationType()},
       std::vector<std::u16string>(
-          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().port()) + u" wants to",
+          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().GetPort()) + u" wants to",
            u"You have allowed location for this site",
            u"You previously didn't allow location for this site"}),
       std::vector<std::u16string>({u"Know your location"}));
@@ -562,7 +568,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
       {ContentSettingsType::MEDIASTREAM_CAMERA,
        ContentSettingsType::MEDIASTREAM_MIC},
       std::vector<std::u16string>(
-          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().port()) + u" wants to",
+          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().GetPort()) + u" wants to",
            u"You have allowed camera and microphone for this site",
            u"You previously didn't allow camera and microphone for this site"}),
       std::vector<std::u16string>({u"Use your cameras"}),
@@ -581,7 +587,8 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
 
 IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
                        TestAllowThisTimeFlowGeolocation) {
-  TestAllowThisTimeFlow("geolocation", {ContentSettingsType::GEOLOCATION});
+  TestAllowThisTimeFlow("geolocation",
+                        {permissions::PermissionUtil::GetGeolocationType()});
 }
 
 IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
@@ -1152,26 +1159,41 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
       NavigateWebContents(
           kWebContentsElementId,
           https_server()->GetURL(
-              "b.test", "/permissions/permission_element_embedder.html")));
-  content::WebContentsConsoleObserver observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
-
-  RunTestSequence(
+              "b.test", "/permissions/permission_element_embedder.html")),
       ExecuteJs(kWebContentsElementId,
                 content::JsReplace("() => { insertIframe($1, $2); }", GetURL(),
-                                   "zoom5")));
-  // Wait until getting the message that the permission element's font is
-  // too large.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    for (const auto& message : observer.messages()) {
-      if (message.message ==
-          u"Font size of the permission element 'camera' is too large") {
-        return true;
-      }
-    }
+                                   "zoom5")),
+      WaitForStateChange(kWebContentsElementId, done_visible), Do([&]() {
+        // Need to attach the devtools client to the cross-site child frame to
+        // be able to notice the font size issue.
+        AttachToFrameTreeHost(ChildFrameAt(browser()
+                                               ->tab_strip_model()
+                                               ->GetActiveWebContents()
+                                               ->GetPrimaryMainFrame(),
+                                           0));
+        SendCommandSync("Audits.enable");
 
-    return false;
-  }));
+        // Wait until getting the message that the permission element's font
+        // is too large.
+        WaitForMatchingNotification(
+            "Audits.issueAdded",
+            base::BindRepeating([](const base::Value::Dict& params) {
+              const std::string* code =
+                  params.FindStringByDottedPath("issue.code");
+              if (!code) {
+                return false;
+              }
+              const std::string* issue_type = params.FindStringByDottedPath(
+                  "issue.details.permissionElementIssueDetails.issueType");
+              if (!issue_type) {
+                return false;
+              }
+              return *code == "PermissionElementIssue" &&
+                     *issue_type == "FontSizeTooLarge";
+            }));
+
+        DetachProtocolClient();
+      }));
 }
 
 IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
@@ -1240,6 +1262,7 @@ class EmbeddedPermissionPromptPositioningInteractiveTest
     feature_list_.InitWithFeaturesAndParameters(
         {
             {blink::features::kPermissionElement, {}},
+            {blink::features::kUserMediaElement, {}},
             {permissions::features::kPermissionElementPromptPositioning,
              {{"PermissionElementPromptPositioningParam", "near_element"}}},
             {blink::features::kBypassPepcSecurityForTesting, {}},
@@ -1390,10 +1413,173 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPositioningInteractiveTest,
   }
 }
 
+// A test suite for running policy-related interactive tests. This test suite
+// is parameterized to match its base class, but the parameter is not used in
+// the tests.
+class EmbeddedPermissionPromptPolicyInteractiveTest
+    : public EmbeddedPermissionPromptInteractiveTest {
+ public:
+  EmbeddedPermissionPromptPolicyInteractiveTest() = default;
+  ~EmbeddedPermissionPromptPolicyInteractiveTest() override = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    EmbeddedPermissionPromptInteractiveTest::SetUpInProcessBrowserTestFixture();
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::PushProfilePolicyConnectorProviderForTesting(&policy_provider_);
+  }
+
+  void UpdateProviderPolicy(const policy::PolicyMap& policies) {
+    policy_provider_.UpdateChromePolicy(policies);
+  }
+
+  void TestPolicy(const policy::PolicyMap& policies,
+                  const std::string& element_id,
+                  const ui::ElementIdentifier& expected_view_id,
+                  const std::u16string& expected_title) {
+    UpdateProviderPolicy(policies);
+
+    RunTestSequence(
+        InstrumentTab(kWebContentsElementId),
+        NavigateWebContents(kWebContentsElementId, GetURL()),
+        ClickOnPEPCElement(element_id),
+        InAnyContext(WaitForShow(expected_view_id)),
+        InAnyContext(
+            CheckViewProperty(EmbeddedPermissionPromptBaseView::kTitleViewId,
+                              &views::Label::GetText, expected_title)),
+        PushPEPCPromptButton(EmbeddedPermissionPromptBaseView::kOkButtonId));
+  }
+
+ private:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+};
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       CameraPolicyBlock) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kVideoCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  TestPolicy(policies, "camera",
+             EmbeddedPermissionPromptPolicyView::kMainViewId,
+             u"Your administrator doesn't allow camera for this site");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       MicrophonePolicyBlock) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kAudioCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  TestPolicy(policies, "microphone",
+             EmbeddedPermissionPromptPolicyView::kMainViewId,
+             u"Your administrator doesn't allow microphone for this site");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       CameraAndMicrophonePolicyBlock) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kVideoCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  policies.Set(policy::key::kAudioCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  TestPolicy(
+      policies, "camera-microphone",
+      EmbeddedPermissionPromptPolicyView::kMainViewId,
+      u"Your administrator doesn't allow camera and microphone for this site");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       GeolocationPolicyBlock) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kDefaultGeolocationSetting,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(CONTENT_SETTING_BLOCK),
+               nullptr);
+  TestPolicy(policies, "geolocation",
+             EmbeddedPermissionPromptPolicyView::kMainViewId,
+             u"Your administrator doesn't allow location for this site");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       CameraPolicyAllow) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kVideoCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  base::Value::List urls;
+  urls.Append(GetURL().spec());
+  policies.Set(policy::key::kVideoCaptureAllowedUrls,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(urls)),
+               nullptr);
+  TestPolicy(policies, "camera",
+             EmbeddedPermissionPromptPolicyView::kMainViewId,
+             u"Your administrator allows camera for this site");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       MicrophonePolicyAllow) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kAudioCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  base::Value::List urls;
+  urls.Append(GetURL().spec());
+  policies.Set(policy::key::kAudioCaptureAllowedUrls,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(urls)),
+               nullptr);
+  TestPolicy(policies, "microphone",
+             EmbeddedPermissionPromptPolicyView::kMainViewId,
+             u"Your administrator allows microphone for this site");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       CameraAndMicrophonePolicyAllow) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kVideoCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  policies.Set(policy::key::kAudioCaptureAllowed,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  base::Value::List urls;
+  urls.Append(GetURL().spec());
+  policies.Set(policy::key::kAudioCaptureAllowedUrls,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(urls.Clone()), nullptr);
+  policies.Set(policy::key::kVideoCaptureAllowedUrls,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(urls)),
+               nullptr);
+  TestPolicy(policies, "camera-microphone",
+             EmbeddedPermissionPromptPolicyView::kMainViewId,
+             u"Your administrator allows camera and microphone for this site");
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
+                       GeolocationPolicyAllow) {
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kDefaultGeolocationSetting,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(CONTENT_SETTING_ALLOW),
+               nullptr);
+  TestPolicy(policies, "geolocation",
+             EmbeddedPermissionPromptPolicyView::kMainViewId,
+             u"Your administrator allows location for this site");
+}
+
 // Setting up to run all tests with two screen scale factors.
 INSTANTIATE_TEST_SUITE_P(,
                          EmbeddedPermissionPromptInteractiveTest,
                          testing::Values(1.0, 2.0));
+INSTANTIATE_TEST_SUITE_P(,
+                         EmbeddedPermissionPromptPolicyInteractiveTest,
+                         testing::Values(1.0));
 INSTANTIATE_TEST_SUITE_P(,
                          EmbeddedPermissionPromptPositioningInteractiveTest,
                          testing::Values(1.0, 2.0));

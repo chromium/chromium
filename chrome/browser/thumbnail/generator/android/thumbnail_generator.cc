@@ -21,7 +21,7 @@
 
 class SkBitmap;
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 
 namespace {
@@ -47,7 +47,7 @@ void OnThumbnailScaled(base::OnceCallback<void(SkBitmap)> java_callback,
 
 }  // namespace
 
-ThumbnailGenerator::ThumbnailGenerator(const JavaParamRef<jobject>& jobj)
+ThumbnailGenerator::ThumbnailGenerator(const JavaRef<jobject>& jobj)
     : java_delegate_(jobj) {
   DCHECK(!jobj.is_null());
 }
@@ -91,13 +91,12 @@ void ThumbnailGenerator::OnVideoThumbnailRetrieved(
                                                              std::move(parser));
 }
 
-void ThumbnailGenerator::RetrieveThumbnail(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& jcontent_id,
-    const JavaParamRef<jstring>& jfile_path,
-    const JavaParamRef<jstring>& jmime_type,
-    jint icon_size,
-    const JavaParamRef<jobject>& callback) {
+void ThumbnailGenerator::RetrieveThumbnail(JNIEnv* env,
+                                           const JavaRef<jstring>& jcontent_id,
+                                           const JavaRef<jstring>& jfile_path,
+                                           const JavaRef<jstring>& jmime_type,
+                                           jint icon_size,
+                                           const JavaRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   base::FilePath file_path = base::FilePath::FromUTF8Unsafe(
@@ -140,6 +139,8 @@ void ThumbnailGenerator::RetrieveThumbnail(
 
 // static
 static jlong JNI_ThumbnailGenerator_Init(JNIEnv* env,
-                                         const JavaParamRef<jobject>& jobj) {
+                                         const JavaRef<jobject>& jobj) {
   return reinterpret_cast<intptr_t>(new ThumbnailGenerator(jobj));
 }
+
+DEFINE_JNI(ThumbnailGenerator)

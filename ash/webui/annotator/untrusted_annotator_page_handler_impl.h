@@ -6,7 +6,6 @@
 #define ASH_WEBUI_ANNOTATOR_UNTRUSTED_ANNOTATOR_PAGE_HANDLER_IMPL_H_
 
 #include "ash/webui/annotator/mojom/untrusted_annotator.mojom.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

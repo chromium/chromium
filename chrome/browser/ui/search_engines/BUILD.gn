@@ -33,6 +33,7 @@ source_set("search_engines") {
   deps = [
     "//base:i18n",
     "//chrome/app:generated_resources",
+    "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/favicon",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
@@ -51,7 +52,10 @@ source_set("search_engines") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "keyword_editor_controller_unittest.cc" ]
+  sources = [
+    "keyword_editor_controller_unittest.cc",
+    "template_url_table_model_unittest.cc",
+  ]
   deps = [
     ":search_engines",
     "//chrome/browser/profiles:profile",

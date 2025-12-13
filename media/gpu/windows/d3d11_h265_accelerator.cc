@@ -544,9 +544,8 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
 
     std::visit(
         [&](const auto& param) {
-          base::span<uint8_t>(params_buffer.data(), pic_params_size)
-              .copy_from(base::span<const uint8_t>(
-                  reinterpret_cast<const uint8_t*>(&param), pic_params_size));
+          params_buffer.data().copy_prefix_from(
+              base::byte_span_from_ref(param).first(pic_params_size));
         },
         pic_param);
 
@@ -566,41 +565,79 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
         pps->pps_scaling_list_data_present_flag ? &pps->scaling_list_data
                                                 : &sps->scaling_list_data;
 
-    static_assert(std::is_same<decltype(iq_matrix.ucScalingLists0),
-                               decltype(scaling_lists->scaling_list_4x4)>()
-                      .value);
-    memcpy(iq_matrix.ucScalingLists0, scaling_lists->scaling_list_4x4,
+    static_assert(
+        std::is_same<
+            std::remove_reference_t<decltype(iq_matrix.ucScalingLists0[0][0])>,
+            std::remove_const_t<std::remove_reference_t<
+                decltype(scaling_lists->scaling_list_4x4[0][0])>>>::value);
+    static_assert(std::extent<decltype(iq_matrix.ucScalingLists0)>() <=
+                  std::tuple_size<std::remove_reference_t<
+                      decltype(scaling_lists->scaling_list_4x4)>>::value);
+    static_assert(std::extent<decltype(iq_matrix.ucScalingLists0[0])>() <=
+                  std::tuple_size<std::remove_reference_t<
+                      decltype(scaling_lists->scaling_list_4x4[0])>>::value);
+    memcpy(iq_matrix.ucScalingLists0, scaling_lists->scaling_list_4x4.data(),
            sizeof iq_matrix.ucScalingLists0);
 
-    static_assert(std::is_same<decltype(iq_matrix.ucScalingLists1),
-                               decltype(scaling_lists->scaling_list_8x8)>()
-                      .value);
-    memcpy(iq_matrix.ucScalingLists1, scaling_lists->scaling_list_8x8,
+    static_assert(
+        std::is_same<
+            std::remove_reference_t<decltype(iq_matrix.ucScalingLists1[0][0])>,
+            std::remove_const_t<std::remove_reference_t<
+                decltype(scaling_lists->scaling_list_8x8[0][0])>>>::value);
+    static_assert(std::extent<decltype(iq_matrix.ucScalingLists1)>() <=
+                  std::tuple_size<std::remove_reference_t<
+                      decltype(scaling_lists->scaling_list_8x8)>>::value);
+    static_assert(std::extent<decltype(iq_matrix.ucScalingLists1[0])>() <=
+                  std::tuple_size<std::remove_reference_t<
+                      decltype(scaling_lists->scaling_list_8x8[0])>>::value);
+    memcpy(iq_matrix.ucScalingLists1, scaling_lists->scaling_list_8x8.data(),
            sizeof iq_matrix.ucScalingLists1);
 
-    static_assert(std::is_same<decltype(iq_matrix.ucScalingLists2),
-                               decltype(scaling_lists->scaling_list_16x16)>()
-                      .value);
-    memcpy(iq_matrix.ucScalingLists2, scaling_lists->scaling_list_16x16,
+    static_assert(
+        std::is_same<
+            std::remove_reference_t<decltype(iq_matrix.ucScalingLists2[0][0])>,
+            std::remove_const_t<std::remove_reference_t<
+                decltype(scaling_lists->scaling_list_16x16[0][0])>>>::value);
+    static_assert(std::extent<decltype(iq_matrix.ucScalingLists2)>() <=
+                  std::tuple_size<std::remove_reference_t<
+                      decltype(scaling_lists->scaling_list_16x16)>>::value);
+    static_assert(std::extent<decltype(iq_matrix.ucScalingLists2[0])>() <=
+                  std::tuple_size<std::remove_reference_t<
+                      decltype(scaling_lists->scaling_list_16x16[0])>>::value);
+    memcpy(iq_matrix.ucScalingLists2, scaling_lists->scaling_list_16x16.data(),
            sizeof iq_matrix.ucScalingLists2);
 
     static_assert(
         std::is_same<
-            std::remove_reference_t<decltype(iq_matrix.ucScalingLists3[0])>,
+            std::remove_reference_t<decltype(iq_matrix.ucScalingLists3[0][0])>,
             std::remove_const_t<std::remove_reference_t<
-                decltype(scaling_lists->scaling_list_32x32[0])>>>()
-            .value);
-    memcpy(iq_matrix.ucScalingLists3[0], scaling_lists->scaling_list_32x32[0],
+                decltype(scaling_lists->scaling_list_32x32[0][0])>>>::value);
+    static_assert(std::extent<decltype(iq_matrix.ucScalingLists3)>() <=
+                  std::tuple_size<std::remove_reference_t<
+                      decltype(scaling_lists->scaling_list_32x32)>>::value);
+    static_assert(std::extent<decltype(iq_matrix.ucScalingLists3[0])>() <=
+                  std::tuple_size<std::remove_reference_t<
+                      decltype(scaling_lists->scaling_list_32x32[0])>>::value);
+    memcpy(iq_matrix.ucScalingLists3[0],
+           scaling_lists->scaling_list_32x32[0].data(),
            sizeof(iq_matrix.ucScalingLists3[0]));
-    memcpy(iq_matrix.ucScalingLists3[1], scaling_lists->scaling_list_32x32[3],
+    memcpy(iq_matrix.ucScalingLists3[1],
+           scaling_lists->scaling_list_32x32[3].data(),
            sizeof(iq_matrix.ucScalingLists3[1]));
 
     static_assert(
-        std::is_same<decltype(iq_matrix.ucScalingListDCCoefSizeID2),
-                     decltype(scaling_lists->scaling_list_dc_coef_16x16)>()
-            .value);
+        std::is_same<
+            std::remove_reference_t<
+                decltype(iq_matrix.ucScalingListDCCoefSizeID2[0])>,
+            std::remove_const_t<std::remove_reference_t<
+                decltype(scaling_lists->scaling_list_dc_coef_16x16[0])>>>::
+            value);
+    static_assert(
+        std::extent<decltype(iq_matrix.ucScalingListDCCoefSizeID2)>() <=
+        std::tuple_size<std::remove_reference_t<
+            decltype(scaling_lists->scaling_list_dc_coef_16x16)>>::value);
     memcpy(iq_matrix.ucScalingListDCCoefSizeID2,
-           scaling_lists->scaling_list_dc_coef_16x16,
+           scaling_lists->scaling_list_dc_coef_16x16.data(),
            sizeof(iq_matrix.ucScalingListDCCoefSizeID2));
     iq_matrix.ucScalingListDCCoefSizeID3[0] =
         scaling_lists->scaling_list_dc_coef_32x32[0];
@@ -615,7 +652,8 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
       return H265DecoderStatus::kFail;
     }
 
-    memcpy(iq_matrix_buffer.data(), &iq_matrix, sizeof(iq_matrix));
+    iq_matrix_buffer.data().copy_prefix_from(
+        base::byte_span_from_ref(iq_matrix));
 
     if (!iq_matrix_buffer.Commit()) {
       return H265DecoderStatus::kFail;

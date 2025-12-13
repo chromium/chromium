@@ -10,11 +10,13 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/android/chrome_jni_headers/TabAndroidTestHelper_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_group_android.h"
 #include "chrome/browser/android/tab_interface_android.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -59,7 +61,7 @@ class TabAndroidTest : public testing::Test {
     if (!java_tab_.is_null()) {
       // Call the destroy() method on the Java TabImpl object.
       // This will trigger TabAndroid::Destroy() via JNI.
-      base::android::ScopedJavaLocalRef<jclass> tab_impl_class(
+      auto tab_impl_class = base::android::ScopedJavaLocalRef<jclass>::Adopt(
           env_, env_->GetObjectClass(java_tab_.obj()));
       ASSERT_FALSE(tab_impl_class.is_null());
 
@@ -98,6 +100,9 @@ TEST_F(TabAndroidTest, TabIsInitialized) {
 }
 
 TEST_F(TabAndroidTest, PinnedCollectionParent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(chrome::android::kAndroidPinnedTabs);
+
   EXPECT_FALSE(tab_android_->IsPinned());
 
   std::unique_ptr<tabs::PinnedTabCollection> pinned_collection =
@@ -122,3 +127,5 @@ TEST_F(TabAndroidTest, TabGroupTabCollectionParent) {
 
   EXPECT_EQ(tab_group_id, *(tab_android_->GetGroup()));
 }
+
+DEFINE_JNI(TabAndroidTestHelper)

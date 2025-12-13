@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">taronges</translation>
 <translation id="1275718070701477396">Seleccionada</translation>
 <translation id="1290331692326790741">Senyal feble</translation>
+<translation id="1292474106138697109">Pantalla d'Eines de classe</translation>
 <translation id="1300115153046603471">L'APN és de tipus predeterminat i <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Converteix</translation>
@@ -335,12 +336,12 @@
 <translation id="2276999893457278469">Contingut d'ajuda principal</translation>
 <translation id="2277631741861284101">Grava i comparteix fàcilment el teu àudio</translation>
 <translation id="2279051792571591988">Restaura els valors predeterminats</translation>
-<translation id="2286454467119466181">Simple</translation>
+<translation id="2286454467119466181">Senzill</translation>
 <translation id="2287186687001756809">No hi ha cap imatge disponible. Per afegir fotos, ves a <ph name="LINK" />.</translation>
 <translation id="2294577623958216786">La programació actual està establerta en <ph name="SUNRISE" />-<ph name="SUNSET" />. Per actualitzar automàticament l'horari de la posta i de la sortida del sol, activa l'accés a la ubicació del sistema.</translation>
 <translation id="2305172810646967500">negre</translation>
 <translation id="2307344026739914387">Utilitza el parell de claus actual</translation>
-<translation id="2308243864813041101">Desconnecta el cable USB del <ph name="DEVICE_NAME" /> per continuar amb el procés d'actualització</translation>
+<translation id="2308243864813041101">Desconnecta el cable USB del <ph name="DEVICE_NAME" /> per continuar el procés d'actualització</translation>
 <translation id="2320295602967756579">Activa el tema clar</translation>
 <translation id="2323506179655536734">OMÈS</translation>
 <translation id="2324354238778375592">Flotant</translation>
@@ -512,7 +513,7 @@
 <translation id="3246869037381808805">Se suprimiran les tasques d'impressió amb una antiguitat superior a 1 dia</translation>
 <translation id="3248791727258378769">No es crearà cap transcripció</translation>
 <translation id="324961752321393509">L'administrador no permet tancar aquesta aplicació</translation>
-<translation id="3263941347294171263">Desendolla i torna a endollar el <ph name="DEVICE_NAME" /> per continuar amb el procés d'actualització</translation>
+<translation id="3263941347294171263">Desendolla i torna a endollar el <ph name="DEVICE_NAME" /> per continuar el procés d'actualització</translation>
 <translation id="3268178239013324452">Error: porta oberta</translation>
 <translation id="3275729367986477355">Imatge d'avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edita el fitxer}other{Edita els fitxers}}</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imatges</translation>
 <translation id="4300272766492248925">Obre l'aplicació</translation>
 <translation id="430786093962686457">xifó</translation>
+<translation id="4309762678330556039">Crea transcripcions automàticament i cerca àudio. Pots crear gravacions fins i tot quan no tens connexió a Internet.</translation>
 <translation id="4310735698903592804">Fons de pantalla recents amb la tecnologia de la IA de Google</translation>
 <translation id="4320904097188876154">rosa neó</translation>
 <translation id="432961742358282111">Fes-hi clic amb el botó dret o mantén-lo premut per obtenir definicions, traduccions o conversions d'unitats. Utilitza les tecles de fletxa dreta o esquerra per gestionar aquesta funció.</translation>
@@ -935,7 +937,7 @@
 <translation id="5088172560898466307">Nom d'amfitrió del servidor</translation>
 <translation id="5089810972385038852">Estat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
-<translation id="5095761549884461003">Desconnecta el cable USB del <ph name="DEVICE_NAME" /> i torna'l a connectar per continuar amb el procés d'actualització</translation>
+<translation id="5095761549884461003">Desconnecta el cable USB del <ph name="DEVICE_NAME" /> i torna'l a connectar per continuar el procés d'actualització</translation>
 <translation id="5099354524039520280">amunt</translation>
 <translation id="5107243100836678918">La drecera sense tecla de <ph name="META_KEY" /> pot entrar en conflicte amb la drecera d'alguna aplicació. Torna a prémer aquesta drecera per continuar utilitzant-la o prem-ne una altra mitjançant la tecla de <ph name="KEY" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Similars:</translation>
@@ -952,7 +954,7 @@
 <translation id="5160857336552977725">Inicieu la sessió al vostre dispositiu (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="5168185087976003268">Estat de la bateria</translation>
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
-<translation id="517075088756846356">Desendolla i torna a endollar el cable d'alimentació del <ph name="DEVICE_NAME" /> per continuar amb el procés d'actualització</translation>
+<translation id="517075088756846356">Desendolla i torna a endollar el cable d'alimentació del <ph name="DEVICE_NAME" /> per continuar el procés d'actualització</translation>
 <translation id="5180108905184566358">baobabs</translation>
 <translation id="5180431943345994173">El teu professor ha suprimit contingut d'Eines de classe</translation>
 <translation id="5180712487038406644">Expressiu</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Més opcions</translation>
 <translation id="5600027863942488546">S'ha provat la tecla <ph name="KEY_NAME" /></translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">Eines de classe està compartint la pantalla amb <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">S'ha tancat la teva sessió</translation>
 <translation id="5620281292257375798">Només intern</translation>
 <translation id="5628106863521633649">Idiomes disponibles</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Moviment de núvols</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">No hi ha cap escàner disponible</translation>
-<translation id="6231648282154119906">Navegació segura de Google analitzarà automàticament els fitxers sospitosos com a part de la protecció millorada que has triat</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6234024205316847054">Mostra els esquemes</translation>
 <translation id="6243280677745499710">Establert actualment</translation>
@@ -1380,7 +1382,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7097908713073775559">acolorits</translation>
 <translation id="710028965487274708">Error: s'ha produït un error en l'autorització</translation>
-<translation id="7101959270679078188">Desbloqueja el <ph name="DEVICE_NAME" /> per continuar amb el procés d'actualització</translation>
+<translation id="7101959270679078188">Desbloqueja el <ph name="DEVICE_NAME" /> per continuar el procés d'actualització</translation>
 <translation id="7103252855940681301">Dispositiu <ph name="INDEX" /> de <ph name="COUNT" />, anomenat <ph name="NAME" />.</translation>
 <translation id="7103793063702494489">Idioma seleccionat</translation>
 <translation id="7107255225945990211">Tria obres d'art exclusives de <ph name="PRODUCT_NAME" /></translation>
@@ -1408,7 +1410,7 @@
 <translation id="7177485034254901881">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" />. És possible que els administradors el configurin de manera remota.</translation>
 <translation id="7180611975245234373">Actualitza</translation>
 <translation id="7180865173735832675">Personalitza</translation>
-<translation id="7182063559013288142">Punt d'accés Wi‑Fi instantani</translation>
+<translation id="7182063559013288142">Punt d'accés instantani</translation>
 <translation id="7184043045742675738">Fes clic en qualsevol tecla per personalitzar el teu botó. Canvia la posició de la tecla amb el ratolí o les tecles de fletxa.</translation>
 <translation id="7187669805838282391">dimecres</translation>
 <translation id="7205318498545665455">Tria el micròfon</translation>
@@ -1735,7 +1737,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8675354002693747642">Clau precompartida</translation>
 <translation id="8677859815076891398">No hi ha cap àlbum. Crea'n un a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">ramen</translation>
-<translation id="8689520252402395106">Torna a connectar el cable USB del <ph name="DEVICE_NAME" /> per continuar amb el procés d'actualització</translation>
+<translation id="8689520252402395106">Torna a connectar el cable USB del <ph name="DEVICE_NAME" /> per continuar el procés d'actualització</translation>
 <translation id="8699053192961439771">Fes clic per amagar automàticament les pestanyes</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilitza les tecles de fletxa dreta o esquerra per gestionar aquesta funció.</translation>
 <translation id="8712637175834984815">Entesos</translation>

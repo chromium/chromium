@@ -186,6 +186,8 @@ class FacilitatedPaymentsPaymentMethodsProperties {
                 new ReadableObjectPropertyKey("title");
         static final ReadableIntPropertyKey DESCRIPTION_ID =
                 new ReadableIntPropertyKey("description_id");
+        static final ReadableIntPropertyKey PAYMENT_LINK_TITLE_TOP_MARGIN =
+                new ReadableIntPropertyKey("payment_link_title_top_margin");
 
         static final PropertyKey[] ALL_KEYS = {
             PRODUCT_ICON_DRAWABLE_ID,
@@ -193,7 +195,8 @@ class FacilitatedPaymentsPaymentMethodsProperties {
             PRODUCT_ICON_CONTENT_DESCRIPTION_ID,
             SECURITY_CHECK_DRAWABLE_ID,
             TITLE,
-            DESCRIPTION_ID
+            DESCRIPTION_ID,
+            PAYMENT_LINK_TITLE_TOP_MARGIN
         };
 
         private HeaderProperties() {}

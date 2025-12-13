@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/ui/test/browser_ui_test_base.h"
 
+#include <string>
+
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
@@ -37,8 +35,8 @@ void BrowserUiTestBase::Invoke() {
   for (int i = 0; i < unit_test->total_test_suite_count(); ++i) {
     const testing::TestSuite* test_suite = unit_test->GetTestSuite(i);
     for (int j = 0; j < test_suite->total_test_count(); ++j) {
-      const char* name = test_suite->GetTestInfo(j)->name();
-      if (strstr(name, kUiPattern)) {
+      const std::string name = test_suite->GetTestInfo(j)->name();
+      if (name.find(kUiPattern) != std::string::npos) {
         ui_cases.insert(base::StrCat({test_suite->name(), ".", name}));
       }
     }

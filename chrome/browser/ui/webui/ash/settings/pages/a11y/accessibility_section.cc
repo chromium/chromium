@@ -614,10 +614,6 @@ bool IsAccessibilityMagnifierFollowsChromeVoxEnabled() {
   return ::features::IsAccessibilityMagnifierFollowsChromeVoxEnabled();
 }
 
-bool IsAccessibilityFaceGazeEnabled() {
-  return ::features::IsAccessibilityFaceGazeEnabled();
-}
-
 bool IsAccessibilityMouseKeysEnabled() {
   return ::features::IsAccessibilityMouseKeysEnabled();
 }
@@ -758,6 +754,8 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_OS_SETTINGS_ACCESSIBILITY_BOUNCE_KEYS_DELAY_SLIDER_SHORT},
       {"bounceKeysDelaySliderLong",
        IDS_OS_SETTINGS_ACCESSIBILITY_BOUNCE_KEYS_DELAY_SLIDER_LONG},
+      {"disabilitySupportTitle",
+       IDS_SETTINGS_ACCESSIBILITY_DISABILITY_SUPPORT_TITLE},
       {"mouseKeysLabel", IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_LABEL},
       {"mouseKeysDescription",
        IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_DESCRIPTION},
@@ -1605,9 +1603,6 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("isAccessibilityMagnifierFollowsChromeVoxEnabled",
                           IsAccessibilityMagnifierFollowsChromeVoxEnabled());
 
-  html_source->AddBoolean("isAccessibilityFaceGazeEnabled",
-                          IsAccessibilityFaceGazeEnabled());
-
   html_source->AddString("faceGazeLearnMoreUrl", chrome::kFaceGazeLearnMoreURL);
 
   html_source->AddBoolean("isAccessibilityDisableTouchpadEnabled",
@@ -2080,9 +2075,7 @@ void AccessibilitySection::UpdateSearchTags() {
     updater.AddSearchTags(GetA11yFlashNotificationsSearchConcepts());
   }
 
-  if (IsAccessibilityFaceGazeEnabled()) {
-    updater.AddSearchTags(GetA11yFaceGazeSearchConcepts());
-  }
+  updater.AddSearchTags(GetA11yFaceGazeSearchConcepts());
 
   if (IsAccessibilityBounceKeysEnabled()) {
     updater.AddSearchTags(GetA11yBounceKeysSearchConcepts());

@@ -92,7 +92,7 @@ public class AutoplayMutedNotificationTest {
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testBasic() throws Exception {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         // Taking audio focus.
         Assert.assertEquals(
@@ -117,7 +117,7 @@ public class AutoplayMutedNotificationTest {
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testDoesNotReactToAudioFocus() throws Exception {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         // The page will autoplay the video.
         DOMUtils.waitForMediaPlay(tab.getWebContents(), VIDEO_ID);
@@ -143,7 +143,7 @@ public class AutoplayMutedNotificationTest {
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testAutoplayMutedThenUnmute() throws Exception {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         // Taking audio focus.
         Assert.assertEquals(
@@ -184,7 +184,7 @@ public class AutoplayMutedNotificationTest {
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testMutedPlaybackDoesNotTakeAudioFocus() throws Exception {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         // Taking audio focus.
         Assert.assertEquals(
@@ -215,7 +215,7 @@ public class AutoplayMutedNotificationTest {
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testUnmutedPlaybackTakesAudioFocus() throws Exception {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         // Taking audio focus.
         Assert.assertEquals(

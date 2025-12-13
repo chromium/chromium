@@ -7,13 +7,7 @@ found in the LICENSE file.
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.Chromium.TabbedMode" parent="Base.Theme.Chromium.TabbedMode">
-        <item name="android:statusBarColor">@android:color/black</item>
-        <item name="android:windowLightStatusBar">false</item>
-    </style>
-
-    <style name="Theme.Chromium.Settings" parent="Base.Theme.Chromium.Settings">
-        <item name="android:statusBarColor">@android:color/black</item>
-        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">?attr/colorSurfaceContainerHighest</item>
     </style>
 
     <style name="Theme.Chromium.WithWindowAnimation" parent="Base.Theme.Chromium.WithWindowAnimation">

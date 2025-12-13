@@ -12,6 +12,10 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -21,8 +25,16 @@
 #include "chrome/browser/win/installer_downloader/installer_downloader_pref_names.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"  // nogncheck
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"  // nogncheck
+#include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_delegate.h"
+#include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_manager.h"
+#endif
+
 using InfoBarType = infobar_internals::mojom::InfoBarType;
 using InfoBarEntry = infobar_internals::mojom::InfoBarEntry;
+using InfoBarEntryPtr = infobar_internals::mojom::InfoBarEntryPtr;
 
 InfoBarInternalsHandler::InfoBarInternalsHandler(
     mojo::PendingReceiver<infobar_internals::mojom::PageHandler> receiver)
@@ -36,22 +48,68 @@ void InfoBarInternalsHandler::TriggerInfoBar(InfoBarType type,
 }
 
 void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
-  static const base::NoDestructor<std::array<InfoBarEntry, 1>> kInfobars(
-      {InfoBarEntry{InfoBarType::kInstallerDownloader,
-                    "Installer Downloader"}});
+  std::vector<InfoBarEntryPtr> infobar_list;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  infobar_list.emplace_back(InfoBarEntry::New(
+      /*type=*/InfoBarType::kDefaultBrowser, /*name=*/"Default Browser",
+      /*description=*/
+      "The Default Browser infobar asks the user if they want to set "
+      "Chrome as their default browser. This trigger resets any browser "
+      "state can prevents the infobar to shown, then shows the infobar. "
+      "This can only be triggered on non-ChromeOS Desktop platforms."));
+  infobar_list.emplace_back(InfoBarEntry::New(
+      /*type=*/InfoBarType::kSessionRestore, /*name=*/"Session Restore",
+      /*description=*/
+      "Triggers the session restore infobar. This infobar can only be "
+      "triggered on Mac, Windows and Linux."));
+#endif
 
-  std::vector<infobar_internals::mojom::InfoBarEntryPtr> infobar_list;
-  for (const auto& infobar : *kInfobars) {
-    infobar_list.emplace_back(InfoBarEntry::New(infobar.type, infobar.name));
-  }
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  infobar_list.emplace_back(InfoBarEntry::New(
+      /*type=*/InfoBarType::kInstallerDownloader,
+      /*name=*/"Installer Downloader",
+      /*description=*/
+      "The Installer Downloader can only be triggered on Windows. The "
+      "manual trigger consist to reset any browser state that can "
+      "prevent it to shown and then trigger a show request."));
+#endif
 
   std::move(callback).Run(std::move(infobar_list));
 }
 
 bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
   switch (type) {
-    case InfoBarType::kInstallerDownloader: {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    case InfoBarType::kDefaultBrowser: {
+      BrowserWindowInterface* const bwi =
+          GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+      Profile* profile = bwi->GetProfile();
+
+      if (!profile) {
+        return false;
+      }
+
+      chrome::startup::default_prompt::ResetPromptPrefs(profile);
+      DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
+      return true;
+    }
+    case InfoBarType::kSessionRestore: {
+      BrowserWindowInterface* const bwi =
+          GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+      Profile* profile = bwi->GetProfile();
+
+      if (!profile) {
+        return false;
+      }
+      session_restore_infobar::SessionRestoreInfoBarManager::GetInstance()
+          ->ShowInfoBar(*profile,
+                        session_restore_infobar::SessionRestoreInfoBarDelegate::
+                            InfobarMessageType::kTurnOffFromRestart);
+      return true;
+    }
+#endif
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    case InfoBarType::kInstallerDownloader: {
       if (auto* controller = g_browser_process->GetFeatures()
                                  ->installer_downloader_controller()) {
         PrefService* prefs = g_browser_process->local_state();
@@ -77,9 +135,9 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
 
         return true;
       }
-#endif
       return false;
     }
+#endif
   }
 
   return false;

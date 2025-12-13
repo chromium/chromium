@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "media/audio/win/audio_low_latency_output_win.h"
 
 #include <windows.h>
@@ -13,6 +12,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -35,6 +35,7 @@
 #include "media/audio/mock_audio_source_callback.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/audio/win/core_audio_util_win.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/seekable_buffer.h"
@@ -93,7 +94,7 @@ class ReadFromFileAudioSource : public AudioOutputStream::AudioSourceCallback {
     // Write the array which contains delta times to a text file.
     size_t elements_written = 0;
     while (elements_written < elements_to_write_) {
-      fprintf(text_file_.get(), "%d\n", delta_times_[elements_written]);
+      fprintf(text_file_.get(), "%d\n", UNSAFE_TODO(delta_times_[elements_written]));
       ++elements_written;
     }
 
@@ -111,7 +112,7 @@ class ReadFromFileAudioSource : public AudioOutputStream::AudioSourceCallback {
     const int diff = (now_time - previous_call_time_).InMilliseconds();
     previous_call_time_ = now_time;
     if (elements_to_write_ < kMaxDeltaSamples) {
-      delta_times_[elements_to_write_] = diff;
+      UNSAFE_TODO(delta_times_[elements_to_write_]) = diff;
       ++elements_to_write_;
     }
 

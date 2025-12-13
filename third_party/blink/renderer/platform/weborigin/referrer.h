@@ -58,9 +58,6 @@ struct PLATFORM_EXPORT Referrer {
 inline bool operator==(const Referrer& a, const Referrer& b) {
   return a.referrer == b.referrer && a.referrer_policy == b.referrer_policy;
 }
-inline bool operator!=(const Referrer& a, const Referrer& b) {
-  return !(a == b);
-}
 
 }  // namespace blink
 

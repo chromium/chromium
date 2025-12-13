@@ -34,7 +34,6 @@ import org.chromium.base.TerminationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -52,6 +51,7 @@ import org.chromium.content.browser.framehost.RenderFrameHostImpl;
 import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.content_public.browser.ChildProcessImportance;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.ImageDownloadCallback;
 import org.chromium.content_public.browser.JavaScriptCallback;
@@ -67,6 +67,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsInternals;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.BrowserControlsOffsetTagDefinitions;
 import org.chromium.ui.OverscrollRefreshHandler;
 import org.chromium.ui.base.EventForwarder;
@@ -518,6 +519,13 @@ public class WebContentsImpl
     }
 
     @Override
+    public void discard(Runnable onDiscarded) {
+        checkNotDestroyed();
+        assert ContentFeatureMap.isEnabled(ContentFeatures.WEB_CONTENTS_DISCARD);
+        WebContentsImplJni.get().discard(mNativeWebContentsAndroid, onDiscarded);
+    }
+
+    @Override
     public boolean isLoading() {
         checkNotDestroyed();
         return WebContentsImplJni.get().isLoading(mNativeWebContentsAndroid);
@@ -598,12 +606,14 @@ public class WebContentsImpl
     }
 
     @Override
-    public void setPrimaryMainFrameImportance(@ChildProcessImportance int importance) {
+    public void setPrimaryPageImportance(
+            @ChildProcessImportance int mainFrameImportance,
+            @ChildProcessImportance int subframeImportance) {
         checkNotDestroyed();
-        assert ChildProcessConnection.supportNotPerceptibleBinding()
-                || importance != ChildProcessImportance.PERCEPTIBLE;
+        assert mainFrameImportance >= subframeImportance;
         WebContentsImplJni.get()
-                .setPrimaryMainFrameImportance(mNativeWebContentsAndroid, importance);
+                .setPrimaryPageImportance(
+                        mNativeWebContentsAndroid, mainFrameImportance, subframeImportance);
     }
 
     @Override
@@ -1146,18 +1156,6 @@ public class WebContentsImpl
     }
 
     @Override
-    public void setContextMenuInsets(Rect insets) {
-        if (mNativeWebContentsAndroid == 0) return;
-        WebContentsImplJni.get()
-                .setContextMenuInsets(
-                        mNativeWebContentsAndroid,
-                        insets.top,
-                        insets.left,
-                        insets.bottom,
-                        insets.right);
-    }
-
-    @Override
     public void showInterestInElement(int nodeID) {
         if (mNativeWebContentsAndroid == 0) return;
         WebContentsImplJni.get().showInterestInElement(mNativeWebContentsAndroid, nodeID);
@@ -1229,6 +1227,19 @@ public class WebContentsImpl
     }
 
     @Override
+    public void setCanAcceptLoadDrops(boolean enabled) {
+        checkNotDestroyed();
+        WebContentsImplJni.get().setCanAcceptLoadDrops(mNativeWebContentsAndroid, enabled);
+    }
+
+    @Override
+    public boolean getCanAcceptLoadDropsForTesting() {
+        checkNotDestroyed();
+        return WebContentsImplJni.get()
+                .getCanAcceptLoadDropsForTesting(mNativeWebContentsAndroid); // IN-TEST
+    }
+
+    @Override
     public void updateOffsetTagDefinitions(
             BrowserControlsOffsetTagDefinitions offsetTagDefinitions) {
         if (mNativeWebContentsAndroid == 0) return;
@@ -1262,6 +1273,25 @@ public class WebContentsImpl
     @Override
     public int getOriginalWindowOpenDisposition() {
         return WebContentsImplJni.get().getOriginalWindowOpenDisposition(mNativeWebContentsAndroid);
+    }
+
+    @Override
+    public void updateWindowControlsOverlay(Rect rect) {
+        WebContentsImplJni.get()
+                .updateWindowControlsOverlay(
+                        mNativeWebContentsAndroid, rect.left, rect.top, rect.right, rect.bottom);
+    }
+
+    @Override
+    public void setSupportsDraggableRegions(boolean supportsDraggableRegions) {
+        WebContentsImplJni.get()
+                .setSupportsDraggableRegions(mNativeWebContentsAndroid, supportsDraggableRegions);
+    }
+
+    @Override
+    public @Nullable WebContents getDocumentPictureInPictureOpener() {
+        return WebContentsImplJni.get()
+                .getDocumentPictureInPictureOpener(mNativeWebContentsAndroid);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -1308,6 +1338,8 @@ public class WebContentsImpl
 
         String getEncoding(long nativeWebContentsAndroid);
 
+        void discard(long nativeWebContentsAndroid, Runnable onDiscarded);
+
         boolean isLoading(long nativeWebContentsAndroid);
 
         boolean shouldShowLoadingUI(long nativeWebContentsAndroid);
@@ -1332,7 +1364,8 @@ public class WebContentsImpl
 
         void collapseSelection(long nativeWebContentsAndroid);
 
-        void setPrimaryMainFrameImportance(long nativeWebContentsAndroid, int importance);
+        void setPrimaryPageImportance(
+                long nativeWebContentsAndroid, int mainFrameImportance, int subframeImportance);
 
         void suspendAllMediaPlayers(long nativeWebContentsAndroid);
 
@@ -1456,9 +1489,6 @@ public class WebContentsImpl
         void setDisplayCutoutSafeArea(
                 long nativeWebContentsAndroid, int top, int left, int bottom, int right);
 
-        void setContextMenuInsets(
-                long nativeWebContentsAndroid, int top, int left, int bottom, int right);
-
         void showInterestInElement(long nativeWebContentsAndroid, int nodeID);
 
         void notifyRendererPreferenceUpdate(long nativeWebContentsAndroid);
@@ -1476,6 +1506,10 @@ public class WebContentsImpl
 
         void setLongPressLinkSelectText(long nativeWebContentsAndroid, boolean enabled);
 
+        void setCanAcceptLoadDrops(long nativeWebContentsAndroid, boolean enabled);
+
+        boolean getCanAcceptLoadDropsForTesting(long nativeWebContentsAndroid);
+
         void updateOffsetTagDefinitions(
                 long nativeWebContentsAndroid,
                 BrowserControlsOffsetTagDefinitions offsetTagDefinitions);
@@ -1487,6 +1521,14 @@ public class WebContentsImpl
 
         boolean hasOpener(long nativeWebContentsAndroid);
 
+        WebContents getDocumentPictureInPictureOpener(long nativeWebContentsAndroid);
+
         int getOriginalWindowOpenDisposition(long nativeWebContentsAndroid);
+
+        void updateWindowControlsOverlay(
+                long nativeWebContentsAndroid, int left, int top, int right, int bottom);
+
+        void setSupportsDraggableRegions(
+                long nativeWebContentsAndroid, boolean supportsDraggableRegions);
     }
 }

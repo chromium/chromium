@@ -12,7 +12,6 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
-#include "components/signin/public/identity_manager/signin_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -26,8 +25,6 @@
 #include "ui/webui/webui_util.h"
 #include "url/gurl.h"
 
-using signin::constants::kNoHostedDomainFound;
-
 namespace {
 
 // Helper to create parameters used for testing, when loading the intercept
@@ -40,22 +37,24 @@ CreateSampleBubbleParameters() {
       "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///"
       "+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII";
 
-  AccountInfo intercepted_account;
-  intercepted_account.account_id =
-      CoreAccountId::FromGaiaId(GaiaId("intercepted_ID"));
-  intercepted_account.given_name = "Sam";
-  intercepted_account.full_name = "Sam Sample";
-  intercepted_account.email = "sam.sample@intercepted.com";
-  intercepted_account.picture_url = small_png;
-  intercepted_account.hosted_domain = kNoHostedDomainFound;
+  AccountInfo intercepted_account =
+      AccountInfo::Builder(GaiaId("intercepted_ID"),
+                           "sam.sample@intercepted.com")
+          .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("intercepted_ID")))
+          .SetFullName("Sam Sample")
+          .SetGivenName("Sam")
+          .SetHostedDomain(std::string())
+          .SetAvatarUrl(small_png)
+          .Build();
 
-  AccountInfo primary_account;
-  primary_account.account_id = CoreAccountId::FromGaiaId(GaiaId("primary_ID"));
-  primary_account.given_name = "Tessa";
-  primary_account.full_name = "Tessa Tester";
-  primary_account.email = "tessa.tester@primary.com";
-  primary_account.picture_url = small_png;
-  primary_account.hosted_domain = kNoHostedDomainFound;
+  AccountInfo primary_account =
+      AccountInfo::Builder(GaiaId("primary_ID"), "tessa.tester@primary.com")
+          .SetAccountId(CoreAccountId::FromGaiaId(GaiaId("primary_ID")))
+          .SetFullName("Tessa Tester")
+          .SetGivenName("Tessa")
+          .SetHostedDomain(std::string())
+          .SetAvatarUrl(small_png)
+          .Build();
 
   return WebSigninInterceptor::Delegate::BubbleParameters(
       WebSigninInterceptor::SigninInterceptionType::kMultiUser,
@@ -119,7 +118,7 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
       "script-src chrome://resources chrome://webui-test 'self';");
   webui::EnableTrustedTypesCSP(source);
 
-  if (web_ui->GetWebContents()->GetVisibleURL().query() == "debug") {
+  if (web_ui->GetWebContents()->GetVisibleURL().GetQuery() == "debug") {
     // Not intended to be hooked to anything. The bubble will not initialize it
     // so we force it here.
     Initialize(CreateSampleBubbleParameters(), base::DoNothing(),

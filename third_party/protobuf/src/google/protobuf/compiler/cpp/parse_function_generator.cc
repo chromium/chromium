@@ -26,13 +26,13 @@
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/generated_message_tctable_gen.h"
 #include "google/protobuf/generated_message_tctable_impl.h"
+#include "google/protobuf/has_bits.h"
 
 namespace google {
 namespace protobuf {
 namespace compiler {
 namespace cpp {
 
-namespace {
 using internal::TailCallTableInfo;
 using internal::cpp::Utf8CheckMode;
 
@@ -48,8 +48,6 @@ std::vector<const FieldDescriptor*> GetOrderedFields(
             });
   return ordered_fields;
 }
-
-}  // namespace
 
 ParseFunctionGenerator::ParseFunctionGenerator(
     const Descriptor* descriptor, int max_has_bit_index,
@@ -72,12 +70,7 @@ ParseFunctionGenerator::ParseFunctionGenerator(
       BuildFieldOptions(descriptor_, ordered_fields_, options_, scc_analyzer_,
                         has_bit_indices, inlined_string_indices_);
   tc_table_info_ = std::make_unique<TailCallTableInfo>(
-      descriptor_,
-      TailCallTableInfo::MessageOptions{
-          /* is_lite */ GetOptimizeFor(descriptor->file(), options_) ==
-              FileOptions::LITE_RUNTIME,
-          /* uses_codegen */ true},
-      fields);
+      BuildTcTableInfoFromDescriptor(descriptor_, options_, fields));
   SetCommonMessageDataVariables(descriptor_, &variables_);
   SetUnknownFieldsVariable(descriptor_, options_, &variables_);
   variables_["classname"] = ClassName(descriptor, false);
@@ -98,10 +91,10 @@ ParseFunctionGenerator::BuildFieldOptions(
     size_t index = static_cast<size_t>(field->index());
     fields.push_back({
         field,
-        index < has_bit_indices.size() ? has_bit_indices[index] : -1,
-        // When not present, we're not sure how likely "field" is present.
-        // Assign a 50% probability to avoid pessimizing it.
-        GetPresenceProbability(field, options).value_or(0.5f),
+        index < has_bit_indices.size() ? has_bit_indices[index]
+                                       : internal::kNoHasbit,
+        GetPresenceProbability(field, options)
+            .value_or(kUnknownPresenceProbability),
         GetLazyStyle(field, options, scc_analyzer),
         IsStringInlined(field, options),
         IsImplicitWeakField(field, options, scc_analyzer),
@@ -109,9 +102,23 @@ ParseFunctionGenerator::BuildFieldOptions(
         ShouldSplit(field, options),
         index < inlined_string_indices.size() ? inlined_string_indices[index]
                                               : -1,
+        IsMicroString(field, options),
     });
   }
   return fields;
+}
+
+TailCallTableInfo ParseFunctionGenerator::BuildTcTableInfoFromDescriptor(
+    const Descriptor* descriptor, const Options& options,
+    absl::Span<const TailCallTableInfo::FieldOptions> field_options) {
+  TailCallTableInfo tc_table_info(
+      descriptor,
+      TailCallTableInfo::MessageOptions{
+          /* is_lite */ GetOptimizeFor(descriptor->file(), options) ==
+              FileOptions::LITE_RUNTIME,
+          /* uses_codegen */ true},
+      field_options);
+  return tc_table_info;
 }
 
 struct SkipEntry16 {
@@ -453,7 +460,6 @@ void ParseFunctionGenerator::GenerateTailCallTable(io::Printer* p) {
           p->Emit(
               {
                   {"strict", utf8_check == Utf8CheckMode::kStrict},
-                  {"verify", utf8_check == Utf8CheckMode::kVerify},
                   {"validate", validated_enum},
                   {"key_wire", map_key->type()},
                   {"value_wire", map_value->type()},
@@ -461,9 +467,8 @@ void ParseFunctionGenerator::GenerateTailCallTable(io::Printer* p) {
                    !HasDescriptorMethods(aux_entry.field->file(), options_)},
               },
               R"cc(
-                {::_pbi::TcParser::GetMapAuxInfo($strict$, $verify$, $validate$,
-                                                 $key_wire$, $value_wire$,
-                                                 $is_lite$)},
+                {::_pbi::TcParser::GetMapAuxInfo(
+                    $strict$, $validate$, $key_wire$, $value_wire$, $is_lite$)},
               )cc");
           break;
         }
@@ -486,12 +491,7 @@ void ParseFunctionGenerator::GenerateTailCallTable(io::Printer* p) {
        {"data_size", FieldNameDataSize(tc_table_info_->field_name_data)},
        {"field_num_to_entry_table_size", field_num_to_entry_table.size16()},
        {"table_base", GenerateTableBase},
-       {"fast_entries",
-        [&] {
-          // TODO: refactor this to use Emit.
-          Formatter format(p, variables_);
-          GenerateFastFieldEntries(format);
-        }},
+       {"fast_entries", [&] { GenerateFastFieldEntries(p); }},
        {"field_lookup_table",
         [&] {
           for (SkipEntryBlock& entry_block : field_num_to_entry_table.blocks) {
@@ -529,12 +529,7 @@ void ParseFunctionGenerator::GenerateTailCallTable(io::Printer* p) {
 
           p->Emit(
               {
-                  {"field_entries",
-                   [&] {
-                     // TODO: refactor this to use Emit.
-                     Formatter format(p, variables_);
-                     GenerateFieldEntries(format);
-                   }},
+                  {"field_entries", [&] { GenerateFieldEntries(p); }},
                   {"aux_entries",
                    [&] {
                      if (tc_table_info_->aux_entries.empty()) {
@@ -592,14 +587,22 @@ $classname$::_table_ = {
   );
 }
 
-void ParseFunctionGenerator::GenerateFastFieldEntries(Formatter& format) {
+void ParseFunctionGenerator::GenerateFastFieldEntries(io::Printer* p) {
   for (const auto& info : tc_table_info_->fast_path_fields) {
     if (auto* nonfield = info.AsNonField()) {
       // Fast slot that is not associated with a field. Eg end group tags.
-      format("{$1$, {$2$, $3$}},\n", TcParseFunctionName(nonfield->func),
-             nonfield->coded_tag, nonfield->nonfield_info);
+      p->Emit({{"target", TcParseFunctionName(nonfield->func)},
+               {"coded_tag", nonfield->coded_tag},
+               {"nonfield_info", nonfield->nonfield_info}},
+              R"cc(
+                {$target$, {$coded_tag$, $nonfield_info$}},
+              )cc");
     } else if (auto* as_field = info.AsField()) {
-      PrintFieldComment(format, as_field->field, options_);
+      {
+        // TODO: refactor this to use Emit.
+        Formatter format(p, variables_);
+        PrintFieldComment(format, as_field->field, options_);
+      }
       ABSL_CHECK(!ShouldSplit(as_field->field, options_));
 
       std::string func_name = TcParseFunctionName(as_field->func);
@@ -626,54 +629,78 @@ void ParseFunctionGenerator::GenerateFastFieldEntries(Formatter& format) {
         }
       }
 
-      format(
-          "{$1$,\n"
-          " {$2$, $3$, $4$, PROTOBUF_FIELD_OFFSET($classname$, $5$)}},\n",
-          func_name, as_field->coded_tag, as_field->hasbit_idx,
-          as_field->aux_idx, FieldMemberName(as_field->field, /*split=*/false));
+      p->Emit(
+          {
+              {"target", func_name},
+              {"coded_tag", as_field->coded_tag},
+              {"hasbit_idx", as_field->hasbit_idx},
+              {"aux_idx", as_field->aux_idx},
+              {"field_name", FieldMemberName(as_field->field, /*split=*/false)},
+          },
+          R"cc(
+            {$target$,
+             {$coded_tag$, $hasbit_idx$, $aux_idx$,
+              PROTOBUF_FIELD_OFFSET($classname$, $field_name$)}},
+          )cc");
     } else {
       ABSL_DCHECK(info.is_empty());
-      format("{::_pbi::TcParser::MiniParse, {}},\n");
+      p->Emit(R"cc(
+        {::_pbi::TcParser::MiniParse, {}},
+      )cc");
     }
   }
 }
 
-void ParseFunctionGenerator::GenerateFieldEntries(Formatter& format) {
+void ParseFunctionGenerator::GenerateFieldEntries(io::Printer* p) {
   for (const auto& entry : tc_table_info_->field_entries) {
     const FieldDescriptor* field = entry.field;
+    // TODO: refactor this to use Emit.
+    Formatter format(p, variables_);
     PrintFieldComment(format, field, options_);
-    format("{");
-    if (IsWeak(field, options_)) {
-      // Weak fields are handled by the reflection fallback function.
-      // (These are handled by legacy Google-internal logic.)
-      format("/* weak */ 0, 0, 0, 0");
-    } else {
-      const OneofDescriptor* oneof = field->real_containing_oneof();
-      bool split = ShouldSplit(field, options_);
-      if (split) {
-        format("PROTOBUF_FIELD_OFFSET($classname$::Impl_::Split, $1$), ",
-               absl::StrCat(FieldName(field), "_"));
-      } else {
-        format("PROTOBUF_FIELD_OFFSET($classname$, $1$), ",
-               FieldMemberName(field, /*split=*/false));
-      }
-      if (oneof) {
-        format("_Internal::kOneofCaseOffset + $1$, ", 4 * oneof->index());
-      } else if (num_hasbits_ > 0 || IsMapEntryMessage(descriptor_)) {
-        if (entry.hasbit_idx >= 0) {
-          format("_Internal::kHasBitsOffset + $1$, ", entry.hasbit_idx);
-        } else {
-          format("$1$, ", entry.hasbit_idx);
-        }
-      } else {
-        format("0, ");
-      }
-      format("$1$,\n ", entry.aux_idx);
-      // Use `0|` prefix to eagerly convert the enums to int to avoid enum-enum
-      // operations. They are deprecated in C++20.
-      format("(0 | $1$)", internal::TypeCardToString(entry.type_card));
-    }
-    format("},\n");
+
+    bool weak = IsWeak(field, options_);
+    bool split = ShouldSplit(field, options_);
+    const OneofDescriptor* oneof = field->real_containing_oneof();
+
+    auto v = p->WithVars(
+        {{"field_name", FieldName(field)},
+         {"field_member_name", FieldMemberName(field, /*split=*/false)}});
+
+    p->Emit(
+        {{"offset",
+          [&] {
+            if (weak) {
+              p->Emit("/* weak */ 0,");
+            } else if (split) {
+              p->Emit(
+                  "PROTOBUF_FIELD_OFFSET($classname$::Impl_::Split, "
+                  "$field_name$_),");
+            } else {
+              p->Emit(
+                  "PROTOBUF_FIELD_OFFSET($classname$, $field_member_name$),");
+            }
+          }},
+         {"has_idx",
+          [&] {
+            if (oneof) {
+              p->Emit(absl::StrCat("_Internal::kOneofCaseOffset + ",
+                                   4 * oneof->index(), ","));
+            } else {
+              std::string hb_content =
+                  entry.hasbit_idx >= 0
+                      ? absl::StrCat("_Internal::kHasBitsOffset + ",
+                                     entry.hasbit_idx, ",")
+                      : "-1,";
+              p->Emit(hb_content);
+            }
+          }},
+         {"aux_idx", entry.aux_idx},
+         {"type_card", internal::TypeCardToString(entry.type_card)}},
+        // Use `0|` prefix to eagerly convert the enums to int to avoid
+        // enum-enum operations. They are deprecated in C++20.
+        R"cc(
+          {$offset$, $has_idx$, $aux_idx$, (0 | $type_card$)},
+        )cc");
   }
 }
 

@@ -7,11 +7,62 @@
 #include "components/webcrypto/algorithm_dispatch.h"
 #include "components/webcrypto/status.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
 #include "third_party/blink/public/platform/web_crypto_key.h"
 #include "third_party/blink/public/platform/web_crypto_key_algorithm.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
+
+namespace {
+
+class WebCryptoFuzzer {
+ public:
+  WebCryptoFuzzer() {
+    // InitializeBlink() does process-wide initialization, and
+    // no code to uninitialize blink for testing. We have to block
+    // re-initializing blink in the same process.
+    if (!blink_initialized_) {
+      blink::Platform::InitializeBlink();
+      blink_initialized_ = true;
+    }
+  }
+  ~WebCryptoFuzzer() = default;
+
+  void ImportKeyFuzzer(blink::WebCryptoAlgorithm algo,
+                       blink::WebCryptoKeyUsage key_usage,
+                       base::span<const uint8_t> key_data);
+  void EncryptFuzzer(blink::WebCryptoAlgorithm algo,
+                     blink::WebCryptoKeyUsage key_usage,
+                     base::span<const uint8_t> key_data,
+                     base::span<const uint8_t> data);
+  void DecryptFuzzer(blink::WebCryptoAlgorithm algo,
+                     blink::WebCryptoKeyUsage key_usage,
+                     base::span<const uint8_t> key_data,
+                     base::span<const uint8_t> data);
+  void DigestFuzzer(blink::WebCryptoAlgorithm algo,
+                    base::span<const uint8_t> data);
+  void SignFuzzer(blink::WebCryptoAlgorithm algo,
+                  blink::WebCryptoKeyUsage key_usage,
+                  base::span<const uint8_t> key_data,
+                  base::span<const uint8_t> data);
+  void VerifyFuzzer(blink::WebCryptoAlgorithm algo,
+                    blink::WebCryptoKeyUsage key_usage,
+                    base::span<const uint8_t> key_data,
+                    base::span<const uint8_t> signature,
+                    base::span<const uint8_t> data);
+  void DeriveBitsFuzzer(blink::WebCryptoAlgorithm algo,
+                        blink::WebCryptoKeyUsage key_usage,
+                        base::span<const uint8_t> key_data,
+                        unsigned int length_bits);
+
+ private:
+  static bool blink_initialized_;
+};
+
+bool WebCryptoFuzzer::blink_initialized_ = false;
+
+}  // namespace
 
 auto AnyKeyUsage() {
   return fuzztest::BitFlagCombinationOf<blink::WebCryptoKeyUsage>(
@@ -50,7 +101,7 @@ auto AesGcmAlgorithm() {
          unsigned char tag_length_bits) {
         return blink::WebCryptoAlgorithm::AdoptParamsAndCreate(
             blink::kWebCryptoAlgorithmIdAesGcm,
-            new blink::WebCryptoAesGcmParams(
+            new blink::WebCryptoAeadParams(
                 std::move(iv), has_additional_data, std::move(additional_data),
                 has_tag_length_bits, tag_length_bits));
       },
@@ -184,18 +235,18 @@ auto AnyAlgorithm() {
   return std::move(builder).Finalize<blink::WebCryptoAlgorithm>("algorithm");
 }
 
-static void ImportKeyFuzzer(blink::WebCryptoAlgorithm algo,
-                            blink::WebCryptoKeyUsage key_usage,
-                            base::span<const uint8_t> key_data) {
+void WebCryptoFuzzer::ImportKeyFuzzer(blink::WebCryptoAlgorithm algo,
+                                      blink::WebCryptoKeyUsage key_usage,
+                                      base::span<const uint8_t> key_data) {
   blink::WebCryptoKey key;
   auto status = webcrypto::ImportKey(blink::kWebCryptoKeyFormatRaw, key_data,
                                      algo, true, key_usage, &key);
 }
 
-static void EncryptFuzzer(blink::WebCryptoAlgorithm algo,
-                          blink::WebCryptoKeyUsage key_usage,
-                          base::span<const uint8_t> key_data,
-                          base::span<const uint8_t> data) {
+void WebCryptoFuzzer::EncryptFuzzer(blink::WebCryptoAlgorithm algo,
+                                    blink::WebCryptoKeyUsage key_usage,
+                                    base::span<const uint8_t> key_data,
+                                    base::span<const uint8_t> data) {
   blink::WebCryptoKey key;
   auto status = webcrypto::ImportKey(blink::kWebCryptoKeyFormatRaw, key_data,
                                      algo, true, key_usage, &key);
@@ -206,10 +257,10 @@ static void EncryptFuzzer(blink::WebCryptoAlgorithm algo,
   webcrypto::Encrypt(algo, key, data, &buffer);
 }
 
-static void DecryptFuzzer(blink::WebCryptoAlgorithm algo,
-                          blink::WebCryptoKeyUsage key_usage,
-                          base::span<const uint8_t> key_data,
-                          base::span<const uint8_t> data) {
+void WebCryptoFuzzer::DecryptFuzzer(blink::WebCryptoAlgorithm algo,
+                                    blink::WebCryptoKeyUsage key_usage,
+                                    base::span<const uint8_t> key_data,
+                                    base::span<const uint8_t> data) {
   blink::WebCryptoKey key;
   auto status = webcrypto::ImportKey(blink::kWebCryptoKeyFormatRaw, key_data,
                                      algo, true, key_usage, &key);
@@ -220,16 +271,16 @@ static void DecryptFuzzer(blink::WebCryptoAlgorithm algo,
   webcrypto::Decrypt(algo, key, data, &buffer);
 }
 
-static void DigestFuzzer(blink::WebCryptoAlgorithm algo,
-                         base::span<const uint8_t> data) {
+void WebCryptoFuzzer::DigestFuzzer(blink::WebCryptoAlgorithm algo,
+                                   base::span<const uint8_t> data) {
   std::vector<uint8_t> buffer;
   webcrypto::Digest(algo, data, &buffer);
 }
 
-static void SignFuzzer(blink::WebCryptoAlgorithm algo,
-                       blink::WebCryptoKeyUsage key_usage,
-                       base::span<const uint8_t> key_data,
-                       base::span<const uint8_t> data) {
+void WebCryptoFuzzer::SignFuzzer(blink::WebCryptoAlgorithm algo,
+                                 blink::WebCryptoKeyUsage key_usage,
+                                 base::span<const uint8_t> key_data,
+                                 base::span<const uint8_t> data) {
   blink::WebCryptoKey key;
   auto status = webcrypto::ImportKey(blink::kWebCryptoKeyFormatRaw, key_data,
                                      algo, true, key_usage, &key);
@@ -240,11 +291,11 @@ static void SignFuzzer(blink::WebCryptoAlgorithm algo,
   webcrypto::Sign(algo, key, data, &buffer);
 }
 
-static void VerifyFuzzer(blink::WebCryptoAlgorithm algo,
-                         blink::WebCryptoKeyUsage key_usage,
-                         base::span<const uint8_t> key_data,
-                         base::span<const uint8_t> signature,
-                         base::span<const uint8_t> data) {
+void WebCryptoFuzzer::VerifyFuzzer(blink::WebCryptoAlgorithm algo,
+                                   blink::WebCryptoKeyUsage key_usage,
+                                   base::span<const uint8_t> key_data,
+                                   base::span<const uint8_t> signature,
+                                   base::span<const uint8_t> data) {
   blink::WebCryptoKey key;
   auto status = webcrypto::ImportKey(blink::kWebCryptoKeyFormatRaw, key_data,
                                      algo, true, key_usage, &key);
@@ -255,10 +306,10 @@ static void VerifyFuzzer(blink::WebCryptoAlgorithm algo,
   webcrypto::Verify(algo, key, signature, data, &match);
 }
 
-static void DeriveBitsFuzzer(blink::WebCryptoAlgorithm algo,
-                             blink::WebCryptoKeyUsage key_usage,
-                             base::span<const uint8_t> key_data,
-                             unsigned int length_bits) {
+void WebCryptoFuzzer::DeriveBitsFuzzer(blink::WebCryptoAlgorithm algo,
+                                       blink::WebCryptoKeyUsage key_usage,
+                                       base::span<const uint8_t> key_data,
+                                       unsigned int length_bits) {
   blink::WebCryptoKey key;
   auto status = webcrypto::ImportKey(blink::kWebCryptoKeyFormatRaw, key_data,
                                      algo, true, key_usage, &key);
@@ -269,40 +320,40 @@ static void DeriveBitsFuzzer(blink::WebCryptoAlgorithm algo,
   webcrypto::DeriveBits(algo, key, length_bits, &derived_bytes);
 }
 
-FUZZ_TEST(WebCryptoFuzzer, ImportKeyFuzzer)
+FUZZ_TEST_F(WebCryptoFuzzer, ImportKeyFuzzer)
     .WithDomains(AnyAlgorithm(),
                  AnyKeyUsage(),
                  fuzztest::Arbitrary<std::vector<uint8_t>>());
 
-FUZZ_TEST(WebCryptoFuzzer, EncryptFuzzer)
-    .WithDomains(AnyAlgorithm(),
-                 AnyKeyUsage(),
-                 fuzztest::Arbitrary<std::vector<uint8_t>>(),
-                 fuzztest::Arbitrary<std::vector<uint8_t>>());
-
-FUZZ_TEST(WebCryptoFuzzer, DecryptFuzzer)
+FUZZ_TEST_F(WebCryptoFuzzer, EncryptFuzzer)
     .WithDomains(AnyAlgorithm(),
                  AnyKeyUsage(),
                  fuzztest::Arbitrary<std::vector<uint8_t>>(),
                  fuzztest::Arbitrary<std::vector<uint8_t>>());
 
-FUZZ_TEST(WebCryptoFuzzer, DigestFuzzer)
+FUZZ_TEST_F(WebCryptoFuzzer, DecryptFuzzer)
+    .WithDomains(AnyAlgorithm(),
+                 AnyKeyUsage(),
+                 fuzztest::Arbitrary<std::vector<uint8_t>>(),
+                 fuzztest::Arbitrary<std::vector<uint8_t>>());
+
+FUZZ_TEST_F(WebCryptoFuzzer, DigestFuzzer)
     .WithDomains(AnyAlgorithm(), fuzztest::Arbitrary<std::vector<uint8_t>>());
 
-FUZZ_TEST(WebCryptoFuzzer, SignFuzzer)
+FUZZ_TEST_F(WebCryptoFuzzer, SignFuzzer)
     .WithDomains(AnyAlgorithm(),
                  AnyKeyUsage(),
                  fuzztest::Arbitrary<std::vector<uint8_t>>(),
                  fuzztest::Arbitrary<std::vector<uint8_t>>());
 
-FUZZ_TEST(WebCryptoFuzzer, VerifyFuzzer)
+FUZZ_TEST_F(WebCryptoFuzzer, VerifyFuzzer)
     .WithDomains(AnyAlgorithm(),
                  AnyKeyUsage(),
                  fuzztest::Arbitrary<std::vector<uint8_t>>(),
                  fuzztest::Arbitrary<std::vector<uint8_t>>(),
                  fuzztest::Arbitrary<std::vector<uint8_t>>());
 
-FUZZ_TEST(WebCryptoFuzzer, DeriveBitsFuzzer)
+FUZZ_TEST_F(WebCryptoFuzzer, DeriveBitsFuzzer)
     .WithDomains(AnyAlgorithm(),
                  AnyKeyUsage(),
                  fuzztest::Arbitrary<std::vector<uint8_t>>(),

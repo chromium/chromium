@@ -280,7 +280,7 @@ impl<'a> Runner<'a> {
             let per_elem = size_of::<StateID>() + size_of::<Vec<PatternID>>();
             let pats = total_pat_len * size_of::<PatternID>();
             let mem = (matches.len() * per_elem) + pats;
-            log::debug!("matches map built, memory usage: {}", mem);
+            log::debug!("matches map built, memory usage: {mem}");
         }
         // At this point, we shuffle the "special" states in the final DFA.
         // This permits a DFA's match loop to detect a match condition (among
@@ -466,7 +466,7 @@ impl<'a> Runner<'a> {
     ) -> Result<(StateID, bool), BuildError> {
         // Compute the look-behind assertions that are true in this starting
         // configuration, and the determine the epsilon closure. While
-        // computing the epsilon closure, we only follow condiional epsilon
+        // computing the epsilon closure, we only follow conditional epsilon
         // transitions that satisfy the look-behind assertions in 'look_have'.
         let mut builder_matches = self.get_state_builder().into_matches();
         util::determinize::set_lookbehind_from_start(

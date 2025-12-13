@@ -28,10 +28,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
   FuzzedDataProvider provider(data, size);
 
-  MediaMetadataParser parser(
-      std::make_unique<media::MemoryDataSource>(data, size),
-      /*mime_type=*/"video/webm",
-      /*get_attached_images=*/provider.ConsumeBool());
+  // SAFETY: libfuzzer guarantees `data` and `size` are safe.
+  auto bytes = UNSAFE_BUFFERS(base::span(data, size));
+
+  MediaMetadataParser parser(std::make_unique<media::MemoryDataSource>(bytes),
+                             /*mime_type=*/"video/webm",
+                             /*get_attached_images=*/provider.ConsumeBool());
   parser.Start(base::DoNothing());
   return 0;
 }

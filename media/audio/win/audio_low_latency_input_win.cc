@@ -24,6 +24,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -55,6 +56,7 @@
 #include "media/base/channel_layout.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
+#include "media/base/sample_format.h"
 #include "media/base/timestamp_constants.h"
 
 using base::win::ScopedCoMem;
@@ -66,6 +68,10 @@ namespace media {
 namespace {
 
 constexpr uint32_t KSAUDIO_SPEAKER_UNSUPPORTED = 0;
+
+// Feature flag for enabling usage of the device/engine sample format.
+BASE_FEATURE(kWasapiInputUseDeviceSampleFormat,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Max allowed absolute difference between a QPC-based timestamp and a default
 // base::TimeTicks::Now() timestamp before switching to fake audio timestamps.
@@ -260,6 +266,27 @@ bool IsEndpointLoopbackCapture(std::string_view device_id,
                                bool is_process_loopback) {
   return AudioDeviceDescription::IsLoopbackDevice(device_id) &&
          !is_process_loopback;
+}
+
+SampleFormat GetSampleFormatFromWaveFormat(
+    const WAVEFORMATEXTENSIBLE& wave_format) {
+  switch (wave_format.Format.wBitsPerSample) {
+    case 8:
+      return kSampleFormatU8;
+    case 16:
+      return kSampleFormatS16;
+    case 24:
+      return kSampleFormatS24;
+    case 32:
+      if (IsEqualGUID(wave_format.SubFormat, KSDATAFORMAT_SUBTYPE_PCM)) {
+        return kSampleFormatS32;
+      } else if (IsEqualGUID(wave_format.SubFormat,
+                             KSDATAFORMAT_SUBTYPE_IEEE_FLOAT)) {
+        return kSampleFormatF32;
+      }
+  }
+  // We do not support other formats, return unknown.
+  return kUnknownSampleFormat;
 }
 
 }  // namespace
@@ -629,7 +656,7 @@ WASAPIAudioInputStream::WASAPIAudioInputStream(
     const std::string& device_id,
     AudioManager::LogCallback log_callback)
     : manager_(manager),
-      glitch_reporter_(SystemGlitchReporter::StreamType::kCapture),
+      params_(params),
       peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
                                          base::Unretained(manager_),
                                          /*trace_start=*/true)),
@@ -644,7 +671,11 @@ WASAPIAudioInputStream::WASAPIAudioInputStream(
               static_cast<void (WASAPIAudioInputStream::*)(std::string)>(
                   &WASAPIAudioInputStream::SendLogMessage),
               base::Unretained(this)))),
-      is_process_loopback_capture_(IsProcessLoopbackDevice(device_id)) {
+      is_loopback_capture_(AudioDeviceDescription::IsLoopbackDevice(device_id)),
+      is_process_loopback_capture_(IsProcessLoopbackDevice(device_id)),
+      glitch_reporter_(is_loopback_capture_
+                           ? SystemGlitchReporter::StreamType::kLoopback
+                           : SystemGlitchReporter::StreamType::kCapture) {
   DCHECK(manager_);
   DCHECK(!device_id_.empty());
   DCHECK(!log_callback_.is_null());
@@ -666,9 +697,83 @@ WASAPIAudioInputStream::WASAPIAudioInputStream(
   if (!avrt_init)
     SendLogMessage("%s => (WARNING: failed to load Avrt.dll)", __func__);
 
-  const SampleFormat kSampleFormat = kSampleFormatS16;
+  // All events are auto-reset events and non-signaled initially.
 
-  // The clients asks for an input stream specified by |params|. Start by
+  // Create the event which the audio engine will signal each time
+  // a buffer becomes ready to be processed by the client.
+  audio_samples_ready_event_.Set(CreateEvent(NULL, FALSE, FALSE, NULL));
+  DCHECK(audio_samples_ready_event_.is_valid());
+
+  // Create the event which will be set in Stop() when capturing shall stop.
+  stop_capture_event_.Set(CreateEvent(NULL, FALSE, FALSE, NULL));
+  DCHECK(stop_capture_event_.is_valid());
+
+  use_device_sample_format_ =
+      base::FeatureList::IsEnabled(kWasapiInputUseDeviceSampleFormat);
+}
+
+WASAPIAudioInputStream::~WASAPIAudioInputStream() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+bool WASAPIAudioInputStream::UpdateFormats() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sample_format_ = kSampleFormatS16;
+  input_format_.SubFormat = KSDATAFORMAT_SUBTYPE_PCM;
+  output_format_.wFormatTag = WAVE_FORMAT_PCM;
+  // WASAPI does not allow the AudioClient to control the process loopback
+  // device. AudioClient::GetMixFormat is not available for process loopback
+  // devices.
+  if (is_process_loopback_capture_ && use_device_sample_format_) {
+    sample_format_ = kSampleFormatF32;
+    input_format_.SubFormat = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT;
+    output_format_.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
+  } else if (use_device_sample_format_) {
+    // Get the format the audio engine uses.
+    WAVEFORMATEXTENSIBLE mix_format;
+    HRESULT hr =
+        CoreAudioUtil::GetSharedModeMixFormat(audio_client_.Get(), &mix_format);
+    if (FAILED(hr)) {
+      ReportOpenResult(hr);
+      return false;
+    }
+    // Note that Windows Audio Engine could potentially be S32 or F32.
+    auto mix_sample_format = GetSampleFormatFromWaveFormat(mix_format);
+    base::UmaHistogramEnumeration("Media.Audio.Capture.Win.AudioEngineFormat",
+                                  mix_sample_format);
+    if (mix_sample_format != kUnknownSampleFormat) {
+      sample_format_ = mix_sample_format;
+      // We are not sure if the Windows Audio Engine will ever choose 24bit over
+      // 32bit. Check if this is the case, and if so we choose S32 instead.
+      CHECK_NE(sample_format_, kSampleFormatS24, base::NotFatalUntil::M148);
+      if (sample_format_ == kSampleFormatS24) {
+        sample_format_ = kSampleFormatS32;
+      }
+
+      input_format_.SubFormat = mix_format.SubFormat;
+      // Set up the fixed output format based on the discovered format.
+      if (IsEqualGUID(mix_format.SubFormat, KSDATAFORMAT_SUBTYPE_PCM)) {
+        CHECK_NE(sample_format_, kSampleFormatF32);
+        output_format_.wFormatTag = WAVE_FORMAT_PCM;
+      } else if (IsEqualGUID(mix_format.SubFormat,
+                             KSDATAFORMAT_SUBTYPE_IEEE_FLOAT)) {
+        CHECK_EQ(sample_format_, kSampleFormatF32);
+        output_format_.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
+      } else {
+        // We don't support other wFormatTags, consider this as failed.
+        return false;
+      }
+    } else {
+      const uint32_t format_tag =
+          EXTRACT_WAVEFORMATEX_ID(&mix_format.SubFormat);
+      base::UmaHistogramSparse(
+          "Media.Audio.Capture.Win.AudioEngineFormat.Unknown", format_tag);
+
+      use_device_sample_format_ = false;
+    }
+  }
+
+  // The clients asks for an input stream specified by `params`. Start by
   // setting up an input device format according to the same specification.
   // If all goes well during the upcoming initialization, this format will not
   // change. However, under some circumstances, minor changes can be required
@@ -677,9 +782,9 @@ WASAPIAudioInputStream::WASAPIAudioInputStream(
   // matches what the client asks for.
   WAVEFORMATEX* format = &input_format_.Format;
   format->wFormatTag = WAVE_FORMAT_EXTENSIBLE;
-  format->nChannels = params.channels();
-  format->nSamplesPerSec = params.sample_rate();
-  format->wBitsPerSample = SampleFormatToBitsPerChannel(kSampleFormat);
+  format->nChannels = params_.channels();
+  format->nSamplesPerSec = params_.sample_rate();
+  format->wBitsPerSample = SampleFormatToBitsPerChannel(sample_format_);
   format->nBlockAlign = (format->wBitsPerSample / 8) * format->nChannels;
   format->nAvgBytesPerSec = format->nSamplesPerSec * format->nBlockAlign;
 
@@ -688,15 +793,10 @@ WASAPIAudioInputStream::WASAPIAudioInputStream(
   format->cbSize = sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX);
   input_format_.Samples.wValidBitsPerSample = format->wBitsPerSample;
   input_format_.dwChannelMask =
-      ChannelLayoutToChannelConfig(params.channel_layout());
-  input_format_.SubFormat = KSDATAFORMAT_SUBTYPE_PCM;
+      ChannelLayoutToChannelConfig(params_.channel_layout());
   SendLogMessage("%s => (audio engine format=[%s])", __func__,
                  CoreAudioUtil::WaveFormatToString(&input_format_).c_str());
 
-  // Set up the fixed output format based on |params|. Will not be changed and
-  // does not required an extended wave format structure since any multi-channel
-  // input will be converted to stereo.
-  output_format_.wFormatTag = WAVE_FORMAT_PCM;
   output_format_.nChannels = format->nChannels;
   output_format_.nSamplesPerSec = format->nSamplesPerSec;
   output_format_.wBitsPerSample = format->wBitsPerSample;
@@ -711,27 +811,13 @@ WASAPIAudioInputStream::WASAPIAudioInputStream(
 
   // Store size of audio packets which we expect to get from the audio
   // endpoint device in each capture event.
-  packet_size_bytes_ = params.GetBytesPerBuffer(kSampleFormat);
+  packet_size_bytes_ = params_.GetBytesPerBuffer(sample_format_);
   packet_size_frames_ = packet_size_bytes_ / format->nBlockAlign;
   SendLogMessage(
       "%s => (packet size=[%zu bytes/%zu audio frames/%.3f milliseconds])",
       __func__, packet_size_bytes_, packet_size_frames_,
-      params.GetBufferDuration().InMillisecondsF());
-
-  // All events are auto-reset events and non-signaled initially.
-
-  // Create the event which the audio engine will signal each time
-  // a buffer becomes ready to be processed by the client.
-  audio_samples_ready_event_.Set(CreateEvent(NULL, FALSE, FALSE, NULL));
-  DCHECK(audio_samples_ready_event_.IsValid());
-
-  // Create the event which will be set in Stop() when capturing shall stop.
-  stop_capture_event_.Set(CreateEvent(NULL, FALSE, FALSE, NULL));
-  DCHECK(stop_capture_event_.IsValid());
-}
-
-WASAPIAudioInputStream::~WASAPIAudioInputStream() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+      params_.GetBufferDuration().InMillisecondsF());
+  return true;
 }
 
 AudioInputStream::OpenOutcome WASAPIAudioInputStream::Open() {
@@ -763,6 +849,10 @@ AudioInputStream::OpenOutcome WASAPIAudioInputStream::Open() {
   if (FAILED(hr)) {
     open_result_ = OPEN_RESULT_ACTIVATION_FAILED;
     ReportOpenResult(hr);
+    return OpenOutcome::kFailed;
+  }
+
+  if (!UpdateFormats()) {
     return OpenOutcome::kFailed;
   }
 
@@ -914,7 +1004,7 @@ void WASAPIAudioInputStream::Stop() {
   StopAgc();
 
   // Shut down the capture thread.
-  if (stop_capture_event_.IsValid()) {
+  if (stop_capture_event_.is_valid()) {
     SetEvent(stop_capture_event_.Get());
   }
 
@@ -1074,6 +1164,12 @@ void WASAPIAudioInputStream::
   GetActivateAudioInterfaceAsyncCallback() = callback;
 }
 
+void WASAPIAudioInputStream::SimulateErrorForTesting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(capture_thread_);
+  simulate_error_for_testing_ = true;
+}
+
 HRESULT WASAPIAudioInputStream::CreateFifoIfNeeded() {
   if (fifo_) {
     return S_OK;
@@ -1146,6 +1242,13 @@ void WASAPIAudioInputStream::Run() {
   while (recording && !error) {
     // Wait for a close-down event or a new capture event.
     DWORD wait_result = WaitForMultipleObjects(2, wait_array, FALSE, INFINITE);
+
+    // Test-only hook to simulate a failure in the capture loop.
+    if (simulate_error_for_testing_) {
+      wait_result = WAIT_FAILED;
+      simulate_error_for_testing_ = false;
+    }
+
     switch (wait_result) {
       case WAIT_OBJECT_0 + 0:
         // |stop_capture_event_| has been set.
@@ -1171,13 +1274,18 @@ void WASAPIAudioInputStream::Run() {
   }
 
   if (recording && error) {
-    // TODO(henrika): perhaps it worth improving the cleanup here by e.g.
-    // stopping the audio client, joining the thread etc.?
-    // TODO(crbug.com/417505389): We should handle pipeline errors in a more
-    // graceful way instead of using NOTREACHED() here.
     auto saved_last_error = GetLastError();
-    NOTREACHED() << "WASAPI capturing failed with error code "
-                 << saved_last_error;
+    LOG(ERROR) << "WAIS::" << __func__
+               << " => (ERROR: capturing failed with error code: "
+               << saved_last_error << ")";
+    // Stop audio rendering since something has gone wrong in our main thread
+    // loop. Note that, we are still in a "started" state, hence a Stop() call
+    // is required to join the thread properly. This approach is inline with the
+    // design in WASAPIAudioOutputStream.
+    audio_client_->Stop();
+
+    // There was an error while recording audio.
+    sink_->OnError();
   }
 
   // Disable MMCSS.
@@ -1312,7 +1420,9 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
         glitch_reporter_.UpdateStats(glitch_duration);
         if (glitch_duration.is_positive()) {
           glitch_accumulator_.Add(AudioGlitchInfo::SingleBoundedSystemGlitch(
-              glitch_duration, AudioGlitchInfo::Direction::kCapture));
+              glitch_duration, is_loopback_capture_
+                                   ? AudioGlitchInfo::Direction::kLoopback
+                                   : AudioGlitchInfo::Direction::kCapture));
         }
       }
 
@@ -1392,8 +1502,8 @@ void WASAPIAudioInputStream::PullCaptureDataAndPushToSink() {
           base::CheckMul<size_t>(num_frames_to_read,
                                  input_format_.Format.nBlockAlign)
               .ValueOrDie()));
-      peak_detector_.FindPeak(audio_frames, bytes_per_sample);
-      fifo_->Push(audio_frames, num_frames_to_read, bytes_per_sample);
+      peak_detector_.FindPeak(audio_frames, sample_format_);
+      fifo_->Push(audio_frames, num_frames_to_read, sample_format_);
     }
 
     hr = audio_capture_client_->ReleaseBuffer(num_frames_to_read);
@@ -1744,7 +1854,13 @@ bool WASAPIAudioInputStream::DesiredFormatIsSupported(HRESULT* hr) {
     // Otherwise, we keep the bits sample as is since we still request fixed
     // point PCM. In that case the closest match is typically in float format
     // (KSDATAFORMAT_SUBTYPE_IEEE_FLOAT).
-    if (CoreAudioUtil::WaveFormatWrapper(closest_match.get()).IsPcm()) {
+    if (CoreAudioUtil::WaveFormatWrapper(closest_match.get()).IsPcm() &&
+        input_format->wBitsPerSample != closest_match->wBitsPerSample) {
+      // Enabling kWasapiInputUseDeviceSampleFormat allows us to query the Audio
+      // Engine for its MixFormat. The MixFormat should in theory always be
+      // supported and have the same bit depth, so we should not hit this
+      // pathway.
+      CHECK(!use_device_sample_format_, base::NotFatalUntil::M148);
       input_format->wBitsPerSample = closest_match->wBitsPerSample;
     }
 
@@ -1863,6 +1979,10 @@ HRESULT WASAPIAudioInputStream::InitializeAudioEngine() {
                    ErrorToString(hr).c_str());
     open_result_ = OPEN_RESULT_AUDIO_CLIENT_INIT_FAILED;
     base::UmaHistogramSparse("Media.Audio.Capture.Win.InitError", hr);
+    if (is_process_loopback_capture_) {
+      base::UmaHistogramSparse(
+          "Media.Audio.Capture.Win.ProcessLoopbackInitError", hr);
+    }
     MaybeReportFormatRelatedInitError(hr);
     return hr;
   }

@@ -68,8 +68,7 @@ class PLATFORM_EXPORT ParkableImageImpl final
 
   // Implementations of the methods of the same name from ParkableImage.
   void Freeze() LOCKS_EXCLUDED(lock_);
-  void Append(WTF::SharedBuffer* buffer, size_t offset = 0)
-      LOCKS_EXCLUDED(lock_);
+  void Append(SharedBuffer* buffer, size_t offset = 0) LOCKS_EXCLUDED(lock_);
   scoped_refptr<SharedBuffer> Data() LOCKS_EXCLUDED(lock_);
   void LockData() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void UnlockData() EXCLUSIVE_LOCKS_REQUIRED(lock_);
@@ -171,7 +170,7 @@ class PLATFORM_EXPORT ParkableImage final
 
   // Appends data to the ParkableImage. Cannot be called after the ParkableImage
   // has been frozen. (see: Freeze())
-  void Append(WTF::SharedBuffer* buffer, size_t offset = 0)
+  void Append(SharedBuffer* buffer, size_t offset = 0)
       LOCKS_EXCLUDED(impl_->lock_);
 
   // Returns a copy of the data stored in ParkableImage. Calling this will

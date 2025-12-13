@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -25,6 +26,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
 
@@ -397,10 +399,6 @@ void SimulateMouseClickAndWait(WebContents* web_contents) {
   observer.Wait();
 }
 
-UrlAndSourceId MakeUrlAndId(std::string_view url) {
-  return UrlAndSourceId(GURL(url), ukm::AssignNewSourceId());
-}
-
 TpcBlockingBrowserClient::TpcBlockingBrowserClient() = default;
 TpcBlockingBrowserClient::~TpcBlockingBrowserClient() = default;
 
@@ -531,7 +529,7 @@ bool TpcBlockingBrowserClient::MitigationsEnabledFor3pcd() const {
 }
 
 bool TpcBlockingBrowserClient::IsThirdPartyCookiesAllowedScheme(
-    const std::string& scheme) const {
+    std::string_view scheme) const {
   return false;
 }
 

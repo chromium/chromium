@@ -52,7 +52,11 @@ final class VersionSafeProxyOptions {
             boolean isDirect = proxy == null;
             // ProxyDelegate callbacks should not be called for direct connection, hence we can
             // safely store a null callback in that case.
-            proxyCallbacks.add(isDirect ? null : new VersionSafeProxyCallback(proxy.getCallback()));
+            proxyCallbacks.add(
+                    isDirect
+                            ? null
+                            : new VersionSafeProxyCallback(
+                                    proxy.getExecutor(), proxy.getCallback()));
         }
         return Collections.unmodifiableList(proxyCallbacks);
     }
@@ -70,9 +74,9 @@ final class VersionSafeProxyOptions {
                 proxyProtoBuilder.setHost(proxy.getHost());
                 proxyProtoBuilder.setPort(proxy.getPort());
                 @org.chromium.net.Proxy.Scheme int scheme = proxy.getScheme();
-                if (scheme == org.chromium.net.Proxy.HTTP) {
+                if (scheme == org.chromium.net.Proxy.SCHEME_HTTP) {
                     proxyProtoBuilder.setScheme(org.chromium.net.impl.proto.ProxyScheme.HTTP);
-                } else if (scheme == org.chromium.net.Proxy.HTTPS) {
+                } else if (scheme == org.chromium.net.Proxy.SCHEME_HTTPS) {
                     proxyProtoBuilder.setScheme(org.chromium.net.impl.proto.ProxyScheme.HTTPS);
                 } else {
                     throw new AssertionError(

@@ -18,6 +18,10 @@
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 
+namespace base {
+class ScopedClosureRunner;
+}
+
 namespace ui {
 class DropTargetEvent;
 }

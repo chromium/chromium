@@ -313,7 +313,7 @@ void MediaFoundationServiceMonitor::Initialize() {
 
   content::ServiceProcessHost::AddObserver(this);
   base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
+  display::Screen::Get()->AddObserver(this);
 }
 
 void MediaFoundationServiceMonitor::ResetForTesting() {

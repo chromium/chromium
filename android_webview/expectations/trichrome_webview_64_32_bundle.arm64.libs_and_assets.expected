@@ -1,329 +1,330 @@
-apk_path=lib/armeabi-v7a/libcrashpad_handler_trampoline.so, compress=False, alignment=4096
-apk_path=lib/armeabi-v7a/libmonochrome_64.so, compress=False, alignment=4096
-apk_path=assets/chrome_100_percent.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/resources.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/snapshot_blob_32.bin+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/af.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/af_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/af_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/af_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/am.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/am_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/am_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/am_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ar.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ar_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ar_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ar_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/as.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/as_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/as_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/as_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/az.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/az_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/az_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/az_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/be.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/be_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/be_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/be_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/bg.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/bg_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/bg_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/bg_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/bn.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/bn_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/bn_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/bn_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/bs.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/bs_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/bs_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/bs_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ca.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ca_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ca_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ca_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/cs.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/cs_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/cs_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/cs_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/da.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/da_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/da_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/da_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/de.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/de_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/de_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/de_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/el.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/el_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/el_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/el_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/en-GB.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/en-GB_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/en-GB_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/en-GB_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/en-US.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/en-US_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/en-US_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/en-US_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/es-419.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/es-419_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/es-419_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/es-419_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/es.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/es_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/es_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/es_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/et.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/et_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/et_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/et_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/eu.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/eu_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/eu_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/eu_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/fa.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/fa_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/fa_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/fa_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/fi.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/fi_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/fi_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/fi_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/fil.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/fil_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/fil_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/fil_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/fr-CA.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/fr-CA_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/fr-CA_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/fr-CA_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/fr.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/fr_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/fr_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/fr_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/gl.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/gl_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/gl_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/gl_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/gu.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/gu_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/gu_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/gu_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/he.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/he_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/he_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/he_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/hi.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/hi_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/hi_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/hi_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/hr.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/hr_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/hr_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/hr_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/hu.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/hu_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/hu_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/hu_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/hy.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/hy_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/hy_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/hy_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/id.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/id_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/id_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/id_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/is.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/is_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/is_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/is_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/it.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/it_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/it_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/it_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ja.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ja_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ja_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ja_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ka.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ka_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ka_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ka_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/kk.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/kk_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/kk_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/kk_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/km.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/km_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/km_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/km_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/kn.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/kn_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/kn_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/kn_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ko.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ko_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ko_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ko_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ky.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ky_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ky_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ky_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/lo.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/lo_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/lo_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/lo_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/lt.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/lt_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/lt_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/lt_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/lv.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/lv_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/lv_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/lv_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/mk.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/mk_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/mk_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/mk_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ml.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ml_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ml_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ml_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/mn.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/mn_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/mn_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/mn_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/mr.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/mr_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/mr_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/mr_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ms.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ms_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ms_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ms_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/my.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/my_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/my_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/my_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/nb.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/nb_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/nb_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/nb_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ne.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ne_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ne_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ne_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/nl.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/nl_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/nl_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/nl_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/or.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/or_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/or_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/or_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/pa.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/pa_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/pa_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/pa_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/pl.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/pl_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/pl_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/pl_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/pt-BR.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/pt-BR_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/pt-BR_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/pt-BR_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/pt-PT.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/pt-PT_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/pt-PT_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/pt-PT_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ro.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ro_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ro_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ro_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ru.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ru_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ru_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ru_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/si.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/si_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/si_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/si_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sk.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sk_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sk_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sk_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sl.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sl_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sl_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sl_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sq.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sq_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sq_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sq_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sr-Latn.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sr-Latn_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sr-Latn_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sr-Latn_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sr.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sr_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sr_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sr_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sv.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sv_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sv_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sv_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sw.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sw_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sw_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/sw_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ta.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ta_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ta_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ta_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/te.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/te_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/te_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/te_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/th.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/th_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/th_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/th_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/tr.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/tr_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/tr_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/tr_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/uk.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/uk_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/uk_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/uk_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ur.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ur_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ur_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/ur_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/uz.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/uz_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/uz_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/uz_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/vi.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/vi_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/vi_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/vi_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/zh-CN.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/zh-CN_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/zh-CN_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/zh-CN_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/zh-HK.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/zh-HK_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/zh-HK_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/zh-HK_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/zh-TW.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/zh-TW_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/zh-TW_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/zh-TW_NEUTER.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/zu.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/zu_FEMININE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/zu_MASCULINE.pak+com.android.webview+, compress=False, alignment=4
-apk_path=assets/stored-locales/zu_NEUTER.pak+com.android.webview+, compress=False, alignment=4
+apk_path=lib/armeabi-v7a/libcrashpad_handler_trampoline.so, compress=False
+apk_path=lib/armeabi-v7a/libmonochrome_64.so, compress=False
+apk_path=assets/chrome_100_percent.pak+com.android.webview+, compress=False
+apk_path=assets/chrome_200_percent.pak+com.android.webview+, compress=False
+apk_path=assets/resources.pak+com.android.webview+, compress=False
+apk_path=assets/snapshot_blob_32.bin+com.android.webview+, compress=False
+apk_path=assets/stored-locales/af.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/af_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/af_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/af_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/am.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/am_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/am_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/am_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ar.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ar_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ar_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ar_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/as.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/as_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/as_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/as_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/az.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/az_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/az_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/az_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/be.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/be_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/be_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/be_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/bg.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/bg_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/bg_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/bg_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/bn.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/bn_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/bn_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/bn_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/bs.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/bs_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/bs_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/bs_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ca.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ca_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ca_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ca_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/cs.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/cs_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/cs_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/cs_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/da.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/da_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/da_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/da_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/de.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/de_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/de_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/de_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/el.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/el_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/el_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/el_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/en-GB.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/en-GB_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/en-GB_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/en-GB_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/en-US.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/en-US_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/en-US_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/en-US_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/es-419.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/es-419_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/es-419_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/es-419_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/es.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/es_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/es_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/es_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/et.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/et_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/et_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/et_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/eu.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/eu_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/eu_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/eu_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/fa.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/fa_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/fa_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/fa_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/fi.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/fi_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/fi_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/fi_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/fil.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/fil_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/fil_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/fil_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/fr-CA.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/fr-CA_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/fr-CA_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/fr-CA_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/fr.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/fr_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/fr_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/fr_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/gl.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/gl_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/gl_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/gl_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/gu.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/gu_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/gu_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/gu_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/he.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/he_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/he_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/he_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/hi.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/hi_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/hi_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/hi_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/hr.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/hr_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/hr_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/hr_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/hu.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/hu_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/hu_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/hu_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/hy.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/hy_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/hy_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/hy_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/id.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/id_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/id_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/id_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/is.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/is_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/is_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/is_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/it.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/it_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/it_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/it_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ja.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ja_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ja_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ja_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ka.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ka_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ka_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ka_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/kk.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/kk_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/kk_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/kk_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/km.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/km_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/km_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/km_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/kn.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/kn_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/kn_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/kn_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ko.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ko_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ko_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ko_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ky.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ky_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ky_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ky_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/lo.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/lo_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/lo_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/lo_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/lt.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/lt_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/lt_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/lt_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/lv.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/lv_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/lv_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/lv_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/mk.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/mk_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/mk_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/mk_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ml.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ml_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ml_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ml_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/mn.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/mn_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/mn_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/mn_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/mr.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/mr_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/mr_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/mr_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ms.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ms_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ms_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ms_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/my.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/my_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/my_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/my_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/nb.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/nb_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/nb_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/nb_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ne.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ne_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ne_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ne_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/nl.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/nl_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/nl_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/nl_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/or.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/or_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/or_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/or_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/pa.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/pa_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/pa_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/pa_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/pl.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/pl_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/pl_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/pl_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/pt-BR.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/pt-BR_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/pt-BR_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/pt-BR_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/pt-PT.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/pt-PT_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/pt-PT_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/pt-PT_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ro.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ro_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ro_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ro_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ru.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ru_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ru_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ru_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/si.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/si_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/si_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/si_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sk.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sk_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sk_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sk_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sl.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sl_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sl_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sl_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sq.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sq_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sq_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sq_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sr-Latn.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sr-Latn_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sr-Latn_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sr-Latn_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sr.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sr_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sr_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sr_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sv.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sv_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sv_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sv_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sw.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sw_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sw_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/sw_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ta.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ta_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ta_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ta_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/te.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/te_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/te_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/te_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/th.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/th_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/th_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/th_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/tr.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/tr_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/tr_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/tr_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/uk.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/uk_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/uk_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/uk_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ur.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ur_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ur_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/ur_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/uz.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/uz_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/uz_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/uz_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/vi.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/vi_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/vi_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/vi_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/zh-CN.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/zh-CN_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/zh-CN_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/zh-CN_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/zh-HK.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/zh-HK_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/zh-HK_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/zh-HK_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/zh-TW.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/zh-TW_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/zh-TW_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/zh-TW_NEUTER.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/zu.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/zu_FEMININE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/zu_MASCULINE.pak+com.android.webview+, compress=False
+apk_path=assets/stored-locales/zu_NEUTER.pak+com.android.webview+, compress=False

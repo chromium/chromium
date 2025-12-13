@@ -1,0 +1,11 @@
+Name: xml
+URL: https://crates.io/crates/xml
+Version: 1.2.0
+Revision: 5ec715b9f09cd793772e13ec5bc8a3a241c9ed63
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/xml-v1/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: An XML library in pure Rust

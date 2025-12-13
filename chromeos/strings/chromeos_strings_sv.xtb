@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">apelsiner</translation>
 <translation id="1275718070701477396">Markerad</translation>
 <translation id="1290331692326790741">svag signal</translation>
+<translation id="1292474106138697109">Skärm för lektionsverktyg</translation>
 <translation id="1300115153046603471">APN är standardtypen och <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Konvertera</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> bilder</translation>
 <translation id="4300272766492248925">Öppna appen</translation>
 <translation id="430786093962686457">chiffong</translation>
+<translation id="4309762678330556039">Skapa transkriptioner automatiskt och sök efter ljud. Du kan skapa inspelningar även när du inte är ansluten till internet.</translation>
 <translation id="4310735698903592804">De senaste bakgrunderna som drivs av Google AI</translation>
 <translation id="4320904097188876154">neonrosa</translation>
 <translation id="432961742358282111">Högerklicka eller håll nedtryckt för att få definitioner, översättningar eller enhetskonverteringar. Hantera den här funktionen med vänster- och högerpil.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> har testats</translation>
 <translation id="5606865426897221650">Tabb</translation>
+<translation id="5612205513582918357">Lektionsverktyg delar din skärm med <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Du har loggats ut</translation>
 <translation id="5620281292257375798">Endast internt</translation>
 <translation id="5628106863521633649">Tillgängliga språk</translation>
@@ -1143,7 +1146,7 @@
 <translation id="6074608334942655098">Sluta översätt</translation>
 <translation id="6074752328838739425">Dölj sammanfattning</translation>
 <translation id="6075872808778243331">(Android) HTTP-latens</translation>
-<translation id="6078323886959318429">Lägg till genväg</translation>
+<translation id="6078323886959318429">Genväg</translation>
 <translation id="6079693086494835199">Återställ för att kontrollera att standardstartsidan inte är en nätfiskewebbplats. Använd bara webbplatser som du litar på.</translation>
 <translation id="6090672065638047175">ett foto på ett lysande träd av stjärnor med en vacker natthimmel och galax i bakgrunden</translation>
 <translation id="6091080061796993741">gul</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Ingen skanner är tillgänglig</translation>
-<translation id="6231648282154119906">Misstänkta filer genomsöks automatiskt av Google Säker webbsökning som en del av det utökade skydd som du har valt</translation>
 <translation id="6232017090690406397">Batteri</translation>
 <translation id="6234024205316847054">Visa grunddrag</translation>
 <translation id="6243280677745499710">Nuvarande</translation>

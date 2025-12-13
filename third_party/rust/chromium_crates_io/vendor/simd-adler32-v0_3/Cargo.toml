@@ -12,9 +12,15 @@
 [package]
 edition = "2018"
 name = "simd-adler32"
-version = "0.3.7"
+version = "0.3.8"
 authors = ["Marvin Countryman <me@maar.vin>"]
+build = false
 exclude = ["bench"]
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "A SIMD-accelerated Adler-32 hash algorithm implementation."
 readme = "README.md"
 keywords = [
@@ -31,19 +37,18 @@ categories = [
 license = "MIT"
 repository = "https://github.com/mcountryman/simd-adler32"
 
-[profile.release]
-opt-level = 2
-debug = 2
+[features]
+const-generics = []
+default = [
+    "std",
+    "const-generics",
+]
+nightly = []
+std = []
 
-[[bench]]
-name = "alts"
-path = "bench/alts.rs"
-harness = false
-
-[[bench]]
-name = "variants"
-path = "bench/variants.rs"
-harness = false
+[lib]
+name = "simd_adler32"
+path = "src/lib.rs"
 
 [dev-dependencies.adler]
 version = "1.0.2"
@@ -57,11 +62,6 @@ version = "0.3"
 [dev-dependencies.rand]
 version = "0.8"
 
-[features]
-const-generics = []
-default = [
-    "std",
-    "const-generics",
-]
-nightly = []
-std = []
+[profile.release]
+opt-level = 2
+debug = 2

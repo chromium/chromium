@@ -35,7 +35,7 @@ const softmaxTests = [
       },
       'operators': [{
         'name': 'softmax',
-        'arguments': [{'input': 'softmaxInput'}],
+        'arguments': [{'input': 'softmaxInput'}, {'axis': 1}],
         'outputs': 'softmaxOutput'
       }],
       'expectedOutputs': {
@@ -79,7 +79,7 @@ const softmaxTests = [
       },
       'operators': [{
         'name': 'softmax',
-        'arguments': [{'input': 'softmaxInput'}],
+        'arguments': [{'input': 'softmaxInput'}, {'axis': 1}],
         'outputs': 'softmaxOutput'
       }],
       'expectedOutputs': {
@@ -123,7 +123,7 @@ const softmaxTests = [
       },
       'operators': [{
         'name': 'softmax',
-        'arguments': [{'input': 'softmaxInput'}],
+        'arguments': [{'input': 'softmaxInput'}, {'axis': 1}],
         'outputs': 'softmaxOutput'
       }],
       'expectedOutputs': {
@@ -229,7 +229,7 @@ const softmaxTests = [
       },
       'operators': [{
         'name': 'softmax',
-        'arguments': [{'input': 'softmaxInput'}],
+        'arguments': [{'input': 'softmaxInput'}, {'axis': 1}],
         'outputs': 'softmaxOutput'
       }],
       'expectedOutputs': {
@@ -271,7 +271,7 @@ const softmaxTests = [
       },
       'operators': [{
         'name': 'softmax',
-        'arguments': [{'input': 'softmaxInput'}],
+        'arguments': [{'input': 'softmaxInput'}, {'axis': 1}],
         'outputs': 'softmaxOutput'
       }],
       'expectedOutputs': {
@@ -312,7 +312,7 @@ const softmaxTests = [
       },
       'operators': [{
         'name': 'softmax',
-        'arguments': [{'input': 'softmaxInput'}],
+        'arguments': [{'input': 'softmaxInput'}, {'axis': 1}],
         'outputs': 'softmaxOutput'
       }],
       'expectedOutputs': {
@@ -364,10 +364,5 @@ const softmaxTests = [
   }
 ];
 
-if (navigator.ml) {
-  softmaxTests.forEach((test) => {
-    webnn_conformance_test(buildAndExecuteGraph, getPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    softmaxTests, buildAndExecuteGraph, getPrecisionTolerance);

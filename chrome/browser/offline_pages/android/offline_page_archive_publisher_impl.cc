@@ -5,9 +5,10 @@
 #include "chrome/browser/offline_pages/android/offline_page_archive_publisher_impl.h"
 
 #include <errno.h>
+
 #include <utility>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -40,8 +41,8 @@ OfflinePageArchivePublisherImpl::Delegate* GetDefaultDelegate() {
 }
 
 bool ShouldUseDownloadsCollection() {
-  return base::android::BuildInfo::GetInstance()->sdk_int() >=
-         base::android::SDK_VERSION_Q;
+  return base::android::android_info::sdk_int() >=
+         base::android::android_info::SDK_VERSION_Q;
 }
 
 // Helper function to do the move and register synchronously. Make sure this is
@@ -205,3 +206,5 @@ OfflinePageArchivePublisherImpl::GetWeakPtr() {
 }
 
 }  // namespace offline_pages
+
+DEFINE_JNI(OfflinePageArchivePublisherBridge)

@@ -1,0 +1,23 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "smart_tab_grouping_service_impl.h",
+    "smart_tab_grouping_service_impl.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/intelligence/proto_wrappers:ios_smart_tab_grouping_proto_wrapper",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/optimization_guide/mojom",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/signin/model",
+    "//ios/web/public",
+  ]
+}

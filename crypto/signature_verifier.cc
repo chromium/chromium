@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "crypto/signature_verifier.h"
 
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
@@ -57,7 +53,8 @@ bool SignatureVerifier::VerifyInit(SignatureAlgorithm signature_algorithm,
     return false;
 
   verify_context_ = std::make_unique<VerifyContext>();
-  signature_.assign(signature.data(), signature.data() + signature.size());
+  signature_.assign(signature.data(),
+                    UNSAFE_TODO(signature.data() + signature.size()));
 
   CBS cbs;
   CBS_init(&cbs, public_key_info.data(), public_key_info.size());

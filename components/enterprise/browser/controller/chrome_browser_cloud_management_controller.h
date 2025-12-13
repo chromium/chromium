@@ -10,27 +10,32 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
-#include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
-#include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/policy/core/common/cloud/chrome_browser_cloud_management_metrics.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/policy_service.h"
 
 class PrefService;
 
+namespace base {
+class SingleThreadTaskRunner;
+}  // namespace base
+
 namespace network {
 class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace enterprise_connectors {
+class DeviceTrustKeyManager;
+}  // namespace enterprise_connectors
+
 namespace enterprise_reporting {
+class ReportingDelegateFactory;
 class ReportScheduler;
 }  // namespace enterprise_reporting
 

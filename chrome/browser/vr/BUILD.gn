@@ -16,7 +16,7 @@ if (is_android) {
 
 source_set("vr") {
   public = [ "vr_tab_helper.h" ]
-  public_deps = [ "//content/public/browser:browser" ]
+  public_deps = [ "//content/public/browser" ]
 }
 
 source_set("impl") {
@@ -24,13 +24,16 @@ source_set("impl") {
   deps = [
     ":vr",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/ui:ui",
-    "//device/vr/buildflags:buildflags",
+    "//chrome/browser/ui",
+    "//device/vr/buildflags",
     "//third_party/blink/public/common:headers",
   ]
 
   if (is_android) {
-    deps += [ "//base:base" ]
+    deps += [
+      "//base",
+      "//chrome/browser/flags:flags_android",
+    ]
   }
 }
 
@@ -41,7 +44,7 @@ source_set("unit_tests") {
 
   deps = [
     ":vr",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }
 
@@ -133,7 +136,7 @@ if (enable_vr) {
       "//components/vector_icons",
       "//device/base",
       "//device/vr:vr_base",
-      "//device/vr/buildflags:buildflags",
+      "//device/vr/buildflags",
       "//media",
       "//net",
       "//skia",
@@ -203,7 +206,7 @@ if (enable_vr) {
       "//content/public/browser",
       "//device/base",
       "//device/vr:vr_util",
-      "//device/vr/buildflags:buildflags",
+      "//device/vr/buildflags",
       "//device/vr/public/mojom:isolated_xr_service",
       "//media",
       "//net",
@@ -465,12 +468,12 @@ if (enable_vr) {
         ":vr_common",
         "//chrome/common:constants",
         "//chrome/test:xr_browser_tests_common",
-        "//device/vr:vr",
+        "//device/vr",
         "//device/vr:vr_test_hook",
-        "//device/vr/buildflags:buildflags",
+        "//device/vr/buildflags",
         "//device/vr/orientation",
         "//device/vr/public/mojom:isolated_xr_service",
-        "//device/vr/public/mojom:test_mojom",
+        "//device/vr/public/mojom/test:test_mojom",
       ]
 
       data_deps = []

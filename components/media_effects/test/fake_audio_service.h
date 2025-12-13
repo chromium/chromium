@@ -14,6 +14,7 @@
 #include "components/media_effects/test/fake_audio_system_info.h"
 #include "media/audio/audio_device_description.h"
 #include "services/audio/public/mojom/audio_service.mojom.h"
+#include "services/audio/public/mojom/ml_model_manager.mojom.h"
 
 namespace media_effects {
 
@@ -64,6 +65,8 @@ class FakeAudioService : public audio::mojom::AudioService {
       override {}
   void BindTestingApi(
       mojo::PendingReceiver<audio::mojom::TestingApi> receiver) override {}
+  void BindMlModelManager(
+      mojo::PendingReceiver<audio::mojom::MlModelManager> receiver) override {}
 
  private:
   FakeAudioSystemInfo fake_system_info_;

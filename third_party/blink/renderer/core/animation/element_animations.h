@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_ELEMENT_ANIMATIONS_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/animation/effect_stack.h"
 #include "third_party/blink/renderer/core/animation/worklet_animation_base.h"

@@ -40,9 +40,7 @@ class WGSLLanguageFeatures : public ScriptWrappable,
    public:
     explicit IterationSource(const HashSet<String>& features);
 
-    bool FetchNextItem(ScriptState* script_state,
-                       String& value,
-                       ExceptionState& exception_state) override;
+    bool FetchNextItem(ScriptState* script_state, String& value) override;
 
    private:
     HashSet<String> features_;
@@ -52,8 +50,7 @@ class WGSLLanguageFeatures : public ScriptWrappable,
   // Starts iteration over the Setlike.
   // Needed for ValueSyncIterable to work properly.
   WGSLLanguageFeatures::IterationSource* CreateIterationSource(
-      ScriptState* script_state,
-      ExceptionState& exception_state) override {
+      ScriptState* script_state) override {
     return MakeGarbageCollected<WGSLLanguageFeatures::IterationSource>(
         features_);
   }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/zucchini/zucchini_commands.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
@@ -153,8 +149,8 @@ zucchini::status::Code MainCrc32(MainParams params) {
   if (input.status != kStatusSuccess)
     return input.status;
 
-  uint32_t crc =
-      zucchini::CalculateCrc32(input.data(), input.data() + input.length());
+  uint32_t crc = zucchini::CalculateCrc32(
+      input.data(), UNSAFE_TODO(input.data() + input.length()));
   *params.out << "CRC32: " << zucchini::AsHex<8>(crc) << std::endl;
   return kStatusSuccess;
 }

@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/main/send_search_feedback_handler.h"
 
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "content/public/browser/web_ui.h"
 
@@ -28,9 +30,14 @@ void SendSearchFeedbackHandler::RegisterMessages() {
 
 void SendSearchFeedbackHandler::OpenFeedbackDialogWrapper(
     const std::string& description_template) {
-  Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
-  chrome::OpenFeedbackDialog(browser, feedback::kFeedbackSourceOsSettingsSearch,
-                             description_template);
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetBrowserForTab(
+          web_ui()->GetWebContents());
+  if (browser) {
+    chrome::OpenFeedbackDialog(&browser->GetBrowser(),
+                               feedback::kFeedbackSourceOsSettingsSearch,
+                               description_template);
+  }
 }
 
 void SendSearchFeedbackHandler::HandleOpenFeedbackDialog(

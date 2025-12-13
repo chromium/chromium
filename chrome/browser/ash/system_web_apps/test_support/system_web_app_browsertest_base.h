@@ -29,7 +29,7 @@ enum class SystemWebAppType;
 class SystemWebAppManager;
 
 class SystemWebAppBrowserTestBase
-    : public InteractiveBrowserTestT<MixinBasedInProcessBrowserTest> {
+    : public InteractiveBrowserTestMixin<MixinBasedInProcessBrowserTest> {
  public:
   // Subclasses should call |SetSystemWebAppInstallation| in their constructor
   // to specify a test system web app to install.

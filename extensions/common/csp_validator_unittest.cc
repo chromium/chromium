@@ -446,36 +446,36 @@ TEST(ExtensionCSPValidator, IsSecure) {
 
 TEST(ExtensionCSPValidator, IsSandboxed) {
   EXPECT_FALSE(ContentSecurityPolicyIsSandboxed(std::string(),
-                                                Manifest::TYPE_EXTENSION));
+                                                Manifest::Type::kExtension));
   EXPECT_FALSE(ContentSecurityPolicyIsSandboxed("img-src https://google.com",
-                                                Manifest::TYPE_EXTENSION));
+                                                Manifest::Type::kExtension));
 
   // Sandbox directive is required.
-  EXPECT_TRUE(ContentSecurityPolicyIsSandboxed(
-      "sandbox", Manifest::TYPE_EXTENSION));
+  EXPECT_TRUE(
+      ContentSecurityPolicyIsSandboxed("sandbox", Manifest::Type::kExtension));
 
   // Additional sandbox tokens are OK.
-  EXPECT_TRUE(ContentSecurityPolicyIsSandboxed(
-      "sandbox allow-scripts", Manifest::TYPE_EXTENSION));
+  EXPECT_TRUE(ContentSecurityPolicyIsSandboxed("sandbox allow-scripts",
+                                               Manifest::Type::kExtension));
   // Except for allow-same-origin.
-  EXPECT_FALSE(ContentSecurityPolicyIsSandboxed(
-      "sandbox allow-same-origin", Manifest::TYPE_EXTENSION));
+  EXPECT_FALSE(ContentSecurityPolicyIsSandboxed("sandbox allow-same-origin",
+                                                Manifest::Type::kExtension));
 
   // Additional directives are OK.
   EXPECT_TRUE(ContentSecurityPolicyIsSandboxed(
-      "sandbox; img-src https://google.com", Manifest::TYPE_EXTENSION));
+      "sandbox; img-src https://google.com", Manifest::Type::kExtension));
 
   // Extensions allow navigation, platform apps don't.
-  EXPECT_TRUE(ContentSecurityPolicyIsSandboxed(
-      "sandbox allow-top-navigation", Manifest::TYPE_EXTENSION));
-  EXPECT_FALSE(ContentSecurityPolicyIsSandboxed(
-      "sandbox allow-top-navigation", Manifest::TYPE_PLATFORM_APP));
+  EXPECT_TRUE(ContentSecurityPolicyIsSandboxed("sandbox allow-top-navigation",
+                                               Manifest::Type::kExtension));
+  EXPECT_FALSE(ContentSecurityPolicyIsSandboxed("sandbox allow-top-navigation",
+                                                Manifest::Type::kPlatformApp));
 
   // Popups are OK.
-  EXPECT_TRUE(ContentSecurityPolicyIsSandboxed(
-      "sandbox allow-popups", Manifest::TYPE_EXTENSION));
-  EXPECT_TRUE(ContentSecurityPolicyIsSandboxed(
-      "sandbox allow-popups", Manifest::TYPE_PLATFORM_APP));
+  EXPECT_TRUE(ContentSecurityPolicyIsSandboxed("sandbox allow-popups",
+                                               Manifest::Type::kExtension));
+  EXPECT_TRUE(ContentSecurityPolicyIsSandboxed("sandbox allow-popups",
+                                               Manifest::Type::kPlatformApp));
 }
 
 TEST(ExtensionCSPValidator, EffectiveSandboxedPageCSP) {

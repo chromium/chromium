@@ -43,53 +43,24 @@ class UI_ANDROID_EXPORT EventForwarder {
   // input i.e. MotionEvent.getHistoricalEventTimeNanos(0) and
   // |latest_event_time| will be the event time of most recent event i.e.
   // MotionEvent.getEventTimeNanos().
-  jboolean OnTouchEvent(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& motion_event,
-      jlong oldest_event_time_ns,
-      jlong latest_event_time_ns,
-      jlong down_time_ms,
-      jint android_action,
-      jint pointer_count,
-      jint history_size,
-      jint action_index,
-      jfloat pos_x_0,
-      jfloat pos_y_0,
-      jfloat pos_x_1,
-      jfloat pos_y_1,
-      jint pointer_id_0,
-      jint pointer_id_1,
-      jfloat touch_major_0,
-      jfloat touch_major_1,
-      jfloat touch_minor_0,
-      jfloat touch_minor_1,
-      jfloat pressure_0,
-      jfloat pressure_1,
-      jfloat orientation_0,
-      jfloat orientation_1,
-      jfloat tilt_0,
-      jfloat tilt_1,
-      jfloat raw_pos_x,
-      jfloat raw_pos_y,
-      jint android_tool_type_0,
-      jint android_tool_type_1,
-      jint android_gesture_classification,
-      jint android_button_state,
-      jboolean is_touch_handle_event,
-      jboolean is_latest_event_time_resampled);
+  jboolean OnTouchEvent(JNIEnv* env,
+                        const base::android::JavaRef<jobject>& motion_event,
+                        jlong oldest_event_time_ns,
+                        jlong latest_event_time_ns,
+                        jint android_action,
+                        jfloat touch_major_0,
+                        jfloat touch_major_1,
+                        jfloat touch_minor_0,
+                        jfloat touch_minor_1,
+                        jint android_gesture_classification,
+                        jboolean is_touch_handle_event,
+                        jboolean is_latest_event_time_resampled);
 
   void OnMouseEvent(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& motion_event,
+                    const base::android::JavaRef<jobject>& motion_event,
                     jlong time_ns,
                     jint android_action,
-                    jfloat x,
-                    jfloat y,
-                    jint pointer_id,
-                    jfloat pressure,
-                    jfloat orientation,
-                    jfloat tilt,
                     jint android_changed_button,
-                    jint android_button_state,
                     jint tool_type);
 
   void OnDragEvent(JNIEnv* env,
@@ -98,12 +69,12 @@ class UI_ANDROID_EXPORT EventForwarder {
                    jfloat y,
                    jfloat screen_x,
                    jfloat screen_y,
-                   const base::android::JavaParamRef<jobjectArray>& j_mimeTypes,
-                   const base::android::JavaParamRef<jstring>& j_content,
-                   const base::android::JavaParamRef<jobjectArray>& j_filenames,
-                   const base::android::JavaParamRef<jstring>& j_text,
-                   const base::android::JavaParamRef<jstring>& j_html,
-                   const base::android::JavaParamRef<jstring>& j_url);
+                   const base::android::JavaRef<jobjectArray>& j_mimeTypes,
+                   const base::android::JavaRef<jstring>& j_content,
+                   const base::android::JavaRef<jobjectArray>& j_filenames,
+                   const base::android::JavaRef<jstring>& j_text,
+                   const base::android::JavaRef<jstring>& j_html,
+                   const base::android::JavaRef<jstring>& j_url);
 
   jboolean OnGestureEvent(JNIEnv* env,
                           jint type,
@@ -112,9 +83,19 @@ class UI_ANDROID_EXPORT EventForwarder {
 
   jboolean OnGenericMotionEvent(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& motion_event,
+      const base::android::JavaRef<jobject>& motion_event,
       jlong event_time_ns,
       jlong down_time_ms);
+
+  void OnMouseWheelEvent(JNIEnv* env,
+                         const base::android::JavaRef<jobject>& motion_event,
+                         jlong time_ns,
+                         jfloat x,
+                         jfloat y,
+                         jfloat raw_x,
+                         jfloat raw_y,
+                         jfloat delta_x,
+                         jfloat delta_y);
 
   jboolean OnKeyUp(JNIEnv* env, const ui::KeyEventAndroid& key_event);
 
@@ -138,11 +119,13 @@ class UI_ANDROID_EXPORT EventForwarder {
                   jfloat velocity_x,
                   jfloat velocity_y,
                   jboolean synthetic_scroll,
-                  jboolean prevent_boosting);
+                  jboolean prevent_boosting,
+                  jboolean is_touchpad_event);
 
   void CancelFling(JNIEnv* env,
                    jlong time_ms,
-                   jboolean prevent_boosting);
+                   jboolean prevent_boosting,
+                   jboolean is_touchpad_event);
 
   void AddObserver(Observer* observer);
 

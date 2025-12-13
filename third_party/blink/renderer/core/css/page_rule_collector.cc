@@ -31,8 +31,11 @@
 #include "third_party/blink/renderer/core/css/page_rule_collector.h"
 
 #include <algorithm>
+#include <compare>
+
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -81,22 +84,25 @@ void PageRuleCollector::MatchPageRules(RuleSet* rules,
   }
 
   rules->CompactRulesIfNeeded();
-  HeapVector<Member<StyleRulePage>> matched_page_rules;
+  HeapVector<CascadeLayered<StyleRulePage>> matched_page_rules;
   MatchPageRulesForList(matched_page_rules, rules->PageRules());
   if (matched_page_rules.empty()) {
     return;
   }
 
-  std::stable_sort(
-      matched_page_rules.begin(), matched_page_rules.end(),
-      [layer_map](const StyleRulePage* r1, const StyleRulePage* r2) {
-        if (r1->GetCascadeLayer() != r2->GetCascadeLayer()) {
-          DCHECK(layer_map);
-          return layer_map->CompareLayerOrder(r1->GetCascadeLayer(),
-                                              r2->GetCascadeLayer()) < 0;
-        }
-        return r1->Selector()->Specificity() < r2->Selector()->Specificity();
-      });
+  // TODO(crbug.com/463591206): We're only sorting within each RuleSet,
+  // which seems wrong.
+  std::stable_sort(matched_page_rules.begin(), matched_page_rules.end(),
+                   [layer_map](const CascadeLayered<StyleRulePage>& r1,
+                               const CascadeLayered<StyleRulePage>& r2) {
+                     std::weak_ordering ordering =
+                         CascadeLayerMap::CompareLayerOrder(layer_map, r1, r2);
+                     if (ordering != 0) {
+                       return ordering < 0;
+                     }
+                     return r1.value->Selector()->Specificity() <
+                            r2.value->Selector()->Specificity();
+                   });
 
   if (origin == CascadeOrigin::kAuthor) {
     CHECK(tree_scope);
@@ -109,14 +115,21 @@ void PageRuleCollector::MatchPageRules(RuleSet* rules,
       static_cast<uint8_t>(ValidPropertyFilter::kPageContext);
   options.origin = origin;
 
-  for (const StyleRulePage* rule : matched_page_rules) {
+  for (CascadeLayered<StyleRulePage>& layered_rule : matched_page_rules) {
+    const StyleRulePage* rule = layered_rule.value;
     if (at_rule_id_ == CSSAtRuleID::kCSSAtRulePage) {
-      result_.AddMatchedProperties(&rule->Properties(), options);
+      // TODO: If we we support @page within mixins, we may need to support
+      // a non-nullptr mixin_parameter_bindings here.
+      result_.AddMatchedProperties(&rule->Properties(),
+                                   /*mixin_parameter_bindings=*/nullptr,
+                                   options);
     } else {
       for (const auto child_rule : rule->ChildRules()) {
         const auto& margin_rule = To<StyleRulePageMargin>(*child_rule.Get());
         if (margin_rule.ID() == at_rule_id_) {
-          result_.AddMatchedProperties(&margin_rule.Properties(), options);
+          result_.AddMatchedProperties(&margin_rule.Properties(),
+                                       /*mixin_parameter_bindings=*/nullptr,
+                                       options);
         }
       }
     }
@@ -148,10 +161,10 @@ static bool CheckPageSelectorComponents(const CSSSelector* selector,
 }
 
 void PageRuleCollector::MatchPageRulesForList(
-    HeapVector<Member<StyleRulePage>>& matched_rules,
-    const HeapVector<Member<StyleRulePage>>& rules) {
-  for (unsigned i = 0; i < rules.size(); ++i) {
-    StyleRulePage* rule = rules[i];
+    HeapVector<CascadeLayered<StyleRulePage>>& matched_rules,
+    const HeapVector<CascadeLayered<StyleRulePage>>& rules) {
+  for (CascadeLayered<StyleRulePage> layered_rule : rules) {
+    StyleRulePage* rule = layered_rule.value;
 
     if (!CheckPageSelectorComponents(rule->Selector(), is_left_page_,
                                      is_first_page_, page_name_)) {
@@ -165,7 +178,7 @@ void PageRuleCollector::MatchPageRulesForList(
     }
 
     // Add this rule to our list of matched rules.
-    matched_rules.push_back(rule);
+    matched_rules.push_back(layered_rule);
   }
 }
 

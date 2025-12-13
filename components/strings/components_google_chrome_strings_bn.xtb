@@ -32,16 +32,16 @@
         <ph name="ADVANCED_TITLE" />
         এবং অনির্বাচন করুন "<ph name="NO_PREFETCH_DESCRIPTION" />৷"
         যদি এটি সমস্যাটির সমাধান না করে, তাহলে উন্নত কার্য সম্পাদনার জন্য আবার এই বিকল্পটি নির্বাচন করা সুপারিশ আমরা করি৷</translation>
-<translation id="6855094794438142393">Chrome মেনুতে
-          যান &gt;
+<translation id="6581867098636731226">Chromium
+          মেনু &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
-          <ph name="ADVANCED_TITLE" />
+          <ph name="SYSTEM_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
           &gt;
-          LAN সেটিংস
-          এবং "আপনার LAN এর জন্য একটি প্রক্সি সার্ভার ব্যবহার করুন" অনির্বাচন করুন৷</translation>
+          নেটওয়ার্ক ও ইন্টারনেট &gt; প্রক্সি
+          বিকল্পে যান এবং "সেটিংস অটোমেটিক শনাক্ত করো" বিকল্প থেকে টিকচিহ্ন সরিয়ে দিন।</translation>
 <translation id="7230956101631259640">আপনি একটি নিরাপদ Chrome পৃষ্ঠা দেখছেন</translation>
 <translation id="8232971017369963250">এছাড়াও Chrome <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ওপেন সোর্স প্রোজেক্ট দ্বারা পরিচালিত।</translation>
 <translation id="8279509328145658601">এছাড়াও Chrome অন্য <ph name="BEGIN_LINK_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_OSS" /> দ্বারা পরিচালিত।</translation>

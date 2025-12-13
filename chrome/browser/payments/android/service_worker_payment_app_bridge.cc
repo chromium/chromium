@@ -17,8 +17,8 @@
 #include "components/payments/content/android/payment_handler_host.h"
 #include "components/payments/content/payment_event_response_util.h"
 #include "components/payments/content/payment_handler_host.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/service_worker_payment_app_finder.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/installed_payment_apps_finder.h"
@@ -41,7 +41,6 @@ using ::base::android::AppendJavaStringArrayToStringVector;
 using ::base::android::AttachCurrentThread;
 using ::base::android::ConvertJavaStringToUTF8;
 using ::base::android::ConvertUTF8ToJavaString;
-using ::base::android::JavaParamRef;
 using ::base::android::JavaRef;
 using ::base::android::ScopedJavaGlobalRef;
 using ::base::android::ScopedJavaLocalRef;
@@ -83,7 +82,7 @@ void OnGetServiceWorkerPaymentAppsInfo(
 
   for (const auto& app_info : apps) {
     Java_ServiceWorkerPaymentAppBridge_addPaymentAppInfo(
-        env, jappsInfo, app_info.second->scope.host(), app_info.second->name,
+        env, jappsInfo, app_info.second->scope.GetHost(), app_info.second->name,
         app_info.second->icon == nullptr
             ? nullptr
             : gfx::ConvertToJavaBitmap(*app_info.second->icon));
@@ -98,7 +97,7 @@ void OnGetServiceWorkerPaymentAppsInfo(
 static void JNI_ServiceWorkerPaymentAppBridge_HasServiceWorkerPaymentApps(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& jcallback) {
+    const JavaRef<jobject>& jcallback) {
   // Checks whether there is a installed service worker payment app through
   // GetAllPaymentApps.
   content::InstalledPaymentAppsFinder::GetInstance(profile)->GetAllPaymentApps(
@@ -109,7 +108,7 @@ static void JNI_ServiceWorkerPaymentAppBridge_HasServiceWorkerPaymentApps(
 static void JNI_ServiceWorkerPaymentAppBridge_GetServiceWorkerPaymentAppsInfo(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& jcallback) {
+    const JavaRef<jobject>& jcallback) {
   content::InstalledPaymentAppsFinder::GetInstance(profile)->GetAllPaymentApps(
       base::BindOnce(&OnGetServiceWorkerPaymentAppsInfo,
                      ScopedJavaGlobalRef<jobject>(env, jcallback)));
@@ -117,7 +116,7 @@ static void JNI_ServiceWorkerPaymentAppBridge_GetServiceWorkerPaymentAppsInfo(
 
 static void JNI_ServiceWorkerPaymentAppBridge_OnClosingPaymentAppWindow(
     JNIEnv* env,
-    const JavaParamRef<jobject>& payment_request_jweb_contents,
+    const JavaRef<jobject>& payment_request_jweb_contents,
     jint reason) {
   content::WebContents* payment_request_web_contents =
       content::WebContents::FromJavaWebContents(payment_request_jweb_contents);
@@ -131,8 +130,8 @@ static void JNI_ServiceWorkerPaymentAppBridge_OnClosingPaymentAppWindow(
 
 static void JNI_ServiceWorkerPaymentAppBridge_OnOpeningPaymentAppWindow(
     JNIEnv* env,
-    const JavaParamRef<jobject>& payment_request_jweb_contents,
-    const JavaParamRef<jobject>& payment_handler_jweb_contents) {
+    const JavaRef<jobject>& payment_request_jweb_contents,
+    const JavaRef<jobject>& payment_handler_jweb_contents) {
   content::WebContents* payment_request_web_contents =
       content::WebContents::FromJavaWebContents(payment_request_jweb_contents);
   content::WebContents* payment_handler_web_contents =
@@ -149,7 +148,7 @@ static void JNI_ServiceWorkerPaymentAppBridge_OnOpeningPaymentAppWindow(
 static jlong
 JNI_ServiceWorkerPaymentAppBridge_GetSourceIdForPaymentAppFromScope(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jscope) {
+    const JavaRef<jobject>& jscope) {
   // At this point we know that the payment handler window is open for the
   // payment app associated with this scope. Since this getter is called inside
   // PaymentApp::getUkmSourceId() function which in turn gets called for the
@@ -158,3 +157,5 @@ JNI_ServiceWorkerPaymentAppBridge_GetSourceIdForPaymentAppFromScope(
   return content::PaymentAppProviderUtil::GetSourceIdForPaymentAppFromScope(
       url::GURLAndroid::ToNativeGURL(env, jscope).DeprecatedGetOriginAsURL());
 }
+
+DEFINE_JNI(ServiceWorkerPaymentAppBridge)

@@ -150,7 +150,30 @@
   right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 100;
+  z-index: var(--cr-searchbox-compose-button-z-index, 100);
+}
+
+:host-context([dir='rtl']) .glow-container {
+  left: 8px;
+  right: unset;
+}
+
+:host-context([ntp-realbox-next-enabled]) {
+  --cr-button-height: 36px;
+}
+
+:host-context([ntp-realbox-next-enabled]) #composeButton {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+:host-context([ntp-realbox-next-enabled]) .glow-container {
+  height: var(--cr-searchbox-icon-size);
+}
+
+:host-context([searchbox-layout-mode^='Tall']) .glow-container {
+  top: var(--cr-searchbox-compose-button-position-top);
+  transform: none;
 }
 
 /* A wrapper class to hold each gradient and its mask. Don't show unless on page
@@ -177,6 +200,10 @@
 /* The outer blurred glow. */
 .outer-glow {
   filter: blur(40px);
+}
+
+#glowAnimationWrapper:hover .outer-glow{
+  filter: none;
 }
 
 /* Containers used to position the gradient and masks correctly. The gradient

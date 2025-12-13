@@ -21,6 +21,7 @@
 #include "chrome/browser/dom_distiller/test_distillation_observers.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
@@ -51,6 +52,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
@@ -66,7 +68,7 @@ namespace {
 const char* kSimpleArticlePath = "/dom_distiller/simple_article.html";
 const char* kOriginalArticleTitle = "Test Page Title";
 const char* kExpectedArticleHeading = "Test Page Title";
-const char* kExpectedDocumentTitle = "Test Page Title";
+const char* kExpectedDocumentTitle = "Test Page Title - Reading Mode";
 
 std::unique_ptr<content::WebContents> NewContentsWithSameParamsAs(
     content::WebContents* source_web_contents) {
@@ -135,6 +137,8 @@ class DomDistillerTabUtilsBrowserTest : public InProcessBrowserTest {
     command_line->AppendSwitch(switches::kEnableDomDistiller);
   }
 
+  net::EmbeddedTestServer& server() { return *https_server_.get(); }
+
  protected:
   DomDistillerTabUtilsBrowserTest() = default;
 
@@ -164,40 +168,9 @@ class DomDistillerTabUtilsBrowserTest : public InProcessBrowserTest {
   GURL article_url_;
 };
 
-// Disabled as flaky: https://crbug.com/1275025
-IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
-                       DISABLED_DistillCurrentPageSwapsWebContents) {
-  content::WebContents* initial_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  TestDistillabilityObserver distillability_observer(initial_web_contents);
-  DistillabilityResult expected_result;
-  expected_result.is_distillable = true;
-  expected_result.is_last = false;
-  expected_result.is_mobile_friendly = false;
-
-  // This blocks until the navigation has completely finished.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), article_url()));
-  // This blocks until the page is found to be distillable.
-  distillability_observer.WaitForResult(expected_result);
-
-  DistillCurrentPageAndView(initial_web_contents);
-
-  // Retrieve new web contents and wait for it to finish loading.
-  content::WebContents* after_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_NE(after_web_contents, nullptr);
-  DistilledPageObserver(after_web_contents).WaitUntilFinishedLoading();
-
-  // Verify the new URL is showing distilled content in a new WebContents.
-  EXPECT_NE(initial_web_contents, after_web_contents);
-  EXPECT_TRUE(
-      after_web_contents->GetLastCommittedURL().SchemeIs(kDomDistillerScheme));
-  EXPECT_EQ(kExpectedDocumentTitle, GetDocumentTitle(after_web_contents));
-  EXPECT_EQ(kExpectedArticleHeading, GetArticleHeading(after_web_contents));
-}
-
-IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
-                       BackForwardNavigationRegeneratesDistillabilitySignal) {
+IN_PROC_BROWSER_TEST_F(
+    DomDistillerTabUtilsBrowserTest,
+    DISABLED_BackForwardNavigationRegeneratesDistillabilitySignal) {
   content::WebContents* initial_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   TestDistillabilityObserver distillability_observer(initial_web_contents);
@@ -262,100 +235,61 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
-                       DomDistillDisableForBackForwardCache) {
-  content::BackForwardCacheDisabledTester tester;
-
-  GURL url1(article_url());
-  content::WebContents* initial_web_contents =
+                       DistillCurrentPageAndNavigateToViewer) {
+  content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  GURL url2(https_server_->GetURL("/title1.html"));
 
-  TestDistillabilityObserver distillability_observer(initial_web_contents);
-  DistillabilityResult expected_result;
-  expected_result.is_distillable = true;
-  expected_result.is_last = false;
-  expected_result.is_mobile_friendly = false;
+  // This blocks until the navigation has completely finished.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), article_url()));
 
-  // Navigate to the page
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
-  content::RenderFrameHost* main_frame = browser()
-                                             ->tab_strip_model()
-                                             ->GetActiveWebContents()
-                                             ->GetPrimaryMainFrame();
-  int process_id = main_frame->GetProcess()->GetDeprecatedID();
-  int frame_routing_id = main_frame->GetRoutingID();
-  distillability_observer.WaitForResult(expected_result);
+  content::TestNavigationObserver navigation_observer(web_contents);
+  base::RunLoop run_loop;
+  DistillCurrentPageAndViewIfSuccessful(
+      web_contents, base::BindOnce(
+                        [](base::RunLoop* run_loop, bool success) {
+                          EXPECT_TRUE(success);
+                          run_loop->Quit();
+                        },
+                        &run_loop));
+  run_loop.Run();
+  navigation_observer.Wait();
 
-  DistillCurrentPageAndView(initial_web_contents);
-
-  // Navigate away while starting distillation. This should block bfcache.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
-
-  EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
-      process_id, frame_routing_id,
-      back_forward_cache::DisabledReason(
-          back_forward_cache::DisabledReasonId::
-              kDomDistiller_SelfDeletingRequestDelegate)));
+  // The same web contents should be used to distill and navigate to the viewer.
+  EXPECT_EQ(web_contents, browser()->tab_strip_model()->GetActiveWebContents());
+  // On success, the function will navigate to the distillation viewer.
+  EXPECT_TRUE(
+      web_contents->GetLastCommittedURL().SchemeIs(kDomDistillerScheme));
+  EXPECT_EQ(kExpectedDocumentTitle, GetDocumentTitle(web_contents));
+  EXPECT_EQ(kExpectedArticleHeading, GetArticleHeading(web_contents));
 }
 
-IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest, SecurityStateIsNone) {
-  content::WebContents* initial_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  TestDistillabilityObserver distillability_observer(initial_web_contents);
-  DistillabilityResult expected_result;
-  expected_result.is_distillable = true;
-  expected_result.is_last = false;
-  expected_result.is_mobile_friendly = false;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), article_url()));
-  distillability_observer.WaitForResult(expected_result);
-
-  // Check security state is not NONE.
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(initial_web_contents);
-  ASSERT_NE(security_state::NONE, helper->GetSecurityLevel());
-
-  DistillCurrentPageAndView(initial_web_contents);
-  content::WebContents* after_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  DistilledPageObserver(after_web_contents).WaitUntilFinishedLoading();
-
-  // Now security state should be NONE.
-  helper = SecurityStateTabHelper::FromWebContents(after_web_contents);
-  ASSERT_EQ(security_state::NONE, helper->GetSecurityLevel());
-}
-
-// TODO(crbug.com/40776875): Flaky on Mac.
-IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
-                       FaviconFromOriginalPage) {
-  content::WebContents* initial_web_contents =
+IN_PROC_BROWSER_TEST_F(
+    DomDistillerTabUtilsBrowserTest,
+    DistillCurrentPageAndNavigateToViewer_NoNavigationOnFailure) {
+  content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  TestDistillabilityObserver distillability_observer(initial_web_contents);
-  DistillabilityResult expected_result;
-  expected_result.is_distillable = true;
-  expected_result.is_last = false;
-  expected_result.is_mobile_friendly = false;
-  FaviconUpdateWaiter waiter(initial_web_contents);
+  // This blocks until the navigation has completely finished.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), server().GetURL("/dom_distiller/undistillable_page.html")));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), article_url()));
-  // Ensure the favicon is loaded and the distillability result has also
-  // loaded before proceeding with the test.
-  waiter.Wait();
-  distillability_observer.WaitForResult(expected_result);
+  base::RunLoop run_loop;
+  DistillCurrentPageAndViewIfSuccessful(
+      web_contents, base::BindOnce(
+                        [](base::RunLoop* run_loop, bool success) {
+                          EXPECT_FALSE(success);
+                          run_loop->Quit();
+                        },
+                        &run_loop));
+  run_loop.Run();
 
-  gfx::Image article_favicon = browser()->GetCurrentPageIcon();
-  // Remove the FaviconUpdateWaiter because we are done with
-  // initial_web_contents.
-  waiter.StopObserving();
-
-  DistillCurrentPageAndView(initial_web_contents);
-  content::WebContents* after_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_NE(after_web_contents, nullptr);
-  DistilledPageObserver(after_web_contents).WaitUntilFinishedLoading();
-
-  gfx::Image distilled_favicon = browser()->GetCurrentPageIcon();
-  EXPECT_TRUE(gfx::test::AreImagesEqual(article_favicon, distilled_favicon));
+  // The same web contents should be used to distill and navigate to the viewer.
+  EXPECT_EQ(web_contents, browser()->tab_strip_model()->GetActiveWebContents());
+  // On failure, the function won't navigate to the distillation viewer.
+  EXPECT_FALSE(
+      web_contents->GetLastCommittedURL().SchemeIs(kDomDistillerScheme));
+  EXPECT_FALSE(web_contents->IsLoading());
+  content::RunAllTasksUntilIdle();
 }
 
 class DomDistillerTabUtilsMPArchTest : public DomDistillerTabUtilsBrowserTest {
@@ -390,7 +324,7 @@ class DomDistillerTabUtilsMPArchTest : public DomDistillerTabUtilsBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsMPArchTest,
-                       TaskTrackerRemovedWhenPrimaryPageChanged) {
+                       DISABLED_TaskTrackerRemovedWhenPrimaryPageChanged) {
   NavigateAndDistill();
   // Ensure the TaskTracker for distilling the source article exist.
   EXPECT_TRUE(HasTaskTracker());
@@ -419,7 +353,7 @@ class DomDistillerTabUtilsFencedFrameTest
 };
 
 IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsFencedFrameTest,
-                       TaskTrackerNotRemovedByFencedFrame) {
+                       DISABLED_TaskTrackerNotRemovedByFencedFrame) {
   NavigateAndDistill();
   // Ensure the TaskTracker for distilling the source article exist.
   EXPECT_TRUE(HasTaskTracker());
@@ -460,7 +394,7 @@ class DomDistillerTabUtilsPrerenderTest
 };
 
 IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsPrerenderTest,
-                       TaskTrackerNotRemovedByPrerendering) {
+                       DISABLED_TaskTrackerNotRemovedByPrerendering) {
   NavigateAndDistill();
   // Ensure the TaskTracker for distilling the source article exist.
   EXPECT_TRUE(HasTaskTracker());

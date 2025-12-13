@@ -59,6 +59,16 @@ struct ChromeShapeDetectionAPI {
 
   void (*DestroyDetectionResults)(ChromeBarcodeDetectionResult* results,
                                   size_t size);
+
+  // TODO(crbug.com/442001297): Remove once the fallback is default-enabled.
+  void (*DetectBarcodesWithFallback)(
+      size_t width,
+      size_t height,
+      uint8_t* data,
+      ChromeBarcodeFormat expected_formats,
+      bool enable_noop_fallback_in_refine_transform_failure,
+      ChromeBarcodeDetectionResult** results,
+      size_t* results_size);
 };
 
 // Signature of the GetChromeShapeDetectionAPI() function which the shared

@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_url_parameters.h"
 
@@ -22,14 +23,14 @@ class DownloadItem;
 // out a download task.
 class COMPONENTS_DOWNLOAD_EXPORT SimpleDownloadManager {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     Observer() = default;
 
     Observer(const Observer&) = delete;
     Observer& operator=(const Observer&) = delete;
 
-    virtual ~Observer() = default;
+    ~Observer() override = default;
 
     virtual void OnDownloadsInitialized() {}
     virtual void OnManagerGoingDown() {}
@@ -84,7 +85,7 @@ class COMPONENTS_DOWNLOAD_EXPORT SimpleDownloadManager {
   bool initialized_ = false;
 
   // Observers that want to be notified of changes to the set of downloads.
-  base::ObserverList<Observer>::Unchecked simple_download_manager_observers_;
+  base::ObserverList<Observer> simple_download_manager_observers_;
 };
 
 }  // namespace download

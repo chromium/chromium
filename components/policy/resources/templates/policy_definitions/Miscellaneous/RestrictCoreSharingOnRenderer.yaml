@@ -1,0 +1,28 @@
+caption: Restrict CPU core sharing for renderer process
+desc: |-
+  This policy mitigates side-channel cross process memory attacks by isolating the renderer process on the CPU core and preventing other processes from sharing the same core. The mitigation is supported on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph> 11 24H2 and above. If the OS does not have the required scheduling support, this policy will have no effect. This policy may slow down performance in some demanding scenarios similar to disabling hyperthreading. For more information refer https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy
+        If this policy is enabled, all other processes will not be scheduled on the same CPU core when the renderer process is running.
+        If this policy is disabled, all other processes can be scheduled on the same CPU core if a renderer process is running on it.
+        If this policy is not set, all other processes can be scheduled on the same CPU core if a renderer process is running on the core. This may vary depending on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> release, currently running field trials, and platform.
+default: null
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: false
+items:
+- caption: All other processes will not scheduled on the same CPU core when renderer process is running on it.
+  value: true
+- caption: All other processes can be scheduled on the same CPU core when renderer process is running on it.
+  value: false
+- caption: Allow the user to decide
+  value: null
+owners:
+- fayez.razak@microsoft.com
+- file://sandbox/win/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome.win:140-
+tags:
+- system-security
+type: main

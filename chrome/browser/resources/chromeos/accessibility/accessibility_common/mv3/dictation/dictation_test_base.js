@@ -160,8 +160,8 @@ DictationE2ETestBase = class extends E2ETestBase {
   }
 
   /** Turns on Dictation and checks IME and Speech Recognition state. */
-  toggleDictationOn() {
-    this.mockAccessibilityPrivate.callOnToggleDictation(true);
+  async toggleDictationOn() {
+    await this.mockAccessibilityPrivate.callOnToggleDictation(true);
     assertTrue(this.getDictationActive());
     this.checkDictationImeActive();
     this.focusInputContext();
@@ -173,8 +173,8 @@ DictationE2ETestBase = class extends E2ETestBase {
    * Dictation can also be toggled off by blurring the current input context,
    * Speech recognition errors, or timeouts.
    */
-  toggleDictationOff() {
-    this.mockAccessibilityPrivate.callOnToggleDictation(false);
+  async toggleDictationOff() {
+    await this.mockAccessibilityPrivate.callOnToggleDictation(false);
     assertFalse(
         this.getDictationActive(),
         'Dictation should be inactive after toggling Dictation');

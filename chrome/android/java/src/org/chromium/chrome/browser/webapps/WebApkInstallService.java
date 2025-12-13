@@ -15,6 +15,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
@@ -33,6 +35,7 @@ import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.webapk.lib.client.WebApkNavigationClient;
 
 /** Java counterpart to webapk_install_service.h. */
+@NullMarked
 public class WebApkInstallService {
     /** Prefix used for generating a unique notification tag. */
     static final String WEBAPK_INSTALL_NOTIFICATION_TAG_PREFIX =
@@ -141,7 +144,7 @@ public class WebApkInstallService {
             String url,
             Bitmap icon,
             String message,
-            PendingIntentProvider clickPendingIntent) {
+            @Nullable PendingIntentProvider clickPendingIntent) {
         Context context = ContextUtils.getApplicationContext();
 
         String channelId;
@@ -171,6 +174,7 @@ public class WebApkInstallService {
                 .setAutoCancel(true);
 
         if (type == SystemNotificationType.WEBAPK_INSTALL_FAILED) {
+            assert clickPendingIntent != null;
             notificationBuilder.addAction(
                     0 /* no icon */,
                     context.getString(R.string.webapk_install_failed_action_open),

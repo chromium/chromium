@@ -45,6 +45,8 @@ namespace performance_manager {
 
 namespace {
 
+BASE_FEATURE(kEarlyPMVisibilityUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Returns true if the opener relationship exists, false otherwise.
 bool ConnectWindowOpenRelationshipIfExists(PerformanceManagerTabHelper* helper,
                                            content::WebContents* web_contents) {
@@ -237,7 +239,8 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
       outer_document_for_inner_frame_root, render_frame_host->GetRoutingID(),
       blink::LocalFrameToken(render_frame_host->GetFrameToken()),
       site_instance->GetBrowsingInstanceId(),
-      site_instance->GetSiteInstanceGroupId(), render_frame_host->IsActive());
+      site_instance->GetSiteInstanceGroupId(), render_frame_host->IsActive(),
+      render_frame_host->IsActive());
   FrameNodeImpl* frame = frame_node.get();
   frames_[render_frame_host] = std::move(frame_node);
   PerformanceManagerImpl::GetGraphImpl()->AddNewNode(frame);
@@ -302,10 +305,33 @@ void PerformanceManagerTabHelper::RenderFrameHostChanged(
                                     PerformanceManagerImpl::GetGraphImpl());
 }
 
+void PerformanceManagerTabHelper::RenderFrameHostStateChanged(
+    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost::LifecycleState old_state,
+    content::RenderFrameHost::LifecycleState new_state) {
+  FrameNodeImpl* frame_node = GetFrameNode(render_frame_host);
+  if (!frame_node) {
+    return;
+  }
+  frame_node->SetIsActive(render_frame_host->IsActive());
+}
+
+void PerformanceManagerTabHelper::OnVisibilityWillChange(
+    content::Visibility visibility) {
+  // Under EarlyPMVisibilityUpdate, going from hidden to visible is forwarded
+  // early so that process priority happens before any handler.
+  if (visibility == content::Visibility::VISIBLE &&
+      base::FeatureList::IsEnabled(kEarlyPMVisibilityUpdate)) {
+    page_node_->SetIsVisible(true);
+  }
+}
+
 void PerformanceManagerTabHelper::OnVisibilityChanged(
     content::Visibility visibility) {
-  const bool is_visible = visibility == content::Visibility::VISIBLE;
-  page_node_->SetIsVisible(is_visible);
+  if (visibility != content::Visibility::VISIBLE ||
+      !base::FeatureList::IsEnabled(kEarlyPMVisibilityUpdate)) {
+    page_node_->SetIsVisible(visibility == content::Visibility::VISIBLE);
+  }
 }
 
 void PerformanceManagerTabHelper::OnAudioStateChanged(bool audible) {
@@ -379,6 +405,9 @@ void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
     return;
   }
   CHECK(render_frame_host->IsRenderFrameLive());
+
+  frame_node->SetIsRendered(visibility !=
+                            blink::mojom::FrameVisibility::kNotRendered);
 
   ViewportIntersection viewport_intersection = [&]() {
     switch (visibility) {
@@ -476,14 +505,16 @@ std::optional<blink::mojom::PermissionStatus> PerformanceManagerTabHelper::
 
   // Create new change subscription.
   permission_controller_subscription_id_ =
-      permission_controller->SubscribeToPermissionStatusChange(
-          blink::PermissionType::NOTIFICATIONS,
+      permission_controller->SubscribeToPermissionResultChange(
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::NOTIFICATIONS),
           /*render_process_host=*/nullptr,
           web_contents()->GetPrimaryMainFrame(),
           url::Origin::Create(web_contents()->GetLastCommittedURL()).GetURL(),
           /*should_include_device_status=*/false,
           base::BindRepeating(&PerformanceManagerTabHelper::
-                                  OnNotificationPermissionStatusChange,
+                                  OnNotificationPermissionResultChange,
                               // Unretained is safe because the subscription
                               // is removed when `this` is deleted.
                               base::Unretained(this)));
@@ -497,9 +528,9 @@ std::optional<blink::mojom::PermissionStatus> PerformanceManagerTabHelper::
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-void PerformanceManagerTabHelper::OnNotificationPermissionStatusChange(
-    blink::mojom::PermissionStatus permission_status) {
-  page_node_->OnNotificationPermissionStatusChange(permission_status);
+void PerformanceManagerTabHelper::OnNotificationPermissionResultChange(
+    content::PermissionResult permission_result) {
+  page_node_->OnNotificationPermissionStatusChange(permission_result.status);
 }
 
 void PerformanceManagerTabHelper::
@@ -510,7 +541,7 @@ void PerformanceManagerTabHelper::
   }
 
   CHECK(permission_controller);
-  permission_controller->UnsubscribeFromPermissionStatusChange(
+  permission_controller->UnsubscribeFromPermissionResultChange(
       permission_controller_subscription_id_);
 }
 

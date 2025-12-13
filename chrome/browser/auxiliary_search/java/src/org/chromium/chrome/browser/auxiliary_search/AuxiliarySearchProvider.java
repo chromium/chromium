@@ -17,7 +17,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController.AuxiliarySearchHostType;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -54,10 +53,10 @@ public class AuxiliarySearchProvider {
         int NUM_ENTRIES = 2;
     }
 
-    /* Only donate the recent 7 days accessed tabs.*/
-    @VisibleForTesting static final String TAB_AGE_HOURS_PARAM = "tabs_max_hours";
     @VisibleForTesting static final String TASK_CREATED_TIME = "TaskCreatedTime";
-    @VisibleForTesting static final int DEFAULT_TAB_AGE_HOURS = 168;
+
+    /** The donated tab's max age in MS. Only donate the recent 7 days accessed tabs. */
+    @VisibleForTesting static final long DEFAULT_TAB_AGE_HOURS = 168;
 
     @VisibleForTesting
     static final int DEFAULT_WINDOW_END_TIME_MS = 60 * 1000; // 1 min in milliseconds.
@@ -79,7 +78,6 @@ public class AuxiliarySearchProvider {
     private final Profile mProfile;
     private final @Nullable TabModelSelector mTabModelSelector;
 
-    private final Long mTabMaxAgeMillis;
     @Nullable private AuxiliarySearchBridge mAuxiliarySearchBridge;
 
     public AuxiliarySearchProvider(
@@ -93,7 +91,6 @@ public class AuxiliarySearchProvider {
             mAuxiliarySearchBridge = new AuxiliarySearchBridge(mProfile);
         }
         mTabModelSelector = tabModelSelector;
-        mTabMaxAgeMillis = getTabsMaxAgeMs();
     }
 
     /** Returns a list of non sensitive Tabs. */
@@ -103,7 +100,8 @@ public class AuxiliarySearchProvider {
             return;
         }
 
-        long minAccessTime = System.currentTimeMillis() - mTabMaxAgeMillis;
+        long minAccessTime =
+                System.currentTimeMillis() - TimeUnit.HOURS.toMillis(DEFAULT_TAB_AGE_HOURS);
         List<Tab> listTab = getTabsByMinimalAccessTime(minAccessTime);
 
         // We will get up to 100 tabs as default. This is controlled by feature
@@ -279,8 +277,7 @@ public class AuxiliarySearchProvider {
         TabList allTabs = mTabModelSelector.getModel(false).getComprehensiveModel();
         List<Tab> recentAccessedTabs = new ArrayList<>();
 
-        for (int i = 0; i < allTabs.getCount(); i++) {
-            Tab tab = allTabs.getTabAtChecked(i);
+        for (Tab tab : allTabs) {
             if (tab.getTimestampMillis() >= minAccessTime) {
                 recentAccessedTabs.add(tab);
             }
@@ -289,35 +286,19 @@ public class AuxiliarySearchProvider {
         return recentAccessedTabs;
     }
 
-    /** Returns the donated tab's max age in MS. */
-    @VisibleForTesting
-    long getTabsMaxAgeMs() {
-        int configuredTabMaxAgeHrs =
-                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.ANDROID_APP_INTEGRATION, TAB_AGE_HOURS_PARAM, 0);
-        if (configuredTabMaxAgeHrs == 0) configuredTabMaxAgeHrs = DEFAULT_TAB_AGE_HOURS;
-        return TimeUnit.HOURS.toMillis(configuredTabMaxAgeHrs);
-    }
-
     /**
      * Schedule a {@link AuxiliarySearchBackgroundTask} for donating more favicons.
      *
-     * @param windowStartTimeMs The delay to schedule a background task.
      * @param startTimeMs The start time when the task is created but not scheduled.
      */
     @VisibleForTesting
-    TaskInfo scheduleBackgroundTask(long windowStartTimeMs, long startTimeMs) {
-        assert ChromeFeatureList.sAndroidAppIntegrationWithFavicon.isEnabled();
-
+    TaskInfo scheduleBackgroundTask(long startTimeMs) {
         PersistableBundle bundle = new PersistableBundle();
         bundle.putLong(TASK_CREATED_TIME, startTimeMs);
 
         BackgroundTaskScheduler scheduler = BackgroundTaskSchedulerFactory.getScheduler();
         TaskInfo.TimingInfo oneOffTimingInfo =
-                TaskInfo.OneOffInfo.create()
-                        .setWindowStartTimeMs(windowStartTimeMs)
-                        .setWindowEndTimeMs(DEFAULT_WINDOW_END_TIME_MS)
-                        .build();
+                TaskInfo.OneOffInfo.create().setWindowEndTimeMs(DEFAULT_WINDOW_END_TIME_MS).build();
 
         TaskInfo.Builder builder =
                 TaskInfo.createTask(TaskIds.AUXILIARY_SEARCH_DONATE_JOB_ID, oneOffTimingInfo);

@@ -26,8 +26,16 @@ void WrappableBase::AssociateWithWrapper(v8::Isolate* isolate,
   wrapper_.Reset(isolate, wrapper);
 }
 
+NamedPropertyInterceptor* WrappableBase::GetNamedPropertyInterceptor() {
+  return nullptr;
+}
+
 void WrappableBase::Trace(cppgc::Visitor* visitor) const {
   visitor->Trace(wrapper_);
+}
+
+const v8::Object::WrapperTypeInfo* WrappableBase::GetWrapperTypeInfo() const {
+  return wrapper_info();
 }
 
 v8::MaybeLocal<v8::Object> WrappableBase::GetWrapper(v8::Isolate* isolate) {
@@ -54,9 +62,10 @@ v8::MaybeLocal<v8::Object> WrappableBase::GetWrapper(v8::Isolate* isolate) {
 
   // TODO(345640553): Delete the internal fields once DeprecatedWrappable does
   // not exist anymore.
-  int indices[] = {kWrapperInfoIndex, kEncodedValueIndex};
-  void* values[] = {nullptr, nullptr};
-  wrapper->SetAlignedPointerInInternalFields(2, indices, values);
+  wrapper->SetAlignedPointerInInternalField(kWrapperInfoIndex, nullptr,
+                                            kDeprecatedData);
+  wrapper->SetAlignedPointerInInternalField(kEncodedValueIndex, nullptr,
+                                            kDeprecatedData);
 
   AssociateWithWrapper(isolate, wrapper);
   return wrapper;
@@ -91,11 +100,6 @@ void DeprecatedWrappableBase::FirstWeakCallback(
   data.SetSecondPassCallback(SecondWeakCallback);
 }
 
-NamedPropertyInterceptor*
-DeprecatedWrappableBase::GetNamedPropertyInterceptor() {
-  return nullptr;
-}
-
 void DeprecatedWrappableBase::SecondWeakCallback(
     const v8::WeakCallbackInfo<DeprecatedWrappableBase>& data) {
   DeprecatedWrappableBase* wrappable = data.GetParameter();
@@ -110,8 +114,9 @@ v8::MaybeLocal<v8::Object> DeprecatedWrappableBase::GetWrapperImpl(
         v8::Local<v8::Object>::New(isolate, wrapper_));
   }
 
-  if (dead_)
+  if (dead_) {
     return v8::MaybeLocal<v8::Object>();
+  }
 
   PerIsolateData* data = PerIsolateData::From(isolate);
   v8::Local<v8::ObjectTemplate> templ = data->DeprecatedGetObjectTemplate(info);
@@ -131,9 +136,10 @@ v8::MaybeLocal<v8::Object> DeprecatedWrappableBase::GetWrapperImpl(
     return v8::MaybeLocal<v8::Object>(wrapper);
   }
 
-  int indices[] = {kWrapperInfoIndex, kEncodedValueIndex};
-  void* values[] = {info, this};
-  wrapper->SetAlignedPointerInInternalFields(2, indices, values);
+  wrapper->SetAlignedPointerInInternalField(kWrapperInfoIndex, info,
+                                            kDeprecatedData);
+  wrapper->SetAlignedPointerInInternalField(kEncodedValueIndex, this,
+                                            kDeprecatedData);
   wrapper_.Reset(isolate, wrapper);
   wrapper_.SetWeak(this, FirstWeakCallback, v8::WeakCallbackType::kParameter);
   return v8::MaybeLocal<v8::Object>(wrapper);
@@ -144,23 +150,27 @@ namespace internal {
 void* FromV8Impl(v8::Isolate* isolate,
                  v8::Local<v8::Value> val,
                  DeprecatedWrapperInfo* wrapper_info) {
-  if (!val->IsObject())
-    return NULL;
+  if (!val->IsObject()) {
+    return nullptr;
+  }
   v8::Local<v8::Object> obj = v8::Local<v8::Object>::Cast(val);
   DeprecatedWrapperInfo* info = DeprecatedWrapperInfo::From(obj);
 
   // If this fails, the object is not managed by Gin. It is either a normal JS
   // object that's not wrapping any external C++ object, or it is wrapping some
   // C++ object, but that object isn't managed by Gin (maybe Blink).
-  if (!info)
-    return NULL;
+  if (!info) {
+    return nullptr;
+  }
 
   // If this fails, the object is managed by Gin, but it's not wrapping an
   // instance of the C++ class associated with wrapper_info.
-  if (info != wrapper_info)
-    return NULL;
+  if (info != wrapper_info) {
+    return nullptr;
+  }
 
-  return obj->GetAlignedPointerFromInternalField(kEncodedValueIndex);
+  return obj->GetAlignedPointerFromInternalField(kEncodedValueIndex,
+                                                 kDeprecatedData);
 }
 
 }  // namespace internal

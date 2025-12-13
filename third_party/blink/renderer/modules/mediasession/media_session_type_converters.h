@@ -8,9 +8,20 @@
 #include "third_party/blink/public/mojom/mediasession/media_session.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_position_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_action_details.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_enter_picture_in_picture_action_details.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_enter_picture_in_picture_reason.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_session_seek_to_action_details.h"
 
 namespace mojo {
+
+template <>
+struct TypeConverter<
+    blink::V8MediaSessionEnterPictureInPictureReason::Enum,
+    blink::mojom::blink::MediaSessionEnterPictureInPictureReason> {
+  static blink::V8MediaSessionEnterPictureInPictureReason::Enum Convert(
+      blink::mojom::blink::MediaSessionEnterPictureInPictureReason
+          mojom_reason);
+};
 
 template <>
 struct TypeConverter<const blink::MediaSessionActionDetails*,
@@ -25,6 +36,13 @@ struct TypeConverter<blink::MediaSessionSeekToActionDetails*,
                      blink::mojom::blink::MediaSessionActionDetailsPtr> {
   static blink::MediaSessionSeekToActionDetails* Convert(
       const blink::mojom::blink::MediaSessionActionDetailsPtr& details);
+};
+
+template <>
+struct TypeConverter<blink::MediaSessionEnterPictureInPictureActionDetails*,
+                     blink::mojom::blink::MediaSessionActionDetailsPtr> {
+  static blink::MediaSessionEnterPictureInPictureActionDetails* Convert(
+      const blink::mojom::blink::MediaSessionActionDetailsPtr&);
 };
 
 template <>

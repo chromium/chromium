@@ -20,6 +20,9 @@ enum class TabHelperFilter {
   // Filter out tab helpers that are not needed when the web state
   // is presented in the lens overlay (BVC's toolbars are covered).
   kLensOverlay = 1 << 1,
+  // Filter out tab helpers that are not needed when the web state
+  // is presented for Reader Mode.
+  kReaderMode = 1 << 2,
 };
 
 // Implementation of bitwise "or", "and" operators (as those are not

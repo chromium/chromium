@@ -109,28 +109,28 @@
       </span>
       <!-- Progress submessage. -->
       <div id = "progress-submessage"
-           hidden="[[!isState_(state_, State.UPGRADING)]]">
+           hidden="[[!isState_(state_, stateEnum_.UPGRADING)]]">
         <span>[[lastProgressLine_]]</span>
       </div>
     </div>
     <!-- Progress bar containers. Depending on the current state, only one
       of them is visible. -->
-    <div id="backup-progress-bar"  hidden="[[!isState_(state_, State.BACKUP)]]">
+    <div id="backup-progress-bar" hidden="[[!isState_(state_, stateEnum_.BACKUP)]]">
       <paper-progress class="progress-bar" value="[[backupProgress_]]">
       </paper-progress>
     </div>
     <div id="restore-progress-bar"
-        hidden="[[!isState_(state_, State.RESTORE)]]">
+        hidden="[[!isState_(state_, stateEnum_.RESTORE)]]">
       <paper-progress class="progress-bar" value="[[restoreProgress_]]">
       </paper-progress>
     </div>
     <div id="upgrade-progress-bar"
-        hidden="[[!isState_(state_, State.UPGRADING)]]">
+        hidden="[[!isState_(state_, stateEnum_.UPGRADING)]]">
       <paper-progress class="progress-bar" indeterminate>
       </paper-progress>
     </div>
     <div id="canceling-progress-bar"
-        hidden="[[!isState_(state_, State.CANCELING)]]">
+        hidden="[[!isState_(state_, stateEnum_.CANCELING)]]">
       <paper-progress class="progress-bar" indeterminate></paper-progress>
     </div>
     <div id="upgrade-error-message" hidden="[[isErrorLogsHidden_(state_)]]">
@@ -141,7 +141,7 @@
   <img id="[[getIllustrationStyle_(state_)]]"
       src="[[getIllustrationURI_(state_)]]" alt=""
       hidden="[[hideIllustration_(state_)]]">
-  <div id="backup-checkbox" hidden="[[!isState_(state_, State.PROMPT)]]">
+  <div id="backup-checkbox" hidden="[[!isState_(state_, stateEnum_.PROMPT)]]">
     <cr-checkbox checked="{{backupCheckboxChecked_}}" >
       <p class="checkbox-text">
         $i18n{backupCheckboxMessage}

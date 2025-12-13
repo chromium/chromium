@@ -6,10 +6,14 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/payments/core/features.h"
 #include "content/public/browser/stored_payment_app.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -117,10 +121,20 @@ class ServiceWorkerPaymentAppTest : public testing::Test,
         web_contents_, GURL("https://testmerchant.com"),
         GURL("https://testmerchant.com/bobpay"), spec_->AsWeakPtr(),
         std::move(app_info), /*enabled_method=*/"https://bobpay.test",
-        /*is_incognito=*/false, /*show_processing_spinner=*/base::DoNothing());
+        /*is_incognito=*/false, /*prefs_can_make_payment=*/true,
+        /*show_processing_spinner=*/base::DoNothing());
   }
 
   void CreateInstalledServiceWorkerPaymentApp(bool with_url_method) {
+    CreateInstalledServiceWorkerPaymentApp(
+        with_url_method, /*prefs_can_make_payment_enabled=*/true,
+        /*has_explicitly_verified_methods=*/false);
+  }
+
+  void CreateInstalledServiceWorkerPaymentApp(
+      bool with_url_method,
+      bool prefs_can_make_payment_enabled,
+      bool has_explicitly_verified_methods) {
     constexpr int kBitmapDimension = 16;
 
     std::unique_ptr<content::StoredPaymentApp> stored_app =
@@ -141,12 +155,16 @@ class ServiceWorkerPaymentAppTest : public testing::Test,
         static_cast<int32_t>(mojom::BasicCardNetwork::JCB));
     stored_app->user_hint = "Visa 4012 ... 1881";
     stored_app->prefer_related_applications = false;
+    if (has_explicitly_verified_methods) {
+      stored_app->has_explicitly_verified_methods = true;
+    }
 
     icon_bitmap_ = stored_app->icon.get();
     app_ = std::make_unique<ServiceWorkerPaymentApp>(
         web_contents_, GURL("https://testmerchant.com"),
         GURL("https://testmerchant.com/bobpay"), spec_->AsWeakPtr(),
         std::move(stored_app), /*is_incognito=*/false,
+        prefs_can_make_payment_enabled,
         /*show_processing_spinner=*/base::DoNothing());
   }
 
@@ -158,6 +176,10 @@ class ServiceWorkerPaymentAppTest : public testing::Test,
 
   mojom::CanMakePaymentEventDataPtr CreateCanMakePaymentEventData() {
     return app_->CreateCanMakePaymentEventData();
+  }
+
+  bool CanMakePaymentEventSkipped() {
+    return app_->GetCanMakePaymentEventSkippedForTesting();
   }
 
  private:
@@ -252,11 +274,54 @@ TEST_F(ServiceWorkerPaymentAppTest, ValidateCanMakePayment) {
   // CanMakePaymentEvent is not triggered because this test app lacks any
   // explicitly verified methods.
   CreateInstalledServiceWorkerPaymentApp(/*with_url_method=*/true);
-  GetApp()->ValidateCanMakePayment(
-      base::BindOnce([](base::WeakPtr<ServiceWorkerPaymentApp> app) {
+  base::RunLoop runloop;
+  GetApp()->ValidateCanMakePayment(base::BindLambdaForTesting(
+      [&](base::WeakPtr<ServiceWorkerPaymentApp> app) {
         EXPECT_NE(nullptr, app.get());
+        runloop.Quit();
       }));
+  runloop.Run();
   EXPECT_FALSE(GetApp()->HasEnrolledInstrument());
+
+  EXPECT_TRUE(CanMakePaymentEventSkipped());
+}
+
+// Test that CanMakePaymentEvent is skipped if the `kCanMakePaymentEnabled` pref
+// is disabled.
+TEST_F(ServiceWorkerPaymentAppTest, ValidateCanMakePaymentWithPrefDisabled) {
+  base::test::ScopedFeatureList features(features::kRestrictIsReadyToPayQuery);
+  CreateInstalledServiceWorkerPaymentApp(
+      /*with_url_method=*/true, /*prefs_can_make_payment_enabled=*/false,
+      /*has_explicitly_verified_methods=*/true);
+  base::RunLoop runloop;
+  GetApp()->ValidateCanMakePayment(base::BindLambdaForTesting(
+      [&](base::WeakPtr<ServiceWorkerPaymentApp> app) {
+        EXPECT_NE(nullptr, app.get());
+        runloop.Quit();
+      }));
+  runloop.Run();
+  EXPECT_FALSE(GetApp()->HasEnrolledInstrument());
+
+  EXPECT_TRUE(CanMakePaymentEventSkipped());
+}
+
+// Test that CanMakePaymentEvent is fired if the `kCanMakePaymentEnabled` pref
+// is enabled.
+TEST_F(ServiceWorkerPaymentAppTest, ValidateCanMakePaymentWithPrefEnabled) {
+  base::test::ScopedFeatureList features(features::kRestrictIsReadyToPayQuery);
+  CreateInstalledServiceWorkerPaymentApp(
+      /*with_url_method=*/true, /*prefs_can_make_payment_enabled=*/true,
+      /*has_explicitly_verified_methods=*/true);
+  base::RunLoop runloop;
+  GetApp()->ValidateCanMakePayment(base::BindLambdaForTesting(
+      [&](base::WeakPtr<ServiceWorkerPaymentApp> app) {
+        EXPECT_NE(nullptr, app.get());
+        runloop.Quit();
+      }));
+  runloop.Run();
+  EXPECT_FALSE(GetApp()->HasEnrolledInstrument());
+
+  EXPECT_FALSE(CanMakePaymentEventSkipped());
 }
 
 TEST_F(ServiceWorkerPaymentAppTest, IsValidForModifier) {

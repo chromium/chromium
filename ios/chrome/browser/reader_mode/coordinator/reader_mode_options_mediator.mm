@@ -6,10 +6,9 @@
 
 #import "components/dom_distiller/core/distilled_page_prefs.h"
 #import "components/dom_distiller/ios/distilled_page_prefs_observer_bridge.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_font_size_utils.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
-#import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_consumer.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 @interface ReaderModeOptionsMediator () <DistilledPagePrefsObserving>
 @end
@@ -17,16 +16,13 @@
 @implementation ReaderModeOptionsMediator {
   std::unique_ptr<DistilledPagePrefsObserverBridge> _prefsObserverBridge;
   raw_ptr<dom_distiller::DistilledPagePrefs> _distilledPagePrefs;
-  raw_ptr<WebStateList> _webStateList;
 }
 
 - (instancetype)initWithDistilledPagePrefs:
-                    (dom_distiller::DistilledPagePrefs*)distilledPagePrefs
-                              webStateList:(WebStateList*)webStateList {
+    (dom_distiller::DistilledPagePrefs*)distilledPagePrefs {
   self = [super init];
   if (self) {
     _distilledPagePrefs = distilledPagePrefs;
-    _webStateList = webStateList;
     _prefsObserverBridge =
         std::make_unique<DistilledPagePrefsObserverBridge>(self);
     _distilledPagePrefs->AddObserver(_prefsObserverBridge.get());
@@ -37,9 +33,15 @@
 - (void)setConsumer:(id<ReaderModeOptionsConsumer>)consumer {
   _consumer = consumer;
   if (_consumer) {
-    [self onChangeFontFamily:_distilledPagePrefs->GetFontFamily()];
-    [self onChangeTheme:_distilledPagePrefs->GetTheme()];
-    [self onChangeFontScaling:_distilledPagePrefs->GetFontScaling()];
+    // Initialize consumer with current state of `_distilledPagePrefs`.
+    [self.consumer setSelectedFontFamily:_distilledPagePrefs->GetFontFamily()];
+    [self.consumer setSelectedTheme:_distilledPagePrefs->GetTheme()];
+    [self.consumer
+        setDecreaseFontSizeButtonEnabled:CanDecreaseReaderModeFontSize(
+                                             _distilledPagePrefs)];
+    [self.consumer
+        setIncreaseFontSizeButtonEnabled:CanIncreaseReaderModeFontSize(
+                                             _distilledPagePrefs)];
   }
 }
 
@@ -50,43 +52,29 @@
 }
 
 - (void)increaseFontSize {
-  double currentScaling = _distilledPagePrefs->GetFontScaling();
-  std::vector<double> multipliers = ReaderModeFontScaleMultipliers();
-  auto it =
-      std::upper_bound(multipliers.begin(), multipliers.end(), currentScaling);
-  if (it != multipliers.end()) {
-    _distilledPagePrefs->SetFontScaling(*it);
-  }
+  IncreaseReaderModeFontSize(_distilledPagePrefs);
 }
 
 - (void)decreaseFontSize {
-  double currentScaling = _distilledPagePrefs->GetFontScaling();
-  std::vector<double> multipliers = ReaderModeFontScaleMultipliers();
-  auto it =
-      std::lower_bound(multipliers.begin(), multipliers.end(), currentScaling);
-  if (it != multipliers.begin()) {
-    _distilledPagePrefs->SetFontScaling(*(--it));
-  }
+  DecreaseReaderModeFontSize(_distilledPagePrefs);
 }
 
 - (void)setTheme:(dom_distiller::mojom::Theme)theme {
-  _distilledPagePrefs->SetTheme(theme);
+  _distilledPagePrefs->SetUserPrefTheme(theme);
 }
 
 - (void)hideReaderMode {
-  web::WebState* webState = _webStateList->GetActiveWebState();
-  if (webState) {
-    ReaderModeTabHelper::FromWebState(webState)->SetActive(false);
-  }
+  [self.readerModeHandler hideReaderMode];
 }
 
 #pragma mark - Public
 
 - (void)disconnect {
-  _distilledPagePrefs->RemoveObserver(_prefsObserverBridge.get());
+  if (_distilledPagePrefs) {
+    _distilledPagePrefs->RemoveObserver(_prefsObserverBridge.get());
+  }
   _prefsObserverBridge.reset();
   _distilledPagePrefs = nullptr;
-  _webStateList = nullptr;
 }
 
 #pragma mark - DistilledPagePrefsObserving
@@ -100,11 +88,11 @@
 }
 
 - (void)onChangeFontScaling:(float)scaling {
-  std::vector<double> multipliers = ReaderModeFontScaleMultipliers();
-  [self.consumer
-      setDecreaseFontSizeButtonEnabled:(scaling > multipliers.front())];
-  [self.consumer
-      setIncreaseFontSizeButtonEnabled:(scaling < multipliers.back())];
+  [self.consumer setDecreaseFontSizeButtonEnabled:CanDecreaseReaderModeFontSize(
+                                                      _distilledPagePrefs)];
+  [self.consumer setIncreaseFontSizeButtonEnabled:CanIncreaseReaderModeFontSize(
+                                                      _distilledPagePrefs)];
+  [self.consumer announceFontSizeMultiplier:scaling];
 }
 
 @end

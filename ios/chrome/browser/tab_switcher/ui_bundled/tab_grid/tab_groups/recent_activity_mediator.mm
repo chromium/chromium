@@ -201,7 +201,7 @@ const int kMaxNumberOfLogs = 5;
 - (void)populateItemsFromService {
   collaboration::messaging::ActivityLogQueryParams params;
   params.result_length = kMaxNumberOfLogs;
-  tab_groups::CollaborationId collabID =
+  syncer::CollaborationId collabID =
       tab_groups::utils::GetTabGroupCollabID(_tabGroup.get(), _syncService);
   params.collaboration_id = data_sharing::GroupId(collabID.value());
 
@@ -258,17 +258,16 @@ const int kMaxNumberOfLogs = 5;
 #pragma mark - TableViewFaviconDataSource
 
 - (void)faviconForPageURL:(CrURL*)URL
-               completion:(void (^)(FaviconAttributes*))completion {
-  _faviconLoader->FaviconForPageUrl(URL.gurl, kFaviconSize, kFaviconSize,
-                                    /*fallback_to_google_server=*/false,
-                                    ^(FaviconAttributes* attributes) {
-                                      if (attributes.usesDefaultImage) {
-                                        return;
-                                      }
-                                      if (attributes.faviconImage) {
-                                        completion(attributes);
-                                      }
-                                    });
+               completion:(void (^)(FaviconAttributes* attributes,
+                                    bool cached))completion {
+  _faviconLoader->FaviconForPageUrl(
+      URL.gurl, kFaviconSize, kFaviconSize,
+      /*fallback_to_google_server=*/false,
+      ^(FaviconAttributes* attributes, bool cached) {
+        if (attributes.faviconImage) {
+          completion(attributes, cached);
+        }
+      });
 }
 
 @end

@@ -20,9 +20,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/utils/content_setting_backed_boolean.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -126,6 +124,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
         [[TableViewSwitchItem alloc] initWithType:ItemTypeMainSwitch];
     _blockPopupsItem.text = l10n_util::GetNSString(IDS_IOS_BLOCK_POPUPS);
     _blockPopupsItem.on = [_disablePopupsSetting value];
+    _blockPopupsItem.target = self;
+    _blockPopupsItem.selector = @selector(blockPopupsSwitchChanged:);
     _blockPopupsItem.accessibilityIdentifier = @"blockPopupsContentView_switch";
     [model addItem:_blockPopupsItem
         toSectionWithIdentifier:SectionIdentifierMainSwitch];
@@ -163,40 +163,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
           : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
   blockPopupsManagedItem.accessibilityHint =
       l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
+  blockPopupsManagedItem.target = self;
+  blockPopupsManagedItem.selector = @selector(didTapManagedUIInfoButton:);
   blockPopupsManagedItem.accessibilityIdentifier =
       @"blockPopupsContentView_managed";
   return blockPopupsManagedItem;
-}
-
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  switch ([self.tableViewModel itemTypeForIndexPath:indexPath]) {
-    case ItemTypeHeader:
-    case ItemTypeException:
-      break;
-    case ItemTypeMainSwitch: {
-      TableViewSwitchCell* switchCell =
-          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-      [switchCell.switchView addTarget:self
-                                action:@selector(blockPopupsSwitchChanged:)
-                      forControlEvents:UIControlEventValueChanged];
-      break;
-    }
-    case ItemTypeManaged: {
-      TableViewInfoButtonCell* managedCell =
-          base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
-      [managedCell.trailingButton
-                 addTarget:self
-                    action:@selector(didTapManagedUIInfoButton:)
-          forControlEvents:UIControlEventTouchUpInside];
-      break;
-    }
-  }
-  return cell;
 }
 
 - (BOOL)tableView:(UITableView*)tableView

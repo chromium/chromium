@@ -227,12 +227,24 @@ function setupEvents() {
     diagnosticLink.addEventListener('click', function(event) {
       sendCommand(SecurityInterstitialCommandId.CMD_OPEN_DIAGNOSTIC);
     });
+    diagnosticLink.addEventListener('auxclick', function(event) {
+      if (event.button === 1) {  // Middle click
+        sendCommand(
+            SecurityInterstitialCommandId.CMD_OPEN_DIAGNOSTIC_IN_NEW_TAB);
+      }
+    });
   }
 
   const learnMoreLink = document.querySelector('#learn-more-link');
   if (learnMoreLink) {
     learnMoreLink.addEventListener('click', function(event) {
       sendCommand(SecurityInterstitialCommandId.CMD_OPEN_HELP_CENTER);
+    });
+    learnMoreLink.addEventListener('auxclick', function(event) {
+      if (event.button === 1) {  // Middle click
+        sendCommand(
+            SecurityInterstitialCommandId.CMD_OPEN_HELP_CENTER_IN_NEW_TAB);
+      }
     });
   }
 
@@ -254,6 +266,26 @@ function setupEvents() {
     // have details buttons.
     detailsButton.classList.add('hidden');
   } else {
+    if (loadTimeData.valueExists('is_qwac_enabled') &&
+        loadTimeData.getBoolean('is_qwac_enabled')) {
+      // TODO(crbug.com/436274249): Once the feature is launched, move the
+      // debugging div to the details section unconditionally (in the HTML file
+      // instead of here.) But do any of the cases that have the details
+      // button hidden use the debugging element?
+      const details = document.querySelector('#details');
+      const debugging = document.querySelector('#debugging');
+      details.prepend(debugging);
+
+      const viewCertificateLink =
+          document.querySelector('#view-certificate-link');
+      if (viewCertificateLink) {
+        viewCertificateLink.addEventListener('click', function(event) {
+          sendCommand(
+              SecurityInterstitialCommandId.CMD_SHOW_CERTIFICATE_VIEWER);
+        });
+      }
+    }
+
     detailsButton.setAttribute(
         'aria-expanded',
         !document.querySelector('#details').classList.contains(HIDDEN_CLASS));
@@ -285,6 +317,12 @@ function setupEvents() {
   if (reportErrorLink) {
     reportErrorLink.addEventListener('click', function(event) {
       sendCommand(SecurityInterstitialCommandId.CMD_REPORT_PHISHING_ERROR);
+    });
+    reportErrorLink.addEventListener('auxclick', function(event) {
+      if (event.button === 1) {  // Middle click
+        sendCommand(
+            SecurityInterstitialCommandId.CMD_REPORT_PHISHING_ERROR_IN_NEW_TAB);
+      }
     });
   }
 

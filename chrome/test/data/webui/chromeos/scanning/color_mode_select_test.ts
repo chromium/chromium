@@ -61,9 +61,9 @@ suite('colorModeSelectTest', function() {
 
     assertEquals(2, select.length);
     assertEquals(
-        getColorModeString(firstColorMode), getOption(0).textContent!.trim());
+        getColorModeString(firstColorMode), getOption(0).textContent.trim());
     assertEquals(
-        getColorModeString(secondColorMode), getOption(1).textContent!.trim());
+        getColorModeString(secondColorMode), getOption(1).textContent.trim());
     assertEquals(firstColorMode.toString(), select.value);
   });
 

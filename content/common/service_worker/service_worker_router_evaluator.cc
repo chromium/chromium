@@ -465,14 +465,14 @@ bool BaseCondition::MatchUrlPatternConditions(
             << " value=" << request.url.field();                         \
     return false;                                                        \
   }
-  PATTERN_MATCH(protocol, scheme);
-  PATTERN_MATCH(username, username);
-  PATTERN_MATCH(password, password);
-  PATTERN_MATCH(hostname, host);
-  PATTERN_MATCH(port, port);
-  PATTERN_MATCH(pathname, path);
-  PATTERN_MATCH(search, query);
-  PATTERN_MATCH(hash, ref);
+  PATTERN_MATCH(protocol, GetScheme);
+  PATTERN_MATCH(username, GetUsername);
+  PATTERN_MATCH(password, GetPassword);
+  PATTERN_MATCH(hostname, GetHost);
+  PATTERN_MATCH(port, GetPort);
+  PATTERN_MATCH(pathname, GetPath);
+  PATTERN_MATCH(search, GetQuery);
+  PATTERN_MATCH(hash, GetRef);
 #undef PATTERN_MATCH
   return true;
 }
@@ -841,9 +841,7 @@ base::Value ServiceWorkerRouterEvaluator::ToValue() const {
 }
 
 std::string ServiceWorkerRouterEvaluator::ToString() const {
-  std::string json;
-  base::JSONWriter::Write(ToValue(), &json);
-  return json;
+  return base::WriteJson(ToValue()).value_or("");
 }
 
 void ServiceWorkerRouterEvaluator::RecordRouterRuleInfo() const {

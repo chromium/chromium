@@ -15,16 +15,18 @@ namespace {
 TEST(SyncErrorTest, ModelError) {
   base::Location location = FROM_HERE;
   std::string msg = "test";
-  SyncError error(location, SyncError::MODEL_ERROR, msg);
+  ModelError model_error(location, ModelError::Type::kGenericTestError);
+  SyncError error = SyncError::CreateFromModelError(model_error);
   EXPECT_EQ(location.line_number(), error.location().line_number());
+  EXPECT_EQ(ModelError::Type::kGenericTestError, error.model_error_type());
   EXPECT_EQ("model error was encountered: ", error.GetMessagePrefix());
-  EXPECT_EQ(msg, error.message());
 }
 
 TEST(SyncErrorTest, PreconditionError) {
   base::Location location = FROM_HERE;
   std::string msg = "test";
-  SyncError error(location, SyncError::PRECONDITION_ERROR_WITH_CLEAR_DATA, msg);
+  SyncError error = SyncError::CreateFromErrorType(
+      location, SyncError::PRECONDITION_ERROR_WITH_CLEAR_DATA, msg);
   EXPECT_EQ(location.line_number(), error.location().line_number());
   EXPECT_EQ("failed precondition was encountered with clear data: ",
             error.GetMessagePrefix());

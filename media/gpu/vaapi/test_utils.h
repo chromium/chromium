@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap_handle.h"
 
@@ -58,7 +59,7 @@ DecodedImage ScopedVAImageToDecodedImage(const ScopedVAImage* scoped_va_image);
 std::unique_ptr<DecodedImage> NativePixmapToDecodedImage(
     gfx::NativePixmapHandle& handle,
     const gfx::Size& size,
-    const gfx::BufferFormat& format);
+    const viz::SharedImageFormat& format);
 #endif
 
 // Compares the result of sw decoding |reference_image| with |hw_decoded_image|

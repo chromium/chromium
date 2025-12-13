@@ -64,6 +64,12 @@ String StatsConversionHelper(const std::string& value) {
     v8_setter(StatsConversionHelper(*webrtc_stat)); \
   }
 
+#define SET_STAT_ENUM(webrtc_stat, v8_setter, V8EnumType)                 \
+  if (webrtc_stat.has_value()) {                                          \
+    v8_setter(                                                            \
+        V8EnumType::Create(StatsConversionHelper(*webrtc_stat)).value()); \
+  }
+
 template <typename T>
 v8::Local<v8::Value> HashMapToValue(ScriptState* script_state,
                                     HashMap<String, T>&& map) {
@@ -123,6 +129,14 @@ RTCInboundRtpStreamStats* ToV8Stat(
   // RTCReceivedRtpStreamStats
   SET_STAT(webrtc_stat.packets_lost, v8_stat->setPacketsLost);
   SET_STAT(webrtc_stat.jitter, v8_stat->setJitter);
+  SET_STAT(webrtc_stat.packets_received_with_ect1,
+           v8_stat->setPacketsReceivedWithEct1);
+  SET_STAT(webrtc_stat.packets_received_with_ce,
+           v8_stat->setPacketsReceivedWithCe);
+  SET_STAT(webrtc_stat.packets_reported_as_lost,
+           v8_stat->setPacketsReportedAsLost);
+  SET_STAT(webrtc_stat.packets_reported_as_lost_but_recovered,
+           v8_stat->setPacketsReportedAsLostButRecovered);
   // RTCInboundRtpStreamStats
   SET_STAT(webrtc_stat.track_identifier, v8_stat->setTrackIdentifier);
   SET_STAT(webrtc_stat.mid, v8_stat->setMid);
@@ -234,6 +248,8 @@ RTCRemoteInboundRtpStreamStats* ToV8Stat(
   SET_STAT(webrtc_stat.fraction_lost, v8_stat->setFractionLost);
   SET_STAT(webrtc_stat.round_trip_time_measurements,
            v8_stat->setRoundTripTimeMeasurements);
+  SET_STAT(webrtc_stat.packets_with_bleached_ect1_marking,
+           v8_stat->setPacketsWithBleachedEct1Marking);
   return v8_stat;
 }
 
@@ -277,11 +293,19 @@ RTCOutboundRtpStreamStats* ToV8Stat(
   SET_STAT(webrtc_stat.frames_encoded, v8_stat->setFramesEncoded);
   SET_STAT(webrtc_stat.key_frames_encoded, v8_stat->setKeyFramesEncoded);
   SET_STAT(webrtc_stat.qp_sum, v8_stat->setQpSum);
+  if (expose_hardware_caps && webrtc_stat.psnr_sum.has_value()) {
+    Vector<std::pair<String, double>> psnr_sum;
+    for (const auto& [key, value] : *webrtc_stat.psnr_sum) {
+      psnr_sum.emplace_back(String::FromUTF8(key), value);
+    }
+    v8_stat->setPsnrSum(std::move(psnr_sum));
+  }
   SET_STAT(webrtc_stat.total_encode_time, v8_stat->setTotalEncodeTime);
   SET_STAT(webrtc_stat.total_packet_send_delay,
            v8_stat->setTotalPacketSendDelay);
-  SET_STAT(webrtc_stat.quality_limitation_reason,
-           v8_stat->setQualityLimitationReason);
+  SET_STAT_ENUM(webrtc_stat.quality_limitation_reason,
+                v8_stat->setQualityLimitationReason,
+                V8RTCQualityLimitationReason);
   if (webrtc_stat.quality_limitation_durations.has_value()) {
     Vector<std::pair<String, double>> quality_durations;
     for (const auto& [key, value] : *webrtc_stat.quality_limitation_durations) {
@@ -304,6 +328,8 @@ RTCOutboundRtpStreamStats* ToV8Stat(
   }
   // https://w3c.github.io/webrtc-provisional-stats/#dom-rtcoutboundrtpstreamstats-contenttype
   SET_STAT(webrtc_stat.content_type, v8_stat->setContentType);
+
+  SET_STAT(webrtc_stat.packets_sent_with_ect1, v8_stat->setPacketsSentWithEct1);
   return v8_stat;
 }
 
@@ -413,7 +439,7 @@ RTCDataChannelStats* ToV8Stat(ScriptState* script_state,
   SET_STAT(webrtc_stat.protocol, v8_stat->setProtocol);
   SET_STAT(webrtc_stat.data_channel_identifier,
            v8_stat->setDataChannelIdentifier);
-  SET_STAT(webrtc_stat.state, v8_stat->setState);
+  SET_STAT_ENUM(webrtc_stat.state, v8_stat->setState, V8RTCDataChannelState);
   SET_STAT(webrtc_stat.messages_sent, v8_stat->setMessagesSent);
   SET_STAT(webrtc_stat.bytes_sent, v8_stat->setBytesSent);
   SET_STAT(webrtc_stat.messages_received, v8_stat->setMessagesReceived);
@@ -431,21 +457,25 @@ RTCTransportStats* ToV8Stat(ScriptState* script_state,
   SET_STAT(webrtc_stat.packets_received, v8_stat->setPacketsReceived);
   SET_STAT(webrtc_stat.bytes_sent, v8_stat->setBytesSent);
   SET_STAT(webrtc_stat.bytes_received, v8_stat->setBytesReceived);
-  SET_STAT(webrtc_stat.ice_role, v8_stat->setIceRole);
+  SET_STAT_ENUM(webrtc_stat.ice_role, v8_stat->setIceRole, V8RTCIceRole);
   SET_STAT(webrtc_stat.ice_local_username_fragment,
            v8_stat->setIceLocalUsernameFragment);
-  SET_STAT(webrtc_stat.dtls_state, v8_stat->setDtlsState);
-  SET_STAT(webrtc_stat.ice_state, v8_stat->setIceState);
+  SET_STAT_ENUM(webrtc_stat.dtls_state, v8_stat->setDtlsState,
+                V8RTCDtlsTransportState);
+  SET_STAT_ENUM(webrtc_stat.ice_state, v8_stat->setIceState,
+                V8RTCIceTransportState);
   SET_STAT(webrtc_stat.selected_candidate_pair_id,
            v8_stat->setSelectedCandidatePairId);
   SET_STAT(webrtc_stat.local_certificate_id, v8_stat->setLocalCertificateId);
   SET_STAT(webrtc_stat.remote_certificate_id, v8_stat->setRemoteCertificateId);
   SET_STAT(webrtc_stat.tls_version, v8_stat->setTlsVersion);
   SET_STAT(webrtc_stat.dtls_cipher, v8_stat->setDtlsCipher);
-  SET_STAT(webrtc_stat.dtls_role, v8_stat->setDtlsRole);
+  SET_STAT_ENUM(webrtc_stat.dtls_role, v8_stat->setDtlsRole, V8RTCDtlsRole);
   SET_STAT(webrtc_stat.srtp_cipher, v8_stat->setSrtpCipher);
   SET_STAT(webrtc_stat.selected_candidate_pair_changes,
            v8_stat->setSelectedCandidatePairChanges);
+  SET_STAT(webrtc_stat.ccfb_messages_received,
+           v8_stat->setCcbfMessagesReceived);
   // https://w3c.github.io/webrtc-provisional-stats/#dom-rtctransportstats-rtcptransportstatsid
   SET_STAT(webrtc_stat.rtcp_transport_stats_id,
            v8_stat->setRtcpTransportStatsId);
@@ -462,18 +492,22 @@ RTCIceCandidateStats* ToV8Stat(
   SET_STAT(webrtc_stat.address, v8_stat->setAddress);
   SET_STAT(webrtc_stat.port, v8_stat->setPort);
   SET_STAT(webrtc_stat.protocol, v8_stat->setProtocol);
-  SET_STAT(webrtc_stat.candidate_type, v8_stat->setCandidateType);
+  SET_STAT_ENUM(webrtc_stat.candidate_type, v8_stat->setCandidateType,
+                V8RTCIceCandidateType);
   SET_STAT(webrtc_stat.priority, v8_stat->setPriority);
   SET_STAT(webrtc_stat.url, v8_stat->setUrl);
-  SET_STAT(webrtc_stat.relay_protocol, v8_stat->setRelayProtocol);
+  SET_STAT_ENUM(webrtc_stat.relay_protocol, v8_stat->setRelayProtocol,
+                V8RTCIceServerTransportProtocol);
   SET_STAT(webrtc_stat.foundation, v8_stat->setFoundation);
   SET_STAT(webrtc_stat.related_address, v8_stat->setRelatedAddress);
   SET_STAT(webrtc_stat.related_port, v8_stat->setRelatedPort);
   SET_STAT(webrtc_stat.username_fragment, v8_stat->setUsernameFragment);
-  SET_STAT(webrtc_stat.tcp_type, v8_stat->setTcpType);
+  SET_STAT_ENUM(webrtc_stat.tcp_type, v8_stat->setTcpType,
+                V8RTCIceTcpCandidateType);
   // https://w3c.github.io/webrtc-provisional-stats/#dom-rtcicecandidatestats-networktype
   // Note: additional work needed to reach consensus on the privacy model.
-  SET_STAT(webrtc_stat.network_type, v8_stat->setNetworkType);
+  SET_STAT_ENUM(webrtc_stat.network_type, v8_stat->setNetworkType,
+                V8RTCNetworkType);
   // Non-standard and obsolete stats.
   SET_STAT(webrtc_stat.is_remote, v8_stat->setIsRemote);
   SET_STAT(webrtc_stat.ip, v8_stat->setIp);
@@ -490,7 +524,8 @@ RTCIceCandidatePairStats* ToV8Stat(
   SET_STAT(webrtc_stat.transport_id, v8_stat->setTransportId);
   SET_STAT(webrtc_stat.local_candidate_id, v8_stat->setLocalCandidateId);
   SET_STAT(webrtc_stat.remote_candidate_id, v8_stat->setRemoteCandidateId);
-  SET_STAT(webrtc_stat.state, v8_stat->setState);
+  SET_STAT_ENUM(webrtc_stat.state, v8_stat->setState,
+                V8RTCStatsIceCandidatePairState);
   SET_STAT(webrtc_stat.nominated, v8_stat->setNominated);
   SET_STAT(webrtc_stat.packets_sent, v8_stat->setPacketsSent);
   SET_STAT(webrtc_stat.packets_received, v8_stat->setPacketsReceived);
@@ -539,67 +574,84 @@ RTCCertificateStats* ToV8Stat(ScriptState* script_state,
 RTCStats* RTCStatsToIDL(ScriptState* script_state,
                         const webrtc::RTCStats& stat,
                         bool expose_hardware_caps) {
+  auto v8_stats_type = V8RTCStatsType::Create(String::FromUTF8(stat.type()));
+  CHECK(v8_stats_type.has_value());
+
   RTCStats* v8_stats = nullptr;
-  if (UNSAFE_TODO(strcmp(stat.type(), "codec")) == 0) {
-    v8_stats = ToV8Stat(script_state, stat.cast_to<webrtc::RTCCodecStats>());
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "inbound-rtp")) == 0) {
-    v8_stats =
-        ToV8Stat(script_state, stat.cast_to<webrtc::RTCInboundRtpStreamStats>(),
-                 expose_hardware_caps);
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "outbound-rtp")) == 0) {
-    v8_stats = ToV8Stat(script_state,
-                        stat.cast_to<webrtc::RTCOutboundRtpStreamStats>(),
-                        expose_hardware_caps);
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "remote-inbound-rtp")) == 0) {
-    v8_stats = ToV8Stat(script_state,
-                        stat.cast_to<webrtc::RTCRemoteInboundRtpStreamStats>());
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "remote-outbound-rtp")) == 0) {
-    v8_stats = ToV8Stat(
-        script_state, stat.cast_to<webrtc::RTCRemoteOutboundRtpStreamStats>());
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "media-source")) == 0) {
-    // Type media-source indicates a parent type. The actual stats are based on
-    // the kind.
-    const auto& media_source =
-        static_cast<const webrtc::RTCMediaSourceStats&>(stat);
-    DCHECK(media_source.kind.has_value());
-    std::string kind = media_source.kind.value_or("");
-    if (kind == "audio") {
+  switch (v8_stats_type->AsEnum()) {
+    case V8RTCStatsType::Enum::kCodec:
+      v8_stats = ToV8Stat(script_state, stat.cast_to<webrtc::RTCCodecStats>());
+      break;
+    case V8RTCStatsType::Enum::kInboundRtp:
+      v8_stats = ToV8Stat(script_state,
+                          stat.cast_to<webrtc::RTCInboundRtpStreamStats>(),
+                          expose_hardware_caps);
+      break;
+    case V8RTCStatsType::Enum::kOutboundRtp:
+      v8_stats = ToV8Stat(script_state,
+                          stat.cast_to<webrtc::RTCOutboundRtpStreamStats>(),
+                          expose_hardware_caps);
+      break;
+    case V8RTCStatsType::Enum::kRemoteInboundRtp:
+      v8_stats = ToV8Stat(
+          script_state, stat.cast_to<webrtc::RTCRemoteInboundRtpStreamStats>());
+      break;
+    case V8RTCStatsType::Enum::kRemoteOutboundRtp:
       v8_stats =
-          ToV8Stat(script_state, stat.cast_to<webrtc::RTCAudioSourceStats>());
-    } else if (kind == "video") {
-      v8_stats =
-          ToV8Stat(script_state, stat.cast_to<webrtc::RTCVideoSourceStats>());
-    } else {
-      NOTIMPLEMENTED() << "Unhandled media source stat type: " << kind;
-      return nullptr;
+          ToV8Stat(script_state,
+                   stat.cast_to<webrtc::RTCRemoteOutboundRtpStreamStats>());
+      break;
+    case V8RTCStatsType::Enum::kMediaSource: {
+      // Type media-source indicates a parent type. The actual stats are based
+      // on the kind.
+      const auto& media_source =
+          static_cast<const webrtc::RTCMediaSourceStats&>(stat);
+      DCHECK(media_source.kind.has_value());
+      std::string kind = media_source.kind.value_or("");
+      if (kind == "audio") {
+        v8_stats =
+            ToV8Stat(script_state, stat.cast_to<webrtc::RTCAudioSourceStats>());
+      } else if (kind == "video") {
+        v8_stats =
+            ToV8Stat(script_state, stat.cast_to<webrtc::RTCVideoSourceStats>());
+      } else {
+        NOTIMPLEMENTED() << "Unhandled media source stat type: " << kind;
+        return nullptr;
+      }
+      break;
     }
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "media-playout")) == 0) {
-    v8_stats =
-        ToV8Stat(script_state, stat.cast_to<webrtc::RTCAudioPlayoutStats>());
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "peer-connection")) == 0) {
-    v8_stats =
-        ToV8Stat(script_state, stat.cast_to<webrtc::RTCPeerConnectionStats>());
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "data-channel")) == 0) {
-    v8_stats =
-        ToV8Stat(script_state, stat.cast_to<webrtc::RTCDataChannelStats>());
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "transport")) == 0) {
-    v8_stats =
-        ToV8Stat(script_state, stat.cast_to<webrtc::RTCTransportStats>());
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "candidate-pair")) == 0) {
-    v8_stats = ToV8Stat(script_state,
-                        stat.cast_to<webrtc::RTCIceCandidatePairStats>());
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "local-candidate")) == 0) {
-    v8_stats = ToV8Stat(script_state,
-                        stat.cast_to<webrtc::RTCLocalIceCandidateStats>());
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "remote-candidate")) == 0) {
-    v8_stats = ToV8Stat(script_state,
-                        stat.cast_to<webrtc::RTCRemoteIceCandidateStats>());
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "certificate")) == 0) {
-    v8_stats =
-        ToV8Stat(script_state, stat.cast_to<webrtc::RTCCertificateStats>());
-  } else {
-    DVLOG(2) << "Unhandled stat-type " << stat.type();
-    return nullptr;
+    case V8RTCStatsType::Enum::kMediaPlayout:
+      v8_stats =
+          ToV8Stat(script_state, stat.cast_to<webrtc::RTCAudioPlayoutStats>());
+      break;
+    case V8RTCStatsType::Enum::kPeerConnection:
+      v8_stats = ToV8Stat(script_state,
+                          stat.cast_to<webrtc::RTCPeerConnectionStats>());
+      break;
+    case V8RTCStatsType::Enum::kDataChannel:
+      v8_stats =
+          ToV8Stat(script_state, stat.cast_to<webrtc::RTCDataChannelStats>());
+      break;
+    case V8RTCStatsType::Enum::kTransport:
+      v8_stats =
+          ToV8Stat(script_state, stat.cast_to<webrtc::RTCTransportStats>());
+      break;
+    case V8RTCStatsType::Enum::kCandidatePair:
+      v8_stats = ToV8Stat(script_state,
+                          stat.cast_to<webrtc::RTCIceCandidatePairStats>());
+      break;
+    case V8RTCStatsType::Enum::kLocalCandidate:
+      v8_stats = ToV8Stat(script_state,
+                          stat.cast_to<webrtc::RTCLocalIceCandidateStats>());
+      break;
+    case V8RTCStatsType::Enum::kRemoteCandidate:
+      v8_stats = ToV8Stat(script_state,
+                          stat.cast_to<webrtc::RTCRemoteIceCandidateStats>());
+      break;
+    case V8RTCStatsType::Enum::kCertificate:
+      v8_stats =
+          ToV8Stat(script_state, stat.cast_to<webrtc::RTCCertificateStats>());
+      break;
   }
 
   v8_stats->setId(String::FromUTF8(stat.id()));
@@ -613,7 +665,7 @@ RTCStats* RTCStatsToIDL(ScriptState* script_state,
                                    ConvertToBaseTimeTicks(stat.timestamp()))
                                .InMillisecondsF());
   }
-  v8_stats->setType(String::FromUTF8(stat.type()));
+  v8_stats->setType(*v8_stats_type);
   return v8_stats;
 }
 
@@ -626,15 +678,13 @@ class RTCStatsReportIterationSource final
 
   bool FetchNextItem(ScriptState* script_state,
                      String& key,
-                     ScriptObject& object,
-                     ExceptionState& exception_state) override {
-    return FetchNextItemIdl(script_state, key, object, exception_state);
+                     ScriptObject& object) override {
+    return FetchNextItemIdl(script_state, key, object);
   }
 
   bool FetchNextItemIdl(ScriptState* script_state,
                         String& key,
-                        ScriptObject& object,
-                        ExceptionState& exception_state) {
+                        ScriptObject& object) {
     const bool expose_hardware_caps =
         ExposeHardwareCapabilityStats(script_state);
     const webrtc::RTCStats* rtc_stats = report_->NextStats();
@@ -669,15 +719,14 @@ uint32_t RTCStatsReport::size() const {
 }
 
 PairSyncIterable<RTCStatsReport>::IterationSource*
-RTCStatsReport::CreateIterationSource(ScriptState*, ExceptionState&) {
+RTCStatsReport::CreateIterationSource(ScriptState*) {
   return MakeGarbageCollected<RTCStatsReportIterationSource>(
       report_->CopyHandle());
 }
 
-bool RTCStatsReport::GetMapEntryIdl(ScriptState* script_state,
-                                    const String& key,
-                                    ScriptObject& object,
-                                    ExceptionState&) {
+bool RTCStatsReport::GetMapEntry(ScriptState* script_state,
+                                 const String& key,
+                                 ScriptObject& object) {
   const webrtc::RTCStats* stats = report_->stats_report().Get(key.Utf8());
   if (!stats) {
     return false;
@@ -690,13 +739,6 @@ bool RTCStatsReport::GetMapEntryIdl(ScriptState* script_state,
   }
   object = ScriptObject::From(script_state, v8_stats);
   return true;
-}
-
-bool RTCStatsReport::GetMapEntry(ScriptState* script_state,
-                                 const String& key,
-                                 ScriptObject& object,
-                                 ExceptionState& exception_state) {
-  return GetMapEntryIdl(script_state, key, object, exception_state);
 }
 
 }  // namespace blink

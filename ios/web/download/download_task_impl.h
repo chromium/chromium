@@ -10,7 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #import "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -129,7 +129,7 @@ class DownloadTaskImpl : public DownloadTask {
   NSString* identifier_ = nil;
   bool has_performed_background_download_ = false;
   DownloadResult download_result_;
-  raw_ptr<WebState> web_state_ = nullptr;
+  raw_ptr<WebState, DanglingUntriaged> web_state_ = nullptr;
 
   base::FilePath path_;
   bool owns_file_ = false;

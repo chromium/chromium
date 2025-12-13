@@ -115,14 +115,14 @@ void HTMLDetailsElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   root.AppendChild(default_summary_style);
 }
 
-Element* HTMLDetailsElement::FindMainSummary() const {
+Element& HTMLDetailsElement::MainSummary() const {
   if (HTMLSummaryElement* summary =
           Traversal<HTMLSummaryElement>::FirstChild(*this))
-    return summary;
+    return *summary;
   HTMLSlotElement& slot =
       To<HTMLSlotElement>(*UserAgentShadowRoot()->firstChild());
   CHECK(IsA<HTMLSummaryElement>(*slot.firstChild()));
-  return To<Element>(slot.firstChild());
+  return *To<Element>(slot.firstChild());
 }
 
 void HTMLDetailsElement::ManuallyAssignSlots() {
@@ -178,8 +178,8 @@ void HTMLDetailsElement::ParseAttribute(
                             old_state, new_state, /*source=*/nullptr);
     pending_event_task_ = PostCancellableTask(
         *GetDocument().GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
-        WTF::BindOnce(&HTMLDetailsElement::DispatchPendingEvent,
-                      WrapPersistent(this), params.reason));
+        BindOnce(&HTMLDetailsElement::DispatchPendingEvent,
+                 WrapPersistent(this), params.reason));
 
     Element* content =
         EnsureUserAgentShadowRoot(SlotAssignmentMode::kManual)
@@ -292,42 +292,6 @@ bool HTMLDetailsElement::IsInteractiveContent() const {
   return true;
 }
 
-// static
-bool HTMLDetailsElement::ExpandDetailsAncestors(const Node& node) {
-  CHECK(&node);
-  // Since setting the open attribute could fire synchronous events (e.g.
-  // `blur`), which could mess with the FlatTreeTraversal iterator, we should
-  // first iterate details elements to open and then open them all.
-  HeapVector<Member<HTMLDetailsElement>> details_to_open;
-
-  for (Node& parent : FlatTreeTraversal::AncestorsOf(node)) {
-    if (HTMLDetailsElement* details = DynamicTo<HTMLDetailsElement>(parent)) {
-      // If the active match is inside the <summary> of a <details>, then we
-      // shouldn't expand the <details> because the active match is already
-      // visible.
-      bool inside_summary = false;
-      Element& summary = *details->FindMainSummary();
-      for (Node& ancestor : FlatTreeTraversal::AncestorsOf(node)) {
-        if (&ancestor == &summary) {
-          inside_summary = true;
-          break;
-        }
-      }
-
-      if (!inside_summary &&
-          !details->FastHasAttribute(html_names::kOpenAttr)) {
-        details_to_open.push_back(details);
-      }
-    }
-  }
-
-  for (HTMLDetailsElement* details : details_to_open) {
-    details->setAttribute(html_names::kOpenAttr, g_empty_atom);
-  }
-
-  return details_to_open.size();
-}
-
 bool HTMLDetailsElement::IsValidBuiltinCommand(HTMLElement& invoker,
                                                CommandEventType command) {
   bool parent_is_valid = HTMLElement::IsValidBuiltinCommand(invoker, command);
@@ -341,8 +305,9 @@ bool HTMLDetailsElement::IsValidBuiltinCommand(HTMLElement& invoker,
 
 bool HTMLDetailsElement::HandleCommandInternal(HTMLElement& invoker,
                                                CommandEventType command) {
-  CHECK(IsValidBuiltinCommand(invoker, command));
-
+  if (!IsValidBuiltinCommand(invoker, command)) {
+    return false;
+  }
   if (HTMLElement::HandleCommandInternal(invoker, command)) {
     return true;
   }
@@ -361,8 +326,7 @@ bool HTMLDetailsElement::HandleCommandInternal(HTMLElement& invoker,
     return false;
   }
 
-  if (RuntimeEnabledFeatures::ToggleEventSourceEnabled() &&
-      pending_toggle_event_) {
+  if (pending_toggle_event_) {
     // pending_toggle_event_ is created inside the attribute handling code which
     // we can't pass the invoker to, so we set it here instead.
     pending_toggle_event_ = ToggleEvent::Create(
@@ -374,6 +338,10 @@ bool HTMLDetailsElement::HandleCommandInternal(HTMLElement& invoker,
   }
 
   return true;
+}
+
+bool HTMLDetailsElement::IsAssignedToContentSlot(const Node& node) const {
+  return node.AssignedSlot() == content_slot_;
 }
 
 }  // namespace blink

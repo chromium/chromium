@@ -26,8 +26,8 @@ class ResourceMonitor : public resource_attribution::QueryResultObserver {
   void OnResourceUsageUpdated(
       const resource_attribution::QueryResultMap& results) override;
 
-  uint64_t get_max_resident_memory_kb() const {
-    return max_resident_memory_kb_;
+  base::ByteCount get_max_resident_memory() const {
+    return max_resident_memory_;
   }
 
  private:
@@ -37,7 +37,7 @@ class ResourceMonitor : public resource_attribution::QueryResultObserver {
   resource_attribution::ScopedResourceUsageQuery scoped_query_;
   resource_attribution::ScopedQueryObservation query_observation_{this};
 
-  uint64_t max_resident_memory_kb_ = 0;
+  base::ByteCount max_resident_memory_;
 };
 
 }  // namespace screen_ai

@@ -84,6 +84,7 @@ class Allocator {
   virtual ~Allocator() = default;
   virtual void* Alloc(size_t size) = 0;
   virtual void Free(void* data) = 0;
+  virtual void FreeWithSize(void* data, size_t size) = 0;
 };
 
 class SystemAllocator : public Allocator {
@@ -92,6 +93,7 @@ class SystemAllocator : public Allocator {
   ~SystemAllocator() override = default;
   void* Alloc(size_t size) override { return malloc(size); }
   void Free(void* data) override { free(data); }
+  void FreeWithSize(void* data, size_t size) override { free(data); }
 };
 
 class PartitionAllocator : public Allocator {
@@ -108,6 +110,13 @@ class PartitionAllocator : public Allocator {
     // more common with PA-E.
     PartitionRoot::FreeInlineInUnknownRoot<
         partition_alloc::FreeFlags::kNoHooks>(data);
+  }
+  void FreeWithSize(void* data, size_t size) override {
+    // Even though it's easy to invoke the fast path with
+    // alloc_.Free<kNoHooks>(), we chose to use the slower path, because it's
+    // more common with PA-E.
+    PartitionRoot::FreeWithSizeInlineInUnknownRoot<
+        partition_alloc::FreeFlags::kNoHooks>(data, size);
   }
 
  private:
@@ -136,6 +145,13 @@ class PartitionAllocatorWithThreadCache : public Allocator {
     // more common with PA-E.
     PartitionRoot::FreeInlineInUnknownRoot<
         partition_alloc::FreeFlags::kNoHooks>(data);
+  }
+  void FreeWithSize(void* data, size_t size) override {
+    // Even though it's easy to invoke the fast path with
+    // alloc_.Free<kNoHooks>(), we chose to use the slower path, because it's
+    // more common with PA-E.
+    PartitionRoot::FreeWithSizeInlineInUnknownRoot<
+        partition_alloc::FreeFlags::kNoHooks>(data, size);
   }
 
  private:
@@ -175,6 +191,13 @@ class PartitionAllocatorWithAllocationStackTraceRecorder : public Allocator {
     // more common with PA-E.
     PartitionRoot::FreeInlineInUnknownRoot<
         partition_alloc::FreeFlags::kNoHooks>(data);
+  }
+  void FreeWithSize(void* data, size_t size) override {
+    // Even though it's easy to invoke the fast path with
+    // alloc_.Free<kNoHooks>(), we chose to use the slower path, because it's
+    // more common with PA-E.
+    PartitionRoot::FreeWithSizeInlineInUnknownRoot<
+        partition_alloc::FreeFlags::kNoHooks>(data, size);
   }
 
  private:
@@ -349,6 +372,37 @@ float MultiBucketWithFree(Allocator* allocator) {
   return timer.LapsPerSecond() * kMultiBucketRounds;
 }
 
+float MultiBucketWithFreeWithSize(Allocator* allocator) {
+  std::vector<void*> elems;
+  elems.reserve(kMultiBucketRounds);
+  // Do an initial round of allocation to make sure that the buckets stay in
+  // use (and aren't accidentally released back to the OS).
+  for (int i = 0; i < kMultiBucketRounds; i++) {
+    void* cur =
+        allocator->Alloc(kMultiBucketMinimumSize + (i * kMultiBucketIncrement));
+    PA_CHECK(cur != nullptr);
+    elems.push_back(cur);
+  }
+
+  ::base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  do {
+    for (int i = 0; i < kMultiBucketRounds; i++) {
+      void* cur = allocator->Alloc(kMultiBucketMinimumSize +
+                                   (i * kMultiBucketIncrement));
+      PA_CHECK(cur != nullptr);
+      allocator->FreeWithSize(
+          cur, kMultiBucketMinimumSize + (i * kMultiBucketIncrement));
+    }
+    timer.NextLap();
+  } while (!timer.HasTimeLimitExpired());
+
+  for (void* ptr : elems) {
+    allocator->Free(ptr);
+  }
+
+  return timer.LapsPerSecond() * kMultiBucketRounds;
+}
+
 float DirectMapped(Allocator* allocator) {
   constexpr size_t kSize = 2 * 1000 * 1000;
 
@@ -460,13 +514,6 @@ void RunTest(int thread_count,
 
 class PartitionAllocMemoryAllocationPerfTest
     : public testing::TestWithParam<std::tuple<int, AllocatorType>> {
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-  void SetUp() override {
-    PartitionRoot::EnableShadowMetadata(
-        partition_alloc::internal::PoolHandleMask::kRegular |
-        partition_alloc::internal::PoolHandleMask::kBRP);
-  }
-#endif
 };
 
 // Only one partition with a thread cache: cannot use the thread cache when
@@ -519,6 +566,12 @@ TEST_P(PartitionAllocMemoryAllocationPerfTest, MultiBucketWithFree) {
   auto params = GetParam();
   RunTest(std::get<int>(params), std::get<AllocatorType>(params),
           MultiBucketWithFree, nullptr, "MultiBucketWithFree");
+}
+
+TEST_P(PartitionAllocMemoryAllocationPerfTest, MultiBucketWithFreeWithSize) {
+  auto params = GetParam();
+  RunTest(std::get<int>(params), std::get<AllocatorType>(params),
+          MultiBucketWithFreeWithSize, nullptr, "MultiBucketWithFreeWithSize");
 }
 
 TEST_P(PartitionAllocMemoryAllocationPerfTest, DirectMapped) {

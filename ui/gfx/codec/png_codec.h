@@ -27,8 +27,6 @@ class Size;
 // things, partially downloaded data.
 class CODEC_EXPORT PNGCodec {
  public:
-  static constexpr int DEFAULT_ZLIB_COMPRESSION = 6;
-
   enum ColorFormat {
     // 4 bytes per pixel, in RGBA order in memory regardless of endianness.
     // Alpha is unpremultiplied, the same as what PNG uses.
@@ -125,8 +123,8 @@ class CODEC_EXPORT PNGCodec {
       bool discard_transparency);
 
   // Call `PNGCodec::Encode` on the supplied SkBitmap `input`. The difference
-  // between this and the previous method is that this restricts compression to
-  // zlib q1, which is just rle encoding.
+  // between this and the previous method is that this uses low compression
+  // level (resulting in faster encoding runtime).
   static std::optional<std::vector<uint8_t>> FastEncodeBGRASkBitmap(
       const SkBitmap& input,
       bool discard_transparency);

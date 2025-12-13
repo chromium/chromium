@@ -19,7 +19,6 @@
 #include "base/numerics/ranges.h"
 #include "base/strings/to_string.h"
 #include "base/task/common/task_annotator.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "cc/base/math_util.h"
@@ -689,7 +688,7 @@ ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
     }
 
     AggregatedRenderPassId prev_root_pass_id;
-    uint64_t prev_frame_index = 0u;
+    uint32_t prev_frame_index = 0u;
     // If this is the first frame in a new surface there might be damage
     // compared to the previous frame in a different surface.
     if (surface->surface_id() != surface->previous_frame_surface_id()) {
@@ -1093,10 +1092,8 @@ void SurfaceAggregator::EmitSurfaceContent(
           dest_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
       quad->SetNew(shared_quad_state, quad_rect, quad_visible_rect,
                    remapped_pass_id, kInvalidResourceId, gfx::RectF(),
-                   gfx::Size(), gfx::Vector2dF(1.0f, 1.0f), gfx::PointF(),
-                   tex_coord_rect,
-                   /*force_anti_aliasing_off=*/false,
-                   /* backdrop_filter_quality*/ 1.0f);
+                   gfx::Size(), tex_coord_rect,
+                   /*force_anti_aliasing_off=*/false);
     }
   }
 
@@ -1303,10 +1300,8 @@ void SurfaceAggregator::AddRenderPassHelper(
       render_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   quad->SetNew(shared_quad_state, current_output_rect, current_output_rect,
                quad_pass_id, kInvalidResourceId, gfx::RectF(), gfx::Size(),
-               gfx::Vector2dF(1.0f, 1.0f), gfx::PointF(),
                gfx::RectF(current_output_rect),
-               /*force_anti_aliasing_off=*/false,
-               /*backdrop_filter_quality*/ 1.0f);
+               /*force_anti_aliasing_off=*/false);
   dest_pass_list_->push_back(std::move(render_pass));
 }
 
@@ -2164,7 +2159,6 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   // Start recording new stats for this aggregation.
   stats_.emplace();
 
-  base::ElapsedTimer prewalk_timer;
   ResolvedFrameData* resolved_frame = GetResolvedFrame(surface_id);
 
   if (!resolved_frame || !resolved_frame->is_valid()) {
@@ -2246,7 +2240,6 @@ AggregatedFrame SurfaceAggregator::Aggregate(
       PrewalkSurface(*resolved_frame,
                      /*parent_pass=*/nullptr,
                      /*damage_from_parent=*/gfx::Rect(), prewalk_result);
-  stats_->prewalk_time = prewalk_timer.Elapsed();
 
   root_damage_rect_ = prewalk_damage_rect;
   // |root_damage_rect_| is used to restrict aggregating quads only if they
@@ -2271,13 +2264,11 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   frame.content_color_usage = prewalk_result.content_color_usage;
   frame.page_fullscreen_mode = prewalk_result.page_fullscreen_mode;
 
-  base::ElapsedTimer copy_timer;
   CopyUndrawnSurfaces(&prewalk_result);
   referenced_surfaces_.insert(surface_id);
   CopyPasses(*resolved_frame);
   referenced_surfaces_.erase(surface_id);
   DCHECK(referenced_surfaces_.empty());
-  stats_->copy_time = copy_timer.Elapsed();
 
   RecordStatHistograms();
 
@@ -2354,13 +2345,6 @@ AggregatedFrame SurfaceAggregator::Aggregate(
 }
 
 void SurfaceAggregator::RecordStatHistograms() {
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Compositing.SurfaceAggregator.PrewalkUs", stats_->prewalk_time,
-      kHistogramMinTime, kHistogramMaxTime, kHistogramTimeBuckets);
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Compositing.SurfaceAggregator.CopyUs", stats_->copy_time,
-      kHistogramMinTime, kHistogramMaxTime, kHistogramTimeBuckets);
-
   UMA_HISTOGRAM_BOOLEAN("Compositing.SurfaceAggregator.HasCopyRequestsPerFrame",
                         has_copy_requests_);
   UMA_HISTOGRAM_BOOLEAN(

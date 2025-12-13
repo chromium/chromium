@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/velocity_tracker/velocity_tracker.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -83,8 +79,8 @@ struct Estimator {
     degree = 0;
     confidence = 0;
     for (size_t i = 0; i <= kMaxDegree; i++) {
-      xcoeff[i] = 0;
-      ycoeff[i] = 0;
+      UNSAFE_TODO(xcoeff[i]) = 0;
+      UNSAFE_TODO(ycoeff[i]) = 0;
     }
   }
 };
@@ -92,7 +88,7 @@ struct Estimator {
 float VectorDot(const float* a, const float* b, uint32_t m) {
   float r = 0;
   while (m--) {
-    r += *(a++) * *(b++);
+    r += *(UNSAFE_TODO(a++)) * *(UNSAFE_TODO(b++));
   }
   return r;
 }
@@ -100,7 +96,7 @@ float VectorDot(const float* a, const float* b, uint32_t m) {
 float VectorNorm(const float* a, uint32_t m) {
   float r = 0;
   while (m--) {
-    float t = *(a++);
+    float t = *(UNSAFE_TODO(a++));
     r += t * t;
   }
   return sqrtf(r);
@@ -548,14 +544,14 @@ static bool SolveLeastSquares(base::span<const float> x,
   // We just work from bottom-right to top-left calculating B's coefficients.
   float wy[M_ARRAY_LENGTH];
   for (uint32_t h = 0; h < m; h++) {
-    wy[h] = y[h] * w[h];
+    UNSAFE_TODO(wy[h]) = y[h] * w[h];
   }
   for (uint32_t i = n; i-- != 0;) {
-    out_b[i] = VectorDot(&q[i][0], wy, m);
+    UNSAFE_TODO(out_b[i]) = VectorDot(&q[i][0], wy, m);
     for (uint32_t j = n - 1; j > i; j--) {
-      out_b[i] -= r[i][j] * out_b[j];
+      UNSAFE_TODO(out_b[i]) -= r[i][j] * UNSAFE_TODO(out_b[j]);
     }
-    out_b[i] /= r[i][i];
+    UNSAFE_TODO(out_b[i]) /= r[i][i];
   }
 
   // Calculate the coefficient of determination as 1 - (SSerr / SStot) where
@@ -575,7 +571,7 @@ static bool SolveLeastSquares(base::span<const float> x,
     float term = 1;
     for (uint32_t i = 1; i < n; i++) {
       term *= x[h];
-      err -= term * out_b[i];
+      err -= term * UNSAFE_TODO(out_b[i]);
     }
     sserr += w[h] * w[h] * err * err;
     float var = y[h] - ymean;

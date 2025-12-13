@@ -12,15 +12,15 @@
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/frame/post_layout_snapshot_client.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
 namespace blink {
 
 // See ScrollTimeline.
 class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
-                                           public ScrollSnapshotClient {
+                                           public PostLayoutSnapshotClient {
  public:
   using ScrollOffsets = cc::ScrollTimeline::ScrollOffsets;
   using ScrollAxis = V8ScrollAxis::Enum;
@@ -109,7 +109,7 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
 
  protected:
   // For access to TimelineState.
-  friend class AnimationTrigger;
+  friend class TimelineTrigger;
 
   PhaseAndTime CurrentPhaseAndTime() override;
 
@@ -170,13 +170,13 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
     }
   };
 
-  // ScrollSnapshotClient:
+  // PostLayoutSnapshotClient:
   // https://wicg.github.io/scroll-animations/#avoiding-cycles
   // Snapshots scroll timeline current time and phase.
   // Called once per animation frame.
-  void UpdateSnapshot() override;
-  bool ValidateSnapshot() override;
+  bool UpdateSnapshot() override;
   bool ShouldScheduleNextService() override;
+  void UpdateSnapshotForServiceAnimations() override;
 
  public:
   // Public for DeferredTimeline::ComputeTimelineState.
@@ -187,6 +187,8 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
                              TimelineState* state) const;
 
  private:
+  bool UpdateSnapshotInternal(bool service_animations);
+
   // Snapshotted value produced by the last SnapshotState call.
   TimelineState timeline_state_snapshotted_;
 };

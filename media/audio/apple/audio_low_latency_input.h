@@ -37,18 +37,18 @@
 
 #include <AudioUnit/AudioUnit.h>
 
+#include <atomic>
 #include <memory>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/audio/agc_audio_stream.h"
+#include "media/audio/apple/glitch_helper.h"
 #include "media/audio/audio_io.h"
-#include "media/audio/system_glitch_reporter.h"
 #include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_block_fifo.h"
 #include "media/base/audio_glitch_info.h"
@@ -157,10 +157,6 @@ class MEDIA_EXPORT AUAudioInputStream
   // Adds extra UMA stats when it has been detected that startup failed.
   void AddHistogramsForFailedStartup();
 
-  // Updates capture timestamp, current lost frames, and total lost frames and
-  // glitches.
-  void UpdateCaptureTimestamp(const AudioTimeStamp* timestamp);
-
   // Called from the dtor and when the stream is reset.
   void ReportAndResetStats();
 
@@ -228,7 +224,7 @@ class MEDIA_EXPORT AUAudioInputStream
   // is safe since after stopping the audio unit there is no current callback
   // ongoing and no further callbacks coming.
   bool got_input_callback_ = false;
-  base::subtle::Atomic32 input_callback_is_active_ = false;
+  std::atomic<bool> input_callback_is_active_ = false;
 
   // Timer which triggers CheckInputStartupSuccess() to verify that input
   // callbacks have started as intended after a successful call to Start().
@@ -247,23 +243,8 @@ class MEDIA_EXPORT AUAudioInputStream
   // The of the output device to cancel echo from.
   AudioDeviceID output_device_id_for_aec_ = kAudioObjectUnknown;
 
-  // Stores the timestamp of the previous audio buffer provided by the OS.
-  // We use this in combination with |last_number_of_frames_| to detect when
-  // the OS has decided to skip providing frames (i.e. a glitch).
-  // This can happen in case of high CPU load or excessive blocking on the
-  // callback audio thread.
-  // These variables are only touched on the callback thread and then read
-  // in the dtor (when no longer receiving callbacks).
-  // NOTE: Float64 and UInt32 types are used for native API compatibility.
-  Float64 last_sample_time_ = 0;
-  UInt32 last_number_of_frames_ = 0;
-
-  // Used to aggregate and report glitch metrics to UMA (periodically) and to
-  // text logs (when a stream ends).
-  SystemGlitchReporter glitch_reporter_;
-
-  // Used to accumulate glitches to be passed to the AudioInputCallback.
-  AudioGlitchInfo::Accumulator glitch_accumulator_;
+  // Used to detect and report glitches.
+  GlitchHelper glitch_helper_;
 
   AmplitudePeakDetector peak_detector_;
 

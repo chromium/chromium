@@ -24,6 +24,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -47,10 +49,10 @@
 @end
 
 @implementation PostRestoreSignInProvider {
-  raw_ptr<syncer::SyncUserSettings> _syncUserSettings;
+  raw_ptr<syncer::SyncUserSettings, DanglingUntriaged> _syncUserSettings;
   std::optional<AccountInfo> _accountInfo;
   bool _historySyncEnabled;
-  raw_ptr<Browser> _browser;
+  raw_ptr<Browser, DanglingUntriaged> _browser;
 }
 
 #pragma mark - Initializers
@@ -91,7 +93,18 @@
   base::UmaHistogramEnumeration(kIOSPostRestoreSigninChoiceHistogram,
                                 IOSPostRestoreSigninChoice::Continue);
   ClearPreRestoreIdentity(_prefService);
-
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(_browser->GetProfile());
+  switch (authenticationService->GetServiceStatus()) {
+    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+    case AuthenticationService::ServiceStatus::SigninAllowed:
+      break;
+    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
+    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+      // The user is not allowed anymore to be signed. This can be skipped.
+      return;
+  }
   if ([self isSignedIn]) {
     // The user has signed in after the promo was presented, so sign-in has
     // already completed.
@@ -166,7 +179,8 @@
 
   __weak __typeof(self) weakSelf = self;
   SigninCoordinatorCompletionCallback completion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> completionIdentity) {
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> completionIdentity) {
         if (result == SigninCoordinatorResultSuccess) {
           [weakSelf signinDone];
         }

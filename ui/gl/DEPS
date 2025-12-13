@@ -21,9 +21,6 @@ specific_include_rules = {
   "delegated_ink_point_renderer_gpu_unittest.cc": [
     "+ui/base/win/hidden_window.h",
   ],
-  "dc_layer_tree\.(cc|h)": [
-    "+third_party/microsoft_dxheaders/src/include/composition",
-  ],
   "dcomp_presenter_unittest.cc": [
     "+ui/base/test/skia_gold_matching_algorithm.h",
     "+ui/base/test/skia_gold_pixel_diff.h",
@@ -36,6 +33,9 @@ specific_include_rules = {
   ],
   "egl_api_unittest.cc": [
     "+ui/ozone/public/ozone_platform.h",
+  ],
+  "egl_surface_io_surface\.(cc|h)": [
+    "+components/viz/common/resources/shared_image_format.h",
   ],
   "gl_angle_util_vulkan.cc": [
     "+third_party/angle/include/EGL/egl.h",

@@ -6,12 +6,8 @@
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_PAYMENTS_UI_CONSTANTS_H_
 
 #include "base/time/time.h"
-#include "ui/gfx/geometry/insets.h"
 
 namespace autofill {
-
-inline constexpr int kMigrationDialogMainContainerChildSpacing = 24;
-inline constexpr auto kMigrationDialogInsets = gfx::Insets::TLBR(0, 24, 48, 24);
 
 // The time span an Autofill card bubble should be visible even if the document
 // navigates away meanwhile. This is to ensure that the user has time to see

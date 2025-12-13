@@ -31,6 +31,8 @@
 #include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/camera_mic/vm_camera_mic_manager.h"
 #include "chrome/browser/ash/extensions/media_player_api.h"
 #include "chrome/browser/ash/extensions/media_player_event_router.h"
@@ -40,17 +42,14 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/user_manager/user_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/media_session.h"
@@ -140,22 +139,21 @@ void GetMediaCaptureState(const MediaStreamCaptureIndicator* indicator,
 void GetBrowserMediaCaptureState(const MediaStreamCaptureIndicator* indicator,
                                  const content::BrowserContext* context,
                                  MediaCaptureState* media_state_out) {
-  const BrowserList* desktop_list = BrowserList::GetInstance();
-
-  for (BrowserList::BrowserVector::const_iterator iter = desktop_list->begin();
-       iter != desktop_list->end(); ++iter) {
-    TabStripModel* tab_strip_model = (*iter)->tab_strip_model();
-    for (int i = 0; i < tab_strip_model->count(); ++i) {
-      content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
-      if (web_contents->GetBrowserContext() != context) {
-        continue;
-      }
-      GetMediaCaptureState(indicator, web_contents, media_state_out);
-      if (*media_state_out == MediaCaptureState::kAudioVideo) {
-        return;
-      }
-    }
-  }
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& browser) {
+        for (size_t i = 0; i < browser.GetWebContentsCount(); ++i) {
+          content::WebContents* web_contents = browser.GetWebContentsAt(i);
+          if (web_contents->GetBrowserContext() != context) {
+            continue;
+          }
+          GetMediaCaptureState(indicator, web_contents, media_state_out);
+          if (*media_state_out == MediaCaptureState::kAudioVideo) {
+            return ash::BrowserController::kBreakIteration;
+          }
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
 }
 
 void GetAppMediaCaptureState(const MediaStreamCaptureIndicator* indicator,
@@ -255,8 +253,7 @@ MediaClientImpl::MediaClientImpl()
                   ash::PrivacyHubNotificationController::OpenSupportUrl,
                   ash::SensorDisabledNotificationDelegate::Sensor::kCamera))}) {
   MediaCaptureDevicesDispatcher::GetInstance()->AddObserver(this);
-  BrowserList::AddObserver(this);
-
+  browser_observation_.Observe(ash::BrowserController::GetInstance());
   ash::VmCameraMicManager::Get()->AddObserver(this);
 
   // Camera service does not behave in non ChromeOS environment (e.g. testing,
@@ -292,8 +289,6 @@ MediaClientImpl::~MediaClientImpl() {
   }
 
   MediaCaptureDevicesDispatcher::GetInstance()->RemoveObserver(this);
-  BrowserList::RemoveObserver(this);
-
   ash::VmCameraMicManager::Get()->RemoveObserver(this);
 
   if (base::SysInfo::IsRunningOnChromeOS() &&
@@ -373,10 +368,11 @@ void MediaClientImpl::RequestCaptureState() {
 }
 
 void MediaClientImpl::SuspendMediaSessions() {
-  for (auto* web_contents : AllTabContentses()) {
-    content::MediaSession::Get(web_contents)
+  tabs::ForEachTabInterface([](tabs::TabInterface* tab) {
+    content::MediaSession::Get(tab->GetContents())
         ->Suspend(content::MediaSession::SuspendType::kSystem);
-  }
+    return true;
+  });
 }
 
 void MediaClientImpl::OnRequestUpdate(int render_process_id,
@@ -391,9 +387,8 @@ void MediaClientImpl::OnRequestUpdate(int render_process_id,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-void MediaClientImpl::OnBrowserSetLastActive(Browser* browser) {
-  active_context_ = browser ? browser->profile() : nullptr;
-
+void MediaClientImpl::OnBrowserActivated(ash::BrowserDelegate* browser) {
+  active_context_ = browser->GetBrowser().profile();
   UpdateForceMediaClientKeyHandling();
 }
 

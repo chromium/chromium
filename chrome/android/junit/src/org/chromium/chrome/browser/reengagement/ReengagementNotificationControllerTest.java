@@ -261,8 +261,7 @@ public class ReengagementNotificationControllerTest {
             return NotificationUmaTracker.SystemNotificationType.CHROME_REENGAGEMENT_3;
         }
 
-        assert false : "Invalid feature, cannot find notification type.";
-        return NotificationUmaTracker.SystemNotificationType.UNKNOWN;
+        throw new AssertionError("Invalid feature, cannot find notification type.");
     }
 
     private String getNotificationTitle(String feature) {
@@ -277,8 +276,7 @@ public class ReengagementNotificationControllerTest {
             return mContext.getString(R.string.chrome_reengagement_notification_3_title);
         }
 
-        assert false : "Invalid feature, cannot find notification title.";
-        return null;
+        throw new AssertionError("Invalid feature, cannot find notification title.");
     }
 
     private String getNotificationDescription(String feature) {
@@ -293,8 +291,7 @@ public class ReengagementNotificationControllerTest {
             return mContext.getString(R.string.chrome_reengagement_notification_3_description);
         }
 
-        assert false : "Invalid feature, cannot find notification description.";
-        return null;
+        throw new AssertionError("Invalid feature, cannot find notification description.");
     }
 
     private DefaultBrowserInfo.DefaultInfo createDefaultInfo(boolean passesPrecondition) {

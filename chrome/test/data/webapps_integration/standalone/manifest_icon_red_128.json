@@ -17,12 +17,13 @@
       "type": "image/png"
     },
     {
-      "src": "256x256-green.png",
+      "src": "256x256-red.png",
       "sizes": "256x256",
       "type": "image/png"
     }
   ],
-  "start_url": "/webapps_integration/standalone/basic.html",
+  "id": "webapps_integration/standalone/basic.html",
+  "start_url": "/webapps_integration/standalone/basic.html?manifest=manifest_icon_red_128.json",
   "scope": "/webapps_integration/standalone/",
   "display": "standalone"
 }

@@ -58,7 +58,7 @@ MULTIPROCESS_TEST_MAIN(gls_main) {
     if (!start_event_name.empty()) {
       base::win::ScopedHandle start_event_handle(
           ::CreateEvent(nullptr, false, false, start_event_name.c_str()));
-      if (start_event_handle.IsValid()) {
+      if (start_event_handle.is_valid()) {
         base::WaitableEvent start_event(std::move(start_event_handle));
         start_event.Wait();
       }

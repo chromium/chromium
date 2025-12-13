@@ -17,11 +17,13 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.widget.ImageView;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.cc.input.OffsetTag;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** An alternative progress bar implemented using ClipDrawable for simplicity and performance. */
@@ -32,17 +34,16 @@ public class ClipDrawableProgressBar extends ImageView {
         public final Rect progressBarRect = new Rect();
         public final Rect progressBarBackgroundRect = new Rect();
         public final Rect progressBarStaticBackgroundRect = new Rect();
-        public final Rect progressBarEndIndicator = new Rect();
 
         public int progressBarColor;
         public int progressBarBackgroundColor;
         public int progressBarStaticBackgroundColor;
         public float cornerRadius;
         public boolean progressBarVisualUpdateAvailable;
+        public boolean visible;
+        public @Nullable OffsetTag offsetTag;
     }
 
-    /** An observer for visible progress updates. */
-    @VisibleForTesting
     public interface ProgressBarObserver {
         /**
          * A notification that the visible progress has been updated. This may not coincide with
@@ -51,7 +52,7 @@ public class ClipDrawableProgressBar extends ImageView {
         void onVisibleProgressUpdated();
 
         /** A notification that the visibility of the progress bar has changed. */
-        void onVisibilityChanged();
+        void onCompositedLayersVisibilityChanged();
     }
 
     // Clip and Scale drawable's max level is a fixed constant 10000.
@@ -62,24 +63,32 @@ public class ClipDrawableProgressBar extends ImageView {
     @Nullable private ColorDrawable mForegroundColorDrawable;
     @Nullable private GradientDrawable mForegroundGradientDrawable;
     @Nullable private GradientDrawable mBackgroundGradientDrawable;
-    @Nullable private GradientDrawable mEndCapCircleDrawable;
     private int mForegroundColor;
     private int mBackgroundColor;
     private int mStaticBackgroundColor;
     protected final int mProgressBarHeight;
     private float mProgress;
-    private int mDesiredVisibility;
+
+    // The visibility of the android and composited UI shouldn't be coupled together. During
+    // browser controls movement, the android view goes invisible, but the composited layers should
+    // stay visible.
+    // TODO(peilinwang): If AnimateProgressBarInBrowser is successful, this class should not be
+    // subclassing a View anymore, so we would only need the composited layers visibility, and the
+    // android progress bar animations might need cleaning up.
+    private int mCompositedLayersVisibility;
+    private int mDesiredAndroidVisibility;
+
     /**
-     * The width of the moving background drawable in pixels.
-     * This is used when {@link #useGradientDrawable()} is true, where the background
-     * drawable scales with the inverse of the progress, leaving a small
-     * gap between the two drawables.
+     * The width of the moving background drawable in pixels. This is used when {@link
+     * #useGradientDrawable()} is true, where the background drawable scales with the inverse of the
+     * progress, leaving a small gap between the two drawables.
      */
     private int mScaledBackgroundWidth;
+
     private int mViewWidth;
 
     /** An observer of updates to the progress bar. */
-    private @Nullable ProgressBarObserver mProgressBarObserver;
+    private final ObserverList<ProgressBarObserver> mObservers = new ObserverList<>();
 
     /**
      * Create the progress bar with a custom height.
@@ -89,8 +98,9 @@ public class ClipDrawableProgressBar extends ImageView {
     public ClipDrawableProgressBar(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        setScaleType(ScaleType.FIT_XY); // Ensure the drawable fills the ImageView
-        mDesiredVisibility = getVisibility();
+        if (!shouldAnimateCompositedLayer()) {
+            mDesiredAndroidVisibility = getVisibility();
+        }
 
         mForegroundColor = SemanticColorUtils.getProgressBarForeground(getContext());
         mBackgroundColor = getContext().getColor(R.color.progress_bar_bg_color_list);
@@ -127,19 +137,11 @@ public class ClipDrawableProgressBar extends ImageView {
             // Background will be fully visible initially.
             backgroundScaleDrawable.setLevel(DRAWABLE_MAX_LEVEL);
 
-            // Create the end circular stop indicator
-            mEndCapCircleDrawable = createGradientDrawable(mForegroundColor, GradientDrawable.OVAL);
-            mEndCapCircleDrawable.setSize(mProgressBarHeight, mProgressBarHeight);
-
-            // A LayerDrawable with the 2 moving components, foreground and background, and the
-            // end stop indicator. Layers are drawn in the order they are added to the array,
+            // A LayerDrawable with the 2 moving components, foreground and background. Layers
+            // are drawn in the order they are added to the array,
             // with the last one appearing on top.
-            Drawable[] layers =
-                    {foregroundScaleDrawable, backgroundScaleDrawable, mEndCapCircleDrawable};
+            Drawable[] layers = {foregroundScaleDrawable, backgroundScaleDrawable};
             LayerDrawable layerDrawable = new LayerDrawable(layers);
-
-            // The circle (layer 2) will be drawn at the right end of the progress bar.
-            layerDrawable.setLayerGravity(2, Gravity.END | Gravity.CENTER_VERTICAL);
 
             setImageDrawable(layerDrawable);
         } else {
@@ -174,11 +176,8 @@ public class ClipDrawableProgressBar extends ImageView {
         return false;
     }
 
-    /** @param observer An update observer for the progress bar. */
-    @VisibleForTesting
-    public void setProgressBarObserver(ProgressBarObserver observer) {
-        assert mProgressBarObserver == null;
-        mProgressBarObserver = observer;
+    public void addObserver(ProgressBarObserver observer) {
+        mObservers.addObserver(observer);
     }
 
     /**
@@ -215,7 +214,10 @@ public class ClipDrawableProgressBar extends ImageView {
         } else {
             getDrawable().setLevel(Math.round(progress * DRAWABLE_MAX_LEVEL));
         }
-        if (mProgressBarObserver != null) mProgressBarObserver.onVisibleProgressUpdated();
+
+        for (ProgressBarObserver observer : mObservers) {
+            observer.onVisibleProgressUpdated();
+        }
     }
 
     /**
@@ -266,7 +268,11 @@ public class ClipDrawableProgressBar extends ImageView {
      * @param drawingInfoOut An instance that the result will be written.
      */
     public void getDrawingInfo(DrawingInfo drawingInfoOut) {
-        float effectiveAlpha = getVisibility() == VISIBLE ? getAlpha() : 0.0f;
+        boolean areCompositedLayersVisible = mCompositedLayersVisibility == VISIBLE;
+        if (shouldAnimateCompositedLayer()) {
+            drawingInfoOut.visible = areCompositedLayersVisible;
+        }
+        float effectiveAlpha = areCompositedLayersVisible ? getAlpha() : 0.0f;
         drawingInfoOut.progressBarColor = applyAlpha(mForegroundColor, effectiveAlpha);
         drawingInfoOut.progressBarBackgroundColor = applyAlpha(mBackgroundColor, effectiveAlpha);
         // Defaults to Color.TRANSPARENT
@@ -282,34 +288,37 @@ public class ClipDrawableProgressBar extends ImageView {
             }
         }
 
-        int endIndicatorSize = getBottom() - getTop();
+        // TODO(https://crbug.com/439461465) Remove updates which position the rectangles. These
+        // updates will be done in viz via OffsetTags.
         if (ViewCompat.getLayoutDirection(this) == LAYOUT_DIRECTION_LTR) {
             drawingInfoOut.progressBarStaticBackgroundRect.set(
                     getLeft(), getTop(), getRight(), getBottom());
-            drawingInfoOut.progressBarRect.set(
-                    getLeft(),
-                    getTop(),
-                    getLeft() + Math.round(mProgress * getWidth()),
-                    getBottom());
-            if (useGradientDrawable()) {
+            if (ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()) {
+                // Fix the width for the foreground and background Rects so that they are wide
+                // enough to cover the entire progress bar. They will be initially positioned to
+                // show 0 progress, and then horizontally translated in viz as the progress updates.
+                drawingInfoOut.progressBarRect.set(getLeft(), getTop(), getRight(), getBottom());
                 drawingInfoOut.progressBarBackgroundRect.set(
-                        getRight() - mScaledBackgroundWidth,
-                        getTop(),
-                        getRight(),
-                        getBottom());
+                        getLeft(), getTop(), getRight(), getBottom());
             } else {
-                drawingInfoOut.progressBarBackgroundRect.set(
-                        drawingInfoOut.progressBarRect.right,
+                drawingInfoOut.progressBarRect.set(
+                        getLeft(),
                         getTop(),
-                        getRight(),
+                        getLeft() + Math.round(mProgress * getWidth()),
                         getBottom());
+                if (useGradientDrawable()) {
+                    drawingInfoOut.progressBarBackgroundRect.set(
+                            getRight() - mScaledBackgroundWidth, getTop(), getRight(), getBottom());
+                } else {
+                    drawingInfoOut.progressBarBackgroundRect.set(
+                            drawingInfoOut.progressBarRect.right,
+                            getTop(),
+                            getRight(),
+                            getBottom());
+                }
             }
-            drawingInfoOut.progressBarEndIndicator.set(
-                    getRight() - endIndicatorSize,
-                    getTop(),
-                    getRight(),
-                    getBottom());
         } else {
+            // TODO(https://crbug.com/439659091): Implement animated progress bar for RTL.
             drawingInfoOut.progressBarStaticBackgroundRect.set(
                     getRight(), getTop(), getLeft(), getBottom());
             drawingInfoOut.progressBarRect.set(
@@ -330,21 +339,15 @@ public class ClipDrawableProgressBar extends ImageView {
                         drawingInfoOut.progressBarRect.left,
                         getBottom());
             }
-            drawingInfoOut.progressBarEndIndicator.set(
-                    getLeft(),
-                    getTop(),
-                    getLeft() + endIndicatorSize,
-                    getBottom());
         }
     }
 
     private void updateInternalVisibility() {
         int oldVisibility = getVisibility();
-        int newVisibility = mDesiredVisibility;
-        if (getAlpha() == 0 && mDesiredVisibility == VISIBLE) newVisibility = INVISIBLE;
-        if (oldVisibility != newVisibility) {
+        int newVisibility = mDesiredAndroidVisibility;
+        if (getAlpha() == 0 && mDesiredAndroidVisibility == VISIBLE) newVisibility = INVISIBLE;
+        if (oldVisibility != newVisibility && !shouldAnimateCompositedLayer()) {
             super.setVisibility(newVisibility);
-            if (mProgressBarObserver != null) mProgressBarObserver.onVisibilityChanged();
         }
     }
 
@@ -355,12 +358,12 @@ public class ClipDrawableProgressBar extends ImageView {
     // View implementations.
 
     /**
-     * Note that this visibility might not be respected for optimization. For example, if alpha
-     * is 0, it will remain View#INVISIBLE even if this is called with View#VISIBLE.
+     * Note that this visibility might not be respected for optimization. For example, if alpha is
+     * 0, it will remain View#INVISIBLE even if this is called with View#VISIBLE.
      */
     @Override
     public void setVisibility(int visibility) {
-        mDesiredVisibility = visibility;
+        mDesiredAndroidVisibility = visibility;
         updateInternalVisibility();
     }
 
@@ -397,9 +400,7 @@ public class ClipDrawableProgressBar extends ImageView {
     public void setForegroundColor(int color) {
         if (useGradientDrawable()) {
             assert mForegroundGradientDrawable != null;
-            assert mEndCapCircleDrawable != null;
             mForegroundGradientDrawable.setColor(color);
-            mEndCapCircleDrawable.setColor(color);
         } else {
             assert mForegroundColorDrawable != null;
             mForegroundColorDrawable.setColor(color);
@@ -422,7 +423,29 @@ public class ClipDrawableProgressBar extends ImageView {
 
     @Override
     protected boolean onSetAlpha(int alpha) {
+        int oldVisibility = mCompositedLayersVisibility;
+        if (alpha == 0) {
+            mCompositedLayersVisibility = INVISIBLE;
+        } else {
+            mCompositedLayersVisibility = VISIBLE;
+        }
+
+        if (oldVisibility != mCompositedLayersVisibility) {
+            for (ProgressBarObserver observer : mObservers) {
+                observer.onCompositedLayersVisibilityChanged();
+            }
+        }
+
         updateInternalVisibility();
         return super.onSetAlpha(alpha);
+    }
+
+    public boolean shouldAnimateCompositedLayer() {
+        return ChromeFeatureList.sAndroidAnimatedProgressBarInViz.isEnabled()
+                || ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled();
+    }
+
+    public int getCompositedVisibilityForTesting() {
+        return mCompositedLayersVisibility;
     }
 }

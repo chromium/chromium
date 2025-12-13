@@ -38,6 +38,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
@@ -116,7 +117,7 @@ class OnConsentStateUpdateClosureRunner
                                     base::OnceClosure on_declined_closure)
       : on_approved_closure_(std::move(on_approved_closure)),
         on_declined_closure_(std::move(on_declined_closure)) {
-    CHECK(chromeos::MagicBoostState::Get()->IsMagicBoostAvailable());
+    CHECK(chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures());
     magic_boost_state_observation_.Observe(chromeos::MagicBoostState::Get());
   }
 
@@ -210,7 +211,7 @@ std::unique_ptr<manta::MahiProvider> CreateProvider() {
 // Returns true if the Mahi feature has been approved to be used.
 bool IsMahiApproved() {
   auto* magic_boost_state = chromeos::MagicBoostState::Get();
-  CHECK(magic_boost_state->IsMagicBoostAvailable())
+  CHECK(magic_boost_state->IsUserEligibleForGenAIFeatures())
       << "GenAI feature surfaced to non-eligible user.";
   return magic_boost_state->hmr_consent_status() ==
          chromeos::HMRConsentStatus::kApproved;
@@ -633,7 +634,8 @@ void MahiManagerImpl::OpenMahiPanelForElucidation(
 }
 
 bool MahiManagerImpl::IsEnabled() {
-  return mahi_availability::IsMahiAvailable() &&
+  return (mahi_availability::IsMahiAvailable().has_value() &&
+          mahi_availability::IsMahiAvailable().value()) &&
          chromeos::MagicBoostState::Get()->hmr_enabled().value_or(false);
 }
 
@@ -777,7 +779,7 @@ void MahiManagerImpl::MaybeObserveHistoryService() {
 
 void MahiManagerImpl::InterrputRequestHandlingWithDisclaimerView(
     crosapi::mojom::MahiContextMenuRequestPtr context_menu_request) {
-  CHECK(chromeos::MagicBoostState::Get()->IsMagicBoostAvailable());
+  CHECK(chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures());
 
   // Cache the display id before moving `context_menu_request`.
   const int64_t display_id = context_menu_request->display_id;

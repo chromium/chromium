@@ -6,7 +6,6 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -31,7 +30,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/snapshot/snapshot.h"
 #include "ui/views/view.h"
 

@@ -15,7 +15,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/toolbar/jni_headers/ScrollingBottomViewSceneLayer_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace android {
@@ -41,13 +40,13 @@ ScrollingBottomViewSceneLayer::~ScrollingBottomViewSceneLayer() = default;
 
 void ScrollingBottomViewSceneLayer::UpdateScrollingBottomViewLayer(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jresource_manager,
+    const JavaRef<jobject>& jresource_manager,
     jint view_resource_id,
     jint shadow_height,
     jfloat x_offset,
     jfloat y_offset,
     bool show_shadow,
-    const JavaParamRef<jobject>& joffset_tag) {
+    const JavaRef<jobject>& joffset_tag) {
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
   ui::Resource* bottom_view_resource = resource_manager->GetResource(
@@ -85,7 +84,7 @@ void ScrollingBottomViewSceneLayer::UpdateScrollingBottomViewLayer(
 
 void ScrollingBottomViewSceneLayer::SetContentTree(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcontent_tree) {
+    const JavaRef<jobject>& jcontent_tree) {
   SceneLayer* content_tree = FromJavaObject(env, jcontent_tree);
   if (!content_tree || !content_tree->layer())
     return;
@@ -111,7 +110,7 @@ bool ScrollingBottomViewSceneLayer::ShouldShowBackground() {
 
 static jlong JNI_ScrollingBottomViewSceneLayer_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jobj) {
+    const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
   ScrollingBottomViewSceneLayer* scene_layer =
       new ScrollingBottomViewSceneLayer(env, jobj);
@@ -119,3 +118,5 @@ static jlong JNI_ScrollingBottomViewSceneLayer_Init(
 }
 
 }  // namespace android
+
+DEFINE_JNI(ScrollingBottomViewSceneLayer)

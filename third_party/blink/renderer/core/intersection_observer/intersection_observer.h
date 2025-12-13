@@ -125,7 +125,6 @@ class CORE_EXPORT IntersectionObserver final
     // Indicates whether the overflow clip edge should be used instead of the
     // bounding box if appropriate.
     bool use_overflow_clip_edge = false;
-    bool needs_initial_observation_with_detached_target = true;
 
     // Indicates whether we should compute and expose the occluder node Id.
     // This only works if you've already set true `track_visibility`.

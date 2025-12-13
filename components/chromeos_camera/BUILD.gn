@@ -150,13 +150,14 @@ source_set("mjpeg_decode_accelerator_service_unittest") {
   ]
 }
 
-if (use_v4l2_codec || use_vaapi) {
+if (use_linux_video_acceleration) {
   test("jpeg_encode_accelerator_unittest") {
     deps = [
       ":jpeg_encode_accelerator",
       ":jpeg_encode_accelerator_service",
       "//base",
       "//base/test:test_support",
+      "//components/viz/common/resources:shared_image_format",
       "//media:test_support",
       "//media/gpu:buildflags",
       "//media/gpu/chromeos:video_frame_mapper",
@@ -192,6 +193,7 @@ test("jpeg_decode_accelerator_unittest") {
     ":mjpeg_decode_accelerator_service",
     "//base",
     "//base/test:test_support",
+    "//components/viz/common/resources:shared_image_format",
     "//media:test_support",
     "//media/gpu",
     "//media/gpu:buildflags",

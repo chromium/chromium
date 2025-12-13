@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>
+    Time mapAsync READ after a submit that doesn't use the buffer
+  </title>
+  <script src="../resources/runner.js"></script>
+  <script src="./resources/webgpu-perf-utils.js"></script>
+</head>
+
+<body>
+  <script>
+    (async () => {
+      const adapter = await getAdapter();
+      const device = await adapter.requestDevice();
+      const mappableBuffer = device.createBuffer({
+        size: 4,
+        usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST,
+      });
+      const otherBuffer1 = device.createBuffer({
+        size: 4,
+        usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.COPY_SRC,
+      });
+      const otherBuffer2 = device.createBuffer({
+        size: 4,
+        usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.COPY_SRC,
+      });
+
+      // Wait to make sure the device is fully ready
+      await device.queue.onSubmittedWorkDone();
+
+      PerfTestRunner.startMeasureValuesAsync({
+        unit: 'ms',
+        warmUpCount: 1,
+        iterationCount: 15,
+        ...loopTestForTime(250, async () => {
+          // Enqueue some work that mapAsync must wait for
+          const enc = device.createCommandEncoder();
+          enc.copyBufferToBuffer(otherBuffer1, 0, otherBuffer2, 0, 4);
+          device.queue.submit([enc.finish()]);
+          // Map the buffer
+          await mappableBuffer.mapAsync(GPUMapMode.READ);
+          mappableBuffer.getMappedRange();
+          mappableBuffer.unmap();
+        }),
+      });
+    })();
+  </script>
+</body>
+
+</html>

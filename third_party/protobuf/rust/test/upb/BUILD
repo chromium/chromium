@@ -49,3 +49,29 @@ rust_test(
         "@crate_index//:googletest",
     ],
 )
+
+rust_test(
+    name = "thread_local_arena_test",
+    srcs = ["thread_local_arena_test.rs"],
+    aliases = {
+        "//rust:protobuf_upb_export": "protobuf",
+    },
+    deps = [
+        "//rust:protobuf_upb_export",
+        "//rust/test:unittest_upb_rust_proto",
+        "@crate_index//:googletest",
+    ],
+)
+
+rust_test(
+    name = "entity_type_test",
+    srcs = ["entity_type_test.rs"],
+    aliases = {
+        "//rust:protobuf_upb_export": "protobuf",
+    },
+    deps = [
+        "//rust:protobuf_upb_export",
+        "//rust/test:unittest_upb_rust_proto",
+        "@crate_index//:googletest",
+    ],
+)

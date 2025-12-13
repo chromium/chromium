@@ -179,17 +179,6 @@ TEST(UserDataDir, HasTempUserDataDirInHeadlessMode) {
   EXPECT_TRUE(::RemoveDirectory(result.c_str()));
 }
 
-TEST(UserDataDir, HasNoTempUserDataDirInOldHeadlessMode) {
-  std::wstring result;
-  std::wstring invalid;
-  GetUserDataDirectoryImpl(L"m.exe --headless=old", kFakeInstallConstants,
-                           &result, &invalid);
-  EXPECT_THAT(result, Not(HasSubstr(L"\\Headless")));
-  EXPECT_THAT(invalid, IsEmpty());
-
-  EXPECT_FALSE(IsTemporaryUserDataDirectoryCreatedForHeadless());
-}
-
 TEST(UserDataDir, HasNoHeadlessTempUserDataDirIfProvidedInCommandLine) {
   const std::wstring cmd_line_user_data_dir(L"C:\\UserDataDir");
 

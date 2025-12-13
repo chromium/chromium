@@ -41,7 +41,7 @@ namespace base {
 class SequencedTaskRunner;
 }
 
-namespace WTF {
+namespace blink {
 
 class WTF_EXPORT Partitions {
  public:
@@ -89,6 +89,7 @@ class WTF_EXPORT Partitions {
   static void* PA_MALLOC_FN BufferMalloc(size_t n, const char* type_name);
   static void* BufferTryRealloc(void* p, size_t n, const char* type_name);
   static void BufferFree(void* p);
+  static void BufferFreeWithSize(void* p, size_t size);
   static size_t BufferPotentialCapacity(size_t n);
 
   static void* PA_MALLOC_FN FastMalloc(size_t n, const char* type_name);
@@ -116,6 +117,6 @@ class WTF_EXPORT Partitions {
   static partition_alloc::PartitionRoot* buffer_root_;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_ALLOCATOR_PARTITIONS_H_

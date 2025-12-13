@@ -14,7 +14,7 @@ import android.os.UserManager;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 
@@ -52,7 +52,7 @@ public class SystemStateUtil {
     @SuppressWarnings("DiscouragedPrivateApi")
     public static @PrimaryCpuAbiBitness int getPrimaryCpuAbiBitness() {
         ApplicationInfo applicationInfo = null;
-        String packageName = BuildInfo.getInstance().packageName;
+        String packageName = ApkInfo.getPackageName();
         try {
             applicationInfo =
                     ContextUtils.getApplicationContext()

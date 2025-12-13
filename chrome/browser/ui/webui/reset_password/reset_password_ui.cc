@@ -20,6 +20,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -29,6 +30,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -37,6 +39,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/webui_util.h"
 
+using password_manager::metrics_util::PasswordType;
 using safe_browsing::LoginReputationClientResponse;
 using safe_browsing::RequestOutcome;
 

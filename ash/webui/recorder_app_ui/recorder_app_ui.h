@@ -24,9 +24,7 @@
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 #include "ui/message_center/message_center_observer.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 namespace ash {
 
@@ -65,9 +63,6 @@ class RecorderAppUI
 
   void BindInterface(
       mojo::PendingReceiver<recorder_app::mojom::PageHandler> receiver);
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          receiver);
   void BindInterface(
       mojo::PendingReceiver<crosapi::mojom::StructuredMetricsService> receiver);
 
@@ -227,8 +222,6 @@ class RecorderAppUI
   mojo::RemoteSet<recorder_app::mojom::QuietModeMonitor> quiet_mode_monitors_;
 
   bool in_quiet_mode_;
-
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   std::unique_ptr<ash::StructuredMetricsServiceWrapper>
       structured_metrics_service_wrapper_;

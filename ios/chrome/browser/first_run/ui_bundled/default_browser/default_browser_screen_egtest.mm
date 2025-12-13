@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -96,12 +96,12 @@ id<GREYMatcher> DefaultPromoSubtitle() {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Sign in.
-  [self tapPromoButton:kPromoStylePrimaryActionAccessibilityIdentifier];
+  [self tapPromoButton:chrome_test_util::ButtonStackPrimaryButton()];
   // Enable history/tab sync.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:
           grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
-  [self tapPromoButton:kPromoStylePrimaryActionAccessibilityIdentifier];
+  [self tapPromoButton:chrome_test_util::ButtonStackPrimaryButton()];
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey
@@ -117,8 +117,7 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 }
 
 // Taps a promo button.
-- (void)tapPromoButton:(NSString*)buttonID {
-  id<GREYMatcher> buttonMatcher = grey_accessibilityID(buttonID);
+- (void)tapPromoButton:(id<GREYMatcher>)buttonMatcher {
   id<GREYMatcher> scrollViewMatcher =
       grey_accessibilityID(kPromoStyleScrollViewAccessibilityIdentifier);
   // Needs to scroll slowly to make sure to not miss a cell if it is not

@@ -10,10 +10,14 @@
 
 #include "base/base_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/memory_consumer_registry_destruction_observer.h"
 #include "base/memory_coordinator/traits.h"
 #include "base/sequence_checker.h"
+#include "base/types/pass_key.h"
 
 namespace base {
+
+class MemoryConsumerRegistry;
 
 // The MemoryConsumer is used to coordinate memory usage across all processes.
 // By registering with the MemoryConsumerRegistry, instances of this class are
@@ -69,6 +73,7 @@ namespace base {
 //
 class BASE_EXPORT MemoryConsumer {
  public:
+  MemoryConsumer();
   virtual ~MemoryConsumer() = default;
 
   // The memory limit, expressed as a percentage.
@@ -104,22 +109,56 @@ class BASE_EXPORT MemoryConsumer {
 
 // Similar to ScopedObservation, registers a MemoryConsumer with the global
 // MemoryConsumerRegistry.
-class BASE_EXPORT ScopedMemoryConsumerRegistration {
+//
+// If `check_unregister` is kEnabled, this class will assert that the
+// registration object is destroyed before the destruction of the global
+// registry. It can be useful to disable this assert for globals that are
+// sometimes leaked.
+//
+// If `check_registry_exists` is kEnabled, this class will assert that the
+// global MemoryConsumerRegistry exists at the time the registration object is
+// created. Useful for MemoryConsumers that are used indirectly in tests where
+// there are no MemoryConsumerRegistry.
+class BASE_EXPORT MemoryConsumerRegistration
+    : public MemoryConsumerRegistryDestructionObserver {
  public:
-  ScopedMemoryConsumerRegistration(std::string_view consumer_id,
-                                   MemoryConsumerTraits traits,
-                                   MemoryConsumer* consumer);
+  enum class CheckUnregister {
+    kEnabled,
+    kDisabled,
+  };
+  enum class CheckRegistryExists {
+    kEnabled,
+    kDisabled,
+  };
 
-  ScopedMemoryConsumerRegistration(const ScopedMemoryConsumerRegistration&) =
+  MemoryConsumerRegistration(
+      std::string_view consumer_id,
+      MemoryConsumerTraits traits,
+      MemoryConsumer* consumer,
+      CheckUnregister check_unregister = CheckUnregister::kEnabled,
+      CheckRegistryExists check_registry_exists =
+          CheckRegistryExists::kEnabled);
+
+  MemoryConsumerRegistration(const MemoryConsumerRegistration&) = delete;
+  MemoryConsumerRegistration& operator=(const MemoryConsumerRegistration&) =
       delete;
-  ScopedMemoryConsumerRegistration& operator=(
-      const ScopedMemoryConsumerRegistration&) = delete;
 
-  ~ScopedMemoryConsumerRegistration();
+  ~MemoryConsumerRegistration() override;
+
+  // MemoryConsumerRegistryDestructionObserver:
+  void OnBeforeMemoryConsumerRegistryDestroyed() override;
 
  private:
+  using PassKey = PassKey<MemoryConsumerRegistration>;
+
   std::string consumer_id_;
   raw_ptr<MemoryConsumer> consumer_;
+
+  // Indicates if failure to unregister in time should cause a CHECK failure, or
+  // if it should simply be ignored.
+  CheckUnregister check_unregister_;
+
+  raw_ptr<MemoryConsumerRegistry> registry_;
 };
 
 }  // namespace base

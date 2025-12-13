@@ -20,6 +20,17 @@ NETWORK_SWITCH(kEnableUserAlternateProtocolPorts,
 NETWORK_SWITCH(kEnableQuic, "enable-quic")
 
 // Ignores certificate-related errors.
+// Note: In tests using net::EmbeddedTestServer with a custom hostname not
+// covered by the default test certs, using this switch is usually incorrect.
+// Strongly prefer to use ServerCertificateConfig with `dns_names` (if possible,
+// by calling the helper SetCertHostnames() on the EmbeddedTestServer instance),
+// to configure the test server with a valid certificate instead of ignoring
+// all certificate errors. If the test fixture inherits from
+// content::BrowserTestBase, consider using the `embedded_https_test_server()`
+// it provides, which is configured by default with a valid certificate for a
+// handful of hostnames commonly used in tests.
+// TODO(crbug.com/40147519): Retire this switch. This switch is an attractive
+// nuisance that doesn't do the right thing.
 NETWORK_SWITCH(kIgnoreCertificateErrors, "ignore-certificate-errors")
 
 // Specifies a comma separated list of host-port pairs to force use of QUIC on.
@@ -44,26 +55,6 @@ NETWORK_SWITCH(kQuicVersion, "quic-version")
 // Allows for forcing socket connections to http/https to use fixed ports.
 NETWORK_SWITCH(kTestingFixedHttpPort, "testing-fixed-http-port")
 NETWORK_SWITCH(kTestingFixedHttpsPort, "testing-fixed-https-port")
-
-// Comma-separated list of rules that control how hostnames are mapped.
-//
-// For example:
-//    "MAP * 127.0.0.1" --> Forces all hostnames to be mapped to 127.0.0.1
-//    "MAP *.google.com proxy" --> Forces all google.com subdomains to be
-//                                 resolved to "proxy".
-//    "MAP test.com [::1]:77 --> Forces "test.com" to resolve to IPv6 loopback.
-//                               Will also force the port of the resulting
-//                               socket address to be 77.
-//    "MAP * baz, EXCLUDE www.google.com" --> Remaps everything to "baz",
-//                                            except for "www.google.com".
-//
-// These mappings apply to the endpoint host in a net::URLRequest (the TCP
-// connect and host resolver in a direct connection, and the CONNECT in an http
-// proxy connection, and the endpoint host in a SOCKS proxy connection).
-//
-// TODO(mmenke): Can we just remove this?  host-resolver-rules is more generally
-// useful.
-NETWORK_SWITCH(kHostRules, "host-rules")
 
 // Enable "greasing" HTTP/2 frame types, that is, sending frames of reserved
 // types.  See https://tools.ietf.org/html/draft-bishop-httpbis-grease-00 for

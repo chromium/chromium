@@ -20,7 +20,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "components/remote_cocoa/browser/application_host.h"

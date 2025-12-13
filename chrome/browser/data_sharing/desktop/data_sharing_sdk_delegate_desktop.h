@@ -88,6 +88,10 @@ class DataSharingSDKDelegateDesktop : public DataSharingSDKDelegate,
       data_sharing::mojom::GroupAction action,
       data_sharing::mojom::GroupActionProgress progress) override;
 
+  content::WebContents* web_contents_for_testing() {
+    return web_contents_.get();
+  }
+
   void AddAccessToken(
       const data_sharing_pb::AddAccessTokenParams& params,
       base::OnceCallback<

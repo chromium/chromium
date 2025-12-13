@@ -67,13 +67,15 @@ void DataUseTracker::UpdateMetricsUsagePrefsInternal(
     bool is_metrics_service_usage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!is_cellular)
+  if (!is_cellular) {
     return;
+  }
 
   UpdateUsagePref(prefs::kUserCellDataUse, message_size);
   // TODO(holte): Consider adding seperate tracking for UKM.
-  if (is_metrics_service_usage)
+  if (is_metrics_service_usage) {
     UpdateUsagePref(prefs::kUmaCellDataUse, message_size);
+  }
 }
 
 bool DataUseTracker::ShouldUploadLogOnCellular(int log_bytes) {

@@ -35,6 +35,8 @@ class FakeGeolocationProvider : public GeolocationProvider {
       const LocationUpdateCallback& callback,
       bool enable_high_accuracy) override {
     location_update_callback_ = callback;
+    last_set_accuracy_ = enable_high_accuracy;
+    add_callback_count_++;
     return {};
   }
 
@@ -47,8 +49,13 @@ class FakeGeolocationProvider : public GeolocationProvider {
     }
   }
 
+  bool GetLastSetAccuracy() const { return last_set_accuracy_; }
+  int GetAddCallbackCount() const { return add_callback_count_; }
+
  private:
   LocationUpdateCallback location_update_callback_;
+  bool last_set_accuracy_;
+  int add_callback_count_ = 0;
 };
 
 }  // namespace
@@ -64,13 +71,32 @@ class GeolocationImplTest : public testing::Test {
 
   void SetUp() override {
     GeolocationProvider::SetInstanceForTesting(&geolocation_provider_);
-    geolocation_context_.BindGeolocation(
-        geolocation_.BindNewPipeAndPassReceiver(), GURL(),
-        mojom::GeolocationClientId::kForTesting);
+    BindGeolocation(/*has_precise_permission=*/true);
   }
 
   void TearDown() override {
     GeolocationProvider::SetInstanceForTesting(nullptr);
+  }
+
+  void BindGeolocation(bool has_precise_permission) {
+    geolocation_.reset();
+    geolocation_context_.BindGeolocation(
+        geolocation_.BindNewPipeAndPassReceiver(), GURL("https://test.com"),
+        mojom::GeolocationClientId::kForTesting,
+        /*has_precise_permission=*/true);
+  }
+
+  void OnPermissionUpdated(mojom::GeolocationPermissionLevel permission_level) {
+    geolocation_context_.OnPermissionUpdated(
+        url::Origin::Create(GURL("https://test.com")), permission_level);
+  }
+
+  bool GetLastSetAccuracy() {
+    return geolocation_provider_.GetLastSetAccuracy();
+  }
+
+  int GetAddCallbackCount() {
+    return geolocation_provider_.GetAddCallbackCount();
   }
 
   void SimulateLocationUpdate(const mojom::GeopositionResult& result) {
@@ -190,6 +216,110 @@ TEST_F(GeolocationImplTest, SetAndClearOverrideWithoutUpdate) {
   ClearOverride();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(clear_future.IsReady());
+}
+
+TEST_F(GeolocationImplTest, PermissionDenied) {
+  TestFuture<mojom::GeopositionResultPtr> future;
+  geolocation()->QueryNextPosition(future.GetCallback());
+  base::RunLoop().RunUntilIdle();
+
+  OnPermissionUpdated(mojom::GeolocationPermissionLevel::kDenied);
+
+  auto result = future.Take();
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error()->error_code,
+            mojom::GeopositionErrorCode::kPermissionDenied);
+}
+
+TEST_F(GeolocationImplTest, OnPermissionUpdated) {
+  // Initially, with kPrecise permission, high accuracy request is accepted.
+  geolocation()->SetHighAccuracyHint(true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(GetLastSetAccuracy());
+
+  // Updated to kApproximate permission , original high accuracy should be
+  // disabled.
+  OnPermissionUpdated(mojom::GeolocationPermissionLevel::kApproximate);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(GetLastSetAccuracy());
+
+  // Given that current permission is kApproximate, the request for high
+  // accuracy should be ignored.
+  geolocation()->SetHighAccuracyHint(true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(GetLastSetAccuracy());
+
+  // Change back to kPrecise, high accuracy should be re-enabled.
+  OnPermissionUpdated(mojom::GeolocationPermissionLevel::kPrecise);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(GetLastSetAccuracy());
+
+  // With kPrecise permission, the request for low accuracy should still be
+  // acceptable.
+  geolocation()->SetHighAccuracyHint(false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(GetLastSetAccuracy());
+}
+
+TEST_F(GeolocationImplTest, EffectiveHighAccuracy) {
+  // A subscription is created when `GeolocationImpl` is firstly created
+  // through `GeolocationContext::BindGeolocation` which invokes
+  // `GeolocationImpl::StartListeningForUpdates`.
+  EXPECT_EQ(1, GetAddCallbackCount());
+
+  // Set high accuracy to false. The `effective_high_accuracy_` is false before
+  // the first granted `SetHighAccuracyHint(true)` is called. A repeated
+  // `SetHighAccuracyHint(false)` should not create new subscription.
+  geolocation()->SetHighAccuracyHint(false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(GetLastSetAccuracy());
+  EXPECT_EQ(1, GetAddCallbackCount());
+
+  // Set high accuracy to true. A new subscription should be created.
+  // effective_high_accuracy will be true.
+  geolocation()->SetHighAccuracyHint(true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(GetLastSetAccuracy());
+  EXPECT_EQ(2, GetAddCallbackCount());
+
+  // Set high accuracy to true again. No new subscription should be created.
+  geolocation()->SetHighAccuracyHint(true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(GetLastSetAccuracy());
+  EXPECT_EQ(2, GetAddCallbackCount());
+
+  // Change permission to approximate. A new subscription should be created.
+  // effective_high_accuracy will be false.
+  OnPermissionUpdated(mojom::GeolocationPermissionLevel::kApproximate);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(GetLastSetAccuracy());
+  EXPECT_EQ(3, GetAddCallbackCount());
+
+  // Change permission to approximate again. No new subscription should be
+  // created.
+  OnPermissionUpdated(mojom::GeolocationPermissionLevel::kApproximate);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(GetLastSetAccuracy());
+  EXPECT_EQ(3, GetAddCallbackCount());
+
+  // Change permission to precise. A new subscription should be created.
+  // effective_high_accuracy will be true, because high_accuracy is still true.
+  OnPermissionUpdated(mojom::GeolocationPermissionLevel::kPrecise);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(GetLastSetAccuracy());
+  EXPECT_EQ(4, GetAddCallbackCount());
+
+  // Set high accuracy to false. A new subscription should be created.
+  geolocation()->SetHighAccuracyHint(false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(GetLastSetAccuracy());
+  EXPECT_EQ(5, GetAddCallbackCount());
+
+  // Set high accuracy to false again. No new subscription should be created.
+  geolocation()->SetHighAccuracyHint(false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(GetLastSetAccuracy());
+  EXPECT_EQ(5, GetAddCallbackCount());
 }
 
 }  // namespace device

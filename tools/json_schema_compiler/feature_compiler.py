@@ -831,16 +831,23 @@ class FeatureCompiler(object):
     self._json."""
     for f in self._source_files:
       abs_source_file = os.path.join(self._chrome_root, f)
-      try:
-        with open(abs_source_file, 'r') as f:
-          f_json = json_parse.Parse(f.read())
-      except:
-        print('FAILED: Exception encountered while loading "%s"' %
-              abs_source_file)
-        raise
-      dupes = set(f_json) & set(self._json)
-      assert not dupes, 'Duplicate keys found: %s' % list(dupes)
+      f_json = self._LoadFile(abs_source_file)
+      override_file_root, override_file_ext = os.path.splitext(abs_source_file)
+      override_file_path = f"{override_file_root}.override{override_file_ext}"
+      if os.path.exists(override_file_path):
+        f_json.update(self._LoadFile(override_file_path))
       self._json.update(f_json)
+
+  def _LoadFile(self, file_path):
+    try:
+      with open(file_path, 'r') as f:
+        f_json = json_parse.Parse(f.read())
+    except:
+      print('FAILED: Exception encountered while loading "%s"' % file_path)
+      raise
+    dupes = set(f_json) & set(self._json)
+    assert not dupes, 'Duplicate keys found: %s' % list(dupes)
+    return f_json
 
   def _FindParent(self, feature_name, feature_value):
     """Checks to see if a feature has a parent. If it does, returns the

@@ -195,8 +195,10 @@ source_set("url_opener") {
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/url",
+    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
+    "//ios/components/webui:url_constants",
     "//url",
   ]
 }
@@ -223,7 +225,6 @@ source_set("metrics_mediator") {
     "//ios/chrome/app/startup:ios_enable_sandbox_dump_buildflags",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
-    "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",

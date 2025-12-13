@@ -185,7 +185,13 @@ public class HistorySyncRenderTest {
                                     mActivityTestRule.getActivity(),
                                     mHistorySyncDelegateMock,
                                     ProfileManager.getLastUsedRegularProfile(),
-                                    new HistorySyncConfig(),
+                                    new HistorySyncConfig(
+                                            mActivityTestRule
+                                                    .getActivity()
+                                                    .getString(R.string.history_sync_title),
+                                            mActivityTestRule
+                                                    .getActivity()
+                                                    .getString(R.string.history_sync_subtitle)),
                                     SigninAccessPoint.UNKNOWN,
                                     /* showEmailInFooter= */ false,
                                     /* shouldSignOutOnDecline= */ false,

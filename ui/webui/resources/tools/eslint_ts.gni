@@ -19,6 +19,7 @@ template("eslint_ts") {
                              "in_folder",
                              "in_files",
                              "tsconfig",
+                             "enable_web_component_missing_deps",
                            ])
 
     # The file holding the ESLint configuration.
@@ -48,5 +49,10 @@ template("eslint_ts") {
              rebase_path(tsconfig, target_gen_dir),
              "--in_files",
            ] + in_files
+
+    if (defined(enable_web_component_missing_deps) &&
+        enable_web_component_missing_deps) {
+      args += [ "--enable_web_component_missing_deps" ]
+    }
   }
 }

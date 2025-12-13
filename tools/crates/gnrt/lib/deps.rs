@@ -38,6 +38,7 @@ pub struct Package {
     pub description: Option<String>,
     pub authors: Vec<String>,
     pub edition: String,
+    pub repository: Option<String>,
     /// This package's dependencies. Each element cross-references another
     /// `Package` by name and version.
     pub dependencies: Vec<DepOfDep>,
@@ -117,6 +118,15 @@ pub enum DependencyKind {
     Normal,
     /// A build-type dependency: proc macro or build.rs dep.
     Build,
+}
+
+impl From<DependencyKind> for guppy::DependencyKind {
+    fn from(value: DependencyKind) -> guppy::DependencyKind {
+        match value {
+            DependencyKind::Build => guppy::DependencyKind::Build,
+            DependencyKind::Normal => guppy::DependencyKind::Normal,
+        }
+    }
 }
 
 /// A dependency of a `Package`. Cross-references another `Package` entry in the
@@ -266,6 +276,9 @@ pub fn collect_dependencies(
         .collect::<HashSet<_>>();
     let feature_set = cargo_set.target_features().union(cargo_set.host_features());
     let package_set = feature_set.to_package_set();
+    // TODO(crbug.com/468223119): Remove this once exact_length_collection is
+    // stabilized: https://github.com/rust-lang/rust/issues/149266
+    #[allow(unstable_name_collisions)]
     let root_id = cargo_set
         .initials()
         .to_package_set()
@@ -314,6 +327,7 @@ pub fn collect_dependencies(
                 description: package.description().map(|s| s.to_string()),
                 authors: package.authors().to_vec(),
                 edition: package.edition().to_string(),
+                repository: package.repository().map(|s| s.to_string()),
                 dependencies,
                 build_dependencies,
                 dependency_kinds,
@@ -376,21 +390,28 @@ impl MemoizationTables {
         Self { package_conditions: HashMap::new() }
     }
 
+    fn get_package_condition_unmemoized(&mut self, package: &PackageMetadata) -> Condition {
+        package
+            .reverse_direct_links()
+            .flat_map(|link| {
+                [DependencyKind::Normal, DependencyKind::Build]
+                    .into_iter()
+                    .map(|kind| {
+                        let condition = self.get_link_condition(&link, kind.into());
+                        adjust_reverse_condition_if_crossing_target_to_host(condition, &link, kind)
+                    })
+                    .collect_vec()
+            })
+            .reduce(Condition::or)
+            .unwrap_or_else(Condition::always_true)
+    }
+
     fn get_package_condition(&mut self, package: &PackageMetadata) -> Condition {
         if let Some(condition) = self.package_conditions.get(&package.into()) {
             return condition.clone();
         }
 
-        let condition = package
-            .reverse_direct_links()
-            .flat_map(|link| {
-                [
-                    self.get_link_condition(&link, guppy::DependencyKind::Normal),
-                    self.get_link_condition(&link, guppy::DependencyKind::Build),
-                ]
-            })
-            .reduce(Condition::or)
-            .unwrap_or_else(Condition::always_true);
+        let condition = self.get_package_condition_unmemoized(package);
         self.package_conditions.insert(package.into(), condition.clone());
         condition
     }
@@ -442,6 +463,28 @@ impl<'g> guppy::graph::PackageResolver<'g> for PackageResolver<'_> {
     }
 }
 
+/// Link conditions are evaluated from the perspective of `link.from()`.
+/// Therefore if the link crosses from target to host, then the condition should
+/// not follow.
+fn adjust_reverse_condition_if_crossing_target_to_host(
+    mut condition: Condition,
+    link: &PackageLink,
+    kind: DependencyKind,
+) -> Condition {
+    let link_is_present = link.req_for_kind(kind.into()).is_present();
+    let link_crosses_from_target_to_host = match kind {
+        DependencyKind::Build => true,
+        DependencyKind::Normal => link.to().is_proc_macro(),
+    };
+    let link_applies_to_chromium = !condition.is_always_false();
+    if link_applies_to_chromium && link_is_present && link_crosses_from_target_to_host {
+        // Reverse condition for `link.to()` needs to support it on all host platforms.
+        condition = Condition::always_true();
+    }
+
+    condition
+}
+
 fn get_reverse_dependency_kinds(
     package: &PackageMetadata,
     cargo_set: &CargoSet,
@@ -457,6 +500,7 @@ fn get_reverse_dependency_kinds(
     let mut result = HashMap::new();
     let mut insert_if_present = |link: PackageLink, kind: DependencyKind| {
         let condition = condition_getter(&link, kind);
+        let condition = adjust_reverse_condition_if_crossing_target_to_host(condition, &link, kind);
         if !condition.is_always_false() {
             let features = match kind {
                 // ... => `build.rs` deps only care about host-side features.
@@ -1129,4 +1173,40 @@ mod tests {
     // `gnrt/sample_package3` directory.  See the `Cargo.toml` for more
     // information.
     static SAMPLE_CARGO_METADATA3: &str = include_str!("test_metadata3.json");
+
+    #[test]
+    fn collect_dependencies_on_sample_output4() {
+        let config = BuildConfig::default();
+        let metadata = PackageGraph::from_json(SAMPLE_CARGO_METADATA4).unwrap();
+        let dependencies = collect_dependencies(&metadata, "sample_package4", &config).unwrap();
+        let dependencies = dependencies
+            .into_iter()
+            .map(|package| (package.package_name.to_string(), package))
+            .collect::<HashMap<_, _>>();
+
+        // When compiling for arm64 **target**, there is a foo => prost-derive
+        // dependency.
+        let foo = &dependencies["foo"];
+        assert_eq!(foo.dependencies.len(), 1);
+        assert_eq!(foo.dependencies[0].package_name, "prost-derive");
+        assert_eq!(
+            foo.dependencies[0].condition.to_handlebars_value().unwrap(),
+            Some("current_cpu == \"arm64\"".to_string()),
+        );
+
+        // We can cross-compile for arm64 **target** when building on x86 **host**.
+        // Therefore the arm64 condition should *not* propagate 1) into when
+        // `prost` is enabled via its reverse dependencies, nor 2) into transitive
+        // dependnecies of `prost`.
+        let prost = &dependencies["prost-derive"];
+        assert_eq!(prost.dependencies.len(), 5);
+        assert_eq!(prost.dependencies[0].package_name, "anyhow");
+        assert!(prost.dependencies[0].condition.is_always_true());
+        assert!(prost.dependency_kinds[&DependencyKind::Normal].condition.is_always_true());
+    }
+
+    // `test_metadata4.json` contains the output of `cargo metadata` run in
+    // `gnrt/sample_package4` directory.  See the `Cargo.toml` for more
+    // information.
+    static SAMPLE_CARGO_METADATA4: &str = include_str!("test_metadata4.json");
 }

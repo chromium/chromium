@@ -13,7 +13,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityEventCompat;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.messages.MessageStateHandler.Position;
@@ -22,6 +21,8 @@ import org.chromium.ui.listmenu.ListMenuHost.PopupMenuShownListener;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.util.RunnableTimer;
+
+import java.util.function.Supplier;
 
 /** Coordinator responsible for creating a message banner. */
 @NullMarked

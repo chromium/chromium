@@ -114,7 +114,8 @@ class ShowNotificationActionPerformerTest : public ChromeAshTestBase {
 TEST_F(ShowNotificationActionPerformerTest, TestValidParams) {
   const auto valid_params = base::StringPrintf(kShowNotificationParamTemplate,
                                                kTestTitle, kTestMessage);
-  auto value = base::JSONReader::Read(valid_params);
+  auto value = base::JSONReader::Read(valid_params,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   EXPECT_CALL(mock_observer_, OnReadyToLogImpression(
                                   testing::Eq(kTestCampaignId),
@@ -164,7 +165,8 @@ TEST_F(ShowNotificationActionPerformerTest, TestUnrecognizedImage) {
       }
     }
 )";
-  auto value = base::JSONReader::Read(valid_params);
+  auto value = base::JSONReader::Read(valid_params,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   EXPECT_CALL(
       mock_observer_,
@@ -196,7 +198,8 @@ TEST_F(ShowNotificationActionPerformerTest, TestUnrecognizedImage) {
 
 TEST_F(ShowNotificationActionPerformerTest, TestInvalidParams) {
   auto* const invalid_params = "{}";
-  auto value = base::JSONReader::Read(invalid_params);
+  auto value = base::JSONReader::Read(invalid_params,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   EXPECT_CALL(mock_observer_, OnReadyToLogImpression(
                                   testing::Eq(kTestCampaignId),

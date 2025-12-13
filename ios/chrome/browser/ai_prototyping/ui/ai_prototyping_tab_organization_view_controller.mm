@@ -129,7 +129,7 @@ using optimization_guide::proto::
 - (void)onGroupTabsButtonPressed:(UIButton*)button {
   [self disableSubmitButton];
   [self updateResponseField:@""];
-  [self.mutator executeGroupTabsWithStrategy:self.groupingStrategy];
+  [self.mutator executeSmartTabGrouping];
 }
 
 #pragma mark - AIPrototypingViewControllerProtocol

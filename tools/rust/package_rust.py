@@ -67,10 +67,6 @@ def main():
         ]
         TeeCmd(build_cmd, log)
 
-        # Build cargo-vet.
-        build_cmd = [sys.executable, os.path.join(THIS_DIR, 'build_vet.py')]
-        TeeCmd(build_cmd, log)
-
         # Build Crubit.
         build_cmd = [sys.executable, os.path.join(THIS_DIR, 'build_crubit.py')]
         # TODO: crbug.com/40226863 - Remove `fail_hard=False` once we can depend

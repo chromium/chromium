@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "url/origin.h"
 
 #include <stdint.h>
@@ -22,6 +17,7 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
@@ -60,7 +56,7 @@ Origin Origin::Create(const GURL& url) {
     // It's SchemeHostPort's responsibility to filter out unrecognized schemes;
     // sanity check that this is happening.
     DCHECK(!tuple.IsValid() || url.IsStandard() ||
-           base::Contains(GetLocalSchemes(), url.scheme_piece()) ||
+           base::Contains(GetLocalSchemes(), url.scheme()) ||
            AllowNonStandardSchemesForAndroidWebView());
   }
 
@@ -190,7 +186,7 @@ bool Origin::CanBeDerivedFrom(const GURL& url) const {
   // For "no access" schemes, blink's SecurityOrigin will always create an
   // opaque unique one. However, about: scheme is also registered as such but
   // does not behave this way, therefore exclude it from this check.
-  if (base::Contains(url::GetNoAccessSchemes(), url.scheme()) &&
+  if (base::Contains(url::GetNoAccessSchemes(), url.GetScheme()) &&
       !url.SchemeIs(kAboutScheme)) {
     // If |this| is not opaque, definitely return false as the expectation
     // is for opaque origin.
@@ -339,8 +335,8 @@ std::optional<std::string> Origin::SerializeWithNonceImpl() const {
     pickle.WriteUInt64(0);
   }
 
-  base::span<const uint8_t> data(static_cast<const uint8_t*>(pickle.data()),
-                                 pickle.size());
+  base::span<const uint8_t> UNSAFE_TODO(
+      data(static_cast<const uint8_t*>(pickle.data()), pickle.size()));
   // Base64 encode the data to make it nicer to play with.
   return base::Base64Encode(data);
 }

@@ -83,10 +83,6 @@ bool operator==(const AXRange& a, const AXRange& b) {
   return a.Start() == b.Start() && a.End() == b.End();
 }
 
-bool operator!=(const AXRange& a, const AXRange& b) {
-  return !(a == b);
-}
-
 std::ostream& operator<<(std::ostream& ostream, const AXRange& range) {
   return ostream << range.ToString().Utf8();
 }

@@ -221,7 +221,6 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
     vp9_profile0_codecs_.push_back("vp09.00.10.08");
 
     // VP9 profile 2 is supported in WebM/MP4 with ClearKey/ExternalClearKey.
-    // TODO(crbug.com/40513453): Add support in Widevine CDM.
     vp9_profile2_codecs_.push_back("vp09.02.10.10");
 
     // AV1 codec string: https://aomediacodec.github.io/av1-isobmff/#codecsparam

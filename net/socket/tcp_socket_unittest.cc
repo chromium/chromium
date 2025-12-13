@@ -42,7 +42,6 @@
 #include "testing/platform_test.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
 #include "net/android/network_change_notifier_factory_android.h"
 #include "net/base/network_change_notifier.h"
 #endif  // BUILDFLAG(IS_ANDROID)

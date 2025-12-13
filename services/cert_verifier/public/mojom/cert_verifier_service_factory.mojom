@@ -11,7 +11,7 @@ import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
 import "services/network/public/mojom/cert_verifier_service_updater.mojom";
-import "services/network/public/mojom/network_context.mojom";
+import "services/network/public/mojom/ct_policy.mojom";
 import "services/network/public/mojom/network_param.mojom";
 
 [EnableIf=is_ct_supported]
@@ -43,10 +43,18 @@ struct ChromeRootCertInfo {
   array<uint8> cert;
 };
 
+struct ChromeRootMerkleTreeCertInfo {
+  string log_id_text;
+  string min_landmark_id_text;
+  string last_landmark_id_text;
+};
+
 // Information about the Chrome Root Store
 struct ChromeRootStoreInfo {
   int64 version;
   array<ChromeRootCertInfo> root_cert_info;
+  mojo_base.mojom.Time? mtc_metadata_update_time;
+  array<ChromeRootMerkleTreeCertInfo> root_mtc_info;
 };
 
 [EnableIf=is_platform_root_store_info_supported]
@@ -102,6 +110,13 @@ interface CertVerifierServiceFactory {
   // (regardless if it was updated successfully or the update was ignored.)
   [EnableIf=is_chrome_root_store_supported]
   UpdateChromeRootStore(mojo_base.mojom.ProtoWrapper new_root_store) => ();
+
+  // Updates the Merkle Tree Certificate metadata used by the
+  // CertVerifierServiceFactory with a new version. The callback will be run
+  // once the update has been processed (regardless if it was updated
+  // successfully or the update was ignored.)
+  [EnableIf=is_chrome_root_store_supported]
+  UpdateMtcMetadata(mojo_base.mojom.ProtoWrapper new_mtc_metadata) => ();
 
   // Sets whether verification should use the Chrome Root Store or not. All
   // CertVerifierServices created by the CertVerifierServiceFactory, including

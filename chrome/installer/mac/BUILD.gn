@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//build/config/mac/mac_sdk.gni")
 import("//build/util/branding.gni")
 import("//chrome/browser/buildflags.gni")
@@ -16,7 +15,11 @@ if (is_chrome_branded) {
 }
 
 group("mac") {
-  public_deps = [ ":copies" ]
+  public_deps = [
+    ":copies",
+    "//third_party/libdmg-hfsplus:dmg_tool",
+    "//third_party/libdmg-hfsplus:hfs_tool",
+  ]
 }
 
 _packaging_dir = "$root_out_dir/$chrome_product_full_name Packaging"
@@ -84,26 +87,13 @@ copy("copies") {
   deps = [
     ":copy_signing",
     "//chrome:entitlements",
-    "//chrome/installer/mac/third_party/bsdiff:goobsdiff",
-    "//chrome/installer/mac/third_party/bsdiff:goobspatch",
-    "//chrome/installer/mac/third_party/xz:lzma_decompress",
-    "//chrome/installer/mac/third_party/xz:xz",
-    "//chrome/installer/mac/third_party/xz:xzdec",
   ]
 
   sources = [
     "$root_gen_dir/chrome/app-entitlements.plist",
-    "$root_out_dir/goobsdiff",
-    "$root_out_dir/goobspatch",
-    "$root_out_dir/liblzma_decompress.dylib",
-    "$root_out_dir/xz",
-    "$root_out_dir/xzdec",
     "//chrome/app/helper-gpu-entitlements.plist",
     "//chrome/app/helper-plugin-entitlements.plist",
     "//chrome/app/helper-renderer-entitlements.plist",
-    "dirdiffer.sh",
-    "dirpatcher.sh",
-    "dmgdiffer.sh",
     "pkg-dmg",
     "pkg_postinstall.in",
     "sign_chrome.py",

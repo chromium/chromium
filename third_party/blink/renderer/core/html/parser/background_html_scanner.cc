@@ -99,17 +99,17 @@ bool ShouldPrecompileFrame(bool is_main_frame) {
 }  // namespace
 
 // static
-WTF::SequenceBound<BackgroundHTMLScanner> BackgroundHTMLScanner::Create(
+SequenceBound<BackgroundHTMLScanner> BackgroundHTMLScanner::Create(
     const HTMLParserOptions& options,
     ScriptableDocumentParser* parser) {
   TRACE_EVENT0("blink", "BackgroundHTMLScanner::Create");
   auto token_scanner = ScriptTokenScanner::Create(parser);
   if (!token_scanner)
-    return WTF::SequenceBound<BackgroundHTMLScanner>();
+    return SequenceBound<BackgroundHTMLScanner>();
   // The background scanner lives on one sequence, while the script streamers
   // work on a second sequence. This allows us to continue scanning the HTML
   // while scripts are compiling.
-  return WTF::SequenceBound<BackgroundHTMLScanner>(
+  return SequenceBound<BackgroundHTMLScanner>(
       worker_pool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_BLOCKING}),
       std::make_unique<HTMLTokenizer>(options), std::move(token_scanner));

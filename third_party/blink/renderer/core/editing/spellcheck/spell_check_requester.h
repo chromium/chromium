@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SPELLCHECK_SPELL_CHECK_REQUESTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SPELLCHECK_SPELL_CHECK_REQUESTER_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/range.h"
@@ -50,9 +49,13 @@ class CORE_EXPORT SpellCheckRequest final
   static const int kUnrequestedTextCheckingSequence = -1;
 
   static SpellCheckRequest* Create(const EphemeralRange& checking_range,
-                                   int request_number);
+                                   int request_number,
+                                   bool should_force_refresh);
 
-  SpellCheckRequest(Range* checking_range, const String&, int request_number);
+  SpellCheckRequest(Range* checking_range,
+                    const String&,
+                    int request_number,
+                    bool should_force_refresh);
   ~SpellCheckRequest();
   void Dispose();
 
@@ -62,6 +65,7 @@ class CORE_EXPORT SpellCheckRequest final
   void SetCheckerAndSequence(SpellCheckRequester*, int sequence);
   int Sequence() const { return sequence_; }
   String GetText() const { return text_; }
+  bool ShouldForceRefresh() const { return should_force_refresh_; }
 
   bool IsValid() const;
   void DidSucceed(const Vector<TextCheckingResult>&);
@@ -78,6 +82,7 @@ class CORE_EXPORT SpellCheckRequest final
   int sequence_ = kUnrequestedTextCheckingSequence;
   String text_;
   int request_number_;
+  bool should_force_refresh_;
 };
 
 class CORE_EXPORT SpellCheckRequester final
@@ -91,7 +96,9 @@ class CORE_EXPORT SpellCheckRequester final
 
   // Returns true if a request is initiated. Returns false otherwise.
   bool RequestCheckingFor(const EphemeralRange&);
-  bool RequestCheckingFor(const EphemeralRange&, int request_num);
+  bool RequestCheckingFor(const EphemeralRange&,
+                          int request_num,
+                          bool should_force_refresh);
   void CancelCheck();
 
   int LastRequestSequence() const { return last_request_sequence_; }

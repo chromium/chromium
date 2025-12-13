@@ -9,10 +9,10 @@
 #include <utility>
 
 #include "base/files/file.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/subresource_filter/content/shared/browser/ruleset_publisher.h"
-#include "components/subresource_filter/content/shared/browser/ruleset_service.h"
+#include "components/subresource_filter/content/browser/ruleset_publisher.h"
+#include "components/subresource_filter/content/browser/ruleset_service.h"
 
 namespace content {
 class RenderProcessHost;

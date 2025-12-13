@@ -4,9 +4,9 @@
 
 package org.chromium.ui.modelutil;
 
-import static org.hamcrest.Matchers.is;
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -155,12 +155,12 @@ public class LazyConstructionPropertyMcpTest {
         mViewProvider.finishInflation(mView);
         ShadowLooper.idleMainLooper();
         verifyBind(VISIBILITY, INT_PROPERTY);
-        assertThat(mModel.get(INT_PROPERTY), is(1));
+        assertThat(mModel.get(INT_PROPERTY)).isEqualTo(1);
         Mockito.<ViewBinder>reset(mViewBinder);
 
         mModel.set(VISIBILITY, false);
         verifyBind(INT_PROPERTY, VISIBILITY);
-        assertThat(mModel.get(INT_PROPERTY), is(2));
+        assertThat(mModel.get(INT_PROPERTY)).isEqualTo(2);
     }
 
     private void verifyBind(PropertyKey... properties) {

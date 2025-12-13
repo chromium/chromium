@@ -15,9 +15,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/functional/callback.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/api_permission_set.h"
@@ -62,7 +61,7 @@ class PermissionsInfo {
   size_t get_permission_count() const { return permission_count_; }
 
  private:
-  friend struct base::LazyInstanceTraitsBase<PermissionsInfo>;
+  friend class base::NoDestructor<PermissionsInfo>;
 
   PermissionsInfo();
 

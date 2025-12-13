@@ -14,7 +14,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/google/core/common/google_switches.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/signin_header_helper.h"
@@ -81,31 +80,24 @@ class ChromeOsMirrorAccountConsistencyTest : public ash::LoginManagerTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ash::LoginManagerTest::SetUpCommandLine(command_line);
 
-    // HTTPS server only serves a valid cert for localhost, so this is needed to
-    // load pages from "www.google.com" without an interstitial.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-
     // The production code only allows known ports (80 for http and 443 for
     // https), but the test server runs on a random port.
     command_line->AppendSwitch(switches::kIgnoreGooglePortNumbers);
   }
 
   void SetUpOnMainThread() override {
-    // We can't use BrowserTestBase's EmbeddedTestServer because google.com
-    // URL's have to be https.
-    test_server_ = std::make_unique<net::EmbeddedTestServer>(
-        net::EmbeddedTestServer::TYPE_HTTPS);
-    net::test_server::RegisterDefaultHandlers(test_server_.get());
-    ASSERT_TRUE(test_server_->Start());
+    test_server()->SetCertHostnames({kGaiaDomain});
+    ASSERT_TRUE(test_server()->Start());
 
     ash::LoginManagerTest::SetUpOnMainThread();
   }
 
+  net::EmbeddedTestServer* test_server() {
+    return &embedded_https_test_server();
+  }
+
   AccountId account_id_;
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
-
- protected:
-  std::unique_ptr<net::EmbeddedTestServer> test_server_;
 };
 
 // Mirror is enabled for child accounts.
@@ -136,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsMirrorAccountConsistencyTest,
   // profiles. Verify if these tests needs to be updated to use child accounts
   // or whether supervised profiles need to be supported as well.
   TestMirrorRequestForProfile(
-      test_server_.get(), profile,
+      test_server(), profile,
       "source=Chrome,mode=1,enable_account_consistency=true,supervised=false,"
       "consistency_enabled_by_default=false");
 }
@@ -161,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsMirrorAccountConsistencyTest,
   EXPECT_TRUE(
       AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile));
   TestMirrorRequestForProfile(
-      test_server_.get(), profile,
+      test_server(), profile,
       "source=Chrome,mode=0,enable_account_consistency=true,supervised=false,"
       "consistency_enabled_by_default=false");
 }

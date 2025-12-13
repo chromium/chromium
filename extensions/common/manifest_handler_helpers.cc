@@ -11,13 +11,14 @@
 #include <string_view>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_resource.h"
 #include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest_constants.h"
 #include "net/base/mime_util.h"
@@ -29,33 +30,9 @@ namespace errors = manifest_errors;
 
 namespace manifest_handler_helpers {
 
-namespace {
-
-BASE_FEATURE(kValidateIconMimeType,
-             "ValidateIconMimeType",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}
-
 std::vector<std::string_view> TokenizeDictionaryPath(std::string_view path) {
   return base::SplitStringPiece(path, ".", base::TRIM_WHITESPACE,
                                 base::SPLIT_WANT_ALL);
-}
-
-bool NormalizeAndValidatePath(std::string* path) {
-  return NormalizeAndValidatePath(*path, path);
-}
-
-bool NormalizeAndValidatePath(const std::string& path,
-                              std::string* normalized_path) {
-  size_t first_non_slash = path.find_first_not_of('/');
-  if (first_non_slash == std::string::npos) {
-    *normalized_path = "";
-    return false;
-  }
-
-  *normalized_path = path.substr(first_non_slash);
-  return true;
 }
 
 std::optional<int> LoadValidSizeFromString(const std::string& string_size) {
@@ -65,7 +42,8 @@ std::optional<int> LoadValidSizeFromString(const std::string& string_size) {
   return is_valid ? std::make_optional(size) : std::nullopt;
 }
 
-bool LoadIconsFromDictionary(const base::Value::Dict& icons_value,
+bool LoadIconsFromDictionary(const Extension& extension,
+                             const base::Value::Dict& icons_value,
                              ExtensionIconSet* icons,
                              std::u16string* error,
                              std::vector<std::string>* warnings) {
@@ -78,14 +56,19 @@ bool LoadIconsFromDictionary(const base::Value::Dict& icons_value,
                                                    entry.first);
       return false;
     }
-    std::string icon_path;
-    if (!entry.second.is_string() ||
-        !NormalizeAndValidatePath(entry.second.GetString(), &icon_path)) {
+    if (!entry.second.is_string()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidIconPath,
                                                    entry.first);
       return false;
     }
-    if (!IsIconMimeTypeValid(base::FilePath::FromUTF8Unsafe(icon_path))) {
+    ExtensionResource icon_path =
+        extension.GetResource(entry.second.GetString());
+    if (icon_path.empty()) {
+      *error = ErrorUtils::FormatErrorMessageUTF16(errors::kInvalidIconPath,
+                                                   entry.first);
+      return false;
+    }
+    if (!IsIconMimeTypeValid(icon_path.relative_path())) {
       // Issue a warning and ignore this file. This is a warning and not a
       // hard-error to preserve both backwards compatibility and potential
       // future-compatibility if mime types change.
@@ -94,7 +77,7 @@ bool LoadIconsFromDictionary(const base::Value::Dict& icons_value,
       continue;
     }
 
-    icons->Add(size.value(), icon_path);
+    icons->Add(size.value(), icon_path.relative_path().AsUTF8Unsafe());
   }
   return true;
 }
@@ -114,12 +97,6 @@ bool IsSupportedExtensionImageMimeType(const base::FilePath& relative_path) {
 }
 
 bool IsIconMimeTypeValid(const base::FilePath& relative_path) {
-  // TODO(crbug.com/40059598): Remove this if-check and always validate the mime
-  // type in M140.
-  if (!base::FeatureList::IsEnabled(kValidateIconMimeType)) {
-    return true;
-  }
-
   return IsSupportedExtensionImageMimeType(relative_path);
 }
 

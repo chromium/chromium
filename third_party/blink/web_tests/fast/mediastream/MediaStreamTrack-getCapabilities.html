@@ -116,7 +116,7 @@ function createAndSetOffer(caller, callee) {
 
 function verifyAudioProcessingProperties(capabilities, is_get_user_media) {
   assert_true(capabilities.hasOwnProperty('echoCancellation'));
-  assert_equals(Object.keys(capabilities.echoCancellation).length, is_get_user_media ? 2 : 1);
+  assert_greater_than_equal(Object.keys(capabilities.echoCancellation).length, is_get_user_media ? 2 : 1);
   assert_true(capabilities.hasOwnProperty('autoGainControl'));
   assert_equals(Object.keys(capabilities.autoGainControl).length, is_get_user_media ? 2 : 1);
   assert_true(capabilities.hasOwnProperty('noiseSuppression'));

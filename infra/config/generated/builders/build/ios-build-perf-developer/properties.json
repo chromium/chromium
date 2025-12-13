@@ -72,5 +72,5 @@
   },
   "builder_group": "chromium.build",
   "recipe": "chrome_build/build_perf_developer",
-  "xcode_build_version": "16c5032a"
+  "xcode_build_version": "17a400"
 }

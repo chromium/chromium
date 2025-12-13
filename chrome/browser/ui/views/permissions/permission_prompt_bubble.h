@@ -53,6 +53,11 @@ class PermissionPromptBubble : public PermissionPromptDesktop,
 
   base::ScopedClosureRunner disallowed_custom_cursors_scope_;
 
+  // Used to prevent the tab from entering content fullscreen mode while the
+  // permission prompt bubble is visible. The content fullscreen mode has no
+  // browser toolbar UI and therefore is prone to spoofing attacks.
+  base::ScopedClosureRunner fullscreen_blocker_;
+
   base::WeakPtrFactory<PermissionPromptBubble> weak_factory_{this};
 };
 

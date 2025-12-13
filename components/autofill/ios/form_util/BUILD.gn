@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
 import("//ios/web/public/js_messaging/optimize_ts.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
@@ -38,10 +37,9 @@ source_set("form_util_feature") {
   ]
   deps = [
     ":autofill_form_features",
-    ":fill_js",
-    ":form_js",
+    ":form_lib_js",
     "//base",
-    "//components/autofill/ios/common:common",
+    "//components/autofill/ios/common",
     "//ios/web/public/js_messaging",
     "//ios/web/public/js_messaging:content_world_header",
   ]
@@ -55,7 +53,7 @@ source_set("form_handler_feature") {
   ]
   deps = [
     ":autofill_form_features",
-    ":autofill_renderer_id_feature",
+    ":child_frame_registration_lib_js",
     ":form_handlers_js",
     ":form_util",
     ":form_util_feature",
@@ -67,6 +65,19 @@ source_set("form_handler_feature") {
     "//ios/web/public/js_messaging",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("renderer_id_test_util") {
+  testonly = true
+  sources = [
+    "renderer_id_test_util.h",
+    "renderer_id_test_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/common",
+    "//ios/web/public/js_messaging",
+  ]
 }
 
 # For inclusion by other TS/JS files, so they can check feature state
@@ -105,19 +116,35 @@ source_set("frame_registration_feature") {
   ]
 }
 
-optimize_ts("child_frame_registration_ts") {
+compile_ts("child_frame_registration_ts") {
   sources = [ "resources/child_frame_registration_lib.ts" ]
   deps = [
     ":autofill_form_features_ts",
-    ":fill_js_namespace",
+    ":fill_js_constants",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
 }
 
-optimize_ts("child_frame_registration_test_ts") {
+optimize_js("child_frame_registration_lib_js") {
+  deps = [
+    ":autofill_form_features_ts",
+    ":child_frame_registration_ts",
+    ":fill_js_constants",
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
+
+  _script = filter_include(get_target_outputs(":child_frame_registration_ts"),
+                           [ "*child_frame_registration_lib.js" ])
+  primary_script = _script[0]
+  sources = _script
+  output_name = "child_frame_registration_lib"
+}
+
+compile_ts("child_frame_registration_test_ts") {
   sources = [ "resources/child_frame_registration_test.ts" ]
-  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
+  deps = [ ":child_frame_registration_ts" ]
 }
 
 compile_ts("fill_js_dependencies") {
@@ -125,49 +152,67 @@ compile_ts("fill_js_dependencies") {
     "resources/fill_element_inference.ts",
     "resources/fill_element_inference_util.ts",
     "resources/fill_util.ts",
+    "resources/fill_web_form.ts",
+    "resources/form_utils.ts",
   ]
 
   deps = [
     ":autofill_form_features_ts",
-    ":fill_js_namespace",
+    ":autofill_renderer_id_js",
+    ":child_frame_registration_ts",
+    ":fill_js_constants",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
 }
 
-compile_ts("fill_js_namespace") {
-  sources = [
-    "resources/create_fill_namespace.ts",
-    "resources/fill_constants.ts",
-  ]
+compile_ts("fill_js_constants") {
+  sources = [ "resources/fill_constants.ts" ]
 
   deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }
 
-optimize_ts("fill_js") {
-  sources = [ "resources/fill.ts" ]
+optimize_ts("fill_util_test_js") {
+  sources = [ "resources/fill_util_test.ts" ]
 
   deps = [
+    ":child_frame_registration_test_ts",
     ":fill_js_dependencies",
-    ":fill_js_namespace",
     "//ios/web/public/js_messaging:gcrweb",
   ]
 }
 
-optimize_ts("form_js") {
-  sources = [ "resources/form.ts" ]
+optimize_ts("form_util_test_js") {
+  sources = [ "resources/form_util_tests.ts" ]
 
   deps = [
     ":fill_js_dependencies",
-    ":fill_js_namespace",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
+}
+
+compile_ts("form_js") {
+  sources = [ "resources/form.ts" ]
+  deps = [
+    ":fill_js_dependencies",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
+}
+
+optimize_js("form_lib_js") {
+  deps = [ ":form_js" ]
+  _script = filter_include(get_target_outputs(":form_js"), [ "*form.js" ])
+  primary_script = _script[0]
+  sources = _script
+  output_name = "form_lib_js"
 }
 
 optimize_ts("form_handlers_js") {
   sources = [ "resources/form_handlers.ts" ]
   deps = [
+    ":child_frame_registration_ts",
+    ":fill_js_dependencies",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
@@ -177,35 +222,23 @@ optimize_ts("register_remote_frame_token_js") {
   sources = [ "resources/register_remote_frame_token.ts" ]
 
   deps = [
+    ":child_frame_registration_ts",
     ":fill_js_dependencies",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
 }
 
-source_set("autofill_renderer_id_feature") {
-  sources = [
-    "autofill_renderer_id_java_script_feature.h",
-    "autofill_renderer_id_java_script_feature.mm",
-  ]
-
-  deps = [
-    ":autofill_renderer_id_js",
-    "//base",
-    "//components/autofill/ios/common",
-    "//ios/web/public/js_messaging",
-    "//ios/web/public/js_messaging:content_world_header",
-  ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-}
-
-optimize_ts("autofill_renderer_id_js") {
+compile_ts("autofill_renderer_id_js") {
   sources = [ "resources/renderer_id.ts" ]
 
-  deps = [
-    ":fill_js_namespace",
-    "//ios/web/public/js_messaging:gcrweb",
-  ]
+  deps = [ ":fill_js_constants" ]
+}
+
+optimize_ts("renderer_id_test") {
+  sources = [ "resources/renderer_id_test.ts" ]
+
+  deps = [ ":autofill_renderer_id_js" ]
 }
 
 source_set("programmatic_form_submission_handler_feature") {
@@ -318,14 +351,16 @@ source_set("unit_tests") {
   deps = [
     ":autofill_form_features",
     ":autofill_form_features_injector",
-    ":autofill_renderer_id_feature",
     ":child_frame_registrar",
-    ":fill_js",
+    ":fill_util_test_js",
     ":form_handler_feature",
-    ":form_js",
+    ":form_lib_js",
     ":form_util",
     ":form_util_feature",
+    ":form_util_test_js",
     ":programmatic_form_submission_handler_feature",
+    ":renderer_id_test",
+    ":renderer_id_test_util",
     ":test_support",
     "//base",
     "//base/test:test_support",

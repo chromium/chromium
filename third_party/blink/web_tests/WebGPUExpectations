@@ -57,3 +57,9 @@ crbug.com/370694819 wpt_internal/webgpu/web_platform/reftests/canvas_display_aft
 # Crashes due to the upgrade from Win10/old driver -> Win11/new driver for NVIDIA GTX 1660.
 crbug.com/418169213 [ Win11 ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba16float_store.https.html [ Crash ]
 crbug.com/418169213 [ Win11 ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_store.https.html [ Crash ]
+
+# These tests are too flaky, skip before actively looking into them.
+crbug.com/440567017 [ Mac ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-paint-invalidation-worker.https.html [ Skip ]
+crbug.com/440913790 [ Mac ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-paint-invalidation.https.html [ Skip ]
+crbug.com/440567017 [ Win ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-paint-invalidation-worker.https.html [ Skip ]
+crbug.com/440913790 [ Win ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-paint-invalidation.https.html [ Skip ]

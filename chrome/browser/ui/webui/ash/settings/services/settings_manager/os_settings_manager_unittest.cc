@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
@@ -65,20 +66,23 @@ class OsSettingsManagerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kPeripheralCustomization, arc::kPerAppLanguage}, {});
-    ASSERT_TRUE(profile_manager_.SetUp());
-    Profile* profile = profile_manager_.CreateTestingProfile(
-        TestingProfile::kDefaultProfileUserName);
-    // Log in user to ensure ARC PlayStore can be enabled.
-    const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        profile->GetProfileUserName(), GaiaId("1234")));
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
-
     // Enables ARC for test profile.
     arc::SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
+
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kPeripheralCustomization, arc::kPerAppLanguage}, {});
+    ASSERT_TRUE(profile_manager_.SetUp());
+
+    // Log in user to ensure ARC PlayStore can be enabled.
+    const AccountId account_id(AccountId::FromUserEmailGaiaId(
+        TestingProfile::kDefaultProfileUserName, GaiaId("1234")));
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
+    ScopedAccountIdAnnotator annotator(profile_manager_.profile_manager(),
+                                       account_id);
+    Profile* profile = profile_manager_.CreateTestingProfile(
+        TestingProfile::kDefaultProfileUserName);
     arc::SetArcPlayStoreEnabledForProfile(profile, true);
 
     NearbySharingServiceFactory::

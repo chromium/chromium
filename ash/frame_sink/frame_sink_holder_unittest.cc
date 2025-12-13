@@ -28,6 +28,7 @@
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -79,11 +80,27 @@ class FrameSinkHolderTest : public AshTestBase {
         /*on_frame_sink_lost_callback=*/base::DoNothing());
 
     holder_weak_ptr_ = frame_sink_holder_->GetWeakPtr();
+
+    sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  }
+
+  std::unique_ptr<UiResource> MakeResource() {
+    const gfx::Size kSize = gfx::Size(20, 20);
+    auto shared_image = sii_->CreateSharedImage(
+        {viz::SinglePlaneFormat::kBGRA_8888, kSize, gfx::ColorSpace(),
+         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "FastInkRootViewFrame"},
+        gpu::kNullSurfaceHandle);
+
+    auto resource = std::make_unique<UiResource>(sii_, std::move(shared_image));
+    resource->ui_source_id = 1u;
+    return resource;
   }
 
   UiResourceManager& GetResourceManager() {
     return frame_sink_holder_->resource_manager();
   }
+
+  scoped_refptr<gpu::SharedImageInterface> sii_;
 
   // If `frame_sink_holder_` lifetime has been extended in a unittest and the
   // holder did not schedule a delete task, it will get destroyed once we
@@ -103,21 +120,6 @@ class FrameSinkHolderTest : public AshTestBase {
   raw_ptr<TestLayerTreeFrameSink, DanglingUntriaged>
       layer_tree_frame_sink_;  // no owned
 };
-
-constexpr UiSourceId kDefaultUiSourceId = 1u;
-constexpr gfx::Size kDefaultSize(20, 20);
-
-std::unique_ptr<UiResource> MakeResource(
-    const gfx::Size& resource_size,
-    viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888,
-    UiSourceId ui_source_id = kDefaultUiSourceId) {
-  auto resource = std::make_unique<UiResource>();
-  resource->ui_source_id = ui_source_id;
-  resource->format = format;
-  resource->resource_size = resource_size;
-  resource->SetExternallyOwnedMailbox(gpu::Mailbox::Generate());
-  return resource;
-}
 
 TEST_F(FrameSinkHolderTest, SubmitFrameSynchronouslyBeforeFirstFrameRequested) {
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
@@ -341,10 +343,10 @@ TEST_F(FrameSinkHolderTest, DontSubmitNewFramesWhenWaitingToDeleteSinkHolder) {
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
   base::RunLoop loop;
 
-  viz::ResourceId id_1 =
-      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
+  viz::TransferableResource resource_1 =
+      GetResourceManager().OfferAndPrepareResourceForExport(MakeResource());
 
-  frame_factory_->SetFrameResources({id_1});
+  frame_factory_->SetFrameResources({resource_1});
   frame_factory_->SetFrameMetaData(gfx::Size(100, 100), 1.0);
 
   // Call OnBeginFrame so that FrameSinkHolder can know that it can submit
@@ -393,14 +395,14 @@ TEST_F(FrameSinkHolderTest,
 TEST_F(FrameSinkHolderTest, ExtendLifeTimeOfHolderToRootWindow) {
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
 
-  viz::ResourceId id_1 =
-      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
-  viz::ResourceId id_2 =
-      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
-  viz::ResourceId id_3 =
-      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
+  viz::TransferableResource resource_1 =
+      GetResourceManager().OfferAndPrepareResourceForExport(MakeResource());
+  viz::TransferableResource resource_2 =
+      GetResourceManager().OfferAndPrepareResourceForExport(MakeResource());
+  viz::TransferableResource resource_3 =
+      GetResourceManager().OfferAndPrepareResourceForExport(MakeResource());
 
-  frame_factory_->SetFrameResources({id_1, id_2, id_3});
+  frame_factory_->SetFrameResources({resource_1, resource_2, resource_3});
   frame_factory_->SetFrameMetaData(gfx::Size(100, 100), 1.0);
 
   // Call OnBeginFrame so that FrameSinkHolder can know that it can submit
@@ -466,12 +468,12 @@ TEST_F(FrameSinkHolderTest, DeleteHolderAfterReclaimingAllResources) {
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
   base::RunLoop loop;
 
-  viz::ResourceId id_1 =
-      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
-  viz::ResourceId id_2 =
-      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
+  viz::TransferableResource resource_1 =
+      GetResourceManager().OfferAndPrepareResourceForExport(MakeResource());
+  viz::TransferableResource resource_2 =
+      GetResourceManager().OfferAndPrepareResourceForExport(MakeResource());
 
-  frame_factory_->SetFrameResources({id_1, id_2});
+  frame_factory_->SetFrameResources({resource_1, resource_2});
   frame_factory_->SetFrameMetaData(gfx::Size(100, 100), 1.0);
 
   // Call OnBeginFrame so that FrameSinkHolder can know that it can submit
@@ -501,10 +503,10 @@ TEST_F(FrameSinkHolderTest, DeleteHolderAfterReclaimingAllResources) {
 TEST_F(FrameSinkHolderTest, LayerTreeFrameSinkLost) {
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
 
-  viz::ResourceId id_1 =
-      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
+  viz::TransferableResource resource_1 =
+      GetResourceManager().OfferAndPrepareResourceForExport(MakeResource());
 
-  frame_factory_->SetFrameResources({id_1});
+  frame_factory_->SetFrameResources({resource_1});
   frame_factory_->SetFrameMetaData(gfx::Size(100, 100), 1.0);
 
   // Call OnBeginFrame so that FrameSinkHolder can know that it can submit
@@ -526,10 +528,10 @@ TEST_F(FrameSinkHolderTest,
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
   base::RunLoop loop;
 
-  viz::ResourceId id_1 =
-      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
+  viz::TransferableResource resource_1 =
+      GetResourceManager().OfferAndPrepareResourceForExport(MakeResource());
 
-  frame_factory_->SetFrameResources({id_1});
+  frame_factory_->SetFrameResources({resource_1});
   frame_factory_->SetFrameMetaData(gfx::Size(100, 100), 1.0);
 
   // Call OnBeginFrame so that FrameSinkHolder can know that it can submit
@@ -558,10 +560,10 @@ TEST_F(FrameSinkHolderTest,
        DeleteSinkHolderWithExportedResources_DuringShutdown) {
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
 
-  viz::ResourceId id_1 =
-      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
+  viz::TransferableResource resource_1 =
+      GetResourceManager().OfferAndPrepareResourceForExport(MakeResource());
 
-  frame_factory_->SetFrameResources({id_1});
+  frame_factory_->SetFrameResources({resource_1});
   frame_factory_->SetFrameMetaData(gfx::Size(100, 100), 1.0);
 
   // Call OnBeginFrame so that FrameSinkHolder can know that it can submit
@@ -598,10 +600,10 @@ TEST_F(FrameSinkHolderTest,
        DeleteSinkHolderImmediatelyWhenNoExportedResources) {
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
 
-  viz::ResourceId id_1 =
-      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
+  viz::TransferableResource resource_1 =
+      GetResourceManager().OfferAndPrepareResourceForExport(MakeResource());
 
-  frame_factory_->SetFrameResources({id_1});
+  frame_factory_->SetFrameResources({resource_1});
   frame_factory_->SetFrameMetaData(gfx::Size(100, 100), 1.0);
 
   // Call OnBeginFrame so that FrameSinkHolder can know that it can submit
@@ -632,10 +634,10 @@ TEST_F(FrameSinkHolderTest,
 TEST_F(FrameSinkHolderTest, DeleteSinkHolderImmediatelyWhenFrameSinkIsLost) {
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
 
-  viz::ResourceId id_1 =
-      GetResourceManager().OfferResource(MakeResource(kDefaultSize));
+  viz::TransferableResource resource_1 =
+      GetResourceManager().OfferAndPrepareResourceForExport(MakeResource());
 
-  frame_factory_->SetFrameResources({id_1});
+  frame_factory_->SetFrameResources({resource_1});
   frame_factory_->SetFrameMetaData(gfx::Size(100, 100), 1.0);
 
   // Call OnBeginFrame so that FrameSinkHolder can know that it can submit

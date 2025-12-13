@@ -10,6 +10,8 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_list.h"
+#include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "ui/display/display_change_notifier.h"
 #include "ui/display/display_export.h"
@@ -23,8 +25,8 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/mojom/dxgi_info.mojom.h"
-#include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/win/singleton_hwnd_observer.h"
+#include "ui/gfx/native_ui_types.h"
+#include "ui/gfx/win/singleton_hwnd.h"
 
 namespace display::win {
 
@@ -138,13 +140,6 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
 
   // Converts dpi to scale factor, including accessibility adjustments.
   virtual float GetScaleFactorForDPI(int dpi) const;
-
-  // Returns the system's global scale factor, ignoring the value of
-  // --force-device-scale-factor. Only use this if you are working with Windows
-  // metrics global to the system. Otherwise you should call
-  // GetScaleFactorForHWND() to get the correct scale factor for the monitor
-  // you are targeting.
-  virtual float GetSystemScaleFactor() const;
 
   // Set a callback to use to query the status of HDR. This callback will be
   // called when the status of HDR may have changed.
@@ -320,7 +315,7 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // Helper implementing the DisplayObserver handling.
   DisplayChangeNotifier change_notifier_;
 
-  std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
+  base::CallbackListSubscription hwnd_subscription_;
 
   // Current list of ScreenWinDisplays.
   std::vector<ScreenWinDisplay> screen_win_displays_;

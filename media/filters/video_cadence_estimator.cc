@@ -136,8 +136,10 @@ bool VideoCadenceEstimator::UpdateCadenceEstimate(
     is_variable_frame_rate_ = false;
   }
 
-  // Variable FPS detected, turn off Cadence by force.
-  if (is_variable_frame_rate_) {
+  // Disable cadence for low frame rate or variable FPS content; both types of
+  // content will end up not looking smooth as the cadence interval changes too
+  // frequently.
+  if (is_variable_frame_rate_ || frame_duration > base::Milliseconds(100)) {
     render_intervals_cadence_held_ = 0;
     if (!cadence_.empty()) {
       cadence_.clear();

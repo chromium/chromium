@@ -11,6 +11,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/commerce/price_insights_handler.h"
+#include "chrome/browser/ui/webui/commerce/price_tracking_handler.h"
 #include "chrome/browser/ui/webui/commerce/shopping_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
@@ -27,7 +28,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 ShoppingInsightsSidePanelUI::ShoppingInsightsSidePanelUI(content::WebUI* web_ui)
@@ -81,13 +81,6 @@ ShoppingInsightsSidePanelUI::ShoppingInsightsSidePanelUI(content::WebUI* web_ui)
 }
 
 ShoppingInsightsSidePanelUI::~ShoppingInsightsSidePanelUI() = default;
-
-void ShoppingInsightsSidePanelUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
-}
 
 void ShoppingInsightsSidePanelUI::BindInterface(
     mojo::PendingReceiver<

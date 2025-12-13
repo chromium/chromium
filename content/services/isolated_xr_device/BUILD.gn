@@ -25,11 +25,11 @@ source_set("lib") {
     "//components/webxr:test_support",
     "//content/public/common:common_sources",
     "//device/base",
-    "//device/vr:vr",
+    "//device/vr",
     "//device/vr:vr_base",
     "//device/vr:vr_test_hook",
     "//device/vr/public/mojom:isolated_xr_service",
-    "//device/vr/public/mojom:test_mojom",
+    "//device/vr/public/mojom/test:test_mojom",
     "//services/viz/public/cpp/gpu",
   ]
 }

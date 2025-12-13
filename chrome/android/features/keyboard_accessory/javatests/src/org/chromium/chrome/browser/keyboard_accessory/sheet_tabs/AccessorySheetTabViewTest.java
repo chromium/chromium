@@ -35,7 +35,9 @@ import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessoryS
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
 
@@ -46,11 +48,13 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccessorySheetTabViewTest {
+    private WebPageStation mPage;
     private AccessorySheetTabItemsModel mModel;
     private final AtomicReference<RecyclerView> mView = new AtomicReference<>();
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     /**
      * This helper method inflates the accessory sheet and loads the given layout as minimalistic
@@ -92,7 +96,7 @@ public class AccessorySheetTabViewTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         openLayoutInAccessorySheet(
                 R.layout.password_accessory_sheet,
                 new KeyboardAccessoryData.Tab.Listener() {

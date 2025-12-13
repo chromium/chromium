@@ -33,7 +33,7 @@ IOSPasswordRequirementsServiceFactory::
 
 std::unique_ptr<KeyedService>
 IOSPasswordRequirementsServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   return password_manager::CreatePasswordRequirementsService(
-      context->GetSharedURLLoaderFactory());
+      profile->GetSharedURLLoaderFactory());
 }

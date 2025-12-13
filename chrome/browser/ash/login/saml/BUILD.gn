@@ -55,6 +55,7 @@ static_library("saml") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
+    "//chrome/browser/notifications",
     "//chrome/browser/signin",
     "//chrome/common:chrome_features",
     "//chromeos/ash/components/install_attributes",
@@ -81,6 +82,7 @@ static_library("test_support") {
     "lockscreen_reauth_dialog_test_helper.h",
     "mock_lock_handler.cc",
     "mock_lock_handler.h",
+    "saml_test_utils.h",
     "security_token_saml_test.cc",
     "security_token_saml_test.h",
     "test_client_cert_saml_idp_mixin.cc",
@@ -89,6 +91,7 @@ static_library("test_support") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/ash/certificate_provider:test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/proximity_auth",
@@ -137,7 +140,6 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
-    "password_change_extension_browsertest.cc",
     "password_change_success_detection_browsertest.cc",
     "saml_browsertest.cc",
     "saml_lockscreen_browsertest.cc",
@@ -228,6 +230,7 @@ source_set("browser_tests") {
     "//third_party/blink/public/mojom:mojom_platform_shared",
     "//third_party/blink/public/mojom:mojom_platform_shared_cpp_sources",
     "//ui/base",
+    "//ui/events:test_support",
     "//url",
   ]
 }

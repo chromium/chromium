@@ -18,14 +18,6 @@
 #include "ui/gfx/image/image.h"
 #include "ui/snapshot/snapshot_mac.h"
 
-// The API that allows an app TCC-less access to its own windows is new in macOS
-// 14.4. While this has been tested extensively on 14.4 betas, because this is a
-// new API added in an OS dot release, have a "break in case of emergency" off-
-// switch.
-BASE_FEATURE(kUseScreenCaptureKitForSnapshots,
-             "UseScreenCaptureKitForSnapshots",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace ui {
 
 namespace {
@@ -123,13 +115,13 @@ gfx::Image GrabViewSnapshotCGWindowListImpl(gfx::NativeView native_view,
   NSView* view = native_view.GetNativeNSView();
   NSWindow* window = view.window;
   NSScreen* screen = NSScreen.screens.firstObject;
-  gfx::Rect screen_bounds = gfx::Rect(NSRectToCGRect(screen.frame));
+  gfx::Rect screen_bounds(screen.frame);
 
   // Get the view bounds relative to the screen.
   NSRect frame = [view convertRect:view.bounds toView:nil];
   frame = [window convertRectToScreen:frame];
 
-  gfx::Rect view_bounds = gfx::Rect(NSRectToCGRect(frame));
+  gfx::Rect view_bounds(frame);
 
   // Flip window coordinates based on the primary screen.
   view_bounds.set_y(screen_bounds.height() - view_bounds.y() -
@@ -196,13 +188,17 @@ void GrabViewSnapshot(gfx::NativeView view,
                       GrabSnapshotImageCallback callback) {
   SnapshotAPI api = g_snapshot_api;
   if (api == SnapshotAPI::kUnspecified) {
-    if (base::mac::MacOSVersion() >= 14'04'00 &&
-        base::FeatureList::IsEnabled(kUseScreenCaptureKitForSnapshots) &&
-        !ShouldForceOldAPIUse()) {
+    if (base::mac::MacOSVersion() >= 14'04'00 && !ShouldForceOldAPIUse()) {
       api = SnapshotAPI::kNewAPI;
     } else {
       api = SnapshotAPI::kOldAPI;
     }
+  }
+
+  // On macOS 26, the CGWindowList API is not supported for snapshots - in
+  // existing tests, no screenshot is returned when using the CGWindowList API.
+  if (base::mac::MacOSVersion() >= 26'00'00) {
+    api = SnapshotAPI::kNewAPI;
   }
 
   if (@available(macOS 14.4, *)) {

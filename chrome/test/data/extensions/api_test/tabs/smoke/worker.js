@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const scriptUrl = '_test_resources/api_test/tabs/basics/tabs_util.js';
+let loadScript = chrome.test.loadScript(scriptUrl);
+
 async function testCreateTab() {
   const tab = await chrome.tabs.create({ url: 'about:blank' });
   chrome.test.assertNoLastError();
@@ -33,4 +36,22 @@ async function testOnUpdated() {
   // chrome.test.succeed() will be called in the closure above.
 }
 
-chrome.test.runTests([testCreateTab, testOnUpdated]);
+function testUpdate() {
+  let tabId;
+  // Create a tab to update.
+  chrome.tabs.create({ "url": pageUrl("a") }, pass(function (tab) {
+    tabId = tab.id;
+    // Update the tab URL to "B".
+    chrome.tabs.update(tabId, { "url": pageUrl("b") }, pass(function (tab) {
+      waitForAllTabs(pass(function () {
+        chrome.tabs.get(tabId, pass(function (tab) {
+          // Tab navigated to "B".
+          assertEq(pageUrl("b"), tab.url);
+          chrome.test.succeed();
+        }));
+      }));
+    }));
+  }));
+}
+
+chrome.test.runTests([testCreateTab, testOnUpdated, testUpdate]);

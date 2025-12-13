@@ -58,19 +58,13 @@ static_library("user_agent") {
   deps = [
     ":embedder_support",
     "//build:branding_buildflags",
-    "//build/util:chromium_git_revision",
     "//components/policy/core/common",
     "//components/prefs",
     "//components/version_info",
-    "//device/vr/buildflags",
     "//net",
     "//third_party/blink/public/common:headers",
     "//ui/base",
   ]
-
-  if (enable_vr) {
-    deps += [ "//device/vr/public/cpp:features" ]
-  }
 }
 
 source_set("unit_tests") {
@@ -93,11 +87,10 @@ source_set("unit_tests") {
     "//components/embedder_support/origin_trials:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
-    "//components/version_info:version_info",
+    "//components/version_info",
     "//content/public/common",
-    "//device/vr/buildflags",
-    "//mojo/core/embedder:embedder",
-    "//net:net",
+    "//mojo/core/embedder",
+    "//net",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",
     "//testing/gtest",
@@ -119,10 +112,6 @@ source_set("unit_tests") {
       "android:native_java_unittests_java",
       "android:util",
     ]
-  }
-
-  if (enable_vr) {
-    deps += [ "//device/vr/public/cpp:features" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

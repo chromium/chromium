@@ -180,28 +180,29 @@ std::u16string GetPhoneCountryCodeSelectControlValue(
 // into the input `field`.
 std::u16string GetValueForProfileForInput(const AutofillProfile& profile,
                                           const std::string& app_locale,
-                                          const AutofillType& field_type,
+                                          const AutofillType& autofill_type,
                                           const FormFieldData& field_data,
                                           std::string* failure_to_fill) {
-  const std::u16string value = profile.GetInfo(field_type, app_locale);
+  const std::u16string value = profile.GetInfo(autofill_type, app_locale);
   if (value.empty()) {
     return {};
   }
-  if (field_type.group() == FieldTypeGroup::kPhone) {
+  const FieldType field_type = autofill_type.GetAddressType();
+  if (GroupTypeOfFieldType(field_type) == FieldTypeGroup::kPhone) {
     return GetPhoneNumberValueForInput(
         field_data.max_length(), value,
         profile.GetInfo(PHONE_HOME_CITY_AND_NUMBER, app_locale));
   }
-  if (field_type.GetStorableType() == ADDRESS_HOME_STREET_ADDRESS) {
+  if (field_type == ADDRESS_HOME_STREET_ADDRESS) {
     return GetStreetAddressForInput(value, profile.language_code(),
                                     field_data.form_control_type());
   }
-  if (field_type.GetStorableType() == ADDRESS_HOME_STATE) {
+  if (field_type == ADDRESS_HOME_STATE) {
     return GetStateTextForInput(
         value, data_util::GetCountryCodeWithFallback(profile, app_locale),
         field_data.max_length(), failure_to_fill);
   }
-  if (IsAlternativeNameType(field_type.GetStorableType())) {
+  if (IsAlternativeNameType(field_type)) {
     return GetAlternativeNameForInput(value, profile.GetAddressCountryCode(),
                                       field_data);
   }
@@ -241,21 +242,22 @@ std::u16string GetValueForProfileSelectControl(
 std::pair<std::u16string, FieldType> GetFillingValueAndTypeForProfile(
     const AutofillProfile& profile,
     const std::string& app_locale,
-    const AutofillType& field_type,
+    const AutofillType& autofill_type,
     const FormFieldData& field_data,
     AddressNormalizer* address_normalizer,
     std::string* failure_to_fill) {
-  CHECK(IsAddressType(field_type.GetStorableType()));
+  const FieldType field_type = autofill_type.GetAddressType();
+  CHECK_NE(field_type, UNKNOWN_TYPE);
   std::u16string value = GetValueForProfileForInput(
-      profile, app_locale, field_type, field_data, failure_to_fill);
+      profile, app_locale, autofill_type, field_data, failure_to_fill);
 
   if (field_data.IsSelectElement() && !value.empty()) {
     value = GetValueForProfileSelectControl(
-        profile, value, app_locale, field_data.options(),
-        field_type.GetStorableType(), address_normalizer, failure_to_fill);
+        profile, value, app_locale, field_data.options(), field_type,
+        address_normalizer, failure_to_fill);
   }
 
-  return {value, field_type.GetStorableType()};
+  return {value, field_type};
 }
 
 std::u16string GetPhoneNumberValueForInput(

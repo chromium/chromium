@@ -16,4 +16,10 @@ void RecordSharedTabGroupManageType(SharedTabGroupManageTypeDesktop action) {
   base::UmaHistogramEnumeration("TabGroups.Shared.Manage.Desktop", action);
 }
 
+void RecordSavedTabGroupOpenedSubmenu(
+    SavedTabGroupOpenedSubmenuDesktop submenu_type) {
+  base::UmaHistogramEnumeration("TabGroups.SavedTabGroupOpenedSubmenu",
+                                submenu_type);
+}
+
 }  // namespace tab_groups::saved_tab_groups::metrics

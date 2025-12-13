@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/extensions/extension_context_menu_model.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
@@ -24,10 +24,13 @@
 #include "ui/views/view_class_properties.h"
 
 ExtensionContextMenuController::ExtensionContextMenuController(
-    ToolbarActionViewController* controller,
+    ToolbarActionViewModel* action_model,
+    Observer* observer,
     extensions::ExtensionContextMenuModel::ContextMenuSource
         context_menu_source)
-    : controller_(controller), context_menu_source_(context_menu_source) {}
+    : action_model_(action_model),
+      observer_(observer),
+      context_menu_source_(context_menu_source) {}
 
 ExtensionContextMenuController::~ExtensionContextMenuController() = default;
 
@@ -35,10 +38,11 @@ void ExtensionContextMenuController::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type) {
-  ui::MenuModel* model = controller_->GetContextMenu(context_menu_source_);
+  ui::MenuModel* menu_model =
+      action_model_->GetContextMenu(context_menu_source_);
 
   // It's possible the action doesn't have a context menu.
-  if (!model) {
+  if (!menu_model) {
     return;
   }
 
@@ -51,14 +55,15 @@ void ExtensionContextMenuController::ShowContextMenuForViewImpl(
   // menu. Any action that would lead to the deletion of |this| first triggers
   // the closing of the menu through lost capture.
   menu_adapter_ = std::make_unique<views::MenuModelAdapter>(
-      model, base::BindRepeating(&ExtensionContextMenuController::OnMenuClosed,
-                                 base::Unretained(this)));
+      menu_model,
+      base::BindRepeating(&ExtensionContextMenuController::OnMenuClosed,
+                          base::Unretained(this)));
 
   std::unique_ptr<views::MenuItemView> menu = menu_adapter_->CreateMenu();
   menu_runner_ =
       std::make_unique<views::MenuRunner>(std::move(menu), run_types);
 
-  controller_->OnContextMenuShown(context_menu_source_);
+  observer_->OnContextMenuShown();
   menu_runner_->RunMenuAt(
       parent,
       static_cast<views::MenuButtonController*>(
@@ -73,6 +78,6 @@ bool ExtensionContextMenuController::IsMenuRunning() const {
 
 void ExtensionContextMenuController::OnMenuClosed() {
   menu_runner_.reset();
-  controller_->OnContextMenuClosed(context_menu_source_);
+  observer_->OnContextMenuClosed();
   menu_adapter_.reset();
 }

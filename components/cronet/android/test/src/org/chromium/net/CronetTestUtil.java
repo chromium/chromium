@@ -113,7 +113,7 @@ public class CronetTestUtil {
     /** Helper method to assert that the request is negotiated over QUIC. */
     public static void assertIsQuic(UrlResponseInfo responseInfo) {
         String protocol = responseInfo.getNegotiatedProtocol();
-        assertWithMessage("Expected the negotiatedProtocol to be QUIC but was " + protocol)
+        assertWithMessage("Expected the negotiatedProtocol to be QUIC but was %s", protocol)
                 .that(protocol.startsWith("http/2+quic") || protocol.startsWith("h3"))
                 .isTrue();
     }

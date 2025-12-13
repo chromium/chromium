@@ -115,9 +115,9 @@ EventSource* EventSource::Create(ExecutionContext* context,
 
   KURL full_url = context->CompleteURL(url);
   if (!full_url.IsValid()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kSyntaxError,
-        "Cannot open an EventSource to '" + url + "'. The URL is invalid.");
+    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
+                                      StrCat({"Cannot open an EventSource to '",
+                                              url, "'. The URL is invalid."}));
     return nullptr;
   }
 
@@ -249,8 +249,7 @@ void EventSource::DidReceiveResponse(uint64_t identifier,
 
   resource_identifier_ = identifier;
   current_url_ = response.CurrentRequestUrl();
-  event_stream_origin_ =
-      SecurityOrigin::Create(response.CurrentRequestUrl())->ToString();
+  event_stream_origin_ = SecurityOrigin::Create(response.CurrentRequestUrl());
   int status_code = response.HttpStatusCode();
   bool mime_type_is_valid = response.MimeType() == "text/event-stream";
   bool response_is_valid = status_code == 200 && mime_type_is_valid;

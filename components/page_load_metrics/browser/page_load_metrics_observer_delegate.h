@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/resource_tracker.h"
 #include "components/page_load_metrics/browser/responsiveness_metrics_normalization.h"
@@ -121,6 +122,9 @@ class PageLoadMetricsObserverDelegate {
   // Page's visibility at activation.
   virtual PageVisibility GetVisibilityAtActivation() const = 0;
 
+  // True if the page load is a reload of a page that was discarded.
+  virtual bool IsReloadAfterDiscard() const = 0;
+
   // True if the page load was a prerender, that was later activated by a
   // navigation that started in the foreground.
   virtual bool WasPrerenderedThenActivatedInForeground() const = 0;
@@ -223,11 +227,10 @@ class PageLoadMetricsObserverDelegate {
   // meaningfully modify the DOM, replacing the previous content with new one.
   virtual mojom::SoftNavigationMetrics& GetSoftNavigationMetrics() const = 0;
 
-  // UKM source ID for the current soft navigation.
-  virtual ukm::SourceId GetUkmSourceIdForSoftNavigation() const = 0;
-
-  // UKM source ID for the previous soft navigation.
-  virtual ukm::SourceId GetPreviousUkmSourceIdForSoftNavigation() const = 0;
+  // Maps main-frame same-document navigation identified
+  // by |same_document_metrics_token| to its UKM source id.
+  virtual ukm::SourceId GetUkmSourceIdForSameDocumentNavigation(
+      base::UnguessableToken same_document_metrics_token) const = 0;
 
   // UKM source ID for the current page load.
   // Note: For prerendered page loads, this returns ukm::kInvalidSourceId until

@@ -5,14 +5,15 @@
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_impl.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 
+#include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/invalidations/fcm_handler.h"
-#include "chromeos/ash/components/boca/session_api/session_client_impl.h"
-#include "chromeos/ash/components/boca/session_api/upload_token_request.h"
+#include "chromeos/ash/components/boca/invalidations/invalidation_service_delegate.h"
 #include "components/account_id/account_id.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/gcm_driver/gcm_driver.h"
@@ -29,34 +30,22 @@ using ::testing::Return;
 using ::testing::SaveArg;
 
 namespace ash::boca {
-
 namespace {
-constexpr char kTestEmail[] = "testemail";
-constexpr GaiaId::Literal kGaiaId("123");
-constexpr int kTokenValidationPeriodMinutesDefault = 60 * 24;
-constexpr char kBocaUploadTokenErrorCodeUmaPath[] =
-    "Ash.Boca.UploadToken.ErrorCode";
 
-class MockSessionClientImpl : public SessionClientImpl {
+constexpr int kTokenValidationPeriodMinutesDefault = 60 * 24;
+
+class MockDelegate : public InvalidationServiceDelegate {
  public:
-  explicit MockSessionClientImpl(
-      std::unique_ptr<google_apis::RequestSender> sender)
-      : SessionClientImpl(std::move(sender)) {}
+  explicit MockDelegate() = default;
+  ~MockDelegate() override = default;
   MOCK_METHOD(void,
               UploadToken,
-              (std::unique_ptr<UploadTokenRequest>),
+              (const std::string&, base::OnceCallback<void(bool)>),
               (override));
-};
-
-class MockSessionManager : public BocaSessionManager {
- public:
-  explicit MockSessionManager(SessionClientImpl* session_client_impl)
-      : BocaSessionManager(session_client_impl,
-                           /*pref_service=*/nullptr,
-                           AccountId::FromUserEmailGaiaId(kTestEmail, kGaiaId),
-                           /*is_producer=*/false) {}
-  MOCK_METHOD(void, LoadCurrentSession, (bool), (override));
-  ~MockSessionManager() override = default;
+  MOCK_METHOD(void,
+              OnInvalidationReceived,
+              (const std::string& payload),
+              (override));
 };
 
 class MockGCMDriver : public gcm::GCMDriver {
@@ -70,7 +59,7 @@ class MockGCMDriver : public gcm::GCMDriver {
 class MockInstanceID : public instance_id::InstanceID {
  public:
   MockInstanceID()
-      : instance_id::InstanceID(InvalidationServiceImpl::kApplicationId,
+      : instance_id::InstanceID(/*app_id=*/"",
                                 /*gcm_driver=*/nullptr) {}
   ~MockInstanceID() override = default;
   MOCK_METHOD(void, GetID, (GetIDCallback callback), (override));
@@ -125,27 +114,21 @@ class InvalidationServiceImplTest : public testing::Test {
   ~InvalidationServiceImplTest() override = default;
 
   void SetUp() override {
+    const std::string kDefaultFcmToken = "default_token";
     mock_instance_id_driver_ =
         std::make_unique<NiceMock<MockInstanceIDDriver>>();
-    ON_CALL(*mock_instance_id_driver_,
-            GetInstanceID(InvalidationServiceImpl::kApplicationId))
+    ON_CALL(*mock_instance_id_driver_, GetInstanceID)
         .WillByDefault(Return(&mock_instance_id_));
 
     ON_CALL(mock_instance_id_, GetToken)
         .WillByDefault(RunOnceCallback<4>(
-            "default_token", instance_id::InstanceID::Result::SUCCESS));
+            kDefaultFcmToken, instance_id::InstanceID::Result::SUCCESS));
 
-    session_client_impl_ =
-        std::make_unique<NiceMock<MockSessionClientImpl>>(nullptr);
-    ON_CALL(*session_client_impl_, UploadToken(_)).WillByDefault(Return());
+    ON_CALL(mock_delegate_, UploadToken(kDefaultFcmToken, _))
+        .WillByDefault(Return());
 
-    boca_session_manager_ = std::make_unique<NiceMock<MockSessionManager>>(
-        session_client_impl_.get());
     invalidation_service_impl_ = std::make_unique<InvalidationServiceImpl>(
-        &fake_gcm_driver_, mock_instance_id_driver_.get(),
-        AccountId::FromUserEmailGaiaId(kTestEmail, kGaiaId),
-        boca_session_manager_.get(), session_client_impl_.get(),
-        "https://test");
+        &fake_gcm_driver_, mock_instance_id_driver_.get(), &mock_delegate_);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -153,55 +136,43 @@ class InvalidationServiceImplTest : public testing::Test {
   NiceMock<MockInstanceID> mock_instance_id_;
   gcm::FakeGCMDriver fake_gcm_driver_;
   std::unique_ptr<NiceMock<MockInstanceIDDriver>> mock_instance_id_driver_;
-  std::unique_ptr<NiceMock<MockSessionClientImpl>> session_client_impl_;
-  std::unique_ptr<NiceMock<MockSessionManager>> boca_session_manager_;
+  NiceMock<MockDelegate> mock_delegate_;
   std::unique_ptr<InvalidationServiceImpl> invalidation_service_impl_;
 };
 
 TEST_F(InvalidationServiceImplTest, HandleInvalidation) {
-  EXPECT_CALL(*boca_session_manager_,
-              LoadCurrentSession(/*from_polling=*/false))
-      .Times(1);
   const std::string kPayloadValue = "payload_1";
+  EXPECT_CALL(mock_delegate_, OnInvalidationReceived(kPayloadValue)).Times(1);
   gcm::IncomingMessage gcm_message;
-  gcm_message.raw_data = kPayloadValue;
+  gcm_message.data.emplace("method", kPayloadValue);
   invalidation_service_impl_->fcm_handler()->OnMessage(
-      InvalidationServiceImpl::kApplicationId, gcm_message);
+      invalidation_service_impl_->fcm_handler()->GetAppIdForTesting(),
+      gcm_message);
 }
 
 TEST_F(InvalidationServiceImplTest, HandleTokenUpload) {
   // Check that the handler gets the token through GetToken.
-  const char token[] = "token_2";
+  const std::string kNewToken = "token_2";
   EXPECT_CALL(mock_instance_id_, GetToken)
-      .WillOnce(
-          RunOnceCallback<4>(token, instance_id::InstanceID::Result::SUCCESS));
-  std::unique_ptr<UploadTokenRequest> request;
-  EXPECT_CALL(*session_client_impl_, UploadToken(_))
-      .WillOnce([&](std::unique_ptr<UploadTokenRequest> request_1) {
-        request = std::move(request_1);
-      });
+      .WillOnce(RunOnceCallback<4>(kNewToken,
+                                   instance_id::InstanceID::Result::SUCCESS));
+  EXPECT_CALL(mock_delegate_, UploadToken(kNewToken, _)).Times(1);
   // Adjust the time and check that validation will happen in time.
   // The old token is invalid, so token observer should be informed.
   task_environment_.FastForwardBy(
       base::Minutes(kTokenValidationPeriodMinutesDefault));
-
-  EXPECT_EQ(kGaiaId, request->gaia_id());
-  EXPECT_EQ(token, request->token());
 }
 
 TEST_F(InvalidationServiceImplTest, HandleTokenUploadFailureWithBackoff) {
-  base::HistogramTester histogram_tester;
   // Check that the handler gets the token through GetToken.
-  const char token[] = "token_2";
+  const std::string kNewToken = "token_2";
   EXPECT_CALL(mock_instance_id_, GetToken)
-      .WillOnce(
-          RunOnceCallback<4>(token, instance_id::InstanceID::Result::SUCCESS));
-  std::unique_ptr<UploadTokenRequest> request;
-  EXPECT_CALL(*session_client_impl_, UploadToken(_))
-      .WillOnce([&](std::unique_ptr<UploadTokenRequest> request_1) {
-        request = std::move(request_1);
-        std::move(request->callback())
-            .Run(base::unexpected(google_apis::ApiErrorCode::HTTP_BAD_REQUEST));
+      .WillOnce(RunOnceCallback<4>(kNewToken,
+                                   instance_id::InstanceID::Result::SUCCESS));
+  EXPECT_CALL(mock_delegate_, UploadToken(kNewToken, _))
+      .WillOnce([&](const std::string&,
+                    base::OnceCallback<void(bool)> on_token_uploaded_cb) {
+        std::move(on_token_uploaded_cb).Run(/*success=*/false);
       });
   // Adjust the time and check that validation will happen in time.
   // The old token is invalid, so token observer should be informed.
@@ -209,17 +180,8 @@ TEST_F(InvalidationServiceImplTest, HandleTokenUploadFailureWithBackoff) {
       base::Minutes(kTokenValidationPeriodMinutesDefault));
 
   // A retry and succeeded and stop uploading.
-  EXPECT_CALL(*session_client_impl_, UploadToken(_))
-      .WillOnce([&](std::unique_ptr<UploadTokenRequest> request_1) {
-        request = std::move(request_1);
-        std::move(request->callback()).Run(true);
-      });
+  EXPECT_CALL(mock_delegate_, UploadToken(kNewToken, _)).Times(1);
   task_environment_.FastForwardBy(base::Seconds(3));
-  histogram_tester.ExpectTotalCount(kBocaUploadTokenErrorCodeUmaPath, 1);
-
-  histogram_tester.ExpectBucketCount(
-      kBocaUploadTokenErrorCodeUmaPath,
-      google_apis::ApiErrorCode::HTTP_BAD_REQUEST, 1);
 }
 }  // namespace
 }  // namespace ash::boca

@@ -40,7 +40,7 @@ enum SystemSecurityPolicy : uint32_t {
   AllowAnyRecoveryOS = 1 << 8,
   AllowUnapprovedKernelExtensions = 1 << 9,
   AllowExecutablePolicyOverride = 1 << 10,
-  AllowUnauthenticatedRoot = 1 < 11,
+  AllowUnauthenticatedRoot = 1 << 11,
   AllowResearchGuests = 1 << 12,
 };
 

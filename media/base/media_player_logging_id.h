@@ -8,12 +8,13 @@
 #include <stdint.h>
 
 #include "base/atomic_sequence_num.h"
+#include "base/types/id_type.h"
 #include "media/base/media_export.h"
 
 namespace media {
 
 // alias the name for readability
-using MediaPlayerLoggingID = int32_t;
+using MediaPlayerLoggingID = base::IdTypeU64<class MediaPlayerLoggingIDTag>;
 
 MEDIA_EXPORT MediaPlayerLoggingID GetNextMediaPlayerLoggingID();
 

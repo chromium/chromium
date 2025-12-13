@@ -71,17 +71,17 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/delay_policy.h"
 #include "base/task/delayed_task_handle.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 
 namespace base {
 
+class SequencedTaskRunner;
 class TickClock;
 
 namespace internal {

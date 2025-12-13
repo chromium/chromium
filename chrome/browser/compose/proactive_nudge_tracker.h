@@ -14,12 +14,21 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
-#include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
+#include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_metrics.h"
-#include "components/segmentation_platform/public/segmentation_platform_service.h"
+#include "components/segmentation_platform/public/result.h"
+
+namespace content {
+class WebContents;
+}
+
+namespace segmentation_platform {
+class SegmentationPlatformService;
+}
 
 namespace compose {
 
@@ -113,7 +122,7 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
     Signals signals;
     std::u16string initial_text_value;
     std::optional<segmentation_platform::ClassificationResult>
-        segmentation_result = std::nullopt;
+        segmentation_result;
     bool segmentation_result_ignored_for_training = false;
     base::OneShotTimer timer;
     bool selection_nudge_requested = false;
@@ -179,7 +188,6 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
  private:
   class EngagementTracker;
 
-  bool SegmentationStateIsValid();
   void ResetState();
 
   void UpdateStateForCurrentFormField();
@@ -220,9 +228,9 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
   std::map<autofill::FieldGlobalId, std::unique_ptr<EngagementTracker>>
       engagement_trackers_;
 
-  raw_ptr<segmentation_platform::SegmentationPlatformService>
+  const raw_ptr<segmentation_platform::SegmentationPlatformService>
       segmentation_service_;
-  raw_ptr<Delegate> delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   autofill::ScopedAutofillManagersObservation autofill_managers_observation_{
       this};

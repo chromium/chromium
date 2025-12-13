@@ -9,8 +9,8 @@
 #include <optional>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
@@ -30,8 +30,6 @@
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
-#include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
-#include "chrome/browser/apps/app_service/webapk/webapk_manager.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_icon.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
@@ -42,7 +40,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -86,6 +83,10 @@
 // overwritten icon... IIRC this applies to shelf items and ArcAppWindow icon".
 
 namespace {
+
+// NOTE: ArcApps is globally unique because it is only created for the primary
+// profile. CHECKs make sure this condition is met.
+apps::ArcApps* g_instance = nullptr;
 
 std::optional<int> g_test_arc_version_;
 
@@ -549,30 +550,49 @@ void ArcApps::SetArcVersionForTesting(int version) {
   g_test_arc_version_ = version;
 }
 
-// static
-ArcApps* ArcApps::Get(Profile* profile) {
-  return ArcAppsFactory::GetForProfile(profile);
-}
-
 ArcApps::ArcApps(AppServiceProxy* proxy)
-    : AppPublisher(proxy), profile_(proxy->profile()) {}
+    : AppPublisher(proxy), profile_(proxy->profile()) {
+  CHECK(!g_instance);
+  g_instance = this;
 
-ArcApps::~ArcApps() {
-  proxy()->UnregisterPublisher(AppType::kArc);
-}
-
-void ArcApps::Initialize() {
   if (!arc::IsArcAllowedForProfile(profile_) ||
       (arc::ArcServiceManager::Get() == nullptr)) {
     return;
   }
 
+  if (auto* arc_session_manager = arc::ArcSessionManager::Get()) {
+    arc_session_manager_observation_.Observe(arc_session_manager);
+  } else {
+    CHECK_IS_TEST();
+  }
+
+  // Register this to AppService.
+  RegisterPublisher(AppType::kArc);
+}
+
+ArcApps::~ArcApps() {
+  proxy()->UnregisterPublisher(AppType::kArc);
+
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
+
+// static
+ArcApps* ArcApps::GetForTesting(Profile* profile) {
+  CHECK(g_instance);
+  CHECK_EQ(g_instance->profile_, profile);
+  return g_instance;
+}
+
+void ArcApps::OnInitialized() {
   // Make some observee-observer connections.
+
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
   if (!prefs) {
     return;
   }
-  prefs->AddObserver(this);
+  arc_app_list_prefs_observation_.Observe(prefs);
+
   proxy()->SetArcIsRegistered();
 
   auto* intent_helper_bridge =
@@ -590,22 +610,18 @@ void ArcApps::Initialize() {
         ash::ArcNotificationsHostInitializer::Get());
   }
 
-  auto* arc_bridge_service =
+  auto* arc_privacy_items_bridge =
       arc::ArcPrivacyItemsBridge::GetForBrowserContext(profile_);
-  if (arc_bridge_service) {
-    arc_privacy_items_bridge_observation_.Observe(arc_bridge_service);
+  if (arc_privacy_items_bridge) {
+    arc_privacy_items_bridge_observation_.Observe(arc_privacy_items_bridge);
   }
 
+  // TODO(crbug.com/446576749): Move out the logic in `OnInstanceUpdate` and
+  // do not observe the instance registry here.
   auto* instance_registry = &proxy()->InstanceRegistry();
   if (instance_registry) {
     instance_registry_observation_.Observe(instance_registry);
   }
-
-  if (web_app::AreWebAppsEnabled(profile_)) {
-    web_apk_manager_ = std::make_unique<apps::WebApkManager>(profile_);
-  }
-
-  RegisterPublisher(AppType::kArc);
 
   std::vector<AppPtr> apps;
   for (const auto& app_id : prefs->GetAppIds()) {
@@ -620,22 +636,27 @@ void ArcApps::Initialize() {
   ObserveDisabledSystemFeaturesPolicy();
 }
 
-void ArcApps::Shutdown() {
-  // Disconnect the observee-observer connections that we made during the
-  // constructor.
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
-  if (prefs) {
-    prefs->RemoveObserver(this);
-  }
+void ArcApps::OnShutdown() {
+  // Corresponds to ObserveDisabledSystemFeaturesPolicy.
+  local_state_pref_change_registrar_.Reset();
+
+  // Disconnect the observee-observer connections that we made during
+  // `OnInitialize`.
+
+  instance_registry_observation_.Reset();
+
+  arc_privacy_items_bridge_observation_.Reset();
+
+  notification_initializer_observation_.Reset();
 
   auto* intent_helper_bridge =
       arc::ArcIntentHelperBridge::GetForBrowserContext(profile_);
   if (intent_helper_bridge) {
     intent_helper_bridge->SetAdaptiveIconDelegate(nullptr);
+    arc_intent_helper_observation_.Reset();
   }
 
-  arc_intent_helper_observation_.Reset();
-  arc_privacy_items_bridge_observation_.Reset();
+  arc_app_list_prefs_observation_.Reset();
 }
 
 void ArcApps::GetCompressedIconData(const std::string& app_id,
@@ -1091,7 +1112,7 @@ void ArcApps::OpenNativeSettings(const std::string& app_id) {
                         ? arc::mojom::ShowPackageInfoPage::MANAGE_PERMISSIONS
                         : arc::mojom::ShowPackageInfoPage::MAIN;
   arc::ShowPackageInfo(app_info->package_name, page,
-                       display::Screen::GetScreen()->GetPrimaryDisplay().id());
+                       display::Screen::Get()->GetPrimaryDisplay().id());
 }
 
 void ArcApps::OnSupportedLinksPreferenceChanged(const std::string& app_id,
@@ -1316,16 +1337,10 @@ void ArcApps::OnArcSupportedLinksChanged(
   }
 }
 
-void ArcApps::OnSetArcNotificationsInstance(
+void ArcApps::OnArcNotificationManagerInitialized(
     ash::ArcNotificationManagerBase* arc_notification_manager) {
   DCHECK(arc_notification_manager);
   notification_observation_.Observe(arc_notification_manager);
-}
-
-void ArcApps::OnArcNotificationInitializerDestroyed(
-    ash::ArcNotificationsHostInitializer* initializer) {
-  DCHECK(notification_initializer_observation_.IsObservingSource(initializer));
-  notification_initializer_observation_.Reset();
 }
 
 void ArcApps::OnNotificationUpdated(const std::string& notification_id,
@@ -1425,6 +1440,7 @@ void ArcApps::OnPrivacyItemsChanged(
   proxy()->OnCapabilityAccesses(std::move(accesses));
 }
 
+// TODO(crbug.com/446576749): Move this logic to somewhere else.
 void ArcApps::OnInstanceUpdate(const apps::InstanceUpdate& update) {
   if (!update.StateChanged()) {
     return;
@@ -1432,6 +1448,7 @@ void ArcApps::OnInstanceUpdate(const apps::InstanceUpdate& update) {
   if (update.AppId() != arc::kSettingsAppId) {
     return;
   }
+
   if (update.State() & apps::InstanceState::kActive) {
     settings_app_is_active_ = true;
   } else if (settings_app_is_active_) {
@@ -1444,11 +1461,9 @@ void ArcApps::OnInstanceUpdate(const apps::InstanceUpdate& update) {
   }
 }
 
+// TODO(crbug.com/442761233): Remove this.
 void ArcApps::OnInstanceRegistryWillBeDestroyed(
-    apps::InstanceRegistry* instance_registry) {
-  DCHECK(instance_registry_observation_.IsObservingSource(instance_registry));
-  instance_registry_observation_.Reset();
-}
+    apps::InstanceRegistry* instance_registry) {}
 
 AppPtr ArcApps::CreateApp(ArcAppListPrefs* prefs,
                           const std::string& app_id,
@@ -1528,7 +1543,8 @@ AppPtr ArcApps::CreateApp(ArcAppListPrefs* prefs,
   // Set hard-coded Play Store intent filters if not set. This is a stop-gap
   // solution to handle Play Store URLs before ARC gets ready.
   // TODO(b/259205050): Remove this once intent filters are properly cached.
-  if (app->intent_filters.empty() && app_id == arc::kPlayStoreAppId) {
+  if ((!app->intent_filters || app->intent_filters->empty()) &&
+      app_id == arc::kPlayStoreAppId) {
     app->intent_filters = GetHardcodedPlayStoreIntentFilters();
   }
 
@@ -1652,8 +1668,7 @@ void ArcApps::OnGetAppShortcutItems(
 }
 
 void ArcApps::OnInstallationStarted(const std::string& package_name) {
-  if (ash::features::ArePromiseIconsEnabled() &&
-      ArcVersionEligibleForPromiseIcons()) {
+  if (ArcVersionEligibleForPromiseIcons()) {
     PromiseAppPtr promise_app = AppPublisher::MakePromiseApp(
         PackageId(PackageType::kArc, package_name));
 
@@ -1665,51 +1680,46 @@ void ArcApps::OnInstallationStarted(const std::string& package_name) {
 
 void ArcApps::OnInstallationProgressChanged(const std::string& package_name,
                                             float progress) {
-  if (ash::features::ArePromiseIconsEnabled()) {
-    PackageId package_id = PackageId(PackageType::kArc, package_name);
-    const PromiseApp* existing_promise_app =
-        proxy()->PromiseAppRegistryCache()->GetPromiseApp(package_id);
-    if (!existing_promise_app) {
-      LOG(ERROR) << "Cannot update installation progress value for "
-                 << package_name
-                 << ", as there is no promise app registered for this package.";
-      return;
-    }
-    PromiseAppPtr promise_app = AppPublisher::MakePromiseApp(package_id);
-    promise_app->progress = progress;
-
-    // Update the status to reflect that the app is actively downloading/
-    // installing. We update the status here on the first progress update
-    // instead of in OnInstallationActiveChanged, due to some conflicts with
-    // what the ARC active status indicates and what we need.
-    if (existing_promise_app->status == PromiseStatus::kPending) {
-      promise_app->status = PromiseStatus::kInstalling;
-    }
-    AppPublisher::PublishPromiseApp(std::move(promise_app));
+  PackageId package_id = PackageId(PackageType::kArc, package_name);
+  const PromiseApp* existing_promise_app =
+      proxy()->PromiseAppRegistryCache()->GetPromiseApp(package_id);
+  if (!existing_promise_app) {
+    LOG(ERROR) << "Cannot update installation progress value for "
+               << package_name
+               << ", as there is no promise app registered for this package.";
+    return;
   }
+  PromiseAppPtr promise_app = AppPublisher::MakePromiseApp(package_id);
+  promise_app->progress = progress;
+
+  // Update the status to reflect that the app is actively downloading/
+  // installing. We update the status here on the first progress update
+  // instead of in OnInstallationActiveChanged, due to some conflicts with
+  // what the ARC active status indicates and what we need.
+  if (existing_promise_app->status == PromiseStatus::kPending) {
+    promise_app->status = PromiseStatus::kInstalling;
+  }
+  AppPublisher::PublishPromiseApp(std::move(promise_app));
 }
 
 void ArcApps::OnInstallationActiveChanged(const std::string& package_name,
                                           bool active) {
-  if (ash::features::ArePromiseIconsEnabled()) {
-    PackageId package_id(PackageType::kArc, package_name);
-    if (!proxy()->PromiseAppRegistryCache()->HasPromiseApp(package_id)) {
-      LOG(ERROR) << "Cannot update installation active status for "
-                 << package_name
-                 << ", as there is no promise app registered for this package.";
-      return;
-    }
-    // TODO(b/261907409): Set PromiseStatus to kPending if the installation is
-    // no longer active, i.e. if active=false after there has been at least one
-    // progress change.
+  PackageId package_id(PackageType::kArc, package_name);
+  if (!proxy()->PromiseAppRegistryCache()->HasPromiseApp(package_id)) {
+    LOG(ERROR) << "Cannot update installation active status for "
+               << package_name
+               << ", as there is no promise app registered for this package.";
+    return;
   }
+  // TODO(b/261907409): Set PromiseStatus to kPending if the installation is
+  // no longer active, i.e. if active=false after there has been at least one
+  // progress change.
 }
 
 void ArcApps::OnInstallationFinished(const std::string& package_name,
                                      bool success,
                                      bool is_launchable_app) {
-  if (ash::features::ArePromiseIconsEnabled() &&
-      ArcVersionEligibleForPromiseIcons()) {
+  if (ArcVersionEligibleForPromiseIcons()) {
     if (success && is_launchable_app) {
       return;
     }

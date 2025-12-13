@@ -76,8 +76,10 @@ LoggingNetworkChangeObserver::~LoggingNetworkChangeObserver() {
     NetworkChangeNotifier::RemoveNetworkObserver(this);
 }
 
-void LoggingNetworkChangeObserver::OnIPAddressChanged() {
-  VLOG(1) << "Observed a change to the network IP addresses";
+void LoggingNetworkChangeObserver::OnIPAddressChanged(
+    NetworkChangeNotifier::IPAddressChangeType change_type) {
+  VLOG(1) << "Observed a change to the network IP addresses "
+          << NetworkChangeNotifier::IPAddressChangeTypeToString(change_type);
 
   net_log_.AddEvent(NetLogEventType::NETWORK_IP_ADDRESSES_CHANGED);
 }

@@ -341,11 +341,6 @@ GL_APICALL void         GL_APIENTRY glBindFragDataLocationIndexedEXT (GLidProgra
 GL_APICALL void         GL_APIENTRY glBindFragDataLocationEXT (GLidProgram program, GLuint colorNumber, const char* name);
 GL_APICALL GLint        GL_APIENTRY glGetFragDataIndexEXT (GLidProgram program, const char* name);
 
-// Extension CHROMIUM_discardable_textures
-GL_APICALL void         GL_APIENTRY glInitializeDiscardableTextureCHROMIUM (GLuint texture_id);
-GL_APICALL void         GL_APIENTRY glUnlockDiscardableTextureCHROMIUM (GLuint texture_id);
-GL_APICALL bool         GL_APIENTRY glLockDiscardableTextureCHROMIUM (GLuint texture_id);
-
 // Extension EXT_window_rectangles
 GL_APICALL void         GL_APIENTRY glWindowRectanglesEXT (GLenumWindowRectanglesMode mode, GLsizeiNotNegative count, const GLint* box);
 

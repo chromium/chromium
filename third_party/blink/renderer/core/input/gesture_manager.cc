@@ -8,6 +8,7 @@
 #include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/public_buildflags.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_mouse_event_init.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_impl.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/selection_controller.h"
@@ -24,8 +25,10 @@
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
@@ -59,7 +62,8 @@ GestureManager::GestureManager(LocalFrame& frame,
                                MouseEventManager& mouse_event_manager,
                                PointerEventManager& pointer_event_manager,
                                SelectionController& selection_controller)
-    : frame_(frame),
+    : FocusChangedObserver(frame.GetPage()),
+      frame_(frame),
       scroll_manager_(scroll_manager),
       mouse_event_manager_(mouse_event_manager),
       pointer_event_manager_(pointer_event_manager),
@@ -70,6 +74,7 @@ GestureManager::GestureManager(LocalFrame& frame,
 void GestureManager::Clear() {
   suppress_mouse_events_from_gestures_ = false;
   suppress_selection_on_repeated_tap_down_ = false;
+  lost_focus_during_drag_ = false;
   ResetLongTapContextMenuStates();
 }
 
@@ -143,6 +148,13 @@ WebInputEventResult GestureManager::HandleGestureEventInFrame(
     }
   }
 
+  // Long presses are the only gesture that could happen with an ongoing drag.
+  // We clear the flag on any other gesture in case the gesture manager didn't
+  // receive a drag end event for any reason.
+  if (gesture_event.GetType() != WebInputEvent::Type::kGestureLongPress) {
+    drag_in_progress_ = false;
+  }
+
   switch (gesture_event.GetType()) {
     case WebInputEvent::Type::kGestureTapDown:
       return HandleGestureTapDown(targeted_event);
@@ -178,6 +190,7 @@ WebInputEventResult GestureManager::HandleGestureTapDown(
   suppress_mouse_events_from_gestures_ =
       pointer_event_manager_->PrimaryPointerdownCanceled(
           gesture_event.unique_touch_event_id);
+  lost_focus_during_drag_ = false;
 
   if (!RuntimeEnabledFeatures::TouchTextEditingRedesignEnabled() ||
       suppress_mouse_events_from_gestures_ ||
@@ -349,11 +362,44 @@ WebInputEventResult GestureManager::HandleGestureTap(
       Node* click_target_node = current_hit_test.InnerNode()->CommonAncestor(
           *tapped_element, event_handling_util::ParentForClickEvent);
       auto* click_target_element = DynamicTo<Element>(click_target_node);
-      fake_mouse_up.id = GetPointerIdFromWebGestureEvent(gesture_event);
+      PointerId pointer_id = GetPointerIdFromWebGestureEvent(gesture_event);
+      fake_mouse_up.id = pointer_id;
       fake_mouse_up.pointer_type = gesture_event.primary_pointer_type;
+
+      PointerEventFactory::PointerTarget* pointer_down_target =
+          pointer_event_manager_->GetPointerDownTarget(pointer_id);
+      PointerEventFactory::PointerTarget* pointer_up_target =
+          pointer_event_manager_->GetPointerUpTarget(pointer_id);
+      if (!pointer_down_target) {
+        CHECK(!pointer_up_target);
+        // The browser didn't send any pointer events for this touch, so we need
+        // to fake the information for light dismiss. This can happen when the
+        // page has no pointerdown/pointerup event handlers.
+        // TODO(crbug.com/465787221): We should prevent this from happening by
+        // making pointerdown/pointerup get fired when there is a popover or
+        // dialog in the page which may be light dismissed.
+        MouseEventInit* init_for_coords =
+            MakeGarbageCollected<MouseEventInit>();
+        MouseEvent::SetCoordinatesFromWebPointerProperties(
+            fake_mouse_up.FlattenTransform(),
+            frame_->GetDocument()->domWindow(), init_for_coords);
+        pointer_down_target =
+            MakeGarbageCollected<PointerEventFactory::PointerTarget>(
+                click_target_element, init_for_coords->clientX(),
+                init_for_coords->clientY());
+        pointer_up_target =
+            MakeGarbageCollected<PointerEventFactory::PointerTarget>(
+                click_target_element, init_for_coords->clientX(),
+                init_for_coords->clientY());
+      } else {
+        CHECK(pointer_up_target);
+      }
+
       click_event_result =
           mouse_event_manager_->SetElementUnderMouseAndDispatchMouseEvent(
-              click_target_element, event_type_names::kClick, fake_mouse_up);
+              click_target_element, event_type_names::kClick, fake_mouse_up,
+              pointer_down_target, pointer_up_target);
+      pointer_event_manager_->RemovePointerTargets(pointer_id);
 
       // Dispatching a JS event could have detached the frame.
       if (frame_->View())
@@ -408,11 +454,11 @@ WebInputEventResult GestureManager::HandleGestureTap(
 
 WebInputEventResult GestureManager::HandleGestureShortPress(
     const GestureEventWithHitTestResults& targeted_event) {
-  drag_in_progress_ = false;
   if (frame_->GetSettings() &&
       frame_->GetSettings()->GetTouchDragDropEnabled() &&
       RuntimeEnabledFeatures::TouchDragOnShortPressEnabled() &&
-      HandleDragDropIfPossible(targeted_event)) {
+      HandleDragDropIfPossible(targeted_event) !=
+          DragHandlingResult::kNotHandled) {
     return WebInputEventResult::kHandledSystem;
   }
   return WebInputEventResult::kNotHandled;
@@ -435,8 +481,9 @@ WebInputEventResult GestureManager::HandleGestureLongPress(
 
   gesture_context_menu_deferred_ = false;
 
-  if (RuntimeEnabledFeatures::TouchDragOnShortPressEnabled()) {
-    if (drag_in_progress_ && DragEndOpensContextMenu()) {
+  if (RuntimeEnabledFeatures::TouchDragOnShortPressEnabled() &&
+      drag_in_progress_) {
+    if (DragEndOpensContextMenu()) {
       gesture_context_menu_deferred_ = true;
       return WebInputEventResult::kNotHandled;
     }
@@ -454,7 +501,8 @@ WebInputEventResult GestureManager::HandleGestureLongPress(
          !hit_test_result.AbsoluteImageURL().IsNull() ||
          !hit_test_result.AbsoluteMediaURL().IsNull());
     if (!should_open_context_menu_now &&
-        HandleDragDropIfPossible(targeted_event)) {
+        HandleDragDropIfPossible(targeted_event) !=
+            DragHandlingResult::kNotHandled) {
       gesture_context_menu_deferred_ = true;
       return WebInputEventResult::kHandledSystem;
     }
@@ -498,32 +546,51 @@ WebInputEventResult GestureManager::HandleGestureTwoFingerTap(
   return SendContextMenuEventForGesture(targeted_event);
 }
 
-void GestureManager::HandleTouchDragEnd(const WebMouseEvent& mouse_event) {
+void GestureManager::HandleTouchDragEnd(
+    const WebMouseEvent& event,
+    ui::mojom::blink::DragOperation operation) {
   if (!drag_in_progress_) {
     return;
   }
   drag_in_progress_ = false;
   if (DragEndOpensContextMenu()) {
-    SendContextMenuEventTouchDragEnd(mouse_event);
+    SendContextMenuEventTouchDragEnd(event, operation);
   }
 }
 
 void GestureManager::SendContextMenuEventTouchDragEnd(
-    const WebMouseEvent& mouse_event) {
+    const WebMouseEvent& mouse_event,
+    ui::mojom::blink::DragOperation operation) {
   if (!gesture_context_menu_deferred_ || suppress_mouse_events_from_gestures_) {
     return;
   }
 
   const gfx::PointF& positon_in_root_frame = mouse_event.PositionInWidget();
 
-  // Don't send contextmenu event if tap position is not within a slop region.
-  //
+  // There are three conditions that need to be met for the context menu to be
+  // open after a drag end:
+  // 1) The drop happened inside the `kTouchDragSlop` region.
+  // 2) The drop happened the same page that initiated the drag and the page
+  // never lost focus.
+  // 3) The drop did not have an effect (drag operation result was `kNone`).
+  // TODO(crbug.com/417245719): Ideally a CM wouldn't open if the drag was moved
+  // drastically outside of the slop region before being dropped; but the way
+  // mouse translation works for touch drag and drop right now makes the pointer
+  // lag behind a few frames when being synced, which causes the drag move
+  // events to always start far away from the original drag position. This makes
+  // tracking the drag to ensure it never left the slop region very difficult.
+  // When crbug.com/418025705 is implemented we will see if this sync issue is
+  // fixed and we can enforce this restriction.
   // TODO(mustaq): We should be reusing gesture touch-slop region here but it
   // seems non-trivial because this code path is called at drag-end, and the
   // drag controller does not sync well with gesture recognizer.  See the
   // blocked-on bugs in https://crbug.com/1096189.
-  if ((positon_in_root_frame - long_press_position_in_root_frame_).Length() >
-      kTouchDragSlop) {
+  const bool should_open_context_menu =
+      (positon_in_root_frame - long_press_position_in_root_frame_).Length() <=
+          kTouchDragSlop &&
+      !lost_focus_during_drag_ &&
+      operation == ui::mojom::blink::DragOperation::kNone;
+  if (!should_open_context_menu) {
     ResetLongTapContextMenuStates();
     return;
   }
@@ -639,11 +706,14 @@ PointerId GestureManager::GetPointerIdFromWebGestureEvent(
       gesture_event.primary_unique_touch_event_id);
 }
 
-bool GestureManager::HandleDragDropIfPossible(
+DragHandlingResult GestureManager::HandleDragDropIfPossible(
     const GestureEventWithHitTestResults& targeted_event) {
-  return drag_in_progress_ = mouse_event_manager_->HandleDragDropIfPossible(
-             targeted_event,
-             GetPointerIdFromWebGestureEvent(targeted_event.Event()));
+  const DragHandlingResult result =
+      mouse_event_manager_->HandleDragDropIfPossible(
+          targeted_event,
+          GetPointerIdFromWebGestureEvent(targeted_event.Event()));
+  drag_in_progress_ = result == DragHandlingResult::kHandledDragStarted;
+  return result;
 }
 
 bool GestureManager::DragEndOpensContextMenu() {

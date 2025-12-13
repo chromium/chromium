@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/notreached.h"
-#include "base/path_service.h"
 #include "ui/gfx/image/image.h"
 
 namespace chromecast {
@@ -40,19 +39,6 @@ base::FilePath CastResourceDelegate::GetPathForResourcePack(
     const base::FilePath& pack_path,
     ui::ResourceScaleFactor scale_factor) {
   return pack_path;
-}
-
-base::FilePath CastResourceDelegate::GetPathForLocalePack(
-    const base::FilePath& pack_path,
-    std::string_view locale) {
-  base::FilePath product_dir;
-  if (!base::PathService::Get(base::DIR_ASSETS, &product_dir)) {
-    NOTREACHED();
-  }
-  return product_dir.
-      Append(FILE_PATH_LITERAL("chromecast_locales")).
-      Append(FILE_PATH_LITERAL(locale)).
-      AddExtension(FILE_PATH_LITERAL("pak"));
 }
 
 gfx::Image CastResourceDelegate::GetImageNamed(int resource_id) {

@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
@@ -51,15 +52,18 @@ void CustomCursorSuppressor::Start(int max_dimension_dips) {
   browser_list_observation_.Observe(BrowserList::GetInstance());
   // Observe all TabStripModels of existing browsers and suppress custom cursors
   // on their active tabs.
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    browser->tab_strip_model()->AddObserver(this);
-    if (content::WebContents* active_contents =
-            browser->tab_strip_model()->GetActiveWebContents()) {
-      MaybeObserveNavigationsInWebContents(*active_contents);
-      SuppressForWebContents(*active_contents);
-    }
-    ObserveAndSuppressExtensionsForProfile(*browser->profile());
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser) {
+        TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+        tab_strip_model->AddObserver(this);
+        if (content::WebContents* const active_contents =
+                tab_strip_model->GetActiveWebContents()) {
+          MaybeObserveNavigationsInWebContents(*active_contents);
+          SuppressForWebContents(*active_contents);
+        }
+        ObserveAndSuppressExtensionsForProfile(*browser->GetProfile());
+        return true;
+      });
 }
 
 void CustomCursorSuppressor::Stop() {

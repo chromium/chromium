@@ -40,7 +40,6 @@ static_library("accessibility") {
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
     "//chrome/browser:resources_grit",
-    "//chrome/browser/ash/accessibility/service",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions/api/braille_display_private:controller",
@@ -53,7 +52,9 @@ static_library("accessibility") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/language_packs",
+    "//chromeos/ash/experiences/settings_ui",
     "//chromeos/dbus/power",
+    "//components/application_locale_storage",
     "//components/input",
     "//components/language/core/browser",
     "//components/language/core/common",
@@ -62,6 +63,7 @@ static_library("accessibility") {
     "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
     "//extensions/common:mojom",
     "//services/accessibility:buildflags",
+    "//ui/base/interaction",
     "//ui/content_accelerators",
     "//ui/events/ash",
     "//ui/views/controls/webview",
@@ -84,9 +86,6 @@ static_library("accessibility") {
     "//skia",
     "//ui/events/devices",
   ]
-
-  allow_circular_includes_from =
-      [ "//chrome/browser/ash/accessibility/service" ]
 }
 
 static_library("test_support") {
@@ -199,7 +198,7 @@ source_set("browser_tests") {
     "//base",
     "//chrome/app:command_ids",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash/accessibility/service:test_support",
+    "//chrome/browser/ash/accessibility/live_caption:browser_tests",
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/base",
@@ -215,14 +214,10 @@ source_set("browser_tests") {
     "//chrome/browser/ui/aura/accessibility",
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",
+    "//components/live_caption",
     "//components/live_caption:constants",
-    "//components/live_caption:live_caption",
     "//ui/base/mojom:ui_base_types",
     "//ui/events:test_support",
-
-    # Tests from subdirectories:
-    "//chrome/browser/ash/accessibility/live_caption:browser_tests",
-    "//chrome/browser/ash/accessibility/service:browser_tests",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

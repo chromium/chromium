@@ -4,18 +4,18 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_layout.h"
 
+#import "base/check_op.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ui/base/device_form_factor.h"
 
 namespace {
 
-// Items aspect ratios.
-constexpr CGFloat kPortraitAspectRatio = 4. / 3.;
 // Percentage of the grid width dedicated to spacing.
 constexpr CGFloat kSpacingPercentage = 0.12;
 // Specific spacing for iPhone Portrait.
@@ -31,15 +31,8 @@ constexpr CGFloat kTabGroupHeaderEstimatedHeight = 70;
 constexpr CGFloat kSearchHeaderEstimatedHeight = 50;
 // Estimated size of the SuggestedActions item.
 constexpr CGFloat kSuggestedActionsEstimatedHeight = 100;
-constexpr CGFloat kLegacySuggestedActionsEstimatedHeight = 150;
 // Estimated size of the activity summary item.
-constexpr CGFloat kActivitySummaryCellEstimatedHeight = 58;
-// Different width thresholds for determining the columns count.
-constexpr CGFloat kSmallWidthThreshold = 500;
-constexpr CGFloat kLargeWidthThreshold = 1000;
-// Magic padding to fit UX mocks for items sizes. See where it is used for more
-// details.
-constexpr CGFloat kMagicPadding = 50;
+constexpr CGFloat kActivitySummaryCellEstimatedHeight = 48;
 
 // Short helper for a fractional width NSCollectionLayoutDimension.
 NSCollectionLayoutDimension* FractionalWidth(CGFloat value) {
@@ -61,48 +54,6 @@ NSCollectionLayoutDimension* AbsoluteDimension(CGFloat value) {
   return [NSCollectionLayoutDimension absoluteDimension:value];
 }
 
-// Returns the number of columns based on the layout environment.
-NSInteger ColumnsCount(id<NSCollectionLayoutEnvironment> layout_environment) {
-  const CGFloat width = layout_environment.container.effectiveContentSize.width;
-  const UIContentSizeCategory content_size_category =
-      layout_environment.traitCollection.preferredContentSizeCategory;
-
-  NSInteger count;
-  if (width < kSmallWidthThreshold) {
-    count = 2;
-  } else if (width < kLargeWidthThreshold) {
-    count = 3;
-  } else {
-    count = 4;
-  }
-
-  // If Dynamic Type uses an Accessibility setting, just remove a column.
-  if (UIContentSizeCategoryIsAccessibilityCategory(content_size_category)) {
-    count -= 1;
-  }
-
-  return count;
-}
-
-// Returns the aspect ratio (height / width) of an item based on the layout
-// environment.
-CGFloat ItemAspectRatio(id<NSCollectionLayoutEnvironment> layout_environment) {
-  const CGFloat width = layout_environment.container.effectiveContentSize.width;
-  const CGFloat height =
-      layout_environment.container.effectiveContentSize.height;
-
-  const CGRect screen_bounds = UIScreen.mainScreen.bounds;
-  const CGFloat screen_aspect_ratio =
-      CGRectGetHeight(screen_bounds) / CGRectGetWidth(screen_bounds);
-
-  // On iPad Landscape with 3/4 - 1/4 Split View, the 3/4 width is just a bit
-  // smaller than the height, but design-wise, a landscape aspect ratio should
-  // be preferred. Pad a bit the width with a magic constant before comparing to
-  // the height.
-  return width + kMagicPadding > height ? screen_aspect_ratio
-                                        : kPortraitAspectRatio;
-}
-
 // Returns the spacing based on the layout environment.
 CGFloat Spacing(id<NSCollectionLayoutEnvironment> layout_environment) {
   // Get the grid width.
@@ -110,7 +61,11 @@ CGFloat Spacing(id<NSCollectionLayoutEnvironment> layout_environment) {
   // Compute the total amount of space.
   const CGFloat total_spacing = width * kSpacingPercentage;
   // Compute the number of spaces.
-  const NSInteger spaces_count = ColumnsCount(layout_environment) + 1;
+  const NSInteger spaces_count =
+      TabGridColumnsCount(
+          layout_environment.container.effectiveContentSize,
+          layout_environment.traitCollection.preferredContentSizeCategory) +
+      1;
   // Compute the theoretical size of the spacing, rounded to the nearest pixel.
   const CGFloat spacing = AlignValueToPixel(total_spacing / spaces_count);
   // Cap to a minimum spacing.
@@ -226,7 +181,9 @@ NSCollectionLayoutSection* InactiveTabButtonSection(
   const CGFloat spacing = Spacing(layout_environment);
   const CGFloat section_horizontal_inset = spacing;
 
-  NSInteger columns_count = ColumnsCount(layout_environment);
+  NSInteger columns_count = TabGridColumnsCount(
+      layout_environment.container.effectiveContentSize,
+      layout_environment.traitCollection.preferredContentSizeCategory);
   CGFloat groupHorizontalInset = 0;
   if (columns_count > 2) {
     const CGFloat width =
@@ -263,12 +220,15 @@ NSCollectionLayoutSection* TabsSection(
     TabsSectionHeaderType tabs_section_header_type,
     NSDirectionalEdgeInsets section_insets) {
   // Determine the number of columns.
-  NSInteger count = ColumnsCount(layout_environment);
+  NSInteger count = TabGridColumnsCount(
+      layout_environment.container.effectiveContentSize,
+      layout_environment.traitCollection.preferredContentSizeCategory);
 
   // Configure the layout item.
   NSCollectionLayoutDimension* item_width_dimension =
       FractionalWidth(1. / count);
-  const CGFloat item_aspect_ratio = ItemAspectRatio(layout_environment);
+  const CGFloat item_aspect_ratio =
+      TabGridItemAspectRatio(layout_environment.container.effectiveContentSize);
   NSCollectionLayoutDimension* item_height_dimension =
       FractionalWidth(item_aspect_ratio / count);
   NSCollectionLayoutSize* item_size =
@@ -379,9 +339,7 @@ NSCollectionLayoutSection* SuggestedActionsSection(
       [NSCollectionLayoutItem itemWithLayoutSize:item_size];
 
   // Configure the layout group.
-  CGFloat estimated_height = IsTabGroupSyncEnabled()
-                                 ? kSuggestedActionsEstimatedHeight
-                                 : kLegacySuggestedActionsEstimatedHeight;
+  CGFloat estimated_height = kSuggestedActionsEstimatedHeight;
   NSCollectionLayoutDimension* group_height_dimension =
       EstimatedDimension(estimated_height);
   NSCollectionLayoutSize* group_size =
@@ -508,15 +466,24 @@ NSCollectionLayoutSection* SuggestedActionsSection(
   if (![_indexPathsOfInsertingItems containsObject:itemIndexPath]) {
     return attributes;
   }
-  // TODO(crbug.com/40566436) : Polish the animation, and put constants where
-  // they belong. Cells being inserted start faded out, scaled down, and drop
-  // downwards slightly.
-  attributes.alpha = 0.0;
-  CGAffineTransform transform =
-      CGAffineTransformScale(attributes.transform, /*sx=*/0.9, /*sy=*/0.9);
-  transform = CGAffineTransformTranslate(transform, /*tx=*/0,
-                                         /*ty=*/attributes.size.height * 0.1);
-  attributes.transform = transform;
+
+  if (IsTabGridDragAndDropEnabled() &&
+      self.dragAndDropGroupIndexPath == itemIndexPath) {
+    attributes.alpha = 1.0;
+    attributes.transform = CGAffineTransformScale(
+        attributes.transform, /*sx=*/kGridCellHighlightScaleTransform,
+        /*sy=*/kGridCellHighlightScaleTransform);
+    self.dragAndDropGroupIndexPath = nil;
+  } else {
+    // Cells being inserted start faded out, scaled down, and drop downwards
+    // slightly.
+    attributes.alpha = 0.0;
+    CGAffineTransform transform =
+        CGAffineTransformScale(attributes.transform, /*sx=*/0.9, /*sy=*/0.9);
+    transform = CGAffineTransformTranslate(transform, /*tx=*/0,
+                                           /*ty=*/attributes.size.height * 0.1);
+    attributes.transform = transform;
+  }
   return attributes;
 }
 

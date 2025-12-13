@@ -104,6 +104,8 @@ if (is_win || is_mac || is_linux) {
       "app/app_install.h",
       "app/app_install_progress.cc",
       "app/app_install_progress.h",
+      "app/app_patch_worker.cc",
+      "app/app_patch_worker.h",
       "app/app_recover.cc",
       "app/app_recover.h",
       "app/app_server.cc",
@@ -112,14 +114,22 @@ if (is_win || is_mac || is_linux) {
       "app/app_uninstall.h",
       "app/app_uninstall_self.cc",
       "app/app_uninstall_self.h",
+      "app/app_unzip_worker.cc",
+      "app/app_unzip_worker.h",
       "app/app_update.cc",
       "app/app_update.h",
+      "app/app_update_apps.cc",
+      "app/app_update_apps.h",
       "app/app_utils.cc",
       "app/app_utils.h",
       "app/app_wake.cc",
       "app/app_wake.h",
       "app/app_wakeall.cc",
       "app/app_wakeall.h",
+      "app/server/update_service_internal_stub.cc",
+      "app/server/update_service_internal_stub.h",
+      "app/server/update_service_stub.cc",
+      "app/server/update_service_stub.h",
       "auto_run_on_os_upgrade_task.cc",
       "auto_run_on_os_upgrade_task.h",
       "change_owners_task.h",
@@ -134,19 +144,30 @@ if (is_win || is_mac || is_linux) {
       "crash_reporter.cc",
       "crash_reporter.h",
       "crx_downloader_factory.h",
+      "event_history.cc",
+      "event_history.h",
       "event_logger.cc",
       "event_logger.h",
       "handle_inconsistent_apps_task.cc",
       "handle_inconsistent_apps_task.h",
       "installer.cc",
       "installer.h",
+      "ipc/ipc_security.h",
       "ipc/update_service_internal_proxy.cc",
       "ipc/update_service_internal_proxy.h",
+      "ipc/update_service_internal_proxy_impl.h",
+      "ipc/update_service_internal_proxy_mojo.cc",
+      "ipc/update_service_internal_proxy_mojo.h",
       "lock.cc",
       "lock.h",
       "net/fallback_net_fetcher.cc",
       "net/fallback_net_fetcher.h",
+      "net/network.cc",
       "net/network.h",
+      "out_of_process_patcher.cc",
+      "out_of_process_patcher.h",
+      "out_of_process_unzipper.cc",
+      "out_of_process_unzipper.h",
       "persisted_data.cc",
       "persisted_data.h",
       "ping_configurator.cc",
@@ -206,14 +227,20 @@ if (is_win || is_mac || is_linux) {
       "//chrome/enterprise_companion/mojom",
       "//chrome/enterprise_companion/telemetry_logger",
       "//chrome/enterprise_companion/telemetry_logger/proto",
+      "//chrome/updater/mojom",
       "//chrome/updater/protos:omaha_proto",
       "//components/crash/core/common",
       "//components/crx_file",
+      "//components/named_mojo_ipc_server",
       "//components/named_system_lock",
       "//components/policy/core/common:common_constants",
       "//components/policy/core/common:util",
       "//components/policy/proto",
       "//components/prefs",
+      "//components/services/patch:lib",
+      "//components/services/patch/public/mojom",
+      "//components/services/unzip:lib",
+      "//components/services/unzip/public/mojom",
       "//components/update_client",
       "//components/update_client:in_process_patcher",
       "//components/update_client:in_process_unzipper",
@@ -223,6 +250,7 @@ if (is_win || is_mac || is_linux) {
       "//third_party/boringssl",
       "//third_party/crashpad/crashpad/client",
       "//third_party/crashpad/crashpad/handler",
+      "//third_party/zlib/google:compression_utils",
       "//url",
     ]
 
@@ -239,7 +267,6 @@ if (is_win || is_mac || is_linux) {
         "app/app_net_worker.cc",
         "app/app_net_worker.h",
         "app/app_server_posix_mac.cc",
-        "cleanup_task_mac.mm",
         "installer_mac.cc",
         "ipc/ipc_security_mac.cc",
         "mac/install_from_archive.h",
@@ -262,6 +289,7 @@ if (is_win || is_mac || is_linux) {
       deps += [
         ":ks_ticket",
         "//chrome/updater/net/mac/mojom",
+        "//components/services/unzip/public/mojom",
         "//mojo/public/cpp/platform",
         "//net",
       ]
@@ -298,6 +326,7 @@ if (is_win || is_mac || is_linux) {
         "app/server/win/updater_service_delegate.h",
         "app/server/win/wrl_classes.cc",
         "change_owners_task_win.cc",
+        "ipc/ipc_security_win.cc",
         "ipc/update_service_internal_proxy_win.cc",
         "ipc/update_service_internal_proxy_win.h",
         "net/network_fetcher_win.cc",
@@ -383,20 +412,8 @@ if (is_win || is_mac || is_linux) {
         "activity_impl_util_posix.h",
         "app/app_server_posix.cc",
         "app/app_server_posix.h",
-        "app/server/posix/update_service_internal_stub.cc",
-        "app/server/posix/update_service_internal_stub.h",
-        "app/server/posix/update_service_stub.cc",
-        "app/server/posix/update_service_stub.h",
         "change_owners_task_posix.cc",
-        "ipc/ipc_security.h",
-        "ipc/update_service_internal_proxy_posix.cc",
-        "ipc/update_service_internal_proxy_posix.h",
         "remove_uninstalled_apps_task_posix.cc",
-      ]
-
-      deps += [
-        "//chrome/updater/mojom",
-        "//components/named_mojo_ipc_server",
       ]
     }
 
@@ -561,11 +578,15 @@ if (is_win || is_mac || is_linux) {
       "branded_constants.h",
       "constants.h",
       "enum_traits.h",
+      "ipc/ipc_names.h",
       "ipc/ipc_support.cc",
       "ipc/ipc_support.h",
+      "ipc/update_service_dialer.h",
       "ipc/update_service_proxy.cc",
       "ipc/update_service_proxy.h",
-      "registration_data.cc",
+      "ipc/update_service_proxy_impl.h",
+      "ipc/update_service_proxy_mojo.cc",
+      "ipc/update_service_proxy_mojo.h",
       "registration_data.h",
       "service_proxy_factory.h",
       "update_service.cc",
@@ -582,6 +603,8 @@ if (is_win || is_mac || is_linux) {
       ":version_header",
       "//base",
       "//chrome/enterprise_companion:installer_paths",
+      "//chrome/updater/mojom",
+      "//components/named_mojo_ipc_server",
       "//components/policy/core/common:common_constants",
       "//components/update_client",
       "//mojo/core/embedder",
@@ -590,7 +613,10 @@ if (is_win || is_mac || is_linux) {
 
     if (is_win) {
       sources += [
+        "ipc/ipc_names_win.cc",
         "ipc/proxy_impl_base_win.h",
+        "ipc/update_service_dialer_win.cc",
+        "ipc/update_service_dialer_win.h",
         "ipc/update_service_proxy_win.cc",
         "ipc/update_service_proxy_win.h",
         "util/win_util.cc",
@@ -605,6 +631,7 @@ if (is_win || is_mac || is_linux) {
 
       deps += [
         "//chrome/updater/app/server/win:updater_idl",
+        "//chrome/updater/app/server/win:updater_internal_idl",
         "//chrome/windows_services/service_program:common",
       ]
 
@@ -652,18 +679,11 @@ if (is_win || is_mac || is_linux) {
 
     if (is_posix) {
       sources += [
-        "ipc/ipc_names.h",
-        "ipc/update_service_dialer.h",
-        "ipc/update_service_proxy_posix.cc",
-        "ipc/update_service_proxy_posix.h",
+        "ipc/update_service_dialer_posix.cc",
+        "ipc/update_service_dialer_posix.h",
         "posix/setup.h",
         "util/posix_util.cc",
         "util/posix_util.h",
-      ]
-
-      deps += [
-        "//chrome/updater/mojom",
-        "//components/named_mojo_ipc_server",
       ]
     }
   }
@@ -847,10 +867,12 @@ if (is_win || is_mac || is_linux) {
       "app/app_server_unittest.cc",
       "app/app_uninstall_unittest.cc",
       "app/app_utils_unittest.cc",
+      "app/server/ipc_unittest.cc",
       "branded_constants_unittest.cc",
       "certificate_tag_unittest.cc",
       "cleanup_task_unittest.cc",
       "enum_traits_unittest.cc",
+      "event_history_unittest.cc",
       "event_logger_unittest.cc",
       "external_constants_builder.cc",
       "external_constants_builder.h",
@@ -908,6 +930,7 @@ if (is_win || is_mac || is_linux) {
       "//chrome/enterprise_companion:version_header",
       "//chrome/enterprise_companion/device_management_storage",
       "//chrome/enterprise_companion/telemetry_logger/proto",
+      "//chrome/updater/mojom",
       "//chrome/updater/protos:omaha_proto",
       "//components/crx_file",
       "//components/policy/core/common:common_constants",
@@ -984,13 +1007,19 @@ if (is_win || is_mac || is_linux) {
         "win/updater_tests.rc",
       ]
 
+      configs -= [ "//build/config/win:winver" ]
+      configs += [
+        "//chrome/updater/app/server/win:winver",
+        "//chrome/updater/win:wrl_strict",
+      ]
+
       deps += [
         "app/server/win:updater_idl",
         "app/server/win:updater_internal_idl",
         "app/server/win:updater_legacy_idl",
-        "test/qualification_app:qualification_app",
+        "test/qualification_app",
         "win:updater_test",
-        "win/installer:installer",
+        "win/installer",
         "win/installer:installer_test",
         "win/installer:lib",
         "win/installer:msi_custom_action",
@@ -1013,6 +1042,7 @@ if (is_win || is_mac || is_linux) {
         "test/data/ProcmonConfiguration.pmc",
         "//chrome/test/data/updater/OfflineManifest.gup",
         "//chrome/test/data/updater/updater_qualification_app_exe.crx",
+        "//chrome/test/data/updater/updater_qualification_app_exe.crx.xz",
       ]
 
       if (target_cpu == "arm64") {
@@ -1061,7 +1091,6 @@ if (is_win || is_mac || is_linux) {
     if (is_mac) {
       sources += [
         "app/app_net_worker_unittest.cc",
-        "cleanup_task_mac_unittest.mm",
         "mac/keystone/ksadmin_unittest.cc",
         "mac/privileged_helper/privileged_helper_unittests.mm",
         "mac/setup/keystone_unittest.mm",
@@ -1111,6 +1140,7 @@ if (is_win || is_mac || is_linux) {
         "//chrome/test/data/updater/setup_test_envcheck/.install",
         "//chrome/test/data/updater/setup_test_envcheck/marker.app",
         "//chrome/test/data/updater/updater_qualification_app_dmg.crx",
+        "//chrome/test/data/updater/updater_qualification_app_dmg.crx.xz",
         "//third_party/updater/chrome_mac_universal/cipd/GoogleUpdater_test.app/Contents/MacOS/GoogleUpdater_test",
         "//third_party/updater/chrome_mac_universal/cipd/GoogleUpdater_test.app/Contents/Info.plist",
         "//third_party/updater/chrome_mac_universal/cipd/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/MacOS/GoogleSoftwareUpdate",
@@ -1172,7 +1202,10 @@ if (is_win || is_mac || is_linux) {
     if (is_linux) {
       sources += [ "test/integration_tests_linux.cc" ]
 
-      data += [ "//chrome/test/data/updater/updater_qualification_app.crx" ]
+      data += [
+        "//chrome/test/data/updater/updater_qualification_app.crx",
+        "//chrome/test/data/updater/updater_qualification_app.crx.xz",
+      ]
       data_deps += [
         "//chrome/enterprise_companion:enterprise_companion_test",
         "//chrome/updater/linux:updater_test",
@@ -1181,10 +1214,7 @@ if (is_win || is_mac || is_linux) {
     }
 
     if (is_posix) {
-      sources += [
-        "app/server/posix/ipc_unittest.cc",
-        "util/posix_util_unittest.cc",
-      ]
+      sources += [ "util/posix_util_unittest.cc" ]
 
       deps += [ "//chrome/updater/mojom" ]
     }
@@ -1318,6 +1348,7 @@ if (is_win || is_mac || is_linux) {
       ":updater_test_sources",
       "//base",
       "//base/test:test_support",
+      "//build/win:default_exe_manifest",
       "//chrome/common:constants",
       "//testing/gtest",
       "//url",

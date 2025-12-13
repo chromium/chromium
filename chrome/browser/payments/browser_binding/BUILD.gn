@@ -1,0 +1,94 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+is_desktop = is_mac || is_win || is_linux || is_chromeos || is_fuchsia
+
+source_set("browser_bound_key_deleter") {
+  sources = [
+    "browser_bound_key_deleter_service.h",
+    "browser_bound_key_deleter_service_factory.cc",
+    "browser_bound_key_deleter_service_factory.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/payments/content:utils",
+    "//components/payments/content/browser_binding",
+    "//components/webdata_services",
+    "//content/public/browser",
+  ]
+
+  if (is_android) {
+    sources += [
+      "browser_bound_key_deleter_service_android.cc",
+      "browser_bound_key_deleter_service_android.h",
+    ]
+    deps += [
+      "//components/webauthn/android",
+      "//components/webauthn/core/browser",
+    ]
+  }
+
+  if (is_desktop) {
+    sources += [
+      "browser_bound_key_deleter_service_desktop.cc",
+      "browser_bound_key_deleter_service_desktop.h",
+    ]
+    deps += [ "//chrome/browser/webauthn:local_credential_management" ]
+
+    if (is_mac) {
+      deps += [ "//chrome/common:version_header" ]
+    }
+  }
+}
+
+source_set("unittests") {
+  testonly = true
+  sources = []
+  deps = [
+    ":browser_bound_key_deleter",
+    "//base/test:test_support",
+    "//components/payments/content:test_support",
+    "//components/payments/content/browser_binding:test_support",
+    "//components/webauthn/core/browser:test_support",
+    "//content/test:test_support",
+    "//third_party/blink/public:blink_headers",
+  ]
+
+  if (is_android) {
+    sources += [ "browser_bound_key_deleter_service_android_unittest.cc" ]
+  }
+
+  if (is_desktop) {
+    sources += [ "browser_bound_key_deleter_service_desktop_unittest.cc" ]
+    deps += [ "//chrome/browser/webauthn:test_support" ]
+  }
+}
+
+source_set("browsertests") {
+  testonly = true
+  sources = [ "browser_bound_key_deleter_service_factory_browsertest.cc" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  deps = [
+    ":browser_bound_key_deleter",
+    ":test_support",
+    "//chrome/test:test_support",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_browser_bound_key_deleter_service.cc",
+    "mock_browser_bound_key_deleter_service.h",
+  ]
+  public_deps = [
+    ":browser_bound_key_deleter",
+    "//testing/gmock",
+  ]
+}

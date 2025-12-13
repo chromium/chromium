@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include <array>
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -50,7 +49,6 @@ class PeerConnectionTracker;
 class RTCAnswerOptionsPlatform;
 class RTCOfferOptionsPlatform;
 class RTCPeerConnectionHandlerClient;
-class RTCRtpTransport;
 class RTCSessionDescriptionInit;
 class RTCVoidRequest;
 class SetLocalDescriptionRequest;
@@ -131,16 +129,14 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       const webrtc::PeerConnectionInterface::RTCConfiguration&
           server_configuration,
       PeerConnectionTracker* peer_connection_tracker,
-      ExceptionState& exception_state,
-      RTCRtpTransport* rtp_transport);
+      ExceptionState& exception_state);
 
   virtual bool Initialize(
       ExecutionContext* context,
       const webrtc::PeerConnectionInterface::RTCConfiguration&
           server_configuration,
       WebLocalFrame* web_frame,
-      ExceptionState& exception_state,
-      RTCRtpTransport* rtp_transport);
+      ExceptionState& exception_state);
 
   virtual void Close();
   virtual void CloseAndUnregister();
@@ -217,14 +213,14 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   virtual void StopEventLog();
 
   // WebRTC event log fragments sent back from PeerConnection land here.
-  virtual void OnWebRtcEventLogWrite(const WTF::Vector<uint8_t>& output);
+  virtual void OnWebRtcEventLogWrite(const Vector<uint8_t>& output);
 
   // Start recording a DataChannel log.
   virtual void StartDataChannelLog();
   // Stop recording a DataChannel log.
   virtual void StopDataChannelLog();
 
-  virtual void OnWebRtcDataChannelLogWrite(const WTF::Vector<uint8_t>& output);
+  virtual void OnWebRtcDataChannelLogWrite(const Vector<uint8_t>& output);
 
   // Virtual for testing purposes.
   virtual scoped_refptr<base::SingleThreadTaskRunner> signaling_thread() const;

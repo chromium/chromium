@@ -30,6 +30,14 @@
 
 namespace {
 
+// Name of the directory containing the legacy sessions.
+inline constexpr base::FilePath::StringViewType kLegacySessionsDirname =
+    FILE_PATH_LITERAL("Sessions");
+
+// Name of the directory containing the legacy web sessions.
+inline constexpr base::FilePath::StringViewType kLegacyWebSessionsDirname =
+    FILE_PATH_LITERAL("Web_Sessions");
+
 // Maximum size of session state NSData objects.
 const int kMaxSessionState = 5 * 1024 * 1024;
 
@@ -354,6 +362,18 @@ SessionRestorationServiceImpl::SessionRestorationServiceImpl(
       task_runner_(task_runner) {
   DCHECK(storage_path_.IsAbsolute());
   DCHECK(task_runner_);
+
+  // Delete the legacy session directories (if they exist).
+  // TODO(crbug.com/450539167): remove in 2026.
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(&base::DeletePathRecursively),
+                     storage_path_.Append(kLegacySessionsDirname)));
+
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(&base::DeletePathRecursively),
+                     storage_path_.Append(kLegacyWebSessionsDirname)));
 }
 
 SessionRestorationServiceImpl::~SessionRestorationServiceImpl() {}
@@ -380,12 +400,6 @@ void SessionRestorationServiceImpl::RemoveObserver(
 void SessionRestorationServiceImpl::SaveSessions() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SaveDirtySessions();
-}
-
-void SessionRestorationServiceImpl::ScheduleSaveSessions() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Nothing to do, the service automatically schedule a save as soon
-  // as changes are detected.
 }
 
 void SessionRestorationServiceImpl::SetSessionID(

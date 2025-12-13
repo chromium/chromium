@@ -1,53 +1,55 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
-<translation id="1036348656032585052">خاموش کردن</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{‫<ph name="NUM_WEEKS_ONE" /> هفته پیش ایجاد شد}one{‫<ph name="NUM_WEEKS_MANY" /> هفته پیش ایجاد شد}other{‫<ph name="NUM_WEEKS_MANY" /> هفته پیش ایجاد شد}}</translation>
-<translation id="1063300264396686489">باز شدن خودکار گروه‌های برگه از دستگاه‌های دیگر</translation>
+<translation id="1063300264396686489">باز شدن خودکار گروه‌های زبانه از دستگاه‌های دیگر</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> مورد از برگه‌هایتان اخیراً استفاده نشده‌اند. آن‌ها را می‌بندید؟</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{‫<ph name="NUM_YEARS_ONE" /> سال پیش ایجاد شد}one{‫<ph name="NUM_YEARS_MANY" /> سال پیش ایجاد شد}other{‫<ph name="NUM_YEARS_MANY" /> سال پیش ایجاد شد}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{زبانه‌ها و گروه‌های غیرفعال بعداز ۱ ماه بسته می‌شوند}one{زبانه‌ها و گروه‌های غیرفعال بعداز <ph name="MONTH_COUNT_MANY" /> ماه بسته می‌شوند}other{زبانه‌ها و گروه‌های غیرفعال بعداز <ph name="MONTH_COUNT_MANY" /> ماه بسته می‌شوند}}</translation>
 <translation id="1173894706177603556">تغییر نام</translation>
-<translation id="1197088940767939838">نارنجی</translation>
+<translation id="1203747227183434426">درحال ضبط رسانه</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{باز کردن <ph name="TITLE_OF_GROUP" /> با <ph name="TAB_COUNT2" /> زبانه}one{باز کردن <ph name="TITLE_OF_GROUP" /> با <ph name="TAB_COUNT2" /> زبانه}other{باز کردن <ph name="TITLE_OF_GROUP" /> با <ph name="TAB_COUNT2" /> زبانه}}</translation>
-<translation id="1273910660700874265">گزینه‌های گروه برگه <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="1273910660700874265">گزینه‌های گروه زبانه <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1300188005269437765">انتخاب کنید زبانه‌ها و گروه زبانه‌ها چه زمانی به بخش غیرفعال منتقل شوند.</translation>
+<translation id="1321004960118052490">موارد غیرفعال انباشته نخواهند شد</translation>
 <translation id="1329584516321524826">لحظاتی پیش به‌روزرسانی شد</translation>
 <translation id="1340839264183302272">ترک گروه</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{گروه زبانه <ph name="TITLE_OF_GROUP" /> هم‌رسانی‌شده متشکل از <ph name="TABS_COUNT_ONE" /> زبانه، به‌رنگ <ph name="COLOR_NAME" />، با برچسب <ph name="CARD_LABEL" /> ازهم باز می‌شود.}one{گروه زبانه <ph name="TITLE_OF_GROUP" /> هم‌رسانی‌شده متشکل از <ph name="TABS_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" />، با برچسب <ph name="CARD_LABEL" /> ازهم باز می‌شود.}other{گروه زبانه <ph name="TITLE_OF_GROUP" /> هم‌رسانی‌شده متشکل از <ph name="TABS_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" />، با برچسب <ph name="CARD_LABEL" /> ازهم باز می‌شود.}}</translation>
-<translation id="1486715732399361704">می‌توانید همه گروه‌های برگه‌تان را در اینجا پیدا کنید</translation>
+<translation id="1486715732399361704">می‌توانید همه گروه‌های زبانه‌تان را در اینجا پیدا کنید</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{‫<ph name="NUM_MINS_ONE" /> دقیقه پیش ایجاد شد}one{‫<ph name="NUM_MINS_MANY" /> دقیقه پیش ایجاد شد}other{‫<ph name="NUM_MINS_MANY" /> دقیقه پیش ایجاد شد}}</translation>
 <translation id="1499635324672558517">همه «برگه‌های ناشناس» بسته شود؟</translation>
 <translation id="1501480321619201731">حذف گروه</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{‫<ph name="TABS_COUNT_ONE" /> مورد غیرفعال}one{‫<ph name="TABS_COUNT_MANY" /> مورد غیرفعال}other{‫<ph name="TABS_COUNT_MANY" /> مورد غیرفعال}}</translation>
-<translation id="1555130319947370107">آبی</translation>
-<translation id="161042844686301425">فیروزه‌ای</translation>
 <translation id="1645759014353344461">‫<ph name="TABS_COUNT_MANY" /> زبانه گروه‌بندی شد</translation>
 <translation id="1657719826150349398">انتقال برگه به پایین</translation>
+<translation id="1670942869417022142">صدای صامت‌شده</translation>
 <translation id="1697284962337958118">افزودن به</translation>
 <translation id="1713541401465507417">بستن همه برگه‌ها و گروه‌ها</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{‫<ph name="TAB_GROUPS_COUNT_ONE" /> گروه زبانه دیگر دردسترس نیست}one{‫<ph name="TAB_GROUPS_COUNT_MANY" /> گروه زبانه دیگر دردسترس نیست}other{‫<ph name="TAB_GROUPS_COUNT_MANY" /> گروه زبانه دیگر دردسترس نیست}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />بیشتر بدانید<ph name="END_LINK1" /></translation>
-<translation id="1828808367831369073">‫<ph name="TABS_COUNT_ONE" /> برگه گروه‌بندی شد</translation>
-<translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> برگه}one{<ph name="TABS_COUNT_MANY" /> برگه}other{<ph name="TABS_COUNT_MANY" /> برگه}}</translation>
-<translation id="1909810060368225529">توجه: تغییرات این «گروه برگه» هم‌رسانی‌شده برای همه نمایان است. همه می‌توانند در گروه‌های برگه هم‌رسانی‌شده شما تغییراتی ایجاد کنند</translation>
+<translation id="1828808367831369073">‫<ph name="TABS_COUNT_ONE" /> زبانه گروه‌بندی شد</translation>
+<translation id="1844381456014878100">پس‌از ۷ روز غیرفعال بودن</translation>
+<translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> زبانه}one{<ph name="TABS_COUNT_MANY" /> زبانه}other{<ph name="TABS_COUNT_MANY" /> زبانه}}</translation>
+<translation id="1909810060368225529">توجه: تغییرات این «گروه زبانه» هم‌رسانی‌شده برای همه نمایان است. همه می‌توانند در گروه‌های زبانه هم‌رسانی‌شده شما تغییراتی ایجاد کنند</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{سنجاق کردن زبانه}one{سنجاق کردن زبانه}other{سنجاق کردن زبانه‌ها}}</translation>
 <translation id="1982637982196732906">منتقل کردن به بخش غیرفعال</translation>
-<translation id="2050597508048557928">{TABS_COUNT,plural, =1{نشانک‌گذاری <ph name="TABS_COUNT_ONE" /> برگه انتخاب‌شده}one{نشانک‌گذاری <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}other{نشانک‌گذاری <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{نشانک‌گذاری <ph name="TABS_COUNT_ONE" /> زبانه انتخاب‌شده}one{نشانک‌گذاری <ph name="TABS_COUNT_MANY" /> زبانه انتخاب‌شده}other{نشانک‌گذاری <ph name="TABS_COUNT_MANY" /> زبانه انتخاب‌شده}}</translation>
 <translation id="2055057176188061528">گروه زبانه انتخاب کنید یا گروه زبانه جدیدی ایجاد کنید</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{‏‫Chrome به‌طور خودکار موارد موجود در بخش غیرفعال را که در <ph name="AUTO_DELETE_DELAY_ONE" /> ماه گذشته استفاده نکرده‌اید می‌بندد. می‌توانید این ویژگی را اکنون یا در هرزمان دیگری در «تنظیمات» خاموش کنید.}one{‏‫Chrome به‌طور خودکار موارد موجود در بخش غیرفعال را که در <ph name="AUTO_DELETE_DELAY_MANY" /> ماه گذشته استفاده نکرده‌اید می‌بندد. می‌توانید این ویژگی را اکنون یا در هرزمان دیگری در «تنظیمات» خاموش کنید.}other{‏‫Chrome به‌طور خودکار موارد موجود در بخش غیرفعال را که در <ph name="AUTO_DELETE_DELAY_MANY" /> ماه گذشته استفاده نکرده‌اید می‌بندد. می‌توانید این ویژگی را اکنون یا در هرزمان دیگری در «تنظیمات» خاموش کنید.}}</translation>
+<translation id="2074527029802029717">باز کردن برگه</translation>
 <translation id="2118649612461486615">اطلاعات فروشگاه</translation>
-<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{می‌توانید برگه‌ها و گروه‌های بسته‌شده را از بخش «برگه‌های اخیر» و بخش «گروه‌های برگه» مجدداً باز کنید. «برگه ناشناس» دردسترس نخواهد بود.}one{می‌توانید برگه‌ها و گروه‌های بسته‌شده را از بخش «برگه‌های اخیر» و بخش «گروه‌های برگه» مجدداً باز کنید. ‫# «برگه ناشناس» دردسترس نخواهد بود.}other{می‌توانید برگه‌ها و گروه‌های بسته‌شده را از بخش «برگه‌های اخیر» و بخش «گروه‌های برگه» مجدداً باز کنید. ‫# «برگه ناشناس» دردسترس نخواهد بود.}}</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{می‌توانید زبانه‌ها و گروه‌های بسته‌شده را از بخش «زبانه‌های اخیر» و بخش «گروه‌های زبانه» مجدداً باز کنید. «زبانه ناشناس» دردسترس نخواهد بود.}one{می‌توانید زبانه‌ها و گروه‌های بسته‌شده را از بخش «زبانه‌های اخیر» و بخش «گروه‌های زبانه» مجدداً باز کنید. ‫# «زبانه ناشناس» دردسترس نخواهد بود.}other{می‌توانید زبانه‌ها و گروه‌های بسته‌شده را از بخش «زبانه‌های اخیر» و بخش «گروه‌های زبانه» مجدداً باز کنید. ‫# «زبانه ناشناس» دردسترس نخواهد بود.}}</translation>
+<translation id="2153899164605463849">{TAB_COUNT,plural, =1{صدادار کردن سایت}one{صدادار کردن سایت}other{صدادار کردن سایت‌ها}}</translation>
 <translation id="2162620598375156287">اکنون با قیمت <ph name="CURRENT_PRICE" /> در <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{لغو گروه‌بندی برگه}one{لغو گروه‌بندی برگه}other{لغو گروه‌بندی برگه‌ها}}</translation>
-<translation id="2271452184061378400">گروه‌های برگه شما اینجا ذخیره می‌شود</translation>
+<translation id="2271452184061378400">گروه‌های زبانه شما اینجا ذخیره می‌شود</translation>
 <translation id="2277224997687551299">ویرایش نام گروه</translation>
-<translation id="2330212241471632770">{TABS_COUNT,plural, =1{نشانک‌گذاری برگه}one{نشانک‌گذاری برگه}other{نشانک‌گذاری برگه‌ها}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{نشانک‌گذاری زبانه}one{نشانک‌گذاری زبانه}other{نشانک‌گذاری زبانه‌ها}}</translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2371084566192454134">زبانه‌ها و گروه زبانه‌ها</translation>
-<translation id="2375257132547014176">{TABS_COUNT,plural, =1{جمع کردن گروه برگه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_ONE" /> برگه.}one{جمع کردن گروه برگه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> برگه.}other{جمع کردن گروه برگه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> برگه.}}</translation>
+<translation id="2375257132547014176">{TABS_COUNT,plural, =1{جمع کردن گروه زبانه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_ONE" /> زبانه.}one{جمع کردن گروه زبانه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> زبانه.}other{جمع کردن گروه زبانه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> زبانه.}}</translation>
 <translation id="2498435670446402865">تغییر نام گروه زبانه</translation>
 <translation id="2536366509642644298">گروه‌های زبانه «<ph name="TAB_GROUP_NAME_1" />» و «<ph name="TAB_GROUP_NAME_2" />» دیگر دردسترس نیستند</translation>
-<translation id="2539705006853443997">{TABS_COUNT,plural, =1{جمع کردن <ph name="TABS_COUNT_ONE" /> برگه.}one{جمع کردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه.}other{جمع کردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه.}}</translation>
+<translation id="2539705006853443997">{TABS_COUNT,plural, =1{جمع کردن <ph name="TABS_COUNT_ONE" /> زبانه.}one{جمع کردن گروه زبانه با <ph name="TABS_COUNT_MANY" /> زبانه.}other{جمع کردن گروه زبانه با <ph name="TABS_COUNT_MANY" /> زبانه.}}</translation>
 <translation id="2569352796411618312">پیشنهاد: <ph name="NUMBER_OF_TABS" /> مورد از برگه‌هایتان اخیراً استفاده نشده‌اند. آن‌ها را می‌بندید؟</translation>
 <translation id="257674075312929031">گروه</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{گروه زبانه‌های متشکل از <ph name="TABS_COUNT_ONE" /> زبانه، به‌رنگ <ph name="COLOR_NAME" /> بازیابی و باز می‌شود.}one{گروه زبانه‌های متشکل از <ph name="TABS_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" /> بازیابی و باز می‌شود.}other{گروه زبانه‌های متشکل از <ph name="TABS_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" /> بازیابی و باز می‌شود.}}</translation>
@@ -59,14 +61,17 @@
 <translation id="2755485474385016903">همه افراد گروه تغییرات ایجادشده را می‌بینند</translation>
 <translation id="2776817246640326047">{NUM_HOURS,plural, =1{‫<ph name="NUM_HOURS_ONE" /> ساعت پیش ایجاد شد}one{‫<ph name="NUM_HOURS_MANY" /> ساعت پیش ایجاد شد}other{‫<ph name="NUM_HOURS_MANY" /> ساعت پیش ایجاد شد}}</translation>
 <translation id="2801787514987684416">اطلاعات فروشگاه نمایش داده شود؟</translation>
-<translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{‫<ph name="ONE_CLOSED" /> برگه بسته شد}one{‫<ph name="MANY_CLOSED" /> برگه بسته شد}other{‫<ph name="MANY_CLOSED" /> برگه بسته شد}}</translation>
+<translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{‫<ph name="ONE_CLOSED" /> زبانه بسته شد}one{‫<ph name="MANY_CLOSED" /> زبانه بسته شد}other{‫<ph name="MANY_CLOSED" /> زبانه بسته شد}}</translation>
 <translation id="2894757982205307093">برگه جدید در گروه</translation>
+<translation id="2918484639460781603">رفتن به تنظیمات</translation>
 <translation id="2928243913527329289">‏Google | درباره این فروشگاه</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{‫<ph name="ITEMS_COUNT_ONE" /> مورد انتخاب شده است}one{‫<ph name="ITEMS_COUNT_MANY" /> مورد انتخاب شده است}other{‫<ph name="ITEMS_COUNT_MANY" /> مورد انتخاب شده است}}</translation>
+<translation id="2991702137079525605">{TABS_COUNT,plural, =1{سنجاق کردن زبانه}one{سنجاق کردن زبانه}other{سنجاق کردن زبانه}}</translation>
 <translation id="3008554597174452548">توقف پیگیری محصول</translation>
 <translation id="3026391124054406831">با ایجاد گروه‌ها، برگه‌هایتان را سازمان‌دهی کنید.</translation>
 <translation id="3051031624272448591">همیشه می‌توانید ازطریق سابقه دوباره به آن‌ها دست پیدا کنید</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> کاهش قیمت <ph name="PRODUCT_NAME" /></translation>
-<translation id="3078350928901129212">نماد رنگ گروه برگه <ph name="COLOR_NAME" /></translation>
+<translation id="3078350928901129212">نماد رنگ گروه زبانه <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">فهرست گروه زبانه بسته شد</translation>
 <translation id="3194464645767632461">رده‌بندی</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{افزودن <ph name="TABS_COUNT_ONE" /> زبانه به گروه}one{افزودن <ph name="TABS_COUNT_MANY" /> زبانه به گروه}other{افزودن <ph name="TABS_COUNT_MANY" /> زبانه به گروه}}</translation>
@@ -78,74 +83,82 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{بستن مورد}one{بستن مورد}other{بستن موارد}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">ریزعکس پیش‌نمایش برگ هم‌رسانی.</translation>
+<translation id="3776329373944672717">عنوان گروه زبانه‌ها: <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">مدیریت</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{برداشتن سنجاق زبانه}one{برداشتن سنجاق زبانه}other{برداشتن سنجاق زبانه‌ها}}</translation>
 <translation id="3940195383040445971">پیگیری قیمت در برگه‌ها</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{‫<ph name="ONE_ADDED" /> زبانه جدید، <ph name="ANY_CLOSED" /> زبانه بسته شد}one{‫<ph name="MANY_ADDED" /> زبانه جدید، <ph name="ANY_CLOSED" /> زبانه بسته شد}other{‫<ph name="MANY_ADDED" /> زبانه جدید، <ph name="ANY_CLOSED" /> زبانه بسته شد}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{گروه‌بندی برگه}one{گروه‌بندی برگه}other{گروه‌بندی برگه‌ها}}</translation>
+<translation id="3962134438902735041">{TABS_COUNT,plural, =1{برداشتن سنجاق <ph name="TABS_COUNT_ONE" /> زبانه انتخابی}one{برداشتن سنجاق <ph name="TABS_COUNT_MANY" /> زبانه انتخابی}other{برداشتن سنجاق <ph name="TABS_COUNT_MANY" /> زبانه انتخابی}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{‫<ph name="NUM_DAYS_ONE" /> روز پیش ایجاد شد}one{‫<ph name="NUM_DAYS_MANY" /> روز پیش ایجاد شد}other{‫<ph name="NUM_DAYS_MANY" /> روز پیش ایجاد شد}}</translation>
 <translation id="4076226664360336092">فهرست گروه زبانه، به‌صورت کامل باز شده است</translation>
 <translation id="4133493477912226187">به نظر می‌رسد <ph name="NUMBER_OF_TABS" /> برگه مرتبط باشند. گروه‌بندی شوند؟</translation>
-<translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{بستن گروه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_ONE" /> برگه، رنگ <ph name="COLOR_NAME" />.}one{بستن گروه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> برگه، رنگ <ph name="COLOR_NAME" />.}other{بستن گروه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> برگه، رنگ <ph name="COLOR_NAME" />.}}</translation>
-<translation id="4159784952369912983">بنفش</translation>
+<translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{بستن گروه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_ONE" /> زبانه، رنگ <ph name="COLOR_NAME" />.}one{بستن گروه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> زبانه، رنگ <ph name="COLOR_NAME" />.}other{بستن گروه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> زبانه، رنگ <ph name="COLOR_NAME" />.}}</translation>
 <translation id="4203448675570432781">اعلان مربوط به تغییرات «حذف خودکار زبانه‌ها» بسته شد.</translation>
 <translation id="427987768447457592">گروه زبانه جدید</translation>
 <translation id="4371591986692297148">غیرفعال</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{بازیابی مورد}one{بازیابی مورد}other{بازیابی موارد}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{‫<ph name="NUM_DAYS_ONE" /> روز پیش به‌روز شده است}one{‫<ph name="NUM_DAYS_MANY" /> روز پیش به‌روز شده است}other{‫<ph name="NUM_DAYS_MANY" /> روز پیش به‌روز شده است}}</translation>
+<translation id="4496868141611329150">انتقال گروه زبانه‌ها به چپ</translation>
+<translation id="4653140634010630594">{TAB_COUNT,plural, =1{صامت کردن سایت}one{صامت کردن سایت}other{صامت کردن سایت‌ها}}</translation>
 <translation id="4686942373615810936">همین الآن ایجاد شد</translation>
 <translation id="4783638485675352219">عنوان‌ها و نشانی‌های وب برگه‌های باز این دستگاه با سیستم‌عامل هم‌رسانی شود</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> مرور)}one{(<ph name="REVIEWS_COUNT_MANY" /> مرور)}other{(<ph name="REVIEWS_COUNT_MANY" /> مرور)}}</translation>
 <translation id="4850886885716139402">نما</translation>
 <translation id="4852605713297257667">{TABS_COUNT,plural, =1{افزودن <ph name="TABS_COUNT_ONE" /> زبانه انتخاب‌شده به گروه}one{افزودن <ph name="TABS_COUNT_MANY" /> زبانه انتخاب‌شده به گروه}other{افزودن <ph name="TABS_COUNT_MANY" /> زبانه انتخاب‌شده به گروه}}</translation>
 <translation id="4861611890274104875">بستن کارت.</translation>
-<translation id="4861953997778766866">همه می‌توانند در گروه‌های برگه هم‌رسانی‌شده شما تغییراتی ایجاد کنند</translation>
-<translation id="4870911314065352661">همه برگه‌ها بسته شود؟</translation>
+<translation id="4861953997778766866">همه می‌توانند در گروه‌های زبانه هم‌رسانی‌شده شما تغییراتی ایجاد کنند</translation>
+<translation id="4870911314065352661">همه زبانه‌ها بسته شود؟</translation>
 <translation id="4871719318659334896">بستن گروه</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{گروه زبانه‌های «<ph name="TITLE_OF_GROUP" />» متشکل از <ph name="TABS_COUNT_ONE" /> زبانه، به‌رنگ <ph name="COLOR_NAME" /> بازیابی و باز می‌شود.}one{گروه زبانه‌های «<ph name="TITLE_OF_GROUP" />» متشکل از <ph name="TABS_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" /> بازیابی و باز می‌شود.}other{گروه زبانه‌های «<ph name="TITLE_OF_GROUP" />» متشکل از <ph name="TABS_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" /> بازیابی و باز می‌شود.}}</translation>
 <translation id="4881695831933465202">باز کردن</translation>
+<translation id="4894777338623123366">درحال هم‌رسانی صفحه زبانه</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{بستن برگه}one{بستن برگه}other{بستن برگه‌ها}}</translation>
 <translation id="4908147833782857886">‫<ph name="USER_EMAIL" /> گروه ذخیره شده است (برگه‌ها بسته می‌شود و گروه‌ها حذف می‌شود)</translation>
 <translation id="492284538114688557">کاهش قیمت شناسایی شد</translation>
 <translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{گروه زبانه هم‌رسانی‌شده متشکل از <ph name="TABS_COUNT_ONE" /> زبانه، به‌رنگ <ph name="COLOR_NAME" />، با برچسب <ph name="CARD_LABEL" /> ازهم باز می‌شود.}one{گروه زبانه هم‌رسانی‌شده متشکل از <ph name="TABS_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" />، با برچسب <ph name="CARD_LABEL" /> ازهم باز می‌شود.}other{گروه زبانه هم‌رسانی‌شده متشکل از <ph name="TABS_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" />، با برچسب <ph name="CARD_LABEL" /> ازهم باز می‌شود.}}</translation>
 <translation id="5007392906805964215">مرور</translation>
+<translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{انتقال دادن زبانه به پنجره جدید}one{انتقال دادن زبانه به پنجره‌ای دیگر}other{انتقال دادن زبانه‌ها به پنجره‌ای دیگر}}</translation>
 <translation id="5073204694187207510">پنهان کردن شبکه تمام‌صفحه</translation>
 <translation id="5076161749301278626">می‌خواهید مرورهای فروشگاه را ببینید؟</translation>
 <translation id="5161254044473106830">عنوان مورد نیاز است</translation>
-<translation id="5339733443032484186">آخرین برگه شما</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{‏‫Chrome زبانه‌ها و گروه‌های زبانه غیرفعال را به‌طور خودکار پس‌از <ph name="AUTO_DELETE_DELAY_ONE" /> ماه می‌بندد. می‌توانید این قابلیت را در تنظیمات تغییر دهید.}one{‏‫Chrome زبانه‌ها و گروه‌های زبانه غیرفعال را به‌طور خودکار پس‌از <ph name="AUTO_DELETE_DELAY_MANY" /> ماه می‌بندد. می‌توانید این قابلیت را در تنظیمات تغییر دهید.}other{‏‫Chrome زبانه‌ها و گروه‌های زبانه غیرفعال را به‌طور خودکار پس‌از <ph name="AUTO_DELETE_DELAY_MANY" /> ماه می‌بندد. می‌توانید این قابلیت را در تنظیمات تغییر دهید.}}</translation>
+<translation id="5339733443032484186">آخرین زبانه شما</translation>
 <translation id="5380159289133845234">بایگانی کردن برگه‌های تکراری</translation>
-<translation id="5400836586163650660">خاکستری</translation>
-<translation id="5446043142172831860">برداشتن برگه و ترک کردن گروه</translation>
-<translation id="5490235265819901748">گروه برگه گسترده شد</translation>
+<translation id="5446043142172831860">برداشتن زبانه و ترک کردن گروه</translation>
+<translation id="5490235265819901748">گروه زبانه گسترده شد</translation>
 <translation id="5494920125229734069">انتخاب همه</translation>
-<translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{بستن گروه برگه با <ph name="TABS_COUNT_ONE" /> برگه، رنگ <ph name="COLOR_NAME" />.}one{بستن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه، رنگ <ph name="COLOR_NAME" />.}other{بستن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه، رنگ <ph name="COLOR_NAME" />.}}</translation>
+<translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{بستن گروه زبانه با <ph name="TABS_COUNT_ONE" /> زبانه، رنگ <ph name="COLOR_NAME" />.}one{بستن گروه زبانه با <ph name="TABS_COUNT_MANY" /> زبانه، رنگ <ph name="COLOR_NAME" />.}other{بستن گروه زبانه با <ph name="TABS_COUNT_MANY" /> زبانه، رنگ <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">مشاهده اطلاعات فروشگاه، گزینه مربوطه در نزدیکی بالای صفحه قرار دارد</translation>
-<translation id="5627941783489838464">برگه هیچ به‌روزرسانی‌ای ندارد</translation>
+<translation id="5627941783489838464">زبانه هیچ به‌روزرسانی‌ای ندارد</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{‏<ph name="TABS_COUNT_ONE" /> پیوند از Chrome}one{‏<ph name="TABS_COUNT_MANY" /> پیوند از Chrome}other{‏<ph name="TABS_COUNT_MANY" /> پیوند از Chrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{انتقال زبانه به چپ}one{انتقال زبانه به چپ}other{انتقال زبانه‌ها به چپ}}</translation>
 <translation id="5746204836956568669">می‌خواهید <ph name="NUMBER_OF_TABS" /> زبانه را گروه‌بندی کنید تا سریع‌تر کار کنید؟</translation>
 <translation id="5773295109010386583">بستن خودکار موارد غیرفعال</translation>
 <translation id="58326064309361797">برای گروه‌بندی برگه‌ها، آن‌ها را بکشید</translation>
-<translation id="5901630391730855834">زرد</translation>
 <translation id="5972844218283131174">لغوانتخاب همه</translation>
-<translation id="6017514345406065928">سبز</translation>
 <translation id="6040143037577758943">بستن</translation>
-<translation id="6051432659151380973">گروه‌های برگه به‌طور خودکار ذخیره می‌شود</translation>
+<translation id="6051432659151380973">گروه‌های زبانه به‌طور خودکار ذخیره می‌شود</translation>
 <translation id="6054741997831917303">قیمت این محصول اخیراً از <ph name="PREVIOUS_PRICE" /> به <ph name="NEW_PRICE" /> کاهش یافته است</translation>
 <translation id="6109251075362363230">همه برگه‌های تکراری اکنون بایگانی نیز خواهند شد، به‌غیراز نسخه‌ای که آخرین بار استفاده شده است.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{بستن <ph name="TABS_COUNT_ONE" /> مورد انتخاب‌شده}one{بستن <ph name="TABS_COUNT_MANY" /> مورد انتخاب‌شده}other{بستن <ph name="TABS_COUNT_MANY" /> مورد انتخاب‌شده}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{انتقال گروه به پنجره جدید}one{انتقال گروه به پنجره دیگر}other{انتقال گروه به پنجره دیگر}}</translation>
-<translation id="6220820548421939212">بله. مایلم</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{انتقال زبانه به راست}one{انتقال زبانه به راست}other{انتقال زبانه‌ها به راست}}</translation>
 <translation id="6228793724645064692">(رده‌بندی فروشگاه)</translation>
+<translation id="6251046978189636310">درحال پخش صدا</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{برداشتن زبانه از گروه}one{برداشتن زبانه از گروه}other{برداشتن زبانه‌ها از گروه}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{افزودن زبانه به گروه جدید}one{افزودن زبانه به گروه جدید}other{افزودن زبانه‌ها به گروه جدید}}</translation>
 <translation id="6333260925957816943">اطلاعات مربوط به این فروشگاه</translation>
-<translation id="6381032505162537930">گروه‌های برگه‌تان را اینجا خواهید دید</translation>
+<translation id="6344715021569694246">{TABS_COUNT,plural, =1{سنجاق کردن <ph name="TABS_COUNT_ONE" /> زبانه انتخابی}one{سنجاق کردن <ph name="TABS_COUNT_MANY" /> زبانه انتخابی}other{سنجاق کردن <ph name="TABS_COUNT_MANY" /> زبانه انتخابی}}</translation>
+<translation id="6381032505162537930">گروه‌های زبانه‌تان را اینجا خواهید دید</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{لغو گروه‌بندی <ph name="TABS_COUNT_ONE" /> برگه انتخاب‌شده}one{لغو گروه‌بندی <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}other{لغو گروه‌بندی <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}}</translation>
-<translation id="6499296376514955580">اعلان درباره تغییرات «گروه برگه هم‌رسانی‌شده» بسته شده است</translation>
+<translation id="6499296376514955580">اعلان درباره تغییرات «گروه زبانه هم‌رسانی‌شده» بسته شده است</translation>
 <translation id="6527303717912515753">اشتراک‌گذاری</translation>
 <translation id="6549021453810473782">مشاهده اطلاعات فروشگاه</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">انتقال برگه به راست</translation>
-<translation id="6589356853295569750">اعلان درباره تغییرات «گروه برگه هم‌رسانی‌شده» به‌صورت کامل باز شده است</translation>
-<translation id="6590332670428149473">باز کردن منوِ کنش‌های گروه برگه برای گروه برگه <ph name="TITLE_OF_GROUP" /> هم‌رسانی‌شده، به‌رنگ <ph name="COLOR_NAME" />.</translation>
+<translation id="6589356853295569750">اعلان درباره تغییرات «گروه زبانه هم‌رسانی‌شده» به‌صورت کامل باز شده است</translation>
+<translation id="6590332670428149473">باز کردن منوِ کنش‌های گروه زبانه برای گروه زبانه <ph name="TITLE_OF_GROUP" /> هم‌رسانی‌شده، به‌رنگ <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">نشانم داده شود</translation>
 <translation id="6694634756612002311">مدیریت هم‌رسانی</translation>
 <translation id="6709297274997495821">انتخاب زبانه</translation>
@@ -153,39 +166,41 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{افزودن به گروهی به نام <ph name="TITLE_OF_GROUP" /> با <ph name="TAB_COUNT1" /> زبانه}one{افزودن به گروهی به نام <ph name="TITLE_OF_GROUP" /> با <ph name="TAB_COUNT1" /> زبانه}other{افزودن به گروهی به نام <ph name="TITLE_OF_GROUP" /> با <ph name="TAB_COUNT1" /> زبانه}}</translation>
 <translation id="6818926723028410516">انتخاب موارد</translation>
 <translation id="6856809498882026482">پنهان کردن حالت چندانتخابی</translation>
-<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{ازهم باز کردن گروه برگه <ph name="TITLE_OF_GROUP" /> هم‌رسانی‌شده با <ph name="TABS_COUNT_ONE" /> برگه، به‌رنگ <ph name="COLOR_NAME" />.}one{ازهم باز کردن گروه برگه <ph name="TITLE_OF_GROUP" /> هم‌رسانی‌شده با <ph name="TABS_COUNT_MANY" /> برگه، به‌رنگ <ph name="COLOR_NAME" />.}other{ازهم باز کردن گروه برگه <ph name="TITLE_OF_GROUP" /> هم‌رسانی‌شده با <ph name="TABS_COUNT_MANY" /> برگه، به‌رنگ <ph name="COLOR_NAME" />.}}</translation>
+<translation id="6957436309971790274">پس‌از ۲۱ روز غیرفعال بودن</translation>
+<translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{ازهم باز کردن گروه زبانه <ph name="TITLE_OF_GROUP" /> هم‌رسانی‌شده با <ph name="TABS_COUNT_ONE" /> زبانه، به‌رنگ <ph name="COLOR_NAME" />.}one{ازهم باز کردن گروه زبانه <ph name="TITLE_OF_GROUP" /> هم‌رسانی‌شده با <ph name="TABS_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" />.}other{ازهم باز کردن گروه زبانه <ph name="TITLE_OF_GROUP" /> هم‌رسانی‌شده با <ph name="TABS_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" />.}}</translation>
 <translation id="709473454666962555">گروه زبانه‌ای انتخاب کنید</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{هم‌رسانی برگه}one{هم‌رسانی برگه}other{هم‌رسانی برگه‌ها}}</translation>
 <translation id="7129458170538955174">اطلاعات مربوط به این فروشگاه به‌صورت نیمه باز شده است</translation>
 <translation id="7204204600596740190">حالت چندانتخابی</translation>
-<translation id="7211038039686180558">گروه‌های برگه در همه دستگاه‌های واردشده به حساب به‌طور خودکار ذخیره و به‌روز می‌شود</translation>
+<translation id="7211038039686180558">گروه‌های زبانه در همه دستگاه‌های واردشده به حساب به‌طور خودکار ذخیره و به‌روز می‌شود</translation>
 <translation id="731648547091221002"><ph name="COLOR_NAME" /> انتخاب شده است</translation>
 <translation id="7326879924029668159">دیدن خط‌مشی برگرداندن و موارد دیگر</translation>
 <translation id="7352298686197644113">ببینید کدام مورد در برگه‌های باز قیمت کمتری دارد</translation>
 <translation id="7369451074646620503">گروه زبانه «<ph name="TAB_GROUP_NAME" />» دیگر دردسترس نیست</translation>
-<translation id="7452985128687107478">گروه‌های برگه به‌طور خودکار در همه دستگاه‌ها ذخیره و به‌روز می‌شود</translation>
+<translation id="7402375256128852434">افزودن زبانه‌های اخیر</translation>
+<translation id="7452985128687107478">گروه‌های زبانه به‌طور خودکار در همه دستگاه‌ها ذخیره و به‌روز می‌شود</translation>
 <translation id="747459581954555080">بازیابی همه</translation>
+<translation id="7489558427602531799">انتقال گروه زبانه‌ها به راست</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{‫<ph name="TABS_COUNT_ONE" /> مورد}one{‫<ph name="TABS_COUNT_MANY" /> مورد}other{‫<ph name="TABS_COUNT_MANY" /> مورد}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{بازیابی <ph name="TABS_COUNT_ONE" /> مورد انتخاب‌شده}one{بازیابی <ph name="TABS_COUNT_MANY" /> مورد انتخاب‌شده}other{بازیابی <ph name="TABS_COUNT_MANY" /> مورد انتخاب‌شده}}</translation>
-<translation id="753732157349120914">تعویض‌کننده برگه</translation>
+<translation id="753732157349120914">تعویض‌کننده زبانه</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{‏<ph name="REVIEWS_COUNT_ONE" /> مرور از Google}one{‏<ph name="REVIEWS_COUNT_MANY" /> مرور از Google}other{‏<ph name="REVIEWS_COUNT_MANY" /> مرور از Google}}</translation>
 <translation id="7559245342362162951">نمایش برگه‌های گروه در شبکه تمام‌صفحه</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7688386659311034820">کادر گفتگوی برگه‌های غیرفعال</translation>
 <translation id="7699041944097291312">{TABS_COUNT,plural, =1{هم‌رسانی <ph name="TABS_COUNT_ONE" /> برگه انتخاب‌شده}one{هم‌رسانی <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}other{هم‌رسانی <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}}</translation>
 <translation id="775668479044571025">{NUM_MONTHS,plural, =1{‫<ph name="NUM_YEARS_ONE" /> سال پیش به‌روز شده است}one{‫<ph name="NUM_YEARS_MANY" /> سال پیش به‌روز شده است}other{‫<ph name="NUM_YEARS_MANY" /> سال پیش به‌روز شده است}}</translation>
-<translation id="7773714564112603605">برداشتن برگه و حذف گروه</translation>
+<translation id="7773714564112603605">برداشتن زبانه و حذف گروه</translation>
 <translation id="7774428938729954687">بازیابی و باز کردن زبانه <ph name="TAB_TITLE" /></translation>
 <translation id="7792771145871471484">پیشنهاد‌ها مرور شود.</translation>
-<translation id="7792860826279960128">اعلان درباره تغییرات «گروه برگه هم‌رسانی‌شده» به‌صورت نیمه باز شده است</translation>
-<translation id="7825973332242257878">گروه برگه</translation>
+<translation id="7792860826279960128">اعلان درباره تغییرات «گروه زبانه هم‌رسانی‌شده» به‌صورت نیمه باز شده است</translation>
+<translation id="7825973332242257878">گروه زبانه</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{گروه‌بندی <ph name="TABS_COUNT_ONE" /> برگه انتخابی}one{گروه‌بندی <ph name="TABS_COUNT_MANY" /> برگه انتخابی}other{گروه‌بندی <ph name="TABS_COUNT_MANY" /> برگه انتخابی}}</translation>
 <translation id="7853202427316060426">فعالیت</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ رده‌بندی <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />، <ph name="REVIEWS_COUNT_ONE" /> مرور}one{رده‌بندی <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />، <ph name="REVIEWS_COUNT_MANY" /> مرور}other{رده‌بندی <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />، <ph name="REVIEWS_COUNT_MANY" /> مرور}}</translation>
 <translation id="7885132941432959125">انتقال برگه به چپ</translation>
-<translation id="788914896430720926">می‌خواهید بخش غیرفعال مرتب بماند؟</translation>
+<translation id="7887334752153342268">کپی‌برداری</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> انتخاب نشده است</translation>
-<translation id="7942349550061667556">قرمز</translation>
 <translation id="7961015016161918242">هرگز</translation>
 <translation id="7966321538264951561">پیشنهادها رد شود.</translation>
 <translation id="796696298310625748">{WINDOW_COUNT,plural, =1{انتقال دادن زبانه به پنجره جدید}one{انتقال دادن زبانه به پنجره‌ای دیگر}other{انتقال دادن زبانه به پنجره‌ای دیگر}}</translation>
@@ -193,19 +208,22 @@
 <translation id="8029301326595421733">اطلاعات مربوط به این فروشگاه به‌صورت کامل باز شده است</translation>
 <translation id="8053770993984522566">فهرست گروه زبانه، به‌صورت نیمه باز شده است</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{افزودن زبانه به گروه}one{افزودن زبانه به گروه}other{افزودن زبانه‌ها به گروه}}</translation>
-<translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{ازهم باز کردن گروه برگه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_ONE" /> برگه، رنگ <ph name="COLOR_NAME" />.}one{ازهم باز کردن گروه برگه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> برگه، رنگ <ph name="COLOR_NAME" />.}other{ازهم باز کردن گروه برگه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> برگه، رنگ <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8138067144082174140">پس‌از ۱۴ روز غیرفعال بودن</translation>
+<translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{ازهم باز کردن گروه زبانه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_ONE" /> زبانه، رنگ <ph name="COLOR_NAME" />.}one{ازهم باز کردن گروه زبانه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> زبانه، رنگ <ph name="COLOR_NAME" />.}other{ازهم باز کردن گروه زبانه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> زبانه، رنگ <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8195186926670288294">{TABS_COUNT,plural, =1{برداشتن سنجاق زبانه}one{برداشتن سنجاق زبانه}other{برداشتن سنجاق زبانه}}</translation>
 <translation id="8205266828577616993">انتقال برگه به بالا</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{‫<ph name="NUM_MINS_ONE" /> دقیقه پیش به‌روز شده است}one{‫<ph name="NUM_MINS_MANY" /> دقیقه پیش به‌روز شده است}other{‫<ph name="NUM_MINS_MANY" /> دقیقه پیش به‌روز شده است}}</translation>
 <translation id="8236097722223016103">افزودن به نشانک‌ها</translation>
 <translation id="827881768507898324">اعلان مربوط به «حذف خودکار زبانه‌ها» به‌صورت کامل باز شده است</translation>
-<translation id="8338427544764842461">گروه‌های برگه شما اینجا ذخیره می‌شود و در همه دستگاه‌های واردشده به حساب به‌روز می‌شود</translation>
-<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{ازهم باز کردن گروه برگه هم‌رسانی‌شده با <ph name="TABS_COUNT_ONE" /> برگه، به‌رنگ <ph name="COLOR_NAME" />.}one{ازهم باز کردن گروه برگه هم‌رسانی‌شده با <ph name="TABS_COUNT_MANY" /> برگه، به‌رنگ <ph name="COLOR_NAME" />.}other{ازهم باز کردن گروه برگه هم‌رسانی‌شده با <ph name="TABS_COUNT_MANY" /> برگه، به‌رنگ <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8338427544764842461">گروه‌های زبانه شما اینجا ذخیره می‌شود و در همه دستگاه‌های واردشده به حساب به‌روز می‌شود</translation>
+<translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{ازهم باز کردن گروه زبانه هم‌رسانی‌شده با <ph name="TABS_COUNT_ONE" /> زبانه، به‌رنگ <ph name="COLOR_NAME" />.}one{ازهم باز کردن گروه زبانه هم‌رسانی‌شده با <ph name="TABS_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" />.}other{ازهم باز کردن گروه زبانه هم‌رسانی‌شده با <ph name="TABS_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" />.}}</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{بستن <ph name="TABS_COUNT_ONE" /> برگه انتخابی}one{بستن <ph name="TABS_COUNT_MANY" /> برگه انتخابی}other{بستن <ph name="TABS_COUNT_MANY" /> برگه انتخابی}}</translation>
 <translation id="8374451057714760401">{NUM_MONTHS,plural, =1{‫<ph name="NUM_MONTHS_ONE" /> ماه پیش به‌روز شده است}one{‫<ph name="NUM_MONTHS_MANY" /> ماه پیش به‌روز شده است}other{‫<ph name="NUM_MONTHS_MANY" /> ماه پیش به‌روز شده است}}</translation>
 <translation id="8398929769197326728">پوشه جدید - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8428213095426709021">تنظیمات</translation>
 <translation id="855081842937141170">سنجاق کردن برگه</translation>
 <translation id="8633025649649592204">فعالیت اخیر</translation>
+<translation id="8635822281281406185">تا ۱۰ فایل، زبانه، یا تصویر اضافه کنید</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8714939927607906138">قیمت کمتر</translation>
 <translation id="8730621377337864115">تمام</translation>
@@ -213,14 +231,13 @@
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{‫<ph name="NUM_MONTHS_ONE" /> ماه پیش ایجاد شد}one{‫<ph name="NUM_MONTHS_MANY" /> ماه پیش ایجاد شد}other{‫<ph name="NUM_MONTHS_MANY" /> ماه پیش ایجاد شد}}</translation>
 <translation id="8813708480179818649">برداشتن زبانه از گروه</translation>
 <translation id="8820741577754260431">دیدن کاهش قیمت در برگه‌ها</translation>
-<translation id="8887921976452567404">برگه‌ها و گروه‌های بسته‌شده از بخش «برگه‌های اخیر» و بخش «گروه‌های برگه» مجدداً باز خواهند شد.</translation>
+<translation id="8887921976452567404">زبانه‌ها و گروه‌های بسته‌شده از بخش «زبانه‌های اخیر» و بخش «گروه‌های زبانه» مجدداً باز خواهند شد.</translation>
 <translation id="8915916167043355778">بستن همه</translation>
 <translation id="9090098097337832354">اطلاعات مربوط به این فروشگاه بسته شد</translation>
-<translation id="9114502155681725011">باز کردن منوِ کنش‌های گروه برگه برای گروه برگه <ph name="TITLE_OF_GROUP" />، به‌رنگ <ph name="COLOR_NAME" />.</translation>
+<translation id="9114502155681725011">باز کردن منوِ کنش‌های گروه زبانه برای گروه زبانه <ph name="TITLE_OF_GROUP" />، به‌رنگ <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">افزودن برگه جدید به گروه</translation>
 <translation id="9187834032751045001">اعلان مربوط به «حذف خودکار زبانه‌ها» به‌صورت نیمه باز شده است.</translation>
-<translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{ازهم باز کردن گروه برگه با <ph name="TABS_COUNT_ONE" /> برگه، رنگ <ph name="COLOR_NAME" />.}one{ازهم باز کردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه، رنگ <ph name="COLOR_NAME" />.}other{ازهم باز کردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه، رنگ <ph name="COLOR_NAME" />.}}</translation>
+<translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{ازهم باز کردن گروه زبانه با <ph name="TABS_COUNT_ONE" /> زبانه، رنگ <ph name="COLOR_NAME" />.}one{ازهم باز کردن گروه زبانه با <ph name="TABS_COUNT_MANY" /> زبانه، رنگ <ph name="COLOR_NAME" />.}other{ازهم باز کردن گروه زبانه با <ph name="TABS_COUNT_MANY" /> زبانه، رنگ <ph name="COLOR_NAME" />.}}</translation>
 <translation id="945522503751344254">ارسال بازخورد</translation>
-<translation id="992256792861109788">صورتی</translation>
 <translation id="994514002078791059">{TAB_COUNT,plural, =1{‫۱ مورد غیرفعال بسته شود؟}one{‫<ph name="TAB_COUNT_MANY" /> مورد غیرفعال بسته شود؟}other{‫<ph name="TAB_COUNT_MANY" /> مورد غیرفعال بسته شود؟}}</translation>
 </translationbundle>

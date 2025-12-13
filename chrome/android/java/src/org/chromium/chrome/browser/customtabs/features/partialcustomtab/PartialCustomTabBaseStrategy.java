@@ -8,6 +8,8 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import static androidx.browser.customtabs.CustomTabsCallback.ACTIVITY_LAYOUT_STATE_FULL_SCREEN;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -29,13 +31,16 @@ import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.browser.customtabs.CustomTabsCallback;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
@@ -52,6 +57,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.function.BooleanSupplier;
 
 /** Base class for PCCT size strategies implementations. */
+@NullMarked
 public abstract class PartialCustomTabBaseStrategy extends CustomTabHeightStrategy
         implements FullscreenManager.Observer {
     private static boolean sDeviceSpecLogged;
@@ -68,10 +74,10 @@ public abstract class PartialCustomTabBaseStrategy extends CustomTabHeightStrate
     protected @Px int mDisplayHeight;
     protected @Px int mDisplayWidth;
 
-    protected Runnable mPositionUpdater;
+    protected @Nullable Runnable mPositionUpdater;
 
     // Runnable finishing the activity after the exit animation. Non-null when PCCT is closing.
-    @Nullable protected Runnable mFinishRunnable;
+    protected @Nullable Runnable mFinishRunnable;
 
     protected @Px int mNavbarHeight;
     protected @Px int mStatusBarHeight;
@@ -95,10 +101,10 @@ public abstract class PartialCustomTabBaseStrategy extends CustomTabHeightStrate
     private final Callback<Integer> mVisibilityChangeObserver =
             this::onToolbarContainerVisibilityChange;
 
-    private ValueAnimator mAnimator;
-    private Runnable mPostAnimationRunnable;
+    private final ValueAnimator mAnimator = new ValueAnimator();
+    private Runnable mPostAnimationRunnable = () -> {};
 
-    private BooleanSupplier mIsFullscreenForTesting;
+    private @Nullable BooleanSupplier mIsFullscreenForTesting;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -208,7 +214,7 @@ public abstract class PartialCustomTabBaseStrategy extends CustomTabHeightStrate
         View coordinatorLayout = getCoordinatorLayout();
         coordinatorLayout.setElevation(getCustomTabsElevation());
 
-        mPositionUpdater.run();
+        assumeNonNull(mPositionUpdater).run();
 
         // Set the window title so the type announcement is made, only when CCT is first launched.
         if (!coordinatorLayout.isAttachedToWindow()) setWindowTitleForTouchExploration();
@@ -241,6 +247,7 @@ public abstract class PartialCustomTabBaseStrategy extends CustomTabHeightStrate
     }
 
     @Override
+    @Initializer
     public void onToolbarInitialized(
             View coordinatorView,
             CustomTabToolbar toolbar,
@@ -252,6 +259,7 @@ public abstract class PartialCustomTabBaseStrategy extends CustomTabHeightStrate
         roundCorners(toolbar, mToolbarCornerRadius);
     }
 
+    @EnsuresNonNull(value = {"mToolbarView", "mToolbarCoordinator"})
     public void setToolbar(View toolbarCoordinator, CustomTabToolbar toolbar) {
         if (mToolbarView != null) {
             mToolbarView.removeContainerVisibilityChangeObserver(mVisibilityChangeObserver);
@@ -290,7 +298,7 @@ public abstract class PartialCustomTabBaseStrategy extends CustomTabHeightStrate
                 // rotating back to non-full-height mode later.
                 cleanupImeStateCallback();
             }
-            mPositionUpdater.run();
+            assumeNonNull(mPositionUpdater).run();
         }
     }
 
@@ -502,7 +510,7 @@ public abstract class PartialCustomTabBaseStrategy extends CustomTabHeightStrate
         int width =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_outline_width);
 
-        cctBackground.setStroke(width, SemanticColorUtils.getDividerLineBgColor(mActivity));
+        cctBackground.setStroke(width, SemanticColorUtils.getDividerColor(mActivity));
 
         // We need an inset to make the outline shadow visible.
         dragBar.setBackground(
@@ -515,11 +523,15 @@ public abstract class PartialCustomTabBaseStrategy extends CustomTabHeightStrate
         View dragBar = mActivity.findViewById(R.id.drag_bar);
         // Check if the current dragBar background is the InsetDrawable used in conjunction with
         // the divider line
+        GradientDrawable drawable;
         if (dragBar.getBackground() instanceof InsetDrawable insetDrawable) {
-            return (GradientDrawable) insetDrawable.getDrawable();
+            drawable = (GradientDrawable) insetDrawable.getDrawable();
         } else {
-            return (GradientDrawable) dragBar.getBackground();
+            drawable = (GradientDrawable) dragBar.getBackground();
         }
+
+        assert drawable != null;
+        return drawable;
     }
 
     protected void resetCoordinatorLayoutInsets() {
@@ -547,7 +559,6 @@ public abstract class PartialCustomTabBaseStrategy extends CustomTabHeightStrate
     }
 
     protected void setupAnimator() {
-        mAnimator = new ValueAnimator();
         mAnimator.addListener(
                 new AnimatorListenerAdapter() {
                     @Override

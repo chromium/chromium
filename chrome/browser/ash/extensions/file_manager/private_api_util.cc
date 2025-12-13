@@ -14,9 +14,9 @@
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -223,7 +223,7 @@ std::string GetShareUrlFromAlternateUrl(const GURL& alternate_url) {
   // sharing dialog for files and folders (add ?userstoinvite="" to the URL).
   GURL::Replacements replacements;
   std::string new_query =
-      (alternate_url.has_query() ? alternate_url.query() + "&" : "") +
+      (alternate_url.has_query() ? alternate_url.GetQuery() + "&" : "") +
       "userstoinvite=%22%22";
   replacements.SetQueryStr(new_query);
 

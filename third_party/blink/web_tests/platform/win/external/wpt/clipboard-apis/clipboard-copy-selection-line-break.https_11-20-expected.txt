@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] test preformatted text with line breaks: "\\r\\r\\r"
+  assert_equals: Check result from DataTransfer in paste event expected "First\\r\\r\\rSecond" but got "First\\r\\n\\r\\n\\r\\nSecond"
+[FAIL] test preformatted text with line breaks: "\\r\\r\\n"
+  assert_equals: Check result from DataTransfer in paste event expected "First\\r\\r\\nSecond" but got "First\\r\\n\\r\\nSecond"
+[FAIL] test preformatted text with line breaks: "\\r\\n\\r"
+  assert_equals: Check result from DataTransfer in paste event expected "First\\r\\n\\rSecond" but got "First\\r\\n\\r\\nSecond"
+Harness: the test ran to completion.
+

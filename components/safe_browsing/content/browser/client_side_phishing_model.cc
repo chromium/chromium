@@ -20,6 +20,8 @@
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/byte_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
@@ -32,7 +34,9 @@
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "crypto/hash.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/zlib/google/compression_utils.h"
 
 namespace safe_browsing {
 
@@ -89,6 +93,49 @@ base::File LoadImageEmbeddingModelFile(const base::FilePath& model_file_path) {
   }
 
   return image_embedding_model_file;
+}
+
+std::pair<base::File, std::optional<EmbeddingList>>
+LoadImageEmbeddingModelFileAndEmbeddingList(
+    const base::FilePath& model_file_path,
+    base::flat_set<base::FilePath> additional_files) {
+  base::File image_embedding_file =
+      LoadImageEmbeddingModelFile(model_file_path);
+  // No need to attempt loading |additional_files| with no image embedding file.
+  if (!image_embedding_file.IsValid()) {
+    return {base::File(), std::nullopt};
+  }
+  // The |additional_files.size()| can be zero (e.g., on Desktop). In this case,
+  // we should only return the image embedding file.
+  if (additional_files.size() == 0) {
+    return {std::move(image_embedding_file), std::nullopt};
+  }
+  // There should only be one additional file.
+  const base::FilePath& target_list_file_path = *additional_files.begin();
+
+  // Read the file in.
+  std::string file_content;
+  if (!base::ReadFileToString(target_list_file_path, &file_content)) {
+    // We failed to read in the zipped target embedding list, so proceed without
+    // it.
+    return {std::move(image_embedding_file), std::nullopt};
+  }
+
+  // Uncompress the file.
+  if (!compression::GzipUncompress(file_content, &file_content)) {
+    // We failed to unzip the target embedding list, so proceed without it.
+    return {std::move(image_embedding_file), std::nullopt};
+  }
+
+  // Parse the proto.
+  EmbeddingList embedding_list_pb;
+  if (!embedding_list_pb.ParseFromString(file_content)) {
+    // We failed to parse the EmbeddingList, so proceed without it.
+    return {std::move(image_embedding_file), std::nullopt};
+  }
+
+  return {std::move(image_embedding_file),
+          std::make_optional(embedding_list_pb)};
 }
 
 // Load the model file at the provided file path.
@@ -151,6 +198,12 @@ void RecordImageEmbeddingModelUpdateSuccess(bool success) {
 
 }  // namespace
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+TargetEmbedding::TargetEmbedding(tflite::task::vision::FeatureVector embedding,
+                                 float threshold)
+    : embedding(std::move(embedding)), threshold(threshold) {}
+#endif
+
 // --- ClientSidePhishingModel methods ---
 
 ClientSidePhishingModel::ClientSidePhishingModel(
@@ -161,7 +214,7 @@ ClientSidePhishingModel::ClientSidePhishingModel(
       beginning_time_(base::TimeTicks::Now()) {
   opt_guide_->AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING,
-      /*model_metadata=*/std::nullopt, this);
+      /*model_metadata=*/std::nullopt, background_task_runner_, this);
 }
 
 void ClientSidePhishingModel::OnModelUpdated(
@@ -231,9 +284,11 @@ void ClientSidePhishingModel::OnModelUpdated(
 
     background_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
-        base::BindOnce(&LoadImageEmbeddingModelFile,
-                       model_info->GetModelFilePath()),
-        base::BindOnce(&ClientSidePhishingModel::OnImageEmbeddingModelLoaded,
+        base::BindOnce(&LoadImageEmbeddingModelFileAndEmbeddingList,
+                       model_info->GetModelFilePath(),
+                       model_info->GetAdditionalFiles()),
+        base::BindOnce(&ClientSidePhishingModel::
+                           OnImageEmbeddingModelFileAndEmbeddingListLoaded,
                        weak_ptr_factory_.GetWeakPtr(),
                        model_info->GetModelMetadata()));
   }
@@ -245,7 +300,7 @@ void ClientSidePhishingModel::SubscribeToImageEmbedderOptimizationGuide() {
     opt_guide_->AddObserverForOptimizationTargetModel(
         optimization_guide::proto::
             OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING_IMAGE_EMBEDDER,
-        /*model_metadata=*/std::nullopt, this);
+        /*model_metadata=*/std::nullopt, background_task_runner_, this);
   }
 }
 
@@ -329,7 +384,7 @@ void ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded(
               threshold.set_esb_threshold(flat_threshold->esb_threshold() > 0
                                               ? flat_threshold->esb_threshold()
                                               : flat_threshold->threshold());
-              thresholds_[flat_threshold->label()->str()] = threshold;
+              thresholds_.push_back(threshold);
             }
           }
         }
@@ -379,11 +434,11 @@ void ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded(
   }
 }
 
-void ClientSidePhishingModel::OnImageEmbeddingModelLoaded(
+void ClientSidePhishingModel::OnImageEmbeddingModelFileAndEmbeddingListLoaded(
     std::optional<optimization_guide::proto::Any> model_metadata,
-    base::File image_embedding_model) {
+    std::pair<base::File, std::optional<EmbeddingList>> model_and_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+  base::File image_embedding_model = std::move(model_and_list.first);
   bool image_embedding_model_valid = image_embedding_model.IsValid();
   RecordImageEmbeddingModelUpdateSuccess(image_embedding_model_valid);
 
@@ -411,13 +466,52 @@ void ClientSidePhishingModel::OnImageEmbeddingModelLoaded(
         model_metadata.value());
   }
 
+  int loaded_image_embedder_version = -1;  // Valid versions start at 1.
   if (image_embedding_model_metadata.has_value()) {
     embedding_model_opt_guide_metadata_image_embedding_version_ =
         image_embedding_model_metadata->image_embedding_model_version();
+    loaded_image_embedder_version =
+        embedding_model_opt_guide_metadata_image_embedding_version_.value();
   } else {
     VLOG(1) << "Image embedding model metadata is missing a version value";
   }
 
+  // Log the EmbeddingList version fetched.
+  if (model_and_list.second.has_value()) {
+    std::string version = model_and_list.second.value().version();
+    int embedding_list_version_num;
+    // The expected version format is PYYMMDDRR. "P" is a letter that
+    // corresponds to the platform the version is for. In the context of UMA,
+    // that information is redundant. So, we skip that part of the version with
+    // the substr method.
+    if (base::StringToInt(version.size() > 1 ? version.substr(1) : "",
+                          &embedding_list_version_num)) {
+      base::UmaHistogramSparse("SBClientPhishing.ImageEmbeddingList.Version",
+                               embedding_list_version_num);
+    }
+  }
+  // Drop any existing target image embeddings in preparation for a new set.
+  target_image_embeddings_.clear();
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  // Only load image embeddings when the version of their embedder matches the
+  // version of the embedder that's been loaded.
+  if (model_and_list.second.has_value() &&
+      model_and_list.second.value().embedder_version() ==
+          loaded_image_embedder_version) {
+    // Build list of TargetEmbeddings.
+    for (const EmbeddingList::Embedding& embedding :
+         model_and_list.second.value().image_embeddings()) {
+      tflite::task::vision::FeatureVector feature_vector;
+      for (float embedding_value : embedding.value()) {
+        feature_vector.add_value_float(embedding_value);
+      }
+      target_image_embeddings_.emplace_back(feature_vector,
+                                            embedding.threshold());
+    }
+  }
+  base::UmaHistogramCounts100000("SBClientPhishing.ImageEmbeddingList.Size",
+                                 target_image_embeddings_.size());
+#endif
   // There is no use of the image embedding model if the visual trigger model is
   // not present, so we will only send to the renderer when that is the case.
   if (visual_tflite_model_ && image_embedding_model_) {
@@ -441,6 +535,18 @@ int ClientSidePhishingModel::GetTriggerModelVersion() {
   return trigger_model_version_.has_value() ? trigger_model_version_.value()
                                             : 0;
 }
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+const std::vector<TargetEmbedding>&
+ClientSidePhishingModel::GetTargetImageEmbeddings() const {
+  return target_image_embeddings_;
+}
+
+void ClientSidePhishingModel::SetTargetImageEmbeddingsForTesting(
+    std::vector<TargetEmbedding> target_embeddings) {
+  target_image_embeddings_ = std::move(target_embeddings);
+}
+#endif
 
 ClientSidePhishingModel::~ClientSidePhishingModel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -544,7 +650,19 @@ bool ClientSidePhishingModel::VerifyCSDFlatBufferIndicesAndFields(
   return true;
 }
 
-const base::flat_map<std::string, TfLiteModelMetadata::Threshold>&
+// static
+std::string ClientSidePhishingModel::GetHashFromEmbedding(
+    const std::vector<float>& embedding_values) {
+  crypto::hash::Hasher hasher(crypto::hash::HashKind::kSha256);
+  for (const float embedding_value : embedding_values) {
+    hasher.Update(base::FloatToBigEndian(embedding_value));
+  }
+  std::array<uint8_t, crypto::hash::kSha256Size> raw_hash;
+  hasher.Finish(raw_hash);
+  return base::HexEncodeLower(raw_hash);
+}
+
+const std::vector<TfLiteModelMetadata::Threshold>&
 ClientSidePhishingModel::GetVisualTfLiteModelThresholds() const {
   return thresholds_;
 }

@@ -1,18 +1,13 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
-<translation id="1004806631856047384">Faça a gestão em <ph name="BEGIN_LINK1" />Definições do Android<ph name="END_LINK1" />
-
-A Proteção avançada controla estas definições do Chrome:
-• A opção "Usar sempre ligações seguras" está ativada.
-• O "Otimizador de JavaScript" está desativado. <ph name="BEGIN_LINK2" />Faça a gestão das exceções de sites<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Abrir online</translation>
 <translation id="1036348656032585052">Desativar</translation>
-<translation id="1044891598689252897">Os sites funcionam normalmente.</translation>
 <translation id="1070329623210597193">Ficheiros que este site pode ver ou editar</translation>
 <translation id="1073417869336441572">Ajude-nos a melhorar o Chrome ao dizer-nos o motivo pelo qual permitiu cookies de terceiros. <ph name="BEGIN_LINK" />Envie feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Pode pedir para ver a versão para computador dos sites</translation>
 <translation id="1085696779717592361">Use o Chrome por predefinição</translation>
+<translation id="113098737392899175">Navegar pelas páginas com um cursor de texto quando tiver um teclado ligado</translation>
 <translation id="1178015372320901893">Secção inferior de Os meus atalhos</translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1181037720776840403">Remover</translation>
@@ -26,6 +21,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="129382876167171263">Os ficheiros guardados por Websites são apresentados aqui.</translation>
 <translation id="131112695174432497">Os dados que afetam a personalização de anúncios são apagados</translation>
 <translation id="1317194122196776028">Esquecer este site</translation>
+<translation id="1321110954513621549">Permitida • Aproximada</translation>
 <translation id="1323433172918577554">Mostrar mais</translation>
 <translation id="1333965224356556482">Não permitir que os sites vejam a sua localização</translation>
 <translation id="1343356790768851700">Este site determina o conteúdo de que gosta e, em seguida, sugere anúncios para outros sites</translation>
@@ -37,13 +33,16 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="1409338233051621926">Toque em Apps e, de seguida, em Apps predefinidas</translation>
 <translation id="1415402041810619267">URL truncado</translation>
 <translation id="1415855080660575082">Permita que o Chrome partilhe os seus separadores recentes com o seu dispositivo para os ver na lista de apps e nos resultados da pesquisa do dispositivo. Pode ativar ou desativar esta opção nas definições do Chrome.</translation>
+<translation id="1420688843103859429">Navegue para a frente e para trás deslizando rapidamente com dois dedos no touchpad</translation>
 <translation id="1432650420699700107">Os sites podem pedir para fazer ligação aos dispositivos na sua rede local</translation>
 <translation id="1448064542941920355">Diminuir zoom</translation>
 <translation id="1464044141348608623">Não permitir que os sites saibam quando está a utilizar ativamente o dispositivo</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
+<translation id="1476700086976862423">Cor do tema: sépia</translation>
 <translation id="1500473259453106018">Ocultar cartão Descidas de preços nos separadores</translation>
 <translation id="1508931164824684991">Os sites podem usar JavaScript</translation>
 <translation id="1510341833810331442">Os sites não têm autorização para guardar dados no dispositivo</translation>
+<translation id="1532175480576580256">Secção inferior de Os meus atalhos aberta à altura total</translation>
 <translation id="1538031354170655462">Normalmente, os sites usam a tecnologia NFC (Comunicação a curta distância) para funcionar com identificadores ou dispositivos próximos, por exemplo, para a leitura de emblemas ou o pagamento sem contacto</translation>
 <translation id="1547123415014299762">Os cookies de terceiros são permitidos</translation>
 <translation id="1569054338208717605">Acelerar os sites com o motor V8 do Chrome, mas tornar o Chrome ligeiramente menos resistente a ataques</translation>
@@ -72,12 +71,15 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="1799920918471566157">Sugestões do Chrome</translation>
 <translation id="1816835383954230954">Quando está ativado, o Chrome é executado mais rapidamente e as funcionalidades que usam o JavaScript devem funcionar conforme previsto. Quando está desativado, reduz o desempenho, mas torna o V8 mais resistente a ataques.</translation>
 <translation id="1818308510395330587">Para permitir que a app <ph name="APP_NAME" /> utilize a realidade aumentada, ative também a câmara nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
+<translation id="1848033246551405023">Tipo de letra: Sans Serif</translation>
+<translation id="1861262398884155592">Esta pasta está vazia</translation>
 <translation id="1881806992065048905">Secção inferior de aspeto da página Novo separador</translation>
 <translation id="1887786770086287077">O acesso à localização está desativado para este dispositivo. Ative-o nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Normalmente, os sites acedem a ficheiros e pastas no seu dispositivo para funcionalidades como guardar automaticamente o seu trabalho.</translation>
 <translation id="1915307458270490472">Desligar</translation>
 <translation id="1919950603503897840">Selecionar contactos</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">Ecrã no ecrã automático</translation>
 <translation id="1954597385941141174">Os sites podem solicitar a ligação a dispositivos USB</translation>
 <translation id="1979673356880165407">Aumente ou diminua o tamanho do texto e das imagens de todos os sites que visitar</translation>
 <translation id="1984937141057606926">Permitidos, exceto de terceiros</translation>
@@ -92,6 +94,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="2079545284768500474">Anular</translation>
 <translation id="2080070583977670716">Mais definições</translation>
 <translation id="2091887806945687916">Som</translation>
+<translation id="2094208275686143364">Cor do tema: claro</translation>
 <translation id="2096716221239095980">Eliminar todos os dados</translation>
 <translation id="2102396546234652240">Não permitir que os sites utilizem o microfone</translation>
 <translation id="2117655453726830283">Slide seguinte</translation>
@@ -115,17 +118,20 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="228293613124499805">É provável que a maioria dos sites que visita guarde dados no seu dispositivo, muitas vezes para melhorar a sua experiência ao guardar as suas preferências ou informações que partilha com o site. Recomendamos que mantenha esta definição ativada.</translation>
 <translation id="2289270750774289114">Perguntar quando um site quer detetar dispositivos Bluetooth próximos (recomendado)</translation>
 <translation id="2315043854645842844">O sistema operativo não suporta a seleção do certificado do lado do cliente.</translation>
+<translation id="2347601491101454548">Secção inferior de Os meus atalhos aberta a meia altura</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2379925928934107488">Aplique o tema escuro aos sites quando o Chrome utiliza o tema escuro, quando possível</translation>
 <translation id="2390272837142897736">Aumentar zoom</translation>
+<translation id="2397689164757137845">Permitida • Exata</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">Exata</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" /> permitidas.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" /> permitidas.}}</translation>
+<translation id="2404857459073803936">Acesso à localização para este site</translation>
 <translation id="2410940059315936967">Um site que visita pode incorporar conteúdo de outros sites, por exemplo, imagens, anúncios e texto. Os cookies definidos por estes sites são denominados cookies de terceiros.</translation>
 <translation id="2411116727035790889">Ativar atalhos</translation>
 <translation id="2433507940547922241">Aspeto</translation>
 <translation id="2434158240863470628">Transferência concluída: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Permitiu temporariamente que este site usasse cookies de terceiros, o que significa uma proteção da navegação inferior, mas é mais provável que as funcionalidades do site funcionem conforme esperado. <ph name="BEGIN_LINK" />Envie feedback<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">As funcionalidades em alguns sites podem não funcionar no Modo de navegação anónima</translation>
 <translation id="2442870161001914531">Peça sempre o site para computador</translation>
 <translation id="2445311670906052406">Agora, o Chrome partilha os seus separadores recentes com o seu dispositivo. Irá vê-los na lista de apps e nos resultados da pesquisa do seu dispositivo. Pode desativar esta opção em qualquer altura nas definições do Chrome.</translation>
 <translation id="245322989586167203">Normalmente, os sites estabelecem ligação a portas de série para funcionalidades de transferência de dados como configurar a sua rede</translation>
@@ -136,6 +142,8 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="2498359688066513246">Ajuda e comentários</translation>
 <translation id="2501278716633472235">Voltar</translation>
 <translation id="2533138527374486328">Quando esta opção está ativada, os sites podem pedir para fazer ligação a qualquer dispositivo na sua rede local. Quando esta opção está desativada, os sites não podem fazer ligação aos dispositivos na sua rede local.</translation>
+<translation id="2536779053640817375">Permitida desta vez • Exata</translation>
+<translation id="2544997614631598250">Cor do tema: escuro</translation>
 <translation id="2546283357679194313">Cookies e dados de Web sites</translation>
 <translation id="2570922361219980984">O acesso à localização também está desativado para este dispositivo. Ative-o nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Expandido. Clique para reduzir.</translation>
@@ -143,6 +151,11 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="2588271083332682494">Organize-se com os grupos de separadores</translation>
 <translation id="2597457036804169544">Não aplique o tema escuro aos sites</translation>
 <translation id="2606760465469169465">Validação automática</translation>
+<translation id="2610903128639500624">Faça a gestão em <ph name="BEGIN_LINK1" />Definições do Android<ph name="END_LINK1" />
+
+A Proteção avançada controla estas definições do Chrome:
+• A opção "Usar sempre ligações seguras" está ativada.
+• O "Otimizador de JavaScript" está desativado. <ph name="BEGIN_LINK2" />Faça a gestão das exceções de sites<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Permitir JavaScript num site específico.</translation>
 <translation id="2626708220538466178">Secção inferior do navegador predefinido fechada</translation>
 <translation id="2653659639078652383">Enviar</translation>
@@ -158,6 +171,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="2787357173144933081">Iniciar rapidamente caixa geral</translation>
 <translation id="2789132527330338807">Os sites podem pedir para criar um mapa 3D do ambiente à sua volta ou monitorizar a posição da câmara</translation>
 <translation id="2790501146643349491">Quando esta opção está ativada, os sites fechados recentemente podem concluir o envio e a receção de dados. Quando esta opção está desativada, os sites fechados recentemente não podem concluir o envio nem a receção de dados.</translation>
+<translation id="2794551654724114396">Ative as notificações para receber dicas úteis que ajudam a tirar o máximo partido do Chrome</translation>
 <translation id="2795716239552913152">Normalmente, os sites utilizam a sua localização para funcionalidades ou informações relevantes, como notícias locais ou lojas próximas.</translation>
 <translation id="2800760947029405028">Carregar uma imagem</translation>
 <translation id="2802908157808345702">Não permitir que os sites enviem pop-ups nem usem redirecionamentos</translation>
@@ -170,6 +184,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="2903493209154104877">Moradas</translation>
 <translation id="2910701580606108292">Perguntar antes de permitir que os sites reproduzam conteúdos protegidos</translation>
 <translation id="2918484639460781603">Ir para definições</translation>
+<translation id="293060180538644702">Receba notificações de dicas do Chrome</translation>
 <translation id="2932883381142163287">Denunciar abuso</translation>
 <translation id="2939338015096024043">Quando esta opção está ativada, os sites podem pedir para monitorizar a posição da câmara e saber mais sobre o ambiente à sua volta. Quando esta opção está desativada, os sites não podem monitorizar a posição da câmara nem saber mais sobre o ambiente à sua volta.</translation>
 <translation id="2968755619301702150">Visualizador de certificados</translation>
@@ -187,13 +202,14 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="311394601889664316">Não permitir que os sites editem ficheiros ou pastas no dispositivo</translation>
 <translation id="3114012059975132928">Leitor de vídeo</translation>
 <translation id="3115898365077584848">Mostrar informações</translation>
-<translation id="3123473560110926937">Bloqueado em alguns sites.</translation>
+<translation id="3123473560110926937">Bloqueado em alguns sites</translation>
 <translation id="3132996321662585180">Atualizar diariamente</translation>
 <translation id="3143754809889689516">Reproduzir desde o início</translation>
-<translation id="3162899666601560689">Os sites podem usar cookies para melhorar a experiência de navegação, por exemplo, para manter a sua sessão iniciada ou memorizar os artigos no seu carrinho de compras</translation>
+<translation id="3164169438034704658">Pode ativar a localização exata nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Permita que um site use cookies de terceiros</translation>
 <translation id="3167868116600277716">Feed do Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de dados armazenados</translation>
+<translation id="3199078925536734975">Permitida desta vez • Aproximada</translation>
 <translation id="321187648315454507">Para permitir que a app <ph name="APP_NAME" /> lhe envie notificações, ative também as notificações nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Acesso à localização não permitido</translation>
 <translation id="3227137524299004712">Microfone</translation>
@@ -205,7 +221,6 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="3285500645985761267">Permitir que os sites relacionados vejam a sua atividade no grupo</translation>
 <translation id="3295019059349372795">Capítulo 11: A Maravilhosa Cidade Esmeralda de Oz</translation>
 <translation id="3295602654194328831">Ocultar informações</translation>
-<translation id="3328801116991980348">Informações do site</translation>
 <translation id="3333961966071413176">Todos os contactos</translation>
 <translation id="3360338140203645771">Eliminar níveis de zoom?</translation>
 <translation id="3362437373201486687">A procurar dispositivos Bluetooth</translation>
@@ -228,7 +243,10 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="3600792891314830896">Desativar o som dos sites que reproduzem som</translation>
 <translation id="3602290021589620013">Pré-visualizar</translation>
 <translation id="3611658447322220736">Os sites fechados recentemente podem concluir o envio e a receção de dados</translation>
+<translation id="3619294456800709762">Os sites podem entrar automaticamente no modo ecrã no ecrã</translation>
 <translation id="3628308229821498208">Pesquisas sugeridas</translation>
+<translation id="3632460243282703117">Subscrever</translation>
+<translation id="363748948745453283">A usar a localização aproximada</translation>
 <translation id="3641456520301071208">Os sites podem solicitar a sua localização</translation>
 <translation id="3658847490588580244">Secção inferior do navegador predefinido</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site no grupo de sites de <ph name="RWS_OWNER" /> que pode ver a sua atividade no grupo}other{<ph name="RWS_MEMBERS_COUNT" /> sites no grupo de sites de <ph name="RWS_OWNER" /> que podem ver a sua atividade no grupo}}</translation>
@@ -249,6 +267,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="3803367742635802571">Os sites que visita podem deixar de funcionar como previsto</translation>
 <translation id="3816118180265633665">Cores do Chrome</translation>
 <translation id="381841723434055211">Números de telefone</translation>
+<translation id="3823453485268218808">Tipo de letra: Mono</translation>
 <translation id="3826050100957962900">Início de sessão de terceiros</translation>
 <translation id="3835233591525155343">O uso do dispositivo</translation>
 <translation id="3843916486309149084">O Chrome vai bloquear os cookies novamente hoje</translation>
@@ -258,10 +277,9 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="3895926599014793903">Forçar ativação do zoom</translation>
 <translation id="3903738175795615004">Arraste a partir da parte superior ou prima a tecla Esc para sair do modo de ecrã inteiro.</translation>
 <translation id="3905475044299942653">Pare notificações excessivas</translation>
-<translation id="3908288065506437185">Bloquear cookies de terceiros no Modo de navegação anónima</translation>
-<translation id="3918378745482005425">Algumas funcionalidades podem não funcionar. Os sites relacionados ainda podem usar cookies de terceiros.</translation>
 <translation id="3922092564198021702">No telemóvel, abra as Definições</translation>
 <translation id="3933121352599513978">Reduzir pedidos indesejados (recomendado)</translation>
+<translation id="3934905113567851655">Junte/afaste os dedos para redimensionar</translation>
 <translation id="3955193568934677022">Permitir que os sites reproduzam conteúdo protegido (recomendado)</translation>
 <translation id="3955321697524543127">Não permitir que os sites estabeleçam ligação a dispositivos USB</translation>
 <translation id="3965467402665811906">Os sites podem pedir para usar as informações guardadas sobre si</translation>
@@ -274,8 +292,10 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="3992684624889376114">Acerca desta página</translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4031179711345676612">Microfone permitido</translation>
+<translation id="4042597221652780603">Aproximada</translation>
 <translation id="4046123991198612571">Faixa seguinte</translation>
 <translation id="4077310749977440510">Normalmente, os sites leem a sua área de transferência para funcionalidades como manter a formatação do texto que copiou</translation>
+<translation id="4082080074595021446">As exceções para Websites específicos não são permitidas porque o dispositivo Android não tem RAM suficiente.</translation>
 <translation id="4149890623864272035">Quer mesmo eliminar todos os dados locais, incluindo os cookies, e repor todas as autorizações deste Website?</translation>
 <translation id="4149994727733219643">Vista simplificada de páginas Web</translation>
 <translation id="4151930093518524179">Zoom predefinido</translation>
@@ -298,12 +318,16 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="4336566011000459927">O Chrome vai limitar os cookies novamente hoje</translation>
 <translation id="4338831206024587507">Todos os sites em <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Não permitir que os sites enviem notificações</translation>
+<translation id="4341577178275615435">Para ativar ou desativar a navegação por cursor, utilize o atalho F7.</translation>
 <translation id="4402755511846832236">Impeça os sites de saberem quando está ativamente a utilizar este dispositivo.</translation>
+<translation id="4412683424767388419">Secção inferior de cores do Chrome aberta a meia altura</translation>
 <translation id="4412992751769744546">Permitir cookies de terceiros</translation>
 <translation id="4419929467120297501">O Chrome impede que os sites usem cookies de terceiros para monitorizar o seu perfil enquanto navega. Aceda às definições para <ph name="BEGIN_LINK" />gerir o acesso a cookies de terceiros<ph name="END_LINK" />.</translation>
+<translation id="4425416282877905577">Tipo de letra: Serif</translation>
 <translation id="443121186588148776">Porta de série</translation>
 <translation id="4434045419905280838">Pop-ups e redirecionamentos</translation>
 <translation id="443552056913301231">Esta ação vai eliminar todos os dados locais, incluindo os cookies, e repor todas as autorizações de <ph name="ORIGIN" /></translation>
+<translation id="4441527683895888777">Secção inferior de cores do Chrome aberta à altura total</translation>
 <translation id="4468959413250150279">Desative o som de um site específico.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookies}}</translation>
 <translation id="4478158430052450698">Facilite a personalização do zoom para diferentes sites</translation>
@@ -313,15 +337,16 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="4566417217121906555">Desativar microfone</translation>
 <translation id="4570913071927164677">Detalhes</translation>
 <translation id="4578289292431526768">Vamos lá</translation>
-<translation id="4598549027014564149">Quando estiver na Navegação anónima, os sites não podem usar cookies para ver a sua atividade de navegação em sites, mesmo em sites relacionados. A sua atividade de navegação não é usada para, por exemplo, personalizar anúncios. As funcionalidades em alguns sites podem não funcionar.</translation>
 <translation id="461356340001513807">Permite-lhe iniciar sessão em Websites com a conta que tem num serviço de identidade</translation>
 <translation id="4635969503923889910">Não permitir que os sites usem dispositivos NFC</translation>
 <translation id="4644713492825682049">Eliminar e repor</translation>
 <translation id="4645575059429386691">Gerido pelos teus pais</translation>
+<translation id="4652266463001779298">Não permitida</translation>
 <translation id="4663373278480897665">Câmara permitida</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>
 <translation id="4672315773691449562">Toque na app de navegador e, de seguida, toque no Chrome</translation>
 <translation id="4676059169848868271">Para permitir que a app <ph name="APP_NAME" /> use a monitorização das mãos, ative esta autorização nas <ph name="BEGIN_LINK" />definições do sistema<ph name="END_LINK" />.</translation>
+<translation id="4688045258817337666">Faça a gestão dos cartões</translation>
 <translation id="4751476147751820511">Sensores de movimento ou de luz</translation>
 <translation id="4755971844837804407">Quando esta opção está ativada, os sites podem mostrar-lhe qualquer anúncio. Quando esta opção está desativada, os sites não podem mostrar anúncios intrusivos ou enganadores.</translation>
 <translation id="4779083564647765204">Zoom</translation>
@@ -330,6 +355,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="4816495437032298535">Zoom guardado para sites</translation>
 <translation id="4836046166855586901">Perguntar quando um site pretender saber quando está a utilizar ativamente este dispositivo.</translation>
 <translation id="483914009762354899">Incluir todos os sites neste domínio</translation>
+<translation id="4852997963351138624">Cor de fundo (hexadecimal)</translation>
 <translation id="4882919381756638075">Normalmente, os sites utilizam o seu microfone para funcionalidades de comunicação como chat de vídeo.</translation>
 <translation id="4883854917563148705">As definições geridas não podem ser repostas</translation>
 <translation id="4887024562049524730">Perguntar antes de permitir que os sites utilizem os seus dados e dispositivo de realidade virtual (recomendado)</translation>
@@ -339,6 +365,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="4953688446973710931">Quando esta opção está ativada, os sites podem pedir para transferir automaticamente vários ficheiros. Quando esta opção está desativada, os sites não podem transferir automaticamente vários ficheiros.</translation>
 <translation id="4962975101802056554">Revogar todas as autorizações do dispositivo</translation>
 <translation id="4972737347717125191">Os sites podem solicitar a utilização de dados e dispositivos de realidade virtual</translation>
+<translation id="4973805849704516244">Secção inferior de cores do Chrome</translation>
 <translation id="497421865427891073">Avançar</translation>
 <translation id="4976702386844183910">Última visita a <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Saiba mais sobre o feed do Discover</translation>
@@ -360,6 +387,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="5116239826668864748">Pode usar o Chrome sempre que tocar em links de mensagens, documentos e outras apps</translation>
 <translation id="5123685120097942451">Separador de navegação anónima</translation>
 <translation id="512938610812707830">Secção inferior de coleções de temas de aspeto da página Novo separador aberta à altura total</translation>
+<translation id="5137460097045297858">Secção inferior do feed do Discover aberta a meia altura</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Descida do preço nos separadores abertos}other{Descidas de preços nos separadores abertos}}</translation>
 <translation id="5186036860380548585">Opção disponível junto à parte superior do ecrã</translation>
 <translation id="5197729504361054390">Os contactos que selecionar serão partilhados com <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
@@ -378,7 +406,6 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="5335288049665977812">Permitir que os sites executem JavaScript (recomendado)</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
 <translation id="5344522958567249764">Gerir privacidade dos anúncios</translation>
-<translation id="5371407439562620893">Otimização e segurança de JavaScript</translation>
 <translation id="5373874281522292782">Os seus grupos de separadores são guardados</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(mais 1)}other{(mais #)}}</translation>
 <translation id="5403592356182871684">Nomes</translation>
@@ -390,7 +417,6 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="5515432237048785579">Secção inferior do feed do Discover aberta à altura total</translation>
 <translation id="5516455585884385570">Abrir definições de notificação</translation>
 <translation id="5527111080432883924">Perguntar antes de autorizar os sites a ler texto e imagens da área de transferência (recomendado).</translation>
-<translation id="5545693483061321551">Os sites não podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios. As funcionalidades em alguns sites podem não funcionar.</translation>
 <translation id="5553374991681107062">Mais recentes</translation>
 <translation id="5555115555607204100">Não acelerar os sites com o motor V8 do Chrome, mas tornar o Chrome ligeiramente mais resistente a ataques</translation>
 <translation id="5556459405103347317">Recarregar</translation>
@@ -407,14 +433,16 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="5700761515355162635">Cookies de terceiros permitidos</translation>
 <translation id="5706552988683188916">Esta ação elimina os cookies e outros dados de sites de <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Os sites podem mostrar pedidos de início de sessão de serviços de identidade</translation>
-<translation id="5723967018671998714">Os cookies de terceiros estão bloqueados no Modo de navegação anónima</translation>
 <translation id="5740126560802162366">Os sites podem guardar dados no seu dispositivo</translation>
 <translation id="5743425052258407233">Aceda ao histórico em todos os seus dispositivos para que possa continuar facilmente a partir do ponto em que ficou</translation>
 <translation id="5749158352074143502">Continue com este separador</translation>
 <translation id="5750869797196646528">Monitorização das mãos</translation>
 <translation id="5753570386948603678">Eliminar do histórico</translation>
 <translation id="5771720122942595109">Bloqueio de <ph name="PERMISSION_1" />.</translation>
+<translation id="5792627621688759634">Deslizar rapidamente entre páginas com um touchpad</translation>
+<translation id="5801457289562671820">Recomendada pela sua organização</translation>
 <translation id="5804241973901381774">Permissões</translation>
+<translation id="5817042798620209981">Informações do site, caixa de diálogo</translation>
 <translation id="5822675474983796325">Secção inferior de Personalize a página Novo separador aberta à altura total</translation>
 <translation id="5833899990800318936">Não permitir que os sites usem JavaScript</translation>
 <translation id="583673505367439042">Os sites podem solicitar a edição de ficheiros ou de pastas no seu dispositivo</translation>
@@ -425,6 +453,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="5876056640971328065">Colocar vídeo em pausa</translation>
 <translation id="5877248419911025165">Reduzir todos os pedidos</translation>
 <translation id="5878945009165002849">Bloquear pedidos de início de sessão de serviços de identidade</translation>
+<translation id="588258955323874662">Ecrã inteiro</translation>
 <translation id="5884085660368669834">Preferência do site</translation>
 <translation id="5887687176710214216">Última visita ontem</translation>
 <translation id="5908617755156109052">Não permitir que os sites criem um mapa 3D do ambiente à sua volta nem monitorizem a posição da câmara</translation>
@@ -439,12 +468,14 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="5975083100439434680">Reduzir</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Ativar feed do Discover</translation>
+<translation id="6012967556075291653">Atalho afixado</translation>
 <translation id="6015775454662021376">Controle o acesso deste site ao seu dispositivo.</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6042308850641462728">Mais</translation>
 <translation id="6064125863973209585">Transferências concluídas</translation>
 <translation id="6071501408666570960">A sua sessão neste site pode ser terminada</translation>
 <translation id="6085954183010297841">Eliminar a autorização de edição de ficheiros? <ph name="FILE" /></translation>
+<translation id="6104860901391833523">Quando esta opção está ativada, os sites podem entrar automaticamente no modo ecrã no ecrã. Quando esta opção está desativada, os sites não podem entrar automaticamente no modo ecrã no ecrã.</translation>
 <translation id="6120483543004435978">Quando a opção está ativada, os sites podem pedir para saber quando está a usar ativamente o dispositivo. Quando esta opção está desativada, os sites não sabem quando está a usar ativamente o dispositivo.</translation>
 <translation id="615886654739818377">Não permitir que os sites façam a gestão de janelas em todos os seus ecrãs</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
@@ -459,6 +490,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="6207207788774442484">Eliminar dados e repor autorizações</translation>
 <translation id="6231752747840485235">Quer desinstalar a app "<ph name="APP_NAME" />"?</translation>
 <translation id="6234351944623978659">Toque em App de navegador &gt; Chrome</translation>
+<translation id="6260830281887654268">Secção inferior de coleções de temas de aspeto da página Novo separador aberta a meia altura</translation>
 <translation id="6262191102408817757">Com base no seu último separador</translation>
 <translation id="6262279340360821358">Bloqueio de <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" />.</translation>
 <translation id="6270391203985052864">Os sites podem pedir para enviar notificações.</translation>
@@ -490,8 +522,11 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Conteúdo protegido</translation>
 <translation id="662080504995468778">Ficar</translation>
+<translation id="6630443592285535486">Introduza o código hexadecimal aqui</translation>
 <translation id="6635327442719709864">Quando esta opção está ativada, os sites podem pedir para usar portas de série. Quando esta opção está desativada, os sites não podem usar portas de série.</translation>
+<translation id="6669390930482049506">Notificar-me</translation>
 <translation id="6678072580827808850">Rever verificação de segurança</translation>
+<translation id="6682057173375416470">Receba artigos sugeridos na página Novo separador</translation>
 <translation id="6683865262523156564">Este site está num grupo que pode ver a sua atividade. O grupo é definido por <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Fotos do perfil</translation>
 <translation id="6697925417670533197">Transferências ativas</translation>
@@ -515,9 +550,11 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980861169612950611">Eliminar dados do site? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Acessibilidade</translation>
+<translation id="6991142177939282156">Permitida • A usar a localização aproximada</translation>
 <translation id="6992289844737586249">Perguntar antes de permitir que os sites utilizem o microfone (recomendado)</translation>
 <translation id="7000754031042624318">Desativada nas Definições do Android</translation>
 <translation id="702275896380648118">Este site determina o conteúdo de que gosta e, em seguida, sugere anúncios para outros sites. Este site também obtém os seus tópicos de anúncios do Chrome para lhe mostrar anúncios mais relevantes.</translation>
+<translation id="7036823721811529709">Ouvir em segundo plano</translation>
 <translation id="7044081119134178347">Câmara permitida desta vez</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7055552182600664515">Para reproduzir conteúdo protegido por direitos de autor, os sites podem ter de usar um serviço de proteção de conteúdo. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -541,16 +578,21 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="728412880473384942">Os sites são mais rápidos, mas menos seguros</translation>
 <translation id="7366415735885268578">Adicionar um site</translation>
 <translation id="7368695150573390554">Todos os dados offline são eliminados</translation>
+<translation id="7369678931043226462">Secção inferior de Personalize a página Novo separador aberta a meia altura</translation>
 <translation id="7383715096023715447">Definições do <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Verificação de segurança</translation>
 <translation id="7406113532070524618">Esta definição funciona sem saber a sua identidade nem permitir que os sites vejam o seu histórico de navegação, embora os sites possam partilhar uma pequena quantidade de informações como parte da validação</translation>
 <translation id="7409735910987429903">Os sites podem enviar pop-ups para mostrar anúncios ou utilizar redirecionamentos para levar o utilizador a Websites que pode não querer visitar.</translation>
+<translation id="7412160840120117304">Cor principal (hexadecimal)</translation>
+<translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{Zoom}other{Zoom: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}}</translation>
 <translation id="7423098979219808738">Perguntar primeiro</translation>
 <translation id="7423538860840206698">Leitura da área de transferência bloqueada</translation>
 <translation id="7425915948813553151">Tema escuro para sites</translation>
+<translation id="746412105358554870">Otimização e segurança de JavaScript</translation>
 <translation id="7478658909253570368">Não permitir que os sites estabeleçam ligação a portas de série</translation>
 <translation id="7488573225650545859">Ocultar Ver separadores na lista de apps</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">Controlo de deslize do tamanho do tipo de letra</translation>
 <translation id="7547989957535180761">Quando esta opção está ativada, os sites podem mostrar pedidos de início de sessão. Quando esta opção está desativada, os sites não podem mostrar pedidos de início de sessão.</translation>
 <translation id="7553211568594248088">Sair da pesquisa do hub</translation>
 <translation id="7554752735887601236">Um site está a utilizar o seu microfone.</translation>
@@ -576,6 +618,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="7804248752222191302">Um site está a utilizar a sua câmara.</translation>
 <translation id="7805832099057502789">Secção inferior de aspeto da página Novo separador aberta à altura total</translation>
 <translation id="7807060072011926525">Disponibilizados pela Google</translation>
+<translation id="7809029041571842593">Secção inferior dos cartões da página Novo separador aberta a meia altura</translation>
 <translation id="7815680994978050279">Transferência perigosa bloqueada</translation>
 <translation id="7835852323729233924">Multimédia em reprodução</translation>
 <translation id="783819812427904514">Reativar o som do vídeo</translation>
@@ -583,7 +626,6 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="7881140103901777395">Na maioria dos sites, o Chrome limita a utilização de cookies de terceiros. Porém, os cookies de terceiros são permitidos neste site porque este depende deles para oferecer serviços básicos.\n\nAceda às definições para <ph name="BEGIN_LINK" />gerir o acesso a cookies de terceiros<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Permita a reprodução de som de um site específico.</translation>
 <translation id="7891547341794213004">Ocultar cartão Continuar com este separador</translation>
-<translation id="789180354981963912">Bloqueie cookies de terceiros na Navegação anónima:</translation>
 <translation id="789722939441020330">Não permitir que os sites transfiram automaticamente vários ficheiros</translation>
 <translation id="7940722705963108451">Lembrar-me</translation>
 <translation id="7948081750384205628">Saber mais sobre <ph name="SETTING_TITLE" /></translation>
@@ -592,6 +634,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="7990211076305263060">Quando esta opção está ativada, os sites podem pedir para usar o microfone. Quando esta opção está desativada, os sites não podem usar o microfone.</translation>
 <translation id="8007176423574883786">Desativada para este dispositivo</translation>
 <translation id="802154636333426148">Falha ao transferir</translation>
+<translation id="8033047164036749181">Subscreva as notificações deste site</translation>
 <translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8051193500142930381">As funcionalidades que precisam de uma câmara não funcionam</translation>
 <translation id="8056330801132235235">Predefinição do Chrome</translation>
@@ -607,6 +650,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="8117244575099414087">Quando esta opção está ativada, os sites podem usar os sensores do dispositivo. Quando esta opção está desativada, os sites não podem usar sensores.</translation>
 <translation id="813082847718468539">Ver informações do Website</translation>
 <translation id="8131740175452115882">Confirmar</translation>
+<translation id="8163152278172770963">Não permitir que os sites entrem automaticamente no modo ecrã no ecrã</translation>
 <translation id="8168435359814927499">Conteúdo</translation>
 <translation id="818487310457576362">Arraste a partir da parte lateral do ecrã para sair do modo de ecrã inteiro.</translation>
 <translation id="8186479265534291036">O site não funciona? Cookies de terceiros bloqueados</translation>
@@ -618,6 +662,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8284326494547611709">Legendas</translation>
 <translation id="8300705686683892304">Geridos por aplicação</translation>
+<translation id="8301363963630676147">Permitida desta vez • A usar a localização aproximada</translation>
 <translation id="8315509175050791576">A partilhar um separador</translation>
 <translation id="8324158725704657629">Não perguntar novamente</translation>
 <translation id="8362795839483915693">Pode aumentar ou diminuir o zoom nos sites que visitar</translation>
@@ -633,12 +678,14 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="8441146129660941386">Procurar para trás</translation>
 <translation id="8444433999583714703">Para permitir que a app <ph name="APP_NAME" /> aceda à sua localização, ative também a localização nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revogar autorização do dispositivo</translation>
+<translation id="8467359479529706065">Secção inferior de aspeto da página Novo separador aberta a meia altura</translation>
 <translation id="8471525937465764768">Normalmente, os sites estabelecem ligação a dispositivos USB para funcionalidades como imprimir um documento ou guardar num dispositivo de armazenamento.</translation>
 <translation id="8473055640493819707">A app "<ph name="APP_NAME" />" está desatualizada. Reinstale-a.</translation>
 <translation id="847433688444405067">Navegue entre dispositivos</translation>
 <translation id="8487700953926739672">Disponível offline</translation>
 <translation id="848952951823693243">Peça sempre o site para dispositivos móveis</translation>
 <translation id="8492822722330266509">Os sites podem enviar pop-ups e utilizar redirecionamentos</translation>
+<translation id="8493548450030356203">Janela de zoom do pop-up</translation>
 <translation id="8499083585497694743">Reativar microfone</translation>
 <translation id="8514955299594277296">Não permitir que os sites guardem dados no seu dispositivo (não recomendado)</translation>
 <translation id="851751545965956758">Impedir a ligação de sites a dispositivos</translation>
@@ -648,7 +695,6 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="8549127125482561383">Como mostrar pedidos</translation>
 <translation id="8558480467877843976">Agora, pode usar o Chrome sempre que navegar ou tocar em links de mensagens, documentos e outras apps.</translation>
 <translation id="857943718398505171">Permitido (recomendado)</translation>
-<translation id="8580511488901768832">secção inferior de Os meus atalhos aberta à altura total</translation>
 <translation id="8593422116412089302">Quando esta opção está ativada, os sites podem pedir para usar informações que guardaram sobre si. Quando esta opção está desativada, os sites não lhe podem pedir para usar informações que guardaram sobre si.</translation>
 <translation id="8609465669617005112">Mover para cima</translation>
 <translation id="8617611086246832542">Quando esta opção está ativada, é apresentada a vista de computador dos Websites. Quando esta opção está desativada, é apresentada a vista de dispositivo móvel dos Websites.</translation>
@@ -666,6 +712,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="8730621377337864115">Concluído</translation>
 <translation id="8737426583868847403">Os sites para os quais guarda um nível de zoom personalizado aparecem aqui</translation>
 <translation id="8751914237388039244">Selecionar uma imagem</translation>
+<translation id="8775741625735357092">Pode ativar a barra de marcadores em Definições &gt; Aspeto</translation>
 <translation id="8800034312320686233">O site não funciona?</translation>
 <translation id="8801436777607969138">Bloqueie JavaScript num site específico.</translation>
 <translation id="8801657293260363985">O V8 é o motor JavaScript e WebAssembly do Chrome usado para melhorar o desempenho do site</translation>
@@ -681,7 +728,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="8926389886865778422">Não voltar a perguntar</translation>
 <translation id="8926666909099850184">O NFC está desativado para este dispositivo. Ative-o nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Impedir os sites de verem e alterarem informações em dispositivos NFC</translation>
-<translation id="8944485226638699751">Conteúdo visível por um grupo limitado de pessoas ou um grupo</translation>
+<translation id="8944485226638699751">Limitado</translation>
 <translation id="895054485242522631">Os sites podem utilizar sensores de movimentos</translation>
 <translation id="8959122750345127698">A navegação está inacessível: <ph name="URL" /></translation>
 <translation id="8990043154272859344">A sua sessão vai ser terminada em todos os sites</translation>
@@ -692,12 +739,14 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="9019902583201351841">Gerido pelos teus pais</translation>
 <translation id="902236149563113779">Normalmente, os sites monitorizam a posição da câmara para funcionalidades de realidade aumentada, como jogos ou direções de avisos.</translation>
 <translation id="9039697262778250930">A sua sessão nestes sites pode ser terminada</translation>
+<translation id="9065203028668620118">Editar</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Eliminar cookies?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" />.}}</translation>
 <translation id="913657688200966289">Ative as autorizações para a app <ph name="APP_NAME" /> nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Acesso às notificações permitido</translation>
 <translation id="9138217887606523162">O zoom atual é de <ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="915112772806845021">Os sites usam esta funcionalidade para entrar automaticamente no modo ecrã no ecrã. Isto permite-lhe continuar a ver um vídeo enquanto liberta o ecrã para outras tarefas.</translation>
 <translation id="9156722768168878035">Permita que o Chrome mostre os seus separadores recentes na lista de apps e nos resultados da pesquisa do seu dispositivo. Pode desativar esta opção em qualquer altura nas definições do Chrome.</translation>
 <translation id="9162462602695099906">Esta página é perigosa</translation>
 <translation id="9182556968660520230">Não permitir que os sites reproduzam conteúdo protegido</translation>

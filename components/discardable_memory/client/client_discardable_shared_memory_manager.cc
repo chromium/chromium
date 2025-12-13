@@ -191,7 +191,12 @@ ClientDiscardableSharedMemoryManager::ClientDiscardableSharedMemoryManager(
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       heap_(std::make_unique<DiscardableSharedMemoryHeap>()),
       io_task_runner_(std::move(io_task_runner)),
-      manager_mojo_(nullptr) {
+      manager_mojo_(nullptr),
+      memory_pressure_listener_registration_(
+          FROM_HERE,
+          base::MemoryPressureListenerTag::
+              kClientDiscardableSharedMemoryManager,
+          this) {
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "ClientDiscardableSharedMemoryManager",
       base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -229,6 +234,13 @@ void ClientDiscardableSharedMemoryManager::OnForegrounded() {
 void ClientDiscardableSharedMemoryManager::OnBackgrounded() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   foregrounded_ = false;
+}
+
+void ClientDiscardableSharedMemoryManager::OnMemoryPressure(
+    base::MemoryPressureLevel level) {
+  if (level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    ReleaseFreeMemory();
+  }
 }
 
 std::unique_ptr<base::DiscardableMemory>

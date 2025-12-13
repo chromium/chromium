@@ -28,6 +28,7 @@ owners:
 - rsorokin@chromium.org
 schema:
   type: boolean
+sensitive: true
 supported_on:
 - chrome.*:8-
 - chrome_os:11-

@@ -31,13 +31,17 @@ static_library("extensions") {
 
   deps = [
     ":resources",
-    "api:api",
+    "api",
     "api:extensions_features",
     "//base",
     "//chrome/common:url_constants",
     "//chromeos/constants",
     "//extensions/common",
   ]
+
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+  }
 
   if (is_chromeos) {
     deps += [ "//ash/constants" ]

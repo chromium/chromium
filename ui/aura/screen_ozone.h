@@ -57,6 +57,7 @@ class AURA_EXPORT ScreenOzone : public display::Screen {
       const gfx::GpuExtraInfo& gpu_extra_info) override;
   std::optional<float> GetPreferredScaleFactorForWindow(
       gfx::NativeWindow window) const override;
+  bool IsHeadless() const override;
 
   // Returns the NativeWindow associated with the AcceleratedWidget.
   virtual gfx::NativeWindow GetNativeWindowFromAcceleratedWidget(

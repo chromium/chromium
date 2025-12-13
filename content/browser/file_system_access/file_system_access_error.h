@@ -25,7 +25,7 @@ blink::mojom::FileSystemAccessErrorPtr FromFileError(
 
 // Wraps a FileSystemAccessStatus in a FileSystemAccessError, optionally with a
 // custom error message.
-blink::mojom::FileSystemAccessErrorPtr FromStatus(
+CONTENT_EXPORT blink::mojom::FileSystemAccessErrorPtr FromStatus(
     blink::mojom::FileSystemAccessStatus status,
     std::string_view message = "");
 

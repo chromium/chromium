@@ -71,7 +71,6 @@
               resolve(list.getEntries()[0].element.innerHTML);
             }).observe({
               type: 'interaction-contentful-paint',
-              includeSoftNavigationObservations: true,
               buffered: true
             });
           })
@@ -92,8 +91,9 @@
   // first, but the LCP entry is serialized first. Both use the same
   // presentation time value to mark the timestamp, explicitly.
   const supportedTraceEventNames = [
-    'SoftNavigationHeuristics::EmitSoftNavigationEntry',
-    'largestContentfulPaint::Candidate'
+    'SoftNavigationStart',
+    'largestContentfulPaint::Candidate',
+    'largestContentfulPaint::CandidateForSoftNavigation',
   ];
 
   let filteredEvents =
@@ -148,12 +148,13 @@
   const ids = new IdMapper();
   const softNavs = [];
   const lcpCandidates = [];
+  const lcpCandidatesForSoftNav = []
   for (const event of filteredEvents) {
-    if (event.name === 'SoftNavigationHeuristics::EmitSoftNavigationEntry') {
+    if (event.name === 'SoftNavigationStart') {
       testRunner.log('-> SoftNavigation event');
       testRunner.log(
-          '   interactionTimestamp: ' +
-          timestamps.map(event.args.context.interactionTimestamp));
+        '   timeOrigin: ' +
+        timestamps.map(event.args.context.timeOrigin));
       testRunner.log('   ts: ' + timestamps.map(event.ts));
       testRunner.log(
           '   firstContentfulPaint: ' +
@@ -162,9 +163,16 @@
       testRunner.log(
           '   performanceTimelineNavigationId: ' +
           ids.map(event.args.context.performanceTimelineNavigationId));
-      testRunner.log('   initialURL: ' + event.args.context.initialURL)
-      testRunner.log('   mostRecentURL: ' + event.args.context.mostRecentURL)
+      testRunner.log('   URL: ' + event.args.context.URL)
       softNavs.push(event);
+    } else if (event.name === 'largestContentfulPaint::CandidateForSoftNavigation') {
+      testRunner.log('-> LCP candidate for soft navigation event');
+      testRunner.log('   ts: ' + timestamps.map(event.ts));
+      testRunner.log('   frame: ' + ids.map(event.args.frame));
+      testRunner.log(
+          '   performanceTimelineNavigationId: ' +
+          ids.map(event.args.data.performanceTimelineNavigationId));
+      lcpCandidatesForSoftNav.push(event);
     } else if (event.name === 'largestContentfulPaint::Candidate') {
       testRunner.log('-> LCP candidate event');
       testRunner.log('   ts: ' + timestamps.map(event.ts));
@@ -181,6 +189,9 @@
 
   testRunner.log('\nLCP candidate event shape:');
   tracingHelper.logEventShape(lcpCandidates[0]);
+
+  testRunner.log('\nLCP candidate for soft navigation event shape:');
+  tracingHelper.logEventShape(lcpCandidatesForSoftNav[0]);
 
   testRunner.completeTest();
 })

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+  <dimen name="ntp_customization_theme_collection_list_item_padding_horizontal">12dp</dimen>
+  <dimen name="ntp_customization_theme_collections_recycle_view_padding_horizontal">12dp</dimen>
+  <dimen name="ntp_customization_theme_collection_list_item_padding_bottom">24dp</dimen>
+</resources>

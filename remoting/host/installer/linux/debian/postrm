@@ -6,9 +6,12 @@
 
 set -e
 
-if [ "$1" = "purge" ]; then
-  delgroup --quiet chrome-remote-desktop > /dev/null || true
+# Only do complete clean-up on purge.
+if [ "$1" != "purge" ]; then
+  exit 0
 fi
+
+delgroup --quiet chrome-remote-desktop > /dev/null || true
 
 APT_CONFIG="`which apt-config 2> /dev/null`"
 

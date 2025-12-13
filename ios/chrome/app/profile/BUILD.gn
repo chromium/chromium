@@ -41,13 +41,16 @@ source_set("profile_controller") {
     ":first_run_profile_agent",
     ":identity_confirmation_profile_agent",
     ":multi_profile_forced_migration_profile_agent",
+    ":otr_profile_destroyer_profile_agent",
     ":post_restore_profile_agent",
     ":profile",
     ":search_engine_choice_profile_agent",
     ":session_metrics_profile_agent",
+    ":synced_set_up_profile_agent",
     ":welcome_back_profile_agent",
     "//base",
     "//components/content_settings/core/browser",
+    "//components/desktop_to_mobile_promos",
     "//components/feature_engagement/public",
     "//components/language/core/browser",
     "//ios/chrome/app",
@@ -60,6 +63,7 @@ source_set("profile_controller") {
     "//ios/chrome/browser/collaboration/model:features",
     "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/credential_provider/model:buildflags",
+    "//ios/chrome/browser/cross_platform_promos/model",
     "//ios/chrome/browser/enterprise/model/idle",
     "//ios/chrome/browser/external_files/model",
     "//ios/chrome/browser/feature_engagement/model",
@@ -74,17 +78,18 @@ source_set("profile_controller") {
     "//ios/chrome/browser/sessions/model:session_constants",
     "//ios/chrome/browser/sessions/model:session_restoration_service",
     "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
-    "//ios/chrome/browser/share_extension/model",
     "//ios/chrome/browser/share_kit/model:factory",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:features",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/snapshots/model:constants",
     "//ios/chrome/browser/translate/model",
-    "//ios/chrome/browser/web_state_list/model:session_metrics",
     "//ios/chrome/browser/web_state_list/model/web_usage_enabler",
+    "//ios/chrome/browser/welcome_back/model:features",
     "//ios/components/cookie_util",
     "//ios/public/provider/chrome/browser/raccoon:raccoon_api",
     "//ios/web/public/thread",
@@ -121,6 +126,7 @@ source_set("application_storage_metrics") {
     "//components/optimization_guide/core:features",
     "//ios/chrome/browser/sessions/model:session_constants",
     "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/snapshots/model:constants",
   ]
 }
 
@@ -205,7 +211,7 @@ source_set("first_run_profile_agent") {
     "//ios/chrome/browser/first_run/ui_bundled",
     "//ios/chrome/browser/first_run/ui_bundled:first_run_provider",
     "//ios/chrome/browser/first_run/ui_bundled/guided_tour",
-    "//ios/chrome/browser/safari_data_import/coordinator",
+    "//ios/chrome/browser/safari_data_import/public",
     "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
@@ -215,6 +221,8 @@ source_set("first_run_profile_agent") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:signin_util",
+    "//ios/chrome/browser/synced_set_up/public",
+    "//ios/chrome/browser/synced_set_up/utils",
   ]
 }
 
@@ -230,8 +238,8 @@ source_set("search_engine_choice_profile_agent") {
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/device_orientation/ui_bundled",
     "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
+    "//ios/chrome/browser/search_engine_choice/coordinator",
     "//ios/chrome/browser/search_engine_choice/model",
-    "//ios/chrome/browser/search_engine_choice/ui_bundled",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
@@ -250,6 +258,8 @@ source_set("session_metrics_profile_agent") {
     ":profile",
     "//base",
     "//ios/chrome/browser/metrics/model",
+    "//ios/chrome/browser/metrics/model:tab_usage_recorder_service",
+    "//ios/chrome/browser/metrics/model:tab_usage_recorder_service_factory",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
   ]
 }
@@ -278,12 +288,11 @@ source_set("identity_confirmation_profile_agent") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/ui/util:snackbar_util",
-    "//ios/chrome/browser/shared/ui/util/identity_snackbar",
+    "//ios/chrome/browser/shared/public/snackbar",
+    "//ios/chrome/browser/shared/ui/util/identity_snackbar:utils",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
-    "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
 }
@@ -304,6 +313,7 @@ source_set("multi_profile_forced_migration_profile_agent") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:features",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:authentication_service",
@@ -321,24 +331,70 @@ source_set("welcome_back_profile_agent") {
   public_deps = [ ":profile" ]
   deps = [
     "//base",
+    "//components/password_manager/core/browser",
     "//components/previous_session_info",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
-    "//components/signin/public/identity_manager:identity_manager",
-    "//ios/chrome/app/profile:profile",
-    "//ios/chrome/app/profile:profile",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/first_run/public:best_features_item",
     "//ios/chrome/browser/first_run/ui_bundled:features",
-    "//ios/chrome/browser/first_run/ui_bundled/welcome_back/model",
-    "//ios/chrome/browser/first_run/ui_bundled/welcome_back/model",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/chrome/browser/promos_manager/model:factory",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/welcome_back/model",
+    "//ios/chrome/browser/welcome_back/model:features",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("synced_set_up_profile_agent") {
+  sources = [
+    "synced_set_up_profile_agent.h",
+    "synced_set_up_profile_agent.mm",
+  ]
+  public_deps = [ ":profile" ]
+  deps = [
+    "//base",
+    "//components/sync_preferences/cross_device_pref_tracker:timestamped_pref_value",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/application_delegate:startup_information",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_activation_level",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/sync/model/prefs/cross_device_pref_tracker:cross_device_pref_tracker_factory",
+    "//ios/chrome/browser/sync/model/prefs/cross_device_pref_tracker:observer_bridge",
+    "//ios/chrome/browser/synced_set_up/public",
+    "//ios/chrome/browser/synced_set_up/utils",
+  ]
+}
+
+source_set("otr_profile_destroyer_profile_agent") {
+  sources = [
+    "otr_profile_destroyer_profile_agent.h",
+    "otr_profile_destroyer_profile_agent.mm",
+  ]
+  deps = [
+    ":profile",
+    "//base",
+    "//ios/chrome/browser/browsing_data/model",
+    "//ios/chrome/browser/browsing_data/model:model_remove_mask",
+    "//ios/chrome/browser/crash_report/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header_for_otr_profile_deletion",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:incognito_session_tracker",
+    "//ios/chrome/browser/web_state_list/model/web_usage_enabler",
+    "//ios/web/public/thread",
+  ]
 }
 
 source_set("test_utils") {
@@ -399,6 +455,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:fake_system_identity_manager",
     "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/welcome_back/model:features",
     "//ios/chrome/test:test_support",
     "//ios/web/public/security",
     "//ios/web/public/session",

@@ -4,6 +4,7 @@
 
 #include "components/viz/common/resources/shared_image_format_utils.h"
 
+#include <limits>
 #include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"

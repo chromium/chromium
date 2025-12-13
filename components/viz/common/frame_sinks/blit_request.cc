@@ -31,6 +31,8 @@ std::string BlendBitmap::ToString() const {
                             destination_region_.ToString().c_str());
 }
 
+BlitRequest::BlitRequest() = default;
+
 BlitRequest::BlitRequest(const gfx::Point& destination_region_offset,
                          LetterboxingBehavior letterboxing_behavior,
                          scoped_refptr<gpu::ClientSharedImage> shared_image,

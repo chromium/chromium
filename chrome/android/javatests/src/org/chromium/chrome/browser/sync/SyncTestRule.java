@@ -36,10 +36,10 @@ import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -211,14 +211,14 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
      * Adds an account of default account name to AccountManagerFacade and waits for the seeding.
      */
     public CoreAccountInfo addTestAccount() {
-        return addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        return addAccount(TestAccounts.ACCOUNT1);
     }
 
     /** Adds an account of given account name to AccountManagerFacade and waits for the seeding. */
-    public CoreAccountInfo addAccount(String accountName) {
-        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccount(accountName);
+    public CoreAccountInfo addAccount(AccountInfo account) {
+        mSigninTestRule.addAccount(account);
         Assert.assertFalse(SyncTestUtil.isSyncFeatureEnabled());
-        return coreAccountInfo;
+        return account;
     }
 
     /**

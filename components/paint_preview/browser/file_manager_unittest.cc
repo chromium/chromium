@@ -15,6 +15,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
+#include "base/test/bind.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
 #include "components/paint_preview/common/test_utils.h"
@@ -22,6 +24,8 @@
 #include "url/gurl.h"
 
 namespace paint_preview {
+
+using base::test::EqualsProto;
 
 class FileManagerTest : public ::testing::Test {
  public:
@@ -81,36 +85,31 @@ TEST_F(FileManagerTest, TestCreateOrGetDirectory) {
   auto key = manager->CreateKey(1U);
   base::RunLoop loop;
   manager->GetTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::OnceClosure quit, scoped_refptr<FileManager> manager,
-             const DirectoryKey& key) {
-            // Create a new directory.
-            base::FilePath directory = manager->CreateOrGetDirectory(key, false)
-                                           .value_or(base::FilePath());
-            EXPECT_FALSE(directory.empty());
-            base::FilePath test_file = directory.AppendASCII("test");
-            std::string test_str = "Hello World!";
-            EXPECT_TRUE(base::WriteFile(test_file, test_str));
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        // Create a new directory.
+        base::FilePath directory = manager->CreateOrGetDirectory(key, false)
+                                       .value_or(base::FilePath());
+        EXPECT_FALSE(directory.empty());
+        base::FilePath test_file = directory.AppendASCII("test");
+        std::string test_str = "Hello World!";
+        EXPECT_TRUE(base::WriteFile(test_file, test_str));
 
-            // Open an existing directory and don't clear.
-            base::FilePath existing_directory =
-                manager->CreateOrGetDirectory(key, false)
-                    .value_or(base::FilePath());
-            EXPECT_FALSE(directory.empty());
-            EXPECT_EQ(existing_directory, directory);
-            EXPECT_TRUE(base::PathExists(test_file));
+        // Open an existing directory and don't clear.
+        base::FilePath existing_directory =
+            manager->CreateOrGetDirectory(key, false)
+                .value_or(base::FilePath());
+        EXPECT_FALSE(directory.empty());
+        EXPECT_EQ(existing_directory, directory);
+        EXPECT_TRUE(base::PathExists(test_file));
 
-            // Open an existing directory and clear.
-            base::FilePath cleared_existing_directory =
-                manager->CreateOrGetDirectory(key, true).value_or(
-                    base::FilePath());
-            EXPECT_FALSE(directory.empty());
-            EXPECT_EQ(cleared_existing_directory, directory);
-            EXPECT_FALSE(base::PathExists(test_file));
-            std::move(quit).Run();
-          },
-          loop.QuitClosure(), manager, key));
+        // Open an existing directory and clear.
+        base::FilePath cleared_existing_directory =
+            manager->CreateOrGetDirectory(key, true).value_or(base::FilePath());
+        EXPECT_FALSE(directory.empty());
+        EXPECT_EQ(cleared_existing_directory, directory);
+        EXPECT_FALSE(base::PathExists(test_file));
+        loop.Quit();
+      }));
   loop.Run();
 }
 
@@ -173,36 +172,33 @@ TEST_F(FileManagerTest, TestDeleteArtifacts) {
       base::MakeRefCounted<FileManager>(Dir(), SecondaryTaskRunner());
 
   manager->GetTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](scoped_refptr<FileManager> manager) {
-            auto cr_key = manager->CreateKey(GURL("https://www.chromium.org"));
-            base::FilePath cr_directory =
-                manager->CreateOrGetDirectory(cr_key, true)
-                    .value_or(base::FilePath());
-            EXPECT_FALSE(cr_directory.empty());
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        auto cr_key = manager->CreateKey(GURL("https://www.chromium.org"));
+        base::FilePath cr_directory =
+            manager->CreateOrGetDirectory(cr_key, true)
+                .value_or(base::FilePath());
+        EXPECT_FALSE(cr_directory.empty());
 
-            auto w3_key = manager->CreateKey(GURL("https://www.w3.org"));
-            base::FilePath w3_directory =
-                manager->CreateOrGetDirectory(w3_key, true)
-                    .value_or(base::FilePath());
-            EXPECT_FALSE(w3_directory.empty());
+        auto w3_key = manager->CreateKey(GURL("https://www.w3.org"));
+        base::FilePath w3_directory =
+            manager->CreateOrGetDirectory(w3_key, true)
+                .value_or(base::FilePath());
+        EXPECT_FALSE(w3_directory.empty());
 
-            manager->DeleteArtifactSet(cr_key);
-            EXPECT_FALSE(base::PathExists(cr_directory));
-            EXPECT_TRUE(base::PathExists(w3_directory));
+        manager->DeleteArtifactSet(cr_key);
+        EXPECT_FALSE(base::PathExists(cr_directory));
+        EXPECT_TRUE(base::PathExists(w3_directory));
 
-            base::FilePath new_cr_directory =
-                manager->CreateOrGetDirectory(cr_key, true)
-                    .value_or(base::FilePath());
-            EXPECT_EQ(cr_directory, new_cr_directory);
+        base::FilePath new_cr_directory =
+            manager->CreateOrGetDirectory(cr_key, true)
+                .value_or(base::FilePath());
+        EXPECT_EQ(cr_directory, new_cr_directory);
 
-            manager->DeleteArtifactSets(
-                std::vector<DirectoryKey>({cr_key, w3_key}));
-            EXPECT_FALSE(base::PathExists(new_cr_directory));
-            EXPECT_FALSE(base::PathExists(w3_directory));
-          },
-          manager));
+        manager->DeleteArtifactSets(
+            std::vector<DirectoryKey>({cr_key, w3_key}));
+        EXPECT_FALSE(base::PathExists(new_cr_directory));
+        EXPECT_FALSE(base::PathExists(w3_directory));
+      }));
   RunUntilIdle();
 }
 

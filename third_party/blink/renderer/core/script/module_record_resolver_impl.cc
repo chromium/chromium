@@ -22,7 +22,7 @@ void ModuleRecordResolverImpl::RegisterModuleScript(
 
   DVLOG(1) << "ModuleRecordResolverImpl::RegisterModuleScript(url="
            << module_script->BaseUrl().GetString()
-           << ", hash=" << WTF::GetHash(record) << ")";
+           << ", hash=" << GetHash(record) << ")";
 
   auto result = record_to_module_script_map_.Set(record, module_script);
 
@@ -40,7 +40,7 @@ void ModuleRecordResolverImpl::UnregisterModuleScript(
   BoxedV8Module* record = MakeGarbageCollected<BoxedV8Module>(isolate, module);
   DVLOG(1) << "ModuleRecordResolverImpl::UnregisterModuleScript(url="
            << module_script->BaseUrl().GetString()
-           << ", hash=" << WTF::GetHash(record) << ")";
+           << ", hash=" << GetHash(record) << ")";
 
   record_to_module_script_map_.erase(record);
 }
@@ -63,8 +63,7 @@ ModuleScript* ModuleRecordResolverImpl::ResolveImpl(
   v8::Isolate* isolate = modulator_->GetScriptState()->GetIsolate();
   DVLOG(1) << "ModuleRecordResolverImpl::ResolveImpl(specifier=\""
            << module_request.specifier << ", referrer.hash="
-           << WTF::GetHash(
-                  MakeGarbageCollected<BoxedV8Module>(isolate, referrer))
+           << GetHash(MakeGarbageCollected<BoxedV8Module>(isolate, referrer))
            << ")";
 
   // <spec step="3">If referencingScriptOrModule is not null, then:</spec>
@@ -117,8 +116,8 @@ v8::Local<v8::Module> ModuleRecordResolverImpl::Resolve(
   // <spec step="9">Assert: resolved module script's record is not null.</spec>
   DCHECK(module_script);
   if (module_script->IsWasmModuleRecord()) {
-    exception_state.ThrowSyntaxError(module_request.specifier +
-                                     kWasmImportInEvaluationPhaseError);
+    exception_state.ThrowSyntaxError(
+        StrCat({module_request.specifier, kWasmImportInEvaluationPhaseError}));
     return v8::Local<v8::Module>();
   }
   v8::Local<v8::Module> record = module_script->V8Module();
@@ -140,8 +139,8 @@ v8::Local<v8::WasmModuleObject> ModuleRecordResolverImpl::ResolveSource(
   // <spec step="9">Assert: resolved module script's record is not null.</spec>
   DCHECK(module_script);
   if (!module_script->IsWasmModuleRecord()) {
-    exception_state.ThrowSyntaxError(module_request.specifier +
-                                     kNonWasmImportInSourcePhaseError);
+    exception_state.ThrowSyntaxError(
+        StrCat({module_request.specifier, kNonWasmImportInSourcePhaseError}));
     return v8::Local<v8::WasmModuleObject>();
   }
   v8::Local<v8::WasmModuleObject> module_source = module_script->WasmModule();

@@ -1,0 +1,116 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  /* Ensure primary text color is inherited by default */
+  color: var(--cr-primary-text-color);
+
+  /* Accent background for primary chips */
+  --chip-primary-background: var(--google-blue-50);
+  /* Accent border for primary chips */
+  --chip-primary-border: var(--google-blue-100);
+  /* Neutral, subtle border for filter bar, input fields, and buttons */
+  --filter-border-color: var(--google-grey-300);
+  /* Text color for primary chips */
+  --chip-text-color: var(--cr-link-color);
+  /* Text color for strikethrough chips and secondary text elements */
+  --chip-strikethrough-text: var(--cr-secondary-text-color);
+  /* Background for strikethrough chips */
+  --chip-strikethrough-background: var(--google-grey-100);
+  /* Border for strikethrough chips */
+  --chip-strikethrough-border: var(--google-grey-300);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --chip-primary-background: var(--google-blue-300);
+    --chip-primary-border: var(--google-blue-300);
+    --filter-border-color: var(--google-grey-700);
+    --chip-text-color: buttontext;
+    --chip-strikethrough-background: var(--google-grey-900);
+    --chip-strikethrough-text: var(--cr-secondary-text-color);
+    --chip-strikethrough-border: var(--google-grey-800);
+  }
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.filter-bar {
+  border: 1px solid var(--filter-border-color);
+  border-radius: 24px;
+  padding: 4px 12px;
+  gap: 4px;
+}
+
+.chip cr-icon-button {
+  padding: 2px;
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-size: 20px;
+  --cr-icon-button-stroke-color: currentColor;
+  --cr-icon-button-fill-color: currentColor;
+}
+
+.chip-wrapper {
+  position: relative;
+}
+
+#add-filter-button {
+  font-family: inherit;
+  font-size: inherit;
+  padding: 4px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--filter-border-color);
+  cursor: pointer;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--cr-card-background-color);
+  border-color: var(--filter-border-color);
+  color: var(--cr-secondary-text-color);
+  height: 32px;
+  box-sizing: border-box;
+}
+
+#add-filter-button:hover {
+  background-color: var(--cr-hover-background-color);
+}
+
+.filter-icon {
+  fill: var(--cr-secondary-text-color);
+  flex-shrink: 0;
+}
+
+#clear-filters-button {
+  background: none;
+  border: none;
+  color: var(--cr-secondary-text-color);
+  cursor: pointer;
+  margin-inline-start: auto;
+  padding: 0;
+  font-weight: bold;
+  font-size: 1.5em;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#clear-filters-button:hover {
+  /* Use hover state color */
+  background-color: var(--cr-hover-background-color);
+}

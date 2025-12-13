@@ -6,6 +6,9 @@
 #define CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_PROFILE_INFO_GENERATOR_H_
 
 #include "chrome/common/extensions/api/developer_private.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 

@@ -8,7 +8,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 js_library("iron-scroll-threshold") {
   deps = [
-    "../iron-scroll-target-behavior:iron-scroll-target-behavior",
+    "../iron-scroll-target-behavior",
     "../polymer:polymer_bundled",
   ]
 }

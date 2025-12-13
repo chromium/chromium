@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/streams/tee_engine.h"
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -49,9 +50,9 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
  public:
   explicit PullAlgorithm(TeeEngine* engine) : engine_(engine) {}
 
-  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int,
-                                  v8::Local<v8::Value>[]) override {
+  ScriptPromise<IDLUndefined> Run(
+      ScriptState* script_state,
+      base::span<v8::Local<v8::Value>> argv) override {
     // https://streams.spec.whatwg.org/#readable-stream-tee
     // 13. Let pullAlgorithm be the following steps:
     //   a. If reading is true,
@@ -91,8 +92,8 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
           ExecutionContext::From(script_state)->GetAgent()->event_loop();
       v8::Global<v8::Value> value(script_state->GetIsolate(), chunk);
       event_loop->EnqueueMicrotask(
-          WTF::BindOnce(&TeeReadRequest::ChunkStepsBody, WrapPersistent(this),
-                        WrapPersistent(script_state), std::move(value)));
+          BindOnce(&TeeReadRequest::ChunkStepsBody, WrapPersistent(this),
+                   WrapPersistent(script_state), std::move(value)));
     }
 
     void CloseSteps(ScriptState* script_state) const override {
@@ -208,7 +209,7 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
       // 7. If readAgain is true, perform pullAlgorithm.
       if (engine_->read_again_) {
         auto* pull_algorithm = MakeGarbageCollected<PullAlgorithm>(engine_);
-        pull_algorithm->Run(script_state, 0, nullptr);
+        pull_algorithm->Run(script_state, {});
       }
     }
 
@@ -225,9 +226,9 @@ class TeeEngine::CancelAlgorithm final : public StreamAlgorithm {
     DCHECK(branch == 0 || branch == 1);
   }
 
-  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
-                                  int argc,
-                                  v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(
+      ScriptState* script_state,
+      base::span<v8::Local<v8::Value>> argv) override {
     // https://streams.spec.whatwg.org/#readable-stream-tee
     // This implements both cancel1Algorithm and cancel2Algorithm as they are
     // identical except for the index they operate on. Standard comments are
@@ -238,7 +239,7 @@ class TeeEngine::CancelAlgorithm final : public StreamAlgorithm {
 
     // a. Set canceled1 to true.
     engine_->canceled_[branch_] = true;
-    DCHECK_EQ(argc, 1);
+    DCHECK_EQ(argv.size(), 1u);
 
     // b. Set reason1 to reason.
     engine_->reason_[branch_].Reset(isolate, argv[0]);

@@ -9,7 +9,6 @@
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
@@ -55,6 +55,7 @@
 #include "components/user_education/common/tutorial/tutorial_description.h"
 #include "components/user_education/common/tutorial/tutorial_service.h"
 #include "components/user_education/common/user_education_class_properties.h"
+#include "components/user_education/common/user_education_context.h"
 #include "components/user_education/common/user_education_data.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_storage_service.h"
@@ -97,26 +98,22 @@ using ::testing::Return;
 // FeaturePromoController[Common].
 class BrowserFeaturePromoControllerTestHelper {
  public:
-  explicit BrowserFeaturePromoControllerTestHelper(
-      const user_education::FeaturePromoControllerCommon& controller)
-      : controller_(controller) {}
+  BrowserFeaturePromoControllerTestHelper(
+      const user_education::FeaturePromoControllerCommon& controller,
+      const ui::AcceleratorProvider& accelerator_provider)
+      : controller_(controller), accelerator_provider_(accelerator_provider) {}
   ~BrowserFeaturePromoControllerTestHelper() = default;
 
-  ui::ElementContext GetAnchorContext() const {
-    return controller_->GetAnchorContext();
-  }
-  const ui::AcceleratorProvider* GetAcceleratorProvider() const {
-    return controller_->GetAcceleratorProvider();
-  }
   std::u16string GetFocusHelpBubbleScreenReaderHint(
       user_education::FeaturePromoSpecification::PromoType promo_type,
       ui::TrackedElement* anchor_element) const {
-    return controller_->GetFocusHelpBubbleScreenReaderHint(promo_type,
-                                                           anchor_element);
+    return controller_->GetFocusHelpBubbleScreenReaderHint(
+        promo_type, anchor_element, &accelerator_provider_.get());
   }
 
  private:
   const raw_ref<const user_education::FeaturePromoControllerCommon> controller_;
+  const raw_ref<const ui::AcceleratorProvider> accelerator_provider_;
 };
 
 namespace {
@@ -203,9 +200,12 @@ class BrowserFeaturePromoController2xTestBase
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     TestWithBrowserView::SetUp();
+    auto* const service =
+        UserEducationServiceFactory::GetForBrowserContext(browser()->profile());
+    auto* const interface = BrowserUserEducationInterface::From(browser());
     controller_ = static_cast<user_education::FeaturePromoControllerCommon*>(
-        BrowserUserEducationInterface::From(browser_view()->browser())
-            ->GetFeaturePromoControllerForTesting());
+        service->GetFeaturePromoControllerForTesting());
+    user_education_context_ = interface->GetUserEducationContextForTesting();
     lock_ = user_education::FeaturePromoControllerCommon::
         BlockActiveWindowCheckForTesting();
 
@@ -388,7 +388,8 @@ class BrowserFeaturePromoController2xTestBase
         });
     EXPECT_ASYNC_CALL_IN_SCOPE(mock_callback, Run, {
       controller_->MaybeShowPromo(MakeParams(feature, std::move(close_callback),
-                                             std::move(actual_show_callback)));
+                                             std::move(actual_show_callback)),
+                                  user_education_context_);
       if (may_time_out) {
         const auto new_now = test_util_->Now() +
                              user_education::features::GetLowPriorityTimeout() +
@@ -491,14 +492,16 @@ class BrowserFeaturePromoController2xTestBase
         FeaturePromoSpecification::AcceleratorInfo());
   }
 
-  void OnCustomPromoAction(const base::Feature* feature,
-                           ui::ElementContext context,
-                           FeaturePromoHandle promo_handle) {
+  void OnCustomPromoAction(
+      const base::Feature* feature,
+      const user_education::UserEducationContextPtr& context,
+      FeaturePromoHandle promo_handle) {
     ++custom_callback_count_;
     EXPECT_TRUE(promo_handle.is_valid());
     EXPECT_EQ(FeaturePromoStatus::kContinued,
               controller_->GetPromoStatus(*feature));
-    EXPECT_EQ(browser()->window()->GetElementContext(), context);
+    EXPECT_EQ(BrowserElements::From(browser())->GetContext(),
+              context->GetElementContext());
     promo_handle.Release();
     EXPECT_EQ(FeaturePromoStatus::kNotRunning,
               controller_->GetPromoStatus(*feature));
@@ -524,6 +527,7 @@ class BrowserFeaturePromoController2xTestBase
       user_education::features::GetIdleTimeBetweenSessions() + base::Hours(1);
 
   raw_ptr<user_education::FeaturePromoControllerCommon> controller_;
+  user_education::UserEducationContextPtr user_education_context_;
   raw_ptr<NiceMock<feature_engagement::test::MockTracker>> mock_tracker_;
   user_education::FeaturePromoControllerCommon::TestLock lock_;
   int custom_callback_count_ = 0;
@@ -570,7 +574,7 @@ class BrowserFeaturePromoController2xTest
     // Ensure that tests start after the grace period. The grace period itself
     // will be tested in the policy tests.
     ResetSessionDataImpl(kMoreThanGracePeriod, base::TimeDelta(),
-                         browser()->window()->AsBrowserView());
+                         BrowserView::GetBrowserViewForBrowser(browser()));
   }
 
   void TimeOutQueuedPromo() {
@@ -588,27 +592,15 @@ TEST_P(BrowserFeaturePromoController2xTest, NotifyFeatureUsedIfValidIsValid) {
   controller_->NotifyFeatureUsedIfValid(kTestIPHFeature);
 }
 
-TEST_P(BrowserFeaturePromoController2xTest, GetAnchorContext) {
-  EXPECT_EQ(
-      browser_view()->GetElementContext(),
-      BrowserFeaturePromoControllerTestHelper(*controller_).GetAnchorContext());
-}
-
-TEST_P(BrowserFeaturePromoController2xTest, GetAcceleratorProvider) {
-  EXPECT_EQ(browser_view(),
-            BrowserFeaturePromoControllerTestHelper(*controller_)
-                .GetAcceleratorProvider());
-}
-
 TEST_P(BrowserFeaturePromoController2xTest,
        GetFocusHelpBubbleScreenReaderHint) {
   EXPECT_TRUE(
-      BrowserFeaturePromoControllerTestHelper(*controller_)
+      BrowserFeaturePromoControllerTestHelper(*controller_, *browser_view())
           .GetFocusHelpBubbleScreenReaderHint(
               FeaturePromoSpecification::PromoType::kToast, GetAnchorElement())
           .empty());
   EXPECT_FALSE(
-      BrowserFeaturePromoControllerTestHelper(*controller_)
+      BrowserFeaturePromoControllerTestHelper(*controller_, *browser_view())
           .GetFocusHelpBubbleScreenReaderHint(
               FeaturePromoSpecification::PromoType::kSnooze, GetAnchorElement())
           .empty());
@@ -625,7 +617,8 @@ TEST_P(BrowserFeaturePromoController2xTest, ShowsStartupBubble) {
   EXPECT_ASYNC_CALL_IN_SCOPE(
       callback, Run(FeaturePromoResult::Success()),
       controller_->MaybeShowStartupPromo(
-          MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get())));
+          MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get()),
+          user_education_context_));
   EXPECT_EQ(FeaturePromoStatus::kBubbleShowing,
             controller_->GetPromoStatus(kTestIPHFeature));
   EXPECT_TRUE(GetPromoBubble());
@@ -639,7 +632,8 @@ TEST_P(BrowserFeaturePromoController2xTest,
   EXPECT_ASYNC_CALL_IN_SCOPE(
       callback, Run(FeaturePromoResult(FeaturePromoResult::kError)), {
         controller_->MaybeShowStartupPromo(
-            MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get()));
+            MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get()),
+            user_education_context_);
         TimeOutQueuedPromo();
       });
 }
@@ -656,7 +650,8 @@ TEST_P(BrowserFeaturePromoController2xTest,
       tracker_initialized, Run, callback,
       Run(FeaturePromoResult(FeaturePromoResult::kError)), {
         controller_->MaybeShowStartupPromo(
-            MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get()));
+            MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get()),
+            user_education_context_);
         EXPECT_EQ(FeaturePromoStatus::kQueued,
                   controller_->GetPromoStatus(kTestIPHFeature));
         TimeOutQueuedPromo();
@@ -679,7 +674,8 @@ TEST_P(BrowserFeaturePromoController2xTest,
       tracker_initialized, Run, callback,
       Run(FeaturePromoResult(FeaturePromoResult::Success())), {
         controller_->MaybeShowStartupPromo(
-            MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get()));
+            MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get()),
+            user_education_context_);
         EXPECT_EQ(FeaturePromoStatus::kQueued,
                   controller_->GetPromoStatus(kTestIPHFeature));
       });
@@ -701,12 +697,14 @@ TEST_P(BrowserFeaturePromoController2xTest,
   EXPECT_ASYNC_CALL_IN_SCOPE(
       callback, Run,
       controller_->MaybeShowStartupPromo(
-          MakeParams(kSnoozeIPHFeature, base::DoNothing(), callback.Get())));
+          MakeParams(kSnoozeIPHFeature, base::DoNothing(), callback.Get()),
+          user_education_context_));
   EXPECT_TRUE(controller_->IsPromoActive(kSnoozeIPHFeature));
   EXPECT_ASYNC_CALL_IN_SCOPE(
       callback2, Run(FeaturePromoResult(FeaturePromoResult::kAlreadyQueued)),
       controller_->MaybeShowStartupPromo(
-          MakeParams(kSnoozeIPHFeature, base::DoNothing(), callback2.Get())));
+          MakeParams(kSnoozeIPHFeature, base::DoNothing(), callback2.Get()),
+          user_education_context_));
   EXPECT_TRUE(controller_->IsPromoActive(kSnoozeIPHFeature));
 }
 
@@ -717,11 +715,12 @@ TEST_P(BrowserFeaturePromoController2xTest,
 
   SetTrackerInitBehavior(true, TrackerCallbackBehavior::kNever);
 
-  controller_->MaybeShowStartupPromo(kTestIPHFeature);
+  controller_->MaybeShowStartupPromo(kTestIPHFeature, user_education_context_);
   EXPECT_ASYNC_CALL_IN_SCOPE(
       callback, Run(FeaturePromoResult(FeaturePromoResult::kAlreadyQueued)),
       controller_->MaybeShowStartupPromo(
-          MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get())));
+          MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get()),
+          user_education_context_));
   EXPECT_EQ(FeaturePromoStatus::kQueued,
             controller_->GetPromoStatus(kTestIPHFeature));
 }
@@ -739,7 +738,8 @@ TEST_P(BrowserFeaturePromoController2xTest, CancelPromoBeforeStartup) {
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI).Times(0);
 
   controller_->MaybeShowStartupPromo(
-      MakeParams(kTestIPHFeature, base::DoNothing(), result_callback.Get()));
+      MakeParams(kTestIPHFeature, base::DoNothing(), result_callback.Get()),
+      user_education_context_);
   EXPECT_EQ(FeaturePromoStatus::kQueued,
             controller_->GetPromoStatus(kTestIPHFeature));
   EXPECT_ASYNC_CALL_IN_SCOPE(
@@ -778,9 +778,11 @@ TEST_P(BrowserFeaturePromoController2xTest, ShowPromoTwice) {
       callback1, Run(FeaturePromoResult::Success()), callback2,
       Run(testing::Ne(FeaturePromoResult::Success())), {
         controller_->MaybeShowStartupPromo(
-            MakeParams(kTestIPHFeature, base::DoNothing(), callback1.Get()));
+            MakeParams(kTestIPHFeature, base::DoNothing(), callback1.Get()),
+            user_education_context_);
         controller_->MaybeShowStartupPromo(
-            MakeParams(kTestIPHFeature, base::DoNothing(), callback2.Get()));
+            MakeParams(kTestIPHFeature, base::DoNothing(), callback2.Get()),
+            user_education_context_);
       });
   EXPECT_EQ(FeaturePromoStatus::kBubbleShowing,
             controller_->GetPromoStatus(kTestIPHFeature));
@@ -812,8 +814,9 @@ TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
           Return(feature_engagement::Tracker::EventList{{config, 1}}));
   EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(testing::Ref(kTestIPHFeature)))
       .WillRepeatedly(Return(true));
-  EXPECT_EQ(FeaturePromoResult::Success(),
-            controller_->CanShowPromo(kTestIPHFeature));
+  EXPECT_EQ(
+      FeaturePromoResult::Success(),
+      controller_->CanShowPromo(kTestIPHFeature, user_education_context_));
 }
 
 TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
@@ -824,8 +827,9 @@ TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
       feature_engagement::ComparatorType::LESS_THAN, 2);
   EXPECT_CALL(*mock_tracker_, ListEvents(testing::Ref(kTestIPHFeature)))
       .WillOnce(Return(feature_engagement::Tracker::EventList{{config, 2}}));
-  EXPECT_EQ(FeaturePromoResult::kBlockedByConfig,
-            controller_->CanShowPromo(kTestIPHFeature));
+  EXPECT_EQ(
+      FeaturePromoResult::kBlockedByConfig,
+      controller_->CanShowPromo(kTestIPHFeature, user_education_context_));
 }
 
 TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
@@ -833,14 +837,16 @@ TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
   // If the backend says no, the controller says no.
   EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .WillOnce(Return(false));
-  EXPECT_EQ(FeaturePromoResult::kBlockedByConfig,
-            controller_->CanShowPromo(kTestIPHFeature));
+  EXPECT_EQ(
+      FeaturePromoResult::kBlockedByConfig,
+      controller_->CanShowPromo(kTestIPHFeature, user_education_context_));
 
   // If the backend says yes, the controller says yes.
   EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .WillOnce(Return(true));
-  EXPECT_EQ(FeaturePromoResult::Success(),
-            controller_->CanShowPromo(kTestIPHFeature));
+  EXPECT_EQ(
+      FeaturePromoResult::Success(),
+      controller_->CanShowPromo(kTestIPHFeature, user_education_context_));
 }
 
 TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
@@ -858,7 +864,8 @@ TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
 
 TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
        DoesNotAskBackendWhenShowingFromDemoPage) {
-  controller_->MaybeShowPromoForDemoPage(kTestIPHFeature);
+  controller_->MaybeShowPromoForDemoPage(kTestIPHFeature,
+                                         user_education_context_);
   EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_NE(nullptr, GetPromoBubble());
 }
@@ -880,13 +887,15 @@ TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
   EXPECT_CALL(*mock_tracker_, WouldTriggerHelpUI(Ref(kTutorialIPHFeature)))
       .WillRepeatedly(Return(true));
   ExpectPromoResult(kTestIPHFeature, FeaturePromoResult::Success(), false);
-  EXPECT_EQ(FeaturePromoResult::kBlockedByPromo,
-            controller_->CanShowPromo(kTutorialIPHFeature));
+  EXPECT_EQ(
+      FeaturePromoResult::kBlockedByPromo,
+      controller_->CanShowPromo(kTutorialIPHFeature, user_education_context_));
   EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kTestIPHFeature))).Times(1);
   EXPECT_TRUE(controller_->EndPromo(
       kTestIPHFeature, user_education::EndFeaturePromoReason::kFeatureEngaged));
-  EXPECT_EQ(FeaturePromoResult::Success(),
-            controller_->CanShowPromo(kTutorialIPHFeature));
+  EXPECT_EQ(
+      FeaturePromoResult::Success(),
+      controller_->CanShowPromo(kTutorialIPHFeature, user_education_context_));
 }
 
 TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
@@ -1507,9 +1516,11 @@ TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
       kCustomActionIPHFeature2, kToolbarAppMenuButtonElementId, IDS_CHROME_TIP,
       IDS_CHROME_TIP,
       base::BindLambdaForTesting(
-          [&](ui::ElementContext context, FeaturePromoHandle handle) {
+          [&](const user_education::UserEducationContextPtr& context,
+              FeaturePromoHandle handle) {
             views::ElementTrackerViews::GetInstance()
-                ->GetUniqueView(kToolbarAppMenuButtonElementId, context)
+                ->GetUniqueView(kToolbarAppMenuButtonElementId,
+                                context->GetElementContext())
                 ->SetVisible(false);
             promo_handle = std::move(handle);
           })));
@@ -1539,26 +1550,18 @@ TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
 
 namespace {
 const int kStringWithNoSubstitution = IDS_OK;
-const int kStringWithSingleSubstitution =
-    IDS_APP_TABLE_COLUMN_SORTED_ASC_ACCNAME;
-const int kStringWithMultipleSubstitutions =
-    IDS_CONCAT_THREE_STRINGS_WITH_COMMA;
-const int kStringWithPluralSubstitution = IDS_TIME_HOURS;
-const std::u16string kSubstitution1{u"First"};
-const std::u16string kSubstitution2{u"Second"};
-const std::u16string kSubstitution3{u"Third"};
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kPromoShownEvent);
 }  // namespace
 
 class BrowserFeaturePromoController2xViewsTestBase
-    : public views::test::InteractiveViewsTestT<
+    : public views::test::InteractiveViewsTestMixin<
           BrowserFeaturePromoController2xTestBase> {
  public:
   BrowserFeaturePromoController2xViewsTestBase() = default;
   ~BrowserFeaturePromoController2xViewsTestBase() override = default;
 
   void SetUp() override {
-    InteractiveViewsTestT<BrowserFeaturePromoController2xTestBase>::SetUp();
+    InteractiveViewsTestMixin<BrowserFeaturePromoController2xTestBase>::SetUp();
     SetContextWidget(browser_view()->GetWidget());
   }
 
@@ -1643,7 +1646,7 @@ class BrowserFeaturePromoController2xViewsTestBase
                     el, kPromoShownEvent);
               });
 
-          controller_->MaybeShowPromo(std::move(p));
+          controller_->MaybeShowPromo(std::move(p), user_education_context_);
         }));
 
     if (timeout_delta) {
@@ -1685,9 +1688,28 @@ class BrowserFeaturePromoController2xViewsTest
   }
 };
 
-INSTANTIATE_V2X_TEST(BrowserFeaturePromoController2xViewsTest);
+// In branded builds on Windows, some of the required strings may be optimized
+// out during Chrome resource compilation. To avoid issues, simply don't run
+// these tests on those specific bots.
+// See https://crbug.com/434261108 and https://crbug.com/1181150 for more info.
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) || !BUILDFLAG(IS_WIN)
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+namespace {
+const int kStringWithSingleSubstitution =
+    IDS_APP_TABLE_COLUMN_SORTED_ASC_ACCNAME;
+const int kStringWithMultipleSubstitutions =
+    IDS_CONCAT_THREE_STRINGS_WITH_COMMA;
+const int kStringWithPluralSubstitution = IDS_TIME_HOURS;
+const std::u16string kSubstitution1{u"First"};
+const std::u16string kSubstitution2{u"Second"};
+const std::u16string kSubstitution3{u"Third"};
+}  // namespace
+
+using BrowserFeaturePromoController2xStringSubstitutionTest =
+    BrowserFeaturePromoController2xViewsTest;
+INSTANTIATE_V2X_TEST(BrowserFeaturePromoController2xStringSubstitutionTest);
+
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        BodyTextSubstitution_SingleString) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.body_params = kSubstitution1;
@@ -1701,7 +1723,7 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
                             kStringWithSingleSubstitution, kSubstitution1)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        BodyTextSubstitution_MultipleStrings) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.body_params =
@@ -1718,7 +1740,7 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
                             kSubstitution2, kSubstitution3)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        BodyTextSubstitution_Singular) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.body_params = 1;
@@ -1732,7 +1754,8 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
           l10n_util::GetPluralStringFUTF16(kStringWithPluralSubstitution, 1)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest, BodyTextSubstitution_Plural) {
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
+       BodyTextSubstitution_Plural) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.body_params = 3;
 
@@ -1745,7 +1768,7 @@ TEST_P(BrowserFeaturePromoController2xViewsTest, BodyTextSubstitution_Plural) {
           l10n_util::GetPluralStringFUTF16(kStringWithPluralSubstitution, 3)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        TitleTextSubstitution_SingleString) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.title_params = kSubstitution1;
@@ -1759,7 +1782,7 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
                             kStringWithSingleSubstitution, kSubstitution1)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        TitleTextSubstitution_MultipleStrings) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.title_params =
@@ -1776,7 +1799,7 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
                             kSubstitution2, kSubstitution3)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        TitleTextSubstitution_Singular) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.title_params = 1;
@@ -1790,7 +1813,8 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
           l10n_util::GetPluralStringFUTF16(kStringWithPluralSubstitution, 1)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest, TitleTextSubstitution_Plural) {
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
+       TitleTextSubstitution_Plural) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.title_params = 3;
 
@@ -1803,7 +1827,7 @@ TEST_P(BrowserFeaturePromoController2xViewsTest, TitleTextSubstitution_Plural) {
           l10n_util::GetPluralStringFUTF16(kStringWithPluralSubstitution, 3)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        ScreenreaderTextSubstitution_Accelerator) {
   static const ui::Accelerator kAccelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE);
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
@@ -1816,7 +1840,7 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
           kStringWithSingleSubstitution, kAccelerator.GetShortcutText()));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        ScreenreaderTextSubstitution_SingleString) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.screen_reader_params = kSubstitution1;
@@ -1827,7 +1851,7 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
                       kStringWithSingleSubstitution, kSubstitution1)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        ScreenreaderTextSubstitution_MultipleStrings) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.screen_reader_params =
@@ -1841,7 +1865,7 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
                       kSubstitution2, kSubstitution3)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        ScreenreaderTextSubstitution_Singular) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.screen_reader_params = 1;
@@ -1852,7 +1876,7 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
                       kStringWithPluralSubstitution, 1)));
 }
 
-TEST_P(BrowserFeaturePromoController2xViewsTest,
+TEST_P(BrowserFeaturePromoController2xStringSubstitutionTest,
        ScreenreaderTextSubstitution_Plural) {
   user_education::FeaturePromoParams params(kStringTestIPHFeature);
   params.screen_reader_params = 3;
@@ -1862,6 +1886,8 @@ TEST_P(BrowserFeaturePromoController2xViewsTest,
                   CheckAccessibleText(l10n_util::GetPluralStringFUTF16(
                       kStringWithPluralSubstitution, 3)));
 }
+
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING) || !BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -1976,9 +2002,8 @@ TEST_P(BrowserFeaturePromoController2xRotatingPromoTest, TwoPromosRotating) {
           kRotatingPromoIPHFeature, kTopContainerElementId, IDS_OK,
           IDS_CHROME_TIP,
           base::BindLambdaForTesting(
-              [&call_count](ui::ElementContext, FeaturePromoHandle) {
-                ++call_count;
-              })));
+              [&call_count](const user_education::UserEducationContextPtr&,
+                            FeaturePromoHandle) { ++call_count; })));
 
   // Show the rotating promo three times, verifying that it wraps around to the,
   // first promo after the second.
@@ -2014,9 +2039,8 @@ TEST_P(BrowserFeaturePromoController2xRotatingPromoTest, SnoozeButtonRepeats) {
           kRotatingPromoIPHFeature, kTopContainerElementId, IDS_OK,
           IDS_CHROME_TIP,
           base::BindLambdaForTesting(
-              [&call_count](ui::ElementContext, FeaturePromoHandle) {
-                ++call_count;
-              })));
+              [&call_count](const user_education::UserEducationContextPtr&,
+                            FeaturePromoHandle) { ++call_count; })));
 
   // Show the rotating promo three times, snoozing the first time. Verify that
   // snoozing re-shows the same promo.
@@ -2295,7 +2319,8 @@ class BrowserFeaturePromoController2xPriorityTest
              // tracker or not.
              EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(*p.feature)))
                  .WillRepeatedly(Return(true));
-             controller_->MaybeShowStartupPromo(std::move(p));
+             controller_->MaybeShowStartupPromo(std::move(p),
+                                                user_education_context_);
            })
         .AddDescriptionPrefix(caller);
   }

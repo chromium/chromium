@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/memory/weak_ptr.h"
 #import "components/keyed_service/core/keyed_service.h"
 
 @protocol ShareKitAvatarPrimitive;

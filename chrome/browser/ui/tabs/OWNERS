@@ -1,4 +1,3 @@
-dfried@chromium.org
 dpenning@chromium.org
 dljames@chromium.org
 shibalik@chromium.org
@@ -7,3 +6,4 @@ agale@chromium.org
 per-file tab_list_interface.*=ckitagawa@chromium.org
 per-file tab_dialog_manager*=kylixrd@chromium.org
 per-file tab_dialog_manager*=kerenzhu@chromium.org
+per-file glic_actor*=file://chrome/browser/actor/ui/OWNERS

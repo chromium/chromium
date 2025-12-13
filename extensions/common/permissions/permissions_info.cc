@@ -6,19 +6,16 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "extensions/common/alias.h"
 
 namespace extensions {
 
-static base::LazyInstance<PermissionsInfo>::Leaky g_permissions_info =
-    LAZY_INSTANCE_INITIALIZER;
-
 // static
 PermissionsInfo* PermissionsInfo::GetInstance() {
-  return g_permissions_info.Pointer();
+  static base::NoDestructor<PermissionsInfo> instance;
+  return instance.get();
 }
 
 void PermissionsInfo::RegisterPermissions(

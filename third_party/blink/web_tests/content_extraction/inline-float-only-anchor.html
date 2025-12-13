@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Inline anchor with only a floated descendant</title>
+  <link href="./resources/consistent-rendering.css" rel="stylesheet">
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
+  <script src="./resources/content-extraction-test-helpers.js"></script>
+  <style>
+    body {
+      margin: 0;
+    }
+
+    a.inline-anchor {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    .floater {
+      float: left;
+      width: 20px;
+      height: 10px;
+      background: black;
+    }
+  </style>
+</head>
+<body onload="runTest()">
+  <a class="inline-anchor" href="#">
+    <span>
+      <span class="floater"></span>
+    </span>
+  </a>
+  <script>
+    function runTest() {
+      finishTest(dumpContentNodeTree(document));
+    }
+  </script>
+</body>
+</html>

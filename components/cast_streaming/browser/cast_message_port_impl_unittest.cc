@@ -173,7 +173,8 @@ TEST_F(CastMessagePortImplTest, InjectMessage) {
   EXPECT_EQ(sender_id, kSenderId);
   EXPECT_EQ(message_namespace, kInjectNamespace);
 
-  std::optional<base::Value> return_value = base::JSONReader::Read(message);
+  std::optional<base::Value> return_value =
+      base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(return_value);
   ASSERT_TRUE(return_value->is_dict());
 
@@ -234,7 +235,8 @@ TEST_F(CastMessagePortImplTest, MediaStatus) {
   EXPECT_EQ(sender_id, kSenderId);
   EXPECT_EQ(message_namespace, kMediaNamespace);
 
-  std::optional<base::Value> return_value = base::JSONReader::Read(message);
+  std::optional<base::Value> return_value =
+      base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(return_value);
   ASSERT_TRUE(return_value->is_dict());
 

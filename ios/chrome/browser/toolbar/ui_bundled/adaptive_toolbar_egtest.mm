@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #import "base/functional/bind.h"
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/adaptive_toolbar_app_interface.h"
@@ -42,7 +45,7 @@ const char kLinkID[] = "linkID";
 const char kPageLoadedString[] = "Page loaded!";
 
 // The title of the test infobar.
-NSString* kTestInfoBarTitle = @"TestInfoBar";
+NSString* const kTestInfoBarTitle = @"TestInfoBar";
 
 // Defines the visibility of an element, in relation to the toolbar.
 typedef NS_ENUM(NSInteger, ButtonVisibility) {
@@ -162,8 +165,8 @@ UITraitCollection* RotateOrChangeTraitCollection(
             forViewController:topViewController];
   } else {
     // On iPhone rotate to test the the landscape orientation.
-    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                  error:nil];
+    [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                     error:nil];
     return topViewController.traitCollection;
   }
 }
@@ -309,9 +312,12 @@ void CheckCurrentURLContainsString(std::string string) {
         performAction:grey_tap()];
 
   } else {
+    id<GREYMatcher> cancelButton = grey_anyOf(
+        grey_accessibilityID(kOmniboxPopupCloseButtonAccessibilityIdentifier),
+        grey_accessibilityID(kOmniboxCancelButtonAccessibilityIdentifier), nil);
     [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityID(
-                                     kToolbarCancelOmniboxEditButtonIdentifier)]
+        selectElementWithMatcher:grey_allOf(cancelButton,
+                                            grey_sufficientlyVisible(), nil)]
         performAction:grey_tap()];
   }
 }
@@ -386,7 +392,8 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
 }
 
 // Tests that tapping a button cancels the focus on the omnibox.
@@ -409,15 +416,9 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 // Check the button visibility of the toolbar when the omnibox is focused from a
 // different orientation than the default one.
-// TODO(crbug.com/365474269): The test is flaky on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testFocusOmniboxFromOtherOrientation \
-  FLAKY_testFocusOmniboxFromOtherOrientation
-#else
-#define MAYBE_testFocusOmniboxFromOtherOrientation \
-  testFocusOmniboxFromOtherOrientation
-#endif
-- (void)MAYBE_testFocusOmniboxFromOtherOrientation {
+// TODO(crbug.com/443913539): The test is flaky on simulator and failing on
+// device.
+- (void)DISABLED_testFocusOmniboxFromOtherOrientation {
   // Load a page to have the toolbar visible (hidden on NTP).
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
 
@@ -439,20 +440,13 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // Remove the override.
     for (UIViewController* child in topViewController.childViewControllers) {
-      if (@available(iOS 17, *)) {
-        child.traitOverrides.horizontalSizeClass =
-            originalTraitCollection.horizontalSizeClass;
-      }
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-      else {
-        [topViewController setOverrideTraitCollection:originalTraitCollection
-                               forChildViewController:child];
-      }
-#endif
+      child.traitOverrides.horizontalSizeClass =
+          originalTraitCollection.horizontalSizeClass;
     }
   } else {
     // Cancel the rotation.
-    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+    [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                     error:nil];
   }
 
   // Check the visiblity after a rotation.
@@ -461,13 +455,9 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 // Check the button visibility of the toolbar when the omnibox is focused from
 // the default orientation.
-// TODO(crbug.com/364160530): The test is flaky on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testFocusOmniboxFromPortrait FLAKY_testFocusOmniboxFromPortrait
-#else
-#define MAYBE_testFocusOmniboxFromPortrait testFocusOmniboxFromPortrait
-#endif
-- (void)MAYBE_testFocusOmniboxFromPortrait {
+// TODO(crbug.com/443913539): The test is flaky on simulator and failing on
+// device.
+- (void)DISABLED_testFocusOmniboxFromPortrait {
   // Load a page to have the toolbar visible (hidden on NTP).
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
 
@@ -491,20 +481,13 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // Remove the override.
     for (UIViewController* child in topViewController.childViewControllers) {
-      if (@available(iOS 17, *)) {
-        child.traitOverrides.horizontalSizeClass =
-            originalTraitCollection.horizontalSizeClass;
-      }
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-      else {
-        [topViewController setOverrideTraitCollection:originalTraitCollection
-                               forChildViewController:child];
-      }
-#endif
+      child.traitOverrides.horizontalSizeClass =
+          originalTraitCollection.horizontalSizeClass;
     }
   } else {
     // Cancel the rotation.
-    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+    [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                     error:nil];
   }
 
   // Check the visiblity after a size class change. This should let the trait
@@ -592,8 +575,8 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 - (void)testShareButton {
   if (![ChromeEarlGrey isIPadIdiom]) {
     // If this test is run on an iPhone, rotate it to have the unsplit toolbar.
-    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                  error:nil];
+    [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                     error:nil];
   }
 
   // Setup the server.
@@ -609,13 +592,15 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
   if (![ChromeEarlGrey isIPadIdiom]) {
     // Cancel rotation.
-    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+    [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                     error:nil];
   }
 }
 
 // Test that the bottom toolbar is still visible after closing the last
 // incognito tab using long press. See https://crbug.com/849937.
-- (void)testBottomToolbarHeightAfterClosingTab {
+// TODO(crbug.com/464193172): Re-enable test for toolbar height.
+- (void)DISABLED_testBottomToolbarHeightAfterClosingTab {
   if (![ChromeEarlGrey isSplitToolbarMode]) {
     EARL_GREY_TEST_SKIPPED(@"This test needs a bottom toolbar.");
   }
@@ -629,6 +614,10 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           TabGridIncognitoTabsPanelButton()]
       performAction:grey_tap()];
+
+  // Synchronization off due to an infinite spinner.
+  ScopedSynchronizationDisabler disabler;
+
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridNewIncognitoTabButton()]
       performAction:grey_tap()];
@@ -665,20 +654,13 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // Remove the override.
     for (UIViewController* child in topViewController.childViewControllers) {
-      if (@available(iOS 17, *)) {
-        child.traitOverrides.horizontalSizeClass =
-            originalTraitCollection.horizontalSizeClass;
-      }
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-      else {
-        [topViewController setOverrideTraitCollection:originalTraitCollection
-                               forChildViewController:child];
-      }
-#endif
+      child.traitOverrides.horizontalSizeClass =
+          originalTraitCollection.horizontalSizeClass;
     }
   } else {
     // Cancel the rotation.
-    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+    [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                     error:nil];
   }
 }
 
@@ -715,20 +697,13 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
     // Remove the override.
 
     for (UIViewController* child in topViewController.childViewControllers) {
-      if (@available(iOS 17, *)) {
-        child.traitOverrides.horizontalSizeClass =
-            originalTraitCollection.horizontalSizeClass;
-      }
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-      else {
-        [topViewController setOverrideTraitCollection:originalTraitCollection
-                               forChildViewController:child];
-      }
-#endif
+      child.traitOverrides.horizontalSizeClass =
+          originalTraitCollection.horizontalSizeClass;
     }
   } else {
     // Cancel the rotation.
-    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+    [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                     error:nil];
   }
 
   // Check the visiblity after a rotation.
@@ -748,7 +723,8 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:YES
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
 }
 
 // Verifies that the address bar can be moved from the location bar context

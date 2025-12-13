@@ -10,6 +10,8 @@ namespace segmentation_platform {
 
 const char kPasswordManagerUserNegativeLabel[] = "Not_PasswordManagerUser";
 
+using Feature = PasswordManagerUserModel::Feature;
+
 class PasswordManagerUserModelTest : public DefaultModelTestBase {
  public:
   PasswordManagerUserModelTest()
@@ -28,28 +30,47 @@ TEST_F(PasswordManagerUserModelTest, ExecuteModelWithInput) {
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
 
   // PasswordManager user.
-  ExpectClassifierResults(/*input=*/{2, 0, 0, 0, 0, 0, 0},
-                          {kPasswordManagerUserUmaName});
-  ExpectClassifierResults(/*input=*/{0, 7, 0, 0, 0, 0, 0},
-                          {kPasswordManagerUserUmaName});
-  ExpectClassifierResults(/*input=*/{0, 0, 1, 0, 0, 0, 0},
-                          {kPasswordManagerUserUmaName});
-  ExpectClassifierResults(/*input=*/{0, 0, 0, 1, 0, 0, 0},
-                          {kPasswordManagerUserUmaName});
-  ExpectClassifierResults(/*input=*/{0, 0, 0, 0, 2, 1, 0},
-                          {kPasswordManagerUserUmaName});
-  ExpectClassifierResults(/*input=*/{0, 0, 0, 0, 0, 0, 1},
-                          {kPasswordManagerUserUmaName});
+  ModelProvider::Request input1(Feature::kFeatureCount, 0);
+  input1[Feature::kFeaturePasswordManagerReferrer] = 2;
+  ExpectClassifierResults(input1, {kPasswordManagerUserUmaName});
+
+  ModelProvider::Request input2(Feature::kFeatureCount, 0);
+  input2[Feature::kFeatureStoredPasswordCount] = 7;
+  ExpectClassifierResults(input2, {kPasswordManagerUserUmaName});
+
+  ModelProvider::Request input3(Feature::kFeatureCount, 0);
+  input3[Feature::kFeatureAssistedLoginCount] = 1;
+  ExpectClassifierResults(input3, {kPasswordManagerUserUmaName});
+
+  ModelProvider::Request input4(Feature::kFeatureCount, 0);
+  input4[Feature::kFeatureGeneratedPasswordCount] = 1;
+  ExpectClassifierResults(input4, {kPasswordManagerUserUmaName});
+
+  ModelProvider::Request input5(Feature::kFeatureCount, 0);
+  input5[Feature::kFeaturePasswordUIAcceptedCount] = 2;
+  input5[Feature::kFeaturePasswordUIDismissedCount] = 1;
+  ExpectClassifierResults(input5, {kPasswordManagerUserUmaName});
+
+  ModelProvider::Request input6(Feature::kFeatureCount, 0);
+  input6[Feature::kFeatureIOSCredentialExtensionEnabled] = 1;
+  ExpectClassifierResults(input6, {kPasswordManagerUserUmaName});
 
   // Not a PasswordManager user.
-  ExpectClassifierResults(/*input=*/{1, 0, 0, 0, 0, 0, 0},
-                          {kPasswordManagerUserNegativeLabel});
-  ExpectClassifierResults(/*input=*/{0, 6, 0, 0, 0, 0, 0},
-                          {kPasswordManagerUserNegativeLabel});
-  ExpectClassifierResults(/*input=*/{0, 0, 0, 0, 1, 1, 0},
-                          {kPasswordManagerUserNegativeLabel});
-  ExpectClassifierResults(/*input=*/{0, 0, 0, 0, 0, 0, 0},
-                          {kPasswordManagerUserNegativeLabel});
+  ModelProvider::Request input7(Feature::kFeatureCount, 0);
+  input7[Feature::kFeaturePasswordManagerReferrer] = 1;
+  ExpectClassifierResults(input7, {kPasswordManagerUserNegativeLabel});
+
+  ModelProvider::Request input8(Feature::kFeatureCount, 0);
+  input8[Feature::kFeatureStoredPasswordCount] = 6;
+  ExpectClassifierResults(input8, {kPasswordManagerUserNegativeLabel});
+
+  ModelProvider::Request input9(Feature::kFeatureCount, 0);
+  input9[Feature::kFeaturePasswordUIAcceptedCount] = 1;
+  input9[Feature::kFeaturePasswordUIDismissedCount] = 1;
+  ExpectClassifierResults(input9, {kPasswordManagerUserNegativeLabel});
+
+  ModelProvider::Request input10(Feature::kFeatureCount, 0);
+  ExpectClassifierResults(input10, {kPasswordManagerUserNegativeLabel});
 }
 
 }  // namespace segmentation_platform

@@ -16,28 +16,37 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/arc_data_removed_waiter.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_test_utils.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/ash/login/fake_login_display_host.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -51,21 +60,22 @@ using testing::_;
 namespace arc {
 namespace {
 
-constexpr char kTestEmail[] = "user@gmail.com";
-constexpr GaiaId::Literal kTestGaiaId("1234567890");
+constexpr auto kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("user@gmail.com",
+                                            GaiaId::Literal("1234567890"));
 
 class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
  public:
-  ArcPlayStoreEnabledPreferenceHandlerTest()
-      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {}
-
+  ArcPlayStoreEnabledPreferenceHandlerTest() = default;
   ArcPlayStoreEnabledPreferenceHandlerTest(
       const ArcPlayStoreEnabledPreferenceHandlerTest&) = delete;
   ArcPlayStoreEnabledPreferenceHandlerTest& operator=(
       const ArcPlayStoreEnabledPreferenceHandlerTest&) = delete;
+  ~ArcPlayStoreEnabledPreferenceHandlerTest() override = default;
 
   void SetUp() override {
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::DlcserviceClient::InitializeFake();
     ash::SessionManagerClient::InitializeFakeInMemory();
     ash::UpstartClient::InitializeFake();
 
@@ -73,41 +83,55 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
         base::CommandLine::ForCurrentProcess());
     ArcSessionManager::SetUiEnabledForTesting(false);
 
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    TestingProfile::Builder profile_builder;
-    profile_builder.SetProfileName(kTestEmail);
-    profile_builder.SetPath(temp_dir_.GetPath().AppendASCII("TestArcProfile"));
-    profile_builder.AddTestingFactory(
-        ConsentAuditorFactory::GetInstance(),
-        base::BindRepeating(&BuildFakeConsentAuditor));
-    profile_ = IdentityTestEnvironmentProfileAdaptor::
-        CreateProfileForIdentityTestEnvironment(profile_builder);
+    ASSERT_TRUE(testing_profile_manager_.SetUp());
+
+    ASSERT_TRUE(user_manager::TestHelper(user_manager_.Get())
+                    .AddRegularUser(kTestAccountId));
+    user_manager_->UserLoggedIn(
+        kTestAccountId,
+        user_manager::TestHelper::GetFakeUsernameHash(kTestAccountId));
+
+    ash::ScopedAccountIdAnnotator annotator(
+        testing_profile_manager_.profile_manager(), kTestAccountId);
+    profile_ = testing_profile_manager_.CreateTestingProfile(
+        std::string(kTestAccountId.GetUserEmail()),
+        IdentityTestEnvironmentProfileAdaptor ::
+            GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+                {TestingProfile::TestingFactory(
+                    ConsentAuditorFactory::GetInstance(),
+                    base::BindRepeating(&BuildFakeConsentAuditor))}));
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
 
-    arc_session_manager_ =
-        CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
-            base::BindRepeating(FakeArcSession::Create)));
+    user_manager_->OnUserProfileCreated(kTestAccountId, profile_->GetPrefs());
+
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
+    arc_session_manager_ = CreateTestArcSessionManager(
+        std::make_unique<ArcSessionRunner>(
+            base::BindRepeating(FakeArcSession::Create)),
+        arc_dlc_installer_.get());
     preference_handler_ =
         std::make_unique<ArcPlayStoreEnabledPreferenceHandler>(
             profile_.get(), arc_session_manager_.get());
-    const AccountId account_id(AccountId::FromUserEmailGaiaId(
-        profile()->GetProfileUserName(), kTestGaiaId));
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
 
     identity_test_env_profile_adaptor_->identity_test_env()
-        ->MakePrimaryAccountAvailable(kTestEmail,
-                                      signin::ConsentLevel::kSignin);
+        ->MakePrimaryAccountAvailable(
+            std::string(kTestAccountId.GetUserEmail()),
+            signin::ConsentLevel::kSignin);
   }
 
   void TearDown() override {
     preference_handler_.reset();
     arc_session_manager_.reset();
+    arc_dlc_installer_.reset();
     identity_test_env_profile_adaptor_.reset();
-    profile_.reset();
+
+    user_manager_->OnUserProfileWillBeDestroyed(kTestAccountId);
+    profile_ = nullptr;
+    testing_profile_manager_.DeleteAllTestingProfiles();
     ash::UpstartClient::Shutdown();
     ash::SessionManagerClient::Shutdown();
+    ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
   }
 
@@ -140,15 +164,19 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState scoped_testing_local_state_{
+  user_manager::ScopedUserManager user_manager_{
+      std::make_unique<user_manager::UserManagerImpl>(
+          std::make_unique<user_manager::FakeUserManagerDelegate>(),
+          TestingBrowserProcess::GetGlobal()->GetTestingLocalState())};
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
+  TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
-  session_manager::SessionManager session_manager_;
-  base::ScopedTempDir temp_dir_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
+
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
-  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
   std::unique_ptr<ArcPlayStoreEnabledPreferenceHandler> preference_handler_;

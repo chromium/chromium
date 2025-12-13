@@ -1,0 +1,157 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "tab_strip_coordinator.h",
+    "tab_strip_coordinator.mm",
+    "tab_strip_mediator.h",
+    "tab_strip_mediator.mm",
+    "tab_strip_mediator_delegate.h",
+  ]
+  deps = [
+    ":tab_strip_mediator_utils",
+    "//base",
+    "//components/collaboration/public",
+    "//components/favicon/ios",
+    "//components/saved_tab_groups/public",
+    "//components/strings",
+    "//components/tab_groups",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/collaboration/model",
+    "//ios/chrome/browser/collaboration/model:collaboration_delegate",
+    "//ios/chrome/browser/collaboration/model:features",
+    "//ios/chrome/browser/collaboration/model/messaging",
+    "//ios/chrome/browser/drag_and_drop/model",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/ntp/model:util",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/saved_tab_groups/coordinator",
+    "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/saved_tab_groups/model:tab_group_service",
+    "//ios/chrome/browser/saved_tab_groups/ui:utils",
+    "//ios/chrome/browser/share_kit/model",
+    "//ios/chrome/browser/share_kit/model:factory",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/layout_guide",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/commands:shared_group_last_tab_commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/snackbar",
+    "//ios/chrome/browser/sharing/ui_bundled",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/tab_switcher/tab_strip/ui",
+    "//ios/chrome/browser/tab_switcher/tab_strip/ui:swift",
+    "//ios/chrome/browser/tab_switcher/tab_strip/ui:utils",
+    "//ios/chrome/browser/tab_switcher/tab_strip/ui/context_menu",
+    "//ios/chrome/browser/tab_switcher/ui_bundled",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:items",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:tab_group_confirmation",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:utils",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:tab_group_creation",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:url_loading_params_header",
+    "//ios/chrome/browser/web_state_list/model",
+    "//ios/web/public",
+    "//ios/web/public/navigation",
+    "//ui/gfx",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("tab_strip_mediator_utils") {
+  sources = [
+    "tab_strip_mediator_utils.h",
+    "tab_strip_mediator_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/chrome/browser/tab_switcher/tab_strip/ui",
+    "//ios/chrome/browser/tab_switcher/tab_strip/ui:swift",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:items",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_tab_strip_consumer.h",
+    "fake_tab_strip_consumer.mm",
+    "fake_tab_strip_handler.h",
+    "fake_tab_strip_handler.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/tab_switcher/tab_strip/ui",
+    "//ios/chrome/browser/tab_switcher/tab_strip/ui:swift",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:items",
+    "//ios/web/public/test/fakes",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "tab_strip_mediator_unittest.mm",
+    "tab_strip_mediator_utils_unittest.mm",
+  ]
+  deps = [
+    ":coordinator",
+    ":tab_strip_mediator_utils",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/collaboration:test_support",
+    "//components/favicon/core",
+    "//components/favicon/ios",
+    "//components/saved_tab_groups/public",
+    "//components/saved_tab_groups/test_support",
+    "//components/tab_groups",
+    "//ios/chrome/browser/drag_and_drop/model",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/saved_tab_groups/ui:utils",
+    "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
+    "//ios/chrome/browser/sessions/model:test_support",
+    "//ios/chrome/browser/share_kit/model",
+    "//ios/chrome/browser/share_kit/model:factory",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/snapshots/model:snapshot_source",
+    "//ios/chrome/browser/tab_insertion/model",
+    "//ios/chrome/browser/tab_switcher/tab_strip/ui",
+    "//ios/chrome/browser/tab_switcher/tab_strip/ui:swift",
+    "//ios/chrome/browser/tab_switcher/ui_bundled",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:items",
+    "//ios/chrome/browser/tab_switcher/ui_bundled:utils",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

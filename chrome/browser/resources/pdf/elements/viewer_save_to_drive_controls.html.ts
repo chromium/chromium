@@ -13,7 +13,7 @@ export function getHtml(this: ViewerSaveToDriveControlsElement) {
     @click="${this.onSaveClick}" aria-label="$i18n{tooltipSaveToDrive}"
     aria-haspopup="${this.getAriaHasPopup()}"
     title="$i18n{tooltipSaveToDrive}"></cr-icon-button>
-  ${this.uploading ? html`
+  ${this.isUploading_() ? html`
     <circular-progress-ring .value="${this.progress}">
     </circular-progress-ring>
   ` : ''}

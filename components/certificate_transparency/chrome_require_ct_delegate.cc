@@ -235,8 +235,9 @@ bool ChromeRequireCTDelegate::MatchSPKI(
 
   std::vector<CRYPTO_BUFFER*> candidates;
   auto intermediate_hashes = base::span(hashes).subspan(1u);
+  auto intermediate_buffers = chain->intermediate_buffers();
   for (auto [hash, cert_buffer] :
-       base::zip(intermediate_hashes, chain->intermediate_buffers())) {
+       base::zip(intermediate_hashes, intermediate_buffers)) {
     if (spkis_.contains(hash)) {
       candidates.push_back(cert_buffer.get());
     }
@@ -296,8 +297,7 @@ void ChromeRequireCTDelegate::AddFilters(
       // not desirable for those.
       url::RawCanonOutputT<char> output;
       url::CanonHostInfo host_info;
-      url::CanonicalizeHostVerbose(pattern.c_str(), parsed.host, &output,
-                                   &host_info);
+      url::CanonicalizeHostVerbose(pattern, parsed.host, &output, &host_info);
       // TODO(rsleevi): Use canonicalized form?
       if (host_info.family == url::CanonHostInfo::NEUTRAL) {
         // Match subdomains (implicit by the omission of '.'). Add in a

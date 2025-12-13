@@ -15,11 +15,11 @@ std::string CreateHintsConfig(
     optimization_guide::proto::Any* metadata) {
   optimization_guide::proto::Configuration config;
   optimization_guide::proto::Hint* hint = config.add_hints();
-  hint->set_key(hints_url.host());
+  hint->set_key(hints_url.GetHost());
   hint->set_key_representation(optimization_guide::proto::HOST);
 
   optimization_guide::proto::PageHint* page_hint = hint->add_page_hints();
-  page_hint->set_page_pattern(hints_url.path().substr(1));
+  page_hint->set_page_pattern(hints_url.GetPath().substr(1));
 
   optimization_guide::proto::Optimization* optimization =
       page_hint->add_allowlisted_optimizations();

@@ -19,7 +19,7 @@ import java.util.List;
 public interface MostVisitedSites extends CustomLinkOperations {
     // LINT.IfChange(INVALID_SUGGESTION_SCORE)
     /** Value to indicate that a site suggestion score is unavailable. */
-    public static final double INVALID_SUGGESTION_SCORE = -1.0;
+    double INVALID_SUGGESTION_SCORE = -1.0;
 
     // LINT.ThenChange(//components/ntp_tiles/most_visited_sites.h)
 

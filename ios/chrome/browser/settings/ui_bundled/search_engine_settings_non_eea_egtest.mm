@@ -8,7 +8,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/search_engines/search_engines_switches.h"
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/search_engine_choice/test/search_engine_choice_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/search_engine_settings_test_case_base.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
@@ -41,11 +41,8 @@
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(@"firstsearch")];
-  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
-  // replaceText can properly handle \n.
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
+  [ChromeEarlGreyUI replaceTextInOmnibox:@"firstsearch"];
+  [ChromeEarlGreyUI pressEnter];
 
   const std::string googleSearchEngineKeyword(
       base::UTF16ToUTF8(TemplateURLPrepopulateData::google.keyword));
@@ -75,12 +72,8 @@
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
 
   // Search something different than the first search to make sure the omnibox
-  // doesn't use the history instead of really searching.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(@"secondsearch")];
-  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
-  // replaceText can properly handle \n.
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
+  [ChromeEarlGreyUI replaceTextInOmnibox:@"secondsearch"];
+  [ChromeEarlGreyUI pressEnter];
 
   const std::string secondSearchEngineKeyword(
       base::UTF16ToUTF8(secondPrepopulatedSearchEngine->keyword));

@@ -77,3 +77,5 @@ bool HasMarkedPrefsForTesting() {
 
 }  // namespace android
 }  // namespace variations
+
+DEFINE_JNI(VariationsSeedBridge)

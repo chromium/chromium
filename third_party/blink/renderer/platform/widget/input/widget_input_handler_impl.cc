@@ -166,9 +166,14 @@ void WidgetInputHandlerImpl::RequestCompositionUpdates(bool immediate_request,
 
 void WidgetInputHandlerImpl::DispatchEvent(
     std::unique_ptr<WebCoalescedInputEvent> event,
+    std::optional<std::unique_ptr<blink::WebCoalescedInputEvent>>
+        original_event_for_gesture,
     DispatchEventCallback callback) {
-  TRACE_EVENT0("input,input.scrolling",
-               "WidgetInputHandlerImpl::DispatchEvent");
+  TRACE_EVENT("input,input.scrolling", "WidgetInputHandlerImpl::DispatchEvent");
+  if (original_event_for_gesture.has_value()) {
+    input_handler_manager_->DispatchEvent(
+        std::move(original_event_for_gesture.value()), DispatchEventCallback());
+  }
   input_handler_manager_->DispatchEvent(std::move(event), std::move(callback));
 }
 

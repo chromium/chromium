@@ -10,8 +10,8 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/strings/string_number_conversions.h"
@@ -20,6 +20,7 @@
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
@@ -566,7 +567,7 @@ void SimpleIndex::SetTrailerPrefetchSize(uint64_t entry_hash, int32_t size) {
 }
 
 bool SimpleIndex::UpdateEntrySize(uint64_t entry_hash,
-                                  base::StrictNumeric<uint32_t> entry_size) {
+                                  base::StrictNumeric<uint64_t> entry_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = entries_set_.find(entry_hash);
   if (it == entries_set_.end())
@@ -621,11 +622,11 @@ void SimpleIndex::PostponeWritingToDisk() {
 
 bool SimpleIndex::UpdateEntryIteratorSize(
     EntrySet::iterator* it,
-    base::StrictNumeric<uint32_t> entry_size) {
+    base::StrictNumeric<uint64_t> entry_size) {
   // Update the total cache size with the new entry size.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(cache_size_, (*it)->second.GetEntrySize());
-  uint32_t original_size = (*it)->second.GetEntrySize();
+  uint64_t original_size = (*it)->second.GetEntrySize();
 
   // If SetEntrySize fails, we cannot update the entry iterator correctly.
   if (!(*it)->second.SetEntrySize(entry_size)) {
@@ -644,6 +645,8 @@ bool SimpleIndex::UpdateEntryIteratorSize(
 
 void SimpleIndex::MergeInitializingSet(
     std::unique_ptr<SimpleIndexLoadResult> load_result) {
+  TRACE_EVENT("disk_cache", "SimpleIndex::MergeInitializingSet", "cache_type_",
+              cache_type_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   EntrySet* index_file_entries = &load_result->entries;
@@ -677,8 +680,8 @@ void SimpleIndex::MergeInitializingSet(
   if (load_result->flush_required)
     WriteToDisk(INDEX_WRITE_REASON_STARTUP_MERGE);
 
-  SIMPLE_CACHE_UMA(CUSTOM_COUNTS, "IndexNumEntriesOnInit", cache_type_,
-                   entries_set_.size(), 0, 100000, 50);
+  SIMPLE_CACHE_UMA(CUSTOM_COUNTS, "IndexNumEntriesOnInit2", cache_type_,
+                   entries_set_.size(), 0, 1000000, 50);
   SIMPLE_CACHE_UMA(
       MEMORY_MEDIUM_MB, "CacheSizeOnInit2", cache_type_,
       static_cast<base::HistogramBase::Sample32>(cache_size_ / kBytesInMiB));

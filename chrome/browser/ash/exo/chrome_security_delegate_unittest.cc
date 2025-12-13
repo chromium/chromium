@@ -21,10 +21,12 @@
 #include "chrome/browser/ash/guest_os/guest_os_security_delegate.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -32,6 +34,12 @@
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "components/account_id/account_id.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,7 +84,27 @@ class ChromeSecurityDelegateTest : public testing::Test {
     ConciergeClient::InitializeFake();
     SeneschalClient::InitializeFake();
 
-    profile_ = std::make_unique<TestingProfile>();
+    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<user_manager::FakeUserManagerDelegate>(),
+        TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345"));
+    ASSERT_TRUE(user_manager::TestHelper(user_manager_.Get())
+                    .AddRegularUser(account_id));
+    user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
+
+    {
+      ash::ScopedAccountIdAnnotator annotator(
+          profile_manager_->profile_manager(), account_id);
+      profile_ =
+          profile_manager_->CreateTestingProfile(account_id.GetUserEmail());
+    }
+
     test_helper_ =
         std::make_unique<crostini::CrostiniTestHelper>(profile_.get());
 
@@ -115,7 +143,9 @@ class ChromeSecurityDelegateTest : public testing::Test {
   void TearDown() override {
     mount_points_->RevokeAllFileSystems();
     test_helper_.reset();
-    profile_.reset();
+    profile_ = nullptr;
+    profile_manager_.reset();
+    user_manager_.Reset();
     SeneschalClient::Shutdown();
     ConciergeClient::Shutdown();
     CiceroneClient::Shutdown();
@@ -126,11 +156,9 @@ class ChromeSecurityDelegateTest : public testing::Test {
   Profile* profile() { return profile_.get(); }
 
   content::BrowserTaskEnvironment task_environment_;
-
-  // Needed for `DriveIntegrationService`, which `GuestOsSharePath` depends on.
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
-
-  std::unique_ptr<TestingProfile> profile_;
+  user_manager::ScopedUserManager user_manager_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   std::unique_ptr<crostini::CrostiniTestHelper> test_helper_;
 
   raw_ptr<storage::ExternalMountPoints> mount_points_;
@@ -147,15 +175,14 @@ TEST_F(ChromeSecurityDelegateTest, CanLockPointer) {
   aura::test::TestWindowDelegate delegate;
 
   // CanLockPointer should be allowed for arc, but not others.
-  std::unique_ptr<aura::Window> arc_toplevel(
-      aura::test::CreateTestWindowWithDelegate(&delegate, 0, gfx::Rect(),
-                                               &container_window));
+  auto arc_toplevel = aura::test::CreateTestWindow(
+      {.delegate = &delegate, .parent = &container_window});
   arc_toplevel->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   EXPECT_TRUE(security_delegate->CanLockPointer(arc_toplevel.get()));
 
-  std::unique_ptr<aura::Window> crostini_toplevel(
-      aura::test::CreateTestWindowWithDelegate(&delegate, 0, gfx::Rect(),
-                                               &container_window));
+  std::unique_ptr<aura::Window> crostini_toplevel =
+      aura::test::CreateTestWindow(
+          {.delegate = &delegate, .parent = &container_window});
   crostini_toplevel->SetProperty(chromeos::kAppTypeKey,
                                  chromeos::AppType::CROSTINI_APP);
   EXPECT_FALSE(security_delegate->CanLockPointer(crostini_toplevel.get()));

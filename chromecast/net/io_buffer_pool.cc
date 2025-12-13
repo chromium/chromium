@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/net/io_buffer_pool.h"
 
 #include <new>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
@@ -95,7 +91,8 @@ class IOBufferPool::Internal {
 
 class IOBufferPool::Internal::Buffer : public net::IOBuffer {
  public:
-  Buffer(char* data, size_t size) : net::IOBuffer(base::span(data, size)) {}
+  Buffer(char* data, size_t size)
+      : net::IOBuffer(UNSAFE_TODO(base::span(data, size))) {}
 
   Buffer(const Buffer&) = delete;
   Buffer& operator=(const Buffer&) = delete;
@@ -172,7 +169,7 @@ IOBufferPool::Internal::AllocateStorageUnionAndDataArea(size_t data_area_size) {
 char* IOBufferPool::Internal::DataAreaFromStorageUnion(
     IOBufferPool::Internal::Storage* ptr) {
   size_t kAlignedStorageSize = base::bits::AlignUp(sizeof(Storage), kAlignment);
-  return reinterpret_cast<char*>(ptr) + kAlignedStorageSize;
+  return UNSAFE_TODO(reinterpret_cast<char*>(ptr) + kAlignedStorageSize);
 }
 
 void IOBufferPool::Internal::Preallocate(size_t num_buffers) {

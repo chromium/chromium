@@ -55,11 +55,6 @@ class ContentWebState : public WebState,
   explicit ContentWebState(const CreateParams& params);
 
   // Constructor for ContentWebState created for deserialized sessions.
-  ContentWebState(const CreateParams& params,
-                  CRWSessionStorage* session_storage,
-                  NativeSessionFetcher session_fetcher);
-
-  // Constructor for ContentWebState created for deserialized sessions.
   ContentWebState(BrowserState* browser_state,
                   WebStateID unique_identifier,
                   proto::WebStateMetadataStorage metadata,
@@ -107,10 +102,8 @@ class ContentWebState : public WebState,
   const SessionCertificatePolicyCache* GetSessionCertificatePolicyCache()
       const override;
   SessionCertificatePolicyCache* GetSessionCertificatePolicyCache() override;
-  CRWSessionStorage* BuildSessionStorage() const override;
   void LoadData(NSData* data, NSString* mime_type, const GURL& url) override;
   void ExecuteUserJavaScript(NSString* javaScript) override;
-  NSString* GetStableIdentifier() const override;
   WebStateID GetUniqueIdentifier() const override;
   const std::string& GetContentsMimeType() const override;
   bool ContentIsHTML() const override;
@@ -230,6 +223,14 @@ class ContentWebState : public WebState,
       content::WebContents* source) override;
 
  private:
+  // Store serialized state.
+  class SerializedState;
+
+  // Private constructor.
+  ContentWebState(const CreateParams& params,
+                  WebStateID unique_identifier,
+                  std::unique_ptr<SerializedState> serialized_state);
+
   // Helper method to register notification observers.
   void RegisterNotificationObservers();
   void OnKeyboardShow(NSNotification* notification);
@@ -237,12 +238,11 @@ class ContentWebState : public WebState,
 
   raw_ptr<WebStateDelegate> delegate_ = nullptr;
   CRCWebViewportContainerView* web_view_;
-  CRWSessionStorage* session_storage_;
+  std::unique_ptr<SerializedState> serialized_state_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<content::WebContents> child_web_contents_;
   std::unique_ptr<web::SessionCertificatePolicyCache> certificate_policy_cache_;
   id<CRWWebViewProxy> web_view_proxy_;
-  NSString* UUID_;
   // The unique identifier. Stable across application restarts.
   const WebStateID unique_identifier_;
   base::ObserverList<WebStatePolicyDecider, true> policy_deciders_;

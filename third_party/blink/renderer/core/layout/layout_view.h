@@ -27,6 +27,7 @@
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -164,6 +165,8 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   PhysicalRect OverflowClipRect(const PhysicalOffset& location,
                                 OverlayScrollbarClipBehavior =
                                     kIgnoreOverlayScrollbarSize) const override;
+  PhysicalRect OverflowClipRectForScrollNode(
+      const PhysicalOffset& location) const override;
 
   // If either direction has a non-auto mode, the other must as well.
   void SetAutosizeScrollbarModes(mojom::blink::ScrollbarMode h_mode,
@@ -177,8 +180,11 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
     return autosize_v_scrollbar_mode_;
   }
 
-  void CalculateScrollbarModes(mojom::blink::ScrollbarMode& h_mode,
-                               mojom::blink::ScrollbarMode& v_mode) const;
+  void CalculateScrollbarModes(
+      mojom::blink::ScrollbarMode& h_mode,
+      mojom::blink::ScrollbarMode& v_mode,
+      std::optional<EOverflow> overflow_x = std::nullopt,
+      std::optional<EOverflow> overflow_y = std::nullopt) const;
 
   bool CanHaveAdditionalCompositingReasons() const override {
     NOT_DESTROYED();
@@ -267,6 +273,8 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   gfx::SizeF LargeViewportSizeForViewportUnits() const;
   // https://drafts.csswg.org/css-values-4/#dynamic-viewport-size
   gfx::SizeF DynamicViewportSizeForViewportUnits() const;
+  gfx::SizeF SubtractUnconditionalScrollbarsFromViewportUnits(
+      const gfx::SizeF& viewport_size) const;
 
   // Get the size to evaluate width and height media queries against when
   // paginating / printing.
@@ -336,8 +344,13 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   LayoutViewTransitionRoot* GetViewTransitionRoot() const;
 
+  void CacheScrollDimensions();
+  bool SetScrollbarSizesForViewportUnits(const gfx::Size& size);
+
  private:
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
   int ViewLogicalWidthForBoxSizing() const {
     NOT_DESTROYED();
     return ViewLogicalWidth(kIncludeScrollbars);
@@ -354,6 +367,7 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   bool CanHaveChildren() const override;
   void UpdateFromStyle() override;
+  void UpdateAfterLayout() override;
 
   // The CompositeBackgroundAttachmentFixed optimization doesn't apply to
   // LayoutView which paints background specially.
@@ -361,6 +375,10 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
     NOT_DESTROYED();
     return false;
   }
+
+  PhysicalRect OverflowClipRectInternal(const PhysicalOffset& location,
+                                        OverlayScrollbarClipBehavior,
+                                        bool for_scroll_node) const;
 
   // The page area (content area) size of the first page, when printing. This
   // size should always be consulted when printing, also when not paginating
@@ -401,7 +419,21 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   mojom::blink::ScrollbarMode autosize_h_scrollbar_mode_;
   mojom::blink::ScrollbarMode autosize_v_scrollbar_mode_;
 
+  struct CachedScrollDimensions {
+    LayoutUnit width;
+    LayoutUnit height;
+    gfx::Point origin;
+    ScrollOffset offset;
+  };
+
+  // This is set when a frame becomes display:none and reset in the first layout
+  // after exiting that state.
+  std::optional<CachedScrollDimensions> cached_scroll_dimensions_;
+
   mutable PhysicalRect previous_background_rect_;
+
+  int vertical_scrollbar_width_for_viewport_units_ = 0;
+  int horizontal_scrollbar_height_for_viewport_units_ = 0;
 };
 
 template <>

@@ -222,33 +222,6 @@ class PaymentHandlerCloseButton : public views::ImageButton {
 BEGIN_METADATA(PaymentHandlerCloseButton)
 END_METADATA
 
-PaymentHandlerWebFlowViewController::PaymentHandlerWebFlowViewController(
-    base::WeakPtr<PaymentRequestSpec> spec,
-    base::WeakPtr<PaymentRequestState> state,
-    base::WeakPtr<PaymentRequestDialogView> dialog,
-    content::WebContents* payment_request_web_contents,
-    Profile* profile,
-    GURL target,
-    PaymentHandlerOpenWindowCallback first_navigation_complete_callback)
-    : PaymentRequestSheetController(spec, state, dialog),
-      log_(payment_request_web_contents),
-      profile_(profile),
-      target_(target),
-      first_navigation_complete_callback_(
-          std::move(first_navigation_complete_callback)),
-      dialog_manager_delegate_(payment_request_web_contents) {}
-
-PaymentHandlerWebFlowViewController::~PaymentHandlerWebFlowViewController() {
-  if (web_contents()) {
-    auto* manager = web_modal::WebContentsModalDialogManager::FromWebContents(
-        web_contents());
-    if (manager) {
-      manager->SetDelegate(nullptr);
-    }
-  }
-  state()->OnPaymentAppWindowClosed();
-}
-
 // Ensures that the views::WebView created by this class has its corners
 // properly rounded. This class is a ViewsObserver that waits until the view
 // attaches to the widget, then manually sets its corner radii to match those of
@@ -283,6 +256,33 @@ class PaymentHandlerWebFlowViewController::RoundedCornerViewClipper
   raw_ptr<views::WebView> web_view_;
   base::WeakPtr<PaymentRequestDialogView> dialog_;
 };
+
+PaymentHandlerWebFlowViewController::PaymentHandlerWebFlowViewController(
+    base::WeakPtr<PaymentRequestSpec> spec,
+    base::WeakPtr<PaymentRequestState> state,
+    base::WeakPtr<PaymentRequestDialogView> dialog,
+    content::WebContents* payment_request_web_contents,
+    Profile* profile,
+    GURL target,
+    PaymentHandlerOpenWindowCallback first_navigation_complete_callback)
+    : PaymentRequestSheetController(spec, state, dialog),
+      log_(payment_request_web_contents),
+      profile_(profile),
+      target_(target),
+      first_navigation_complete_callback_(
+          std::move(first_navigation_complete_callback)),
+      dialog_manager_delegate_(payment_request_web_contents) {}
+
+PaymentHandlerWebFlowViewController::~PaymentHandlerWebFlowViewController() {
+  if (web_contents()) {
+    auto* manager = web_modal::WebContentsModalDialogManager::FromWebContents(
+        web_contents());
+    if (manager) {
+      manager->SetDelegate(nullptr);
+    }
+  }
+  state()->OnPaymentAppWindowClosed();
+}
 
 std::u16string PaymentHandlerWebFlowViewController::GetSheetTitle() {
   return GetPaymentHandlerDialogTitle(web_contents());

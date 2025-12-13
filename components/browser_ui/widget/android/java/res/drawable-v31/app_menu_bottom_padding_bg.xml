@@ -15,8 +15,8 @@ found in the LICENSE file.
         android:right="@dimen/app_menu_shadow_length">
         <shape
             android:shape="rectangle">
-            <solid android:color="@color/menu_bg_color"/>
-            <corners android:radius="@dimen/app_menu_corner_size" />
+            <corners android:radius="?attr/popupBgCornerRadius" />
+            <solid android:color="@macro/menu_bg_color"/>
             <padding
                 android:top="@dimen/app_menu_shadow_length"
                 android:left="@dimen/app_menu_shadow_length"

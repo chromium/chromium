@@ -27,6 +27,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-blink.h"
@@ -142,11 +143,15 @@ void UseCounterImpl::Trace(Visitor* visitor) const {
 
 void UseCounterImpl::DidCommitLoad(const LocalFrame* frame) {
   const KURL url = frame->GetDocument()->Url();
-  if (CommonSchemeRegistry::IsExtensionScheme(url.Protocol().Ascii())) {
+  const std::string protocol = url.Protocol().Ascii();
+  if (CommonSchemeRegistry::IsExtensionScheme(protocol)) {
     context_ = kExtensionContext;
   } else if (url.ProtocolIs("file")) {
     context_ = kFileContext;
-  } else if (url.ProtocolIsInHTTPFamily()) {
+  } else if (url.ProtocolIsInHTTPFamily() ||
+             CommonSchemeRegistry::IsIsolatedAppScheme(protocol)) {
+    // Isolated Apps use the same frames as regular web pages, thus IWA feature
+    // usage is recorded in the same way as feature usage for normal frames.
     context_ = kDefaultContext;
   } else if (url.IsAboutBlankURL() || url.IsAboutSrcdocURL()) {
     context_ = kAboutBlankOrSrcdoc;
@@ -308,12 +313,14 @@ bool UseCounterImpl::ReportMeasurement(const UseCounterFeature& feature,
   if (feature.type() == mojom::blink::UseCounterFeatureType::kWebFeature)
     NotifyFeatureCounted(static_cast<WebFeature>(feature.value()));
 
-  // Report to browser about observed event only when URL is HTTP/HTTPS,
-  // as other URL schemes are filtered out in
+  // Report to browser about observed event only when URL is HTTP/HTTPS or
+  // isolated-app://, as other URL schemes are filtered out in
   // |MetricsWebContentsObserver::DoesTimingUpdateHaveError| anyway.
   if (context_ == kDefaultContext) {
     client->DidObserveNewFeatureUsage(feature);
-    total_taken_time_for_reporting_ += timer.Elapsed();
+    if (base::TimeTicks::IsHighResolution()) {
+      total_taken_time_for_reporting_ += timer.Elapsed();
+    }
     return true;
   }
 
@@ -344,9 +351,9 @@ void UseCounterImpl::ReportTotalTakenTime(const LocalFrame* frame,
     suffix = ".FinishedParsing";
   }
 
-  base::UmaHistogramTimes(
+  base::UmaHistogramMicrosecondsTimes(
       base::StrCat(
-          {"Blink.UseCounter.TotalTakenTimeForReporting", suffix.Ascii()}),
+          {"Blink.UseCounter.TotalTakenTimeForReporting2", suffix.Ascii()}),
       total_taken_time_for_reporting_);
 }
 

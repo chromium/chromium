@@ -19,7 +19,7 @@
 #include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/browser/extensions/chrome_app_icon_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/accelerator_table.h"
+#include "chrome/browser/ui/accelerator_table.h"
 #include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/zoom/page_zoom.h"
@@ -208,9 +208,9 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
   }
 }
 
-std::unique_ptr<views::NonClientFrameView>
+std::unique_ptr<views::FrameView>
 ChromeNativeAppWindowViews::CreateStandardDesktopAppFrame() {
-  return views::WidgetDelegateView::CreateNonClientFrameView(widget());
+  return views::WidgetDelegateView::CreateFrameView(widget());
 }
 
 bool ChromeNativeAppWindowViews::ShouldRemoveStandardFrame() {
@@ -286,8 +286,8 @@ ui::ImageModel ChromeNativeAppWindowViews::GetWindowIcon() {
   return ui::ImageModel();
 }
 
-std::unique_ptr<views::NonClientFrameView>
-ChromeNativeAppWindowViews::CreateNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> ChromeNativeAppWindowViews::CreateFrameView(
+    views::Widget* widget) {
   return (IsFrameless() || has_frame_color_) ? CreateNonStandardAppFrame()
                                              : CreateStandardDesktopAppFrame();
 }
@@ -297,7 +297,7 @@ bool ChromeNativeAppWindowViews::WidgetHasHitTestMask() const {
 }
 
 void ChromeNativeAppWindowViews::GetWidgetHitTestMask(SkPath* mask) const {
-  shape_->getBoundaryPath(mask);
+  *mask = shape_->getBoundaryPath();
 }
 
 // views::View implementation.

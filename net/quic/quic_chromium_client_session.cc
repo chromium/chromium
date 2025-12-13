@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/quic/quic_chromium_client_session.h"
 
 #include <algorithm>
@@ -15,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -28,7 +24,9 @@
 #include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "base/observer_list.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -66,6 +64,7 @@
 #include "net/spdy/spdy_session.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_stream_priority.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
@@ -84,8 +83,11 @@ BASE_FEATURE(kQuicMigrationIgnoreDisconnectSignalDuringProbing,
              "kQuicMigrationIgnoreDisconnectSignalDuringProbing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This feature caused an issue that was fixed by https://crrev.com/c/7071963.
+// It's suffixed with V2 to ensure that code without the fix cannot enable
+// the feature.
 BASE_FEATURE(kQuicRegisterConnectionClosePayload,
-             "kQuicRegisterConnectionClosePayload",
+             "kQuicRegisterConnectionClosePayloadV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
@@ -1144,21 +1146,6 @@ QuicChromiumClientSession::~QuicChromiumClientSession() {
     return;
   }
 
-  // Sending one client_hello means we had zero handshake-round-trips.
-  int round_trip_handshakes = crypto_stream_->num_sent_client_hellos() - 1;
-
-  SSLInfo ssl_info;
-  // QUIC supports only secure urls.
-  if (GetSSLInfo(&ssl_info) && ssl_info.cert.get()) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Net.QuicSession.ConnectRandomPortForHTTPS",
-                                round_trip_handshakes, 1, 3, 4);
-    if (require_confirmation_) {
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Net.QuicSession.ConnectRandomPortRequiringConfirmationForHTTPS",
-          round_trip_handshakes, 1, 3, 4);
-    }
-  }
-
   const quic::QuicConnectionStats stats = connection()->GetStats();
 
   // The MTU used by QUIC is limited to a fairly small set of predefined values
@@ -1264,7 +1251,7 @@ void QuicChromiumClientSession::OnOriginFrame(const quic::OriginFrame& frame) {
       return;
     }
     GURL url(base::StrCat({origin_str, "/"}));
-    if (!url.is_valid() || url.path() != "/") {
+    if (!url.is_valid() || url.GetPath() != "/") {
       continue;
     }
     url::SchemeHostPort origin(url);
@@ -1408,10 +1395,6 @@ bool QuicChromiumClientSession::ShouldCreateOutgoingBidirectionalStream() {
   return true;
 }
 
-bool QuicChromiumClientSession::ShouldCreateOutgoingUnidirectionalStream() {
-  NOTREACHED() << "Try to create outgoing unidirectional streams";
-}
-
 bool QuicChromiumClientSession::WasConnectionEverUsed() {
   const quic::QuicConnectionStats& stats = connection()->GetStats();
   return stats.bytes_sent > 0 || stats.bytes_received > 0;
@@ -1420,11 +1403,6 @@ bool QuicChromiumClientSession::WasConnectionEverUsed() {
 QuicChromiumClientStream*
 QuicChromiumClientSession::CreateOutgoingBidirectionalStream() {
   NOTREACHED() << "CreateOutgoingReliableStreamImpl should be called directly";
-}
-
-QuicChromiumClientStream*
-QuicChromiumClientSession::CreateOutgoingUnidirectionalStream() {
-  NOTREACHED() << "Try to create outgoing unidirectional stream";
 }
 
 QuicChromiumClientStream*
@@ -1495,6 +1473,8 @@ bool QuicChromiumClientSession::GetSSLInfo(SSLInfo* ssl_info) const {
   ssl_info->key_exchange_group = crypto_params.key_exchange_group;
   ssl_info->peer_signature_algorithm = crypto_params.peer_signature_algorithm;
   ssl_info->encrypted_client_hello = crypto_params.encrypted_client_hello;
+  ssl_info->early_data_accepted =
+      crypto_stream_->EarlyDataReason() == ssl_early_data_accepted;
   return true;
 }
 
@@ -1704,7 +1684,6 @@ void QuicChromiumClientSession::OnCanCreateNewOutgoingStream(
       std::unique_ptr<WebSocketQuicStreamAdapter> adapter =
           CreateWebSocketQuicStreamAdapterImpl(
               request->websocket_adapter_delegate_);
-      request->websocket_adapter_delegate_ = nullptr;
       std::move(request->start_websocket_callback_).Run(std::move(adapter));
       continue;
     }
@@ -1725,15 +1704,10 @@ quic::QuicSSLConfig QuicChromiumClientSession::GetSSLConfig() const {
     config.ech_config_list.assign(ech_config_list_.begin(),
                                   ech_config_list_.end());
   }
-  if (base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs)) {
-    if (!trust_anchor_ids_.empty() &&
-        !ssl_context_config.trust_anchor_ids.empty()) {
-      std::vector<uint8_t> selected_trust_anchor_ids =
-          SSLConfig::SelectTrustAnchorIDs(trust_anchor_ids_,
-                                          ssl_context_config.trust_anchor_ids);
-      config.trust_anchor_ids = std::string(selected_trust_anchor_ids.begin(),
-                                            selected_trust_anchor_ids.end());
-    }
+  if (!ssl_context_config.trust_anchor_ids.empty() &&
+      base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs)) {
+    config.trust_anchor_ids = base::as_string_view(
+        ssl_context_config.SelectTrustAnchorIDs(trust_anchor_ids_));
   }
   return config;
 }
@@ -1778,13 +1752,17 @@ void QuicChromiumClientSession::RegisterQuicConnectionClosePayload() {
           features::kQuicRegisterConnectionClosePayload)) {
     return;
   }
+  // Cannot serialize ConnectionClosePacket before handshake is confirmed.
+  if (!connection()->IsHandshakeConfirmed()) {
+    return;
+  }
   std::unique_ptr<quic::SerializedPacket> connection_close_packet =
       connection()->SerializeLargePacketNumberConnectionClosePacket(
           quic::QUIC_CLIENT_LOST_NETWORK_ACCESS,
           "App loses network access on Android");
-  base::span<uint8_t> payload(
-      (uint8_t*)connection_close_packet->encrypted_buffer,
-      connection_close_packet->encrypted_length);
+  auto payload = UNSAFE_TODO(
+      base::span<uint8_t>((uint8_t*)connection_close_packet->encrypted_buffer,
+                          connection_close_packet->encrypted_length));
   static_cast<QuicChromiumPacketWriter*>(connection()->writer())
       ->RegisterQuicConnectionClosePayload(payload);
 }
@@ -2409,12 +2387,6 @@ void QuicChromiumClientSession::OnNoNewNetwork() {
   // alternate network available.
   static_cast<QuicChromiumPacketWriter*>(connection()->writer())
       ->set_force_write_blocked(true);
-
-  if (base::FeatureList::IsEnabled(features::kDisableBlackholeOnNoNewNetwork)) {
-    // Turn off the black hole detector since the writer is blocked.
-    // Blackhole will be re-enabled once a packet is sent again.
-    connection()->blackhole_detector().StopDetection(false);
-  }
 
   // Post a task to maybe close the session if the alarm fires.
   task_runner_->PostDelayedTask(
@@ -3950,11 +3922,6 @@ void QuicChromiumClientSession::Migrate(handles::NetworkHandle network,
   DVLOG(1) << "Force blocking the packet writer";
   static_cast<QuicChromiumPacketWriter*>(connection()->writer())
       ->set_force_write_blocked(true);
-  if (base::FeatureList::IsEnabled(features::kDisableBlackholeOnNoNewNetwork)) {
-    // Turn off the black hole detector since the writer is blocked.
-    // Blackhole will be re-enabled once a packet is sent again.
-    connection()->blackhole_detector().StopDetection(false);
-  }
   CompletionOnceCallback connect_callback = base::BindOnce(
       &QuicChromiumClientSession::FinishMigrate, weak_factory_.GetWeakPtr(),
       std::move(socket), peer_address, close_session_on_error,
@@ -4177,7 +4144,7 @@ QuicChromiumClientSession::Handle::GetGuaranteedLargestMessagePayload() const {
   if (!session_) {
     return 0;
   }
-  return session_->GetGuaranteedLargestMessagePayload();
+  return session_->GetGuaranteedLargestDatagramPayload();
 }
 
 const ConnectionMigrationInformation

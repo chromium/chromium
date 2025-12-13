@@ -5,6 +5,20 @@
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 
+if (media_use_symphonia) {
+  rust_static_library("symphonia_glue") {
+    # Needed because CXX generates unsafe code, for example using export_name
+    # is inherently unsafe.
+    allow_unsafe = true
+
+    crate_root = "symphonia_glue.rs"
+    sources = [ "symphonia_glue.rs" ]
+    cxx_bindings = [ "symphonia_glue.rs" ]
+    visibility = [ ":filters" ]
+    deps = [ "//third_party/rust/symphonia/v0_5:lib" ]
+  }
+}
+
 source_set("filters") {
   # Do not expand the visibility here without double-checking with OWNERS, this
   # is a roll-up target which is part of the //media component. Most other DEPs
@@ -80,7 +94,7 @@ source_set("filters") {
     "//media/video",
     "//net",
     "//third_party/libyuv",
-    "//ui/gfx/geometry:geometry",
+    "//ui/gfx/geometry",
   ]
 
   libs = []
@@ -122,9 +136,19 @@ source_set("filters") {
       "ffmpeg_glue.h",
       "in_memory_url_protocol.cc",
       "in_memory_url_protocol.h",
+      "legacy_audio_file_reader.cc",
+      "legacy_audio_file_reader.h",
       "media_file_checker.cc",
       "media_file_checker.h",
     ]
+  }
+
+  if (media_use_symphonia) {
+    sources += [
+      "symphonia_audio_decoder.cc",
+      "symphonia_audio_decoder.h",
+    ]
+    deps += [ ":symphonia_glue" ]
   }
 
   if (media_use_libvpx) {
@@ -318,7 +342,7 @@ source_set("unit_tests") {
 
   deps = [
     "//base/test:test_support",
-    "//crypto:crypto",
+    "//crypto",
     "//media:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -349,6 +373,7 @@ source_set("unit_tests") {
       "ffmpeg_demuxer_unittest.cc",
       "ffmpeg_glue_unittest.cc",
       "in_memory_url_protocol_unittest.cc",
+      "legacy_audio_file_reader_unittest.cc",
     ]
 
     deps += [

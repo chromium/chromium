@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/vulkan/vulkan_instance.h"
 
 #include <array>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
@@ -47,7 +43,7 @@ VulkanErrorCallback(VkDebugReportFlagsEXT flags,
                     void* user_data) {
   static std::array<bool, std::size(kSkippedErrors)> encountered_errors;
   for (size_t i = 0; i < std::size(kSkippedErrors); ++i) {
-    if (strstr(message, kSkippedErrors[i])) {
+    if (UNSAFE_TODO(strstr(message, kSkippedErrors[i]))) {
       if (encountered_errors[i]) {
         return VK_FALSE;
       }
@@ -149,8 +145,8 @@ bool VulkanInstance::CreateInstance(
 
   for (const VkExtensionProperties& ext_property :
        vulkan_info_.instance_extensions) {
-    if (strcmp(ext_property.extensionName,
-               VK_EXT_DEBUG_REPORT_EXTENSION_NAME) == 0) {
+    if (UNSAFE_TODO(strcmp(ext_property.extensionName,
+                           VK_EXT_DEBUG_REPORT_EXTENSION_NAME)) == 0) {
       debug_report_enabled_ = true;
       vulkan_info_.enabled_instance_extensions.push_back(
           VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
@@ -169,7 +165,8 @@ bool VulkanInstance::CreateInstance(
     bool found = false;
     for (const VkExtensionProperties& ext_property :
          vulkan_info_.instance_extensions) {
-      if (strcmp(ext_property.extensionName, enabled_extension) == 0) {
+      if (UNSAFE_TODO(strcmp(ext_property.extensionName, enabled_extension)) ==
+          0) {
         found = true;
         break;
       }
@@ -277,7 +274,8 @@ bool VulkanInstance::InitializeFromANGLE(
     bool found = false;
     for (const char* enabled_extension :
          vulkan_info_.enabled_instance_extensions) {
-      if (strcmp(required_extension_name, enabled_extension) == 0) {
+      if (UNSAFE_TODO(strcmp(required_extension_name, enabled_extension)) ==
+          0) {
         found = true;
         break;
       }
@@ -347,7 +345,8 @@ bool VulkanInstance::CollectBasicInfo(
                                             num_instance_exts);
     result = vkEnumerateInstanceExtensionProperties(
         layer_name, &num_instance_exts,
-        &vulkan_info_.instance_extensions.data()[previous_extension_count]);
+        UNSAFE_TODO(&vulkan_info_.instance_extensions
+                         .data()[previous_extension_count]));
     if (VK_SUCCESS != result) {
       LOG(ERROR) << "vkEnumerateInstanceExtensionProperties("
                  << (layer_name ? layer_name : "nullptr")
@@ -358,8 +357,8 @@ bool VulkanInstance::CollectBasicInfo(
 
   for (const VkExtensionProperties& ext_property :
        vulkan_info_.instance_extensions) {
-    if (strcmp(ext_property.extensionName,
-               VK_EXT_DEBUG_REPORT_EXTENSION_NAME) == 0) {
+    if (UNSAFE_TODO(strcmp(ext_property.extensionName,
+                           VK_EXT_DEBUG_REPORT_EXTENSION_NAME)) == 0) {
       debug_report_enabled_ = true;
       vulkan_info_.enabled_instance_extensions.push_back(
           VK_EXT_DEBUG_REPORT_EXTENSION_NAME);

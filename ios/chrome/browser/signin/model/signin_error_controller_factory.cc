@@ -34,8 +34,7 @@ SigninErrorControllerFactory::~SigninErrorControllerFactory() = default;
 
 std::unique_ptr<KeyedService>
 SigninErrorControllerFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   return std::make_unique<SigninErrorController>(
       SigninErrorController::AccountMode::ANY_ACCOUNT,
       IdentityManagerFactory::GetForProfile(profile));

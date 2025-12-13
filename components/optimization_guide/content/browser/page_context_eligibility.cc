@@ -12,6 +12,7 @@
 
 namespace optimization_guide {
 
+
 PageContextEligibility::PageContextEligibility(
     const PageContextEligibilityAPI* api)
     : api_(api) {}
@@ -32,6 +33,7 @@ std::unique_ptr<PageContextEligibility> PageContextEligibility::Create() {
   // use cases for it in browser.
   static base::NoDestructor<std::unique_ptr<OptimizationGuideLibraryHolder>>
       holder{OptimizationGuideLibraryHolder::Create()};
+
   // Pointer will be null if the library was not created.
   OptimizationGuideLibraryHolder* holder_ptr = holder->get();
   if (!holder_ptr) {
@@ -63,8 +65,8 @@ std::vector<FrameMetadata> GetFrameMetadataFromPageContent(
       MetaTag meta_tag(tag->name, tag->content);
       meta_tags.push_back(std::move(meta_tag));
     }
-    FrameMetadata metadata(frame_metadata_mojom->url.host(),
-                           frame_metadata_mojom->url.path(),
+    FrameMetadata metadata(frame_metadata_mojom->url.GetHost(),
+                           frame_metadata_mojom->url.GetPath(),
                            std::move(meta_tags));
     frame_metadata_structs.push_back(std::move(metadata));
   }

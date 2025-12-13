@@ -11,13 +11,12 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ambient_time_of_day_constants.h"
-#include "base/files/file_util.h"
 #include "base/system/sys_info.h"
 #include "chrome/common/chrome_paths.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/path_utils.h"
 #endif
 
@@ -119,9 +118,8 @@ bool IsAccessAllowedAndroid(const base::FilePath& path) {
   allowlist.insert(allowlist.end(), all_download_dirs.begin(),
                    all_download_dirs.end());
 
-  base::android::BuildInfo* build_info =
-      base::android::BuildInfo::GetInstance();
-  if (build_info->sdk_int() > base::android::SDK_VERSION_Q) {
+  if (base::android::android_info::sdk_int() >
+      base::android::android_info::SDK_VERSION_Q) {
     std::vector<base::FilePath> all_external_download_volumes =
         base::android::GetSecondaryStorageDownloadDirectories();
     allowlist.insert(allowlist.end(), all_external_download_volumes.begin(),

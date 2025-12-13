@@ -33,6 +33,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/unguessable_token.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
+#include "services/network/public/cpp/integrity_metadata.h"
 #include "services/network/public/cpp/integrity_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
@@ -148,7 +149,8 @@ class CORE_EXPORT ContentSecurityPolicyDelegate : public GarbageCollectedMixin {
   virtual void ReportBlockedScriptExecutionToInspector(
       const String& directive_text) = 0;
   virtual void DidAddContentSecurityPolicies(
-      WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>) = 0;
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>) = 0;
+  virtual bool ScriptSrcExtendedHashesEnabled() = 0;
 };
 
 class CORE_EXPORT ContentSecurityPolicy final
@@ -285,7 +287,7 @@ class CORE_EXPORT ContentSecurityPolicy final
                    const String& content,
                    const String& nonce,
                    const String& context_url,
-                   const WTF::OrdinalNumber& context_line,
+                   const OrdinalNumber& context_line,
                    ReportingDisposition = ReportingDisposition::kReport);
 
   static bool IsScriptInlineType(InlineType);
@@ -420,7 +422,7 @@ class CORE_EXPORT ContentSecurityPolicy final
   void SetSupportsWasmEval(bool value) { supports_wasm_eval_ = value; }
 
   // Retrieve the parsed policies.
-  const WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>&
+  const Vector<network::mojom::blink::ContentSecurityPolicyPtr>&
   GetParsedPolicies() const;
 
   // Retrieves the parsed sandbox flags. A lot of the time the execution
@@ -494,7 +496,7 @@ class CORE_EXPORT ContentSecurityPolicy final
   // checks a vector of csp hashes against policy, probably a good idea
   // to use in tandem with FillInCSPHashValues.
   static bool CheckHashAgainstPolicy(
-      Vector<network::mojom::blink::IntegrityMetadataPtr>&,
+      Vector<network::IntegrityMetadata>&,
       const network::mojom::blink::ContentSecurityPolicy&,
       InlineType);
 
@@ -518,7 +520,7 @@ class CORE_EXPORT ContentSecurityPolicy final
   // We put the hash functions used on the policy object so that we only need
   // to calculate digests using those hashing algorithms which show up in the
   // policy.
-  WTF::HashSet<IntegrityAlgorithm> hash_algorithms_used_;
+  HashSet<IntegrityAlgorithm> hash_algorithms_used_;
 
   // State flags used to configure the environment after parsing a policy.
   network::mojom::blink::WebSandboxFlags sandbox_mask_;

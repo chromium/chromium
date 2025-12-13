@@ -142,19 +142,12 @@ void UndoStack::ElementRemoved(Element* element) {
 
 String UndoStack::ToString() const {
   StringBuilder builder;
-  builder.Append("UndoStack {undo_stack:[");
-  const char* delimiter = "\n  ";
-  for (const auto& step : UndoSteps()) {
-    builder.Append(delimiter);
-    builder.Append(step->ToString());
-  }
-  builder.Append("], redo_stack:[");
-  delimiter = "\n  ";
-  for (const auto& step : RedoSteps()) {
-    builder.Append(delimiter);
-    builder.Append(step->ToString());
-    delimiter = ",\n  ";
-  }
+  builder.Append("UndoStack {undo_stack:[\n  ");
+  builder.AppendRange(UndoSteps(), ",\n  ",
+                      [](const auto& step) { return step->ToString(); });
+  builder.Append("], redo_stack:[\n  ");
+  builder.AppendRange(RedoSteps(), ",\n  ",
+                      [](const auto& step) { return step->ToString(); });
   builder.Append("]}");
   return builder.ReleaseString();
 }

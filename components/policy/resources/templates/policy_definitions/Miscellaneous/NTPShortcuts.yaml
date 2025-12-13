@@ -1,0 +1,49 @@
+caption: Setting shortcuts on the New Tab Page
+desc: |-
+  Setting the policy pre-configures up to 10 custom shortcuts on the <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> New Tab page.
+
+  If set, users will see these shortcuts by default, in addition to their personal shortcuts. Users can control visibility of their organization's shortcuts on the "Customize Chrome" panel.
+
+  Shortcut URLs must be unique.
+
+  If <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME">allow_user_edit</ph> is set to true, users can change the name of the shortcut. If set to false or unset, users cannot edit the name.
+
+  If <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME">allow_user_delete</ph> is set to true, users can remove the shortcut. If set to false or unset, users cannot remove the shortcut.
+example_value:
+- name: Google
+  url: https://www.google.com
+- name: YouTube
+  url: https://www.youtube.com
+- name: Google Drive
+  url: https://www.drive.google.com
+  allow_user_edit: true
+  allow_user_delete: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- alexwchen@chromium.org
+- rtatum@google.com
+- tiborg@chromium.org
+- chrome-desktop-ntp@google.com
+schema:
+  type: array
+  items:
+    type: object
+    properties:
+      name:
+        type: string
+      url:
+        type: string
+      allow_user_edit:
+        type: boolean
+      allow_user_delete:
+        type: boolean
+    required:
+    - name
+    - url
+supported_on:
+- chrome.*:141-
+- chrome_os:141-
+tags: []
+type: dict

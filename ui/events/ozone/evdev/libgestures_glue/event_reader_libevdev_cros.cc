@@ -7,8 +7,10 @@
 #include <errno.h>
 #include <libevdev/libevdev.h>
 #include <linux/input.h>
+
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -54,14 +56,12 @@ EventReaderLibevdevCros::EventReaderLibevdevCros(
   // This class assumes it does not deal with internal keyboards.
   CHECK(!has_keyboard_ || type() != INPUT_DEVICE_INTERNAL);
 
-  memset(&evdev_, 0, sizeof(evdev_));
   evdev_.log = OnLogMessage;
   evdev_.log_udata = this;
   evdev_.syn_report = OnSynReport;
   evdev_.syn_report_udata = this;
   evdev_.fd = fd.release();
 
-  memset(&evstate_, 0, sizeof(evstate_));
   evdev_.evstate = &evstate_;
   Event_Init(&evdev_);
 

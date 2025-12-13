@@ -97,7 +97,6 @@ BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
   }
 
   UseCounter::Count(document, mojom::blink::WebFeature::kPrivacySandboxAdsAPIs);
-  UseCounter::Count(document, mojom::blink::WebFeature::kTopicsAPIAll);
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<BrowsingTopic>>>(
@@ -170,7 +169,7 @@ BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
 
   document_host_->GetBrowsingTopics(
       /*observe=*/!options->skipObservation(),
-      WTF::BindOnce(
+      blink::BindOnce(
           [](ScriptPromiseResolver<IDLSequence<BrowsingTopic>>* resolver,
              BrowsingTopicsDocumentSupplement* supplement,
              base::TimeTicks start_time,

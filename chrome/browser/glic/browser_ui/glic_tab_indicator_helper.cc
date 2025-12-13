@@ -9,37 +9,39 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace glic {
+DEFINE_USER_DATA(GlicTabIndicatorHelper);
+
+GlicTabIndicatorHelper* GlicTabIndicatorHelper::From(tabs::TabInterface* tab) {
+  return Get(tab->GetUnownedUserDataHost());
+}
 
 GlicTabIndicatorHelper::GlicTabIndicatorHelper(tabs::TabInterface* tab)
-    : tab_(tab) {
-  auto* const service = GlicKeyedServiceFactory::GetGlicKeyedService(
-      tab_->GetBrowserWindowInterface()->GetProfile());
-
+    : tab_(tab),
+      glic_keyed_service_(GlicKeyedServiceFactory::GetGlicKeyedService(
+          tab_->GetBrowserWindowInterface()->GetProfile())),
+      scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {
   subscriptions_.push_back(
-      service->sharing_manager().AddFocusedTabChangedCallback(
+      glic_keyed_service_->sharing_manager().AddFocusedTabChangedCallback(
           base::BindRepeating(&GlicTabIndicatorHelper::OnFocusedTabChanged,
                               base::Unretained(this))));
   subscriptions_.push_back(
-      service->AddContextAccessIndicatorStatusChangedCallback(
+      glic_keyed_service_->AddContextAccessIndicatorStatusChangedCallback(
           base::BindRepeating(&GlicTabIndicatorHelper::OnIndicatorStatusChanged,
                               base::Unretained(this))));
   subscriptions_.push_back(
-      service->sharing_manager().AddTabPinningStatusChangedCallback(
-          base::BindRepeating(
-              &GlicTabIndicatorHelper::OnTabPinningStatusChanged,
-              base::Unretained(this))));
-
-  subscriptions_.push_back(
-      service->sharing_manager().AddTabPinningStatusChangedCallback(
+      glic_keyed_service_->sharing_manager().AddTabPinningStatusChangedCallback(
           base::BindRepeating(
               &GlicTabIndicatorHelper::OnTabPinningStatusChanged,
               base::Unretained(this))));
@@ -53,10 +55,42 @@ GlicTabIndicatorHelper::GlicTabIndicatorHelper(tabs::TabInterface* tab)
 
 GlicTabIndicatorHelper::~GlicTabIndicatorHelper() = default;
 
+base::CallbackListSubscription
+GlicTabIndicatorHelper::RegisterGlicAccessingStateChange(
+    GlicAlertStateChangeCallbackList::CallbackType accessing_change_callback) {
+  return glic_accessing_change_callbacks_.Add(
+      std::move(accessing_change_callback));
+}
+
+base::CallbackListSubscription
+GlicTabIndicatorHelper::RegisterGlicSharingStateChange(
+    GlicAlertStateChangeCallbackList::CallbackType sharing_change_callback) {
+  return glic_sharing_change_callbacks_.Add(std::move(sharing_change_callback));
+}
+
 void GlicTabIndicatorHelper::UpdateTab() {
   if (is_detached_) {
     return;
   }
+
+  const bool is_glic_sharing =
+      glic_keyed_service_->sharing_manager().IsTabPinned(tab_->GetHandle());
+  const bool is_glic_accessing =
+      glic_keyed_service_->IsContextAccessIndicatorShown(tab_->GetContents());
+
+  if (is_glic_sharing_ != is_glic_sharing) {
+    is_glic_sharing_ = is_glic_sharing;
+    glic_sharing_change_callbacks_.Notify(is_glic_sharing_);
+  }
+
+  if (is_glic_accessing_ != is_glic_accessing) {
+    is_glic_accessing_ = is_glic_accessing;
+    glic_accessing_change_callbacks_.Notify(is_glic_accessing_);
+  }
+
+  // TODO(crbug.com/422748580): The model should not be notified when the alert
+  // state changes after all clients that cares about tab alerts subscribe to
+  // the TabAlertController.
   auto* const model = tab_->GetBrowserWindowInterface()->GetTabStripModel();
   const int index = model->GetIndexOfTab(tab_);
   model->UpdateWebContentsStateAt(index, TabChangeType::kAll);
@@ -81,9 +115,8 @@ void GlicTabIndicatorHelper::OnFocusedTabChanged(
 }
 
 void GlicTabIndicatorHelper::OnIndicatorStatusChanged(bool enabled) {
-  auto* const service = GlicKeyedServiceFactory::GetGlicKeyedService(
-      tab_->GetBrowserWindowInterface()->GetProfile());
-  bool is_pinned = service->sharing_manager().IsTabPinned(tab_->GetHandle());
+  bool is_pinned =
+      glic_keyed_service_->sharing_manager().IsTabPinned(tab_->GetHandle());
   if (tab_is_focused_ || is_pinned) {
     UpdateTab();
   }

@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 
 #include "base/files/file_util.h"
+#include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -28,6 +29,7 @@ GetGenAILocalFoundationalModelEnterprisePolicySettings(
 
 std::unique_ptr<proto::OnDeviceModelExecutionConfig>
 ReadOnDeviceModelExecutionConfig(const base::FilePath& config_path) {
+  TRACE_EVENT("optimization_guide", "ReadOnDeviceModelExecutionConfig");
   // Unpack and verify model config file.
   std::string binary_config_pb;
   if (!base::ReadFileToString(config_path, &binary_config_pb)) {
@@ -39,14 +41,6 @@ ReadOnDeviceModelExecutionConfig(const base::FilePath& config_path) {
     return nullptr;
   }
   return config;
-}
-
-bool WasOnDeviceEligibleFeatureRecentlyUsed(ModelBasedCapabilityKey feature,
-                                            const PrefService& local_state) {
-  if (!features::internal::GetOptimizationTargetForCapability(feature)) {
-    return false;
-  }
-  return model_execution::prefs::WasFeatureRecentlyUsed(&local_state, feature);
 }
 
 }  // namespace optimization_guide

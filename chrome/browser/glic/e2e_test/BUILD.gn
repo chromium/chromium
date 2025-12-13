@@ -37,6 +37,7 @@ source_set("e2e_test_support") {
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//content/public/browser",
     "//content/test:test_support",
   ]
   if (checkout_glic_e2e_tests) {
@@ -80,7 +81,7 @@ test("glic_internal_e2e_interactive_ui_tests") {
 
     # TODO(crbug.com/399665693): Remove unneeded deps after refactoring.
     # Required for translate_bubble_test_utils_views.cc
-    "//chrome/browser/ui/browser_window:browser_window",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/translate:test_support",
     "//chrome/test:chrome_test_launcher",
     "//chrome/test:test_support",
@@ -90,7 +91,10 @@ test("glic_internal_e2e_interactive_ui_tests") {
   if (checkout_glic_e2e_tests) {
     # Real internal test code is defined in this target.
     deps += [ "internal:e2e_tests" ]
-    data += [ "internal/wpr_recordings/" ]
+    data += [
+      "internal/wpr_recordings/",
+      "internal/test_data/",
+    ]
   }
 
   if (use_aura) {

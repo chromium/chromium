@@ -86,7 +86,7 @@ public class SadTabTest {
     @SmallTest
     @Feature({"SadTab"})
     public void testSadTabShownWhenRendererProcessKilled() {
-        final Tab tab = mInitialPage.loadedTabElement.get();
+        final Tab tab = mInitialPage.loadedTabElement.value();
 
         Assert.assertFalse(isShowingSadTab(tab));
         simulateRendererKilled(tab, true);
@@ -101,7 +101,7 @@ public class SadTabTest {
     @SmallTest
     @Feature({"SadTab"})
     public void testSadTabNotShownWhenRendererProcessKilledInBackround() {
-        final Tab tab = mInitialPage.loadedTabElement.get();
+        final Tab tab = mInitialPage.loadedTabElement.value();
 
         Assert.assertFalse(isShowingSadTab(tab));
         simulateRendererKilled(tab, false);
@@ -113,7 +113,7 @@ public class SadTabTest {
     @SmallTest
     @Feature({"SadTab"})
     public void testSadTabReloadAfterKill() throws Throwable {
-        final Tab tab = mInitialPage.loadedTabElement.get();
+        final Tab tab = mInitialPage.loadedTabElement.value();
 
         TestWebServer webServer = TestWebServer.start();
         try {
@@ -132,7 +132,7 @@ public class SadTabTest {
     @SmallTest
     @Feature({"SadTab"})
     public void testSadTabNoReloadAfterLoad() throws Throwable {
-        final Tab tab = mInitialPage.loadedTabElement.get();
+        final Tab tab = mInitialPage.loadedTabElement.value();
 
         TestWebServer webServer = TestWebServer.start();
         try {
@@ -157,7 +157,7 @@ public class SadTabTest {
     @SmallTest
     @Feature({"SadTab"})
     public void testSadTabPageButtonText() throws IllegalArgumentException {
-        final Tab tab = mInitialPage.loadedTabElement.get();
+        final Tab tab = mInitialPage.loadedTabElement.value();
 
         Assert.assertFalse(isShowingSadTab(tab));
         simulateRendererKilled(tab, true);
@@ -202,7 +202,7 @@ public class SadTabTest {
         FullscreenManagerTestUtils.waitForBrowserControlsToBeMoveable(
                 mActivityTestRule.getActivity());
         FullscreenManagerTestUtils.scrollBrowserControls(mActivityTestRule.getActivity(), false);
-        simulateRendererKilled(mActivityTestRule.getActivity().getActivityTab(), true);
+        simulateRendererKilled(mActivityTestRule.getActivityTab(), true);
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(
                 mActivityTestRule.getActivity(), 0);
     }

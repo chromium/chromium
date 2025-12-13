@@ -26,7 +26,7 @@ public interface SessionHandler {
     /**
      * @return The session this {@link SessionHandler} is associated with.
      */
-    SessionHolder<?> getSession();
+    @Nullable SessionHolder<?> getSession();
 
     /**
      * Finds the action button with the given id, and updates it with the new content.
@@ -40,7 +40,9 @@ public interface SessionHandler {
      * @return Whether this update is successful.
      */
     boolean updateRemoteViews(
-            RemoteViews remoteViews, int[] clickableIDs, PendingIntent pendingIntent);
+            @Nullable RemoteViews remoteViews,
+            int @Nullable [] clickableIDs,
+            @Nullable PendingIntent pendingIntent);
 
     /**
      * Updates the {@link PendingIntent} to be sent when the user swipes up from the secondary

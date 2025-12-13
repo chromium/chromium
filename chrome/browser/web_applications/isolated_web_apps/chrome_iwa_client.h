@@ -17,16 +17,23 @@ class ChromeIwaClient : public IwaClient {
   // `web_app::IwaClient::GetInstance()`.
   static void CreateSingleton();
 
+  // IwaClient:
   base::expected<void, std::string> ValidateTrust(
       content::BrowserContext* browser_context,
       const web_package::SignedWebBundleId& web_bundle_id,
       bool dev_mode) override;
-
-  base::expected<web_package::SignedWebBundleId, std::string>
-  CreateWebBundleIdFromURL(const GURL& url) override;
-
-  GURL CreateBaseURLForWebBundleId(
-      const web_package::SignedWebBundleId& web_bundle_id) override;
+  void RunWhenAppCloses(content::BrowserContext* browser_context,
+                        const web_package::SignedWebBundleId& web_bundle_id,
+                        base::OnceClosure callback) override;
+  void GetIwaSourceForRequest(
+      content::BrowserContext* browser_context,
+      const web_package::SignedWebBundleId& web_bundle_id,
+      const network::ResourceRequest& request,
+      const std::optional<content::FrameTreeNodeId>& frame_tree_node,
+      base::OnceCallback<void(
+          base::expected<IwaSourceWithModeOrGeneratedResponse, std::string>)>
+          callback) override;
+  IwaRuntimeDataProvider* GetRuntimeDataProvider() override;
 
  private:
   ChromeIwaClient() = default;

@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/simple_test_clock.h"
@@ -22,13 +23,13 @@
 #include "chrome/browser/ash/power/ml/idle_event_notifier.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/user_session_activity.pb.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
@@ -115,7 +116,8 @@ class UserSessionActivityReporterTest : public ::testing::Test {
 
   std::unique_ptr<ash::SessionTerminationManager> session_termination_manager_;
 
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -249,8 +251,9 @@ TEST_F(UserSessionActivityReporterTest, ReportWhenSessionEnds) {
 
   // Expect the delegate to report session activity.
   base::RunLoop run_loop;
-  EXPECT_CALL(*delegate, ReportSessionActivity())
-      .WillOnce(testing::Invoke([&run_loop]() { run_loop.Quit(); }));
+  EXPECT_CALL(*delegate, ReportSessionActivity()).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
 
   std::unique_ptr<UserSessionActivityReporter> reporter = CreateReporter(
       &managed_session_service, fake_user_manager_.Get(), std::move(delegate));

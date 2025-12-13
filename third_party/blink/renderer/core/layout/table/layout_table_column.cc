@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/layout/table/table_borders.h"
 #include "third_party/blink/renderer/core/layout/table/table_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/table/table_layout_algorithm_types.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -57,8 +56,10 @@ void LayoutTableColumn::Trace(Visitor* visitor) const {
   LayoutBox::Trace(visitor);
 }
 
-void LayoutTableColumn::StyleDidChange(StyleDifference diff,
-                                       const ComputedStyle* old_style) {
+void LayoutTableColumn::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   if (diff.HasDifference()) {
     if (LayoutTable* table = Table()) {
@@ -84,7 +85,7 @@ void LayoutTableColumn::StyleDidChange(StyleDifference diff,
       }
     }
   }
-  LayoutBox::StyleDidChange(diff, old_style);
+  LayoutBox::StyleDidChange(diff, old_style, style_change_context);
 }
 
 void LayoutTableColumn::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {
@@ -168,7 +169,7 @@ void LayoutTableColumn::UpdateFromElement() {
   }
 }
 
-PhysicalSize LayoutTableColumn::Size() const {
+PhysicalSize LayoutTableColumn::StitchedSize() const {
   NOT_DESTROYED();
   auto* table = Table();
   DCHECK(table);
@@ -210,13 +211,8 @@ PhysicalSize LayoutTableColumn::Size() const {
   return ToPhysicalSize(size, table->StyleRef().GetWritingMode());
 }
 
-PhysicalOffset LayoutTableColumn::PhysicalLocation(
-    const LayoutBox* location_container) const {
+PhysicalOffset LayoutTableColumn::PhysicalLocation() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-    return LayoutBox::PhysicalLocation(location_container);
-  }
-
   auto* table = Table();
   DCHECK(table);
   if (!table->PhysicalFragmentCount()) {
@@ -251,7 +247,6 @@ PhysicalOffset LayoutTableColumn::PhysicalLocation(
 
 PhysicalRect LayoutTableColumn::BoundingBoxRelativeToFirstFragment() const {
   NOT_DESTROYED();
-  DCHECK(RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
   std::optional<PhysicalOffset> first_offset_from_fragmentation_context_root;
   PhysicalRect bounding_rect;
 
@@ -277,10 +272,6 @@ void LayoutTableColumn::QuadsInAncestorInternal(
     const LayoutBoxModelObject* ancestor,
     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-    return LayoutBox::QuadsInAncestorInternal(quads, ancestor, mode);
-  }
-
   // Offset from the root fragmentation context to the first synthesized table
   // column fragment. When mapping to ancestors, it's all about the offsets from
   // the *first* fragment to the *first* container fragment, so any subsequent
@@ -317,88 +308,9 @@ void LayoutTableColumn::QuadsInAncestorInternal(
   }
 }
 
-DeprecatedLayoutPoint LayoutTableColumn::DeprecatedLocationInternal() const {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-  auto* table = Table();
-  DCHECK(table);
-  if (table->PhysicalFragmentCount() == 0) {
-    return DeprecatedLayoutPoint();
-  }
-
-  WritingDirectionMode direction = StyleRef().GetWritingDirection();
-  LayoutTableColumn* parent_colgroup = nullptr;
-  if (IsColumn()) {
-    parent_colgroup = DynamicTo<LayoutTableColumn>(Parent());
-    DCHECK(!parent_colgroup || parent_colgroup->IsColumnGroup());
-  }
-
-  LogicalOffset offset;
-  LogicalSize size;
-  LayoutUnit parent_colgroup_inline_size;
-  bool found_geometries = false;
-
-  for (auto& fragment : table->PhysicalFragments()) {
-    BoxStrut decorations =
-        (fragment.Padding() + fragment.Borders()).ConvertToLogical(direction);
-    if (!found_geometries && fragment.TableColumnGeometries()) {
-      // If there was a table relayout, and this column box doesn't have a
-      // corresponding column in the table anymore, the column_idx_ will not
-      // have been updated. Therefore if it is greater or equal to the number of
-      // table column geometries, or if the geometry at that index doesn't point
-      // to this layout box, we return early.
-      if (column_idx_ >= fragment.TableColumnGeometries()->size()) {
-        return DeprecatedLayoutPoint();
-      }
-      const auto& geometry = (*fragment.TableColumnGeometries())[column_idx_];
-      if (geometry.node.GetLayoutBox() != this) {
-        return DeprecatedLayoutPoint();
-      }
-
-      found_geometries = true;
-      offset.inline_offset = geometry.inline_offset;
-      if (parent_colgroup) {
-        const auto& parent_geometry =
-            (*fragment.TableColumnGeometries())[parent_colgroup->column_idx_];
-        offset.inline_offset -= parent_geometry.inline_offset;
-        parent_colgroup_inline_size = parent_geometry.inline_size;
-      }
-      size.inline_size = geometry.inline_size;
-
-      LogicalSize table_border_spacing = table->StyleRef().TableBorderSpacing();
-      size.block_size -= table_border_spacing.block_size * 2;
-      if (!parent_colgroup) {
-        offset.inline_offset +=
-            decorations.inline_start + table_border_spacing.inline_size;
-        offset.block_offset += decorations.block_start +
-                               table_border_spacing.block_size +
-                               fragment.TableGridRect().offset.block_offset;
-      }
-    }
-
-    size.block_size +=
-        fragment.TableGridRect().size.block_size - decorations.BlockSum();
-  }
-
-  PhysicalSize outer_size;
-  if (!parent_colgroup) {
-    outer_size = PhysicalSize(table->Size());
-  } else {
-    DCHECK_EQ(parent_colgroup->StyleRef().GetWritingDirection(), direction);
-    outer_size = ToPhysicalSize(
-        LogicalSize(parent_colgroup_inline_size, size.block_size),
-        direction.GetWritingMode());
-  }
-  PhysicalSize inner_size = ToPhysicalSize(size, direction.GetWritingMode());
-  return offset.ConvertToPhysical(direction, outer_size, inner_size)
-      .FaultyToDeprecatedLayoutPoint();
-}
-
 void LayoutTableColumn::ForAllSynthesizedFragments(
     base::FunctionRef<bool(const SynthesizedFragment&)> callback) const {
   NOT_DESTROYED();
-  DCHECK(RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
-
   auto* table = Table();
   DCHECK(table);
   DCHECK_GT(table->PhysicalFragmentCount(), 0u);

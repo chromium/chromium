@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+enum class SearchEngineLogoState;
+
 namespace content_suggestions {
 
 extern const CGFloat kHintTextScale;
@@ -14,20 +16,13 @@ extern const CGFloat kHintTextScale;
 // Bottom margin for the Return to Recent Tab tile.
 extern const CGFloat kReturnToRecentTabSectionBottomMargin;
 
-// Returns the proper height for the doodle. `logo_is_showing` is YES if showing
-// the Google logo. `doodle_is_showing` is YES if the doodle is showing. The
+// Returns the proper height for the doodle, based on `logo_state`. The
 // SizeClass of the `trait_collection` of the view displaying the doodle is used
 // in the computation.
-// TODO(crbug.com/396119930): Group `logo_is_showing` and `doodle_is_showing`
-// into an enum.
-CGFloat DoodleHeight(BOOL logo_is_showing,
-                     BOOL doodle_is_showing,
+CGFloat DoodleHeight(SearchEngineLogoState logo_state,
                      UITraitCollection* trait_collection);
 // Returns the proper margin to the top of the header for the doodle.
-// TODO(crbug.com/396119930): Group `logo_is_showing` and `doodle_is_showing`
-// into an enum.
-CGFloat DoodleTopMargin(BOOL logo_is_showing,
-                        BOOL doodle_is_showing,
+CGFloat DoodleTopMargin(SearchEngineLogoState logo_state,
                         UITraitCollection* trait_collection);
 // Returns the height of the separator line below the omnibox.
 CGFloat HeaderSeparatorHeight();
@@ -43,13 +38,8 @@ CGFloat FakeToolbarHeight();
 // The SizeClass of the `traitCollection` of the view displaying the search
 // field is used in the computation.
 CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection);
-// Returns the expected height of the header. `logo_is_showing` is YES if
-// showing the Google logo. `doodle_is_showing` is YES if the doodle is being
-// shown.
-// TODO(crbug.com/396119930): Group `logo_is_showing` and `doodle_is_showing`
-// into an enum.
-CGFloat HeightForLogoHeader(BOOL logo_is_showing,
-                            BOOL doodle_is_showing,
+// Returns the expected height of the header, based on `logo_state`.
+CGFloat HeightForLogoHeader(SearchEngineLogoState logo_state,
                             UITraitCollection* trait_collection);
 // Returns the bottom padding for the header. This represents the spacing
 // between the fake omnibox and the content suggestions tiles.
@@ -65,10 +55,12 @@ void ConfigureSearchHintLabel(UILabel* search_hint_label,
 // Configure the `voice_search_button` appearance.
 void ConfigureVoiceSearchButton(UIButton* voice_search_button,
                                 BOOL use_color_icon);
-// Configure the `lens_button` appearance.
+// Configure the `lens_button` appearance. If `new_badge_color` is nil, falls
+// back to the default badge color.
 void ConfigureLensButtonAppearance(UIButton* lens_button,
                                    BOOL use_new_badge,
-                                   BOOL use_color_icon);
+                                   BOOL use_color_icon,
+                                   UIColor* new_badge_color);
 // Configure the `lens_button` new badge's alpha.
 void ConfigureLensButtonWithNewBadgeAlpha(UIButton* lens_button,
                                           CGFloat new_badge_alpha);
@@ -82,11 +74,8 @@ UIView* NearestAncestor(UIView* view, Class of_class);
 // Returns the color of the search hint label in the fakebox.
 UIColor* SearchHintLabelColor();
 
-// Returns the string ID to be used to get the title of the SetUpList.
-int SetUpListTitleStringID();
-
-// Returns the localized title to be used for the SetUpList.
-NSString* SetUpListTitleString();
+// Returns the color to use for the Lens and Voice icons in the Fakebox.
+UIColor* DefaultIconTintColorWithAIMAllowed(bool aim_allowed);
 
 }  // namespace content_suggestions
 

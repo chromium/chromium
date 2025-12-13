@@ -115,6 +115,24 @@ enum class VerifyAppsEnabledResult {
   kMaxValue = SUCCESS_ALREADY_ENABLED,
 };
 
+// The result status of SafetyNet.listHarmfulApps.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.safe_browsing
+// TODO(b:449183636): Remove `FAILED` once internal usage is removed.
+enum class HasHarmfulAppsResultStatus {
+  SUCCESS = 0,
+  TIMEOUT = 1,
+  FAILED = 2,
+  // Failure occurred from SafetyNet API, see below for code definition
+  // https://developers.google.com/android/reference/com/google/android/gms/common/api/CommonStatusCodes
+  // or
+  // https://developers.google.com/android/reference/com/google/android/gms/safetynet/SafetyNetStatusCodes
+  API_FAILURE = 3,
+  // Error occurred locally in Chrome
+  LOCAL_FAILURE = 4,
+  UNKNOWN_FAILURE = 5,
+  kMaxValue = UNKNOWN_FAILURE,
+};
+
 // Translates |threat_type| and |threat_attributes| from the Safe Browsing API
 // into ThreatMetadata.
 ThreatMetadata GetThreatMetadataFromSafeBrowsingApi(

@@ -31,6 +31,7 @@
 
 namespace blink {
 
+bool IsCSSTokenizerIdentifier(const StringView&);
 // Common serializing methods. See:
 // https://drafts.csswg.org/cssom/#common-serializing-idioms
 void SerializeIdentifier(const String& identifier,

@@ -17,5 +17,9 @@ NSString* const kReadingListToolbarCancelButtonID =
 NSString* const kReadingListToolbarMarkButtonID =
     @"ReadingListToolbarMarkButton";
 
+NSString* const kReadingListLocalImageID = @"ReadingListLocalImageID";
+
+NSString* const kReadingListItemBadgeID = @"ReadingListItemBadgeID";
+
 NSString* const kLastReadingListEntryAddedFromMessages =
     @"LastReadingListEntryAddedFromMessages";

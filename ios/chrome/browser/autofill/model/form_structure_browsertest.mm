@@ -13,6 +13,7 @@
 #import "base/files/file_util.h"
 #import "base/memory/ptr_util.h"
 #import "base/path_service.h"
+#import "base/strings/strcat.h"
 #import "base/strings/string_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
@@ -164,8 +165,7 @@ class FormStructureBrowserTest
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
-  autofill::test::AutofillUnitTestEnvironment autofill_test_environment_{
-      {.disable_server_communication = true}};
+  autofill::test::AutofillBrowserTestEnvironment autofill_test_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
   std::unique_ptr<AutofillClient> autofill_client_;
@@ -185,15 +185,14 @@ FormStructureBrowserTest::FormStructureBrowserTest()
   TestProfileIOS::Builder builder;
   builder.AddTestingFactory(
       IOSChromeProfilePasswordStoreFactory::GetInstance(),
-      base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
-                          web::BrowserState,
-                          password_manager::MockPasswordStoreInterface>));
+      base::BindOnce(
+          &password_manager::BuildPasswordStoreInterface<
+              ProfileIOS, password_manager::MockPasswordStoreInterface>));
   builder.AddTestingFactory(
       IOSUserEventServiceFactory::GetInstance(),
-      base::BindRepeating(
-          [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
-            return std::make_unique<syncer::FakeUserEventService>();
-          }));
+      base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
+        return std::make_unique<syncer::FakeUserEventService>();
+      }));
   profile_ = std::move(builder).Build();
 
   web::WebState::CreateParams params(profile_.get());
@@ -206,7 +205,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           // TODO(crbug.com/40266396): Remove once launched.
           features::kAutofillEnableExpirationDateImprovements,
           features::kAutofillIgnoreCheckableElements,
-          features::kAutofillUnifyRationalizationAndSectioningOrder,
           // TODO(crbug.com/369503318): Remove once launched.
           features::kAutofillSupportSplitZipCode,
       },
@@ -333,10 +331,10 @@ std::string FormStructureBrowserTest::FormStructuresToString(
               section_index);
         }
       }
-      form_string += base::StrCat({field->Type().ToStringView(), " | ", name,
-                                   " | ", base::UTF16ToUTF8(field->label()),
-                                   " | ", base::UTF16ToUTF8(field->value()),
-                                   " | ", section, "\n"});
+      form_string += base::StrCat({field->Type().ToString(), " | ", name, " | ",
+                                   base::UTF16ToUTF8(field->label()), " | ",
+                                   base::UTF16ToUTF8(field->value()), " | ",
+                                   section, "\n"});
     }
     forms_string.push_back(form_string);
   }

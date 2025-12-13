@@ -4,7 +4,7 @@ desc: |-
   advanced JavaScript optimizations are enabled.
 
   For detailed information on valid site url patterns, please see
-  https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+  https://chromeenterprise.google/policies/url-patterns.
   Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
 
   JavaScript optimization policy exceptions will only be enforced at a site

@@ -40,9 +40,11 @@ source_set("content_settings") {
       "javascript_optimizer_provider_android.h",
       "request_desktop_site_web_contents_observer_android.h",
     ]
+    public_deps += [ "//chrome/browser/preferences:android" ]
   } else {
     sources += [
       "generated_cookie_prefs.h",
+      "generated_javascript_optimizer_pref.h",
       "generated_permission_prompting_behavior_pref.h",
     ]
 
@@ -78,6 +80,8 @@ source_set("impl") {
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
+    "//chrome/browser/site_protection",
+    "//chrome/browser/ui/tabs:utils",
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
@@ -101,6 +105,7 @@ source_set("impl") {
   } else {
     sources += [
       "generated_cookie_prefs.cc",
+      "generated_javascript_optimizer_pref.cc",
       "generated_permission_prompting_behavior_pref.cc",
     ]
 
@@ -147,6 +152,7 @@ source_set("content_settings_factory_impl") {
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
+    "//chrome/browser/webid",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
     "//components/permissions:permissions_common",
@@ -161,7 +167,10 @@ source_set("content_settings_factory_impl") {
   }
 
   if (is_android) {
-    deps += [ "//chrome/browser/notifications:notifications_java_enum_srcjar" ]
+    deps += [
+      "//chrome/browser/flags:flags_android",
+      "//chrome/browser/notifications:notifications_java_enum_srcjar",
+    ]
   }
 }
 
@@ -183,7 +192,10 @@ source_set("content_settings_util_impl") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   if (!is_android) {
-    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
+    deps += [
+      "//chrome/browser/ui/location_bar",
+      "//chrome/browser/ui/tabs:tab_strip",
+    ]
   }
 }
 
@@ -212,7 +224,6 @@ if (!is_android) {
       "//content/public/browser",
       "//content/public/common",
       "//content/test:test_support",
-      "//net:test_support",
       "//net:test_support",
       "//testing/gtest",
       "//third_party/blink/public/common",
@@ -282,6 +293,7 @@ source_set("unit_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/tabs:tab_enums",
+    "//chrome/browser/ui/tabs:utils",
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
@@ -315,7 +327,10 @@ source_set("unit_tests") {
   if (is_android) {
     sources += [ "javascript_optimizer_provider_android_unittest.cc" ]
   } else {
-    sources += [ "generated_cookie_prefs_unittest.cc" ]
+    sources += [
+      "generated_cookie_prefs_unittest.cc",
+      "generated_javascript_optimizer_pref_unittest.cc",
+    ]
 
     deps += [
       "//chrome/browser/extensions",

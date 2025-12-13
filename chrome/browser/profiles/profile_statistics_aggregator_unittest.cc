@@ -67,8 +67,7 @@ class ProfileStatisticsAggregatorTest : public testing::Test {
         base::CreateUniqueTempDirectoryScopedToTest(),
         /*download_interrupt_reason_none=*/0,
         /*download_interrupt_reason_crash=*/0, version_info::Channel::UNKNOWN));
-    profile_password_store_->Init(&pref_service_,
-                                  /*affiliated_match_helper=*/nullptr);
+    profile_password_store_->Init(/*affiliated_match_helper=*/nullptr);
     autofill_web_data_service_->Init(base::DoNothing());
   }
 

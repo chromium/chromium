@@ -6,12 +6,14 @@
 #define COMPONENTS_METRICS_DWA_DWA_ENTRY_BUILDER_BASE_H_
 
 #include <cstdint>
-#include <optional>
 #include <string>
-#include <unordered_map>
+#include <string_view>
 
-#include "components/metrics/dwa/dwa_recorder.h"
 #include "components/metrics/dwa/mojom/dwa_interface.mojom.h"
+
+namespace metrics::dwa {
+class DwaRecorder;
+}
 
 namespace dwa::internal {
 

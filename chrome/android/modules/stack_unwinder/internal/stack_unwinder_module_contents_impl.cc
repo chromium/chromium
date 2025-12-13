@@ -24,3 +24,5 @@ static jlong JNI_StackUnwinderModuleContentsImpl_GetDoNothingFunction(
     JNIEnv* env) {
   return reinterpret_cast<jlong>(&DoNothing);
 }
+
+DEFINE_JNI(StackUnwinderModuleContentsImpl)

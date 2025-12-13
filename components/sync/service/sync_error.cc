@@ -9,10 +9,31 @@
 
 namespace syncer {
 
+// static
+SyncError SyncError::CreateFromModelError(const ModelError& model_error) {
+  return SyncError(model_error.location(), MODEL_ERROR, model_error.ToString(),
+                   model_error.type());
+}
+
+// static
+SyncError SyncError::CreateFromErrorType(const base::Location& location,
+                                         ErrorType error_type,
+                                         const std::string& message) {
+  CHECK_NE(error_type, MODEL_ERROR);
+  return SyncError(location, error_type, message, std::nullopt);
+}
+
 SyncError::SyncError(const base::Location& location,
                      ErrorType error_type,
-                     const std::string& message)
-    : location_(location), message_(message), error_type_(error_type) {}
+                     const std::string& message,
+                     std::optional<ModelError::Type> model_error_type)
+    : location_(location),
+      message_(message),
+      error_type_(error_type),
+      model_error_type_(model_error_type) {
+  // `model_error_type` should be passed iff `error_type` is `MODEL_ERROR`.
+  CHECK(error_type != MODEL_ERROR || model_error_type.has_value());
+}
 
 SyncError::~SyncError() = default;
 
@@ -26,6 +47,11 @@ const std::string& SyncError::message() const {
 
 SyncError::ErrorType SyncError::error_type() const {
   return error_type_;
+}
+
+std::optional<ModelError::Type> SyncError::model_error_type() const {
+  CHECK_EQ(error_type_, MODEL_ERROR);
+  return model_error_type_;
 }
 
 std::string SyncError::GetMessagePrefix() const {

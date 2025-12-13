@@ -32,6 +32,7 @@ static_library("camera_mic") {
     "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/notifications",
     "//chrome/browser/ui/webui/ash/settings/app_management",
     "//components/vector_icons",
     "//content/public/browser",

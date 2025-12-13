@@ -2,6 +2,7 @@ Name: Liberation Sans Width Variants Test Font
 Short Name: LiberationSansWidthVariants
 URL: https://github.com/liberationfonts/liberation-fonts
 Version: 2.000
+Update Mechanism: Static (https://crbug.com/422924001)
 License: OFL-1.1
 License File: LICENSE
 Security Critical: no

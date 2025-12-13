@@ -18,9 +18,6 @@ CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface CSSColorValue
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     method constructor
-CONSOLE MESSAGE:     method toHSL
-CONSOLE MESSAGE:     method toHWB
-CONSOLE MESSAGE:     method toRGB
 CONSOLE MESSAGE: interface CSSHSL : CSSColorValue
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter alpha
@@ -76,6 +73,13 @@ CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface CSSMathProduct : CSSMathValue
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter values
+CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE: interface CSSMathRandom : CSSMathValue
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter baseValue
+CONSOLE MESSAGE:     getter max
+CONSOLE MESSAGE:     getter min
+CONSOLE MESSAGE:     getter step
 CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface CSSMathSum : CSSMathValue
 CONSOLE MESSAGE:     attribute @@toStringTag
@@ -387,6 +391,17 @@ CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     method releaseLock
 CONSOLE MESSAGE:     method write
 CONSOLE MESSAGE: [NAMESPACES]
+CONSOLE MESSAGE: namespace Temporal
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     attribute Now
+CONSOLE MESSAGE:     method Duration
+CONSOLE MESSAGE:     method Instant
+CONSOLE MESSAGE:     method PlainDate
+CONSOLE MESSAGE:     method PlainDateTime
+CONSOLE MESSAGE:     method PlainMonthDay
+CONSOLE MESSAGE:     method PlainTime
+CONSOLE MESSAGE:     method PlainYearMonth
+CONSOLE MESSAGE:     method ZonedDateTime
 CONSOLE MESSAGE: namespace console
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     method assert
@@ -436,9 +451,6 @@ CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface CSSColorValue
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     method constructor
-CONSOLE MESSAGE:     method toHSL
-CONSOLE MESSAGE:     method toHWB
-CONSOLE MESSAGE:     method toRGB
 CONSOLE MESSAGE: interface CSSHSL : CSSColorValue
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter alpha
@@ -494,6 +506,13 @@ CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface CSSMathProduct : CSSMathValue
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     getter values
+CONSOLE MESSAGE:     method constructor
+CONSOLE MESSAGE: interface CSSMathRandom : CSSMathValue
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     getter baseValue
+CONSOLE MESSAGE:     getter max
+CONSOLE MESSAGE:     getter min
+CONSOLE MESSAGE:     getter step
 CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE: interface CSSMathSum : CSSMathValue
 CONSOLE MESSAGE:     attribute @@toStringTag
@@ -805,6 +824,17 @@ CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     method releaseLock
 CONSOLE MESSAGE:     method write
 CONSOLE MESSAGE: [NAMESPACES]
+CONSOLE MESSAGE: namespace Temporal
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     attribute Now
+CONSOLE MESSAGE:     method Duration
+CONSOLE MESSAGE:     method Instant
+CONSOLE MESSAGE:     method PlainDate
+CONSOLE MESSAGE:     method PlainDateTime
+CONSOLE MESSAGE:     method PlainMonthDay
+CONSOLE MESSAGE:     method PlainTime
+CONSOLE MESSAGE:     method PlainYearMonth
+CONSOLE MESSAGE:     method ZonedDateTime
 CONSOLE MESSAGE: namespace console
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     method assert

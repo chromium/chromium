@@ -11,7 +11,8 @@
 
 #include "base/path_service.h"
 #include "base/test/scoped_run_loop_timeout.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_ui.h"
 #include "chrome/test/base/web_ui_test_data_source.h"
 #include "chrome/test/data/webui/chromeos/settings/test_api.test-mojom-test-utils.h"
@@ -114,13 +115,12 @@ void OSSettingsBrowserTestMixin::SetUpOnMainThread() {
 mojo::Remote<mojom::OSSettingsDriver>
 OSSettingsBrowserTestMixin::OpenOSSettings(const std::string& relative_url) {
   // Open os-settings page.
-  BrowserList* browser_list = BrowserList::GetInstance();
-  CHECK(browser_list);
-  Browser* browser = browser_list->GetLastActive();
+  BrowserWindowInterface* const browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
 
   GURL test_url("chrome://os-settings" + relative_url);
-  content::RenderFrameHost* render_frame_host =
-      ui_test_utils::NavigateToURL(browser, test_url);
+  content::RenderFrameHost* render_frame_host = ui_test_utils::NavigateToURL(
+      browser->GetBrowserForMigrationOnly(), test_url);
 
   // Load test_api.js to register the os settings driver mojo implementation.
   static const char* script = R"(

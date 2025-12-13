@@ -42,6 +42,10 @@ ResultExpr ImeProcessPolicy::EvaluateSyscall(int sysno) const {
     case __NR_getrusage:
       return RestrictGetrusage();
 #endif
+#if defined(__NR_prlimit64)
+    case __NR_prlimit64:
+      return RestrictPrlimitToGetrlimit(GetPolicyPid());
+#endif
     default:
       auto* sandbox_linux = SandboxLinux::GetInstance();
       if (sandbox_linux->ShouldBrokerHandleSyscall(sysno))

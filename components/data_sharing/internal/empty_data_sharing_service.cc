@@ -128,6 +128,10 @@ void EmptyDataSharingService::GetAvatarImageForURL(
 void EmptyDataSharingService::SetSDKDelegate(
     std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) {}
 
+DataSharingSDKDelegate* EmptyDataSharingService::GetSDKDelegate() {
+  return nullptr;
+}
+
 void EmptyDataSharingService::SetUIDelegate(
     std::unique_ptr<DataSharingUIDelegate> ui_delegate) {}
 
@@ -148,5 +152,9 @@ PreviewServerProxy* EmptyDataSharingService::GetPreviewServerProxyForTesting() {
 
 void EmptyDataSharingService::OnCollaborationGroupRemoved(
     const GroupId& group_id) {}
+
+bool EmptyDataSharingService::IsContextIdShared(const ContextId& context_id) {
+  return false;
+}
 
 }  // namespace data_sharing

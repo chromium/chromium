@@ -33,7 +33,7 @@ namespace gl {
 namespace {
 
 constexpr gfx::BufferUsage kUsage = gfx::BufferUsage::SCANOUT;
-constexpr gfx::BufferFormat kFormat = gfx::BufferFormat::BGRA_8888;
+constexpr viz::SharedImageFormat kFormat = viz::SinglePlaneFormat::kBGRA_8888;
 
 bool SkipTest() {
   ui::OzonePlatform::InitParams params;
@@ -89,8 +89,7 @@ class NativePixmapGLBindingTest : public testing::Test {
     scoped_refptr<gfx::NativePixmap> pixmap =
         surface_factory->CreateNativePixmap(gfx::kNullAcceleratedWidget,
                                             nullptr, size, kFormat, kUsage);
-    DCHECK(pixmap) << "Offending format: "
-                   << gfx::BufferFormatToString(kFormat);
+    DCHECK(pixmap) << "Offending format: " << kFormat.ToString();
 
     // Create a dummy texture ID to bind - these tests don't actually care about
     // binding.

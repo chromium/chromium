@@ -16,16 +16,17 @@
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace variations {
 namespace android {
 
-ScopedJavaLocalRef<jstring> JNI_VariationsAssociatedData_GetVariationParamValue(
+static ScopedJavaLocalRef<jstring>
+JNI_VariationsAssociatedData_GetVariationParamValue(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jtrial_name,
-    const JavaParamRef<jstring>& jparam_name) {
+    const JavaRef<jstring>& jtrial_name,
+    const JavaRef<jstring>& jparam_name) {
   std::string trial_name(ConvertJavaStringToUTF8(env, jtrial_name));
   std::string param_name(ConvertJavaStringToUTF8(env, jparam_name));
   std::string param_value =
@@ -33,15 +34,15 @@ ScopedJavaLocalRef<jstring> JNI_VariationsAssociatedData_GetVariationParamValue(
   return ConvertUTF8ToJavaString(env, param_value);
 }
 
-ScopedJavaLocalRef<jstring> JNI_VariationsAssociatedData_GetFeedbackVariations(
-    JNIEnv* env) {
+static ScopedJavaLocalRef<jstring>
+JNI_VariationsAssociatedData_GetFeedbackVariations(JNIEnv* env) {
   const std::string values =
       VariationsIdsProvider::GetInstance()->GetVariationsString();
   return ConvertUTF8ToJavaString(env, values);
 }
 
-ScopedJavaLocalRef<jstring> JNI_VariationsAssociatedData_GetVariationsState(
-    JNIEnv* env) {
+static ScopedJavaLocalRef<jstring>
+JNI_VariationsAssociatedData_GetVariationsState(JNIEnv* env) {
   if (!base::FeatureList::IsEnabled(variations::kFeedbackIncludeVariations)) {
     return nullptr;
   }
@@ -58,8 +59,8 @@ ScopedJavaLocalRef<jstring> JNI_VariationsAssociatedData_GetVariationsState(
   return ConvertUTF8ToJavaString(env, value);
 }
 
-ScopedJavaLocalRef<jstring> JNI_VariationsAssociatedData_GetGoogleAppVariations(
-    JNIEnv* env) {
+static ScopedJavaLocalRef<jstring>
+JNI_VariationsAssociatedData_GetGoogleAppVariations(JNIEnv* env) {
   const std::string values =
       VariationsIdsProvider::GetInstance()->GetGoogleAppVariationsString();
   return ConvertUTF8ToJavaString(env, values);
@@ -67,3 +68,5 @@ ScopedJavaLocalRef<jstring> JNI_VariationsAssociatedData_GetGoogleAppVariations(
 
 }  // namespace android
 }  // namespace variations
+
+DEFINE_JNI(VariationsAssociatedData)

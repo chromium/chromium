@@ -15,6 +15,8 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace aura {
@@ -40,6 +42,11 @@ class ASH_EXPORT AnnotatorController : public AnnotatorControllerBase {
   AnnotatorController(const AnnotatorController&) = delete;
   AnnotatorController& operator=(const AnnotatorController&) = delete;
   ~AnnotatorController() override;
+
+  class AnnotatorObserver : public base::CheckedObserver {
+   public:
+    virtual void OnAnnotatorStateChanged(bool enabled) {}
+  };
 
   bool is_annotator_enabled() const { return annotator_enabled_; }
   AnnotationSourceWatcher* annotation_source_watcher() {
@@ -72,6 +79,7 @@ class ASH_EXPORT AnnotatorController : public AnnotatorControllerBase {
   void CreateAnnotationOverlayForWindow(
       aura::Window* window,
       std::optional<gfx::Rect> partial_region_bounds);
+  void CreateAnnotationOverlayForMarkerMode(aura::Window* window);
 
   // AnnotatorControllerBase:
   void SetToolClient(AnnotatorClient* client) override;
@@ -88,6 +96,9 @@ class ASH_EXPORT AnnotatorController : public AnnotatorControllerBase {
   // Updates the accessible name of the |annotation_tray_| in the accessibility
   // cache.
   void UpdateAnnotationTrayAccessibleName(bool is_annotator_enabled);
+  // Adds/removes the specified |observer|.
+  void AddObserver(AnnotatorObserver* observer);
+  void RemoveObserver(AnnotatorObserver* observer);
 
   void set_canvas_initialized_callback_for_test(base::OnceClosure callback) {
     on_canvas_initialized_callback_for_test_ = std::move(callback);
@@ -103,6 +114,8 @@ class ASH_EXPORT AnnotatorController : public AnnotatorControllerBase {
   // targeting the underlying window. Otherwise, it's hidden and cannot accept
   // any events.
   void ToggleAnnotatorCanvas();
+  // Notifies observers that the |annotator_enabled_| state has changed.
+  void NotifyStateChanged();
   raw_ptr<AnnotatorClient> client_ = nullptr;
   // True if the canvas is initialized successfully, false if it failed to
   // initialize. An absent value indicates that the initialization has not
@@ -116,6 +129,7 @@ class ASH_EXPORT AnnotatorController : public AnnotatorControllerBase {
   // Controls and owns the overlay widget, which is used to host annotations.
   std::unique_ptr<AnnotationsOverlayController> annotations_overlay_controller_;
   std::unique_ptr<AnnotationSourceWatcher> annotation_source_watcher_;
+  base::ObserverList<AnnotatorObserver> observers_;
 };
 
 }  // namespace ash

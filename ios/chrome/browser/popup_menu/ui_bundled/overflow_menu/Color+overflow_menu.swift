@@ -9,7 +9,7 @@ extension Color {
     let uiColor = UIColor { traitCollection in
       let color =
         traitCollection.userInterfaceStyle == .dark
-        ? UIColor(named: kTertiaryBackgroundColor) : UIColor(named: kGrey200Color)
+        ? UIColor(named: kGrey100Color) : UIColor(named: kGrey200Color)
       return color ?? .separator
     }
 

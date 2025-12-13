@@ -5,6 +5,7 @@
 #include "components/content_settings/core/browser/permission_settings_info.h"
 
 #include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -33,6 +34,11 @@ PermissionSetting PermissionSettingsInfo::GetInitialDefaultSetting() const {
   DCHECK(default_setting);
   DCHECK(delegate_->IsValid(*default_setting));
   return *default_setting;
+}
+
+bool PermissionSettingsInfo::Delegate::IsBlocked(
+    const PermissionSetting& setting) const {
+  return !IsAnyPermissionAllowed(setting) && !IsUndecided(setting);
 }
 
 PermissionSetting PermissionSettingsInfo::Delegate::CoalesceEphemeralState(

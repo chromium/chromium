@@ -12,7 +12,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -24,6 +23,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 /** An animator that can be used for animations in the Browser Compositor. */
 @NullMarked
@@ -456,6 +456,17 @@ public class CompositorAnimator extends Animator {
         mTimeSinceStartMs = 0;
 
         for (AnimatorListener listener : mListeners) listener.onAnimationStart(this);
+
+        // If in testing mode, #registerAndStartAnimator will finish the animation, meaning we don't
+        // need to set the initial values.
+        if (mAnimationState == AnimationState.ENDED) return;
+
+        // Immediately set to the initial value, since otherwise, this wouldn't occur until the next
+        // compositor update.
+        mAnimatedFraction = 0f;
+        for (AnimatorUpdateListener listener : mAnimatorUpdateListeners) {
+            listener.onAnimationUpdate(this);
+        }
     }
 
     @Override

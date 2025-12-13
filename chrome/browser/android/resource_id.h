@@ -43,11 +43,9 @@ LINK_RESOURCE_ID(IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER,
                  R.drawable.google_pay_with_divider)
 
 // Android only messages (an alternative UI to infobars)
-DECLARE_RESOURCE_ID(IDR_ANDORID_MESSAGE_PERMISSION_VIDEOCAM,
-                    R.drawable.ic_videocam_24dp)
-DECLARE_RESOURCE_ID(IDR_ANDORID_MESSAGE_PERMISSION_STORAGE,
-                    R.drawable.ic_storage)
-DECLARE_RESOURCE_ID(IDR_ANDORID_MESSAGE_PERMISSION_CAMERA,
+DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_PERMISSION_VIDEOCAM,
+                    R.drawable.ic_videocam_fill_24dp)
+DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_PERMISSION_CAMERA,
                     R.drawable.ic_photo_camera_black)
 DECLARE_RESOURCE_ID(IDR_ANDROID_MESSAGE_PERMISSION_XR,
                     R.drawable.gm_filled_cardboard_24)
@@ -81,7 +79,7 @@ DECLARE_RESOURCE_ID(IDR_SEND_TAB_TO_SELF, R.drawable.send_tab)
 
 // Icon displayed in the save address message on Android.
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_ADDRESS,
-                    R.drawable.gm_filled_location_on_24)
+                    R.drawable.ic_location_on_fill_24dp)
 DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_UPLOAD_ADDRESS,
                     R.drawable.ic_cloud_upload_24dp)
 

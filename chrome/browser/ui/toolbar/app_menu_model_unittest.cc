@@ -11,19 +11,19 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service_factory.h"
@@ -36,16 +36,19 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/menu_model_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/optimization_guide/core/model_execution/model_execution_features.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -352,6 +355,35 @@ TEST_F(AppMenuModelTest, GlicItem) {
 }
 #endif
 
+TEST_F(AppMenuModelTest, DoNotShowShareSubMenuItem) {
+  PrefService* prefs = browser()->profile()->GetPrefs();
+#if !BUILDFLAG(IS_CHROMEOS)
+  prefs->SetBoolean(prefs::kDesktopSharingHubEnabled, false);
+#endif
+  prefs->SetBoolean(prefs::kDisableScreenshots, true);
+
+  AppMenuModel model(this, browser());
+  model.Init();
+
+  ASSERT_TRUE(model.GetIndexOfCommandId(IDC_SAVE_AND_SHARE_MENU));
+  ui::MenuModel* submenu = model.GetSubmenuModelAt(
+      model.GetIndexOfCommandId(IDC_SAVE_AND_SHARE_MENU).value());
+  ASSERT_NE(submenu, nullptr);
+
+  size_t expected_item_count = 7;
+  if (!sharing_hub::SharingIsDisabledByPolicy(browser()->profile()) ||
+      sharing_hub::DesktopScreenshotsFeatureEnabled(browser()->profile())) {
+    expected_item_count += 2;
+    if (!sharing_hub::SharingIsDisabledByPolicy(browser()->profile())) {
+      expected_item_count += 3;
+    }
+    if (sharing_hub::DesktopScreenshotsFeatureEnabled(browser()->profile())) {
+      expected_item_count += 1;
+    }
+  }
+  EXPECT_EQ(expected_item_count, submenu->GetItemCount());
+}
+
 TEST_F(AppMenuModelTest, ModelHasIcons) {
   // Skip the items that are either not supposed to have an icon, or are not
   // ready to be tested. Remove items once they're ready for testing.
@@ -474,6 +506,7 @@ INSTANTIATE_TEST_SUITE_P(
                     IDC_SHOW_SIGNIN_WHEN_PAUSED,
                     IDC_SHOW_SYNC_SETTINGS,
                     IDC_TURN_ON_SYNC,
+                    IDC_SHOW_SIGNIN,
                     IDC_OPEN_GUEST_PROFILE,
                     IDC_ADD_NEW_PROFILE,
                     IDC_MANAGE_CHROME_PROFILES,
@@ -482,7 +515,48 @@ INSTANTIATE_TEST_SUITE_P(
                     IDC_SHOW_PASSWORD_MANAGER,
                     IDC_SHOW_PAYMENT_METHODS,
                     IDC_SHOW_ADDRESSES,
+                    IDC_SHOW_CONTACT_INFO,
+                    IDC_SHOW_IDENTITY_DOCS,
+                    IDC_SHOW_TRAVEL,
                     AppMenuModel::kMinOtherProfileCommandId));
+
+TEST_F(AppMenuModelTest, YourSavedInfoSubmenusShown) {
+  feature_list_.InitAndEnableFeature(
+      autofill::features::kYourSavedInfoSettingsPage);
+  AppMenuModel model(this, browser());
+  model.Init();
+
+  const size_t your_saved_info_menu_index =
+      model.GetIndexOfCommandId(IDC_PASSWORDS_AND_AUTOFILL_MENU).value();
+  ui::SimpleMenuModel* your_saved_info_menu = static_cast<ui::SimpleMenuModel*>(
+      model.GetSubmenuModelAt(your_saved_info_menu_index));
+
+  EXPECT_TRUE(your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_CONTACT_INFO)
+                  .has_value());
+  EXPECT_TRUE(your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_IDENTITY_DOCS)
+                  .has_value());
+  EXPECT_TRUE(
+      your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_TRAVEL).has_value());
+}
+
+TEST_F(AppMenuModelTest, YourSavedInfoSubmenusDisabled) {
+  feature_list_.InitAndDisableFeature(
+      autofill::features::kYourSavedInfoSettingsPage);
+  AppMenuModel model(this, browser());
+  model.Init();
+
+  const size_t your_saved_info_menu_index =
+      model.GetIndexOfCommandId(IDC_PASSWORDS_AND_AUTOFILL_MENU).value();
+  ui::SimpleMenuModel* your_saved_info_menu = static_cast<ui::SimpleMenuModel*>(
+      model.GetSubmenuModelAt(your_saved_info_menu_index));
+
+  EXPECT_FALSE(your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_CONTACT_INFO)
+                   .has_value());
+  EXPECT_FALSE(your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_IDENTITY_DOCS)
+                   .has_value());
+  EXPECT_FALSE(
+      your_saved_info_menu->GetIndexOfCommandId(IDC_SHOW_TRAVEL).has_value());
+}
 
 TEST_F(AppMenuModelTest, ProfileSyncOnTest) {
   signin::IdentityManager* identity_manager =
@@ -501,7 +575,48 @@ TEST_F(AppMenuModelTest, ProfileSyncOnTest) {
   EXPECT_TRUE(profile_menu->IsEnabledAt(sync_settings_index));
 }
 
-#endif
+class AppMenuModelSigninPromoTest : public base::test::WithFeatureOverride,
+                                    public AppMenuModelTest {
+ public:
+  AppMenuModelSigninPromoTest()
+      : WithFeatureOverride(syncer::kReplaceSyncPromosWithSignInPromos) {}
+  ~AppMenuModelSigninPromoTest() override = default;
+};
+
+TEST_P(AppMenuModelSigninPromoTest, SignedIn) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
+                                      signin::ConsentLevel::kSignin);
+  AppMenuModel model(this, browser());
+  model.Init();
+  const size_t profile_menu_index =
+      model.GetIndexOfCommandId(IDC_PROFILE_MENU_IN_APP_MENU).value();
+  ui::SimpleMenuModel* profile_menu = static_cast<ui::SimpleMenuModel*>(
+      model.GetSubmenuModelAt(profile_menu_index));
+
+  EXPECT_EQ(!IsParamFeatureEnabled(),
+            profile_menu->GetIndexOfCommandId(IDC_TURN_ON_SYNC).has_value());
+  EXPECT_FALSE(profile_menu->GetIndexOfCommandId(IDC_SHOW_SIGNIN).has_value());
+}
+
+TEST_P(AppMenuModelSigninPromoTest, SignedOut) {
+  AppMenuModel model(this, browser());
+  model.Init();
+  const size_t profile_menu_index =
+      model.GetIndexOfCommandId(IDC_PROFILE_MENU_IN_APP_MENU).value();
+  ui::SimpleMenuModel* profile_menu = static_cast<ui::SimpleMenuModel*>(
+      model.GetSubmenuModelAt(profile_menu_index));
+
+  EXPECT_EQ(!IsParamFeatureEnabled(),
+            profile_menu->GetIndexOfCommandId(IDC_TURN_ON_SYNC).has_value());
+  EXPECT_EQ(IsParamFeatureEnabled(),
+            profile_menu->GetIndexOfCommandId(IDC_SHOW_SIGNIN).has_value());
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AppMenuModelSigninPromoTest);
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Tests settings menu items is disabled in the app menu when
@@ -557,13 +672,6 @@ TEST_F(AppMenuModelTest, DisableSettingsItem) {
 
 class TestAppMenuModelSafetyHubTest : public AppMenuModelTest {
  public:
-  TestAppMenuModelSafetyHubTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSafetyHub,
-                              features::kSafetyHubHaTSOneOffSurvey},
-        /*disabled_features=*/{});
-  }
-
   void SetUp() override {
     AppMenuModelTest::SetUp();
     password_store_ = CreateAndUseTestPasswordStore(profile());
@@ -574,28 +682,10 @@ class TestAppMenuModelSafetyHubTest : public AppMenuModelTest {
 
     safety_hub_test_util::UpdatePasswordCheckServiceAsync(password_service);
     EXPECT_EQ(password_service->compromised_credential_count(), 0UL);
-
-    // mock_hats_service_ should return true for CanShowAnySurvey on each test
-    // running for desktop, since hats service is called in
-    // SafetyHubMenuNotificationService ctor.
-    mock_hats_service_ = static_cast<MockHatsService*>(
-        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            profile(), base::BindRepeating(&BuildMockHatsService)));
-    EXPECT_CALL(*mock_hats_service(), CanShowAnySurvey(_))
-        .WillRepeatedly(testing::Return(true));
   }
-
-  void TearDown() override {
-    mock_hats_service_ = nullptr;
-    AppMenuModelTest::TearDown();
-  }
-
-  MockHatsService* mock_hats_service() { return mock_hats_service_; }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   scoped_refptr<password_manager::TestPasswordStore> password_store_;
-  raw_ptr<MockHatsService> mock_hats_service_;
 };
 
 TEST_F(TestAppMenuModelSafetyHubTest, SafetyHubMenuNotification) {
@@ -617,26 +707,6 @@ TEST_F(TestAppMenuModelSafetyHubTest, SafetyHubMenuNotification) {
   new_model.ActivatedAt(menu_index);
   EXPECT_TRUE(new_model.IsEnabledAt(menu_index));
   EXPECT_FALSE(new_model.GetLabelAt(menu_index).empty());
-}
-
-TEST_F(TestAppMenuModelSafetyHubTest, HaTSControlTrigger) {
-  EXPECT_CALL(*mock_hats_service(),
-              LaunchSurvey(kHatsSurveyTriggerSafetyHubOneOffExperimentControl,
-                           _, _, _, _, _, _))
-      .Times(1);
-
-  // Attempting to show the safety hub item in the app menu should trigger the
-  // control experiment.
-  AppMenuModel model(this, browser());
-  model.Init();
-
-  // Generate a menu notification that has been shown. After a notification is
-  // shown, the control survey should not be shown.
-  safety_hub_test_util::GenerateSafetyHubMenuNotification(profile());
-  SafetyHubMenuNotificationServiceFactory::GetForProfile(profile())
-      ->GetNotificationToShow();
-  AppMenuModel new_model(this, browser());
-  new_model.Init();
 }
 
 class TabSearchMenuModelTest : public AppMenuModelTest {

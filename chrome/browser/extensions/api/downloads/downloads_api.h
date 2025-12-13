@@ -23,48 +23,16 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/warning_set.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class DownloadFileIconExtractor;
-class DownloadOpenPrompt;
 class Profile;
 
 // Functions in the chrome.downloads namespace facilitate
 // controlling downloads from extensions. See the full API doc at
 // https://docs.google.com/document/d/12rNimeeGaA8jEV60PPKtT4pmJYmY9ae_edl3hJyoXYE/
-
-namespace download_extension_errors {
-
-// Errors that can be returned through chrome.runtime.lastError.message.
-extern const char kEmptyFile[];
-extern const char kFileAlreadyDeleted[];
-extern const char kFileNotRemoved[];
-extern const char kIconNotFound[];
-extern const char kInvalidDangerType[];
-extern const char kInvalidFilename[];
-extern const char kInvalidFilter[];
-extern const char kInvalidHeaderName[];
-extern const char kInvalidHeaderValue[];
-extern const char kInvalidHeaderUnsafe[];
-extern const char kInvalidId[];
-extern const char kInvalidOrderBy[];
-extern const char kInvalidQueryLimit[];
-extern const char kInvalidState[];
-extern const char kInvalidURL[];
-extern const char kInvisibleContext[];
-extern const char kNotComplete[];
-extern const char kNotDangerous[];
-extern const char kNotInProgress[];
-extern const char kNotResumable[];
-extern const char kOpenPermission[];
-extern const char kShelfDisabled[];
-extern const char kShelfPermission[];
-extern const char kTooManyListeners[];
-extern const char kUiDisabled[];
-extern const char kUiPermission[];
-extern const char kUnexpectedDeterminer[];
-extern const char kUserGesture[];
-
-}  // namespace download_extension_errors
 
 namespace extensions {
 
@@ -269,19 +237,13 @@ class DownloadsOpenFunction : public ExtensionFunction {
 
   ResponseAction Run() override;
 
-  using OnPromptCreatedCallback = base::OnceCallback<void(DownloadOpenPrompt*)>;
-  static void set_on_prompt_created_cb_for_testing(
-      OnPromptCreatedCallback* on_prompt_created_cb) {
-    on_prompt_created_cb_ = on_prompt_created_cb;
-  }
+  [[nodiscard]] static base::AutoReset<bool> AcceptDialogForTesting();
 
  protected:
   ~DownloadsOpenFunction() override;
 
  private:
   void OpenPromptDone(int download_id, bool accept);
-
-  static OnPromptCreatedCallback* on_prompt_created_cb_;
 };
 
 // TODO(crbug.com/40858206): Remove this deprecated function.
@@ -350,7 +312,7 @@ class ExtensionDownloadsEventRouter
       download::DownloadPathReservationTracker::FilenameConflictAction)>
       FilenameChangedCallback;
 
-  static void SetDetermineFilenameTimeoutSecondsForTesting(int s);
+  static void SetDetermineFilenameTimeoutForTesting(base::TimeDelta timeout);
 
   // The logic for how to handle conflicting filename suggestions from multiple
   // extensions is split out here for testing.

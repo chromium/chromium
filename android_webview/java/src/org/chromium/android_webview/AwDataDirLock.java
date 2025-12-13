@@ -17,7 +17,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.metrics.ScopedSysTraceEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,7 +40,7 @@ abstract class AwDataDirLock {
     private static @Nullable FileLock sExclusiveFileLock;
 
     static void lock(final Context appContext) {
-        try (ScopedSysTraceEvent e1 = ScopedSysTraceEvent.scoped("AwDataDirLock.lock");
+        try (DualTraceEvent e1 = DualTraceEvent.scoped("AwDataDirLock.lock");
                 StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             if (sExclusiveFileLock != null) {
                 // We have already called lock() and successfully acquired the lock in this process.

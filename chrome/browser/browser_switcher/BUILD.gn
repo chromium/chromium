@@ -1,0 +1,177 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+assert(is_win || is_mac || is_linux)
+
+source_set("browser_switcher") {
+  sources = []
+  public_deps = [ "//base" ]
+
+  if (is_win) {
+    sources += [
+      "browser_switcher_policy_migrator.h",
+      "browser_switcher_service_win.h",
+    ]
+    public_deps += [ "//chrome/browser/policy:policy_migrator" ]
+  }
+
+  if (is_win || is_mac || is_linux) {
+    sources += [
+      "alternative_browser_driver.h",
+      "browser_switcher_navigation_throttle.h",
+      "browser_switcher_prefs.h",
+      "browser_switcher_service.h",
+      "browser_switcher_service_factory.h",
+      "browser_switcher_sitelist.h",
+      "ieem_sitelist_parser.h",
+    ]
+    public_deps += [
+      "//chrome/browser/profiles:profile",
+      "//components/keyed_service/core",
+      "//components/policy/core/common",
+      "//components/prefs",
+      "//mojo/public/cpp/bindings",
+      "//services/network/public/cpp",
+      "//url",
+    ]
+  }
+}
+
+source_set("impl") {
+  sources = []
+  deps = [ ":browser_switcher" ]
+
+  if (is_win) {
+    sources += [
+      "browser_switcher_policy_migrator.cc",
+      "browser_switcher_service_win.cc",
+    ]
+  }
+
+  if (is_win || is_mac || is_linux) {
+    sources += [
+      "browser_switcher_navigation_throttle.cc",
+      "browser_switcher_prefs.cc",
+      "browser_switcher_service.cc",
+      "browser_switcher_service_factory.cc",
+      "browser_switcher_sitelist.cc",
+      "ieem_sitelist_parser.cc",
+    ]
+    deps += [
+      "//chrome/common",
+      "//components/navigation_interception",
+      "//components/no_state_prefetch/browser",
+      "//components/pref_registry",
+      "//components/url_formatter",
+      "//content/public/browser",
+      "//services/data_decoder/public/cpp",
+      "//services/data_decoder/public/cpp:safe_xml_parser",
+      "//services/data_decoder/public/mojom:mojom_xml_parser",
+    ]
+  }
+
+  if (is_win) {
+    sources += [ "alternative_browser_driver_win.cc" ]
+  }
+
+  if (is_mac || is_linux) {
+    sources += [ "alternative_browser_driver_posix.cc" ]
+  }
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (is_linux || is_mac || is_win) {
+    sources += [
+      "alternative_browser_driver_unittest.cc",
+      "browser_switcher_navigation_throttle_unittest.cc",
+      "browser_switcher_prefs_unittest.cc",
+      "browser_switcher_sitelist_unittest.cc",
+      "ieem_sitelist_parser_unittest.cc",
+      "mock_alternative_browser_driver.cc",
+      "mock_alternative_browser_driver.h",
+    ]
+    deps += [
+      ":browser_switcher",
+      "//base/test:test_support",
+      "//chrome/app:generated_resources",
+      "//chrome/test:test_support",
+      "//components/policy:generated",
+      "//components/policy:policy_code_generate",
+      "//components/policy/core/common",
+      "//components/policy/core/common:test_support",
+      "//components/prefs:test_support",
+      "//components/sync_preferences:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//services/data_decoder/public/cpp:safe_xml_parser",
+      "//services/data_decoder/public/cpp:test_support",
+      "//testing/gtest",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = []
+    deps = []
+
+    if (is_mac || is_win || is_linux) {
+      sources += [
+        "browser_switcher_browsertest.cc",
+        "browser_switcher_service_browsertest.cc",
+      ]
+      deps += [
+        ":browser_switcher",
+        "//base/test:test_config",
+        "//chrome/browser/ui",
+        "//chrome/test:test_support_ui",
+        "//components/policy:generated",
+        "//components/policy:policy_code_generate",
+        "//components/policy/core/browser",
+        "//components/policy/core/common",
+        "//components/policy/core/common:test_support",
+        "//content/test:test_support",
+        "//extensions:test_support",
+        "//extensions/browser",
+        "//extensions/common",
+        "//net",
+        "//testing/gtest",
+      ]
+    }
+  }
+}
+
+fuzzer_test("browser_switcher_ieem_sitelist_parser_fuzzer") {
+  sources = [ "ieem_sitelist_parser_fuzzer.cc" ]
+  deps = [
+    ":browser_switcher",
+    "//base",
+    "//chrome/browser",
+    "//mojo/core/embedder",
+    "//services/data_decoder/public/cpp:test_support",
+  ]
+
+  if (is_win) {
+    deps += [
+      # Stub out thunks for transitive dependencies (they're normally linked
+      # into the Chrome binary by separate GN rules, but for the fuzzer we
+      # have to do it manually here).
+      "//chrome/chrome_elf:test_stubs",
+      "//components/crash/core/app:test_support",
+    ]
+  }
+
+  # The fuzzed code needs more RAM that the default limit.
+  libfuzzer_options = [ "rss_limit_mb=4096" ]
+}

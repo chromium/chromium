@@ -17,7 +17,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/child_process_id.h"
 #include "content/public/common/content_constants.h"
-#include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 
 namespace base {
@@ -43,9 +42,9 @@ class ChildProcessHostDelegate;
 // the launched child process, with the other end held by the ChildProcessHost
 // (the primordial pipe is a content.mojom.ChildProcess pipe).
 //
-class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
+class CONTENT_EXPORT ChildProcessHost {
  public:
-  ~ChildProcessHost() override;
+  virtual ~ChildProcessHost();
 
   // This is a value never returned as the unique id of any child processes of
   // any kind, including the values returned by
@@ -141,10 +140,10 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
   // Creates a legacy IPC channel over a Mojo message pipe. Must be called if
   // legacy IPC will be used to communicate with the child process, but
   // otherwise should not be called.
-  virtual void CreateChannelMojo() = 0;
+  virtual void CreateChannel() = 0;
 
   // Returns true iff the IPC channel is currently being opened; this means
-  // CreateChannelMojo() has been called, but OnChannelConnected() has not yet
+  // CreateChannel() has been called, but OnChannelConnected() has not yet
   // been invoked.
   virtual bool IsChannelOpening() = 0;
 

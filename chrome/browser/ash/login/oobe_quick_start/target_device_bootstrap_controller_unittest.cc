@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
 #include "chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.h"
 #include "chrome/browser/ash/nearby/fake_quick_start_connectivity_service.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/components/quick_start/types.h"
@@ -115,8 +114,7 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
 
   static constexpr char kSourceDeviceId[] = "fake-source-device-id";
 
-  TargetDeviceBootstrapControllerTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  TargetDeviceBootstrapControllerTest() = default;
 
   TargetDeviceBootstrapControllerTest(TargetDeviceBootstrapControllerTest&) =
       delete;
@@ -174,7 +172,9 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
     bootstrap_controller_->OnNotifySourceOfUpdateResponse(ack_successful);
   }
 
-  PrefService* GetLocalState() { return local_state_.Get(); }
+  PrefService* GetLocalState() {
+    return TestingBrowserProcess::GetGlobal()->local_state();
+  }
 
   void ExpectQuickStartConnectivityServiceCleanupCalled() {
     EXPECT_TRUE(
@@ -212,7 +212,6 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
   raw_ptr<FakeAccessibilityManagerWrapper, DanglingUntriaged>
       fake_accessibility_manager_ = nullptr;
   std::unique_ptr<TargetDeviceBootstrapController> bootstrap_controller_;
-  ScopedTestingLocalState local_state_;
   base::HistogramTester histogram_tester_;
   const Base64UrlString kFakeChallengeBytes_ =
       *Base64UrlTranscode(Base64String(kFakeChallengeBytesBase64));

@@ -22,8 +22,11 @@ import org.chromium.components.cached_flags.CachedFeatureParam;
 import org.chromium.components.cached_flags.CachedFlag;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /** Tests the behavior of {@link ChromeFeatureList}. */
@@ -159,5 +162,31 @@ public class ChromeFeatureListUnitTest {
                 "Cached params listed in |sParamsCached|, but not declared in ChromeFeatureList",
                 Collections.emptySet(),
                 listedButNotDeclared);
+    }
+
+    @Test
+    public void testFeatureNamesHaveUniqueValues() throws IllegalAccessException {
+        final Map<String, String> featureNamesValuesToSymbols = new HashMap<>();
+
+        for (Field field : ChromeFeatureList.class.getDeclaredFields()) {
+            if (field.getType() != String.class || !Modifier.isPublic(field.getModifiers())) {
+                continue;
+            }
+
+            final String fieldValue = (String) field.get(null);
+            final String fieldSymbol = field.getName();
+            final String maybeOtherSymbolWithEqualValue =
+                    featureNamesValuesToSymbols.get(fieldValue);
+
+            assertTrue(
+                    "Two feature name declarations ("
+                            + fieldSymbol
+                            + " and "
+                            + maybeOtherSymbolWithEqualValue
+                            + ") share the same value "
+                            + fieldValue,
+                    maybeOtherSymbolWithEqualValue == null);
+            featureNamesValuesToSymbols.put(fieldValue, fieldSymbol);
+        }
     }
 }

@@ -171,9 +171,15 @@ message NavigateAction {
 }
 
 // Wait action waits the specified milliseconds.
-// Next ID: 2
+// Next ID: 3
 message WaitAction {
   int32 wait_time_ms = 1 [features = { field_presence: EXPLICIT }];
+
+  // If provided, the given tab will be included in the returned observations
+  // (along with tabs in the actuating set), regardless of whether the tab is in
+  // the actuating set. This will not cause the tab to be added to the actuating
+  // set.
+  int32 observe_tab_id = 2 [features = { field_presence: EXPLICIT }];
 }
 
 // Navigate the page Back action.
@@ -251,10 +257,141 @@ message AttemptLoginAction {
   int32 tab_id = 1 [features = { field_presence: EXPLICIT }];
 }
 
+// Specifies a form by a set of fields (from different autofill sections) and
+// the kind of data to fill in these sections. See AttemptFormFillingAction.
+//
+// If a form consists of multiple autofill sections, only fields from the
+// section corresponding to the trigger field will be filled.
+//
+// This FormFillingRequest in development and future changes are possible once
+// the model constraings/performance are understood.
+//
+// Next ID: 3
+message FormFillingRequest {
+  // Specifies a field that is part of the form. Autofill will be triggered from
+  // this field, but will fill other fields of the same autofill section with
+  // the available data.
+  //
+  // TODO(crbug.com/452946211): This field is repeated to be able to support a form that
+  // is spread over multiple autofill sections.
+  repeated ActionTarget trigger_fields = 1;
+
+  // Specifies which data is requested. The requested data type will be
+  // presented in the UI to the user (e.g. a user chooses an address for the
+  // "shipping address").
+  RequestedData requested_data = 2 [features = { field_presence: EXPLICIT }];
+
+  // Enumerates the purposes for forms. Note that although the type of data
+  // (address or credit card) is encoded that autofill already detects the type,
+  // but does not detect the purpose (e.g. shipping v.s. billing address)
+  // provide here.
+  enum RequestedData {
+    // The requested data is not specified.
+    REQUESTED_DATA_UNKNOWN = 0;
+
+    // An address should be filled. This value can be used as a catch-all when
+    // the more specific address options below do not fit.
+    ADDRESS = 1;
+
+    // A shipping address should be filled.
+    SHIPPING_ADDRESS = 2;
+
+    // A billing address should be filled.
+    BILLING_ADDRESS = 3;
+
+    // A home address should be filled.
+    HOME_ADDRESS = 4;
+
+    // A work address should be filled.
+    WORK_ADDRESS = 5;
+
+    // A credit card should be filled.
+    CREDIT_CARD = 6;
+
+    // Contact information should be filled. Contact information includes name,
+    // email, phone number, but not postal address information (street, city,
+    // etc.)
+    CONTACT_INFORMATION = 7;
+  }
+}
+
+// Attempts to fill forms on the website.
+//
+// This AttemptFormFillingAction in development and future changes are possible
+// once the model constraings/performance are understood.
+//
+// Next ID: 3
+message AttemptFormFillingAction {
+  int32 tab_id = 1 [features = { field_presence: EXPLICIT }];
+
+  repeated FormFillingRequest form_filling_requests = 2;
+}
+
+// Scrolls the DOM element into viewport.
+// Next ID: 5
+message ScrollToAction {
+  ActionTarget target = 3 [features = { field_presence: EXPLICIT }];
+
+  int32 tab_id = 4 [features = { field_presence: EXPLICIT }];
+
+  reserved 1, 2;
+}
+
+// Executes a script tool.
+// Next ID: 5
+message ScriptToolAction {
+  // The Document which provides the associated Tool.
+  DocumentIdentifier document_identifier = 1 [features = { field_presence: EXPLICIT }];
+
+  int32 tab_id = 2 [features = { field_presence: EXPLICIT }];
+
+  // The name of the tool to execute.
+  string tool_name = 3 [features = { field_presence: EXPLICIT }];
+
+  // A serialized JSON string containing the arguments to pass to the tool.
+  string input_arguments = 4 [features = { field_presence: EXPLICIT }];
+}
+
+// Play media action plays the media session.
+// Next ID: 1
+message PlayMediaAction {
+}
+
+// Pause media action pauses the media session.
+// Next ID: 1
+message PauseMediaAction {
+}
+
+// Seek media action seeks the media session to the given seek time in
+// microseconds from the beginning of the media. The seek time should be
+// non-negative.
+// Next ID: 2
+message SeekMediaAction {
+  int64 seek_time_microseconds = 1 [features = { field_presence: EXPLICIT }];
+}
+
+// Controls media session in a tab.
+// Next ID: 6
+message MediaControlAction {
+  oneof media_control_action {
+    PlayMediaAction play = 3;
+
+    PauseMediaAction pause = 4;
+
+    SeekMediaAction seek = 5;
+  }
+
+  // The id of the tab which contains the media session.
+  int32 tab_id = 2 [features = { field_presence: EXPLICIT }];
+
+  reserved 1;
+}
+
 // All of the actions that can be taken.
 // Only one of these is allowed per action.
-// Next ID: 19
+// Next ID: 23
 message Action {
+
   oneof action {
     ClickAction click = 1;
 
@@ -291,58 +428,53 @@ message Action {
     YieldToUserAction yield_to_user = 17;
 
     AttemptLoginAction attempt_login = 18;
+
+    ScrollToAction scroll_to = 19;
+
+    ScriptToolAction script_tool = 20;
+
+    MediaControlAction media_control = 21;
+
+    AttemptFormFillingAction attempt_form_filling = 22;
   }
 }
 
-// Deprecated. Use Actions instead.
-// A single set of actions to be taken by Chrome before responding.
-// Next ID: 4
-message BrowserAction {
-  // The actions to be taken by Chrome.
-  repeated Action actions = 1;
-
-  // The task id of the action.
-  int32 task_id = 2 [features = { field_presence: EXPLICIT }];
-
-  // The id of the tab the action will be taken in.
-  // TODO(crbug.com/421441072): Remove this field once all models are using tab_id in
-  // actions.
-  int32 tab_id = 3 [features = { field_presence: EXPLICIT }];
+// Container for any type of metadata that is associated with a task.
+// Next ID: 2
+message TaskMetadata {
+  SecurityMetadata security = 1 [features = { field_presence: EXPLICIT }];
 }
 
-// Deprecated. Use ActionsResult instead.
-// The state of the browser after an action is taken.
-// Currently only used for extension APIs, but should directly reflect the
-// production state of the browser returned in glic.mojom.
-// Next ID: 7
-message BrowserActionResult {
-  // The page content at the time after the action.
-  AnnotatedPageContent annotated_page_content = 1 [features = { field_presence: EXPLICIT }];
-
-  // The screenshot of the page at the time after the action.
-  bytes screenshot = 2 [features = { field_presence: EXPLICIT }];
-
-  // The mime type of the |screenshot|.
-  string screenshot_mime_type = 3 [features = { field_presence: EXPLICIT }];
-
-  // The result of the action.
-  int32 action_result = 4 [features = { field_presence: EXPLICIT }];
-
-  // The task id of the action.
-  int32 task_id = 5 [features = { field_presence: EXPLICIT }];
-
-  // The id of the tab the action was taken in.
-  int32 tab_id = 6 [features = { field_presence: EXPLICIT }];
+// Metadata related to action security.
+// Next ID: 2
+message SecurityMetadata {
+  // If the server predicted that new mainframe origins may be navigated to as a
+  // result of the current task turn, those are given here.
+  //
+  // These origins, if any, are added to the set of all writeable origins kept
+  // by the Chrome browser process.
+  repeated string added_writable_mainframe_origins = 1;
 }
 
 // A single set of actions to be taken by Chrome. The response is ActionsResult.
-// Next ID: 3
+// Next ID: 5
 message Actions {
   // The actions to be taken by Chrome.
   repeated Action actions = 1;
 
   // The task id of the action.
   int32 task_id = 2 [features = { field_presence: EXPLICIT }];
+
+  // Whether to skip APC and screenshot (i.e., async) observation collections
+  // when building the ActionsResult. Tab Observation will still be collected,
+  // but will be missing APC and screenshot. Tab ID will be populated in the
+  // TabObservation.
+  // We may want more sophisticated control over which observations are
+  // collected in the future.
+  bool skip_async_observation_collection = 3 [features = { field_presence: EXPLICIT }];
+
+  // Metadata that is associated with a task.
+  TaskMetadata task_metadata = 4 [features = { field_presence: EXPLICIT }];
 }
 
 // Information about a chrome window.
@@ -364,24 +496,95 @@ message WindowObservation {
 }
 
 // Information about a chrome tab.
-// Next ID: 5
+// Next ID: 9
 message TabObservation {
   // Unique id
   int32 id = 1 [features = { field_presence: EXPLICIT }];
 
   // The page content at the observation time.
+  // This field is only populated if skip_async_observation_collection is false
+  // in the Actions message.
   AnnotatedPageContent annotated_page_content = 2 [features = { field_presence: EXPLICIT }];
 
   // The screenshot of the page at the time after the action.
+  // This field is only populated if skip_async_observation_collection is false
+  // in the Actions message.
   bytes screenshot = 3 [features = { field_presence: EXPLICIT }];
 
   // The mime type of the |screenshot|.
+  // This field is only populated if skip_async_observation_collection is false
+  // in the Actions message.
   string screenshot_mime_type = 4 [features = { field_presence: EXPLICIT }];
+
+  // The result of the tab observation.
+  TabObservationResult result = 5 [features = { field_presence: EXPLICIT }];
+
+  // Metadata about the page content.
+  // The number of meta tags returned is limited to 32.
+  // This field is only populated if skip_async_observation_collection is false
+  // in the Actions message.
+  PageMetadata metadata = 6 [features = { field_presence: EXPLICIT }];
+
+  AnnotatedPageContentResult annotated_page_content_result = 7 [features = { field_presence: EXPLICIT }];
+
+  ScreenshotResult screenshot_result = 8 [features = { field_presence: EXPLICIT }];
+
+  // Result codes of a tab observation as a whole. It may be possible to retry
+  // an observation given specific error codes.
+  enum TabObservationResult {
+    // The tab was observed successfully.
+    TAB_OBSERVATION_OK = 0;
+
+    // The tab is not available because it went away.
+    TAB_OBSERVATION_TAB_WENT_AWAY = 1;
+
+    // The screenshot of the tab timed out.
+    // TODO: crbug.com/462190108 - Deprecate, this should be a screenshot error code.
+    TAB_OBSERVATION_SCREENSHOT_TIMEOUT = 2;
+
+    // The page crashed.
+    TAB_OBSERVATION_PAGE_CRASHED = 3;
+
+    // A generic error has occurred.
+    TAB_OBSERVATION_UNKNOWN_ERROR = 4;
+
+    // The web contents of the tab changed so the tab observation was abandoned.
+    TAB_OBSERVATION_WEB_CONTENTS_CHANGED = 5;
+
+    // The page is not eligible for tab observation.
+    TAB_OBSERVATION_PAGE_CONTEXT_NOT_ELIGIBLE = 6;
+
+    // Fetching context encountered an error. The details are in the APC or
+    // Screenshot specific fields below.
+    TAB_OBSERVATION_FETCH_ERROR = 7;
+  }
+
+  enum AnnotatedPageContentResult {
+    // The annotated page content was observed successfully.
+    ANNOTATED_PAGE_CONTENT_OK = 0;
+
+    // Fetching annotated page content timed out.
+    ANNOTATED_PAGE_CONTENT_TIMEOUT = 1;
+
+    // Fetching annotated page content encountered an unspecified error.
+    ANNOTATED_PAGE_CONTENT_ERROR = 2;
+  }
+
+  enum ScreenshotResult {
+    // The screenshot was observed successfully.
+    SCREENSHOT_OK = 0;
+
+    // Fetching the screenshot timed out.
+    SCREENSHOT_TIMEOUT = 1;
+
+    // Fetching the screenshot encountered an unspecified error.
+    SCREENSHOT_ERROR = 2;
+  }
 }
 
 // All relevant state in chrome after the actions are taken or an error has
 // occurred.
-// Next ID: 5
+// Next ID: 7
 message ActionsResult {
   // The result of the actions. See
   // https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/actor.mojom
@@ -399,6 +602,63 @@ message ActionsResult {
   // Observations after all actions are finished or an error has occurred. The
   // client will determine the relevant windows and tabs.
   repeated TabObservation tabs = 4;
+
+  // The results of executing script tools.
+  repeated ScriptToolResult script_tool_results = 5;
+
+  LatencyInformation latency_information = 6 [features = { field_presence: EXPLICIT }];
+
+  // Chrome reported information about the latency of steps while performing the
+  // actions.
+  // Next ID: 4
+  message LatencyInformation {
+    // All steps that Chrome reported latency for. These steps can overlap due
+    // to parallel execution.
+    repeated LatencyStep latency_steps = 1;
+
+    // Latency of a single step.
+    // Next ID: 7
+    message LatencyStep {
+      oneof step {
+        ActionLatency action = 3;
+
+        PageStabilizationLatency page_stabilization = 4;
+
+        AnnotatedPageContentLatency annotated_page_content = 5;
+
+        ScreenshotLatency screenshot = 6;
+      }
+
+      // The latency since the time that Chrome received the Actions request.
+      // Time from request to step start.
+      int32 latency_start_ms = 1 [features = { field_presence: EXPLICIT }];
+
+      // Time from request to step stop.
+      int32 latency_stop_ms = 2 [features = { field_presence: EXPLICIT }];
+
+      message ActionLatency {
+        // The index of the action that triggered the latency step.
+        int32 action_index = 1 [features = { field_presence: EXPLICIT }];
+      }
+
+      message PageStabilizationLatency {
+        // The index of the action that triggered the page stabilization.
+        int32 action_index = 1 [features = { field_presence: EXPLICIT }];
+      }
+
+      // The latency of the annotated page content step.
+      message AnnotatedPageContentLatency {
+        // The id of the tab that was observed.
+        int32 id = 1 [features = { field_presence: EXPLICIT }];
+      }
+
+      // The latency of the screenshot step.
+      message ScreenshotLatency {
+        // The id of the tab that was observed.
+        int32 id = 1 [features = { field_presence: EXPLICIT }];
+      }
+    }
+  }
 }
 
 // A request to start a task.
@@ -408,8 +668,8 @@ message BrowserStartTask {
   // The id of the tab the task should be started in. If not set, the task
   // will be started in a new tab.
   // TODO(crbug.com/421441072): Remove this field. This is only needed in the short term
-  // since bluedog needs a mechanism to start tasks in a new tab, and the model
-  // has not yet been trained to use CreateTabAction.
+  // since we need a mechanism to start tasks in a new tab, and the model has
+  // not yet been trained to use CreateTabAction.
   int32 tab_id = 1 [features = { field_presence: EXPLICIT }];
 }
 

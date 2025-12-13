@@ -26,6 +26,7 @@
 #include "components/zucchini/patch_writer.h"
 #include "components/zucchini/suffix_array.h"
 #include "components/zucchini/targets_affinity.h"
+#include "components/zucchini/zucchini.h"
 
 namespace zucchini {
 

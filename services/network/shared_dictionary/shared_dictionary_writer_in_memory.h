@@ -11,7 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "crypto/secure_hash.h"
+#include "crypto/hash.h"
 #include "net/base/hash_value.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer.h"
 
@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryWriterInMemory
   ~SharedDictionaryWriterInMemory() override;
 
   FinishCallback finish_callback_;
-  std::unique_ptr<crypto::SecureHash> secure_hash_;
+  crypto::hash::Hasher hash_{crypto::hash::kSha256};
   std::vector<std::string> data_;
   size_t total_size_ = 0;
 };

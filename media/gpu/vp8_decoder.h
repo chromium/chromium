@@ -70,7 +70,8 @@ class MEDIA_GPU_EXPORT VP8Decoder : public AcceleratedVideoDecoder {
   ~VP8Decoder() override;
 
   // AcceleratedVideoDecoder implementation.
-  void SetStream(int32_t id, const DecoderBuffer& decoder_buffer) override;
+  void SetStream(int32_t id,
+                 scoped_refptr<DecoderBuffer> decoder_buffer) override;
   [[nodiscard]] bool Flush() override;
   void Reset() override;
   [[nodiscard]] DecodeResult Decode() override;
@@ -80,7 +81,7 @@ class MEDIA_GPU_EXPORT VP8Decoder : public AcceleratedVideoDecoder {
   uint8_t GetBitDepth() const override;
   VideoChromaSampling GetChromaSampling() const override;
   VideoColorSpace GetVideoColorSpace() const override;
-  std::optional<gfx::HDRMetadata> GetHDRMetadata() const override;
+  gfx::HDRMetadata GetHDRMetadata() const override;
   size_t GetRequiredNumOfPictures() const override;
   size_t GetNumReferenceFrames() const override;
 
@@ -96,6 +97,9 @@ class MEDIA_GPU_EXPORT VP8Decoder : public AcceleratedVideoDecoder {
 
   State state_;
 
+  // Most recent call to SetStream().
+  scoped_refptr<media::DecoderBuffer> decoder_buffer_;
+
   Vp8Parser parser_;
 
   std::unique_ptr<Vp8FrameHeader> curr_frame_hdr_;
@@ -107,8 +111,8 @@ class MEDIA_GPU_EXPORT VP8Decoder : public AcceleratedVideoDecoder {
   int32_t last_decoded_stream_id_ = kInvalidId;
   size_t size_change_failure_counter_ = 0;
 
-  raw_ptr<const uint8_t, DanglingUntriaged> curr_frame_start_;
-  size_t frame_size_;
+  raw_ptr<const uint8_t> curr_frame_start_;
+  size_t frame_size_ = 0;
 
   gfx::Size pic_size_;
   int horizontal_scale_;

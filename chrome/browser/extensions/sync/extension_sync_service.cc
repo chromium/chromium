@@ -18,7 +18,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/launch_util.h"
-#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/sync/account_extension_tracker.h"
 #include "chrome/browser/extensions/sync/extension_sync_data.h"
 #include "chrome/browser/extensions/sync/extension_sync_service_factory.h"
@@ -37,7 +36,9 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/launch_util.h"
 #include "extensions/browser/pending_extension_manager.h"
+#include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/uninstall_reason.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/permissions/permission_message_provider.h"
@@ -46,6 +47,8 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::AccountExtensionTracker;
 using extensions::AppSorting;
@@ -563,12 +566,14 @@ void ExtensionSyncService::ApplySyncData(
       id, profile_, extension_sync_data.incognito_enabled());
   extension = nullptr;  // No longer safe to use.
 
+#if BUILDFLAG(IS_CHROMEOS)
   // Set app-specific data.
   if (extension_sync_data.is_app()) {
     // The corresponding validation of this value during ExtensionSyncData
     // population is in ExtensionSyncData::ToAppSpecifics.
-    if (extension_sync_data.launch_type() >= extensions::LAUNCH_TYPE_FIRST &&
-        extension_sync_data.launch_type() < extensions::NUM_LAUNCH_TYPES) {
+    if (extension_sync_data.launch_type() >= extensions::LaunchType::kFirst &&
+        extension_sync_data.launch_type() <
+            extensions::LaunchType::kNumLaunchTypes) {
       extensions::SetLaunchType(profile_, id,
                                 extension_sync_data.launch_type());
     }
@@ -581,12 +586,21 @@ void ExtensionSyncService::ApplySyncData(
       app_sorting->SetPageOrdinal(id, extension_sync_data.page_ordinal());
     }
   }
+#endif
 
   // Notify the AccountExtensionTracker of an incoming extension via sync.
   if (!extension_sync_data.is_app() && state != NOT_INSTALLED) {
     DCHECK(ShouldPromoteToAccountExtension(extension_sync_data));
     AccountExtensionTracker::Get(profile_)->OnExtensionSyncDataReceived(id);
   }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Chrome Apps are deprecated on WML, so we do not want to sync new apps
+  // installed on other devices.
+  if (extension_sync_data.is_app()) {
+    return;
+  }
+#endif
 
   // Finally, trigger installation/update as required.
   bool check_for_updates = false;
@@ -673,7 +687,9 @@ void ExtensionSyncService::OnExtensionUninstalled(
     extensions::UninstallReason reason) {
   DCHECK_EQ(profile_, browser_context);
   // Don't bother syncing if the extension will be re-installed momentarily.
+  // Don't sync extension removals enforced by policy.
   if (reason == extensions::UNINSTALL_REASON_REINSTALL ||
+      reason == extensions::UNINSTALL_REASON_INTERNAL_MANAGEMENT ||
       !ShouldSync(*extension)) {
     return;
   }

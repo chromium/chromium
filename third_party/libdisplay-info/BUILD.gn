@@ -4,6 +4,8 @@
 
 assert(is_linux)
 
+import("//third_party/libdisplay-info/visibility.gni")
+
 config("libdisplay_info_public_config") {
   include_dirs = [ "src/include" ]
 }

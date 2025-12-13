@@ -57,7 +57,7 @@ class VIEWS_EXAMPLES_EXPORT ActionsExample : public ExampleBase {
   ActionViewController action_view_controller_ = ActionViewController();
   std::vector<base::CallbackListSubscription> subscriptions_;
   raw_ptr<actions::ActionItem> example_actions_ = nullptr;
-  raw_ptr<View> action_panel_ = nullptr;
+  raw_ptr<BoxLayoutView> action_panel_ = nullptr;
   raw_ptr<BoxLayoutView> control_panel_ = nullptr;
   raw_ptr<Combobox> available_controls_ = nullptr;
   raw_ptr<Combobox> available_actions_ = nullptr;

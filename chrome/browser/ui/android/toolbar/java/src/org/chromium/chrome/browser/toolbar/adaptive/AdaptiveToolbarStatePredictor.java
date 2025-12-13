@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,8 +46,8 @@ public class AdaptiveToolbarStatePredictor {
         /** Used to determine whether we can show any toolbar shortcut specific UI. */
         public final boolean canShowUi;
 
-        /** Used for showing the toolbar shortcut action in the toolbar UI. */
-        public final @AdaptiveToolbarButtonVariant int toolbarButtonState;
+        /** Ranked list of options to show for the toolbar shortcut action in the toolbar UI. */
+        public final ArrayList<@AdaptiveToolbarButtonVariant Integer> rankedToolbarButtonStates;
 
         /** Used for the selected radio button in the toolbar shortcut settings page. */
         public final @AdaptiveToolbarButtonVariant int preferenceSelection;
@@ -54,14 +55,13 @@ public class AdaptiveToolbarStatePredictor {
         /** Used for the substring used in the auto option. */
         public final @AdaptiveToolbarButtonVariant int autoButtonCaption;
 
-        /** Constructor. */
         public UiState(
                 boolean canShowUi,
-                int toolbarButtonState,
+                ArrayList<Integer> rankedToolbarButtonStates,
                 int preferenceSelection,
                 int autoButtonCaption) {
             this.canShowUi = canShowUi;
-            this.toolbarButtonState = toolbarButtonState;
+            this.rankedToolbarButtonStates = rankedToolbarButtonStates;
             this.preferenceSelection = preferenceSelection;
             this.autoButtonCaption = autoButtonCaption;
         }
@@ -70,7 +70,7 @@ public class AdaptiveToolbarStatePredictor {
     /**
      * Constructs {@code AdaptiveToolbarStatePredictor}
      *
-     * @param Context to determine form-factor.
+     * @param context Used to determine form-factor.
      * @param profile The {@link Profile} associated with the toolbar state.
      * @param androidPermissionDelegate used for determining if voice search can be used
      * @param behavior Embedder-specific toolbar behavior. The default one is used if {@code null}
@@ -94,10 +94,12 @@ public class AdaptiveToolbarStatePredictor {
      */
     public void recomputeUiState(Callback<UiState> callback) {
         if (sToolbarStateForTesting != null) {
+            ArrayList<Integer> rankedToolbarButtonList = new ArrayList<>();
+            rankedToolbarButtonList.add(sToolbarStateForTesting);
             UiState uiState =
                     new UiState(
                             isValidSegment(sToolbarStateForTesting),
-                            sToolbarStateForTesting,
+                            rankedToolbarButtonList,
                             sToolbarStateForTesting,
                             sToolbarStateForTesting);
             callback.onResult(uiState);
@@ -106,10 +108,12 @@ public class AdaptiveToolbarStatePredictor {
 
         // Early return if the feature isn't enabled.
         if (!AdaptiveToolbarFeatures.isCustomizationEnabled()) {
+            ArrayList<Integer> buttonList = new ArrayList<>();
+            buttonList.add(AdaptiveToolbarButtonVariant.UNKNOWN);
             callback.onResult(
                     new UiState(
                             false,
-                            AdaptiveToolbarButtonVariant.UNKNOWN,
+                            buttonList,
                             AdaptiveToolbarButtonVariant.UNKNOWN,
                             AdaptiveToolbarButtonVariant.UNKNOWN));
             return;
@@ -119,40 +123,56 @@ public class AdaptiveToolbarStatePredictor {
         boolean toolbarToggle = readToolbarToggleStateFromPrefs();
         readFromSegmentationPlatform(
                 segmentSelectionResults -> {
-                    int topSegmentationResult = filterSegmentationResults(segmentSelectionResults);
                     int defaultSegment = mBehavior.getSegmentationDefault();
                     UiState uiState =
                             new UiState(
                                     AdaptiveToolbarFeatures.isCustomizationEnabled(),
-                                    replaceVariantIfDisabled(
-                                            getToolbarButtonState(
-                                                    toolbarToggle,
-                                                    manualOverride,
-                                                    defaultSegment,
-                                                    topSegmentationResult)),
+                                    filterValidSegmentationResults(
+                                            toolbarToggle,
+                                            manualOverride,
+                                            defaultSegment,
+                                            segmentSelectionResults),
                                     getToolbarPreferenceSelection(manualOverride),
                                     replaceVariantIfDisabled(
                                             getToolbarPreferenceAutoOptionSubtitleSegment(
-                                                    defaultSegment, topSegmentationResult)));
+                                                    defaultSegment,
+                                                    filterSegmentationResults(
+                                                            segmentSelectionResults))));
                     callback.onResult(uiState);
                 });
     }
 
     public int filterSegmentationResults(List<Integer> results) {
+        if (sToolbarStateForTesting != null) {
+            return sToolbarStateForTesting;
+        }
         return mBehavior.resultFilter(results);
     }
 
-    private @AdaptiveToolbarButtonVariant int getToolbarButtonState(
+    private @AdaptiveToolbarButtonVariant ArrayList<Integer> filterValidSegmentationResults(
             boolean toolbarToggle,
             @AdaptiveToolbarButtonVariant int manualOverride,
             @AdaptiveToolbarButtonVariant int defaultSegment,
-            @AdaptiveToolbarButtonVariant int segmentationResult) {
-        if (!toolbarToggle) return AdaptiveToolbarButtonVariant.UNKNOWN;
-        if (mBehavior.canShowManualOverride(manualOverride) && isValidSegment(manualOverride)) {
-            return manualOverride;
+            List<Integer> segmentationResults) {
+        ArrayList<Integer> filteredResults = new ArrayList<>();
+
+        if (!toolbarToggle) {
+            filteredResults.add(AdaptiveToolbarButtonVariant.UNKNOWN);
+            return filteredResults;
         }
 
-        return isValidSegment(segmentationResult) ? segmentationResult : defaultSegment;
+        if (mBehavior.canShowManualOverride(manualOverride) && isValidSegment(manualOverride)) {
+            filteredResults.add(manualOverride);
+            return filteredResults;
+        }
+
+        for (Integer result : segmentationResults) {
+            if (result != null && isValidSegment(result) && isVariantEnabled(result)) {
+                filteredResults.add(result);
+            }
+        }
+        if (!filteredResults.contains(defaultSegment)) filteredResults.add(defaultSegment);
+        return filteredResults;
     }
 
     private @AdaptiveToolbarButtonVariant int getToolbarPreferenceSelection(
@@ -170,7 +190,7 @@ public class AdaptiveToolbarStatePredictor {
     /**
      * @return Given a segment, whether it is a valid segment that can be shown to the user.
      */
-    private boolean isValidSegment(@AdaptiveToolbarButtonVariant int variant) {
+    private static boolean isValidSegment(@AdaptiveToolbarButtonVariant int variant) {
         switch (variant) {
             case AdaptiveToolbarButtonVariant.NEW_TAB:
             case AdaptiveToolbarButtonVariant.SHARE:

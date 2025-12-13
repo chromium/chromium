@@ -9,7 +9,7 @@
 #include "chrome/browser/sync/test/integration/saved_tab_groups_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -49,14 +49,25 @@ sync_pb::SavedTabGroupSpecifics CreateSavedTabGroupSpecific(base::Uuid guid,
   return pb_specific;
 }
 
-class SingleClientSavedTabGroupsSyncTest : public SyncTest {
+class SingleClientSavedTabGroupsSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientSavedTabGroupsSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientSavedTabGroupsSyncTest() : SyncTest(SINGLE_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
   ~SingleClientSavedTabGroupsSyncTest() override = default;
   SingleClientSavedTabGroupsSyncTest(
       const SingleClientSavedTabGroupsSyncTest&) = delete;
   SingleClientSavedTabGroupsSyncTest& operator=(
       const SingleClientSavedTabGroupsSyncTest&) = delete;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
 
   void AddDataToFakeServer(const sync_pb::SavedTabGroupSpecifics& specifics) {
     sync_pb::EntitySpecifics group_entity_specifics;
@@ -121,15 +132,20 @@ class SingleClientSavedTabGroupsSyncTest : public SyncTest {
   }
 
   TabGroupSyncService* GetService() {
-    return tab_groups::SavedTabGroupUtils::GetServiceForProfile(GetProfile(0));
+    return tab_groups::TabGroupSyncServiceFactory::GetForProfile(GetProfile(0));
   }
 
  private:
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientSavedTabGroupsSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
 // Save a group with two tabs and validate they are added to the model.
-IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
                        DownloadsGroupAndTabs) {
   SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey, {},
                        /*position=*/0);
@@ -161,10 +177,30 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
   EXPECT_TRUE(
       tab_groups::SavedTabOrGroupExistsChecker(service, tab2.saved_tab_guid())
           .Wait());
+// Signing out isn't supported on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+    // Sign out and verify that the tabs are gone.
+    GetClient(0)->SignOutPrimaryAccount();
+    ASSERT_FALSE(
+        GetSyncService(0)->GetActiveDataTypes().Has(syncer::SAVED_TAB_GROUP));
+    EXPECT_TRUE(tab_groups::SavedTabOrGroupDoesNotExistChecker(
+                    service, group1.saved_guid())
+                    .Wait());
+
+    EXPECT_TRUE(tab_groups::SavedTabOrGroupDoesNotExistChecker(
+                    service, tab1.saved_tab_guid())
+                    .Wait());
+
+    EXPECT_TRUE(tab_groups::SavedTabOrGroupDoesNotExistChecker(
+                    service, tab2.saved_tab_guid())
+                    .Wait());
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 // Save a group with no tabs and validate it is added to the model.
-IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
                        DownloadsGroupWithNoTabs) {
   SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey, {},
                        /*position=*/0);
@@ -180,23 +216,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
 
   TabGroupSyncService* service = GetService();
 
-  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    // TabGroupSyncService does not notify observers that an empty group has
-    // been added .
-    EXPECT_TRUE(service->GetGroup(group1.saved_guid()));
-  } else {
-    // Verify the group is added to the model but not the tab.
-    EXPECT_TRUE(
-        tab_groups::SavedTabOrGroupExistsChecker(service, group1.saved_guid())
-            .Wait());
-
-    EXPECT_TRUE(service->GetGroup(group1.saved_guid()));
-    EXPECT_TRUE(service->GetGroup(group1.saved_guid())->saved_tabs().empty());
-  }
+  // TabGroupSyncService does not notify observers that an empty group has
+  // been added .
+  EXPECT_TRUE(service->GetGroup(group1.saved_guid()));
 }
 
 // Save a tab with no group and validate it is added to the model.
-IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
                        DownloadsTabWithNoGroup) {
   SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey, {},
                        /*position=*/0);
@@ -227,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
 }
 
 // Add a tab to an existing group.
-IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, AddToExistingGroup) {
+IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, AddToExistingGroup) {
   SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey, {},
                        /*position=*/0);
   SavedTabGroupTab tab1(GURL("about:blank"), u"about:blank",
@@ -269,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, AddToExistingGroup) {
 }
 
 // Remove one tab from a group with two tabs.
-IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, RemoveTabFromGroup) {
+IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, RemoveTabFromGroup) {
   SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey, {},
                        /*position=*/0);
   SavedTabGroupTab tab1(GURL("about:blank"), u"about:blank",
@@ -311,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, RemoveTabFromGroup) {
 }
 
 // Remove a saved group from the model.
-IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, RemoveGroup) {
+IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, RemoveGroup) {
   SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey, {},
                        /*position=*/0);
   SavedTabGroupTab tab1(GURL("about:blank"), u"about:blank",
@@ -363,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, RemoveGroup) {
 }
 
 // Update the metadata of a saved group already in the model.
-IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
                        UpdateGroupMetadata) {
   SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey,
                        /*urls=*/{},
@@ -398,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
 }
 
 // Update the URL and title of a saved tab already in the model.
-IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, UpdatedTabData) {
+IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, UpdatedTabData) {
   SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey,
                        /*urls=*/{},
                        /*position=*/0);
@@ -433,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, UpdatedTabData) {
 }
 
 // Reorder groups already saved in the model.
-IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, ReorderGroups) {
+IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, ReorderGroups) {
   SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey,
                        /*urls=*/{},
                        /*position=*/0);
@@ -478,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, ReorderGroups) {
 }
 
 // Reorder tabs in a group.
-IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, ReorderTabs) {
+IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest, ReorderTabs) {
   SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey, {}, 0);
   SavedTabGroupTab tab1(GURL("about:blank"), u"about:blank",
                         group1.saved_guid(), /*position=*/0);
@@ -520,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, ReorderTabs) {
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
                        V2BrowserWithV1Proto) {
   auto guid1 = base::Uuid::GenerateRandomV4();
   AddDataToFakeServer(CreateSavedTabGroupSpecific(guid1, /*ui_v2=*/false, 0));
@@ -549,96 +575,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
   // Verify guid2 has no position set even the position in the proto is set.
   EXPECT_EQ(std::nullopt, service->GetGroup(guid2)->position());
 }
-
-// On ChromeOS, Sync-the-feature gets started automatically once a primary
-// account is signed in and the transport mode is not a thing.
-#if !BUILDFLAG(IS_CHROMEOS)
-
-// Subclass that enables an additional feature, namely
-// `syncer::kReplaceSyncPromosWithSignInPromos`.
-class SingleClientSavedTabGroupsSyncTestWithTransportMode
-    : public SingleClientSavedTabGroupsSyncTest {
- public:
-  SingleClientSavedTabGroupsSyncTestWithTransportMode() = default;
-  ~SingleClientSavedTabGroupsSyncTestWithTransportMode() override = default;
-
- private:
-  base::test::ScopedFeatureList additional_features_{
-      syncer::kReplaceSyncPromosWithSignInPromos};
-};
-
-// Save a group with two tabs and validate they are added to the model for a
-// user that signs in without turning sync-the-feature on. It also verifies that
-// the downloaded data goes away upon signout.
-IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTestWithTransportMode,
-                       DownloadsGroupAndTabsInTransportMode) {
-  SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey, {},
-                       /*position=*/0);
-  SavedTabGroupTab tab1(GURL("about:blank"), u"about:blank",
-                        group1.saved_guid(), /*position=*/0);
-  SavedTabGroupTab tab2(GURL("about:blank"), u"about:blank",
-                        group1.saved_guid(), /*position=*/1);
-
-  // Add a group with two tabs to sync.
-  AddGroupToFakeServer(group1);
-  AddTabToFakeServer(tab1);
-  AddTabToFakeServer(tab2);
-
-  ASSERT_TRUE(SetupClients());
-  // Setup a primary account, but don't actually enable Sync-the-feature (so
-  // that Sync will start in transport mode).
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  // Enable tabs explicitly (as it is off by default).
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, the feature is behind `UserSelectableType::kTabs`.
-  GetSyncService(0)->GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kTabs, true);
-#else   // BUILDFLAG(IS_ANDROID)
-  // On desktop platforms, there is a dedicated toggle.
-  GetSyncService(0)->GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kSavedTabGroups, true);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  ASSERT_TRUE(
-      GetSyncService(0)->GetPreferredDataTypes().Has(syncer::SAVED_TAB_GROUP));
-  ASSERT_TRUE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::SAVED_TAB_GROUP));
-
-  TabGroupSyncService* service = GetService();
-
-  // Verify they are added to the model.
-  EXPECT_TRUE(
-      tab_groups::SavedTabOrGroupExistsChecker(service, group1.saved_guid())
-          .Wait());
-
-  EXPECT_TRUE(
-      tab_groups::SavedTabOrGroupExistsChecker(service, tab1.saved_tab_guid())
-          .Wait());
-
-  EXPECT_TRUE(
-      tab_groups::SavedTabOrGroupExistsChecker(service, tab2.saved_tab_guid())
-          .Wait());
-
-  // Sign out and verify that the tabs are gone.
-  GetClient(0)->SignOutPrimaryAccount();
-  ASSERT_FALSE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::SAVED_TAB_GROUP));
-  EXPECT_TRUE(tab_groups::SavedTabOrGroupDoesNotExistChecker(
-                  service, group1.saved_guid())
-                  .Wait());
-
-  EXPECT_TRUE(tab_groups::SavedTabOrGroupDoesNotExistChecker(
-                  service, tab1.saved_tab_guid())
-                  .Wait());
-
-  EXPECT_TRUE(tab_groups::SavedTabOrGroupDoesNotExistChecker(
-                  service, tab2.saved_tab_guid())
-                  .Wait());
-}
-
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 }  // namespace tab_groups

@@ -44,8 +44,6 @@ void ApplyQuickInsertPseudoFocusToView(views::View* view) {
   }
 
   // Otherwise, default to drawing a focus ring around the view.
-  // TODO: b/328144222 - Add accessibility announcement when a view gains
-  // pseudo focus.
   if (views::FocusRing* focus_ring = views::FocusRing::Get(view)) {
     focus_ring->SetHasFocusPredicate(
         base::BindRepeating([](const views::View* view) { return true; }));
@@ -77,8 +75,6 @@ void RemoveQuickInsertPseudoFocusFromView(views::View* view) {
   }
 
   // Otherwise, default to removing the focus ring around the view.
-  // TODO: b/328144222 - Add accessibility announcement when a view loses
-  // pseudo focus.
   if (views::FocusRing* focus_ring = views::FocusRing::Get(view)) {
     focus_ring->SetHasFocusPredicate(
         base::BindRepeating([](const views::View* view) { return false; }));

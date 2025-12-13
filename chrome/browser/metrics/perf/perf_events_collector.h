@@ -78,7 +78,7 @@ class PerfCollector : public internal::MetricCollector {
 
   const RandomSelector& command_selector() const { return command_selector_; }
 
-  // Collects both Ash and Lacros Chrome process and thread types.
+  // Collects Chrome process and thread types.
   static void CollectProcessTypes(SampledProfile* sampled_profile);
 
   // Executes asynchronously on another thread pool and retries with a delay if
@@ -108,22 +108,6 @@ class PerfCollector : public internal::MetricCollector {
     kNumCPUsMoreThanPossible,
     // Magic constant used by the histogram macros.
     kMaxValue = kNumCPUsMoreThanPossible,
-  };
-
-  // Extracts the |lacros_channel| and |lacros_version| from |lacros_path|.
-  static bool LacrosChannelAndVersion(
-      std::string_view lacros_path,
-      metrics::SystemProfileProto_Channel& lacros_channel,
-      std::string& lacros_version);
-
-  // Enumeration of various locations gotten from parsing a Lacros binary path.
-  // This is used to monitor any change to the Lacros path.
-  enum class ParseLacrosPath {
-    kRootfs,
-    kStateful,
-    kUnrecognized,
-    // Magic constant used by the histogram macros.
-    kMaxValue = kUnrecognized,
   };
 
   // Annotations on the collected sampled_profile, including adding process

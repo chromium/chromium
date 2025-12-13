@@ -1,16 +1,15 @@
-use PT_FIRSTMACH;
-
 use crate::prelude::*;
+use crate::PT_FIRSTMACH;
 
 pub type __greg_t = u64;
 pub type __cpu_simple_lock_nv_t = c_int;
 pub type __gregset = [__greg_t; _NGREG];
-pub type __fregset = [__freg; _NFREG];
+pub type __fregset = [__fpreg; _NFREG];
 
 s! {
     pub struct mcontext_t {
         pub __gregs: __gregset,
-        pub __fregs: __fpregset,
+        pub __fregs: __fregset,
         __spare: [crate::__greg_t; 7],
     }
 }
@@ -22,7 +21,23 @@ s_no_extra_traits! {
     }
 }
 
-pub(crate) const _ALIGNBYTES: usize = mem::size_of::<c_long>() - 1;
+cfg_if! {
+    if #[cfg(feature = "extra_traits")] {
+        impl PartialEq for __fpreg {
+            fn eq(&self, other: &Self) -> bool {
+                unsafe { self.u_u64 == other.u_u64 }
+            }
+        }
+        impl Eq for __fpreg {}
+        impl hash::Hash for __fpreg {
+            fn hash<H: hash::Hasher>(&self, state: &mut H) {
+                unsafe { self.u_u64.hash(state) };
+            }
+        }
+    }
+}
+
+pub(crate) const _ALIGNBYTES: usize = size_of::<c_long>() - 1;
 
 pub const PT_GETREGS: c_int = PT_FIRSTMACH + 0;
 pub const PT_SETREGS: c_int = PT_FIRSTMACH + 1;

@@ -51,7 +51,7 @@ namespace {
 constexpr int32_t kDefaultFps = 30;
 constexpr char kVirtualPrefix[] = "VIRTUAL_";
 
-const std::unordered_set<int32_t> module_id_set = {
+const absl::flat_hash_set<int32_t> module_id_set = {
     static_cast<int32_t>(
         CameraHalDelegate::PopularCamPeriphModuleID::kLifeCamHD3000_Microsoft),
     static_cast<int32_t>(

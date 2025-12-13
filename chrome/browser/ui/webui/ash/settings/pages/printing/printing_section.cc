@@ -257,6 +257,8 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PRINTING_CUPS_EDIT_PRINTER_DIALOG_TITLE},
       {"viewPrinterDialogTitle",
        IDS_SETTINGS_PRINTING_CUPS_VIEW_PRINTER_DIALOG_TITLE},
+      {"viewPrinterDialogManagedLabel",
+       IDS_SETTINGS_PRINTING_CUPS_VIEW_PRINTER_DIALOG_MANAGED_LABEL},
       {"editPrinterButtonText", IDS_SETTINGS_PRINTING_CUPS_EDIT_PRINTER_BUTTON},
       {"currentPpdMessage",
        IDS_SETTINGS_PRINTING_CUPS_EDIT_PRINTER_CURRENT_PPD_MESSAGE},

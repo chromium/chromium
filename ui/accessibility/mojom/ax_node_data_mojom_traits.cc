@@ -22,6 +22,15 @@ bool HasAnyHighlightEntries(std::vector<int32_t>& marker_types) {
 }  // namespace
 
 // static
+bool StructTraits<ax::mojom::AXBitsetDataDataView,
+                  ui::AXBitset<ax::mojom::BoolAttribute>>::
+    Read(ax::mojom::AXBitsetDataDataView data,
+         ui::AXBitset<ax::mojom::BoolAttribute>* out) {
+  *out = ui::AXBitset<ax::mojom::BoolAttribute>(data.set_bits(), data.values());
+  return true;
+}
+
+// static
 bool StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData>::Read(
     ax::mojom::AXNodeDataDataView data,
     ui::AXNodeData* out) {
@@ -40,11 +49,14 @@ bool StructTraits<ax::mojom::AXNodeDataDataView, ui::AXNodeData>::Read(
     return false;
   }
 
-  base::flat_map<ax::mojom::BoolAttribute, bool> bool_attributes_from_mojo;
-  if (!data.ReadBoolAttributes(&bool_attributes_from_mojo)) {
+  std::optional<ui::AXBitset<ax::mojom::BoolAttribute>> bitset_from_mojo;
+  if (!data.ReadBoolAttributesData(&bitset_from_mojo)) {
     return false;
   }
-  out->bool_attributes->PopulateFromMap(bool_attributes_from_mojo);
+
+  if (bitset_from_mojo.has_value()) {
+    out->bool_attributes = bitset_from_mojo.value();
+  }
 
   auto& intlist_attributes = out->intlist_attributes.container();
   if (!data.ReadIntlistAttributes(&intlist_attributes)) {

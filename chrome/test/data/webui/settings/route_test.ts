@@ -336,6 +336,7 @@ suite('Basic', function() {
       autofill: true,
     });
     loadTimeData.overrideValues({
+      enableYourSavedInfoSettingsPage: false,
       showAutofillAiControl: true,
     });
     resetRouterForTesting();
@@ -352,6 +353,88 @@ suite('Basic', function() {
     resetRouterForTesting();
     assertFalse(!!routes.AUTOFILL_AI);
   });
+
+  test('privacySandbox routes defined', function() {
+    // Case 1
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: true,
+      isPrivacySandboxRestrictedNoticeEnabled: false,
+    });
+    resetPageVisibilityForTesting();
+    resetRouterForTesting();
+
+    assertFalse(!!routes.PRIVACY_SANDBOX);
+    assertFalse(!!routes.PRIVACY_SANDBOX_TOPICS);
+    assertFalse(!!routes.PRIVACY_SANDBOX_MANAGE_TOPICS);
+    assertFalse(!!routes.PRIVACY_SANDBOX_FLEDGE);
+    assertFalse(!!routes.PRIVACY_SANDBOX_AD_MEASUREMENT);
+
+    // Case 2
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+      isPrivacySandboxRestrictedNoticeEnabled: false,
+    });
+    resetPageVisibilityForTesting();
+    resetRouterForTesting();
+
+    assertTrue(!!routes.PRIVACY_SANDBOX);
+    assertTrue(!!routes.PRIVACY_SANDBOX_TOPICS);
+    assertTrue(!!routes.PRIVACY_SANDBOX_MANAGE_TOPICS);
+    assertTrue(!!routes.PRIVACY_SANDBOX_FLEDGE);
+    assertTrue(!!routes.PRIVACY_SANDBOX_AD_MEASUREMENT);
+
+    // Case 3
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: true,
+      isPrivacySandboxRestrictedNoticeEnabled: true,
+    });
+    resetPageVisibilityForTesting();
+    resetRouterForTesting();
+
+    assertTrue(!!routes.PRIVACY_SANDBOX);
+    assertFalse(!!routes.PRIVACY_SANDBOX_TOPICS);
+    assertFalse(!!routes.PRIVACY_SANDBOX_MANAGE_TOPICS);
+    assertFalse(!!routes.PRIVACY_SANDBOX_FLEDGE);
+    assertTrue(!!routes.PRIVACY_SANDBOX_AD_MEASUREMENT);
+  });
+
+  test('Your saved info route existence', function() {
+    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: false});
+    resetPageVisibilityForTesting();
+    resetRouterForTesting();
+    assertFalse(!!routes.YOUR_SAVED_INFO);
+
+    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: true});
+    resetPageVisibilityForTesting();
+    resetRouterForTesting();
+    assertTrue(!!routes.YOUR_SAVED_INFO);
+  });
+
+  // <if expr="not is_chromeos">
+  test('account route existence', function() {
+    resetPageVisibilityForTesting({people: true});
+
+    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: false});
+    resetRouterForTesting();
+    assertFalse(!!routes.ACCOUNT);
+
+    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
+    resetRouterForTesting();
+    assertTrue(!!routes.ACCOUNT);
+  });
+
+  test('google services route existence', function() {
+    resetPageVisibilityForTesting({people: true});
+
+    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: false});
+    resetRouterForTesting();
+    assertFalse(!!routes.GOOGLE_SERVICES);
+
+    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
+    resetRouterForTesting();
+    assertTrue(!!routes.GOOGLE_SERVICES);
+  });
+  // </if>
 });
 
 suite('DynamicParameters', function() {

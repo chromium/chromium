@@ -72,8 +72,8 @@ public class MultiWindowIntegrationTest {
             ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
 
             mActivityTestRule.newIncognitoTabFromMenu();
-            Assert.assertTrue(mActivityTestRule.getActivity().getActivityTab().isIncognito());
-            final int incognitoTabId = mActivityTestRule.getActivity().getActivityTab().getId();
+            Assert.assertTrue(mActivityTestRule.getActivityTab().isIncognito());
+            final int incognitoTabId = mActivityTestRule.getActivityTab().getId();
 
             MenuUtils.invokeCustomMenuActionSync(
                     InstrumentationRegistry.getInstrumentation(),

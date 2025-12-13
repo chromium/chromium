@@ -6,7 +6,7 @@ package org.chromium.content.app;
 
 import android.os.Process;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.AndroidInfo;
 import org.chromium.build.annotations.NullMarked;
 
 /**
@@ -30,7 +30,7 @@ class KillChildUncaughtExceptionHandler implements Thread.UncaughtExceptionHandl
         // due to bad user experience. Note this is also the reason the exception stack is not
         // printed here, to avoid the stack being printed twice in release builds where breakpad
         // is also enabled.
-        if (BuildInfo.isDebugAndroid()) return;
+        if (AndroidInfo.isDebugAndroid()) return;
         Thread.setDefaultUncaughtExceptionHandler(new KillChildUncaughtExceptionHandler());
     }
 

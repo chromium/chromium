@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Žanr</translation>
 <translation id="1254593899333212300">Izravna internetska veza</translation>
 <translation id="1272293450992660632">PIN-ovi se ne podudaraju</translation>
+<translation id="1279040297980392566">Čeka se dovršetak skeniranja, pokušajte ponovno kasnije</translation>
 <translation id="1280820357415527819">Traženje mobilnih mreža</translation>
 <translation id="1293556467332435079">Datoteke</translation>
 <translation id="1297922636971898492">Google disk trenutačno nije dostupan. Prijenos će se automatski ponovo pokrenuti kada Google disk opet postane dostupan.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">Odabrana je 1 datoteka</translation>
 <translation id="3817579325494460411">Nenavedeno</translation>
 <translation id="3819448694985509187">Netočan PIN. Imate još jedan pokušaj.</translation>
-<translation id="3822559385185038546">Taj proxy nametnuo je administrator</translation>
 <translation id="3830674330436234648">Nema dostupnih reprodukcija</translation>
 <translation id="383652340667548381">Srpski</translation>
 <translation id="3839045880592694915">Vaš mobilni operater nema dopuštenje za povezivanje vašeg modema. Više pojedinosti zatražite od mobilnog operatera.</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Više opcija</translation>
 <translation id="5602622065581044566">bugarski s fonetskom tipkovnicom</translation>
 <translation id="5605830556594064952">američka (SAD: Dvorak)</translation>
+<translation id="560739212255190568">Vaš administrator je postavio pravila za nadjačavanje proxyja uz primjenu sljedećeg proxyja</translation>
 <translation id="5618330573454123917">Ta je datoteka predviđena za računalo koje upotrebljava Mac OS. Nije kompatibilna s vašim uređajem na kojem se izvodi Chrome OS. <ph name="BEGIN_LINK_HELP" />Saznajte više<ph name="END_LINK_HELP" /> o otvaranju datoteka u Chrome OS-u.</translation>
 <translation id="5625294776298156701">tamilski s tipkovnicom Tamil99</translation>
 <translation id="5633226425545095130">Ako premjestite tu stavku, podijelit ćete je sa svima koji mogu vidjeti dijeljenu mapu <ph name="DESTINATION_NAME" />.</translation>
@@ -787,7 +788,7 @@
 <translation id="7075931588889865715">tajlandski s tipkovnicom TIS 820-2531</translation>
 <translation id="708278670402572152">Prekinite vezu da biste omogućili pretraživanje</translation>
 <translation id="7086590977277044826">tamilski s tipkovnicom InScript</translation>
-<translation id="7088615885725309056">Starije</translation>
+<translation id="7088615885725309056">Starija</translation>
 <translation id="7103992300314999525">makedonski</translation>
 <translation id="7104338189998813914">Pojavio se problem s pristupanjem vašem OneDrive računu</translation>
 <translation id="7106346894903675391">Kupite još prostora za pohranu...</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, pojedinosti</translation>
 <translation id="8545476925160229291">engleski (SAD)</translation>
 <translation id="854655314928502177">Automatsko otkrivanje URL-a putem web-proxyja:</translation>
+<translation id="8547747809824590510">Vaš administrator je postavio pravila za nadjačavanje proxyja</translation>
 <translation id="8549186985808798022">talijanski</translation>
 <translation id="8551494947769799688">Latvijski</translation>
 <translation id="8560515948038859357">kantonski</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Datoteka s nazivom "<ph name="FILE_NAME" />" već postoji. Odaberite drugi naziv.</translation>
 <translation id="9046895021617826162">Neuspjelo povezivanje</translation>
 <translation id="9065512565307033593">Ako potvrda nije bila uspješna, nećete imati pristup mreži.</translation>
+<translation id="9079844694307518094">Vaš administrator primjenjuje sljedeći proxy</translation>
 <translation id="908378762078012445">ruski s fonetskom tipkovnicom AATSEEL</translation>
 <translation id="9086302186042011942">Sinkronizacija</translation>
 <translation id="9099674669267916096">Broj stranica</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">Instalacija je uspješno pokrenuta.</translation>
 <translation id="9219103736887031265">Slike</translation>
 <translation id="9219908252191632183">Površina Mjeseca</translation>
+<translation id="931652069802536959">Mreža je blokirana pravilima</translation>
 <translation id="938470336146445890">Instalirajte korisnički certifikat.</translation>
 <translation id="939736085109172342">Nova mapa</translation>
 <translation id="943972244133411984">Izmijenio</translation>

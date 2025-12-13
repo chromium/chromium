@@ -107,8 +107,8 @@ class CORE_EXPORT ScrollTimeline : public ScrollSnapshotTimeline {
 
   Element* GetReferenceElement() const { return reference_element_.Get(); }
 
-  void AddAnimationTrigger(AnimationTrigger* trigger) override;
-  void RemoveAnimationTrigger(AnimationTrigger* trigger) override;
+  void AddTrigger(TimelineTrigger* trigger) override;
+  void RemoveTrigger(TimelineTrigger* trigger) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, MultipleScrollOffsetsClamping);

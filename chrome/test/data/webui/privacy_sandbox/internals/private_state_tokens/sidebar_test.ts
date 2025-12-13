@@ -22,6 +22,6 @@ suite('SidebarTest', () => {
     const renderedLinks = sidebar.shadowRoot.querySelectorAll('a');
     assertEquals(1, renderedLinks.length);
     assertEquals('chrome://settings/', renderedLinks[0]!.href);
-    assertEquals('Settings', renderedLinks[0]!.textContent!.trim());
+    assertEquals('Settings', renderedLinks[0]!.textContent.trim());
   });
 });

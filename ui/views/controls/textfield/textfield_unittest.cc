@@ -131,6 +131,30 @@ class TextfieldDestroyerController : public TextfieldController {
   std::unique_ptr<Textfield> target_;
 };
 
+// Controller that intercepts paste and optionally supplies text for insertion.
+// Used to verify TextfieldController::OnBeforePaste() and OnAfterPaste().
+class TextfieldPasteInterceptController : public TextfieldController {
+ public:
+  explicit TextfieldPasteInterceptController(std::u16string text_to_inject)
+      : text_to_inject_(std::move(text_to_inject)) {}
+
+  bool on_before_called() const { return on_before_called_; }
+  bool on_after_called() const { return on_after_called_; }
+
+  bool OnBeforePaste(Textfield* sender, std::u16string* text) override {
+    on_before_called_ = true;
+    *text = text_to_inject_;
+    return true;
+  }
+
+  void OnAfterPaste() override { on_after_called_ = true; }
+
+ private:
+  std::u16string text_to_inject_;
+  bool on_before_called_ = false;
+  bool on_after_called_ = false;
+};
+
 // Class that focuses a textfield when it sees a KeyDown event.
 class TextfieldFocuser : public View {
   METADATA_HEADER(TextfieldFocuser, View)
@@ -510,6 +534,15 @@ void TextfieldTest::OnAfterUserAction(Textfield* sender) {
 
 void TextfieldTest::OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_type) {
   copied_to_clipboard_ = clipboard_type;
+}
+
+bool TextfieldTest::HandleWriteTextToClipboard(ui::ClipboardBuffer,
+                                               const std::u16string_view&) {
+  return handle_write_to_clipboard_;
+}
+
+bool TextfieldTest::AllowStartDragEvent(const std::u16string_view&) {
+  return allow_drag_event_;
 }
 
 void TextfieldTest::InitTextfield(int count) {
@@ -1754,6 +1787,40 @@ TEST_F(TextfieldTest, TextInputType) {
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_PASSWORD, textfield_->GetTextInputType());
 }
 
+TEST_F(TextfieldTest, NumberInputType_FiltersNonDigitCharacters) {
+  InitTextfield();
+
+  // Set the textfield to accept number input.
+  textfield_->SetTextInputType(ui::TEXT_INPUT_TYPE_NUMBER);
+  EXPECT_EQ(ui::TEXT_INPUT_TYPE_NUMBER, textfield_->GetTextInputType());
+
+  // Test inserting digits. They should be accepted.
+  SendKeyEvent(ui::VKEY_1);
+  EXPECT_EQ(u"1", textfield_->GetText());
+
+  // Test inserting a non-digit character. It should be ignored.
+  SendKeyEvent(ui::VKEY_A);
+  EXPECT_EQ(u"1", textfield_->GetText());
+
+  // Test inserting a string with only digits. It should be accepted.
+  textfield_->InsertText(
+      u"234",
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  EXPECT_EQ(u"1234", textfield_->GetText());
+
+  // Test inserting a string with mixed characters. Only digits should be kept.
+  textfield_->InsertText(
+      u"5a6b7",
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  EXPECT_EQ(u"1234567", textfield_->GetText());
+
+  // Test inserting a string with only non-digits. It should be ignored.
+  textfield_->InsertText(
+      u"abc",
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  EXPECT_EQ(u"1234567", textfield_->GetText());
+}
+
 TEST_F(TextfieldTest, OnKeyPress) {
   InitTextfield();
 
@@ -2265,6 +2332,10 @@ TEST_F(TextfieldTest, DragAndDrop_InitiateDrag) {
             textfield_->GetDragOperationsForView(nullptr, kStringPoint));
   EXPECT_TRUE(
       textfield_->CanStartDragForView(nullptr, kStringPoint, gfx::Point()));
+  allow_drag_event_ = false;
+  EXPECT_FALSE(
+      textfield_->CanStartDragForView(nullptr, kStringPoint, kStringPoint));
+  allow_drag_event_ = true;
   // Ensure that textfields support local moves.
   EXPECT_EQ(ui::DragDropTypes::DRAG_MOVE | ui::DragDropTypes::DRAG_COPY,
             textfield_->GetDragOperationsForView(textfield_, kStringPoint));
@@ -2888,6 +2959,17 @@ TEST_F(TextfieldTest, CutCopyPaste) {
   EXPECT_EQ(u"abc", GetClipboardText(ui::ClipboardBuffer::kCopyPaste));
   EXPECT_EQ(u"abcabcabc", textfield_->GetText());
   EXPECT_EQ(ui::ClipboardBuffer::kMaxValue, GetAndResetCopiedToClipboard());
+
+  // Ensure clipboard buffer is unchanged if override is enabled
+  textfield_->SetText(u"345");
+  textfield_->SelectAll(false);
+  SendAlternateCopy();
+  EXPECT_EQ(u"345", GetClipboardText(ui::ClipboardBuffer::kCopyPaste));
+  handle_write_to_clipboard_ = true;
+  textfield_->SetText(u"4242");
+  textfield_->SelectAll(false);
+  SendAlternateCopy();
+  EXPECT_EQ(u"345", GetClipboardText(ui::ClipboardBuffer::kCopyPaste));
 }
 
 TEST_F(TextfieldTest, CutCopyPasteWithEditCommand) {
@@ -3843,7 +3925,7 @@ TEST_F(TextfieldTest, TwoFingerScroll) {
   const gfx::Point kStart2 = kStart1 + gfx::Vector2d(20, 0);
   const gfx::Point kStart[] = {kStart1, kStart2};
   event_generator_->GestureMultiFingerScroll(
-      /*count=*/2, kStart,
+      kStart,
       /*event_separation_time_ms=*/50,
       /*steps=*/5, /*move_x=*/kDisplayOffsetXAdjustment,
       /*move_y=*/0);
@@ -3954,8 +4036,8 @@ TEST_F(TextfieldTest, TwoFingerScrollUpdate) {
   constexpr int kDelayAddingFingerMs[] = {0, 40};
   constexpr int kDelayReleasingFingerMs[] = {150, 150};
   event_generator_->GestureMultiFingerScrollWithDelays(
-      /*count=*/2, kStart, kDelta, kDelayAddingFingerMs,
-      kDelayReleasingFingerMs, /*event_separation_time_ms=*/20, /*steps=*/5);
+      kStart, kDelta, kDelayAddingFingerMs, kDelayReleasingFingerMs,
+      /*event_separation_time_ms=*/20, /*steps=*/5);
 
   // Since the scroll started with one finger, the cursor should have moved.
   gfx::Range range;
@@ -5683,5 +5765,74 @@ TEST_F(TextfieldTest, AccessibleGraphemeOffsetsIndependentOfDisplayOffset) {
             expected_offsets);
 }
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+
+TEST_F(TextfieldTest, DragOutsideSelectionModifiesSelection) {
+  allow_drag_event_ = false;
+
+  InitTextfield();
+  textfield_->SetText(u"Hello World");
+  textfield_->SetSelectedRange(gfx::Range(0, 5));  // Selects "Hello"
+  EXPECT_EQ(u"Hello", textfield_->GetSelectedText());
+
+  // Simulate a mouse click and drag starting outside the current selection.
+  gfx::Point start_drag =
+      GetTextfieldTestApi()
+          .GetRenderText()
+          ->GetCursorBounds(gfx::SelectionModel(6, gfx::CURSOR_FORWARD), true)
+          .origin();
+  gfx::Point end_drag =
+      GetTextfieldTestApi()
+          .GetRenderText()
+          ->GetCursorBounds(gfx::SelectionModel(11, gfx::CURSOR_FORWARD), true)
+          .origin();
+
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, start_drag,
+                             start_drag, ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  textfield_->OnMousePressed(press_event);
+
+  ui::MouseEvent drag_event(ui::EventType::kMouseDragged, end_drag, end_drag,
+                            ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0);
+  textfield_->OnMouseDragged(drag_event);
+
+  EXPECT_EQ(u"World", textfield_->GetSelectedText());
+}
+
+// Intercept paste via controller, supplying text; trims whitespace and calls
+// both OnBeforePaste() and OnAfterPaste().
+TEST_F(TextfieldTest, OnBeforePasteIntercepts) {
+  InitTextfield();
+
+  textfield_->SetText(u"");
+  TextfieldPasteInterceptController controller(u" hello world ");
+  textfield_->set_controller(&controller);
+  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, u"a");
+  textfield_->ExecuteCommand(Textfield::kPaste, 0);
+  EXPECT_TRUE(controller.on_before_called());
+  EXPECT_TRUE(controller.on_after_called());
+  EXPECT_EQ(textfield_->GetText(), u"hello world");
+
+  // Whitespace-only injection becomes a single space.
+  textfield_->SetText(u"");
+  TextfieldPasteInterceptController controller_space(u"  \t  ");
+  textfield_->set_controller(&controller_space);
+  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, u"  hello world ");
+  textfield_->ExecuteCommand(Textfield::kPaste, 0);
+  EXPECT_TRUE(controller_space.on_before_called());
+  EXPECT_TRUE(controller_space.on_after_called());
+  EXPECT_EQ(textfield_->GetText(), u" ");
+}
+
+// When controller does not intercept, Textfield falls back to clipboard.
+TEST_F(TextfieldTest, OnBeforePasteFallbackToClipboard) {
+  InitTextfield();
+
+  textfield_->SetText(u"");
+  SetClipboardText(ui::ClipboardBuffer::kCopyPaste, u" hello world ");
+  textfield_->ExecuteCommand(Textfield::kPaste, 0);
+
+  EXPECT_EQ(textfield_->GetText(), u"hello world");
+}
 
 }  // namespace views::test

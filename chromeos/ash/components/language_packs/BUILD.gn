@@ -24,9 +24,9 @@ static_library("language_packs") {
     "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
     "//chromeos/ash/components/language_packs/public/mojom",
     "//components/language/core/common",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/session_manager:base",
-    "//components/session_manager/core:core",
+    "//components/session_manager/core",
     "//ui/base/ime/ash",
   ]
   public_deps = [ "//third_party/abseil-cpp:absl" ]
@@ -49,7 +49,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/dlcservice",
     "//components/prefs",
     "//components/prefs:test_support",
-    "//components/session_manager/core:core",
+    "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base:test_support",

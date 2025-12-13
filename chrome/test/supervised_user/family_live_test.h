@@ -119,7 +119,7 @@ std::string ToString(FamilyLiveTest::RpcMode rpc_mode);
 // Fixture that combines InProcessBrowserTest with InteractiveBrowserTest,
 // adding Family test related utilities.
 class InteractiveFamilyLiveTest
-    : public InteractiveBrowserTestT<FamilyLiveTest> {
+    : public InteractiveBrowserTestMixin<FamilyLiveTest> {
  public:
   // Observes if the browser has reached the intended state.
   using InIntendedStateObserver = ui::test::PollingStateObserver<bool>;

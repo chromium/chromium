@@ -1,0 +1,101 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//build/config/chrome_build.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+assert(is_desktop_android)
+
+source_set("internal") {
+  sources = [
+    "extension_window_controller_bridge.cc",
+
+    # Compiling test support code into production is unusual, but this is a
+    # special case. Please see the class documentation of
+    # WindowControllerListObserverForTesting for reasons.
+    "window_controller_list_observer_for_testing.cc",
+    "window_controller_list_observer_for_testing.h",
+  ]
+  deps = [
+    ":jni",
+    "//base",
+    "//chrome/browser/extensions",
+    "//chrome/browser/ui/browser_window",
+  ]
+}
+
+android_library("java") {
+  visibility = [
+    ":*",
+    "//chrome/android:chrome_all_java",
+    "//chrome/browser/ui/android/extensions/windowing/test:native_unit_test_support_java",
+  ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/extensions/windowing/ExtensionWindowControllerBridgeFactory.java",
+    "java/src/org/chromium/chrome/browser/ui/extensions/windowing/ExtensionWindowControllerBridgeImpl.java",
+  ]
+  deps = [
+    "//base:resetters_java",
+    "//build/android:build_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/android/extensions/windowing:java",
+    "//chrome/browser/ui/browser_window/public/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+  srcjar_deps = [
+    ":java_enum_srcjar",
+    ":jni",
+  ]
+}
+
+generate_jni("jni") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/extensions/windowing/ExtensionWindowControllerBridgeImpl.java" ]
+}
+
+java_cpp_enum("java_enum_srcjar") {
+  visibility = [ ":*" ]
+  sources = [ "window_controller_list_observer_for_testing.h" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "extension_window_controller_bridge_unittest.cc" ]
+  deps = [
+    ":internal",
+    "//base",
+    "//chrome/browser/extensions",
+    "//chrome/browser/extensions:test_support",
+    "//chrome/browser/ui/android/extensions/windowing/test:native_unit_test_support_java",
+    "//chrome/browser/ui/android/extensions/windowing/test:native_unit_test_support_jni",
+    "//chrome/browser/ui/android/tab_model:test_support",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/test:test_support",
+    "//components/sessions:session_id",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/ui/extensions/windowing/ExtensionWindowControllerBridgeIntegrationTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/android/javatests:chrome_test_java_helper",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/ui/android/extensions/windowing:java",
+    "//chrome/browser/ui/browser_window/internal:java",
+    "//chrome/browser/ui/browser_window/public/android:java",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//chrome/test/android:chrome_java_transit",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+  data = [ "//chrome/test/data/android/about.html" ]
+}

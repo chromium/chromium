@@ -29,8 +29,10 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest.h"
@@ -41,6 +43,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::mojom::APIPermissionID;
 using extensions::mojom::ManifestLocation;
@@ -172,10 +176,11 @@ class ExtensionManagementServiceTest : public testing::Test {
   void SetPref(bool managed,
                const char* path,
                std::unique_ptr<base::Value> value) {
-    if (managed)
+    if (managed) {
       pref_service_->SetManagedPref(path, std::move(value));
-    else
+    } else {
       pref_service_->SetUserPref(path, std::move(value));
+    }
   }
 
   void SetPref(bool managed, const char* path, base::Value value) {
@@ -187,10 +192,11 @@ class ExtensionManagementServiceTest : public testing::Test {
   }
 
   void RemovePref(bool managed, const char* path) {
-    if (managed)
+    if (managed) {
       pref_service_->RemoveManagedPref(path);
-    else
+    } else {
       pref_service_->RemoveUserPref(path);
+    }
   }
 
   const internal::GlobalSettings* ReadGlobalSettings() {
@@ -303,7 +309,7 @@ class ExtensionManagementServiceTest : public testing::Test {
     manifest_dict.Set(manifest_keys::kVersion, version);
     manifest_dict.Set(manifest_keys::kManifestVersion, 2);
     manifest_dict.Set(manifest_keys::kUpdateURL, update_url);
-    std::string error;
+    std::u16string error;
     scoped_refptr<const Extension> extension =
         Extension::Create(base::FilePath(), location, std::move(manifest_dict),
                           flags, id, &error);
@@ -368,6 +374,10 @@ class ExtensionManagementServiceTest : public testing::Test {
     return extension_management_->IsFileUrlNavigationAllowed(extension_id);
   }
 
+  extensions::ManagedToolbarPinMode GetToolbarPinMode(const ExtensionId& id) {
+    return extension_management_->GetToolbarPinMode(id);
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
@@ -424,7 +434,7 @@ class ExtensionAdminPolicyTest : public ExtensionManagementServiceTest {
     values->Set(manifest_keys::kName, "test");
     values->Set(manifest_keys::kVersion, "0.1");
     values->Set(manifest_keys::kManifestVersion, 2);
-    std::string error;
+    std::u16string error;
     extension_ = Extension::Create(base::FilePath(), location, *values,
                                    Extension::NO_FLAGS, &error);
     ASSERT_TRUE(extension_.get());
@@ -451,9 +461,10 @@ class ExtensionAdminPolicyTest : public ExtensionManagementServiceTest {
 bool ExtensionAdminPolicyTest::BlocklistedByDefault(
     const base::Value::List* blocklist) {
   SetUpPolicyProvider();
-  if (blocklist)
+  if (blocklist) {
     SetPref(true, pref_names::kInstallDenyList,
             base::Value(blocklist->Clone()));
+  }
   return extension_management_->BlocklistedByDefault();
 }
 
@@ -464,15 +475,18 @@ bool ExtensionAdminPolicyTest::UserMayLoad(
     const Extension* extension,
     std::u16string* error) {
   SetUpPolicyProvider();
-  if (blocklist)
+  if (blocklist) {
     SetPref(true, pref_names::kInstallDenyList,
             base::Value(blocklist->Clone()));
-  if (allowlist)
+  }
+  if (allowlist) {
     SetPref(true, pref_names::kInstallAllowList,
             base::Value(allowlist->Clone()));
-  if (allowed_types)
+  }
+  if (allowed_types) {
     SetPref(true, pref_names::kAllowedTypes,
             base::Value(allowed_types->Clone()));
+  }
   return provider_->UserMayLoad(extension, error);
 }
 
@@ -706,8 +720,9 @@ TEST_F(ExtensionManagementServiceTest, HostsMaximumExceeded) {
       "}";
 
   std::string urls;
-  for (size_t i = 0; i < 200; ++i)
+  for (size_t i = 0; i < 200; ++i) {
     urls.append("\"*://example" + base::NumberToString(i) + ".com\",");
+  }
 
   std::string policy =
       base::StringPrintf(policy_template, urls.c_str(), urls.c_str());
@@ -1094,8 +1109,8 @@ TEST_F(ExtensionManagementServiceTest, NewInstallForcelist) {
   // Set the new dictionary preference.
   {
     PrefUpdater updater(pref_service_.get());
-    updater.SetIndividualExtensionAutoInstalled(
-        kTargetExtension, kExampleUpdateUrl, true);
+    updater.SetIndividualExtensionAutoInstalled(kTargetExtension,
+                                                kExampleUpdateUrl, true);
   }
   EXPECT_EQ(GetInstallationModeById(kTargetExtension),
             ManagedInstallationMode::kForced);
@@ -1111,7 +1126,7 @@ TEST_F(ExtensionManagementServiceTest, IsInstallationExplicitlyAllowed) {
   // Constant name indicates the installation_mode of extensions in example
   // preference.
   const char* allowed = kTargetExtension;
-  const char* forced  = kTargetExtension2;
+  const char* forced = kTargetExtension2;
   const char* recommended = kTargetExtension3;
   const char* blocked = kTargetExtension4;
   const char* removed = kTargetExtension9;
@@ -1453,6 +1468,56 @@ TEST_F(ExtensionManagementServiceTest, IsFileUrlNavigationAllowed) {
   EXPECT_EQ(IsFileUrlNavigationAllowed(kTargetExtension2), false);
 }
 
+TEST_F(ExtensionManagementServiceTest, ToolbarPinModeParsing) {
+  const char kToolbarPinPref[] = R"(
+{
+  "%s": {
+    "toolbar_pin": "%s"
+  },
+  "%s": {
+    "toolbar_pin": "%s"
+  },
+  "%s": {
+    "toolbar_pin": "%s"
+  }
+})";
+
+  // Test valid values.
+  SetExampleDictPref(base::StringPrintf(
+      kToolbarPinPref, kTargetExtension, "default_unpinned", kTargetExtension2,
+      "default_pinned", kTargetExtension3, "force_pinned"));
+
+  EXPECT_EQ(GetToolbarPinMode(kTargetExtension),
+            extensions::ManagedToolbarPinMode::kDefaultUnpinned);
+  EXPECT_EQ(GetToolbarPinMode(kTargetExtension2),
+            extensions::ManagedToolbarPinMode::kDefaultPinned);
+  EXPECT_EQ(GetToolbarPinMode(kTargetExtension3),
+            extensions::ManagedToolbarPinMode::kForcePinned);
+
+  // Test with no value set, should default to kDefaultUnpinned.
+  SetExampleDictPref(base::StringPrintf(R"({
+    "%s": {}
+  })",
+                                        kTargetExtension5));
+  EXPECT_EQ(GetToolbarPinMode(kTargetExtension5),
+            extensions::ManagedToolbarPinMode::kDefaultUnpinned);
+}
+
+TEST_F(ExtensionManagementServiceTest, ToolbarPinModeParsingFailsForInvalid) {
+  // An invalid value for `toolbar_pin` should fail to parse.
+  SetExampleDictPref(base::StringPrintf(R"({
+    "%s": {
+      "toolbar_pin": "invalid_value",
+      "installation_mode": "blocked"
+    }
+  })",
+                                        kTargetExtension));
+  // Because parsing failed, the installation_mode was not applied, therefore
+  // it should fall back to the default (kAllowed).
+  EXPECT_EQ(GetInstallationModeById(kTargetExtension),
+            ManagedInstallationMode::kAllowed);
+}
+
 TEST_F(ExtensionManagementServiceTest, IsAllowedByUnpackedDeveloperModePolicy) {
   base::test::ScopedFeatureList feature_list(
       extensions_features::kExtensionDisableUnsupportedDeveloper);
@@ -1499,6 +1564,124 @@ TEST_F(ExtensionManagementServiceTest, IsForceInstalledInLowTrustEnvironment) {
 
     EXPECT_FALSE(extension_management_->IsForceInstalledInLowTrustEnvironment(
         *forced_extension));
+  }
+}
+
+TEST_F(ExtensionManagementServiceTest,
+       IsGreylistedForceInstalledInLowTrustEnvironment) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  base::test::ScopedFeatureList feature_list(
+      kDisableForceInstalledExtensionsInLowTrustEnviromentWhenGreylisted);
+#endif
+
+  {
+    // Greylisted, force-installed in a low-trust environment.
+
+    // Force-install an extension in low-trust environment.
+    policy::ScopedManagementServiceOverrideForTesting browser_management(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::NONE);
+    scoped_refptr<const Extension> forced_extension =
+        CreateForcedExtension(kTargetExtension3, Extension::NO_FLAGS);
+
+    // Greylist the extension.
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        forced_extension->id(),
+        BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
+        ExtensionPrefs::Get(profile_.get()));
+
+    constexpr bool expect_greylisted_in_low_trust =
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+        true;
+#else
+        false;
+#endif
+    EXPECT_EQ(
+        extension_management_->IsGreylistedForceInstalledInLowTrustEnvironment(
+            forced_extension->id()),
+        expect_greylisted_in_low_trust);
+  }
+  {
+    // Greylisted, force-installed in a high-trust environment.
+
+    // Force-install an extension in high-trust environment.
+    policy::ScopedManagementServiceOverrideForTesting browser_management(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+    scoped_refptr<const Extension> forced_extension =
+        CreateForcedExtension(kTargetExtension3, Extension::NO_FLAGS);
+
+    // Greylist the extension.
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        forced_extension->id(),
+        BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
+        ExtensionPrefs::Get(profile_.get()));
+
+    EXPECT_FALSE(
+        extension_management_->IsGreylistedForceInstalledInLowTrustEnvironment(
+            forced_extension->id()));
+  }
+  {
+    // Not greylisted.
+
+    // Force-install an extension in low-trust environment.
+    policy::ScopedManagementServiceOverrideForTesting browser_management(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::NONE);
+    scoped_refptr<const Extension> forced_extension =
+        CreateForcedExtension(kTargetExtension3, Extension::NO_FLAGS);
+
+    // Don't greylist the extension.
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        forced_extension->id(), BitMapBlocklistState::NOT_BLOCKLISTED,
+        ExtensionPrefs::Get(profile_.get()));
+
+    EXPECT_FALSE(
+        extension_management_->IsGreylistedForceInstalledInLowTrustEnvironment(
+            forced_extension->id()));
+  }
+  {
+    // `ExtensionForceInstallWithNonMalwareViolationsEnabled` policy is true.
+
+    // Force-install an extension in low-trust environment.
+    policy::ScopedManagementServiceOverrideForTesting browser_management(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::NONE);
+    scoped_refptr<const Extension> forced_extension =
+        CreateForcedExtension(kTargetExtension3, Extension::NO_FLAGS);
+
+    // Greylist the extension.
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        forced_extension->id(),
+        BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
+        ExtensionPrefs::Get(profile_.get()));
+
+    profile_->GetPrefs()->SetBoolean(
+        pref_names::kExtensionForceInstallWithNonMalwareViolationsEnabled,
+        true);
+
+    EXPECT_FALSE(
+        extension_management_->IsGreylistedForceInstalledInLowTrustEnvironment(
+            forced_extension->id()));
+  }
+  {
+    // Not force-installed.
+
+    // Set up a non-forced extension in a low-trust environment.
+    policy::ScopedManagementServiceOverrideForTesting browser_management(
+        policy::ManagementServiceFactory::GetForPlatform(),
+        policy::EnterpriseManagementAuthority::NONE);
+    scoped_refptr<const Extension> extension =
+        CreateNormalExtension(kTargetExtension3);
+
+    // Greylist the extension.
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        extension->id(), BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
+        ExtensionPrefs::Get(profile_.get()));
+
+    EXPECT_FALSE(
+        extension_management_->IsGreylistedForceInstalledInLowTrustEnvironment(
+            extension->id()));
   }
 }
 
@@ -1717,5 +1900,59 @@ TEST_F(ExtensionAdminPolicyTest, MustRemainEnabled) {
   EXPECT_FALSE(MustRemainEnabled(extension_.get(), &error));
   EXPECT_TRUE(error.empty());
 }
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+class ExtensionManagementDesktopAndroidTest : public testing::Test {
+ public:
+  ExtensionManagementDesktopAndroidTest() = default;
+  ExtensionManagementDesktopAndroidTest(
+      const ExtensionManagementDesktopAndroidTest&) = delete;
+  ExtensionManagementDesktopAndroidTest& operator=(
+      const ExtensionManagementDesktopAndroidTest&) = delete;
+  ~ExtensionManagementDesktopAndroidTest() override = default;
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+};
+
+// Tests that kEnableExtensionsForCorpDesktopAndroid enables extensions for corp
+// accounts.
+TEST_F(ExtensionManagementDesktopAndroidTest, FeatureFlagOn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      extensions_features::kEnableExtensionsForCorpDesktopAndroid);
+
+  // Build a profile for a corp dogfood user.
+  TestingProfile::Builder builder;
+  builder.SetProfileName("sundar@google.com");
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+
+  // Use that profile to initialize an ExtensionManagement instance.
+  ExtensionManagement management(profile.get());
+
+  // Extensions should be allowed because of the feature flag.
+  EXPECT_TRUE(management.ExtensionsEnabledForDesktopAndroid());
+}
+
+// Tests that with kEnableExtensionsForCorpDesktopAndroid off, extensions are
+// still disabled for corp accounts.
+TEST_F(ExtensionManagementDesktopAndroidTest, FeatureFlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      extensions_features::kEnableExtensionsForCorpDesktopAndroid);
+
+  // Build a profile for a corp dogfood user.
+  TestingProfile::Builder builder;
+  builder.SetProfileName("sundar@google.com");
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+
+  // Use that profile to initialize an ExtensionManagement instance.
+  ExtensionManagement management(profile.get());
+
+  // Extensions are blocked because this is a corp dogfood user.
+  EXPECT_FALSE(management.ExtensionsEnabledForDesktopAndroid());
+}
+
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 
 }  // namespace extensions

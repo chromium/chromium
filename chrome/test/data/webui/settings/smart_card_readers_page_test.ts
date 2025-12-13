@@ -6,16 +6,16 @@
 import 'chrome://settings/lazy_load.js';
 
 import type {SettingsSmartCardReadersPageElement} from 'chrome://settings/lazy_load.js';
-import {ChooserType, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ChooserType, ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, loadTimeData, resetRouterForTesting} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 
 // clang-format on
 suite('SmartCardReadersPageSettings', function() {
   let testElement: SettingsSmartCardReadersPageElement;
-  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let browserProxy: TestSiteSettingsBrowserProxy;
 
   suiteSetup(function() {
     CrSettingsPrefs.setInitialized();
@@ -29,8 +29,8 @@ suite('SmartCardReadersPageSettings', function() {
   // Initialize the settings-smart-card-readers-page element.
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
+    browserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
     testElement = document.createElement('settings-smart-card-readers-page');
     assertTrue(!!testElement);
     document.body.appendChild(testElement);

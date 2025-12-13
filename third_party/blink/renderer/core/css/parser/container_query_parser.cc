@@ -3,50 +3,16 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
-#include "third_party/blink/renderer/core/css/css_identifier_value.h"
-#include "third_party/blink/renderer/core/css/css_value_list.h"
+
+#include "third_party/blink/renderer/core/css/conditional_exp_node.h"
+#include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
-#include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
-#include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
-#include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
-#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
-#include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 
 namespace blink {
 
-using css_parsing_utils::AtIdent;
-using css_parsing_utils::ConsumeIfIdent;
-
 namespace {
-
-// not <func> | <func> [ and <func> ]* | <func> [ or <func> ]*
-//
-// For example, if <func> is a function that can parse <container-query>,
-// then ConsumeNotAndOr can be used to parse <container-condition>:
-//
-// https://drafts.csswg.org/css-contain-3/#typedef-container-condition
-template <typename Func>
-const MediaQueryExpNode* ConsumeNotAndOr(Func func,
-                                         CSSParserTokenStream& stream) {
-  if (ConsumeIfIdent(stream, "not")) {
-    return MediaQueryExpNode::Not(func(stream));
-  }
-
-  const MediaQueryExpNode* result = func(stream);
-
-  if (AtIdent(stream.Peek(), "and")) {
-    while (result && ConsumeIfIdent(stream, "and")) {
-      result = MediaQueryExpNode::And(result, func(stream));
-    }
-  } else if (AtIdent(stream.Peek(), "or")) {
-    while (ConsumeIfIdent(stream, "or")) {
-      result = MediaQueryExpNode::Or(result, func(stream));
-    }
-  }
-
-  return result;
-}
 
 class SizeFeatureSet : public MediaQueryParser::FeatureSet {
   STACK_ALLOCATED();
@@ -79,15 +45,15 @@ class SizeFeatureSet : public MediaQueryParser::FeatureSet {
            feature == media_feature_names::kAspectRatioMediaFeature ||
            feature == media_feature_names::kOrientationMediaFeature;
   }
+  bool IsAllowedWithValue(const AtomicString& feature) const override {
+    return true;
+  }
   bool IsCaseSensitive(const AtomicString& feature) const override {
     return false;
   }
   bool SupportsRange() const override { return true; }
   bool SupportsStyleRange() const override { return false; }
-  bool SupportsElementDependent() const override {
-    return RuntimeEnabledFeatures::
-        CSSSiblingFunctionsInContainerQueriesEnabled();
-  }
+  bool SupportsElementDependent() const override { return true; }
 };
 
 class StateFeatureSet : public MediaQueryParser::FeatureSet {
@@ -98,12 +64,14 @@ class StateFeatureSet : public MediaQueryParser::FeatureSet {
     return feature == media_feature_names::kStuckMediaFeature ||
            feature == media_feature_names::kSnappedMediaFeature ||
            feature == media_feature_names::kScrollableMediaFeature ||
-           (RuntimeEnabledFeatures::
-                CSSScrollDirectionContainerQueriesEnabled() &&
-            feature == media_feature_names::kDirectionMediaFeature);
+           (RuntimeEnabledFeatures::CSSScrolledContainerQueriesEnabled() &&
+            feature == media_feature_names::kScrolledMediaFeature);
   }
   bool IsAllowedWithoutValue(const AtomicString& feature,
                              const ExecutionContext*) const override {
+    return true;
+  }
+  bool IsAllowedWithValue(const AtomicString& feature) const override {
     return true;
   }
   bool IsCaseSensitive(const AtomicString& feature) const override {
@@ -111,10 +79,7 @@ class StateFeatureSet : public MediaQueryParser::FeatureSet {
   }
   bool SupportsRange() const override { return false; }
   bool SupportsStyleRange() const override { return false; }
-  bool SupportsElementDependent() const override {
-    return RuntimeEnabledFeatures::
-        CSSSiblingFunctionsInContainerQueriesEnabled();
-  }
+  bool SupportsElementDependent() const override { return true; }
 };
 
 class AnchoredFeatureSet : public MediaQueryParser::FeatureSet {
@@ -128,189 +93,148 @@ class AnchoredFeatureSet : public MediaQueryParser::FeatureSet {
                              const ExecutionContext*) const override {
     return true;
   }
+  bool IsAllowedWithValue(const AtomicString& feature) const override {
+    return true;
+  }
   bool IsCaseSensitive(const AtomicString& feature) const override {
     return false;
   }
   bool SupportsRange() const override { return false; }
   bool SupportsStyleRange() const override { return false; }
-  bool SupportsElementDependent() const override {
-    return RuntimeEnabledFeatures::
-        CSSSiblingFunctionsInContainerQueriesEnabled();
-  }
+  bool SupportsElementDependent() const override { return true; }
 };
 
 }  // namespace
 
 ContainerQueryParser::ContainerQueryParser(const CSSParserContext& context)
-    : context_(context),
-      media_query_parser_(MediaQueryParser::kMediaQuerySetParser,
-                          kHTMLStandardMode,
-                          context.GetExecutionContext(),
-                          MediaQueryParser::SyntaxLevel::kLevel4) {}
+    : context_(context) {}
 
-const MediaQueryExpNode* ContainerQueryParser::ParseCondition(String value) {
+const ConditionalExpNode* ContainerQueryParser::ParseCondition(String value) {
   CSSParserTokenStream stream(value);
-  const MediaQueryExpNode* node = ParseCondition(stream);
+  const ConditionalExpNode* node = ParseCondition(stream);
   if (!stream.AtEnd()) {
     return nullptr;
   }
   return node;
 }
 
-const MediaQueryExpNode* ContainerQueryParser::ParseCondition(
+const ConditionalExpNode* ContainerQueryParser::ParseCondition(
     CSSParserTokenStream& stream) {
   stream.ConsumeWhitespace();
-  return ConsumeContainerCondition(stream);
+  return ConsumeCondition(stream);
 }
 
-// <query-in-parens> = ( <container-condition> )
-//                   | ( <size-feature> )
-//                   | style( <style-query> )
-//                   | scroll-state( <scroll-state-query> )
-//                   | anchored( <anchored-state-query> )
-//                   | <general-enclosed>
-const MediaQueryExpNode* ContainerQueryParser::ConsumeQueryInParens(
+const ConditionalExpNode* ContainerQueryParser::ConsumeLeaf(
     CSSParserTokenStream& stream) {
   CSSParserTokenStream::State savepoint = stream.Save();
+  stream.ConsumeWhitespace();
+  // <size-feature>
+  const ConditionalExpNode* query = ConsumeFeature(stream, SizeFeatureSet());
+  if (query && stream.AtEnd()) {
+    stream.ConsumeWhitespace();
+    return query;
+  }
+  stream.Restore(savepoint);
+  return nullptr;
+}
 
-  if (stream.Peek().GetType() == kLeftParenthesisToken) {
-    // ( <size-feature> ) | ( <container-condition> )
-    {
-      CSSParserTokenStream::RestoringBlockGuard guard(stream);
-      stream.ConsumeWhitespace();
-      // <size-feature>
-      const MediaQueryExpNode* query = ConsumeFeature(stream, SizeFeatureSet());
-      if (query && stream.AtEnd()) {
-        guard.Release();
-        stream.ConsumeWhitespace();
-        return MediaQueryExpNode::Nested(query);
-      }
-    }
+// style( <style-query> ) |
+// scroll-state( <scroll-state-query> ) |
+// anchored( <anchored-state-query> )
+const ConditionalExpNode* ContainerQueryParser::ConsumeFunction(
+    CSSParserTokenStream& stream) {
+  DCHECK_EQ(stream.Peek().GetType(), kFunctionToken);
 
-    {
-      CSSParserTokenStream::RestoringBlockGuard guard(stream);
-      stream.ConsumeWhitespace();
-      // <container-condition>
-      const MediaQueryExpNode* condition = ConsumeContainerCondition(stream);
-      if (condition && stream.AtEnd()) {
-        guard.Release();
-        stream.ConsumeWhitespace();
-        return MediaQueryExpNode::Nested(condition);
-      }
-    }
-  } else if (stream.Peek().GetType() == kFunctionToken &&
-             stream.Peek().FunctionId() == CSSValueID::kStyle) {
+  if (stream.Peek().FunctionId() == CSSValueID::kStyle) {
     // style( <style-query> )
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
     stream.ConsumeWhitespace();
 
-    if (const MediaQueryExpNode* query =
+    if (const ConditionalExpNode* query =
             ConsumeFeatureQuery(stream, StyleFeatureSet())) {
       context_.Count(WebFeature::kCSSStyleContainerQuery);
       guard.Release();
-      stream.ConsumeWhitespace();
-      return MediaQueryExpNode::Function(query, AtomicString("style"));
+      return ConditionalExpNode::Function(query, AtomicString("style"));
     }
-  } else if (stream.Peek().GetType() == kFunctionToken &&
-             stream.Peek().FunctionId() == CSSValueID::kScrollState) {
+  } else if (stream.Peek().FunctionId() == CSSValueID::kScrollState) {
     // scroll-state(stuck: [ none | top | right | bottom | left | block-start |
     // inline-start | block-end | inline-end ] )
     // scroll-state(snapped: [ none | x | y | block | inline ] )
     // scroll-state(scrollable: [ none | top | right | bottom | left |
     // block-start | inline-start | block-end | inline-end | x | y | block |
     // inline ] )
-    // scroll-state(direction: [ none | top | right | bottom | left
+    // scroll-state(scrolled: [ none | top | right | bottom | left
     // | block-start | inline-start | block-end | inline-end | x | y | block |
     // inline ] )
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
     stream.ConsumeWhitespace();
 
-    if (const MediaQueryExpNode* query =
+    if (const ConditionalExpNode* query =
             ConsumeFeatureQuery(stream, StateFeatureSet())) {
       guard.Release();
-      stream.ConsumeWhitespace();
-      return MediaQueryExpNode::Function(query, AtomicString("scroll-state"));
+      return ConditionalExpNode::Function(query, AtomicString("scroll-state"));
     }
   } else if (RuntimeEnabledFeatures::CSSFallbackContainerQueriesEnabled() &&
-             stream.Peek().GetType() == kFunctionToken &&
              stream.Peek().FunctionId() == CSSValueID::kAnchored) {
     // anchored(fallback: [<dashed-ident> || <try-tactic>] | <'position-area'>)
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
     stream.ConsumeWhitespace();
 
-    if (const MediaQueryExpNode* query =
+    if (const ConditionalExpNode* query =
             ConsumeFeatureQuery(stream, AnchoredFeatureSet())) {
       guard.Release();
-      stream.ConsumeWhitespace();
-      return MediaQueryExpNode::Function(query, AtomicString("anchored"));
+      return ConditionalExpNode::Function(query, AtomicString("anchored"));
     }
-  }
-  stream.Restore(savepoint);
-
-  // <general-enclosed>
-  return media_query_parser_.ConsumeGeneralEnclosed(stream);
-}
-
-const MediaQueryExpNode* ContainerQueryParser::ConsumeContainerCondition(
-    CSSParserTokenStream& stream) {
-  return ConsumeNotAndOr(
-      [this](CSSParserTokenStream& stream) {
-        return this->ConsumeQueryInParens(stream);
-      },
-      stream);
-}
-
-const MediaQueryExpNode* ContainerQueryParser::ConsumeFeatureQuery(
-    CSSParserTokenStream& stream,
-    const FeatureSet& feature_set) {
-  stream.EnsureLookAhead();
-  CSSParserTokenStream::State savepoint = stream.Save();
-  if (const MediaQueryExpNode* feature = ConsumeFeature(stream, feature_set)) {
-    return feature;
-  }
-  stream.Restore(savepoint);
-
-  if (const MediaQueryExpNode* node =
-          ConsumeFeatureCondition(stream, feature_set)) {
-    return node;
   }
 
   return nullptr;
 }
 
-const MediaQueryExpNode* ContainerQueryParser::ConsumeFeatureQueryInParens(
+const ConditionalExpNode* ContainerQueryParser::ConsumeFeatureQuery(
     CSSParserTokenStream& stream,
     const FeatureSet& feature_set) {
+  stream.EnsureLookAhead();
   CSSParserTokenStream::State savepoint = stream.Save();
-  if (stream.Peek().GetType() == kLeftParenthesisToken) {
-    CSSParserTokenStream::RestoringBlockGuard guard(stream);
-    stream.ConsumeWhitespace();
-    const MediaQueryExpNode* query = ConsumeFeatureQuery(stream, feature_set);
-    if (query && stream.AtEnd()) {
-      guard.Release();
-      stream.ConsumeWhitespace();
-      return MediaQueryExpNode::Nested(query);
-    }
+  if (const ConditionalExpNode* feature = ConsumeFeature(stream, feature_set)) {
+    return feature;
   }
+
+  // Not at a feature leaf. Most likely because of parentheses inside a
+  // function. Parse expressions (such as parentheses, `and`, `or`, `not`). For
+  // each actual feature, call back into this parser, with the specified feature
+  // set.
+
   stream.Restore(savepoint);
 
-  return media_query_parser_.ConsumeGeneralEnclosed(stream);
+  class ExpressionParser : public ConditionalParser {
+   public:
+    ExpressionParser(ContainerQueryParser& parent_parser,
+                     const FeatureSet& feature_set)
+        : parent_parser_(parent_parser), feature_set_(feature_set) {}
+
+    const ConditionalExpNode* ConsumeLeaf(
+        CSSParserTokenStream& stream) override {
+      return parent_parser_.ConsumeFeature(stream, feature_set_);
+    }
+    const ConditionalExpNode* ConsumeFunction(CSSParserTokenStream&) override {
+      return nullptr;
+    }
+
+   private:
+    ContainerQueryParser& parent_parser_;
+    const FeatureSet& feature_set_;
+  };
+
+  ExpressionParser nested_parser(*this, feature_set);
+  return nested_parser.ConsumeCondition(stream);
 }
 
-const MediaQueryExpNode* ContainerQueryParser::ConsumeFeatureCondition(
+const ConditionalExpNode* ContainerQueryParser::ConsumeFeature(
     CSSParserTokenStream& stream,
     const FeatureSet& feature_set) {
-  return ConsumeNotAndOr(
-      [this, &feature_set](CSSParserTokenStream& stream) {
-        return this->ConsumeFeatureQueryInParens(stream, feature_set);
-      },
-      stream);
-}
-
-const MediaQueryExpNode* ContainerQueryParser::ConsumeFeature(
-    CSSParserTokenStream& stream,
-    const FeatureSet& feature_set) {
-  return media_query_parser_.ConsumeFeature(stream, feature_set);
+  MediaQueryParser media_query_parser(MediaQueryParser::kMediaQuerySetParser,
+                                      context_.GetExecutionContext());
+  return media_query_parser.ConsumeFeature(stream, feature_set);
 }
 
 }  // namespace blink

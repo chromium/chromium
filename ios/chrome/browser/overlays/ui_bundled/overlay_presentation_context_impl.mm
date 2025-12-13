@@ -16,6 +16,19 @@
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_presentation_context_coordinator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_presentation_context_impl_delegate.h"
 
+namespace {
+
+// Returns the OverlayRequestId for `request` correctly handling null.
+OverlayRequestId OverlayRequestIdForRequest(OverlayRequest* request) {
+  if (!request) {
+    return {};
+  }
+
+  return request->GetRequestId();
+}
+
+}  // namespace
+
 // static
 OverlayPresentationContextImpl* OverlayPresentationContextImpl::FromBrowser(
     Browser* browser,
@@ -69,17 +82,29 @@ OverlayPresentationContextImpl::OverlayPresentationContextImpl(
     OverlayModality modality,
     OverlayRequestCoordinatorFactory* factory)
     : presenter_(OverlayPresenter::FromBrowser(browser, modality)),
-      shutdown_helper_(browser, presenter_, this),
       coordinator_delegate_(this),
       fullscreen_disabler_(browser, modality),
       coordinator_factory_(factory),
       weak_factory_(this) {
   DCHECK(presenter_);
   DCHECK(coordinator_factory_);
+  presenter_->AddObserver(this);
   presenter_->SetPresentationContext(this);
 }
 
-OverlayPresentationContextImpl::~OverlayPresentationContextImpl() = default;
+OverlayPresentationContextImpl::~OverlayPresentationContextImpl() {
+  if (presenter_) {
+    // Destruction order between the OverlayPresentationContextImpl and the
+    // OverlayPresenter is unspecified, so reset the PresentationContext if
+    // the OverlayPresentationContextImpl is destroyed first.
+    OverlayPresenterDestroyed(presenter_);
+    DCHECK(!presenter_);
+  }
+
+  for (auto& [_, ui_state] : states_) {
+    ui_state->coordinator().delegate = nil;
+  }
+}
 
 #pragma mark Public
 
@@ -150,6 +175,16 @@ bool OverlayPresentationContextImpl::IsUIDisabled() {
   return ui_disabled_;
 }
 
+#pragma mark OverlayPresenterObserver
+
+void OverlayPresentationContextImpl::OverlayPresenterDestroyed(
+    OverlayPresenter* presenter) {
+  DCHECK_EQ(presenter_, presenter);
+  presenter_->SetPresentationContext(nullptr);
+  presenter_->RemoveObserver(this);
+  presenter_ = nullptr;
+}
+
 #pragma mark OverlayPresentationContext
 
 void OverlayPresentationContextImpl::AddObserver(
@@ -183,7 +218,7 @@ bool OverlayPresentationContextImpl::CanShowUIForRequest(
 bool OverlayPresentationContextImpl::IsShowingOverlayUI() const {
   // The UI for the active request is visible until its dismissal callback has
   // been executed.
-  OverlayRequestUIState* state = GetRequestUIState(request_);
+  OverlayRequestUIState* state = GetRequestUIState(request_id_);
   return state && state->has_callback();
 }
 
@@ -208,19 +243,22 @@ void OverlayPresentationContextImpl::ShowOverlayUI(
   DCHECK(!IsShowingOverlayUI());
   DCHECK(CanShowUIForRequest(request));
   // Create the UI state for `request` if necessary.
-  if (!GetRequestUIState(request)) {
-    states_[request] = std::make_unique<OverlayRequestUIState>(request);
+  const OverlayRequestId request_id = OverlayRequestIdForRequest(request);
+  if (!GetRequestUIState(request_id)) {
+    states_[request_id] = std::make_unique<OverlayRequestUIState>(request);
   }
   // Present the overlay UI and update the UI state.
-  GetRequestUIState(request)->OverlayPresentionRequested(
-      std::move(presentation_callback), std::move(dismissal_callback));
+  GetRequestUIState(request_id)
+      ->OverlayPresentionRequested(std::move(presentation_callback),
+                                   std::move(dismissal_callback));
   SetRequest(request);
 }
 
 void OverlayPresentationContextImpl::HideOverlayUI(OverlayRequest* request) {
-  DCHECK_EQ(request_, request);
+  const OverlayRequestId request_id = OverlayRequestIdForRequest(request);
+  DCHECK_EQ(request_id_, request_id);
 
-  OverlayRequestUIState* state = GetRequestUIState(request_);
+  OverlayRequestUIState* state = GetRequestUIState(request_id);
   DCHECK(state->has_callback());
 
   // Hide the overlay UI.  The presented request will be reset when the
@@ -232,7 +270,8 @@ void OverlayPresentationContextImpl::CancelOverlayUI(OverlayRequest* request) {
   // No cleanup required if there is no UI state for `request`.  This can
   // occur when cancelling an OverlayRequest whose UI has never been
   // presented.
-  OverlayRequestUIState* state = GetRequestUIState(request);
+  const OverlayRequestId request_id = OverlayRequestIdForRequest(request);
+  OverlayRequestUIState* state = GetRequestUIState(request_id);
   if (!state) {
     return;
   }
@@ -240,7 +279,7 @@ void OverlayPresentationContextImpl::CancelOverlayUI(OverlayRequest* request) {
   // If the coordinator is not presenting the overlay UI for `state`, it can
   // be deleted immediately.
   if (!state->has_callback()) {
-    states_.erase(request);
+    states_.erase(request_id);
     return;
   }
 
@@ -250,11 +289,12 @@ void OverlayPresentationContextImpl::CancelOverlayUI(OverlayRequest* request) {
 #pragma mark Accesors
 
 void OverlayPresentationContextImpl::SetRequest(OverlayRequest* request) {
-  if (request_ == request) {
+  const OverlayRequestId request_id = OverlayRequestIdForRequest(request);
+  if (request_id_ == request_id) {
     return;
   }
-  if (request_) {
-    OverlayRequestUIState* state = GetRequestUIState(request_);
+  if (request_id_) {
+    OverlayRequestUIState* state = GetRequestUIState(request_id_);
     // The presented request should only be reset when the previously presented
     // request's UI has finished being dismissed.
     DCHECK(state);
@@ -266,16 +306,16 @@ void OverlayPresentationContextImpl::SetRequest(OverlayRequest* request) {
     OverlayDismissalReason reason = state->dismissal_reason();
     if (reason == OverlayDismissalReason::kUserInteraction ||
         reason == OverlayDismissalReason::kCancellation) {
-      states_.erase(request_);
+      states_.erase(request_id_);
     }
   }
 
-  request_ = request;
+  request_id_ = request_id;
 
-  if (request_) {
+  if (request_id_) {
     // The UI state should be created before resetting the presented request.
-    DCHECK(GetRequestUIState(request_));
-    ShowUIForPresentedRequest();
+    DCHECK(GetRequestUIState(request_id_));
+    ShowUIForPresentedRequest(request);
   } else {
     // Inform the delegate that no presentation capabilities are currently
     // required.
@@ -298,11 +338,9 @@ UIViewController* OverlayPresentationContextImpl::GetBaseViewController(
 }
 
 OverlayRequestUIState* OverlayPresentationContextImpl::GetRequestUIState(
-    OverlayRequest* request) const {
-  if (!request || !base::Contains(states_, request)) {
-    return nullptr;
-  }
-  return states_.at(request).get();
+    OverlayRequestId request_id) const {
+  auto iter = states_.find(request_id);
+  return iter == states_.end() ? nullptr : iter->second.get();
 }
 
 OverlayPresentationContext::UIPresentationCapabilities
@@ -355,18 +393,20 @@ OverlayPresentationContextImpl::ConstructPresentationCapabilities() {
 
 #pragma mark Presentation and Dismissal helpers
 
-void OverlayPresentationContextImpl::ShowUIForPresentedRequest() {
-  DCHECK(request_);
-  DCHECK(CanShowUIForRequest(request_));
+void OverlayPresentationContextImpl::ShowUIForPresentedRequest(
+    OverlayRequest* request) {
+  const OverlayRequestId request_id = OverlayRequestIdForRequest(request);
+  DCHECK_EQ(request_id_, request_id);
+  DCHECK(CanShowUIForRequest(request));
 
   // Create the coordinator if necessary.
-  OverlayRequestUIState* state = GetRequestUIState(request_);
+  OverlayRequestUIState* state = GetRequestUIState(request_id);
   OverlayRequestCoordinator* overlay_coordinator = state->coordinator();
-  UIViewController* base_view_controller = GetBaseViewController(request_);
+  UIViewController* base_view_controller = GetBaseViewController(request);
   if (!overlay_coordinator ||
       overlay_coordinator.baseViewController != base_view_controller) {
     overlay_coordinator =
-        [coordinator_factory_ newCoordinatorForRequest:request_
+        [coordinator_factory_ newCoordinatorForRequest:request
                                               delegate:&coordinator_delegate_
                                     baseViewController:base_view_controller];
     state->OverlayUIWillBePresented(overlay_coordinator);
@@ -377,7 +417,7 @@ void OverlayPresentationContextImpl::ShowUIForPresentedRequest() {
 }
 
 void OverlayPresentationContextImpl::OverlayUIWasPresented() {
-  OverlayRequestUIState* state = GetRequestUIState(request_);
+  OverlayRequestUIState* state = GetRequestUIState(request_id_);
   DCHECK(state);
   UIView* overlay_view = state->coordinator().viewController.view;
   DCHECK(overlay_view);
@@ -387,7 +427,7 @@ void OverlayPresentationContextImpl::OverlayUIWasPresented() {
 
 void OverlayPresentationContextImpl::DismissPresentedUI(
     OverlayDismissalReason reason) {
-  OverlayRequestUIState* state = GetRequestUIState(request_);
+  OverlayRequestUIState* state = GetRequestUIState(request_id_);
   DCHECK(state);
   DCHECK(state->coordinator());
 
@@ -397,47 +437,18 @@ void OverlayPresentationContextImpl::DismissPresentedUI(
 }
 
 void OverlayPresentationContextImpl::OverlayUIWasDismissed() {
-  DCHECK(request_);
-  DCHECK(GetRequestUIState(request_)->has_callback());
+  DCHECK(request_id_);
+  DCHECK(GetRequestUIState(request_id_)->has_callback());
   // If there is another request in the active WebState's OverlayRequestQueue,
   // executing the state's dismissal callback will trigger the presentation of
   // the next request.  If the presented request remains unchanged after calling
   // the dismissal callback, reset it to nullptr since the UI is no longer
   // presented.
-  OverlayRequest* previously_presented_request = request_;
-  GetRequestUIState(request_)->OverlayUIWasDismissed();
-  if (request_ == previously_presented_request) {
+  const OverlayRequestId previously_presented_request_id = request_id_;
+  GetRequestUIState(request_id_)->OverlayUIWasDismissed();
+  if (request_id_ == previously_presented_request_id) {
     SetRequest(nullptr);
   }
-}
-
-void OverlayPresentationContextImpl::BrowserDestroyed() {
-  for (std::pair<OverlayRequest* const, std::unique_ptr<OverlayRequestUIState>>&
-           state : states_) {
-    OverlayRequestUIState* ui_state = state.second.get();
-    ui_state->coordinator().delegate = nil;
-  }
-}
-
-#pragma mark BrowserShutdownHelper
-
-OverlayPresentationContextImpl::BrowserShutdownHelper::BrowserShutdownHelper(
-    Browser* browser,
-    OverlayPresenter* presenter,
-    OverlayPresentationContextImpl* presentation_context)
-    : presenter_(presenter), presentation_context_(presentation_context) {
-  DCHECK(presenter_);
-  browser_observation_.Observe(browser);
-}
-
-OverlayPresentationContextImpl::BrowserShutdownHelper::
-    ~BrowserShutdownHelper() = default;
-
-void OverlayPresentationContextImpl::BrowserShutdownHelper::BrowserDestroyed(
-    Browser* browser) {
-  presenter_->SetPresentationContext(nullptr);
-  presentation_context_->BrowserDestroyed();
-  browser_observation_.Reset();
 }
 
 #pragma mark OverlayDismissalHelper
@@ -455,13 +466,15 @@ OverlayPresentationContextImpl::OverlayRequestCoordinatorDelegateImpl::
 void OverlayPresentationContextImpl::OverlayRequestCoordinatorDelegateImpl::
     OverlayUIDidFinishPresentation(OverlayRequest* request) {
   DCHECK(request);
-  DCHECK_EQ(presentation_context_->request_, request);
+  const OverlayRequestId request_id = OverlayRequestIdForRequest(request);
+  DCHECK_EQ(presentation_context_->request_id_, request_id);
   presentation_context_->OverlayUIWasPresented();
 }
 
 void OverlayPresentationContextImpl::OverlayRequestCoordinatorDelegateImpl::
     OverlayUIDidFinishDismissal(OverlayRequest* request) {
   DCHECK(request);
-  DCHECK_EQ(presentation_context_->request_, request);
+  const OverlayRequestId request_id = OverlayRequestIdForRequest(request);
+  DCHECK_EQ(presentation_context_->request_id_, request_id);
   presentation_context_->OverlayUIWasDismissed();
 }

@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">жүржүүд</translation>
 <translation id="1275718070701477396">Сонгогдсон</translation>
 <translation id="1290331692326790741">Муу дохио</translation>
+<translation id="1292474106138697109">Хичээлийн хэрэглэгдэхүүний дэлгэц</translation>
 <translation id="1300115153046603471">APN нь өгөгдмөл бөгөөд <ph name="ATTACH" /> төрөл юм.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Хөрвүүлэх</translation>
@@ -187,7 +188,7 @@
 <translation id="1703835215927279855">Захидал</translation>
 <translation id="1706391837335750954">DNS тайлагчийг үзүүлэх</translation>
 <translation id="1708602061922134366">Google-н цэнхэр</translation>
-<translation id="1710499924611012470">Хандалтын навигац</translation>
+<translation id="1710499924611012470">Хүртээмжтэй навигац</translation>
 <translation id="1715359911173058521">Сканнертай холбогдоход асуудал гарлаа. Сүлжээ эсвэл USB холболтыг шалгаад, дахин оролдоно уу.</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> болон <ph name="SECOND_MANAGER" />-р удирддаг</translation>
 <translation id="1718553040985966377">нуур</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> зураг</translation>
 <translation id="4300272766492248925">Апп нээх</translation>
 <translation id="430786093962686457">шифон</translation>
+<translation id="4309762678330556039">Сийрүүлэг автоматаар үүсгэж, аудионоос хайгаарай. Та интернэтэд холбогдоогүй үедээ ч бичлэг үүсгэх боломжтой.</translation>
 <translation id="4310735698903592804">Google AI-аар дэмжигдсэн саяхны дэлгэцийн зургууд</translation>
 <translation id="4320904097188876154">неон ягаан</translation>
 <translation id="432961742358282111">Тодорхойлолт, орчуулга авах, нэгж хөрвүүлэхийн тулд баруун талыг товших эсвэл удаан дарна уу. Энэ онцлогийг удирдахын тулд зүүн, баруун сум товчнуудыг ашиглана уу.</translation>
@@ -818,7 +820,7 @@
 <translation id="4562494484721939086">Үйлчилгээ байхгүй</translation>
 <translation id="4570558255126759859">Бичлэгийг хураангуйлахын тулд Gemini-н загварыг татах уу?</translation>
 <translation id="4573777384450697571">Амжилтгүй болсон - Сертификатын хугацаа дууссан</translation>
-<translation id="4575450106703099687">хандалтын сонголтууд</translation>
+<translation id="4575450106703099687">хүртээмжийн сонголтууд</translation>
 <translation id="458794348635939462">Бүх хостыг шийдвэрлэж чадсангүй</translation>
 <translation id="4593212453765072419">Проксиг баталгаажуулах шаардлагатай</translation>
 <translation id="4594021849294327751">Сийрүүлэг үүсгэх</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Бусад сонголт</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> товчлуурыг туршиж үзсэн</translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">Хичээлийн хэрэглэгдэхүүн таны дэлгэцийг <ph name="RECEIVER_NAME" />-тай хуваалцаж байна</translation>
 <translation id="5613201299517339763">Таныг гаргалаа</translation>
 <translation id="5620281292257375798">Зөвхөн дотоодод</translation>
 <translation id="5628106863521633649">Боломжтой хэлнүүд</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Боломжтой сканнер байхгүй</translation>
-<translation id="6231648282154119906">Сэжигтэй файлуудыг таны сонгосон сайжруулсан хамгаалалтын нэг хэсэг байдлаар Google-н аюулгүй хөтчөөс автоматаар скан хийнэ</translation>
 <translation id="6232017090690406397">Баттерей</translation>
 <translation id="6234024205316847054">Тоймуудыг харуулах</translation>
 <translation id="6243280677745499710">Одоогийн тохируулсан дэлгэцийн зураг</translation>

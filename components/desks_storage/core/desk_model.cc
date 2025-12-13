@@ -39,7 +39,7 @@ DeskModel::GetAllEntriesResult::GetAllEntriesResult(
     std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>> entries)
     : status(status), entries(std::move(entries)) {}
 DeskModel::GetAllEntriesResult::GetAllEntriesResult(
-    GetAllEntriesResult& other) = default;
+    const GetAllEntriesResult& other) = default;
 DeskModel::GetAllEntriesResult::~GetAllEntriesResult() = default;
 
 DeskModel::GetEntryByUuidResult::GetEntryByUuidResult(
@@ -76,7 +76,8 @@ void DeskModel::SetPolicyDeskTemplates(const std::string& policy_json) {
   policy_entries_.clear();
 
   std::string_view raw_json = std::string_view(policy_json);
-  auto parsed_list = base::JSONReader::ReadAndReturnValueWithError(raw_json);
+  auto parsed_list = base::JSONReader::ReadAndReturnValueWithError(
+      raw_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_list.has_value())
     return;
 

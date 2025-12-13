@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
 

@@ -353,7 +353,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   const std::string input =
       R"({"primary": "https://foo.test", )"
       R"("associatedSites": ["https://associatedsite.test"]})";
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   handler.Init(scoped_dir_.GetPath(),
                FirstPartySetParser::ParseFromCommandLine(input));
@@ -395,7 +396,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
     const std::string input =
         R"({"primary": "https://foo.test", )"
         R"("associatedSites": ["https://associatedsite.test"]})";
-    ASSERT_TRUE(base::JSONReader::Read(input));
+    ASSERT_TRUE(
+        base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     handler.SetPublicFirstPartySets(base::Version("0.0.1"),
                                     WritePublicSetsFile(input));
 
@@ -440,7 +442,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
     const std::string input =
         R"({"primary": "https://foo.test", )"
         R"("associatedSites": ["https://associatedsite2.test"]})";
-    ASSERT_TRUE(base::JSONReader::Read(input));
+    ASSERT_TRUE(
+        base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     // The new public sets need to be associated with a different version.
     handler.SetPublicFirstPartySets(base::Version("0.0.2"),
                                     WritePublicSetsFile(input));
@@ -481,7 +484,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   const std::string input =
       R"({"primary": "https://foo.test", )"
       R"("associatedSites": ["https://associatedsite.test"]})";
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   handler().SetPublicFirstPartySets(base::Version("0.0.1"),
                                     WritePublicSetsFile(input));
 
@@ -555,7 +559,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   const std::string input =
       R"({"primary": "https://example.test", )"
       R"("associatedSites": ["https://associatedsite.test"]})";
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   handler().SetPublicFirstPartySets(base::Version("1.2.3"),
                                     WritePublicSetsFile(input));
 
@@ -590,7 +595,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   const std::string input =
       R"({"primary": "https://example.test", )"
       R"("associatedSites": ["https://associatedsite.test"]})";
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   handler().SetPublicFirstPartySets(base::Version("1.2.3"),
                                     WritePublicSetsFile(input));
 
@@ -677,7 +683,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   const std::string input =
       R"({"primary": "https://example.test", )"
       R"("associatedSites": ["https://associatedsite.test"]})";
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   handler().SetPublicFirstPartySets(base::Version("1.2.3"),
                                     WritePublicSetsFile(input));
   // Wait for initialization is done.
@@ -711,7 +718,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   const std::string input =
       R"({"primary": "https://example.test", )"
       R"("associatedSites": ["https://associatedsite1.test"]})";
-  ASSERT_TRUE(base::JSONReader::Read(input));
+  ASSERT_TRUE(
+      base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   handler().SetPublicFirstPartySets(base::Version("1.2.3"),
                                     WritePublicSetsFile(input));
   // Wait for initialization is done.
@@ -770,7 +778,8 @@ class FirstPartySetsHandlerGetContextConfigForPolicyTest
     const std::string input =
         R"({"primary": "https://primary1.test", )"
         R"("associatedSites": ["https://associatedsite1.test", "https://associatedsite2.test"]})";
-    ASSERT_TRUE(base::JSONReader::Read(input));
+    ASSERT_TRUE(
+        base::JSONReader::Read(input, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     handler().SetPublicFirstPartySets(base::Version("1.2.3"),
                                       WritePublicSetsFile(input));
 

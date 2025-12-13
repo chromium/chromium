@@ -18,6 +18,7 @@ enum class MandatoryReauthBubbleType;
 
 class TestAutofillBubble final : public AutofillBubbleBase {
   void Hide() override {}
+  bool IsMouseHovered() const override;
 };
 
 class TestAutofillBubbleHandler : public AutofillBubbleHandler {
@@ -45,7 +46,7 @@ class TestAutofillBubbleHandler : public AutofillBubbleHandler {
       bool is_user_gesture) override;
   AutofillBubbleBase* ShowSaveAutofillAiDataBubble(
       content::WebContents* web_contents,
-      SaveOrUpdateAutofillAiDataController* controller) override;
+      AutofillAiImportDataController* controller) override;
   AutofillBubbleBase* ShowSaveAddressProfileBubble(
       content::WebContents* contents,
       std::unique_ptr<SaveAddressBubbleController> controller,

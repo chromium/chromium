@@ -80,7 +80,6 @@ bool DeviceInfoRequiredForUpload() {
 // TODO(b/281905099): remove after rolling out reporting managed user events
 // from unmanaged devices
 BASE_FEATURE(kEnableReportingFromUnmanagedDevices,
-             "EnableReportingFromUnmanagedDevices",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 ReportingServerConnector::ReportingServerConnector()

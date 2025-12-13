@@ -17,6 +17,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/omnibox_proto/aim_tools_and_models.pb.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -147,15 +148,6 @@ class AutocompleteInput {
   };
   static FeaturedKeywordMode GetFeaturedKeywordMode(std::u16string_view text);
 
-  // If the input is in the keyword mode for a starter pack engine, returns the
-  // starter pack's `TemplateURL` or nullptr. E.g. for "@Gemini text", Gemini
-  // `TemplateURL` is returned. If the matching keyword was found, updates
-  // `input` with the keyword stripped.
-  // `model` must be non-null.
-  static const TemplateURL* AdjustInputForStarterPackEngines(
-      TemplateURLService* model,
-      AutocompleteInput* input);
-
   // Returns the matching substituting keyword for `input`, or NULL if there
   // is no keyword for the specified input.  If the matching keyword was found,
   // updates `input`'s text and cursor position.
@@ -249,13 +241,16 @@ class AutocompleteInput {
   // request URLs) and source= or sourceid= (for Search request URLs).
   SearchTermsData::RequestSource request_source() const {
     switch (current_page_classification()) {
-      // Lens Overlay searchboxes don't rely on TemplateURL replacement and set
-      // `client=` in //components/omnibox/browser/remote_suggestions_service.cc
-      // and `source=` in //c/b/u/lens/lens_overlay_url_builder.cc.
       case metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX:
       case metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX:
       case metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX:
         return SearchTermsData::RequestSource::LENS_OVERLAY;
+      case metrics::OmniboxEventProto::NTP_COMPOSEBOX:
+      case metrics::OmniboxEventProto::LENS_SIDE_PANEL_COMPOSEBOX:
+      case metrics::OmniboxEventProto::NTP_OMNIBOX_COMPOSEBOX:
+      case metrics::OmniboxEventProto::SRP_OMNIBOX_COMPOSEBOX:
+      case metrics::OmniboxEventProto::OTHER_OMNIBOX_COMPOSEBOX:
+        return SearchTermsData::RequestSource::NTP_COMPOSEBOX;
       default:
         return SearchTermsData::RequestSource::SEARCHBOX;
     }
@@ -367,6 +362,33 @@ class AutocompleteInput {
     lens_overlay_suggest_inputs_ = lens_overlay_suggest_inputs;
   }
 
+  // Variant of the set_lens_overlay_suggest_inputs that doesn't make copies
+  // and is better aligned with the value returned by ComposeboxQueryController.
+  void set_lens_overlay_suggest_inputs(
+      std::unique_ptr<lens::proto::LensOverlaySuggestInputs>
+          lens_overlay_suggest_inputs) {
+    lens_overlay_suggest_inputs_.emplace(
+        std::move(*lens_overlay_suggest_inputs.release()));
+  }
+
+  omnibox::ChromeAimToolsAndModels aim_tool_mode() const {
+    return aim_tool_mode_;
+  }
+
+  void set_aim_tool_mode(
+      const omnibox::ChromeAimToolsAndModels& aim_tool_mode) {
+    aim_tool_mode_ = aim_tool_mode;
+  }
+  std::u16string context_tab_title() const { return context_tab_title_; }
+
+  void set_context_tab_title(std::u16string title) {
+    context_tab_title_ = title;
+  }
+
+  GURL context_tab_url() const { return context_tab_url_; }
+
+  void set_context_tab_url(GURL url) { context_tab_url_ = url; }
+
   // Resets all internal variables to the null-constructed state.
   void Clear();
 
@@ -433,6 +455,9 @@ class AutocompleteInput {
   // the suggest requests.
   std::optional<lens::proto::LensOverlaySuggestInputs>
       lens_overlay_suggest_inputs_;
+  // Tool mode.
+  omnibox::ChromeAimToolsAndModels aim_tool_mode_ =
+      omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
 
   // Flags for OmniboxDefaultNavigationsToHttps feature.
   bool should_use_https_as_default_scheme_;
@@ -448,6 +473,8 @@ class AutocompleteInput {
   // actually an HTTP server that pretends to serve HTTPS responses. Should only
   // be true on iOS.
   bool use_fake_https_for_https_upgrade_testing_;
+  std::u16string context_tab_title_;
+  GURL context_tab_url_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_INPUT_H_

@@ -98,7 +98,7 @@ component("ui_devtools") {
     "//mojo/public/cpp/system",
     "//net",
     "//third_party/inspector_protocol:crdtp",
-    "//ui/base:base",
+    "//ui/base/interaction",
     "//ui/gfx",
   ]
 

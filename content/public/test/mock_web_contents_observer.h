@@ -299,7 +299,7 @@ class MockWebContentsObserver : public WebContentsObserver {
               (override));
   MOCK_METHOD(void,
               OnFocusChangedInPage,
-              (FocusedNodeDetails* details),
+              (const FocusedNodeDetails& details),
               (override));
   MOCK_METHOD(void,
               DidUpdateWebManifestURL,

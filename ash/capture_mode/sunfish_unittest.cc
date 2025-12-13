@@ -86,12 +86,12 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
@@ -137,8 +137,6 @@ constexpr base::TimeDelta kImageSearchRequestStartDelay = base::Seconds(1);
 // button cannot fit inside.
 constexpr int kSmallRegionEdgeLength = 20;
 
-// TODO: crbug.com/402548933 - Update this to work when the Lens Web API
-// integration is enabled.
 void WaitForImageCapturedForSearch(PerformCaptureType expected_capture_type) {
   base::test::TestFuture<void> image_captured_future;
   CaptureModeTestApi().SetOnImageCapturedForSearchCallback(
@@ -2591,6 +2589,100 @@ TEST_F(SunfishTest, PinnedWindowExitSession) {
   EXPECT_FALSE(controller->IsActive());
 }
 
+TEST_F(SunfishTest, NudgeChangesRootWithBar) {
+  UpdateDisplay("800x700,801+0-800x700");
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(gfx::Point(100, 500));
+
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kImage);
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(session->session_type(), SessionType::kReal);
+  auto* capture_toast_controller = session->capture_toast_controller();
+
+  EXPECT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
+  ASSERT_TRUE(capture_toast_controller->capture_toast_widget());
+  EXPECT_EQ(capture_toast_controller->capture_toast_widget()
+                ->GetNativeWindow()
+                ->GetRootWindow(),
+            session->current_root());
+
+  event_generator->MoveMouseTo(gfx::Point(1000, 500));
+  EXPECT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
+  ASSERT_TRUE(capture_toast_controller->capture_toast_widget());
+  EXPECT_EQ(capture_toast_controller->capture_toast_widget()
+                ->GetNativeWindow()
+                ->GetRootWindow(),
+            session->current_root());
+}
+
+TEST_F(SunfishTest, NudgeBehaviorWhenSelectingRegion) {
+  UpdateDisplay("800x700,801+0-800x700");
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(gfx::Point(100, 500));
+
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_EQ(session->session_type(), SessionType::kReal);
+  EXPECT_EQ(Shell::GetAllRootWindows()[0], session->current_root());
+
+  // Nudge hides while selecting a region, but doesn't change roots until the
+  // region change is committed.
+  auto* nudge_controller = GetUserNudgeController();
+  event_generator->MoveMouseTo(gfx::Point(1000, 500));
+  event_generator->PressLeftButton();
+  EXPECT_FALSE(nudge_controller->is_visible());
+
+  // If we release without selecting a valid region (i.e., an empty region), the
+  // nudge should be visible again.
+  event_generator->ReleaseLeftButton();
+  EXPECT_EQ(Shell::GetAllRootWindows()[1], session->current_root());
+
+  // The nudge shows again, and is on the second display.
+  EXPECT_TRUE(nudge_controller->is_visible());
+  ASSERT_TRUE(session->capture_toast_controller()->capture_toast_widget());
+  EXPECT_EQ(session->capture_toast_controller()
+                ->capture_toast_widget()
+                ->GetNativeWindow()
+                ->GetRootWindow(),
+            session->current_root());
+}
+
+TEST_F(SunfishTest, NudgeDoesNotShowForAllUserTypes) {
+  struct {
+    std::string trace;
+    user_manager::UserType user_type;
+    bool can_see_nudge;
+  } kUserTypeTestCases[] = {
+      {"regular user", user_manager::UserType::kRegular, true},
+      {"child", user_manager::UserType::kChild, true},
+      {"guest", user_manager::UserType::kGuest, false},
+      {"public account", user_manager::UserType::kPublicAccount, false},
+      {"kiosk app", user_manager::UserType::kKioskChromeApp, false},
+      {"web kiosk app", user_manager::UserType::kKioskWebApp, false},
+  };
+
+  for (const auto& test_case : kUserTypeTestCases) {
+    SCOPED_TRACE(test_case.trace);
+    ClearLogin();
+    SimulateUserLogin({"example@gmail.com", test_case.user_type});
+
+    auto* controller = StartCaptureSession(CaptureModeSource::kRegion,
+                                           CaptureModeType::kImage);
+    ASSERT_EQ(test_case.can_see_nudge, controller->CanShowSunfishRegionNudge());
+
+    auto* nudge_controller = GetUserNudgeController();
+    ASSERT_EQ(test_case.can_see_nudge, !!nudge_controller);
+
+    controller->Stop();
+  }
+}
+
 using SunfishMultiDisplayTest = SunfishTest;
 
 TEST_F(SunfishMultiDisplayTest, SelectNewRegionAndPanelRoot) {
@@ -2767,7 +2859,7 @@ TEST_F(SunfishDisplayMetricsTest, RefreshPanelBoundsInDefaultMode) {
   const gfx::Rect initial_panel_bounds(panel->GetBoundsInScreen());
 
   // Zoom in until the panel is cropped to fit within the work area.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   do {
     PressAndReleaseKey(ui::VKEY_OEM_PLUS,
                        ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
@@ -2798,7 +2890,7 @@ TEST_F(SunfishDisplayMetricsTest, RefreshPanelBoundsInSunfishMode) {
   const gfx::Rect initial_panel_bounds(panel->GetBoundsInScreen());
 
   // Zoom in until the panel is cropped to fit within the work area.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   do {
     PressAndReleaseKey(ui::VKEY_OEM_PLUS,
                        ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);

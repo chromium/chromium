@@ -19,13 +19,14 @@
         <!-- Custom bindings for extension APIs. -->
         <include name="IDR_ACTION_CUSTOM_BINDINGS_JS" file="extensions\action_custom_bindings.js" type="BINDATA" />
         <include name="IDR_BROWSER_ACTION_CUSTOM_BINDINGS_JS" file="extensions\browser_action_custom_bindings.js" type="BINDATA" />
-        <include name="IDR_CONTROLLED_FRAME_JS" file="controlled_frame\controlled_frame.js" type="BINDATA" />
+        <include name="IDR_HTML_CONTROLLED_FRAME_ELEMENT_JS" file="controlled_frame\html_controlled_frame_element.js" type="BINDATA" />
         <include name="IDR_CONTROLLED_FRAME_EVENTS_JS" file="controlled_frame\controlled_frame_events.js" type="BINDATA" />
         <include name="IDR_CONTROLLED_FRAME_INTERNAL_CUSTOM_BINDINGS_JS" file="controlled_frame\controlled_frame_internal_custom_bindings.js" type="BINDATA" />
         <include name="IDR_CONTROLLED_FRAME_IMPL_JS" file="controlled_frame\controlled_frame_impl.js" type="BINDATA" />
         <include name="IDR_CONTROLLED_FRAME_API_METHODS_JS" file="controlled_frame\controlled_frame_api_methods.js" type="BINDATA" />
         <include name="IDR_CONTROLLED_FRAME_WEB_REQUEST_JS" file="controlled_frame\controlled_frame_web_request.js" type="BINDATA" />
         <include name="IDR_CONTROLLED_FRAME_CONTEXT_MENUS_JS" file="controlled_frame\controlled_frame_context_menus.js" type="BINDATA" />
+        <include name="IDR_CONTROLLED_FRAME_URL_PATTERNS_HELPER_JS" file="controlled_frame\controlled_frame_url_patterns_helper.js" type="BINDATA" />
         <include name="IDR_CHROME_WEB_VIEW_CONTEXT_MENUS_API_METHODS_JS" file="extensions\web_view\chrome_web_view_context_menus_api_methods.js" type="BINDATA" />
         <include name="IDR_CHROME_WEB_VIEW_ELEMENT_JS" file="extensions\web_view\chrome_web_view_element.js" type="BINDATA" />
         <include name="IDR_CHROME_WEB_VIEW_INTERNAL_CUSTOM_BINDINGS_JS" file="extensions\web_view\chrome_web_view_internal_custom_bindings.js" type="BINDATA" />

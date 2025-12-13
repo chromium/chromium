@@ -7,10 +7,12 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/memory/shared_memory_switch.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/synchronization/lock.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
-#include "components/tracing/common/trace_to_console.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
@@ -41,42 +43,109 @@ constexpr SharedMemoryMachPortRendezvousKey kTraceBufferRendezvousKey = 'trbc';
 using base::trace_event::TraceConfig;
 using base::trace_event::TraceLog;
 
+class StartupTrackEventConfigObserver
+    : public perfetto::TrackEventSessionObserver {
+ public:
+  static StartupTrackEventConfigObserver& GetInstance() {
+    static base::NoDestructor<StartupTrackEventConfigObserver> instance;
+    return *instance;
+  }
+
+  StartupTrackEventConfigObserver() {
+    base::TrackEvent::AddSessionObserver(this);
+  }
+
+  // perfetto::TrackEventSessionObserver implementation.
+  void OnSetup(const perfetto::DataSourceBase::SetupArgs& args) override {
+    if (args.backend_type != perfetto::kCustomBackend ||
+        args.config->has_interceptor_config()) {
+      return;
+    }
+    base::AutoLock lock(lock_);
+    track_event_sessions_.emplace(args.internal_instance_index,
+                                  TrackEventSession(false, *args.config));
+  }
+
+  void OnStart(const perfetto::DataSourceBase::StartArgs& args) override {
+    base::AutoLock lock(lock_);
+    auto it = track_event_sessions_.find(args.internal_instance_index);
+    if (it != track_event_sessions_.end()) {
+      it->second.started = true;
+    }
+  }
+
+  void OnStop(const perfetto::DataSourceBase::StopArgs& args) override {
+    base::AutoLock lock(lock_);
+    track_event_sessions_.erase(args.internal_instance_index);
+  }
+
+  std::optional<perfetto::DataSourceConfig> GetTrackEventConfig() {
+    base::AutoLock lock(lock_);
+    for (const auto& [session_id, session] : track_event_sessions_) {
+      if (session.started) {
+        return session.config;
+      }
+    }
+    return std::nullopt;
+  }
+
+ private:
+  ~StartupTrackEventConfigObserver() override {
+    base::TrackEvent::RemoveSessionObserver(this);
+  }
+
+  struct TrackEventSession {
+    bool started;
+    perfetto::DataSourceConfig config;
+  };
+  base::Lock lock_;
+  base::flat_map<uint32_t, TrackEventSession> track_event_sessions_
+      GUARDED_BY(lock_);
+};
+
 }  // namespace
 
-bool g_tracing_initialized_after_featurelist = false;
+bool g_tracing_initialized = false;
 
 bool IsTracingInitialized() {
-  return g_tracing_initialized_after_featurelist;
+  return g_tracing_initialized;
 }
 
-void InitTracingPostFeatureList(
+void InitTracing(
     bool enable_consumer,
     bool will_trace_thread_restart,
-    base::RepeatingCallback<bool()> should_allow_system_tracing) {
-  DCHECK(base::FeatureList::GetInstance());
-  DCHECK(!g_tracing_initialized_after_featurelist);
-  g_tracing_initialized_after_featurelist = true;
+    bool enable_system_backend,
+    base::RepeatingCallback<bool()> allow_system_tracing_consumer) {
+  DCHECK(!g_tracing_initialized);
+  g_tracing_initialized = true;
 
-  // Initialize the client library's TrackRegistry to support trace points
-  // during startup tracing. We don't setup the client library completely here
-  // yet, because we don't have field trials loaded yet (which influence which
-  // backends we enable).
-  perfetto::internal::TrackRegistry::InitializeInstance();
+  std::optional<uint64_t> maybe_process_track_uuid;
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kTraceProcessTrackUuid)) {
+    uint64_t process_track_uuid;
+    if (base::StringToUint64(
+            command_line->GetSwitchValueASCII(switches::kTraceProcessTrackUuid),
+            &process_track_uuid)) {
+      maybe_process_track_uuid = process_track_uuid;
+    }
+  }
 
   // Create the PerfettoTracedProcess.
   auto& traced_process =
       PerfettoTracedProcess::MaybeCreateInstance(will_trace_thread_restart);
-  if (should_allow_system_tracing) {
+  if (allow_system_tracing_consumer) {
     traced_process.SetAllowSystemTracingConsumerCallback(
-        std::move(should_allow_system_tracing));
+        std::move(allow_system_tracing_consumer));
   }
-  traced_process.InitPostFeatureList(enable_consumer);
+  traced_process.SetupClientLibrary(enable_consumer, enable_system_backend,
+                                    maybe_process_track_uuid);
 
   RegisterTracedValueProtoWriter();
 
   // Ensure TraceLog is initialized first.
   // https://crbug.com/764357
   TraceLog::GetInstance();
+  StartupTrackEventConfigObserver::GetInstance();
 
 #if BUILDFLAG(IS_WIN)
   tracing::EnableETWExport();
@@ -97,26 +166,25 @@ void InitTracingPostFeatureList(
   }
 }
 
+void InitTracingPostFeatureList(
+    bool enable_consumer,
+    bool will_trace_thread_restart,
+    base::RepeatingCallback<bool()> allow_system_tracing_consumer) {
+  DCHECK(base::FeatureList::GetInstance());
+  InitTracing(enable_consumer, will_trace_thread_restart,
+              ShouldSetupSystemTracing(),
+              std::move(allow_system_tracing_consumer));
+}
+
 base::ReadOnlySharedMemoryRegion CreateTracingConfigSharedMemory() {
-  base::trace_event::TraceLog* trace_log =
-      base::trace_event::TraceLog::GetInstance();
   const auto& startup_config = TraceStartupConfig::GetInstance();
   perfetto::TraceConfig trace_config;
   if (startup_config.IsEnabled()) {
     trace_config = startup_config.GetPerfettoConfig();
-  } else if (trace_log->IsEnabled()) {
-    bool has_relevant_config = false;
-    for (const auto& session : trace_log->GetTrackEventSessions()) {
-      if (session.backend_type == perfetto::kCustomBackend &&
-          !session.config.has_interceptor_config()) {
-        *trace_config.add_data_sources()->mutable_config() = session.config;
-        has_relevant_config = true;
-        break;
-      }
-    }
-    if (!has_relevant_config) {
-      return base::ReadOnlySharedMemoryRegion();
-    }
+  } else if (auto maybe_config = StartupTrackEventConfigObserver::GetInstance()
+                                     .GetTrackEventConfig();
+             maybe_config.has_value()) {
+    *trace_config.add_data_sources()->mutable_config() = *maybe_config;
   } else {
     return base::ReadOnlySharedMemoryRegion();
   }
@@ -133,24 +201,6 @@ base::ReadOnlySharedMemoryRegion CreateTracingConfigSharedMemory() {
 }
 
 base::UnsafeSharedMemoryRegion CreateTracingOutputSharedMemory() {
-#if DCHECK_IS_ON()
-  // This should not be called if tracing config shm was not created beforehand.
-  base::trace_event::TraceLog* trace_log =
-      base::trace_event::TraceLog::GetInstance();
-  const auto& startup_config = TraceStartupConfig::GetInstance();
-  DCHECK(startup_config.IsEnabled() || trace_log->IsEnabled());
-
-  if (!startup_config.IsEnabled()) {
-    const auto sessions = trace_log->GetTrackEventSessions();
-    bool has_relevant_config =
-        std::any_of(sessions.begin(), sessions.end(), [](const auto& session) {
-          return session.backend_type == perfetto::kCustomBackend &&
-                 !session.config.has_interceptor_config();
-        });
-    DCHECK(has_relevant_config);
-  }
-#endif  // DCHECK_IS_ON()
-
   auto shm = base::UnsafeSharedMemoryRegion::Create(
       features::kPerfettoSharedMemorySizeBytes.Get());
   if (!shm.IsValid()) {

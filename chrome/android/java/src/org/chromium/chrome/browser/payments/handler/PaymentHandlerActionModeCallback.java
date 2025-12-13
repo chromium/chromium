@@ -4,18 +4,16 @@
 
 package org.chromium.chrome.browser.payments.handler;
 
-import android.content.Intent;
 import android.graphics.Rect;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
+import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 
@@ -53,9 +51,8 @@ public class PaymentHandlerActionModeCallback extends ActionModeCallback {
     }
 
     @Override
-    public boolean onDropdownItemClicked(
-            int groupId, int id, @Nullable Intent intent, @Nullable OnClickListener clickListener) {
-        return mHelper.onDropdownItemClicked(groupId, id, intent, clickListener);
+    public boolean onDropdownItemClicked(SelectionMenuItem item, boolean closeMenu) {
+        return mHelper.onDropdownItemClicked(item, closeMenu);
     }
 
     @Override

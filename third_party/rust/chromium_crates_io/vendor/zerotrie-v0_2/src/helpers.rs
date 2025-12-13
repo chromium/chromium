@@ -78,8 +78,11 @@ pub(crate) const MAX_USIZE_LEN_AS_DIGITS: usize = core::mem::size_of::<usize>() 
 /// Formats a usize as a string of length N, padded with spaces,
 /// with the given prefix.
 ///
+/// # Panics
+///
 /// If the string is too short, the function may panic. To prevent
 /// this, N should be MAX_USIZE_LEN_AS_DIGITS larger than M.
+#[allow(clippy::indexing_slicing)] // documented, and based on const parameters
 pub(crate) const fn const_fmt_int<const M: usize, const N: usize>(
     prefix: [u8; M],
     value: usize,

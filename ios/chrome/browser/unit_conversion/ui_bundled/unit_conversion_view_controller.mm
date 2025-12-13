@@ -50,8 +50,8 @@ const CGFloat kReportAnIssueButtonPadding = 4;
 const CGFloat kUnitTitlePadding = 4;
 
 // Cells identifiers.
-NSString* kUnitTypeCellIdentifier = @"UnitTypeCell";
-NSString* kUnitTypeFieldCellIdentifier = @"UnitTypeValueFieldCell";
+NSString* const kUnitTypeCellIdentifier = @"UnitTypeCell";
+NSString* const kUnitTypeFieldCellIdentifier = @"UnitTypeValueFieldCell";
 
 // Source and target sections indexes.
 const NSInteger kSourceSection = 0;

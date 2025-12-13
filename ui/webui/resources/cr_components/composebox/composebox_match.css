@@ -1,0 +1,118 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --input-inline-spacing: 12px;
+  outline: none;
+  height: var(--cr-composebox-match-height, 44px);
+  display: block;
+}
+
+:host(:not([is-last])) {
+  padding-bottom: var(--cr-composebox-match-match-padding-bottom, 2px);
+}
+
+.container {
+  border-start-end-radius: 24px;
+  border-end-end-radius: 24px;
+  color: var(--color-composebox-font);
+  cursor: default;
+  display: flex;
+  font-size: 16px;
+  height: var(--cr-composebox-match-height, 44px);
+  line-height: 24px;
+  position: relative;
+}
+
+.container:hover,
+:host(:is(:focus-visible, [selected])) .container {
+  background-color: var(--color-searchbox-results-background-hovered);
+}
+
+#focusIndicator {
+  background-color: var(--color-searchbox-results-focus-indicator);
+  border-radius: 4px;
+  display: none;
+  margin-inline-start: -4px;
+  height: 100%;
+  position: absolute;
+  width: 8px;
+}
+
+:host(:is(:focus-visible, [selected])) #focusIndicator {
+  display: block;
+}
+
+#iconContainer {
+  align-items: center;
+  display: flex;
+  padding-inline-start: var(--cr-composebox-match-icon-container-padding-inline-start, 18px);
+  justify-content: center;
+}
+
+#icon {
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: cover;
+  background-color: var(--color-composebox-input-icon);
+  height: var(--cr-composebox-match-icon-size, 20px);
+  width: var(--cr-composebox-match-icon-size, 20px);
+}
+
+#textContainer {
+  align-content: center;
+  color: var(--color-composebox-font-light);
+  font-size: var(--cr-composebox-match-text-container-font-size, 16px);
+  overflow: hidden;
+  padding-inline: var(--input-inline-spacing) 64px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#remove {
+  --cr-icon-button-fill-color:
+      var(--color-searchbox-results-icon-selected);
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-hover-background-color:
+      var(--color-searchbox-results-background-hovered);
+  display: none;
+  position: absolute;
+  top: var(--cr-composebox-match-remove-button-top, 6px);
+  right: 12px;
+}
+
+:host-context([dir='rtl']) #remove {
+  left: 12px;
+  right: unset;
+}
+
+.container:hover #remove:not([hidden]),
+:host-context(cr-composebox-match:-webkit-any(:focus-within, [selected])) #remove:not([hidden]) {
+  display: inline-flex;
+}
+
+:host-context([in-deep-search-mode_]) #textContainer {
+  display: block;
+  line-clamp: 2;
+  overflow: hidden;
+  box-orient: vertical;
+  white-space: normal;
+}
+
+:host-context([in-deep-search-mode_]),
+:host-context([in-deep-search-mode_]) .container {
+  height: 68px;
+}
+
+:host-context([in-deep-search-mode_]) .container {
+  border-start-end-radius: 24px;
+  border-end-end-radius: 24px;
+}

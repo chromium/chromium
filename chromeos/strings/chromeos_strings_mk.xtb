@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">портокали</translation>
 <translation id="1275718070701477396">Избран</translation>
 <translation id="1290331692326790741">Слаб сигнал</translation>
+<translation id="1292474106138697109">Екран на „Алатки за клас“</translation>
 <translation id="1300115153046603471">APN е од стандарден и тип <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Конвертирајте</translation>
@@ -617,7 +618,7 @@
 <translation id="3763034084412196440">Приспособете ја јачината на звукот</translation>
 <translation id="3767737419527918477">Пребарајте снимки</translation>
 <translation id="3771294271822695279">Видеодатотеки</translation>
-<translation id="3771694256347217732">Услови за користење на Google</translation>
+<translation id="3771694256347217732">„Услови за користење“ на Google</translation>
 <translation id="3772164567520167489">Не може да се создадат наслови на снимките за овој јазик на транскрипција</translation>
 <translation id="3780740315729837296">Назначете копче од тастатурата</translation>
 <translation id="3784455785234192852">Катанец</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> слики</translation>
 <translation id="4300272766492248925">Отвори ја апликацијата</translation>
 <translation id="430786093962686457">шифон</translation>
+<translation id="4309762678330556039">Автоматски создавајте транскрипции и пребарувајте аудио. Може да создавате снимки дури и кога не сте поврзани на интернет.</translation>
 <translation id="4310735698903592804">Неодамнешни тапети овозможени од Google AI</translation>
 <translation id="4320904097188876154">неонска розова</translation>
 <translation id="432961742358282111">Кликнете со десното копче или притиснете и задржете за да добиете дефиниции, преводи или конверзии на единици. Користете го копчето со стрелка налево или со стрелка надесно за да управувате со функцијава.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Повеќе опции</translation>
 <translation id="5600027863942488546">Копчето <ph name="KEY_NAME" /> е тестирано</translation>
 <translation id="5606865426897221650">Картичка</translation>
+<translation id="5612205513582918357">„Алатки за клас“ го споделува вашиот екран со <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Одјавени сте</translation>
 <translation id="5620281292257375798">Само интерно</translation>
 <translation id="5628106863521633649">Достапни јазици</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Нема достапни скенери</translation>
-<translation id="6231648282154119906">Како дел од „Подобрената заштита“ што ја избравте, „Безбедно прелистување со Google“ ќе ги скенира сомнителните датотеки автоматски</translation>
 <translation id="6232017090690406397">Батерија</translation>
 <translation id="6234024205316847054">Прикажи прегледи</translation>
 <translation id="6243280677745499710">Поставен во моментов</translation>
@@ -1828,7 +1830,7 @@
 <translation id="9049868303458988905">Копчето „Зачувај“ во APN сега е овозможено</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">Одредување со DNS има висока латенција</translation>
-<translation id="9065203028668620118">Измени</translation>
+<translation id="9065203028668620118">Изменете</translation>
 <translation id="9068296451330120661">водена боја</translation>
 <translation id="9073281213608662541">ПАП</translation>
 <translation id="9074739597929991885">Bluetooth</translation>

@@ -58,7 +58,7 @@ class MEDIA_EXPORT VideoFrameExtractor {
   void ConvertPacket(AVPacket* packet);
 
   // Called when video frame is successfully extracted.
-  void NotifyComplete(std::vector<uint8_t> encoded_frame,
+  void NotifyComplete(base::span<uint8_t> encoded_frame,
                       const VideoDecoderConfig& config);
 
   // Called when error happens.

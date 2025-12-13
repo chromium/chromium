@@ -6,7 +6,6 @@ include_rules = [
   "+chrome/browser/ash/accessibility",
   "+chrome/browser/ash/base",
   "+chrome/browser/ash/child_accounts/parent_access_code",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/input_method",
   "+chrome/browser/ash/login",
@@ -15,6 +14,7 @@ include_rules = [
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/download",
+  "+chrome/browser/global_features.h",
   "+chrome/browser/prefs",
   "+chrome/browser/ash/policy/skyvault",
   # We don't want more dependencies on c/b/ui/ash.

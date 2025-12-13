@@ -17,10 +17,10 @@ source_set("plus_addresses") {
     "//chrome/browser/sync:factories",
     "//components/affiliations/core/browser:affiliations",
     "//components/autofill/core/common:features",
-    "//components/plus_addresses",
-    "//components/plus_addresses:features",
-    "//components/plus_addresses:hats_utils",
-    "//components/plus_addresses/settings",
+    "//components/plus_addresses/core/browser",
+    "//components/plus_addresses/core/browser:hats_utils",
+    "//components/plus_addresses/core/browser/settings",
+    "//components/plus_addresses/core/common:features",
     "//components/signin/public/identity_manager",
     "//components/sync/model",
     "//components/variations/service",
@@ -36,6 +36,7 @@ source_set("impl") {
   deps = [
     ":plus_addresses",
     "//chrome/browser/signin",
+    "//chrome/browser/webdata_services",
   ]
 }
 
@@ -51,7 +52,7 @@ if (!is_android) {
       "//chrome/browser/signin",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
-      "//components/plus_addresses",
+      "//components/plus_addresses/core/browser",
       "//content/test:test_support",
       "//testing/gtest",
     ]

@@ -31,7 +31,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
-#include "services/video_effects/public/cpp/buildflags.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/aura/env.h"
 #include "ui/compositor/compositor.h"
@@ -422,14 +421,6 @@ void FakeCameraDevice::CreatePushSubscription(
               kCreatedWithRequestedSettings),
       requested_settings);
 }
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-void FakeCameraDevice::RegisterVideoEffectsProcessor(
-    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor> remote) {}
-
-void FakeCameraDevice::RegisterReadonlyVideoEffectsManager(
-    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager> remote) {}
-#endif
 
 void FakeCameraDevice::OnFinishedConsumingBuffer(int32_t buffer_id) {
   auto iter = buffer_pool_.find(buffer_id);

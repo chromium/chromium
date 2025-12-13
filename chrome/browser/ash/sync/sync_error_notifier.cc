@@ -64,7 +64,7 @@ void TriggerSyncKeyRetrieval(Profile* profile) {
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
   OpenTabForSyncKeyRetrieval(
       displayer.browser(),
-      syncer::TrustedVaultUserActionTriggerForUMA::kNotification);
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kNotification);
 }
 
 void TriggerSyncRecoverabilityDegradedFix(Profile* profile) {
@@ -72,7 +72,7 @@ void TriggerSyncRecoverabilityDegradedFix(Profile* profile) {
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
   OpenTabForSyncKeyRecoverabilityDegraded(
       displayer.browser(),
-      syncer::TrustedVaultUserActionTriggerForUMA::kNotification);
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kNotification);
 }
 
 BubbleViewParameters GetBubbleViewParameters(
@@ -196,6 +196,11 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
   display_service->Display(NotificationHandler::Type::TRANSIENT, notification,
                            /*metadata=*/nullptr);
   notification_displayed_ = true;
+}
+
+void SyncErrorNotifier::OnSyncShutdown(syncer::SyncService*) {
+  // Unreachable, since this service is Shutdown() before the SyncService.
+  NOTREACHED();
 }
 
 }  // namespace ash

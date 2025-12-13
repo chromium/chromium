@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_analysis_request.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,9 +27,9 @@ class FileOpeningJobTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   void OnGotFileData(std::unique_ptr<FileAnalysisRequest> request,
-                     BinaryUploadService::Result result,
+                     enterprise_connectors::ScanRequestUploadResult result,
                      BinaryUploadService::Request::Data data) {
-    EXPECT_EQ(BinaryUploadService::Result::SUCCESS, result);
+    EXPECT_EQ(enterprise_connectors::ScanRequestUploadResult::kSuccess, result);
     EXPECT_TRUE(data.contents.empty());
     EXPECT_FALSE(data.mime_type.empty());
     EXPECT_EQ(3u, data.size);

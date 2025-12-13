@@ -6,10 +6,6 @@
 
 #import "components/password_manager/core/common/password_manager_features.h"
 
-BASE_FEATURE(kNewOverflowMenu,
-             "NewOverflowMenu",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsNewOverflowMenuEnabled() {
-  return base::FeatureList::IsEnabled(kNewOverflowMenu);
+  return true;
 }

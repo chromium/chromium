@@ -34,13 +34,15 @@ namespace metrics::dwa {
 class DwaService;
 }
 
+namespace metrics::private_metrics {
+class PumaService;
+}
+
 namespace variations {
 class EntropyProviders;
 class SyntheticTrialRegistry;
 class VariationsService;
 }  // namespace variations
-
-class IdentifiabilityStudyState;
 
 namespace metrics_services_manager {
 
@@ -83,9 +85,8 @@ class MetricsServicesManager {
   // Returns the DwaService, creating it if it hasn't been created yet.
   metrics::dwa::DwaService* GetDwaService();
 
-  // Returns the IdentifiabilityStudyState, if it has been created, and nullptr
-  // otherwise.
-  IdentifiabilityStudyState* GetIdentifiabilityStudyState();
+  // Returns the PumaService, creating it if it hasn't been created yet.
+  metrics::private_metrics::PumaService* GetPumaService();
 
   // Returns the StructuredMetricsService associated with the
   // |metrics_service_client_|.
@@ -151,6 +152,9 @@ class MetricsServicesManager {
 
   // Updates the state of DwaService to match current permissions.
   void UpdateDwaService();
+
+  // Updates the state of PumaService to match current permissions.
+  void UpdatePumaService();
 
   // Updates the managed services when permissions for recording/uploading
   // metrics change.

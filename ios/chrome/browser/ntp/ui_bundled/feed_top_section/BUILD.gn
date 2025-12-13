@@ -36,7 +36,7 @@ source_set("feed_top_section") {
     "//ios/chrome/browser/authentication/ui_bundled/cells",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/content_notification/model:util",
-    "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list:utils",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/public:utils",
     "//ios/chrome/browser/discover_feed/model:constants",
     "//ios/chrome/browser/ntp/ui_bundled",
     "//ios/chrome/browser/ntp/ui_bundled:constants",

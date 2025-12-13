@@ -4,9 +4,6 @@
 
 import type {PrintPreviewLinkContainerElement} from 'chrome://print/print_preview.js';
 import {Destination, DestinationOrigin} from 'chrome://print/print_preview.js';
-// <if expr="is_macosx">
-import {assert} from 'chrome://resources/js/assert.js';
-// </if>
 import {isWindows} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -67,13 +64,7 @@ suite('LinkContainerTest', function() {
   test('SystemDialogLinkProperties', function() {
     const link = linkContainer.$.systemDialogLink;
     assertLinkState(link, false);
-
-    // <if expr="is_macosx">
-    assertEquals('Print using system dialog… (⌥⌘P)', link.textContent);
-    // </if>
-    // <if expr="not is_macosx">
     assertEquals('Print using system dialog… (Ctrl+Shift+P)', link.textContent);
-    // </if>
   });
 
   /**
@@ -85,36 +76,10 @@ suite('LinkContainerTest', function() {
     const systemDialogLink = linkContainer.$.systemDialogLink;
 
     assertLinkState(systemDialogLink, false);
-    // <if expr="is_macosx">
-    const openInPreviewLink = linkContainer.$.openPdfInPreviewLink;
-    assertLinkState(openInPreviewLink, false);
-    // </if>
 
     // Set disabled to true, indicating that there is a validation error or
     // printer error.
     linkContainer.disabled = true;
     assertLinkState(systemDialogLink, isWindows);
-    // <if expr="is_macosx">
-    assert(openInPreviewLink);
-    assertLinkState(openInPreviewLink, true);
-    // </if>
   });
-
-  // <if expr="is_macosx">
-  /**
-   * Test that clicking the open in preview link correctly results in a
-   * property change and that the throbber appears. Mac only.
-   */
-  test(
-      'OpenInPreviewLinkClick', function() {
-        const throbber = linkContainer.$.openPdfInPreviewThrobber;
-        assertTrue(throbber.hidden);
-        const promise = eventToPromise('open-pdf-in-preview', linkContainer);
-
-        linkContainer.$.openPdfInPreviewLink.click();
-        return promise.then(function() {
-          assertFalse(throbber.hidden);
-        });
-      });
-  // </if>
 });

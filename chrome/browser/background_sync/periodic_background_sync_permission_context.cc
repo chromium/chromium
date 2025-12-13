@@ -34,7 +34,6 @@ namespace features {
 // dropped and the content setting is checked. This only applies if the
 // requesting origin matches that of the browser's default search engine.
 BASE_FEATURE(kPeriodicSyncPermissionForDefaultSearchEngine,
-             "PeriodicSyncPermissionForDefaultSearchEngine",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

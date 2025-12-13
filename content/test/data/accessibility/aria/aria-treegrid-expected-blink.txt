@@ -45,7 +45,7 @@ rootWebArea
 ++++++++++++++staticText name='Cell 1, row 2, level 2'
 ++++++++++++++++inlineTextBox name='Cell 1, row 2, level 2'
 ++++++treeGrid
-++++++++rowGroup setSize=4
+++++++++rowGroup
 ++++++++++row name='Cell 1, row 1, rowgroup 1, level 1' hierarchicalLevel=1
 ++++++++++++gridCell name='Cell 1, row 1, rowgroup 1, level 1'
 ++++++++++++++staticText name='Cell 1, row 1, rowgroup 1, level 1'
@@ -66,7 +66,7 @@ rootWebArea
 ++++++++++++gridCell name='Cell 1, row 1, rowgroup 1, level 1'
 ++++++++++++++staticText name='Cell 1, row 1, rowgroup 1, level 1'
 ++++++++++++++++inlineTextBox name='Cell 1, row 1, rowgroup 1, level 1'
-++++++++rowGroup setSize=1
+++++++++rowGroup
 ++++++++++row name='Cell 1, row 1, rowgroup 2, level 1 Cell 2, row 1, rowgroup 2, level 1' hierarchicalLevel=1
 ++++++++++++gridCell name='Cell 1, row 1, rowgroup 2, level 1'
 ++++++++++++++staticText name='Cell 1, row 1, rowgroup 2, level 1'
@@ -86,7 +86,7 @@ rootWebArea
 ++++++++++++++++inlineTextBox name='Cell 3, row 1, rowgroup 2, level 2'
 ++++++treeGrid
 ++++++++genericContainer ignored
-++++++++++rowGroup setSize=4
+++++++++++rowGroup
 ++++++++++++row name='Cell 1, row 1, rowgroup 1, level 1' hierarchicalLevel=1
 ++++++++++++++staticText name='Cell 1, row 1, rowgroup 1, level 1'
 ++++++++++++++++inlineTextBox name='Cell 1, row 1, rowgroup 1, level 1'
@@ -102,7 +102,7 @@ rootWebArea
 ++++++++++++row name='Cell 1, row 1, rowgroup 1, level 1' hierarchicalLevel=1
 ++++++++++++++staticText name='Cell 1, row 1, rowgroup 1, level 1'
 ++++++++++++++++inlineTextBox name='Cell 1, row 1, rowgroup 1, level 1'
-++++++++++rowGroup setSize=1
+++++++++++rowGroup
 ++++++++++++row name='Cell 1, row 1, rowgroup 2, level 1 Cell 2, row 1, rowgroup 2, level 1' hierarchicalLevel=1
 ++++++++++++++staticText name='Cell 1, row 1, rowgroup 2, level 1 Cell 2, row 1, rowgroup 2, level 1'
 ++++++++++++++++inlineTextBox name='Cell 1, row 1, rowgroup 2, level 1 Cell 2, row 1, rowgroup 2, level 1'

@@ -29,6 +29,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 
@@ -108,6 +109,11 @@ TEST_F(ResourceAttrWorkerContextTest, WorkerContexts) {
       WorkerContext::FromWorkerToken(worker_token2);
   EXPECT_TRUE(worker_context2.has_value());
   EXPECT_NE(worker_context2, worker_context);
+
+  // Put contexts in an absl set to make sure they can be hashed.
+  absl::flat_hash_set<WorkerContext> context_set{worker_context.value(),
+                                                 worker_context2.value()};
+  EXPECT_EQ(context_set.size(), 2u);
 
   std::move(delete_workers).Invoke();
 

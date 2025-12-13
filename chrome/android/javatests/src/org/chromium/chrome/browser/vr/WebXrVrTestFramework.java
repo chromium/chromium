@@ -109,7 +109,7 @@ public class WebXrVrTestFramework extends WebXrTestFramework {
     @Override
     public void endSession(WebContents webContents) {
         // Use a long timeout for session.end(), this can unexpectedly take more than
-        // a second. TODO(crbug.com/40653025): investigate why.
+        // a second.
         runJavaScriptOrFail(
                 "sessionInfos[sessionTypes.IMMERSIVE].currentSession.end()",
                 POLL_TIMEOUT_LONG_MS,

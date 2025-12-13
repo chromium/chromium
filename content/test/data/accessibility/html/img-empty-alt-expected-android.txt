@@ -1,10 +1,10 @@
 android.webkit.WebView focusable focused
 ++android.view.View
 ++++android.widget.TextView name=' '
-++++android.widget.Image role_description='graphic'
+++++android.widget.Image
 ++++android.widget.TextView name=' '
 ++++android.widget.TextView name=' '
 ++++android.widget.TextView name=' '
-++++android.widget.Image role_description='graphic' interesting name='read'
+++++android.widget.Image interesting name='read'
 ++++android.widget.TextView name=' '
-++++android.widget.Image role_description='graphic' interesting name='full'
+++++android.widget.Image interesting name='read' content_description='full'

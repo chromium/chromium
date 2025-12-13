@@ -49,9 +49,9 @@ struct MODULES_EXPORT IDBRecordArray {
   // Clears all vector members.
   void clear();
 
-  WTF::Vector<std::unique_ptr<IDBKey>> primary_keys;
-  WTF::Vector<std::unique_ptr<IDBValue>> values;
-  WTF::Vector<std::unique_ptr<IDBKey>> index_keys;
+  Vector<std::unique_ptr<IDBKey>> primary_keys;
+  Vector<std::unique_ptr<IDBValue>> values;
+  Vector<std::unique_ptr<IDBKey>> index_keys;
 };
 
 }  // namespace blink

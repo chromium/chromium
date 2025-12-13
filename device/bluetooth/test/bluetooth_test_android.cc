@@ -13,12 +13,10 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "device/base/features.h"
 #include "device/bluetooth/android/wrappers.h"
 #include "device/bluetooth/bluetooth_adapter_android.h"
 #include "device/bluetooth/bluetooth_common.h"
@@ -35,7 +33,7 @@
 #include "device/bluetooth_test_jni_headers/Fakes_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace device {
@@ -77,9 +75,8 @@ static void RunJavaRunnable(
   Java_Fakes_runRunnable(AttachCurrentThread(), runnable_ref);
 }
 
-void BluetoothTestAndroid::PostTaskFromJava(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& runnable) {
+void BluetoothTestAndroid::PostTaskFromJava(JNIEnv* env,
+                                            const JavaRef<jobject>& runnable) {
   base::android::ScopedJavaGlobalRef<jobject> runnable_ref;
   // ScopedJavaGlobalRef does not hold onto the env reference, so it is safe to
   // use it across threads. |RunJavaRunnable| will acquire a new JNIEnv before
@@ -91,7 +88,7 @@ void BluetoothTestAndroid::PostTaskFromJava(
 
 void BluetoothTestAndroid::PostDelayedTaskFromJava(
     JNIEnv* env,
-    const JavaParamRef<jobject>& runnable,
+    const JavaRef<jobject>& runnable,
     jlong delayMillis) {
   base::android::ScopedJavaGlobalRef<jobject> runnable_ref;
   // ScopedJavaGlobalRef does not hold onto the env reference, so it is safe to
@@ -109,8 +106,7 @@ bool BluetoothTestAndroid::PlatformSupportsLowEnergy() {
 
 void BluetoothTestAndroid::InitWithDefaultAdapter() {
   j_default_bluetooth_adapter_ =
-      BluetoothAdapterWrapper_CreateWithDefaultAdapter(
-          base::FeatureList::IsEnabled(features::kBluetoothRfcommAndroid));
+      BluetoothAdapterWrapper_CreateWithDefaultAdapter();
   adapter_ = BluetoothAdapterAndroid::Create(j_default_bluetooth_adapter_);
 }
 
@@ -632,7 +628,7 @@ void BluetoothTestAndroid::OnFakeBluetoothGattReadCharacteristic(JNIEnv* env) {
 
 void BluetoothTestAndroid::OnFakeBluetoothGattWriteCharacteristic(
     JNIEnv* env,
-    const JavaParamRef<jbyteArray>& value) {
+    const JavaRef<jbyteArray>& value) {
   gatt_write_characteristic_attempts_++;
   base::android::JavaByteArrayToByteVector(env, value, &last_write_value_);
 }
@@ -643,7 +639,7 @@ void BluetoothTestAndroid::OnFakeBluetoothGattReadDescriptor(JNIEnv* env) {
 
 void BluetoothTestAndroid::OnFakeBluetoothGattWriteDescriptor(
     JNIEnv* env,
-    const JavaParamRef<jbyteArray>& value) {
+    const JavaRef<jbyteArray>& value) {
   gatt_write_descriptor_attempts_++;
   base::android::JavaByteArrayToByteVector(env, value, &last_write_value_);
 }
@@ -659,3 +655,5 @@ void BluetoothTestAndroid::OnFakeAdapterStateChanged(
 }
 
 }  // namespace device
+
+DEFINE_JNI(Fakes)

@@ -14,23 +14,12 @@ namespace ash::full_restore {
 inline constexpr char kRestoreAppsEnabled[] = "settings.restore_apps_enabled";
 inline constexpr char kGhostWindowEnabled[] = "settings.ghost_window_enabled";
 
-// Registers the restore pref |kRestoreAppsAndPagesPrefName|.
-void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
-// Returns true if the pref has |kRestoreAppsAndPagesPrefName|. Otherwise,
-// return false.
-bool HasRestorePref(PrefService* prefs);
+// Registers `kRestoreAppsEnabled` and `kGhostWindowEnabled`.
+void RegisterProfilePolicyPrefs(PrefRegistrySimple* registry);
 
 // Returns true if the pref has |kRestoreOnStartup|. Otherwise,
 // return false.
 bool HasSessionStartupPref(PrefService* prefs);
-
-// Returns true if the restore pref doesn't exist or the pref is 'Always' or
-// 'Ask every time'. Otherwise, return false for 'Do not restore'.
-bool CanPerformRestore(PrefService* prefs);
-
-// Returns true if the restore pref exists, and is set to 'Ask every time'.
-bool IsAskEveryTime(PrefService* prefs);
 
 // Sets the default restore pref |kRestoreAppsAndPagesPrefName| based on the
 // current browser restore settings. If it is the first time to run Chrome OS,

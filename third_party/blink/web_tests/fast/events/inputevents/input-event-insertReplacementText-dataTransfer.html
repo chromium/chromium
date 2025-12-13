@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../editing/assert_selection.js"></script>
+<input id="input" value="appla" />
+<script>
+  test(() => {
+    assert_own_property(window, 'internals', 'The test requires internals.');
+    assert_selection(
+      '<div contenteditable id="editable">|appla^ </div>',
+      (selection) => {
+        const document = selection.document;
+        internals.setMarker(
+          document,
+          selection.getRangeAt(0),
+          "Spelling"
+        );
+        const editable = document.getElementById("editable");
+
+        let inputDispatched = false;
+        let inputEventData = null;
+        let dataTransferPlainText = null;
+        let dataTransferHTML = null;
+
+        editable.addEventListener("input", (event) => {
+          if (event.inputType === "insertReplacementText") {
+            inputDispatched = true;
+            inputEventData = event.data;
+
+            // Test DataTransfer availability
+            if (event.dataTransfer) {
+              dataTransferPlainText =
+                event.dataTransfer.getData("text/plain");
+              dataTransferHTML =
+                event.dataTransfer.getData("text/html");
+            }
+          }
+        });
+
+        internals.replaceMisspelled(document, "apple");
+
+        assert_true(
+          inputDispatched,
+          "input event should be dispatched"
+        );
+        assert_equals(
+          inputEventData,
+          null,
+          "input event data should be null for insertReplacementText"
+        );
+        assert_not_equals(
+          dataTransferPlainText,
+          null,
+          "DataTransfer should be available on input event"
+        );
+        assert_equals(
+          dataTransferPlainText,
+          "apple",
+          "DataTransfer plain text should match replacement text"
+        );
+      },
+      '<div contenteditable id="editable">apple| </div>'
+    );
+  }, "input event for insertReplacementText should have DataTransfer in contenteditable");
+
+  test(() => {
+    assert_own_property(window, 'internals', 'The test requires internals.');
+    assert_selection(
+      [
+        "<div contenteditable>",
+        '<span style="color: rgb(255, 0, 0);">',
+        "this is a ^appla|.",
+        "</span>",
+        "</div>",
+      ],
+      (selection) => {
+        const document = selection.document;
+        internals.setMarker(
+          document,
+          selection.getRangeAt(0),
+          "Spelling"
+        );
+        const editable = document.querySelector("div");
+
+        let inputDispatched = false;
+        let inputEventData = null;
+        let dataTransferPlainText = null;
+        let dataTransferHTML = null;
+
+        editable.addEventListener("input", (event) => {
+          if (event.inputType === "insertReplacementText") {
+            inputDispatched = true;
+            inputEventData = event.data;
+
+            // Test DataTransfer availability
+            if (event.dataTransfer) {
+              dataTransferPlainText =
+                event.dataTransfer.getData("text/plain");
+              dataTransferHTML =
+                event.dataTransfer.getData("text/html");
+            }
+          }
+        });
+
+        internals.replaceMisspelled(document, "apple");
+
+        assert_true(
+          inputDispatched,
+          "input event should be dispatched"
+        );
+        assert_equals(
+          inputEventData,
+          null,
+          "input event data should be null for insertReplacementText"
+        );
+        assert_not_equals(
+          dataTransferPlainText,
+          null,
+          "DataTransfer should be available on input event"
+        );
+        assert_equals(
+          dataTransferPlainText,
+          "apple",
+          "DataTransfer plain text should match replacement text"
+        );
+      },
+      [
+        "<div contenteditable>",
+        '<span style="color: rgb(255, 0, 0);">',
+        "this is a apple|.",
+        "</span>",
+        "</div>",
+      ]
+    );
+  }, "input event for insertReplacementText with styled content should have DataTransfer");
+
+  test(() => {
+    assert_own_property(window, 'internals', 'The test requires internals.');
+    assert_selection(
+      '<textarea id="ta">^appla| </textarea>',
+      (selection) => {
+        const document = selection.document;
+        const textarea = document.getElementById("ta");
+
+        const shadowRoot = internals.shadowRoot(textarea);
+        const selection1 = shadowRoot.getSelection();
+        const range = selection1.getRangeAt(0);
+        internals.setMarker(document, range, "Spelling");
+
+        let inputDispatched = false;
+        let inputEventData = null;
+        let dataTransferObject = null;
+
+        textarea.addEventListener("input", (event) => {
+          if (event.inputType === "insertReplacementText") {
+            inputDispatched = true;
+            inputEventData = event.data;
+            dataTransferObject = event.dataTransfer;
+          }
+        });
+
+        internals.replaceMisspelled(document, "apple");
+
+        assert_true(
+          inputDispatched,
+          "input event should be dispatched"
+        );
+        assert_equals(
+          inputEventData,
+          "apple",
+          "input event data should contain replacement text for textarea"
+        );
+        assert_equals(
+          dataTransferObject,
+          null,
+          "DataTransfer should not be available for textarea"
+        );
+      },
+      '<textarea id="ta">apple| </textarea>'
+    );
+  }, "input event for insertReplacementText should not have DataTransfer in textarea");
+
+  test(() => {
+    assert_own_property(window, 'internals', 'The test requires internals.');
+    const input = document.getElementById("input");
+    // Set selection to the misspelled word
+    input.focus();
+    input.setSelectionRange(0, 5);
+
+    const shadowRoot = internals.shadowRoot(input);
+    const selection1 = shadowRoot.getSelection();
+    const range = selection1.getRangeAt(0);
+    internals.setMarker(document, range, "Spelling");
+
+    let inputDispatched = false;
+    let inputEventData = null;
+    let dataTransferObject = null;
+
+    input.addEventListener("input", (event) => {
+      if (event.inputType === "insertReplacementText") {
+        inputDispatched = true;
+        inputEventData = event.data;
+        dataTransferObject = event.dataTransfer;
+      }
+    });
+
+    internals.replaceMisspelled(document, "apple");
+
+    assert_true(inputDispatched, "input event should be dispatched");
+    assert_equals(
+      inputEventData,
+      "apple",
+      "input event data should contain replacement text for input"
+    );
+    assert_equals(
+      dataTransferObject,
+      null,
+      "DataTransfer should not be available for input element"
+    );
+  }, "input event for insertReplacementText should not have DataTransfer in input element");
+</script>

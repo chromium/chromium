@@ -12,7 +12,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 
@@ -70,6 +69,7 @@ class COMPONENT_EXPORT(OS_CRYPT_ASYNC) Encryptor {
                                      os_crypt_async::Encryptor::Key>;
     FRIEND_TEST_ALL_PREFIXES(EncryptorTestWithOSCrypt, MultipleKeys);
     FRIEND_TEST_ALL_PREFIXES(EncryptorTraitsTest, TraitsRoundTrip);
+    FRIEND_TEST_ALL_PREFIXES(KeychainKeyProviderTest, GetKey_Success);
 
     Key(base::span<const uint8_t> key,
         const mojom::Algorithm& algo,

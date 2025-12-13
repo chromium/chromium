@@ -47,8 +47,10 @@ void ConvertJavaMetricsArrayToVector(
   CHECK_GE(jlength, 0) << "Invalid array length: " << jlength;
   size_t length = static_cast<size_t>(std::max(0, jlength));
   for (size_t i = 0; i < length; ++i) {
-    jni_zero::ScopedJavaLocalRef<jobject> j_metric(
-        env, static_cast<jobject>(env->GetObjectArrayElement(array.obj(), i)));
+    jni_zero::ScopedJavaLocalRef<jobject> j_metric =
+        jni_zero::ScopedJavaLocalRef<jobject>::Adopt(
+            env,
+            static_cast<jobject>(env->GetObjectArrayElement(array.obj(), i)));
     out->emplace_back(ConvertJavaMetric(env, j_metric));
   }
 }
@@ -56,9 +58,9 @@ void ConvertJavaMetricsArrayToVector(
 // Called by Java org.chromium.chrome.browser.metrics.UkmRecorder.
 static void JNI_UkmRecorder_RecordEventWithMultipleMetrics(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_web_contents,
-    const base::android::JavaParamRef<jstring>& j_event_name,
-    const base::android::JavaParamRef<jobjectArray>& j_metrics) {
+    const base::android::JavaRef<jobject>& j_web_contents,
+    const base::android::JavaRef<jstring>& j_event_name,
+    const base::android::JavaRef<jobjectArray>& j_metrics) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
   const std::string event_name(
@@ -77,3 +79,5 @@ static void JNI_UkmRecorder_RecordEventWithMultipleMetrics(
 }
 
 }  // namespace metrics
+
+DEFINE_JNI(UkmRecorder)

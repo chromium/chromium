@@ -6,12 +6,13 @@ package org.chromium.chrome.browser.customtabs.features.toolbar;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
+
+import java.util.function.Supplier;
 
 /** Implementation of {@link BrowserControlsVisibilityDelegate} for custom tabs. */
 @NullMarked
@@ -21,7 +22,6 @@ public class CustomTabBrowserControlsVisibilityDelegate extends BrowserControlsV
 
     public CustomTabBrowserControlsVisibilityDelegate(
             Supplier<BrowserControlsVisibilityManager> controlsVisibilityManager) {
-        super(BrowserControlsState.BOTH);
         mBrowserControlsVisibilityManager = controlsVisibilityManager;
         getDefaultVisibilityDelegate().addObserver((constraints) -> updateVisibilityConstraints());
         updateVisibilityConstraints();

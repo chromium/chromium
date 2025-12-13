@@ -84,7 +84,6 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   enum WrapMethod { kNoWrap, kSoftWrap, kHardWrap };
 
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
-  bool AreAuthorShadowsAllowed() const override { return false; }
 
   void HandleBeforeTextInsertedEvent(BeforeTextInsertedEvent*);
   static String SanitizeUserInputValue(const String&, unsigned max_length);
@@ -154,6 +153,8 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   bool ValueMissing(const String*) const;
   bool TooLong(const String*, NeedsToCheckDirtyFlag) const;
   bool TooShort(const String*, NeedsToCheckDirtyFlag) const;
+
+  void DidChangeIsCanvasOrInCanvasSubtree() final;
 
   unsigned rows_;
   unsigned cols_;

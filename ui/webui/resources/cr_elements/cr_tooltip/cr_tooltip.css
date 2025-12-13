@@ -66,3 +66,37 @@
   animation-duration: var(--paper-tooltip-duration-out, 500ms);
   animation-fill-mode: forwards;
 }
+
+/* Fills in the space created by the offset so that users can move their
+ * pointer towards the tooltip without having the tooltip disappear. */
+#tooltipOffsetFiller {
+  position: absolute;
+
+  :host([position="top"]) & {
+    top: 100%;
+  }
+
+  :host([position="bottom"]) & {
+    bottom: 100%;
+  }
+
+  :host([position="left"]) & {
+    left: 100%;
+  }
+
+  :host([position="right"]) & {
+    right: 100%;
+  }
+
+  :host(:is([position="top"], [position="bottom"])) & {
+    left: 0;
+    height: var(--cr-tooltip-offset);
+    width: 100%;
+  }
+
+  :host(:is([position="left"], [position="right"])) & {
+    top: 0;
+    height: 100%;
+    width: var(--cr-tooltip-offset);
+  }
+}

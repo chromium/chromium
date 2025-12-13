@@ -54,6 +54,11 @@ if (!defined(partition_alloc_dcheck_always_on_default)) {
   }
 }
 
+# Allows embedders to optionally disable PartitionAlloc.
+if (!defined(use_partition_alloc_default)) {
+  use_partition_alloc_default = true
+}
+
 # PartitionAlloc have limited support for MSVC's cl.exe compiler. It can only
 # access the generate "buildflags" and the "raw_ptr" definitions implemented
 # with RawPtrNoOpImpl. Everything else is considered not supported.
@@ -119,7 +124,7 @@ declare_args() {
   #     and doesn't wish to incur the library size increase (crbug.com/674570).
   # 2.  On NaCl (through this declaration), where PartitionAlloc doesn't
   #     build at all.
-  use_partition_alloc = is_clang_or_gcc
+  use_partition_alloc = use_partition_alloc_default && is_clang_or_gcc
 }
 
 if (!is_clang_or_gcc) {
@@ -145,15 +150,6 @@ declare_args() {
   # provides an extended API to swap PartitionAlloc.
   enable_allocator_shim_partition_alloc_dispatch_with_advanced_checks_support =
       use_partition_alloc_as_malloc
-}
-
-declare_args() {
-  # This is a flag for binary experiment on iOS. When BRP for iOS is enabled,
-  # we see some un-actionable `DoubleFreeOrCorruptionDetected` crashes.
-  # This flag enables some extra `CHECK`s to get actionable crash reports.
-  # TODO(crbug.com/371135823): Remove upon completion of investigation.
-  enable_ios_corruption_hardening = use_partition_alloc_as_malloc && is_ios &&
-                                    enable_ios_corruption_hardening_default
 }
 
 assert(
@@ -209,20 +205,19 @@ declare_args() {
 
   # Enable reentrancy checks at `partition_alloc::internal::Lock`.
   # TODO(crbug.com/371135823): Remove upon completion of investigation.
-  enable_partition_lock_reentrancy_check = enable_ios_corruption_hardening
+  enable_partition_lock_reentrancy_check = false
 
   # This will write a fixed cookie pattern at the end of each allocation, and
   # later verify the pattern remain unchanged to ensure there is no OOB write.
   # It comes with performance and memory cost, hence enabled only in debug.
   use_partition_cookie =
-      partition_alloc_is_debug || partition_alloc_dcheck_always_on ||
-      enable_ios_corruption_hardening
+      partition_alloc_is_debug || partition_alloc_dcheck_always_on
 
   # This will change partition cookie size to 4B or 8B, whichever equivalent to
   # size of InSlotMetadata. This option is useful for InSlotMetadata corruption
   # investigation.
   # TODO(crbug.com/371135823): Remove upon completion of investigation.
-  smaller_partition_cookie = enable_ios_corruption_hardening
+  smaller_partition_cookie = false
 }
 
 declare_args() {
@@ -265,7 +260,7 @@ declare_args() {
   # outside of Chromium.
   use_asan_backup_ref_ptr =
       build_with_chromium && is_asan &&
-      (is_win || is_android || is_linux || is_mac || is_chromeos)
+      (is_win || is_android || is_linux || is_apple || is_chromeos)
 
   # Use probe-on-destruct unowned ptr detection with ASAN.
   use_raw_ptr_asan_unowned_impl = false
@@ -300,13 +295,12 @@ declare_args() {
   enable_backup_ref_ptr_feature_flag =
       enable_backup_ref_ptr_support && use_raw_ptr_backup_ref_impl &&
       # Platforms where BackupRefPtr hasn't shipped yet:
-      !is_castos && !is_ios
+      !is_castos
 
   # While keeping BRP support, override a feature flag to make it disabled
   # state. This will overwrite `enable_backup_ref_ptr_feature_flag`.
   # TODO(https://crbug.com/372183586): Fix the bug and remove this arg.
-  force_disable_backup_ref_ptr_feature =
-      enable_backup_ref_ptr_support && enable_ios_corruption_hardening
+  force_disable_backup_ref_ptr_feature = enable_backup_ref_ptr_support && false
 
   # Build support for Dangling Ptr Detection (DPD) via BackupRefPtr (BRP),
   # making the raw_ptr<T> implementation to RawPtrBackupRefImpl if active.
@@ -338,10 +332,19 @@ declare_args() {
 }
 
 declare_args() {
-  # Shadow metadata is still under development and only supports Linux
-  # for now.
-  enable_shadow_metadata = false && is_linux && has_64_bit_pointers
+  # Because of address space issue, this feature cannot be enabled on
+  # 32bit OS and iOS, i.e. has_64_bit_pointers && !is_ios
+  move_metadata_outside_gigacage = has_64_bit_pointers && !is_ios
 }
+
+declare_args() {
+  enable_move_metadata_outside_gigacage_trial = move_metadata_outside_gigacage
+}
+
+assert(!enable_move_metadata_outside_gigacage_trial ||
+           move_metadata_outside_gigacage,
+       "Can't enable PartitionAllocExternalMetadata synthetic trial " +
+           "without move_metadata_outside_gigacage=true.")
 
 declare_args() {
   # Use full MTE protection available by changing the feature flag default
@@ -519,12 +522,6 @@ declare_args() {
   raw_ptr_zero_on_construct = raw_ptr_zero_on_construct_default
   raw_ptr_zero_on_move = raw_ptr_zero_on_move_default
   raw_ptr_zero_on_destruct = raw_ptr_zero_on_destruct_default
-}
-
-declare_args() {
-  # Assert that PartitionAlloc and MiraclePtr run on C++20 when set to true.
-  # Embedders may opt-out of using C++ 20 build.
-  assert_cpp20 = assert_cpp20_default
 }
 
 declare_args() {

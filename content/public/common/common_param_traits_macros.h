@@ -10,7 +10,7 @@
 
 #include "content/common/content_export.h"
 #include "content/public/common/webplugininfo_param_traits.h"
-#include "ipc/ipc_message_macros.h"
+#include "ipc/param_traits_macros.h"
 #include "services/network/public/cpp/network_ipc_param_traits.h"
 #include "ui/base/page_transition_types.h"
 
@@ -41,8 +41,7 @@ IPC_STRUCT_TRAITS_BEGIN(ui::FileInfo)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(content::DropData)
-  IPC_STRUCT_TRAITS_MEMBER(url)
-  IPC_STRUCT_TRAITS_MEMBER(url_title)
+  IPC_STRUCT_TRAITS_MEMBER(url_infos)
   IPC_STRUCT_TRAITS_MEMBER(download_metadata)
   IPC_STRUCT_TRAITS_MEMBER(referrer_policy)
   IPC_STRUCT_TRAITS_MEMBER(filenames)
@@ -69,6 +68,11 @@ IPC_STRUCT_TRAITS_BEGIN(content::DropData::Metadata)
   IPC_STRUCT_TRAITS_MEMBER(mime_type)
   IPC_STRUCT_TRAITS_MEMBER(filename)
   IPC_STRUCT_TRAITS_MEMBER(file_system_url)
+IPC_STRUCT_TRAITS_END()
+
+IPC_STRUCT_TRAITS_BEGIN(ui::ClipboardUrlInfo)
+  IPC_STRUCT_TRAITS_MEMBER(url)
+  IPC_STRUCT_TRAITS_MEMBER(title)
 IPC_STRUCT_TRAITS_END()
 
 #endif  // BUILDFLAG(IS_MAC)

@@ -6,7 +6,6 @@ module media.mojom;
 
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-[Stable, Extensible]
 enum VideoCapturePixelFormat {
   UNKNOWN,
   I420,
@@ -39,46 +38,41 @@ enum VideoCapturePixelFormat {
   XB30,
   BGRA,
   RGBAF16,
-  [MinVersion=1] I422A,
-  [MinVersion=1] I444A,
-  [MinVersion=1] YUV420AP10,
-  [MinVersion=1] YUV422AP10,
-  [MinVersion=1] YUV444AP10,
-  [MinVersion=2] NV12A,
-  [MinVersion=3] NV16,
-  [MinVersion=3] NV24,
-  [MinVersion=3] P210LE,
-  [MinVersion=3] P410LE,
+  I422A,
+  I444A,
+  YUV420AP10,
+  YUV422AP10,
+  YUV444AP10,
+  NV12A,
+  NV16,
+  NV24,
+  P210LE,
+  P410LE,
 };
 
-[Stable, Extensible]
 enum ResolutionChangePolicy {
   FIXED_RESOLUTION,
   FIXED_ASPECT_RATIO,
   ANY_WITHIN_LIMIT,
 };
 
-[Stable, Extensible]
 enum PowerLineFrequency {
   DEFAULT,
   HZ_50,
   HZ_60
 };
 
-[Stable, Extensible]
 enum VideoFacingMode {
   NONE,
   USER,
   ENVIRONMENT
 };
 
-[Stable, Extensible]
 enum CameraAvailability {
-  [Default] kAvailable,
+  kAvailable,
   kUnavailableExclusivelyUsedByOtherApplication,
 };
 
-[Stable, Extensible]
 enum VideoCaptureApi {
   LINUX_V4L2_SINGLE_PLANE,
   WIN_MEDIA_FOUNDATION,
@@ -93,17 +87,15 @@ enum VideoCaptureApi {
   FUCHSIA_CAMERA3,
   VIRTUAL_DEVICE,
   UNKNOWN,
-  [MinVersion=1] WEBRTC_LINUX_PIPEWIRE_SINGLE_PLANE,
+  WEBRTC_LINUX_PIPEWIRE_SINGLE_PLANE,
 };
 
-[Stable, Extensible]
 enum VideoCaptureTransportType {
 // For AVFoundation Api, identify devices that are built-in or USB.
   APPLE_USB_OR_BUILT_IN,
   OTHER_TRANSPORT
 };
 
-[Stable, Extensible]
 enum VideoCaptureBufferType {
   kSharedMemory,
   kSharedMemoryViaRawFileDescriptor_DEPRECATED,  // DEPRECATED, DO NOT USE
@@ -112,14 +104,12 @@ enum VideoCaptureBufferType {
 };
 
 // Represents capture device's support for different controls.
-[Stable]
 struct VideoCaptureControlSupport {
   bool pan;
   bool tilt;
   bool zoom;
 };
 
-[Stable, Extensible]
 enum VideoCaptureError {
   kNone,
   kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested,
@@ -247,33 +237,32 @@ enum VideoCaptureError {
   kDesktopCaptureDeviceMacFailedStreamCreate,
   kDesktopCaptureDeviceMacFailedStreamStart,
   kCrosHalV3BufferManagerFailedToReserveBuffers,
-  [MinVersion=1] kWinMediaFoundationSystemPermissionDenied,
-  [MinVersion=2] kVideoCaptureImplTimedOutOnStart,
-  [MinVersion=3] kLacrosVideoCaptureDeviceProxyAlreadyEndedOnFatalError,
-  [MinVersion=3] kLacrosVideoCaptureDeviceProxyEncounteredFatalError,
-  [MinVersion=4] kScreenCaptureKitFailedGetShareableContent,
-  [MinVersion=4] kScreenCaptureKitFailedAddStreamOutput,
-  [MinVersion=4] kScreenCaptureKitFailedStartCapture,
-  [MinVersion=4] kScreenCaptureKitFailedStopCapture,
-  [MinVersion=4] kScreenCaptureKitStreamError,
-  [MinVersion=4] kScreenCaptureKitFailedToFindSCDisplay,
-  [MinVersion=5] kVideoCaptureControllerInvalid,
-  [MinVersion=5] kVideoCaptureDeviceFactoryChromeOSCreateDeviceFailed,
-  [MinVersion=5] kVideoCaptureControllerUnsupportedPixelFormat,
-  [MinVersion=5] kVideoCaptureDeviceAlreadyReleased,
-  [MinVersion=5] kVideoCaptureSystemDeviceIdNotFound,
-  [MinVersion=5] kVideoCaptureDeviceFactoryWinUnknownError,
-  [MinVersion=5] kWinMediaFoundationDeviceInitializationFailed,
-  [MinVersion=5] kWinMediaFoundationSourceCreationFailed,
-  [MinVersion=5] kWinDirectShowDeviceFilterCreationFailed,
-  [MinVersion=5] kWinDirectShowDeviceInitializationFailed,
-  [MinVersion=6] kVideoCaptureDeviceFactorySecondCreateDenied,
-  [MinVersion=7] kScreenCaptureKitResetStreamError,
-  [MinVersion=8] kWinMediaFoundationCameraBusy,
-  [MinVersion=9] kWebRtcStartCaptureFailed,
+  kWinMediaFoundationSystemPermissionDenied,
+  kVideoCaptureImplTimedOutOnStart,
+  kLacrosVideoCaptureDeviceProxyAlreadyEndedOnFatalError,
+  kLacrosVideoCaptureDeviceProxyEncounteredFatalError,
+  kScreenCaptureKitFailedGetShareableContent,
+  kScreenCaptureKitFailedAddStreamOutput,
+  kScreenCaptureKitFailedStartCapture,
+  kScreenCaptureKitFailedStopCapture,
+  kScreenCaptureKitStreamError,
+  kScreenCaptureKitFailedToFindSCDisplay,
+  kVideoCaptureControllerInvalid,
+  kVideoCaptureDeviceFactoryChromeOSCreateDeviceFailed,
+  kVideoCaptureControllerUnsupportedPixelFormat,
+  kVideoCaptureDeviceAlreadyReleased,
+  kVideoCaptureSystemDeviceIdNotFound,
+  kVideoCaptureDeviceFactoryWinUnknownError,
+  kWinMediaFoundationDeviceInitializationFailed,
+  kWinMediaFoundationSourceCreationFailed,
+  kWinDirectShowDeviceFilterCreationFailed,
+  kWinDirectShowDeviceInitializationFailed,
+  kVideoCaptureDeviceFactorySecondCreateDenied,
+  kScreenCaptureKitResetStreamError,
+  kWinMediaFoundationCameraBusy,
+  kWebRtcStartCaptureFailed,
 };
 
-[Stable, Extensible]
 enum VideoCaptureFrameDropReason {
   kNone,
   kDeviceClientFrameHasInvalidFormat,
@@ -301,20 +290,22 @@ enum VideoCaptureFrameDropReason {
   kResolutionAdapterHasNoCallbacks,
   kVideoTrackFrameDelivererNotEnabledReplacingWithBlackFrame,
   kRendererSinkFrameDelivererIsNotStarted,
-  [MinVersion=1] kCropVersionNotCurrent_DEPRECATED,
-  [MinVersion=5] kGpuMemoryBufferMapFailed,
-  [MinVersion=12] kSubCaptureTargetVersionNotCurrent,
-  [MinVersion=13] kPostProcessingFailed,
+  kCropVersionNotCurrent_DEPRECATED,
+  kGpuMemoryBufferMapFailed,
+  kSubCaptureTargetVersionNotCurrent_DEPRECATED,
+  kPostProcessingFailed,
+  kResolutionAdapterFrameIsNotMappable,
+  kResolutionAdapterCannotCreateConvertFrame,
+  kResolutionAdapterConvertAndScaleFailed,
+  kOldCaptureVersion,
 };
 
-[Stable]
 struct VideoCaptureFormat {
   gfx.mojom.Size frame_size;
   float frame_rate;
   VideoCapturePixelFormat pixel_format;
 };
 
-[Stable]
 struct VideoCaptureParams {
   VideoCaptureFormat requested_format;
   VideoCaptureBufferType buffer_type;
@@ -324,10 +315,14 @@ struct VideoCaptureParams {
 
   // TODO(crbug.com/40255351): remove this once HiDPI is enabled for
   // all video capture sessions.
-  [MinVersion=1] bool is_high_dpi_enabled;
+  bool is_high_dpi_enabled;
+
+  // Starts at 0 when the capture starts, and is incremented
+  // whenever the target of the capture is dynamically changed,
+  // as for example when using share-this-tab-instead.
+  uint32 capture_version_source;
 };
 
-[Stable, RenamedFrom="media.mojom.VideoFrameFeedback"]
 struct VideoCaptureFeedback {
   // Reports that the frame incurred some fractional utilization of the
   // downstream pipeline's per-frame processing capacity.
@@ -350,8 +345,9 @@ struct VideoCaptureFeedback {
   // camera capturer.
   bool require_mapped_frame;
 
+  // TODO: crbug.com/453992558 - Remove deprecated field.
   // DEPRECATED - DO NOT USE.  Only kept for backwards compatibility.
-  [MinVersion=1] array<gfx.mojom.Size>? DEPRECATED_mapped_sizes;
+  array<gfx.mojom.Size>? DEPRECATED_mapped_sizes;
 
   // The frame that this feedback is associated with. Some consumers do not
   // break down their analysis on a per-frame basis; while some may expect to
@@ -361,12 +357,12 @@ struct VideoCaptureFeedback {
   // intermediate layer to help route the feedback accordingly.
   // This should usually be set to the same value as the |frame_feedback_id|
   // received with the frame (often from a received `ReadyFrameInBuffer`).
-  [MinVersion=2] int32 frame_id = 0;
+  int32 frame_id = 0;
 
   // Indicates whether or not the value in |frame_id| is valid.
   // TODO(crbug.com/40489779): Remove this and replace frame_id with an
   // optional type.
-  [MinVersion=2] bool has_frame_id = false;
+  bool has_frame_id = false;
 };
 
 // Contains one stride value per image plane. Stride means the number of bytes
@@ -383,7 +379,6 @@ struct PlaneStrides {
 // |device_id| represents a unique id of a physical device. Since the same
 // physical device may be accessible through different APIs |capture_api|
 // disambiguates the API.
-[Stable]
 struct VideoCaptureDeviceDescriptor {
   string display_name;
   string device_id;
@@ -392,12 +387,12 @@ struct VideoCaptureDeviceDescriptor {
   VideoCaptureApi capture_api;
   VideoCaptureControlSupport control_support;
   VideoCaptureTransportType transport_type;
-  [MinVersion=1] CameraAvailability? availability;
+  // TODO: crbug.com/453992558 - Remove ? added for backwards compatibility.
+  CameraAvailability? availability;
 };
 
 // Bundles a VideoCaptureDeviceDescriptor with corresponding supported
 // video formats.
-[Stable]
 struct VideoCaptureDeviceInfo {
   VideoCaptureDeviceDescriptor descriptor;
   array<VideoCaptureFormat> supported_formats;

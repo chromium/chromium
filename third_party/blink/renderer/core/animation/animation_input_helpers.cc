@@ -81,8 +81,8 @@ scoped_refptr<TimingFunction> AnimationInputHelpers::ParseTimingFunction(
   const auto* value_list = DynamicTo<CSSValueList>(value);
   if (!value_list) {
     DCHECK(!value || value->IsCSSWideKeyword());
-    exception_state.ThrowTypeError("'" + string +
-                                   "' is not a valid value for easing");
+    exception_state.ThrowTypeError(
+        StrCat({"'", string, "' is not a valid value for easing"}));
     return nullptr;
   }
   if (value_list->length() > 1) {

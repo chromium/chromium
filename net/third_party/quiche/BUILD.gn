@@ -38,6 +38,10 @@ config("quiche_internal_config") {
       "-Wno-deprecated-declarations",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs = [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 config("quiche_config") {
@@ -90,10 +94,6 @@ component("quiche") {
   ]
 
   defines = [ "IS_QUICHE_IMPL" ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 proto_library("net_quic_proto") {
@@ -331,10 +331,6 @@ static_library("quiche_tool_support") {
     "//third_party/quic_trace:quic_trace_proto",
     "//url",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # QUICHE-provided CLI tools that don't use epoll.
@@ -458,6 +454,11 @@ bundle_data("test_data") {
   ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
+
+# TODO(crbug.com/433273929): Remove once fixed.
+config("no_nonnull") {
+  cflags = [ "-Wno-nonnull" ]
 }
 
 source_set("quiche_tests") {
@@ -745,7 +746,7 @@ source_set("quiche_tests") {
     "//net:spdy_test_tools",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/fuzztest:fuzztest",
+    "//third_party/fuzztest",
   ]
   if (is_ios) {
     deps += [ ":test_data" ]
@@ -776,78 +777,43 @@ source_set("quiche_tests") {
     ]
   }
 
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  # TODO(crbug.com/433273929): Remove once fixed.
+  configs += [ ":no_nonnull" ]
 }
 
-fuzzer_test("net_quic_framer_fuzzer") {
-  sources = [ "src/quiche/quic/test_tools/fuzzing/quic_framer_fuzzer.cc" ]
-
-  deps = [
-    "//net",
-    "//net:net_fuzzer_test_support",
-    "//net:quic_test_tools",
-    "//net:test_support",
-    "//net/data/ssl/certificates:generate_fuzzer_cert_includes",
-  ]
+config("fuzzer_config") {
+  include_dirs = [ "//third_party/fuzztest/src" ]
 }
 
-fuzzer_test("net_quic_framer_process_data_packet_fuzzer") {
-  sources = [ "src/quiche/quic/test_tools/fuzzing/quic_framer_process_data_packet_fuzzer.cc" ]
-
-  deps = [
-    "//net",
-    "//net:net_fuzzer_test_support",
-    "//net:quic_test_tools",
-    "//net:test_support",
-    "//net/data/ssl/certificates:generate_fuzzer_cert_includes",
-  ]
-}
-
-fuzzer_test("net_qpack_decoder_fuzzer") {
-  sources = [ "src/quiche/quic/core/qpack/fuzzer/qpack_decoder_fuzzer.cc" ]
-  deps = [
-    "//base",
-    "//net",
-    "//net:net_fuzzer_test_support",
-    "//net:quic_test_tools",
-    "//net:test_support",
-  ]
-}
-
-fuzzer_test("net_qpack_encoder_stream_receiver_fuzzer") {
+test("net_quiche_fuzzer") {
   sources = [
+    "src/quiche/quic/core/qpack/fuzzer/qpack_decoder_fuzzer.cc",
     "src/quiche/quic/core/qpack/fuzzer/qpack_encoder_stream_receiver_fuzzer.cc",
-  ]
-  deps = [
-    "//base",
-    "//net",
-    "//net:net_fuzzer_test_support",
-  ]
-}
-
-fuzzer_test("net_qpack_encoder_stream_sender_fuzzer") {
-  sources = [
     "src/quiche/quic/core/qpack/fuzzer/qpack_encoder_stream_sender_fuzzer.cc",
+    "src/quiche/quic/core/qpack/fuzzer/qpack_round_trip_fuzzer.cc",
+    "src/quiche/quic/test_tools/fuzzing/quic_framer_fuzzer.cc",
+    "src/quiche/quic/test_tools/fuzzing/quic_framer_process_data_packet_fuzzer.cc",
   ]
-  deps = [
-    "//base",
-    "//net",
-    "//net:net_fuzzer_test_support",
-    "//net:quic_test_tools",
-    "//net:test_support",
-  ]
-}
 
-fuzzer_test("net_qpack_round_trip_fuzzer") {
-  sources = [ "src/quiche/quic/core/qpack/fuzzer/qpack_round_trip_fuzzer.cc" ]
+  fuzztests = [
+    "QpackDecoderFuzzer.DoesNotCrash",
+    "QpackEncoderStreamReceiverFuzzer.DoesNotCrash",
+    "QpackEncoderStreamSenderFuzzer.DoesNotCrash",
+    "QpackRoundTripFuzzer.EncodeDecodeRoundTrips",
+    "QuicFramerFuzzer.DoesNotCrash",
+    "QuicFramerProcessDataPacketFuzzer.DoesNotCrash",
+  ]
+
   deps = [
-    "//base",
     "//net",
-    "//net:net_fuzzer_test_support",
     "//net:quic_test_tools",
     "//net:test_support",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+
+  configs += [
+    ":quiche_internal_config",
+    ":fuzzer_config",
   ]
 }
 
@@ -859,8 +825,11 @@ component("blind_sign_auth") {
     "src/quiche/blind_sign_auth/blind_sign_message_interface.h",
     "src/quiche/blind_sign_auth/blind_sign_message_response.cc",
     "src/quiche/blind_sign_auth/blind_sign_message_response.h",
+    "src/quiche/blind_sign_auth/blind_sign_tracing_hooks.h",
     "src/quiche/blind_sign_auth/cached_blind_sign_auth.cc",
     "src/quiche/blind_sign_auth/cached_blind_sign_auth.h",
+    "src/quiche/blind_sign_auth/direct_task_bundle.cc",
+    "src/quiche/blind_sign_auth/direct_task_bundle.h",
   ]
   configs += [ ":quiche_internal_config" ]
   public_configs = [ ":quiche_config" ]
@@ -931,31 +900,4 @@ source_set("blind_sign_auth_test_support") {
   ]
   public_deps =
       [ "//third_party/anonymous_tokens:anonymous_tokens_test_support" ]
-}
-
-if (is_android) {
-  import("//build/config/android/rules.gni")
-
-  proto_java_library("blind_sign_auth_proto_java") {
-    visibility = [
-      "//components/ip_protection/*",
-      "//net/third_party/quiche/*",
-    ]
-
-    proto_path = "src/"
-
-    sources = [
-      "src/quiche/blind_sign_auth/proto/any.proto",
-      "src/quiche/blind_sign_auth/proto/attestation.proto",
-      "src/quiche/blind_sign_auth/proto/auth_and_sign.proto",
-      "src/quiche/blind_sign_auth/proto/get_initial_data.proto",
-      "src/quiche/blind_sign_auth/proto/key_services.proto",
-      "src/quiche/blind_sign_auth/proto/proxy_layer.proto",
-      "src/quiche/blind_sign_auth/proto/public_metadata.proto",
-    ]
-
-    deps = [ "//third_party/anonymous_tokens:anonymous_tokens_java_proto" ]
-
-    import_dirs = [ "//third_party/anonymous_tokens/src/" ]
-  }
 }

@@ -37,27 +37,18 @@ tast.arc.BuildProperties
 tast.arc.CheckAndroidVersion
 tast.arc.Downloads
 
-# b/293976130, NaCl issues on arm64 boards
-tast.nacl.Pnacl@jacuzzi
-tast.nacl.Pnacl@trogdor
-tast.terminal.SSH@jacuzzi
-tast.terminal.SSH@trogdor
-
 # b/338111076
 tast.crostini.AppAndroidStudio.bookworm_clamshell_stable@octopus
 
 # b/346793249, b/330290054
 tast.videoconferencing.OpenCLCacher
 
-# b/352753237, Pnacl and terminal.SSH failing only on brya, blocking LKGM
-tast.nacl.Pnacl@brya
-tast.terminal.SSH@brya
-
 # b/352703668: tests failing on trogdor.
 tast.security.SELinuxFilesDataDir.arcvm_user@trogdor
 
 # b/384060114
 tast.inputs.InputMethodShelfInputs@reven-vmtest
+tast.inputs.InputMethodShelfInputs@betty
 tast.inputs.VirtualKeyboardHandwriting.docked@reven-vmtest
 tast.inputs.VirtualKeyboardHandwriting.floating@reven-vmtest
 
@@ -98,5 +89,27 @@ tast.inputs.VirtualKeyboardSpeech
 
 # b/424789710
 tast.apps.LaunchGalleryFromNotifications.stable
+
+# https://crbug.com/434741638
+apps.Sharesheet
+tast.apps.Sharesheet
+
+# https://crbug.com/437961311
+tast.bruschetta.CopyFilesToGuest@betty
+
+# https://crbug.com/432304431
+tast.featured.FieldTrialEarlyBoot.active_trial
+
+# https://crbug.com/459929970
+tast.crostini.SyncTime.baguette_stable
+
+# https://crbug.com/460052469
+tast.apps.LaunchHelpAppFromShortcut.stable_guest
+
+# https://crbug.com/460054243
+tast.inputs.VirtualKeyboardTypingUserMode.guest
+
+# https://crbug.com/368606672
+tast.inputs.InputMethodManagement.guest
 
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.

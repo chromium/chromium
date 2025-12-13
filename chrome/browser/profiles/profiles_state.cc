@@ -31,7 +31,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -44,8 +43,12 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #else
 #include <algorithm>
+#include <optional>
+#include <string_view>
+
 #include "chrome/browser/profiles/gaia_info_update_service.h"
 #include "chrome/browser/profiles/gaia_info_update_service_factory.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -182,8 +185,8 @@ void UpdateProfileName(Profile* profile,
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-bool IsRegularOrGuestSession(Browser* browser) {
-  Profile* profile = browser->profile();
+bool IsRegularOrGuestSession(const BrowserWindowInterface* browser) {
+  const Profile* profile = browser->GetProfile();
   return profile->IsRegularProfile() || profile->IsGuestSession();
 }
 
@@ -312,7 +315,7 @@ bool IsDemoSession() {
 
 bool IsChromeAppKioskSession() {
 #if BUILDFLAG(IS_CHROMEOS)
-  return user_manager::UserManager::Get()->IsLoggedInAsKioskChromeApp();
+  return chromeos::IsChromeAppKioskSession();
 #else
   return false;
 #endif
@@ -320,11 +323,10 @@ bool IsChromeAppKioskSession() {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 std::u16string GetDefaultNameForNewEnterpriseProfile(
-    const std::string& hosted_domain) {
+    std::optional<std::string_view> hosted_domain) {
   std::u16string name;
-  if (!hosted_domain.empty() &&
-      hosted_domain != signin::constants::kNoHostedDomainFound) {
-    name = base::UTF8ToUTF16(hosted_domain);
+  if (hosted_domain.has_value() && !hosted_domain->empty()) {
+    name = base::UTF8ToUTF16(*hosted_domain);
   } else {
     name = l10n_util::GetStringUTF16(
         IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_PROFILE_NAME);
@@ -342,7 +344,7 @@ std::u16string GetDefaultNameForNewSignedInProfile(
     return given_name;
   }
   std::u16string default_name =
-      GetDefaultNameForNewEnterpriseProfile(account_info.hosted_domain);
+      GetDefaultNameForNewEnterpriseProfile(account_info.GetHostedDomain());
   CHECK(!default_name.empty());
   return default_name;
 }

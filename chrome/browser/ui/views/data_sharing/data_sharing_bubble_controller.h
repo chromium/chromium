@@ -14,6 +14,7 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/widget/widget_observer.h"
 
 class BrowserWindowInterface;
@@ -24,6 +25,8 @@ class TabStripModel;
 class DataSharingBubbleController : public views::WidgetObserver,
                                     public DataSharingUI::Delegate {
  public:
+  DECLARE_USER_DATA(DataSharingBubbleController);
+
   using OnCloseCallback = base::OnceCallback<void(
       std::optional<data_sharing::mojom::GroupAction> action,
       std::optional<data_sharing::mojom::GroupActionProgress> progress)>;
@@ -35,6 +38,9 @@ class DataSharingBubbleController : public views::WidgetObserver,
   DataSharingBubbleController& operator=(const DataSharingBubbleController&) =
       delete;
   ~DataSharingBubbleController() override;
+
+  static DataSharingBubbleController* From(
+      BrowserWindowInterface* browser_window_interface);
 
   // `request_info` contains the values we want to pass into the loaded WebUI in
   // this bubble.
@@ -122,6 +128,9 @@ class DataSharingBubbleController : public views::WidgetObserver,
   // Progress of the latest group action received from Data Sharing SDK.
   std::optional<data_sharing::mojom::GroupActionProgress>
       group_action_progress_;
+
+  ui::ScopedUnownedUserData<DataSharingBubbleController>
+      scoped_unowned_user_data_;
 
   base::WeakPtr<WebUIBubbleDialogView> bubble_view_;
 };

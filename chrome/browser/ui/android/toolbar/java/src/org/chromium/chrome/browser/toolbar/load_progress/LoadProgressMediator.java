@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.toolbar.load_progress;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.MathUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
@@ -36,8 +36,7 @@ public class LoadProgressMediator {
      * @param tabSupplier An observable supplier of the current {@link Tab}.
      * @param model MVC property model instance used for load progress bar.
      */
-    public LoadProgressMediator(
-            ObservableSupplier<@Nullable Tab> tabSupplier, PropertyModel model) {
+    public LoadProgressMediator(NullableObservableSupplier<Tab> tabSupplier, PropertyModel model) {
         mModel = model;
         mLoadProgressSimulator = new LoadProgressSimulator(model);
         mTabObserver =
@@ -91,18 +90,6 @@ public class LoadProgressMediator {
                                 }
 
                                 updateLoadProgress(progress);
-                            }
-
-                            @Override
-                            public void onWebContentsSwapped(
-                                    Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-                                // If loading both started and finished before we swapped in the
-                                // WebContents, we won't get any load progress signals. Otherwise,
-                                // we should receive at least one real signal so we don't need to
-                                // simulate them.
-                                if (didStartLoad && didFinishLoad && !mPreventUpdates) {
-                                    mLoadProgressSimulator.start();
-                                }
                             }
 
                             @Override

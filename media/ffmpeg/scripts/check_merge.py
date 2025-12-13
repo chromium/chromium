@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 #
-# Copyright 2018 The Chromium Authors.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-#
-# Verify HEAD against upstream to see if anything bad has been added to
-# HEAD that we would not want to roll.  For example, if HEAD introduces any
-# UNCHECKED_BITSTREAM_READERs, then we definitely want to fix that before
-# including HEAD in Chromium.
-#
-# Usage: check_merge.py [new_branch]
-# where |new_branch| is the branch that we'd like to compare to upstream.
+"""Verify HEAD against upstream to see if anything bad has been added.
 
-import os
+Verify HEAD against upstream to see if anything bad has been added to
+HEAD that we would not want to roll.  For example, if HEAD introduces any
+`UNCHECKED_BITSTREAM_READER`s, then we definitely want to fix that before
+including HEAD in Chromium.
+
+Usage: check_merge.py [new_branch]
+where |new_branch| is the branch that we'd like to compare to upstream.
+"""
+
 import re
 import sys
 import subprocess
@@ -26,8 +27,8 @@ EXISTING_COMMIT = "origin/master"  # nocheck
 #
 # Remember that we're going to check ffmpeg files and Chromium files (e.g.,
 # the build configs for each platform, ffmpeg_generated.gni, etc.).
-# TODO(liberato): consider making these a dictionary, with the value as some
-# descriptive text (e.g., the bug number) about why it's not allowed.
+# TODO(crbug.com/450394703): consider making these a dictionary, with the value
+# as some descriptive text (e.g., the bug number) about why it's not allowed.
 INSERTION_TRIPWIRES = [
     # In Chromium, all codecs should use the safe bitstream reader. Roller must
     # undo any new usage of the unchecked reader.

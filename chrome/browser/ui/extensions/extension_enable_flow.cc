@@ -19,7 +19,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/profiles/profile_picker.h"
@@ -106,10 +106,7 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
         base::BindOnce(&ExtensionEnableFlow::OnExtensionApprovalDone,
                        weak_ptr_factory_.GetWeakPtr());
     supervised_user_extensions_delegate->RequestToEnableExtensionOrShowError(
-        *extension, parent_contents_,
-        SupervisedUserExtensionParentApprovalEntryPoint::
-            kOnTerminatedExtensionEnableFlowOperation,
-        std::move(extension_approval_callback));
+        *extension, parent_contents_, std::move(extension_approval_callback));
     return;
   }
 
@@ -161,22 +158,17 @@ void ExtensionEnableFlow::CreatePrompt() {
 }
 
 void ExtensionEnableFlow::OnExtensionApprovalDone(
-    extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalResult
-        result) {
+    extensions::SupervisedExtensionApprovalResult result) {
   switch (result) {
-    case extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalResult::
-        kApproved:
+    case extensions::SupervisedExtensionApprovalResult::kApproved:
       EnableExtension();
       break;
-    case extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalResult::
-        kCanceled:
+    case extensions::SupervisedExtensionApprovalResult::kCanceled:
       delegate_->ExtensionEnableFlowAborted(
           /*user_initiated=*/true);  // |delegate_| may delete us.
       break;
-    case extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalResult::
-        kFailed:
-    case extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalResult::
-        kBlocked:
+    case extensions::SupervisedExtensionApprovalResult::kFailed:
+    case extensions::SupervisedExtensionApprovalResult::kBlocked:
       delegate_->ExtensionEnableFlowAborted(
           /*user_initiated=*/false);  // |delegate_| may delete us.
       break;
@@ -197,7 +189,7 @@ void ExtensionEnableFlow::StopObserving() {
 void ExtensionEnableFlow::OnLoadFailure(
     content::BrowserContext* browser_context,
     const base::FilePath& file_path,
-    const std::string& error) {
+    const std::u16string& error) {
   StopObserving();
   delegate_->ExtensionEnableFlowAborted(
       /*user_initiated=*/false);  // |delegate_| may delete us.

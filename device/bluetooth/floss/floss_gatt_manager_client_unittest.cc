@@ -4,6 +4,8 @@
 
 #include "device/bluetooth/floss/floss_gatt_manager_client.h"
 
+#include <utility>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -32,7 +34,7 @@ class FlossGattClientTest : public testing::Test,
   void SetUp() override {
     ::dbus::Bus::Options options;
     options.bus_type = ::dbus::Bus::BusType::SYSTEM;
-    bus_ = base::MakeRefCounted<::dbus::MockBus>(options);
+    bus_ = base::MakeRefCounted<::dbus::MockBus>(std::move(options));
 
     gatt_manager_client_ = FlossGattManagerClient::Create();
     gatt_manager_client_->AddObserver(this);
@@ -55,9 +57,9 @@ class FlossGattClientTest : public testing::Test,
   void FakeGattResponseCallback(
       ::dbus::MethodCall* method_call,
       int timeout_ms,
-      ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+      ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
     auto response = ::dbus::Response::CreateEmpty();
-    std::move(*cb).Run(response.get(), /*err=*/nullptr);
+    std::move(cb).Run(response.get(), /*err=*/nullptr);
   }
 
   void SuccessCallback(DBusResult<Void> ret) {
@@ -69,13 +71,13 @@ class FlossGattClientTest : public testing::Test,
   void FakeGattWriteResponseCallback(
       ::dbus::MethodCall* method_call,
       int timeout_ms,
-      ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+      ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
     // Create a fake response with GattWriteRequestStatus return value.
     auto response = ::dbus::Response::CreateEmpty();
     dbus::MessageWriter writer(response.get());
     writer.AppendUint32(
         static_cast<uint32_t>(GattWriteRequestStatus::kSuccess));
-    std::move(*cb).Run(response.get(), /*err=*/nullptr);
+    std::move(cb).Run(response.get(), /*err=*/nullptr);
   }
 
   void SuccessWriteCallback(DBusResult<GattWriteRequestStatus> ret) {
@@ -88,12 +90,12 @@ class FlossGattClientTest : public testing::Test,
   void FakeGattStatusResponseCallback(
       ::dbus::MethodCall* method_call,
       int timeout_ms,
-      ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+      ::dbus::ObjectProxy::ResponseOrErrorCallback cb) {
     // Create a fake response with GattStatus return value.
     auto response = ::dbus::Response::CreateEmpty();
     dbus::MessageWriter writer(response.get());
     writer.AppendUint32(static_cast<uint32_t>(GattStatus::kSuccess));
-    std::move(*cb).Run(response.get(), /*err=*/nullptr);
+    std::move(cb).Run(response.get(), /*err=*/nullptr);
   }
 
   void SuccessGattCallback(DBusResult<GattStatus> ret) {
@@ -158,7 +160,7 @@ TEST_F(FlossGattClientTest, ConnectDiscoveryDisconnect) {
 
   EXPECT_CALL(
       *object_proxy_.get(),
-      DoCallMethodWithErrorResponse(HasMemberOf(gatt::kClientConnect), _, _))
+      CallMethodWithErrorResponse(HasMemberOf(gatt::kClientConnect), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->Connect(
       base::BindOnce(&FlossGattClientTest::SuccessCallback,
@@ -168,14 +170,14 @@ TEST_F(FlossGattClientTest, ConnectDiscoveryDisconnect) {
 
   EXPECT_CALL(
       *object_proxy_.get(),
-      DoCallMethodWithErrorResponse(HasMemberOf(gatt::kReadRemoteRssi), _, _))
+      CallMethodWithErrorResponse(HasMemberOf(gatt::kReadRemoteRssi), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->ReadRemoteRssi(
       base::BindOnce(&FlossGattClientTest::SuccessCallback,
                      base::Unretained(this)),
       kTestDeviceName);
 
-  EXPECT_CALL(*object_proxy_.get(), DoCallMethodWithErrorResponse(
+  EXPECT_CALL(*object_proxy_.get(), CallMethodWithErrorResponse(
                                         HasMemberOf(gatt::kConfigureMtu), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->ConfigureMTU(
@@ -184,7 +186,7 @@ TEST_F(FlossGattClientTest, ConnectDiscoveryDisconnect) {
       kTestDeviceName, /*mtu=*/0);
 
   EXPECT_CALL(*object_proxy_.get(),
-              DoCallMethodWithErrorResponse(
+              CallMethodWithErrorResponse(
                   HasMemberOf(gatt::kConnectionParameterUpdate), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->UpdateConnectionParameters(
@@ -195,7 +197,7 @@ TEST_F(FlossGattClientTest, ConnectDiscoveryDisconnect) {
 
   EXPECT_CALL(
       *object_proxy_.get(),
-      DoCallMethodWithErrorResponse(HasMemberOf(gatt::kDiscoverServices), _, _))
+      CallMethodWithErrorResponse(HasMemberOf(gatt::kDiscoverServices), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->DiscoverAllServices(
       base::BindOnce(&FlossGattClientTest::SuccessCallback,
@@ -203,7 +205,7 @@ TEST_F(FlossGattClientTest, ConnectDiscoveryDisconnect) {
       kTestDeviceName);
 
   EXPECT_CALL(*object_proxy_.get(),
-              DoCallMethodWithErrorResponse(
+              CallMethodWithErrorResponse(
                   HasMemberOf(gatt::kDiscoverServiceByUuid), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->DiscoverServiceByUuid(
@@ -213,7 +215,7 @@ TEST_F(FlossGattClientTest, ConnectDiscoveryDisconnect) {
 
   EXPECT_CALL(
       *object_proxy_.get(),
-      DoCallMethodWithErrorResponse(HasMemberOf(gatt::kRefreshDevice), _, _))
+      CallMethodWithErrorResponse(HasMemberOf(gatt::kRefreshDevice), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->Refresh(
       base::BindOnce(&FlossGattClientTest::SuccessCallback,
@@ -222,7 +224,7 @@ TEST_F(FlossGattClientTest, ConnectDiscoveryDisconnect) {
 
   EXPECT_CALL(
       *object_proxy_.get(),
-      DoCallMethodWithErrorResponse(HasMemberOf(gatt::kClientDisconnect), _, _))
+      CallMethodWithErrorResponse(HasMemberOf(gatt::kClientDisconnect), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->Disconnect(
       base::BindOnce(&FlossGattClientTest::SuccessCallback,
@@ -235,9 +237,9 @@ TEST_F(FlossGattClientTest, ConnectDiscoveryDisconnect) {
 TEST_F(FlossGattClientTest, ReliableWrite) {
   Init();
 
-  EXPECT_CALL(*object_proxy_.get(),
-              DoCallMethodWithErrorResponse(
-                  HasMemberOf(gatt::kBeginReliableWrite), _, _))
+  EXPECT_CALL(
+      *object_proxy_.get(),
+      CallMethodWithErrorResponse(HasMemberOf(gatt::kBeginReliableWrite), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->BeginReliableWrite(
       base::BindOnce(&FlossGattClientTest::SuccessCallback,
@@ -246,7 +248,7 @@ TEST_F(FlossGattClientTest, ReliableWrite) {
 
   EXPECT_CALL(
       *object_proxy_.get(),
-      DoCallMethodWithErrorResponse(HasMemberOf(gatt::kEndReliableWrite), _, _))
+      CallMethodWithErrorResponse(HasMemberOf(gatt::kEndReliableWrite), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->EndReliableWrite(
       base::BindOnce(&FlossGattClientTest::SuccessCallback,
@@ -259,9 +261,9 @@ TEST_F(FlossGattClientTest, ReliableWrite) {
 TEST_F(FlossGattClientTest, ReadWriteCharacteristic) {
   Init();
 
-  EXPECT_CALL(*object_proxy_.get(),
-              DoCallMethodWithErrorResponse(
-                  HasMemberOf(gatt::kReadCharacteristic), _, _))
+  EXPECT_CALL(
+      *object_proxy_.get(),
+      CallMethodWithErrorResponse(HasMemberOf(gatt::kReadCharacteristic), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->ReadCharacteristic(
       base::BindOnce(&FlossGattClientTest::SuccessCallback,
@@ -269,7 +271,7 @@ TEST_F(FlossGattClientTest, ReadWriteCharacteristic) {
       kTestDeviceName, /*handle=*/0, AuthRequired::kNoAuth);
 
   EXPECT_CALL(*object_proxy_.get(),
-              DoCallMethodWithErrorResponse(
+              CallMethodWithErrorResponse(
                   HasMemberOf(gatt::kReadUsingCharacteristicUuid), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->ReadUsingCharacteristicUuid(
@@ -280,7 +282,7 @@ TEST_F(FlossGattClientTest, ReadWriteCharacteristic) {
 
   const std::vector<uint8_t> write_value = {0x01};
   EXPECT_CALL(*object_proxy_.get(),
-              DoCallMethodWithErrorResponse(
+              CallMethodWithErrorResponse(
                   HasMemberOf(gatt::kWriteCharacteristic), _, _))
       .WillOnce(
           Invoke(this, &FlossGattClientTest::FakeGattWriteResponseCallback));
@@ -298,7 +300,7 @@ TEST_F(FlossGattClientTest, ReadWriteDescriptor) {
 
   EXPECT_CALL(
       *object_proxy_.get(),
-      DoCallMethodWithErrorResponse(HasMemberOf(gatt::kReadDescriptor), _, _))
+      CallMethodWithErrorResponse(HasMemberOf(gatt::kReadDescriptor), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->ReadDescriptor(
       base::BindOnce(&FlossGattClientTest::SuccessCallback,
@@ -308,7 +310,7 @@ TEST_F(FlossGattClientTest, ReadWriteDescriptor) {
   const std::vector<uint8_t> write_value = {0x01};
   EXPECT_CALL(
       *object_proxy_.get(),
-      DoCallMethodWithErrorResponse(HasMemberOf(gatt::kWriteDescriptor), _, _))
+      CallMethodWithErrorResponse(HasMemberOf(gatt::kWriteDescriptor), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->WriteDescriptor(
       base::BindOnce(&FlossGattClientTest::SuccessCallback,
@@ -322,7 +324,7 @@ TEST_F(FlossGattClientTest, RegisterUnregisterNotification) {
   Init();
 
   EXPECT_CALL(*object_proxy_.get(),
-              DoCallMethodWithErrorResponse(
+              CallMethodWithErrorResponse(
                   HasMemberOf(gatt::kRegisterForNotification), _, _))
       .WillOnce(
           Invoke(this, &FlossGattClientTest::FakeGattStatusResponseCallback));
@@ -332,7 +334,7 @@ TEST_F(FlossGattClientTest, RegisterUnregisterNotification) {
       kTestDeviceName, /*handle=*/0);
 
   EXPECT_CALL(*object_proxy_.get(),
-              DoCallMethodWithErrorResponse(
+              CallMethodWithErrorResponse(
                   HasMemberOf(gatt::kRegisterForNotification), _, _))
       .WillOnce(
           Invoke(this, &FlossGattClientTest::FakeGattStatusResponseCallback));
@@ -349,7 +351,7 @@ TEST_F(FlossGattClientTest, ServerConnectReadSetPhyDisconnect) {
 
   EXPECT_CALL(
       *object_proxy_.get(),
-      DoCallMethodWithErrorResponse(HasMemberOf(gatt::kServerConnect), _, _))
+      CallMethodWithErrorResponse(HasMemberOf(gatt::kServerConnect), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->ServerConnect(
       base::BindOnce(&FlossGattClientTest::SuccessCallback,
@@ -358,7 +360,7 @@ TEST_F(FlossGattClientTest, ServerConnectReadSetPhyDisconnect) {
 
   EXPECT_CALL(
       *object_proxy_.get(),
-      DoCallMethodWithErrorResponse(HasMemberOf(gatt::kServerReadPhy), _, _))
+      CallMethodWithErrorResponse(HasMemberOf(gatt::kServerReadPhy), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->ServerReadPhy(
       base::BindOnce(&FlossGattClientTest::SuccessCallback,
@@ -366,7 +368,7 @@ TEST_F(FlossGattClientTest, ServerConnectReadSetPhyDisconnect) {
       kTestDeviceName);
 
   EXPECT_CALL(*object_proxy_.get(),
-              DoCallMethodWithErrorResponse(
+              CallMethodWithErrorResponse(
                   HasMemberOf(gatt::kServerSetPreferredPhy), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->ServerSetPreferredPhy(
@@ -377,7 +379,7 @@ TEST_F(FlossGattClientTest, ServerConnectReadSetPhyDisconnect) {
 
   EXPECT_CALL(
       *object_proxy_.get(),
-      DoCallMethodWithErrorResponse(HasMemberOf(gatt::kServerDisconnect), _, _))
+      CallMethodWithErrorResponse(HasMemberOf(gatt::kServerDisconnect), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->ServerDisconnect(
       base::BindOnce(&FlossGattClientTest::SuccessCallback,
@@ -394,8 +396,8 @@ TEST_F(FlossGattClientTest, ServerAddRemoveClearService) {
   service.uuid = device::BluetoothUUID(kTestUuidStr);
   service.instance_id = 1;
   service.service_type = 0;
-  EXPECT_CALL(*object_proxy_.get(), DoCallMethodWithErrorResponse(
-                                        HasMemberOf(gatt::kAddService), _, _))
+  EXPECT_CALL(*object_proxy_.get(),
+              CallMethodWithErrorResponse(HasMemberOf(gatt::kAddService), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->AddService(
       base::BindOnce(&FlossGattClientTest::SuccessCallback,
@@ -404,7 +406,7 @@ TEST_F(FlossGattClientTest, ServerAddRemoveClearService) {
 
   EXPECT_CALL(
       *object_proxy_.get(),
-      DoCallMethodWithErrorResponse(HasMemberOf(gatt::kRemoveService), _, _))
+      CallMethodWithErrorResponse(HasMemberOf(gatt::kRemoveService), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->RemoveService(
       base::BindOnce(&FlossGattClientTest::SuccessCallback,
@@ -413,7 +415,7 @@ TEST_F(FlossGattClientTest, ServerAddRemoveClearService) {
 
   EXPECT_CALL(
       *object_proxy_.get(),
-      DoCallMethodWithErrorResponse(HasMemberOf(gatt::kClearServices), _, _))
+      CallMethodWithErrorResponse(HasMemberOf(gatt::kClearServices), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->ClearServices(base::BindOnce(
       &FlossGattClientTest::SuccessCallback, base::Unretained(this)));
@@ -425,7 +427,7 @@ TEST_F(FlossGattClientTest, ServerSendResponseNotification) {
   Init();
 
   const std::vector<uint8_t> resp_value = {0x01};
-  EXPECT_CALL(*object_proxy_.get(), DoCallMethodWithErrorResponse(
+  EXPECT_CALL(*object_proxy_.get(), CallMethodWithErrorResponse(
                                         HasMemberOf(gatt::kSendResponse), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->SendResponse(
@@ -435,7 +437,7 @@ TEST_F(FlossGattClientTest, ServerSendResponseNotification) {
       resp_value);
 
   EXPECT_CALL(*object_proxy_.get(),
-              DoCallMethodWithErrorResponse(
+              CallMethodWithErrorResponse(
                   HasMemberOf(gatt::kServerSendNotification), _, _))
       .WillOnce(Invoke(this, &FlossGattClientTest::FakeGattResponseCallback));
   gatt_manager_client_->ServerSendNotification(

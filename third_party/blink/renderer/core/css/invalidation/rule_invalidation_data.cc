@@ -458,7 +458,7 @@ String RuleInvalidationData::ToString() const {
     if (a.flags != b.flags) {
       return a.flags < b.flags;
     }
-    return WTF::CodeUnitCompareLessThan(a.name, b.name);
+    return CodeUnitCompareLessThan(a.name, b.name);
   });
 
   for (const Entry& entry : entries) {

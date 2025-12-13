@@ -39,7 +39,7 @@ HelpAppSystemAppDelegate::HelpAppSystemAppDelegate(Profile* profile)
 gfx::Rect HelpAppSystemAppDelegate::GetDefaultBounds(BrowserDelegate*) const {
   // Help app is centered.
   gfx::Rect bounds =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+      display::Screen::Get()->GetDisplayForNewWindows().work_area();
   bounds.ClampToCenteredSize(HELP_DEFAULT_SIZE);
   return bounds;
 }

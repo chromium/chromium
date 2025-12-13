@@ -11,9 +11,11 @@
 #include <wrl.h>
 
 #include "base/functional/callback.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/encoder_status.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/gpu/svc_layers.h"
 #include "media/gpu/windows/d3d12_video_encoder_wrapper.h"
 #include "media/gpu/windows/d3d12_video_helpers.h"
 #include "media/gpu/windows/d3d12_video_processor_wrapper.h"
@@ -26,13 +28,14 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
  public:
   static constexpr size_t kAV1DPBMaxSize = 8;
   struct EncodeResult {
-    int32_t bitstream_buffer_id_;
-    BitstreamBufferMetadata metadata_;
+    int32_t bitstream_buffer_id;
+    BitstreamBufferMetadata metadata;
   };
 
   // Returns the supported profiles for given |codecs|.
   static VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles(
       ID3D12VideoDevice3* video_device,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       const std::vector<D3D12_VIDEO_ENCODER_CODEC>& codecs);
 
   explicit D3D12VideoEncodeDelegate(
@@ -40,13 +43,22 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
   virtual ~D3D12VideoEncodeDelegate();
 
   virtual EncoderStatus Initialize(VideoEncodeAccelerator::Config config);
+  // Returns the maximum number of reference frames that can be used for
+  // referencing. This value is used for the `input_count` parameter of
+  // VideoEncodeAccelerator::Client::RequireBitstreamBuffers().
   virtual size_t GetMaxNumOfRefFrames() const = 0;
+  // Returns the maximum number of buffers that can be used for future
+  // reference. This value is used for the number_of_manual_reference_buffers
+  // field of VideoEncoderInfo.
+  virtual size_t GetMaxNumOfManualRefBuffers() const = 0;
   // Returns whether the delegate supports changing |Bitrate::Mode| using
   // |UpdateRateControl()| during encoding.
   virtual bool SupportsRateControlReconfiguration() const = 0;
   virtual bool ReportsAverageQp() const;
 
-  virtual bool UpdateRateControl(const Bitrate& bitrate, uint32_t framerate);
+  virtual bool UpdateRateControl(
+      const VideoBitrateAllocation& bitrate_allocation,
+      uint32_t framerate);
 
   // Do video processing if the input frame format or resolution is not
   // expected and then call |EncodeImpl()|.
@@ -58,11 +70,13 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
       const VideoEncoder::EncodeOptions& options);
 
   // Do the codec specific encoding.
-  virtual EncoderStatus::Or<BitstreamBufferMetadata> EncodeImpl(
+  virtual EncoderStatus EncodeImpl(
       ID3D12Resource* input_frame,
       UINT input_frame_subresource,
       const VideoEncoder::EncodeOptions& options,
       const gfx::ColorSpace& input_color_space) = 0;
+
+  uint8_t GetNumTemporalLayers() const;
 
   void SetFactoriesForTesting(
       base::RepeatingCallback<decltype(CreateD3D12VideoEncoderWrapper)>
@@ -102,7 +116,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
                                                   uint32_t p_frame_qp,
                                                   uint32_t b_frame_qp);
     static D3D12VideoEncoderRateControl Create(
-        Bitrate bitrate,
+        const VideoBitrateAllocation& bitrate_allocation,
         uint32_t framerate,
         ID3D12VideoDevice3* video_device,
         VideoCodecProfile output_profile);
@@ -140,7 +154,10 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
 
   Microsoft::WRL::ComPtr<ID3D12Device> device_;
   Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device_;
-  uint32_t max_num_ref_frames_ = 0;
+
+  // Bitrate allocation in bps.
+  VideoBitrateAllocation bitrate_allocation_{Bitrate::Mode::kConstant};
+  uint32_t framerate_ = 30;
 
   // The the size and format for the input of the D3D12VideoEncoder. The format
   // may be different to input frame, in which case we do internal conversion.
@@ -159,6 +176,10 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
           base::BindRepeating(&CreateD3D12VideoEncoderWrapper);
   std::unique_ptr<D3D12VideoEncoderWrapper> video_encoder_wrapper_;
 
+  std::optional<SVCLayers> svc_layers_;
+  // The metadata of the bitstream buffer for the last encode request.
+  BitstreamBufferMetadata metadata_;
+
  private:
   // The video processor factory that may be changed for testing.
   base::RepeatingCallback<
@@ -171,13 +192,6 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
   // conversion.
   std::unique_ptr<D3D12VideoProcessorWrapper> video_processor_wrapper_;
   Microsoft::WRL::ComPtr<ID3D12Resource> processed_input_frame_;
-};
-
-// Records an ID3D12Resource pointer and a subresource index for a specific
-// subresource.
-struct D3D12PictureBuffer {
-  raw_ptr<ID3D12Resource> resource_ = nullptr;
-  UINT subresource_ = 0;
 };
 
 // A class to manage the decoded picture buffers for D3D12 video encode and
@@ -195,14 +209,18 @@ class D3D12VideoEncodeDecodedPictureBuffers {
 
   size_t size() const { return size_; }
 
-  // Initialize the texture array with the given size and format.
-  bool InitializeTextureArray(ID3D12Device* device,
-                              gfx::Size texture_size,
-                              DXGI_FORMAT format,
-                              size_t max_num_ref_frames);
+  // Initialize the texture resources with the given size and format. When
+  // `use_texture_array` is true, this will create texture array within single
+  // resource; otherwise, an array of textures in invidual resources will be
+  // created.
+  bool InitializeTextureResources(ID3D12Device* device,
+                                  gfx::Size texture_size,
+                                  DXGI_FORMAT format,
+                                  size_t max_num_ref_frames,
+                                  bool use_texture_array = false);
 
   // Get the unused buffer for current frame.
-  D3D12PictureBuffer GetCurrentFrame() const;
+  D3D12_VIDEO_ENCODER_RECONSTRUCTED_PICTURE GetCurrentFrame() const;
   // Insert the last picture buffer returned by |GetCurrentFrame()| into the
   // given index and move the old buffers with index no less than |position| to
   // the next index.

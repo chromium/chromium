@@ -14,9 +14,8 @@ namespace blink {
 class BufferedDataSourceHostImplTest : public testing::Test {
  public:
   BufferedDataSourceHostImplTest()
-      : host_(WTF::BindRepeating(
-                  &BufferedDataSourceHostImplTest::ProgressCallback,
-                  WTF::Unretained(this)),
+      : host_(BindRepeating(&BufferedDataSourceHostImplTest::ProgressCallback,
+                            Unretained(this)),
               &clock_) {}
   BufferedDataSourceHostImplTest(const BufferedDataSourceHostImplTest&) =
       delete;

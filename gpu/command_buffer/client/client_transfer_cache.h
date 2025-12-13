@@ -8,6 +8,7 @@
 #include <map>
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
@@ -102,9 +103,11 @@ class GLES2_IMPL_EXPORT ClientTransferCache {
       base::OnceCallback<void(ClientDiscardableHandle)> create_entry_cb);
 
   // Map(of either type) must always be followed by an Unmap.
-  void* MapEntry(MappedMemoryManager* mapped_memory, uint32_t size);
-  void* MapTransferBufferEntry(TransferBufferInterface* transfer_buffer,
+  base::span<uint8_t> MapEntry(MappedMemoryManager* mapped_memory,
                                uint32_t size);
+  base::span<uint8_t> MapTransferBufferEntry(
+      TransferBufferInterface* transfer_buffer,
+      uint32_t size);
   void UnmapAndCreateEntry(uint32_t type, uint32_t id);
   bool LockEntry(uint32_t type, uint32_t id);
   void UnlockEntries(const std::vector<std::pair<uint32_t, uint32_t>>& entries);

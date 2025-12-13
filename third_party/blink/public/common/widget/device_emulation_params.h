@@ -81,11 +81,6 @@ inline bool operator==(const DeviceEmulationParams& a,
          a.device_posture == b.device_posture;
 }
 
-inline bool operator!=(const DeviceEmulationParams& a,
-                       const DeviceEmulationParams& b) {
-  return !(a == b);
-}
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_WIDGET_DEVICE_EMULATION_PARAMS_H_

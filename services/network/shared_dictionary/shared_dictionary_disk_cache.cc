@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/functional/callback_helpers.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 
@@ -79,9 +80,10 @@ disk_cache::BackendResult SharedDictionaryDiskCache::CreateCacheBackend(
       net::APP_CACHE, net::CACHE_BACKEND_SIMPLE, file_operations_factory.get(),
       cache_directory_path, /*max_bytes=*/std::numeric_limits<int64_t>::max(),
       disk_cache::ResetHandling::kResetOnError,
-      /*net_log=*/nullptr, std::move(callback)
+      /*net_log=*/nullptr, /*cache_encryption_delegate=*/nullptr,
+      std::move(callback)
 #if BUILDFLAG(IS_ANDROID)
-                               ,
+          ,
       std::move(app_status_listener_getter)
 #endif  // BUILDFLAG(IS_ANDROID));
   );

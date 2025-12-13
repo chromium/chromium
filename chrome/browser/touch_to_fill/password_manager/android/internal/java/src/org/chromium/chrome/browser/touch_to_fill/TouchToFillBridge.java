@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.password_manager.GetLoginMatchType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
+import org.chromium.chrome.browser.touch_to_fill.data.CredentialBase;
 import org.chromium.chrome.browser.touch_to_fill.data.WebauthnCredential;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -60,13 +61,13 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     }
 
     @CalledByNative
-    private static Credential[] createCredentialArray(int size) {
-        return new Credential[size];
+    private static CredentialBase[] createCredentialArray(int size) {
+        return new CredentialBase[size];
     }
 
     @CalledByNative
     private static void insertCredential(
-            Credential[] credentials,
+            CredentialBase[] credentials,
             int index,
             String username,
             String password,
@@ -81,29 +82,25 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
             boolean sharingNotificationDisplayed,
             boolean isBackupCredential) {
         credentials[index] =
-                new Credential(
-                        username,
-                        password,
-                        formattedUsername,
-                        originUrl,
-                        displayName,
-                        mMatchType,
-                        lastUsedMsSinceEpoch,
-                        isShared,
-                        senderName,
-                        senderProfileImageUrl,
-                        sharingNotificationDisplayed,
-                        isBackupCredential);
-    }
-
-    @CalledByNative
-    private static WebauthnCredential[] createWebAuthnCredentialArray(int size) {
-        return new WebauthnCredential[size];
+                new Credential.Builder()
+                        .setUsername(username)
+                        .setPassword(password)
+                        .setFormattedUsername(formattedUsername)
+                        .setOriginUrl(originUrl)
+                        .setDisplayName(displayName)
+                        .setMatchType(mMatchType)
+                        .setLastUsedMsSinceEpoch(lastUsedMsSinceEpoch)
+                        .setIsShared(isShared)
+                        .setSenderName(senderName)
+                        .setSenderProfileImageUrl(senderProfileImageUrl)
+                        .setSharingNotificationDisplayed(sharingNotificationDisplayed)
+                        .setIsBackupCredential(isBackupCredential)
+                        .build();
     }
 
     @CalledByNative
     private static void insertWebAuthnCredential(
-            WebauthnCredential[] credentials,
+            CredentialBase[] credentials,
             int index,
             String rpId,
             byte[] credentialId,
@@ -116,19 +113,15 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     private void showCredentials(
             GURL url,
             boolean isOriginSecure,
-            WebauthnCredential[] webAuthnCredentials,
-            Credential[] credentials,
+            CredentialBase[] credentials,
             boolean submitCredential,
-            boolean managePasskeysHidesPasswords,
             boolean showHybridPasskeyOption,
             boolean showCredManEntry) {
         mTouchToFillComponent.showCredentials(
                 url,
                 isOriginSecure,
-                Arrays.asList(webAuthnCredentials),
                 Arrays.asList(credentials),
                 submitCredential,
-                managePasskeysHidesPasswords,
                 showHybridPasskeyOption,
                 showCredManEntry);
     }

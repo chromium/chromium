@@ -6,11 +6,10 @@
 import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrInputElement, SettingsSearchEngineEditDialogElement, SettingsSearchEnginesListElement, SettingsSearchEnginesPageElement} from 'chrome://settings/lazy_load.js';
 import type {SearchEngine, SearchEnginesInfo} from 'chrome://settings/settings.js';
-import {SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from 'chrome://settings/settings.js';
+import {loadTimeData, SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -74,7 +73,7 @@ suite('AddSearchEngineDialogTests', function() {
     assertFalse(dialog.$.cancel.disabled);
     assertTrue(actionButton.disabled);
     assertEquals(
-        actionButton.textContent!.trim(), loadTimeData.getString('add'));
+        actionButton.textContent.trim(), loadTimeData.getString('add'));
     await inputAndValidate('searchEngine');
     await inputAndValidate('keyword');
     await inputAndValidate('queryUrl');
@@ -428,7 +427,7 @@ suite('SearchEnginePageTests', function() {
     assertFalse(dialog.$.actionButton.hidden);
     assertFalse(dialog.$.actionButton.disabled);
     assertEquals(
-        dialog.$.actionButton.textContent!.trim(),
+        dialog.$.actionButton.textContent.trim(),
         loadTimeData.getString('save'));
   });
 
@@ -461,7 +460,7 @@ suite('SearchEnginePageTests', function() {
     assertEquals(
         expectedDialogTitle,
         dialog.shadowRoot!.querySelector(
-                              'div[slot="title"]')!.textContent!.trim());
+                              'div[slot="title"]')!.textContent.trim());
 
     // Check that the cr-input fields are pre-populated.
     assertEquals(engine.name, dialog.$.searchEngine.value);
@@ -477,7 +476,7 @@ suite('SearchEnginePageTests', function() {
     assertFalse(dialog.$.actionButton.disabled);
     assertEquals(
         loadTimeData.getString(expectedReadonly ? 'done' : 'save'),
-        dialog.$.actionButton.textContent!.trim());
+        dialog.$.actionButton.textContent.trim());
 
     // Ensures that field validation is not run for readonly search engines
     // created by policy (crbug.com/348165485).
@@ -544,7 +543,7 @@ suite('SearchEnginePageTests', function() {
     assertFalse(dialog.$.actionButton.hidden);
     assertFalse(dialog.$.actionButton.disabled);
     assertEquals(
-        dialog.$.actionButton.textContent!.trim(),
+        dialog.$.actionButton.textContent.trim(),
         loadTimeData.getString('save'));
   });
 

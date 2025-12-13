@@ -258,19 +258,19 @@ String String::Number(float number) {
 }
 
 String String::Number(double number, unsigned precision) {
-  NumberToStringBuffer buffer;
-  return String(NumberToFixedPrecisionString(number, precision, buffer));
+  DoubleToStringConverter converter;
+  return String(converter.ToStringWithFixedPrecision(number, precision));
 }
 
 String String::NumberToStringECMAScript(double number) {
-  NumberToStringBuffer buffer;
-  return String(NumberToString(number, buffer));
+  DoubleToStringConverter converter;
+  return String(converter.ToString(number));
 }
 
 String String::NumberToStringFixedWidth(double number,
                                         unsigned decimal_places) {
-  NumberToStringBuffer buffer;
-  return String(NumberToFixedWidthString(number, decimal_places, buffer));
+  DoubleToStringConverter converter;
+  return String(converter.ToStringWithFixedWidth(number, decimal_places));
 }
 
 int String::ToIntStrict(bool* ok) const {

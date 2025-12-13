@@ -38,6 +38,7 @@ void PropertyTreeLayerTreeDelegate::UpdatePropertyTreesIfNeeded() {
 void PropertyTreeLayerTreeDelegate::UpdateScrollOffsetFromImpl(
     const ElementId& id,
     const gfx::Vector2dF& delta,
+    ScrollSourceType type,
     const std::optional<TargetSnapAreaElementIds>& snap_target_ids) {
   if (Layer* layer = host()->LayerByElementId(id)) {
     layer->SetScrollOffsetFromImplSide(layer->scroll_offset() + delta);

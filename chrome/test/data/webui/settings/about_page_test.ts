@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SettingsAboutPageElement} from 'chrome://settings/settings.js';
-import {AboutPageBrowserProxyImpl, LifetimeBrowserProxyImpl, Router, routes} from 'chrome://settings/settings.js';
+import {AboutPageBrowserProxyImpl, LifetimeBrowserProxyImpl, loadTimeData, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestAboutPageBrowserProxy} from './test_about_page_browser_proxy.js';
@@ -116,13 +115,13 @@ suite('AllBuilds', function() {
     fireStatusChanged(UpdateStatus.UPDATING, {progress: 0});
     await assertSpinnerVisible(true);
     assertEquals('', icon.getAttribute('icon'));
-    assertFalse(statusMessageEl.textContent!.includes('%'));
+    assertFalse(statusMessageEl.textContent.includes('%'));
     assertNotEquals(previousMessageText, statusMessageEl.textContent);
     previousMessageText = statusMessageEl.textContent;
 
     fireStatusChanged(UpdateStatus.UPDATING, {progress: 1});
     assertNotEquals(previousMessageText, statusMessageEl.textContent);
-    assertTrue(statusMessageEl.textContent!.includes('%'));
+    assertTrue(statusMessageEl.textContent.includes('%'));
     previousMessageText = statusMessageEl.textContent;
 
     fireStatusChanged(UpdateStatus.NEARLY_UPDATED);
@@ -134,17 +133,17 @@ suite('AllBuilds', function() {
     fireStatusChanged(UpdateStatus.DISABLED_BY_ADMIN);
     await assertSpinnerVisible(false);
     assertEquals('cr20:domain', icon.icon);
-    assertEquals(0, statusMessageEl.textContent!.trim().length);
+    assertEquals(0, statusMessageEl.textContent.trim().length);
 
     fireStatusChanged(UpdateStatus.FAILED);
     await assertSpinnerVisible(false);
     assertEquals('cr:error', icon.icon);
-    assertEquals(0, statusMessageEl.textContent!.trim().length);
+    assertEquals(0, statusMessageEl.textContent.trim().length);
 
     fireStatusChanged(UpdateStatus.DISABLED);
     await assertSpinnerVisible(false);
     assertEquals('', icon.getAttribute('icon'));
-    assertEquals(0, statusMessageEl.textContent!.trim().length);
+    assertEquals(0, statusMessageEl.textContent.trim().length);
   });
 
   test('ErrorMessageWithHtml', function() {

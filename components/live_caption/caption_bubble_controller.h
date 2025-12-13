@@ -11,7 +11,6 @@
 
 #include "components/live_caption/caption_controller_base.h"
 #include "components/live_caption/views/caption_bubble.h"
-#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "ui/native_theme/caption_style.h"
 
 namespace content {

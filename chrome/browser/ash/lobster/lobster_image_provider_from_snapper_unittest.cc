@@ -56,7 +56,7 @@ TEST_F(LobsterImageProviderFromSnapperTest,
               /*num_outputs=*/2, /*use_query_rewriter=*/true,
               /*use_i18n=*/true)),
           testing::_, testing::_))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](const manta::proto::Request& request,
              net::NetworkTrafficAnnotationTag traffic_annotation,
              manta::MantaProtoResponseCallback done_callback) {
@@ -69,7 +69,7 @@ TEST_F(LobsterImageProviderFromSnapperTest,
                                    kPreviewImageDimensionSize)),
                      {.status_code = manta::MantaStatusCode::kOk,
                       .message = ""});
-          }));
+          });
 
   base::test::TestFuture<const ash::LobsterResult&> future;
 
@@ -114,7 +114,7 @@ TEST_F(LobsterImageProviderFromSnapperTest,
                /*num_outputs=*/1, /*use_query_rewriter=*/true,
                /*use_i18n=*/true)),
            testing::_, testing::_))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](const manta::proto::Request& request,
              net::NetworkTrafficAnnotationTag traffic_annotation,
              manta::MantaProtoResponseCallback done_callback) {
@@ -126,7 +126,7 @@ TEST_F(LobsterImageProviderFromSnapperTest,
                                    kFullImageDimensionSize)),
                      {.status_code = manta::MantaStatusCode::kOk,
                       .message = ""});
-          }));
+          });
 
   base::test::TestFuture<const ash::LobsterResult&> future;
 
@@ -162,7 +162,7 @@ TEST_F(
               /*num_outputs=*/2, /*use_query_rewriter=*/true,
               /*use_i18n=*/true)),
           testing::_, testing::_))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](const manta::proto::Request& request,
              net::NetworkTrafficAnnotationTag traffic_annotation,
              manta::MantaProtoResponseCallback done_callback) {
@@ -170,7 +170,7 @@ TEST_F(
                 .Run(std::make_unique<manta::proto::Response>(),
                      {.status_code = manta::MantaStatusCode::kGenericError,
                       .message = "generic error"});
-          }));
+          });
 
   base::test::TestFuture<const ash::LobsterResult&> future;
 

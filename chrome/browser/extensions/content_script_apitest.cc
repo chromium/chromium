@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
@@ -23,22 +24,20 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/search/ntp_test_utils.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "content/public/browser/javascript_dialog_manager.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
@@ -48,8 +47,10 @@
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/script_injection_tracker.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/common/utils/content_script_utils.h"
@@ -71,6 +72,14 @@
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/search/ntp_test_utils.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -161,11 +170,11 @@ class ContentScriptApiTest : public ExtensionApiTest {
     AllowHttpForHostnamesForTesting(
         {"a.com", "b.com", "default.test", "bar.com", "path-test.example",
          "example.com", "chromium.org", "example1.com"},
-        browser()->profile()->GetPrefs());
+        profile()->GetPrefs());
   }
 
   void TearDownOnMainThread() override {
-    ClearHttpAllowlistForHostnamesForTesting(browser()->profile()->GetPrefs());
+    ClearHttpAllowlistForHostnamesForTesting(profile()->GetPrefs());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -203,11 +212,13 @@ class ContentScriptApiTestWithContextType
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ContentScriptApiTestWithContextType,
                          ::testing::Values(ContextType::kPersistentBackground));
+#if !BUILDFLAG(IS_ANDROID)
 // These tests use chrome.tabs.executeScript, which is not available in MV3 and
-// above.
+// above. Android only supports MV3 and above, so skip these tests on Android.
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ContentScriptApiTestWithContextType,
                          ::testing::Values(ContextType::kServiceWorkerMV2));
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, AllFrames) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -220,6 +231,9 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, AboutBlankIframes) {
       << message_;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
+// is supported.
 IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
                        AboutBlankAndSrcdoc) {
   // The optional "*://*/*" permission is requested after verifying that
@@ -234,6 +248,7 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
   ASSERT_TRUE(RunExtensionTest("content_scripts/about_blank_srcdoc"))
       << message_;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, ExtensionIframe) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -248,6 +263,9 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
       << message_;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
+// is supported.
 IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
                        FragmentNavigation) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -255,6 +273,8 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
   ASSERT_TRUE(RunExtensionTest(extension_name)) << message_;
 }
 
+// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
+// is supported.
 IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, IsolatedWorlds) {
   // This extension runs various bits of script and tests that they all run in
   // the same isolated world.
@@ -265,6 +285,7 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, IsolatedWorlds) {
   // shared.
   ASSERT_TRUE(RunExtensionTest("content_scripts/isolated_world2")) << message_;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
                        IgnoreHostPermissions) {
@@ -324,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, RunAtTimingsAllFire) {
     // Load the URL and make sure each script set for the different timings have
     // fired.
     const GURL url = embedded_test_server()->GetURL(path);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
 
     // Note: These checks don't ensure the correct ordering of injection, but
     // that is verified in the JS files themselves.
@@ -339,8 +360,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, RunAtTimingsAllFire) {
     listener_end.Reset();
     listener_idle.Reset();
 
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
+    ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
     EXPECT_TRUE(listener_start.WaitUntilSatisfied());
     EXPECT_TRUE(listener_end.WaitUntilSatisfied());
     EXPECT_TRUE(listener_idle.WaitUntilSatisfied());
@@ -358,21 +378,22 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(
       "content_scripts/duplicate_script_injection")));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
 
   // Test that a script that matches two separate, yet overlapping match
   // patterns is only injected once.
-  ASSERT_EQ(true, content::EvalJs(
-                      browser()->tab_strip_model()->GetActiveWebContents(),
-                      "document.getElementsByClassName('injected-once')"
-                      ".length == 1"));
+  ASSERT_EQ(true,
+            content::EvalJs(web_contents,
+                            "document.getElementsByClassName('injected-once')"
+                            ".length == 1"));
 
   // Test that a script injected at two different load process times, document
   // idle and document end, is injected exactly twice.
-  ASSERT_EQ(true, content::EvalJs(
-                      browser()->tab_strip_model()->GetActiveWebContents(),
-                      "document.getElementsByClassName('injected-twice')"
-                      ".length == 2"));
+  ASSERT_EQ(true,
+            content::EvalJs(web_contents,
+                            "document.getElementsByClassName('injected-twice')"
+                            ".length == 2"));
 }
 
 // Tests that content scripts detaching its Window during evaluation shouldn't
@@ -386,22 +407,23 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, DetachDuringEvaluation) {
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("content_scripts/detach_during_evaluation")));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
 
   // The iframe is removed by `detach.js`.
-  EXPECT_EQ(true, content::EvalJs(
-                      browser()->tab_strip_model()->GetActiveWebContents(),
-                      "document.getElementById('injected') === null"));
+  EXPECT_EQ(true,
+            content::EvalJs(web_contents,
+                            "document.getElementById('injected') === null"));
 
   // `detach.js` is evaluated, and detaches the iframe.
   EXPECT_EQ(true, content::EvalJs(
-                      browser()->tab_strip_model()->GetActiveWebContents(),
+                      web_contents,
                       "document.getElementById('detach-evaluated') !== null"));
 
   // `detach2.js` isn't evaluated because the iframe is detached.
   EXPECT_EQ(
       false,
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+      content::EvalJs(web_contents,
                       "document.getElementById('detach2-evaluated') !== null"));
 }
 
@@ -455,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, FetchExemptFromCSP) {
   GURL csp_page_url = embedded_test_server()->GetURL(
       "bar.com",
       "/extensions/page_with_csp.html?fetchUrl=" + redirect_url.spec());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), csp_page_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), csp_page_url));
 
   // Ensure the fetch is exempt from the page CSP and succeeds.
   ASSERT_TRUE(listener.WaitUntilSatisfied());
@@ -471,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, FetchExemptFromCSP) {
   csp_page_url = embedded_test_server()->GetURL(
       "bar.com",
       "/extensions/page_with_csp.html?fetchUrl=" + redirect_url.spec());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), csp_page_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), csp_page_url));
 
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   EXPECT_EQ("Failed to fetch", listener.message());
@@ -543,10 +565,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptCssInjectionTest,
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("content_scripts")
                                 .AppendASCII("css_injection")));
 
-  // Helper to get the active tab from the browser.
-  auto get_active_tab = [browser = browser()]() {
-    return browser->tab_strip_model()->GetActiveWebContents();
-  };
+  // Shorter alias to get the active tab.
+  auto get_active_tab = [this]() { return GetActiveWebContents(); };
   // Returns the background color for the element retrieved from the given
   // `query_selector`.
   auto get_element_color =
@@ -575,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptCssInjectionTest,
   // the patterns specified for the content script.
   GURL url =
       embedded_test_server()->GetURL("/extensions/test_file_with_body.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
   constexpr char kInjectedBodyColor[] = "rgb(0, 0, 255)";  // Blue
   EXPECT_EQ(kInjectedBodyColor, get_element_color("body"));
   EXPECT_EQ(0, get_style_sheet_count())
@@ -585,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptCssInjectionTest,
   // The loaded extension has an exclude match for "extensions/test_file.html",
   // so no CSS should be injected.
   url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
   EXPECT_NE(kInjectedBodyColor, get_element_color("body"));
   EXPECT_EQ(0, get_style_sheet_count());
 
@@ -595,7 +615,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptCssInjectionTest,
   url = embedded_test_server()
             ->GetURL("/extensions/test_file_with_body.html")
             .ReplaceComponents(replacements);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
   EXPECT_NE(kInjectedBodyColor, get_element_color("body"));
   EXPECT_EQ(0, get_style_sheet_count());
 
@@ -607,7 +627,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptCssInjectionTest,
   // The extension styles should win by specificity, since they are in the same
   // style origin ("author").
   url = embedded_test_server()->GetURL("/extensions/test_file_with_style.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
   constexpr char kInjectedDivColor[] = "rgb(0, 0, 255)";  // Blue
   constexpr char kOriginalDivColor[] = "rgb(255, 0, 0)";  // Red
   EXPECT_EQ(kInjectedDivColor, get_element_color("#div1"));
@@ -638,40 +658,116 @@ IN_PROC_BROWSER_TEST_F(ContentScriptCssInjectionTest,
   EXPECT_EQ(kInjectedDivColor, get_element_color("#div3"));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+
+class ContentScriptCssApiTest : public ContentScriptApiTest {
+ protected:
+  base::test::ScopedFeatureList feature_list_{
+      extensions_features::kExtensionLocalizationGuid};
+};
+
+// Tests a page's service worker intercepting an extension's stylesheet as
+// served by a dynamic URL.
+// Regression test for https://crbug.com/435609878.
+// TODO(crbug.com/447647864): Port to desktop Android when `getComputedStyle()`
+// returns updated values for a web service worker, instead of the default.
+IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, LocalizedWithDynamicUrl) {
+  // Load an extension with a stylesheet that can be served by a dynamic URL.
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("content_scripts/css_l10n_dynamic"));
+  ASSERT_TRUE(extension);
+
+  // Navigate to a web page controlled by a service worker. The page will send a
+  // "ready" message when the service worker is activated and has claimed the
+  // page as a client.
+  const GURL url = embedded_test_server()->GetURL(
+      "/extensions/page_with_service_worker/index.html");
+  content::WebContents* web_contents = GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
+  std::string ready;
+  EXPECT_TRUE(message_queue.WaitForMessage(&ready));
+  EXPECT_EQ(R"("ready")", ready);
+
+  // Inject a script that will add a stylesheet associated with the extension's
+  // dynamic URL and return (via a promise) when the stylesheet has loaded.
+  static constexpr char kInjectStylesheet[] =
+      R"((function() {
+           let sheet = document.createElement('link');
+           sheet.type = 'text/css';
+           sheet.rel = 'stylesheet';
+           let url = '%s';
+           sheet.href = url;
+           return new Promise(resolve => {
+             sheet.onload = () => { resolve('success'); };
+             sheet.onerror = error => { resolve(error); };
+             document.head.appendChild(sheet);
+           });
+         })();)";
+  GURL dynamic_url = extension->dynamic_url().Resolve("style.css");
+  std::string script =
+      base::StringPrintf(kInjectStylesheet, dynamic_url.spec());
+  EXPECT_EQ("success", content::EvalJs(web_contents, script));
+
+  // Retrieve the body's background color. Red (rgb(255, 0, 0) comes from the
+  // web service worker which retrieves it from the extension's messages.json
+  // file. This is made possible due to the extension's `default_locale` key.
+  // Notes:
+  // * The stylesheet in the extension uses the color "green". This difference
+  //   ensures the stylesheet is properly being served by the service worker,
+  //   and not the extension.
+  // * The service worker replies with an unlocalized variable in the stylesheet
+  //   for the color. This ensures that the stylesheet is properly localized by
+  //   the browser process before use.
+  static constexpr char kGetBodyColor[] =
+      R"((function() {
+           return getComputedStyle(document.body).color;
+         })();)";
+  EXPECT_EQ("rgb(255, 0, 0)", content::EvalJs(web_contents, kGetBodyColor));
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
+// is supported.
 IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
                        ContentScriptCSSLocalization) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("content_scripts/css_l10n")) << message_;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptExtensionAPIs) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   const extensions::Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("content_scripts/extension_api"));
 
+  auto* web_contents = GetActiveWebContents();
   ResultCatcher catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(NavigateToURL(
+      web_contents,
       embedded_test_server()->GetURL("/extensions/api_test/content_scripts/"
                                      "extension_api/functions.html")));
   EXPECT_TRUE(catcher.GetNextResult());
 
   // Navigate to a page that will cause a content script to run that starts
   // listening for an extension event.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(NavigateToURL(
+      web_contents,
       embedded_test_server()->GetURL(
           "/extensions/api_test/content_scripts/extension_api/events.html")));
 
   // Navigate to an extension page that will fire the event events.js is
   // listening for.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), extension->GetResourceURL("fire_event.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_NO_WAIT);
+  NavigateToURLInNewTab(extension->GetResourceURL("fire_event.html"));
   EXPECT_TRUE(catcher.GetNextResult());
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
+// is supported.
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptPermissionsApi) {
   base::AutoReset<PermissionsRequestFunction::DialogAction> dialog_action =
       PermissionsRequestFunction::SetDialogActionForTests(
@@ -680,6 +776,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptPermissionsApi) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("content_scripts/permissions")) << message_;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // TODO(crbug.com/40698663): Maybe push the ContextType into
 // ExtensionApiTestWithManagementPolicy depending on how the conversions
@@ -701,11 +798,13 @@ class ContentScriptApiManagementPolicyTestWithContextType
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ContentScriptApiManagementPolicyTestWithContextType,
                          ::testing::Values(ContextType::kPersistentBackground));
+#if !BUILDFLAG(IS_ANDROID)
 // These tests use chrome.tabs.executeScript, which is not available in MV3 and
-// above.
+// above. Android only supports MV3 and up, so skip these tests on Android.
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ContentScriptApiManagementPolicyTestWithContextType,
                          ::testing::Values(ContextType::kServiceWorkerMV2));
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_P(ContentScriptApiManagementPolicyTestWithContextType,
                        Policy) {
@@ -839,8 +938,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptBlockingScript) {
   const Extension* ext2 = LoadExtension(ext_dir2.UnpackedPath());
   ASSERT_TRUE(ext2);
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   auto* js_dialog_manager =
       javascript_dialogs::TabModalDialogManager::FromWebContents(web_contents);
   base::RunLoop dialog_wait;
@@ -850,10 +948,14 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptBlockingScript) {
   ExtensionTestMessageListener listener("done");
   listener.set_extension_id(ext2->id());
 
-  // Navigate! Both extensions will try to inject.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), embedded_test_server()->GetURL("/empty.html"),
-      WindowOpenDisposition::CURRENT_TAB, ui_test_utils::BROWSER_TEST_NO_WAIT);
+  // Navigate! Both extensions will try to inject. Use WebContents::OpenURL() to
+  // avoid waits on navigation/load, which cause the test to time out.
+  content::OpenURLParams params(
+      embedded_test_server()->GetURL("/empty.html"), content::Referrer(),
+      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED,
+      /*is_renderer_initiated=*/false);
+  web_contents->OpenURL(params,
+                        /*navigation_handle_callback=*/{});
 
   dialog_wait.Run();
   // Right now, the alert dialog is showing and blocking injection of anything
@@ -874,10 +976,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
 
   // We're going to close a tab in this test, so make a new one (to ensure
   // we don't close the browser).
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), embedded_test_server()->GetURL("/empty.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(embedded_test_server()->GetURL("/empty.html"));
 
   // Set up the same as the previous test case.
   TestExtensionDir ext_dir1;
@@ -893,8 +992,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   const Extension* ext2 = LoadExtension(ext_dir2.UnpackedPath());
   ASSERT_TRUE(ext2);
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   auto* js_dialog_manager =
       javascript_dialogs::TabModalDialogManager::FromWebContents(web_contents);
   base::RunLoop dialog_wait;
@@ -904,19 +1002,22 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   ExtensionTestMessageListener listener("done");
   listener.set_extension_id(ext2->id());
 
-  // Navigate!
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), embedded_test_server()->GetURL("/empty.html"),
-      WindowOpenDisposition::CURRENT_TAB, ui_test_utils::BROWSER_TEST_NO_WAIT);
+  // Navigate! Use WebContents::OpenURL() to avoid waits that can cause the
+  // test to time out.
+  content::OpenURLParams params(
+      embedded_test_server()->GetURL("/empty.html"), content::Referrer(),
+      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED,
+      /*is_renderer_initiated=*/false);
+  web_contents->OpenURL(params,
+                        /*navigation_handle_callback=*/{});
 
   // Now, instead of closing the dialog, just close the tab. Later scripts
   // should never get a chance to run (and we shouldn't crash).
   dialog_wait.Run();
   EXPECT_FALSE(listener.was_satisfied());
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  browser()->tab_strip_model()->CloseWebContentsAt(
-      browser()->tab_strip_model()->active_index(), 0);
-  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(2, GetTabCount());
+  CloseTabForWebContents(GetActiveWebContents());
+  EXPECT_EQ(1, GetTabCount());
   EXPECT_FALSE(listener.was_satisfied());
 }
 
@@ -935,18 +1036,21 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   const Extension* ext1 = LoadExtension(ext_dir1.UnpackedPath());
   ASSERT_TRUE(ext1);
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   auto* js_dialog_manager =
       javascript_dialogs::TabModalDialogManager::FromWebContents(web_contents);
   base::RunLoop dialog_wait;
   js_dialog_manager->SetDialogShownCallbackForTesting(
       dialog_wait.QuitClosure());
 
-  // Navigate!
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), embedded_test_server()->GetURL("/empty.html"),
-      WindowOpenDisposition::CURRENT_TAB, ui_test_utils::BROWSER_TEST_NO_WAIT);
+  // Navigate! Use WebContents::OpenURL() to avoid waits that can cause the
+  // test to time out.
+  content::OpenURLParams params(
+      embedded_test_server()->GetURL("/empty.html"), content::Referrer(),
+      WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED,
+      /*is_renderer_initiated=*/false);
+  web_contents->OpenURL(params,
+                        /*navigation_handle_callback=*/{});
 
   dialog_wait.Run();
 
@@ -976,27 +1080,30 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   ASSERT_TRUE(injector);
 
   ExtensionTestMessageListener listener("done");
-  ASSERT_TRUE(
-      AddTabAtIndex(0, GURL("chrome://newtab"), ui::PAGE_TRANSITION_LINK));
-  browser()->tab_strip_model()->ActivateTabAt(0);
-  content::WebContents* tab_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  NavigateToURLInNewTab(GURL("chrome://newtab"));
+  content::WebContents* tab_contents = GetActiveWebContents();
 
   EXPECT_EQ(new_tab_override->GetResourceURL("newtab.html"),
             tab_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
   EXPECT_FALSE(listener.was_satisfied());
   listener.Reset();
 
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), embedded_test_server()->GetURL("/empty.html"),
-      WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_TRUE(NavigateToURL(tab_contents,
+                            embedded_test_server()->GetURL("/empty.html")));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(listener.was_satisfied());
 }
 
+// TODO(crbug.com/441557607) Causes flaky GPU crashes on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_DontInjectContentScriptsInBackgroundPages \
+  DISABLED_DontInjectContentScriptsInBackgroundPages
+#else
+#define MAYBE_DontInjectContentScriptsInBackgroundPages \
+  DontInjectContentScriptsInBackgroundPages
+#endif
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
-                       DontInjectContentScriptsInBackgroundPages) {
+                       MAYBE_DontInjectContentScriptsInBackgroundPages) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   // Load two extensions, one with an iframe to a.com in its background page,
   // the other, a content script for a.com. The latter should never be able to
@@ -1029,19 +1136,15 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
   ResultCatcher catcher;
   test_listener.Reply(std::string());
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
-  EXPECT_EQ(ntp_test_utils::GetFinalNtpUrl(browser()->profile()),
-            browser()
-                ->tab_strip_model()
-                ->GetActiveWebContents()
-                ->GetLastCommittedURL());
-  EXPECT_FALSE(
-      did_script_inject(browser()->tab_strip_model()->GetActiveWebContents()));
+  auto* web_contents = GetActiveWebContents();
+  // ntp_test_utils are not available on Android, so hard-code the expected URL.
+  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
+            web_contents->GetLastCommittedURL());
+  EXPECT_FALSE(did_script_inject(web_contents));
 
   // Next, check content script injection.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), search::GetNewTabPageURL(profile())));
-  EXPECT_FALSE(
-      did_script_inject(browser()->tab_strip_model()->GetActiveWebContents()));
+  ASSERT_TRUE(NavigateToURL(web_contents, search::GetNewTabPageURL(profile())));
+  EXPECT_FALSE(did_script_inject(web_contents));
 
   // The extension should inject on "normal" urls.
 
@@ -1049,17 +1152,15 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
   // loads over http instead of https. example2.com loads over https.
   GURL unprotected_url1 = embedded_test_server()->GetURL(
       "example1.com", "/extensions/test_file.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), unprotected_url1));
-  EXPECT_TRUE(
-      did_script_inject(browser()->tab_strip_model()->GetActiveWebContents()));
+  ASSERT_TRUE(NavigateToURL(web_contents, unprotected_url1));
+  EXPECT_TRUE(did_script_inject(web_contents));
 
   // Test on an HTTPS URL. If HTTPS-Upgrades feature is enabled, this URL is
   // upgraded to HTTPS.
   GURL unprotected_url2 = embedded_test_server()->GetURL(
       "example2.com", "/extensions/test_file.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), unprotected_url2));
-  EXPECT_TRUE(
-      did_script_inject(browser()->tab_strip_model()->GetActiveWebContents()));
+  ASSERT_TRUE(NavigateToURL(web_contents, unprotected_url2));
+  EXPECT_TRUE(did_script_inject(web_contents));
 }
 
 IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, SameSiteCookies) {
@@ -1083,6 +1184,9 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, SameSiteCookies) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
+// is supported.
 IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
                        ExecuteScriptFileSameSiteCookies) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -1111,6 +1215,8 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
+// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
+// is supported.
 IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
                        ExecuteScriptCodeSameSiteCookies) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -1144,6 +1250,7 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType,
   EXPECT_EQ("success", result);
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that extension content scripts can execute (including asynchronously
 // through timeouts) in pages with Content-Security-Policy: sandbox.
@@ -1173,11 +1280,14 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ExecuteScriptBypassingSandbox) {
 
   GURL url = embedded_test_server()->GetURL(
       "example.com", "/extensions/page_with_sandbox_csp.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Regression test for https://crbug.com/1407986.
+// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
+// is supported.
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ExecuteScriptForSandboxFrame) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -1219,9 +1329,10 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 
   GURL url = embedded_test_server()->GetURL(
       "example.com", "/extensions/page_with_sandbox_csp.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Regression test for https://crbug.com/883526.
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, InifiniteLoopInGetEffectiveURL) {
@@ -1247,10 +1358,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, InifiniteLoopInGetEffectiveURL) {
 
   // Create an "infinite" loop for hopping over parent/opener:
   // subframe1 ---parent---> mainFrame ---opener--> subframe1 ...
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, GURL(url::kAboutBlankURL)));
   ASSERT_TRUE(content::ExecJs(web_contents,
                               R"(
                                   var iframe = document.createElement('iframe');
@@ -1293,10 +1402,13 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, Messaging) {
   ASSERT_TRUE(RunExtensionTest("content_scripts/messaging")) << message_;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests that the URLs of content scripts are set to the extension URL
 // (chrome-extension://<id>/<path_to_script>) rather than the local file
 // path.
 // Regression test for https://crbug.com/714617.
+// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
+// is supported.
 IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, ContentScriptUrls) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   TestExtensionDir test_dir;
@@ -1335,21 +1447,21 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, ContentScriptUrls) {
   auto load_page_and_check_error = [this, extension](const char* host) {
     SCOPED_TRACE(host);
     ResultCatcher catcher;
-    content::WebContentsConsoleObserver observer(
-        browser()->tab_strip_model()->GetActiveWebContents());
+    content::WebContentsConsoleObserver observer(GetActiveWebContents());
     auto filter =
         [](const content::WebContentsConsoleObserver::Message& message) {
           return message.message == u"TestMessage";
         };
     observer.SetFilter(base::BindRepeating(filter));
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL(host, "/simple.html")));
+    ASSERT_TRUE(
+        NavigateToURL(GetActiveWebContents(),
+                      embedded_test_server()->GetURL(host, "/simple.html")));
     ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
     ASSERT_EQ(1u, observer.messages().size());
     GURL source_url(observer.messages()[0].source_id);
     ASSERT_TRUE(source_url.is_valid());
-    EXPECT_EQ(kExtensionScheme, source_url.scheme_piece());
-    EXPECT_EQ(extension->id(), source_url.host_piece());
+    EXPECT_EQ(kExtensionScheme, source_url.scheme());
+    EXPECT_EQ(extension->id(), source_url.host());
   };
 
   // Test the script url from both a static content script specified in the
@@ -1357,6 +1469,7 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, ContentScriptUrls) {
   load_page_and_check_error("content-script.example");
   load_page_and_check_error("inject-script.example");
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Verifies how the storage API works with content scripts with default access
 // level.
@@ -1371,7 +1484,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, StorageApiDefaultAccessTest) {
   // then continues the test, so we need a separate ResultCatcher.
   ResultCatcher catcher;
   GURL url(embedded_test_server()->GetURL("/extensions/test_file.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
@@ -1390,7 +1503,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   // then continues the test, so we need a separate ResultCatcher.
   ResultCatcher catcher;
   GURL url(embedded_test_server()->GetURL("/extensions/test_file.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
@@ -1410,7 +1523,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, StorageApiAllowMixedAccessTest) {
   // then continues the test, so we need a separate ResultCatcher.
   ResultCatcher catcher;
   GURL url(embedded_test_server()->GetURL("/extensions/test_file.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
@@ -1462,16 +1575,15 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, MhtmlIframe) {
       "Got message from %s", kExpectedFrame1Url.spec().c_str()));
   ExtensionTestMessageListener listener2(base::StringPrintf(
       "Got message from %s", kExpectedFrame2Url.spec().c_str()));
-  GURL page_url = ui_test_utils::GetTestUrl(
+  GURL page_url = chrome_test_utils::GetTestUrl(
       base::FilePath(FILE_PATH_LITERAL("extensions")),
       base::FilePath(FILE_PATH_LITERAL("mhtml-with-subframes.mht")));
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  content::WebContents* web_contents = GetActiveWebContents();
+  EXPECT_TRUE(NavigateToURL(web_contents, page_url));
 
   // Verify that the subframes are at the expected URLs:
   // * Not `file:` URLs - the URLs come from inside MHTML,
   // * URLs will match the URLs patterns from the extension manifest above.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHost* subframe1 = content::ChildFrameAt(web_contents, 0);
   ASSERT_TRUE(subframe1);
   EXPECT_EQ(subframe1->GetLastCommittedURL(), kExpectedFrame1Url);
@@ -1686,10 +1798,9 @@ bool ContentScriptRelatedFrameTest::DidScriptRunInFrame(
 
 content::WebContents* ContentScriptRelatedFrameTest::NavigateTab(
     const GURL& url) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   content::TestNavigationObserver observer(web_contents);
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(NavigateToURL(web_contents, url));
   EXPECT_TRUE(observer.last_navigation_succeeded());
   EXPECT_EQ(url, web_contents->GetLastCommittedURL());
   return web_contents;
@@ -1698,15 +1809,14 @@ content::WebContents* ContentScriptRelatedFrameTest::NavigateTab(
 content::WebContents* ContentScriptRelatedFrameTest::OpenPopup(
     content::WebContents* opener_web_contents,
     const GURL& url) {
-  int initial_tab_count = browser()->tab_strip_model()->count();
+  int initial_tab_count = GetTabCount();
   content::TestNavigationObserver popup_observer(nullptr /* web_contents */);
   popup_observer.StartWatchingNewWebContents();
   EXPECT_TRUE(content::ExecJs(
       opener_web_contents, content::JsReplace("window.open($1);", url.spec())));
   popup_observer.Wait();
-  EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->count());
-  content::WebContents* popup =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(initial_tab_count + 1, GetTabCount());
+  content::WebContents* popup = GetActiveWebContents();
   EXPECT_EQ(url, popup->GetLastCommittedURL());
   EXPECT_NE(popup, opener_web_contents);
   return popup;
@@ -1748,7 +1858,7 @@ GURL ContentScriptRelatedFrameTest::CreateBlobURL(
       content::EvalJs(host, kCreateBlobURL).ExtractString();
   GURL url(url_string);
   EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(url::kBlobScheme, url.scheme());
+  EXPECT_EQ(url::kBlobScheme, url.GetScheme());
   EXPECT_EQ(
       url::Origin::Create(host->GetLastCommittedURL()).GetURL(),
       url::Origin::Create(url).GetTupleOrPrecursorTupleIfOpaque().GetURL());
@@ -1776,7 +1886,7 @@ GURL ContentScriptRelatedFrameTest::CreateFilesystemURL(
       content::EvalJs(host, kCreateFilesystemURL).ExtractString();
   GURL url(url_string);
   EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(url::kFileSystemScheme, url.scheme());
+  EXPECT_EQ(url::kFileSystemScheme, url.GetScheme());
   EXPECT_EQ(
       url::Origin::Create(host->GetLastCommittedURL()).GetURL(),
       url::Origin::Create(url).GetTupleOrPrecursorTupleIfOpaque().GetURL());
@@ -1834,10 +1944,14 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
   EXPECT_FALSE(DidScriptRunInFrame(tab->GetPrimaryMainFrame()));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests injecting a content script when the iframe rewrites the parent to be
 // null. This re-write causes the parent to itself become an about:blank frame
 // without a parent. Regression test for https://crbug.com/963347 and
 // https://crbug.com/963420.
+// TODO(crbug.com/371432155): Port to desktop Android when we have cross
+// platform utilities for Navigate/NavigateParams. Attempting to use
+// NavigateToURLInNewTab() causes crashes in the navigation stack.
 IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        MatchAboutBlank_NullParent) {
   NavigateParams navigate_params(browser(), null_document_url(),
@@ -1861,8 +1975,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
   // parent.
   ASSERT_TRUE(message_queue.WaitForMessage(&result));
   EXPECT_EQ(R"("navigated")", result);
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* tab = GetActiveWebContents();
   EXPECT_EQ(null_document_url(), tab->GetLastCommittedURL());
   content::RenderFrameHost* main_frame = tab->GetPrimaryMainFrame();
   // Sanity check: The main frame should have been re-written. The test passes
@@ -1873,6 +1986,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
   // no-parent about:blank case well when there was a non-about:blank
   // precursor origin, which caused a crash during the document writing.
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that match_about_blank does not allow extensions to inject into blob:
 // URLs.
@@ -2041,9 +2155,16 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
   EXPECT_FALSE(DidScriptRunInFrame(render_frame_host));
 }
 
-// Inject into nested iframes with data: URLs.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_DataURLInjection_NestedDataIframe_SameOrigin \
+  DISABLED_DataURLInjection_NestedDataIframe_SameOrigin
+#else
+#define MAYBE_DataURLInjection_NestedDataIframe_SameOrigin \
+  DataURLInjection_NestedDataIframe_SameOrigin
+#endif
+// Inject into nested iframes with data: URLs. Flaky on Android.
 IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
-                       DataURLInjection_NestedDataIframe_SameOrigin) {
+                       MAYBE_DataURLInjection_NestedDataIframe_SameOrigin) {
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
 
   // Create a data: URL that will have an iframe to another data: URL.
@@ -2160,7 +2281,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
   }
 }
 
-// Test fixture which sets a custom NTP Page.
+#if !BUILDFLAG(IS_ANDROID)
+// Test fixture which sets a custom NTP Page for content script injection tests.
+// These tests are skipped on Android because Android uses native UI instead of
+// webui for the NTP and hence the NTP isn't scriptable.
 // TODO(karandeepb): Similar logic to set up a custom NTP is used elsewhere as
 // well. Abstract this away into a reusable test fixture class.
 class NTPInterceptionTest : public ExtensionApiTest,
@@ -2212,14 +2336,13 @@ IN_PROC_BROWSER_TEST_P(NTPInterceptionTest, ContentScript) {
 
   // Ensure that the extension isn't able to inject the script into the New Tab
   // Page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, GURL(chrome::kChromeUINewTabURL)));
   ASSERT_TRUE(search::IsInstantNTP(web_contents));
 
   EXPECT_EQ(false, EvalJs(web_contents, "document.title !== 'Fake NTP';"));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, CoepFrameTest) {
   using HttpRequest = net::test_server::HttpRequest;
@@ -2244,17 +2367,20 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, CoepFrameTest) {
   auto handle = server.StartAndReturnHandle();
   const GURL url = server.GetURL("/hello.html");
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
 
   const std::u16string kPassed = u"PASSED";
   const std::u16string kFailed = u"FAILED";
-  content::TitleWatcher watcher(
-      browser()->tab_strip_model()->GetActiveWebContents(), kPassed);
+  content::TitleWatcher watcher(web_contents, kPassed);
   watcher.AlsoWaitForTitle(kFailed);
 
   ASSERT_EQ(kPassed, watcher.WaitAndGetTitle());
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
+// is supported.
 class ContentScriptApiPrerenderingTest
     : public ContentScriptApiTestWithContextType {
  private:
@@ -2270,6 +2396,8 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ContentScriptApiPrerenderingTest,
                          ::testing::Values(ContextType::kServiceWorkerMV2));
 
+// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
+// is supported.
 IN_PROC_BROWSER_TEST_P(ContentScriptApiPrerenderingTest, Prerendering) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("content_scripts/prerendering")) << message_;
@@ -2284,11 +2412,14 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
 
 // Checks if injecting inline speculation rules are permitted in the manifest v3
 // content_scripts.
+// TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
+// is supported.
 IN_PROC_BROWSER_TEST_P(ContentScriptApiPrerenderingMV3Test, SpeculationRules) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("content_scripts/speculation_rules"))
       << message_;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class ContentScriptApiFencedFrameTest : public ContentScriptApiTest {
  protected:
@@ -2380,11 +2511,10 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiFencedFrameTest,
   ASSERT_TRUE(LoadExtension(document_start_extension_dir.UnpackedPath()));
 
   ExtensionTestMessageListener listener;
-  content::WebContents* tab_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* tab_contents = GetActiveWebContents();
 
   GURL extension_test_url = extension->GetResourceURL("test.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_test_url));
+  ASSERT_TRUE(NavigateToURL(tab_contents, extension_test_url));
 
   EXPECT_EQ(extension_test_url,
             tab_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
@@ -2412,8 +2542,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTestWithActivityLog,
   ASSERT_TRUE(extension);
 
   // Navigate to a page where content scripts would be executed.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  ASSERT_TRUE(NavigateToURL(
+      GetActiveWebContents(),
       embedded_test_server()->GetURL("a.com", "/extensions/test_file.html")));
 
   // Execute the test which passes when it sees exactly 1 content_script entry

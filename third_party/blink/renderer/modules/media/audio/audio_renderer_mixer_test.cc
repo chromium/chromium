@@ -20,6 +20,8 @@
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/types/zip.h"
+#include "media/base/audio_bus.h"
 #include "media/base/fake_audio_render_callback.h"
 #include "media/base/mock_audio_renderer_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -142,17 +144,20 @@ class AudioRendererMixerTest
   }
 
   bool ValidateAudioData(int index, int frames, float scale, double epsilon) {
-    for (int i = 0; i < audio_bus_->channels(); ++i) {
-      for (int j = index; j < frames; j++) {
-        double error =
-            fabs(UNSAFE_TODO(audio_bus_->channel(i)[j]) -
-                 UNSAFE_TODO(expected_audio_bus_->channel(i)[j]) * scale);
+    for (int ch = 0; ch < audio_bus_->channels(); ++ch) {
+      auto expected_channel = expected_audio_bus_->channel(ch);
+      auto actual_channel = audio_bus_->channel(ch);
+
+      for (int sample = index; sample < frames; sample++) {
+        const double error =
+            fabs(actual_channel[sample] - expected_channel[sample] * scale);
+
         // The second comparison is for the case when scale is set to 0
         // (and less that 1 in general)
         if ((error > epsilon * scale) && (error > epsilon)) {
-          UNSAFE_TODO(EXPECT_NEAR(expected_audio_bus_->channel(i)[j] * scale,
-                                  audio_bus_->channel(i)[j], epsilon * scale))
-              << " i=" << i << ", j=" << j;
+          EXPECT_NEAR(expected_channel[sample] * scale, actual_channel[sample],
+                      epsilon * scale)
+              << " ch=" << ch << ", sample=" << sample;
           return false;
         }
       }
@@ -198,10 +203,8 @@ class AudioRendererMixerTest
 
   // Fill |audio_bus_| fully with |value|.
   void FillAudioData(float value) {
-    for (int i = 0; i < audio_bus_->channels(); ++i) {
-      std::fill(audio_bus_->channel(i),
-                UNSAFE_TODO(audio_bus_->channel(i) + audio_bus_->frames()),
-                value);
+    for (auto channel : audio_bus_->AllChannels()) {
+      std::ranges::fill(channel, value);
     }
   }
 

@@ -125,6 +125,8 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
   virtual Node* toElement() const;
   virtual Node* fromElement() const;
 
+  CSSPseudoElement* pseudoTarget() const { return Event::pseudoTarget(); }
+
   virtual DataTransfer* getDataTransfer() const { return nullptr; }
 
   bool FromTouch() const { return synthetic_event_type_ == kFromTouch; }

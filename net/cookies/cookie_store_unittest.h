@@ -598,10 +598,10 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
   base::Time one_hour_ago = base::Time::Now() - base::Hours(1);
   base::Time one_hour_from_now = base::Time::Now() + base::Hours(1);
 
-  std::string foo_foo_host(this->www_foo_foo_.url().host());
+  std::string foo_foo_host(this->www_foo_foo_.url().GetHost());
   std::string foo_bar_domain(this->www_foo_bar_.domain());
-  std::string http_foo_host(this->http_www_foo_.url().host());
-  std::string https_foo_host(this->https_www_foo_.url().host());
+  std::string http_foo_host(this->http_www_foo_.url().GetHost());
+  std::string https_foo_host(this->https_www_foo_.url().GetHost());
 
   EXPECT_TRUE(this->SetCanonicalCookie(
       cs,
@@ -794,9 +794,9 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
 TYPED_TEST_P(CookieStoreTest, SecureEnforcement) {
   CookieStore* cs = this->GetCookieStore();
   GURL http_url(this->http_www_foo_.url());
-  std::string http_domain(http_url.host());
+  std::string http_domain(http_url.GetHost());
   GURL https_url(this->https_www_foo_.url());
-  std::string https_domain(https_url.host());
+  std::string https_domain(https_url.GetHost());
 
   // Confirm that setting the secure attribute from an insecure source fails,
   // but the other combinations work.

@@ -40,3 +40,5 @@ void PermissionUpdateRequester::OnPermissionResult(
     jboolean all_permissions_granted) {
   std::move(callback_).Run(all_permissions_granted);
 }
+
+DEFINE_JNI(PermissionUpdateRequester)

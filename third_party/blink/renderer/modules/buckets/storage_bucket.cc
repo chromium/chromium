@@ -53,9 +53,8 @@ ScriptPromise<IDLBoolean> StorageBucket::persist(ScriptState* script_state) {
     return promise;
   }
 
-  remote_->Persist(WTF::BindOnce(&StorageBucket::DidRequestPersist,
-                                 WrapPersistent(this),
-                                 WrapPersistent(resolver)));
+  remote_->Persist(BindOnce(&StorageBucket::DidRequestPersist,
+                            WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -72,9 +71,8 @@ ScriptPromise<IDLBoolean> StorageBucket::persisted(ScriptState* script_state) {
     return promise;
   }
 
-  remote_->Persisted(WTF::BindOnce(&StorageBucket::DidGetPersisted,
-                                   WrapPersistent(this),
-                                   WrapPersistent(resolver)));
+  remote_->Persisted(BindOnce(&StorageBucket::DidGetPersisted,
+                              WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -92,9 +90,8 @@ ScriptPromise<StorageEstimate> StorageBucket::estimate(
     return promise;
   }
 
-  remote_->Estimate(WTF::BindOnce(&StorageBucket::DidGetEstimate,
-                                  WrapPersistent(this),
-                                  WrapPersistent(resolver)));
+  remote_->Estimate(BindOnce(&StorageBucket::DidGetEstimate,
+                             WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -113,9 +110,8 @@ ScriptPromise<V8StorageBucketDurability> StorageBucket::durability(
     return promise;
   }
 
-  remote_->Durability(WTF::BindOnce(&StorageBucket::DidGetDurability,
-                                    WrapPersistent(this),
-                                    WrapPersistent(resolver)));
+  remote_->Durability(BindOnce(&StorageBucket::DidGetDurability,
+                               WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -134,10 +130,9 @@ ScriptPromise<IDLUndefined> StorageBucket::setExpires(
     return promise;
   }
 
-  remote_->SetExpires(
-      base::Time::FromMillisecondsSinceUnixEpoch(expires),
-      WTF::BindOnce(&StorageBucket::DidSetExpires, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+  remote_->SetExpires(base::Time::FromMillisecondsSinceUnixEpoch(expires),
+                      BindOnce(&StorageBucket::DidSetExpires,
+                               WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -155,9 +150,9 @@ ScriptPromise<IDLNullable<IDLDOMHighResTimeStamp>> StorageBucket::expires(
     return promise;
   }
 
-  remote_->Expires(WTF::BindOnce(&StorageBucket::DidGetExpires,
-                                 WrapPersistent(this),
-                                 WrapPersistent(resolver)));
+  remote_->Expires(blink::BindOnce(&StorageBucket::DidGetExpires,
+                                   WrapPersistent(this),
+                                   WrapPersistent(resolver)));
   return promise;
 }
 
@@ -200,8 +195,8 @@ ScriptPromise<FileSystemDirectoryHandle> StorageBucket::getDirectory(
     ExceptionState& exception_state) {
   return StorageManagerFileSystemAccess::CheckStorageAccessIsAllowed(
       script_state, exception_state,
-      WTF::BindOnce(&StorageBucket::GetSandboxedFileSystem,
-                    WrapWeakPersistent(this)));
+      BindOnce(&StorageBucket::GetSandboxedFileSystem,
+               WrapWeakPersistent(this)));
 }
 
 void StorageBucket::GetDirectoryForDevTools(
@@ -210,10 +205,10 @@ void StorageBucket::GetDirectoryForDevTools(
     base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                             FileSystemDirectoryHandle*)> callback) {
   StorageManagerFileSystemAccess::CheckStorageAccessIsAllowed(
-      context,
-      WTF::BindOnce(&StorageBucket::GetSandboxedFileSystemForDevtools,
-                    WrapWeakPersistent(this), WrapWeakPersistent(context),
-                    std::move(directory_path_components), std::move(callback)));
+      context, blink::BindOnce(
+                   &StorageBucket::GetSandboxedFileSystemForDevtools,
+                   WrapWeakPersistent(this), WrapWeakPersistent(context),
+                   std::move(directory_path_components), std::move(callback)));
 }
 
 void StorageBucket::Trace(Visitor* visitor) const {
@@ -328,8 +323,8 @@ void StorageBucket::GetSandboxedFileSystem(
   }
 
   remote_->GetDirectory(
-      WTF::BindOnce(&StorageManagerFileSystemAccess::DidGetSandboxedFileSystem,
-                    WrapPersistent(resolver)));
+      BindOnce(&StorageManagerFileSystemAccess::DidGetSandboxedFileSystem,
+               WrapPersistent(resolver)));
 }
 
 void StorageBucket::GetSandboxedFileSystemForDevtools(
@@ -354,7 +349,7 @@ void StorageBucket::GetSandboxedFileSystemForDevtools(
 
   remote_->GetDirectoryForDevtools(
       directory_path_components,
-      WTF::BindOnce(
+      blink::BindOnce(
           &StorageManagerFileSystemAccess::DidGetSandboxedFileSystemForDevtools,
           WrapWeakPersistent(context), std::move(callback)));
 }

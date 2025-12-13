@@ -18,7 +18,9 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.RuntimePromptResponse;
 import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.TestAndroidPermissionDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -223,6 +225,7 @@ public class RuntimePermissionTest {
                 R.string.infobar_missing_microphone_permission_text);
     }
 
+    // Disabled on android.emulator_12l_landscape - crbug.com/442769979.
     @Test
     @MediumTest
     @Feature({"RuntimePermissions", "Location"})
@@ -253,7 +256,8 @@ public class RuntimePermissionTest {
     @MediumTest
     @Feature({"RuntimePermissions", "MediaPermissions"})
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
-    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/41486136
+    @DisableIf.Device(
+            DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/41486136 and crbug.com/464710913
     public void testDenyAndNeverAskMicrophone() throws Exception {
         // First ask for mic and reply with "deny and never ask again";
         String[] requestablePermission = new String[] {Manifest.permission.RECORD_AUDIO};
@@ -291,7 +295,8 @@ public class RuntimePermissionTest {
     @MediumTest
     @Feature({"RuntimePermissions", "MediaPermissions"})
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
-    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // crbug.com/41486136
+    @DisableIf.Device(
+            DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/41486136 and crbug.com/464699382
     public void testDenyAndNeverAskCamera() throws Exception {
         // First ask for camera and reply with "deny and never ask again";
         String[] requestablePermission = new String[] {Manifest.permission.CAMERA};
@@ -357,7 +362,13 @@ public class RuntimePermissionTest {
     @Feature({"RuntimePermissions", "Location"})
     public void testAllowRuntimeLocationIncognito() throws Exception {
         RuntimePermissionTestUtils.setupGeolocationSystemMock();
-        mPermissionTestRule.newIncognitoTabFromMenu();
+        ChromeActivity incognitoActivity;
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            incognitoActivity = mPermissionTestRule.newIncognitoWindowFromMenu();
+        } else {
+            mPermissionTestRule.newIncognitoTabFromMenu();
+            incognitoActivity = mPermissionTestRule.getActivity();
+        }
 
         String[] requestablePermission =
                 new String[] {
@@ -368,6 +379,7 @@ public class RuntimePermissionTest {
                 new TestAndroidPermissionDelegate(
                         requestablePermission, RuntimePromptResponse.GRANT);
         RuntimePermissionTestUtils.runTest(
+                incognitoActivity,
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 GEOLOCATION_TEST,

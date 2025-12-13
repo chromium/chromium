@@ -14,7 +14,7 @@
 namespace blink {
 
 class PLATFORM_EXPORT WebGPUTextureAlphaClearer final
-    : public WTF::RefCounted<WebGPUTextureAlphaClearer> {
+    : public RefCounted<WebGPUTextureAlphaClearer> {
  public:
   WebGPUTextureAlphaClearer(
       scoped_refptr<DawnControlClientHolder> dawn_control_client,
@@ -26,7 +26,7 @@ class PLATFORM_EXPORT WebGPUTextureAlphaClearer final
   void ClearAlpha(const wgpu::Texture& texture);
 
  private:
-  friend class WTF::RefCounted<WebGPUTextureAlphaClearer>;
+  friend class RefCounted<WebGPUTextureAlphaClearer>;
   ~WebGPUTextureAlphaClearer();
 
   const scoped_refptr<DawnControlClientHolder> dawn_control_client_;

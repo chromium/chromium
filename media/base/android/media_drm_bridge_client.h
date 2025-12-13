@@ -8,11 +8,11 @@
 #include <stdint.h>
 
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace media {
 
@@ -35,7 +35,7 @@ using UUID = std::vector<uint8_t>;
 // provide customized additions to Android's media handling.
 class MEDIA_EXPORT MediaDrmBridgeClient {
  public:
-  typedef std::unordered_map<std::string, UUID> KeySystemUuidMap;
+  typedef absl::flat_hash_map<std::string, UUID> KeySystemUuidMap;
 
   MediaDrmBridgeClient();
 

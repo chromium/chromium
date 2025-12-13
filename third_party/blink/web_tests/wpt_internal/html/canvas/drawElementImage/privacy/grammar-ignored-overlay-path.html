@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>drawElementImage does not draw grammar with custom highlights</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<link rel="author" href="mailto:schenney@chromium.org">
+<link rel="match" href="grammar-ignored-overlay-path-ref.html">
+<meta name="assert" value="When preserving privacy for readback, do not draw grammar markers when using the highlight overlay painting path (triggered by the custom highlight).">
+<script src="/wpt_internal/css/support/markers.js"></script>
+<style>
+  #child {
+    width: 100px;
+    height: 100px;
+    background: green;
+  }
+  #canvas {
+    background: grey;
+  }
+  ::highlight(example-highlight) {
+    background-color: yellow;
+    color: blue;
+  }
+  ::grammar-error {
+    background-color: lime;
+    color: green;
+  }
+</style>
+<canvas id=canvas width="200" height="200" layoutsubtree>
+  <div id="child">
+    <div id="editable" contenteditable="true">Many thing can happen.</div>
+  </div>
+</canvas>
+<script>
+  function runTest() {
+    addGrammarMarker(editable, 5, 10)
+
+    let r = new Range();
+    r.setStart(document.body, 0);
+    r.setEnd(document.body, 1);
+    CSS.highlights.set("example-highlight", new Highlight(r));
+
+    canvas.getContext("2d").drawElementImage(child, 0, 0);
+  }
+
+  onload = () => runTest();
+</script>

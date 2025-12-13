@@ -118,16 +118,17 @@ class ProfileIOSImpl final : public ProfileIOS {
   // STOP!!!! DO NOT ADD ANY MORE ITEMS HERE!!!!
   //
   // Instead, make your Service/Manager/whatever object you're hanging off the
-  // Profile use our BrowserStateKeyedServiceFactory system instead.
+  // Profile use our {Refcounted,}ProfileKeyedServiceFactoryIOS system instead.
   // You can find the design document here:
   //
   //   https://sites.google.com/a/chromium.org/dev/developers/design-documents/profile-architecture
   //
   // and you can read the raw headers here:
   //
-  // components/keyed_service/ios/browser_state_dependency_manager.*
   // components/keyed_service/core/keyed_service.h
-  // components/keyed_service/ios/browser_state_keyed_service_factory.*
+  // ios/chrome/browser/shared/model/profile/profile_dependency_manager_ios.h
+  // ios/chrome/browser/shared/model/profile/
+  //          {refcounted,}profile_keyed_service_factory_ios.h
 };
 
 #endif  // IOS_CHROME_BROWSER_PROFILE_MODEL_PROFILE_IOS_IMPL_H_

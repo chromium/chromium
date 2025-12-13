@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/workers/threaded_object_proxy_base.h"
 
 #include <memory>
+#include <utility>
 
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -48,20 +49,21 @@ void ThreadedObjectProxyBase::ReportConsoleMessage(
     mojom::ConsoleMessageSource source,
     mojom::ConsoleMessageLevel level,
     const String& message,
-    SourceLocation* location) {
+    const SourceLocation* location) {
   if (!GetParentExecutionContextTaskRunners()) {
     DCHECK(GetParentAgentGroupTaskRunner());
     return;
   }
 
-  CrossThreadSourceLocation cross_thread_location(location);
+  CrossThreadSourceLocation cross_thread_location =
+      CrossThreadSourceLocation::From(location);
 
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
       CrossThreadBindOnce(&ThreadedMessagingProxyBase::ReportConsoleMessage,
                           MessagingProxyWeakPtr(), source, level, message,
-                          cross_thread_location));
+                          std::move(cross_thread_location)));
 }
 
 void ThreadedObjectProxyBase::DidCloseWorkerGlobalScope() {

@@ -2,22 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "device/fido/cable/fido_cable_handshake_handler.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/fido/cable/fido_cable_device.h"
-#include "device/fido/cable/fido_cable_handshake_handler.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,7 +35,7 @@ constexpr char kTestDeviceAddress[] = "Fake_Address";
 }  // namespace
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* raw_data, size_t size) {
-  auto data_span = base::span(raw_data, size);
+  auto data_span = UNSAFE_TODO(base::span(raw_data, size));
   auto adapter =
       base::MakeRefCounted<::testing::NiceMock<device::MockBluetoothAdapter>>();
   device::FidoCableDevice test_cable_device(adapter.get(), kTestDeviceAddress);

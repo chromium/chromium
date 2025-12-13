@@ -5,8 +5,7 @@
 // This is a small file to make a loadable dll for the echo service tests.
 #include <windows.h>
 
-#define SECURITY_WIN32
-#include <security.h>
+#include <timeapi.h>
 
 extern "C" {
 BOOL WINAPI DllMain(PVOID h, DWORD reason, PVOID reserved) {
@@ -14,12 +13,10 @@ BOOL WINAPI DllMain(PVOID h, DWORD reason, PVOID reserved) {
 }
 
 BOOL FnCallsDelayloadFn() {
-  // Calls xyz which is delayloaded but in a library already in
+  // Calls winmm.timeGetTime() which is delayloaded but in a library already in
   // utility processes.
-  ULONG sz = 0;
-  wchar_t buf[1];
   // This call should happen, we don't actually care about the return.
-  if (::GetUserNameExW(NameSamCompatible, buf, &sz)) {
+  if (timeGetTime() == 0) {
     return false;
   }
   return true;

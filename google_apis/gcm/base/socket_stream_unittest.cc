@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "google_apis/gcm/base/socket_stream.h"
 
 #include <stdint.h>
@@ -17,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -164,8 +160,9 @@ std::string_view GCMSocketStreamTest::DoInputStreamRead(int bytes) {
       break;
     total_bytes_read += size;
     if (initial_buffer) {  // Verify the buffer doesn't skip data.
-      EXPECT_EQ(static_cast<const uint8_t*>(initial_buffer) + total_bytes_read,
-                static_cast<const uint8_t*>(buffer) + size);
+      UNSAFE_TODO(EXPECT_EQ(
+          static_cast<const uint8_t*>(initial_buffer) + total_bytes_read,
+          static_cast<const uint8_t*>(buffer) + size));
     } else {
       initial_buffer = buffer;
     }
@@ -203,9 +200,8 @@ size_t GCMSocketStreamTest::DoOutputStreamWriteWithoutFlush(
     if (!socket_output_stream_->Next(&buffer, &size))
       break;
     int bytes_to_write = (size < bytes ? size : bytes);
-    memcpy(buffer,
-           write_src.data() + total_bytes_written,
-           bytes_to_write);
+    UNSAFE_TODO(
+        memcpy(buffer, write_src.data() + total_bytes_written, bytes_to_write));
     if (bytes_to_write < size)
       socket_output_stream_->BackUp(size - bytes_to_write);
     total_bytes_written += bytes_to_write;

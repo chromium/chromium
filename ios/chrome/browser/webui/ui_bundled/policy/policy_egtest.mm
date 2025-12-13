@@ -6,6 +6,7 @@
 #import <XCTest/XCTest.h>
 
 #import "base/json/json_reader.h"
+#import "base/strings/strcat.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.cc"
@@ -18,8 +19,8 @@
 #import "components/policy/test_support/embedded_policy_test_server.h"
 #import "components/strings/grit/components_branded_strings.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -83,8 +84,8 @@ void VerifyPolicies(
                           "JSON.stringify(policies);";
 
   base::Value policies = [ChromeEarlGrey evaluateJavaScript:javascript];
-  std::optional<base::Value> value_ptr =
-      base::JSONReader::Read(policies.GetString());
+  std::optional<base::Value> value_ptr = base::JSONReader::Read(
+      policies.GetString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   GREYAssertTrue(value_ptr, @"Expected policies, but there weren't any.");
   GREYAssertTrue(value_ptr->is_list(), @"Value is not a list.");
   const base::Value::List& actual_policies = value_ptr->GetList();

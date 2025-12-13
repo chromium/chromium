@@ -22,6 +22,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/barrier_callback.h"
 #include "base/check_is_test.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
@@ -43,6 +44,8 @@
 #include "ui/color/dynamic_color/palette.h"
 #include "ui/color/dynamic_color/palette_factory.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/os_settings_provider_ash.h"
 
 namespace ash {
 
@@ -73,20 +76,17 @@ const AccountId& AccountFromSession(const UserSession* session) {
   return session->user_info.account_id;
 }
 
-using SchemeVariant = ui::ColorProviderKey::SchemeVariant;
-
-SchemeVariant ToVariant(style::mojom::ColorScheme scheme) {
-  switch (scheme) {
-    case style::mojom::ColorScheme::kStatic:
-    case style::mojom::ColorScheme::kNeutral:
-      return SchemeVariant::kNeutral;
-    case style::mojom::ColorScheme::kTonalSpot:
-      return SchemeVariant::kTonalSpot;
-    case style::mojom::ColorScheme::kExpressive:
-      return SchemeVariant::kExpressive;
-    case style::mojom::ColorScheme::kVibrant:
-      return SchemeVariant::kVibrant;
-  }
+ui::ColorProviderKey::SchemeVariant ToVariant(
+    style::mojom::ColorScheme scheme) {
+  using CS = style::mojom::ColorScheme;
+  using SV = ui::ColorProviderKey::SchemeVariant;
+  static constexpr auto kSchemeMap =
+      base::MakeFixedFlatMap<CS, SV>({{CS::kStatic, SV::kNeutral},
+                                      {CS::kTonalSpot, SV::kTonalSpot},
+                                      {CS::kNeutral, SV::kNeutral},
+                                      {CS::kExpressive, SV::kExpressive},
+                                      {CS::kVibrant, SV::kVibrant}});
+  return kSchemeMap.at(scheme);
 }
 
 SampleColorScheme GenerateSampleColorScheme(bool dark,
@@ -130,33 +130,6 @@ void SortSampleColorSchemes(
     sorted_sample_color_schemes.push_back(*color_scheme_sample);
   }
   std::move(callback).Run(sorted_sample_color_schemes);
-}
-
-// Refresh colors of the system on the current color mode. Not only the SysUI,
-// but also all the other components like WebUI. This will trigger
-// View::OnThemeChanged to live update the colors. The colors live update can
-// happen when color mode changes or wallpaper changes. It is needed when
-// wallpaper changes as the background color is calculated from current
-// wallpaper.
-void RefreshNativeTheme(const ColorPaletteSeed& seed) {
-  const SkColor themed_color = seed.seed_color;
-  bool is_dark_mode_enabled = seed.color_mode == ColorMode::kDark;
-  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  native_theme->set_use_dark_colors(is_dark_mode_enabled);
-  native_theme->set_user_color(themed_color);
-  native_theme->set_scheme_variant(ToVariant(seed.scheme));
-  native_theme->NotifyOnNativeThemeUpdated();
-
-  auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
-  if (!native_theme_web->IsForcedDarkMode()) {
-    native_theme_web->set_use_dark_colors(is_dark_mode_enabled);
-    native_theme_web->set_preferred_color_scheme(
-        is_dark_mode_enabled ? ui::NativeTheme::PreferredColorScheme::kDark
-                             : ui::NativeTheme::PreferredColorScheme::kLight);
-  }
-  native_theme_web->set_scheme_variant(ToVariant(seed.scheme));
-  native_theme_web->set_user_color(themed_color);
-  native_theme_web->NotifyOnNativeThemeUpdated();
 }
 
 class ColorPaletteControllerImpl : public ColorPaletteController,
@@ -630,7 +603,14 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
       observer.OnColorPaletteChanging(*seed);
     }
 
-    RefreshNativeTheme(*seed);
+    if (auto* const os_settings_provider =
+            ui::OsSettingsProviderAsh::GetInstance()) {
+      os_settings_provider->SetColorPaletteData(
+          (seed->color_mode == ui::ColorProviderKey::ColorMode::kDark)
+              ? ui::NativeTheme::PreferredColorScheme::kDark
+              : ui::NativeTheme::PreferredColorScheme::kLight,
+          seed->seed_color, ToVariant(seed->scheme));
+    }
   }
 
   void OnColorSchemePrefChanged() {

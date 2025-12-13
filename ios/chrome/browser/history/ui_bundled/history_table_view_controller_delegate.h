@@ -19,8 +19,6 @@
                withCompletion:(ProceduralBlock)completionHandler;
 // Notifies the coordinator that history should be dismissed.
 - (void)dismissViewController:(BaseHistoryViewController*)controller;
-// Notifies the coordinator that Privacy Settings should be displayed.
-- (void)displayClearHistoryData;
 @end
 
 #endif  // IOS_CHROME_BROWSER_HISTORY_UI_BUNDLED_HISTORY_TABLE_VIEW_CONTROLLER_DELEGATE_H_

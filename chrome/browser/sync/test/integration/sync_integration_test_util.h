@@ -28,4 +28,11 @@ class ServerCountMatchStatusChecker
   const size_t count_;
 };
 
+namespace sync_integration_test_util {
+
+// Returns true if the test is enabled to run in E2E mode.
+bool IsCurrentTestAllowlistedForE2EMode();
+
+}  // namespace sync_integration_test_util
+
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_INTEGRATION_TEST_UTIL_H_

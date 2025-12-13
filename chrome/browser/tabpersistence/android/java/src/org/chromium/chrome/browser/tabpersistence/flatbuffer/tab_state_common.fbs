@@ -51,6 +51,8 @@ enum TabLaunchTypeAtCreation:int {
     FROM_HISTORY_NAVIGATION_FOREGROUND = 29,
     FROM_LONGPRESS_FOREGROUND_IN_GROUP = 30,
     FROM_TAB_LIST_INTERFACE = 31,
+    FROM_LINK_CREATING_NEW_WINDOW = 32,
+    FROM_TIPS_NOTIFICATIONS = 33,
     // Add new values here and don't change existing values
     // as they are persisted across restarts. Changing existing
     // values will lead to backwards compatibility issues crbug.com/1286984.

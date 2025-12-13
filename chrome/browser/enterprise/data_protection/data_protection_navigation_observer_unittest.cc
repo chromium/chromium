@@ -8,17 +8,18 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -46,7 +47,7 @@ namespace enterprise_data_protection {
 
 namespace {
 
-const char* kSkippedUrls[] = {
+constexpr const char* kSkippedUrls[] = {
     "chrome://version",
     "chrome-extension://abcdefghijklmnop",
 };
@@ -190,13 +191,6 @@ class DataProtectionNavigationObserverTest
     policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm-token"));
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
 
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetInstance()
-        ->SetTestingFactory(
-            profile(),
-            base::BindRepeating([](content::BrowserContext* context) {
-              return std::unique_ptr<KeyedService>(
-                  new extensions::SafeBrowsingPrivateEventRouter(context));
-            }));
     enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
         ->SetTestingFactory(
             profile(),
@@ -208,7 +202,7 @@ class DataProtectionNavigationObserverTest
         profile())
         ->SetBrowserCloudPolicyClientForTesting(client_.get());
     identity_test_environment_.MakePrimaryAccountAvailable(
-        "test-user@chromium.org", signin::ConsentLevel::kSync);
+        "test-user@chromium.org", signin::ConsentLevel::kSignin);
     enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
         profile())
         ->SetIdentityManagerForTesting(
@@ -802,6 +796,71 @@ TEST_F(DataProtectionNavigationObserverTest,
       GetPageFromWebContents(web_contents()));
   ASSERT_TRUE(user_data);
   EXPECT_EQ(user_data->settings(), get_settings_future.Get());
+}
+
+TEST_F(DataProtectionNavigationObserverTest,
+       WatermarkWebUI_CreateForNavigationIfNeeded) {
+  SetContents(CreateTestWebContents());
+
+  auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL(chrome::kChromeUIWatermarkURL), web_contents());
+  base::test::TestFuture<const UrlSettings&> future;
+  FakeDataProtectionNavigationController controller(
+      web_contents(), &lookup_service_, future.GetCallback());
+  simulator->Start();
+  auto navigation_observer =
+      DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
+          &controller, Profile::FromBrowserContext(browser_context()),
+          simulator->GetNavigationHandle(), future.GetCallback());
+
+  // The observer should be null since the callback is invoked directly.
+  ASSERT_EQ(navigation_observer, nullptr);
+
+  // The settings should contain the default watermark text.
+  const UrlSettings& settings = future.Get();
+  EXPECT_EQ(settings.watermark_text, "Watermark Test Page");
+  EXPECT_TRUE(settings.allow_screenshots);
+}
+
+TEST_F(DataProtectionNavigationObserverTest,
+       WatermarkWebUI_ApplyDataProtectionSettings) {
+  SetContents(CreateTestWebContents());
+
+  NavigateAndCommit(GURL(chrome::kChromeUIWatermarkURL));
+  base::test::TestFuture<const UrlSettings&> future;
+  DataProtectionNavigationObserver::ApplyDataProtectionSettings(
+      Profile::FromBrowserContext(browser_context()), web_contents(),
+      future.GetCallback());
+
+  // The settings should contain the default watermark text.
+  const UrlSettings& settings = future.Get();
+  EXPECT_EQ(settings.watermark_text, "Watermark Test Page");
+  EXPECT_TRUE(settings.allow_screenshots);
+}
+
+TEST_F(DataProtectionNavigationObserverTest, TestVerdictCacheMaxSizeFlag) {
+  EXPECT_EQ(200UL, DataProtectionNavigationObserver::GetVerdictCacheMaxSize());
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        enterprise_data_protection::kEnableVerdictCache,
+        {{enterprise_data_protection::kVerdictCacheMaxSize.name,
+          base::ToString(0)}});
+    // Falls back to default value when set to an invalid value.
+    EXPECT_EQ(200UL,
+              DataProtectionNavigationObserver::GetVerdictCacheMaxSize());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        enterprise_data_protection::kEnableVerdictCache,
+        {{enterprise_data_protection::kVerdictCacheMaxSize.name,
+          base::ToString(500UL)}});
+    EXPECT_EQ(500UL,
+              DataProtectionNavigationObserver::GetVerdictCacheMaxSize());
+  }
 }
 
 namespace {

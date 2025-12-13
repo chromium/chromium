@@ -42,6 +42,7 @@ bool StructTraits<
     return false;
   output->location = input.location();
   output->length = input.length();
+  output->should_hide_suggestion_menu = input.should_hide_suggestion_menu();
   if (!input.ReadReplacements(&output->replacements))
     return false;
   return true;

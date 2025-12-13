@@ -20,12 +20,14 @@ import build.android.gyp.util.build_utils as build_utils  # pylint: disable=wron
 import components.cronet.tools.utils as cronet_utils  # pylint: disable=wrong-import-position
 
 _THIRD_PARTY_STR = 'third_party/'
+_THIRD_PARTY_RUST_STR = _THIRD_PARTY_STR + 'rust/'
 _GN_PATH = os.path.join(REPOSITORY_ROOT, 'buildtools/linux64/gn')
 
 
 def _get_current_gn_args() -> List[str]:
   """Returns the GN args in the current working directory"""
-  return subprocess.check_output(["cat", "args.gn"]).decode('utf-8').split("\n")
+  args = subprocess.check_output(["cat", "args.gn"]).decode('utf-8').split("\n")
+  return [arg for arg in args if arg and not arg.startswith("#")]
 
 
 def normalize_third_party_dep(dependency: str) -> str:
@@ -56,7 +58,12 @@ def normalize_third_party_dep(dependency: str) -> str:
   """
   if _THIRD_PARTY_STR not in dependency:
     raise ValueError('Dependency is not a third_party dependency')
-  root_end_index = dependency.rfind(_THIRD_PARTY_STR) + len(_THIRD_PARTY_STR)
+
+  root_to_keep = _THIRD_PARTY_STR
+  if _THIRD_PARTY_RUST_STR in dependency:
+    root_to_keep = _THIRD_PARTY_RUST_STR
+
+  root_end_index = dependency.rfind(root_to_keep) + len(root_to_keep)
   dependency_name_end_index = dependency.find("/", root_end_index)
   if dependency_name_end_index == -1:
     return dependency
@@ -99,6 +106,14 @@ def normalize_and_dedup_deps(deps: Set[str]) -> Set[str]:
   for dep in deps:
     if not dep:
       # Ignore empty lines.
+      continue
+
+    if dep.startswith("//build/modules/android-"):
+      # There is one dependencies.txt shared between all cpu architectures.
+      # On arm64, this would output //build/modules/android-arm64
+      # On x64, this would output //build/modules/android-x64
+      # It's impossible to normalize this because you can have platforms without
+      # modules enabled at all, which don't output anything. So we skip it.
       continue
 
     if dep.startswith("//third_party/androidx:") and dep.endswith("_java"):

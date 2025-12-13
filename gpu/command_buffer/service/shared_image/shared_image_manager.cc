@@ -36,12 +36,9 @@
 #endif
 
 #if BUILDFLAG(IS_OZONE)
+#include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "ui/ozone/public/ozone_platform.h"
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/android_hardware_buffer_compat.h"
 #endif
 
 #if DCHECK_IS_ON()
@@ -239,13 +236,24 @@ class SCOPED_LOCKABLE SharedImageManager::AutoLock {
   base::AutoLockMaybe auto_lock_;
 };
 
-SharedImageManager::SharedImageManager(bool thread_safe,
-                                       bool display_context_on_another_thread)
+SharedImageManager::SharedImageManager(
+    bool thread_safe,
+    bool display_context_on_another_thread,
+    viz::VulkanContextProvider* vulkan_context_provider,
+    scoped_refptr<base::SingleThreadTaskRunner> io_runner)
     : display_context_on_another_thread_(display_context_on_another_thread)
 #if BUILDFLAG(IS_WIN)
       ,
       dxgi_shared_handle_manager_(
           base::MakeRefCounted<DXGISharedHandleManager>())
+#endif
+#if BUILDFLAG(IS_OZONE)
+      ,
+      vulkan_context_provider_(vulkan_context_provider)
+#endif
+#if BUILDFLAG(IS_WIN)
+      ,
+      io_runner_(std::move(io_runner))
 #endif
 {
   DCHECK(!display_context_on_another_thread || thread_safe);
@@ -438,7 +446,8 @@ std::unique_ptr<DawnBufferRepresentation> SharedImageManager::ProduceDawnBuffer(
     const Mailbox& mailbox,
     MemoryTypeTracker* tracker,
     const wgpu::Device& device,
-    wgpu::BackendType backend_type) {
+    wgpu::BackendType backend_type,
+    scoped_refptr<SharedContextState> context_state) {
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
@@ -449,8 +458,8 @@ std::unique_ptr<DawnBufferRepresentation> SharedImageManager::ProduceDawnBuffer(
     return nullptr;
   }
 
-  auto representation =
-      backing->ProduceDawnBuffer(this, tracker, device, backend_type);
+  auto representation = backing->ProduceDawnBuffer(this, tracker, device,
+                                                   backend_type, context_state);
   if (!representation) {
     LOG(ERROR) << "SharedImageManager::ProduceDawnBuffer: Trying to produce a "
                   "Dawn buffer representation from an incompatible backing: "
@@ -458,6 +467,30 @@ std::unique_ptr<DawnBufferRepresentation> SharedImageManager::ProduceDawnBuffer(
     return nullptr;
   }
 
+  return representation;
+}
+
+std::unique_ptr<WebNNTensorRepresentation>
+SharedImageManager::ProduceWebNNTensor(const Mailbox& mailbox,
+                                       MemoryTypeTracker* tracker) {
+  CALLED_ON_VALID_THREAD();
+
+  AutoLock autolock(this);
+  SharedImageBacking* backing = GetBacking(mailbox);
+  if (!backing) {
+    LOG(ERROR) << "SharedImageManager::ProduceWebNNTensor: Trying to produce a "
+                  "WebNN tensor representation from a non-existent mailbox.";
+    return nullptr;
+  }
+
+  std::unique_ptr<WebNNTensorRepresentation> representation =
+      backing->ProduceWebNNTensor(this, tracker);
+  if (!representation) {
+    LOG(ERROR) << "SharedImageManager::ProduceWebNNTensor: Trying to produce a "
+                  "WebNN tensor representation from an incompatible backing: "
+               << backing->GetName();
+    return nullptr;
+  }
   return representation;
 }
 
@@ -735,7 +768,7 @@ bool SharedImageManager::SupportsScanoutImages() {
 #if BUILDFLAG(IS_APPLE)
   return true;
 #elif BUILDFLAG(IS_ANDROID)
-  return base::AndroidHardwareBufferCompat::IsSupportAvailable();
+  return true;
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   return supports_overlays_on_ozone_;
 #elif BUILDFLAG(IS_WIN)

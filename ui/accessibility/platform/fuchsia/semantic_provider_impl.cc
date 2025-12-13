@@ -152,7 +152,7 @@ bool AXFuchsiaSemanticProviderImpl::Update(
 
     // Convert to fuchsia's transform type.
     std::array<float, 16> mat = {};
-    transform.GetColMajorF(mat.data());
+    transform.GetColMajorF(mat);
     fuchsia_ui_gfx::Mat4 mat4{std::move(mat)};
     // The root node will never have an offset container, so its transform will
     // always be the identity matrix. Thus, we can safely overwrite it here.

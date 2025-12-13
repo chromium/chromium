@@ -11,10 +11,16 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 
 @class NSError;
 @class WKContentRuleList;
+@class WKContentRuleListStore;
 @class WKUserContentController;
+
+namespace base {
+class FilePath;
+}
 
 namespace web {
 
@@ -31,8 +37,10 @@ class WKContentRuleListProvider {
   // be nil on success, and non-nil if compilation or removal failed.
   using OperationCallback = base::OnceCallback<void(NSError* error)>;
 
-  WKContentRuleListProvider();
-  ~WKContentRuleListProvider();
+  // `state_path` - The path where the BrowserState data is stored, in which to
+  // store content rule lists.
+  explicit WKContentRuleListProvider(const base::FilePath& state_path);
+  virtual ~WKContentRuleListProvider();
 
   WKContentRuleListProvider(const WKContentRuleListProvider&) = delete;
   WKContentRuleListProvider& operator=(const WKContentRuleListProvider&) =
@@ -45,18 +53,13 @@ class WKContentRuleListProvider {
 
   // Asynchronously creates or updates a content rule list identified by `key`.
   // The `callback` is invoked upon completion.
-  void UpdateRuleList(RuleListKey key,
-                      std::string json_rules,
-                      OperationCallback callback);
+  virtual void UpdateRuleList(RuleListKey key,
+                              std::string json_rules,
+                              OperationCallback callback);
 
   // Asynchronously removes an existing content rule list identified by `key`.
   // The `callback` is invoked upon completion.
-  void RemoveRuleList(RuleListKey key, OperationCallback callback);
-
-  // Sets a callback to be invoked whenever the provider has no pending
-  // asynchronous operations. If the provider is already idle when this is
-  // called, the callback will be posted as a task to run immediately.
-  void SetIdleCallbackForTesting(base::RepeatingClosure callback);
+  virtual void RemoveRuleList(RuleListKey key, OperationCallback callback);
 
  private:
   // Installs all compiled content rule lists from `compiled_lists_` onto the
@@ -71,6 +74,7 @@ class WKContentRuleListProvider {
   // WKContentRuleListStore.
   void OnRuleListCompiled(RuleListKey key,
                           OperationCallback callback,
+                          base::TimeTicks start_time,
                           WKContentRuleList* rule_list,
                           NSError* error);
 
@@ -80,10 +84,6 @@ class WKContentRuleListProvider {
                          OperationCallback callback,
                          NSError* error);
 
-  // Functions to track pending async operations.
-  void IncrementPendingOperations();
-  void DecrementPendingOperations();
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The user content controller that this provider will install its rules on.
@@ -92,10 +92,8 @@ class WKContentRuleListProvider {
   __weak WKUserContentController* user_content_controller_ = nullptr;
   // A map of all compiled lists, keyed by their identifier.
   std::map<RuleListKey, WKContentRuleList*> compiled_lists_;
-  // The number of pending operations.
-  size_t pending_operations_count_ = 0;
-  // A callback to be invoked when there are no pending operations.
-  base::RepeatingClosure idle_callback_for_testing_;
+  // The persistent store where content rule lists are stored.
+  WKContentRuleListStore* __strong rule_list_store_ = nil;
 
   base::WeakPtrFactory<WKContentRuleListProvider> weak_ptr_factory_{this};
 };

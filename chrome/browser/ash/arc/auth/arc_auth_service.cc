@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -33,10 +34,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_dialog.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chromeos/ash/components/account_manager/account_manager_facade_factory.h"
+#include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
@@ -45,6 +46,7 @@
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_management_transition.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -84,6 +86,20 @@ class ArcAuthServiceFactory
     DependsOn(ash::AccountAppsAvailabilityFactory::GetInstance());
   }
   ~ArcAuthServiceFactory() override = default;
+};
+
+class ArcAuthServiceDelegateImpl : public ArcAuthService::Delegate {
+ public:
+  explicit ArcAuthServiceDelegateImpl(user_manager::User* user)
+      : user_(CHECK_DEREF(user)) {}
+
+  void OpenSettingsAppWithPeopleSection() override {
+    ash::SettingsAppManager::Get()->Open(
+        *user_, {.sub_page = chromeos::settings::mojom::kPeopleSectionPath});
+  }
+
+ private:
+  const raw_ref<user_manager::User> user_;
 };
 
 mojom::ChromeAccountType GetAccountType(const Profile* profile) {
@@ -232,7 +248,10 @@ ArcAuthService* ArcAuthService::GetForBrowserContext(
 
 ArcAuthService::ArcAuthService(content::BrowserContext* browser_context,
                                ArcBridgeService* arc_bridge_service)
-    : profile_(Profile::FromBrowserContext(browser_context)),
+    : delegate_(std::make_unique<ArcAuthServiceDelegateImpl>(
+          ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+              browser_context))),
+      profile_(Profile::FromBrowserContext(browser_context)),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile_)),
       arc_bridge_service_(arc_bridge_service),
       url_loader_factory_(profile_->GetDefaultStoragePartition()
@@ -506,26 +525,29 @@ void ArcAuthService::IsAccountManagerAvailable(
 
 void ArcAuthService::HandleAddAccountRequest() {
   DCHECK(ash::IsAccountManagerAvailable(profile_));
-
-  ash::GetAccountManagerFacade(profile_->GetPath().value())
+  ash::AccountManagerFactory::Get()
+      ->GetAccountManagerFacade(profile_->GetPath().value())
       ->ShowAddAccountDialog(
           account_manager::AccountManagerFacade::AccountAdditionSource::kArc);
 }
 
 void ArcAuthService::HandleRemoveAccountRequest(const std::string& email) {
   DCHECK(ash::IsAccountManagerAvailable(profile_));
-
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      profile_, chromeos::settings::mojom::kPeopleSectionPath);
+  delegate_->OpenSettingsAppWithPeopleSection();
 }
 
 void ArcAuthService::HandleUpdateCredentialsRequest(const std::string& email) {
   DCHECK(ash::IsAccountManagerAvailable(profile_));
 
-  ash::GetAccountManagerFacade(profile_->GetPath().value())
+  ash::AccountManagerFactory::Get()
+      ->GetAccountManagerFacade(profile_->GetPath().value())
       ->ShowReauthAccountDialog(
           account_manager::AccountManagerFacade::AccountAdditionSource::kArc,
           email, base::DoNothing());
+}
+
+void ArcAuthService::SetDelegateForTesting(std::unique_ptr<Delegate> delegate) {
+  delegate_ = std::move(delegate);
 }
 
 void ArcAuthService::OnRefreshTokenUpdatedForAccount(

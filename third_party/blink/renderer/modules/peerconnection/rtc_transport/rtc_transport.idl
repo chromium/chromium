@@ -1,0 +1,62 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+enum RtcTransportWireProtocol {"dtls", "dtls-srtp"};
+
+dictionary RtcTransportConfig {
+  DOMString name;
+
+  // ICE configuration.
+  sequence<RTCIceServer> iceServers;
+  required boolean iceControlling;
+  RtcTransportWireProtocol wireProtocol = "dtls-srtp";
+};
+
+dictionary RtcTransportICECandidateInit {
+  required DOMString address;
+  required unsigned short port;
+  required DOMString usernameFragment;
+  required DOMString password;
+  required RTCIceCandidateType type;
+};
+
+dictionary RtcSendPacketParameters {
+  // The `id` is used by the app to map packets sent with `sendPackets` to
+  // information received in `RtcPacketSentInfo` and `RtcPacketFeedbackInfo`.
+  long long id;
+
+  required AllowSharedBufferSource data;
+
+  DOMHighResTimeStamp desiredSendTime;
+};
+
+enum RtcTransportSslRole {"server", "client"};
+
+dictionary RtcDtlsParameters {
+  required RtcTransportSslRole sslRole;
+  required DOMString fingerprintDigestAlgorithm;
+  required ArrayBuffer fingerprint;
+};
+
+[
+    Exposed=(Window,Worker),
+    SecureContext,
+    RuntimeEnabled=RTCRtpTransport
+] interface RtcTransport {
+  [CallWith=ExecutionContext, RaisesException] constructor(RtcTransportConfig name);
+
+  void sendPackets(sequence<RtcSendPacketParameters> packets);
+  sequence<RtcReceivedPacket> getReceivedPackets();
+
+  attribute EventHandler onicecandidate;
+  [RaisesException] void addRemoteCandidate(RtcTransportICECandidateInit candidate);
+
+  // Transport encryption negotiation
+  void setRemoteDtlsParameters(RtcDtlsParameters params);
+  readonly attribute DOMString fingerprintDigestAlgorithm;
+  readonly attribute ArrayBuffer fingerprint;
+
+  attribute EventHandler onwritablechange;
+  [CallWith=ScriptState] Promise<boolean> writable();
+};

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/clipboard/clipboard_history.h"
 
 #include <iterator>
@@ -26,6 +21,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/test/view_drawn_waiter.h"
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -41,7 +37,6 @@
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
-#include "chrome/browser/ui/ash/clipboard/clipboard_history_test_util.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/grit/generated_resources.h"
@@ -49,6 +44,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/experiences/clipboard/clipboard_history_test_util.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
@@ -185,7 +181,7 @@ bool VerifyClipboardTextData(const std::initializer_list<std::string>& texts) {
       return false;
     }
     ++items_iter;
-    ++texts_iter;
+    UNSAFE_TODO(++texts_iter);
   }
 
   return true;
@@ -332,13 +328,16 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
         item_view->GetViewByID(MenuViewID::kDeleteButtonViewID);
     ASSERT_FALSE(delete_button->GetVisible());
 
+    // MoveMouseTo() may dispatch events right away, so the ViewBoundsWaiter
+    // should be created before the mouse move so ensure it observes the event.
+    ui_test_utils::ViewBoundsWaiter delete_button_waiter(delete_button);
+
     // Hover the mouse on `item_view` to show the delete button.
     GetEventGenerator()->MoveMouseTo(
         item_view->GetBoundsInScreen().CenterPoint(), /*count=*/5);
 
     // Wait until `delete_button` has meaningful bounds. Note that the bounds
     // are set by the layout manager asynchronously.
-    ui_test_utils::ViewBoundsWaiter delete_button_waiter(delete_button);
     delete_button_waiter.WaitForNonEmptyBounds();
 
     EXPECT_TRUE(delete_button->GetVisible());
@@ -812,11 +811,10 @@ class ClipboardHistoryPasteTypeBrowserTest
  private:
   // Returns all valid data formats for the last paste.
   base::Value::List GetLastPaste() {
-    auto result =
-        content::EvalJs(web_contents_.get(),
-                        "(function() { return window.getLastPaste(); })();");
-    EXPECT_TRUE(result.error.empty());
-    return result.ExtractList();
+    return content::EvalJs(web_contents_.get(),
+                           "(function() { return window.getLastPaste(); })();")
+        .TakeValue()
+        .TakeList();
   }
 
   raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
@@ -1650,8 +1648,8 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryRefreshAshBrowserTest,
 
   // Get the textfield center in the the web contents coordinates.
   auto result = content::EvalJs(web_contents, "getTextfieldCenterOnPage();");
-  ASSERT_TRUE(result.error.empty());
-  auto center_as_list = result.ExtractList();
+  ASSERT_TRUE(result.is_ok());
+  const auto& center_as_list = result.ExtractList();
   ASSERT_EQ(center_as_list.size(), 2u);
 
   // Calculate the textfield center in the screen coordinates. Then right click
@@ -1858,70 +1856,4 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryRefreshAshBrowserTest,
   GetEventGenerator()->ReleaseTouch();
   EXPECT_TRUE(second_item_delete_button->GetVisible());
   EXPECT_FALSE(second_item_contents_view->clip_path().isEmpty());
-}
-
-// Base class used to test features that only exist when the Ctrl+V longpress
-// feature is enabled.
-class ClipboardHistoryLongpressEnabledBrowserTest
-    : public ClipboardHistoryTextfieldBrowserTest {
- public:
-  ClipboardHistoryLongpressEnabledBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kClipboardHistoryLongpress);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Verifies that clicking the clipboard history menu's footer does nothing and
-// that tab and arrow key traversal pass over the footer.
-IN_PROC_BROWSER_TEST_F(ClipboardHistoryLongpressEnabledBrowserTest,
-                       FooterNotInteractive) {
-  // Write some things to the clipboard.
-  SetClipboardText("A");
-  SetClipboardText("B");
-
-  // Show the clipboard history menu via the Ctrl+V long-press shortcut so that
-  // the menu's educational footer shows.
-  EXPECT_TRUE(GetClipboardHistoryController()->ShowMenu(
-      gfx::Rect(), ui::mojom::MenuSourceType::kNone,
-      crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kControlVLongpress));
-  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
-
-  // Verify that the menu has two clipboard history items and a third item (the
-  // menu footer). A fourth item (the menu header) will also be present.
-  const auto* menu = GetClipboardHistoryController()->context_menu_for_test();
-  EXPECT_EQ(menu->GetMenuItemsCount(), 2u);
-  ASSERT_EQ(menu->GetModelForTest()->GetItemCount(), 4u);
-
-  // Verify that clicking on the footer does nothing.
-  EXPECT_TRUE(textfield_->GetText().empty());
-  const auto* footer = menu->GetMenuItemViewAtForTest(
-      /*index=*/3u);
-  GetEventGenerator()->MoveMouseTo(footer->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
-  EXPECT_TRUE(textfield_->GetText().empty());
-
-  // Verify that traversing over the menu with arrow keys skips the footer.
-  const auto* item1 =
-      GetMenuItemViewForClipboardHistoryItemAtIndex(/*index=*/0u);
-  const auto* item2 =
-      GetMenuItemViewForClipboardHistoryItemAtIndex(/*index=*/1u);
-  PressAndRelease(ui::VKEY_DOWN);
-  EXPECT_TRUE(item1->IsSelected());
-  PressAndRelease(ui::VKEY_DOWN);
-  EXPECT_TRUE(item2->IsSelected());
-  PressAndRelease(ui::VKEY_DOWN);
-  EXPECT_TRUE(item1->IsSelected());
-
-  // Verify that traversing over the menu with the Tab key (two presses at a
-  // time for each item's main button and delete button) skips the footer.
-  PressAndRelease(ui::VKEY_TAB);
-  PressAndRelease(ui::VKEY_TAB);
-  EXPECT_TRUE(item2->IsSelected());
-  PressAndRelease(ui::VKEY_TAB);
-  PressAndRelease(ui::VKEY_TAB);
-  EXPECT_TRUE(item1->IsSelected());
 }

@@ -230,28 +230,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, StickyKeysEnabled) {
   EXPECT_FALSE(accessibility_manager->IsStickyKeysEnabled());
 }
 
-// TODO(b/307433336): Remove this once the flag is enabled by default.
-// TODO(b/307433336): Move these tests to a separate file since these are not
+// TODO(b/448267171): Move these tests to a separate file since these are not
 // accessibility related.
-class AccessibilityPolicyTouchVirtualKeyboardEnabledTest
-    : public AccessibilityPolicyTest,
-      public testing::WithParamInterface<bool> {
- public:
-  AccessibilityPolicyTouchVirtualKeyboardEnabledTest() {
-    feature_list_.InitWithFeatureState(
-        ash::features::kTouchVirtualKeyboardPolicyListenPrefsAtLogin,
-        GetParam());
-  }
 
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         AccessibilityPolicyTouchVirtualKeyboardEnabledTest,
-                         ::testing::Values(true, false));
-
-IN_PROC_BROWSER_TEST_P(AccessibilityPolicyTouchVirtualKeyboardEnabledTest,
+IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest,
                        TouchVirtualKeyboardEnabledDefault) {
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();
   ASSERT_TRUE(keyboard_client);
@@ -266,7 +248,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPolicyTouchVirtualKeyboardEnabledTest,
   EXPECT_FALSE(keyboard_client->is_keyboard_enabled());
 }
 
-IN_PROC_BROWSER_TEST_P(AccessibilityPolicyTouchVirtualKeyboardEnabledTest,
+IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest,
                        TouchVirtualKeyboardEnabledTrueEnablesVirtualKeyboard) {
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();
   ASSERT_TRUE(keyboard_client);
@@ -283,8 +265,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPolicyTouchVirtualKeyboardEnabledTest,
   EXPECT_TRUE(keyboard_client->is_keyboard_enabled());
 }
 
-IN_PROC_BROWSER_TEST_P(
-    AccessibilityPolicyTouchVirtualKeyboardEnabledTest,
+IN_PROC_BROWSER_TEST_F(
+    AccessibilityPolicyTest,
     TouchVirtualKeyboardEnabledFalseDisablesVirtualKeyboard) {
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();
   ASSERT_TRUE(keyboard_client);

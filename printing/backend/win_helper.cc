@@ -218,7 +218,7 @@ bool ScopedPrinterHandle::OpenPrinterWithName(const wchar_t* printer) {
   if (::OpenPrinter(const_cast<LPTSTR>(printer), &temp_handle, nullptr)) {
     Set(temp_handle);
   }
-  return IsValid();
+  return is_valid();
 }
 
 bool XPSModule::Init() {
@@ -551,7 +551,7 @@ std::unique_ptr<DEVMODE, base::FreeDeleter> CreateDevModeWithColor(
   const DRIVER_INFO_6* p = info_6.get();
 
   // Only HP known to have issues.
-  if (!p->pszMfgName || UNSAFE_TODO(wcscmp(p->pszMfgName, L"HP")) != 0) {
+  if (!p->pszMfgName || std::wstring_view(p->pszMfgName) != L"HP") {
     return default_ticket;
   }
 

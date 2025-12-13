@@ -71,11 +71,13 @@ class SaveFileManager::SimpleURLLoaderHelper
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       network::mojom::URLLoaderFactory* url_loader_factory,
       SaveFileManager* save_file_manager,
+      base::OnceClosure quarantine_callback,
       URLLoaderCompleteCallback on_complete_cb) {
     return std::unique_ptr<SimpleURLLoaderHelper>(new SimpleURLLoaderHelper(
         std::move(resource_request), save_item_id, save_package_id,
         render_process_id, render_frame_routing_id, annotation_tag,
-        url_loader_factory, save_file_manager, std::move(on_complete_cb)));
+        url_loader_factory, save_file_manager, std::move(quarantine_callback),
+        std::move(on_complete_cb)));
   }
 
   SimpleURLLoaderHelper(const SimpleURLLoaderHelper&) = delete;
@@ -93,10 +95,12 @@ class SaveFileManager::SimpleURLLoaderHelper
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       network::mojom::URLLoaderFactory* url_loader_factory,
       SaveFileManager* save_file_manager,
+      base::OnceClosure quarantine_callback,
       URLLoaderCompleteCallback on_complete_cb)
       : save_file_manager_(save_file_manager),
         save_item_id_(save_item_id),
         save_package_id_(save_package_id),
+        quarantine_callback_(std::move(quarantine_callback)),
         on_complete_cb_(std::move(on_complete_cb)) {
     GURL url = resource_request->url;
     url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
@@ -124,6 +128,7 @@ class SaveFileManager::SimpleURLLoaderHelper
     auto info = std::make_unique<SaveFileCreateInfo>(
         url, final_url, save_item_id_, save_package_id_, render_process_id,
         render_frame_routing_id, content_disposition);
+    info->quarantine_callback = std::move(quarantine_callback_);
     download::GetDownloadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&SaveFileManager::StartSave,
                                   save_file_manager_, std::move(info)));
@@ -155,6 +160,7 @@ class SaveFileManager::SimpleURLLoaderHelper
   SaveItemId save_item_id_;
   SavePackageId save_package_id_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
+  base::OnceClosure quarantine_callback_;
   URLLoaderCompleteCallback on_complete_cb_;
 };
 
@@ -226,6 +232,12 @@ void SaveFileManager::SaveURL(
   // Insert started saving job to tracking list.
   DCHECK(!base::Contains(packages_, save_item_id));
   packages_[save_item_id] = save_package;
+
+  base::OnceClosure quarantine_callback = base::BindOnce(
+      &SaveFileManager::QuarantineItem, this, save_item_id, save_package->id(),
+      context->IsOffTheRecord() ? GURL() : url,
+      context->IsOffTheRecord() ? GURL() : referrer.url, client_guid,
+      std::move(remote_quarantine));
 
   // Register a saving job.
   if (save_source == SaveFileCreateInfo::SAVE_FILE_FROM_NET) {
@@ -309,29 +321,28 @@ void SaveFileManager::SaveURL(
           static_cast<RenderFrameHostImpl*>(rfh)->GetStorageKey()));
       factory = factory_remote.get();
     } else if (rfh && url.SchemeIs(content::kChromeUIScheme)) {
-      factory_remote.Bind(CreateWebUIURLLoaderFactory(rfh, url.scheme(), {}));
+      factory_remote.Bind(
+          CreateWebUIURLLoaderFactory(rfh, url.GetScheme(), {}));
       factory = factory_remote.get();
     } else {
       factory = storage_partition->GetURLLoaderFactoryForBrowserProcess().get();
     }
 
     base::OnceCallback<void(bool /*success*/)> save_finished_cb =
-        base::BindOnce(&SaveFileManager::OnURLLoaderComplete, this,
-                       save_item_id, save_package->id(),
-                       context->IsOffTheRecord() ? GURL() : url,
-                       context->IsOffTheRecord() ? GURL() : referrer.url,
-                       client_guid, std::move(remote_quarantine));
-
+        base::BindOnce(&SaveFileManager::SaveFinished, this, save_item_id,
+                       save_package->id());
     url_loader_helpers_[save_item_id] =
         SimpleURLLoaderHelper::CreateAndStartDownload(
             std::move(request), save_item_id, save_package->id(),
             render_process_host_id, render_frame_routing_id, traffic_annotation,
-            factory, this, std::move(save_finished_cb));
+            factory, this, std::move(quarantine_callback),
+            std::move(save_finished_cb));
   } else {
     // We manually start the save job.
     auto info = std::make_unique<SaveFileCreateInfo>(
         file_full_path, url, save_item_id, save_package->id(),
         render_process_host_id, render_frame_routing_id, save_source);
+    info->quarantine_callback = std::move(quarantine_callback);
 
     // Since the data will come from render process, so we need to start
     // this kind of save job by ourself.
@@ -381,20 +392,16 @@ void SaveFileManager::SendCancelRequest(SaveItemId save_item_id) {
       base::BindOnce(&SaveFileManager::CancelSave, this, save_item_id));
 }
 
-void SaveFileManager::OnURLLoaderComplete(
+void SaveFileManager::QuarantineItem(
     SaveItemId save_item_id,
     SavePackageId save_package_id,
     const GURL& url,
     const GURL& referrer_url,
     const std::string& client_guid,
-    mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
-    bool is_success) {
+    mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine) {
   DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
   SaveFile* save_file = LookupSaveFile(save_item_id);
-  if (!is_success || !save_file) {
-    SaveFinished(save_item_id, save_package_id, is_success);
-    return;
-  }
+  CHECK(save_file);
 
   save_file->AnnotateWithSourceInformation(
       client_guid, url, referrer_url, std::move(remote_quarantine),
@@ -407,8 +414,8 @@ void SaveFileManager::OnQuarantineComplete(
     SavePackageId save_package_id,
     download::DownloadInterruptReason result) {
   DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
-  SaveFinished(save_item_id, save_package_id,
-               result == download::DOWNLOAD_INTERRUPT_REASON_NONE);
+  SaveCompleted(save_item_id, save_package_id,
+                result == download::DOWNLOAD_INTERRUPT_REASON_NONE);
 }
 
 // Notifications sent from the IO thread and run on the file thread:
@@ -447,7 +454,7 @@ void SaveFileManager::UpdateSaveProgress(SaveItemId save_item_id,
     DCHECK(save_file->InProgress());
 
     download::DownloadInterruptReason reason =
-        save_file->AppendDataToFile(data.data(), data.size());
+        save_file->AppendDataToFile(base::as_byte_span(data));
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&SaveFileManager::OnUpdateSaveProgress, this,
@@ -456,11 +463,23 @@ void SaveFileManager::UpdateSaveProgress(SaveItemId save_item_id,
   }
 }
 
-// The IO thread will call this when saving is completed or it got error when
-// fetching data. We forward the message to OnSaveFinished in UI thread.
 void SaveFileManager::SaveFinished(SaveItemId save_item_id,
                                    SavePackageId save_package_id,
                                    bool is_success) {
+  DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
+
+  SaveFile* save_file = LookupSaveFile(save_item_id);
+  if (!is_success || !save_file) {
+    SaveCompleted(save_item_id, save_package_id, is_success);
+    return;
+  }
+
+  save_file->RunQuarantineCallback();
+}
+
+void SaveFileManager::SaveCompleted(SaveItemId save_item_id,
+                                    SavePackageId save_package_id,
+                                    bool is_success) {
   DVLOG(20) << __func__ << "() save_item_id = " << save_item_id
             << " save_package_id = " << save_package_id
             << " is_success = " << is_success;
@@ -480,12 +499,11 @@ void SaveFileManager::SaveFinished(SaveItemId save_item_id,
   }
 
   GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&SaveFileManager::OnSaveFinished, this,
+      FROM_HERE, base::BindOnce(&SaveFileManager::OnSaveCompleted, this,
                                 save_item_id, bytes_so_far, is_success));
 }
 
 // Notifications sent from the file thread and run on the UI thread.
-
 void SaveFileManager::OnStartSave(const SaveFileCreateInfo& info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   SavePackage* save_package = GetSavePackageFromRenderIds(
@@ -511,9 +529,9 @@ void SaveFileManager::OnUpdateSaveProgress(SaveItemId save_item_id,
     SendCancelRequest(save_item_id);
 }
 
-void SaveFileManager::OnSaveFinished(SaveItemId save_item_id,
-                                     int64_t bytes_so_far,
-                                     bool is_success) {
+void SaveFileManager::OnSaveCompleted(SaveItemId save_item_id,
+                                      int64_t bytes_so_far,
+                                      bool is_success) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ClearURLLoader(save_item_id);
   SavePackage* package = LookupPackage(save_item_id);

@@ -24,6 +24,7 @@ include_rules = [
   "+components/media_router/common",
   "+components/omnibox/common",
   "+components/services/heap_profiling/public",
+  "+components/webapps/isolated_web_apps/scheme.h",
   "+components/url_formatter",
   "+components/variations",
   "+content/public/common",

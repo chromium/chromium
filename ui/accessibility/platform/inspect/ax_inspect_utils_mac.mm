@@ -76,7 +76,7 @@ bool IsValidAXAttribute(const std::string& attribute) {
     NSAccessibilityARIARowIndexAttribute,
     NSAccessibilityARIASetSizeAttribute,
     NSAccessibilityAutocompleteValueAttribute,
-    CrNSAccessibilityBlockQuoteLevelAttribute,
+    NSAccessibilityBlockQuoteLevelAttribute,
     NSAccessibilityBrailleLabelAttribute,
     NSAccessibilityBrailleRoleDescription,
     NSAccessibilityChromeAXNodeIdAttribute,
@@ -114,7 +114,7 @@ bool IsValidAXAttribute(const std::string& attribute) {
     NSAccessibilityTitleAttribute,
     NSAccessibilityTitleUIElementAttribute,
     NSAccessibilityURLAttribute,
-    CrNSAccessibilityVisitedAttribute,
+    NSAccessibilityVisitedAttribute,
   ]];
 
   return [valid_attributes containsObject:base::SysUTF8ToNSString(attribute)];
@@ -258,22 +258,21 @@ base::apple::ScopedCFTypeRef<AXUIElementRef> FindAXWindowChild(
   return base::apple::ScopedCFTypeRef<AXUIElementRef>();
 }
 
-bool IsWebContent(AXUIElementRef element,
-                  base::WeakPtr<AXPlatformTreeManager> manager) {
+AXPlatformNode* GetAXPlatformNode(
+    AXUIElementRef element,
+    base::WeakPtr<AXPlatformTreeManager> manager) {
   if (!element || !manager) {
-    return false;
+    return nullptr;
   }
 
   AXElementWrapper wrapper((__bridge id)element);
   NSString* chrome_node_id =
       *wrapper.GetAttributeValue(NSAccessibilityChromeAXNodeIdAttribute);
   if (!chrome_node_id) {
-    return false;
+    return nullptr;
   }
 
-  AXPlatformNode* ax_platform_node =
-      manager->GetPlatformNodeFromTree([chrome_node_id intValue]);
-  return ax_platform_node ? ax_platform_node->IsWebContent() : false;
+  return manager->GetPlatformNodeFromTree([chrome_node_id intValue]);
 }
 
 }  // namespace ui

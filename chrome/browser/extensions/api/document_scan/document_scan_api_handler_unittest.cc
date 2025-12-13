@@ -16,6 +16,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "chrome/browser/ash/crosapi/document_scan_ash_type_converters.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/scanning/fake_lorgnette_scanner_manager.h"
+#include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_api.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_test_utils.h"
 #include "chrome/browser/extensions/api/document_scan/fake_document_scan_ash.h"
@@ -86,8 +91,22 @@ class DocumentScanAPIHandlerTest : public testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-    testing_profile_ =
-        profile_manager_->CreateTestingProfile(chrome::kInitialProfile);
+    ash::ProfileHelper::Get();  // Instantiate.
+
+    create_services_subscription_.emplace(
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&DocumentScanAPIHandlerTest::
+                                        OnWillCreateBrowserContextKeyedServices,
+                                    base::Unretained(this))));
+
+    {
+      ash::ScopedAccountIdAnnotator annotator(
+          profile_manager_->profile_manager(),
+          AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345")));
+      testing_profile_ =
+          profile_manager_->CreateTestingProfile(chrome::kInitialProfile);
+    }
 
     extension_ = ExtensionBuilder(kExtensionName)
                      .SetID(kExtensionId)
@@ -102,6 +121,7 @@ class DocumentScanAPIHandlerTest : public testing::Test {
   void TearDown() override {
     document_scan_api_handler_.reset();
     testing_profile_ = nullptr;
+    create_services_subscription_.reset();
     profile_manager_->DeleteTestingProfile(chrome::kInitialProfile);
   }
 
@@ -135,11 +155,12 @@ class DocumentScanAPIHandlerTest : public testing::Test {
     auto scanner_info = CreateTestScannerInfo();
     if (unique_id) {
       static size_t counter = 0;
-      scanner_info->id =
-          base::StringPrintf("%s-%zu", scanner_info->id.c_str(), counter++);
+      scanner_info.set_name(
+          base::StringPrintf("%s-%zu", scanner_info.name().c_str(), counter++));
     }
-    const std::string the_scanner_id = scanner_info->id;
-    GetDocumentScan().AddScanner(std::move(scanner_info));
+    const std::string the_scanner_id = scanner_info.name();
+
+    AddScanners({std::move(scanner_info)});
     ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(true);
 
     GetScannerListFuture list_future;
@@ -156,6 +177,39 @@ class DocumentScanAPIHandlerTest : public testing::Test {
     }
 
     return "";
+  }
+
+  void AddScanners(std::vector<lorgnette::ScannerInfo> scanners) {
+    auto* scanner_manager = static_cast<ash::FakeLorgnetteScannerManager*>(
+        ash::LorgnetteScannerManagerFactory::GetForBrowserContext(
+            testing_profile_.get()));
+
+    base::test::TestFuture<
+        const std::optional<lorgnette::ListScannersResponse>&>
+        future;
+    scanner_manager->GetScannerInfoList(
+        /*client_id=*/std::string(),
+        ash::LorgnetteScannerManager::LocalScannerFilter::
+            kIncludeNetworkScanners,
+        ash::LorgnetteScannerManager::SecureScannerFilter::
+            kIncludeUnsecureScanners,
+        future.GetCallback());
+    auto response = future.Get().value_or(lorgnette::ListScannersResponse());
+    response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+    for (auto& scanner : scanners) {
+      auto open_response = crosapi::mojom::OpenScannerResponse::New();
+      open_response->result = crosapi::mojom::ScannerOperationResult::kSuccess;
+      open_response->scanner_id = scanner.name();
+      open_response->scanner_handle = scanner.name() + "-handle";
+      open_response->options.emplace();
+      open_response->options.value()["option1"] =
+          mojo::ConvertForTesting(CreateTestScannerOption("option1", 5));
+      document_scan_.SetOpenScannerResponse(scanner.name(),
+                                            std::move(open_response));
+
+      response.mutable_scanners()->Add(std::move(scanner));
+    }
+    scanner_manager->SetGetScannerInfoListResponse(response);
   }
 
   // "Discover" a scanner and open that given scanner, returning the scanner
@@ -217,10 +271,20 @@ class DocumentScanAPIHandlerTest : public testing::Test {
   }
 
  private:
+  void OnWillCreateBrowserContextKeyedServices(
+      content::BrowserContext* context) {
+    ash::LorgnetteScannerManagerFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<ash::FakeLorgnetteScannerManager>();
+        }));
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   raw_ptr<TestingProfile> testing_profile_;
   FakeDocumentScanAsh document_scan_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  std::optional<base::CallbackListSubscription> create_services_subscription_;
 };
 
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_NoScannersAvailableError) {
@@ -252,11 +316,11 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_UnsupportedMimeTypesError) {
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_OpenFails) {
   auto scanner_info = CreateTestScannerInfo();
   auto open_response = crosapi::mojom::OpenScannerResponse::New();
-  open_response->scanner_id = scanner_info->id;
+  open_response->scanner_id = scanner_info.name();
   open_response->result = crosapi::mojom::ScannerOperationResult::kDeviceBusy;
 
   // A scanner is returned in the list, but it can't be opened.
-  GetDocumentScan().AddScanner(std::move(scanner_info));
+  AddScanners({std::move(scanner_info)});
   GetDocumentScan().SetOpenScannerResponse(open_response->scanner_id,
                                            std::move(open_response));
 
@@ -273,9 +337,9 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_StartScanFails) {
   auto scan_response = crosapi::mojom::StartPreparedScanResponse::New();
   scan_response->result = crosapi::mojom::ScannerOperationResult::kIoError;
 
-  GetDocumentScan().SetStartPreparedScanResponse(scanner_info->id,
+  GetDocumentScan().SetStartPreparedScanResponse(scanner_info.name(),
                                                  std::move(scan_response));
-  GetDocumentScan().AddScanner(std::move(scanner_info));
+  AddScanners({std::move(scanner_info)});
 
   SimpleScanFuture future;
   document_scan_api_handler_->SimpleScan(extension_, {"image/png"},
@@ -286,7 +350,7 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_StartScanFails) {
 }
 
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_ScanImageError) {
-  GetDocumentScan().AddScanner(CreateTestScannerInfo());
+  AddScanners({CreateTestScannerInfo()});
   GetDocumentScan().SetReadScanDataResponses(
       std::nullopt, crosapi::mojom::ScannerOperationResult::kIoError);
   SimpleScanFuture future;
@@ -298,7 +362,7 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_ScanImageError) {
 }
 
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_Success) {
-  GetDocumentScan().AddScanner(CreateTestScannerInfo());
+  AddScanners({CreateTestScannerInfo()});
   const std::string data = kScanDataItem;
   const std::vector<std::string> scan_data = {"", data.substr(0, 5),
                                               data.substr(5)};
@@ -319,7 +383,7 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_Success) {
 }
 
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_TestingMIMETypeError) {
-  GetDocumentScan().AddScanner(CreateTestScannerInfo());
+  AddScanners({CreateTestScannerInfo()});
   SimpleScanFuture future;
   document_scan_api_handler_->SimpleScan(extension_, {"testing"},
                                          future.GetCallback());
@@ -329,11 +393,10 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_TestingMIMETypeError) {
 }
 
 TEST_F(DocumentScanAPIHandlerTest, SimpleScan_TestingMIMETypeSuccess) {
-  GetDocumentScan().AddScanner(CreateTestScannerInfo());
   auto test_scanner = CreateTestScannerInfo();
-  test_scanner->id = kVirtualUSBPrinterName;
-  test_scanner->display_name = kVirtualUSBPrinterName;
-  GetDocumentScan().AddScanner(std::move(test_scanner));
+  test_scanner.set_name(kVirtualUSBPrinterName);
+  test_scanner.set_display_name(kVirtualUSBPrinterName);
+  AddScanners({CreateTestScannerInfo(), std::move(test_scanner)});
   const std::vector<std::string> scan_data = {kScanDataItem};
   GetDocumentScan().SetReadScanDataResponses(
       scan_data, crosapi::mojom::ScannerOperationResult::kEndOfData);
@@ -352,7 +415,7 @@ TEST_F(DocumentScanAPIHandlerTest, SimpleScan_TestingMIMETypeSuccess) {
 }
 
 TEST_F(DocumentScanAPIHandlerTest, GetScannerList_DiscoveryDenied) {
-  GetDocumentScan().AddScanner(CreateTestScannerInfo());
+  AddScanners({CreateTestScannerInfo()});
   ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(false);
   api::document_scan::DeviceFilter filter;
   GetScannerListFuture future;
@@ -367,7 +430,7 @@ TEST_F(DocumentScanAPIHandlerTest, GetScannerList_DiscoveryDenied) {
 }
 
 TEST_F(DocumentScanAPIHandlerTest, GetScannerList_DiscoveryApproved) {
-  GetDocumentScan().AddScanner(CreateTestScannerInfo());
+  AddScanners({CreateTestScannerInfo()});
   ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(true);
   api::document_scan::DeviceFilter filter;
   GetScannerListFuture future;
@@ -382,7 +445,7 @@ TEST_F(DocumentScanAPIHandlerTest, GetScannerList_DiscoveryApproved) {
 }
 
 TEST_F(DocumentScanAPIHandlerTest, GetScannerList_DiscoveryTrusted) {
-  GetDocumentScan().AddScanner(CreateTestScannerInfo());
+  AddScanners({CreateTestScannerInfo()});
   MarkExtensionTrusted(kExtensionId);
   // Confirmation will be denied, but it won't matter because the extension is
   // trusted.
@@ -402,7 +465,7 @@ TEST_F(DocumentScanAPIHandlerTest, GetScannerList_DiscoveryTrusted) {
 
 TEST_F(DocumentScanAPIHandlerTest,
        GetScannerList_MultipleDiscoveryPreservesApproval) {
-  GetDocumentScan().AddScanner(CreateTestScannerInfo());
+  AddScanners({CreateTestScannerInfo()});
 
   // First request is denied.
   ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(false);
@@ -464,7 +527,7 @@ TEST_F(DocumentScanAPIHandlerTest,
 }
 
 TEST_F(DocumentScanAPIHandlerTest, GetScannerList_ApprovalFollowsExtension) {
-  GetDocumentScan().AddScanner(CreateTestScannerInfo());
+  AddScanners({CreateTestScannerInfo()});
 
   auto extension2 = ExtensionBuilder("extension2")
                         .SetID("extension2id")
@@ -507,7 +570,7 @@ TEST_F(DocumentScanAPIHandlerTest, GetScannerList_ApprovalFollowsExtension) {
 }
 
 TEST_F(DocumentScanAPIHandlerTest, GetScannerList_SameIdBetweenCalls) {
-  GetDocumentScan().AddScanner(CreateTestScannerInfo());
+  AddScanners({CreateTestScannerInfo()});
   MarkExtensionTrusted(kExtensionId);
 
   api::document_scan::DeviceFilter filter1;

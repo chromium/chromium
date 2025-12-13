@@ -36,7 +36,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 HistorySidePanelUIConfig::HistorySidePanelUIConfig()
@@ -69,7 +68,7 @@ HistorySidePanelUI::HistorySidePanelUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIHistorySidePanelHost);
 
-  HistoryUtil::PopulateSourceForSidePanelHistory(source, profile);
+  HistoryUtil::PopulateCommonSourceForHistory(source, profile);
 
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/true);
 
@@ -99,13 +98,6 @@ void HistorySidePanelUI::BindInterface(
       std::move(pending_page_handler), Profile::FromWebUI(web_ui()),
       web_ui()->GetWebContents());
   browsing_history_handler_->SetSidePanelUIEmbedder(this->embedder());
-}
-
-void HistorySidePanelUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
 }
 
 void HistorySidePanelUI::BindInterface(

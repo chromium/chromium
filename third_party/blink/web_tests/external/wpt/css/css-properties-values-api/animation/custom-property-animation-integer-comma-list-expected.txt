@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Animating a custom property of type <integer># with iterationComposite
-  assert_equals: expected "250, 275" but got "50, 75"
-Harness: the test ran to completion.
-

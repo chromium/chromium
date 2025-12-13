@@ -25,7 +25,6 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/views/background.h"
@@ -344,9 +343,8 @@ gfx::Size DesignerExample::GrabHandle::CalculatePreferredSize(
 }
 
 void DesignerExample::GrabHandle::OnPaint(gfx::Canvas* canvas) {
-  SkPath path;
   gfx::Point center = GetLocalBounds().CenterPoint();
-  path.addCircle(center.x(), center.y(), width() / 2);
+  const SkPath path = SkPath::Circle(center.x(), center.y(), width() / 2);
   cc::PaintFlags flags;
   flags.setColor(
       GetColorProvider()->GetColor(ExamplesColorIds::kColorDesignerGrabHandle));

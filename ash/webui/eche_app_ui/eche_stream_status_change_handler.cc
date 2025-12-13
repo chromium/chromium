@@ -4,7 +4,6 @@
 
 #include "ash/webui/eche_app_ui/eche_stream_status_change_handler.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/eche_app_ui/apps_launch_info_provider.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom-shared.h"
@@ -46,8 +45,7 @@ void EcheStreamStatusChangeHandler::OnStreamStatusChanged(
   // events to separate bucket to prevent it from polluting our real success
   // metrics.
   if (status == mojom::StreamStatus::kStreamStatusStarted) {
-    if (features::IsEcheNetworkConnectionStateEnabled() &&
-        apps_launch_info_provider_->GetConnectionStatusFromLastAttempt() !=
+    if (apps_launch_info_provider_->GetConnectionStatusFromLastAttempt() !=
             mojom::ConnectionStatus::kConnectionStatusConnected &&
         apps_launch_info_provider_->entry_point() ==
             mojom::AppStreamLaunchEntryPoint::NOTIFICATION) {

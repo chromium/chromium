@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider_delegate.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_web_provider.h"
-#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_bottom_sheet_presentation_delegate.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_bottom_sheet_presentation_commands.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_result_consumer.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_mutator.h"
 #import "ios/web/public/web_state.h"
@@ -49,8 +49,8 @@ class WebStateList;
 @property(nonatomic, weak) id<LensOverlayTabChangeAudience> tabChangeAudience;
 
 /// Presentation delegate for requesting bottom sheet resizing.
-@property(nonatomic, weak) id<LensOverlayBottomSheetPresentationDelegate>
-    presentationDelegate;
+@property(nonatomic, weak) id<LensOverlayBottomSheetPresentationCommands>
+    bottomSheetCommands;
 
 /// WebState context menu configuration provider.
 @property(nonatomic, weak)

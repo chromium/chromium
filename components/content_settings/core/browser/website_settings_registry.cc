@@ -277,11 +277,6 @@ void WebsiteSettingsRegistry::Init() {
            WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE,
            DESKTOP | PLATFORM_ANDROID,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
-  Register(ContentSettingsType::PRIVATE_NETWORK_CHOOSER_DATA,
-           "private-network-chooser-data", base::Value(),
-           WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
-           WebsiteSettingsInfo::TOP_ORIGIN_ONLY_SCOPE, DESKTOP,
-           WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(
       ContentSettingsType::FEDERATED_IDENTITY_IDENTITY_PROVIDER_SIGNIN_STATUS,
       "fedcm-idp-signin", base::Value(), WebsiteSettingsInfo::UNSYNCABLE,
@@ -345,6 +340,18 @@ void WebsiteSettingsRegistry::Init() {
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
   Register(ContentSettingsType::SUSPICIOUS_NOTIFICATION_IDS,
            "suspicious-notification-ids", base::Value(),
+           WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
+           WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE,
+           DESKTOP | PLATFORM_ANDROID,
+           WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
+  Register(ContentSettingsType::PERMISSION_ACTIONS_HISTORY,
+           "permission-actions-history", base::Value(),
+           WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
+           WebsiteSettingsInfo::REQUESTING_ORIGIN_ONLY_SCOPE,
+           DESKTOP | PLATFORM_ANDROID,
+           WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
+  Register(ContentSettingsType::SUSPICIOUS_NOTIFICATION_SHOW_ORIGINAL,
+           "suspicious-notification-show-original", base::Value(),
            WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
            WebsiteSettingsInfo::GENERIC_SINGLE_ORIGIN_SCOPE,
            DESKTOP | PLATFORM_ANDROID,

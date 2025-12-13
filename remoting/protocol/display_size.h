@@ -30,8 +30,8 @@ class DisplaySize {
     return DisplaySize(width_dips, height_dips, dpi);
   }
 
-  bool operator==(const DisplaySize& other);
-  bool operator!=(const DisplaySize& other);
+  bool operator==(const DisplaySize& other) const;
+  bool operator!=(const DisplaySize& other) const;
 
   bool IsEmpty() const;
 

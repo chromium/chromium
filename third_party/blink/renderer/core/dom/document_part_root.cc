@@ -30,7 +30,8 @@ PartRootUnion* DocumentPartRoot::clone(ExceptionState& exception_state) {
                            : CloneOption::kPreserveDOMParts};
 
   Node* clone = rootContainer()->Clone(rootContainer()->GetDocument(), data,
-                                       /*append_to*/ nullptr);
+                                       /*append_to*/ nullptr,
+                                       /*fallback_registry*/ nullptr);
   if (!clone) {
     // Note we MUST throw if we can't return a non-null value.
     exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,

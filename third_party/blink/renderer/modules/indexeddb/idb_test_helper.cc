@@ -38,9 +38,9 @@ std::unique_ptr<IDBValue> CreateIDBValueForTesting(v8::Isolate* isolate,
     v8_array->Set(context, i, v8::True(isolate)).Check();
 
   NonThrowableExceptionState non_throwable_exception_state;
-  IDBValueWrapper wrapper(isolate, v8_array,
-                          SerializedScriptValue::SerializeOptions::kSerialize,
-                          non_throwable_exception_state);
+  IDBValueWrapper wrapper(
+      isolate, v8_array, SerializedScriptValue::SerializeOptions::kSerialize,
+      non_throwable_exception_state, /*backend_uses_sqlite=*/false);
   wrapper.set_wrapping_threshold_for_test(
       create_wrapped_value ? 0 : 1024 * element_count);
   wrapper.DoneCloning();

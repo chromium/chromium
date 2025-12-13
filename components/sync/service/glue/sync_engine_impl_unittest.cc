@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -21,8 +20,10 @@
 #include "base/task/thread_pool.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -202,6 +203,14 @@ class SyncEngineImplTest : public testing::Test {
     params.authenticated_account_info.account_id =
         CoreAccountId::FromGaiaId(gaia_id);
     params.sync_manager_factory = std::move(fake_manager_factory_);
+    if (base::FeatureList::IsEnabled(syncer::kSyncUseOsCryptAsync)) {
+      std::unique_ptr<os_crypt_async::OSCryptAsync> os_cryp_async =
+          os_crypt_async::GetTestOSCryptAsyncForTesting();
+      base::test::TestFuture<os_crypt_async::Encryptor> future;
+      os_cryp_async->GetInstance(future.GetCallback());
+      params.encryptor =
+          std::make_unique<os_crypt_async::Encryptor>(future.Take());
+    }
 
     EXPECT_CALL(mock_host_, OnEngineInitialized(expect_success, _))
         .WillOnce(
@@ -236,7 +245,7 @@ class SyncEngineImplTest : public testing::Test {
 
   DataTypeSet ConfigureDataTypesWithUnready(DataTypeSet unready_types) {
     DataTypeConfigurer::ConfigureParams params;
-    params.reason = CONFIGURE_REASON_RECONFIGURATION;
+    params.reason = ConfigureReason::kReconfiguration;
     DataTypeSet enabled_types = Difference(enabled_types_, unready_types);
     params.to_download = Difference(enabled_types, engine_types_);
     if (!params.to_download.empty()) {
@@ -475,7 +484,7 @@ TEST_F(SyncEngineImplTest, ForwardLocalRefreshRequest) {
 // Test that configuration on signin sends the proper GU source.
 TEST_F(SyncEngineImplTest, DownloadControlTypesNewClient) {
   InitializeBackend();
-  EXPECT_EQ(CONFIGURE_REASON_NEW_CLIENT,
+  EXPECT_EQ(ConfigureReason::kNewClient,
             fake_manager_->GetAndResetConfigureReason());
 }
 
@@ -484,7 +493,7 @@ TEST_F(SyncEngineImplTest, DownloadControlTypesRestart) {
   fake_manager_factory_->set_progress_marker_types(enabled_types_);
   fake_manager_factory_->set_initial_sync_ended_types(enabled_types_);
   InitializeBackend();
-  EXPECT_EQ(CONFIGURE_REASON_EXISTING_CLIENT_RESTART,
+  EXPECT_EQ(ConfigureReason::kExistingClientRestart,
             fake_manager_->GetAndResetConfigureReason());
 }
 

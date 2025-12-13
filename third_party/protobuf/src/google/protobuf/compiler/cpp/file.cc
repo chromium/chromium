@@ -686,9 +686,9 @@ void FileGenerator::GenerateSourceDefaultInstance(int idx, io::Printer* p) {
             {"member", FieldMemberName(field, ShouldSplit(field, options_))},
         },
         R"cc(
-          PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 std::true_type
+          PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 ::std::true_type
               $class$::Impl_::_init_inline_$field$_ =
-                  ($default$._instance.$member$.Init(), std::true_type{});
+                  ($default$._instance.$member$.Init(), ::std::true_type{});
         )cc");
   }
 
@@ -1150,7 +1150,7 @@ void FileGenerator::GenerateReflectionInitializationCode(io::Printer* p) {
     )cc");
   } else {
     p->Emit(R"cc(
-      static constexpr const ::_pb::EnumDescriptor *$nonnull$ *$nullable$
+      static constexpr const ::_pb::EnumDescriptor* $nonnull$* $nullable$
           $file_level_enum_descriptors$ = nullptr;
     )cc");
   }
@@ -1163,7 +1163,7 @@ void FileGenerator::GenerateReflectionInitializationCode(io::Printer* p) {
     )cc");
   } else {
     p->Emit(R"cc(
-      static constexpr const ::_pb::ServiceDescriptor *$nonnull$ *$nullable$
+      static constexpr const ::_pb::ServiceDescriptor* $nonnull$* $nullable$
           $file_level_service_descriptors$ = nullptr;
     )cc");
   }
@@ -1373,13 +1373,13 @@ void FileGenerator::GenerateReflectionInitializationCode(io::Printer* p) {
     if (UsingImplicitWeakDescriptor(file_, options_)) {
       for (auto* pinned :
            GetMessagesToPinGloballyForWeakDescriptors(file_, options_)) {
-        static_initializers_[kInitPriority102].push_back([this,
-                                                          pinned](auto* p) {
-          p->Emit({{"pin", StrongReferenceToType(pinned, options_)}},
-                  R"cc(
-                    $pin$,
-                  )cc");
-        });
+        static_initializers_[kInitPriority102].push_back(
+            [this, pinned](auto* p) {
+              p->Emit({{"pin", StrongReferenceToType(pinned, options_)}},
+                      R"cc(
+                        $pin$,
+                      )cc");
+            });
       }
     }
     static_initializers_[kInitPriority102].push_back([](auto* p) {
@@ -1412,8 +1412,8 @@ void FileGenerator::GenerateReflectionInitializationCode(io::Printer* p) {
             $initializers$;
           }
           PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-          static std::true_type $dummy${
-              (InitializeFileDescriptorDefaultInstances(), std::true_type{})};
+          static ::std::true_type $dummy${
+              (InitializeFileDescriptorDefaultInstances(), ::std::true_type{})};
 #endif  // !defined(PROTOBUF_CONSTINIT_DEFAULT_INSTANCES)
         )cc");
   }
@@ -1614,6 +1614,9 @@ void FileGenerator::GenerateLibraryIncludes(io::Printer* p) {
   if (ShouldVerify(file_, options_, &scc_analyzer_)) {
     IncludeFile("third_party/protobuf/wire_format_verify.h", p);
   }
+  if (options_.experimental_use_micro_string) {
+    IncludeFile("third_party/protobuf/micro_string.h", p);
+  }
 
   IncludeFile("third_party/protobuf/runtime_version.h", p);
   int version;
@@ -1653,6 +1656,7 @@ void FileGenerator::GenerateLibraryIncludes(io::Printer* p) {
   if (HasGeneratedMethods(file_, options_)) {
     IncludeFile("third_party/protobuf/generated_message_tctable_decl.h", p);
   }
+
 
   IncludeFile("third_party/protobuf/generated_message_util.h", p);
   IncludeFile("third_party/protobuf/metadata_lite.h", p);

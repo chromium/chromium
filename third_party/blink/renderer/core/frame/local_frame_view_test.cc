@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "content/test/test_blink_web_unit_test_support.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -140,7 +142,8 @@ TEST_F(LocalFrameViewTest, HideTooltipWhenScrollPositionChanges) {
       GetAnimationMockChromeClient(),
       MockUpdateTooltipUnderCursor(GetDocument().GetFrame(), String(), _));
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(1, 1), mojom::blink::ScrollType::kUser);
+      ScrollOffset(1, 1), mojom::blink::ScrollType::kUser,
+      cc::ScrollSourceType::kNone);
 
   // Programmatic scrolling should not dismiss the tooltip, so
   // MockUpdateTooltipUnderCursor should not be called for this invocation.
@@ -149,7 +152,8 @@ TEST_F(LocalFrameViewTest, HideTooltipWhenScrollPositionChanges) {
       MockUpdateTooltipUnderCursor(GetDocument().GetFrame(), String(), _))
       .Times(0);
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(2, 2), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(2, 2), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
 }
 
 // NoOverflowInIncrementVisuallyNonEmptyPixelCount tests fail if the number of
@@ -688,7 +692,7 @@ TEST_F(LocalFrameViewTest, StartOfLifecycleTaskRunsOnFullLifecycle) {
   TestCallback callback;
 
   frame_view->EnqueueStartOfLifecycleTask(
-      WTF::BindOnce(&TestCallback::Increment, WTF::Unretained(&callback)));
+      BindOnce(&TestCallback::Increment, Unretained(&callback)));
   EXPECT_EQ(callback.calls, 0);
 
   frame_view->UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kTest);
@@ -864,6 +868,71 @@ TEST_P(PrerenderLocalFrameViewTest, DryRunPaintBeforePrerenderActivation) {
               GetDocument().Lifecycle().GetState());
     EXPECT_TRUE(GetPage().GetVisualViewport().NeedsPaintPropertyUpdate());
   }
+}
+
+class LocalFrameViewPresentationTimeTest : public SimTest {
+ public:
+  void SetUp() override {
+    SimTest::SetUp();
+    WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  }
+};
+
+TEST_F(LocalFrameViewPresentationTimeTest,
+       SameDocumentNavigationPresentationTime) {
+  const char kHistogramName[] =
+      "Navigation.MainframeSameDocumentNavigationCommitToPresentFirstFrame";
+
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete("<div id='a' style='color: blue'>A</div>");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  base::HistogramTester histogram_tester;
+
+  // 1. Simulate a same-document navigation.
+  LocalFrame* frame = GetDocument().GetFrame();
+  DocumentLoader* loader = frame->Loader().GetDocumentLoader();
+  loader->CommitSameDocumentNavigation(
+      KURL("https://example.com/test.html#foo"), WebFrameLoadType::kStandard,
+      nullptr, ClientRedirectPolicy::kNotClientRedirect,
+      false /* has_transient_user_activation */, /*initiator_origin=*/nullptr,
+      /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
+      mojom::blink::TriggeringEventInfo::kNotFromEvent,
+      /*is_browser_initiated=*/false,
+      /*has_ua_visual_transition,=*/false,
+      /*soft_navigation_heuristics_task_id=*/std::nullopt,
+      /*should_skip_screenshot=*/false);
+
+  // 2. Verify that the UMA is not recorded yet.
+  histogram_tester.ExpectTotalCount(kHistogramName, 0);
+
+  // 3. Trigger a compositing step.
+  Compositor().BeginFrame();
+
+  // 4. Verify that the UMA is recorded once.
+  histogram_tester.ExpectTotalCount(kHistogramName, 1);
+
+  // 5. Simulate 100 more same-document navigations.
+  for (int i = 0; i < 100; ++i) {
+    loader->CommitSameDocumentNavigation(
+        KURL(String::FromUTF8("https://example.com/test.html#bar") +
+             String::Number(i)),
+        WebFrameLoadType::kStandard, nullptr,
+        ClientRedirectPolicy::kNotClientRedirect,
+        false /* has_transient_user_activation */, /*initiator_origin=*/nullptr,
+        /*is_synchronously_committed=*/false, /*source_element=*/nullptr,
+        mojom::blink::TriggeringEventInfo::kNotFromEvent,
+        /*is_browser_initiated=*/false,
+        /*has_ua_visual_transition,=*/false,
+        /*soft_navigation_heuristics_task_id=*/std::nullopt,
+        /*should_skip_screenshot=*/false);
+  }
+
+  Compositor().BeginFrame();
+
+  // 6. Verify that we only record one more histogram.
+  histogram_tester.ExpectTotalCount(kHistogramName, 2);
 }
 
 }  // namespace

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/browser/passwords/model/password_controller.h"
 
 #import <Foundation/Foundation.h>
 
+#import <array>
 #import <memory>
 #import <set>
 #import <utility>
@@ -53,6 +49,7 @@
 #import "components/safe_browsing/core/browser/password_protection/stub_password_reuse_detection_manager_client.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -63,7 +60,6 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -155,7 +151,8 @@ class MockPasswordManagerClient
  private:
   mutable FakeNetworkContext network_context_;
   raw_ptr<PrefService> const prefs_;
-  const raw_ptr<password_manager::PasswordStoreInterface> store_;
+  const raw_ptr<password_manager::PasswordStoreInterface, DanglingUntriaged>
+      store_;
 };
 
 // Creates PasswordController with the given `pref_service`, `web_state` and a
@@ -235,6 +232,29 @@ struct TestPasswordFormData {
 
 @synthesize suggestions = _suggestions;
 
+- (void)retrieveSuggestionsForForm:(const autofill::FormActivityParams&)params
+                          webState:(web::WebState*)webState
+          accessoryViewUpdateBlock:
+              (FormSuggestionsReadyCompletion)accessoryViewUpdateBlock {
+  __weak __typeof(self) weakSelf = self;
+  FormSuggestionsReadyCompletion wrappedBlock =
+      ^(NSArray<FormSuggestion*>* suggestions,
+        id<FormInputSuggestionsProvider> provider) {
+        // Capture the suggestions here for the test to verify.
+        weakSelf.suggestions = suggestions;
+
+        // Call the original completion block.
+        if (accessoryViewUpdateBlock) {
+          accessoryViewUpdateBlock(suggestions, provider);
+        }
+      };
+
+  [super retrieveSuggestionsForForm:params
+                           webState:webState
+           accessoryViewUpdateBlock:wrappedBlock];
+}
+
+// This method is kept for the stateful path.
 - (void)updateKeyboardWithSuggestions:(NSArray*)suggestions {
   self.suggestions = suggestions;
 }
@@ -363,15 +383,6 @@ class PasswordControllerTest : public PlatformTest {
     return [suggestion_values copy];
   }
 
-  // Returns an identifier for the `form_number|th form in the page.
-  std::string FormName(int form_number) {
-    NSString* kFormNamingScript =
-        @"__gCrWeb.form.getFormIdentifier("
-         "    document.querySelectorAll('form')[%d]);";
-    return base::SysNSStringToUTF8(ExecuteJavaScriptInFeatureWorld(
-        [NSString stringWithFormat:kFormNamingScript, form_number]));
-  }
-
   void SimulateUserTyping(const std::string& form_name,
                           FormRendererId formRendererID,
                           const std::string& field_identifier,
@@ -437,8 +448,10 @@ class PasswordControllerTest : public PlatformTest {
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
       return block_was_called;
     }));
-    ASSERT_TRUE(
-        passwordController_.sharedPasswordController.isPasswordGenerated);
+
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
+      return passwordController_.sharedPasswordController.isPasswordGenerated;
+    }));
   }
 
   void LoadHtml(NSString* html) {
@@ -620,6 +633,19 @@ void PasswordControllerTest::FillFormAndValidate(TestPasswordFormData test_data,
                      type:autofill::SuggestionType::kAutocompleteEntry
                   payload:autofill::Suggestion::Payload()
            requiresReauth:NO];
+
+  if (base::FeatureList::IsEnabled(kStatelessFormSuggestionController)) {
+    autofill::FormActivityParams params;
+    params.form_name = test_data.form_name;
+    params.form_renderer_id = FormRendererId(test_data.form_renderer_id);
+    params.field_identifier = test_data.username_element;
+    params.field_renderer_id = FieldRendererId(test_data.username_renderer_id);
+    params.frame_id = frame->GetFrameId();
+    suggestion =
+        [FormSuggestion copy:suggestion
+                andSetParams:params
+                    provider:passwordController_.sharedPasswordController];
+  }
 
   SuggestionHandledCompletion completion = ^{
     block_was_called = YES;
@@ -1201,30 +1227,31 @@ TEST_F(PasswordControllerTest, SelectingSuggestionShouldFillPasswordForm) {
 
   const std::string base_url = BaseUrl();
 
-  const TestPasswordFormData kTestData[] = {{/*form_name=*/"f1",
-                                             /*form_renderer_id=*/1,
-                                             /*username_element=*/"u1",
-                                             /*username_renderer_id=*/2,
-                                             /*password_element=*/"p1",
-                                             /*password_renderer_id=*/3,
-                                             /*user_value=*/"abc",
-                                             /*password_value=*/"def",
-                                             /*on_key_up=*/YES,
-                                             /*on_change=*/YES},
-                                            {/*form_name=*/"f2",
-                                             /*form_renderer_id=*/4,
-                                             /*username_element=*/"u2",
-                                             /*username_renderer_id=*/5,
-                                             /*password_element=*/"p2",
-                                             /*password_renderer_id=*/6,
-                                             /*user_value=*/"abc",
-                                             /*password_value=*/"def",
-                                             /*on_key_up=*/YES,
-                                             /*on_change=*/YES}};
+  const auto kTestData =
+      std::to_array<TestPasswordFormData>({{/*form_name=*/"f1",
+                                            /*form_renderer_id=*/1,
+                                            /*username_element=*/"u1",
+                                            /*username_renderer_id=*/2,
+                                            /*password_element=*/"p1",
+                                            /*password_renderer_id=*/3,
+                                            /*user_value=*/"abc",
+                                            /*password_value=*/"def",
+                                            /*on_key_up=*/YES,
+                                            /*on_change=*/YES},
+                                           {/*form_name=*/"f2",
+                                            /*form_renderer_id=*/4,
+                                            /*username_element=*/"u2",
+                                            /*username_renderer_id=*/5,
+                                            /*password_element=*/"p2",
+                                            /*password_renderer_id=*/6,
+                                            /*user_value=*/"abc",
+                                            /*password_value=*/"def",
+                                            /*on_key_up=*/YES,
+                                            /*on_change=*/YES}});
 
   // Check that the right password form is filled on suggesion selection.
-  for (size_t form_i = 0; form_i < std::size(kTestData); ++form_i) {
-    FillFormAndValidate(kTestData[form_i], /*should_succeed=*/true,
+  for (const TestPasswordFormData& test_data : kTestData) {
+    FillFormAndValidate(test_data, /*should_succeed=*/true,
                         GetWebFrame(/*is_main_frame=*/true));
   }
 }
@@ -1234,8 +1261,8 @@ class PasswordControllerTestSimple : public PlatformTest {
  public:
   PasswordControllerTestSimple()
       : web_client_(std::make_unique<web::FakeWebClient>()),
-        browser_state_(std::make_unique<web::FakeBrowserState>()) {
-    web_state_.SetBrowserState(browser_state_.get());
+        profile_(TestProfileIOS::Builder().Build()) {
+    web_state_.SetBrowserState(profile_.get());
   }
 
   ~PasswordControllerTestSimple() override {
@@ -1256,7 +1283,7 @@ class PasswordControllerTestSimple : public PlatformTest {
     ON_CALL(*store_, IsAbleToSavePasswords).WillByDefault(Return(true));
 
     web::test::OverrideJavaScriptFeatures(
-        browser_state_.get(),
+        profile_.get(),
         {autofill::FormUtilJavaScriptFeature::GetInstance(),
          password_manager::PasswordManagerJavaScriptFeature::GetInstance()});
 
@@ -1289,7 +1316,7 @@ class PasswordControllerTestSimple : public PlatformTest {
   web::ScopedTestingWebClient web_client_;
 
   sync_preferences::TestingPrefServiceSyncable pref_service_;
-  std::unique_ptr<web::FakeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
   std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
   PasswordController* passwordController_;
@@ -1305,7 +1332,7 @@ TEST_F(PasswordControllerTestSimple, SaveOnNonHTMLLandingPage) {
       passwordController_.sharedPasswordController;
 
   auto web_frame = web::FakeWebFrame::CreateMainWebFrame();
-  web_frame->set_browser_state(browser_state_.get());
+  web_frame->set_browser_state(profile_.get());
   web::WebFrame* main_web_frame = web_frame.get();
   web_frames_manager_->AddWebFrame(std::move(web_frame));
 
@@ -1359,12 +1386,12 @@ TEST_F(PasswordControllerTest, SendingToStoreDynamicallyAddedFormsOnFocus) {
   // TODO(crbug.com/40621653): replace WillRepeatedly with WillOnce when the old
   // parser is gone.
   EXPECT_CALL(*store_, GetLogins(expected_form_digest, _))
-      .WillRepeatedly(testing::Invoke(
+      .WillRepeatedly(
           [&get_logins_called](
               const password_manager::PasswordFormDigest&,
               base::WeakPtr<password_manager::PasswordStoreConsumer>) {
             get_logins_called = true;
-          }));
+          });
 
   // Sets a focus on a username field.
   NSString* kSetUsernameInFocusScript =
@@ -1382,25 +1409,25 @@ TEST_F(PasswordControllerTest, SendingToStoreDynamicallyAddedFormsOnFocus) {
 TEST_F(PasswordControllerTest, TouchendAsSubmissionIndicator) {
   ON_CALL(*store_, GetLogins)
       .WillByDefault(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
-  const char* kHtml[] = {
-      "<html><body>"
-      "<form name='login_form' id='login_form'>"
-      "  <input type='text' name='username'>"
-      "  <input type='password' name='password'>"
-      "  <button id='submit_button' value='Submit'>"
-      "</form>"
-      "</body></html>",
-      "<html><body>"
-      "<form name='login_form' id='login_form'>"
-      "  <input type='text' name='username'>"
-      "  <input type='password' name='password'>"
-      "  <button id='back' value='Back'>"
-      "  <button id='submit_button' type='submit' value='Submit'>"
-      "</form>"
-      "</body></html>"};
+  const auto kHtml = std::to_array<std::string_view>(
+      {"<html><body>"
+       "<form name='login_form' id='login_form'>"
+       "  <input type='text' name='username'>"
+       "  <input type='password' name='password'>"
+       "  <button id='submit_button' value='Submit'>"
+       "</form>"
+       "</body></html>",
+       "<html><body>"
+       "<form name='login_form' id='login_form'>"
+       "  <input type='text' name='username'>"
+       "  <input type='password' name='password'>"
+       "  <button id='back' value='Back'>"
+       "  <button id='submit_button' type='submit' value='Submit'>"
+       "</form>"
+       "</body></html>"});
 
-  for (size_t i = 0; i < std::size(kHtml); ++i) {
-    LoadHtml(SysUTF8ToNSString(kHtml[i]));
+  for (const std::string_view html : kHtml) {
+    LoadHtml(SysUTF8ToNSString(html));
     WaitForFormManagersCreation();
 
     std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;

@@ -21,7 +21,7 @@ import {getMyFiles} from '../../state/ducks/all_entries.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {clearSearch, getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js';
 import type {FileData, FileKey, SearchData} from '../../state/state.js';
-import {EntryType, PropStatus, SearchLocation, type SearchOptions, type State, type Volume, type VolumeId} from '../../state/state.js';
+import {PropStatus, SearchLocation, type SearchOptions, type State, type Volume, type VolumeId} from '../../state/state.js';
 import {getFileData, getStore, getVolume, type Store} from '../../state/store.js';
 
 import {CROSTINI_CONNECT_ERR, DLP_METADATA_PREFETCH_PROPERTY_NAMES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from './constants.js';
@@ -229,10 +229,6 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
     // initiate the actual change and will update to SUCCESS at the end.
     if (state.currentDirectory?.status === PropStatus.STARTED) {
       const fileData = getFileData(state, newURL);
-      if (fileData?.type === EntryType.MATERIALIZED_VIEW) {
-        this.changeDirectoryFileData(fileData);
-        return;
-      }
 
       const entry = fileData?.entry;
       if (!entry) {

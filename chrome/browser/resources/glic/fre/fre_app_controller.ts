@@ -4,6 +4,8 @@
 
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {GlicRequestHeaderInjector} from '/shared/glic_request_headers.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {FrePageHandlerFactory, FrePageHandlerRemote, FreWebUiState} from './glic_fre.mojom-webui.js';
@@ -23,32 +25,36 @@ const MAX_WAIT_TIME_MS = loadTimeData.getInteger('maxLoadingTimeMs');
 const RELOAD_MAX_WAIT_TIME_RELOAD_MS =
     loadTimeData.getInteger('reloadMaxLoadingTimeMs');
 
-// Initial FRE width. Also used as the minimum and maximum width for FRE.
-const INITIAL_WIDTH = loadTimeData.getInteger('freInitialWidth');
+// If unified FRE is enabled to change formatting for sidepanel ui.
+const IS_UNIFIED_FRE = loadTimeData.getBoolean('isUnifiedFre');
 
 // Minimum height for FRE.
 const MIN_HEIGHT = 200;
 
-interface PageElementTypes {
-  webviewContainer: HTMLDivElement;
+export enum FreResultType {
+  ACCEPT,
+  DISMISS,
+  REJECT,
 }
 
-const $: PageElementTypes = new Proxy({}, {
-  get(_target: any, prop: string) {
-    return getRequiredElement(prop);
-  },
-});
+export interface FreResult {
+  type: FreResultType;
+}
 
-type PanelId = 'guestPanel'|'offlinePanel'|'errorPanel'|'loadingPanel';
+
+interface FreControllerOptions {
+  partitionString?: string;
+  shouldSizeForDialog?: boolean;
+  onClose?: () => void;
+}
+
+type PanelId = 'freGuestPanel'|'freOfflinePanel'|'freErrorPanel'|
+    'freLoadingPanel'|'freDisabledByAdminPanel';
 
 interface StateDescriptor {
   onEnter?: () => void;
   onExit?: () => void;
 }
-
-const freHandler = new FrePageHandlerRemote();
-FrePageHandlerFactory.getRemote().createPageHandler(
-    (freHandler).$.bindNewPipeAndPassReceiver());
 
 export class FreAppController {
   state = FreWebUiState.kUninitialized;
@@ -58,6 +64,8 @@ export class FreAppController {
   // with an empty <webview>.
   private webview: chrome.webviewTag.WebView;
   private webviewEventTracker = new EventTracker();
+  private glicRequestHeaderInjector: GlicRequestHeaderInjector|undefined;
+  private freHandler: FrePageHandlerRemote;
 
   // When entering loading state, this represents the earliest timestamp at
   // which the UI can transition to the ready state. This ensures that the
@@ -70,12 +78,41 @@ export class FreAppController {
   // content load ends.
   private useReloadTimeout = false;
 
-  constructor() {
+  // Unified FRE variables.
+  private freContainer: HTMLElement;
+  private webviewContainer: HTMLElement;
+  private partitionString: string;
+  private shouldSizeForDialog: boolean;
+  private onCloseCallback?: () => void;
+
+
+  constructor(options: FreControllerOptions = {}) {
     this.onLoadCommit = this.onLoadCommit.bind(this);
     this.onContentLoad = this.onContentLoad.bind(this);
     this.onNewWindow = this.onNewWindow.bind(this);
+    const container = getRequiredElement('fre-app-container');
+    assert(container, '#fre-app-container not found in constructor');
+    this.freContainer = container!;
+
+    this.freHandler = new FrePageHandlerRemote();
+    FrePageHandlerFactory.getRemote().createPageHandler(
+        this.freHandler.$.bindNewPipeAndPassReceiver());
+
+    this.webviewContainer = getRequiredElement('freWebviewContainer')!;
+    assert(
+        this.webviewContainer, '#freWebviewContainer not found in constructor');
+    this.partitionString = options.partitionString ?? 'glicfrepart';
+    this.shouldSizeForDialog = options.shouldSizeForDialog ?? true;
+    this.onCloseCallback = options.onClose;
+
 
     this.webview = this.createWebview();
+
+    // TODO(b/459795708): Remove when FRE is deduplicated and unified fre is
+    // launched.
+    const frePanelStateKindSection = getRequiredElement('fre-local-panels');
+    frePanelStateKindSection.classList.toggle('side-panel', IS_UNIFIED_FRE);
+    frePanelStateKindSection.classList.toggle('floating', !IS_UNIFIED_FRE);
 
     window.addEventListener('online', () => {
       this.online();
@@ -86,29 +123,59 @@ export class FreAppController {
     window.addEventListener('load', () => {
       // Allow WebUI close buttons to close the window. Close buttons are
       // present on all UI states except for `FreWebUiState.kReady`.
-      const buttons = document.querySelectorAll('.close-button');
+      const buttons = this.freContainer.querySelectorAll('.close-button');
       for (const button of buttons) {
         const parentPanel = button.closest('.panel');
         if (parentPanel) {
           button.addEventListener('click', () => {
-            freHandler.dismissFre(this.panelIdToEnum(parentPanel.id));
+            chrome.metricsPrivate.recordUserAction('Glic.Fre.CloseWithX');
+            this.dismissFre(this.panelIdToEnum(parentPanel.id));
           });
         }
       }
 
-      document.getElementById('reload')?.addEventListener('click', () => {
+      const disabledByAdminButton =
+          getRequiredElement('freDisabledByAdminCloseButton');
+      assert(disabledByAdminButton);
+
+      const parentPanel = disabledByAdminButton.closest('.panel');
+      assert(parentPanel);
+
+      disabledByAdminButton.addEventListener('click', () => {
+        chrome.metricsPrivate.recordUserAction(
+            'Glic.Fre.DisabledByAdminPanelCloseButton');
+        this.dismissFre(this.panelIdToEnum(parentPanel.id));
+      });
+
+      const disabledByAdminLink =
+          this.freContainer.querySelector<HTMLAnchorElement>(
+              '#freDisabledByAdminPanel a');
+      assert(disabledByAdminLink);
+      disabledByAdminLink.addEventListener(
+          'click', (e) => {
+            e.preventDefault();
+            chrome.metricsPrivate.recordUserAction(
+                'Glic.Fre.DisabledByAdminPanelLinkClicked');
+            this.freHandler.validateAndOpenLinkInNewTab({
+              url: (e.target as HTMLAnchorElement).href,
+            });
+            e.stopPropagation();
+          });
+
+      getRequiredElement('fre-reload')?.addEventListener('click', () => {
         this.reload();
       });
     });
 
-    document.addEventListener('keydown', ev => {
+    this.freContainer.addEventListener('keydown', (ev: KeyboardEvent) => {
       if (ev.code === 'Escape') {
         ev.stopPropagation();
         ev.preventDefault();
-        const visiblePanel =
-            document.querySelector<HTMLElement>('.panel:not([hidden])');
+        const visiblePanel = this.freContainer.querySelector<HTMLElement>(
+            '.panel:not([hidden])');
         if (visiblePanel) {
-          freHandler.dismissFre(this.panelIdToEnum(visiblePanel.id));
+          chrome.metricsPrivate.recordUserAction('Glic.Fre.CloseWithEsc');
+          this.dismissFre(this.panelIdToEnum(visiblePanel.id));
         }
       }
     });
@@ -127,14 +194,27 @@ export class FreAppController {
     const url = new URL(e.url);
     const urlHash = url.hash;
 
+    if (loadTimeData.getBoolean('caaGuestError') &&
+        (url.hostname === 'access.workspace.google.com' ||
+         url.hostname === 'admin.google.com')) {
+      this.setState(FreWebUiState.kDisabledByAdmin);
+      return;
+    }
+
     // Fragment navigations are used to represent actions taken in the web
     // client following this mapping: “Continue” button navigates to
     // glic/intro...#continue, “No thanks” button navigates to
     // glic/intro...#noThanks
     if (urlHash === '#continue') {
-      freHandler.acceptFre();
-    } else if (urlHash === '#noThanks') {
-      freHandler.dismissFre(FreWebUiState.kReady);
+      this.acceptFre();
+    } else if (urlHash.startsWith('#noThanks')) {
+      const source = url.searchParams.get('source');
+      if (source === 'x_button') {
+        chrome.metricsPrivate.recordUserAction(`Glic.Fre.CloseWithX`);
+        this.dismissFre(FreWebUiState.kReady);
+      } else {
+        this.rejectFre();
+      }
     }
   }
 
@@ -149,7 +229,7 @@ export class FreAppController {
 
   onNewWindow(e: any) {
     e.preventDefault();
-    freHandler.validateAndOpenLinkInNewTab({
+    this.freHandler.validateAndOpenLinkInNewTab({
       url: e.targetUrl,
     });
     e.stopPropagation();
@@ -177,13 +257,24 @@ export class FreAppController {
   reload(): void {
     this.destroyWebview();
     this.useReloadTimeout = true;
-    freHandler.freReloaded();
+    this.freHandler.freReloaded();
     this.setState(FreWebUiState.kBeginLoading);
   }
 
   private showPanel(id: PanelId): void {
-    for (const panel of document.querySelectorAll<HTMLElement>('.panel')) {
+    for (const panel of this.freContainer.querySelectorAll<HTMLElement>(
+             '.panel')) {
       panel.hidden = panel.id !== id;
+    }
+
+    const frePanelStateKindSection = getRequiredElement('fre-local-panels');
+    frePanelStateKindSection.classList.toggle('hidden', id === 'freGuestPanel');
+
+    // After making the guest panel visible, programmatically move focus
+    // to the content inside the webview. This ensures that screen readers
+    // announce the new content.
+    if (id === 'freGuestPanel') {
+      this.webview.focus();
     }
   }
 
@@ -197,7 +288,7 @@ export class FreAppController {
     }
     this.state = newState;
     this.states.get(this.state)!.onEnter?.call(this);
-    freHandler.webUiStateChanged(newState);
+    this.freHandler.webUiStateChanged(newState);
   }
 
   readonly states: Map<FreWebUiState, StateDescriptor> = new Map([
@@ -223,7 +314,16 @@ export class FreAppController {
         onEnter: () => {
           this.useReloadTimeout = false;
           this.destroyWebview();
-          this.showPanel('errorPanel');
+          this.showPanel('freErrorPanel');
+        },
+      },
+    ],
+    [
+      FreWebUiState.kDisabledByAdmin,
+      {
+        onEnter: () => {
+          this.destroyWebview();
+          this.showPanel('freDisabledByAdminPanel');
         },
       },
     ],
@@ -233,7 +333,7 @@ export class FreAppController {
         onEnter: () => {
           this.useReloadTimeout = false;
           this.destroyWebview();
-          this.showPanel('offlinePanel');
+          this.showPanel('freOfflinePanel');
         },
       },
     ],
@@ -242,7 +342,7 @@ export class FreAppController {
       {
         onEnter: () => {
           this.useReloadTimeout = false;
-          this.showPanel('guestPanel');
+          this.showPanel('freGuestPanel');
         },
       },
     ],
@@ -260,7 +360,7 @@ export class FreAppController {
     const showLoadingTime = performance.now() + PRE_HOLD_LOADING_TIME_MS;
 
     // Attempt to re-sync cookies before continuing.
-    const {success} = await freHandler.prepareForClient();
+    const {success} = await this.freHandler.prepareForClient();
     if (!success) {
       this.setState(FreWebUiState.kError);
       return;
@@ -272,16 +372,23 @@ export class FreAppController {
     // Signal to the fre controller that the web ui framework has completed
     // loading and the remote web content is about to start loading in the
     // webview. This is used to record timing metrics.
-    freHandler.logWebUiLoadComplete();
+    this.freHandler.logWebUiLoadComplete();
 
-    this.webview.src = loadTimeData.getString('glicFreURL');
+    const glicFreURL = new URL(loadTimeData.getString('glicFreURL'));
+    // If `shouldSizeForDialog` is false, this indicates the side panel context.
+    // Append a query parameter to notify the webview of this context.
+    if (!this.shouldSizeForDialog) {
+      glicFreURL.searchParams.append('sidepanelFre', 'true');
+    }
+    this.webview.src = glicFreURL.toString();
+
     this.loadingTimer = setTimeout(() => {
       this.setState(FreWebUiState.kShowLoading);
     }, Math.max(0, showLoadingTime - performance.now()));
   }
 
   showLoading(): void {
-    this.showPanel('loadingPanel');
+    this.showPanel('freLoadingPanel');
     // After `kMinHoldLoadingTimeMs`, transition to `kFinishLoading` or `kReady`
     // states. Note that we never transition from `kShowLoading` to `kReady`
     // before the timeout.
@@ -311,11 +418,12 @@ export class FreAppController {
         MAX_WAIT_TIME_MS;
     this.loadingTimer = setTimeout(() => {
       console.warn('Exceeded timeout in finishLoading');
+      chrome.metricsPrivate.recordUserAction('Glic.Fre.WebviewLoadTimedOut');
       chrome.metricsPrivate.recordEnumerationValue(
           'Glic.Fre.WebviewLoadAbortReason',
           GlicFreWebviewLoadAbortReason.ERR_TIMED_OUT,
           GlicFreWebviewLoadAbortReason.MAX_VALUE + 1);
-      freHandler.exceededTimeoutError();
+      this.freHandler.exceededTimeoutError();
       this.setState(FreWebUiState.kError);
     }, timeoutValue - MIN_HOLD_LOADING_TIME_MS);
   }
@@ -330,14 +438,22 @@ export class FreAppController {
     webview.id = 'freGuestFrame';
     // TODO(crbug.com/408475473): Update the webviewTag definition to be able to
     // define properties rather than using setAttribute.
-    webview.setAttribute('partition', 'glicfrepart');
+    webview.setAttribute('partition', this.partitionString);
     webview.setAttribute('autosize', 'true');
-    webview.setAttribute('minwidth', INITIAL_WIDTH.toString());
-    webview.setAttribute('maxwidth', INITIAL_WIDTH.toString());
-    webview.setAttribute('minheight', MIN_HEIGHT.toString());
-    webview.setAttribute('maxheight', window.screen.availHeight.toString());
+    if (this.shouldSizeForDialog) {
+      webview.setAttribute(
+          'minwidth', loadTimeData.getInteger('freInitialWidth').toString());
+      webview.setAttribute(
+          'maxwidth', loadTimeData.getInteger('freInitialWidth').toString());
+      webview.setAttribute('minheight', MIN_HEIGHT.toString());
+      webview.setAttribute('maxheight', window.screen.availHeight.toString());
+    }
+    this.glicRequestHeaderInjector = new GlicRequestHeaderInjector(
+        webview, loadTimeData.getString('chromeVersion'),
+        loadTimeData.getString('chromeChannel'),
+        loadTimeData.getString('glicHeaderRequestTypes'));
 
-    $.webviewContainer.appendChild(webview);
+    this.webviewContainer.appendChild(webview);
 
     this.webviewEventTracker.add(
         webview, 'loadcommit', this.onLoadCommit.bind(this));
@@ -383,6 +499,7 @@ export class FreAppController {
 
   private onLoadAbort(e: any) {
     const reasonEnum = this.reasonStringToEnum(e.reason);
+    chrome.metricsPrivate.recordUserAction('Glic.Fre.WebviewLoadAborted');
     chrome.metricsPrivate.recordEnumerationValue(
         'Glic.Fre.WebviewLoadAbortReason', reasonEnum,
         GlicFreWebviewLoadAbortReason.MAX_VALUE + 1);
@@ -392,14 +509,16 @@ export class FreAppController {
 
   private panelIdToEnum(panelId: string): FreWebUiState {
     switch (panelId) {
-      case 'guestPanel':
+      case 'freGuestPanel':
         return FreWebUiState.kReady;
-      case 'offlinePanel':
+      case 'freOfflinePanel':
         return FreWebUiState.kOffline;
-      case 'errorPanel':
+      case 'freErrorPanel':
         return FreWebUiState.kError;
-      case 'loadingPanel':
+      case 'freLoadingPanel':
         return FreWebUiState.kShowLoading;
+      case 'freDisabledByAdminPanel':
+        return FreWebUiState.kDisabledByAdmin;
       default:
         return FreWebUiState.kUninitialized;
     }
@@ -410,8 +529,27 @@ export class FreAppController {
   destroyWebview(): void {
     this.webviewEventTracker.removeAll();
 
-    $.webviewContainer.removeChild(this.webview);
+    if (this.glicRequestHeaderInjector) {
+      this.glicRequestHeaderInjector.destroy();
+      this.glicRequestHeaderInjector = undefined;
+    }
+
+    this.webviewContainer.removeChild(this.webview);
 
     this.webview = this.createWebview();
+  }
+
+  private dismissFre(state: FreWebUiState): void {
+    this.freHandler.dismissFre(state);
+    this.onCloseCallback?.();
+  }
+
+  private acceptFre(): void {
+    this.freHandler.acceptFre();
+  }
+
+  private rejectFre(): void {
+    this.freHandler.rejectFre();
+    this.onCloseCallback?.();
   }
 }

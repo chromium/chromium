@@ -5,16 +5,16 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_GPU_GBM_SURFACELESS_WAYLAND_H_
 #define UI_OZONE_PLATFORM_WAYLAND_GPU_GBM_SURFACELESS_WAYLAND_H_
 
-#include <memory>
-#include <vector>
-
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
+
+#include <memory>
+#include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gl/presenter.h"
 #include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_gpu.h"

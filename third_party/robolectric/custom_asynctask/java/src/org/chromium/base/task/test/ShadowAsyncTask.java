@@ -7,6 +7,9 @@ import org.robolectric.annotation.RealObject;
 
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
+import org.chromium.base.task.Location;
+import org.chromium.base.task.LocationAwareExecutor;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
@@ -129,6 +132,17 @@ public class ShadowAsyncTask<Result> {
         });
 
         return realAsyncTask;
+    }
+
+    @Implementation
+    public AsyncTask<Result> executeOnExecutor(LocationAwareExecutor executor) {
+        return executeOnExecutor(executor, null);
+    }
+
+    @Implementation
+    public AsyncTask<Result> executeOnExecutor(
+            LocationAwareExecutor executor, @Nullable Location location) {
+        return executeOnExecutor((Executor) executor);
     }
 
     @Implementation

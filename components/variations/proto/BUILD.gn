@@ -22,17 +22,22 @@ if (is_android) {
 
 fuzzable_proto_library("proto") {
   sources = [
-    "client_variations.proto",
     "layer.proto",
+    "stored_seed_info.proto",
     "study.proto",
     "variations_seed.proto",
-    "stored_seed_info.proto",
   ]
+}
+
+proto_library("client_variations_proto") {
+  sources = [ "client_variations.proto" ]
 
   # The generated JavaScript bindings are used to build a small, self-contained
   # parser for ClientVariations in Dev Tools. This parser is used to decode the
   # X-Client-Data header.
-  # Note: This doesn't do anything when use_libfuzzer is true.
+  #
+  # Note: This is incompatible with "edition" syntax of protobuf. The plan is to
+  # migrate this away from JS proto bindings, tracked here: crbug.com/40253708
   generate_javascript = true
 }
 

@@ -31,6 +31,7 @@
 #include "base/types/zip.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
+#include "third_party/blink/renderer/core/css/cascade_layered.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -65,9 +66,9 @@ ScopedStyleResolver* ScopedStyleResolver::Parent() const {
 }
 
 void ScopedStyleResolver::AddKeyframeRules(const RuleSet& rule_set) {
-  const HeapVector<Member<StyleRuleKeyframes>> keyframes_rules =
+  const HeapVector<CascadeLayered<StyleRuleKeyframes>> keyframes_rules =
       rule_set.KeyframesRules();
-  for (auto rule : keyframes_rules) {
+  for (const auto& rule : keyframes_rules) {
     AddKeyframeStyle(rule);
   }
 }
@@ -89,12 +90,13 @@ void ScopedStyleResolver::AddFontFaceRules(const RuleSet& rule_set) {
   Document& document = GetTreeScope().GetDocument();
   CSSFontSelector* css_font_selector =
       document.GetStyleEngine().GetFontSelector();
-  const HeapVector<Member<StyleRuleFontFace>> font_face_rules =
+  const HeapVector<CascadeLayered<StyleRuleFontFace>> font_face_rules =
       rule_set.FontFaceRules();
   for (auto& font_face_rule : font_face_rules) {
     if (FontFace* font_face = FontFace::Create(&document, font_face_rule,
                                                false /* is_user_style */)) {
-      css_font_selector->GetFontFaceCache()->Add(font_face_rule, font_face);
+      css_font_selector->GetFontFaceCache()->Add(font_face_rule.value,
+                                                 font_face);
     }
   }
   if (font_face_rules.size()) {
@@ -156,7 +158,7 @@ void ScopedStyleResolver::CollectFeaturesTo(
         visited_shared_style_sheet_contents) const {
   features.MutableMediaQueryResultFlags().Add(media_query_result_flags_);
 
-  for (auto [sheet, rule_set] : active_style_sheets_) {
+  for (const auto& [sheet, rule_set] : active_style_sheets_) {
     DCHECK(sheet->ownerNode() || sheet->IsConstructed());
     StyleSheetContents* contents = sheet->Contents();
     if (contents->HasOneClient() ||
@@ -174,6 +176,7 @@ void ScopedStyleResolver::ResetStyle() {
   keyframes_rule_map_.clear();
   position_try_rule_map_.clear();
   font_feature_values_storage_map_.clear();
+  font_feature_values_rule_map_.clear();
   function_rule_map_.clear();
   if (counter_style_map_) {
     counter_style_map_->Dispose();
@@ -193,11 +196,13 @@ StyleRuleKeyframes* ScopedStyleResolver::KeyframeStylesForAnimation(
     return nullptr;
   }
 
-  return it->value.Get();
+  const CascadeLayered<StyleRuleKeyframes>& layered_keyframes = it->value;
+  return layered_keyframes.value.Get();
 }
 
-void ScopedStyleResolver::AddKeyframeStyle(StyleRuleKeyframes* rule) {
-  AtomicString name = rule->GetName();
+void ScopedStyleResolver::AddKeyframeStyle(
+    const CascadeLayered<StyleRuleKeyframes>& rule) {
+  AtomicString name = rule.value->GetName();
 
   KeyframesRuleMap::iterator it = keyframes_rule_map_.find(name);
   if (it == keyframes_rule_map_.end() ||
@@ -207,14 +212,14 @@ void ScopedStyleResolver::AddKeyframeStyle(StyleRuleKeyframes* rule) {
 }
 
 bool ScopedStyleResolver::KeyframeStyleShouldOverride(
-    const StyleRuleKeyframes* new_rule,
-    const StyleRuleKeyframes* existing_rule) const {
-  if (new_rule->IsVendorPrefixed() != existing_rule->IsVendorPrefixed()) {
-    return existing_rule->IsVendorPrefixed();
+    const CascadeLayered<StyleRuleKeyframes>& new_rule,
+    const CascadeLayered<StyleRuleKeyframes>& existing_rule) const {
+  if (new_rule.value->IsVendorPrefixed() !=
+      existing_rule.value->IsVendorPrefixed()) {
+    return existing_rule.value->IsVendorPrefixed();
   }
-  return !cascade_layer_map_ || cascade_layer_map_->CompareLayerOrder(
-                                    existing_rule->GetCascadeLayer(),
-                                    new_rule->GetCascadeLayer()) <= 0;
+  return CascadeLayerMap::CompareLayerOrder(cascade_layer_map_, existing_rule,
+                                            new_rule) <= 0;
 }
 
 Element& ScopedStyleResolver::InvalidationRootForTreeScope(
@@ -268,14 +273,19 @@ void ScopedStyleResolver::KeyframesRulesAdded(const TreeScope& tree_scope) {
                                                                 reason);
 }
 
+// The `scope_root` represents the node that should match the `:scope`
+// selector. This is normally the same as the ScopedStyleResolver's
+// root node, except when resolving style for <use>-cloned
+// SVG elements.
 template <class Func>
 void ScopedStyleResolver::ForAllStylesheets(ElementRuleCollector& collector,
+                                            const ContainerNode& scope_root,
                                             const Func& func) {
 #if DCHECK_IS_ON()
   // Verify that all the cached rule_set_groups_ have the right bits
   // and RuleSets.
   HeapVector<RuleSetGroup> ref_groups;
-  for (auto [sheet, rule_set] : active_style_sheets_) {
+  for (const auto& [sheet, rule_set] : active_style_sheets_) {
     AddRuleSetToRuleSetGroupList(rule_set, ref_groups);
   }
   DCHECK_EQ(ref_groups.size(), rule_set_groups_.size())
@@ -287,45 +297,51 @@ void ScopedStyleResolver::ForAllStylesheets(ElementRuleCollector& collector,
 #endif
 
   for (RuleSetGroup& rule_set_group : rule_set_groups_) {
-    func(MatchRequest(rule_set_group, &scope_->RootNode(), collector));
+    func(MatchRequest(rule_set_group, &scope_root, collector));
   }
 }
 
 void ScopedStyleResolver::CollectMatchingElementScopeRules(
+    const ContainerNode& scope_root,
     ElementRuleCollector& collector,
     PartNames* part_names) {
   ForAllStylesheets(
-      collector, [&collector, part_names](const MatchRequest& match_request) {
+      collector, scope_root,
+      [&collector, part_names](const MatchRequest& match_request) {
         collector.CollectMatchingRules(match_request, part_names);
       });
 }
 
 void ScopedStyleResolver::CollectMatchingShadowHostRules(
     ElementRuleCollector& collector) {
-  ForAllStylesheets(collector, [&collector](const MatchRequest& match_request) {
-    collector.CollectMatchingShadowHostRules(match_request);
-  });
+  ForAllStylesheets(collector, GetTreeScope().RootNode(),
+                    [&collector](const MatchRequest& match_request) {
+                      collector.CollectMatchingShadowHostRules(match_request);
+                    });
 }
 
 void ScopedStyleResolver::CollectMatchingSlottedRules(
     ElementRuleCollector& collector) {
-  ForAllStylesheets(collector, [&collector](const MatchRequest& match_request) {
-    collector.CollectMatchingSlottedRules(match_request);
-  });
+  ForAllStylesheets(collector, GetTreeScope().RootNode(),
+                    [&collector](const MatchRequest& match_request) {
+                      collector.CollectMatchingSlottedRules(match_request);
+                    });
 }
 
 void ScopedStyleResolver::CollectMatchingPartPseudoRules(
     ElementRuleCollector& collector,
     PartNames* part_names) {
-  ForAllStylesheets(collector, [&](const MatchRequest& match_request) {
-    collector.CollectMatchingPartPseudoRules(match_request, part_names);
-  });
+  ForAllStylesheets(collector, GetTreeScope().RootNode(),
+                    [&](const MatchRequest& match_request) {
+                      collector.CollectMatchingPartPseudoRules(match_request,
+                                                               part_names);
+                    });
 }
 
 void ScopedStyleResolver::MatchPageRules(PageRuleCollector& collector) {
   // Currently, only @page rules in the document scope apply.
   DCHECK(scope_->RootNode().IsDocumentNode());
-  for (auto [sheet, rule_set] : active_style_sheets_) {
+  for (const auto& [sheet, rule_set] : active_style_sheets_) {
     collector.MatchPageRules(rule_set.Get(), CascadeOrigin::kAuthor, scope_,
                              GetCascadeLayerMap());
   }
@@ -345,22 +361,27 @@ void ScopedStyleResolver::AddFontFeatureValuesRules(const RuleSet& rule_set) {
     return;
   }
 
-  const HeapVector<Member<StyleRuleFontFeatureValues>>
+  const HeapVector<CascadeLayered<StyleRuleFontFeatureValues>>&
       font_feature_values_rules = rule_set.FontFeatureValuesRules();
-  for (auto& rule : font_feature_values_rules) {
+  for (auto& layered_rule : font_feature_values_rules) {
+    StyleRuleFontFeatureValues* rule = layered_rule.value;
+    const CascadeLayer* layer = layered_rule.layer;
     for (auto& font_family : rule->GetFamilies()) {
       unsigned layer_order = CascadeLayerMap::kImplicitOuterLayerOrder;
-      if (cascade_layer_map_ && rule->GetCascadeLayer() != nullptr) {
-        layer_order =
-            cascade_layer_map_->GetLayerOrder(*rule->GetCascadeLayer());
+      if (cascade_layer_map_ && layer != nullptr) {
+        layer_order = cascade_layer_map_->GetLayerOrder(*layer);
       }
-      auto add_result = font_feature_values_storage_map_.insert(
-          String(font_family).FoldCase(), rule->Storage());
+      auto key = String(font_family).FoldCase();
+      auto add_result =
+          font_feature_values_storage_map_.insert(key, rule->Storage());
       if (add_result.is_new_entry) {
         add_result.stored_value->value.SetLayerOrder(layer_order);
+        font_feature_values_rule_map_.insert(
+            key, HeapVector<Member<StyleRuleFontFeatureValues>>());
       } else {
         add_result.stored_value->value.FuseUpdate(rule->Storage(), layer_order);
       }
+      font_feature_values_rule_map_.find(key)->value.push_back(rule);
     }
   }
 }
@@ -370,7 +391,7 @@ StyleRulePositionTry* ScopedStyleResolver::PositionTryForName(
   DCHECK(try_name);
   auto iter = position_try_rule_map_.find(try_name);
   if (iter != position_try_rule_map_.end()) {
-    return iter->value.Get();
+    return iter->value.value;
   }
   return nullptr;
 }
@@ -378,7 +399,7 @@ StyleRulePositionTry* ScopedStyleResolver::PositionTryForName(
 StyleRuleFunction* ScopedStyleResolver::FunctionForName(StringView name) {
   auto iter = function_rule_map_.find(AtomicString(name));
   if (iter != function_rule_map_.end()) {
-    return iter->value.Get();
+    return iter->value.value;
   }
   return nullptr;
 }
@@ -392,6 +413,20 @@ const FontFeatureValuesStorage* ScopedStyleResolver::FontFeatureValuesForFamily(
   auto it =
       font_feature_values_storage_map_.find(String(font_family).FoldCase());
   if (it == font_feature_values_storage_map_.end()) {
+    return nullptr;
+  }
+
+  return &(it->value);
+}
+
+const HeapVector<Member<StyleRuleFontFeatureValues>>*
+ScopedStyleResolver::FontFeatureValuesRulesForFamily(AtomicString font_family) {
+  if (font_feature_values_rule_map_.empty() || font_family.empty()) {
+    return nullptr;
+  }
+
+  auto it = font_feature_values_rule_map_.find(String(font_family).FoldCase());
+  if (it == font_feature_values_rule_map_.end()) {
     return nullptr;
   }
 
@@ -460,7 +495,7 @@ void ScopedStyleResolver::AddImplicitScopeTrigger(
 }
 
 void ScopedStyleResolver::RemoveImplicitScopeTriggers() {
-  for (auto [sheet, rule_set] : active_style_sheets_) {
+  for (const auto& [sheet, rule_set] : active_style_sheets_) {
     RemoveImplicitScopeTriggers(*sheet, *rule_set);
   }
 }
@@ -484,10 +519,16 @@ void ScopedStyleResolver::RemoveImplicitScopeTrigger(
 
 void ScopedStyleResolver::QuietlySwapActiveStyleSheets(
     ActiveStyleSheetVector& other) {
+  // The new stylesheets may change which implicit @scope rules apply;
+  // various StyleScopeData objects (stored on ElementRareData) need
+  // to be updated.
+  RemoveImplicitScopeTriggers();
+
   std::swap(active_style_sheets_, other);
   rule_set_groups_.clear();
   for (auto& [style_sheet, rule_set] : active_style_sheets_) {
     AddRuleSetToRuleSetGroupList(rule_set, rule_set_groups_);
+    AddImplicitScopeTriggers(*style_sheet, *rule_set);
   }
   // Any @layer rules within the new list of active stylesheets
   // must be collected in the cross-sheet layer map. Otherwise,
@@ -505,6 +546,7 @@ void ScopedStyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(function_rule_map_);
   visitor->Trace(counter_style_map_);
   visitor->Trace(cascade_layer_map_);
+  visitor->Trace(font_feature_values_rule_map_);
 }
 
 }  // namespace blink

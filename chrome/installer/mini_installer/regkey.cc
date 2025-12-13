@@ -57,12 +57,6 @@ LONG RegKey::ReadDWValue(const wchar_t* value_name, DWORD* value) const {
   return result;
 }
 
-LONG RegKey::WriteSZValue(const wchar_t* value_name, const wchar_t* value) {
-  return ::RegSetValueEx(key_, value_name, 0, REG_SZ,
-                         reinterpret_cast<const BYTE*>(value),
-                         (lstrlen(value) + 1) * sizeof(wchar_t));
-}
-
 LONG RegKey::WriteDWValue(const wchar_t* value_name, DWORD value) {
   return ::RegSetValueEx(key_, value_name, 0, REG_DWORD,
                          reinterpret_cast<const BYTE*>(&value), sizeof(value));

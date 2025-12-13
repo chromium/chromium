@@ -1654,5 +1654,262 @@ INSTANTIATE_TEST_SUITE_P(
       });
     });
 
+#if !BUILDFLAG(IS_CHROMEOS)
+class SyncSetupIncompleteMigrationTest : public SyncToSigninMigrationTestBase,
+                                         public testing::Test {
+ public:
+  SyncSetupIncompleteMigrationTest()
+      : SyncToSigninMigrationTestBase(
+            /*migration_feature_enabled=*/false,
+            /*force_migration_feature_enabled=*/false) {
+    feature_list_.InitWithFeatures(
+        {syncer::kUnoPhase2FollowUp,
+         switches::kMigrateOutOfSyncSetupIncompleteState},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(SyncSetupIncompleteMigrationTest, Migrate) {
+  ASSERT_TRUE(sync_service_.HasSyncConsent());
+
+  const GaiaId gaia_id = sync_service_.GetAccountInfo().gaia;
+  const std::string email = sync_service_.GetAccountInfo().email;
+
+  // Save the above state to prefs.
+  RecordStateToPrefs();
+  // Mark sync setup incomplete.
+  sync_prefs_->ClearInitialSyncFeatureSetupComplete();
+
+  ASSERT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
+            gaia_id.ToString());
+  ASSERT_TRUE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
+  ASSERT_EQ(pref_service_.GetString(prefs::kGoogleServicesLastSyncingGaiaId),
+            gaia_id.ToString());
+  ASSERT_EQ(pref_service_.GetString(prefs::kGoogleServicesLastSyncingUsername),
+            email);
+  ASSERT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
+
+  base::HistogramTester histogram_tester;
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SyncSetupIncompleteMigrationDecision",
+      /*kMigrate*/ 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SyncToSigninMigrationDecision",
+      /*SyncToSigninMigrationDecision::kDontMigrateNotSyncing*/ 2, 1);
+
+  // Note that TestSyncService doesn't consume the prefs, so verify the prefs
+  // directly here.
+  // The user should still be signed in.
+  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
+            gaia_id.ToString());
+  // But not syncing anymore.
+  EXPECT_FALSE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
+  EXPECT_FALSE(
+      pref_service_.GetUserPrefValue(prefs::kGoogleServicesLastSyncingGaiaId));
+  EXPECT_FALSE(pref_service_.GetUserPrefValue(
+      prefs::kGoogleServicesLastSyncingUsername));
+  EXPECT_FALSE(pref_service_.GetUserPrefValue(
+      syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete));
+}
+
+TEST_F(SyncSetupIncompleteMigrationTest, ShouldNotMigrateIfNotSignedIn) {
+  // Signed-out user.
+  sync_service_.SetSignedOut();
+  // Save the above state to prefs.
+  RecordStateToPrefs();
+
+  base::HistogramTester histogram_tester;
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SyncSetupIncompleteMigrationDecision",
+      /*kDontMigrateNotSignedIn*/ 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SyncToSigninMigrationDecision",
+      /*SyncToSigninMigrationDecision::kDontMigrateNotSignedIn*/ 1, 1);
+}
+
+TEST_F(SyncSetupIncompleteMigrationTest, ShouldNotMigrateIfNotSyncing) {
+  // Signed-in non-syncing user.
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
+  // Save the above state to prefs.
+  RecordStateToPrefs();
+
+  base::HistogramTester histogram_tester;
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SyncSetupIncompleteMigrationDecision",
+      /*kDontMigrateNotSyncing*/ 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SyncToSigninMigrationDecision",
+      /*SyncToSigninMigrationDecision::kDontMigrateNotSyncing*/ 2, 1);
+}
+
+TEST_F(SyncSetupIncompleteMigrationTest, ShouldNotMigrateIfSyncSetupComplete) {
+  ASSERT_TRUE(sync_service_.HasSyncConsent());
+
+  const GaiaId gaia_id = sync_service_.GetAccountInfo().gaia;
+  const std::string email = sync_service_.GetAccountInfo().email;
+
+  // Save the above state to prefs.
+  RecordStateToPrefs();
+
+  ASSERT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
+            gaia_id.ToString());
+  ASSERT_TRUE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
+  ASSERT_EQ(pref_service_.GetString(prefs::kGoogleServicesLastSyncingGaiaId),
+            gaia_id.ToString());
+  ASSERT_EQ(pref_service_.GetString(prefs::kGoogleServicesLastSyncingUsername),
+            email);
+  ASSERT_TRUE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
+
+  base::HistogramTester histogram_tester;
+  MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                    &pref_service_);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SyncSetupIncompleteMigrationDecision",
+      /*kDontMigrateSyncSetupComplete*/ 3, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SyncToSigninMigrationDecision",
+      /*SyncToSigninMigrationDecision::kDontMigrateFlagDisabled*/ 5, 1);
+
+  // Note that TestSyncService doesn't consume the prefs, so verify the prefs
+  // directly here.
+  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
+            gaia_id.ToString());
+  EXPECT_TRUE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
+  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesLastSyncingGaiaId),
+            gaia_id.ToString());
+  EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesLastSyncingUsername),
+            email);
+  EXPECT_TRUE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
+}
+
+TEST_F(SyncSetupIncompleteMigrationTest, ShouldNotMigrateIfFlagDisabled) {
+  ASSERT_TRUE(sync_service_.HasSyncConsent());
+
+  const GaiaId gaia_id = sync_service_.GetAccountInfo().gaia;
+  const std::string email = sync_service_.GetAccountInfo().email;
+
+  // Save the above state to prefs.
+  RecordStateToPrefs();
+  // Mark sync setup incomplete.
+  sync_prefs_->ClearInitialSyncFeatureSetupComplete();
+
+  ASSERT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
+            gaia_id.ToString());
+  ASSERT_TRUE(pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
+  ASSERT_EQ(pref_service_.GetString(prefs::kGoogleServicesLastSyncingGaiaId),
+            gaia_id.ToString());
+  ASSERT_EQ(pref_service_.GetString(prefs::kGoogleServicesLastSyncingUsername),
+            email);
+  ASSERT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
+
+  // Kill-switch active.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{syncer::kUnoPhase2FollowUp},
+        /*disabled_features=*/
+        {switches::kMigrateOutOfSyncSetupIncompleteState});
+
+    base::HistogramTester histogram_tester;
+    MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                      &pref_service_);
+
+    histogram_tester.ExpectUniqueSample(
+        "Sync.SyncSetupIncompleteMigrationDecision",
+        /*kDontMigrateFlagDisabled*/ 4, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Sync.SyncToSigninMigrationDecision",
+        /*SyncToSigninMigrationDecision::kDontMigrateFlagDisabled*/ 5, 1);
+
+    // Note that TestSyncService doesn't consume the prefs, so verify the prefs
+    // directly here.
+    EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
+              gaia_id.ToString());
+    EXPECT_TRUE(
+        pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
+    EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesLastSyncingGaiaId),
+              gaia_id.ToString());
+    EXPECT_EQ(
+        pref_service_.GetString(prefs::kGoogleServicesLastSyncingUsername),
+        email);
+  }
+  // Fast-follows flag disabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{switches::kMigrateOutOfSyncSetupIncompleteState},
+        /*disabled_features=*/{syncer::kUnoPhase2FollowUp});
+
+    base::HistogramTester histogram_tester;
+    MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                      &pref_service_);
+
+    histogram_tester.ExpectUniqueSample(
+        "Sync.SyncSetupIncompleteMigrationDecision",
+        /*kDontMigrateFlagDisabled*/ 4, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Sync.SyncToSigninMigrationDecision",
+        /*SyncToSigninMigrationDecision::kDontMigrateFlagDisabled*/ 5, 1);
+
+    // Note that TestSyncService doesn't consume the prefs, so verify the prefs
+    // directly here.
+    EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
+              gaia_id.ToString());
+    EXPECT_TRUE(
+        pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
+    EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesLastSyncingGaiaId),
+              gaia_id.ToString());
+    EXPECT_EQ(
+        pref_service_.GetString(prefs::kGoogleServicesLastSyncingUsername),
+        email);
+  }
+  // Both flags enabled.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{syncer::kUnoPhase2FollowUp,
+                              switches::kMigrateOutOfSyncSetupIncompleteState},
+        /*disabled_features=*/{});
+
+    base::HistogramTester histogram_tester;
+    MaybeMigrateSyncingUserToSignedIn(fake_profile_dir_.GetPath(),
+                                      &pref_service_);
+
+    histogram_tester.ExpectUniqueSample(
+        "Sync.SyncSetupIncompleteMigrationDecision",
+        /*kMigrate*/ 0, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Sync.SyncToSigninMigrationDecision",
+        /*SyncToSigninMigrationDecision::kDontMigrateNotSyncing*/ 2, 1);
+
+    // Note that TestSyncService doesn't consume the prefs, so verify the prefs
+    // directly here.
+    EXPECT_EQ(pref_service_.GetString(prefs::kGoogleServicesAccountId),
+              gaia_id.ToString());
+    EXPECT_FALSE(
+        pref_service_.GetBoolean(prefs::kGoogleServicesConsentedToSync));
+    EXPECT_FALSE(pref_service_.GetUserPrefValue(
+        prefs::kGoogleServicesLastSyncingGaiaId));
+    EXPECT_FALSE(pref_service_.GetUserPrefValue(
+        prefs::kGoogleServicesLastSyncingUsername));
+    EXPECT_FALSE(pref_service_.GetUserPrefValue(
+        syncer::prefs::internal::kSyncInitialSyncFeatureSetupComplete));
+  }
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace
 }  // namespace browser_sync

@@ -7,7 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
-#include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 
 namespace plus_addresses {
 

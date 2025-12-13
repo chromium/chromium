@@ -3212,9 +3212,6 @@
         "test": "cast_shell_unittests"
       },
       {
-        "args": [
-          "--test-launcher-filter-file=src/testing/buildbot/filters/cast-linux.content_browsertests.filter"
-        ],
         "swarming": {
           "can_use_on_swarming_builders": false
         },
@@ -3402,9 +3399,6 @@
         "test": "cast_shell_unittests"
       },
       {
-        "args": [
-          "--test-launcher-filter-file=src/testing/buildbot/filters/cast-linux.content_browsertests.filter"
-        ],
         "swarming": {
           "can_use_on_swarming_builders": false
         },
@@ -4110,7 +4104,7 @@
         "swarming": {
           "can_use_on_swarming_builders": true
         },
-        "test": "webkit_unit_tests"
+        "test": "blink_unittests"
       },
       {
         "swarming": {

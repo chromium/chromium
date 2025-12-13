@@ -20,7 +20,6 @@ PrerenderNewTabHandle::PrerenderNewTabHandle(
     const PrerenderAttributes& attributes,
     BrowserContext& browser_context)
     : attributes_(attributes), web_contents_create_params_(&browser_context) {
-  CHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab));
   CHECK(!attributes.IsBrowserInitiated());
 
   auto* initiator_render_frame_host = RenderFrameHostImpl::FromFrameToken(
@@ -81,6 +80,8 @@ FrameTreeNodeId PrerenderNewTabHandle::StartPrerendering(
   ukm::SourceId triggered_primary_page_source_id =
       attributes_.initiator_web_contents->GetPrimaryMainFrame()
           ->GetPageUkmSourceId();
+  // TODO(https://crbug.com/428500219): Update the logic for
+  // prerender-until-script.
   auto* preloading_attempt =
       static_cast<PreloadingAttemptImpl*>(preloading_data->AddPreloadingAttempt(
           creating_predictor, enacting_predictor, PreloadingType::kPrerender,

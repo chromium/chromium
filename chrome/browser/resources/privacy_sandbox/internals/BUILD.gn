@@ -15,15 +15,18 @@ build_webui("build") {
     "mojo_timedelta.ts",
     "mojo_timestamp.ts",
     "pref_display.ts",
+    "pref_page.ts",
     "text_copy_button.ts",
     "value_display.ts",
     "internals_page.ts",
+    "search_bar.ts",
   ]
 
   ts_files = [
+    "content_settings_groups.ts",
+    "highlight_utils.ts",
     "privacy_sandbox_internals_browser_proxy.ts",
     "router.ts",
-    "content_settings_groups.ts",
   ]
 
   mojo_files_deps = [

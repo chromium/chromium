@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/ui/toolbar/back_forward_menu_model.h"
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -591,13 +587,13 @@ TEST_F(BackFwdMenuModelTest, FaviconLoadTest) {
   SkBitmap valid_icon_bitmap = *valid_icon.GetImage().ToSkBitmap();
 
   // Verify we did not get the default favicon.
-  EXPECT_NE(
+  UNSAFE_TODO(EXPECT_NE(
       0, memcmp(default_icon_bitmap.getPixels(), valid_icon_bitmap.getPixels(),
-                default_icon_bitmap.computeByteSize()));
+                default_icon_bitmap.computeByteSize())));
   // Verify we did get the expected favicon.
-  EXPECT_EQ(0,
-            memcmp(new_icon_bitmap.getPixels(), valid_icon_bitmap.getPixels(),
-                   new_icon_bitmap.computeByteSize()));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(new_icon_bitmap.getPixels(), valid_icon_bitmap.getPixels(),
+                new_icon_bitmap.computeByteSize())));
 
   // Make sure the browser deconstructor doesn't have problems.
   browser->tab_strip_model()->CloseAllTabs();

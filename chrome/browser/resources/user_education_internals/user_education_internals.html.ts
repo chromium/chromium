@@ -38,6 +38,9 @@ export function getHtml(this: UserEducationInternalsElement) {
         <a role="menuitem" href="#whatsNew" class="cr-nav-menu-item">
           What's New
         </a>
+        <a role="menuitem" href="#ntpPromos" class="cr-nav-menu-item">
+          NTP Promos
+        </a>
         <a role="menuitem" href="#advanced" class="cr-nav-menu-item">
           Advanced
         </a>
@@ -97,11 +100,44 @@ export function getHtml(this: UserEducationInternalsElement) {
               @clear-promo-data="${this.clearNewBadgeData_}">
           </user-education-internals-card>`)}
       </div>
+      <div id="ntpPromos">
+        <a name="ntpPromos"></a>
+        <h2>NTP Promos</h2>
+        <div id="ntpPromoPreferences">
+          <cr-expand-button
+              ?expanded="${this.ntpPromoPreferencesExpanded_}"
+              @expanded-changed="${this.onNtpPromoPreferencesExpandedChanged_}">
+            <div id="label"><h3>NTP Promo Preferences</h3></div>
+          </cr-expand-button>
+          <div id="ntpPromoPrefData"
+              ?hidden="${!this.ntpPromoPreferencesExpanded_}">
+            ${this.ntpPromoPreferences_.map(item => html`
+              <p><b>${item.name}</b> ${item.value}</p>`)}
+            <p>
+              Clicking the button below will reset all NTP promo preferences
+              not tied to feature flags. These changes may not be reflected on
+              NTP tabs that are already open.
+            </p>
+            <cr-button
+                id="clearNtpPromoPreferences"
+                @click="${this.clearNtpPromoPreferences_}">
+              Clear All
+            </cr-button>
+          </div>
+        </div>
+        ${this.ntpPromos_.map(item => html`
+          <user-education-internals-card
+              id="${item.internalName}"
+              ?hidden="${!this.promoFilter_(item)}"
+              .promo="${item}"
+              @clear-promo-data="${this.clearNtpPromoData_}">
+          </user-education-internals-card>`)}
+      </div>
       <div id="whatsNew">
         <h2>What's New</h2>
         <if expr="is_chromeos == False">
           <div class="whats-new-section">
-            <cr-button @click=${this.launchWhatsNewStaging_}>
+            <cr-button @click="${this.launchWhatsNewStaging_}">
               Launch staging
             </cr-button>
           </div>

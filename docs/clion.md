@@ -236,8 +236,6 @@ all the folders to exclude, right-clicking on them, selecting
       <file path="$PROJECT_DIR$/src/ipc" />
       <file path="$PROJECT_DIR$/src/media" />
       <file path="$PROJECT_DIR$/src/mojo" />
-      <file path="$PROJECT_DIR$/src/native_client" />
-      <file path="$PROJECT_DIR$/src/native_client_sdk" />
       <file path="$PROJECT_DIR$/src/net" />
       <file path="$PROJECT_DIR$/src/out" />
       <file path="$PROJECT_DIR$/src/pdf" />
@@ -258,7 +256,6 @@ all the folders to exclude, right-clicking on them, selecting
       <file path="$PROJECT_DIR$/src/url" />
       <file path="$PROJECT_DIR$/src/v8" />
       <file path="$PROJECT_DIR$/src/venv" />
-      <file path="$PROJECT_DIR$/src/weblayer" />
     </excludeRoots>
   </component>
 ```

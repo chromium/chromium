@@ -351,6 +351,9 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kWasmImportedStrings:
       blink_feature = WebFeature::kV8WebAssemblyJSStringBuiltins;
       break;
+    case v8::Isolate::kWasmCustomDescriptors:
+      blink_feature = WebFeature::kV8WasmCustomDescriptors;
+      break;
     case v8::Isolate::kSourceMappingUrlMagicCommentAtSign:
       blink_feature = WebFeature::kSourceMappingUrlMagicCommentAtSign;
       break;
@@ -464,7 +467,7 @@ void UseCounterCallback(v8::Isolate* isolate,
       webdx_feature = WebDXFeature::kDRAFT_WasmBranchHinting;
       break;
     case v8::Isolate::kExplicitResourceManagement:
-      webdx_feature = WebDXFeature::kDRAFT_ExplicitResourceManagement;
+      webdx_feature = WebDXFeature::kExplicitResourceManagement;
       break;
     case v8::Isolate::kUint8ArrayToFromBase64AndHex:
       webdx_feature = WebDXFeature::kUint8ArrayBase64Hex;
@@ -483,6 +486,35 @@ void UseCounterCallback(v8::Isolate* isolate,
       break;
     case v8::Isolate::kWasmSignExtensionOps:
       webdx_feature = WebDXFeature::kWasmSignExtensionOperators;
+      break;
+    case v8::Isolate::kTopLevelAwait:
+      webdx_feature = WebDXFeature::kTopLevelAwait;
+      break;
+    case v8::Isolate::kAtomicsPause:
+      webdx_feature = WebDXFeature::kAtomicsPause;
+      break;
+    case v8::Isolate::kLogicalAssignment:
+      webdx_feature = WebDXFeature::kLogicalAssignments;
+      break;
+    case v8::Isolate::kNullishCoalescing:
+      webdx_feature = WebDXFeature::kNullishCoalescing;
+      break;
+    case v8::Isolate::kRegExpCompile:
+      webdx_feature = WebDXFeature::kRegexpCompile;
+      break;
+    case v8::Isolate::kWithStatement:
+      webdx_feature = WebDXFeature::kWith;
+      break;
+    case v8::Isolate::kHtmlWrapperMethods:
+      webdx_feature = WebDXFeature::kHtmlWrapperMethods;
+      break;
+    case v8::Isolate::kRegExpStaticProperties:
+      webdx_feature = WebDXFeature::kRegexpStaticProperties;
+      break;
+    case v8::Isolate::kRegExpStaticPropertiesWithLastMatch:
+      UseCounter::Count(CurrentExecutionContext(isolate),
+                        WebFeature::kV8RegExpStaticPropertiesWithLastMatch);
+      webdx_feature = WebDXFeature::kRegexpStaticProperties;
       break;
     default:
       // This can happen if V8 has added counters that this version of Blink

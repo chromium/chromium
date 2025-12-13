@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/linux/seccomp-bpf/syscall.h"
 
 #include <asm/unistd.h>
@@ -22,6 +17,7 @@
 #include <array>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/memory/page_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/posix/eintr_wrapper.h"
@@ -50,7 +46,8 @@ TEST(Syscall, InvalidCallReturnsENOSYS) {
 template <typename T>
 T LoadBehind(intptr_t ptr) {
   T ret;
-  memcpy(&ret, reinterpret_cast<const void*>(ptr - sizeof(T)), sizeof(ret));
+  UNSAFE_TODO(memcpy(&ret, reinterpret_cast<const void*>(ptr - sizeof(T)),
+                     sizeof(ret)));
   return ret;
 }
 
@@ -111,7 +108,8 @@ intptr_t CopySyscallArgsToAux(const struct arch_seccomp_data& args, void* aux) {
   std::vector<uint64_t>* const seen_syscall_args =
       static_cast<std::vector<uint64_t>*>(aux);
   BPF_ASSERT(std::size(args.args) == 6);
-  seen_syscall_args->assign(args.args, args.args + std::size(args.args));
+  seen_syscall_args->assign(args.args,
+                            UNSAFE_TODO(args.args + std::size(args.args)));
   return -ENOMEM;
 }
 
@@ -244,14 +242,14 @@ TEST(Syscall, ComplexSyscallSixArgs) {
                                                           )));
 #if !defined(MEMORY_SANITIZER)
   // MSan considers the memory backing addr2 uninitialized.
-  EXPECT_EQ(0, memcmp(addr2 + kPageSize, addr3, kPageSize));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(addr2 + kPageSize, addr3, kPageSize)));
 
   // Just to be absolutely on the safe side, also verify that the file
   // contents matches what we are getting from a read() operation.
   base::FixedArray<char> buf(2 * kPageSize);
   EXPECT_EQ(2 * kPageSize, static_cast<size_t>(Syscall::Call(
                                __NR_read, fd, buf.data(), 2 * kPageSize)));
-  EXPECT_EQ(0, memcmp(addr2, buf.data(), 2 * kPageSize));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(addr2, buf.data(), 2 * kPageSize)));
 #endif
 
   // Clean up

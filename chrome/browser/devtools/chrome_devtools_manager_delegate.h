@@ -11,8 +11,10 @@
 #include <string>
 
 #include "chrome/browser/devtools/device/devtools_device_discovery.h"
+#include "chrome/browser/devtools/global_confirm_info_bar.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
 #include "content/public/browser/devtools_manager_delegate.h"
@@ -22,7 +24,8 @@ class ChromeDevToolsSession;
 class ScopedKeepAlive;
 using RemoteLocations = std::set<net::HostPortPair>;
 
-class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
+class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate,
+                                      public ConfirmInfoBarDelegate::Observer {
  public:
   static const char kTypeApp[];
   static const char kTypeBackgroundPage[];
@@ -56,12 +59,20 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
 
   // content::DevToolsManagerDelegate implementation.
   void Inspect(content::DevToolsAgentHost* agent_host) override;
+  scoped_refptr<content::DevToolsAgentHost> GetDevToolsAgentHost(
+      content::DevToolsAgentHost* agent_host) override;
+  scoped_refptr<content::DevToolsAgentHost> OpenDevTools(
+      content::DevToolsAgentHost* agent_host,
+      const content::DevToolsManagerDelegate::DevToolsOptions& devtools_options)
+      override;
   void Activate(content::DevToolsAgentHost* agent_host) override;
   void HandleCommand(content::DevToolsAgentHostClientChannel* channel,
                      base::span<const uint8_t> message,
                      NotHandledCallback callback) override;
   std::string GetTargetType(content::WebContents* web_contents) override;
   std::string GetTargetTitle(content::WebContents* web_contents) override;
+  std::optional<bool> ShouldReportAsTabTarget(
+      content::WebContents* web_contents) override;
 
   content::BrowserContext* CreateBrowserContext() override;
   void DisposeBrowserContext(content::BrowserContext*,
@@ -77,10 +88,17 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
       TargetType target_type,
       bool new_window) override;
   bool HasBundledFrontendResources() override;
+  void AcceptDebugging(AcceptCallback) override;
+  void SetActiveWebSocketConnections(size_t count) override;
 
   void DevicesAvailable(
       const DevToolsDeviceDiscovery::CompleteDevices& devices);
 
+  // ConfirmInfoBarDelegate::Observer
+  void OnAccept() override;
+  void OnDismiss() override;
+
+  raw_ptr<GlobalConfirmInfoBar> infobar_ = nullptr;
   std::map<content::DevToolsAgentHostClientChannel*,
            std::unique_ptr<ChromeDevToolsSession>>
       sessions_;

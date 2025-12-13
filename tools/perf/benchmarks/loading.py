@@ -6,6 +6,7 @@ from core import perf_benchmark
 
 from benchmarks import loading_metrics_category
 from telemetry.web_perf import timeline_based_measurement
+from telemetry.timeline import chrome_trace_category_filter
 
 
 class _LoadingBase(perf_benchmark.PerfBenchmark):
@@ -14,7 +15,9 @@ class _LoadingBase(perf_benchmark.PerfBenchmark):
   options = {'pageset_repeat': 2}
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
-    tbm_options = timeline_based_measurement.Options()
+    cat_filter = chrome_trace_category_filter.ChromeTraceCategoryFilter(
+        filter_string='disabled-by-default-histogram_samples')
+    tbm_options = timeline_based_measurement.Options(cat_filter)
     loading_metrics_category.AugmentOptionsForLoadingMetrics(tbm_options)
     # Enable "Memory.GPU.PeakMemoryUsage2.PageLoad" so we can measure the GPU
     # memory used throughout the page loading tests. Include "umaMetric" as a
@@ -28,4 +31,5 @@ class _LoadingBase(perf_benchmark.PerfBenchmark):
     # Add "umaMetric" to the timeline based metrics. This does not override
     # those added in loading_metrics_category.AugmentOptionsForLoadingMetrics.
     tbm_options.AddTimelineBasedMetric('umaMetric')
+    tbm_options.AddTimelineBasedMetric('tbmv3:uma_metrics')
     return tbm_options

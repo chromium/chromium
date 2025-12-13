@@ -394,8 +394,8 @@ TEST_F(NetworkGetConnectionTest, GetConnectionTypeOnDifferentThread) {
   // Flush pending OnInitialConnectionType() notification and force |tracker| to
   // use async for GetConnectionType() calls.
   base::RunLoop().RunUntilIdle();
-  base::subtle::NoBarrier_Store(&network_connection_tracker()->connection_type_,
-                                -1);
+  network_connection_tracker()->connection_type_.store(-1,
+      std::memory_order_relaxed);
   {
     base::RunLoop run_loop;
     getter_thread()->task_runner()->PostTaskAndReply(

@@ -16,6 +16,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -82,7 +83,11 @@ Matcher GetHeaderMatcher(
 
 Matcher GetUpdaterUserAgentMatcher(const base::Version& updater_version) {
   return GetHeaderMatcher(
-      {{"User-Agent", GetUpdaterUserAgent(updater_version)}});
+      {{"User-Agent",
+        base::StrCat({GetUpdaterUserAgent(updater_version), "|",
+                      PRODUCT_FULLNAME_STRING, "_test/",
+                      base::NumberToString(updater_version.components()[2]),
+                      ".*"})}});
 }
 
 Matcher GetTargetURLMatcher(GURL target_url) {
@@ -95,7 +100,7 @@ Matcher GetTargetURLMatcher(GURL target_url) {
                     << "]";
       return false;
     }
-    return GetHeaderMatcher({{"Host", target_url.host()}}).Run(request);
+    return GetHeaderMatcher({{"Host", target_url.GetHost()}}).Run(request);
   });
 }
 
@@ -123,8 +128,8 @@ Matcher GetContentMatcher(
 Matcher GetScopeMatcher(UpdaterScope scope) {
   return base::BindLambdaForTesting([scope](const HttpRequest& request) {
     const bool is_match = [&scope, &request] {
-      const std::optional<base::Value::Dict> doc =
-          base::JSONReader::ReadDict(request.decoded_content);
+      const std::optional<base::Value::Dict> doc = base::JSONReader::ReadDict(
+          request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (!doc) {
         return false;
       }
@@ -156,8 +161,8 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
   return base::BindLambdaForTesting([app_id,
                                      priority](const HttpRequest& request) {
     const bool is_match = [&app_id, priority, &request] {
-      const std::optional<base::Value::Dict> doc =
-          base::JSONReader::ReadDict(request.decoded_content);
+      const std::optional<base::Value::Dict> doc = base::JSONReader::ReadDict(
+          request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (!doc) {
         return false;
       }
@@ -195,8 +200,8 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
 Matcher GetUpdaterEnableUpdatesMatcher() {
   return base::BindLambdaForTesting([](const HttpRequest& request) {
     const bool update_disabled = [&request] {
-      const std::optional<base::Value::Dict> doc =
-          base::JSONReader::ReadDict(request.decoded_content);
+      const std::optional<base::Value::Dict> doc = base::JSONReader::ReadDict(
+          request.decoded_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (!doc) {
         return false;
       }

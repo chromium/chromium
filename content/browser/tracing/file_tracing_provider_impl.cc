@@ -22,26 +22,30 @@ bool FileTracingProviderImpl::FileTracingCategoryIsEnabled() const {
 }
 
 void FileTracingProviderImpl::FileTracingEnable(const void* id) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      kFileTracingEventCategoryGroup, FILE_TRACING_PREFIX, id);
+  TRACE_EVENT_BEGIN(kFileTracingEventCategoryGroup, FILE_TRACING_PREFIX,
+                    perfetto::Track::FromPointer(id));
 }
 
 void FileTracingProviderImpl::FileTracingDisable(const void* id) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      kFileTracingEventCategoryGroup, FILE_TRACING_PREFIX, id);
+  // FILE_TRACING_PREFIX
+  TRACE_EVENT_END(kFileTracingEventCategoryGroup,
+                  perfetto::Track::FromPointer(id));
 }
 
 void FileTracingProviderImpl::FileTracingEventBegin(const char* name,
                                                     const void* id,
                                                     const base::FilePath& path,
                                                     int64_t size) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(kFileTracingEventCategoryGroup, name, id,
-      "path", path.AsUTF8Unsafe(), "size", size);
+  TRACE_EVENT_BEGIN(kFileTracingEventCategoryGroup,
+                    perfetto::DynamicString(name),
+                    perfetto::Track::FromPointer(id), "path",
+                    path.AsUTF8Unsafe(), "size", size);
 }
 
 void FileTracingProviderImpl::FileTracingEventEnd(const char* name,
                                                   const void* id) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0(kFileTracingEventCategoryGroup, name, id);
+  TRACE_EVENT_END(kFileTracingEventCategoryGroup,
+                  perfetto::Track::FromPointer(id));
 }
 
 }  // namespace content

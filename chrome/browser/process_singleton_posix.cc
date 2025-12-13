@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // On Linux, when the user tries to launch a second copy of chrome, we check
 // for a socket in the user's profile directory.  If the socket file is open we
 // send a message to the first chrome browser process with the current
@@ -55,6 +50,7 @@
 #include <sys/un.h>
 #include <unistd.h>
 
+#include <array>
 #include <cstring>
 #include <memory>
 #include <set>
@@ -63,6 +59,8 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/file_path.h"
@@ -74,6 +72,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/safe_strerror.h"
@@ -81,6 +80,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -138,12 +138,11 @@ const int kTimeoutInSeconds = 20;
 // Number of retries to notify the browser. 20 retries over 20 seconds = 1 try
 // per second.
 const int kRetryAttempts = 20;
-const char kStartToken[] = "START";
-const char kACKToken[] = "ACK";
-const char kShutdownToken[] = "SHUTDOWN";
+constexpr std::string_view kStartToken = "START";
+constexpr std::string_view kACKToken = "ACK";
+constexpr std::string_view kShutdownToken = "SHUTDOWN";
 const char kTokenDelimiter = '\0';
 const int kMaxMessageLength = 32 * 1024;
-const int kMaxACKMessageLength = std::size(kShutdownToken) - 1;
 
 bool g_disable_prompt = false;
 bool g_skip_is_chrome_process_check = false;
@@ -167,13 +166,10 @@ void CloseSocket(int fd) {
 }
 
 // Write a message to a socket fd.
-bool WriteToSocket(int fd, const char *message, size_t length) {
-  DCHECK(message);
-  DCHECK(length);
-  size_t bytes_written = 0;
-  do {
-    ssize_t rv = HANDLE_EINTR(
-        write(fd, message + bytes_written, length - bytes_written));
+bool WriteToSocket(int fd, std::string_view message) {
+  DCHECK(!message.empty());
+  while (!message.empty()) {
+    ssize_t rv = HANDLE_EINTR(write(fd, message.data(), message.size()));
     if (rv < 0) {
       if (errno == EAGAIN || errno == EWOULDBLOCK) {
         // The socket shouldn't block, we're sending so little data.  Just give
@@ -184,8 +180,8 @@ bool WriteToSocket(int fd, const char *message, size_t length) {
       PLOG(ERROR) << "write() failed";
       return false;
     }
-    bytes_written += rv;
-  } while (bytes_written < length);
+    message = message.substr(rv);
+  }
 
   return true;
 }
@@ -204,8 +200,15 @@ int WaitSocketForRead(int fd, const base::TimeDelta& timeout) {
   fd_set read_fds;
   struct timeval tv = TimeDeltaToTimeVal(timeout);
 
-  FD_ZERO(&read_fds);
-  FD_SET(fd, &read_fds);
+  // SAFETY: FD_ZERO is a macro provided by linux that ensures the fd_set
+  // is empty. Because we are providing a stack variable this memory address
+  // will always be valid.
+  // See https://linux.die.net/man/3/fd_zero
+  UNSAFE_BUFFERS(FD_ZERO(&read_fds));
+
+  // SAFETY: FD_SET adds fd to the set read_fds, which was just cleared before.
+  // See https://linux.die.net/man/3/fd_set
+  UNSAFE_BUFFERS(FD_SET(fd, &read_fds));
 
   return HANDLE_EINTR(select(fd + 1, &read_fds, nullptr, nullptr, &tv));
 }
@@ -213,10 +216,9 @@ int WaitSocketForRead(int fd, const base::TimeDelta& timeout) {
 // Read a message from a socket fd, with an optional timeout.
 // If |timeout| <= 0 then read immediately.
 // Return number of bytes actually read, or -1 on error.
-ssize_t ReadFromSocket(int fd,
-                       char* buf,
-                       size_t bufsize,
-                       const base::TimeDelta& timeout) {
+ssize_t ReadFromSocketWithTimeout(int fd,
+                                  const base::span<char> buf,
+                                  const base::TimeDelta& timeout) {
   if (timeout.is_positive()) {
     int rv = WaitSocketForRead(fd, timeout);
     if (rv <= 0)
@@ -224,23 +226,26 @@ ssize_t ReadFromSocket(int fd,
   }
 
   size_t bytes_read = 0;
-  do {
-    ssize_t rv = HANDLE_EINTR(read(fd, buf + bytes_read, bufsize - bytes_read));
+  base::span<char> buf_remainder(buf);
+  while (!buf_remainder.empty()) {
+    ssize_t rv =
+        HANDLE_EINTR(read(fd, buf_remainder.data(), buf_remainder.size()));
+    if (rv == 0) {
+      break;
+    }
     if (rv < 0) {
       if (errno != EAGAIN && errno != EWOULDBLOCK) {
         PLOG(ERROR) << "read() failed";
+        CloseSocket(fd);
         return rv;
-      } else {
-        // It would block, so we just return what has been read.
-        return bytes_read;
       }
-    } else if (!rv) {
-      // No more data to read.
+      // It would block, so we just return what has been read.
       return bytes_read;
-    } else {
-      bytes_read += rv;
     }
-  } while (bytes_read < bufsize);
+
+    buf_remainder = buf_remainder.subspan(base::checked_cast<size_t>(rv));
+    bytes_read += rv;
+  }
 
   return bytes_read;
 }
@@ -274,7 +279,7 @@ bool SetupSockAddr(const std::string& path,
       offsetof(std::remove_pointer_t<decltype(addr)>, sun_path) + path.length();
 
   *socklen = addr->sun_len;
-  memcpy(addr->sun_path, path.c_str(), path.length());
+  base::span(addr->sun_path).copy_prefix_from(path);
 #else
   // The portable version: NUL-terminate sun_path and don’t touch sun_len (which
   // may not even exist).
@@ -542,7 +547,7 @@ class ProcessSingleton::LinuxWatcher
 
     // Finish handling the incoming message by optionally sending back an ACK
     // message and removing this SocketReader.
-    void FinishWithACK(const char *message, size_t length);
+    void FinishWithACK(std::string_view message);
 
    private:
     void OnSocketCanReadWithoutBlocking();
@@ -568,7 +573,7 @@ class ProcessSingleton::LinuxWatcher
     const int fd_;
 
     // Store the message in this buffer.
-    char buf_[kMaxMessageLength];
+    std::array<char, kMaxMessageLength> buf_;
 
     // Tracks the number of bytes we've read in case we're getting partial
     // reads.
@@ -661,13 +666,13 @@ void ProcessSingleton::LinuxWatcher::HandleMessage(
   if (parent_ && parent_->notification_callback_.Run(
                      base::CommandLine(argv), base::FilePath(current_dir))) {
     // Send back "ACK" message to prevent the client process from starting up.
-    reader->FinishWithACK(kACKToken, std::size(kACKToken) - 1);
+    reader->FinishWithACK(kACKToken);
   } else {
     LOG(WARNING) << "Not handling interprocess notification as browser"
                     " is shutting down";
     // Send back "SHUTDOWN" message, so that the client process can start up
     // without killing this process.
-    reader->FinishWithACK(kShutdownToken, std::size(kShutdownToken) - 1);
+    reader->FinishWithACK(kShutdownToken);
     return;
   }
 }
@@ -686,40 +691,23 @@ void ProcessSingleton::LinuxWatcher::RemoveSocketReader(SocketReader* reader) {
 void ProcessSingleton::LinuxWatcher::SocketReader::
     OnSocketCanReadWithoutBlocking() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  while (bytes_read_ < sizeof(buf_)) {
-    ssize_t rv =
-        HANDLE_EINTR(read(fd_, buf_ + bytes_read_, sizeof(buf_) - bytes_read_));
-    if (rv < 0) {
-      if (errno != EAGAIN && errno != EWOULDBLOCK) {
-        PLOG(ERROR) << "read() failed";
-        CloseSocket(fd_);
-        return;
-      } else {
-        // It would block, so we just return and continue to watch for the next
-        // opportunity to read.
-        return;
-      }
-    } else if (!rv) {
-      // No more data to read.  It's time to process the message.
-      break;
-    } else {
-      bytes_read_ += rv;
-    }
-  }
+  bytes_read_ += ReadFromSocketWithTimeout(
+      fd_, base::span(buf_).subspan(bytes_read_), base::Seconds(0));
 
   // Validate the message.  The shortest message is kStartToken\0x\0x
-  const size_t kMinMessageLength = std::size(kStartToken) + 4;
+  const size_t kMinMessageLength = kStartToken.length() + 4;
   if (bytes_read_ < kMinMessageLength) {
     buf_[bytes_read_] = 0;
-    LOG(ERROR) << "Invalid socket message (wrong length):" << buf_;
+    LOG(ERROR) << "Invalid socket message (wrong length):" << buf_.data();
     CleanupAndDeleteSelf();
     return;
   }
 
-  std::string str(buf_, bytes_read_);
-  std::vector<std::string> tokens = base::SplitString(
-      str, std::string(1, kTokenDelimiter),
-      base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::string_view str =
+      base::as_string_view(base::span(buf_).first(bytes_read_));
+  std::vector<std::string> tokens =
+      base::SplitString(str, std::string(1, kTokenDelimiter),
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   if (tokens.size() < 3 || tokens[0] != kStartToken) {
     LOG(ERROR) << "Wrong message format: " << str;
@@ -748,10 +736,10 @@ void ProcessSingleton::LinuxWatcher::SocketReader::
 }
 
 void ProcessSingleton::LinuxWatcher::SocketReader::FinishWithACK(
-    const char *message, size_t length) {
-  if (message && length) {
+    std::string_view message) {
+  if (!message.empty()) {
     // Not necessary to care about the return value.
-    WriteToSocket(fd_, message, length);
+    WriteToSocket(fd_, message);
   }
 
   if (shutdown(fd_, SHUT_WR) < 0)
@@ -903,7 +891,7 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
   }
 
   // Send the message
-  if (!WriteToSocket(socket.fd(), to_send.data(), to_send.length())) {
+  if (!WriteToSocket(socket.fd(), to_send)) {
     // Try to kill the other process, because it might have been dead.
     if (!kill_unresponsive || !KillProcessByLockPath(true))
       return PROFILE_IN_USE;
@@ -917,8 +905,8 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
 
   // Read ACK message from the other process. It might be blocked for a certain
   // timeout, to make sure the other process has enough time to return ACK.
-  char buf[kMaxACKMessageLength + 1];
-  ssize_t len = ReadFromSocket(socket.fd(), buf, kMaxACKMessageLength, timeout);
+  std::array<char, std::max(kACKToken.size(), kShutdownToken.size())> buf;
+  ssize_t len = ReadFromSocketWithTimeout(socket.fd(), buf, timeout);
 
   // Failed to read ACK, the other process might have been frozen.
   if (len <= 0) {
@@ -928,18 +916,20 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
     return PROCESS_NONE;
   }
 
-  buf[len] = '\0';
-  if (strncmp(buf, kShutdownToken, std::size(kShutdownToken) - 1) == 0) {
+  std::string_view buf_string_view = base::as_string_view(
+      base::span(buf).first(base::checked_cast<size_t>(len)));
+  if (buf_string_view == kShutdownToken) {
     // The other process is shutting down, it's safe to start a new process.
     internal::SendRemoteProcessInteractionResultHistogram(
         REMOTE_PROCESS_SHUTTING_DOWN);
     return PROCESS_NONE;
-  } else if (strncmp(buf, kACKToken, std::size(kACKToken) - 1) == 0) {
+  } else if (buf_string_view == kACKToken) {
     // Assume the other process is handling the request.
     return PROCESS_NOTIFIED;
   }
 
-  NOTREACHED() << "The other process returned unknown message: " << buf;
+  NOTREACHED() << "The other process returned unknown message: "
+               << buf_string_view;
 }
 
 ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessOrCreate() {
@@ -1055,7 +1045,7 @@ bool ProcessSingleton::Create() {
   // Create the socket file somewhere in /tmp which is usually mounted as a
   // normal filesystem. Some network filesystems (notably AFS) are screwy and
   // do not support Unix domain sockets.
-  if (!socket_dir_.CreateUniqueTempDir()) {
+  if (!socket_dir_.CreateUniqueTempDir(/*prefix=*/FILE_PATH_LITERAL(""))) {
     LOG(ERROR) << "Failed to create socket directory.";
     return false;
   }

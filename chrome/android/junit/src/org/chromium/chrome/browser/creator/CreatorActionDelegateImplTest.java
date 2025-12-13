@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.creator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,7 +28,6 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.creator.CreatorActionDelegateImpl;
-import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -46,7 +46,6 @@ public class CreatorActionDelegateImplTest {
 
     @Mock private SigninAndHistorySyncActivityLauncher mSigninLauncher;
     @Mock private SnackbarManager mSnackbarManager;
-    @Mock private BookmarkModel mBookmarkModel;
     @Mock private Activity mActivity;
     @Mock private Profile mProfile;
     @Mock private BottomSheetController mBottomSheetController;
@@ -73,6 +72,7 @@ public class CreatorActionDelegateImplTest {
     @Test
     public void testShowSignInInterstitial() {
         @SigninAccessPoint int signinAccessPoint = SigninAccessPoint.NTP_FEED_BOTTOM_PROMO;
+        when(mActivity.getString(anyInt())).thenReturn("string");
         when(mSigninLauncher.createBottomSheetSigninIntentOrShowError(
                         any(), any(), any(), eq(signinAccessPoint)))
                 .thenReturn(mSigninIntent);

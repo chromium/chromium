@@ -109,7 +109,7 @@ QualifiedName::QualifiedNameImpl::~QualifiedNameImpl() {
 String QualifiedName::ToString() const {
   String local = LocalName();
   if (HasPrefix())
-    return Prefix().GetString() + ":" + local;
+    return StrCat({Prefix().GetString(), ":", local});
   return local;
 }
 

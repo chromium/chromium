@@ -254,6 +254,9 @@ public class AddToHomescreenDialogView
                 mAppOriginView.setVisibility(View.VISIBLE);
                 mAppOriginView.setVisibility(View.VISIBLE);
                 break;
+            case AppType.TWA:
+                // This dialog should not be created for auto-minted TWAs.
+                assert false;
         }
 
         if (mAppType == AppType.SHORTCUT) {
@@ -334,7 +337,7 @@ public class AddToHomescreenDialogView
         int dismissalCause = DialogDismissalCause.NEGATIVE_BUTTON_CLICKED;
         if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
             String title = getAppNameView().getText().toString();
-            mDelegate.onAddToHomescreen(title, mAppType);
+            mDelegate.onAddToHomescreen(title);
             dismissalCause = DialogDismissalCause.POSITIVE_BUTTON_CLICKED;
         }
         mModalDialogManager.dismissDialog(mDialogModel, dismissalCause);
@@ -358,6 +361,7 @@ public class AddToHomescreenDialogView
             case AppType.NATIVE:
                 return mAppNameView;
             default:
+                // This dialog should not be created for auto-minted TWAs.
                 assert false;
                 return assumeNonNull(null);
         }

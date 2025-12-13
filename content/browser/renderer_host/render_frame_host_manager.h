@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <set>
@@ -22,6 +21,7 @@
 #include "content/browser/renderer_host/browsing_context_state.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/scoped_view_transition_resources.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/browser/renderer_host/stored_page.h"
 #include "content/browser/security/coop/cross_origin_opener_policy_status.h"
@@ -275,6 +275,30 @@ class CONTENT_EXPORT RenderFrameHostManager {
     std::optional<bool> is_same_site_;
   };
 
+  // Information about the ViewTransition state for the navigation commit.
+  struct ViewTransitionCommitInfo {
+    // No default constructor to ensure all arguments are explicitly passed,
+    // avoiding bugs where fields are missed.
+    ViewTransitionCommitInfo() = delete;
+
+    ViewTransitionCommitInfo(
+        ScopedViewTransitionResources* view_transition_resources,
+        bool delay_layer_tree_view_deletion)
+        : view_transition_resources(view_transition_resources),
+          delay_layer_tree_view_deletion(delay_layer_tree_view_deletion) {}
+
+    bool HasViewTransitionResources() const {
+      return !!view_transition_resources;
+    }
+
+    // The ScopedViewTransitionResources object is owned by the
+    // NavigationRequest. This struct is created on the stack during the
+    // navigation commit flow in Navigator::DidNavigate, ensuring the pointer
+    // remains valid for the duration of its use.
+    raw_ptr<ScopedViewTransitionResources> view_transition_resources;
+    bool delay_layer_tree_view_deletion;
+  };
+
   // The delegate pointer must be non-null and is not owned by this class. It
   // must outlive this class.
   //
@@ -376,12 +400,15 @@ class CONTENT_EXPORT RenderFrameHostManager {
   void BeforeUnloadCompleted(bool proceed);
 
   // Called when a renderer's frame navigates.
-  void DidNavigateFrame(RenderFrameHostImpl* render_frame_host,
-                        bool was_caused_by_user_gesture,
-                        bool is_same_document_navigation,
-                        bool clear_proxies_on_commit,
-                        const blink::FramePolicy& frame_policy,
-                        bool allow_paint_holding);
+  void DidNavigateFrame(
+      RenderFrameHostImpl* render_frame_host,
+      bool was_caused_by_user_gesture,
+      bool is_same_document_navigation,
+      bool clear_proxies_on_commit,
+      const blink::FramePolicy& frame_policy,
+      bool allow_paint_holding,
+      const ViewTransitionCommitInfo& view_transition_commit_info,
+      const base::optional_ref<const GURL> navigation_request_url);
 
   // Called when this frame's opener is changed to the frame specified by
   // |opener_frame_token| in |source_site_instance_group|'s process.  This
@@ -1087,23 +1114,35 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // removed during the commit. This can happen following some BrowsingInstance
   // swaps, such as those for COOP.
   // |allow_paint_holding| Indicates whether paint holding is allowed.
-  void CommitPending(std::unique_ptr<RenderFrameHostImpl> pending_rfh,
-                     std::unique_ptr<StoredPage> pending_stored_page,
-                     bool clear_proxies_on_commit,
-                     bool allow_paint_holding);
+  // |view_transition_commit_info| Information about the ViewTransition state
+  // for the navigation commit.
+  // `navigation_request_url` is a URL for the next new page's
+  // NavigationRequest's url.
+  void CommitPending(
+      std::unique_ptr<RenderFrameHostImpl> pending_rfh,
+      std::unique_ptr<StoredPage> pending_stored_page,
+      bool clear_proxies_on_commit,
+      bool allow_paint_holding,
+      const ViewTransitionCommitInfo& view_transition_commit_info,
+      const base::optional_ref<const GURL> navigation_request_url);
 
   // Helper to call CommitPending() in all necessary cases.
-  void CommitPendingIfNecessary(RenderFrameHostImpl* render_frame_host,
-                                bool was_caused_by_user_gesture,
-                                bool is_same_document_navigation,
-                                bool clear_proxies_on_commit,
-                                bool allow_paint_holding);
+  void CommitPendingIfNecessary(
+      RenderFrameHostImpl* render_frame_host,
+      bool was_caused_by_user_gesture,
+      bool is_same_document_navigation,
+      bool clear_proxies_on_commit,
+      bool allow_paint_holding,
+      const ViewTransitionCommitInfo& view_transition_commit_info,
+      const base::optional_ref<const GURL> navigation_request_url);
 
   // Runs the unload handler in the old RenderFrameHost, after the new
   // RenderFrameHost has committed.  |old_render_frame_host| will either be
   // deleted or put on the pending delete list during this call.
   void UnloadOldFrame(
-      std::unique_ptr<RenderFrameHostImpl> old_render_frame_host);
+      std::unique_ptr<RenderFrameHostImpl> old_render_frame_host,
+      const ViewTransitionCommitInfo& view_transition_commit_info,
+      const base::optional_ref<const GURL> navigation_request_url);
 
   // Discards a RenderFrameHost that was never made active (for active ones
   // UnloadOldFrame is used instead).

@@ -36,7 +36,7 @@
     padding-top: 0;
   }
 
-  :host-context(.focus-outline-visible):host(:focus) #container {
+  :host(:focus:focus-visible) #container {
     box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
   }
 

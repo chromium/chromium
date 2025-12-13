@@ -34,12 +34,15 @@ class AnimationInterpolableValueTest : public testing::Test {
         MakeGarbageCollected<CSSNumberInterpolationType>(property_handle));
     InterpolationValue start(MakeGarbageCollected<InterpolableNumber>(a));
     InterpolationValue end(MakeGarbageCollected<InterpolableNumber>(b));
-    TransitionInterpolation* i = MakeGarbageCollected<TransitionInterpolation>(
-        property_handle, interpolation_type, std::move(start), std::move(end),
-        nullptr, nullptr);
+    TransitionInterpolation* interpolation =
+        MakeGarbageCollected<TransitionInterpolation>(
+            property_handle, interpolation_type, std::move(start),
+            std::move(end), nullptr, nullptr);
 
-    i->Interpolate(0, progress);
-    TypedInterpolationValue* interpolated_value = i->GetInterpolatedValue();
+    interpolation->Interpolate(0, progress,
+                               EffectModel::kIterationCompositeReplace);
+    TypedInterpolationValue* interpolated_value =
+        interpolation->GetInterpolatedValue();
     EXPECT_TRUE(interpolated_value);
     CSSToLengthConversionData length_resolver(/*element=*/nullptr);
     return To<InterpolableNumber>(interpolated_value->GetInterpolableValue())

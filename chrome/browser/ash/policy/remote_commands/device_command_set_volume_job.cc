@@ -45,8 +45,8 @@ enterprise_management::RemoteCommand_Type DeviceCommandSetVolumeJob::GetType()
 
 bool DeviceCommandSetVolumeJob::ParseCommandPayload(
     const std::string& command_payload) {
-  std::optional<base::Value::Dict> root =
-      base::JSONReader::ReadDict(command_payload);
+  std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(
+      command_payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root) {
     return false;
   }

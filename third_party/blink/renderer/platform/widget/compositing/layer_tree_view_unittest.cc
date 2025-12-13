@@ -26,7 +26,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/platform/scheduler/test/web_fake_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/widget_scheduler.h"
@@ -60,7 +59,7 @@ class FakeLayerTreeViewDelegate : public StubLayerTreeViewDelegate {
       return;
     }
 
-    auto context_provider = viz::TestContextProvider::Create();
+    auto context_provider = viz::TestContextProvider::CreateGLES();
     if (num_failures_since_last_success_ < num_failures_before_success_) {
       context_provider->UnboundTestContextGL()->LoseContextCHROMIUM(
           GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
@@ -453,7 +452,7 @@ class LayerTreeViewDelegateChangeTest : public testing::Test {
       did_request_frame_sink_ = true;
 
       if (service_frame_sink_request_) {
-        auto context_provider = viz::TestContextProvider::Create();
+        auto context_provider = viz::TestContextProvider::CreateGLES();
         std::move(callback).Run(
             cc::FakeLayerTreeFrameSink::Create3d(std::move(context_provider)),
             nullptr);

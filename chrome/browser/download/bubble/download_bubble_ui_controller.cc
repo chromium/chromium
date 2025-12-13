@@ -33,10 +33,12 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
+#include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
@@ -63,23 +65,25 @@ using DownloadUIModelPtr = DownloadUIModel::DownloadUIModelPtr;
 // user clicks on the button to open the main view.
 constexpr base::TimeDelta kShowPartialViewMinInterval = base::Seconds(15);
 
-bool IsForDownload(Browser* browser, download::DownloadItem* item) {
+bool IsForDownload(BrowserWindowInterface* browser,
+                   download::DownloadItem* item) {
   Profile* profile = Profile::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(item));
   // An off-the-record `profile` should match only the off-the-record browsers,
   // but a regular `profile` should match both the regular and off-the-record
   // browsers.
-  if (browser->profile() != profile &&
-      browser->profile()->GetOriginalProfile() != profile) {
+  if (browser->GetProfile() != profile &&
+      browser->GetProfile()->GetOriginalProfile() != profile) {
     return false;
   }
 
   if (DownloadItemWebAppData* web_app_data = DownloadItemWebAppData::Get(item);
       web_app_data) {
-    return web_app::AppBrowserController::IsForWebApp(browser,
-                                                      web_app_data->id());
+    return web_app::AppBrowserController::IsForWebApp(
+        browser->GetBrowserForMigrationOnly(), web_app_data->id());
   } else {
-    return !web_app::AppBrowserController::IsWebApp(browser);
+    return !web_app::AppBrowserController::IsWebApp(
+        browser->GetBrowserForMigrationOnly());
   }
 }
 
@@ -88,13 +92,22 @@ bool IsForDownload(Browser* browser, download::DownloadItem* item) {
 // static
 DownloadBubbleUIController* DownloadBubbleUIController::GetForDownload(
     download::DownloadItem* item) {
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (IsForDownload(browser, item) && browser->window() &&
-        browser->window()->GetDownloadBubbleUIController()) {
-      return browser->window()->GetDownloadBubbleUIController();
-    }
-  }
-  return nullptr;
+  DownloadBubbleUIController* controller = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (IsForDownload(browser, item) &&
+            browser->GetFeatures().download_toolbar_ui_controller() &&
+            browser->GetFeatures()
+                .download_toolbar_ui_controller()
+                ->bubble_controller()) {
+          controller = browser->GetFeatures()
+                           .download_toolbar_ui_controller()
+                           ->bubble_controller();
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      });
+  return controller;
 }
 
 DownloadBubbleUIController::DownloadBubbleUIController(Browser* browser)
@@ -350,9 +363,6 @@ void DownloadBubbleUIController::RetryDownload(
   if (!download_manager) {
     return;
   }
-  RecordDownloadRetry(
-      OfflineItemUtils::ConvertFailStateToDownloadInterruptReason(
-          model->GetLastFailState()));
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("download_bubble_retry_download", R"(

@@ -7,15 +7,19 @@
 
 #include <memory>
 #include <optional>
+#include <string>
+#include <tuple>
+#include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/dbus/properties/types.h"
 #include "components/dbus/xdg/request.h"
 #include "dbus/bus.h"
 #include "ui/shell_dialogs/select_file_dialog_linux.h"
+#include "ui/shell_dialogs/shell_dialogs_export.h"
+#include "url/gurl.h"
 
 namespace ui {
 
@@ -26,7 +30,8 @@ using OnSelectFileCanceledCallback = base::OnceCallback<void()>;
 
 // Implementation of SelectFileDialog that has the XDG file chooser portal show
 // a platform-dependent file selection dialog. This acts as a modal dialog.
-class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
+class SHELL_DIALOGS_EXPORT SelectFileDialogLinuxPortal
+    : public SelectFileDialogLinux {
  public:
   SelectFileDialogLinuxPortal(Listener* listener,
                               std::unique_ptr<ui::SelectFilePolicy> policy);
@@ -36,19 +41,11 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
   SelectFileDialogLinuxPortal& operator=(
       const SelectFileDialogLinuxPortal& other) = delete;
 
-  // Starts running a test to check for the presence of the file chooser portal.
-  // Must be called on the UI thread. This should only be called once,
-  // preferably around program start.
-  static void StartAvailabilityTestInBackground();
-
-  // Checks if the file chooser portal is available. Logs a warning if the
-  // availability test has not yet completed.
-  static bool IsPortalAvailable();
-
  protected:
   ~SelectFileDialogLinuxPortal() override;
 
   // BaseShellDialog:
+  void ListenerDestroyed() override;
   bool IsRunning(gfx::NativeWindow parent_window) const override;
 
   // SelectFileDialog:
@@ -62,14 +59,18 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
                       const GURL* caller) override;
   bool HasMultipleFileTypeChoicesImpl() override;
 
+  base::WeakPtr<SelectFileDialogLinuxPortal> GetWeakPtrForTesting() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   // Glob-style patterns are indicated by 0, MIME types by 1. Patterns are
   // case-sensitive.
-  using DbusFilterPattern = DbusStruct<DbusUint32, DbusString>;
-  using DbusFilterPatterns = DbusArray<DbusFilterPattern>;
+  using DbusFilterPattern = std::tuple<uint32_t, std::string>;
+  using DbusFilterPatterns = std::vector<DbusFilterPattern>;
   // The first string is a user-visible name for the filter.
-  using DbusFilter = DbusStruct<DbusString, DbusFilterPatterns>;
-  using DbusFilters = DbusArray<DbusFilter>;
+  using DbusFilter = std::tuple<std::string, DbusFilterPatterns>;
+  using DbusFilters = std::vector<DbusFilter>;
 
   // A named set of patterns used as a dialog filter.
   struct PortalFilter {
@@ -115,19 +116,20 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
                                   base::FilePath::StringType default_extension,
                                   std::string parent_handle);
 
-  DbusDictionary BuildOptionsDictionary(const base::FilePath& default_path,
-                                        bool default_path_exists,
-                                        const PortalFilterSet& filter_set);
+  dbus_xdg::Dictionary BuildOptionsDictionary(
+      const base::FilePath& default_path,
+      bool default_path_exists,
+      const PortalFilterSet& filter_set);
 
   DbusFilter MakeFilterStruct(const PortalFilter& filter);
 
   void MakeFileChooserRequest(const std::string& method,
                               const std::string& title,
-                              DbusDictionary options,
+                              dbus_xdg::Dictionary options,
                               std::string parent_handle);
 
   void OnFileChooserResponse(
-      base::expected<DbusDictionary, dbus_xdg::ResponseError> results);
+      base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results);
 
   void CompleteOpen(std::vector<base::FilePath> paths,
                     std::string current_filter);
@@ -142,13 +144,20 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
   // Removes the DialogInfo parent.
   void UnparentOnInvoker();
 
-  Type type_ = SELECT_NONE;
+  void OnPortalAvailable(std::u16string title,
+                         base::FilePath default_path,
+                         base::FilePath::StringType default_extension,
+                         std::optional<GURL> caller,
+                         uint32_t version);
 
   // The task runner the SelectFileImpl method was called on.
   scoped_refptr<base::SequencedTaskRunner> invoker_task_runner_;
 
   // This should be used by the invoker task runner.
   base::WeakPtr<aura::WindowTreeHost> host_;
+
+  // The fallback dialog to use if the portal is not available.
+  scoped_refptr<SelectFileDialog> fallback_dialog_;
 
   std::vector<PortalFilter> filters_;
 
@@ -161,6 +170,8 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
   // to make the dialog modal.  This closure should be run when the dialog is
   // closed to reenable event handling.
   base::OnceClosure reenable_window_event_handling_;
+
+  base::WeakPtrFactory<SelectFileDialogLinuxPortal> weak_factory_{this};
 };
 
 }  // namespace ui

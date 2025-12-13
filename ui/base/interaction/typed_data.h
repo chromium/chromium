@@ -7,6 +7,7 @@
 
 #include <concepts>
 
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -76,7 +77,7 @@ class TypedData;
 // Base class for typed data that can be stored in a typed data collection and
 // looked up by `TypedIdentifier<T>`. This base class does not actually contain
 // the data, but allows for polymorphism.
-class COMPONENT_EXPORT(UI_BASE) TypedDataBase {
+class COMPONENT_EXPORT(UI_BASE_INTERACTION) TypedDataBase {
  public:
   using Identifier = ElementIdentifier;
 

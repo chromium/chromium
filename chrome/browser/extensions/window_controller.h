@@ -15,7 +15,10 @@
 #include "base/values.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/windows.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/context_type.mojom-forward.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class BrowserWindowInterface;
 class GURL;
@@ -148,6 +151,12 @@ class WindowController {
 
   // Notifies that a window's bounds are changed.
   void NotifyWindowBoundsChanged();
+
+  // Notifies that a window's focus is changed.
+  //
+  // As of Sep 23, 2025, this API was only used on desktop Android.
+  // TODO(http://crbug.com/446925633): Use this API on non-Android OSes.
+  void NotifyWindowFocusChanged(bool has_focus);
 
   // Creates a base::Value::Dict representing the window for the browser and
   // scrubs any privacy-sensitive data that `extension` does not have access to.

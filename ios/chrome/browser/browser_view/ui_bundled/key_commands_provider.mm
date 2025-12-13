@@ -16,7 +16,7 @@
 #import "components/sessions/core/tab_restore_service_helper.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
-#import "ios/chrome/browser/find_in_page/model/abstract_find_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/features.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -39,7 +38,7 @@
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
-#import "ios/chrome/browser/shared/ui/util/keyboard_observer_helper.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -87,7 +86,10 @@ using base::UserMetricsAction;
 
 @end
 
-@implementation KeyCommandsProvider
+@implementation KeyCommandsProvider {
+  // Whether the keyboard is visible or not.
+  BOOL _keyboardVisible;
+}
 
 #pragma mark - Public
 
@@ -96,6 +98,16 @@ using base::UserMetricsAction;
   self = [super init];
   if (self) {
     _browser = browser->AsWeakPtr();
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(keyboardDidShow)
+               name:UIKeyboardDidShowNotification
+             object:nil];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(keyboardDidHide)
+               name:UIKeyboardDidHideNotification
+             object:nil];
   }
   return self;
 }
@@ -206,8 +218,7 @@ using base::UserMetricsAction;
     bool readerModeActive = IsReaderModeAvailable() && readerModeTabHelper &&
                             readerModeTabHelper->IsActive();
     if (readerModeActive &&
-        (sel_isEqual(action, @selector(keyCommand_find)) ||
-         sel_isEqual(action, @selector(keyCommand_addToBookmarks)) ||
+        (sel_isEqual(action, @selector(keyCommand_addToBookmarks)) ||
          sel_isEqual(action, @selector(keyCommand_addToReadingList)))) {
       return NO;
     }
@@ -252,19 +263,25 @@ using base::UserMetricsAction;
 // Changes the title to display the most appropriate string in the shortcut
 // menu.
 - (void)validateCommand:(UICommand*)command {
+  NSString* newTitle;
   if (command.action == @selector(keyCommand_find)) {
-    command.discoverabilityTitle =
-        l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_FIND_IN_PAGE);
+    newTitle = l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_FIND_IN_PAGE);
   }
   if (command.action == @selector(keyCommand_select1)) {
-    command.discoverabilityTitle =
-        l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_FIRST_TAB);
+    newTitle = l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_FIRST_TAB);
   }
   if (command.action == @selector(keyCommand_addToBookmarks)) {
     if ([self isBookmarkedPage]) {
-      command.discoverabilityTitle =
+      newTitle =
           l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_EDIT_BOOKMARK);
+      command.image = DefaultSymbolWithConfiguration(kPencilSymbol, nil);
     }
+  }
+  // If a new title was determined, set it on the command.
+  if (newTitle.length > 0) {
+    command.title = newTitle;
+    // Keep the discoverability title in sync.
+    command.discoverabilityTitle = newTitle;
   }
   [super validateCommand:command];
 }
@@ -552,11 +569,7 @@ using base::UserMetricsAction;
       browsing_data::DeleteBrowsingDataDialogAction::
           kKeyboardEntryPointSelected);
 
-  if (IsIosQuickDeleteEnabled()) {
-    [_quickDeleteHandler showQuickDeleteAndCanPerformTabsClosureAnimation:YES];
-  } else {
-    [_settingsHandler showClearBrowsingDataSettings];
-  }
+  [_quickDeleteHandler showQuickDeleteAndCanPerformRadialWipeAnimation:YES];
 }
 
 #pragma mark - Private
@@ -572,7 +585,7 @@ using base::UserMetricsAction;
     return NO;
   }
 
-  auto* helper = GetConcreteFindTabHelperFromWebState(currentWebState);
+  FindTabHelper* helper = FindTabHelper::FromWebState(currentWebState);
   return (helper && helper->CurrentPageSupportsFindInPage());
 }
 
@@ -583,7 +596,7 @@ using base::UserMetricsAction;
     return NO;
   }
 
-  auto* helper = GetConcreteFindTabHelperFromWebState(currentWebState);
+  FindTabHelper* helper = FindTabHelper::FromWebState(currentWebState);
   return (helper && helper->IsFindUIActive());
 }
 
@@ -594,8 +607,7 @@ using base::UserMetricsAction;
 - (BOOL)isEditingText {
   UIResponder* firstResponder = GetFirstResponder();
   return [firstResponder isKindOfClass:[UITextField class]] ||
-         [firstResponder isKindOfClass:[UITextView class]] ||
-         [[KeyboardObserverHelper sharedKeyboardObserver] isKeyboardVisible];
+         [firstResponder isKindOfClass:[UITextView class]] || _keyboardVisible;
 }
 
 - (void)openNewRegularTab {
@@ -640,6 +652,16 @@ using base::UserMetricsAction;
   bookmarks::BookmarkModel* bookmarkModel =
       ios::BookmarkModelFactory::GetForProfile(_browser->GetProfile());
   return bookmarkModel->IsBookmarked(url);
+}
+
+// Updates keyboard visibility when the keyboard is visible.
+- (void)keyboardDidShow {
+  _keyboardVisible = YES;
+}
+
+// Updates keyboard visibility when the keyboard is hidden.
+- (void)keyboardDidHide {
+  _keyboardVisible = NO;
 }
 
 @end

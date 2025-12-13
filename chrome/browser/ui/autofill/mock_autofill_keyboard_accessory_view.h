@@ -21,10 +21,11 @@ class MockAutofillKeyboardAccessoryView : public AutofillKeyboardAccessoryView {
   MOCK_METHOD(bool, Initialize, (), (override));
   MOCK_METHOD(void, Hide, (), (override));
   MOCK_METHOD(void, Show, (), (override));
-  MOCK_METHOD(void, AxAnnounce, (const std::u16string&), (override));
   MOCK_METHOD(void,
               ConfirmDeletion,
               (const std::u16string&,
+               const std::u16string&,
+               const std::u16string&,
                const std::u16string&,
                base::OnceCallback<void(bool)>),
               (override));

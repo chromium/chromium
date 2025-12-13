@@ -31,7 +31,7 @@ class CORE_EXPORT MacScrollbarImplV2
   // Function to call upon interaction with this scrollbar.
   void MouseDidEnter();
   void MouseDidExit();
-  void DidScroll();
+  bool DidScroll();
 
   // MacScrollbar:
   void SetEnabled(bool) final {}
@@ -68,6 +68,7 @@ class CORE_EXPORT MacScrollbarAnimatorV2 : public MacScrollbarAnimator {
   void WillRemoveHorizontalScrollbar(Scrollbar&) final;
   void DidChangeUserVisibleScrollOffset(const ScrollOffset&) final;
   void Dispose() final;
+  bool FadeInScrollbarIfExists(bool horizontal, bool vertical) final;
 
  private:
   std::unique_ptr<MacScrollbarImplV2> horizontal_scrollbar_;

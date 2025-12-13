@@ -10,6 +10,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class NVShaderNoperspectiveInterpolation final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -17,7 +19,8 @@ class NVShaderNoperspectiveInterpolation final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit NVShaderNoperspectiveInterpolation(WebGLRenderingContextBase*);
+  NVShaderNoperspectiveInterpolation(WebGLRenderingContextBase*,
+                                     ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 };

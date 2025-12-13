@@ -365,18 +365,13 @@ void CertProvisioningClientImpl::OnStartCsrResponse(
 
     const std::string empty_str;
 
-    const std::string& invalidation_topic =
-        start_csr_response.has_invalidation_topic()
-            ? start_csr_response.invalidation_topic()
-            : empty_str;
-
     const std::string& va_challenge = start_csr_response.has_va_challenge()
                                           ? start_csr_response.va_challenge()
                                           : empty_str;
 
     // Everything is ok, run |callback| with data.
     return std::move(callback).Run(
-        status, response_error, try_later, invalidation_topic, va_challenge,
+        status, response_error, try_later, va_challenge,
         start_csr_response.hashing_algorithm(),
         StrToBytes(start_csr_response.data_to_sign()));
   } while (false);
@@ -385,8 +380,9 @@ void CertProvisioningClientImpl::OnStartCsrResponse(
   // |try_later|.
   const std::string empty_str;
   em::HashingAlgorithm hash_algo = {};
-  return std::move(callback).Run(status, response_error, try_later, empty_str,
-                                 empty_str, hash_algo, std::vector<uint8_t>());
+  return std::move(callback).Run(status, response_error, try_later,
+                                 /*va_challenge=*/empty_str, hash_algo,
+                                 /*data_to_sign=*/std::vector<uint8_t>());
 }
 
 void CertProvisioningClientImpl::OnFinishCsrResponse(

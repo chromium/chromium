@@ -14,6 +14,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
@@ -32,6 +33,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
+using base::test::TestFuture;
 using ::testing::_;
 
 namespace safe_browsing {
@@ -177,6 +179,19 @@ class MockWebUIDelegate : public HashRealTimeService::WebUIDelegate {
  private:
   int token_counter_ = 0;
 };
+
+void WaitForUnsuccessfulHashRealtimeLookup(
+    TestFuture<bool, std::optional<SBThreatType>>& future) {
+  EXPECT_FALSE(future.Get<0>());
+  EXPECT_EQ(std::nullopt, future.Get<1>());
+}
+
+void WaitForSuccessfulHashRealtimeLookup(
+    TestFuture<bool, std::optional<SBThreatType>>& future,
+    SBThreatType expected_threat_type) {
+  EXPECT_TRUE(future.Get<0>());
+  EXPECT_EQ(expected_threat_type, future.Get<1>());
+}
 
 }  // namespace
 
@@ -423,9 +438,8 @@ class HashRealTimeServiceTest : public PlatformTest {
   void StartSuccessRequest(
       const GURL& url,
       const std::set<FullHashStr>& cached_hash_prefixes,
-      base::MockCallback<HPRTLookupResponseCallback>& response_callback,
-      const std::vector<V5::FullHash>& response_full_hashes,
-      SBThreatType expected_threat_type) {
+      HPRTLookupResponseCallback response_callback,
+      const std::vector<V5::FullHash>& response_full_hashes) {
     // Intercept search hashes request URL.
     auto request = std::make_unique<V5::SearchHashesRequest>();
     for (const auto& hash_prefix : UrlToHashPrefixesAsSet(url)) {
@@ -448,13 +462,7 @@ class HashRealTimeServiceTest : public PlatformTest {
                         /*full_hashes=*/response_full_hashes);
 
     // Start lookup.
-    // Confirm request response will be called once with the relevant threat
-    // type.
-    EXPECT_CALL(response_callback,
-                Run(/*is_lookup_successful=*/true,
-                    /*sb_threat_type=*/testing::Optional(expected_threat_type)))
-        .Times(1);
-    service_->StartLookup(url, response_callback.Get(),
+    service_->StartLookup(url, std::move(response_callback),
                           base::SequencedTaskRunner::GetCurrentDefault());
   }
   // Starts a lookup on |url| that is expected to succeed, simulating the server
@@ -462,15 +470,14 @@ class HashRealTimeServiceTest : public PlatformTest {
   // returned through the lookup's callback. |cached_hash_prefixes| can be empty
   // or can specify which hash prefixes are already in the cache and should
   // therefore not be sent in the request.
-  void RunRequestSuccessTest(
-      const GURL& url,
-      const std::set<FullHashStr>& cached_hash_prefixes,
-      std::vector<V5::FullHash> response_full_hashes,
-      SBThreatType expected_threat_type,
-      int expected_prefix_count,
-      int expected_threat_info_size,
-      bool expected_found_unmatched_full_hashes,
-      std::string expected_relay_url) {
+  void RunRequestSuccessTest(const GURL& url,
+                             const std::set<FullHashStr>& cached_hash_prefixes,
+                             std::vector<V5::FullHash> response_full_hashes,
+                             SBThreatType expected_threat_type,
+                             int expected_prefix_count,
+                             int expected_threat_info_size,
+                             bool expected_found_unmatched_full_hashes,
+                             std::string expected_relay_url) {
     int next_token = webui_delegate_->GetNextToken();
     EXPECT_CALL(
         *webui_delegate_,
@@ -481,9 +488,10 @@ class HashRealTimeServiceTest : public PlatformTest {
         .Times(1);
     auto num_requests = network_context_.total_requests();
     base::MockCallback<HPRTLookupResponseCallback> response_callback;
-    StartSuccessRequest(url, cached_hash_prefixes, response_callback,
-                        response_full_hashes, expected_threat_type);
-    task_environment_.RunUntilIdle();
+    TestFuture<bool, std::optional<SBThreatType>> response_future;
+    StartSuccessRequest(url, cached_hash_prefixes,
+                        response_future.GetCallback(), response_full_hashes);
+    WaitForSuccessfulHashRealtimeLookup(response_future, expected_threat_type);
 
     CheckPreRequestMetrics(/*expect_cache_hit_all_prefixes=*/false,
                            /*expected_backoff_mode_status=*/false);
@@ -541,14 +549,10 @@ class HashRealTimeServiceTest : public PlatformTest {
     }
 
     // Start lookup.
-    base::MockCallback<HPRTLookupResponseCallback> response_callback;
-    EXPECT_CALL(response_callback,
-                Run(/*is_lookup_successful=*/false,
-                    /*sb_threat_type=*/testing::Eq(std::nullopt)))
-        .Times(1);
-    service_->StartLookup(url, response_callback.Get(),
+    TestFuture<bool, std::optional<SBThreatType>> response_future;
+    service_->StartLookup(url, response_future.GetCallback(),
                           base::SequencedTaskRunner::GetCurrentDefault());
-    task_environment_.RunUntilIdle();
+    WaitForUnsuccessfulHashRealtimeLookup(response_future);
 
     CheckPreRequestMetrics(/*expect_cache_hit_all_prefixes=*/false,
                            /*expected_backoff_mode_status=*/false);
@@ -576,16 +580,10 @@ class HashRealTimeServiceTest : public PlatformTest {
     EXPECT_CALL(*webui_delegate_, AddToHPRTLookupPings(_, _, _)).Times(0);
     EXPECT_CALL(*webui_delegate_, AddToHPRTLookupResponses(_, _)).Times(0);
     auto num_requests = network_context_.total_requests();
-    base::MockCallback<HPRTLookupResponseCallback> response_callback;
-    // Confirm request response will be called once with the relevant threat
-    // type.
-    EXPECT_CALL(response_callback,
-                Run(/*is_lookup_successful=*/true,
-                    /*sb_threat_type=*/testing::Optional(expected_threat_type)))
-        .Times(1);
-    service_->StartLookup(url, response_callback.Get(),
+    TestFuture<bool, std::optional<SBThreatType>> response_future;
+    service_->StartLookup(url, response_future.GetCallback(),
                           base::SequencedTaskRunner::GetCurrentDefault());
-    task_environment_.RunUntilIdle();
+    WaitForSuccessfulHashRealtimeLookup(response_future, expected_threat_type);
 
     CheckPreRequestMetrics(/*expect_cache_hit_all_prefixes=*/true,
                            /*expected_backoff_mode_status=*/false);
@@ -605,16 +603,10 @@ class HashRealTimeServiceTest : public PlatformTest {
     EXPECT_CALL(*webui_delegate_, AddToHPRTLookupPings(_, _, _)).Times(0);
     EXPECT_CALL(*webui_delegate_, AddToHPRTLookupResponses(_, _)).Times(0);
     auto num_requests = network_context_.total_requests();
-    base::MockCallback<HPRTLookupResponseCallback> response_callback;
-    // Confirm request response will be called once with the relevant threat
-    // type.
-    EXPECT_CALL(response_callback,
-                Run(/*is_lookup_successful=*/false,
-                    /*sb_threat_type=*/testing::Eq(std::nullopt)))
-        .Times(1);
-    service_->StartLookup(url, response_callback.Get(),
+    TestFuture<bool, std::optional<SBThreatType>> response_future;
+    service_->StartLookup(url, response_future.GetCallback(),
                           base::SequencedTaskRunner::GetCurrentDefault());
-    task_environment_.RunUntilIdle();
+    WaitForUnsuccessfulHashRealtimeLookup(response_future);
 
     CheckPreRequestMetrics(/*expect_cache_hit_all_prefixes=*/false,
                            /*expected_backoff_mode_status=*/true);
@@ -638,11 +630,10 @@ class HashRealTimeServiceTest : public PlatformTest {
                         /*full_hashes=*/response_full_hashes);
 
     // Start lookup.
-    base::MockCallback<HPRTLookupResponseCallback> response_callback;
-    EXPECT_CALL(response_callback, Run(_, _));
-    service_->StartLookup(url, response_callback.Get(),
+    base::test::TestFuture<bool, std::optional<SBThreatType>> response_future;
+    service_->StartLookup(url, response_future.GetCallback(),
                           base::SequencedTaskRunner::GetCurrentDefault());
-    task_environment_.RunUntilIdle();
+    EXPECT_TRUE(response_future.Wait());
   }
   void RunSimpleFailingRequest(const GURL& url,
                                int net_error = net::ERR_FAILED) {
@@ -657,11 +648,10 @@ class HashRealTimeServiceTest : public PlatformTest {
                                  /*inner_response_code=*/std::nullopt);
 
     // Start lookup.
-    base::MockCallback<HPRTLookupResponseCallback> response_callback;
-    EXPECT_CALL(response_callback, Run(_, _));
-    service_->StartLookup(url, response_callback.Get(),
+    base::test::TestFuture<bool, std::optional<SBThreatType>> response_future;
+    service_->StartLookup(url, response_future.GetCallback(),
                           base::SequencedTaskRunner::GetCurrentDefault());
-    task_environment_.RunUntilIdle();
+    EXPECT_TRUE(response_future.Wait());
   }
   bool IsHashDetailMoreSevere(
       const V5::FullHash::FullHashDetail& candidate_detail,
@@ -1092,11 +1082,12 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_OhttpClientDestructedEarly) {
   std::string expected_url = GetExpectedRequestUrl(request);
   SetUpLookupResponse(/*request_url=*/expected_url,
                       /*full_hashes=*/{});
-  base::MockCallback<HPRTLookupResponseCallback> response_callback;
-  service_->StartLookup(url, response_callback.Get(),
+  base::test::TestFuture<bool, std::optional<SBThreatType>> response_future;
+  service_->StartLookup(url, response_future.GetCallback(),
                         base::SequencedTaskRunner::GetCurrentDefault());
   // Trigger destructing OHTTP client before it has completed.
   service_->ohttp_client_receivers_.Clear();
+  EXPECT_TRUE(response_future.Wait());
   histogram_tester_->ExpectUniqueSample(
       /*name=*/
       "SafeBrowsing.HPRT.FailedNetResultIsFromEarlyOhttpClientDestruct",
@@ -1221,14 +1212,10 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_MissingOhttpKey) {
   ohttp_key_service_->SetOhttpKey(std::nullopt);
   EXPECT_CALL(*webui_delegate_, AddToHPRTLookupPings(_, _, _)).Times(0);
   EXPECT_CALL(*webui_delegate_, AddToHPRTLookupResponses(_, _)).Times(0);
-  base::MockCallback<HPRTLookupResponseCallback> response_callback;
-  EXPECT_CALL(response_callback,
-              Run(/*is_lookup_successful=*/false,
-                  /*sb_threat_type=*/testing::Eq(std::nullopt)))
-      .Times(1);
-  service_->StartLookup(url, response_callback.Get(),
+  TestFuture<bool, std::optional<SBThreatType>> response_future;
+  service_->StartLookup(url, response_future.GetCallback(),
                         base::SequencedTaskRunner::GetCurrentDefault());
-  task_environment_.RunUntilIdle();
+  WaitForUnsuccessfulHashRealtimeLookup(response_future);
 
   CheckNoNetworkRequestMetric();
   CheckOperationOutcomeMetric(
@@ -1442,25 +1429,28 @@ TEST_F(HashRealTimeServiceTest, TestLookup_MultipleRequestsAtOnce) {
 
   GURL url1 = GURL("https://example.test1");
   GURL url2 = GURL("https://example.test2");
-  base::MockCallback<HPRTLookupResponseCallback> response_callback1;
+  TestFuture<bool, std::optional<SBThreatType>> response_future1;
   StartSuccessRequest(
       /*url=*/url1, /*cached_hash_prefixes=*/{},
-      /*response_callback=*/response_callback1, /*response_full_hashes=*/
+      /*response_callback=*/
+      response_future1.GetCallback(), /*response_full_hashes=*/
       {CreateFullHashProto({V5::ThreatType::SOCIAL_ENGINEERING},
-                           UrlToSingleFullHash(url1))},
-      /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
-  base::MockCallback<HPRTLookupResponseCallback> response_callback2;
+                           UrlToSingleFullHash(url1))});
+  base::test::TestFuture<bool, std::optional<SBThreatType>> response_future2;
   StartSuccessRequest(
       /*url=*/url2, /*cached_hash_prefixes=*/{},
-      /*response_callback=*/response_callback2, /*response_full_hashes=*/
+      /*response_callback=*/
+      response_future2.GetCallback(), /*response_full_hashes=*/
       {CreateFullHashProto({V5::ThreatType::MALWARE},
-                           UrlToSingleFullHash(url2))},
-      /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
+                           UrlToSingleFullHash(url2))});
 
   histogram_tester_->ExpectTotalCount(
       /*name=*/"SafeBrowsing.HPRT.Network.Result",
       /*expected_count=*/0);
-  task_environment_.RunUntilIdle();
+  WaitForSuccessfulHashRealtimeLookup(
+      response_future1, SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+  WaitForSuccessfulHashRealtimeLookup(response_future2,
+                                      SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
   histogram_tester_->ExpectTotalCount(
       /*name=*/"SafeBrowsing.HPRT.Network.Result",
       /*expected_count=*/2);
@@ -1473,15 +1463,16 @@ TEST_F(HashRealTimeServiceTest, TestLookup_WebUiDelegateReturnsNullopt) {
   EXPECT_CALL(*webui_delegate_, AddToHPRTLookupResponses(_, _)).Times(0);
 
   GURL url = GURL("https://example.test");
-  base::MockCallback<HPRTLookupResponseCallback> response_callback1;
+  TestFuture<bool, std::optional<SBThreatType>> response_future;
   StartSuccessRequest(
       /*url=*/url, /*cached_hash_prefixes=*/{},
-      /*response_callback=*/response_callback1, /*response_full_hashes=*/
+      /*response_callback=*/
+      response_future.GetCallback(), /*response_full_hashes=*/
       {CreateFullHashProto({V5::ThreatType::SOCIAL_ENGINEERING},
-                           UrlToSingleFullHash(url))},
-      /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+                           UrlToSingleFullHash(url))});
 
-  task_environment_.RunUntilIdle();
+  WaitForSuccessfulHashRealtimeLookup(
+      response_future, SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
 }
 
 class HashRealTimeServiceNoWebUiDelegateTest : public HashRealTimeServiceTest {
@@ -1490,15 +1481,16 @@ class HashRealTimeServiceNoWebUiDelegateTest : public HashRealTimeServiceTest {
 };
 TEST_F(HashRealTimeServiceNoWebUiDelegateTest, TestLookup_NoWebUiDelegate) {
   GURL url = GURL("https://example.test");
-  base::MockCallback<HPRTLookupResponseCallback> response_callback1;
+  TestFuture<bool, std::optional<SBThreatType>> response_future;
   StartSuccessRequest(
       /*url=*/url, /*cached_hash_prefixes=*/{},
-      /*response_callback=*/response_callback1, /*response_full_hashes=*/
+      /*response_callback=*/
+      response_future.GetCallback(), /*response_full_hashes=*/
       {CreateFullHashProto({V5::ThreatType::SOCIAL_ENGINEERING},
-                           UrlToSingleFullHash(url))},
-      /*expected_threat_type=*/SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
+                           UrlToSingleFullHash(url))});
 
-  task_environment_.RunUntilIdle();
+  WaitForSuccessfulHashRealtimeLookup(
+      response_future, SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
 }
 
 TEST_F(HashRealTimeServiceTest, TestBackoffModeSet) {
@@ -1562,18 +1554,18 @@ TEST_F(HashRealTimeServiceTest, TestBackoffModeSet_RetriableError) {
 TEST_F(HashRealTimeServiceTest, TestBackoffModeNotSet_MissingOhttpKey) {
   GURL url = GURL("https://example.test");
   ohttp_key_service_->SetOhttpKey(std::nullopt);
-  base::MockCallback<HPRTLookupResponseCallback> response_callback;
-  EXPECT_CALL(response_callback,
-              Run(/*is_lookup_successful=*/false,
-                  /*sb_threat_type=*/testing::Eq(std::nullopt)))
-      .Times(3);
-  service_->StartLookup(url, response_callback.Get(),
+  TestFuture<bool, std::optional<SBThreatType>> response_future1;
+  TestFuture<bool, std::optional<SBThreatType>> response_future2;
+  TestFuture<bool, std::optional<SBThreatType>> response_future3;
+  service_->StartLookup(url, response_future1.GetCallback(),
                         base::SequencedTaskRunner::GetCurrentDefault());
-  service_->StartLookup(url, response_callback.Get(),
+  service_->StartLookup(url, response_future2.GetCallback(),
                         base::SequencedTaskRunner::GetCurrentDefault());
-  service_->StartLookup(url, response_callback.Get(),
+  service_->StartLookup(url, response_future3.GetCallback(),
                         base::SequencedTaskRunner::GetCurrentDefault());
-  task_environment_.RunUntilIdle();
+  WaitForUnsuccessfulHashRealtimeLookup(response_future1);
+  WaitForUnsuccessfulHashRealtimeLookup(response_future2);
+  WaitForUnsuccessfulHashRealtimeLookup(response_future3);
 
   // Key related failure should not affect the backoff status.
   EXPECT_FALSE(service_->backoff_operator_->IsInBackoffMode());

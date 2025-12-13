@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "google_apis/gaia/gaia_config.h"
 #include "google_apis/gaia/gaia_features.h"
@@ -106,17 +105,21 @@ TEST_F(GaiaUrlsTest, InitializeDefault_AllUrls) {
             "https://accounts.google.com/oauth/multilogin");
   EXPECT_EQ(gaia_urls()->oauth_user_info_url().spec(),
             "https://www.googleapis.com/oauth2/v1/userinfo");
-  EXPECT_EQ(gaia_urls()->ListAccountsURLWithSource("").spec(),
-            "https://accounts.google.com/ListAccounts?json=standard");
+  EXPECT_EQ(
+      gaia_urls()->ListAccountsURLWithSource("").spec(),
+      "https://accounts.google.com/ListAccounts?json=standard&laf=b64bin");
   EXPECT_EQ(gaia_urls()->embedded_signin_url().spec(),
             "https://accounts.google.com/embedded/setup/chrome/usermenu");
   EXPECT_EQ(gaia_urls()->add_account_url().spec(),
             "https://accounts.google.com/AddSession");
   EXPECT_EQ(gaia_urls()->reauth_url().spec(),
             "https://accounts.google.com/embedded/xreauth/chrome");
-  EXPECT_EQ(gaia_urls()->account_capabilities_url().spec(),
+  EXPECT_EQ(gaia_urls()->account_capabilities_batch_get_url().spec(),
             "https://accountcapabilities-pa.googleapis.com/v1/"
             "accountcapabilities:batchGet");
+  EXPECT_EQ(gaia_urls()->account_capabilities_get_all_visible_url().spec(),
+            "https://accountcapabilities-pa.googleapis.com/v1/"
+            "accountcapabilities:getAllVisible");
   EXPECT_EQ(gaia_urls()->GetCheckConnectionInfoURLWithSource("").spec(),
             "https://accounts.google.com/GetCheckConnectionInfo");
   EXPECT_EQ(gaia_urls()->oauth2_token_url().spec(),
@@ -180,7 +183,7 @@ TEST_F(GaiaUrlsTest, InitializeDefault_URLSwitches) {
   EXPECT_EQ(gaia_urls()->oauth_user_info_url().spec(),
             "https://test-googleapis.com/oauth2/v1/userinfo");
   EXPECT_EQ(gaia_urls()->ListAccountsURLWithSource("").spec(),
-            "https://test-gaia.com/ListAccounts?json=standard");
+            "https://test-gaia.com/ListAccounts?json=standard&laf=b64bin");
   EXPECT_EQ(gaia_urls()->embedded_signin_url().spec(),
             "https://test-gaia.com/embedded/setup/chrome/usermenu");
   EXPECT_EQ(gaia_urls()->add_account_url().spec(),
@@ -292,16 +295,20 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllUrls) {
             "https://accounts.example.com/oauth/multilogin");
   EXPECT_EQ(gaia_urls()->oauth_user_info_url().spec(),
             "https://www.exampleapis.com/oauth2/v1/userinfo");
-  EXPECT_EQ(gaia_urls()->ListAccountsURLWithSource("").spec(),
-            "https://accounts.example.com/ListAccounts?json=standard");
+  EXPECT_EQ(
+      gaia_urls()->ListAccountsURLWithSource("").spec(),
+      "https://accounts.example.com/ListAccounts?json=standard&laf=b64bin");
   EXPECT_EQ(gaia_urls()->embedded_signin_url().spec(),
             "https://accounts.example.com/embedded/setup/chrome/usermenu");
   EXPECT_EQ(gaia_urls()->add_account_url().spec(),
             "https://accounts.example.com/AddSession");
   EXPECT_EQ(gaia_urls()->reauth_url().spec(),
             "https://accounts.example.com/embedded/xreauth/chrome");
-  EXPECT_EQ(gaia_urls()->account_capabilities_url().spec(),
+  EXPECT_EQ(gaia_urls()->account_capabilities_batch_get_url().spec(),
             "https://accountcapabilities.exampleapis.com/v1/capabilities");
+  EXPECT_EQ(gaia_urls()->account_capabilities_get_all_visible_url().spec(),
+            "https://accountcapabilities.exampleapis.com/v1/"
+            "getAllVisibleCapabilities");
   EXPECT_EQ(gaia_urls()->GetCheckConnectionInfoURLWithSource("").spec(),
             "https://accounts.example.com/GetCheckConnectionInfo");
   EXPECT_EQ(gaia_urls()->oauth2_token_url().spec(),
@@ -359,17 +366,21 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllBaseUrls) {
             "https://accounts.example.com/oauth/multilogin");
   EXPECT_EQ(gaia_urls()->oauth_user_info_url().spec(),
             "https://www.exampleapis.com/oauth2/v1/userinfo");
-  EXPECT_EQ(gaia_urls()->ListAccountsURLWithSource("").spec(),
-            "https://accounts.example.com/ListAccounts?json=standard");
+  EXPECT_EQ(
+      gaia_urls()->ListAccountsURLWithSource("").spec(),
+      "https://accounts.example.com/ListAccounts?json=standard&laf=b64bin");
   EXPECT_EQ(gaia_urls()->embedded_signin_url().spec(),
             "https://accounts.example.com/embedded/setup/chrome/usermenu");
   EXPECT_EQ(gaia_urls()->add_account_url().spec(),
             "https://accounts.example.com/AddSession");
   EXPECT_EQ(gaia_urls()->reauth_url().spec(),
             "https://accounts.example.com/embedded/xreauth/chrome");
-  EXPECT_EQ(gaia_urls()->account_capabilities_url().spec(),
+  EXPECT_EQ(gaia_urls()->account_capabilities_batch_get_url().spec(),
             "https://accountcapabilities.exampleapis.com/v1/"
             "accountcapabilities:batchGet");
+  EXPECT_EQ(gaia_urls()->account_capabilities_get_all_visible_url().spec(),
+            "https://accountcapabilities.exampleapis.com/v1/"
+            "accountcapabilities:getAllVisible");
   EXPECT_EQ(gaia_urls()->GetCheckConnectionInfoURLWithSource("").spec(),
             "https://accounts.example.com/GetCheckConnectionInfo");
   EXPECT_EQ(gaia_urls()->oauth2_token_url().spec(),
@@ -385,17 +396,9 @@ TEST_F(GaiaUrlsTest, InitializeFromConfig_AllBaseUrls) {
 }
 
 TEST_F(GaiaUrlsTest, InitializeDefault_ListAccountsFormat) {
-  base::test::ScopedFeatureList feature_list;
-
-  // Default behaviour - kListAccountsUsesBinaryFormat enabled.
   EXPECT_EQ(gaia_urls()->ListAccountsURLWithSource("fake_source").spec(),
             "https://accounts.google.com/"
-            "ListAccounts?gpsia=1&source=fake_source&laf=b64bin&json=standard");
-  feature_list.InitAndDisableFeature(
-      gaia::features::kListAccountsUsesBinaryFormat);
-  EXPECT_EQ(gaia_urls()->ListAccountsURLWithSource("fake_source").spec(),
-            "https://accounts.google.com/"
-            "ListAccounts?gpsia=1&source=fake_source&json=standard");
+            "ListAccounts?gpsia=1&source=fake_source&json=standard&laf=b64bin");
 }
 
 TEST_F(GaiaUrlsTest, InitializeFromConfigContents) {

@@ -30,7 +30,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   // Navigate to an https site.
   const GURL secure_url =
       embedded_test_server()->GetURL("example.com", "/simple.html");
-  EXPECT_EQ("https", secure_url.scheme());
+  EXPECT_EQ("https", secure_url.GetScheme());
 
   content::RenderFrameHost* frame =
       ui_test_utils::NavigateToURL(browser(), secure_url);

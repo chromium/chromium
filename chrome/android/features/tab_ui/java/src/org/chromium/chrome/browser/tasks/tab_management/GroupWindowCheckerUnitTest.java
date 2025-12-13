@@ -94,8 +94,8 @@ public class GroupWindowCheckerUnitTest {
         when(mSyncService.getAllGroupIds()).thenReturn(new String[] {"id1", "id2"});
         when(mSyncService.getGroup("id1")).thenReturn(group1);
         when(mSyncService.getGroup("id2")).thenReturn(group2);
-        when(mTabList.getCount()).thenReturn(1);
-        when(mTabList.getTabAt(0)).thenReturn(mTab1);
+        List<Tab> tabList = List.of(mTab1);
+        when(mTabList.iterator()).thenAnswer(invocation -> tabList.iterator());
         when(mTab1.getTabGroupId()).thenReturn(token1);
 
         List<SavedTabGroup> sortedList =
@@ -132,8 +132,8 @@ public class GroupWindowCheckerUnitTest {
         SavedTabGroup group = createSavedTabGroup(token, "title1");
         group.localId = new LocalTabGroupId(token);
 
-        when(mTabList.getCount()).thenReturn(1);
-        when(mTabList.getTabAt(0)).thenReturn(mTab1);
+        List<Tab> tabList = List.of(mTab1);
+        when(mTabList.iterator()).thenAnswer(invocation -> tabList.iterator());
         when(mTab1.getTabGroupId()).thenReturn(token);
 
         @GroupWindowState int state = mSyncUtils.getState(group);
@@ -144,8 +144,8 @@ public class GroupWindowCheckerUnitTest {
     public void testGetState_InCurrentClosing() {
         Token token = Token.createRandom();
         SavedTabGroup group = createSavedTabGroup(token, "title1");
-        when(mTabList.getCount()).thenReturn(1);
-        when(mTabList.getTabAt(0)).thenReturn(mTab1);
+        List<Tab> tabList = List.of(mTab1);
+        when(mTabList.iterator()).thenAnswer(invocation -> tabList.iterator());
         when(mTab1.getTabGroupId()).thenReturn(token);
         when(mTab1.isClosing()).thenReturn(true);
 
@@ -158,8 +158,8 @@ public class GroupWindowCheckerUnitTest {
         Token token = Token.createRandom();
         SavedTabGroup group = createSavedTabGroup(token, "title1");
 
-        when(mTabList.getCount()).thenReturn(1);
-        when(mTabList.getTabAt(0)).thenReturn(mTab1);
+        List<Tab> tabList = List.of(mTab1);
+        when(mTabList.iterator()).thenAnswer(invocation -> tabList.iterator());
         when(mTab1.getTabGroupId()).thenReturn(new Token(200L, 1L));
 
         @GroupWindowState int state = mSyncUtils.getState(group);

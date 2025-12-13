@@ -79,7 +79,10 @@ class NoOpWebAppPublisherDelegate : public WebAppPublisherHelper::Delegate {
 };
 
 bool HandlesIntent(const apps::AppPtr& app, const apps::IntentPtr& intent) {
-  for (const auto& filter : app->intent_filters) {
+  if (!app->intent_filters) {
+    return false;
+  }
+  for (const auto& filter : *app->intent_filters) {
     if (intent->MatchFilter(filter)) {
       return true;
     }
@@ -150,9 +153,10 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_Minimal) {
 }
 
 TEST_F(WebAppPublisherHelperTest, CreateWebApp_Random) {
-  for (uint32_t seed = 0; seed < 100; ++seed) {
-    std::unique_ptr<WebApp> random_app =
-        test::CreateRandomWebApp({.seed = seed});
+  for (int seed = 0; seed < 100; ++seed) {
+    test::CreateRandomWebAppParams params;
+    params.seed = seed;
+    std::unique_ptr<WebApp> random_app = test::CreateRandomWebApp(params);
 
     auto info = std::make_unique<WebAppInstallInfo>(random_app->manifest_id(),
                                                     random_app->start_url());
@@ -268,7 +272,6 @@ TEST_F(WebAppPublisherHelperTest,
     auto new_app = test::CreateWebApp();
     app = new_app.get();
     DCHECK(new_app->start_url().is_valid());
-    new_app->SetScope(new_app->start_url().GetWithoutFilename());
     // TODO(https://crbug.com/411126942): Stop using CreateApp.
     update->CreateApp(std::move(new_app));
   }
@@ -298,7 +301,7 @@ TEST_F(WebAppPublisherHelperTest,
     ASSERT_EQ(condition.condition_values.size(), 1U);
     EXPECT_EQ(condition.condition_values[0]->match_type,
               apps::PatternMatchType::kLiteral);
-    EXPECT_EQ(condition.condition_values[0]->value, app->scope().scheme());
+    EXPECT_EQ(condition.condition_values[0]->value, app->scope().GetScheme());
   }
 
   {
@@ -317,7 +320,7 @@ TEST_F(WebAppPublisherHelperTest,
     ASSERT_EQ(condition.condition_values.size(), 1U);
     EXPECT_EQ(condition.condition_values[0]->match_type,
               apps::PatternMatchType::kPrefix);
-    EXPECT_EQ(condition.condition_values[0]->value, app->scope().path());
+    EXPECT_EQ(condition.condition_values[0]->value, app->scope().GetPath());
   }
 }
 
@@ -330,7 +333,6 @@ TEST_F(WebAppPublisherHelperTest, CreateIntentFiltersForWebApp_FileHandlers) {
     auto new_app = test::CreateWebApp();
     app = new_app.get();
     DCHECK(new_app->start_url().is_valid());
-    new_app->SetScope(new_app->start_url().GetWithoutFilename());
 
     apps::FileHandler::AcceptEntry accept_entry;
     proto::os_state::WebAppOsIntegration test_state;
@@ -395,7 +397,6 @@ TEST_F(WebAppPublisherHelperTest, LaunchWithFiles_AllowWithNoPrompt) {
     auto new_app = test::CreateWebApp(app_url);
     app = new_app.get();
     DCHECK(new_app->start_url().is_valid());
-    new_app->SetScope(new_app->start_url().GetWithoutFilename());
 
     apps::FileHandler::AcceptEntry accept_entry;
     proto::os_state::WebAppOsIntegration test_state;

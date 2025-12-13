@@ -5,6 +5,7 @@
 #import <objc/runtime.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/affiliations/core/browser/affiliation_utils.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -17,15 +18,61 @@
 
 - (instancetype)initWithPasswordForm:
     (const password_manager::PasswordForm&)passwordForm {
+  return [self initWithPasswordForm:passwordForm isAffiliationEnabled:false];
+}
+
+- (instancetype)initWithPasswordForm:
+                    (const password_manager::PasswordForm&)passwordForm
+                isAffiliationEnabled:(BOOL)isAffiliationEnabled {
   self = [super init];
   if (self) {
     _passwordForm = passwordForm;
     _title = base::SysUTF8ToNSString(password_manager::GetShownOrigin(
         password_manager::CredentialUIEntry(_passwordForm)));
-    _site = base::SysUTF8ToNSString(
-        password_manager::GetShownUrl(
-            password_manager::CredentialUIEntry(_passwordForm))
-            .spec());
+
+    // If valid android password check the affiliation.
+    if (isAffiliationEnabled &&
+        affiliations::IsValidAndroidFacetURI(_passwordForm.signon_realm)) {
+      std::string siteName = password_manager::GetShownOrigin(
+          url::Origin::Create(passwordForm.url));
+
+      NSString* serviceName = base::SysUTF8ToNSString(siteName);
+      NSString* serviceIdentifier = @"";
+      NSString* webRealm =
+          base::SysUTF8ToNSString(passwordForm.affiliated_web_realm);
+      url::Origin origin =
+          url::Origin::Create(GURL(passwordForm.affiliated_web_realm));
+      std::string shownOrigin = password_manager::GetShownOrigin(origin);
+
+      // Set serviceIdentifier:
+      if (webRealm.length) {
+        // Prefer webRealm.
+        serviceIdentifier = webRealm;
+      } else if (!serviceIdentifier.length) {
+        // Fallback to signon_realm.
+        serviceIdentifier = base::SysUTF8ToNSString(passwordForm.signon_realm);
+      }
+
+      // Set serviceName:
+      if (!shownOrigin.empty()) {
+        // Prefer shownOrigin to match non Android credentials.
+        serviceName = base::SysUTF8ToNSString(shownOrigin);
+      } else if (!passwordForm.app_display_name.empty()) {
+        serviceName = base::SysUTF8ToNSString(passwordForm.app_display_name);
+      } else if (!serviceName.length) {
+        // Fallback to serviceIdentifier.
+        serviceName = serviceIdentifier;
+      }
+
+      _title = serviceName;
+      _site = serviceIdentifier;
+
+    } else {
+      _site = base::SysUTF8ToNSString(
+          password_manager::GetShownUrl(
+              password_manager::CredentialUIEntry(_passwordForm))
+              .spec());
+    }
   }
   return self;
 }

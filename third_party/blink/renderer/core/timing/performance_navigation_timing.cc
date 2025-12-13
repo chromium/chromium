@@ -87,29 +87,6 @@ void PerformanceNavigationTiming::OnBodyLoadFinished(
   UpdateBodySizes(encoded_body_size, decoded_body_size);
 }
 
-V8NavigationEntropy::Enum PerformanceNavigationTiming::GetSystemEntropy()
-    const {
-  DocumentLoader* loader = GetDocumentLoader();
-  switch (document_load_timing_values_->system_entropy_at_navigation_start) {
-    case mojom::blink::SystemEntropy::kHigh:
-      if (loader) {
-        CHECK(loader->GetFrame()->IsOutermostMainFrame());
-      }
-      return V8NavigationEntropy::Enum::kHigh;
-    case mojom::blink::SystemEntropy::kNormal:
-      if (loader) {
-        CHECK(loader->GetFrame()->IsOutermostMainFrame());
-      }
-      return V8NavigationEntropy::Enum::kNormal;
-    case mojom::blink::SystemEntropy::kEmpty:
-      if (loader) {
-        CHECK(!loader->GetFrame()->IsOutermostMainFrame());
-      }
-      return V8NavigationEntropy::Enum::k;
-  }
-  NOTREACHED();
-}
-
 DocumentLoader* PerformanceNavigationTiming::GetDocumentLoader() const {
   return DomWindow() ? DomWindow()->document()->Loader() : nullptr;
 }
@@ -264,6 +241,11 @@ PerformanceTimingConfidence* PerformanceNavigationTiming::confidence() const {
         WebFeature::kPerformanceNavigationTimingConfidence);
   }
 
+  return GetConfidence();
+}
+
+PerformanceTimingConfidence* PerformanceNavigationTiming::GetConfidence()
+    const {
   std::optional<RandomizedConfidenceValue> confidence =
       document_load_timing_values_->randomized_confidence;
   if (!confidence) {
@@ -276,19 +258,7 @@ PerformanceTimingConfidence* PerformanceNavigationTiming::confidence() const {
           GetNavigationConfidenceString(confidence->second)));
 }
 
-V8NavigationEntropy PerformanceNavigationTiming::systemEntropy() const {
-  if (DomWindow()) {
-    blink::UseCounter::Count(DomWindow()->document(),
-                             WebFeature::kPerformanceNavigateSystemEntropy);
-  }
-
-  return V8NavigationEntropy(GetSystemEntropy());
-}
-
-DOMHighResTimeStamp PerformanceNavigationTiming::criticalCHRestart(
-    ScriptState* script_state) const {
-  ExecutionContext::From(script_state)
-      ->CountUse(WebFeature::kCriticalCHRestartNavigationTiming);
+DOMHighResTimeStamp PerformanceNavigationTiming::criticalCHRestart() const {
   return Performance::MonotonicTimeToDOMHighResTimeStamp(
       TimeOrigin(), document_load_timing_values_->critical_ch_restart,
       AllowNegativeValues(), CrossOriginIsolatedCapability());
@@ -355,13 +325,12 @@ void PerformanceNavigationTiming::BuildJSONValue(
   builder.AddNumber("domComplete", domComplete());
   builder.AddNumber("loadEventStart", loadEventStart());
   builder.AddNumber("loadEventEnd", loadEventEnd());
-  builder.AddString("type", type().AsString());
+  builder.AddString("type", type().AsStringView());
   builder.AddNumber("redirectCount", redirectCount());
   builder.AddNumber(
       "activationStart",
       PerformanceNavigationTimingActivationStart::activationStart(*this));
-  builder.AddNumber("criticalCHRestart",
-                    criticalCHRestart(builder.GetScriptState()));
+  builder.AddNumber("criticalCHRestart", criticalCHRestart());
 
   if (RuntimeEnabledFeatures::BackForwardCacheNotRestoredReasonsEnabled(
           ExecutionContext::From(builder.GetScriptState()))) {
@@ -374,15 +343,9 @@ void PerformanceNavigationTiming::BuildJSONValue(
         ->CountUse(WebFeature::kBackForwardCacheNotRestoredReasons);
   }
 
-  if (RuntimeEnabledFeatures::PerformanceNavigateSystemEntropyEnabled(
-          ExecutionContext::From(builder.GetScriptState()))) {
-    builder.AddString("systemEntropy",
-                      V8NavigationEntropy(GetSystemEntropy()).AsString());
-  }
-
   if (RuntimeEnabledFeatures::PerformanceNavigationTimingConfidenceEnabled(
           ExecutionContext::From(builder.GetScriptState()))) {
-    if (auto* confidence_value = confidence()) {
+    if (auto* confidence_value = GetConfidence()) {
       builder.Add("confidence", confidence_value);
     } else {
       builder.AddNull("confidence");

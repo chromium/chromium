@@ -8,20 +8,20 @@ import("//testing/test.gni")
 config("libhwy_external_config") {
   include_dirs = [ "src" ]
   defines = []
-  if (target_cpu == "x86") {
+  if (current_cpu == "x86") {
     # Highway automatically disables AVX2 and AVX3 targets when compiling in
     # 32-bit mode due to bugs in the generated code. However, when doing so it
     # prints a warning (#pragma message). This flag silences that warning by
     # explicitly disabling AVX2 and AVX3 targets.
     defines += [ "HWY_BROKEN_TARGETS=(HWY_AVX2|HWY_AVX3)" ]
   }
-  if (target_cpu == "arm64") {
+  if (current_cpu == "arm" || current_cpu == "arm64") {
     # There are Chrome targets that use HWY_ALIGN on absl::uint128. This breaks
     # with SVE, since HWY_ALIGN == 8 for it and the minimal alignment requirement
     # for absl::uint128 is 16.
     defines += [ "HWY_BROKEN_TARGETS=HWY_ALL_SVE" ]
   }
-  if (target_cpu == "riscv64") {
+  if (current_cpu == "riscv64") {
     # Runtime dispatch for RVV is broken in highway
     # ref: https://github.com/google/highway/commit/c95cc0237d2f7a0
     defines += [ "HWY_BROKEN_TARGETS=HWY_RVV" ]
@@ -94,13 +94,16 @@ test("highway_tests") {
     "src/hwy/tests/sums_abs_diff_test.cc",
     "src/hwy/tests/swizzle_block_test.cc",
     "src/hwy/tests/swizzle_test.cc",
-    "src/hwy/tests/table_test.cc",
     "src/hwy/tests/test_util.cc",
     "src/hwy/tests/test_util_test.cc",
     "src/hwy/tests/truncate_test.cc",
     "src/hwy/tests/tuple_test.cc",
     "src/hwy/tests/widen_mul_test.cc",
   ]
+  if (!is_msan) {
+    # TODO(crbug.com/424075503): This fails under MSan.
+    sources += [ "src/hwy/tests/table_test.cc" ]
+  }
   deps = [
     ":libhwy",
     "//base/test:run_all_unittests",

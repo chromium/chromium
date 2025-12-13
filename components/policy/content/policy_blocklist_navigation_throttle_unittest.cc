@@ -12,11 +12,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/content/safe_search_service.h"
 #include "components/policy/content/safe_sites_navigation_throttle.h"
-#include "components/policy/core/browser/url_blocklist_manager.h"
-#include "components/policy/core/browser/url_blocklist_policy_handler.h"
+#include "components/policy/core/browser/url_list/policy_blocklist_service.h"
+#include "components/policy/core/browser/url_list/url_blocklist_manager.h"
+#include "components/policy/core/browser/url_list/url_blocklist_policy_handler.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/safe_search_api/stub_url_checker.h"
@@ -117,7 +117,7 @@ class SafeSitesNavigationThrottleTest
  private:
   virtual void CreateAndAddThrottle(content::NavigationThrottleRegistry& registry) {
     registry.AddThrottle(std::make_unique<SafeSitesNavigationThrottle>(
-        registry, browser_context()));
+        registry, SafeSearchFactory::GetForBrowserContext(browser_context())));
   }
 
   safe_search_api::StubURLChecker stub_url_checker_;
@@ -131,7 +131,8 @@ class SafeSitesNavigationThrottleWithErrorContentTest
   // SafeSitesNavigationThrottleTest:
   void CreateAndAddThrottle(content::NavigationThrottleRegistry& registry) override {
     registry.AddThrottle(std::make_unique<SafeSitesNavigationThrottle>(
-        registry, browser_context(), kErrorPageContent));
+        registry, SafeSearchFactory::GetForBrowserContext(browser_context()),
+        kErrorPageContent));
   }
 };
 
@@ -139,9 +140,14 @@ const char
     SafeSitesNavigationThrottleWithErrorContentTest::kErrorPageContent[] =
         "<html><body>URL was filtered.</body></html>";
 
+struct PolicyBlocklistTestParams {
+  bool is_proceed_until_response_enabled;
+  bool is_incognito_mode;
+};
+
 class PolicyBlocklistNavigationThrottleTest
     : public SafeSitesNavigationThrottleTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<PolicyBlocklistTestParams> {
  public:
   PolicyBlocklistNavigationThrottleTest() {
     if (IsProceedUntilResponseEnabled()) {
@@ -157,13 +163,43 @@ class PolicyBlocklistNavigationThrottleTest
 
     user_prefs::UserPrefs::Set(browser_context(), &pref_service_);
     policy::URLBlocklistManager::RegisterProfilePrefs(pref_service_.registry());
+
+    // TODO(crbug.com/442891187): Remove this once the prefs are registered in
+    // the URLBlocklistManager::RegisterProfilePrefs.
+    pref_service_.registry()->RegisterListPref(
+        policy::policy_prefs::kIncognitoModeBlocklist);
+    pref_service_.registry()->RegisterListPref(
+        policy::policy_prefs::kIncognitoModeAllowlist);
+
+    auto url_blocklist_manager = std::make_unique<policy::URLBlocklistManager>(
+        &pref_service_, policy::policy_prefs::kUrlBlocklist,
+        policy::policy_prefs::kUrlAllowlist);
+    std::unique_ptr<policy::URLBlocklistManager>
+        incognito_url_blocklist_manager;
+    if (IsIncognitoMode()) {
+      incognito_url_blocklist_manager =
+          std::make_unique<policy::URLBlocklistManager>(
+              &pref_service_, policy::policy_prefs::kIncognitoModeBlocklist,
+              policy::policy_prefs::kIncognitoModeAllowlist);
+    }
+
+    policy_blocklist_service_ = std::make_unique<PolicyBlocklistService>(
+        std::move(url_blocklist_manager),
+        std::move(incognito_url_blocklist_manager), &pref_service_);
+  }
+
+  void TearDown() override {
+    policy_blocklist_service_.reset();
+    SafeSitesNavigationThrottleTest::TearDown();
   }
 
  protected:
   // SafeSitesNavigationThrottleTest:
   void CreateAndAddThrottle(content::NavigationThrottleRegistry& registry) override {
     registry.AddThrottle(std::make_unique<PolicyBlocklistNavigationThrottle>(
-        registry, browser_context()));
+        registry, user_prefs::UserPrefs::Get(browser_context()),
+        policy_blocklist_service_.get(),
+        SafeSearchFactory::GetForBrowserContext(browser_context())));
   }
 
   void SetBlocklistUrlPattern(const std::string& pattern) {
@@ -182,15 +218,49 @@ class PolicyBlocklistNavigationThrottleTest
     task_environment()->RunUntilIdle();
   }
 
+  void SetIncognitoBlocklistUrlPattern(const std::string& pattern) {
+    base::Value::List value;
+    value.Append(pattern);
+    pref_service_.SetManagedPref(policy::policy_prefs::kIncognitoModeBlocklist,
+                                 std::move(value));
+    task_environment()->RunUntilIdle();
+  }
+
+  void SetIncognitoAllowlistUrlPattern(const std::string& pattern) {
+    base::Value::List value;
+    value.Append(pattern);
+    pref_service_.SetManagedPref(policy::policy_prefs::kIncognitoModeAllowlist,
+                                 std::move(value));
+    task_environment()->RunUntilIdle();
+  }
+
   void SetSafeSitesFilterBehavior(SafeSitesFilterBehavior filter_behavior) {
     base::Value value(static_cast<int>(filter_behavior));
     pref_service_.SetManagedPref(policy::policy_prefs::kSafeSitesFilterBehavior,
                                  std::move(value));
   }
 
-  bool IsProceedUntilResponseEnabled() { return GetParam(); }
+  void TestNavigationThrottleCheckResult(
+      const GURL& url,
+      content::NavigationThrottle::ThrottleAction expected_result) {
+    auto navigation_simulator = StartNavigation(url);
+    ASSERT_FALSE(navigation_simulator->IsDeferred());
+
+    EXPECT_EQ(expected_result,
+              navigation_simulator->GetLastThrottleCheckResult());
+
+    // Call WebContents::Stop() to reset the main rfh's navigation state. It
+    // results in destructing the navigation throttles to flush metrics.
+    RenderViewHostTestHarness::web_contents()->Stop();
+  }
+
+  bool IsProceedUntilResponseEnabled() {
+    return GetParam().is_proceed_until_response_enabled;
+  }
+  bool IsIncognitoMode() { return GetParam().is_incognito_mode; }
 
   sync_preferences::TestingPrefServiceSyncable pref_service_;
+  std::unique_ptr<PolicyBlocklistService> policy_blocklist_service_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -202,14 +272,8 @@ TEST_P(PolicyBlocklistNavigationThrottleTest, Blocklist) {
   SetBlocklistUrlPattern("example.com");
 
   // Block a blocklisted site.
-  auto navigation_simulator = StartNavigation(GURL("http://www.example.com/"));
-  ASSERT_FALSE(navigation_simulator->IsDeferred());
-  EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST,
-            navigation_simulator->GetLastThrottleCheckResult());
-
-  // Call WebContents::Stop() to reset the main rfh's navigation state. It
-  // results in destructing the navigation throttles to flush metrics.
-  RenderViewHostTestHarness::web_contents()->Stop();
+  TestNavigationThrottleCheckResult(GURL("http://www.example.com/"),
+                                    content::NavigationThrottle::BLOCK_REQUEST);
 }
 
 TEST_P(PolicyBlocklistNavigationThrottleTest, Allowlist) {
@@ -219,14 +283,60 @@ TEST_P(PolicyBlocklistNavigationThrottleTest, Allowlist) {
   SetBlocklistUrlPattern("example.com");
 
   // Allow a allowlisted exception to a blocklisted domain.
-  auto navigation_simulator = StartNavigation(GURL("http://www.example.com/"));
-  ASSERT_FALSE(navigation_simulator->IsDeferred());
-  EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            navigation_simulator->GetLastThrottleCheckResult());
+  TestNavigationThrottleCheckResult(GURL("http://www.example.com/"),
+                                    content::NavigationThrottle::PROCEED);
+}
 
-  // Call WebContents::Stop() to reset the main rfh's navigation state. It
-  // results in destructing the navigation throttles to flush metrics.
-  RenderViewHostTestHarness::web_contents()->Stop();
+TEST_P(PolicyBlocklistNavigationThrottleTest, IncognitoBlocklist) {
+  base::HistogramTester histogram_tester;
+
+  SetIncognitoBlocklistUrlPattern("example.com");
+
+  // Block a blocklisted site in incognito mode and allow in regular mode.
+  TestNavigationThrottleCheckResult(
+      GURL("http://www.example.com/"),
+      IsIncognitoMode() ? content::NavigationThrottle::BLOCK_REQUEST
+                        : content::NavigationThrottle::PROCEED);
+}
+
+TEST_P(PolicyBlocklistNavigationThrottleTest,
+       IncognitoAllowlistAgainstIncognitoBlocklist) {
+  base::HistogramTester histogram_tester;
+
+  SetIncognitoAllowlistUrlPattern("www.example.com");
+  SetIncognitoBlocklistUrlPattern("example.com");
+  TestNavigationThrottleCheckResult(GURL("http://www.example.com/"),
+                                    content::NavigationThrottle::PROCEED);
+}
+
+TEST_P(PolicyBlocklistNavigationThrottleTest,
+       IncognitoAllowlistAgainstURLBlocklist) {
+  base::HistogramTester histogram_tester;
+
+  SetIncognitoAllowlistUrlPattern("www.example.com");
+  SetBlocklistUrlPattern("example.com");
+
+  // Allow a allowlisted exception to a regular blocklist in incognito mode and
+  // block in regular mode.
+  TestNavigationThrottleCheckResult(
+      GURL("http://www.example.com/"),
+      IsIncognitoMode() ? content::NavigationThrottle::PROCEED
+                        : content::NavigationThrottle::BLOCK_REQUEST);
+}
+
+TEST_P(PolicyBlocklistNavigationThrottleTest,
+       URLAllowlistAgainstIncognitoBlocklist) {
+  base::HistogramTester histogram_tester;
+
+  SetAllowlistUrlPattern("www.example.com");
+  SetIncognitoBlocklistUrlPattern("example.com");
+
+  // A regular URL allowlist against an Incognito blocklist should block in
+  // incognito mode.
+  TestNavigationThrottleCheckResult(
+      GURL("http://www.example.com/"),
+      IsIncognitoMode() ? content::NavigationThrottle::BLOCK_REQUEST
+                        : content::NavigationThrottle::PROCEED);
 }
 
 TEST_P(PolicyBlocklistNavigationThrottleTest, SafeSites_Safe) {
@@ -363,11 +473,21 @@ TEST_P(PolicyBlocklistNavigationThrottleTest, SafeSites_Failure) {
             navigation_simulator->GetLastThrottleCheckResult());
 }
 
-// Run all SafeSitesNavigationThrottle tests with and without the
-// kPolicyBlocklistProceedUntilResponse feature enabled.
-INSTANTIATE_TEST_SUITE_P(All,
-                         PolicyBlocklistNavigationThrottleTest,
-                         testing::Values(false, true));
+// Run all PolicyBlocklistNavigationThrottle tests with and without the
+// kPolicyBlocklistProceedUntilResponse feature enabled and for both incognito
+// and non-Incognito modes.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PolicyBlocklistNavigationThrottleTest,
+    testing::Values(
+        PolicyBlocklistTestParams{.is_proceed_until_response_enabled = false,
+                                  .is_incognito_mode = false},
+        PolicyBlocklistTestParams{.is_proceed_until_response_enabled = false,
+                                  .is_incognito_mode = true},
+        PolicyBlocklistTestParams{.is_proceed_until_response_enabled = true,
+                                  .is_incognito_mode = false},
+        PolicyBlocklistTestParams{.is_proceed_until_response_enabled = true,
+                                  .is_incognito_mode = true}));
 
 void SafeSitesNavigationThrottleTest::TestSafeSitesCachedSites(
     const char* expected_error_page_content,
@@ -558,9 +678,7 @@ TEST_P(PolicyBlocklistNavigationThrottleTest, UseVpnPreConnectFiltering) {
       policy::policy_prefs::kAlwaysOnVpnPreConnectUrlAllowlist,
       base::Value(std::move(list)));
 
-  PolicyBlocklistService* service =
-      PolicyBlocklistFactory::GetForBrowserContext(browser_context());
-  service->SetAlwaysOnVpnPreConnectUrlAllowlistEnforced(
+  policy_blocklist_service_->SetAlwaysOnVpnPreConnectUrlAllowlistEnforced(
       /*enforced=*/true);
 
   task_environment()->RunUntilIdle();
@@ -577,7 +695,7 @@ TEST_P(PolicyBlocklistNavigationThrottleTest, UseVpnPreConnectFiltering) {
   EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST,
             navigation_simulator->GetLastThrottleCheckResult());
 
-  service->SetAlwaysOnVpnPreConnectUrlAllowlistEnforced(
+  policy_blocklist_service_->SetAlwaysOnVpnPreConnectUrlAllowlistEnforced(
       /*enforced=*/false);
 
   task_environment()->RunUntilIdle();

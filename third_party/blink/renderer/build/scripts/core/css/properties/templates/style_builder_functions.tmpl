@@ -348,18 +348,25 @@ state.GetFontBuilder().{{property.setter}}
   CounterDirectiveMap& map = state.StyleBuilder().AccessCounterDirectives();
 
   for (const CSSValue* item : *list) {
-    const auto& pair = To<CSSValuePair>(*item);
-    AtomicString identifier(To<CSSCustomIdentValue>(pair.First()).Value());
-    int counter_value = To<CSSPrimitiveValue>(pair.Second()).ComputeInteger(state.CssToLengthConversionData());
+    const auto& counter_data = To<cssvalue::CSSCounterValue>(*item);
+    AtomicString identifier(To<CSSCustomIdentValue>(counter_data.Identifier())->Value());
     CounterDirectives& directives =
-    map.insert(identifier, CounterDirectives()).stored_value->value;
+        map.insert(identifier, CounterDirectives()).stored_value->value;
         {% if action == 'Reset' %}
-    directives.SetResetValue(counter_value);
-        {% elif action == 'Increment' %}
-    directives.AddIncrementValue(counter_value);
-        {% else %}
-    directives.SetSetValue(counter_value);
+    if (counter_data.IsReversed()) {
+      directives.SetIsResetReversed();
+    }
         {% endif %}
+    if (const CSSPrimitiveValue* counter_data_value = counter_data.Value()) {
+      int counter_value = counter_data_value->ComputeInteger(state.CssToLengthConversionData());
+          {% if action == 'Reset' %}
+      directives.SetResetValue(counter_value);
+          {% elif action == 'Increment' %}
+      directives.AddIncrementValue(counter_value);
+          {% else %}
+      directives.SetSetValue(counter_value);
+          {% endif %}
+    }
   }
   DCHECK(!map.empty());
     {% endcall %}

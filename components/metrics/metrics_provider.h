@@ -125,9 +125,21 @@ class MetricsProvider {
   virtual bool HasPreviousSessionData();
 
   // Called when building a log about the previous session, so the provider
-  // can provide data about it.  Stability metrics can be provided
-  // directly into |stability_proto| fields or by logging stability histograms
-  // via the UMA_STABILITY_HISTOGRAM_ENUMERATION() macro.
+  // can provide data about it.  For example, in the case of a crash, data from
+  // the previous session can sometimes be recovered and uploaded. Add new
+  // metrics in ProvidePreviousSessionData() if they can be reasonably reliably
+  // reported. For example, the physical width of a screen is unlikely to
+  // change, so it's reasonable to report the current screen width in a previous
+  // session log. It's likely the physical width of the screen during the
+  // previous session is the same as the current screen width. On the other
+  // hand, the amount of memory used by Chrome during the previous session
+  // cannot be reliably determined based on information currently available. As
+  // such, it's not appropriate to report memory usage in
+  // ProvidePreviousSessionData().
+  //
+  // Stability metrics can be provided directly into |stability_proto| fields or
+  // by logging stability histograms via the
+  // UMA_STABILITY_HISTOGRAM_ENUMERATION() macro.
   virtual void ProvidePreviousSessionData(
       ChromeUserMetricsExtension* uma_proto);
 

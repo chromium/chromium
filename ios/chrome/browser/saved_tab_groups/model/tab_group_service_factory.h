@@ -24,9 +24,9 @@ class TabGroupServiceFactory : public ProfileKeyedServiceFactoryIOS {
   TabGroupServiceFactory();
   ~TabGroupServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_TAB_GROUP_SERVICE_FACTORY_H_

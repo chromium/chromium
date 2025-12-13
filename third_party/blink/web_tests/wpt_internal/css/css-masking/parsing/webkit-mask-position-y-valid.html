@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Non-standard CSS Masking: parsing -webkit-mask-position-y with valid values</title>
+<link rel="help" href="https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-mask-position-x">
+<meta name="assert" content="-webkit-mask-position-y supports the full grammar '[ center | [ left | right | x-start | x-end ]? <length-percentage>? ]#'.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_valid_value("-webkit-mask-position-y", "center");
+test_valid_value("-webkit-mask-position-y", "top");
+test_valid_value("-webkit-mask-position-y", "bottom");
+test_valid_value("-webkit-mask-position-y", "y-start");
+test_valid_value("-webkit-mask-position-y", "y-end");
+test_valid_value("-webkit-mask-position-y", "-20%");
+test_valid_value("-webkit-mask-position-y", "10px");
+test_valid_value("-webkit-mask-position-y", "0.5em");
+test_valid_value("-webkit-mask-position-y", "calc(10px - 0.5em)", "calc(-0.5em + 10px)");
+test_valid_value("-webkit-mask-position-y", "top -20%");
+test_valid_value("-webkit-mask-position-y", "bottom 10px");
+test_valid_value("-webkit-mask-position-y", "-20%, 10px");
+test_valid_value("-webkit-mask-position-y", "center, top, bottom");
+test_valid_value("-webkit-mask-position-y", "0.5em, y-start, y-end");
+test_valid_value("-webkit-mask-position-y", "calc(10px - 0.5em), top -20%, bottom 10px", "calc(-0.5em + 10px), top -20%, bottom 10px");
+</script>
+</body>
+</html>

@@ -10,13 +10,17 @@ fuzzable_proto_library("proto") {
 
 source_set("leak_detection_interface_headers") {
   sources = [
-    "bulk_leak_check.h",
-    "bulk_leak_check_service.h",
-    "bulk_leak_check_service_interface.h",
     "leak_detection_check.h",
     "leak_detection_check_factory.h",
     "leak_detection_delegate_interface.h",
   ]
+  if (!is_android) {
+    sources += [
+      "bulk_leak_check.h",
+      "bulk_leak_check_service.h",
+      "bulk_leak_check_service_interface.h",
+    ]
+  }
   deps = [
     "//base",
     "//components/keyed_service/core",
@@ -27,10 +31,6 @@ source_set("leak_detection_interface_headers") {
 
 source_set("leak_detection") {
   sources = [
-    "bulk_leak_check_impl.cc",
-    "bulk_leak_check_impl.h",
-    "bulk_leak_check_service.cc",
-    "bulk_leak_check_service_interface.cc",
     "encryption_utils.cc",
     "encryption_utils.h",
     "leak_detection_check.h",
@@ -48,6 +48,14 @@ source_set("leak_detection") {
     "single_lookup_response.cc",
     "single_lookup_response.h",
   ]
+  if (!is_android) {
+    sources += [
+      "bulk_leak_check_impl.cc",
+      "bulk_leak_check_impl.h",
+      "bulk_leak_check_service.cc",
+      "bulk_leak_check_service_interface.cc",
+    ]
+  }
 
   public_deps = [
     ":leak_detection_interface_headers",
@@ -77,8 +85,6 @@ source_set("leak_detection") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "mock_bulk_leak_check_service.cc",
-    "mock_bulk_leak_check_service.h",
     "mock_leak_detection_check_factory.cc",
     "mock_leak_detection_check_factory.h",
     "mock_leak_detection_delegate.cc",
@@ -86,10 +92,17 @@ source_set("test_support") {
     "mock_leak_detection_request_factory.cc",
     "mock_leak_detection_request_factory.h",
   ]
+  if (!is_android) {
+    sources += [
+      "mock_bulk_leak_check_service.cc",
+      "mock_bulk_leak_check_service.h",
+    ]
+  }
   deps = [
     ":leak_detection",
     "//base/test:test_support",
     "//components/keyed_service/core",
+    "//components/password_manager/core/browser:password_form",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -98,20 +111,25 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "bulk_leak_check_impl_unittest.cc",
-    "bulk_leak_check_service_unittest.cc",
     "encryption_utils_unittest.cc",
     "leak_detection_check_factory_impl_unittest.cc",
     "leak_detection_check_impl_unittest.cc",
     "leak_detection_request_unittest.cc",
     "leak_detection_request_utils_unittest.cc",
   ]
+  if (!is_android) {
+    sources += [
+      "bulk_leak_check_impl_unittest.cc",
+      "bulk_leak_check_service_unittest.cc",
+    ]
+  }
 
   deps = [
     ":leak_detection",
     ":proto",
     ":test_support",
     "//base/test:test_support",
+    "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
     "//components/signin/public/identity_manager:test_support",

@@ -47,16 +47,14 @@ class V8ScriptRunnerTest : public testing::Test {
     counter_++;
   }
 
-  WTF::String Code() const {
+  String Code() const {
     // Simple function for testing. Note:
     // - Add counter to trick V8 code cache.
     // - Pad counter to 1000 digits, to trick minimal cacheability threshold.
-    return WTF::String::Format("a = function() { 1 + 1; } // %01000d\n",
-                               counter_);
+    return String::Format("a = function() { 1 + 1; } // %01000d\n", counter_);
   }
-  WTF::String DifferentCode() const {
-    return WTF::String::Format("a = function() { 1 + 12; } // %01000d\n",
-                               counter_);
+  String DifferentCode() const {
+    return String::Format("a = function() { 1 + 12; } // %01000d\n", counter_);
   }
   KURL Url() const { return KURL(url_ + String::Number(counter_)); }
   unsigned TagForCodeCache(CachedMetadataHandler* cache_handler) const {

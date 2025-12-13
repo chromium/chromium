@@ -4,11 +4,9 @@
 
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 
-#import "base/files/file_util.h"
 #import "base/metrics/metrics_hashes.h"
 #import "base/path_service.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/values.h"
 #import "components/language_detection/ios/browser/language_detection_model_loader_service_ios.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
@@ -20,7 +18,6 @@
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
 #import "ios/chrome/browser/language_detection/model/language_detection_model_loader_service_ios_factory.h"
 #import "ios/chrome/browser/language_detection/model/language_detection_model_service_factory.h"
-#import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -38,8 +35,6 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
-    scoped_feature_list_.InitWithFeatures(
-        {translate::kTFLiteLanguageDetectionEnabled}, {});
     OptimizationGuideServiceFactory::InitializePredictionModelStore();
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
@@ -57,22 +52,14 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
             ->GetSupportedContentWorld();
     web_state_.SetWebFramesManager(content_world,
                                    std::move(web_frames_manager));
-    ChromeIOSTranslateClient::CreateForWebState(&web_state_);
     InfoBarManagerImpl::CreateForWebState(&web_state_);
-  }
-
-  void TearDown() override {
-    // Reinitialize the store, so that tests do not use state from the
-    // previous test.
-    optimization_guide::IOSChromePredictionModelStore::GetInstance()
-        ->ResetForTesting();
-    PlatformTest::TearDown();
+    ChromeIOSTranslateClient::CreateForWebState(
+        &web_state_, InfoBarManagerImpl::FromWebState(&web_state_));
   }
 
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;

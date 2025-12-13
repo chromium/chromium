@@ -5,18 +5,13 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_EXTERNAL_OBJECT_STORAGE_H_
 #define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_EXTERNAL_OBJECT_STORAGE_H_
 
-#include <stdint.h>
-
-#include <map>
+#include <cstdint>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
-#include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/status.h"
-#include "storage/common/file_system/file_system_mount_option.h"
 
 namespace content::indexed_db {
 
@@ -25,8 +20,6 @@ namespace content::indexed_db {
 // mid-refactor, but it will be cleaned up over time.
 
 enum class BlobWriteResult {
-  // There was an error writing the blobs.
-  kFailure,
   // The blobs were written, and phase two should be scheduled asynchronously.
   // The returned status will be ignored.
   kRunPhaseTwoAsync,
@@ -36,14 +29,24 @@ enum class BlobWriteResult {
 };
 
 // This callback is used to signify that writing blobs is complete. The
-// BlobWriteResult signifies if the operation succeeded or not, and the returned
-// status is used to handle errors in the next part of the transcation commit
-// lifecycle. Note: The returned status can only be used when the result is
-// |kRunPhaseTwoAndReturnResult|.  The WriteBlobToFileResult is a more granular
-// error in the case something goes wrong.
-using BlobWriteCallback =
-    base::OnceCallback<Status(BlobWriteResult,
-                              storage::mojom::WriteBlobToFileResult)>;
+// `StatusOr<BlobWriteResult>` signifies if the operation succeeded or not, and
+// the returned status is used to handle errors in the next part of the
+// transaction commit lifecycle. Note: The returned status can only be used when
+// the result is `kRunPhaseTwoAndReturnResult`.
+using BlobWriteCallback = base::OnceCallback<Status(StatusOr<BlobWriteResult>)>;
+
+// This callback will serialize a single object that represents an FSA handle
+// and return the serialized token asynchronously via the inner callback.
+using SerializeFsaCallback = base::RepeatingCallback<void(
+    blink::mojom::FileSystemAccessTransferToken&,
+    base::OnceCallback<void(
+        const std::vector<uint8_t>& /*serialized_token*/)>)>;
+
+// This callback will rehydrate a serialized FSA handle token into a mojo
+// endpoint which is returned asynchronously via the inner callback.
+using DeserializeFsaCallback = base::RepeatingCallback<void(
+    const std::vector<uint8_t>& /*serialized_token*/,
+    mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>)>;
 
 // This object represents a change in the database involving adding or removing
 // external objects. if external_objects() is empty, then objects are to be

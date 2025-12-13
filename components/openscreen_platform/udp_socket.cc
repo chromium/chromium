@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/openscreen_platform/udp_socket.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "components/openscreen_platform/network_context.h"
@@ -142,7 +138,7 @@ void UdpSocket::JoinMulticastGroup(const IPAddress& address,
 
 void UdpSocket::SendMessage(ByteView data, const IPEndpoint& dest) {
   const auto send_to_address = openscreen_platform::ToNetEndPoint(dest);
-  base::span<const uint8_t> data_span(data.data(), data.size());
+  base::span<const uint8_t> UNSAFE_TODO(data_span(data.data(), data.size()));
   udp_socket_->SendTo(
       send_to_address, data_span,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),

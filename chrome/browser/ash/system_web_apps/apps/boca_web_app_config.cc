@@ -10,10 +10,10 @@
 #include "base/version_info/channel.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 
@@ -35,7 +35,7 @@ class ChromeBocaUIDelegate : public ash::boca::BocaUIDelegate {
     const user_manager::User* user =
         ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_);
     const PrefService* pref_service = profile_->GetPrefs();
-    version_info::Channel channel = chrome::GetChannel();
+    version_info::Channel channel = ash::GetChannel();
     source->AddBoolean("isDevChannel",
                        channel == version_info::Channel::DEV ||
                            channel == version_info::Channel::UNKNOWN);
@@ -72,6 +72,14 @@ class ChromeBocaUIDelegate : public ash::boca::BocaUIDelegate {
                        features::IsBocaSpotlightRobotRequesterEnabled());
     source->AddBoolean("userFeedbackAllowed",
                        pref_service->GetBoolean(::prefs::kUserFeedbackAllowed));
+    if (features::IsBocaConfigureMaxStudentsEnabled()) {
+      source->AddInteger("maxNumStudentsAllowed",
+                         features::kBocaMaxNumStudentsAllowed.Get());
+    }
+    source->AddBoolean("screenSharingTeacher",
+                       features::IsBocaScreenSharingTeacherEnabled());
+    source->AddBoolean("screenSharingStudent",
+                       features::IsBocaScreenSharingStudentEnabled());
   }
 
  private:

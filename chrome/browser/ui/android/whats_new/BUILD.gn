@@ -15,8 +15,7 @@ android_library("feature_list_java") {
   ]
   deps = [
     "//base:resetters_java",
-    "//chrome/android:chrome_app_java_resources",
-    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_annotation_annotation_jvm_java",
   ]
 }
 
@@ -85,7 +84,7 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",

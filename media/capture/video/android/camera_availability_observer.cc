@@ -43,3 +43,5 @@ void CameraAvailabilityObserver::OnCameraAvailabilityChanged(JNIEnv* env) {
 }
 
 }  // namespace media
+
+DEFINE_JNI(CameraAvailabilityObserver)

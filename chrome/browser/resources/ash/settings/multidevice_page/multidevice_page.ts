@@ -425,6 +425,9 @@ export class SettingsMultidevicePageElement extends
         // If this device is waiting for action on the server or the host
         // device, clicking the button should trigger this action.
         this.browserProxy_.retryPendingHostSetup();
+        return;
+      default:
+        break;
     }
   }
 

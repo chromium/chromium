@@ -54,7 +54,6 @@ class OffTheRecordProfileImpl : public Profile {
   Profile* GetOriginalProfile() override;
   const Profile* GetOriginalProfile() const override;
   bool IsChild() const override;
-  bool AllowsBrowserWindows() const override;
   ExtensionSpecialStoragePolicy* GetExtensionSpecialStoragePolicy() override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
@@ -90,7 +89,6 @@ class OffTheRecordProfileImpl : public Profile {
   void SetCreationTimeForTesting(base::Time creation_time) override;
 
   // content::BrowserContext implementation:
-  base::FilePath GetPath() override;
   base::FilePath GetPath() const override;
   base::Time GetCreationTime() const override;
   std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(

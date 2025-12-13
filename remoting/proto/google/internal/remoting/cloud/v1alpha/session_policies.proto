@@ -60,4 +60,8 @@ message SessionPolicies {
   // 2) A session continuum (concurrent sessions) when 2FA is required.
   // Default is no maximum session length.
   optional Duration maximum_session_duration = 8;
+
+  // Allow host-side WebAuthn requests to be handled by the client browser.
+  // Defaults to true.
+  optional bool allow_web_authn_forwarding = 9;
 }

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/debug/crash_logging.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -19,9 +20,10 @@ namespace mojo {
 namespace internal {
 namespace {
 
-ValidationErrorObserverForTesting* g_validation_error_observer = nullptr;
-SerializationWarningObserverForTesting* g_serialization_warning_observer =
+base::RepeatingCallback<void(ValidationError)>* g_validation_error_callback =
     nullptr;
+base::RepeatingCallback<void(ValidationError, SendValidation)>*
+    g_serialization_warning_callback = nullptr;
 bool g_suppress_logging = false;
 
 std::string MessageHeaderAsHexString(Message* message) {
@@ -89,8 +91,8 @@ void ReportValidationError(ValidationContext* context,
   SCOPED_CRASH_KEY_STRING64("mojo-message", "header-bytes",
                             MessageHeaderAsHexString(context->message()));
 
-  if (g_validation_error_observer) {
-    g_validation_error_observer->set_last_error(error);
+  if (g_validation_error_callback) {
+    (*g_validation_error_callback).Run(error);
     return;
   }
 
@@ -130,51 +132,33 @@ void ReportValidationErrorForMessage(mojo::Message* message,
   ReportValidationError(&validation_context, error);
 }
 
-ScopedSuppressValidationErrorLoggingForTests
-    ::ScopedSuppressValidationErrorLoggingForTests()
-    : was_suppressed_(g_suppress_logging) {
-  g_suppress_logging = true;
+bool GetIsValidationErrorLoggingSuppressedForTesting() {
+  return g_suppress_logging;
 }
 
-ScopedSuppressValidationErrorLoggingForTests
-    ::~ScopedSuppressValidationErrorLoggingForTests() {
-  g_suppress_logging = was_suppressed_;
+void SetIsValidationErrorLoggingSuppressedForTesting(bool suppress_logging) {
+  g_suppress_logging = suppress_logging;
 }
 
-ValidationErrorObserverForTesting::ValidationErrorObserverForTesting(
-    base::RepeatingClosure callback)
-    : last_error_(VALIDATION_ERROR_NONE), callback_(std::move(callback)) {
-  DCHECK(!g_validation_error_observer);
-  g_validation_error_observer = this;
+void SetSerializationWarningCallbackForTesting(
+    base::RepeatingCallback<void(ValidationError, SendValidation)>* callback) {
+  g_serialization_warning_callback = callback;
 }
 
-ValidationErrorObserverForTesting::~ValidationErrorObserverForTesting() {
-  DCHECK(g_validation_error_observer == this);
-  g_validation_error_observer = nullptr;
+void SetValidationErrorCallbackForTesting(
+    base::RepeatingCallback<void(ValidationError)>* callback) {
+  g_validation_error_callback = callback;
 }
 
-bool ReportSerializationWarning(
-    ValidationError error,
-    mojo::internal::SendValidation validation_type) {
-  if (g_serialization_warning_observer) {
-    g_serialization_warning_observer->set_last_warning(error);
-    g_serialization_warning_observer->set_send_validation_type(validation_type);
+bool ReportSerializationWarning(ValidationError error,
+                                SendValidation validation_type) {
+  if (g_serialization_warning_callback) {
+    (*g_serialization_warning_callback).Run(error, validation_type);
     return true;
   }
 
   return false;
 }
 
-SerializationWarningObserverForTesting::SerializationWarningObserverForTesting()
-    : last_warning_(VALIDATION_ERROR_NONE) {
-  DCHECK(!g_serialization_warning_observer);
-  g_serialization_warning_observer = this;
-}
-
-SerializationWarningObserverForTesting::
-    ~SerializationWarningObserverForTesting() {
-  DCHECK(g_serialization_warning_observer == this);
-  g_serialization_warning_observer = nullptr;
-}
 }  // namespace internal
 }  // namespace mojo

@@ -44,8 +44,7 @@ public class BluetoothAdapterWrapper {
      * permissions.
      */
     @CalledByNative
-    public static @Nullable BluetoothAdapterWrapper createWithDefaultAdapter(
-            boolean enableClassic) {
+    public static @Nullable BluetoothAdapterWrapper createWithDefaultAdapter() {
         // In Android Q and earlier the BLUETOOTH and BLUETOOTH_ADMIN permissions must
         // be granted in the manifest. In Android S and later the BLUETOOTH_SCAN and
         // BLUETOOTH_CONNECT permissions can be requested at runtime after fetching the
@@ -73,10 +72,9 @@ public class BluetoothAdapterWrapper {
                         .getPackageManager()
                         .hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
         final boolean hasBluetoothFeature =
-                enableClassic
-                        && ContextUtils.getApplicationContext()
-                                .getPackageManager()
-                                .hasSystemFeature(PackageManager.FEATURE_BLUETOOTH);
+                ContextUtils.getApplicationContext()
+                        .getPackageManager()
+                        .hasSystemFeature(PackageManager.FEATURE_BLUETOOTH);
 
         // Fails out if neither Classic nor Low Energy are supported.
         if (!hasBluetoothFeature && !hasLowEnergyFeature) {
@@ -97,7 +95,7 @@ public class BluetoothAdapterWrapper {
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public BluetoothAdapterWrapper(
             BluetoothAdapter adapter,
             Context context,

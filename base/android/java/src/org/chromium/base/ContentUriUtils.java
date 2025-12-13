@@ -113,11 +113,14 @@ public abstract class ContentUriUtils {
      *
      * @param uriString the content URI to look up.
      * @param listFiles if true, the children of uri are populated, else uri info is populated.
+     * @param fileType the type of files to list. Flags other than FILES and DIRECTORIES are
+     *     ignored.
      * @param nativeVector vector to populate with results via Natives#addFileInfoToVector(). Called
      *     only if file is found.
      */
     @SuppressWarnings("NullAway") // Using broad try/catch to catch NullPointerException
-    private static void populateFileInfo(String uriString, boolean listFiles, long nativeVector) {
+    private static void populateFileInfo(
+            String uriString, boolean listFiles, @FileType int fileType, long nativeVector) {
         String[] columns = {
             DocumentsContract.Document.COLUMN_DOCUMENT_ID,
             DocumentsContract.Document.COLUMN_DISPLAY_NAME,
@@ -183,6 +186,14 @@ public abstract class ContentUriUtils {
                                 && DocumentsContract.Document.MIME_TYPE_DIR.equals(c.getString(2));
                 long size = c.isNull(3) ? 0 : c.getLong(3);
                 long lastModified = c.isNull(4) ? 0 : c.getLong(4);
+
+                if ((fileType & FileType.FILES) == 0 && !isDirectory) {
+                    continue;
+                }
+                if ((fileType & FileType.DIRECTORIES) == 0 && isDirectory) {
+                    continue;
+                }
+
                 ContentUriUtilsJni.get()
                         .addFileInfoToVector(
                                 nativeVector, path, displayName, isDirectory, size, lastModified);
@@ -202,19 +213,21 @@ public abstract class ContentUriUtils {
      */
     @CalledByNative
     private static void getFileInfo(@JniType("std::string") String uriString, long nativeVector) {
-        populateFileInfo(uriString, false, nativeVector);
+        populateFileInfo(uriString, false, FileType.DIRECTORIES | FileType.FILES, nativeVector);
     }
 
     /**
      * Provices an array of files and directories contained in the given directory.
      *
      * @param uriString the content URI to look up.
+     * @param fileType specifies the type of files to be enumerated.
      * @param nativeVector vector to populate with results via Natives#addFileInfoToVector(). Called
      *     for each file in this directory.
      */
     @CalledByNative
-    private static void listDirectory(@JniType("std::string") String uriString, long nativeVector) {
-        populateFileInfo(uriString, true, nativeVector);
+    private static void listDirectory(
+            @JniType("std::string") String uriString, @FileType int fileType, long nativeVector) {
+        populateFileInfo(uriString, true, fileType, nativeVector);
     }
 
     /**

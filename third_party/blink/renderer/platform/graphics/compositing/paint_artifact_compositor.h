@@ -91,13 +91,13 @@ class SynthesizedClip : public cc::ContentLayerClient {
   bool FillsBoundsCompletely() const final { return false; }
 
  private:
-  scoped_refptr<cc::PictureLayer> layer_;
   gfx::Transform projection_;
-  bool rrect_is_local_ = false;
   SkRRect rrect_;
-  std::optional<Path> path_;
+  scoped_refptr<cc::PictureLayer> layer_;
   CompositorElementId mask_isolation_id_;
   CompositorElementId mask_effect_id_;
+  std::optional<Path> path_;
+  bool rrect_is_local_ = false;
 };
 
 // Responsible for managing compositing in terms of a PaintArtifact.

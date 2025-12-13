@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"

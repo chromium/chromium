@@ -14,7 +14,7 @@ source_set("impl") {
     "//ash/style",
     "//base",
     "//chromeos/ash/components/osauth/public",
-    "//chromeos/constants:constants",
+    "//chromeos/constants",
     "//ui/views",
   ]
 

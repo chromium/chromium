@@ -39,13 +39,38 @@ class MockUnexportableKeyService : public UnexportableKeyService {
       (override));
   MOCK_METHOD(
       void,
+      GetAllSigningKeysForGarbageCollectionSlowlyAsync,
+      (BackgroundTaskPriority priority,
+       base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
+           callback),
+      (override));
+  MOCK_METHOD(
+      void,
+      CopyKeyFromOtherService,
+      (const UnexportableKeyService& other_service,
+       UnexportableKeyId key_id_from_other_service,
+       BackgroundTaskPriority priority,
+       base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback),
+      (override));
+  MOCK_METHOD(
+      void,
       SignSlowlyAsync,
-      (const UnexportableKeyId& key_id,
+      (UnexportableKeyId key_id,
        base::span<const uint8_t> data,
        BackgroundTaskPriority priority,
-       size_t max_retries,
        base::OnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)> callback),
       (override));
+  MOCK_METHOD(void,
+              DeleteKeySlowlyAsync,
+              (UnexportableKeyId key_id,
+               BackgroundTaskPriority priority,
+               base::OnceCallback<void(ServiceErrorOr<void>)> callback),
+              (override));
+  MOCK_METHOD(void,
+              DeleteAllKeysSlowlyAsync,
+              (BackgroundTaskPriority priority,
+               base::OnceCallback<void(ServiceErrorOr<size_t>)> callback),
+              (override));
   MOCK_METHOD(ServiceErrorOr<std::vector<uint8_t>>,
               GetSubjectPublicKeyInfo,
               (UnexportableKeyId key_id),

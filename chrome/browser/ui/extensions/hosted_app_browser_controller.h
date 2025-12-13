@@ -49,7 +49,6 @@ class HostedAppBrowserController : public web_app::AppBrowserController,
   void Uninstall(
       webapps::WebappUninstallSource webapp_uninstall_source) override;
   bool IsInstalled() const override;
-  bool IsHostedApp() const override;
 
  protected:
   // ExtensionUninstallDialog::Delegate:

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/test/mock_clipboard_host.h"
 
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -46,7 +42,10 @@ void MockClipboardHost::Reset() {
 
 void MockClipboardHost::GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,
                                           GetSequenceNumberCallback callback) {
-  std::move(callback).Run(sequence_number_);
+  auto bytes = sequence_number_.value().AsBytes();
+  std::move(callback).Run(
+      absl::MakeUint128(base::U64FromLittleEndian(bytes.first<8>()),
+                        base::U64FromLittleEndian(bytes.last<8>())));
 }
 
 std::vector<std::u16string> MockClipboardHost::ReadStandardFormatNames() {
@@ -214,7 +213,7 @@ void MockClipboardHost::WriteUnsanitizedCustomFormat(
   if (needs_reset_)
     Reset();
   // Simulate the underlying platform copying this data.
-  std::vector<uint8_t> data_copy(data.data(), data.data() + data.size());
+  std::vector<uint8_t> data_copy(data.begin(), data.end());
   // Append the "web " prefix since it is removed by the clipboard writer during
   // write.
   std::u16string web_format =
@@ -230,7 +229,12 @@ void MockClipboardHost::RegisterClipboardListener(
 
 void MockClipboardHost::OnClipboardDataChanged() {
   if (clipboard_listener_) {
-    clipboard_listener_->OnClipboardDataChanged();
+    auto sequence_number_bytes = sequence_number_.value().AsBytes();
+    clipboard_listener_->OnClipboardDataChanged(
+        ReadStandardFormatNames(),
+        absl::MakeUint128(
+            base::U64FromLittleEndian(sequence_number_bytes.first<8>()),
+            base::U64FromLittleEndian(sequence_number_bytes.last<8>())));
   }
 }
 

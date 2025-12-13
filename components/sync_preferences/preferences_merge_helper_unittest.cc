@@ -209,8 +209,8 @@ TEST(PreferencesMergeHelperTest,
   }
 }
   )";
-  std::optional<base::Value> local_value =
-      base::JSONReader::Read(local_dict_json);
+  std::optional<base::Value> local_value = base::JSONReader::Read(
+      local_dict_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(local_value.has_value() && local_value->is_dict());
 
   const char* account_dict_json = R"(
@@ -221,8 +221,8 @@ TEST(PreferencesMergeHelperTest,
   }
 }
   )";
-  std::optional<base::Value> account_value =
-      base::JSONReader::Read(account_dict_json);
+  std::optional<base::Value> account_value = base::JSONReader::Read(
+      account_dict_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(account_value.has_value() && account_value->is_dict());
 
   // Changes:
@@ -238,7 +238,8 @@ TEST(PreferencesMergeHelperTest,
   }
 }
   )";
-  std::optional<base::Value> new_value = base::JSONReader::Read(new_dict_json);
+  std::optional<base::Value> new_value = base::JSONReader::Read(
+      new_dict_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(new_value.has_value() && new_value->is_dict());
 
   // "local_key" is unchanged, "new_key" was added and "server_key1" was
@@ -253,8 +254,8 @@ TEST(PreferencesMergeHelperTest,
   }
 }
   )";
-  std::optional<base::Value> expected_local_value =
-      base::JSONReader::Read(expected_local_dict_json);
+  std::optional<base::Value> expected_local_value = base::JSONReader::Read(
+      expected_local_dict_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected_local_value.has_value() &&
               expected_local_value->is_dict());
 
@@ -270,8 +271,8 @@ TEST(PreferencesMergeHelperTest,
   }
 }
   )";
-  std::optional<base::Value> expected_account_value =
-      base::JSONReader::Read(expected_account_dict_json);
+  std::optional<base::Value> expected_account_value = base::JSONReader::Read(
+      expected_account_dict_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected_account_value.has_value() &&
               expected_account_value->is_dict());
 
@@ -296,8 +297,8 @@ TEST(
   }
 }
   )";
-  std::optional<base::Value> local_value =
-      base::JSONReader::Read(local_dict_json);
+  std::optional<base::Value> local_value = base::JSONReader::Read(
+      local_dict_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(local_value.has_value() && local_value->is_dict());
 
   const char* account_dict_json = R"(
@@ -310,8 +311,8 @@ TEST(
   }
 }
   )";
-  std::optional<base::Value> account_value =
-      base::JSONReader::Read(account_dict_json);
+  std::optional<base::Value> account_value = base::JSONReader::Read(
+      account_dict_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(account_value.has_value() && account_value->is_dict());
 
   // Unchanged, this is the same as the merged value. Hence, both the local
@@ -330,7 +331,8 @@ TEST(
   }
 }
   )";
-  std::optional<base::Value> new_value = base::JSONReader::Read(new_dict_json);
+  std::optional<base::Value> new_value = base::JSONReader::Read(
+      new_dict_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(new_value.has_value() && new_value->is_dict());
   // The new value is the same as the merged value.
   ASSERT_EQ(new_value->GetDict(),
@@ -354,8 +356,8 @@ TEST(PreferencesMergeHelperTest,
   }
 }
   )";
-  std::optional<base::Value> local_value =
-      base::JSONReader::Read(local_dict_json);
+  std::optional<base::Value> local_value = base::JSONReader::Read(
+      local_dict_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(local_value.has_value() && local_value->is_dict());
 
   const char* account_dict_json = R"(
@@ -365,8 +367,8 @@ TEST(PreferencesMergeHelperTest,
   }
 }
   )";
-  std::optional<base::Value> account_value =
-      base::JSONReader::Read(account_dict_json);
+  std::optional<base::Value> account_value = base::JSONReader::Read(
+      account_dict_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(account_value.has_value() && account_value->is_dict());
 
   // Values for "local_key1" and "server_key1" were updated. They should get
@@ -381,7 +383,8 @@ TEST(PreferencesMergeHelperTest,
   }
 }
   )";
-  std::optional<base::Value> new_value = base::JSONReader::Read(new_dict_json);
+  std::optional<base::Value> new_value = base::JSONReader::Read(
+      new_dict_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(new_value.has_value() && new_value->is_dict());
 
   auto [new_local_value, new_account_value] = helper::UnmergeDictionaryValues(
@@ -401,8 +404,8 @@ TEST(PreferencesMergeHelperTest,
   }
 }
   )";
-  std::optional<base::Value> local_value =
-      base::JSONReader::Read(local_dict_json);
+  std::optional<base::Value> local_value = base::JSONReader::Read(
+      local_dict_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(local_value.has_value() && local_value->is_dict());
 
   const char* account_dict_json = R"(
@@ -412,8 +415,8 @@ TEST(PreferencesMergeHelperTest,
   }
 }
   )";
-  std::optional<base::Value> account_value =
-      base::JSONReader::Read(account_dict_json);
+  std::optional<base::Value> account_value = base::JSONReader::Read(
+      account_dict_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(account_value.has_value() && account_value->is_dict());
 
   // "local_key2" and "server_key2" are newly-added keys. They should get added
@@ -431,7 +434,8 @@ TEST(PreferencesMergeHelperTest,
   }
 }
   )";
-  std::optional<base::Value> new_value = base::JSONReader::Read(new_dict_json);
+  std::optional<base::Value> new_value = base::JSONReader::Read(
+      new_dict_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(new_value.has_value() && new_value->is_dict());
 
   // "local_key2" and "server_key2" were added. Since, "server_key1" was
@@ -447,8 +451,8 @@ TEST(PreferencesMergeHelperTest,
   }
 }
   )";
-  std::optional<base::Value> expected_local_value =
-      base::JSONReader::Read(expected_local_dict_json);
+  std::optional<base::Value> expected_local_value = base::JSONReader::Read(
+      expected_local_dict_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected_local_value.has_value() &&
               expected_local_value->is_dict());
 
@@ -465,8 +469,8 @@ TEST(PreferencesMergeHelperTest,
   }
 }
   )";
-  std::optional<base::Value> expected_account_value =
-      base::JSONReader::Read(expected_account_dict_json);
+  std::optional<base::Value> expected_account_value = base::JSONReader::Read(
+      expected_account_dict_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected_account_value.has_value() &&
               expected_account_value->is_dict());
 
@@ -490,8 +494,8 @@ TEST(PreferencesMergeHelperTest,
   }
 }
   )";
-  std::optional<base::Value> local_value =
-      base::JSONReader::Read(local_dict_json);
+  std::optional<base::Value> local_value = base::JSONReader::Read(
+      local_dict_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(local_value.has_value() && local_value->is_dict());
 
   const char* account_dict_json = R"(
@@ -504,8 +508,8 @@ TEST(PreferencesMergeHelperTest,
   }
 }
   )";
-  std::optional<base::Value> account_value =
-      base::JSONReader::Read(account_dict_json);
+  std::optional<base::Value> account_value = base::JSONReader::Read(
+      account_dict_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(account_value.has_value() && account_value->is_dict());
 
   // "local_key1" and "server_key2" were removed.
@@ -519,7 +523,8 @@ TEST(PreferencesMergeHelperTest,
   }
 }
   )";
-  std::optional<base::Value> new_value = base::JSONReader::Read(new_dict_json);
+  std::optional<base::Value> new_value = base::JSONReader::Read(
+      new_dict_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(new_value.has_value() && new_value->is_dict());
 
   // "local_key1" and "server_key2" were removed. So, "local_key1" got removed
@@ -531,8 +536,8 @@ TEST(PreferencesMergeHelperTest,
   }
 }
   )";
-  std::optional<base::Value> expected_local_value =
-      base::JSONReader::Read(expected_local_dict_json);
+  std::optional<base::Value> expected_local_value = base::JSONReader::Read(
+      expected_local_dict_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected_local_value.has_value() &&
               expected_local_value->is_dict());
 
@@ -545,8 +550,8 @@ TEST(PreferencesMergeHelperTest,
   }
 }
   )";
-  std::optional<base::Value> expected_account_value =
-      base::JSONReader::Read(expected_account_dict_json);
+  std::optional<base::Value> expected_account_value = base::JSONReader::Read(
+      expected_account_dict_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected_account_value.has_value() &&
               expected_account_value->is_dict());
 

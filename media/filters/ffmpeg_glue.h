@@ -26,6 +26,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "media/base/container_names.h"
 #include "media/base/media_export.h"
@@ -40,7 +41,7 @@ class MEDIA_EXPORT FFmpegURLProtocol {
  public:
   // Read the given amount of bytes into data, returns the number of bytes read
   // if successful, kReadError otherwise.
-  virtual int Read(int size, uint8_t* data) = 0;
+  virtual int Read(base::span<uint8_t> data) = 0;
 
   // Returns true and the current file position for this file, false if the
   // file position could not be retrieved.

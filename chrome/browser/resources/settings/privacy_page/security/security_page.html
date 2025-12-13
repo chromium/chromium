@@ -1,0 +1,309 @@
+  <style include="cr-shared-style settings-shared settings-columned-section">
+    #safeBrowsingSection {
+      padding: 0 var(--cr-section-padding);
+    }
+
+    .bullet-line {
+      align-items: center;
+      display: flex;
+      min-height: var(--cr-section-min-height);
+    }
+
+    .bullet-line > div {
+      padding-inline-start: var(--cr-radio-button-size);
+    }
+
+    settings-collapse-radio-button:not(:first-of-type) {
+      --settings-collapse-separator-line: var(--cr-separator-line);
+    }
+
+    settings-collapse-radio-button[hidden] + settings-collapse-radio-button {
+        --settings-collapse-separator-line: 0;
+    }
+
+    settings-collapse-radio-button .bullet-line:last-child {
+      padding-bottom: 12px;
+    }
+
+    settings-toggle-button {
+      padding-inline-end: 0;
+      padding-inline-start: 0;
+    }
+
+    settings-toggle-button:not([disabled]) {
+      pointer-events: all;
+    }
+
+    #safeBrowsingEnhanced .bullet-line:last-of-type {
+      padding-bottom: 12px;
+    }
+
+    #safeBrowsingEnhanced {
+      --cr-radio-button-unchecked-ripple-color:
+          var(--cr-radio-button-checked-ripple-color);
+    }
+
+    #secureConnectionsSection h2 {
+      padding: 24px var(--cr-section-padding) 8px;
+    }
+
+    #httpsOnlyModeToggle,
+    #passwordsLeakToggle {
+      padding: 0 var(--cr-section-padding);
+    }
+
+    #httpsFirstModeToggle {
+      margin-top: 8px;
+    }
+
+    #httpsFirstModeRadioGroup {
+      width: 100%;
+    }
+
+    #httpsFirstModeRadioGroup .list-item {
+      padding-inline-end: 20px;
+      padding-inline-start: 20px;
+    }
+
+    #learnMoreLabelContainer {
+      padding-bottom: 12px;
+      pointer-events: auto;
+    }
+  </style>
+  <settings-subpage page-title="$i18n{securityPageTitle}"
+      learn-more-url="$i18n{safeBrowsingHelpCenterURL}"
+      route-path$="[[routePath]]">
+    <div id="safeBrowsingSection">
+      <h2 class="cr-title-text">$i18n{safeBrowsingSectionLabel}</h2>
+      <settings-radio-group id="safeBrowsingRadioGroup" no-set-pref
+          pref="{{prefs.generated.safe_browsing}}"
+          selectable-elements="cr-radio-button, settings-collapse-radio-button"
+          on-change="onSafeBrowsingRadioChange_">
+        <settings-collapse-radio-button id="safeBrowsingEnhanced"
+            name="[[safeBrowsingSettingEnum_.ENHANCED]]"
+            pref="[[prefs.generated.safe_browsing]]"
+            label="$i18n{safeBrowsingEnhanced}"
+            sub-label="$i18n{safeBrowsingEnhancedDescUpdated}"
+            indicator-aria-label="$i18n{controlledSettingPolicy}"
+            expand-aria-label="$i18n{safeBrowsingEnhancedExpandA11yLabel}"
+            on-expand-clicked="onEnhancedProtectionExpandButtonClicked_"
+            no-automatic-collapse>
+          <div slot="collapse">
+            <div id="enhancedProtectionDescContainer"
+                class="settings-columned-section">
+              <div class="column">
+                <h3 class="description-header">
+                  $i18n{columnHeadingWhenOn}
+                </h3>
+                <ul class="icon-bulleted-list">
+                  <li>
+                    <cr-icon icon="settings20:data" aria-hidden="true">
+                    </cr-icon>
+                    <div class="secondary">
+                      $i18n{safeBrowsingEnhancedWhenOnBulOne}
+                    </div>
+                  </li>
+                  <li>
+                    <cr-icon icon="settings20:download" aria-hidden="true">
+                    </cr-icon>
+                    <div class="secondary">
+                      $i18n{safeBrowsingEnhancedWhenOnBulTwo}
+                    </div>
+                  </li>
+                  <li>
+                    <cr-icon icon="settings20:gshield" aria-hidden="true">
+                    </cr-icon>
+                    <div class="secondary">
+                      $i18n{safeBrowsingEnhancedWhenOnBulThree}
+                    </div>
+                  </li>
+                  <li>
+                    <cr-icon icon="settings:language" aria-hidden="true">
+                    </cr-icon>
+                    <div class="secondary">
+                      $i18n{safeBrowsingEnhancedWhenOnBulFour}
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <div class="column">
+                <h3 class="description-header">
+                  $i18n{columnHeadingConsider}
+                </h3>
+                <ul class="icon-bulleted-list">
+                  <li>
+                    <cr-icon icon="settings20:link"></cr-icon>
+                    <div class="cr-secondary-text">
+                      $i18n{safeBrowsingEnhancedThingsToConsiderBulOne}
+                    </div>
+                  </li>
+                  <li>
+                    <cr-icon icon="settings20:account-circle"></cr-icon>
+                    <div class="cr-secondary-text">
+                      $i18n{safeBrowsingEnhancedThingsToConsiderBulTwo}
+                    </div>
+                  </li>
+                  <li>
+                    <cr-icon icon="settings:performance"></cr-icon>
+                    <div class="cr-secondary-text">
+                      $i18n{safeBrowsingEnhancedThingsToConsiderBulThree}
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div id="learnMoreLabelContainer">
+              <div class="cr-secondary-text">
+                $i18nRaw{safeBrowsingEnhancedLearnMoreLabel}
+              </div>
+            </div>
+          </div>
+        </settings-collapse-radio-button>
+        <settings-collapse-radio-button id="safeBrowsingStandard"
+            no-collapse="[[hideExtendedReportingRadioButton_]]"
+            name="[[safeBrowsingSettingEnum_.STANDARD]]"
+            pref="[[prefs.generated.safe_browsing]]"
+            label="$i18n{safeBrowsingStandard}"
+            sub-label="[[getSafeBrowsingStandardSubLabel_(
+                        enableHashPrefixRealTimeLookups_)]]"
+            indicator-aria-label="$i18n{controlledSettingPolicy}"
+            expand-aria-label="$i18n{safeBrowsingStandardExpandA11yLabel}"
+            info-opened="{{infoOpened_}}"
+            on-expand-clicked="onStandardProtectionExpandButtonClicked_"
+            no-automatic-collapse>
+          <div slot="noSelectionCollapse">
+            <template is="dom-if" if="[[!hideExtendedReportingRadioButton_]]">
+              <settings-toggle-button id="safeBrowsingReportingToggle"
+                pref="{{prefs.safebrowsing.scout_reporting_enabled}}"
+                label="$i18n{safeBrowsingStandardReportingLabel}"
+                sub-label="$i18n{safeBrowsingEnableExtendedReportingDesc}"
+                on-change="onSafeBrowsingExtendedReportingChange_"
+                disabled="[[getDisabledExtendedSafeBrowsing_(
+                              prefs.generated.safe_browsing.*)]]">
+              </settings-toggle-button>
+            </template>
+          </div>
+        </settings-collapse-radio-button>
+        <settings-collapse-radio-button id="safeBrowsingDisabled" no-collapse
+            name="[[safeBrowsingSettingEnum_.DISABLED]]"
+            pref="[[prefs.generated.safe_browsing]]"
+            label="$i18n{safeBrowsingNone}"
+            sub-label="$i18n{safeBrowsingNoneDesc}"
+            indicator-aria-label="$i18n{controlledSettingPolicy}">
+        </settings-collapse-radio-button>
+      </settings-radio-group>
+    </div>
+    <template is="dom-if" if="[[enableHttpsFirstModeNewSettings_]]" restamp>
+      <div id="secureConnectionsSection">
+        <h2 class="cr-title-text">$i18n{secureConnectionsSectionTitle}</h2>
+        <settings-toggle-button id="httpsFirstModeToggle" class="cr-row first"
+            pref="{{prefs.generated.https_first_mode_enabled}}"
+            label="$i18n{httpsOnlyModeTitle}"
+            sub-label="[[getHttpsFirstModeSubLabel_(
+                prefs.generated.https_first_mode_enabled.*)]]"
+            numeric-unchecked-values="[[httpsFirstModeUncheckedValues_]]"
+            numeric-checked-value=
+                "[[httpsFirstModeSettingEnum_.ENABLED_BALANCED]]">
+        </settings-toggle-button>
+        <cr-collapse id="httpsFirstModeRadioGroupCollapse"
+            opened="[[isHttpsFirstModeExpanded_(
+                        prefs.generated.https_first_mode_enabled.value)]]">
+          <div class="cr-row continuation https-first-mode-radio-group">
+            <settings-radio-group id="httpsFirstModeRadioGroup"
+                pref="{{prefs.generated.https_first_mode_enabled}}">
+              <controlled-radio-button id="httpsFirstModeEnabledBalanced"
+                name="[[getName_(
+                          httpsFirstModeSettingEnum_.ENABLED_BALANCED)]]"
+                pref="[[prefs.generated.https_first_mode_enabled]]"
+                label="$i18n{httpsFirstModeEnabledBalancedLabel}"
+                class="list-item">
+            </controlled-radio-button>
+              <controlled-radio-button id="httpsFirstModeEnabledStrict"
+                  name="[[getName_(httpsFirstModeSettingEnum_.ENABLED_FULL)]]"
+                  pref="[[prefs.generated.https_first_mode_enabled]]"
+                  label="$i18n{httpsFirstModeEnabledStrictLabel}"
+                  class="list-item">
+                <div class="cr-secondary-text">
+                  $i18n{httpsFirstModeEnabledStrictSubLabel}
+                </div>
+              </controlled-radio-button>
+            </settings-radio-group>
+          </div>
+        </cr-collapse>
+      </div>
+    </template>
+    <div class="cr-row first">
+      <h2 class="cr-title-text">$i18n{advancedPageTitle}</h2>
+    </div>
+    <settings-toggle-button id="passwordsLeakToggle"
+          label="$i18n{passwordsLeakDetectionLabel}"
+          pref="{{prefs.generated.password_leak_detection}}"
+          sub-label="[[getPasswordsLeakToggleSubLabel_(
+                        prefs.profile.password_manager_leak_detection.*,
+                        prefs.generated.password_leak_detection.*)]]">
+    </settings-toggle-button>
+    <template is="dom-if" if="[[!enableHttpsFirstModeNewSettings_]]" restamp>
+      <settings-toggle-button id="httpsOnlyModeToggle"
+          pref="{{prefs.generated.https_first_mode_enabled}}"
+          label="$i18n{httpsOnlyModeTitle}"
+          sub-label="[[getHttpsFirstModeSubLabel_(
+                         prefs.generated.https_first_mode_enabled.*)]]"
+          numeric-checked-value="[[httpsFirstModeSettingEnum_.ENABLED_FULL]]">
+      </settings-toggle-button>
+      <template is="dom-if" if="[[showSecureDnsSetting_]]">
+        <settings-secure-dns prefs="{{prefs}}" id="secureDnsSettingOld">
+        </settings-secure-dns>
+      </template>
+    </template>
+    <template is="dom-if" if="[[enableHttpsFirstModeNewSettings_]]" restamp>
+      <template is="dom-if" if="[[showSecureDnsSetting_]]">
+        <settings-secure-dns prefs="{{prefs}}" class="hr"
+            id="secureDnsSettingNew">
+        </settings-secure-dns>
+      </template>
+    </template>
+<if expr="is_chromeos">
+    <template is="dom-if" if="[[showSecureDnsSettingLink_]]">
+        <cr-link-row id="openChromeOSSecureDnsSettings"
+            on-click="onOpenChromeOsSecureDnsSettingsClicked_"
+            label="$i18n{openChromeOSSecureDnsSettingsLabel}" external>
+        </cr-link-row>
+    </template>
+</if>
+    <cr-link-row id="javascriptOptimizerSettingLink" class="hr"
+        on-click="onJavascriptOptimizerSettingsClick_"
+        label="$i18n{securityJavascriptOptimizerLinkTitle}"
+        sub-label="[[javascriptOptimizerSubLabel_]]"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+    <template is="dom-if" if="[[enableSecurityKeysSubpage_]]">
+        <cr-link-row id="securityKeysSubpageTrigger" class="hr"
+            label="$i18n{securityKeysTitle}"
+            sub-label="$i18n{securityKeysDesc}"
+            on-click="onSecurityKeysClick_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+    </template>
+
+    <cr-link-row id="manageCertificatesLinkRow" class="hr"
+        role-description="$i18n{subpageArrowRoleDescription}"
+        label="$i18n{manageCertificates}"
+        sub-label="$i18n{manageCertificatesDescription}"
+        on-click="onManageCertificatesClick_" external>
+    </cr-link-row>
+
+    <cr-link-row id="advancedProtectionProgramLink" class="hr"
+        label="$i18n{advancedProtectionProgramTitle}"
+        sub-label="$i18n{advancedProtectionProgramDesc}"
+        on-click="onAdvancedProtectionProgramLinkClick_"
+        external>
+    </cr-link-row>
+    <template is="dom-if" if="[[showDisableSafebrowsingDialog_]]" restamp>
+      <settings-simple-confirmation-dialog
+          title-text="$i18n{safeBrowsingDisableDialog}"
+          body-text="$i18n{safeBrowsingDisableDialogDesc}"
+          confirm-text="$i18n{safeBrowsingDisableDialogConfirm}"
+          on-close="onDisableSafebrowsingDialogClose_">
+      </settings-simple-confirmation-dialog>
+    </template>
+  </settings-subpage>

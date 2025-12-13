@@ -9,7 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 
 class PrefService;
@@ -19,7 +19,7 @@ class PrefService;
 class PrefChangeRegistrarAndroid {
  public:
   PrefChangeRegistrarAndroid(JNIEnv* env,
-                             const JavaParamRef<jobject>& obj,
+                             const JavaRef<jobject>& obj,
                              PrefService* prefs);
   void Destroy(JNIEnv*);
 
@@ -27,8 +27,8 @@ class PrefChangeRegistrarAndroid {
   PrefChangeRegistrarAndroid& operator=(const PrefChangeRegistrarAndroid&) =
       delete;
 
-  void Add(JNIEnv* env, const JavaParamRef<jstring>& j_preference);
-  void Remove(JNIEnv* env, const JavaParamRef<jstring>& j_preference);
+  void Add(JNIEnv* env, const JavaRef<jstring>& j_preference);
+  void Remove(JNIEnv* env, const JavaRef<jstring>& j_preference);
 
  private:
   ~PrefChangeRegistrarAndroid();

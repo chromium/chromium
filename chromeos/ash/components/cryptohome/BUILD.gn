@@ -13,7 +13,7 @@ component("cryptohome") {
     "//chromeos/ash/components/dbus/constants",
     "//chromeos/ash/components/dbus/cryptohome",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
-    "//chromeos/ash/components/dbus/userdataauth:userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/login/auth/public:challenge_response_key",
     "//components/account_id",
@@ -67,11 +67,11 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/ash/components/dbus:test_support",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
-    "//chromeos/ash/components/dbus/userdataauth:userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/login/auth/public:challenge_response_key",
     "//google_apis",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
   sources = [
     "auth_factor_conversions_unittest.cc",

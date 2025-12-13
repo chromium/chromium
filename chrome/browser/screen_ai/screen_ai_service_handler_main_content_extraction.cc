@@ -8,7 +8,6 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/memory_pressure_monitor.h"

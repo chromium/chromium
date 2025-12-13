@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/memory/userspace_swap/userspace_swap.h"
 
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
 #include "chromeos/ash/components/memory/userspace_swap/region.h"
@@ -47,22 +43,25 @@ TEST(UserspaceSwap, GetUsedSuperpages) {
   uintptr_t mem_area[kNumAllocations] = {};
   uint64_t mem_area_len[kNumAllocations] = {};
   for (size_t i = 0; i < kNumAllocations; ++i) {
-    mem_area_len[i] = base::RandInt(kMinAllocationSize, kMaxAllocationSize);
-    mem_area[i] = reinterpret_cast<uintptr_t>(malloc(mem_area_len[i]));
-    ASSERT_NE(mem_area[i], 0u);
+    UNSAFE_TODO(mem_area_len[i]) =
+        base::RandInt(kMinAllocationSize, kMaxAllocationSize);
+    UNSAFE_TODO(mem_area[i]) =
+        reinterpret_cast<uintptr_t>(malloc(UNSAFE_TODO(mem_area_len[i])));
+    UNSAFE_TODO(ASSERT_NE(mem_area[i], 0u));
   }
 
   // And we should expect to find all of our allocations.
   std::vector<::userspace_swap::mojom::MemoryRegionPtr> regions;
   ASSERT_TRUE(GetPartitionAllocSuperPagesInUse(-1, regions));
   for (size_t i = 0; i < kNumAllocations; ++i) {
-    EXPECT_THAT(regions, testing::Contains(userspace_swap::InRange(
-                             mem_area[i], mem_area[i] + mem_area_len[i])));
+    UNSAFE_TODO(
+        EXPECT_THAT(regions, testing::Contains(userspace_swap::InRange(
+                                 mem_area[i], mem_area[i] + mem_area_len[i]))));
   }
 
   // Cleanup
   for (size_t i = 0; i < kNumAllocations; ++i) {
-    free(reinterpret_cast<void*>(mem_area[i]));
+    free(reinterpret_cast<void*>(UNSAFE_TODO(mem_area[i])));
   }
 }
 
@@ -75,9 +74,11 @@ TEST(UserspaceSwap, LimitSuperpagesReturned) {
   uintptr_t mem_area[kNumAllocations] = {};
   uint64_t mem_area_len[kNumAllocations] = {};
   for (size_t i = 0; i < kNumAllocations; ++i) {
-    mem_area_len[i] = base::RandInt(kMinAllocationSize, kMaxAllocationSize);
-    mem_area[i] = reinterpret_cast<uintptr_t>(malloc(mem_area_len[i]));
-    ASSERT_NE(mem_area[i], 0u);
+    UNSAFE_TODO(mem_area_len[i]) =
+        base::RandInt(kMinAllocationSize, kMaxAllocationSize);
+    UNSAFE_TODO(mem_area[i]) =
+        reinterpret_cast<uintptr_t>(malloc(UNSAFE_TODO(mem_area_len[i])));
+    UNSAFE_TODO(ASSERT_NE(mem_area[i], 0u));
   }
 
   // All that will be returned is 5 superpages worth of in use memory.
@@ -94,7 +95,7 @@ TEST(UserspaceSwap, LimitSuperpagesReturned) {
 
   // Cleanup
   for (size_t i = 0; i < kNumAllocations; ++i) {
-    free(reinterpret_cast<void*>(mem_area[i]));
+    free(reinterpret_cast<void*>(UNSAFE_TODO(mem_area[i])));
   }
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&

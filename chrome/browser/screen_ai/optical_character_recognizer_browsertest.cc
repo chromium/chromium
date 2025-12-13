@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 
 #include "base/command_line.h"
@@ -874,6 +869,121 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
+                       PerformOCRLightModeEnglish) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  SkBitmap bitmap =
+      LoadImageFromTestFile(base::FilePath(FILE_PATH_LITERAL("ocr"))
+                                .AppendASCII("simple_text_only_sample.png"));
+
+  scoped_refptr<OpticalCharacterRecognizer> ocr_client;
+  {
+    base::test::TestFuture<bool> future;
+    ocr_client = OpticalCharacterRecognizer::CreateWithStatusCallback(
+        browser()->profile(), mojom::OcrClientType::kTest,
+        future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    ASSERT_TRUE(future.Get<bool>());
+  }
+
+  // Recognize in normal mode and store data.
+  int lines_count;
+  std::string first_line_text;
+  {
+    base::test::TestFuture<mojom::VisualAnnotationPtr> future;
+    ocr_client->PerformOCR(bitmap, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    lines_count = future.Get<mojom::VisualAnnotationPtr>()->lines.size();
+    ASSERT_GT(lines_count, 0);
+    first_line_text =
+        future.Get<mojom::VisualAnnotationPtr>()->lines[0]->text_line;
+  }
+
+  // Set Light mode.
+  ocr_client->SetOCRLightMode(true);
+
+  // Recognize in light mode, ensure no change.
+  {
+    base::test::TestFuture<mojom::VisualAnnotationPtr> future;
+    ocr_client->PerformOCR(bitmap, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    ASSERT_EQ(lines_count,
+              future.Get<mojom::VisualAnnotationPtr>()->lines.size());
+    EXPECT_EQ(first_line_text,
+              future.Get<mojom::VisualAnnotationPtr>()->lines[0]->text_line);
+  }
+
+  // Back to normal mode and still no change.
+  ocr_client->SetOCRLightMode(false);
+  {
+    base::test::TestFuture<mojom::VisualAnnotationPtr> future;
+    ocr_client->PerformOCR(bitmap, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    ASSERT_EQ(lines_count,
+              future.Get<mojom::VisualAnnotationPtr>()->lines.size());
+    EXPECT_EQ(first_line_text,
+              future.Get<mojom::VisualAnnotationPtr>()->lines[0]->text_line);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
+                       PerformOCRLightModeChinese) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  SkBitmap bitmap = LoadImageFromTestFile(
+      base::FilePath(FILE_PATH_LITERAL("ocr")).AppendASCII("chinese.png"));
+
+  scoped_refptr<OpticalCharacterRecognizer> ocr_client;
+  {
+    base::test::TestFuture<bool> future;
+    ocr_client = OpticalCharacterRecognizer::CreateWithStatusCallback(
+        browser()->profile(), mojom::OcrClientType::kTest,
+        future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    ASSERT_TRUE(future.Get<bool>());
+  }
+
+  // Recognize in normal mode and store data.
+  int lines_count;
+  std::string first_line_text;
+  {
+    base::test::TestFuture<mojom::VisualAnnotationPtr> future;
+    ocr_client->PerformOCR(bitmap, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    lines_count = future.Get<mojom::VisualAnnotationPtr>()->lines.size();
+    ASSERT_GT(lines_count, 0);
+    first_line_text =
+        future.Get<mojom::VisualAnnotationPtr>()->lines[0]->text_line;
+  }
+
+  // Set Light mode.
+  ocr_client->SetOCRLightMode(true);
+
+  // Recognize in light mode. Chinese text is not recognized, however since OCR
+  // only has Latin recognizer, it tries to recognize the text using that and
+  // does not return empty.
+  {
+    base::test::TestFuture<mojom::VisualAnnotationPtr> future;
+    ocr_client->PerformOCR(bitmap, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    ASSERT_EQ(lines_count,
+              future.Get<mojom::VisualAnnotationPtr>()->lines.size());
+    EXPECT_NE(first_line_text,
+              future.Get<mojom::VisualAnnotationPtr>()->lines[0]->text_line);
+  }
+
+  // Back to normal mode and correct recognition.
+  ocr_client->SetOCRLightMode(false);
+  {
+    base::test::TestFuture<mojom::VisualAnnotationPtr> future;
+    ocr_client->PerformOCR(bitmap, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    ASSERT_EQ(lines_count,
+              future.Get<mojom::VisualAnnotationPtr>()->lines.size());
+    EXPECT_EQ(first_line_text,
+              future.Get<mojom::VisualAnnotationPtr>()->lines[0]->text_line);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
                        PerformOCRMultipleClientsLightMode) {
   base::HistogramTester histograms;
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -916,9 +1026,24 @@ IN_PROC_BROWSER_TEST_F(OpticalCharacterRecognizerResultsTest,
     ocr_clients[1]->PerformOCR(chinese_bitmap, result_futures[3].GetCallback());
     EXPECT_TRUE(result_futures[3].Wait());
 
-    // TODO(crbug.com/412553116): After library is updated to 140.0, verify that
-    // Chinese on OCR client 1 is not recognized, and add test scenario where
-    // one client switches between light and normal.
+    const auto& english_0 = result_futures[0].Get<mojom::VisualAnnotationPtr>();
+    const auto& english_1 = result_futures[1].Get<mojom::VisualAnnotationPtr>();
+    const auto& chinese_0 = result_futures[2].Get<mojom::VisualAnnotationPtr>();
+    const auto& chinese_1 = result_futures[3].Get<mojom::VisualAnnotationPtr>();
+
+    // Light mode should not affect English text.
+    EXPECT_EQ(english_0->lines.size(), english_1->lines.size());
+    for (unsigned i = 0; i < english_0->lines.size(); i++) {
+      EXPECT_EQ(english_0->lines[i]->text_line, english_1->lines[i]->text_line);
+    }
+
+    // Chinese on client 1 is not recognized, however since OCR only has Latin
+    // recognizer, it tries to recognize the text using that and does not return
+    // empty.
+    EXPECT_EQ(chinese_0->lines.size(), chinese_1->lines.size());
+    for (unsigned i = 0; i < chinese_0->lines.size(); i++) {
+      EXPECT_NE(chinese_0->lines[i]->text_line, chinese_1->lines[i]->text_line);
+    }
   }
 
   // Verify that the both clients consider OCR busy as there is another

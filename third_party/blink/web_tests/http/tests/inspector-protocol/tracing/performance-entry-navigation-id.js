@@ -36,10 +36,9 @@
     });
   }
 
-  async function firstEntryAfter(
-      timeStamp, entryType, includeSoftNavigationObservations = false) {
+  async function firstEntryAfter(timeStamp, entryType) {
     return session.evaluateAsync(
-        function(timeStamp, entryType, includeSoftNavigationObservations) {
+      function (timeStamp, entryType) {
           return new Promise(resolve => {
             new PerformanceObserver((list, observer) => {
               const e =
@@ -50,13 +49,11 @@
               }
             }).observe({
               type: entryType,
-              includeSoftNavigationObservations:
-                  includeSoftNavigationObservations,
               buffered: true
             });
           });
         },
-        timeStamp, entryType, includeSoftNavigationObservations);
+      timeStamp, entryType);
   }
 
   // Start tracing and observe the devtools.timeline category.
@@ -180,13 +177,18 @@
 
   const traceEntries = [];
   for (const event of unfilteredEvents.sort((a, b) => a.ts - b.ts)) {
-    if (event.name === 'largestContentfulPaint::Candidate') {
+    if (event.name === 'largestContentfulPaint::CandidateForSoftNavigation') {
+      traceEntries.push({
+        navigationId: event.args.data.performanceTimelineNavigationId,
+        name: 'LCP candidate for soft navigation (trace)'
+      });
+    } else if (event.name === 'largestContentfulPaint::Candidate') {
       traceEntries.push({
         navigationId: event.args.data.performanceTimelineNavigationId,
         name: 'LCP candidate (trace)'
       });
     } else if (
-        event.name === 'SoftNavigationHeuristics::EmitSoftNavigationEntry') {
+      event.name === 'SoftNavigationStart') {
       traceEntries.push({
         navigationId: event.args.context.performanceTimelineNavigationId,
         name: 'Soft navigation (trace)'
@@ -221,20 +223,15 @@
       'Trace events and performance entries can be joined by navigationId.');
   while (perfEntries.length > 0 || traceEntries.length > 0) {
     const entries = [];
-    if (perfEntries.length === 0) {
-      entries.push(traceEntries.shift());
-    } else if (traceEntries.length === 0) {
+    const navigationId = perfEntries.length > 0 ? perfEntries[0].navigationId :
+                                                  traceEntries[0].navigationId;
+    while (perfEntries.length > 0 &&
+           perfEntries[0].navigationId === navigationId) {
       entries.push(perfEntries.shift());
-    } else {
-      const navigationId = perfEntries[0].navigationId;
-      while (perfEntries.length > 0 &&
-             perfEntries[0].navigationId === navigationId) {
-        entries.push(perfEntries.shift());
-      }
-      while (traceEntries.length > 0 &&
-             traceEntries[0].navigationId === navigationId) {
-        entries.push(traceEntries.shift());
-      }
+    }
+    while (traceEntries.length > 0 &&
+           traceEntries[0].navigationId === navigationId) {
+      entries.push(traceEntries.shift());
     }
     for (const {navigationId, name} of entries) {
       testRunner.log('-> ' + ids.map(navigationId) + ' ' + name);

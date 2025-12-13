@@ -60,13 +60,6 @@ bool ShellContentRendererClient::OverrideCreatePlugin(
   return false;
 }
 
-blink::WebPlugin* ShellContentRendererClient::CreatePluginReplacement(
-    content::RenderFrame* render_frame,
-    const base::FilePath& plugin_path) {
-  // Don't provide a custom "failed to load" plugin.
-  return nullptr;
-}
-
 void ShellContentRendererClient::WillSendRequest(
     blink::WebLocalFrame* frame,
     ui::PageTransition transition_type,

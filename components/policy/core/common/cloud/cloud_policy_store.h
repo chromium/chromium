@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/policy_map.h"
@@ -52,9 +53,9 @@ class POLICY_EXPORT CloudPolicyStore {
   };
 
   // Callbacks for policy store events. Most importantly, policy updates.
-  class POLICY_EXPORT Observer {
+  class POLICY_EXPORT Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer();
+    ~Observer() override;
 
     // Called on changes to store->policy() and/or store->policy_map().
     virtual void OnStoreLoaded(CloudPolicyStore* store) = 0;
@@ -216,7 +217,7 @@ class POLICY_EXPORT CloudPolicyStore {
 
   std::unique_ptr<enterprise_management::PolicyData> policy_;
 
-  base::ObserverList<Observer, true>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace policy

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
+
 import android.graphics.Bitmap;
 import android.view.View;
 
@@ -18,13 +20,20 @@ class ContextMenuHeaderProperties {
     /** Invalid value for OVERRIDE_*_PIXEL resources */
     static final int INVALID_OVERRIDE = -1;
 
-    public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey TITLE_MAX_LINES = new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<CharSequence> URL =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<CharSequence> SECONDARY_URL =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<CharSequence> TERTIARY_URL =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<View.OnClickListener>
             TITLE_AND_URL_CLICK_LISTENER = new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey URL_MAX_LINES = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey SECONDARY_URL_MAX_LINES =
+            new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey TERTIARY_URL_MAX_LINES =
+            new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<Bitmap> IMAGE = new WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableBooleanPropertyKey CIRCLE_BG_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
@@ -54,17 +63,25 @@ class ContextMenuHeaderProperties {
     public static final WritableIntPropertyKey OVERRIDE_HEADER_CIRCLE_BG_MARGIN_PIXEL =
             new WritableIntPropertyKey();
 
+    public static final PropertyModel.WritableBooleanPropertyKey IS_EXPANDED =
+            new PropertyModel.WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = {
         TITLE,
         TITLE_MAX_LINES,
         URL,
+        SECONDARY_URL,
+        TERTIARY_URL,
         TITLE_AND_URL_CLICK_LISTENER,
         URL_MAX_LINES,
+        SECONDARY_URL_MAX_LINES,
+        TERTIARY_URL_MAX_LINES,
         IMAGE,
         CIRCLE_BG_VISIBLE,
         MONOGRAM_SIZE_PIXEL,
         OVERRIDE_HEADER_IMAGE_MAX_SIZE_PIXEL,
         OVERRIDE_HEADER_CIRCLE_BG_SIZE_PIXEL,
-        OVERRIDE_HEADER_CIRCLE_BG_MARGIN_PIXEL
+        OVERRIDE_HEADER_CIRCLE_BG_MARGIN_PIXEL,
+        IS_EXPANDED
     };
 }

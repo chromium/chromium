@@ -105,7 +105,7 @@ public class TemplateUrl {
     }
 
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(@Nullable Object other) {
         if (!(other instanceof TemplateUrl)) return false;
         TemplateUrl otherTemplateUrl = (TemplateUrl) other;
         return mTemplateUrlPtr == otherTemplateUrl.mTemplateUrlPtr;

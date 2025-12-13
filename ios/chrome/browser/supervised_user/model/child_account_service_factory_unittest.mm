@@ -6,6 +6,7 @@
 
 #import "components/supervised_user/core/browser/child_account_service.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -14,7 +15,6 @@ class ChildAccountServiceFactoryTest : public PlatformTest {
  public:
   ChildAccountServiceFactoryTest() {
     profile_ = TestProfileIOS::Builder().Build();
-    profile_->CreateOffTheRecordBrowserStateWithTestingFactories();
   }
 
   ProfileIOS* GetRegularProfile() { return profile_.get(); }
@@ -25,6 +25,7 @@ class ChildAccountServiceFactoryTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
 };
 

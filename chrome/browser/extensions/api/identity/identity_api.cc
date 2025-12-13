@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/functional/callback_forward.h"
 #include "base/lazy_instance.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -32,6 +31,7 @@
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/manifest_handlers/oauth2_manifest_handler.h"
@@ -46,6 +46,8 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"  // nogncheck crbug.com/423799622
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using signin::ConsentLevel;
 using signin::PrimaryAccountChangeEvent;

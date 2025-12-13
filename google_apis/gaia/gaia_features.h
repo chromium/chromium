@@ -11,7 +11,7 @@
 namespace gaia::features {
 
 COMPONENT_EXPORT(GOOGLE_APIS)
-BASE_DECLARE_FEATURE(kListAccountsUsesBinaryFormat);
+BASE_DECLARE_FEATURE(kGetAccountCapabilitiesUsesGetAllVisibleUrl);
 
 }  // namespace gaia::features
 

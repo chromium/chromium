@@ -28,20 +28,12 @@ void TurnOnSelectToSpeakForTest(Profile* profile) {
   // dialog does not block.
   profile->GetPrefs()->SetBoolean(
       prefs::kAccessibilitySelectToSpeakEnhancedVoicesDialogShown, true);
-
-  // Watch events from an MV2 extension which runs in a background page.
-  extensions::ExtensionHostTestHelper host_helper(
-      profile, extension_misc::kSelectToSpeakExtensionId);
   // Watch events from an MV3 extension which runs in a service worker.
   extensions::ExtensionRegistryTestHelper observer(
       extension_misc::kSelectToSpeakExtensionId, profile);
 
   AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
-  if (observer.WaitForManifestVersion() == 3) {
-    observer.WaitForServiceWorkerStart();
-  } else {
-    host_helper.WaitForHostCompletedFirstLoad();
-  }
+  observer.WaitForServiceWorkerStart();
 
   base::ScopedAllowBlockingForTesting allow_blocking;
 

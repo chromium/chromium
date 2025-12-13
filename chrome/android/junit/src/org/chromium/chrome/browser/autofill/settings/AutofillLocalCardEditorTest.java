@@ -13,6 +13,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -54,10 +55,10 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.build.NullUtil;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.CreditCardScanner;
-import org.chromium.chrome.browser.autofill.CreditCardScanner.Delegate;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
@@ -71,6 +72,7 @@ import org.chromium.chrome.browser.profiles.ProfileManagerUtilsJni;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsIntentUtil;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -82,7 +84,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
-@DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD)
+@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class AutofillLocalCardEditorTest {
     // This is a non-amex card without a CVC code.
     private static CreditCard getSampleLocalCard() {
@@ -231,13 +233,7 @@ public class AutofillLocalCardEditorTest {
         ProfileManager.setLastUsedProfileForTesting(mMockProfile);
         mActionTester = new UserActionTester();
 
-        CreditCardScanner.setFactory(
-                new CreditCardScanner.Factory() {
-                    @Override
-                    public CreditCardScanner create(Delegate delegate) {
-                        return mMockScanner;
-                    }
-                });
+        CreditCardScanner.setFactory(delegate -> mMockScanner);
     }
 
     @After
@@ -281,7 +277,20 @@ public class AutofillLocalCardEditorTest {
         mExpirationYear =
                 mSettingsActivity.findViewById(R.id.autofill_credit_card_editor_year_spinner);
         mExpirationDate = mSettingsActivity.findViewById(R.id.expiration_month_and_year);
-        mCvc = mSettingsActivity.findViewById(R.id.cvc);
+
+        View cvcLegacyContainer = mSettingsActivity.findViewById(R.id.cvc_legacy_container);
+        TextInputLayout cvcMaterialLabel =
+                mSettingsActivity.findViewById(R.id.credit_card_security_code_label_material);
+
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            cvcLegacyContainer.setVisibility(View.GONE);
+            cvcMaterialLabel.setVisibility(View.VISIBLE);
+            mCvc = NullUtil.assertNonNull(cvcMaterialLabel.getEditText());
+        } else {
+            cvcLegacyContainer.setVisibility(View.VISIBLE);
+            cvcMaterialLabel.setVisibility(View.GONE);
+            mCvc = mSettingsActivity.findViewById(R.id.cvc);
+        }
         mCvcHintImage = mSettingsActivity.findViewById(R.id.cvc_hint_image);
         mNumberText = mSettingsActivity.findViewById(R.id.credit_card_number_edit);
         mExpirationDateInvalidError =
@@ -957,23 +966,13 @@ public class AutofillLocalCardEditorTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
-    public void scannerFeatureDisabled_scanButtonIsHidden() {
-        initFragment(null);
-        assertEquals(View.GONE, mScanButton.getVisibility());
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
-    public void scannerFeatureEnabled_scanButtonIsVisible() {
+    public void scanButtonIsVisible() {
         initFragment(null);
         assertEquals(View.VISIBLE, mScanButton.getVisibility());
     }
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
     public void scannerCannotScan_scanButtonIsHidden() {
         when(mMockScanner.canScan()).thenReturn(false);
         initFragment(null);
@@ -983,7 +982,6 @@ public class AutofillLocalCardEditorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
     public void scannerButtonClicked_scanIsCalled() {
         initFragment(null);
 
@@ -1105,5 +1103,82 @@ public class AutofillLocalCardEditorTest {
         mCvc.setText("101");
 
         verify(mMockScannerManager).fieldEdited(FieldType.UNKNOWN);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT})
+    public void saveCard_withBillingAddress_SettingsContainmentDisabled() {
+        CreditCard card = getSampleLocalCard();
+        List<AutofillProfile> profiles = setupBillingAddressProfiles();
+        initFragment(card);
+
+        mCardEditor.mBillingAddressSpinner.setSelection(
+                2); // 0 is "Select", 1 is address1, 2 is address2
+        mDoneButton.performClick();
+
+        verify(mMockPersonalDataManager)
+                .setCreditCard(
+                        argThat(
+                                c -> {
+                                    assertThat(c.getBillingAddressId())
+                                            .isEqualTo(profiles.get(1).getGUID());
+                                    return true;
+                                }));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT})
+    public void saveCard_withBillingAddress_SettingsContainmentEnabled() {
+        CreditCard card = getSampleLocalCard();
+        List<AutofillProfile> profiles = setupBillingAddressProfiles();
+        initFragment(card);
+
+        // Simulate that the user has selected the second billing address.
+        // We set the text for visual confirmation and directly set the selected profile
+        // to bypass the complexities of simulating a dropdown item click in Robolectric.
+        mCardEditor.mBillingAddressDropdown.setText(profiles.get(1).getLabel(), false);
+        mCardEditor.mSelectedBillingProfile = profiles.get(1);
+        mDoneButton.performClick();
+
+        verify(mMockPersonalDataManager)
+                .setCreditCard(
+                        argThat(
+                                c -> {
+                                    assertThat(c.getBillingAddressId())
+                                            .isEqualTo(profiles.get(1).getGUID());
+                                    return true;
+                                }));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT})
+    public void saveCard_noBillingAddressSelected_SettingsContainmentEnabled() {
+        CreditCard card = getSampleLocalCard();
+        setupBillingAddressProfiles();
+        initFragment(card);
+
+        // Do not simulate a selection. The default (no selection) should result in an empty GUID.
+        mDoneButton.performClick();
+
+        verify(mMockPersonalDataManager)
+                .setCreditCard(
+                        argThat(
+                                c -> {
+                                    assertThat(c.getBillingAddressId()).isEmpty();
+                                    return true;
+                                }));
+    }
+
+    private List<AutofillProfile> setupBillingAddressProfiles() {
+        AutofillProfile billingAddress1 =
+                AutofillProfile.builder().setGUID("guid-1").setStreetAddress("1 Main St").build();
+        AutofillProfile billingAddress2 =
+                AutofillProfile.builder().setGUID("guid-2").setStreetAddress("2 Main St").build();
+        List<AutofillProfile> profiles = List.of(billingAddress1, billingAddress2);
+        when(mMockPersonalDataManager.getProfilesForSettings()).thenReturn(profiles);
+        return profiles;
     }
 }

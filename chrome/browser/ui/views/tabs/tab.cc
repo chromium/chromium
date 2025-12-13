@@ -25,12 +25,14 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_recorder.h"
 #include "cc/paint/paint_shader.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
@@ -56,6 +58,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/collaboration/public/messaging/message.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -87,13 +90,14 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/views/win/pen_event_handler_util.h"
@@ -101,6 +105,11 @@
 
 #if defined(USE_AURA)
 #include "ui/aura/env.h"
+#endif
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/browser_ui/tab_underline_view.h"
+#include "chrome/browser/glic/browser_ui/tab_underline_view_controller_impl.h"
 #endif
 
 using base::UserMetricsAction;
@@ -153,7 +162,7 @@ class TabStyleHighlightPathGenerator : public views::HighlightPathGenerator {
 
   // views::HighlightPathGenerator:
   SkPath GetHighlightPath(const views::View* view) override {
-    return tab_style_views_->GetPath(TabStyle::PathType::kHighlight, 1.0);
+    return tab_style_views_->GetPath(TabStyle::PathType::kHighlight, 1.0, {});
   }
 
  private:
@@ -250,13 +259,32 @@ Tab::Tab(TabSlotController* controller)
   alert_indicator_button_ =
       AddChildView(std::make_unique<AlertIndicatorButton>(this));
 
+#if BUILDFLAG(ENABLE_GLIC)
+  if (controller_->GetBrowser() &&
+      ((base::FeatureList::IsEnabled(features::kGlicMultitabUnderlines) &&
+        glic::GlicEnabling::IsProfileEligible(
+            controller_->GetBrowser()->GetProfile())) ||
+       base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks))) {
+    glic_tab_underline_view_ = AddChildView(
+        views::Builder<glic::TabUnderlineView>(
+            glic::TabUnderlineView::Factory::Create(
+                std::make_unique<glic::TabUnderlineViewControllerImpl>(),
+                controller->GetBrowser(), this))
+            // Needed so that expectations of visibility that
+            // inform underline updates are correct on first show.
+            .SetVisible(false)
+            // `glic_tab_underline_view_` should never receive input events.
+            .SetCanProcessEventsWithinSubtree(false)
+            .Build());
+  }
+#endif
+
   // Unretained is safe here because this class outlives its close button, and
   // the controller outlives this Tab.
   close_button_ = AddChildView(std::make_unique<TabCloseButton>(
       base::BindRepeating(&Tab::CloseButtonPressed, base::Unretained(this)),
       base::BindRepeating(&TabSlotController::OnMouseEventInTab,
                           base::Unretained(controller_))));
-  close_button_->SetHasInkDropActionOnClick(true);
 
 #if BUILDFLAG(IS_CHROMEOS)
   showing_close_button_ = !controller_->IsLockedForOnTask();
@@ -319,7 +347,7 @@ bool Tab::GetHitTestMask(SkPath* mask) const {
   *mask = tab_style_views()->GetPath(
       TabStyle::PathType::kHitTest,
       GetWidget()->GetCompositor()->device_scale_factor(),
-      /* force_active */ false, TabStyle::RenderUnits::kDips);
+      {.render_units = TabStyle::RenderUnits::kDips});
   return true;
 }
 
@@ -330,6 +358,20 @@ void Tab::Layout(PassKey) {
   UpdateIconVisibility();
 
   const int start = contents_rect.x();
+
+#if BUILDFLAG(ENABLE_GLIC)
+  // Position the underline under the tab contents.
+  constexpr int kGlicUnderlineYOffset = 8;
+  if (glic_tab_underline_view_) {
+    gfx::Rect glic_bounds =
+        contents_rect + gfx::Vector2d(0, kGlicUnderlineYOffset);
+    // Use the full width of the tab in order to accommodate small tab sizes
+    // where the width of the contents bounds is 0.
+    glic_bounds.set_x(0);
+    glic_bounds.set_width(size().width());
+    glic_tab_underline_view_->SetBoundsRect(glic_bounds);
+  }
+#endif
 
   // The bounds for the favicon will include extra width for the attention
   // indicator, but visually it will be smaller at kFaviconSize wide.
@@ -414,6 +456,7 @@ void Tab::Layout(PassKey) {
     }
     alert_indicator_button_->SetBoundsRect(bounds);
   }
+  alert_indicator_button_->UpdateAlertIndicatorAnimation();
   alert_indicator_button_->SetVisible(showing_alert_indicator_);
 
   // Size the title to fill the remaining width and use all available height.
@@ -525,8 +568,8 @@ bool Tab::OnMousePressed(const ui::MouseEvent& event) {
   // Allow a right click from touch to drag, which corresponds to a long click.
   if (event.IsOnlyLeftMouseButton() ||
       (event.IsOnlyRightMouseButton() && event.flags() & ui::EF_FROM_TOUCH)) {
-    ui::ListSelectionModel original_selection;
-    original_selection = controller_->GetSelectionModel();
+    ui::ListSelectionModel original_selection =
+        controller_->GetSelectionModel();
     // Changing the selection may cause our bounds to change. If that happens
     // the location of the event may no longer be valid. Create a copy of the
     // event in the parents coordinate, which won't change, and recreate an
@@ -571,7 +614,7 @@ void Tab::OnMouseReleased(const ui::MouseEvent& event) {
   // In some cases, ending the drag will schedule the tab for destruction; if
   // so, bail immediately, since our members are already dead and we shouldn't
   // do anything else except drop the tab where it is.
-  if (controller_->EndDrag(END_DRAG_COMPLETE)) {
+  if (controller_->EndDrag(EndDragReason::kComplete)) {
     shift_pressed_on_mouse_down_ = false;
     return;
   }
@@ -611,7 +654,7 @@ void Tab::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void Tab::OnMouseCaptureLost() {
-  controller_->EndDrag(END_DRAG_CAPTURE_LOST);
+  controller_->EndDrag(EndDragReason::kCaptureLost);
 }
 
 void Tab::OnMouseMoved(const ui::MouseEvent& event) {
@@ -679,8 +722,8 @@ void Tab::OnGestureEvent(ui::GestureEvent* event) {
       // See comment in OnMousePressed() as to why we copy the event.
       ui::GestureEvent event_in_parent(*event, static_cast<View*>(this),
                                        parent());
-      ui::ListSelectionModel original_selection;
-      original_selection = controller_->GetSelectionModel();
+      ui::ListSelectionModel original_selection =
+          controller_->GetSelectionModel();
       if (!IsSelected()) {
         controller_->SelectTab(this, *event);
       }
@@ -756,6 +799,11 @@ void Tab::SetGroup(std::optional<tab_groups::TabGroupId> group) {
   UpdateAccessibleName();
 }
 
+void Tab::SetSplit(std::optional<split_tabs::SplitTabId> split) {
+  TabSlotView::SetSplit(split);
+  UpdateAccessibleName();
+}
+
 gfx::Size Tab::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   return gfx::Size(GetTabSizeInfo().standard_width,
@@ -771,7 +819,7 @@ void Tab::PaintChildren(const views::PaintInfo& info) {
   const float paint_recording_scale = info.paint_recording_scale_x();
 
   const SkPath clip_path = tab_style_views()->GetPath(
-      TabStyle::PathType::kInteriorClip, paint_recording_scale);
+      TabStyle::PathType::kInteriorClip, paint_recording_scale, {});
 
   clip_recorder.ClipPathWithAntiAliasing(clip_path);
   View::PaintChildren(info);
@@ -843,7 +891,6 @@ std::optional<SkColor> Tab::GetGroupColor() const {
       controller_->GetGroupColorId(group().value()));
 }
 
-
 bool Tab::IsActive() const {
   if (split()) {
     return std::ranges::any_of(controller()->GetTabsInSplit(this),
@@ -861,6 +908,18 @@ void Tab::ActiveStateChanged() {
   icon_->SetActiveState(IsActive());
   alert_indicator_button_->OnParentTabButtonColorChanged();
   DeprecatedLayoutImmediately();
+}
+
+bool Tab::ShouldEnableMuteToggle(int required_width) {
+  return IsActive() || GetWidthOfLargestSelectableRegion() >= required_width;
+}
+
+void Tab::ToggleTabAudioMute() {
+  controller()->ToggleTabAudioMute(this);
+}
+
+bool Tab::IsApparentlyActive() const {
+  return tab_style_views()->IsApparentlyActive();
 }
 
 void Tab::AlertStateChanged() {
@@ -914,8 +973,8 @@ bool Tab::ShouldUpdateAccessibleName(TabRendererData& old_data,
           old_data.alert_state != new_data.alert_state ||
           old_data.should_show_discard_status !=
               new_data.should_show_discard_status ||
-          old_data.discarded_memory_savings_in_bytes !=
-              new_data.discarded_memory_savings_in_bytes ||
+          old_data.discarded_memory_savings !=
+              new_data.discarded_memory_savings ||
           old_data.tab_resource_usage != new_data.tab_resource_usage ||
           old_data.pinned != new_data.pinned ||
           old_data.title != new_data.title || collaboration_message_changed);
@@ -948,8 +1007,10 @@ void Tab::SetData(TabRendererData data) {
   }
   title_->SetText(title);
 
-  const auto new_alert_state = GetAlertStateToShow(data_.alert_state);
-  const auto old_alert_state = GetAlertStateToShow(old.alert_state);
+  const auto new_alert_state =
+      tabs::TabAlertController::GetAlertStateToShow(data_.alert_state);
+  const auto old_alert_state =
+      tabs::TabAlertController::GetAlertStateToShow(old.alert_state);
   if (new_alert_state != old_alert_state) {
     alert_indicator_button_->TransitionToAlertState(new_alert_state);
   }
@@ -1013,18 +1074,9 @@ std::u16string Tab::GetTooltipText(const std::u16string& title,
   if (!result.empty()) {
     result.append(1, '\n');
   }
-  result.append(GetTabAlertStateText(alert_state.value()));
+  result.append(
+      tabs::TabAlertController::GetTabAlertStateText(alert_state.value()));
   return result;
-}
-
-// static
-std::optional<tabs::TabAlert> Tab::GetAlertStateToShow(
-    const std::vector<tabs::TabAlert>& alert_states) {
-  if (alert_states.empty()) {
-    return std::nullopt;
-  }
-
-  return alert_states[0];
 }
 
 void Tab::SetShouldShowDiscardIndicator(bool enabled) {
@@ -1052,6 +1104,17 @@ void Tab::MaybeAdjustLeftForPinnedTab(gfx::Rect* bounds,
 }
 
 void Tab::UpdateIconVisibility() {
+  // When a tab is less than it's minimum inactive width its implied that its
+  // collapsed, but some favicon functionality can escape the bounds of the tab
+  // causing artifacts. Fix this by explicitly disabling the visibility of the
+  // views in the tab if the width is such that it is collapsed.
+  if (width() < tab_style()->GetMinimumInactiveWidth()) {
+    showing_icon_ = false;
+    showing_alert_indicator_ = false;
+    showing_close_button_ = false;
+    return;
+  }
+
   // TODO(pkasting): This whole function should go away, and we should simply
   // compute child visibility state in Layout().
 
@@ -1071,10 +1134,23 @@ void Tab::UpdateIconVisibility() {
   }
 
   const bool has_favicon = data().show_icon;
-  const bool has_alert_icon =
-      (alert_indicator_button_ ? alert_indicator_button_->showing_alert_state()
-                               : GetAlertStateToShow(data().alert_state))
+  bool has_alert_icon =
+      (alert_indicator_button_
+           ? alert_indicator_button_->showing_alert_state()
+           : tabs::TabAlertController::GetAlertStateToShow(data().alert_state))
           .has_value();
+#if BUILDFLAG(ENABLE_GLIC)
+  std::optional<tabs::TabAlert> current_alert_state =
+      alert_indicator_button_->showing_alert_state();
+  if (glic_tab_underline_view_ &&
+      (current_alert_state == tabs::TabAlert::kGlicAccessing ||
+       current_alert_state == tabs::TabAlert::kGlicSharing)) {
+    // Tab underlines for glic multitab replace `alert_indicator_button` as the
+    // UI indicator for sharing. In this case, ensure the alert indicator is
+    // hidden.
+    has_alert_icon = false;
+  }
+#endif
 
   is_animating_from_pinned_ &= animating();
 
@@ -1212,8 +1288,8 @@ void Tab::UpdateForegroundColors() {
 void Tab::CloseButtonPressed(const ui::Event& event) {
   if (!alert_indicator_button_ || !alert_indicator_button_->GetVisible()) {
     base::RecordAction(UserMetricsAction("CloseTab_NoAlertIndicator"));
-  } else if (GetAlertStateToShow(data_.alert_state) ==
-             tabs::TabAlert::AUDIO_PLAYING) {
+  } else if (tabs::TabAlertController::GetAlertStateToShow(data_.alert_state) ==
+             tabs::TabAlert::kAudioPlaying) {
     base::RecordAction(UserMetricsAction("CloseTab_AudioIndicator"));
   } else {
     base::RecordAction(UserMetricsAction("CloseTab_RecordingIndicator"));

@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/permissions/permissions_client.h"
@@ -16,18 +17,21 @@ namespace permissions {
 namespace {
 
 // For each origin that has the  |ContentSettingsType::NOTIFICATIONS|
-// permission, we record the number of notifications that were displayed
-// and interacted with. The data is stored in the website setting
-// |NOTIFICATION_INTERACTIONS|  keyed to the same origin. The internal
-// structure of this metadata is a dictionary:
+// permission, we record the number of notifications that were displayed,
+// interacted with, and replaced by a suspicious content warning.
+// The data is stored in the website setting |NOTIFICATION_INTERACTIONS|  keyed
+// to the same origin. The internal structure of this metadata is a dictionary:
 //
-//   {"1644163200": {"display_count": 3},  # Implied click_count = 0.
-//    "1644768000": {"display_count": 6, "click_count": 1}}
+//   {"1644163200": {"display_count": 3},  # Implied click_count,
+//   suspicious_count = 0.
+//    "1644768000": {"display_count": 6, "click_count": 1, "suspicious_count":
+//    2}}
 //
 // Currently, entries will be recorded daily.
 
 constexpr char kEngagementKey[] = "click_count";
 constexpr char kDisplayedKey[] = "display_count";
+constexpr char kSuspiciousKey[] = "suspicious_count";
 
 // Entries in notifications engagement expire after they become this old.
 constexpr base::TimeDelta kMaxAge = base::Days(30);
@@ -111,18 +115,27 @@ void NotificationsEngagementService::Shutdown() {
 
 void NotificationsEngagementService::RecordNotificationDisplayed(
     const GURL& url) {
-  IncrementCounts(url, 1 /*display_count_delta*/, 0 /*click_count_delta*/);
+  IncrementCounts(url, 1 /*display_count_delta*/, 0 /*click_count_delta*/,
+                  0 /*suspicious_count_delta*/);
 }
 
 void NotificationsEngagementService::RecordNotificationDisplayed(
     const GURL& url,
     int display_count) {
-  IncrementCounts(url, display_count, 0 /*click_count_delta*/);
+  IncrementCounts(url, display_count, 0 /*click_count_delta*/,
+                  0 /*suspicious_count_delta*/);
 }
 
 void NotificationsEngagementService::RecordNotificationInteraction(
     const GURL& url) {
-  IncrementCounts(url, 0 /*display_count_delta*/, 1 /*click_count_delta*/);
+  IncrementCounts(url, 0 /*display_count_delta*/, 1 /*click_count_delta*/,
+                  0 /*suspicious_count_delta*/);
+}
+
+void NotificationsEngagementService::RecordNotificationSuspicious(
+    const GURL& url) {
+  IncrementCounts(url, 0 /*display_count_delta*/, 0 /*click_count_delta*/,
+                  1 /*suspicious_count_delta*/);
 }
 
 // static
@@ -152,6 +165,25 @@ int NotificationsEngagementService::GetDailyAverageNotificationCount(
 }
 
 // static
+int NotificationsEngagementService::GetSuspiciousNotificationCountForPeriod(
+    const base::Value::Dict& engagement,
+    int days) {
+  base::Time date = base::Time::Now();
+  int suspicious_notification_count = 0;
+
+  for (int day = 0; day < days; ++day) {
+    const base::Value::Dict* bucket =
+        engagement.FindDict(GetBucketLabel(date - base::Days(day)));
+    if (bucket) {
+      suspicious_notification_count +=
+          bucket->FindInt(kSuspiciousKey).value_or(0);
+    }
+  }
+
+  return suspicious_notification_count;
+}
+
+// static
 std::map<std::pair<ContentSettingsPattern, ContentSettingsPattern>, int>
 NotificationsEngagementService::GetNotificationCountMapPerPatternPair(
     const HostContentSettingsMap* hcsm) {
@@ -166,9 +198,11 @@ NotificationsEngagementService::GetNotificationCountMapPerPatternPair(
   return result;
 }
 
-void NotificationsEngagementService::IncrementCounts(const GURL& url,
-                                                     int display_count_delta,
-                                                     int click_count_delta) {
+void NotificationsEngagementService::IncrementCounts(
+    const GURL& url,
+    int display_count_delta,
+    int click_count_delta,
+    int suspicious_count_delta) {
   base::Value engagement_as_value = settings_map_->GetWebsiteSetting(
       url, GURL(), ContentSettingsType::NOTIFICATION_INTERACTIONS);
 
@@ -197,6 +231,11 @@ void NotificationsEngagementService::IncrementCounts(const GURL& url,
         kEngagementKey,
         click_count_delta + bucket->FindInt(kEngagementKey).value_or(0));
   }
+  if (suspicious_count_delta) {
+    bucket->Set(
+        kSuspiciousKey,
+        suspicious_count_delta + bucket->FindInt(kSuspiciousKey).value_or(0));
+  }
 
   int daily_notification_count = GetDailyAverageNotificationCount(engagement);
   double site_engagement_score =
@@ -205,6 +244,8 @@ void NotificationsEngagementService::IncrementCounts(const GURL& url,
                                site_engagement_score, display_count_delta);
   ReportNotificationEngagement("Clicked", daily_notification_count,
                                site_engagement_score, click_count_delta);
+  ReportNotificationEngagement("Suspicious", daily_notification_count,
+                               site_engagement_score, suspicious_count_delta);
 
   // Set the website setting of this origin with the updated |engagement|.
   settings_map_->SetWebsiteSettingDefaultScope(

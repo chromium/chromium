@@ -34,22 +34,6 @@ using webauthn::IsPasskeyFromAnotherDeviceContextMenuEnabled;
 constexpr uint64_t kFormRendererId = 1;
 constexpr uint64_t kFieldRendererId = 1;
 
-class MockBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
- public:
-  using autofill::TestBrowserAutofillManager::TestBrowserAutofillManager;
-  MOCK_METHOD(autofill::FormStructure*,
-              FindCachedFormById,
-              (autofill::FormGlobalId),
-              (const override));
-};
-
-class MockAutofillDriver : public autofill::ContentAutofillDriver {
- public:
-  using ContentAutofillDriver::ContentAutofillDriver;
-
-  MOCK_METHOD(autofill::AutofillManager&, GetAutofillManager, (), (override));
-};
-
 class ContextMenuHelperBaseTest : public ChromeRenderViewHostTestHarness {
  public:
   ContextMenuHelperBaseTest()
@@ -109,7 +93,7 @@ class ContextMenuHelperWithAfTest : public ContextMenuHelperBaseTest {
       af_client_injector;
   autofill::TestAutofillDriverInjector<autofill::TestContentAutofillDriver>
       af_driver_injector_;
-  autofill::TestAutofillManagerInjector<MockBrowserAutofillManager>
+  autofill::TestAutofillManagerInjector<autofill::TestBrowserAutofillManager>
       af_manager_injector_;
 };
 

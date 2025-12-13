@@ -20,6 +20,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 
@@ -44,7 +45,7 @@ using CustomElementEventType = ElementIdentifier;
 // You should derive a class for each UI framework whose elements you wish to
 // track. See README.md for information on how to create your own framework
 // implementations.
-class COMPONENT_EXPORT(UI_BASE) TrackedElement
+class COMPONENT_EXPORT(UI_BASE_INTERACTION) TrackedElement
     : public FrameworkSpecificImplementation {
  public:
   ~TrackedElement() override;
@@ -62,6 +63,10 @@ class COMPONENT_EXPORT(UI_BASE) TrackedElement
   // implementations that need to do additional tracking can implement their own
   // methods.
   virtual gfx::Rect GetScreenBounds() const;
+
+  // Returns the native view associated with this element, if any. This view is
+  // used as the parent window for anchoring secondary UIs.
+  virtual gfx::NativeView GetNativeView() const;
 
   // FrameworkSpecificImplementation:
   std::string ToString() const override;
@@ -87,7 +92,7 @@ class COMPONENT_EXPORT(UI_BASE) TrackedElement
 // An element must be visible before events can be sent for that element;
 // NotifyElementHidden() must be called before the element is destroyed or
 // changes context or identifier.
-class COMPONENT_EXPORT(UI_BASE) ElementTrackerFrameworkDelegate {
+class COMPONENT_EXPORT(UI_BASE_INTERACTION) ElementTrackerFrameworkDelegate {
  public:
   virtual void NotifyElementShown(TrackedElement* element) = 0;
   virtual void NotifyElementActivated(TrackedElement* element) = 0;
@@ -100,7 +105,7 @@ class COMPONENT_EXPORT(UI_BASE) ElementTrackerFrameworkDelegate {
 // eventually become hidden. Tracks only visible elements.
 //
 // NOT THREAD SAFE. Should only be accessed from the main UI thread.
-class COMPONENT_EXPORT(UI_BASE) ElementTracker
+class COMPONENT_EXPORT(UI_BASE_INTERACTION) ElementTracker
     : ElementTrackerFrameworkDelegate {
  public:
   // Callback that subscribers receive when the specified event occurs.
@@ -209,9 +214,23 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
                                       Callback callback);
 
   // Adds a callback that will be called whenever an event of `event_type` is
-  // generated within any context.
+  // generated within any context by any element.
   Subscription AddCustomEventInAnyContextCallback(
       CustomElementEventType event_type,
+      Callback callback);
+
+  // Adds a callback that will be called whenever an event of `event_type` is
+  // generated within `context` by an element with identifier `id`.
+  Subscription AddCustomEventCallback(CustomElementEventType event_type,
+                                      ElementIdentifier id,
+                                      ElementContext context,
+                                      Callback callback);
+
+  // Adds a callback that will be called whenever an event of `event_type` is
+  // generated within any context by an element with identifier `id`.
+  Subscription AddCustomEventInAnyContextCallback(
+      CustomElementEventType event_type,
+      ElementIdentifier id,
       Callback callback);
 
   // Returns all known contexts.
@@ -266,7 +285,7 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
 
 // Holds an TrackedElement reference and nulls it out if the element goes
 // away. In other words, acts as a weak reference for TrackedElements.
-class COMPONENT_EXPORT(UI_BASE) SafeElementReference {
+class COMPONENT_EXPORT(UI_BASE_INTERACTION) SafeElementReference {
  public:
   SafeElementReference();
   explicit SafeElementReference(TrackedElement* element);

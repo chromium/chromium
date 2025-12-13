@@ -28,6 +28,8 @@
 
 #include <tuple>
 
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -46,6 +48,7 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/editing/markers/spell_check_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/suggestion_marker_properties.h"
 #include "third_party/blink/renderer/core/editing/reveal_selection_scope.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
@@ -694,12 +697,34 @@ bool InputMethodController::CommitText(
   return InsertTextAndMoveCaret(text, relative_caret_position, ime_text_spans);
 }
 
+bool InputMethodController::ReplaceTextAndKeepSelection(const String& text,
+                                                        PlainTextRange range) {
+  EventQueueScope scope;
+  const PlainTextRange old_selection(GetSelectionOffsets());
+  if (!SetSelectionOffsets(range)) {
+    return false;
+  }
+  if (!InsertText(text)) {
+    return false;
+  }
+
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited.  see http://crbug.com/590369 for more details.
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+
+  wtf_size_t selection_delta = text.length() - range.length();
+  wtf_size_t start = old_selection.Start();
+  wtf_size_t end = old_selection.End();
+  return SetSelectionOffsets(
+      {start >= range.End() ? start + selection_delta : start,
+       end >= range.End() ? end + selection_delta : end});
+}
+
 bool InputMethodController::ReplaceTextAndMoveCaret(
     const String& text,
     PlainTextRange range,
-    MoveCaretBehavior move_caret_behavior) {
+    int relative_caret_position) {
   EventQueueScope scope;
-  const PlainTextRange old_selection(GetSelectionOffsets());
   if (!SetSelectionOffsets(range))
     return false;
   if (!InsertText(text))
@@ -708,21 +733,9 @@ bool InputMethodController::ReplaceTextAndMoveCaret(
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  see http://crbug.com/590369 for more details.
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-  switch (move_caret_behavior) {
-    case MoveCaretBehavior::kMoveCaretAfterText: {
-      wtf_size_t absolute_caret_position = range.Start() + text.length();
-      return SetSelectionOffsets(
-          {absolute_caret_position, absolute_caret_position});
-    }
-    case MoveCaretBehavior::kDoNotMove: {
-      wtf_size_t selection_delta = text.length() - range.length();
-      wtf_size_t start = old_selection.Start();
-      wtf_size_t end = old_selection.End();
-      return SetSelectionOffsets(
-          {start >= range.End() ? start + selection_delta : start,
-           end >= range.End() ? end + selection_delta : end});
-    }
-  }
+  return SetSelectionOffsets(
+      {range.Start() + text.length() + relative_caret_position,
+       range.Start() + text.length() + relative_caret_position});
 }
 
 bool InputMethodController::ReplaceComposition(const String& text) {
@@ -1597,7 +1610,7 @@ void InputMethodController::ExtendSelectionAndReplace(
       PlainTextRange(
           std::max(static_cast<int>(selection_offsets.Start()) - before, 0),
           selection_offsets.End() + after),
-      MoveCaretBehavior::kMoveCaretAfterText);
+      /*relative_caret_position=*/0);
 }
 
 void InputMethodController::GetLayoutBounds(gfx::Rect* control_bounds,
@@ -1717,20 +1730,22 @@ int InputMethodController::TextInputFlags() const {
 
   int flags = 0;
 
-  const AtomicString& autocomplete =
-      element->FastGetAttribute(html_names::kAutocompleteAttr);
-  if (autocomplete == keywords::kOn) {
-    flags |= kWebTextInputFlagAutocompleteOn;
-  } else if (autocomplete == keywords::kOff) {
-    flags |= kWebTextInputFlagAutocompleteOff;
+  if (const AtomicString& autocomplete =
+          element->FastGetAttribute(html_names::kAutocompleteAttr)) {
+    if (EqualIgnoringASCIICase(autocomplete, keywords::kOn)) {
+      flags |= kWebTextInputFlagAutocompleteOn;
+    } else if (EqualIgnoringASCIICase(autocomplete, keywords::kOff)) {
+      flags |= kWebTextInputFlagAutocompleteOff;
+    }
   }
 
-  const AtomicString& autocorrect =
-      element->FastGetAttribute(html_names::kAutocorrectAttr);
-  if (autocorrect == keywords::kOn) {
-    flags |= kWebTextInputFlagAutocorrectOn;
-  } else if (autocorrect == keywords::kOff) {
-    flags |= kWebTextInputFlagAutocorrectOff;
+  if (const AtomicString& autocorrect =
+          element->FastGetAttribute(html_names::kAutocorrectAttr)) {
+    if (EqualIgnoringASCIICase(autocorrect, keywords::kOn)) {
+      flags |= kWebTextInputFlagAutocorrectOn;
+    } else if (EqualIgnoringASCIICase(autocorrect, keywords::kOff)) {
+      flags |= kWebTextInputFlagAutocorrectOff;
+    }
   }
 
   SpellcheckAttributeState spellcheck = element->GetSpellcheckAttributeState();
@@ -1996,6 +2011,47 @@ std::vector<ui::ImeTextSpan> InputMethodController::GetImeTextSpans() const {
     }
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAndroidSpellcheckFullApiBlink)) {
+    const HeapVector<std::pair<Member<const Text>, Member<DocumentMarker>>>&
+        spelling_node_marker_pairs =
+            GetDocument().Markers().MarkersIntersectingRange(
+                ToEphemeralRangeInFlatTree(range),
+                DocumentMarker::MarkerTypes::Misspelling());
+
+    for (const std::pair<Member<const Text>, Member<DocumentMarker>>&
+             node_marker_pair : spelling_node_marker_pairs) {
+      SpellCheckMarker* marker =
+          To<SpellCheckMarker>(node_marker_pair.second.Get());
+      const Text* node = node_marker_pair.first;
+
+      // Spelling markers can only be grammar or spelling type. Hence if not
+      // grammar then default to spelling.
+      const ImeTextSpan::Type type =
+          (marker->GetType() == DocumentMarker::kGrammar)
+              ? ImeTextSpan::Type::kGrammarSuggestion
+              : ImeTextSpan::Type::kMisspellingSuggestion;
+      Vector<String> suggestions;
+      marker->Description().Split('\n', suggestions);
+
+      const EphemeralRange& marker_ephemeral_range =
+          EphemeralRange(Position(node, marker->StartOffset()),
+                         Position(node, marker->EndOffset()));
+      const PlainTextRange& marker_plain_text_range =
+          cached_text_input_info_.GetPlainTextRange(marker_ephemeral_range);
+
+      ime_text_spans.emplace_back(
+          ImeTextSpan(type, marker_plain_text_range.Start(),
+                      marker_plain_text_range.End(), Color::kTransparent,
+                      ImeTextSpanThickness::kNone,
+                      ImeTextSpanUnderlineStyle::kNone, Color::kTransparent,
+                      Color::kTransparent, Color::kTransparent, false, false,
+                      suggestions, marker->ShouldHideSuggestionMenu())
+              .ToUiImeTextSpan());
+    }
+  }
+#endif
   return ime_text_spans;
 }
 

@@ -15,7 +15,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ScreenshotTask_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -25,13 +24,14 @@ using ui::WindowAndroid;
 namespace chrome {
 namespace android {
 
-void JNI_ScreenshotTask_SnapshotCallback(
+static void JNI_ScreenshotTask_SnapshotCallback(
     JNIEnv* env,
     const JavaRef<jobject>& callback,
     scoped_refptr<base::RefCountedMemory> png_data) {
   if (png_data.get()) {
     size_t size = png_data->size();
-    ScopedJavaLocalRef<jbyteArray> jbytes(env, env->NewByteArray(size));
+    auto jbytes =
+        ScopedJavaLocalRef<jbyteArray>::Adopt(env, env->NewByteArray(size));
     env->SetByteArrayRegion(jbytes.obj(), 0, size, (jbyte*)png_data->front());
     Java_ScreenshotTask_onBytesReceived(env, callback, jbytes);
   } else {
@@ -39,10 +39,10 @@ void JNI_ScreenshotTask_SnapshotCallback(
   }
 }
 
-void JNI_ScreenshotTask_GrabWindowSnapshotAsync(
+static void JNI_ScreenshotTask_GrabWindowSnapshotAsync(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcallback,
-    const JavaParamRef<jobject>& jwindow_android,
+    const JavaRef<jobject>& jcallback,
+    const JavaRef<jobject>& jwindow_android,
     jint window_width,
     jint window_height) {
   ui::WindowAndroid* window_android =
@@ -56,3 +56,5 @@ void JNI_ScreenshotTask_GrabWindowSnapshotAsync(
 
 }  // namespace android
 }  // namespace chrome
+
+DEFINE_JNI(ScreenshotTask)

@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/html/rel_list.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"
+#include "third_party/blink/renderer/core/url/dom_origin_utils.h"
 #include "third_party/blink/renderer/core/url/dom_url_utils.h"
 #include "third_party/blink/renderer/platform/link_hash.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
@@ -42,39 +43,13 @@ namespace blink {
 
 class MouseEvent;
 
-// Link relation bitmask values.
-// FIXME: Uncomment as the various link relations are implemented.
-enum {
-  //     RelationAlternate   = 0x00000001,
-  //     RelationArchives    = 0x00000002,
-  //     RelationAuthor      = 0x00000004,
-  //     RelationBoomark     = 0x00000008,
-  //     RelationExternal    = 0x00000010,
-  //     RelationFirst       = 0x00000020,
-  //     RelationHelp        = 0x00000040,
-  //     RelationIndex       = 0x00000080,
-  //     RelationLast        = 0x00000100,
-  //     RelationLicense     = 0x00000200,
-  //     RelationNext        = 0x00000400,
-  //     RelationNoFolow    = 0x00000800,
-  kRelationNoReferrer = 0x00001000,
-  //     RelationPrev        = 0x00002000,
-  //     RelationSearch      = 0x00004000,
-  //     RelationSidebar     = 0x00008000,
-  //     RelationTag         = 0x00010000,
-  //     RelationUp          = 0x00020000,
-  kRelationNoOpener = 0x00040000,
-  kRelationOpener = 0x00080000,
-  kRelationPrivacyPolicy = 0x00100000,
-  kRelationTermsOfService = 0x00200000,
-};
-
 // Base class for <a> and <area> (HTMLAnchorElement and HTMLAreaElement).
 // Note: If a new element needs to use this as a base, existing callsites and
 // features that use this class should be audited (to see if the new element
 // should also support these features).
 class CORE_EXPORT HTMLAnchorElementBase : public HTMLElement,
-                                          public DOMURLUtils {
+                                          public DOMURLUtils,
+                                          public DOMOriginUtils {
  public:
   ~HTMLAnchorElementBase() override;
 
@@ -89,7 +64,12 @@ class CORE_EXPORT HTMLAnchorElementBase : public HTMLElement,
   const AtomicString& GetEffectiveTarget() const;
 
   KURL Url() const final;
+
+  // DOMURLUtils overrides:
   void SetURL(const KURL&) final;
+
+  // DOMOriginUtils overrides:
+  DOMOrigin* GetDOMOrigin(LocalDOMWindow*) const final;
 
   String Input() const final;
 
@@ -97,8 +77,8 @@ class CORE_EXPORT HTMLAnchorElementBase : public HTMLElement,
 
   bool WillRespondToMouseClickEvents() final;
 
-  bool HasRel(uint32_t relation) const;
-  void SetRel(const AtomicString&);
+  uint32_t GetLinkRelations() const { return link_relations_; }
+
   DOMTokenList& relList() const {
     return static_cast<DOMTokenList&>(*rel_list_);
   }
@@ -107,9 +87,7 @@ class CORE_EXPORT HTMLAnchorElementBase : public HTMLElement,
   LinkHash PartitionedVisitedLinkFingerprint() const;
   void InvalidateCachedVisitedLinkHash() { cached_visited_link_hash_ = 0; }
 
-  void SendPings(const KURL& destination_url) const;
-
-  Element* InterestForElement() const override;
+  bool IsValidInterestInvoker(Element& target) const override;
 
   void Trace(Visitor*) const override;
 

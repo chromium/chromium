@@ -42,6 +42,27 @@
 
 namespace blink {
 
+namespace {
+
+const LayoutBlockFlow* GetInlineFormattingContext(const Node& node) {
+  const LayoutBlockFlow* block_flow =
+      OffsetMapping::GetInlineFormattingContextOf(*node.GetLayoutObject());
+  // For <textarea>, ignore internal anonymous IFCs for backward compatibility.
+  if (RuntimeEnabledFeatures::FindAcrossParagraphsInTextareaEnabled() &&
+      block_flow && block_flow->IsAnonymous() &&
+      node.IsInUserAgentShadowRoot()) {
+    for (const LayoutBlock* parent = block_flow->ContainingBlock(); parent;
+         parent = parent->ContainingBlock()) {
+      if (!parent->IsAnonymous() && parent->IsLayoutBlockFlow()) {
+        return To<LayoutBlockFlow>(parent);
+      }
+    }
+  }
+  return block_flow;
+}
+
+}  // namespace
+
 // Returns true if the search should ignore the given |node|'s contents. In
 // other words, we don't need to recurse into the node's children.
 bool FindBuffer::ShouldIgnoreContents(const Node& node) {
@@ -309,6 +330,11 @@ const Node& FindBuffer::GetFirstBlockLevelAncestorInclusive(const Node& node) {
   for (const Node& ancestor : FlatTreeTraversal::InclusiveAncestorsOf(node)) {
     if (!ancestor.GetLayoutObject())
       continue;
+    if (RuntimeEnabledFeatures::FindAcrossParagraphsInTextareaEnabled() &&
+        ancestor.GetLayoutObject()->IsAnonymous() &&
+        node.IsInUserAgentShadowRoot()) {
+      continue;
+    }
     if (!IsInSameUninterruptedBlock(ancestor, node))
       return ancestor;
   }
@@ -328,11 +354,9 @@ bool FindBuffer::IsInSameUninterruptedBlock(const Node& start_node,
   if (IsExplicitFindBoundary(start_node) || IsExplicitFindBoundary(end_node))
     return false;
 
-  LayoutBlockFlow& start_block_flow =
-      *OffsetMapping::GetInlineFormattingContextOf(
-          *start_node.GetLayoutObject());
-  LayoutBlockFlow& end_block_flow =
-      *OffsetMapping::GetInlineFormattingContextOf(*end_node.GetLayoutObject());
+  const LayoutBlockFlow* start_block_flow =
+      GetInlineFormattingContext(start_node);
+  const LayoutBlockFlow* end_block_flow = GetInlineFormattingContext(end_node);
   if (start_block_flow != end_block_flow)
     return false;
 
@@ -347,8 +371,7 @@ bool FindBuffer::IsInSameUninterruptedBlock(const Node& start_node,
     }
 
     if (node->GetLayoutObject() &&
-        *OffsetMapping::GetInlineFormattingContextOf(
-            *node->GetLayoutObject()) != start_block_flow) {
+        GetInlineFormattingContext(*node) != start_block_flow) {
       return false;
     }
   }
@@ -428,6 +451,10 @@ void FindBuffer::CollectTextUntilBlockBoundary(
   // Example: <div id="outer">a<span>b</span>c<div>d</div></div>
   // Will try to collect all text in outer div but will actually
   // stop when it encounters the inner div. So buffer will be "abc".
+
+  // Exception: <textarea> is treated differently. A <textarea> contains
+  // multiple blocks, but text nodes in these blocks are collected at once
+  // for backward compatibility.  See crbug.com/438220615.
 
   // Used for checking if we reached a new block.
   Node* last_added_text_node = nullptr;
@@ -545,7 +572,7 @@ PositionInFlatTree FindBuffer::PositionAtStartOfCharacterAtIndex(
   const BufferNodeMapping* entry = MappingForIndex(index);
   if (!entry)
     return PositionInFlatTree();
-  return ToPositionInFlatTree(offset_mapping_->GetLastPosition(
+  return ToPositionInFlatTree(entry->offset_mapping->GetLastPosition(
       index - entry->offset_in_buffer + entry->offset_in_mapping));
 }
 
@@ -556,7 +583,7 @@ PositionInFlatTree FindBuffer::PositionAtEndOfCharacterAtIndex(
   const BufferNodeMapping* entry = MappingForIndex(index);
   if (!entry)
     return PositionInFlatTree();
-  return ToPositionInFlatTree(offset_mapping_->GetFirstPosition(
+  return ToPositionInFlatTree(entry->offset_mapping->GetFirstPosition(
       index - entry->offset_in_buffer + entry->offset_in_mapping + 1));
 }
 
@@ -564,7 +591,7 @@ Vector<UChar> FindBuffer::SerializeLevelInGraph(
     const HeapVector<Member<CorpusChunk>>& chunk_list,
     const String& level,
     const EphemeralRangeInFlatTree& range) {
-  Vector<BufferNodeMapping>* mappings =
+  HeapVector<BufferNodeMapping>* mappings =
       level.empty() ? &buffer_node_mappings_ : nullptr;
   Vector<UChar> buffer;
   const CorpusChunk* chunk = chunk_list[0];
@@ -598,10 +625,12 @@ Vector<UChar> FindBuffer::SerializeLevelInGraph(
 void FindBuffer::AddTextToBuffer(const Text& text_node,
                                  const EphemeralRangeInFlatTree& range,
                                  Vector<UChar>& buffer,
-                                 Vector<BufferNodeMapping>* mappings) {
+                                 HeapVector<BufferNodeMapping>* mappings) {
   LayoutBlockFlow& block_flow = *OffsetMapping::GetInlineFormattingContextOf(
       *text_node.GetLayoutObject());
-  if (!offset_mapping_) {
+  if (!offset_mapping_ ||
+      (RuntimeEnabledFeatures::FindAcrossParagraphsInTextareaEnabled() &&
+       text_node.IsInUserAgentShadowRoot())) {
     offset_mapping_ = InlineNode::GetOffsetMapping(&block_flow);
 
     if (!offset_mapping_) [[unlikely]] {
@@ -630,8 +659,8 @@ void FindBuffer::AddTextToBuffer(const Text& text_node,
       if (mappings) {
         // This is the first unit, or the units are not consecutive, so we need
         // to insert a new BufferNodeMapping.
-        mappings->push_back(
-            BufferNodeMapping({buffer.size(), unit.TextContentStart()}));
+        mappings->push_back(BufferNodeMapping(
+            {offset_mapping_, buffer.size(), unit.TextContentStart()}));
       }
       first_unit = false;
     }
@@ -652,6 +681,10 @@ Vector<String> FindBuffer::BuffersForTesting() const {
     result.push_back(String(buffer));
   }
   return result;
+}
+
+void FindBuffer::BufferNodeMapping::Trace(Visitor* visitor) const {
+  visitor->Trace(offset_mapping);
 }
 
 }  // namespace blink

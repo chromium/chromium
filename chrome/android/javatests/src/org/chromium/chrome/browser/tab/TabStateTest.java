@@ -60,25 +60,12 @@ public class TabStateTest {
 
     @Test
     @SmallTest
-    public void testLoadV0Tabs() throws Exception {
-        TabStateFileManager.setChannelNameOverrideForTest("stable");
-        loadAndCheckTabState(TestTabModelDirectory.M18_GOOGLE_COM);
-        loadAndCheckTabState(TestTabModelDirectory.M18_NTP);
-    }
-
-    @Test
-    @SmallTest
-    public void testLoadV1Tabs() throws Exception {
-        loadAndCheckTabState(TestTabModelDirectory.M26_GOOGLE_COM);
-        loadAndCheckTabState(TestTabModelDirectory.M26_GOOGLE_CA);
-    }
-
-    @Test
-    @SmallTest
     public void testLoadV2Tabs() throws Exception {
         // Standard English tabs.
         loadAndCheckTabState(TestTabModelDirectory.V2_DUCK_DUCK_GO);
         loadAndCheckTabState(TestTabModelDirectory.V2_TEXTAREA);
+        loadAndCheckTabState(TestTabModelDirectory.V2_GOOGLE_COM_FBS);
+        loadAndCheckTabState(TestTabModelDirectory.V2_GOOGLE_CA_FBS);
 
         // Chinese characters.
         loadAndCheckTabState(TestTabModelDirectory.V2_BAIDU);

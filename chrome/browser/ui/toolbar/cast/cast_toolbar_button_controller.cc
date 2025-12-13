@@ -14,10 +14,11 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "components/media_router/browser/media_router.h"
@@ -170,32 +171,37 @@ void CastToolbarButtonController::MaybeToggleIconVisibility() {
     actions_model->UpdatePinnedState(kActionRouteMedia, true);
   }
 
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() != profile_) {
-      continue;
-    }
-    auto* action_item = actions::ActionManager::Get().FindAction(
-        kActionRouteMedia, browser->browser_actions()->root_action_item());
-    // Update the action item's pinnable state based on the enterprise policy.
-    if (shown_by_policy) {
-      action_item->SetProperty(
-          actions::kActionItemPinnableKey,
-          static_cast<std::underlying_type_t<actions::ActionPinnableState>>(
-              actions::ActionPinnableState::kEnterpriseControlled));
-    } else {
-      action_item->SetProperty(
-          actions::kActionItemPinnableKey,
-          static_cast<std::underlying_type_t<actions::ActionPinnableState>>(
-              actions::ActionPinnableState::kPinnable));
-    }
-    // Update the toolbar button's visibility.
-    if (auto* container = BrowserView::GetBrowserViewForBrowser(browser)
-                              ->toolbar()
-                              ->pinned_toolbar_actions_container()) {
-      container->ShowActionEphemerallyInToolbar(kActionRouteMedia,
-                                                ShouldEnableAction());
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, shown_by_policy](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() != profile_) {
+          return true;
+        }
+        auto* action_item = actions::ActionManager::Get().FindAction(
+            kActionRouteMedia, browser->GetActions()->root_action_item());
+        // Update the action item's pinnable state based on the enterprise
+        // policy.
+        if (shown_by_policy) {
+          action_item->SetProperty(
+              actions::kActionItemPinnableKey,
+              static_cast<std::underlying_type_t<actions::ActionPinnableState>>(
+                  actions::ActionPinnableState::kEnterpriseControlled));
+        } else {
+          action_item->SetProperty(
+              actions::kActionItemPinnableKey,
+              static_cast<std::underlying_type_t<actions::ActionPinnableState>>(
+                  actions::ActionPinnableState::kPinnable));
+        }
+        // Update the toolbar button's visibility.
+        // WebUIBrowser does not have a BrowserView.
+        // TODO(webium): make an pinned toolbar actions container for
+        // WebUIBrowser.
+        if (auto* controller =
+                browser->GetFeatures().pinned_toolbar_actions_controller()) {
+          controller->ShowActionEphemerallyInToolbar(kActionRouteMedia,
+                                                     ShouldEnableAction());
+        }
+        return true;
+      });
 }
 
 void CastToolbarButtonController::UpdateToggleMediaRouterRemotingAction() {

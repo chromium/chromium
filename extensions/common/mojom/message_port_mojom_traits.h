@@ -12,26 +12,54 @@
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "mojo/public/cpp/bindings/union_traits.h"
 
 namespace mojo {
 
 template <>
+struct UnionTraits<extensions::mojom::MessageDataDataView,
+                   extensions::MessageData> {
+  static extensions::mojom::MessageDataDataView::Tag GetTag(
+      const extensions::MessageData& data);
+
+  static bool IsJson(const extensions::MessageData& data) {
+    return std::holds_alternative<std::string>(data);
+  }
+
+  static const std::string& json(const extensions::MessageData& data) {
+    return std::get<std::string>(data);
+  }
+
+  static bool IsStructuredCloned(const extensions::MessageData& data) {
+    return std::holds_alternative<extensions::StructureClonedMessageWireData>(
+        data);
+  }
+
+  static extensions::StructureClonedMessageWireData structured_cloned(
+      const extensions::MessageData& data);
+
+  static bool Read(extensions::mojom::MessageDataDataView data,
+                   extensions::MessageData* out);
+};
+
+template <>
 struct StructTraits<extensions::mojom::MessageDataView, extensions::Message> {
-  static const std::string& data(const extensions::Message& message) {
-    return message.data;
+  static const extensions::MessageData& data(
+      const extensions::Message& message) {
+    return message.message_data();
   }
 
   static extensions::mojom::SerializationFormat format(
       const extensions::Message& message) {
-    return message.format;
+    return message.format();
   }
 
   static bool user_gesture(const extensions::Message& message) {
-    return message.user_gesture;
+    return message.user_gesture();
   }
 
   static bool from_privileged_context(const extensions::Message& message) {
-    return message.from_privileged_context;
+    return message.from_privileged_context();
   }
 
   static bool Read(extensions::mojom::MessageDataView data,

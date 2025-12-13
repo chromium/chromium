@@ -11,7 +11,6 @@ import {PowerBookmarksService} from 'chrome://bookmarks-side-panel.top-chrome/po
 import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -271,10 +270,6 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     imageServiceHandler.setResultFor('getPageImageUrl', Promise.resolve({
       result: {imageUrl: {url: 'https://example.com/image.png'}},
     }));
-
-    loadTimeData.overrideValues({
-      urlImagesEnabled: true,
-    });
 
     delegate = new ServiceTestPowerBookmarksDelegate();
     service = new PowerBookmarksService(delegate);

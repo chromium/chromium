@@ -160,7 +160,7 @@ class TabContentsTagTest : public InProcessBrowserTest {
   // title (e.g. via the <title> tag).
   std::u16string GetDefaultTitleForUrl(const GURL& url) const {
     std::u16string title =
-        base::UTF8ToUTF16(url.host() + ":" + url.port() + url.path());
+        base::UTF8ToUTF16(url.GetHost() + ":" + url.GetPort() + url.GetPath());
     return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_TAB_PREFIX, title);
   }
 

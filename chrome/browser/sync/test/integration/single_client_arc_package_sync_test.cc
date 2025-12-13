@@ -97,6 +97,11 @@ class SingleClientArcPackageSyncTest : public SyncTest {
  public:
   SingleClientArcPackageSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientArcPackageSyncTest() override = default;
+
+  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientArcPackageSyncTest, ArcPackageEmpty) {
@@ -147,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientArcPackageSyncTest, DisableAndReenable) {
 
   // Reenable ARC++.
   sync_arc_helper()->EnableArcService(GetProfile(0));
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // The problematic scenario in the regression test involves the refresh
   // happening late, after sync has started.

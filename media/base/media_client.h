@@ -60,6 +60,10 @@ class MEDIA_EXPORT MediaClient {
   // audio sink.
   virtual bool IsSupportedBitstreamAudioCodec(AudioCodec codec) = 0;
 
+  // Returns true if audio tracks should be suppressed (neither decoded nor
+  // rendered).
+  virtual bool ShouldSuppressAudioTracks() = 0;
+
   // Optionally returns audio renderer algorithm parameters.
   virtual std::optional<::media::AudioRendererAlgorithmParameters>
   GetAudioRendererAlgorithmParameters(AudioParameters audio_parameters) = 0;

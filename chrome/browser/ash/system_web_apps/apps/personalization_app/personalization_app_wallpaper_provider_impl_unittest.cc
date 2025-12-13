@@ -27,7 +27,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
@@ -38,7 +37,6 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/policy/external_data/handlers/device_wallpaper_image_external_data_handler.h"
 #include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -51,7 +49,6 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/ash/wallpaper/test_wallpaper_controller.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -100,8 +97,6 @@ TestingPrefServiceSimple* RegisterPrefs(TestingPrefServiceSimple* local_state) {
   ash::device_settings_cache::RegisterPrefs(local_state->registry());
   user_manager::KnownUser::RegisterPrefs(local_state->registry());
   ash::WallpaperPrefManager::RegisterLocalStatePrefs(local_state->registry());
-  policy::DeviceWallpaperImageExternalDataHandler::RegisterPrefs(
-      local_state->registry());
   ProfileAttributesStorage::RegisterPrefs(local_state->registry());
   return local_state;
 }

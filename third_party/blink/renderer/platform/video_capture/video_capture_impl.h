@@ -9,7 +9,6 @@
 
 #include <map>
 
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -76,8 +75,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
   // changes.
   // |video_capture_callbacks.deliver_frame_cb| will be called when a
   // frame is ready.
-  // |video_capture_callbacks.sub_capture_target_version_cb| will be called
-  // when it is guaranteed that all subsequent frames
+  // |video_capture_callbacks.capture_version_cb| will be called when it is
+  // guaranteed that all subsequent frames
   // |video_capture_callbacks.deliver_frame_cb| is called for, have a crop
   // version that is equal-to-or-greater-than the given crop version.
   // |video_capture_callbacks.frame_dropped_cb| will be called when a frame was
@@ -123,8 +122,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
   void OnBufferReady(media::mojom::blink::ReadyBufferPtr buffer) override;
   void OnBufferDestroyed(int32_t buffer_id) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
-  void OnNewSubCaptureTargetVersion(
-      uint32_t sub_capture_target_version) override;
+  void OnNewCaptureVersion(
+      const media::CaptureVersion& capture_version) override;
 
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback);
 

@@ -4,21 +4,18 @@
 
 package org.chromium.chrome.browser.tab;
 
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * A {@link UnownedUserDataSupplier} which manages the supplier and UnownedUserData for a {@link
- * TabObscuringHandler}.
- */
+/** A class which manages the supplier and UnownedUserData for a {@link TabObscuringHandler}. */
 @NullMarked
-public class TabObscuringHandlerSupplier extends UnownedUserDataSupplier<TabObscuringHandler> {
-    private static final UnownedUserDataKey<TabObscuringHandlerSupplier> KEY =
-            new UnownedUserDataKey<>(TabObscuringHandlerSupplier.class);
+public class TabObscuringHandlerSupplier {
+    private static final UnownedUserDataKey<ObservableSupplier<TabObscuringHandler>> KEY =
+            new UnownedUserDataKey<>();
 
     /**
      * Retrieves an {@link ObservableSupplier} from the given host. Real implementations should use
@@ -27,13 +24,24 @@ public class TabObscuringHandlerSupplier extends UnownedUserDataSupplier<TabObsc
     public static @Nullable TabObscuringHandler getValueOrNullFrom(
             @Nullable WindowAndroid windowAndroid) {
         if (windowAndroid == null) return null;
-        TabObscuringHandlerSupplier supplier =
+        ObservableSupplier<TabObscuringHandler> supplier =
                 KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
         return supplier == null ? null : supplier.get();
     }
 
-    /** Constructs a TabObscuringHandlerSupplier and attaches it to the {@link WindowAndroid} */
-    public TabObscuringHandlerSupplier() {
-        super(KEY);
+    /**
+     * Attach to the specified host.
+     *
+     * @param host The host to attach the supplier to.
+     */
+    public static void attach(
+            UnownedUserDataHost host, ObservableSupplier<TabObscuringHandler> supplier) {
+        KEY.attachToHost(host, supplier);
     }
+
+    public static void destroy(ObservableSupplier<TabObscuringHandler> supplier) {
+        KEY.detachFromAllHosts(supplier);
+    }
+
+    private TabObscuringHandlerSupplier() {}
 }

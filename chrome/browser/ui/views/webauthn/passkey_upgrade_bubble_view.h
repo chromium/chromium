@@ -23,7 +23,6 @@ class WebContents;
 
 namespace views {
 class BoxLayoutView;
-class View;
 }  // namespace views
 
 // A bubble informing the user that a passkey was created during a passkey
@@ -33,7 +32,7 @@ class PasskeyUpgradeBubbleView : public PasswordBubbleViewBase {
 
  public:
   PasskeyUpgradeBubbleView(content::WebContents* web_contents,
-                           views::View* anchor,
+                           views::BubbleAnchor anchor,
                            DisplayReason display_reason,
                            std::string passkey_rp_id);
   PasskeyUpgradeBubbleView(const PasskeyUpgradeBubbleView&) = delete;

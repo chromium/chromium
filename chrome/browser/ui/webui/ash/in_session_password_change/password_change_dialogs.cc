@@ -43,8 +43,7 @@ constexpr int kConfirmBothPasswordsHeight = 380;
 // Given a desired size, returns the same size if it fits on screen,
 // or the closest possible size that will fit on the screen.
 gfx::Size FitSizeToDisplay(const gfx::Size& desired) {
-  const display::Display display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+  const display::Display display = display::Screen::Get()->GetPrimaryDisplay();
 
   gfx::Size display_size = display.size();
 

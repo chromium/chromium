@@ -421,11 +421,6 @@ bool TableGroupedChildrenIterator::operator==(
   return true;
 }
 
-bool TableGroupedChildrenIterator::operator!=(
-    const TableGroupedChildrenIterator& rhs) const {
-  return !(*this == rhs);
-}
-
 void TableGroupedChildrenIterator::AdvanceForwardToNonEmptySection() {
   switch (current_section_) {
     case kNone:

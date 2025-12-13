@@ -8,15 +8,13 @@
 #include <tuple>
 
 #include "base/logging.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "crypto/features.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "crypto/scoped_fake_apple_keychain_v2.h"
+#include "crypto/apple/scoped_fake_keychain_v2.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
@@ -60,16 +58,8 @@ std::string ToString(Provider provider) {
 
 class UnexportableKeySigningTest
     : public testing::TestWithParam<
-          std::tuple<crypto::SignatureVerifier::SignatureAlgorithm,
-                     Provider,
-                     bool>> {
+          std::tuple<crypto::SignatureVerifier::SignatureAlgorithm, Provider>> {
  protected:
-  UnexportableKeySigningTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        crypto::features::kIsHardwareBackedFixEnabled,
-        is_hardware_backed_fix_enabled());
-  }
-
   std::unique_ptr<crypto::UnexportableKeyProvider> CreateProvider() {
     if (provider_type() == Provider::kMicrosoftSoftware) {
       return crypto::GetMicrosoftSoftwareUnexportableKeyProvider();
@@ -89,12 +79,9 @@ class UnexportableKeySigningTest
 
   Provider provider_type() { return std::get<1>(GetParam()); }
 
-  bool is_hardware_backed_fix_enabled() { return std::get<2>(GetParam()); }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 #if BUILDFLAG(IS_MAC)
-  crypto::ScopedFakeAppleKeychainV2 scoped_fake_apple_keychain_{
+  crypto::apple::ScopedFakeKeychainV2 scoped_fake_keychain_{
       kTestKeychainAccessGroup};
 #endif  // BUILDFLAG(IS_MAC)
 };
@@ -102,14 +89,12 @@ class UnexportableKeySigningTest
 INSTANTIATE_TEST_SUITE_P(All,
                          UnexportableKeySigningTest,
                          testing::Combine(testing::ValuesIn(kAllAlgorithms),
-                                          testing::ValuesIn(kAllProviders),
-                                          testing::Bool()));
+                                          testing::ValuesIn(kAllProviders)));
 
 TEST_P(UnexportableKeySigningTest, RoundTrip) {
   const bool expected_is_hardware_backed =
       provider_type() == Provider::kFake ? false
-      : is_hardware_backed_fix_enabled() ? (provider_type() == Provider::kTPM)
-                                         : true;
+                                         : provider_type() == Provider::kTPM;
 
   switch (algorithm()) {
     case crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
@@ -190,18 +175,16 @@ TEST_P(UnexportableKeySigningTest, RoundTrip) {
   verifier2.VerifyUpdate(msg);
   ASSERT_TRUE(verifier2.VerifyFinal());
 
-  EXPECT_TRUE(provider->DeleteSigningKeySlowly(wrapped));
+  crypto::StatefulUnexportableKeyProvider* stateful_provider =
+      provider->AsStatefulUnexportableKeyProvider();
+  EXPECT_TRUE(stateful_provider == nullptr ||
+              stateful_provider->DeleteSigningKeySlowly(wrapped));
 }
 
 #if BUILDFLAG(IS_WIN)
 TEST_P(UnexportableKeySigningTest, DuplicatePlatformKeyHandleSucceeds) {
   if (provider_type() == Provider::kFake) {
     GTEST_SKIP() << "Test only works with real platform keys.";
-  }
-
-  if (provider_type() == Provider::kMicrosoftSoftware &&
-      !is_hardware_backed_fix_enabled()) {
-    GTEST_SKIP() << "Fix for software keys is disabled.";
   }
 
   std::unique_ptr<crypto::UnexportableKeyProvider> provider = CreateProvider();

@@ -1,0 +1,56 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_AI_SAVE_UPDATE_ENTITY_FLOW_MANAGER_H_
+#define CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_AI_SAVE_UPDATE_ENTITY_FLOW_MANAGER_H_
+
+#include <memory>
+
+#include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/autofill/autofill_message_controller.h"
+#include "chrome/browser/ui/autofill/autofill_message_model.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+
+namespace autofill {
+
+// Class to manage save/update Autofill AI entities on Android. The flow
+// consists of 3 steps:
+// 1. showing a confirmation message
+// 2. showing a prompt with profile details to review
+// 3. showing a snackbar afterwards.
+// This class owns and triggers the corresponding controllers.
+class AutofillAiSaveUpdateEntityFlowManager {
+ public:
+  // Maximum number of lines this message's description can occupy.
+  static constexpr int kDescriptionMaxLines = 2;
+
+  explicit AutofillAiSaveUpdateEntityFlowManager(
+      AutofillMessageController* autofill_message_controller);
+  AutofillAiSaveUpdateEntityFlowManager(
+      const AutofillAiSaveUpdateEntityFlowManager&) = delete;
+  AutofillAiSaveUpdateEntityFlowManager& operator=(
+      const AutofillAiSaveUpdateEntityFlowManager&) = delete;
+  ~AutofillAiSaveUpdateEntityFlowManager();
+
+  // Triggers a confirmation flow for saving or updating an Autofill AI entity.
+  // If another flow is in progress, the incoming offer will be auto-declined.
+  void OfferSave(const EntityInstance& entity);
+
+ private:
+  void OnMessagePrimaryAction();
+
+  void OnMessageDismissed(messages::DismissReason dismiss_reason);
+
+  std::unique_ptr<AutofillMessageModel> CreateMessageModel(
+      const EntityInstance& entity);
+
+  base::raw_ref<AutofillMessageController> autofill_message_controller_;
+  base::WeakPtrFactory<AutofillAiSaveUpdateEntityFlowManager> weak_ptr_factory_{
+      this};
+};
+
+}  // namespace autofill
+
+#endif  // CHROME_BROWSER_UI_ANDROID_AUTOFILL_AUTOFILL_AI_SAVE_UPDATE_ENTITY_FLOW_MANAGER_H_

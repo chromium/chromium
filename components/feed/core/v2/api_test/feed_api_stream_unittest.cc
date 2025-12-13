@@ -4180,6 +4180,16 @@ TEST_F(FeedApiTest, DoNotRefreshFeedOnStartWithoutFlag) {
   EXPECT_FALSE(response_translator_.InjectedResponseConsumed());
 }
 
+TEST_F(FeedApiTest, GetFeedUrls) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  std::vector<std::string> urls = stream_->GetFeedUrls(surface.GetSurfaceId());
+  ASSERT_EQ(2u, urls.size());
+  EXPECT_EQ("http://content0", urls.at(0));
+  EXPECT_EQ("http://content1", urls.at(1));
+}
+
 class SignedOutViewDemotionTest : public FeedApiTest {
  public:
   void SetUp() override {

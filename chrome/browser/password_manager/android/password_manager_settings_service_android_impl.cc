@@ -12,14 +12,11 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/password_manager/android/password_manager_android_util.h"
-#include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_bridge_helper.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
-#include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -32,8 +29,6 @@
 
 using password_manager::PasswordManagerSetting;
 using password_manager::PasswordSettingsUpdaterAndroidBridgeHelper;
-using password_manager::UsesSplitStoresAndUPMForLocal;
-using password_manager_upm_eviction::IsCurrentUserEvicted;
 
 namespace {
 
@@ -41,7 +36,6 @@ using Consumer =
     password_manager::PasswordSettingsUpdaterAndroidReceiverBridge::Consumer;
 using SyncingAccount = password_manager::
     PasswordSettingsUpdaterAndroidReceiverBridge::SyncingAccount;
-using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
 
 const std::vector<PasswordManagerSetting> GetAllPasswordSettings() {
   return base::FeatureList::IsEnabled(
@@ -169,9 +163,14 @@ void PasswordManagerSettingsServiceAndroidImpl::TurnOffAutoSignIn() {
       account, PasswordManagerSetting::kAutoSignIn, false);
 }
 
+void PasswordManagerSettingsServiceAndroidImpl::Shutdown() {
+  if (sync_service_) {
+    sync_service_->RemoveObserver(this);
+    sync_service_ = nullptr;
+  }
+}
+
 void PasswordManagerSettingsServiceAndroidImpl::Init() {
-  CHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kLoginDbDeprecationAndroid));
   bridge_helper_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
   lifecycle_helper_->RegisterObserver(base::BindRepeating(
       &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
@@ -252,4 +251,10 @@ void PasswordManagerSettingsServiceAndroidImpl::OnStateChanged(
   // Fetch settings from the backend to align values stored in GMS Core and
   // Chrome's cache.
   RequestSettingsFromBackend();
+}
+
+void PasswordManagerSettingsServiceAndroidImpl::OnSyncShutdown(
+    syncer::SyncService* sync) {
+  // Unreachable, since this service is Shutdown() before the SyncService.
+  NOTREACHED();
 }

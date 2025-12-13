@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!--
+@WAIT-FOR:Ready
+@EXECUTE-AND-WAIT-FOR:openMenu()
+@EXECUTE-AND-WAIT-FOR:closeMenu()
+@BLINK-ALLOW:htmlTag*
+@BLINK-ALLOW:className*
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Web Menu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady } from "./resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-menu",
+            "md-menu-item",
+            "md-sub-menu",
+            "md-filled-button",
+            "md-icon"
+        ];
+
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+            const menuContainer = document.createElement("div");
+            menuContainer.style.position = "relative";
+            menuContainer.style.display = "inline-block";
+
+            const button = document.createElement("md-filled-button");
+            button.id = "test-menu-button";
+            button.textContent = "Open Menu";
+
+            const menu = document.createElement("md-menu");
+            menu.id = "test-menu";
+            menu.anchor = "test-menu-button";
+            menu.quick = true;
+
+            const items = [
+                { headline: "Menu Item 1" },
+                { headline: "Menu Item 2", startIcon: "star" },
+                { headline: "Menu Item 3", startIcon: "settings", disabled: true },
+                {
+                    headline: "Submenu Item",
+                    endIcon: "arrow_right",
+                    submenu: [
+                        { headline: "Submenu Item 1" },
+                        { headline: "Submenu Item 2" }
+                    ]
+                }
+            ];
+
+            items.forEach(itemInfo => {
+                const menuItem = document.createElement("md-menu-item");
+                menuItem.headline = itemInfo.headline;
+                if (itemInfo.startIcon) {
+                    const icon = document.createElement("md-icon");
+                    icon.slot = "start";
+                    icon.textContent = itemInfo.startIcon;
+                    menuItem.appendChild(icon);
+                }
+                if (itemInfo.endIcon) {
+                    const icon = document.createElement("md-icon");
+                    icon.slot = "end";
+                    icon.textContent = itemInfo.endIcon;
+                    menuItem.appendChild(icon);
+                }
+                if (itemInfo.disabled) {
+                    menuItem.disabled = true;
+                }
+                if (itemInfo.submenu) {
+                    const subMenu = document.createElement("md-sub-menu");
+                    subMenu.slot = "submenu";
+                    itemInfo.submenu.forEach(subItemInfo => {
+                        const subMenuItem = document.createElement("md-menu-item");
+                        subMenuItem.headline = subItemInfo.headline;
+                        subMenu.appendChild(subMenuItem);
+                    });
+                    menuItem.appendChild(subMenu);
+                }
+                menu.appendChild(menuItem);
+            });
+
+            menuContainer.appendChild(button);
+            menuContainer.appendChild(menu);
+            statusDiv.appendChild(menuContainer);
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+<script>
+    async function openMenu() {
+        const menu = document.getElementById("test-menu");
+        if (menu) {
+            menu.open = true;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "Menu Opened";
+            statusDiv.appendChild(statusText);
+            return "Menu Opened";
+        }
+        return "Failed to open Menu";
+    }
+
+    async function closeMenu() {
+        const menu = document.getElementById("test-menu");
+        if (menu) {
+            menu.anchorElement.focus({ preventScroll: true });
+            menu.open = false;
+
+            await menu.updateComplete;
+            menu.offsetHeight;
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "Menu Closed";
+            statusDiv.appendChild(statusText);
+            return "Menu Closed";
+        }
+        return "Failed to close Menu";
+    }
+</script>
+</html>

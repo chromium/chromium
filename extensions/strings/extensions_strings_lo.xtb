@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">ສ່ວນຂະຫຍາຍນີ້ລວມມີໄຟລ໌ລະຫັດ <ph name="KEY_PATH" /> . ທ່ານ​ອາດ​ຈະ​ບໍ່​ຕ້ອງ​ການ​ທີ່​ຈະ​ເຮັດ​ແນວ​ນັ້ນ​.</translation>
 <translation id="5486326529110362464">ຄ່າປ້ອນເຂົ້າສໍາລັບລະຫັດສ່ວນຕົວຕ້ອງມີຢູ່.</translation>
+<translation id="5707185214361380026">ບໍ່​ສາມາດໂຫຼດສ່ວນຂະຫຍາຍຈາກ:</translation>
 <translation id="5972529113578162692">ຜູ້​ຄວບ​ຄຸມ​ອຸ​ປະ​ກອນ​ນີ້​ຕ້ອງ​ການ​ໃຫ້​ຕິດ​ຕັ້ງ <ph name="EXTENSION_NAME" />. ​ບໍ່​ສາ​ມາດ​ຖອນ​ຕິດ​ຕັ້ງມັນ​ໄດ້.</translation>
 <translation id="6027032947578871493">ຜະ​ລິດ​ຕະ​ພັນ​ບໍ່​ຮູ້​ຈັກ <ph name="PRODUCT_ID" /> ຈາກ <ph name="VENDOR_NAME" /> (ເລກ​ລຳ​ດັບ <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> ຈາກຜູ້​ຂາຍ<ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">ການໂຫຼດສ່ວນຂະຫຍາຍຜິດ​ພາດ</translation>
 <translation id="6322279351188361895">ອ່ານປຸ່ມສ່ວນຕົວບໍ່ໄດ້.</translation>
 <translation id="6391538222494443604">ບັນຊີລາຍຊື່ການປ້ອນ​ຕ້ອງ​ມີຢູ່​.</translation>
 <translation id="641087317769093025">ບໍ່​ສາ​ມາດແຍກຊິບສ່ວນຂະ​ຫຍາຍໄດ້</translation>

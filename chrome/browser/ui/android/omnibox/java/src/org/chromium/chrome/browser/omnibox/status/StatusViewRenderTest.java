@@ -29,9 +29,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifierJni;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -46,7 +48,7 @@ import org.chromium.chrome.test.util.ToolbarUnitTestUtils;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.util.DrawableUtils;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -63,11 +65,16 @@ public class StatusViewRenderTest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private static Activity sActivity;
+    // Revision history:
+    // 1: Initial set of tests
+    // 2: Applied fixed size to StatusView.
+    private static final int RENDER_TEST_REVISION = 2;
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_OMNIBOX)
+                    .setRevision(RENDER_TEST_REVISION)
                     .build();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -115,7 +122,8 @@ public class StatusViewRenderTest {
                                     mStatusView.getContext(),
                                     NewTabPageDelegate.EMPTY,
                                     url -> url.getSpec(),
-                                    ToolbarUnitTestUtils.OFFLINE_STATUS);
+                                    ToolbarUnitTestUtils.OFFLINE_STATUS,
+                                    new ObservableSupplierImpl(ControlsPosition.TOP));
                     mLocationBarModel.setTab(null, mProfile);
                     mStatusModel = new PropertyModel.Builder(StatusProperties.ALL_KEYS).build();
                     PropertyModelChangeProcessor.create(
@@ -198,7 +206,7 @@ public class StatusViewRenderTest {
                             ContentSettingsResources.getIconForOmnibox(
                                     mStatusView.getContext(),
                                     ContentSettingsType.GEOLOCATION,
-                                    ContentSettingValues.ALLOW,
+                                    ContentSetting.ALLOW,
                                     false);
                     PermissionIconResource statusIcon =
                             new PermissionIconResource(locationIcon, false);

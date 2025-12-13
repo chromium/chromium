@@ -10,7 +10,11 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "extensions/buildflags/buildflags.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -107,6 +111,7 @@ WebRequestResourceType ToWebRequestResourceType(
     case network::mojom::RequestDestination::kManifest:
     case network::mojom::RequestDestination::kPaintWorklet:
     case network::mojom::RequestDestination::kWebIdentity:
+    case network::mojom::RequestDestination::kEmailVerification:
     // The compression dictionary has not been exposed to extensions yet.
     // We could do so if the need arises.
     case network::mojom::RequestDestination::kDictionary:

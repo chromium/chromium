@@ -55,6 +55,7 @@ void PredictionModelHandler::ExecuteModelWithMetadata(
   // be used with the Signature runner
   const bool is_model_mismatch =
       base::FeatureList::IsEnabled(features::kCpssUseTfliteSignatureRunner) &&
+      prediction_model_metadata_.has_value() &&
       prediction_model_metadata_->version() != 2;
   base::UmaHistogramBoolean(
       "Permissions.PredictionService.SignatureModel.Mismatch",

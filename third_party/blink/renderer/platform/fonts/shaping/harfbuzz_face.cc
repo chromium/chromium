@@ -535,19 +535,18 @@ static hb_blob_t* HarfBuzzSkiaGetTable(hb_face_t* face,
     return nullptr;
   }
 
-  char* buffer = reinterpret_cast<char*>(WTF::Partitions::FastMalloc(
+  char* buffer = reinterpret_cast<char*>(Partitions::FastMalloc(
       table_size, WTF_HEAP_PROFILER_TYPE_NAME(HarfBuzzFontData)));
   if (!buffer) {
     return nullptr;
   }
   size_t actual_size = typeface->getTableData(tag, 0, table_size, buffer);
   if (table_size != actual_size) {
-    WTF::Partitions::FastFree(buffer);
+    Partitions::FastFree(buffer);
     return nullptr;
   }
   return hb_blob_create(const_cast<char*>(buffer), table_size,
-                        HB_MEMORY_MODE_WRITABLE, buffer,
-                        WTF::Partitions::FastFree);
+                        HB_MEMORY_MODE_WRITABLE, buffer, Partitions::FastFree);
 }
 
 // TODO(yosin): We should move |CreateFace()| to "harfbuzz_font_cache.cc".

@@ -37,14 +37,11 @@ class ServiceWorkerContextWrapper;
 // Manages ServiceWorkerDevToolsAgentHost's. This class lives on UI thread.
 class ServiceWorkerDevToolsManager {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     virtual void WorkerCreated(ServiceWorkerDevToolsAgentHost* host,
-                               bool* should_pause_on_start) {}
-    virtual void WorkerDestroyed(ServiceWorkerDevToolsAgentHost* host) {}
-
-   protected:
-    virtual ~Observer() {}
+                               bool* should_pause_on_start) = 0;
+    virtual void WorkerDestroyed(ServiceWorkerDevToolsAgentHost* host) = 0;
   };
 
   // Returns the ServiceWorkerDevToolsManager singleton.
@@ -158,7 +155,7 @@ class ServiceWorkerDevToolsManager {
       const ServiceWorkerContextWrapper* context_wrapper,
       int64_t version_id);
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
   bool debug_service_worker_on_start_;
 
   // We retain agent hosts as long as the service worker is alive.

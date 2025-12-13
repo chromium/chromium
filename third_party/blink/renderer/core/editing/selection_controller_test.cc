@@ -594,4 +594,35 @@ TEST_F(SelectionControllerTest, AdjustSelectionByUserSelectWithComment) {
             PositionInFlatTree::LastPositionInNode(*two->firstChild()));
 }
 
+// https://crbug.com/399412221
+#if BUILDFLAG(IS_OZONE)
+#define MAYBE_MiddleClickPasteToggle MiddleClickPasteToggle
+#else
+#define MAYBE_MiddleClickPasteToggle DISABLED_MiddleClickPasteToggle
+#endif
+TEST_F(SelectionControllerTest, MAYBE_MiddleClickPasteToggle) {
+  SetBodyContent("<input type=text id=dst>");
+
+  // Create a middle mouse button up event
+  auto point = gfx::PointF(25, 25);
+  WebMouseEvent mouse_event(WebInputEvent::Type::kMouseUp, point, point,
+                            WebMouseEvent::Button::kMiddle, 1, 0,
+                            WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.SetFrameScale(1);
+
+  // Test with middle-click paste disabled
+  GetDocument().GetSettings()->SetMiddleClickPasteAllowed(false);
+  EXPECT_FALSE(Controller().HandlePasteGlobalSelection(mouse_event));
+
+  // Test with middle-click paste enabled
+  GetDocument().GetSettings()->SetMiddleClickPasteAllowed(true);
+  EXPECT_TRUE(Controller().HandlePasteGlobalSelection(mouse_event));
+
+  // Test with middle-click paste enabled, but wrong mouse event
+  WebMouseEvent mouse_event_down(WebInputEvent::Type::kMouseDown,
+                                 WebInputEvent::kIsCompatibilityEventForTouch,
+                                 WebInputEvent::GetStaticTimeStampForTests());
+  EXPECT_FALSE(Controller().HandlePasteGlobalSelection(mouse_event_down));
+}
+
 }  // namespace blink

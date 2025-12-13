@@ -8,11 +8,11 @@
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_popup_coordinator.h"
+#import "ios/chrome/browser/authentication/history_sync/coordinator/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/ui/util/identity_snackbar/utils.h"
+#import "ios/chrome/browser/shared/ui/util/identity_snackbar/identity_snackbar_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -68,6 +68,12 @@
                      accessPoint:self.accessPoint];
   _syncPopupCoordinator.delegate = self;
   [_syncPopupCoordinator start];
+}
+
+#pragma mark - BuggyAuthenticationViewOwner
+
+- (BOOL)viewWillPersist {
+  return YES;
 }
 
 #pragma mark - AnimatedCoordinator

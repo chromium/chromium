@@ -221,6 +221,10 @@ TestMetricsWebContentsObserverEmbedder::CreateTimer() {
   return std::move(timer);
 }
 
+bool TestMetricsWebContentsObserverEmbedder::HasWebUIConfig(const GURL& url) {
+  return false;
+}
+
 bool TestMetricsWebContentsObserverEmbedder::IsNoStatePrefetch(
     content::WebContents* web_contents) {
   return false;
@@ -234,20 +238,13 @@ bool TestMetricsWebContentsObserverEmbedder::IsNonTabWebUI(const GURL& url) {
   return false;
 }
 
+bool TestMetricsWebContentsObserverEmbedder::IsInternalWebUI(const GURL& url) {
+  return true;
+}
+
 bool TestMetricsWebContentsObserverEmbedder::ShouldObserveScheme(
     std::string_view scheme) {
   return false;
-}
-
-bool TestMetricsWebContentsObserverEmbedder::IsIncognito(
-    content::WebContents* web_contents) {
-  return false;
-}
-
-PageLoadMetricsMemoryTracker*
-TestMetricsWebContentsObserverEmbedder::GetMemoryTrackerForBrowserContext(
-    content::BrowserContext* browser_context) {
-  return nullptr;
 }
 
 }  // namespace page_load_metrics

@@ -61,6 +61,37 @@ enum MemDumpFlags {
   MEM_DUMP_PAGES_BITMAP = 2,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(RequestOutcome)
+enum RequestOutcome {
+  // Dump was produced successfully.
+  kSuccess = 0,
+  // Periodic dump request was made with the same level of details as an already
+  // queued request.
+  kRedundant = 1,
+  // OSMetrics::FillOSMemoryDump failed.
+  kFillOsMemoryDumpFailed = 2,
+  // OSMetrics::FillProcessMemoryMaps failed.
+  kFillProcessMemoryMapsFailed = 3,
+  // Dump was requested for a null pid.
+  kNullPid = 4,
+  // Dump was requested for a process that was not found.
+  kProcessNotFound = 5,
+  // A request was made via RequestGlobalMemoryDumpAndAppendToTrace while
+  // tracing is disabled or not setup yet
+  kInvalidTracingState = 6,
+  // A process that was part of the request unregistered while the dump was
+  // being collected.
+  kProcessUnregistered = 7,
+  // A request could not be fulfilled within the allowed time.
+  kTimeout = 8,
+  // base::trace_event::MemoryDumpManager::CreateProcessDump failed.
+  kInProcessMemoryDumpFailed = 9,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/memory/enums.xml:RequestOutcome)
+
 // These structs are internal only (only for the communication between
 // the service and the ClientProcess library).
 // See corresponding types in //base/trace_event for comments.
@@ -282,11 +313,11 @@ struct GlobalMemoryDump {
 // allows a process to contribute to memory-infra dumps. There should be at
 // most one instance of this per hosting process.
 interface ClientProcess {
-  // When |success| == true the dump is appended in the process-local trace
+  // When outcome is a success, the dump is appended in the process-local trace
   // buffer of the target process and an ACK. A summary of the dump is also
   // returned in case of success.
   RequestChromeMemoryDump(RequestArgs args)
-      => (bool success,
+      => (RequestOutcome outcome,
           uint64 dump_id,
           RawProcessMemoryDump? raw_process_memory_dump);
 
@@ -308,7 +339,7 @@ interface ClientProcess {
       MemoryMapOption option,
       array<MemDumpFlags> flags,
       array<mojo_base.mojom.ProcessId> pids)
-      => (bool success, map<mojo_base.mojom.ProcessId, RawOSMemDump> dumps);
+      => (RequestOutcome outcome, map<mojo_base.mojom.ProcessId, RawOSMemDump> dumps);
 };
 
 struct HeapProfileResult {
@@ -365,27 +396,26 @@ interface Coordinator {
                           LevelOfDetail level_of_detail,
                           Determinism determinism,
                           array<string> allocator_dump_names)
-      => (bool success, GlobalMemoryDump? global_memory_dump);
+      => (RequestOutcome outcome, GlobalMemoryDump? global_memory_dump);
 
   // Sends a dump request to the client process given by the specified pid and
   // returns a summarized dump back or null if there was a failure.
   RequestGlobalMemoryDumpForPid(
       mojo_base.mojom.ProcessId pid, array<string> allocator_dump_names)
-      => (bool success, GlobalMemoryDump? global_memory_dump);
+      => (RequestOutcome outcome, GlobalMemoryDump? global_memory_dump);
 
   // Requesting a null pid is the same as requesting all pids.
   // The returned dump only contains OS metrics. |chrome_allocator_dumps| will
   // be empty.
   RequestPrivateMemoryFootprint(mojo_base.mojom.ProcessId pid)
-      => (bool success, GlobalMemoryDump? global_memory_dump);
+      => (RequestOutcome outcome, GlobalMemoryDump? global_memory_dump);
 
   // Broadcasts a dump request to all registered client processes and injects
-  // the
-  // dump in the trace buffer (if tracing is enabled).
+  // the dump in the trace buffer (if tracing is enabled).
   RequestGlobalMemoryDumpAndAppendToTrace(DumpType dump_type,
                                           LevelOfDetail level_of_detail,
                                           Determinism determinism)
-      => (bool success, uint64 dump_id);
+      => (RequestOutcome outcome, uint64 dump_id);
 };
 
 // An interface used by client processes to register themselves with a

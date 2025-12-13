@@ -12,7 +12,6 @@
 
 namespace device {
 
-using testing::Invoke;
 using testing::_;
 
 MockBluetoothAdapter::Observer::Observer(
@@ -27,13 +26,13 @@ MockBluetoothAdapter::Observer::~Observer() {
 
 MockBluetoothAdapter::MockBluetoothAdapter() {
   ON_CALL(*this, AddObserver(_))
-      .WillByDefault(Invoke([this](BluetoothAdapter::Observer* observer) {
+      .WillByDefault([this](BluetoothAdapter::Observer* observer) {
         this->BluetoothAdapter::AddObserver(observer);
-      }));
+      });
   ON_CALL(*this, RemoveObserver(_))
-      .WillByDefault(Invoke([this](BluetoothAdapter::Observer* observer) {
+      .WillByDefault([this](BluetoothAdapter::Observer* observer) {
         this->BluetoothAdapter::RemoveObserver(observer);
-      }));
+      });
   ON_CALL(*this, GetOsPermissionStatus())
       .WillByDefault(testing::Return(PermissionStatus::kAllowed));
 }

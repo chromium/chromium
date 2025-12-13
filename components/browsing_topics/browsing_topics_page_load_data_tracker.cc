@@ -11,6 +11,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_topics_site_data_manager.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"

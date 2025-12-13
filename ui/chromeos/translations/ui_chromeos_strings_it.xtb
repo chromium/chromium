@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Genere</translation>
 <translation id="1254593899333212300">Connessione diretta a Internet</translation>
 <translation id="1272293450992660632">I valori PIN non corrispondono.</translation>
+<translation id="1279040297980392566">In attesa del termine della scansione, riprova più tardi</translation>
 <translation id="1280820357415527819">Ricerca di reti mobili in corso</translation>
 <translation id="1293556467332435079">File</translation>
 <translation id="1297922636971898492">Google Drive non è al momento disponibile. Il caricamento riprenderà automaticamente una volta che Google Drive sarà tornato operativo.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">Un file selezionato</translation>
 <translation id="3817579325494460411">Non fornito</translation>
 <translation id="3819448694985509187">PIN errato. Hai ancora 1 tentativo a disposizione.</translation>
-<translation id="3822559385185038546">Questo proxy è stato applicato dall'amministratore</translation>
 <translation id="3830674330436234648">Riproduzione non disponibile</translation>
 <translation id="383652340667548381">Serbo</translation>
 <translation id="3839045880592694915">Il tuo operatore non ha autorizzato il modem a connettersi. Contatta il tuo operatore per ulteriori dettagli.</translation>
@@ -595,6 +595,7 @@
 <translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="5602622065581044566">Bulgaro con tastiera fonetica</translation>
 <translation id="5605830556594064952">Dvorak USA</translation>
+<translation id="560739212255190568">L'amministratore ha impostato regole di override del proxy e ha applicato in modo forzato il seguente proxy</translation>
 <translation id="5618330573454123917">Questo file è supportato su computer con software Macintosh. Non è compatibile con il tuo dispositivo, che esegue ChromeOS. <ph name="BEGIN_LINK_HELP" />Scopri di più<ph name="END_LINK_HELP" /> sull'apertura di file in ChromeOS.</translation>
 <translation id="5625294776298156701">Tamil con tastiera Tamil99</translation>
 <translation id="5633226425545095130">Se lo sposti, questo elemento verrà condiviso con chiunque abbia accesso alla cartella condivisa "<ph name="DESTINATION_NAME" />".</translation>
@@ -786,7 +787,7 @@
 <translation id="7075931588889865715">Thai con tastiera TIS 820-2531</translation>
 <translation id="708278670402572152">Scollega per consentire la scansione</translation>
 <translation id="7086590977277044826">Tamil con tastiera InScript</translation>
-<translation id="7088615885725309056">Meno recente</translation>
+<translation id="7088615885725309056">Più obsoleta</translation>
 <translation id="7103992300314999525">Macedone</translation>
 <translation id="7104338189998813914">Si è verificato un problema durante l'accesso al tuo account OneDrive</translation>
 <translation id="7106346894903675391">Acquista più spazio di archiviazione...</translation>
@@ -994,6 +995,7 @@
 <translation id="8540608333167683902">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, dettagli</translation>
 <translation id="8545476925160229291">Inglese (USA)</translation>
 <translation id="854655314928502177">URL rilevamento automatico proxy web:</translation>
+<translation id="8547747809824590510">L'amministratore ha impostato le regole di override del proxy</translation>
 <translation id="8549186985808798022">Italiano</translation>
 <translation id="8551494947769799688">Lettone</translation>
 <translation id="8560515948038859357">Cantonese</translation>
@@ -1039,7 +1041,7 @@
 <translation id="8903931173357132290">Persona laureata</translation>
 <translation id="8912078710089354287">Cane che scodinzola</translation>
 <translation id="8919081441417203123">Danese</translation>
-<translation id="8949925099261528566">Connesso, senza Internet</translation>
+<translation id="8949925099261528566">Connesso, senza internet</translation>
 <translation id="8965697826696209160">Spazio insufficiente.</translation>
 <translation id="8970887620466824814">C'è stato un problema.</translation>
 <translation id="8971742885766657349">Sincronizzazione: <ph name="PERCENT" />%</translation>
@@ -1054,6 +1056,7 @@
 <translation id="9038620279323455325">Esiste già un file chiamato "<ph name="FILE_NAME" />". Scegli un altro nome.</translation>
 <translation id="9046895021617826162">Connessione non riuscita</translation>
 <translation id="9065512565307033593">Se non superi la verifica, l'accesso alla rete verrà disattivato.</translation>
+<translation id="9079844694307518094">L'amministratore sta applicando in modo forzato il seguente proxy</translation>
 <translation id="908378762078012445">Russo con tastiera fonetica AATSEEL</translation>
 <translation id="9086302186042011942">Sincronizzazione in corso</translation>
 <translation id="9099674669267916096">Numero di pagine</translation>
@@ -1077,6 +1080,7 @@
 <translation id="9213073329713032541">Installazione eseguita correttamente.</translation>
 <translation id="9219103736887031265">Immagini</translation>
 <translation id="9219908252191632183">Lunare</translation>
+<translation id="931652069802536959">La rete è bloccata da una policy</translation>
 <translation id="938470336146445890">Installa un certificato utente.</translation>
 <translation id="939736085109172342">Nuova cartella</translation>
 <translation id="943972244133411984">Modificato da</translation>

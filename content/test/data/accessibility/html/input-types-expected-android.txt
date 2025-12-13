@@ -5,14 +5,14 @@ android.webkit.WebView focusable focused
 ++++++android.widget.EditText clickable editable_text focusable interesting hint='Default:' input_type=1
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Button: '
-++++++android.widget.Button role_description='button' clickable focusable interesting name='Button:'
-++++android.widget.CheckBox role_description='checkbox' checkable clickable focusable interesting name='Checkbox:'
+++++++android.widget.Button clickable focusable interesting name='Button:'
+++++android.widget.CheckBox checkable clickable focusable interesting name='Checkbox:'
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Color: '
 ++++++android.widget.Spinner role_description='color picker' clickable focusable interesting name='#000000'
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Date: '
-++++++android.widget.Spinner role_description='date picker' clickable focusable interesting hint='Date:' input_type=20
+++++++android.widget.DatePicker role_description='date picker' clickable focusable interesting hint='Date:' input_type=20
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Datetime: '
 ++++++android.widget.EditText clickable editable_text focusable interesting hint='Datetime:' input_type=4
@@ -27,10 +27,10 @@ android.webkit.WebView focusable focused
 ++++++android.widget.EditText clickable editable_text focusable interesting hint='Empty:' input_type=1
 ++++android.view.View
 ++++++android.widget.TextView interesting name='File: '
-++++++android.widget.Button role_description='button' clickable focusable interesting name='No file chosen' hint='File:: No file chosen'
+++++++android.widget.Button clickable focusable interesting name='No file chosen' hint='File:: No file chosen'
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Image: '
-++++++android.widget.Button role_description='button' clickable focusable interesting name='Image:'
+++++++android.widget.Button clickable focusable interesting name='Image:'
 ++++android.widget.TextView name=' '
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Invalid: '
@@ -44,19 +44,19 @@ android.webkit.WebView focusable focused
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Password: '
 ++++++android.widget.EditText clickable editable_text focusable password interesting hint='Password:' input_type=225
-++++android.widget.RadioButton role_description='radio button' checkable clickable focusable interesting name='Radio:'
+++++android.widget.RadioButton checkable clickable focusable interesting name='Radio:'
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Range: '
-++++++android.widget.SeekBar role_description='slider' clickable focusable range interesting name='50, Range:' item_index=50 item_count=100 range_max=100 range_current_value=50
+++++++android.widget.SeekBar clickable focusable range interesting name='Range:' item_index=50 item_count=100 range_max=100 range_current_value=50
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Reset: '
-++++++android.widget.Button role_description='button' clickable focusable interesting name='Reset:'
+++++++android.widget.Button clickable focusable interesting name='Reset:'
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Search: '
 ++++++android.widget.EditText role_description='search text field' clickable editable_text focusable interesting hint='Search:' input_type=1
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Submit: '
-++++++android.widget.Button role_description='button' clickable focusable interesting name='Submit:'
+++++++android.widget.Button clickable focusable interesting name='Submit:'
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Tel: '
 ++++++android.widget.EditText clickable editable_text focusable interesting hint='Tel:' input_type=3
@@ -65,7 +65,7 @@ android.webkit.WebView focusable focused
 ++++++android.widget.EditText clickable editable_text focusable interesting hint='Text:' input_type=1
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Time: '
-++++++android.widget.Spinner role_description='time picker' clickable focusable interesting hint='Time:' input_type=36
+++++++android.widget.TimePicker role_description='time picker' clickable focusable interesting hint='Time:' input_type=36
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Url: '
 ++++++android.widget.EditText clickable editable_text focusable interesting hint='Url:' input_type=17

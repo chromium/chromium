@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -186,7 +187,7 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
   protected getInputLabel_(): string {
     if (this.selectedElement_ && this.selectedElement_.value &&
         this.selectedElement_.value === this.value) {
-      return this.selectedElement_.textContent!;
+      return this.selectedElement_.textContent;
     }
 
     return this.label;
@@ -378,13 +379,15 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
       return;
     }
 
+    const key = e.key as 'ArrowDown' | 'ArrowUp' | 'Home' | 'End';
+
     e.preventDefault();
     e.stopPropagation();
 
     let index = this.highlightedElement_ ?
         this.highlightableElements_.indexOf(this.highlightedElement_) :
         -1;
-    switch (e.key) {
+    switch (key) {
       case 'ArrowDown':
         index++;
         break;
@@ -397,6 +400,8 @@ export class CustomizeChromeComboboxElement extends CrLitElement {
       case 'End':
         index = this.highlightableElements_.length - 1;
         break;
+      default:
+        assertNotReachedCase(key);
     }
 
     if (index < 0) {

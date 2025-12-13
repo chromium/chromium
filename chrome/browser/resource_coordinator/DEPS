@@ -4,7 +4,4 @@ include_rules = [
   "+components/performance_manager",
 
   "+services/resource_coordinator/public",
-  # No inclusion of blink from the browser, other than strictly enum/POD,
-  # header-only types, and some selected common code.
-  "+third_party/blink/public/common/sudden_termination_disabler_type.h",
 ]

@@ -1,0 +1,6 @@
+[document web]
+++[section]
+++++[push button] name='Show Menu'
+++++[panel]
+++++++[menu item] name='Copy'
+++++++[menu item] name='Paste'

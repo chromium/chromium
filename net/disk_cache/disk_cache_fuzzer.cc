@@ -14,7 +14,6 @@
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -1184,7 +1183,7 @@ void DiskCacheLPMFuzzer::CreateBackend(
       auto simple_backend = std::make_unique<disk_cache::SimpleBackendImpl>(
           /*file_operations=*/nullptr, cache_path_, std::move(cleanup_tracker),
           simple_file_tracker_.get(), ComputeMaxSize(maybe_max_size), type,
-          /*net_log=*/nullptr);
+          /*net_log=*/nullptr, /*cache_encryption_delegate=*/nullptr);
       simple_backend->Init(cb.callback());
       CHECK_EQ(cb.WaitForResult(), net::OK);
       simple_cache_impl_ = simple_backend.get();

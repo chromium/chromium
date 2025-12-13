@@ -39,9 +39,8 @@ class FlingingControllerBridge : public media::FlingingController,
   void Seek(base::TimeDelta time) override;
 
   // Called by the Java side on status updates.
-  void OnMediaStatusUpdated(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_status);
+  void OnMediaStatusUpdated(JNIEnv* env,
+                            const base::android::JavaRef<jobject>& j_status);
 
  private:
   // Java MediaControllerBridge instance.

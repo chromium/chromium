@@ -69,11 +69,10 @@ class BLINK_PLATFORM_EXPORT WebVideoCaptureImplManager {
   // |video_capture_callbacks.deliver_frame_cb| will be called on the IO thread
   // when a video frame is ready.
   //
-  // |video_capture_callbacks.sub_capture_target_version_cb| will be called on
-  // the IO thread when a new crop version is successfully applied, and it is
-  // guaranteed that all subsequent frames delivered to
-  // |video_capture_callbacks.deliver_frame_cb|, will have this
-  // sub-capture-target version or later.
+  // |video_capture_callbacks.capture_version_cb| will be called on the IO
+  // thread when a new CropTargetVersion is successfully applied, and it is
+  // guaranteed that all subsequent frames delivered to |deliver_frame_cb|,
+  // will have this capture version or later.
   //
   // |video_capture_callbacks.frame_dropped_cb| will be called on the IO thread
   // when a frame was dropped prior to delivery

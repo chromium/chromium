@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -21,6 +16,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -248,8 +244,8 @@ void StartServerOnIOThread(
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   if (!cmd_line->HasSwitch("silent") &&
       cmd_line->GetSwitchValueASCII("log-level") != "OFF") {
-    printf("%s was started successfully on port %u.\n",
-           kChromeDriverProductShortName, port);
+    UNSAFE_TODO(printf("%s was started successfully on port %u.\n",
+                       kChromeDriverProductShortName, port));
   }
   if (cmd_line->HasSwitch("log-path")) {
     VLOG(0) << kChromeDriverProductShortName
@@ -379,12 +375,14 @@ int main(int argc, char *argv[]) {
         "dangerous!\n",
         "allowed-origins=LIST", kChromeDriverProductShortName);
 
-    printf("Usage: %s [OPTIONS]\n\nOptions\n%s", argv[0], options.c_str());
+    UNSAFE_TODO(
+        printf("Usage: %s [OPTIONS]\n\nOptions\n%s", argv[0], options.c_str()));
     return 0;
   }
   bool early_exit = false;
   if (cmd_line->HasSwitch("v") || cmd_line->HasSwitch("version")) {
-    printf("%s %s\n", kChromeDriverProductFullName, kChromeDriverVersion);
+    UNSAFE_TODO(
+        printf("%s %s\n", kChromeDriverProductFullName, kChromeDriverVersion));
     early_exit = true;
   }
   if (early_exit)
@@ -461,8 +459,9 @@ int main(int argc, char *argv[]) {
 
   if (!cmd_line->HasSwitch("silent") &&
       cmd_line->GetSwitchValueASCII("log-level") != "OFF") {
-    printf("Starting %s %s on port %u\n", kChromeDriverProductShortName,
-           kChromeDriverVersion, port);
+    UNSAFE_TODO(printf("Starting %s %s on port %u\n",
+                       kChromeDriverProductShortName, kChromeDriverVersion,
+                       port));
     if (!allow_remote) {
       printf("Only local connections are allowed.\n");
     } else if (!allowed_ips.empty()) {
@@ -471,7 +470,7 @@ int main(int argc, char *argv[]) {
     } else {
       printf("All remote connections are allowed. Use an allowlist instead!\n");
     }
-    printf("%s\n", GetPortProtectionMessage());
+    UNSAFE_TODO(printf("%s\n", GetPortProtectionMessage()));
     fflush(stdout);
   }
 

@@ -18,6 +18,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "components/vector_icons/vector_icons.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -43,6 +45,7 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 
 using views::FlexLayout;
@@ -134,10 +137,8 @@ void FeatureTile::ProgressBackground::Paint(gfx::Canvas* canvas,
   clip_bounds.Inset(kDownloadProgressBorderThickness);
   int clip_radius =
       std::max(0, tile->corner_radius_ - kDownloadProgressBorderThickness);
-  SkScalar clip_radii[8];
-  std::fill_n(clip_radii, 8, clip_radius);
-  SkPath clip;
-  clip.addRoundRect(gfx::RectToSkRect(clip_bounds), clip_radii);
+  const SkPath clip = SkPath::RRect(SkRRect::MakeRectXY(
+      gfx::RectToSkRect(clip_bounds), clip_radius, clip_radius));
   canvas->ClipPath(clip, /*do_anti_alias=*/true);
 
   // Shrink the width of the progress bar according to the tile's current
@@ -396,10 +397,9 @@ void FeatureTile::UpdateColors() {
                                                corner_radius_));
 
   auto* ink_drop = views::InkDrop::Get(this);
-  ink_drop->SetBaseColorId(toggled_
-                               ? ink_drop_toggled_base_color_.value_or(
-                                     cros_tokens::kCrosSysRipplePrimary)
-                               : cros_tokens::kCrosSysRippleNeutralOnSubtle);
+  ink_drop->SetBaseColor(toggled_ ? ink_drop_toggled_base_color_.value_or(
+                                        cros_tokens::kCrosSysRipplePrimary)
+                                  : cros_tokens::kCrosSysRippleNeutralOnSubtle);
 
   auto icon_image_model = ui::ImageModel::FromVectorIcon(
       *vector_icon_, foreground_color, kIconSize);
@@ -712,9 +712,8 @@ void FeatureTile::UpdateIconButtonRippleColors() {
                           toggled_ ? cros_tokens::kCrosSysHighlightShape
                                    : cros_tokens::kCrosSysHoverOnSubtle));
   // Set up the ripple color.
-  ink_drop->SetBaseColorId(toggled_
-                               ? cros_tokens::kCrosSysRipplePrimary
-                               : cros_tokens::kCrosSysRippleNeutralOnSubtle);
+  ink_drop->SetBaseColor(toggled_ ? cros_tokens::kCrosSysRipplePrimary
+                                  : cros_tokens::kCrosSysRippleNeutralOnSubtle);
   // The ripple base color includes opacity.
   ink_drop->SetVisibleOpacity(1.0f);
 

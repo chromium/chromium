@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.text.format.DateUtils;
 
 import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -21,18 +20,25 @@ import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.util.date.CalendarFactory;
 import org.chromium.ui.widget.Toast;
 
 import java.util.Calendar;
 
 /** Settings fragment that displays information about Chrome. */
 @NullMarked
-public class AboutChromeSettings extends PreferenceFragmentCompat
+public class AboutChromeSettings extends ChromeBaseSettingsFragment
         implements EmbeddableSettingsPage, Preference.OnPreferenceClickListener {
+    static {
+        CalendarFactory.warmUp();
+    }
+
     private static final int TAPS_FOR_DEVELOPER_SETTINGS = 7;
 
     private static final String PREF_APPLICATION_VERSION = "application_version";
@@ -70,7 +76,9 @@ public class AboutChromeSettings extends PreferenceFragmentCompat
         p.setSummary(AboutSettingsBridge.getOSVersion());
         p = findPreference(PREF_LEGAL_INFORMATION);
         assumeNonNull(p);
-        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        Calendar calendar = CalendarFactory.get();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        int currentYear = calendar.get(Calendar.YEAR);
         p.setSummary(getString(R.string.legal_information_summary, currentYear));
     }
 
@@ -146,4 +154,13 @@ public class AboutChromeSettings extends PreferenceFragmentCompat
     public @SettingsFragment.AnimationType int getAnimationType() {
         return SettingsFragment.AnimationType.PROPERTY;
     }
+
+    @Override
+    public @Nullable String getMainMenuKey() {
+        return "about_chrome";
+    }
+
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(
+                    AboutChromeSettings.class.getName(), R.xml.about_chrome_preferences);
 }

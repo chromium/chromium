@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "android_webview/browser/prefetch/aw_preloading_utils.h"
+#include "android_webview/common/aw_features.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/trace_event/trace_event.h"
@@ -21,6 +22,9 @@
 using content::BrowserThread;
 
 namespace android_webview {
+
+BASE_FEATURE(kWebViewPrefetchDisableBlockUntilHeadTimeout,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 class AwPrefetchRequestStatusListener
     : public content::PrefetchRequestStatusListener {
@@ -104,15 +108,24 @@ bool AwPrefetchManager::IsSecPurposeForPrefetch(
 int AwPrefetchManager::StartPrefetchRequest(
     JNIEnv* env,
     const std::string& url,
-    const base::android::JavaParamRef<jobject>& prefetch_params,
-    const base::android::JavaParamRef<jobject>& callback,
-    const base::android::JavaParamRef<jobject>& callback_executor) {
+    const base::android::JavaRef<jobject>& prefetch_params,
+    const base::android::JavaRef<jobject>& callback,
+    const base::android::JavaRef<jobject>& callback_executor) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT0("android_webview", "AwPrefetchManager::StartPrefetchRequest");
 
   GURL pf_url = GURL(url);
   net::HttpRequestHeaders additional_headers =
       GetAdditionalHeadersFromPrefetchParameters(env, prefetch_params);
+
+  // TODO(crbug.com/455296998): Remove this code for M145.
+  bool should_bypass_http_cache = false;
+  if (base::FeatureList::IsEnabled(
+          android_webview::features::
+              kWebViewBypassHttpCacheForPrefetchFromHeader)) {
+    should_bypass_http_cache = GetShouldBypassHttpCacheFromHeaders(
+        additional_headers, /*remove_header=*/true);
+  }
   std::optional<net::HttpNoVarySearchData> expected_no_vary_search =
       GetExpectedNoVarySearchFromPrefetchParameters(env, prefetch_params);
   std::unique_ptr<content::PrefetchRequestStatusListener>
@@ -147,13 +160,15 @@ int AwPrefetchManager::StartPrefetchRequest(
             GetIsJavaScriptEnabledFromPrefetchParameters(env, prefetch_params),
             expected_no_vary_search,
             base::FeatureList::IsEnabled(
-                features::kWebViewPrefetchHighestPrefetchPriority)
+                ::features::kWebViewPrefetchHighestPrefetchPriority)
                 ? std::optional(content::PrefetchPriority::kHighest)
                 : std::nullopt,
             additional_headers, std::move(request_status_listener),
             base::Seconds(ttl_in_sec_),
             /*should_append_variations_header=*/false,
-            /*should_disable_block_until_head_timeout=*/true);
+            base::FeatureList::IsEnabled(
+                kWebViewPrefetchDisableBlockUntilHeadTimeout),
+            should_bypass_http_cache);
 
     if (prefetch_handle) {
       return AddPrefetchHandle(std::move(prefetch_handle));
@@ -184,11 +199,11 @@ bool AwPrefetchManager::GetIsPrefetchInCacheForTesting(JNIEnv* env,
   return all_prefetches_map_.find(prefetch_key) != all_prefetches_map_.end();
 }
 
-jint JNI_AwPrefetchManager_GetNoPrefetchKey(JNIEnv* env) {
+static jint JNI_AwPrefetchManager_GetNoPrefetchKey(JNIEnv* env) {
   return NO_PREFETCH_KEY;
 }
 
-jboolean JNI_AwPrefetchManager_IsSecPurposeForPrefetch(
+static jboolean JNI_AwPrefetchManager_IsSecPurposeForPrefetch(
     JNIEnv* env,
     std::string& sec_purpose_header_value) {
   return AwPrefetchManager::IsSecPurposeForPrefetch(sec_purpose_header_value);
@@ -205,3 +220,5 @@ AwPrefetchManager::GetJavaPrefetchManager() {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwPrefetchManager)

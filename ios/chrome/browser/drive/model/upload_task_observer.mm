@@ -6,6 +6,9 @@
 
 UploadTaskObserver::UploadTaskObserver() = default;
 
-UploadTaskObserver::~UploadTaskObserver() = default;
+UploadTaskObserver::~UploadTaskObserver() {
+  CHECK(!IsInObserverList()) << "UploadTaskObserver needs to be removed from "
+                                "observer lists before their destruction.";
+}
 
 void UploadTaskObserver::OnUploadUpdated(UploadTask* task) {}

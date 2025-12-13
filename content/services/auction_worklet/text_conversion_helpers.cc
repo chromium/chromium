@@ -9,6 +9,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/webidl_compat.h"
+#include "gin/public/gin_embedders.h"
 #include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-function-callback.h"
@@ -26,8 +27,8 @@ void TextConversionHelpers::AttachToContext(v8::Local<v8::Context> context) {
     return;
   }
 
-  v8::Local<v8::External> v8_this =
-      v8::External::New(v8_helper_->isolate(), this);
+  v8::Local<v8::External> v8_this = v8::External::New(
+      v8_helper_->isolate(), this, gin::kTextConversionHelpersTag);
   v8::Local<v8::Function> encode =
       v8::Function::New(context, &TextConversionHelpers::EncodeUtf8, v8_this)
           .ToLocalChecked();
@@ -52,7 +53,7 @@ void TextConversionHelpers::Reset() {}
 void TextConversionHelpers::EncodeUtf8(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   TextConversionHelpers* bindings = static_cast<TextConversionHelpers*>(
-      v8::External::Cast(*args.Data())->Value());
+      v8::External::Cast(*args.Data())->Value(gin::kTextConversionHelpersTag));
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
   v8::Isolate* isolate = v8_helper->isolate();
 
@@ -118,7 +119,7 @@ void TextConversionHelpers::EncodeUtf8(
 void TextConversionHelpers::DecodeUtf8(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   TextConversionHelpers* bindings = static_cast<TextConversionHelpers*>(
-      v8::External::Cast(*args.Data())->Value());
+      v8::External::Cast(*args.Data())->Value(gin::kTextConversionHelpersTag));
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
   v8::Isolate* isolate = v8_helper->isolate();
 

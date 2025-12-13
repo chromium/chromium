@@ -24,6 +24,7 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -657,8 +658,15 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, TabAudio) {
             interval_data.source_id_for_longest_visible_origin_duration);
 }
 
+// TODO(https://crbug.com/448444906): There's a race condition in this test
+// between the two calls to ResetIntervalData() that manifests on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FullScreenVideoClosed DISABLED_FullScreenVideoClosed
+#else
+#define MAYBE_FullScreenVideoClosed FullScreenVideoClosed
+#endif
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
-                       FullScreenVideoClosed) {
+                       MAYBE_FullScreenVideoClosed) {
   // Play fullscreen video in a tab and close it while it's playing, ensure that
   // things are tracked properly.
   EXPECT_TRUE(
@@ -715,8 +723,13 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
             interval_data.source_id_for_longest_visible_origin_duration);
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_FullScreenVideoCrash DISABLED_FullScreenVideoCrash
+#else
+#define MAYBE_FullScreenVideoCrash FullScreenVideoCrash
+#endif
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
-                       FullScreenVideoCrash) {
+                       MAYBE_FullScreenVideoCrash) {
   // Play fullscreen video in a tab and make the tab crash, ensure that things
   // are tracked properly.
   auto* contents = browser()->tab_strip_model()->GetWebContentsAt(0);
@@ -767,19 +780,22 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
                        InitialVisibleNotification) {
   // This test causes a WebContents::OnVisibilityChanged(VISIBLE) signal to be
   // emitted for a tab that was already visible when adding it.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("/title2.html"),
       WindowOpenDisposition::NEW_WINDOW,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
-  Browser* browser2 = BrowserList::GetInstance()->get(1);
+  BrowserWindowInterface* const browser2 = browser_created_observer.Wait();
 
-  int previous_browser1_tab_count = browser()->tab_strip_model()->count();
-  int previous_browser2_tab_count = browser2->tab_strip_model()->count();
-  browser2->tab_strip_model()->CloseWebContentsAt(
+  const int previous_browser1_tab_count =
+      browser()->GetTabStripModel()->count();
+  const int previous_browser2_tab_count = browser2->GetTabStripModel()->count();
+  browser2->GetTabStripModel()->CloseWebContentsAt(
       0, TabCloseTypes::CLOSE_USER_GESTURE);
-  EXPECT_EQ(previous_browser1_tab_count, browser()->tab_strip_model()->count());
+  EXPECT_EQ(previous_browser1_tab_count,
+            browser()->GetTabStripModel()->count());
   EXPECT_EQ(previous_browser2_tab_count - 1,
-            browser2->tab_strip_model()->count());
+            browser2->GetTabStripModel()->count());
 
   tick_clock_.Advance(kInterval);
   auto interval_data = data_store_.ResetIntervalData();
@@ -793,7 +809,7 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
   EXPECT_TRUE(interval_data.time_with_open_webrtc_connection.is_zero());
   EXPECT_TRUE(interval_data.time_playing_video_in_visible_tab.is_zero());
   EXPECT_EQ(browser()
-                ->tab_strip_model()
+                ->GetTabStripModel()
                 ->GetActiveWebContents()
                 ->GetPrimaryMainFrame()
                 ->GetPageUkmSourceId(),

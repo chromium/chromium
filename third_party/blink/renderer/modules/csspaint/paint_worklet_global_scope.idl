@@ -8,7 +8,7 @@
     Exposed=PaintWorklet,
     Global=(Worklet,PaintWorklet)
 ] interface PaintWorkletGlobalScope : WorkletGlobalScope {
-    [HighEntropy=Direct, Measure] readonly attribute unrestricted double devicePixelRatio;
+    [Measure] readonly attribute unrestricted double devicePixelRatio;
     [Measure, RaisesException, CallWith=ScriptState] void registerPaint(DOMString name, NoArgumentConstructor paintCtor);
 };
 

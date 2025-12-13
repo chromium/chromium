@@ -38,6 +38,7 @@ void BirchLastActiveProvider::RequestBirchDataFetch() {
   history::QueryOptions options;
   options.max_count = 1;
   options.SetRecentDayRange(7);
+  options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
   history_service_->QueryHistory(
       u"", options,
       base::BindOnce(&BirchLastActiveProvider::OnGotHistory,

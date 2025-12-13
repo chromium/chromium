@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/site_policy.h"
 
 #include "base/command_line.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
@@ -76,6 +78,14 @@ class ActorSitePolicyBrowserTest : public InProcessBrowserTest {
         "OptimizationGuide.HintsManager.HintCacheInitialized", 1);
 
     InitActionBlocklist(browser()->profile());
+
+    // Simulate the component loading, as the implementation checks it, but the
+    // actual list is set via the command line.
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    optimization_guide::OptimizationHintsComponentUpdateListener::GetInstance()
+        ->MaybeUpdateHintsComponent(
+            {base::Version("123"),
+             temp_dir_.GetPath().Append(FILE_PATH_LITERAL("dont_care"))});
   }
 
   void TearDownOnMainThread() override {
@@ -87,18 +97,21 @@ class ActorSitePolicyBrowserTest : public InProcessBrowserTest {
   void CheckUrl(const GURL& url, bool expected_allowed) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-    base::test::TestFuture<bool> allowed;
+    base::test::TestFuture<MayActOnUrlBlockReason> allowed;
     auto* actor_service = ActorKeyedService::Get(browser()->profile());
     MayActOnTab(*browser()->tab_strip_model()->GetActiveTab(),
-                actor_service->GetJournal(), TaskId(), allowed.GetCallback());
+                actor_service->GetJournal(), TaskId(),
+                absl::flat_hash_set<url::Origin>(), allowed.GetCallback());
     // The result should not be provided synchronously.
     EXPECT_FALSE(allowed.IsReady());
-    EXPECT_EQ(expected_allowed, allowed.Get());
+    EXPECT_EQ(expected_allowed,
+              allowed.Get() == MayActOnUrlBlockReason::kAllowed);
   }
 
  private:
   base::HistogramTester histogram_tester_for_init_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::ScopedTempDir temp_dir_;
 };
 
 IN_PROC_BROWSER_TEST_F(ActorSitePolicyBrowserTest, Basic) {
@@ -137,6 +150,34 @@ IN_PROC_BROWSER_TEST_F(ActorSitePolicyBrowserTest,
   const GURL lookalike_url = embedded_https_test_server().GetURL(
       kLookalikeHostWarning, "/title1.html");
   CheckUrl(lookalike_url, false);
+}
+
+// This intentionaly does not load a blocklist.
+class ActorSitePolicyMissingBlocklistBrowserTest : public InProcessBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_https_test_server().Start());
+
+    // Register the optimization type for the blocklist, but we do not actually
+    // load a blocklist.
+    InitActionBlocklist(browser()->profile());
+  }
+};
+
+// If the blocklist doesn't exist, we allow the URL.
+IN_PROC_BROWSER_TEST_F(ActorSitePolicyMissingBlocklistBrowserTest, FailOpen) {
+  const GURL url =
+      embedded_https_test_server().GetURL("bar.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  base::test::TestFuture<MayActOnUrlBlockReason> allowed;
+  auto* actor_service = ActorKeyedService::Get(browser()->profile());
+  MayActOnTab(*browser()->tab_strip_model()->GetActiveTab(),
+              actor_service->GetJournal(), TaskId(),
+              absl::flat_hash_set<url::Origin>(), allowed.GetCallback());
+  EXPECT_TRUE(allowed.Get() == MayActOnUrlBlockReason::kAllowed);
 }
 
 class ActorSitePolicySafeBrowsingBrowserTest

@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">ቡርቱካኖች</translation>
 <translation id="1275718070701477396">የተመረጡ</translation>
 <translation id="1290331692326790741">ደካማ ሲግናል</translation>
+<translation id="1292474106138697109">የክፍል መሣሪያዎች ማሳያ</translation>
 <translation id="1300115153046603471">ኤፒኤን ነባሪ ዓይነት እና <ph name="ATTACH" />ነው።</translation>
 <translation id="1301069673413256657">ጂኤስኤም</translation>
 <translation id="1301340234286078471">ቀይር</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ምስሎች</translation>
 <translation id="4300272766492248925">መተግበሪያ ክፈት</translation>
 <translation id="430786093962686457">ሽፎን</translation>
+<translation id="4309762678330556039">በራስ-ሰር የጽሑፍ ግልባጮችን ይፍጠሩ እና ኦዲዮ ይፈልጉ። ከበይነመረብ ጋር ባልተገናኙበት ጊዜ እንኳን ቅጂዎችን መፍጠር ይችላሉ።</translation>
 <translation id="4310735698903592804">በGoogle ሰው ሠራሽ አስተውሎት የተጎላበቱ የቅርብ ጊዜ ልጣፎች</translation>
 <translation id="4320904097188876154">ኒዮን ሮዝ</translation>
 <translation id="432961742358282111">ፍቺዎችን፣ ትርጉሞችን ወይም አሃድ ውይይቶችን ለማግኘት የቀኝ ጠቅታ ወይም ተጭነው ይያዙ። ይህን ባህሪ ለማስተዳደር የግራ ወይም የቀኝ ቀስት ቁልፎችን ይጠቀሙ።</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">ተጨማሪ አማራጮች</translation>
 <translation id="5600027863942488546">የ<ph name="KEY_NAME" /> ቁልፍ ተሞክሯል</translation>
 <translation id="5606865426897221650">ትር</translation>
+<translation id="5612205513582918357">የክፍል መሣሪያዎች ማያ ገጽዎን ለ<ph name="RECEIVER_NAME" /> እያጋራ ነው</translation>
 <translation id="5613201299517339763">ዘግተው እንዲወጡ ተደርገዋል</translation>
 <translation id="5620281292257375798">ውስጣዊ ብቻ</translation>
 <translation id="5628106863521633649">የሚገኙ ቋንቋዎች</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">የደመና ፍሰት</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">ምንም ቃኚዎች የሉም</translation>
-<translation id="6231648282154119906">እንደ እርስዎ የመረጡት የላቀ ጥበቃ አካል አጠራጣሪ ፋይሎች በGoogle ጥንቃቄ አሰሳ በራስ-ሰር ይቃኛሉ</translation>
 <translation id="6232017090690406397">ባትሪ</translation>
 <translation id="6234024205316847054">አጠቃላይ መግለጫዎችን አሳይ</translation>
 <translation id="6243280677745499710">በአሁኑ ጊዜ የተቀናበረ</translation>
@@ -1248,7 +1250,7 @@
 <translation id="650266656685499220">አልበሞችን ለመፍጠር ወደ Google ፎቶዎች ይሂዱ</translation>
 <translation id="6505750420152840539">ከንጋት ወደ ጨለማ</translation>
 <translation id="6515056490985026110">ርዕሶችን መፍጠር አልተቻለም። ረዘም ያለ ጽሑፍ ግልባጭ ይፍጠሩ።</translation>
-<translation id="6516990319416533844">የባትሪ ኃይል መሙያ መጠንን ለመሞከር ባትሪዎ ለአጭር ጊዜ እንዲያልቅ ያድርጉ</translation>
+<translation id="6516990319416533844">የባትሪ ኃይል መሙያ መጠንን ለመሞከር ባትሪዎ ለአጭር ጊዜ እንዲጨርስ ያድርጉ</translation>
 <translation id="6517239166834772319">ያስሱ</translation>
 <translation id="6526200165918397681">ልጣፍን አዛምድ</translation>
 <translation id="6527081081771465939">ያልታወቀ የWiFi ደህንነት ፕሮቶኮል</translation>

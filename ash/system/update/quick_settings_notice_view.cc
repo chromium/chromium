@@ -11,6 +11,7 @@
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "base/functional/bind.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -61,7 +62,7 @@ QuickSettingsNoticeView::QuickSettingsNoticeView(
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 
-  views::InkDrop::Get(this)->SetBaseColorId(kColorAshInkDropOpaqueColor);
+  views::InkDrop::Get(this)->SetBaseColor(kColorAshInkDropOpaqueColor);
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(
                     icon, cros_tokens::kCrosSysOnSurfaceVariant, kIconSize));
@@ -88,10 +89,10 @@ void QuickSettingsNoticeView::PaintButtonContents(gfx::Canvas* canvas) {
   bounds.Inset(kButtonStrokeWidth / 2.0f);
 
   flags.setAntiAlias(true);
-  canvas->DrawPath(
-      SkPath().addRoundRect(gfx::RectFToSkRect(bounds), kRoundedCornerRadius,
-                            kRoundedCornerRadius),
-      flags);
+  canvas->DrawPath(SkPath::RRect(SkRRect::MakeRectXY(gfx::RectFToSkRect(bounds),
+                                                     kRoundedCornerRadius,
+                                                     kRoundedCornerRadius)),
+                   flags);
 }
 
 void QuickSettingsNoticeView::SetNarrowLayout(bool narrow) {

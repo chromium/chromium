@@ -65,7 +65,7 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   }
   void SetThumbThicknessScaleFactor(float thumb_thickness_scale_factor);
 
-  virtual int ThumbThickness() const = 0;
+  virtual int32_t ThumbThickness() const = 0;
 
   void SetOverlayScrollbarLayerOpacityAnimated(float opacity,
                                                bool fade_out_animation);
@@ -73,7 +73,8 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   virtual LayerTreeSettings::ScrollbarAnimator GetScrollbarAnimator() const;
 
   virtual float TrackLength() const = 0;
-  virtual int ThumbLength() const = 0;
+  int32_t ThumbLength() const;
+  virtual int32_t MinimumThumbLength() const = 0;
   virtual gfx::Rect BackButtonRect() const;
   virtual gfx::Rect ForwardButtonRect() const;
   virtual gfx::Rect BackTrackRect() const;
@@ -108,7 +109,7 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
                          bool is_overlay);
   ~ScrollbarLayerImplBase() override;
 
-  virtual int TrackStart() const = 0;
+  virtual int32_t TrackStart() const = 0;
   // Indicates whether the thumb length can be changed without going back to the
   // main thread.
   virtual bool IsThumbResizable() const = 0;

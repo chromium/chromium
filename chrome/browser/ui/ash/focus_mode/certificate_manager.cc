@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
@@ -300,7 +301,7 @@ CertificateManager::Key::Key(const std::string& label, base::Time expiration)
 
 CertificateManager::Key::Key(const Key& key) = default;
 
-bool CertificateManager::Key::operator==(const Key& other) {
+bool CertificateManager::Key::operator==(const Key& other) const {
   return label == other.label && expiration == other.expiration;
 }
 

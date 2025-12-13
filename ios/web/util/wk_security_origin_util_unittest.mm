@@ -46,7 +46,7 @@ TEST_F(WKSecurityOriginUtilTest, GURLOriginWithValidWKSecurityOrigin) {
   GURL url(
       GURLOriginWithWKSecurityOrigin(static_cast<WKSecurityOrigin*>(origin)));
   EXPECT_EQ("http://chromium.org/", url.spec());
-  EXPECT_TRUE(url.port().empty());
+  EXPECT_TRUE(url.GetPort().empty());
 }
 
 // Tests calling GURLOriginWithWKSecurityOrigin with default port.
@@ -59,7 +59,7 @@ TEST_F(WKSecurityOriginUtilTest, GURLOriginWithDefaultPort) {
   GURL url(
       GURLOriginWithWKSecurityOrigin(static_cast<WKSecurityOrigin*>(origin)));
   EXPECT_EQ("http://chromium.org/", url.spec());
-  EXPECT_TRUE(url.port().empty());
+  EXPECT_TRUE(url.GetPort().empty());
 }
 
 // Tests calling GURLOriginWithWKSecurityOrigin with valid origin.
@@ -72,7 +72,7 @@ TEST_F(WKSecurityOriginUtilTest, GURLOriginWithNonDefaultPort) {
   GURL url(
       GURLOriginWithWKSecurityOrigin(static_cast<WKSecurityOrigin*>(origin)));
   EXPECT_EQ("http://chromium.org:123/", url.spec());
-  EXPECT_EQ("123", url.port());
+  EXPECT_EQ("123", url.GetPort());
 }
 
 // Tests calling GURLOriginWithWKSecurityOrigin with valid origin.
@@ -85,7 +85,7 @@ TEST_F(WKSecurityOriginUtilTest, GURLOriginWithChromeProtocol) {
   GURL url(
       GURLOriginWithWKSecurityOrigin(static_cast<WKSecurityOrigin*>(origin)));
   EXPECT_EQ("testwebui://version/", url.spec());
-  EXPECT_TRUE(url.port().empty());
+  EXPECT_TRUE(url.GetPort().empty());
 }
 
 // Tests calling OriginWithWKSecurityOrigin with nil.

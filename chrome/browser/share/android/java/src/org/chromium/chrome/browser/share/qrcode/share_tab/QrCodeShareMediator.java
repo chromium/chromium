@@ -19,6 +19,8 @@ import android.text.TextUtils.TruncateAt;
 import android.view.View;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.FileAccessPermissionHelper;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -30,6 +32,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /**
  * QrCodeShareMediator is in charge of calculating and setting values for QrCodeShareViewProperties.
  */
+@NullMarked
 class QrCodeShareMediator {
     // QR code version 40 with M-level error correction can encode binary inputs of up to 2331
     // bytes, and digit-only inputs of up to 5596 bytes.  See
@@ -41,7 +44,7 @@ class QrCodeShareMediator {
 
     private final Context mContext;
     private final PropertyModel mPropertyModel;
-    private WindowAndroid mWindowAndroid;
+    private @Nullable WindowAndroid mWindowAndroid;
 
     // The number of times the user has attempted to download the QR code in this dialog.
     private int mNumDownloads;
@@ -63,7 +66,7 @@ class QrCodeShareMediator {
             PropertyModel propertyModel,
             Runnable closeDialog,
             String url,
-            WindowAndroid windowAndroid) {
+            @Nullable WindowAndroid windowAndroid) {
         mContext = context;
         mPropertyModel = propertyModel;
         mCloseDialog = closeDialog;
@@ -76,9 +79,10 @@ class QrCodeShareMediator {
 
     /**
      * Refreshes the QR Code bitmap for given data.
+     *
      * @param data The data to encode.
      */
-    protected void refreshQrCode(String data) {
+    protected void refreshQrCode(@Nullable String data) {
         if (TextUtils.isEmpty(data)) {
             mPropertyModel.set(
                     QrCodeShareViewProperties.ERROR_STRING,

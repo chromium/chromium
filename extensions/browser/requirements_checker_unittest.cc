@@ -16,11 +16,14 @@
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/preload_check.h"
 #include "extensions/browser/preload_check_test_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -47,7 +50,7 @@ class RequirementsCheckerTest : public ExtensionsTest {
     manifest_dict_.Set("version", "1");
     manifest_dict_.Set("manifest_version", 2);
 
-    std::string error;
+    std::u16string error;
     extension_ =
         Extension::Create(base::FilePath(), mojom::ManifestLocation::kUnpacked,
                           manifest_dict_, Extension::NO_FLAGS, &error);

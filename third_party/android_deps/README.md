@@ -1,34 +1,78 @@
-Android Deps Repository Generator
----------------------------------
+# Android Deps
 
-Tool to generate a gradle-specified repository for Android and Java
-dependencies.
+[TOC]
 
-### Usage
+Chromium's way to pull prebuilt .jar / .aar files from Maven.
 
-    fetch_all.py [--help]
+There are 3 roots for libraries:
 
-This script creates a temporary build directory, where it will, for each of the
-dependencies specified in `build.gradle`, take care of the following:
+1. `//third_party/androidx`
+   * Contains all androidx libraries listed in `//third_party/androidx/build.gradle.template`
+   * Pulls from daily snapshots hosted on https://androidx.dev
+   * Libraries are combined into a single CIPD instance by [android-androidx-packager]
+   * Auto-rolled by [androidx-chromium]
 
-  - Download the library
-  - Generate a README.chromium file
-  - Download the LICENSE
-  - Generate a GN target in BUILD.gn
-  - Generate .info files for AAR libraries
-  - Generate 3pp subdirectories describing the CIPD packages
-  - Generate a `deps` entry in DEPS.
+2. `//third_party/android_deps/autorolled`
+   * Contains deps reachable from `//third_party/android_deps/autorolled/build.gradle.template`
+   * All libraries are combined into a single CIPD instance by [android-androidx-packager] (out of convenience).
+   * Auto-rolled by [android-deps-chromium]
 
-It will then compare the build directory with your current workspace, and print
-the differences (i.e. new/updated/deleted packages names).
+3. `//third_party/android_deps`
+   * This was the original root, and thus contains scripts used by the other two
+   * Contains deps reachable from `//third_party/android_deps/build.gradle`
+   * Each library is packaged into its own CIPD package
+   * Not auto-rolled
 
-### Adding a new library or updating existing libraries.
-Full steps to add a new third party library or update existing libraries:
+This system supports deps between roots, but since they roll separately,
+such deps can require manually rolling multiple roots atomically, and sometimes
+explicitly adding dependent libraries to `build.gradle{.template}` files.
+
+[androidx-chromium]: https://autoroll.skia.org/r/androidx-chromium
+[android-deps-chromium]: https://autoroll.skia.org/r/android-deps-chromium
+[android-androidx-packager]: https://ci.chromium.org/ui/p/chromium/builders/ci/android-androidx-packager
+
+## Adding a new Library
+
+See first: [`//docs/adding_to_third_party.md`].
+
+For AndroidX libries, see [`//third_party/androidx/README.md`]
+
+[`//docs/adding_to_third_party.md`]: /docs/adding_to_third_party.md
+[`//third_party/androidx/README.md`]: /third_party/androidx/README.md
+
+### Adding an Autorolled Library (Preferred)
+
+1. Add the gradle entry for the desired target to `//third_party/android_deps/autorolled/build.gradle.template`
+2. Do a trial run (downloads files locally):
+   ```
+   third_party/android_deps/autorolled/fetch_all_autorolled.py --local
+   ```
+3. Assuming it works fine, upload & submit your change to `build.gradle.template`
+4. Wait for the [android-androidx-packager] and [android-deps-chromium] to run (or [trigger the packager manually] to expedite)
+
+[trigger the packager manually]: https://luci-scheduler.appspot.com/jobs/chromium/android-androidx-packager
+
+### Adding a Non-Autorolled Library
+
+1) Add the gradle entry for the desired target to `//third_party/android_deps/build.gradle`
+2) Do a trial run (downloads files locally):
+   ```
+   third_party/android_deps/fetch_all.py --local
+   ```
+3) Assuming it works fine, upload & submit you changes to `build.gradle` and everything in `libs/`.
+   * Revert your local changes to `DEPS` and `BUILD.gn`
+4) Wait for the [3pp-linux-amd64-packager] to run (or [trigger it manually] to expedite)
+5) Run `fetch_all.py --local` again, and this time commit all the changes.
+
+[3pp-linux-amd64-packager]: https://ci.chromium.org/ui/p/chromium/builders/ci/3pp-linux-amd64-packager
+[trigger it manually]: https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
+
+### Adding or Updating a Non-Autorolled Library
 
 1. Update `build.gradle` with the new dependency or the new versions.
 
 2. Run `fetch_all.py --local` to update your current workspace with the changes.
-   This will update, among other things, your top-level DEPS file. If this is a
+   This will update, among other things, your top-level `DEPS` file. If this is a
    new library, you can skip directly to step 5 since the next step is not going
    to work for you.
 
@@ -39,7 +83,7 @@ Full steps to add a new third party library or update existing libraries:
    with the steps.
 
 5. Add a `overrideLatest` property override to your package in
-   `ChromiumDepGraph.groovy` in the `PROPERTY_OVERRIDES` map, set it to `true`.
+   `ChromiumDepGraph.groovy` in the [`PROPERTY_OVERRIDES`] map, set it to `true`.
 
 6. Run `fetch_all.py --local` again.
 
@@ -71,23 +115,27 @@ Full steps to add a new third party library or update existing libraries:
 
 11. Run `fetch_all.py --local` again. Create a CL with the changes and land it.
 
-If the CL is doing more than upgrading existing packages or adding packages
-from the same source and license (e.g. gms) follow
-[`//docs/adding_to_third_party.md`][docs_link] for the review.
-
-If you are updating any of the gms dependencies, please ensure that the license
-file that they use, explained in the [README.chromium][readme_chromium_link] is
-up-to-date with the one on android's [website][android_sdk_link], last updated
-date is at the bottom.
-
 [3pp_bot]: https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
 [cipd_and_3pp_doc]: ../../docs/cipd_and_3pp.md
-[owners_link]: http://go/android-deps-owners
-[docs_link]: ../../docs/adding_to_third_party.md
-[android_sdk_link]: https://developer.android.com/studio/terms
-[readme_chromium_link]: ./README.chromium
+[`PROPERTY_OVERRIDES`]: /third_party/android_deps/buildSrc/src/main/groovy/ChromiumDepGraph.groovy
 
-### Implementation notes:
+## Common Issues
+
+### Missing Metadata
+
+E.g. missing license, HTML in license, missing URL or description:
+
+* Add an entry to [`PROPERTY_OVERRIDES`]
+
+### BUILD.gn Needs Customization
+
+* For AndroidX, add an entry to `//third_party/androidx/customizations.gni`
+* For others, add an entry to [`addSpecialTreatment()`]
+
+[`addSpecialTreatment()`]: /third_party/android_deps/buildSrc/src/main/groovy/BuildConfigGenerator.groovy
+
+## Implementation Notes
+
 The script invokes a Gradle plugin to leverage its dependency resolution
 features. An alternative way to implement it is to mix gradle to purely fetch
 dependencies and their pom.xml files, and use Python to process and generate the
@@ -97,7 +145,8 @@ resulted in expecting dependencies that gradle considered unnecessary. This is
 especially true nowadays that pom.xml files for many dependencies are no longer
 maintained by the package authors.
 
-#### Groovy Style Guide
+### Groovy Style Guide
+
 The groovy code in `//third_party/android_deps/buildSrc/src/main/groovy` is best
 edited using Android Studio (ASwB works too). This code can be auto-formatted by
 using Android Studio's code formatting actions.

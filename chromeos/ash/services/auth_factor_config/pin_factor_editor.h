@@ -38,6 +38,10 @@ class PinFactorEditor : public mojom::PinFactorEditor {
       const std::string& auth_token,
       base::OnceCallback<void(std::optional<mojom::AuthFactor>)> callback)
       override;
+  void CheckPinComplexity(
+      const std::string& auth_token,
+      const std::string& pin,
+      base::OnceCallback<void(mojom::PinComplexity)> callback) override;
 
   void BindReceiver(mojo::PendingReceiver<mojom::PinFactorEditor> receiver);
 
@@ -106,6 +110,12 @@ class PinFactorEditor : public mojom::PinFactorEditor {
   void GetConfiguredPinFactorResponse(
       base::OnceCallback<void(std::optional<mojom::AuthFactor>)> callback,
       AuthFactorSet factors);
+
+  void CheckPinComplexityWithContext(
+      const std::string& auth_token,
+      const std::string& pin,
+      base::OnceCallback<void(mojom::PinComplexity)> callback,
+      std::unique_ptr<UserContext> context);
 
   raw_ptr<AuthFactorConfig> auth_factor_config_;
   raw_ptr<PinBackendDelegate> pin_backend_;

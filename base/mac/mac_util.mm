@@ -353,6 +353,13 @@ int MacOSVersion() {
   return macos_version;
 }
 
+bool IsVirtualMachine() {
+  int ret;
+  size_t size = sizeof(ret);
+  PCHECK(sysctlbyname("kern.hv_vmm_present", &ret, &size, nullptr, 0) != -1);
+  return ret;
+}
+
 namespace {
 
 #if defined(ARCH_CPU_X86_64)

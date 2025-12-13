@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/proto_fetcher_status.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

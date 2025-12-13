@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="PaymentRequest.AddressEditorTrigerred"
-    enum="PaymentRequestAddressEditorMode" expires_after="2025-11-16">
+    enum="PaymentRequestAddressEditorMode" expires_after="2026-06-07">
   <owner>vykochko@chromium.org</owner>
   <owner>smcgruer@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -35,9 +35,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.CanMakePayment.CallAllowedByPref"
-    enum="Boolean" expires_after="2025-12-14">
+    enum="Boolean" expires_after="2026-02-22">
   <owner>smcgruer@chromium.org</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Whether or not a call to the PaymentRequest.canMakePayment() API was allowed
     by the kCanMakePaymentEnabled user preference. This histogram does not
@@ -48,9 +48,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.CheckoutFunnel"
-    enum="PaymentRequestCheckoutFunnelSteps" expires_after="2025-11-16">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
+    enum="PaymentRequestCheckoutFunnelSteps" expires_after="2026-05-24">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Counts the number of Payment Requests (PR) that go through each checkout
     step. A single PR may be counted in multiple buckets depending on its final
@@ -61,9 +61,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.Events2" units="bitfield value"
-    expires_after="2025-11-30">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
+    expires_after="2026-06-07">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     The 2.0 version of Events. A bitfield representing the different events that
     happened during the Payment Request.
@@ -71,9 +71,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.HasEnrolledInstrument.CallAllowedByPref"
-    enum="Boolean" expires_after="2025-12-28">
+    enum="Boolean" expires_after="2026-03-01">
   <owner>smcgruer@chromium.org</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Whether or not a call to the PaymentRequest.hasEnrolledInstrument() API was
     allowed by the kCanMakePaymentEnabled user preference. This histogram does
@@ -85,9 +85,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.IsCanMakePaymentAllowedByPref.PaymentRequestConstruction.Once"
-    enum="Boolean" expires_after="2025-10-06">
+    enum="Boolean" expires_after="2026-04-06">
   <owner>smcgruer@chromium.org</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Whether or not the 'payments.can_make_payment_enabled' pref is enabled when
     a PaymentRequest object is constructed. Recorded only when a PaymentRequest
@@ -104,9 +104,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.IsCanMakePaymentAllowedByPref.PaymentRequestConstruction.Once.DisabledReason"
-    enum="CanMakePaymentPreferenceSetter" expires_after="2025-12-21">
+    enum="CanMakePaymentPreferenceSetter" expires_after="2026-02-22">
   <owner>smcgruer@chromium.org</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     When the 'payments.can_make_payment_enabled' pref is disabled, this records
     the reason why (e.g., by the user, an extension, etc). Recorded only when a
@@ -122,9 +122,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.IsCanMakePaymentAllowedByPref.Startup"
-    enum="Boolean" expires_after="2025-12-21">
+    enum="Boolean" expires_after="2026-02-22">
   <owner>smcgruer@chromium.org</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Whether or not the 'payments.can_make_payment_enabled' pref is enabled.
     Recorded once per profile load/creation (approximately once per start-up for
@@ -134,9 +134,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.IsCanMakePaymentAllowedByPref.Startup.DisabledReason"
-    enum="CanMakePaymentPreferenceSetter" expires_after="2025-12-21">
+    enum="CanMakePaymentPreferenceSetter" expires_after="2026-02-22">
   <owner>smcgruer@chromium.org</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     When the 'payments.can_make_payment_enabled' pref is disabled, this records
     the reason why (e.g., by the user, an extension, etc). Recorded once per
@@ -147,44 +147,17 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PaymentRequest.NumberOfSuggestionsShown" units="units"
     expires_after="2022-11-22">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     The number of suggestions shown to the user during a payment request.
   </summary>
 </histogram>
 
-<histogram name="PaymentRequest.NumberOfSupportedMethods.AndroidApp"
-    units="methods" expires_after="2023-07-14">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    The number of payment methods that an installed Android payment app declares
-    to support. Recorded when a website creates a new PaymentRequest JS object.
-  </summary>
-</histogram>
-
-<histogram name="PaymentRequest.PaymentDetailsUpdateService.Bind"
-    enum="Boolean" expires_after="2025-09-03">
-  <owner>rouslan@chromium.org</owner>
-  <owner>chrome-payments-eng@google.com</owner>
-  <summary>
-    Recorded when an Android app binds to Chrome's service for updating payment
-    details, e.g., when an Android payment app supports the feature of dynamic
-    price updates based different shipping addresses.
-
-    All service connections are recorded, even if there are no ongoing payment
-    flows.
-
-    Warning: this histogram was expired from 2025-03-03 to ~2025-04-11; data may
-    be missing.
-  </summary>
-</histogram>
-
 <histogram
     name="PaymentRequest.PaymentDetailsUpdateService.ChangePaymentMethod"
-    enum="Boolean" expires_after="2025-11-23">
-  <owner>rouslan@chromium.org</owner>
+    enum="Boolean" expires_after="2026-03-22">
+  <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Recorded when an invoked Android payment app sends updated payment method
@@ -204,8 +177,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.PaymentDetailsUpdateService.ChangeShippingAddress"
-    enum="Boolean" expires_after="2025-11-23">
-  <owner>rouslan@chromium.org</owner>
+    enum="Boolean" expires_after="2026-03-22">
+  <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Recorded when an Android payment app sends updated shipping address to the
@@ -224,8 +197,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.PaymentDetailsUpdateService.ChangeShippingOption"
-    enum="Boolean" expires_after="2025-11-23">
-  <owner>rouslan@chromium.org</owner>
+    enum="Boolean" expires_after="2026-03-22">
+  <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Recorded when an Android payment app sends updated shipping option (e.g.,
@@ -244,9 +217,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.PaymentHandlerInstallSuccess"
-    enum="BooleanSuccess" expires_after="2026-01-04">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
+    enum="BooleanSuccess" expires_after="2026-03-08">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Whether an attempted just-in-time payment handler installation was
     successful. Recorded when the attempted installation is finished.
@@ -254,10 +227,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKey.SignLatency"
+    units="ms" expires_after="2026-11-01">
+  <owner>darwinyang@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records the latency of signing data with the browser bound key. This latency
+    is measured from the moment a key is about to sign data to when the key is
+    done signing.
+  </summary>
+</histogram>
+
+<histogram
     name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyInclusion"
     enum="SecurePaymentConfirmationBrowserBoundKeyInclusionResult"
-    expires_after="2025-12-04">
+    expires_after="2026-11-01">
   <owner>slobodan@chromium.org</owner>
+  <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Whether and how browser bound key will be included in a secure payment
@@ -269,10 +255,52 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyMetadataUpdate"
+    enum="Boolean" expires_after="2026-11-01">
+  <owner>darwinyang@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Whether updating the browser bound key metadata was successful or not.
+    Recorded after a browser bound key metadata update is attempted.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore.CreateKeyLatency"
+    units="ms" expires_after="2026-11-01">
+  <owner>darwinyang@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records the latency of creating the browser bound key. This latency is
+    measured from the moment a key is about to be created to when the key is
+    returned.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore.GetKeyLatency.{GetKeyLatencyResult}"
+    units="ms" expires_after="2026-11-01">
+  <owner>darwinyang@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records the latency of getting the browser bound key. This latency is
+    measured from the moment a key is about to be retrieved to when the key is
+    returned.
+  </summary>
+  <token key="GetKeyLatencyResult">
+    <variant name="KeyFound"
+        summary="Labeled get key latency when a key is returned"/>
+    <variant name="KeyNotFound"
+        summary="Labeled get key latency when a key is not returned"/>
+  </token>
+</histogram>
+
+<histogram
     name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStoreCreate"
     enum="SecurePaymentConfirmationBrowserBoundKeyDeviceResult"
-    expires_after="2025-12-04">
+    expires_after="2026-11-01">
   <owner>slobodan@chromium.org</owner>
+  <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Whether the creation of a browser bound key succeeded or failed and whether
@@ -284,8 +312,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStoreRetrieve"
     enum="SecurePaymentConfirmationBrowserBoundKeyDeviceResult"
-    expires_after="2025-12-04">
+    expires_after="2026-11-01">
   <owner>slobodan@chromium.org</owner>
+  <owner>darwinyang@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Whether the retrieval of a browser bound key succeeded or failed and whether
@@ -295,9 +324,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.Show.TryShowOutcome"
-    enum="PaymentRequestTryShowOutcome" expires_after="2025-11-30">
+    enum="PaymentRequestTryShowOutcome" expires_after="2026-04-05">
   <owner>smcgruer@chromium.org</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     The outcome of trying to show the PaymentRequest UI in response to
     PaymentRequest.show(), with regards only to whether the call is blocked due
@@ -318,7 +347,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SecurePaymentRequest.Fallback.Outcome"
-    enum="SecurePaymentRequestOutcome" expires_after="2025-12-31">
+    enum="SecurePaymentRequestOutcome" expires_after="2026-11-01">
   <owner>darwinyang@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -334,7 +363,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SecurePaymentRequest.Transaction.Outcome"
-    enum="SecurePaymentRequestOutcome" expires_after="2025-12-31">
+    enum="SecurePaymentRequestOutcome" expires_after="2026-11-01">
   <owner>darwinyang@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>

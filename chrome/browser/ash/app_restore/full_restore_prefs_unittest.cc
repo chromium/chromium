@@ -49,7 +49,7 @@ class FullRestorePrefsTest : public testing::Test {
 // For a brand new user, set 'ask every time' as the default value.
 TEST_F(FullRestorePrefsTest, NewUser) {
   GetFakeUserManager()->SetIsCurrentUserNew(true);
-  RegisterProfilePrefs(registry());
+  RegisterProfilePrefsFullRestore(registry());
 
   SetDefaultRestorePrefIfNecessary(pref_service_.get());
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
@@ -64,7 +64,7 @@ TEST_F(FullRestorePrefsTest, UpgradingFromRestore) {
       ::prefs::kRestoreOnStartup,
       static_cast<int>(SessionStartupPref::kPrefValueLast));
 
-  RegisterProfilePrefs(registry());
+  RegisterProfilePrefsFullRestore(registry());
   SetDefaultRestorePrefIfNecessary(pref_service_.get());
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
   EXPECT_TRUE(CanPerformRestore(pref_service_.get()));
@@ -78,7 +78,7 @@ TEST_F(FullRestorePrefsTest, UpgradingFromNotRestore) {
       ::prefs::kRestoreOnStartup,
       static_cast<int>(SessionStartupPref::kPrefValueNewTab));
 
-  RegisterProfilePrefs(registry());
+  RegisterProfilePrefsFullRestore(registry());
   SetDefaultRestorePrefIfNecessary(pref_service_.get());
   EXPECT_EQ(RestoreOption::kDoNotRestore, GetRestoreOption());
   EXPECT_FALSE(CanPerformRestore(pref_service_.get()));
@@ -89,7 +89,7 @@ TEST_F(FullRestorePrefsTest, UpgradingFromNotRestore) {
 TEST_F(FullRestorePrefsTest, NewChromeOSUserFromRestore) {
   GetFakeUserManager()->SetIsCurrentUserNew(true);
 
-  RegisterProfilePrefs(registry());
+  RegisterProfilePrefsFullRestore(registry());
   SetDefaultRestorePrefIfNecessary(pref_service_.get());
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
   EXPECT_TRUE(CanPerformRestore(pref_service_.get()));
@@ -109,7 +109,7 @@ TEST_F(FullRestorePrefsTest, NewChromeOSUserFromRestore) {
 TEST_F(FullRestorePrefsTest, NewChromeOSUserFromNotRestore) {
   GetFakeUserManager()->SetIsCurrentUserNew(true);
 
-  RegisterProfilePrefs(registry());
+  RegisterProfilePrefsFullRestore(registry());
   SetDefaultRestorePrefIfNecessary(pref_service_.get());
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
   EXPECT_TRUE(CanPerformRestore(pref_service_.get()));

@@ -1,6 +1,3 @@
-# Pacific Time
-crmullins@chromium.org
-chiav@chromium.org
 
 # Eastern Time
 nicolaso@chromium.org
@@ -9,7 +6,7 @@ nicolaso@chromium.org
 # Please pick a random reviewer:
 #
 # cat tools/traffic_annotation/summary/TRAFFIC_ANNOTATION_OWNERS \
-#   | tail -n+7 | shuf | head -n 1
+#   | tail -n+6 | shuf | head -n 1
 #
 dullweber@chromium.org
 harrisonsean@chromium.org

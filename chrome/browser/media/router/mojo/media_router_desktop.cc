@@ -87,6 +87,8 @@ DesktopMediaPickerController::Params MakeDesktopPickerParams(
   params.select_only_screen = true;
   params.request_audio = true;
   params.force_audio_checkboxes_to_default_checked = true;
+  params.includable_web_contents_filter =
+      base::BindRepeating([](content::WebContents* wc) { return true; });
 
   return params;
 }
@@ -203,7 +205,6 @@ void MediaRouterDesktop::CreateRoute(const MediaSource::Id& source_id,
     desktop_picker_->Show(
         MakeDesktopPickerParams(web_contents),
         {DesktopMediaList::Type::kScreen},
-        base::BindRepeating([](content::WebContents* wc) { return true; }),
         base::BindOnce(&MediaRouterDesktop::CreateRouteWithSelectedDesktop,
                        weak_factory_.GetWeakPtr(), provider_id, sink_id,
                        presentation_id, origin, web_contents, timeout,
@@ -426,8 +427,6 @@ bool MediaRouterDesktop::RegisterMediaSinksObserver(
   // If the query isn't new, then there is no need to call MRPs.
   if (is_new_query) {
     for (const auto& provider : media_route_providers_) {
-      // TODO(crbug.com/40133937): Don't allow MediaSource::ForAnyTab().id() to
-      // be passed here.
       provider.second->StartObservingMediaSinks(source.id());
     }
   }
@@ -453,8 +452,6 @@ void MediaRouterDesktop::UnregisterMediaSinksObserver(
   // here.
   if (!it->second->HasObservers() && !source.IsTabMirroringSource()) {
     for (const auto& provider : media_route_providers_) {
-      // TODO(crbug.com/40133937): Don't allow MediaSource::ForAnyTab().id() to
-      // be passed here.
       provider.second->StopObservingMediaSinks(source.id());
     }
     sinks_queries_.erase(source.id());

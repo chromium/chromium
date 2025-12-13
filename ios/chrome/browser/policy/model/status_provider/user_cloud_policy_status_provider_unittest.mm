@@ -23,7 +23,6 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
-#import "components/signin/public/identity_manager/signin_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
@@ -34,8 +33,6 @@
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/time_format.h"
-
-using signin::constants::kNoHostedDomainFound;
 
 namespace {
 
@@ -67,8 +64,9 @@ class UserCloudPolicyStatusProviderTest
 
     user_store_ = std::make_unique<policy::MockUserCloudPolicyStore>();
     user_core_ = std::make_unique<policy::CloudPolicyCore>(
-        policy::dm_protocol::kChromeUserPolicyType, std::string(),
-        user_store_.get(), base::SingleThreadTaskRunner::GetCurrentDefault(),
+        policy::dm_protocol::GetChromeUserPolicyType(), std::string(),
+        user_store_.get(), /*extension_install_store=*/nullptr,
+        base::SingleThreadTaskRunner::GetCurrentDefault(),
         network::TestNetworkConnectionTracker::CreateGetter());
 
     user_client_ = ConnectNewMockClient(user_core_.get());
@@ -82,14 +80,16 @@ class UserCloudPolicyStatusProviderTest
 
   // UserCloudPolicyStatusProvider::Delegate implementation:
   MOCK_METHOD0(GetDeviceAffiliationIds, base::flat_set<std::string>());
+  MOCK_METHOD0(GetProfileId, std::optional<std::string>());
 
   void SetPrimaryAccountAsFlex() {
     AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
         kTestUsername, signin::ConsentLevel::kSignin);
 
     AccountCapabilitiesTestMutator mutator(&account.capabilities);
-    mutator.set_is_subject_to_enterprise_policies(true);
-    account.hosted_domain = kNoHostedDomainFound;
+    mutator.set_is_subject_to_enterprise_features(true);
+    account =
+        AccountInfo::Builder(account).SetHostedDomain(std::string()).Build();
     identity_test_env_.UpdateAccountInfoForAccount(account);
   }
 
@@ -125,7 +125,7 @@ class UserCloudPolicyStatusProviderTest
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<policy::MockUserCloudPolicyStore> user_store_;
   std::unique_ptr<policy::CloudPolicyCore> user_core_;
-  raw_ptr<policy::MockCloudPolicyClient> user_client_;
+  raw_ptr<policy::MockCloudPolicyClient, DanglingUntriaged> user_client_;
   std::unique_ptr<UserCloudPolicyStatusProvider> status_provider_;
 };
 
@@ -156,6 +156,11 @@ TEST_F(UserCloudPolicyStatusProviderTest, GetStatus_Full) {
         affiliation_ids.insert(kSharedAffiliationId);
         return affiliation_ids;
       });
+
+  constexpr char kProfileId[] = "test-profile-id";
+  ON_CALL(*this, GetProfileId).WillByDefault([kProfileId]() {
+    return kProfileId;
+  });
 
   // Set clients as managed.
   user_client()->SetStatus(policy::DM_STATUS_SUCCESS);
@@ -195,6 +200,7 @@ TEST_F(UserCloudPolicyStatusProviderTest, GetStatus_Full) {
                time_since_last_success_fetch_formatted)
           .Set(policy::kDomainKey, kTestDomain)
           .Set("isAffiliated", true)
+          .Set("profileId", kProfileId)
           .Set(policy::kFlexOrgWarningKey, false)
           .Set(policy::kPolicyDescriptionKey, "statusUser");
 

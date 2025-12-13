@@ -1,0 +1,26 @@
+{
+  "chromeos-x64-libfuzzer-asan-rel-tests": {
+    "gtest_tests": [
+      {
+        "args": [
+          "--asan-detect-odr-violation=0"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//testing/libfuzzer/tests:fuzzing_unittests",
+        "module_scheme": "gtest",
+        "name": "fuzzing_unittests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "fuzzing_unittests",
+        "test_id_prefix": "ninja://testing/libfuzzer/tests:fuzzing_unittests/"
+      }
+    ]
+  }
+}

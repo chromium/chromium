@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_dispatcher.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_port.h"
+#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -69,6 +70,7 @@ class MODULES_EXPORT MIDIAccessInitializer
   void DidSetOutputPortState(unsigned port_index,
                              midi::mojom::PortState) override;
   void DidStartSession(midi::mojom::Result) override;
+  void OnSessionStartFailed() override;
   void DidReceiveMIDIData(unsigned port_index,
                           base::span<const uint8_t> data,
                           base::TimeTicks time_stamp) override {}
@@ -76,11 +78,9 @@ class MODULES_EXPORT MIDIAccessInitializer
   void Trace(Visitor*) const override;
 
  private:
-
   void StartSession();
 
-  void OnPermissionsUpdated(mojom::blink::PermissionStatus);
-  void OnPermissionUpdated(mojom::blink::PermissionStatus);
+  void OnPermissionRequestResult(mojom::blink::PermissionStatus);
 
   Member<ScriptPromiseResolver<MIDIAccess>> resolver_;
   Member<MIDIDispatcher> dispatcher_;
@@ -88,6 +88,7 @@ class MODULES_EXPORT MIDIAccessInitializer
   Member<const MIDIOptions> options_;
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
+  SelfKeepAlive<MIDIAccessInitializer> self_keep_alive_;
 };
 
 }  // namespace blink

@@ -40,6 +40,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/containers/contains.h"
 #include "base/i18n/time_formatting.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"

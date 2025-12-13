@@ -11,7 +11,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
+#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -41,6 +43,8 @@ std::string ParamsToString(
   }
 }
 
+constexpr const char kCreateShortcutIconUrl[] = "https://www.example.com/icon";
+
 class CreateShortcutConfirmationViewBrowserTest
     : public DialogBrowserTest,
       public ::testing::WithParamInterface<CreateShortcutViewParams> {
@@ -56,6 +60,15 @@ class CreateShortcutConfirmationViewBrowserTest
     auto app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
         GURL("https://example.com"));
     app_info->title = u"Test app";
+
+    const web_app::GeneratedIconsInfo any_icon_info1(
+        web_app::IconPurpose::ANY, {web_app::icon_size::k32}, {SK_ColorBLACK});
+    const web_app::GeneratedIconsInfo any_icon_info2(
+        web_app::IconPurpose::MASKABLE, {web_app::icon_size::k32},
+        {SK_ColorBLUE});
+    web_app::AddIconsToWebAppInstallInfo(app_info.get(),
+                                         GURL(kCreateShortcutIconUrl),
+                                         {any_icon_info1, any_icon_info2});
 
     auto callback = [](bool result,
                        std::unique_ptr<web_app::WebAppInstallInfo>) {};
@@ -74,6 +87,7 @@ class CreateShortcutConfirmationViewBrowserTest
 
   void SetUp() override {
     base::flat_map<base::test::FeatureRef, bool> features;
+    features.insert({features::kWebAppUsePrimaryIcon, true});
     switch (GetParam()) {
       case CreateShortcutViewParams::kTabStripEnabled:
         features.insert({blink::features::kDesktopPWAsTabStrip, true});
@@ -242,7 +256,7 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
                         bool result,
                         std::unique_ptr<web_app::WebAppInstallInfo> info) {
       is_accepted = result;
-      title = info->title;
+      title = info->title.value();
     };
 
     content::WebContents* web_contents =

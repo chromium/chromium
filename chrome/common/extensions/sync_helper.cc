@@ -5,6 +5,7 @@
 #include "chrome/common/extensions/sync_helper.h"
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "components/app_constants/constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"

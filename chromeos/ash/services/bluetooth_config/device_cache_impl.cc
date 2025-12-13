@@ -167,8 +167,7 @@ void DeviceCacheImpl::OnDeviceNicknameChanged(
     if (device->GetIdentifier() != device_id)
       continue;
 
-    if (ash::features::IsFastPairSavedDevicesNicknamesEnabled() &&
-        fast_pair_delegate_ && nickname.has_value()) {
+    if (fast_pair_delegate_ && nickname.has_value()) {
       fast_pair_delegate_->UpdateDeviceNickname(device->GetAddress(),
                                                 nickname.value());
     }

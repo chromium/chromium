@@ -1,0 +1,21 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("actor") {
+  sources = [
+    "glic_actor_task_manager.cc",
+    "glic_actor_task_manager.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/actor",
+    "//chrome/browser/actor/ui",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic:mojo_bindings",
+    "//chrome/common:actor_webui_mojom",
+    "//components/tabs:public",
+    "//mojo/public/mojom/base:protobuf_support",
+  ]
+  public_deps = [ "//chrome/browser/profiles:profile" ]
+}

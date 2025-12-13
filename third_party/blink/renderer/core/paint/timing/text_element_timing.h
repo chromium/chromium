@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_TEXT_ELEMENT_TIMING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_TEXT_ELEMENT_TIMING_H_
 
-#include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"

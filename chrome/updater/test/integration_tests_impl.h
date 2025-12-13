@@ -14,11 +14,14 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/function_ref.h"
+#include "base/process/launch.h"
 #include "base/process/process_iterator.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/external_constants.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/test/server.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_version.h"
@@ -36,12 +39,10 @@ class GURL;
 namespace base {
 class CommandLine;
 class TimeDelta;
-class Value;
 }  // namespace base
 
 namespace updater {
 enum class UpdaterScope;
-struct RegistrationRequest;
 }  // namespace updater
 
 namespace wireless_android_enterprise_devicemanagement {
@@ -144,6 +145,11 @@ void PrintLog(UpdaterScope scope);
 // the test left the updater in an installed or partially installed state.
 void Clean(UpdaterScope scope);
 
+#if BUILDFLAG(IS_WIN)
+// Expects that the no temporary directories created by `update_client` remain.
+void ExpectCleanUpdateClientTempDirectories(UpdaterScope scope);
+#endif  // BUILDFLAG(IS_WIN)
+
 // Expects that the system is in a clean state, i.e. no updater is installed and
 // no traces of an updater exist. Should be run at the start and end of each
 // test.
@@ -234,6 +240,12 @@ void RunCrashMe(UpdaterScope scope);
 // `exit_code`.
 void RunServer(UpdaterScope scope, int exit_code, bool internal);
 
+// Runs the UpdateApps client and wait for it to exit. Assert that it exits with
+// `exit_code`. The server should exit a few seconds after.
+void RunUpdateApps(UpdaterScope scope,
+                   int exit_code,
+                   const base::Version& version);
+
 // Invokes the active instance's UpdateService::Update (via RPC) for an app.
 void Update(UpdaterScope scope,
             const std::string& app_id,
@@ -276,9 +288,19 @@ void DeleteUpdaterDirectory(UpdaterScope scope);
 void DeleteActiveUpdaterExecutable(UpdaterScope scope);
 
 // Runs the command and waits for it to exit or time out.
-void Run(UpdaterScope scope,
-         base::CommandLine command_line,
-         int* exit_code = nullptr);
+void Run(
+    UpdaterScope scope,
+    base::CommandLine command_line,
+    int* exit_code = nullptr,
+    base::FunctionRef<base::Process(const base::CommandLine&)> launch_process =
+        [](const base::CommandLine& command_line) {
+          return base::LaunchProcess(command_line, {});
+        });
+
+// Similar to `Run`, but runs the command de-elevated on Windows.
+void RunDeElevated(UpdaterScope scope,
+                   base::CommandLine command_line,
+                   int* exit_code);
 
 // Runs the command (via sudo if `elevate` is true) and waits for it to exit,
 // then asserts that it returned the expected exit code (if provided) and
@@ -367,6 +389,7 @@ void ExpectLegacyUpdate3WebSucceeds(
     int expected_error_code,
     bool cancel_when_downloading);
 void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope);
+void ExpectProcessLauncherLaunchCmdLineSucceeds(UpdaterScope scope);
 void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
                                        const std::string& app_id,
                                        const std::string& command_id,
@@ -392,6 +415,13 @@ void InvokeTestServiceFunction(const std::string& function_name,
 
 void RunUninstallCmdLine(UpdaterScope scope);
 void RunHandoff(UpdaterScope scope, const std::string& app_id);
+
+void InstallScheduledTask(const std::string& task_name,
+                          bool use_task_subfolders);
+void IsScheduledTaskRegistered(const std::string& task_name,
+                               bool use_task_subfolders);
+void DeleteScheduledTask(const std::string& task_name,
+                         bool use_task_subfolders);
 #endif  // BUILDFLAG(IS_WIN)
 
 // Returns the number of files in the directory, not including directories,
@@ -436,7 +466,8 @@ void ExpectUpdateSequence(
     bool do_fault_injection,
     bool skip_download,
     const base::Version& updater_version = base::Version(kUpdaterVersion),
-    const std::string& event_regex = ".*");
+    const std::string& event_regex = ".*",
+    bool use_xz = false);
 
 void ExpectUpdateSequenceBadHash(UpdaterScope scope,
                                  ScopedServer* test_server,

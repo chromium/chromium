@@ -24,13 +24,13 @@
 #include "content/public/android/content_jni_headers/DialogOverlayImpl_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace content {
 
 static jlong JNI_DialogOverlayImpl_Init(JNIEnv* env,
-                                        const JavaParamRef<jobject>& obj,
+                                        const JavaRef<jobject>& obj,
                                         jlong high,
                                         jlong low,
                                         jboolean power_efficient) {
@@ -83,7 +83,7 @@ static jlong JNI_DialogOverlayImpl_Init(JNIEnv* env,
       obj, rfhi, web_contents_impl, power_efficient, observe_container_view));
 }
 
-DialogOverlayImpl::DialogOverlayImpl(const JavaParamRef<jobject>& obj,
+DialogOverlayImpl::DialogOverlayImpl(const JavaRef<jobject>& obj,
                                      RenderFrameHostImpl* rfhi,
                                      WebContents* web_contents,
                                      bool power_efficient,
@@ -166,7 +166,7 @@ void DialogOverlayImpl::Destroy(JNIEnv* env) {
 
 void DialogOverlayImpl::GetCompositorOffset(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& rect) {
+    const base::android::JavaRef<jobject>& rect) {
   gfx::Point point =
       web_contents()->GetNativeView()->GetLocationOfContainerViewInWindow();
 
@@ -325,7 +325,7 @@ static void JNI_DialogOverlayImpl_NotifyDestroyedSynchronously(
 
 static jint JNI_DialogOverlayImpl_RegisterSurface(
     JNIEnv* env,
-    const JavaParamRef<jobject>& surface) {
+    const JavaRef<jobject>& surface) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return gpu::GpuSurfaceTracker::Get()->AddSurfaceForNativeWidget(
       gpu::SurfaceRecord(gl::ScopedJavaSurface(surface, /*auto_release=*/false),
@@ -355,3 +355,5 @@ JNI_DialogOverlayImpl_LookupSurfaceForTesting(
 }
 
 }  // namespace content
+
+DEFINE_JNI(DialogOverlayImpl)

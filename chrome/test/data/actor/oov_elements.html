@@ -1,0 +1,19 @@
+<html><head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+  <title>Out of Viewport Elements</title>
+</head>
+<body>
+  <input type="button" id="topButton" value="Top Button"/>
+  <div style="width: 100%; height: 4800px; display: block;">
+  </div>
+  <details style="display: block;">
+    <summary>Heading</summary>
+    <input type="button" id="detailButton" value="Detail Button"/>
+  </details>
+  <div hidden="until-found">
+    <input type="button" id="hiddenButton" value="Hidden Button"/>
+  </div>
+  <div style="content-visibility: auto;">
+    <input type="button" id="autoButton" value="Auto Button"/>
+  </div>
+</body></html>

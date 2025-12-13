@@ -39,30 +39,6 @@ namespace login_detection {
 // number of navigations in the popup window.
 class OAuthLoginDetector {
  public:
-  OAuthLoginDetector();
-  ~OAuthLoginDetector();
-
-  OAuthLoginDetector(const OAuthLoginDetector&) = delete;
-  OAuthLoginDetector& operator=(const OAuthLoginDetector&) = delete;
-
-  // Processes the navigation |redirect_chain| and returns the site that started
-  // the OAuth login flow and completed. std::nullopt is returned when there is
-  // no login flow detected or it has not yet completed. |prev_navigation_url|
-  // is the URL of the previous navigation on this detector, and can be invalid
-  // when no previous navigation happened.
-  std::optional<GURL> GetSuccessfulLoginFlowSite(
-      const GURL& prev_navigation_url,
-      const std::vector<GURL>& redirect_chain);
-
-  // Returns the OAuth requestor site when popup based login flow is detected,
-  // otherwise std::nullopt is returned.
-  std::optional<GURL> GetPopUpLoginFlowSite() const;
-
-  // Indicates this detector is opened for a popup window, and the opener window
-  // had the |opener_navigation_url|.
-  void DidOpenAsPopUp(const GURL& opener_navigation_url);
-
- private:
   struct OAuthLoginFlowInfo {
     OAuthLoginFlowInfo(const GURL& oauth_provider_site,
                        const GURL& oauth_requestor_site);
@@ -81,6 +57,32 @@ class OAuthLoginDetector {
     GURL oauth_requestor_site;
   };
 
+  OAuthLoginDetector();
+  ~OAuthLoginDetector();
+
+  OAuthLoginDetector(const OAuthLoginDetector&) = delete;
+  OAuthLoginDetector& operator=(const OAuthLoginDetector&) = delete;
+
+  // Processes the navigation |redirect_chain| and returns the OAuth login
+  // information including the site that started the OAuth login flow and
+  // completed as well as the OAuth provider site. std::nullopt is returned when
+  // there is no login flow detected or it has not yet completed.
+  // |prev_navigation_url| is the URL of the previous navigation on this
+  // detector, and can be invalid when no previous navigation happened.
+  std::optional<OAuthLoginFlowInfo> GetSuccessfulLoginFlowSite(
+      const GURL& prev_navigation_url,
+      const std::vector<GURL>& redirect_chain);
+
+  // Returns the OAuth login information including the requestor and provider
+  // sites when popup based login flow is detected, otherwise std::nullopt is
+  // returned.
+  std::optional<OAuthLoginFlowInfo> GetPopUpLoginFlowSite() const;
+
+  // Indicates this detector is opened for a popup window, and the opener window
+  // had the |opener_navigation_url|.
+  void DidOpenAsPopUp(const GURL& opener_navigation_url);
+
+ private:
   // Returns whether successful OAuth login completion was detected. Clears the
   // login flow state when completion is detected or when completion is no
   // longer possible.

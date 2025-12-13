@@ -1,0 +1,94 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(!is_android)
+
+if (is_chrome_branded) {
+  generate_grd("build_icons_grdp") {
+    grd_prefix = "lens_untrusted_icons"
+    out_grd = "$target_gen_dir/icon_resources.grdp"
+    input_files = [ "encrypted.svg" ]
+    input_files_base_dir =
+        rebase_path("//chrome/app/theme/google_chrome/lens/", "//")
+  }
+}
+
+build_webui("build") {
+  grd_prefix = "contextual_tasks"
+
+  static_files = [
+    "contextual_tasks.html",
+    "internals/contextual_tasks_internals.html",
+  ]
+
+  if (is_chrome_branded) {
+    extra_grdp_deps = [ ":build_icons_grdp" ]
+    extra_grdp_files = [ "$target_gen_dir/icon_resources.grdp" ]
+  }
+
+  ts_files = [
+    "app.ts",
+    "app.html.ts",
+    "composebox.ts",
+    "composebox.html.ts",
+    "error_page.ts",
+    "error_page.html.ts",
+    "contextual_tasks_browser_proxy.ts",
+    "favicon_group.ts",
+    "favicon_group.html.ts",
+    "icons.html.ts",
+    "post_message_handler.ts",
+    "sources_menu.ts",
+    "sources_menu.html.ts",
+    "top_toolbar.ts",
+    "top_toolbar.html.ts",
+    "internals/app.ts",
+    "internals/app.html.ts",
+    "internals/browser_proxy.ts",
+  ]
+
+  css_files = [
+    "app.css",
+    "composebox.css",
+    "error_page.css",
+    "favicon_group.css",
+    "sources_menu.css",
+    "top_toolbar.css",
+    "internals/app.css",
+  ]
+
+  mojo_files_deps = [
+    "//chrome/browser/contextual_tasks:mojo_bindings_ts__generator",
+    "//ui/webui/resources/cr_components/composebox:mojo_bindings_ts__generator",
+  ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/contextual_tasks/contextual_tasks.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/contextual_tasks/contextual_tasks_internals.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/contextual_tasks/contextual_tasks_types.mojom-webui.ts",
+    "$root_gen_dir/ui/webui/resources/cr_components/composebox/composebox.mojom-webui.ts",
+  ]
+
+  # Needed for browser_tests
+  ts_composite = true
+
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/webview_tag.d.ts",
+    "//tools/typescript/definitions/web_request.d.ts",
+  ]
+
+  ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_components/composebox:build_ts",
+    "//ui/webui/resources/cr_components/search:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  webui_context_type = "trusted"
+}

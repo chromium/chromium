@@ -85,7 +85,7 @@ public class PageInfoViewDarkModeTest {
 
     private void openPageInfo() {
         ChromeActivity activity = mActivityTestRule.getActivity();
-        Tab tab = activity.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     new ChromePageInfo(

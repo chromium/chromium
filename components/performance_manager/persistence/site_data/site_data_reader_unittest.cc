@@ -151,7 +151,7 @@ TEST_F(SiteDataReaderTest, FreeingReaderDoesntCauseWriteOperation) {
               ReadSiteDataFromStore(::testing::Property(&url::Origin::Serialize,
                                                         kOrigin.Serialize()),
                                     ::testing::_))
-      .WillOnce(::testing::Invoke(read_from_store_mock_impl));
+      .WillOnce(read_from_store_mock_impl);
 
   scoped_refptr<internal::SiteDataImpl> impl(
       base::WrapRefCounted(new internal::SiteDataImpl(

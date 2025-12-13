@@ -14,7 +14,6 @@ static_library("thumbnail_loader") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/file_manager",
-    "//chrome/browser/image_decoder",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/file_manager:constants",
     "//extensions/browser",

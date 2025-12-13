@@ -44,16 +44,7 @@ bool IsEligibleAndEnabledUploadOfficeToCloud(const Profile* profile) {
   if (profile->IsGuestSession()) {
     return false;
   }
-  // If `kUploadOfficeToCloudForEnterprise` flag is enabled, we loosen the
-  // condition below to allow managed accounts.
-  if (chromeos::features::IsUploadOfficeToCloudForEnterpriseEnabled()) {
-    return !profile->IsChild();
-  }
-  // Managed users, e.g. enterprise account, child account, are not eligible.
-  if (profile->GetProfilePolicyConnector()->IsManaged()) {
-    return false;
-  }
-  return true;
+  return !profile->IsChild();
 }
 
 namespace cloud_upload {
@@ -95,7 +86,7 @@ bool IsMicrosoftOfficeOneDriveIntegrationAutomated(const Profile* profile) {
 }
 
 bool IsMicrosoftOfficeCloudUploadAllowed(Profile* profile) {
-  if (!chromeos::features::IsUploadOfficeToCloudForEnterpriseEnabled()) {
+  if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
     return IsEligibleAndEnabledUploadOfficeToCloud(profile);
   }
   return IsEligibleAndEnabledUploadOfficeToCloud(profile) &&
@@ -105,7 +96,7 @@ bool IsMicrosoftOfficeCloudUploadAllowed(Profile* profile) {
 }
 
 bool IsMicrosoftOfficeCloudUploadAutomated(Profile* profile) {
-  if (!chromeos::features::IsUploadOfficeToCloudForEnterpriseEnabled()) {
+  if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
     return false;
   }
   return IsEligibleAndEnabledUploadOfficeToCloud(profile) &&
@@ -115,7 +106,7 @@ bool IsMicrosoftOfficeCloudUploadAutomated(Profile* profile) {
 }
 
 bool IsGoogleWorkspaceCloudUploadAllowed(Profile* profile) {
-  if (!chromeos::features::IsUploadOfficeToCloudForEnterpriseEnabled()) {
+  if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
     return IsEligibleAndEnabledUploadOfficeToCloud(profile);
   }
   return IsEligibleAndEnabledUploadOfficeToCloud(profile) &&
@@ -124,7 +115,7 @@ bool IsGoogleWorkspaceCloudUploadAllowed(Profile* profile) {
 }
 
 bool IsGoogleWorkspaceCloudUploadAutomated(Profile* profile) {
-  if (!chromeos::features::IsUploadOfficeToCloudForEnterpriseEnabled()) {
+  if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
     return false;
   }
   return IsEligibleAndEnabledUploadOfficeToCloud(profile) &&

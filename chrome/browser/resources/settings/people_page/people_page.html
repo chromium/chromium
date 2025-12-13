@@ -65,12 +65,12 @@
         }
       }
     </style>
-    <settings-animated-pages id="pages" section="people"
-        focus-config="[[focusConfig_]]">
-      <div route-path="default">
+    <settings-section page-title="$i18n{peoplePageTitle}">
+      <div>
+
 <if expr="not is_chromeos">
         <template is="dom-if" if="[[shouldShowSyncAccountControl_(
-            syncStatus.syncSystemEnabled)]]">
+            syncStatus.syncSystemEnabled, syncStatus.signedInStatus)]]" restamp>
           <settings-sync-account-control
               sync-status="[[syncStatus]]"
               prefs="{{prefs}}"
@@ -79,15 +79,17 @@
               promo-secondary-label-with-account=
                   "$i18n{peopleSignInPromptSecondaryWithAccount}"
               promo-secondary-label-with-no-account=
-                  "$i18n{peopleSignInPromptSecondaryWithNoAccount}">
+                  "$i18n{peopleSignInPromptSecondaryWithNoAccount}"
+              access-point="[[accessPointEnum_.SETTINGS]]">
           </settings-sync-account-control>
         </template>
-</if>
-        <template is="dom-if" if="[[!shouldShowSyncAccountControl_(
-            syncStatus.syncSystemEnabled, signinAllowed_)]]" restamp>
+
+        <template is="dom-if" if="[[shouldLinkToProfileRow_(
+            syncStatus.syncSystemEnabled, signinAllowed_,
+            syncStatus.signedInState)]]" restamp>
           <div id="profile-row" class="cr-row first two-line"
-                  actionable$="[[isProfileActionable_]]"
-                  on-click="onProfileClick_">
+              actionable$="[[isProfileActionable_]]"
+              on-click="onProfileClick_">
             <template is="dom-if" if="[[syncStatus]]">
               <div id="profile-icon"
                   style="background-image: [[getIconImageSet_(
@@ -95,40 +97,46 @@
               </div>
               <div class="flex cr-row-gap cr-padded-text text-elide">
                 <span id="profile-name">[[profileName_]]</span>
-<!-- When the user is signed-in, the settings-sync-account-control is always
-shown on non-ChromeOS platforms -->
-<if expr="is_chromeos">
-                <div class="secondary" hidden="[[!isSyncing_(
-                      syncStatus.signedInState)]]">
-                  [[syncStatus.signedInUsername]]
-                </div>
-</if>
               </div>
-<if expr="not is_chromeos">
               <cr-icon-button class="subpage-arrow"
                   aria-label="$i18n{editPerson}"
                   aria-describedby="profile-name"
                   aria-roledescription="$i18n{subpageArrowRoleDescription}">
               </cr-icon-button>
-</if>
-<if expr="is_chromeos">
-              <cr-icon-button class="icon-external"
-                  id="profile-subpage-arrow"
-                  hidden="[[!isProfileActionable_]]"
-                  aria-label="$i18n{accountManagerSubMenuLabel}"
-                  aria-describedby="profile-name"></cr-icon-button>
-</if>
             </template>
           </div>
-        </template> <!-- if="[[!shouldShowSyncAccountControl_()]]" -->
+        </template>
+
+        <cr-link-row id="account-subpage-row" on-click="onAccountClick_"
+            hidden="[[!shouldLinkToAccountSettingsPage_(
+              syncStatus.signedInState)]]">
+          <div id="profile-icon"
+              style="background-image: [[getIconImageSet_(
+                  primaryAccountIconUrl_)]]">
+          </div>
+          <div class="cr-row-gap cr-padded-text flex no-min-width">
+            <div id="account-name" class="text-elide">
+              [[primaryAccountName_]]
+            </div>
+            <div id="account-subtitle" class="secondary">
+              [[getAccountRowSubtitle_(primaryAccountEmail_, syncStatus)]]
+            </div>
+          </div>
+        </cr-link-row>
 
         <cr-link-row id="sync-setup"
             label="$i18n{syncAndNonPersonalizedServices}"
             on-click="onSyncClick_"
-            role-description="$i18n{subpageArrowRoleDescription}">
+            role-description="$i18n{subpageArrowRoleDescription}"
+            hidden="[[shouldHideSyncSetupLinkRow_(syncStatus)]]">
+        </cr-link-row>
+        <cr-link-row id="google-services"
+            label="$i18n{googleServicesPageTitle}"
+            on-click="onGoogleServicesClick_"
+            role-description="$i18n{subpageArrowRoleDescription}"
+            hidden="[[!shouldHideSyncSetupLinkRow_(syncStatus)]]">
         </cr-link-row>
 
-<if expr="not is_chromeos">
         <template is="dom-if" if="[[signinAllowed_]]">
           <cr-link-row id="manage-google-account"
               label="$i18n{manageGoogleAccount}"
@@ -139,15 +147,11 @@ shown on non-ChromeOS platforms -->
               label="$i18n{profileNameAndPicture}"
               on-click="onProfileClick_" ></cr-link-row>
         </template>
-</if>
 
-<if expr="not is_chromeos">
         <cr-link-row id="importDataDialogTrigger"
             label="$i18n{importTitle}"
             on-click="onImportDataClick_"></cr-link-row>
-</if>
 
-<if expr="not is_chromeos">
         <template is="dom-if" if="[[isDasherlessProfile_]]">
           <div id="sync-not-allowed" class="cr-row continuation">
             <cr-icon id="info-icon" icon="cr:info-outline"></cr-icon>
@@ -158,51 +162,38 @@ shown on non-ChromeOS platforms -->
         </template>
 </if>
 
-      </div>
-      <template is="dom-if" route-path="/syncSetup">
-        <settings-subpage
-            associated-control="[[$$('#sync-setup')]]"
-            page-title="$i18n{syncPageTitle}"
-            learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
-          <settings-sync-page
-              sync-status="[[syncStatus]]" prefs="{{prefs}}"
-              focus-config="[[focusConfig_]]">
-          </settings-sync-page>
-        </settings-subpage>
-      </template>
+<if expr="is_chromeos">
+        <div id="profile-row" class="cr-row first two-line"
+            actionable$="[[isProfileActionable_]]" on-click="onProfileClick_">
+          <template is="dom-if" if="[[syncStatus]]">
+            <div id="profile-icon"
+                style="background-image: [[getIconImageSet_(
+                    profileIconUrl_)]]">
+            </div>
+            <div class="flex cr-row-gap cr-padded-text text-elide">
+              <span id="profile-name">[[profileName_]]</span>
+              <div class="secondary" hidden="[[!isSyncing_(
+                    syncStatus.signedInState)]]">
+                [[syncStatus.signedInUsername]]
+              </div>
+            </div>
+            <cr-icon-button class="icon-external"
+                id="profile-subpage-arrow"
+                hidden="[[!isProfileActionable_]]"
+                aria-label="$i18n{accountManagerSubMenuLabel}"
+                aria-describedby="profile-name"></cr-icon-button>
+          </template>
+        </div>
 
-      <template is="dom-if" route-path="/syncSetup/advanced">
-        <settings-subpage page-title="$i18n{syncAdvancedPageTitle}"
-            associated-control="[[$$('#sync-setup')]]"
-            learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
-          <settings-sync-controls sync-status="[[syncStatus]]">
-          </settings-sync-controls>
-        </settings-subpage>
-      </template>
-
-<if expr="not is_chromeos">
-      <template is="dom-if" route-path="/manageProfile">
-        <settings-subpage
-            associated-control=
-                "[[getEditPersonAssocControl_(signinAllowed_)]]"
-            page-title="$i18n{editPerson}">
-          <settings-manage-profile profile-name="[[profileName_]]"
-              sync-status="[[syncStatus]]">
-          </settings-manage-profile>
-        </settings-subpage>
-      </template>
-
-      <template is="dom-if" if="[[shouldShowAccountSettingsPage_]]" restamp>
-        <template is="dom-if" route-path="/account">
-          <settings-subpage page-title="$i18n{accountPageTitle}">
-            <settings-account-page prefs="{{prefs}}"
-                sync-status="[[syncStatus]]" no-search>
-            </settings-account-page>
-          </settings-subpage>
-        </template>
-      </template>
+        <cr-link-row id="sync-setup"
+            label="$i18n{syncAndNonPersonalizedServices}"
+            on-click="onSyncClick_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
 </if>
-    </settings-animated-pages>
+
+      </div>
+    </settings-section>
 
 <if expr="not is_chromeos">
     <template is="dom-if" if="[[showSignoutDialog_]]" restamp>

@@ -23,6 +23,7 @@ source_set("factory") {
     "//chrome/browser/notifications/scheduler/public",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
+    "//components/prefs",
     "//skia",
   ]
 }

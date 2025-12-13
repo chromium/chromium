@@ -9,13 +9,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Based on jspecify's @Nullable and checked by NullAway.
- *
- * <p>Not directly using jspecify's annotations so that Cronet does not need the extra dep.
- *
- * <p>See: https://github.com/uber/NullAway/wiki/Supported-Annotations
- */
+/** See //styleguide/java/nullaway.md for how to use these annotations. */
 @Target(ElementType.TYPE_USE)
 @Retention(RetentionPolicy.CLASS)
 public @interface Nullable {}

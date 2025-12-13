@@ -11,14 +11,14 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import type {Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 
 import {getTemplate} from './content_setting_pattern_source.html.js';
-import type {ContentSettingPatternSource} from './content_settings.mojom-webui.js';
+import type {ContentSettingPatternSource as MojoContentSettingPatternSource} from './content_settings.mojom-webui.js';
 import {ContentSetting} from './content_settings.mojom-webui.js';
 import {ProviderType, SessionModel} from './content_settings_enums.mojom-webui.js';
 import type {PageHandlerInterface} from './privacy_sandbox_internals.mojom-webui.js';
 import type {LogicalFn} from './value_display.js';
 import {defaultLogicalFn} from './value_display.js';
 
-function contentSettingLogicalValue(v: Value) {
+function contentSettingLogicalValue(v: Value): HTMLElement|undefined {
   if (v.intValue === undefined) {
     return undefined;
   }
@@ -31,7 +31,7 @@ function contentSettingLogicalValue(v: Value) {
   return el;
 }
 
-function providerTypeLogicalValue(v: Value) {
+function providerTypeLogicalValue(v: Value): HTMLElement|undefined {
   if (v.intValue === undefined) {
     return undefined;
   }
@@ -44,7 +44,7 @@ function providerTypeLogicalValue(v: Value) {
   return el;
 }
 
-function sessionModelLogicalValue(v: Value) {
+function sessionModelLogicalValue(v: Value): HTMLElement|undefined {
   if (v.intValue === undefined) {
     return undefined;
   }
@@ -79,7 +79,7 @@ export class ContentSettingPatternSourceElement extends CustomElement {
       const patternHeader = this.getFieldElement(key + '-header');
       if (patternHeader) {
         const copyButton = document.createElement('text-copy-button');
-        copyButton.textToCopy = value;
+        copyButton.setAttribute('text-to-copy', value);
         patternHeader.appendChild(copyButton);
       }
     }
@@ -113,43 +113,74 @@ export class ContentSettingPatternSourceElement extends CustomElement {
     }
   }
 
+  private getSearchableContent(
+      cs: MojoContentSettingPatternSource, primaryPattern: string,
+      secondaryPattern: string): string {
+    const formatTimeToISO = (t: Time) => t.internalValue > 0 ?
+        new Date(Number(t.internalValue / 1000n)).toISOString() :
+        undefined;
+
+    const searchableContent = [
+      primaryPattern,
+      secondaryPattern,
+      cs.settingValue.intValue !== undefined ?
+          ContentSetting[cs.settingValue.intValue] :
+          undefined,
+      JSON.stringify(cs.settingValue),
+      cs.source !== undefined ? ProviderType[cs.source] : undefined,
+      cs.incognito.toString(),
+      formatTimeToISO(cs.metadata.lastModified),
+      formatTimeToISO(cs.metadata.lastUsed),
+      formatTimeToISO(cs.metadata.lastVisited),
+      formatTimeToISO(cs.metadata.expiration),
+      cs.metadata.sessionModel !== undefined ?
+          SessionModel[cs.metadata.sessionModel] :
+          undefined,
+      cs.metadata.lifetime.microseconds.toString(),
+    ];
+
+    return searchableContent.filter(Boolean).join(' ');
+  }
+
   async configure(
-      pageHandler: PageHandlerInterface, cs: ContentSettingPatternSource) {
+      pageHandler: PageHandlerInterface,
+      cs: MojoContentSettingPatternSource): Promise<string> {
+    let primaryPatternString = '';
+    let secondaryPatternString = '';
     try {
-      this.setField(
-          'primary-pattern',
+      primaryPatternString =
           (await pageHandler.contentSettingsPatternToString(cs.primaryPattern))
-              .s);
+              .s;
     } catch (e) {
       console.error('Error parsing primary pattern ', e);
     }
     try {
-      this.setField(
-          'secondary-pattern',
+      secondaryPatternString =
           (await pageHandler.contentSettingsPatternToString(
                cs.secondaryPattern))
-              .s);
+              .s;
     } catch (e) {
       console.error('Error parsing secondary pattern ', e);
     }
-    this.setFieldValue('value', cs.settingValue, contentSettingLogicalValue);
-    const source: Value = {} as Value;
-    if (cs.source != null) {
-      source.intValue = cs.source;
-    }
-    this.setFieldValue('source', source, providerTypeLogicalValue);
 
-    const incognito: Value = {} as Value;
-    incognito.boolValue = cs.incognito;
-    this.setFieldValue('incognito', incognito);
+    // Populate the UI fields.
+    this.setField('primary-pattern', primaryPatternString);
+    this.setField('secondary-pattern', secondaryPatternString);
+    this.setFieldValue('value', cs.settingValue, contentSettingLogicalValue);
+    this.setFieldValue(
+        'source', {intValue: cs.source}, providerTypeLogicalValue);
+    this.setFieldValue('incognito', {boolValue: cs.incognito});
     this.setFieldTime('last-modified', cs.metadata.lastModified);
     this.setFieldTime('last-used', cs.metadata.lastUsed);
     this.setFieldTime('last-visited', cs.metadata.lastVisited);
     this.setFieldTime('expiration', cs.metadata.expiration);
-    const sessionModel: Value = {} as Value;
-    sessionModel.intValue = cs.metadata.sessionModel;
-    this.setFieldValue('session-model', sessionModel, sessionModelLogicalValue);
+    this.setFieldValue(
+        'session-model', {intValue: cs.metadata.sessionModel},
+        sessionModelLogicalValue);
     this.setFieldDuration('lifetime', cs.metadata.lifetime);
+
+    return this.getSearchableContent(
+        cs, primaryPatternString, secondaryPatternString);
   }
 }
 

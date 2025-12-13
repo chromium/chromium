@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/safe_browsing/model/real_time_url_lookup_service_factory.h"
 
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #import "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
@@ -53,7 +54,7 @@ RealTimeUrlLookupServiceFactory::RealTimeUrlLookupServiceFactory()
 
 std::unique_ptr<KeyedService>
 RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* browser_state) const {
+    ProfileIOS* profile) const {
   SafeBrowsingService* safe_browsing_service =
       GetApplicationContext()->GetSafeBrowsingService();
   if (!safe_browsing_service) {
@@ -70,7 +71,6 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
   // requests.
   safe_browsing::ReferrerChainProvider* referrer_chain_provider = nullptr;
 
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   return std::make_unique<safe_browsing::RealTimeUrlLookupService>(
       safe_browsing_service->GetURLLoaderFactory(),
       VerdictCacheManagerFactory::GetForProfile(profile),

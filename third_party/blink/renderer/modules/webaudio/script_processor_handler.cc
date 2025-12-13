@@ -9,6 +9,7 @@
 #include "base/compiler_specific.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/audio_bus.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -42,12 +43,10 @@ ScriptProcessorHandler::ScriptProcessorHandler(
       buffer_size_(buffer_size),
       number_of_input_channels_(number_of_input_channels),
       number_of_output_channels_(number_of_output_channels),
-      internal_input_bus_(AudioBus::Create(
-          number_of_input_channels,
-          node.context()->GetDeferredTaskHandler().RenderQuantumFrames(),
-          false)) {
-  DCHECK_GE(buffer_size_,
-            node.context()->GetDeferredTaskHandler().RenderQuantumFrames());
+      internal_input_bus_(AudioBus::Create(number_of_input_channels,
+                                           node.context()->renderQuantumSize(),
+                                           false)) {
+  DCHECK_GE(buffer_size_, node.context()->renderQuantumSize());
   DCHECK_LE(number_of_input_channels, BaseAudioContext::MaxNumberOfChannels());
 
   AddInput();
@@ -324,7 +323,7 @@ void ScriptProcessorHandler::SetChannelCountMode(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         StrCat({"channelCountMode cannot be changed from 'explicit' to '",
-                V8ChannelCountMode(mode).AsString(), "'"}));
+                V8ChannelCountMode(mode).AsStringView(), "'"}));
   }
 }
 

@@ -6,6 +6,7 @@
 #define COMPONENTS_FACILITATED_PAYMENTS_ANDROID_DEVICE_DELEGATE_ANDROID_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/android/application_status_listener.h"
 #include "base/functional/callback.h"
@@ -26,12 +27,14 @@ class DeviceDelegateAndroid : public DeviceDelegate {
   DeviceDelegateAndroid& operator=(const DeviceDelegateAndroid&) = delete;
   ~DeviceDelegateAndroid() override;
 
-  // Returns true if Google Wallet is installed, and its version supports Pix
-  // account linking.
-  bool IsPixAccountLinkingSupported() const override;
+  // Returns eligible if Google Wallet is installed, and its version supports
+  // Pix account linking.
+  WalletEligibilityForPixAccountLinking IsPixAccountLinkingSupported()
+      const override;
 
-  // Opens the Pix account linking page in Google Wallet.
-  void LaunchPixAccountLinkingPage() override;
+  // Opens the Pix account linking page in Google Wallet. The `email` is set to
+  // the gaia account that the user logged into.
+  void LaunchPixAccountLinkingPage(std::string email) override;
 
   // Starts observing the Chrome app status. Runs the `callback` if the Chrome
   // app is moved to the background and then to the foreground. Stops observing
@@ -43,6 +46,12 @@ class DeviceDelegateAndroid : public DeviceDelegate {
 
   std::unique_ptr<FacilitatedPaymentsAppInfoList> GetSupportedPaymentApps(
       const GURL& payment_link_url) override;
+
+  bool InvokePaymentApp(std::string_view package_name,
+                        std::string_view activity_name,
+                        const GURL& payment_link_url) override;
+
+  bool IsPixSupportAvailableViaGboard() const override;
 
  private:
   friend class DeviceDelegateAndroidTestApi;

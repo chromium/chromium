@@ -34,7 +34,9 @@ func SmallWidgetDeletedAccountView() -> some View {
     .frame(minWidth: 0, maxWidth: .infinity)
     .padding(DeletedAccountUIConstants.whiteBorder)
   }
-  .crContainerBackground(Color("widget_background_color").unredacted())
+  .containerBackground(for: .widget) {
+    Color("widget_background_color").unredacted()
+  }
   .onAppear {
     CollectMetricsInfo()
   }
@@ -63,7 +65,9 @@ func MediumWidgetDeletedAccountView() -> some View {
     .frame(minWidth: 0, maxWidth: .infinity)
     .padding(DeletedAccountUIConstants.whiteBorder)
   }
-  .crContainerBackground(Color("widget_background_color").unredacted())
+  .containerBackground(for: .widget) {
+    Color("widget_background_color").unredacted()
+  }
   .onAppear {
     CollectMetricsInfo()
   }

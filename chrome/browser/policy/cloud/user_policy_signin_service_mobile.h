@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "components/policy/core/browser/cloud/user_policy_signin_service_base.h"
@@ -26,9 +27,32 @@ class SharedURLLoaderFactory;
 
 namespace policy {
 
+class UserPolicySigninService;
+
+// Observer bridge for UserPolicySigninService to observe profile manager
+// events.
+class ProfileManagerObserverBridge : public ProfileManagerObserver {
+ public:
+  explicit ProfileManagerObserverBridge(
+      UserPolicySigninService* user_policy_signin_service);
+  ProfileManagerObserverBridge(const ProfileManagerObserverBridge&) = delete;
+  ProfileManagerObserverBridge& operator=(const ProfileManagerObserverBridge&) =
+      delete;
+  ~ProfileManagerObserverBridge() override;
+
+  // ProfileManagerObserver implementation:
+  void OnProfileAdded(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
+
+ private:
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
+  raw_ptr<UserPolicySigninService> user_policy_signin_service_;
+};
+
 // A specialization of UserPolicySigninServiceBase for Android.
 class UserPolicySigninService : public UserPolicySigninServiceBase,
-                                public ProfileManagerObserver,
+                                public ProfileAttributesStorage::Observer,
                                 public signin::IdentityManager::Observer {
  public:
   // Creates a UserPolicySigninService associated with the passed |profile|.
@@ -47,13 +71,21 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   // delayed registration.
   void ShutdownCloudPolicyManager() override;
 
+  // Handler for when the profile is ready.
+  void OnProfileReady(Profile* profile);
+
+  // Called when the ProfileAttributesStorage is being destroyed.
+  void OnProfileAttributesStorageDestroying();
+
   // signin::IdentityManager::Observer implementation:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
+  void OnRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info) override;
 
-  // ProfileManagerObserver implementation.
-  void OnProfileAdded(Profile* profile) override;
-  void OnProfileManagerDestroying() override;
+  // ProfileAttributesStorage::Observer implementation:
+  void OnProfileUserManagementAcceptanceChanged(
+      const base::FilePath& profile_path) override;
 
   void set_profile_can_be_managed_for_testing(bool can_be_managed) {
     profile_can_be_managed_for_testing_ = can_be_managed;
@@ -74,6 +106,11 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   GetDeviceDMTokenIfAffiliatedCallback() override;
   std::string GetProfileId() override;
 
+  // Helper method that attempts calls |InitializeForSignedInUser| only if
+  // |policy_manager| is not-nul. Expects that there is a refresh token for
+  // the primary account.
+  void TryInitializeForSignedInUser();
+
   // Initializes the UserPolicySigninService once its owning Profile becomes
   // ready. If the Profile has a signed-in account associated with it at startup
   // then this initializes the cloud policy manager by calling
@@ -85,8 +122,12 @@ class UserPolicySigninService : public UserPolicySigninServiceBase,
   // attributes entry.
   bool profile_can_be_managed_for_testing_ = false;
 
-  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
-      profile_manager_observation_{this};
+  // Observer bridge for profile added events.
+  ProfileManagerObserverBridge profile_manager_observer_bridge_{this};
+
+  base::ScopedObservation<ProfileAttributesStorage,
+                          ProfileAttributesStorage::Observer>
+      observed_profile_{this};
 
   // The PrefService associated with the profile.
   raw_ptr<PrefService> profile_prefs_;

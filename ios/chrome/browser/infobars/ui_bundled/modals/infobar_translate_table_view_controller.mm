@@ -104,7 +104,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-  self.styler.cellBackgroundColor = [UIColor clearColor];
   self.tableView.sectionHeaderHeight = 0;
   [self.tableView
       setSeparatorInset:UIEdgeInsetsMake(0, kTableViewHorizontalSpacing, 0, 0)];
@@ -150,7 +149,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       self.tableView.contentSize.height +
       self.tableView.adjustedContentInset.top +
       self.tableView.adjustedContentInset.bottom;
-  self.tableView.scrollEnabled =
+  self.tableView.bounces =
       tableViewScrollableHeight > self.view.frame.size.height;
 }
 
@@ -334,6 +333,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
+  cell.backgroundColor = UIColor.clearColor;
   ItemType itemType = static_cast<ItemType>(
       [self.tableViewModel itemTypeForIndexPath:indexPath]);
   TableViewTextButtonCell* tableViewTextButtonCell =
@@ -480,7 +480,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)dismissInfobarModal {
-  // TODO(crbug.com/40103513): add metrics
   [self.infobarModalDelegate dismissInfobarModal:self];
 }
 

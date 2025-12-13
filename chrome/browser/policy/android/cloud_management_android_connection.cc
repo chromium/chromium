@@ -22,3 +22,5 @@ std::string GetClientId() {
 
 }  // namespace android
 }  // namespace policy
+
+DEFINE_JNI(CloudManagementAndroidConnection)

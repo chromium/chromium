@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.permissions;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.view.View;
 
-import androidx.annotation.CallSuper;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -68,7 +69,7 @@ public class LocationPrecisionChooserRenderTest {
      */
     public static class PermissionTestActivity extends ChromeTabbedActivity {
         @Override
-        @CallSuper
+        @SuppressLint("CheckResult")
         protected boolean applyOverrides(Context baseContext, Configuration overrideConfig) {
             super.applyOverrides(baseContext, overrideConfig);
             overrideConfig.densityDpi = 1300;
@@ -102,8 +103,10 @@ public class LocationPrecisionChooserRenderTest {
 
         mPermissionRule.waitForDialogShownState(true);
 
-        mRenderTestRule.render(
-                mPermissionRule.getActivity().findViewById(R.id.modal_dialog_view), goldenViewId);
+        View modalDialogView = mPermissionRule.getActivity().findViewById(R.id.modal_dialog_view);
+        RenderTestRule.sanitize(modalDialogView);
+
+        mRenderTestRule.render(modalDialogView, goldenViewId);
     }
 
     @Test

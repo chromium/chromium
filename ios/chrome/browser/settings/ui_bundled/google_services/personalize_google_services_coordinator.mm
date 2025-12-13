@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/google_services/personalize_google_services_coordinator.h"
 
 #import "base/check_op.h"
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/personalize_google_services_command_handler.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/personalize_google_services_view_controller.h"

@@ -2,6 +2,8 @@ friedrichh@chromium.org
 ioanap@chromium.org
 derinel@google.com
 tchudakov@google.com
+luchenpeng@google.com
+piotrkotynia@google.com
 
 # Everyone can fix our docs:
 per-file *.md=*

@@ -3,18 +3,11 @@
 // found in the LICENSE file.
 
 import type {CrButtonElement, NativeInitialSettings, PrintPreviewAppElement, PrintTicket} from 'chrome://print/print_preview.js';
-import {
-  // <if expr="is_chromeos">
-  GooglePromotedDestinationId,
-  // </if>
-  NativeLayerImpl, PluginProxyImpl, State} from 'chrome://print/print_preview.js';
+import {GooglePromotedDestinationId, NativeLayerImpl, PluginProxyImpl, State} from 'chrome://print/print_preview.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-// <if expr="is_chromeos">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
-// </if>
-
 import {NativeLayerStub} from './native_layer_stub.js';
 import {getDefaultInitialSettings} from './print_preview_test_utils.js';
 import {TestPluginProxy} from './test_plugin_proxy.js';
@@ -37,9 +30,7 @@ suite('PrintButtonTest', function() {
   setup(function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="is_chromeos">
     setNativeLayerCrosInstance();
-    // </if>
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     nativeLayer.setInitialSettings(initialSettings);
     const localDestinationInfos = [
@@ -203,7 +194,6 @@ suite('PrintButtonTest', function() {
     assertDeepEquals(expectedStates, stateLog);
   });
 
-  // <if expr="is_chromeos">
   // Tests that hidePreview() is not called if Save to Drive is selected on
   // Chrome OS and the user clicks print while the preview is loading because
   // Save to Drive needs to be treated like Save as PDF.
@@ -244,5 +234,4 @@ suite('PrintButtonTest', function() {
     ];
     assertDeepEquals(expectedStates, stateLog);
   });
-  // </if>
 });

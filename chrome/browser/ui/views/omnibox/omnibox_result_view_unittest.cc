@@ -8,12 +8,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_header_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_row_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -75,7 +75,7 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
         CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
     omnibox_controller_ = std::make_unique<OmniboxController>(
-        /*view=*/nullptr, std::make_unique<TestOmniboxClient>());
+        std::make_unique<TestOmniboxClient>());
     popup_view_ =
         std::make_unique<TestOmniboxPopupViewViews>(omnibox_controller_.get());
     result_view_ =
@@ -116,6 +116,7 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
                           ui::EventTimeForNow(), flags, 0);
   }
 
+  OmniboxController* omnibox_controller() { return omnibox_controller_.get(); }
   OmniboxEditModel* edit_model() { return omnibox_controller_->edit_model(); }
   OmniboxPopupViewViews* popup_view() { return popup_view_.get(); }
   OmniboxResultView* result_view() { return result_view_; }
@@ -287,7 +288,7 @@ TEST_F(OmniboxResultViewTest, AccessibleProperties) {
       int{kTestResultViewIndex} + 1);
 
   int result_size = static_cast<int>(
-      popup_view()->controller()->autocomplete_controller()->result().size());
+      omnibox_controller()->autocomplete_controller()->result().size());
   EXPECT_EQ(result_size, result_node_data.GetIntAttribute(
                              ax::mojom::IntAttribute::kSetSize));
 

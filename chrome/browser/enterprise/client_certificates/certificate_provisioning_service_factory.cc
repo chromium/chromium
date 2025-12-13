@@ -83,6 +83,12 @@ CertificateProvisioningServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  if (!features::IsClientCertificateProvisioningOnAndroidEnabled()) {
+    return nullptr;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   auto* certificate_store = CertificateStoreFactory::GetForProfile(profile);
   auto url_loader_factory = profile->GetURLLoaderFactory();
   auto* device_management_service = GetDeviceManagementService();

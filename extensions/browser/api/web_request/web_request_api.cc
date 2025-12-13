@@ -53,6 +53,7 @@
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/warning_service.h"
 #include "extensions/browser/warning_set.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/web_request.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -60,6 +61,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
+#include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
@@ -70,11 +72,14 @@
 #include "net/http/http_util.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::BrowserThread;
 using extension_web_request_api_helpers::ExtraInfoSpec;
@@ -420,10 +425,24 @@ void WebRequestAPI::OnListenerRemoved(const EventListenerInfo& details) {
         details.worker_thread_id, details.service_worker_version_id);
   }
 
-  // This PostTask is necessary even though we are already on the UI thread to
-  // allow cases where blocking listeners remove themselves inside the handler.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, std::move(remove_listener));
+  if (ExtensionRegistry::Get(details.browser_context)
+          ->enabled_extensions()
+          .GetByID(details.extension_id)) {
+    // The extension is still enabled, so this listener removal was likely
+    // initiated by a call from the extension itself. If the listener removal is
+    // performed synchronously, the listener will be removed before the
+    // handler's result can be processed. This `PostTask` is necessary, even
+    // though we are already on the UI thread, to defer the removal until after
+    // the event handling is complete.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(remove_listener));
+  } else {
+    // The extension has been unloaded or disabled, so this removal is part of
+    // the teardown process. In this case, there are no running handlers to
+    // worry about, so we can remove the listener synchronously for immediate
+    // cleanup.
+    std::move(remove_listener).Run();
+  }
 }
 
 bool WebRequestAPI::MaybeProxyURLLoaderFactory(
@@ -625,10 +644,13 @@ void WebRequestAPI::ProxyWebSocket(
   const bool has_extra_headers =
       WebRequestEventRouter::Get(browser_context)
           ->HasAnyExtraHeadersListener(browser_context);
+  const bool has_security_info =
+      WebRequestEventRouter::Get(browser_context)
+          ->HasAnySecurityInfoListener(browser_context);
 
   WebRequestProxyingWebSocket::StartProxying(
       std::move(factory), url, site_for_cookies, user_agent,
-      std::move(handshake_client), has_extra_headers,
+      std::move(handshake_client), has_extra_headers, has_security_info,
       frame->GetProcess()->GetDeprecatedID(), frame->GetRoutingID(),
       &request_id_generator_, frame->GetLastCommittedOrigin(),
       frame->GetProcess()->GetBrowserContext(), proxies_.get());
@@ -734,6 +756,10 @@ void WebRequestAPI::OnExtensionLoaded(content::BrowserContext* browser_context,
   if (HasAnyWebRequestPermissions(*extension)) {
     ++web_request_extension_count_;
     update_may_have_proxies = true;
+    if (BackgroundInfo::IsServiceWorkerBased(extension)) {
+      WebRequestEventRouter::Get(browser_context)
+          ->LoadPersistedLazyListeners(browser_context, extension->id());
+    }
   }
   if (HasAnyDeclarativeWebRequestPermissions(*extension)) {
     ++declarative_request_extension_count_;
@@ -891,8 +917,8 @@ WebRequestInternalAddEventListenerFunction::Run() {
 
   int extra_info_spec = 0;
   if (HasOptionalArgument(2)) {
-    EXTENSION_FUNCTION_VALIDATE(ExtraInfoSpec::InitFromValue(
-        browser_context(), args()[2], &extra_info_spec));
+    EXTENSION_FUNCTION_VALIDATE(
+        ExtraInfoSpec::InitFromValue(args()[2], &extra_info_spec));
   }
 
   const auto& event_name_value = args()[3];
@@ -912,6 +938,31 @@ WebRequestInternalAddEventListenerFunction::Run() {
                                    .GetByID(extension_id_safe());
   std::string extension_name =
       extension ? extension->name() : extension_id_safe();
+
+  if (extra_info_spec & ExtraInfoSpec::SECURITY_INFO) {
+    if (extension && extension->is_platform_app()) {
+      // The security info should not be available in Chrome Apps.
+      return RespondNow(Error(keys::kSecurityInfoAPINotAvailable));
+    }
+
+    if (extension) {
+      if (!base::FeatureList::IsEnabled(
+              extensions_features::kWebRequestSecurityInfo)) {
+        return RespondNow(Error(keys::kSecurityInfoFlagAbsentInExtensions));
+      }
+    } else {
+      if (!GetContextData()->HasControlledFrameCapability()) {
+        // Available only in extensions and Controlled Frame.
+        return RespondNow(Error(keys::kSecurityInfoAPINotAvailable));
+      }
+
+      if (!base::FeatureList::IsEnabled(
+              blink::features::kControlledFrameWebRequestSecurityInfo)) {
+        return RespondNow(
+            Error(keys::kSecurityInfoFlagAbsentInControlledFrame));
+      }
+    }
+  }
 
   if (web_view_instance_id) {
     // If a web view ID has been supplied and the call is from an extension
@@ -1081,8 +1132,8 @@ WebRequestInternalEventHandledFunction::Run() {
         std::string name;
         std::string value;
         if (!FromHeaderDictionary(header_value, &name, &value)) {
-          std::string serialized_header;
-          base::JSONWriter::Write(header_value, &serialized_header);
+          std::string serialized_header =
+              base::WriteJson(header_value).value_or("");
           OnError(event_name, sub_event_name, request_id, render_process_id,
                   web_view_instance_id, std::move(response));
           return RespondNow(Error(keys::kInvalidHeader, serialized_header));

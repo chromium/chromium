@@ -178,29 +178,6 @@ impl Discriminant {
             magnitude: i.wrapping_abs() as u64,
         }
     }
-
-    #[cfg(feature = "experimental-enum-variants-from-header")]
-    pub(crate) const fn checked_succ(self) -> Option<Self> {
-        match self.sign {
-            Sign::Negative => {
-                if self.magnitude == 1 {
-                    Some(Discriminant::zero())
-                } else {
-                    Some(Discriminant {
-                        sign: Sign::Negative,
-                        magnitude: self.magnitude - 1,
-                    })
-                }
-            }
-            Sign::Positive => match self.magnitude.checked_add(1) {
-                Some(magnitude) => Some(Discriminant {
-                    sign: Sign::Positive,
-                    magnitude,
-                }),
-                None => None,
-            },
-        }
-    }
 }
 
 impl Display for Discriminant {
@@ -274,14 +251,14 @@ fn parse_int_suffix(suffix: &str) -> Result<Option<Atom>> {
 }
 
 #[derive(Copy, Clone)]
-struct Limits {
-    repr: Atom,
-    min: Discriminant,
-    max: Discriminant,
+pub(crate) struct Limits {
+    pub repr: Atom,
+    pub min: Discriminant,
+    pub max: Discriminant,
 }
 
 impl Limits {
-    fn of(repr: Atom) -> Option<Limits> {
+    pub(crate) fn of(repr: Atom) -> Option<Limits> {
         for limits in &LIMITS {
             if limits.repr == repr {
                 return Some(*limits);

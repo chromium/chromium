@@ -169,6 +169,8 @@ export class UnmountCommand extends FilesCommand {
       case VolumeType.REMOVABLE:
         event.command.label = str('UNMOUNT_DEVICE_BUTTON_LABEL');
         break;
+      default:
+        break;
     }
   }
 }

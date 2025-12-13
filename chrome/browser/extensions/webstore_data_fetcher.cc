@@ -15,12 +15,15 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_urls.h"
 #include "google_apis/common/api_key_request_util.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace {
 
@@ -159,7 +162,7 @@ void WebstoreDataFetcher::OnResponseStarted(
 }
 
 void WebstoreDataFetcher::OnFetchItemSnippetResponseReceived(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   if (!response_body) {
     delegate_->OnWebstoreRequestFailure(id_);
     return;

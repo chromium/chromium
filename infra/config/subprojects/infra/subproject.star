@@ -3,11 +3,11 @@
 # found in the LICENSE file.
 """Definitions of builders in the infra bucket."""
 
-load("//lib/builders.star", "builders", "cpu", "os")
-load("//lib/ci.star", "ci")
-load("//lib/consoles.star", "consoles")
-load("//lib/html.star", "linkify_builder")
-load("//lib/try.star", "try_")
+load("@chromium-luci//builders.star", "builders", "cpu", "os")
+load("@chromium-luci//consoles.star", "consoles")
+load("@chromium-luci//html.star", "linkify_builder")
+load("@chromium-luci//try.star", "try_")
+load("//lib/ci_constants.star", "ci_constants")
 
 consoles.console_view(
     name = "infra",
@@ -21,8 +21,8 @@ builders.defaults.set(
     os = os.LINUX_DEFAULT,
     cpu = cpu.X86_64,
     build_numbers = True,
-    shadow_pool = ci.DEFAULT_SHADOW_POOL,
-    shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+    shadow_pool = ci_constants.DEFAULT_SHADOW_POOL,
+    shadow_service_account = ci_constants.DEFAULT_SHADOW_SERVICE_ACCOUNT,
 )
 
 luci.bucket(
@@ -58,8 +58,8 @@ luci.bucket(
     name = "infra.shadow",
     shadows = "infra",
     constraints = luci.bucket_constraints(
-        pools = [ci.DEFAULT_SHADOW_POOL],
-        service_accounts = [ci.DEFAULT_SHADOW_SERVICE_ACCOUNT],
+        pools = [ci_constants.DEFAULT_SHADOW_POOL],
+        service_accounts = [ci_constants.DEFAULT_SHADOW_SERVICE_ACCOUNT],
     ),
     bindings = [
         luci.binding(
@@ -98,6 +98,11 @@ builders.builder(
             "ios-simulator",
             "ios-simulator-full-configs",
             "android-arm64-rel",
+            # TODO(crbug.com/402190537): Revisit the emulator-based Android CQ
+            # builders after the slowness in CIPD package deployment is fixed
+            "android-desktop-x64-rel",
+            "android-x64-rel",
+            "android-x86-rel",
         ],
         "exclude_suites": [
             "chrome_all_tast_tests",

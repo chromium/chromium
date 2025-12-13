@@ -74,14 +74,12 @@
         <div id="container" class="scroll-container"
             scrollable$="[[fixedHeight]]">
           <div role="rowgroup">
-            <dom-repeat items="[[engines]]">
-              <template>
-                <settings-search-engine-entry engine="[[item]]"
-                    show-query-url="[[showQueryUrl]]"
-                    show-shortcut="[[showShortcut]]">
-                </settings-search-engine-entry>
-              </template>
-            </dom-repeat>
+            <template is="dom-repeat" items="[[engines]]">
+              <settings-search-engine-entry engine="[[item]]"
+                  show-query-url="[[showQueryUrl]]"
+                  show-shortcut="[[showShortcut]]">
+              </settings-search-engine-entry>
+            </template>
           </div>
         </div>
       </template>
@@ -91,14 +89,12 @@
             hidden="[[!collapseList]]"
             scrollable$="[[fixedHeight]]">
           <div role="rowgroup">
-            <dom-repeat items="[[visibleEngines]]">
-              <template>
-                <settings-search-engine-entry engine="[[item]]"
-                    show-shortcut="[[showShortcut]]"
-                    show-query-url="[[showQueryUrl]]">
-                </settings-search-engine-entry>
-              </template>
-            </dom-repeat>
+            <template is="dom-repeat" items="[[visibleEngines]]">
+              <settings-search-engine-entry engine="[[item]]"
+                  show-shortcut="[[showShortcut]]"
+                  show-query-url="[[showQueryUrl]]">
+              </settings-search-engine-entry>
+            </template>
           </div>
 
           <cr-expand-button no-hover class="cr-row"
@@ -108,14 +104,12 @@
           </cr-expand-button>
           <cr-collapse opened="[[enginesListExpanded_]]">
             <div role="rowgroup">
-              <dom-repeat items="[[collapsedEngines]]">
-                <template>
-                  <settings-search-engine-entry engine="[[item]]"
-                      show-shortcut="[[showShortcut]]"
-                      show-query-url="[[showQueryUrl]]">
-                  </settings-search-engine-entry>
-                </template>
-              </dom-repeat>
+              <template is="dom-repeat" items="[[collapsedEngines]]">
+                <settings-search-engine-entry engine="[[item]]"
+                    show-shortcut="[[showShortcut]]"
+                    show-query-url="[[showQueryUrl]]">
+                </settings-search-engine-entry>
+              </template>
             </div>
           </cr-collapse>
         </div>

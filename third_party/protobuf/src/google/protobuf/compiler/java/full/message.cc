@@ -24,6 +24,7 @@
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "absl/strings/substitute.h"
+#include "google/protobuf/compiler/code_generator_lite.h"
 #include "google/protobuf/compiler/java/context.h"
 #include "google/protobuf/compiler/java/doc_comment.h"
 #include "google/protobuf/compiler/java/field_common.h"
@@ -152,13 +153,12 @@ int ImmutableMessageGenerator::GenerateStaticVariableInitializers(
   if (descriptor_->containing_type() == nullptr) {
     printer->Print(vars,
                    "internal_$identifier$_descriptor =\n"
-                   "  getDescriptor().getMessageTypes().get($index$);\n");
+                   "  getDescriptor().getMessageType($index$);\n");
     bytecode_estimate += 30;
   } else {
-    printer->Print(
-        vars,
-        "internal_$identifier$_descriptor =\n"
-        "  internal_$parent$_descriptor.getNestedTypes().get($index$);\n");
+    printer->Print(vars,
+                   "internal_$identifier$_descriptor =\n"
+                   "  internal_$parent$_descriptor.getNestedType($index$);\n");
     bytecode_estimate += 30;
   }
 
@@ -241,7 +241,7 @@ int ImmutableMessageGenerator::GenerateFieldAccessorTableInitializer(
 void ImmutableMessageGenerator::GenerateInterface(io::Printer* printer) {
   MaybePrintGeneratedAnnotation(context_, printer, descriptor_,
                                 /* immutable = */ true, "OrBuilder");
-  if (!context_->options().opensource_runtime) {
+  if (!google::protobuf::internal::IsOss()) {
     printer->Print("@com.google.protobuf.Internal.ProtoNonnullApi\n");
   }
   if (descriptor_->extension_range_count() > 0) {
@@ -302,7 +302,7 @@ void ImmutableMessageGenerator::Generate(io::Printer* printer) {
   WriteMessageDocComment(printer, descriptor_, context_->options());
   MaybePrintGeneratedAnnotation(context_, printer, descriptor_,
                                 /* immutable = */ true);
-  if (!context_->options().opensource_runtime) {
+  if (!google::protobuf::internal::IsOss()) {
     printer->Print("@com.google.protobuf.Internal.ProtoNonnullApi\n");
   }
 
@@ -339,7 +339,7 @@ void ImmutableMessageGenerator::Generate(io::Printer* printer) {
 
   printer->Print("static {\n");
   printer->Indent();
-  PrintGencodeVersionValidator(printer, context_->options().opensource_runtime,
+  PrintGencodeVersionValidator(printer, google::protobuf::internal::IsOss(),
                                descriptor_->name());
   printer->Outdent();
   printer->Print("}\n");
@@ -432,7 +432,7 @@ void ImmutableMessageGenerator::Generate(io::Printer* printer) {
                    "private $oneof_capitalized_name$Case(int value) {\n"
                    "  this.value = value;\n"
                    "}\n");
-    if (context_->options().opensource_runtime) {
+    if (google::protobuf::internal::IsOss()) {
       printer->Print(
           vars,
           "/**\n"
@@ -446,7 +446,7 @@ void ImmutableMessageGenerator::Generate(io::Printer* printer) {
           "}\n"
           "\n");
     }
-    if (!context_->options().opensource_runtime) {
+    if (!google::protobuf::internal::IsOss()) {
       printer->Print(
           "@com.google.protobuf.Internal.ProtoMethodMayReturnNull\n");
     }
@@ -733,7 +733,7 @@ void ImmutableMessageGenerator::GenerateParseFromMethods(io::Printer* printer) {
       "\n",
       "classname", name_resolver_->GetImmutableClassName(descriptor_),
       "parsedelimitedreturnannotation",
-      context_->options().opensource_runtime
+      google::protobuf::internal::IsOss()
           ? ""
           : "@com.google.protobuf.Internal.ProtoMethodMayReturnNull");
 }
@@ -949,7 +949,7 @@ void ImmutableMessageGenerator::GenerateEqualsAndHashCode(
   printer->Print(
       "@java.lang.Override\n"
       "public boolean equals(");
-  if (!context_->options().opensource_runtime) {
+  if (!google::protobuf::internal::IsOss()) {
     printer->Print(
         "@com.google.protobuf.Internal.ProtoMethodAcceptsNullParameter\n");
   }
@@ -1167,40 +1167,6 @@ void ImmutableMessageGenerator::GenerateInitializers(io::Printer* printer) {
   }
 }
 
-// ===================================================================
-void ImmutableMessageGenerator::GenerateMutableCopy(io::Printer* printer) {
-  printer->Print(
-      "protected com.google.protobuf.MutableMessage\n"
-      "    internalMutableDefault() {\n"
-      "  return MutableDefaultLoader.get();\n"
-      "}\n"
-      "\n"
-      "private static final class MutableDefaultLoader {\n"
-      "  private static final java.lang.Object defaultOrRuntimeException;\n"
-      "  static {\n"
-      "    java.lang.Object local;\n"
-      "    try {\n"
-      "      local = internalMutableDefault(\"$mutable_name$\");\n"
-      "    } catch (java.lang.RuntimeException e) {\n"
-      "      local = e;\n"
-      "    }\n"
-      "    defaultOrRuntimeException = local;\n"
-      "  }\n"
-      "\n"
-      "  private MutableDefaultLoader() {}\n"
-      "\n"
-      "  public static com.google.protobuf.MutableMessage get() {\n"
-      "    if (defaultOrRuntimeException\n"
-      "         instanceof java.lang.RuntimeException) {\n"
-      "      throw (java.lang.RuntimeException) defaultOrRuntimeException;\n"
-      "    }\n"
-      "    return\n"
-      "        (com.google.protobuf.MutableMessage) "
-      "defaultOrRuntimeException;\n"
-      "  }\n"
-      "}\n",
-      "mutable_name", name_resolver_->GetJavaMutableClassName(descriptor_));
-}
 
 void ImmutableMessageGenerator::GenerateAnyMethods(io::Printer* printer) {
   printer->Print(

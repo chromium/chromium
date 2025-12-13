@@ -6,9 +6,9 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
+import "third_party/blink/public/mojom/annotation/annotation.mojom";
 import "third_party/blink/public/mojom/conversions/conversions.mojom";
 import "third_party/blink/public/mojom/forms/form_control_type.mojom";
-import "third_party/blink/public/mojom/annotation/annotation.mojom";
 import "ui/base/mojom/menu_source_type.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
@@ -43,7 +43,7 @@ enum CustomContextMenuItemType {
   kCheckableOption,
   kGroup,
   kSeparator,
-  kSubMenu
+  kSubMenu,
 };
 
 // Container for information about a context menu item shortcut
@@ -51,7 +51,6 @@ struct Accelerator {
   uint16 key_code;
   int32 modifiers;
 };
-
 
 // Container for information about the form renderer id from where the context
 // menu was triggered.
@@ -78,6 +77,7 @@ struct CustomContextMenuItem {
   mojo_base.mojom.String16 tool_tip;
   CustomContextMenuItemType type;
   int32 action;
+  mojo_base.mojom.String16 feature_name;
   bool is_experimental_feature;
   bool rtl;
   bool has_directional_override;
@@ -206,9 +206,8 @@ struct UntrustworthyContextMenuParams {
   // True when the context menu was opened from an element with the
   // `interestfor` attribute.
   bool opened_from_interest_for;
-  // If opened_from_interest_for is true, and if the
-  // HTMLInterestForContextMenuItemOnly feature is enabled, this will contain
-  // the DOMNodeID of the link that generated the context menu.
+  // If opened_from_interest_for is true, this will contain the DOMNodeID of the
+  // link that generated the context menu.
   int32 interest_for_node_id;
 
   // The type of the form control element on which the context menu is invoked,

@@ -13,12 +13,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/component_updater/component_updater_paths.h"
-#include "components/webapps/isolated_web_apps/iwa_key_distribution_histograms.h"
-#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
-#include "components/webapps/isolated_web_apps/proto/key_distribution.pb.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 
@@ -108,8 +108,9 @@ IN_PROC_BROWSER_TEST_F(IwaKeyDistributionComponentInstallBrowserTest,
   // UMAs.
   IwaKeyDistributionInfoProvider::GetInstance().GetKeyRotationInfo("anything");
 
-  EXPECT_THAT(ht.GetAllSamples(kIwaKeyRotationInfoSource),
-              base::BucketsAre(base::Bucket(KeyRotationInfoSource::kNone, 1)));
+  EXPECT_THAT(
+      ht.GetAllSamples(kIwaKeyRotationInfoSource),
+      base::BucketsAre(base::Bucket(KeyDistributionComponentSource::kNone, 1)));
 
   ASSERT_OK_AND_ASSIGN(
       (auto [version, is_preloaded]),
@@ -120,10 +121,10 @@ IN_PROC_BROWSER_TEST_F(IwaKeyDistributionComponentInstallBrowserTest,
   // UMAs.
   IwaKeyDistributionInfoProvider::GetInstance().GetKeyRotationInfo("anything");
 
-  EXPECT_THAT(
-      ht.GetAllSamples(kIwaKeyRotationInfoSource),
-      base::BucketsAre(base::Bucket(KeyRotationInfoSource::kNone, 1),
-                       base::Bucket(KeyRotationInfoSource::kPreloaded, 1)));
+  EXPECT_THAT(ht.GetAllSamples(kIwaKeyRotationInfoSource),
+              base::BucketsAre(
+                  base::Bucket(KeyDistributionComponentSource::kNone, 1),
+                  base::Bucket(KeyDistributionComponentSource::kPreloaded, 1)));
 }
 
 }  // namespace web_app

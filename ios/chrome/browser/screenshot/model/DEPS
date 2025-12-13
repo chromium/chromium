@@ -2,6 +2,7 @@ specific_include_rules = {
   # TODO(crbug.com/40820398): Remove this dependency.
   "^screenshot_delegate.mm": [
     "+ios/chrome/browser/main/ui_bundled/browser_interface_provider.h",
+    "+ios/chrome/browser/reader_mode/model",
   ],
 }
 

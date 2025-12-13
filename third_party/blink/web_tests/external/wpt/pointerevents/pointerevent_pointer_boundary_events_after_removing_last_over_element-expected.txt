@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] After removing the last over element, redundant pointerenter events should not be fired on the ancestors
-  assert_equals: expected "pointerleave@div#parent, pointerleave@div#grandparent, pointerover@body, pointermove@body" but got "pointerleave@div#parent, pointerleave@div#grandparent, pointerleave@body, pointerover@div#parent, pointerenter@body, pointerenter@div#grandparent, pointerenter@div#parent, pointerout@div#parent, pointerleave@div#parent, pointerleave@div#grandparent, pointerover@body, pointermove@body"
-[FAIL] After removing the root element in the shadow under the cursor, pointerleave events should be targeted outside the shadow, but redundant pointerenter events should not be fired
-  assert_equals: expected "pointerleave@div#shadowHost, pointerleave@div#containerOfShadowHost, pointerover@body, pointermove@body" but got "pointerover@div#shadowHost, pointerenter@body, pointerenter@div#containerOfShadowHost, pointerenter@div#shadowHost, pointerover@body, pointerenter@body, pointermove@body"
-Harness: the test ran to completion.
-

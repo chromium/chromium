@@ -133,8 +133,12 @@ bool IsArcAvailable();
 // for ARC R container and your code won't work on that configuration.
 bool IsArcVmEnabled();
 
-// Returns true if ARC VM DLC is enabled.
-bool IsArcVmDlcEnabled();
+// Returns true if the board has the arcvm_dlc USE flag, indicating that the
+// ARCVM image must be installed from a DLC.
+bool IsArcVmDlcRequired();
+
+// Returns true if the device meets the hardware requirements for the ARCVM DLC.
+bool IsArcVmDlcHardwareRequirementSatisfied();
 
 // This is a thin wrapper around version_loader::GetArcAndroidSdkVersion() and
 // returns the version as integer. For example, when the device uses ARC++ P,

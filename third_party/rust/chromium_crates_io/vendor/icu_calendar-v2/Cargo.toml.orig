@@ -5,7 +5,7 @@
 [package]
 name = "icu_calendar"
 description = "Date APIs for Gregorian and non-Gregorian calendars"
-version = "2.0.2"
+version.workspace = true
 
 authors.workspace = true
 categories.workspace = true
@@ -23,14 +23,13 @@ all-features = true
 calendrical_calculations = { workspace = true }
 displaydoc = { workspace = true }
 icu_provider = { workspace = true }
-icu_locale_core = { workspace = true, features = ["alloc"]}
+icu_locale_core = { workspace = true }
 ixdtf = { workspace = true, optional = true }
-tinystr = { workspace = true, features = ["alloc", "zerovec"] }
+tinystr = { workspace = true, features = ["zerovec"] }
 zerovec = { workspace = true, features = ["derive"] }
-writeable = { workspace = true }
 
 databake = { workspace = true, features = ["derive"], optional = true }
-serde = { workspace = true, features = ["derive", "alloc"], optional = true }
+serde = { workspace = true, features = ["derive"], optional = true }
 
 icu_calendar_data = { workspace = true, optional = true }
 icu_locale = { workspace = true, optional = true }
@@ -38,9 +37,11 @@ icu_locale = { workspace = true, optional = true }
 [dev-dependencies]
 icu_provider = { path = "../../provider/core", features = ["logging"] }
 icu = { path = "../../components/icu", default-features = false }
+itertools = { workspace = true }
 serde = { workspace = true, features = ["derive", "alloc"] }
 serde_json = { workspace = true }
 simple_logger = { workspace = true }
+ureq = { workspace = true }
 
 
 [target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
@@ -54,8 +55,9 @@ logging = ["calendrical_calculations/logging"]
 serde = ["dep:serde", "zerovec/serde", "tinystr/serde", "icu_provider/serde"]
 datagen = ["serde", "dep:databake", "zerovec/databake", "tinystr/databake", "alloc", "icu_provider/export"]
 compiled_data = ["dep:icu_calendar_data", "dep:icu_locale", "icu_locale?/compiled_data", "icu_provider/baked"]
+unstable = []
 
-alloc = []
+alloc = ["icu_locale_core/alloc", "tinystr/alloc", "serde?/alloc"]
 
 [[bench]]
 name = "date"
@@ -64,3 +66,10 @@ harness = false
 [[bench]]
 name = "convert"
 harness = false
+
+[[test]]
+name = "arithmetic"
+required-features = ["ixdtf"]
+
+[package.metadata.cargo-semver-checks.lints]
+workspace = true

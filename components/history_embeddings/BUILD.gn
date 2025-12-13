@@ -37,6 +37,7 @@ static_library("history_embeddings") {
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/optimization_guide/public/mojom",
     "//components/os_crypt/async/browser",
     "//components/page_content_annotations/core",
     "//components/passage_embeddings",
@@ -102,4 +103,8 @@ source_set("unit_tests") {
   if (is_ios) {
     deps += [ "//components/test:history_embeddings_test_bundle_data" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

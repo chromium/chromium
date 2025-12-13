@@ -330,7 +330,7 @@
 <translation id="3070245424257836917">Desliza tres dedos hacia arriba</translation>
 <translation id="307516670110542567">Orientación rápida</translation>
 <translation id="3077734595579995578">mayús</translation>
-<translation id="3078345202707391975">Siguiente encabezado de nivel 2</translation>
+<translation id="3078345202707391975">Encabezado siguiente de nivel 2</translation>
 <translation id="3078740164268491126">tabla</translation>
 <translation id="3082249673510793544">Desplazarse hacia atrás</translation>
 <translation id="3084806535845658316">no hablar al escribir</translation>
@@ -719,7 +719,7 @@
 <translation id="5574412348552378458">Modo de aprendizaje de ChromeVox</translation>
 <translation id="5582839680698949063">Menú principal</translation>
 <translation id="5585044216466955529">Edita texto, entrada de correo electrónico</translation>
-<translation id="5597170376237141345">Siguiente casilla de verificación</translation>
+<translation id="5597170376237141345">Casilla de verificación siguiente</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, botón de opción no seleccionado</translation>
 <translation id="5601172225407283979">Realiza una acción predeterminada</translation>
 <translation id="5608798115546226984">Autocompletados insertados</translation>
@@ -910,7 +910,7 @@
 <translation id="696356426651109308">Saltar al principio</translation>
 <translation id="6978319636763404384">.input {$$COUNT :number} .match $$COUNT 1{{hora}} *{{horas}}</translation>
 <translation id="6994042831499278539">Referencia de glosario</translation>
-<translation id="6996566555547746822">Siguiente cuadro combinado</translation>
+<translation id="6996566555547746822">Cuadro combinado siguiente</translation>
 <translation id="6997224546856374593">Al leer mayúsculas:</translation>
 <translation id="6999752561504308105">Te damos la bienvenida al tutorial de ChromeVox. Para salir de este tutorial en cualquier momento, desliza dos dedos de derecha a izquierda. Puedes encender o apagar el ChromeVox cuando quieras manteniendo pulsados los dos botones de volumen durante cinco segundos. Cuando tengas todo listo, da dos toques en la pantalla con un dedo para ir a la siguiente lección.</translation>
 <translation id="700202842116345659">Entrada bibliográfica</translation>
@@ -1113,7 +1113,7 @@
 <translation id="827422111966801947">Índigo</translation>
 <translation id="8276439074553447000">Salta al elemento enfocable anterior</translation>
 <translation id="8279039817939141096">Pulsa una tecla del teclado QWERTY o una tecla de braille actualizable, o realiza un gesto táctil para saber su función. Para salir, desliza dos dedos hacia la izquierda o pulsa Ctrl + W, Barra espaciadora + Z o Esc.</translation>
-<translation id="8283603667300770666">Siguiente campo de formulario</translation>
+<translation id="8283603667300770666">Campo de formulario siguiente</translation>
 <translation id="8310185481635255431">No hay ningún enlace posterior</translation>
 <translation id="831207808878314375">Definición</translation>
 <translation id="8313653172105209786">dir</translation>
@@ -1173,7 +1173,7 @@
 <translation id="8770473310765924354">sale del contenido estructurado (por ejemplo, tablas)</translation>
 <translation id="8775203254697638994">En algunas ocasiones tendrás que seleccionar un elemento de una lista desplegable. Para hacerlo, primero pulsa la tecla de búsqueda + barra espaciadora para desplegar la lista. A continuación, pulsa las teclas de flechas hacia arriba o hacia abajo para seleccionar un elemento. Por último, pulsa la tecla de búsqueda + barra espaciadora para ocultar la lista.</translation>
 <translation id="8779057862865475116">No hay ningún enlace anterior</translation>
-<translation id="8796411681063377102">Siguiente encabezado de nivel 3</translation>
+<translation id="8796411681063377102">Encabezado siguiente de nivel 3</translation>
 <translation id="8821891849214789910">Detener dictado</translation>
 <translation id="8823311177246872527">Página <ph name="CURRENTPAGE" /> de <ph name="TOTALPAGES" /></translation>
 <translation id="8825828890761629845">bnr</translation>
@@ -1234,7 +1234,7 @@
 <translation id="948171205378458592">Habla más lento</translation>
 <translation id="957570623732056069">Desliza un dedo a la izquierda o la derecha para desplazarte por esta lección</translation>
 <translation id="958854023026327378">Desliza un dedo hacia abajo</translation>
-<translation id="962913030769097253">Siguiente encabezado de nivel 1</translation>
+<translation id="962913030769097253">Encabezado siguiente de nivel 1</translation>
 <translation id="966588271015727539">Selecciona una pantalla de braille Bluetooth</translation>
 <translation id="973955474346881951">Habilita o inhabilita el modo Persistente</translation>
 <translation id="985654871861528815">Bajar una línea</translation>

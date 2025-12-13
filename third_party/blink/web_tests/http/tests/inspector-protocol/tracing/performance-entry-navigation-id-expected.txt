@@ -14,18 +14,18 @@ Trace events and performance entries can be joined by navigationId.
 
 -> id_3 soft-navigation (entry after 1st user click)
 -> id_3 soft-lcp (entry)
--> id_3 LCP candidate (trace)
 -> id_3 Soft navigation (trace)
+-> id_3 LCP candidate for soft navigation (trace)
 
 -> id_4 soft-navigation (entry after 2nd user click)
 -> id_4 soft-lcp (entry)
--> id_4 LCP candidate (trace)
 -> id_4 Soft navigation (trace)
+-> id_4 LCP candidate for soft navigation (trace)
 
 -> id_5 soft-navigation (entry after 3rd user click)
 -> id_5 soft-lcp (entry)
--> id_5 LCP candidate (trace)
 -> id_5 Soft navigation (trace)
+-> id_5 LCP candidate for soft navigation (trace)
 
 -> id_6 back-forward-cache-restoration (entry for text-lcp.html)
 -> id_6 hard-lcp (entry)

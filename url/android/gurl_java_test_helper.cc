@@ -74,3 +74,5 @@ static void JNI_GURLJavaTestHelper_TestGURLEquivalence(JNIEnv* env) {
 }
 
 }  // namespace url
+
+DEFINE_JNI(GURLJavaTestHelper)

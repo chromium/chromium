@@ -12,7 +12,7 @@ namespace blink {
 
 namespace {
 
-WTF::String OverscrollBehaviorTypeToString(cc::OverscrollBehavior::Type value) {
+String OverscrollBehaviorTypeToString(cc::OverscrollBehavior::Type value) {
   switch (value) {
     case cc::OverscrollBehavior::Type::kNone:
       return "none";

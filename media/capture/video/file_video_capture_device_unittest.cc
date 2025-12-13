@@ -84,7 +84,6 @@ class FileVideoCaptureDeviceTest : public ::testing::Test {
         GetTestDataFilePath("bear.mjpeg"));
     device_->AllocateAndStart(VideoCaptureParams(), std::move(client_));
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-    test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
     VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
         test_sii_);
   }

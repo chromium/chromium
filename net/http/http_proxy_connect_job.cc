@@ -16,6 +16,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -513,8 +514,9 @@ int HttpProxyConnectJob::DoTransportConnect() {
     // Skip making a new connection if we have an existing HTTP/2 session.
     if (params_->tunnel() &&
         common_connect_job_params()->spdy_session_pool->FindAvailableSession(
-            CreateSpdySessionKey(), /*enable_ip_based_pooling=*/false,
+            CreateSpdySessionKey(), /*enable_ip_based_pooling_for_h2=*/false,
             /*is_websocket=*/false, net_log())) {
+      has_established_connection_ = true;
       next_state_ = STATE_SPDY_PROXY_CREATE_STREAM;
       return OK;
     }
@@ -678,7 +680,7 @@ int HttpProxyConnectJob::DoSpdyProxyCreateStream() {
   SpdySessionKey key = CreateSpdySessionKey();
   base::WeakPtr<SpdySession> spdy_session =
       common_connect_job_params()->spdy_session_pool->FindAvailableSession(
-          key, /* enable_ip_based_pooling = */ false,
+          key, /* enable_ip_based_pooling_for_h2 = */ false,
           /* is_websocket = */ false, net_log());
   // It's possible that a session to the proxy has recently been created
   if (spdy_session) {
@@ -922,19 +924,13 @@ std::string HttpProxyConnectJob::GetUserAgent() const {
 
 SpdySessionKey HttpProxyConnectJob::CreateSpdySessionKey() const {
   // Construct the SpdySessionKey using a ProxyChain that corresponds to what we
-  // are sending the CONNECT to. For the first proxy server use
-  // `ProxyChain::Direct()`, and for the others use a proxy chain containing all
+  // are sending the CONNECT to. For the first proxy server use a direct proxy
+  // chain, and for the others use a proxy chain containing all
   // proxy servers that we have already connected through.
-  std::vector<ProxyServer> intermediate_proxy_servers;
-  for (size_t proxy_index = 0; proxy_index < params_->proxy_chain_index();
-       ++proxy_index) {
-    intermediate_proxy_servers.push_back(
-        params_->proxy_chain().GetProxyServer(proxy_index));
-  }
-  ProxyChain session_key_proxy_chain(std::move(intermediate_proxy_servers));
-  if (params_->proxy_chain_index() == 0) {
-    DCHECK(session_key_proxy_chain.is_direct());
-  }
+  ProxyChain session_key_proxy_chain =
+      params_->proxy_chain().Prefix(params_->proxy_chain_index());
+  DCHECK(params_->proxy_chain_index() != 0 ||
+         session_key_proxy_chain.is_direct());
 
   // Note that `disable_cert_network_fetches` must be true for proxies to avoid
   // deadlock. See comment on

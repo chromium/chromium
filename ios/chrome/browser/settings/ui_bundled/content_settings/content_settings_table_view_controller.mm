@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/web/model/annotations/annotations_util.h"
@@ -40,7 +39,7 @@ namespace {
 BOOL openedMailTo = NO;
 
 // Notification name of changes to openedMailTo state.
-NSString* kMailToInstanceChanged = @"MailToInstanceChanged";
+NSString* const kMailToInstanceChanged = @"MailToInstanceChanged";
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSettings = kSectionIdentifierEnumZero,
@@ -70,12 +69,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewMultiDetailTextItem* _openedInAnotherWindowItem;
   TableViewDetailIconItem* _defaultSiteMode;
   TableViewDetailIconItem* _webInspectorStateItem;
-
-  // PrefBackedBoolean for Mini Map show native setting state.
-  PrefBackedBoolean* _miniMapShowNativeEnabled;
-
-  // The item related to the switch for the "MiniMap native" setting.
-  TableViewSwitchItem* _miniMapShowNativeViewItem;
 }
 
 // PrefBackedBoolean for "Show Link Preview" setting state.
@@ -151,11 +144,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
                    prefName:prefs::kDetectAddressesEnabled];
     [_detectAddressesEnabled setObserver:self];
 
-    _miniMapShowNativeEnabled = [[PrefBackedBoolean alloc]
-        initWithPrefService:prefService
-                   prefName:prefs::kIosMiniMapShowNativeMap];
-    [_miniMapShowNativeEnabled setObserver:self];
-
     _detectUnitsEnabled = [[PrefBackedBoolean alloc]
         initWithPrefService:prefService
                    prefName:prefs::kDetectUnitsEnabled];
@@ -226,9 +214,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [_detectAddressesEnabled stop];
   _detectAddressesEnabled.observer = nil;
   _detectAddressesEnabled = nil;
-  [_miniMapShowNativeEnabled stop];
-  _miniMapShowNativeEnabled.observer = nil;
-  _miniMapShowNativeEnabled = nil;
   [_detectUnitsEnabled stop];
   _detectUnitsEnabled.observer = nil;
   _detectUnitsEnabled = nil;
@@ -277,11 +262,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   if (IsAddressDetectionEnabled()) {
     [model addItem:[self detectAddressItem]
-        toSectionWithIdentifier:SectionIdentifierSettings];
-  }
-
-  if (base::FeatureList::IsEnabled(kIOSMiniMapUniversalLink)) {
-    [model addItem:[self miniMapShowNativeViewItem]
         toSectionWithIdentifier:SectionIdentifierSettings];
   }
 
@@ -385,6 +365,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
     _linkPreviewItem.text = l10n_util::GetNSString(IDS_IOS_SHOW_LINK_PREVIEWS);
     _linkPreviewItem.on = [self.linkPreviewEnabled value];
+    _linkPreviewItem.target = self;
+    _linkPreviewItem.selector = @selector(showLinkPreviewSwitchToggled:);
     _linkPreviewItem.accessibilityIdentifier = kSettingsShowLinkPreviewCellId;
   }
   return _linkPreviewItem;
@@ -400,24 +382,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _detectAddressesItem.detailText =
         l10n_util::GetNSString(IDS_IOS_DETECT_ADDRESSES_SETTING_DESCRIPTION);
     _detectAddressesItem.on = [self.detectAddressesEnabled value];
+    _detectAddressesItem.target = self;
+    _detectAddressesItem.selector = @selector(detectAddressesSwitchToggled:);
     _detectAddressesItem.accessibilityIdentifier =
         kSettingsDetectAddressesCellId;
   }
   return _detectAddressesItem;
-}
-
-- (TableViewSwitchItem*)miniMapShowNativeViewItem {
-  if (!_miniMapShowNativeViewItem) {
-    _miniMapShowNativeViewItem = [[TableViewSwitchItem alloc]
-        initWithType:ItemTypeSettingsMiniMapShowNative];
-
-    _miniMapShowNativeViewItem.text =
-        l10n_util::GetNSString(IDS_IOS_MAPS_PREVIEWS_SETTING_TITLE);
-    _miniMapShowNativeViewItem.on = [_miniMapShowNativeEnabled value];
-    _miniMapShowNativeViewItem.accessibilityIdentifier =
-        kSettingsMimiMapNativeCellId;
-  }
-  return _miniMapShowNativeViewItem;
 }
 
 - (TableViewSwitchItem*)detectUnitItem {
@@ -430,6 +400,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _detectUnitsItem.detailText =
         l10n_util::GetNSString(IDS_IOS_DETECT_UNITS_SETTING_DESCRIPTION);
     _detectUnitsItem.on = [self.detectUnitsEnabled value];
+    _detectUnitsItem.target = self;
+    _detectUnitsItem.selector = @selector(detectUnitsSwitchToggled:);
     _detectUnitsItem.accessibilityIdentifier = kSettingsDetectUnitsCellId;
   }
   return _detectUnitsItem;
@@ -445,48 +417,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
       UITableViewCellAccessoryDisclosureIndicator;
   _webInspectorStateItem.accessibilityIdentifier = kSettingsWebInspectorCellId;
   return _webInspectorStateItem;
-}
-
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
-
-  if (itemType == ItemTypeSettingsShowLinkPreview) {
-    TableViewSwitchCell* switchCell =
-        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-    [switchCell.switchView addTarget:self
-                              action:@selector(showLinkPreviewSwitchToggled:)
-                    forControlEvents:UIControlEventValueChanged];
-  }
-
-  if (itemType == ItemTypeSettingsDetectAddresses) {
-    TableViewSwitchCell* switchCell =
-        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-    [switchCell.switchView addTarget:self
-                              action:@selector(detectAddressesSwitchToggled:)
-                    forControlEvents:UIControlEventValueChanged];
-  }
-
-  if (itemType == ItemTypeSettingsMiniMapShowNative) {
-    TableViewSwitchCell* switchCell =
-        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-    [switchCell.switchView addTarget:self
-                              action:@selector(detectMiniMapSwitchToggled:)
-                    forControlEvents:UIControlEventValueChanged];
-  }
-
-  if (itemType == ItemTypeSettingsDetectUnits) {
-    TableViewSwitchCell* switchCell =
-        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-    [switchCell.switchView addTarget:self
-                              action:@selector(detectUnitsSwitchToggled:)
-                    forControlEvents:UIControlEventValueChanged];
-  }
-  return cell;
 }
 
 #pragma mark - UITableViewDelegate
@@ -565,9 +495,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   } else if (observableBoolean == self.detectAddressesEnabled) {
     self.detectAddressItem.on = [self.detectAddressesEnabled value];
     [self reconfigureCellsForItems:@[ self.detectAddressItem ]];
-  } else if (observableBoolean == _miniMapShowNativeEnabled) {
-    _miniMapShowNativeViewItem.on = [_miniMapShowNativeEnabled value];
-    [self reconfigureCellsForItems:@[ _miniMapShowNativeViewItem ]];
   } else if (observableBoolean == self.detectUnitsEnabled) {
     self.detectUnitsItem.on = [self.detectUnitsEnabled value];
     [self reconfigureCellsForItems:@[ self.detectUnitsItem ]];
@@ -588,12 +515,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   BOOL newSwitchValue = sender.isOn;
   self.detectAddressesItem.on = newSwitchValue;
   [self.detectAddressesEnabled setValue:newSwitchValue];
-}
-
-- (void)detectMiniMapSwitchToggled:(UISwitch*)sender {
-  BOOL newSwitchValue = sender.isOn;
-  _miniMapShowNativeViewItem.on = newSwitchValue;
-  [_miniMapShowNativeEnabled setValue:newSwitchValue];
 }
 
 - (void)detectUnitsSwitchToggled:(UISwitch*)sender {

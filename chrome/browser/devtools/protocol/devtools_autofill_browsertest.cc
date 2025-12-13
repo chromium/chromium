@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/check_deref.h"
+#include "base/containers/to_vector.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -227,7 +228,10 @@ class DevToolsAutofillTest : public DevToolsProtocolTestBase {
     return profile;
   }
 
-  FormGlobalId form_id() const { return form_id_; }
+  FormGlobalId form_id() {
+    return {LocalFrameToken(*main_frame()->GetFrameToken()),
+            FormRendererId(123)};
+  }
 
   base::Value::Dict GetFilledOutForm(const std::string& unique_context_id) {
     return GetFilledOutForm(unique_context_id, "");
@@ -259,8 +263,7 @@ class DevToolsAutofillTest : public DevToolsProtocolTestBase {
   }
 
  private:
-  test::AutofillUnitTestEnvironment autofill_test_environment_;
-  FormGlobalId form_id_ = test::MakeFormGlobalId();
+  test::AutofillBrowserTestEnvironment autofill_test_environment_;
   autofill::TestAutofillManagerInjector<TestAutofillManager>
       autofill_manager_injector_;
 };
@@ -311,30 +314,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, SetAddresses) {
   ASSERT_EQ(
       res[1].GetAddress().GetRawInfo(autofill::FieldType::ADDRESS_HOME_LINE2),
       u"Faria lima");
-}
-
-IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCard) {
-  embedded_test_server()->ServeFilesFromSourceDirectory(
-      "chrome/test/data/autofill");
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL url(
-      embedded_test_server()->GetURL("/autofill_creditcard_form.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
-  Attach();
-
-  EXPECT_TRUE(main_autofill_manager().WaitForFormsSeen(1));
-
-  int backend_node_id = GetBackendNodeIdByIdAttribute("CREDIT_CARD_NUMBER");
-
-  base::Value::Dict params;
-  params.Set("fieldId", backend_node_id);
-  params.Set("card", GetTestCreditCard());
-
-  ASSERT_TRUE(result());
-  SendCommandSync("Autofill.trigger", std::move(params));
-  EXPECT_EQ(*result(), base::Value::Dict());
-  EXPECT_EQ(GetFilledOutForm(""), GetTestCreditCard());
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCardInIframe) {
@@ -466,7 +445,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
 
   // TODO(crbug.com/40227496): Get rid of FormFieldData.
   FormData form;
-  form.set_host_frame(LocalFrameToken(*main_frame()->GetFrameToken()));
+  form.set_host_frame(form_id().frame_token);
   form.set_renderer_id(form_id().renderer_id);
   std::vector<FormFieldData> fields;
   fields.push_back(test::CreateTestFormField(
@@ -492,16 +471,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
   form_structure->field(1)->SetHtmlType(HtmlFieldType::kUnspecified,
                                         HtmlFieldMode::kShipping);
 
-  // Fake a that the fields were filled.
-  form_structure->field(0)->set_value(u"value_1");
-  form_structure->field(1)->set_value(u"value_2");
-  test_api(form).field(0).set_value(u"value_1");
-  test_api(form).field(1).set_value(u"value_2");
   const std::vector<FormFieldData> filled_fields_by_autofill = {
       {form.fields()[0], form.fields()[1]}};
 
-  (*test_api(main_autofill_manager()).mutable_form_structures())[form_id()] =
-      std::move(form_structure);
+  test_api(main_autofill_manager())
+      .AddSeenFormStructure(std::move(form_structure));
 
   // Enable events and emit event about form being filled.
   SendCommandSync("Autofill.enable");
@@ -541,19 +515,24 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
       notification.FindListByDottedPath("filledFields");
   ASSERT_EQ(filled_fields->size(), filled_fields_by_autofill.size());
   for (size_t i = 0; i < filled_fields->size(); ++i) {
-    FormStructure& fs =
+    const FormStructure& fs =
         CHECK_DEREF(main_autofill_manager().FindCachedFormById(form_id()));
     const base::Value& ff = (*filled_fields)[i];
     const FormFieldData& ffd = filled_fields_by_autofill[i];
     const AutofillField* af = fs.GetFieldById(ffd.global_id());
 
+    std::vector<std::string_view> field_type_strings =
+        base::ToVector(af->Type().GetTypes(),
+                       &autofill::FieldTypeToDeveloperRepresentationString);
+    std::erase(field_type_strings, "");
+
     EXPECT_THAT(ff,
                 FilledFieldHasAttributeWithValue16("id", af->id_attribute()));
-    EXPECT_THAT(ff, FilledFieldHasAttributeWithValue(
-                        "autofillType",
-                        std::string(FieldTypeToDeveloperRepresentationString(
-                            af->Type().GetStorableType()))));
-    EXPECT_THAT(ff, FilledFieldHasAttributeWithValue16("value", af->value()));
+    EXPECT_THAT(
+        ff, FilledFieldHasAttributeWithValue(
+                "autofillType", base::JoinString(field_type_strings, ", ")));
+    EXPECT_THAT(ff, FilledFieldHasAttributeWithValue16(
+                        "value", profile.GetInfo(af->Type(), "en-us")));
     EXPECT_THAT(ff, FilledFieldHasAttributeWithValue16(
                         "frameId",
                         base::UTF8ToUTF16(
@@ -714,6 +693,282 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
       form_b.global_id(), autofill::mojom::ActionPersistence::kFill,
       filled_fields_by_autofill_b, &profile_b);
   WaitForNotification("Autofill.addressFormFilled", /*allow_existing=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerAddressAutofill) {
+  embedded_test_server()->ServeFilesFromSourceDirectory(
+      "chrome/test/data/autofill");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL url =
+      embedded_test_server()->GetURL("/autofill_address_enabled.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  Attach();
+  SendCommandSync("Autofill.enable");
+
+  EXPECT_TRUE(main_autofill_manager().WaitForFormsSeen(1));
+
+  int backend_node_id = GetBackendNodeIdByIdAttribute("street-address");
+
+  auto address_fields = base::Value::List()
+                            .Append(base::Value::Dict()
+                                        .Set("name", "ADDRESS_HOME_LINE1")
+                                        .Set("value", "123 Main Street"))
+                            .Append(base::Value::Dict()
+                                        .Set("name", "ADDRESS_HOME_CITY")
+                                        .Set("value", "New York"))
+                            .Append(base::Value::Dict()
+                                        .Set("name", "ADDRESS_HOME_STATE")
+                                        .Set("value", "NY"))
+                            .Append(base::Value::Dict()
+                                        .Set("name", "ADDRESS_HOME_ZIP")
+                                        .Set("value", "10001"))
+                            .Append(base::Value::Dict()
+                                        .Set("name", "ADDRESS_HOME_COUNTRY")
+                                        .Set("value", "US"));
+
+  auto address = base::Value::Dict().Set("fields", std::move(address_fields));
+
+  base::Value::Dict params;
+  params.Set("fieldId", backend_node_id);
+  params.Set("address", std::move(address));
+
+  SendCommandSync("Autofill.trigger", std::move(params));
+
+  if (error()) {
+    FAIL() << "Autofill trigger failed with error: "
+           << *error()->FindString("message");
+  } else {
+    // Verify the field was filled
+    content::EvalJsResult street_address = content::EvalJs(
+        web_contents(), "document.getElementById('street-address').value");
+    EXPECT_EQ("123 Main Street", street_address.ExtractString());
+    content::EvalJsResult city = content::EvalJs(
+        web_contents(), "document.getElementById('city').value");
+    EXPECT_EQ("New York", city.ExtractString());
+    content::EvalJsResult zip = content::EvalJs(
+        web_contents(), "document.getElementById('postal-code').value");
+    EXPECT_EQ("10001", zip.ExtractString());
+    content::EvalJsResult state = content::EvalJs(
+        web_contents(), "document.getElementById('state').value");
+    EXPECT_EQ("NY", state.ExtractString());
+    content::EvalJsResult country = content::EvalJs(
+        web_contents(), "document.getElementById('country').value");
+    EXPECT_EQ("US", country.ExtractString());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerWithInvalidFieldId) {
+  embedded_test_server()->ServeFilesFromSourceDirectory(
+      "chrome/test/data/autofill");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(
+      embedded_test_server()->GetURL("/autofill_creditcard_form.html"));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  Attach();
+  SendCommandSync("Autofill.enable");
+
+  EXPECT_TRUE(main_autofill_manager().WaitForFormsSeen(1));
+
+  base::Value::Dict params;
+  params.Set("fieldId", 99999);  // Invalid field ID
+  params.Set("card", GetTestCreditCard());
+
+  SendCommandSync("Autofill.trigger", std::move(params));
+
+  EXPECT_TRUE(error());
+  EXPECT_EQ(*error()->FindString("message"), "Field not found");
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
+                       TriggerAddressWithUnsupportedFieldType) {
+  embedded_test_server()->ServeFilesFromSourceDirectory(
+      "chrome/test/data/autofill");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL url =
+      embedded_test_server()->GetURL("/autofill_address_enabled.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  Attach();
+  SendCommandSync("Autofill.enable");
+
+  EXPECT_TRUE(main_autofill_manager().WaitForFormsSeen(1));
+
+  int backend_node_id = GetBackendNodeIdByIdAttribute("street-address");
+
+  // Use an invalid/unsupported field type
+  auto address_fields =
+      base::Value::List().Append(base::Value::Dict()
+                                     .Set("name", "INVALID_FIELD_TYPE")
+                                     .Set("value", "123 Main Street"));
+
+  auto address = base::Value::Dict().Set("fields", std::move(address_fields));
+
+  base::Value::Dict params;
+  params.Set("fieldId", backend_node_id);
+  params.Set("address", std::move(address));
+
+  SendCommandSync("Autofill.trigger", std::move(params));
+
+  EXPECT_TRUE(error());
+  EXPECT_EQ(*error()->FindString("message"),
+            "Unsupported field type: INVALID_FIELD_TYPE");
+
+  address_fields =
+      base::Value::List().Append(base::Value::Dict()
+                                     .Set("name", "LOYALTY_MEMBERSHIP_ID")
+                                     .Set("value", "1234567890"));
+
+  address = base::Value::Dict().Set("fields", std::move(address_fields));
+
+  params.Set("fieldId", backend_node_id);
+  params.Set("address", std::move(address));
+
+  SendCommandSync("Autofill.trigger", std::move(params));
+
+  EXPECT_TRUE(error());
+  EXPECT_EQ(*error()->FindString("message"),
+            "Unsupported field type: LOYALTY_MEMBERSHIP_ID");
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerAddressAutofillInIframe) {
+  embedded_test_server()->ServeFilesFromSourceDirectory(
+      "chrome/test/data/autofill");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL(
+      "/autofill_address_multi_form_in_oopif.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+  Attach();
+
+  EXPECT_TRUE(main_autofill_manager().WaitForFormsSeen(1));
+
+  std::string frame_id;
+  {
+    const base::Value::Dict* result = SendCommandSync("Page.getFrameTree");
+    const base::Value::List* frames =
+        result->FindListByDottedPath("frameTree.childFrames");
+    const base::Value::Dict* frame_dict = frames->front().GetIfDict();
+    frame_id = *frame_dict->FindStringByDottedPath("frame.id");
+  }
+
+  std::string unique_context_id;
+  {
+    base::Value::Dict command_params;
+    SendCommandSync("Runtime.enable");
+    base::Value::Dict params;
+    for (int context_count = 1; true; context_count++) {
+      params = WaitForNotification("Runtime.executionContextCreated", true);
+      if (*params.FindStringByDottedPath("context.auxData.frameId") ==
+          frame_id) {
+        unique_context_id = *params.FindStringByDottedPath("context.uniqueId");
+        break;
+      }
+      ASSERT_LT(context_count, 2);
+    }
+  }
+
+  int backend_node_id =
+      GetBackendNodeIdByIdAttribute("street-address", unique_context_id);
+
+  // Use valid address field types
+  auto address_fields = base::Value::List()
+                            .Append(base::Value::Dict()
+                                        .Set("name", "ADDRESS_HOME_LINE1")
+                                        .Set("value", "123 Main Street"))
+                            .Append(base::Value::Dict()
+                                        .Set("name", "ADDRESS_HOME_CITY")
+                                        .Set("value", "New York"));
+
+  auto address = base::Value::Dict().Set("fields", std::move(address_fields));
+
+  base::Value::Dict params;
+  params.Set("fieldId", backend_node_id);
+  params.Set("address", std::move(address));
+  params.Set("frameId", frame_id);
+
+  SendCommandSync("Autofill.trigger", std::move(params));
+
+  if (error()) {
+    FAIL() << "Autofill trigger failed with error: "
+           << *error()->FindString("message");
+  } else {
+    // Verify the fields were filled in the iframe
+    content::EvalJsResult street_address =
+        content::EvalJs(web_contents(),
+                        "document.querySelector('iframe').contentDocument."
+                        "getElementById('street-address').value");
+    EXPECT_EQ("123 Main Street", street_address.ExtractString());
+
+    content::EvalJsResult city =
+        content::EvalJs(web_contents(),
+                        "document.querySelector('iframe').contentDocument."
+                        "getElementById('city').value");
+    EXPECT_EQ("New York", city.ExtractString());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerWithBothCardAndAddress) {
+  embedded_test_server()->ServeFilesFromSourceDirectory(
+      "chrome/test/data/autofill");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(
+      embedded_test_server()->GetURL("/autofill_creditcard_form.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+  Attach();
+
+  EXPECT_TRUE(main_autofill_manager().WaitForFormsSeen(1));
+
+  int backend_node_id = GetBackendNodeIdByIdAttribute("CREDIT_CARD_NUMBER");
+
+  auto address_fields = base::Value::List()
+                            .Append(base::Value::Dict()
+                                        .Set("name", "ADDRESS_HOME_LINE1")
+                                        .Set("value", "123 Main Street"))
+                            .Append(base::Value::Dict()
+                                        .Set("name", "ADDRESS_HOME_COUNTRY")
+                                        .Set("value", "US"));
+
+  base::Value::Dict params;
+  params.Set("fieldId", backend_node_id);
+  params.Set("card", GetTestCreditCard());
+  params.Set("address",
+             base::Value::Dict().Set("fields", std::move(address_fields)));
+
+  SendCommandSync("Autofill.trigger", std::move(params));
+
+  EXPECT_TRUE(error());
+  EXPECT_EQ(*error()->FindString("message"),
+            "Card and address cannot both be provided");
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerWithNeitherCardNorAddress) {
+  embedded_test_server()->ServeFilesFromSourceDirectory(
+      "chrome/test/data/autofill");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(
+      embedded_test_server()->GetURL("/autofill_creditcard_form.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+  Attach();
+
+  EXPECT_TRUE(main_autofill_manager().WaitForFormsSeen(1));
+
+  int backend_node_id = GetBackendNodeIdByIdAttribute("CREDIT_CARD_NUMBER");
+
+  base::Value::Dict params;
+  params.Set("fieldId", backend_node_id);
+  // Neither card nor address provided
+
+  SendCommandSync("Autofill.trigger", std::move(params));
+
+  EXPECT_TRUE(error());
+  EXPECT_EQ(*error()->FindString("message"),
+            "Either card or address must be provided");
 }
 
 }  // namespace

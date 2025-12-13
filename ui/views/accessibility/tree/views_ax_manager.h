@@ -9,11 +9,11 @@
 
 #include <memory>
 #include <string>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/accessibility/ax_action_handler.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -155,7 +155,7 @@ class VIEWS_EXPORT ViewsAXManager : public ui::AXActionHandler,
   };
   std::vector<Event> pending_events_;
 
-  std::unordered_set<ui::AXNodeID> pending_data_updates_;
+  absl::flat_hash_set<ui::AXNodeID> pending_data_updates_;
 };
 }  // namespace views
 

@@ -18,6 +18,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
@@ -40,13 +41,13 @@ namespace gpu {
 
 namespace {
 
-auto kQualities = std::to_array<GLHelper::ScalerQuality>({
+constexpr auto kQualities = std::to_array<GLHelper::ScalerQuality>({
     GLHelper::SCALER_QUALITY_BEST,
     GLHelper::SCALER_QUALITY_GOOD,
     GLHelper::SCALER_QUALITY_FAST,
 });
 
-auto kQualityNames = std::to_array<const char*>({
+constexpr auto kQualityNames = std::to_array<const char*>({
     "best",
     "good",
     "fast",
@@ -59,11 +60,9 @@ class GLHelperTest : public testing::Test {
   void SetUp() override {
     feature_list_.Init();
 
-    ContextCreationAttribs attributes;
     context_ = std::make_unique<GLInProcessContext>();
     auto result = context_->Initialize(
-        viz::TestGpuServiceHolder::GetInstance()->task_executor(), attributes,
-        SharedMemoryLimits());
+        viz::TestGpuServiceHolder::GetInstance()->task_executor());
     DCHECK_EQ(result, ContextResult::kSuccess);
     gl_ = context_->GetImplementation();
     ContextSupport* support = context_->GetImplementation();
@@ -670,7 +669,8 @@ class GLHelperTest : public testing::Test {
 
     EXPECT_TRUE(ReadBackTexture(
         dst_texture, gfx::Rect(scaled_size),
-        static_cast<unsigned char*>(output_pixels.getPixels()),
+        UNSAFE_TODO(base::span(static_cast<uint8_t*>(output_pixels.getPixels()),
+                               output_pixels.computeByteSize())),
         output_pixels.rowBytes(), flip_output, kRGBA_8888_SkColorType));
 
     // If the bitmap shouldn't have changed - compare against input.
@@ -755,7 +755,8 @@ class GLHelperTest : public testing::Test {
 
     EXPECT_TRUE(ReadBackTexture(
         dst_texture, gfx::Rect(entire_output_size),
-        static_cast<unsigned char*>(entire_output.getPixels()),
+        UNSAFE_TODO(base::span(static_cast<uint8_t*>(entire_output.getPixels()),
+                               entire_output.computeByteSize())),
         entire_output.rowBytes(), /*flip_y=*/false, kRGBA_8888_SkColorType));
 
     const std::string human_readable_test_params = base::StringPrintf(
@@ -798,7 +799,9 @@ class GLHelperTest : public testing::Test {
                               kRGBA_8888_SkColorType, kPremul_SkAlphaType));
         EXPECT_TRUE(ReadBackTexture(
             dst_texture, gfx::Rect(patch_size),
-            static_cast<unsigned char*>(patch_output.getPixels()),
+            UNSAFE_TODO(
+                base::span(static_cast<uint8_t*>(patch_output.getPixels()),
+                           patch_output.computeByteSize())),
             patch_output.rowBytes(), /*flip_y=*/false, kRGBA_8888_SkColorType));
         SkBitmap expected;
         SkIRect expected_subrect{patch_rect.x(), patch_rect.y(),
@@ -842,7 +845,9 @@ class GLHelperTest : public testing::Test {
           gl_->DeleteTextures(1, &src_subset_texture);
           EXPECT_TRUE(ReadBackTexture(
               dst_texture, gfx::Rect(patch_size),
-              static_cast<unsigned char*>(patch_output.getPixels()),
+              UNSAFE_TODO(
+                  base::span(static_cast<uint8_t*>(patch_output.getPixels()),
+                             patch_output.computeByteSize())),
               patch_output.rowBytes(), /*flip_y=*/false,
               kRGBA_8888_SkColorType));
           Compare(&expected, &patch_output, 2, test_bitmap.get(), stages,
@@ -995,7 +1000,7 @@ class GLHelperTest : public testing::Test {
 
   bool ReadBackTexture(GLuint src_texture,
                        const gfx::Rect& src_rect,
-                       unsigned char* pixels,
+                       base::span<uint8_t> pixels,
                        size_t pixels_stride,
                        bool flip_y,
                        SkColorType color_type) {
@@ -1041,7 +1046,9 @@ class GLHelperTest : public testing::Test {
     // Initialize the output bitmap with Green color.
     // When the readback is over output bitmap should have the red color.
     output_pixels.eraseColor(SK_ColorGREEN);
-    uint8_t* pixels = static_cast<uint8_t*>(output_pixels.getPixels());
+    auto pixels =
+        UNSAFE_TODO(base::span(static_cast<uint8_t*>(output_pixels.getPixels()),
+                               output_pixels.computeByteSize()));
     if (!ReadBackTexture(src_texture, gfx::Rect(src_size), pixels,
                          output_pixels.rowBytes(), /*flip_y=*/false,
                          color_type) ||
@@ -1283,7 +1290,7 @@ TEST_F(GLHelperTest, BGRAASyncReadbackTest) {
   EXPECT_EQ(result, true);
 }
 
-auto kRGBReadBackSizes = std::to_array<int>({3, 6, 16});
+constexpr auto kRGBReadBackSizes = std::to_array<int>({3, 6, 16});
 
 class GLHelperPixelReadbackTest
     : public GLHelperPixelTest,

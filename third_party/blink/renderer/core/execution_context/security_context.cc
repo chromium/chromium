@@ -38,6 +38,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
+#include "third_party/blink/renderer/core/frame/intervention.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -46,12 +47,35 @@
 
 namespace blink {
 
+namespace {
+
+String SelectivePermissionInterventionMessage(
+    network::mojom::PermissionsPolicyFeature feature) {
+  // Get the feature's name.
+  String feature_name;
+  for (const auto& entry :
+       GetDefaultFeatureNameMap(/*is_isolated_context=*/false)) {
+    if (entry.value == feature) {
+      feature_name = entry.key;
+      break;
+    }
+  }
+  DCHECK(!feature_name.empty());
+
+  return StrCat({"Blocked call to ", feature_name,
+                 " because ad-script was in the JavaScript stack at the time "
+                 "of the call. See http://crbug.com/435223477 for more "
+                 "information about this intervention."});
+}
+
+}  // namespace
+
 // static
-WTF::Vector<unsigned> SecurityContext::SerializeInsecureNavigationSet(
+Vector<unsigned> SecurityContext::SerializeInsecureNavigationSet(
     const InsecureNavigationsSet& set) {
   // The set is serialized as a sorted array. Sorting it makes it easy to know
   // if two serialized sets are equal.
-  WTF::Vector<unsigned> serialized;
+  Vector<unsigned> serialized;
   serialized.reserve(set.size());
   for (unsigned host : set)
     serialized.emplace_back(host);
@@ -179,16 +203,37 @@ SecurityContext::FeatureStatus SecurityContext::IsFeatureEnabled(
       !report_only_permissions_policy_ ||
       report_only_permissions_policy_->IsFeatureEnabled(feature);
 
+  // Selective Permissions Intervention.
+  // https://chromestatus.com/feature/4811835974615040
   if (permissions_policy_result && IsPrivacySensitiveFeature(feature)) {
     if (LocalDOMWindow* window =
             DynamicTo<LocalDOMWindow>(execution_context_.Get())) {
       if (LocalFrame* frame = window->GetFrame()) {
+        AdTracker::AdScriptAncestry ad_ancestry;
         AdTracker* ad_tracker = frame->GetAdTracker();
-        if (ad_tracker && ad_tracker->IsAdScriptInStack(
-                              AdTracker::StackType::kBottomAndTop)) {
+
+        if (ad_tracker &&
+            ad_tracker->IsAdScriptInStack(
+                AdTracker::StackType::kBottomAndTop,
+                /*ignore_monkey_patch=*/AdTracker::MonkeyPatchableApi::kNone,
+                &ad_ancestry)) {
           window->CountPermissionsPolicyUsage(
               feature, UseCounterImpl::PermissionsPolicyUsageType::
                            kEnabledPrivacySensitive);
+          if (RuntimeEnabledFeatures::
+                  SelectivePermissionsInterventionEnabled()) {
+            permissions_policy_result = false;
+
+            String intervention_message =
+                SelectivePermissionInterventionMessage(feature);
+
+            // Add debugging cross-site data to the devtools console that
+            // shouldn't be in the intervention report.
+            String console_message =
+                StrCat({intervention_message, " ", ad_ancestry.ToString()});
+            Intervention::GenerateReport(frame, "SelectivePermissions",
+                                         intervention_message, console_message);
+          }
         }
       }
     }

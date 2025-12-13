@@ -15,7 +15,7 @@ namespace content {
 class WebContents;
 }
 
-class Browser;
+class BrowserWindowInterface;
 
 class FullscreenKeyboardBrowserTestBase : public InProcessBrowserTest {
  public:
@@ -99,10 +99,10 @@ class FullscreenKeyboardBrowserTestBase : public InProcessBrowserTest {
   size_t GetBrowserCount() const;
 
   // Gets the last active Browser instance.
-  Browser* GetActiveBrowser() const;
+  BrowserWindowInterface* GetActiveBrowser() const;
 
   // Creates a new browser instance.  Returns a pointer to the new instance.
-  Browser* CreateNewBrowserInstance();
+  BrowserWindowInterface* CreateNewBrowserInstance();
 
   // Ensures GetActiveBrowser() is focused.
   void FocusOnLastActiveBrowser();

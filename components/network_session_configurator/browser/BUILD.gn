@@ -23,7 +23,7 @@ source_set("unit_tests") {
   deps = [
     ":browser",
     "//base/test:test_support",
-    "//components/variations:variations",
+    "//components/variations",
     "//testing/gtest",
   ]
 }

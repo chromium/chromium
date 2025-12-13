@@ -9,6 +9,7 @@
 #include <psapi.h>
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -246,7 +247,7 @@ void HandleHooks::PatchLoadedModules() {
   returned = std::min(kSize, returned);
 
   for (DWORD current = 0; current < returned; current++) {
-    AddIATPatch(modules[current]);
+    AddIATPatch(UNSAFE_TODO(modules[current]));
   }
 }
 

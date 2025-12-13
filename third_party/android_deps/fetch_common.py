@@ -58,7 +58,7 @@ def get_download_url(version, spec):
                                                     spec.group_name,
                                                     spec.module_name, version,
                                                     spec.file_ext)
-    file_name = file_url.rsplit('/', 1)[-1]
+    file_name = f'{spec.module_name}.{spec.file_ext}'
 
     partial_manifest = {
         'url': [file_url],

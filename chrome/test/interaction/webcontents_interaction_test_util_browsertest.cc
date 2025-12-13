@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
@@ -80,7 +81,7 @@ class WebContentsInteractionTestUtilTest : public InProcessBrowserTest {
     }
     return std::move(
         ui::InteractionSequence::Builder()
-            .SetContext(context_browser->window()->GetElementContext())
+            .SetContext(BrowserElements::From(context_browser)->GetContext())
             // Because the state of the util needs to be checked immediately,
             // the start callbacks need to be immediate.
             .SetDefaultStepStartMode(
@@ -96,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   // Using this constructor hits all of the rest of the constructors, saving us
   // the hassle of writing three identical tests.
   auto util = WebContentsInteractionTestUtil::ForExistingTabInContext(
-      browser()->window()->GetElementContext(), kWebContentsElementId);
+      BrowserElements::From(browser())->GetContext(), kWebContentsElementId);
   auto sequence =
       DefaultBuilder()
           .SetCompletedCallback(completed.Get())
@@ -1661,10 +1662,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto* const model = browser()->tab_strip_model();
-  const int count = model->GetTabCount();
+  const int count = model->count();
   const int index = model->active_index();
   util->LoadPageInNewTab(url, false);
-  EXPECT_EQ(count + 1, model->GetTabCount());
+  EXPECT_EQ(count + 1, model->count());
   EXPECT_EQ(index, model->active_index());
 }
 
@@ -1675,10 +1676,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto* const model = browser()->tab_strip_model();
-  const int count = model->GetTabCount();
+  const int count = model->count();
   const int index = model->active_index();
   util->LoadPageInNewTab(url, true);
-  EXPECT_EQ(count + 1, model->GetTabCount());
+  EXPECT_EQ(count + 1, model->count());
   EXPECT_EQ(index + 1, model->active_index());
 }
 
@@ -1692,7 +1693,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto util2 = WebContentsInteractionTestUtil::ForNextTabInContext(
-      browser()->window()->GetElementContext(), kWebContentsElementId2);
+      BrowserElements::From(browser())->GetContext(), kWebContentsElementId2);
 
   auto sequence =
       DefaultBuilder()
@@ -1909,7 +1910,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
   auto* const element = get_element2();
   EXPECT_NE(nullptr, element);
-  EXPECT_EQ(other_browser->window()->GetElementContext(), element->context());
+  EXPECT_EQ(BrowserElements::From(other_browser)->GetContext(),
+            element->context());
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
@@ -1958,7 +1960,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
   auto* const element = get_element2();
   EXPECT_NE(nullptr, element);
-  EXPECT_EQ(other_browser->window()->GetElementContext(), element->context());
+  EXPECT_EQ(BrowserElements::From(other_browser)->GetContext(),
+            element->context());
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest, ExistsInWebUIPage) {
@@ -2361,7 +2364,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
   ui::test::TestElement test_el(kDummyElementId,
-                                browser()->window()->GetElementContext());
+                                BrowserElements::From(browser())->GetContext());
   test_el.Show();
 
   NavigateParams params(browser(),
@@ -2378,18 +2381,19 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
           .SetCompletedCallback(completed.Get())
           .SetAbortedCallback(aborted.Get())
 
-          .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetType(ui::InteractionSequence::StepType::kShown)
-                       .SetElementID(kDummyElementId)
-                       .SetStartCallback(base::BindLambdaForTesting(
-                           [&](ui::InteractionSequence* sequence,
-                               ui::TrackedElement* element) {
-                             util = WebContentsInteractionTestUtil::
-                                 ForExistingTabInContext(
-                                     browser()->window()->GetElementContext(),
-                                     kWebContentsElementId);
-                           }))
-                       .Build())
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetType(ui::InteractionSequence::StepType::kShown)
+                  .SetElementID(kDummyElementId)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence* sequence,
+                          ui::TrackedElement* element) {
+                        util = WebContentsInteractionTestUtil::
+                            ForExistingTabInContext(
+                                BrowserElements::From(browser())->GetContext(),
+                                kWebContentsElementId);
+                      }))
+                  .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kCustomEvent,
                                 TrackedElementWebContents::kFirstNonEmptyPaint)
@@ -2452,7 +2456,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto util2 = WebContentsInteractionTestUtil::ForNextTabInContext(
-      browser()->window()->GetElementContext(), kWebContentsElementId2);
+      BrowserElements::From(browser())->GetContext(), kWebContentsElementId2);
 
   auto sequence =
       DefaultBuilder()

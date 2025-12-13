@@ -13,7 +13,6 @@
 #include "base/apple/foundation_util.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/process/process_iterator.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/updater/app/app_utils.h"
@@ -31,17 +30,11 @@ namespace {
 // Returns true if the directory contains a crashpad database with uploads
 // enabled.
 bool AppAllowsUsageStats(const base::FilePath& app_directory) {
-  base::FilePath crashpad = app_directory.Append("Crashpad");
-  if (!base::PathExists(crashpad)) {
-    return false;
-  }
-  std::unique_ptr<crashpad::CrashReportDatabase> app_database =
-      crashpad::CrashReportDatabase::Initialize(crashpad);
-  if (!app_database) {
-    return false;
-  }
   bool enabled = false;
-  return app_database->GetSettings()->GetUploadsEnabled(&enabled) && enabled;
+  return crashpad::CrashReportDatabase::GetSettingsReaderForDatabasePath(
+             app_directory.Append("Crashpad"))
+             ->GetUploadsEnabled(&enabled) &&
+         enabled;
 }
 
 std::vector<base::FilePath> GetAppDirectories(
@@ -84,7 +77,7 @@ bool RemoteEventLoggingAllowed(
 
   bool manages_additional_apps =
       std::ranges::any_of(installed_app_ids, [&](const std::string& app_id) {
-        return !IsUpdaterOrCompanionApp(app_id) &&
+        return !IsRemoteEventLoggingPermissionExempt(app_id) &&
                !base::EqualsCaseInsensitiveASCII(
                    app_id, event_logging_permission_provider->app_id);
       });

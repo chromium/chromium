@@ -369,10 +369,25 @@ public abstract class org.chromium.net.NetworkQualityThroughputListener {
   public java.util.concurrent.Executor getExecutor();
   public org.chromium.net.NetworkQualityThroughputListener(java.util.concurrent.Executor);
 }
-public abstract class org.chromium.net.Proxy$Callback {
-  public abstract boolean onTunnelHeadersReceived(java.util.List<java.util.Map$Entry<java.lang.String, java.lang.String>>, int);
-  public abstract java.util.List<java.util.Map$Entry<java.lang.String, java.lang.String>> onBeforeTunnelRequest();
+public abstract class org.chromium.net.Proxy$Callback extends org.chromium.net.Proxy$HttpConnectCallback {
   public org.chromium.net.Proxy$Callback();
+}
+public interface org.chromium.net.Proxy$HttpConnectCallback$OnResponseReceivedAction extends java.lang.annotation.Annotation {
+}
+public abstract class org.chromium.net.Proxy$HttpConnectCallback$Request implements java.lang.AutoCloseable {
+  public abstract void close();
+  public abstract void proceed(java.util.List<android.util.Pair<java.lang.String, java.lang.String>>);
+  public org.chromium.net.Proxy$HttpConnectCallback$Request();
+}
+public abstract class org.chromium.net.Proxy$HttpConnectCallback {
+  public boolean onTunnelHeadersReceived(java.util.List<java.util.Map$Entry<java.lang.String, java.lang.String>>, int);
+  public int onResponseReceived(java.util.List<android.util.Pair<java.lang.String, java.lang.String>>, int);
+  public java.util.List<java.util.Map$Entry<java.lang.String, java.lang.String>> onBeforeTunnelRequest();
+  public org.chromium.net.Proxy$HttpConnectCallback();
+  public static final int RESPONSE_ACTION_CLOSE;
+  public static final int RESPONSE_ACTION_PROCEED;
+  public void onBeforeRequest(org.chromium.net.Proxy$HttpConnectCallback$Request);
+  public void onBeforeTunnelRequest(org.chromium.net.Proxy$HttpConnectCallback$Request);
 }
 public interface org.chromium.net.Proxy$Scheme extends java.lang.annotation.Annotation {
 }
@@ -380,16 +395,22 @@ public final class org.chromium.net.Proxy {
   public int getPort();
   public int getScheme();
   public java.lang.String getHost();
-  public org.chromium.net.Proxy$Callback getCallback();
-  public org.chromium.net.Proxy(int, java.lang.String, int, org.chromium.net.Proxy$Callback);
+  public java.util.concurrent.Executor getExecutor();
+  public org.chromium.net.Proxy$HttpConnectCallback getCallback();
+  public org.chromium.net.Proxy(int, java.lang.String, int, java.util.concurrent.Executor, org.chromium.net.Proxy$HttpConnectCallback);
+  public org.chromium.net.Proxy(int, java.lang.String, int, org.chromium.net.Proxy$HttpConnectCallback);
   public static final int HTTP;
   public static final int HTTPS;
+  public static final int SCHEME_HTTP;
+  public static final int SCHEME_HTTPS;
+  public static org.chromium.net.Proxy createHttpProxy(int, java.lang.String, int, java.util.concurrent.Executor, org.chromium.net.Proxy$HttpConnectCallback);
 }
 public interface org.chromium.net.ProxyOptions$Experimental extends java.lang.annotation.Annotation {
 }
 public final class org.chromium.net.ProxyOptions {
   public java.util.List<org.chromium.net.Proxy> getProxyList();
   public org.chromium.net.ProxyOptions(java.util.List<org.chromium.net.Proxy>);
+  public static org.chromium.net.ProxyOptions fromProxyList(java.util.List<org.chromium.net.Proxy>);
 }
 public abstract class org.chromium.net.QuicException extends org.chromium.net.NetworkException {
   protected org.chromium.net.QuicException(java.lang.String, java.lang.Throwable);
@@ -665,4 +686,4 @@ public class org.chromium.net.apihelpers.UrlRequestCallbacks {
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<java.lang.String, org.chromium.net.apihelpers.StringCronetCallback> forStringBody(org.chromium.net.apihelpers.RedirectHandler);
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<org.json.JSONObject, org.chromium.net.apihelpers.JsonCronetCallback> forJsonBody(org.chromium.net.apihelpers.RedirectHandler);
 }
-Stamp: 5fd818a7fa4b22e1e4be8179648eba6b
+Stamp: 12558b61a9bb199457f6c5b7de8c9a82

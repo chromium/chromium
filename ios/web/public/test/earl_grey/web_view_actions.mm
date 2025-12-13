@@ -27,7 +27,7 @@ using web::test::ExecuteJavaScript;
 namespace {
 
 // Long press duration to trigger context menu.
-constexpr base::TimeDelta kContextMenuLongPressDuration = base::Seconds(1);
+constexpr base::TimeDelta kContextMenuLongPressDuration = base::Seconds(2);
 
 // Duration to wait for verification of JavaScript action.
 // TODO(crbug.com/41289402): Reduce duration if the time required for

@@ -31,7 +31,7 @@ ScopedJavaLocalRef<jobjectArray> MediaImage::ToJavaArray(
     ScopedJavaLocalRef<jobject> item = images[i].CreateJavaObject(env);
     env->SetObjectArrayElement(joa, i, item.obj());
   }
-  return ScopedJavaLocalRef<jobjectArray>(env, joa);
+  return ScopedJavaLocalRef<jobjectArray>::Adopt(env, joa);
 }
 
 ScopedJavaLocalRef<jobject> MediaImage::CreateJavaObject(JNIEnv* env) const {
@@ -53,8 +53,10 @@ ScopedJavaLocalRef<jobject> MediaImage::CreateJavaObject(JNIEnv* env) const {
     env->SetObjectArrayElement(joa, i, item.obj());
   }
 
-  return Java_MediaImage_create(env, j_src, j_type,
-                                ScopedJavaLocalRef<jobjectArray>(env, joa));
+  return Java_MediaImage_create(
+      env, j_src, j_type, ScopedJavaLocalRef<jobjectArray>::Adopt(env, joa));
 }
 
 }  // namespace media_session
+
+DEFINE_JNI(MediaImage)

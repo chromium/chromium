@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/renderer_host/compositor_impl_android.h"
+
 #include "base/android/application_status_listener.h"
-#include "base/android/build_info.h"
 #include "base/base_switches.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -12,7 +13,6 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/gpu/gpu_process_host.h"
-#include "content/browser/renderer_host/compositor_impl_android.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_switches.h"
@@ -29,6 +29,7 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "url/gurl.h"

@@ -15,7 +15,7 @@ source_set("typing_session_manager") {
   ]
 
   public_deps = [
-    "//base:base",
+    "//base",
     "//third_party/abseil-cpp:absl",
   ]
 }

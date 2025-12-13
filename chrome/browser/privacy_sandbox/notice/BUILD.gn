@@ -20,12 +20,10 @@ source_set("notice_definitions") {
 
 source_set("core") {
   sources = [
-    "notice_catalog.cc",
     "notice_model.cc",
     "notice_storage.cc",
   ]
   public = [
-    "notice_catalog.h",
     "notice_model.h",
     "notice_storage.h",
   ]
@@ -33,8 +31,8 @@ source_set("core") {
     ":notice_definitions",
     ":notice_mojom",
     "//base",
-    "//base/version_info:version_info",
-    "//components/pref_registry:pref_registry",
+    "//base/version_info",
+    "//components/pref_registry",
     "//components/prefs",
     "//components/privacy_sandbox:features",
   ]
@@ -49,6 +47,18 @@ source_set("interfaces") {
   deps = [
     ":notice_mojom",
     "//components/keyed_service/core",
+  ]
+}
+
+source_set("catalog") {
+  sources = [ "notice_catalog.cc" ]
+  public = [ "notice_catalog.h" ]
+  deps = [
+    ":core",
+    ":notice_definitions",
+    ":notice_mojom",
+    "//base",
+    "//chrome/browser/privacy_sandbox:headers",
   ]
 }
 
@@ -72,6 +82,7 @@ source_set("notice") {
   ]
 
   public_deps = [
+    ":catalog",
     ":core",
     ":factory",
     ":interfaces",
@@ -95,12 +106,8 @@ if (!is_android) {
   }
 
   source_set("desktop_view_manager") {
-    sources = [
-      "desktop_entrypoint_handlers.cc",
-      "desktop_view_manager.cc",
-    ]
+    sources = [ "desktop_view_manager.cc" ]
     public = [
-      "desktop_entrypoint_handlers.h",
       "desktop_view_manager.h",
       "desktop_view_manager_test_peer.h",
     ]
@@ -113,7 +120,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/sync",
-      "//chrome/browser/ui:ui",
+      "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/privacy_sandbox",
       "//chrome/browser/ui/profiles",
@@ -123,7 +130,7 @@ if (!is_android) {
       "//components/regional_capabilities",
       "//components/search_engines:search_engines_switches",
       "//components/tabs:public",
-      "//components/web_modal:web_modal",
+      "//components/web_modal",
       "//content/public/browser",
     ]
   }
@@ -153,12 +160,13 @@ source_set("test_support") {
     "mocks/mock_notice_storage.h",
   ]
   deps = [
+    ":catalog",
     ":core",
     ":interfaces",
     ":notice_mojom",
     "//base",
-    "//components/keyed_service/core:core",
-    "//content/public/browser:browser",
+    "//components/keyed_service/core",
+    "//content/public/browser",
     "//testing/gmock",
   ]
 
@@ -185,6 +193,7 @@ source_set("unit_tests") {
   ]
   data = [ "//tools/metrics/histograms/metadata/privacy/histograms.xml" ]
   deps = [
+    ":catalog",
     ":core",
     ":notice",
     ":test_support",
@@ -215,6 +224,7 @@ source_set("browser_tests") {
   sources = [ "notice_service_browsertest.cc" ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   deps = [
+    ":catalog",
     ":core",
     ":interfaces",
     ":notice",
@@ -232,10 +242,6 @@ source_set("browser_tests") {
   }
 
   if (!is_android) {
-    sources += [
-      "desktop_entrypoint_handlers_browsertest.cc",
-      "desktop_view_manager_browsertest.cc",
-    ]
     deps += [
       ":desktop_view_manager",
       "//chrome/browser/sync",
@@ -243,7 +249,6 @@ source_set("browser_tests") {
       "//chrome/browser/ui/privacy_sandbox",
       "//chrome/browser/ui/signin",
       "//chrome/test:test_support_ui",
-      "//components/privacy_sandbox:features",
     ]
   }
 }

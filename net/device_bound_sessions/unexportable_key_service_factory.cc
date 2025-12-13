@@ -5,6 +5,7 @@
 #include "net/device_bound_sessions/unexportable_key_service_factory.h"
 
 #include "base/logging.h"
+#include "build/branding_buildflags.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
@@ -12,27 +13,33 @@
 
 namespace {
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/384055845): Use the correct value for Secure Enclave
-constexpr char kKeychainAccessGroup[] =
-    ".org.chromium.Chromium.unexportable-keys";
-#endif  // BUILDFLAG(IS_MAC)
+// TODO: crbug.com/443932320 - Replace all usages of this class with //chrome's
+// `UnexportableKeyServiceFactory`. This already uses the version constants.
 
-// Returns a newly created task manager instance, or nullptr if unexportable
-// keys are not available.
-std::unique_ptr<unexportable_keys::UnexportableKeyTaskManager>
-CreateTaskManagerInstance() {
-  crypto::UnexportableKeyProvider::Config config{
+// Returns the config to use for creating unexportable key service.
+crypto::UnexportableKeyProvider::Config GetConfig() {
+  return {
 #if BUILDFLAG(IS_MAC)
-      .keychain_access_group = kKeychainAccessGroup,
+      .keychain_access_group =
+// Ideally we'd just use `MAC_TEAM_IDENTIFIER_STRING` and
+// `MAC_BUNDLE_IDENTIFIER_STRING`, but we can't depend on //chrome here.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+          "EQHXZ8M8AV.com.google.Chrome"
+#else
+          ".org.chromium.Chromium"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+          ".unexportable-keys",
 #endif  // BUILDFLAG(IS_MAC)
   };
+}
+
+std::unique_ptr<unexportable_keys::UnexportableKeyTaskManager>
+CreateTaskManagerInstance() {
   if (!unexportable_keys::UnexportableKeyServiceImpl::
-          IsUnexportableKeyProviderSupported(config)) {
+          IsUnexportableKeyProviderSupported(GetConfig())) {
     return nullptr;
   }
-  return std::make_unique<unexportable_keys::UnexportableKeyTaskManager>(
-      std::move(config));
+  return std::make_unique<unexportable_keys::UnexportableKeyTaskManager>();
 }
 
 // Returns an `UnexportableKeyTaskManager` instance that is shared across the
@@ -90,7 +97,7 @@ UnexportableKeyServiceFactory::GetShared() {
     if (task_manager) {
       unexportable_key_service_ =
           std::make_unique<unexportable_keys::UnexportableKeyServiceImpl>(
-              *task_manager);
+              *task_manager, GetConfig());
     }
   }
 

@@ -299,13 +299,13 @@ void PostToCompleteRequest(AsyncOperationAction action, RequestType* request) {
       return;
     case AsyncOperationAction::kResolve:
       scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
-          FROM_HERE, WTF::BindOnce(&CompleteRequest<RequestType>,
-                                   WrapWeakPersistent(request), true));
+          FROM_HERE, BindOnce(&CompleteRequest<RequestType>,
+                              WrapWeakPersistent(request), true));
       return;
     case AsyncOperationAction::kReject:
       scheduler::GetSequencedTaskRunnerForTesting()->PostTask(
-          FROM_HERE, WTF::BindOnce(&CompleteRequest<RequestType>,
-                                   WrapWeakPersistent(request), false));
+          FROM_HERE, BindOnce(&CompleteRequest<RequestType>,
+                              WrapWeakPersistent(request), false));
       return;
   }
 }
@@ -372,14 +372,6 @@ TEST_F(RTCPeerConnectionTest, MediaStreamTrackStopsThrottling) {
   // Stopping the track disables the opt-out.
   track->stopTrack(scope.GetExecutionContext());
   EXPECT_FALSE(scheduler->OptedOutFromAggressiveThrottlingForTest());
-}
-
-TEST_F(RTCPeerConnectionTest, GettingRtpTransportEarlySucceeds) {
-  V8TestingScope scope;
-
-  RTCPeerConnection* pc = CreatePC(scope);
-  EXPECT_NE(pc->rtpTransport(), nullptr);
-  EXPECT_EQ("", GetExceptionMessage(scope));
 }
 
 }  // namespace blink

@@ -1,0 +1,38 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("consent_auditor") {
+  sources = [
+    "consent_auditor_factory.cc",
+    "consent_auditor_factory.h",
+  ]
+  public_deps = [ "//chrome/browser/profiles:profile" ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/sync:factories",
+    "//chrome/common:channel_info",
+    "//components/consent_auditor",
+    "//components/sync/base",
+    "//components/sync/model",
+  ]
+
+  if (is_android) {
+    sources += [ "../android/consent_auditor/consent_auditor_bridge.cc" ]
+    deps += [ "//chrome/browser/consent_auditor/android:jni_headers" ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "consent_auditor_test_utils.cc",
+    "consent_auditor_test_utils.h",
+  ]
+  deps = [
+    "//base",
+    "//components/consent_auditor:test_support",
+    "//testing/gmock",
+  ]
+}

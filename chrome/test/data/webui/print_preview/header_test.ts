@@ -61,25 +61,25 @@ suite('HeaderTest', function() {
     assertTrue(!!summary);
 
     await assertGetPluralStringCall(1, 'printPreviewSheetSummaryLabel');
-    assertEquals(pluralStringProxy.text, summary.textContent!.trim());
+    assertEquals(pluralStringProxy.text, summary.textContent.trim());
 
     pluralStringProxy.resetResolver('getPluralString');
     pluralStringProxy.text = 'dummyResponse1';
     model.setSetting('pages', [1, 2, 3]);
     await assertGetPluralStringCall(3, 'printPreviewSheetSummaryLabel');
-    assertEquals(pluralStringProxy.text, summary.textContent!.trim());
+    assertEquals(pluralStringProxy.text, summary.textContent.trim());
 
     pluralStringProxy.resetResolver('getPluralString');
     pluralStringProxy.text = 'dummyResponse2';
     setPdfDestination();
     await assertGetPluralStringCall(3, 'printPreviewPageSummaryLabel');
-    assertEquals(pluralStringProxy.text, summary.textContent!.trim());
+    assertEquals(pluralStringProxy.text, summary.textContent.trim());
 
     pluralStringProxy.resetResolver('getPluralString');
     pluralStringProxy.text = 'dummyResponse3';
     model.setSetting('pages', [1]);
     await assertGetPluralStringCall(1, 'printPreviewPageSummaryLabel');
-    assertEquals(pluralStringProxy.text, summary.textContent!.trim());
+    assertEquals(pluralStringProxy.text, summary.textContent.trim());
 
     // Verify the chrome://print case of a zero length document does not show
     // the summary.
@@ -94,23 +94,23 @@ suite('HeaderTest', function() {
     const summary = header.shadowRoot.querySelector('.summary')!;
     await pluralStringProxy.whenCalled('getPluralString');
     await microtasksFinished();
-    assertEquals('1 sheet of paper', summary.textContent!.trim());
+    assertEquals('1 sheet of paper', summary.textContent.trim());
 
     header.state = State.NOT_READY;
     await microtasksFinished();
-    assertEquals('', summary.textContent!.trim());
+    assertEquals('', summary.textContent.trim());
 
     header.state = State.PRINTING;
     await microtasksFinished();
     assertEquals(
-        loadTimeData.getString('printing'), summary.textContent!.trim());
+        loadTimeData.getString('printing'), summary.textContent.trim());
     setPdfDestination();
     await microtasksFinished();
-    assertEquals(loadTimeData.getString('saving'), summary.textContent!.trim());
+    assertEquals(loadTimeData.getString('saving'), summary.textContent.trim());
 
     header.state = State.ERROR;
     await microtasksFinished();
-    assertEquals('', summary.textContent!.trim());
+    assertEquals('', summary.textContent.trim());
   });
 
   // Tests that enterprise badge shows up if any setting is managed.
@@ -131,25 +131,25 @@ suite('HeaderTest', function() {
     assertEquals(1, model.getSettingValue('copies'));
 
     await assertGetPluralStringCall(1, 'printPreviewSheetSummaryLabel');
-    assertEquals(pluralStringProxy.text, summary.textContent!.trim());
+    assertEquals(pluralStringProxy.text, summary.textContent.trim());
 
     pluralStringProxy.resetResolver('getPluralString');
     pluralStringProxy.text = 'dummyResponse1';
     model.setSetting('pages', [1, 2, 3]);
     await assertGetPluralStringCall(3, 'printPreviewSheetSummaryLabel');
-    assertEquals(pluralStringProxy.text, summary.textContent!.trim());
+    assertEquals(pluralStringProxy.text, summary.textContent.trim());
 
     pluralStringProxy.resetResolver('getPluralString');
     pluralStringProxy.text = 'dummyResponse2';
     model.setSetting('duplex', true);
     await assertGetPluralStringCall(2, 'printPreviewSheetSummaryLabel');
-    assertEquals(pluralStringProxy.text, summary.textContent!.trim());
+    assertEquals(pluralStringProxy.text, summary.textContent.trim());
 
     pluralStringProxy.resetResolver('getPluralString');
     pluralStringProxy.text = 'dummyResponse3';
     model.setSetting('pages', [1, 2]);
     await assertGetPluralStringCall(1, 'printPreviewSheetSummaryLabel');
-    assertEquals(pluralStringProxy.text, summary.textContent!.trim());
+    assertEquals(pluralStringProxy.text, summary.textContent.trim());
   });
 
   // Tests that number of sheets is correctly calculated if multiple copies
@@ -162,32 +162,32 @@ suite('HeaderTest', function() {
     assertEquals(1, model.getSettingValue('copies'));
 
     await assertGetPluralStringCall(1, 'printPreviewSheetSummaryLabel');
-    assertEquals(pluralStringProxy.text, summary.textContent!.trim());
+    assertEquals(pluralStringProxy.text, summary.textContent.trim());
 
     pluralStringProxy.resetResolver('getPluralString');
     pluralStringProxy.text = 'dummyResponse1';
     model.setSetting('copies', 4);
     await assertGetPluralStringCall(4, 'printPreviewSheetSummaryLabel');
-    assertEquals(pluralStringProxy.text, summary.textContent!.trim());
+    assertEquals(pluralStringProxy.text, summary.textContent.trim());
 
     pluralStringProxy.resetResolver('getPluralString');
     model.setSetting('duplex', true);
     await microtasksFinished();
     // No backend call expected, since the sheetCount did not change.
     assertEquals(0, pluralStringProxy.getCallCount('getPluralString'));
-    assertEquals(pluralStringProxy.text, summary.textContent!.trim());
+    assertEquals(pluralStringProxy.text, summary.textContent.trim());
 
     pluralStringProxy.resetResolver('getPluralString');
     model.setSetting('pages', [1, 2]);
     await microtasksFinished();
     // No backend call expected, since the sheetCount did not change.
     assertEquals(0, pluralStringProxy.getCallCount('getPluralString'));
-    assertEquals(pluralStringProxy.text, summary.textContent!.trim());
+    assertEquals(pluralStringProxy.text, summary.textContent.trim());
 
     pluralStringProxy.resetResolver('getPluralString');
     pluralStringProxy.text = 'dummyResponse2';
     model.setSetting('duplex', false);
     await assertGetPluralStringCall(8, 'printPreviewSheetSummaryLabel');
-    assertEquals(pluralStringProxy.text, summary.textContent!.trim());
+    assertEquals(pluralStringProxy.text, summary.textContent.trim());
   });
 });

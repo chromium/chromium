@@ -49,7 +49,6 @@ source_set("constants") {
   sources = [
     "constants.cc",
     "constants.h",
-    "pref_names.cc",
     "pref_names.h",
   ]
 
@@ -58,7 +57,7 @@ source_set("constants") {
     "//components/component_updater:component_updater_paths",
     "//components/crx_file",
     "//components/language/core/browser",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/strings/",
     "//media",
     "//ui/base",
@@ -81,7 +80,7 @@ source_set("utils") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//ash/constants:constants" ]
+    deps += [ "//ash/constants" ]
   }
 }
 

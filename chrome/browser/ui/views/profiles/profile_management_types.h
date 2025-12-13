@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MANAGEMENT_TYPES_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MANAGEMENT_TYPES_H_
 
+#include <vector>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/types/strong_alias.h"
@@ -29,23 +31,22 @@ using PostHostClearedCallback =
     base::StrongAlias<class PostHostClearedCallbackTag,
                       base::OnceCallback<void(Browser*)>>;
 
-// Generic template to combine two callbacks of the same type `CallbackType`
-// without needing to forward the input parameters from the `callback1` to
-// `callback2`. `Params` must match with `CallbackType` input parameters.
-// Empty/Null callbacks are accepted and ignored.
+// Generic template to combine multiple callbacks of the same type without
+// needing to forward the input parameters between all callbacks. `Params` must
+// match with `CallbackType` input parameters.  The callbacks are run in the
+// order that they are provided. Empty/Null callbacks are accepted and ignored.
 // Note: `CallbackType` should be of type `base::StrongAlias<Tag, Callback>`.
 template <class CallbackType, class... Params>
-CallbackType CombineCallbacks(CallbackType callback1, CallbackType callback2) {
+CallbackType CombineCallbacks(std::vector<CallbackType> callbacks) {
   return CallbackType(base::BindOnce(
-      [](CallbackType cb1, CallbackType cb2, Params... params) {
-        if (!cb1->is_null()) {
-          std::move(*cb1).Run(params...);
-        }
-        if (!cb2->is_null()) {
-          std::move(*cb2).Run(params...);
+      [](std::vector<CallbackType> cbs, Params... params) {
+        for (auto& cb : cbs) {
+          if (!cb->is_null()) {
+            std::move(*cb).Run(params...);
+          }
         }
       },
-      std::move(callback1), std::move(callback2)));
+      std::move(callbacks)));
 }
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MANAGEMENT_TYPES_H_

@@ -15,24 +15,20 @@ namespace enterprise_obfuscation {
 
 namespace {
 
-std::vector<uint8_t> StringToVector(const std::string& str) {
-  return std::vector<uint8_t>(str.begin(), str.end());
-}
-
 std::string GetHexEncodedHash(const std::unique_ptr<crypto::SecureHash>& hash) {
   std::vector<uint8_t> hash_value(hash->GetHashLength());
-  hash->Finish(hash_value.data(), hash_value.size());
-  return base::HexEncode(hash_value.data(), hash_value.size());
+  hash->Finish(hash_value);
+  return base::HexEncode(hash_value);
 }
 
-constexpr char kTestData1[] = "Hello, world!";
-constexpr char kTestData2[] = "This is another test.";
-constexpr char kTestData3[] = "Download obfuscation test.";
+constexpr std::string_view kTestData1 = "Hello, world!";
+constexpr std::string_view kTestData2 = "This is another test.";
+constexpr std::string_view kTestData3 = "Download obfuscation test.";
 
 constexpr int64_t kOverheadPerChunk = kAuthTagSize + kChunkSizePrefixSize;
 
 struct TestParams {
-  std::vector<std::string> chunks;
+  std::vector<std::string_view> chunks;
   bool feature_enabled;
 };
 
@@ -63,8 +59,8 @@ TEST_P(DownloadObfuscatorTest, ObfuscateAndDeobfuscateVerify) {
   // Test obfuscation process.
   for (size_t i = 0; i < params.chunks.size(); ++i) {
     bool is_last_chunk = (i == params.chunks.size() - 1);
-    auto result = obfuscator.ObfuscateChunk(StringToVector(params.chunks[i]),
-                                            is_last_chunk);
+    auto result = obfuscator.ObfuscateChunk(
+        base::as_byte_span(params.chunks[i]), is_last_chunk);
 
     if (params.feature_enabled) {
       ASSERT_TRUE(result.has_value());
@@ -85,7 +81,7 @@ TEST_P(DownloadObfuscatorTest, ObfuscateAndDeobfuscateVerify) {
       return;
     }
 
-    expected_hash->Update(params.chunks[i].data(), params.chunks[i].size());
+    expected_hash->Update(base::as_byte_span(params.chunks[i]));
   }
 
   EXPECT_EQ(obfuscator.GetTotalOverhead(),
@@ -103,7 +99,8 @@ TEST_P(DownloadObfuscatorTest, ObfuscateAndDeobfuscateVerify) {
       auto deobfuscated =
           deobfuscator.DeobfuscateChunk(obfuscated_content, offset);
       ASSERT_TRUE(deobfuscated.has_value());
-      EXPECT_EQ(deobfuscated.value(), StringToVector(chunk));
+      EXPECT_EQ(base::as_byte_span(deobfuscated.value()),
+                base::as_byte_span(chunk));
     }
     EXPECT_EQ(offset, obfuscated_content.size());
 
@@ -165,10 +162,12 @@ TEST_F(DownloadObfuscatorEnabledTest, ObfuscationConsistency) {
   DownloadObfuscator obfuscator1;
   DownloadObfuscator obfuscator2;
 
-  auto result1 = obfuscator1.ObfuscateChunk(StringToVector(kTestData1), true);
+  auto result1 =
+      obfuscator1.ObfuscateChunk(base::as_byte_span(kTestData1), true);
   ASSERT_TRUE(result1.has_value());
 
-  auto result2 = obfuscator2.ObfuscateChunk(StringToVector(kTestData1), true);
+  auto result2 =
+      obfuscator2.ObfuscateChunk(base::as_byte_span(kTestData1), true);
   ASSERT_TRUE(result2.has_value());
 
   EXPECT_NE(*result1, *result2);
@@ -202,7 +201,8 @@ TEST_F(DownloadObfuscatorEnabledTest, InvalidData) {
 TEST_F(DownloadObfuscatorEnabledTest, PartialDeobfuscation) {
   DownloadObfuscator obfuscator;
   std::string test_data = "This is a test for partial deobfuscation.";
-  auto obfuscated = obfuscator.ObfuscateChunk(StringToVector(test_data), true);
+  auto obfuscated =
+      obfuscator.ObfuscateChunk(base::as_byte_span(test_data), true);
   ASSERT_TRUE(obfuscated.has_value());
 
   DownloadObfuscator deobfuscator;
@@ -226,7 +226,8 @@ TEST_F(DownloadObfuscatorEnabledTest, PartialDeobfuscation) {
     deobfuscator.UpdateDeobfuscatedChunkPosition(bytes_to_read);
   }
 
-  EXPECT_EQ(deobfuscated_content, StringToVector(test_data));
+  EXPECT_EQ(base::as_byte_span(deobfuscated_content),
+            base::as_byte_span(test_data));
   EXPECT_EQ(deobfuscator.GetNextChunkOffset(), obfuscated->size());
 
   // Obfuscate an empty chunk to test scenarios where size is not given.

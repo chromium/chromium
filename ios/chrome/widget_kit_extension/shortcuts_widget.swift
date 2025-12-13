@@ -30,6 +30,7 @@ struct ConfigureShortcutsWidgetEntry: TimelineEntry {
   // Account avatar (to be used when multiprofile flag is enabled).
   let avatar: Image?
   let gaiaID: String?
+  let email: String?
   let deleted: Bool
 }
 
@@ -43,7 +44,7 @@ struct ConfigureShortcutsWidgetEntryProvider: TimelineProvider {
   func placeholder(in context: TimelineProviderContext) -> Entry {
     return Entry(
       date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil,
-      avatar: nil, gaiaID: nil, deleted: false)
+      avatar: nil, gaiaID: nil, email: nil, deleted: false)
   }
 
   // Provides a timeline entry that represents the current time and state of a widget.
@@ -91,13 +92,12 @@ struct ShortcutsWidget: Widget {
     )
     .supportedFamilies([.systemMedium])
     .crDisfavoredLocations()
-    .crContentMarginsDisabled()
-    .crContainerBackgroundRemovable(false)
+    .contentMarginsDisabled()
+    .containerBackgroundRemovable(false)
   }
 }
 
 #if IOS_ENABLE_WIDGETS_FOR_MIM
-  @available(iOS 17, *)
   // Provides the configuration and content of a widget to display on the Home screen.
   struct ShortcutsWidgetConfigurable: Widget {
     // Changing 'kind' or deleting this widget will cause all installed instances of this widget to
@@ -122,13 +122,12 @@ struct ShortcutsWidget: Widget {
       )
       .supportedFamilies([.systemMedium])
       .crDisfavoredLocations()
-      .crContentMarginsDisabled()
-      .crContainerBackgroundRemovable(false)
+      .contentMarginsDisabled()
+      .containerBackgroundRemovable(false)
     }
   }
 
   // Advises WidgetKit when to update a widget’s display.
-  @available(iOS 17, *)
   struct ConfigurableShortcutsWidgetEntryProvider: AppIntentTimelineProvider {
 
     // A type that specifies the entry of the configured timeline entry of the widget.
@@ -138,7 +137,7 @@ struct ShortcutsWidget: Widget {
     func placeholder(in context: TimelineProviderContext) -> Entry {
       return Entry(
         date: Date(), mostVisitedSites: [:], isPreview: true, isExpired: false, expirationDate: nil,
-        avatar: nil, gaiaID: nil, deleted: false)
+        avatar: nil, gaiaID: nil, email: nil, deleted: false)
     }
 
     // Provides a timeline entry that represents the current time and state of a widget.
@@ -146,10 +145,11 @@ struct ShortcutsWidget: Widget {
 
       let avatar: Image? = configuration.avatar()
       let gaiaID: String? = configuration.gaia()
+      let email: String? = configuration.email()
       let deleted: Bool = configuration.deleted()
 
       let entry = loadMostVisitedSitesEntry(
-        isPreview: context.isPreview, avatar: avatar, gaia: gaiaID, deleted: deleted)
+        isPreview: context.isPreview, avatar: avatar, gaia: gaiaID, email: email, deleted: deleted)
       return entry
     }
 
@@ -159,10 +159,11 @@ struct ShortcutsWidget: Widget {
     > {
       let avatar: Image? = configuration.avatar()
       let gaiaID: String? = configuration.gaia()
+      let email: String? = configuration.email()
       let deleted: Bool = configuration.deleted()
 
       let entry = loadMostVisitedSitesEntry(
-        isPreview: context.isPreview, avatar: avatar, gaia: gaiaID, deleted: deleted)
+        isPreview: context.isPreview, avatar: avatar, gaia: gaiaID, email: email, deleted: deleted)
       let entries = [entry]
       let timeline = Timeline(
         entries: entries, policy: entry.expirationDate.map { .after($0) } ?? .never)
@@ -173,7 +174,8 @@ struct ShortcutsWidget: Widget {
 
 // Return ConfigureShortcutsWidgetEntry with the most visited sites
 func loadMostVisitedSitesEntry(
-  isPreview: Bool, avatar: Image? = nil, gaia: String? = nil, deleted: Bool = false
+  isPreview: Bool, avatar: Image? = nil, gaia: String? = nil, email: String? = nil,
+  deleted: Bool = false
 )
   -> ConfigureShortcutsWidgetEntry
 {
@@ -189,6 +191,7 @@ func loadMostVisitedSitesEntry(
     expirationDate: nil,
     avatar: avatar,
     gaiaID: gaia,
+    email: email,
     deleted: deleted
   )
   // A constant of an expired entry.
@@ -200,6 +203,7 @@ func loadMostVisitedSitesEntry(
     expirationDate: nil,
     avatar: avatar,
     gaiaID: gaia,
+    email: email,
     deleted: deleted
   )
   // Returns an empty entry if the Shortcuts Widget is in the Widgets Gallery.
@@ -285,6 +289,7 @@ func loadMostVisitedSitesEntry(
     expirationDate: expirationDate,
     avatar: avatar,
     gaiaID: gaia,
+    email: email,
     deleted: deleted
   )
 }
@@ -348,32 +353,34 @@ struct ShortcutsWidgetEntryView: View {
     let spacing: CGFloat = 12
     let padding: CGFloat = 8
 
-    Link(
-      destination: destinationURL(
-        url: WidgetConstants.ShortcutsWidget.searchUrl, gaia: entry.gaiaID)
-    ) {
-      ZStack {
-        RoundedRectangle(cornerRadius: cornerRadius)
-          .frame(height: height)
-          .foregroundColor(Colors.widgetSearchBarColor)
-        HStack(spacing: spacing) {
-          Image("widget_chrome_logo")
-            .clipShape(Circle())
-            .padding(.leading, padding)
-            .unredacted()
-          Text(Strings.searchA11yLabel)
-            .font(.subheadline)
-            .foregroundColor(Colors.widgetTextColor)
-          Spacer()
-          #if IOS_ENABLE_WIDGETS_FOR_MIM
-            AvatarForShortcuts(entry: entry)
-          #endif
-        }
+    ZStack {
+      RoundedRectangle(cornerRadius: cornerRadius)
+        .frame(height: height)
+        .foregroundColor(Colors.widgetSearchBarColor)
+        // This is needed so that the voice over will see the widget as a button and not as
+        // an image.
+        .accessibilityAddTraits(.isButton)
+        .accessibilityLabel(Strings.searchA11yLabel)
+      HStack(spacing: spacing) {
+        Image("widget_chrome_logo")
+          .clipShape(Circle())
+          .padding(.leading, padding)
+          .unredacted()
+          .accessibilityHidden(true)
+        Text(Strings.searchA11yLabel)
+          .font(.subheadline)
+          .foregroundColor(Colors.widgetTextColor)
+          .accessibilityHidden(true)
+        Spacer()
+        #if IOS_ENABLE_WIDGETS_FOR_MIM
+          AvatarForShortcuts(entry: entry)
+        #endif
       }
-      .frame(minWidth: 0, maxWidth: .infinity)
-      .padding([.leading, .trailing], Dimensions.stackFramePadding)
     }
-    .accessibilityLabel(Strings.searchA11yLabel)
+    .frame(minWidth: 0, maxWidth: .infinity)
+    .padding([.leading, .trailing], Dimensions.stackFramePadding)
+    .widgetURL(
+      destinationURL(url: WidgetConstants.ShortcutsWidget.searchUrl, gaia: entry.gaiaID))
   }
 
   // Shows the widget with 4 shortcuts placeholder in the gallery view to respect user's privacy.
@@ -479,9 +486,9 @@ struct ShortcutsWidgetEntryView: View {
         }
         .frame(maxHeight: .infinity)
       }
-      .crContainerBackground(
+      .containerBackground(for: .widget) {
         Colors.widgetBackgroundColor.unredacted()
-      )
+      }
     }
   }
 }
@@ -624,10 +631,15 @@ struct AvatarForShortcuts: View {
         .opacity(0.2)
         .frame(width: 35, height: 35)
         .padding(.trailing, 8)
-    } else if let avatar = entry.avatar {
+    } else if let avatar = entry.avatar,
+      let email = entry.email
+    {
       avatar
         .resizable()
         .clipShape(Circle())
+        .accessibilityLabel(
+          String(localized: "IDS_IOS_WIDGET_KIT_EXTENSION_AVATAR_A11Y_LABEL") + email
+        )
         .unredacted()
         .scaledToFill()
         .frame(width: 35, height: 35)

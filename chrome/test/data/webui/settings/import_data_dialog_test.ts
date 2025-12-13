@@ -146,7 +146,7 @@ suite('ImportDataDialog', function() {
     ];
 
     Array.from(dialog.$.browserSelect.options).forEach((option, i) => {
-      assertEquals(expectedText[i], option.textContent!.trim());
+      assertEquals(expectedText[i], option.textContent.trim());
     });
   });
 

@@ -325,7 +325,8 @@ const std::optional<apps::DefaultAppName> PreinstalledWebAppIdToName(
     return apps::DefaultAppName::kPlayMovies;
   } else if (app_id == ash::kGoogleCalendarAppId) {
     return apps::DefaultAppName::kGoogleCalendar;
-  } else if (app_id == ash::kGoogleChatAppId) {
+  } else if (app_id == ash::kGoogleChatAppId ||
+             app_id == ash::kOldGoogleChatAppId) {
     return apps::DefaultAppName::kGoogleChat;
   } else if (app_id == ash::kGoogleDocsAppId) {
     return apps::DefaultAppName::kDocs;

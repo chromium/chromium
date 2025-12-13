@@ -7,7 +7,7 @@
 
 #include <string_view>
 
-#include "components/autofill/core/browser/strike_databases/simple_autofill_strike_database.h"
+#include "components/strike_database/simple_strike_database.h"
 
 namespace autofill {
 
@@ -22,8 +22,8 @@ struct AutofillAiUpdateStrikeDatabaseTraits {
   static constexpr bool kUniqueIdRequired = true;
 };
 
-using AutofillAiUpdateStrikeDatabase = autofill::SimpleAutofillStrikeDatabase<
-    AutofillAiUpdateStrikeDatabaseTraits>;
+using AutofillAiUpdateStrikeDatabase =
+    strike_database::SimpleStrikeDatabase<AutofillAiUpdateStrikeDatabaseTraits>;
 
 }  // namespace autofill
 

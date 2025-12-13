@@ -1,7 +1,9 @@
 include_rules = [
   "+components/collaboration",
   "+components/keyed_service",
+  "+components/prefs",
   "+components/signin/public",
+  "+components/sync/base",
   "+components/sync/model",
   "+components/sync/protocol",
   "+components/url_formatter/elide_url.h",

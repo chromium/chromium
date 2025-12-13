@@ -9,9 +9,9 @@
 #include <ostream>
 #include <string_view>
 
-#include "base/check.h"
-#include "base/lazy_instance.h"
+#include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "third_party/icu/source/common/unicode/ubrk.h"
@@ -27,7 +27,7 @@ namespace {
 // also optimize to not create break iterator many time. For each kind of break
 // iterator (character, word, line and sentence, but NOT rule), we keep one of
 // them in the main_ and lease it out. If some other code request a lease
-// before |main_| is returned, we create a new instance of the iterator.
+// before `main_` is returned, we create a new instance of the iterator.
 // This will keep at most 4 break iterators (one for each kind) unreleased until
 // the program destruction time.
 template <UBreakIteratorType break_type>
@@ -80,14 +80,25 @@ class DefaultLocaleBreakIteratorCache {
   Lock lock_;
 };
 
-static LazyInstance<DefaultLocaleBreakIteratorCache<UBRK_CHARACTER>>::Leaky
-    char_break_cache = LAZY_INSTANCE_INITIALIZER;
-static LazyInstance<DefaultLocaleBreakIteratorCache<UBRK_WORD>>::Leaky
-    word_break_cache = LAZY_INSTANCE_INITIALIZER;
-static LazyInstance<DefaultLocaleBreakIteratorCache<UBRK_SENTENCE>>::Leaky
-    sentence_break_cache = LAZY_INSTANCE_INITIALIZER;
-static LazyInstance<DefaultLocaleBreakIteratorCache<UBRK_LINE>>::Leaky
-    line_break_cache = LAZY_INSTANCE_INITIALIZER;
+DefaultLocaleBreakIteratorCache<UBRK_CHARACTER>& GetCharBreakCache() {
+  static NoDestructor<DefaultLocaleBreakIteratorCache<UBRK_CHARACTER>> cache;
+  return *cache;
+}
+
+DefaultLocaleBreakIteratorCache<UBRK_WORD>& GetWordBreakCache() {
+  static NoDestructor<DefaultLocaleBreakIteratorCache<UBRK_WORD>> cache;
+  return *cache;
+}
+
+DefaultLocaleBreakIteratorCache<UBRK_SENTENCE>& GetSentenceBreakCache() {
+  static NoDestructor<DefaultLocaleBreakIteratorCache<UBRK_SENTENCE>> cache;
+  return *cache;
+}
+
+DefaultLocaleBreakIteratorCache<UBRK_LINE>& GetLineBreakCache() {
+  static NoDestructor<DefaultLocaleBreakIteratorCache<UBRK_LINE>> cache;
+  return *cache;
+}
 
 }  // namespace
 
@@ -109,17 +120,17 @@ BreakIterator::~BreakIterator() {
     case RULE_BASED:
       return;
     case BREAK_CHARACTER:
-      char_break_cache.Pointer()->Return(std::move(iter_));
+      GetCharBreakCache().Return(std::move(iter_));
       return;
     case BREAK_WORD:
-      word_break_cache.Pointer()->Return(std::move(iter_));
+      GetWordBreakCache().Return(std::move(iter_));
       return;
     case BREAK_SENTENCE:
-      sentence_break_cache.Pointer()->Return(std::move(iter_));
+      GetSentenceBreakCache().Return(std::move(iter_));
       return;
     case BREAK_LINE:
     case BREAK_NEWLINE:
-      line_break_cache.Pointer()->Return(std::move(iter_));
+      GetLineBreakCache().Return(std::move(iter_));
       return;
   }
 }
@@ -129,17 +140,17 @@ bool BreakIterator::Init() {
   UParseError parse_error;
   switch (break_type_) {
     case BREAK_CHARACTER:
-      iter_ = char_break_cache.Pointer()->Lease(status);
+      iter_ = GetCharBreakCache().Lease(status);
       break;
     case BREAK_WORD:
-      iter_ = word_break_cache.Pointer()->Lease(status);
+      iter_ = GetWordBreakCache().Lease(status);
       break;
     case BREAK_SENTENCE:
-      iter_ = sentence_break_cache.Pointer()->Lease(status);
+      iter_ = GetSentenceBreakCache().Lease(status);
       break;
     case BREAK_LINE:
     case BREAK_NEWLINE:
-      iter_ = line_break_cache.Pointer()->Lease(status);
+      iter_ = GetLineBreakCache().Lease(status);
       break;
     case RULE_BASED:
       iter_ = UBreakIteratorPtr(

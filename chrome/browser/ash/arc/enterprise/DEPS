@@ -19,13 +19,13 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/arc",
+  "+chrome/browser/ash/certificate_provider",
   "+chrome/browser/ash/login/test",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/platform_keys",
   "+chrome/browser/ash/policy/affiliation",
   "+chrome/browser/ash/policy/remote_commands",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/certificate_provider",
   "+chrome/browser/chromeos/platform_keys",
   "+chrome/browser/net",
   "+chrome/browser/profiles",

@@ -22,7 +22,6 @@ class TransformOrigin {
   bool operator==(const TransformOrigin& o) const {
     return x_ == o.x_ && y_ == o.y_ && z_ == o.z_;
   }
-  bool operator!=(const TransformOrigin& o) const { return !(*this == o); }
   const Length& X() const { return x_; }
   const Length& Y() const { return y_; }
   float Z() const { return z_; }

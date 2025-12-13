@@ -30,7 +30,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
@@ -392,6 +392,9 @@ class WaylandWindow : public PlatformWindow,
   // scale changes, eg: accessibility's "large text" setting.
   void OnFontScaleFactorChanged();
 
+  void OnDisplayColorSpacesChanged(
+      scoped_refptr<gfx::DisplayColorSpacesRef> display_color_spaces);
+
   virtual void DumpState(std::ostream& out) const;
 
 #if DCHECK_IS_ON()
@@ -593,12 +596,12 @@ class WaylandWindow : public PlatformWindow,
   raw_ptr<WaylandBubble> active_bubble_ = nullptr;
   std::vector<raw_ptr<WaylandBubble>> child_bubbles_;
 
-  std::unique_ptr<WaylandFrameManager> frame_manager_;
-  bool received_configure_event_ = false;
-
   // |root_surface_| is a surface for the opaque background. Its z-order is
   // INT32_MIN.
   std::unique_ptr<WaylandSurface> root_surface_;
+
+  std::unique_ptr<WaylandFrameManager> frame_manager_;
+  bool received_configure_event_ = false;
   // |primary_subsurface| is the primary that shows the widget content.
   std::unique_ptr<WaylandSubsurface> primary_subsurface_;
   // Subsurfaces excluding the primary_subsurface

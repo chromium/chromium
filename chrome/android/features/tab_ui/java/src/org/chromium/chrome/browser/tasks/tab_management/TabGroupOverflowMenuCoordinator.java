@@ -4,15 +4,19 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.content.Context;
+import android.app.Activity;
+
+import androidx.annotation.LayoutRes;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+
+import java.util.function.Supplier;
 
 /**
  * A coordinator for the overflow menu in tab groups. This applies to both the TabGridDialog toolbar
@@ -24,26 +28,32 @@ public abstract class TabGroupOverflowMenuCoordinator extends TabOverflowMenuCoo
 
     /**
      * @param menuLayout The menu layout to use.
+     * @param flyoutMenuLayout The menu layout for flyout popups to use.
      * @param onItemClickedCallback A callback for listening to clicks.
      * @param tabModelSupplier The supplier of the tab model.
+     * @param multiInstanceManager The {@link MultiInstanceManager}.
      * @param tabGroupSyncService Used to checking if a group is shared or synced.
      * @param collaborationService Used for checking the user is the owner of a group.
-     * @param context The {@link Context} that the coordinator resides in.
+     * @param activity The {@link Activity} that the coordinator resides in.
      */
     protected TabGroupOverflowMenuCoordinator(
-            int menuLayout,
+            @LayoutRes int menuLayout,
+            @LayoutRes int flyoutMenuLayout,
             OnItemClickedCallback<Token> onItemClickedCallback,
             Supplier<TabModel> tabModelSupplier,
+            @Nullable MultiInstanceManager multiInstanceManager,
             @Nullable TabGroupSyncService tabGroupSyncService,
             CollaborationService collaborationService,
-            @Nullable Context context) {
+            Activity activity) {
         super(
                 menuLayout,
+                flyoutMenuLayout,
                 onItemClickedCallback,
                 tabModelSupplier,
+                multiInstanceManager,
                 tabGroupSyncService,
                 collaborationService,
-                context);
+                activity);
     }
 
     @Override

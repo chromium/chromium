@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/feature_list.h"
-#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
@@ -18,6 +17,7 @@
 #include "services/metrics/public/mojom/ukm_interface.mojom-forward.h"
 #include "url/gurl.h"
 
+class AbusiveNotificationPermissionsManager;
 class ChromePermissionsClient;
 class PermissionUmaUtil;
 class PlatformNotificationServiceImpl;
@@ -28,6 +28,10 @@ namespace apps {
 class WebsiteMetrics;
 }  // namespace apps
 
+namespace login_detection {
+class IdentityProviderMetrics;
+}  // namespace login_detection
+
 namespace metrics {
 class UkmRecorderInterface;
 }  // namespace metrics
@@ -35,22 +39,21 @@ class UkmRecorderInterface;
 namespace content {
 class BtmNavigationHandle;
 class BtmServiceImpl;
-class FedCmMetrics;
+namespace webid {
+class Metrics;
+}  // namespace webid
 class PaymentAppProviderUtil;
 class RenderFrameHostImpl;
 }  // namespace content
 
 namespace extensions {
-class ExtensionMessagePort;
 class ManifestV2ExperimentManager;
+class ExtensionContextMenuModel;
+class MetricsPrivateRecordExtensionUsageUkmFunction;
 }
 
 namespace safe_browsing {
 class NotificationContentDetectionUkmUtil;
-}
-
-namespace weblayer {
-class BackgroundSyncDelegateImpl;
 }
 
 namespace ukm {
@@ -123,7 +126,11 @@ class METRICS_EXPORT UkmRecorder {
   // from the identity provider. This method should only be called in the
   // FedCmMetrics class.
   static SourceId GetSourceIdForWebIdentityFromScope(
-      base::PassKey<content::FedCmMetrics>,
+      base::PassKey<content::webid::Metrics>,
+      const GURL& provider_url);
+
+  static SourceId GetSourceIdForWebIdentityFromScope(
+      base::PassKey<login_detection::IdentityProviderMetrics>,
       const GURL& provider_url);
 
   // Gets a new SourceId of REDIRECT_ID type and updates the source URL
@@ -134,13 +141,16 @@ class METRICS_EXPORT UkmRecorder {
       const GURL& redirect_url);
 
   // Gets a new SourceId of EXTENSION_ID type and updates the source URL
-  // from the extension message port. This method should only be called by
-  // approved cases, indicated by the PassKeys.
-  static SourceId GetSourceIdForExtensionUrl(
-      base::PassKey<extensions::ExtensionMessagePort>,
-      const GURL& extension_url);
+  // from the manifest v2 experiment manager. This method should only be called
+  // by approved cases, indicated by the PassKeys.
   static SourceId GetSourceIdForExtensionUrl(
       base::PassKey<extensions::ManifestV2ExperimentManager>,
+      const GURL& extension_url);
+  static SourceId GetSourceIdForExtensionUrl(
+      base::PassKey<extensions::ExtensionContextMenuModel>,
+      const GURL& extension_url);
+  static SourceId GetSourceIdForExtensionUrl(
+      base::PassKey<extensions::MetricsPrivateRecordExtensionUsageUkmFunction>,
       const GURL& extension_url);
 
   // Gets a new SourceId of REDIRECT_ID type and updates the source URL to the
@@ -186,6 +196,12 @@ class METRICS_EXPORT UkmRecorder {
       base::PassKey<safe_browsing::NotificationContentDetectionUkmUtil>,
       const GURL& url);
 
+  // Gets a new SourceId of NOTIFICATION_ID type. This should only be used
+  // for recording abusive notification Safety Hub interaction UKM events.
+  static SourceId GetSourceIdForNotificationEvent(
+      base::PassKey<AbusiveNotificationPermissionsManager>,
+      const GURL& url);
+
   // This method should be called when the system is about to shutdown, but
   // `UkmRecorder` is still available to record metrics.
   // Calls `OnStartingShutdown` on each observer from `observers_`.
@@ -224,7 +240,6 @@ class METRICS_EXPORT UkmRecorder {
                                            SourceIdType type);
 
  private:
-  friend weblayer::BackgroundSyncDelegateImpl;
   friend DelegatingUkmRecorder;
   friend TestRecordingHelper;
   friend UkmBackgroundRecorderService;

@@ -7,8 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+@class FaviconAttributes;
+
 // Returns the icon to display in the UI in order to visually differentiate a
 // backup password suggestion from the main password suggestion.
 UIImage* GetBackupPasswordSuggestionIcon();
+
+// Returns the attributes for the default globe favicon.
+FaviconAttributes* GetDefaultGlobeFaviconAttributes();
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_UI_BUNDLED_PASSWORD_SUGGESTION_UTILS_H_

@@ -19,7 +19,8 @@ namespace ash::onc {
 // Fuzzer for methods of the `Normalizer` class.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::optional<base::Value::Dict> parsed_json = base::JSONReader::ReadDict(
-      std::string_view(reinterpret_cast<const char*>(data), size));
+      std::string_view(reinterpret_cast<const char*>(data), size),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json) {
     return 0;
   }

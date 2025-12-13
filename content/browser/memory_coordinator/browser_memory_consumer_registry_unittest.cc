@@ -30,19 +30,19 @@ MATCHER_P3(HasConsumer, child_process_id, consumer_id, traits, "") {
          arg.consumer_id == consumer_id && arg.traits == traits;
 }
 
-const base::MemoryConsumerTraits kTestTraits1{
+constexpr base::MemoryConsumerTraits kTestTraits1{
     .estimated_memory_usage =
         base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
     .release_memory_cost = base::MemoryConsumerTraits::ReleaseMemoryCost::
         kFreesPagesWithoutTraversal,
     .execution_type = base::MemoryConsumerTraits::ExecutionType::kSynchronous};
-const base::MemoryConsumerTraits kTestTraits2{
+constexpr base::MemoryConsumerTraits kTestTraits2{
     .estimated_memory_usage =
         base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
     .release_memory_cost = base::MemoryConsumerTraits::ReleaseMemoryCost::
         kFreesPagesWithoutTraversal,
     .execution_type = base::MemoryConsumerTraits::ExecutionType::kSynchronous};
-const base::MemoryConsumerTraits kTestTraits3{
+constexpr base::MemoryConsumerTraits kTestTraits3{
     .estimated_memory_usage =
         base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
     .release_memory_cost =
@@ -57,18 +57,22 @@ class BrowserMemoryConsumerRegistryTest : public testing::Test {
     return browser_registry_;
   }
 
-  std::unique_ptr<ChildMemoryConsumerRegistry> CreateChildRegistry(
-      ChildProcessId child_process_id) {
-    mojo::PendingRemote<mojom::BrowserMemoryConsumerRegistry> pending_remote;
+  std::unique_ptr<ChildMemoryConsumerRegistry> CreateChildRegistry() {
+    return std::make_unique<ChildMemoryConsumerRegistry>();
+  }
 
+  void BindChildRegistry(ChildMemoryConsumerRegistry& child_registry,
+                         ChildProcessId child_process_id) {
     // Assign the receiver endpoint to the browser registry.
     browser_registry_.Bind(PROCESS_TYPE_RENDERER, child_process_id,
-                           pending_remote.InitWithNewPipeAndPassReceiver());
+                           child_registry.BindAndPassReceiverForTesting());
+  }
 
+  std::unique_ptr<ChildMemoryConsumerRegistry> CreateAndBindChildRegistry(
+      ChildProcessId child_process_id) {
     // Create a child registry with the remote endpoint.
-    auto child_registry = std::make_unique<ChildMemoryConsumerRegistry>(
-        std::move(pending_remote));
-
+    auto child_registry = std::make_unique<ChildMemoryConsumerRegistry>();
+    BindChildRegistry(*child_registry, child_process_id);
     return child_registry;
   }
 
@@ -100,10 +104,10 @@ TEST_F(BrowserMemoryConsumerRegistryTest, LocalConsumer) {
 // ReleaseMemory() method. We must wait between all steps since everything
 // happens asynchronously through a mojo connection.
 TEST_F(BrowserMemoryConsumerRegistryTest, RemoteConsumer) {
-  auto child_registry = CreateChildRegistry(ChildProcessId(23));
+  auto child_registry = CreateAndBindChildRegistry(ChildProcessId(23));
 
-  const std::string KConsumerId("consumer");
-  const base::MemoryConsumerTraits kTraits = kTestTraits1;
+  static constexpr char KConsumerId[] = "consumer";
+  static constexpr base::MemoryConsumerTraits kTraits = kTestTraits1;
 
   base::MockMemoryConsumer consumer;
 
@@ -146,15 +150,15 @@ TEST_F(BrowserMemoryConsumerRegistryTest, MultipleChildRegistries) {
     std::string consumer_id;
     base::MemoryConsumerTraits traits;
   } child_registry_and_consumers[] = {
-      {CreateChildRegistry(ChildProcessId(0)),
+      {CreateAndBindChildRegistry(ChildProcessId(0)),
        {},
        CreateConsumerId(0),
        kTestTraits1},
-      {CreateChildRegistry(ChildProcessId(1)),
+      {CreateAndBindChildRegistry(ChildProcessId(1)),
        {},
        CreateConsumerId(1),
        kTestTraits2},
-      {CreateChildRegistry(ChildProcessId(2)),
+      {CreateAndBindChildRegistry(ChildProcessId(2)),
        {},
        CreateConsumerId(2),
        kTestTraits3},
@@ -205,9 +209,61 @@ TEST_F(BrowserMemoryConsumerRegistryTest, MultipleChildRegistries) {
       base::test::RunUntil([&]() { return browser_registry().size() == 0u; }));
 }
 
+// Simulate having multiple child processes that each host a consumer with the
+// same ID.
+TEST_F(BrowserMemoryConsumerRegistryTest, SameConsumerIdDifferentChild) {
+  static constexpr char kTestConsumerId[] = "Test consumer id";
+  static constexpr base::MemoryConsumerTraits kTestTraits = kTestTraits1;
+
+  struct ChildRegistryAndConsumer {
+    std::unique_ptr<ChildMemoryConsumerRegistry> child_registry;
+    base::MockMemoryConsumer consumer;
+  } child_registry_and_consumers[] = {
+      {CreateAndBindChildRegistry(ChildProcessId(0)), {}},
+      {CreateAndBindChildRegistry(ChildProcessId(1)), {}},
+      {CreateAndBindChildRegistry(ChildProcessId(2)), {}},
+  };
+
+  // Add consumers.
+  for (auto& [child_registry, consumer] : child_registry_and_consumers) {
+    child_registry->AddMemoryConsumer(kTestConsumerId, kTestTraits, &consumer);
+  }
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return browser_registry().size() == 3u; }));
+
+  // Verify the consumers' properties.
+  EXPECT_THAT(
+      browser_registry(),
+      testing::UnorderedElementsAre(
+          HasConsumer(ChildProcessId(0), kTestConsumerId, kTestTraits),
+          HasConsumer(ChildProcessId(1), kTestConsumerId, kTestTraits),
+          HasConsumer(ChildProcessId(2), kTestConsumerId, kTestTraits)));
+
+  // Notify the consumers.
+  base::test::TestFuture<void> future;
+  auto barrier_closure = base::BarrierClosure(3, future.GetCallback());
+  for (auto& [child_registry, consumer] : child_registry_and_consumers) {
+    EXPECT_CALL(consumer, OnReleaseMemory()).WillOnce([&]() {
+      barrier_closure.Run();
+    });
+  }
+
+  for (auto& consumer_info : browser_registry()) {
+    consumer_info.consumer.ReleaseMemory();
+  }
+  EXPECT_TRUE(future.Wait());
+
+  // Remove consumers.
+  for (auto& [child_registry, consumer] : child_registry_and_consumers) {
+    child_registry->RemoveMemoryConsumer(kTestConsumerId, &consumer);
+  }
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return browser_registry().size() == 0u; }));
+}
+
 // Simulate having one child process with multiple MemoryConsumers.
 TEST_F(BrowserMemoryConsumerRegistryTest, MultipleChildConsumersSameRegistry) {
-  auto child_registry = CreateChildRegistry(ChildProcessId(23));
+  auto child_registry = CreateAndBindChildRegistry(ChildProcessId(23));
 
   struct ChildConsumers {
     std::string consumer_id;
@@ -251,6 +307,28 @@ TEST_F(BrowserMemoryConsumerRegistryTest, MultipleChildConsumersSameRegistry) {
   for (auto& [consumer_id, _, consumer] : child_consumers) {
     child_registry->RemoveMemoryConsumer(consumer_id, &consumer);
   }
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return browser_registry().size() == 0u; }));
+}
+
+// Tests that child memory consumers registered before the child registry is
+// connected to the browser registry are still correctly registered with the
+// browser registry.
+TEST_F(BrowserMemoryConsumerRegistryTest, ChildConsumerAddedBeforeBind) {
+  auto child_registry = CreateChildRegistry();
+
+  std::string consumer_id = CreateConsumerId(10);
+  base::MemoryConsumerTraits traits = kTestTraits1;
+  base::MockMemoryConsumer consumer;
+  child_registry->AddMemoryConsumer(consumer_id, traits, &consumer);
+
+  // Actually connect both registries. This will register the child consumer
+  // with the browser process.
+  BindChildRegistry(*child_registry, ChildProcessId(23));
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return browser_registry().size() == 1u; }));
+
+  child_registry->RemoveMemoryConsumer(consumer_id, &consumer);
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return browser_registry().size() == 0u; }));
 }

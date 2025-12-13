@@ -49,7 +49,6 @@
 
 // FFmpeg forward declarations.
 struct AVFormatContext;
-struct AVRational;
 struct AVStream;
 
 namespace media {
@@ -97,18 +96,6 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
 
   base::TimeDelta duration() const { return duration_; }
 
-  // Enables fixes for files with negative timestamps.  Normally all timestamps
-  // are rebased against FFmpegDemuxer::start_time() whenever that value is
-  // negative.  When this fix is enabled, only AUDIO stream packets will be
-  // rebased to time zero, all other stream types will use the muxed timestamp.
-  //
-  // Further, when no codec delay is present, all AUDIO packets which originally
-  // had negative timestamps will be marked for post-decode discard.  When codec
-  // delay is present, it is assumed the decoder will handle discard and does
-  // not need the AUDIO packets to be marked for discard; just rebased to zero.
-  void enable_negative_timestamp_fixups() {
-    fixup_negative_timestamps_ = true;
-  }
   void enable_chained_ogg_fixups() { fixup_chained_ogg_ = true; }
 
   // DemuxerStream implementation.
@@ -158,10 +145,6 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   // NotifyCapacityAvailable() if capacity is still available.
   void SatisfyPendingRead();
 
-  // Converts an FFmpeg stream timestamp into a base::TimeDelta.
-  static base::TimeDelta ConvertStreamTimestamp(const AVRational& time_base,
-                                                int64_t timestamp);
-
   // Resets any currently active bitstream converter.
   void ResetBitstreamConverter();
 
@@ -195,7 +178,6 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
 #endif
 
   std::string encryption_key_id_;
-  bool fixup_negative_timestamps_ = false;
   bool fixup_chained_ogg_ = false;
 
   int num_discarded_packet_warnings_ = 0;
@@ -256,9 +238,7 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
                        TrackChangeCB change_completed_cb) override;
   void SetPlaybackRate(double rate) override {}
 
-  // The lowest demuxed timestamp.  If negative, DemuxerStreams must use this to
-  // adjust packet timestamps such that external clients see a zero-based
-  // timeline.
+  // The lowest demuxed timestamp.
   base::TimeDelta start_time() const { return start_time_; }
 
   // Task runner used to execute blocking FFmpeg operations.

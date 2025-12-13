@@ -34,6 +34,7 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//testing/gtest",
   ]
 }

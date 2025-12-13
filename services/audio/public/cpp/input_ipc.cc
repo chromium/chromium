@@ -54,8 +54,8 @@ void InputIPC::CreateStream(media::AudioInputIPCDelegate* delegate,
 
   stream_factory_->CreateInputStream(
       stream_.BindNewPipeAndPassReceiver(), std::move(client), {},
-      std::move(log), device_id_, params, total_segments,
-      automatic_gain_control,
+      std::move(log), device_id_, params, base::UnguessableToken::Create(),
+      total_segments, automatic_gain_control,
       /*processing_config=*/nullptr,
       base::BindOnce(&InputIPC::StreamCreated, weak_factory_.GetWeakPtr()));
 }

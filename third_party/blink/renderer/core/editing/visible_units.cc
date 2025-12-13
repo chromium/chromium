@@ -623,7 +623,7 @@ bool EndsOfNodeAreVisuallyDistinctPositions(const Node* node) {
   // There is a VisiblePosition inside an empty inline-block container.
   return layout_object->IsAtomicInlineLevel() &&
          CanHaveChildrenForEditing(node) &&
-         !To<LayoutBox>(layout_object)->Size().IsEmpty() &&
+         !To<LayoutBox>(layout_object)->StitchedSize().IsEmpty() &&
          !HasRenderedNonAnonymousDescendantsWithHeight(layout_object);
 }
 
@@ -1169,7 +1169,7 @@ static bool IsVisuallyEquivalentCandidateAlgorithm(
     return false;
 
   if (layout_object->IsLayoutBlockFlow() || layout_object->IsFlexibleBox() ||
-      layout_object->IsLayoutGrid()) {
+      layout_object->IsLayoutGridOrGridLanes()) {
     if (To<LayoutBlock>(layout_object)->LogicalHeight() ||
         anchor_node->GetDocument().body() == anchor_node) {
       if (!HasRenderedNonAnonymousDescendantsWithHeight(layout_object))

@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -39,6 +38,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
@@ -76,9 +76,10 @@
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/test/regular_logged_in_browser_test_mixin.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/account_id/account_id_literal.h"  // nogncheck
+#include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -116,14 +117,14 @@ constexpr char OpenAndClaimDeviceScript[] = R"((async () => {
     }
   })();)";
 
-// Matches an EvalJs error message.
-MATCHER_P(FailedWithSubstr, substr, "") {
-  return arg.error.find(substr) != std::string::npos;
+auto FailedWithSubstr(std::string_view substr) {
+  return content::EvalJsResult::ErrorIs(testing::HasSubstr(substr));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS)
-const AccountId kManagedUserAccountId =
-    AccountId::FromUserEmail("example@example.com");
+constexpr auto kManagedUserAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("example@example.com",
+                                            GaiaId::Literal("12345"));
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS)
 
 // Observer for an extension service worker events like start, activated, and
@@ -1153,12 +1154,26 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
+class WebUsbExtensionBrowserTest : public InProcessBrowserTestMixinHostSupport<
+                                       extensions::ExtensionBrowserTest> {
  public:
-  WebUsbExtensionBrowserTest() = default;
+  WebUsbExtensionBrowserTest() {
+#if BUILDFLAG(IS_CHROMEOS)
+    // The user is created via RegularLoggedInBrowserTestMixin.
+    set_chromeos_user_ = false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
 
   void SetUpOnMainThread() override {
-    ExtensionBrowserTest::SetUpOnMainThread();
+    InProcessBrowserTestMixinHostSupport<
+        extensions::ExtensionBrowserTest>::SetUpOnMainThread();
+#if BUILDFLAG(IS_CHROMEOS)
+    user_manager::UserManager::Get()->SetUserPolicyStatus(
+        kManagedUserAccountId, /*is_managed=*/true, /*is_affiliated=*/true);
+    display_service_for_system_notification_ =
+        std::make_unique<NotificationDisplayServiceTester>(
+            /*profile=*/nullptr);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     mojo::PendingRemote<device::mojom::UsbDeviceManager> device_manager;
     device_manager_.AddReceiver(
@@ -1171,39 +1186,7 @@ class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
     TestFuture<std::vector<device::mojom::UsbDeviceInfoPtr>> devices_future;
     chooser_context->GetDevices(devices_future.GetCallback());
     ASSERT_TRUE(devices_future.Get().empty());
-
-#if BUILDFLAG(IS_CHROMEOS)
-    // Create a user account affiliated with the machine owner.
-    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    fake_user_manager->AddUserWithAffiliation(kManagedUserAccountId, true);
-    fake_user_manager->LoginUser(kManagedUserAccountId);
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
-
-    display_service_for_system_notification_ =
-        std::make_unique<NotificationDisplayServiceTester>(
-            /*profile=*/nullptr);
-#endif  // BUILDFLAG(IS_CHROMEOS)
   }
-
-  void TearDownOnMainThread() override {
-#if BUILDFLAG(IS_CHROMEOS)
-    // Explicitly removing the user is required; otherwise ProfileHelper keeps
-    // a dangling pointer to the User.
-    // TODO(b/208629291): Consider removing all users from ProfileHelper in the
-    // destructor of ash::FakeChromeUserManager.
-    GetFakeUserManager()->RemoveUserFromList(kManagedUserAccountId);
-    scoped_user_manager_.reset();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-    ExtensionBrowserTest::TearDownOnMainThread();
-  }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  ash::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void SetUpPolicy(const extensions::Extension* extension) {
     // Define a policy to automatically grant permission to access the device
@@ -1326,18 +1309,15 @@ class WebUsbExtensionBrowserTest : public extensions::ExtensionBrowserTest {
 #endif
   }
 
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-#if BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<NotificationDisplayServiceTester>
-      display_service_for_system_notification_;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
  private:
   device::FakeUsbDeviceManager device_manager_;
   device::mojom::UsbDeviceInfoPtr fake_device_info_;
+
 #if BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  ash::RegularLoggedInBrowserTestMixin logged_in_mixin_{&mixin_host_,
+                                                        kManagedUserAccountId};
+  std::unique_ptr<NotificationDisplayServiceTester>
+      display_service_for_system_notification_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/audio/cast_audio_renderer.h"
 
 #include <stdint.h>
@@ -491,9 +486,9 @@ void CastAudioRenderer::OnNewBuffer(
   }
 
   last_pushed_timestamp_ = buffer->timestamp() + buffer->duration();
-  memcpy(io_buffer->data() +
-             audio_output_service::OutputSocket::kAudioMessageHeaderSize,
-         buffer->data(), buffer->size());
+  io_buffer->span()
+      .subspan(audio_output_service::OutputSocket::kAudioMessageHeaderSize)
+      .copy_from(*buffer);
 
   output_connection_
       .AsyncCall(&audio_output_service::OutputStreamConnection::SendAudioBuffer)

@@ -22,6 +22,55 @@ enum GinEmbedder : uint16_t {
   kEmbedderFuchsia,
 };
 
+enum EmbedderDataTag : uint16_t {
+  // kDeprecatedData is used for data that is already not used anymore but still
+  // exists for legacy reasons, e.g. in the implementation of
+  // gin::DeprecatedWrappable.
+  kDeprecatedData,
+  // kDefaultTag can be used by embedders that don't use V8 type tagging, e.g.
+  // because they have their own type tagging system, like PDFium.
+  kDefaultEmbedderDataTag = kDeprecatedData,
+  kBlinkScriptState,
+  kGinPerContextData,
+};
+
+enum ExternalPointerTypeTag : uint16_t {
+  kExternalPointerTypeTagDefaultTag = 0,
+  kAppHooksDelegateTag,
+  kAuctionV8LoggerTest_TestLazyFillerTag,
+  kForDebuggingOnlyBindingsTag,
+  kLazyFillerTag,
+  kPrivateAggregationBindingsTag,
+  kPrivateModelTrainingBindingsTag,
+  kRealTimeReportingBindingsTag,
+  kRegisterAdBeaconBindingsTag,
+  kRegisterAdMacroBindingsTag,
+  kReportBindingsTag,
+  kSetBidBindingsTag,
+  kSetPriorityBindingsTag,
+  kSetPrioritySignalsOverrideBindingsTag,
+  kSharedStorageBindingsTag,
+  kTextConversionHelpersTag,
+  kWebIDLCompatTestTag,
+  kDeclarativeContentHooksDelegateHandlerCallbackTag,
+  kAPIBindingHandlerCallbackTag,
+  kAPIBindingEventDataTag,
+  kAPIBindingCustomPropertyDataTag,
+  kAPIBindingJSUtilUnittestErrorInfoTag,
+  kEventEmitterUnittestListenerClosureDataTag,
+  kModuleSystemTag,
+  kObjectBackedNativeHandlerHandlerFunctionTag,
+  kGinInternalCallbackHolderBaseTag,
+  kProxyResolverV8ContextTag,
+  kThreadDebuggerCommonImplTag,
+  kViewTransitionTestDataTag,
+  kViewTransitionTestDocumentTag,
+  kViewTransitionTestBoolTag,
+  kFXJSEFunctionDescriptorTag,
+  kFXJSEClassDescriptorTag,
+  kV8IsolateTag,
+};
+
 }  // namespace gin
 
 #endif  // GIN_PUBLIC_GIN_EMBEDDERS_H_

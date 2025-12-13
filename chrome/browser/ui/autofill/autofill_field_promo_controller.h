@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_FIELD_PROMO_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_FIELD_PROMO_CONTROLLER_H_
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_view.h"
 #include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"

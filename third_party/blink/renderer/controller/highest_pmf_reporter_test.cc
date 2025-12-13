@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/controller/highest_pmf_reporter.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
@@ -84,9 +80,7 @@ class MockMemoryUsageMonitor : public MemoryUsageMonitor {
         agent_group_scheduler_(Thread::MainThread()
                                    ->Scheduler()
                                    ->ToMainThreadScheduler()
-                                   ->CreateAgentGroupScheduler()) {
-    memset(&mock_memory_usage_, 0, sizeof(mock_memory_usage_));
-  }
+                                   ->CreateAgentGroupScheduler()) {}
   ~MockMemoryUsageMonitor() override = default;
 
   MemoryUsage GetCurrentMemoryUsage() override { return mock_memory_usage_; }
@@ -132,7 +126,7 @@ class MockMemoryUsageMonitor : public MemoryUsageMonitor {
                                    /*color_provider_colors=*/nullptr);
   }
 
-  MemoryUsage mock_memory_usage_;
+  MemoryUsage mock_memory_usage_ = {};
   std::vector<Persistent<Page>> dummy_pages_;
   Persistent<AgentGroupScheduler> agent_group_scheduler_;
 };

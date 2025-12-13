@@ -1,6 +1,4 @@
 include_rules = [
-  "+chrome/browser/nearby_sharing/common",
-  "+chrome/browser/nearby_sharing/public",
   "+chromeos/ash/services/nearby/public",
   "+components/keyed_service/core",
   "+chromeos/ash/components/nearby/common/connections_manager",

@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 syntax = "proto2";
-option optimize_for = LITE_RUNTIME;
-option java_package = "org.chromium.components.optimization_guide.proto";
-option java_outer_classname = "ModelsProto";
 
 package optimization_guide.proto;
 
 import "components/optimization_guide/proto/common_types.proto";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "ModelsProto";
 
 // A generic handle for any type of model.
 message Model {
@@ -256,6 +257,21 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_SEGMENTATION_IOS_DEFAULT_BROWSER_PROMO = 63;
   // Target for education classifier.
   OPTIMIZATION_TARGET_EDU_CLASSIFIER = 64;
+  // Target for the text+image AIv4 geolocation permission feature model.
+  OPTIMIZATION_TARGET_PERMISSIONS_AIV4_GEOLOCATION_DESKTOP = 65;
+  // Target for the text+image AIv4 notifications permission feature model.
+  OPTIMIZATION_TARGET_PERMISSIONS_AIV4_NOTIFICATIONS_DESKTOP = 66;
+  // Target for a newer, generalized safety model, designed to replace the
+  // model associated with target `OPTIMIZATION_TARGET_TEXT_SAFETY`.
+  OPTIMIZATION_TARGET_GENERALIZED_SAFETY = 67;
+  // Target for the text+image AIv4 geolocation permission feature model.
+  OPTIMIZATION_TARGET_PERMISSIONS_AIV4_GEOLOCATION_ANDROID = 68;
+  // Target for the text+image AIv4 notifications permission feature model.
+  OPTIMIZATION_TARGET_PERMISSIONS_AIV4_NOTIFICATIONS_ANDROID = 69;
+  // Target for on-device speech recognition.
+  OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION = 70;
+  // Target for the Neural Residual Echo Estimator used in the WebRTC AEC.
+  OPTIMIZATION_TARGET_WEBRTC_NEURAL_RESIDUAL_ECHO_ESTIMATOR = 71;
 }
 
 // The model engine versions that can be used to do model inference.
@@ -315,6 +331,9 @@ enum ModelEngineVersion {
   // A model using only operations that are supported by 2.20.0.
   // This adds GATHER v4 to the supported operations.
   MODEL_ENGINE_VERSION_TFLITE_2_20_1 = 20;
+  // A model using only operations that are supported by 2.20.0.
+  // This adds BROADCAST_TO to the supported operations.
+  MODEL_ENGINE_VERSION_TFLITE_2_20_2 = 21;
 }
 
 // The set of parameters that the server can use to vary the served model for

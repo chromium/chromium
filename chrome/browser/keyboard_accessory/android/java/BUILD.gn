@@ -29,8 +29,9 @@ android_library("java") {
     "src/org/chromium/chrome/browser/keyboard_accessory/KeyboardAccessoryVisualStateProvider.java",
     "src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingComponent.java",
     "src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingComponentSupplier.java",
+    "src/org/chromium/chrome/browser/keyboard_accessory/data/CachedProviderAdapter.java",
+    "src/org/chromium/chrome/browser/keyboard_accessory/data/ConditionalProviderAdapter.java",
     "src/org/chromium/chrome/browser/keyboard_accessory/data/KeyboardAccessoryData.java",
-    "src/org/chromium/chrome/browser/keyboard_accessory/data/PropertyProvider.java",
     "src/org/chromium/chrome/browser/keyboard_accessory/data/Provider.java",
     "src/org/chromium/chrome/browser/keyboard_accessory/data/UserInfoField.java",
   ]
@@ -42,9 +43,6 @@ android_library("java") {
 }
 
 java_cpp_enum("java_enums_srcjar") {
-  sources = [
-    "//chrome/browser/autofill/manual_filling_view_interface.h",
-    "//chrome/browser/password_manager/android/password_accessory_metrics_util.h",
-  ]
+  sources = [ "//chrome/browser/password_manager/android/password_accessory_metrics_util.h" ]
   visibility = [ ":*" ]
 }

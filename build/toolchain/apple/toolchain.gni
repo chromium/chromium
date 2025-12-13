@@ -6,6 +6,7 @@
 # some enhancements since the commands on Mac are slightly different than on
 # Linux.
 
+import("//build/config/apple/arch.gni")
 import("//build/config/apple/symbols.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
@@ -188,6 +189,7 @@ template("single_apple_toolchain") {
       ld += " -B " + invoker.bin_path
     }
 
+    coverage_wrapper = ""
     if (defined(toolchain_args.coverage_instrumentation_input_file)) {
       toolchain_coverage_instrumentation_input_file =
           toolchain_args.coverage_instrumentation_input_file
@@ -203,8 +205,7 @@ template("single_apple_toolchain") {
                       root_build_dir) + " --files-to-instrument=" +
           rebase_path(toolchain_coverage_instrumentation_input_file,
                       root_build_dir) + " --target-os=" + target_os
-      cc = "\"$python_path\" $_coverage_wrapper ${cc}"
-      cxx = "\"$python_path\" $_coverage_wrapper ${cxx}"
+      coverage_wrapper = "\"$python_path\" ${_coverage_wrapper} "
     }
 
     linker_driver_env = "TOOL_VERSION=${tool_versions.linker_driver}"
@@ -235,12 +236,33 @@ template("single_apple_toolchain") {
                      rebase_path("//tools/clang/dsymutil/bin/dsymutil",
                                  root_build_dir) + " "
 
+      # All the toolchains are defined in the context of the default toolchain,
+      # this means that the global variable `current_cpu` is not correct, it
+      # will be the one for the default toolchain.
+      #
+      # This means that the code cannot use the variable `dsym_arch` defined in
+      # build/config/apple/symbols.gni since it is defined from `current_cpu`.
+      #
+      # Instead declare another local variable `_dsym_arch` based from the
+      # toolchain `toolchain_args.current_cpu` which will be used when targets
+      # are evaluated in the context of the current toolchain.
+      _archs_mapping_os = archs_mapping[toolchain_args.current_os]
+      if (defined(_archs_mapping_os[toolchain_args.current_cpu])) {
+        _archs_mapping_os_cpu = _archs_mapping_os[toolchain_args.current_cpu]
+        _dsym_arch = _archs_mapping_os_cpu.dsym_arch
+      } else {
+        not_needed([ "_archs_mapping_os" ])
+        assert("cpu unsupported ${toolchain_args.current_cpu}")
+      }
+
       dsym_output_dir =
           "{{root_out_dir}}/{{target_output_name}}{{output_extension}}.dSYM"
       dsym_output = [
         "$dsym_output_dir/Contents/Info.plist",
         "$dsym_output_dir/Contents/Resources/DWARF/" +
             "{{target_output_name}}{{output_extension}}",
+        "$dsym_output_dir/Contents/Resources/Relocations/" +
+            "$_dsym_arch/{{target_output_name}}{{output_extension}}.yml",
       ]
     } else {
       dsym_switch = ""
@@ -248,6 +270,12 @@ template("single_apple_toolchain") {
 
     if (_save_unstripped_output) {
       _unstripped_output = "{{root_out_dir}}/{{target_output_name}}{{output_extension}}.unstripped"
+    }
+
+    if (system_headers_in_deps) {
+      md = "-MD"
+    } else {
+      md = "-MMD"
     }
 
     if (toolchain_has_rust) {
@@ -258,7 +286,7 @@ template("single_apple_toolchain") {
       rustc_bin = "$rust_sysroot_relative/bin/rustc"
       rustc = "$rust_compiler_prefix${rustc_bin}"
       rustc_wrapper =
-          rebase_path("//build/rust/rustc_wrapper.py", root_build_dir)
+          rebase_path("//build/rust/gni_impl/rustc_wrapper.py", root_build_dir)
 
       tool("rust_staticlib") {
         libname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
@@ -398,7 +426,7 @@ template("single_apple_toolchain") {
     tool("cc") {
       depfile = "{{output}}.d"
       precompiled_header_type = "gcc"
-      command = "$cc -MMD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_c}} -c {{source}} -o {{output}}"
+      command = "$coverage_wrapper$cc $md -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_c}} -c {{source}} -o {{output}}"
       depsformat = "gcc"
       description = "CC {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.o" ]
@@ -407,7 +435,7 @@ template("single_apple_toolchain") {
     tool("cxx") {
       depfile = "{{output}}.d"
       precompiled_header_type = "gcc"
-      command = "$cxx -MMD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} {{module_deps_no_self}} -c {{source}} -o {{output}}"
+      command = "$coverage_wrapper$cxx $md -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} {{module_deps_no_self}} -c {{source}} -o {{output}}"
       depsformat = "gcc"
       description = "CXX {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.o" ]
@@ -416,7 +444,10 @@ template("single_apple_toolchain") {
     tool("cxx_module") {
       depfile = "{{output}}.d"
       precompiled_header_type = "gcc"
-      command = "$cxx -MMD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} {{module_deps_no_self}} -fmodule-name={{label_name}} -c -x c++ -Xclang -emit-module {{source}} -o {{output}}"
+
+      # Module file doesn't need coverage instrumentation because module files
+      # represent interfaces rather than implementations.
+      command = "$cxx -MD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} {{module_deps_no_self}} -fmodule-name={{label_name}} -c -x c++ -Xclang -emit-module {{source}} -o {{output}}"
       depsformat = "gcc"
       description = "CXX_MODULE {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.pcm" ]
@@ -425,7 +456,7 @@ template("single_apple_toolchain") {
     tool("asm") {
       # For GCC we can just use the C compiler to compile assembly.
       depfile = "{{output}}.d"
-      command = "$cc -MMD -MF $depfile {{defines}} {{include_dirs}} {{asmflags}} -c {{source}} -o {{output}}"
+      command = "$cc $md -MF $depfile {{defines}} {{include_dirs}} {{asmflags}} -c {{source}} -o {{output}}"
       depsformat = "gcc"
       description = "ASM {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.o" ]
@@ -434,7 +465,7 @@ template("single_apple_toolchain") {
     tool("objc") {
       depfile = "{{output}}.d"
       precompiled_header_type = "gcc"
-      command = "$cc -MMD -MF $depfile {{defines}} {{include_dirs}} {{framework_dirs}} {{cflags}} {{cflags_objc}} -c {{source}} -o {{output}}"
+      command = "$coverage_wrapper$cc $md -MF $depfile {{defines}} {{include_dirs}} {{framework_dirs}} {{cflags}} {{cflags_objc}} -c {{source}} -o {{output}}"
       depsformat = "gcc"
       description = "OBJC {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.o" ]
@@ -443,7 +474,7 @@ template("single_apple_toolchain") {
     tool("objcxx") {
       depfile = "{{output}}.d"
       precompiled_header_type = "gcc"
-      command = "$cxx -MMD -MF $depfile {{defines}} {{include_dirs}} {{framework_dirs}} {{cflags}} {{cflags_objcc}} -c {{source}} -o {{output}}"
+      command = "$coverage_wrapper$cxx $md -MF $depfile {{defines}} {{include_dirs}} {{framework_dirs}} {{cflags}} {{cflags_objcc}} -c {{source}} -o {{output}}"
       depsformat = "gcc"
       description = "OBJCXX {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.o" ]
@@ -658,19 +689,14 @@ template("single_apple_toolchain") {
         # The list of outputs and partial_outputs change whether the whole
         # module optimization is enabled or not.
         if (swift_whole_module_optimization) {
-          outputs += [
-            "$_output_dir/{{module_name}}.swiftconstvalues"
-          ]
+          outputs += [ "$_output_dir/{{module_name}}.swiftconstvalues" ]
 
           # This seems broken in Xcode 26 beta 1. The OutputFileMap.json
           # confirms the file should be there, but when
           # whole-module-optimization is enabled it's not there.
           if (xcode_version_int < 2600) {
-            outputs += [
-              "$_output_dir/{{module_name}}.swiftdeps"
-            ]
+            outputs += [ "$_output_dir/{{module_name}}.swiftdeps" ]
           }
-
         } else {
           outputs += [ "$_output_dir/{{module_name}}.priors" ]
           partial_outputs += [

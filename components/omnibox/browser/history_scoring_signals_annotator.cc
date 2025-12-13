@@ -130,7 +130,7 @@ void HistoryScoringSignalsAnnotator::PopulateTitleMatchingSignals(
     const WordStarts& terms_to_word_starts_offsets,
     const std::u16string& raw_title,
     ScoringSignals* scoring_signals) {
-  std::u16string title = string_cleaning::CleanUpTitleForMatching(raw_title);
+  std::u16string title = omnibox::CleanUpTitleForMatching(raw_title);
   WordStarts title_word_starts;
   String16VectorFromString16(title, &title_word_starts);
   TermMatches title_matches = FindTermMatchesForTerms(

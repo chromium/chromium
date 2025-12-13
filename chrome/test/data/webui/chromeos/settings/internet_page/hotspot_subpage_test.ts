@@ -158,8 +158,8 @@ suite('<settings-hotspot-subpage>', () => {
 
     assertEquals(
         hotspotSubpage.i18n('hotspotSummaryStateOff'),
-        hotspotOnOffLabel.textContent!.trim());
-    assertEquals('test_ssid', hotspotNameElement.textContent!.trim());
+        hotspotOnOffLabel.textContent.trim());
+    assertEquals('test_ssid', hotspotNameElement.textContent.trim());
     assertFalse(
         enableToggle.checked, 'Enable hotspot toggle should not be checked');
     assertTrue(
@@ -172,7 +172,7 @@ suite('<settings-hotspot-subpage>', () => {
     await flushTasks();
     assertEquals(
         hotspotSubpage.i18n('hotspotSummaryStateOn'),
-        hotspotOnOffLabel.textContent!.trim());
+        hotspotOnOffLabel.textContent.trim());
     assertTrue(enableToggle.checked, 'Enable hotspot toggle should be checked');
     assertFalse(
         connectedClientCountRow.hidden,
@@ -184,7 +184,7 @@ suite('<settings-hotspot-subpage>', () => {
     await flushTasks();
     assertEquals(
         hotspotSubpage.i18n('hotspotSummaryStateOff'),
-        hotspotOnOffLabel.textContent!.trim());
+        hotspotOnOffLabel.textContent.trim());
     assertFalse(
         enableToggle.checked, 'Enable hotspot toggle should not be checked');
     assertTrue(
@@ -204,7 +204,7 @@ suite('<settings-hotspot-subpage>', () => {
     await flushTasks();
     assertEquals(
         hotspotSubpage.i18n('hotspotSummaryStateTurningOn'),
-        hotspotOnOffLabel.textContent!.trim());
+        hotspotOnOffLabel.textContent.trim());
     assertTrue(
         enableToggle.checked,
         'Enable hotspot toggle should not checked when hotspot enabling');
@@ -216,33 +216,33 @@ suite('<settings-hotspot-subpage>', () => {
     await flushTasks();
     assertEquals(
         hotspotSubpage.i18n('hotspotSummaryStateOn'),
-        hotspotOnOffLabel.textContent!.trim());
+        hotspotOnOffLabel.textContent.trim());
     assertTrue(
         enableToggle.checked,
         'Enable hotspot toggle should be checked when hotspot enabled');
     assertFalse(
         connectedClientCountRow.hidden,
         'Connected device count row should be not hidden when hotspot enabled');
-    assertEquals('0', connectedClientCount.textContent!.trim());
+    assertEquals('0', connectedClientCount.textContent.trim());
 
     hotspotConfig.setFakeHotspotState(HotspotState.kDisabling);
     await flushTasks();
     assertEquals(
         hotspotSubpage.i18n('hotspotSummaryStateTurningOff'),
-        hotspotOnOffLabel.textContent!.trim());
+        hotspotOnOffLabel.textContent.trim());
     assertFalse(
         enableToggle.checked,
         'Enable hotspot toggle should not be checked when hotspot disabling');
     assertFalse(
         connectedClientCountRow.hidden,
         'Connected device count row should be shown when hotspot disabling');
-    assertEquals('0', connectedClientCount.textContent!.trim());
+    assertEquals('0', connectedClientCount.textContent.trim());
 
     hotspotConfig.setFakeHotspotState(HotspotState.kDisabled);
     await flushTasks();
     assertEquals(
         hotspotSubpage.i18n('hotspotSummaryStateOff'),
-        hotspotOnOffLabel.textContent!.trim());
+        hotspotOnOffLabel.textContent.trim());
     assertFalse(
         enableToggle.checked,
         'Enable hotspot toggle should not be checked when hotspot disabled');
@@ -252,13 +252,13 @@ suite('<settings-hotspot-subpage>', () => {
 
     hotspotConfig.setFakeHotspotActiveClientCount(6);
     await flushTasks();
-    assertEquals('6', connectedClientCount.textContent!.trim());
+    assertEquals('6', connectedClientCount.textContent.trim());
 
     const config = {ssid: 'new_ssid'} as HotspotConfig;
 
     hotspotConfig.setFakeHotspotConfig(config);
     await flushTasks();
-    assertEquals('new_ssid', hotspotNameElement.textContent!.trim());
+    assertEquals('new_ssid', hotspotNameElement.textContent.trim());
 
     // Verifies UI with undefined hotspot config
     hotspotConfig.setFakeHotspotConfig(undefined);

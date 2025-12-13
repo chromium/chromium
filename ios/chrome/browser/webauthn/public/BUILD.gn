@@ -1,0 +1,18 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("public") {
+  sources = [
+    "passkey_welcome_screen_util.h",
+    "passkey_welcome_screen_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/settings/ui_bundled/password:title_view",
+    "//ios/chrome/common/credential_provider/ui",
+    "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
+    "//ui/base",
+  ]
+}

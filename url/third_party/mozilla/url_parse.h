@@ -7,10 +7,13 @@
 
 #include <iosfwd>
 #include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace url {
 
@@ -32,7 +35,24 @@ struct Component {
   // Normal constructor: takes an offset and a length.
   constexpr Component(int b, int l) : begin(b), len(l) {}
 
+  // Construct a Component covering the whole `view`.
+  template <typename CharT>
+  explicit Component(std::basic_string_view<CharT> view)
+      : begin(0), len(base::checked_cast<int>(view.size())) {}
+
+  // Adjusts the beginning of the component by the given offset. This is useful
+  // for adjusting component offsets when they are relative to a substring
+  // rather than the original string. Crashes if `begin + offset` overflows.
+  void OffsetBy(size_t offset) {
+    size_t new_begin = static_cast<size_t>(begin) + offset;
+    begin = base::checked_cast<int>(new_begin);
+  }
+
   constexpr int end() const { return begin + len; }
+
+  // Returns the `end` value in size_t. This crashes if this object is
+  // not valid.
+  size_t CheckedEnd() const { return base::checked_cast<size_t>(end()); }
 
   // Returns true if this component is valid, meaning the length is given.
   // Valid components may be empty to record the fact that they exist.
@@ -54,20 +74,48 @@ struct Component {
 
   // Returns a string_view using `source` as a backend.
   template <typename CharT>
-  std::basic_string_view<CharT> as_string_view_on(const CharT* source) const {
+  std::basic_string_view<CharT> AsViewOn(
+      std::basic_string_view<CharT> source) const {
     DCHECK(is_valid());
-    return std::basic_string_view(&source[begin], len);
+    return source.substr(static_cast<size_t>(begin), static_cast<size_t>(len));
+  }
+
+  // Returns a string_view using `source` as a backend.
+  template <typename CharT>
+  std::basic_string_view<CharT> AsViewOn(
+      const std::basic_string<CharT>& source) const {
+    return AsViewOn(std::basic_string_view<CharT>(source));
+  }
+
+  // Returns a std::optional<string_view> using `source` as a backend.
+  // Returns std::nullopt if the component is invalid.
+  // TODO(crbug.com/350788890): This is unsafe. We should use MaybeAsViewOn().
+  template <typename CharT>
+  UNSAFE_BUFFER_USAGE std::optional<std::basic_string_view<CharT>>
+  maybe_as_string_view_on(const CharT* source) const {
+    if (!is_valid()) {
+      return std::nullopt;
+    }
+    return std::basic_string_view(&UNSAFE_TODO(source[begin]), len);
   }
 
   // Returns a std::optional<string_view> using `source` as a backend.
   // Returns std::nullopt if the component is invalid.
   template <typename CharT>
-  std::optional<std::basic_string_view<CharT>> maybe_as_string_view_on(
-      const CharT* source) const {
+  std::optional<std::basic_string_view<CharT>> MaybeAsViewOn(
+      std::basic_string_view<CharT> source) const {
     if (!is_valid()) {
       return std::nullopt;
     }
-    return std::basic_string_view(&source[begin], len);
+    return source.substr(static_cast<size_t>(begin), static_cast<size_t>(len));
+  }
+
+  // Returns a std::optional<string_view> using `source` as a backend.
+  // Returns std::nullopt if the component is invalid.
+  template <typename CharT>
+  std::optional<std::basic_string_view<CharT>> MaybeAsViewOn(
+      const std::basic_string<CharT>& source) const {
+    return MaybeAsViewOn(std::basic_string_view<CharT>(source));
   }
 
   int begin;  // Byte offset in the string of this component.
@@ -83,6 +131,10 @@ std::ostream& operator<<(std::ostream& os, const Component& component);
 inline Component MakeRange(int begin, int end) {
   return Component(begin, end - begin);
 }
+// Helper that returns a component created with the given begin and ending
+// points. The ending point is non-inclusive.
+// This function crashes if an argument is greater than INT_MAX.
+COMPONENT_EXPORT(URL) Component MakeRange(size_t begin, size_t end);
 
 // Parsed ---------------------------------------------------------------------
 
@@ -286,11 +338,11 @@ std::ostream& operator<<(std::ostream& os, const Parsed& parsed);
 //
 // The 8-bit versions require UTF-8 encoding.
 
-// StandardURL is for when the scheme is known, such as "https:", "ftp:".
+// ParseStandardUrl is for when the scheme is known, such as "https:", "ftp:".
 // This is defined as "special" in URL Standard.
 // See https://url.spec.whatwg.org/#is-special
-COMPONENT_EXPORT(URL) Parsed ParseStandardURL(std::string_view url);
-COMPONENT_EXPORT(URL) Parsed ParseStandardURL(std::u16string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseStandardUrl(std::string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseStandardUrl(std::u16string_view url);
 // TODO(crbug.com/325408566): Remove once all third-party libraries use the
 // overloads above.
 COMPONENT_EXPORT(URL)
@@ -298,28 +350,28 @@ void ParseStandardURL(const char* url, int url_len, Parsed* parsed);
 
 // Non-special URL is for when the scheme is not special, such as "about:",
 // "javascript:". See https://url.spec.whatwg.org/#is-not-special
-COMPONENT_EXPORT(URL) Parsed ParseNonSpecialURL(std::string_view url);
-COMPONENT_EXPORT(URL) Parsed ParseNonSpecialURL(std::u16string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseNonSpecialUrl(std::string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseNonSpecialUrl(std::u16string_view url);
 
 // PathURL is for when the scheme is known not to have an authority (host)
 // section but that aren't file URLs either. The scheme is parsed, and
 // everything after the scheme is considered as the path. This is used for
 // things like "about:" and "javascript:"
 //
-// TODO: Replace ParsePathURL() with ParseNonSpecialURL(), ensuring it works
+// TODO: Replace ParsePathUrl() with ParseNonSpecialUrl(), ensuring it works
 // with the android:// escape hatch introduced in crrev.com/c/5515685.
 COMPONENT_EXPORT(URL)
-Parsed ParsePathURL(std::string_view url, bool trim_path_end);
+Parsed ParsePathUrl(std::string_view url, bool trim_path_end);
 COMPONENT_EXPORT(URL)
-Parsed ParsePathURL(std::u16string_view url, bool trim_path_end);
+Parsed ParsePathUrl(std::u16string_view url, bool trim_path_end);
 // TODO(crbug.com/325408566): Remove once openscreen starts using
-// ParseNonSpecialURL(), now that kStandardCompliantNonSpecialSchemeURLParsing
+// ParseNonSpecialUrl(), now that kStandardCompliantNonSpecialSchemeURLParsing
 // has been launched. This is non-trivial because it involves:
 //
-// 1. Adding ParseNonSpecialURL() into
+// 1. Adding ParseNonSpecialUrl() into
 // https://quiche.googlesource.com/googleurl/+/refs/heads/master/url/third_party/mozilla/url_parse.h.
 // 2. Rolling quiche into openscreen, and making the change in openscreen to use
-// ParseNonSpecialURL() instead of ParsePathURL().
+// ParseNonSpecialUrl() instead of ParsePathURL().
 // 3. Removing all traces of ParsePathURL() from
 // url/third_party/mozilla/url_parse here in chromium.
 COMPONENT_EXPORT(URL)
@@ -328,18 +380,18 @@ void ParsePathURL(const char* url,
                   bool trim_path_end,
                   Parsed* parsed);
 
-// FileURL is for file URLs. There are some special rules for interpreting
+// ParseFileUrl is for file URLs. There are some special rules for interpreting
 // these.
-COMPONENT_EXPORT(URL) Parsed ParseFileURL(std::string_view url);
-COMPONENT_EXPORT(URL) Parsed ParseFileURL(std::u16string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseFileUrl(std::string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseFileUrl(std::u16string_view url);
 
 // Filesystem URLs are structured differently than other URLs.
-COMPONENT_EXPORT(URL) Parsed ParseFileSystemURL(std::string_view url);
-COMPONENT_EXPORT(URL) Parsed ParseFileSystemURL(std::u16string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseFileSystemUrl(std::string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseFileSystemUrl(std::u16string_view url);
 
-// MailtoURL is for mailto: urls. They are made up scheme,path,query
-COMPONENT_EXPORT(URL) Parsed ParseMailtoURL(std::string_view url);
-COMPONENT_EXPORT(URL) Parsed ParseMailtoURL(std::u16string_view url);
+// ParseMailtoUrl is for mailto: urls. They are made up scheme,path,query
+COMPONENT_EXPORT(URL) Parsed ParseMailtoUrl(std::string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseMailtoUrl(std::u16string_view url);
 
 // Helper functions -----------------------------------------------------------
 
@@ -370,8 +422,6 @@ bool ExtractScheme(std::u16string_view url, Component* scheme);
 // Deprecated (crbug.com/325408566): Prefer using the overloads above.
 COMPONENT_EXPORT(URL)
 bool ExtractScheme(const char* url, int url_len, Component* scheme);
-COMPONENT_EXPORT(URL)
-bool ExtractScheme(const char16_t* url, int url_len, Component* scheme);
 
 // Returns true if ch is a character that terminates the authority segment
 // of a URL.
@@ -389,20 +439,13 @@ void ParseAuthority(const char* spec,
                     Component* password,
                     Component* hostname,
                     Component* port_num);
-COMPONENT_EXPORT(URL)
-void ParseAuthority(const char16_t* spec,
-                    const Component& auth,
-                    Component* username,
-                    Component* password,
-                    Component* hostname,
-                    Component* port_num);
 
 // Does a best effort parse of input `spec`, in range `auth`. If a particular
 // component is not found, it will be set to invalid. `ParserMode` is used to
 // determine the appropriate authority terminator. See `IsAuthorityTerminator`
 // for details.
 COMPONENT_EXPORT(URL)
-void ParseAuthority(const char* spec,
+void ParseAuthority(std::string_view spec,
                     const Component& auth,
                     ParserMode parser_mode,
                     Component* username,
@@ -410,7 +453,7 @@ void ParseAuthority(const char* spec,
                     Component* hostname,
                     Component* port_num);
 COMPONENT_EXPORT(URL)
-void ParseAuthority(const char16_t* spec,
+void ParseAuthority(std::u16string_view spec,
                     const Component& auth,
                     ParserMode parser_mode,
                     Component* username,
@@ -424,10 +467,15 @@ void ParseAuthority(const char16_t* spec,
 //
 // The return value will be a positive integer between 0 and 64K, or one of
 // the two special values below.
+//
+// Overloads for `const char*` and `const char16_t*` are deprecated. Use an
+// overload for `std::string_view` or `std::u16string_view` instead.
 enum SpecialPort { PORT_UNSPECIFIED = -1, PORT_INVALID = -2 };
 COMPONENT_EXPORT(URL) int ParsePort(const char* url, const Component& port);
 COMPONENT_EXPORT(URL)
-int ParsePort(const char16_t* url, const Component& port);
+int ParsePort(std::string_view url, const Component& port);
+COMPONENT_EXPORT(URL)
+int ParsePort(std::u16string_view url, const Component& port);
 
 // Extracts the range of the file name in the given url. The path must
 // already have been computed by the parse function, and the matching URL
@@ -440,11 +488,11 @@ int ParsePort(const char16_t* url, const Component& port);
 //
 // The 8-bit version requires UTF-8 encoding.
 COMPONENT_EXPORT(URL)
-void ExtractFileName(const char* url,
+void ExtractFileName(std::string_view url,
                      const Component& path,
                      Component* file_name);
 COMPONENT_EXPORT(URL)
-void ExtractFileName(const char16_t* url,
+void ExtractFileName(std::u16string_view url,
                      const Component& path,
                      Component* file_name);
 

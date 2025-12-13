@@ -18,12 +18,9 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.crypto.CipherFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
@@ -40,14 +37,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /** Test relating to FlatBuffer portion of {@link TabStateFileManager} */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -90,62 +82,6 @@ public class TabStateFlatBufferTest {
 
     @Test
     @LargeTest
-    @DisableFeatures(ChromeFeatureList.TAB_STATE_FLAT_BUFFER)
-    public void testFlatBufferCleanup() throws IOException, TimeoutException, ExecutionException {
-        List<File> flatBufferFiles = new ArrayList<>();
-        List<File> legacyHandWrittenFiles = new ArrayList<>();
-        List<Integer> tabIds = List.of(1, 2, 3, 4, 5);
-        for (int tabId : tabIds) {
-            legacyHandWrittenFiles.add(getLegacyTestFile(tabId, /* isEncrypted= */ tabId % 2 == 0));
-            flatBufferFiles.add(getTestFile(tabId, /* isEncrypted= */ tabId % 2 == 0));
-        }
-
-        for (int i = 0; i < tabIds.size(); i++) {
-            int tabId = tabIds.get(i);
-            TabState tabState =
-                    getTestTabState(
-                            /* isIncognito */
-                            tabId % 2 == 0);
-            TabStateFileManager.saveStateInternal(
-                    legacyHandWrittenFiles.get(i),
-                    tabState,
-                    /* encrypted= */ tabId % 2 == 0,
-                    sCipherFactory);
-            TabStateFileManager.saveStateInternal(
-                    flatBufferFiles.get(i),
-                    tabState,
-                    /* encrypted= */ tabId % 2 == 0,
-                    sCipherFactory);
-        }
-        for (File file :
-                Stream.concat(legacyHandWrittenFiles.stream(), flatBufferFiles.stream())
-                        .collect(Collectors.toList())) {
-            Assert.assertTrue("File " + file + " should exist.", file.exists());
-        }
-        TabStateFileManager.cleanupUnusedFiles(flatBufferFiles.get(0).getParentFile());
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    for (File file : flatBufferFiles) {
-                        Criteria.checkThat(
-                                "File " + file + " should no longer exist.",
-                                file.exists(),
-                                Matchers.is(false));
-                    }
-                });
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    for (File file : legacyHandWrittenFiles) {
-                        Criteria.checkThat(
-                                "File " + file + " should still exist.",
-                                file.exists(),
-                                Matchers.is(true));
-                    }
-                });
-    }
-
-    @Test
-    @LargeTest
-    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLAT_BUFFER)
     public void testFlatBufferMetrics() throws ExecutionException, IOException {
         TabState state = getTestTabState(false);
         File file = getTestFile(1, false);
@@ -162,7 +98,6 @@ public class TabStateFlatBufferTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLAT_BUFFER)
     public void testLegacyHandWrittenMetrics() throws ExecutionException, IOException {
         TabState state = getTestTabState(false);
         File file = getLegacyTestFile(1, false);
@@ -179,7 +114,6 @@ public class TabStateFlatBufferTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLAT_BUFFER)
     public void testCorruptTabStateFile() throws ExecutionException, IOException {
         File legacyFile = getLegacyTestFile(1, false);
         FileOutputStream legacyOutputStream = new FileOutputStream(legacyFile);
@@ -201,7 +135,6 @@ public class TabStateFlatBufferTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLAT_BUFFER)
     public void testFlatBufferFormatIncognito() throws ExecutionException {
         TabState state = getTestTabState(/* isIncognito= */ true);
         TabStateFileManager.saveStateInternal(
@@ -220,7 +153,6 @@ public class TabStateFlatBufferTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.LEGACY_TAB_STATE_DEPRECATION)
     public void testLegacyTabStateFileDeletion() throws ExecutionException {
         TabState state = getTestTabState(/* isIncognito= */ true);
         File legacyTabStateFile =
@@ -257,9 +189,6 @@ public class TabStateFlatBufferTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(
-            ChromeFeatureList.LEGACY_TAB_STATE_DEPRECATION
-                    + ":delete_migrated_files_after_restore/true")
     public void testLegacyTabStateFileMarkedForDeletion() throws ExecutionException {
         TabState state = getTestTabState(/* isIncognito= */ false);
         File legacyTabStateFile =
@@ -290,9 +219,6 @@ public class TabStateFlatBufferTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(
-            ChromeFeatureList.LEGACY_TAB_STATE_DEPRECATION
-                    + ":delete_migrated_files_after_restore/true")
     public void testUnmigratedLegacyTabStateFileNotMarkedForDeletion() throws ExecutionException {
         TabState state = getTestTabState(/* isIncognito= */ false);
         File legacyTabStateFile =
@@ -377,7 +303,8 @@ public class TabStateFlatBufferTest {
         ByteBuffer buffer = ByteBuffer.allocateDirect(capacity);
         buffer.put(bytes);
         buffer.rewind();
-        state.contentsState = new WebContentsState(buffer);
+        state.contentsState =
+                new WebContentsState(buffer, WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
         state.openerAppId = "openerAppId";
         return state;
     }

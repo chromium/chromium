@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/win/enum_variant.h"
 
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
+#include "base/compiler_specific.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_variant.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -84,7 +80,7 @@ TEST(EnumVariantTest, SimpleEnumVariant) {
   VARIANT out_elements[3];
   ULONG out_received_multiple;
   for (int i = 0; i < 3; ++i) {
-    ::VariantInit(&out_elements[i]);
+    ::VariantInit(&UNSAFE_TODO(out_elements[i]));
   }
   EXPECT_EQ(S_OK, ev->Next(3, out_elements, &out_received_multiple));
   EXPECT_EQ(3u, out_received_multiple);
@@ -95,7 +91,7 @@ TEST(EnumVariantTest, SimpleEnumVariant) {
   EXPECT_EQ(VT_I4, out_elements[2].vt);
   EXPECT_EQ(30, out_elements[2].lVal);
   for (int i = 0; i < 3; ++i) {
-    ::VariantClear(&out_elements[i]);
+    ::VariantClear(&UNSAFE_TODO(out_elements[i]));
   }
 
   base::win::ScopedVariant placeholder_variant_multiple;
@@ -121,7 +117,7 @@ TEST(EnumVariantTest, Clone) {
 
   VARIANT out_elements[3];
   for (int i = 0; i < 3; ++i) {
-    ::VariantInit(&out_elements[i]);
+    ::VariantInit(&UNSAFE_TODO(out_elements[i]));
   }
   EXPECT_EQ(S_OK, ev2->Next(3, out_elements, nullptr));
   EXPECT_EQ(VT_I4, out_elements[0].vt);
@@ -131,7 +127,7 @@ TEST(EnumVariantTest, Clone) {
   EXPECT_EQ(VT_I4, out_elements[2].vt);
   EXPECT_EQ(30, out_elements[2].lVal);
   for (int i = 0; i < 3; ++i) {
-    ::VariantClear(&out_elements[i]);
+    ::VariantClear(&UNSAFE_TODO(out_elements[i]));
   }
 }
 

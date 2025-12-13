@@ -38,8 +38,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.ui.base.WindowAndroid;
 
-import java.util.Optional;
-
 /** Tests for SendTabToSelfCoordinator */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -76,11 +74,11 @@ public class SendTabToSelfCoordinatorTest {
         // Sign in and wait for the device list to be downloaded.
         mSyncTestRule.setUpAccountAndSignInForTesting();
         CriteriaHelper.pollUiThread(
-                () -> {
-                    return SendTabToSelfAndroidBridge.getEntryPointDisplayReason(
-                                    ProfileManager.getLastUsedRegularProfile(), HTTP_URL.getSpec())
-                            .equals(Optional.of(EntryPointDisplayReason.OFFER_FEATURE));
-                });
+                () ->
+                        SendTabToSelfAndroidBridge.getEntryPointDisplayReason(
+                                        ProfileManager.getLastUsedRegularProfile(),
+                                        HTTP_URL.getSpec())
+                                .equals(EntryPointDisplayReason.OFFER_FEATURE));
 
         buildAndShowCoordinator();
 

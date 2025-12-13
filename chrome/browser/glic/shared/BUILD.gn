@@ -1,0 +1,19 @@
+import("//chrome/common/features.gni")
+
+assert(enable_glic)
+
+source_set("shared") {
+  sources = [
+    "webui_shared.cc",
+    "webui_shared.h",
+  ]
+  deps = [
+    "//base/version_info",
+    "//chrome/browser/resources/glic/shared:resources_grit",
+    "//chrome/common:channel_info",
+    "//chrome/common:chrome_features",
+    "//chrome/common:non_code_constants",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}

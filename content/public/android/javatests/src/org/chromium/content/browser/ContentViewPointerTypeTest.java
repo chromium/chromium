@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import android.graphics.Rect;
 import android.os.SystemClock;
 import android.view.InputDevice;
@@ -55,7 +57,7 @@ public class ContentViewPointerTypeTest {
         }
 
         public int getPointerType() {
-            assert getCallCount() > 0;
+            assertThat(getCallCount()).isGreaterThan(0);
             return mPointerType;
         }
     }

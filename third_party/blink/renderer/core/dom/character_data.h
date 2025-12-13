@@ -130,6 +130,7 @@ class CORE_EXPORT CharacterData : public Node {
   Node* Clone(Document& factory,
               NodeCloningData& data,
               ContainerNode* append_to,
+              CustomElementRegistry* fallback_registry,
               ExceptionState& append_exception_state) const override;
   virtual CharacterData* CloneWithData(Document&, const String&) const = 0;
 

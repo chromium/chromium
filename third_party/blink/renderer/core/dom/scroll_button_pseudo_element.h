@@ -6,12 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SCROLL_BUTTON_PSEUDO_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
-#include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
+#include "third_party/blink/renderer/core/frame/post_layout_snapshot_client.h"
 
 namespace blink {
 
 class ScrollButtonPseudoElement : public PseudoElement,
-                                  public ScrollSnapshotClient {
+                                  public PostLayoutSnapshotClient {
  public:
   ScrollButtonPseudoElement(Element* originating_element, PseudoId pseudo_id);
 
@@ -27,16 +27,13 @@ class ScrollButtonPseudoElement : public PseudoElement,
   bool IsDisabledFormControl() const final { return !IsEnabled(); }
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const final;
 
-  // ScrollSnapshotClient:
-  void UpdateSnapshot() override;
-  bool ValidateSnapshot() override;
+  // PostLayoutSnapshotClient:
+  bool UpdateSnapshot() override;
   bool ShouldScheduleNextService() override;
 
   void Trace(Visitor* v) const final;
 
  private:
-  bool UpdateSnapshotInternal();
-
   void HandleButtonActivation();
 
   bool enabled_ = true;

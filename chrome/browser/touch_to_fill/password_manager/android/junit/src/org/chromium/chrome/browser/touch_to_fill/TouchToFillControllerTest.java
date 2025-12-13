@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.touch_to_fill;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
@@ -106,46 +108,46 @@ public class TouchToFillControllerTest {
             UrlFormatter.formatUrlForSecurityDisplay(TEST_URL, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
     private static final String TEST_SUBDOMAIN_URL = "https://subdomain.example.xyz";
     private static final Credential ANA =
-            new Credential(
-                    "Ana",
-                    "S3cr3t",
-                    "Ana",
-                    "https://m.a.xyz/",
-                    "m.a.xyz",
-                    GetLoginMatchType.PSL,
-                    0);
+            new Credential.Builder()
+                    .setUsername("Ana")
+                    .setPassword("S3cr3t")
+                    .setFormattedUsername("Ana")
+                    .setOriginUrl("https://m.a.xyz/")
+                    .setDisplayName("m.a.xyz")
+                    .setMatchType(GetLoginMatchType.PSL)
+                    .setLastUsedMsSinceEpoch(0)
+                    .build();
     private static final Credential BOB =
-            new Credential(
-                    "Bob",
-                    "*****",
-                    "Bob",
-                    TEST_SUBDOMAIN_URL,
-                    "subdomain.example.xyz",
-                    GetLoginMatchType.PSL,
-                    0);
+            new Credential.Builder()
+                    .setUsername("Bob")
+                    .setPassword("*****")
+                    .setFormattedUsername("Bob")
+                    .setOriginUrl(TEST_SUBDOMAIN_URL)
+                    .setDisplayName("subdomain.example.xyz")
+                    .setMatchType(GetLoginMatchType.PSL)
+                    .setLastUsedMsSinceEpoch(0)
+                    .build();
     private static final Credential CARL =
-            new Credential(
-                    "Carl",
-                    "G3h3!m",
-                    "Carl",
-                    TEST_URL.getSpec(),
-                    "example.xyz",
-                    GetLoginMatchType.EXACT,
-                    0);
+            new Credential.Builder()
+                    .setUsername("Carl")
+                    .setPassword("G3h3!m")
+                    .setFormattedUsername("Carl")
+                    .setOriginUrl(TEST_URL.getSpec())
+                    .setDisplayName("example.xyz")
+                    .setMatchType(GetLoginMatchType.EXACT)
+                    .setLastUsedMsSinceEpoch(0)
+                    .build();
     private static final Credential CARL_BACKUP =
-            new Credential(
-                    "Carl",
-                    "G3h3!m",
-                    "Carl",
-                    TEST_URL.getSpec(),
-                    "example.xyz",
-                    GetLoginMatchType.EXACT,
-                    0,
-                    false,
-                    /* senderName= */ null,
-                    null,
-                    /* sharingNotificationDisplayed= */ false,
-                    /* isBackupCredential= */ true);
+            new Credential.Builder()
+                    .setUsername("Carl")
+                    .setPassword("G3h3!m")
+                    .setFormattedUsername("Carl")
+                    .setOriginUrl(TEST_URL.getSpec())
+                    .setDisplayName("example.xyz")
+                    .setMatchType(GetLoginMatchType.EXACT)
+                    .setLastUsedMsSinceEpoch(0)
+                    .setIsBackupCredential(true)
+                    .build();
     private static final WebauthnCredential DINO =
             new WebauthnCredential("dinos.com", new byte[] {1}, new byte[] {2}, "dino@example.com");
     private static final @Px int DESIRED_FAVICON_SIZE = 64;
@@ -195,11 +197,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA, CARL),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ true,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(4)); // Header + 2 credentials + footer.
@@ -232,11 +232,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(4)); // Header + 1 credential + Button + Footer.
@@ -263,10 +261,8 @@ public class TouchToFillControllerTest {
                 TEST_URL,
                 true,
                 Arrays.asList(DINO),
-                Collections.emptyList(),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(4)); // Header + 1 credential + Button + Footer.
@@ -292,11 +288,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Arrays.asList(DINO),
-                Arrays.asList(ANA),
+                Arrays.asList(DINO, ANA),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         // Header + 1 webauthn credential + 1 password credential + Footer.
@@ -324,11 +318,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ true,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(4)); // Header + 1 credential + Button + Footer.
@@ -356,11 +348,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA, CARL, BOB),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(5)); // Header + 3 Credentials + Footer.
@@ -387,33 +377,30 @@ public class TouchToFillControllerTest {
         List<Integer> postedTasksTraits = new ArrayList();
         ShadowPostTask.setTestImpl(
                 (taskTraits, task, delay) -> {
-                    assert delay == 0;
+                    assertThat(delay).isEqualTo(0);
                     // Store the traits to test that tasks are posted to the proper traits.
                     postedTasksTraits.add(taskTraits);
                     task.run();
                 });
         Credential sharedCredentials =
-                new Credential(
-                        "Ana",
-                        "S3cr3t",
-                        "Ana",
-                        "https://m.a.xyz/",
-                        "m.a.xyz",
-                        GetLoginMatchType.PSL,
-                        0,
-                        /* isShared */ true,
-                        "Sender Name",
-                        new GURL("https://sender-profile-image.xyz/"),
-                        /* sharingNotificationDisplayed */ false,
-                        /* isBackupCredential */ false);
+                new Credential.Builder()
+                        .setUsername("Ana")
+                        .setPassword("S3cr3t")
+                        .setFormattedUsername("Ana")
+                        .setOriginUrl("https://m.a.xyz/")
+                        .setDisplayName("m.a.xyz")
+                        .setMatchType(GetLoginMatchType.PSL)
+                        .setLastUsedMsSinceEpoch(0)
+                        .setIsShared(true)
+                        .setSenderName("Sender Name")
+                        .setSenderProfileImageUrl(new GURL("https://sender-profile-image.xyz/"))
+                        .build();
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(sharedCredentials),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ true,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         // Header + 1 credential + Button + Footer.
@@ -456,41 +443,37 @@ public class TouchToFillControllerTest {
     @Test
     public void testShowSheetForMultipleSharedCredentials() {
         Credential sharedCredential1 =
-                new Credential(
-                        "Ana",
-                        "S3cr3t",
-                        "Ana",
-                        "https://m.a.xyz/",
-                        "m.a.xyz",
-                        GetLoginMatchType.PSL,
-                        0,
-                        /* isShared */ true,
-                        "Sender Name",
-                        new GURL("https://sender-profile-image.xyz/"),
-                        /* sharingNotificationDisplayed */ false,
-                        /* isBackupCredential */ false);
+                new Credential.Builder()
+                        .setUsername("Ana")
+                        .setPassword("S3cr3t")
+                        .setFormattedUsername("Ana")
+                        .setOriginUrl("https://m.a.xyz/")
+                        .setDisplayName("m.a.xyz")
+                        .setMatchType(GetLoginMatchType.PSL)
+                        .setLastUsedMsSinceEpoch(0)
+                        .setIsShared(true)
+                        .setSenderName("Sender Name")
+                        .setSenderProfileImageUrl(new GURL("https://sender-profile-image.xyz/"))
+                        .build();
         Credential sharedCredential2 =
-                new Credential(
-                        "Bob",
-                        "S3cr3t",
-                        "Ana",
-                        "https://m.a.xyz/",
-                        "m.a.xyz",
-                        GetLoginMatchType.PSL,
-                        0,
-                        /* isShared */ true,
-                        "Sender Name",
-                        new GURL("https://sender-profile-image.xyz/"),
-                        /* sharingNotificationDisplayed */ false,
-                        /* isBackupCredential */ false);
+                new Credential.Builder()
+                        .setUsername("Bob")
+                        .setPassword("S3cr3t")
+                        .setFormattedUsername("Ana")
+                        .setOriginUrl("https://m.a.xyz/")
+                        .setDisplayName("m.a.xyz")
+                        .setMatchType(GetLoginMatchType.PSL)
+                        .setLastUsedMsSinceEpoch(0)
+                        .setIsShared(true)
+                        .setSenderName("Sender Name")
+                        .setSenderProfileImageUrl(new GURL("https://sender-profile-image.xyz/"))
+                        .build();
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(sharedCredential1, sharedCredential2),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ true,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         // Header + 2 credentials + Footer.
@@ -516,11 +499,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Collections.singletonList(CARL),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(4)); // Header + Credential + Continue Button + Footer.
@@ -553,11 +534,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(CARL, CARL_BACKUP),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(4)); // Header + 2 credentials + Footer.
@@ -593,11 +572,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA, BOB),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ false);
         assertThat(mModel.get(SHEET_ITEMS).size(), is(4)); // Header + 2 Credentials + Footer.
         assertThat(mModel.get(SHEET_ITEMS).get(1).type, is(ItemType.CREDENTIAL));
@@ -609,11 +586,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Collections.singletonList(ANA),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(4)); // Header + Credential + Continue Button + Footer.
@@ -625,11 +600,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Collections.singletonList(BOB),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ false);
         itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.size(), is(4)); // Header + Credential + Continue Button + Footer.
@@ -643,11 +616,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA, CARL, BOB),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ false);
         assertThat(mModel.get(VISIBLE), is(true));
     }
@@ -657,11 +628,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ false);
         assertThat(mModel.get(VISIBLE), is(true));
         assertNotNull(mModel.get(SHEET_ITEMS).get(1).model.get(ON_CLICK_LISTENER));
@@ -680,11 +649,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA, CARL),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ false);
         assertThat(mModel.get(VISIBLE), is(true));
         assertNotNull(mModel.get(SHEET_ITEMS).get(1).model.get(ON_CLICK_LISTENER));
@@ -703,11 +670,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA, CARL),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ false);
         mMediator.onDismissed(BottomSheetController.StateChangeReason.BACK_PRESS);
         verify(mMockDelegate).onDismissed();
@@ -724,11 +689,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA, CARL, BOB),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(
@@ -744,10 +707,8 @@ public class TouchToFillControllerTest {
                 TEST_URL,
                 true,
                 Arrays.asList(DINO),
-                Collections.emptyList(),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ true,
                 /* showHybridPasskeyOption= */ false);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(
@@ -757,34 +718,13 @@ public class TouchToFillControllerTest {
     }
 
     @Test
-    public void testManagePasskeysButtonTitleWhenPasswordsHidden() {
-        mMediator.showCredentials(
-                TEST_URL,
-                true,
-                Arrays.asList(DINO),
-                Arrays.asList(ANA),
-                /* showMorePasskeys= */ false,
-                /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ true,
-                /* showHybridPasskeyOption= */ false);
-        ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
-        // Header + 1 webauthn credential + 1 password credential + Footer.
-        assertThat(itemList.size(), is(4));
-        assertThat(
-                itemList.get(itemList.size() - 1).model.get(MANAGE_BUTTON_TEXT),
-                is(mContext.getString(R.string.manage_passkeys)));
-    }
-
-    @Test
     public void testAddsTheBottomSheetHelperToObserveTheSheet() {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Arrays.asList(DINO),
-                Arrays.asList(ANA),
+                Arrays.asList(ANA, DINO),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ true,
                 /* showHybridPasskeyOption= */ false);
 
         verify(mMockFocusHelper).registerForOneTimeUse();
@@ -795,11 +735,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA, CARL, BOB),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ true);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.get(itemList.size() - 1).model.get(SHOW_HYBRID), is(true));
@@ -810,11 +748,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA, CARL, BOB),
                 /* showMorePasskeys= */ false,
                 /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ true);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(
@@ -829,11 +765,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA),
                 /* showMorePasskeys= */ true,
                 /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ true);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.get(2).type, is(ItemType.MORE_PASSKEYS));
@@ -854,11 +788,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Arrays.asList(DINO),
-                Arrays.asList(ANA),
+                Arrays.asList(ANA, DINO),
                 /* showMorePasskeys= */ true,
                 /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ true);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(itemList.get(3).type, is(ItemType.MORE_PASSKEYS));
@@ -880,11 +812,9 @@ public class TouchToFillControllerTest {
         mMediator.showCredentials(
                 TEST_URL,
                 true,
-                Collections.emptyList(),
                 Arrays.asList(ANA),
                 /* showMorePasskeys= */ true,
                 /* triggerSubmission= */ false,
-                /* managePasskeysHidesPasswords= */ false,
                 /* showHybridPasskeyOption= */ true);
         ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
         assertThat(

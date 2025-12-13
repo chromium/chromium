@@ -11,6 +11,7 @@
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/occlusion.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace cc {
@@ -111,11 +112,19 @@ void UIResourceLayerImpl::AppendQuads(const AppendQuadsContext& context,
   if (visible_quad_rect.IsEmpty())
     return;
 
+  const gfx::Size resource_size =
+      layer_tree_impl()->GetUIResourceSize(ui_resource_id_);
+  const gfx::PointF top_left = gfx::ScalePoint(
+      uv_top_left_, resource_size.width(), resource_size.height());
+  const gfx::PointF bottom_right = gfx::ScalePoint(
+      uv_bottom_right_, resource_size.width(), resource_size.height());
+
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect, needs_blending,
-               resource, uv_top_left_, uv_bottom_right_, SkColors::kTransparent,
+               resource, top_left, bottom_right, SkColors::kTransparent,
                nearest_neighbor,
-               /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
+               /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
+               /*is_tex_coords_normalized=*/false);
   ValidateQuadResources(quad);
 }
 

@@ -74,7 +74,7 @@ void ProxyConfig::ProxyRules::Apply(const GURL& url, ProxyInfo* result) const {
       return;
     }
     case ProxyRules::Type::PROXY_LIST_PER_SCHEME: {
-      const ProxyList* entry = MapUrlSchemeToProxyList(url.scheme());
+      const ProxyList* entry = MapUrlSchemeToProxyList(url.GetScheme());
       if (entry) {
         result->UseProxyList(*entry);
       } else {
@@ -241,6 +241,65 @@ const ProxyList* ProxyConfig::ProxyRules::GetProxyListForWebSocketScheme()
   return nullptr;
 }
 
+ProxyConfig::ProxyOverrideRule::ProxyOverrideRule() = default;
+ProxyConfig::ProxyOverrideRule::ProxyOverrideRule(
+    const ProxyConfig::ProxyOverrideRule& other) = default;
+ProxyConfig::ProxyOverrideRule& ProxyConfig::ProxyOverrideRule::operator=(
+    const ProxyOverrideRule& other) = default;
+ProxyConfig::ProxyOverrideRule::ProxyOverrideRule(ProxyOverrideRule&& other) =
+    default;
+ProxyConfig::ProxyOverrideRule& ProxyConfig::ProxyOverrideRule::operator=(
+    ProxyOverrideRule&& other) = default;
+ProxyConfig::ProxyOverrideRule::~ProxyOverrideRule() = default;
+
+bool ProxyConfig::ProxyOverrideRule::operator==(
+    const ProxyOverrideRule& other) const {
+  return destination_matchers == other.destination_matchers &&
+         exclude_destination_matchers == other.exclude_destination_matchers &&
+         dns_conditions == other.dns_conditions &&
+         proxy_list.Equals(other.proxy_list);
+}
+
+base::Value::Dict ProxyConfig::ProxyOverrideRule::ToDict() const {
+  base::Value::Dict dict;
+  dict.Set("destination_matchers", destination_matchers.ToString());
+  dict.Set("proxy_list", proxy_list.ToValue());
+
+  base::Value::List dns_conditions_value;
+  for (const auto& dns_condition : dns_conditions) {
+    dns_conditions_value.Append(dns_condition.ToDict());
+  }
+
+  dict.Set("dns_conditions", std::move(dns_conditions_value));
+  return dict;
+}
+
+bool ProxyConfig::ProxyOverrideRule::MatchesDestination(const GURL& url) const {
+  return destination_matchers.Matches(url) &&
+         !exclude_destination_matchers.Matches(url);
+}
+
+bool ProxyConfig::ProxyOverrideRule::DnsProbeCondition::operator==(
+    const DnsProbeCondition& other) const = default;
+
+base::Value::Dict ProxyConfig::ProxyOverrideRule::DnsProbeCondition::ToDict()
+    const {
+  base::Value::Dict dict;
+  dict.Set("host", host.Serialize());
+
+  std::string_view result_str;
+  switch (result) {
+    case DnsProbeCondition::Result::kNotFound:
+      result_str = "NotFound";
+      break;
+    case DnsProbeCondition::Result::kResolved:
+      result_str = "Resolved";
+      break;
+  }
+  dict.Set("result", result_str);
+  return dict;
+}
+
 ProxyConfig::ProxyConfig() = default;
 
 ProxyConfig::ProxyConfig(const ProxyConfig& config) = default;
@@ -254,7 +313,8 @@ ProxyConfig& ProxyConfig::operator=(ProxyConfig&& config) = default;
 ProxyConfig::~ProxyConfig() = default;
 
 bool ProxyConfig::Equals(const ProxyConfig& other) const {
-  return auto_detect_ == other.auto_detect_ && pac_url_ == other.pac_url_ &&
+  return proxy_override_rules_ == other.proxy_override_rules_ &&
+         auto_detect_ == other.auto_detect_ && pac_url_ == other.pac_url_ &&
          pac_mandatory_ == other.pac_mandatory_ &&
          from_system_ == other.from_system_ &&
          proxy_rules_.Equals(other.proxy_rules());
@@ -306,7 +366,7 @@ base::Value ProxyConfig::ToValue() const {
     }
 
     // Output the bypass rules.
-    const ProxyBypassRules& bypass = proxy_rules_.bypass_rules;
+    const ProxyHostMatchingRules& bypass = proxy_rules_.bypass_rules;
     if (!bypass.rules().empty()) {
       if (proxy_rules_.reverse_bypass) {
         dict.Set("reverse_bypass", true);
@@ -320,6 +380,15 @@ base::Value ProxyConfig::ToValue() const {
 
       dict.Set("bypass_list", std::move(list));
     }
+  }
+
+  // Output override rules.
+  if (!proxy_override_rules_.empty()) {
+    base::Value::List override_rules;
+    for (const auto& override_rule : proxy_override_rules_) {
+      override_rules.Append(override_rule.ToDict());
+    }
+    dict.Set("override_rules", std::move(override_rules));
   }
 
   return base::Value(std::move(dict));

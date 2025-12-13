@@ -32,6 +32,9 @@ const char kGpuPreferences[] = "gpu-preferences";
 // Ignores GPU blocklist.
 const char kIgnoreGpuBlocklist[] = "ignore-gpu-blocklist";
 
+// Disables the GPU shader on disk cache.
+const char kDisableGpuShaderDiskCache[] = "disable-gpu-shader-disk-cache";
+
 // Allows explicitly specifying the shader disk cache size for embedded devices.
 // Default value is 6MB. On Android, 2MB is default and 128KB for low-end
 // devices.
@@ -140,6 +143,7 @@ const char kSkiaGraphiteBackendDawn[] = "dawn";
 const char kSkiaGraphiteBackendDawnD3D11[] = "dawn-d3d11";
 const char kSkiaGraphiteBackendDawnD3D12[] = "dawn-d3d12";
 const char kSkiaGraphiteBackendDawnMetal[] = "dawn-metal";
+const char kSkiaGraphiteBackendDawnOpenGLES[] = "dawn-opengles";
 const char kSkiaGraphiteBackendDawnSwiftshader[] = "dawn-swiftshader";
 const char kSkiaGraphiteBackendDawnVulkan[] = "dawn-vulkan";
 const char kSkiaGraphiteBackendMetal[] = "metal";

@@ -4,11 +4,14 @@
 
 #include "base/strings/stringprintf.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::FeatureSwitch;
 using extensions::OptionsPageInfo;
@@ -88,7 +91,7 @@ TEST_F(OptionsPageManifestTest, OptionsPageInApps) {
       // Forbid absolute URL for options page in packaged apps.
       Testcase("packaged_app_absolute_options.json",
                extensions::manifest_errors::kInvalidOptionsPage)};
-  RunTestcases(testcases, EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, ExpectType::kError);
 }
 
 // Tests for the options_ui.page manifest field.
@@ -109,7 +112,7 @@ TEST_F(OptionsPageManifestTest, OptionsUIPage) {
 
   RunTestcase(Testcase("options_ui_page_bad_url.json",
                        "'page': expected page, got null"),
-              EXPECT_TYPE_WARNING);
+              ExpectType::kWarning);
 }
 
 // Runs TestOptionsUIChromeStyleAndOpenInTab with and without the

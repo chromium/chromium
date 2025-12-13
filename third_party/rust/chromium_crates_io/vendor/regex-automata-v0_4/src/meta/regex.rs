@@ -917,7 +917,9 @@ impl Regex {
     /// ```
     #[inline]
     pub fn search(&self, input: &Input<'_>) -> Option<Match> {
-        if self.imp.info.is_impossible(input) {
+        if self.imp.info.captures_disabled()
+            || self.imp.info.is_impossible(input)
+        {
             return None;
         }
         let mut guard = self.pool.get();
@@ -973,7 +975,9 @@ impl Regex {
     /// ```
     #[inline]
     pub fn search_half(&self, input: &Input<'_>) -> Option<HalfMatch> {
-        if self.imp.info.is_impossible(input) {
+        if self.imp.info.captures_disabled()
+            || self.imp.info.is_impossible(input)
+        {
             return None;
         }
         let mut guard = self.pool.get();
@@ -1128,7 +1132,9 @@ impl Regex {
         input: &Input<'_>,
         slots: &mut [Option<NonMaxUsize>],
     ) -> Option<PatternID> {
-        if self.imp.info.is_impossible(input) {
+        if self.imp.info.captures_disabled()
+            || self.imp.info.is_impossible(input)
+        {
             return None;
         }
         let mut guard = self.pool.get();
@@ -1242,7 +1248,9 @@ impl Regex {
         cache: &mut Cache,
         input: &Input<'_>,
     ) -> Option<Match> {
-        if self.imp.info.is_impossible(input) {
+        if self.imp.info.captures_disabled()
+            || self.imp.info.is_impossible(input)
+        {
             return None;
         }
         self.imp.strat.search(cache, input)
@@ -1284,7 +1292,9 @@ impl Regex {
         cache: &mut Cache,
         input: &Input<'_>,
     ) -> Option<HalfMatch> {
-        if self.imp.info.is_impossible(input) {
+        if self.imp.info.captures_disabled()
+            || self.imp.info.is_impossible(input)
+        {
             return None;
         }
         self.imp.strat.search_half(cache, input)
@@ -1437,7 +1447,9 @@ impl Regex {
         input: &Input<'_>,
         slots: &mut [Option<NonMaxUsize>],
     ) -> Option<PatternID> {
-        if self.imp.info.is_impossible(input) {
+        if self.imp.info.captures_disabled()
+            || self.imp.info.is_impossible(input)
+        {
             return None;
         }
         self.imp.strat.search_slots(cache, input, slots)
@@ -1980,6 +1992,19 @@ impl RegexInfo {
     pub(crate) fn is_always_anchored_end(&self) -> bool {
         use regex_syntax::hir::Look;
         self.props_union().look_set_suffix().contains(Look::End)
+    }
+
+    /// Returns true when the regex's NFA lacks capture states.
+    ///
+    /// In this case, some regex engines (like the PikeVM) are unable to report
+    /// match offsets, while some (like the lazy DFA can). To avoid whether a
+    /// match or not is reported based on engine selection, routines that
+    /// return match offsets will _always_ report `None` when this is true.
+    ///
+    /// Yes, this is a weird case and it's a little fucked up. But
+    /// `WhichCaptures::None` comes with an appropriate warning.
+    fn captures_disabled(&self) -> bool {
+        matches!(self.config().get_which_captures(), WhichCaptures::None)
     }
 
     /// Returns true if and only if it is known that a match is impossible
@@ -2645,7 +2670,12 @@ impl Config {
     /// Setting this to `WhichCaptures::None` is usually not the right thing to
     /// do. When no capture states are compiled, some regex engines (such as
     /// the `PikeVM`) won't be able to report match offsets. This will manifest
-    /// as no match being found.
+    /// as no match being found. Indeed, in order to enforce consistent
+    /// behavior, the meta regex engine will always report `None` for routines
+    /// that return match offsets even if one of its regex engines could
+    /// service the request. This avoids "match or not" behavior from being
+    /// influenced by user input (since user input can influence the selection
+    /// of the regex engine).
     ///
     /// # Example
     ///
@@ -2691,6 +2721,33 @@ impl Config {
     /// re.captures(hay, &mut caps);
     /// assert_eq!(Some(Span::from(0..9)), caps.get_group(0));
     /// assert_eq!(None, caps.get_group(1));
+    ///
+    /// Ok::<(), Box<dyn std::error::Error>>(())
+    /// ```
+    ///
+    /// # Example: strange `Regex::find` behavior
+    ///
+    /// As noted above, when using [`WhichCaptures::None`], this means that
+    /// `Regex::is_match` could return `true` while `Regex::find` returns
+    /// `None`:
+    ///
+    /// ```
+    /// use regex_automata::{
+    ///     meta::Regex,
+    ///     nfa::thompson::WhichCaptures,
+    ///     Input,
+    ///     Match,
+    ///     Span,
+    /// };
+    ///
+    /// let re = Regex::builder()
+    ///     .configure(Regex::config().which_captures(WhichCaptures::None))
+    ///     .build(r"foo([0-9]+)bar")?;
+    /// let hay = "foo123bar";
+    ///
+    /// assert!(re.is_match(hay));
+    /// assert_eq!(re.find(hay), None);
+    /// assert_eq!(re.search_half(&Input::new(hay)), None);
     ///
     /// Ok::<(), Box<dyn std::error::Error>>(())
     /// ```
@@ -3413,9 +3470,9 @@ impl Builder {
                     .last()
                     .unwrap_or(0);
                 if maxoff < p.len() {
-                    debug!("{:?}: {}[... snip ...]", pid, &p[..maxoff]);
+                    debug!("{pid:?}: {}[... snip ...]", &p[..maxoff]);
                 } else {
-                    debug!("{:?}: {}", pid, p);
+                    debug!("{pid:?}: {p}");
                 }
             }
         }

@@ -23,7 +23,6 @@
 #include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/common/hit_test/hit_test_region_observer.h"
 #include "components/viz/common/surfaces/surface_id.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/geometry/transform.h"

@@ -37,6 +37,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/test/desktop_test_views_delegate.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -450,7 +451,8 @@ void ShellPlatformDelegate::SetTitle(Shell* shell,
   shell_data.window_widget->widget_delegate()->SetTitle(title);
 }
 
-void ShellPlatformDelegate::MainFrameCreated(Shell* shell) {}
+void ShellPlatformDelegate::MainFrameCreated(Shell* shell,
+                                             RenderFrameHost* main_frame) {}
 
 bool ShellPlatformDelegate::DestroyShell(Shell* shell) {
   DCHECK(base::Contains(shell_data_map_, shell));

@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/aggregated_journal_file_serializer.h"
 #include "chrome/browser/actor/aggregated_journal_in_memory_serializer.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -64,7 +65,8 @@ TEST_F(AggregatedJournalTest, AddObserver) {
   MockJournalObserver observer(journal);
   EXPECT_CALL(observer, WillAddJournalEntry(testing::_)).Times(1);
 
-  journal.Log(GURL(), TaskId(0), "Test", "Nothing");
+  journal.Log(GURL(), TaskId(0), "Test",
+              JournalDetailsBuilder().Add("details", "Nothing").Build());
 }
 
 TEST_F(AggregatedJournalTest, SerializerInMemory) {
@@ -73,11 +75,12 @@ TEST_F(AggregatedJournalTest, SerializerInMemory) {
                                                  /*max_bytes=*/1024 * 1024);
   serializer.Init();
   auto begin_entry = journal.CreatePendingAsyncEntry(
-      GURL("http://example.com"), TaskId(), "Begin", "Entry");
-  journal.Log(GURL(), TaskId(0), "Test", "Nothing");
-  journal.Log(GURL(), TaskId(0), "Test2", "Nothing");
-  journal.Log(GURL(), TaskId(0), "Test3", "Nothing");
-  journal.Log(GURL(), TaskId(0), "Test4", "Nothing");
+      GURL("http://example.com"), TaskId(), MakeBrowserTrackUUID(TaskId()),
+      "Begin", JournalDetailsBuilder().Add("details", "Entry").Build());
+  journal.Log(GURL(), TaskId(0), "Test", {});
+  journal.Log(GURL(), TaskId(0), "Test2", {});
+  journal.Log(GURL(), TaskId(0), "Test3", {});
+  journal.Log(GURL(), TaskId(0), "Test4", {});
   begin_entry.reset();
 
   std::vector<uint8_t> result = serializer.Snapshot();
@@ -92,7 +95,8 @@ TEST_F(AggregatedJournalTest, SerializerInMemoryTooSmallBuffer) {
   AggregatedJournal& journal = ActorKeyedService::Get(profile())->GetJournal();
   AggregatedJournalInMemorySerializer serializer(journal, /*max_bytes=*/8);
   serializer.Init();
-  journal.Log(GURL(), TaskId(0), "Test", "Nothing");
+  journal.Log(GURL(), TaskId(0), "Test",
+              JournalDetailsBuilder().Add("details", "Nothing").Build());
 
   // Nothing will get logged because of the small buffer.
   std::vector<uint8_t> result = serializer.Snapshot();
@@ -104,7 +108,8 @@ TEST_F(AggregatedJournalTest, SerializerInMemorySmallBuffer) {
   AggregatedJournalInMemorySerializer serializer(journal, /*max_bytes=*/100);
   serializer.Init();
   for (size_t i = 0; i < 10; ++i) {
-    journal.Log(GURL(), TaskId(0), "Test", "Nothing");
+    journal.Log(GURL(), TaskId(0), "Test",
+                JournalDetailsBuilder().Add("details", "Nothing").Build());
   }
 
   // We should something but at most 100 bytes.
@@ -124,11 +129,13 @@ TEST_F(AggregatedJournalTest, SerializerInFile) {
   EXPECT_TRUE(init_future.Get<bool>());
 
   auto begin_entry = journal.CreatePendingAsyncEntry(
-      GURL("http://example.com"), TaskId(), "Begin", "Entry");
-  journal.Log(GURL(), TaskId(0), "Test", "Nothing");
-  journal.Log(GURL(), TaskId(0), "Test2", "Nothing");
-  journal.Log(GURL(), TaskId(0), "Test3", "Nothing");
-  journal.Log(GURL(), TaskId(0), "Test4", "Nothing");
+      GURL("http://example.com"), TaskId(), journal.AllocateDynamicTrackUUID(),
+      "Begin", JournalDetailsBuilder().Add("details", "Entry").Build());
+  journal.Log(GURL(), TaskId(0), "Test",
+              JournalDetailsBuilder().Add("details", "Nothing").Build());
+  journal.Log(GURL(), TaskId(0), "Test2", {});
+  journal.Log(GURL(), TaskId(0), "Test3", {});
+  journal.Log(GURL(), TaskId(0), "Test4", {});
   begin_entry.reset();
 
   base::test::TestFuture<void> shutdown_future;

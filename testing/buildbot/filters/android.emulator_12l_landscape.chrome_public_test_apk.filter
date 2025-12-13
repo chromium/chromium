@@ -1,5 +1,9 @@
-# crbug.com/386395527
+# crbug.com/442769979
 -org.chromium.chrome.browser.app.bookmarks.BookmarkTest.testSmallDrag_Down_FoldersOnly
+-org.chromium.chrome.browser.app.bookmarks.PartnerBookmarkTest.testCannotSelectPartner
+-org.chromium.chrome.browser.incognito.IncognitoPermissionLeakageTest.testBlockPermissionDoNotLeakFromIncognitoToIncognito__INCOGNITO_TAB_INCOGNITO_CCT
+-org.chromium.chrome.browser.page_info.PageInfoDiscoverabilityTest.testPageInfoDiscoverabilityBlockPrompt
+-org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyTriggersNoRuntime
 -org.chromium.chrome.browser.tasks.tab_management.TabListContainerViewBinderTest.testSetInitialScrollIndex_Grid
 -org.chromium.chrome.browser.webapps.WebApkIntegrationTest.testWebApkServiceIntegration
 -org.chromium.chrome.browser.webapps.WebappNavigationTest.testCloseButtonReturnsToUrlBeforeRedirects

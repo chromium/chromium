@@ -35,7 +35,7 @@ component("win") {
 
   deps = [
     "//base:base_static",
-    "//components/stylus_handwriting/win:win",
+    "//components/stylus_handwriting/win",
     "//ui/base",
     "//ui/display",
   ]

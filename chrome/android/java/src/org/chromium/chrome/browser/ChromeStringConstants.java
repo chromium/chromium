@@ -15,7 +15,9 @@ import org.chromium.build.annotations.NullMarked;
 public class ChromeStringConstants {
     public static final String AUTOFILL_MANAGE_WALLET_ADDRESSES_URL =
             "https://payments.google.com/#paymentMethods";
-    public static final String SYNC_DASHBOARD_URL = "https://www.google.com/settings/chrome/sync";
+    public static final String LEGACY_SYNC_DASHBOARD_URL =
+            "https://www.google.com/settings/chrome/sync";
+    public static final String NEW_SYNC_DASHBOARD_URL = "https://chrome.google.com/data";
     // LINT.IfChange
     public static final String AUTOFILL_VIRTUAL_CARD_ENROLLMENT_SUPPORT_URL =
             "https://support.google.com/googlepay/answer/11234179";

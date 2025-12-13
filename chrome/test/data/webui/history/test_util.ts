@@ -5,7 +5,6 @@
 import type {ForeignSession, ForeignSessionTab, ForeignSessionWindow, HistoryAppElement} from 'chrome://history/history.js';
 import type {HistoryEntry, HistoryQuery} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {middleOfNode} from 'chrome://webui-test/mouse_mock_interactions.js';
 
 
@@ -48,6 +47,7 @@ export function createHistoryEntry(
     time: d.getTime(),
     title: urlStr,
     url: urlStr,
+    isActorVisit: false,
   };
 }
 
@@ -75,10 +75,6 @@ export function createSearchEntry(
  */
 export function createHistoryInfo(searchTerm?: string): HistoryQuery {
   return {finished: true, term: searchTerm || ''};
-}
-
-export function polymerSelectAll(element: Element, selector: string): NodeList {
-  return element.shadowRoot!.querySelectorAll(selector);
 }
 
 /**
@@ -202,5 +198,4 @@ export function createWindow(tabUrls: string[]): ForeignSessionWindow {
 export function navigateTo(route: string, _app: HistoryAppElement) {
   window.history.replaceState({}, '', route);
   window.dispatchEvent(new CustomEvent('popstate'));
-  flush();
 }

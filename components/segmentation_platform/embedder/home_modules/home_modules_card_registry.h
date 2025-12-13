@@ -19,13 +19,14 @@
 namespace segmentation_platform::home_modules {
 
 #if BUILDFLAG(IS_ANDROID)
-// Immpression counter for each card.
+// Impression counter for each card.
 extern const char kDefaultBrowserPromoImpressionCounterPref[];
 extern const char kTabGroupPromoImpressionCounterPref[];
 extern const char kTabGroupSyncPromoImpressionCounterPref[];
 extern const char kQuickDeletePromoImpressionCounterPref[];
 extern const char kAuxiliarySearchPromoImpressionCounterPref[];
 extern const char kHistorySyncPromoImpressionCounterPref[];
+extern const char kTipsNotificationsPromoImpressionCounterPref[];
 
 // Interaction flag for each card.
 extern const char kDefaultBrowserPromoInteractedPref[];
@@ -34,15 +35,18 @@ extern const char kTabGroupSyncPromoInteractedPref[];
 extern const char kQuickDeletePromoInteractedPref[];
 extern const char kAuxiliarySearchPromoInteractedPref[];
 extern const char kHistorySyncPromoInteractedPref[];
+extern const char kTipsNotificationsPromoInteractedPref[];
 #endif
 
 // Registry that manages all ephemeral cards in mobile home modules.
 class HomeModulesCardRegistry : public base::SupportsUserData::Data {
  public:
-  explicit HomeModulesCardRegistry(PrefService* profile_prefs);
+  explicit HomeModulesCardRegistry(PrefService* profile_prefs,
+                                   PrefService* local_state_prefs);
   // For testing.
   HomeModulesCardRegistry(
       PrefService* profile_prefs,
+      PrefService* local_state_prefs,
       std::vector<std::unique_ptr<CardSelectionInfo>> cards);
   ~HomeModulesCardRegistry() override;
 
@@ -51,6 +55,9 @@ class HomeModulesCardRegistry : public base::SupportsUserData::Data {
 
   // Registers all the profile prefs needed for the ephemeral cards system.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  // Registers all the local state prefs needed for the ephemeral cards system.
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // Returns `true` if the given `label` corresponds to any of the Tips
   // ephemeral module classes.
@@ -104,6 +111,9 @@ class HomeModulesCardRegistry : public base::SupportsUserData::Data {
 
   const raw_ptr<PrefService> profile_prefs_;
 
+  // `PrefService` for the local state.
+  const raw_ptr<PrefService> local_state_prefs_;
+
   // Maps a card label to its output index order.
   std::map<std::string, size_t> label_to_output_index_;
 
@@ -128,12 +138,6 @@ class HomeModulesCardRegistry : public base::SupportsUserData::Data {
 #endif
 
   base::WeakPtrFactory<HomeModulesCardRegistry> weak_ptr_factory_{this};
-
-  // Returns the list of card names configured via the
-  // "names_of_ephemeral_cards_to_show" feature param. The param is expected to
-  // be a comma-separated string (e.g.,
-  // "TabGroupPromo,TabGroupSyncPromo,QuickDeletePromo").
-  std::vector<std::string> GetEnabledCardList();
 };
 
 }  // namespace segmentation_platform::home_modules

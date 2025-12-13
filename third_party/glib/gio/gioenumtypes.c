@@ -29,7 +29,7 @@
 #include "config.h"
 #include "gioenumtypes.h"
 #include <gio.h>
-/* enumerations from "gio/gioenums.h" */
+/* enumerations from "gioenums.h" */
 GType
 g_app_info_create_flags_get_type (void)
 {
@@ -1815,7 +1815,7 @@ g_memory_monitor_warning_level_get_type (void)
 
   return static_g_define_type_id;
 }
-/* enumerations from "gio/gresolver.h" */
+/* enumerations from "gresolver.h" */
 GType
 g_resolver_name_lookup_flags_get_type (void)
 {
@@ -1836,7 +1836,7 @@ g_resolver_name_lookup_flags_get_type (void)
 
   return static_g_define_type_id;
 }
-/* enumerations from "gio/gsettings.h" */
+/* enumerations from "gsettings.h" */
 GType
 g_settings_bind_flags_get_type (void)
 {

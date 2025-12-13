@@ -27,7 +27,6 @@ namespace blink {
 namespace {
 
 using ::testing::_;
-using ::testing::Invoke;
 
 static const char kFakeRecordId[] =
     "https://w3c.github.io/web-nfc/dummy-record-id";
@@ -44,7 +43,7 @@ MATCHER_P(MessageEquals, expected, "") {
   if (received_data.size() != expected.size())
     return false;
 
-  for (WTF::wtf_size_t i = 0; i < received_data.size(); i++) {
+  for (wtf_size_t i = 0; i < received_data.size(); i++) {
     if (received_data[i] != expected[i]) {
       return false;
     }
@@ -71,8 +70,8 @@ class FakeNfcService : public device::mojom::blink::NFC {
     DCHECK(!receiver_.is_bound());
     receiver_.Bind(
         mojo::PendingReceiver<device::mojom::blink::NFC>(std::move(handle)));
-    receiver_.set_disconnect_handler(WTF::BindOnce(
-        &FakeNfcService::OnConnectionError, WTF::Unretained(this)));
+    receiver_.set_disconnect_handler(
+        BindOnce(&FakeNfcService::OnConnectionError, Unretained(this)));
   }
 
   void OnConnectionError() {
@@ -86,11 +85,11 @@ class FakeNfcService : public device::mojom::blink::NFC {
 
 #if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
     auto raw_message = device::mojom::blink::NDEFRawMessage::New();
-    WTF::Vector<uint8_t> record_data(
+    Vector<uint8_t> record_data(
         {0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10});
     auto raw_record = device::mojom::blink::NDEFRawRecord::New(
-        WTF::Vector<uint8_t>(base::as_byte_span(kFakeRecordId)), record_data,
-        WTF::Vector<uint8_t>("mime"),
+        Vector<uint8_t>(base::as_byte_span(kFakeRecordId)), record_data,
+        Vector<uint8_t>("mime"),
         device::mojom::blink::NSRawTypeNameFormat::kMedia);
     raw_message->data.push_back(std::move(raw_record));
 
@@ -109,7 +108,7 @@ class FakeNfcService : public device::mojom::blink::NFC {
     watch_error_ = std::move(error);
   }
 
-  WTF::Vector<uint32_t> GetWatches() { return watchIDs_; }
+  Vector<uint32_t> GetWatches() { return watchIDs_; }
 
  private:
   // Override methods from device::mojom::blink::NFC.
@@ -155,7 +154,7 @@ class FakeNfcService : public device::mojom::blink::NFC {
 #else
   mojo::Remote<device::mojom::blink::NFCClient> client_;
 #endif
-  WTF::Vector<uint32_t> watchIDs_;
+  Vector<uint32_t> watchIDs_;
   mojo::Receiver<device::mojom::blink::NFC> receiver_;
 };
 
@@ -168,8 +167,7 @@ class NFCProxyTest : public PageTestBase {
     PageTestBase::SetUp(gfx::Size());
     GetFrame().DomWindow()->GetBrowserInterfaceBroker().SetBinderForTesting(
         device::mojom::blink::NFC::Name_,
-        WTF::BindRepeating(&FakeNfcService::BindRequest,
-                           WTF::Unretained(nfc_service())));
+        BindRepeating(&FakeNfcService::BindRequest, Unretained(nfc_service())));
   }
 
   void TearDown() override {
@@ -204,11 +202,10 @@ TEST_F(NFCProxyTest, SuccessfulPath) {
   // Construct a NDEFMessagePtr
   auto message = device::mojom::blink::NDEFMessage::New();
   auto record = device::mojom::blink::NDEFRecord::New();
-  WTF::Vector<uint8_t> record_data(
-      {0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10});
+  Vector<uint8_t> record_data({0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10});
   record->record_type = "mime";
   record->id = kFakeRecordId;
-  record->data = WTF::Vector<uint8_t>(record_data);
+  record->data = Vector<uint8_t>(record_data);
   message->data.push_back(std::move(record));
 
   {
@@ -220,10 +217,10 @@ TEST_F(NFCProxyTest, SuccessfulPath) {
                              String(kFakeNfcTagSerialNumber),
 #endif
                              MessageEquals(record_data)))
-        .WillOnce(Invoke([&](const String& serial_number,
-                             const device::mojom::blink::NDEFMessage& message) {
+        .WillOnce([&](const String& serial_number,
+                      const device::mojom::blink::NDEFMessage& message) {
           loop.Quit();
-        }));
+        });
 
     nfc_proxy->Push(std::move(message), /*options=*/nullptr,
                     base::BindLambdaForTesting(

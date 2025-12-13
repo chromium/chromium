@@ -45,6 +45,9 @@ js_binary("generate_ccaas_deps") {
                     "jscomp_warning=checkTypes",
                     "jscomp_warning=deprecatedAnnotations",
                     "jscomp_warning=deprecated",
+
+                    # ECMAScript 2021 required for protobuf-javascript
+                    "language_in=ECMASCRIPT_2021",
                   ]
 }
 
@@ -70,5 +73,8 @@ js_type_check("closure_compile") {
                     "jscomp_warning=checkTypes",
                     "jscomp_warning=deprecatedAnnotations",
                     "jscomp_warning=deprecated",
+
+                    # ECMAScript 2021 required for protobuf-javascript
+                    "language_in=ECMASCRIPT_2021",
                   ]
 }

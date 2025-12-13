@@ -19,8 +19,8 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interactive_test_definitions.h"
-#include "ui/gfx/native_widget_types.h"
-#include "ui/views/interaction/interactive_views_test_internal.h"
+#include "ui/base/interaction/interactive_test_internal.h"
+#include "ui/gfx/native_ui_types.h"
 
 class DevToolsAgentCoverageObserver;
 class InteractiveBrowserTestApi;
@@ -30,14 +30,13 @@ namespace internal {
 // Class that provides functionality needed by InteractiveBrowserTestApi but
 // which should not be directly visible to tests inheriting from the API class.
 class InteractiveBrowserTestPrivate
-    : public views::test::internal::InteractiveViewsTestPrivate {
+    : public ui::test::internal::InteractiveTestPrivateFrameworkBase {
  public:
-  explicit InteractiveBrowserTestPrivate(
-      std::unique_ptr<InteractionTestUtilBrowser> test_util);
-  ~InteractiveBrowserTestPrivate() override;
+  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
 
-  // views::test::internal::InteractiveViewsTestPrivate:
-  void DoTestTearDown() override;
+  explicit InteractiveBrowserTestPrivate(
+      ui::test::internal::InteractiveTestPrivate& test_impl);
+  ~InteractiveBrowserTestPrivate() override;
 
   // Starts code coverage if the proper configuration is present.
   void MaybeStartWebUICodeCoverage();
@@ -56,13 +55,15 @@ class InteractiveBrowserTestPrivate
       const WebContentsInteractionTestUtil::DeepQuery& deep_query);
 
  protected:
-  // views::test::InteractiveViewsTestPrivate:
+  // views::test::internal::InteractiveTestPrivateFrameworkBase:
+  void DoTestTearDown() override;
   gfx::NativeWindow GetNativeWindowFromElement(
-      ui::TrackedElement* el) const override;
+      const ui::TrackedElement* el) const override;
   gfx::NativeWindow GetNativeWindowFromContext(
       ui::ElementContext context) const override;
   std::string DebugDescribeContext(ui::ElementContext context) const override;
-  DebugTreeNode DebugDumpElement(const ui::TrackedElement* el) const override;
+  std::vector<DebugTreeNode> DebugDumpElements(
+      std::set<const ui::TrackedElement*>& elements) const override;
 
  private:
   friend InteractiveBrowserTestApi;

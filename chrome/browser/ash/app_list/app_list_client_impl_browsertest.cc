@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "ash/app_list/apps_collections_controller.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -71,7 +70,6 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -98,7 +96,6 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/browser_sync/browser_sync_switches.h"
@@ -122,12 +119,12 @@
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/menus/simple_menu_model.h"
+#include "ui/message_center/test/message_center_waiter.h"
 #include "ui/wm/core/window_util.h"
 #include "url/gurl.h"
 
 // Browser Test for AppListClientImpl.
 using AppListClientImplBrowserTest = extensions::PlatformAppBrowserTest;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 
 namespace {
@@ -207,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, IsExtensionAppOpen) {
                             false /* preferred_containner */),
         apps::LaunchSource::kFromTest,
         std::make_unique<apps::WindowInfo>(
-            display::Screen::GetScreen()->GetPrimaryDisplay().id()));
+            display::Screen::Get()->GetPrimaryDisplay().id()));
     app_loaded_observer.Wait();
   }
   EXPECT_TRUE(delegate->IsAppOpen(extension_app->id()));
@@ -220,6 +217,10 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, IsPlatformAppOpen) {
 
   const extensions::Extension* app = InstallPlatformApp("minimal");
   EXPECT_FALSE(delegate->IsAppOpen(app->id()));
+
+  apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
+      app->id());
+
   {
     content::CreateAndLoadWebContentsObserver app_loaded_observer;
     LaunchPlatformApp(app);
@@ -273,10 +274,9 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, ShowAppInfo) {
   EXPECT_TRUE(wm::GetTransientChildren(client->GetAppListWindow()).empty());
 
   // Open the app info dialog.
-  ui_test_utils::BrowserChangeObserver browser_opened(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   client->DoShowAppInfoFlow(profile(), app->id());
-  browser_opened.Wait();
+  browser_created_observer.Wait();
 
   Browser* settings_app =
       chrome::SettingsWindowManager::GetInstance()->FindBrowserForProfile(
@@ -458,9 +458,7 @@ class AppListClientImplBrowserPromiseAppTest
     : public AppListClientImplBrowserTest,
       public AppListModelUpdaterObserver {
  public:
-  AppListClientImplBrowserPromiseAppTest() {
-    feature_list_.InitWithFeatures({ash::features::kPromiseIcons}, {});
-  }
+  AppListClientImplBrowserPromiseAppTest() = default;
 
   // extensions::PlatformAppBrowserTest:
   void SetUpOnMainThread() override {
@@ -505,7 +503,6 @@ class AppListClientImplBrowserPromiseAppTest
  private:
   int updates_ = 0;
   std::unique_ptr<ash::AppListItemMetadata> last_updated_metadata_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that progress updates from promise apps registry are reflected into the
@@ -691,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   display_manager.UpdateDisplay("400x300,500x400");
 
   const display::Display& primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
   AppListClientImpl* const client = AppListClientImpl::GetInstance();
   ASSERT_TRUE(client);
   // Associate |client| with the current profile.
@@ -826,12 +823,12 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
 
   {
     display::ScopedDisplayForNewWindows scoped_display(
-        display::Screen::GetScreen()->GetPrimaryDisplay().id());
+        display::Screen::Get()->GetPrimaryDisplay().id());
     client->ShowAppList(ash::AppListShowSource::kSearchKey);
     ash::AppListTestApi().WaitForBubbleWindow(
         /*wait_for_opening_animation=*/true);
   }
-  EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+  EXPECT_EQ(display::Screen::Get()->GetPrimaryDisplay().id(),
             client->GetAppListDisplayId());
 }
 
@@ -1121,7 +1118,6 @@ class DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest
   }
   ~DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest()
       override = default;
-
  protected:
   void ShowAppListAndVerify() {
     auto* client = AppListClientImpl::GetInstance();
@@ -1440,8 +1436,6 @@ class AppListSurveyTriggerTest
   void SetUpOnMainThread() override {
     AppListClientImplBrowserTest::SetUpOnMainThread();
 
-    display_service_ = std::make_unique<NotificationDisplayServiceTester>(
-        browser()->profile());
     user_manager::UserManager::Get()->SetIsCurrentUserNew(true);
     AppListClientImpl::GetInstance()->InitializeAsIfNewUserLoginForTest();
   }
@@ -1466,9 +1460,8 @@ class AppListSurveyTriggerTest
   }
 
   bool IsHatsNotificationActive() const {
-    return display_service_
-        ->GetNotification(ash::HatsNotificationController::kNotificationId)
-        .has_value();
+    return message_center::MessageCenter::Get()->FindVisibleNotificationById(
+               ash::HatsNotificationController::kNotificationId) != nullptr;
   }
 
   void MaybeWaitForHatsNotification() {
@@ -1476,9 +1469,9 @@ class AppListSurveyTriggerTest
       return;
     }
 
-    base::RunLoop loop;
-    display_service_->SetNotificationAddedClosure(loop.QuitClosure());
-    loop.Run();
+    message_center::MessageCenterWaiter(
+        ash::HatsNotificationController::kNotificationId)
+        .WaitUntilAdded();
   }
 
   const ash::HatsNotificationController* GetHatsNotificationController() const {
@@ -1505,8 +1498,6 @@ class AppListSurveyTriggerTest
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

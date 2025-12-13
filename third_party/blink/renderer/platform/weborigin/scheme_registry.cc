@@ -236,16 +236,7 @@ String SchemeRegistry::ListOfCorsEnabledURLSchemes() {
             });
 
   StringBuilder builder;
-  bool add_separator = false;
-  for (const auto& scheme : sorted_schemes) {
-    if (add_separator)
-      builder.Append(", ");
-    else
-      add_separator = true;
-
-    builder.Append(scheme);
-  }
-  return builder.ToString();
+  return builder.AppendRange(sorted_schemes, ", ").ReleaseString();
 }
 
 bool SchemeRegistry::ShouldTrackUsageMetricsForScheme(const String& scheme) {

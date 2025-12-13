@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"

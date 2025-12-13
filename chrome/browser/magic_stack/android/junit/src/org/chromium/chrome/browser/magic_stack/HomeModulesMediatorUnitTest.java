@@ -36,12 +36,15 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.FeatureOverrides;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.client_util.HomeModulesRankingHelper;
 import org.chromium.chrome.browser.segmentation_platform.client_util.HomeModulesRankingHelperJni;
@@ -50,7 +53,6 @@ import org.chromium.components.segmentation_platform.PredictionOptions;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.HashSet;
 import java.util.List;
@@ -88,13 +90,14 @@ public class HomeModulesMediatorUnitTest {
         mListItems = new ListItem[MODULE_TYPES];
         mModuleProviderBuilderList = new ModuleProviderBuilder[MODULE_TYPES];
         mModuleProviders = new ModuleProvider[MODULE_TYPES];
-        OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
+        ObservableSupplierImpl<Profile> profileSupplier = new ObservableSupplierImpl<>();
         profileSupplier.set(mProfile);
 
         registerModule(0, ModuleType.SINGLE_TAB);
         registerModule(1, ModuleType.PRICE_CHANGE);
         registerModule(2, ModuleType.SAFETY_HUB);
 
+        FeatureOverrides.newBuilder().disable(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR).apply();
         mHomeModulesConfigManager = HomeModulesConfigManager.getInstance();
         assertEquals(0, mHomeModulesConfigManager.getEnabledModuleSet().size());
         mMediator =
@@ -187,8 +190,7 @@ public class HomeModulesMediatorUnitTest {
         mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mOnHomeModulesChangedCallback);
         Boolean[] moduleFetchResultsIndicator =
                 mMediator.getModuleFetchResultsIndicatorForTesting();
-        SimpleRecyclerViewAdapter.ListItem[] moduleFetchResultsCache =
-                mMediator.getModuleFetchResultsCacheForTesting();
+        ListItem[] moduleFetchResultsCache = mMediator.getModuleFetchResultsCacheForTesting();
         verify(mModel, never()).add(any());
 
         // Verifies that the response of a low ranking module is cached.
@@ -232,8 +234,7 @@ public class HomeModulesMediatorUnitTest {
         mMediator.buildModulesAndShow(moduleList, mModuleDelegate, mOnHomeModulesChangedCallback);
         Boolean[] moduleFetchResultsIndicator =
                 mMediator.getModuleFetchResultsIndicatorForTesting();
-        SimpleRecyclerViewAdapter.ListItem[] moduleFetchResultsCache =
-                mMediator.getModuleFetchResultsCacheForTesting();
+        ListItem[] moduleFetchResultsCache = mMediator.getModuleFetchResultsCacheForTesting();
         verify(mModel, never()).add(any());
 
         // Calls onModuleBuilt() to add ModuleProviders to the map.
@@ -480,8 +481,7 @@ public class HomeModulesMediatorUnitTest {
         }
         Boolean[] moduleFetchResultsIndicator =
                 mMediator.getModuleFetchResultsIndicatorForTesting();
-        SimpleRecyclerViewAdapter.ListItem[] moduleFetchResultsCache =
-                mMediator.getModuleFetchResultsCacheForTesting();
+        ListItem[] moduleFetchResultsCache = mMediator.getModuleFetchResultsCacheForTesting();
         verify(mModel, never()).add(any());
         // The magic stack is waiting for modules to be load.
         assertTrue(mMediator.getIsFetchingModulesForTesting());
@@ -587,7 +587,8 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.TAB_GROUP_PROMO,
                         ModuleType.TAB_GROUP_SYNC_PROMO,
                         ModuleType.QUICK_DELETE_PROMO,
-                        ModuleType.HISTORY_SYNC_PROMO);
+                        ModuleType.HISTORY_SYNC_PROMO,
+                        ModuleType.TIPS_NOTIFICATIONS_PROMO);
         assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
 
         // Verifies that the single tab module isn't shown if it isn't the home surface even with
@@ -602,7 +603,8 @@ public class HomeModulesMediatorUnitTest {
                         ModuleType.TAB_GROUP_PROMO,
                         ModuleType.TAB_GROUP_SYNC_PROMO,
                         ModuleType.QUICK_DELETE_PROMO,
-                        ModuleType.HISTORY_SYNC_PROMO);
+                        ModuleType.HISTORY_SYNC_PROMO,
+                        ModuleType.TIPS_NOTIFICATIONS_PROMO);
         assertEquals(expectedModuleSet, mMediator.getFilteredEnabledModuleSet());
     }
 
@@ -624,7 +626,7 @@ public class HomeModulesMediatorUnitTest {
                         /* onDemandExecution= */ true,
                         /* canUpdateCacheForFutureRequests= */ true,
                         /* fallbackAllowed= */ true);
-        actualOptions.equals(expectedOptions);
+        assertEquals(expectedOptions, actualOptions);
     }
 
     @Test
@@ -639,7 +641,7 @@ public class HomeModulesMediatorUnitTest {
         // Verifies that createPredictionOptions() returns cache prediction options.
         PredictionOptions actualOptions = mMediator.createPredictionOptions();
         PredictionOptions expectedOptions = new PredictionOptions(false);
-        actualOptions.equals(expectedOptions);
+        assertEquals(expectedOptions, actualOptions);
     }
 
     @Test
@@ -723,6 +725,22 @@ public class HomeModulesMediatorUnitTest {
         assertEquals(
                 INVALID_IMPRESSION_COUNT_BEFORE_INTERACTION,
                 HomeModulesUtils.getImpressionCountBeforeInteraction(moduleType2));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetFilteredEnabledModuleSet_withRefactorEnabled() {
+        FeatureOverrides.newBuilder().enable(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR).apply();
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED, false);
+
+        List<Integer> moduleList = List.of(mModuleTypeList[2], mModuleTypeList[0]);
+        // Registers three modules to the ModuleRegistry.
+        for (int i = 0; i < 2; i++) {
+            when(mModuleRegistry.build(eq(mModuleTypeList[i]), eq(mModuleDelegate), any()))
+                    .thenReturn(false);
+        }
+        assertEquals(Set.of(), mMediator.getFilteredEnabledModuleSet());
     }
 
     /**

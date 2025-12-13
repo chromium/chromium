@@ -14,10 +14,7 @@ namespace content {
 
 // This browser test is aimed towards exercising the FileAPI bindings and
 // the actual implementation that lives in the browser side.
-class FileAPIBrowserTest : public ContentBrowserTest {
- public:
-  FileAPIBrowserTest() {}
-};
+using FileAPIBrowserTest = ContentBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(FileAPIBrowserTest, FileInputChooserParams) {
   base::FilePath file;
@@ -29,13 +26,12 @@ IN_PROC_BROWSER_TEST_F(FileAPIBrowserTest, FileInputChooserParams) {
   // Click on the <input type=file> element to launch the file upload picker.
   {
     base::RunLoop run_loop;
-    std::unique_ptr<FileChooserDelegate> delegate(
-        new FileChooserDelegate(file, run_loop.QuitClosure()));
-    shell()->web_contents()->SetDelegate(delegate.get());
+    FileChooserDelegate delegate(file, run_loop.QuitClosure());
+    shell()->web_contents()->SetDelegate(&delegate);
     EXPECT_TRUE(
         ExecJs(shell(), "document.getElementById('fileinput').click();"));
     run_loop.Run();
-    EXPECT_TRUE(delegate->params().default_file_name.empty());
+    EXPECT_TRUE(delegate.params().default_file_name.empty());
   }
 
   // Click again, to verify what state was maintained and what was not.
@@ -43,13 +39,12 @@ IN_PROC_BROWSER_TEST_F(FileAPIBrowserTest, FileInputChooserParams) {
   // the browser to remember the last selected directory in the profile.
   {
     base::RunLoop run_loop;
-    std::unique_ptr<FileChooserDelegate> delegate(
-        new FileChooserDelegate(file, run_loop.QuitClosure()));
-    shell()->web_contents()->SetDelegate(delegate.get());
+    FileChooserDelegate delegate(file, run_loop.QuitClosure());
+    shell()->web_contents()->SetDelegate(&delegate);
     EXPECT_TRUE(
         ExecJs(shell(), "document.getElementById('fileinput').click();"));
     run_loop.Run();
-    EXPECT_TRUE(delegate->params().default_file_name.empty());
+    EXPECT_TRUE(delegate.params().default_file_name.empty());
   }
 }
 

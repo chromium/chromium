@@ -32,7 +32,7 @@ class TsSectionPat : public TsSectionPsi {
   const RegisterPmtCB register_pmt_cb_;
 
   // Parameters from the PAT.
-  int version_number_;
+  std::optional<uint8_t> version_number_;
 };
 
 }  // namespace mp2t

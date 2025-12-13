@@ -12,16 +12,16 @@
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/constants.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/common/string_util.h"
-#import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -39,10 +39,6 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
 using policy_test_utils::SetPolicy;
 
 namespace {
-
-// kSnackbarDisappearanceTimeout = MDCSnackbarMessageDurationMax + extra 4
-// seconds for avoiding flakiness due to time lags.
-constexpr base::TimeDelta kSnackbarDisappearanceTimeout = base::Seconds(10 + 4);
 
 // Returns a matcher for the idle timeout dialog's "Continue using Chrome"
 // button.
@@ -141,23 +137,23 @@ void WaitForIdleTimeoutScreenAndClickContinue() {
 
 // Waits to confirm that the snackbar is shown after idle timeout actions run.
 void VerifyActionsSnackbarShown(int actions_string_id) {
-  id<GREYMatcher> snackbarMatcher = grey_allOf(
-      grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier"),
-      grey_text(l10n_util::GetNSString(actions_string_id)), nil);
+  id<GREYMatcher> snackbar_matcher = grey_allOf(
+      chrome_test_util::SnackbarViewMatcher(),
+      grey_descendant(grey_text(l10n_util::GetNSString(actions_string_id))),
+      nil);
   // Wait for the snackbar to appear.
-  [ChromeEarlGrey testUIElementAppearanceWithMatcher:snackbarMatcher];
+  [ChromeEarlGrey testUIElementAppearanceWithMatcher:snackbar_matcher];
   // Wait for the snackbar to disappear to make sure it is not indefinitely in
   // the view.
   [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:snackbarMatcher
-                                     timeout:kSnackbarDisappearanceTimeout];
+      waitForUIElementToDisappearWithMatcher:snackbar_matcher
+                                     timeout:kIdleTimeoutSnackbarDuration];
 }
 
 // Verifies that the snackbar does not appear within 5 seconds. The condition is
 // expected to timeout and return false.
 void VerifySnackbarDoesNotAppear() {
-  id<GREYMatcher> snackbarMatcher =
-      grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier");
+  id<GREYMatcher> snackbarMatcher = chrome_test_util::SnackbarViewMatcher();
   ConditionBlock condition = ^{
     NSError* error = nil;
     [[EarlGrey selectElementWithMatcher:snackbarMatcher]
@@ -342,13 +338,17 @@ void VerifyNoActionsRan() {
 
 // Tests that the idle timeout confirmation dialog is shown on the other window
 // when the window presenting the dialog is closed.
-- (void)testIdleTimeoutDialogWithMultiWindows {
+// TODO(crbug.com/442534095): Re-enable the test once the bug is fixed.
+- (void)DISABLED_testIdleTimeoutDialogWithMultiWindows {
+  // TODO(crbug.com/444650008): Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+#endif
+
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
-  }
-  if (@available(iOS 19.0, *)) {
-    // TODO(crbug.com/427699033): Re-enable test on iOS 26.
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
   }
 
   // Wait and verify that the idle timeout dialog is shown on timeout.

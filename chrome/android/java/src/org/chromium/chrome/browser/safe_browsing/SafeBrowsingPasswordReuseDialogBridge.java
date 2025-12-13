@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.safe_browsing;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -11,6 +12,8 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.password_manager.PasswordManagerDialogContents;
@@ -20,6 +23,7 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 
 /** JNI call glue between the native and Java for password reuse dialogs. */
 @JNINamespace("safe_browsing")
+@NullMarked
 public class SafeBrowsingPasswordReuseDialogBridge {
     // The address of its C++ counterpart.
     private long mNativePasswordReuseDialogViewAndroid;
@@ -29,7 +33,7 @@ public class SafeBrowsingPasswordReuseDialogBridge {
     // Used to initialize the custom view of the dialog.
     private final WindowAndroid mWindowAndroid;
     // Primarily used in tests to validate fields of PasswordManagerDialogContents.
-    private PasswordManagerDialogContents mPasswordManagerDialogContents;
+    private @Nullable PasswordManagerDialogContents mPasswordManagerDialogContents;
 
     private SafeBrowsingPasswordReuseDialogBridge(
             WindowAndroid windowAndroid, long nativePasswordReuseDialogViewAndroid) {
@@ -37,8 +41,9 @@ public class SafeBrowsingPasswordReuseDialogBridge {
         mWindowAndroid = windowAndroid;
         mDialogCoordinator =
                 new PasswordManagerDialogCoordinator(
-                        mWindowAndroid.getModalDialogManager(),
-                        mWindowAndroid.getActivity().get().findViewById(android.R.id.content),
+                        assertNonNull(mWindowAndroid.getModalDialogManager()),
+                        assumeNonNull(mWindowAndroid.getActivity().get())
+                                .findViewById(android.R.id.content),
                         BrowserControlsManagerSupplier.getValueOrNullFrom(mWindowAndroid));
         mPasswordManagerDialogContents = null;
     }
@@ -61,7 +66,7 @@ public class SafeBrowsingPasswordReuseDialogBridge {
                 windowAndroid, nativePasswordReuseDialogViewAndroid, dialogCoordinator);
     }
 
-    public PasswordManagerDialogContents getPasswordManagerDialogContentsForTests() {
+    public @Nullable PasswordManagerDialogContents getPasswordManagerDialogContentsForTests() {
         return mPasswordManagerDialogContents;
     }
 

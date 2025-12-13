@@ -67,8 +67,12 @@ void FilteringNetworkManager::StartUpdating() {
 
   if (!start_updating_called_) {
     start_updating_called_ = true;
-    network_manager_for_signaling_thread_->SignalNetworksChanged.connect(
-        this, &FilteringNetworkManager::OnNetworksChanged);
+    network_manager_for_signaling_thread_->SubscribeNetworksChanged(
+        [that = GetWeakPtr()] {
+          if (that) {
+            that->OnNetworksChanged();
+          }
+        });
   }
 
   // Update |pending_network_update_| and |start_count_| before calling
@@ -136,12 +140,12 @@ void FilteringNetworkManager::CheckPermission() {
   // Request for media permission asynchronously.
   media_permission_->HasPermission(
       media::MediaPermission::Type::kAudioCapture,
-      WTF::BindOnce(&FilteringNetworkManager::OnPermissionStatus,
-                    GetWeakPtr()));
+      blink::BindOnce(&FilteringNetworkManager::OnPermissionStatus,
+                      GetWeakPtr()));
   media_permission_->HasPermission(
       media::MediaPermission::Type::kVideoCapture,
-      WTF::BindOnce(&FilteringNetworkManager::OnPermissionStatus,
-                    GetWeakPtr()));
+      blink::BindOnce(&FilteringNetworkManager::OnPermissionStatus,
+                      GetWeakPtr()));
 }
 
 void FilteringNetworkManager::OnPermissionStatus(bool granted) {
@@ -184,7 +188,7 @@ void FilteringNetworkManager::OnNetworksChanged() {
   std::vector<std::unique_ptr<webrtc::Network>> copied_networks;
   copied_networks.reserve(networks.size());
   for (const webrtc::Network* network : networks) {
-    auto copied_network = std::make_unique<webrtc::Network>(*network);
+    std::unique_ptr<webrtc::Network> copied_network = network->Clone();
     copied_network->set_default_local_address_provider(this);
     copied_network->set_mdns_responder_provider(this);
     copied_networks.push_back(std::move(copied_network));
@@ -222,14 +226,14 @@ void FilteringNetworkManager::FireEventIfStarted() {
   // TODO(crbug.com/787254): Use Frame-based TaskRunner here.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      WTF::BindOnce(&FilteringNetworkManager::SendNetworksChangedSignal,
-                    GetWeakPtr()));
+      blink::BindOnce(&FilteringNetworkManager::SendNetworksChangedSignal,
+                      GetWeakPtr()));
 
   sent_first_update_ = true;
 }
 
 void FilteringNetworkManager::SendNetworksChangedSignal() {
-  SignalNetworksChanged();
+  NotifyNetworksChanged();
 }
 
 }  // namespace blink

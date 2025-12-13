@@ -13,7 +13,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-webrtc",
               "builder_group": "chromium.webrtc.fyi",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -37,11 +36,10 @@
           {
             "builder_id": {
               "bucket": "webrtc.fyi",
-              "builder": "WebRTC Chromium FYI Win10 Tester",
+              "builder": "WebRTC Chromium FYI Win Tester",
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-webrtc",
               "builder_group": "chromium.webrtc.fyi",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
@@ -76,11 +74,12 @@
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "webrtc.fyi",
-          "builder": "WebRTC Chromium FYI Win10 Tester",
+          "builder": "WebRTC Chromium FYI Win Tester",
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/webrtc.fyi/WebRTC Chromium FYI Win Builder/targets"
+      "targets_spec_directory": "infra/config/generated/builders/webrtc.fyi/WebRTC Chromium FYI Win Builder/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

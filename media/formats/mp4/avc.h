@@ -50,14 +50,13 @@ class MEDIA_EXPORT AVC {
   // `subsamples` contains the information about what parts of the buffer are
   // encrypted and which parts are clear.
   static BitstreamConverter::AnalysisResult AnalyzeAnnexB(
-      const uint8_t* buffer,
-      size_t size,
+      base::span<const uint8_t> buffer,
       const std::vector<SubsampleEntry>& subsamples);
 
   // Given a `buffer` and `subsamples` information and `pts` pointer into the
   // `buffer` finds the index of the subsample `ptr` is pointing into.
   static int FindSubsampleIndex(const std::vector<uint8_t>& buffer,
-                                const std::vector<SubsampleEntry>* subsamples,
+                                base::span<const SubsampleEntry> subsamples,
                                 const uint8_t* ptr);
 
   // Convert a `buffer` from AVC bitstream to Annex-B bitstream by replacing
@@ -87,7 +86,7 @@ class AVCBitstreamConverter : public BitstreamConverter {
  private:
   ~AVCBitstreamConverter() override;
   AnalysisResult Analyze(
-      std::vector<uint8_t>* frame_buf,
+      base::span<const uint8_t> frame_buf,
       std::vector<SubsampleEntry>* subsamples) const override;
   std::unique_ptr<AVCDecoderConfigurationRecord> avc_config_;
 };

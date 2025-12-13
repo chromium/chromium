@@ -9,7 +9,6 @@
 #include <cstdint>
 
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -157,7 +156,7 @@ class MODULES_EXPORT OutgoingStream final
   // Data which has been passed to write() but still needs to be written
   // asynchronously.
   // Uses a custom CachedDataBuffer rather than a Vector because
-  // WTF::Vector is currently limited to 2GB.
+  // Vector is currently limited to 2GB.
   // TODO(ricea): Change this to a Vector when it becomes 64-bit safe.
   class CachedDataBuffer;
   std::unique_ptr<CachedDataBuffer> cached_data_;

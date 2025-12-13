@@ -6,6 +6,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/android/config.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//build_overrides/build.gni")
 import("//third_party/cpuinfo/cpuinfo.gni")
 import("//third_party/flatbuffers/flatbuffer.gni")
 import("//third_party/mediapipe/features.gni")
@@ -40,6 +41,14 @@ proto_library("tflite_tools_proto") {
   cc_generator_options = "lite=true:"
 }
 
+proto_library("benchmark_result_proto") {
+  proto_in_dir = "src"
+  sources =
+      [ "src/tensorflow/lite/tools/benchmark/proto/benchmark_result.proto" ]
+  cc_generator_options = "lite=true:"
+  visibility = [ ":tflite_benchmark" ]
+}
+
 config("tflite_config") {
   include_dirs = [
     "$root_gen_dir/third_party/tflite/src",
@@ -54,7 +63,7 @@ config("tflite_config") {
     "TF_MAJOR_VERSION=" + tf_version_major,
     "TF_MINOR_VERSION=" + tf_version_minor,
     "TF_PATCH_VERSION=" + tf_version_patch,
-    "TF_VERSION_SUFFIX",
+    "TF_VERSION_SUFFIX=",
   ]
   if (is_android) {
     libs = [ "log" ]
@@ -68,6 +77,12 @@ config("tflite_config") {
   }
 }
 
+# The config `tflite_config_no_undef` is used when compiling WebRTC outside the
+# Chromium environment.
+config("tflite_config_no_undef") {
+  cflags = [ "-Wno-undef" ]
+}
+
 config("tflite_flags") {
   cflags = [
     "-Wno-c99-extensions",
@@ -78,6 +93,7 @@ config("tflite_flags") {
     "-Wno-shadow",
     "-Wno-deprecated-anon-enum-enum-conversion",
     "-Wno-unused-function",
+    "-Wno-unreachable-code-return",
 
     # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if possible.
     "-Wno-sign-compare",
@@ -176,6 +192,16 @@ static_library("tflite_builtin_op_resolver_internals") {
 
 tflite_static_library("tflite_builtin_op_resolver") {
   sources = [
+    "src/tensorflow/lite/c/c_api_opaque_internal.cc",
+    "src/tensorflow/lite/c/c_api_opaque_internal.h",
+    "src/tensorflow/lite/core/c/c_api.cc",
+    "src/tensorflow/lite/core/c/c_api.h",
+    "src/tensorflow/lite/core/c/c_api_opaque.cc",
+    "src/tensorflow/lite/core/c/c_api_opaque.h",
+    "src/tensorflow/lite/core/c/operator.cc",
+    "src/tensorflow/lite/core/c/operator.h",
+    "src/tensorflow/lite/core/create_op_resolver.h",
+    "src/tensorflow/lite/core/create_op_resolver_with_builtin_ops.cc",
     "src/tensorflow/lite/core/kernels/register.cc",
     "src/tensorflow/lite/core/kernels/register.h",
     "src/tensorflow/lite/kernels/atan2.cc",
@@ -184,7 +210,6 @@ tflite_static_library("tflite_builtin_op_resolver") {
     "src/tensorflow/lite/kernels/bitcast.cc",
     "src/tensorflow/lite/kernels/bitwise_xor.cc",
     "src/tensorflow/lite/kernels/broadcast_args.cc",
-    "src/tensorflow/lite/kernels/broadcast_to.cc",
     "src/tensorflow/lite/kernels/bucketize.cc",
     "src/tensorflow/lite/kernels/call_once.cc",
     "src/tensorflow/lite/kernels/complex_support.cc",
@@ -241,8 +266,10 @@ tflite_static_library("tflite_builtin_op_resolver") {
   visibility = [
     ":tflite_benchmark",
     "//components/optimization_guide/internal/*",
+    "//modules/*",
     "//services/webnn/*",
     "//third_party/mediapipe/*",
+    "//third_party/webrtc/modules/*",
   ]
 
   conditional_deps = [ ":tflite" ]
@@ -340,42 +367,27 @@ source_set("tflite_kernel_common_headers") {
   visibility = [ ":*" ]
 }
 
-tflite_litert_sources = [
-  "src/tensorflow/lite/experimental/genai/external_kvcache.cc",
-  "src/tensorflow/lite/experimental/genai/genai_ops.cc",
-  "src/tensorflow/lite/experimental/genai/genai_ops.h",
-  "src/tensorflow/lite/experimental/genai/kvcache.cc",
-  "src/tensorflow/lite/experimental/genai/sdpa.cc",
-  "src/tensorflow/lite/experimental/resource/cache_buffer.cc",
-  "src/tensorflow/lite/experimental/resource/cache_buffer.h",
-]
-
-tflite_litert_deps = [
-  ":tflite_kernel_common_headers",
-  ":tflite_kernel_internals",
-  ":tflite_public_headers",
-  "//third_party/flatbuffers",
-]
-
-source_set("tflite_litert") {
-  sources = tflite_litert_sources
-
-  deps = tflite_litert_deps
-  deps += [ ":tflite_logging" ]
-
-  configs += [
-    ":tflite_config",
-    ":tflite_flags",
+tflite_source_set("tflite_litert") {
+  sources = [
+    "src/tensorflow/lite/experimental/genai/external_kvcache.cc",
+    "src/tensorflow/lite/experimental/genai/genai_ops.cc",
+    "src/tensorflow/lite/experimental/genai/genai_ops.h",
+    "src/tensorflow/lite/experimental/genai/kvcache.cc",
+    "src/tensorflow/lite/experimental/genai/sdpa.cc",
+    "src/tensorflow/lite/experimental/resource/cache_buffer.cc",
+    "src/tensorflow/lite/experimental/resource/cache_buffer.h",
   ]
-}
 
-source_set("tflite_litert_standalone") {
-  sources = tflite_litert_sources
+  deps = [
+    ":tflite_kernel_common_headers",
+    ":tflite_kernel_internals",
+    ":tflite_public_headers",
+    "//third_party/flatbuffers",
+  ]
 
-  deps = tflite_litert_deps
-  deps += [ ":tflite_logging_standalone" ]
+  conditional_deps = [ ":tflite_logging" ]
 
-  configs += [
+  configs_to_add = [
     ":tflite_config",
     ":tflite_flags",
   ]
@@ -403,7 +415,6 @@ source_set("tflite_kernel_internals") {
     "src/tensorflow/lite/kernels/internal/optimized/4bit/fully_connected_reference.cc",
     "src/tensorflow/lite/kernels/internal/optimized/4bit/fully_connected_reference.h",
     "src/tensorflow/lite/kernels/internal/optimized/4bit/fully_connected_reference_impl.h",
-    "src/tensorflow/lite/kernels/internal/optimized/batch_matmul.h",
     "src/tensorflow/lite/kernels/internal/optimized/cpu_check.cc",
     "src/tensorflow/lite/kernels/internal/optimized/cpu_check.h",
     "src/tensorflow/lite/kernels/internal/optimized/depthwiseconv_3x3_filter_common.h",
@@ -542,6 +553,7 @@ tflite_static_library("tflite_kernels") {
     "src/tensorflow/lite/kernels/batch_to_space_nd.cc",
     "src/tensorflow/lite/kernels/bidirectional_sequence_lstm.cc",
     "src/tensorflow/lite/kernels/bidirectional_sequence_rnn.cc",
+    "src/tensorflow/lite/kernels/broadcast_to.cc",
     "src/tensorflow/lite/kernels/builtin_op_kernels.h",
     "src/tensorflow/lite/kernels/cast.cc",
     "src/tensorflow/lite/kernels/ceil.cc",
@@ -668,7 +680,7 @@ tflite_static_library("tflite_kernels") {
     "//third_party/ruy",
   ]
 
-  conditional_deps = [ "//third_party/pthreadpool:pthreadpool" ]
+  conditional_deps = [ "//third_party/pthreadpool" ]
 
   if (use_cpuinfo) {
     defines = [ "TFLITE_HAVE_CPUINFO" ]
@@ -677,7 +689,7 @@ tflite_static_library("tflite_kernels") {
   }
 
   if (build_tflite_with_xnnpack) {
-    conditional_deps += [ "//third_party/xnnpack:xnnpack" ]
+    conditional_deps += [ "//third_party/xnnpack" ]
   }
 
   configs_to_add = [
@@ -694,8 +706,6 @@ if (!is_fuchsia) {
       "src/tensorflow/lite/kernels/shim/shape.cc",
       "src/tensorflow/lite/kernels/shim/tflite_op_shim.cc",
       "src/tensorflow/lite/kernels/shim/tflite_tensor_view.cc",
-      "src/third_party/xla/xla/tsl/platform/default/logging.cc",
-      "src/third_party/xla/xla/tsl/platform/default/logging.h",
     ]
 
     if (is_win) {
@@ -724,19 +734,21 @@ if (!is_fuchsia) {
 # The two below TFLite logging targets are separate since the Chromium one
 # requires //base, which is not allowed to be embedded by non-libchrome shared
 # libraries.
-source_set("tflite_logging") {
-  sources = [ "shims/minimal_logging_chromium.cc" ]
-  deps = [
-    ":tflite_public_headers",
-    "//base",
-  ]
+if (build_with_chromium) {
+  source_set("tflite_logging") {
+    sources = [ "shims/minimal_logging_chromium.cc" ]
+    deps = [
+      ":tflite_public_headers",
+      "//base",
+    ]
 
-  configs += [
-    ":tflite_config",
-    ":tflite_flags",
-  ]
+    configs += [
+      ":tflite_config",
+      ":tflite_flags",
+    ]
 
-  visibility = [ ":*" ]
+    visibility = [ ":*" ]
+  }
 }
 
 # This target is used in conditional_deps in the ":tflite" target, which
@@ -1294,6 +1306,8 @@ tflite_static_library("tflite") {
       "src/tensorflow/lite/delegates/xnnpack/quantization_util.h",
       "src/tensorflow/lite/delegates/xnnpack/weight_cache.cc",
       "src/tensorflow/lite/delegates/xnnpack/weight_cache.h",
+      "src/tensorflow/lite/delegates/xnnpack/windows_util.cc",
+      "src/tensorflow/lite/delegates/xnnpack/windows_util.h",
       "src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc",
       "src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.h",
     ]
@@ -1341,7 +1355,7 @@ tflite_static_library("tflite") {
 
   conditional_deps = [
     ":tflite_logging",
-    "//third_party/pthreadpool:pthreadpool",
+    "//third_party/pthreadpool",
   ]
 
   if (build_tflite_with_xnnpack) {
@@ -1349,7 +1363,7 @@ tflite_static_library("tflite") {
       ":weight_cache_schema_generated",
       "//third_party/cpuinfo",
     ]
-    conditional_deps += [ "//third_party/xnnpack:xnnpack" ]
+    conditional_deps += [ "//third_party/xnnpack" ]
   }
 
   if (build_tflite_with_opencl) {
@@ -1410,49 +1424,52 @@ tflite_static_library("tflite") {
   public_deps_for_standalone = [ "//third_party/neon_2_sse" ]
 }
 
-executable("tflite_benchmark") {
-  sources = [
-    "src/tensorflow/lite/tools/benchmark/benchmark_main.cc",
-    "src/tensorflow/lite/tools/benchmark/benchmark_model.cc",
-    "src/tensorflow/lite/tools/benchmark/benchmark_model.h",
-    "src/tensorflow/lite/tools/benchmark/benchmark_tflite_model.cc",
-    "src/tensorflow/lite/tools/benchmark/benchmark_tflite_model.h",
-    "src/tensorflow/lite/tools/benchmark/benchmark_utils.cc",
-    "src/tensorflow/lite/tools/benchmark/benchmark_utils.h",
-    "src/tensorflow/lite/tools/benchmark/profiling_listener.cc",
-    "src/tensorflow/lite/tools/benchmark/profiling_listener.h",
-    "src/tensorflow/lite/tools/command_line_flags.cc",
-    "src/tensorflow/lite/tools/command_line_flags.h",
-    "src/tensorflow/lite/tools/delegates/delegate_provider.cc",
-    "src/tensorflow/lite/tools/delegates/delegate_provider.h",
-    "src/tensorflow/lite/tools/model_loader.cc",
-    "src/tensorflow/lite/tools/model_loader.h",
-    "src/tensorflow/lite/tools/tool_params.cc",
-    "src/tensorflow/lite/tools/tool_params.h",
-    "src/tensorflow/lite/tools/utils.cc",
-    "src/tensorflow/lite/tools/utils.h",
-  ]
-  deps = [
-    ":tflite",
-    ":tflite_builtin_op_resolver",
-    ":tflite_tools_proto",
-    "//third_party/abseil-cpp:absl",
-    "//third_party/ruy",
-  ]
-
-  public_configs = [ ":tflite_config" ]
-
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-    "//third_party/eigen3:eigen_includes",
-    ":tflite_flags",
-  ]
-
-  if (is_clang) {
-    cflags_cc = [
-      "-Wno-ignored-qualifiers",
-      "-Wno-defaulted-function-deleted",
+if (build_with_chromium) {
+  executable("tflite_benchmark") {
+    sources = [
+      "src/tensorflow/lite/tools/benchmark/benchmark_main.cc",
+      "src/tensorflow/lite/tools/benchmark/benchmark_model.cc",
+      "src/tensorflow/lite/tools/benchmark/benchmark_model.h",
+      "src/tensorflow/lite/tools/benchmark/benchmark_tflite_model.cc",
+      "src/tensorflow/lite/tools/benchmark/benchmark_tflite_model.h",
+      "src/tensorflow/lite/tools/benchmark/benchmark_utils.cc",
+      "src/tensorflow/lite/tools/benchmark/benchmark_utils.h",
+      "src/tensorflow/lite/tools/benchmark/profiling_listener.cc",
+      "src/tensorflow/lite/tools/benchmark/profiling_listener.h",
+      "src/tensorflow/lite/tools/command_line_flags.cc",
+      "src/tensorflow/lite/tools/command_line_flags.h",
+      "src/tensorflow/lite/tools/delegates/delegate_provider.cc",
+      "src/tensorflow/lite/tools/delegates/delegate_provider.h",
+      "src/tensorflow/lite/tools/model_loader.cc",
+      "src/tensorflow/lite/tools/model_loader.h",
+      "src/tensorflow/lite/tools/tool_params.cc",
+      "src/tensorflow/lite/tools/tool_params.h",
+      "src/tensorflow/lite/tools/utils.cc",
+      "src/tensorflow/lite/tools/utils.h",
     ]
+    deps = [
+      ":benchmark_result_proto",
+      ":tflite",
+      ":tflite_builtin_op_resolver",
+      ":tflite_tools_proto",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/ruy",
+    ]
+
+    public_configs = [ ":tflite_config" ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      "//build/config/compiler:no_chromium_code",
+      "//third_party/eigen3:eigen_includes",
+      ":tflite_flags",
+    ]
+
+    if (is_clang) {
+      cflags_cc = [
+        "-Wno-ignored-qualifiers",
+        "-Wno-defaulted-function-deleted",
+      ]
+    }
   }
 }

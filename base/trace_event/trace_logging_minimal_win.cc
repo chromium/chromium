@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/trace_event/trace_logging_minimal_win.h"
 
 #include <evntrace.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 
@@ -45,8 +41,8 @@ uint16_t TlmProvider::AppendNameToMetadata(
     return static_cast<uint16_t>(-1);
   }
 
-  memcpy(metadata + index, name.data(), cch);
-  metadata[index + cch] = 0;
+  UNSAFE_TODO(memcpy(metadata + index, name.data(), cch));
+  UNSAFE_TODO(metadata[index + cch]) = 0;
   index += static_cast<uint16_t>(cch) + 1;
   return index;
 }
@@ -155,7 +151,7 @@ uint16_t TlmProvider::EventBegin(char* metadata,
 
   uint16_t index = 2;  // Skip MetadataSize field.
 
-  metadata[index] = 0;  // Set SpecialFlags[0] = 0.
+  UNSAFE_TODO(metadata[index]) = 0;  // Set SpecialFlags[0] = 0.
   index++;              // sizeof(SpecialFlags) == 1.
 
   index =
@@ -194,7 +190,7 @@ char TlmProvider::EventAddField(char* metadata,
       return 0;
     }
 
-    metadata[*metadata_index] = static_cast<char>(in_type);
+    UNSAFE_TODO(metadata[*metadata_index]) = static_cast<char>(in_type);
     *metadata_index += 1;
     return 0;
   }
@@ -205,9 +201,9 @@ char TlmProvider::EventAddField(char* metadata,
   }
 
   // Set high bit to indicate presence of OutType.
-  metadata[*metadata_index] = static_cast<char>(in_type | 0x80);
+  UNSAFE_TODO(metadata[*metadata_index]) = static_cast<char>(in_type | 0x80);
   *metadata_index += 1;
-  metadata[*metadata_index] = static_cast<char>(out_type);
+  UNSAFE_TODO(metadata[*metadata_index]) = static_cast<char>(out_type);
   *metadata_index += 1;
   return 0;
 }
@@ -229,9 +225,10 @@ ULONG TlmProvider::EventEnd(
   descriptors[0].Size = provider_metadata_size_;
   descriptors[0].Reserved = EVENT_DATA_DESCRIPTOR_TYPE_PROVIDER_METADATA;
 
-  descriptors[1].Ptr = reinterpret_cast<ULONG_PTR>(metadata);
-  descriptors[1].Size = meta_data_index;
-  descriptors[1].Reserved = EVENT_DATA_DESCRIPTOR_TYPE_EVENT_METADATA;
+  UNSAFE_TODO(descriptors[1]).Ptr = reinterpret_cast<ULONG_PTR>(metadata);
+  UNSAFE_TODO(descriptors[1]).Size = meta_data_index;
+  UNSAFE_TODO(descriptors[1]).Reserved =
+      EVENT_DATA_DESCRIPTOR_TYPE_EVENT_METADATA;
 
   return EventWrite(reg_handle_, &event_descriptor, descriptors_index,
                     descriptors);

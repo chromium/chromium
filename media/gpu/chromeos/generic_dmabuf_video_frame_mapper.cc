@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/chromeos/generic_dmabuf_video_frame_mapper.h"
 
 #include <sys/mman.h>
@@ -15,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -49,7 +45,7 @@ void MunmapBuffers(const std::vector<std::pair<uint8_t*, size_t>>& chunks,
 // |src_video_frame| is the video frame that owns dmabufs to the mapped planes.
 scoped_refptr<VideoFrame> CreateMappedVideoFrame(
     scoped_refptr<const FrameResource> src_video_frame,
-    base::span<uint8_t*, VideoFrame::kMaxPlanes> plane_addrs,
+    std::array<base::span<uint8_t>, VideoFrame::kMaxPlanes> plane_addrs,
     const std::vector<std::pair<uint8_t*, size_t>>& chunks) {
   scoped_refptr<VideoFrame> video_frame;
 
@@ -62,7 +58,7 @@ scoped_refptr<VideoFrame> CreateMappedVideoFrame(
   } else if (VideoFrame::NumPlanes(layout.format()) == 1) {
     video_frame = VideoFrame::WrapExternalDataWithLayout(
         layout, visible_rect, visible_rect.size(), plane_addrs[0],
-        layout.planes()[0].size, src_video_frame->timestamp());
+        src_video_frame->timestamp());
   }
   if (!video_frame) {
     MunmapBuffers(chunks, /*video_frame=*/nullptr);
@@ -142,7 +138,7 @@ scoped_refptr<VideoFrame> GenericDmaBufVideoFrameMapper::MapFrame(
   // Always prepare VideoFrame::kMaxPlanes addresses for planes initialized by
   // nullptr. This enables to specify nullptr to redundant plane, for pixel
   // format whose number of planes are less than VideoFrame::kMaxPlanes.
-  std::array<uint8_t*, VideoFrame::kMaxPlanes> plane_addrs = {};
+  std::array<base::span<uint8_t>, VideoFrame::kMaxPlanes> plane_addrs = {};
   const size_t num_planes = planes.size();
   std::vector<std::pair<uint8_t*, size_t>> chunks;
   DCHECK_EQ(video_frame->NumDmabufFds(), num_planes);
@@ -173,8 +169,11 @@ scoped_refptr<VideoFrame> GenericDmaBufVideoFrameMapper::MapFrame(
     }
 
     chunks.emplace_back(mapped_addr, mapped_size);
-    for (size_t j = i; j < next_buf; ++j)
-      plane_addrs[j] = mapped_addr + planes[j].offset;
+    for (size_t j = i; j < next_buf; ++j) {
+      // TODO(crbug.com/40285824): spanify this usage.
+      plane_addrs[j] = UNSAFE_TODO(
+          base::span(mapped_addr + planes[j].offset, planes[j].size));
+    }
 
     i = next_buf;
   }

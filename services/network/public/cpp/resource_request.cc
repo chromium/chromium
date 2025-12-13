@@ -10,6 +10,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "base/types/optional_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
 #include "net/log/net_log_source.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
@@ -21,6 +22,23 @@
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
 
 namespace network {
+
+ResourceRequest::TrustedParams::EnabledClientHints::EnabledClientHints() =
+    default;
+ResourceRequest::TrustedParams::EnabledClientHints::~EnabledClientHints() =
+    default;
+ResourceRequest::TrustedParams::EnabledClientHints::EnabledClientHints(
+    const EnabledClientHints&) = default;
+ResourceRequest::TrustedParams::EnabledClientHints&
+ResourceRequest::TrustedParams::EnabledClientHints::operator=(
+    const EnabledClientHints&) = default;
+
+bool ResourceRequest::TrustedParams::EnabledClientHints::operator==(
+    const EnabledClientHints& other) const {
+  return origin == other.origin &&
+         is_outermost_main_frame == other.is_outermost_main_frame &&
+         hints == other.hints;
+}
 
 namespace {
 
@@ -346,7 +364,6 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
                                             request.net_log_create_info) &&
          OptionalNetLogInfoEqualsForTesting(net_log_reference_info,
                                             request.net_log_reference_info) &&
-         target_ip_address_space == request.target_ip_address_space &&
          shared_dictionary_writer_enabled ==
              request.shared_dictionary_writer_enabled &&
          socket_tag == request.socket_tag &&

@@ -12,8 +12,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/permissions/features.h"
-#include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/prediction_service/permission_ui_selector.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
@@ -73,6 +74,11 @@ class PermissionPrompt {
     virtual void Deny() = 0;
     virtual void Dismiss() = 0;
     virtual void Ignore() = 0;
+
+    virtual void SetPromptOptions(PromptOptions prompt_options) = 0;
+
+    virtual GeolocationAccuracy GetInitialGeolocationAccuracySelection()
+        const = 0;
 
     // Called to explicitly finalize the request, if
     // |ShouldFinalizeRequestAfterDecided| returns false.

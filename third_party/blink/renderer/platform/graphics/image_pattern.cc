@@ -4,15 +4,16 @@
 
 #include "third_party/blink/renderer/platform/graphics/image_pattern.h"
 
+#include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "third_party/skia/include/core/SkImage.h"
 
 namespace blink {
 
-scoped_refptr<ImagePattern> ImagePattern::Create(scoped_refptr<Image> image,
-                                                 RepeatMode repeat_mode) {
-  return base::AdoptRef(new ImagePattern(std::move(image), repeat_mode));
+std::unique_ptr<ImagePattern> ImagePattern::Create(scoped_refptr<Image> image,
+                                                   RepeatMode repeat_mode) {
+  return base::WrapUnique(new ImagePattern(std::move(image), repeat_mode));
 }
 
 ImagePattern::ImagePattern(scoped_refptr<Image> image, RepeatMode repeat_mode)

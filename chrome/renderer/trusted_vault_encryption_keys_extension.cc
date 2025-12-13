@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/renderer/trusted_vault_encryption_keys_extension.h"
 
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -50,7 +46,7 @@ std::vector<uint8_t> ArrayBufferAsBytes(
   const uint8_t* start =
       reinterpret_cast<const uint8_t*>(backing_store->Data());
   const size_t length = backing_store->ByteLength();
-  return std::vector<uint8_t>(start, start + length);
+  return std::vector<uint8_t>(start, UNSAFE_TODO(start + length));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -84,6 +80,7 @@ bool ParseTrustedVaultKeyArrayMayDeleteFrame(
     v8::Local<v8::Array> array,
     std::vector<chrome::mojom::TrustedVaultKeyPtr>* trusted_vault_keys) {
   DCHECK(trusted_vault_keys);
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   for (uint32_t i = 0; i < array->Length(); ++i) {
     v8::Local<v8::Value> value;
     if (!array->Get(context, i).ToLocal(&value) || !value->IsObject()) {
@@ -92,7 +89,7 @@ bool ParseTrustedVaultKeyArrayMayDeleteFrame(
     }
     v8::Local<v8::Object> obj = value.As<v8::Object>();
     v8::Local<v8::Value> epoch_value;
-    if (!obj->Get(context, gin::StringToV8(context->GetIsolate(), "epoch"))
+    if (!obj->Get(context, gin::StringToV8(isolate, "epoch"))
              .ToLocal(&epoch_value) ||
         !epoch_value->IsInt32()) {
       DVLOG(1) << "invalid key epoch";
@@ -101,7 +98,7 @@ bool ParseTrustedVaultKeyArrayMayDeleteFrame(
     const int32_t version = epoch_value.As<v8::Int32>()->Value();
 
     v8::Local<v8::Value> key_value;
-    if (!obj->Get(context, gin::StringToV8(context->GetIsolate(), "key"))
+    if (!obj->Get(context, gin::StringToV8(isolate, "key"))
              .ToLocal(&key_value) ||
         !key_value->IsArrayBuffer()) {
       DVLOG(1) << "invalid key bytes";
@@ -138,6 +135,7 @@ void ParseTrustedVaultKeysFromMapMayDeleteFrame(
       result;
   v8::Local<v8::Array> array = map->AsArray();
   CHECK_EQ(array->Length(), 2 * map->Size());
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   for (uint32_t i = 0; i < array->Length(); i += 2) {
     v8::Local<v8::Value> key;
     if (!array->Get(context, i).ToLocal(&key) || !key->IsString()) {
@@ -146,7 +144,7 @@ void ParseTrustedVaultKeysFromMapMayDeleteFrame(
       return;
     }
     const std::string security_domain_name(
-        *v8::String::Utf8Value(context->GetIsolate(), key));
+        *v8::String::Utf8Value(isolate, key));
 
     v8::Local<v8::Value> value;
     if (!array->Get(context, i + 1).ToLocal(&value) || !value->IsArray()) {

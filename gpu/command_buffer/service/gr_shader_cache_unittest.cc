@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "gpu/command_buffer/service/gr_shader_cache.h"
 
 #include <thread>
@@ -134,8 +129,7 @@ TEST_F(GrShaderCacheTest, MemoryPressure) {
   }
   EXPECT_EQ(cache_.num_cache_entries(), 1u);
 
-  cache_.PurgeMemory(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  cache_.PurgeMemory(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   EXPECT_EQ(cache_.num_cache_entries(), 0u);
 }
 
@@ -155,13 +149,11 @@ TEST_F(GrShaderCacheTest, AggressiveCacheAndMemoryPressure) {
   EXPECT_EQ(cache_.num_cache_entries(), 1u);
 
   // Moderate memory pressure is ignored
-  cache_.PurgeMemory(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+  cache_.PurgeMemory(base::MEMORY_PRESSURE_LEVEL_MODERATE);
   EXPECT_EQ(cache_.num_cache_entries(), 1u);
 
   // But not critical, except on Android
-  cache_.PurgeMemory(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  cache_.PurgeMemory(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(cache_.num_cache_entries(), 1u);
 #else

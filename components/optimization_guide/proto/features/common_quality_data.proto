@@ -196,7 +196,7 @@ message PageContext {
 
 // The page content represented as a tree of semantic chunks and (in the
 // future) annotated with additional information about the page.
-// Next ID: 7
+// Next ID: 10
 message AnnotatedPageContent {
   // The version of the proto. Each time a backwards incompatible change is made
   // to the proto, the version should be incremented.
@@ -215,13 +215,30 @@ message AnnotatedPageContent {
   // The interaction information for the page--the subtree represented by the
   // AnnotatedPageContent. This is for top-level interactions, such as the mouse
   // position and focused element, for which there can only be one unique value
-  // for the entire page. Includes interaction information for the main frame
-  // and embedded iframes.
+  // for the entire page.
+  // Currently this is only tracked for the main frame.
   PageInteractionInfo page_interaction_info = 4 [features = { field_presence: EXPLICIT }];
 
   // The rect of the viewport for the tab. i.e., screenshot dimensions.
   // Dimensions are in captured pixels.
+  // This coordinate system should be used for coordinate based browser actions.
+  // This uses device independent pixels, i.e., doesn't include the device
+  // scale factor while other dimensions in APC are based on that.
   BoundingRect viewport_geometry = 5 [features = { field_presence: EXPLICIT }];
+
+  // The id of the tab that the page content was extracted from. Guaranteed to
+  // be unique within the browsing session.
+  int32 tab_id = 7 [features = { field_presence: EXPLICIT }];
+
+  // A page can only have one popup window open at a time. If one is open, its
+  // details are populated here. The popup window draws on top of the tab and as
+  // such has a higher z order than the main frame's Document.
+  PopupWindow popup_window = 8 [features = { field_presence: EXPLICIT }];
+
+  // Information that pertains to the user's profile, not the page.
+  // TODO(crbug.com/454610456): This should be moved out of AnnotatedPageContent because
+  // it does not semantically belong here.
+  ProfileInformation profile_information = 9 [features = { field_presence: EXPLICIT }];
 }
 
 // The ContentNode tree is a sparse representation of the DOM tree for a web
@@ -250,7 +267,7 @@ message ContentNode {
   ContentAttributes content_attributes = 2 [features = { field_presence: EXPLICIT }];
 }
 
-// Next ID: 28
+// Next ID: 29
 message ContentAttributes {
   oneof content_data {
     // Only set if attribute_type is CONTENT_ATTRIBUTE_TEXT.
@@ -301,6 +318,12 @@ message ContentAttributes {
   ContentAttributeType attribute_type = 3 [features = { field_presence: EXPLICIT }];
 
   // This is the geometry of the common_ancestor_dom_node_id.
+  //
+  // In the default mode, this is only populated if this is the
+  // `accessibility_focused_dom_node_id`.
+  //
+  // Populated for all nodes in
+  // `ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS.`
   Geometry geometry = 4 [features = { field_presence: EXPLICIT }];
 
   // The interaction information for the content node.
@@ -334,28 +357,52 @@ message ContentAttributes {
   // Only populated for ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS.
   AXRole aria_role = 26 [features = { field_presence: EXPLICIT }];
 
+  // Whether the content node is from an ad.
+  bool is_ad_related = 28 [features = { field_presence: EXPLICIT }];
+
   reserved 5, 6, 7, 17, 18, 1, 22;
 }
 
 // The geometry of the content, in the page coordinate system.
-// Next ID: 6
+// Next ID: 7
 // NOTE: If `visual_bounding_box` is empty, i.e., the content is offscreen and
 // it's in an iframe, the `outer_bounding_box` may be incorrect. See crbug.com/384996050
 // for details.
 //
 // Only populated for ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS.
 message Geometry {
-  // The bounding box of the content node, in the page coordinate system. This
-  // roughly corresponds to the element's local box used for hit testing.
+  // The bounding box of the content node mapped to the viewport ignoring any
+  // ancestor clips (including the viewport clip). This can be thought of as the
+  // where the element would be relative to the viewport if it "popped out" of
+  // the page and was painted on top of all the content. A few use-case for this
+  // are:
+  //
+  // - If empty, this implies the node is not hit-testable, even once
+  //   scrolled onscreen.
+  // - The rect's origin indicates whether whether it starts above or below the
+  //   viewport. A negative y-coordinate means the node's content starts above
+  //   the viewport.
   BoundingRect outer_bounding_box = 1 [features = { field_presence: EXPLICIT }];
 
-  // Denotes which subset of this node is visible, in the page coordinate
-  // system. If the content is offscreen, this field will be empty.
+  // The bounding box of the content node relative to the viewport including all
+  // ancestor clipping. These are the element bounds visible to the user and
+  // hit-testable in the DOM.
   BoundingRect visible_bounding_box = 2 [features = { field_presence: EXPLICIT }];
+
+  // Multiple boxes are used when there are multiple rectangles belonging to
+  // the same node, e.g.: across multiple lines, columns or pages. In layout
+  // terms, a node that does this is called a fragmentainer.
+  // Each rectangle represents a hit testable fragment belonging to the node.
+  // An empty array indicates that the node is not fragmented or is entirely
+  // offscreen. Relative to viewport origin.
+  repeated BoundingRect fragment_visible_bounding_boxes = 6;
 
   // Whether the content node is fixed or sticky position. This may suggest
   // that the node is a header, footer, or sidebar.
-  bool is_fixed_or_sticky_position = 3 [features = { field_presence: EXPLICIT }];
+  bool is_fixed_or_sticky_position = 3 [
+    deprecated = true,
+    features = { field_presence: EXPLICIT }
+  ];
 
   reserved 4, 5;
 }
@@ -376,7 +423,7 @@ message BoundingRect {
 // Note: ScrollerInfo is populated for ANNOTATED_PAGE_CONTENT_MODE_DEFAULT. The
 // rest of the fields are only populated for
 // ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS.
-// Next ID: 16
+// Next ID: 18
 message InteractionInfo {
   // Set if the content node is scrollable.
   ScrollerInfo scroller_info = 12 [features = { field_presence: EXPLICIT }];
@@ -444,6 +491,18 @@ message InteractionInfo {
   // Provides signals which indicate whether the node is actionable. The action
   // may be triggered by clicking or hovering on the element.
   repeated ClickabilityReason clickability_reasons = 15;
+
+  // Whether the content node is explicitly disabled from being actionable. For
+  // example, a `select` element with the `disabled` or `aria-disabled`
+  // attribute. Disabled nodes are still valid action targets and can consume
+  // events. This is not set for nodes which are not hit-testable and will
+  // ignore events, for example with `pointer-events: none`.
+  bool is_disabled = 16 [features = { field_presence: EXPLICIT }];
+
+  // Hints on why the interaction with the node is disabled.
+  //
+  // TODO(linnan): Deprecate is_disabled in favour of the list of reasons.
+  repeated InteractionDisabledReason interaction_disabled_reasons = 17;
 
   reserved 8, 1, 2, 11;
 }
@@ -554,12 +613,20 @@ message AnchorData {
   repeated AnchorRel rel = 2;
 }
 
+// FormInfo is a mirror of AIPageContentFormData from
+// third_party/blink/public/mojom/content_extraction/ai_page_content.mojom,
+// in contrast with FormData, which is a mirror of autofill::FormData from
+// components/autofill/core/common/mojom/autofill_types.mojom.
 message FormInfo {
-  // The of the form.
+  // The name of the form.
   string form_name = 1 [features = { field_presence: EXPLICIT }];
+
+  // The action URL of the form, if present. This is the resolved value
+  // including the final origin.
+  string action_url = 2 [features = { field_presence: EXPLICIT }];
 }
 
-// Next ID: 8
+// Next ID: 11
 message FormControlData {
   // The name for the field.
   string field_name = 1 [features = { field_presence: EXPLICIT }];
@@ -582,6 +649,21 @@ message FormControlData {
 
   // Whether the field is required.
   bool is_required = 7 [features = { field_presence: EXPLICIT }];
+
+  // Redaction decision for form fields.
+  RedactionDecision redaction_decision = 8 [features = { field_presence: EXPLICIT }];
+
+  // The types of data that can be autofilled this field. This does not imply
+  // that the user has data to fill of this type on file.
+  repeated CoarseAutofillFieldType coarse_autofill_field_type = 9;
+
+  // Global identifier (across one AnnotatedPageContent) of an autofillable
+  // section. Fields that belong to the same section are filled in one fill
+  // operation. These fields share the same `autofill_section_id`.
+  // The value may change over time if the page changes (IDs are generated
+  // in AnnotatedPageContent traversal order according to Autofill's
+  // understanding of forms).
+  uint32 autofill_section_id = 10 [features = { field_presence: EXPLICIT }];
 }
 
 // Represents an option in a select field. See below for example.
@@ -616,18 +698,34 @@ message TableData {
 }
 
 message IframeData {
-  FrameData frame_data = 3 [features = { field_presence: EXPLICIT }];
+  oneof data {
+    FrameData frame_data = 3;
 
-  // Indicates whether the iframe is likely to be an ad frame. This is set for
-  // both the root ad frame and its descendants.
-  bool likely_ad_frame = 2 [features = { field_presence: EXPLICIT }];
+    RedactedFrameMetadata redacted_frame_metadata = 4;
+  }
 
-  reserved 1;
+  message RedactedFrameMetadata {
+    Reason reason = 1 [features = { field_presence: EXPLICIT }];
+
+    enum Reason {
+      REASON_UNSPECIFIED = 0;
+
+      // This iframe was redacted because it is not on the same eTLD+1 site as
+      // the top-level frame.
+      REASON_CROSS_SITE = 1;
+
+      // This iframe was redacted because it is not on the same origin as the
+      // top-level frame.
+      REASON_CROSS_ORIGIN = 2;
+    }
+  }
+
+  reserved 1, 2;
 }
 
 // The data for a frame in the web page. This is the common data structure for
 // both the root frame and embedded iframes.
-// Next ID: 9
+// Next ID: 12
 message FrameData {
   // The security origin of the frame.
   SecurityOrigin security_origin = 1 [features = { field_presence: EXPLICIT }];
@@ -654,7 +752,15 @@ message FrameData {
   // session web API.
   MediaData media_data = 8 [features = { field_presence: EXPLICIT }];
 
-  reserved 7;
+  // The set of tools supported by this Document.
+  repeated ScriptTool script_tools = 9;
+
+  // The results of executing script tools.
+  // TODO(khushalsagar): Remove this field once all consumers move to using
+  // the field in ActionsResult.
+  repeated ScriptToolResult script_tool_results = 11;
+
+  reserved 7, 10;
 }
 
 // The interaction information for the frame. This is for interactions that
@@ -690,8 +796,10 @@ message Selection {
 // Directs the action to a specific Document in a frame in Chrome.
 // Next ID: 3
 message DocumentIdentifier {
-  // A unique identifier for the frame that is not stable across APC
-  // calls/pages. Caller can map these to a client side frame id.
+  // A unique identifier for a Document loaded in the browser. This ID is
+  // guaranteed to be unique across all Documents for the browser's lifetime.
+  // The ID is also stable for the Document's lifetime. It can be used to
+  // identify the Document across APC calls.
   string serialized_token = 1 [features = { field_presence: EXPLICIT }];
 }
 
@@ -703,7 +811,10 @@ message PaidContentMetadata {
 }
 
 // The media data for a frame in the web page. If the frame has multiple media
-// elements, only one of them is controlled by the media session.
+// elements, only one of them is controlled by the media session. The
+// transcripts are always attached if any have been generated for past media or
+// current media in this frame, while other fields are only populated if there
+// is an active media session in the frame.
 // Next ID: 9
 message MediaData {
   // Type of the media in the frame.
@@ -744,14 +855,48 @@ message MediaTranscript {
   int64 start_timestamp_milliseconds = 2 [features = { field_presence: EXPLICIT }];
 }
 
+// The data for tools exposed by the Document.
+message ScriptTool {
+  // The name of the tool. This must be unique within the source Document's
+  // scope.
+  string name = 2 [features = { field_presence: EXPLICIT }];
+
+  // A description of the tool used to understand the capabilities of the tool.
+  string description = 3 [features = { field_presence: EXPLICIT }];
+
+  // A JSON schema string describing the input expected by the tool.
+  string input_schema = 4 [features = { field_presence: EXPLICIT }];
+
+  // Annotations for the tool.
+  ScriptToolAnnotations annotations = 5 [features = { field_presence: EXPLICIT }];
+}
+
+// Annotations for the script tool.
+message ScriptToolAnnotations {
+  bool read_only = 1 [features = { field_presence: EXPLICIT }];
+}
+
+// Result of executing a script tool.
+// Next ID: 3
+// TODO(khushalsagar): Move this to actions_data.proto.
+message ScriptToolResult {
+  // The index of the ScriptToolAction in the Actions proto. This is used to
+  // match the result to the corresponding action.
+  int32 index_of_script_tool_action = 1 [features = { field_presence: EXPLICIT }];
+
+  // The result from executing the tool, if the execution was successful.
+  string result = 2 [features = { field_presence: EXPLICIT }];
+}
+
 message TableRowData {
   TableRowType type = 1 [features = { field_presence: EXPLICIT }];
 }
 
 // Represents the interaction information for the page. This is for top-level
 // interactions, such as the mouse position and focused element, for which
-// there can only be one unique value. Includes interaction information for
-// the main frame and embedded iframes.
+// there can only be one unique value.
+// Currently this is only tracked for the main frame. The IDs correspond to the
+// DOM node IDs of the content nodes in the main frame.
 // Next ID: 4
 message PageInteractionInfo {
   // The content node ID of the content node that is currently focused.
@@ -769,6 +914,56 @@ message Point {
   int32 x = 1 [features = { field_presence: EXPLICIT }];
 
   int32 y = 2 [features = { field_presence: EXPLICIT }];
+}
+
+// Represents a popup window that is open on a web page.
+// Next ID: 6
+message PopupWindow {
+  // Root node for the document in the window.
+  ContentNode root_node = 1 [features = { field_presence: EXPLICIT }];
+
+  // The bounding box of the popup window relative to the viewport. The popup is
+  // not clipped by any ancestor except the viewport clipping the screenshot.
+  BoundingRect visible_bounding_box = 5 [features = { field_presence: EXPLICIT }];
+
+  // Unique identifier for the document which opened this popup window.
+  DocumentIdentifier opener_document_id = 3 [features = { field_presence: EXPLICIT }];
+
+  // Unique identifier for the node which opened this popup window. Relies on
+  // opener_document_id to determine which document contains the node.
+  int32 opener_common_ancestor_dom_node_id = 4 [features = { field_presence: EXPLICIT }];
+
+  reserved 2;
+}
+
+// Information that pertains the user's Chrome profile.
+// Next ID: 2
+message ProfileInformation {
+  AutofillInformation autofill_information = 1 [features = { field_presence: EXPLICIT }];
+}
+
+// Autofill information that pertains to Autofill data on the client.
+// Next ID: 2
+message AutofillInformation {
+  repeated FillableData fillable_data = 1;
+
+  // The type of data that can be autofilled into a form because the client has
+  // corresponding data on file. Note that this is coarse data: A user may have
+  // an address on file that does not contain an email address. So the autofill
+  // status may indicate that an address is fillable but autofill cannot be
+  // triggered on an email field.
+  enum FillableData {
+    UNSPECIFIED = 0;
+
+    // If reported, the user has at least one address on file.
+    ADDRESS = 1;
+
+    // The gap in numbering here exists to stay aligned with
+    // FormFillingRequest.RequestedData.
+
+    // If reported, the user has at least one credit card on file.
+    CREDIT_CARD = 6;
+  }
 }
 
 // Uniquely identifies a DOM elements across all frames.
@@ -794,9 +989,13 @@ message FormData {
   // changes dynamically.
   // Only set during data collection, not in prediction requests.
   uint64 form_signature = 4 [features = { field_presence: EXPLICIT }];
+
+  // The action URL of the form, if present. This is the resolved value
+  // including the final origin.
+  string action_url = 5 [features = { field_presence: EXPLICIT }];
 }
 
-// Next ID: 14
+// Next ID: 15
 message FormFieldData {
   // The name for the field.
   string field_name = 1 [features = { field_presence: EXPLICIT }];
@@ -846,10 +1045,12 @@ message FormFieldData {
   // The text of the elements denoted by the aria-labelledby attribute of field
   // or the value of its aria-label attribute, with priority given to the
   // aria-labelledby attribute.
-  // TODO(crbug.com/389631485): The client doesn't set this for model requests at the
-  // moment. But it can and should be used for inference since it is contained
-  // in the metadata pipeline.
   string aria_label = 13 [features = { field_presence: EXPLICIT }];
+
+  // The text of the elements denoted by the aria-describedby attribute of field
+  // or the value of its aria-description attribute, with priority given to the
+  // aria-describedby attribute.
+  string aria_description = 14 [features = { field_presence: EXPLICIT }];
 }
 
 message TableRow {
@@ -909,11 +1110,62 @@ message SiteEngagement {
 }
 
 // The coordinates of a point.
-// Next ID: 3
+// Next ID: 4
 message Coordinate {
   int32 x = 1 [features = { field_presence: EXPLICIT }];
 
   int32 y = 2 [features = { field_presence: EXPLICIT }];
+
+  // The type of the coordinate. If not specified, the coordinate is assumed to
+  // be relative to the viewport dimensions or screenshot dimensions depending
+  // on the context.
+  PixelType pixel_type = 3 [features = { field_presence: EXPLICIT }];
+
+  enum PixelType {
+    // The coordinate type is not specified. Assumed to be viewport.
+    PIXEL_TYPE_UNSPECIFIED = 0;
+
+    // Density independent pixels (DIPs).
+    // The coordinate is in DIPs which are independent of OS-level UI scaling.
+    // e.g., The coordinate is relative to the viewport dimensions set in APC.
+    PIXEL_TYPE_DIPS = 1;
+
+    // Physical pixels.
+    // The coordinate is provided in physical screen pixels. Values provided in
+    // physical pixels depend on UI scaling factor so must not be used when the
+    // scaling factor changes (e.g. APC generated, window moved to a higher
+    // density monitor; physical coordinate values must now be invalidated).
+    // e.g., The coordinate is relative to the dimensions of the annotated page
+    // content root node.
+    PIXEL_TYPE_PHYSICAL_PIXELS = 2;
+  }
+}
+
+// A meta tag (https://developer.mozilla.org/en-US/docs/Wecrbug.com/HTML/Element/meta).
+// Next ID: 3
+message MetaTag {
+  // The name attribute of the meta tag.
+  string name = 1 [features = { field_presence: EXPLICIT }];
+
+  // The content attribute of the meta tag.
+  string content = 2 [features = { field_presence: EXPLICIT }];
+}
+
+// Metadata about a frame.
+// Next ID: 3
+message FrameMetadata {
+  // The URL of the frame.
+  string url = 1 [features = { field_presence: EXPLICIT }];
+
+  repeated MetaTag meta_tags = 2;
+}
+
+// Metadata (URL and meta tags) from page content. Includes data from meta tags
+// for all frames on this page.
+// Next ID: 2
+message PageMetadata {
+  // The main frame is the first entry in the array.
+  repeated FrameMetadata frame_metadata = 1;
 }
 
 // Selection text affinity, part of the a11y snapshot.
@@ -927,7 +1179,7 @@ enum AXTextAffinity {
 }
 
 // AX Role.
-// Next ID: 213
+// Next ID: 214
 enum AXRole {
   AX_ROLE_NONE = 0;
 
@@ -1182,6 +1434,8 @@ enum AXRole {
   AX_ROLE_MENUITEMCHECKBOX = 125;
 
   AX_ROLE_MENUITEMRADIO = 126;
+
+  AX_ROLE_MENUITEMSEPARATOR = 213;
 
   AX_ROLE_MENULISTOPTION = 127;
 
@@ -1447,7 +1701,7 @@ enum AXStringAttribute {
 }
 
 // AX Int attribute enum.
-// Next ID: 68
+// Next ID: 69
 enum AXIntAttribute {
   AX_IA_NONE = 0;
 
@@ -1584,6 +1838,8 @@ enum AXIntAttribute {
   AX_IA_DETAILSFROM = 66;
 
   AX_IA_MAXLENGTH = 67;
+
+  AX_IA_PAINTORDER = 68;
 }
 
 // AX Float attribute enum.
@@ -1790,6 +2046,7 @@ enum ContentAttributeType {
   // Image chunks.
   CONTENT_ATTRIBUTE_IMAGE = 9;
 
+  // Root SVG nodes.
   CONTENT_ATTRIBUTE_SVG = 25;
 
   CONTENT_ATTRIBUTE_CANVAS = 26;
@@ -1817,7 +2074,7 @@ enum ContentAttributeType {
 }
 
 // The reason why a node is clickable.
-// Next ID: 10
+// Next ID: 15
 enum ClickabilityReason {
   // The node is a native form control.
   CLICKABILITY_REASON_CLICKABLE_CONTROL = 0;
@@ -1826,8 +2083,9 @@ enum ClickabilityReason {
   CLICKABILITY_REASON_CLICK_HANDLER = 1;
 
   // The node has mouse event handlers like mouseup, mousedown, mouseover and
-  // mouseenter.
-  CLICKABILITY_REASON_MOUSE_EVENTS = 2;
+  // mouseenter. Deprecated in favor of
+  // CLICKABILITY_REASON_MOUSE_CLICK and CLICKABILITY_REASON_MOUSE_HOVER.
+  CLICKABILITY_REASON_MOUSE_EVENTS = 2 [deprecated = true];
 
   // The node has keyboard event handlers like keydown, keypress, keyup.
   CLICKABILITY_REASON_KEY_EVENTS = 3;
@@ -1854,6 +2112,41 @@ enum ClickabilityReason {
   // visibility of other elements. This reason implies that the associated
   // control is currently collapsed.
   CLICKABILITY_REASON_ARIA_EXPANDED_FALSE = 9;
+
+  // The node has the tabIndex attribute set to a valid value.
+  CLICKABILITY_REASON_TAB_INDEX = 10;
+
+  // The node has autocomplete, as indicated by the same-named attribute or
+  // aria-autocomplete.
+  CLICKABILITY_REASON_AUTOCOMPLETE = 11;
+
+  // The node has mouse event handlers like mouseup and mousedown.
+  CLICKABILITY_REASON_MOUSE_CLICK = 12;
+
+  // The node has mouse event handlers like mouseover and mouseenter.
+  CLICKABILITY_REASON_MOUSE_HOVER = 13;
+
+  // The node has a CSS :hover pseudo-class, which indicates that it changes
+  // state when a mouse hovers over it. This should be relatively low-priority
+  // compared to stronger clickability signals. There's not enough granularity
+  // in Chrome to know what properties the rule might effect, so this reason
+  // just indicates that a :hover rule is defined.
+  CLICKABILITY_REASON_HOVER_PSEUDO_CLASS = 14;
+}
+
+// Provides hints that indicate that interaction with this node is disabled.
+// Next ID: 4
+enum InteractionDisabledReason {
+  INTERACTION_DISABLED_REASON_UNSPECIFIED = 0;
+
+  // The node is disabled by the `disabled` attribute.
+  INTERACTION_DISABLED_REASON_DISABLED = 1;
+
+  // The node is disabled by the `aria-disabled` attribute.
+  INTERACTION_DISABLED_REASON_ARIA_DISABLED = 2;
+
+  // The node has the style `cursor: not-allowed`.
+  INTERACTION_DISABLED_REASON_CURSOR_NOT_ALLOWED = 3;
 }
 
 // Next ID: 5
@@ -1955,6 +2248,33 @@ enum FormControlType {
   FORM_CONTROL_TYPE_INPUT_WEEK = 32;
 
   FORM_CONTROL_TYPE_OUTPUT = 33;
+}
+
+enum RedactionDecision {
+  // No redaction necessary for this node type.
+  REDACTION_DECISION_NO_REDACTION_NECESSARY = 0;
+
+  // Empty password inputs are not redacted.
+  REDACTION_DECISION_UNREDACTED_EMPTY_PASSWORD = 1;
+
+  // Is a password input or was in the past.
+  REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD = 2;
+
+  // Empty payment fields are not redacted.
+  REDACTION_DECISION_UNREDACTED_EMPTY_PAYMENT_FIELD = 3;
+
+  // Is a non-empty field that autofill recognized as a sensitive payment field
+  // type and so must be redacted.
+  REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD = 4;
+}
+
+// The type of data that can be autofilled into a form.
+enum CoarseAutofillFieldType {
+  COARSE_AUTOFILL_FIELD_TYPE_UNSUPPORTED = 0;
+
+  COARSE_AUTOFILL_FIELD_TYPE_ADDRESS = 1;
+
+  COARSE_AUTOFILL_FIELD_TYPE_CREDIT_CARD = 2;
 }
 
 // Indicates the type of media in the media data.

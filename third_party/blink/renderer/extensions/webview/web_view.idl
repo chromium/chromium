@@ -23,7 +23,6 @@ dictionary GetMediaIntegrityTokenProviderParams {
     // The promise may reject as a MediaIntegrityError.
     [ NewObject,
       CallWith=ScriptState,
-      HighEntropy,
       RaisesException,
       RuntimeEnabled=BlinkExtensionWebViewMediaIntegrity,
       SecureContext,

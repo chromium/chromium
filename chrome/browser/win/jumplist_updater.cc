@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/win_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/common/content_switches.h"
@@ -73,7 +74,7 @@ bool AddShellLink(Microsoft::WRL::ComPtr<IObjectCollection> collection,
     return false;
 
   if (!base::win::SetStringValueForPropertyStore(
-          property_store.Get(), PKEY_Title, base::as_wcstr(item->title()))) {
+          property_store.Get(), PKEY_Title, base::UTF16ToWide(item->title()))) {
     return false;
   }
 

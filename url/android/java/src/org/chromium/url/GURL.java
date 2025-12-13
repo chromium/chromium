@@ -190,46 +190,46 @@ public class GURL {
         return mSpec.substring(begin, begin + length);
     }
 
-    /** See native GURL::scheme(). */
+    /** See native GURL::GetScheme(). */
     public String getScheme() {
         return getComponent(mParsed.mSchemeBegin, mParsed.mSchemeLength);
     }
 
-    /** See native GURL::username(). */
+    /** See native GURL::GetUsername(). */
     public String getUsername() {
         return getComponent(mParsed.mUsernameBegin, mParsed.mUsernameLength);
     }
 
-    /** See native GURL::password(). */
+    /** See native GURL::GetPassword(). */
     public String getPassword() {
         return getComponent(mParsed.mPasswordBegin, mParsed.mPasswordLength);
     }
 
-    /** See native GURL::host(). */
+    /** See native GURL::GetHost(). */
     public String getHost() {
         return getComponent(mParsed.mHostBegin, mParsed.mHostLength);
     }
 
     /**
-     * See native GURL::port().
+     * See native GURL::GetHost().
      *
-     * Note: Do not convert this to an integer yourself. See native GURL::IntPort().
+     * <p>Note: Do not convert this to an integer yourself. See native GURL::IntPort().
      */
     public String getPort() {
         return getComponent(mParsed.mPortBegin, mParsed.mPortLength);
     }
 
-    /** See native GURL::path(). */
+    /** See native GURL::GetPath(). */
     public String getPath() {
         return getComponent(mParsed.mPathBegin, mParsed.mPathLength);
     }
 
-    /** See native GURL::query(). */
+    /** See native GURL::GetQuery(). */
     public String getQuery() {
         return getComponent(mParsed.mQueryBegin, mParsed.mQueryLength);
     }
 
-    /** See native GURL::ref(). */
+    /** See native GURL::GetRef(). */
     public String getRef() {
         return getComponent(mParsed.mRefBegin, mParsed.mRefLength);
     }

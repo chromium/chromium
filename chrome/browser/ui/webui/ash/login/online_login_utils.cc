@@ -223,10 +223,6 @@ AccountId GetAccountId(const std::string& authenticated_email,
 }
 
 bool IsFamilyLinkAllowed() {
-  if (!features::IsFamilyLinkOnSchoolDeviceEnabled()) {
-    return false;
-  }
-
   CrosSettings* cros_settings = CrosSettings::Get();
   bool family_link_allowed = false;
   cros_settings->GetBoolean(kAccountsPrefFamilyLinkAccountsAllowed,

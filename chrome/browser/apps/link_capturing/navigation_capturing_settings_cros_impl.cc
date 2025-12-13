@@ -10,8 +10,23 @@
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 
 namespace web_app {
+
+namespace {
+bool IsSystemWebApp(Profile* profile, const std::string& app_id) {
+  bool is_system_web_app = false;
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&is_system_web_app](const apps::AppUpdate& update) {
+        if (update.InstallReason() == apps::InstallReason::kSystem) {
+          is_system_web_app = true;
+        }
+      });
+  return is_system_web_app;
+}
+}  // namespace
 
 std::unique_ptr<NavigationCapturingSettings>
 NavigationCapturingSettings::Create(Profile& profile) {
@@ -27,12 +42,10 @@ NavigationCapturingSettingsCrosImpl::~NavigationCapturingSettingsCrosImpl() =
 
 std::optional<webapps::AppId>
 NavigationCapturingSettingsCrosImpl::GetCapturingWebAppForUrl(const GURL& url) {
-  if (std::optional<webapps::AppId> iwa_id =
-          WebAppProvider::GetForWebApps(&profile_.get())
-              ->registrar_unsafe()
-              .FindBestAppWithUrlInScope(url, WebAppFilter::IsIsolatedApp())) {
-    // IWA URLs are always captured.
-    return *iwa_id;
+  if (url.SchemeIs(webapps::kIsolatedAppScheme)) {
+    return WebAppProvider::GetForWebApps(&profile_.get())
+        ->registrar_unsafe()
+        .FindBestAppWithUrlInScope(url, WebAppFilter::IsIsolatedApp());
   }
 
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
@@ -40,10 +53,15 @@ NavigationCapturingSettingsCrosImpl::GetCapturingWebAppForUrl(const GURL& url) {
     return std::nullopt;
   }
 
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return std::nullopt;
+  }
+
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(&profile_.get());
   auto app_id = apps::FindAppIdsToLaunchForUrl(proxy, url).preferred;
   if (!app_id.has_value() ||
-      proxy->AppRegistryCache().GetAppType(*app_id) != apps::AppType::kWeb) {
+      proxy->AppRegistryCache().GetAppType(*app_id) != apps::AppType::kWeb ||
+      IsSystemWebApp(&profile_.get(), *app_id)) {
     return std::nullopt;
   }
   return app_id;

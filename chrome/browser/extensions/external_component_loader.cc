@@ -15,6 +15,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/feature_switch.h"
@@ -27,6 +28,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

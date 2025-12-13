@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_LOADER_LOADING_BEHAVIOR_FLAG_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_LOADER_LOADING_BEHAVIOR_FLAG_H_
 
+#include <stdint.h>
+
 namespace blink {
 
 // This enum tracks certain behavior Blink exhibits when loading a page. This is
@@ -12,7 +14,7 @@ namespace blink {
 // features and potential areas of improvement in the loading stack. The main
 // consumer is the page_load_metrics component, which sends bit flags to the
 // browser process for histogram splitting.
-enum LoadingBehaviorFlag {
+enum LoadingBehaviorFlag : uint32_t {
   kLoadingBehaviorNone = 0,
   // Indicates that the page used the document.write evaluator to preload scan
   // for resources inserted via document.write.
@@ -54,7 +56,25 @@ enum LoadingBehaviorFlag {
   // Indicates that the RaceNetworkRequest is dispatched for the main and
   // subresources. crbug.com/1420517 for more details.
   kLoadingBehaviorServiceWorkerRaceNetworkRequest = 1 << 12,
+  // Indicates that the SyntheticResponse is used for the main resource. The
+  // response header is served from the locally stored cache. This doesn't
+  // guarantee that the synthetic response successfully returned the response.
+  // The bit will be sent even in the fallback case e.g. inconsistent headers.
+  // crbug.com/1420517 for more details.
+  kLoadingBehaviorServiceWorkerSyntheticResponse = 1 << 13,
 };
+
+inline LoadingBehaviorFlag operator|(LoadingBehaviorFlag a,
+                                     LoadingBehaviorFlag b) {
+  return static_cast<LoadingBehaviorFlag>(static_cast<uint32_t>(a) |
+                                          static_cast<uint32_t>(b));
+}
+
+inline LoadingBehaviorFlag& operator|=(LoadingBehaviorFlag& a,
+                                       LoadingBehaviorFlag b) {
+  a = a | b;
+  return a;
+}
 
 }  // namespace blink
 

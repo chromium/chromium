@@ -186,6 +186,8 @@ enum BocaValidPref {
   kDefaultMediaStreamSetting = 2,
   // OOBE page access count.
   kOOBEAccessCount = 3,
+  // Kiosk receiver codes.
+  kKioskReceiverCodes = 4,
 };
 
 struct Session {
@@ -391,6 +393,31 @@ interface PageHandler {
     => (SpeechRecognitionInstallState state);
   // Notifies the client to start the Spotlight session.
   StartSpotlight(string crd_connection_code) => ();
+  // Present the screen of the student with the given id to the given receiver.
+  // `receiver_id` should match an id of one of the registered receivers in the
+  // server, otherwise the call will fail and return false.
+  // Only one presentation is allowed at a time, an overlapping call will fail.
+  // For a second `PresentStudentScreen` to succeed, it should come either after
+  // a successful call to `StopPresentingStudentScreen` or after a Page
+  // `OnPresentStudentScreenEnded` has been triggered.
+  PresentStudentScreen(Identity student, string receiver_id) => (bool success);
+  // Stop the current screen share presentation for the student.
+  // An overlapping call will fail and return false.
+  // The call will also fail if no current connection that has started.
+  // For the call to be successful, the servervrequest should succeed and the a
+  // check for the connection on the server should indicate that the connection
+  // was ended.
+  // If called after `OnPresentStudentScreenEnded` is triggered, the call will
+  // fail. It is up to the caller to ignore this failure since it will be
+  // already notified by `OnPresentStudentScreenEnded` that the screen
+  // presentation has ended.
+  // If successful, it is guaranteed that `OnPresentStudentScreenEnded` will not
+  // be triggered for that screen presentation.
+  StopPresentingStudentScreen() => (bool success);
+  // Present the teacher's screen to the given receiver.
+  PresentOwnScreen(string receiver_id) => (bool success);
+  // Stop the current screen share presentation for the teacher.
+  StopPresentingOwnScreen() => (bool success);
 };
 
 // Implemented by renderer process. There is an implementation in the browser
@@ -413,6 +440,12 @@ interface Page {
   OnFrameDataReceived(skia.mojom.BitmapN32 frame_data);
   // Notifies app when Spotlight CRD session has ended.
   OnSpotlightCrdSessionStatusUpdated(CrdConnectionState state);
+  // Notifies the app that the screen share presentation for the student has
+  // ended.
+  OnPresentStudentScreenEnded();
+  // Notify the app that the screen share presentation for the teacher has
+  // ended.
+  OnPresentOwnScreenEnded();
 };
 
 // Implemented in browser process to set up the communication between the Page

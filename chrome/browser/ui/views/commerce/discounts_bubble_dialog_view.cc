@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/functional/callback_forward.h"
 #include "base/i18n/time_formatting.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -17,6 +16,7 @@
 #include "chrome/browser/ui/views/commerce/discounts_coupon_code_label_view.h"
 #include "chrome/browser/ui/views/controls/page_switcher_view.h"
 #include "chrome/browser/ui/views/controls/subpage_view.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/metrics/discounts_metric_collector.h"
@@ -28,9 +28,11 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_tracker.h"
 #include "url/gurl.h"
@@ -83,11 +85,12 @@ std::unique_ptr<views::View>
 DiscountsBubbleDialogView::CreateMainPageHeaderView() {
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
 
-  return std::make_unique<ThemeTrackingNonAccessibleImageView>(
-      *bundle.GetImageSkiaNamed(IDR_DISCOUNTS_BUBBLE_HEADER_LIGHT),
-      *bundle.GetImageSkiaNamed(IDR_DISCOUNTS_BUBBLE_HEADER_DARK),
-      base::BindRepeating(&views::BubbleDialogDelegate::background_color,
-                          base::Unretained(this)));
+  auto image_view =
+      std::make_unique<views::ImageView>(bundle.GetThemedLottieImageNamed(
+          IDR_SHOPPING_DISCOUNTS_AVAILABLE_LOTTIE));
+  image_view->GetViewAccessibility().SetIsInvisible(true);
+
+  return image_view;
 }
 
 std::unique_ptr<views::View> DiscountsBubbleDialogView::CreateMainPageTitleView(

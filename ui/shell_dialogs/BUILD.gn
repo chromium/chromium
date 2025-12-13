@@ -57,7 +57,6 @@ component("shell_dialogs") {
       "select_file_dialog_linux.cc",
       "select_file_dialog_linux.h",
       "shell_dialog_linux.cc",
-      "shell_dialog_linux.h",
     ]
     deps += [ "//ui/linux:linux_ui" ]
     if (use_dbus) {
@@ -173,6 +172,15 @@ test("shell_dialogs_unittests") {
     "//ui/resources:ui_test_pak_data",
     "//ui/strings",
   ]
+
+  if (is_linux && !is_castos && use_dbus) {
+    sources += [ "select_file_dialog_linux_portal_unittest.cc" ]
+    deps += [
+      "//components/dbus",
+      "//dbus",
+      "//dbus:test_support",
+    ]
+  }
 
   if (is_mac) {
     deps += [ "//components/remote_cocoa/app_shim" ]

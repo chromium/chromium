@@ -81,7 +81,6 @@ config("compiler") {
   # for precompiled headers where the same source file is compiled in both
   # modes.
   cflags_c = [ "/TC" ]
-  cflags_cc = [ "/TP" ]
 
   if (is_clang) {
     # Required to make the 19041 SDK compatible with clang-cl.
@@ -399,10 +398,7 @@ config("cfi_linker") {
 # unnecessarily, even if advapi32.dll itself is loaded.
 #
 # This config applies to chrome.exe, chrome.dll, chrome_elf.dll (& others).
-#
-# This config should also be used for any test binary whose goal is to run
-# tests with the full browser.
-config("delayloads") {
+config("delayloads_except_dbghelp") {
   ldflags = [
     "/DELAYLOAD:api-ms-win-core-synch-l1-2-0.dll",
     "/DELAYLOAD:api-ms-win-core-winrt-error-l1-1-0.dll",
@@ -417,6 +413,7 @@ config("delayloads") {
     "/DELAYLOAD:d3d11.dll",
     "/DELAYLOAD:d3d12.dll",
     "/DELAYLOAD:d3d9.dll",
+    "/DELAYLOAD:dhcpcsvc.dll",
     "/DELAYLOAD:dcomp.dll",
     "/DELAYLOAD:dwmapi.dll",
     "/DELAYLOAD:dxgi.dll",
@@ -427,32 +424,51 @@ config("delayloads") {
     "/DELAYLOAD:hid.dll",
     "/DELAYLOAD:imagehlp.dll",
     "/DELAYLOAD:imm32.dll",
+    "/DELAYLOAD:iphlpapi.dll",
     "/DELAYLOAD:mmdevapi.dll",
     "/DELAYLOAD:msi.dll",
     "/DELAYLOAD:netapi32.dll",
     "/DELAYLOAD:ncrypt.dll",
     "/DELAYLOAD:ole32.dll",
     "/DELAYLOAD:oleacc.dll",
+    "/DELAYLOAD:oleaut32.dll",
     "/DELAYLOAD:pdh.dll",
     "/DELAYLOAD:propsys.dll",
     "/DELAYLOAD:psapi.dll",
     "/DELAYLOAD:rpcrt4.dll",
     "/DELAYLOAD:rstrtmgr.dll",
+    "/DELAYLOAD:secur32.dll",
     "/DELAYLOAD:setupapi.dll",
     "/DELAYLOAD:shell32.dll",
     "/DELAYLOAD:shlwapi.dll",
     "/DELAYLOAD:uiautomationcore.dll",
     "/DELAYLOAD:urlmon.dll",
     "/DELAYLOAD:user32.dll",
+    "/DELAYLOAD:userenv.dll",
     "/DELAYLOAD:usp10.dll",
     "/DELAYLOAD:uxtheme.dll",
     "/DELAYLOAD:wer.dll",
     "/DELAYLOAD:wevtapi.dll",
+    "/DELAYLOAD:winhttp.dll",
     "/DELAYLOAD:wininet.dll",
+    "/DELAYLOAD:winspool.drv",
+    "/DELAYLOAD:wintrust.dll",
     "/DELAYLOAD:winusb.dll",
     "/DELAYLOAD:wsock32.dll",
     "/DELAYLOAD:wtsapi32.dll",
   ]
+}
+
+# Production binaries should use this config.
+config("delayloads") {
+  configs = [ ":delayloads_except_dbghelp" ]
+  ldflags = [ "/DELAYLOAD:dbghelp.dll" ]
+}
+
+# This config should also be used for any test binary whose goal is to run
+# tests with the full browser.
+config("delayloads_for_tests") {
+  configs = [ ":delayloads_except_dbghelp" ]
 }
 
 # This config (along with `:delayloads`) applies to chrome.exe & chrome_elf.dll.
@@ -460,17 +476,8 @@ config("delayloads") {
 config("delayloads_not_for_child_dll") {
   ldflags = [
     "/DELAYLOAD:crypt32.dll",
-    "/DELAYLOAD:dbghelp.dll",
-    "/DELAYLOAD:dhcpcsvc.dll",
     "/DELAYLOAD:dwrite.dll",
-    "/DELAYLOAD:iphlpapi.dll",
-    "/DELAYLOAD:oleaut32.dll",
-    "/DELAYLOAD:secur32.dll",
-    "/DELAYLOAD:userenv.dll",
-    "/DELAYLOAD:winhttp.dll",
     "/DELAYLOAD:winmm.dll",
-    "/DELAYLOAD:winspool.drv",
-    "/DELAYLOAD:wintrust.dll",
     "/DELAYLOAD:ws2_32.dll",
   ]
 }

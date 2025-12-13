@@ -9,7 +9,7 @@
 #include <optional>
 #include <vector>
 
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "media/capture/capture_export.h"
 #include "ui/gfx/geometry/size.h"
 

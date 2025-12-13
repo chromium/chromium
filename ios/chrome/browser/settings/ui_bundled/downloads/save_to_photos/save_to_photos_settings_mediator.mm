@@ -16,8 +16,10 @@
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_account_confirmation_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_account_selection_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_mediator_delegate.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 
 @interface SaveToPhotosSettingsMediator () <
@@ -108,10 +110,10 @@
 
 #pragma mark - SaveToPhotosSettingsMutator
 
-- (void)setSelectedIdentityGaiaID:(NSString*)gaiaID {
-  CHECK(gaiaID);
+- (void)setSelectedIdentityGaiaID:(const GaiaId*)gaiaID {
+  CHECK(!gaiaID->empty());
   _prefService->SetString(prefs::kIosSaveToPhotosDefaultGaiaId,
-                          base::SysNSStringToUTF8(gaiaID));
+                          gaiaID->ToString());
 }
 
 - (void)setAskWhichAccountToUseEveryTime:(BOOL)askEveryTime {
@@ -186,18 +188,16 @@
   }
 
   BOOL askEveryTimeSwitchOn =
-      !_prefService->GetBoolean(prefs::kIosSaveToPhotosSkipAccountPicker);
-  if (IsSaveToPhotosAccountPickerImprovementEnabled()) {
-    askEveryTimeSwitchOn = !askEveryTimeSwitchOn;
-  }
+      _prefService->GetBoolean(prefs::kIosSaveToPhotosSkipAccountPicker);
   [self.accountConfirmationConsumer
-      setIdentityButtonAvatar:_accountManagerService
-                                  ->GetIdentityAvatarWithIdentity(
+      setIdentityButtonAvatar:GetApplicationContext()
+                                  ->GetIdentityAvatarProvider()
+                                  ->GetIdentityAvatar(
                                       selectedIdentity,
                                       IdentityAvatarSize::TableViewIcon)
                          name:selectedIdentity.userFullName
                         email:selectedIdentity.userEmail
-                       gaiaID:selectedIdentity.gaiaID
+                       gaiaID:selectedIdentity.gaiaId
          askEveryTimeSwitchOn:askEveryTimeSwitchOn];
 
   // Update secondary consumer with the list of accounts on the device and which
@@ -209,13 +209,13 @@
   for (id<SystemIdentity> systemIdentity in identitiesOnDevice) {
     AccountPickerSelectionScreenIdentityItemConfigurator* configurator =
         [[AccountPickerSelectionScreenIdentityItemConfigurator alloc] init];
-    configurator.gaiaID = systemIdentity.gaiaID;
+    configurator.gaiaID = systemIdentity.gaiaId;
     configurator.name = systemIdentity.userFullName;
     configurator.email = systemIdentity.userEmail;
-    configurator.avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
-        systemIdentity, IdentityAvatarSize::TableViewIcon);
-    configurator.selected =
-        [systemIdentity.gaiaID isEqual:selectedIdentity.gaiaID];
+    configurator.avatar =
+        GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
+            systemIdentity, IdentityAvatarSize::TableViewIcon);
+    configurator.selected = systemIdentity.gaiaId == selectedIdentity.gaiaId;
     [identityItemConfigurators addObject:configurator];
   }
   [self.accountSelectionConsumer

@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <map>
 #include <optional>
 #include <string_view>
 #include <vector>
@@ -257,6 +256,21 @@ class UrlPatternIndexMatcher {
 // Returns whether the `rule` is considered "generic". A generic rule is one
 // whose initator domain list is either empty or contains only negative domains.
 bool IsRuleGeneric(const flat::UrlRule& rule);
+
+// Returns whether the `host` matches the domain conditions. It's considered a
+// match if both:
+//  1. An included domain matches the `host`, or `domains_included` is omitted
+//     entirely (since rules match all domains by default).
+//  2. No excluded domain match the `host`, or the longest matching excluded
+//     domain is shorter than the longest matching included domain (since
+//     longer, more specific domain matches take precedence), or
+//     `domains_excluded` is omitted entirely.
+bool DoesHostMatchDomainLists(
+    std::string_view host,
+    const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>*
+        domains_included,
+    const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>*
+        domains_excluded);
 
 // Returns whether the `origin` matches the initiator domain list of the `rule`.
 // A match means that the longest domain in `domains` that `origin` is a

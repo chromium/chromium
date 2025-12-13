@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view.h"
 
 #import <UIKit/UIKit.h>
@@ -27,9 +22,12 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_container_view.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
@@ -73,7 +71,7 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
 
 // When the placeholder text in the fakebox doesn't fit, the font shrinks to fit
 // the string. This is the minimum allowed factor by which it shrinks.
-const CGFloat kFakeboxMinimumFontScaleFactor = 0.3;
+const CGFloat kFakeboxMinimumFontScaleFactor = 0.57;
 
 // The constants for the constraints affecting the end button; either Lens or
 // Voice Search, depending on if Lens is enabled.
@@ -120,9 +118,6 @@ const CGFloat kCustomizationNewBadgeOffset = 14.0;
 NSString* const kMIACircleAnimationLightMode = @"mia_circle_animation_no_glow";
 NSString* const kMIACircleAnimationDarkMode = @"mia_glowing_circle_animation";
 
-// The value that makes the Lottie animation loop indefinitely.
-const CGFloat kLottieInfiniteLoopFlag = -1;
-
 // The value of the sides of the MIA circle animation for the normal size of the
 // fakebox.
 const CGFloat kMIACircleAnimationSizeNormal = 40.0;
@@ -161,35 +156,6 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
   } else {
     return [UIColor colorNamed:@"ntp_background_color"];
   }
-}
-
-// Returns a color which is a blend of `color_1` and `color_2`, depending on
-// the value of `fraction`. `fraction` is a value between 0 and 1. If it is
-// closer to 0, the output will be closer to `color_1`, and if it is closer to
-// 1 the output will be closer to `color_2`.
-UIColor* BlendColors(UIColor* color_1, UIColor* color_2, CGFloat fraction) {
-  if (fraction <= 0.0) {
-    return color_1;
-  } else if (fraction >= 1.0) {
-    return color_2;
-  } else if ([color_1 isEqual:color_2]) {
-    return color_1;
-  }
-
-  // Get RGBA components for the two colors, as inputs to the blend.
-  CGFloat in_1[4];
-  CGFloat in_2[4];
-  [color_1 getRed:&in_1[0] green:&in_1[1] blue:&in_1[2] alpha:&in_1[3]];
-  [color_2 getRed:&in_2[0] green:&in_2[1] blue:&in_2[2] alpha:&in_2[3]];
-
-  // Blend each RGBA color component, based on the given fraction.
-  CGFloat out[4];
-  CGFloat inverse = 1.0 - fraction;
-  for (int i = 0; i < 4; i++) {
-    out[i] = inverse * in_1[i] + fraction * in_2[i];
-  }
-
-  return [UIColor colorWithRed:out[0] green:out[1] blue:out[2] alpha:out[3]];
 }
 
 // Returns a value in the range of `from` up to `to`, depending on the given
@@ -319,8 +285,10 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   // Whether AIM is allowed.
   BOOL _isAIMAllowed;
 
-  // The current NTP color palette.
-  NewTabPageColorPalette* _colorPalette;
+  // Location bar view for when it has a colored gradient.
+  GradientView* _fakeLocationBarGradientView;
+  // Location bar view to use for when it should have a blur effect.
+  UIVisualEffectView* _fakeLocationBarBlurEffectView;
 }
 
 #pragma mark - Public
@@ -345,24 +313,27 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
     _lastAnimationPercent = 0;
     _currentHintLabelScale = 1;
 
-    if (@available(iOS 17, *)) {
-      NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
-        UITraitPreferredContentSizeCategory.class,
-        UITraitUserInterfaceStyle.class
-      ]);
-      __weak __typeof(self) weakSelf = self;
-      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
-                                       UITraitCollection* previousCollection) {
-        [weakSelf updateUIOnTraitChange:previousCollection];
-      };
-      [self registerForTraitChanges:traits withHandler:handler];
-      if (IsNTPBackgroundCustomizationEnabled()) {
-        NSArray<UITrait>* colorTraits =
-            TraitCollectionSetForTraits(@[ NewTabPageTrait.class ]);
-        [self registerForTraitChanges:colorTraits
-                           withAction:@selector(applyBackgroundColors)];
-      }
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+      UITraitPreferredContentSizeCategory.class, UITraitUserInterfaceStyle.class
+    ]);
+    __weak __typeof(self) weakSelf = self;
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf updateUIOnTraitChange:previousCollection];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
+    NSMutableArray<UITrait>* buttonTraits =
+        [@[ UITraitUserInterfaceStyle.class ] mutableCopy];
+    if (IsNTPBackgroundCustomizationEnabled()) {
+      NSArray<UITrait>* customizationTraits =
+          @[ NewTabPageTrait.class, NewTabPageImageBackgroundTrait.class ];
+      [buttonTraits addObjectsFromArray:customizationTraits];
+      [self registerForTraitChanges:customizationTraits
+                         withAction:@selector(applyBackgroundTheme)];
     }
+    [self registerForTraitChanges:buttonTraits
+                       withAction:@selector
+                       (updateButtonsForCurrentTraitCollection)];
   }
   return self;
 }
@@ -400,7 +371,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
     return;
   }
   _placeholderText = placeholderText;
-  self.omnibox.textField.placeholder = placeholderText;
+  [self.omnibox.textInput setDefaultPlaceholderText:placeholderText];
   self.searchHintLabel.text = placeholderText;
 }
 
@@ -417,18 +388,18 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   // TODO(crbug.com/40615993): See if it is possible to share some
   // initialization code with the real Omnibox.
   UIColor* color = [UIColor colorNamed:kTextfieldPlaceholderColor];
-  OmniboxContainerView* omnibox =
-      [[OmniboxContainerView alloc] initWithFrame:CGRectZero
-                                        textColor:color
-                                    textFieldTint:color
-                                         iconTint:color
-                                    isLensOverlay:NO];
-  omnibox.textField.placeholder = self.placeholderText;
-  [omnibox.textField setText:@""];
+  OmniboxContainerView* omnibox = [[OmniboxContainerView alloc]
+            initWithFrame:CGRectZero
+                textColor:color
+            textInputTint:color
+                 iconTint:color
+      presentationContext:OmniboxPresentationContext::kNTPHeader];
+  [omnibox.textInput setDefaultPlaceholderText:self.placeholderText];
+  [omnibox.textInput setText:@""];
   omnibox.translatesAutoresizingMaskIntoConstraints = NO;
   [searchField addSubview:omnibox];
   AddSameConstraints(omnibox, self.fakeLocationBar);
-  omnibox.textField.userInteractionEnabled = NO;
+  omnibox.textInput.view.userInteractionEnabled = NO;
   omnibox.hidden = YES;
   self.omnibox = omnibox;
 
@@ -548,17 +519,33 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   _logoView.image = logo;
 }
 
-- (void)updateButtonsForUserInterfaceStyle:(UIUserInterfaceStyle)style {
+// Updates button styling for the current trait collection.
+- (void)updateButtonsForCurrentTraitCollection {
   // Variations containing MIA entry point force disable colors in the icons.
-  const BOOL forceDisableColors = self.shouldShowMIAEntrypoint;
-  const BOOL darkUIStyle = style == UIUserInterfaceStyleDark;
-  const BOOL useColorIcon = !darkUIStyle && !forceDisableColors;
+  const BOOL aimInQuickActions = GetNTPMIAEntrypointVariation() ==
+                                 NTPMIAEntrypointVariation::kAIMInQuickAction;
+  const BOOL forceDisableColors =
+      self.shouldShowMIAEntrypoint || aimInQuickActions;
+  const BOOL darkUIStyle =
+      self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+  const BOOL ntpHasCustomBackground =
+      IsNTPBackgroundCustomizationEnabled() &&
+      ([self.traitCollection boolForNewTabPageImageBackgroundTrait] ||
+       [self.traitCollection objectForNewTabPageTrait]);
+  const BOOL useColorIcon =
+      !darkUIStyle && !forceDisableColors && !ntpHasCustomBackground;
 
   content_suggestions::ConfigureVoiceSearchButton(self.voiceSearchButton,
                                                   useColorIcon);
   if (self.lensButton) {
+    // Only color the badge if there's no image background.
+    UIColor* newBadgeColor =
+        [self.traitCollection boolForNewTabPageImageBackgroundTrait]
+            ? nil
+            : [self.traitCollection objectForNewTabPageTrait].tintColor;
     content_suggestions::ConfigureLensButtonAppearance(
-        self.lensButton, _useNewBadgeForLensButton, useColorIcon);
+        self.lensButton, _useNewBadgeForLensButton, useColorIcon,
+        newBadgeColor);
     if (_useNewBadgeForLensButton) {
       content_suggestions::ConfigureLensButtonWithNewBadgeAlpha(
           self.lensButton, 1 - _lastAnimationPercent);
@@ -635,7 +622,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   self.backgroundColor =
       [HeaderBackgroundColor(self) colorWithAlphaComponent:percent];
 
-  [self setFakeboxBackgroundWithProgress:percent];
+  [self setFakeboxColorsWithProgress:percent];
 
   // Offset the hint label constraints with half of the change in width
   // from the original scale, since constraints are calculated before
@@ -807,9 +794,38 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
     [_customizationMenuButton removeFromSuperview];
   }
 
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    UIButtonConfiguration* configuration =
+        [UIButtonConfiguration plainButtonConfiguration];
+
+    UIImage* icon = DefaultSymbolTemplateWithPointSize(
+        kPencilSymbol,
+        ntp_home::kCustomizationMenuIconSizeWhenSignInButtonHasNoAvatar);
+    configuration.image = icon;
+    configuration.background.cornerRadius =
+        ntp_home::kCustomizationMenuButtonCornerRadius;
+    customizationMenuButton.configuration = configuration;
+
+    UIColor* unthemedTintColor = [UIColor colorNamed:kBlue600Color];
+    customizationMenuButton.configurationUpdateHandler =
+        CreateThemedButtonConfigurationUpdateHandler(
+            unthemedTintColor, ^UIColor*(NewTabPageColorPalette* palette) {
+              if (palette) {
+                return palette.headerButtonColor;
+              }
+
+              return [UIColor colorWithDynamicProvider:^UIColor*(
+                                  UITraitCollection* traits) {
+                return traits.userInterfaceStyle == UIUserInterfaceStyleDark
+                           ? [UIColor
+                                 colorNamed:kTabGroupFaviconBackgroundColor]
+                           : [[UIColor colorNamed:kSolidWhiteColor]
+                                 colorWithAlphaComponent:0.75];
+              }];
+            });
+  }
+
   customizationMenuButton.translatesAutoresizingMaskIntoConstraints = NO;
-  customizationMenuButton.layer.cornerRadius =
-      ntp_home::kCustomizationMenuButtonCornerRadius;
   customizationMenuButton.pointerInteractionEnabled = YES;
   customizationMenuButton.clipsToBounds = YES;
 
@@ -845,7 +861,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   _customizationNewFeatureBadge = newBadgeView;
 
   if (IsNTPBackgroundCustomizationEnabled()) {
-    [self applyBackgroundColors];
+    [self applyBackgroundTheme];
   }
 }
 
@@ -884,30 +900,35 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   _isAIMAllowed = allowed;
 }
 
-#pragma mark - UITraitEnvironment
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateUIOnTraitChange:previousTraitCollection];
-}
-
-#endif
-
 #pragma mark - Property accessors
 
 - (UIView*)fakeLocationBar {
   if (!_fakeLocationBar) {
-    _fakeLocationBar =
-        [[GradientView alloc] initWithTopColor:FakeboxTopColor()
-                                   bottomColor:FakeboxBottomColor()];
+    _fakeLocationBar = [[UIView alloc] init];
     _fakeLocationBar.userInteractionEnabled = NO;
     _fakeLocationBar.clipsToBounds = YES;
     _fakeLocationBar.translatesAutoresizingMaskIntoConstraints = NO;
+
+    _fakeLocationBarGradientView =
+        [[GradientView alloc] initWithTopColor:FakeboxTopColor()
+                                   bottomColor:FakeboxBottomColor()];
+    _fakeLocationBarGradientView.userInteractionEnabled = NO;
+    _fakeLocationBarGradientView.translatesAutoresizingMaskIntoConstraints = NO;
+    [_fakeLocationBar addSubview:_fakeLocationBarGradientView];
+    AddSameConstraints(_fakeLocationBar, _fakeLocationBarGradientView);
+
+    if (IsNTPBackgroundCustomizationEnabled()) {
+      UIVisualEffect* blurEffect =
+          [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterial];
+      _fakeLocationBarBlurEffectView =
+          [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+      _fakeLocationBarBlurEffectView.userInteractionEnabled = NO;
+      _fakeLocationBarBlurEffectView.translatesAutoresizingMaskIntoConstraints =
+          NO;
+      [_fakeLocationBar addSubview:_fakeLocationBarBlurEffectView];
+      AddSameConstraints(_fakeLocationBar, _fakeLocationBarBlurEffectView);
+    }
+
     _fakeLocationBarHighlightView = [[UIView alloc] init];
     _fakeLocationBarHighlightView.userInteractionEnabled = NO;
     _fakeLocationBarHighlightView.backgroundColor = UIColor.clearColor;
@@ -915,6 +936,14 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
         NO;
     [_fakeLocationBar addSubview:_fakeLocationBarHighlightView];
     AddSameConstraints(_fakeLocationBar, _fakeLocationBarHighlightView);
+
+    // Make sure the correct background is visible.
+    if (IsNTPBackgroundCustomizationEnabled()) {
+      [self applyBackgroundTheme];
+    } else {
+      _fakeLocationBarGradientView.hidden = NO;
+      _fakeLocationBarBlurEffectView.hidden = YES;
+    }
   }
   return _fakeLocationBar;
 }
@@ -948,32 +977,35 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
 #pragma mark - Private
 
-// Sets the background using the current color palette, or defaults if none is
-// set.
-- (void)applyBackgroundColors {
-  _colorPalette = [self.traitCollection objectForTrait:NewTabPageTrait.class];
+// Sets the background based on the current NTP background, current color
+// palette, or defaults if neither are set.
+- (void)applyBackgroundTheme {
+  // Fakebox coloring looks at image/color/default to determine correct colors.
+  [self setFakeboxColorsWithProgress:_lastAnimationPercent];
 
-  if (_colorPalette) {
-    [_fakeLocationBar setStartColor:_colorPalette.omniboxColor
-                           endColor:_colorPalette.omniboxColor];
-
-    _customizationMenuButton.backgroundColor = _colorPalette.secondaryColor;
-    _customizationMenuButton.tintColor = _colorPalette.tintColor;
-  } else {
-    [_fakeLocationBar setStartColor:FakeboxTopColor()
-                           endColor:FakeboxBottomColor()];
-
-    UIColor* backgroundColor =
-        IsSignInButtonNoAvatarEnabled()
-            ? [[UIColor colorNamed:kSolidWhiteColor]
-                  colorWithAlphaComponent:0.75]
-            : [[UIColor colorNamed:@"fake_omnibox_solid_background_color"]
-                  colorWithAlphaComponent:0.8];
-    _customizationMenuButton.backgroundColor = backgroundColor;
-    _customizationMenuButton.tintColor = [UIColor
-        colorNamed:(IsSignInButtonNoAvatarEnabled() ? kBlue600Color
-                                                    : kTextSecondaryColor)];
+  BOOL hasBlurredBackground =
+      [self.traitCollection boolForNewTabPageImageBackgroundTrait];
+  if (hasBlurredBackground) {
+    _fakeLocationBarGradientView.hidden = YES;
+    _fakeLocationBarBlurEffectView.hidden = NO;
+    _miaAnimationView.hidden = YES;
+    return;
   }
+
+  _fakeLocationBarGradientView.hidden = NO;
+  _fakeLocationBarBlurEffectView.hidden = YES;
+
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForNewTabPageTrait];
+
+  if (colorPalette) {
+    _miaAnimationView.hidden = YES;
+    return;
+  }
+
+  _miaAnimationView.hidden = NO;
+  _miaAnimationView.alpha =
+      MIAAnimationOpacityForScrollProgress(_lastAnimationPercent);
 }
 
 // Empties the fakebox buttons stack.
@@ -1030,8 +1062,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
     }
   }
 
-  [self updateButtonsForUserInterfaceStyle:self.traitCollection
-                                               .userInterfaceStyle];
+  [self updateButtonsForCurrentTraitCollection];
 
   [self addActionsToFakeboxButtons];
   [self updateHintLabelTrailingConstraint];
@@ -1147,26 +1178,46 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
   return offset;
 }
 
-// Sets the fakebox's background gradient colors, based on the progress towards
-// being pinned at the top.
-- (void)setFakeboxBackgroundWithProgress:(CGFloat)progress {
+// Sets the fakebox's colors, based on the current customization settings and
+// the progress towards being pinned at the top.
+- (void)setFakeboxColorsWithProgress:(CGFloat)progress {
   UIColor* pinnedColor = [UIColor colorNamed:kTextfieldBackgroundColor];
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForNewTabPageTrait];
 
   // Use a quadratic curve interpolation.
   progress = progress * progress;
-  [_fakeLocationBar
-      setStartColor:BlendColors(_colorPalette ? _colorPalette.omniboxColor
-                                              : FakeboxTopColor(),
+  [_fakeLocationBarGradientView
+      setStartColor:BlendColors(colorPalette ? colorPalette.omniboxColor
+                                             : FakeboxTopColor(),
                                 pinnedColor, progress)
-           endColor:BlendColors(_colorPalette ? _colorPalette.omniboxColor
-                                              : FakeboxBottomColor(),
+           endColor:BlendColors(colorPalette ? colorPalette.omniboxColor
+                                             : FakeboxBottomColor(),
                                 pinnedColor, progress)];
+
+  UIColor* defaultTintColor =
+      content_suggestions::DefaultIconTintColorWithAIMAllowed(_isAIMAllowed);
+  UIColor* defaultDividerColor = [UIColor colorNamed:kGrey600Color];
+  UIColor* tintColor = colorPalette ? BlendColors(colorPalette.tintColor,
+                                                  defaultTintColor, progress)
+                                    : defaultTintColor;
+  UIColor* dividerColor =
+      colorPalette ? BlendColors(colorPalette.omniboxIconDividerColor,
+                                 defaultDividerColor, progress)
+                   : defaultDividerColor;
+  _miaButton.tintColor = tintColor;
+  _voiceSearchButton.tintColor = tintColor;
+  _lensButton.tintColor = tintColor;
+  _voiceAndLensDivider.backgroundColor = dividerColor;
+  _miaAndVoiceDivider.backgroundColor = dividerColor;
 }
 
 // Creates a thin grey divider that acts as a visual separator.
 - (UIView*)createDivider {
   UIView* divider = [[UIView alloc] init];
-  divider.backgroundColor = [UIColor colorNamed:kGrey600Color];
+  if (!IsNTPBackgroundCustomizationEnabled()) {
+    divider.backgroundColor = [UIColor colorNamed:kGrey600Color];
+  }
   divider.translatesAutoresizingMaskIntoConstraints = NO;
   CGFloat dividerWidth = 1.0 / [[UIScreen mainScreen] scale];
 
@@ -1215,7 +1266,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
     return kEndButtonMIAEnlargedFakebox;
   }
   // If normal sized fakebox and new bade is showing, reduce trailing space.
-  if (_useNewBadgeForLensButton && !ShouldEnlargeLogoAndFakebox()) {
+  if (_useNewBadgeForLensButton && !ShouldEnlargeNTPFakeboxForMIA()) {
     return kEndButtonNormalSizeFakeboxWithBadgeTrailingSpace;
   }
   // Common trailing space.
@@ -1234,7 +1285,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
     // The fakebox background can be a blended color, which will not
     // automatically update when dark/light mode is changed. It needs to be
     // manually updated here.
-    [self setFakeboxBackgroundWithProgress:_lastAnimationPercent];
+    [self setFakeboxColorsWithProgress:_lastAnimationPercent];
 
     if (_accountDiscParticleBadgeImageView) {
       _accountDiscParticleBadgeImageView.backgroundColor =
@@ -1287,7 +1338,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
       self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
           ? kMIACircleAnimationDarkMode
           : kMIACircleAnimationLightMode;
-  config.loopAnimationCount = kLottieInfiniteLoopFlag;
+  config.shouldLoop = YES;
   return ios::provider::GenerateLottieAnimation(config);
 }
 
@@ -1302,6 +1353,10 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
   _miaAnimationView = [self createMIAAnimationView];
   _miaAnimationView.userInteractionEnabled = NO;
+  // Hide the view when there is a color palette or image background.
+  _miaAnimationView.hidden =
+      [self.traitCollection objectForNewTabPageTrait] != nil ||
+      [self.traitCollection boolForNewTabPageImageBackgroundTrait];
   _miaAnimationView.alpha =
       MIAAnimationOpacityForScrollProgress(_lastAnimationPercent);
   [_miaAnimation play];
@@ -1337,7 +1392,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 #pragma mark - helpers
 
 - (CGFloat)fakeboxHorizontalMargin {
-  if (IsSplitToolbarMode(self) && ShouldEnlargeLogoAndFakebox() &&
+  if (IsSplitToolbarMode(self) && ShouldEnlargeNTPFakeboxForMIA() &&
       !ShouldEnlargeNTPFakeboxForMIA()) {
     return kLargeFakeboxHorizontalMargin;
   }

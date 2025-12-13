@@ -127,10 +127,9 @@ TEST_F(BorealisAppUninstallerTest, BorealisAppUninstallsBorealis) {
               Call(BorealisAppUninstaller::UninstallResult::kSuccess));
   BorealisAppUninstaller uninstaller = BorealisAppUninstaller(profile_.get());
   EXPECT_CALL(*mock_installer_, Uninstall(testing::_))
-      .WillOnce(testing::Invoke(
-          [](base::OnceCallback<void(BorealisUninstallResult)> callback) {
-            std::move(callback).Run(BorealisUninstallResult::kSuccess);
-          }));
+      .WillOnce([](base::OnceCallback<void(BorealisUninstallResult)> callback) {
+        std::move(callback).Run(BorealisUninstallResult::kSuccess);
+      });
   uninstaller.Uninstall(kInstallerAppId, callback_check.BindOnce());
 }
 
@@ -140,10 +139,9 @@ TEST_F(BorealisAppUninstallerTest, BorealisMainAppUninstallsBorealis) {
               Call(BorealisAppUninstaller::UninstallResult::kSuccess));
   BorealisAppUninstaller uninstaller = BorealisAppUninstaller(profile_.get());
   EXPECT_CALL(*mock_installer_, Uninstall(testing::_))
-      .WillOnce(testing::Invoke(
-          [](base::OnceCallback<void(BorealisUninstallResult)> callback) {
-            std::move(callback).Run(BorealisUninstallResult::kSuccess);
-          }));
+      .WillOnce([](base::OnceCallback<void(BorealisUninstallResult)> callback) {
+        std::move(callback).Run(BorealisUninstallResult::kSuccess);
+      });
   uninstaller.Uninstall(kClientAppId, callback_check.BindOnce());
 }
 
@@ -159,13 +157,11 @@ TEST_F(BorealisAppUninstallerTest, BorealisGameUninstalls) {
   EXPECT_CALL(
       *mock_launcher_,
       Launch(steam_id, v, BorealisLaunchSource::kAppUninstaller, testing::_))
-      .WillOnce(testing::Invoke(
-          [&](std::string app_id, const std::vector<std::string>& args,
-              BorealisLaunchSource source,
-              BorealisAppLauncher::OnLaunchedCallback callback) {
-            std::move(callback).Run(
-                BorealisAppLauncher::LaunchResult::kSuccess);
-          }));
+      .WillOnce([&](std::string app_id, const std::vector<std::string>& args,
+                    BorealisLaunchSource source,
+                    BorealisAppLauncher::OnLaunchedCallback callback) {
+        std::move(callback).Run(BorealisAppLauncher::LaunchResult::kSuccess);
+      });
   uninstaller.Uninstall(game_id, callback_check.BindOnce());
 }
 

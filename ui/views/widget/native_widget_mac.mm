@@ -39,9 +39,10 @@
 #include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/events/gestures/gesture_recognizer_impl_mac.h"
 #include "ui/events/gestures/gesture_types.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/font_list.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_mac.h"
 #import "ui/views/cocoa/drag_drop_client_mac.h"
@@ -128,7 +129,7 @@ class NativeWidgetMac::ZoomFocusMonitor : public FocusChangeListener {
     if (focused_now->GetClassName() == "WebView") {
       return;
     }
-    NSRect rect = NSRectFromCGRect(focused_now->GetBoundsInScreen().ToCGRect());
+    NSRect rect = focused_now->GetBoundsInScreen().ToCGRect();
     UAZoomChangeFocus(&rect, nullptr, kUAZoomFocusTypeOther);
   }
 };
@@ -394,8 +395,7 @@ void NativeWidgetMac::ReparentNativeViewImpl(gfx::NativeView new_parent) {
   }
 }
 
-std::unique_ptr<NonClientFrameView>
-NativeWidgetMac::CreateNonClientFrameView() {
+std::unique_ptr<FrameView> NativeWidgetMac::CreateFrameView() {
   return GetWidget() ? std::make_unique<NativeFrameViewMac>(GetWidget(),
                                                             /*client=*/nullptr)
                      : nullptr;
@@ -574,11 +574,19 @@ void NativeWidgetMac::InitModalType(ui::mojom::ModalType modal_type) {
   // Everything happens upon show.
 }
 
-void NativeWidgetMac::OnWidgetThemeChanged(
-    ui::ColorProviderKey::ColorMode color_mode,
-    std::optional<SkColor> background_color) {
+void NativeWidgetMac::SetBackgroundColor(SkColor background_color) {
   if (ns_window_host_) {
-    ns_window_host_->SetColorMode(color_mode);
+    // The NSAppearance of a NSWindow affects traffic light contrast. The
+    // NSAppearance is determined by the color mode set on the window host. In
+    // macOS 26, if the color mode is light but the window has a dark background
+    // color, traffic lights in inactive windows lose contrast and become
+    // invisible. Therefore, if an explicit `background_color` is available,
+    // override the color mode to match that background's luminance.
+    ui::ColorProviderKey::ColorMode frame_color_mode =
+        color_utils::IsDark(background_color)
+            ? ui::ColorProviderKey::ColorMode::kDark
+            : ui::ColorProviderKey::ColorMode::kLight;
+    ns_window_host_->SetColorMode(frame_color_mode);
   }
 }
 
@@ -1195,6 +1203,7 @@ void NativeWidgetMac::OnFocusManagerDestroying(FocusManager* focus_manager) {
   // parent's focus manager. However, this is not happening for unknown reasons.
   CHECK_EQ(focus_manager, focus_manager_);
   focus_manager->RemoveFocusChangeListener(this);
+  focus_manager_ = nullptr;
 }
 
 ui::EventDispatchDetails NativeWidgetMac::DispatchKeyEventPostIME(
@@ -1221,7 +1230,7 @@ void NativeWidgetMac::OnWidgetDestroyed(Widget* widget) {
 // Widget:
 
 // static
-void Widget::CloseAllSecondaryWidgets() {
+void Widget::CloseAllWidgets() {
   NSArray* starting_windows = [NSApp windows];  // Creates an autoreleased copy.
   for (NSWindow* window in starting_windows) {
     // Ignore any windows that couldn't have been created by NativeWidgetMac or
@@ -1242,9 +1251,15 @@ void Widget::CloseAllSecondaryWidgets() {
     crash_reporter::ScopedCrashKeyString scopedWindowKey(&window_info_key,
                                                          value);
 
-    Widget* widget = GetWidgetForNativeWindow(gfx::NativeWindow(window));
-    if (widget && widget->is_secondary_widget()) {
-      [window close];
+    // It is necessary to call `GetNativeWidgetForNativeWindow()` below as the
+    // views::Widget may be destroyed independently from its NativeWidget (see
+    // CLIENT_OWNS_WIDGET), and in this case `GetWidgetForNativeWindow()` will
+    // return null.
+    if (internal::NativeWidgetPrivate* native_widget =
+            internal::NativeWidgetPrivate::GetNativeWidgetForNativeWindow(
+                gfx::NativeWindow(window))) {
+      // `CloseNow()` will destroy both in-process and remote NSWindows.
+      native_widget->CloseNow();
     }
   }
 }

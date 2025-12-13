@@ -15,8 +15,10 @@
 #import "components/enterprise/browser/reporting/common_pref_names.h"
 #import "components/enterprise/browser/reporting/report_request.h"
 #import "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/policy/model/reporting/reporting_delegate_factory_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -78,7 +80,8 @@ class MockReportUploader : public ReportUploader {
                     ReportCallback));
 };
 
-class ReportSchedulerIOSTest : public PlatformTest {
+class ReportSchedulerIOSTest : public PlatformTest,
+                               public testing::WithParamInterface<bool> {
  public:
   ReportSchedulerIOSTest() = default;
   ReportSchedulerIOSTest(const ReportSchedulerIOSTest&) = delete;
@@ -88,12 +91,8 @@ class ReportSchedulerIOSTest : public PlatformTest {
   void SetUp() override {
     client_ptr_ = std::make_unique<policy::MockCloudPolicyClient>();
     client_ = client_ptr_.get();
-    generator_ptr_ =
-        std::make_unique<MockReportGenerator>(&report_delegate_factory_);
-    generator_ = generator_ptr_.get();
     uploader_ptr_ = std::make_unique<MockReportUploader>();
     uploader_ = uploader_ptr_.get();
-    Init(true, kDMToken, kClientId);
   }
 
   void Init(bool policy_enabled,
@@ -104,41 +103,7 @@ class ReportSchedulerIOSTest : public PlatformTest {
     storage_.SetClientId(client_id);
   }
 
-  void CreateScheduler() {
-    ReportScheduler::CreateParams params;
-    params.client = client_.get();
-    params.delegate = report_delegate_factory_.GetReportSchedulerDelegate();
-    params.report_generator = std::move(generator_ptr_);
-    scheduler_ = std::make_unique<ReportScheduler>(std::move(params));
-    scheduler_->QueueReportUploaderForTesting(std::move(uploader_ptr_));
-  }
-
-  void SetLastUploadInHour(base::TimeDelta gap) {
-    previous_set_last_upload_timestamp_ = base::Time::Now() - gap;
-    local_state()->SetTime(kLastUploadTimestamp,
-                           previous_set_last_upload_timestamp_);
-  }
-
-  void SetReportFrequency(base::TimeDelta frequency) {
-    local_state()->SetTimeDelta(kCloudReportingUploadFrequency, frequency);
-  }
-
-  void ToggleCloudReport(bool enabled) {
-    local_state()->SetBoolean(kCloudReportingEnabled, enabled);
-  }
-
-  // If lastUploadTimestamp is updated recently, it should be updated as Now().
-  // Otherwise, it should be same as previous set timestamp.
-  void ExpectLastUploadTimestampUpdated(bool is_updated) {
-    auto current_last_upload_timestamp =
-        local_state()->GetTime(kLastUploadTimestamp);
-    if (is_updated) {
-      EXPECT_EQ(base::Time::Now(), current_last_upload_timestamp);
-    } else {
-      EXPECT_EQ(previous_set_last_upload_timestamp_,
-                current_last_upload_timestamp);
-    }
-  }
+  virtual void ToggleCloudReport(bool enabled) = 0;
 
   ReportRequestQueue CreateRequests(int number) {
     ReportRequestQueue requests;
@@ -158,49 +123,97 @@ class ReportSchedulerIOSTest : public PlatformTest {
             Invoke(client_.get(), &policy::MockCloudPolicyClient::SetDMToken)));
   }
 
-  PrefService* local_state() {
-    return GetApplicationContext()->GetLocalState();
-  }
-
   base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 
+  std::unique_ptr<TestProfileIOS> profile_;
+
   ReportingDelegateFactoryIOS report_delegate_factory_;
   std::unique_ptr<ReportScheduler> scheduler_;
-  raw_ptr<policy::MockCloudPolicyClient> client_;
-  raw_ptr<MockReportGenerator> generator_;
-  raw_ptr<MockReportUploader> uploader_;
+  std::unique_ptr<policy::MockCloudPolicyClient> client_ptr_;
+  raw_ptr<policy::MockCloudPolicyClient, DanglingUntriaged> client_;
+  std::unique_ptr<MockReportUploader> uploader_ptr_;
+  raw_ptr<MockReportUploader, DanglingUntriaged> uploader_;
   policy::FakeBrowserDMTokenStorage storage_;
   base::Time previous_set_last_upload_timestamp_;
   base::HistogramTester histogram_tester_;
-
- private:
-  std::unique_ptr<policy::MockCloudPolicyClient> client_ptr_;
-  std::unique_ptr<MockReportGenerator> generator_ptr_;
-  std::unique_ptr<MockReportUploader> uploader_ptr_;
 };
 
-TEST_F(ReportSchedulerIOSTest, NoReportWithoutPolicy) {
+class BrowserReportSchedulerIOSTest : public ReportSchedulerIOSTest {
+ public:
+  void SetUp() override {
+    ReportSchedulerIOSTest::SetUp();
+    generator_ptr_ =
+        std::make_unique<MockReportGenerator>(&report_delegate_factory_);
+    generator_ = generator_ptr_.get();
+    Init(true, kDMToken, kClientId);
+  }
+
+  void CreateScheduler() {
+    ReportScheduler::CreateParams params;
+    params.client = client_.get();
+    params.delegate = report_delegate_factory_.GetReportSchedulerDelegate();
+    params.report_generator = std::move(generator_ptr_);
+    scheduler_ = std::make_unique<ReportScheduler>(std::move(params));
+    scheduler_->QueueReportUploaderForTesting(std::move(uploader_ptr_));
+  }
+
+  // If lastUploadTimestamp is updated recently, it should be updated as Now().
+  // Otherwise, it should be same as previous set timestamp.
+  void ExpectLastUploadTimestampUpdated(bool is_updated) {
+    auto current_last_upload_timestamp =
+        local_state()->GetTime(kLastUploadTimestamp);
+    if (is_updated) {
+      EXPECT_EQ(base::Time::Now(), current_last_upload_timestamp);
+    } else {
+      EXPECT_EQ(previous_set_last_upload_timestamp_,
+                current_last_upload_timestamp);
+    }
+  }
+
+  void SetLastUploadInHour(base::TimeDelta gap) {
+    previous_set_last_upload_timestamp_ = base::Time::Now() - gap;
+    local_state()->SetTime(kLastUploadTimestamp,
+                           previous_set_last_upload_timestamp_);
+  }
+
+  void SetReportFrequency(base::TimeDelta frequency) {
+    local_state()->SetTimeDelta(kCloudReportingUploadFrequency, frequency);
+  }
+
+  void ToggleCloudReport(bool enabled) override {
+    local_state()->SetBoolean(kCloudReportingEnabled, enabled);
+  }
+
+  PrefService* local_state() {
+    return GetApplicationContext()->GetLocalState();
+  }
+
+  std::unique_ptr<MockReportGenerator> generator_ptr_;
+  raw_ptr<MockReportGenerator> generator_;
+};
+
+TEST_F(BrowserReportSchedulerIOSTest, NoReportWithoutPolicy) {
   Init(false, kDMToken, kClientId);
   CreateScheduler();
   EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
 }
 
-TEST_F(ReportSchedulerIOSTest, NoReportWithoutDMToken) {
+TEST_F(BrowserReportSchedulerIOSTest, NoReportWithoutDMToken) {
   Init(true, "", kClientId);
   CreateScheduler();
   EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
 }
 
-TEST_F(ReportSchedulerIOSTest, NoReportWithoutClientId) {
+TEST_F(BrowserReportSchedulerIOSTest, NoReportWithoutClientId) {
   Init(true, kDMToken, "");
   CreateScheduler();
   EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
 }
 
-TEST_F(ReportSchedulerIOSTest, UploadReportSucceeded) {
+TEST_F(BrowserReportSchedulerIOSTest, UploadReportSucceeded) {
   EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
@@ -223,7 +236,7 @@ TEST_F(ReportSchedulerIOSTest, UploadReportSucceeded) {
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
-TEST_F(ReportSchedulerIOSTest, UploadReportTransientError) {
+TEST_F(BrowserReportSchedulerIOSTest, UploadReportTransientError) {
   EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
@@ -246,7 +259,7 @@ TEST_F(ReportSchedulerIOSTest, UploadReportTransientError) {
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
-TEST_F(ReportSchedulerIOSTest, UploadReportPersistentError) {
+TEST_F(BrowserReportSchedulerIOSTest, UploadReportPersistentError) {
   EXPECT_CALL_SetupRegistrationWithSetDMToken();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
@@ -274,7 +287,7 @@ TEST_F(ReportSchedulerIOSTest, UploadReportPersistentError) {
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
-TEST_F(ReportSchedulerIOSTest, NoReportGenerate) {
+TEST_F(BrowserReportSchedulerIOSTest, NoReportGenerate) {
   EXPECT_CALL_SetupRegistrationWithSetDMToken();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(0)));
@@ -299,7 +312,7 @@ TEST_F(ReportSchedulerIOSTest, NoReportGenerate) {
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
-TEST_F(ReportSchedulerIOSTest, TimerDelayWithLastUploadTimestamp) {
+TEST_F(BrowserReportSchedulerIOSTest, TimerDelayWithLastUploadTimestamp) {
   const base::TimeDelta gap = base::Hours(10);
   SetLastUploadInHour(gap);
   SetReportFrequency(kUploadFrequency);
@@ -325,7 +338,7 @@ TEST_F(ReportSchedulerIOSTest, TimerDelayWithLastUploadTimestamp) {
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
-TEST_F(ReportSchedulerIOSTest, TimerDelayWithoutLastUploadTimestamp) {
+TEST_F(BrowserReportSchedulerIOSTest, TimerDelayWithoutLastUploadTimestamp) {
   EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
@@ -344,7 +357,7 @@ TEST_F(ReportSchedulerIOSTest, TimerDelayWithoutLastUploadTimestamp) {
   ::testing::Mock::VerifyAndClearExpectations(client_);
 }
 
-TEST_F(ReportSchedulerIOSTest, TimerDelayUpdate) {
+TEST_F(BrowserReportSchedulerIOSTest, TimerDelayUpdate) {
   const base::TimeDelta gap = base::Hours(5);
   SetLastUploadInHour(gap);
   SetReportFrequency(kUploadFrequency);
@@ -376,7 +389,7 @@ TEST_F(ReportSchedulerIOSTest, TimerDelayUpdate) {
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
-TEST_F(ReportSchedulerIOSTest, IgnoreFrequencyWithoutReportEnabled) {
+TEST_F(BrowserReportSchedulerIOSTest, IgnoreFrequencyWithoutReportEnabled) {
   Init(false, kDMToken, kClientId);
   CreateScheduler();
   EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
@@ -396,7 +409,7 @@ TEST_F(ReportSchedulerIOSTest, IgnoreFrequencyWithoutReportEnabled) {
   EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
 }
 
-TEST_F(ReportSchedulerIOSTest,
+TEST_F(BrowserReportSchedulerIOSTest,
        ReportingIsDisabledWhileNewReportIsScheduledButNotPosted) {
   EXPECT_CALL_SetupRegistration();
 
@@ -416,7 +429,8 @@ TEST_F(ReportSchedulerIOSTest,
   ::testing::Mock::VerifyAndClearExpectations(generator_);
 }
 
-TEST_F(ReportSchedulerIOSTest, ReportingIsDisabledWhileNewReportIsPosted) {
+TEST_F(BrowserReportSchedulerIOSTest,
+       ReportingIsDisabledWhileNewReportIsPosted) {
   EXPECT_CALL_SetupRegistration();
   EXPECT_CALL(*generator_, OnGenerate(ReportType::kFull, _))
       .WillOnce(WithArgs<1>(ScheduleGeneratorCallback(1)));
@@ -442,6 +456,97 @@ TEST_F(ReportSchedulerIOSTest, ReportingIsDisabledWhileNewReportIsPosted) {
 
   ::testing::Mock::VerifyAndClearExpectations(client_);
   ::testing::Mock::VerifyAndClearExpectations(generator_);
+}
+
+class ProfileReportSchedulerIOSTest : public ReportSchedulerIOSTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        enterprise_reporting::kCloudProfileReporting);
+    ReportSchedulerIOSTest::SetUp();
+    profile_ = TestProfileIOS::Builder().Build();
+    Init(true, kDMToken, kClientId);
+  }
+
+  void CreateScheduler(bool require_policy_fetch_with_profile_id) {
+    ReportScheduler::CreateParams params;
+    params.client = client_.get();
+    params.delegate =
+        report_delegate_factory_.GetReportSchedulerDelegate(profile_.get());
+    params.require_policy_fetch_with_profile_id =
+        require_policy_fetch_with_profile_id;
+    scheduler_ = std::make_unique<ReportScheduler>(std::move(params));
+    scheduler_->QueueReportUploaderForTesting(std::move(uploader_ptr_));
+  }
+
+  void ToggleCloudReport(bool enabled) override {
+    profile_->GetPrefs()->SetBoolean(kCloudProfileReportingEnabled, enabled);
+  }
+};
+
+// Profile reporting without require_policy_fetch_with_profile_id, schedule
+// reports right away.
+TEST_F(ProfileReportSchedulerIOSTest, NoRequirePolicyFetchWithProfileId) {
+  EXPECT_CALL_SetupRegistrationWithSetDMToken();
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _, _)).Times(0);
+
+  ToggleCloudReport(true);
+  CreateScheduler(/*require_policy_fetch_with_profile_id=*/false);
+  EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+
+  ::testing::Mock::VerifyAndClearExpectations(client_);
+}
+
+// kPoliciesEverFetchedWithProfileId starts false, schedule reports when it
+// flips to true.
+TEST_F(ProfileReportSchedulerIOSTest, RequirePolicyFetchWithProfileId) {
+  EXPECT_CALL_SetupRegistrationWithSetDMToken();
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _, _)).Times(0);
+
+  ToggleCloudReport(true);
+  CreateScheduler(/*require_policy_fetch_with_profile_id=*/true);
+  EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
+
+  // Flip kPoliciesEverFetchedWithProfileId to true, this should enable
+  // scheduling.
+  profile_->GetPrefs()->SetBoolean(kPoliciesEverFetchedWithProfileId, true);
+  EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+
+  ::testing::Mock::VerifyAndClearExpectations(client_);
+}
+
+// kPoliciesEverFetchedWithProfileId starts true, schedule reports right away.
+TEST_F(ProfileReportSchedulerIOSTest,
+       RequirePolicyFetchWithProfileIdAlreadyTrue) {
+  EXPECT_CALL_SetupRegistrationWithSetDMToken();
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _, _)).Times(0);
+
+  ToggleCloudReport(true);
+  profile_->GetPrefs()->SetBoolean(kPoliciesEverFetchedWithProfileId, true);
+  CreateScheduler(/*require_policy_fetch_with_profile_id=*/true);
+  EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+
+  ::testing::Mock::VerifyAndClearExpectations(client_);
+}
+
+// kPoliciesEverFetchedWithProfileId starts true, but the policy starts false.
+// Schedule reports when the policy flips to ture.
+TEST_F(ProfileReportSchedulerIOSTest,
+       RequirePolicyFetchWithProfileIdPolicyChanges) {
+  EXPECT_CALL_SetupRegistrationWithSetDMToken();
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _, _)).Times(0);
+
+  ToggleCloudReport(false);
+  profile_->GetPrefs()->SetBoolean(kPoliciesEverFetchedWithProfileId, true);
+  CreateScheduler(/*require_policy_fetch_with_profile_id=*/true);
+  EXPECT_FALSE(scheduler_->IsNextReportScheduledForTesting());
+
+  // Flip kCloudProfileReportingEnabled to true, this should enable
+  // scheduling.
+  ToggleCloudReport(true);
+  EXPECT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+
+  ::testing::Mock::VerifyAndClearExpectations(client_);
 }
 
 }  // namespace enterprise_reporting

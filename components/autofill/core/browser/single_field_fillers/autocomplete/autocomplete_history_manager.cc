@@ -10,12 +10,14 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version_info/version_info.h"
 #include "components/autofill/core/browser/data_quality/validation.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -32,43 +34,58 @@
 
 namespace autofill {
 
-namespace {
-
-// Limit on the number of suggestions to appear in the pop-up menu under an
-// text input element in a form.
-const int kMaxAutocompleteMenuItems = 6;
-
-}  // namespace
-
 AutocompleteHistoryManager::AutocompleteHistoryManager() = default;
 
-AutocompleteHistoryManager::~AutocompleteHistoryManager() {
-  CancelPendingQuery();
-}
+AutocompleteHistoryManager::~AutocompleteHistoryManager() = default;
 
 void AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
-    const FormFieldData& field,
+    const FormData& form,
+    const FormStructure* form_structure,
+    const FormFieldData& trigger_field,
+    const AutofillField* trigger_autofill_field,
     const AutofillClient& client,
     SingleFieldFillRouter::OnSuggestionsReturnedCallback
         on_suggestions_returned) {
-  if (!field.should_autocomplete()) {
-    std::move(on_suggestions_returned).Run(field.global_id(), {});
+  // Cancel the pending query if there is one.
+  suggestion_generator_ = nullptr;
+  if (!profile_database_) {
+    std::move(on_suggestions_returned).Run(trigger_field.global_id(), {});
     return;
   }
+  suggestion_generator_ =
+      std::make_unique<AutocompleteSuggestionGenerator>(profile_database_);
 
-  CancelPendingQuery();
+  auto on_suggestions_generated = base::BindOnce(
+      [](SingleFieldFillRouter::OnSuggestionsReturnedCallback callback,
+         FieldGlobalId field_id,
+         SuggestionGenerator::ReturnedSuggestions returned_suggestions) {
+        std::move(callback).Run(field_id,
+                                std::move(returned_suggestions.second));
+      },
+      std::move(on_suggestions_returned), trigger_field.global_id());
 
-  if (!IsFieldNameMeaningfulForAutocomplete(field.name()) ||
-      !client.IsAutocompleteEnabled() ||
-      field.form_control_type() == FormControlType::kTextArea ||
-      field.form_control_type() == FormControlType::kContentEditable ||
-      IsInAutofillSuggestionsDisabledExperiment()) {
-    SendSuggestions({}, QueryHandler(field.global_id(), field.value(),
-                                     std::move(on_suggestions_returned)));
-    return;
-  }
+  auto on_suggestion_data_returned = base::BindOnce(
+      [](base::OnceCallback<void(SuggestionGenerator::ReturnedSuggestions)>
+             callback,
+         FormData form, FormFieldData field, const AutofillClient& client,
+         base::WeakPtr<AutocompleteSuggestionGenerator>
+             autocomplete_suggestion_generator,
+         std::pair<SuggestionGenerator::SuggestionDataSource,
+                   std::vector<SuggestionGenerator::SuggestionData>>
+             suggestion_data) {
+        if (autocomplete_suggestion_generator) {
+          autocomplete_suggestion_generator->GenerateSuggestions(
+              std::move(form), std::move(field), /*form_structure=*/nullptr,
+              /*trigger_autofill_field=*/nullptr, client,
+              {std::move(suggestion_data)}, std::move(callback));
+        }
+      },
+      std::move(on_suggestions_generated), form, trigger_field,
+      std::cref(client), suggestion_generator_->GetWeakPtr());
 
-  GetFormValuesForElementName(field, std::move(on_suggestions_returned));
+  suggestion_generator_->FetchSuggestionData(
+      form, trigger_field, form_structure, trigger_autofill_field, client,
+      std::move(on_suggestion_data_returned));
 }
 
 void AutocompleteHistoryManager::OnWillSubmitFormWithFields(
@@ -90,10 +107,9 @@ void AutocompleteHistoryManager::OnWillSubmitFormWithFields(
 }
 
 void AutocompleteHistoryManager::CancelPendingQuery() {
-  if (profile_database_ && pending_query_) {
-      profile_database_->CancelRequest(*pending_query_);
+  if (suggestion_generator_) {
+    suggestion_generator_->CancelPendingQuery();
   }
-  pending_query_.reset();
 }
 
 void AutocompleteHistoryManager::OnRemoveCurrentSingleFieldSuggestion(
@@ -136,9 +152,9 @@ void AutocompleteHistoryManager::Init(
         prefs::kAutocompleteLastVersionRetentionPolicy);
     if (version_info::GetMajorVersionNumberAsInt() > last_cleaned_version) {
       // Trigger the cleanup.
-      profile_database_->RemoveExpiredAutocompleteEntries(base::BindOnce(
-        &AutocompleteHistoryManager::OnAutofillCleanupReturned,
-        weak_ptr_factory_.GetWeakPtr()));
+      profile_database_->RemoveExpiredAutocompleteEntries(
+          base::BindOnce(&AutocompleteHistoryManager::OnAutofillCleanupReturned,
+                         weak_ptr_factory_.GetWeakPtr()));
     }
   }
 }
@@ -149,88 +165,6 @@ bool AutocompleteHistoryManager::IsFieldNameMeaningfulForAutocomplete(
       u"^(((field|input|mat-input)(_|-)?\\d+)|title|otp|tan)$|"
       u"(cvc|cvn|cvv|captcha)";
   return !MatchesRegex<kRegex>(name);
-}
-
-void AutocompleteHistoryManager::GetFormValuesForElementName(
-    const FormFieldData& field,
-    SingleFieldFillRouter::OnSuggestionsReturnedCallback
-        on_suggestions_returned) {
-  if (!profile_database_) {
-    std::move(on_suggestions_returned).Run(field.global_id(), {});
-    return;
-  }
-
-  pending_query_ = profile_database_->GetFormValuesForElementName(
-      field.name(), field.value(), kMaxAutocompleteMenuItems,
-      base::BindOnce(&AutocompleteHistoryManager::OnAutofillValuesReturned,
-                      weak_ptr_factory_.GetWeakPtr(),
-                      QueryHandler(field.global_id(), field.value(),
-                                  std::move(on_suggestions_returned))));
-}
-
-AutocompleteHistoryManager::QueryHandler::QueryHandler(
-    FieldGlobalId field_id,
-    std::u16string prefix,
-    SingleFieldFillRouter::OnSuggestionsReturnedCallback
-        on_suggestions_returned)
-    : field_id(field_id),
-      prefix(std::move(prefix)),
-      on_suggestions_returned(std::move(on_suggestions_returned)) {}
-
-AutocompleteHistoryManager::QueryHandler::QueryHandler(QueryHandler&&) =
-    default;
-
-AutocompleteHistoryManager::QueryHandler&
-AutocompleteHistoryManager::QueryHandler::operator=(QueryHandler&&) = default;
-
-AutocompleteHistoryManager::QueryHandler::~QueryHandler() = default;
-
-void AutocompleteHistoryManager::SendSuggestions(
-    const std::vector<AutocompleteEntry>& entries,
-    QueryHandler query_handler) {
-  // If there is only one suggestion that is the exact same string as
-  // what is in the input box, then don't show the suggestion.
-  bool hide_suggestions =
-      entries.size() == 1 && query_handler.prefix == entries[0].key().value();
-
-  std::vector<Suggestion> suggestions;
-  if (!hide_suggestions) {
-    for (const AutocompleteEntry& entry : entries) {
-      suggestions.emplace_back(entry.key().value(),
-                               SuggestionType::kAutocompleteEntry);
-      suggestions.back().payload = entry;
-    }
-  }
-
-  std::move(query_handler.on_suggestions_returned)
-      .Run(query_handler.field_id, suggestions);
-}
-
-void AutocompleteHistoryManager::OnAutofillValuesReturned(
-    QueryHandler query_handler,
-    WebDataServiceBase::Handle current_handle,
-    std::unique_ptr<WDTypedResult> result) {
-  if (!result) {
-    // Returning early here if `result` is null.  We've seen this happen on
-    // Linux due to NFS dismounting and causing sql failures.
-    // See http://crbug.com/68783.
-    return;
-  }
-  DCHECK_EQ(AUTOFILL_VALUE_RESULT, result->GetType());
-
-  if (!pending_query_ || *pending_query_ != current_handle) {
-    // There's no handler for this query, hence nothing to do.
-    return;
-  }
-
-  // Removing the query, as it is no longer pending.
-  pending_query_.reset();
-
-  const WDResult<std::vector<AutocompleteEntry>>* autocomplete_result =
-      static_cast<const WDResult<std::vector<AutocompleteEntry>>*>(
-          result.get());
-  std::vector<AutocompleteEntry> entries = autocomplete_result->GetValue();
-  SendSuggestions(entries, std::move(query_handler));
 }
 
 void AutocompleteHistoryManager::OnAutofillCleanupReturned(

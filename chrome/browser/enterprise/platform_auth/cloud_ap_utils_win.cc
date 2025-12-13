@@ -47,8 +47,7 @@ void AppendRegistryOrigins(HKEY root,
   for (const auto& value : multi_string_values) {
     GURL url(base::AsStringPiece16(value));
     if (url.is_valid() && url.SchemeIs(url::kHttpsScheme) && url.has_host() &&
-        url.EffectiveIntPort() ==
-            url::DefaultPortForScheme(url.scheme_piece())) {
+        url.EffectiveIntPort() == url::DefaultPortForScheme(url.scheme())) {
       DVLOG(1) << __func__ << " Discovered MS Auth LoginUrl: \"" << url << "\"";
       origins.push_back(url::Origin::Create(url));
     } else {

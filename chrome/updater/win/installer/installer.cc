@@ -18,6 +18,7 @@
 
 #include <optional>
 #include <string>
+#include <typeinfo>
 
 #include "base/check.h"
 #include "base/command_line.h"
@@ -623,9 +624,7 @@ int WMain(HMODULE module) {
                      ui::GetInstallerDisplayName(bundle_name, lang).c_str(),
                      MB_OK | MB_ICONERROR | MB_SETFOREGROUND, 0);
     }
-    if (usage_stats_enable) {
-      SendPing(result.exit_code, result.windows_error);
-    }
+    SendPing(result.exit_code, result.windows_error);
   }
   base::ThreadPoolInstance::Get()->Shutdown();
   return wmain_exit_code;

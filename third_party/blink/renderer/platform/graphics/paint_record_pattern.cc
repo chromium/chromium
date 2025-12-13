@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint_record_pattern.h"
 
+#include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -11,11 +12,11 @@
 
 namespace blink {
 
-scoped_refptr<PaintRecordPattern> PaintRecordPattern::Create(
+std::unique_ptr<PaintRecordPattern> PaintRecordPattern::Create(
     PaintRecord record,
     const gfx::RectF& record_bounds,
     RepeatMode repeat_mode) {
-  return base::AdoptRef(
+  return base::WrapUnique(
       new PaintRecordPattern(std::move(record), record_bounds, repeat_mode));
 }
 

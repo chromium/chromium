@@ -48,10 +48,11 @@ void CreateCookies(
     GURL url(url_string);
     std::unique_ptr<net::CanonicalCookie> cookie =
         net::CanonicalCookie::CreateSanitizedCookie(
-            url, name, "A=" + name, url.host(), url.path(), base::Time::Now(),
-            base::Time::Max(), base::Time::Now(), url.SchemeIsCryptographic(),
-            false, net::CookieSameSite::NO_RESTRICTION,
-            net::COOKIE_PRIORITY_DEFAULT, std::nullopt, /*status=*/nullptr);
+            url, name, "A=" + name, url.GetHost(), url.GetPath(),
+            base::Time::Now(), base::Time::Max(), base::Time::Now(),
+            url.SchemeIsCryptographic(), false,
+            net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
+            std::nullopt, /*status=*/nullptr);
     cookie_manager->SetCanonicalCookie(
         *cookie, url, net::CookieOptions::MakeAllInclusive(),
         base::BindLambdaForTesting(
@@ -156,7 +157,7 @@ class TokenManagedProfileCreationDelegateTest
     EXPECT_EQ(3u, cookies_new_profile.size());
 
     for (const auto& cookie : cookies_new_profile) {
-      EXPECT_TRUE(cookie.IsDomainMatch(url.host()));
+      EXPECT_TRUE(cookie.IsDomainMatch(url.GetHost()));
       EXPECT_TRUE(cookie.Name() == "oldgoogle0" ||
                   cookie.Name() == "validgoogle1" ||
                   cookie.Name() == "newgoogle2");

@@ -194,7 +194,9 @@ using net::test_server::RegisterDefaultHandlers;
 using testing::_;
 using testing::AnyOf;
 using testing::ElementsAre;
+using testing::HasSubstr;
 using testing::IsEmpty;
+using testing::Not;
 using testing::Optional;
 using testing::UnorderedElementsAre;
 
@@ -440,7 +442,8 @@ class BlockingNetworkDelegate : public TestNetworkDelegate {
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
       const IPEndPoint& endpoint,
-      std::optional<GURL>* preserve_fragment_on_redirect_url) override;
+      std::optional<GURL>* preserve_fragment_on_redirect_url,
+      const std::optional<net::SSLInfo>& ssl_info) override;
 
   // Resets the callbacks and |stage_blocked_for_callback_|.
   void Reset();
@@ -547,13 +550,14 @@ int BlockingNetworkDelegate::OnHeadersReceived(
     const HttpResponseHeaders* original_response_headers,
     scoped_refptr<HttpResponseHeaders>* override_response_headers,
     const IPEndPoint& endpoint,
-    std::optional<GURL>* preserve_fragment_on_redirect_url) {
+    std::optional<GURL>* preserve_fragment_on_redirect_url,
+    const std::optional<net::SSLInfo>& ssl_info) {
   // TestNetworkDelegate always completes synchronously.
   CHECK_NE(ERR_IO_PENDING,
            TestNetworkDelegate::OnHeadersReceived(
                request, base::NullCallback(), original_response_headers,
                override_response_headers, endpoint,
-               preserve_fragment_on_redirect_url));
+               preserve_fragment_on_redirect_url, ssl_info));
 
   return MaybeBlockStage(ON_HEADERS_RECEIVED, std::move(callback));
 }
@@ -2067,7 +2071,7 @@ TEST_F(URLRequestTest, DoNotSendCookies) {
     TestDelegate d;
     std::unique_ptr<URLRequest> req = CreateFirstPartyRequest(
         default_context(), test_server.GetURL("/echoheader?Cookie"), &d);
-    req->set_allow_credentials(false);
+    req->set_disallow_credentials();
     req->Start();
     d.RunUntilComplete();
 
@@ -2195,13 +2199,7 @@ TEST_F(URLRequestTest, DoNotSendCookies_ViaPolicy) {
   }
 }
 
-// TODO(crbug.com/41225288) This test is flaky on iOS.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_DoNotSaveCookies_ViaPolicy FLAKY_DoNotSaveCookies_ViaPolicy
-#else
-#define MAYBE_DoNotSaveCookies_ViaPolicy DoNotSaveCookies_ViaPolicy
-#endif
-TEST_F(URLRequestTest, MAYBE_DoNotSaveCookies_ViaPolicy) {
+TEST_F(URLRequestTest, DoNotSaveCookies_ViaPolicy) {
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 
@@ -3689,7 +3687,8 @@ class FixedDateNetworkDelegate : public TestNetworkDelegate {
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
       const IPEndPoint& endpoint,
-      std::optional<GURL>* preserve_fragment_on_redirect_url) override;
+      std::optional<GURL>* preserve_fragment_on_redirect_url,
+      const std::optional<net::SSLInfo>& ssl_info) override;
 
  private:
   std::string fixed_date_;
@@ -3701,7 +3700,8 @@ int FixedDateNetworkDelegate::OnHeadersReceived(
     const HttpResponseHeaders* original_response_headers,
     scoped_refptr<HttpResponseHeaders>* override_response_headers,
     const IPEndPoint& endpoint,
-    std::optional<GURL>* preserve_fragment_on_redirect_url) {
+    std::optional<GURL>* preserve_fragment_on_redirect_url,
+    const std::optional<net::SSLInfo>& ssl_info) {
   *override_response_headers = base::MakeRefCounted<HttpResponseHeaders>(
       original_response_headers->raw_headers());
 
@@ -3709,7 +3709,8 @@ int FixedDateNetworkDelegate::OnHeadersReceived(
 
   return TestNetworkDelegate::OnHeadersReceived(
       request, std::move(callback), original_response_headers,
-      override_response_headers, endpoint, preserve_fragment_on_redirect_url);
+      override_response_headers, endpoint, preserve_fragment_on_redirect_url,
+      ssl_info);
 }
 
 // Test that cookie expiration times are adjusted for server/client clock
@@ -4781,19 +4782,20 @@ std::unique_ptr<test_server::HttpResponse> HandleZippedRequest(
     size_t uncompressed_length,
     const test_server::HttpRequest& request) {
   GURL url = request.GetURL();
-  if (url.path_piece() != "/compressedfiles/BullRunSpeech.txt")
+  if (url.path() != "/compressedfiles/BullRunSpeech.txt") {
     return nullptr;
+  }
 
   size_t length;
-  if (url.query_piece() == kZippedContentLengthCompressed) {
+  if (url.query() == kZippedContentLengthCompressed) {
     length = compressed_content.size();
-  } else if (url.query_piece() == kZippedContentLengthUncompressed) {
+  } else if (url.query() == kZippedContentLengthUncompressed) {
     length = uncompressed_length;
-  } else if (url.query_piece() == kZippedContentLengthShort) {
+  } else if (url.query() == kZippedContentLengthShort) {
     length = compressed_content.size() / 2;
-  } else if (url.query_piece() == kZippedContentLengthMedium) {
+  } else if (url.query() == kZippedContentLengthMedium) {
     length = (compressed_content.size() + uncompressed_length) / 2;
-  } else if (url.query_piece() == kZippedContentLengthLong) {
+  } else if (url.query() == kZippedContentLengthLong) {
     length = compressed_content.size() + uncompressed_length;
   } else {
     return nullptr;
@@ -5149,13 +5151,14 @@ class AsyncLoggingNetworkDelegate : public TestNetworkDelegate {
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
       const IPEndPoint& endpoint,
-      std::optional<GURL>* preserve_fragment_on_redirect_url) override {
+      std::optional<GURL>* preserve_fragment_on_redirect_url,
+      const std::optional<net::SSLInfo>& ssl_info) override {
     // TestNetworkDelegate always completes synchronously.
     CHECK_NE(ERR_IO_PENDING,
              TestNetworkDelegate::OnHeadersReceived(
                  request, base::NullCallback(), original_response_headers,
                  override_response_headers, endpoint,
-                 preserve_fragment_on_redirect_url));
+                 preserve_fragment_on_redirect_url, ssl_info));
     return RunCallbackAsynchronously(request, std::move(callback));
   }
 
@@ -6106,7 +6109,7 @@ TEST_F(URLRequestTestHTTP, STSNotProcessedOnIP) {
   // Make sure this test fails if the test server is changed to not
   // listen on an IP by default.
   ASSERT_TRUE(https_test_server.GetURL("/").HostIsIPAddress());
-  std::string test_server_hostname = https_test_server.GetURL("/").host();
+  std::string test_server_hostname = https_test_server.GetURL("/").GetHost();
 
   TestDelegate d;
   std::unique_ptr<URLRequest> request(default_context().CreateRequest(
@@ -6133,7 +6136,7 @@ TEST_F(URLRequestTestHTTP, STSNotProcessedOnLocalhost) {
   ASSERT_TRUE(https_test_server.Start());
   // Make sure this test fails if the test server is changed to not
   // use `localhost` as the hostname for CERT_COMMON_NAME_IS_DOMAIN.
-  ASSERT_TRUE(net::IsLocalHostname(https_test_server.GetURL("/").host()));
+  ASSERT_TRUE(net::IsLocalHostname(https_test_server.GetURL("/").GetHost()));
 
   TestDelegate d;
   std::unique_ptr<URLRequest> request(default_context().CreateRequest(
@@ -6159,7 +6162,7 @@ TEST_F(URLRequestTestHTTP, STSProcessedOnLocalhostWhenFeatureDisabled) {
   ASSERT_TRUE(https_test_server.Start());
   // Make sure this test fails if the test server is changed to not
   // use `localhost` as the hostname for CERT_COMMON_NAME_IS_DOMAIN.
-  ASSERT_TRUE(net::IsLocalHostname(https_test_server.GetURL("/").host()));
+  ASSERT_TRUE(net::IsLocalHostname(https_test_server.GetURL("/").GetHost()));
 
   TestDelegate d;
   std::unique_ptr<URLRequest> request(default_context().CreateRequest(
@@ -7477,6 +7480,58 @@ TEST_F(URLRequestTestHTTP, AuthWithNetworkAnonymizationKey) {
   }
 }
 
+TEST_F(URLRequestTestHTTP, EmbeddedAuthCredentialsRedacted) {
+  ASSERT_TRUE(http_test_server()->Start());
+  const std::string_view kUsername = "jiminy";
+  // Default password for "/auth-basic".
+  const std::string_view kPassword = "secret";
+
+  RecordingNetLogObserver redacted_net_log_observer(
+      NetLogCaptureMode::kDefault);
+
+  GURL url_without_credentials = http_test_server()->GetURL("/auth-basic");
+  GURL::Replacements replacements;
+  replacements.SetUsernameStr(kUsername);
+  replacements.SetPasswordStr(kPassword);
+  GURL url = url_without_credentials.ReplaceComponents(replacements);
+
+  TestDelegate d;
+  std::unique_ptr<URLRequest> req(default_context().CreateRequest(
+      url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->Start();
+  d.RunUntilComplete();
+  EXPECT_THAT(d.request_status(), IsOk());
+  ASSERT_TRUE(req->response_headers());
+  EXPECT_EQ(200, req->response_headers()->response_code());
+
+  // Make sure the NetLogObservers are hooked up properly.
+  EXPECT_GT(redacted_net_log_observer.GetSize(), 0u);
+  EXPECT_GT(net_log_observer_.GetSize(), 0u);
+
+  // Check that only the version of the URL with credentials redacted appears
+  // was passed to the NetLogObserver with the default capture mode.
+  std::string url_with_redacted_credentials =
+      url_without_credentials.spec() + " (credentials redacted)";
+  std::string observed_redacted_json = redacted_net_log_observer.GetJson();
+  EXPECT_THAT(observed_redacted_json, Not(HasSubstr(url.spec())));
+  EXPECT_THAT(observed_redacted_json, HasSubstr(url_with_redacted_credentials));
+  // Also search individually for the username and password. While this doesn't
+  // guarantee there's no code that logs the unredacted HTTP auth credentials,
+  // either embedded in the URLs or provided in some other way, it does provide
+  // some defence against it.
+  EXPECT_THAT(observed_redacted_json, Not(HasSubstr(kUsername)));
+  EXPECT_THAT(observed_redacted_json, Not(HasSubstr(kPassword)));
+
+  // Check that the NetLogObserver set to receive sensitive information
+  // never displays the redacted URL string (though at some layers, the URL
+  // may appear without credentials, it never logs the redacted message),
+  // and the full URL appears in at least some locations.
+  std::string observed_json = net_log_observer_.GetJson();
+  EXPECT_NE(observed_json.find(url.spec()), std::string::npos);
+  EXPECT_EQ(observed_json.find(url_with_redacted_credentials),
+            std::string::npos);
+}
+
 TEST_F(URLRequestTest, ReportCookieActivity) {
   EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
   RegisterDefaultHandlers(&test_server);
@@ -7531,33 +7586,33 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
     auto entries = net_log_observer.GetEntriesWithType(
         NetLogEventType::COOKIE_INCLUSION_STATUS);
     EXPECT_EQ(5u, entries.size());
-    EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.host() +
+    EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.GetHost() +
                   R"x(","name":"not_stored_cookie","operation":"store",)x"
                   R"x("partition_key":"(none)","path":"/",)x"
                   R"x("status":"EXCLUDE_USER_PREFERENCES, )x"
                   R"x(DO_NOT_WARN, NO_EXEMPTION"})x",
               SerializeNetLogValueToJson(entries[0].params));
-    EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.host() +
+    EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.GetHost() +
                   R"x(","name":"stored_cookie","operation":"store",)x"
                   R"x("partition_key":"(none)","path":"/",)x"
                   R"x("status":"INCLUDE, DO_NOT_WARN, NO_EXEMPTION"})x",
               SerializeNetLogValueToJson(entries[1].params));
-    EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.host() +
+    EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.GetHost() +
                   R"x(","name":"path_cookie","operation":"store",)x"
                   R"x("partition_key":"(none)",)x"
                   R"x("path":"/set-cookie","status":"INCLUDE, DO_NOT_WARN, )x"
                   R"x(NO_EXEMPTION"})x",
               SerializeNetLogValueToJson(entries[2].params));
-    EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.host() +
+    EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.GetHost() +
                   R"x(","name":"partitioned_cookie","operation":"store",)x"
                   R"x("partition_key":")x" +
-                  set_cookie_test_url.scheme() + "://" +
-                  set_cookie_test_url.host() +
+                  set_cookie_test_url.GetScheme() + "://" +
+                  set_cookie_test_url.GetHost() +
                   ", same-site"
                   R"x(","path":"/","status":"INCLUDE, DO_NOT_WARN, )x"
                   R"x(NO_EXEMPTION"})x",
               SerializeNetLogValueToJson(entries[3].params));
-    EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.host() +
+    EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.GetHost() +
                   R"x(","name":"expired_cookie","operation":"expire",)x"
                   R"x("partition_key":"(none)",)x"
                   R"x("path":"/","status":"INCLUDE, DO_NOT_WARN, )x"
@@ -7597,23 +7652,23 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
     auto entries = net_log_observer.GetEntriesWithType(
         NetLogEventType::COOKIE_INCLUSION_STATUS);
     EXPECT_EQ(3u, entries.size());
-    EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.host() +
+    EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.GetHost() +
                   R"x(","name":"path_cookie","operation":"send",)x"
                   R"x("partition_key":"(none)","path":)x"
                   R"x("/set-cookie","status":"EXCLUDE_NOT_ON_PATH, )x"
                   R"x(EXCLUDE_USER_PREFERENCES, DO_NOT_WARN, NO_EXEMPTION"})x",
               SerializeNetLogValueToJson(entries[0].params));
-    EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.host() +
+    EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.GetHost() +
                   R"x(","name":"stored_cookie","operation":"send",)x"
                   R"x("partition_key":"(none)","path":"/)x"
                   R"x(","status":"EXCLUDE_USER_PREFERENCES, DO_NOT_WARN, )x"
                   R"x(NO_EXEMPTION"})x",
               SerializeNetLogValueToJson(entries[1].params));
-    EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.host() +
+    EXPECT_EQ("{\"domain\":\"" + set_cookie_test_url.GetHost() +
                   R"x(","name":"partitioned_cookie","operation":"send",)x"
                   R"x("partition_key":")x" +
-                  set_cookie_test_url.scheme() + "://" +
-                  set_cookie_test_url.host() +
+                  set_cookie_test_url.GetScheme() + "://" +
+                  set_cookie_test_url.GetHost() +
                   ", same-site"
                   R"x(","path":"/)x"
                   R"x(","status":"EXCLUDE_USER_PREFERENCES, DO_NOT_WARN, )x"
@@ -7648,8 +7703,8 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
               R"x(DO_NOT_WARN, NO_EXEMPTION"})x",
               SerializeNetLogValueToJson(entries[1].params));
     EXPECT_EQ(R"x({"operation":"send","partition_key":")x" +
-                  set_cookie_test_url.scheme() + "://" +
-                  set_cookie_test_url.host() +
+                  set_cookie_test_url.GetScheme() + "://" +
+                  set_cookie_test_url.GetHost() +
                   ", same-site"
                   R"x(","status":"EXCLUDE_USER_PREFERENCES, )x"
                   R"x(DO_NOT_WARN, NO_EXEMPTION"})x",
@@ -7685,23 +7740,24 @@ TEST_F(URLRequestTest, ReportCookieActivity) {
         NetLogEventType::COOKIE_INCLUSION_STATUS);
     EXPECT_EQ(3u, entries.size());
     EXPECT_EQ(
-        "{\"domain\":\"" + set_cookie_test_url.host() +
+        "{\"domain\":\"" + set_cookie_test_url.GetHost() +
             R"x(","name":"path_cookie","operation":"send",)x"
             R"x("partition_key":"(none)","path":"/)x"
             R"x(set-cookie","status":"EXCLUDE_NOT_ON_PATH, DO_NOT_WARN, )x"
             R"x(NO_EXEMPTION"})x",
         SerializeNetLogValueToJson(entries[0].params));
     EXPECT_EQ(
-        "{\"domain\":\"" + set_cookie_test_url.host() +
+        "{\"domain\":\"" + set_cookie_test_url.GetHost() +
             R"x(","name":"stored_cookie","operation":"send",)x"
             R"x("partition_key":"(none)",)x"
             R"x("path":"/","status":"INCLUDE, DO_NOT_WARN, NO_EXEMPTION"})x",
         SerializeNetLogValueToJson(entries[1].params));
     EXPECT_EQ(
-        "{\"domain\":\"" + set_cookie_test_url.host() +
+        "{\"domain\":\"" + set_cookie_test_url.GetHost() +
             R"x(","name":"partitioned_cookie","operation":"send",)x"
             R"x("partition_key":")x" +
-            set_cookie_test_url.scheme() + "://" + set_cookie_test_url.host() +
+            set_cookie_test_url.GetScheme() + "://" +
+            set_cookie_test_url.GetHost() +
             ", same-site"
             R"x(","path":"/","status":"INCLUDE, DO_NOT_WARN, NO_EXEMPTION"})x",
         SerializeNetLogValueToJson(entries[2].params));
@@ -8693,15 +8749,7 @@ TEST_F(URLRequestTestHTTP, DefaultUserAgent) {
             d.data_received());
 }
 
-// Check that if request overrides the User-Agent header,
-// the default is not appended.
-// TODO(crbug.com/41225288) This test is flaky on iOS.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_OverrideUserAgent FLAKY_OverrideUserAgent
-#else
-#define MAYBE_OverrideUserAgent OverrideUserAgent
-#endif
-TEST_F(URLRequestTestHTTP, MAYBE_OverrideUserAgent) {
+TEST_F(URLRequestTestHTTP, OverrideUserAgent) {
   ASSERT_TRUE(http_test_server()->Start());
 
   TestDelegate d;
@@ -9562,7 +9610,7 @@ TEST_F(HTTPSRequestTest, HSTSPreservesPosts) {
   req->Start();
   d.RunUntilComplete();
 
-  EXPECT_EQ("https", req->url().scheme());
+  EXPECT_EQ("https", req->url().GetScheme());
   EXPECT_EQ("POST", req->method());
   EXPECT_EQ(kData, d.data_received());
 
@@ -10107,7 +10155,9 @@ TEST_F(HTTPSRequestTest, NoSessionResumptionBetweenPrivacyModes) {
     TestDelegate d;
     std::unique_ptr<URLRequest> r(default_context().CreateRequest(
         url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-    r->set_allow_credentials(allow_credentials);
+    if (!allow_credentials) {
+      r->set_disallow_credentials();
+    }
 
     // Start the request and check the SSL handshake type.
     r->Start();
@@ -10299,6 +10349,8 @@ TEST_F(HTTPSSessionTest, DontResumeSessionsForInvalidCertificates) {
   }
 }
 
+#endif  // !BUILDFLAG(IS_IOS)
+
 // Interceptor to check that secure DNS has been disabled. Secure DNS should be
 // disabled for any network fetch triggered during certificate verification as
 // it could cause a deadlock.
@@ -10416,6 +10468,8 @@ class HTTPSCertNetFetchingTest : public HTTPSRequestTest {
   std::unique_ptr<URLRequestContext> context_;
   raw_ptr<CertVerifierWithUpdatableProc> updatable_cert_verifier_;
 };
+
+#if !BUILDFLAG(IS_IOS)
 
 // The test EV policy OID used for generated certs.
 static const char kEVTestCertPolicy[] = "1.3.6.1.4.1.11129.2.4.1";
@@ -11074,6 +11128,8 @@ INSTANTIATE_TEST_SUITE_P(OCSPVerify,
                          HTTPSOCSPVerifyTest,
                          testing::ValuesIn(kOCSPVerifyData));
 
+#endif  // !BUILDFLAG(IS_IOS)
+
 class HTTPSAIATest : public HTTPSCertNetFetchingTest {};
 
 TEST_F(HTTPSAIATest, AIAFetching) {
@@ -11105,6 +11161,8 @@ TEST_F(HTTPSAIATest, AIAFetching) {
   ASSERT_TRUE(r->ssl_info().unverified_cert);
   EXPECT_EQ(0u, r->ssl_info().unverified_cert->intermediate_buffers().size());
 }
+
+#if !BUILDFLAG(IS_IOS)
 
 class HTTPSHardFailTest : public HTTPSOCSPTest {
  protected:
@@ -11474,7 +11532,10 @@ TEST_F(HTTPSCRLSetTest, CRLSetRevokedBySubject) {
   std::string common_name = test_server.GetCertificate()->subject().common_name;
 
   {
-    auto crl_set = CRLSet::ForTesting(false, nullptr, "", common_name, {});
+    auto crl_set = CRLSet::ForTesting(
+        /*is_expired=*/false, /*issuer_spki=*/nullptr, /*serial_number=*/{},
+        common_name,
+        /*acceptable_spki_hashes_for_cn=*/{});
     ASSERT_TRUE(crl_set);
     UpdateCertVerifier(crl_set);
 
@@ -11501,8 +11562,9 @@ TEST_F(HTTPSCRLSetTest, CRLSetRevokedBySubject) {
       test_server.GetCertificate()->cert_buffer(), &spki_hash_value));
   std::string spki_hash(base::as_string_view(spki_hash_value));
   {
-    auto crl_set =
-        CRLSet::ForTesting(false, nullptr, "", common_name, {spki_hash});
+    auto crl_set = CRLSet::ForTesting(
+        /*is_expired=*/false, /*issuer_spki=*/nullptr, /*serial_number=*/{},
+        common_name, {spki_hash});
     ASSERT_TRUE(crl_set);
     UpdateCertVerifier(crl_set);
 
@@ -11768,15 +11830,9 @@ TEST_F(URLRequestTest, URLRequestRedirectJobCancelRequest) {
   EXPECT_EQ(0, d.received_redirect_count());
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_HeadersCallbacks DISABLED_HeadersCallbacks
-#else
-#define MAYBE_HeadersCallbacks HeadersCallbacks
-#endif
-TEST_F(URLRequestTestHTTP, MAYBE_HeadersCallbacks) {
+TEST_F(URLRequestTestHTTP, HeadersCallbacks) {
   ASSERT_TRUE(http_test_server()->Start());
   GURL url(http_test_server()->GetURL("/cachetime"));
-  TestDelegate delegate;
   HttpRequestHeaders extra_headers;
   extra_headers.SetHeader("X-Foo", "bar");
 
@@ -11784,15 +11840,25 @@ TEST_F(URLRequestTestHTTP, MAYBE_HeadersCallbacks) {
     HttpRawRequestHeaders raw_req_headers;
     scoped_refptr<const HttpResponseHeaders> raw_resp_headers;
 
+    TestDelegate delegate;
     std::unique_ptr<URLRequest> r(default_context().CreateRequest(
         url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     r->SetExtraRequestHeaders(extra_headers);
-    r->SetRequestHeadersCallback(base::BindRepeating(
-        &HttpRawRequestHeaders::Assign, base::Unretained(&raw_req_headers)));
-    r->SetResponseHeadersCallback(base::BindRepeating(
-        [](scoped_refptr<const HttpResponseHeaders>* left,
-           scoped_refptr<const HttpResponseHeaders> right) { *left = right; },
-        base::Unretained(&raw_resp_headers)));
+    r->SetRequestHeadersCallback(base::BindLambdaForTesting(
+        [&delegate, &raw_req_headers](HttpRawRequestHeaders request_headers) {
+          // This should happen before the delegate is informed the response has
+          // started.
+          EXPECT_EQ(delegate.response_started_count(), 0);
+          raw_req_headers = std::move(request_headers);
+        }));
+    r->SetResponseHeadersCallback(base::BindLambdaForTesting(
+        [&delegate, &raw_resp_headers](
+            scoped_refptr<const HttpResponseHeaders> response_headers) {
+          // This should happen before the delegate is informed the response has
+          // started.
+          EXPECT_EQ(delegate.response_started_count(), 0);
+          raw_resp_headers = response_headers;
+        }));
     r->set_isolation_info(isolation_info1_);
     r->Start();
     delegate.RunUntilComplete();
@@ -11808,6 +11874,7 @@ TEST_F(URLRequestTestHTTP, MAYBE_HeadersCallbacks) {
     EXPECT_EQ(raw_resp_headers.get(), r->response_headers());
   }
   {
+    TestDelegate delegate;
     std::unique_ptr<URLRequest> r(default_context().CreateRequest(
         url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
     r->SetExtraRequestHeaders(extra_headers);
@@ -12005,7 +12072,7 @@ TEST_F(URLRequestTest, UpgradeIfInsecureFlagSetExplicitPort80) {
   d.RunUntilRedirect();
   GURL::Replacements replacements;
   // The URL host should have not been changed.
-  EXPECT_EQ(d.redirect_info().new_url.host(), kRedirectUrl.host());
+  EXPECT_EQ(d.redirect_info().new_url.GetHost(), kRedirectUrl.GetHost());
   // The scheme should now be https, and the effective port should now be 443.
   EXPECT_TRUE(d.redirect_info().new_url.SchemeIs("https"));
   EXPECT_EQ(d.redirect_info().new_url.EffectiveIntPort(), 443);
@@ -12183,11 +12250,12 @@ std::unique_ptr<test_server::HttpResponse> HandleZeroRTTRequest(
     const test_server::HttpRequest& request) {
   DCHECK(request.ssl_info);
 
-  if (request.GetURL().path() != "/zerortt")
+  if (request.GetURL().GetPath() != "/zerortt") {
     return nullptr;
+  }
   return std::make_unique<ZeroRTTResponse>(
       request.ssl_info->early_data_received, false,
-      request.GetURL().query() == "ws=1");
+      request.GetURL().GetQuery() == "ws=1");
 }
 
 }  // namespace
@@ -12493,8 +12561,9 @@ std::unique_ptr<test_server::HttpResponse> HandleTooEarly(
     const test_server::HttpRequest& request) {
   DCHECK(request.ssl_info);
 
-  if (request.GetURL().path() != "/tooearly")
+  if (request.GetURL().GetPath() != "/tooearly") {
     return nullptr;
+  }
   if (request.ssl_info->early_data_received)
     *sent_425 = true;
   return std::make_unique<ZeroRTTResponse>(
@@ -12919,7 +12988,7 @@ TEST_F(URLRequestTest, SetIsolationInfoFromNak) {
   r->set_isolation_info_from_network_anonymization_key(
       populated_cross_site_nak);
   r->SetLoadFlags(LOAD_DISABLE_CACHE);
-  r->set_allow_credentials(false);
+  r->set_disallow_credentials();
   EXPECT_TRUE(r->is_created_from_network_anonymization_key());
   EXPECT_EQ(r->isolation_info().network_anonymization_key(),
             populated_cross_site_nak);
@@ -13130,7 +13199,7 @@ TEST_F(PartitionConnectionsByNetworkAnonymizationKey,
     r1->set_isolation_info_from_network_anonymization_key(
         network_anonymization_key1);
     r1->SetLoadFlags(LOAD_DISABLE_CACHE);
-    r1->set_allow_credentials(false);
+    r1->set_disallow_credentials();
 
     // Verify NetworkAnonymizationKey is set correctly
     EXPECT_TRUE(r1->is_created_from_network_anonymization_key());
@@ -13156,7 +13225,7 @@ TEST_F(PartitionConnectionsByNetworkAnonymizationKey,
     r2->set_isolation_info_from_network_anonymization_key(
         network_anonymization_key2);
     r2->SetLoadFlags(LOAD_DISABLE_CACHE);
-    r2->set_allow_credentials(false);
+    r2->set_disallow_credentials();
 
     // Verify NetworkAnonymizationKey is set correctly.
     EXPECT_TRUE(r2->is_created_from_network_anonymization_key());
@@ -13192,7 +13261,7 @@ TEST_F(PartitionConnectionsByNetworkAnonymizationKey,
     r1->set_isolation_info_from_network_anonymization_key(
         network_anonymization_key1);
     r1->SetLoadFlags(LOAD_DISABLE_CACHE);
-    r1->set_allow_credentials(false);
+    r1->set_disallow_credentials();
 
     // Verify NetworkAnonymizationKey is set correctly
     EXPECT_TRUE(r1->is_created_from_network_anonymization_key());
@@ -13217,7 +13286,7 @@ TEST_F(PartitionConnectionsByNetworkAnonymizationKey,
     r2->set_isolation_info_from_network_anonymization_key(
         network_anonymization_key2);
     r2->SetLoadFlags(LOAD_DISABLE_CACHE);
-    r2->set_allow_credentials(false);
+    r2->set_disallow_credentials();
 
     // Verify NetworkAnonymizationKey is set correctly.
     EXPECT_TRUE(r2->is_created_from_network_anonymization_key());
@@ -13254,7 +13323,7 @@ TEST_F(
     r1->set_isolation_info_from_network_anonymization_key(
         network_anonymization_key1);
     r1->SetLoadFlags(LOAD_DISABLE_CACHE);
-    r1->set_allow_credentials(false);
+    r1->set_disallow_credentials();
 
     // Verify NetworkAnonymizationKey is set correctly
     EXPECT_TRUE(r1->is_created_from_network_anonymization_key());
@@ -13281,7 +13350,7 @@ TEST_F(
     r2->set_isolation_info_from_network_anonymization_key(
         network_anonymization_key2);
     r2->SetLoadFlags(LOAD_DISABLE_CACHE);
-    r2->set_allow_credentials(false);
+    r2->set_disallow_credentials();
 
     // Verify NetworkAnonymizationKey is set correctly.
     EXPECT_TRUE(r2->is_created_from_network_anonymization_key());
@@ -13319,7 +13388,7 @@ TEST_F(PartitionConnectionsByNetworkAnonymizationKey,
     r1->set_isolation_info_from_network_anonymization_key(
         network_anonymization_key1);
     r1->SetLoadFlags(LOAD_DISABLE_CACHE);
-    r1->set_allow_credentials(false);
+    r1->set_disallow_credentials();
 
     // Verify NetworkAnonymizationKey is set correctly
     EXPECT_TRUE(r1->is_created_from_network_anonymization_key());
@@ -13346,7 +13415,7 @@ TEST_F(PartitionConnectionsByNetworkAnonymizationKey,
     r2->set_isolation_info_from_network_anonymization_key(
         network_anonymization_key2);
     r2->SetLoadFlags(LOAD_DISABLE_CACHE);
-    r2->set_allow_credentials(false);
+    r2->set_disallow_credentials();
 
     // Verify NetworkAnonymizationKey is set correctly.
     EXPECT_TRUE(r2->is_created_from_network_anonymization_key());
@@ -13417,7 +13486,7 @@ TEST_F(URLRequestTest, RedirectClearsPerHopLoadFlags) {
   req->FollowDeferredRedirect(/*removed_headers=*/{}, /*modified_headers=*/{});
   d.RunUntilComplete();
 
-  EXPECT_EQ(req->url().path(), "/echo");
+  EXPECT_EQ(req->url().GetPath(), "/echo");
 }
 
 TEST_F(URLRequestTest, DelegateCanSetPerHopLoadFlagsDuringRedirect) {
@@ -13449,7 +13518,7 @@ TEST_F(URLRequestTest, DelegateCanSetPerHopLoadFlagsDuringRedirect) {
   req->FollowDeferredRedirect(/*removed_headers=*/{}, /*modified_headers=*/{});
   d.RunUntilComplete();
 
-  EXPECT_EQ(req->url().path(), "/echo");
+  EXPECT_EQ(req->url().GetPath(), "/echo");
 }
 
 class StorageAccessHeaderURLRequestTest : public URLRequestTestHTTP {
@@ -13497,7 +13566,8 @@ class StorageAccessHeaderURLRequestTest : public URLRequestTestHTTP {
  private:
   std::unique_ptr<test_server::HttpResponse> HandleRetryRequest(
       const test_server::HttpRequest& request) {
-    if (!base::StartsWith(request.GetURL().path(), kStorageAccessRetryPath)) {
+    if (!base::StartsWith(request.GetURL().GetPath(),
+                          kStorageAccessRetryPath)) {
       return nullptr;
     }
     auto http_response = std::make_unique<test_server::BasicHttpResponse>();
@@ -13757,7 +13827,7 @@ TEST_F(StorageAccessHeaderURLRequestTest, RedirectPrioritizesRetryHeader) {
   req->Start();
   d.RunUntilRedirect();
 
-  EXPECT_EQ(req->url().path(), kStorageAccessRetryPath);
+  EXPECT_EQ(req->url().GetPath(), kStorageAccessRetryPath);
   req->set_storage_access_status(
       StorageAccessStatusCache(cookie_util::StorageAccessStatus::kActive));
   req->FollowDeferredRedirect(/*removed_headers=*/{}, /*modified_headers=*/{});
@@ -13782,7 +13852,7 @@ TEST_F(StorageAccessHeaderURLRequestTest, RedirectPrioritizesRetryHeader) {
               {CookieSettingOverride::kStorageAccessGrantEligibleViaHeader}),
           CookieSettingOverrides(
               {CookieSettingOverride::kStorageAccessGrantEligibleViaHeader})));
-  EXPECT_EQ(req->url().path(), "/echo");
+  EXPECT_EQ(req->url().GetPath(), "/echo");
 }
 
 TEST_F(StorageAccessHeaderURLRequestTest, AuthChallengeIgnoresRetryHeader) {

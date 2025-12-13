@@ -18,6 +18,7 @@
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/common/pref_names.h"
 #include "components/download/public/common/download_item.h"
+#include "components/prefs/pref_service.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/download_item_utils.h"
@@ -32,15 +33,20 @@
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/common/content_features.h"
 #else
-#include "chrome/browser/download/bubble/download_bubble_prefs.h"
-#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
-#include "chrome/browser/download/bubble/download_bubble_update_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
+#include "chrome/browser/download/bubble/download_bubble_update_service_factory.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -71,7 +77,7 @@ void AndroidUIControllerDelegate::OnNewDownloadReady(
   DownloadControllerBase::Get()->OnDownloadStarted(item);
 }
 
-#else  // BUILDFLAG(IS_ANDROID)
+#elif !BUILDFLAG(IS_CHROMEOS)
 
 void InitializeDownloadBubbleUpdateService(Profile* profile,
                                            content::DownloadManager* manager) {
@@ -131,66 +137,22 @@ void DownloadBubbleUIControllerDelegate::OnNewDownloadReady(
 }
 
 void DownloadBubbleUIControllerDelegate::OnButtonClicked() {
-  BrowserList* browser_list = BrowserList::GetInstance();
-  if (!browser_list)
-    return;
-
-  for (Browser* browser : *browser_list) {
-    if (browser && browser->window() &&
-        browser->window()->GetDownloadBubbleUIController()) {
-      browser->window()->GetDownloadBubbleUIController()->HandleButtonPressed();
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [](BrowserWindowInterface* browser_window_interface) {
+        DownloadToolbarUIController* download_controller =
+            browser_window_interface->GetFeatures()
+                .download_toolbar_ui_controller();
+        DownloadBubbleUIController* bubble_ui_controller =
+            download_controller ? download_controller->bubble_controller()
+                                : nullptr;
+        if (bubble_ui_controller) {
+          bubble_ui_controller->HandleButtonPressed();
+        }
+        return true;
+      });
 }
 
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS)
-
-// A composite `DownloadUIController::Delegate` for use exclusively on ChromeOS.
-// TODO(http://b/279791981): Remove after enabling the new downloads integration
-// with System UI surfaces and deprecating `DownloadNotificationManager`.
-class CrOSUIControllerDelegate : public DownloadUIController::Delegate {
- public:
-  explicit CrOSUIControllerDelegate(content::DownloadManager* manager) {
-    // Conditionally add the `DownloadBubbleUIControllerDelegate`.
-    auto* profile = Profile::FromBrowserContext(manager->GetBrowserContext());
-    if (download::IsDownloadBubbleEnabled()) {
-      delegates_.emplace_back(
-          std::make_unique<DownloadBubbleUIControllerDelegate>(profile));
-      InitializeDownloadBubbleUpdateService(profile, manager);
-    }
-
-    // The `DownloadNotificationManager` should always be added as it provides
-    // System UI notifications on ChromeOS.
-    delegates_.emplace_back(
-        std::make_unique<DownloadNotificationManager>(profile));
-  }
-
-  CrOSUIControllerDelegate(const CrOSUIControllerDelegate&) = delete;
-  CrOSUIControllerDelegate& operator=(const CrOSUIControllerDelegate&) = delete;
-  ~CrOSUIControllerDelegate() override = default;
-
- private:
-  // DownloadUIController::Delegate:
-  void OnNewDownloadReady(download::DownloadItem* item) override {
-    for (auto& delegate : delegates_) {
-      delegate->OnNewDownloadReady(item);
-    }
-  }
-
-  void OnButtonClicked() override {
-    for (auto& delegate : delegates_) {
-      delegate->OnButtonClicked();
-    }
-  }
-
-  // The collection of delegates contained by this composite.
-  std::vector<std::unique_ptr<DownloadUIController::Delegate>> delegates_;
-};
-
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
+#endif
 } // namespace
 
 DownloadUIController::Delegate::~Delegate() = default;
@@ -203,17 +165,18 @@ DownloadUIController::DownloadUIController(content::DownloadManager* manager,
 #if BUILDFLAG(IS_ANDROID)
   if (!delegate_)
     delegate_ = std::make_unique<AndroidUIControllerDelegate>();
-#elif BUILDFLAG(IS_CHROMEOS)
-  if (!delegate_) {
-    delegate_ = std::make_unique<CrOSUIControllerDelegate>(manager);
-  }
-#else   // BUILDFLAG(IS_CHROMEOS)
+#else
+  // The download bubble UI is used on desktop platforms besides ChromeOS,
+  // which uses system notifications instead.
   if (!delegate_) {
     Profile* profile =
         Profile::FromBrowserContext(manager->GetBrowserContext());
-    CHECK(download::IsDownloadBubbleEnabled());
+#if BUILDFLAG(IS_CHROMEOS)
+    delegate_ = std::make_unique<DownloadNotificationManager>(profile);
+#else
     delegate_ = std::make_unique<DownloadBubbleUIControllerDelegate>(profile);
     InitializeDownloadBubbleUpdateService(profile, manager);
+#endif
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
@@ -263,7 +226,7 @@ void DownloadUIController::OnDownloadUpdated(content::DownloadManager* manager,
 #if BUILDFLAG(IS_ANDROID)
   if (manager && manager->GetDelegate() &&
       manager->GetDelegate()->ShouldOpenPdfInline() &&
-      !item->IsMustDownload() &&
+      item->AllowAutoOpenAfterCompletion() &&
       item->GetState() == download::DownloadItem::IN_PROGRESS &&
       base::EqualsCaseInsensitiveASCII(item->GetMimeType(),
                                        pdf::kPDFMimeType)) {

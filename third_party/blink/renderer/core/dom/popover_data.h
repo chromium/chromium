@@ -82,8 +82,7 @@ class PopoverData final : public GarbageCollected<PopoverData>,
         : popover_(popover),
           was_set_(popover.GetPopoverData()->hiding_or_showing_this_popover_) {
       if (was_set_ && show_warning) {
-        if (RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-                popover.GetDocument().GetExecutionContext())) {
+        if (RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled()) {
           popover_.GetDocument().AddConsoleMessage(
               MakeGarbageCollected<ConsoleMessage>(
                   mojom::blink::ConsoleMessageSource::kOther,

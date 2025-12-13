@@ -86,11 +86,6 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
     virtual void OnPendingAppListUpdates(
         const vm_tools::cicerone::PendingAppListUpdatesSignal& signal) {}
 
-    // This is signaled from the container while a playbook is being applied
-    // via ApplyAnsiblePlaybook.
-    virtual void OnApplyAnsiblePlaybookProgress(
-        const vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal& signal) {}
-
     // This is signaled from Cicerone while a container is being upgraded
     // via UpgradeContainer.
     virtual void OnUpgradeContainerProgress(
@@ -175,9 +170,6 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
   // This should be true before expecting to receive
   // PendingAppListUpdatesSignal.
   virtual bool IsPendingAppListUpdatesSignalConnected() = 0;
-
-  // This should be true prior to calling ApplyAnsiblePlaybook.
-  virtual bool IsApplyAnsiblePlaybookProgressSignalConnected() = 0;
 
   // This should be true prior to calling UpgradeContainer.
   virtual bool IsUpgradeContainerProgressSignalConnected() = 0;
@@ -307,13 +299,6 @@ class COMPONENT_EXPORT(CICERONE) CiceroneClient : public chromeos::DBusClient {
       const vm_tools::cicerone::CancelImportLxdContainerRequest& request,
       chromeos::DBusMethodCallback<
           vm_tools::cicerone::CancelImportLxdContainerResponse> callback) = 0;
-
-  // Applies Ansible playbook.
-  // |callback| is called after the method call finishes.
-  virtual void ApplyAnsiblePlaybook(
-      const vm_tools::cicerone::ApplyAnsiblePlaybookRequest& request,
-      chromeos::DBusMethodCallback<
-          vm_tools::cicerone::ApplyAnsiblePlaybookResponse> callback) = 0;
 
   // Configure the container to allow sideloading Android apps into Arc.
   // |callback| is called once configuration finishes.

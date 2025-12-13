@@ -5,6 +5,7 @@
 #include "content/browser/preloading/prerender/prerender_subframe_navigation_throttle.h"
 
 #include "base/memory/ptr_util.h"
+#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -94,7 +95,7 @@ PrerenderSubframeNavigationThrottle::WillProcessResponse() {
   const url::Origin& main_origin = rfhi->GetLastCommittedOrigin();
   if (!main_origin.IsSameOriginWith(
           navigation_request->GetOriginToCommit().value())) {
-    return DeferOrCancelCrossOriginSubframeNavigation(*frame_tree_node);
+    return DecidePolicyForCrossOriginSubframeNavigation(*frame_tree_node);
   }
 
   return PROCEED;
@@ -158,15 +159,15 @@ PrerenderSubframeNavigationThrottle::WillCommitWithoutUrlLoader() {
     // Although main frames can be in sandboxed SiteInfo's, we don't encounter
     // that here since this throttle check should never occur for a mainframe.
     CHECK(!frame_tree_node->IsMainFrame());
-    return DeferOrCancelCrossOriginSubframeNavigation(*frame_tree_node);
+    return DecidePolicyForCrossOriginSubframeNavigation(*frame_tree_node);
   }
 
   return NavigationThrottle::PROCEED;
 }
 
-NavigationThrottle::ThrottleCheckResult
-PrerenderSubframeNavigationThrottle::DeferOrCancelCrossOriginSubframeNavigation(
-    const FrameTreeNode& frame_tree_node) {
+NavigationThrottle::ThrottleCheckResult PrerenderSubframeNavigationThrottle::
+    DecidePolicyForCrossOriginSubframeNavigation(
+        const FrameTreeNode& frame_tree_node) {
   CHECK(frame_tree_node.frame_tree().is_prerendering());
   CHECK(!frame_tree_node.IsMainFrame());
 
@@ -180,6 +181,10 @@ PrerenderSubframeNavigationThrottle::DeferOrCancelCrossOriginSubframeNavigation(
     // The PrerenderHostRegistry removed the PrerenderHost and scheduled to
     // destroy it asynchronously.
     return NavigationThrottle::CANCEL;
+  }
+
+  if (prerender_host->AllowCrossOriginSubframeNavigation()) {
+    return NavigationThrottle::PROCEED;
   }
 
   // Defer cross-origin subframe navigations during prerendering.
@@ -207,7 +212,9 @@ PrerenderSubframeNavigationThrottle::WillStartOrRedirectRequest() {
     return NavigationThrottle::PROCEED;
   }
 
-  // Defer cross-origin subframe navigation until page activation.
+  // Decide a loading policy for cross-origin subframe navigation: cancel,
+  // defer it until page activation, or proceed if the opt-in header allows.
+  //
   // Using url::Origin::Create() to check same-origin might not be
   // completely accurate for cases such as sandboxed iframes, which have a
   // different origin from the main frame even when the URL is same-origin.
@@ -220,7 +227,7 @@ PrerenderSubframeNavigationThrottle::WillStartOrRedirectRequest() {
   RenderFrameHostImpl* rfhi = frame_tree_node->frame_tree().GetMainFrame();
   const url::Origin& main_origin = rfhi->GetLastCommittedOrigin();
   if (!main_origin.IsSameOriginWith(navigation_handle()->GetURL())) {
-    return DeferOrCancelCrossOriginSubframeNavigation(*frame_tree_node);
+    return DecidePolicyForCrossOriginSubframeNavigation(*frame_tree_node);
   }
 
   return NavigationThrottle::PROCEED;

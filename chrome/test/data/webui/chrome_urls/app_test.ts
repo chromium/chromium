@@ -183,7 +183,7 @@ suite('ChromeUrlsAppTest', function() {
     assertEquals('disabled', status.textContent);
     const button = app.shadowRoot.querySelector('cr-button');
     assertTrue(!!button);
-    assertEquals('Enable internal debugging pages', button.textContent!.trim());
+    assertEquals('Enable internal debugging pages', button.textContent.trim());
 
     // Test case of enabling debug pages.
     button.click();
@@ -192,8 +192,7 @@ suite('ChromeUrlsAppTest', function() {
     await microtasksFinished();
     // Status is enabled, button is to disable, and page is linked.
     assertEquals('enabled', status.textContent);
-    assertEquals(
-        'Disable internal debugging pages', button.textContent!.trim());
+    assertEquals('Disable internal debugging pages', button.textContent.trim());
     internalItems = lists[1]!.querySelectorAll('li');
     assertEquals(1, internalItems.length);
     assertTrue(!!internalItems[0]!.querySelector('a'));
@@ -205,7 +204,7 @@ suite('ChromeUrlsAppTest', function() {
     assertFalse(enabled);
     await microtasksFinished();
     assertEquals('disabled', status.textContent);
-    assertEquals('Enable internal debugging pages', button.textContent!.trim());
+    assertEquals('Enable internal debugging pages', button.textContent.trim());
     internalItems = lists[1]!.querySelectorAll('li');
     assertEquals(1, internalItems.length);
     assertFalse(!!internalItems[0]!.querySelector('a'));

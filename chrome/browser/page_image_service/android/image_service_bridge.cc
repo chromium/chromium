@@ -17,7 +17,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/page_image_service/android/jni_headers/ImageServiceBridge_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -61,12 +61,11 @@ void ImageServiceBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void ImageServiceBridge::FetchImageUrlFor(
-    JNIEnv* env,
-    const bool is_account_data,
-    const jint client_id,
-    const GURL& page_url,
-    const JavaParamRef<jobject>& j_callback) {
+void ImageServiceBridge::FetchImageUrlFor(JNIEnv* env,
+                                          const bool is_account_data,
+                                          const jint client_id,
+                                          const GURL& page_url,
+                                          const JavaRef<jobject>& j_callback) {
   ScopedJavaGlobalRef<jobject> callback(j_callback);
   FetchImageUrlForImpl(
       is_account_data,
@@ -108,3 +107,5 @@ bool ImageServiceBridge::HasConsentToFetchImagesImpl(
   return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) ||
          is_account_data;
 }
+
+DEFINE_JNI(ImageServiceBridge)

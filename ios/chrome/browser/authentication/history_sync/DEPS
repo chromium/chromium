@@ -1,0 +1,6 @@
+include_rules = [
+  "+ios/chrome/browser/first_run/model/first_run_metrics.h",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/sync/model",
+]
+

@@ -33,9 +33,13 @@ void TabHandleLayer::SetProperties(
     ui::NinePatchResource* tab_handle_resource,
     ui::NinePatchResource* tab_handle_outline_resource,
     bool foreground,
+    bool is_pinned,
     bool shouldShowTabOutline,
     bool close_pressed,
     bool should_hide_favicon,
+    bool should_show_media_indicator,
+    ui::Resource* media_indicator_resource,
+    float media_indicator_width,
     float toolbar_width,
     float x,
     float y,
@@ -58,9 +62,11 @@ void TabHandleLayer::SetProperties(
     int stroke_width,
     float folio_foot_length,
     float width_to_hide_tab_title) {
-  if (foreground != foreground_ || opacity != opacity_) {
+  if (foreground != foreground_ || opacity != opacity_ ||
+      is_pinned != is_pinned_) {
     foreground_ = foreground;
     opacity_ = opacity;
+    is_pinned_ = is_pinned;
   }
 
   y += top_margin;
@@ -99,7 +105,7 @@ void TabHandleLayer::SetProperties(
   }
 
   if (title_layer) {
-    unsigned expected_children = 4;
+    unsigned expected_children = 5;
     title_layer_ = title_layer->layer();
     if (tab_->children().size() < expected_children) {
       tab_->AddChild(title_layer_);
@@ -183,6 +189,19 @@ void TabHandleLayer::SetProperties(
     end_divider_->SetPosition(gfx::PointF(divider_x, divider_y));
   }
 
+  float media_indicator_size = 0.f;
+  if (should_show_media_indicator && media_indicator_resource) {
+    media_indicator_size = media_indicator_width;
+    media_indicator_layer_->SetIsDrawable(true);
+    media_indicator_layer_->SetUIResourceId(
+        media_indicator_resource->ui_resource()->id());
+    media_indicator_layer_->SetBounds(
+        gfx::Size(media_indicator_size, media_indicator_size));
+    media_indicator_layer_->SetOpacity(1.0f);
+  } else {
+    media_indicator_layer_->SetIsDrawable(false);
+  }
+
   if (title_layer) {
     int title_y;
     float title_y_offset_mid = (tab_handle_resource->padding().y() + height -
@@ -197,8 +216,10 @@ void TabHandleLayer::SetProperties(
     // Hide tab favicon if necessary.
     title_layer->SetShouldHideIcon(should_hide_favicon);
 
-    int title_x = is_rtl ? padding_left + close_width : padding_left;
-    int title_width = width - padding_left - padding_right - close_width;
+    int title_x = is_rtl ? padding_left + close_width + media_indicator_size
+                         : padding_left;
+    int title_width = width - padding_left - padding_right - close_width -
+                      media_indicator_size;
     title_layer->setBounds(gfx::Size(title_width, height));
     title_layer->layer()->SetPosition(gfx::PointF(title_x, title_y));
     if (is_loading) {
@@ -266,6 +287,23 @@ void TabHandleLayer::SetProperties(
           close_button_keyboard_focus_ring_resource->size().height()));
     }
   }
+
+  if (media_indicator_size > 0) {
+    float right_aligned_icon_x = is_rtl ? padding_left - close_button_padding
+                                        : width - padding_right - close_width;
+    if (close_button_alpha == 0.f) {
+      right_aligned_icon_x = is_rtl ? padding_left : width - padding_right;
+    }
+
+    float media_x = is_rtl ? right_aligned_icon_x + close_width
+                           : right_aligned_icon_x - media_indicator_size;
+    float media_y =
+        close_y + std::round((close_button_resource->size().height() -
+                              media_indicator_size) /
+                             2);
+    media_indicator_layer_->SetPosition(gfx::PointF(media_x, media_y));
+  }
+
   if (is_keyboard_focused) {
     keyboard_focus_ring_->SetIsDrawable(true);
     keyboard_focus_ring_->SetUIResourceId(
@@ -305,6 +343,10 @@ bool TabHandleLayer::foreground() {
   return foreground_;
 }
 
+bool TabHandleLayer::is_pinned() {
+  return is_pinned_;
+}
+
 scoped_refptr<cc::slim::Layer> TabHandleLayer::layer() {
   return layer_;
 }
@@ -318,6 +360,7 @@ TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
       close_keyboard_focus_ring_(cc::slim::UIResourceLayer::Create()),
       start_divider_(cc::slim::UIResourceLayer::Create()),
       end_divider_(cc::slim::UIResourceLayer::Create()),
+      media_indicator_layer_(cc::slim::UIResourceLayer::Create()),
       decoration_tab_(cc::slim::NinePatchLayer::Create()),
       tab_outline_(cc::slim::NinePatchLayer::Create()),
       keyboard_focus_ring_(cc::slim::NinePatchLayer::Create()),
@@ -327,6 +370,7 @@ TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
   tab_->AddChild(decoration_tab_);
   tab_->AddChild(tab_outline_);
   tab_->AddChild(close_button_hover_highlight_);
+  tab_->AddChild(media_indicator_layer_);
   close_button_hover_highlight_->AddChild(close_button_);
 
   decoration_tab_->SetPosition(gfx::PointF(0, 0));

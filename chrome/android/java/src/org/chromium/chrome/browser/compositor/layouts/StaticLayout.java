@@ -4,20 +4,23 @@
 
 package org.chromium.chrome.browser.compositor.layouts;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.RectF;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -39,6 +42,7 @@ import org.chromium.ui.resources.ResourceManager;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
+import java.util.function.Supplier;
 
 // TODO(meiliang): Rename to StaticLayoutMediator.
 /**
@@ -46,23 +50,27 @@ import java.util.Collections;
  * #tabSelecting(long, int)} call, and is used to show a thumbnail of a {@link Tab} until that
  * {@link Tab} is ready to be shown.
  */
+@NullMarked
 public class StaticLayout extends Layout {
     public static final String TAG = "StaticLayout";
+
+    private static @Nullable Integer sToolbarTextBoxBackgroundColorForTesting;
 
     private final boolean mHandlesTabLifecycles;
     private final boolean mNeedsOffsetTag;
 
     private final Context mContext;
     private final LayoutManagerHost mViewHost;
-    private final CompositorModelChangeProcessor.FrameRequestSupplier mRequestSupplier;
+    private final NonNullObservableSupplier<Long> mFrameRequestSupplier;
+    private final Runnable mRequestFrameRunnable;
 
     private final PropertyModel mModel;
     private CompositorModelChangeProcessor mMcp;
 
     private StaticTabSceneLayer mSceneLayer;
 
-    private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
-    private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
+    private @Nullable TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
+    private @Nullable TabModelSelectorTabObserver mTabModelSelectorTabObserver;
 
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final BrowserControlsStateProvider.Observer mBrowserControlsStateProviderObserver;
@@ -71,8 +79,7 @@ public class StaticLayout extends Layout {
 
     private boolean mIsShowing;
 
-    private static Integer sToolbarTextBoxBackgroundColorForTesting;
-
+    @SuppressWarnings("HidingField")
     private final float mPxToDp;
 
     /**
@@ -94,7 +101,8 @@ public class StaticLayout extends Layout {
             LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost,
             LayoutManagerHost viewHost,
-            CompositorModelChangeProcessor.FrameRequestSupplier requestSupplier,
+            NonNullObservableSupplier<Long> frameRequestSupplier,
+            Runnable requestFrameRunnable,
             TabModelSelector tabModelSelector,
             TabContentManager tabContentManager,
             BrowserControlsStateProvider browserControlsStateProvider,
@@ -105,7 +113,8 @@ public class StaticLayout extends Layout {
                 updateHost,
                 renderHost,
                 viewHost,
-                requestSupplier,
+                frameRequestSupplier,
+                requestFrameRunnable,
                 tabModelSelector,
                 tabContentManager,
                 browserControlsStateProvider,
@@ -121,12 +130,13 @@ public class StaticLayout extends Layout {
             LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost,
             LayoutManagerHost viewHost,
-            CompositorModelChangeProcessor.FrameRequestSupplier requestSupplier,
+            NonNullObservableSupplier<Long> frameRequestSupplier,
+            Runnable requestFrameRunnable,
             TabModelSelector tabModelSelector,
             TabContentManager tabContentManager,
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
-            StaticTabSceneLayer testSceneLayer,
+            @Nullable StaticTabSceneLayer testSceneLayer,
             boolean needsOffsetTag) {
         super(context, updateHost, renderHost);
 
@@ -140,7 +150,8 @@ public class StaticLayout extends Layout {
         mNeedsOffsetTag = needsOffsetTag;
 
         mViewHost = viewHost;
-        mRequestSupplier = requestSupplier;
+        mFrameRequestSupplier = frameRequestSupplier;
+        mRequestFrameRunnable = requestFrameRunnable;
 
         setTabContentManager(tabContentManager);
         setTabModelSelector(tabModelSelector);
@@ -167,7 +178,7 @@ public class StaticLayout extends Layout {
         mBrowserControlsStateProviderObserver =
                 new BrowserControlsStateProvider.Observer() {
                     @Override
-                    public void onControlsConstraintsChanged(
+                    public void onOffsetTagsInfoChanged(
                             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                             BrowserControlsOffsetTagsInfo offsetTagsInfo,
                             @BrowserControlsState int constraints,
@@ -218,11 +229,16 @@ public class StaticLayout extends Layout {
         } else {
             mSceneLayer = new StaticTabSceneLayer();
         }
+        assumeNonNull(mTabContentManager);
         mSceneLayer.setTabContentManager(mTabContentManager);
 
         mMcp =
                 CompositorModelChangeProcessor.create(
-                        mModel, mSceneLayer, StaticTabSceneLayer::bind, mRequestSupplier);
+                        mModel,
+                        mSceneLayer,
+                        StaticTabSceneLayer::bind,
+                        mFrameRequestSupplier,
+                        mRequestFrameRunnable);
     }
 
     @Override
@@ -235,7 +251,7 @@ public class StaticLayout extends Layout {
         mTabModelSelectorTabModelObserver =
                 new TabModelSelectorTabModelObserver(tabModelSelector) {
                     @Override
-                    public void didSelectTab(Tab tab, int type, int lastId) {
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                         if (!mIsShowing) return;
 
                         setStaticTab(tab);
@@ -298,7 +314,8 @@ public class StaticLayout extends Layout {
 
     /**
      * Initialize the layout to be shown.
-     * @param time   The current time of the app in ms.
+     *
+     * @param time The current time of the app in ms.
      * @param animate Whether to play an entry animation.
      */
     @Override
@@ -306,6 +323,7 @@ public class StaticLayout extends Layout {
         super.show(time, animate);
 
         mIsShowing = true;
+        assumeNonNull(mTabModelSelector);
         Tab tab = mTabModelSelector.getCurrentTab();
         if (tab == null) return;
         setStaticTab(tab);
@@ -320,6 +338,7 @@ public class StaticLayout extends Layout {
     @Override
     public void doneShowing() {
         super.doneShowing();
+        assumeNonNull(mTabModelSelector);
         Tab tab = mTabModelSelector.getCurrentTab();
         if (tab == null) return;
         requestFocus(tab);
@@ -417,8 +436,6 @@ public class StaticLayout extends Layout {
                 tab.isNativePage() || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
         final boolean isBFScreenshotDrawing =
                 isNativePage && tab.isDisplayingBackForwardAnimation();
-        assert !isBFScreenshotDrawing || GestureNavigationUtils.areBackForwardTransitionsEnabled()
-                : "Must not draw bf screenshot if back forward transition is disabled";
         return !SadTab.isShowing(tab) && (!isNativePage || isBFScreenshotDrawing);
     }
 
@@ -438,7 +455,7 @@ public class StaticLayout extends Layout {
     }
 
     @Override
-    protected EventFilter getEventFilter() {
+    protected @Nullable EventFilter getEventFilter() {
         return null;
     }
 
@@ -471,6 +488,7 @@ public class StaticLayout extends Layout {
     }
 
     @Override
+    @SuppressWarnings("NullAway")
     public void destroy() {
         if (mSceneLayer != null) {
             mSceneLayer.destroy();
@@ -490,11 +508,11 @@ public class StaticLayout extends Layout {
         return mModel;
     }
 
-    TabModelSelector getTabModelSelectorForTesting() {
+    @Nullable TabModelSelector getTabModelSelectorForTesting() {
         return mTabModelSelector;
     }
 
-    TabContentManager getTabContentManagerForTesting() {
+    @Nullable TabContentManager getTabContentManagerForTesting() {
         return mTabContentManager;
     }
 

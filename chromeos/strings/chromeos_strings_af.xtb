@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">lemoene</translation>
 <translation id="1275718070701477396">Gekies</translation>
 <translation id="1290331692326790741">Swak sein</translation>
+<translation id="1292474106138697109">Klasnutsgoed-skerm</translation>
 <translation id="1300115153046603471">APN is verstektipe en <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Skakel om</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> prente</translation>
 <translation id="4300272766492248925">Maak app oop</translation>
 <translation id="430786093962686457">chiffon</translation>
+<translation id="4309762678330556039">Skep outomaties transkripsies en soek deur oudio. Jy kan opnames skep selfs wanneer jy nie aan die internet gekoppel is nie.</translation>
 <translation id="4310735698903592804">Onlangse muurpapiere aangedryf deur Google AI</translation>
 <translation id="4320904097188876154">neonpienk</translation>
 <translation id="432961742358282111">Regsklik of druk en hou om definisies, vertalings en eenheidomskakelings te kry. Gebruik links- of regspylsleutels om hierdie kenmerk te bestuur.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Meer opsies</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" />-sleutel is getoets</translation>
 <translation id="5606865426897221650">Oortjie</translation>
+<translation id="5612205513582918357">Klasnutsgoed deel tans jou skerm met <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Jy is afgemeld</translation>
 <translation id="5620281292257375798">Slegs intern</translation>
 <translation id="5628106863521633649">Beskikbare tale</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Geen skandeerders beskikbaar nie</translation>
-<translation id="6231648282154119906">Verdagte lêers sal outomaties geskandeer word deur Google Veiligblaai as deel van die verbeterde beskerming wat jy gekies het</translation>
 <translation id="6232017090690406397">Battery</translation>
 <translation id="6234024205316847054">Wys buitelyne</translation>
 <translation id="6243280677745499710">Tans gestel</translation>

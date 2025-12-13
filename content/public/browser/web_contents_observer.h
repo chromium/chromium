@@ -22,7 +22,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_capability_type.h"
-#include "ipc/ipc_message.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -34,8 +33,6 @@
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-forward.h"
-#include "third_party/skia/include/core/SkColor.h"
-#include "ui/accessibility/ax_location_and_scroll_updates.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -638,6 +635,9 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // configured to ignore UI events, and an UI event took place.
   virtual void DidGetIgnoredUIEvent() {}
 
+  // Invoked before the WebContents changes visibility.
+  virtual void OnVisibilityWillChange(Visibility visibility) {}
+
   // Invoked every time the WebContents changes visibility.
   virtual void OnVisibilityChanged(Visibility visibility) {}
 
@@ -913,10 +913,6 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   virtual void OnTextCopiedToClipboard(RenderFrameHost* render_frame_host,
                                        const std::u16string& copied_text) {}
 
-  // Invoked if an IPC message is coming from a specific RenderFrameHost.
-  virtual bool OnMessageReceived(const IPC::Message& message,
-                                 RenderFrameHost* render_frame_host);
-
   // Notification that the |render_widget_host| for this WebContents has gained
   // focus.
   virtual void OnWebContentsFocused(RenderWidgetHost* render_widget_host) {}
@@ -926,12 +922,11 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   virtual void OnWebContentsLostFocus(RenderWidgetHost* render_widget_host) {}
 
   // Notification that a RenderFrameHost inside this WebContents has updated
-  // its focused element. |details| contains information on the element
-  // that has received focus. This allows for observing focus changes
-  // within WebContents, as opposed to OnWebContentsFocused/LostFocus
-  // which allows observation that the RenderWidgetHost for the
-  // WebContents has gained/lost focus.
-  virtual void OnFocusChangedInPage(FocusedNodeDetails* details) {}
+  // its focused element. `details` contains information on the element that has
+  // received focus. This allows for observing focus changes within WebContents,
+  // as opposed to OnWebContentsFocused/LostFocus which allows observation that
+  // the RenderWidgetHost for the WebContents has gained/lost focus.
+  virtual void OnFocusChangedInPage(const FocusedNodeDetails& details) {}
 
   // Notifies that the manifest URL for the main frame changed to
   // |manifest_url|. This will be invoked when a document with a manifest loads

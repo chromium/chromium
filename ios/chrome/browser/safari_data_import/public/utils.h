@@ -7,12 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-/// Returns the accessibility identifier to set on a `SafariDataItemTableView`.
-NSString* GetSafariDataItemTableViewAccessibilityIdentifier();
-
-/// Returns the accessibility identifier to set on a cell in the
-/// `SafariDataItemTableView`.
-NSString* GetSafariDataItemTableViewCellAccessibilityIdentifier(
-    NSUInteger cell_index);
+/// Returns the accessibility identifier for the Safari data entry point landing
+/// page.
+NSString* GetSafariDataEntryPointAccessibilityIdentifier();
 
 #endif  // IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_PUBLIC_UTILS_H_

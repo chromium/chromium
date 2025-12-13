@@ -440,7 +440,7 @@ GLuint GLES2Implementation::CreateProgram() {
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCreateProgram(" << ")");
   GLuint client_id;
   GetIdHandler(SharedIdNamespaces::kProgramsAndShaders)
-      ->MakeIds(this, 0, 1, &client_id);
+      ->MakeIds(this, 1, &client_id);
   helper_->CreateProgram(client_id);
   GPU_CLIENT_LOG("returned " << client_id);
   CheckGLError();
@@ -453,7 +453,7 @@ GLuint GLES2Implementation::CreateShader(GLenum type) {
                      << GLES2Util::GetStringShaderType(type) << ")");
   GLuint client_id;
   GetIdHandler(SharedIdNamespaces::kProgramsAndShaders)
-      ->MakeIds(this, 0, 1, &client_id);
+      ->MakeIds(this, 1, &client_id);
   helper_->CreateShader(type, client_id);
   GPU_CLIENT_LOG("returned " << client_id);
   CheckGLError();
@@ -677,7 +677,7 @@ GLsync GLES2Implementation::FenceSync(GLenum condition, GLbitfield flags) {
     return 0;
   }
   GLuint client_id;
-  GetIdHandler(SharedIdNamespaces::kSyncs)->MakeIds(this, 0, 1, &client_id);
+  GetIdHandler(SharedIdNamespaces::kSyncs)->MakeIds(this, 1, &client_id);
   helper_->FenceSync(client_id);
   GPU_CLIENT_LOG("returned " << client_id);
   CheckGLError();
@@ -745,11 +745,9 @@ void GLES2Implementation::GenBuffers(GLsizei n, GLuint* buffers) {
     return;
   }
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GetIdHandler(SharedIdNamespaces::kBuffers)->MakeIds(this, 0, n, buffers);
+  GetIdHandler(SharedIdNamespaces::kBuffers)->MakeIds(this, n, buffers);
   GenBuffersHelper(n, buffers);
   helper_->GenBuffersImmediate(n, buffers);
-  if (share_group_->bind_generates_resource())
-    helper_->CommandBufferHelper::Flush();
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (GLsizei i = 0; i < n; ++i) {
       GPU_CLIENT_LOG("  " << i << ": " << buffers[i]);
@@ -796,11 +794,9 @@ void GLES2Implementation::GenRenderbuffers(GLsizei n, GLuint* renderbuffers) {
   }
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GetIdHandler(SharedIdNamespaces::kRenderbuffers)
-      ->MakeIds(this, 0, n, renderbuffers);
+      ->MakeIds(this, n, renderbuffers);
   GenRenderbuffersHelper(n, renderbuffers);
   helper_->GenRenderbuffersImmediate(n, renderbuffers);
-  if (share_group_->bind_generates_resource())
-    helper_->CommandBufferHelper::Flush();
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (GLsizei i = 0; i < n; ++i) {
       GPU_CLIENT_LOG("  " << i << ": " << renderbuffers[i]);
@@ -817,11 +813,9 @@ void GLES2Implementation::GenSamplers(GLsizei n, GLuint* samplers) {
     return;
   }
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GetIdHandler(SharedIdNamespaces::kSamplers)->MakeIds(this, 0, n, samplers);
+  GetIdHandler(SharedIdNamespaces::kSamplers)->MakeIds(this, n, samplers);
   GenSamplersHelper(n, samplers);
   helper_->GenSamplersImmediate(n, samplers);
-  if (share_group_->bind_generates_resource())
-    helper_->CommandBufferHelper::Flush();
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (GLsizei i = 0; i < n; ++i) {
       GPU_CLIENT_LOG("  " << i << ": " << samplers[i]);
@@ -838,11 +832,9 @@ void GLES2Implementation::GenTextures(GLsizei n, GLuint* textures) {
     return;
   }
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GetIdHandler(SharedIdNamespaces::kTextures)->MakeIds(this, 0, n, textures);
+  GetIdHandler(SharedIdNamespaces::kTextures)->MakeIds(this, n, textures);
   GenTexturesHelper(n, textures);
   helper_->GenTexturesImmediate(n, textures);
-  if (share_group_->bind_generates_resource())
-    helper_->CommandBufferHelper::Flush();
   GPU_CLIENT_LOG_CODE_BLOCK({
     for (GLsizei i = 0; i < n; ++i) {
       GPU_CLIENT_LOG("  " << i << ": " << textures[i]);

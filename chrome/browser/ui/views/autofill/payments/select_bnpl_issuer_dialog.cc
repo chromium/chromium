@@ -18,7 +18,9 @@
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -42,34 +44,49 @@ class SelectBnplIssuerViewDesktop : public SelectBnplIssuerView {
  public:
   SelectBnplIssuerViewDesktop(
       base::WeakPtr<SelectBnplIssuerDialogController> controller,
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      bool has_seen_ai_terms);
   SelectBnplIssuerViewDesktop(const SelectBnplIssuerViewDesktop&) = delete;
   SelectBnplIssuerViewDesktop& operator=(const SelectBnplIssuerViewDesktop&) =
       delete;
   ~SelectBnplIssuerViewDesktop() override;
 
+  void UpdateDialogWithIssuers() override;
+
  private:
   base::WeakPtr<SelectBnplIssuerDialogController> controller_;
   std::unique_ptr<views::Widget> dialog_;
+  base::WeakPtr<SelectBnplIssuerDialog> select_bnpl_issuer_dialog_;
 };
 
 SelectBnplIssuerViewDesktop::SelectBnplIssuerViewDesktop(
     base::WeakPtr<SelectBnplIssuerDialogController> controller,
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    bool has_seen_ai_terms)
     : controller_(controller) {
   auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents);
   if (tab_interface) {
-    auto select_bnpl_issuer_delegate =
-        std::make_unique<SelectBnplIssuerDialog>(controller_, web_contents);
+    auto select_bnpl_issuer_dialog_delegate =
+        std::make_unique<SelectBnplIssuerDialog>(controller_, web_contents,
+                                                 has_seen_ai_terms);
+    select_bnpl_issuer_dialog_ =
+        select_bnpl_issuer_dialog_delegate->GetWeakPtr();
+
     dialog_ = tab_interface->GetTabFeatures()
                   ->tab_dialog_manager()
                   ->CreateAndShowDialog(
-                      select_bnpl_issuer_delegate.release(),
+                      select_bnpl_issuer_dialog_delegate.release(),
                       std::make_unique<tabs::TabDialogManager::Params>());
   }
 }
 
 SelectBnplIssuerViewDesktop::~SelectBnplIssuerViewDesktop() = default;
+
+void SelectBnplIssuerViewDesktop::UpdateDialogWithIssuers() {
+  if (dialog_ && select_bnpl_issuer_dialog_) {
+    select_bnpl_issuer_dialog_->DismissThrobberAndShowIssuerView();
+  }
+}
 
 }  // namespace
 
@@ -78,10 +95,12 @@ END_METADATA
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SelectBnplIssuerDialog, kThrobberId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SelectBnplIssuerDialog, kBnplIssuerView);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SelectBnplIssuerDialog, kFootnoteViewId);
 
 SelectBnplIssuerDialog::SelectBnplIssuerDialog(
     base::WeakPtr<SelectBnplIssuerDialogController> controller,
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    bool has_seen_ai_terms)
     : controller_(controller), web_contents_(web_contents->GetWeakPtr()) {
   // Set the ownership of the delegate, not the View. The View is owned by the
   // Widget as a child view.
@@ -110,41 +129,43 @@ SelectBnplIssuerDialog::SelectBnplIssuerDialog(
   container_view_ = AddChildView(std::make_unique<views::View>());
   container_view_->SetUseDefaultFillLayout(true);
 
-  bnpl_issuer_view_ = container_view_->AddChildView(
-      std::make_unique<BnplIssuerView>(controller_, this));
-  bnpl_issuer_view_->SetProperty(views::kElementIdentifierKey,
-                                 SelectBnplIssuerDialog::kBnplIssuerView);
+  CreateThrobberView();
+  CreateBnplIssuerView();
+  if (base::FeatureList::IsEnabled(
+          ::autofill::features::kAutofillEnableAiBasedAmountExtraction) &&
+      has_seen_ai_terms) {
+    throbber_container_view_->SetVisible(true);
+    bnpl_issuer_view_->SetVisible(false);
+  } else {
+    throbber_container_view_->SetVisible(false);
+    bnpl_issuer_view_->SetVisible(true);
+  }
 
   TextWithLink link_text = controller_.get()->GetLinkText();
   TextLinkInfo link_info;
+  link_info.bold_range = link_text.bold_range;
   link_info.offset = link_text.offset;
   link_info.callback =
       base::BindRepeating(&SelectBnplIssuerDialog::OnSettingsLinkClicked,
                           weak_ptr_factory_.GetWeakPtr());
-
   bnpl_footnote_view_ = SetFootnoteView(std::make_unique<BnplDialogFootnote>(
       link_text.text, std::move(link_info)));
+  bnpl_footnote_view_->SetProperty(views::kElementIdentifierKey,
+                                   SelectBnplIssuerDialog::kFootnoteViewId);
 }
 
 SelectBnplIssuerDialog::~SelectBnplIssuerDialog() = default;
 
 void SelectBnplIssuerDialog::DisplayThrobber() {
   bnpl_issuer_view_->SetVisible(false);
-  views::Throbber* throbber = nullptr;
-  container_view_->AddChildView(
-      views::Builder<views::BoxLayoutView>()
-          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
-          .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
-          .AddChild(views::Builder<views::Throbber>(
-                        std::make_unique<views::Throbber>(24))
-                        .CopyAddressTo(&throbber))
-          .SetProperty(views::kElementIdentifierKey,
-                       SelectBnplIssuerDialog::kThrobberId)
-          .Build());
-  throbber->Start();
-  throbber->SizeToPreferredSize();
-  throbber->GetViewAccessibility().AnnouncePolitely(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_BNPL_PROGRESS_DIALOG_LOADING_MESSAGE));
+  throbber_container_view_->SetVisible(true);
+}
+
+void SelectBnplIssuerDialog::DismissThrobberAndShowIssuerView() {
+  throbber_->Stop();
+  throbber_container_view_->SetVisible(false);
+  bnpl_issuer_view_->UpdateIssuers();
+  bnpl_issuer_view_->SetVisible(true);
 }
 
 bool SelectBnplIssuerDialog::OnCancelled() {
@@ -167,6 +188,32 @@ void SelectBnplIssuerDialog::AddedToWidget() {
       l10n_util::GetStringUTF16(IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME)));
 }
 
+void SelectBnplIssuerDialog::CreateThrobberView() {
+  if (!throbber_container_view_) {
+    throbber_container_view_ = container_view_->AddChildView(
+        views::Builder<views::BoxLayoutView>()
+            .SetCrossAxisAlignment(
+                views::BoxLayout::CrossAxisAlignment::kCenter)
+            .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
+            .SetProperty(views::kElementIdentifierKey,
+                         SelectBnplIssuerDialog::kThrobberId)
+            .Build());
+    throbber_ = throbber_container_view_->AddChildView(
+        std::make_unique<views::Throbber>(24));
+    throbber_->SizeToPreferredSize();
+  }
+  throbber_->Start();
+  throbber_->GetViewAccessibility().AnnouncePolitely(l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_BNPL_PROGRESS_DIALOG_LOADING_MESSAGE));
+}
+
+void SelectBnplIssuerDialog::CreateBnplIssuerView() {
+  bnpl_issuer_view_ = container_view_->AddChildView(
+      std::make_unique<BnplIssuerView>(controller_, this));
+  bnpl_issuer_view_->SetProperty(views::kElementIdentifierKey,
+                                 SelectBnplIssuerDialog::kBnplIssuerView);
+}
+
 void SelectBnplIssuerDialog::OnSettingsLinkClicked() {
   if (!web_contents_) {
     return;
@@ -183,10 +230,11 @@ void SelectBnplIssuerDialog::OnSettingsLinkClicked() {
 std::unique_ptr<payments::SelectBnplIssuerView>
 CreateAndShowBnplIssuerSelectionDialog(
     base::WeakPtr<payments::SelectBnplIssuerDialogController> controller,
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    bool has_seen_ai_terms) {
   auto select_issuer_view =
-      std::make_unique<payments::SelectBnplIssuerViewDesktop>(controller,
-                                                              web_contents);
+      std::make_unique<payments::SelectBnplIssuerViewDesktop>(
+          controller, web_contents, has_seen_ai_terms);
   return select_issuer_view;
 }
 

@@ -1,3 +1,9 @@
 include_rules = [
   "+components/android_autofill/browser/java/src/org/chromium/components/autofill/AutofillProvider.java"
 ]
+
+specific_include_rules = {
+  "PageContentProtoViewStructureBuilderUnitTest\.java":[
+    "+components/optimization_guide/content/browser/android/java/src/org/chromium/components/optimization_guide/content/PageContentProtoProviderBridge.java",
+  ]
+}

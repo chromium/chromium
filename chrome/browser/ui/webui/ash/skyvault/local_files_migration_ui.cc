@@ -20,7 +20,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 namespace policy::local_user_files {
@@ -87,12 +86,6 @@ void LocalFilesMigrationUI::BindInterface(
     mojo::PendingReceiver<mojom::PageHandlerFactory> receiver) {
   factory_receiver_.reset();
   factory_receiver_.Bind(std::move(receiver));
-}
-
-void LocalFilesMigrationUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 void LocalFilesMigrationUI::CreatePageHandler(

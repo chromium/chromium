@@ -7,11 +7,13 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 
 namespace regional_capabilities {
@@ -32,6 +34,11 @@ namespace search_engines {
 // have the needed registrations.
 // The creation of the various services involved with `TemplateURLService` can
 // be controlled by passing a custom `ServiceFactories`.
+//
+// NOTE: SearchEnginesTestEnvironment requires that tests have a properly set up
+// task environment. If your test doesn't already have one, use a
+// base::test::TaskEnvironment instance variable to fulfill this
+// requirement.
 class SearchEnginesTestEnvironment {
  public:
   struct Deps {
@@ -42,23 +49,30 @@ class SearchEnginesTestEnvironment {
         template_url_service_initializer;
   };
 
+  template <typename T>
+  using ServiceFactory = base::RepeatingCallback<std::unique_ptr<T>(
+      SearchEnginesTestEnvironment& self)>;
+
   struct ServiceFactories {
-    base::RepeatingCallback<
-        std::unique_ptr<regional_capabilities::RegionalCapabilitiesService>(
-            SearchEnginesTestEnvironment& self)>
+    ServiceFactory<regional_capabilities::RegionalCapabilitiesService>
         regional_capabilities_service_factory;
-    base::RepeatingCallback<std::unique_ptr<SearchEngineChoiceService>(
-        SearchEnginesTestEnvironment& self)>
+    ServiceFactory<SearchEngineChoiceService>
         search_engine_choice_service_factory;
-    base::RepeatingCallback<std::unique_ptr<TemplateURLService>(
-        SearchEnginesTestEnvironment& self)>
-        template_url_service_factory;
+    ServiceFactory<TemplateURLService> template_url_service_factory;
 
     ServiceFactories();
     ServiceFactories(const ServiceFactories& other);
     ServiceFactories& operator=(const ServiceFactories& other);
     ~ServiceFactories();
   };
+
+  static ServiceFactory<SearchEngineChoiceService>
+  GetSearchEngineChoiceServiceFactory(
+      bool skip_init = false,
+      base::RepeatingCallback<
+          std::unique_ptr<SearchEngineChoiceService::Client>()> client_factory =
+          base::RepeatingCallback<
+              std::unique_ptr<SearchEngineChoiceService::Client>()>());
 
   explicit SearchEnginesTestEnvironment(
       const Deps& deps = {/*pref_service=*/nullptr,
@@ -83,6 +97,8 @@ class SearchEnginesTestEnvironment {
 
   TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver();
 
+  policy::ManagementService& management_service();
+
   SearchEngineChoiceService& search_engine_choice_service();
 
   // Guaranteed to be non-null unless `ReleaseTemplateURLService` has been
@@ -94,9 +110,15 @@ class SearchEnginesTestEnvironment {
   // the function if forcing the service creation earlier is needed.
   const TemplateURLService* template_url_service() const;
 
+  signin::IdentityTestEnvironment& identity_test_env() {
+    return identity_test_env_;
+  }
+
   [[nodiscard]] std::unique_ptr<TemplateURLService> ReleaseTemplateURLService();
 
  private:
+  signin::IdentityTestEnvironment identity_test_env_;
+
   // Created when `Deps::local_state` is not provided.
   // Don't access it directly, prefer using `local_state_` instead.
   std::unique_ptr<TestingPrefServiceSimple> owned_local_state_;
@@ -117,6 +139,7 @@ class SearchEnginesTestEnvironment {
       regional_capabilities_service_;
   std::unique_ptr<TemplateURLPrepopulateData::Resolver>
       prepopulate_data_resolver_;
+  std::unique_ptr<policy::ManagementService> management_service_;
   std::unique_ptr<SearchEngineChoiceService> search_engine_choice_service_;
   std::unique_ptr<TemplateURLService> template_url_service_;
   bool released_template_url_service_ = false;

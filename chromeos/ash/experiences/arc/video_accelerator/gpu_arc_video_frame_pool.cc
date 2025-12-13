@@ -20,7 +20,7 @@
 #include "media/gpu/chromeos/native_pixmap_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "media/media_buildflags.h"
-#include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/buffer_types.h"
 
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
@@ -504,8 +504,8 @@ scoped_refptr<media::FrameResource> GpuArcVideoFramePool::CreateFrame(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!has_error_);
 
-  auto buffer_format = media::VideoPixelFormatToGfxBufferFormat(pixel_format);
-  CHECK(buffer_format);
+  auto si_format = media::VideoPixelFormatToSharedImageFormat(pixel_format);
+  CHECK(si_format);
   // Usage is SCANOUT_CPU_READ_WRITE because we may need to map the buffer in
   // order to use the LibYUVImageProcessorBackend.
   scoped_refptr<media::FrameResource> frame =
@@ -513,7 +513,7 @@ scoped_refptr<media::FrameResource> GpuArcVideoFramePool::CreateFrame(
           gfx::Rect(coded_size_), coded_size_, base::TimeDelta(),
           gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
           base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
-              coded_size_, *buffer_format,
+              coded_size_, *si_format,
               std::move(gmb_handle).native_pixmap_handle()));
 
   // Ensures that the tracking token is unique for frames in the frame pool.

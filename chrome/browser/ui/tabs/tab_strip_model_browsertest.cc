@@ -26,6 +26,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_test_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/prevent_close_test_base.h"
@@ -49,8 +51,9 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #endif
 
@@ -179,8 +182,7 @@ class TabStripModelBrowserTest : public InProcessBrowserTest,
                                  public TabStripModelObserver {
  public:
   TabStripModelBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kTabOrganization, features::kSideBySide}, {});
+    feature_list_.InitWithFeatures({features::kTabOrganization}, {});
   }
 
   void TearDownOnMainThread() override { observer_.Reset(); }
@@ -514,17 +516,21 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandDuplicateSelected) {
 class TabStripModelGlicMultiTabBrowserTest : public TabStripModelBrowserTest {
  public:
   TabStripModelGlicMultiTabBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        glic::mojom::features::kGlicMultiTab);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{glic::mojom::features::kGlicMultiTab, true},
+         {features::kGlicMultiInstance, false}});
   }
 
  protected:
   TabStripModel* tab_strip() { return browser()->tab_strip_model(); }
 
-  glic::GlicSharingManager& sharing_manager() {
+  glic::GlicKeyedService* service() {
     return glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-               browser()->profile())
-        ->sharing_manager();
+        browser()->profile());
+  }
+
+  glic::GlicSharingManager& sharing_manager() {
+    return service()->sharing_manager();
   }
 
   tabs::TabHandle TabHandleAtIndex(int index) {
@@ -596,6 +602,93 @@ IN_PROC_BROWSER_TEST_F(TabStripModelGlicMultiTabBrowserTest, ShareLimit) {
 
   sharing_manager().UnpinAllTabs();
   EXPECT_EQ(0, sharing_manager().GetNumPinnedTabs());
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripModelGlicMultiTabBrowserTest,
+                       StartSharingShouldOpenGlicWindow) {
+  AddTabs(1);
+  tab_strip()->ActivateTabAt(0);
+  EXPECT_FALSE(service()->IsWindowOrFreShowing());
+
+  tab_strip()->ExecuteContextMenuCommand(1,
+                                         TabStripModel::CommandGlicStartShare);
+
+  EXPECT_TRUE(service()->IsWindowOrFreShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripModelGlicMultiTabBrowserTest,
+                       StartSharingShouldNotCloseGlicWindow) {
+  AddTabs(1);
+  tab_strip()->ActivateTabAt(0);
+  service()->ToggleUI(/*bwi=*/nullptr, /*prevent_close=*/true,
+                      glic::mojom::InvocationSource::kOsButton);
+  EXPECT_TRUE(service()->IsWindowOrFreShowing());
+
+  tab_strip()->ExecuteContextMenuCommand(1,
+                                         TabStripModel::CommandGlicStartShare);
+
+  EXPECT_TRUE(service()->IsWindowOrFreShowing());
+}
+
+class TabStripModelTestTabGroupEntryPointsEnabled
+    : public TabStripModelBrowserTest {
+ public:
+  TabStripModelTestTabGroupEntryPointsEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kTabGroupMenuMoreEntryPoints);
+  }
+
+  TabStrip* tabstrip() {
+    return views::AsViewClass<HorizontalTabStripRegionView>(
+               browser()->GetBrowserView().tab_strip_view())
+        ->tab_strip();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabStripModelTestTabGroupEntryPointsEnabled,
+                       TestMostRecentlyUsedGroup) {
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabGroupModel* tab_group_model = tab_strip_model->group_model();
+  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
+  ASSERT_TRUE(tab_group_model);
+
+  TabStripController* tab_strip_controller = tabstrip()->controller();
+  tab_strip_controller->CreateNewTab(NewTabTypes::kNewTabCommand);
+  tab_strip_controller->CreateNewTab(NewTabTypes::kNewTabCommand);
+  tab_strip_controller->CreateNewTab(NewTabTypes::kNewTabCommand);
+
+  ASSERT_TRUE(tab_strip_model->count() == 4);
+
+  const tab_groups::TabGroupId group_1 = tab_strip_model->AddToNewGroup({1});
+  const tab_groups::TabGroupId group_2 = tab_strip_model->AddToNewGroup({2});
+  const tab_groups::TabGroupId group_3 = tab_strip_model->AddToNewGroup({3});
+
+  tab_strip_model->ActivateTabAt(2);
+  tab_strip_model->ActivateTabAt(1);
+  tab_strip_model->ActivateTabAt(3);
+  tab_strip_model->ActivateTabAt(0);
+
+  std::optional<tab_groups::TabGroupId> most_recently_used =
+      tab_group_model->GetMostRecentTabGroupId();
+
+  EXPECT_TRUE(most_recently_used);
+  EXPECT_EQ(*most_recently_used, group_3);
+
+  tab_strip_controller->RemoveTabFromGroup(3);
+  most_recently_used = tab_group_model->GetMostRecentTabGroupId();
+  EXPECT_TRUE(most_recently_used);
+  EXPECT_EQ(*most_recently_used, group_1);
+
+  tab_strip_controller->RemoveTabFromGroup(1);
+  most_recently_used = tab_group_model->GetMostRecentTabGroupId();
+  EXPECT_TRUE(most_recently_used);
+  EXPECT_EQ(*most_recently_used, group_2);
+
+  tab_strip_controller->RemoveTabFromGroup(2);
+  EXPECT_FALSE(tab_group_model->GetMostRecentTabGroupId());
 }
 
 #endif  // BUILDFLAG(ENABLE_GLIC)

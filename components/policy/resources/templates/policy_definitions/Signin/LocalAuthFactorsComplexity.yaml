@@ -1,0 +1,54 @@
+owners:
+- ghostbusters@google.com
+
+caption: Set minimum complexity for local PINs and passwords
+
+desc: |-
+  This policy configures the minimum complexity requirements for local authentication factors (PINs and local passwords) set by users on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
+
+  If this policy is not set, default to complexity level None.
+
+  This policy's requirements are enforced when a user sets up a new local PIN/password or changes an existing one.
+
+  The complexity levels are based on Android's password quality metrics (https://developers.google.com/android/management/reference/rest/v1/PasswordRequirements), adapted for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>:
+  - 1 = None: A PIN/password is required, but there are no restrictions on its content or length.
+  - 2 = Low: Basic complexity requirements.
+  - 3 = Medium: Stricter length and character-type requirements.
+  - 4 = High: Strongest complexity requirements, demanding multiple character types.
+
+  See the help center article for detailed explanations of what each level entails for both PINs and passwords.
+
+future_on:
+- chrome_os
+
+features:
+  dynamic_refresh: true
+  per_profile: false
+
+type: int-enum
+
+schema:
+  type: integer
+  enum:
+  - 1
+  - 2
+  - 3
+  - 4
+
+items:
+- caption: No Complexity
+  name: None
+  value: 1
+- caption: Low Complexity
+  name: Low
+  value: 2
+- caption: Medium Complexity
+  name: Medium
+  value: 3
+- caption: High Complexity
+  name: High
+  value: 4
+
+default: 1
+example_value: 1
+tags: []

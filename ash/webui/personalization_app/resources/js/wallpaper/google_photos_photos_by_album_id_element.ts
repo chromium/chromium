@@ -41,7 +41,7 @@ function getPlaceholders(): GooglePhotosPhoto[] {
     return {
       id: PLACEHOLDER_ID,
       name: '',
-      date: {data: []},
+      date: '',
       url: {url: ''},
       dedupKey: null,
       location: null,

@@ -36,7 +36,7 @@ const char kId1[] = "id1";
 const char kId2[] = "id2";
 const char kId3[] = "id3";
 
-int64_t kTimeBetweenEachCommandMs = 200;
+constexpr int64_t kTimeBetweenEachCommandMs = 200;
 
 struct RegisterAdvertisementArgs {
   RegisterAdvertisementArgs(

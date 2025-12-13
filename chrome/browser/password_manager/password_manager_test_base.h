@@ -96,9 +96,6 @@ class BubbleObserver {
   // PasswordManagerBrowserTestBase.
   bool WaitForFallbackForSaving() const;
 
-  // Returns once the prompt for saving unsynced credentials pops up.
-  void WaitForSaveUnsyncedCredentialsPrompt() const;
-
  private:
   void WaitForState(password_manager::ui::State target_state) const;
 

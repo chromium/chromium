@@ -2,21 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/stream_parser_factory.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_span.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
@@ -92,12 +88,9 @@ typedef StreamParser* (*ParserFactoryFunction)(
     MediaLog* media_log);
 
 struct SupportedTypeInfo {
-  const char* type;
+  const std::string_view type;
   const ParserFactoryFunction factory_function;
-  // This field is not a raw_ptr<> because both levels of pointer only ever
-  // point to statically-allocated data which is never freed, and hence cannot
-  // dangle.
-  RAW_PTR_EXCLUSION const CodecInfo* const* codecs;
+  const base::raw_span<const CodecInfo* const> codecs;
 };
 
 static const CodecInfo kVP8CodecInfo = {"vp8", CodecInfo::VIDEO, nullptr,
@@ -119,16 +112,20 @@ static const CodecInfo kAV1CodecInfo = {"av01.*", CodecInfo::VIDEO, nullptr,
                                         CodecInfo::HISTOGRAM_AV1};
 #endif
 
-static const CodecInfo* const kVideoWebMCodecs[] = {
-    &kVP8CodecInfo,  &kLegacyVP9CodecInfo, &kVP9CodecInfo, &kVorbisCodecInfo,
-    &kOpusCodecInfo, &kOpusCodecInfo2,
+static const auto kVideoWebMCodecs = std::to_array<const CodecInfo* const>({
+    &kVP8CodecInfo,
+    &kLegacyVP9CodecInfo,
+    &kVP9CodecInfo,
+    &kVorbisCodecInfo,
+    &kOpusCodecInfo,
+    &kOpusCodecInfo2,
 #if BUILDFLAG(ENABLE_AV1_DECODER)
     &kAV1CodecInfo,
 #endif
-    nullptr};
+});
 
-static const CodecInfo* const kAudioWebMCodecs[] = {
-    &kVorbisCodecInfo, &kOpusCodecInfo, &kOpusCodecInfo2, nullptr};
+static const auto kAudioWebMCodecs = std::to_array<const CodecInfo* const>(
+    {&kVorbisCodecInfo, &kOpusCodecInfo, &kOpusCodecInfo2});
 
 static StreamParser* BuildWebMParser(base::span<const std::string> codecs,
                                      MediaLog* media_log) {
@@ -290,7 +287,8 @@ static const CodecInfo kMpegHAudioCodecInfo2 = {
 
 static const CodecInfo kMP3CodecInfo = {nullptr, CodecInfo::AUDIO, nullptr,
                                         CodecInfo::HISTOGRAM_MP3};
-static const CodecInfo* const kAudioMP3Codecs[] = {&kMP3CodecInfo, nullptr};
+static const auto kAudioMP3Codecs =
+    std::to_array<const CodecInfo* const>({&kMP3CodecInfo});
 
 static StreamParser* BuildMP3Parser(base::span<const std::string> codecs,
                                     MediaLog* media_log) {
@@ -310,113 +308,117 @@ static const CodecInfo kIAMFCodecInfo2 = {"iamf.*", CodecInfo::AUDIO, nullptr,
                                           CodecInfo::HISTOGRAM_IAMF};
 #endif  // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
 
-static const CodecInfo* const kVideoMP4Codecs[] = {&kMPEG4FLACCodecInfo,
-                                                   &kMPEG4FLACCodecInfo2,
-                                                   &kOpusCodecInfo,
-                                                   &kOpusCodecInfo2,
-                                                   &kMPEG4VP09CodecInfo,
+static const auto kVideoMP4Codecs = std::to_array<const CodecInfo* const>({
+    &kMPEG4FLACCodecInfo,
+    &kMPEG4FLACCodecInfo2,
+    &kOpusCodecInfo,
+    &kOpusCodecInfo2,
+    &kMPEG4VP09CodecInfo,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-                                                   &kH264AVC1CodecInfo,
-                                                   &kH264AVC3CodecInfo,
+    &kH264AVC1CodecInfo,
+    &kH264AVC3CodecInfo,
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-                                                   &kHEVCHEV1CodecInfo,
-                                                   &kHEVCHVC1CodecInfo,
+    &kHEVCHEV1CodecInfo,
+    &kHEVCHVC1CodecInfo,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
-                                                   &kDolbyVisionAVCCodecInfo1,
-                                                   &kDolbyVisionAVCCodecInfo2,
+    &kDolbyVisionAVCCodecInfo1,
+    &kDolbyVisionAVCCodecInfo2,
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-                                                   &kDolbyVisionHEVCCodecInfo1,
-                                                   &kDolbyVisionHEVCCodecInfo2,
+    &kDolbyVisionHEVCCodecInfo1,
+    &kDolbyVisionHEVCCodecInfo2,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
-                                                   &kMPEG4AACCodecInfo,
-                                                   &kMPEG2AACLCCodecInfo,
+    &kMPEG4AACCodecInfo,
+    &kMPEG2AACLCCodecInfo,
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
-                                                   &kMpegHAudioCodecInfo1,
-                                                   &kMpegHAudioCodecInfo2,
+    &kMpegHAudioCodecInfo1,
+    &kMpegHAudioCodecInfo2,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-                                                   &kAC3CodecInfo1,
-                                                   &kAC3CodecInfo2,
-                                                   &kAC3CodecInfo3,
-                                                   &kEAC3CodecInfo1,
-                                                   &kEAC3CodecInfo2,
-                                                   &kEAC3CodecInfo3,
+    &kAC3CodecInfo1,
+    &kAC3CodecInfo2,
+    &kAC3CodecInfo3,
+    &kEAC3CodecInfo1,
+    &kEAC3CodecInfo2,
+    &kEAC3CodecInfo3,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 #if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
-                                                   &kAC4CodecInfo1,
-                                                   &kAC4CodecInfo2,
-                                                   &kAC4CodecInfo3,
-                                                   &kAC4CodecInfo4,
-                                                   &kAC4CodecInfo5,
-                                                   &kAC4CodecInfo6,
+    &kAC4CodecInfo1,
+    &kAC4CodecInfo2,
+    &kAC4CodecInfo3,
+    &kAC4CodecInfo4,
+    &kAC4CodecInfo5,
+    &kAC4CodecInfo6,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-                                                   &kDTSCodecInfo1,
-                                                   &kDTSCodecInfo2,
-                                                   &kDTSCodecInfo3,
-                                                   &kDTSXCodecInfo1,
-                                                   &kDTSXCodecInfo2,
-                                                   &kDTSXCodecInfo3,
-                                                   &kDTSECodecInfo1,
-                                                   &kDTSECodecInfo2,
-                                                   &kDTSECodecInfo3,
+    &kDTSCodecInfo1,
+    &kDTSCodecInfo2,
+    &kDTSCodecInfo3,
+    &kDTSXCodecInfo1,
+    &kDTSXCodecInfo2,
+    &kDTSXCodecInfo3,
+    &kDTSECodecInfo1,
+    &kDTSECodecInfo2,
+    &kDTSECodecInfo3,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(ENABLE_AV1_DECODER)
-                                                   &kAV1CodecInfo,
+    &kAV1CodecInfo,
 #endif  // BUILDFLAG(ENABLE_AV1_DECODER)
 #if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
-                                                   &kIAMFCodecInfo1,
-                                                   &kIAMFCodecInfo2,
+    &kIAMFCodecInfo1,
+    &kIAMFCodecInfo2,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
-                                                   nullptr};
+});
 
-static const CodecInfo* const kAudioMP4Codecs[] = {&kMPEG4FLACCodecInfo,
-                                                   &kMPEG4FLACCodecInfo2,
-                                                   &kOpusCodecInfo,
-                                                   &kOpusCodecInfo2,
+// clang-format off
+static const auto kAudioMP4Codecs = std::to_array<const CodecInfo* const>({
+    &kMPEG4FLACCodecInfo,
+    &kMPEG4FLACCodecInfo2,
+    &kOpusCodecInfo,
+    &kOpusCodecInfo2,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-                                                   &kMPEG4AACCodecInfo,
-                                                   &kMPEG2AACLCCodecInfo,
+    &kMPEG4AACCodecInfo,
+    &kMPEG2AACLCCodecInfo,
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
-                                                   &kMpegHAudioCodecInfo1,
-                                                   &kMpegHAudioCodecInfo2,
+        & kMpegHAudioCodecInfo1,
+    &kMpegHAudioCodecInfo2,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-                                                   &kAC3CodecInfo1,
-                                                   &kAC3CodecInfo2,
-                                                   &kAC3CodecInfo3,
-                                                   &kEAC3CodecInfo1,
-                                                   &kEAC3CodecInfo2,
-                                                   &kEAC3CodecInfo3,
+    &kAC3CodecInfo1,
+    &kAC3CodecInfo2,
+    &kAC3CodecInfo3,
+    &kEAC3CodecInfo1,
+    &kEAC3CodecInfo2,
+    &kEAC3CodecInfo3,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 #if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
-                                                   &kAC4CodecInfo1,
-                                                   &kAC4CodecInfo2,
-                                                   &kAC4CodecInfo3,
-                                                   &kAC4CodecInfo4,
-                                                   &kAC4CodecInfo5,
-                                                   &kAC4CodecInfo6,
+    &kAC4CodecInfo1,
+    &kAC4CodecInfo2,
+    &kAC4CodecInfo3,
+    &kAC4CodecInfo4,
+    &kAC4CodecInfo5,
+    &kAC4CodecInfo6,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-                                                   &kDTSCodecInfo1,
-                                                   &kDTSCodecInfo2,
-                                                   &kDTSCodecInfo3,
-                                                   &kDTSXCodecInfo1,
-                                                   &kDTSXCodecInfo2,
-                                                   &kDTSXCodecInfo3,
-                                                   &kDTSECodecInfo1,
-                                                   &kDTSECodecInfo2,
-                                                   &kDTSECodecInfo3,
+    &kDTSCodecInfo1,
+    &kDTSCodecInfo2,
+    &kDTSCodecInfo3,
+    &kDTSXCodecInfo1,
+    &kDTSXCodecInfo2,
+    &kDTSXCodecInfo3,
+    &kDTSECodecInfo1,
+    &kDTSECodecInfo2,
+    &kDTSECodecInfo3,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
-                                                   &kIAMFCodecInfo1,
-                                                   &kIAMFCodecInfo2,
+    &kIAMFCodecInfo1,
+    &kIAMFCodecInfo2,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
-                                                   nullptr};
+});
+// clang-format on
 
 static StreamParser* BuildMP4Parser(base::span<const std::string> codecs,
                                     MediaLog* media_log) {
@@ -515,7 +517,8 @@ static StreamParser* BuildMP4Parser(base::span<const std::string> codecs,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 static const CodecInfo kADTSCodecInfo = {nullptr, CodecInfo::AUDIO, nullptr,
                                          CodecInfo::HISTOGRAM_MPEG4AAC};
-static const CodecInfo* const kAudioADTSCodecs[] = {&kADTSCodecInfo, nullptr};
+static const auto kAudioADTSCodecs =
+    std::to_array<const CodecInfo* const>({&kADTSCodecInfo});
 
 static StreamParser* BuildADTSParser(base::span<const std::string> codecs,
                                      MediaLog* media_log) {
@@ -533,13 +536,14 @@ static const CodecInfo kMPEG2TS_MP3CodecInfo1 = {
 static const CodecInfo kMPEG2TS_MP3CodecInfo2 = {
     "mp4a.6B", CodecInfo::AUDIO, nullptr, CodecInfo::HISTOGRAM_MP3};
 
-static const CodecInfo* const kVideoMP2TCodecs[] = {&kH264AVC1CodecInfo,
-                                                    &kH264AVC3CodecInfo,
-                                                    &kMPEG2TS_MP3CodecInfo1,
-                                                    &kMPEG2TS_MP3CodecInfo2,
-                                                    &kMPEG4AACCodecInfo,
-                                                    &kMPEG2AACLCCodecInfo,
-                                                    nullptr};
+static const auto kVideoMP2TCodecs = std::to_array<const CodecInfo* const>({
+    &kH264AVC1CodecInfo,
+    &kH264AVC3CodecInfo,
+    &kMPEG2TS_MP3CodecInfo1,
+    &kMPEG2TS_MP3CodecInfo2,
+    &kMPEG4AACCodecInfo,
+    &kMPEG2AACLCCodecInfo,
+});
 
 static StreamParser* BuildMP2TParser(base::span<const std::string> codecs,
                                      MediaLog* media_log) {
@@ -675,24 +679,22 @@ static SupportsType CheckTypeAndCodecs(
       for (const auto& codec_id : codecs) {
         // Search the type info for a match.
         bool found_codec = false;
-        for (int i = 0; type_info.codecs[i]; ++i) {
+        for (const auto* codec : type_info.codecs) {
           // Only check a codec pattern if there is one to check. Some types,
           // like audio/mpeg and audio/aac require there be no codecs parameter,
           // and instead have implicit codec. If a codec is provided for such a
           // type then it is not supported by MSE. We don't check any other
           // potential matches because none should be configured.
-          if (!type_info.codecs[i]->pattern) {
-            DCHECK(i == 0 && !type_info.codecs[1])
+          if (!codec->pattern) {
+            DCHECK(type_info.codecs.size() == 1)
                 << "For a type with implicit codec, then only one codec must "
                    "be configured";
             break;
           }
 
-          if (base::MatchPattern(codec_id, type_info.codecs[i]->pattern) &&
-              (!type_info.codecs[i]->validator ||
-               type_info.codecs[i]->validator(codec_id, media_log))) {
-            found_codec =
-                VerifyCodec(type_info.codecs[i], audio_codecs, video_codecs);
+          if (base::MatchPattern(codec_id, codec->pattern) &&
+              (!codec->validator || codec->validator(codec_id, media_log))) {
+            found_codec = VerifyCodec(codec, audio_codecs, video_codecs);
             break;  // Since only 1 pattern will match, no need to check others.
           }
         }

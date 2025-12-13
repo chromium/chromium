@@ -36,8 +36,6 @@ NSString* const kSearchWhatYouSeePromoAXID = @"kSearchWhatYouSeePromoAXID";
   self.secondaryActionString = l10n_util::GetNSString(
       IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_PROMO_SHOW_ME_HOW_ACTION);
 
-  self.showDismissBarButton = YES;
-
   [super viewDidLoad];
 
   self.view.accessibilityIdentifier = kSearchWhatYouSeePromoAXID;

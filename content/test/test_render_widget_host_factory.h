@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "content/browser/renderer_host/render_widget_host_factory.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace content {
 

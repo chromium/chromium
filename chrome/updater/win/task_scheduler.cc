@@ -7,6 +7,7 @@
 #include <mstask.h>
 #include <oleauto.h>
 #include <security.h>
+#include <shlobj.h>
 #include <taskschd.h>
 #include <wrl/client.h>
 
@@ -38,6 +39,7 @@
 #include "base/win/windows_version.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util/win_util.h"
 
 namespace updater {
 namespace {
@@ -423,11 +425,82 @@ class TaskSchedulerV2 final : public TaskScheduler {
     return !IsTaskRegistered(task_name);
   }
 
+  bool RegisterTaskDefinition(Microsoft::WRL::ComPtr<ITaskDefinition> task,
+                              const std::wstring& task_name,
+                              const base::CommandLine& run_command,
+                              const base::win::ScopedBstr& user_name,
+                              bool is_system) {
+    Microsoft::WRL::ComPtr<IRegisteredTask> registered_task;
+    base::win::ScopedVariant user(user_name.Get());
+
+    const HRESULT hr = task_folder_->RegisterTaskDefinition(
+        base::win::ScopedBstr(task_name).Get(), task.Get(),
+        TASK_CREATE_OR_UPDATE,
+        *user.AsInput(),  // Not really input, but API expect non-const.
+        base::win::ScopedVariant::kEmptyVariant,
+        is_system ? TASK_LOGON_SERVICE_ACCOUNT : TASK_LOGON_INTERACTIVE_TOKEN,
+        base::win::ScopedVariant::kEmptyVariant, &registered_task);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "RegisterTaskDefinition failed: " << std::hex << hr
+                 << ", Task XML: " << GetTaskXml(task.Get());
+      return false;
+    }
+
+    if (!is_system && ::IsUserAnAdmin()) {
+      // Best-effort (returns `true` on any failure) to adjust privileges to
+      // explicitly allow the current user to be able to manipulate the task
+      // folder and task at medium integrity since the per-user task is being
+      // installed elevated. This allows a subsequent `updater` running at
+      // medium integrity to edit or delete the installed task.
+      constexpr LONG kRequestedSecurityInformation =
+          OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION |
+          DACL_SECURITY_INFORMATION | SACL_SECURITY_INFORMATION;
+      for (auto& task_interface :
+           std::vector<std::variant<Microsoft::WRL::ComPtr<ITaskFolder>,
+                                    Microsoft::WRL::ComPtr<IRegisteredTask>>>{
+               task_folder_, registered_task}) {
+        std::visit(
+            [](auto& task_ifc) {
+              base::win::ScopedBstr sddl;
+              HRESULT hr = task_ifc->GetSecurityDescriptor(
+                  kRequestedSecurityInformation, sddl.Receive());
+              if (FAILED(hr)) {
+                LOG(ERROR) << "GetSecurityDescriptor failed: " << std::hex
+                           << hr;
+                return;
+              }
+
+              std::optional<std::wstring> new_sddl =
+                  AddCurrentUserAllowedAce(sddl.Get(), FILE_ALL_ACCESS, 0);
+              if (!new_sddl) {
+                return;
+              }
+              hr = task_ifc->SetSecurityDescriptor(
+                  base::win::ScopedBstr(*new_sddl).Get(), 0);
+              if (FAILED(hr)) {
+                LOG(ERROR) << "SetSecurityDescriptor failed: " << *new_sddl
+                           << ": " << std::hex << hr;
+                return;
+              }
+            },
+            task_interface);
+      }
+    }
+
+    VLOG(1) << __func__ << ":" << task_name << ": "
+            << run_command.GetCommandLineString();
+    return true;
+  }
+
   bool RegisterTask(const std::wstring& task_name,
                     const std::wstring& task_description,
                     const base::CommandLine& run_command,
                     int trigger_types,
                     bool hidden) override {
+    if (!task_folder_) {
+      return false;
+    }
+
     // Create the task definition object to create the task.
     Microsoft::WRL::ComPtr<ITaskDefinition> task;
     HRESULT hr = task_service_->NewTask(0, &task);
@@ -693,28 +766,8 @@ class TaskSchedulerV2 final : public TaskScheduler {
     }
 
     DVLOG(2) << "Registering Task with XML: " << GetTaskXml(task.Get());
-
-    Microsoft::WRL::ComPtr<IRegisteredTask> registered_task;
-    base::win::ScopedVariant user(user_name.Get());
-
-    if (task_folder_) {
-      hr = task_folder_->RegisterTaskDefinition(
-          base::win::ScopedBstr(task_name).Get(), task.Get(),
-          TASK_CREATE_OR_UPDATE,
-          *user.AsInput(),  // Not really input, but API expect non-const.
-          base::win::ScopedVariant::kEmptyVariant,
-          is_system ? TASK_LOGON_SERVICE_ACCOUNT : TASK_LOGON_INTERACTIVE_TOKEN,
-          base::win::ScopedVariant::kEmptyVariant, &registered_task);
-      if (FAILED(hr)) {
-        LOG(ERROR) << "RegisterTaskDefinition failed: " << std::hex << hr;
-        LOG(ERROR) << "Task XML: " << GetTaskXml(task.Get());
-        return false;
-      }
-    }
-
-    VLOG(1) << __func__ << ":" << task_name << ": "
-            << run_command.GetCommandLineString();
-    return IsTaskRegistered(task_name);
+    return RegisterTaskDefinition(task, task_name, run_command, user_name,
+                                  is_system);
   }
 
   bool StartTask(const std::wstring& task_name) override {
@@ -857,6 +910,18 @@ class TaskSchedulerV2 final : public TaskScheduler {
     if (FAILED(hr)) {
       PLOG(ERROR) << "CreateInstance failed for CLSID_TaskScheduler. "
                   << std::hex << hr;
+      return nullptr;
+    }
+
+    // Calling ITaskService::Connect crashes when the current user is empty.
+    // This is correlated with a Windows update followed by a computer
+    // restart (crbug.com/434269515).
+    const std::wstring current_user = [] {
+      base::win::ScopedBstr user_name;
+      return GetCurrentUser(user_name) ? std::wstring(user_name.Get())
+                                       : std::wstring();
+    }();
+    if (current_user.empty()) {
       return nullptr;
     }
     hr = task_service->Connect(base::win::ScopedVariant::kEmptyVariant,

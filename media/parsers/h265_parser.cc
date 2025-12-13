@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/parsers/h265_parser.h"
 
 #include <stddef.h>
@@ -71,40 +66,44 @@ namespace {
 // raster scan order. We get k4x4RasterScanOrderIdxToUpRightDiagScanOrderIdx[6]
 // which is 8. Then we get arrayInUpRightDiagOrder[8] which in the example above
 // is 'g'.
-constexpr size_t k4x4RasterScanOrderIdxToUpRightDiagScanOrderIdx[] = {
-    0, 2, 5, 9, 1, 4, 8, 12, 3, 7, 11, 14, 6, 10, 13, 15,
+constexpr std::array<size_t, 16>
+    k4x4RasterScanOrderIdxToUpRightDiagScanOrderIdx = {
+        0, 2, 5, 9, 1, 4, 8, 12, 3, 7, 11, 14, 6, 10, 13, 15,
 };
 
 // k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx serves the same purpose as
 // k4x4RasterScanOrderIdxToUpRightDiagScanOrderIdx but for 8x8 matrices. This
 // array is also derived from the algorithm in 6.5.3 in a similar manner with
 // (1 << log2BlockSize) as the input where log2BlockSize is 3.
-constexpr size_t k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx[] = {
-    0,  2,  5,  9,  14, 20, 27, 35, 1,  4,  8,  13, 19, 26, 34, 42,
-    3,  7,  12, 18, 25, 33, 41, 48, 6,  11, 17, 24, 32, 40, 47, 53,
-    10, 16, 23, 31, 39, 46, 52, 57, 15, 22, 30, 38, 45, 51, 56, 60,
-    21, 29, 37, 44, 50, 55, 59, 62, 28, 36, 43, 49, 54, 58, 61, 63,
+constexpr std::array<size_t, 64>
+    k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx = {
+        0,  2,  5,  9,  14, 20, 27, 35, 1,  4,  8,  13, 19, 26, 34, 42,
+        3,  7,  12, 18, 25, 33, 41, 48, 6,  11, 17, 24, 32, 40, 47, 53,
+        10, 16, 23, 31, 39, 46, 52, 57, 15, 22, 30, 38, 45, 51, 56, 60,
+        21, 29, 37, 44, 50, 55, 59, 62, 28, 36, 43, 49, 54, 58, 61, 63,
 };
 
 // From Table 7-6.
-constexpr uint8_t kDefaultScalingListSize1To3Matrix0To2[] = {
-    16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 17, 16, 17, 16, 17, 18,
-    17, 18, 18, 17, 18, 21, 19, 20, 21, 20, 19, 21, 24, 22, 22, 24,
-    24, 22, 22, 24, 25, 25, 27, 30, 27, 25, 25, 29, 31, 35, 35, 31,
-    29, 36, 41, 44, 41, 36, 47, 54, 54, 47, 65, 70, 65, 88, 88, 115,
+constexpr std::array<uint8_t, H265ScalingListData::kScalingListSizeId1To3Count>
+    kDefaultScalingListSize1To3Matrix0To2 = {
+        16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 17, 16, 17, 16, 17, 18,
+        17, 18, 18, 17, 18, 21, 19, 20, 21, 20, 19, 21, 24, 22, 22, 24,
+        24, 22, 22, 24, 25, 25, 27, 30, 27, 25, 25, 29, 31, 35, 35, 31,
+        29, 36, 41, 44, 41, 36, 47, 54, 54, 47, 65, 70, 65, 88, 88, 115,
 };
-constexpr uint8_t kDefaultScalingListSize1To3Matrix3To5[] = {
-    16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 17, 17, 17, 17, 17, 18,
-    18, 18, 18, 18, 18, 20, 20, 20, 20, 20, 20, 20, 24, 24, 24, 24,
-    24, 24, 24, 24, 25, 25, 25, 25, 25, 25, 25, 28, 28, 28, 28, 28,
-    28, 33, 33, 33, 33, 33, 41, 41, 41, 41, 54, 54, 54, 71, 71, 91,
+constexpr std::array<uint8_t, H265ScalingListData::kScalingListSizeId1To3Count>
+    kDefaultScalingListSize1To3Matrix3To5 = {
+        16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 17, 17, 17, 17, 17, 18,
+        18, 18, 18, 18, 18, 20, 20, 20, 20, 20, 20, 20, 24, 24, 24, 24,
+        24, 24, 24, 24, 25, 25, 25, 25, 25, 25, 25, 28, 28, 28, 28, 28,
+        28, 33, 33, 33, 33, 33, 41, 41, 41, 41, 54, 54, 54, 71, 71, 91,
 };
 
 // VUI parameters: Table E-1 "Interpretation of sample aspect ratio indicator"
-constexpr int kTableSarWidth[] = {0,  1,  12, 10, 16,  40, 24, 20, 32,
-                                  80, 18, 15, 64, 160, 4,  3,  2};
-constexpr int kTableSarHeight[] = {0,  1,  11, 11, 11, 33, 11, 11, 11,
-                                   33, 11, 11, 33, 99, 3,  2,  1};
+constexpr std::array<int, 17> kTableSarWidth = {
+    0, 1, 12, 10, 16, 40, 24, 20, 32, 80, 18, 15, 64, 160, 4, 3, 2};
+constexpr std::array<int, 17> kTableSarHeight = {
+    0, 1, 11, 11, 11, 33, 11, 11, 11, 33, 11, 11, 33, 99, 3, 2, 1};
 static_assert(std::size(kTableSarWidth) == std::size(kTableSarHeight),
               "sar tables must have the same size");
 
@@ -112,13 +111,12 @@ void FillInDefaultScalingListData(H265ScalingListData* scaling_list_data,
                                   int size_id,
                                   int matrix_id) {
   if (size_id == 0) {
-    std::fill_n(scaling_list_data->scaling_list_4x4[matrix_id],
-                H265ScalingListData::kScalingListSizeId0Count,
-                H265ScalingListData::kDefaultScalingListSize0Values);
+    scaling_list_data->scaling_list_4x4[matrix_id].fill(
+        H265ScalingListData::kDefaultScalingListSize0Values);
     return;
   }
 
-  uint8_t* dst;
+  base::span<uint8_t> dst;
   switch (size_id) {
     case 1:
       dst = scaling_list_data->scaling_list_8x8[matrix_id];
@@ -130,13 +128,13 @@ void FillInDefaultScalingListData(H265ScalingListData* scaling_list_data,
       dst = scaling_list_data->scaling_list_32x32[matrix_id];
       break;
   }
-  const uint8_t* src;
-  if (matrix_id < 3)
+  base::span<const uint8_t> src;
+  if (matrix_id < 3) {
     src = kDefaultScalingListSize1To3Matrix0To2;
-  else
+  } else {
     src = kDefaultScalingListSize1To3Matrix3To5;
-  memcpy(dst, src,
-         H265ScalingListData::kScalingListSizeId1To3Count * sizeof(*src));
+  }
+  dst.copy_from(src);
 
   // These are sixteen because the default for the minus8 values is 8.
   if (size_id == 2)
@@ -155,8 +153,6 @@ uint8_t H265ScalingListData::GetScalingList4x4EntryInRasterOrder(
   // Per equation 7-44, ScalingList[0][matrixId][..] (i.e., the 4x4 scaling list
   // data) is associated with ScanOrder[2][0][..] (i.e., an up-right diagonal
   // scan ordering for a 4x4 matrix).
-  CHECK_LT(raster_idx,
-           std::size(k4x4RasterScanOrderIdxToUpRightDiagScanOrderIdx));
   const size_t up_right_diag_idx =
       k4x4RasterScanOrderIdxToUpRightDiagScanOrderIdx[raster_idx];
   return scaling_list_4x4[matrix_id][up_right_diag_idx];
@@ -168,8 +164,6 @@ uint8_t H265ScalingListData::GetScalingList8x8EntryInRasterOrder(
   // Per equation 7-45, ScalingList[1][matrixId][..] (i.e., the 8x8 scaling list
   // data) is associated with ScanOrder[3][0][..] (i.e., an up-right diagonal
   // scan ordering for an 8x8 matrix).
-  CHECK_LT(raster_idx,
-           std::size(k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx));
   const size_t up_right_diag_idx =
       k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx[raster_idx];
   return scaling_list_8x8[matrix_id][up_right_diag_idx];
@@ -181,8 +175,6 @@ uint8_t H265ScalingListData::GetScalingList16x16EntryInRasterOrder(
   // Per equation 7-46, ScalingList[2][matrixId][..] (i.e., the 16x16 scaling
   // list data) is associated with ScanOrder[3][0][..] (i.e., an up-right
   // diagonal scan ordering for an 8x8 matrix).
-  CHECK_LT(raster_idx,
-           std::size(k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx));
   const size_t up_right_diag_idx =
       k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx[raster_idx];
   return scaling_list_16x16[matrix_id][up_right_diag_idx];
@@ -194,8 +186,6 @@ uint8_t H265ScalingListData::GetScalingList32x32EntryInRasterOrder(
   // Per equation 7-48, ScalingList[3][matrixId][..] (i.e., the 32x32 scaling
   // list data) is associated with ScanOrder[3][0][..] (i.e., an up-right
   // diagonal scan ordering for an 8x8 matrix).
-  CHECK_LT(raster_idx,
-           std::size(k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx));
   const size_t up_right_diag_idx =
       k8x8RasterScanOrderIdxToUpRightDiagScanOrderIdx[raster_idx];
   return scaling_list_32x32[matrix_id][up_right_diag_idx];
@@ -514,18 +504,18 @@ H265Parser::Result H265Parser::ParseVPS(int* vps_id) {
     }
     bool splitting_flag;
     READ_BOOL_OR_RETURN(&splitting_flag);
-    bool scalability_mask_flag[16] = {};
+    std::array<bool, 16> scalability_mask_flag = {};
     int num_scalability_types = 0;
     for (int i = 0; i < 16; ++i) {
       READ_BOOL_OR_RETURN(&scalability_mask_flag[i]);
       num_scalability_types += scalability_mask_flag[i];
     }
-    int dimension_id_len_minus1[16] = {};
+    std::array<int, 16> dimension_id_len_minus1 = {};
     for (int j = 0; j < (num_scalability_types - splitting_flag); ++j) {
       READ_BITS_OR_RETURN(3, &dimension_id_len_minus1[j]);
     }
 
-    int dim_bit_offset[17] = {};
+    std::array<int, 17> dim_bit_offset = {};
     if (splitting_flag) {
       // Equation F-2
       for (int j = 1; j <= num_scalability_types - 1; ++j) {
@@ -552,7 +542,7 @@ H265Parser::Result H265Parser::ParseVPS(int* vps_id) {
       if (vps_nuh_layer_id_present_flag) {
         READ_BITS_OR_RETURN(6, &layer_id_in_nuh_i);
       }
-      int dimension_id_i[16] = {};
+      std::array<int, 16> dimension_id_i = {};
       if (!splitting_flag) {
         for (int j = 0; j < num_scalability_types; ++j) {
           READ_BITS_OR_RETURN(dimension_id_len_minus1[j] + 1,
@@ -569,7 +559,7 @@ H265Parser::Result H265Parser::ParseVPS(int* vps_id) {
 
       // F.7.4.3.1.1 dimension_id
       // We can skip layer zero because all dimension_id[0][j] == 0.
-      int scalability_id_i[16] = {};
+      std::array<int, 16> scalability_id_i = {};
       for (int sm_idx = 0, j = 0; sm_idx < 16; ++sm_idx) {
         if (scalability_mask_flag[sm_idx]) {
           scalability_id_i[sm_idx] = dimension_id_i[j++];
@@ -1124,8 +1114,8 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
 
   DCHECK(shdr);
   shdr->nal_unit_type = nalu.nal_unit_type;
-  shdr->nalu_data = nalu.data.get();
-  shdr->nalu_size = nalu.size;
+  shdr->nalu_data = nalu.data.data();
+  shdr->nalu_size = nalu.data.size();
   shdr->temporal_id = nalu.nuh_temporal_id_plus1 - 1;
 
   READ_BOOL_OR_RETURN(&shdr->first_slice_segment_in_pic_flag);
@@ -1164,9 +1154,11 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
     // Copy everything in the structure starting at |slice_type| going forward.
     // This is copying the dependent slice data that we do not parse below.
     size_t skip_amount = offsetof(H265SliceHeader, slice_type);
-    memcpy(reinterpret_cast<uint8_t*>(shdr) + skip_amount,
-           reinterpret_cast<uint8_t*>(prior_shdr) + skip_amount,
-           sizeof(H265SliceHeader) - skip_amount);
+    // TODO(crbug.com/40285824): Find more graceful way to copy a part of the
+    // struct
+    UNSAFE_TODO(memcpy(reinterpret_cast<uint8_t*>(shdr) + skip_amount,
+                       reinterpret_cast<uint8_t*>(prior_shdr) + skip_amount,
+                       sizeof(H265SliceHeader) - skip_amount));
 
     // We also need to validate the fields that have conditions that depend on
     // anything unique in this slice (i.e. anything already parsed).
@@ -1449,9 +1441,13 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
     // as one memory range.
     size_t block_start = offsetof(H265SliceHeader, short_term_ref_pic_set_idx);
     size_t block_end = offsetof(H265SliceHeader, slice_sao_luma_flag);
-    TRUE_OR_RETURN(!memcmp(reinterpret_cast<uint8_t*>(shdr) + block_start,
-                           reinterpret_cast<uint8_t*>(prior_shdr) + block_start,
-                           block_end - block_start));
+
+    // TODO(crbug.com/40285824): Find more graceful way to compare a part of the
+    // struct
+    UNSAFE_TODO(TRUE_OR_RETURN(
+        !memcmp(reinterpret_cast<uint8_t*>(shdr) + block_start,
+                reinterpret_cast<uint8_t*>(prior_shdr) + block_start,
+                block_end - block_start)));
   }
 
   // byte_alignment()
@@ -1556,11 +1552,11 @@ H265Parser::Result H265Parser::ParseProfileTierLevel(
     READ_BOOL_OR_RETURN(
         &profile_tier_level->general_one_picture_only_constraint_flag);
     SKIP_BITS_OR_RETURN(35);  // general_reserved_zero_35bits
-    SKIP_BITS_OR_RETURN(1);  // general_inbld_flag
+    SKIP_BITS_OR_RETURN(1);   // general_inbld_flag
   }
   READ_BITS_OR_RETURN(8, &profile_tier_level->general_level_idc);
-  bool sub_layer_profile_present_flag[8];
-  bool sub_layer_level_present_flag[8];
+  std::array<bool, 8> sub_layer_profile_present_flag;
+  std::array<bool, 8> sub_layer_level_present_flag;
   for (int i = 0; i < max_num_sub_layers_minus1; ++i) {
     READ_BOOL_OR_RETURN(&sub_layer_profile_present_flag[i]);
     READ_BOOL_OR_RETURN(&sub_layer_level_present_flag[i]);
@@ -1613,29 +1609,24 @@ H265Parser::Result H265Parser::ParseScalingListData(
         } else {
           int ref_matrix_id = matrix_id - scaling_list_pred_matrix_id_delta *
                                               (size_id == 3 ? 3 : 1);
-          uint8_t* dst;
-          uint8_t* src;
-          int count = H265ScalingListData::kScalingListSizeId1To3Count;
           switch (size_id) {
             case 0:
-              src = scaling_list_data->scaling_list_4x4[ref_matrix_id];
-              dst = scaling_list_data->scaling_list_4x4[matrix_id];
-              count = H265ScalingListData::kScalingListSizeId0Count;
+              scaling_list_data->scaling_list_4x4[matrix_id] =
+                  scaling_list_data->scaling_list_4x4[ref_matrix_id];
               break;
             case 1:
-              src = scaling_list_data->scaling_list_8x8[ref_matrix_id];
-              dst = scaling_list_data->scaling_list_8x8[matrix_id];
+              scaling_list_data->scaling_list_8x8[matrix_id] =
+                  scaling_list_data->scaling_list_8x8[ref_matrix_id];
               break;
             case 2:
-              src = scaling_list_data->scaling_list_16x16[ref_matrix_id];
-              dst = scaling_list_data->scaling_list_16x16[matrix_id];
+              scaling_list_data->scaling_list_16x16[matrix_id] =
+                  scaling_list_data->scaling_list_16x16[ref_matrix_id];
               break;
             case 3:
-              src = scaling_list_data->scaling_list_32x32[ref_matrix_id];
-              dst = scaling_list_data->scaling_list_32x32[matrix_id];
+              scaling_list_data->scaling_list_32x32[matrix_id] =
+                  scaling_list_data->scaling_list_32x32[ref_matrix_id];
               break;
           }
-          memcpy(dst, src, count * sizeof(*src));
 
           if (size_id == 2) {
             scaling_list_data->scaling_list_dc_coef_16x16[matrix_id] =
@@ -1721,10 +1712,10 @@ H265Parser::Result H265Parser::ParseStRefPicSet(int st_rps_idx,
     if (is_slice_hdr) {
       st_ref_pic_set->rps_idx_num_delta_pocs = ref_set.num_delta_pocs;
     }
-    bool used_by_curr_pic_flag[kMaxShortTermRefPicSets];
-    bool use_delta_flag[kMaxShortTermRefPicSets];
+    std::array<bool, kMaxShortTermRefPicSets> used_by_curr_pic_flag;
+    std::array<bool, kMaxShortTermRefPicSets> use_delta_flag;
     // 7.4.8 - use_delta_flag defaults to 1 if not present.
-    std::fill_n(use_delta_flag, kMaxShortTermRefPicSets, true);
+    use_delta_flag.fill(true);
 
     for (int j = 0; j <= ref_set.num_delta_pocs; j++) {
       READ_BOOL_OR_RETURN(&used_by_curr_pic_flag[j]);
@@ -2035,8 +2026,8 @@ H265Parser::Result H265Parser::ParsePredWeightTable(
         pred_weight_table->luma_log2_weight_denom;
     IN_RANGE_OR_RETURN(pred_weight_table->chroma_log2_weight_denom, 0, 7);
   }
-  bool luma_weight_flag[kMaxRefIdxActive] = {};
-  bool chroma_weight_flag[kMaxRefIdxActive] = {};
+  std::array<bool, kMaxRefIdxActive> luma_weight_flag;
+  std::array<bool, kMaxRefIdxActive> chroma_weight_flag;
   for (int i = 0; i <= shdr.num_ref_idx_l0_active_minus1; ++i) {
     READ_BOOL_OR_RETURN(&luma_weight_flag[i]);
   }
@@ -2072,7 +2063,7 @@ H265Parser::Result H265Parser::ParsePredWeightTable(
   if (shdr.IsPSlice())
     TRUE_OR_RETURN(sum_weight_l0_flags <= 24);
   if (shdr.IsBSlice()) {
-    memset(chroma_weight_flag, 0, sizeof(chroma_weight_flag));
+    chroma_weight_flag.fill(false);
     int sum_weight_l1_flags = 0;
     for (int i = 0; i <= shdr.num_ref_idx_l1_active_minus1; ++i) {
       READ_BOOL_OR_RETURN(&luma_weight_flag[i]);

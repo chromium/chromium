@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/test/media_router/access_code_cast/access_code_cast_integration_browsertest.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
@@ -25,8 +28,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
 
   // This tests that if the network is not present (we are not connected to the
   // internet), we will see a server error in the access code dialog box.
-  SetUpPrimaryAccountWithHostedDomain(signin::ConsentLevel::kSync,
-                                      browser()->profile());
+  SetUpPrimaryAccountWithHostedDomain(browser()->profile());
 
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       network::mojom::ConnectionType::CONNECTION_NONE);
@@ -78,8 +80,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
 
   EnableAccessCodeCasting();
 
-  SetUpPrimaryAccountWithHostedDomain(signin::ConsentLevel::kSync,
-                                      browser()->profile());
+  SetUpPrimaryAccountWithHostedDomain(browser()->profile());
 
   auto* dialog_contents = ShowDialog();
   SetAccessCode("abcdef", dialog_contents);
@@ -94,13 +95,18 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
-                       ExpectProfileSynErrorWhenNoSync) {
+                       ExpectErrorWhenNoSigninError) {
   EnableAccessCodeCasting();
 
-  // This tests that an account that does not have Sync enabled will throw a
-  // generic error.
-  SetUpPrimaryAccountWithHostedDomain(signin::ConsentLevel::kSignin,
-                                      browser()->profile());
+  // This tests that an account with auth error will throw a generic error.
+  SetUpPrimaryAccountWithHostedDomain(browser()->profile());
+  signin::IdentityManager* identity_manager =
+      AccessCodeCastSinkServiceFactory::GetForProfile(browser()->profile())
+          ->GetIdentityManager();
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager,
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
 
   auto* dialog_contents = ShowDialog();
   SetAccessCode("abcdef", dialog_contents);
@@ -147,8 +153,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
 
   EnableAccessCodeCasting();
 
-  SetUpPrimaryAccountWithHostedDomain(signin::ConsentLevel::kSync,
-                                      browser()->profile());
+  SetUpPrimaryAccountWithHostedDomain(browser()->profile());
 
   auto* dialog_contents = ShowDialog();
   SetAccessCode("abcdef", dialog_contents);
@@ -196,8 +201,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
 
   EnableAccessCodeCasting();
 
-  SetUpPrimaryAccountWithHostedDomain(signin::ConsentLevel::kSync,
-                                      browser()->profile());
+  SetUpPrimaryAccountWithHostedDomain(browser()->profile());
 
   auto* dialog_contents = ShowDialog();
   SetAccessCodeUsingKeyPress("ABCDEF");

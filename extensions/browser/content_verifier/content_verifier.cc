@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -20,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/trace_event/typed_macros.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -30,8 +32,10 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_l10n_util.h"
+#include "extensions/common/extension_resource.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
@@ -48,32 +52,16 @@ namespace {
 ContentVerifier::TestObserver* g_content_verifier_test_observer = nullptr;
 using content_verifier_utils::CanonicalRelativePath;
 
-// This function converts paths like "//foo/bar", "./foo/bar", and
-// "/foo/bar" to "foo/bar". It also converts path separators to "/".
-base::FilePath NormalizeRelativePath(const base::FilePath& path) {
-  // Remove leading separator characters.
-  auto path_trimmed_separators = base::FilePath(base::TrimString(
-      path.value(), base::FilePath::kSeparators, base::TRIM_LEADING));
+// This function converts paths like "foo/bar", "./foo/bar", and "foo/x/../bar"
+// to "foo/bar". It also converts path separators to "/".
+base::FilePath NormalizeRelativePath(const base::FilePath& relative_path) {
+  CHECK(!relative_path.IsAbsolute());
 
-  // Ideally, we shouldn't end up here with an absolute path, but it can happen.
-  // For example, an extension's manifest may contain:
-  //
-  // "icons": { "48": "C:/icon.png" }
-  //
-  // In this case, such icon path is rejected on installation, but not when an
-  // installed extension is loaded.
-  //
-  // TODO(https://crbug.com/407932132): Make sure we only reach here with
-  // relative paths and replace this with a CHECK.
-  if (path_trimmed_separators.IsAbsolute()) {
-    return base::FilePath();
-  }
-
-  base::FilePath path_normalized =
-      content_verifier_utils::NormalizePathComponents(path_trimmed_separators);
+  base::FilePath relative_path_normalized =
+      content_verifier_utils::NormalizePathComponents(relative_path);
 
   std::vector<base::FilePath::StringType> parts =
-      path_normalized.GetComponents();
+      relative_path_normalized.GetComponents();
 
   // Remove all parent directory components from the beginning of the path,
   // since they're ignored when using the path in the request url, e.g.
@@ -88,7 +76,7 @@ base::FilePath NormalizeRelativePath(const base::FilePath& path) {
   base::FilePath::StringType normalized_relative_path =
       base::JoinString(parts, base::FilePath::StringType(1, '/'));
   // Preserve trailing separator, if present.
-  if (path.EndsWithSeparator() && !normalized_relative_path.empty()) {
+  if (relative_path.EndsWithSeparator() && !normalized_relative_path.empty()) {
     normalized_relative_path.push_back('/');
   }
   return base::FilePath(normalized_relative_path);
@@ -102,9 +90,9 @@ std::unique_ptr<ContentVerifierIOData::ExtensionData> CreateIOData(
   if (source_type == ContentVerifierDelegate::VerifierSourceType::NONE)
     return nullptr;
 
-  // The browser image paths from the extension may not be relative (eg
-  // they might have leading '/' or './'), so we strip those to make
-  // comparing to actual relative paths work later on.
+  // The browser image paths from the extension might have '.' or '..'
+  // components, so we strip those to make comparing to actual relative
+  // paths work later on.
   std::set<base::FilePath> original_image_paths =
       delegate->GetBrowserImagePaths(extension);
   auto canonicalize_path = [](const base::FilePath& relative_path) {
@@ -340,6 +328,12 @@ class ContentVerifier::HashHelper {
       ContentVerifierDelegate::VerifierSourceType source_type,
       const IsCancelledCallback& is_cancelled,
       ContentHash::CreatedCallback created_callback) {
+    TRACE_EVENT("extensions.content_verifier.debug",
+                "HashHelper::ReadHashOnFileTaskRunner",
+                "fetch_key_extension_id", fetch_key.extension_id,
+                "fetch_key_extension_root", fetch_key.extension_root,
+                "fetch_key_extension_version",
+                fetch_key.extension_version.GetString());
     ContentHash::Create(
         std::move(fetch_key), source_type, is_cancelled,
         base::BindOnce(&HashHelper::ForwardToIO, std::move(created_callback)));
@@ -349,6 +343,10 @@ class ContentVerifier::HashHelper {
       const scoped_refptr<ContentHash> content_hash,
       const IsCancelledCallback& is_cancelled,
       ContentHash::CreatedCallback created_callback) {
+    TRACE_EVENT("extensions.content_verifier.debug",
+                "HashHelper::ForceBuildComputedHashesOnFileTaskRuner",
+                "hash_extension_id", content_hash->extension_id(),
+                "hash_extension_root", content_hash->extension_root());
     content_hash->ForceBuildComputedHashes(
         is_cancelled,
         base::BindOnce(&HashHelper::ForwardToIO, std::move(created_callback)));
@@ -358,6 +356,10 @@ class ContentVerifier::HashHelper {
                    const scoped_refptr<IsCancelledChecker>& checker,
                    scoped_refptr<ContentHash> content_hash,
                    bool was_cancelled) {
+    TRACE_EVENT("extensions.content_verifier.debug", "HashHelper::DidReadHash",
+                "hash_extension_id", content_hash->extension_id(),
+                "hash_extension_root", content_hash->extension_root(),
+                "was_cancelled", (was_cancelled ? "true" : "false"));
     DCHECK(checker);
     if (was_cancelled ||
         // The request might have been cancelled on IO after |content_hash| was
@@ -398,6 +400,11 @@ class ContentVerifier::HashHelper {
                            const scoped_refptr<IsCancelledChecker>& checker,
                            scoped_refptr<ContentHash> content_hash,
                            bool was_cancelled) {
+    TRACE_EVENT("extensions.content_verifier.debug",
+                "HashHelper::CompleteDidReadHash", "hash_extension_id",
+                content_hash->extension_id(), "hash_extension_root",
+                content_hash->extension_root(), "was_cancelled",
+                (was_cancelled ? "true" : "false"));
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
     DCHECK(checker);
     if (was_cancelled ||
@@ -579,6 +586,7 @@ void ContentVerifier::ShutdownOnIO() {
 scoped_refptr<ContentVerifyJob> ContentVerifier::CreateAndStartJobFor(
     const ExtensionId& extension_id,
     const base::FilePath& extension_root,
+    const base::Version& extension_version,
     const base::FilePath& relative_path,
     scoped_refptr<ContentVerifier> verifier) {
   base::FilePath normalized_unix_path = NormalizeRelativePath(relative_path);
@@ -586,7 +594,7 @@ scoped_refptr<ContentVerifyJob> ContentVerifier::CreateAndStartJobFor(
   // TODO(asargent) - we can probably get some good performance wins by having
   // a cache of ContentHashReader's that we hold onto past the end of each job.
   scoped_refptr<ContentVerifyJob> job = base::MakeRefCounted<ContentVerifyJob>(
-      extension_id, extension_root, normalized_unix_path);
+      extension_id, extension_version, extension_root, normalized_unix_path);
 
   // Priority set explicitly to avoid unwanted task priority inheritance.
   content::GetIOThreadTaskRunner({base::TaskPriority::USER_BLOCKING})
@@ -618,6 +626,12 @@ void ContentVerifier::CreateContentHash(
     const base::Version& extension_version,
     bool force_missing_computed_hashes_creation,
     ContentHashCallback callback) {
+  TRACE_EVENT("extensions.content_verifier.debug",
+              "ContentVerifier::CreateContentHash", "extension_id",
+              extension_id, "extension_root", extension_root,
+              "extension_version", extension_version.GetString(),
+              "force_missing_computed_hashes_creation",
+              (force_missing_computed_hashes_creation ? "true" : "false"));
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (shutdown_on_io_) {
     return;
@@ -643,6 +657,11 @@ scoped_refptr<const ContentHash> ContentVerifier::GetCachedContentHash(
     const ExtensionId& extension_id,
     const base::Version& extension_version,
     bool force_missing_computed_hashes_creation) {
+  TRACE_EVENT("extensions.content_verifier.debug",
+              "ContentVerifier::GetCachedContentHash", "extension_id",
+              extension_id, "extension_version", extension_version.GetString(),
+              "force_missing_computed_hashes_creation",
+              (force_missing_computed_hashes_creation ? "true" : "false"));
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (shutdown_on_io_) {
     return nullptr;
@@ -664,6 +683,9 @@ void ContentVerifier::VerifyFailed(
     const std::vector<VerifiedFileType>& failed_file_types,
     int manifest_version,
     ContentVerifyJob::FailureReason reason) {
+  TRACE_EVENT("extensions.content_verifier.debug",
+              "ContentVerifier::VerifyFailed", "extension_id", extension_id,
+              "ContentVerifyJob::FailureReason", reason);
   if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -725,21 +747,6 @@ void ContentVerifier::VerifyFailed(
           "Extensions.ContentVerification.VerifyFailedOnFileTypeMV3",
           file_type);
     }
-
-    // TODO(crbug.com/325613709): Remove docs offline specific logging after a
-    // few milestones.
-    if (extension_id == extension_misc::kDocsOfflineExtensionId &&
-        manifest_version == 3) {
-      base::UmaHistogramEnumeration(
-          base::StringPrintf("Extensions.ContentVerification."
-                             "VerifyFailedOnFileMV3.GoogleDocsOffline.%s",
-                             histogram_suffix),
-          reason, ContentVerifyJob::FAILURE_REASON_MAX);
-      base::UmaHistogramEnumeration(
-          "Extensions.ContentVerification.VerifyFailedOnFileTypeMV3."
-          "GoogleDocsOffline",
-          file_type);
-    }
   }
 
   delegate_->VerifyFailed(extension_id, reason);
@@ -748,6 +755,10 @@ void ContentVerifier::VerifyFailed(
 void ContentVerifier::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
+  TRACE_EVENT("extensions.content_verifier.debug",
+              "ContentVerifier::OnExtensionLoaded", "extension_id",
+              extension->id(), "extension_root", extension->path(),
+              "extension_version", extension->version().GetString());
   if (shutdown_on_ui_)
     return;
 
@@ -764,6 +775,10 @@ void ContentVerifier::OnExtensionLoadedOnIO(
     const base::FilePath& extension_root,
     const base::Version& extension_version,
     std::unique_ptr<ContentVerifierIOData::ExtensionData> data) {
+  TRACE_EVENT("extensions.content_verifier.debug",
+              "ContentVerifier::OnExtensionLoadedOnIO", "extension_id",
+              extension_id, "extension_root", extension_root,
+              "extension_version", extension_version.GetString());
   if (shutdown_on_io_)
     return;
 
@@ -784,6 +799,11 @@ void ContentVerifier::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
+  TRACE_EVENT("extensions.content_verifier.debug",
+              "ContentVerifier::OnExtensionUnloaded", "extension_id",
+              extension->id(), "extension_root", extension->path(),
+              "extension_version", extension->version().GetString(),
+              "UnloadedExtensionReason", reason);
   if (shutdown_on_ui_)
     return;
   content::GetIOThreadTaskRunner({})->PostTask(
@@ -816,6 +836,9 @@ void ContentVerifier::ClearCacheForTesting() {
 void ContentVerifier::OnExtensionUnloadedOnIO(
     const ExtensionId& extension_id,
     const base::Version& extension_version) {
+  TRACE_EVENT("extensions.content_verifier.debug",
+              "ContentVerifier::OnExtensionUnloadedOnIO", "extension_id",
+              extension_id, "extension_version", extension_version.GetString());
   if (shutdown_on_io_)
     return;
   io_data_.RemoveData(extension_id);
@@ -844,19 +867,26 @@ void ContentVerifier::OnExtensionDataReady(const ExtensionId& extension_id) {
   }
 }
 
-bool ContentVerifier::StartJob(const scoped_refptr<ContentVerifyJob>& job) {
+void ContentVerifier::StartJob(const scoped_refptr<ContentVerifyJob>& job) {
+  TRACE_EVENT("extensions.content_verifier.debug", "ContentVerifier::StartJob",
+              "job_extension_id", job->extension_id());
   const ContentVerifierIOData::ExtensionData* data =
       io_data_.GetData(job->extension_id());
   // The absence of |data| means that we don't have to verify the extension
   // resource.
   if (!data) {
-    return false;
+    return;
   }
+
+  TRACE_EVENT_INSTANT("extensions.content_verifier.debug",
+                      "ContentVerifier::StartJob", "job_extension_id",
+                      job->extension_id(), "data_extension_version",
+                      data->version.GetString());
 
   VerifiedFileType verified_file_type =
       VerifiedFileTypeHelper(*data).GetVerifiedFileType(job->relative_path());
   if (verified_file_type == VerifiedFileType::kNone) {
-    return false;  // Not a file to be verified.
+    return;  // Not a file to be verified.
   }
 
   std::vector<VerifiedFileType> file_types({verified_file_type});
@@ -864,8 +894,19 @@ bool ContentVerifier::StartJob(const scoped_refptr<ContentVerifyJob>& job) {
       base::BindOnce(&ContentVerifier::VerifyFailed, this, job->extension_id(),
                      file_types, data->manifest_version);
 
-  job->Start(this, data->version, data->manifest_version, std::move(callback));
-  return true;
+  const base::Version& current_extension_version = data->version;
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kContentVerifyJobUseJobVersionForHashing) &&
+      current_extension_version != job->extension_version()) {
+    // This verify job must've started after a newer version of the extension
+    // has been loaded so let's not start the job since it'll try to check for a
+    // non-existent `ContentHash` and/or create a `ContentHash` for an unloaded
+    // extension version.
+    return;
+  }
+
+  job->Start(this, current_extension_version, data->manifest_version,
+             std::move(callback));
 }
 
 void ContentVerifier::OnFetchComplete(
@@ -894,29 +935,6 @@ void ContentVerifier::OnFetchComplete(
   if (g_content_verifier_test_observer) {
     g_content_verifier_test_observer->OnFetchComplete(content_hash,
                                                       did_hash_mismatch);
-  }
-
-  auto record_hash_mismatch = [&data, &did_hash_mismatch](
-                                  const char* mv2_histogram,
-                                  const char* mv3_histogram) {
-    if (mv2_histogram && data->manifest_version == 2) {
-      base::UmaHistogramBoolean(mv2_histogram, did_hash_mismatch);
-    } else if (data->manifest_version == 3) {
-      base::UmaHistogramBoolean(mv3_histogram, did_hash_mismatch);
-    }
-  };
-
-  record_hash_mismatch(
-      "Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV2",
-      "Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV3");
-
-  // TODO(crbug.com/325613709): Remove docs offline specific logging after a few
-  // milestones.
-  if (extension_id == extension_misc::kDocsOfflineExtensionId) {
-    record_hash_mismatch(
-        nullptr,  // No MV2 Google Docs Offline version.
-        "Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV3."
-        "GoogleDocsOffline");
   }
 
   if (!did_hash_mismatch)

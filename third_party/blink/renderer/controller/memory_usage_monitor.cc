@@ -48,9 +48,9 @@ bool MemoryUsageMonitor::HasObserver(Observer* observer) {
 void MemoryUsageMonitor::StartMonitoringIfNeeded() {
   if (timer_.IsRunning())
     return;
-  timer_.Start(FROM_HERE, kPingInterval,
-               WTF::BindRepeating(&MemoryUsageMonitor::TimerFired,
-                                  WTF::Unretained(this)));
+  timer_.Start(
+      FROM_HERE, kPingInterval,
+      BindRepeating(&MemoryUsageMonitor::TimerFired, Unretained(this)));
 }
 
 void MemoryUsageMonitor::StopMonitoring() {

@@ -4,8 +4,6 @@
 
  /* #css_wrapper_metadata_start
  * #type=style-lit
- * #import=../toolbar_styles_shared.css.js
- * #include=toolbar-styles-shared
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
@@ -23,4 +21,22 @@
 
 .check-mark-showing-false {
   visibility: hidden;
+}
+
+.check-mark {
+  margin: 0;
+}
+
+.dropdown-item {
+  align-items: center;
+  font-size: 13px;
+  min-width: 180px;
+  padding-left: 20px;
+}
+
+cr-icon {
+  --icon-size: 20px;
+  height: var(--icon-size);
+  margin: 0px 8px 0px 4px;
+  width: var(--icon-size);
 }

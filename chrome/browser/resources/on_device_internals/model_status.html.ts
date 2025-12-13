@@ -32,10 +32,28 @@ export function getHtml(this: OnDeviceInternalsModelStatusElement) {
             <span class="value">${baseInfo.version}</value>
           </div>
           <div>
+            Backend Type: <span class="value">${baseInfo.backendType}</value>
+          </div>
+          <div>
             File path:
             <span class="value">${baseInfo.filePath}</value>
           </div>
+          <div>
+            Folder size:
+            <span class="value">
+              ${(Number(baseInfo.fileSize) / 1024 / 1024).
+                toLocaleString('en-US', {maximumFractionDigits : 2})} MiB
+            </value>
+          </div>
         </div>` : html``}
+        <div>
+          <progress value="${this.loadProgress}" max="${this.loadMax}">
+          </progress>
+          <span>${this.readableLoadProgress}</span><span>/</span>
+          <span>${this.readableLoadMax}</span>
+        </div>
+        <cr-button class="cr-button-gap"
+            @click="${this.uninstallDefaultModel_}">Uninstall</cr-button>
       </div>
     </div>
     <div class="cr-row">
@@ -108,12 +126,12 @@ export function getHtml(this: OnDeviceInternalsModelStatusElement) {
             <td>${adaptation.version}</td>
             <td>${adaptation.isRecentlyUsed}</td>
             <td>
-              <button @click=${() =>
+              <button @click="${() =>
                 this.onFeatureUsageSetterClick_(adaptation.featureKey, true)
-              }>set to true</button>
-              <button @click=${() =>
+              }">set to true</button>
+              <button @click="${() =>
                 this.onFeatureUsageSetterClick_(adaptation.featureKey, false)
-              }>set to false</button>
+              }">set to false</button>
             </td>
           </tr>`)}
       </tbody>

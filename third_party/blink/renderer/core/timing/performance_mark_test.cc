@@ -127,8 +127,8 @@ TEST_F(PerformanceMarkTest, BuildJSONValue) {
           .ToLocalChecked(),
       kDoNotExternalize);
 
-  auto parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(json_string.Utf8());
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      json_string.Utf8(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(parsed_json->is_dict());
 
   EXPECT_EQ(expected_name, parsed_json->GetDict().FindString("name")->c_str());

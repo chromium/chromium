@@ -18,6 +18,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/updater/event_history.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/manager.h"
@@ -46,9 +47,9 @@ class PolicyStatus {
   PolicyStatus(const PolicyStatus&) = default;
   PolicyStatus& operator=(const PolicyStatus&) = default;
 
-  void AddPolicyIfNeeded(bool is_managed,
-                         const std::string& source,
-                         const T& policy) {
+  void AddPolicy(bool is_managed, const std::string& source, const T& policy) {
+    all_policies_.emplace_back(source, policy);
+
     if (conflict_policy_) {
       return;  // We already have enough policies.
     }
@@ -67,6 +68,7 @@ class PolicyStatus {
   const std::optional<Entry>& conflict_policy() const {
     return conflict_policy_;
   }
+  const std::vector<Entry>& all_policies() const { return all_policies_; }
 
   std::optional<T> effective_policy_value() const {
     return effective_policy_ ? std::optional<T>(effective_policy_->policy)
@@ -86,6 +88,7 @@ class PolicyStatus {
  private:
   std::optional<Entry> effective_policy_;
   std::optional<Entry> conflict_policy_;
+  std::vector<Entry> all_policies_;
 };
 
 // The PolicyService returns policies for enterprise managed machines from the
@@ -167,7 +170,7 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   PolicyStatus<int> DeprecatedGetLastCheckPeriodMinutes() const;
 
   // Helper methods.
-  base::Value GetAllPolicies() const;
+  base::Value::Dict GetAllPolicies() const;
   std::string GetAllPoliciesAsString() const;
   bool AreUpdatesSuppressedNow(base::Time now = base::Time::Now()) const;
 
@@ -196,6 +199,7 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   // provided DM policy manager.
   void FetchPoliciesDone(
       scoped_refptr<PolicyFetcher> fetcher,
+      LoadPolicyEndEvent event,
       int result,
       scoped_refptr<PolicyManagerInterface> dm_policy_manager);
 
@@ -223,7 +227,7 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   // providers should be ahead of non-managed providers.
   // Also contains a named map indexed by `source()` for all the policy
   // managers.
-  PolicyManagers policy_managers_;
+  std::unique_ptr<PolicyManagers> policy_managers_;
   const scoped_refptr<ExternalConstants> external_constants_;
 
   base::OnceCallback<void(int)> fetch_policies_callback_;

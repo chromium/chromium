@@ -98,8 +98,9 @@ class SnapshotBrowserTest : public ContentBrowserTest {
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
     GURL absolute_url = embedded_test_server()->GetURL(request.relative_url);
-    if (absolute_url.path() != "/test")
+    if (absolute_url.GetPath() != "/test") {
       return nullptr;
+    }
 
     std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
         new net::test_server::BasicHttpResponse());

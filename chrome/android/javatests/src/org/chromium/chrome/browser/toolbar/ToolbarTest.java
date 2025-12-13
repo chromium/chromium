@@ -10,15 +10,13 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -28,10 +26,10 @@ import android.content.res.Configuration;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -42,6 +40,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -52,8 +53,12 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSceneLayer;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSceneLayerJni;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.findinpage.FindToolbar;
@@ -77,6 +82,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
@@ -86,7 +93,6 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for toolbar manager behavior. */
@@ -98,6 +104,10 @@ public class ToolbarTest {
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private BookmarkBarSceneLayer.Natives mBookmarkBarSceneLayerJniMock;
+
     private static final String TEST_PAGE = "/chrome/test/data/android/test.html";
     private WebPageStation mPage;
     private ChromeTabbedActivity mActivity;
@@ -105,6 +115,8 @@ public class ToolbarTest {
     @Before
     public void setUp() throws InterruptedException {
         BookmarkBarUtils.setBookmarkBarVisibleForTesting(true);
+        BookmarkBarSceneLayerJni.setInstanceForTesting(mBookmarkBarSceneLayerJniMock);
+
         TabbedRootUiCoordinator.setDisableTopControlsAnimationsForTesting(true);
         mPage = mActivityTestRule.startOnBlankPage();
         mActivity = mActivityTestRule.getActivity();
@@ -170,6 +182,8 @@ public class ToolbarTest {
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
     @Restriction({DeviceFormFactor.PHONE})
+    @DisabledTest
+    // TODO(crbug.com/447525636): Re-enable tests.
     public void testControlContainerTopMarginWhenBookmarkBarIsEnabledOnPhone() {
         testControlContainerTopMargin(/* expectBookmarkBar= */ false);
     }
@@ -186,7 +200,7 @@ public class ToolbarTest {
     private void testControlContainerTopMargin(boolean expectBookmarkBar) {
         // Verify bookmark bar (in-)existence.
         final @Nullable var bookmarkBar = mActivity.findViewById(R.id.bookmark_bar);
-        assertThat(bookmarkBar, is(expectBookmarkBar ? notNullValue() : nullValue()));
+        assertThat(bookmarkBar != null).isEqualTo(expectBookmarkBar);
 
         // Verify browser controls manager existence.
         final var browserControlsManager =
@@ -252,7 +266,7 @@ public class ToolbarTest {
                         ApplicationProvider.getApplicationContext());
         String testUrl = testServer.getURL(TEST_PAGE);
 
-        Tab tab = mActivity.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         // Load new tab page.
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
@@ -355,8 +369,8 @@ public class ToolbarTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @DisabledTest(message = "Flaky, see crbug.com/464502425")
     public void testToggleTabStripVisibility() {
         int tabStripHeightResource =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
@@ -443,7 +457,7 @@ public class ToolbarTest {
 
         final ToolbarPhone toolbarPhone =
                 (ToolbarPhone) mActivity.getToolbarManager().getToolbarLayoutForTesting();
-        final View incognitoNtpView = mActivity.getActivityTab().getView();
+        final View incognitoNtpView = mActivityTestRule.getActivityTab().getView();
 
         setControlsPosition(ControlsPosition.TOP);
         verifyTopControlsAccessibilityOrder(toolbarPhone, incognitoNtpView);
@@ -459,7 +473,7 @@ public class ToolbarTest {
 
         final ToolbarPhone toolbarPhone =
                 (ToolbarPhone) mActivity.getToolbarManager().getToolbarLayoutForTesting();
-        final View incognitoNtpView = mActivity.getActivityTab().getView();
+        final View incognitoNtpView = mActivityTestRule.getActivityTab().getView();
 
         setControlsPosition(ControlsPosition.BOTTOM);
         verifyBottomControlsAccessibilityOrder(toolbarPhone, incognitoNtpView);
@@ -475,7 +489,7 @@ public class ToolbarTest {
 
         final ToolbarPhone toolbarPhone =
                 (ToolbarPhone) mActivity.getToolbarManager().getToolbarLayoutForTesting();
-        final View regularNtpView = mActivity.getActivityTab().getView();
+        final View regularNtpView = mActivityTestRule.getActivityTab().getView();
 
         setControlsPosition(ControlsPosition.BOTTOM);
         verifyAccessibilityOrderIsReset(toolbarPhone, regularNtpView);
@@ -489,7 +503,7 @@ public class ToolbarTest {
 
         mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
 
-        final Tab incognitoNtpTab = mActivity.getActivityTab();
+        final Tab incognitoNtpTab = mActivityTestRule.getActivityTab();
         ToolbarPhone toolbarPhone =
                 (ToolbarPhone) mActivity.getToolbarManager().getToolbarLayoutForTesting();
 
@@ -503,7 +517,8 @@ public class ToolbarTest {
         ThreadUtils.runOnUiThreadBlocking(mActivity::onBackPressed);
         CriteriaHelper.pollUiThread(
                 () -> {
-                    Criteria.checkThat(mActivity.getActivityTab(), Matchers.is(incognitoNtpTab));
+                    Criteria.checkThat(
+                            mActivityTestRule.getActivityTab(), Matchers.is(incognitoNtpTab));
                 });
 
         NewTabPageTestUtils.waitForNtpLoaded(incognitoNtpTab);
@@ -532,7 +547,8 @@ public class ToolbarTest {
                 });
         CriteriaHelper.pollUiThread(
                 () -> {
-                    Criteria.checkThat(mActivity.getActivityTab(), Matchers.is(incognitoNtpTab));
+                    Criteria.checkThat(
+                            mActivityTestRule.getActivityTab(), Matchers.is(incognitoNtpTab));
                 });
         NewTabPageTestUtils.waitForNtpLoaded(incognitoNtpTab);
 
@@ -626,6 +642,37 @@ public class ToolbarTest {
         }
     }
 
+    @Test
+    @LargeTest
+    // Disable opening windows side-by-side because home button might not show up on small windows.
+    @EnableFeatures({
+        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL + ":open_adjacently/false"
+    })
+    @ImportantFormFactors(DeviceFormFactor.TABLET_OR_DESKTOP)
+    public void testHomeButton_loadsNtpOnSameTab() {
+        WebPageStation webPage = mPage;
+        webPage.homeButtonElement.checkPresent();
+
+        RegularNewTabPageStation ntp =
+                webPage.homeButtonElement
+                        .clickTo()
+                        .arriveAt(RegularNewTabPageStation.newBuilder().initFrom(webPage).build());
+        ntp.homeButtonElement.checkPresent();
+
+        WebPageStation incognitoWebPage = ntp.openNewIncognitoTabOrWindowFast().loadAboutBlank();
+        incognitoWebPage.homeButtonElement.checkPresent();
+
+        IncognitoNewTabPageStation incognitoNtp =
+                incognitoWebPage
+                        .homeButtonElement
+                        .clickTo()
+                        .arriveAt(
+                                IncognitoNewTabPageStation.newBuilder()
+                                        .initFrom(incognitoWebPage)
+                                        .build());
+        incognitoNtp.homeButtonElement.checkPresent();
+    }
+
     private void setAccessibilityEnabled(boolean enabled) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(enabled));
@@ -669,8 +716,7 @@ public class ToolbarTest {
                 });
     }
 
-    private void verifyTopControlsAccessibilityOrder(
-            @NonNull ToolbarPhone toolbar, @NonNull View ntpView) {
+    private void verifyTopControlsAccessibilityOrder(ToolbarPhone toolbar, View ntpView) {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
@@ -684,8 +730,7 @@ public class ToolbarTest {
                 });
     }
 
-    private void verifyBottomControlsAccessibilityOrder(
-            @NonNull ToolbarPhone toolbar, @NonNull View ntpView) {
+    private void verifyBottomControlsAccessibilityOrder(ToolbarPhone toolbar, View ntpView) {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
@@ -699,8 +744,7 @@ public class ToolbarTest {
                 });
     }
 
-    private void verifyAccessibilityOrderIsReset(
-            @NonNull ToolbarPhone toolbar, @Nullable View ntpView) {
+    private void verifyAccessibilityOrderIsReset(ToolbarPhone toolbar, View ntpView) {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(

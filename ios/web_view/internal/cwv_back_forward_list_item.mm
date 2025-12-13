@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/apple/foundation_util.h"
+#import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web_view/internal/cwv_back_forward_list_item_internal.h"
@@ -17,6 +18,7 @@
 
   self = [super init];
   if (self) {
+    CHECK(navigationItem);
     _uniqueID = navigationItem->GetUniqueID();
 
     _title = base::SysUTF16ToNSString(navigationItem->GetTitle());

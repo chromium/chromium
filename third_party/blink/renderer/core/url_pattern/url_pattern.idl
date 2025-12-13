@@ -18,10 +18,10 @@ enum URLPatternComponent { "protocol", "username", "password", "hostname",
   [RaisesException, CallWith=Isolate, Measure]
   constructor(optional URLPatternInput input = {}, optional URLPatternOptions options = {});
 
-  [RaisesException, CallWith=ScriptState, Measure]
+  [RaisesException, CallWith=Isolate, Measure]
   boolean test(optional URLPatternInput input = {}, optional USVString baseURL);
 
-  [RaisesException, CallWith=ScriptState, Measure]
+  [RaisesException, CallWith=Isolate, Measure]
   URLPatternResult? exec(optional URLPatternInput input = {}, optional USVString baseURL);
 
   [RuntimeEnabled=URLPatternGenerate, RaisesException, Measure]

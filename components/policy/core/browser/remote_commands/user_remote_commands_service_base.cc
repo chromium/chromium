@@ -11,7 +11,7 @@
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
 #include "components/policy/core/common/remote_commands/remote_commands_constants.h"
 #include "components/policy/core/common/remote_commands/remote_commands_factory.h"
-#include "components/policy/core/common/remote_commands/remote_commands_invalidator_impl.h"
+#include "components/policy/core/common/remote_commands/remote_commands_invalidator.h"
 
 namespace policy {
 
@@ -40,22 +40,19 @@ void UserRemoteCommandsServiceBase::
   }
   core_->StartRemoteCommandsService(GetFactory(),
                                     PolicyInvalidationScope::kUser);
-  invalidator_ = std::make_unique<RemoteCommandsInvalidatorImpl>(
+  invalidator_ = std::make_unique<RemoteCommandsInvalidator>(
+      invalidation_provider->GetInvalidationListener(
+          kRemoteCommandsInvalidationsProjectNumber),
       core_, base::DefaultClock::GetInstance(), PolicyInvalidationScope::kUser);
-  invalidator_->Initialize(invalidation_provider->GetInvalidationListener(
-      kRemoteCommandsInvalidationsProjectNumber));
 }
 
 void UserRemoteCommandsServiceBase::OnPolicyRefreshed(bool success) {}
 
 void UserRemoteCommandsServiceBase::Shutdown() {
   cloud_policy_service_observer_.Reset();
-  if (invalidator_) {
-    invalidator_->Shutdown();
-    // Reset `invalidator_` ahead of time to avoid dangling pointer from
-    // `RemoteCommandsInvalidator` to `ProfileInvalidationProvider`.
-    invalidator_.reset();
-  }
+  // Reset `invalidator_` ahead of time to avoid dangling pointer from
+  // `RemoteCommandsInvalidator` to `ProfileInvalidationProvider`.
+  invalidator_.reset();
 }
 
 }  // namespace policy

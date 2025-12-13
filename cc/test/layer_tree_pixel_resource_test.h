@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "cc/test/layer_tree_pixel_test.h"
 
 namespace cc {

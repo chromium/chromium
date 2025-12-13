@@ -6,10 +6,13 @@
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_VIEW_H_
 
 #include "build/build_config.h"
+#include "extensions/buildflags/buildflags.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class RenderFrameHost;

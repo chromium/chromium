@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/global_media_controls/media_view_utils.h"
@@ -19,6 +20,8 @@
 #include "components/media_message_center/vector_icons/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "media/base/media_switches.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -28,12 +31,14 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
@@ -493,9 +498,9 @@ void MediaItemUIDetailedView::UpdateWithMediaArtwork(
     artwork_view_->SetImage(ui::ImageModel::FromImageSkia(image));
 
     // Draw the image with rounded corners.
-    auto path = SkPath().addRoundRect(
+    const SkPath path = SkPath::RRect(SkRRect::MakeRectXY(
         RectToSkRect(gfx::Rect(kArtworkSize.width(), kArtworkSize.height())),
-        kDefaultArtworkCornerRadius, kDefaultArtworkCornerRadius);
+        kDefaultArtworkCornerRadius, kDefaultArtworkCornerRadius));
     artwork_view_->SetClipPath(path);
   }
   SchedulePaint();

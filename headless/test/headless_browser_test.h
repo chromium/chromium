@@ -44,6 +44,9 @@ class HeadlessBrowserTest : public content::BrowserTestBase {
   // FinishAsynchronousTest() to notify that the test should finish.
   void RunAsynchronousTest();
 
+  // Return true if CLI switch --reset-results provided.
+  bool ShouldUpdateExpectations();
+
  protected:
   // Call this instead of SetUp() to run tests without GPU rendering (i.e.,
   // without using SwiftShader or a hardware GPU).

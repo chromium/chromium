@@ -16,6 +16,7 @@ import android.os.PowerManager;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.net.ConnectionType;
@@ -43,6 +44,8 @@ public class DeviceConditions {
     @VisibleForTesting
     public static @ConnectionType int mConnectionTypeForTesting = ConnectionType.CONNECTION_NONE;
 
+    private static @Nullable DeviceConditions sInstanceForTesting;
+
     /**
      * Creates a DeviceConditions instance that stores a snapshot of the current set of device
      * network and power conditions. Also used when setting up tests simulating specific conditions.
@@ -64,11 +67,16 @@ public class DeviceConditions {
     }
 
     @VisibleForTesting
-    DeviceConditions() {
+    public DeviceConditions() {
         // Setting to most restrictive device conditions.
         mPowerSaveOn = true;
         mScreenOnAndUnlocked = true;
         mActiveNetworkMetered = true;
+    }
+
+    public static void setForTesting(DeviceConditions conditions) {
+        sInstanceForTesting = conditions;
+        ResettersForTesting.register(() -> sInstanceForTesting = null);
     }
 
     /**
@@ -76,6 +84,8 @@ public class DeviceConditions {
      * Otherwise it will return the most restrictive device conditions.
      */
     public static DeviceConditions getCurrent(Context context) {
+        if (sInstanceForTesting != null) return sInstanceForTesting;
+
         Intent batteryStatus = getBatteryStatus(context);
         if (batteryStatus == null) {
             return new DeviceConditions();
@@ -92,6 +102,8 @@ public class DeviceConditions {
 
     /** @return Whether the device is connected to a power source. */
     public static boolean isCurrentlyPowerConnected(Context context) {
+        if (sInstanceForTesting != null) return sInstanceForTesting.isPowerConnected();
+
         Intent batteryStatus = getBatteryStatus(context);
         if (batteryStatus == null) return false;
 
@@ -108,6 +120,8 @@ public class DeviceConditions {
 
     /** @return The battery percentage or 0 if the device can't provide that information. */
     public static int getCurrentBatteryPercentage(Context context) {
+        if (sInstanceForTesting != null) return sInstanceForTesting.getBatteryPercentage();
+
         Intent batteryStatus = getBatteryStatus(context);
         if (batteryStatus == null) return 0;
 
@@ -127,6 +141,8 @@ public class DeviceConditions {
      * @return Whether the device is in power save mode.
      */
     public static boolean isCurrentlyInPowerSaveMode(Context context) {
+        if (sInstanceForTesting != null) return sInstanceForTesting.isInPowerSaveMode();
+
         PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         return powerManager.isPowerSaveMode();
     }
@@ -143,6 +159,8 @@ public class DeviceConditions {
      *     org.chromium.net.ConnectionType.
      */
     public static int getCurrentNetConnectionType(Context context) {
+        if (sInstanceForTesting != null) return sInstanceForTesting.getNetConnectionType();
+
         int connectionType = ConnectionType.CONNECTION_NONE;
         if (sForceConnectionTypeForTesting) {
             return mConnectionTypeForTesting;
@@ -172,6 +190,8 @@ public class DeviceConditions {
      * @return true if the active network is a metered network
      */
     public static boolean isCurrentActiveNetworkMetered(Context context) {
+        if (sInstanceForTesting != null) return sInstanceForTesting.isActiveNetworkMetered();
+
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm.isActiveNetworkMetered();
@@ -181,6 +201,8 @@ public class DeviceConditions {
      * @return Whether the screen is currently on and unlocked.
      */
     public static boolean isCurrentlyScreenOnAndUnlocked(Context context) {
+        if (sInstanceForTesting != null) return sInstanceForTesting.isScreenOnAndUnlocked();
+
         KeyguardManager keyguardManager =
                 (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
         if (keyguardManager == null || keyguardManager.isKeyguardLocked()) return false;

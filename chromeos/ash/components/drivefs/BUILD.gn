@@ -47,7 +47,7 @@ component("drivefs") {
     "//chromeos/ash/components/file_manager",
     "//chromeos/ash/components/network",
     "//chromeos/components/mojo_bootstrap",
-    "//chromeos/dbus/power:power",
+    "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//components/account_id",
     "//components/drive",
@@ -57,7 +57,7 @@ component("drivefs") {
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/platform",
     "//net",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
   ]
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_DRIVEFS_IMPL" ]
 }
@@ -115,7 +115,7 @@ source_set("unit_tests") {
     "//net",
     "//net:test_support",
     "//services/network:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]

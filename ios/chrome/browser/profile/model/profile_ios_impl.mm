@@ -19,7 +19,6 @@
 #import "base/uuid.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/policy/core/common/configuration_policy_provider.h"
 #import "components/policy/core/common/schema_registry.h"
@@ -48,6 +47,8 @@
 #import "ios/chrome/browser/shared/model/paths/paths_internal.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
+#import "ios/chrome/browser/shared/model/profile/profile_dependency_manager_ios.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
 #import "ios/web/public/thread/web_thread.h"
 
@@ -242,7 +243,7 @@ ProfileIOSImpl::ProfileIOSImpl(
       pref_registry_(new user_prefs::PrefRegistrySyncable),
       io_data_(new ProfileIOSImplIOData::Handle(this)) {
   DCHECK(!profile_name.empty());
-  BrowserStateDependencyManager::GetInstance()->MarkBrowserStateLive(this);
+  ProfileDependencyManagerIOS::GetInstance()->MarkProfileLive(this);
 
   profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kRegular);
@@ -280,8 +281,8 @@ ProfileIOSImpl::ProfileIOSImpl(
 
   // Register Profile preferences.
   RegisterProfilePrefs(pref_registry_.get());
-  BrowserStateDependencyManager::GetInstance()
-      ->RegisterBrowserStatePrefsForServices(pref_registry_.get());
+  ProfileDependencyManagerIOS::GetInstance()->RegisterProfilePrefsForServices(
+      pref_registry_.get());
 
   // Create a SupervisedUserPrefStore and initialize it with empty data.
   // The pref store will load SupervisedUserSettingsService disk data after
@@ -321,9 +322,16 @@ ProfileIOSImpl::ProfileIOSImpl(
 
 ProfileIOSImpl::~ProfileIOSImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BrowserStateDependencyManager::GetInstance()->DestroyBrowserStateServices(
-      this);
-  // Warning: the order for shutting down the BrowserState objects is important
+  // Notify the callback of the profile destruction before destroying anything.
+  NotifyProfileDestroyed();
+
+  if (base::FeatureList::IsEnabled(kDestroyOTRProfileEarly)) {
+    // Destroy OTR profile first.
+    DestroyOffTheRecordProfile();
+  }
+
+  ProfileDependencyManagerIOS::GetInstance()->DestroyProfileServices(this);
+  // Warning: the order for shutting down the Profile's objects is important
   // because of interdependencies. Ideally the order for shutting down the
   // objects should be backward of their declaration in class attributes.
 
@@ -340,7 +348,9 @@ ProfileIOSImpl::~ProfileIOSImpl() {
     user_cloud_policy_manager_->Shutdown();
   }
 
-  DestroyOffTheRecordProfile();
+  if (!base::FeatureList::IsEnabled(kDestroyOTRProfileEarly)) {
+    DestroyOffTheRecordProfile();
+  }
 }
 
 ProfileIOS* ProfileIOSImpl::GetOriginalProfile() {
@@ -451,7 +461,8 @@ void ProfileIOSImpl::PrefsInitStage1(InitInfo init_info, bool success) {
       state_path, GetIOTaskRunner(),
       init_info.creation_mode == CreationMode::kSynchronous);
 
-  init_info.supervised_user_prefs->Init(supervised_user_settings);
+  init_info.supervised_user_prefs->Init(supervised_user_settings,
+                                        /*content_filters_service=*/nullptr);
 
   auto supervised_provider =
       std::make_unique<supervised_user::SupervisedUserContentSettingsProvider>(
@@ -528,8 +539,7 @@ void ProfileIOSImpl::PrefsInitStage3(InitInfo init_info, bool success) {
 
   // The initialisation of the ProfileIOS is now complete and the services
   // can be safely created.
-  BrowserStateDependencyManager::GetInstance()->CreateBrowserStateServices(
-      this);
+  ProfileDependencyManagerIOS::GetInstance()->CreateProfileServices(this);
 
   if (delegate_) {
     delegate_->OnProfileCreationFinished(this, init_info.creation_mode,

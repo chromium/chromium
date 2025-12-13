@@ -6,6 +6,7 @@ module wl.mojom;
 
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/color_space.mojom";
+import "ui/gfx/mojom/hdr_metadata.mojom";
 import "ui/gfx/mojom/gpu_fence_handle.mojom";
 import "ui/gfx/mojom/overlay_transform.mojom";
 import "ui/gfx/mojom/overlay_priority_hint.mojom";
@@ -27,6 +28,9 @@ struct WaylandOverlayConfig {
 
   // Optional: specifies the color space data of the wayland config.
   gfx.mojom.ColorSpace? color_space;
+
+  // Optional: specifies the HDR metadata of the wayland config.
+  gfx.mojom.HDRMetadata hdr_metadata;
 
   // Specifies how the buffer is to be transformed during composition.
   TransformUnion transform;

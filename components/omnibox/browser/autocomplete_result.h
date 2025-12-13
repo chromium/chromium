@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -38,13 +39,14 @@ class TemplateURLService;
 // what the default match should be if the user doesn't manually select another
 // match.
 class AutocompleteResult {
+  // TODO(crbug.com/449894891): Remove this macro once it gets fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   typedef ACMatches::const_iterator const_iterator;
   typedef ACMatches::iterator iterator;
   using MatchDedupComparator = ACMatchKey<std::string,  // URL
-                                          bool,         // Is Calculator type?
-                                          bool,         // Is Verbatim Match?
-                                          bool>;        // Is Answer card?
+                                          AutocompleteMatchDedupeType>;
 
   // Max number of matches we'll show from the various providers. This limit
   // may be different for zero suggest and non zero suggest. Does not take into
@@ -95,7 +97,7 @@ class AutocompleteResult {
   // bounds of valid AutocompleteResult indices, where every other aspect of the
   // AutocompleteResult is correct.
   bool VerifyCoherency(JNIEnv* env,
-                       const base::android::JavaParamRef<jlongArray>& matches,
+                       const base::android::JavaRef<jlongArray>& matches,
                        jint match_index,
                        jint verification_point);
 #endif
@@ -126,6 +128,7 @@ class AutocompleteResult {
                    bool is_lens_active,
                    bool can_show_contextual_suggestions,
                    bool mia_enabled,
+                   bool is_incognito,
                    std::optional<AutocompleteMatch> default_match_to_preserve =
                        std::nullopt);
 
@@ -185,8 +188,24 @@ class AutocompleteResult {
   void AttachPedalsToMatches(const AutocompleteInput& input,
                              const AutocompleteProviderClient& client);
 
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+  // Attaches AIM action to the highest-scoring eligible match in the result
+  // set, if no other actions are present.
+  void AttachAimAction(TemplateURLService* template_url_service,
+                       AutocompleteProviderClient* client);
+#endif
+
   // Sets a takeover action on all matches to issue a contextual search.
   void AttachContextualSearchFulfillmentActionToMatches();
+
+  // Sets a takeover action on all matches to open Lens.
+  void AttachContextualSearchOpenLensActionToMatches();
+
+  // Sets a smart compose inline hint.
+  void set_smart_compose_inline_hint(
+      const std::string& smart_compose_inline_hint) {
+    smart_compose_inline_hint_ = smart_compose_inline_hint;
+  }
 
   // Sets |has_tab_match| in matches whose URL matches an open tab's URL.
   // Also, fixes up the description if not using another UI element to
@@ -249,6 +268,10 @@ class AutocompleteResult {
 
   const omnibox::GroupConfigMap& suggestion_groups_map() const {
     return suggestion_groups_map_;
+  }
+
+  const std::string smart_compose_inline_hint() const {
+    return smart_compose_inline_hint_;
   }
 
   const SessionData& session() const { return session_; }
@@ -419,6 +442,7 @@ class AutocompleteResult {
   friend class AutocompleteController;
   friend class AutocompleteResultForTesting;
   friend class AutocompleteProviderTest;
+  friend class AutocompleteResultTest;
   friend class HistoryURLProviderTest;
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest, Desktop_TwoColumnRealbox);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest, Android_TrimOmniboxActions);
@@ -434,12 +458,14 @@ class AutocompleteResult {
   typedef ACMatches::iterator::difference_type matches_difference_type;
 #endif
 
-  // Swaps this result set - i.e., `matches_` and `suggestion_groups_map_` -
-  // with `other`. Called in AutocompleteController and tests only.
+  // Swaps this result set - i.e., `matches_`, `suggestion_groups_map_`, and
+  // `smart_compose_inline_hint_` - with `other`. Called in
+  // `AutocompleteController` and tests only.
   void SwapMatchesWith(AutocompleteResult* other);
 
-  // Copies the result set - i.e., `matches_` and `suggestion_groups_map_` -
-  // from `other`. Called in AutocompleteController and tests only.
+  // Copies the result set - i.e., `matches_` and `suggestion_groups_map_` and
+  // `smart_compose_inline_hint_` - from `other`. Called in
+  // `AutocompleteController` and tests only.
   void CopyMatchesFrom(const AutocompleteResult& other);
 
   // Modifies |matches| such that any duplicate matches are coalesced into
@@ -478,11 +504,10 @@ class AutocompleteResult {
       const AutocompleteMatch& match);
 
   // This method reduces the number of navigation suggestions to that of
-  // |max_url_matches| but will allow more if there are no other types to
+  // `max_url_matches_` but will allow more if there are no other types to
   // replace them.
   void LimitNumberOfURLsShown(
       size_t max_matches,
-      size_t max_url_count,
       const CompareWithDemoteByType<AutocompleteMatch>& comparing_object);
 
   // If we have SearchProvider search suggestions, demote OnDeviceProvider
@@ -498,10 +523,17 @@ class AutocompleteResult {
   // The current result set. Cleared on `ClearMatches()` or `Reset()`.
   ACMatches matches_;
 
+  // The smart compose completion, if any.
+  std::string smart_compose_inline_hint_;
+
   // The map of suggestion group IDs to suggestion group information for the
   // current result set. Cleared along with `matches_` on `ClearMatches()` or
   // `Reset()`.
   omnibox::GroupConfigMap suggestion_groups_map_;
+
+  // The maximum number of URL matches that should be allowed within the Omnibox
+  // if there are search-type matches available to replace them.
+  size_t max_url_matches_ = 0;
 
   // The session data irrespective of the current result set. Cleared on
   // `Reset()`.

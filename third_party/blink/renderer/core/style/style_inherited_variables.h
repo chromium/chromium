@@ -18,21 +18,16 @@
 
 namespace blink {
 
-class CORE_EXPORT StyleInheritedVariables
-    : public GarbageCollected<StyleInheritedVariables> {
+class CORE_EXPORT StyleInheritedVariables {
+  DISALLOW_NEW();
+
  public:
   StyleInheritedVariables() = default;
-  StyleInheritedVariables(StyleInheritedVariables& other) {
-    variables_ = other.variables_;
-  }
 
   void Trace(Visitor* visitor) const { visitor->Trace(variables_); }
 
   bool operator==(const StyleInheritedVariables& other) const {
     return variables_ == other.variables_;
-  }
-  bool operator!=(const StyleInheritedVariables& other) const {
-    return !(*this == other);
   }
 
   void SetData(const AtomicString& name, CSSVariableData* value) {
@@ -56,6 +51,9 @@ class CORE_EXPORT StyleInheritedVariables
   void CollectNames(HashSet<AtomicString>& names) const {
     variables_.CollectNames(names);
   }
+
+  bool IsEmpty() const { return variables_.IsEmpty(); }
+  unsigned GetHash() const { return variables_.GetHash(); }
 
   // For debugging/logging.
   friend std::ostream& operator<<(std::ostream& stream,

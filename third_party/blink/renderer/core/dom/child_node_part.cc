@@ -98,7 +98,8 @@ PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) {
   auto& fragment_part_root = fragment->getPartRoot();
   data.PushPartRoot(fragment_part_root);
   ContainerNode* new_parent = To<ContainerNode>(
-      parentNode()->Clone(document, data, fragment, exception_state));
+      parentNode()->Clone(document, data, fragment,
+                          /*fallback_registry*/ nullptr, exception_state));
   if (exception_state.HadException()) {
     return nullptr;
   }
@@ -110,7 +111,8 @@ PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) {
     if (final_node) {
       part_root = static_cast<ChildNodePart*>(&data.CurrentPartRoot());
     }
-    node->Clone(document, data, new_parent, exception_state);
+    node->Clone(document, data, new_parent, /*fallback_registry*/ nullptr,
+                exception_state);
     if (exception_state.HadException()) {
       return nullptr;
     }
@@ -189,7 +191,7 @@ void ChildNodePart::replaceChildren(
   // trusted type handling if that template parameter is a V8UnionNodeOrString.
   HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>> nodes_mapped;
   nodes_mapped.ReserveInitialCapacity(nodes.size());
-  for (auto node_or_string : nodes) {
+  for (const auto& node_or_string : nodes) {
     if (node_or_string->IsNode()) {
       nodes_mapped.push_back(
           MakeGarbageCollected<V8UnionNodeOrStringOrTrustedScript>(
@@ -204,8 +206,8 @@ void ChildNodePart::replaceChildren(
 
   // Insert new contents.
   VectorOf<Node> node_vector = Node::ConvertNodeUnionsIntoNodes(
-      parent, nodes_mapped, parent->GetDocument(), "replaceChildren",
-      exception_state);
+      parent, nodes_mapped, parent->GetDocument(),
+      trusted_types_names::kReplaceChildren, exception_state);
   if (exception_state.HadException()) {
     return;
   }

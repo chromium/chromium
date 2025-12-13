@@ -7,6 +7,7 @@
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -16,6 +17,7 @@ class HashRealTimeServiceFactoryTest : public PlatformTest {
       : profile_(TestProfileIOS::Builder().Build()) {}
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<ProfileIOS> profile_;
 };
 

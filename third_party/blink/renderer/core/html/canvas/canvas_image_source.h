@@ -51,8 +51,7 @@ enum SourceImageStatus {
 
 class CORE_EXPORT CanvasImageSource {
  public:
-  virtual scoped_refptr<Image> GetSourceImageForCanvas(FlushReason,
-                                                       SourceImageStatus*,
+  virtual scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
                                                        const gfx::SizeF&) = 0;
 
   // IMPORTANT: Result must be independent of whether destinationContext is
@@ -61,11 +60,9 @@ class CORE_EXPORT CanvasImageSource {
   // another canvas, which may not be already tainted.
   virtual bool WouldTaintOrigin() const = 0;
 
-  virtual bool IsCSSImageValue() const { return false; }
   virtual bool IsImageElement() const { return false; }
   virtual bool IsVideoElement() const { return false; }
   virtual bool IsCanvasElement() const { return false; }
-  virtual bool IsSVGSource() const { return false; }
   virtual bool IsImageBitmap() const { return false; }
   virtual bool IsOffscreenCanvas() const { return false; }
   virtual bool IsVideoFrame() const { return false; }

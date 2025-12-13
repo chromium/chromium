@@ -17,6 +17,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/browser/visibility.h"
 #include "url/gurl.h"
 
@@ -47,7 +48,12 @@ void OneTimePermissionsTracker::RemoveObserver(
 void OneTimePermissionsTracker::WebContentsBackgrounded(
     const url::Origin& origin) {
   if (!ShouldIgnoreOrigin(origin)) {
-    origin_tracker_[origin].background_tab_counter++;
+    // For some reason using `origin_tracker_[origin].background_tab_counter++;`
+    // on some builds leaves the value of
+    // `origin_tracker_[origin].background_tab_counter` at 0 in case of
+    // insertion. My best efforts to understand it have failed. Hence, `+=` is
+    // necessary here for the feature to work at all there.
+    origin_tracker_[origin].background_tab_counter += 1;
 
     if (AreAllTabsToOriginBackgroundedOrDiscarded(origin)) {
       // When all undiscarded tabs which point to the origin are in the
@@ -208,7 +214,7 @@ void OneTimePermissionsTracker::CleanupStateForExpiredContentSetting(
   }
 
   for (const auto& origin : affected_origins) {
-    if (type == ContentSettingsType::GEOLOCATION) {
+    if (type == permissions::PermissionUtil::GetGeolocationType()) {
       origin_tracker_[origin].background_expiration_timer->Stop();
     } else {
       origin_tracker_[origin]

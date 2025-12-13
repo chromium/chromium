@@ -315,6 +315,9 @@ message MatchedUrlNavigationRule {
 
     // The id of the data masking detector.
     optional string detector_id = 4;
+
+    // The text to use as the mask.
+    optional string mask_text = 5;
   }
 
   // The set of data masking actions that should be applied to the URL due to

@@ -79,7 +79,7 @@ suite('ExtensionShortcutTest', function() {
     const card1 = cards[0]!;
     assertEquals(
         oneCommand.name,
-        card1.querySelector<HTMLElement>('.card-title span')!.textContent!);
+        card1.querySelector<HTMLElement>('.card-title span')!.textContent);
     let commands = card1.querySelectorAll<HTMLElement>('.command-entry');
     assertEquals(1, commands.length);
     assertTrue(isVisibleOnCard(commands[0]!, '.command-name'));

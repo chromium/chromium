@@ -35,7 +35,6 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ContainsRegex;
 using ::testing::HasSubstr;
-using ::testing::Invoke;
 using ::testing::MatchesRegex;
 using ::testing::Not;
 using ::testing::Property;
@@ -90,6 +89,8 @@ class InstallerDownloaderControllerTest : public testing::Test {
     controller_->SetActiveWebContentsCallbackForTesting(
         base::BindLambdaForTesting(
             [&]() -> content::WebContents* { return web_contents_; }));
+    controller_->SetShouldShowInfobarForProfileCallbackForTesting(
+        should_show_infobar_for_profile_mock_callback_.Get());
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -108,6 +109,8 @@ class InstallerDownloaderControllerTest : public testing::Test {
   raw_ptr<content::MockDownloadManager> mock_download_manager_;
   StrictMock<base::MockCallback<base::RepeatingCallback<bool()>>>
       is_metric_enabled_mock_callback_;
+  StrictMock<base::MockCallback<base::RepeatingCallback<bool()>>>
+      should_show_infobar_for_profile_mock_callback_;
 };
 
 TEST_F(InstallerDownloaderControllerTest, BailsWhenInfobarCannotShow) {
@@ -118,6 +121,8 @@ TEST_F(InstallerDownloaderControllerTest, BailsWhenInfobarCannotShow) {
 
 TEST_F(InstallerDownloaderControllerTest, CallsEligibilityWhenInfobarCanShow) {
   EXPECT_CALL(*mock_model_, CanShowInfobar()).WillOnce(Return(true));
+  EXPECT_CALL(should_show_infobar_for_profile_mock_callback_, Run())
+      .WillOnce(Return(true));
   EXPECT_CALL(*mock_model_, ShouldByPassEligibilityCheck())
       .WillOnce(Return(false));
   EXPECT_CALL(*mock_model_, CheckEligibility(_))
@@ -129,6 +134,8 @@ TEST_F(InstallerDownloaderControllerTest, CallsEligibilityWhenInfobarCanShow) {
 // All conditions satisfied  →  coordinator::Show should run exactly once.
 TEST_F(InstallerDownloaderControllerTest, ShowsInfobarWhenEligible) {
   EXPECT_CALL(*mock_model_, CanShowInfobar()).WillOnce(Return(true));
+  EXPECT_CALL(should_show_infobar_for_profile_mock_callback_, Run())
+      .WillOnce(Return(true));
   EXPECT_CALL(*mock_model_, CheckEligibility(_))
       .WillOnce(base::test::RunOnceCallback<0>(
           std::optional<base::FilePath>(FILE_PATH_LITERAL("C:\\foo"))));
@@ -144,11 +151,10 @@ TEST_F(InstallerDownloaderControllerTest, SkipsWhenNoActiveContents) {
   controller_->SetActiveWebContentsCallbackForTesting(
       base::BindLambdaForTesting(
           [&]() -> content::WebContents* { return nullptr; }));
-
   EXPECT_CALL(*mock_model_, CanShowInfobar()).WillOnce(Return(true));
-  EXPECT_CALL(*mock_model_, CheckEligibility(_))
-      .WillOnce(base::test::RunOnceCallback<0>(
-          std::optional<base::FilePath>(FILE_PATH_LITERAL("C:\\foo"))));
+  EXPECT_CALL(should_show_infobar_for_profile_mock_callback_, Run())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_model_, CheckEligibility(_)).Times(1);
 
   controller_->MaybeShowInfoBar();
 }
@@ -156,6 +162,8 @@ TEST_F(InstallerDownloaderControllerTest, SkipsWhenNoActiveContents) {
 // If the eligibility callback returns `std::nullopt`, no infobar is shown.
 TEST_F(InstallerDownloaderControllerTest, SkipsWhenNotEligible) {
   EXPECT_CALL(*mock_model_, CanShowInfobar()).WillOnce(Return(true));
+  EXPECT_CALL(should_show_infobar_for_profile_mock_callback_, Run())
+      .WillOnce(Return(true));
   EXPECT_CALL(*mock_model_, ShouldByPassEligibilityCheck())
       .WillOnce(Return(false));
   EXPECT_CALL(*mock_model_, CheckEligibility(_))
@@ -272,6 +280,8 @@ TEST_F(InstallerDownloaderControllerTest,
                                             /*create=*/true);
 
   EXPECT_CALL(*mock_model_, CanShowInfobar()).WillOnce(Return(true));
+  EXPECT_CALL(should_show_infobar_for_profile_mock_callback_, Run())
+      .WillOnce(Return(true));
   EXPECT_CALL(*mock_model_, ShouldByPassEligibilityCheck())
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_model_, IncrementShowCount()).Times(1);
@@ -288,6 +298,8 @@ TEST_F(InstallerDownloaderControllerTest,
 
 TEST_F(InstallerDownloaderControllerTest, IncrementOnlyOncePerShow) {
   EXPECT_CALL(*mock_model_, CanShowInfobar()).WillOnce(Return(true));
+  EXPECT_CALL(should_show_infobar_for_profile_mock_callback_, Run())
+      .WillOnce(Return(true));
   EXPECT_CALL(*mock_model_, CheckEligibility(_))
       .WillOnce(base::test::RunOnceCallback<0>(
           std::optional<base::FilePath>(base::FilePath(L"C:\\foo"))));
@@ -303,6 +315,8 @@ TEST_F(InstallerDownloaderControllerTest, InfobarShownLoggedOncePerSession) {
   base::HistogramTester histograms;
 
   EXPECT_CALL(*mock_model_, CanShowInfobar()).WillRepeatedly(Return(true));
+  EXPECT_CALL(should_show_infobar_for_profile_mock_callback_, Run())
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(*mock_model_, CheckEligibility(_))
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<0>(
           std::optional<base::FilePath>(base::FilePath(L"C:\\foo"))));
@@ -400,18 +414,23 @@ TEST_F(InstallerDownloaderControllerTest,
 }
 
 TEST_F(InstallerDownloaderControllerTest, NoInfobarOnGuestProfile) {
-  TestingProfile::Builder builder;
-  builder.SetGuestSession();
-  std::unique_ptr<Profile> guest_profile = builder.Build();
-  content::WebContents* guest_web_contents =
-      web_contents_factory_.CreateWebContents(guest_profile.get());
-  controller_->SetActiveWebContentsCallbackForTesting(
-      base::BindLambdaForTesting([&]() { return guest_web_contents; }));
   EXPECT_CALL(*mock_model_, CanShowInfobar()).WillOnce(Return(true));
   // Since this is a guest profile, the eligibility check should not run.
-  EXPECT_CALL(*mock_model_, CheckEligibility(_)).Times(1);
+  EXPECT_CALL(should_show_infobar_for_profile_mock_callback_, Run())
+      .WillOnce(Return(false));
+  EXPECT_CALL(*mock_model_, CheckEligibility(_)).Times(0);
   controller_->MaybeShowInfoBar();
-  web_contents_factory_.DestroyWebContents(guest_web_contents);
+}
+
+TEST_F(InstallerDownloaderControllerTest, SkipsWhenActiveBrowserHasNoTabs) {
+  controller_->SetActiveWebContentsCallbackForTesting(
+      base::BindLambdaForTesting(
+          [&]() -> content::WebContents* { return nullptr; }));
+  EXPECT_CALL(*mock_model_, CanShowInfobar()).WillOnce(Return(true));
+  EXPECT_CALL(should_show_infobar_for_profile_mock_callback_, Run())
+      .WillOnce(Return(false));
+  EXPECT_CALL(*mock_model_, CheckEligibility(_)).Times(0);
+  controller_->MaybeShowInfoBar();
 }
 
 }  // namespace

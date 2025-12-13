@@ -25,6 +25,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/omnibox_proto/aim_tools_and_models.pb.h"
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -124,6 +125,8 @@ class TemplateURLRef {
       // translation is forced using |source_lang|. Note that this only supports
       // Partial Translate and so may only be enabled for select clients on the
       // server.
+      // The |use_snippet_as_subtitle| specifies whether or not the entity
+      // snippet should be used as the subtitle of the card.
       ContextualSearchParams(int version,
                              int contextual_cards_version,
                              std::string home_country,
@@ -134,7 +137,8 @@ class TemplateURLRef {
                              std::string target_lang,
                              std::string fluent_languages,
                              std::string related_searches_stamp,
-                             bool apply_lang_hint);
+                             bool apply_lang_hint,
+                             bool use_snippet_as_subtitle);
       ContextualSearchParams(const ContextualSearchParams& other);
       ~ContextualSearchParams();
 
@@ -183,6 +187,9 @@ class TemplateURLRef {
 
       // Whether hinted language detection should be used on the backend.
       bool apply_lang_hint = false;
+
+      // Whether the snippet should be used as the subtitle.
+      bool use_snippet_as_subtitle = false;
     };
 
     // Estimates dynamic memory usage.
@@ -224,6 +231,10 @@ class TemplateURLRef {
     // the suggest requests.
     std::optional<lens::proto::LensOverlaySuggestInputs>
         lens_overlay_suggest_inputs;
+
+    // The tool mode to be sent in query parameters in the suggest requests.
+    omnibox::ChromeAimToolsAndModels aim_tool_mode =
+        omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
 
     // Which omnibox the user used to type the prefix.
     metrics::OmniboxEventProto::PageClassification page_classification =
@@ -626,9 +637,19 @@ class TemplateURLRef {
 
 // TemplateURL ----------------------------------------------------------------
 
-// A TemplateURL represents a single "search engine", defined primarily as a
-// subset of the Open Search Description Document
-// (http://www.opensearch.org/Specifications/OpenSearch) plus some extensions.
+// A TemplateURL represents a single "search engine". It can hold two sets of
+// data: a "local" value and an "account" value. The local value is stored on
+// the device and is not synced. The account value is synced.
+//
+// When a user is signed in, a TemplateURL can have both local and account
+// values. The `data()` method provides a merged view of these two values, with
+// the more recent one taking precedence. When a search engine is modified, the
+// change is written to both the local and account values (dual-write). This
+// ensures that the change is both synced to the user's account and persists on
+// the device after sign-out.
+//
+// Upon sign-out, the account values are cleared, leaving only the local values.
+//
 // One TemplateURL contains several TemplateURLRefs, which correspond to various
 // different capabilities (e.g. doing searches or getting suggestions), as well
 // as a TemplateURLData containing other details like the name, keyword, etc.
@@ -874,8 +895,18 @@ class TemplateURL {
   std::string GetExtensionId() const;
 
   // Returns the resource ID for the logo (small / favicon style) associated
-  // with this template URL, or an empty string is none is associated with it.
+  // with this template URL, or an empty string if none is associated with it.
   std::string GetBuiltinImageResourceId() const;
+
+  // Returns the resource ID for the search engine description string associated
+  // with this template URL, or an empty string if none is associated with it.
+  std::string GetBuiltinDescriptionResourceId() const;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Returns the marketing snippet string for the search engine, either the
+  // built-in one or a fallback variant.
+  std::u16string GetMarketingSnippet() const;
+#endif
 
   // Returns the type of this search engine, or SEARCH_ENGINE_OTHER if no
   // engines match.
@@ -1022,6 +1053,11 @@ class TemplateURL {
   // Returns the resource ID base associated with this template URL, if it is
   // provided from built-in data.
   std::optional<std::string_view> GetBaseBuiltinResourceId() const;
+
+  // Returns the built-in marketing snippet string for the search engine, or
+  // `std::nullopt` if a marketing snippets are not included in this build of
+  // unavailable for this search engine.
+  std::optional<std::u16string> GetBuiltinMarketingSnippet() const;
 
   TemplateURLData& active_data();
 

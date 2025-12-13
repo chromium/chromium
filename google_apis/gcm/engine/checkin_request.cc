@@ -4,6 +4,10 @@
 
 #include "google_apis/gcm/engine/checkin_request.h"
 
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -13,6 +17,7 @@
 #include "google_apis/gcm/monitoring/gcm_stats_recorder.h"
 #include "google_apis/gcm/protocol/checkin.pb.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -214,7 +219,7 @@ void CheckinRequest::RetryWithBackoff() {
 }
 
 void CheckinRequest::OnURLLoadComplete(const network::SimpleURLLoader* source,
-                                       std::unique_ptr<std::string> body) {
+                                       std::optional<std::string> body) {
   if (source->NetError() != net::OK) {
     RecordCheckinStatusAndReportUMA(CheckinRequestStatus::kFailedNetError,
                                     recorder_, /* will_retry= */ true);

@@ -89,6 +89,9 @@ class CONTENT_EXPORT ReportSchedulerTimer
 
   bool IsOffline() const VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  void UpdateState(network::mojom::ConnectionType)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   // Fires whenever a reporting time is reached for a report. Must be updated
   // whenever the next report time changes.
   base::WallClockTimer reporting_time_reached_timer_

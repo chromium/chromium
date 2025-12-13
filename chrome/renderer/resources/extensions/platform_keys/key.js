@@ -2,21 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var utils = require('utils');
+const utils = require('utils');
 
 /**
  * Enum of possible key types (defined in WebCrypto.KeyType). Symmetric keys are
  * represented with the 'secret' type.
  * @enum {string}
  */
-var KeyType =
-    {__proto__: null, public: 'public', private: 'private', secret: 'secret'};
+const KeyType = {
+  __proto__: null,
+  public: 'public',
+  private: 'private',
+  secret: 'secret',
+};
 
 /**
  * Enum of possible key usages (subset of WebCrypto.KeyUsage).
  * @enum {string}
  */
-var KeyUsage = {
+const KeyUsage = {
   __proto__: null,
   sign: 'sign',
   verify: 'verify',
@@ -81,7 +85,7 @@ function getKeyIdentifier(key) {
   if (!privates(key)) {
     throw CreateInvalidKeyObjectError();
   }
-  var keyImpl = privates(key).impl;
+  const keyImpl = privates(key).impl;
   if (!keyImpl || !keyImpl.keyIdentifier) {
     throw CreateInvalidKeyObjectError();
   }

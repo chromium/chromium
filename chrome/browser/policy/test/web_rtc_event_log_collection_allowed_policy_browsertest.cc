@@ -127,9 +127,10 @@ IN_PROC_BROWSER_TEST_P(WebRtcEventLogCollectionAllowedPolicyTest, RunTest) {
 
     // Test focus - remote-bound logging allowed if and only if the policy
     // is configured to allow it.
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
     webrtc_event_log_manager->StartRemoteLogging(
-        frame_id.child_id, kSessionId, kMaxFileSizeBytes, kOutputPeriodMs,
-        kWebAppId,
+        frame_id.child_id.GetUnsafeValue(), kSessionId, kMaxFileSizeBytes,
+        kOutputPeriodMs, kWebAppId,
         BlockingBoolExpectingReplyWithExtras(&run_loop,
                                              remote_logging_allowed));
     run_loop.Run();

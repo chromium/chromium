@@ -21,7 +21,7 @@ class InputTokenForwarderManager : public input::InputTokenForwarder {
   // InputTokenForwarder overrides.
   void ForwardVizInputTransferToken(
       int surface_id,
-      base::android::ScopedJavaGlobalRef<jobject> viz_input_token) override;
+      const jni_zero::JavaRef<>& viz_input_token) override;
 
  private:
   friend struct base::DefaultSingletonTraits<InputTokenForwarderManager>;

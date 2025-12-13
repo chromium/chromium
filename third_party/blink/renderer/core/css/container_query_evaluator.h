@@ -68,11 +68,11 @@ class CORE_EXPORT ContainerQueryEvaluator final
   bool DependsOnStuck() const { return depends_on_stuck_; }
   bool DependsOnSnapped() const { return depends_on_snapped_; }
   bool DependsOnScrollable() const { return depends_on_scrollable_; }
-  bool DependsOnScrollDirection() const { return depends_on_scroll_direction_; }
+  bool DependsOnScrolled() const { return depends_on_scrolled_; }
   bool DependsOnSize() const { return depends_on_size_; }
   bool MayDependOnWritingDirection() const {
     return DependsOnSize() || DependsOnStuck() || DependsOnSnapped() ||
-           DependsOnScrollable() || DependsOnScrollDirection();
+           DependsOnScrollable() || DependsOnScrolled();
   }
 
   enum class Change : uint8_t {
@@ -187,9 +187,8 @@ class CORE_EXPORT ContainerQueryEvaluator final
                                  ContainerScrollableFlags scrollable_vertical);
 
   // Update the CSSContainerValues with the new scroll-direction state.
-  void UpdateContainerScrollDirection(
-      ContainerScrollDirection scroll_direction_horizontal,
-      ContainerScrollDirection scroll_direction_vertical);
+  void UpdateContainerScrolled(ContainerScrolled scrolled_horizontal,
+                               ContainerScrolled scrolled_vertical);
 
   // Update the CSSContainerValues with the new anchored fallback.
   void UpdateAnchoredFallback(
@@ -213,9 +212,8 @@ class CORE_EXPORT ContainerQueryEvaluator final
 
   // Re-evaluate the cached results and clear any results which are affected by
   // the snapped target changes.
-  Change ScrollDirectionContainerChanged(
-      ContainerScrollDirection scroll_direction_horizontal,
-      ContainerScrollDirection scroll_direction_vertical);
+  Change ScrolledContainerChanged(ContainerScrolled scrolled_horizontal,
+                                  ContainerScrolled scrolled_vertical);
 
   enum ContainerType {
     kSizeContainer,
@@ -223,7 +221,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
     kStickyContainer,
     kSnapContainer,
     kScrollableContainer,
-    kScrollDirectionContainer,
+    kScrolledContainer,
     kAnchoredContainer,
   };
   void ClearResults(Change change, ContainerType container_type);
@@ -250,7 +248,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
 
   // Re-evaluate cached query results after a scroll-direction state change and
   // return which elements need to be invalidated if necessary.
-  Change ComputeScrollDirectionChange() const;
+  Change ComputeScrolledChange() const;
 
   // Re-evaluate cached query results after an anchored(fallback) change and
   // return which elements need to be invalidated if necessary.
@@ -281,10 +279,8 @@ class CORE_EXPORT ContainerQueryEvaluator final
       static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
   ContainerScrollableFlags scrollable_vertical_ =
       static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
-  ContainerScrollDirection scroll_direction_horizontal_ =
-      ContainerScrollDirection::kNone;
-  ContainerScrollDirection scroll_direction_vertical_ =
-      ContainerScrollDirection::kNone;
+  ContainerScrolled scrolled_horizontal_ = ContainerScrolled::kNone;
+  ContainerScrolled scrolled_vertical_ = ContainerScrolled::kNone;
   PositionTryFallback anchored_fallback_;
 
   HeapHashMap<Member<const ContainerQuery>, Result> results_;
@@ -297,7 +293,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   bool depends_on_stuck_ = false;
   bool depends_on_snapped_ = false;
   bool depends_on_scrollable_ = false;
-  bool depends_on_scroll_direction_ = false;
+  bool depends_on_scrolled_ = false;
   bool depends_on_size_ = false;
 };
 

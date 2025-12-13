@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
-#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 
 namespace blink {
 
@@ -23,7 +22,7 @@ class V8UnionCSSPseudoElementOrElement;
 // for better developer experience, as most uses cases rely on object staying
 // the same between two `.pseudo` calls (e.g. to add/remove event listeners).
 // Spec: https://www.w3.org/TR/css-pseudo-4/#CSSPseudoElement-interface
-class CSSPseudoElement final : public EventTarget {
+class CSSPseudoElement final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -35,6 +34,9 @@ class CSSPseudoElement final : public EventTarget {
   // Parses the `type` to determine the PseudoId and if it's a currently
   // supported pseudo-element.
   static PseudoId ConvertTypeToSupportedPseudoId(const AtomicString& type);
+  // Returns true if the `pseudo_id` is a supported pseudo-element type
+  // for CSSPseudoElement interface.
+  static bool IsSupportedTypeForCSSPseudoElement(PseudoId pseudo_id);
 
   // IDL interface.
   // The type attribute is a string representing the type of the pseudo-element.
@@ -52,10 +54,6 @@ class CSSPseudoElement final : public EventTarget {
   // the sub-pseudo-element referenced in its argument, if such a
   // sub-pseudo-element could exist and would be valid, and null otherwise.
   CSSPseudoElement* pseudo(const AtomicString& type);
-
-  // EventTarget overrides.
-  const AtomicString& InterfaceName() const override;
-  ExecutionContext* GetExecutionContext() const override;
 
   PseudoId GetPseudoId() const { return pseudo_id_; }
 

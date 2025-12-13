@@ -15,7 +15,10 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
@@ -23,6 +26,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -80,6 +84,91 @@ const prefs::TrackedPreferenceMetadata kTestTrackedPrefs[] = {
     {6, kAtomicPref4, EnforcementLevel::ENFORCE_ON_LOAD,
      PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
 };
+
+// Defines a test case for a tracked preference type mismatch.
+struct TypeMismatchTestCase {
+  size_t reporting_id;
+  const char* pref_name;
+  PrefTrackingStrategy strategy;
+  base::Value::Type registered_type;
+  base::Value::Type mismatch_type;
+  const char* mismatch_string_value = nullptr;
+};
+
+// A helper function to return the test cases for type mismatch tests.
+std::vector<TypeMismatchTestCase> GetTypeMismatchTestCases() {
+  return {
+      {0, "browser.show_home_button", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::BOOLEAN, base::Value::Type::DICT},
+      {1, "homepage_is_newtabpage", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::BOOLEAN, base::Value::Type::DICT},
+      {2, "homepage", PrefTrackingStrategy::ATOMIC, base::Value::Type::STRING,
+       base::Value::Type::DICT},
+      {3, "session.restore_on_startup", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::INTEGER, base::Value::Type::DICT},
+      {4, "session.startup_urls", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::LIST, base::Value::Type::DICT},
+      {6, "google.services.last_syncing_username", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::STRING, base::Value::Type::DICT},
+      {7, "search_provider_overrides", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::LIST, base::Value::Type::DICT},
+      {11, "pinned_tabs", PrefTrackingStrategy::ATOMIC, base::Value::Type::LIST,
+       base::Value::Type::DICT},
+      {14, "default_search_provider_data.template_url_data",
+       PrefTrackingStrategy::ATOMIC, base::Value::Type::DICT,
+       base::Value::Type::LIST},
+      {15, "profile.preference_reset_time", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::STRING, base::Value::Type::DICT},
+      {18, "safebrowsing.incidents_sent", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::DICT, base::Value::Type::LIST},
+      {23, "google.services.account_id", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::STRING, base::Value::Type::DICT},
+      {29, "media.storage_id_salt", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::STRING, base::Value::Type::DICT},
+      {32, "media.cdm.origin_data", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::DICT, base::Value::Type::LIST},
+      {33, "google.services.last_signed_in_username",
+       PrefTrackingStrategy::ATOMIC, base::Value::Type::STRING,
+       base::Value::Type::DICT},
+      {34, "enterprise_signin.policy_recovery_token",
+       PrefTrackingStrategy::ATOMIC, base::Value::Type::STRING,
+       base::Value::Type::DICT},
+      {35, "extensions.ui.developer_mode", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::BOOLEAN, base::Value::Type::DICT},
+      {36, "preference_reset_schedule_to_flush_to_disk",
+       PrefTrackingStrategy::ATOMIC, base::Value::Type::STRING,
+       base::Value::Type::DICT},
+      {37, "extensions.install.init_list", PrefTrackingStrategy::ATOMIC,
+       base::Value::Type::LIST, base::Value::Type::DICT},
+      {38, "extensions.install.init_provider_name",
+       PrefTrackingStrategy::ATOMIC, base::Value::Type::STRING,
+       base::Value::Type::DICT},
+  };
+}
+
+// Helper to duplicate the logic in pref_hash_filter.cc for test verification
+const char* GetValueTypeStringForTest(base::Value::Type type) {
+  using Type = base::Value::Type;
+  switch (type) {
+    case Type::NONE:
+      return "None";
+    case Type::BOOLEAN:
+      return "Boolean";
+    case Type::INTEGER:
+      return "Integer";
+    case Type::DOUBLE:
+      return "Double";
+    case Type::STRING:
+      return "String";
+    case Type::BINARY:
+      return "Binary";
+    case Type::DICT:
+      return "Dictionary";
+    case Type::LIST:
+      return "List";
+  }
+  return "Unknown";
+}
 
 }  // namespace
 
@@ -295,17 +384,22 @@ class MockPrefHashStore : public PrefHashStore {
 
 void MockPrefHashStore::SetCheckResult(const std::string& path,
                                        ValueState result) {
-  check_results_.insert(std::make_pair(path, result));
+  // Allow overwriting existing values. This is necessary for tests that need
+  // to set the check result for the same preference multiple times
+  // (e.g., once for the synchronous pass and once for the asynchronous pass).
+  check_results_[path] = result;
 }
 
 void MockPrefHashStore::SetInvalidKeysResult(
     const std::string& path,
     const std::vector<std::string>& invalid_keys_result) {
-  // Ensure |check_results_| has a CHANGED entry for |path|.
   std::map<std::string, ValueState>::const_iterator result =
       check_results_.find(path);
   ASSERT_TRUE(result != check_results_.end());
-  ASSERT_EQ(ValueState::CHANGED, result->second);
+  ValueState value_state = result->second;
+  ASSERT_TRUE(value_state == ValueState::CHANGED ||
+              value_state == ValueState::CHANGED_ENCRYPTED ||
+              value_state == ValueState::CHANGED_VIA_HMAC_FALLBACK);
 
   invalid_keys_results_.insert(std::make_pair(path, invalid_keys_result));
 }
@@ -372,13 +466,11 @@ base::Value::Dict MockPrefHashStore::ComputeSplitEncryptedHashes(
 ValueState MockPrefHashStore::RecordCheckValue(const std::string& path,
                                                const void* value,
                                                PrefTrackingStrategy strategy) {
-  // Record that |path| was checked and validate that it wasn't previously
-  // checked.
-  EXPECT_TRUE(checked_values_
-                  .insert(std::make_pair(path, std::make_pair(value, strategy)))
-                  .second);
-  std::map<std::string, ValueState>::const_iterator result =
-      check_results_.find(path);
+  // Record that |path| was checked. Allow it to be checked multiple times.
+  // This is required for tests that simulate both a synchronous and an
+  // asynchronous validation pass.
+  checked_values_[path] = std::make_pair(value, strategy);
+  auto result = check_results_.find(path);
   if (result != check_results_.end())
     return result->second;
   return ValueState::UNCHANGED;
@@ -680,7 +772,16 @@ class PrefHashFilterTest : public testing::TestWithParam<EnforcementLevel>,
         mock_validation_delegate_record_(new MockValidationDelegateRecord),
         mock_validation_delegate_(mock_validation_delegate_record_),
         validation_delegate_receiver_(&mock_validation_delegate_),
-        reset_recorded_(false) {}
+        reset_recorded_(false) {
+    // Register prefs that are accessed by tasks posted from
+    // FinalizeFilterOnLoad (like UpdateTrackedPreferencesResetListInPrefStore
+    // and DeferredEncryptorRevalidation).
+    pref_service_.registry()->RegisterStringPref(
+        user_prefs::kPreferenceResetTime, "0");
+    pref_service_.registry()->RegisterListPref(
+        user_prefs::kTrackedPreferencesReset);
+    pref_service_.registry()->RegisterStringPref(kScheduleToFlushToDisk, "0");
+  }
 
   PrefHashFilterTest(const PrefHashFilterTest&) = delete;
   PrefHashFilterTest& operator=(const PrefHashFilterTest&) = delete;
@@ -690,6 +791,7 @@ class PrefHashFilterTest : public testing::TestWithParam<EnforcementLevel>,
     // tests.
     InitializeSyncOSCrypt();
     Reset();
+    pref_hash_filter_->SetPrefService(&pref_service_);
   }
 
   // Resets to the default state (feature off).
@@ -782,6 +884,54 @@ class PrefHashFilterTest : public testing::TestWithParam<EnforcementLevel>,
         os_crypt);
   }
 
+  // Initializes |pref_hash_filter_| with a PrefHashFilter that uses a
+  // MockPrefHashStore. The raw pointer to the MockPrefHashStore (owned by the
+  // PrefHashFilter) is stored in |mock_pref_hash_store_|. The configuration is
+  // built from |custom_metadata|. This function is a helper function similar to
+  // the one above.
+  void InitializePrefHashFilterWithCustomConfig(
+      const std::vector<prefs::TrackedPreferenceMetadata>& custom_metadata,
+      os_crypt_async::OSCryptAsync* os_crypt) {
+    auto configuration = prefs::ConstructTrackedConfiguration(custom_metadata);
+
+    auto temp_mock_pref_hash_store = std::make_unique<MockPrefHashStore>();
+    auto temp_mock_external_validation_pref_hash_store =
+        std::make_unique<MockPrefHashStore>();
+    auto temp_mock_external_validation_hash_store_contents =
+        std::make_unique<MockHashStoreContents>();
+    mock_pref_hash_store_ = temp_mock_pref_hash_store.get();
+    mock_external_validation_pref_hash_store_ =
+        temp_mock_external_validation_pref_hash_store.get();
+    mock_external_validation_hash_store_contents_ =
+        temp_mock_external_validation_hash_store_contents.get();
+
+    validation_delegate_receiver_.reset();
+    reset_on_load_observer_receivers_.Clear();
+
+    mojo::PendingRemote<prefs::mojom::ResetOnLoadObserver>
+        reset_on_load_observer;
+    reset_on_load_observer_receivers_.Add(
+        this, reset_on_load_observer.InitWithNewPipeAndPassReceiver());
+
+    mojo::Remote<prefs::mojom::TrackedPreferenceValidationDelegate>
+        validation_delegate_remote(
+            validation_delegate_receiver_.BindNewPipeAndPassRemote());
+    auto validation_delegate_remote_ref =
+        base::MakeRefCounted<base::RefCountedData<
+            mojo::Remote<prefs::mojom::TrackedPreferenceValidationDelegate>>>(
+            std::move(validation_delegate_remote));
+
+    // Initialize the filter with the CUSTOM configuration and size.
+    pref_hash_filter_ = std::make_unique<PrefHashFilter>(
+        std::move(temp_mock_pref_hash_store),
+        PrefHashFilter::StoreContentsPair(
+            std::move(temp_mock_external_validation_pref_hash_store),
+            std::move(temp_mock_external_validation_hash_store_contents)),
+        std::move(configuration), std::move(reset_on_load_observer),
+        std::move(validation_delegate_remote_ref), custom_metadata.size(),
+        os_crypt);
+  }
+
   // Verifies whether a reset was reported by the PrefHashFiler. Also verifies
   // that kPreferenceResetTime was set (or not) accordingly.
   void VerifyRecordedReset(bool reset_expected) {
@@ -811,6 +961,7 @@ class PrefHashFilterTest : public testing::TestWithParam<EnforcementLevel>,
   base::Value::Dict pref_store_contents_;
   scoped_refptr<MockValidationDelegateRecord> mock_validation_delegate_record_;
   std::unique_ptr<PrefHashFilter> pref_hash_filter_;
+  TestingPrefServiceSimple pref_service_;
 
  private:
   void OnResetOnLoad() override {
@@ -1562,6 +1713,60 @@ TEST_P(PrefHashFilterTest, ExternalValidationValueChanged) {
                 ValueState::UNCHANGED));
 }
 
+TEST_P(PrefHashFilterTest, TrackedPreferenceResetStored) {
+  // This test is only relevant for platforms where ENFORCE_ON_LOAD is a real
+  // enforcement level.
+  if (GetParam() != EnforcementLevel::ENFORCE_ON_LOAD) {
+    return;
+  }
+
+  int expected_atomic_int_content = 1234;
+  pref_store_contents_.Set(kAtomicPref, expected_atomic_int_content);
+  ASSERT_TRUE(pref_store_contents_.contains(kAtomicPref));
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::CHANGED);
+  DoFilterOnLoad(true);
+  ASSERT_FALSE(pref_store_contents_.contains(kAtomicPref));
+  const base::Value::List* reset_prefs =
+      pref_store_contents_.FindList(user_prefs::kTrackedPreferencesReset);
+  ASSERT_TRUE(reset_prefs);
+  ASSERT_EQ(1u, reset_prefs->size());
+  ASSERT_EQ(base::Value(kAtomicPref), (*reset_prefs)[0]);
+}
+
+TEST_P(PrefHashFilterTest, TrackedSplitPreferenceResetStored) {
+  // This test is only relevant for platforms where ENFORCE_ON_LOAD is a real
+  // enforcement level.
+  if (GetParam() != EnforcementLevel::ENFORCE_ON_LOAD) {
+    return;
+  }
+
+  base::Value::Dict initial_split_dict_content;
+  initial_split_dict_content.Set("a", "foo");
+  initial_split_dict_content.Set("b", 1234);
+  initial_split_dict_content.Set("c", 56);
+  initial_split_dict_content.Set("d", false);
+
+  pref_store_contents_.Set(kSplitPref, initial_split_dict_content.Clone());
+  ASSERT_TRUE(pref_store_contents_.contains(kSplitPref));
+
+  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::CHANGED);
+  std::vector<std::string> mock_invalid_keys;
+  mock_invalid_keys.push_back("a");
+  mock_invalid_keys.push_back("c");
+  mock_pref_hash_store_->SetInvalidKeysResult(kSplitPref, mock_invalid_keys);
+
+  DoFilterOnLoad(true);
+
+  const base::Value::List* reset_prefs =
+      pref_store_contents_.FindList(user_prefs::kTrackedPreferencesReset);
+  ASSERT_TRUE(reset_prefs);
+  ASSERT_EQ(2u, reset_prefs->size());
+  EXPECT_TRUE(base::Contains(*reset_prefs,
+                             base::Value(std::string(kSplitPref) + ".a")));
+  EXPECT_TRUE(base::Contains(*reset_prefs,
+                             base::Value(std::string(kSplitPref) + ".c")));
+}
+
 TEST_P(PrefHashFilterTest, CleanupDeprecatedTrackedDictionary) {
   // Fake a preference value and stored hash from an old version of Chrome.
   base::Value pref_value(1234);
@@ -1585,6 +1790,52 @@ TEST_P(PrefHashFilterTest, CleanupDeprecatedTrackedDictionary) {
   EXPECT_EQ(0u, mock_pref_hash_store_->stored_paths_count());
   EXPECT_FALSE(pref_store_contents_.contains("dictionary.pref"));
   EXPECT_FALSE(pref_store_contents_.contains("dictionary"));
+}
+
+TEST_P(PrefHashFilterTest, RecordTrackedPreferenceResetCount_NoResets) {
+  base::HistogramTester histogram_tester;
+  pref_hash_filter_->MaybeRecordTrackedPreferenceResetCount(
+      pref_store_contents_);
+  histogram_tester.ExpectUniqueSample("Settings.TrackedPreferenceResets.Count",
+                                      0, 1);
+}
+
+TEST_P(PrefHashFilterTest, RecordTrackedPreferenceResetCount_WithResets) {
+  base::Value::List reset_list;
+  reset_list.Append("path.to.some.pref");
+  reset_list.Append("path.to.another.pref");
+  pref_store_contents_.Set(user_prefs::kTrackedPreferencesReset,
+                           std::move(reset_list));
+
+  base::HistogramTester histogram_tester;
+  pref_hash_filter_->MaybeRecordTrackedPreferenceResetCount(
+      pref_store_contents_);
+  histogram_tester.ExpectUniqueSample("Settings.TrackedPreferenceResets.Count",
+                                      2, 1);
+}
+
+TEST_P(PrefHashFilterTest, TrackedSplitPreferenceResetMissingDict) {
+  // This test is only relevant for platforms where ENFORCE_ON_LOAD applies.
+  if (GetParam() != EnforcementLevel::ENFORCE_ON_LOAD) {
+    return;
+  }
+
+  ASSERT_FALSE(pref_store_contents_.contains(kSplitPref));
+
+  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::CHANGED);
+  mock_pref_hash_store_->SetInvalidKeysResult(kSplitPref, {"z", "a", "c", "k"});
+
+  // This the code should run without crashing.
+  DoFilterOnLoad(true);
+
+  // The preference should still be missing, as it was reset from a non existent
+  // state.
+  ASSERT_FALSE(pref_store_contents_.contains(kSplitPref));
+
+  // Since the original value was missing, nothing should be stored.
+  const base::Value::Dict* reset_prefs =
+      pref_store_contents_.FindDict(user_prefs::kTrackedPreferencesReset);
+  ASSERT_FALSE(reset_prefs && reset_prefs->contains(kSplitPref));
 }
 
 INSTANTIATE_TEST_SUITE_P(PrefHashFilterTestInstance,
@@ -1623,10 +1874,15 @@ class PrefHashFilterEncryptedTest : public PrefHashFilterTest {
     MockPrefService() = default;
     ~MockPrefService() override = default;
 
-    void ClearPref(const std::string& path) { cleared_prefs_.insert(path); }
+    void ClearPref(const std::string& path) {
+      cleared_prefs_.insert(path);
+      TestingPrefServiceSimple::ClearPref(path);
+    }
     bool WasCleared(const std::string& path) const {
       return cleared_prefs_.count(path);
     }
+
+    void ClearClearedPrefsForTesting() { cleared_prefs_.clear(); }
 
    private:
     std::set<std::string> cleared_prefs_;
@@ -1656,6 +1912,8 @@ TEST_P(PrefHashFilterEncryptedTest, PostsDeferredTaskOnlyWhenFeatureEnabled) {
   // Also register the reset pref as a matter of good practice.
   mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
                                                      "0");
+  mock_pref_service_->registry()->RegisterListPref(
+      user_prefs::kTrackedPreferencesReset);
 
   bool callback_ran = false;
   auto set_callback = [&](base::RunLoop& run_loop) {
@@ -1706,6 +1964,10 @@ TEST_P(PrefHashFilterEncryptedTest, DeferredRevalidationSkipsIfValueChanged) {
   mock_pref_service_->registry()->RegisterStringPref(kAtomicPref, "");
   mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
                                                      "0");
+  mock_pref_service_->registry()->RegisterListPref(
+      user_prefs::kTrackedPreferencesReset);
+  mock_pref_service_->registry()->RegisterStringPref(
+      user_prefs::kPreferenceResetTime, "0");
   pref_hash_filter_->SetPrefService(mock_pref_service_.get());
 
   pref_store_contents_.Set(kAtomicPref, "value_at_load");
@@ -1730,6 +1992,492 @@ TEST_P(PrefHashFilterEncryptedTest, DeferredRevalidationSkipsIfValueChanged) {
   revalidation_run_loop.Run();
 
   EXPECT_FALSE(mock_pref_service_->WasCleared(kAtomicPref));
+}
+
+TEST_P(PrefHashFilterEncryptedTest, DeferredRevalidationSkipsIfValueCleared) {
+  InitializeAsyncOSCrypt();
+  ResetImpl(true, test_os_crypt_async_.get());
+
+  mock_pref_service_ = std::make_unique<MockPrefService>();
+  mock_pref_service_->registry()->RegisterStringPref(kAtomicPref, "");
+  mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
+                                                     "0");
+  mock_pref_service_->registry()->RegisterListPref(
+      user_prefs::kTrackedPreferencesReset);
+  mock_pref_service_->registry()->RegisterStringPref(
+      user_prefs::kPreferenceResetTime, "0");
+  pref_hash_filter_->SetPrefService(mock_pref_service_.get());
+
+  pref_store_contents_.Set(kAtomicPref, "value_at_load");
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::UNCHANGED);
+  // Set the encrypted hash explicitly to be invalid, so the deferred task will
+  // try to reset the pref.
+  mock_pref_hash_store_->SetCheckResult("prefix." + std::string(kAtomicPref),
+                                        ValueState::CHANGED);
+
+  pref_hash_filter_->FilterOnLoad(
+      base::BindOnce(&PrefHashFilterTest::GetPrefsBack, base::Unretained(this),
+                     false),
+      std::move(pref_store_contents_));
+  mock_pref_service_->ClearPref(kAtomicPref);
+
+  base::RunLoop revalidation_run_loop;
+  bool was_validation_performed = false;
+  pref_hash_filter_->SetOnDeferredRevalidationCompleteForTesting(base::BindOnce(
+      &PrefHashFilterEncryptedTest::OnDeferredRevalidationComplete,
+      base::Unretained(this), &was_validation_performed,
+      revalidation_run_loop.QuitClosure()));
+
+  mock_pref_service_->ClearClearedPrefsForTesting();
+  revalidation_run_loop.Run();
+
+  EXPECT_TRUE(was_validation_performed);
+
+  // This means ClearPref should NOT be called a second time.
+  EXPECT_FALSE(mock_pref_service_->WasCleared(kAtomicPref));
+}
+
+TEST_P(PrefHashFilterEncryptedTest,
+       DeferredRevalidationResetsSplitPrefPartially) {
+  // This test is only relevant when enforcement is on.
+  if (GetParam() != EnforcementLevel::ENFORCE_ON_LOAD) {
+    return;
+  }
+
+  InitializeAsyncOSCrypt();
+  ResetImpl(true, test_os_crypt_async_.get());
+
+  mock_pref_service_ = std::make_unique<MockPrefService>();
+  mock_pref_service_->registry()->RegisterDictionaryPref(kSplitPref);
+  mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
+                                                     "0");
+  mock_pref_service_->registry()->RegisterStringPref(
+      user_prefs::kPreferenceResetTime, "0");
+  mock_pref_service_->registry()->RegisterListPref(
+      user_prefs::kTrackedPreferencesReset);
+  pref_hash_filter_->SetPrefService(mock_pref_service_.get());
+
+  // 1. Set up the initial state with a good and a bad key.
+  base::Value::Dict initial_dict;
+  initial_dict.Set("good_key", "good_value");
+  initial_dict.Set("bad_key", "bad_value");
+  pref_store_contents_.Set(kSplitPref, initial_dict.Clone());
+  // Also set this initial state in the live PrefService.
+  mock_pref_service_->Set(kSplitPref, base::Value(initial_dict.Clone()));
+
+  // 2. Configure the mock for the SYNCHRONOUS pass.
+  // The HMACs are all valid, so the initial check is UNCHANGED.
+  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::UNCHANGED);
+
+  // 3. Run the synchronous load. This should schedule the deferred task.
+  pref_hash_filter_->FilterOnLoad(
+      base::BindOnce(&PrefHashFilterTest::GetPrefsBack, base::Unretained(this),
+                     false /* expected_altered */),
+      std::move(pref_store_contents_));
+
+  // At this point, nothing should have been cleared.
+  ASSERT_FALSE(mock_pref_service_->WasCleared(kSplitPref));
+
+  // 4. Re-configure the mock for the ASYNCHRONOUS pass.
+  // Now, the encrypted hash for "bad_key" is found to be invalid.
+  mock_pref_hash_store_->SetCheckResult(kSplitPref,
+                                        ValueState::CHANGED_ENCRYPTED);
+  mock_pref_hash_store_->SetInvalidKeysResult(kSplitPref, {"bad_key"});
+
+  // 5. Wait for the deferred task to complete.
+  base::RunLoop revalidation_run_loop;
+  bool callback_ran = false;
+  pref_hash_filter_->SetOnDeferredRevalidationCompleteForTesting(base::BindOnce(
+      &PrefHashFilterEncryptedTest::OnDeferredRevalidationComplete,
+      base::Unretained(this), &callback_ran,
+      revalidation_run_loop.QuitClosure()));
+  revalidation_run_loop.Run();
+  ASSERT_TRUE(callback_ran);
+
+  // 6. VERIFY the results.
+  // The whole pref should NOT have been cleared. This is the bug fix check.
+  EXPECT_FALSE(mock_pref_service_->WasCleared(kSplitPref));
+
+  // The live pref value should now be the corrected dictionary.
+  const base::Value::Dict& final_dict = mock_pref_service_->GetDict(kSplitPref);
+  EXPECT_TRUE(final_dict.Find("good_key"));
+  EXPECT_FALSE(final_dict.Find("bad_key"));
+  EXPECT_EQ(1u, final_dict.size());
+}
+
+TEST_P(PrefHashFilterTest, MetricLoggedOnceOnSyncPathFeatureDisabled) {
+  // The metric is logged exactly once from the synchronous FinalizeFilterOnLoad
+  // pass.
+  base::HistogramTester histogram_tester;
+
+  DoFilterOnLoad(false);
+
+  // We expect exactly one sample, with a value of 0 (no resets).
+  histogram_tester.ExpectUniqueSample("Settings.TrackedPreferenceResets.Count",
+                                      0, 1);
+}
+
+TEST_P(PrefHashFilterEncryptedTest, MetricLoggedOnceOnDeferredPath) {
+  InitializeAsyncOSCrypt();
+  base::HistogramTester histogram_tester;
+  base::RunLoop revalidation_loop;
+
+  ResetImpl(true /* enable_encrypted_hashing_feature */,
+            test_os_crypt_async_.get());
+
+  mock_pref_service_ = std::make_unique<MockPrefService>();
+  mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
+                                                     "0");
+  mock_pref_service_->registry()->RegisterListPref(
+      user_prefs::kTrackedPreferencesReset);
+  mock_pref_service_->registry()->RegisterStringPref(
+      user_prefs::kPreferenceResetTime, "0");
+  pref_hash_filter_->SetPrefService(mock_pref_service_.get());
+
+  pref_hash_filter_->SetOnDeferredRevalidationCompleteForTesting(
+      revalidation_loop.QuitClosure());
+
+  // This will run FinalizeFilterOnLoad, which should post the deferred task but
+  // not log the metric.
+  pref_hash_filter_->FilterOnLoad(
+      base::BindOnce(&PrefHashFilterTest::GetPrefsBack, base::Unretained(this),
+                     false /* expected_altered */),
+      pref_store_contents_.Clone());
+
+  revalidation_loop.Run();
+
+  // We expect exactly one sample, with a value of 0 (no resets).
+  histogram_tester.ExpectUniqueSample("Settings.TrackedPreferenceResets.Count",
+                                      0, 1);
+}
+
+TEST_P(PrefHashFilterTest, MaybeRecordTrackedPreferenceResetCount_LogsOnce) {
+  base::HistogramTester histogram_tester;
+  pref_hash_filter_->MaybeRecordTrackedPreferenceResetCount(
+      pref_store_contents_);
+  // Call a second time.
+  pref_hash_filter_->MaybeRecordTrackedPreferenceResetCount(
+      pref_store_contents_);
+
+  // Should only have one sample.
+  histogram_tester.ExpectUniqueSample("Settings.TrackedPreferenceResets.Count",
+                                      0, 1);
+}
+
+TEST_P(PrefHashFilterEncryptedTest, ResetSplitPrefThenDeferredValidation) {
+  if (GetParam() != EnforcementLevel::ENFORCE_ON_LOAD) {
+    return;
+  }
+  InitializeAsyncOSCrypt();
+  ResetImpl(true /* enable_encrypted_hashing_feature */,
+            test_os_crypt_async_.get());
+
+  mock_pref_service_ = std::make_unique<MockPrefService>();
+  mock_pref_service_->registry()->RegisterDictionaryPref(kSplitPref);
+  mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
+                                                     "0");
+  mock_pref_service_->registry()->RegisterListPref(
+      user_prefs::kTrackedPreferencesReset);
+  mock_pref_service_->registry()->RegisterStringPref(
+      user_prefs::kPreferenceResetTime, "0");
+  pref_hash_filter_->SetPrefService(mock_pref_service_.get());
+
+  base::Value::Dict tampered_dict;
+  tampered_dict.Set("some_invalid_key", "this_is_the_tampered_value");
+  pref_store_contents_.Set(kSplitPref, std::move(tampered_dict));
+
+  // Configure the mock to report an invalid unencrypted hash.
+  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::CHANGED);
+  mock_pref_hash_store_->SetInvalidKeysResult(kSplitPref, {"some_invalid_key"});
+
+  base::RunLoop run_loop;
+  pref_hash_filter_->SetOnDeferredRevalidationCompleteForTesting(
+      run_loop.QuitClosure());
+
+  // This will trigger the synchronous reset and schedule the deferred task.
+  pref_hash_filter_->FilterOnLoad(
+      base::BindOnce(&PrefHashFilterTest::GetPrefsBack, base::Unretained(this),
+                     true /* expected_altered */),
+      std::move(pref_store_contents_));
+
+  // The invalid key should have been immediately removed, leaving an empty
+  // dict.
+  const base::Value::Dict* dict_after_sync_reset =
+      pref_store_contents_.FindDict(kSplitPref);
+  ASSERT_TRUE(dict_after_sync_reset);
+  EXPECT_TRUE(dict_after_sync_reset->empty());
+
+  // Clear the mock's call history, then reconfigure it to report that the
+  // encrypted hash for the same preference is also invalid.
+  mock_pref_hash_store_->ClearTestState();
+  mock_pref_hash_store_->SetCheckResult(kSplitPref, ValueState::CHANGED);
+
+  run_loop.Run();
+
+  // The `already_reset_paths` logic should have caused the deferred task to
+  // completely skip re-validating `kSplitPref`. We prove this by asserting
+  // that the mock store's `CheckValue` method was not called.
+  EXPECT_EQ(0u, mock_pref_hash_store_->checked_paths_count());
+
+  const base::Value::Dict* dict_after_async_pass =
+      pref_store_contents_.FindDict(kSplitPref);
+  ASSERT_TRUE(dict_after_async_pass);
+  EXPECT_TRUE(dict_after_async_pass->empty());
+}
+
+TEST_P(PrefHashFilterEncryptedTest,
+       DeferredResetOverwritesExistingResetListInPrefService) {
+  if (GetParam() != EnforcementLevel::ENFORCE_ON_LOAD) {
+    return;
+  }
+
+  InitializeAsyncOSCrypt();
+  ResetImpl(true, test_os_crypt_async_.get());
+
+  mock_pref_service_ = std::make_unique<MockPrefService>();
+  mock_pref_service_->registry()->RegisterStringPref(kAtomicPref, "");
+  mock_pref_service_->registry()->RegisterListPref(
+      user_prefs::kTrackedPreferencesReset);
+  mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
+                                                     "0");
+  mock_pref_service_->registry()->RegisterStringPref(
+      user_prefs::kPreferenceResetTime, "0");
+  pref_hash_filter_->SetPrefService(mock_pref_service_.get());
+
+  pref_store_contents_.Set(kAtomicPref, "value_at_load");
+  mock_pref_service_->SetString(kAtomicPref, "value_at_load");
+
+  // Pre populate the live PrefService's reset list with a stale value.
+  base::Value::List existing_resets;
+  existing_resets.Append("existing.stale.pref");
+  mock_pref_service_->SetList(user_prefs::kTrackedPreferencesReset,
+                              std::move(existing_resets));
+
+  // The pref_store_contents_at_load won't have the stale pref, as it's
+  // only in the live service.
+  pref_store_contents_.Set(user_prefs::kTrackedPreferencesReset,
+                           base::Value::List());
+
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::UNCHANGED);
+  pref_hash_filter_->FilterOnLoad(
+      base::BindOnce(&PrefHashFilterTest::GetPrefsBack, base::Unretained(this),
+                     false /* expected_altered */),
+      std::move(pref_store_contents_));
+
+  ASSERT_EQ(
+      1u,
+      mock_pref_service_->GetList(user_prefs::kTrackedPreferencesReset).size());
+
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref,
+                                        ValueState::CHANGED_ENCRYPTED);
+
+  base::RunLoop revalidation_run_loop;
+  bool callback_ran = false;
+  pref_hash_filter_->SetOnDeferredRevalidationCompleteForTesting(base::BindOnce(
+      &PrefHashFilterEncryptedTest::OnDeferredRevalidationComplete,
+      base::Unretained(this), &callback_ran,
+      revalidation_run_loop.QuitClosure()));
+  revalidation_run_loop.Run();
+
+  ASSERT_TRUE(callback_ran);
+  EXPECT_TRUE(mock_pref_service_->GetString(kAtomicPref).empty());
+
+  const base::Value::List& final_list =
+      mock_pref_service_->GetList(user_prefs::kTrackedPreferencesReset);
+  ASSERT_EQ(1u, final_list.size());
+  EXPECT_EQ(kAtomicPref, final_list[0].GetString());
+}
+
+TEST_P(PrefHashFilterEncryptedTest,
+       SyncResetIsPatchedToLivePrefServiceWhenFlagOff) {
+  if (GetParam() != EnforcementLevel::ENFORCE_ON_LOAD) {
+    return;
+  }
+
+  InitializeAsyncOSCrypt();
+  ResetImpl(false /* enable_encrypted_hashing_feature */,
+            test_os_crypt_async_.get());
+
+  mock_pref_service_ = std::make_unique<MockPrefService>();
+  mock_pref_service_->registry()->RegisterStringPref(kAtomicPref, "");
+  mock_pref_service_->registry()->RegisterListPref(
+      user_prefs::kTrackedPreferencesReset);
+  mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
+                                                     "0");
+  mock_pref_service_->registry()->RegisterStringPref(
+      user_prefs::kPreferenceResetTime, "0");
+  pref_hash_filter_->SetPrefService(mock_pref_service_.get());
+
+  pref_store_contents_.Set(kAtomicPref, "value_at_load");
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::CHANGED);
+
+  // The live pref list should be empty before we start.
+  ASSERT_TRUE(mock_pref_service_->GetList(user_prefs::kTrackedPreferencesReset)
+                  .empty());
+
+  DoFilterOnLoad(true /* expected_altered */);
+
+  // The live PrefService list should be populated by the
+  // UpdateTrackedPreferencesResetListInPrefStore task.
+  const base::Value::List& final_list =
+      mock_pref_service_->GetList(user_prefs::kTrackedPreferencesReset);
+  ASSERT_EQ(1u, final_list.size());
+  EXPECT_EQ(kAtomicPref, final_list[0].GetString());
+}
+
+TEST_P(PrefHashFilterEncryptedTest, DeferredValidation_TypeMismatch) {
+  // This test is only relevant when enforcement is on.
+  if (GetParam() != EnforcementLevel::ENFORCE_ON_LOAD) {
+    return;
+  }
+
+  InitializeAsyncOSCrypt();
+  ResetImpl(true, test_os_crypt_async_.get());
+  std::vector<prefs::TrackedPreferenceMetadata> custom_prefs = {
+      {0, kAtomicPref, EnforcementLevel::ENFORCE_ON_LOAD,
+       PrefTrackingStrategy::ATOMIC, ValueType::PERSONAL}};
+
+  InitializePrefHashFilterWithCustomConfig(custom_prefs,
+                                           test_os_crypt_async_.get());
+
+  mock_pref_service_ = std::make_unique<MockPrefService>();
+  // Register kAtomicPref as an integer.
+  mock_pref_service_->registry()->RegisterIntegerPref(kAtomicPref, 0);
+  // Register other prefs.
+  mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
+                                                     "0");
+  mock_pref_service_->registry()->RegisterStringPref(
+      user_prefs::kPreferenceResetTime, "0");
+  mock_pref_service_->registry()->RegisterListPref(
+      user_prefs::kTrackedPreferencesReset);
+  pref_hash_filter_->SetPrefService(mock_pref_service_.get());
+
+  // Set kAtomicPref as a string in the pref store contents, creating a
+  // type mismatch
+  pref_store_contents_.Set(kAtomicPref, "invalid_type");
+
+  // Configure the mock for the synchronous pass.
+  // The HMACs are all valid, so the initial check is UNCHANGED.
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::UNCHANGED);
+
+  base::HistogramTester histogram_tester;
+
+  // Run the synchronous load. This should schedule the deferred task.
+  pref_hash_filter_->FilterOnLoad(
+      base::BindOnce(&PrefHashFilterTest::GetPrefsBack, base::Unretained(this),
+                     false /* expected_altered */),
+      std::move(pref_store_contents_));
+
+  base::RunLoop revalidation_run_loop;
+  pref_hash_filter_->SetOnDeferredRevalidationCompleteForTesting(
+      revalidation_run_loop.QuitClosure());
+  mock_pref_hash_store_->ClearTestState();
+  revalidation_run_loop.Run();
+  EXPECT_EQ(0u, mock_pref_hash_store_->checked_paths_count());
+  histogram_tester.ExpectUniqueSample(
+      "Settings.TrackedPreferences.TypeMismatch.Combination.IntegerToString", 0,
+      1);
+}
+
+TEST_P(PrefHashFilterEncryptedTest, DetectsAndLogsMismatch_AllPrefs) {
+  if (GetParam() != EnforcementLevel::ENFORCE_ON_LOAD) {
+    return;
+  }
+  InitializeAsyncOSCrypt();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(tracked::kEncryptedPrefHashing);
+
+  // We loop over all test cases defined in GetTypeMismatchTestCases to simulate
+  // the real world scenarios.
+  for (const auto& param : GetTypeMismatchTestCases()) {
+    base::HistogramTester histogram_tester;
+
+    std::vector<prefs::TrackedPreferenceMetadata> custom_metadata = {
+        {param.reporting_id, param.pref_name, EnforcementLevel::ENFORCE_ON_LOAD,
+         param.strategy, ValueType::IMPERSONAL}};
+
+    InitializePrefHashFilterWithCustomConfig(custom_metadata,
+                                             test_os_crypt_async_.get());
+    // Simulate registering the pref in PrefService.
+    mock_pref_service_ = std::make_unique<MockPrefService>();
+    switch (param.registered_type) {
+      case base::Value::Type::BOOLEAN:
+        mock_pref_service_->registry()->RegisterBooleanPref(param.pref_name,
+                                                            false);
+        break;
+      case base::Value::Type::INTEGER:
+        mock_pref_service_->registry()->RegisterIntegerPref(param.pref_name, 0);
+        break;
+      case base::Value::Type::STRING:
+        mock_pref_service_->registry()->RegisterStringPref(param.pref_name, "");
+        break;
+      case base::Value::Type::LIST:
+        mock_pref_service_->registry()->RegisterListPref(param.pref_name);
+        break;
+      case base::Value::Type::DICT:
+        mock_pref_service_->registry()->RegisterDictionaryPref(param.pref_name);
+        break;
+      default:
+        FAIL() << "Unsupported registered preference type";
+    }
+    mock_pref_service_->registry()->RegisterStringPref(kScheduleToFlushToDisk,
+                                                       "0");
+    mock_pref_service_->registry()->RegisterStringPref(
+        user_prefs::kPreferenceResetTime, "0");
+    mock_pref_service_->registry()->RegisterListPref(
+        user_prefs::kTrackedPreferencesReset);
+    pref_hash_filter_->SetPrefService(mock_pref_service_.get());
+
+    base::Value mismatch_value;
+    if (param.mismatch_string_value) {
+      mismatch_value = base::Value(param.mismatch_string_value);
+    } else {
+      switch (param.mismatch_type) {
+        case base::Value::Type::DICT:
+          mismatch_value = base::Value(base::Value::Dict());
+          break;
+        case base::Value::Type::LIST:
+          mismatch_value = base::Value(base::Value::List());
+          break;
+        default:
+          mismatch_value = base::Value("default_mismatch");
+          break;
+      }
+    }
+    pref_store_contents_.SetByDottedPath(param.pref_name,
+                                         mismatch_value.Clone());
+    mock_pref_hash_store_->SetCheckResult(param.pref_name,
+                                          ValueState::UNCHANGED);
+    pref_hash_filter_->FilterOnLoad(
+        base::BindOnce(&PrefHashFilterTest::GetPrefsBack,
+                       base::Unretained(this), false),
+        pref_store_contents_.Clone());
+
+    mock_pref_hash_store_->ClearTestState();
+
+    base::RunLoop revalidation_run_loop;
+    bool callback_ran = false;
+    pref_hash_filter_->SetOnDeferredRevalidationCompleteForTesting(
+        base::BindOnce(
+            &PrefHashFilterEncryptedTest::OnDeferredRevalidationComplete,
+            base::Unretained(this), &callback_ran,
+            revalidation_run_loop.QuitClosure()));
+
+    revalidation_run_loop.Run();
+    ASSERT_TRUE(callback_ran);
+
+    // Verify that CheckValue was never called as the type mismatch should skip
+    // validation.
+    EXPECT_EQ(0u, mock_pref_hash_store_->checked_paths_count());
+
+    std::string combo_name =
+        base::StrCat({"Settings.TrackedPreferences.TypeMismatch.Combination.",
+                      GetValueTypeStringForTest(param.registered_type), "To",
+                      GetValueTypeStringForTest(mismatch_value.type())});
+    histogram_tester.ExpectUniqueSample(combo_name, param.reporting_id, 1);
+    pref_hash_filter_->SetPrefService(nullptr);
+    pref_store_contents_.clear();
+  }
 }
 INSTANTIATE_TEST_SUITE_P(PrefHashFilterTestInstance,
                          PrefHashFilterEncryptedTest,

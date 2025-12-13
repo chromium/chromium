@@ -122,7 +122,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // If the card is local, has a non-empty GUID, and the user has updated its
   // expiration date, then this function will write the new information to
   // autofill table on disk.
-  void GetFullCard(const CreditCard& card,
+  void GetFullCard(CreditCard card,
                    PaymentsAutofillClient::UnmaskCardReason reason,
                    base::WeakPtr<ResultDelegate> result_delegate,
                    base::WeakPtr<UIDelegate> ui_delegate,
@@ -133,13 +133,13 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // Virtual Card specific fields that are required in the UnmaskCardRequest for
   // unmasking a Virtual Card via CVC authentication.
   void GetFullVirtualCardViaCVC(
-      const CreditCard& card,
+      CreditCard card,
       PaymentsAutofillClient::UnmaskCardReason reason,
       base::WeakPtr<ResultDelegate> result_delegate,
       base::WeakPtr<UIDelegate> ui_delegate,
-      const GURL& last_committed_primary_main_frame_origin,
-      const std::string& vcn_context_token,
-      const CardUnmaskChallengeOption& selected_challenge_option);
+      GURL last_committed_primary_main_frame_origin,
+      std::string vcn_context_token,
+      CardUnmaskChallengeOption selected_challenge_option);
 
   // Retrieves the pan for `card` through a FIDO assertion and invokes
   // Delegate::OnFullCardRequestSucceeded() or
@@ -154,7 +154,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // expiration date, then this function will write the new information to
   // autofill table on disk.
   void GetFullCardViaFIDO(
-      const CreditCard& card,
+      CreditCard card,
       PaymentsAutofillClient::UnmaskCardReason reason,
       base::WeakPtr<ResultDelegate> result_delegate,
       base::Value::Dict fido_assertion_info,
@@ -170,7 +170,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // CreditCardFidoAuthenticator to cancel the flow for opted-in users.
   void OnFIDOVerificationCancelled();
 
-  UnmaskResponseDetails unmask_response_details() const {
+  const UnmaskResponseDetails& unmask_response_details() const {
     return unmask_response_details_;
   }
 
@@ -207,7 +207,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // expiration date, then this function will write the new information to
   // autofill table on disk.
   void GetFullCardImpl(
-      const CreditCard& card,
+      CreditCard card,
       PaymentsAutofillClient::UnmaskCardReason reason,
       base::WeakPtr<ResultDelegate> result_delegate,
       base::WeakPtr<UIDelegate> ui_delegate,

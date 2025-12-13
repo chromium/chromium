@@ -26,9 +26,6 @@
 class AutoPipSettingView;
 class DesktopMediaPickerDialogView;
 class DigitalIdentityMultiStepDialogDelegate;
-class DownloadBubbleContentsViewTest;
-class DownloadBubbleSecurityViewTest;
-class DownloadToolbarUIController;
 class ExtensionsMenuCoordinator;
 class ExternalProtocolNoHandlersTelSchemeDialog;
 class ForceInstalledDeprecatedAppsDialogView;
@@ -59,6 +56,12 @@ class WebDialogBrowserTest;
 FORWARD_DECLARE_TEST(AcceleratorCommandsFullscreenBrowserTest,
                      ToggleFullscreen);
 FORWARD_DECLARE_TEST(TabStripScrollContainerTest, AnchoredWidgetHidesOnScroll);
+
+#if !BUILDFLAG(IS_CHROMEOS)
+class DownloadBubbleContentsViewTest;
+class DownloadBubbleSecurityViewTest;
+class DownloadToolbarUIController;
+#endif
 
 namespace arc {
 class ArcTaskWindowBuilder;
@@ -104,7 +107,7 @@ class LoginTestBase;
 class LoginTestWidgetDelegate;
 class MahiPanelWidget;
 class MaximizeDelegateView;
-class NonClientFrameViewAshTestWidgetDelegate;
+class FrameViewAshTestWidgetDelegate;
 class PipTest;
 class QuickInsertSubmenuView;
 class QuickInsertView;
@@ -181,10 +184,6 @@ namespace gfx {
 class Rect;
 }
 
-namespace glic {
-class GlicWidgetDelegate;
-}
-
 namespace javascript_dialogs {
 class AppModalDialogViewViews;
 }
@@ -217,7 +216,7 @@ class DefaultWidgetDelegate;
 class DialogDelegate;
 class FocusTraversalTest;
 class MoveTestWidgetDelegate;
-class NonClientFrameView;
+class FrameView;
 class ShapedWidgetDelegate;
 class TableViewFocusTest;
 class View;
@@ -249,7 +248,7 @@ class SubAppsInstallDialogController;
 }  // namespace web_app
 
 namespace webid {
-class AccountSelectionModalView;
+class TestAccountSelectionView;
 }  // namespace webid
 
 namespace views {
@@ -267,18 +266,19 @@ using AccessibleTitleChangedCallback = base::RepeatingCallback<void()>;
 class VIEWS_EXPORT WidgetDelegate {
  public:
   using ClientViewFactory =
-      base::OnceCallback<std::unique_ptr<ClientView>(Widget*)>;
+      base::OnceCallback<std::unique_ptr<ClientView>(Widget*,
+                                                     /*contents_view=*/View*)>;
   using OverlayViewFactory = base::OnceCallback<std::unique_ptr<View>()>;
 
-  // NonClientFrameViewFactory is a RepeatingCallback because the
-  // NonClientFrameView is rebuilt on Aura platforms when WindowTreeHost
+  // FrameViewFactory is a RepeatingCallback because the
+  // FrameView is rebuilt on Aura platforms when WindowTreeHost
   // properties that might affect its appearance change. Rebuilding the entire
-  // NonClientFrameView is a pretty big hammer for that but it's the one we
+  // FrameView is a pretty big hammer for that but it's the one we
   // have.
-  // TODO(b:387350163): Investigate if NonClientFrameView can handle these
+  // TODO(b:387350163): Investigate if FrameView can handle these
   // changes in a more granular way.
-  using NonClientFrameViewFactory =
-      base::RepeatingCallback<std::unique_ptr<NonClientFrameView>(Widget*)>;
+  using FrameViewFactory =
+      base::RepeatingCallback<std::unique_ptr<FrameView>(Widget*)>;
 
   struct Params {
     Params();
@@ -373,9 +373,11 @@ class VIEWS_EXPORT WidgetDelegate {
     // See comments atop `SetOwnedByWidget()`.
     friend class ::AutoPipSettingView;
     friend class ::DigitalIdentityMultiStepDialogDelegate;
+#if !BUILDFLAG(IS_CHROMEOS)
     friend class ::DownloadBubbleContentsViewTest;
     friend class ::DownloadBubbleSecurityViewTest;
     friend class ::DownloadToolbarUIController;
+#endif
     friend class ::ExtensionsMenuCoordinator;
     friend class ::ExternalProtocolNoHandlersTelSchemeDialog;
     friend class ::ForceInstalledDeprecatedAppsDialogView;
@@ -442,7 +444,6 @@ class VIEWS_EXPORT WidgetDelegate {
     friend class borealis::BorealisLaunchErrorDialog;
     friend class ::web_app::IsolatedWebAppInstallerViewController;
     friend class ::web_app::SubAppsInstallDialogController;
-    friend class ::webid::AccountSelectionModalView;
 
     OwnedByWidgetPassKey() = default;
   };
@@ -471,7 +472,6 @@ class VIEWS_EXPORT WidgetDelegate {
     friend class ::ShareThisTabDialogView;
     friend class ::SigninViewControllerDelegateViews;
     friend class ::ash::InformedRestoreController;
-    friend class ::glic::GlicWidgetDelegate;
     friend class ::native_app_window::NativeAppWindowViews;
     friend class ::plus_addresses::PlusAddressCreationDialogDelegate;
     friend class ::remoting::MessageBoxCore;
@@ -691,12 +691,11 @@ class VIEWS_EXPORT WidgetDelegate {
 
   // Called by the Widget to create the NonClient Frame View for this widget.
   // Return NULL to use the default one.
-  virtual std::unique_ptr<NonClientFrameView> CreateNonClientFrameView(
-      Widget* widget);
+  virtual std::unique_ptr<FrameView> CreateFrameView(Widget* widget);
 
   // Called by the Widget to create the overlay View for this widget. Return
   // NULL for no overlay. The overlay View will fill the Widget and sit on top
-  // of the ClientView and NonClientFrameView (both visually and wrt click
+  // of the ClientView and FrameView (both visually and wrt click
   // targeting).
   virtual View* CreateOverlayView();
 
@@ -781,7 +780,7 @@ class VIEWS_EXPORT WidgetDelegate {
                                       base::OnceClosure callback);
 
   void SetClientViewFactory(ClientViewFactory factory);
-  void SetNonClientFrameViewFactory(NonClientFrameViewFactory factory);
+  void SetFrameViewFactory(FrameViewFactory factory);
   void SetOverlayViewFactory(OverlayViewFactory factory);
 
   // Returns true if the title text should be centered.
@@ -878,7 +877,7 @@ class VIEWS_EXPORT WidgetDelegate {
   ClosureVector delete_delegate_callbacks_;
 
   ClientViewFactory client_view_factory_;
-  NonClientFrameViewFactory non_client_frame_view_factory_;
+  FrameViewFactory frame_view_factory_;
   OverlayViewFactory overlay_view_factory_;
 
   TitleChangedCallback title_changed_callback_;
@@ -943,7 +942,7 @@ class VIEWS_EXPORT WidgetDelegateView : public WidgetDelegate, public View {
   friend class ::ash::KioskExternalUpdateNotificationView;
   friend class ::ash::LayoutWidgetDelegateView;
   friend class ::ash::MaximizeDelegateView;
-  friend class ::ash::NonClientFrameViewAshTestWidgetDelegate;
+  friend class ::ash::FrameViewAshTestWidgetDelegate;
   friend class ::ash::PipTest;
   friend class ::ash::QuickInsertSubmenuView;
   friend class ::ash::QuickInsertView;
@@ -978,6 +977,7 @@ class VIEWS_EXPORT WidgetDelegateView : public WidgetDelegate, public View {
   friend class examples::ExamplesWindowContents;
   friend class test::GetNativeThemeFromDestructorView;
   friend class test::TestingWidgetDelegateView;
+  friend class webid::TestAccountSelectionView;
   FRIEND_TEST_ALL_PREFIXES(test::WidgetOwnsNativeWidgetTest,
                            WidgetDelegateView);
 

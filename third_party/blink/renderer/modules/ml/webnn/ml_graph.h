@@ -81,7 +81,7 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   void OnConnectionError();
 
   // Describes the constraints on the inputs or outputs to this graph.
-  // Note that `WTF::HashMap` values must be nullable, but
+  // Note that `HashMap` values must be nullable, but
   // `webnn::OperandDescriptor` lacks a default constructor, so an optional is
   // used. Do not add std::nullopt values to these maps.
   const NamedOperandDescriptors input_constraints_;

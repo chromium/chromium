@@ -22,7 +22,6 @@ class WebRtcVideoFrameAdapterTest : public ::testing::Test {
  protected:
   void SetUp() override {
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-    test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
   }
 
   scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
@@ -195,14 +194,14 @@ TEST_F(WebRtcVideoFrameAdapterTest, MapScaledFrameCreatesNewFrame) {
   auto resources =
       base::MakeRefCounted<testing::StrictMock<MockSharedResources>>();
   EXPECT_CALL(*resources, CreateFrame)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [this](media::VideoPixelFormat format, const gfx::Size& coded_size,
                  const gfx::Rect& visible_rect, const gfx::Size& natural_size,
                  base::TimeDelta timestamp) {
             return CreateTestFrame(coded_size, visible_rect, natural_size,
                                    media::VideoFrame::STORAGE_OWNED_MEMORY,
                                    format, base::TimeDelta(), test_sii_.get());
-          }));
+          });
   resources->ExpectConvertAndScaleWithRealImplementation();
 
   auto frame_720p = CreateTestFrame(kSize720p, kRect720p, kSize720p,
@@ -244,14 +243,14 @@ TEST_F(WebRtcVideoFrameAdapterTest,
   auto resources =
       base::MakeRefCounted<testing::StrictMock<MockSharedResources>>();
   EXPECT_CALL(*resources, CreateFrame)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [this](media::VideoPixelFormat format, const gfx::Size& coded_size,
                  const gfx::Rect& visible_rect, const gfx::Size& natural_size,
                  base::TimeDelta timestamp) {
             return CreateTestFrame(coded_size, visible_rect, natural_size,
                                    media::VideoFrame::STORAGE_OWNED_MEMORY,
                                    format, base::TimeDelta(), test_sii_.get());
-          }));
+          });
   resources->ExpectConvertAndScaleWithRealImplementation();
 
   auto frame_720p = CreateTestFrame(kSize720p, kRect720p, kSize720p,
@@ -297,14 +296,14 @@ TEST_F(WebRtcVideoFrameAdapterTest,
   auto resources =
       base::MakeRefCounted<testing::StrictMock<MockSharedResources>>();
   EXPECT_CALL(*resources, CreateFrame)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [this](media::VideoPixelFormat format, const gfx::Size& coded_size,
                  const gfx::Rect& visible_rect, const gfx::Size& natural_size,
                  base::TimeDelta timestamp) {
             return CreateTestFrame(coded_size, visible_rect, natural_size,
                                    media::VideoFrame::STORAGE_OWNED_MEMORY,
                                    format, base::TimeDelta(), test_sii_.get());
-          }));
+          });
   resources->ExpectConvertAndScaleWithRealImplementation();
 
   // Create a full frame with soft-applied cropping and scaling.
@@ -363,14 +362,14 @@ TEST_F(WebRtcVideoFrameAdapterTest,
       base::MakeRefCounted<testing::StrictMock<MockSharedResources>>();
   EXPECT_CALL(*resources, CreateFrame)
       .Times(2)
-      .WillRepeatedly(testing::Invoke(
+      .WillRepeatedly(
           [this](media::VideoPixelFormat format, const gfx::Size& coded_size,
                  const gfx::Rect& visible_rect, const gfx::Size& natural_size,
                  base::TimeDelta timestamp) {
             return CreateTestFrame(coded_size, visible_rect, natural_size,
                                    media::VideoFrame::STORAGE_OWNED_MEMORY,
                                    format, base::TimeDelta(), test_sii_.get());
-          }));
+          });
 
   auto frame_720p = CreateTestFrame(kSize720p, kRect720p, kSize720p,
                                     media::VideoFrame::STORAGE_OWNED_MEMORY,
@@ -414,7 +413,7 @@ TEST_F(WebRtcVideoFrameAdapterTest, FrameFeedbackSetsRequireMappedFrame) {
   const gfx::Size kSize360p(640, 360);
 
   scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> resources =
-      base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(nullptr);
+      WebRtcVideoFrameAdapter::SharedResources::Create(nullptr);
   auto frame_720p = CreateTestFrame(kSize720p, kRect720p, kSize720p,
                                     media::VideoFrame::STORAGE_OWNED_MEMORY,
                                     media::VideoPixelFormat::PIXEL_FORMAT_NV12,

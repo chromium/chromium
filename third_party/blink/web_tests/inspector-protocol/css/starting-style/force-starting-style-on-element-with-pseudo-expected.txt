@@ -1,0 +1,9 @@
+Test that starting styles with pseudos don't hit DCHECK
+::backdrop
+starting-styles [
+    [0] : {
+        range : <object>
+        styleSheetId : <string>
+    }
+]
+

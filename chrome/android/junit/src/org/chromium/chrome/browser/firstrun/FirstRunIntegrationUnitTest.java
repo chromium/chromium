@@ -14,7 +14,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.UserManager;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.test.core.app.ApplicationProvider;
@@ -26,7 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -71,9 +69,6 @@ public final class FirstRunIntegrationUnitTest {
         mContext = ApplicationProvider.getApplicationContext();
         mShadowApplication = shadowOf((Application) ApplicationProvider.getApplicationContext());
 
-        UserManager userManager = Mockito.mock(UserManager.class);
-        Mockito.when(userManager.isDemoUser()).thenReturn(false);
-        mShadowApplication.setSystemService(Context.USER_SERVICE, userManager);
         ChromeBrowserInitializer.setForTesting(mChromeBrowserInitializer);
 
         FirstRunStatus.setFirstRunFlowComplete(false);

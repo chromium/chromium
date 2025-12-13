@@ -6,6 +6,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/callback_list.h"
 #include "base/memory/singleton.h"
 #include "base/notimplemented.h"
 #include "ui/base/idle/idle_internal.h"
@@ -17,6 +18,11 @@ using base::android::ScopedJavaLocalRef;
 using jni_zero::AttachCurrentThread;
 
 namespace ui {
+
+base::CallbackListSubscription AddScreenLockCallback(
+    base::RepeatingCallback<void(bool)> callback) {
+  return {};
+}
 
 namespace {
 
@@ -86,3 +92,5 @@ IdleState CalculateIdleState(int idle_threshold) {
 }
 
 }  // namespace ui
+
+DEFINE_JNI(IdleDetector)

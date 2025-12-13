@@ -34,8 +34,7 @@ void SlotAssignment::DidAddSlot(HTMLSlotElement& slot) {
   needs_collect_slots_ = true;
 
   if (owner_->IsManualSlotting()) {
-    // Adding a new slot should not require assignment recalc, but still needs
-    // setting up the fallback if any.
+    SetNeedsAssignmentRecalc();
     slot.CheckFallbackAfterInsertedIntoShadowTree();
     return;
   }
@@ -61,7 +60,6 @@ void SlotAssignment::DidRemoveSlot(HTMLSlotElement& slot) {
   if (owner_->IsManualSlotting()) {
     auto& candidates = slot.ManuallyAssignedNodes();
     if (candidates.size()) {
-      SetNeedsAssignmentRecalc();
       slot.DidSlotChangeAfterRemovedFromShadowTree();
     }
     return;
@@ -252,8 +250,9 @@ void SlotAssignment::RecalcAssignment() {
     // during slot reassignment, so call ChildrenChanged() on all of them.
     AXObjectCache* cache = owner_->GetDocument().ExistingAXObjectCache();
     if (cache) {
-      for (Member<HTMLSlotElement> slot : Slots())
+      for (Member<HTMLSlotElement>& slot : Slots()) {
         cache->SlotAssignmentWillChange(slot);
+      }
     }
 
     FlatTreeTraversalForbiddenScope forbid_flat_tree_traversal(
@@ -264,8 +263,9 @@ void SlotAssignment::RecalcAssignment() {
     }
     needs_assignment_recalc_ = false;
 
-    for (Member<HTMLSlotElement> slot : Slots())
+    for (Member<HTMLSlotElement>& slot : Slots()) {
       slot->WillRecalcAssignedNodes();
+    }
 
     if (owner_->IsManualSlotting()) {
       // |children_to_clear| starts with the list of all light-dom children of
@@ -278,7 +278,7 @@ void SlotAssignment::RecalcAssignment() {
         children_to_clear.insert(&child);
       }
 
-      for (Member<HTMLSlotElement> slot : Slots()) {
+      for (Member<HTMLSlotElement>& slot : Slots()) {
         for (Node* slottable : slot->ManuallyAssignedNodes()) {
           // Some of the manually assigned nodes might have been moved
           // to other trees or documents. In that case, don't assign them
@@ -299,7 +299,7 @@ void SlotAssignment::RecalcAssignment() {
         }
       }
 
-      for (auto child : children_to_clear) {
+      for (auto& child : children_to_clear) {
         child->ClearFlatTreeNodeData();
         child->RemovedFromFlatTree();
       }
@@ -363,7 +363,7 @@ void SlotAssignment::RecalcAssignment() {
   }
 }
 
-const HeapVector<Member<HTMLSlotElement>>& SlotAssignment::Slots() {
+HeapVector<Member<HTMLSlotElement>>& SlotAssignment::Slots() {
   if (needs_collect_slots_)
     CollectSlots();
   return slots_;

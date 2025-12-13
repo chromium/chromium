@@ -89,9 +89,9 @@ void LoadResources(const std::string& pak, const std::string& name) {
 
 static void JNI_Module_LoadNative(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jname,
-    const base::android::JavaParamRef<jobjectArray>& jlibraries,
-    const base::android::JavaParamRef<jobjectArray>& jpaks) {
+    const base::android::JavaRef<jstring>& jname,
+    const base::android::JavaRef<jobjectArray>& jlibraries,
+    const base::android::JavaRef<jobjectArray>& jpaks) {
   std::string name = base::android::ConvertJavaStringToUTF8(env, jname);
   std::vector<std::string> libraries;
   base::android::AppendJavaStringArrayToStringVector(env, jlibraries,
@@ -114,3 +114,5 @@ static void JNI_Module_LoadNative(
 }
 
 }  // namespace module_installer
+
+DEFINE_JNI(Module)

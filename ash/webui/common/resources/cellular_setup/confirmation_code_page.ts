@@ -13,7 +13,6 @@ import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './base_page.js';
 
 import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
-import {mojoString16ToString} from '//resources/js/mojo_type_util.js';
 import type {ESimProfileProperties} from '//resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -62,7 +61,7 @@ export class ConfirmationCodePageElement extends
     if (!this.profileProperties) {
       return '';
     }
-    return mojoString16ToString(this.profileProperties.name);
+    return this.profileProperties.name;
   }
 }
 

@@ -548,7 +548,8 @@ RenderWidgetHostInputEventRouter::FindMouseWheelEventTarget(
     return {target, /*should_query_view=*/false, transformed_point};
   }
 
-  if (event.phase == blink::WebMouseWheelEvent::kPhaseBegan) {
+  if (event.phase == blink::WebMouseWheelEvent::kPhaseBegan ||
+      event.phase == blink::WebMouseWheelEvent::kPhaseMayBegin) {
     auto result =
         FindViewAtLocation(root_view, event.PositionInWidget(),
                            viz::EventSource::MOUSE, &transformed_point);
@@ -750,7 +751,8 @@ void RenderWidgetHostInputEventRouter::DispatchMouseWheelEvent(
               static_cast<void*>(target), "wheel_target_",
               static_cast<void*>(wheel_target_));
   if (!root_view->IsPointerLocked()) {
-    if (mouse_wheel_event.phase == blink::WebMouseWheelEvent::kPhaseBegan) {
+    if (mouse_wheel_event.phase == blink::WebMouseWheelEvent::kPhaseBegan ||
+        mouse_wheel_event.phase == blink::WebMouseWheelEvent::kPhaseMayBegin) {
       wheel_target_ = target;
     } else {
       if (wheel_target_) {
@@ -1889,7 +1891,12 @@ void RenderWidgetHostInputEventRouter::DispatchTouchpadGestureEvent(
   // https://crbug.com/346569466 we want to discover if we're ever violating
   // this condition. It's too risky to make this a check initially, but if tests
   // or development work bump into this, it will provide helpful feedback.
-  DCHECK(!touchscreen_gesture_target_);
+  // Skip the check for fling cancel events since they are triggered by other
+  // touchpad input events that might be converted to touchscreen gestures.
+  if (touchpad_gesture_event.GetType() !=
+      blink::WebInputEvent::Type::kGestureFlingCancel) {
+    DCHECK(!touchscreen_gesture_target_);
+  }
   // Touchpad gesture flings should be treated as mouse wheels for the purpose
   // of routing.
   if (touchpad_gesture_event.GetType() ==

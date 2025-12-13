@@ -26,38 +26,7 @@ namespace base {
 class OneShotTimer;
 }  // namespace base
 
-namespace blink {
-struct JavaScriptFrameworkDetectionResult;
-struct SoftNavigationMetrics;
-}  // namespace blink
-
 namespace page_load_metrics {
-
-namespace internal {
-const char kPageLoadInternalSoftNavigationFromStartInvalidTiming[] =
-    "PageLoad.Internal.SoftNavigationFromStartInvalidTiming";
-
-// These values are recorded into a UMA histogram as scenarios where the start
-// time of soft navigation ends up being 0. These entries
-// should not be renumbered and the numeric values should not be reused. These
-// entries should be kept in sync with the definition in
-// tools/metrics/histograms/enums.xml
-// TODO(crbug.com/40074158): Remove the code here and related code once the bug
-// is resolved.
-enum class SoftNavigationFromStartInvalidTimingReasons {
-  kSoftNavStartTimeIsZeroAndLtNavStart = 0,
-  kSoftNavStartTimeIsZeroAndEqNavStart = 1,
-  kSoftNavStartTimeIsNonZeroAndEqNavStart = 2,
-  kSoftNavStartTimeIsNonZeroAndLtNavStart = 3,
-  kMaxValue = kSoftNavStartTimeIsNonZeroAndLtNavStart,
-};
-
-void RecordUmaForkPageLoadInternalSoftNavigationFromStartInvalidTiming(
-    base::TimeDelta start_time_relative_to_reference,
-    double nav_start_to_reference);
-
-}  // namespace internal
-
 class PageTimingMetricsSender;
 class PageTimingSender;
 
@@ -92,28 +61,31 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
       const blink::SubresourceLoadMetrics& subresource_load_metrics) override;
   void DidObserveNewFeatureUsage(
       const blink::UseCounterFeature& feature) override;
-  void DidObserveSoftNavigation(blink::SoftNavigationMetrics metrics) override;
+  void DidObserveSoftNavigation(
+      blink::SoftNavigationMetricsForReporting metrics) override;
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
   void DidStartResponse(const url::SchemeHostPort& final_response_url,
                         int request_id,
                         const network::mojom::URLResponseHead& response_head,
                         network::mojom::RequestDestination request_destination,
                         bool is_ad_resource) override;
-  void DidReceiveTransferSizeUpdate(int request_id,
-                                    int received_data_length) override;
+  void DidReceiveTransferSizeUpdate(
+      int request_id,
+      base::ByteCount received_data_length) override;
   void DidCompleteResponse(
       int request_id,
       const network::URLLoaderCompletionStatus& status) override;
   void DidCancelResponse(int request_id) override;
   void DidLoadResourceFromMemoryCache(const GURL& response_url,
                                       int request_id,
-                                      int64_t encoded_body_length,
+                                      base::ByteCount encoded_body_length,
                                       const std::string& mime_type,
                                       bool from_archive) override;
   void DidStartNavigation(
       const GURL& url,
       std::optional<blink::WebNavigationType> navigation_type) override;
-  void DidSetPageLifecycleState(bool restoring_from_bfcache) override;
+  void DidSetPageLifecycleState(
+      blink::BFCacheStateChange bfcache_change) override;
 
   void ReadyToCommitNavigation(
       blink::WebDocumentLoader* document_loader) override;
@@ -130,9 +102,8 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
       const gfx::Rect& main_frame_intersection_rect) override;
   void OnMainFrameViewportRectangleChanged(
       const gfx::Rect& main_frame_viewport_rect) override;
-  void OnMainFrameImageAdRectangleChanged(
-      int element_id,
-      const gfx::Rect& image_ad_rect) override;
+  void OnMainFrameAdRectangleChanged(int element_id,
+                                     const gfx::Rect& ad_rect) override;
 
   // blink::WebLocalFrameObserver implementation
   void OnFrameDetached() override;

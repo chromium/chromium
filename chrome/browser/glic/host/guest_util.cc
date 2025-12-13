@@ -7,8 +7,9 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/glic/glic_keyed_service.h"
-#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
@@ -20,10 +21,15 @@
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
+#include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkRegion.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "url/gurl.h"
 
 namespace glic {
+
+BASE_FEATURE(kGlicGuestUrlMultiInstanceParam, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -61,6 +67,35 @@ class WebviewWebContentsObserver : public content::WebContentsObserver,
   }
 };
 
+class WebviewWebContentsDelegate : public content::WebContentsDelegate,
+                                   public base::SupportsUserData::Data {
+ public:
+  WebviewWebContentsDelegate(content::WebContents* contents,
+                             GlicWindowController* window_controller)
+      : contents_(contents), window_controller_(window_controller) {
+    contents_->SetDelegate(this);
+  }
+  ~WebviewWebContentsDelegate() override = default;
+
+  void DraggableRegionsChanged(
+      const std::vector<blink::mojom::DraggableRegionPtr>& regions,
+      content::WebContents* contents) override {
+    SkRegion sk_region;
+    for (const auto& region : regions) {
+      sk_region.op(
+          SkIRect::MakeLTRB(region->bounds.x(), region->bounds.y(),
+                            region->bounds.right(), region->bounds.bottom()),
+          region->draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
+    }
+
+    window_controller_->SetDraggableRegion(sk_region);
+  }
+
+ private:
+  raw_ptr<content::WebContents> contents_;
+  raw_ptr<GlicWindowController> window_controller_;
+};
+
 }  // namespace
 
 GURL GetGuestURL() {
@@ -74,6 +109,9 @@ GURL GetGuestURL() {
     LOG(ERROR) << "No glic guest url";
     return GURL();
   }
+
+  url = MaybeAddMultiInstanceParameter(url);
+
   return GetLocalizedGuestURL(url);
 }
 
@@ -89,6 +127,14 @@ GURL GetLocalizedGuestURL(const GURL& guest_url) {
   std::string locale = g_browser_process->GetApplicationLocale();
   language::ToTranslateLanguageSynonym(&locale);
   return net::AppendQueryParameter(guest_url, "hl", locale);
+}
+
+GURL MaybeAddMultiInstanceParameter(const GURL& guest_url) {
+  if (GlicEnabling::IsMultiInstanceEnabled() &&
+      base::FeatureList::IsEnabled(kGlicGuestUrlMultiInstanceParam)) {
+    return net::AppendOrReplaceQueryParameter(guest_url, "mode", "mi");
+  }
+  return guest_url;
 }
 
 bool IsGlicWebUI(const content::WebContents* web_contents) {
@@ -114,6 +160,14 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
   if (!service) {
     return false;
   }
+  if (base::FeatureList::IsEnabled(features::kGlicWindowDragRegions)) {
+    guest_contents->SetUserData(
+        "glic::WebviewWebContentsDelegate",
+        std::make_unique<WebviewWebContentsDelegate>(
+            guest_contents, &service->window_controller()));
+    guest_contents->SetSupportsDraggableRegions(true);
+  }
+
   service->GuestAdded(guest_contents);
 
   guest_contents->SetUserData(

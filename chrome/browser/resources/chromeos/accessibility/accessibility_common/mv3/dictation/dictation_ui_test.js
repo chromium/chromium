@@ -9,7 +9,7 @@ DictationUIE2ETest = class extends DictationE2ETestBase {};
 
 AX_TEST_F(
     'DictationUIE2ETest', 'ShownWhenSpeechRecognitionStarts', async function() {
-      this.toggleDictationOn();
+      await this.toggleDictationOn();
       await this.waitForUIProperties({
         visible: true,
         icon: this.iconType.STANDBY,
@@ -18,7 +18,7 @@ AX_TEST_F(
 
 AX_TEST_F(
     'DictationUIE2ETest', 'DisplaysInterimSpeechResults', async function() {
-      this.toggleDictationOn();
+      await this.toggleDictationOn();
       // Send an interim speech result.
       this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(
           'Testing', /*isFinal=*/ false);
@@ -30,7 +30,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F('DictationUIE2ETest', 'DisplaysMacroSuccess', async function() {
-  this.toggleDictationOn();
+  await this.toggleDictationOn();
   // Perform a command.
   this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(
       this.commandStrings.SELECT_ALL_TEXT, /*isFinal=*/ true);
@@ -44,7 +44,7 @@ AX_TEST_F('DictationUIE2ETest', 'DisplaysMacroSuccess', async function() {
 AX_TEST_F(
     'DictationUIE2ETest', 'ResetsToStandbyModeAfterFinalSpeechResult',
     async function() {
-      this.toggleDictationOn();
+      await this.toggleDictationOn();
       await this.waitForUIProperties({
         visible: true,
         icon: this.iconType.STANDBY,
@@ -68,18 +68,18 @@ AX_TEST_F(
 
 AX_TEST_F(
     'DictationUIE2ETest', 'HiddenWhenDictationDeactivates', async function() {
-      this.toggleDictationOn();
+      await this.toggleDictationOn();
       await this.waitForUIProperties({
         visible: true,
         icon: this.iconType.STANDBY,
       });
-      this.toggleDictationOff();
+      await this.toggleDictationOff();
       await this.waitForUIProperties(
           {visible: false, icon: this.iconType.HIDDEN});
     });
 
 AX_TEST_F('DictationUIE2ETest', 'StandbyHints', async function() {
-  this.toggleDictationOn();
+  await this.toggleDictationOn();
   await this.waitForUIProperties({
     visible: true,
     icon: this.iconType.STANDBY,
@@ -94,7 +94,7 @@ AX_TEST_F('DictationUIE2ETest', 'StandbyHints', async function() {
 
 AX_TEST_F(
     'DictationUIE2ETest', 'HintsShownWhenTextCommitted', async function() {
-      this.toggleDictationOn();
+      await this.toggleDictationOn();
       await this.waitForUIProperties({
         visible: true,
         icon: this.iconType.STANDBY,
@@ -124,7 +124,7 @@ AX_TEST_F(
 
 AX_TEST_F(
     'DictationUIE2ETest', 'HintsShownAfterTextSelected', async function() {
-      this.toggleDictationOn();
+      await this.toggleDictationOn();
       await this.waitForUIProperties({
         visible: true,
         icon: this.iconType.STANDBY,
@@ -155,7 +155,7 @@ AX_TEST_F(
 
 AX_TEST_F(
     'DictationUIE2ETest', 'HintsShownAfterCommandExecuted', async function() {
-      this.toggleDictationOn();
+      await this.toggleDictationOn();
       await this.waitForUIProperties({
         visible: true,
         icon: this.iconType.STANDBY,
@@ -182,7 +182,7 @@ AX_TEST_F(
 AX_TEST_F(
     'DictationUIE2ETest', 'HintsTimeoutWithoutChromevox', async function() {
       this.mockSetTimeoutMethod();
-      this.toggleDictationOn();
+      await this.toggleDictationOn();
 
       // No hint shown yet.
       await this.waitForUIProperties({
@@ -215,7 +215,7 @@ AX_TEST_F(
       await this.getPref(Dictation.SPOKEN_FEEDBACK_PREF);
 
       this.mockSetTimeoutMethod();
-      this.toggleDictationOn();
+      await this.toggleDictationOn();
 
       // A callback should have been set to show hints later.
       const callback = this.getCallbackWithDelay(

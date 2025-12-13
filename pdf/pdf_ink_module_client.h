@@ -6,14 +6,17 @@
 #define PDF_PDF_INK_MODULE_CLIENT_H_
 
 #include <map>
+#include <vector>
 
 #include "pdf/buildflags.h"
 #include "pdf/page_orientation.h"
 #include "pdf/pdf_ink_ids.h"
+#include "pdf/pdf_rect.h"
 #include "pdf/ui/thumbnail.h"
 #include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d.h"
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
@@ -32,6 +35,8 @@ class Cursor;
 
 namespace chrome_pdf {
 
+class PdfCaret;
+
 class PdfInkModuleClient {
  public:
   // Key: ID to identify a shape.
@@ -42,6 +47,10 @@ class PdfInkModuleClient {
   // Key: 0-based page index.
   // Value: Map of shapes on the page.
   using DocumentV2InkPathShapesMap = std::map<int, PageV2InkPathShapesMap>;
+
+  // Key: 0-based page index.
+  // Value: Selections on the page, in PDF coordinates.
+  using SelectionRectMap = std::map<int, std::vector<PdfRect>>;
 
   virtual ~PdfInkModuleClient() = default;
 
@@ -55,6 +64,10 @@ class PdfInkModuleClient {
   // Extends the current text selection to the nearest page and character to
   // `point`. `point` must be in device coordinates.
   virtual void ExtendSelectionByPoint(const gfx::PointF& point) {}
+
+  // Returns the transform required to convert canonical coordinates to PDF
+  // coordinates.
+  virtual gfx::Transform GetCanonicalToPdfTransform(int page_index) = 0;
 
   // Returns the current cursor.
   virtual ui::Cursor GetCursor() = 0;
@@ -71,8 +84,12 @@ class PdfInkModuleClient {
   // non-negative page index returned from `VisiblePageIndexFromPoint()`.
   virtual gfx::SizeF GetPageSizeInPoints(int page_index) = 0;
 
-  // Returns all current text selection rects in device coordinates.
-  virtual std::vector<gfx::Rect> GetSelectionRects() = 0;
+  // Returns the PDF caret instance, otherwise returns nullptr if it does not
+  // exist.
+  virtual PdfCaret* GetPdfCaret() = 0;
+
+  // Returns all current text selection rects in PDF coordinates.
+  virtual SelectionRectMap GetSelectionRectMap() = 0;
 
   // Gets the thumbnail size for `page_index`. The size must be non-empty for
   // any valid page index.

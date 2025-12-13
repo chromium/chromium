@@ -8,7 +8,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 

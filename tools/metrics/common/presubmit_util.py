@@ -137,7 +137,7 @@ def CheckChange(xml_file, input_api, output_api):
 
   cwd = input_api.PresubmitLocalPath()
   pretty_print_args = [
-      input_api.python3_executable, 'pretty_print.py', '--presubmit'
+      input_api.python3_executable, 'pretty_print.py', '--presubmit', xml_file
   ]
 
   exit_code = input_api.subprocess.call(pretty_print_args, cwd=cwd)
@@ -148,7 +148,8 @@ def CheckChange(xml_file, input_api, output_api):
     ]
 
   validate_format_args = [
-      input_api.python3_executable, 'validate_format.py', '--presubmit'
+      input_api.python3_executable, 'validate_format.py', '--presubmit',
+      xml_file
   ]
   exit_code = input_api.subprocess.call(validate_format_args, cwd=cwd)
   if exit_code != 0:

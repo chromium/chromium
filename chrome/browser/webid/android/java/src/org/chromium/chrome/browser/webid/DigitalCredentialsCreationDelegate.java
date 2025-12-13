@@ -4,13 +4,10 @@
 
 package org.chromium.chrome.browser.webid;
 
-import static androidx.core.app.ActivityCompat.startIntentSenderForResult;
 import static androidx.credentials.DigitalCredential.TYPE_DIGITAL_CREDENTIAL;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.IntentSender.SendIntentException;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -28,18 +25,17 @@ import com.google.android.gms.identitycredentials.IdentityCredentialManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.webid.IdentityCredentialsDelegate.DigitalCredential;
+import org.chromium.ui.base.WindowAndroid;
 
 @NullMarked
 public class DigitalCredentialsCreationDelegate {
     private static final String TAG = "DCCreationDelegate";
-
-    // Arbitrary request code that is used when invoking the GMSCore API.
-    private static final int REQUEST_CODE_DIGITAL_CREDENTIALS_CREATION = 777;
 
     private static final String DC_API_RESPONSE_PROTOCOL_KEY = "protocol";
     private static final String DC_API_RESPONSE_DATA_KEY = "data";
@@ -48,9 +44,19 @@ public class DigitalCredentialsCreationDelegate {
             "androidx.identitycredentials.BUNDLE_KEY_PROVIDER_DATA";
 
     @OptIn(markerClass = androidx.credentials.ExperimentalDigitalCredentialApi.class)
-    public Promise<DigitalCredential> create(Activity window, String origin, String request) {
-        final IdentityCredentialClient client =
-                IdentityCredentialManager.Companion.getClient(window);
+    public Promise<DigitalCredential> create(
+            WindowAndroid windowAndroid, String origin, String request) {
+        Activity window = windowAndroid.getActivity().get();
+        if (window == null) return Promise.rejected();
+
+        final IdentityCredentialClient client;
+        try {
+            client = IdentityCredentialManager.Companion.getClient(window);
+        } catch (Exception e) {
+            // Thrown when running in phones without the most current GMS
+            // version.
+            return Promise.rejected();
+        }
 
         final Promise<DigitalCredential> result = new Promise<>();
 
@@ -66,9 +72,7 @@ public class DigitalCredentialsCreationDelegate {
                         }
                         Log.d(TAG, "Received a response");
                         Intent providerData =
-                                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-                                        ? data.getParcelable(BUNDLE_KEY_PROVIDER_DATA, Intent.class)
-                                        : data.getParcelable(BUNDLE_KEY_PROVIDER_DATA);
+                                IntentUtils.safeGetParcelable(data, BUNDLE_KEY_PROVIDER_DATA);
 
                         if (providerData == null) {
                             Log.d(TAG, "Response doesn't contain providerData");
@@ -134,23 +138,22 @@ public class DigitalCredentialsCreationDelegate {
                                                 "Response doesn't contain pendingIntent"));
                                 return;
                             }
-                            try {
-                                Log.d(TAG, "Sending an intent for sender");
-                                Log.d(TAG, request);
-                                startIntentSenderForResult(
-                                        /* activity= */ window,
-                                        /* intent= */ response.getPendingIntent().getIntentSender(),
-                                        /* requestCode= */ REQUEST_CODE_DIGITAL_CREDENTIALS_CREATION,
-                                        /* fillInIntent= */ null,
-                                        /* flagsMask= */ 0,
-                                        /* flagsValues= */ 0,
-                                        /* extraFlags= */ 0,
-                                        /* options= */ null);
-                            } catch (SendIntentException e) {
+                            Log.d(TAG, "Sending an intent for sender");
+                            Log.d(TAG, request);
+                            int requestCode =
+                                    windowAndroid.showCancelableIntent(
+                                            response.getPendingIntent(),
+                                            (resultCode, intent) -> {
+                                                if (resultCode != Activity.RESULT_OK
+                                                        && result.isPending()) {
+                                                    result.reject(
+                                                            new Exception("Cancelled or Crashed"));
+                                                }
+                                            },
+                                            null);
+                            if (requestCode == WindowAndroid.START_INTENT_FAILURE) {
                                 Log.e(TAG, "Sending an intent for sender failed");
-                                if (result.isPending()) {
-                                    result.reject(e);
-                                }
+                                result.reject(new Exception("Failed to start intent"));
                             }
                         })
                 .addOnFailureListener(

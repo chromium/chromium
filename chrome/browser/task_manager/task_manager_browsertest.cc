@@ -40,6 +40,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -135,7 +136,7 @@ class TaskManagerBrowserTest : public extensions::ExtensionBrowserTest {
   }
 
   GURL GetTestURL() {
-    return ui_test_utils::GetTestUrl(
+    return chrome_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(kTitle1File));
   }
@@ -1079,7 +1080,7 @@ IN_PROC_BROWSER_TEST_P(TaskManagerOOPIFBrowserTest, KillSubframe) {
   auto* b_frame =
       ChildFrameAt(browser()->tab_strip_model()->GetActiveWebContents(), 0);
   GURL b_url = b_frame->GetLastCommittedURL();
-  ASSERT_EQ(b_url.host(), "b.com");  // Sanity check of test code / setup.
+  ASSERT_EQ(b_url.GetHost(), "b.com");  // Sanity check of test code / setup.
   ASSERT_TRUE(b_frame->GetSiteInstance()->RequiresDedicatedProcess());
   {
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
@@ -1598,7 +1599,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderTaskBrowserTest, MAYBE_ProperlyShowsTasks) {
   const auto prerender_gurl = embedded_test_server()->GetURL(kPrerenderURL);
   std::string server_port;
   if (prerender_gurl.has_port()) {
-    server_port = prerender_gurl.port();
+    server_port = prerender_gurl.GetPort();
   }
 
   // Inject the speculation rule and wait for prerender to complete.

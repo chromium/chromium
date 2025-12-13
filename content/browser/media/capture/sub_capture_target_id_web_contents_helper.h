@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/token.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -18,11 +17,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "content/public/common/buildflags.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#error Region Capture not supported on Android.
-#endif
+static_assert(BUILDFLAG(ENABLE_SCREEN_CAPTURE),
+              "Region Capture requires enable_screen_capture = true.");
 
 namespace content {
 

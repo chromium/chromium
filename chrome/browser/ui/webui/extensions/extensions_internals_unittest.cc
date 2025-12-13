@@ -6,8 +6,6 @@
 #include "base/json/json_reader.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
-#include "chrome/browser/extensions/permissions/permissions_updater.h"
-#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/ui/webui/extensions/extensions_internals_source.h"
 #include "chrome/test/base/testing_profile.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
@@ -17,6 +15,8 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/permissions/permissions_updater.h"
+#include "extensions/browser/permissions/scripting_permissions_modifier.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/simple_feature.h"
@@ -61,7 +61,8 @@ TEST_F(ExtensionsInternalsUnitTest, Basic) {
   registrar()->AddExtension(extension.get());
 
   ExtensionsInternalsSource source(profile());
-  auto extensions_list = base::JSONReader::Read(source.WriteToString());
+  auto extensions_list = base::JSONReader::Read(
+      source.WriteToString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(extensions_list) << "Failed to parse extensions internals json.";
   base::Value::Dict& extension_json = extensions_list->GetList()[0].GetDict();
 
@@ -101,7 +102,8 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringPermissions) {
 
   registrar()->AddExtension(extension.get());
   ExtensionsInternalsSource source(profile());
-  auto extensions_list = base::JSONReader::Read(source.WriteToString());
+  auto extensions_list = base::JSONReader::Read(
+      source.WriteToString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(extensions_list) << "Failed to parse extensions internals json.";
 
   EXPECT_EQ(extensions_list->GetList().size(), 1U);
@@ -148,7 +150,8 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringTabSpecificPermissions) {
   registrar()->AddExtension(extension.get());
 
   ExtensionsInternalsSource source(profile());
-  auto extensions_list = base::JSONReader::Read(source.WriteToString());
+  auto extensions_list = base::JSONReader::Read(
+      source.WriteToString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(extensions_list) << "Failed to parse extensions internals json.";
   base::Value::Dict* permissions =
       extensions_list->GetList()[0].GetDict().FindDict("permissions");
@@ -167,7 +170,8 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringTabSpecificPermissions) {
       tab_hosts.Clone(), tab_hosts.Clone());
   extension->permissions_data()->UpdateTabSpecificPermissions(1,
                                                               tab_permissions);
-  extensions_list = base::JSONReader::Read(source.WriteToString());
+  extensions_list = base::JSONReader::Read(
+      source.WriteToString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(extensions_list->GetList()[0].is_dict());
   permissions = extensions_list->GetList()[0].GetDict().FindDict("permissions");
 
@@ -202,7 +206,8 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringWithheldPermissions) {
   registrar()->AddExtension(extension.get());
 
   ExtensionsInternalsSource source(profile());
-  auto extensions_list = base::JSONReader::Read(source.WriteToString());
+  auto extensions_list = base::JSONReader::Read(
+      source.WriteToString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(extensions_list) << "Failed to parse extensions internals json.";
   base::Value::Dict* permissions =
       extensions_list->GetList()[0].GetDict().FindDict("permissions");
@@ -227,7 +232,8 @@ TEST_F(ExtensionsInternalsUnitTest, WriteToStringWithheldPermissions) {
   // Change an active host to be withheld.
   extensions::ScriptingPermissionsModifier modifier(profile(), extension);
   modifier.SetWithholdHostPermissions(true);
-  extensions_list = base::JSONReader::Read(source.WriteToString());
+  extensions_list = base::JSONReader::Read(
+      source.WriteToString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   permissions = extensions_list->GetList()[0].GetDict().FindDict("permissions");
 
   // Check the host that was active is now withheld.
@@ -269,7 +275,8 @@ TEST_F(ExtensionsInternalsUnitTest, RegistryExtensionStatus) {
   registrar()->BlocklistExtensionForTest(blocklisted_extension->id());
 
   ExtensionsInternalsSource source(profile());
-  auto extensions_list = base::JSONReader::Read(source.WriteToString());
+  auto extensions_list = base::JSONReader::Read(
+      source.WriteToString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(extensions_list) << "Failed to parse extensions internals json.";
   for (const auto& info : extensions_list->GetList()) {
     const base::Value::Dict& extension_json = info.GetDict();
@@ -300,7 +307,8 @@ TEST_F(ExtensionsInternalsUnitTest, RegistryExtensionStatus) {
       extensions::ExtensionPrefs::Get(profile()));
   registrar()->OnBlocklistStateRemoved(blocklisted_extension->id());
   registrar()->BlockAllExtensions();
-  extensions_list = base::JSONReader::Read(source.WriteToString());
+  extensions_list = base::JSONReader::Read(
+      source.WriteToString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(extensions_list) << "Failed to parse extensions internals json.";
   for (const auto& info : extensions_list->GetList()) {
     EXPECT_EQ("BLOCKED", *info.GetDict().FindString("registry_status"));

@@ -107,11 +107,12 @@ void ManagementService::RefreshCache(CacheRefreshCallback callback) {
     if (provider->RequiresCache()) {
       provider->UpdateCache(provider->FetchAuthority());
     }
+  }
 
-    ManagementAuthorityTrustworthiness next =
-        GetManagementAuthorityTrustworthiness();
-    if (callback)
-      std::move(callback).Run(previous, next);
+  ManagementAuthorityTrustworthiness next =
+      GetManagementAuthorityTrustworthiness();
+  if (callback) {
+    std::move(callback).Run(previous, next);
   }
 }
 

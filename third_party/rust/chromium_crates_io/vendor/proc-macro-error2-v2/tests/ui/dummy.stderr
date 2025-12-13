@@ -1,0 +1,5 @@
+error: set_dummy test
+ --> tests/ui/dummy.rs:8:8
+  |
+8 | dummy!(need_default);
+  |        ^^^^^^^^^^^^

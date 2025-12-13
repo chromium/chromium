@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/byte_count.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
@@ -19,6 +20,7 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "content/public/common/content_features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include <algorithm>
@@ -56,7 +58,7 @@ bool IsBatterySaverModeManagedByOS() {
 #endif
 }
 
-uint64_t GetDiscardedMemoryEstimateForPage(const PageNode* node) {
+base::ByteCount GetDiscardedMemoryEstimateForPage(const PageNode* node) {
   DCHECK_ON_GRAPH_SEQUENCE(node->GetGraph());
 
   return node->EstimatePrivateFootprintSize();
@@ -65,10 +67,12 @@ uint64_t GetDiscardedMemoryEstimateForPage(const PageNode* node) {
 std::vector<std::string> GetCannotDiscardReasonsForPageNode(
     const PageNode* page_node) {
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/399740817): Enable PageDiscardingHelper after
-  // WebContentsDiscard launch.
-  return {"not implemented"};
-#else
+  // Discarding on Android depends on kWebContentsDiscard.
+  if (!base::FeatureList::IsEnabled(::features::kWebContentsDiscard)) {
+    return {"not implemented"};
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   auto* discarding_helper = policies::DiscardEligibilityPolicy::GetFromGraph(
       PerformanceManager::GetGraph());
   CHECK(discarding_helper);
@@ -85,13 +89,11 @@ std::vector<std::string> GetCannotDiscardReasonsForPageNode(
                  std::back_inserter(results),
                  policies::CannotDiscardReasonToString);
   return results;
-#endif
 }
 
 void DiscardPage(const PageNode* page_node,
                  ::mojom::LifecycleUnitDiscardReason reason,
                  bool ignore_minimum_time_in_background) {
-#if !BUILDFLAG(IS_ANDROID)
   auto* discarding_helper = policies::PageDiscardingHelper::GetFromGraph(
       PerformanceManager::GetGraph());
   CHECK(discarding_helper);
@@ -101,12 +103,10 @@ void DiscardPage(const PageNode* page_node,
       ignore_minimum_time_in_background
           ? base::TimeDelta()
           : policies::kNonVisiblePagesUrgentProtectionTime);
-#endif
 }
 
 void DiscardAnyPage(::mojom::LifecycleUnitDiscardReason reason,
                     bool ignore_minimum_time_in_background) {
-#if !BUILDFLAG(IS_ANDROID)
   auto* discarding_helper = policies::PageDiscardingHelper::GetFromGraph(
       PerformanceManager::GetGraph());
   CHECK(discarding_helper);
@@ -114,7 +114,6 @@ void DiscardAnyPage(::mojom::LifecycleUnitDiscardReason reason,
       reason, ignore_minimum_time_in_background
                   ? base::TimeDelta()
                   : policies::kNonVisiblePagesUrgentProtectionTime);
-#endif
 }
 
 }  //  namespace performance_manager::user_tuning

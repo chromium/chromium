@@ -59,8 +59,8 @@ void LocalVideoCapturerSource::StartCapture(
                         weak_factory_.GetWeakPtr())));
   new_video_capture_callbacks.deliver_frame_cb =
       std::move(video_capture_callbacks.deliver_frame_cb);
-  new_video_capture_callbacks.sub_capture_target_version_cb =
-      std::move(video_capture_callbacks.sub_capture_target_version_cb);
+  new_video_capture_callbacks.capture_version_cb =
+      std::move(video_capture_callbacks.capture_version_cb);
   new_video_capture_callbacks.frame_dropped_cb =
       std::move(video_capture_callbacks.frame_dropped_cb);
   stop_capture_cb_ = manager_->StartCapture(

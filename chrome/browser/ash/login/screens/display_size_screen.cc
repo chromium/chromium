@@ -31,8 +31,7 @@ constexpr const char kUserActionNext[] = "next";
 constexpr const char kUserActionReturn[] = "return";
 
 std::vector<float> GetZoomFactors() {
-  const auto display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  const auto display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   const auto& info =
       ash::Shell::Get()->display_manager()->GetDisplayInfo(display_id);
   auto factors = display::GetDisplayZoomFactors(info.display_modes()[0]);
@@ -45,8 +44,7 @@ float GetCurrentZoomFactor(PrefService* prefs) {
     return prefs->GetDouble(prefs::kOobeDisplaySizeFactorDeferred);
   }
 
-  const auto display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  const auto display_id = display::Screen::Get()->GetPrimaryDisplay().id();
   const auto& info =
       ash::Shell::Get()->display_manager()->GetDisplayInfo(display_id);
   return info.zoom_factor();
@@ -123,7 +121,7 @@ void DisplaySizeScreen::MaybeUpdateZoomFactor(Profile* profile) {
     }
   }
 
-  auto display_id_ = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  auto display_id_ = display::Screen::Get()->GetPrimaryDisplay().id();
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   display_manager->UpdateZoomFactor(display_id_, selected_zoom_factor);
 }

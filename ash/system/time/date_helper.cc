@@ -242,7 +242,9 @@ DateHelper::DateHelper()
 
   // Not using a scoped observer since the Shell can be destructed before this
   // `DateHelper` instance gets destructed.
-  Shell::Get()->locale_update_controller()->AddObserver(this);
+  if (Shell::HasInstance()) {
+    Shell::Get()->locale_update_controller()->AddObserver(this);
+  }
 }
 
 DateHelper::~DateHelper() {

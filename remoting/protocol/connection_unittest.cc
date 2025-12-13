@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <memory>
 #include <numbers>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -97,10 +93,10 @@ class TestScreenCapturer : public DesktopCapturer {
     }
 
     // Return black 100x100 frame.
-    std::unique_ptr<webrtc::DesktopFrame> frame(
-        new webrtc::BasicDesktopFrame(webrtc::DesktopSize(100, 100)));
-    memset(frame->data(), frame_index_,
-           frame->stride() * frame->size().height());
+    auto frame = std::make_unique<webrtc::BasicDesktopFrame>(
+        webrtc::DesktopSize(100, 100), webrtc::FOURCC_ARGB);
+    UNSAFE_TODO(memset(frame->data(), frame_index_,
+                       frame->stride() * frame->size().height()));
     frame_index_++;
     frame->mutable_updated_region()->SetRect(
         webrtc::DesktopRect::MakeSize(frame->size()));
@@ -217,7 +213,8 @@ class FakeAudioPlayer : public AudioStub {
   }
 
   void Verify() {
-    const int16_t* data = reinterpret_cast<const int16_t*>(data_.data());
+    const int16_t* data =
+        UNSAFE_TODO(reinterpret_cast<const int16_t*>(data_.data()));
     int num_samples = data_.size() / kAudioChannels / sizeof(int16_t);
 
     // Skip the first 200 ms as these samples are more likely to be affected by
@@ -231,11 +228,12 @@ class FakeAudioPlayer : public AudioStub {
     int left = 0;
     int right = 0;
     for (int i = kSkippedSamples; i < num_samples; ++i) {
-      if (data[(i - 1) * kAudioChannels] < 0 && data[i * kAudioChannels] >= 0) {
+      if (UNSAFE_TODO(data[(i - 1) * kAudioChannels]) < 0 &&
+          UNSAFE_TODO(data[i * kAudioChannels]) >= 0) {
         ++left;
       }
-      if (data[(i - 1) * kAudioChannels + 1] < 0 &&
-          data[i * kAudioChannels + 1] >= 0) {
+      if (UNSAFE_TODO(data[(i - 1) * kAudioChannels + 1]) < 0 &&
+          UNSAFE_TODO(data[i * kAudioChannels + 1]) >= 0) {
         ++right;
       }
     }

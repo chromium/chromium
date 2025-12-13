@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.browser.readaloud.player.expanded.ExpandedPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerCoordinator;
+import org.chromium.chrome.modules.on_demand.OnDemandModule;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
@@ -62,7 +63,8 @@ public class PlayerCoordinator implements Player {
                         .build();
         // This Context can be used to inflate views from the split.
         Context contextForInflation =
-                BundleUtils.createContextForInflation(delegate.getActivity(), "google3");
+                BundleUtils.createContextForInflation(
+                        delegate.getActivity(), OnDemandModule.SPLIT_NAME);
         mMiniPlayer =
                 new MiniPlayerCoordinator(
                         delegate.getActivity(),

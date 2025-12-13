@@ -9,9 +9,13 @@
 #include <utility>
 
 #include "base/containers/enum_set.h"
+#include "base/functional/bind.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/structured_shared_memory.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
+#include "base/threading/thread.h"
 #include "components/performance_manager/scenario_api/performance_scenario_memory.h"
 #include "components/performance_manager/scenario_api/performance_scenario_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -316,6 +320,36 @@ TEST_P(PerformanceScenariosAllInputScenariosTest, InputScenarioOrdering) {
       // This is the lowest priority scenario.
       break;
   }
+}
+
+// Tests that creating a ScopedReadOnlyScenarioMemory on one thread while
+// getting the scenario on another thread doesn't race.
+TEST(PerformanceScenariosTest, GetAndSetScenarioMappingRace) {
+  base::test::TaskEnvironment task_environment;
+  auto test_helper = PerformanceScenarioTestHelper::CreateWithoutMapping();
+  ASSERT_TRUE(test_helper);
+
+  base::RunLoop runloop;
+  base::Thread thread("racy_thread");
+  ASSERT_TRUE(thread.Start());
+
+  thread.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce([] {
+                   for (int i = 0; i < 10; ++i) {
+                     // This reads the global mapping pointer.
+                     auto scope =
+                         GetScenarioMappingForScope(ScenarioScope::kGlobal);
+                   }
+                 }).Then(task_environment.QuitClosure()));
+
+  for (int i = 0; i < 10; ++i) {
+    // This sets and clears the global mapping pointer.
+    ScopedReadOnlyScenarioMemory mapped_global_memory(
+        ScenarioScope::kGlobal,
+        test_helper->GetReadOnlyScenarioRegion(ScenarioScope::kGlobal));
+  }
+
+  task_environment.RunUntilQuit();
 }
 
 }  // namespace

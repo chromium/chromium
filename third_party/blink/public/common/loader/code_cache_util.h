@@ -7,6 +7,12 @@
 
 #include <stddef.h>
 
+#include <string>
+
+#include "third_party/blink/public/common/common_export.h"
+
+class GURL;
+
 namespace blink {
 
 // Size of the CachedMetadataHeader struct (see
@@ -23,6 +29,13 @@ inline constexpr size_t kCodeCacheTimestampSize = 8;
 // kCodeCacheTimestampSize itself.
 inline constexpr size_t kCodeCacheTimestampCachedMetaSize =
     kCodeCacheCachedMetadataHeaderSize + kCodeCacheTimestampSize;
+
+// The prefix prepended to a resource URL to form its code cache key.
+inline constexpr char kCodeCacheKeyPrefix[] = "_key";
+
+// Returns the key with which a resource URL's compiled code should be
+// associated in the code cache.
+BLINK_COMMON_EXPORT std::string UrlToCodeCacheKey(const GURL& url);
 
 }  // namespace blink
 

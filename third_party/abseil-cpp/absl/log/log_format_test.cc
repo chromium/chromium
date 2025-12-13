@@ -73,6 +73,7 @@ std::ostringstream ComparisonStream() {
 
 TEST(LogFormatTest, NoMessage) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const int log_line = __LINE__ + 1;
   auto do_log = [] { LOG(INFO); };
@@ -95,6 +96,7 @@ TYPED_TEST_SUITE(CharLogFormatTest, CharTypes);
 
 TYPED_TEST(CharLogFormatTest, Printable) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const TypeParam value = 'x';
   auto comparison_stream = ComparisonStream();
@@ -112,6 +114,7 @@ TYPED_TEST(CharLogFormatTest, Printable) {
 
 TYPED_TEST(CharLogFormatTest, Unprintable) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   constexpr auto value = static_cast<TypeParam>(0xeeu);
   auto comparison_stream = ComparisonStream();
@@ -130,6 +133,7 @@ TYPED_TEST(CharLogFormatTest, Unprintable) {
 
 TEST(WideCharLogFormatTest, Printable) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   EXPECT_CALL(test_sink, Send(AllOf(TextMessage(Eq("€")),
                                     ENCODED_MESSAGE(HasValues(
@@ -142,6 +146,7 @@ TEST(WideCharLogFormatTest, Printable) {
 
 TEST(WideCharLogFormatTest, Unprintable) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   // Using NEL (Next Line) Unicode character (U+0085).
   // It is encoded as "\xC2\x85" in UTF-8.
@@ -163,6 +168,7 @@ TYPED_TEST_SUITE(UnsignedIntLogFormatTest, UnsignedIntTypes);
 
 TYPED_TEST(UnsignedIntLogFormatTest, Positive) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const TypeParam value = 224;
   auto comparison_stream = ComparisonStream();
@@ -181,6 +187,7 @@ TYPED_TEST(UnsignedIntLogFormatTest, Positive) {
 
 TYPED_TEST(UnsignedIntLogFormatTest, BitfieldPositive) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const struct {
     TypeParam bits : 6;
@@ -206,6 +213,7 @@ TYPED_TEST_SUITE(SignedIntLogFormatTest, SignedIntTypes);
 
 TYPED_TEST(SignedIntLogFormatTest, Positive) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const TypeParam value = 224;
   auto comparison_stream = ComparisonStream();
@@ -224,6 +232,7 @@ TYPED_TEST(SignedIntLogFormatTest, Positive) {
 
 TYPED_TEST(SignedIntLogFormatTest, Negative) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const TypeParam value = -112;
   auto comparison_stream = ComparisonStream();
@@ -242,6 +251,7 @@ TYPED_TEST(SignedIntLogFormatTest, Negative) {
 
 TYPED_TEST(SignedIntLogFormatTest, BitfieldPositive) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const struct {
     TypeParam bits : 6;
@@ -261,6 +271,7 @@ TYPED_TEST(SignedIntLogFormatTest, BitfieldPositive) {
 
 TYPED_TEST(SignedIntLogFormatTest, BitfieldNegative) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const struct {
     TypeParam bits : 6;
@@ -305,6 +316,7 @@ TYPED_TEST_SUITE(UnsignedEnumLogFormatTest, UnsignedEnumTypes);
 
 TYPED_TEST(UnsignedEnumLogFormatTest, Positive) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const TypeParam value = static_cast<TypeParam>(224);
   auto comparison_stream = ComparisonStream();
@@ -323,6 +335,7 @@ TYPED_TEST(UnsignedEnumLogFormatTest, Positive) {
 
 TYPED_TEST(UnsignedEnumLogFormatTest, BitfieldPositive) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const struct {
     TypeParam bits : 6;
@@ -365,6 +378,7 @@ TYPED_TEST_SUITE(SignedEnumLogFormatTest, SignedEnumTypes);
 
 TYPED_TEST(SignedEnumLogFormatTest, Positive) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const TypeParam value = static_cast<TypeParam>(224);
   auto comparison_stream = ComparisonStream();
@@ -383,6 +397,7 @@ TYPED_TEST(SignedEnumLogFormatTest, Positive) {
 
 TYPED_TEST(SignedEnumLogFormatTest, Negative) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const TypeParam value = static_cast<TypeParam>(-112);
   auto comparison_stream = ComparisonStream();
@@ -401,6 +416,7 @@ TYPED_TEST(SignedEnumLogFormatTest, Negative) {
 
 TYPED_TEST(SignedEnumLogFormatTest, BitfieldPositive) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const struct {
     TypeParam bits : 6;
@@ -420,6 +436,7 @@ TYPED_TEST(SignedEnumLogFormatTest, BitfieldPositive) {
 
 TYPED_TEST(SignedEnumLogFormatTest, BitfieldNegative) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const struct {
     TypeParam bits : 6;
@@ -441,6 +458,7 @@ TYPED_TEST(SignedEnumLogFormatTest, BitfieldNegative) {
 
 TEST(FloatLogFormatTest, Positive) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const float value = 6.02e23f;
   auto comparison_stream = ComparisonStream();
@@ -458,6 +476,7 @@ TEST(FloatLogFormatTest, Positive) {
 
 TEST(FloatLogFormatTest, Negative) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const float value = -6.02e23f;
   auto comparison_stream = ComparisonStream();
@@ -475,6 +494,7 @@ TEST(FloatLogFormatTest, Negative) {
 
 TEST(FloatLogFormatTest, NegativeExponent) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const float value = 6.02e-23f;
   auto comparison_stream = ComparisonStream();
@@ -492,6 +512,7 @@ TEST(FloatLogFormatTest, NegativeExponent) {
 
 TEST(DoubleLogFormatTest, Positive) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const double value = 6.02e23;
   auto comparison_stream = ComparisonStream();
@@ -509,6 +530,7 @@ TEST(DoubleLogFormatTest, Positive) {
 
 TEST(DoubleLogFormatTest, Negative) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const double value = -6.02e23;
   auto comparison_stream = ComparisonStream();
@@ -526,6 +548,7 @@ TEST(DoubleLogFormatTest, Negative) {
 
 TEST(DoubleLogFormatTest, NegativeExponent) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const double value = 6.02e-23;
   auto comparison_stream = ComparisonStream();
@@ -548,6 +571,7 @@ TYPED_TEST_SUITE(FloatingPointLogFormatTest, FloatingPointTypes);
 
 TYPED_TEST(FloatingPointLogFormatTest, Zero) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const TypeParam value = 0.0;
   auto comparison_stream = ComparisonStream();
@@ -565,6 +589,7 @@ TYPED_TEST(FloatingPointLogFormatTest, Zero) {
 
 TYPED_TEST(FloatingPointLogFormatTest, Integer) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const TypeParam value = 1.0;
   auto comparison_stream = ComparisonStream();
@@ -582,6 +607,7 @@ TYPED_TEST(FloatingPointLogFormatTest, Integer) {
 
 TYPED_TEST(FloatingPointLogFormatTest, Infinity) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const TypeParam value = std::numeric_limits<TypeParam>::infinity();
   auto comparison_stream = ComparisonStream();
@@ -600,6 +626,7 @@ TYPED_TEST(FloatingPointLogFormatTest, Infinity) {
 
 TYPED_TEST(FloatingPointLogFormatTest, NegativeInfinity) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const TypeParam value = -std::numeric_limits<TypeParam>::infinity();
   auto comparison_stream = ComparisonStream();
@@ -618,6 +645,7 @@ TYPED_TEST(FloatingPointLogFormatTest, NegativeInfinity) {
 
 TYPED_TEST(FloatingPointLogFormatTest, NaN) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const TypeParam value = std::numeric_limits<TypeParam>::quiet_NaN();
   auto comparison_stream = ComparisonStream();
@@ -635,6 +663,7 @@ TYPED_TEST(FloatingPointLogFormatTest, NaN) {
 
 TYPED_TEST(FloatingPointLogFormatTest, NegativeNaN) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const TypeParam value =
       std::copysign(std::numeric_limits<TypeParam>::quiet_NaN(), -1.0);
@@ -671,6 +700,7 @@ TYPED_TEST_SUITE(VoidPtrLogFormatTest, VoidPtrTypes);
 
 TYPED_TEST(VoidPtrLogFormatTest, Null) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const TypeParam value = nullptr;
   auto comparison_stream = ComparisonStream();
@@ -688,6 +718,7 @@ TYPED_TEST(VoidPtrLogFormatTest, Null) {
 
 TYPED_TEST(VoidPtrLogFormatTest, NonNull) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const TypeParam value = reinterpret_cast<TypeParam>(0xdeadbeefULL);
   auto comparison_stream = ComparisonStream();
@@ -715,6 +746,7 @@ TYPED_TEST_SUITE(VolatilePtrLogFormatTest, VolatilePtrTypes);
 
 TYPED_TEST(VolatilePtrLogFormatTest, Null) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const TypeParam value = nullptr;
   auto comparison_stream = ComparisonStream();
@@ -742,6 +774,7 @@ TYPED_TEST(VolatilePtrLogFormatTest, Null) {
 
 TYPED_TEST(VolatilePtrLogFormatTest, NonNull) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const TypeParam value = reinterpret_cast<TypeParam>(0xdeadbeefLL);
   auto comparison_stream = ComparisonStream();
@@ -777,6 +810,7 @@ TYPED_TEST_SUITE(CharPtrLogFormatTest, CharPtrTypes);
 
 TYPED_TEST(CharPtrLogFormatTest, Null) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   // Streaming `([cv] char *)nullptr` into a `std::ostream` is UB, and some C++
   // standard library implementations choose to crash.  We take measures to log
@@ -797,6 +831,7 @@ TYPED_TEST(CharPtrLogFormatTest, Null) {
 
 TYPED_TEST(CharPtrLogFormatTest, NonNull) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   TypeParam data[] = {'v', 'a', 'l', 'u', 'e', '\0'};
   TypeParam* const value = data;
@@ -821,6 +856,7 @@ TYPED_TEST_SUITE(WideCharPtrLogFormatTest, WideCharPtrTypes);
 
 TYPED_TEST(WideCharPtrLogFormatTest, Null) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   TypeParam* const value = nullptr;
 
@@ -834,6 +870,7 @@ TYPED_TEST(WideCharPtrLogFormatTest, Null) {
 
 TYPED_TEST(WideCharPtrLogFormatTest, NonNull) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   TypeParam data[] = {'v', 'a', 'l', 'u', 'e', '\0'};
   TypeParam* const value = data;
@@ -848,6 +885,7 @@ TYPED_TEST(WideCharPtrLogFormatTest, NonNull) {
 
 TEST(BoolLogFormatTest, True) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const bool value = true;
   auto comparison_stream = ComparisonStream();
@@ -866,6 +904,7 @@ TEST(BoolLogFormatTest, True) {
 
 TEST(BoolLogFormatTest, False) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const bool value = false;
   auto comparison_stream = ComparisonStream();
@@ -884,6 +923,7 @@ TEST(BoolLogFormatTest, False) {
 
 TEST(LogFormatTest, StringLiteral) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   auto comparison_stream = ComparisonStream();
   comparison_stream << "value";
@@ -900,6 +940,7 @@ TEST(LogFormatTest, StringLiteral) {
 
 TEST(LogFormatTest, WideStringLiteral) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   EXPECT_CALL(test_sink, Send(AllOf(TextMessage(Eq("value")),
                                     ENCODED_MESSAGE(HasValues(ElementsAre(
@@ -911,6 +952,7 @@ TEST(LogFormatTest, WideStringLiteral) {
 
 TEST(LogFormatTest, CharArray) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   char value[] = "value";
   auto comparison_stream = ComparisonStream();
@@ -929,6 +971,7 @@ TEST(LogFormatTest, CharArray) {
 
 TEST(LogFormatTest, WideCharArray) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   wchar_t value[] = L"value";
 
@@ -967,6 +1010,7 @@ TYPED_TEST_SUITE(WideStringLogFormatTest, StringTypes);
 
 TYPED_TEST(WideStringLogFormatTest, NonLiterals) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   TypeParam value = ABSL_LOG_INTERNAL_WIDE_LITERAL;
   absl::string_view utf8_value = GetUtf8TestString();
@@ -981,6 +1025,7 @@ TYPED_TEST(WideStringLogFormatTest, NonLiterals) {
 
 TEST(WideStringLogFormatTest, StringView) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   std::wstring_view value = ABSL_LOG_INTERNAL_WIDE_LITERAL;
   absl::string_view utf8_value = GetUtf8TestString();
@@ -995,6 +1040,7 @@ TEST(WideStringLogFormatTest, StringView) {
 
 TEST(WideStringLogFormatTest, Literal) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   absl::string_view utf8_value = GetUtf8TestString();
 
@@ -1011,6 +1057,7 @@ TEST(WideStringLogFormatTest, Literal) {
 
 TYPED_TEST(WideStringLogFormatTest, IsolatedLowSurrogatesAreReplaced) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   TypeParam value = L"AAA \xDC00 BBB";
   // NOLINTNEXTLINE(readability/utf8)
@@ -1027,6 +1074,7 @@ TYPED_TEST(WideStringLogFormatTest, IsolatedLowSurrogatesAreReplaced) {
 TYPED_TEST(WideStringLogFormatTest,
            DISABLED_IsolatedHighSurrogatesAreReplaced) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   TypeParam value = L"AAA \xD800 BBB";
   // NOLINTNEXTLINE(readability/utf8)
@@ -1044,6 +1092,7 @@ TYPED_TEST(WideStringLogFormatTest,
 TYPED_TEST(WideStringLogFormatTest,
            DISABLED_ConsecutiveHighSurrogatesAreReplaced) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   TypeParam value = L"AAA \xD800\xD800 BBB";
   // NOLINTNEXTLINE(readability/utf8)
@@ -1061,6 +1110,7 @@ TYPED_TEST(WideStringLogFormatTest,
 TYPED_TEST(WideStringLogFormatTest,
            DISABLED_HighHighLowSurrogateSequencesAreReplaced) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   TypeParam value = L"AAA \xD800\xD800\xDC00 BBB";
   // NOLINTNEXTLINE(readability/utf8)
@@ -1078,6 +1128,7 @@ TYPED_TEST(WideStringLogFormatTest,
 TYPED_TEST(WideStringLogFormatTest,
            DISABLED_TrailingHighSurrogatesAreReplaced) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   TypeParam value = L"AAA \xD800";
   // NOLINTNEXTLINE(readability/utf8)
@@ -1094,6 +1145,7 @@ TYPED_TEST(WideStringLogFormatTest,
 
 TYPED_TEST(WideStringLogFormatTest, EmptyWideString) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   TypeParam value = L"";
 
@@ -1121,6 +1173,7 @@ std::ostream& operator<<(std::ostream& os, const CustomClass&) {
 
 TEST(LogFormatTest, Custom) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   CustomClass value;
   auto comparison_stream = ComparisonStream();
@@ -1147,6 +1200,7 @@ std::ostream& operator<<(std::ostream& os, const CustomClassNonCopyable&) {
 
 TEST(LogFormatTest, CustomNonCopyable) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   CustomClassNonCopyable value;
   auto comparison_stream = ComparisonStream();
@@ -1174,6 +1228,7 @@ struct Point {
 
 TEST(LogFormatTest, AbslStringifyExample) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   Point p;
 
@@ -1205,6 +1260,7 @@ ABSL_ATTRIBUTE_UNUSED std::ostream& operator<<(
 
 TEST(LogFormatTest, CustomWithAbslStringifyAndOstream) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   PointWithAbslStringifiyAndOstream p;
 
@@ -1228,6 +1284,7 @@ struct PointStreamsNothing {
 
 TEST(LogFormatTest, AbslStringifyStreamsNothing) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   PointStreamsNothing p;
 
@@ -1254,6 +1311,7 @@ struct PointMultipleAppend {
 
 TEST(LogFormatTest, AbslStringifyMultipleAppend) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   PointMultipleAppend p;
 
@@ -1269,6 +1327,7 @@ TEST(LogFormatTest, AbslStringifyMultipleAppend) {
 
 TEST(ManipulatorLogFormatTest, BoolAlphaTrue) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const bool value = true;
   auto comparison_stream = ComparisonStream();
@@ -1293,6 +1352,7 @@ TEST(ManipulatorLogFormatTest, BoolAlphaTrue) {
 
 TEST(ManipulatorLogFormatTest, BoolAlphaFalse) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const bool value = false;
   auto comparison_stream = ComparisonStream();
@@ -1317,6 +1377,7 @@ TEST(ManipulatorLogFormatTest, BoolAlphaFalse) {
 
 TEST(ManipulatorLogFormatTest, ShowPoint) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const double value = 77.0;
   auto comparison_stream = ComparisonStream();
@@ -1341,6 +1402,7 @@ TEST(ManipulatorLogFormatTest, ShowPoint) {
 
 TEST(ManipulatorLogFormatTest, ShowPos) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const int value = 77;
   auto comparison_stream = ComparisonStream();
@@ -1364,6 +1426,7 @@ TEST(ManipulatorLogFormatTest, ShowPos) {
 
 TEST(ManipulatorLogFormatTest, UppercaseFloat) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const double value = 7.7e7;
   auto comparison_stream = ComparisonStream();
@@ -1388,6 +1451,7 @@ TEST(ManipulatorLogFormatTest, UppercaseFloat) {
 
 TEST(ManipulatorLogFormatTest, Hex) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const int value = 0x77;
   auto comparison_stream = ComparisonStream();
@@ -1405,6 +1469,7 @@ TEST(ManipulatorLogFormatTest, Hex) {
 
 TEST(ManipulatorLogFormatTest, Oct) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const int value = 077;
   auto comparison_stream = ComparisonStream();
@@ -1423,6 +1488,7 @@ TEST(ManipulatorLogFormatTest, Oct) {
 
 TEST(ManipulatorLogFormatTest, Dec) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const int value = 77;
   auto comparison_stream = ComparisonStream();
@@ -1440,6 +1506,7 @@ TEST(ManipulatorLogFormatTest, Dec) {
 
 TEST(ManipulatorLogFormatTest, ShowbaseHex) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const int value = 0x77;
   auto comparison_stream = ComparisonStream();
@@ -1466,6 +1533,7 @@ TEST(ManipulatorLogFormatTest, ShowbaseHex) {
 
 TEST(ManipulatorLogFormatTest, ShowbaseOct) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const int value = 077;
   auto comparison_stream = ComparisonStream();
@@ -1491,6 +1559,7 @@ TEST(ManipulatorLogFormatTest, ShowbaseOct) {
 
 TEST(ManipulatorLogFormatTest, UppercaseHex) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const int value = 0xbeef;
   auto comparison_stream = ComparisonStream();
@@ -1518,6 +1587,7 @@ TEST(ManipulatorLogFormatTest, UppercaseHex) {
 
 TEST(ManipulatorLogFormatTest, FixedFloat) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const double value = 7.7e7;
   auto comparison_stream = ComparisonStream();
@@ -1535,6 +1605,7 @@ TEST(ManipulatorLogFormatTest, FixedFloat) {
 
 TEST(ManipulatorLogFormatTest, ScientificFloat) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const double value = 7.7e7;
   auto comparison_stream = ComparisonStream();
@@ -1558,6 +1629,7 @@ TEST(ManipulatorLogFormatTest, ScientificFloat) {
 #else
 TEST(ManipulatorLogFormatTest, FixedAndScientificFloat) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const double value = 7.7e7;
   auto comparison_stream = ComparisonStream();
@@ -1591,6 +1663,7 @@ TEST(ManipulatorLogFormatTest, FixedAndScientificFloat) {
 #else
 TEST(ManipulatorLogFormatTest, HexfloatFloat) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const double value = 7.7e7;
   auto comparison_stream = ComparisonStream();
@@ -1612,6 +1685,7 @@ TEST(ManipulatorLogFormatTest, HexfloatFloat) {
 
 TEST(ManipulatorLogFormatTest, DefaultFloatFloat) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const double value = 7.7e7;
   auto comparison_stream = ComparisonStream();
@@ -1629,6 +1703,7 @@ TEST(ManipulatorLogFormatTest, DefaultFloatFloat) {
 
 TEST(ManipulatorLogFormatTest, Ends) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   auto comparison_stream = ComparisonStream();
   comparison_stream << std::ends;
@@ -1645,6 +1720,7 @@ TEST(ManipulatorLogFormatTest, Ends) {
 
 TEST(ManipulatorLogFormatTest, Endl) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   auto comparison_stream = ComparisonStream();
   comparison_stream << std::endl;
@@ -1662,6 +1738,7 @@ TEST(ManipulatorLogFormatTest, Endl) {
 
 TEST(ManipulatorLogFormatTest, SetIosFlags) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const int value = 0x77;
   auto comparison_stream = ComparisonStream();
@@ -1691,6 +1768,7 @@ TEST(ManipulatorLogFormatTest, SetIosFlags) {
 
 TEST(ManipulatorLogFormatTest, SetBase) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const int value = 0x77;
   auto comparison_stream = ComparisonStream();
@@ -1715,6 +1793,7 @@ TEST(ManipulatorLogFormatTest, SetBase) {
 
 TEST(ManipulatorLogFormatTest, SetPrecision) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const double value = 6.022140857e23;
   auto comparison_stream = ComparisonStream();
@@ -1736,6 +1815,7 @@ TEST(ManipulatorLogFormatTest, SetPrecision) {
 
 TEST(ManipulatorLogFormatTest, SetPrecisionOverflow) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const double value = 6.022140857e23;
   auto comparison_stream = ComparisonStream();
@@ -1753,6 +1833,7 @@ TEST(ManipulatorLogFormatTest, SetPrecisionOverflow) {
 
 TEST(ManipulatorLogFormatTest, SetW) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const int value = 77;
   auto comparison_stream = ComparisonStream();
@@ -1774,6 +1855,7 @@ TEST(ManipulatorLogFormatTest, SetW) {
 
 TEST(ManipulatorLogFormatTest, Left) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const int value = -77;
   auto comparison_stream = ComparisonStream();
@@ -1791,6 +1873,7 @@ TEST(ManipulatorLogFormatTest, Left) {
 
 TEST(ManipulatorLogFormatTest, Right) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const int value = -77;
   auto comparison_stream = ComparisonStream();
@@ -1808,6 +1891,7 @@ TEST(ManipulatorLogFormatTest, Right) {
 
 TEST(ManipulatorLogFormatTest, Internal) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const int value = -77;
   auto comparison_stream = ComparisonStream();
@@ -1825,6 +1909,7 @@ TEST(ManipulatorLogFormatTest, Internal) {
 
 TEST(ManipulatorLogFormatTest, SetFill) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   const int value = 77;
   auto comparison_stream = ComparisonStream();
@@ -1851,6 +1936,7 @@ std::ostream& operator<<(std::ostream& os, const FromCustomClass&) {
 
 TEST(ManipulatorLogFormatTest, FromCustom) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   FromCustomClass value;
   auto comparison_stream = ComparisonStream();
@@ -1873,6 +1959,7 @@ std::ostream& operator<<(std::ostream& os, const StreamsNothing&) { return os; }
 
 TEST(ManipulatorLogFormatTest, CustomClassStreamsNothing) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   StreamsNothing value;
   auto comparison_stream = ComparisonStream();
@@ -1900,6 +1987,7 @@ struct PointPercentV {
 
 TEST(ManipulatorLogFormatTest, IOManipsDoNotAffectAbslStringify) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   PointPercentV p;
 
@@ -1915,6 +2003,7 @@ TEST(ManipulatorLogFormatTest, IOManipsDoNotAffectAbslStringify) {
 
 TEST(StructuredLoggingOverflowTest, TruncatesStrings) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   // This message is too long and should be truncated to some unspecified size
   // no greater than the buffer size but not too much less either.  It should be
@@ -1937,6 +2026,7 @@ TEST(StructuredLoggingOverflowTest, TruncatesStrings) {
 
 TEST(StructuredLoggingOverflowTest, TruncatesWideStrings) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   // This message is too long and should be truncated to some unspecified size
   // no greater than the buffer size but not too much less either.  It should be
@@ -1967,6 +2057,7 @@ std::ostream& operator<<(std::ostream& os, StringLike str) {
 
 TEST(StructuredLoggingOverflowTest, TruncatesInsertionOperators) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
 
   // This message is too long and should be truncated to some unspecified size
   // no greater than the buffer size but not too much less either.  It should be
@@ -2018,6 +2109,7 @@ TEST(StructuredLoggingOverflowTest, TruncatesStringsCleanly) {
   // sizes.  To put any data in the field we need a fifth byte.
   {
     absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink, Send).Times(0);
     EXPECT_CALL(test_sink,
                 Send(AllOf(ENCODED_MESSAGE(HasOneStrThat(
                                AllOf(SizeIs(longest_fit), Each(Eq('x'))))),
@@ -2028,6 +2120,7 @@ TEST(StructuredLoggingOverflowTest, TruncatesStringsCleanly) {
   }
   {
     absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink, Send).Times(0);
     EXPECT_CALL(test_sink,
                 Send(AllOf(ENCODED_MESSAGE(HasOneStrThat(
                                AllOf(SizeIs(longest_fit - 1), Each(Eq('x'))))),
@@ -2038,6 +2131,7 @@ TEST(StructuredLoggingOverflowTest, TruncatesStringsCleanly) {
   }
   {
     absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink, Send).Times(0);
     EXPECT_CALL(test_sink,
                 Send(AllOf(ENCODED_MESSAGE(HasOneStrThat(
                                AllOf(SizeIs(longest_fit - 2), Each(Eq('x'))))),
@@ -2048,6 +2142,7 @@ TEST(StructuredLoggingOverflowTest, TruncatesStringsCleanly) {
   }
   {
     absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink, Send).Times(0);
     EXPECT_CALL(test_sink,
                 Send(AllOf(ENCODED_MESSAGE(HasOneStrThat(
                                AllOf(SizeIs(longest_fit - 3), Each(Eq('x'))))),
@@ -2058,6 +2153,7 @@ TEST(StructuredLoggingOverflowTest, TruncatesStringsCleanly) {
   }
   {
     absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink, Send).Times(0);
     EXPECT_CALL(test_sink,
                 Send(AllOf(ENCODED_MESSAGE(HasOneStrAndOneLiteralThat(
                                AllOf(SizeIs(longest_fit - 4), Each(Eq('x'))),
@@ -2070,6 +2166,7 @@ TEST(StructuredLoggingOverflowTest, TruncatesStringsCleanly) {
   }
   {
     absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink, Send).Times(0);
     EXPECT_CALL(
         test_sink,
         Send(AllOf(ENCODED_MESSAGE(HasOneStrAndOneLiteralThat(
@@ -2087,6 +2184,7 @@ TEST(StructuredLoggingOverflowTest, TruncatesInsertionOperatorsCleanly) {
   // sizes.  To put any data in the field we need a fifth byte.
   {
     absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink, Send).Times(0);
     EXPECT_CALL(test_sink,
                 Send(AllOf(ENCODED_MESSAGE(HasOneStrThat(
                                AllOf(SizeIs(longest_fit), Each(Eq('x'))))),
@@ -2097,6 +2195,7 @@ TEST(StructuredLoggingOverflowTest, TruncatesInsertionOperatorsCleanly) {
   }
   {
     absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink, Send).Times(0);
     EXPECT_CALL(test_sink,
                 Send(AllOf(ENCODED_MESSAGE(HasOneStrThat(
                                AllOf(SizeIs(longest_fit - 1), Each(Eq('x'))))),
@@ -2108,6 +2207,7 @@ TEST(StructuredLoggingOverflowTest, TruncatesInsertionOperatorsCleanly) {
   }
   {
     absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink, Send).Times(0);
     EXPECT_CALL(test_sink,
                 Send(AllOf(ENCODED_MESSAGE(HasOneStrThat(
                                AllOf(SizeIs(longest_fit - 2), Each(Eq('x'))))),
@@ -2119,6 +2219,7 @@ TEST(StructuredLoggingOverflowTest, TruncatesInsertionOperatorsCleanly) {
   }
   {
     absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink, Send).Times(0);
     EXPECT_CALL(test_sink,
                 Send(AllOf(ENCODED_MESSAGE(HasOneStrThat(
                                AllOf(SizeIs(longest_fit - 3), Each(Eq('x'))))),
@@ -2130,6 +2231,7 @@ TEST(StructuredLoggingOverflowTest, TruncatesInsertionOperatorsCleanly) {
   }
   {
     absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink, Send).Times(0);
     EXPECT_CALL(test_sink,
                 Send(AllOf(ENCODED_MESSAGE(HasOneStrThat(
                                AllOf(SizeIs(longest_fit - 4), Each(Eq('x'))))),
@@ -2143,6 +2245,7 @@ TEST(StructuredLoggingOverflowTest, TruncatesInsertionOperatorsCleanly) {
   }
   {
     absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+    EXPECT_CALL(test_sink, Send).Times(0);
     EXPECT_CALL(
         test_sink,
         Send(AllOf(ENCODED_MESSAGE(HasTwoStrsThat(

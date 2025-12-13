@@ -206,7 +206,7 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//chromeos/ash/components/boca:boca",
+    "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/babelorca/proto",
     "//chromeos/ash/components/boca/babelorca/proto:test_support",
     "//chromeos/ash/components/boca/proto",

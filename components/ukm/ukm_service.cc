@@ -61,15 +61,7 @@ uint64_t LoadOrGenerateAndStoreClientId(PrefService* pref_service) {
     return client_id;
   }
 
-  // Since client_id was 0, the pref value may have been negative. Attempt to
-  // get it as an Int64 to migrate it to Uint64.
-  client_id = pref_service->GetInt64(prefs::kUkmClientId);
-  if (client_id) {
-    pref_service->SetUint64(prefs::kUkmClientId, client_id);
-    return client_id;
-  }
-
-  // The client_id is still 0, so it wasn't set.
+  // The client_id is 0, so it wasn't set.
   return GenerateAndStoreClientId(pref_service);
 }
 
@@ -478,10 +470,6 @@ void UkmService::RegisterMetricsProvider(
   metrics_providers_.RegisterMetricsProvider(std::move(provider));
 }
 
-void UkmService::RegisterEventFilter(std::unique_ptr<UkmEntryFilter> filter) {
-  SetEntryFilter(std::move(filter));
-}
-
 // static
 void UkmService::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterUint64Pref(prefs::kUkmClientId, 0);
@@ -590,6 +578,7 @@ void UkmService::BuildAndStoreLog(
 
   reporting_service_.ukm_log_store()->StoreLog(serialized_log, log_metadata,
                                                reason);
+  log_creation_time_ = base::TimeTicks::Now();
 }
 
 void UkmService::SetInitializationCompleteCallbackForTesting(

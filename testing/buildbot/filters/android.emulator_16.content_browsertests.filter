@@ -4,3 +4,6 @@
 -FormControlsBrowserTest.Checkbox
 -FormControlsBrowserTest.MultiSelect
 -FormControlsBrowserTest.Select
+
+# crbug.com/382588633
+-Default/MediaTest.VideoBearWavPcm3kHz*

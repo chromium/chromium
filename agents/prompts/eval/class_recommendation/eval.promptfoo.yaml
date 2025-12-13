@@ -1,0 +1,18 @@
+description: Recommendation for class names from a user prompt.
+owner: erikchen@
+prompts:
+  - >
+    I want to add a dialog that shows over the contents of the tab on macOS.
+    The dialog should only show when the tab is in the foreground. Could you
+    list all classes that manage tab scoped dialogs? Please format the output
+    as '"class_name": "<class_name>"' for each class.
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+tests:
+  - assert:
+    - type: contains
+      value: '"class_name": "TabDialogs"'
+    - type: contains
+      value: '"class_name": "TabDialogsViews"'

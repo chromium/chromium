@@ -30,16 +30,15 @@ class IOSRealtimeReportingClientFactory : public ProfileKeyedServiceFactoryIOS {
   // be registered with AddTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
- protected:
-  // BrowserStateKeyedServiceFactory overrides.
-  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* browser_state) const override;
-
  private:
   friend class base::NoDestructor<IOSRealtimeReportingClientFactory>;
 
   IOSRealtimeReportingClientFactory();
   ~IOSRealtimeReportingClientFactory() override;
+
+  // ProfileKeyedServiceFactoryIOS overrides.
+  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace enterprise_connectors

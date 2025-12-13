@@ -20,7 +20,7 @@ class NodeLink;
 
 // ApplicationObject encapsulates an opaque object identifier along with
 // serialization and destruction functions, as provided by an application via
-// the Box() API. This serves as a thin wrapper to model strong owenership of
+// the Box() API. This serves as a thin wrapper to model strong ownership of
 // the opaque object within ipcz.
 class ApplicationObject {
  public:
@@ -46,7 +46,7 @@ class ApplicationObject {
   void reset();
 
   // Releases ownership of the application object and returns it. This
-  // invalidates the ApplicationObject and insures that neither resetting nor
+  // invalidates the ApplicationObject and ensures that neither resetting nor
   // destroying the ApplicationObject will invoke the released object's custom
   // destructor.
   uintptr_t ReleaseObject();

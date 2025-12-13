@@ -9,6 +9,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
+#include "components/sync/base/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 constexpr char kWebPasswordManagerPromoId[] = "passwords_on_web_promo";
@@ -18,14 +19,12 @@ WebPasswordManagerPromo::WebPasswordManagerPromo(
     const syncer::SyncService* sync_service)
     : password_manager::PasswordPromoCardBase(kWebPasswordManagerPromoId,
                                               prefs) {
-  // TODO(crbug.com/40067296): Migrate away from `ConsentLevel::kSync` on
-  // desktop platforms and remove #ifdef below.
-#if BUILDFLAG(IS_ANDROID)
-#error If this code is built on Android, please update TODO above.
-#endif  // BUILDFLAG(IS_ANDROID)
   sync_enabled_ =
-      password_manager::sync_util::IsSyncFeatureActiveIncludingPasswords(
-          sync_service);
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? password_manager::sync_util::GetPasswordSyncState(sync_service) !=
+                password_manager::sync_util::SyncState::kNotActive
+          : password_manager::sync_util::IsSyncFeatureActiveIncludingPasswords(
+                sync_service);
 }
 
 std::string WebPasswordManagerPromo::GetPromoID() const {

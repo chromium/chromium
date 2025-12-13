@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {AnnotationMode, PluginController, PluginControllerEventType, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -148,7 +147,7 @@ chrome.test.runTests([
     await microtasksFinished();
     mockMetricsPrivate.assertCount(UserAction.ENTER_INK2_ANNOTATION_MODE, 1);
     const sidePanel = viewer.shadowRoot.querySelector('viewer-side-panel');
-    assert(sidePanel);
+    chrome.test.assertTrue(!!sidePanel);
 
     // The side panel should be visible when annotation mode is enabled.
     chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);

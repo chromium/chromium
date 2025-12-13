@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.input;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
@@ -12,7 +14,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
 import org.junit.After;
@@ -46,11 +47,11 @@ public class InputMethodManagerWrapperImplTest {
         @Override
         protected int getDisplayId(Context context) {
             if (context == mContext) {
-                assert mContextDisplayId != -1;
+                assertThat(mContextDisplayId).isNotEqualTo(-1);
                 return mContextDisplayId;
             }
             if (context == mActivity) {
-                assert mActivityDisplayId != -1;
+                assertThat(mActivityDisplayId).isNotEqualTo(-1);
                 return mActivityDisplayId;
             }
             return super.getDisplayId(context);
@@ -64,8 +65,6 @@ public class InputMethodManagerWrapperImplTest {
     @Mock private InputMethodManagerWrapper.Delegate mDelegate;
     @Mock private View mView;
     @Mock private InputMethodManager mInputMethodManager;
-    @Mock private WindowManager mContextWindowManager;
-    @Mock private WindowManager mActivityWindowManager;
 
     private int mContextDisplayId = -1; // uninitialized
     private int mActivityDisplayId = -1; // uninitialized

@@ -9,10 +9,14 @@
 namespace bookmarks {
 UndoManagerBridge::UndoManagerBridge(id<UndoManagerBridgeObserver> observer)
     : observer_(observer) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M152);
 }
 
 void UndoManagerBridge::OnUndoManagerStateChange() {
   [observer_ undoManagerChanged];
+}
+
+void UndoManagerBridge::OnUndoManagerShutdown() {
+  [observer_ undoManagerShutdown];
 }
 }  // namespace bookmarks

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/skottie_wrapper.h"
 
 #include <cstdint>
@@ -14,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -68,9 +64,10 @@ class MockFrameDataCallback {
 
 TEST(SkottieWrapperTest, LoadsValidLottieFileNonSerializable) {
   scoped_refptr<SkottieWrapper> skottie =
-      SkottieWrapper::UnsafeCreateNonSerializable(base::span<const uint8_t>(
-          reinterpret_cast<const uint8_t*>(kLottieDataWithoutAssets1.data()),
-          kLottieDataWithoutAssets1.length()));
+      SkottieWrapper::UnsafeCreateNonSerializable(UNSAFE_TODO(
+          base::span<const uint8_t>(reinterpret_cast<const uint8_t*>(
+                                        kLottieDataWithoutAssets1.data()),
+                                    kLottieDataWithoutAssets1.length())));
   EXPECT_TRUE(skottie->is_valid());
 }
 
@@ -78,30 +75,34 @@ TEST(SkottieWrapperTest, LoadsValidLottieFileSerializable) {
   scoped_refptr<SkottieWrapper> skottie =
       SkottieWrapper::UnsafeCreateSerializable(std::vector<uint8_t>(
           reinterpret_cast<const uint8_t*>(kLottieDataWithoutAssets1.data()),
-          reinterpret_cast<const uint8_t*>(kLottieDataWithoutAssets1.data()) +
-              kLottieDataWithoutAssets1.length()));
+          UNSAFE_TODO(reinterpret_cast<const uint8_t*>(
+                          kLottieDataWithoutAssets1.data()) +
+                      kLottieDataWithoutAssets1.length())));
   EXPECT_TRUE(skottie->is_valid());
 }
 
 TEST(SkottieWrapperTest, DetectsInvalidLottieFile) {
   static constexpr std::string_view kInvalidJson = "this is invalid json";
   scoped_refptr<SkottieWrapper> skottie =
-      SkottieWrapper::UnsafeCreateNonSerializable(base::span<const uint8_t>(
-          reinterpret_cast<const uint8_t*>(kInvalidJson.data()),
-          kInvalidJson.length()));
+      SkottieWrapper::UnsafeCreateNonSerializable(
+          UNSAFE_TODO(base::span<const uint8_t>(
+              reinterpret_cast<const uint8_t*>(kInvalidJson.data()),
+              kInvalidJson.length())));
   EXPECT_FALSE(skottie->is_valid());
 }
 
 TEST(SkottieWrapperTest, IdMatchesForSameLottieFile) {
   scoped_refptr<SkottieWrapper> skottie_1 =
-      SkottieWrapper::UnsafeCreateNonSerializable(base::span<const uint8_t>(
-          reinterpret_cast<const uint8_t*>(kLottieDataWithoutAssets1.data()),
-          kLottieDataWithoutAssets1.length()));
+      SkottieWrapper::UnsafeCreateNonSerializable(UNSAFE_TODO(
+          base::span<const uint8_t>(reinterpret_cast<const uint8_t*>(
+                                        kLottieDataWithoutAssets1.data()),
+                                    kLottieDataWithoutAssets1.length())));
   scoped_refptr<SkottieWrapper> skottie_2 =
       SkottieWrapper::UnsafeCreateSerializable(std::vector<uint8_t>(
           reinterpret_cast<const uint8_t*>(kLottieDataWithoutAssets1.data()),
-          reinterpret_cast<const uint8_t*>(kLottieDataWithoutAssets1.data()) +
-              kLottieDataWithoutAssets1.length()));
+          UNSAFE_TODO(reinterpret_cast<const uint8_t*>(
+                          kLottieDataWithoutAssets1.data()) +
+                      kLottieDataWithoutAssets1.length())));
   ASSERT_TRUE(skottie_1->is_valid());
   ASSERT_TRUE(skottie_2->is_valid());
   EXPECT_THAT(skottie_1->id(), Eq(skottie_2->id()));
@@ -109,13 +110,15 @@ TEST(SkottieWrapperTest, IdMatchesForSameLottieFile) {
 
 TEST(SkottieWrapperTest, IdDoesNotMatchForDifferentLottieFile) {
   scoped_refptr<SkottieWrapper> skottie_1 =
-      SkottieWrapper::UnsafeCreateNonSerializable(base::span<const uint8_t>(
-          reinterpret_cast<const uint8_t*>(kLottieDataWithoutAssets1.data()),
-          kLottieDataWithoutAssets1.length()));
+      SkottieWrapper::UnsafeCreateNonSerializable(UNSAFE_TODO(
+          base::span<const uint8_t>(reinterpret_cast<const uint8_t*>(
+                                        kLottieDataWithoutAssets1.data()),
+                                    kLottieDataWithoutAssets1.length())));
   scoped_refptr<SkottieWrapper> skottie_2 =
-      SkottieWrapper::UnsafeCreateNonSerializable(base::span<const uint8_t>(
-          reinterpret_cast<const uint8_t*>(kLottieDataWithoutAssets2.data()),
-          kLottieDataWithoutAssets2.length()));
+      SkottieWrapper::UnsafeCreateNonSerializable(UNSAFE_TODO(
+          base::span<const uint8_t>(reinterpret_cast<const uint8_t*>(
+                                        kLottieDataWithoutAssets2.data()),
+                                    kLottieDataWithoutAssets2.length())));
   ASSERT_TRUE(skottie_1->is_valid());
   ASSERT_TRUE(skottie_2->is_valid());
   EXPECT_THAT(skottie_1->id(), Ne(skottie_2->id()));
@@ -123,9 +126,10 @@ TEST(SkottieWrapperTest, IdDoesNotMatchForDifferentLottieFile) {
 
 TEST(SkottieWrapperTest, LoadsImageAssetsMetadata) {
   scoped_refptr<SkottieWrapper> skottie =
-      SkottieWrapper::UnsafeCreateNonSerializable(base::span<const uint8_t>(
-          reinterpret_cast<const uint8_t*>(kLottieDataWith2Assets.data()),
-          kLottieDataWith2Assets.length()));
+      SkottieWrapper::UnsafeCreateNonSerializable(
+          UNSAFE_TODO(base::span<const uint8_t>(
+              reinterpret_cast<const uint8_t*>(kLottieDataWith2Assets.data()),
+              kLottieDataWith2Assets.length())));
   ASSERT_TRUE(skottie->is_valid());
   SkottieResourceMetadataMap metadata = skottie->GetImageAssetMetadata();
   EXPECT_THAT(

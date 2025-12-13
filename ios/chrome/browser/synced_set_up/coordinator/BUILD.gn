@@ -1,0 +1,89 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "synced_set_up_coordinator.h",
+    "synced_set_up_coordinator.mm",
+    "synced_set_up_coordinator_delegate.h",
+    "synced_set_up_mediator.h",
+    "synced_set_up_mediator.mm",
+    "synced_set_up_mediator_delegate.h",
+  ]
+  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
+  deps = [
+    "//base",
+    "//components/signin/public/identity_manager/objc",
+    "//components/sync_device_info",
+    "//components/sync_preferences/cross_device_pref_tracker",
+    "//components/sync_preferences/synced_set_up:utils",
+    "//ios/chrome/app",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ntp/model:util",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/snackbar",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
+    "//ios/chrome/browser/sync/model/prefs/cross_device_pref_tracker:cross_device_pref_tracker_factory",
+    "//ios/chrome/browser/synced_set_up/public",
+    "//ios/chrome/browser/synced_set_up/ui",
+    "//ios/web/public",
+    "//ui/base",
+    "//url",
+  ]
+
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "synced_set_up_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//components/ntp_tiles:pref_names",
+    "//components/omnibox/browser:pref_names",
+    "//components/sync_device_info:test_support",
+    "//components/sync_preferences/cross_device_pref_tracker",
+    "//components/sync_preferences/cross_device_pref_tracker/prefs",
+    "//ios/chrome/app",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ntp/model:util",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/shared/model/utils:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/synced_set_up/ui",
+    "//ios/chrome/test:test_support",
+    "//ios/web/common:features",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+    "//url",
+  ]
+}

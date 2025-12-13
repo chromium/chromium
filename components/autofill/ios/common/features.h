@@ -10,13 +10,6 @@
 
 // Features that are exclusive to iOS go here in alphabetical order.
 
-// Feature flag to control whether the Add Address Manually bottom sheet is
-// enabled.
-BASE_DECLARE_FEATURE(kAddAddressManually);
-
-// Returns true if the AddAddressManually feature is enabled
-bool IsAddAddressManuallyEnabled();
-
 // Allows detecting form submissions that are `defaultPrevented` by the page
 // content.
 BASE_DECLARE_FEATURE(kAutofillAllowDefaultPreventedSubmission);
@@ -35,11 +28,6 @@ BASE_DECLARE_FEATURE(kAutofillCountFormSubmissionInRenderer);
 // allow submitting the form multiple times as post-submit navigation can be
 // prevented.
 BASE_DECLARE_FEATURE(kAutofillDedupeFormSubmission);
-
-// Controls whether to dynamically load the address input fields in the save
-// flow and settings based on the country value.
-// TODO(crbug.com/40281788): Remove once launched.
-BASE_DECLARE_FEATURE(kAutofillDynamicallyLoadsFieldsForAddressInput);
 
 // Fix for XHR form submission detection when autofill across iframes is
 // enabled.

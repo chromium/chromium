@@ -36,9 +36,8 @@ void LobsterView::ResizeDueToAutoResize(content::WebContents* source,
                                         const gfx::Size& new_size) {
   WebUIBubbleDialogView::ResizeDueToAutoResize(source, new_size);
 
-  gfx::Rect screen_work_area = display::Screen::GetScreen()
-                                   ->GetDisplayMatching(caret_bounds_)
-                                   .work_area();
+  gfx::Rect screen_work_area =
+      display::Screen::Get()->GetDisplayMatching(caret_bounds_).work_area();
   screen_work_area.Inset(kLobsterScreenEdgePadding);
 
   // If the contents is very tall, just place it at the center of the screen.

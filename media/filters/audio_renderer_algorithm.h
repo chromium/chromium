@@ -27,6 +27,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -313,11 +314,11 @@ class MEDIA_EXPORT AudioRendererAlgorithm {
   std::unique_ptr<AudioBus> wsola_output_;
 
   // Overlap-and-add window.
-  std::unique_ptr<float[]> ola_window_;
+  base::HeapArray<float> ola_window_;
 
   // Transition window, used to update |optimal_block_| by a weighted sum of
   // |optimal_block_| and |target_block_|.
-  std::unique_ptr<float[]> transition_window_;
+  base::HeapArray<float> transition_window_;
 
   // Auxiliary variables to avoid allocation in every iteration.
 

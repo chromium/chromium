@@ -43,9 +43,6 @@ ProfileManagementDisclaimerServiceFactory::
 std::unique_ptr<KeyedService> ProfileManagementDisclaimerServiceFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(switches::kEnforceManagementDisclaimer)) {
-    return nullptr;
-  }
   return std::make_unique<ProfileManagementDisclaimerService>(
       Profile::FromBrowserContext(context));
 }

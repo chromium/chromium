@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.73"
+rust-version = "1.82"
 name = "cxxbridge-cmd"
-version = "1.0.160"
+version = "1.0.190"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 exclude = ["build.rs"]
@@ -36,9 +36,6 @@ repository = "https://github.com/dtolnay/cxx"
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
 
-[features]
-experimental-async-fn = []
-
 [[bin]]
 name = "cxxbridge"
 path = "src/main.rs"
@@ -55,7 +52,7 @@ features = [
 default-features = false
 
 [dependencies.codespan-reporting]
-version = "0.12"
+version = "0.13.1"
 
 [dependencies.indexmap]
 version = "2.9.0"

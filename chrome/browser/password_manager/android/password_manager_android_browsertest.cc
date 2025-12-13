@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/string_number_conversions.h"
@@ -45,8 +45,8 @@ class PasswordManagerAndroidBrowserTest
     // Set a GMS Core version that is guaranteed to provide full UPM support.
     // This ensures that calls to the password store are derministically
     // routed to the android backend.
-    base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
-        base::NumberToString(password_manager::GetLocalUpmMinGmsVersion()));
+    base::android::device_info::set_gms_version_code_for_test(
+        base::NumberToString(password_manager::GetSplitStoresUpmMinVersion()));
     // See crbug.com/331746629. The login database on Android will be
     // deprecated soon. So create a fake backend on GMS Core for password
     // storing.

@@ -31,13 +31,14 @@ class SampleProxyEdgeCases<E extends Enum<E>> {
         int addStructB(SampleForTests caller, SampleForTests.InnerStructB b);
 
         // Tests a java.lang class.
-        public boolean setStringBuilder(StringBuilder sb);
+        boolean setStringBuilder(StringBuilder sb);
 
         // Tests name collisions with java.lang classes.
-        public void setBool(Boolean b, Integer i);
+        void setBool(Boolean b, Integer i);
 
         // Test IntDef
-        public @SomeClass.EnumType int setStringBuilder(@MyThing int sb);
+        @SomeClass.EnumType
+        int setStringBuilder(@MyThing int sb);
     }
 
     // Non-proxy natives in same file.

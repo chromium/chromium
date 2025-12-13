@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/ozone/evdev/touch_event_converter_evdev.h"
 
 #include <errno.h>
@@ -19,6 +14,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -378,9 +374,9 @@ MockTouchEventConverterEvdev::~MockTouchEventConverterEvdev() {
 void MockTouchEventConverterEvdev::ConfigureReadMock(struct input_event* queue,
                                                      long read_this_many,
                                                      long queue_index) {
-  int nwrite = HANDLE_EINTR(write(write_pipe_,
-                                  queue + queue_index,
-                                  sizeof(struct input_event) * read_this_many));
+  int nwrite = UNSAFE_TODO(
+      HANDLE_EINTR(write(write_pipe_, queue + queue_index,
+                         sizeof(struct input_event) * read_this_many)));
   DPCHECK(nwrite ==
           static_cast<int>(sizeof(struct input_event) * read_this_many))
       << "write() failed";
@@ -400,9 +396,7 @@ class TouchEventConverterEvdevTest : public testing::Test {
     // By default, tests disable single-cancel and enable palm on touch_major ==
     // major_max.
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatures(
-        {kEnablePalmOnMaxTouchMajor, kEnablePalmOnToolTypePalm},
-        {kEnableSingleCancelTouch});
+    scoped_feature_list_->InitWithFeatures({}, {kEnableSingleCancelTouch});
     SetUpDevice();
   }
 
@@ -442,7 +436,7 @@ class TouchEventConverterEvdevTest : public testing::Test {
 
   void UpdateTime(struct input_event* queue, long count, timeval time) const {
     for (int i = 0; i < count; ++i) {
-      queue[i].time = time;
+      UNSAFE_TODO(queue[i]).time = time;
     }
   }
 
@@ -902,185 +896,6 @@ TEST_F(TouchEventConverterEvdevTest, ShouldRemoveContactsWhenDisabled) {
                          std::size(mock_kernel_queue_press), 0);
   dev->ReadNow();
   EXPECT_EQ(2u, size());
-}
-
-TEST_F(TouchEventConverterEvdevTest, ToolTypePalmNotCancelTouch) {
-  // By default, we use TOOL_TYPE_PALM as a cancellation signal for all touches.
-  // We disable that behavior and want to see all touches registered as usual.
-  TearDownDevice();
-  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  scoped_feature_list_->InitWithFeatures(
-      {}, {kEnablePalmOnMaxTouchMajor, kEnablePalmOnToolTypePalm,
-           kEnableSingleCancelTouch});
-  SetUpDevice();
-
-  ui::MockTouchEventConverterEvdev* dev = device();
-  EventDeviceInfo devinfo;
-  EXPECT_TRUE(CapabilitiesToDeviceInfo(kLinkWithToolTypeTouchscreen, &devinfo));
-
-  timeval time;
-  time = {1429651083, 686882};
-  struct input_event mock_kernel_queue_max_major[] = {
-      {time, EV_ABS, ABS_MT_SLOT, 0},
-      {time, EV_ABS, ABS_MT_TRACKING_ID, 0},
-      {time, EV_ABS, ABS_MT_TOOL_TYPE, MT_TOOL_FINGER},
-      {time, EV_ABS, ABS_MT_POSITION_X, 1003},
-      {time, EV_ABS, ABS_MT_POSITION_Y, 749},
-      {time, EV_ABS, ABS_MT_PRESSURE, 50},
-      {time, EV_ABS, ABS_MT_TOUCH_MAJOR, 116},
-      {time, EV_ABS, ABS_MT_SLOT, 1},
-      {time, EV_ABS, ABS_MT_TRACKING_ID, 1},
-      {time, EV_ABS, ABS_MT_TOOL_TYPE, MT_TOOL_FINGER},
-      {time, EV_ABS, ABS_MT_POSITION_X, 1103},
-      {time, EV_ABS, ABS_MT_POSITION_Y, 649},
-      {time, EV_ABS, ABS_MT_PRESSURE, 50},
-      {time, EV_ABS, ABS_MT_TOUCH_MAJOR, 116},
-      {time, EV_KEY, BTN_TOUCH, 1},
-      {time, EV_ABS, ABS_X, 1003},
-      {time, EV_ABS, ABS_Y, 749},
-      {time, EV_ABS, ABS_PRESSURE, 50},
-      {time, EV_SYN, SYN_REPORT, 0},
-      {time, EV_ABS, ABS_MT_SLOT, 0},
-      {time, EV_ABS, ABS_MT_TOUCH_MAJOR, 200},
-      {time, EV_ABS, ABS_MT_POSITION_X, 1009},
-      {time, EV_ABS, ABS_MT_POSITION_Y, 755},
-      {time, EV_ABS, ABS_MT_TOOL_TYPE, MT_TOOL_PALM},
-      {time, EV_SYN, SYN_REPORT, 0},
-      {time, EV_ABS, ABS_MT_SLOT, 1},
-      {time, EV_ABS, ABS_MT_POSITION_X, 1090},
-      {time, EV_ABS, ABS_MT_POSITION_Y, 655},
-      {time, EV_SYN, SYN_REPORT, 0},
-      {time, EV_ABS, ABS_MT_SLOT, 0},
-      {time, EV_ABS, ABS_MT_TRACKING_ID, -1},
-      {time, EV_ABS, ABS_MT_SLOT, 1},
-      {time, EV_ABS, ABS_MT_TRACKING_ID, -1},
-      {time, EV_SYN, SYN_REPORT, 0},
-  };
-  // Set test now time to ensure above timestamps are in the past.
-  SetTestNowTime(time);
-
-  // Initialize the device.
-  dev->Initialize(devinfo);
-
-  dev->ConfigureReadMock(mock_kernel_queue_max_major,
-                         std::size(mock_kernel_queue_max_major), 0);
-  dev->ReadNow();
-  EXPECT_EQ(6u, size());
-
-  ui::TouchEventParams ev1_1 = dispatched_touch_event(0);
-  EXPECT_EQ(EventType::kTouchPressed, ev1_1.type);
-  EXPECT_EQ(0, ev1_1.slot);
-  EXPECT_EQ(1003, ev1_1.location.x());
-  EXPECT_EQ(749, ev1_1.location.y());
-
-  ui::TouchEventParams ev1_2 = dispatched_touch_event(1);
-  EXPECT_EQ(EventType::kTouchPressed, ev1_2.type);
-  EXPECT_EQ(1, ev1_2.slot);
-  EXPECT_EQ(1103, ev1_2.location.x());
-  EXPECT_EQ(649, ev1_2.location.y());
-
-  ui::TouchEventParams ev1_3 = dispatched_touch_event(2);
-  EXPECT_EQ(EventType::kTouchMoved, ev1_3.type);
-  EXPECT_EQ(0, ev1_3.slot);
-  EXPECT_EQ(1009, ev1_3.location.x());
-  EXPECT_EQ(755, ev1_3.location.y());
-
-  ui::TouchEventParams ev1_4 = dispatched_touch_event(3);
-  EXPECT_EQ(EventType::kTouchMoved, ev1_4.type);
-  EXPECT_EQ(1, ev1_4.slot);
-  EXPECT_EQ(1090, ev1_4.location.x());
-  EXPECT_EQ(655, ev1_4.location.y());
-
-  ui::TouchEventParams ev1_5 = dispatched_touch_event(4);
-  EXPECT_EQ(EventType::kTouchReleased, ev1_5.type);
-  EXPECT_EQ(0, ev1_5.slot);
-
-  ui::TouchEventParams ev1_6 = dispatched_touch_event(5);
-  EXPECT_EQ(EventType::kTouchReleased, ev1_6.type);
-  EXPECT_EQ(1, ev1_6.slot);
-}
-
-TEST_F(TouchEventConverterEvdevTest, MaxMajorNotCancelTouch) {
-  // By default, tests disable single-cancel and enable palm on touch_major ==
-  // major_max. So we disable that behavior: and expect to see a RELEASED rather
-  // than cancelled.
-  TearDownDevice();
-  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  scoped_feature_list_->InitWithFeatures(
-      {}, {kEnablePalmOnMaxTouchMajor, kEnableSingleCancelTouch});
-  SetUpDevice();
-
-  ui::MockTouchEventConverterEvdev* dev = device();
-
-  EventDeviceInfo devinfo;
-  EXPECT_TRUE(CapabilitiesToDeviceInfo(kLinkWithToolTypeTouchscreen, &devinfo));
-
-  timeval time;
-  time = {1429651083, 686882};
-  int major_max = devinfo.GetAbsMaximum(ABS_MT_TOUCH_MAJOR);
-  struct input_event mock_kernel_queue_max_major[] = {
-      {time, EV_ABS, ABS_MT_SLOT, 0},
-      {time, EV_ABS, ABS_MT_TRACKING_ID, 0},
-      {time, EV_ABS, ABS_MT_TOOL_TYPE, MT_TOOL_FINGER},
-      {time, EV_ABS, ABS_MT_POSITION_X, 1003},
-      {time, EV_ABS, ABS_MT_POSITION_Y, 749},
-      {time, EV_ABS, ABS_MT_PRESSURE, 50},
-      {time, EV_ABS, ABS_MT_TOUCH_MAJOR, 116},
-      {time, EV_ABS, ABS_MT_SLOT, 1},
-      {time, EV_ABS, ABS_MT_TRACKING_ID, 1},
-      {time, EV_ABS, ABS_MT_TOOL_TYPE, MT_TOOL_FINGER},
-      {time, EV_ABS, ABS_MT_POSITION_X, 1103},
-      {time, EV_ABS, ABS_MT_POSITION_Y, 649},
-      {time, EV_ABS, ABS_MT_PRESSURE, 50},
-      {time, EV_ABS, ABS_MT_TOUCH_MAJOR, 116},
-      {time, EV_KEY, BTN_TOUCH, 1},
-      {time, EV_ABS, ABS_X, 1003},
-      {time, EV_ABS, ABS_Y, 749},
-      {time, EV_ABS, ABS_PRESSURE, 50},
-      {time, EV_SYN, SYN_REPORT, 0},
-      {time, EV_ABS, ABS_MT_SLOT, 0},
-      {time, EV_ABS, ABS_MT_TOUCH_MAJOR, major_max},
-      {time, EV_SYN, SYN_REPORT, 0},
-      {time, EV_ABS, ABS_MT_TRACKING_ID, -1},
-      {time, EV_ABS, ABS_MT_SLOT, 1},
-      {time, EV_ABS, ABS_MT_TRACKING_ID, -1},
-      {time, EV_SYN, SYN_REPORT, 0},
-  };
-
-  // Set test now time to ensure above timestamps are in the past.
-  SetTestNowTime(time);
-
-  // Initialize the device.
-  dev->Initialize(devinfo);
-
-  dev->ConfigureReadMock(mock_kernel_queue_max_major,
-                         std::size(mock_kernel_queue_max_major), 0);
-  dev->ReadNow();
-  EXPECT_EQ(5u, size());
-
-  ui::TouchEventParams ev1_1 = dispatched_touch_event(0);
-  EXPECT_EQ(EventType::kTouchPressed, ev1_1.type);
-  EXPECT_EQ(0, ev1_1.slot);
-  EXPECT_EQ(1003, ev1_1.location.x());
-  EXPECT_EQ(749, ev1_1.location.y());
-
-  ui::TouchEventParams ev1_2 = dispatched_touch_event(1);
-  EXPECT_EQ(EventType::kTouchPressed, ev1_2.type);
-  EXPECT_EQ(1, ev1_2.slot);
-  EXPECT_EQ(1103, ev1_2.location.x());
-  EXPECT_EQ(649, ev1_2.location.y());
-
-  ui::TouchEventParams ev1_3 = dispatched_touch_event(2);
-  EXPECT_EQ(EventType::kTouchMoved, ev1_3.type);
-  EXPECT_EQ(0, ev1_3.slot);
-
-  ui::TouchEventParams ev1_4 = dispatched_touch_event(3);
-  EXPECT_EQ(EventType::kTouchReleased, ev1_4.type);
-  EXPECT_EQ(0, ev1_4.slot);
-
-  ui::TouchEventParams ev1_5 = dispatched_touch_event(4);
-  EXPECT_EQ(EventType::kTouchReleased, ev1_5.type);
-  EXPECT_EQ(1, ev1_5.slot);
 }
 
 TEST_F(TouchEventConverterEvdevTest, PalmShouldCancelTouch) {
@@ -2601,8 +2416,8 @@ TEST_F(TouchEventConverterEvdevTest, ChangePen) {
   ui::EvdevSetBit(ev_bits.data(), EV_KEY);
   ui::EvdevSetBit(key_bits.data(), BTN_TOOL_PEN);
 
-  devinfo.SetEventTypes(ev_bits.data(), ev_bits.size());
-  devinfo.SetKeyEvents(key_bits.data(), key_bits.size());
+  devinfo.SetEventTypes(ev_bits);
+  devinfo.SetKeyEvents(key_bits);
 
   dev->Initialize(devinfo);
 
@@ -2725,8 +2540,8 @@ TEST_F(TouchEventConverterEvdevTest, ChangeQuirkLeftButton) {
   ui::EvdevSetBit(ev_bits.data(), EV_KEY);
   ui::EvdevSetBit(key_bits.data(), BTN_LEFT);
 
-  devinfo.SetEventTypes(ev_bits.data(), ev_bits.size());
-  devinfo.SetKeyEvents(key_bits.data(), key_bits.size());
+  devinfo.SetEventTypes(ev_bits);
+  devinfo.SetKeyEvents(key_bits);
 
   dev->Initialize(devinfo);
 
@@ -2885,54 +2700,6 @@ TEST_F(TouchEventConverterEvdevTest, TouchPoints) {
   EXPECT_EQ(output.str(), log);
 }
 
-TEST_F(TouchEventConverterEvdevTest, ChangePalmOnTouchMajorMax) {
-  TearDownDevice();
-  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  scoped_feature_list_->InitWithFeatures(
-      {kEnablePalmOnToolTypePalm},
-      {kEnableSingleCancelTouch, kEnablePalmOnMaxTouchMajor});
-  SetUpDevice();
-
-  ui::MockTouchEventConverterEvdev* dev = device();
-
-  EventDeviceInfo devinfo;
-  CapabilitiesToDeviceInfo(kEveTouchScreen, &devinfo);
-  dev->Initialize(devinfo);
-
-  std::stringstream output;
-  dev->DescribeForLog(output);
-
-  std::string log = kEveTouchScreenLogDescription;
-
-  log = LogSubst(log, "palm_on_touch_major_max", "0");
-
-  EXPECT_EQ(output.str(), log);
-}
-
-TEST_F(TouchEventConverterEvdevTest, ChangePalmOnTool) {
-  TearDownDevice();
-  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  scoped_feature_list_->InitWithFeatures(
-      {kEnablePalmOnMaxTouchMajor},
-      {kEnableSingleCancelTouch, kEnablePalmOnToolTypePalm});
-  SetUpDevice();
-
-  ui::MockTouchEventConverterEvdev* dev = device();
-
-  EventDeviceInfo devinfo;
-  CapabilitiesToDeviceInfo(kEveTouchScreen, &devinfo);
-  dev->Initialize(devinfo);
-
-  std::stringstream output;
-  dev->DescribeForLog(output);
-
-  std::string log = kEveTouchScreenLogDescription;
-
-  log = LogSubst(log, "palm_on_tool_type_palm", "0");
-
-  EXPECT_EQ(output.str(), log);
-}
-
 TEST_F(TouchEventConverterEvdevTest, ChangeTouchLogging) {
   ui::MockTouchEventConverterEvdev* dev = device();
 
@@ -2949,60 +2716,6 @@ TEST_F(TouchEventConverterEvdevTest, ChangeTouchLogging) {
   log = LogSubst(log, "touch_logging_enabled", "0");
 
   EXPECT_EQ(output.str(), log);
-}
-
-TEST_F(TouchEventConverterEvdevTest, HeatmapPalmRejection) {
-  auto heatmap_palm_detector = std::make_unique<FakeHeatmapPalmDetector>();
-  auto* heatmap_palm_detector_ptr = heatmap_palm_detector.get();
-  HeatmapPalmDetector::SetInstance(std::move(heatmap_palm_detector));
-  TearDownDevice();
-  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  scoped_feature_list_->InitWithFeatures(
-      {kEnableHeatmapPalmDetection},
-      {kEnablePalmOnMaxTouchMajor, kEnablePalmOnToolTypePalm,
-       kEnableSingleCancelTouch});
-  SetUpDevice();
-
-  ui::MockTouchEventConverterEvdev* dev = device();
-
-  EventDeviceInfo devinfo;
-  EXPECT_TRUE(CapabilitiesToDeviceInfo(kRexHeatmapTouchScreen, &devinfo));
-  dev->Initialize(devinfo);
-
-  timeval time0 = {0, 0};
-  struct input_event mock_kernel_queue_press[] = {
-      {time0, EV_ABS, ABS_MT_TRACKING_ID, 3},
-      {time0, EV_ABS, ABS_MT_POSITION_X, 12},
-      {time0, EV_ABS, ABS_MT_POSITION_Y, 34},
-      {time0, EV_ABS, ABS_MT_PRESSURE, 56},
-      {time0, EV_ABS, ABS_MT_TOUCH_MAJOR, 5},
-      {time0, EV_SYN, SYN_REPORT, 0},
-  };
-  SetTestNowTime(time0);
-  dev->ConfigureReadMock(mock_kernel_queue_press,
-                         std::size(mock_kernel_queue_press), 0);
-  dev->ReadNow();
-  EXPECT_EQ(1u, size());
-  ui::TouchEventParams event = dispatched_touch_event(0);
-  EXPECT_EQ(ui::EventType::kTouchPressed, event.type);
-
-  heatmap_palm_detector_ptr->SetPalm(3);
-  timeval time1 = {2, 0};
-  struct input_event mock_kernel_queue_move[] = {
-      {time1, EV_ABS, ABS_MT_TRACKING_ID, 3},
-      {time1, EV_ABS, ABS_MT_POSITION_X, 50},
-      {time1, EV_ABS, ABS_MT_POSITION_Y, 60},
-      {time1, EV_ABS, ABS_MT_PRESSURE, 56},
-      {time1, EV_ABS, ABS_MT_TOUCH_MAJOR, 5},
-      {time1, EV_SYN, SYN_REPORT, 0},
-  };
-  SetTestNowTime(time1);
-  dev->ConfigureReadMock(mock_kernel_queue_move,
-                         std::size(mock_kernel_queue_move), 0);
-  dev->ReadNow();
-  EXPECT_EQ(2u, size());
-  event = dispatched_touch_event(1);
-  EXPECT_EQ(ui::EventType::kTouchCancelled, event.type);
 }
 
 TEST_F(TouchEventConverterEvdevTest, RecordFingerSessionMetrics) {

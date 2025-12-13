@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -39,6 +40,9 @@ bool CanIncludeWindowInAppMruList(aura::Window* window);
 // cycling using Alt+Tab and overview mode.
 class ASH_EXPORT MruWindowTracker : public wm::ActivationChangeObserver,
                                     public aura::WindowObserver {
+  // TODO(crbug.com/454818182): Remove this macro once the bug gets fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   using WindowList = std::vector<raw_ptr<aura::Window, VectorExperimental>>;
 

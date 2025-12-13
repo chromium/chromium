@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
@@ -36,6 +37,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -209,15 +211,26 @@ class FaviconForPageUrlAvailableChecker : public StatusChangeChecker {
   base::CancelableTaskTracker tracker_;
 };
 
-class SingleClientSessionsSyncTest : public SyncTest {
+class SingleClientSessionsSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientSessionsSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  SingleClientSessionsSyncTest() : SyncTest(SINGLE_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
 
   SingleClientSessionsSyncTest(const SingleClientSessionsSyncTest&) = delete;
   SingleClientSessionsSyncTest& operator=(const SingleClientSessionsSyncTest&) =
       delete;
 
   ~SingleClientSessionsSyncTest() override = default;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
 
   void ExpectNavigationChain(const std::vector<GURL>& urls) {
     ScopedWindowMap windows;
@@ -280,9 +293,17 @@ class SingleClientSessionsSyncTest : public SyncTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     SyncTest::SetUpOnMainThread();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientSessionsSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest,
                        RequireUserSelectableTypeTabsForUiDelegate) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
@@ -292,11 +313,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
 
   EXPECT_NE(nullptr, service->GetOpenTabsUIDelegate());
   ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kTabs));
+      GetClient(0)->DisableSelectableType(syncer::UserSelectableType::kTabs));
   EXPECT_EQ(nullptr, service->GetOpenTabsUIDelegate());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, Sanity) {
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, Sanity) {
   ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(CheckInitialState(0));
@@ -321,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, Sanity) {
   WaitForURLOnServer(url);
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, PRE_SessionStartTime) {
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, PRE_SessionStartTime) {
   const base::Time initial_time = base::Time::Now();
   ASSERT_TRUE(SetupSync());
 
@@ -353,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, PRE_SessionStartTime) {
   EXPECT_TRUE(found_header);
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, SessionStartTime) {
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, SessionStartTime) {
   const base::Time initial_time = base::Time::Now();
   ASSERT_TRUE(SetupClients());
 
@@ -388,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, SessionStartTime) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 // Regression test for crbug.com/361256057.
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, UpdateSessionTag) {
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, UpdateSessionTag) {
   ASSERT_TRUE(SetupSync(SyncTestAccount::kConsumerAccount1));
 
   ASSERT_TRUE(CheckInitialState(0));
@@ -428,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, UpdateSessionTag) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, NavigateInTab) {
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, NavigateInTab) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
 
@@ -444,14 +465,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, NavigateInTab) {
   WaitForHierarchyOnServer(SessionsHierarchy({{url2.spec()}}));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest,
                        SessionsWithoutHistorySync) {
   ASSERT_TRUE(SetupSync());
   // If the user disables history sync on settings, but still enables tab sync,
   // then sessions should be synced but the server should be able to tell the
   // difference based on active datatypes.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kHistory));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kHistory));
   ASSERT_TRUE(CheckInitialState(0));
 
   GURL url1 =
@@ -466,13 +487,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
   WaitForHierarchyOnServer(SessionsHierarchy({{url2.spec()}}));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, NoSessions) {
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, NoSessions) {
   ASSERT_TRUE(SetupSync());
 
   WaitForHierarchyOnServer(SessionsHierarchy());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, TimestampMatchesHistory) {
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, TimestampMatchesHistory) {
   ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(CheckInitialState(0));
@@ -504,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, TimestampMatchesHistory) {
   ASSERT_EQ(1, found_navigations);
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, ResponseCodeIsPreserved) {
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, ResponseCodeIsPreserved) {
   ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(CheckInitialState(0));
@@ -529,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, ResponseCodeIsPreserved) {
   ASSERT_EQ(1, found_navigations);
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, FragmentURLNavigation) {
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, FragmentURLNavigation) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
 
@@ -542,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, FragmentURLNavigation) {
   WaitForURLOnServer(fragment_url);
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest,
                        NavigationChainForwardBack) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
@@ -568,7 +589,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
   ExpectNavigationChain({first_url, second_url});
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest,
                        NavigationChainAlteredDestructively) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
@@ -603,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
   ExpectNavigationChain({base_url, second_url});
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, OpenNewTab) {
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, OpenNewTab) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
 
@@ -621,7 +642,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, OpenNewTab) {
       SessionsHierarchy({{base_url.spec(), new_tab_url.spec()}}));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, OpenNewWindow) {
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, OpenNewWindow) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
 
@@ -640,7 +661,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, OpenNewWindow) {
       SessionsHierarchy({{base_url.spec()}, {new_window_url.spec()}}));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest,
                        GarbageCollectionOfForeignSessions) {
   const std::string kForeignSessionTag = "ForeignSessionTag";
   const std::string kForeignClientName = "ForeignClientName";
@@ -690,7 +711,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
                    syncer::DataTypeEntityChange::kLocalDeletion));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest,
                        GarbageCollectionOfForeignOrphanTabWithoutHeader) {
   const std::string kForeignSessionTag = "ForeignSessionTag";
   const SessionID kWindowId = SessionID::FromSerializedValue(5);
@@ -738,7 +759,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
 
 // Regression test for crbug.com/915133 that verifies the browser doesn't crash
 // if the server sends corrupt data during initial merge.
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CorruptInitialForeignTab) {
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, CorruptInitialForeignTab) {
   // Tabs with a negative node ID should be ignored.
   sync_pb::EntitySpecifics specifics;
   specifics.mutable_session()->mutable_tab();
@@ -760,7 +781,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CorruptInitialForeignTab) {
 
 // Regression test for crbug.com/915133 that verifies the browser doesn't crash
 // if the server sends corrupt data as incremental update.
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CorruptForeignTabUpdate) {
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, CorruptForeignTabUpdate) {
   ASSERT_TRUE(SetupSync());
 
   // Tabs with a negative node ID should be ignored.
@@ -775,7 +796,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CorruptForeignTabUpdate) {
           /*last_modified_time=*/0));
 
   // Mimic a browser restart by forcing a refresh to get updates.
-  GetSyncService(0)->TriggerRefresh({syncer::SESSIONS});
+  GetSyncService(0)->TriggerRefresh(
+      syncer::SyncService::TriggerRefreshSource::kUnknown, {syncer::SESSIONS});
   EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
   // Foreign data should be empty.
@@ -784,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CorruptForeignTabUpdate) {
   EXPECT_EQ(0U, sessions.size());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, TabMovedToOtherWindow) {
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, TabMovedToOtherWindow) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
 
@@ -811,7 +833,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, TabMovedToOtherWindow) {
       {{base_url.spec()}, {new_window_url.spec(), moved_tab_url.spec()}}));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CookieJarMismatch) {
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest, CookieJarMismatch) {
   ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(CheckInitialState(0));
@@ -858,7 +880,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CookieJarMismatch) {
       << syncer::ClientToServerMessageToValue(second_commit, /*options=*/{});
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTest,
                        ShouldNotifyLoadedIconUrl) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
@@ -900,7 +922,13 @@ class SingleClientSessionsSyncTestWithFaviconTestServer
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTestWithFaviconTestServer,
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SingleClientSessionsSyncTestWithFaviconTestServer,
+    GetSyncTestModes(),
+    testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsSyncTestWithFaviconTestServer,
                        ShouldDeleteOnDemandIconsOnSessionsDisabled) {
   const std::string kForeignSessionTag = "ForeignSessionTag";
   const std::string kForeignClientName = "ForeignClientName";
@@ -954,9 +982,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTestWithFaviconTestServer,
 
   // Disable tabs and history toggles.
   ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kTabs));
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kHistory));
+      GetClient(0)->DisableSelectableType(syncer::UserSelectableType::kTabs));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kHistory));
 
   EXPECT_TRUE(FaviconForPageUrlAvailableChecker(GetProfile(0),
                                                 GURL("http://foo/1"),
@@ -975,7 +1003,12 @@ class SingleClientSessionsWithoutDestroyProfileSyncTest
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsWithoutDestroyProfileSyncTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientSessionsWithoutDestroyProfileSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsWithoutDestroyProfileSyncTest,
                        ShouldDeleteLastClosedTab) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));
@@ -1007,7 +1040,12 @@ class SingleClientSessionsWithDestroyProfileSyncTest
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsWithDestroyProfileSyncTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientSessionsWithDestroyProfileSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientSessionsWithDestroyProfileSyncTest,
                        ShouldNotDeleteLastClosedTab) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(CheckInitialState(0));

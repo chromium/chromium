@@ -30,8 +30,7 @@
 #include "build/build_config.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
-#include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
-#include "mojo/public/cpp/base/proto_wrapper.h"
+#include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/mock_network_change_notifier.h"
@@ -43,6 +42,7 @@
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_config_service.h"
 #include "net/dns/dns_test_util.h"
+#include "net/dns/dns_util.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/public/dns_over_https_config.h"
@@ -173,80 +173,6 @@ TEST_F(NetworkServiceTest, CreateContextWithoutChannelID) {
   mojo::Remote<mojom::NetworkContext> network_context;
   service()->CreateNetworkContext(network_context.BindNewPipeAndPassReceiver(),
                                   std::move(params));
-  network_context.reset();
-  // Make sure the NetworkContext is destroyed.
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(NetworkServiceTest, CreateContextWithMaskedDomainListProxyConfig) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatures(
-      {net::features::kEnableIpProtectionProxy},
-      {network::features::kMaskedDomainListFlatbufferImpl});
-
-  masked_domain_list::MaskedDomainList mdl;
-  auto* resourceOwner = mdl.add_resource_owners();
-  resourceOwner->set_owner_name("foo");
-  resourceOwner->add_owned_resources()->set_domain("example.com");
-  service()->UpdateMaskedDomainList(
-      mojo_base::ProtoWrapper(mdl),
-      /*exclusion_list=*/std::vector<std::string>());
-  task_environment()->RunUntilIdle();
-
-  mojom::NetworkContextParamsPtr params = CreateContextParams();
-  mojo::Remote<mojom::NetworkContext> network_context;
-  service()->CreateNetworkContext(network_context.BindNewPipeAndPassReceiver(),
-                                  std::move(params));
-
-  // TODO(aakallam): verify that the allow list is used
-
-  network_context.reset();
-  // Make sure the NetworkContext is destroyed.
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(NetworkServiceTest,
-       CreateContextWithCustomProxyConfig_MdlConfigIsNotUsed) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatures(
-      {net::features::kEnableIpProtectionProxy},
-      {network::features::kMaskedDomainListFlatbufferImpl});
-
-  masked_domain_list::MaskedDomainList mdl;
-  auto* resourceOwner = mdl.add_resource_owners();
-  resourceOwner->set_owner_name("foo");
-  resourceOwner->add_owned_resources()->set_domain("example.com");
-  service()->UpdateMaskedDomainList(
-      mojo_base::ProtoWrapper(mdl),
-      /*exclusion_list=*/std::vector<std::string>());
-  task_environment()->RunUntilIdle();
-
-  mojom::NetworkContextParamsPtr params = CreateContextParams();
-  params->initial_custom_proxy_config =
-      network::mojom::CustomProxyConfig::New();
-  mojo::Remote<mojom::NetworkContext> network_context;
-  service()->CreateNetworkContext(network_context.BindNewPipeAndPassReceiver(),
-                                  std::move(params));
-
-  // TODO(aakallam): verify that the allow list isn't used
-
-  network_context.reset();
-  // Make sure the NetworkContext is destroyed.
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(NetworkServiceTest, CreateContextWithoutMaskedDomainListData) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      net::features::kEnableIpProtectionProxy);
-
-  mojom::NetworkContextParamsPtr params = CreateContextParams();
-  mojo::Remote<mojom::NetworkContext> network_context;
-  service()->CreateNetworkContext(network_context.BindNewPipeAndPassReceiver(),
-                                  std::move(params));
-
-  // TODO(aakallam): verify that the allow list isn't used
-
   network_context.reset();
   // Make sure the NetworkContext is destroyed.
   base::RunLoop().RunUntilIdle();
@@ -637,7 +563,8 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
       /*insecure_dns_client_enabled=*/true, /*happy_eyeballs_v3_enabled=*/false,
       net::SecureDnsMode::kOff,
       /*dns_over_https_config=*/{},
-      /*additional_dns_types_enabled=*/true);
+      /*additional_dns_types_enabled=*/true,
+      /*fallback_doh_nameservers=*/{});
   EXPECT_TRUE(dns_client_ptr->CanUseInsecureDnsTransactions());
   EXPECT_EQ(net::SecureDnsMode::kOff,
             dns_client_ptr->GetEffectiveConfig()->secure_dns_mode);
@@ -646,7 +573,8 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
       /*insecure_dns_client_enabled=*/false,
       /*happy_eyeballs_v3_enabled=*/false, net::SecureDnsMode::kOff,
       /*dns_over_https_config=*/{},
-      /*additional_dns_types_enabled=*/true);
+      /*additional_dns_types_enabled=*/true,
+      /*fallback_doh_nameservers=*/{});
   EXPECT_FALSE(dns_client_ptr->CanUseInsecureDnsTransactions());
   EXPECT_EQ(net::SecureDnsMode::kOff,
             dns_client_ptr->GetEffectiveConfig()->secure_dns_mode);
@@ -655,7 +583,8 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
       /*insecure_dns_client_enabled=*/false,
       /*happy_eyeballs_v3_enabled=*/false, net::SecureDnsMode::kAutomatic,
       /*dns_over_https_config=*/{},
-      /*additional_dns_types_enabled=*/true);
+      /*additional_dns_types_enabled=*/true,
+      /*fallback_doh_nameservers=*/{});
   EXPECT_FALSE(dns_client_ptr->CanUseInsecureDnsTransactions());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic,
             dns_client_ptr->GetEffectiveConfig()->secure_dns_mode);
@@ -664,7 +593,8 @@ TEST_F(NetworkServiceTest, DnsClientEnableDisable) {
       /*insecure_dns_client_enabled=*/false,
       /*happy_eyeballs_v3_enabled=*/false, net::SecureDnsMode::kAutomatic,
       *net::DnsOverHttpsConfig::FromString("https://foo/"),
-      /*additional_dns_types_enabled=*/true);
+      /*additional_dns_types_enabled=*/true,
+      /*fallback_doh_nameservers=*/{});
   EXPECT_FALSE(dns_client_ptr->CanUseInsecureDnsTransactions());
   EXPECT_EQ(net::SecureDnsMode::kAutomatic,
             dns_client_ptr->GetEffectiveConfig()->secure_dns_mode);
@@ -685,14 +615,16 @@ TEST_F(NetworkServiceTest, HandlesAdditionalDnsQueryTypesEnableDisable) {
       /*insecure_dns_client_enabled=*/true, /*happy_eyeballs_v3_enabled=*/false,
       net::SecureDnsMode::kOff,
       /*dns_over_https_config=*/{},
-      /*additional_dns_types_enabled=*/true);
+      /*additional_dns_types_enabled=*/true,
+      /*fallback_doh_nameservers=*/{});
   EXPECT_TRUE(dns_client_ptr->CanQueryAdditionalTypesViaInsecureDns());
 
   service()->ConfigureStubHostResolver(
       /*insecure_dns_client_enabled=*/true, /*happy_eyeballs_v3_enabled=*/false,
       net::SecureDnsMode::kOff,
       /*dns_over_https_config=*/{},
-      /*additional_dns_types_enabled=*/false);
+      /*additional_dns_types_enabled=*/false,
+      /*fallback_doh_nameservers=*/{});
   EXPECT_FALSE(dns_client_ptr->CanQueryAdditionalTypesViaInsecureDns());
 }
 
@@ -710,14 +642,16 @@ TEST_F(NetworkServiceTest, HappyEyeballsV3EnableDisable) {
       /*insecure_dns_client_enabled=*/true, /*happy_eyeballs_v3_enabled=*/true,
       net::SecureDnsMode::kOff,
       /*dns_over_https_config=*/{},
-      /*additional_dns_types_enabled=*/true);
+      /*additional_dns_types_enabled=*/true,
+      /*fallback_doh_nameservers=*/{});
   EXPECT_TRUE(service()->host_resolver_manager()->IsHappyEyeballsV3Enabled());
 
   service()->ConfigureStubHostResolver(
       /*insecure_dns_client_enabled=*/true, /*happy_eyeballs_v3_enabled=*/false,
       net::SecureDnsMode::kOff,
       /*dns_over_https_config=*/{},
-      /*additional_dns_types_enabled=*/false);
+      /*additional_dns_types_enabled=*/false,
+      /*fallback_doh_nameservers=*/{});
   EXPECT_FALSE(service()->host_resolver_manager()->IsHappyEyeballsV3Enabled());
 }
 
@@ -742,7 +676,8 @@ TEST_F(NetworkServiceTest, DnsOverHttpsEnableDisable) {
       /*insecure_dns_client_enabled=*/false,
       /*happy_eyeballs_v3_enabled=*/false, net::SecureDnsMode::kAutomatic,
       kConfig1,
-      /*additional_dns_types_enabled=*/true);
+      /*additional_dns_types_enabled=*/true,
+      /*fallback_doh_nameservers=*/{});
   EXPECT_EQ(kConfig1, dns_client_ptr->GetEffectiveConfig()->doh_config);
 
   // Enable DNS over HTTPS for two servers.
@@ -750,8 +685,65 @@ TEST_F(NetworkServiceTest, DnsOverHttpsEnableDisable) {
   service()->ConfigureStubHostResolver(
       /*insecure_dns_client_enabled=*/true, /*happy_eyeballs_v3_enabled=*/false,
       net::SecureDnsMode::kSecure, kConfig2,
-      /*additional_dns_types_enabled=*/true);
+      /*additional_dns_types_enabled=*/true,
+      /*fallback_doh_nameservers=*/{});
   EXPECT_EQ(kConfig2, dns_client_ptr->GetEffectiveConfig()->doh_config);
+}
+
+TEST_F(NetworkServiceTest, AutomaticWithDohFallbackEnableDisable) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kAddAutomaticWithDohFallbackMode);
+  const auto kConfig = net::DnsOverHttpsConfig();
+
+  // Create valid DnsConfig.
+  net::DnsConfig config;
+  config.nameservers.emplace_back();
+  auto dns_client = std::make_unique<net::MockDnsClient>(
+      std::move(config), net::MockDnsClientRuleList());
+  dns_client->set_ignore_system_config_changes(true);
+  net::MockDnsClient* dns_client_ptr = dns_client.get();
+  service()->host_resolver_manager()->SetDnsClientForTesting(
+      std::move(dns_client));
+
+  // The DNS config is unchanged when 'fallback_doh_nameservers' is empty.
+  service()->ConfigureStubHostResolver(
+      /*insecure_dns_client_enabled=*/false,
+      /*happy_eyeballs_v3_enabled=*/false, net::SecureDnsMode::kAutomatic,
+      kConfig,
+      /*additional_dns_types_enabled=*/true,
+      /*fallback_doh_nameservers=*/{});
+  EXPECT_EQ(kConfig, dns_client_ptr->GetEffectiveConfig()->doh_config);
+  EXPECT_TRUE(dns_client_ptr->GetConfigOverridesForTesting()
+                  .fallback_doh_nameservers->empty());
+
+  // Set the 'fallback_doh_nameservers' and check that the DNS config overrides
+  // have them set.
+  std::vector<net::IPEndPoint> fallback_doh_nameservers = {net::IPEndPoint(
+      net::IPAddress(8, 8, 8, 8), net::dns_protocol::kDefaultPort)};
+  std::vector<net::DnsOverHttpsServerConfig> fallback_doh_configs =
+      net::GetDohUpgradeServersFromNameservers(fallback_doh_nameservers);
+  ASSERT_GT(fallback_doh_configs.size(), 0u);
+  service()->ConfigureStubHostResolver(
+      /*insecure_dns_client_enabled=*/true, /*happy_eyeballs_v3_enabled=*/false,
+      net::SecureDnsMode::kAutomatic, kConfig,
+      /*additional_dns_types_enabled=*/true,
+      /*fallback_doh_nameservers=*/fallback_doh_nameservers);
+  EXPECT_EQ(
+      dns_client_ptr->GetConfigOverridesForTesting().fallback_doh_nameservers,
+      fallback_doh_nameservers);
+
+  // Set a default config without a fallback and check that the DNS config isn't
+  // upgraded to DoH.
+  service()->ConfigureStubHostResolver(
+      /*insecure_dns_client_enabled=*/false,
+      /*happy_eyeballs_v3_enabled=*/false, net::SecureDnsMode::kAutomatic,
+      kConfig,
+      /*additional_dns_types_enabled=*/true,
+      /*fallback_doh_nameservers=*/{});
+  EXPECT_EQ(kConfig, dns_client_ptr->GetEffectiveConfig()->doh_config);
+  EXPECT_TRUE(dns_client_ptr->GetConfigOverridesForTesting()
+                  .fallback_doh_nameservers->empty());
 }
 
 TEST_F(NetworkServiceTest, DisableDohUpgradeProviders) {
@@ -776,7 +768,8 @@ TEST_F(NetworkServiceTest, DisableDohUpgradeProviders) {
       /*insecure_dns_client_enabled=*/true, /*happy_eyeballs_v3_enabled=*/false,
       net::SecureDnsMode::kAutomatic,
       /*dns_over_https_config=*/{},
-      /*additional_dns_types_enabled=*/true);
+      /*additional_dns_types_enabled=*/true,
+      /*fallback_doh_nameservers=*/{});
 
   // Set valid DnsConfig.
   net::DnsConfig config;
@@ -1045,7 +1038,7 @@ TEST_F(NetworkServiceTest, AuthAndroidNegotiateAccountType) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-static int GetGlobalMaxConnectionsPerProxyChain() {
+static size_t GetGlobalMaxConnectionsPerProxyChain() {
   return net::ClientSocketPoolManager::max_sockets_per_proxy_chain(
       net::HttpNetworkSession::NORMAL_SOCKET_POOL);
 }
@@ -1053,9 +1046,9 @@ static int GetGlobalMaxConnectionsPerProxyChain() {
 // Tests that NetworkService::SetMaxConnectionsPerProxyChain() (1) modifies
 // globals in net::ClientSocketPoolManager (2) saturates out of bound values.
 TEST_F(NetworkServiceTest, SetMaxConnectionsPerProxyChain) {
-  const int kDefault = net::kDefaultMaxSocketsPerProxyChain;
-  const int kMin = 6;
-  const int kMax = 99;
+  const size_t kDefault = net::kDefaultMaxSocketsPerProxyChain;
+  const size_t kMin = 6;
+  const size_t kMax = 99;
 
   // Starts off at default value.
   EXPECT_EQ(net::kDefaultMaxSocketsPerProxyChain,
@@ -1071,11 +1064,7 @@ TEST_F(NetworkServiceTest, SetMaxConnectionsPerProxyChain) {
 
   // Anything in between kMin and kMax should be set exactly.
   service()->SetMaxConnectionsPerProxyChain(58);
-  EXPECT_EQ(58, GetGlobalMaxConnectionsPerProxyChain());
-
-  // Negative values select the default.
-  service()->SetMaxConnectionsPerProxyChain(-2);
-  EXPECT_EQ(kDefault, GetGlobalMaxConnectionsPerProxyChain());
+  EXPECT_EQ(58u, GetGlobalMaxConnectionsPerProxyChain());
 
   // Restore the default value to minize sideffects.
   service()->SetMaxConnectionsPerProxyChain(kDefault);
@@ -1108,25 +1097,6 @@ TEST_F(NetworkServiceTest, DisableCTEnforcement) {
   EXPECT_TRUE(transport_security_state->is_ct_emergency_disabled_for_testing());
 }
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
-
-TEST_F(NetworkServiceTest, SetMaskedDomainList) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatures(
-      {net::features::kEnableIpProtectionProxy,
-       network::features::kMaskedDomainList},
-      {network::features::kMaskedDomainListFlatbufferImpl});
-
-  masked_domain_list::MaskedDomainList mdl;
-  auto* resourceOwner = mdl.add_resource_owners();
-  resourceOwner->set_owner_name("foo");
-  resourceOwner->add_owned_resources()->set_domain("example.com");
-
-  service()->UpdateMaskedDomainList(
-      mojo_base::ProtoWrapper(mdl),
-      /*exclusion_list=*/std::vector<std::string>());
-
-  EXPECT_TRUE(service()->masked_domain_list_manager()->IsPopulated());
-}
 
 class TestCookieEncryptionProvider : public mojom::CookieEncryptionProvider {
  public:
@@ -1253,16 +1223,17 @@ TEST_P(NetworkServiceCookieTest, CookieEncryptionProvider) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
-                         NetworkServiceCookieTest,
-                         testing::Combine(testing::Bool(), testing::Bool()),
-                         [](const auto& info) {
-                           return base::StringPrintf(
-                               "%s_%s",
-                               std::get<0>(info.param) ? "crypt" : "no_crypt",
-                               std::get<1>(info.param) ? "provider"
-                                                       : "no_provider");
-                         });
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    NetworkServiceCookieTest,
+    testing::Values(std::make_tuple(true, true),     // crypt_provider
+                    std::make_tuple(false, true),    // no_crypt_provider
+                    std::make_tuple(false, false)),  // no_crypt_no_provider
+    [](const auto& info) {
+      return base::StringPrintf(
+          "%s_%s", std::get<0>(info.param) ? "crypt" : "no_crypt",
+          std::get<1>(info.param) ? "provider" : "no_provider");
+    });
 
 class NetworkServiceTestWithService : public testing::Test {
  public:
@@ -1512,10 +1483,13 @@ class NetworkServiceTestWithResolverMap : public NetworkServiceTestWithService {
 TEST_F(NetworkServiceTestWithService, SetNetworkConditions) {
   const base::UnguessableToken profile_id = base::UnguessableToken::Create();
   CreateNetworkContext();
-  mojom::NetworkConditionsPtr network_conditions =
-      mojom::NetworkConditions::New();
-  network_conditions->offline = true;
-  context()->SetNetworkConditions(profile_id, std::move(network_conditions));
+  {
+    std::vector<mojom::MatchedNetworkConditionsPtr> network_conditions;
+    network_conditions.emplace_back(mojom::MatchedNetworkConditions::New());
+    network_conditions.back()->conditions = mojom::NetworkConditions::New();
+    network_conditions.back()->conditions->offline = true;
+    context()->SetNetworkConditions(profile_id, std::move(network_conditions));
+  }
 
   ResourceRequest request;
   request.url = test_server()->GetURL("/nocache.html");
@@ -1533,23 +1507,31 @@ TEST_F(NetworkServiceTestWithService, SetNetworkConditions) {
   EXPECT_EQ(net::ERR_INTERNET_DISCONNECTED,
             client()->completion_status().error_code);
 
-  network_conditions = mojom::NetworkConditions::New();
-  network_conditions->offline = false;
-  context()->SetNetworkConditions(profile_id, std::move(network_conditions));
+  {
+    std::vector<mojom::MatchedNetworkConditionsPtr> network_conditions;
+    network_conditions.emplace_back(mojom::MatchedNetworkConditions::New());
+    network_conditions.back()->conditions = mojom::NetworkConditions::New();
+    network_conditions.back()->conditions->offline = false;
+    context()->SetNetworkConditions(profile_id, std::move(network_conditions));
+  }
   StartLoadingURL(request, 0);
   client()->RunUntilComplete();
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
 
-  network_conditions = mojom::NetworkConditions::New();
-  network_conditions->offline = true;
-  context()->SetNetworkConditions(profile_id, std::move(network_conditions));
+  {
+    std::vector<mojom::MatchedNetworkConditionsPtr> network_conditions;
+    network_conditions.emplace_back(mojom::MatchedNetworkConditions::New());
+    network_conditions.back()->conditions = mojom::NetworkConditions::New();
+    network_conditions.back()->conditions->offline = true;
+    context()->SetNetworkConditions(profile_id, std::move(network_conditions));
+  }
 
   request.throttling_profile_id = profile_id;
   StartLoadingURL(request, 0);
   client()->RunUntilComplete();
   EXPECT_EQ(net::ERR_INTERNET_DISCONNECTED,
             client()->completion_status().error_code);
-  context()->SetNetworkConditions(profile_id, nullptr);
+  context()->SetNetworkConditions(profile_id, {});
   StartLoadingURL(request, 0);
   client()->RunUntilComplete();
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
@@ -1636,7 +1618,8 @@ TEST_F(NetworkServiceTestWithService, EnableDisableHappyEyeballsV3AndLoad) {
       /*insecure_dns_client_enabled=*/true, /*happy_eyeballs_v3_enabled=*/true,
       net::SecureDnsMode::kOff,
       /*dns_over_https_config=*/{},
-      /*additional_dns_types_enabled=*/false);
+      /*additional_dns_types_enabled=*/false,
+      /*fallback_doh_nameservers=*/{});
   LoadURL(test_server()->GetURL("/echo"));
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
 
@@ -1644,7 +1627,8 @@ TEST_F(NetworkServiceTestWithService, EnableDisableHappyEyeballsV3AndLoad) {
       /*insecure_dns_client_enabled=*/true, /*happy_eyeballs_v3_enabled=*/false,
       net::SecureDnsMode::kOff,
       /*dns_over_https_config=*/{},
-      /*additional_dns_types_enabled=*/false);
+      /*additional_dns_types_enabled=*/false,
+      /*fallback_doh_nameservers=*/{});
   LoadURL(test_server()->GetURL("/echo"));
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
 }
@@ -2108,13 +2092,12 @@ class StubHostResolverClient : public mojom::ResolveHostClient {
   void OnTextResults(const std::vector<std::string>& text_results) override {}
   void OnHostnameResults(const std::vector<net::HostPortPair>& hosts) override {
   }
-  void OnComplete(int result,
-                  const net::ResolveErrorInfo& resolve_error_info,
-                  const std::optional<net::AddressList>& resolved_addresses,
-                  const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override {
-    std::move(resolve_host_callback_)
-        .Run(resolved_addresses.value_or(net::AddressList()));
+  void OnComplete(
+      int result,
+      const net::ResolveErrorInfo& resolve_error_info,
+      const net::AddressList& resolved_addresses,
+      const net::HostResolverEndpointResults& alternative_endpoints) override {
+    std::move(resolve_host_callback_).Run(resolved_addresses);
   }
 
  private:

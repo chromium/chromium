@@ -71,13 +71,14 @@ bool CSSOMUtils::HasGridRepeatValue(const CSSValueList* value_list) {
 }
 
 // static
-bool CSSOMUtils::IsMasonryColumnDirectionValue(
-    const CSSValue* masonry_direction_values) {
-  const auto* masonry_direction_value =
-      DynamicTo<CSSIdentifierValue>(masonry_direction_values);
-  return masonry_direction_value &&
-         (masonry_direction_value->GetValueID() == CSSValueID::kColumn ||
-          masonry_direction_value->GetValueID() == CSSValueID::kColumnReverse);
+bool CSSOMUtils::IsGridLanesColumnDirectionValue(
+    const CSSValue* grid_lanes_direction_values) {
+  const auto* grid_lanes_direction_value =
+      DynamicTo<CSSIdentifierValue>(grid_lanes_direction_values);
+  return grid_lanes_direction_value &&
+         (grid_lanes_direction_value->GetValueID() == CSSValueID::kColumn ||
+          grid_lanes_direction_value->GetValueID() ==
+              CSSValueID::kColumnReverse);
 }
 
 // static
@@ -212,16 +213,16 @@ CSSValueList* CSSOMUtils::ComputedValueForGridTemplateShorthand(
 }
 
 // static
-CSSValueList* CSSOMUtils::ComputedValueForMasonryShorthand(
-    const CSSValue* masonry_template_tracks_values,
+CSSValueList* CSSOMUtils::ComputedValueForGridLanesShorthand(
+    const CSSValue* grid_template_tracks_values,
     const CSSValue* template_area_values,
-    const CSSValue* masonry_direction_values,
-    const CSSValue* masonry_fill_values) {
-  const bool has_initial_masonry_template_tracks =
-      IsNoneValue(masonry_template_tracks_values);
+    const CSSValue* grid_lanes_direction_values,
+    const CSSValue* grid_lanes_fill_values) {
+  const bool has_initial_grid_template_tracks =
+      IsNoneValue(grid_template_tracks_values);
   const bool has_initial_template_areas = IsNoneValue(template_area_values);
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  if (has_initial_template_areas && has_initial_masonry_template_tracks) {
+  if (has_initial_template_areas && has_initial_grid_template_tracks) {
     list->Append(*template_area_values);
   }
 
@@ -229,7 +230,7 @@ CSSValueList* CSSOMUtils::ComputedValueForMasonryShorthand(
     // If we have template columns, we can serialize the template areas as is.
     // Otherwise, for template rows, we need to serialize multiple string tokens
     // into a single space-separated string.
-    if (IsMasonryColumnDirectionValue(masonry_direction_values)) {
+    if (IsGridLanesColumnDirectionValue(grid_lanes_direction_values)) {
       list->Append(*template_area_values);
     } else {
       const cssvalue::CSSGridTemplateAreasValue* template_areas =
@@ -241,12 +242,12 @@ CSSValueList* CSSOMUtils::ComputedValueForMasonryShorthand(
     }
   }
 
-  if (!has_initial_masonry_template_tracks) {
-    list->Append(*masonry_template_tracks_values);
+  if (!has_initial_grid_template_tracks) {
+    list->Append(*grid_template_tracks_values);
   }
 
-  list->Append(*masonry_direction_values);
-  list->Append(*masonry_fill_values);
+  list->Append(*grid_lanes_direction_values);
+  list->Append(*grid_lanes_fill_values);
 
   return list;
 }

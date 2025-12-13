@@ -14,7 +14,6 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
-#include <unordered_map>
 #include <utility>
 
 #include "base/check.h"
@@ -37,7 +36,9 @@
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/request_header_to_enum.h"
 #include "services/network/stringify_enum.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace network {
 
@@ -107,7 +108,6 @@ namespace {
   DO_FIELD(devtools_accepted_stream_types) __VA_ARGS__             \
   DO_FIELD(net_log_create_info) __VA_ARGS__                        \
   DO_FIELD(net_log_reference_info) __VA_ARGS__                     \
-  DO_FIELD(target_ip_address_space) __VA_ARGS__                    \
   DO_FIELD(storage_access_api_status) __VA_ARGS__                  \
   DO_FIELD(attribution_reporting_support) __VA_ARGS__              \
   DO_FIELD(attribution_reporting_eligibility) __VA_ARGS__          \
@@ -209,7 +209,7 @@ enum class FieldsForUma {
   kDevtoolsAcceptedStreamTypes = 53,
   kNetLogCreateInfo = 54,
   kNetLogReferenceInfo = 55,
-  kTargetIpAddressSpace = 56,
+  // DEPRECATED: kTargetIpAddressSpace = 56,
   kStorageAccessApiStatus = 57,
   kAttributionReportingSupport = 58,
   kAttributionReportingEligibility = 59,
@@ -283,7 +283,6 @@ constexpr auto kUmaEnumMap = base::MakeFixedFlatMap<Fields, FieldsForUma>({
      FieldsForUma::kDevtoolsAcceptedStreamTypes},
     {Fields::knet_log_create_info, FieldsForUma::kNetLogCreateInfo},
     {Fields::knet_log_reference_info, FieldsForUma::kNetLogReferenceInfo},
-    {Fields::ktarget_ip_address_space, FieldsForUma::kTargetIpAddressSpace},
     {Fields::kstorage_access_api_status, FieldsForUma::kStorageAccessApiStatus},
     {Fields::kattribution_reporting_support,
      FieldsForUma::kAttributionReportingSupport},
@@ -352,7 +351,7 @@ using IgnoredHeadersType = decltype(kIgnoredHeaders);
 bool MatchHeadersWithExceptions(const net::HttpRequestHeaders& prefetch_headers,
                                 const net::HttpRequestHeaders& real_headers,
                                 const IgnoredHeadersType& ignored_headers) {
-  std::unordered_map<std::string, std::string_view> lowered_prefetch_headers;
+  absl::flat_hash_map<std::string, std::string_view> lowered_prefetch_headers;
   const net::HttpRequestHeaders::HeaderVector& prefetch_headers_vector =
       prefetch_headers.GetHeaderVector();
   lowered_prefetch_headers.reserve(prefetch_headers_vector.size());
@@ -369,22 +368,37 @@ bool MatchHeadersWithExceptions(const net::HttpRequestHeaders& prefetch_headers,
   }
   const net::HttpRequestHeaders::HeaderVector& real_headers_vector =
       real_headers.GetHeaderVector();
-  size_t real_header_count = 0;
   for (const auto& keyvalue : real_headers_vector) {
     std::string lowered_key = base::ToLowerASCII(keyvalue.key);
     if (ignored_headers.contains(lowered_key)) {
       continue;
     }
-    ++real_header_count;
     auto it = lowered_prefetch_headers.find(lowered_key);
     if (it == lowered_prefetch_headers.end()) {
+      LogLowerCaseRequestHeaderToUma(
+          "Network.PrefetchMatches.FirstHeaderMissingFromPrefetch",
+          lowered_key);
       return false;
     }
     if (it->second != keyvalue.value) {
+      LogLowerCaseRequestHeaderToUma(
+          "Network.PrefetchMatches.FirstHeaderValueMismatch", lowered_key);
       return false;
     }
+    lowered_prefetch_headers.erase(it);
   }
-  return real_header_count == lowered_prefetch_headers.size();
+  if (lowered_prefetch_headers.empty()) {
+    return true;
+  }
+
+  // Any value in `lowered_prefetch_headers` that hasn't been erased was missing
+  // from the real headers. Prefetches never have a lot of headers, so just
+  // record all of them.
+  for (const auto& [name, _] : lowered_prefetch_headers) {
+    LogLowerCaseRequestHeaderToUma(
+        "Network.PrefetchMatches.HeaderOnlyInPrefetch", name);
+  }
+  return false;
 }
 
 // MatchByType() can be overloaded to provide special behavior for specific

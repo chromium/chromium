@@ -50,7 +50,9 @@ class CORE_EXPORT LayoutListItem final : public LayoutBlockFlow {
 
   void InsertedIntoTree() override;
   void WillBeRemovedFromTree() override;
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
   void SubtreeDidChange() final;
   void WillBeDestroyed() override;
 

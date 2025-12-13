@@ -9,9 +9,7 @@
 #include "content/common/content_export.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/common/page_zoom.h"
-#include "ipc/ipc_sender.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 
 namespace perfetto::protos::pbzero {
 class RenderViewHost;

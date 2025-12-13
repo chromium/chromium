@@ -68,7 +68,7 @@ class ConvertingAudioFifoTest
 
   void PushFramesWithValue(AudioParameters params, float value) {
     auto audio_bus = AudioBus::Create(params);
-    std::ranges::fill(audio_bus->channel_span(0), value);
+    std::ranges::fill(audio_bus->channel(0), value);
   }
 
   int min_number_input_frames_needed() {
@@ -274,7 +274,7 @@ TEST_F(ConvertingAudioFifoTest, Push_MoreThanEnoughFrames_IsFifoOrder) {
   while (fifo()->HasOutput()) {
     // Get the first value of the output.
     auto* output = fifo()->PeekOutput();
-    float current_value = output->channel_span(0)[0];
+    float current_value = output->channel(0)[0];
     EXPECT_GT(current_value, last_value);
     last_value = current_value;
   }

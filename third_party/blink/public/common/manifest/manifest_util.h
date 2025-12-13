@@ -11,7 +11,6 @@
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/mojom/manifest/capture_links.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom.h"
@@ -36,6 +35,12 @@ BLINK_COMMON_EXPORT bool IsDefaultManifest(const mojom::ManifestPtr& manifest,
 // |dir| is case insensitive. Returns std::nullopt if there is no match.
 BLINK_COMMON_EXPORT std::optional<blink::mojom::Manifest_TextDirection>
 TextDirectionFromString(const std::string& dir);
+
+// Converts a blink::mojom::Manifest_TextDirection to a string. Returns one of
+// https://www.w3.org/TR/appmanifest/#dfn-text-directions. Return values are
+// lowercase.
+BLINK_COMMON_EXPORT std::string TextDirectionToString(
+    blink::mojom::Manifest_TextDirection direction);
 
 // Converts a blink::mojom::DisplayMode to a string. Returns one of
 // https://www.w3.org/TR/appmanifest/#dfn-display-modes-values. Return values
@@ -71,9 +76,6 @@ BLINK_COMMON_EXPORT std::string WebScreenOrientationLockTypeToString(
 // device::mojom::ScreenOrientationLockType::DEFAULT if there is no match.
 BLINK_COMMON_EXPORT device::mojom::ScreenOrientationLockType
 WebScreenOrientationLockTypeFromString(const std::string& orientation);
-
-BLINK_COMMON_EXPORT mojom::CaptureLinks CaptureLinksFromString(
-    const std::string& capture_links);
 
 BLINK_COMMON_EXPORT std::optional<mojom::ManifestLaunchHandler::ClientMode>
 ClientModeFromString(const std::string& client_mode);

@@ -78,7 +78,7 @@ class SurfaceReferencesTest : public testing::Test {
     auto support_ptr = supports_.find(frame_sink_id);
     ASSERT_NE(support_ptr, supports_.end());
     supports_.erase(support_ptr);
-    manager_->InvalidateFrameSinkId(frame_sink_id);
+    manager_->InvalidateFrameSinkId(frame_sink_id, {});
   }
 
   void RemoveSurfaceReference(const SurfaceId& parent_id,

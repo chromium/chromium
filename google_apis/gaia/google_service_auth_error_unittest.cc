@@ -30,10 +30,9 @@ TEST(GoogleServiceAuthErrorTest, State) {
     EXPECT_EQ(i, error.state());
     EXPECT_TRUE(error.error_message().empty());
 
-    if (i == GoogleServiceAuthError::CONNECTION_FAILED)
-      EXPECT_EQ(net::ERR_FAILED, error.network_error());
-    else
-      EXPECT_EQ(net::OK, error.network_error());
+    if (i == GoogleServiceAuthError::CONNECTION_FAILED) {
+      EXPECT_EQ(net::ERR_FAILED, error.GetNetworkError());
+    }
 
     if (i == GoogleServiceAuthError::NONE) {
       EXPECT_FALSE(error.IsTransientError());
@@ -64,7 +63,7 @@ TEST(GoogleServiceAuthErrorTest, FromConnectionError) {
   GoogleServiceAuthError error =
       GoogleServiceAuthError::FromConnectionError(net::ERR_TIMED_OUT);
   EXPECT_EQ(GoogleServiceAuthError::CONNECTION_FAILED, error.state());
-  EXPECT_EQ(net::ERR_TIMED_OUT, error.network_error());
+  EXPECT_EQ(net::ERR_TIMED_OUT, error.GetNetworkError());
 }
 
 TEST(GoogleServiceAuthErrorTest, FromServiceError) {

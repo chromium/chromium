@@ -1,0 +1,11 @@
+This is a wdspec test.
+[FAIL] test_params_user_context_invalid_value[]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.NoSuchUserContextException'>
+[FAIL] test_params_user_context_invalid_value[unknown]
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.NoSuchUserContextException'>
+[FAIL] test_params_user_context_invalid_value_with_ref_context
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.NoSuchUserContextException'>
+[FAIL] test_params_user_context_removed_context
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+Harness: the test ran to completion.
+

@@ -135,9 +135,10 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
       const override;
   std::unique_ptr<webauthn::InternalAuthenticator> CreateInternalAuthenticator()
       const override;
-  scoped_refptr<PaymentManifestWebDataService>
-  GetPaymentManifestWebDataService() const override;
+  scoped_refptr<WebPaymentsWebDataService> GetWebPaymentsWebDataService()
+      const override;
   bool IsOffTheRecord() const override;
+  bool PrefsCanMakePayment() const override;
   void OnPaymentAppCreated(std::unique_ptr<PaymentApp> app) override;
   void OnPaymentAppCreationError(
       const std::string& error_message,

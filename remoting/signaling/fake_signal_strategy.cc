@@ -172,7 +172,7 @@ bool FakeSignalStrategy::SendStanza(
 
 bool FakeSignalStrategy::SendMessage(
     const SignalingAddress& destination_address,
-    const ftl::ChromotingMessage& message) {
+    SignalingMessage&& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTIMPLEMENTED();
   return false;

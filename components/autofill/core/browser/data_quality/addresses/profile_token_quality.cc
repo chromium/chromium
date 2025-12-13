@@ -181,9 +181,6 @@ void ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
     const FormStructure& form_structure,
     const FormData& form_data,
     AddressDataManager& adm) {
-  autofill_metrics::LogObservationCountBeforeSubmissionMetric(form_structure,
-                                                              adm);
-
   std::set<std::string> guids_seen;
   for (const std::unique_ptr<AutofillField>& field : form_structure) {
     if (!field->autofill_source_profile_guid() ||
@@ -269,7 +266,7 @@ ObservationType ProfileTokenQuality::GetObservationTypeFromField(
   DCHECK(!base::Contains(other_profiles, profile_->guid(),
                          [](const AutofillProfile* p) { return p->guid(); }));
 
-  const FieldType type = field.Type().GetStorableType();
+  const FieldType type = field.Type().GetAddressType();
   if (field.is_autofilled()) {
     // The filled value was accepted without editing.
     return AutofillProfile::kDatabaseStoredTypes.contains(type)

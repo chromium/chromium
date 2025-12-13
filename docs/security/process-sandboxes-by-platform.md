@@ -53,7 +53,7 @@ Last updated for M128.
 * kMediaFoundationCdm (Windows only)
 * kPdfConversion (Windows only)
 * kXrCompositing (Windows only)
-* kWindowsSystemProxyResolver (Windows only)
+* kProxyResolver (Windows only)
 * kHardwareVideoDecoding (Linux & Ash)
 * kHardwareVideoEncoding (Linux & Ash)
 * kIme (Ash only)

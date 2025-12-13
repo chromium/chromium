@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/dns/loopback_only.h"
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -71,7 +67,8 @@ bool HaveOnlyLoopbackAddressesUsingGetifaddrs() {
       const struct sockaddr_in6* addr_in6 =
           reinterpret_cast<const struct sockaddr_in6*>(addr);
       const struct in6_addr* sin6_addr = &addr_in6->sin6_addr;
-      if (IN6_IS_ADDR_LOOPBACK(sin6_addr) || IN6_IS_ADDR_LINKLOCAL(sin6_addr)) {
+      if (UNSAFE_TODO(IN6_IS_ADDR_LOOPBACK(sin6_addr)) ||
+          UNSAFE_TODO(IN6_IS_ADDR_LINKLOCAL(sin6_addr))) {
         continue;
       }
     }

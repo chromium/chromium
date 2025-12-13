@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/uuid.h"
 #include "ios/web/public/browser_state.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -48,6 +48,8 @@ class FakeBrowserState final : public BrowserState {
   void SetWebKitStorageID(base::Uuid uuid);
 
  private:
+  base::FilePath state_path_;
+
   scoped_refptr<net::URLRequestContextGetter> request_context_;
 
   bool is_off_the_record_ = false;

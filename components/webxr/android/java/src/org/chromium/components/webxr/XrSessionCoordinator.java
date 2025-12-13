@@ -21,13 +21,18 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.ref.WeakReference;
 
 /**
@@ -46,6 +51,7 @@ public class XrSessionCoordinator {
 
     @IntDef({SessionType.NONE, SessionType.AR, SessionType.VR})
     @Retention(RetentionPolicy.SOURCE)
+    @Target(ElementType.TYPE_USE)
     public @interface SessionType {
         int NONE = 0;
         int AR = 1;
@@ -60,8 +66,8 @@ public class XrSessionCoordinator {
     private static @Nullable XrSessionCoordinator sActiveSessionInstance;
 
     /** Whether there is a non-null valid {@link #sActiveSessionInstance}. */
-    private static final XrSessionTypeSupplier sActiveSessionAvailableSupplier =
-            new XrSessionTypeSupplier(SessionType.NONE);
+    private static final SettableNonNullObservableSupplier<@SessionType Integer>
+            sActiveSessionAvailableSupplier = ObservableSuppliers.createNonNull(SessionType.NONE);
 
     private long mNativeXrSessionCoordinator;
 
@@ -281,7 +287,7 @@ public class XrSessionCoordinator {
         return sActiveSessionInstance.mActiveSessionType == SessionType.AR;
     }
 
-    public static XrSessionTypeSupplier getActiveSessionTypeSupplier() {
+    public static NonNullObservableSupplier<@SessionType Integer> getActiveSessionTypeSupplier() {
         return sActiveSessionAvailableSupplier;
     }
 

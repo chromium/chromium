@@ -188,6 +188,11 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // Suffix for logging metrics.
   virtual std::string GetMetricSuffix() const = 0;
 
+  // Overrides safe url check from browser throttle. This is used
+  // to send requests for sites that would usually be safe in case
+  // they are blocked by an enterprise data protection rule.
+  virtual bool ShouldOverrideKnownSafeUrlDecision(const GURL& url) const = 0;
+
   // Fragments, usernames and passwords are removed, because fragments are only
   // used for local navigations and usernames/passwords are too privacy
   // sensitive.  This method is for internal use only but is made public for
@@ -352,7 +357,7 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       bool is_sampled_report,
       scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
       std::optional<int> webui_token,
-      std::unique_ptr<std::string> response_body);
+      std::optional<std::string> response_body);
 
   // Fills in fields in |RTLookupRequest|.  |url| is expected to be already
   // sanitized.

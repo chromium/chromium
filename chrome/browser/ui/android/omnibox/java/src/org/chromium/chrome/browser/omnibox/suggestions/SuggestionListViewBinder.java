@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
 
@@ -24,10 +23,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 class SuggestionListViewBinder {
     /** Holds the view components needed to renderer the suggestion list. */
     public static class SuggestionListViewHolder {
-        public final ViewGroup container;
+        public final OmniboxSuggestionsContainer container;
         public final OmniboxSuggestionsDropdown dropdown;
 
-        public SuggestionListViewHolder(ViewGroup container, OmniboxSuggestionsDropdown dropdown) {
+        public SuggestionListViewHolder(
+                OmniboxSuggestionsContainer container, OmniboxSuggestionsDropdown dropdown) {
             this.container = container;
             this.dropdown = dropdown;
         }
@@ -44,15 +44,15 @@ class SuggestionListViewBinder {
             view.dropdown.translateChildrenVertical(
                     model.get(SuggestionListProperties.CHILD_TRANSLATION_Y));
         } else if (SuggestionListProperties.EMBEDDER.equals(propertyKey)) {
-            view.dropdown.setEmbedder(model.get(SuggestionListProperties.EMBEDDER));
+            view.container.setEmbedder(model.get(SuggestionListProperties.EMBEDDER));
         } else if (SuggestionListProperties.OMNIBOX_SESSION_ACTIVE.equals(propertyKey)) {
             updateContainerVisibility(model, view);
-            view.dropdown.onOmniboxSessionStateChange(
+            view.container.onOmniboxSessionStateChange(
                     model.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE));
         } else if (SuggestionListProperties.GESTURE_OBSERVER.equals(propertyKey)) {
             view.dropdown.setGestureObserver(model.get(SuggestionListProperties.GESTURE_OBSERVER));
         } else if (SuggestionListProperties.DROPDOWN_HEIGHT_CHANGE_LISTENER.equals(propertyKey)) {
-            view.dropdown.setHeightChangeListener(
+            view.container.setHeightChangeListener(
                     model.get(SuggestionListProperties.DROPDOWN_HEIGHT_CHANGE_LISTENER));
         } else if (SuggestionListProperties.DROPDOWN_SCROLL_LISTENER.equals(propertyKey)) {
             view.dropdown
@@ -97,16 +97,11 @@ class SuggestionListViewBinder {
             // elements. Be sure to capture and reflect this fact appropriately.
             updateContainerVisibility(model, view);
         } else if (SuggestionListProperties.COLOR_SCHEME.equals(propertyKey)) {
-            view.dropdown.refreshPopupBackground(model.get(SuggestionListProperties.COLOR_SCHEME));
+            updateColorScheme(model, view);
         } else if (SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE.equals(propertyKey)
                 || SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED.equals(propertyKey)) {
             if (model.get(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE)) {
-                Context context = view.dropdown.getContext();
-                @ColorInt
-                int backgroundColor =
-                        OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
-                                context, model.get(SuggestionListProperties.COLOR_SCHEME));
-                view.container.setBackgroundColor(backgroundColor);
+                updateColorScheme(model, view);
             }
             updateContainerVisibility(model, view);
         } else if (SuggestionListProperties.DRAW_OVER_ANCHOR == propertyKey) {
@@ -118,6 +113,28 @@ class SuggestionListViewBinder {
                     view.dropdown
                             .getResources()
                             .getDimensionPixelSize(R.dimen.omnibox_suggestion_list_elevation));
+        } else if (SuggestionListProperties.IS_LARGE_SCREEN == propertyKey) {
+            updateColorScheme(model, view);
+            view.dropdown.setShouldClipToOutline(
+                    model.get(SuggestionListProperties.IS_LARGE_SCREEN));
+        } else if (SuggestionListProperties.TOOLBAR_POSITION == propertyKey) {
+            view.dropdown.setToolbarPosition(model.get(SuggestionListProperties.TOOLBAR_POSITION));
+        }
+    }
+
+    private static void updateColorScheme(PropertyModel model, SuggestionListViewHolder holder) {
+        @ColorInt
+        int backgroundColor =
+                OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
+                        holder.dropdown.getContext(),
+                        model.get(SuggestionListProperties.COLOR_SCHEME));
+
+        holder.dropdown.setBackgroundColor(backgroundColor);
+
+        if (model.get(SuggestionListProperties.IS_LARGE_SCREEN)) {
+            holder.container.setBackgroundColor(Color.TRANSPARENT);
+        } else {
+            holder.container.setBackgroundColor(backgroundColor);
         }
     }
 

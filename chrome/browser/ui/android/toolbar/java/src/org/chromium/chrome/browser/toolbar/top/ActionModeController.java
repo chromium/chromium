@@ -55,25 +55,27 @@ public class ActionModeController {
     public interface ActionBarDelegate {
         /**
          * Sets the top margin of the control container.
+         *
          * @param margin The new top margin of the control container.
          */
-        public void setControlTopMargin(int margin);
+        void setControlTopMargin(int margin);
 
         /**
          * @return The top margin of the control container.
          */
-        public int getControlTopMargin();
+        int getControlTopMargin();
 
         /**
          * @return The action bar that will be animated in and out.
          */
-        public ActionBar getSupportActionBar();
+        @Nullable ActionBar getSupportActionBar();
 
         /**
          * Change the background visibility for the action bar.
+         *
          * @param visible Whether the background should be visible.
          */
-        public void setActionBarBackgroundVisibility(boolean visible);
+        void setActionBarBackgroundVisibility(boolean visible);
     }
 
     /**

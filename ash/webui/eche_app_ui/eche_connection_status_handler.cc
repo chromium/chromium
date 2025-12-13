@@ -25,10 +25,6 @@ void EcheConnectionStatusHandler::Observer::OnConnectionClosed() {}
 
 void EcheConnectionStatusHandler::OnConnectionStatusChanged(
     mojom::ConnectionStatus connection_status) {
-  if (!features::IsEcheNetworkConnectionStateEnabled()) {
-    return;
-  }
-
   PA_LOG(INFO) << "echeapi EcheConnectionStatusHandler "
                << " OnConnectionStatusChanged " << connection_status;
   NotifyConnectionStatusChanged(connection_status);

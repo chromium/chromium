@@ -3,6 +3,11 @@
 // found in the LICENSE file.
 
 #include "net/cookies/cookie_constants.h"
+
+#include <string_view>
+#include <utility>
+
+#include "base/strings/strcat.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -40,24 +45,57 @@ TEST(CookieConstantsTest, TestCookiePriority) {
 // TODO(crbug.com/40641705): Add tests for multiple possibly-invalid attributes.
 TEST(CookieConstantsTest, TestCookieSameSite) {
   // Test case insensitivity
-  EXPECT_EQ(CookieSameSite::NO_RESTRICTION, StringToCookieSameSite("None"));
-  EXPECT_EQ(CookieSameSite::NO_RESTRICTION, StringToCookieSameSite("none"));
-  EXPECT_EQ(CookieSameSite::NO_RESTRICTION, StringToCookieSameSite("NONE"));
-  EXPECT_EQ(CookieSameSite::LAX_MODE, StringToCookieSameSite("Lax"));
-  EXPECT_EQ(CookieSameSite::LAX_MODE, StringToCookieSameSite("LAX"));
-  EXPECT_EQ(CookieSameSite::LAX_MODE, StringToCookieSameSite("lAx"));
-  EXPECT_EQ(CookieSameSite::STRICT_MODE, StringToCookieSameSite("Strict"));
-  EXPECT_EQ(CookieSameSite::STRICT_MODE, StringToCookieSameSite("STRICT"));
-  EXPECT_EQ(CookieSameSite::STRICT_MODE, StringToCookieSameSite("sTrIcT"));
-  EXPECT_EQ(CookieSameSite::UNSPECIFIED, StringToCookieSameSite("extended"));
-  EXPECT_EQ(CookieSameSite::UNSPECIFIED, StringToCookieSameSite("EXTENDED"));
-  EXPECT_EQ(CookieSameSite::UNSPECIFIED, StringToCookieSameSite("ExtenDED"));
+  EXPECT_EQ(std::make_pair(CookieSameSite::NO_RESTRICTION,
+                           CookieSameSiteString::kNone),
+            StringToCookieSameSite("None"));
+  EXPECT_EQ(std::make_pair(CookieSameSite::NO_RESTRICTION,
+                           CookieSameSiteString::kNone),
+            StringToCookieSameSite("none"));
+  EXPECT_EQ(std::make_pair(CookieSameSite::NO_RESTRICTION,
+                           CookieSameSiteString::kNone),
+            StringToCookieSameSite("NONE"));
+  EXPECT_EQ(
+      std::make_pair(CookieSameSite::LAX_MODE, CookieSameSiteString::kLax),
+      StringToCookieSameSite("Lax"));
+  EXPECT_EQ(
+      std::make_pair(CookieSameSite::LAX_MODE, CookieSameSiteString::kLax),
+      StringToCookieSameSite("LAX"));
+  EXPECT_EQ(
+      std::make_pair(CookieSameSite::LAX_MODE, CookieSameSiteString::kLax),
+      StringToCookieSameSite("lAx"));
+  EXPECT_EQ(std::make_pair(CookieSameSite::STRICT_MODE,
+                           CookieSameSiteString::kStrict),
+            StringToCookieSameSite("Strict"));
+  EXPECT_EQ(std::make_pair(CookieSameSite::STRICT_MODE,
+                           CookieSameSiteString::kStrict),
+            StringToCookieSameSite("STRICT"));
+  EXPECT_EQ(std::make_pair(CookieSameSite::STRICT_MODE,
+                           CookieSameSiteString::kStrict),
+            StringToCookieSameSite("sTrIcT"));
+  EXPECT_EQ(std::make_pair(CookieSameSite::UNSPECIFIED,
+                           CookieSameSiteString::kExtended),
+            StringToCookieSameSite("extended"));
+  EXPECT_EQ(std::make_pair(CookieSameSite::UNSPECIFIED,
+                           CookieSameSiteString::kExtended),
+            StringToCookieSameSite("EXTENDED"));
+  EXPECT_EQ(std::make_pair(CookieSameSite::UNSPECIFIED,
+                           CookieSameSiteString::kExtended),
+            StringToCookieSameSite("ExtenDED"));
 
   // Unrecognized tokens are interpreted as UNSPECIFIED.
-  const char* const bad_tokens[] = {"",          "foo",   "none ",
-                                    "strictest", " none", "0"};
-  for (const auto* bad_token : bad_tokens) {
-    EXPECT_EQ(CookieSameSite::UNSPECIFIED, StringToCookieSameSite(bad_token));
+  const std::pair<std::string_view, CookieSameSiteString> bad_tokens[] = {
+      {"", CookieSameSiteString::kEmptyString},
+      {"foo", CookieSameSiteString::kUnrecognized},
+      {"none ", CookieSameSiteString::kUnrecognized},
+      {"strictest", CookieSameSiteString::kUnrecognized},
+      {" none", CookieSameSiteString::kUnrecognized},
+      {"0", CookieSameSiteString::kUnrecognized},
+  };
+  for (const auto [bad_token, expected_samesite_string] : bad_tokens) {
+    SCOPED_TRACE(base::StrCat({"Token: \"", bad_token, "\""}));
+    EXPECT_EQ(
+        std::make_pair(CookieSameSite::UNSPECIFIED, expected_samesite_string),
+        StringToCookieSameSite(bad_token));
   }
 }
 

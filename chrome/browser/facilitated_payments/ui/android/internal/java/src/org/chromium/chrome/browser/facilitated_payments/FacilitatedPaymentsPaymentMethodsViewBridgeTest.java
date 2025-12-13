@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.pm.ResolveInfo;
@@ -32,9 +31,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.autofill.payments.AccountType;
@@ -44,7 +45,6 @@ import org.chromium.components.autofill.payments.PaymentInstrument;
 import org.chromium.components.autofill.payments.PaymentRail;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Unit tests for {@link FacilitatedPaymentsPaymentMethodsViewBridge}. */
@@ -108,7 +108,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     @Mock private ManagedBottomSheetController mBottomSheetController;
     @Mock private AutofillImageFetcher mAutofillImageFetcher;
     @Mock private Profile mProfile;
-    @Mock private WebContents mWebContents;
 
     private Context mApplicationContext;
     private FacilitatedPaymentsPaymentMethodsViewBridge mViewBridge;
@@ -167,7 +166,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     @Test
     @SmallTest
     public void requestShowContent_callsControllerRequestShowContent() {
-        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
         mViewBridge.requestShowContent(BANK_ACCOUNTS);
 
@@ -179,7 +177,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     @Test
     @SmallTest
     public void requestShowContent_bottomSheetContentImplIsStubbed() {
-        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
         mViewBridge.requestShowContent(BANK_ACCOUNTS);
 
@@ -205,8 +202,8 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
 
     @Test
     @SmallTest
+    @DisableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void requestShowContentForPaymentLink_callsControllerRequestShowContent() {
-        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
         mViewBridge.requestShowContentForPaymentLink(EWALLETS, APPS);
 
@@ -217,8 +214,20 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
 
     @Test
     @SmallTest
+    @DisableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
+    public void requestShowContentForPaymentLink_callsControllerRequestShowContent_nullAppArray() {
+
+        mViewBridge.requestShowContentForPaymentLink(EWALLETS, null);
+
+        verify(mBottomSheetController)
+                .requestShowContent(
+                        any(FacilitatedPaymentsPaymentMethodsView.class), /* animate= */ eq(true));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({ChromeFeatureList.FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT})
     public void requestShowContentForPaymentLink_bottomSheetContentImplIsStubbed() {
-        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
         mViewBridge.requestShowContentForPaymentLink(EWALLETS, APPS);
 
@@ -246,7 +255,6 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     @Test
     @SmallTest
     public void showPixAccountLinkingPrompt_callsControllerRequestShowContent() {
-        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
         mViewBridge.showPixAccountLinkingPrompt();
 

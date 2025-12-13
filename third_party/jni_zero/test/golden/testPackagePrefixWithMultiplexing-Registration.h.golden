@@ -8,58 +8,58 @@
 
 #include <iterator>
 
-#include "third_party/jni_zero/jni_zero_internal.h"
+#include "overridden/jni_zero_internal.h"
+
 
 extern const int64_t kJniZeroHashWhole = 3865356290363738592LL;
 extern const int64_t kJniZeroHashPriority = 0LL;
 
 // Forward Declarations.
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_bar(
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_bar(
     JNIEnv* env,
     jobject sample);
-JNI_ZERO_MUXED_ENTRYPOINT void Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_foo(
+JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleForAnnotationProcessor_foo(JNIEnv* env);
+JNI_ZERO_MUXED_ENTRYPOINT jboolean Muxed_org_jni_1zero_SampleForAnnotationProcessor_hasPhalange(
     JNIEnv* env);
-JNI_ZERO_MUXED_ENTRYPOINT jboolean Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_hasPhalange(
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnClass(
     JNIEnv* env);
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnClass(
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnClasses(
     JNIEnv* env);
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnClasses(
-    JNIEnv* env);
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects(
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects(
     JNIEnv* env,
     jobject __arrayClazz);
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts(
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts(
     JNIEnv* env);
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString(
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString(
     JNIEnv* env);
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings(
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings(
     JNIEnv* env);
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnObject(
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnObject(
     JNIEnv* env);
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnObjects(
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnObjects(
     JNIEnv* env);
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnString(
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnString(
     JNIEnv* env);
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnStrings(
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnStrings(
     JNIEnv* env);
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnStruct(
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnStruct(
     JNIEnv* env);
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnStructs(
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnStructs(
     JNIEnv* env);
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnThrowable(
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnThrowable(
     JNIEnv* env);
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnThrowables(
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnThrowables(
     JNIEnv* env);
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_revString(
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_revString(
     JNIEnv* env,
     jobject stringToReverse);
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_sendSamplesToNative(
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_sendSamplesToNative(
     JNIEnv* env,
     jobject strs);
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_sendToNative(
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_sendToNative(
     JNIEnv* env,
     jobject strs);
-JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives(
+JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives(
     JNIEnv* env,
     jbyte zbyte,
     jchar zchar,
@@ -77,7 +77,7 @@ JNI_ZERO_MUXED_ENTRYPOINT jobject Muxed_this_is_a_package_prefix_org_jni_1zero_S
     jobject bools,
     jshort zshort,
     jboolean zbool);
-JNI_ZERO_MUXED_ENTRYPOINT void Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(
+JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(
     JNIEnv* env,
     jobject clazz,
     jobject classes,
@@ -100,7 +100,7 @@ JNI_ZERO_MUXED_ENTRYPOINT void Muxed_this_is_a_package_prefix_org_jni_1zero_Samp
 
 // Multiplexing Methods.
 JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_J_N_V(JNIEnv* env, jclass jcaller) {
-  return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_foo(env);
+  return Muxed_org_jni_1zero_SampleForAnnotationProcessor_foo(env);
 }
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_O(
     JNIEnv* env,
@@ -109,37 +109,37 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_O(
   JNI_ZERO_DCHECK(switch_num >= 0 && switch_num < 13);
   switch (switch_num) {
     case 0:
-      return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnClass(env);
+      return Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnClass(env);
     case 1:
-      return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnClasses(env);
+      return Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnClasses(env);
     case 2:
-      return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts(env);
+      return Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts(env);
     case 3:
-      return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString(env);
+      return Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString(env);
     case 4:
-      return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings(env);
+      return Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings(env);
     case 5:
-      return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnObject(env);
+      return Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnObject(env);
     case 6:
-      return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnObjects(env);
+      return Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnObjects(env);
     case 7:
-      return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnString(env);
+      return Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnString(env);
     case 8:
-      return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnStrings(env);
+      return Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnStrings(env);
     case 9:
-      return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnStruct(env);
+      return Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnStruct(env);
     case 10:
-      return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnStructs(env);
+      return Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnStructs(env);
     case 11:
-      return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnThrowable(env);
+      return Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnThrowable(env);
     case 12:
-      return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnThrowables(env);
+      return Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnThrowables(env);
     default:
       __builtin_unreachable();
   }
 }
 JNI_ZERO_BOUNDARY_EXPORT jboolean Java_this_is_a_package_prefix_J_N_Z(JNIEnv* env, jclass jcaller) {
-  return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_hasPhalange(env);
+  return Muxed_org_jni_1zero_SampleForAnnotationProcessor_hasPhalange(env);
 }
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_OO(
     JNIEnv* env,
@@ -149,15 +149,15 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_OO(
   JNI_ZERO_DCHECK(switch_num >= 0 && switch_num < 5);
   switch (switch_num) {
     case 0:
-      return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_bar(env, p0);
+      return Muxed_org_jni_1zero_SampleForAnnotationProcessor_bar(env, p0);
     case 1:
-      return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects(env, p0);
+      return Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects(env, p0);
     case 2:
-      return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_revString(env, p0);
+      return Muxed_org_jni_1zero_SampleForAnnotationProcessor_revString(env, p0);
     case 3:
-      return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_sendSamplesToNative(env, p0);
+      return Muxed_org_jni_1zero_SampleForAnnotationProcessor_sendSamplesToNative(env, p0);
     case 4:
-      return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_sendToNative(env, p0);
+      return Muxed_org_jni_1zero_SampleForAnnotationProcessor_sendToNative(env, p0);
     default:
       __builtin_unreachable();
   }
@@ -181,7 +181,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_OBCDFIJOOOOOO
     jobject p13,
     jshort p14,
     jboolean p15) {
-  return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives(env, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15);
+  return Muxed_org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives(env, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15);
 }
 JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_J_N_VOOOOOOOOOOOOOOOOOO(
     JNIEnv* env,
@@ -204,7 +204,7 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_J_N_VOOOOOOOOOOOOOOO
     jobject p15,
     jobject p16,
     jobject p17) {
-  return Muxed_this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(env, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17);
+  return Muxed_org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(env, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17);
 }
 
 

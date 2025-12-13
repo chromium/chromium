@@ -25,7 +25,7 @@ class CORE_EXPORT VideoTrack final : public ScriptWrappable, public TrackBase {
   void Trace(Visitor*) const override;
 
   bool selected() const { return selected_; }
-  void setSelected(bool);
+  void setSelected(bool selected, ChangeSource source = ChangeSource::kScript);
   const AtomicString& kind() const { return kind_; }
 
   // Set selected to false without notifying the owner media element. Used when

@@ -14,11 +14,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/back_forward_cache_test_util.h"
 #include "content/browser/browsing_data/shared_storage_clear_site_data_tester.h"
-#include "content/browser/fingerprinting_protection/canvas_noise_token_data.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
@@ -37,6 +35,7 @@
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/prefetch_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
@@ -166,7 +165,7 @@ class BrowsingDataRemoverImplBrowserTest
         network::SimpleURLLoader::Create(std::move(request),
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
     loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        url_loader_factory(), loader_helper.GetCallbackDeprecated());
+        url_loader_factory(), loader_helper.GetCallback());
     loader_helper.WaitForCallback();
     ASSERT_TRUE(loader_helper.response_body());
     EXPECT_EQ(kHstsResponseBody, *loader_helper.response_body());
@@ -203,7 +202,7 @@ class BrowsingDataRemoverImplBrowserTest
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
     SimpleURLLoaderTestHelper loader_helper;
     loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        url_loader_factory(), loader_helper.GetCallbackDeprecated());
+        url_loader_factory(), loader_helper.GetCallback());
     loader_helper.WaitForCallback();
 
     // On success, HSTS was enabled for the domain.
@@ -408,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplBrowserTest,
   // matches the BFCached document's origin.
   filter = BrowsingDataFilterBuilder::Create(
       BrowsingDataFilterBuilder::Mode::kDelete);
-  filter->AddRegisterableDomain(ssl_server().base_url().host());
+  filter->AddRegisterableDomain(ssl_server().base_url().GetHost());
   RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_CACHE,
                           std::move(filter));
 
@@ -458,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(
   // matches the BFCached document's origin.
   auto filter = BrowsingDataFilterBuilder::Create(
       BrowsingDataFilterBuilder::Mode::kDelete);
-  filter->AddRegisterableDomain(ssl_server().base_url().host());
+  filter->AddRegisterableDomain(ssl_server().base_url().GetHost());
   RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_COOKIES,
                           std::move(filter));
 
@@ -485,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(
   // matches the BFCached document's origin.
   auto filter = BrowsingDataFilterBuilder::Create(
       BrowsingDataFilterBuilder::Mode::kDelete);
-  filter->AddRegisterableDomain(ssl_server().base_url().host());
+  filter->AddRegisterableDomain(ssl_server().base_url().GetHost());
   RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_COOKIES,
                           std::move(filter));
 
@@ -1039,7 +1038,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrerenderingBrowserTest,
   // 3) Remove the browsing data with DATA_TYPE_CACHE.
   auto filter = BrowsingDataFilterBuilder::Create(
       BrowsingDataFilterBuilder::Mode::kDelete);
-  filter->AddRegisterableDomain(ssl_server().base_url().host());
+  filter->AddRegisterableDomain(ssl_server().base_url().GetHost());
   RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_CACHE,
                           std::move(filter));
   host_observer.WaitForDestroyed();
@@ -1053,10 +1052,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrerenderingBrowserTest,
 class BrowsingDataRemoverImplPrefetchBrowserTest
     : public BrowsingDataRemoverImplBrowserTest {
  public:
-  BrowsingDataRemoverImplPrefetchBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kPrefetchBrowsingDataRemoval);
-  }
-
   void StartPrefetch(const GURL& url, Shell* shell) {
     auto* prefetch_document_manager =
         PrefetchDocumentManager::GetOrCreateForCurrentDocument(
@@ -1075,9 +1070,6 @@ class BrowsingDataRemoverImplPrefetchBrowserTest
   }
 
   ~BrowsingDataRemoverImplPrefetchBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrefetchBrowserTest,
@@ -1103,7 +1095,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrefetchBrowserTest,
   // 4) Remove the browsing data with DATA_TYPE_CACHE.
   auto filter = BrowsingDataFilterBuilder::Create(
       BrowsingDataFilterBuilder::Mode::kDelete);
-  filter->AddRegisterableDomain(ssl_server().base_url().host());
+  filter->AddRegisterableDomain(ssl_server().base_url().GetHost());
   RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_CACHE,
                           std::move(filter));
 
@@ -1201,7 +1193,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrefetchHoldbackBrowserTest,
   // 3) Remove the browsing data with DATA_TYPE_CACHE.
   auto filter = BrowsingDataFilterBuilder::Create(
       BrowsingDataFilterBuilder::Mode::kDelete);
-  filter->AddRegisterableDomain(ssl_server().base_url().host());
+  filter->AddRegisterableDomain(ssl_server().base_url().GetHost());
   RemoveWithFilterAndWait(BrowsingDataRemover::DATA_TYPE_CACHE,
                           std::move(filter));
 
@@ -1210,48 +1202,4 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplPrefetchHoldbackBrowserTest,
       "Preloading.Prefetch.PrefetchStatus",
       PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved, 1);
 }
-
-class BrowsingDataRemoverCanvasNoiseTokenBrowserTest
-    : public CookiesBrowsingDataRemoverImplBrowserTest {
- private:
-  base::test::ScopedFeatureList features_{
-      fingerprinting_protection_interventions::features::kCanvasNoise};
-};
-
-IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverCanvasNoiseTokenBrowserTest,
-                       CanvasNoiseTokenRegeneratesOnCookieRemoval) {
-  // Set a cookie.
-  GURL url = ssl_server().GetURL("/browsing_data/site_data.html");
-  ASSERT_TRUE(NavigateToURL(shell(), url));
-
-  content::BrowserContext* browser_context =
-      shell()->web_contents()->GetBrowserContext();
-  content::WebContents* tab = shell()->web_contents();
-
-  uint64_t original_token = tab->GetMutableRendererPrefs()->canvas_noise_token;
-  EXPECT_EQ(original_token,
-            content::CanvasNoiseTokenData::GetToken(browser_context));
-
-  constexpr uint64_t kRemoveMask =
-      content::BrowsingDataRemover::DATA_TYPE_COOKIES;
-  content::BrowsingDataRemover* remover =
-      browser_context->GetBrowsingDataRemover();
-  content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
-  remover->RemoveAndReply(
-      base::Time(),       // delete_begin
-      base::Time::Max(),  // delete_end
-      kRemoveMask, content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
-      &completion_observer);
-
-  completion_observer.BlockUntilCompletion();
-
-  // Next navigation should update the token.
-  ASSERT_TRUE(NavigateToURL(tab, url));
-
-  uint64_t updated_token = tab->GetMutableRendererPrefs()->canvas_noise_token;
-  EXPECT_EQ(updated_token,
-            content::CanvasNoiseTokenData::GetToken(browser_context));
-  EXPECT_NE(updated_token, original_token);
-}
-
 }  // namespace content

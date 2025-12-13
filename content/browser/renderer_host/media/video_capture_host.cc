@@ -8,7 +8,6 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/token.h"
 #include "base/unguessable_token.h"
@@ -18,28 +17,11 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/common/content_client.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
-#include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
-
-namespace {
-
-BrowserContext* GetBrowserContext(
-    GlobalRenderFrameHostId render_frame_host_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  RenderFrameHost* host = RenderFrameHost::FromID(render_frame_host_id);
-  if (host) {
-    return host->GetBrowserContext();
-  }
-  return nullptr;
-}
-
-}  // namespace
 
 VideoCaptureHost::RenderFrameHostDelegate::~RenderFrameHostDelegate() = default;
 
@@ -99,8 +81,7 @@ class VideoCaptureHost::RenderFrameHostDelegateImpl
                        render_frame_host_id_));
   }
 
-  GlobalRenderFrameHostId GetRenderFrameHostId() const override {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  GlobalRenderFrameHostId render_frame_host_id() const override {
     return render_frame_host_id_;
   }
 
@@ -321,15 +302,10 @@ void VideoCaptureHost::Start(
   }
 
   controllers_[controller_id] = base::WeakPtr<VideoCaptureController>();
-  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&GetBrowserContext,
-                     render_frame_host_delegate_->GetRenderFrameHostId()),
-      base::BindOnce(&VideoCaptureHost::ConnectClient,
-                     weak_factory_.GetWeakPtr(), session_id, params,
-                     controller_id,
-                     base::BindOnce(&VideoCaptureHost::OnControllerAdded,
-                                    weak_factory_.GetWeakPtr(), device_id)));
+  ConnectClient(session_id, params, controller_id,
+                render_frame_host_delegate_->render_frame_host_id(),
+                base::BindOnce(&VideoCaptureHost::OnControllerAdded,
+                               weak_factory_.GetWeakPtr(), device_id));
 }
 
 void VideoCaptureHost::Stop(const base::UnguessableToken& device_id) {
@@ -463,9 +439,9 @@ void VideoCaptureHost::GetDeviceFormatsInUse(
   std::move(callback).Run(formats_in_use);
 }
 
-void VideoCaptureHost::OnNewSubCaptureTargetVersion(
+void VideoCaptureHost::OnNewCaptureVersion(
     const base::UnguessableToken& device_id,
-    uint32_t sub_capture_target_version) {
+    media::CaptureVersion capture_version) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   const VideoCaptureControllerID controller_id(device_id);
@@ -478,7 +454,7 @@ void VideoCaptureHost::OnNewSubCaptureTargetVersion(
     return;
   }
 
-  it->second->OnNewSubCaptureTargetVersion(sub_capture_target_version);
+  it->second->OnNewCaptureVersion(capture_version);
 }
 
 void VideoCaptureHost::OnLog(const base::UnguessableToken& device_id,
@@ -602,16 +578,17 @@ void VideoCaptureHost::NotifyAllStreamsRemoved() {
     NotifyStreamRemoved();
 }
 
-void VideoCaptureHost::ConnectClient(const base::UnguessableToken session_id,
-                                     const media::VideoCaptureParams& params,
-                                     VideoCaptureControllerID controller_id,
-                                     VideoCaptureManager::DoneCB done_cb,
-                                     BrowserContext* browser_context) {
+void VideoCaptureHost::ConnectClient(
+    const base::UnguessableToken session_id,
+    const media::VideoCaptureParams& params,
+    VideoCaptureControllerID controller_id,
+    const GlobalRenderFrameHostId& render_frame_host_id,
+    VideoCaptureManager::DoneCB done_cb) {
   std::optional<url::Origin> origin =
       media_stream_manager_->GetOriginByVideoSessionId(session_id);
   media_stream_manager_->video_capture_manager()->ConnectClient(
-      session_id, params, controller_id, this, std::move(origin),
-      std::move(done_cb), browser_context);
+      session_id, params, controller_id, render_frame_host_id, this,
+      std::move(origin), std::move(done_cb));
 }
 
 }  // namespace content

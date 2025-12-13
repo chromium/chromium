@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
+import "mojo/public/mojom/base/int128.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "third_party/blink/public/mojom/data_transfer/data_transfer.mojom";
@@ -57,7 +58,9 @@ struct ClipboardFiles {
 // Implemented by clients that want to be notified when the clipboard contents change.
 interface ClipboardListener {
   // Called when the clipboard data has changed.
-  OnClipboardDataChanged();
+  OnClipboardDataChanged(
+      array<mojo_base.mojom.String16> types,
+      mojo_base.mojom.Uint128 change_id);
 };
 
 // Implemented by the browser to allow the renderer to use the system clipboard.
@@ -97,12 +100,14 @@ interface ClipboardHost {
   const uint32 kMaxFormatSize = 1024;
   const uint32 kMaxDataSize = 1073741824; // 1 GB, or 1 << 30
 
-  // Returns a token which uniquely identifies clipboard state.
-  // This can be used to version the data on the clipboard and determine
-  // whether it has changed.
+
+  // Returns a 128-bit random number that uniquely identifies the current
+  // clipboard state. This can be used to version the data on the clipboard and
+  // determine whether it has changed.
+  // Renderers associated with different storage keys or partitions will receive
+  // different numbers, otherwise this will change only when the clipboard does.
   [Sync]
-  GetSequenceNumber(ClipboardBuffer buffer) =>
-      (blink.mojom.ClipboardSequenceNumberToken result);
+  GetSequenceNumber(ClipboardBuffer buffer) => (mojo_base.mojom.Uint128 result);
 
   [Sync]
   IsFormatAvailable(ClipboardFormat format,

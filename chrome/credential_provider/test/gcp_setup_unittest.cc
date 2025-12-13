@@ -20,6 +20,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/process/launch.h"
+#include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -245,7 +246,7 @@ void GcpSetupTest::CreateSentinelFileToSimulateCrash(
   base::win::ScopedHandle file(
       CreateFile(sentinel_file.value().c_str(), GENERIC_WRITE, 0, nullptr,
                  CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr));
-  ASSERT_TRUE(file.IsValid());
+  ASSERT_TRUE(file.is_valid());
 }
 
 void GcpSetupTest::ExpectSentinelFileToNotExist(

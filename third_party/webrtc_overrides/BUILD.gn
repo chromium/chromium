@@ -23,35 +23,48 @@ webrtc_public_deps = [
   "//third_party/webrtc/api:async_dns_resolver",
   "//third_party/webrtc/api:candidate",
   "//third_party/webrtc/api:create_modular_peer_connection_factory",
+  "//third_party/webrtc/api:data_channel_interface",
+  "//third_party/webrtc/api:datagram_connection",
+  "//third_party/webrtc/api:datagram_connection_factory",
   "//third_party/webrtc/api:dtls_transport_interface",
+  "//third_party/webrtc/api:dtmf_sender_interface",
   "//third_party/webrtc/api:enable_media",
   "//third_party/webrtc/api:field_trials_view",
   "//third_party/webrtc/api:frame_transformer_factory",
   "//third_party/webrtc/api:frame_transformer_interface",
   "//third_party/webrtc/api:ice_transport_factory",
   "//third_party/webrtc/api:ice_transport_interface",
+  "//third_party/webrtc/api:jsep",
   "//third_party/webrtc/api:libjingle_logging_api",
-  "//third_party/webrtc/api:libjingle_peerconnection_api",
   "//third_party/webrtc/api:local_network_access_permission",
   "//third_party/webrtc/api:location",
   "//third_party/webrtc/api:make_ref_counted",
   "//third_party/webrtc/api:media_stream_interface",
   "//third_party/webrtc/api:packet_socket_factory",
+  "//third_party/webrtc/api:peer_connection_interface",
   "//third_party/webrtc/api:priority",
   "//third_party/webrtc/api:rtc_error",
   "//third_party/webrtc/api:rtc_stats_api",
   "//third_party/webrtc/api:rtp_headers",
   "//third_party/webrtc/api:rtp_packet_info",
   "//third_party/webrtc/api:rtp_parameters",
+  "//third_party/webrtc/api:rtp_receiver_interface",
+  "//third_party/webrtc/api:rtp_sender_interface",
+  "//third_party/webrtc/api:rtp_transceiver_interface",
   "//third_party/webrtc/api:scoped_refptr",
+  "//third_party/webrtc/api:sctp_transport_interface",
+  "//third_party/webrtc/api:set_local_description_observer_interface",
+  "//third_party/webrtc/api:set_remote_description_observer_interface",
   "//third_party/webrtc/api:simulated_network_api",
   "//third_party/webrtc/api:transport_api",
   "//third_party/webrtc/api:turn_customizer",
+  "//third_party/webrtc/api:video_track_source_proxy_factory",
   "//third_party/webrtc/api/adaptation:resource_adaptation_api",
   "//third_party/webrtc/api/audio:aec3_config",
   "//third_party/webrtc/api/audio:aec3_factory",
   "//third_party/webrtc/api/audio:audio_processing",
   "//third_party/webrtc/api/audio:builtin_audio_processing_builder",
+  "//third_party/webrtc/api/audio:neural_residual_echo_estimator_creator",
   "//third_party/webrtc/api/audio_codecs:audio_codecs_api",
   "//third_party/webrtc/api/audio_codecs/L16:audio_decoder_L16",
   "//third_party/webrtc/api/audio_codecs/L16:audio_encoder_L16",
@@ -67,10 +80,9 @@ webrtc_public_deps = [
   "//third_party/webrtc/api/environment:environment_factory",
   "//third_party/webrtc/api/metronome",
   "//third_party/webrtc/api/rtc_event_log:rtc_event_log_factory",
-  "//third_party/webrtc/api/task_queue:task_queue",
+  "//third_party/webrtc/api/task_queue",
   "//third_party/webrtc/api/transport:ecn_marking",
   "//third_party/webrtc/api/transport:enums",
-  "//third_party/webrtc/api/transport:field_trial_based_config",
   "//third_party/webrtc/api/transport:goog_cc",
   "//third_party/webrtc/api/transport:network_control",
   "//third_party/webrtc/api/transport/rtp:rtp_source",
@@ -90,7 +102,6 @@ webrtc_public_deps = [
   "//third_party/webrtc/api/video_codecs:video_codecs_api",
   "//third_party/webrtc/call:simulated_network",
   "//third_party/webrtc/common_video",
-  "//third_party/webrtc/common_video:common_video",
   "//third_party/webrtc/media:codec",
   "//third_party/webrtc/media:media_channel",
   "//third_party/webrtc/media:media_constants",
@@ -106,7 +117,6 @@ webrtc_public_deps = [
   "//third_party/webrtc/modules/audio_processing:api",
   "//third_party/webrtc/modules/audio_processing:audio_processing_statistics",
   "//third_party/webrtc/modules/audio_processing/aec_dump",
-  "//third_party/webrtc/modules/audio_processing/aec_dump:aec_dump",
   "//third_party/webrtc/modules/desktop_capture",
   "//third_party/webrtc/modules/desktop_capture:primitives",
   "//third_party/webrtc/modules/video_coding:video_codec_interface",
@@ -127,7 +137,6 @@ webrtc_public_deps = [
   "//third_party/webrtc/p2p:port",
   "//third_party/webrtc/p2p:port_allocator",
   "//third_party/webrtc/p2p:port_interface",
-  "//third_party/webrtc/p2p:pseudo_tcp",
   "//third_party/webrtc/p2p:transport_description",
   "//third_party/webrtc/pc:ice_server_parsing",
   "//third_party/webrtc/pc:libjingle_peerconnection",
@@ -159,10 +168,9 @@ webrtc_public_deps = [
   "//third_party/webrtc/rtc_base:threading",
   "//third_party/webrtc/rtc_base:timestamp_aligner",
   "//third_party/webrtc/rtc_base:timeutils",
+  "//third_party/webrtc/rtc_base:weak_ptr",
   "//third_party/webrtc/rtc_base/network:received_packet",
   "//third_party/webrtc/rtc_base/system:rtc_export",
-  "//third_party/webrtc/rtc_base/third_party/sigslot",
-  "//third_party/webrtc/rtc_base/third_party/sigslot:sigslot",
   "//third_party/webrtc/stats",
   "//third_party/webrtc/stats:rtc_stats",
   "//third_party/webrtc/stats:rtc_stats_test_utils",
@@ -235,10 +243,7 @@ source_set("metrics") {
 }
 
 source_set("field_trial") {
-  visibility = [
-    ":environment",
-    "//third_party/webrtc/test/fuzzers:webrtc_fuzzer_main",
-  ]
+  visibility = [ ":environment" ]
   sources = [
     "field_trial.cc",
     "field_trial.h",
@@ -249,10 +254,6 @@ source_set("field_trial") {
     "//third_party/webrtc/api:field_trials_view",
     "//third_party/webrtc/rtc_base/system:rtc_export",
   ]
-
-  if (!is_castos && !is_cast_android) {
-    sources += [ "field_trial_legacy.cc" ]
-  }
 }
 
 # If you want to depend on this target you should depend on :webrtc_component
@@ -316,7 +317,7 @@ source_set("logging_test") {
   deps = [
     ":webrtc_component",
     "//base/test:test_support",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }
 
@@ -334,7 +335,7 @@ source_set("metronome_like_task_queue_test") {
     ":webrtc_component",
     "//base",
     "//base/test:test_support",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }
 
@@ -379,6 +380,7 @@ source_set("bridge_ice_controller") {
     "//third_party/webrtc/api:make_ref_counted",
     "//third_party/webrtc/api:rtc_error",
     "//third_party/webrtc/api:scoped_refptr",
+    "//third_party/webrtc/api/units:timestamp",
     "//third_party/webrtc/p2p:active_ice_controller_factory_interface",
     "//third_party/webrtc/p2p:active_ice_controller_interface",
     "//third_party/webrtc/p2p:basic_ice_controller",
@@ -387,7 +389,6 @@ source_set("bridge_ice_controller") {
     "//third_party/webrtc/p2p:ice_agent_interface",
     "//third_party/webrtc/p2p:ice_controller_interface",
     "//third_party/webrtc/p2p:ice_switch_reason",
-    "//third_party/webrtc/p2p:ice_transport_internal",
     "//third_party/webrtc/p2p:ice_transport_internal",
     "//third_party/webrtc/p2p:p2p_transport_channel",
     "//third_party/webrtc/p2p:transport_description",

@@ -10,16 +10,18 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/extensions/test_extension_prefs.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/test_extension_prefs.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using testing::_;
 using testing::Mock;
@@ -33,8 +35,9 @@ class IdentityAPITest : public testing::Test {
       testing::StrictMock<base::MockRepeatingCallback<void(Event*)>>;
 
   IdentityAPITest()
-      : prefs_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-        event_router_(prefs_.profile(), prefs_.prefs()),
+      : prefs_(base::SingleThreadTaskRunner::GetCurrentDefault(),
+               std::make_unique<TestingProfile>()),
+        event_router_(prefs_.browser_context(), prefs_.prefs()),
         api_(CreateIdentityAPI()) {
     // IdentityAPITest requires the extended account info callbacks to be fired
     // on account update/removal.
@@ -44,9 +47,9 @@ class IdentityAPITest : public testing::Test {
   ~IdentityAPITest() override { api_->Shutdown(); }
 
   std::unique_ptr<IdentityAPI> CreateIdentityAPI() {
-    auto identity_api = base::WrapUnique(
-        new IdentityAPI(prefs_.profile(), identity_env_.identity_manager(),
-                        prefs_.prefs(), &event_router_));
+    auto identity_api = base::WrapUnique(new IdentityAPI(
+        Profile::FromBrowserContext(prefs_.browser_context()),
+        identity_env_.identity_manager(), prefs_.prefs(), &event_router_));
     identity_api->set_on_signin_changed_callback_for_testing(
         mock_on_signin_changed_callback_.Get());
     return identity_api;

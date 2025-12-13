@@ -20,9 +20,9 @@
 
 // https://html.spec.whatwg.org/C/#htmlelement
 [
-    Exposed=Window,
-    HTMLConstructor
+    Exposed=Window
 ] interface HTMLElement : Element {
+    [HTMLConstructor] constructor();
     // metadata attributes
     [CEReactions, Reflect] attribute DOMString title;
     [CEReactions, Reflect] attribute DOMString lang;
@@ -35,6 +35,7 @@
     [RuntimeCallStatsCounter=HTMLElementClick] void click();
     [CEReactions, Reflect] attribute boolean inert;
     [CEReactions, Reflect] attribute DOMString accessKey;
+    [RuntimeEnabled=AccessKeyLabel] readonly attribute DOMString accessKeyLabel;
     [CEReactions] attribute boolean draggable;
     [CEReactions] attribute boolean spellcheck;
     [Measure] attribute DOMString autocapitalize;

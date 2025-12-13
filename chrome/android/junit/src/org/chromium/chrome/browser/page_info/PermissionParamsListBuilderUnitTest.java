@@ -21,7 +21,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
-import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.page_info.PageInfoPermissionsController.PermissionObject;
 import org.chromium.components.page_info.PermissionParamsListBuilder;
@@ -57,7 +56,7 @@ public class PermissionParamsListBuilderUnitTest {
     @Test
     public void addSingleEntryAndBuild() {
         mPermissionParamsListBuilder.addPermissionEntry(
-                "Foo", "foo", ContentSettingsType.COOKIES, ContentSettingValues.ALLOW);
+                "Foo", "foo", ContentSettingsType.COOKIES, true, false);
 
         List<PermissionObject> permissions = mPermissionParamsListBuilder.build();
         assertEquals(1, permissions.size());
@@ -69,7 +68,7 @@ public class PermissionParamsListBuilderUnitTest {
     public void addLocationEntryAndBuildWhenSystemLocationDisabled() {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(false);
         mPermissionParamsListBuilder.addPermissionEntry(
-                "Test", "test", ContentSettingsType.GEOLOCATION, ContentSettingValues.ALLOW);
+                "Test", "test", ContentSettingsType.GEOLOCATION, true, false);
 
         List<PermissionObject> permissions = mPermissionParamsListBuilder.build();
         assertEquals(1, permissions.size());
@@ -82,7 +81,7 @@ public class PermissionParamsListBuilderUnitTest {
     public void arNotificationWhenCameraBlocked() {
         FakePermissionDelegate.blockPermission(android.Manifest.permission.CAMERA);
         mPermissionParamsListBuilder.addPermissionEntry(
-                "Test", "test", ContentSettingsType.AR, ContentSettingValues.ALLOW);
+                "Test", "test", ContentSettingsType.AR, true, false);
 
         List<PermissionObject> permissions = mPermissionParamsListBuilder.build();
         assertEquals(1, permissions.size());

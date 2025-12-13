@@ -5,18 +5,27 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_connector.h"
 
 #include "base/functional/bind.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_wp_color_manager.h"
 
 namespace ui {
 
 WaylandBufferManagerConnector::WaylandBufferManagerConnector(
+    WaylandConnection* connection,
     WaylandBufferManagerHost* buffer_manager_host)
-    : buffer_manager_host_(buffer_manager_host) {
-}
+    : connection_(connection), buffer_manager_host_(buffer_manager_host) {}
 
 WaylandBufferManagerConnector::~WaylandBufferManagerConnector() {
   DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
+}
+
+void WaylandBufferManagerConnector::OnHdrEnabledChanged(bool hdr_enabled) {
+  DCHECK_CALLED_ON_VALID_THREAD(ui_thread_checker_);
+  if (auto* color_manager = connection_->wp_color_manager()) {
+    color_manager->OnHdrEnabledChanged(hdr_enabled);
+  }
 }
 
 void WaylandBufferManagerConnector::OnChannelDestroyed(int host_id) {

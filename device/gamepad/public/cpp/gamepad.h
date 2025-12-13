@@ -8,13 +8,14 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <limits>
 #include <string>
 #include <type_traits>
 
 #include "base/component_export.h"
-
+#include "base/containers/span.h"
 namespace device {
 
 class GamepadButton {
@@ -42,7 +43,7 @@ enum class GamepadHapticActuatorType {
   kTriggerRumble = 2
 };
 
-enum class GamepadHapticEffectType { kDualRumble = 0 };
+enum class GamepadHapticEffectType { kDualRumble = 0, kTriggerRumble = 1 };
 
 enum class GamepadHapticsResult {
   kError = 0,
@@ -127,16 +128,18 @@ class GamepadImpl {
   // If src is too long, then the contents of id will be truncated to
   // kIdLengthCap-1. id will be null-terminated and any extra space in the
   // buffer will be zeroed out.
-  void SetID(const std::u16string& src) {
-    std::ranges::fill(id, 0);
-    src.copy(id, kIdLengthCap - 1);
+  inline void SetID(const std::u16string& src) {
+    id.fill(0);
+    for (size_t i = 0; i < std::min(src.length(), kIdLengthCap - 1); ++i) {
+      id[i] = src[i];
+    }
   }
 
   // Is there a gamepad connected at this index?
   bool connected = false;
 
   // Device identifier (based on manufacturer, model, etc.).
-  char16_t id[kIdLengthCap] = {};
+  std::array<uint16_t, kIdLengthCap> id = {};
 
   // Time value representing the last time the data for this gamepad was
   // updated. Measured as TimeTicks::Now().since_origin().InMicroseconds().
@@ -153,13 +156,13 @@ class GamepadImpl {
                 "axes_used is not large enough");
 
   // Normalized values representing axes, in the range [-1..1].
-  double axes[kAxesLengthCap] = {};
+  std::array<double, kAxesLengthCap> axes = {};
 
   // Number of valid entries in the buttons array.
   unsigned buttons_length = 0;
 
   // Button states
-  GamepadButton buttons[kButtonsLengthCap] = {};
+  std::array<GamepadButton, kButtonsLengthCap> buttons = {};
 
   // Number of valid entries in the touch_events array.
   uint32_t touch_events_length = 0;
@@ -167,7 +170,7 @@ class GamepadImpl {
   // Touch events states
   bool supports_touch_events_ = false;
 
-  GamepadTouch touch_events[kTouchEventsLengthCap] = {};
+  std::array<GamepadTouch, kTouchEventsLengthCap> touch_events = {};
 
   GamepadHapticActuator vibration_actuator;
 

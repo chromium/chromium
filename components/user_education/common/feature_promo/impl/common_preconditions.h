@@ -14,6 +14,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_lifecycle.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
+#include "components/user_education/common/user_education_context.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/typed_data_collection.h"
@@ -27,6 +28,7 @@ DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kFeatureEngagementTrackerInitializedPrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kMeetsFeatureEngagementCriteriaPrecondition);
+DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kContextValidPrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kAnchorElementPrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kLifecyclePrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kSessionPolicyPrecondition);
@@ -80,6 +82,21 @@ class MeetsFeatureEngagementCriteriaPrecondition
  private:
   const raw_ref<const base::Feature> feature_;
   const raw_ref<const feature_engagement::Tracker> tracker_;
+};
+
+// Requires the context for the promo to still be valid. Should be evaluated
+// before AnchorElementPrecondition.
+class ContextValidPrecondition : public FeaturePromoPreconditionBase {
+ public:
+  explicit ContextValidPrecondition(const UserEducationContextPtr& context);
+  ~ContextValidPrecondition() override;
+
+  // FeaturePromoPrecondition:
+  FeaturePromoResult CheckPrecondition(
+      ui::UnownedTypedDataCollection& data) const override;
+
+ private:
+  const UserEducationContextPtr context_;
 };
 
 // Represents the requirement that an anchor element is present and visible.

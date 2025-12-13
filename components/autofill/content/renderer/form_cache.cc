@@ -24,8 +24,6 @@
 
 namespace autofill {
 
-using form_util::ExtractOption;
-
 namespace {
 
 // Determines whether the form is interesting enough to be sent to the browser
@@ -113,7 +111,8 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
       FormRendererId form_id = form.renderer_id();
       auto it = old_extracted_forms.find(form_id);
       if (it == old_extracted_forms.end() || !it->second ||
-          !FormData::DeepEqual(std::move(*it->second), form)) {
+          !FormData::IdenticalAndEquivalentDomElements(
+              *it->second, form, {FormFieldData::Exclusion::kValue})) {
         r.updated_forms.push_back(form);
       }
       r.removed_forms.erase(form_id);

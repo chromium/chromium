@@ -10,7 +10,6 @@
 #include <array>
 
 #include "base/base_export.h"
-#include "base/feature_list.h"
 #include "base/task/task_traits.h"
 #include "base/threading/thread.h"
 

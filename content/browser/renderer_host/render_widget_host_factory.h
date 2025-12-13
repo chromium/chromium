@@ -6,12 +6,12 @@
 #define CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_HOST_FACTORY_H_
 
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/memory/safe_ref.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace content {
 class FrameTree;

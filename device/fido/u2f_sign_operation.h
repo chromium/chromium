@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/device_operation.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 

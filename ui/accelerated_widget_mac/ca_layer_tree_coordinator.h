@@ -7,11 +7,11 @@
 
 #include <queue>
 
+#include "base/containers/queue.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
-#include "ui/accelerated_widget_mac/ca_renderer_layer_tree.h"
 #include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/presentation_feedback.h"
-#include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_context.h"
 #include "ui/gl/presenter.h"
 
 @class CAContext;
@@ -19,17 +19,18 @@
 @protocol MTLDevice;
 
 namespace ui {
+class CARendererLayerTree;
+
 using BufferPresentedCallback =
     base::RepeatingCallback<void(gl::Presenter::PresentationCallback callback,
                                  const gfx::PresentationFeedback& feedback)>;
 
+using GLMakeCurrentCallback = base::RepeatingCallback<bool()>;
+
 struct PresentedFrame {
-  PresentedFrame(gl::Presenter::SwapCompletionCallback completion_cb,
-                 gl::Presenter::PresentationCallback presentation_cb,
-                 uint64_t fence,
-                 gfx::CALayerResult error_code,
-                 base::TimeTicks ready_timestamp,
-                 std::unique_ptr<CARendererLayerTree> layer_tree);
+  PresentedFrame();
+  PresentedFrame(PresentedFrame&&);
+  PresentedFrame& operator=(PresentedFrame&&);
   ~PresentedFrame();
 
   // The swap completion and presentation callbacks are made when
@@ -37,10 +38,11 @@ struct PresentedFrame {
   gl::Presenter::SwapCompletionCallback completion_callback;
   gl::Presenter::PresentationCallback presentation_callback;
 
-  // A fence inserted when Present was called. Future frames will
-  // wait on this fence to ensure that our GPU work does not starve
-  // CoreAnimation.
-  uint64_t backpressure_fence = 0;
+  // Fences inserted before Present was called. Future frames will wait on these
+  // fences to ensure that our GPU work does not starve CoreAnimation.
+  std::vector<gfx::MTLSharedEventFence> backpressure_metal_fences;
+
+  std::unique_ptr<gl::GLFence> backpressure_gl_fence;
 
   gfx::CALayerResult ca_layer_error_code = gfx::kCALayerSuccess;
 
@@ -65,12 +67,15 @@ class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
  public:
   CALayerTreeCoordinator(bool allow_av_sample_buffer_display_layer,
                          BufferPresentedCallback buffer_presented_callback,
+                         GLMakeCurrentCallback gl_make_current_callback,
                          id<MTLDevice> metal_device);
 
   CALayerTreeCoordinator(const CALayerTreeCoordinator&) = delete;
   CALayerTreeCoordinator& operator=(const CALayerTreeCoordinator&) = delete;
 
   virtual ~CALayerTreeCoordinator();
+
+  CALayer* root_ca_layer() const { return root_ca_layer_; }
 
   // Set the composited frame's size.
   void Resize(const gfx::Size& pixel_size, float scale_factor);
@@ -82,11 +87,14 @@ class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
   // the CALayer tree for the CoreAnimation renderer.
   CARendererLayerTree* GetPendingCARendererLayerTree();
 
+  // The number of presented frames that are still waiting to be committed.
+  virtual int NumPendingSwaps() const;
+
   virtual void Present(
       gl::Presenter::SwapCompletionCallback completion_callback,
       gl::Presenter::PresentationCallback presentation_callback);
 
-  //  Do a GL fence for flush to apply back-pressure on the committed frame.
+  //  Wait on backpressure fences for the committed frame.
   void ApplyBackpressure();
 
   // Commit the presented frame's OpenGL backbuffer or CALayer tree to be
@@ -96,13 +104,11 @@ class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
 
   void SetMaxCALayerTrees(int cap_max_ca_layer_trees);
 
-  virtual int NumPendingSwaps() const;
-
-  CALayer* root_ca_layer() { return root_ca_layer_; }
+  // Enqueue Metal backpressure fences for the current unpresented frame.
+  void EnqueueBackpressureFences(
+      std::vector<gfx::MTLSharedEventFence> metal_fences);
 
  private:
-  uint64_t CreateBackpressureFence();
-
   const bool allow_remote_layers_ = true;
   const bool allow_av_sample_buffer_display_layer_ = true;
   gfx::Size pixel_size_;
@@ -121,6 +127,8 @@ class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
 
   BufferPresentedCallback buffer_presented_callback_;
 
+  GLMakeCurrentCallback gl_make_current_callback_;
+
   // This is needed to ensure synchronization between the display compositor and
   // the HDRCopierLayer. See https://crbug.com/1372898
   id<MTLDevice> __strong metal_device_;
@@ -130,8 +138,11 @@ class ACCELERATED_WIDGET_MAC_EXPORT CALayerTreeCoordinator {
   // it will be moved to |presented_frames_|.
   std::unique_ptr<CARendererLayerTree> unpresented_ca_renderer_layer_tree_;
 
+  // Backpressure Metal fences for the current unpresented frame.
+  std::vector<gfx::MTLSharedEventFence> pending_backpressure_metal_fences_;
+
   // The frames has been presented.
-  std::queue<std::unique_ptr<PresentedFrame>> presented_frames_;
+  base::queue<PresentedFrame> presented_frames_;
 };
 
 }  // namespace ui

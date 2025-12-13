@@ -19,6 +19,13 @@ use std::process::{Command, Stdio};
 
 use anyhow::{ensure, format_err, Context, Result};
 
+/// `fn generate` implements handling of the `gnrt gen` CLI command - this
+/// covers the following steps (for either `//build/rust/std` or for
+/// `//third_party/rust`):
+///
+/// 1. Using `cargo` / `guppy` (in offline mode) to resolve transitive
+///    dependencies of `Cargo.toml`
+/// 2. Generating all required `BUILD.gn` files
 pub fn generate(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     if args.for_std.is_some() {
         generate_for_std(args, paths)
@@ -38,13 +45,15 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
 
     // The Rust source tree, containing the standard library and vendored
     // dependencies.
-    let rust_src_root = args.for_std.as_ref().unwrap();
+    // Backslashes will confuse some of the string processing later, so
+    // ensure we only use forward-slash paths, even on windows.
+    let rust_src_root = paths::normalize_unix_path_separator(args.for_std.as_ref().unwrap());
 
     println!("Generating stdlib GN rules from {rust_src_root}");
 
     let cargo_config = std::fs::read_to_string(paths.std_fake_root_config_template)
         .unwrap()
-        .replace("RUST_SRC_ROOT", rust_src_root);
+        .replace("RUST_SRC_ROOT", &rust_src_root);
     std::fs::write(
         paths.strip_template(paths.std_fake_root_config_template).unwrap(),
         cargo_config,
@@ -53,11 +62,11 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
 
     let cargo_toml = std::fs::read_to_string(paths.std_fake_root_cargo_template)
         .unwrap()
-        .replace("RUST_SRC_ROOT", rust_src_root);
+        .replace("RUST_SRC_ROOT", &rust_src_root);
     std::fs::write(paths.strip_template(paths.std_fake_root_cargo_template).unwrap(), cargo_toml)
         .unwrap();
     // Convert the `rust_src_root` to a Path hereafter.
-    let rust_src_root = paths.root.join(Path::new(rust_src_root));
+    let rust_src_root = paths.root.join(Path::new(&rust_src_root)).canonicalize().unwrap();
 
     // Delete the Cargo.lock if it exists.
     let mut std_fake_root_cargo_lock = paths.std_fake_root.to_path_buf();
@@ -306,7 +315,12 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
     for (dir, build_file) in &all_build_files {
         let build_file_path = dir.join("BUILD.gn");
         render_handlebars(&handlebars, &build_file_template_path, &build_file, &build_file_path)?;
-        format_build_file(&build_file_path)?;
+        if let Err(err) = format_build_file(&build_file_path) {
+            log::warn!(
+                "Ignoring the following `gn format` failure: {err}. \
+                 Please format the generated file(s) manually."
+            );
+        }
     }
     Ok(())
 }

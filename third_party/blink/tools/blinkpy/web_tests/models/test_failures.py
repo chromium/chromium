@@ -28,7 +28,6 @@
 
 import pickle
 import re
-import six
 from typing import ClassVar
 
 from blinkpy.web_tests.controllers import repaint_overlay

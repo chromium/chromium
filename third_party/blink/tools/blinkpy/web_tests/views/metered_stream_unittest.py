@@ -26,13 +26,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import io
 import logging
 import re
 import unittest
 
 from blinkpy.web_tests.views.metered_stream import MeteredStream
-
-from six import StringIO
 
 
 class RegularTest(unittest.TestCase):
@@ -40,7 +39,7 @@ class RegularTest(unittest.TestCase):
     isatty = False
 
     def setUp(self):
-        self.stream = StringIO()
+        self.stream = io.StringIO()
         self.stream.isatty = lambda: self.isatty
 
         # configure a logger to test that log calls do normally get included.
@@ -65,7 +64,7 @@ class RegularTest(unittest.TestCase):
     def test_logging_not_included(self):
         # This tests that if we don't hand a logger to the MeteredStream,
         # nothing is logged.
-        logging_stream = StringIO()
+        logging_stream = io.StringIO()
         handler = logging.StreamHandler(logging_stream)
         root_logger = logging.getLogger()
         orig_level = root_logger.level

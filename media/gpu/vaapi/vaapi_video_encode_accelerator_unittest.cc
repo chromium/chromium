@@ -747,16 +747,12 @@ class VaapiVideoEncodeAcceleratorTest
                           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
     CHECK(test_sii);
 
-    auto buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
+    auto format = viz::MultiPlaneFormat::kNV12;
     // Create a mappable shared image.
-    auto pixmap_handle = gpu::TestSharedImageInterface::CreatePixmapHandle(
-        kDefaultEncodeSize, buffer_format);
-    auto shared_image = test_sii->CreateSharedImage(
-        {viz::GetSharedImageFormat(buffer_format), kDefaultEncodeSize,
-         gfx::ColorSpace(), gpu::SharedImageUsageSet(si_usage),
-         "VaapiVideoEncodeAcceleratorTest"},
-        gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ,
-        std::move(pixmap_handle));
+    auto shared_image = test_sii->CreateNativePixmapBackedSharedImage(
+        {format, kDefaultEncodeSize, gfx::ColorSpace(),
+         gpu::SharedImageUsageSet(si_usage), "VaapiVideoEncodeAcceleratorTest"},
+        gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ);
     auto frame = VideoFrame::WrapMappableSharedImage(
         std::move(shared_image), test_sii->GenVerifiedSyncToken(),
         base::NullCallback(), gfx::Rect(kDefaultEncodeSize), kDefaultEncodeSize,

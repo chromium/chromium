@@ -12,7 +12,6 @@
 #include "components/viz/service/display/display_resource_provider.h"
 
 namespace cc {
-
 // Transfer resources to the parent and return the child to parent map.
 const std::
     unordered_map<viz::ResourceId, viz::ResourceId, viz::ResourceIdHasher>&
@@ -20,7 +19,7 @@ const std::
         const std::vector<viz::ResourceId>& resource_ids,
         viz::DisplayResourceProvider* resource_provider,
         viz::ClientResourceProvider* child_resource_provider,
-        viz::RasterContextProvider* child_context_provider);
+        gpu::SharedImageInterface* shared_image_interface);
 
 }  // namespace cc
 

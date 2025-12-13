@@ -53,7 +53,7 @@ int GetDataVersion(PrefService* prefs);
 // regional data and profile-specific data.
 std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
     PrefService& prefs,
-    std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
+    const std::vector<const PrepopulatedEngine*>&
         regional_prepopulated_engines);
 
 // Returns the prepopulated search engine with the given `prepopulated_id`
@@ -62,8 +62,7 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
 // template URLs.
 std::unique_ptr<TemplateURLData> GetPrepopulatedEngine(
     PrefService& prefs,
-    std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
-        regional_prepopulated_engines,
+    const std::vector<const PrepopulatedEngine*>& regional_prepopulated_engines,
     int prepopulated_id);
 
 // Returns the prepopulated search engine with the given `prepopulated_id`
@@ -74,8 +73,7 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngine(
 // could be associated with multiple country-specific variants.
 std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
     PrefService& prefs,
-    std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
-        regional_prepopulated_engines,
+    const std::vector<const PrepopulatedEngine*>& regional_prepopulated_engines,
     int prepopulated_id);
 
 // Returns the prepopulated search engine with the given `prepopulated_id`
@@ -88,7 +86,17 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
 // potential presence of search providers overrides. Use with caution.
 const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
     int prepopulated_id,
-    const std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>&
+    const std::vector<const PrepopulatedEngine*>&
+        regional_prepopulated_engines);
+
+// Returns the prepopulated search engine with the given `keyword`
+// from the full list of known prepopulated search engines, or `nullptr` if
+// it's not known there.
+// This function assumes no overrides, as a single keyword can only be
+// associated with a single search engine.
+const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
+    std::u16string_view keyword,
+    const std::vector<const PrepopulatedEngine*>&
         regional_prepopulated_engines);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -114,7 +122,7 @@ void ClearPrepopulatedEnginesInPrefs(PrefService* prefs);
 // engines available.
 std::unique_ptr<TemplateURLData> GetPrepopulatedFallbackSearch(
     PrefService& prefs,
-    std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>
+    const std::vector<const PrepopulatedEngine*>&
         regional_prepopulated_engines);
 
 // Returns all prepopulated engines for all locales.

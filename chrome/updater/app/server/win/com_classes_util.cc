@@ -169,7 +169,7 @@ std::optional<RegistrationRequest> ValidateRegistrationRequest(
     request.brand_code = *brand_code;
     request.brand_path = *brand_path;
     request.ap = *ap;
-    request.version = *version;
+    request.version = version->GetString();
     request.existence_checker_path = *existence_checker_path;
     request.install_id = *install_id;
     return request;

@@ -106,9 +106,9 @@ class CONTENT_EXPORT NavigationURLLoader {
   // Called in response to OnRequestRedirected to continue processing the
   // request.
   virtual void FollowRedirect(
-      const std::vector<std::string>& removed_headers,
-      const net::HttpRequestHeaders& modified_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_headers) = 0;
+      std::vector<std::string> removed_headers,
+      net::HttpRequestHeaders modified_headers,
+      net::HttpRequestHeaders modified_cors_exempt_headers) = 0;
 
   // Sets an overall request timeout for this navigation, which will cause the
   // navigation to fail if it expires before the navigation commits. This is

@@ -11,6 +11,7 @@ build_webui_tests("build") {
     "history_drawer_test.ts",
     "history_embeddings_promo_test.ts",
     "history_item_focus_test.ts",
+    "history_side_bar_footer_test.ts",
     "history_item_test.ts",
     "history_list_focus_test.ts",
     "history_list_test.ts",
@@ -33,10 +34,6 @@ build_webui_tests("build") {
     "chrome://history/history.js|" +
         rebase_path(
             "$root_gen_dir/chrome/browser/resources/history/tsc/history.d.ts",
-            target_gen_dir),
-    "chrome://history/lazy_load.js|" +
-        rebase_path(
-            "$root_gen_dir/chrome/browser/resources/history/tsc/lazy_load.d.ts",
             target_gen_dir),
     "chrome://history/strings.m.js|" +
         rebase_path("//tools/typescript/definitions/strings.d.ts",

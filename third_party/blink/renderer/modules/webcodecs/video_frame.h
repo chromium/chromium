@@ -9,7 +9,6 @@
 
 #include <optional>
 
-#include "base/feature_list.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
@@ -130,8 +129,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
 
  private:
   // CanvasImageSource implementation
-  scoped_refptr<Image> GetSourceImageForCanvas(FlushReason,
-                                               SourceImageStatus*,
+  scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
                                                const gfx::SizeF&) override;
 
   gfx::SizeF ElementSize(const gfx::SizeF&,

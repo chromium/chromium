@@ -54,8 +54,8 @@ void OnLoadScriptInjectorHost<ScriptId>::AddScript(
           .ValueOrDie();
   base::WritableSharedMemoryRegion script_shared_memory =
       base::WritableSharedMemoryRegion::Create(script_utf16_size);
-  UNSAFE_TODO(memcpy(script_shared_memory.Map().memory(), script_utf16.data(),
-                     script_utf16_size));
+  script_shared_memory.Map().GetMemoryAsSpan<char16_t>().copy_from(
+      script_utf16);
 
   base::ReadOnlySharedMemoryRegion script_shared_memory_readonly =
       base::WritableSharedMemoryRegion::ConvertToReadOnly(

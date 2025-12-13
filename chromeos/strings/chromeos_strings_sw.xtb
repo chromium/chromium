@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">machungwa</translation>
 <translation id="1275718070701477396">Umeichagua</translation>
 <translation id="1290331692326790741">Mtandao si thabiti</translation>
+<translation id="1292474106138697109">Onyesho la Zana za Darasani</translation>
 <translation id="1300115153046603471">APN ni aina chaguomsingi na <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Badilisha</translation>
@@ -325,7 +326,7 @@
 <translation id="2230624078793142213">Buni mandhari zaidi</translation>
 <translation id="2236746079896696523">Kipengele cha kuzima/kuwasha mwangaza wa kibodi</translation>
 <translation id="2240366984605217732">Swichi ya muundo</translation>
-<translation id="224421911978987610">kitia ukungu kwenye maudhui</translation>
+<translation id="224421911978987610">ukungu kwenye maudhui</translation>
 <translation id="2244834438220057800">rangi ya kijani</translation>
 <translation id="2248689665683494517">picha tuli ya maua machache ya Mpopi yaliyochanua katika jagi la kioo katika mandharinyuma meusi</translation>
 <translation id="225692081236532131">Hali ya kuwasha</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989">Picha <ph name="IMAGE_COUNT" /></translation>
 <translation id="4300272766492248925">Fungua programu</translation>
 <translation id="430786093962686457">shifoni</translation>
+<translation id="4309762678330556039">Tayarisha manukuu kiotomatiki na utafute sauti. Unaweza kurekodi hata wakati hujaunganishwa kwenye intaneti.</translation>
 <translation id="4310735698903592804">Mandhari ya hivi majuzi yanayoendeshwa na Google AI</translation>
 <translation id="4320904097188876154">waridi ya neoni</translation>
 <translation id="432961742358282111">Bofya kulia au ubonyeze na ushikilie ili upate maana, tafsiri au vipimo vya ugeuzaji. Tumia vitufe vya vishale vya Kushoto au Kulia kudhibiti kipengele hiki.</translation>
@@ -805,7 +807,7 @@
 <translation id="4503441351962730761">sanaa ya kisasa</translation>
 <translation id="4507392511610824664">ongeza ung'aavu</translation>
 <translation id="4511264077854731334">Tovuti kuu</translation>
-<translation id="4513946894732546136">Mwitiko</translation>
+<translation id="4513946894732546136">Maoni</translation>
 <translation id="4521826082652183069">Jina mbadala la kichwa linalolingana</translation>
 <translation id="4522570452068850558">Maelezo</translation>
 <translation id="4536864596629708641">Mipangilio ya IP</translation>
@@ -950,7 +952,7 @@
 <translation id="5145331109270917438">Tarehe ilipobadilishwa</translation>
 <translation id="5154917547274118687">Kumbukumbu</translation>
 <translation id="5160857336552977725">Ingia katika <ph name="DEVICE_TYPE" /></translation>
-<translation id="5168185087976003268">Muda wa kudumu wa betri</translation>
+<translation id="5168185087976003268">Kudumu kwa betri</translation>
 <translation id="5170568018924773124">Onyesha katika folda</translation>
 <translation id="517075088756846356">Chomoa kisha uchomeke upya kebo ya umeme ya <ph name="DEVICE_NAME" /> ili uendelee na mchakato wa kusasisha</translation>
 <translation id="5180108905184566358">miti ya mibuyu</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Chaguo zaidi</translation>
 <translation id="5600027863942488546">Kitufe cha <ph name="KEY_NAME" /> kimejaribishwa</translation>
 <translation id="5606865426897221650">Kichupo</translation>
+<translation id="5612205513582918357">Zana za Darasani zinaruhusu <ph name="RECEIVER_NAME" /> ifikie skrini yako</translation>
 <translation id="5613201299517339763">Umeondolewa kwenye akaunti</translation>
 <translation id="5620281292257375798">Ndani ya kampuni pekee</translation>
 <translation id="5628106863521633649">Lugha zinazopatikana</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Kulingana na Wingu</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Hakuna vichanganuzi vilivyopatikana</translation>
-<translation id="6231648282154119906">Faili zinazotiliwa shaka zitachanganuliwa kiotomatiki na Kipengele cha Kuvinjari Salama na Google kama sehemu ya ulinzi ulioboreshwa uliochagua</translation>
 <translation id="6232017090690406397">Betri</translation>
 <translation id="6234024205316847054">Onyesha mihtasari</translation>
 <translation id="6243280677745499710">Mandhari yaliyopo</translation>

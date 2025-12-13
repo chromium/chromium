@@ -238,12 +238,12 @@
           the Chrome menu &gt;
           <ph name="SETTINGS_TITLE">&lt;span&gt;$1&lt;/span&gt;<ex>Settings</ex></ph>
           &gt;
-          <ph name="ADVANCED_TITLE">&lt;span&gt;$2&lt;/span&gt;<ex>Under the Hood</ex></ph>
+          <ph name="SYSTEM_TITLE">&lt;span&gt;$2&lt;/span&gt;<ex>System</ex></ph>
           &gt;
-          <ph name="PROXIES_TITLE">&lt;span&gt;$3&lt;/span&gt;<ex>Change proxy settings...</ex></ph>
+          <ph name="PROXIES_TITLE">&lt;span&gt;$3&lt;/span&gt;<ex>Open your computer's proxy settings</ex></ph>
           &gt;
-          LAN Settings
-          and deselect &quot;Use a proxy server for your LAN&quot;.
+          Network &amp; internet &gt; Proxy
+          and deselect &quot;Automatically detect settings&quot;.
         </message>
         <message name="IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT" desc="Message to be displayed to the user in the device authentication prompt when they click on the mandatory auth toggle on the Payments settings page, irrespective to enable or disable it. When mandatory auth toggle is enabled, we would authenticate the user before autofilling in the payment details.">
           Google Chrome is trying to modify settings for filling payment methods.

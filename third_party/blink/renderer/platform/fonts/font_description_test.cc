@@ -67,7 +67,7 @@ TEST_F(FontDescriptionTest, TestHashCollision) {
       std::to_array<FontSelectionValue>({kNormalSlopeValue, kItalicSlopeValue});
 
   FontDescription source;
-  WTF::Vector<unsigned> hashes;
+  Vector<unsigned> hashes;
   for (size_t i = 0; i < std::size(weights); i++) {
     source.SetWeight(weights[i]);
     for (size_t j = 0; j < std::size(stretches); j++) {
@@ -427,7 +427,7 @@ TEST_F(FontDescriptionTest, AllFeaturesHash) {
   key_a = font_description.GetHash();
   EXPECT_EQ(key_a, key_b);
 
-  font_description.SetWordSpacing(1.2);
+  font_description.SetWordSpacing(Length::Fixed(1.2));
   key_b = font_description.GetHash();
   EXPECT_NE(key_a, key_b);
   key_a = font_description.GetHash();
@@ -539,7 +539,7 @@ TEST_F(FontDescriptionTest, ToString) {
   description.SetSizeAdjust(
       FontSizeAdjust(4.4f, FontSizeAdjust::Metric::kCapHeight));
   description.SetLetterSpacing(Length::Fixed(5.5f));
-  description.SetWordSpacing(6.6f);
+  description.SetWordSpacing(Length::Fixed(6.6f));
 
   description.SetStyle(FontSelectionValue(31.5));
   description.SetWeight(FontSelectionValue(32.6));
@@ -659,6 +659,28 @@ TEST_F(FontDescriptionTest, LetterSpacing) {
       CalculationValue::CreateSimplified(expression, Length::ValueRange::kAll);
   description.SetLetterSpacing(Length(calculation));
   EXPECT_EQ(description.LetterSpacing(), 30.0);
+}
+
+TEST_F(FontDescriptionTest, WordSpacing) {
+  FontDescription description;
+  description.SetComputedSize(30.0);
+
+  description.SetWordSpacing(Length::Fixed(15.0));
+  EXPECT_EQ(description.WordSpacing(), 15.0);
+
+  description.SetWordSpacing(Length::Percent(10.0));
+  EXPECT_EQ(description.WordSpacing(), 3.0);
+
+  const auto twenty_px_ten_percent =
+      PixelsAndPercent(20.0, 10.0, /*has_explicit_pixels=*/true,
+                       /*has_explicit_percent=*/true);
+  const auto* expression =
+      MakeGarbageCollected<CalculationExpressionPixelsAndPercentNode>(
+          twenty_px_ten_percent);
+  const auto* calculation =
+      CalculationValue::CreateSimplified(expression, Length::ValueRange::kAll);
+  description.SetWordSpacing(Length(calculation));
+  EXPECT_EQ(description.WordSpacing(), 23.0);
 }
 
 }  // namespace blink

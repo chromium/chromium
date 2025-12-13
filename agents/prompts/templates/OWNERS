@@ -1,0 +1,2 @@
+per-file crd.md=file://remoting/OWNERS
+per-file ios.md=scottyoder@google.com

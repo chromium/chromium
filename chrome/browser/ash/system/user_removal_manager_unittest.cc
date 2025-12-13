@@ -13,10 +13,11 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
@@ -77,8 +78,8 @@ UserRemovalManagerTest::~UserRemovalManagerTest() = default;
 // Test that the InitiateUserRemoval/RemoveUsersIfNeeded sequence results in
 // users being removed from the device.
 TEST_F(UserRemovalManagerTest, TestUserRemovingWorks) {
-  user_removal_manager::InitiateUserRemoval(base::OnceClosure());
-  EXPECT_TRUE(user_removal_manager::RemoveUsersIfNeeded());
+  user_removal_manager::InitiateUserRemoval(local_state(), base::OnceClosure());
+  EXPECT_TRUE(user_removal_manager::RemoveUsersIfNeeded(local_state()));
   EXPECT_TRUE(user_manager::UserManager::Get()->GetPersistedUsers().empty());
   EXPECT_TRUE(local_state()
                   ->FindPreference(prefs::kRemoveUsersRemoteCommand)
@@ -91,7 +92,7 @@ TEST_F(UserRemovalManagerTest, TestUserRemovingDoNotRetryOnFailure) {
   // If explicitly set to false - it means chrome might've crashed during the
   // previous removal.
   local_state()->SetBoolean(prefs::kRemoveUsersRemoteCommand, false);
-  EXPECT_FALSE(user_removal_manager::RemoveUsersIfNeeded());
+  EXPECT_FALSE(user_removal_manager::RemoveUsersIfNeeded(local_state()));
   EXPECT_FALSE(user_manager::UserManager::Get()->GetPersistedUsers().empty());
 }
 
@@ -102,7 +103,7 @@ TEST_F(UserRemovalManagerTest, TestFailsafeTimer) {
       [](bool* log_out_called) { *log_out_called = true; }, &log_out_called));
 
   // This call starts the timer.
-  user_removal_manager::InitiateUserRemoval(base::OnceClosure());
+  user_removal_manager::InitiateUserRemoval(local_state(), base::OnceClosure());
 
   // After 55s the timer is not run yet.
   task_runner_->FastForwardBy(base::Seconds(55));

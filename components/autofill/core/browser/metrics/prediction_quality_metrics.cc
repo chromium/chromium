@@ -362,7 +362,6 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
         case CREDIT_CARD_TYPE:
         case CREDIT_CARD_VERIFICATION_CODE:
         case COMPANY_NAME:
-        case FIELD_WITH_DEFAULT_VALUE:
         case MERCHANT_EMAIL_SIGNUP:
         case MERCHANT_PROMO_CODE:
         case PASSWORD:
@@ -396,7 +395,6 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
         case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
         case SINGLE_USERNAME_FORGOT_PASSWORD:
         case SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
-        case PASSPORT_NAME_TAG:
         case PASSPORT_NUMBER:
         case PASSPORT_ISSUING_COUNTRY:
         case PASSPORT_EXPIRATION_DATE:
@@ -404,14 +402,12 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
         case LOYALTY_MEMBERSHIP_PROGRAM:
         case LOYALTY_MEMBERSHIP_PROVIDER:
         case LOYALTY_MEMBERSHIP_ID:
-        case VEHICLE_OWNER_TAG:
         case VEHICLE_LICENSE_PLATE:
         case VEHICLE_VIN:
         case VEHICLE_MAKE:
         case VEHICLE_MODEL:
         case VEHICLE_YEAR:
         case VEHICLE_PLATE_STATE:
-        case DRIVERS_LICENSE_NAME_TAG:
         case DRIVERS_LICENSE_REGION:
         case DRIVERS_LICENSE_NUMBER:
         case DRIVERS_LICENSE_EXPIRATION_DATE:
@@ -421,6 +417,15 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
         case NATIONAL_ID_CARD_EXPIRATION_DATE:
         case NATIONAL_ID_CARD_ISSUE_DATE:
         case NATIONAL_ID_CARD_ISSUING_COUNTRY:
+        case REDRESS_NUMBER:
+        case KNOWN_TRAVELER_NUMBER:
+        case KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
+        case FLIGHT_RESERVATION_FLIGHT_NUMBER:
+        case FLIGHT_RESERVATION_TICKET_NUMBER:
+        case FLIGHT_RESERVATION_CONFIRMATION_CODE:
+        case FLIGHT_RESERVATION_ARRIVAL_AIRPORT:
+        case FLIGHT_RESERVATION_DEPARTURE_AIRPORT:
+        case FLIGHT_RESERVATION_DEPARTURE_DATE:
           NOTREACHED() << field_type << " type is not in that group.";
       }
       break;
@@ -692,7 +697,8 @@ void LogPredictionQualityMetrics(
     const FormStructure& form,
     const AutofillField& field,
     QualityMetricType metric_type,
-    bool log_rationalization_metrics) {
+    bool log_rationalization_metrics,
+    base::TimeTicks now) {
   // Generate histogram names.
   const char* source = GetQualityMetricPredictionSource(prediction_source);
   const char* suffix = GetQualityMetricTypeSuffix(metric_type);
@@ -705,7 +711,8 @@ void LogPredictionQualityMetrics(
 
   const FieldTypeSet& possible_types =
       metric_type == TYPE_AUTOCOMPLETE_BASED
-          ? FieldTypeSet{AutofillType(field.html_type()).GetStorableType()}
+          ? FieldTypeSet{HtmlFieldTypeToBestCorrespondingFieldType(
+                field.html_type())}
           : field.possible_types();
 
   // Get the best type classification we can for the field.
@@ -719,7 +726,7 @@ void LogPredictionQualityMetrics(
   form_interactions_ukm_logger.LogFieldType(
       source_id, form.form_parsed_timestamp(), form.form_signature(),
       field.GetFieldSignature(), prediction_source, metric_type, predicted_type,
-      actual_type);
+      actual_type, now);
 
   // NO_SERVER_DATA is the equivalent of predicting UNKNOWN.
   if (predicted_type == NO_SERVER_DATA) {
@@ -759,11 +766,12 @@ void LogHeuristicPredictionQualityMetrics(
     ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
-    QualityMetricType metric_type) {
+    QualityMetricType metric_type,
+    base::TimeTicks now) {
   LogPredictionQualityMetrics(
       PREDICTION_SOURCE_HEURISTIC, field.heuristic_type(),
       form_interactions_ukm_logger, source_id, form, field, metric_type,
-      /*log_rationalization_metrics=*/false);
+      /*log_rationalization_metrics=*/false, now);
   if (metric_type == TYPE_SUBMISSION) {
     LogHeuristicPredictionQualityPerLabelSourceMetric(field);
   }
@@ -794,38 +802,41 @@ void LogMlPredictionQualityMetrics(
     ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
-    QualityMetricType metric_type) {
+    QualityMetricType metric_type,
+    base::TimeTicks now) {
   LogPredictionQualityMetrics(
       PREDICTION_SOURCE_ML_PREDICTIONS,
       field.heuristic_type(HeuristicSource::kAutofillMachineLearning),
       form_interactions_ukm_logger, source_id, form, field, metric_type,
-      /*log_rationalization_metrics=*/false);
+      /*log_rationalization_metrics=*/false, now);
 }
 
-// static
 void LogServerPredictionQualityMetrics(
     FormInteractionsUkmLogger& form_interactions_ukm_logger,
     ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
-    QualityMetricType metric_type) {
+    QualityMetricType metric_type,
+    base::TimeTicks now) {
   LogPredictionQualityMetrics(PREDICTION_SOURCE_SERVER, field.server_type(),
                               form_interactions_ukm_logger, source_id, form,
                               field, metric_type,
-                              /*log_rationalization_metrics=*/false);
+                              /*log_rationalization_metrics=*/false, now);
 }
 
-// static
 void LogOverallPredictionQualityMetrics(
     FormInteractionsUkmLogger& form_interactions_ukm_logger,
     ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
-    QualityMetricType metric_type) {
-  LogPredictionQualityMetrics(
-      PREDICTION_SOURCE_OVERALL, field.Type().GetStorableType(),
-      form_interactions_ukm_logger, source_id, form, field, metric_type,
-      /*log_rationalization_metrics=*/true);
+    QualityMetricType metric_type,
+    base::TimeTicks now) {
+  for (FieldType field_type : field.Type().GetTypes()) {
+    LogPredictionQualityMetrics(PREDICTION_SOURCE_OVERALL, field_type,
+                                form_interactions_ukm_logger, source_id, form,
+                                field, metric_type,
+                                /*log_rationalization_metrics=*/true, now);
+  }
 }
 
 void LogEmailFieldPredictionMetrics(const AutofillField& field) {
@@ -836,7 +847,7 @@ void LogEmailFieldPredictionMetrics(const AutofillField& field) {
   }
 
   bool is_valid_email = IsValidEmailAddress(value);
-  bool is_email_prediction = field.Type().GetStorableType() == EMAIL_ADDRESS;
+  bool is_email_prediction = field.Type().GetTypes().contains(EMAIL_ADDRESS);
 
   if (is_email_prediction) {
     EmailPredictionConfusionMatrix prediction_precision =

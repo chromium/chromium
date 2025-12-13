@@ -57,7 +57,7 @@ class FakeOverlayCandidatesOzone : public ui::OverlayCandidatesOzone {
 
 class FakeNativePixmap : public gfx::NativePixmap {
  public:
-  FakeNativePixmap(gfx::Size size, gfx::BufferFormat format)
+  FakeNativePixmap(gfx::Size size, SharedImageFormat format)
       : size_(size), format_(format) {}
   bool AreDmaBufFdsValid() const override { return false; }
   int GetDmaBufFd(size_t plane) const override { return -1; }
@@ -65,7 +65,7 @@ class FakeNativePixmap : public gfx::NativePixmap {
   size_t GetDmaBufOffset(size_t plane) const override { return 0; }
   size_t GetDmaBufPlaneSize(size_t plane) const override { return 0; }
   uint64_t GetBufferFormatModifier() const override { return 0; }
-  gfx::BufferFormat GetBufferFormat() const override { return format_; }
+  SharedImageFormat GetSharedImageFormat() const override { return format_; }
   size_t GetNumberOfPlanes() const override { return 0; }
   bool SupportsZeroCopyWebGPUImport() const override { return false; }
   gfx::Size GetBufferSize() const override { return size_; }
@@ -84,7 +84,7 @@ class FakeNativePixmap : public gfx::NativePixmap {
  private:
   ~FakeNativePixmap() override = default;
   gfx::Size size_;
-  gfx::BufferFormat format_;
+  SharedImageFormat format_;
 };
 
 class MockPixmapProvider : public OverlayProcessorOzone::PixmapProvider {
@@ -101,8 +101,8 @@ class MockPixmapProvider : public OverlayProcessorOzone::PixmapProvider {
 TEST(OverlayProcessorOzoneTest, PrimaryPlaneSizeAndFormatMatches) {
   // Set up the primary plane.
   gfx::Size size(128, 128);
-  OverlayProcessorInterface::OutputSurfaceOverlayPlane primary_plane;
-  primary_plane.resource_size = size;
+  OverlayCandidate primary_plane;
+  primary_plane.resource_size_in_pixels = size;
   primary_plane.format = SinglePlaneFormat::kBGRA_8888;
   primary_plane.mailbox = gpu::Mailbox::Generate();
 
@@ -120,10 +120,10 @@ TEST(OverlayProcessorOzoneTest, PrimaryPlaneSizeAndFormatMatches) {
   auto pixmap_provider = std::make_unique<MockPixmapProvider>();
   scoped_refptr<gfx::NativePixmap> primary_plane_pixmap =
       base::MakeRefCounted<FakeNativePixmap>(size,
-                                             gfx::BufferFormat::BGRA_8888);
+                                             SinglePlaneFormat::kBGRA_8888);
   scoped_refptr<gfx::NativePixmap> candidate_pixmap =
       base::MakeRefCounted<FakeNativePixmap>(size,
-                                             gfx::BufferFormat::BGRA_8888);
+                                             SinglePlaneFormat::kBGRA_8888);
   EXPECT_CALL(*pixmap_provider, GetNativePixmap(_))
       .WillOnce(Return(primary_plane_pixmap))
       .WillOnce(Return(candidate_pixmap));
@@ -131,7 +131,7 @@ TEST(OverlayProcessorOzoneTest, PrimaryPlaneSizeAndFormatMatches) {
       std::make_unique<FakeOverlayCandidatesOzone>(), {},
       std::move(pixmap_provider));
 
-  processor.CheckOverlaySupport(&primary_plane, &candidates);
+  processor.CheckOverlaySupport(primary_plane, &candidates);
 
   // Since the |OutputSurfaceOverlayPlane|'s size and format match those of
   // primary plane's NativePixmap, the overlay candidate is promoted.
@@ -141,8 +141,8 @@ TEST(OverlayProcessorOzoneTest, PrimaryPlaneSizeAndFormatMatches) {
 TEST(OverlayProcessorOzoneTest, PrimaryPlaneFormatMismatch) {
   // Set up the primary plane.
   gfx::Size size(128, 128);
-  OverlayProcessorInterface::OutputSurfaceOverlayPlane primary_plane;
-  primary_plane.resource_size = size;
+  OverlayCandidate primary_plane;
+  primary_plane.resource_size_in_pixels = size;
   primary_plane.format = SinglePlaneFormat::kBGRA_8888;
   primary_plane.mailbox = gpu::Mailbox::Generate();
 
@@ -159,14 +159,14 @@ TEST(OverlayProcessorOzoneTest, PrimaryPlaneFormatMismatch) {
   // a different buffer format than that of the primary plane.
   auto pixmap_provider = std::make_unique<MockPixmapProvider>();
   scoped_refptr<gfx::NativePixmap> primary_plane_pixmap =
-      base::MakeRefCounted<FakeNativePixmap>(size, gfx::BufferFormat::R_8);
+      base::MakeRefCounted<FakeNativePixmap>(size, SinglePlaneFormat::kR_8);
   EXPECT_CALL(*pixmap_provider, GetNativePixmap(_))
       .WillOnce(Return(primary_plane_pixmap));
   OverlayProcessorOzone processor(
       std::make_unique<FakeOverlayCandidatesOzone>(), {},
       std::move(pixmap_provider));
 
-  processor.CheckOverlaySupport(&primary_plane, &candidates);
+  processor.CheckOverlaySupport(primary_plane, &candidates);
 
   // Since the |OutputSurfaceOverlayPlane|'s format doesn't match that of the
   // primary plane's NativePixmap, the overlay candidate is NOT promoted.
@@ -176,8 +176,8 @@ TEST(OverlayProcessorOzoneTest, PrimaryPlaneFormatMismatch) {
 TEST(OverlayProcessorOzoneTest, ColorSpaceMismatch) {
   // Set up the primary plane.
   gfx::Size size(128, 128);
-  OverlayProcessorInterface::OutputSurfaceOverlayPlane primary_plane;
-  primary_plane.resource_size = size;
+  OverlayCandidate primary_plane;
+  primary_plane.resource_size_in_pixels = size;
   primary_plane.format = SinglePlaneFormat::kBGRA_8888;
   primary_plane.mailbox = gpu::Mailbox::Generate();
 
@@ -195,10 +195,10 @@ TEST(OverlayProcessorOzoneTest, ColorSpaceMismatch) {
   auto pixmap_provider = std::make_unique<MockPixmapProvider>();
   scoped_refptr<gfx::NativePixmap> primary_plane_pixmap =
       base::MakeRefCounted<FakeNativePixmap>(size,
-                                             gfx::BufferFormat::BGRA_8888);
+                                             SinglePlaneFormat::kBGRA_8888);
   scoped_refptr<gfx::NativePixmap> candidate_pixmap =
       base::MakeRefCounted<FakeNativePixmap>(size,
-                                             gfx::BufferFormat::BGRA_8888);
+                                             SinglePlaneFormat::kBGRA_8888);
   ON_CALL(*pixmap_provider, GetNativePixmap(primary_plane.mailbox))
       .WillByDefault(Return(primary_plane_pixmap));
   ON_CALL(*pixmap_provider, GetNativePixmap(candidate.mailbox))
@@ -212,7 +212,7 @@ TEST(OverlayProcessorOzoneTest, ColorSpaceMismatch) {
   // In other platforms, this is not a restriction.
   primary_plane.color_space = gfx::ColorSpace::CreateSRGB();
   candidates[0].color_space = gfx::ColorSpace::CreateHDR10();
-  processor.CheckOverlaySupport(&primary_plane, &candidates);
+  processor.CheckOverlaySupport(primary_plane, &candidates);
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_FALSE(candidates.at(0).overlay_handled);
 #else
@@ -223,7 +223,7 @@ TEST(OverlayProcessorOzoneTest, ColorSpaceMismatch) {
 
   primary_plane.color_space = gfx::ColorSpace::CreateHDR10();
   candidates[0].color_space = gfx::ColorSpace::CreateHLG();
-  processor.CheckOverlaySupport(&primary_plane, &candidates);
+  processor.CheckOverlaySupport(primary_plane, &candidates);
   EXPECT_TRUE(candidates.at(0).overlay_handled);
 
   candidates[0] = candidate;
@@ -233,7 +233,7 @@ TEST(OverlayProcessorOzoneTest, ColorSpaceMismatch) {
   primary_plane.color_space = gfx::ColorSpace::CreateSRGB();
   candidates[0].color_space = gfx::ColorSpace::CreateHDR10();
   candidates[0].requires_overlay = true;
-  processor.CheckOverlaySupport(&primary_plane, &candidates);
+  processor.CheckOverlaySupport(primary_plane, &candidates);
   EXPECT_TRUE(candidates.at(0).overlay_handled);
 
   candidates[0] = candidate;
@@ -243,7 +243,7 @@ TEST(OverlayProcessorOzoneTest, ColorSpaceMismatch) {
   primary_plane.color_space = gfx::ColorSpace::CreateHDR10();
   candidates[0].color_space = gfx::ColorSpace();
   EXPECT_FALSE(candidates[0].color_space.IsValid());
-  processor.CheckOverlaySupport(&primary_plane, &candidates);
+  processor.CheckOverlaySupport(primary_plane, &candidates);
   EXPECT_TRUE(candidates.at(0).overlay_handled);
 }
 
@@ -274,7 +274,7 @@ TEST(OverlayProcessorOzoneTest, ObserveHardwareCapabilites) {
   // No receive_callback yet.
   EXPECT_TRUE(fake_candidates->receive_callback().is_null());
 
-  processor.CheckOverlaySupport(nullptr, &candidates);
+  processor.CheckOverlaySupport(std::nullopt, &candidates);
 
   // Receive callback is set.
   EXPECT_FALSE(fake_candidates->receive_callback().is_null());

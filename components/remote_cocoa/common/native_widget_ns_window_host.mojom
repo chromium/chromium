@@ -112,8 +112,11 @@ interface NativeWidgetNSWindowHost {
 
   // Called when the NSEvent monitor observes an event. If `event_handled` is
   // true, then do not continue dispatching the event.
+  // The `target_is_this_window` parameter is set to true if the event target
+  // was equal to the NSWindow this NativeWidgetNSWindowHost represents.
   [Sync]
-  DispatchMonitorEvent(ui.mojom.Event event) => (bool event_handled);
+  DispatchMonitorEvent(ui.mojom.Event event, bool target_is_this_window) =>
+      (bool event_handled);
 
   // Synchronously return in  |has_menu_controller| whether or not a menu
   // controller exists for this widget.
@@ -189,6 +192,12 @@ interface NativeWidgetNSWindowHost {
   // Called when the blob of data that represents the NSWindow's restorable
   // state has changed.
   OnWindowStateRestorationDataChanged(array<uint8> data);
+
+  // Called when a sheet modal is shown.
+  OnSheetModalShown();
+
+  // Called when the sheet modal is closed.
+  OnSheetModalClosed();
 
   // Called when the toolbar reveal status changes. The toolbar is visible
   // either because there are outstanding reveal locks or the mouse is

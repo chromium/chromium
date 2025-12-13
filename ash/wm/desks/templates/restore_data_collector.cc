@@ -4,8 +4,7 @@
 
 #include "ash/wm/desks/templates/restore_data_collector.h"
 
-#include "ash/multi_user/multi_user_window_manager_impl.h"
-#include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -50,7 +49,7 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
   call.root_window_to_show = root_window_to_show;
   call.template_type = template_type;
   call.template_name = template_name;
-  auto* window_manager = MultiUserWindowManagerImpl::Get();
+  auto* window_manager = MultiUserWindowManager::Get();
   auto* const shell = Shell::Get();
   auto mru_windows =
       shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);

@@ -15,6 +15,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/property_effects.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/display/win/dpi.h"
@@ -23,7 +24,7 @@
 namespace views {
 
 MenuSeparator::MenuSeparator(ui::MenuSeparatorType type) : type_(type) {
-  GetViewAccessibility().SetRole(ax::mojom::Role::kSplitter);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItemSeparator);
 }
 
 void MenuSeparator::OnPaint(gfx::Canvas* canvas) {
@@ -114,7 +115,7 @@ void MenuSeparator::SetType(ui::MenuSeparatorType type) {
   }
 
   type_ = type;
-  OnPropertyChanged(&type_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&type_, PropertyEffects::kPreferredSizeChanged);
 }
 
 BEGIN_METADATA(MenuSeparator)

@@ -24,12 +24,16 @@ constexpr char kIdentityCredentialType[] = "identity";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(FedCmCspStatus)
 enum class FedCmCspStatus {
   kSuccess = 0,
   kFailedPathButPassedOrigin = 1,
   kFailedOrigin = 2,
+
   kMaxValue = kFailedOrigin
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmCspStatus)
 
 void OnDisconnect(ScriptPromiseResolver<IDLUndefined>* resolver,
                   DisconnectStatus status) {
@@ -43,7 +47,7 @@ void OnDisconnect(ScriptPromiseResolver<IDLUndefined>* resolver,
 
 }  // namespace
 
-IdentityCredential* IdentityCredential::Create(const String& token,
+IdentityCredential* IdentityCredential::Create(const ScriptValue& token,
                                                bool is_auto_selected,
                                                const String& config_url) {
   return MakeGarbageCollected<IdentityCredential>(token, is_auto_selected,
@@ -76,23 +80,27 @@ bool IdentityCredential::IsRejectingPromiseDueToCSP(
                               FedCmCspStatus::kFailedOrigin);
   }
 
-  WTF::String error =
-      "Refused to connect to '" + provider_url.ElidedString() +
-      "' because it violates the document's Content Security Policy.";
+  String error =
+      StrCat({"Refused to connect to '", provider_url.ElidedString(),
+              "' because it violates the document's Content Security Policy."});
   resolver->RejectWithDOMException(DOMExceptionCode::kNetworkError, error);
   return true;
 }
 
-IdentityCredential::IdentityCredential(const String& token,
+IdentityCredential::IdentityCredential(const ScriptValue& token,
                                        bool is_auto_selected,
                                        const String& config_url)
     : Credential(/* id = */ "", kIdentityCredentialType),
-      token_(token),
+      token_value_(token),
       is_auto_selected_(is_auto_selected),
       config_url_(config_url) {}
 
 bool IdentityCredential::IsIdentityCredential() const {
   return true;
+}
+
+ScriptValue IdentityCredential::token(ScriptState* script_state) const {
+  return token_value_;
 }
 
 // static
@@ -140,10 +148,14 @@ ScriptPromise<IDLUndefined> IdentityCredential::disconnect(
 
   mojom::blink::IdentityCredentialDisconnectOptionsPtr disconnect_options =
       blink::mojom::blink::IdentityCredentialDisconnectOptions::From(*options);
-  auth_request->Disconnect(
-      std::move(disconnect_options),
-      WTF::BindOnce(&OnDisconnect, WrapPersistent(resolver)));
+  auth_request->Disconnect(std::move(disconnect_options),
+                           BindOnce(&OnDisconnect, WrapPersistent(resolver)));
   return promise;
+}
+
+void IdentityCredential::Trace(Visitor* visitor) const {
+  visitor->Trace(token_value_);
+  Credential::Trace(visitor);
 }
 
 }  // namespace blink

@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/map_util.h"
+#include "base/notreached.h"
 #include "base/version.h"
 #include "mojo/public/cpp/base/version_mojom_traits.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"

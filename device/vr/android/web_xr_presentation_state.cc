@@ -34,13 +34,6 @@ void WebXrFrame::Recycle() {
   recycle_once_unlocked = false;
   gvr_handoff_fence.reset();
   begin_frame_args.reset();
-
-  waiting_for_webxr = false;
-  waiting_for_overlay = false;
-  webxr_submitted = true;
-  overlay_submitted = false;
-  frame_data = nullptr;
-  render_info = nullptr;
 }
 
 WebXrPresentationState::WebXrPresentationState() {
@@ -293,11 +286,6 @@ bool WebXrPresentationState::CanProcessFrame() const {
   if (state_machine_type_ == StateMachineType::kVizComposited &&
       !animating_frame_->begin_frame_args) {
     DVLOG(2) << __func__ << ": waiting for BeginFrameArgs";
-    return false;
-  }
-
-  if (animating_frame_->waiting_for_webxr ||
-      animating_frame_->waiting_for_overlay) {
     return false;
   }
 

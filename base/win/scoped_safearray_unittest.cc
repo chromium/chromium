@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/win/scoped_safearray.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,7 +35,7 @@ static void PopulateScopedSafearrayOfInts(ScopedSafearray& scoped_safe_array) {
   ASSERT_HRESULT_SUCCEEDED(SafeArrayAccessData(
       scoped_safe_array.Get(), reinterpret_cast<void**>(&int_array)));
   for (size_t i = 0; i < kInputValues.size(); ++i) {
-    int_array[i] = kInputValues[i];
+    UNSAFE_TODO(int_array[i]) = kInputValues[i];
   }
   ASSERT_HRESULT_SUCCEEDED(SafeArrayUnaccessData(scoped_safe_array.Get()));
 }

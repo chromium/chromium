@@ -6,6 +6,7 @@
 
 #include <atomic>
 #include <limits>
+#include <memory>
 #include <string_view>
 #include <utility>
 
@@ -316,8 +317,10 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::GetHistogram(
           '\0' ||
       data->samples_metadata.id == 0 || data->logged_metadata.id == 0 ||
       // Note: Sparse histograms use `id + 1` in `logged_metadata`.
-      (data->logged_metadata.id != data->samples_metadata.id &&
-       data->logged_metadata.id != data->samples_metadata.id + 1) ||
+      (data->histogram_type == SPARSE_HISTOGRAM
+           ? (data->logged_metadata.id != data->samples_metadata.id &&
+              data->logged_metadata.id != data->samples_metadata.id + 1)
+           : (data->logged_metadata.id != data->samples_metadata.id)) ||
       // Most non-matching values happen due to truncated names. Ideally, we
       // could just verify the name length based on the overall alloc length,
       // but that doesn't work because the allocated block may have been
@@ -774,7 +777,7 @@ bool GlobalHistogramAllocator::CreateWithFile(const FilePath& file_path,
     return false;
   }
 
-  std::unique_ptr<MemoryMappedFile> mmfile(new MemoryMappedFile());
+  auto mmfile = std::make_unique<MemoryMappedFile>();
   bool success = false;
   const bool file_created = file.created();
   if (file_created) {
@@ -834,7 +837,7 @@ bool GlobalHistogramAllocator::CreateWithActiveFileInDir(
     std::string_view name) {
   FilePath base_path = ConstructFilePath(dir, name);
   FilePath active_path = ConstructFilePathForActiveFile(dir, name);
-  FilePath spare_path = ConstructFilePath(dir, std::string(name) + "-spare");
+  FilePath spare_path = ConstructFilePathForSpareFile(dir, name);
   return CreateWithActiveFile(base_path, active_path, spare_path, size, id,
                               name);
 }
@@ -851,6 +854,13 @@ FilePath GlobalHistogramAllocator::ConstructFilePathForActiveFile(
     const FilePath& dir,
     std::string_view name) {
   return ConstructFilePath(dir, std::string(name) + "-active");
+}
+
+// static
+FilePath GlobalHistogramAllocator::ConstructFilePathForSpareFile(
+    const FilePath& dir,
+    std::string_view name) {
+  return ConstructFilePath(dir, std::string(name) + "-spare");
 }
 
 // static

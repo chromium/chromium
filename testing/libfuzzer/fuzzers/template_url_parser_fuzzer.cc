@@ -54,18 +54,17 @@ void ignore(void* ctx, const char* msg, ...) {
 
 class Env {
  public:
-  Env() : executor_(base::MessagePumpType::IO) {
+  Env() {
     mojo::core::Init();
     xmlSetGenericErrorFunc(nullptr, &ignore);
   }
-
- private:
-  base::SingleThreadTaskExecutor executor_;
-  data_decoder::test::InProcessDataDecoder data_decoder_;
 };
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Env env;
+  base::SingleThreadTaskExecutor executor(base::MessagePumpType::IO);
+  data_decoder::test::InProcessDataDecoder data_decoder;
+
   if (size < sizeof(FuzzerFixedParams)) {
     return 0;
   }
@@ -96,5 +95,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   run_loop.Run();
 
+  // Calling TemplateURLParser::Parse() creates a Remote which is destroyed
+  // when the callback runs. Shutting down in the middle of this causes
+  // low-level classes like ipcz::TrapSet::Trap to be leaked.
+  //
+  // Wait for Mojo to finish cleaning up to avoid leaks.
+  base::RunLoop().RunUntilIdle();
   return 0;
 }

@@ -30,6 +30,7 @@
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/loader/code_cache_util.h"
 #include "third_party/blink/public/common/page/v8_compile_hints_histograms.h"
 
@@ -78,6 +79,11 @@ class CodeCacheBrowserTest
           std::pair<CodeCacheTestCase, BackgroundResourceFetchTestCase>> {
  public:
   CodeCacheBrowserTest() {
+    // This test directly inspects and manipulates `GeneratedCodeCache` objects
+    // which are not usable under the feature.
+    feature_use_persistent_cache_for_code_cache_.InitAndDisableFeature(
+        blink::features::kUsePersistentCacheForCodeCache);
+
     // Enable the split HTTP cache since the GeneratedCodeCache won't consider
     // partitioning by NIK unless the HTTP cache does.
     feature_split_cache_by_network_isolation_key_.InitAndEnableFeature(
@@ -124,7 +130,7 @@ class CodeCacheBrowserTest
 
     // Worker scripts will fetch this once the cacheable resource has been
     // loaded and the test logic (checking histograms) can continue.
-    if (absolute_url.path() == "/done.js") {
+    if (absolute_url.GetPath() == "/done.js") {
       GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(done_callback_));
 
       auto http_response =
@@ -138,7 +144,7 @@ class CodeCacheBrowserTest
 
     // Returns a JavaScript file that should be cacheable by the
     // GeneratedCodeCache (>1024 characters).
-    if (absolute_url.path() == "/cacheable.js") {
+    if (absolute_url.GetPath() == "/cacheable.js") {
       if (trigger_validation_requests_ &&
           base::Contains(request.headers, "If-Modified-Since")) {
         auto http_response =
@@ -173,7 +179,7 @@ class CodeCacheBrowserTest
     }
 
     // Returns an HTML file that will load /cacheable.js.
-    if (absolute_url.path() == "/cacheable.html") {
+    if (absolute_url.GetPath() == "/cacheable.html") {
       auto http_response =
           std::make_unique<net::test_server::BasicHttpResponse>();
       http_response->set_code(net::HTTP_OK);
@@ -189,7 +195,7 @@ class CodeCacheBrowserTest
     // Returns a JavaScript file that should itself be eligible for caching in
     // the GeneratedCodeCache and that will load /cacheable.js via
     // importScripts.
-    if (absolute_url.path() == "/worker.js") {
+    if (absolute_url.GetPath() == "/worker.js") {
       auto http_response =
           std::make_unique<net::test_server::BasicHttpResponse>();
       http_response->set_code(net::HTTP_OK);
@@ -210,7 +216,7 @@ class CodeCacheBrowserTest
     }
 
     // Return a page that will create a Shared Worker that uses /worker.js.
-    if (absolute_url.path() == "/shared-worker.html") {
+    if (absolute_url.GetPath() == "/shared-worker.html") {
       auto http_response =
           std::make_unique<net::test_server::BasicHttpResponse>();
       http_response->set_code(net::HTTP_OK);
@@ -225,7 +231,7 @@ class CodeCacheBrowserTest
 
     // Returns a JavaScript module file that should be cacheable by the
     // GeneratedCodeCache (>1024 characters).
-    if (absolute_url.path() == "/cacheable_module.js") {
+    if (absolute_url.GetPath() == "/cacheable_module.js") {
       auto http_response =
           std::make_unique<net::test_server::BasicHttpResponse>();
       http_response->set_code(net::HTTP_OK);
@@ -246,7 +252,7 @@ class CodeCacheBrowserTest
     }
 
     // Returns an HTML file that will load /cacheable_module.js.
-    if (absolute_url.path() == "/cacheable_module.html") {
+    if (absolute_url.GetPath() == "/cacheable_module.html") {
       auto http_response =
           std::make_unique<net::test_server::BasicHttpResponse>();
       http_response->set_code(net::HTTP_OK);
@@ -317,6 +323,7 @@ class CodeCacheBrowserTest
   std::optional<net::HttpStatusCode> last_cache_js_response_code_;
 
  private:
+  base::test::ScopedFeatureList feature_use_persistent_cache_for_code_cache_;
   base::test::ScopedFeatureList feature_split_cache_by_network_isolation_key_;
   base::test::ScopedFeatureList feature_third_party_storage_partitioning_;
   base::test::ScopedFeatureList
@@ -824,7 +831,7 @@ class CompileHintsBrowserTest : public ContentBrowserTest {
 
     // Returns a JavaScript file that should be cacheable by the
     // GeneratedCodeCache (>1024 characters).
-    if (absolute_url.path() == "/cacheable.js") {
+    if (absolute_url.GetPath() == "/cacheable.js") {
       auto http_response =
           std::make_unique<net::test_server::BasicHttpResponse>();
       http_response->set_code(net::HTTP_OK);
@@ -849,7 +856,7 @@ class CompileHintsBrowserTest : public ContentBrowserTest {
     }
 
     // Returns an HTML file that will load /cacheable.js.
-    if (absolute_url.path() == "/cacheable.html") {
+    if (absolute_url.GetPath() == "/cacheable.html") {
       auto http_response =
           std::make_unique<net::test_server::BasicHttpResponse>();
       http_response->set_code(net::HTTP_OK);
@@ -872,21 +879,33 @@ class LocalCompileHintsBrowserTest : public CompileHintsBrowserTest {
         blink::features::kLocalCompileHints);
     interactive_detector_ignore_fcp_.InitAndEnableFeature(
         blink::features::kInteractiveDetectorIgnoreFcp);
+
+    // This test directly inspects and manipulates `GeneratedCodeCache` objects
+    // which are not usable under the feature.
+    feature_use_persistent_cache_for_code_cache_.InitAndDisableFeature(
+        blink::features::kUsePersistentCacheForCodeCache);
   }
 
  private:
   base::test::ScopedFeatureList local_compile_hints_;
   base::test::ScopedFeatureList interactive_detector_ignore_fcp_;
+  base::test::ScopedFeatureList feature_use_persistent_cache_for_code_cache_;
 };
 
 class NoLocalCompileHintsBrowserTest : public CompileHintsBrowserTest {
  public:
   NoLocalCompileHintsBrowserTest() {
+    // This test directly expects histograms from `GeneratedCodeCache` which are
+    // not present under the feature.
+    feature_use_persistent_cache_for_code_cache_.InitAndDisableFeature(
+        blink::features::kUsePersistentCacheForCodeCache);
+
     local_compile_hints_.InitAndDisableFeature(
         blink::features::kLocalCompileHints);
   }
 
  private:
+  base::test::ScopedFeatureList feature_use_persistent_cache_for_code_cache_;
   base::test::ScopedFeatureList local_compile_hints_;
 };
 

@@ -12,23 +12,23 @@ namespace net {
 
 namespace {
 
-int kObsoleteVersion = SSL_CONNECTION_VERSION_TLS1;
-int kModernVersion = SSL_CONNECTION_VERSION_TLS1_2;
+constexpr int kObsoleteVersion = SSL_CONNECTION_VERSION_TLS1;
+constexpr int kModernVersion = SSL_CONNECTION_VERSION_TLS1_2;
 
-uint16_t kModernCipherSuite =
+constexpr uint16_t kModernCipherSuite =
     0xc02f; /* TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 */
 
-uint16_t kObsoleteCipherObsoleteKeyExchange =
+constexpr uint16_t kObsoleteCipherObsoleteKeyExchange =
     0x2f; /* TLS_RSA_WITH_AES_128_CBC_SHA */
-uint16_t kObsoleteCipherModernKeyExchange =
+constexpr uint16_t kObsoleteCipherModernKeyExchange =
     0xc014; /* TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA */
-uint16_t kModernCipherObsoleteKeyExchange =
+constexpr uint16_t kModernCipherObsoleteKeyExchange =
     0x9c; /* TLS_RSA_WITH_AES_128_GCM_SHA256 */
-uint16_t kModernCipherModernKeyExchange =
+constexpr uint16_t kModernCipherModernKeyExchange =
     0xc02f; /* TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 */
 
-uint16_t kObsoleteSignature = SSL_SIGN_RSA_PKCS1_SHA1;
-uint16_t kModernSignature = SSL_SIGN_RSA_PSS_RSAE_SHA256;
+constexpr uint16_t kObsoleteSignature = SSL_SIGN_RSA_PKCS1_SHA1;
+constexpr uint16_t kModernSignature = SSL_SIGN_RSA_PSS_RSAE_SHA256;
 
 int MakeConnectionStatus(int version, uint16_t cipher_suite) {
   int connection_status = 0;

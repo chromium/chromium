@@ -24,20 +24,20 @@ by a child template that "extends" this file.
 
     <uses-feature android:glEsVersion="0x00030000" />
 
+
+    <!-- Needed for
+          * servicing requests from websites to obtain location through the Web Geolocation API,
+            which, however, is further gated on the user expressly granting the geolocation
+            permission to individual web origins
+          * supporting bluetooth discovery pre-S
+          * providing a geolocation header to the default search engine; used to annotate omnibox
+            suggestions, search prefetch and search navigation requests.
+    -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-    <!--
-      Enable runtime permissions as uses-permission in tip of tree builds
-      only for ease of development on Android L and earlier. For consumer
-      channels use "runtime permission" uses-permission-sdk-23 which provides
-      permission on Android M and later without a prompt.
-    -->
-    {% if channel in ['default'] %}
-        <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
-    {% endif %}
 
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_ADSERVICES_ATTRIBUTION" />
     <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30"/>
@@ -64,9 +64,12 @@ by a child template that "extends" this file.
 
     <uses-permission-sdk-23 android:name="android.permission.READ_CONTACTS"/>
     <uses-permission-sdk-23 android:name="android.permission.REORDER_TASKS"/>
+
+    <!--  Needed for allowing downloaded APKs to be installed. -->
     <uses-permission-sdk-23 android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.CAPTURE_KEYBOARD" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     {% set is_desktop_android = is_desktop_android|default(0) %}
@@ -89,11 +92,20 @@ by a child template that "extends" this file.
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-permission android:name="android.permission.NFC"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Needed to determine whether an app installed on the device should handle a web navigation.  -->
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission-sdk-23 android:name="android.permission.READ_MEDIA_AUDIO"/>
+
+    <!-- Needed for handling media-viewing Intents from other apps for images and video on low end
+         or managed devices (eg. crbug.com/40546519), monitoring of screenshots if permission has
+         been previously granted (doesn't request independently) (crbug.com/40520892), and
+         Chromium's custom photo picker used on Android S and below (crbug.com/40489056) -->
     <uses-permission-sdk-23 android:name="android.permission.READ_MEDIA_IMAGES"/>
     <uses-permission-sdk-23 android:name="android.permission.READ_MEDIA_VIDEO"/>
+
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <!--
@@ -217,6 +229,9 @@ by a child template that "extends" this file.
         android:allowAudioPlaybackCapture="false"
         android:appComponentFactory="org.chromium.chrome.browser.base.SplitCompatAppComponentFactory"
         android:enableOnBackInvokedCallback="true"
+        {% if javaless_renderers is defined %}
+        android:zygotePreloadNativeLib="lib{{ library_name }}.so"
+        {% endif %}
         {% block extra_application_attributes %}{% endblock %}>
 
         {% if channel in ['canary', 'dev', 'default'] %}
@@ -279,6 +294,13 @@ by a child template that "extends" this file.
                 <data android:mimeType="text/html"/>
                 <data android:mimeType="text/plain"/>
                 <data android:mimeType="application/xhtml+xml"/>
+            </intent-filter>
+            <!-- PDF viewing support. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/pdf" />
+                <data android:scheme="content" />
             </intent-filter>
             <!-- MHTML support, used for snapshots -->
             <intent-filter>
@@ -385,6 +407,17 @@ by a child template that "extends" this file.
             </intent-filter>
         </activity>
 
+        <activity android:name="org.chromium.chrome.browser.media.DocumentPictureInPictureActivity"
+            android:exported="false"
+            android:noHistory="true"
+            android:theme="@style/Theme.Chromium.Activity"
+            android:excludeFromRecents="true"
+            android:configChanges=
+                       "screenSize|smallestScreenSize|screenLayout|orientation"
+            {{ self.supports_video_persistence() }}
+        >
+        </activity>
+
         <activity android:name="org.chromium.chrome.browser.media.PictureInPictureActivity"
                   android:exported="false"
                   android:noHistory="true"
@@ -401,8 +434,6 @@ by a child template that "extends" this file.
              images in that case. -->
         <activity-alias android:name="org.chromium.chrome.browser.media.AudioLauncherActivity"
             android:targetActivity="org.chromium.chrome.browser.media.MediaLauncherActivity"
-            android:theme="@style/Theme.BrowserUI.NoDisplay"
-            android:excludeFromRecents="true"
             android:exported="true"
             android:enabled="false"><!-- This will be selectively enabled at runtime. -->
             <intent-filter tools:ignore="AppLinkUrlError">
@@ -594,7 +625,7 @@ by a child template that "extends" this file.
             @android:style/Theme.NoDisplay can't be used here.
         -->
         <activity android:name="org.chromium.chrome.browser.sync.ui.SyncTrustedVaultProxyActivity"
-            android:theme="@style/Theme.Material3.DayNight"
+            android:theme="@style/Theme.Material3Expressive.DayNight"
             android:excludeFromRecents="true"
             android:exported="false">
         </activity>
@@ -603,7 +634,7 @@ by a child template that "extends" this file.
             android:autoRemoveFromRecents="true">
         </activity>
         <activity android:name="org.chromium.chrome.browser.firstrun.LightweightFirstRunActivity"
-            android:theme="@style/Theme.BrowserUI.AlertDialog.NoActionBar.DayNight"
+            android:theme="@style/Theme.BrowserUI.DayNight.AlertDialog.NoActionBar"
             android:launchMode="singleInstance"
             {{ self.first_run_activity_common() }}>
         </activity>
@@ -655,6 +686,12 @@ by a child template that "extends" this file.
             android:label="@string/storage_management_activity_label"
             android:exported="false">
         </activity>
+        <activity
+            android:name="org.chromium.chrome.browser.chrome_item_picker.ChromeItemPickerActivity"
+            android:theme="@style/Theme.Chromium.WithWindowAnimation"
+            android:exported="false"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode">
+        </activity>
 
         <!-- Activities for bookmarks. -->
         <activity android:name="org.chromium.chrome.browser.app.bookmarks.BookmarkActivity"
@@ -681,10 +718,7 @@ by a child template that "extends" this file.
         <!-- Activities for downloads. -->
         <activity-alias android:name="org.chromium.chrome.browser.download.DownloadActivity"
             android:targetActivity="org.chromium.chrome.browser.app.download.home.DownloadActivity"
-            android:theme="@style/Theme.Chromium.Activity.Fullscreen"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
-            android:exported="false"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize">
+            android:exported="false">
         </activity-alias>
         <activity android:name="org.chromium.chrome.browser.app.download.home.DownloadActivity"
             android:theme="@style/Theme.Chromium.Activity.Fullscreen"
@@ -775,8 +809,7 @@ by a child template that "extends" this file.
         </activity>
         <activity-alias android:name="com.google.android.apps.chrome.webapps.WebappActivity"
             android:targetActivity="org.chromium.chrome.browser.webapps.WebappActivity"
-            android:label="@string/webapp_activity_title"
-            {{ self.supports_video_persistence() }} >
+            android:label="@string/webapp_activity_title">
         </activity-alias>
         <!-- Activities for WebAPKs. -->
         <activity android:name="org.chromium.chrome.browser.webapps.SameTaskWebApkActivity"
@@ -900,6 +933,9 @@ by a child template that "extends" this file.
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
+            </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/quick_action_search_widget_small_info" />
@@ -911,6 +947,9 @@ by a child template that "extends" this file.
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
@@ -948,6 +987,9 @@ by a child template that "extends" this file.
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
+            </intent-filter>
             <meta-data
                     android:name="android.appwidget.provider"
                     android:resource="@xml/search_widget_info" />
@@ -957,7 +999,7 @@ by a child template that "extends" this file.
         <activity android:name="org.chromium.chrome.browser.searchwidget.SearchActivity"
             android:theme="@style/Theme.Chromium.SearchActivity"
             android:label="Search"
-            android:exported="false"
+            android:exported="true"
             android:launchMode="singleTask"
             android:taskAffinity=""
             android:clearTaskOnLaunch="true"
@@ -972,14 +1014,6 @@ by a child template that "extends" this file.
             </intent-filter>
       </activity>
 
-        <!-- GcmTaskService for registration for Invalidations. Not actually implemented anymore. -->
-        <service android:name="com.google.ipc.invalidation.ticl.android2.channel.GcmRegistrationTaskService"
-            android:exported="true"
-            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE" >
-            <intent-filter>
-                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY"/>
-            </intent-filter>
-        </service>
         <!-- GcmListenerService for messages from GCM. -->
         <service android:name="org.chromium.chrome.browser.services.gcm.ChromeGcmListenerService"
             android:exported="false" >
@@ -1026,15 +1060,6 @@ by a child template that "extends" this file.
         <service android:name="org.chromium.chrome.browser.notifications.NotificationJobService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE"/>
-
-        <!-- GcmTaskService implementation to wake Chrome on scheduled events -->
-        <service android:name="org.chromium.chrome.browser.ChromeBackgroundService"
-            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
-            </intent-filter>
-        </service>
 
         <service android:name="org.chromium.chrome.browser.customtabs.CustomTabsConnectionService"
             android:exported="true"
@@ -1186,6 +1211,16 @@ by a child template that "extends" this file.
         <service android:name="org.chromium.chrome.browser.app.usb.UsbNotificationService"
             android:exported="false"/>
 
+        <service android:name="org.chromium.chrome.browser.data_import.DataImporterService"
+            android:exported="true" tools:ignore="ExportedService">
+          <intent-filter>
+            <action android:name="io.grpc.action.BIND" />
+            <data android:host=""
+                android:path="/com.google.osmigration.systemappapi.TargetService"
+                android:scheme="grpc" />
+          </intent-filter>
+        </service>
+
         <meta-data android:name="org.chromium.content.browser.SMART_CLIP_PROVIDER"
             android:value="org.chromium.content_public.browser.SmartClipProvider"/>
 
@@ -1194,9 +1229,20 @@ by a child template that "extends" this file.
             android:excludeFromRecents="true"
             android:exported="true"
             android:noHistory="true"
-            android:theme="@style/Theme.Material3.DayNight"
+            android:theme="@style/Theme.Material3Expressive.DayNight"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize" >
         </activity>
+
+        <!-- This activity is Android P- only which is not supported by Chrome now. -->
+        <activity
+            android:name="androidx.biometric.internal.ui.FingerprintDialogActivity"
+            tools:node="remove">
+        </activity>
+
+        <!-- Disabled via CastOptionsProvider. -->
+        <service
+            android:name="com.google.android.gms.cast.framework.ReconnectionService"
+            tools:node="remove" />
 
         <property android:name="android.adservices.AD_SERVICES_CONFIG"
             android:resource="@xml/ad_services_config" />
@@ -1257,6 +1303,31 @@ by a child template that "extends" this file.
           android:visibleToInstantApps="true"
           {% endif %} />
       {% endfor %}
+      {% if javaless_renderers is defined %}
+      <!-- Restricting to just 2 native-only services, one for zygote and one for non-zygote. -->
+      {% for i in range(2) %}
+      <!-- For now, the name of a native-only service must be prefixed with "NativeService". This is
+           only for the prototype, and once it actually lands in the Android tree, there will be a
+           better mechanism than this. -->
+      <service android:name="org.chromium.content.app.NativeServiceSandboxedProcessService{{ i }}"
+          android:nativeService="true"
+          android:process=":sandboxed_process{{ i }}"
+          android:permission="{{ manifest_package }}.permission.CHILD_SERVICE"
+          android:isolatedProcess="true"
+          android:useAppZygote="true"
+          android:exported="{{sandboxed_service_exported|default(false)}}"
+          {% if (sandboxed_service_exported|default(false)) == 'true' %}
+          android:externalService="true"
+          tools:ignore="ExportedService"
+          android:visibleToInstantApps="true"
+          {% endif %} >
+          <property android:name="android.app.PROPERTY_NATIVE_SERVICE_LIBRARY_NAME"
+              android:value="lib{{ library_name }}.so" />
+          <property android:name="android.app.PROPERTY_NATIVE_SERVICE_FUNCTION_NAME"
+              android:value="NativeChildProcessService_onCreate" />
+      </service>
+      {% endfor %}
+      {% endif %}
 
       {% set num_privileged_services = 10 %}
       <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES"
@@ -1356,6 +1427,7 @@ by a child template that "extends" this file.
           android:name="androidx.startup.InitializationProvider"
           tools:node="remove">
       </provider>
+
       <!-- We call FirebaseApp.initializeApp() explicitly rather than relying on this hook for better control over when it happens. -->
       <provider
           android:name="com.google.firebase.provider.FirebaseInitProvider"

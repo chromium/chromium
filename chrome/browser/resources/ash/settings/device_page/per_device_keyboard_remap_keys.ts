@@ -605,6 +605,8 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         this.set('fakeFunctionPref.value', targetKey);
         break;
       }
+      default:
+        break;
     }
   }
 
@@ -744,6 +746,8 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
           break;
         case SixPackKey.PAGE_DOWN:
           this.set('pageDownPref.value', modifier);
+          break;
+        default:
           break;
       }
     });

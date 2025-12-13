@@ -20,9 +20,7 @@ class CustomStateIterationSource : public CustomStateSet::IterationSource {
     CustomStateSet::IterationSource::Trace(visitor);
   }
 
-  bool FetchNextItem(ScriptState*,
-                     String& out_value,
-                     ExceptionState&) override {
+  bool FetchNextItem(ScriptState*, String& out_value) override {
     if (index_ >= states_->list_.size())
       return false;
     out_value = states_->list_[index_++];
@@ -70,8 +68,9 @@ bool CustomStateSet::deleteForBinding(ScriptState*,
                                       const String& value,
                                       ExceptionState&) {
   wtf_size_t index = list_.Find(value);
-  if (index == WTF::kNotFound)
+  if (index == kNotFound) {
     return false;
+  }
   list_.EraseAt(index);
   for (auto& iterator : iterators_)
     iterator->DidEraseAt(index);
@@ -90,8 +89,7 @@ bool CustomStateSet::Has(const String& value) const {
 }
 
 CustomStateSet::IterationSource* CustomStateSet::CreateIterationSource(
-    ScriptState*,
-    ExceptionState&) {
+    ScriptState*) {
   auto* iterator = MakeGarbageCollected<CustomStateIterationSource>(*this);
   iterators_.insert(iterator);
   return iterator;

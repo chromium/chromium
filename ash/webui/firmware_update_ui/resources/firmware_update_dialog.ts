@@ -15,7 +15,6 @@ import '/strings.m.js';
 import type {I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {DeviceRequest, DeviceRequestObserverInterface, FirmwareUpdate, InstallationProgress, InstallControllerRemote, UpdateProgressObserverInterface} from './firmware_update.mojom-webui.js';
@@ -297,7 +296,7 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
     const {percentage} = this.installationProgress;
     assert(this.lastDeviceRequestId !== null);
 
-    const deviceNameString: string = mojoString16ToString(deviceName);
+    const deviceNameString: string = deviceName;
 
     return {
       title: this.i18n('updating', deviceNameString),
@@ -316,7 +315,7 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
       [
         UpdateState.kUpdating,
         {
-          title: this.i18n('updating', mojoString16ToString(deviceName)),
+          title: this.i18n('updating', deviceName),
           body: this.i18n('updatingInfo'),
           footer: this.i18n('installing', percentage),
         },
@@ -324,8 +323,7 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
       [
         UpdateState.kRestarting,
         {
-          title: this.i18n(
-              'restartingTitleText', mojoString16ToString(deviceName)),
+          title: this.i18n('restartingTitleText', deviceName),
           body: this.i18n('restartingBodyText'),
           footer: this.i18n('restartingFooterText'),
         },
@@ -333,8 +331,7 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
       [
         UpdateState.kFailed,
         {
-          title: this.i18n(
-              'updateFailedTitleText', mojoString16ToString(deviceName)),
+          title: this.i18n('updateFailedTitleText', deviceName),
           body: this.i18n('updateFailedBodyText'),
           footer: '',
         },
@@ -343,18 +340,14 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
 
     if (needsReboot) {
       dialogContent.set(UpdateState.kSuccess, {
-        title: this.i18n(
-            'deviceReadyToInstallUpdate', mojoString16ToString(deviceName)),
-        body: this.i18n(
-            'deviceNeedsReboot', mojoString16ToString(deviceName),
-            deviceVersion),
+        title: this.i18n('deviceReadyToInstallUpdate', deviceName),
+        body: this.i18n('deviceNeedsReboot', deviceName, deviceVersion),
         footer: '',
       });
     } else {
       dialogContent.set(UpdateState.kSuccess, {
-        title: this.i18n('deviceUpToDate', mojoString16ToString(deviceName)),
-        body: this.i18n(
-            'hasBeenUpdated', mojoString16ToString(deviceName), deviceVersion),
+        title: this.i18n('deviceUpToDate', deviceName),
+        body: this.i18n('hasBeenUpdated', deviceName, deviceVersion),
         footer: '',
       });
     }

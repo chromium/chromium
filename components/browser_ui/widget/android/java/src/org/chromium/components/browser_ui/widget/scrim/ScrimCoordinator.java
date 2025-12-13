@@ -14,8 +14,7 @@ import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
@@ -24,9 +23,10 @@ import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * The coordinator for the scrim components. Creating and owning the mediator and view, and scoped
@@ -105,7 +105,7 @@ public class ScrimCoordinator {
      * no active scrim or the scrim doesn't affect the status bar, then a fully transparent color
      * will be returned.
      */
-    public ObservableSupplier<Integer> getStatusBarColorSupplier() {
+    public NonNullObservableSupplier<Integer> getStatusBarColorSupplier() {
         return mMediator.getStatusBarColorSupplier();
     }
 
@@ -114,7 +114,7 @@ public class ScrimCoordinator {
      * active scrim or the scrim doesn't affect the nav bar, then a fully transparent color will be
      * returned.
      */
-    public ObservableSupplier<Integer> getNavigationBarColorSupplier() {
+    public NonNullObservableSupplier<Integer> getNavigationBarColorSupplier() {
         return mMediator.getNavigationBarColorSupplier();
     }
 
@@ -218,11 +218,11 @@ public class ScrimCoordinator {
         if (mView == null || mView.getParent() == null) {
             return Collections.singletonList(-1);
         } else {
-            LinkedList<Integer> list = new LinkedList<>();
+            ArrayList<Integer> list = new ArrayList<>();
             ViewGroup parent = (ViewGroup) mView.getParent();
             View child = mView;
             while (parent != null && child != root) {
-                list.addFirst(parent.indexOfChild(child));
+                list.add(parent.indexOfChild(child));
                 child = parent;
                 parent = (ViewGroup) parent.getParent();
             }
@@ -230,6 +230,7 @@ public class ScrimCoordinator {
             if (parent == null) {
                 return Collections.singletonList(-1);
             }
+            Collections.reverse(list);
             return list;
         }
     }

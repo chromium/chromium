@@ -78,6 +78,9 @@ inline constexpr int kModalButtonSpinnerSize = 20;
 
 inline constexpr char kImageFetcherUmaClient[] = "FedCMAccountChooser";
 
+using AccountSelectionCallback =
+    base::RepeatingCallback<bool(const ui::Event&)>;
+
 class BrandIconImageView : public views::ImageView {
   METADATA_HEADER(BrandIconImageView, views::ImageView)
 
@@ -98,7 +101,7 @@ class BrandIconImageView : public views::ImageView {
 
 class AccountHoverButton : public HoverButton {
  public:
-  AccountHoverButton(PressedCallback callback,
+  AccountHoverButton(AccountSelectionCallback callback,
                      std::unique_ptr<views::View> icon_view,
                      const std::u16string& title,
                      const std::u16string& subtitle,
@@ -108,7 +111,7 @@ class AccountHoverButton : public HoverButton {
                      int button_position);
   AccountHoverButton(const AccountHoverButton&) = delete;
   AccountHoverButton& operator=(const AccountHoverButton&) = delete;
-  ~AccountHoverButton() override = default;
+  ~AccountHoverButton() override;
 
   // HoverButton
   void StateChanged(ButtonState old_state) override;
@@ -125,10 +128,10 @@ class AccountHoverButton : public HoverButton {
   void ReplaceSecondaryViewWithSpinner();
 
   // Used for testing.
-  void SetCallbackForTesting(PressedCallback callback);
+  void SetCallbackForTesting(AccountSelectionCallback callback);
 
  private:
-  PressedCallback callback_;
+  AccountSelectionCallback callback_;
   // The order of this account button relative to other account buttons in
   // the dialog (e.g. 0 is the topmost account, 1 the one below it, etc.). Used
   // to record a metric when the button is clicked.
@@ -204,6 +207,8 @@ class AccountSelectionViewBase {
 
   // Gets the subtitle of the dialog, if any.
   virtual std::optional<std::string> GetDialogSubtitle() const = 0;
+
+  virtual void UpdateTitleAndSubtitle(const content::RelyingPartyData& rp_data);
 
  protected:
   void SetLabelProperties(views::Label* label);

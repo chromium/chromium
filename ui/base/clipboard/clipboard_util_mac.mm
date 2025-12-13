@@ -259,8 +259,9 @@ URLAndTitle* ExtractURLFromStringValue(NSPasteboardItem* item,
   }
 
   // The hostname is the best that can be done for the title.
-  return [URLAndTitle URLAndTitleWithURL:string
-                                   title:base::SysUTF8ToNSString(url.host())];
+  return
+      [URLAndTitle URLAndTitleWithURL:string
+                                title:base::SysUTF8ToNSString(url.GetHost())];
 }
 
 // If there is a file URL on the pasteboard, returns that file as the URL. For

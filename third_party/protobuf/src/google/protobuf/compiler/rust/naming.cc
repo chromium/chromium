@@ -39,7 +39,11 @@ namespace compiler {
 namespace rust {
 
 std::string GetCrateName(Context& ctx, const FileDescriptor& dep) {
-  return absl::StrCat("::", RsSafeName(ctx.ImportPathToCrateName(dep.name())));
+  std::string crate_name = RsSafeName(ctx.ImportPathToCrateName(dep.name()));
+  if (absl::StartsWith(crate_name, "crate::")) {
+    return crate_name;
+  }
+  return absl::StrCat("::", crate_name);
 }
 
 std::string GetEntryPointRsFilePath(Context& ctx, const FileDescriptor& file) {
@@ -390,6 +394,21 @@ std::string ScreamingSnakeToUpperCamelCase(absl::string_view input) {
     }
   }
   return result;
+}
+
+std::string CrubitCcSymbolName(const Descriptor& msg) {
+  // To support forward declares of C++ types, Crubit requires that the symbol
+  // literal is spelled identical to the one used in the generated bindings.
+  // This requires some string mangling here to make them match.
+  std::string cpp_name = cpp::QualifiedClassName(&msg);
+  if (absl::StartsWith(cpp_name, "::")) {
+    cpp_name = cpp_name.substr(2);
+  }
+  cpp_name = absl::StrReplaceAll(cpp_name,
+                                 {{"::", " :: "}, {"<", " < "}, {">", " > "}});
+  absl::StripTrailingAsciiWhitespace(&cpp_name);
+
+  return cpp_name;
 }
 
 MultiCasePrefixStripper::MultiCasePrefixStripper(absl::string_view prefix)

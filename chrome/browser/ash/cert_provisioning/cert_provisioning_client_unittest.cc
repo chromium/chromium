@@ -83,7 +83,6 @@ class StartCsrFuture
           std::optional<em::ClientCertificateProvisioningResponse::Error>,
           std::optional<int64_t>,
           std::string,
-          std::string,
           em::HashingAlgorithm,
           std::vector<uint8_t>> {
  public:
@@ -91,8 +90,8 @@ class StartCsrFuture
     return GetCallback<
         policy::DeviceManagementStatus,
         std::optional<em::ClientCertificateProvisioningResponse::Error>,
-        std::optional<int64_t>, const std::string&, const std::string&,
-        em::HashingAlgorithm, std::vector<uint8_t>>();
+        std::optional<int64_t>, const std::string&, em::HashingAlgorithm,
+        std::vector<uint8_t>>();
   }
 
   policy::DeviceManagementStatus GetStatus() { return Get<0>(); }
@@ -103,13 +102,11 @@ class StartCsrFuture
 
   std::optional<int64_t> GetTryLater() { return Get<2>(); }
 
-  const std::string& GetInvalidationTopic() { return Get<3>(); }
+  const std::string& GetVaChallenge() { return Get<3>(); }
 
-  const std::string& GetVaChallenge() { return Get<4>(); }
+  em::HashingAlgorithm GetHashingAlgorithm() { return Get<4>(); }
 
-  em::HashingAlgorithm GetHashingAlgorithm() { return Get<5>(); }
-
-  const std::vector<uint8_t>& GetDataToSign() { return Get<6>(); }
+  const std::vector<uint8_t>& GetDataToSign() { return Get<5>(); }
 };
 
 // A TestFuture that supports waiting for a
@@ -188,7 +185,6 @@ class CertProvisioningClientTestBase : public testing::Test {
   const std::string kPublicKeyAsString =
       std::string(kPublicKey.begin(), kPublicKey.end());
 
-  const std::string kInvalidationTopic = "fake_invalidation_topic_1";
   const std::string kVaChallange = "fake_va_challenge_1";
   const std::string kDataToSignStr = {10, 11, 12, 13, 14};
   const std::vector<uint8_t> kDataToSignBin = {10, 11, 12, 13, 14};
@@ -244,17 +240,13 @@ TEST_P(CertProvisioningClientTest, StartSuccess) {
   }
 
   // Make CloudPolicyClient answer the request.
-  const std::string invalidation_topic = "test";
-
   em::ClientCertificateProvisioningResponse response;
-  response.mutable_start_response()->set_invalidation_topic(invalidation_topic);
+  response.mutable_start_response();
 
   std::move(cert_prov_call.callback).Run(policy::DM_STATUS_SUCCESS, response);
 
   // Check that CertProvisioningClient has forwarded the answer correctly.
   ASSERT_TRUE(start_future.Get().has_value());
-  EXPECT_EQ(start_future.Get().value().invalidation_topic(),
-            invalidation_topic);
 }
 
 // Checks a successful invocation of GetNextInstruction.
@@ -420,7 +412,6 @@ TEST_P(CertProvisioningClientTest, StartCsrSuccess) {
   {
     em::StartCsrResponse* start_csr_response =
         response.mutable_start_csr_response();
-    start_csr_response->set_invalidation_topic(kInvalidationTopic);
     start_csr_response->set_va_challenge(kVaChallange);
     start_csr_response->set_hashing_algorithm(kHashAlgorithm);
     start_csr_response->set_signing_algorithm(kSignAlgorithm);
@@ -432,7 +423,6 @@ TEST_P(CertProvisioningClientTest, StartCsrSuccess) {
   EXPECT_EQ(start_csr_future.GetStatus(), policy::DM_STATUS_SUCCESS);
   EXPECT_EQ(start_csr_future.GetError(), std::nullopt);
   EXPECT_EQ(start_csr_future.GetTryLater(), std::nullopt);
-  EXPECT_EQ(start_csr_future.GetInvalidationTopic(), kInvalidationTopic);
   EXPECT_EQ(start_csr_future.GetVaChallenge(), kVaChallange);
   EXPECT_EQ(start_csr_future.GetHashingAlgorithm(), kHashAlgorithm);
   EXPECT_EQ(start_csr_future.GetDataToSign(), kDataToSignBin);

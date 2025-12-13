@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/notreached.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/mojom/account_id.mojom.h"
 #include "google_apis/gaia/gaia_id.h"

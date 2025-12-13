@@ -37,7 +37,6 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
@@ -163,27 +162,28 @@ std::vector<arc::mojom::AppInfoPtr> GetArcSettingsAppInfo() {
 
 class ArcAppsPublisherTest : public testing::Test {
  public:
-  ArcAppsPublisherTest()
-      : local_state_(std::make_unique<ScopedTestingLocalState>(
-            TestingBrowserProcess::GetGlobal())) {}
+  ArcAppsPublisherTest() = default;
   void SetUp() override {
     testing::Test::SetUp();
 
-    profile_ = MakeProfile();
-
     // Do not destroy the ArcServiceManager during TearDown, so that Arc
     // KeyedServices can be correctly destroyed during profile shutdown.
-    arc_test_.set_persist_service_manager(true);
-    // We will manually start ArcApps after setting up IntentHelper, this allows
-    // ArcApps to observe the correct IntentHelper during initialization.
-    arc_test_.set_start_app_service_publisher(false);
+    arc_app_test_.set_persist_service_manager(true);
     // We want to use the real ArcIntentHelper KeyedService so that it's the
     // same object that ArcApps uses.
-    arc_test_.set_initialize_real_intent_helper_bridge(true);
-    arc_test_.SetUp(profile());
+    arc_app_test_.set_initialize_real_intent_helper_bridge(true);
+    arc_app_test_.PreProfileSetUp();
+
+    profile_ = MakeProfile();
+
+    // Initialize AppServiceProxy.
+    app_service_test_.SetUp(profile());
+
+    // Initialize ARC.
+    arc_app_test_.PostProfileSetUp(profile());
 
     auto* arc_bridge_service =
-        arc_test_.arc_service_manager()->arc_bridge_service();
+        arc_app_test_.arc_service_manager()->arc_bridge_service();
 
     intent_helper_ =
         arc::ArcIntentHelperBridge::GetForBrowserContext(profile());
@@ -197,17 +197,17 @@ class ArcAppsPublisherTest : public testing::Test {
     provider->SetWebAppPolicyManager(std::move(web_app_policy_manager));
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
 
-    app_service_test_.SetUp(profile_.get());
-    apps::ArcAppsFactory::GetForProfile(profile());
     // Ensure that the PreferredAppsList is fully initialized before running the
     // test.
     task_environment_.RunUntilIdle();
   }
 
   void TearDown() override {
-    arc_test_.StopArcInstance();
-    apps::ArcAppsFactory::GetInstance()->ShutDownForTesting(profile());
-    arc_test_.TearDown();
+    arc_file_system_bridge_.reset();
+    arc_app_test_.StopArcInstance();
+    arc_app_test_.PreProfileTearDown();
+    profile_.reset();
+    arc_app_test_.PostProfileTearDown();
   }
 
   virtual std::unique_ptr<TestingProfile> MakeProfile() {
@@ -233,7 +233,7 @@ class ArcAppsPublisherTest : public testing::Test {
 
   void SetUpFileSystemInstance() {
     auto* arc_bridge_service =
-        arc_test()->arc_service_manager()->arc_bridge_service();
+        arc_app_test()->arc_service_manager()->arc_bridge_service();
     file_system_instance_ = std::make_unique<arc::FakeFileSystemInstance>();
     arc_bridge_service->file_system()->SetInstance(file_system_instance());
     arc::WaitForInstanceReady(arc_bridge_service->file_system());
@@ -248,14 +248,14 @@ class ArcAppsPublisherTest : public testing::Test {
   arc::ArcIntentHelperBridge* intent_helper() { return intent_helper_; }
 
   arc::FakeIntentHelperInstance* intent_helper_instance() {
-    return arc_test_.intent_helper_instance();
+    return arc_app_test_.intent_helper_instance();
   }
 
   arc::FakeFileSystemInstance* file_system_instance() {
     return file_system_instance_.get();
   }
 
-  ArcAppTest* arc_test() { return &arc_test_; }
+  ArcAppTest* arc_app_test() { return &arc_app_test_; }
 
   apps::PreferredAppsListHandle& preferred_apps() {
     return apps::AppServiceProxyFactory::GetForProfile(profile())
@@ -272,13 +272,10 @@ class ArcAppsPublisherTest : public testing::Test {
     return result;
   }
 
- protected:
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
-
  private:
   content::BrowserTaskEnvironment task_environment_;
   ash::SystemWebAppDelegateMap system_apps_;
-  ArcAppTest arc_test_;
+  ArcAppTest arc_app_test_;
   std::unique_ptr<TestingProfile> profile_;
   apps::AppServiceTest app_service_test_;
   raw_ptr<arc::ArcIntentHelperBridge, DanglingUntriaged> intent_helper_;
@@ -290,11 +287,11 @@ class ArcAppsPublisherTest : public testing::Test {
 // system doesn't change the setting in app service.
 TEST_F(ArcAppsPublisherTest, SetSupportedLinksFromArcSystem) {
   constexpr char kTestAuthority[] = "www.example.com";
-  const auto& fake_apps = arc_test()->fake_apps();
+  const auto& fake_apps = arc_app_test()->fake_apps();
   std::string package_name = fake_apps[0]->package_name;
   std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
                                                  fake_apps[0]->activity);
-  arc_test()->app_instance()->SendRefreshAppList(fake_apps);
+  arc_app_test()->app_instance()->SendRefreshAppList(fake_apps);
 
   // Update intent filters and supported links for the app, as if it was just
   // installed.
@@ -313,11 +310,11 @@ TEST_F(ArcAppsPublisherTest, SetSupportedLinksFromArcSystem) {
 // syncs the setting to ARC.
 TEST_F(ArcAppsPublisherTest, SetSupportedLinksFromAppService) {
   constexpr char kTestAuthority[] = "www.example.com";
-  const auto& fake_apps = arc_test()->fake_apps();
+  const auto& fake_apps = arc_app_test()->fake_apps();
   std::string package_name = fake_apps[0]->package_name;
   std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
                                                  fake_apps[0]->activity);
-  arc_test()->app_instance()->SendRefreshAppList(fake_apps);
+  arc_app_test()->app_instance()->SendRefreshAppList(fake_apps);
   intent_helper()->OnIntentFiltersUpdatedForPackage(
       package_name, CreateFilterList(package_name, {kTestAuthority}));
   VerifyIntentFilters(app_id, {kTestAuthority});
@@ -334,11 +331,11 @@ TEST_F(ArcAppsPublisherTest, SetSupportedLinksFromAppService) {
 TEST_F(ArcAppsPublisherTest, SetSupportedLinksAllowsUpdates) {
   constexpr char kTestAuthority[] = "www.example.com";
   constexpr char kTestAuthority2[] = "www.newexample.com";
-  const auto& fake_apps = arc_test()->fake_apps();
+  const auto& fake_apps = arc_app_test()->fake_apps();
   std::string package_name = fake_apps[0]->package_name;
   std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
                                                  fake_apps[0]->activity);
-  arc_test()->app_instance()->SendRefreshAppList(fake_apps);
+  arc_app_test()->app_instance()->SendRefreshAppList(fake_apps);
 
   // Update intent filters and supported links for the app, as if it was just
   // installed.
@@ -367,11 +364,11 @@ TEST_F(ArcAppsPublisherTest, SetSupportedLinksAllowsUpdates) {
 // Verifies that the user can set an app as preferred through ARC settings.
 TEST_F(ArcAppsPublisherTest, SetSupportedLinksAllowsUserChanges) {
   constexpr char kTestAuthority[] = "www.example.com";
-  const auto& fake_apps = arc_test()->fake_apps();
+  const auto& fake_apps = arc_app_test()->fake_apps();
   std::string package_name = fake_apps[0]->package_name;
   std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
                                                  fake_apps[0]->activity);
-  arc_test()->app_instance()->SendRefreshAppList(fake_apps);
+  arc_app_test()->app_instance()->SendRefreshAppList(fake_apps);
 
   // Update intent filters and supported links for the app, as if it was just
   // installed.
@@ -392,7 +389,7 @@ TEST_F(ArcAppsPublisherTest, SetSupportedLinksAllowsPlayStoreDefault) {
   std::vector<arc::mojom::AppInfoPtr> apps;
   apps.push_back(arc::mojom::AppInfo::New("Play Store", arc::kPlayStorePackage,
                                           arc::kPlayStoreActivity));
-  arc_test()->app_instance()->SendRefreshAppList(apps);
+  arc_app_test()->app_instance()->SendRefreshAppList(apps);
 
   // Update intent filters and supported links for the app, as if it was just
   // installed.
@@ -411,12 +408,13 @@ TEST_F(ArcAppsPublisherTest, SetSupportedLinksAllowsPlayStoreDefault) {
 // disable ARC settings as well. Clearing the policy should re-enable ARC
 // settings.
 TEST_F(ArcAppsPublisherTest, DisableOSSettingArcSettings) {
-  arc_test()->app_instance()->SendRefreshAppList(GetArcSettingsAppInfo());
+  arc_app_test()->app_instance()->SendRefreshAppList(GetArcSettingsAppInfo());
 
   // Change SystemFeaturesDisableList policy to disable OS Setting.
   {
     ScopedListPrefUpdate update(
-        local_state_->Get(), policy::policy_prefs::kSystemFeaturesDisableList);
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        policy::policy_prefs::kSystemFeaturesDisableList);
     update->Append(static_cast<int>(policy::SystemFeature::kOsSettings));
   }
 
@@ -430,7 +428,8 @@ TEST_F(ArcAppsPublisherTest, DisableOSSettingArcSettings) {
   // Clear SystemFeaturesDisableList policy.
   {
     ScopedListPrefUpdate update(
-        local_state_->Get(), policy::policy_prefs::kSystemFeaturesDisableList);
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        policy::policy_prefs::kSystemFeaturesDisableList);
     update->clear();
   }
 
@@ -446,12 +445,13 @@ TEST_F(ArcAppsPublisherTest, DisableOSSettingArcSettings) {
 // Verifies that disabling OS settings by SystemFeaturesDisableList policy and
 // re-enabling does not remove the local settings block.
 TEST_F(ArcAppsPublisherTest, DisableAndBlockOSSettingArcSettings) {
-  arc_test()->app_instance()->SendRefreshAppList(GetArcSettingsAppInfo());
+  arc_app_test()->app_instance()->SendRefreshAppList(GetArcSettingsAppInfo());
 
   // Change SystemFeaturesDisableList policy to disable OS Setting.
   {
     ScopedListPrefUpdate update(
-        local_state_->Get(), policy::policy_prefs::kSystemFeaturesDisableList);
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        policy::policy_prefs::kSystemFeaturesDisableList);
     update->Append(static_cast<int>(policy::SystemFeature::kOsSettings));
   }
 
@@ -473,7 +473,8 @@ TEST_F(ArcAppsPublisherTest, DisableAndBlockOSSettingArcSettings) {
   // Clear SystemFeaturesDisableList policy.
   {
     ScopedListPrefUpdate update(
-        local_state_->Get(), policy::policy_prefs::kSystemFeaturesDisableList);
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        policy::policy_prefs::kSystemFeaturesDisableList);
     update->clear();
   }
 
@@ -509,11 +510,11 @@ class ArcAppsPublisherManagedProfileTest : public ArcAppsPublisherTest {
 // ARC system changes the app service setting, for a managed profile.
 TEST_F(ArcAppsPublisherManagedProfileTest, SetSupportedLinksByDefault) {
   constexpr char kTestAuthority[] = "www.example.com";
-  const auto& fake_apps = arc_test()->fake_apps();
+  const auto& fake_apps = arc_app_test()->fake_apps();
   std::string package_name = fake_apps[0]->package_name;
   std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
                                                  fake_apps[0]->activity);
-  arc_test()->app_instance()->SendRefreshAppList(fake_apps);
+  arc_app_test()->app_instance()->SendRefreshAppList(fake_apps);
 
   // Update intent filters and supported links for the app, as if it was just
   // installed.
@@ -533,11 +534,11 @@ TEST_F(ArcAppsPublisherManagedProfileTest, SetSupportedLinksByDefault) {
 // a managed profile is set to true.
 TEST_F(ArcAppsPublisherManagedProfileTest, SetSupportedLinksDisabledByPolicy) {
   constexpr char kTestAuthority[] = "www.example.com";
-  const auto& fake_apps = arc_test()->fake_apps();
+  const auto& fake_apps = arc_app_test()->fake_apps();
   std::string package_name = fake_apps[0]->package_name;
   std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
                                                  fake_apps[0]->activity);
-  arc_test()->app_instance()->SendRefreshAppList(fake_apps);
+  arc_app_test()->app_instance()->SendRefreshAppList(fake_apps);
   profile()->GetPrefs()->SetBoolean(arc::prefs::kArcOpenLinksInBrowserByDefault,
                                     true);
 
@@ -566,7 +567,7 @@ TEST_F(ArcAppsPublisherManagedProfileTest,
   std::vector<arc::mojom::AppInfoPtr> app_list;
   app_list.push_back(std::move(app));
 
-  arc_test()->app_instance()->SendRefreshAppList(std::move(app_list));
+  arc_app_test()->app_instance()->SendRefreshAppList(std::move(app_list));
 
   // Update intent filters and supported links for the app, as if it was just
   // installed.
@@ -593,7 +594,7 @@ TEST_F(ArcAppsPublisherManagedProfileTest,
   std::vector<arc::mojom::AppInfoPtr> app_list;
   app_list.push_back(std::move(app));
 
-  arc_test()->app_instance()->SendRefreshAppList(std::move(app_list));
+  arc_app_test()->app_instance()->SendRefreshAppList(std::move(app_list));
   intent_helper()->OnIntentFiltersUpdatedForPackage(
       package_name, CreateFilterList(package_name, {kTestAuthority}));
 
@@ -617,7 +618,7 @@ TEST_F(ArcAppsPublisherManagedProfileTest,
       arc::mojom::AppInfo::New("Google Drive", package_name, activity_name);
   std::vector<arc::mojom::AppInfoPtr> app_list;
   app_list.push_back(std::move(app));
-  arc_test()->app_instance()->SendRefreshAppList(std::move(app_list));
+  arc_app_test()->app_instance()->SendRefreshAppList(std::move(app_list));
   intent_helper()->OnIntentFiltersUpdatedForPackage(
       package_name, CreateFilterList(package_name, {kDriveAuthority}));
 
@@ -650,7 +651,7 @@ TEST_F(ArcAppsPublisherTest, PublishPermission) {
   std::vector<arc::mojom::AppInfoPtr> apps;
   apps.push_back(
       arc::mojom::AppInfo::New("Fake app", kPackageName, kActivityName));
-  arc_test()->app_instance()->SendRefreshAppList(apps);
+  arc_app_test()->app_instance()->SendRefreshAppList(apps);
 
   std::vector<arc::mojom::ArcPackageInfoPtr> packages;
 
@@ -673,7 +674,7 @@ TEST_F(ArcAppsPublisherTest, PublishPermission) {
   package->permission_states = std::move(permissions);
   packages.push_back(std::move(package));
 
-  arc_test()->app_instance()->SendRefreshPackageList(std::move(packages));
+  arc_app_test()->app_instance()->SendRefreshPackageList(std::move(packages));
 
   apps::Permissions result;
   bool found = app_service_proxy()->AppRegistryCache().ForOneApp(
@@ -704,11 +705,11 @@ TEST_F(ArcAppsPublisherTest,
   auto intent = apps_util::MakeEditIntent(
       FileInDownloads(profile(), base::FilePath("test.txt")), "text/plain");
 
-  const auto& fake_apps = arc_test()->fake_apps();
+  const auto& fake_apps = arc_app_test()->fake_apps();
   std::string package_name = fake_apps[0]->package_name;
   std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
                                                  fake_apps[0]->activity);
-  arc_test()->app_instance()->SendRefreshAppList(fake_apps);
+  arc_app_test()->app_instance()->SendRefreshAppList(fake_apps);
 
   std::optional<apps::State> result;
   app_service_proxy()->LaunchAppWithIntent(
@@ -737,11 +738,11 @@ TEST_F(ArcAppsPublisherTest,
   auto intent = apps_util::MakeEditIntent(
       FileInDownloads(profile(), base::FilePath("test.txt")), "text/plain");
 
-  const auto& fake_apps = arc_test()->fake_apps();
+  const auto& fake_apps = arc_app_test()->fake_apps();
   std::string package_name = fake_apps[0]->package_name;
   std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
                                                  fake_apps[0]->activity);
-  arc_test()->app_instance()->SendRefreshAppList(fake_apps);
+  arc_app_test()->app_instance()->SendRefreshAppList(fake_apps);
 
   std::optional<apps::State> result;
   app_service_proxy()->LaunchAppWithIntent(
@@ -775,11 +776,11 @@ TEST_F(
   auto intent = std::make_unique<apps::Intent>(apps_util::kIntentActionView,
                                                std::move(files));
 
-  const auto& fake_apps = arc_test()->fake_apps();
+  const auto& fake_apps = arc_app_test()->fake_apps();
   std::string package_name = fake_apps[0]->package_name;
   std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
                                                  fake_apps[0]->activity);
-  arc_test()->app_instance()->SendRefreshAppList(fake_apps);
+  arc_app_test()->app_instance()->SendRefreshAppList(fake_apps);
 
   std::optional<apps::State> result;
   app_service_proxy()->LaunchAppWithIntent(
@@ -814,11 +815,11 @@ TEST_F(ArcAppsPublisherTest,
   GURL url = FileInDownloads(profile(), base::FilePath(file_name));
   auto intent = apps_util::MakeShareIntent({url}, {mime_type});
 
-  const auto& fake_apps = arc_test()->fake_apps();
+  const auto& fake_apps = arc_app_test()->fake_apps();
   std::string package_name = fake_apps[0]->package_name;
   std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
                                                  fake_apps[0]->activity);
-  arc_test()->app_instance()->SendRefreshAppList(fake_apps);
+  arc_app_test()->app_instance()->SendRefreshAppList(fake_apps);
 
   std::optional<apps::State> result;
   app_service_proxy()->LaunchAppWithIntent(
@@ -853,11 +854,11 @@ TEST_F(ArcAppsPublisherTest, LaunchAppWithIntent_ShareFilesIntent_SendsExtras) {
                                            kTestIntentText, kTestIntentTitle);
   intent->extras = {std::make_pair(kTestExtraKey, kTestExtraValue)};
 
-  const auto& fake_apps = arc_test()->fake_apps();
+  const auto& fake_apps = arc_app_test()->fake_apps();
   std::string package_name = fake_apps[0]->package_name;
   std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
                                                  fake_apps[0]->activity);
-  arc_test()->app_instance()->SendRefreshAppList(fake_apps);
+  arc_app_test()->app_instance()->SendRefreshAppList(fake_apps);
 
   app_service_proxy()->LaunchAppWithIntent(
       app_id, 0, std::move(intent), apps::LaunchSource::kFromFileManager,
@@ -882,19 +883,19 @@ TEST_F(ArcAppsPublisherTest, SetAppLocale_SendsLocaleToArc) {
   ASSERT_NE(nullptr, prefs);
   // fake_packages[4] is the test package with localeInfo.
   const std::string& test_package_name =
-      arc_test()->fake_apps()[4]->package_name;
-  const std::string& app_id =
-      prefs->GetAppId(test_package_name, arc_test()->fake_apps()[4]->activity);
+      arc_app_test()->fake_apps()[4]->package_name;
+  const std::string& app_id = prefs->GetAppId(
+      test_package_name, arc_app_test()->fake_apps()[4]->activity);
 
   // Setup app.
   std::vector<arc::mojom::AppInfoPtr> test_app_info_list;
-  test_app_info_list.push_back(arc_test()->fake_apps()[4]->Clone());
-  arc_test()->app_instance()->SendRefreshAppList(test_app_info_list);
+  test_app_info_list.push_back(arc_app_test()->fake_apps()[4]->Clone());
+  arc_app_test()->app_instance()->SendRefreshAppList(test_app_info_list);
   // Setup package.
   // Initially pref will be set with "en" as selectedLocale.
   std::vector<arc::mojom::ArcPackageInfoPtr> test_packages;
-  test_packages.push_back(arc_test()->fake_packages()[4]->Clone());
-  arc_test()->app_instance()->SendRefreshPackageList(
+  test_packages.push_back(arc_app_test()->fake_packages()[4]->Clone());
+  arc_app_test()->app_instance()->SendRefreshPackageList(
       ArcAppTest::ClonePackages(test_packages));
 
   // Run.
@@ -902,7 +903,7 @@ TEST_F(ArcAppsPublisherTest, SetAppLocale_SendsLocaleToArc) {
 
   // Assert.
   ASSERT_EQ("ja",
-            arc_test()->app_instance()->selected_locale(test_package_name));
+            arc_app_test()->app_instance()->selected_locale(test_package_name));
   ASSERT_EQ("ja",
             profile()->GetPrefs()->GetString(arc::prefs::kArcLastSetAppLocale));
 }
@@ -911,8 +912,6 @@ class ArcAppsPublisherPromiseAppTest : public ArcAppsPublisherTest {
  public:
   void SetUp() override {
     ArcAppsPublisherTest::SetUp();
-    feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
-    app_service_proxy()->ReinitializeForTesting(profile());
     service()->SetSkipAlmanacForTesting(true);
   }
 
@@ -923,9 +922,6 @@ class ArcAppsPublisherPromiseAppTest : public ArcAppsPublisherTest {
   apps::PromiseAppRegistryCache* cache() {
     return app_service_proxy()->PromiseAppRegistryCache();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ArcAppsPublisherPromiseAppTest,
@@ -933,7 +929,7 @@ TEST_F(ArcAppsPublisherPromiseAppTest,
   // Verify that the promise app is not yet registered.
   EXPECT_FALSE(cache()->HasPromiseApp(kTestPackageId));
 
-  arc_test()->app_instance()->SendInstallationStarted(kTestPackageName);
+  arc_app_test()->app_instance()->SendInstallationStarted(kTestPackageName);
 
   // Verify that the promise app is now registered.
   EXPECT_TRUE(cache()->HasPromiseApp(kTestPackageId));
@@ -958,8 +954,8 @@ TEST_F(ArcAppsPublisherPromiseAppTest,
   EXPECT_EQ(promise_app_result->progress.value(), progress_initial);
 
   // Send an update and check the progress value.
-  arc_test()->app_instance()->SendInstallationProgressChanged(kTestPackageName,
-                                                              progress_next);
+  arc_app_test()->app_instance()->SendInstallationProgressChanged(
+      kTestPackageName, progress_next);
   promise_app_result = cache()->GetPromiseApp(kTestPackageId);
   EXPECT_TRUE(promise_app_result);
   EXPECT_TRUE(promise_app_result->progress.has_value());
@@ -980,8 +976,8 @@ TEST_F(ArcAppsPublisherPromiseAppTest, ProgressUpdateChangesPromiseStatus) {
   EXPECT_EQ(promise_app_result->status, apps::PromiseStatus::kPending);
 
   // Send a progress update and check the status.
-  arc_test()->app_instance()->SendInstallationProgressChanged(kTestPackageName,
-                                                              0.2);
+  arc_app_test()->app_instance()->SendInstallationProgressChanged(
+      kTestPackageName, 0.2);
   promise_app_result = cache()->GetPromiseApp(kTestPackageId);
   EXPECT_TRUE(promise_app_result);
   EXPECT_EQ(promise_app_result->status, apps::PromiseStatus::kInstalling);
@@ -999,7 +995,8 @@ TEST_F(ArcAppsPublisherPromiseAppTest, CancelledInstallationRemovesPromiseApp) {
 
   // Confirm that the promise app gets removed after a cancelled/ failed
   // installation update.
-  arc_test()->app_instance()->SendInstallationFinished(kTestPackageName, false);
+  arc_app_test()->app_instance()->SendInstallationFinished(kTestPackageName,
+                                                           false);
   EXPECT_FALSE(cache()->HasPromiseApp(kTestPackageId));
 }
 
@@ -1016,7 +1013,7 @@ TEST_F(ArcAppsPublisherPromiseAppTest,
 
   // Confirm that the promise app gets removed after successful installation of
   // a non-launchable package.
-  arc_test()->app_instance()->SendInstallationFinished(
+  arc_app_test()->app_instance()->SendInstallationFinished(
       kTestPackageName, /*success=*/true,
       /*is_launchable_app=*/false);
   EXPECT_FALSE(cache()->HasPromiseApp(kTestPackageId));
@@ -1035,11 +1032,11 @@ TEST_F(ArcAppsPublisherPromiseAppTest,
 
   // Confirm that the promise app gets removed after a successfully completed
   // installation.
-  const auto& fake_apps = arc_test()->fake_apps();
+  const auto& fake_apps = arc_app_test()->fake_apps();
   fake_apps[0]->package_name = kTestPackageName;
   std::string app_id =
       ArcAppListPrefs::GetAppId(kTestPackageName, "testActivity");
-  arc_test()->app_instance()->SendRefreshAppList(fake_apps);
+  arc_app_test()->app_instance()->SendRefreshAppList(fake_apps);
 
   // Confirm that the promise app gets removed after the installed app gets
   // registered.
@@ -1054,7 +1051,7 @@ TEST_F(ArcAppsPublisherPromiseAppTest, PromiseAppsAreSuppressedForPiArc) {
   EXPECT_FALSE(cache()->HasPromiseApp(kTestPackageId));
 
   // Trigger an installation event notification.
-  arc_test()->app_instance()->SendInstallationStarted(kTestPackageName);
+  arc_app_test()->app_instance()->SendInstallationStarted(kTestPackageName);
 
   // Verify that the promise app still isn't registered.
   EXPECT_FALSE(cache()->HasPromiseApp(kTestPackageId));
@@ -1068,7 +1065,7 @@ TEST_F(ArcAppsPublisherPromiseAppTest, PromiseAppsAreCreatedForRvcArc) {
   EXPECT_FALSE(cache()->HasPromiseApp(kTestPackageId));
 
   // Trigger an installation event notification.
-  arc_test()->app_instance()->SendInstallationStarted(kTestPackageName);
+  arc_app_test()->app_instance()->SendInstallationStarted(kTestPackageName);
 
   // Verify that the promise app is registered.
   EXPECT_TRUE(cache()->HasPromiseApp(kTestPackageId));
@@ -1077,30 +1074,30 @@ TEST_F(ArcAppsPublisherPromiseAppTest, PromiseAppsAreCreatedForRvcArc) {
 // Verifies that only valid intent filters will be published from ARC.
 TEST_F(ArcAppsPublisherTest, OnlyValidFilterIsPublished) {
   const GURL kTestUrl("https://www.example.com");
-  const auto& fake_apps = arc_test()->fake_apps();
+  const auto& fake_apps = arc_app_test()->fake_apps();
   std::string package_name = fake_apps[0]->package_name;
   std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
                                                  fake_apps[0]->activity);
-  arc_test()->app_instance()->SendRefreshAppList(fake_apps);
+  arc_app_test()->app_instance()->SendRefreshAppList(fake_apps);
 
   std::vector<arc::IntentFilter::AuthorityEntry> filter_authorities1;
-  filter_authorities1.emplace_back(kTestUrl.host(), 0);
+  filter_authorities1.emplace_back(kTestUrl.GetHost(), 0);
   std::vector<arc::IntentFilter::PatternMatcher> patterns;
-  patterns.emplace_back(kTestUrl.path(), arc::PatternType::kPrefix);
+  patterns.emplace_back(kTestUrl.GetPath(), arc::PatternType::kPrefix);
 
-  auto filter = arc::IntentFilter(package_name, {arc::kIntentActionView},
-                                  std::move(filter_authorities1),
-                                  std::move(patterns), {kTestUrl.scheme()}, {});
+  auto filter = arc::IntentFilter(
+      package_name, {arc::kIntentActionView}, std::move(filter_authorities1),
+      std::move(patterns), {kTestUrl.GetScheme()}, {});
   std::vector<arc::IntentFilter> filters;
   filters.push_back(std::move(filter));
 
   std::vector<arc::IntentFilter::AuthorityEntry> filter_authorities2;
-  filter_authorities2.emplace_back(kTestUrl.host(), 0);
+  filter_authorities2.emplace_back(kTestUrl.GetHost(), 0);
   constexpr arc::PatternType kInvalidPatternType =
       static_cast<arc::PatternType>(5);
   ASSERT_FALSE(arc::IsKnownPatternType(kInvalidPatternType));
   std::vector<arc::IntentFilter::PatternMatcher> invalid_pattern;
-  invalid_pattern.emplace_back(kTestUrl.path(), kInvalidPatternType);
+  invalid_pattern.emplace_back(kTestUrl.GetPath(), kInvalidPatternType);
 
   auto invalid_filter = arc::IntentFilter(
       package_name, {arc::kIntentActionView}, std::move(filter_authorities2),
